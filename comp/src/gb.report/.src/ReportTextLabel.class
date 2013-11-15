@@ -40,17 +40,17 @@ Private Sub Alignment_Write(Value As Integer)
 
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
 
   Dim hMyHints As New TSizeHint
   Dim fTextHeight As Float
   Dim sTmp As String
 
-  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalWidth)
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalWidth, DataIndex)
 
   If Me.Autoresize Then
     If Not $sText Then
-      Raise Data(Me._GetIndex())
+      Raise Data(DataIndex)
       sTmp = Data
     Else
       sTmp = $sText
@@ -66,7 +66,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
 
 End
 
-Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim iX, iY, iW, iH As Integer
   Dim sTmp As String
@@ -74,7 +74,7 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
 
   If Not $sText Then
-    Raise Data(Me._GetIndex())
+    Raise Data(DataIndex)
     sTmp = Data
   Else
     sTmp = $sText

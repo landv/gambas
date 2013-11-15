@@ -18,20 +18,20 @@ Public Data As Image
 
 Event Data(Index As Integer)
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
 
   Dim hMyHints As New TSizeHint
 
 
   Dim hPic As Image
 
-  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
 
   If Me.Autoresize Then
     If $hpic Then
       hpic = $hpic
     Else
-      Raise Data(Me._GetIndex())
+      Raise Data(DataIndex)
       hpic = Data
     Endif
 
@@ -46,7 +46,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
 
 End
 
-Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim ix, iy As Float
   Dim hBrush As PaintBrush
@@ -59,7 +59,7 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
   iy = y + hControl.RealTop '+ MTools.UnitsToPixels(Me.Padding._Top)
 
   If Not $hpic Then
-    Raise Data(Me._GetIndex())
+    Raise Data(DataIndex)
     hpic = Data
     If Not hPic Then Return
   Else

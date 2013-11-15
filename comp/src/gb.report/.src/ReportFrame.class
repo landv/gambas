@@ -32,7 +32,7 @@ Private Sub Border_Write(Value As ReportBorder)
 
 End
 
-Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim X1, Y1, X2, Y2 As Float
  
@@ -88,15 +88,15 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
 
 End
 
-Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
-  _PaintBefore(Page, X, Y, hControl, VirtualId)
-  Me._Paint(Page, X, Y, hControl, VirtualId)
-  _PaintAfter(Page, X, Y, hControl, VirtualId)
+  _PaintBefore(Page, X, Y, hControl, DataIndex)
+  Me._Paint(Page, X, Y, hControl, DataIndex)
+  _PaintAfter(Page, X, Y, hControl, DataIndex)
 
 End
 
-Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim X1, Y1, X2, Y2 As Float
   'Dim fWidth As Float
@@ -110,7 +110,7 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
   Y1 = (y + hControl.RealTop)
   X2 = (x + hControl.RealLeft + hControl.RealWidth)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
-If Me.Tag = "**" Then Stop
+'If Me.Tag = "**" Then Stop
   If $hBorder.RoundCorner._Active Then
     fLeftWidth = MTools.UnitsToPixels($hBorder._Left) / 2
     paint.LineWidth = fLeftWidth * 2
@@ -199,11 +199,11 @@ Public Sub _SetUnifiedValues()
 
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
 
   Dim hMyHints As TSizeHint
 
-  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight)
+  hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
 
   If hMyHints.Height <= 0 Then
     hMyHints.Height = Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom

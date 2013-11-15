@@ -4,10 +4,12 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
 Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
 Public Const _Family As String = "Report"
 Public _SizeInt As TSizeHint
 Public _Count As Integer = 1
+Public _Finished As Boolean
 Private $iDataindex As Integer
 Property _DataIndex As Integer
 
@@ -90,17 +92,19 @@ Property Autoresize As Boolean
 Property Read {Report} As Report
 Property _ReportId As Integer
 Property Read DataIndex As Integer
+Property ForceNewPage As Boolean
+Private $bForceNewPage As Boolean
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
-
+  
   Dim hRep As Report
-
+  
   $iMyId = $iLastId
   Inc $iLastId
   If IsNull(Parent) Then
     $iParentId = -1
     $iReportId = $iMyId
-
+    
   Else
     If Parent Is Report Then
       hRep = Parent
@@ -113,365 +117,365 @@ Public Sub _New(Optional Parent As ReportContainer = Null)
       $iReportId = Parent._ReportId
     Endif
   Endif
-
+  
 End
 
 Private Function Id_Read() As Integer
-
+  
   Return $iMyId
-
+  
 End
 
 Private Function Parent_Read() As ReportContainer
-
+  
   Return ReportControl._ObjectFromId[$iParentId]
-
+  
 End
 
 Private Function Left_Read() As String
-
+  
   Return $sLeft
-
+  
 End
 
 Private Sub Left_Write(Value As String)
-
+  
   $sLeft = Value
-
+  
 End
 
 Private Function Top_Read() As String
-
+  
   Return $sTop
-
+  
 End
 
 Private Sub Top_Write(Value As String)
-
+  
   $sTop = Value
-
+  
 End
 
 Private Function Width_Read() As String
-
+  
   Return $sWidth
-
+  
 End
 
 Private Sub Width_Write(Value As String)
-
+  
   $sWidth = Value
-
+  
 End
 
 Private Function Height_Read() As String
-
+  
   Return $sHeight
-
+  
 End
 
 Private Sub Height_Write(Value As String)
-
+  
   $sHeight = Value
-
+  
 End
 
 Private Function Expand_Read() As Boolean
-
+  
   Return $bExpand
-
+  
 End
 
 Private Sub Expand_Write(Value As Boolean)
-
+  
   $bExpand = Value
-
+  
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, TotalWidth As Float, TotalHeight As Float) As TSizeHint
-
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As TSizeHint
+  
   'Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
   'Implementaion standart du sizeInt hors autoresize et hbox
   '
-
+  
   Dim hMyHints As New TSizeHint
-
+  
   If Me._RelativeHeight Then
     hMyHints.Height = TotalHeight * Me._Height / 100
   Else
     hMyHints.Height = Me._Height
   Endif
-
+  
   If Me._RelativeWidth Then
     hMyHints.Width = TotalWidth * Me._Width / 100
   Else
     hMyHints.Width = Me._Width
   Endif
   Return hMyHints
-
+  
 End
 
-Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
-
+Public Sub _PaintBeFore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+  
 End
 
-Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
-
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+  
 End
 
-Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
-
-  Me._Paint(Page, X, Y, hControl, VirtualId)
-
+Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+  
+  Me._Paint(Page, X, Y, hControl, DataIndex)
+  
 End
 
-Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
-
+Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+  
 End
 
 Private Function Visible_Read() As Boolean
-
+  
   Return $iVisible
-
+  
 End
 
 Private Sub Visible_Write(Value As Boolean)
-
+  
   $iVisible = Value
-
+  
 End
 
 Public Sub Move(X As Float, Y As Float, W As Float, H As Float)
-
+  
   $fLeft = X
   $fTop = Y
   $fWidth = W
   $fHeight = H
-
+  
 End
 
 Private Function Tag_Read() As Variant
-
+  
   Return $vTag
-
+  
 End
 
 Private Sub Tag_Write(Value As Variant)
-
+  
   $vTag = Value
-
+  
 End
 
 Private Function Font_Read() As Font
-
+  
   Return $hFont
-
+  
 End
 
 Private Sub Font_Write(Value As Font)
-
+  
   $hFont = Value
-
+  
 End
 
 Private Function Padding_Read() As ReportPadding
-
+  
   Return $hPadding
-
+  
 End
 
 Private Sub Padding_Write(Value As ReportPadding)
-
+  
   $hPadding = Value
-
+  
 End
 
 Private Function _Top_Read() As Float
-
+  
   Return $fTop
-
+  
 End
 
 Private Function _Height_Read() As Float
-
+  
   Return $fHeight
-
+  
 End
 
 Private Function _Width_Read() As Float
-
+  
   Return $fWidth
-
+  
 End
 
 Private Function _Left_Read() As Float
-
+  
   Return $fLeft
-
+  
 End
 
 Private Function _Padding_Read() As Float
-
+  
   Return $fPadding
-
+  
 End
 
 Public Function _SetChildGeometry((X) As Float, (Y) As Float, (W) As Float, (H) As Float, (ContPage) As Integer, (TCont) As TControl, (bInFixed) As Boolean)
-
+  
 End
 
 Private Function Autoresize_Read() As Boolean
-
+  
   Return $bAutoresize
-
+  
 End
 
 Private Sub Autoresize_Write(Value As Boolean)
-
+  
   $bAutoresize = Value
-
+  
 End
 
 Private Function _RelativeWidth_Read() As Boolean
-
+  
   Return $bRelativeWidth
-
+  
 End
 
 Private Function _RelativeHeight_Read() As Boolean
-
+  
   Return $bRelativeHeight
-
+  
 End
 
 Private Function _RelativePadding_Read() As Boolean
-
+  
   Return $bRelativePadding
-
+  
 End
 
 ''Convert recursively string values to unified values in cm
 Public Sub _SetUnifiedValues()
-
+  
   Dim hSizeParse As TSizeParse
-
+  
   'Left
   hSizeParse = New TSizeParse($sLeft, True)
   $fLeft = hSizeParse.GetValue()
   $bRelativeLeft = hSizeParse.IsRelative()
-
+  
   'Right
   hSizeParse = New TSizeParse($sTop, True)
   $fTop = hSizeParse.GetValue()
   $bRelativeTop = hSizeParse.IsRelative()
-
+  
   'Width
   hSizeParse = New TSizeParse($sWidth, True)
   $fWidth = hSizeParse.GetValue()
   $bRelativeWidth = hSizeParse.IsRelative()
-
+  
   'Height
   hSizeParse = New TSizeParse($sHeight, True)
   $fHeight = hSizeParse.GetValue()
   $bRelativeHeight = hSizeParse.IsRelative()
-
+  
   'Padding
   ' hSizeParse = New TSizeParse($sPadding, True)
   ' $fPadding = hSizeParse.GetValue()
   ' $bRelativePadding = hSizeParse.IsRelative()
-
+  
   hSizeParse = New TSizeParse($hPadding.Left, True)
   $hPadding._Left = hSizeParse.GetValue()
-
+  
   hSizeParse = New TSizeParse($hPadding.Right, True)
   $hPadding._Right = hSizeParse.GetValue()
-
+  
   hSizeParse = New TSizeParse($hPadding.Top, True)
   $hPadding._Top = hSizeParse.GetValue()
-
+  
   hSizeParse = New TSizeParse($hPadding.Bottom, True)
   $hPadding._Bottom = hSizeParse.GetValue()
-
+  
   '
-
+  
 End
 
 Private Function Ignore_Read() As Boolean
-
+  
   Return $bIgnore
-
+  
 End
 
 Private Sub Ignore_Write(Value As Boolean)
-
+  
   $bIgnore = Value
-
+  
 End
 
 Private Function Report_Read() As Report
-
+  
   Return ReportControl._ObjectFromId[$iReportId]
-
+  
 End
 
 Private Function _ReportId_Read() As Integer
-
+  
   Return $iReportId
-
+  
 End
 
 Private Function Fixed_Read() As Boolean
-
+  
   Return $bFixed
-
+  
 End
 
 Private Sub Fixed_Write(Value As Boolean)
-
+  
   $bFixed = Value
-
+  
 End
 
 Public Sub _Reset()
-
+  
   Me._DataIndex = 0
-
+  
 End
 
 Private Function X_Read() As String
-
+  
   Return $sLeft
-
+  
 End
 
 Private Sub X_Write(Value As String)
-
+  
   $sLeft = Value
-
+  
 End
 
 Private Function Y_Read() As String
-
+  
   Return $sTop
-
+  
 End
 
 Private Sub Y_Write(Value As String)
-
+  
   $sTop = Value
-
+  
 End
 
 Private Function Brush_Read() As ReportBrush
-
+  
   Return $hBrush
-
+  
 End
 
 Private Sub Brush_Write(Value As ReportBrush)
-
+  
   $hBrush = Value
-
+  
 End
 
 ' Private Function Color_Read() As Integer
@@ -487,9 +491,9 @@ End
 ' End
 
 Public Function _GetActualBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As PaintBrush
-
+  
   Dim hBrush As PaintBrush
-
+  
   If $hBrush Then
     hBrush = $hBrush._PaintBrush(X1, Y1, X2, Y2)
   Else If $iColor Then
@@ -501,75 +505,88 @@ Public Function _GetActualBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 
     Endif
   Endif
   Return hBrush
-
+  
 End
 
 Private Sub _ReportId_Write(Value As Integer)
-
+  
   $iReportId = Value
-
+  
 End
 
 Private Function _RelativeLeft_Read() As Boolean
-
+  
   Return $bRelativeLeft
-
+  
 End
 
 Private Function _RelativeTop_Read() As Boolean
-
+  
   Return $bRelativeTop
-
+  
 End
 
 Private Function DataIndex_Read() As Integer
-
-  Return Me._GetIndex()
-
+  
+  Return Me._Index 'Return Me._GetIndex()
+  
 End
 
 Private Function Range_Read() As String
-
+  
   Return $sRange
-
+  
 End
 
 Private Sub Range_Write(Value As String)
-
+  
   $sRange = Value
-
+  
 End
 
 Public Function _GetIndex() As Integer
-
-  Return Me.Parent._GetIndex()
-
+  
+  Return Me._Index
+  'Return Me.Parent._GetIndex()
+  
 End
 
 Private Function _Index_Read() As Integer
-
+  
   Return $iIndex
-
+  
 End
 
 Private Sub _Index_Write(Value As Integer)
-
+  
   $iIndex = Value
-
+  
 End
 
 Private Function _DataIndex_Read() As Integer
-
+  
   Return $iDataindex
-
+  
 End
 
 Private Sub _DataIndex_Write(Value As Integer)
   'If Me.Tag = "Boite 2" And Value = 0 Then Stop
   'If Me.Report.$iCurPage = 0 Then Print "DataIndex: " & value
-
+  
   $iDataindex = Value
   'Stop
   'Print "_DataIndex " & Me.Tag & "  = " & $iDataindex
+  
+End
 
+Private Function ForceNewPage_Read() As Boolean
+  
+  Return $bForceNewPage
+  
+End
+
+Private Sub ForceNewPage_Write(Value As Boolean)
+  
+  $bForceNewPage = Value
+  
 End

@@ -470,7 +470,7 @@ Container
 _Properties
 C
 s
-*,Spacing{ReportCoord},OnePiece
+*,Spacing{ReportCoord},OnePiece,ForceNewPage
 _CurItem
 p
 i
@@ -511,6 +511,10 @@ _RealSpacing
 v
 i
 
+_NotFinished
+v
+b
+
 :BeforeData
 :
 
@@ -534,11 +538,11 @@ m
 _ClipChildren
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i(fScale)f
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i(fScale)f
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _SetUnifiedValues
 m
 
@@ -550,11 +554,7 @@ m
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_GetData
-m
-v
-(sKey)s
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Reset
 m
 
@@ -563,10 +563,6 @@ _SetChildGeometry
 m
 
 (X)f(Y)f(W)f(H)f(ContPage)i(TCont)TControl;(bInFixed)b
-_GetIndex
-m
-i
-
 #ReportControl
 
 
@@ -574,6 +570,10 @@ _IsControl
 C
 b
 -1
+_IsContainer
+C
+b
+0
 _Properties
 C
 s
@@ -589,6 +589,10 @@ TSizeHint
 _Count
 v
 i
+
+_Finished
+v
+b
 
 _DataIndex
 p
@@ -735,6 +739,10 @@ DataIndex
 r
 i
 
+ForceNewPage
+p
+b
+
 _New
 m
 
@@ -742,23 +750,23 @@ m
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
-_PaintBefore
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
+_PaintBeFore
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _PaintFrame
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _PaintAfter
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 Move
 m
 
@@ -801,15 +809,15 @@ ReportBrush
 _PaintBefore
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _PaintFrame
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _PaintAfter
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 _SetUnifiedValues
 m
 
@@ -817,7 +825,7 @@ m
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 #ReportHBox
 ReportContainer
 C
@@ -879,11 +887,11 @@ Image
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportLabel
 ReportFrame
 C
@@ -934,11 +942,11 @@ s
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportLine
 ReportControl
 C
@@ -973,11 +981,11 @@ m
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportPadding
 
 C
@@ -1089,11 +1097,11 @@ i
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportTextLabel
 ReportFrame
 C
@@ -1128,18 +1136,18 @@ s
 _GetSizeHints
 m
 TSizeHint
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
 
-(Page)i(X)f(Y)f(hControl)TControl;(VirtualId)i
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportVBox
 ReportContainer
 C
 _Properties
 C
 s
-*
+*,ForceNewPage
 _Similar
 C
 s

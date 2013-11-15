@@ -8,7 +8,7 @@ Public Const _Properties As String = "*"
 Public Const _Similar As String = "ReportImage"
 Public Const _DefaultEvent As String = "Draw"
 
-Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim hRect As Rect
   Dim iX, iY, iW, iH As Integer

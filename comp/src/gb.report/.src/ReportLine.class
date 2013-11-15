@@ -45,7 +45,7 @@ Public Sub _SetUnifiedValues()
 
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
 
   Dim hMyHints As New TSizeHint
 
@@ -55,7 +55,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
 
 End
 
-Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (VirtualId) As Integer)
+Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim iX, iY, W, H, W2, H2 As Integer
 
