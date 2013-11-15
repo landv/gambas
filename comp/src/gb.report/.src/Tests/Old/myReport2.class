@@ -1,0 +1,85 @@
+' Gambas class file
+
+Private cList As New Collection[]
+Private cFactHead As New Collection[]
+
+Public Sub _new()
+
+  Dim cLine As Collection
+  Dim i As Integer
+
+  'Report.Debug = True
+
+  cLine = New Collection
+  cLine["nom"] = "Berton Toto "
+  cLine["adresse"] = "La belle route"
+  cLine["CP"] = "17520"
+  cLine["ville"] = "Archiac"
+  cLine["TOTALHT"] = 0
+  cFactHead.Add(cLine)
+  'Me.Data = cFactHead
+  For i = 0 To 12
+    cLine = New Collection
+    cLine["designation"] = "Patin a roulette"
+    cLine["PU"] = 19.90
+    cLine["Q"] = 1
+    cList.Add(cLine)
+    cLine = New Collection
+    cLine["designation"] = "Cuilliere en bois"
+    cLine["PU"] = 8.90
+    cLine["Q"] = 1
+    cList.Add(cLine)
+    cLine = New Collection
+    cLine["designation"] = "Lapin en peluche"
+    cLine["PU"] = 19.90
+    cLine["Q"] = 5
+    cList.Add(cLine)
+    cLine = New Collection
+    cLine["designation"] = "Cloche de noël"
+    cLine["PU"] = 20
+    cLine["Q"] = 10
+    cList.Add(cLine)
+    cLine = New Collection
+    cLine["designation"] = "Cheque en bois"
+    cLine["PU"] = 1000
+    cLine["Q"] = 1
+    cList.Add(cLine)
+    cLine = New Collection
+    cLine["designation"] = "Pense bête"
+    cLine["PU"] = 2
+    cLine["Q"] = 3
+    cList.Add(cLine)
+  Next
+  'ReportHBox3.Data = cList
+  'ReportHBox12.Data = cList
+  'Compute Summaries
+  i = 0
+  For Each cLine In cList
+    Inc i
+    cLine["id"] = i
+    cLine["THT"] = Round(cLine["PU"] * cLine["Q"], -2)
+    cFactHead[0]["TOTALHT"] += cLine["THT"]
+
+  Next
+  ReportHBox3.DataCount = cList.Count
+
+End
+
+Public Sub ligne_Data(Index As Integer)
+
+  If Not Last.tag Then Return
+  Last.data = cList[Index][Last.tag]
+
+End
+
+Public Sub entete_Data(Index As Integer)
+
+  Last.data = cFactHead[Index][Last.tag]
+
+End
+
+Public Sub ReportVBox1_BeforeArrange()
+
+  Debug "Before Arrange"
+
+End

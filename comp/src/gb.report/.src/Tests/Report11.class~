@@ -1,0 +1,22 @@
+' Gambas class file
+
+Public Sub _new()
+  
+  Dim hLab As ReportLabel
+  Dim i As Integer
+  
+  For i = 0 To 200
+    
+    hLab = New ReportLabel(ReportVBox1) As "Label"
+    hLab.Height = "1 cm"
+    
+  Next
+  
+End
+
+
+Public Sub Label_Data(Index As Integer)
+  
+  Last.Data = ReportVBox1.dataIndex
+  
+End

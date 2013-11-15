@@ -1,0 +1,43 @@
+' Gambas class file
+
+Private hCon As Connection = Connections["Connection1"]
+Private hResult As Result
+
+Public Sub _new()
+
+  'Dim hresult As Result
+  'Report.debug = True
+  ' ReportLabel8.Fixed = True
+  ' ReportHBox4.Fixed = True
+  'ReportHBox3._Count = 200
+  ' ReportLabel2.Fixed = True
+  ' hCon.Type = "sqlite"
+  ' hCon.Host = User.Home
+  ' hCon.Name = "test"
+  hresult = db.Exec("SELECT * FROM test")
+  'Print hresult.Count
+  ReportHBox1.DataCount = hresult.Count
+  'ReportLabel1.Brush = ReportBrush["&h00FF00&"]
+
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  hresult.MoveTo(Index)
+  Last.data = hresult!name
+
+End
+
+Public Sub ReportLabel6_Data(Index As Integer)
+
+  hresult.MoveTo(Index)
+  Last.data = hresult!firstname
+
+End
+
+Public Sub ReportLabel7_Data(Index As Integer)
+
+  hresult.MoveTo(Index)
+  Last.data = hresult!birth
+
+End

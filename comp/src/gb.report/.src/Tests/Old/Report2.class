@@ -1,0 +1,20 @@
+' Gambas class file
+
+Public Sub _new()
+
+  Dim Rlbl As ReportLabel
+  Dim i As Integer
+  'Report.Debug = True
+  For i = 0 To 200
+
+    Rlbl = New ReportLabel(RVBCont)
+    Rlbl.Text = "Ligne " & i
+    Rlbl.Autoresize = True
+    Rlbl.Border.bottom.Width = "1px"
+    Rlbl.Padding.Top = "3 mm"
+    Rlbl.Padding.Bottom = "1mm"
+    Rlbl.Padding.Left = "2 mm"
+
+  Next
+
+End

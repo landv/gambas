@@ -1,0 +1,64 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:20mm;Bottom:10mm;Left:25mm;Right:15mm"]
+  Paper = Printer.A3
+  Index = 0
+  Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(1,4,59,5)
+    Height = "1cm"
+    Fixed = True
+    { ReportLabel1 ReportLabel
+      #MoveScaled(1,1,17,4)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:6mm"]
+      Text = ("ReportLabel1")
+    }
+    { ReportLabel2 ReportLabel
+      #MoveScaled(21,1,14,4)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000"]
+      Text = ("ReportLabel2")
+    }
+    { ReportLabel3 ReportLabel
+      #MoveScaled(40,0,13,5)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopRightCorner:6mm"]
+      Text = ("ReportLabel3")
+    }
+  }
+  { ReportHBox2 ReportHBox
+    #MoveScaled(1,12,59,5)
+    Height = "1cm"
+    { ReportLabel4 ReportLabel
+      #MoveScaled(1,1,17,4)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Text = ("ReportLabel1")
+    }
+    { ReportLabel5 ReportLabel
+      #MoveScaled(21,1,14,4)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000"]
+      Text = ("ReportLabel2")
+    }
+    { ReportLabel6 ReportLabel
+      #MoveScaled(40,0,13,5)
+      Expand = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
+      Text = ("ReportLabel3")
+    }
+  }
+  { ReportLabel7 ReportLabel
+    #MoveScaled(3,49,60,4)
+    Fixed = True
+    Padding = ReportPadding["Top:10mm;Bottom:10mm;Left:10mm;Right:10mm"]
+    AutoResize = True
+    Text = ("Page $NPAGE")
+    Alignment = Align.Right
+    UseField = True
+  }
+  Index = 0
+}
