@@ -7,7 +7,7 @@ Public Const DropImageClass As String = "ReportImage"
 Public Const DropImageProperty As String = "Image"
 Public Const EmbedContainer As String = "ReportPanel"
 
-Static Private $aBorderName As String[] = ["topleftcorner", "toprightcorner", "bottomleftcorner", "bottomrightcorner"]
+Static Private $aBorderName As String[] = ["topleftcorner", "toprightcorner", "bottomrightcorner", "bottomleftcorner"]
 
 Static Private Function GetFactor(Unit As String) As Float
 
@@ -251,7 +251,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   W = hCtrl.Width
   H = hCtrl.Height
 
-  If Draw.Device Then Paint.Begin(Draw.Device)
+  'If paint.Device Then Paint.Begin(Draw.Device)
 
   If hCtrl["Background"] Then
     Paint.Brush = CReportBrush[hCtrl["Background"]].GetBrush(0, 0, Paint.Width, Paint.Height)
@@ -263,7 +263,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
     fVal = PaintBorder(hCtrl["Border"])
   Endif
 
-  If Draw.Device Then Paint.End
+  'If Draw.Device Then Paint.End
 
   If Not hCtrl.IsContainer() And If hCtrl["Padding"] Then
     fVal = Max(ToPixel(hCtrl["Padding"]), fVal)
