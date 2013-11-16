@@ -423,10 +423,10 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
     'Me._DataIndex = 0
   Endif
   
-  If $bIndexChange Then
-    Raise BeforeData
-    $bIndexChange = False
-  Endif
+  ' If $bIndexChange Then
+  '   Raise BeforeData
+  '   $bIndexChange = False
+  ' Endif
   
   Select Case _Arrangement
     Case Arrange.Vertical
@@ -678,8 +678,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       Else
         iPreIndex = TCont.Index
       Endif
-      If hchild.tag = "**" Then Print iPreIndex
-      
+      'If hchild.tag = "**" Then Print iPreIndex
+      'If iPreIndex = 9 Then Stop
       'on récupère la taille de l'enfant
       hChildHints = hchild._GetSizeHints(W, fTH, W, H, iPreIndex)
       'Les éléments fixes ont déja été traités on ne tient donc pas compte de leur hauteur

@@ -8,19 +8,20 @@
   Index = 0
   Text = ("First Page")
   { ReportVBox2 ReportVBox
-    #MoveScaled(2,2,51,11)
+    #MoveScaled(2,3,51,11)
     Expand = True
   }
   { ReportLabel9 ReportLabel
-    #MoveScaled(5,17,48,13)
+    #MoveScaled(4,16,48,13)
     Font = Font["Bitstream Charter,Bold,+9"]
+    Padding = ReportPadding["Top:6mm;Bottom:6mm;Left:6mm;Right:6mm"]
     AutoResize = True
-    Border = ReportBorder["Top:3mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Bottom:3mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Left:3mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Right:3mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);TopLeftCorner:2mm;TopRightCorner:5mm 10mm;BottomRightCorner:2mm;BottomLeftCorner:2mm"]
+    Border = ReportBorder["Top:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Bottom:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Left:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);Right:2mm LinearGradient(0,0,1,1,[#00FF00,#FFFFFF,#FF0000],[0,1,0.59]);TopLeftCorner:8mm;TopRightCorner:8mm;BottomRightCorner:8mm;BottomLeftCorner:8mm"]
     Text = ("Report About")
     Alignment = Align.Center
   }
   { ReportLabel10 ReportLabel
-    #MoveScaled(8,32,43,7)
+    #MoveScaled(6,35,43,7)
     Font = Font["Bitstream Charter,+9"]
     AutoResize = True
     Border = ReportBorder["Top:4mm #FFAF5F;Bottom:4mm #FFAF5F;Left:4mm #FFAF5F;Right:4mm #FFAF5F;TopLeftCorner:4mm;TopRightCorner:4mm;BottomRightCorner:4mm;BottomLeftCorner:4mm"]
@@ -28,8 +29,9 @@
     Alignment = Align.Center
   }
   { ReportVBox3 ReportVBox
-    #MoveScaled(2,41,52,11)
+    #MoveScaled(2,47,52,11)
     Expand = True
+    Border = ReportBorder["Top:2px #000000;Bottom:2px #000000;Left:2px #000000;Right:2px #000000"]
   }
   Index = 1
   Text = ("Friend Table")
