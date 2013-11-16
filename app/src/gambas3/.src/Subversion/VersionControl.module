@@ -47,7 +47,7 @@ Public Sub Refresh()
     If Not $sSvnVersion Then 
       Exec ["svn", "--version", "--quiet"] To $sSvnVersion
       $sSvnVersion = Trim($sSvnVersion)
-      $bSvn17 = $sSvnVersion Begins "1.7."
+      $bSvn17 = Comp($sSvnVersion, "1.7", gb.Natural) >= 0
     Endif
   
     If $bSvn17 Then
