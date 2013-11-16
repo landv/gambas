@@ -28,6 +28,10 @@
       { Menu16 Menu
       }
     }
+    { mnuOpenExtern Menu
+      Action = "open-extern"
+      Text = ("Open &file...")
+    }
     { Menu5 Menu
     }
     { mnuSave Menu
@@ -1307,6 +1311,10 @@
     Text = "&WebPage..."
     Shortcut = ""
     Picture = "img/16/webpage.png"
+  }
+  { Action open-extern
+    Text = "Open &file..."
+    Shortcut = ""
   }
   { Action open-profile
     Text = "&Open profile..."

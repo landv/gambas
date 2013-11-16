@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Public Path As String
+Public RichText As String
 
 Property Read ReadOnly As Boolean
 
@@ -111,8 +112,8 @@ Public Sub Reload()
   ClearSelection
   $aUndo.Clear
   $aRedo.Clear
-  DrawTitle
   btnZoomFit_Click
+  SetReadOnly
   
 End
 
@@ -170,22 +171,24 @@ End
 
 Public Sub Form_Open()
 
-  SetReadOnly
   ReadConfig
+  SetReadOnly
 
 End
 
 Private Sub SetReadOnly()
 
-  'Dim hCtrl As Control  
+  Dim bReadOnly As Boolean
 
-  $bReadOnly = False
-  
   If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
-    $bReadOnly = True
+    bReadOnly = True
   Endif
 
-  UpdateMenu
+  'If bReadOnly <> $bReadOnly Then
+    $bReadOnly = bReadOnly
+    UpdateMenu
+    DrawTitle
+  'Endif
 
 End
 

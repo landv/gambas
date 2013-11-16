@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Public Path As String '' Source file absolute path.
+Public RichText As String
 Public Editor As Editor '' The current Editor control.
 Public Scan As Collection '' The result of the class symbol analyze.
 Public ParentClass As String '' The parent class.
@@ -98,8 +99,6 @@ Public Sub _new(sPath As String)
 
   Path = sPath
   Me.Name = File.BaseName(Path)
-
-  SetReadOnly
 
   Editor = edtEditor
   edtEditor.Flags[Editor.HighlightBraces] = True
@@ -2333,14 +2332,19 @@ End
 
 Private Sub SetReadOnly()
 
-  edtEditor.ReadOnly = False
+  Dim bReadOnly As Boolean
+  
   If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
-    edtEditor.ReadOnly = True
+    bReadOnly = True
   Endif
 
-  If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
-  If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly
+  'If bReadOnly <> edtEditor.ReadOnly Then
+    edtEditor.ReadOnly = bReadOnly
+    If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
+    If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
+  'Endif
 
+  DrawTitle
   UpdateMenu
 
 End
@@ -2361,15 +2365,14 @@ Public Sub Reload()
 
   Editor.SetFocus
   Modify(True)
+  
+  SetReadOnly
 
 End
 
 Public Sub LoadFile() As Boolean
 
   Reload
-
-  DrawTitle
-  UpdateMenu
 
 End
 

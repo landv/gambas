@@ -22,6 +22,7 @@
 Static Public CompressMessage As String
 
 Public Path As String
+Public RichText As String
 Public Editor As Editor
 Public Age As Integer
 
@@ -115,7 +116,7 @@ Public Sub LoadFile() As Boolean
   $bModify = False
   edtEditor.SetFocus
 
-  DrawTitle
+  SetReadOnly
   
 End
 
@@ -501,15 +502,19 @@ End
 
 Private Sub SetReadOnly()
 
-  edtEditor.ReadOnly = False
-  If Project.ReadOnly Or If Project.Running Or If Not Exist(Path) Or If Stat(Path).Type = gb.Link Then
-    edtEditor.ReadOnly = True
+  Dim bReadOnly As Boolean
+
+  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
+    bReadOnly = True
   Endif
 
-  If $hEditor1 Then $hEditor1.ReadOnly = edtEditor.ReadOnly
-  If $hEditor2 Then $hEditor2.ReadOnly = edtEditor.ReadOnly
-  
-  UpdateMenu
+  'If bReadOnly <> edtEditor.ReadOnly Then
+    edtEditor.ReadOnly = bReadOnly
+    If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
+    If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
+    UpdateMenu
+    DrawTitle
+  'Endif
 
 End
 
@@ -1134,6 +1139,7 @@ End
 
 Public Sub Form_Open()
 
+  ReadConfig
   SetReadOnly
 
 End

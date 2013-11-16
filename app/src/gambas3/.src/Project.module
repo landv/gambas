@@ -121,6 +121,7 @@ Public Const FILTER_ADDED As String = " +"
 Public Const FILTER_EXPORTED As String = " X"
 
 Public Files As New Collection
+Public ExternFiles As New Collection
 
 Public AboutToQuit As Boolean
 
@@ -137,6 +138,7 @@ Public Const KEY_MISC As String = "$O"
 Public Const KEY_PROJECT As String = "$P"
 Public Const KEY_PUBLIC As String = "$B"
 Public Const KEY_CONNECTION As String = "$D"
+Public Const KEY_EXTERN As String = "$X"
 
 Private Const CLASS_AUTH_CAR As String = "abcdefghijklmnopqrstuvwxyz0123456789"
 Private Const CLASS_AUTH_CAR_COMPONENT As String = "_"
@@ -1246,6 +1248,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim hForm As Object
   Dim hModule As CModule
   Dim bSource As Boolean
+  Dim bExtern As Boolean
 
   If $cProjectFilter And If Not $cProjectFilter.Exist(sDir &/ sFile) Then Return
 
@@ -1263,6 +1266,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     sParent = KEY_SOURCE
   Else If sDir = Project.Dir &/ ".connection" Then
     sParent = KEY_CONNECTION
+  Else If Not Project.InsideDirectory(sDir, Project.Dir) Then
+    sParent = KEY_EXTERN
+    If Not ProjectTree.Exist(KEY_EXTERN) Then ProjectTree.Add(KEY_EXTERN, ("Files"), Picture["icon:/small/system"], Project.Dir)
+    bExtern = True
   Endif
 
   If Not ProjectTree.Exist(sParent) Then Return
@@ -1272,7 +1279,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     If .Hidden Then Return
 
     bShow = False
-    bSource = IsSourcePath(sDir &/ sFile, True)
+    If Not bExtern Then bSource = IsSourcePath(sDir &/ sFile, True)
 
     If IsDir(sPath) Then
 
@@ -1987,7 +1994,7 @@ Public Function LoadFile(sPath As String) As Object
     Endif
 
     If hForm Then FSearch.OnNewForm(hForm)
-
+    
     Dec Application.Busy
 
   Endif
@@ -2067,6 +2074,10 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   If VersionControl.InConflict(sPath) Then
     FConflict.Run(sPath)
     If VersionControl.InConflict(sPath) Then Return
+    RefreshKey(sPath)
+  Endif
+  
+  If Not ProjectTree.Exist(sPath) Then
     RefreshKey(sPath)
   Endif
 
@@ -5192,6 +5203,11 @@ Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean)
   If Not bNoReadOnly Then
     If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
   Endif
+  
+  If Not IsProjectPath(sPath) Then
+    Try hForm.RichText = "<i>" & Html(sTitle) & "</i>"
+  Endif
+  
   If hForm.Title <> sTitle Then hForm.Title = sTitle
 
 End
@@ -5313,6 +5329,7 @@ End
 Public Sub IsReadOnly(sPath As String) As Boolean
 
   If Not Exist(sPath) Then Return True
+  If Not Access(sPath, gb.Write) Then Return True
 
   Do
     If sPath = Project.Dir Or If sPath = "/" Then Break
@@ -5521,3 +5538,12 @@ Public Sub CanUseHttpServer() As Boolean
   If Components Then Return Components.Exist("gb.web") 
   
 End
+
+Public Sub InsideDirectory(sPath As String, sDir As String) As Boolean
+  
+  If sPath = sDir Then Return True
+  If Right(sDir) <> "/" Then sDir &= "/"
+  If sPath Begins sDir Then Return True
+  
+End
+

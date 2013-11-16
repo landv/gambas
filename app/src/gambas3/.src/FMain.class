@@ -307,6 +307,7 @@ Public Sub mnuPopup_Show()
   Dim sParent As String
   Dim sMime As String
   Dim hProgList As DesktopFile[]
+  Dim bProject As Boolean
   
   sCurrent = GetCurrent()
   bCurrent = sCurrent
@@ -323,6 +324,8 @@ Public Sub mnuPopup_Show()
     mnuRenameFile.Visible = False
   Endif
   
+  bProject = Project.IsProjectPath(sCurrent)
+    
   If $sKey = Project.KEY_SOURCE Or If sCurrent Begins Project.SourceDir &/ "/" Then
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent And Not Project.Running
@@ -381,7 +384,7 @@ Public Sub mnuPopup_Show()
       
     Endif
     
-  Else
+  Else 
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent
     mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
@@ -389,10 +392,12 @@ Public Sub mnuPopup_Show()
     mnuCompressAll.Hide
     mnuUncompressAll.Hide
     
-    If $sKey = Project.KEY_MISC Or If IsDir(sCurrent) Then
-      If MCompressFile.CanCompress(If($sKey = Project.KEY_MISC, Project.Dir, sCurrent)) Then
-        mnuCompressAll.Show
-        mnuUncompressAll.Show
+    If bProject Then
+      If $sKey = Project.KEY_MISC Or If IsDir(sCurrent) Then
+        If MCompressFile.CanCompress(If($sKey = Project.KEY_MISC, Project.Dir, sCurrent)) Then
+          mnuCompressAll.Show
+          mnuUncompressAll.Show
+        Endif
       Endif
     Endif
     
@@ -449,7 +454,12 @@ Public Sub mnuPopup_Show()
     
   Endif
   
-  mnuAddVersion.Visible = Project.IsAdded($sKey)
+  If bProject Then
+    mnuAddVersion.Visible = Project.IsAdded($sKey)
+  Else
+    mnuAddVersion.Hide
+    mnuNew.Hide
+  Endif
   
 End
 
@@ -1260,6 +1270,8 @@ Public Sub Action_Activate(Key As String) As Boolean
       NewProject
     Case "open-project"
       OpenProject
+    Case "open-extern"
+      OpenExternFile
     Case "save-project"
       Project.Save
     Case "save-project-as"
@@ -2294,8 +2306,16 @@ Private Sub CompressAll(sPath As String, bUncompress As Boolean)
   
 End
 
-Public Sub btnCloseAll_Click()
-
+Private Sub OpenExternFile()
   
-
+  Dialog.Title = ("Select a file outside of the project")
+  If Dialog.OpenFile() Then Return
+  
+  If Project.IsProjectPath(Dialog.Path) Then
+    Message.Warning(("This file is located inside the project."))
+    Return
+  Endif
+  
+  Project.OpenFile(Dialog.Path)
+  
 End
