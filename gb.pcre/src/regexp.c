@@ -366,14 +366,14 @@ BEGIN_METHOD(RegExp_Replace, GB_STRING subject; GB_STRING pattern; GB_STRING rep
 	CLEAR(&r);
 	r.ovecsize = OVECSIZE_INC;
 	GB.Alloc(POINTER(&r.ovector), sizeof(int) * r.ovecsize);
-	r.copts = VARG(coptions) | PCRE_UNGREEDY;
+	r.copts = VARGOPT(coptions, 0) | PCRE_UNGREEDY;
 	r.pattern = GB.NewString(STRING(pattern), LENGTH(pattern));
 
 	compile(&r);
 
 	if (r.code)
 	{
-		r.eopts = VARG(eoptions);
+		r.eopts = VARGOPT(eoptions, 0);
 		subject = GB.NewString(STRING(subject), LENGTH(subject));
 
 		offset = 0;
