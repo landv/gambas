@@ -5,12 +5,14 @@ Inherits UserControl
 Private $hDrawingArea As DrawingArea
 
 Property Text As String
+Property RichText As String
 Property Selected As Boolean
 Property Orientation As Integer
 Property Picture As Picture
 'Property Visible As Boolean
 
 Private $sText As String
+Private $bRichText As Boolean
 Private $bSelected As Boolean
 Private $iOrientation As Integer = Align.Top
 Private $hPicture As Picture
@@ -86,7 +88,11 @@ Public Sub DrawingArea_Draw()
     If System.RightToLeft Then X += BUTTON_SIZE
   Endif
   
-  Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
+  If $bRichText Then
+    Draw.RichText($sText, X, 0, W, Me.Height, Align.Center)
+  Else
+    Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
+  Endif
   Draw.Foreground = Color.LightForeground
   
   bBorder = hTabPanel.Border
@@ -153,7 +159,7 @@ End
 
 Private Function Text_Read() As String
 
-  Return $sText
+  If Not $bRichText Then Return $sText
 
 End
 
@@ -161,15 +167,19 @@ Public Sub UpdateLayout()
 
   Dim S As Integer
   Dim bClosable As Boolean = GetParent().Closable
+  
+  If $bRichText Then
+    S = Me.Parent.Font.RichTextWidth($sText) + 16
+  Else
+    S = Me.Parent.Font.TextWidth($sText) + 16
+  Endif
 
   Select Case $iOrientation
     Case Align.Left, Align.Right
-      S = Me.Parent.Font.TextWidth($sText) + 16
       If $hPicture Then S += $hPicture.W '- 4
       If bClosable Then S += BUTTON_SIZE - 4
       Me.H = S
     Case Else
-      S = Me.Parent.Font.TextWidth($sText) + 16
       If $hPicture Then S += $hPicture.W '- 4
       If bClosable Then S += BUTTON_SIZE - 4
       Me.W = S
@@ -182,6 +192,7 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
+  $bRichText = False
   UpdateLayout
   $hDrawingArea.Refresh
 
@@ -298,4 +309,19 @@ Public Sub DrawingArea_MouseMove()
     $hDrawingArea.Refresh
   Endif
   
+End
+
+Private Function RichText_Read() As String
+
+  If $bRichText Then Return $sText
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  $sText = Value
+  $bRichText = True
+  UpdateLayout
+  $hDrawingArea.Refresh
+
 End

@@ -5,6 +5,7 @@ Export
 Inherits UserControl
 
 Property Text As String
+Property RichText As String
 Property Picture As Picture
 Property Visible As Boolean
 
@@ -78,5 +79,17 @@ End
 Private Sub Visible_Write(Value As Boolean)
 
   GetParent()._SetVisible(GetIndex(), Value)
+
+End
+
+Private Function RichText_Read() As String
+
+  Return GetButton().RichText
+
+End
+
+Private Sub RichText_Write(Value As String)
+
+  GetButton().RichText = Value
 
 End

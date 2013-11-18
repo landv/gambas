@@ -1491,10 +1491,10 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim X, Y, W, H As Integer
   Dim bHasSize As Boolean
   Dim bTranslate As Boolean
-  ' Dim sVal As String
-  ' Dim bThreeDots As Boolean
-  ' Dim iPos As Integer
-  ' Dim sShortcut As String
+  Dim sVal As String
+  Dim iPos As Integer
+  Dim sShortcut As String
+  Dim sThreeDots As String
 
   cProp = CComponent.Classes[Kind].Properties
   'If Not CComponent.Classes[Kind].PropertyList Then Stop
@@ -1547,31 +1547,33 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
         If bTranslate Then
           
-          ' If hProp.Shortcut Then
-          '   
-          '   sVal = vVal
-          '   
-          '   If Right(sVal, 3) = "..." Then
-          '     sVal = Left(sVal, -3)
-          '     bThreeDots = True
-          '   Else If sVal Ends "…" Then
-          '     sVal = String.Left(sVal, -1)
-          '     bThreeDots = True
-          '   Endif
-          '   
-          '   iPos = String.InStr(sVal, "&")
-          '   If iPos Then
-          '     sShortcut = String.Mid$(sVal, iPos + 1, 1)
-          '     sLine &= "Shortcut((" & Quote(String.Left(sVal, iPos - 1) & String.Mid$(sVal, iPos + 1)) & "), " & Quote(sShortcut) & ")"
-          '   Else
-          '     sLine &= "(" & Quote(sVal) & ")"
-          '   Endif
-          '   
-          '   If bThreeDots Then sLine &= " & \"…\""
-          '   
-          ' Else
+          If hProp.Shortcut Then
+            
+            sVal = vVal
+            
+            If sVal Ends "..." Then
+              sVal = Left(sVal, -3)
+              sThreeDots = "..."
+            Else If sVal Ends "…" Then
+              sVal = String.Left(sVal, -1)
+              sThreeDots = "…"
+            Else
+              sThreeDots = ""
+            Endif
+            
+            iPos = String.InStr(sVal, "&")
+            If iPos Then
+              sShortcut = String.Mid$(sVal, iPos + 1, 1)
+              sLine &= "Shortcut((" & Quote(String.Left(sVal, iPos - 1) & String.Mid$(sVal, iPos + 1)) & "), " & Quote(sShortcut) & ")"
+            Else
+              sLine &= "(" & Quote(sVal) & ")"
+            Endif
+            
+            If sThreeDots Then sLine &= " & " & Quote(sThreeDots)
+            
+          Else
             sLine &= "(" & Quote(vVal) & ")"
-          'Endif
+          Endif
           
         Else
           sLine &= Quote$(vVal)
@@ -1745,10 +1747,28 @@ Public Function GetGroup() As String
 
 End
 
-Private Sub SetAction(cAction As Collection, sProp As String)
+Static Public Sub RemoveShortcut(sText As String) As String
+
+  Dim iPos As Integer
+
+  iPos = InStr(sText, "&")
+  If iPos Then sText = Left(sText, iPos - 1) & Mid$(sText, iPos + 1)
+  If sText Ends "..." Then
+    sText = Left(sText, -3)
+  Else If sText Ends "…" Then
+    sText = String.Left(sText, -1)
+  Endif
+  Return sText
+
+End
+
+Private Sub SetAction(cAction As Collection, sProp As String, Optional bRemoveShortcut As Boolean)
   
   Dim sVal As String = GetPropertyString(sProp)
-  If sVal Then cAction[sProp] = sVal
+  If sVal Then 
+    If bRemoveShortcut Then sVal = RemoveShortcut(sVal)
+    cAction[sProp] = sVal
+  Endif
   
 End
 
@@ -1825,7 +1845,7 @@ Public Sub AddAction(cActionSet As Collection)
   Endif
   
   cAction["Name"] = sAction
-  SetAction(cAction, "Text")
+  SetAction(cAction, "Text", True)
   SetAction(cAction, "ToolTip")
   
   If Kind = "Form" Then

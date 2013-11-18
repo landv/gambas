@@ -5,45 +5,45 @@
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
-    Text = ("&File")
+    Text = Shortcut(("File"), "F")
     { mnuNewProject Menu
       Action = "new-project"
-      Text = ("&New project...")
+      Text = Shortcut(("New project"), "N") & "..."
       Picture = Picture["icon:/small/new"]
       Shortcut = "Ctrl+N"
     }
     { mnuOpen Menu
       Action = "open-project"
-      Text = ("&Open project...")
+      Text = Shortcut(("Open project"), "O") & "..."
       Picture = Picture["icon:/small/open"]
       Shortcut = "Ctrl+O"
     }
     { mnuOpenRecent Menu
-      Text = ("Open &recent")
+      Text = Shortcut(("Open recent"), "r")
       { Menu4 Menu
       }
     }
     { mnuOpenExample Menu
-      Text = ("Open &example")
+      Text = Shortcut(("Open example"), "e")
       { Menu16 Menu
       }
     }
     { mnuOpenExtern Menu
       Action = "open-extern"
-      Text = ("Open &file...")
+      Text = Shortcut(("Open file"), "f") & "..."
     }
     { Menu5 Menu
     }
     { mnuSave Menu
       Action = "save-project"
-      Text = ("&Save project")
+      Text = Shortcut(("Save project"), "S")
       Picture = Picture["icon:/small/save"]
       Visible = False
       Shortcut = "Ctrl+Alt+S"
     }
     { mnuSaveAs Menu
       Action = "save-project-as"
-      Text = ("Save project &as...")
+      Text = Shortcut(("Save project as"), "a") & "..."
       Picture = Picture["icon:/small/save-as"]
       Visible = False
       Shortcut = "Ctrl+Shift+Alt+S"
@@ -52,23 +52,23 @@
     }
     { mnuQuit Menu
       Action = "quit"
-      Text = ("&Quit")
+      Text = Shortcut(("Quit"), "Q")
       Picture = Picture["icon:/small/quit"]
       Shortcut = "Ctrl+Q"
     }
   }
   { mnuProject Menu
-    Text = ("&Project")
+    Text = Shortcut(("Project"), "P")
     Visible = False
     { mnuCompile Menu
       Action = "compile"
-      Text = ("&Compile")
+      Text = Shortcut(("Compile"), "C")
       Picture = Picture["icon:/small/make"]
       Shortcut = "F7"
     }
     { mnuCompileAll Menu
       Action = "compile-all"
-      Text = ("Compile &All")
+      Text = Shortcut(("Compile All"), "A")
       Picture = Picture["icon:/small/make-all"]
       Shortcut = "Alt+F7"
     }
@@ -76,7 +76,7 @@
     }
     { mnuTranslate Menu
       Action = "translate"
-      Text = ("&Translate...")
+      Text = Shortcut(("Translate"), "T") & "..."
       Picture = Picture["icon:/small/language"]
       Shortcut = "Ctrl+T"
     }
@@ -86,19 +86,19 @@
       Text = ("Make")
       { mnuExec Menu
         Action = "exec"
-        Text = ("E&xecutable...")
+        Text = Shortcut(("Executable"), "x") & "..."
         Picture = Picture["icon:/small/exec"]
         Shortcut = "Ctrl+Alt+X"
       }
       { mnuMakePackage Menu
         Action = "archive"
-        Text = ("&Source archive...")
+        Text = Shortcut(("Source archive"), "S") & "..."
         Picture = Picture["icon:/small/archive"]
         Shortcut = "Ctrl+Alt+A"
       }
       { mnuMakeInstall Menu
         Action = "install"
-        Text = ("&Installation package...")
+        Text = Shortcut(("Installation package"), "I") & "..."
         Picture = Picture["icon:/small/package"]
         Shortcut = "Ctrl+Alt+I"
       }
@@ -106,11 +106,11 @@
     { Menu12 Menu
       Text = ("Patch")
       { mnuPatch Menu
-        Text = ("&Create...")
+        Text = Shortcut(("Create"), "C") & "..."
         Picture = Picture["icon:/small/text"]
       }
       { mnuPatchProject Menu
-        Text = ("&Apply...")
+        Text = Shortcut(("Apply"), "A") & "..."
         Picture = Picture["icon:/small/pen"]
       }
     }
@@ -118,17 +118,17 @@
     }
     { mnuClean Menu
       Action = "clean-up-project"
-      Text = ("&Clean up")
+      Text = Shortcut(("Clean up"), "C")
       Picture = Picture["icon:/small/clear"]
     }
     { mnuRefresh Menu
       Action = "refresh-project"
-      Text = ("&Refresh")
+      Text = Shortcut(("Refresh"), "R")
       Picture = Picture["icon:/small/refresh"]
     }
     { mnuVersionControl Menu
       Action = "version-control"
-      Text = ("Put on &version control")
+      Text = Shortcut(("Put on version control"), "v")
       Picture = Picture["icon:/small/add"]
       Visible = False
     }
@@ -136,7 +136,7 @@
     }
     { mnuProperty Menu
       Action = "project-property"
-      Text = ("&Properties...")
+      Text = Shortcut(("Properties"), "P") & "..."
       Picture = Picture["icon:/small/edit"]
       Shortcut = "Ctrl+P"
     }
@@ -149,22 +149,22 @@
     }
     { mnuVersion Menu
       Action = "project-version"
-      Text = ("&Version control...")
+      Text = Shortcut(("Version control"), "V") & "..."
       Picture = Picture["icon:/small/calendar"]
     }
   }
   { mnuDebug Menu
-    Text = ("&Debug")
+    Text = Shortcut(("Debug"), "D")
     Visible = False
     { mnuRun Menu
       Action = "start"
-      Text = ("&Run")
+      Text = Shortcut(("Run"), "R")
       Picture = Picture["icon:/small/play"]
       Shortcut = "F5"
     }
     { mnuUseTerminal Menu
       Action = "terminal"
-      Text = ("Use &terminal emulator")
+      Text = Shortcut(("Use terminal emulator"), "t")
       Toggle = True
     }
     { mnuUseHttpServer Menu
@@ -174,38 +174,38 @@
     }
     { mnuProfile Menu
       Action = "profile"
-      Text = ("Activate profilin&g")
+      Text = Shortcut(("Activate profiling"), "g")
       Toggle = True
     }
     { Menu14 Menu
     }
     { mnuPause Menu
       Action = "pause"
-      Text = ("&Pause")
+      Text = Shortcut(("Pause"), "P")
       Picture = Picture["icon:/small/pause"]
       Shortcut = "Pause"
     }
     { mnuStop Menu
       Action = "stop"
-      Text = ("&Stop")
+      Text = Shortcut(("Stop"), "S")
       Picture = Picture["icon:/small/stop"]
       Shortcut = "Alt+Pause"
     }
     { mnuStep Menu
       Action = "step"
-      Text = ("St&ep")
+      Text = Shortcut(("Step"), "e")
       Picture = Picture["icon:/small/end"]
       Shortcut = "F8"
     }
     { mnuForward Menu
       Action = "forward"
-      Text = ("&Forward")
+      Text = Shortcut(("Forward"), "F")
       Picture = Picture["icon:/small/forward"]
       Shortcut = "Shift+F8"
     }
     { mnuFrom Menu
       Action = "return"
-      Text = ("Finis&h")
+      Text = Shortcut(("Finish"), "h")
       Picture = Picture["icon:/small/eject"]
       Shortcut = "Alt+F5"
     }
@@ -213,24 +213,24 @@
     }
     { mnuOpenProfile Menu
       Action = "open-profile"
-      Text = ("&Open profile...")
+      Text = Shortcut(("Open profile"), "O") & "..."
       Picture = Picture["icon:/small/clock"]
     }
     { mnuClearBreakpoints Menu
       Action = "clear-break"
-      Text = ("Clear &all breakpoints")
+      Text = Shortcut(("Clear all breakpoints"), "a")
     }
     { mnuClearDebugWindows Menu
       Action = "close-all-debug"
-      Text = ("Close all &debug windows")
+      Text = Shortcut(("Close all debug windows"), "d")
     }
   }
   { mnuView Menu
-    Text = ("&View")
+    Text = Shortcut(("View"), "V")
     Visible = False
     { mnuViewProject Menu
       Action = "project"
-      Text = ("Pro&ject")
+      Text = Shortcut(("Project"), "j")
       Picture = Picture["img/16/gambas.png"]
       Toggle = True
       Checked = True
@@ -238,7 +238,7 @@
     }
     { mnuViewProperty Menu
       Action = "property"
-      Text = ("&Properties")
+      Text = Shortcut(("Properties"), "P")
       Picture = Picture["icon:/small/edit"]
       Toggle = True
       Checked = True
@@ -246,7 +246,7 @@
     }
     { mnuViewConsole Menu
       Action = "console"
-      Text = ("&Console")
+      Text = Shortcut(("Console"), "C")
       Picture = Picture["icon:/small/terminal"]
       Toggle = True
       Shortcut = "F11"
@@ -280,20 +280,20 @@
     }
     { mnuCloseAll Menu
       Action = "close-all-window"
-      Text = ("Close &all windows")
+      Text = Shortcut(("Close all windows"), "a")
       Shortcut = "Ctrl+Alt+W"
     }
   }
   { mnuTool Menu
-    Text = ("&Tools")
+    Text = Shortcut(("Tools"), "T")
     Visible = False
     { mnuFind Menu
-      Text = ("&Find...")
+      Text = Shortcut(("Find"), "F") & "..."
       Picture = Picture["icon:/small/find"]
       Shortcut = "Ctrl+F"
     }
     { mnuReplace Menu
-      Text = ("&Replace...")
+      Text = Shortcut(("Replace"), "R") & "..."
       Picture = Picture["icon:/small/replace"]
       Shortcut = "Ctrl+R"
     }
@@ -301,31 +301,36 @@
     }
     { mnuBrowse Menu
       Action = "browse-project"
-      Text = ("&Browse project...")
+      Text = Shortcut(("Browse project"), "B") & "..."
       Picture = Picture["icon:/small/file-manager"]
       Shortcut = "Ctrl+Alt+O"
     }
     { mnuTerminal Menu
       Action = "open-terminal"
-      Text = ("&Open a terminal...")
+      Text = Shortcut(("Open a terminal"), "O") & "..."
       Picture = Picture["icon:/16/terminal"]
       Shortcut = "Ctrl+Alt+T"
     }
     { mnuSendMail Menu
       Action = "send-mail"
-      Text = ("Send project by &mail...")
+      Text = Shortcut(("Send project by mail"), "m") & "..."
       Picture = Picture["icon:/small/mail"]
+    }
+    { mnuUpdateAllForms Menu
+      Action = "update-all-forms"
+      Text = ("Update all forms")
+      Picture = Picture["icon:/small/refresh"]
     }
     { Menu20 Menu
     }
     { mnuShortcut Menu
       Action = "shortcut"
-      Text = ("&Shortcuts...")
+      Text = Shortcut(("Shortcuts"), "S") & "..."
       Picture = Picture["icon:/small/shortcut"]
     }
     { mnuPreferences Menu
       Action = "option"
-      Text = ("&Preferences...")
+      Text = Shortcut(("Preferences"), "P") & "..."
       Picture = Picture["icon:/small/options"]
       Toggle = True
       Shortcut = "Ctrl+Alt+P"
@@ -337,12 +342,12 @@
       Text = ("New")
       { mnuAddDirectory Menu
         Action = "new-directory"
-        Text = ("&Directory")
+        Text = Shortcut(("Directory"), "D")
         Picture = Picture["icon:/small/directory"]
       }
       { mnuAddProjectLink Menu
         Action = "new-project-link"
-        Text = ("&Project link...")
+        Text = Shortcut(("Project link"), "P") & "..."
         Picture = Picture["img/logo/logo-16.png"]
         Visible = False
       }
@@ -351,35 +356,35 @@
       { mnuNewModule Menu mnuNewFile
         Name = "mnuNewModule"
         Action = "new-module"
-        Text = ("&Module...")
+        Text = Shortcut(("Module"), "M") & "..."
         Picture = Picture["img/16/module.png"]
         Tag = "module"
       }
       { mnuNewClass Menu mnuNewFile
         Name = "mnuNewClass"
         Action = "new-class"
-        Text = ("&Class...")
+        Text = Shortcut(("Class"), "C") & "..."
         Picture = Picture["img/16/class.png"]
         Tag = "class"
       }
       { mnuNewForm Menu mnuNewFile
         Name = "mnuNewForm"
         Action = "new-form"
-        Text = ("&Form...")
+        Text = Shortcut(("Form"), "F") & "..."
         Picture = Picture["img/16/form.png"]
         Tag = "form"
       }
       { mnuNewWebPage Menu mnuNewFile
         Name = "mnuNewWebPage"
         Action = "new-webpage"
-        Text = ("&WebPage...")
+        Text = Shortcut(("WebPage"), "W") & "..."
         Picture = Picture["img/16/webpage.png"]
         Tag = "webpage"
       }
       { mnuNewReport Menu mnuNewFile
         Name = "mnuNewReport"
         Action = "new-report"
-        Text = ("&Report...")
+        Text = Shortcut(("Report"), "R") & "..."
         Picture = Picture["img/16/report.png"]
         Tag = "report"
       }
@@ -388,32 +393,32 @@
       { mnuNewImage Menu mnuNewFile
         Name = "mnuNewImage"
         Action = "new-image"
-        Text = ("&Image...")
+        Text = Shortcut(("Image"), "I") & "..."
         Picture = Picture["icon:/small/image"]
         Tag = "image"
       }
       { mnuNewHtml Menu mnuNewFile
         Name = "mnuNewHtml"
-        Text = ("&HTML file...")
+        Text = Shortcut(("HTML file"), "H") & "..."
         Picture = Picture["icon:/small/html"]
         Tag = "html"
       }
       { mnuNewCSS Menu mnuNewFile
         Name = "mnuNewCSS"
-        Text = ("&Style sheet...")
+        Text = Shortcut(("Style sheet"), "S") & "..."
         Picture = Picture["icon:/small/html"]
         Tag = "css"
       }
       { mnuNewJS Menu mnuNewFile
         Name = "mnuNewJS"
-        Text = ("&Javascript file...")
+        Text = Shortcut(("Javascript file"), "J") & "..."
         Picture = Picture["icon:/small/script"]
         Tag = "js"
       }
       { mnuNewFile Menu mnuNewFile
         Name = "mnuNewFile"
         Action = "new-other"
-        Text = ("&Other...")
+        Text = Shortcut(("Other"), "O") & "..."
         Picture = Picture["icon:/small/new"]
         Tag = "text"
       }
@@ -421,11 +426,11 @@
     { Menu2 Menu
     }
     { mnuEditFile Menu
-      Text = ("&Open")
+      Text = Shortcut(("Open"), "O")
       Picture = Picture["icon:/small/edit"]
     }
     { mnuEditClass Menu
-      Text = ("Open &code")
+      Text = Shortcut(("Open code"), "c")
     }
     { mnuEditWith Menu
       Text = ("Open with")
@@ -446,31 +451,31 @@
     }
     { mnuCut Menu
       Action = ".cut"
-      Text = ("&Cut")
+      Text = Shortcut(("Cut"), "C")
       Picture = Picture["icon:/small/cut"]
       Shortcut = "Ctrl+X"
     }
     { mnuCopy Menu
       Action = ".copy"
-      Text = ("&Copy")
+      Text = Shortcut(("Copy"), "C")
       Picture = Picture["icon:/small/copy"]
       Shortcut = "Ctrl+C"
     }
     { mnuPaste Menu
       Action = ".paste"
-      Text = ("&Paste")
+      Text = Shortcut(("Paste"), "P")
       Picture = Picture["icon:/small/paste"]
       Shortcut = "Ctrl+V"
     }
     { mnuRenameFile Menu
       Action = "rename"
-      Text = ("&Rename...")
+      Text = Shortcut(("Rename"), "R") & "..."
       Picture = Picture["img/16/rename.png"]
       Shortcut = "F2"
     }
     { mnuDeleteFile Menu
       Action = ".delete"
-      Text = ("&Delete...")
+      Text = Shortcut(("Delete"), "D") & "..."
       Picture = Picture["icon:/small/delete"]
       Shortcut = "Del"
     }
@@ -478,26 +483,26 @@
     }
     { mnuCopyPath Menu
       Action = "copy-file-path"
-      Text = ("Copy file pat&h")
+      Text = Shortcut(("Copy file path"), "h")
       Shortcut = "Ctrl+Shift+C"
     }
     { mnuSepDeleteFile Menu
     }
     { mnuStartup Menu
       Action = "startup-class"
-      Text = ("&Startup class")
+      Text = Shortcut(("Startup class"), "S")
       Picture = Picture["icon:/small/play"]
       Shortcut = "Alt+S"
     }
     { Menu24 Menu
     }
     { mnuAddVersion Menu
-      Text = ("&Add to repository")
+      Text = Shortcut(("Add to repository"), "A")
       Picture = Picture["icon:/16/add"]
     }
     { mnuInformation Menu
       Action = "info"
-      Text = ("&Properties...")
+      Text = Shortcut(("Properties"), "P") & "..."
       Picture = Picture["icon:/small/info"]
       Shortcut = "Ctrl+I"
     }
@@ -505,25 +510,25 @@
     }
     { mnuRefresh2 Menu
       Action = "refresh-project"
-      Text = ("&Refresh")
+      Text = Shortcut(("Refresh"), "R")
       Picture = Picture["icon:/small/refresh"]
     }
   }
   { mnuDatabase Menu
     Enabled = False
     { mnuNewConnection Menu
-      Text = ("&New connection...")
+      Text = Shortcut(("New connection"), "N") & "..."
       Picture = Picture["icon:/small/new"]
     }
     { Menu17 Menu
     }
     { mnuEditConnection Menu
-      Text = ("&Open")
+      Text = Shortcut(("Open"), "O")
       Picture = Picture["icon:/small/edit"]
     }
     { mnuKillConnection Menu mnuDeleteFile
       Name = "mnuKillConnection"
-      Text = ("&Remove")
+      Text = Shortcut(("Remove"), "R")
       Picture = Picture["icon:/small/delete"]
       Shortcut = "Del"
     }
@@ -531,11 +536,11 @@
     }
     { mnuAddVersionConnection Menu mnuAddVersion
       Name = "mnuAddVersionConnection"
-      Text = ("&Add to repository")
+      Text = Shortcut(("Add to repository"), "A")
       Picture = Picture["icon:/16/add"]
     }
     { mnuInfoConnection Menu
-      Text = ("&Properties...")
+      Text = Shortcut(("Properties"), "P") & "..."
       Picture = Picture["icon:/small/info"]
       Shortcut = "Ctrl+I"
     }
@@ -543,54 +548,54 @@
     }
     { mnuRefresh3 Menu
       Action = "refresh-project"
-      Text = ("&Refresh")
+      Text = Shortcut(("Refresh"), "R")
       Picture = Picture["icon:/small/refresh"]
     }
   }
   { mnuMenu Menu
     Visible = False
     { mnuFile2 Menu
-      Text = ("&File")
+      Text = Shortcut(("File"), "F")
     }
     { mnuProject2 Menu
-      Text = ("&Project")
+      Text = Shortcut(("Project"), "P")
     }
     { mnuDebug2 Menu
-      Text = ("&Debug")
+      Text = Shortcut(("Debug"), "D")
     }
     { mnuView2 Menu
-      Text = ("&View")
+      Text = Shortcut(("View"), "V")
     }
     { mnuTools2 Menu
-      Text = ("&Tools")
+      Text = Shortcut(("Tools"), "T")
     }
     { mnuHelp2 Menu
-      Text = ("&?")
+      Text = Shortcut(("?"), "?")
     }
   }
   { mnuHelp Menu
-    Text = ("&?")
+    Text = Shortcut(("?"), "?")
     { mnuViewExplorer Menu
       Action = "help"
-      Text = ("&Help browser")
+      Text = Shortcut(("Help browser"), "H")
       Picture = Picture["icon:/small/help"]
       Toggle = True
       Shortcut = "F1"
     }
     { mnuTip Menu
       Action = "tips"
-      Text = ("&Tips of the day")
+      Text = Shortcut(("Tips of the day"), "T")
       Picture = Picture["icon:/small/lamp"]
     }
     { Menu8 Menu
     }
     { mnuSystemInfo Menu
-      Text = ("&System informations...")
+      Text = Shortcut(("System informations"), "S") & "..."
       Picture = Picture["icon:/16/system"]
     }
     { mnuAbout Menu
       Action = "about"
-      Text = ("&About Gambas...")
+      Text = Shortcut(("About Gambas"), "A") & "..."
       Picture = Picture["icon:/16/gambas"]
     }
   }
@@ -1108,44 +1113,44 @@
 
 { Actions
   { Action about
-    Text = "&About Gambas..."
+    Text = "About Gambas"
     Shortcut = ""
     Picture = "icon:/16/gambas"
   }
   { Action archive
-    Text = "&Source archive..."
+    Text = "Source archive"
     Shortcut = "Ctrl+Alt+A"
     Picture = "icon:/small/archive"
   }
   { Action browse-project
-    Text = "&Browse project..."
+    Text = "Browse project"
     Shortcut = "Ctrl+Alt+O"
     Picture = "icon:/small/file-manager"
   }
   { Action clean-up-project
-    Text = "&Clean up"
+    Text = "Clean up"
     Shortcut = ""
     Picture = "icon:/small/clear"
   }
   { Action clear-break
-    Text = "Clear &all breakpoints"
+    Text = "Clear all breakpoints"
     Shortcut = ""
   }
   { Action close-all-debug
-    Text = "Close all &debug windows"
+    Text = "Close all debug windows"
     Shortcut = ""
   }
   { Action close-all-window
-    Text = "Close &all windows"
+    Text = "Close all windows"
     Shortcut = "Ctrl+Alt+W"
   }
   { Action compile
-    Text = "&Compile"
+    Text = "Compile"
     Shortcut = "F7"
     Picture = "icon:/small/make"
   }
   { Action compile-all
-    Text = "Compile &All"
+    Text = "Compile All"
     Shortcut = "Alt+F7"
     Picture = "icon:/small/make-all"
   }
@@ -1160,7 +1165,7 @@
     Picture = "icon:/small/archive"
   }
   { Action console
-    Text = "&Console"
+    Text = "Console"
     Shortcut = "F11"
     Picture = "icon:/small/terminal"
   }
@@ -1169,26 +1174,26 @@
     Picture = "icon:/small/tools"
   }
   { Action copy
-    Text = "&Copy"
+    Text = "Copy"
     Shortcut = "Ctrl+C"
     Picture = "icon:/small/copy"
   }
   { Action copy-file-path
-    Text = "Copy file pat&h"
+    Text = "Copy file path"
     Shortcut = "Ctrl+Shift+C"
   }
   { Action cut
-    Text = "&Cut"
+    Text = "Cut"
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
   { Action delete
-    Text = "&Delete..."
+    Text = "Delete"
     Shortcut = "Del"
     Picture = "icon:/small/delete"
   }
   { Action exec
-    Text = "E&xecutable..."
+    Text = "Executable"
     Shortcut = "Ctrl+Alt+X"
     Picture = "icon:/small/exec"
   }
@@ -1201,7 +1206,7 @@
     Picture = "icon:/small/find"
   }
   { Action forward
-    Text = "&Forward"
+    Text = "Forward"
     Shortcut = "Shift+F8"
     Picture = "icon:/small/forward"
   }
@@ -1216,7 +1221,7 @@
     Picture = "icon:/small/right"
   }
   { Action help
-    Text = "&Help browser"
+    Text = "Help browser"
     Shortcut = "F1"
     Picture = "icon:/small/help"
   }
@@ -1229,218 +1234,218 @@
     Shortcut = ""
   }
   { Action info
-    Text = "&Properties..."
+    Text = "Properties"
     Shortcut = "Ctrl+I"
     Picture = "icon:/small/info"
   }
   { Action install
-    Text = "&Installation package..."
+    Text = "Installation package"
     Shortcut = "Ctrl+Alt+I"
     Picture = "icon:/small/package"
   }
   { Action menu-debug
-    Text = "&Debug"
+    Text = "Debug"
     Picture = "$MenuButton"
   }
   { Action menu-file
-    Text = "&File"
+    Text = "File"
     Picture = "$MenuButton"
   }
   { Action menu-help
-    Text = "&?"
+    Text = "?"
     Picture = "$MenuButton"
   }
   { Action menu-project
-    Text = "&Project"
+    Text = "Project"
     Picture = "$MenuButton"
   }
   { Action menu-tool
-    Text = "&Tools"
+    Text = "Tools"
     Picture = "$MenuButton"
   }
   { Action menu-view
-    Text = "&View"
+    Text = "View"
     Picture = "$MenuButton"
   }
   { Action new-class
-    Text = "&Class..."
+    Text = "Class"
     Shortcut = ""
     Picture = "img/16/class.png"
   }
   { Action new-directory
-    Text = "&Directory"
+    Text = "Directory"
     Shortcut = ""
     Picture = "icon:/small/directory"
   }
   { Action new-form
-    Text = "&Form..."
+    Text = "Form"
     Shortcut = ""
     Picture = "img/16/form.png"
   }
   { Action new-image
-    Text = "&Image..."
+    Text = "Image"
     Shortcut = ""
     Picture = "icon:/small/image"
   }
   { Action new-module
-    Text = "&Module..."
+    Text = "Module"
     Shortcut = ""
     Picture = "img/16/module.png"
   }
   { Action new-other
-    Text = "&Other..."
+    Text = "Other"
     Shortcut = ""
     Picture = "icon:/small/new"
   }
   { Action new-project
-    Text = "&New project..."
+    Text = "New project"
     Shortcut = "Ctrl+N"
     Picture = "icon:/small/new"
   }
   { Action new-project-link
-    Text = "&Project link..."
+    Text = "Project link"
     Shortcut = ""
     Picture = "img/logo/logo-16.png"
   }
   { Action new-report
-    Text = "&Report..."
+    Text = "Report"
     Shortcut = ""
     Picture = "img/16/report.png"
   }
   { Action new-webpage
-    Text = "&WebPage..."
+    Text = "WebPage"
     Shortcut = ""
     Picture = "img/16/webpage.png"
   }
   { Action open-extern
-    Text = "Open &file..."
+    Text = "Open file"
     Shortcut = ""
   }
   { Action open-profile
-    Text = "&Open profile..."
+    Text = "Open profile"
     Shortcut = ""
     Picture = "icon:/small/clock"
   }
   { Action open-project
-    Text = "&Open project..."
+    Text = "Open project"
     Shortcut = "Ctrl+O"
     Picture = "icon:/small/open"
   }
   { Action open-terminal
-    Text = "&Open a terminal..."
+    Text = "Open a terminal"
     Shortcut = "Ctrl+Alt+T"
     Picture = "icon:/small/terminal"
   }
   { Action option
-    Text = "&Preferences..."
+    Text = "Preferences"
     Shortcut = "Ctrl+Alt+P"
     Picture = "icon:/small/tools"
   }
   { Action paste
-    Text = "&Paste"
+    Text = "Paste"
     Shortcut = "Ctrl+V"
     Picture = "icon:/small/paste"
   }
   { Action pause
-    Text = "&Pause"
+    Text = "Pause"
     Shortcut = "Pause"
     Picture = "icon:/small/pause"
   }
   { Action profile
-    Text = "Activate profilin&g"
+    Text = "Activate profiling"
     Shortcut = ""
   }
   { Action project
-    Text = "Pro&ject"
+    Text = "Project"
     Shortcut = "F10"
     Picture = "img/16/gambas.png"
   }
   { Action project-property
-    Text = "&Properties..."
+    Text = "Properties"
     Shortcut = "Ctrl+P"
     Picture = "icon:/small/edit"
   }
   { Action project-version
-    Text = "&Version control..."
+    Text = "Version control"
     Shortcut = ""
     Picture = "icon:/small/calendar"
   }
   { Action property
-    Text = "&Properties"
+    Text = "Properties"
     Shortcut = "F4"
     Picture = "icon:/small/edit"
   }
   { Action quit
-    Text = "&Quit"
+    Text = "Quit"
     Shortcut = "Ctrl+Q"
     Picture = "icon:/small/quit"
   }
   { Action refresh-project
-    Text = "&Refresh"
+    Text = "Refresh"
     Shortcut = ""
     Picture = "icon:/small/refresh"
   }
   { Action rename
-    Text = "&Rename..."
+    Text = "Rename"
     Shortcut = "F2"
     Picture = "img/16/rename.png"
   }
   { Action return
-    Text = "Finis&h"
+    Text = "Finish"
     Shortcut = "Alt+F5"
     Picture = "icon:/small/eject"
   }
   { Action save-project
-    Text = "&Save project"
+    Text = "Save project"
     Shortcut = "Ctrl+Alt+S"
     Picture = "icon:/small/save"
   }
   { Action save-project-as
-    Text = "Save project &as..."
+    Text = "Save project as"
     Shortcut = "Ctrl+Shift+Alt+S"
     Picture = "icon:/small/save-as"
   }
   { Action send-mail
-    Text = "Send project by &mail..."
+    Text = "Send project by mail"
     Shortcut = ""
     Picture = "icon:/small/mail"
   }
   { Action shortcut
-    Text = "&Shortcuts..."
+    Text = "Shortcuts"
     Shortcut = ""
     Picture = "icon:/small/shortcut"
   }
   { Action start
-    Text = "&Run"
+    Text = "Run"
     Shortcut = "F5"
     Picture = "icon:/small/play"
   }
   { Action startup-class
-    Text = "&Startup class"
+    Text = "Startup class"
     Shortcut = "Alt+S"
     Picture = "icon:/small/play"
   }
   { Action step
-    Text = "St&ep"
+    Text = "Step"
     Shortcut = "F8"
     Picture = "icon:/small/end"
   }
   { Action stop
-    Text = "&Stop"
+    Text = "Stop"
     Shortcut = "Alt+Pause"
     Picture = "icon:/small/stop"
   }
   { Action terminal
-    Text = "Use &terminal emulator"
+    Text = "Use terminal emulator"
     Shortcut = ""
   }
   { Action tips
-    Text = "&Tips of the day"
+    Text = "Tips of the day"
     Shortcut = ""
     Picture = "icon:/small/lamp"
   }
   { Action translate
-    Text = "&Translate..."
+    Text = "Translate"
     Shortcut = "Ctrl+T"
     Picture = "icon:/small/language"
   }
@@ -1453,8 +1458,13 @@
     Text = "Run until current line"
     Picture = "icon:/small/jump"
   }
+  { Action update-all-forms
+    Text = "Update all forms"
+    Shortcut = ""
+    Picture = "icon:/small/refresh"
+  }
   { Action version-control
-    Text = "Put on &version control"
+    Text = "Put on version control"
     Shortcut = ""
     Picture = "icon:/small/add"
   }

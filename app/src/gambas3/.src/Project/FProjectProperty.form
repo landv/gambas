@@ -329,12 +329,12 @@
         Spacing = True
         { btnInsertArg Button
           MoveScaled(0,0,17,4)
-          Text = ("&Insert")
+          Text = Shortcut(("Insert"), "I")
           Picture = Picture["icon:/small/add"]
         }
         { btnRemoveArg Button
           MoveScaled(18,0,17,4)
-          Text = ("&Remove")
+          Text = Shortcut(("Remove"), "R")
           Picture = Picture["icon:/small/remove"]
         }
         { btnMoveUpArg Button
@@ -378,7 +378,7 @@
         }
         { btnRemoveEnv Button
           MoveScaled(20,0,17,4)
-          Text = ("&Remove")
+          Text = Shortcut(("Remove"), "R")
           Picture = Picture["icon:/small/remove"]
         }
       }
@@ -442,7 +442,7 @@
       Margin = True
       { btnHelp Button
         MoveScaled(0,0,35,4)
-        Text = ("About &component...")
+        Text = Shortcut(("About component"), "c") & "..."
         Picture = Picture["icon:/small/up"]
       }
       { Panel3 Panel
@@ -451,7 +451,7 @@
       }
       { btnUndo Button
         MoveScaled(62,0,17,4)
-        Text = ("&Reset")
+        Text = Shortcut(("Reset"), "R")
         Picture = Picture["icon:/small/undo"]
       }
     }
@@ -504,12 +504,12 @@
       Margin = True
       { btnInsertLib Button
         MoveScaled(1,1,17,4)
-        Text = ("&Add...")
+        Text = Shortcut(("Add"), "A") & "..."
         Picture = Picture["icon:/small/add"]
       }
       { btnRemoveLib Button
         MoveScaled(19,1,17,4)
-        Text = ("&Remove")
+        Text = Shortcut(("Remove"), "R")
         Picture = Picture["icon:/small/remove"]
       }
       { btnMoveUpLib Button
@@ -526,7 +526,7 @@
       }
       { btnUndoLib Button
         MoveScaled(66,1,17,4)
-        Text = ("&Reset")
+        Text = Shortcut(("Reset"), "R")
         Picture = Picture["icon:/small/undo"]
       }
     }

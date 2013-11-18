@@ -59,7 +59,7 @@
       MoveScaled(24,0,9,4)
       ToolTip = ("Rename table")
       AutoResize = True
-      Text = ("Rename...")
+      Text = ("Rename") & "..."
       Picture = Picture["icon:/small/edit"]
     }
     { btnCopyTable ToolButton
@@ -73,14 +73,14 @@
       MoveScaled(37,0,4,4)
       ToolTip = ("Paste table")
       AutoResize = True
-      Text = ("Paste...")
+      Text = ("Paste") & "..."
       Picture = Picture["icon:/small/paste"]
     }
     { btnImport ToolButton
       MoveScaled(44,0,12,4)
       ToolTip = ("Import text file")
       AutoResize = True
-      Text = ("Import...")
+      Text = ("Import") & "..."
       Picture = Picture["icon:/small/open"]
     }
     { btnRequest ToolButton
@@ -330,7 +330,7 @@
                 MoveScaled(8,0,11,4)
                 ToolTip = ("Export to CSV file")
                 AutoResize = True
-                Text = ("Export...")
+                Text = ("Export") & "..."
                 Picture = Picture["icon:/small/save-as"]
               }
               { btnSaveData ToolButton
@@ -374,7 +374,7 @@
                 MoveScaled(0,0,12,4)
                 ToolTip = ("Export to CSV file")
                 AutoResize = True
-                Text = ("Export...")
+                Text = ("Export") & "..."
                 Picture = Picture["icon:/small/save-as"]
               }
             }

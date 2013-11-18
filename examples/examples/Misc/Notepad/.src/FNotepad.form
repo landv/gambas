@@ -6,9 +6,9 @@
   Icon = Picture["notepad.png"]
   Arrangement = Arrange.Fill
   { mnuFile Menu
-    Text = ("&File")
+    Text = Shortcut(("File"), "F")
     { mnuOpen Menu
-      Text = ("&Open...")
+      Text = Shortcut(("Open"), "O") & "..."
       Picture = Picture["icon:/16/new"]
       Shortcut = "Ctrl+O"
     }
@@ -20,66 +20,66 @@
     { Menu1 Menu
     }
     { mnuSave Menu
-      Text = ("&Save")
+      Text = Shortcut(("Save"), "S")
       Picture = Picture["icon:/16/save"]
       Shortcut = "Ctrl+S"
     }
     { mnuSaveAs Menu
-      Text = ("S&ave As...")
+      Text = Shortcut(("Save As"), "a") & "..."
       Shortcut = "Ctrl+Shift+S"
     }
     { Menu2 Menu
     }
     { mnuQuit Menu
-      Text = ("&Quit")
+      Text = Shortcut(("Quit"), "Q")
       Picture = Picture["icon:/16/quit"]
       Shortcut = "Ctrl+Q"
     }
   }
   { mnuEdit Menu
-    Text = ("&Edit")
+    Text = Shortcut(("Edit"), "E")
     { mnuCopy Menu
-      Text = ("&Copy")
+      Text = Shortcut(("Copy"), "C")
       Picture = Picture["icon:/16/copy"]
       Shortcut = "Ctrl+C"
     }
     { mnuCut Menu
-      Text = ("C&ut")
+      Text = Shortcut(("Cut"), "u")
       Picture = Picture["icon:/16/cut"]
       Shortcut = "Ctrl+X"
     }
     { mnuPaste Menu
-      Text = ("&Paste")
+      Text = Shortcut(("Paste"), "P")
       Picture = Picture["icon:/16/paste"]
       Shortcut = "Ctrl+V"
     }
     { Menu3 Menu
     }
     { mnuUndo Menu
-      Text = ("&Undo")
+      Text = Shortcut(("Undo"), "U")
       Picture = Picture["icon:/16/undo"]
       Shortcut = "Ctrl+Z"
     }
     { mnuRedo Menu
-      Text = ("&Redo")
+      Text = Shortcut(("Redo"), "R")
       Picture = Picture["icon:/16/redo"]
       Shortcut = "Ctrl+Y"
     }
     { Menu4 Menu
     }
     { mnuFont Menu
-      Text = ("Choose &Font...")
+      Text = Shortcut(("Choose Font"), "F") & "..."
     }
     { mnuWrap Menu
-      Text = ("&Wrap text")
+      Text = Shortcut(("Wrap text"), "W")
       Picture = Picture["icon:/16/text-fill"]
       Checked = True
     }
   }
   { mnuHelp Menu
-    Text = ("&?")
+    Text = Shortcut(("?"), "?")
     { mnuAbout Menu
-      Text = ("&About...")
+      Text = Shortcut(("About"), "A") & "..."
     }
   }
   { txtNotepad TextArea

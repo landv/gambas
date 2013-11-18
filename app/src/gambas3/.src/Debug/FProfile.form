@@ -39,7 +39,7 @@
         MoveScaled(16,0,15,4)
         ToolTip = ("Save profile")
         AutoResize = True
-        Text = ("Save profile...")
+        Text = ("Save profile") & "..."
         Picture = Picture["icon:/small/save-as"]
       }
     }
@@ -49,10 +49,10 @@
     { gvwProfile GridView
       MoveScaled(1,9,41,38)
       Expand = True
+      Border = False
       Mode = Select.Single
       Header = GridView.Horizontal
       ScrollBar = Scroll.Vertical
-      Border = False
       AutoResize = False
       Sorted = True
     }
@@ -85,10 +85,10 @@
         Text = ("Callees")
         { gvwCalled GridView
           MoveScaled(1,1,27,11)
+          Border = False
           Mode = Select.Single
           Header = GridView.Horizontal
           ScrollBar = Scroll.Vertical
-          Border = False
           AutoResize = False
           Sorted = True
         }
@@ -96,10 +96,10 @@
         Text = ("Callers")
         { gvwCaller GridView
           MoveScaled(1,2,27,11)
+          Border = False
           Mode = Select.Single
           Header = GridView.Horizontal
           ScrollBar = Scroll.Vertical
-          Border = False
           AutoResize = False
           Sorted = True
         }
@@ -109,11 +109,11 @@
         MoveScaled(1,20,29,20)
         { gvwSource GridView
           MoveScaled(1,1,7,14)
+          Border = False
           Mode = Select.Single
           Grid = False
           Header = GridView.Horizontal
           ScrollBar = Scroll.None
-          Border = False
         }
         { Separator4 Separator
           MoveScaled(9,1,0,14)

@@ -9,7 +9,7 @@
     Enabled = False
     { mnuGotoLine Menu
       Action = ".goto-line"
-      Text = ("Go to line...")
+      Text = ("Go to line") & "..."
       Shortcut = "Ctrl+G"
     }
     { mnuShowCode Menu
@@ -56,7 +56,7 @@
     }
     { mnuSelectAll Menu
       Action = ".select-all"
-      Text = ("Select &All")
+      Text = Shortcut(("Select All"), "A")
       Shortcut = "Ctrl+A"
     }
     { Menu2 Menu
@@ -96,7 +96,7 @@
       }
       { mnuInsertColor Menu
         Action = ".color"
-        Text = ("Insert color...")
+        Text = ("Insert color") & "..."
         Picture = Picture["icon:/small/color"]
       }
       { mnuCompress Menu
@@ -337,7 +337,7 @@
     Picture = "icon:/small/close"
   }
   { Action color
-    Text = "Insert color..."
+    Text = "Insert color"
     Shortcut = ""
     Picture = "icon:/small/color"
   }
@@ -367,7 +367,7 @@
     Picture = "icon:/small/up"
   }
   { Action goto-line
-    Text = "Go to line..."
+    Text = "Go to line"
     Shortcut = "Ctrl+G"
   }
   { Action indent
@@ -404,7 +404,7 @@
     Picture = "icon:/small/save"
   }
   { Action select-all
-    Text = "Select &All"
+    Text = "Select All"
     Shortcut = "Ctrl+A"
   }
   { Action show-class

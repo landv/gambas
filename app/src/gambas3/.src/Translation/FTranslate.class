@@ -708,12 +708,9 @@ End
 
 Private Sub FindIndex(sMsgId As String) As Integer
 
-  'sMsgId = Trim(sMsgId)
   If Not sMsgId Then Return
-  If $cCacheImport.Exist(sMsgId) Then
-    Return $cCacheImport[sMsgId]
-  Endif
-
+  If $cCacheImport.Exist(sMsgId) Then Return $cCacheImport[sMsgId]
+  
 End
 
 Private Sub ImportMessage(sPath As String) As Integer
@@ -798,18 +795,22 @@ Private Sub ImportMessage(sPath As String) As Integer
 
     If Trim(sMsgId) Then
 
+      If sCharset Then sMsgStr = Conv(sMsgStr, sCharset, "UTF-8")
+      
       iIndex = FindIndex(sMsgId)
+      If iIndex <= 0 Then
+        sMsgId = CControl.RemoveShortcut(sMsgId)
+        sMsgStr = CControl.RemoveShortcut(sMsgStr)
+        iIndex = FindIndex(sMsgId)
+      Endif
 
       If iIndex > 0 And If cvwTranslate[iIndex][1] = "" Then
-
-        If sCharset Then sMsgStr = Conv(sMsgStr, sCharset, "UTF-8")
 
         If sMsgStr = "-\\n" Then sMsgStr = "-"
 
         If bFuzzy Then
           bFuzzy = False
         Else
-          'Debug sMsgId
           cvwTranslate[iIndex][1] = sMsgStr
           If sMsgStr Then
             Inc $nTrans

@@ -1248,8 +1248,6 @@ Public Sub Action_Activate(Key As String) As Boolean
   
   Dim hEditor As FEditor
   
-  'DEBUG Key
-  
   Select Key
       
     Case "project"
@@ -1308,8 +1306,6 @@ Public Sub Action_Activate(Key As String) As Boolean
       FSearch.FindNext
     Case "find-previous"
       FSearch.FindPrevious
-      'Case "find-project"
-      'cmbFind_Activate
       
     Case "console"
       If Action["console"].Value Then 
@@ -1317,15 +1313,7 @@ Public Sub Action_Activate(Key As String) As Boolean
       Else
         Try Project.ActiveForm.SetFocus
       Endif
-      'FOutput.Toggle(Action["console"].Value)
       
-      ' Case "break"
-      '   'Debug Action["break"].Value
-      '   Try hEditor = Project.ActiveForm
-      '   If Not Error Then Design.SetBreakpoint(hEditor.Name, hEditor.Editor.Line, Action["break"].Value)
-      ' Case "watch"
-      '   Try hEditor = Project.ActiveForm
-      '   If Not Error Then hEditor.WatchExpression
     Case "until"
       Try hEditor = Project.ActiveForm
       If Not Error Then hEditor.RunUntil
@@ -1378,6 +1366,9 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case "uncompress-all"
       CompressAll(tvwProject.Key, True)
+      
+    Case "update-all-forms"
+      Project.UpdateAllForms
     
   End Select 
   
@@ -2308,7 +2299,7 @@ End
 
 Private Sub OpenExternFile()
   
-  Dialog.Title = ("Select a file outside of the project")
+  Dialog.Title = ("Select a file")
   If Dialog.OpenFile() Then Return
   
   If Project.IsProjectPath(Dialog.Path) Then

@@ -119,12 +119,12 @@
     }
     { btnSave Button
       MoveScaled(4,0,16,4)
-      Text = ("&Save")
+      Text = Shortcut(("Save"), "S")
       Picture = Picture["icon:/small/save-as"]
     }
     { btnSolve Button
       MoveScaled(21,0,16,4)
-      Text = ("Sol&ve")
+      Text = Shortcut(("Solve"), "v")
       Picture = Picture["icon:/small/apply"]
     }
     { btnClose Button

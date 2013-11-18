@@ -30,22 +30,22 @@
     Spacing = True
     { btnInsert Button
       MoveScaled(0,0,18,4)
-      Text = ("&Insert")
+      Text = Shortcut(("Insert"), "I")
       Picture = Picture["icon:/small/add"]
     }
     { btnDelete Button
       MoveScaled(0,5,18,4)
-      Text = ("&Delete")
+      Text = Shortcut(("Delete"), "D")
       Picture = Picture["icon:/small/delete"]
     }
     { btnUp Button
       MoveScaled(0,10,8,4)
-      Text = ("&Up")
+      Text = Shortcut(("Up"), "U")
       Picture = Picture["icon:/small/up"]
     }
     { btnDown Button
       MoveScaled(0,15,10,4)
-      Text = ("&Down")
+      Text = Shortcut(("Down"), "D")
       Picture = Picture["icon:/small/down"]
     }
     { Panel2 Panel
@@ -53,22 +53,22 @@
     }
     { btnClear Button
       MoveScaled(0,23,16,4)
-      Text = ("Cl&ear")
+      Text = Shortcut(("Clear"), "e")
       Picture = Picture["icon:/small/clear"]
     }
     { btnCopy Button
       MoveScaled(0,28,16,4)
-      Text = ("&Copy")
+      Text = Shortcut(("Copy"), "C")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPaste Button
       MoveScaled(0,33,16,4)
-      Text = ("&Paste")
+      Text = Shortcut(("Paste"), "P")
       Picture = Picture["icon:/small/paste"]
     }
     { btnUndo Button
       MoveScaled(0,38,16,4)
-      Text = ("&Undo")
+      Text = Shortcut(("Undo"), "U")
       Picture = Picture["icon:/small/undo"]
     }
     { Panel1 Panel

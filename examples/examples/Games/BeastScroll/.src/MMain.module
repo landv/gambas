@@ -151,9 +151,8 @@ Public Sub Screen_Draw()
   
   #Endif
 
-  Draw.ForeColor = &hFFFF00&
-  Draw.Text(Screen.Framerate & " FPS", 5, 450)
-  'Print "\r"; Screen.Framerate; " FPS";
+  Draw.ForeColor = Color.White
+  Draw.Text(Screen.Framerate & " FPS", 10, 10)
   
 End
 

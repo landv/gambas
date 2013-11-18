@@ -22,22 +22,22 @@
         Margin = True
         { btnUpdate Button
           MoveScaled(1,1,18,4)
-          Text = ("&Update")
+          Text = Shortcut(("Update"), "U")
           Picture = Picture["icon:/small/down"]
         }
         { btnRevert Button
           MoveScaled(1,6,18,4)
-          Text = ("&Revert")
+          Text = Shortcut(("Revert"), "R")
           Picture = Picture["icon:/small/undo"]
         }
         { btnCommit Button
           MoveScaled(1,11,18,4)
-          Text = ("&Commit")
+          Text = Shortcut(("Commit"), "C")
           Picture = Picture["icon:/small/ok"]
         }
         { btnCleanUp Button
           MoveScaled(1,16,18,4)
-          Text = ("Clea&n up")
+          Text = Shortcut(("Clean up"), "n")
           Picture = Picture["icon:/small/wizard"]
         }
       }
@@ -120,7 +120,7 @@
       Margin = True
       { btnInfo Button
         MoveScaled(1,1,28,4)
-        Text = ("Refresh &information")
+        Text = Shortcut(("Refresh information"), "i")
         Picture = Picture["icon:/small/refresh"]
       }
     }

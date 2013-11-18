@@ -70,10 +70,8 @@ Catch
   
 End
 
-
 Public Sub _new(Optional Path As String, Optional Title As String)
 
-  Dim sDir As String
   Dim sPath As String
   Dim sElt As String
 
@@ -102,13 +100,11 @@ Public Sub _new(Optional Path As String, Optional Title As String)
 
 End
 
-
 Public Sub _free()
 
   Try Me.Save
 
 End
-
 
 Public Sub Save()
 
@@ -169,7 +165,6 @@ Public Sub Save()
 
 End
 
-
 Private Function GetSlot(sKey As String) As String
 
   Dim sSlot As String
@@ -184,7 +179,6 @@ Private Function GetSlot(sKey As String) As String
   Return sSlot
 
 End
-
 
 Public Function _get(Key As String, Optional {Default} As Variant) As Variant
 
@@ -201,7 +195,6 @@ Public Function _get(Key As String, Optional {Default} As Variant) As Variant
   Return {Default}
 
 End
-
 
 Public Sub _put(Value As Variant, Key As String)
 
@@ -235,7 +228,6 @@ Public Sub Clear(Optional ParentKey As String)
   $bModify = True
 
 End
-
 
 ' PUBLIC FUNCTION MakeWindowKey(sWin AS String, sKey AS String) AS String
 ' 
@@ -328,7 +320,6 @@ Private Sub ReadWindow(hWindow As Window, sKey As String)
 
   Dim aPos As Integer[]
   Dim X, Y, W, H, S As Integer
-  Dim sPos As String
 
   aPos = Me[sKey &/ "Geometry"]
 
@@ -372,7 +363,6 @@ Private Sub ReadWindow(hWindow As Window, sKey As String)
 
 End
 
-
 Private Sub WriteWindow(hWindow As Window, sKey As String)
 
   Dim X, Y, W, H, S As Integer
@@ -391,19 +381,13 @@ Private Sub WriteWindow(hWindow As Window, sKey As String)
 
 End
 
-
 Private Sub GetTopLevel(hCtrl As Object) As String
   
   Return Object.Type(hCtrl.Window)
   
 End
 
-
-
 Public Sub Read(hObject As Object, Optional sKey As String, Optional vDefault As Variant)
-
-  Dim sVal As String
-  Dim aVal As String[]
 
   If Object.Is(hObject, "Window") Then
     If Not sKey Then sKey = Object.Type(hObject) 
@@ -428,7 +412,6 @@ Public Sub Write(hObject As Object, Optional sKey As String)
   Endif
 
 End
-
 
 Private Function Path_Read() As String
 
@@ -477,7 +460,6 @@ Public Sub Reload()
   Load
   
 End
-
 
 Private Function Keys_Read() As _Settings_Keys
 

@@ -56,27 +56,27 @@
         }
         { chkCaseSensitive CheckBox
           MoveScaled(0,4,25,4)
-          Text = ("&Case sensitive")
+          Text = Shortcut(("Case sensitive"), "C")
         }
         { chkWordOnly CheckBox
           MoveScaled(0,8,25,4)
-          Text = ("&Words only")
+          Text = Shortcut(("Words only"), "W")
         }
         { chkRegularExpression CheckBox
           MoveScaled(0,12,25,4)
-          Text = ("Regular e&xpression")
+          Text = Shortcut(("Regular expression"), "x")
         }
         { chkHighlight CheckBox
           MoveScaled(0,16,25,4)
-          Text = ("&Highlight result")
+          Text = Shortcut(("Highlight result"), "H")
         }
         { chkIgnoreStrings CheckBox
           MoveScaled(0,20,25,4)
-          Text = ("&Ignore strings")
+          Text = Shortcut(("Ignore strings"), "I")
         }
         { chkIgnoreComments CheckBox
           MoveScaled(0,24,25,4)
-          Text = ("I&gnore comments")
+          Text = Shortcut(("Ignore comments"), "g")
         }
       }
       { Panel3 Panel
@@ -94,23 +94,23 @@
         { radCurrentProcedure RadioButton radSearch
           Name = "radCurrentProcedure"
           MoveScaled(0,4,25,4)
-          Text = ("C&urrent procedure")
+          Text = Shortcut(("Current procedure"), "u")
         }
         { radCurrentFile RadioButton radSearch
           Name = "radCurrentFile"
           MoveScaled(0,8,25,4)
-          Text = ("Current &file")
+          Text = Shortcut(("Current file"), "f")
           Value = True
         }
         { radSourceFileOnly RadioButton radSearch
           Name = "radSourceFileOnly"
           MoveScaled(0,12,25,4)
-          Text = ("&Source files")
+          Text = Shortcut(("Source files"), "S")
         }
         { radEverywhere RadioButton radSearch
           Name = "radEverywhere"
           MoveScaled(0,16,25,4)
-          Text = ("A&ll files")
+          Text = Shortcut(("All files"), "l")
         }
       }
     }
@@ -127,28 +127,28 @@
     Spacing = True
     { btnNext Button
       MoveScaled(0,0,22,4)
-      Text = ("&Next")
+      Text = Shortcut(("Next"), "N")
       Picture = Picture["icon:/small/down"]
     }
     { btnPrevious Button
       MoveScaled(0,5,21,4)
-      Text = ("&Previous")
+      Text = Shortcut(("Previous"), "P")
       Picture = Picture["icon:/small/up"]
     }
     { btnBrowse Button
       MoveScaled(0,10,17,4)
       Visible = False
-      Text = ("&Browse")
+      Text = Shortcut(("Browse"), "B")
       Picture = Picture["icon:/small/find"]
     }
     { btnReplace Button
       MoveScaled(0,15,17,4)
-      Text = ("&Replace")
+      Text = Shortcut(("Replace"), "R")
       Picture = Picture["icon:/small/replace"]
     }
     { btnReplaceAll Button
       MoveScaled(0,19,17,4)
-      Text = ("Replace &all")
+      Text = Shortcut(("Replace all"), "a")
       Picture = Picture["icon:/small/wizard"]
     }
     { Panel1 Panel
@@ -172,7 +172,7 @@
 
 { Actions
   { Action find
-    Text = "Search & Replace"
+    Text = "Search  Replace"
     Picture = "icon:/small/find"
   }
 }

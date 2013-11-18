@@ -13,7 +13,7 @@ Static Private $cRedirect As New Collection
 Static Private $cTranslate As New Collection
 Static Private $cUpdateName As New Collection
 Static Private $cAlwaysRead As New Collection
-'Static Private $cShortcut As New Collection
+Static Private $cShortcut As New Collection
 
 
 Public Name As String
@@ -29,7 +29,7 @@ Public Virtual As Boolean
 Public Translate As Boolean
 Public Argument As String
 Public UpdateName As Boolean 
-'Public Shortcut As Boolean
+Public Shortcut As Boolean
 'PUBLIC Control AS Boolean
 
 Public ConstantClass As String
@@ -116,13 +116,13 @@ Static Public Sub _init()
   $cAlwaysRead["ProgressBar.Value"] = True
   $cAlwaysRead["ProgressBar.Max"] = True
   
-  ' $cShortcut["Button.Text"] = True
-  ' $cShortcut["Menu.Text"] = True
-  ' $cShortcut["ToolButton.Text"] = True
-  ' $cShortcut["RadioButton.Text"] = True
-  ' $cShortcut["CheckBox.Text"] = True
-  ' $cShortcut["ToggleButton.Text"] = True
-  ' $cShortcut["DataCheckBox.Text"] = True
+  $cShortcut["Button.Text"] = True
+  $cShortcut["Menu.Text"] = True
+  $cShortcut["ToolButton.Text"] = True
+  $cShortcut["RadioButton.Text"] = True
+  $cShortcut["CheckBox.Text"] = True
+  $cShortcut["ToggleButton.Text"] = True
+  $cShortcut["DataCheckBox.Text"] = True
   
 End
 
@@ -335,7 +335,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
   'Translate = $cTranslate.Exist(Name) Or $cTranslate.Exist(sClass & "." & Name)
   Translate = GetFlag($cTranslate, sClass, Name)
-  'Shortcut = GetFlag($cShortcut, sClass, Name)
+  Shortcut = GetFlag($cShortcut, sClass, Name)
   UpdateName = GetFlag($cUpdateName, sClass, Name)
   
   Virtual = bVirtual

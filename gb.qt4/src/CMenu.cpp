@@ -369,6 +369,7 @@ BEGIN_METHOD_VOID(Menu_free)
 	//if (!strcmp(THIS->widget.name, "mnuCut"))
 	//	BREAKPOINT();
 	GB.FreeString(&THIS->widget.name);
+	GB.FreeString(&THIS->save_text);
 
 	#ifdef DEBUG_MENU
 		qDebug("Menu_free: item = %p is freed!", THIS);
@@ -380,7 +381,12 @@ END_METHOD
 BEGIN_PROPERTY(Menu_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(ACTION->text()));
+	{
+		if (THIS->save_text)
+			GB.ReturnString(THIS->save_text);
+		else
+			GB.ReturnNewZeroString(TO_UTF8(ACTION->text()));
+	}
 	else
 	{
 		QString text = QSTRING_PROP();
@@ -390,6 +396,8 @@ BEGIN_PROPERTY(Menu_Text)
 
 		if (!CMENU_is_toplevel(THIS))
 			((CMENU *)THIS->parent)->init_shortcut = FALSE;
+
+		GB.FreeString(&THIS->save_text);
 	}
 
 END_PROPERTY
@@ -673,6 +681,15 @@ BEGIN_PROPERTY(Menu_Action)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Menu_SaveText)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->save_text);
+	else
+		GB.StoreString(PROP(GB_STRING), &THIS->save_text);
+
+END_PROPERTY
+
 /*BEGIN_PROPERTY(CMENU_tear_off)
 
 	if (!THIS->menu)
@@ -710,6 +727,7 @@ GB_DESC CMenuDesc[] =
 	GB_PROPERTY("Name", "s", Control_Name),
 	GB_PROPERTY("Caption", "s", Menu_Text),
 	GB_PROPERTY("Text", "s", Menu_Text),
+	GB_PROPERTY("_Text", "s", Menu_SaveText),
 	GB_PROPERTY("Enabled", "b", Menu_Enabled),
 	GB_PROPERTY("Checked", "b", Menu_Checked),
 	GB_PROPERTY("Tag", "v", Control_Tag),

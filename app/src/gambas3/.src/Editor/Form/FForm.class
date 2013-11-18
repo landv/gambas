@@ -1,6 +1,6 @@
 ' Gambas class file
 
-'Class Shortcut
+Class Shortcut
 
 Public Path As String
 Public Family As String
@@ -91,6 +91,22 @@ Private $hUndo As New CUndo
 
 Private $hCtrlFrame As Control
 Private $hDropTarget As CControl
+
+' Static Private Sub Shortcut(Text As String, sShortcut As String) As String
+' 
+'   Dim iPos As Integer
+'   
+'   iPos = String.InStr(Text, "&")
+'   If iPos Then 
+'     sShortcut = String.Mid$(Text, iPos + 1, 1)
+'     Text = Left(Text, iPos - 1) & Mid$(Text, iPos + 1)
+'   Endif
+'   
+'   iPos = InStr(Text, sShortcut, 1, gb.IgnoreCase)
+'   If iPos = 0 Then Return Text '& " (&" & String.UCase(sShortcut) & ")"
+'   Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
+'   
+' End
 
 Public Sub _new(sPath As String)
 
@@ -238,7 +254,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim bFirst As Boolean
   Dim bPublic As Boolean
   Dim sProp As String
-  'Dim aScan As String[]
+  Dim aScan As String[]
 
   hCtrl = hParent
   bFirst = True
@@ -384,9 +400,9 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
             vValue = Null
           Else If sValue Begins "Shortcut(" Then
             
-            ' aScan = Scan(Mid$(sValue, 10), "(*),*)*")
-            ' vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(aScan[1])))
-            ' If aScan[2] Then vValue &= UnQuote(Trim(Mid$(Trim(aScan[2]), 2)))
+            aScan = Scan(Mid$(sValue, 10), "(*),*)*")
+            vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(aScan[1])))
+            If aScan[2] Then vValue &= UnQuote(Trim(Mid$(Trim(aScan[2]), 2)))
             
           Else
 

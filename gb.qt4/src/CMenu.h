@@ -65,6 +65,7 @@ typedef
 		QKeySequence *accel;
     CPICTURE *picture;
 		char *action;
+		char *save_text;
     unsigned deleted : 1;
     unsigned toggle : 1;
     //unsigned noshortcut : 1;

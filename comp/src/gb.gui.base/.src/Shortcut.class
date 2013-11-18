@@ -1,6 +1,6 @@
 ' Gambas class file
 
-'Export
+Export
 
 Static Public Sub _call(Text As String, Shortcut As String) As String
 
@@ -13,7 +13,7 @@ Static Public Sub _call(Text As String, Shortcut As String) As String
   Endif
   
   iPos = InStr(Text, Shortcut, 1, gb.IgnoreCase)
-  If iPos = 0 Then Return Text & " (&" & String.UCase(Shortcut) & ")"
+  If iPos = 0 Then Return Text '& " (&" & String.UCase(Shortcut) & ")"
   Return Left(Text, iPos - 1) & "&" & Mid$(Text, iPos)
   
 End

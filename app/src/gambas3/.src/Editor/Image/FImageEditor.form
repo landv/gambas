@@ -45,7 +45,7 @@
     }
     { mnuSelectAll Menu
       Action = ".select-all"
-      Text = ("Select &All")
+      Text = Shortcut(("Select All"), "A")
       Shortcut = "Ctrl+A"
     }
     { mnuHideSelection Menu
@@ -151,13 +151,13 @@
       { mnuResize Menu btnResize
         Name = "mnuResize"
         Action = ".resize"
-        Text = ("Resize...")
+        Text = ("Resize") & "..."
         Picture = Picture["icon:/small/zoom-fit"]
       }
       { mnuRotate Menu btnRotate
         Name = "mnuRotate"
         Action = ".rotate"
-        Text = ("Rotate...")
+        Text = ("Rotate") & "..."
         Picture = Picture["icon:/small/rotate-right"]
       }
     }
@@ -492,7 +492,7 @@
       ToolTip = ("Resize or stretch image")
       Action = ".resize"
       AutoResize = True
-      Text = ("Resize...")
+      Text = ("Resize") & "..."
       Picture = Picture["icon:/small/zoom-fit"]
     }
     { btnRotate ToolButton
@@ -500,7 +500,7 @@
       ToolTip = ("Rotate image")
       Action = ".rotate"
       AutoResize = True
-      Text = ("Rotate...")
+      Text = ("Rotate") & "..."
       Picture = Picture["icon:/small/rotate-right"]
     }
   }
@@ -612,12 +612,12 @@
     Picture = "icon:/small/refresh"
   }
   { Action resize
-    Text = "Resize..."
+    Text = "Resize"
     Shortcut = ""
     Picture = "icon:/small/zoom-fit"
   }
   { Action rotate
-    Text = "Rotate..."
+    Text = "Rotate"
     Shortcut = ""
     Picture = "icon:/small/rotate-right"
   }
@@ -645,7 +645,7 @@
     Picture = "icon:/small/save"
   }
   { Action select-all
-    Text = "Select &All"
+    Text = "Select All"
     Shortcut = "Ctrl+A"
   }
   { Action stroke

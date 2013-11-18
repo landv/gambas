@@ -157,12 +157,12 @@
         Spacing = True
         { btnAdd Button
           MoveScaled(0,0,17,4)
-          Text = ("&Add")
+          Text = Shortcut(("Add"), "A")
           Picture = Picture["icon:/small/add"]
         }
         { btnRemove Button
           MoveScaled(0,5,17,4)
-          Text = ("&Remove")
+          Text = Shortcut(("Remove"), "R")
           Picture = Picture["icon:/small/remove"]
         }
         { btnRemoveAll Button

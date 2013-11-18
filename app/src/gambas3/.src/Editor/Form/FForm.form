@@ -28,7 +28,7 @@
     }
     { mnuStartup Menu
       Action = ".startup-class"
-      Text = ("&Startup class")
+      Text = Shortcut(("Startup class"), "S")
       Picture = Picture["icon:/small/play"]
       Shortcut = "Alt+S"
     }
@@ -45,25 +45,25 @@
       Picture = Picture["img/16/tabmove.png"]
       { mnuTabFirst Menu
         Action = ".move-tab-first"
-        Text = ("&First")
+        Text = Shortcut(("First"), "F")
         Picture = Picture["icon:/small/first"]
         Shortcut = "Ctrl+Alt+Home"
       }
       { mnuTabPrevious Menu
         Action = ".move-tab-previous"
-        Text = ("&Previous")
+        Text = Shortcut(("Previous"), "P")
         Picture = Picture["icon:/small/left"]
         Shortcut = "Ctrl+Alt+Left"
       }
       { mnuTabNext Menu
         Action = ".move-tab-next"
-        Text = ("&Next")
+        Text = Shortcut(("Next"), "N")
         Picture = Picture["icon:/small/right"]
         Shortcut = "Ctrl+Alt+Right"
       }
       { mnuTabLast Menu
         Action = ".move-tab-last"
-        Text = ("&Last")
+        Text = Shortcut(("Last"), "L")
         Picture = Picture["icon:/small/last"]
         Shortcut = "Ctrl+Alt+End"
       }
@@ -194,34 +194,34 @@
       Text = ("Alignment")
       { mnuAlignLeft Menu
         Action = ".align-left"
-        Text = ("Align to &left")
+        Text = Shortcut(("Align to left"), "l")
         Picture = Picture["img/16/align-left.png"]
       }
       { mnuAlignRight Menu
         Action = ".align-right"
-        Text = ("Align to &right")
+        Text = Shortcut(("Align to right"), "r")
         Picture = Picture["img/16/align-right.png"]
       }
       { mnuAlignTop Menu
         Action = ".align-top"
-        Text = ("Align to &top")
+        Text = Shortcut(("Align to top"), "t")
         Picture = Picture["img/16/align-top.png"]
       }
       { mnuAlignBottom Menu
         Action = ".align-bottom"
-        Text = ("Align to &bottom")
+        Text = Shortcut(("Align to bottom"), "b")
         Picture = Picture["img/16/align-bottom.png"]
       }
       { Menu5 Menu
       }
       { mnuAlignWidth Menu
         Action = ".same-width"
-        Text = ("Same &width")
+        Text = Shortcut(("Same width"), "w")
         Picture = Picture["img/16/same-width.png"]
       }
       { mnuAlignHeight Menu
         Action = ".same-height"
-        Text = ("Same &height")
+        Text = Shortcut(("Same height"), "h")
         Picture = Picture["img/16/same-height.png"]
       }
     }
@@ -229,7 +229,7 @@
     }
     { mnuMenu Menu
       Action = ".menu"
-      Text = ("Menu editor...")
+      Text = ("Menu editor") & "..."
       Picture = Picture["icon:/small/menu"]
       Shortcut = "Ctrl+E"
     }
@@ -337,7 +337,7 @@
       ToolTip = ("Menu editor")
       Action = ".menu"
       AutoResize = True
-      Text = ("Menu editor...")
+      Text = ("Menu editor") & "..."
       Picture = Picture["icon:/small/menu"]
     }
     { ToolButton2 ToolButton
@@ -640,22 +640,22 @@
 
 { Actions
   { Action align-bottom
-    Text = "Align to &bottom"
+    Text = "Align to bottom"
     Shortcut = ""
     Picture = "img/16/align-bottom.png"
   }
   { Action align-left
-    Text = "Align to &left"
+    Text = "Align to left"
     Shortcut = ""
     Picture = "img/16/align-left.png"
   }
   { Action align-right
-    Text = "Align to &right"
+    Text = "Align to right"
     Shortcut = ""
     Picture = "img/16/align-right.png"
   }
   { Action align-top
-    Text = "Align to &top"
+    Text = "Align to top"
     Shortcut = ""
     Picture = "img/16/align-top.png"
   }
@@ -750,27 +750,27 @@
     Picture = "img/16/lower.png"
   }
   { Action menu
-    Text = "Menu editor..."
+    Text = "Menu editor"
     Shortcut = "Ctrl+E"
     Picture = "icon:/small/menu"
   }
   { Action move-tab-first
-    Text = "&First"
+    Text = "First"
     Shortcut = "Ctrl+Alt+Home"
     Picture = "icon:/small/first"
   }
   { Action move-tab-last
-    Text = "&Last"
+    Text = "Last"
     Shortcut = "Ctrl+Alt+End"
     Picture = "icon:/small/last"
   }
   { Action move-tab-next
-    Text = "&Next"
+    Text = "Next"
     Shortcut = "Ctrl+Alt+Right"
     Picture = "icon:/small/right"
   }
   { Action move-tab-previous
-    Text = "&Previous"
+    Text = "Previous"
     Shortcut = "Ctrl+Alt+Left"
     Picture = "icon:/small/left"
   }
@@ -795,12 +795,12 @@
     Picture = "icon:/small/revert"
   }
   { Action same-height
-    Text = "Same &height"
+    Text = "Same height"
     Shortcut = ""
     Picture = "img/16/same-height.png"
   }
   { Action same-width
-    Text = "Same &width"
+    Text = "Same width"
     Shortcut = ""
     Picture = "img/16/same-width.png"
   }
@@ -822,7 +822,7 @@
     Picture = "img/16/tabstrip.png"
   }
   { Action startup-class
-    Text = "&Startup class"
+    Text = "Startup class"
     Shortcut = "Alt+S"
     Picture = "icon:/small/play"
   }

@@ -54,13 +54,13 @@
         { btnApply Button
           MoveScaled(0,0,15,4)
           Enabled = False
-          Text = ("&Apply")
+          Text = Shortcut(("Apply"), "A")
           Picture = Picture["icon:/small/apply"]
         }
         { btnRevert Button
           MoveScaled(16,0,16,4)
           Enabled = False
-          Text = ("&Revert")
+          Text = Shortcut(("Revert"), "R")
           Picture = Picture["icon:/small/undo"]
         }
         { Panel1 Panel
@@ -70,7 +70,7 @@
         { btnClose Button
           MoveScaled(39,0,16,4)
           AutoResize = True
-          Text = ("&Close")
+          Text = Shortcut(("Close"), "C")
           Picture = Picture["icon:/small/close"]
         }
       }

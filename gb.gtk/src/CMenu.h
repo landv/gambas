@@ -45,6 +45,7 @@ typedef
 		gMenu *widget;
 		GB_VARIANT_VALUE tag;
 		char *action;
+		char *save_text;
 		unsigned init_shortcut : 1;
 	} 
 	CMENU;

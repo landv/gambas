@@ -20,13 +20,13 @@
   }
   { btnIgnore ToggleButton
     MoveScaled(25,40,23,5)
-    Text = ("Do &not save")
+    Text = Shortcut(("Do not save"), "n")
     Picture = Picture["icon:/medium/cancel"]
     Radio = True
   }
   { btnSave ToggleButton
     MoveScaled(1,40,23,5)
-    Text = ("Save &All")
+    Text = Shortcut(("Save All"), "A")
     Picture = Picture["icon:/medium/save"]
     Radio = True
   }

@@ -194,11 +194,11 @@ Private Sub UpdateCreateDatabase()
   sDatabase = Trim(txtDatabase.Text)
   If sDatabase Then
     If Not $hConn.Databases.Exist(sDatabase) Then
-      btnCreateDatabase.Text = Subst(("&Create database '&1'"), sDatabase)
+      btnCreateDatabase.Text = Subst(("Create database '&1'"), sDatabase)
       btnCreateDatabase.Show
       btnDeleteDatabase.Hide
     Else
-      btnDeleteDatabase.Text = Subst(("&Delete database '&1'"), sDatabase)
+      btnDeleteDatabase.Text = Subst(("Delete database '&1'"), sDatabase)
       btnCreateDatabase.Hide
       btnDeleteDatabase.Show
     Endif

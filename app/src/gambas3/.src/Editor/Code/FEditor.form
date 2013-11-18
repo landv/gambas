@@ -11,7 +11,7 @@
     }
     { mnuGotoLine Menu
       Action = ".goto-line"
-      Text = ("Go to line...")
+      Text = ("Go to line") & "..."
       Shortcut = "Ctrl+G"
     }
     { mnuDefinition Menu
@@ -28,7 +28,7 @@
     }
     { mnuStartup Menu
       Action = ".startup-class"
-      Text = ("&Startup class")
+      Text = Shortcut(("Startup class"), "S")
       Picture = Picture["icon:/small/play"]
       Shortcut = "Alt+S"
     }
@@ -68,7 +68,7 @@
     }
     { mnuSelectAll Menu
       Action = ".select-all"
-      Text = ("Select &All")
+      Text = Shortcut(("Select All"), "A")
       Shortcut = "Ctrl+A"
     }
     { mnuSep2 Menu
@@ -88,19 +88,19 @@
     { mnuSep4 Menu
     }
     { mnuUntil Menu
-      Text = ("Run &until current line")
+      Text = Shortcut(("Run until current line"), "u")
       Picture = Picture["icon:/small/jump"]
       Shortcut = "Shift+F5"
     }
     { mnuBreakpoint Menu
       Action = ".break"
-      Text = ("Toggle &breakpoint")
+      Text = Shortcut(("Toggle breakpoint"), "b")
       Picture = Picture["icon:/small/halt"]
       Shortcut = "F9"
     }
     { mnuWatch Menu
       Action = ".watch"
-      Text = ("&Watch expression")
+      Text = Shortcut(("Watch expression"), "W")
       Picture = Picture["icon:/small/watch"]
     }
     { mnuSepBookmark Menu
@@ -140,13 +140,13 @@
       }
       { mnuPasteSpecial Menu
         Action = ".paste-special"
-        Text = ("Paste special...")
+        Text = ("Paste special") & "..."
         Picture = Picture["icon:/small/paste"]
         Shortcut = "Ctrl+Shift+V"
       }
       { mnuInsertColor Menu
         Action = ".color"
-        Text = ("Insert color...")
+        Text = ("Insert color") & "..."
         Picture = Picture["icon:/small/color"]
       }
       { mnuPretty Menu
@@ -156,7 +156,7 @@
         Shortcut = "Ctrl+Shift+F"
       }
       { mnuSortProc Menu
-        Text = ("Sort procedures...")
+        Text = ("Sort procedures") & "..."
         Picture = Picture["icon:/small/sort-ascent"]
         Visible = False
       }
@@ -273,7 +273,7 @@
       ToolTip = ("Paste special")
       Action = ".paste-special"
       AutoResize = True
-      Text = ("Paste special...")
+      Text = ("Paste special") & "..."
       Picture = Picture["icon:/small/paste"]
     }
     { btnInsertColor MenuButton
@@ -444,7 +444,7 @@
     Picture = "icon:/small/bookmark"
   }
   { Action break
-    Text = "Toggle &breakpoint"
+    Text = "Toggle breakpoint"
     Shortcut = "F9"
     Picture = "icon:/small/halt"
   }
@@ -454,7 +454,7 @@
     Picture = "icon:/small/close"
   }
   { Action color
-    Text = "Insert color..."
+    Text = "Insert color"
     Shortcut = ""
     Picture = "icon:/small/color"
   }
@@ -487,7 +487,7 @@
     Picture = "icon:/small/up"
   }
   { Action goto-line
-    Text = "Go to line..."
+    Text = "Go to line"
     Shortcut = "Ctrl+G"
   }
   { Action indent
@@ -509,7 +509,7 @@
     Shortcut = ""
   }
   { Action paste-special
-    Text = "Paste special..."
+    Text = "Paste special"
     Shortcut = "Ctrl+Shift+V"
     Picture = "icon:/small/paste"
   }
@@ -546,7 +546,7 @@
     Picture = "icon:/small/save"
   }
   { Action select-all
-    Text = "Select &All"
+    Text = "Select All"
     Shortcut = "Ctrl+A"
   }
   { Action show-form
@@ -555,7 +555,7 @@
     Picture = "img/16/form.png"
   }
   { Action startup-class
-    Text = "&Startup class"
+    Text = "Startup class"
     Shortcut = "Alt+S"
     Picture = "icon:/small/play"
   }
@@ -594,7 +594,7 @@
     Picture = "icon:/small/view-split-v"
   }
   { Action watch
-    Text = "&Watch expression"
+    Text = "Watch expression"
     Shortcut = ""
     Picture = "icon:/small/watch"
   }

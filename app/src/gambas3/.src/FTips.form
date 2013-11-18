@@ -31,7 +31,7 @@
     Border = False
     ScrollBar = Scroll.Vertical
     { txtTip TextLabel
-      MoveScaled(1,2,48,24)
+      MoveScaled(2,2,48,24)
       Background = Color.TextBackground
       Padding = 4
       AutoResize = True
@@ -49,12 +49,12 @@
     }
     { btnPrev Button
       MoveScaled(32,0,14,4)
-      Text = ("&Previous")
+      Text = Shortcut(("Previous"), "P")
       Picture = Picture["icon:/small/rewind"]
     }
     { btnNext Button
       MoveScaled(47,0,14,4)
-      Text = ("&Next")
+      Text = Shortcut(("Next"), "N")
       Picture = Picture["icon:/small/forward"]
     }
     { btnClose Button

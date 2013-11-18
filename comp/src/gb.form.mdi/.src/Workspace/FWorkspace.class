@@ -176,9 +176,19 @@ End
 
 Private Sub UpdateTitleFromIndex(iInd As Integer)
   
+  Dim hObject As Object
+  Dim sRichText As String
+  
   With $aWindow[iInd].Window
 
-    tabWorkspace[iInd].Text = .Text
+    hObject = $aWindow[iInd].Window  
+    Try sRichText = hObject.RichText    
+    If sRichText Then
+      tabWorkspace[iInd].RichText = sRichText
+    Else
+      tabWorkspace[iInd].Text = .Text
+    Endif
+
     tabWorkspace[iInd].Picture = .Icon
     ' If $hCurrent And If $hCurrent.Window = hWin Then
     '   lblTitle.Text = " " & .Text

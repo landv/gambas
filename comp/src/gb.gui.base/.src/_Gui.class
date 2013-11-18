@@ -15,7 +15,7 @@ Static Public Sub _DefineShortcut(hParent As Menu)
   Dim hObs As Observer
   Dim cText As Collection
   
-  Return
+  'Return
   
   For Each hMenu In hParent.Children
     
@@ -36,15 +36,14 @@ Static Public Sub _DefineShortcut(hParent As Menu)
       
       If Not cShortcut.Exist(sCar) Then
         
-        If Not hObs Then
-          hObs = New Observer(hParent) As "Menu"
-          cText = New Collection
-          '$cMenu[Object.Address(hParent)] = cText
-        Endif
-        
-        cText[Object.Address(hMenu)] = hMenu.Text
+        ' If Not hObs Then
+        '   hObs = New Observer(hParent) As "Menu"
+        '   cText = New Collection
+        '   '$cMenu[Object.Address(hParent)] = cText
+        ' Endif
         
         hMenu.Text = String.Left(sText, I - 1) & "&" & String.Mid$(sText, I)
+        hMenu._Text = sText
         cShortcut[sCar] = True
         
         Break

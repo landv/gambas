@@ -5547,3 +5547,29 @@ Public Sub InsideDirectory(sPath As String, sDir As String) As Boolean
   
 End
 
+
+Public Sub UpdateAllForms() 
+
+  Dim sPath As String
+  Dim hForm As Object
+
+  Inc Application.Busy 
+
+  For Each sPath In $cSourceDir
+
+    If File.Ext(sPath) <> "form" Then Continue
+    If Stat(sPath).Type = gb.Link Then Continue
+
+    hForm = LoadFile(sPath)
+    hForm.Save(True)
+
+  Next
+
+  Dec Application.Busy 
+
+Catch
+
+  Application.Busy = 0
+  Message.Error("<b>Unable to update all forms!</b><p>" & Error.Text & "<br>" & Error.Where)
+
+End

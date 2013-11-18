@@ -12,10 +12,10 @@
   { mnuPopup Menu
     Visible = False
     { mnuForeground Menu
-      Text = ("Foreground color...")
+      Text = ("Foreground color") & "..."
     }
     { mnuBackground Menu
-      Text = ("Background color...")
+      Text = ("Background color") & "..."
     }
     { Menu1 Menu
     }
@@ -137,7 +137,7 @@
       { btnInstallFont Button
         MoveScaled(4,0,35,4)
         AutoResize = True
-        Text = ("Install Gambas font for code edition...")
+        Text = ("Install Gambas font for code edition") & "..."
       }
     }
     { Label43 Label
@@ -644,40 +644,40 @@
         { btnInsertSnippet Button
           MoveScaled(0,0,17,4)
           AutoResize = True
-          Text = ("&New...")
+          Text = Shortcut(("New"), "N") & "..."
           Picture = Picture["icon:/small/new"]
         }
         { btnEditSnippet Button
           MoveScaled(0,5,17,4)
           AutoResize = True
-          Text = ("&Edit...")
+          Text = Shortcut(("Edit"), "E") & "..."
           Picture = Picture["icon:/small/edit"]
         }
         { btnRemoveSnippet Button
           MoveScaled(0,10,17,4)
           AutoResize = True
-          Text = ("&Remove")
+          Text = Shortcut(("Remove"), "R")
           Picture = Picture["icon:/small/delete"]
         }
         { btnUndoSnippet Button
           MoveScaled(0,15,17,4)
           Visible = False
           AutoResize = True
-          Text = ("Re&set")
+          Text = Shortcut(("Reset"), "s")
           Picture = Picture["icon:/small/undo"]
         }
         { btnExportSnippet Button
           MoveScaled(0,20,17,4)
           Visible = False
           AutoResize = True
-          Text = ("E&xport...")
+          Text = Shortcut(("Export"), "x") & "..."
           Picture = Picture["icon:/small/save"]
         }
         { btnImportSnippet Button
           MoveScaled(0,25,17,4)
           Visible = False
           AutoResize = True
-          Text = ("&Import...")
+          Text = Shortcut(("Import"), "I") & "..."
           Picture = Picture["icon:/small/open"]
         }
       }
@@ -798,19 +798,19 @@
         { btnInsertIgnore Button
           MoveScaled(0,0,17,4)
           AutoResize = True
-          Text = ("&Add")
+          Text = Shortcut(("Add"), "A")
           Picture = Picture["icon:/small/new"]
         }
         { btnRemoveIgnore Button
           MoveScaled(0,5,17,4)
           AutoResize = True
-          Text = ("&Remove")
+          Text = Shortcut(("Remove"), "R")
           Picture = Picture["icon:/small/delete"]
         }
         { btnResetIgnore Button
           MoveScaled(0,10,17,4)
           AutoResize = True
-          Text = ("Re&set")
+          Text = Shortcut(("Reset"), "s")
           Picture = Picture["icon:/small/undo"]
         }
       }
@@ -895,7 +895,7 @@
       { btnProxy Button
         MoveScaled(0,0,39,6)
         AutoResize = True
-        Text = ("Proxy configuration...")
+        Text = ("Proxy configuration") & "..."
         Picture = Picture["icon:/medium/internet"]
       }
     }
