@@ -357,8 +357,13 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
         vValue = Val(sValue)
         If IsNull(vValue) Then
 
-          If Left$(sValue, 2) = "(" & Chr$(34) Then
-            sValue = Mid$(sValue, 2, -1)
+          If Left$(sValue, 2) = "(\"" Then
+            If sValue Ends "\")" Then
+              sValue = Mid$(sValue, 2, -1)
+            Else
+              aScan = Scan(sValue, "(\"*\") & \"*\"")
+              sValue = "\"" & aScan[0] & aScan[1] & "\""
+            Endif
           Endif
 
           If Left$(sValue, 1) = Chr$(34) Then
@@ -399,6 +404,8 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           Else If UCase(sValue) = "NULL" Then
             vValue = Null
           Else If sValue Begins "Shortcut(" Then
+            
+            If InStr(sValue, "\\\"") Then Error "gambas3: "; File.Name(Path); ".form: "; sValue
             
             aScan = Scan(Mid$(sValue, 10), "(*),*)*")
             vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(aScan[1])))

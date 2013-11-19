@@ -4967,17 +4967,42 @@ End
 
 Public Sub CleanUp(Optional sDir As String = Project.Dir)
 
-  Dim iInd As Integer
-  Dim aClear As String[] = [".gambas", ".lock", ".xvpics", "*~", "*.pot", "*.gambas", "core", "core.*", "vgcore.*", ".kdbg*", ".*.prof"]
-  Dim sClear As String
+  Dim sFile As String
+  Dim aPattern As String[] = ["*.gambas", ".lock", "*~", "core", "core.*", "vgcore", "vgcore.*", ".kdbg*", ".*.prof"]
+  Dim sName As String
+  Dim sPattern As String
+  Dim aFail As New String[]
 
-  For iInd = 0 To aClear.Max
-    If iInd Then sClear &= " -o"
-    sClear &= " -name \"" & aClear[iInd] & "\""
+  Inc Application.Busy
+
+  For Each sFile In RDir(sDir)
+    
+    If IsDir(sDir &/ sFile) Then Continue
+    
+    sName = File.Name(sFile)
+    For Each sPattern In aPattern
+      If sName Like sPattern Then Goto DELETE_FILE
+    Next
+    
+    If sFile Begins ".gambas/" Then Goto DELETE_FILE
+    If sFile Begins ".lang/" And If sName Like "*.pot" Then Goto DELETE_FILE
+    
+    Continue
+    
+DELETE_FILE:
+
+    Try Kill sDir &/ sFile
+    If Error Then aFail.Add(sFile)
+    
   Next
 
-  Shell "cd " & Shell$(sDir) & "; rm -rf `find . " & sClear & "`" Wait
   If sDir = Project.Dir Then Project.Refresh
+  
+  Dec Application.Busy
+  
+  If aFail.Count Then
+    Message.Error(("The following files couldn't be removed:") & "<br><br><tt>" & aFail.Join("<br>") & "</tt>")
+  Endif
 
 End
 

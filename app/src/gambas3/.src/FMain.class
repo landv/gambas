@@ -392,12 +392,10 @@ Public Sub mnuPopup_Show()
     mnuCompressAll.Hide
     mnuUncompressAll.Hide
     
-    If bProject Then
-      If $sKey = Project.KEY_MISC Or If IsDir(sCurrent) Then
-        If MCompressFile.CanCompress(If($sKey = Project.KEY_MISC, Project.Dir, sCurrent)) Then
-          mnuCompressAll.Show
-          mnuUncompressAll.Show
-        Endif
+    If $sKey = Project.KEY_MISC Or If IsDir(sCurrent) And bProject Then
+      If MCompressFile.CanCompress(If($sKey = Project.KEY_MISC, Project.Dir, sCurrent)) Then
+        mnuCompressAll.Show
+        mnuUncompressAll.Show
       Endif
     Endif
     
