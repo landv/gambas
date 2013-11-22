@@ -205,7 +205,7 @@ CMD2MODEL *MD2MODEL_create(void)
 int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, float *scale, float *rotate)
 {
 	int i;
-	int n;
+	int n, n2;
 	double interp;
 	GLfloat v_curr[3], v_next[3], v[3], norm[3];
 	GLfloat *n_curr, *n_next;
@@ -223,11 +223,12 @@ int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, flo
 	n = (int)frame;
 	interp = frame - n;
 
-	if ((n < 0) || (n >= (THIS->num_frames - 1)))
-	{
-		n = 0;
-		interp = 0;
-	}
+	if (n < 0 || n >= THIS->num_frames)
+		return 0;
+
+	n2 = n + 1;
+	if (n2 >= THIS->num_frames)
+		n2 = 0;
 
 	enabled = glIsEnabled(GL_TEXTURE_2D);
   if (!enabled)
@@ -256,11 +257,15 @@ int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, flo
 	pglcmds = THIS->glcmds;
 
 	pframe1 = &THIS->frames[n];
-	pframe2 = &THIS->frames[n + 1];
+	pframe2 = &THIS->frames[n2];
+
+	//fprintf(stderr, "\n******** %p: n = %d / %d | %p %p\n", _object, n, THIS->num_frames, pframe1->verts, pframe2->verts);
 
 	// Draw the model
 	while ((i = *(pglcmds++)) != 0)
 	{
+		//fprintf(stderr, "i = %d\n", i);
+
 		if (i < 0)
 		{
 			glBegin(GL_TRIANGLE_FAN);
@@ -275,8 +280,13 @@ int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, flo
 		for (/* Nothing */ ; i > 0; --i, pglcmds += 3)
 		{
 			packet = (glcmd *)pglcmds;
+
+			//fprintf(stderr, "%d (%d) ", i, packet->index);
+
 			pvert1 = &pframe1->verts[packet->index];
 			pvert2 = &pframe2->verts[packet->index];
+			//if (!pvert1 || !pvert2)
+			//	continue;
 
 			// Pass texture coordinates to OpenGL
 			//glTexCoord2f (pGLcmd->s, 1.0f - pGLcmd->t);
@@ -309,6 +319,8 @@ int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, flo
 			nvert++;
 		}
 
+		//fprintf(stderr, "\n");
+
 		glEnd();
 	}
 #else
@@ -323,7 +335,7 @@ int MD2MODEL_draw(CMD2MODEL *_object, double frame, int texture, float *pos, flo
 			for (j = 0; j < 3; ++j)
 			{
 				pframe1 = &THIS->frames[n];
-				pframe2 = &THIS->frames[n + 1];
+				pframe2 = &THIS->frames[n2];
 				pvert1 = &pframe1->verts[THIS->triangles[i].vertex[j]];
 				pvert2 = &pframe2->verts[THIS->triangles[i].vertex[j]];
 

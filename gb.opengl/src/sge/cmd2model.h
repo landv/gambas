@@ -72,7 +72,7 @@ typedef float vec3[3];
 typedef
 struct md2_skin
 {
-  char name[64];
+  char name[68];
 }skinmd2;
 
 /* Texture coords */
