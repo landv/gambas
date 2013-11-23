@@ -336,11 +336,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	{
 		err = 0;
 
-		if (_need_field_type)
-		{
-			res->setNeedFieldType();
-			_need_field_type = FALSE;
-		}
+		res->setNeedFieldType(_need_field_type);
 
 		if (select)
 			success = res->query(query);
@@ -370,6 +366,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		res->close();
 
  	db->error = err;
+	_need_field_type = FALSE;
 	return err != 0;
 }
 

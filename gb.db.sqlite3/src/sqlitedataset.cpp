@@ -64,6 +64,7 @@
 #include "gambas.h"
 
 
+static bool _do_need_field_type = false;
 static bool _need_field_type = false;
 
 
@@ -93,6 +94,9 @@ static int my_sqlite3_exec(
 	int nCallback;
 
 	//fprintf(stderr, "my_sqlite3_exec: %s\n", zSql);
+
+	_do_need_field_type = _need_field_type;
+	_need_field_type = false;
 
 	if( zSql==0 ) return SQLITE_OK;
 	while( (rc==SQLITE_OK || (rc==SQLITE_SCHEMA && (++nRetry)<2)) && zSql[0] ){
@@ -179,8 +183,6 @@ exec_out:
 	if( pStmt ) sqlite3_finalize(pStmt);
 	if( azCols )
 		GB.Free(POINTER(&azCols));
-
-	_need_field_type = false;
 
 	//if( sqlite3_malloc_failed ){
 	//  rc = SQLITE_NOMEM;
@@ -272,7 +274,7 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 
 		for (int i = 0; i < ncol; i++)
 		{
-			if (_need_field_type)
+			if (_do_need_field_type)
 			{
 				type = sqlite3_column_decltype(stmt, i);
 				r->record_header[i].type = type ? GetFieldType(type, &r->record_header[i].field_len) : ft_String;
@@ -729,7 +731,7 @@ int SqliteDataset::exec(const string & sql)
 
 	for (retry = 1; retry <= 2; retry++)
 	{
-		res = sqlite3_exec(handle(), sql.c_str(), old_callback, &exec_res, NULL);
+		res = my_sqlite3_exec(handle(), sql.c_str(), callback, &exec_res, NULL);
 		if (res != SQLITE_SCHEMA)
 			break;
 	}
@@ -911,9 +913,9 @@ long SqliteDataset::nextid(const char *seq_name)
 		return DB_UNEXPECTED_RESULT;
 }
 
-void SqliteDataset::setNeedFieldType()
+void SqliteDataset::setNeedFieldType(bool need)
 {
-	_need_field_type = true;
+	_need_field_type = need;
 }
 
 /* Helper function */

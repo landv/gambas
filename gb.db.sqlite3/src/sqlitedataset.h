@@ -208,7 +208,7 @@ public:
 /* Go to record No (starting with 0) */
 	virtual bool seek(int pos = 0);
 
-	void setNeedFieldType();
+	void setNeedFieldType(bool need);
 };
 
 #endif
