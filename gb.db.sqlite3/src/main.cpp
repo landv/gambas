@@ -2337,6 +2337,10 @@ static int database_create(DB_DATABASE * db, const char *name)
 _CREATE_DATABASE:
 
 	conn2.setDatabase(fullpath);
+
+	if (DB.IsDebug())
+		fprintf(stderr, "sqlite3: create database: %s\n", fullpath);
+
 	GB.FreeString(&fullpath);
 
 	if (conn2.connect() != DB_CONNECTION_OK)

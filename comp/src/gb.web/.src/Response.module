@@ -83,6 +83,7 @@ Public Sub Begin()
   If $bBuffered Then
   
     $hFile = Open Temp$("response") For Create
+    $hFile.EndOfLine = File.Out.EndOfLine
     Output To #$hFile
     
   Else
@@ -125,14 +126,15 @@ Public Sub End()
 
   If $bBuffered Then
   
-    Close #$hFile
     Output To Default 
+    File.Out.EndOfLine = $hFile.EndOfLine
+    Close #$hFile
     
     sFile = Temp$("response")
     
     If ShouldCompress() Then
       If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
-        If Stat(sFile).Size >= 1024 Then
+        If Stat(sFile).Size >= 128 Then
           If CanUseCompression() Then
             AddHeader("Content-Encoding", "gzip")
             AddHeader("Vary", "Accept-Encoding")
