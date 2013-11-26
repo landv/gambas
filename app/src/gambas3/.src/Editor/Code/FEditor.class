@@ -315,6 +315,11 @@ Public Sub Delete()
   
   FSearch.OnFileChange(Me.Path)
   FDebugInfo.RefreshTabs(Me.Path, Me.Name)
+
+  $hBookmark = Null
+  $hCompletion = Null
+  $hInsertColor = Null
+
   Super.Delete
   
 End
@@ -1434,7 +1439,7 @@ End
 
 Public Sub Form_Hide()
 
-  $hCompletion.Hide
+  Try $hCompletion.Hide
   'Project.Deactivate(ME)
 
 End
@@ -3727,3 +3732,4 @@ Public Sub mnuBookmark_Show()
   $hBookmark.Update
   
 End
+

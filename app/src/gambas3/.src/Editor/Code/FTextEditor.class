@@ -55,6 +55,8 @@ Private $iLastLine As Integer
 
 Public Sub _new(sPath As String, Optional bModule As Boolean)
 
+  $iLastLine = -1
+
   Path = sPath
   Editor = edtEditor
   
@@ -1189,7 +1191,7 @@ End
 
 Public Sub Form_Hide()
 
-  $hCompletion.Hide
+  Try $hCompletion.Hide
 
 End
 
@@ -1331,4 +1333,13 @@ Public Sub GetKeywords() As String[]
   
   Return Highlight._GetKeywords(Editor.Highlight)
   
+End
+
+Public Sub Delete()
+
+  $hBookmark = Null
+  $hCompletion = Null
+  $hInsertColor = Null
+  Super.Delete
+
 End
