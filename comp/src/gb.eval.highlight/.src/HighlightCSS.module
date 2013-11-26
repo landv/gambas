@@ -1,14 +1,29 @@
 ' Gambas module file
 
 Private $cProp As New Collection
+Private $aKeywords As String[]
 
 Public Sub _init()
   
   Dim sProp As String
   
+  $aKeywords = New String[]
+  
   For Each sProp In Split(File.Load("css/properties"), ", \n", "", True)
     $cProp[sProp] = True
+    $aKeywords.Add(sProp)
   Next
+  
+  For Each sProp In Split(File.Load("css/values"), ", \n", "", True)
+    sProp = Trim(sProp)
+    $aKeywords.Add(sProp)
+  Next
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
   
 End
 

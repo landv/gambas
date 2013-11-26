@@ -35,7 +35,6 @@ Private $hSymbol As CSymbolInfo
 Private $bCheckSignature As Boolean
 Private $iArgSignature As Integer
 Private $iPosSignature As Integer
-Private $bCompletion As Boolean
 Private $bCleanOnSave As Boolean
 Private $bShowPopupHelp As Boolean
 
@@ -68,6 +67,7 @@ Private $iSamplePos As Integer
 
 Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
+Private $hCompletion As CCompletion
 
 Static Private $cLastClassCount As New Collection
 
@@ -105,15 +105,9 @@ Public Sub _new(sPath As String)
   'edtEditor.Flags[Editor.ShowCursorPosition] = True
   edtEditor.Highlight = Highlight.Gambas
 
-  $hInsertColor = New CInsertColor(btnInsertColor, Editor)
-  $hBookmark = New CBookmark(Editor, btnBookmark, mnuBookmark)
-
-  ' If Not frmCompletion Then
-  '   frmCompletion = New FCompletion(Me)
-  '   frmCompletion.Hide
-  '   frmSignature = New FSignature(Me)
-  '   frmSignature.Hide
-  ' Endif
+  $hInsertColor = New CInsertColor(Me, btnInsertColor)
+  $hBookmark = New CBookmark(Me, btnBookmark, mnuBookmark)
+  $hCompletion = New CCompletion(Me)
 
   ReadConfig
   Refresh
@@ -156,7 +150,7 @@ Public Sub ReadConfig()
   If $hEditor1 Then ReadConfigEditor($hEditor1)
   If $hEditor2 Then ReadConfigEditor($hEditor2)
 
-  $bCompletion = Settings["/Editor/Completion", True]
+  $hCompletion.ReadConfig
   $bCleanOnSave = Settings["/Editor/CleanOnSave", False]
 
   $bShowPopupHelp = Settings["/Editor/ShowPopupHelp", True]
@@ -391,7 +385,7 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean) As Boolean
 
     $iLastLine = Editor.Line
 
-    UpdateFunction
+    UpdateCurrentProc
     timProc.Stop
     timProc.Start
 
@@ -421,7 +415,7 @@ Public Sub Editors_Cursor()
 
   If RefreshLineInfo() Then
     HideMessage
-    HideCompletion
+    $hCompletion.Hide
     HideSignature
   Endif
 
@@ -438,10 +432,6 @@ Public Sub Form_GotFocus()
 End
 
 Public Sub Form_Deactivate()
-
-  'HideCompletion
-  'HideSignature
-  'mnuEditor.Enabled = False
 
 End
 
@@ -904,13 +894,11 @@ Public Sub Editors_KeyPress()
   Dim sClass As String
   Dim iOldCount As Integer
 
+  If $hCompletion.OnKeyPress() Then Return
+
   If Not Editor.ReadOnly Then
 
     iLine = Editor.Line
-
-    If FCompletion.VisibleFrom(Editor) Then
-      bStop = FCompletion.ManageKey()
-    Endif
 
     If FSignature.VisibleFrom(Editor) Then
       bStop = bStop Or FSignature.ManageKey()
@@ -959,39 +947,39 @@ Public Sub Editors_KeyPress()
 
   Else If Key.Control Then
 
-    If Key.Code = Key["A"] Then
+    ' If Key.Code = Key["A"] Then
+    ' 
+    '   mnuSelectAll_Click
+    '   Stop Event
 
-      mnuSelectAll_Click
-      Stop Event
+    ' Else If Key.Code = Key.Up Then
+    '
+    '   GotoPreviousProc
+    '   Stop Event
+    '
+    ' Else If Key.Code = Key.Down Then
+    '
+    '   GotoNextProc
+    '   Stop Event
 
-      ' Else If Key.Code = Key.Up Then
-      '
-      '   GotoPreviousProc
-      '   Stop Event
-      '
-      ' Else If Key.Code = Key.Down Then
-      '
-      '   GotoNextProc
-      '   Stop Event
-
-    Else If Key.Code = Key.Return Then
-
-      If Key.Shift Then
-        If Editor.Lines[Editor.Line].Expanded Then
-          Editor.CollapseAll
-        Else
-          Editor.ExpandAll
-        Endif
-      Else
-        Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
-      Endif
-      Stop Event
-      
+    ' Else If Key.Code = Key.Return Then
+    ' 
+    '   If Key.Shift Then
+    '     If Editor.Lines[Editor.Line].Expanded Then
+    '       Editor.CollapseAll
+    '     Else
+    '       Editor.ExpandAll
+    '     Endif
+    '   Else
+    '     Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
+    '   Endif
+    '   Stop Event
+    '   
     ' Else If Key.Code = Key["L"] Then
     '   
     '   FMain.SearchProject
     '   
-    Else If Key.Code = Key.F12 Then
+    If Key.Code = Key.F12 Then
       
       For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
         If InStr(sLine, "[heap]") Then
@@ -1101,28 +1089,11 @@ Public Sub Editors_KeyPress()
     
   Else If Key.Code = Key.Space Then
 
-    CheckCompletion(" ")
     $bCheckSignature = True
-
-  Else If Key.Code = Key.Backspace Then
-
-    CheckCompletion("<")
-
-  Else If Key.Text = "." Then
-
-    CheckCompletion(".")
-    
-  Else If Key.Text = "/" Then
-    
-    CheckCompletion("/")
 
   Else If InStr("(),[]", Key.Text) Then
 
     $bCheckSignature = True
-
-  Else If InStr(IDENT_CAR, Key.Text) Then
-
-    CheckCompletion("A")
 
   Else If Key.Code = Key.Tab Then
 
@@ -1131,7 +1102,7 @@ Public Sub Editors_KeyPress()
     Endif
 
   Endif
-
+  
 End
 
 Static Public Function IsCurrentProc() As Boolean
@@ -1431,7 +1402,7 @@ End
 
 Public Sub mnuUndo_Click()
 
-  HideCompletion
+  $hCompletion.Hide
   HideSignature
   Editor.Undo
 
@@ -1439,7 +1410,7 @@ End
 
 Public Sub mnuRedo_Click()
 
-  HideCompletion
+  $hCompletion.Hide
   HideSignature
   Editor.Redo
 
@@ -1463,7 +1434,7 @@ End
 
 Public Sub Form_Hide()
 
-  HideCompletion
+  $hCompletion.Hide
   'Project.Deactivate(ME)
 
 End
@@ -2026,7 +1997,7 @@ Private Sub GetRightString(sLine As String) As String
 End
 
 
-Private Sub CheckCompletion(sMode As String)
+Public Sub CheckCompletion(sMode As String)
 
   'DIM sMode AS String
   Dim sLine As String
@@ -2035,9 +2006,6 @@ Private Sub CheckCompletion(sMode As String)
   Dim aTypes As Integer[]
   Dim sWord As String
   Dim iPos As Integer
-
-  If Not $bCompletion Then Return
-  If Editor.Selected Then Return
 
   'IF Key.Code = Key.Backspace THEN
   '  IF FCompletion.IsMine(edtEditor) THEN
@@ -2057,7 +2025,7 @@ Private Sub CheckCompletion(sMode As String)
     If GetRightString(sLine) Then Return
     
     If UCase(Right$(sLine, 3)) = " AS" Or If UCase(Right$(sLine, 4)) = " NEW" Or If UCase(Right$(sLine, 3)) = " IS" Or If UCase(sLine) = "INHERITS" Then
-      HideCompletion
+      $hCompletion.Hide
       FCompletion.Open(Me, sMode)
     Endif
     
@@ -2131,7 +2099,7 @@ Private Sub CheckCompletion(sMode As String)
         
       Endif
       
-      HideCompletion
+      $hCompletion.Hide
         
     Endif
     
@@ -2142,15 +2110,9 @@ Private Sub CheckCompletion(sMode As String)
     
   Else
     
-    HideCompletion
+    $hCompletion.Hide
     
   Endif
-
-End
-
-Private Sub HideCompletion()
-
-  FCompletion.HideFrom(Editor)
 
 End
 
@@ -2288,7 +2250,7 @@ Private Sub CheckSignature(Optional sText As String)
   Dim hSymbol As CSymbolInfo
   Dim sKind As String
 
-  If Not $bCompletion Then Return
+  If Not $hCompletion.Enabled Then Return
 
   'sLig = Left$(edtEditor.GetPurgedLine(edtEditor.Line), edtEditor.Column) & sText
   sLig = String.Left$(Highlight.Purge(Editor.Lines[Editor.Line].Text), Editor.Column) & sText
@@ -2323,8 +2285,7 @@ End
 
 Public Sub Editors_Scroll()
 
-  'PRINT "Scroll"
-  HideCompletion
+  $hCompletion.Hide
   HideSignature
   HideMessage
 
@@ -2641,7 +2602,7 @@ Public Sub Editors_GotFocus()
   Dim hEditor As Editor = Last
 
   Editor = hEditor
-  $hInsertColor.SetEditor(Editor)
+  '$hInsertColor.SetEditor(Editor)
   Project.SetCurrentPopup(mnuEditor)
 
   If hEditor = $hEditor1 Or hEditor = $hEditor2 Then
@@ -2795,7 +2756,7 @@ Private Sub SetComboProcText(sProc As String)
 
 End
 
-Private Sub UpdateFunction()
+Private Sub UpdateCurrentProc()
 
   Dim iLine As Integer = GetCurrentProcLine(Editor.Line)
   Dim sProc As String = $sName
@@ -2805,21 +2766,7 @@ Private Sub UpdateFunction()
     iLine = 0
   Endif
 
-  'If Not $cProc.Exist(sProc) Then
-  '  $cProc[sProc] = iLine
-  '  $aProc.Add(sProc)
-  '  $aProc.Sort(gb.IgnoreCase)
-  'Endif
   SetComboProcText(sProc)
-
-  ' iIndex = cmbProc.Find(sProc)
-  ' If iIndex < 0 Then
-  '   cmbProc.Add(sProc)
-  '   iIndex = cmbProc.Find(sProc)
-  ' Endif
-  ' Object.Lock(cmbProc)
-  ' cmbProc.Index = iIndex
-  ' Object.Unlock(cmbProc)
 
 End
 
@@ -3005,7 +2952,7 @@ End
 
 Private Sub SetViewMode(iViewMode As Integer)
 
-  If $iViewMode = iViewMode Then Return
+  If $iViewMode = iViewMode Then iViewMode = VIEWMODE_NORMAL
   $iViewMode = iViewMode
 
   If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then

@@ -49,3 +49,27 @@ Static Public Sub _DoSQL()
   HighlightSQL.Run
   
 End
+
+Static Public Sub _GetKeywords(Style As Integer) As String[]
+  
+  Dim aKeywords As String[]
+  
+  Select Case Style
+    
+    Case Highlight.C
+      aKeywords = HighlightC.GetKeywords()
+      
+    Case Highlight.CPlusPlus
+      aKeywords = HighlightCPlusPlus.GetKeywords()
+      
+    Case Highlight.CSS
+      aKeywords = HighlightCSS.GetKeywords()
+      
+    Case Highlight.JavaScript
+      aKeywords = HighlightJavascript.GetKeywords()
+    
+  End Select
+  
+  Return aKeywords
+  
+End

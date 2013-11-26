@@ -2078,6 +2078,10 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 				cursorPageUp(shift, alt); return;
 			case Qt::Key_Next:
 				cursorPageDown(shift, alt); return;
+			case Qt::Key_Return:
+				if (ctrl)
+					expand(shift);
+				return;
 		}
 
 		if (!ctrl)
@@ -2123,8 +2127,13 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 			case Qt::Key_Down:
 				cursorDown(shift, ctrl, alt); return;
 			case Qt::Key_Enter: 
-			case Qt::Key_Return:
 				newLine(); return;
+			case Qt::Key_Return:
+				if (ctrl)
+					expand(shift);
+				else
+					newLine();
+				return;
 			case Qt::Key_Home:
 				cursorHome(shift, ctrl, alt); return;
 			case Qt::Key_End:
@@ -3289,4 +3298,26 @@ void GEditor::setLineOffset(int l)
 {
 	_firstLineNumber = l;
 	update();
+}
+
+void GEditor::expand(bool shift)
+{
+	bool e;
+
+	e = isFolded(y);
+
+	if (shift)
+	{
+		if (e)
+			unfoldAll();
+		else
+			foldAll();
+	}
+	else
+	{
+		if (e)
+			unfoldLine(y);
+		else
+			foldLine(y);
+	}
 }

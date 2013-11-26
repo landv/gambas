@@ -239,6 +239,7 @@ public:
 	void selectAll();
 	void movePreviousSameIndent(bool shift);
 	void moveNextSameIndent(bool shift);
+	void expand(bool shift);
 	
 	bool getInsertMode() const { return _insertMode; }
 	void setInsertMode(bool mode);

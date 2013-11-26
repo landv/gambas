@@ -64,7 +64,7 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
   If $sClass Then
     
     'cSymbol = CComponent.GetClassSymbols($sClass)
-    hSymbol = $hModule.Scan[sName]
+    Try hSymbol = $hModule.Scan[sName]
 
     If hSymbol Then
       If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True

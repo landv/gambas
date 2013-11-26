@@ -6,18 +6,23 @@ Private Const DIGIT_CAR As String = "0123456789.+-eE"
 Private $cKeyword As New Collection
 Private $cOperator As New Collection
 Private $cType As New Collection
+Private $aKeywords As String[]
 
 Public Sub _init()
   
   Dim sStr As String
   
+  $aKeywords = New String[]
+  
   For Each sStr In ["auto", "break", "case", "const", "continue", "default", "do", "else", "enum", "extern", "for",
     "goto", "if", "register", "return", "sizeof", "static", "struct", "switch", "typedef", "union", "volatile", "while"]
     $cKeyword[sStr] = 0
+    $aKeywords.Add(sStr)
   Next
 
   For Each sStr In ["FALSE", "NULL" "TRUE"]
     $cKeyword[sStr] = 1
+    $aKeywords.Add(sStr)
   Next
 
   For Each sStr In ["{", "}", ".", ">=", "+", "<<", "!", "=", ">>=", ";", "==", "-", ">>", "~", "+=", "(", ",", "!=", "*", "&&", "-=", "&=", ")", "<", "%", "&", "||", "*=", "|=", "[", ">", "++", "|", "?", "%=", "^=",
@@ -27,7 +32,14 @@ Public Sub _init()
   
   For Each sStr In ["void", "signed", "unsigned", "char", "short", "int", "long", "float", "double", "int64_t", "uint64_t", "int32_t", "uint32_t", "int16_t", "uint16_t", "int8_t", "uint8_t"]
     $cType[sStr] = True
+    $aKeywords.Add(sStr)
   Next
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
   
 End
 

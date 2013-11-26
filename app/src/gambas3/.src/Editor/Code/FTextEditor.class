@@ -45,11 +45,13 @@ Private $hEditor1 As Editor
 Private $hEditor2 As Editor
 Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
+Private $hCompletion As CCompletion
 
 Private $cProc As Collection
 Private $aProc As String[]
 
 Private $bWebPage As Boolean
+Private $iLastLine As Integer
 
 Public Sub _new(sPath As String, Optional bModule As Boolean)
 
@@ -106,8 +108,9 @@ Public Sub LoadFile() As Boolean
     $bNoHighlight = True
   Endif
 
-  $hInsertColor = New CInsertColor(btnInsertColor, Editor)
-  $hBookmark = New CBookmark(Editor, btnBookmark, mnuBookmark)
+  $hInsertColor = New CInsertColor(Me, btnInsertColor)
+  $hBookmark = New CBookmark(Me, btnBookmark, mnuBookmark)
+  $hCompletion = New CCompletion(Me)
 
   ReadConfig
 
@@ -151,6 +154,7 @@ Public Sub ReadConfig()
   edtEditor.ReadConfig
   If $hEditor1 Then $hEditor1.ReadConfig
   If $hEditor2 Then $hEditor2.ReadConfig
+  $hCompletion.ReadConfig
 
 End
 
@@ -290,6 +294,8 @@ End
 
 Public Sub Editors_KeyPress()
   
+  If $hCompletion.OnKeyPress() Then Return
+
   If Key.Code = Key.Escape Then 
     
     Action["find"].Value = False
@@ -394,7 +400,6 @@ End
 Public Sub Editors_GotFocus()
   
   Editor = Last 
-  $hInsertColor.SetEditor(Editor)
   Project.SetCurrentPopup(mnuEditor)
   
 End
@@ -463,12 +468,14 @@ End
 
 Public Sub mnuUndo_Click()
 
+  $hCompletion.Hide
   Editor.Undo
 
 End
 
 Public Sub mnuRedo_Click()
 
+  $hCompletion.Hide
   Editor.Redo
 
 End
@@ -567,8 +574,8 @@ End
 
 Public Sub Form_Activate()
 
+  RefreshLineInfo(True)
   Project.SetCurrentPopup(mnuEditor)
-  'Editor.SetFocus
 
 End
 
@@ -640,7 +647,7 @@ End
 
 Private Sub SetViewMode(iViewMode As Integer)
   
-  If $iViewMode = iViewMode Then Return 
+  If $iViewMode = iViewMode Then iViewMode = VIEWMODE_NORMAL 
   $iViewMode = iViewMode
 
   If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then 
@@ -752,7 +759,7 @@ Private Sub SetText(sText As String)
   
   Editor.Text = sText
   Me.Save
-  RefreshCurrentProc
+  UpdateCurrentProc
   'Editor.Begin
   'Editor.SelectAll
   'Editor.Insert(sText)
@@ -853,11 +860,35 @@ Public Sub mnuUncompress_Click()
   
 End
 
+Private Sub RefreshLineInfo(Optional bForce As Boolean) As Boolean
+
+  Dim bNewLine As Boolean
+
+  If bForce Then
+    $iLastLine = -1
+  Endif
+
+  If Editor.Line <> $iLastLine Then
+
+    $iLastLine = Editor.Line
+
+    UpdateCurrentProc
+    bNewLine = True
+
+  Endif
+
+  lblInfo.Text = CStr(Editor.Column + 1) & " : " & CStr(Editor.Line + 1)
+  Return bNewLine
+
+End
+
 Public Sub Editors_Cursor()
 
-  RefreshCurrentProc
+  If RefreshLineInfo() Then
+    $hCompletion.Hide
+  Endif
+  
   CPosition.SaveCurrent
-  lblInfo.Text = CStr(Editor.Column + 1) & " : " & CStr(Editor.Line + 1)
 
 End
 
@@ -998,7 +1029,7 @@ Public Sub GetProcAt(iLine As Integer) As String
 
 End
 
-Private Sub RefreshCurrentProc()
+Private Sub UpdateCurrentProc()
 
   btnProc.Text = GetCurrentProc()
 
@@ -1154,4 +1185,150 @@ Public Sub btnUnindent_Click()
 
   Editor.Unindent
 
+End
+
+Public Sub Form_Hide()
+
+  $hCompletion.Hide
+
+End
+
+Public Sub Editors_Scroll()
+
+  $hCompletion.Hide
+
+End
+
+Private Sub GetRightString(sLine As String) As String
+
+  Dim I, iPos As Integer
+  Dim sCar As String
+  Dim bInside As Boolean
+  
+  For I = 1 To Len(sLine)
+    sCar = Mid$(sLine, I, 1)
+    If bInside Then
+      If sCar = "\\" Then
+        Inc I
+      Else If sCar = Chr$(34) Then
+        bInside = False
+      Endif
+    Else If sCar = Chr$(34) Then
+      bInside = True
+      iPos = I
+    Endif
+  Next
+  
+  If bInside Then Return Mid$(sLine, iPos + 1)
+  
+End
+
+Public Sub CheckCompletion(sMode As String)
+
+  Dim sLine As String
+  Dim sWord As String
+
+  sLine = String.Left$(Editor.Lines[Editor.Line].Text, Editor.Column)
+  '"If Right$(RTrim(sLine)) = "'" Then Return
+
+  ' If sMode = " " Then
+  '   
+  '   If GetRightString(sLine) Then Return
+  '   
+  '   If UCase(Right$(sLine, 3)) = " AS" Or If UCase(Right$(sLine, 4)) = " NEW" Or If UCase(Right$(sLine, 3)) = " IS" Or If UCase(sLine) = "INHERITS" Then
+  '     $hCompletion.Hide
+  '     FCompletion.Open(Me, sMode)
+  '   Endif
+  '   
+  ' Else If sMode = "." Then
+  '   
+  '   If GetRightString(sLine) Then Return
+  '   
+  '   Highlight.Analyze(sLine & ".")
+  '   aSymbols = Highlight.Symbols
+  '   aTypes = Highlight.Types
+  '   aSymbols.Remove(aSymbols.Count - 1)
+  '   aTypes.Remove(aTypes.Count - 1)
+  '   sType = GetExpressionType(aSymbols, aTypes, True)
+  '   If sType Then
+  '     'PRINT "Type: "; sType
+  '     FCompletion.Open(Me, sMode, sType, $bLastStatic, False) 'LCase(sType) = LCase(ME.Name))
+  '   Endif
+  '   
+  If sMode = "A" Then
+    
+    If GetRightString(sLine) Then Return
+    
+    If Not FCompletion.VisibleFrom(Editor) Then
+      sWord = FEditor.GetIdentifier(sLine & Key.Text, Editor.Column + 1)
+      If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
+      'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+    Endif
+    
+  ' Else If sMode = "_" Then
+  '   
+  '   If Not FCompletion.VisibleFrom(Editor) Then
+  '     sWord = GetIdentifier(sLine, Editor.Column)
+  '     If Len(sWord) >= 3 Then
+  '       FCompletion.Open(Me, "A", sWord & "_")
+  '     Endif
+  '     'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+  '   Endif
+  '   
+  Else If sMode = "<" Then
+    
+    If Not Editor.Selected And If Editor.Column >= 1 And If Not FCompletion.VisibleFrom(Editor) Then
+      
+      sLine = String.Left(sLine, -1)
+      sWord = GetRightString(sLine)
+      
+      If sWord Then
+        
+        If FCompletion.IsPath(sWord) Then
+          FCompletion.Open(Me, "/", sWord)
+          Return
+        Endif
+        
+      Else
+        
+        '$bCheckSignature = True
+        
+        sWord = FEditor.GetIdentifier(sLine, Editor.Column - 1)
+        ' If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
+        '   iPos = Editor.Column
+        '   Editor.Goto(Editor.Line, Editor.Column - String.Len(sWord) - 2)
+        '   CheckCompletion(".")
+        '   FCompletion.SetText(sWord)
+        '   Editor.Goto(Editor.Line, iPos)
+        '   Return
+        ' Endif
+        
+        If Len(sWord) >= 3 Then 
+          FCompletion.Open(Me, sMode, sWord)
+          Return
+        Endif
+        
+      Endif
+      
+      $hCompletion.Hide
+        
+    Endif
+    
+  Else If sMode = "/" Then
+    
+    sWord = GetRightString(sLine & "/")
+    If sWord Then FCompletion.Open(Me, "/", sWord)
+    
+  Else
+    
+    $hCompletion.Hide
+    
+  Endif
+
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return Highlight._GetKeywords(Editor.Highlight)
+  
 End

@@ -1,0 +1,87 @@
+' Gambas class file
+
+Property Read Enabled As Boolean
+
+Private $hModule As Object
+Private $bCompletion As Boolean
+
+Public Sub _new(hModule As Object)
+  
+  $hModule = hModule
+  
+End
+
+Private Sub GetEditor() As Editor
+  
+  Return $hModule.Editor
+  
+End
+
+
+Public Sub ReadConfig()
+  
+  $bCompletion = Settings["/Editor/Completion", True]
+  
+End
+
+Public Sub Hide()
+  
+  FCompletion.HideFrom(GetEditor())
+  
+End
+
+Private Sub CheckCompletion(sMode As String)
+  
+  If Not $bCompletion Then Return
+  If GetEditor().Selected Then Return
+  
+  $hModule.CheckCompletion(sMode)
+  
+End
+
+
+Public Sub OnKeyPress() As Boolean
+
+  Dim hEditor As Editor = GetEditor()
+  Dim bStop As Boolean
+  
+  If hEditor.ReadOnly Then Return
+
+  If FCompletion.VisibleFrom(hEditor) Then
+    bStop = FCompletion.ManageKey()
+  Endif
+
+  If bStop Then 
+    Stop Event
+    Return True
+  Endif
+
+  If Key.Code = Key.Space Then
+
+    CheckCompletion(" ")
+  
+  Else If Key.Code = Key.Backspace Then
+
+    CheckCompletion("<")
+
+  Else If Key.Text = "." Then
+
+    CheckCompletion(".")
+    
+  Else If Key.Text = "/" Then
+    
+    CheckCompletion("/")
+
+  Else If InStr(FEditor.IDENT_CAR, Key.Text) Then
+
+    CheckCompletion("A")
+
+  Endif  
+  
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $bCompletion
+
+End

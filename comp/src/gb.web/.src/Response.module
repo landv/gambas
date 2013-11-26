@@ -7,6 +7,7 @@ Class Compress
 Property Buffered As Boolean
 Property ContentType As String
 Property Status As String
+Property EndOfLine As Integer
 'Property LastModified As Date
 'Property Read Cache As _ResponseCache
 
@@ -301,3 +302,15 @@ End
 '   $dLastModified = Value
 ' 
 ' End
+
+Private Function EndOfLine_Read() As Integer
+
+  Return File.Out.EndOfLine
+
+End
+
+Private Sub EndOfLine_Write(Value As Integer)
+
+  File.Out.EndOfLine = Value
+
+End

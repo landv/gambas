@@ -1,14 +1,14 @@
 ' Gambas class file
 
-Private $hEditor As Editor
+Private $hModule As Object
 Private $hMenu As Menu
 Private $sName As String
 
-Public Sub _new(hEditor As Editor, hMenuButton As MenuButton, hMenu As Menu)
+Public Sub _new(hModule As Object, hMenuButton As MenuButton, hMenu As Menu)
   
-  $hEditor = hEditor
+  $hModule = hModule
   $hMenu = hMenu
-  $sName = Object.Parent(hEditor).Name
+  $sName = Object.Parent(GetEditor()).Name
   
   Object.Attach(hMenuButton, Me, "btnBookmark")
   
@@ -16,11 +16,18 @@ Public Sub _new(hEditor As Editor, hMenuButton As MenuButton, hMenu As Menu)
   
 End
 
+Private Sub GetEditor() As Editor
+
+  Return $hModule.Editor
+
+End
+
 Private Sub FillMenu(aBook As Integer[])
   
   Dim hMenu As Menu
   Dim iLine As Integer
   Dim sLine As String
+  Dim hEditor As Editor
   
   $hMenu.Children.Clear
   
@@ -50,9 +57,10 @@ Private Sub FillMenu(aBook As Integer[])
   
   If aBook Then
     hMenu = New Menu($hMenu)
+    hEditor = GetEditor()
     
     For Each iLine In aBook
-      Try sLine = $hEditor.Lines[iLine].Text
+      Try sLine = hEditor.Lines[iLine].Text
       If Error Then Continue
       
       hMenu = New Menu($hMenu) As "mnuGoto"
@@ -67,9 +75,11 @@ End
 Private Sub Clear()
   
   Dim iLine As Integer
+  Dim hEditor As Editor
   
-  For Each iLine In $hEditor.Bookmarks
-    $hEditor.Lines[iLine].Bookmark = False
+  hEditor = GetEditor()
+  For Each iLine In GetEditor().Bookmarks
+    hEditor.Lines[iLine].Bookmark = False
   Next
   
 End
@@ -78,12 +88,14 @@ Public Sub Load()
   
   Dim aBook As Integer[]
   Dim iLine As Integer
+  Dim hEditor As Editor
   
   aBook = Project.Config["Bookmarks/" &/ $sName]
   If aBook Then
     aBook.Sort
+    hEditor = GetEditor()    
     For Each iLine In aBook
-      Try $hEditor.Lines[iLine].Bookmark = True
+      Try hEditor.Lines[iLine].Bookmark = True
     Next
   Endif
   
@@ -93,7 +105,7 @@ End
 
 Private Sub Save()
   
-  Dim aBook As Integer[] = $hEditor.Bookmarks
+  Dim aBook As Integer[] = GetEditor().Bookmarks
   
   Project.Config["Bookmarks/" &/ $sName] = aBook
   FillMenu(aBook)
@@ -101,8 +113,11 @@ Private Sub Save()
 End
 
 Public Sub mnuAdd_Click()
+
+  Dim hEditor As Editor
   
-  $hEditor.Lines[$hEditor.Line].Bookmark = Not $hEditor.Lines[$hEditor.Line].Bookmark  
+  hEditor = GetEditor()
+  hEditor.Lines[hEditor.Line].Bookmark = Not hEditor.Lines[hEditor.Line].Bookmark  
   Save
   
 End
@@ -116,7 +131,7 @@ End
 
 Public Sub mnuGoto_Click()
   
-  $hEditor.Goto(Last.Tag, 0, True)
+  GetEditor().Goto(Last.Tag, 0, True)
   
 End
 
@@ -128,12 +143,13 @@ End
 
 Public Sub MovePrevious()
   
-  Dim iLine As Integer = $hEditor.Line
+  Dim hEditor As Editor = GetEditor()
+  Dim iLine As Integer = hEditor.Line
   
   While iLine > 0
     Dec iLine
-    If $hEditor.Lines[iLine].Bookmark Then
-      $hEditor.Goto(iLine, 0, True)
+    If hEditor.Lines[iLine].Bookmark Then
+      hEditor.Goto(iLine, 0, True)
       Return
     Endif
   Wend
@@ -142,12 +158,13 @@ End
 
 Public Sub MoveNext()
   
-  Dim iLine As Integer = $hEditor.Line
+  Dim hEditor As Editor = GetEditor()
+  Dim iLine As Integer = hEditor.Line
   
-  While iLine < ($hEditor.Lines.Count - 1)
+  While iLine < (hEditor.Lines.Count - 1)
     Inc iLine
-    If $hEditor.Lines[iLine].Bookmark Then
-      $hEditor.Goto(iLine, 0, True)
+    If hEditor.Lines[iLine].Bookmark Then
+      hEditor.Goto(iLine, 0, True)
       Return
     Endif
   Wend

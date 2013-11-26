@@ -25,7 +25,9 @@ Private $iMinW As Integer
 Private $iMinH As Integer
 Private $iMaxY As Integer
 
+Private $hForm As Object
 Private $hEditor As Editor
+Private $bGambas As Boolean
 
 Private $bHideLater As Boolean
 
@@ -45,14 +47,14 @@ End
 
 Private Function GetClass() As String
   
-  Dim hForm As FEditor
+  Dim hForm As Object
 
   hForm = $hEditor.Window
   Return hForm.Name
   
 End
 
-Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bPrivate As Boolean)
+Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Optional bStatic As Boolean, Optional bPrivate As Boolean)
 
   Dim iX As Integer
   Dim iY As Integer
@@ -64,8 +66,10 @@ Public Sub Open(hForm As FEditor, sMode As String, Optional sClass As String, Op
   If hForm.Editor <> $hEditor Then HideFrom($hEditor)
   $bHideLater = False
 
+  $hForm = hForm
   $hEditor = hForm.Editor
   Me.Font = $hEditor.font
+  $bGambas = hForm Is FEditor
 
   Inc Application.Busy
 
@@ -254,65 +258,69 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
   Dim aLib As String[]
   Dim iPos As Integer
 
-  CComponent.All["gb"].Load
+  If $bGambas Then
 
-  For Each sClass In Project.GetClasses()
-    If sClass Like sBegin & "*" Then aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
-    'TRY lvwComp.Add(sClass, sClass)
-  Next
-
-  aLib = Project.Components.Copy()
+    CComponent.All["gb"].Load
   
-  For Each sLib In Project.Libraries
-    aLib.Add(File.Name(sLib))
-  Next
+    For Each sClass In Project.GetClasses()
+      If sClass Like sBegin & "*" Then aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
+      'TRY lvwComp.Add(sClass, sClass)
+    Next
   
-  aLib.Add(CComponent.PROJECT_NAME, 0)
-  aLib.Add("gb", 0)
-
-  For Each sLib In aLib
+    aLib = Project.Components.Copy()
     
-    If sLib <> CComponent.PROJECT_NAME Then
-      If Not CComponent.All.Exist(sLib) Then Continue
-      CComponent.All[sLib].Load
-    Endif
-    
-    For Each sClass In CComponent.All[sLib].ClassList
-      
-      If IsLetter(Left$(sClass)) Then
-        If sClass Like sBegin & "*" Then 
-          
-          Do
-            iPos = aClass.Find(Replace(sClass, "[", "[[]") & " *", gb.Like)
-            If iPos < 0 Then Break
-            aClass.Remove(iPos)
-          Loop
-          
-          If CComponent.Classes[sClass].Properties Then
-            aClass.Add(sClass & " " & MHelp.TYPE_CONTROL)
-          Else
-            aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
-          Endif
-          
-        Endif 
-      Endif
-      
+    For Each sLib In Project.Libraries
+      aLib.Add(File.Name(sLib))
     Next
     
-  Next
-
+    aLib.Add(CComponent.PROJECT_NAME, 0)
+    aLib.Add("gb", 0)
+  
+    For Each sLib In aLib
+      
+      If sLib <> CComponent.PROJECT_NAME Then
+        If Not CComponent.All.Exist(sLib) Then Continue
+        CComponent.All[sLib].Load
+      Endif
+      
+      For Each sClass In CComponent.All[sLib].ClassList
+        
+        If IsLetter(Left$(sClass)) Then
+          If sClass Like sBegin & "*" Then 
+            
+            Do
+              iPos = aClass.Find(Replace(sClass, "[", "[[]") & " *", gb.Like)
+              If iPos < 0 Then Break
+              aClass.Remove(iPos)
+            Loop
+            
+            If CComponent.Classes[sClass].Properties Then
+              aClass.Add(sClass & " " & MHelp.TYPE_CONTROL)
+            Else
+              aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
+            Endif
+            
+          Endif 
+        Endif
+        
+      Next
+      
+    Next
+  
+  Endif
+  
   aClass.Sort(gb.IgnoreCase + gb.Natural)
 
   If Not $hClassPicture Then $hClassPicture = Project.MakeModuleIcon("class", 16).Picture
-
-  hPic[0] = Picture["img/logo/logo-16.png"]
-  hPic[1] = $hClassPicture
-  hPic[2] = Picture["img/symbol/control.png"]
-  hPic[3] = Picture["img/symbol/symbol.png"]
-  hPic[4] = Picture["img/symbol/event.png"]
-  hPic[5] = hPic[0]
-  hPic[6] = Picture["img/symbol/special.png"]
   
+    hPic[0] = Picture["img/logo/logo-16.png"]
+    hPic[1] = $hClassPicture
+    hPic[2] = Picture["img/symbol/control.png"]
+    hPic[3] = Picture["img/symbol/symbol.png"]
+    hPic[4] = Picture["img/symbol/event.png"]
+    hPic[5] = hPic[0]
+    hPic[6] = Picture["img/symbol/special.png"]
+    
   ClearRows
 
   For Each sClass In aClass
@@ -377,6 +385,8 @@ Private Sub GetEvents(sCtrl As String) As String[]
   Dim aLine As String[]
   Dim iPos As Integer
   Dim sPath As String
+  
+  If Not $bGambas Then Return
   
   sPath = Project.FindForm(GetClass())
   If Not sPath Then Return  
@@ -445,46 +455,61 @@ Private Sub FillWithIdent(sWord As String)
   Dim sOrg As String
   Dim iLine As Integer
   Dim sUCaseLine As String
+  Dim aKeywords As String[]
 
   ClearRows
 
   sOrg = sWord
   sWord = UCase(sWord)
   
-  For Each sCar In ["True", "False", "Null", "Last", "Me", "Super"]
-    If sCar Like sWord & "*" Then 
-      cKey[sCar] = True
-      aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
-    Endif
-  Next
+  If $bGambas Then
   
-  For Each sCar In $aNativeDatatypes
-    If sCar Like sWord & "*" Then 
-      cKey[Left(sCar, -2)] = True
-      aResult.Add(sCar)
-    Endif
-  Next
-
-  For Each sCar In System.Keywords
-    If sCar Like sWord & "*" Then 
-      If cKey.Exist(sCar) Then Continue
-      cKey[sCar] = True
-      If sCar = UCase(sCar) Then sCar &= " "
-      aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
-    Endif
-  Next
-
-  If Left(sWord) = "_" Then 
-    For Each sCar In $aSpecialMethods
+    For Each sCar In ["True", "False", "Null", "Last", "Me", "Super"]
       If sCar Like sWord & "*" Then 
         cKey[sCar] = True
-        aResult.Add(sCar & " " & MHelp.TYPE_SPECIAL)
+        aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
       Endif
-      'Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
+    Next
+    
+    For Each sCar In $aNativeDatatypes
+      If sCar Like sWord & "*" Then 
+        cKey[Left(sCar, -2)] = True
+        aResult.Add(sCar)
+      Endif
+    Next
+  
+    For Each sCar In System.Keywords
+      If sCar Like sWord & "*" Then 
+        If cKey.Exist(sCar) Then Continue
+        cKey[sCar] = True
+        If sCar = UCase(sCar) Then sCar &= " "
+        aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
+      Endif
+    Next
+
+    If Left(sWord) = "_" Then 
+      For Each sCar In $aSpecialMethods
+        If sCar Like sWord & "*" Then 
+          cKey[sCar] = True
+          aResult.Add(sCar & " " & MHelp.TYPE_SPECIAL)
+        Endif
+        'Try lvwComp.Add(CStr(MHelp.TYPE_SPECIAL) & sName, sName, hPict)
+      Next
+    Endif
+    
+  Endif
+  
+  Try aKeywords = $hForm.GetKeywords()
+  If aKeywords Then
+    For Each sCar In aKeywords
+      If sCar Like sWord & "*" Then 
+        If cKey.Exist(sCar) Then Continue
+        cKey[sCar] = True
+        If sCar = UCase(sCar) Then sCar &= " "
+        aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
+      Endif
     Next
   Endif
-  'sText = hEditor.Text
-  'IF InStr(sText, sWord, 1, gb.Text) THEN
   
   iLine = -1
   Do
@@ -518,20 +543,23 @@ Private Sub FillWithIdent(sWord As String)
   
   Loop 
 
-  cSymbol = CComponent.GetClassSymbols(GetClass())
-  If cSymbol Then
-    For Each hSymbol In cSymbol
-      If Not hSymbol.NotPublic Then Continue
-      sCar = hSymbol.Name
-      If Not (sCar Like sWord & "*") Then Continue
-      If cKey.Exist(sCar) Then Continue
-      aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
-      cKey[sCar] = True
-    Next
-  Endif
+  If $bGambas Then
+    
+    cSymbol = CComponent.GetClassSymbols(GetClass())
+    If cSymbol Then
+      For Each hSymbol In cSymbol
+        If Not hSymbol.NotPublic Then Continue
+        sCar = hSymbol.Name
+        If Not (sCar Like sWord & "*") Then Continue
+        If cKey.Exist(sCar) Then Continue
+        aResult.Add(sCar & " " & MHelp.TYPE_SYMBOL)
+        cKey[sCar] = True
+      Next
+    Endif
   
-  If Right(sWord) = "_" Then
-    AddEvents(aResult, Left(sOrg, -1))
+    If Right(sWord) = "_" Then
+      AddEvents(aResult, Left(sOrg, -1))
+    Endif
   Endif
 
   AddClassesAndFill(aResult, sWord)
@@ -708,7 +736,7 @@ Public Function ManageKey() As Boolean
           Return FindItem()
         Else If Key.Text = "[" And If Not $sText Then
           Me.Hide
-        Else If InStr("([.!", Key.Text) > 0 And If InStr(". A<", $sMode) Then
+        Else If $bGambas And If InStr("([.!", Key.Text) > 0 And If InStr(". A<", $sMode) Then
           InsertItem
         Else
           Me.Hide
@@ -802,7 +830,7 @@ End
 
 Public Sub gvwComp_KeyPress()
 
-  Dim hForm As FEditor
+  Dim hForm As Object
 
   'IF Key.Code = Key.Escape THEN ME.Hide
 
@@ -852,17 +880,20 @@ Public Sub timHelp_Timer()
   Dim sSymbol As String
   Dim iType As Integer
   Dim sClass As String
+  Dim hModule As FEditor
   
   timHelp.Stop
   
   If Not $hEditor Then Return
+  Try hModule = $hEditor.Window
+  If Not hModule Then Return
   
   Try sSymbol = gvwComp.Current.Text
   If sSymbol Then   
     iType = CInt(Left($aKey[gvwComp.Row]))
     sClass = $sClass
     If Not sClass Then sClass = $sEventClass
-    MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", $hEditor.Window)
+    MHelp.InitWebViewWith(webHelp, iType, sSymbol, sClass, "noimage", hModule)
   Endif
 
 End

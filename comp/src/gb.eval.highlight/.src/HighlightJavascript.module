@@ -5,18 +5,23 @@ Private Const DIGIT_CAR As String = "0123456789.+-eE"
 
 Private $cKeyword As New Collection
 Private $cOperator As New Collection
+Private $aKeywords As String[]
 
 Public Sub _init()
   
   Dim sStr As String
   
+  $aKeywords = New String[]
+  
   For Each sStr In ["break", "case", "catch", "const", "continue", "debugger", "default", "delete", "do", "else", "finally", "for",
     "function", "if", "in", "instanceof", "new", "return", "switch", "throw", "try", "typeof", "var", "void", "while", "with"]
     $cKeyword[sStr] = 0
+    $aKeywords.Add(sStr)
   Next
 
   For Each sStr In ["false", "null", "this", "true", "undefined"]
     $cKeyword[sStr] = 1
+    $aKeywords.Add(sStr)
   Next
 
   For Each sStr In ["{", "}", ".", ">=", "+", "<<", "!", "=", ">>=", ";", "==", "-", ">>", "~", "+=", ">>>=", "(", ",", "!=", "*", ">>>", "&&", "-=", "&=", ")", "<", "===", "%", "&", "||", "*=", "|=", "[", ">", "!==", "++", "|", "?", "%=", "^=",
@@ -25,6 +30,13 @@ Public Sub _init()
   Next
   
 End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
+  
+End
+
 
 
 Public Sub Run()

@@ -6,18 +6,18 @@
 'Public Const MODE_HTML As Integer = 1
 'Public Const MODE_C As Integer = 2
 
-Private $hEditor As Editor
+Private $hModule As Object
 Private $sPattern As String
 Private $aPattern As String[]
 Private $hMenu As Menu
 
-Public Sub _new(hMenuButton As MenuButton, hEditor As Editor)
+Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   
   Dim hMenu As Menu
   
-  $hEditor = hEditor
+  $hModule = hModule
   
-  Select Case $hEditor.Highlight
+  Select Case GetEditor().Highlight
     Case Highlight.Gambas
       $aPattern = ["&H", "#", "&"]
     Case Highlight.CSS, Highlight.WebPage, Highlight.HTML
@@ -37,6 +37,13 @@ Public Sub _new(hMenuButton As MenuButton, hEditor As Editor)
   
 End
 
+Private Sub GetEditor() As Editor
+  
+  Return $hModule.Editor
+  
+End
+
+
 Public Sub Menu_Show()
   
   Dim sText As String
@@ -48,7 +55,7 @@ Public Sub Menu_Show()
   Dim hImage As Image
   Dim iColor As Integer
   
-  sText = $hEditor.Text
+  sText = GetEditor().Text
   aColor = [$sPattern & "000000", $sPattern & "FFFFFF", $sPattern & "808080"]
   
   For Each sPattern In $aPattern
@@ -97,7 +104,7 @@ End
 
 Public Sub MenuColor_Click()
   
-  $hEditor.Insert(Last.Tag)
+  GetEditor().Insert(Last.Tag)
   
 End
 
@@ -105,7 +112,7 @@ Public Sub Button_Click()
   
   If FColorChooser.Run("", False, ("Insert color")) Then Return
   
-  $hEditor.Insert($sPattern & Hex$(FColorChooser.Value, 6))
+  GetEditor().Insert($sPattern & Hex$(FColorChooser.Value, 6))
   
 End
 
@@ -115,9 +122,3 @@ Public Sub Insert()
   
 End
 
-
-Public Sub SetEditor(hEditor As Editor)
-  
-  $hEditor = hEditor
-  
-End
