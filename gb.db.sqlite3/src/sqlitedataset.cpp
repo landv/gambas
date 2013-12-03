@@ -373,7 +373,7 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 				GB.FreeString(&table);
 		}
 
-		if (*last_table)
+		if (last_table && *last_table)
 			GB.FreeString(&last_table);
 
 		for (int i = 0; i < ncol; i++)
