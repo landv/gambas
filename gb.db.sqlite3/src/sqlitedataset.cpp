@@ -325,10 +325,12 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 	//Tables tables;
 	//Tables::iterator it;
 	char *item;
+	char *last_table;
 	char *table;
 	const char *type;
-	bool has_table = false;
+	bool need_table = false;
 
+	last_table = NULL;
 	result_set *r = (result_set *) res_ptr;	//dynamic_cast<result_set*>(res_ptr);
 	int sz = r->records.size();
 
@@ -343,11 +345,10 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 				fprintf(stderr, "--> %s\n", sqlite3_column_decltype(stmt, i));*/
 
 			item = strchr(cols[i], (int) '.');
-			if (!item)
-			{													/* Field does not include table info */
-				item = cols[i];
-				r->record_header[i].name = item;	//NG
-				table = NULL;
+			if (!item) // No table info in field name
+			{
+				table = (char *)"";
+				r->record_header[i].name = cols[i];
 				r->record_header[i].field_table = "";
 			}
 			else
@@ -355,38 +356,25 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 				table = GB.NewString(cols[i], strchr(cols[i], (int) '.') - cols[i]);
 				r->record_header[i].name = item + 1;
 				r->record_header[i].field_table = table;
-				has_table = true;
 			}
 
-			#if 0
-			if (!table)
+			if (!need_table)
 			{
-				/* Field does not contain table info,
-				* so let's default to string.  This
-				* has probably happened because aliases
-				* are being used */
-			}
-			else
-			{
-				/* Check Table Name and add to list */
-				bool TableRegistered = false;
-
-				for (it = tables.begin(); it != tables.end(); it++)
+				if (!last_table)
 				{
-					if (strcmp((*it).data(), table) == 0)
-						TableRegistered = true;
+					last_table = table;
+					table = NULL;
 				}
-				if (TableRegistered == false)
-				{
-					tables.push_back(table);
-				}
+				else if (strcmp(last_table, table))
+					need_table = true;
 			}
-			#endif
 
-			GB.FreeString(&table);		//from strdup
+			if (table && *table)
+				GB.FreeString(&table);
 		}
 
-		//SetFieldType(r, tables);		// Set all the field types
+		if (*last_table)
+			GB.FreeString(&last_table);
 
 		for (int i = 0; i < ncol; i++)
 		{
@@ -396,8 +384,8 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 				r->record_header[i].type = type ? GetFieldType(type, &r->record_header[i].field_len) : ft_String;
 			}
 
-			/* Should table name be included in field name */
-			if (has_table)
+			/* Should table name be included in field name (at least two different tables) */
+			if (need_table)
 				r->record_header[i].name = cols[i];
 		}
 	}
@@ -794,16 +782,18 @@ void SqliteDataset::make_deletion()
 
 void SqliteDataset::fill_fields()
 {
-	//cout <<"rr "<<result.records.size()<<"|" << frecno <<"\n";
 	if ((db == NULL) || (result.record_header.size() == 0)
 			|| (result.records.size() < (uint) frecno))
 		return;
+
 	if (fields_object->size() == 0)	// Filling columns name
+	{
 		for (uint i = 0; i < result.record_header.size(); i++)
 		{
 			(*fields_object)[i].props = result.record_header[i];
 			//(*edit_object)[i].props = result.record_header[i];
 		}
+	}
 
 	//Filling result
 	if (result.records.size() != 0)
