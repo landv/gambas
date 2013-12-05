@@ -31,6 +31,7 @@ End
 
 Public Sub Configure()
   
+  If Not Me.Key Then Error.Raise("The Key property must be defined")
   Action._ConfigureToolbar(Me)
   
 End

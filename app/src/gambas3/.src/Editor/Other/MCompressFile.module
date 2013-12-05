@@ -418,7 +418,9 @@ Public Sub Html(sText As String) As String
   Dim sString As String
   Dim iLen As Integer
   Dim bMarkup As Boolean
+  Dim iNewLine As Integer
   
+  iNewLine = 256
   iLen = Len(sText)
   sText = sText & "  "
   
@@ -463,6 +465,13 @@ Public Sub Html(sText As String) As String
       
       sCar = " "
       
+      If Not bMarkup And If Not sString Then
+        If Len(sRes) >= iNewLine Then
+          sCar = "\n"
+          iNewLine = (Len(sRes) + 255) And Not 255
+        Endif
+      Endif
+    
       'If InStr(IDENT_CAR_CSS, Right(sRes)) = 0 Then Continue
       'If InStr(IDENT_CAR_CSS, Right$(sCar2)) = 0 Then Continue
     Endif

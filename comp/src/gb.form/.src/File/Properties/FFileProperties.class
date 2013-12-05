@@ -148,7 +148,8 @@ Private Sub UpdateSize(Optional sDirSize As String)
 
   If sDirSize Then
     aDirSize = Split(sDirSize, " ")
-    $iSize = CLong(aDirSize[0])
+    Try $iSize = CLong(aDirSize[0])
+    If Error Then Return
     Try nFile = CInt(aDirSize[1])
     Try nDir = CInt(aDirSize[2])
   Endif
