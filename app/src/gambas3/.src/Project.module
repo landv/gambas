@@ -690,10 +690,10 @@ _INIT_AGAIN:
 
   ' The .lang/.pot file must not be on version control
   
-  If VersionControl.Enabled() Then 
+  If Localize And If VersionControl.Enabled() Then 
     sPath = Project.Dir &/ ".lang/.pot"
     sStatus = VersionControl.Status(sPath)
-    If sStatus And If Left(sStatus) <> "?" Then VersionControl.RemoveFile(sPath)
+    If sStatus And If Left(sStatus) <> "?" And If Left(sStatus) <> "D" Then VersionControl.RemoveFile(sPath)
   Endif 
 
   If Settings["/RestoreFiles", 1] Then LastOpenedFiles
