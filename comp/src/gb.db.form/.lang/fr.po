@@ -90,51 +90,15 @@ msgstr ""
 msgid "Data bound controls"
 msgstr ""
 
-#: BlobEditor.class:40
-msgid "Clear blob"
-msgstr "Effacer le blob"
-
-#: BlobEditor.class:45 FBlobEditor.class:113
-msgid "Load blob from file"
-msgstr "Charger le blob depuis un fichier"
-
-#: BlobEditor.class:50 FBlobEditor.class:98
-msgid "Save blob to file"
-msgstr "Enregistrer le blob dans un fichier"
-
-#: BlobEditor.class:87 FBlobEditor.class:122
-msgid "Unable to load file"
-msgstr "Impossible de charger le fichier"
-
-#: BlobEditor.class:103 FBlobEditor.class:107
-msgid "Unable to save file"
-msgstr "Impossible d'enregistrer le fichier"
-
-#: BlobEditor.class:109 FBlobEditor.class:128
-msgid "Cancel"
-msgstr "Annuler"
-
-#: BlobEditor.class:109 FBlobEditor.form:38
-msgid "Clear"
-msgstr "Effacer"
-
-#: BlobEditor.class:109 FBlobEditor.class:128
-msgid "Do you really want to clear blob?"
-msgstr "Désirez-vous vraiment effacer le blob ?"
-
-#: BlobEditor.class:114 FBlobEditor.class:136
-msgid "Unable to clear blob"
-msgstr "Impossible d'effacer le blob"
-
-#: DataControl.class:88 DataView.class:455
+#: DataControl.class:96 DataView.class:452
 msgid "True"
 msgstr "Vrai"
 
-#: DataControl.class:89 DataField.class:19 DataView.class:455
+#: DataControl.class:97 DataField.class:19 DataView.class:452
 msgid "False"
 msgstr "Faux"
 
-#: DataControl.class:90
+#: DataControl.class:98
 msgid "Unknown"
 msgstr "Inconnu"
 
@@ -146,21 +110,49 @@ msgstr "Valeur incorrecte."
 msgid "You must fill all mandatory fields."
 msgstr "Vous devez saisir tous les champs obligatoires."
 
-#: DataView.class:726
+#: DataView.class:723
 msgid "Unable to save value."
 msgstr "Impossible d'enregistrer la valeur."
 
-#: DataView.class:728
+#: DataView.class:725
 msgid "Incorrect value."
 msgstr "Valeur incorrecte."
 
-#: DataView.class:890
+#: DataView.class:887
 msgid "Unable to save record."
 msgstr "Impossible de sauver l'enregistrement."
 
-#: DataView.class:1054
+#: DataView.class:1051
 msgid "Unable to delete record."
 msgstr "Impossible de supprimer l'enregistrement."
+
+#: FBlobEditor.class:122
+msgid "Save blob to file"
+msgstr "Enregistrer le blob dans un fichier"
+
+#: FBlobEditor.class:131
+msgid "Unable to save file"
+msgstr "Impossible d'enregistrer le fichier"
+
+#: FBlobEditor.class:137
+msgid "Load blob from file"
+msgstr "Charger le blob depuis un fichier"
+
+#: FBlobEditor.class:146
+msgid "Unable to load file"
+msgstr "Impossible de charger le fichier"
+
+#: FBlobEditor.class:152
+msgid "Cancel"
+msgstr "Annuler"
+
+#: FBlobEditor.class:152
+msgid "Do you really want to clear blob?"
+msgstr "Désirez-vous vraiment effacer le blob ?"
+
+#: FBlobEditor.class:160
+msgid "Unable to clear blob"
+msgstr "Impossible d'effacer le blob"
 
 #: FBlobEditor.form:15
 msgid "Blob contents"
@@ -174,6 +166,10 @@ msgstr "Enregistrer..."
 msgid "Load..."
 msgstr "Charger..."
 
+#: FBlobEditor.form:38
+msgid "Clear"
+msgstr "Effacer"
+
 #: FBrowser.form:44
 msgid "New"
 msgstr "Nouveau"
@@ -182,7 +178,7 @@ msgstr "Nouveau"
 msgid "Save"
 msgstr "Enregistrer"
 
-#: FBrowser.form:56 FMain2.form:37 FMain3.form:20 FTest.form:29
+#: FBrowser.form:56 FMain2.form:40 FMain3.form:20 FTest.form:29
 msgid "Refresh"
 msgstr "Actualiser"
 
@@ -206,36 +202,40 @@ msgstr "Suivant"
 msgid "End"
 msgstr "Fin"
 
-#: FMain2.form:81
+#: FMain2.form:87
 msgid "Id"
 msgstr ""
 
-#: FMain2.form:86
+#: FMain2.form:92
 msgid "Color"
 msgstr ""
 
-#: FMain2.form:91
+#: FMain2.form:97
 msgid "First Name"
 msgstr ""
 
-#: FMain2.form:96
+#: FMain2.form:102
 msgid "Name"
 msgstr ""
 
-#: FMain2.form:101
+#: FMain2.form:107
 msgid "Birth"
 msgstr ""
 
-#: FMain2.form:106
+#: FMain2.form:112
 msgid "Active"
 msgstr ""
 
-#: FMain2.form:112
+#: FMain2.form:118
 msgid "Comment"
 msgstr ""
 
-#: FMain2.form:118
+#: FMain2.form:124
 msgid "Salary"
+msgstr ""
+
+#: FMain2.form:129
+msgid "Image"
 msgstr ""
 
 #: FMain3.form:25
@@ -274,3 +274,9 @@ msgstr ""
 msgid "Élément 7"
 msgstr ""
 
+#: FTest.form:55
+msgid "This guy is active"
+msgstr ""
+
+#~ msgid "Clear blob"
+#~ msgstr "Effacer le blob"

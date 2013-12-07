@@ -46,6 +46,8 @@ Public Sub Update()
   hInfo = hSource._GetInfo($sKey)
   If hInfo.Type <> db.Boolean Then Error.Raise(Subst("'&1' field is not a boolean", $sKey))
 
+  $hCtrl.Tristate = IsNull(hInfo.Default)
+
   $vVal = hSource[$sKey]
   SetValue($vVal)
   
