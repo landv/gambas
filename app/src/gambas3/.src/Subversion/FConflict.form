@@ -2,133 +2,124 @@
 
 { Form Form
   MoveScaled(0,0,102,74)
+  Text = ("Version conflict")
   Icon = Picture["icon:/small/warning"]
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Padding = 8
+  { mnuOpen Menu
+    Text = ("mnuOpen")
+    Visible = False
+  }
   { panConflict VBox
-    MoveScaled(0,1,86,52)
+    MoveScaled(1,10,86,52)
     Expand = True
     Spacing = True
-    { HBox4 HBox
-      MoveScaled(3,2,63,4)
-      { btnOpen ToolButton
-        MoveScaled(0,0,4,4)
-        ToolTip = ("Open")
-        Picture = Picture["icon:/small/open"]
-      }
-      { btnCut ToolButton
-        MoveScaled(4,0,4,4)
-        ToolTip = ("Cut")
-        Picture = Picture["icon:/small/cut"]
-      }
-      { btnCopy ToolButton
-        MoveScaled(8,0,4,4)
-        ToolTip = ("Copy")
-        Picture = Picture["icon:/small/copy"]
-      }
-      { btnPaste ToolButton
-        MoveScaled(12,0,4,4)
-        ToolTip = ("Paste")
-        Picture = Picture["icon:/small/paste"]
-      }
-      { btnUndo ToolButton
-        MoveScaled(16,0,4,4)
-        ToolTip = ("Undo")
-        Picture = Picture["icon:/small/undo"]
-      }
-      { btnRedo ToolButton
-        MoveScaled(20,0,4,4)
-        ToolTip = ("Redo")
-        Picture = Picture["icon:/small/redo"]
-      }
-      { btnIndent ToolButton
-        MoveScaled(24,0,4,4)
-        ToolTip = ("Indent")
-        Picture = Picture["icon:/small/indent"]
-      }
-      { btnUnindent ToolButton
-        MoveScaled(28,0,4,4)
-        ToolTip = ("Unindent")
-        Picture = Picture["icon:/small/unindent"]
-      }
-      { Panel2 Panel
-        MoveScaled(32,0,4,4)
-        Expand = True
-      }
-      { lblCursor Label
-        MoveScaled(55,0,5,4)
-        Font = Font["Bold"]
-        AutoResize = True
+    { fprInfo FileProperties
+      MoveScaled(2,2,54,21)
+      Expand = True
+      Border = False
+    }
+    { panImage Panel
+      MoveScaled(58,6,25,15)
+      Visible = False
+      Arrangement = Arrange.Fill
+      { imvImage ImageView
+        MoveScaled(4,2,16,10)
       }
     }
-    { tabConflict TabStrip
-      MoveScaled(3,7,79,41)
-      Expand = True
-      Arrangement = Arrange.Fill
-      Padding = 8
-      Count = 3
-      Index = 0
-      Text = ("Text")
+    { panEditor Panel
+      MoveScaled(4,25,71,24)
+      Visible = False
+      Arrangement = Arrange.Vertical
+      { HBox4 HBox
+        MoveScaled(4,2,63,4)
+        { btnCut ToolButton
+          MoveScaled(4,0,4,4)
+          ToolTip = ("Cut")
+          Picture = Picture["icon:/small/cut"]
+        }
+        { btnCopy ToolButton
+          MoveScaled(8,0,4,4)
+          ToolTip = ("Copy")
+          Picture = Picture["icon:/small/copy"]
+        }
+        { btnPaste ToolButton
+          MoveScaled(12,0,4,4)
+          ToolTip = ("Paste")
+          Picture = Picture["icon:/small/paste"]
+        }
+        { btnUndo ToolButton
+          MoveScaled(16,0,4,4)
+          ToolTip = ("Undo")
+          Picture = Picture["icon:/small/undo"]
+        }
+        { btnRedo ToolButton
+          MoveScaled(20,0,4,4)
+          ToolTip = ("Redo")
+          Picture = Picture["icon:/small/redo"]
+        }
+        { btnIndent ToolButton
+          MoveScaled(24,0,4,4)
+          ToolTip = ("Indent")
+          Picture = Picture["icon:/small/indent"]
+        }
+        { btnUnindent ToolButton
+          MoveScaled(28,0,4,4)
+          ToolTip = ("Unindent")
+          Picture = Picture["icon:/small/unindent"]
+        }
+        { Panel2 Panel
+          MoveScaled(32,0,4,4)
+          Expand = True
+        }
+        { lblCursor Label
+          MoveScaled(50,0,10,4)
+          Font = Font["+2"]
+          Padding = 4
+          AutoResize = True
+        }
+      }
+      { Separator1 Separator
+        MoveScaled(29,7,20,0)
+      }
       { edtConflict Editor
-        MoveScaled(2,3,23,26)
+        MoveScaled(4,10,17,12)
         Expand = True
+        Border = False
         Highlight = Highlight.Custom
       }
-      Index = 1
-      Text = ("Image")
-      { picFile PictureBox
-        MoveScaled(1,1,19,22)
-        Background = Color.TextBackground
-        Expand = True
-        Border = Border.Sunken
-      }
-      Index = 2
-      Text = ("Details")
-      { panInfo VBox
-        MoveScaled(1,1,76,35)
-        { Label1 Label
-          MoveScaled(1,1,33,4)
-          Font = Font["Bold"]
-          AutoResize = True
-          Text = ("Resolve conflict with")
-        }
-        { lblPath Label
-          MoveScaled(2,5,53,4)
-          Font = Font["+2"]
-          Border = Border.Sunken
-        }
-        { Panel3 Panel
-          MoveScaled(11,10,4,3)
-        }
-        { Label2 Label
-          MoveScaled(2,12,23,4)
-          Font = Font["Bold"]
-          Text = ("Information")
-        }
-      }
-      Index = 0
+    }
+    { lblPath Label
+      MoveScaled(44,2,12,4)
+      Ignore = True
     }
   }
   { panButton HBox
-    MoveScaled(1,57,56,4)
+    MoveScaled(1,64,96,6)
     Spacing = True
-    { Panel1 Panel
-      MoveScaled(1,0,3,3)
-      Expand = True
+    Margin = True
+    { btnOpen MenuButton
+      MoveScaled(0,0,15,4)
+      ToolTip = ("Open")
+      AutoResize = True
+      Text = ("Open...")
+      Picture = Picture["icon:/small/open"]
     }
     { btnSave Button
-      MoveScaled(4,0,16,4)
+      MoveScaled(22,0,16,4)
       Text = ("&Save")
       Picture = Picture["icon:/small/save-as"]
     }
+    { Panel1 Panel
+      MoveScaled(48,0,3,3)
+      Expand = True
+    }
     { btnSolve Button
-      MoveScaled(21,0,16,4)
+      MoveScaled(59,0,16,4)
       Text = ("Sol&ve")
       Picture = Picture["icon:/small/apply"]
     }
     { btnClose Button
-      MoveScaled(38,0,16,4)
+      MoveScaled(76,0,16,4)
       Text = ("Close")
       Picture = Picture["icon:/small/close"]
       Cancel = True

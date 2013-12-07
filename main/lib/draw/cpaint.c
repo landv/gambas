@@ -157,6 +157,13 @@ bool PAINT_begin(void *device)
 		paint->extra = other->extra;
 		paint->opened = TRUE;
 		paint->other = TRUE;
+		paint->width = other->width;
+		paint->height = other->height;
+		paint->resolutionX = other->resolutionX;
+		paint->resolutionY = other->resolutionY;
+		paint->brush = other->brush;
+		if (paint->brush)
+			GB.Ref(paint->brush);
 	}
 	else
 	{
@@ -1453,8 +1460,6 @@ END_PROPERTY
 \
 	if (w < 1 || h < 1) \
 		return;
-	
-
 
 
 GB_DESC PaintDesc[] =

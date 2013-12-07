@@ -128,7 +128,7 @@ BEGIN_METHOD(CElement_appendFromText, GB_STRING data; GB_VALUE param[0])
 
 try
 {
-    if(GB.NParam > 0)
+    if(GB.NParam() > 0)
     {
         XMLNode_substAppendFromText(THIS, STRING(data), LENGTH(data), ARG(param[0]), GB.NParam());
     }
@@ -247,7 +247,14 @@ END_PROPERTY
 BEGIN_METHOD(CElement_fromText, GB_STRING data)
 
 GB_ARRAY array;
-GBparseXML(STRING(data), LENGTH(data), &array);
+try
+{
+    GBparseXML(STRING(data), LENGTH(data), &array);
+}
+catch(XMLParseException &e)
+{
+    GB.Error(e.what());
+}
 GB.ReturnObject(array);
 
 END_METHOD

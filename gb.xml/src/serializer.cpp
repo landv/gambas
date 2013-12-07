@@ -126,7 +126,7 @@ void addStringLen(Node *node, size_t &len, int indent)
         XMLTextNode_checkEscapedContent((TextNode*)node);
         // <!-- + content + -->
         len += ((TextNode*)node)->lenEscapedContent + 7;
-        if(indent > 0) len += indent + 1;
+        if(indent >= 0) len += indent + 1;
         break;
     case Node::CDATA:
 

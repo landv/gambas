@@ -49,6 +49,7 @@ extern "C"
 static char _buffer[32];
 
 static int _print_query = FALSE;
+static bool _need_field_type = FALSE;
 
 /*****************************************************************************
 
@@ -294,7 +295,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	va_list args;
 	int i;
 	const char *query;
-	Dataset *res = conn->CreateDataset();
+	SqliteDataset *res = (SqliteDataset *)conn->CreateDataset();
 	int err;
 	int retry = 0;
 	int max_retry;
@@ -334,7 +335,9 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	for(;;)
 	{
 		err = 0;
-		
+
+		res->setNeedFieldType(_need_field_type);
+
 		if (select)
 			success = res->query(query);
 		else
@@ -363,6 +366,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		res->close();
 
  	db->error = err;
+	_need_field_type = FALSE;
 	return err != 0;
 }
 
@@ -811,6 +815,7 @@ static void format_blob(DB_BLOB * blob, DB_FORMAT_CALLBACK add)
 
 static int exec_query(DB_DATABASE * db, const char *query, DB_RESULT * result, const char *err)
 {
+	_need_field_type = TRUE;
 	return do_query(db, err, (Dataset **) result, query, 0);
 }
 
@@ -2332,6 +2337,10 @@ static int database_create(DB_DATABASE * db, const char *name)
 _CREATE_DATABASE:
 
 	conn2.setDatabase(fullpath);
+
+	if (DB.IsDebug())
+		fprintf(stderr, "sqlite3: create database: %s\n", fullpath);
+
 	GB.FreeString(&fullpath);
 
 	if (conn2.connect() != DB_CONNECTION_OK)

@@ -47,7 +47,7 @@ Public Sub Refresh()
     If Not $sSvnVersion Then 
       Exec ["svn", "--version", "--quiet"] To $sSvnVersion
       $sSvnVersion = Trim($sSvnVersion)
-      $bSvn17 = $sSvnVersion Begins "1.7."
+      $bSvn17 = Comp($sSvnVersion, "1.7", gb.Natural) >= 0
     Endif
   
     If $bSvn17 Then
@@ -111,7 +111,7 @@ Private Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput A
     
     If $bEnd Then Break
     
-    If DateDiff($dOutput, Now, gb.Second) >= 10 Then
+    If DateDiff($dOutput, Now, gb.Second) >= 30 Then
       Close #hProcess
       hProcess.Kill
       Insert("** " & ("command timeout") & " **\n")
@@ -276,6 +276,8 @@ Private Sub UpdatePathFromStatus(sStatus As String)
 
     If Left(sStatus) = "D" Then
       Project.LockedPaths[sPath] = True
+    Else If Left(sStatus) = "C" Then
+      Project.ConflictPaths[sPath] = True
     Else If Left(sStatus) = "?" Then
       If Left(File.Name(sFile)) = "." Then Continue
       If sFile Begins ".lang/" Then Continue
@@ -310,6 +312,7 @@ Private Sub UpdatePath(aPath As String[])
       sCmd &= " " & Mid$(sPath, Len(Project.Dir) + 2)
       Project.LockedPaths.Remove(sPath)
       Project.AddedPaths.Remove(sPath)
+      Project.ConflictPaths.Remove(sPath)
     Next
 
     Shell sCmd To sStatus
@@ -326,6 +329,7 @@ Public Sub CheckPaths()
 
   Project.LockedPaths = New Collection
   Project.AddedPaths = New Collection
+  Project.ConflictPaths = New Collection
 
   If $bSVN Then
 
@@ -359,20 +363,26 @@ Public Sub MoveDir(sOld As String, sNew As String) As Boolean
 
 End
 
-Public Sub Status() As String
+Public Sub Status(Optional sPath As String) As String
 
   Dim sStatus As String
+  Dim sCmd As String
 
   If $bSVN Then
-    Shell "cd " & Shell$($sRealDir) & "; svn status -q" To sStatus
-    Return sStatus
+    sCmd = "cd " & Shell$($sRealDir) & "; svn status -q" 
+    If sPath Then sCmd &= " " & Shell$(sPath)
   Endif
 
   If $bCVS Then
-    Shell "cd " & Shell$($sRealDir) & "; cvs status" To sStatus
-    Return sStatus
+    sCmd = "cd " & Shell$($sRealDir) & "; cvs status" 
+    If sPath Then sCmd &= " " & Shell$(sPath)
   Endif
 
+  If sCmd Then
+    Shell sCmd To sStatus
+    Return sStatus
+  Endif
+  
 End
 
 Public Sub Commit(sChange As String) As Boolean
@@ -393,7 +403,7 @@ End
 Public Sub Update() As Boolean
 
   If $bSVN Then
-    Return Run(["svn", "update", SvnPath$($sRealDir)], True)
+    Return Run(["svn", "update", SvnPath$($sRealDir), "--accept", "postpone"], True)
   Endif
 
 End

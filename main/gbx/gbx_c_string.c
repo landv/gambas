@@ -717,6 +717,9 @@ static void string_search(const char *str, const char *ref, int len, const char 
 {
 	int pos;
 
+	if (lenp == 0)
+		goto __ERROR;
+
 	if (start)
 		start = index_to_byte(ref, str, len, start);
 

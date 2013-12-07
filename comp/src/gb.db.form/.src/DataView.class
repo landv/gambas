@@ -231,6 +231,7 @@ Private Sub Load()
   'Object.Lock($hCtrl)
   $bNoActivate = True
   $hCtrl.Rows.Count = $hTable.Count
+  $iRowNewRecord = -1
   '$hCtrl.Rows.H = GetDefaultRowHeight()
   $bNoActivate = False
   'Object.Unlock($hCtrl)
@@ -249,8 +250,7 @@ Private Sub Load()
     $hCtrl.Rows[$hCtrl.Row].Selected = True
   Endif
   
-  Try $hCtrl.Rows[$iRowNewRecord].Text = "" '$iRowNewRecord + 1
-  $iRowNewRecord = -1
+  'Try $hCtrl.Rows[$iRowNewRecord].Text = "" '$iRowNewRecord + 1
   If CanEdit() Then
     CreateNewRecord
     $bNoActivate = True
@@ -601,7 +601,7 @@ Public Sub TableView_Change()
 
   If $bNoActivate Then Return
   
-  If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Count - 1 Then 
+  If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Max Then 
     SetCreate(True)
   Else
     SetCreate(False)
@@ -785,7 +785,7 @@ Public Sub MoveNext()
     MoveFirst
     Return
   Endif
-  If $hCtrl.Row >= ($hCtrl.Rows.Count - 1) Then Return
+  If $hCtrl.Row >= $hCtrl.Rows.Max Then Return
   If $hCtrl.Row < 0 Then Return
   Inc $hCtrl.Row
   $hCtrl.Rows[$hCtrl.Row].Selected = True
@@ -816,7 +816,8 @@ Private Sub HasNewRecord() As Boolean
   
   If Not $bEditable Then Return
   If $hCtrl.Rows.Count = 0 Then Return
-  If $hCtrl.Rows[$hCtrl.Rows.Count - 1].Text <> NEW_RECORD Then Return
+  If $iRowNewRecord = -1 Then Return
+  'If $hCtrl.Rows[$hCtrl.Rows.Count - 1].Text <> NEW_RECORD Then Return
   Return True
   
 End
@@ -825,7 +826,7 @@ Private Sub InNewRecord() As Boolean
   
   If Not $bEditable Then Return
   If Not HasNewRecord() Then Return
-  Return $hCtrl.Row = ($hCtrl.Rows.Count - 1) 
+  Return $hCtrl.Row = $hCtrl.Rows.Max
   
 End
 
@@ -835,7 +836,7 @@ Private Sub ShowNewRecord()
     $bNoActivate = True
     Inc $hCtrl.Rows.Count
     $bNoActivate = False
-    $iRowNewRecord = $hCtrl.Rows.Count - 1
+    $iRowNewRecord = $hCtrl.Rows.Max
     $hCtrl.Rows[$iRowNewRecord].Text = NEW_RECORD
   Else
     $hCtrl.Refresh
@@ -936,13 +937,13 @@ Public Sub Create()
   If $hCtrl.Save() Then Goto _EDIT
   
   If InNewRecord() Then
-    $hCtrl.MoveTo($hCtrl.Rows.Count - 1, 0)
+    $hCtrl.MoveTo($hCtrl.Rows.Max, 0)
     If SaveNewRecord() Then Goto _EDIT
   Endif
     
   CreateNewRecord()
   SetCreate(False)
-  $hCtrl.MoveTo($hCtrl.Rows.Count - 1, 0)
+  $hCtrl.MoveTo($hCtrl.Rows.Max, 0)
   Try $hCtrl.Current.EnsureVisible
 
 _EDIT:
@@ -974,7 +975,11 @@ End
 
 Private Function Count_Read() As Integer
   
-  Return $hCtrl.Rows.Count
+  If HasNewRecord() Then
+    Return $hCtrl.Rows.Count - 1
+  Else
+    Return $hCtrl.Rows.Count
+  Endif
   
 End
 
@@ -1026,7 +1031,7 @@ Public Function Remove() As Boolean
       If Not hSrc Then Return
 
       aDelete = New Integer[]
-      For iRow = 0 To $hCtrl.Rows.Count - 1
+      For iRow = 0 To $hCtrl.Rows.Max
         If $hCtrl.Rows[iRow].Selected Then aDelete.Add(iRow)
       Next
       aDelete.Reverse

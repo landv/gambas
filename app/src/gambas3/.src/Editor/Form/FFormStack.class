@@ -87,7 +87,7 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
   Dec $bNoSelect
   tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
 
-  If hCtrl.Kind = "DataControl" Then Stop
+  'If hCtrl.Kind = "DataControl" Then Stop
 
   If Not hCtrl.IsContainer() Then Return
 

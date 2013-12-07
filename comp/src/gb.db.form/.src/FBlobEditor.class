@@ -68,16 +68,16 @@ Public Sub gvwPreview_MouseMove()
     Y = Mouse.Y
   Endif
   
-  iRow = gvwPreview.RowAt(Mouse.Y)
-  iCol = gvwPreview.ColumnAt(Mouse.X)
+  iRow = gvwPreview.RowAt(Y)
+  iCol = gvwPreview.ColumnAt(X)
   
   Select Case iCol
     Case 2
       iRow = iRow
-      iPos = (Mouse.X - gvwPreview.Columns[iCol].X) \ ($W * 3)
+      iPos = (X - gvwPreview.Columns[iCol].X) \ ($W * 3)
     Case 3
       iRow = iRow
-      iPos = (Mouse.X - gvwPreview.Columns[iCol].X) \ $W
+      iPos = (X - gvwPreview.Columns[iCol].X) \ $W
     Case Else
       iRow = -1
   End Select

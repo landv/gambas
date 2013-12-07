@@ -1,53 +1,53 @@
 /***************************************************************************
 
-  sqlitedataset.cpp
+	sqlitedataset.cpp
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
 /**********************************************************************
- * Copyright (c) 2002, Leo Seib, Hannover
- *
- * Project:SQLiteDataset C++ Dynamic Library
- * Module: SQLiteDataset class realisation file
- * Author: Leo Seib      E-Mail: lev@almaty.pointstrike.net
- * Begin: 5/04/2002
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- **********************************************************************/
+* Copyright (c) 2002, Leo Seib, Hannover
+*
+* Project:SQLiteDataset C++ Dynamic Library
+* Module: SQLiteDataset class realisation file
+* Author: Leo Seib      E-Mail: lev@almaty.pointstrike.net
+* Begin: 5/04/2002
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+*
+**********************************************************************/
 
 
 #include <stdio.h>
@@ -64,6 +64,9 @@
 #include "gambas.h"
 
 
+static bool _do_need_field_type = false;
+static bool _need_field_type = false;
+
 
 /**************************************************************/
 
@@ -72,33 +75,36 @@
 typedef
 	int (*my_sqlite3_callback)(void *, int, char **, char **, sqlite3_stmt *);
 
-
-static int my_sqlite3_exec(
+#if 0
+static int sqlite3_exec(
   sqlite3 *db,                /* The database on which the SQL executes */
   const char *zSql,           /* The SQL to be executed */
-  my_sqlite3_callback xCallback, /* Invoke this callback routine */
+  sqlite3_callback xCallback, /* Invoke this callback routine */
   void *pArg,                 /* First argument to xCallback() */
   char **pzErrMsg             /* Write error messages here */
-)
-{
-  int rc = SQLITE_OK;
-  const char *zLeftover;
-  sqlite3_stmt *pStmt = 0;
-  char **azCols = 0;
+){
+  int rc = SQLITE_OK;         /* Return code */
+  const char *zLeftover;      /* Tail of unprocessed SQL */
+  sqlite3_stmt *pStmt = 0;    /* The current SQL statement */
+  char **azCols = 0;          /* Names of result columns */
+  int callbackIsInit;         /* True if callback data is initialized */
 
-  int nRetry = 0;
-  //int nChange = 0;
-  int nCallback;
+	_do_need_field_type = _need_field_type;
+	_need_field_type = false;
 
+  //if( !sqlite3SafetyCheckOk(db) ) return SQLITE_MISUSE_BKPT;
   if( zSql==0 ) return SQLITE_OK;
-  while( (rc==SQLITE_OK || (rc==SQLITE_SCHEMA && (++nRetry)<2)) && zSql[0] ){
+
+  sqlite3_mutex_enter(db->mutex);
+  //sqlite3Error(db, SQLITE_OK, 0);
+  while( rc==SQLITE_OK && zSql[0] ){
     int nCol;
     char **azVals = 0;
 
     pStmt = 0;
-    rc = sqlite3_prepare(db, zSql, -1, &pStmt, &zLeftover);
+    rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
+    assert( rc==SQLITE_OK || pStmt==0 );
     if( rc!=SQLITE_OK ){
-      if( pStmt ) sqlite3_finalize(pStmt);
       continue;
     }
     if( !pStmt ){
@@ -107,20 +113,8 @@ static int my_sqlite3_exec(
       continue;
     }
 
-    //db->nChange += nChange;
-    nCallback = 0;
-
+    callbackIsInit = 0;
     nCol = sqlite3_column_count(pStmt);
-    if (nCol == 0)
-    	goto exec_out;
-
-    //azCols = sqliteMalloc(2*nCol*sizeof(const char *));
-  	GB.Alloc(POINTER(&azCols), 2*nCol*sizeof(const char *));
-
-    if( nCol && !azCols ){
-      rc = SQLITE_NOMEM;
-      goto exec_out;
-    }
 
     while( 1 ){
       int i;
@@ -128,25 +122,36 @@ static int my_sqlite3_exec(
 
       /* Invoke the callback function if required */
       if( xCallback && (SQLITE_ROW==rc ||
-          //(SQLITE_DONE==rc && !nCallback && db->flags&SQLITE_NullCallback)) ){
-          (SQLITE_DONE==rc && !nCallback && 1)) ){
-        if( 0==nCallback ){
+          (SQLITE_DONE==rc && !callbackIsInit
+                           && db->flags&SQLITE_NullCallback)) ){
+        if( !callbackIsInit ){
+          azCols = sqlite3DbMallocZero(db, 2*nCol*sizeof(const char*) + 1);
+          if( azCols==0 ){
+            goto exec_out;
+          }
           for(i=0; i<nCol; i++){
             azCols[i] = (char *)sqlite3_column_name(pStmt, i);
+            /* sqlite3VdbeSetColName() installs column names as UTF8
+            ** strings so there is no way for sqlite3_column_name() to fail. */
+            assert( azCols[i]!=0 );
           }
-          nCallback++;
+          callbackIsInit = 1;
         }
         if( rc==SQLITE_ROW ){
           azVals = &azCols[nCol];
           for(i=0; i<nCol; i++){
-          	if (sqlite3_column_type(pStmt, i) == SQLITE_BLOB)
-            	azVals[i] = (char *)sqlite3_column_blob(pStmt, i);
-						else
-            	azVals[i] = (char *)sqlite3_column_text(pStmt, i);
+            azVals[i] = (char *)sqlite3_column_text(pStmt, i);
+            if( !azVals[i] && sqlite3_column_type(pStmt, i)!=SQLITE_NULL ){
+              db->mallocFailed = 1;
+              goto exec_out;
+            }
           }
         }
-        if( xCallback(pArg, nCol, azVals, azCols, pStmt) ){
+        if( xCallback(pArg, nCol, azVals, azCols) ){
           rc = SQLITE_ABORT;
+          sqlite3_finalize(pStmt);
+          pStmt = 0;
+          sqlite3Error(db, SQLITE_ABORT, 0);
           goto exec_out;
         }
       }
@@ -154,33 +159,153 @@ static int my_sqlite3_exec(
       if( rc!=SQLITE_ROW ){
         rc = sqlite3_finalize(pStmt);
         pStmt = 0;
-        //if( db->pVdbe==0 ){
-        //  nChange = db->nChange;
-        //}
-        if( rc!=SQLITE_SCHEMA ){
-          nRetry = 0;
-          zSql = zLeftover;
-          while( isspace((unsigned char)zSql[0]) ) zSql++;
-        }
+        zSql = zLeftover;
+        while( sqlite3Isspace(zSql[0]) ) zSql++;
         break;
       }
     }
 
-    GB.Free(POINTER(&azCols));
+    sqlite3DbFree(db, azCols);
     azCols = 0;
   }
 
 exec_out:
   if( pStmt ) sqlite3_finalize(pStmt);
-  if( azCols )
-    GB.Free(POINTER(&azCols));
+  /*sqlite3DbFree(db, azCols);
 
-  //if( sqlite3_malloc_failed ){
-  //  rc = SQLITE_NOMEM;
-  //}
-  
+  rc = sqlite3ApiExit(db, rc);
+  if( rc!=SQLITE_OK && ALWAYS(rc==sqlite3_errcode(db)) && pzErrMsg ){
+    int nErrMsg = 1 + sqlite3Strlen30(sqlite3_errmsg(db));
+    *pzErrMsg = sqlite3Malloc(nErrMsg);
+    if( *pzErrMsg ){
+      memcpy(*pzErrMsg, sqlite3_errmsg(db), nErrMsg);
+    }else{
+      rc = SQLITE_NOMEM;
+      sqlite3Error(db, SQLITE_NOMEM, 0);
+    }
+  }else if( pzErrMsg ){
+    *pzErrMsg = 0;
+  }
+
+  assert( (rc&db->errMask)==rc );*/
+  sqlite3_mutex_leave(db->mutex);
+  return rc;
+}
+#endif
+
+static int my_sqlite3_exec(
+	sqlite3 *db,                /* The database on which the SQL executes */
+	const char *zSql,           /* The SQL to be executed */
+	my_sqlite3_callback xCallback, /* Invoke this callback routine */
+	void *pArg,                 /* First argument to xCallback() */
+	char **pzErrMsg             /* Write error messages here */
+)
+{
+	int rc = SQLITE_OK;
+	const char *zLeftover;
+	sqlite3_stmt *pStmt = 0;
+	char **azCols = 0;
+
+	int nRetry = 0;
+	//int nChange = 0;
+	int nCallback;
+
+	//fprintf(stderr, "my_sqlite3_exec: %s\n", zSql);
+
+	_do_need_field_type = _need_field_type;
+	_need_field_type = false;
+
+	if( zSql==0 ) return SQLITE_OK;
+	while( (rc==SQLITE_OK || (rc==SQLITE_SCHEMA && (++nRetry)<2)) && zSql[0] ){
+		int nCol;
+		char **azVals = 0;
+
+		pStmt = 0;
+		rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
+		if( rc!=SQLITE_OK ){
+			if( pStmt ) sqlite3_finalize(pStmt);
+			continue;
+		}
+		if( !pStmt ){
+			/* this happens for a comment or white-space */
+			zSql = zLeftover;
+			continue;
+		}
+
+		//db->nChange += nChange;
+		nCallback = 0;
+
+		nCol = sqlite3_column_count(pStmt);
+		if (nCol > 0)
+		{
+			GB.Alloc(POINTER(&azCols), 2*nCol*sizeof(const char *));
+			if (!azCols )
+			{
+				rc = SQLITE_NOMEM;
+				goto exec_out;
+			}
+		}
+
+		while( 1 ){
+			int i;
+			rc = sqlite3_step(pStmt);
+
+			/* Invoke the callback function if required */
+			if( xCallback && (SQLITE_ROW==rc ||
+					//(SQLITE_DONE==rc && !nCallback && db->flags&SQLITE_NullCallback)) ){
+					(SQLITE_DONE==rc && !nCallback && 1)) ){
+				if( 0==nCallback ){
+					for(i=0; i<nCol; i++){
+						azCols[i] = (char *)sqlite3_column_name(pStmt, i);
+					}
+					nCallback++;
+				}
+				if( rc==SQLITE_ROW ){
+					azVals = &azCols[nCol];
+					for(i=0; i<nCol; i++){
+						if (sqlite3_column_type(pStmt, i) == SQLITE_BLOB)
+							azVals[i] = (char *)sqlite3_column_blob(pStmt, i);
+						else
+							azVals[i] = (char *)sqlite3_column_text(pStmt, i);
+					}
+				}
+				if( xCallback(pArg, nCol, azVals, azCols, pStmt) ){
+					rc = SQLITE_ABORT;
+					goto exec_out;
+				}
+			}
+
+			if( rc!=SQLITE_ROW ){
+				rc = sqlite3_finalize(pStmt);
+				pStmt = 0;
+				//if( db->pVdbe==0 ){
+				//  nChange = db->nChange;
+				//}
+				if( rc!=SQLITE_SCHEMA ){
+					nRetry = 0;
+					zSql = zLeftover;
+					while( isspace((unsigned char)zSql[0]) ) zSql++;
+				}
+				break;
+			}
+		}
+
+		GB.Free(POINTER(&azCols));
+		azCols = 0;
+	}
+
+exec_out:
+
+	if( pStmt ) sqlite3_finalize(pStmt);
+	if( azCols )
+		GB.Free(POINTER(&azCols));
+
+	//if( sqlite3_malloc_failed ){
+	//  rc = SQLITE_NOMEM;
+	//}
+
 //   GB.Free(POINTER(pzErrMsg));
-//   
+//
 //   if( rc!=SQLITE_OK && rc==sqlite3_errcode(db) && pzErrMsg ){
 //     //*pzErrMsg = malloc(1+strlen(sqlite3_errmsg(db)));
 //   	GB.Alloc(POINTER(pzErrMsg), 1+strlen(sqlite3_errmsg(db)));
@@ -189,7 +314,7 @@ exec_out:
 //     }
 //   }
 
-  return rc;
+	return rc;
 }
 
 
@@ -197,84 +322,73 @@ exec_out:
 
 static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_stmt *stmt)
 {
-
-	/* NG: Type definition */
-//   typedef vector<string> Tables;
-	Tables tables;
-
-	Tables::iterator it;
-
+	//Tables tables;
+	//Tables::iterator it;
 	char *item;
+	char *last_table;
 	char *table;
+	const char *type;
+	bool need_table = false;
 
+	last_table = NULL;
 	result_set *r = (result_set *) res_ptr;	//dynamic_cast<result_set*>(res_ptr);
 	int sz = r->records.size();
 
 	//if (reslt == NULL ) cout << "EMPTY!!!\n";
 	if (!r->record_header.size())
 	{
-		 /*IF*/ for (int i = 0; i < ncol; i++)
+		for (int i = 0; i < ncol; i++)
 		{
+			/*fprintf(stderr, "%d: %s\n", i, cols[i]);
+
+			if (_need_field_type)
+				fprintf(stderr, "--> %s\n", sqlite3_column_decltype(stmt, i));*/
+
 			item = strchr(cols[i], (int) '.');
-			if (!item)
-			{													/* Field does not include table info */
-				item = cols[i];
-				r->record_header[i].name = item;	//NG
-				table = NULL;
+			if (!item) // No table info in field name
+			{
+				table = (char *)"";
+				r->record_header[i].name = cols[i];
 				r->record_header[i].field_table = "";
-				r->record_header[i].type = ft_String;	//default type to string
 			}
 			else
 			{
-				//table = strndup(cols[i], strchr(cols[i], (int)'.') - cols[i]);
 				table = GB.NewString(cols[i], strchr(cols[i], (int) '.') - cols[i]);
-//             table = strdup(reslt[0]);
 				r->record_header[i].name = item + 1;
 				r->record_header[i].field_table = table;
-				r->record_header[i].type = ft_String;	//default type to string
 			}
 
-			if (!table)
+			if (!need_table)
 			{
-				/* Field does not contain table info,
-				 * so let's default to string.  This
-				 * has probably happened because aliases
-				 * are being used */
+				if (!last_table)
+				{
+					last_table = table;
+					table = NULL;
+				}
+				else if (strcmp(last_table, table))
+					need_table = true;
 			}
-			else
-			{
-				/* Check Table Name and add to list */
-				bool TableRegistered = false;
 
-				for (it = tables.begin(); it != tables.end(); it++)
-				{
-					if (strcmp((*it).data(), table) == 0)
-						TableRegistered = true;
-				}
-				if (TableRegistered == false)
-				{
-					tables.push_back(table);
-				}
-			}
-			GB.FreeString(&table);		//from strdup
+			if (table && *table)
+				GB.FreeString(&table);
 		}
 
-		SetFieldType(r, tables);		// Set all the field types
+		if (last_table && *last_table)
+			GB.FreeString(&last_table);
 
 		for (int i = 0; i < ncol; i++)
 		{
-			/* Should table name be included in field name */
-			if (tables.size() > 1)
+			if (_do_need_field_type && stmt)
 			{
-				r->record_header[i].name = cols[i];
+				type = sqlite3_column_decltype(stmt, i);
+				r->record_header[i].type = type ? GetFieldType(type, &r->record_header[i].field_len) : ft_String;
 			}
 
-/*      if (tables.size() < 1){
-            r->record_header[i].type = ft_String;//Where type cannot be found
-	                                         //default to string
-      }*/
+			/* Should table name be included in field name (at least two different tables) */
+			if (need_table)
+				r->record_header[i].name = cols[i];
 		}
-	}															/* IF close */
+	}
 
 	//sql_record rec;
 
@@ -349,7 +463,7 @@ int SqliteDatabase::status(void)
 int SqliteDatabase::setErr(int err_code)
 {
 	last_err = err_code;
-	
+
 	switch (err_code)
 	{
 		case SQLITE_OK:
@@ -437,24 +551,24 @@ int SqliteDatabase::connect()
 
 		if (setErr
 				(sqlite3_exec
-				 (getHandle(), "PRAGMA empty_result_callbacks=ON", NULL, NULL,
+				(getHandle(), "PRAGMA empty_result_callbacks=ON", NULL, NULL,
 					NULL)) != SQLITE_OK)
 		{
 			GB.Error(getErrorMsg());
 		}
 		active = true;
 		/* NG 29/12/2005 - 3.2.1 introduced a problem with columns names
-		 * which is resolved by setting short columns off first */
+		* which is resolved by setting short columns off first */
 		if (setErr
 				(sqlite3_exec
-				 (getHandle(), "PRAGMA short_column_names=OFF", NULL, NULL,
+				(getHandle(), "PRAGMA short_column_names=OFF", NULL, NULL,
 					NULL)) != SQLITE_OK)
 		{														//NG
 			GB.Error(getErrorMsg());	//NG
 		}
 		if (setErr
 				(sqlite3_exec
-				 (getHandle(), "PRAGMA full_column_names=ON", NULL, NULL,
+				(getHandle(), "PRAGMA full_column_names=ON", NULL, NULL,
 					NULL)) != SQLITE_OK)
 		{														//NG
 			GB.Error(getErrorMsg());	//NG
@@ -501,7 +615,7 @@ long SqliteDatabase::nextid(const char *sname)
 					sequence_table.c_str(), sname);
 	res.conn = getHandle();				//NG
 	if ((last_err =
-			 my_sqlite3_exec(getHandle(), sqlcmd, &callback, &res, NULL)) != SQLITE_OK)
+			my_sqlite3_exec(getHandle(), sqlcmd, &callback, &res, NULL)) != SQLITE_OK)
 	{
 		return DB_UNEXPECTED_RESULT;
 	}
@@ -511,7 +625,7 @@ long SqliteDatabase::nextid(const char *sname)
 		sprintf(sqlcmd, "insert into %s (nextid,seq_name) values (%d,'%s')",
 						sequence_table.c_str(), id, sname);
 		if ((last_err =
-				 sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
+				sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
 			return DB_UNEXPECTED_RESULT;
 		return id;
 	}
@@ -521,7 +635,7 @@ long SqliteDatabase::nextid(const char *sname)
 		sprintf(sqlcmd, "update %s set nextid=%d where seq_name = '%s'",
 						sequence_table.c_str(), id, sname);
 		if ((last_err =
-				 sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
+				sqlite3_exec(conn, sqlcmd, NULL, NULL, NULL)) != SQLITE_OK)
 			return DB_UNEXPECTED_RESULT;
 		return id;
 	}
@@ -620,7 +734,7 @@ void SqliteDataset::make_query(StringList & _sql)
 			//cout << "Executing: "<<query<<"\n\n";
 			if (db->
 					setErr(sqlite3_exec
-								 (this->handle(), query.c_str(), NULL, NULL,
+								(this->handle(), query.c_str(), NULL, NULL,
 									NULL)) != SQLITE_OK)
 			{
 				GB.Error(db->getErrorMsg());
@@ -668,16 +782,18 @@ void SqliteDataset::make_deletion()
 
 void SqliteDataset::fill_fields()
 {
-	//cout <<"rr "<<result.records.size()<<"|" << frecno <<"\n";
 	if ((db == NULL) || (result.record_header.size() == 0)
 			|| (result.records.size() < (uint) frecno))
 		return;
+
 	if (fields_object->size() == 0)	// Filling columns name
+	{
 		for (uint i = 0; i < result.record_header.size(); i++)
 		{
 			(*fields_object)[i].props = result.record_header[i];
 			//(*edit_object)[i].props = result.record_header[i];
 		}
+	}
 
 	//Filling result
 	if (result.records.size() != 0)
@@ -691,7 +807,7 @@ void SqliteDataset::fill_fields()
 	else
 	{
 		field_value tmp;
-	
+
 		for (uint i = 0; i < result.record_header.size(); i++)
 		{
 			(*fields_object)[i].val = tmp;
@@ -721,7 +837,7 @@ int SqliteDataset::exec(const string & sql)
 
 	for (retry = 1; retry <= 2; retry++)
 	{
-		res = sqlite3_exec(handle(), sql.c_str(), old_callback, &exec_res, NULL);
+		res = my_sqlite3_exec(handle(), sql.c_str(), &callback, &exec_res, NULL);
 		if (res != SQLITE_SCHEMA)
 			break;
 	}
@@ -746,10 +862,8 @@ const void *SqliteDataset::getExecRes()
 
 bool SqliteDataset::query(const char *query)
 {
-
 	int res;
 	int retry;
-
 
 	//try{
 	if (db == NULL)
@@ -757,8 +871,8 @@ bool SqliteDataset::query(const char *query)
 	if (dynamic_cast < SqliteDatabase * >(db)->getHandle() == NULL)
 		GB.Error("No database connection");
 	if ((strncasecmp("select", query, 6) != 0)	/*&&
-																							   (strncasecmp("PRAGMA table",query,12) !=0) &&
-																							   (strncasecmp("PRAGMA index",query,12) !=0) */
+																								(strncasecmp("PRAGMA table",query,12) !=0) &&
+																								(strncasecmp("PRAGMA index",query,12) !=0) */
 		)
 		GB.Error("Syntax error in request: SELECT expected.");
 
@@ -905,6 +1019,11 @@ long SqliteDataset::nextid(const char *seq_name)
 		return DB_UNEXPECTED_RESULT;
 }
 
+void SqliteDataset::setNeedFieldType(bool need)
+{
+	_need_field_type = need;
+}
+
 /* Helper function */
 void SetFieldType(result_set * r, Tables tables)
 {
@@ -965,7 +1084,7 @@ fType GetFieldType(const char *Type, unsigned int *length)
 	upper = GB.NewZeroString(Type);
 	for (i = 0; i < GB.StringLength(upper); i++)
 		upper[i] = toupper(upper[i]);
-	
+
 	Type = upper;
 	if (!Type) Type = "";
 
@@ -977,8 +1096,8 @@ fType GetFieldType(const char *Type, unsigned int *length)
 		rType = ft_String;
 	}
 	else if (strstr(Type, "CHAR")	/* this is a 1-byte value */
-					 || strstr(Type, "TINYINT")
-					 || strstr(Type, "INT1") || strstr(Type, "BOOL"))
+					|| strstr(Type, "TINYINT")
+					|| strstr(Type, "INT1") || strstr(Type, "BOOL"))
 	{
 		rType = ft_Boolean;
 		/* Length is for when value is used as a string */
@@ -1003,7 +1122,7 @@ fType GetFieldType(const char *Type, unsigned int *length)
 		rTypeLen = ft_LongDouble_Length;
 	}
 	else if (strstr(Type, "INTEGER")
-					 || strstr(Type, "INT") || strstr(Type, "INT4"))
+					|| strstr(Type, "INT") || strstr(Type, "INT4"))
 	{
 		rType = ft_Long;
 		/* Length is for when value is used as a string */
@@ -1039,10 +1158,10 @@ fType GetFieldType(const char *Type, unsigned int *length)
 		rTypeLen = ft_Double_Length;
 	}
 	else if (strstr(Type, "REAL")	/* this is PostgreSQL "real", not
-																   MySQL "real" which is a
-																   synonym of "double" */
-					 || strstr(Type, "FLOAT")
-					 || strstr(Type, "FLOAT4"))
+																	MySQL "real" which is a
+																	synonym of "double" */
+					|| strstr(Type, "FLOAT")
+					|| strstr(Type, "FLOAT4"))
 	{
 		rType = ft_Float;
 		/* Length is for when value is used as a string */
@@ -1079,6 +1198,6 @@ fType GetFieldType(const char *Type, unsigned int *length)
 		*length = rTypeLen;
 
 	GB.FreeString(&upper);
-	
+
 	return rType;
 }

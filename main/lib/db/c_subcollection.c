@@ -73,11 +73,15 @@ static CSUBCOLLECTION *_current = NULL;
 
 static void clear_one(void *data)
 {
+	CSUBCOLLECTION *save = _current;
+
 	if (_current->desc->release)
 		(*_current->desc->release)(_current->container, data);
 
 	//fprintf(stderr, "clear: %p\n", data);
 	GB.Unref(&data);
+
+	_current = save;
 }
 
 static void clear_subcollection(CSUBCOLLECTION *_object)

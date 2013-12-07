@@ -455,16 +455,19 @@ const field_value & Dataset::get_field_value(const char *f_name)
 			for (uint i = 0; i < edit_object->size(); i++)
 				if ((*edit_object)[i].props.name == f_name)
 					return (*edit_object)[i].val;
-			GB.Error("Field not found: %s", f_name);
 		}
 		else
+		{
 			for (uint i = 0; i < fields_object->size(); i++)
 				if ((*fields_object)[i].props.name == f_name)
 					return (*fields_object)[i].val;
-		GB.Error("Field not found: %s", f_name);
-	}
+		}
 
-	GB.Error("Dataset state is Inactive");
+		GB.Error("Field not found: &1", f_name);
+	}
+	else
+		GB.Error("Dataset state is Inactive");
+
 	return fv;
 }
 

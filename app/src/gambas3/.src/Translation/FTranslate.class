@@ -1026,10 +1026,15 @@ End
 
 Private Sub ResizeTable()
 
+  Dim I As Integer
+  
+  cvwTranslate.AutoResize = False
   With cvwTranslate
     .Columns[0].Width = .ClientW \ 2
     .Columns[1].Width = .ClientW - .Columns[0].Width '- 16
-    .Columns[2].Width = 0 ' = TRUE
+    For I = 2 To .Columns.Max
+      .Columns[I].Width = 0
+    Next
   End With
 
 End

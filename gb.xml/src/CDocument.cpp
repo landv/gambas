@@ -103,8 +103,7 @@ BEGIN_METHOD(CDocument_tostring, GB_BOOLEAN indent)
 
     char *str = 0;
     size_t len = 0;
-
-    GBserializeNode((Node*)THIS, str, len, VARG(indent) ? 0 : -1);
+    GBserializeNode((Node*)THIS, str, len, VARG(indent) == -1 ? 0 : -1);
     
     GB.ReturnString(str);
 
@@ -214,7 +213,7 @@ GB_DESC CDocumentDesc[] =
     
     GB_METHOD("CreateElement", "XmlElement", CDocument_createElement, "(TagName)s"),
     GB_PROPERTY("Root", "XmlElement", CDocument_root),
-    GB_PROPERTY_READ("All", "XmlElement[]", CDocument_getAll),
+    GB_PROPERTY_READ("All", "XmlNode[]", CDocument_getAll),
     GB_METHOD("GetElementsByTagName", "XmlElement[]", CDocument_getElementsByTagName, "(TagName)s[(Mode)i(Depth)i]"),
     GB_METHOD("GetElementsByNamespace", "XmlElement[]", CDocument_getElementsByNamespace, "(Namespace)s[(Mode)i(Depth)i]"),
 
