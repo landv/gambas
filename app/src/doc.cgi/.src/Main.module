@@ -162,19 +162,18 @@ End
 Public Sub Main()
 
   Dim bPost As Boolean
-  Dim sErr As String
   Dim hComponent As CComponent
+  Dim sErr As String
 
   $eTime = Timer
-
-  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", 
-    "mk", "sq", "ca", "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", 
-    "ru", "zh", "zh_TW", "eo"]
 
   $sRoot = File.Dir(File.Dir(Application.Path)) 'Application.Env["DOCUMENT_ROOT"]
   If Not Exist($sRoot &/ ".htaccess") Then $sRoot = User.Home &/ "www/help"
 
   $sUser = Application.Env["REMOTE_USER"]
+
+  $aLang = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", 
+    "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
 
   OpenDatabase
 
