@@ -182,6 +182,7 @@ End
 Public Sub btnUpdate_Click()
 
   Dim bErr As Boolean
+  Dim hFile As Variant
 
   Inc Application.Busy
   GetAuthentication
@@ -196,6 +197,10 @@ Public Sub btnUpdate_Click()
   Endif
   
   RefreshStatus(True)
+  
+  For Each hFile In Project.Files
+    If Project.IsConflict(hFile.Path) Then Try hFile.Close
+  Next
     
 End
 

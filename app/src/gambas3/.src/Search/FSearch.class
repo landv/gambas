@@ -1003,6 +1003,8 @@ Public Sub Form_KeyPress()
     Else
       Me.Close
     Endif
+  Else If Key.Code = Key.F3 Then
+    btnNext.Value = True
   Endif
 
 End

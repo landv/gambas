@@ -117,8 +117,9 @@ Public DESKTOP_FONT As String
 
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
 
-Public Const FILTER_ADDED As String = " +"
+Public Const FILTER_ADDED As String = " A"
 Public Const FILTER_EXPORTED As String = " X"
+Public Const FILTER_CONFLICT As String = " C"
 
 Public Files As New Collection
 Public ExternFiles As New Collection
@@ -181,6 +182,7 @@ Private $cSourceDir As New Collection
 ' Subversion state of files
 Public LockedPaths As Collection
 Public AddedPaths As Collection
+Public ConflictPaths As Collection
 
 ' I'm using the IDE to test the interpreter with valgrind!
 Private $bTesting As Boolean
@@ -436,7 +438,8 @@ Private Sub LastOpenedFiles()
     If Left(sPath) <> "/" Then sPath = Project.Dir &/ sPath
     If Not Exist(sPath) Then sPath = FindPath(File.Name(sPath))
     If Not Exist(sPath) Then Continue
-    If VersionControl.InConflict(sPath) Then Continue
+    'If VersionControl.InConflict(sPath) Then Continue
+    If IsConflict(sPath) Then Continue
     If IsConnectionPath(sPath) Then Continue
     hForm = OpenFile(sPath)
     If Not hForm Then Continue
@@ -473,6 +476,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim bStopConvert As Boolean
   Dim sExec As String
   Dim sPath As String
+  Dim sStatus As String
 
   If Not Exist(sDir &/ ".project") Then
     FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
@@ -684,7 +688,16 @@ _INIT_AGAIN:
 
   If bStopConvert Then FConvert.Stop
 
+  ' The .lang/.pot file must not be on version control
+  
+  If VersionControl.Enabled() Then 
+    sPath = Project.Dir &/ ".lang/.pot"
+    sStatus = VersionControl.Status(sPath)
+    If sStatus And If Left(sStatus) <> "?" Then VersionControl.RemoveFile(sPath)
+  Endif 
+
   If Settings["/RestoreFiles", 1] Then LastOpenedFiles
+  
   CPosition.Clear
 
   Dec Application.Busy
@@ -1029,7 +1042,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
 
     Else
 
-      bConflict = VersionControl.InConflict(sPath)
+      'bConflict = VersionControl.InConflict(sPath)
+      bConflict = IsConflict(sPath)
 
       sIcon = sPrefix &/ "file"
 
@@ -1675,6 +1689,15 @@ Private Sub InitProjectFilter()
       AddPathToFilter(sPath)
     Next
 
+  Else If ProjectFilter = FILTER_CONFLICT Then
+
+    $cProjectFilter = New Collection
+
+    For Each ConflictPaths
+      sPath = ConflictPaths.Key
+      AddPathToFilter(sPath)
+    Next
+
   Else If ProjectFilter = FILTER_EXPORTED Then
 
     $cProjectFilter = New Collection
@@ -1786,6 +1809,12 @@ Private Sub DoRefresh(Optional bReset As Boolean, Optional bDoNotRefreshCache As
 
   For Each sPath In AddedPaths
     sPath = AddedPaths.Key
+    EnsureKey(sPath)
+    Try ProjectTree[sPath].EnsureVisible
+  Next
+
+  For Each sPath In ConflictPaths
+    sPath = ConflictPaths.Key
     EnsureKey(sPath)
     Try ProjectTree[sPath].EnsureVisible
   Next
@@ -1918,7 +1947,8 @@ Public Function LoadFile(sPath As String) As Object
 
     Inc Application.Busy
 
-    If VersionControl.InConflict(sPath) Then Error.Raise("File in conflict")
+    'If VersionControl.InConflict(sPath) Then Error.Raise("File in conflict")
+    If IsConflict(sPath) Then Error.Raise("File in conflict")
 
     SetMessage(Subst(("Loading &1..."), File.Name(sPath)))
 
@@ -2071,9 +2101,10 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   '  FToolBox.Show
   'ENDIF
 
-  If VersionControl.InConflict(sPath) Then
+  If IsConflict(sPath) Then
     FConflict.Run(sPath)
-    If VersionControl.InConflict(sPath) Then Return
+    VersionControl.CheckPaths()
+    If IsConflict(sPath) Then Return
     RefreshKey(sPath)
   Endif
   
@@ -5278,10 +5309,16 @@ Public Sub IsAdded(sPath As String, Optional bNoRec As Boolean) As Boolean
 
   If Not AddedPaths Or If AddedPaths.Count = 0 Then Return
   If AddedPaths.Exist(sPath) Then Return True
-  'If IsSourcePath(sPath) And If File.Ext(sPath) = "form" And If AddedPaths.Exist(File.SetExt(sPath, "class")) Then Return True
   If bNoRec Then Return False
   If sPath = "" Or sPath = "/" Then Return False
   Return IsAdded(File.Dir(sPath))
+
+End
+
+Public Sub IsConflict(sPath As String) As Boolean
+
+  If Not ConflictPaths Then Return
+  If ConflictPaths.Exist(sPath) Then Return True
 
 End
 

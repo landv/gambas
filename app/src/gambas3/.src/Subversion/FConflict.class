@@ -4,7 +4,6 @@ Private $sPath As String
 Private $sLoadedPath As String
 Private $bModify As Boolean
 Private $iType As Integer
-Private $hForm As FInfo
 
 Private Const TYPE_TEXT As Integer = 0
 Private Const TYPE_IMAGE As Integer = 1
@@ -88,17 +87,33 @@ End
 
 Private Sub LoadFile(sPath As String)
 
+  Inc Application.Busy
+  
   If $iType = TYPE_TEXT Then
     edtConflict.Text = File.Load(sPath)
     $bModify = False
     edtConflict.SetFocus
-  Else If $iType = TYPE_IMAGE Then
-    picFile.Picture = Picture.Load(sPath)
+    edtConflict_Cursor
+  Else
+    fprInfo.Hide
+  'Else If $iType = TYPE_IMAGE Then
+  '  ivwImage.Image = Image.Load(sPath)
   Endif
   
-  $hForm.ShowInfo(sPath)
+  fprInfo.Path = sPath
   $sLoadedPath = sPath
-  lblPath.Text = File.Name($sLoadedPath)
+  
+  sPath = Mid$(sPath, Len(Project.Dir) + 1)
+  If Left(sPath) = "/" Then sPath = Mid$(sPath, 2)
+  lblPath.Text = sPath
+  panConflict_Arrange
+  '
+  Dec Application.Busy
+  
+Catch
+  
+  Application.Busy = 0
+  Message.Error(("Unable to load file:") & "\n<tt>" & sPath & "</tt>\n\n" & Error.Text)
     
 End
 
@@ -127,19 +142,37 @@ End
 
 Public Sub Form_Open()
 
-  Me.Title = Mid$($sPath, Len(Project.Dir) + 2) & " - " & ("Version conflict")
+  Dim hTabPanel As TabPanel
+  Dim sFile As String
+  Dim hMenu As Menu
+
+  'Me.Title = Mid$($sPath, Len(Project.Dir) + 2) & " - " & ("Version conflict")
   Me.Icon = Project.GetFileIcon($sPath)
   
   $iType = GetFileType()
   
-  tabConflict[0].Visible = $iType = TYPE_TEXT
-  tabConflict[1].Visible = $iType = TYPE_IMAGE
+  'tabConflict[0].Visible = $iType = TYPE_TEXT
+  'tabConflict[1].Visible = $iType = TYPE_IMAGE
   
-  $hForm = New FInfo(panInfo)
-  $hForm.Padding = 0
-  
+  If $iType = TYPE_TEXT Then
+    fprInfo.Add(panEditor, ("Text"))
+  Else If $iType = TYPE_IMAGE Then
+    fprInfo.Add(panImage, ("Image"))
+  Endif
+
+  hTabPanel = Container(fprInfo.Children[0]).Children[0]
+  hTabPanel.Index = hTabPanel.Count - 1
+
   edtConflict.ReadConfig
   edtConflict.Styles[Highlight.Comment].Bold = True
+
+  hMenu = New Menu(mnuOpen) As "mnuOpen"
+  hMenu.Text = File.Name($sPath)
+  For Each sFile In Dir(File.Dir($sPath), File.Name($sPath) & ".*")
+    hMenu = New Menu(mnuOpen) As "mnuOpen"
+    hMenu.Text = sFile
+  Next
+  btnOpen.Menu = "mnuOpen"
 
   LoadFile($sPath)
   
@@ -254,9 +287,24 @@ Public Sub btnOpen_Click()
 
   Dialog.Path = $sPath
   Dialog.Filter = [File.Name($sPath) & "*", ("Conflict files")]
+  Dialog.ShowHidden = True
   If Dialog.OpenFile() Then Return
 
   LoadFile(Dialog.Path)
   $bModify = True
+
+End
+
+Public Sub mnuOpen_Click()
+  
+  LoadFile(File.Dir($sPath) &/ Last.Text)
+  
+End
+
+Public Sub panConflict_Arrange()
+
+  lblPath.W = lblPath.Font.TextWidth(lblPath.Text) + 8
+  lblPath.Move(panConflict.W - lblPath.W, 0)
+  lblPath.Raise
 
 End
