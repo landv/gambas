@@ -155,7 +155,7 @@ static void return_match(void *_object, int index)
 	index *= 2;
 	len = THIS->ovector[index + 1] - THIS->ovector[index];
 	if (len <= 0)
-		GB.ReturnNull();
+		GB.ReturnVoidString();
 	else
 		GB.ReturnNewString(&THIS->subject[THIS->ovector[index]], len);
 }
