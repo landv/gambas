@@ -2674,13 +2674,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		GB.Unref(POINTER(&control));
 		
 		if (!control)
-			return true;
-		
+			goto __MOUSE_RETURN_TRUE;
+
 		if (control->flag.grab && event_id == EVENT_MouseUp)
 			MyApplication::eventLoop->exit();
 		
 		if (cancel)
-			return true;
+			goto __MOUSE_RETURN_TRUE;
 		
 		if (EXT(control) && EXT(control)->proxy_for)
 		{
@@ -2688,7 +2688,13 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto __MOUSE_TRY_PROXY;
 		}
 		
+		CMOUSE_reset_translate();
 		goto __NEXT;
+
+	__MOUSE_RETURN_TRUE:
+
+		CMOUSE_reset_translate();
+		return true;
 	}
 	
 	__TABLET:
@@ -2796,6 +2802,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			goto __TABLET_TRY_PROXY;
 		}
 		
+		CMOUSE_reset_translate();
 		return false; // We fill the information, and then expect Qt to generate a Mouse event from the Tablet event
 	}
 	

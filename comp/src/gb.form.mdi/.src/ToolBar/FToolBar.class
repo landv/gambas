@@ -220,28 +220,42 @@ Private Sub SetArrangement()
       'Debug ToolBarKey;; "WT = "; WT;; NX
     Endif
   
-    X = SH
+    X = If(System.RightToLeft, panToolBar.W - SH, SH)
     For Each hCtrl In panToolBar.Children
-      If hCtrl.Visible Then 
-        W = hCtrl.W
-        If hCtrl.Expand Then
-          If $nRow = 1 Then
-            If NX And If WT > 0 Then
-              W = WT \ NX
-              WT -= W
-              Dec NX
-            Else
-              W = Desktop.Scale
-            Endif
+      If Not hCtrl.Visible Then Continue
+      
+      W = hCtrl.W
+      If hCtrl.Expand Then
+        If $nRow = 1 Then
+          If NX And If WT > 0 Then
+            W = WT \ NX
+            WT -= W
+            Dec NX
           Else
-            If hCtrl.Next Then
-              W = Desktop.Scale
-            Else
-              W = Max(Desktop.Scale, panToolBar.W - X)
-            Endif
+            W = Desktop.Scale
+          Endif
+        Else
+          If hCtrl.Next Then
+            W = Desktop.Scale
+          Else
+            W = Max(Desktop.Scale, panToolBar.W - X)
           Endif
         Endif
-          'X += hCtrl.W
+      Endif
+      
+      If System.RightToLeft Then
+      
+        X -= W
+        If X < 0 Then
+          X = panToolBar.W - SH
+          Y += $iButtonWidth
+          If hCtrl.Expand And If Not hCtrl.Next Then W = X 'panToolBar.W - X
+        Endif
+        'If ToolbarKey = "editor" Then Debug ToolBarKey;; hCtrl.Name;; X;; Y;; W
+        hCtrl.Move(X, Y, W, $iButtonWidth)
+        
+      Else
+        
         If (X + W) > panToolBar.W Then
           X = SH
           Y += $iButtonWidth
@@ -250,7 +264,9 @@ Private Sub SetArrangement()
         'If ToolbarKey = "editor" Then Debug ToolBarKey;; hCtrl.Name;; X;; Y;; W
         hCtrl.Move(X, Y, W, $iButtonWidth)
         X += W
+        
       Endif
+      
     Next
 
   Else

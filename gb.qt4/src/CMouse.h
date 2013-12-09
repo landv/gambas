@@ -45,6 +45,8 @@ typedef
 		int delta;
 		int screenX;
 		int screenY;
+		int dx;
+		int dy;
 		}
 	MOUSE_INFO;
 	
@@ -93,5 +95,6 @@ typedef
 	"SizeNESW,SplitH,SplitV,Pointing"
 
 void CMOUSE_clear(int valid);
+void CMOUSE_reset_translate(void);
 
 #endif

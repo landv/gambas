@@ -474,7 +474,7 @@ Private Sub MoveProperty()
   If IsNull($hEditor) Then Return
 
   With grdProperty[grdProperty.Row, 1]
-
+  
     panEditor.Move(grdProperty.X + .X - grdProperty.ScrollX, grdProperty.Y + .Y - grdProperty.ScrollY, .Width, .Height)
     panEditor.Raise
 

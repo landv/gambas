@@ -251,18 +251,40 @@ Private Sub DoLayout()
       
     Else
       
-      For Each hChild In aChildren
-        hChild.Move(X, 0, hChild.W, Me.H)
-        X += hChild.W + SW
-      Next
-      
-      hChild.Width = WMax - hChild.X
+      If System.RightToLeft Then
+        
+        X = WMax
+        
+        For Each hChild In aChildren
+          X -= hChild.W
+          hChild.Move(X, 0, hChild.W, Me.H)
+          X -= SW
+        Next
+        
+        hChild.Width += hChild.X
+        hChild.X = 0
   
-      For I = 0 To $aResize.Max
-        hChild = aChildren[I + 1]
-        $aResize[I].Move(hChild.X - Desktop.Scale \ 2 - SW \ 2, 0, Desktop.Scale, Me.H)
-      Next
-    
+        For I = 0 To $aResize.Max
+          hChild = aChildren[I]
+          $aResize[I].Move(hChild.X - Desktop.Scale \ 2 - SW \ 2, 0, Desktop.Scale, Me.H)
+        Next
+      
+      Else
+        
+        For Each hChild In aChildren
+          hChild.Move(X, 0, hChild.W, Me.H)
+          X += hChild.W + SW
+        Next
+        
+        hChild.Width = WMax - hChild.X
+  
+        For I = 0 To $aResize.Max
+          hChild = aChildren[I + 1]
+          $aResize[I].Move(hChild.X - Desktop.Scale \ 2 - SW \ 2, 0, Desktop.Scale, Me.H)
+        Next
+      
+      Endif
+      
     Endif
     
   Endif
@@ -311,8 +333,13 @@ Public Sub Resize_MouseDown()
     $XMin = aChildren[I].ScreenY
     $XMax = aChildren[I + 1].ScreenY + aChildren[I + 1].H + SW
   Else
-    $XMin = aChildren[I].ScreenX
-    $XMax = aChildren[I + 1].ScreenX + aChildren[I + 1].W + SW
+    If System.RightToLeft Then
+      $XMin = aChildren[I + 1].ScreenX
+      $XMax = aChildren[I].ScreenX + aChildren[I].W + SW
+    Else
+      $XMin = aChildren[I].ScreenX
+      $XMax = aChildren[I + 1].ScreenX + aChildren[I + 1].W + SW
+    Endif
   Endif
   
 End
@@ -322,6 +349,7 @@ Public Sub Resize_MouseMove()
   Dim aChildren As Control[] = GetChildren()
   Dim hResize As DrawingArea = Last
   Dim I As Integer = hResize.Tag
+  Dim I2 As Integer
   Dim X As Integer
   Dim SW As Integer = GetSepWidth()
   
@@ -347,18 +375,18 @@ Public Sub Resize_MouseMove()
   Else
     
     X = Min(Max(Mouse.ScreenX, $XMin + MIN_SIZE), $XMax - MIN_SIZE)
-    'Debug "==============";; X - $XMin
+    
+    If System.RightToLeft Then
+      I2 = I
+      I = I2 + 1
+    Else
+      I2 = I + 1
+    Endif
     
     aChildren[I].W = X - $XMin - SW
-    aChildren[I + 1].Move(X - Me.ScreenX, 0, $XMax - X - SW, Me.H)
+    aChildren[I2].Move(X - Me.ScreenX, 0, $XMax - X - SW, Me.H)
     
-    hResize.Move(aChildren[I + 1].X - Desktop.Scale \ 2 - SW \ 2, 0, Desktop.Scale, Me.H)
-    
-    ' For Each hChild In aChildren
-    '   W = hChild.W
-    '   If hChild <> aChildren[aChildren.Max] Then Inc W
-    '   $cWeight[Object.Address(hChild)] = W
-    ' Next
+    hResize.Move(aChildren[I2].X - Desktop.Scale \ 2 - SW \ 2, 0, Desktop.Scale, Me.H)
     
   Endif
   

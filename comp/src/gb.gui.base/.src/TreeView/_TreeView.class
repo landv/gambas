@@ -419,7 +419,7 @@ Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   
 End
 
-Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Integer, Row As Integer, Column As Integer)
+Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer, Row As Integer, Column As Integer)
   
   Dim hItem As _TreeView_Item = RowToItem(Row)
   Dim sText As String
@@ -428,25 +428,51 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, (W) As Integer, H As Intege
   
   If Column = 0 Then
   
-    X += hItem._Depth * 16
-    
-    If Not $bNoRoot Then
-    
-      If hItem.Count Then
-        If hItem.Expanded Then
-          Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Bottom)
-        Else
-          Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Right)
+    If System.RightToLeft Then
+
+      W -= hItem._Depth * 16 + 16
+      
+      If Not $bNoRoot Then
+      
+        If hItem.Count Then
+          If hItem.Expanded Then
+            Style.PaintArrow(X + W, Y + H \ 2 - 8, 16, 16, Align.Bottom)
+          Else
+            Style.PaintArrow(X + W, Y + H \ 2 - 8, 16, 16, Align.Left)
+          Endif
         Endif
+        
       Endif
       
-      X += 16
+      If hItem.Picture Then
+        W -= hItem.Picture.W
+        Paint.DrawPicture(hItem.Picture, X + W, Y + (H - hItem.Picture.H) / 2)
+        W -= 2
+      Endif
+
+    Else
+  
+      X += hItem._Depth * 16
       
-    Endif
+      If Not $bNoRoot Then
+      
+        If hItem.Count Then
+          If hItem.Expanded Then
+            Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Bottom)
+          Else
+            Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Right)
+          Endif
+        Endif
+        
+        X += 16
+        
+      Endif
+      
+      If hItem.Picture Then
+        Paint.DrawPicture(hItem.Picture, X, Y + (H - hItem.Picture.H) / 2)
+        X += hItem.Picture.W + 2
+      Endif
     
-    If hItem.Picture Then
-      Paint.DrawPicture(hItem.Picture, X, Y + (H - hItem.Picture.H) / 2)
-      X += hItem.Picture.W + 2
     Endif
     
     'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "]", X, Y, W, H, $hView.Columns[Column].Alignment)
@@ -496,6 +522,7 @@ Public Sub GridView_MouseDown()
   
   Dim iRow As Integer = $hView.RowAt(Mouse.Y)
   Dim hItem As _TreeView_Item = RowToItem(iRow)
+  Dim X As Integer
 
   If Not hItem Then Return
 
@@ -506,7 +533,17 @@ Public Sub GridView_MouseDown()
   If hItem.Count = 0 Then Return
   If $bNoRoot Then Return
   
-  If Mouse.X >= hItem._Depth * 16 And If Mouse.X < (hItem._Depth * 16 + 16) Then
+  If System.RightToLeft Then
+    With $hView.Columns[0]
+      X = .X + .W - hItem._Depth * 16 - 16
+    End With
+  Else
+    X = hItem._Depth * 16
+  Endif
+  
+  X -= $hView.ScrollX
+  
+  If Mouse.X >= X And If Mouse.X < X + 16 Then
     hItem.Expanded = Not hItem.Expanded
   Endif
   

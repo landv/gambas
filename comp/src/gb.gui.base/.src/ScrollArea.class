@@ -248,7 +248,18 @@ RETRY:
     Goto RETRY
   Endif
   
-  $hDrawingArea.Move(0, 0, Me.W, Me.H)
+  'Debug W;; H;; "/";; Me.W;; Me.H;; ":";; SB;; SP
+  
+  If W < 1 Or If H < 1 Then
+    $hDrawingArea.Hide
+  Else
+    If $bVBarVisible And If System.RightToLeft Then
+      $hDrawingArea.Move(SP + SB, 0, W, H)
+    Else
+      $hDrawingArea.Move(0, 0, W, H)
+    Endif
+    $hDrawingArea.Show
+  Endif
   
   If bHBarVisible <> $bHBarVisible Or If bVBarVisible <> $bVBarVisible Then Raise Resize
   
@@ -258,8 +269,20 @@ RETRY:
   $bVBarVisible = bVBarVisible
   UpdateScrollbarVisibility
   
-  If $bHBarVisible Then $hHBar.Move(0, H + SP, W, SB)
-  If $bVBarVisible Then $hVBar.Move(W + SP, 0, SB, H)
+  If $bHBarVisible Then 
+    If System.RightToLeft Then
+      $hHBar.Move(Me.W - W, H + SP, W, SB)
+    Else
+      $hHBar.Move(0, H + SP, W, SB)
+    Endif
+  Endif
+  If $bVBarVisible Then 
+    If System.RightToLeft Then
+      $hVBar.Move(0, 0, SB, H)
+    Else
+      $hVBar.Move(W + SP, 0, SB, H)
+    Endif
+  Endif
   
   $bNoArrange = False
   
@@ -316,7 +339,11 @@ End
 
 Private Function ScrollX_Read() As Integer
 
-  Return $hHBar.Value
+  If System.RightToLeft Then
+    Return $hHBar.MaxValue - $hHBar.Value
+  Else
+    Return $hHBar.Value
+  Endif
 
 End
 
@@ -340,11 +367,13 @@ End
 
 Public Sub Scroll(X As Integer, Y As Integer)
   
+  If System.RightToLeft Then X = $hHBar.MaxValue - X
+
   If $hHBar.Value = X And If $hVBar.Value = Y Then Return
+  
   $hHBar.Value = X
   $hVBar.Value = Y
-  'Debug X;; Y
-  'Error "\t" & System.Backtrace.Join("\n\t")
+  
   $hDrawingArea.Refresh
   
 End
@@ -356,14 +385,18 @@ Public Sub DrawingArea_Draw()
   Dim FW As Integer
   Dim hClip As Rect
   Dim hFrame As Rect
+  Dim bWestShadow As Boolean
+  Dim bEastShadow As Boolean
+  Dim iWestWidth As Integer
+  Dim iEastWidth As Integer
   
   If $bBorder Then FW = Style.FrameWidth
   
   DW = Draw.W
-  If $bVBarVisible Then DW -= $hVBar.W
+  'If $bVBarVisible Then DW -= $hVBar.W
+  'If System.RightToLeft Then DX = $hVBar.W + Style.ScrollbarSpacing
   DH = Draw.H
-  If $bHBarVisible Then DH -= $hHBar.H
-  
+  'If $bHBarVisible Then DH -= $hHBar.H
   
   If $iBackground <> Color.Default Then 
     Draw.FillRect(FW, FW, DW - FW * 2, DH - FW * 2, $iBackground)
@@ -373,17 +406,20 @@ Public Sub DrawingArea_Draw()
   
   'hClip = New Rect(Draw.Clip.X, Draw.Clip.Y, Draw.Clip.W, Draw.Clip.H)
   hClip = Draw.ClipRect
-  hFrame = New Rect(FW, FW, DW - FW * 2, DH - FW * 2)
   
-  If hClip Then hClip = hClip.Intersection(hFrame)
+  If FW Then
+    hFrame = New Rect(FW, FW, DW - FW * 2, DH - FW * 2)  
+    If hClip Then 
+      hClip = hClip.Intersection(hFrame)
+      Draw.ClipRect = hClip
+    Endif
+  Endif
   
   If hClip Then
 
-    Draw.ClipRect = hClip '(hClip.X, hClip.Y, hClip.W, hClip.H)
+    'Draw.ClipRect = hClip '(hClip.X, hClip.Y, hClip.W, hClip.H)
 
-    'If $bPainted Then Paint.Begin($hDrawingArea)
     Raise Draw
-    'If $bPainted Then Paint.End
 
     If $bShadow Then
       
@@ -405,8 +441,16 @@ Public Sub DrawingArea_Draw()
       If $bHBarVisible Then
         LoadFades()
         Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
-        If $hHBar.Value > $hHBar.MinValue Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - ($hHBar.Value - $hHBar.MinValue)), 0, $hFadeW.W, DH)
-        If $hHBar.Value < $hHBar.MaxValue Then Draw.Tile($hFadeE, DW - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - ($hHBar.MaxValue - $hHBar.Value)), 0, $hFadeE.W, DH)
+        bWestShadow = $hHBar.Value > $hHBar.MinValue
+        bEastShadow = $hHBar.Value < $hHBar.MaxValue
+        iWestWidth = $hHBar.Value - $hHBar.MinValue
+        iEastWidth = $hHBar.MaxValue - $hHBar.Value
+        If System.RightToLeft Then
+          Swap bWestShadow, bEastShadow
+          Swap iWestWidth, iEastWidth
+        Endif
+        If bWestShadow Then Draw.Tile($hFadeW, $iShadowW - Max(0, $hFadeW.W - iWestWidth), 0, $hFadeW.W, DH)
+        If bEastShadow Then Draw.Tile($hFadeE, DW - $hFadeE.W - $iShadowE + Max(0, $hFadeE.W - iEastWidth), 0, $hFadeE.W, DH)
       Endif
       
     Endif
@@ -417,7 +461,6 @@ Public Sub DrawingArea_Draw()
   
   If $bBorder Then 
     Draw.Reset
-    'Draw.Style.Box(0, 0, Draw.W, Draw.H)
     Style.PaintPanel(0, 0, DW, DH, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
@@ -701,20 +744,38 @@ End
 
 Private Function ClientWidth_Read() As Integer
 
-  Dim W As Integer
+  Return $hDrawingArea.W
 
-  W = Me.W
-  If $bVBarVisible Then W -= $hVBar.W + Style.ScrollbarSpacing
-  Return Max(0, W)
+  'Dim W As Integer
+  'W = Me.W
+  'If $bVBarVisible Then W -= $hVBar.W + Style.ScrollbarSpacing
+  'Return Max(0, W)
 
 End
 
 Private Function ClientHeight_Read() As Integer
 
-  Dim H As Integer
+  Return $hDrawingArea.H
+  
+  ' Dim H As Integer
+  ' H = Me.H
+  ' If $bHBarVisible Then H -= $hHBar.H + Style.ScrollbarSpacing
+  ' Return Max(0, H)
 
-  H = Me.H
-  If $bHBarVisible Then H -= $hHBar.H + Style.ScrollbarSpacing
-  Return Max(0, H)
+End
 
+Public Sub ScrollArea_MouseDown()
+  
+  'Debug Mouse.X;;
+  Mouse.Translate(- $hDrawingArea.X, 0)
+  'Error "->";; Mouse.X
+  
+End
+
+Public Sub ScrollArea_MouseMove()
+  
+  'Debug Mouse.X;;
+  Mouse.Translate(- $hDrawingArea.X, 0)
+  'Error "->";; Mouse.X
+  
 End

@@ -328,3 +328,11 @@ void gMouse::invalidate()
 		}
 	}
 }
+
+void gMouse::translate(int dx, int dy)
+{
+	_x += dx;
+	_y += dy;
+	_start_x += dx;
+	_start_y += dy;
+}

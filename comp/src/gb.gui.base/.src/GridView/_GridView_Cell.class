@@ -61,7 +61,7 @@ End
 
 Private Function X_Read() As Integer
 
-  Return _View.Columns[_Column].X
+  Return _View.Columns[_Column].X + _View.Proxy.Proxy.X
 
 End
 

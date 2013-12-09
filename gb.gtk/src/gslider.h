@@ -62,6 +62,8 @@ public:
 	virtual void orientation(int w,int h);
 	void updateMark();
 	void init();
+	void checkInverted();
+	
 	bool _mark;
 	int _step;
 	int _page_step;

@@ -61,6 +61,7 @@ public:
 	
 //"Methods"
 	static void move(int x, int y);
+	static void translate(int dx, int dy);
 
 //"Private"
 	static void setWheel(int dt, int orn);

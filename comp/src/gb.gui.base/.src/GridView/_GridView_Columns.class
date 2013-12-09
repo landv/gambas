@@ -121,8 +121,9 @@ Public Sub _Layout()
   Dim X As Integer
   Dim FH As Integer
   
+  VW = hView._GetVisibleWidth()
   N = $aColumns.Count - 1
-
+    
   'Debug N
   If N >= 0 And If hView.AutoResize And If Not $bLayouting Then 
 
@@ -140,8 +141,6 @@ Public Sub _Layout()
       End With
       
     Next
-    
-    VW = hView._GetVisibleWidth()
     
     If NX = 0 Then
       
@@ -176,16 +175,21 @@ Public Sub _Layout()
     H = Max(H, hView.Font.TextHeight(hCol.Text))
   Next
   
+  If System.RightToLeft Then
+    'Debug "";
+    I = 0
+    For Each hCol In $aColumns
+      hCol._X = Max(X, VW) - hCol._X - hCol.Width
+      'Error "["; I; "] "; hCol._X;;
+      Inc I
+    Next
+    'Error
+  Endif
+  
   If X <> $iWidth Or If H <> $iHeight Then
     $iWidth = X
     $iHeight = H
     hView._ResizeContents
-  Endif
-  
-  If System.RightToLeft Then
-    For Each hCol In $aColumns
-      hCol._X = $iWidth - hCol._X - hCol.Width
-    Next
   Endif
   
   hView.Refresh

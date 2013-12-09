@@ -653,7 +653,7 @@ Public Sub btnUp_Click()
   iCount = $aMenu.Count
   If iCount <= 1 Then Return
 
-  If $iCurrent = $aMenu.Max Then Return
+  'If $iCurrent = $aMenu.Max Then Return
   If gvwMenu.Rows[0].Selected Then Return
   
   For iInd = 1 To $aMenu.Count - 1

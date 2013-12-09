@@ -640,7 +640,7 @@ void LOCAL_set_lang(const char *lang)
 	}
 	
 	var = getenv("GB_REVERSE");
-	if (var && *var)
+	if (var && !(var[0] == '0' && var[1] == 0))
 		rtl = !rtl;
 
 	HOOK(lang)(lang, rtl);

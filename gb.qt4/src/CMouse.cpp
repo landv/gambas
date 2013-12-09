@@ -38,6 +38,8 @@
 
 MOUSE_INFO MOUSE_info = { 0 };
 POINTER_INFO POINTER_info = { 0 };
+static int _dx = 0;
+static int _dy = 0;
 
 void CMOUSE_clear(int valid)
 {
@@ -50,6 +52,10 @@ void CMOUSE_clear(int valid)
 		CLEAR(&POINTER_info);
 }
 
+void CMOUSE_reset_translate()
+{
+	_dx = _dy = 0;
+}
 
 //int CMOUSE_last_state = 0;
 
@@ -204,28 +210,28 @@ END_PROPERTY
 BEGIN_PROPERTY(Mouse_X)
 
 	CHECK_VALID();
-	GB.ReturnInteger(MOUSE_info.x);
+	GB.ReturnInteger(MOUSE_info.x + _dx);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_Y)
 
 	CHECK_VALID();
-	GB.ReturnInteger(MOUSE_info.y);
+	GB.ReturnInteger(MOUSE_info.y + _dy);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_StartX)
 
 	CHECK_VALID();
-	GB.ReturnInteger(MOUSE_info.sx);
+	GB.ReturnInteger(MOUSE_info.sx + _dx);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_StartY)
 
 	CHECK_VALID();
-	GB.ReturnInteger(MOUSE_info.sy);
+	GB.ReturnInteger(MOUSE_info.sy + _dy);
 
 END_PROPERTY
 
@@ -339,19 +345,28 @@ BEGIN_METHOD(Mouse_Inside, GB_OBJECT control)
 
 END_METHOD
 
+BEGIN_METHOD(Mouse_Translate, GB_INTEGER dx; GB_INTEGER dy)
+
+	CHECK_VALID();
+
+	_dx += VARG(dx);
+	_dy += VARG(dy);
+
+END_METHOD
+
 //-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Pointer_X)
 
 	CHECK_VALID();
-	GB.ReturnFloat((double)MOUSE_info.x + (POINTER_info.tx - (int)POINTER_info.tx));
+	GB.ReturnFloat((double)(MOUSE_info.x + _dx) + (POINTER_info.tx - (int)POINTER_info.tx));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Pointer_Y)
 
 	CHECK_VALID();
-	GB.ReturnFloat((double)MOUSE_info.y + (POINTER_info.ty - (int)POINTER_info.ty));
+	GB.ReturnFloat((double)(MOUSE_info.y + _dy) + (POINTER_info.ty - (int)POINTER_info.ty));
 
 END_PROPERTY
 
@@ -481,6 +496,8 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Orientation", "i", Mouse_Orientation),
 	GB_STATIC_PROPERTY_READ("Delta", "f", Mouse_Delta),
 	GB_STATIC_PROPERTY_READ("Forward", "b", Mouse_Forward),
+
+	GB_STATIC_METHOD("Translate", NULL, Mouse_Translate, "(DX)i(DY)i"),
 
 	GB_END_DECLARE
 };

@@ -23,6 +23,7 @@
 
 #include "widgets.h"
 #include "widgets_private.h"
+#include "gdesktop.h"
 #include "gscrollbar.h"
 #include "gslider.h"
 
@@ -42,8 +43,8 @@ void gSlider::init()
 {
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 	
-	if (_min == _max)
-		_max = _min + 1;
+	//if (_min == _max)
+	//	_max = _min + 1;
 	
 	if (_value < _min)
 		_value = _min;
@@ -63,6 +64,8 @@ void gSlider::init()
 	}
 	gtk_range_set_value(GTK_RANGE(widget), _value);
 	gtk_range_set_update_policy(GTK_RANGE(widget), _tracking ? GTK_UPDATE_CONTINUOUS : GTK_UPDATE_DISCONTINUOUS);
+
+	checkInverted();
 }
 
 gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
@@ -319,5 +322,10 @@ int gSlider::getDefaultSize()
 
 bool gSlider::isVertical() const
 {
-	return (GTK_WIDGET_TYPE(widget) == GTK_TYPE_VSCALE);
+	return (GTK_WIDGET_TYPE(widget) == GTK_TYPE_VSCALE || GTK_WIDGET_TYPE(widget) == GTK_TYPE_VSCROLLBAR);
+}
+
+void gSlider::checkInverted()
+{
+	gtk_range_set_inverted(GTK_RANGE(widget), !isVertical() && gDesktop::rightToLeft());
 }

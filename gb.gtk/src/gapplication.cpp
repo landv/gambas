@@ -1218,12 +1218,13 @@ void gApplication::setActiveControl(gControl *control, bool on)
 
 int gApplication::getScrollbarSize()
 {
-	//gint focus_line_width;
-	//gint focus_padding;
+	GtkStyle* st;
 	gint trough_border;
 	gint slider_width;
 	
-	if (g_type_from_name("OsBar"))
+	st = gtk_rc_get_style_by_paths(gtk_settings_get_default(), NULL, "OsBar", G_TYPE_NONE);
+
+	if (st) //g_type_from_name("OsBar"))
 	{
 		char *env = getenv("LIBOVERLAY_SCROLLBAR");
 		if (!env || *env != '0')

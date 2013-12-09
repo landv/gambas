@@ -300,7 +300,11 @@ DRAW_GRID:
 
   If $bGrid Then
     Draw.Foreground = Color.Merge(Color.LightForeground, $hView.Background)
-    Draw.Line(hRect.X + hRect.W - 1, hRect.Y, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
+    If System.RightToLeft Then
+      Draw.Line(hRect.X, hRect.Y, hRect.X, hRect.Y + hRect.H - 1)
+    Else
+      Draw.Line(hRect.X + hRect.W - 1, hRect.Y, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
+    Endif
     Draw.Line(hRect.X, hRect.Y + hRect.H - 1, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
   Endif
   
@@ -332,13 +336,20 @@ Public Sub ScrollArea_Draw()
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
   
   iCol = $hColumns._FindColumnFromPos($hView.ScrollX)
+  If iCol < 0 Then iCol = $hColumns.Max
+  'Debug "iCol = "; iCol
+  
   iRow = $hRows._FindRowFromPos($hView.ScrollY)
   iCol2 = -1
   iRow2 = -1
   
   iStepCol = If(System.RightToLeft, -1, 1)
   
-  XO = $hRows.Width - $hView.ScrollX + F
+  If System.RightToLeft Then
+    XO = - $hView.ScrollX + F
+  Else
+    XO = $hRows.Width - $hView.ScrollX + F
+  Endif
   XX = XO + $hColumns[iCol].X
   YO = $hColumns.Height - $hView.ScrollY + F
   YY = YO + $hRows._GetRowY(iRow)
@@ -374,7 +385,11 @@ Public Sub ScrollArea_Draw()
         If .W > 0 And If $iHeader And Horizontal Then
           Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
           'If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
-          Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+          If System.RightToLeft Then
+            Draw.FillRect(X, F, 1, H - F, iGrid)
+          Else
+            Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+          Endif
           If iSort = I Then
             WA = Min(16, H - F)
             Draw.Style.Arrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
@@ -392,7 +407,13 @@ Public Sub ScrollArea_Draw()
 
   If $iHeader And Horizontal Then 
     Draw.ClipRect = hClip
-    If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+    If $bGrid Then 
+      If System.RightToLeft Then
+        Draw.FillRect(X, F, 1, H - F, iGrid)
+      Else
+        Draw.FillRect(X - 1, F, 1, H - F, iGrid)
+      Endif
+    Endif
   Endif
     
   ' Horizontal header
@@ -401,8 +422,19 @@ Public Sub ScrollArea_Draw()
   $aRowY.Clear
 
   W = $hRows.Width + F
-  If $iHeader And Vertical Then Draw.FillRect(0, 0, W, Draw.H, Color.ButtonBackground)
+  If $iHeader And Vertical Then 
+    If System.RightToLeft Then
+      Draw.FillRect($hView.ClientW - W, 0, W, Draw.H, Color.ButtonBackground)
+    Else
+      Draw.FillRect(0, 0, W, Draw.H, Color.ButtonBackground)
+    Endif
+  Endif
   Y = YY
+  If System.RightToLeft Then
+    X = $hView.ClientW - $hRows.Width - F
+  Else
+    X = F
+  Endif
   
   If iRow >= 0 Then
     For I = iRow To $hRows.Count - 1
@@ -413,10 +445,10 @@ Public Sub ScrollArea_Draw()
       'Draw.Style.Separator(F, Y, W - F, 2)
       H = $hRows._GetRowHeight(I)
       If H > 0 And If $iHeader And Vertical Then
-        Draw.FillRect(F, Y - 1, W - F, 1, iGrid)
-        Draw.ClipRect = hClip.Intersection(Rect(F, Y, W - F, H))
+        Draw.FillRect(X, Y - 1, W - F, 1, iGrid)
+        Draw.ClipRect = hClip.Intersection(Rect(X, Y, W - F, H))
         If I = $iRow Then Draw.Font.Bold = True
-        Draw.Text($hRows._GetRowText(I), F, Y + 2, W - F, H - 2, Align.Center)
+        Draw.Text($hRows._GetRowText(I), X, Y + 2, W - F, H - 2, Align.Center)
         If I = $iRow Then Draw.Font.Bold = False
       Endif
       
@@ -433,21 +465,37 @@ Public Sub ScrollArea_Draw()
 
   ' Top-left frame
   
-  If $iHeader = Both Then Draw.FillRect(0, 0, $hRows.Width + F, $hColumns.Height + F, Color.ButtonBackground)
+  If $iHeader = Both Then 
+    If System.RightToLeft Then
+      Draw.FillRect($hView.ClientW - $hRows.Width - F, 0, $hRows.Width + F, $hColumns.Height + F, Color.ButtonBackground)
+    Else
+      Draw.FillRect(0, 0, $hRows.Width + F, $hColumns.Height + F, Color.ButtonBackground)
+    Endif
+  Endif
   
   ' Header limits
   
   If $iHeader And Horizontal Then Draw.FillRect(0, $hColumns.Height + F - 1, $hView.ClientW, 1, Color.Merge(Color.LightForeground, Color.ButtonBackground))
-  If $iHeader And Vertical Then Draw.FillRect($hRows.Width + F - 1, 0, 1, $hView.ClientH, Color.Merge(Color.LightForeground, Color.ButtonBackground))
+  If $iHeader And Vertical Then 
+    If System.RightToLeft Then
+      Draw.FillRect($hView.ClientW - $hRows.Width - F, 0, 1, $hView.ClientH, Color.Merge(Color.LightForeground, Color.ButtonBackground))
+    Else
+      Draw.FillRect($hRows.Width + F - 1, 0, 1, $hView.ClientH, Color.Merge(Color.LightForeground, Color.ButtonBackground))
+    Endif
+  Endif
   
   If $hColumns.Count = 0 Or If $hRows.Count = 0 Then Return
   If iRow < 0 Or If iRow2 < 0 Then Return
   
   ' Cells
   
-  hRect = New Rect($hView.ClientX, $hView.ClientY, $hView.ClientW, $hView.ClientH)
+  hRect = New Rect($hView.ClientX - $hView.Proxy.X, $hView.ClientY, $hView.ClientW, $hView.ClientH)
   hRect.Adjust(F)
-  hRect.Adjust($hRows.Width, $hColumns.Height, 0, 0)
+  If System.RightToLeft Then
+    hRect.Adjust(0, $hColumns.Height, $hRows.Width, 0)
+  Else
+    hRect.Adjust($hRows.Width, $hColumns.Height, 0, 0)
+  Endif
   hClip = hRect.Intersection(Draw.ClipRect)
   If Not hClip Then Return
   
@@ -523,7 +571,11 @@ Public Sub ScrollArea_Draw()
     NEXT_CELL:
       
       If I = $iRow And If J = $iCol Then
-        hCursor = Rect(X, Y, Max(0, W - 1), Max(0, H - 1))
+        If System.RightToLeft Then
+          hCursor = Rect(X + 1, Y, Max(0, W - 1), Max(0, H - 1))
+        Else
+          hCursor = Rect(X, Y, Max(0, W - 1), Max(0, H - 1))
+        Endif
         ' Paint.Begin(Draw.Device)
         ' Paint.ClipRect = hClip
         ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
@@ -636,7 +688,7 @@ Public Sub _ResizeContents()
   ' Error
   
   $hView.ResizeContents($hColumns._GetWidth() + $hRows.Width + F * 2, $hRows._GetHeight() + $hColumns.Height + F * 2)
-  $hView._SetShadowOffset($hColumns.H, 0, $hRows.W, 0)
+  $hView._SetShadowOffset($hColumns.H, 0, If(System.RightToLeft, 0, $hRows.W), If(System.RightToLeft, $hRows.W, 0))
   
 End
 
@@ -683,17 +735,32 @@ Public Sub ScrollArea_Leave()
   
 End
 
+Private Sub InRowHeader(X As Integer) As Boolean
+  
+  If $hRows.Width = 0 Then Return
+  
+  If System.RightToLeft Then
+    Return X >= $hView.ClientW - $hRows.Width
+  Else
+    Return X < $hRows.Width
+  Endif
+  
+End
+
 
 Public Sub ScrollArea_MouseMove()
   
   Dim I, MX, MY, X, Y, iRow, iCol As Integer
   Dim iMouse As Integer
   Dim F As Integer = _GetFrameWidth()
+  Dim bInRowHeader As Boolean
 
   If Not Me.Enabled Then Return
   If $bIgnoreMove Then Return
 
   If $hRows.Count = 0 And If $hColumns.Count = 0 Then Return
+  
+  'Debug Mouse.X
   
   MX = Mouse.X - F
   MY = Mouse.Y - F
@@ -705,7 +772,13 @@ Public Sub ScrollArea_MouseMove()
     If $iRowResize >= 0 Then
       $hRows._SetRowHeight($iRowResize, Max(1, $iDimResize + MY - $MY))
     Else If $iColResize >= 0 Then
-      $hColumns[$iColResize].Width = Max(1, $iDimResize + MX - $MX)
+      'Debug "Resize "; $iColResize; ": "; $hColumns[$iColResize].Width;; "->";; Max(1, $iDimResize + MX - $MX)
+      If System.RightToLeft Then
+        $hColumns[$iColResize].Width = Max(1, $iDimResize + $MX - MX)
+      Else
+        $hColumns[$iColResize].Width = Max(1, $iDimResize + MX - $MX)
+      Endif
+      'Debug "ScrollX = "; Me.ScrollX
     Endif
     Return
   Endif
@@ -715,7 +788,9 @@ Public Sub ScrollArea_MouseMove()
   $iRowResize = -1
   $iColResize = -1
   
-  If MX < $hRows.Width Then
+  bInRowHeader = InRowHeader(MX)
+  
+  If bInRowHeader Then
     
     If $hRows.Resizable Then
       For I = 0 To $aRowY.Max
@@ -733,27 +808,65 @@ Public Sub ScrollArea_MouseMove()
   Else If MY < $hColumns.Height Then
     
     If $hColumns.Resizable Then
-      X = MX + $hView.ScrollX - $hRows.Width
-      For I = 1 To $hColumns.Count - 1
-        With $hColumns[I]
-          If $hColumns[I - 1].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
-            iMouse = Mouse.SizeE
-            $iColResize = I - 1
-            $iDimResize = $hColumns[$iColResize].Width
-            Break
-          Endif
-        End With
-      Next
-      If $iColResize < 0 And If $hColumns[$hColumns.Count - 1].Resizable And If X >= ($hColumns._GetWidth() - 1) And If X <= ($hColumns._GetWidth() + 2) Then
-        iMouse = Mouse.SizeE
-        $iColResize = $hColumns.Count - 1
-        $iDimResize = $hColumns[$iColResize].Width
+      
+      X = MX + $hView.ScrollX
+      If Not System.RightToLeft Then X -= $hRows.Width
+      
+      If System.RightToLeft Then
+        ' For I = $hColumns.Count - 2 DownTo 0
+        '   With $hColumns[I]
+        '     If $hColumns[I + 1].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
+        '       iMouse = Mouse.SizeE
+        '       $iColResize = I + 1
+        '       $iDimResize = $hColumns[$iColResize].Width
+        '       Break
+        '     Endif
+        '   End With
+        ' Next
+        For I = 1 To $hColumns.Count - 1
+          With $hColumns[I]
+            If $hColumns[I].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
+              iMouse = Mouse.SizeE
+              $iColResize = I
+              $iDimResize = $hColumns[$iColResize].Width
+              Break
+            Endif
+          End With
+        Next
+      Else
+        For I = 1 To $hColumns.Count - 1
+          With $hColumns[I]
+            If $hColumns[I - 1].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
+              iMouse = Mouse.SizeE
+              $iColResize = I - 1
+              $iDimResize = $hColumns[$iColResize].Width
+              Break
+            Endif
+          End With
+        Next
       Endif
+      
+      If System.RightToLeft Then
+        If $iColResize < 0 And If $hColumns[0].Resizable And If X >= ($hColumns._GetWidth() - 1) And If X <= ($hColumns._GetWidth() + 2) Then
+          iMouse = Mouse.SizeE
+          $iColResize = 0
+          $iDimResize = $hColumns[$iColResize].Width
+        Endif
+      Else
+        If $iColResize < 0 And If $hColumns[$hColumns.Count - 1].Resizable And If X >= ($hColumns._GetWidth() - 1) And If X <= ($hColumns._GetWidth() + 2) Then
+          iMouse = Mouse.SizeE
+          $iColResize = $hColumns.Count - 1
+          $iDimResize = $hColumns[$iColResize].Width
+        Endif
+      Endif
+      
     Endif
     
   Endif
     
   If Mouse.Button = 0 And If $hView.Mouse <> iMouse Then $hView.Mouse = iMouse
+  
+  'If $iColResize >= 0 Then Debug "Resize?";; $iColResize
   
   If $iRowResize >= 0 Or If $iColResize >= 0 Then Return
   
@@ -765,9 +878,11 @@ Public Sub ScrollArea_MouseMove()
   $SX = X
   $SY = Y
   
+  If Not System.RightToLeft Then X -= $hRows.W
+  
   If Mouse.Left Then
     
-    If Y >= $hColumns.Height Then
+    If Y >= 0 Then
       For I = 1 To $aRowY.Max
         If Y < $aRowY[I] Then
           iRow = I + $iFirstRow - 1
@@ -777,8 +892,8 @@ Public Sub ScrollArea_MouseMove()
       If iRow < 0 Then iRow = $hRows._FindRowFromPos(Y - $hColumns.Height + $hView.ScrollY)
     Endif
     
-    If X >= $hRows.W Then
-      X += $hView.ScrollX - $hRows.Width
+    If Not bInRowHeader Then
+      X += $hView.ScrollX
       iCol = $hColumns._FindColumnFromPos(X)
     Endif
     
@@ -798,7 +913,7 @@ End
 
 Public Sub TimerScroll_Timer()
   
-  Dim X As Integer = $SX - $hRows.W + $hView.ScrollX
+  Dim X As Integer = $SX - If(System.RightToLeft, 0, $hRows.W) + $hView.ScrollX
   Dim Y As Integer = $SY - $hColumns.Height + $hView.ScrollY
   Dim iCol As Integer
   Dim iRow As Integer 
@@ -808,11 +923,11 @@ Public Sub TimerScroll_Timer()
     Return
   Endif
   
-  If $SX < $hRows.W Then
+  If InRowHeader($SX) Then
     iCol = -1
   Else
     iCol = $hColumns._FindColumnFromPos(X)
-    If iCol < 0 Then iCol = $hColumns.Count - 1
+    If iCol < 0 Then iCol = If(System.RightToLeft, 0, $hColumns.Count - 1)
   Endif
   
   If Y < 0 Then
@@ -856,6 +971,8 @@ Public Sub ScrollArea_MouseDown()
   Dim I, iOldRow As Integer
   Dim bCancel As Boolean
   Dim F As Integer = _GetFrameWidth()
+  
+  'Debug Mouse.X
   
   $MX = Mouse.X - F
   $MY = Mouse.Y - F
@@ -1330,6 +1447,7 @@ Public Sub ScrollArea_KeyPress()
   
   Dim iRow As Integer
   Dim bStop As Boolean
+  Dim iCode As Integer
   
   $bKeyEvent = True
   
@@ -1341,7 +1459,16 @@ Public Sub ScrollArea_KeyPress()
     Endif
   Endif
   
-  Select Key.Code
+  iCode = Key.Code
+  If System.RightToLeft Then
+    If iCode = Key.Left Then
+      iCode = Key.Right
+    Else If iCode = Key.Right Then
+      iCode = Key.Left
+    Endif
+  Endif
+  
+  Select iCode
     
     Case Key.Up, Key.Down, Key.Left, Key.Right, Key.Home, Key.End, Key.PageUp, Key.PageDown
       bStop = Raise KeyPress
@@ -1352,7 +1479,7 @@ Public Sub ScrollArea_KeyPress()
     
   End Select
   
-  Select Key.Code
+  Select iCode
     
     Case Key.Up
       If $iRow > 0 Then MoveTo($iRow - 1, $iCol)
@@ -1575,7 +1702,7 @@ End
 
 Public Sub ColumnAt(X As Integer) As Integer
   
-  X -= $hRows.Width
+  X -= $hRows.Width + $hView.Proxy.Proxy.X
   If X < 0 Then Return -1
   
   Return $hColumns._FindColumnFromPos(X + $hView.ScrollX)

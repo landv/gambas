@@ -236,6 +236,13 @@ BEGIN_METHOD(Mouse_Inside, GB_OBJECT control)
 
 END_METHOD
 
+BEGIN_METHOD(Mouse_Translate, GB_INTEGER dx; GB_INTEGER dy)
+
+	CHECK_VALID();
+	gMouse::translate(VARG(dx), VARG(dy));
+
+END_METHOD
+
 //-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Pointer_ScreenX)
@@ -377,6 +384,8 @@ GB_DESC CMouseDesc[] =
 	GB_STATIC_PROPERTY_READ("Delta", "f", Mouse_Delta),
 	GB_STATIC_PROPERTY_READ("Forward", "b", Mouse_Forward),
 	
+	GB_STATIC_METHOD("Translate", NULL, Mouse_Translate, "(DX)i(DY)i"),
+
 	GB_END_DECLARE
 };
 	

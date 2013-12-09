@@ -3,10 +3,13 @@
 
 Public Sub Form_Open()
 
-  Print Me.W;; gvwInfo.W
+  Dim hScrollBar As ScrollBar
+  Dim I As Integer
+  
+  Print gvwInfo.W;; gvwInfo.H;; "/";; Me.W;; Me.H
   
   gvwinfo.Clear
-  gvwinfo.Columns.Count = 2
+  gvwinfo.Columns.Count = 3
   gvwinfo.Rows.Count = 10
   gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Name"
@@ -34,7 +37,17 @@ Public Sub Form_Open()
   gvwinfo[9, 0].Text = "Needs"
   gvwinfo[9, 1].Text = ""
   
+  For I = 0 To 9
+    gvwInfo[I, 2].Text = CStr(Int(Rnd(0, 1000)))
+  Next
+  
+  For I = 0 To 2
+    gvwInfo.Columns[I].Text = ["Bleu", "Blanc", "Rouge"][I]
+  Next
+  
   gvwInfo[1, 1].Background = Color.White
+  
+  ScrollArea(gvwInfo.Proxy).Shadow = True
   
   gvwinfo.Columns.Width = -1
 

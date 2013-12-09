@@ -10,7 +10,9 @@ Public Sub Form_Open()
   Dim hFilePict As Picture
   Dim sParent As String
   
-  hDirPict = Picture["icon:/48/directory"]
+  Component.Load("gb.form")
+  
+  hDirPict = Picture["icon:/small/directory"]
   hFilePict = Picture["icon:/small/file"]
   
   tvwTest.Columns.Count = 3
@@ -20,7 +22,7 @@ Public Sub Form_Open()
     'Print File.Name(sPath); " -> "; File.Dir(sPath)
     sParent = File.Dir(sPath)
     If sParent = sDir Then sParent = ""
-    tvwTest.Add(sPath, File.Name(sPath),, sParent)[1] = Stat(sPath).Size
+    tvwTest.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict), sParent)[1] = Stat(sPath).Size
     'ListView1.Add(sPath, File.Name(sPath), If(IsDir(sPath), hDirPict, hFilePict))
   Next
   
