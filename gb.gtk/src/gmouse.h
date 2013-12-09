@@ -47,8 +47,8 @@ public:
 	static int delta();
 	static int orientation();
 	static bool isValid() { return _isValid; }
-	static int startX() { return _start_x; }
-	static int startY() { return _start_y; }
+	static int startX() { return _start_x + _dx; }
+	static int startY() { return _start_y + _dy; }
 
 	static double getAxis(GdkAxisUse axis);
 	static int getType();
@@ -62,6 +62,7 @@ public:
 //"Methods"
 	static void move(int x, int y);
 	static void translate(int dx, int dy);
+	static void resetTranslate() { translate(0, 0); }
 
 //"Private"
 	static void setWheel(int dt, int orn);
@@ -83,6 +84,8 @@ private:
 	static int _orientation;
 	static int _start_x;
 	static int _start_y;
+	static int _dx;
+	static int _dy;
 	static GdkEvent *_event;
 };
 

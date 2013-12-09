@@ -47,6 +47,8 @@ int gMouse::_delta;
 int gMouse::_orientation;
 int gMouse::_start_x;
 int gMouse::_start_y;
+int gMouse::_dx = 0;
+int gMouse::_dy = 0;
 GdkEvent *gMouse::_event = 0;
 
 void gMouse::move(int x, int y)
@@ -117,12 +119,12 @@ bool gMouse::normal()
 
 int gMouse::x()
 {
-	return _isValid ? _x : -1;
+	return _isValid ? _x + _dx : -1;
 }
 
 int gMouse::y()
 {
-	return _isValid ? _y : -1;
+	return _isValid ? _y + _dy : -1;
 }
 
 void gMouse::getScreenPos(int *x, int *y)
@@ -297,12 +299,12 @@ void gMouse::initDevices()
 
 double gMouse::getPointerX()
 {
-	return ((GdkEventMotion *)_event)->x;
+	return ((GdkEventMotion *)_event)->x + _dx;
 }
 
 double gMouse::getPointerY()
 {
-	return ((GdkEventMotion *)_event)->y;
+	return ((GdkEventMotion *)_event)->y + _dy;
 }
 
 double gMouse::getPointerScreenX()
@@ -331,8 +333,6 @@ void gMouse::invalidate()
 
 void gMouse::translate(int dx, int dy)
 {
-	_x += dx;
-	_y += dy;
-	_start_x += dx;
-	_start_y += dy;
+	_dx = dx;
+	_dy = dy;
 }

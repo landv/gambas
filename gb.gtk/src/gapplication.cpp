@@ -555,11 +555,15 @@ __FOUND_WIDGET:
 			}
 			
 			if (cancel)
+			{
+				gMouse::resetTranslate();
 				goto __RETURN;
-			
+			}
+
 			if (widget != save_control->border && widget != save_control->widget)
 			{
 				//fprintf(stderr, "widget = %p, control = %p %p %s\n", widget, save_control->border, save_control->widget, save_control->name());
+				gMouse::resetTranslate();
 				goto __RETURN;
 			}
 			
@@ -613,6 +617,7 @@ __FOUND_WIDGET:
 				goto __MOTION_TRY_PROXY;
 			}
 			
+			gMouse::resetTranslate();
 			//if (widget != save_control->border && widget != save_control->widget)
 			//	goto __RETURN;
 			
@@ -651,7 +656,10 @@ __FOUND_WIDGET:
 			}
 
 			if (cancel)
+			{
+				gMouse::resetTranslate();
 				goto __RETURN;
+			}
 				
 			if (control->_proxy_for)
 			{
@@ -660,7 +668,10 @@ __FOUND_WIDGET:
 			}
 			
 			if (widget != save_control->border && widget != save_control->widget)
+			{
+				gMouse::resetTranslate();
 				goto __RETURN;
+			}
 			
 			break;
 
