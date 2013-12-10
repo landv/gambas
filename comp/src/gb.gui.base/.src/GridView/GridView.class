@@ -1701,8 +1701,8 @@ Public Sub RowAt(Y As Integer) As Integer
 End
 
 Public Sub ColumnAt(X As Integer) As Integer
-  
-  X -= $hRows.Width + $hView.Proxy.Proxy.X
+
+  X -= $hRows.Width + $hView.Proxy.X
   If X < 0 Then Return -1
   
   Return $hColumns._FindColumnFromPos(X + $hView.ScrollX)
