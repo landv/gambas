@@ -279,19 +279,19 @@ msgstr "جامباس 3"
 msgid "Integrated Development Environment for Gambas"
 msgstr "بيئة تطوير متكاملة لجامباس"
 
-#: CBookmark.class:33
+#: CBookmark.class:40
 msgid "Define bookmark"
 msgstr ""
 
-#: CBookmark.class:38
+#: CBookmark.class:45
 msgid "Clear all bookmarks"
 msgstr ""
 
-#: CBookmark.class:42
+#: CBookmark.class:49
 msgid "Previous bookmark"
 msgstr ""
 
-#: CBookmark.class:47
+#: CBookmark.class:54
 msgid "Next bookmark"
 msgstr ""
 
@@ -355,7 +355,7 @@ msgstr ""
 msgid "write-only"
 msgstr ""
 
-#: CClassInfo.class:627 Project.module:1641
+#: CClassInfo.class:627 Project.module:1655
 msgid "read-only"
 msgstr "قراءة فقط"
 
@@ -719,7 +719,7 @@ msgstr ""
 msgid "Classes"
 msgstr " الطّبقات"
 
-#: CInsertColor.class:106 FEditor.form:263 FTextEditor.form:182
+#: CInsertColor.class:113 FEditor.form:263 FTextEditor.form:182
 msgid "Insert color"
 msgstr ""
 
@@ -739,10 +739,12 @@ msgstr ""
 msgid "Provides"
 msgstr ""
 
+#: CLibraryInfo.class:158 ComponentItem.class:153 FPropertyComponent.form:142
 #: LibraryItem.class:60
 msgid "Requires"
 msgstr ""
 
+#: CModule.class:28 FCreateFile.form:153 FEditor.form:372 FForm.form:430
 #: FMain.form:669
 msgid "Form"
 msgstr "فورم"
@@ -787,27 +789,28 @@ msgstr ""
 msgid "Event loop"
 msgstr ""
 
-#: Project.module:1743
+#: CProjectTree.class:285 FMain.form:292 FSearch.class:97 FSelectIcon.form:31
+#: Project.module:1766
 msgid "Project"
 msgstr " المشروع"
 
-#: CProjectTree.class:288 Project.module:1744
+#: CProjectTree.class:288 Project.module:1767
 msgid "Sources"
 msgstr "المصادر"
 
-#: CProjectTree.class:290 Project.module:1745
+#: CProjectTree.class:290 Project.module:1768
 msgid "Connections"
 msgstr "الاتصالات"
 
-#: CProjectTree.class:298 Project.module:1746
+#: CProjectTree.class:298 Project.module:1769
 msgid "Public"
 msgstr ""
 
-#: CProjectTree.class:299 Project.module:1747
+#: CProjectTree.class:299 Project.module:1770
 msgid "Data"
 msgstr "البيانات"
 
-#: CRecentFile.class:69 FMain.class:592
+#: CRecentFile.class:69 FMain.class:590
 msgid "Today"
 msgstr "اليوم"
 
@@ -827,7 +830,23 @@ msgstr ""
 msgid "This month"
 msgstr ""
 
-#: FTranslate.class:554 Project.module:508
+#: CWaitingAnimation.class:56 FColorChooser.form:60 FConflict.class:218
+#: FConnectionEditor.class:387 FCreateFile.form:461 FDebugInfo.form:263
+#: FEditor.class:2348 FExportData.class:126 FFieldChooser.form:138
+#: FFileProperty.class:140 FFontChooser.form:40 FForm.class:3167
+#: FGotoLine.form:23 FHelpBrowser.form:61 FImageEditor.class:351
+#: FImageOffsetSelection.form:33 FImageQuality.form:30 FImageResize.form:49
+#: FImageRotate.form:32 FInfo.class:263 FList.form:121 FMain.class:212
+#: FMakeInstall.class:360 FMenu.form:365 FNewConnection.form:277
+#: FNewTable.form:86 FNewTranslation.form:21 FOpenProject.form:158
+#: FOption.class:675 FPasteSpecial.form:77 FPasteTable.form:107
+#: FProjectProperty.form:768 FProjectVersion.class:209
+#: FPropertyComponent.form:267 FProxy.form:57 FReportBorderChooser.form:48
+#: FReportBrushChooser.form:36 FReportCoordChooser.form:26
+#: FReportPaddingChooser.form:75 FSave.form:28 FSaveProjectAs.form:76
+#: FSearch.class:869 FSelectExtraFile.form:43 FSelectIcon.form:87
+#: FSnippet.form:57 FTableChooser.form:68 FText.form:41 FTextEditor.class:613
+#: FTranslate.class:554 Project.module:512
 msgid "Cancel"
 msgstr " ألغاء"
 
@@ -839,10 +858,12 @@ msgstr ""
 msgid "This program is published under the GNU General Public License."
 msgstr ""
 
+#: ComponentItem.class:139 FProjectProperty.class:1267
 #: FPropertyComponent.form:80
 msgid "Experimental"
 msgstr "تجريبي"
 
+#: ComponentItem.class:141 FProjectProperty.class:1265
 #: FPropertyComponent.form:80
 msgid "Not finished but stable"
 msgstr ""
@@ -883,19 +904,19 @@ msgstr ""
 msgid "Remove all"
 msgstr ""
 
-#: Design.module:159 Project.module:2178
+#: Design.module:159 Project.module:2209
 msgid "first"
 msgstr ""
 
-#: Design.module:161 Project.module:2180
+#: Design.module:161 Project.module:2211
 msgid "second"
 msgstr ""
 
-#: Design.module:163 Project.module:2182
+#: Design.module:163 Project.module:2213
 msgid "third"
 msgstr ""
 
-#: Design.module:257 Project.module:2241
+#: Design.module:257 Project.module:2272
 msgid "in &1:&2."
 msgstr ""
 
@@ -908,9 +929,21 @@ msgid "The program has stopped unexpectedly:"
 msgstr ""
 
 #: Design.module:367
-msgid "The program has returned\nthe value: &1"
+msgid ""
+"The program has returned\n"
+"the value: &1"
 msgstr ""
 
+#: Design.module:428 FColorChooser.form:54 FConnectionEditor.class:587
+#: FCreateFile.form:467 FFieldChooser.form:132 FFontChooser.form:34
+#: FGotoLine.form:17 FImageOffsetSelection.form:27 FImageQuality.form:24
+#: FImageResize.form:103 FImageRotate.form:26 FInfo.form:181 FList.form:115
+#: FMain.class:1842 FMakeInstall.class:306 FMenu.form:360
+#: FNewConnection.form:271 FNewTable.form:80 FNewTranslation.form:15
+#: FOpenProject.form:152 FPasteSpecial.form:71 FProjectProperty.form:762
+#: FPropertyComponent.form:261 FProxy.form:63 FReportBorderChooser.form:54
+#: FReportBrushChooser.form:42 FReportCoordChooser.form:32
+#: FReportPaddingChooser.form:69 FSelectExtraFile.form:37 FSelectIcon.form:82
 #: FSnippet.form:51 FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr " الموافقة"
@@ -940,7 +973,12 @@ msgid "Gambas Almost Means Basic!"
 msgstr ""
 
 #: FAbout.form:57
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgid ""
+"<h2 align=center>Licence</h2>\n"
+"\n"
+"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
+"\n"
+"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
 msgstr ""
 
 #: FAbout.form:63
@@ -959,106 +997,139 @@ msgstr "النظام"
 msgid "Free"
 msgstr "خالى"
 
-#: FConflict.class:24
+#: FConflict.class:23
 msgid "&Edit"
 msgstr "&تحرير"
 
-#: FConflict.class:24
-msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
+#: FConflict.class:23
+msgid ""
+"This file is in conflict with the revision #&1.\n"
+"You must resolve the conflict in order to use the file."
 msgstr ""
 
-#: FConflict.class:130
-msgid "Version conflict"
+#: FConflict.class:116
+msgid "Unable to load file:"
 msgstr ""
 
-#: FConflict.class:185
-msgid "The file has been modified.\nDo you really want to close the dialog?"
+#: FConflict.class:158 FCreateFile.form:237 FDebugInfo.class:70
+msgid "Text"
+msgstr "نّصوص"
+
+#: FConflict.class:160 FCreateFile.form:216 FMain.form:696
+#: FReportBrushChooser.form:49 Project.module:204
+msgid "Image"
+msgstr "صورة"
+
+#: FConflict.class:218
+msgid ""
+"The file has been modified.\n"
+"Do you really want to close the dialog?"
 msgstr ""
 
-#: FConflict.class:213
+#: FConflict.class:246
 msgid "Some conflicts are not yet resolved."
 msgstr ""
 
-#: FConflict.class:219
+#: FConflict.class:252
 msgid "Unable to resolve the conflict."
 msgstr ""
 
-#: FConflict.class:248
-msgid "The file has been modified.\nDo you really want to open another file?"
+#: FConflict.class:281
+msgid ""
+"The file has been modified.\n"
+"Do you really want to open another file?"
 msgstr ""
 
-#: FConflict.class:256
+#: FConflict.class:289
 msgid "Conflict files"
 msgstr ""
 
-#: FConflict.form:47 FMain.form:735 FOpenProject.form:40
-msgid "Open"
+#: FConflict.form:32
+msgid "Version conflict"
+msgstr ""
+
+#: FConflict.form:37
+#, fuzzy
+msgid "mnuOpen"
 msgstr "افتح"
 
+#: FConflict.form:72 FConnectionEditor.form:377 FEditor.form:144
+#: FForm.form:239 FImageEditor.form:123 FMain.form:767 FMenu.form:105
 #: FOutput.form:58 FProjectVersion.form:234 FTextEditor.form:108
 msgid "Cut"
 msgstr "قطع"
 
+#: FConflict.form:78 FConnectionEditor.form:149 FEditor.form:150
+#: FForm.form:246 FImageEditor.form:131 FList.form:92 FMain.form:774
+#: FMenu.form:111 FOutput.form:65 FProjectVersion.form:240 FSystemInfo.form:74
 #: FTextEditor.form:115
 msgid "Copy"
 msgstr "انسخ"
 
+#: FConflict.form:84 FConnectionEditor.form:157 FEditor.form:157
+#: FForm.form:259 FImageEditor.form:138 FList.form:98 FMain.form:781
+#: FMenu.form:117 FOutput.form:72 FPasteTable.form:101
 #: FProjectVersion.form:246 FTextEditor.form:122
 msgid "Paste"
 msgstr "الصق"
 
+#: FConflict.form:90 FConnectionEditor.form:405 FEditor.form:128
+#: FFieldChooser.form:121 FForm.form:222 FImageEditor.form:104 FList.form:104
+#: FOption.form:561 FOutput.form:41 FProjectVersion.form:252
 #: FTextEditor.form:91
 msgid "Undo"
 msgstr "تراجع"
 
+#: FConflict.form:96 FConnectionEditor.form:412 FEditor.form:135
+#: FForm.form:229 FImageEditor.form:112 FOutput.form:48
 #: FProjectVersion.form:258 FTextEditor.form:98
 msgid "Redo"
 msgstr " أعد"
 
+#: FConflict.form:102 FEditor.form:452 FMenu.form:127 FProjectVersion.form:264
 #: FTextEditor.form:326
 msgid "Indent"
 msgstr ""
 
+#: FConflict.form:108 FEditor.form:460 FMenu.form:133 FProjectVersion.form:270
 #: FTextEditor.form:334
 msgid "Unindent"
 msgstr ""
 
-#: FConflict.form:112 FCreateFile.form:237 FDebugInfo.class:70
-msgid "Text"
-msgstr "نّصوص"
+#: FConflict.form:150 FMain.form:735 FOpenProject.form:40
+msgid "Open"
+msgstr "افتح"
 
-#: FReportBrushChooser.form:49 Project.module:202
-msgid "Image"
-msgstr "صورة"
+#: FConflict.form:152
+#, fuzzy
+msgid "Open..."
+msgstr "افتح"
 
-#: FConflict.form:129 FInfo.form:136
-msgid "Details"
-msgstr "التفاصيل"
-
-#: FConflict.form:138
-msgid "Resolve conflict with"
-msgstr ""
-
-#: FConflict.form:154 FInfo.form:30
-msgid "Information"
-msgstr "المعلومات"
-
+#: FConflict.form:158 FConnectionEditor.form:102 FEditor.form:323
+#: FForm.form:421 FImageEditor.form:328 FMenu.class:70 FSaveProjectAs.form:82
 #: FTextEditor.form:237
 msgid "Save"
 msgstr " احفظ"
 
-#: FConflict.form:178
+#: FConflict.form:169
 msgid "Solve"
 msgstr ""
 
+#: FConflict.form:175 FDebugInfo.form:270 FEditor.form:310
+#: FFileProperty.form:75 FForm.form:408 FImageEditor.form:335
+#: FImportTable.form:222 FPatch.form:105 FProjectVersion.form:323
 #: FSystemInfo.form:80 FTextEditor.form:244 FTips.form:84 FTranslate.form:297
 msgid "Close"
 msgstr " اغلق"
 
+#: FConnectionEditor.class:44 FCreateFile.form:313 FDebugInfo.class:38
+#: FMakeInstall.form:184 FNewConnection.form:64 FNewTable.form:33
 #: FOption.form:1038
 msgid "Name"
 msgstr " التّحرّك"
 
+#: FConnectionEditor.class:49 FCreateFile.form:364 FCreateProject.form:97
+#: FDebugInfo.class:76 FInfo.form:84 FNewConnection.form:78 FNewTable.form:48
 #: FProxy.form:27
 msgid "Type"
 msgstr " النّوع"
@@ -1083,7 +1154,7 @@ msgstr ""
 msgid "Field"
 msgstr "مجال"
 
-#: FConnectionEditor.class:256 FMakeInstall.form:251 FProjectProperty.form:259
+#: FConnectionEditor.class:256 FMakeInstall.form:251 FProjectProperty.form:266
 msgid "Description"
 msgstr " الوصف"
 
@@ -1119,6 +1190,7 @@ msgstr ""
 msgid "Boolean"
 msgstr "بولياني"
 
+#: FConnectionEditor.class:710 FProjectVersion.class:288
 #: MConnection.module:115
 msgid "Date"
 msgstr "التاريخ"
@@ -1187,7 +1259,7 @@ msgstr ""
 msgid "Select the CSV file to import"
 msgstr ""
 
-#: FConnectionEditor.class:1619 FSearch.form:172 FTranslate.class:1199
+#: FConnectionEditor.class:1619 FSearch.form:172 FTranslate.class:1204
 msgid "All files"
 msgstr "كل الملفات"
 
@@ -1207,6 +1279,8 @@ msgstr ""
 msgid "Connection editor"
 msgstr ""
 
+#: FConnectionEditor.form:110 FEditor.form:317 FForm.form:415
+#: FHelpBrowser.form:67 FImageEditor.form:321 FTextEditor.form:231
 #: FTranslate.form:72
 msgid "Reload"
 msgstr " أعد التحميل"
@@ -1223,7 +1297,8 @@ msgstr ""
 msgid "Delete table"
 msgstr ""
 
-#: FOption.form:991 FProjectProperty.form:516 FPropertyComponent.form:236
+#: FConnectionEditor.form:133 FMain.form:862 FMakeInstall.form:642
+#: FOption.form:991 FProjectProperty.form:523 FPropertyComponent.form:236
 msgid "Remove"
 msgstr "أزل"
 
@@ -1247,6 +1322,7 @@ msgstr ""
 msgid "Import text file"
 msgstr ""
 
+#: FConnectionEditor.form:165 FImportTable.form:215 FOption.form:1015
 #: FTranslate.form:317
 msgid "Import"
 msgstr "ا&ستورد"
@@ -1259,7 +1335,8 @@ msgstr ""
 msgid "Fields"
 msgstr ""
 
-#: FOption.form:1160 FProjectProperty.form:719 FPropertyComponent.form:230
+#: FConnectionEditor.form:233 FMain.class:1944 FMakeInstall.form:636
+#: FOption.form:1160 FProjectProperty.form:726 FPropertyComponent.form:230
 msgid "Add"
 msgstr "أضف"
 
@@ -1291,6 +1368,7 @@ msgstr ""
 msgid "New query"
 msgstr ""
 
+#: FConnectionEditor.form:363 FCreateFile.form:82 FMain.form:632
 #: FOption.form:977 FTranslate.form:67
 msgid "New"
 msgstr " جديد"
@@ -1311,6 +1389,7 @@ msgstr ""
 msgid "Export"
 msgstr "صدّر"
 
+#: FConnectionEditor.form:483 FForm.form:266 FList.form:64 FMain.form:795
 #: FMenu.form:95 FNewConnection.class:327 FOption.class:858 FTranslate.form:77
 msgid "Delete"
 msgstr " احذف"
@@ -1375,6 +1454,8 @@ msgstr "Style sheet"
 msgid "Javascript file"
 msgstr ""
 
+#: FCreateFile.form:323 FCreateProject.form:273 FImportTable.form:57
+#: FMakePatch.form:63 FProjectProperty.form:288 FPropertyComponent.form:63
 #: FSearch.form:100
 msgid "Options"
 msgstr " الخيارات"
@@ -1431,7 +1512,7 @@ msgstr "المشروع تم إنشاؤه بنجاح."
 msgid "New project"
 msgstr " المشروع الجديد"
 
-#: FCreateProject.form:81 FProjectProperty.form:202
+#: FCreateProject.form:81 FProjectProperty.form:209
 msgid "Project type"
 msgstr "نوع المشروع"
 
@@ -1460,7 +1541,9 @@ msgid "CGI Web application"
 msgstr ""
 
 #: FCreateProject.form:258
-msgid "Application stored in a\nSubversion repository"
+msgid ""
+"Application stored in a\n"
+"Subversion repository"
 msgstr ""
 
 #: FCreateProject.form:287
@@ -1571,6 +1654,7 @@ msgstr " التّعبير"
 msgid "Function"
 msgstr "وظيفة"
 
+#: FDebugInfo.class:55 FImageEditor.form:523 FImportTable.class:56
 #: FOption.form:642
 msgid "Line"
 msgstr "سطر"
@@ -1595,6 +1679,7 @@ msgstr ""
 msgid "native code"
 msgstr " الاسم"
 
+#: FDebugInfo.class:570 FImageEditor.form:610 FList.form:86
 #: FMakeInstall.form:660 FOption.class:675 FOutput.form:79
 msgid "Clear"
 msgstr "احذف"
@@ -1707,11 +1792,14 @@ msgstr "المتغير الحرفي لا يمكن أن يُوجَد ."
 msgid "Stack backtrace"
 msgstr ""
 
-#: FEditor.class:2382 FImageEditor.class:351 FTextEditor.class:604
-msgid "The file has been modified.\n\nAll your changes will be lost."
+#: FEditor.class:2348 FImageEditor.class:351 FTextEditor.class:613
+msgid ""
+"The file has been modified.\n"
+"\n"
+"All your changes will be lost."
 msgstr ""
 
-#: FEditor.class:2804 FTextEditor.class:990
+#: FEditor.class:2770 FTextEditor.class:1023
 msgid "(Declarations)"
 msgstr ""
 
@@ -1844,7 +1932,10 @@ msgid "&Overwrite"
 msgstr ""
 
 #: FExportData.class:126
-msgid "This file already exists.\n\nDo you want to overwrite it?"
+msgid ""
+"This file already exists.\n"
+"\n"
+"Do you want to overwrite it?"
 msgstr ""
 
 #: FExportData.form:31 FImportTable.form:100
@@ -1923,11 +2014,12 @@ msgstr ""
 msgid "This file has not been modified since the last commit."
 msgstr ""
 
-#: FProjectVersion.class:204 FSave.form:21 Project.module:3339
+#: FFileProperty.class:140 FInfo.class:263 FMakeInstall.class:360
+#: FProjectVersion.class:209 FSave.form:21 Project.module:3370
 msgid "Continue"
 msgstr " استمرّ"
 
-#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:204
+#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:209
 msgid "You are going to cancel your changes!"
 msgstr "ستقوم بإلغاء تغييراتك!"
 
@@ -1951,12 +2043,15 @@ msgstr ""
 msgid "Bad form file"
 msgstr " ملفّ فورم خاطئ"
 
-#: FForm.class:1301
+#: FForm.class:1308
 msgid "Component missing for control &1"
 msgstr ""
 
-#: FForm.class:3160
-msgid "The form has been modified.\n\nAll your changes will be lost."
+#: FForm.class:3167
+msgid ""
+"The form has been modified.\n"
+"\n"
+"All your changes will be lost."
 msgstr ""
 
 #: FForm.form:129
@@ -2171,7 +2266,7 @@ msgstr "أنقل إلى الأسفل"
 msgid "Move bottom"
 msgstr ""
 
-#: FHelpBrowser.class:24 FProjectProperty.form:409
+#: FHelpBrowser.class:24 FProjectProperty.form:416
 msgid "Default language"
 msgstr "اللغة الافتراضية"
 
@@ -2427,6 +2522,7 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
+#: FImageProperty.form:360 FInfo.form:97 FSelectIcon.form:54
 #: FTranslate.class:70
 msgid "Size"
 msgstr " الحجم"
@@ -2467,7 +2563,7 @@ msgstr ""
 msgid "Preview"
 msgstr "معاينة"
 
-#: FImageProperty.form:547 FOption.form:999 FProjectProperty.form:656
+#: FImageProperty.form:547 FOption.form:999 FProjectProperty.form:663
 msgid "Reset"
 msgstr "إعادة تعيين"
 
@@ -2647,7 +2743,11 @@ msgstr "سجل تغييرات"
 msgid "&1, &2 line(s)"
 msgstr ""
 
-#: FInfo.form:60 FProjectProperty.form:171 FPropertyComponent.form:58
+#: FInfo.form:30
+msgid "Information"
+msgstr "المعلومات"
+
+#: FInfo.form:60 FProjectProperty.form:178 FPropertyComponent.form:58
 msgid "General"
 msgstr "عام"
 
@@ -2663,6 +2763,10 @@ msgstr "أخر تعديل"
 msgid "Directory"
 msgstr " الدّليل"
 
+#: FInfo.form:136
+msgid "Details"
+msgstr "التفاصيل"
+
 #: FList.class:103
 msgid "Item &1"
 msgstr ""
@@ -2675,7 +2779,7 @@ msgstr ""
 msgid "Edit list property"
 msgstr "حرر خاصية القائمة"
 
-#: FList.form:58 FMenu.form:80 FProjectProperty.form:510
+#: FList.form:58 FMenu.form:80 FProjectProperty.form:517
 msgid "Insert"
 msgstr ""
 
@@ -2699,71 +2803,77 @@ msgstr " لا يمكن أن يحذف الملفّ أو الدّليل"
 msgid "File or directory does not exist anymore."
 msgstr ""
 
-#: FMain.class:613
+#: FMain.class:611
 msgid "Sort history"
 msgstr ""
 
-#: FMain.class:617 FOpenProject.form:71 FWelcome.form:42
+#: FMain.class:615 FOpenProject.form:71 FWelcome.form:42
 msgid "Sort by date"
 msgstr ""
 
-#: FMain.class:617 FOpenProject.form:80 FWelcome.form:49
+#: FMain.class:615 FOpenProject.form:80 FWelcome.form:49
 msgid "Sort by name"
 msgstr ""
 
-#: FMain.class:617 FOpenProject.form:88 FWelcome.form:55
+#: FMain.class:615 FOpenProject.form:88 FWelcome.form:55
 msgid "Sort by path"
 msgstr "ترتيب حسب المسار"
 
-#: FMain.class:628
+#: FMain.class:626
 msgid "&Clear history"
 msgstr "&حذف التاريخ"
 
-#: FMain.class:794
+#: FMain.class:792
 msgid "New folder"
 msgstr "مجلد جديد"
 
-#: FMain.class:865
-msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
-msgstr "أدوات  GNU للترجمة ليست منصبة على نظامك.\n\nالرجاء تنصيب هذه الأدوات حتى تتمكن من الترجمة."
+#: FMain.class:863
+msgid ""
+"The GNU translation tools are not installed on your system.\n"
+"\n"
+"Please install them to be able to do the translation."
+msgstr ""
+"أدوات  GNU للترجمة ليست منصبة على نظامك.\n"
+"\n"
+"الرجاء تنصيب هذه الأدوات حتى تتمكن من الترجمة."
 
-#: FMain.class:1103 FPropertyComponent.class:232
+#: FMain.class:1101 FPropertyComponent.class:232
 msgid "Library properties"
 msgstr ""
 
-#: FMain.class:1515
+#: FMain.class:1513
 msgid "Unable to drop file into the project."
 msgstr ""
 
-#: FMain.class:1633
+#: FMain.class:1631
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "جميع النسخ الاحتياطية والملفات المنشأة ستزال من دليل المشروع."
 
-#: FMain.class:1633
+#: FMain.class:1631
 msgid "Clean"
 msgstr "تنظيف"
 
-#: FMain.class:1844
+#: FMain.class:1842
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr ""
 
-#: FMain.class:1946
+#: FMain.class:1944
 msgid "Do you really want to add this file to the repository?"
 msgstr ""
 
-#: FMain.class:2085
+#: FMain.class:2083
 msgid "Choose a profile"
 msgstr ""
 
-#: FMain.class:2086
+#: FMain.class:2084
 msgid "Profile for &1 project"
 msgstr ""
 
-#: FMain.class:2302 FProperty.class:947
+#: FMain.class:2300 FProperty.class:947
 msgid "Select a file"
 msgstr ""
 
-#: FMain.class:2306
+#: FMain.class:2304
 msgid "This file is located inside the project."
 msgstr ""
 
@@ -2859,11 +2969,11 @@ msgstr "جري (شغل)"
 msgid "Use terminal emulator"
 msgstr ""
 
-#: FMain.form:427 FProjectProperty.form:470
+#: FMain.form:427 FProjectProperty.form:477
 msgid "Use embedded HTTP server"
 msgstr ""
 
-#: FMain.form:433 FProjectProperty.form:435
+#: FMain.form:433 FProjectProperty.form:442
 msgid "Activate profiling"
 msgstr ""
 
@@ -3007,7 +3117,7 @@ msgstr ""
 msgid "Show all"
 msgstr ""
 
-#: FMain.form:1018 FProjectProperty.form:116
+#: FMain.form:1018 FProjectProperty.form:117
 msgid "Project properties"
 msgstr "خصائص المشروع"
 
@@ -3079,7 +3189,7 @@ msgstr "&الأدوات"
 msgid "&?"
 msgstr "-"
 
-#: FMain.form:1376 FProjectProperty.form:607
+#: FMain.form:1376 FProjectProperty.form:614
 msgid "Reset filter"
 msgstr ""
 
@@ -3272,7 +3382,9 @@ msgid "Mimetypes"
 msgstr ""
 
 #: FMakeInstall.form:578
-msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
+msgid ""
+"Enter the mimetypes handled by your application there.\n"
+"Please enter one mimetype by line.\n"
 msgstr ""
 
 #: FMakeInstall.form:590
@@ -3308,7 +3420,9 @@ msgid "Extra autoconf tests"
 msgstr ""
 
 #: FMakeInstall.form:747
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgid ""
+"Add extra tests for the configuration process.\n"
+"<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
 msgstr ""
 
 #: FMakeInstall.form:755
@@ -3324,7 +3438,12 @@ msgid "Create package"
 msgstr ""
 
 #: FMakeInstall.form:773
-msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
+msgid ""
+"All needed information have been collected. You can now create the installation packages for your application...\n"
+"<p>Click on the <b>OK</b> button to create the packages.\n"
+"<p>Click on the <b>Previous</b> button if you had made a mistake.\n"
+"<p>Click on the <b>Cancel</b> button to cancel the operation.\n"
+"\n"
 msgstr ""
 
 #: FMakePatch.class:23
@@ -3379,7 +3498,7 @@ msgstr ""
 msgid "*.gz;*.bz2;*.xz"
 msgstr ""
 
-#: FMakePatch.form:89 Project.module:4394
+#: FMakePatch.form:89 Project.module:4425
 msgid "Source packages"
 msgstr "مصدر الحزمة"
 
@@ -3423,7 +3542,7 @@ msgstr ""
 msgid "This menu is too deep !"
 msgstr " هذه القائمة عميقة جدًّا !"
 
-#: FMenu.class:965 Project.module:5202
+#: FMenu.class:965 Project.module:5258
 msgid "modified"
 msgstr " عدّل"
 
@@ -3495,7 +3614,7 @@ msgstr "كلمة السر"
 msgid "Remember password"
 msgstr "تذكر كلمة السر"
 
-#: FNewConnection.form:181 Project.module:199
+#: FNewConnection.form:181 Project.module:201
 msgid "Database"
 msgstr "قاعدة البيانات"
 
@@ -3655,7 +3774,7 @@ msgstr ""
 msgid "Install Gambas font for code edition"
 msgstr ""
 
-#: FOption.form:371 Project.module:203
+#: FOption.form:371 Project.module:205
 msgid "Miscellaneous"
 msgstr " متنوّع"
 
@@ -3663,11 +3782,11 @@ msgstr " متنوّع"
 msgid "Sort properties"
 msgstr ""
 
-#: FOption.form:388 FProjectProperty.form:339 FPropertyComponent.form:97
+#: FOption.form:388 FProjectProperty.form:346 FPropertyComponent.form:97
 msgid "No"
 msgstr "لا"
 
-#: FOption.form:388 FProjectProperty.form:339 FPropertyComponent.form:97
+#: FOption.form:388 FProjectProperty.form:346 FPropertyComponent.form:97
 msgid "Yes"
 msgstr "نعم"
 
@@ -3683,7 +3802,7 @@ msgstr ""
 msgid "Toolbox size"
 msgstr "حجم شريط الأدوات"
 
-#: FOption.form:454 FProjectProperty.form:209
+#: FOption.form:454 FProjectProperty.form:216
 msgid "Normal"
 msgstr "عادي"
 
@@ -3723,7 +3842,7 @@ msgstr "تصدير سيمة"
 msgid "Default tab size"
 msgstr "حجم جدولة افتراضي"
 
-#: FOption.form:624 FProjectProperty.form:314
+#: FOption.form:624 FProjectProperty.form:321
 msgid "space(s)"
 msgstr "المسافات"
 
@@ -3872,8 +3991,14 @@ msgid "Quiet external commands"
 msgstr ""
 
 #: FOutput.class:31
-msgid "Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"
-msgstr " مرحبًا إلى لوحة تحكّم جامباس.\n لتقيّم أيّ تعبير, اكتب ؟ ثم التعبير ثم زر الادخال\n"
+msgid ""
+"Welcome to the Gambas console.\n"
+"To evaluate any expression, type '?' followed by\n"
+"the expression, then hit return.\n"
+"\n"
+msgstr ""
+" مرحبًا إلى لوحة تحكّم جامباس.\n"
+" لتقيّم أيّ تعبير, اكتب ؟ ثم التعبير ثم زر الادخال\n"
 
 #: FOutput.form:30
 msgid "Console - Gambas"
@@ -4003,7 +4128,7 @@ msgstr "متغير"
 msgid "Snapping value is incorrect."
 msgstr " انهيار القيمة (Snapping) خطأ."
 
-#: FProjectProperty.class:408 Project.module:3338
+#: FProjectProperty.class:408 Project.module:3369
 msgid "Some components are missing: &1"
 msgstr "بعض المكونات مفقودة: &1"
 
@@ -4035,131 +4160,135 @@ msgstr ""
 msgid "Stable"
 msgstr ""
 
-#: FProjectProperty.form:125
+#: FProjectProperty.form:126
 msgid "GB_GUI=gb.qt4"
 msgstr ""
 
-#: FProjectProperty.form:131
+#: FProjectProperty.form:132
 msgid "GB_GUI=gb.gtk"
 msgstr ""
 
-#: FProjectProperty.form:137
+#: FProjectProperty.form:138
 msgid "GB_STOCK_DEBUG=1"
 msgstr ""
 
-#: FProjectProperty.form:143
+#: FProjectProperty.form:144
 msgid "GB_JIT_DEBUG=1"
 msgstr ""
 
-#: FProjectProperty.form:149
+#: FProjectProperty.form:150
 msgid "GB_HTTPD_DEBUG=1"
 msgstr ""
 
-#: FProjectProperty.form:155
+#: FProjectProperty.form:156
 msgid "GB_HTTPD_PORT=8080"
 msgstr ""
 
-#: FProjectProperty.form:161
+#: FProjectProperty.form:162
+msgid "GB_REVERSE=1"
+msgstr ""
+
+#: FProjectProperty.form:168
 msgid "LANG=C ; LC_ALL=C"
 msgstr ""
 
-#: FProjectProperty.form:209
+#: FProjectProperty.form:216
 msgid "Component"
 msgstr " العنصر"
 
-#: FProjectProperty.form:209
+#: FProjectProperty.form:216
 msgid "Library"
 msgstr ""
 
-#: FProjectProperty.form:215
+#: FProjectProperty.form:222
 msgid "Version"
 msgstr " النّسخة"
 
-#: FProjectProperty.form:241
+#: FProjectProperty.form:248
 msgid "Get from 'VERSION' file"
 msgstr ""
 
-#: FProjectProperty.form:248
+#: FProjectProperty.form:255
 msgid "Title"
 msgstr " الاسم"
 
-#: FProjectProperty.form:271
+#: FProjectProperty.form:278
 msgid "Author(s)"
 msgstr "المؤلف/ون"
 
-#: FProjectProperty.form:291
+#: FProjectProperty.form:298
 msgid "Edition"
 msgstr "النسخة"
 
-#: FProjectProperty.form:302
+#: FProjectProperty.form:309
 msgid "Tab size"
 msgstr "حجم جدولة"
 
-#: FProjectProperty.form:322
+#: FProjectProperty.form:329
 msgid "Compilation"
 msgstr "تصريف"
 
-#: FProjectProperty.form:333
+#: FProjectProperty.form:340
 msgid "Module symbols are public by default"
 msgstr ""
 
-#: FProjectProperty.form:350
+#: FProjectProperty.form:357
 msgid "Form controls are public"
 msgstr "عناصر التحكم بالفورم عامة"
 
-#: FProjectProperty.form:367
+#: FProjectProperty.form:374
 msgid "Activate warnings"
 msgstr ""
 
-#: FProjectProperty.form:381 FTranslate.form:107
+#: FProjectProperty.form:388 FTranslate.form:107
 msgid "Translation"
 msgstr " التّرجمة"
 
-#: FProjectProperty.form:392
+#: FProjectProperty.form:399
 msgid "Project is translatable"
 msgstr " المشروع ممكن ترجمته"
 
-#: FProjectProperty.form:424
+#: FProjectProperty.form:431
 msgid "Debugging"
 msgstr "تنقيح"
 
-#: FProjectProperty.form:452
+#: FProjectProperty.form:459
 msgid "Use a terminal emulator"
 msgstr ""
 
-#: FProjectProperty.form:481
+#: FProjectProperty.form:488
 msgid "Environment"
 msgstr "البيئة"
 
-#: FProjectProperty.form:491
+#: FProjectProperty.form:498
 msgid "Arguments"
 msgstr "المدخلات"
 
-#: FProjectProperty.form:544
+#: FProjectProperty.form:551
 msgid "Environment variables"
 msgstr "متغيرات البيئة"
 
-#: FProjectProperty.form:563
+#: FProjectProperty.form:570
 msgid "&Insert"
 msgstr "&ادخال"
 
-#: FProjectProperty.form:576 FPropertyComponent.form:198
+#: FProjectProperty.form:583 FPropertyComponent.form:198
 msgid "Components"
 msgstr " العناصر"
 
-#: FProjectProperty.form:615
+#: FProjectProperty.form:622
 msgid "Show only components used in project"
 msgstr " أظهر فقط العناصر التي استخدمت في المشروع"
 
-#: FProjectProperty.form:645
+#: FProjectProperty.form:652
 msgid "About component"
 msgstr "عن المكون"
 
-#: FProjectProperty.form:677
+#: FProjectProperty.form:684
 msgid "Libraries"
 msgstr ""
 
-#: FProjectProperty.form:696
+#: FProjectProperty.form:703
 msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
 msgstr ""
 
@@ -4187,19 +4316,19 @@ msgstr ""
 msgid "The project could not be committed."
 msgstr ""
 
-#: FProjectVersion.class:193
+#: FProjectVersion.class:194
 msgid "Unable to update project from repository."
 msgstr ""
 
-#: FProjectVersion.class:195
+#: FProjectVersion.class:196
 msgid "Project has been updated from repository successfully."
 msgstr ""
 
-#: FProjectVersion.class:277
+#: FProjectVersion.class:282
 msgid "Revision"
 msgstr ""
 
-#: FProjectVersion.class:280 ProjectItem.class:82
+#: FProjectVersion.class:285 ProjectItem.class:82
 msgid "Author"
 msgstr "المؤلف"
 
@@ -4531,15 +4660,15 @@ msgstr "حرر خاصية الكتابة"
 msgid "Use a fixed font"
 msgstr "استخدم خط ثابت"
 
-#: FTextEditor.class:815
+#: FTextEditor.class:824
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr ""
 
-#: FTextEditor.class:815
+#: FTextEditor.class:824
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr ""
 
-#: FTextEditor.class:821
+#: FTextEditor.class:830
 msgid "Unable to compress file."
 msgstr ""
 
@@ -4639,7 +4768,7 @@ msgstr ""
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr ""
 
-#: FTranslate.class:1114 Project.module:4359
+#: FTranslate.class:1119 Project.module:4390
 msgid "The '&1' command has failed."
 msgstr ""
 
@@ -6171,299 +6300,319 @@ msgstr ""
 msgid "Patch didn't apply:\n"
 msgstr ""
 
-#: Project.module:197
+#: Project.module:199
 msgid "Automation"
 msgstr "التنفيذ التلقائي"
 
-#: Project.module:198
+#: Project.module:200
 msgid "Basic"
 msgstr "بسيط"
 
-#: Project.module:200
+#: Project.module:202
 msgid "Drawing"
 msgstr "رسم"
 
-#: Project.module:201
+#: Project.module:203
 msgid "Games"
 msgstr "الألعاب"
 
-#: Project.module:204
+#: Project.module:206
 msgid "Networking"
 msgstr "شبكات"
 
-#: Project.module:205
+#: Project.module:207
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: Project.module:206
+#: Project.module:208
 msgid "Printing"
 msgstr "طباعة"
 
-#: Project.module:207
+#: Project.module:209
 msgid "Sound"
 msgstr "صوتيات"
 
-#: Project.module:208
+#: Project.module:210
 msgid "Video"
 msgstr "مرئي"
 
-#: Project.module:209
+#: Project.module:211
 msgid "Controls"
 msgstr "تحكم"
 
-#: Project.module:210
+#: Project.module:212
 msgid "Multimedia"
 msgstr ""
 
-#: Project.module:478
+#: Project.module:482
 msgid "This project does not exist."
 msgstr "هذا المشروع غير موجود."
 
-#: Project.module:489
-msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
+#: Project.module:493
+msgid ""
+"Unable to find Gambas IDE executable in directory:\n"
+"\n"
+"&1"
 msgstr ""
 
-#: Project.module:502
+#: Project.module:506
 msgid "This is not a Gambas project."
 msgstr "هذا ليس مشروع جامباس."
 
-#: Project.module:505
+#: Project.module:509
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr ""
 
-#: Project.module:508
+#: Project.module:512
 msgid "Convert"
 msgstr ""
 
-#: Project.module:508
-msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
+#: Project.module:512
+msgid ""
+"This is a Gambas 2.0 project.\n"
+"\n"
+"Do you want to convert it?"
 msgstr ""
 
-#: Project.module:526
+#: Project.module:530
 msgid "Do not open"
 msgstr "لا تفتح"
 
-#: Project.module:526
+#: Project.module:530
 msgid "Open after all"
 msgstr ""
 
-#: Project.module:526
-msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
-msgstr "يبدو أن المشروع مفتوح.\n\nفتح المشروع مرتين يمكن أن يسبب فقط للبينات."
+#: Project.module:530
+msgid ""
+"This project seems to be already opened.\n"
+"\n"
+"Opening the same project twice can lead to data loss."
+msgstr ""
+"يبدو أن المشروع مفتوح.\n"
+"\n"
+"فتح المشروع مرتين يمكن أن يسبب فقط للبينات."
 
-#: Project.module:532
+#: Project.module:536
 msgid "It cannot be converted."
 msgstr ""
 
-#: Project.module:532
+#: Project.module:536
 msgid "This project is read-only."
 msgstr "المشروع للقراءة فقط."
 
-#: Project.module:548
+#: Project.module:552
 msgid "Copying project inside a temporary directory..."
 msgstr ""
 
-#: Project.module:551
+#: Project.module:555
 msgid "Unable to create temporary directory"
 msgstr ""
 
-#: Project.module:573
+#: Project.module:577
 msgid "Converting project structure..."
 msgstr ""
 
-#: Project.module:600
+#: Project.module:604
 msgid "Applying conversion..."
 msgstr ""
 
-#: Project.module:606
+#: Project.module:610
 msgid "Unable to apply conversion"
 msgstr ""
 
-#: Project.module:700
+#: Project.module:713
 msgid "Some libraries used by the project are missing."
 msgstr ""
 
-#: Project.module:718
+#: Project.module:731
 msgid "Cannot open project file :\n"
 msgstr " لا يمكن أن يفتح ملفّ المشروع: \n"
 
-#: Project.module:1271
+#: Project.module:1285
 msgid "Files"
 msgstr ""
 
-#: Project.module:1473
+#: Project.module:1487
 msgid "The following classes have circular inheritance:"
 msgstr ""
 
-#: Project.module:1645
+#: Project.module:1659
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr "نسخة ألفا, استخدمها على مسؤوليتك! :-)"
 
-#: Project.module:1923
+#: Project.module:1953
 msgid "Loading &1..."
 msgstr "تحميل &1..."
 
-#: Project.module:1975
+#: Project.module:2005
 msgid "Cannot open a binary file."
 msgstr ""
 
-#: Project.module:2008
+#: Project.module:2038
 msgid "Cannot open file."
 msgstr "لا يمكن فتح الملف."
 
-#: Project.module:2064
+#: Project.module:2094
 msgid "File not found!"
 msgstr "الملف غير موجود!"
 
-#: Project.module:2184
+#: Project.module:2215
 msgid "&1th"
 msgstr ""
 
-#: Project.module:2237
+#: Project.module:2268
 msgid "in form definition"
 msgstr ""
 
-#: Project.module:2244
+#: Project.module:2275
 msgid "in &1."
 msgstr ""
 
-#: Project.module:2400
-msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
-msgstr "بعض ملفات مصدر المشروع متعارضة.\nالرجاء حلها إذا كنت تريد تصريف المشروع."
+#: Project.module:2431
+msgid ""
+"Some project source files are in conflict.\n"
+"Please solve them if you want to compile the project."
+msgstr ""
+"بعض ملفات مصدر المشروع متعارضة.\n"
+"الرجاء حلها إذا كنت تريد تصريف المشروع."
 
-#: Project.module:2404
+#: Project.module:2435
 msgid "Compiling project"
 msgstr "جارى تجميع المشروع"
 
-#: Project.module:2645
+#: Project.module:2676
 msgid "File already exists."
 msgstr "الملفّ بالفعل متواجد ."
 
-#: Project.module:2677
+#: Project.module:2708
 msgid "Directory already exists."
 msgstr " يتواجد الدّليل بالفعل ."
 
-#: Project.module:2689
+#: Project.module:2720
 msgid "Cannot link template file."
 msgstr ""
 
-#: Project.module:2695
+#: Project.module:2726
 msgid "Cannot copy template file."
 msgstr " لا يمكن أن ينسخ ملفّ القالب."
 
-#: Project.module:2906
+#: Project.module:2937
 msgid "Making executable..."
 msgstr "جاري عمل ملف تنفيذى ..."
 
-#: Project.module:2950
+#: Project.module:2981
 msgid "Cannot make executable."
 msgstr "لا يمكن إنشاء ملف تنفيذي."
 
-#: Project.module:3530
+#: Project.module:3561
 msgid "Cannot write project file."
 msgstr "لا يمكن كتابة ملف المشروع."
 
-#: Project.module:3572
+#: Project.module:3603
 msgid "Unable to create desktop shortcut."
 msgstr "لا يمكن إنشاء اختصار لسطح المكتب."
 
-#: Project.module:3818
+#: Project.module:3849
 msgid "The directory will be removed at the next commit."
 msgstr "الدليل سيتم إزالته في الإيداع القادم."
 
-#: Project.module:3835
+#: Project.module:3866
 msgid "You must define a startup class or form!"
 msgstr "يجب تعريف نافذة أو صنف للبداية!"
 
-#: Project.module:3866
+#: Project.module:3897
 msgid "Please type a name."
 msgstr " من فضلك اطبع اسمًا ."
 
-#: Project.module:3870
+#: Project.module:3901
 msgid "This name contains a forbidden character:"
 msgstr "هذا الاسم يحتوى على حرف ممنوع:"
 
-#: Project.module:3874
+#: Project.module:3905
 msgid "The name cannot begins with a dot."
 msgstr ""
 
-#: Project.module:3878
+#: Project.module:3909
 msgid "This name is already used. Choose another one."
 msgstr " هذا الاسم مستعمل بالفعل . اختر واحد آخر ."
 
-#: Project.module:3914
+#: Project.module:3945
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "اسم الصنف لا بد أن يبدأ بحرف أو شرطة سفلية, متبوعة بحرف او رقم."
 
-#: Project.module:3962
+#: Project.module:3993
 msgid "Destination already exists."
 msgstr ""
 
-#: Project.module:4174
+#: Project.module:4205
 msgid "Unable to rename '&1'"
 msgstr " غير قادر أن تعيد تسمية &1"
 
-#: Project.module:4290
+#: Project.module:4321
 msgid "Please type a project name."
 msgstr "من فضلك اطبع اسم مشروع ."
 
-#: Project.module:4298
+#: Project.module:4329
 msgid "The project name cannot begin with a dot."
 msgstr "اسم المشروع لا يمكن أن يبدأ بنقطة."
 
-#: Project.module:4301
+#: Project.module:4332
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "المحارف غير محارف ASCII ممنوعة في اسم المشروع."
 
-#: Project.module:4302
+#: Project.module:4333
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "الأحرف التالية ممنوعة في اسم المشروع: ? * / \\ SPACE"
 
-#: Project.module:4309
+#: Project.module:4340
 msgid "This project already exists."
 msgstr " يتواجد هذا المشروع بالفعل ."
 
-#: Project.module:4312
+#: Project.module:4343
 msgid "The project directory already exists."
 msgstr "دليل المشروع موجود مسبقا."
 
-#: Project.module:4314
+#: Project.module:4345
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "دليل المشروع لا يمكن إنشاؤه لان هناك ملف بنفس الاسم موجود مسبقا."
 
-#: Project.module:4370
+#: Project.module:4401
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4393
+#: Project.module:4424
 msgid "Create source package"
 msgstr "خلق مجموعه المصدر"
 
-#: Project.module:4694
+#: Project.module:4725
 msgid "Cannot copy file &1."
 msgstr " لا يمكن أن ينسخ ملفّ &1."
 
-#: Project.module:4742
+#: Project.module:4773
 msgid "Cannot create link &1."
 msgstr "لا يمكن إنشاء الرابط &1."
 
-#: Project.module:4757
+#: Project.module:4788
 msgid "Cannot move a directory inside itself."
 msgstr "لا يمكن نقل الدليل داخل نفسة."
 
-#: Project.module:4825
+#: Project.module:4856
 msgid "Cannot move file &1."
 msgstr "لا يمكن أن ينقل ملفّ &1."
 
-#: Project.module:5363
+#: Project.module:5035
+msgid "The following files couldn't be removed:"
+msgstr ""
+
+#: Project.module:5425
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5369
+#: Project.module:5431
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5399
+#: Project.module:5461
 msgid "Unable to convert &1"
 msgstr ""
 
@@ -6490,4 +6639,3 @@ msgstr ""
 #: VersionControl.module:117
 msgid "command timeout"
 msgstr ""
-

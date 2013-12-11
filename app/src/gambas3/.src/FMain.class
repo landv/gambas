@@ -456,7 +456,7 @@ Public Sub mnuPopup_Show()
     mnuAddVersion.Visible = Project.IsAdded($sKey)
   Else
     mnuAddVersion.Hide
-    mnuNew.Hide
+    If $sKey = Project.Dir Then mnuNew.Hide
   Endif
   
 End
