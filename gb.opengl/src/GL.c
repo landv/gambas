@@ -281,6 +281,8 @@ GB_DESC Cgl[] =
 	GB_STATIC_METHOD("TexEnviv", NULL, GLTEXENVIV, "(Target)i(Pname)i(Params)Integer[]"),
 	GB_STATIC_METHOD("TexImage1D", NULL, GLTEXIMAGE1D, "(Image)Image;[(Level)i(Border)i]"),
 	GB_STATIC_METHOD("TexImage2D", NULL, GLTEXIMAGE2D,"(Image)Image;[(Level)i(Border)i]"),
+	GB_STATIC_METHOD("TexSubImage1D", NULL, GLTEXSUBIMAGE2D,"(Image)Image;(XOffset)i(Width)i[(Level)i]"),
+	GB_STATIC_METHOD("TexSubImage2D", NULL, GLTEXSUBIMAGE2D,"(Image)Image;(XOffset)i(YOffset)i(Width)i(Height)i[(Level)i]"),
 	GB_STATIC_METHOD("TexParameterf", NULL, GLTEXPARAMETERF, "(Target)i(Pname)i(Param)f"),
 	GB_STATIC_METHOD("TexParameterfv", NULL, GLTEXPARAMETERFV, "(Target)i(Pname)i(Params)Float[]"),
 	GB_STATIC_METHOD("TexParameteri", NULL, GLTEXPARAMETERI, "(Target)i(Pname)i(Param)i"),

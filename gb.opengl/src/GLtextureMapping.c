@@ -242,12 +242,38 @@ BEGIN_METHOD(GLTEXIMAGE2D, GB_OBJECT Image; GB_INTEGER Level; GB_INTEGER Border)
 
 	GB_IMG *image;
 	int format;
-	
+
 	if (IMAGE_get(ARG(Image), &image, &format))
 		return;
 
 	glTexImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), IMAGE_get_ncolors(format), image->width, image->height,
 		 VARGOPT(Border, 0), format, GL_UNSIGNED_BYTE, image->data);
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXSUBIMAGE1D, GB_OBJECT Image; GB_INTEGER XOffset; GB_INTEGER Width; GB_INTEGER Level)
+
+	GB_IMG *image;
+	int format;
+
+	if (IMAGE_get(ARG(Image), &image, &format))
+		return;
+
+	glTexSubImage1D(GL_TEXTURE_1D, VARGOPT(Level, 0), VARG(XOffset), VARG(Width),
+		 format, GL_UNSIGNED_BYTE, image->data);
+
+END_METHOD
+
+BEGIN_METHOD(GLTEXSUBIMAGE2D, GB_OBJECT Image; GB_INTEGER XOffset; GB_INTEGER YOffset; GB_INTEGER Width; GB_INTEGER Height; GB_INTEGER Level)
+
+	GB_IMG *image;
+	int format;
+
+	if (IMAGE_get(ARG(Image), &image, &format))
+		return;
+
+	glTexSubImage2D(GL_TEXTURE_2D, VARGOPT(Level, 0), VARG(XOffset), VARG(YOffset), VARG(Width), VARG(Height),
+		 format, GL_UNSIGNED_BYTE, image->data);
 
 END_METHOD
 
