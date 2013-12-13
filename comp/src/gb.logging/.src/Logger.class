@@ -5,22 +5,39 @@ Create Static
 
 Property Level As Integer
 Property Format As String
+Property Enabled As Boolean
 
-Private $sFormat As String = "[$(now)] [$(levelname)] [$(callLocation)] $(message)"
+Static Public Const DefaultFormat As String = "[$(now)] [$(levelname)] [$(callLocation)] $(message)"
+
+Private $sFormat As String = ""
 Private $iLevel As Integer
 Private $sOutput As String
 Private $sLogFile As Stream
+Private $bEnabled As Boolean = True
 
-'' As defined by http://tools.ietf.org/html/rfc5424
-Public Enum Critical, {Error}, Warning, Info, {Debug}
+Static Public Const Critical As Integer = 0
+Static Public Const Error As Integer = 1
+Static Public Const Warning As Integer = 2
+Static Public Const Info As Integer = 3
+Static Public Const Debug As Integer = 4
 
-Public Sub _new(Optional iMinLevel As Integer = Info, Optional sOutput As String = ":stdout")
+Static Public Const Stdout As String = ":stdout"
 
-  If sOutput Then $sOutput = sOutput
+Public Sub _new(Optional iMinLevel As Integer, Optional sFormat As String, Optional sOutput As String)
 
-  If iMinLevel Then $iLevel = iMinLevel
+  If iMinLevel Then $iLevel = iMinLevel Else $iLevel = Info
 
-  If $sOutput <> ":stdout" Then _OpenLog()
+  If sFormat Then $sFormat = sFormat Else $sFormat = Logger.DefaultFormat
+
+  If sOutput Then $sOutput = sOutput Else $sOutput = Stdout
+
+End
+
+Public Function Begin() As Boolean
+
+  If $sOutput <> Stdout Then _OpenLog()
+
+  Return True
 
 End
 
@@ -32,7 +49,7 @@ End
 
 Private Sub Level_Write(Value As Integer)
 
-  If Value < 0 Or Value > Me.Debug Then Error.Raise(("Invalid logging level"))
+  If Value < 0 Or Value > Me.Debug Then Error.Raise("Invalid logging level")
 
   $iLevel = Value
 
@@ -44,13 +61,19 @@ Public Function isEnabledFor(iLevel As Integer) As Boolean
 
 End
 
-Public Sub _call(sMessage As String, Optional iLevel As Integer = Logger.Info)
+Public Sub Log(sMessage As String, Optional iLevel As Integer = Info)
 
-  If Not isEnabledFor(iLevel) Then Return
+  If Not $bEnabled Or Not isEnabledFor(iLevel) Then Return
 
   sMessage = Formatter(sMessage, $sFormat, iLevel)
 
   _Write(sMessage)
+
+End
+
+Public Sub _call(sMessage As String, Optional iLevel As Integer = Info)
+
+  Me.Log(sMessage, iLevel)
 
 End
 
@@ -82,12 +105,24 @@ Private Sub _OpenLog()
     $sOutput = $sOutput &/ Application.Name & ".log"
   Endif
 
-  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise(("Log file not writable"))
+  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise("Log file not writable")
 
   If Exist($sOutput) Then
     $sLogFile = Open $sOutput For Write Append
   Else
     $sLogFile = Open $sOutput For Write Create
   Endif
+
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $bEnabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $bEnabled = Value
 
 End

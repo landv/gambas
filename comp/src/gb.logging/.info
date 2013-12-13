@@ -18,39 +18,54 @@ Format
 p
 s
 
+Enabled
+p
+b
+
+DefaultFormat
+C
+s
+[$(now)] [$(levelname)] [$(callLocation)] $(message)
 Critical
 C
 i
 0
-'As defined by http://tools.ietf.org/html/rfc5424
 Error
 C
 i
 1
-'As defined by http://tools.ietf.org/html/rfc5424
 Warning
 C
 i
 2
-'As defined by http://tools.ietf.org/html/rfc5424
 Info
 C
 i
 3
-'As defined by http://tools.ietf.org/html/rfc5424
 Debug
 C
 i
 4
-'As defined by http://tools.ietf.org/html/rfc5424
+Stdout
+C
+s
+:stdout
 _new
 m
 
-[(iMinLevel)i(sOutput)s]
+[(iMinLevel)i(sFormat)s(sOutput)s]
+Begin
+m
+b
+
 isEnabledFor
 m
 b
 (iLevel)i
+Log
+m
+
+(sMessage)s[(iLevel)i]
 _call
 m
 

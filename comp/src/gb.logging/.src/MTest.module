@@ -2,10 +2,14 @@
 
 Public Sub Main()
 
-  Dim a As Logger
+  Logger.Begin()
 
-  a = New Logger
+  Logger.Enabled = False
 
-  a("Starting logger", Logger.Warning)
+  Logger.Log("asdasd")
+
+  Logger.Enabled = True
+
+  Logger.Log("asdasd2")
 
 End
