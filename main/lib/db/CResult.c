@@ -820,6 +820,7 @@ static bool _convert_blob(CBLOB *_object, GB_TYPE type, GB_VALUE *conv)
 				conv->_string.value.addr = BLOB->data;
 				conv->_string.value.start = 0;
 				conv->_string.value.len = BLOB->length;
+				conv->type = GB_T_CSTRING;
 				return FALSE;
 				
 			default:
@@ -864,8 +865,6 @@ static CBLOB *make_blob(CRESULT *result, int field)
 
 static void set_blob(CBLOB *_object, char *data, int length)
 {
-	//fprintf(stderr, "set_blob: %p %ld\n", BLOB, length);
-
 	if (!BLOB->constant && BLOB->data)
 		GB.FreeString((char **)&BLOB->data);
 

@@ -754,11 +754,16 @@ __OBJECT:
 		if (class->has_convert)
 		{
 			void *unref = value->_object.object;
+			bool old_type = value->type;
+
 			if (!((*class->convert)(value->_object.object, type, value)))
 			{
 				OBJECT_UNREF(unref);
-				//OBJECT_REF(value->_object.object, "VALUE_convert");
-				goto __TYPE;
+				
+				if (value->type == old_type)
+					goto __TYPE;
+				else
+					goto __OK;
 			}
 		}
 		
