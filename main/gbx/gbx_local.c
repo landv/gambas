@@ -382,7 +382,7 @@ static void fill_local_info(void)
 		LOCAL_encoding = STRING_new_zero(codeset);
 
 	#ifdef DEBUG_LANG
-	fprintf(stderr, "LOCAL_encoding = %s\n", LOCAL_encoding);
+	fprintf(stderr, "LOCAL_encoding = %s\n", LOCAL_encoding == SC_UTF8 ? "UTF-8" : LOCAL_encoding);
 	#endif
 
 	/* Numeric information */
@@ -595,6 +595,7 @@ void LOCAL_set_lang(const char *lang)
 	char **l;
 	int rtl;
 	char *var;
+	char *err;
 
 	#ifdef DEBUG_LANG
 	fprintf(stderr, "LOCAL_set_lang: %s\n", lang);
@@ -616,7 +617,8 @@ void LOCAL_set_lang(const char *lang)
 	}
 	else
 	{
-		ERROR_warning("cannot switch to language '%s'. Did you install the corresponding locale packages?", lang ? lang : LOCAL_get_lang());
+		err = strerror(errno);
+		ERROR_warning("cannot switch to language '%s': %s. Did you install the corresponding locale packages?", lang ? lang : LOCAL_get_lang(), err);
 		setlocale(LC_ALL, "C");
 	}
 

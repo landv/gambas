@@ -144,6 +144,8 @@ static void exec(void *_object, int lsubject)
 
 static void return_match(void *_object, int index)
 {
+	int len;
+
 	if (index < 0 || index >= THIS->count)
 	{
 		GB.Error("Out of bounds");
@@ -151,7 +153,11 @@ static void return_match(void *_object, int index)
 	}
 	
 	index *= 2;
-	GB.ReturnNewString(&THIS->subject[THIS->ovector[index]], THIS->ovector[index + 1] - THIS->ovector[index]);
+	len = THIS->ovector[index + 1] - THIS->ovector[index];
+	if (len <= 0)
+		GB.ReturnVoidString();
+	else
+		GB.ReturnNewString(&THIS->subject[THIS->ovector[index]], len);
 }
 
 bool REGEXP_match(const char *subject, int lsubject, const char *pattern, int lpattern, int coptions, int eoptions)

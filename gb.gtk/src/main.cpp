@@ -240,7 +240,9 @@ extern "C"
 		g_type_init();
 #endif /* !defined(GLIB_VERSION_2_36) */
 		
-		return -1;
+	my_lang(GB.System.Language(), GB.System.IsRightToLeft());
+
+	return -1;
 	}
 
 	void EXPORT GB_EXIT()
@@ -512,12 +514,12 @@ static void my_error(int code,char *error,char *where)
 	g_free(showstr);
 }
 
-static void my_lang(char *lang,int rtl)
+static void my_lang(char *lang, int rtl)
 {
 	int bucle, ct;
 	gControl *iter;
 
-	if (rtl==1)
+	if (rtl)
 		gtk_widget_set_default_direction(GTK_TEXT_DIR_RTL);
 	else
 		gtk_widget_set_default_direction(GTK_TEXT_DIR_LTR);
