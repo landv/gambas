@@ -272,6 +272,17 @@ Private Function GetCurrent() As String
   
 End
 
+Private Sub GetRootKey(sKey As String) As String
+  
+  Do
+    If Left(sKey) = "$" Then Return sKey
+    Try sKey = tvwProject[sKey].ParentKey
+    If Error Then Return
+  Loop
+  
+End
+
+
 Private Function GetCurrentDir(Optional sKey As String) As String
   
   If sKey Then 
@@ -308,9 +319,11 @@ Public Sub mnuPopup_Show()
   Dim sMime As String
   Dim hProgList As DesktopFile[]
   Dim bProject As Boolean
+  Dim sRoot As String
   
   sCurrent = GetCurrent()
   bCurrent = sCurrent
+  sRoot = GetRootKey($sKey)
   
   UpdateMenu
   
@@ -325,8 +338,8 @@ Public Sub mnuPopup_Show()
   Endif
   
   bProject = Project.IsProjectPath(sCurrent)
-    
-  If $sKey = Project.KEY_SOURCE Or If sCurrent Begins Project.SourceDir &/ "/" Then
+
+  If sRoot = Project.KEY_SOURCE Then
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent And Not Project.Running
     mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent) And Not Project.Running
@@ -383,8 +396,12 @@ Public Sub mnuPopup_Show()
       mnuNewModule.Show
       
     Endif
+  
+  Else
     
-  Else 
+    If sRoot = Project.KEY_EXTERN Then
+      mnuNew.Hide
+    Endif
     
     mnuRenameFile.Visible = mnuRenameFile.Visible And bCurrent
     mnuDeleteFile.Visible = mnuDeleteFile.Visible And CanDelete(sCurrent)
@@ -456,9 +473,10 @@ Public Sub mnuPopup_Show()
     mnuAddVersion.Visible = Project.IsAdded($sKey)
   Else
     mnuAddVersion.Hide
-    If $sKey = Project.Dir Then mnuNew.Hide
   Endif
   
+  mnuFilter.Visible = IsProject($sKey)
+    
 End
 
 Public Sub mnuDatabase_Show()

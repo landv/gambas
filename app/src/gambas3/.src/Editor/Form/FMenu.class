@@ -266,7 +266,7 @@ End
 
 
 
-Public Sub gvwMenu_Select()
+Public Sub gvwMenu_Change()
 
   If $bFreeze Then Return
   If gvwMenu.Row < 0 Then Return
@@ -719,10 +719,13 @@ Private Sub SetCurrent(iCurrent As Integer)
     gvwMenu.Rows.UnselectAll
     $iCurrent = -1
   Else
+    Object.Lock(gvwMenu)
+    gvwMenu.Rows[$iCurrent].Selected = False
     $iCurrent = iCurrent
     If gvwMenu.Row <> $iCurrent Then gvwMenu.Row = $iCurrent
     gvwMenu.Rows[$iCurrent].Selected = True
     gvwMenu[$iCurrent, 0].EnsureVisible
+    Object.Unlock(gvwMenu)
   Endif
   
   ReadMenu
@@ -888,15 +891,19 @@ Public Sub txtSearch_Click()
   iStart = gvwMenu.Row 
   If iStart < 0 Then iStart = 0
   
+  sFind = String.LCase(sFind)
+  
   iIndex = iStart
   Do
     Inc iIndex
     If iIndex >= $aMenu.Max Then iIndex = 0
     If iIndex = iStart Then Break
-    If $aMenu[iIndex].Caption Like ("*" & sFind & "*") Then 
-      SetCurrent(iIndex)
-      Break
-    Endif
+    With $aMenu[iIndex]
+      If InStr(String.LCase(.Caption), sFind) Or If InStr(LCase(.Name), sFind) Then 
+        SetCurrent(iIndex)
+        Break
+      Endif
+    End With
   Loop
 
 End

@@ -245,41 +245,6 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
 
-  ' Dim hPolygon As Polygon
-  ' 
-  ' hPolygon = [PointF(0, 0), PointF(0, 10), PointF(10, 10), PointF(10, 0)]
-  ' Print hPolygon.Count
-  ' Print hPolygon.Area
-  ' 
-  ' For iInd = 0 To hPolygon.Max
-  '   Print hPolygon[iInd];
-  ' Next
-  ' Print
-  ' 
-  ' hPolygon = Clipper.Offset([hPolygon], 2)[0]
-  ' For iInd = 0 To hPolygon.Max
-  '   Print hPolygon[iInd];
-  ' Next
-  ' Print
-  ' 
-  ' Quit
-
-  ' Dim hImage As Image = Image.Load("img/logo/logo-32-head.png").Stretch(24, 24)
-  ' Dim iVal As Integer
-  ' Dim I As Integer
-  ' 
-  ' hImage.Format = "RGBA"
-  ' Print hImage.Format;; hImage.W;; hImage.H
-  ' 
-  ' Print "{"
-  ' For I = 0 To hImage.W * hImage.H * 4 - 1
-  '   Print Byte@(hImage.Data + I); ", ";
-  '   If I Mod 8 = 7 Then Print
-  ' Next
-  ' If I Mod 8 Then Print
-  ' Print "}"
-  ' Return
-
   'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
 
   'DB.Debug = True
@@ -1656,7 +1621,11 @@ Private Sub UpdateTitle()
     sTitle &= " - "
   Endif
   sTitle &= Application.Title
-  If Application.Version Like "*.99.*" Then sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK! :-)")
+  If Application.Version Like "*.9[0-9].*" Then 
+    sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK!")
+  Else If Application.Version Like "*.*.9[0-9]" Then 
+    sTitle &= " - " & ("DEVELOPMENT VERSION, USE AT YOUR OWN RISK!")
+  Endif
   FMain.Title = sTitle
 
 End
@@ -2868,7 +2837,7 @@ Public Sub Deactivate(hForm As Object)
 
 End
 
-Private Sub GetVersion() As Boolean
+Private Sub GetVersion(Optional bWriteProject As Boolean) As Boolean
 
   Dim sDir As String
   Dim sVer As String
@@ -2876,8 +2845,11 @@ Private Sub GetVersion() As Boolean
   Dim iMajor As Integer
   Dim iMinor As Integer
   Dim iRelease As Integer
+  Dim sOldVer As String
 
   If Not VersionFile Then Return True
+
+  If bWriteProject Then sOldVer = CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
 
   sDir = Project.Dir
   Do
@@ -2898,6 +2870,11 @@ Private Sub GetVersion() As Boolean
 
   Try iRelease = aVer[2]
   If Not Error Then ReleaseVersion = iRelease
+  
+  If bWriteProject Then
+    sVer = CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
+    If sVer <> sOldVer Then WriteProject
+  Endif
 
 End
 
@@ -3363,7 +3340,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
   Close hFic
 
-  VersionFile = Not GetVersion()
+  VersionFile = Not GetVersion(True)
 
   If aMissing.Count Then
     sMsg = Subst(("Some components are missing: &1"), aMissing.Join(", "))

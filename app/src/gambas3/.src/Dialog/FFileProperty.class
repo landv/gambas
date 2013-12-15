@@ -85,6 +85,7 @@ Public Sub Form_Open()
     '$hObs = New Observer(fprInfo.Parent) As "tabInfo"
     edtChange.Clear
     edtChange.ReadConfig
+    panVersion_Arrange
   Endif
   
   If (sPath &/ "/") = (Project.SourceDir &/ "/") Then    

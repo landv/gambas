@@ -500,18 +500,27 @@
       Text = Shortcut(("Add to repository"), "A")
       Picture = Picture["icon:/16/add"]
     }
+    { mnuFilter Menu
+      Text = ("Filter")
+      { mnuFilterExport Menu
+        Text = ("Show exported classes")
+        Picture = Picture["img/16/exported.png"]
+      }
+      { mnuFilterAdd Menu
+        Text = ("Show added files")
+        Picture = Picture["icon:/small/add"]
+      }
+      { mnuFilterAll Menu btnSearchClear
+        Name = "mnuFilterAll"
+        Text = ("Show all")
+        Picture = Picture["icon:/small/refresh"]
+      }
+    }
     { mnuInformation Menu
       Action = "info"
       Text = Shortcut(("Properties"), "P") & "..."
       Picture = Picture["icon:/small/info"]
       Shortcut = "Ctrl+I"
-    }
-    { Menu13 Menu
-    }
-    { mnuRefresh2 Menu
-      Action = "refresh-project"
-      Text = Shortcut(("Refresh"), "R")
-      Picture = Picture["icon:/small/refresh"]
     }
   }
   { mnuDatabase Menu
@@ -601,21 +610,6 @@
   }
   { mnuBackward Menu
     { Menu6 Menu
-    }
-  }
-  { mnuFilter Menu
-    { mnuFilterExport Menu
-      Text = ("Show exported classes")
-      Picture = Picture["img/16/exported.png"]
-    }
-    { mnuFilterAdd Menu
-      Text = ("Show added files")
-      Picture = Picture["icon:/small/add"]
-    }
-    { mnuFilterAll Menu btnSearchClear
-      Name = "mnuFilterAll"
-      Text = ("Show all")
-      Picture = Picture["icon:/small/refresh"]
     }
   }
   { sepMenu Separator
