@@ -2048,39 +2048,32 @@ Public Sub txtSearch_Activate()
   
 End
 
-Public Sub mnuFilterAdd_Click()
+Private Sub DoFilter(sFilter As String)
   
   txtSearchProject.Font.Italic = True
   txtSearchProject.Text = Last.Text
-  Project.ProjectFilter = Project.FILTER_ADDED
+  Project.ProjectFilter = sFilter
   tvwProject.SetFocus
   timSearchProject_Timer
   
 End
 
-' Public Sub panSearchProject_Enter()
-' 
-'   btnSearchAdd.Visible = VersionControl.Enabled()
-'   btnSearchClear.Visible = True
-'   btnSearchExported.Visible = True
-' 
-' End
-' 
-' Public Sub panSearchProject_Leave()
-' 
-'   btnSearchAdd.Visible = False
-'   btnSearchClear.Visible = False
-'   btnSearchExported.Visible = False
-' 
-' End
+
+Public Sub mnuFilterAdd_Click()
+  
+  DoFilter(Project.FILTER_ADDED)
+  
+End
 
 Public Sub mnuFilterExport_Click()
 
-  txtSearchProject.Font.Italic = True
-  txtSearchProject.Text = Last.Text
-  Project.ProjectFilter = Project.FILTER_EXPORTED
-  tvwProject.SetFocus
-  timSearchProject_Timer
+  DoFilter(Project.FILTER_EXPORTED)
+
+End
+
+Public Sub mnuFilterConflict_Click()
+
+  DoFilter(Project.FILTER_CONFLICT)
 
 End
 

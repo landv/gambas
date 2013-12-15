@@ -2328,30 +2328,30 @@ Private Sub FillShowTabMenu()
 
 End
 
-Sub RefreshMenu()
+Private Sub RefreshMenu()
 
   Dim bOn As Boolean
   Dim hCtrl As CControl
 
   If $bNoRefreshMenu Then Return
 
-  bOn = Not IsNull(Master)
-
+  Action[".menu", Me].Visible = Not $bReadOnly And $hFamily.HasMenuEditor
+  Action[".text-*,.format-*,.undo,.redo", Me].Visible = Not $bReadOnly
+  
+  bOn = Not IsNull(Master) And Not $bReadOnly
+  
   Action[".cut,.copy,.copy-same,.delete,.lower,.raise", Me].Enabled = bOn
-
-  bOn = Selection.Count >= 2
 
   Action[".paste", Me].Enabled = CanPaste()
 
   mnuArrange.Visible = Not $bReadOnly
   Action[".save,.reload,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
 
-  bOn = bOn And Not $bReadOnly
+  bOn = Selection.Count >= 2 And Not $bReadOnly
 
   mnuAlign.Enabled = bOn
   mnuAlign.Visible = bOn
-  Action[".align-*", Me].Visible = bOn
-  Action[".same-*", Me].Visible = bOn
+  Action[".align-*,.same-*", Me].Visible = bOn
 
   mnuShowTab.Hide
   mnuMoveTab.Hide
@@ -2370,15 +2370,13 @@ Sub RefreshMenu()
 
   Action[".move-tab*,.show-tab", Me].Visible = mnuShowTab.Visible
 
-  Action[".menu", Me].Visible = $hFamily.HasMenuEditor
-  
   If Selection.Count = 1 And If Master <> RootControl And If Master.IsContainer() And If GetChildren(Master.Name).Count Then
     Action[".delete-container", Me].Visible = True
   Else
     Action[".delete-container", Me].Visible = False
   Endif
 
-  If Selection.Count Then
+  If Not $bReadOnly And If Selection.Count Then
     
     bOn = True
     For Each hCtrl In Selection
@@ -3964,6 +3962,17 @@ Private Sub ZoomFont(sFont As String, sAction As String) As String
   
 End
 
+Private Sub GetActionSelection() As Collection
+
+  Dim cSelect As Collection
+
+  If Selection.Count Then Return Selection
+
+  cSelect = New Collection
+  cSelect[RootControl.Name] = RootControl
+  Return cSelect
+  
+End
 
 Private Sub DoActionText(sAction As String)
 
@@ -3971,7 +3980,7 @@ Private Sub DoActionText(sAction As String)
   Dim sFont As String
 
   $hUndo.Begin
-  For Each hCtrl In Selection
+  For Each hCtrl In GetActionSelection()
     
     Try sFont = hCtrl.GetProperty("Font")
     If Error Then Continue
@@ -4018,7 +4027,7 @@ Private Sub DoActionFormat(sAction As String)
   If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
 
   $hUndo.Begin
-  For Each hCtrl In Selection
+  For Each hCtrl In GetActionSelection()
     
     Select Case sAction
       
