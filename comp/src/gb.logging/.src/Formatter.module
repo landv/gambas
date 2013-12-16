@@ -31,6 +31,8 @@ End
 Public Function _call(sMessage As String, sFormat As String, iLevel As Integer) As String
 
   Dim sName As String
+  Dim aLoaded As String[]
+  Dim oComponent As Component
 
   If String.InStr(sFormat, "$(message)") > 0 Then
     sFormat = Replace$(sFormat, "$(message)", sMessage)
@@ -114,6 +116,41 @@ Public Function _call(sMessage As String, sFormat As String, iLevel As Integer) 
 
   If String.InStr(sFormat, "$(pid)") > 0 Then
     sFormat = Replace$(sFormat, "$(pid)", CStr(Application.Id))
+  Endif
+
+  If String.InStr(sFormat, "$(architecture)") > 0 Then
+    sFormat = Replace$(sFormat, "$(architecture)", System.Architecture)
+  Endif
+
+  If String.InStr(sFormat, "$(charset)") > 0 Then
+    sFormat = Replace$(sFormat, "$(charset)", System.Charset)
+  Endif
+
+  If String.InStr(sFormat, "$(home)") > 0 Then
+    sFormat = Replace$(sFormat, "$(home)", User.Home)
+  Endif
+
+  If String.InStr(sFormat, "$(username)") > 0 Then
+    sFormat = Replace$(sFormat, "$(username)", User.Name)
+  Endif
+
+  If String.InStr(sFormat, "$(appPath)") > 0 Then
+    sFormat = Replace$(sFormat, "$(appPath)", Application.Path)
+  Endif
+
+  If String.InStr(sFormat, "$(appName)") > 0 Then
+    sFormat = Replace$(sFormat, "$(appName)", Application.Name)
+  Endif
+
+  If String.InStr(sFormat, "$(loadedComponents)") > 0 Then
+
+    aLoaded = New String[]
+
+    For Each oComponent In Components
+      aLoaded.Add(oComponent.Name)
+    Next
+
+    sFormat = Replace$(sFormat, "$(loadedComponents)", aLoaded.Join(", "))
   Endif
 
   Return sFormat

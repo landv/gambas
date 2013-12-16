@@ -4,20 +4,12 @@ Public Sub Main()
 
   Dim a As Logger
 
-  a = New Logger(Logger.Debug, Logger.DefaultFormat, User.Home)
+  a = New Logger '(Logger.Debug, Logger.DefaultFormat, User.Home)
 
   ' a.Begin()
 
   a.Log("stdout")
 
   a.Log("stdout")
-
-  a = New Logger(Logger.Debug, Logger.DefaultFormat, User.Home)
-
-  a.Begin()
-
-  a.Log("stderr")
-
-  a.Log("stderr")
 
 End

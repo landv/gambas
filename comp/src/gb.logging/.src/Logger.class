@@ -92,6 +92,14 @@ Private Sub _Write(sLine As String)
 
 End
 
+Public Sub _free()
+
+  If $sOutput <> Stdout And $sOutput <> Stderr Then
+    Close $sLogFile
+  Endif
+
+End
+
 Private Function Enabled_Read() As Boolean
 
   Return $bEnabled
