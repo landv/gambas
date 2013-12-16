@@ -125,10 +125,9 @@ Public Sub Screen_Close()
 
 End
 
-Public Sub Screen_keyPress()
+Public Sub Screen_KeyPress()
 
-  Debug Key.Code;; Key.Text
-  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.code = key.F1) Then Screen.Fullscreen = Not Screen.Fullscreen
   If (key.Code = key.Esc) Then Screen.Close()
 
 End

@@ -61,22 +61,24 @@ bool EXEC_big_endian;
 /* Current iterator */
 CENUM *EXEC_enum;
 
+const char *EXEC_profile_path = NULL; // profile file path
+const char *EXEC_fifo_name = NULL; // fifo name
+EXEC_HOOK EXEC_Hook = { NULL };
+EXEC_GLOBAL EXEC;
+uint64_t EXEC_byref = 0;
+uchar EXEC_quit_value = 0;
+
 bool EXEC_debug = FALSE; // debugging mode
 bool EXEC_task = FALSE; // I am a background task
 bool EXEC_profile = FALSE; // profiling mode
 bool EXEC_profile_instr = FALSE; // profiling mode at instruction level
-const char *EXEC_profile_path = NULL; // profile file path
 bool EXEC_arch = FALSE; // executing an archive
 bool EXEC_fifo = FALSE; // debugging through a fifo
-const char *EXEC_fifo_name = NULL; // fifo name
 bool EXEC_keep_library = FALSE; // do not unload libraries
 bool EXEC_string_add = FALSE; // next '&' operator is done for a '&='
-uchar EXEC_quit_value = 0;
-EXEC_HOOK EXEC_Hook = { NULL };
-EXEC_GLOBAL EXEC;
 bool EXEC_main_hook_done = FALSE;
 bool EXEC_got_error = FALSE;
-uint64_t EXEC_byref = 0;
+//bool EXEC_always_stop_on_error = FALSE; // if CATCH and TRY must be ignored
 
 const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0 };
 
@@ -897,6 +899,7 @@ void EXEC_jit_function_loop()
 void EXEC_function_loop()
 {
 	bool retry = FALSE;
+	//bool always_stop_on_error = EXEC_always_stop_on_error;
 
 	if (LIKELY(PC != NULL))
 	{
@@ -923,158 +926,168 @@ void EXEC_function_loop()
 					//STACK_pop_frame(&EXEC_current);
 					PROPAGATE();
 				}
-				// We are in a TRY
-				else if (EP != NULL)
+
+				//if (!always_stop_on_error)
 				{
-					#if DEBUG_ERROR
-					fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
-					fprintf(stderr, "TRY\n");
-					#endif
-					ERROR_set_last(FALSE);
-					
-					// No need to unwind the Gosub stack until the TRY stack position, because TRY GOSUB is forbidden
-					/*while (GP > EP)
+					// Are we are in a TRY?
+					if (EP != NULL)
 					{
-						...
-					}*/
-					
-					// The stack is popped until reaching the stack position before the TRY
-					while (SP > EP)
-						POP();
-
-					// We go directly to the END TRY
-					PC = EC;
-					EP = NULL;
-					retry = TRUE;
-				}
-				// There is a CATCH in the function
-				else if (EC != NULL)
-				{
-					#if DEBUG_ERROR
-					fprintf(stderr, "#2 EC = %p\n", EC);
-					fprintf(stderr, "CATCH\n");
-					#endif
-
-					ERROR_set_last(TRUE);
-					
-					// The stack is popped until reaching the stack position at the function start
-					while (SP > (BP + FP->n_local + FP->n_ctrl))
-						POP();
-					
-					// Reset the Gosub stack pointer as all Gosub control variables saved have been released
-					GP = NULL;
-					
-					PC = EC;
-					EC = NULL;
-					retry = TRUE;
-				}
-				// There is no error handler in the function
-				else
-				{
-					#if DEBUG_ERROR
-					fprintf(stderr, "#3\n");
-					fprintf(stderr, "NOTHING\n");
-					#endif
-					//ERROR_INFO save = { 0 };
-					//ERROR_save(&save);
-
-					ERROR_set_last(TRUE);
-
-					if (EXEC_debug && !STACK_has_error_handler())
-					{
-						ERROR_hook();
-						DEBUG.Main(TRUE);
-						
-						if (TP && TC)
-						{
-							ERROR_lock();
-							while (BP > TP)
-							{
-								EXEC_leave_drop();
-								if (!PC)
-									STACK_pop_frame(&EXEC_current);
-							}
-							while (SP > TP)
-								POP();
-							PC = TC;
-							ERROR_unlock();
-						}
-
-						retry = TRUE;
-					}
-					else
-					{
-						// We leave stack frames until we find either:
-						// - A stack frame that has an error handler.
-						// - A void stack frame created by EXEC_enter_real()
-						
-						// First we leave stack frames for JIT functions
-						// on top of the stack. We have just propagated
-						// past these some lines below.
-						ERROR_lock();
-						while (PC != NULL && EC == NULL && FP->fast)
-							EXEC_leave_drop();
-						ERROR_unlock();
-						
-						// We can only leave stack frames for non-JIT functions.
-						ERROR_lock();
-						while (PC != NULL && EC == NULL && !FP->fast)
-							EXEC_leave_drop();
-						ERROR_unlock();
-
-						// If the JIT function has set up an exception handler, call that now.
-						// If not, we must still propagate past that JIT function.
-						if (PC != NULL && FP->fast)
-							PROPAGATE();
-
-						// If we got the void stack frame, then we remove it and raise the error again
-						if (PC == NULL)
-						{
-							/*printf("try to propagate\n");*/
-							STACK_pop_frame(&EXEC_current);
-							
-							//ERROR_restore(&save);
-							//ERROR_set_last();
-							PROPAGATE();
-						}
-
-						// We have a TRY too, handle it.
-						if (EP != NULL)
-						{
-							#if DEBUG_ERROR
-							fprintf(stderr, "#4 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
-							#endif
-
-							ERROR_lock();
-							while (SP > EP)
-								POP();
-							ERROR_unlock();
-
-							EP = NULL;
-							/* On va directement sur le END TRY */
-						}
-
-						// Now we can handle the CATCH
-						
-						// The stack is popped until reaching the stack position at the function start
-						ERROR_lock();
 						#if DEBUG_ERROR
-						DEBUG_where();
-						fprintf(stderr, "#5 BP + local + ctrl = %d  SP = %d\n", BP + FP->n_local + FP->n_ctrl - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+						fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+						fprintf(stderr, "TRY\n");
 						#endif
+						ERROR_set_last(FALSE);
+
+						// No need to unwind the Gosub stack until the TRY stack position, because TRY GOSUB is forbidden
+						/*while (GP > EP)
+						{
+							...
+						}*/
+
+						// The stack is popped until reaching the stack position before the TRY
+						while (SP > EP)
+							POP();
+
+						// We go directly to the END TRY
+						PC = EC;
+						EP = NULL;
+						retry = TRUE;
+						goto __CONTINUE;
+					}
+
+					// Is there a CATCH in the function?
+					if (EC != NULL)
+					{
+						#if DEBUG_ERROR
+						fprintf(stderr, "#2 EC = %p\n", EC);
+						fprintf(stderr, "CATCH\n");
+						#endif
+
+						ERROR_set_last(TRUE);
+
+						// The stack is popped until reaching the stack position at the function start
 						while (SP > (BP + FP->n_local + FP->n_ctrl))
 							POP();
-						ERROR_unlock();
-					
+
+						// Reset the Gosub stack pointer as all Gosub control variables saved have been released
+						GP = NULL;
+
 						PC = EC;
 						EC = NULL;
-
 						retry = TRUE;
+						goto __CONTINUE;
 					}
-					
-					//ERROR_restore(&save);
-					//ERROR_set_last();
 				}
+				//else
+				//	always_stop_on_error = FALSE;
+
+				// There is no error handler in the function
+
+				#if DEBUG_ERROR
+				fprintf(stderr, "#3\n");
+				fprintf(stderr, "NOTHING\n");
+				#endif
+				//ERROR_INFO save = { 0 };
+				//ERROR_save(&save);
+
+				ERROR_set_last(TRUE);
+
+				if (EXEC_debug && !STACK_has_error_handler())
+				{
+					ERROR_hook();
+					DEBUG.Main(TRUE);
+
+					if (TP && TC)
+					{
+						ERROR_lock();
+						while (BP > TP)
+						{
+							EXEC_leave_drop();
+							if (!PC)
+								STACK_pop_frame(&EXEC_current);
+						}
+						while (SP > TP)
+							POP();
+						PC = TC;
+						ERROR_unlock();
+					}
+
+					retry = TRUE;
+				}
+				else
+				{
+					// We leave stack frames until we find either:
+					// - A stack frame that has an error handler.
+					// - A void stack frame created by EXEC_enter_real()
+
+					// First we leave stack frames for JIT functions
+					// on top of the stack. We have just propagated
+					// past these some lines below.
+					ERROR_lock();
+					while (PC != NULL && EC == NULL && FP->fast)
+						EXEC_leave_drop();
+					ERROR_unlock();
+
+					// We can only leave stack frames for non-JIT functions.
+					ERROR_lock();
+					while (PC != NULL && EC == NULL && !FP->fast)
+						EXEC_leave_drop();
+					ERROR_unlock();
+
+					// If the JIT function has set up an exception handler, call that now.
+					// If not, we must still propagate past that JIT function.
+					if (PC != NULL && FP->fast)
+						PROPAGATE();
+
+					// If we got the void stack frame, then we remove it and raise the error again
+					if (PC == NULL)
+					{
+						/*printf("try to propagate\n");*/
+						STACK_pop_frame(&EXEC_current);
+
+						//ERROR_restore(&save);
+						//ERROR_set_last();
+						PROPAGATE();
+					}
+
+					// We have a TRY too, handle it.
+					if (EP != NULL)
+					{
+						#if DEBUG_ERROR
+						fprintf(stderr, "#4 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+						#endif
+
+						ERROR_lock();
+						while (SP > EP)
+							POP();
+						ERROR_unlock();
+
+						EP = NULL;
+						/* On va directement sur le END TRY */
+					}
+
+					// Now we can handle the CATCH
+
+					// The stack is popped until reaching the stack position at the function start
+					ERROR_lock();
+					#if DEBUG_ERROR
+					DEBUG_where();
+					fprintf(stderr, "#5 BP + local + ctrl = %d  SP = %d\n", BP + FP->n_local + FP->n_ctrl - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+					#endif
+					while (SP > (BP + FP->n_local + FP->n_ctrl))
+						POP();
+					ERROR_unlock();
+
+					PC = EC;
+					EC = NULL;
+
+					retry = TRUE;
+				}
+
+				//ERROR_restore(&save);
+				//ERROR_set_last();
+
+			__CONTINUE:
 
 				while (SP < EXEC_super)
 					EXEC_super = ((VALUE *)EXEC_super)->_object.super;

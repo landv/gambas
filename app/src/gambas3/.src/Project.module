@@ -515,8 +515,8 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
     Try File.Save(sDir &/ ".lock", "")
 
     FConvert.Start(("Copying project inside a temporary directory..."))
-    Project.Dir = Temp$()
-    Shell "cp -R " & Shell$(sDir) & " " & Shell$(Project.Dir) Wait
+    Project.Dir = Temp$("conv")
+    Shell "rm -rf " & Shell$(Project.Dir) & " && cp -R " & Shell$(sDir) & " " & Shell$(Project.Dir) Wait
     If Process.LastValue Then Error.Raise(("Unable to create temporary directory"))
 
   Endif
@@ -531,7 +531,7 @@ _INIT_AGAIN:
   ProjectFilter = ""
   VersionControl.Refresh
 
-  If bConvert And If Not Exist(SourceDir) Then
+  If bConvert Then
 
     If ReadOnly Then
       Message.Error(("This project is read-only.") & " " & ("It cannot be converted."))
@@ -544,14 +544,18 @@ _INIT_AGAIN:
     ' Needed for MoveFile()
     RefreshSourceCache
 
-    InsertDirectory(SourceDir)
-    aDir = Dir(Project.Dir, "*")
-    iStep = 0
-    For Each sFile In aDir
-      If CModule.Ext.Exist(File.Ext(sFile)) Then MoveFile(Project.Dir &/ sFile, SourceDir &/ sFile)
-      Inc iStep
-      FConvert.SetProgress(iStep / aDir.Count)
-    Next
+    If Not Exist(SourceDir) Then
+
+      InsertDirectory(SourceDir)
+      aDir = Dir(Project.Dir, "*")
+      iStep = 0
+      For Each sFile In aDir
+        If CModule.Ext.Exist(File.Ext(sFile)) Then MoveFile(Project.Dir &/ sFile, SourceDir &/ sFile)
+        Inc iStep
+        FConvert.SetProgress(iStep / aDir.Count)
+      Next
+      
+    Endif
 
     RefreshSourceCache
 

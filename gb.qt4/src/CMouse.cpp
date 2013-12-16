@@ -349,8 +349,8 @@ BEGIN_METHOD(Mouse_Translate, GB_INTEGER dx; GB_INTEGER dy)
 
 	CHECK_VALID();
 
-	_dx += VARG(dx);
-	_dy += VARG(dy);
+	_dx = VARG(dx);
+	_dy = VARG(dy);
 
 END_METHOD
 

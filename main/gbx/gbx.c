@@ -231,6 +231,7 @@ int main(int argc, char *argv[])
 			if (!EXEC_arch)
 			{
 				printf("  -e               evaluate an expression\n");
+				//printf("  -s               always stop on error\n");
 			}
 			printf(
 				"  -V --version     display version\n"
@@ -310,6 +311,10 @@ int main(int argc, char *argv[])
 		{
 			PROJECT_run_httpd = TRUE;
 		}
+		/*else if (is_option(argv[i], 's'))
+		{
+			EXEC_always_stop_on_error = TRUE;
+		}*/
 		else if (is_option(argv[i], '-'))
 		{
 			i++;

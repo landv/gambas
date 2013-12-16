@@ -343,8 +343,9 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 			
 			if (c == '\t')
 			{
-				int l = 8 - col % 8;
-				print_text(THIS, "        ", l);
+				//int l = 8 - col % 8;
+				//print_text(THIS, "        ", l);
+				WIDGET->insert("\t");
 			}
 			else if (c == '\r')
 			{
@@ -355,11 +356,11 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 				WIDGET->cursorGoto(line, DOC->lineLength(line), false);
 				WIDGET->insert("\n");
 			}
-			else if (c == 12) // CTRL+L
+			else if (c == '\f') // CTRL+L
 			{
 				DOC->clear();
 			}
-			else if (c == 7)
+			else if (c == '\a')
 			{
 				WIDGET->flash();
 			}
