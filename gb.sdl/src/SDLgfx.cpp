@@ -394,6 +394,7 @@ void SDLgfx::DrawRect(int x, int y, int w, int h)
 		glEnd();
 	}
 
+	SetFillPattern(SDL::SolidFill);
 	glPopAttrib();
 }
 
@@ -430,6 +431,7 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 		glEnd();
 	}
 
+	SetFillPattern(SDL::SolidFill);
 	glPopAttrib();
 	glLoadIdentity();
 }
