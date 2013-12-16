@@ -6,14 +6,26 @@ Create Static
 Property Level As Integer
 Property Format As String
 Property Enabled As Boolean
+Property Output As String
 
 Static Public Const DefaultFormat As String = "[$(now)] [$(levelname)] [$(callLocation)] $(message)"
 
 Private $sFormat As String = ""
+
+'' Holds the minimum level the Logger will write
 Private $iLevel As Integer
+
+'' Holds the path of the file or the name of the std{out,err}
 Private $sOutput As String
+
+'' Holds a stram to the log file
 Private $sLogFile As Stream
+
+'' Enables or disables the logger programatically
 Private $bEnabled As Boolean = True
+
+'' True if Begin() was called
+Private $bStarted As Boolean = False
 
 Static Public Const Critical As Integer = 0
 Static Public Const Error As Integer = 1
@@ -32,7 +44,15 @@ Public Sub _new(Optional iMinLevel As Integer, Optional sFormat As String, Optio
 
   If sOutput Then $sOutput = sOutput Else $sOutput = Stdout
 
+End
+
+Public Function Begin() As Boolean
+
+  If $bStarted Then Error.Raise("Begin can't be called twice.")
+
   If $sOutput <> Stdout And $sOutput <> Stderr Then _OpenLog()
+
+  $bStarted = True
 
 End
 
@@ -42,7 +62,7 @@ Private Sub _OpenLog()
     $sOutput = $sOutput &/ Application.Name & ".log"
   Endif
 
-  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise("Log file not writable")
+  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise("Log file not writable.")
 
   If Exist($sOutput) Then
     $sLogFile = Open $sOutput For Write Append
@@ -59,6 +79,8 @@ Public Function isEnabledFor(iLevel As Integer) As Boolean
 End
 
 Public Sub Log(sMessage As String, Optional iLevel As Integer = Info)
+
+  If Not $bStarted Then Error.Raise("Logger is not ready. Please call Begin() to start it.")
 
   If Not $bEnabled Or Not isEnabledFor(iLevel) Then Return
 
@@ -120,7 +142,7 @@ End
 
 Private Sub Level_Write(Value As Integer)
 
-  If Value < 0 Or Value > Me.Debug Then Error.Raise("Invalid logging level")
+  If Value < 0 Then Error.Raise("Invalid logging level.")
 
   $iLevel = Value
 
@@ -135,5 +157,19 @@ End
 Private Sub Format_Write(Value As String)
 
   $sFormat = Value
+
+End
+
+Private Function Output_Read() As String
+
+  Return $sOutput
+
+End
+
+Private Sub Output_Write(Value As String)
+
+  If $bStarted Then Error.Raise("The logger has already started.")
+
+  $sOutput = Value
 
 End

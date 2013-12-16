@@ -96,6 +96,9 @@ Public Function _call(sMessage As String, sFormat As String, iLevel As Integer) 
       Case Logger.Debug
         sName = "DEBUG"
 
+      Case Else
+        sName = "CUSTOM DEBUG"
+
     End Select
 
     sFormat = Replace$(sFormat, "$(levelname)", sName)
