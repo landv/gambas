@@ -2,14 +2,22 @@
 
 Public Sub Main()
 
-  Logger.Begin()
+  Dim a As Logger
 
-  Logger.Enabled = False
+  a = New Logger(Logger.Debug, Logger.DefaultFormat, User.Home)
 
-  Logger.Log("asdasd")
+  ' a.Begin()
 
-  Logger.Enabled = True
+  a.Log("stdout")
 
-  Logger.Log("asdasd2")
+  a.Log("stdout")
+
+  a = New Logger(Logger.Debug, Logger.DefaultFormat, User.Home)
+
+  a.Begin()
+
+  a.Log("stderr")
+
+  a.Log("stderr")
 
 End

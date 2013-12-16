@@ -22,6 +22,7 @@ Static Public Const Info As Integer = 3
 Static Public Const Debug As Integer = 4
 
 Static Public Const Stdout As String = ":stdout"
+Static Public Const Stderr As String = ":stderr"
 
 Public Sub _new(Optional iMinLevel As Integer, Optional sFormat As String, Optional sOutput As String)
 
@@ -31,27 +32,23 @@ Public Sub _new(Optional iMinLevel As Integer, Optional sFormat As String, Optio
 
   If sOutput Then $sOutput = sOutput Else $sOutput = Stdout
 
-End
-
-Public Function Begin() As Boolean
-
-  If $sOutput <> Stdout Then _OpenLog()
-
-  Return True
+  If $sOutput <> Stdout And $sOutput <> Stderr Then _OpenLog()
 
 End
 
-Private Function Level_Read() As Integer
+Private Sub _OpenLog()
 
-  Return $iLevel
+  If IsDir($sOutput) Then
+    $sOutput = $sOutput &/ Application.Name & ".log"
+  Endif
 
-End
+  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise("Log file not writable")
 
-Private Sub Level_Write(Value As Integer)
-
-  If Value < 0 Or Value > Me.Debug Then Error.Raise("Invalid logging level")
-
-  $iLevel = Value
+  If Exist($sOutput) Then
+    $sLogFile = Open $sOutput For Write Append
+  Else
+    $sLogFile = Open $sOutput For Write Create
+  Endif
 
 End
 
@@ -77,40 +74,20 @@ Public Sub _call(sMessage As String, Optional iLevel As Integer = Info)
 
 End
 
-Private Function Format_Read() As String
-
-  Return $sFormat
-
-End
-
-Private Sub Format_Write(Value As String)
-
-  $sFormat = Value
-
-End
-
 Private Sub _Write(sLine As String)
 
-  If $sOutput = ":stdout" Then
+  If $sOutput = Stdout Then
+
     Print sLine
+
+  Else If $sOutput = Stderr Then
+
+    Print #File.Err, sLine
+
   Else
+
     Print #$sLogFile, sLine
-  Endif
 
-End
-
-Private Sub _OpenLog()
-
-  If IsDir($sOutput) Then
-    $sOutput = $sOutput &/ Application.Name & ".log"
-  Endif
-
-  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise("Log file not writable")
-
-  If Exist($sOutput) Then
-    $sLogFile = Open $sOutput For Write Append
-  Else
-    $sLogFile = Open $sOutput For Write Create
   Endif
 
 End
@@ -124,5 +101,31 @@ End
 Private Sub Enabled_Write(Value As Boolean)
 
   $bEnabled = Value
+
+End
+
+Private Function Level_Read() As Integer
+
+  Return $iLevel
+
+End
+
+Private Sub Level_Write(Value As Integer)
+
+  If Value < 0 Or Value > Me.Debug Then Error.Raise("Invalid logging level")
+
+  $iLevel = Value
+
+End
+
+Private Function Format_Read() As String
+
+  Return $sFormat
+
+End
+
+Private Sub Format_Write(Value As String)
+
+  $sFormat = Value
 
 End
