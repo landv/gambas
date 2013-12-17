@@ -4,7 +4,7 @@ Public Sub Main()
 
   Dim a As Logger
 
-  a = New Logger '(Logger.Debug, Logger.DefaultFormat, User.Home)
+  a = New Logger(Logger.Debug, "[$(now)] [$(levelname)] [$(callFunction)] $(message)")
 
   a.Begin()
 

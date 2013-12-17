@@ -6,25 +6,31 @@ Export
 
 Private Function GetCallLocation() As String
 
-  Return System.Backtrace[3]
+  Dim iCount As Integer = 3
+
+  While System.Backtrace[iCount] Begins "Logger"
+    Inc iCount
+  Wend
+
+  Return System.Backtrace[iCount]
 
 End
 
 Private Function GetCallFile() As String
 
-  Return Split(System.Backtrace[3], ".")[0]
+  Return Split(GetCallLocation(), ".")[0]
 
 End
 
 Private Function GetCallFunction() As String
 
-  Return Split(System.Backtrace[3], ".")[1]
+  Return Split(GetCallLocation(), ".")[1]
 
 End
 
 Private Function GetCallLine() As String
 
-  Return Split(System.Backtrace[3], ".")[2]
+  Return Split(GetCallLocation(), ".")[2]
 
 End
 
