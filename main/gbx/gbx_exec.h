@@ -101,7 +101,7 @@ extern bool EXEC_fifo;
 extern const char *EXEC_fifo_name;
 extern bool EXEC_keep_library;
 extern bool EXEC_string_add;
-//extern bool EXEC_always_stop_on_error;
+extern bool EXEC_break_on_error;
 
 extern EXEC_HOOK EXEC_Hook;
 

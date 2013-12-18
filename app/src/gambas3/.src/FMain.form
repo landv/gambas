@@ -209,6 +209,12 @@
       Picture = Picture["icon:/small/eject"]
       Shortcut = "Alt+F5"
     }
+    { mnuBreakOnError Menu
+      Action = "breakerr"
+      Text = ("Break on each error")
+      Picture = Picture["icon:/small/error"]
+      Toggle = True
+    }
     { Menu9 Menu
     }
     { mnuOpenProfile Menu
@@ -825,17 +831,25 @@
       Action = "until"
       Picture = Picture["icon:/small/jump"]
     }
+    { btnBreakOnError ToolButton mnuBreakOnError
+      Name = "btnBreakOnError"
+      MoveScaled(91,0,4,4)
+      ToolTip = ("Break on each error")
+      Action = "breakerr"
+      Picture = Picture["icon:/small/error"]
+      Toggle = True
+    }
     { Panel3 Panel
-      MoveScaled(93,0,1,4)
+      MoveScaled(98,0,1,4)
     }
     { txtSearch ButtonBox
-      MoveScaled(94,0,37,4)
+      MoveScaled(99,0,37,4)
       ToolTip = ("Browse project...")
       Action = "find-project"
       Picture = Picture["icon:/small/find"]
     }
     { btnGoBack MenuButton
-      MoveScaled(131,0,6,4)
+      MoveScaled(136,0,6,4)
       ToolTip = ("Go back")
       Action = "go-back"
       Picture = Picture["icon:/small/left"]
@@ -843,28 +857,28 @@
       Menu = "mnuBackward"
     }
     { btnGoForward ToolButton
-      MoveScaled(135,0,4,4)
+      MoveScaled(140,0,4,4)
       Enabled = False
       ToolTip = ("Go forward")
       Action = "go-forward"
       Picture = Picture["icon:/small/right"]
     }
     { ToolButton6 ToolButton
-      MoveScaled(138,0,4,4)
+      MoveScaled(143,0,4,4)
       Visible = False
       ToolTip = ("Browse project")
       Action = "browse-project"
       Picture = Picture["icon:/small/file-manager"]
     }
     { ToolButton11 ToolButton
-      MoveScaled(140,0,4,4)
+      MoveScaled(145,0,4,4)
       Visible = False
       ToolTip = ("Open a terminal")
       Action = "open-terminal"
       Picture = Picture["icon:/small/terminal"]
     }
     { ToolButton13 ToolButton
-      MoveScaled(142,0,4,4)
+      MoveScaled(147,0,4,4)
       Visible = False
       ToolTip = ("Send project by mail")
       Action = "send-mail"
@@ -1121,6 +1135,11 @@
     Text = "Source archive"
     Shortcut = "Ctrl+Alt+A"
     Picture = "icon:/small/archive"
+  }
+  { Action breakerr
+    Text = "Break on each error"
+    Shortcut = ""
+    Picture = "icon:/small/error"
   }
   { Action browse-project
     Text = "Browse project"
@@ -1473,7 +1492,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
   }
 }

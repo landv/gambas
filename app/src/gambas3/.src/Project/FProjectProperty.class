@@ -1334,6 +1334,48 @@ Public Sub tabProject_Click()
     txtFilterComponent.SetFocus
   Else If tabProject.Text = ("Options") Then
     panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
+  Else If tabProject.Text = ("Statistics") Then
+    UpdateStat
   Endif
 
+End
+
+Private Sub UpdateStat()
+
+  Dim hModule As CModule
+  Dim N As Integer
+  
+  gvwStat.Columns.Count = 2
+  gvwStat.Rows.Count = 0
+  
+  Inc gvwStat.Rows.Count
+  gvwStat[0, 0].Text = ("Modules")
+  gvwStat[0, 1].Text = CStr(Project.GetCount("module"))
+
+  Inc gvwStat.Rows.Count
+  gvwStat[1, 0].Text = ("Classes")
+  gvwStat[1, 1].Text = CStr(Project.GetCount("class"))
+
+  For Each hModule In CModule.All
+    If Not hModule.Used Then Continue
+    N = gvwStat.Rows.Count
+    Inc gvwStat.Rows.Count
+    gvwStat[N, 0].Text = hModule.NamePlural
+    gvwStat[N, 1].Text = CStr(Project.GetCount(hModule.Key))
+  Next
+
+  N = gvwStat.Rows.Count
+  Inc gvwStat.Rows.Count
+  gvwStat[N, 0].Text = ("Lines of code")
+  gvwStat[N, 1].Text = Format(Project.GetLinesOfCode(), ",0")
+
+  For N = 0 To gvwStat.Rows.Max
+    gvwStat[N, 0].Padding = 8
+    gvwStat[N, 1].Padding = 8
+  Next
+
+  gvwStat.Columns[0].Width = -1
+  gvwStat.Columns[0].Width += 16
+  gvwStat.Rows.Height = gvwStat.Font.Height + 16
+  
 End

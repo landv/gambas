@@ -128,7 +128,7 @@ void DEBUG_init(void)
 
 void DEBUG_exit(void)
 {
-	if (!EXEC_debug)
+	if (!EXEC_debug || !DEBUG_is_init())
 		return;
 
 	DEBUG.Exit();

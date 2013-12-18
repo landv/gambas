@@ -861,6 +861,11 @@ static void command_symbol(const char *cmd)
 }
 
 
+static void command_break_on_error(const char *cmd)
+{
+	GB_DEBUG.BreakOnError(cmd[1] == '+');
+}
+
 void DEBUG_main(bool error)
 {
 	static DEBUG_TYPE last_command = TC_NONE;
@@ -874,16 +879,14 @@ void DEBUG_main(bool error)
 		{ "g", TC_GO, command_go, FALSE },
 		{ "+", TC_NONE, command_set_breakpoint, TRUE },
 		{ "-", TC_NONE, command_unset_breakpoint, TRUE },
-		//{ "w", TC_NONE, command_where, TRUE },
-		//{ "l", TC_NONE, command_local, TRUE },
 		{ "&", TC_NONE, command_symbol, TRUE },
 		{ "?", TC_NONE, command_eval, TRUE },
 		{ "!", TC_NONE, command_eval, TRUE },
 		{ "#", TC_NONE, command_eval, TRUE },
 		{ "=", TC_NONE, command_eval, TRUE },
-		//{ "e", TC_NONE, command_error, TRUE },
 		{ "@", TC_NONE, command_frame, TRUE },
-		
+		{ "b", TC_NONE, command_break_on_error, TRUE },
+
 		{ NULL }
 	};
 

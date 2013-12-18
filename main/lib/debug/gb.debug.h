@@ -78,6 +78,7 @@ typedef
 		int (*GetObjectAccessType)(void *object, CLASS *klass, int *count);
 		GB_CLASS (*FindClass)(const char *name);
 		int *(*GetArrayBounds)(void *array);
+		void (*BreakOnError)(bool);
 		}
 	GB_DEBUG_INTERFACE;
 

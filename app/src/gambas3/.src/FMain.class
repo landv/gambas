@@ -1153,6 +1153,7 @@ Public Sub OnProjectChange()
   mnuUseTerminal.Value = Project.UseTerminal
   mnuUseHttpServer.Value = Project.UseHttpServer
   mnuProfile.Value = Project.Profiling
+  mnuBreakOnError.Value = Project.BreakOnError
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -1356,6 +1357,11 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "profile"
       Project.Profiling = Action["profile"].Value
       Project.WriteProject(True)
+      
+    Case "breakerr"
+      Project.BreakOnError = Action["breakerr"].Value
+      Project.WriteProject(True)
+      Design.UpdateBreakOnError
     
     Case "open-profile"
       OpenProfile

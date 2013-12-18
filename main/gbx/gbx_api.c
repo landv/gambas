@@ -314,6 +314,7 @@ const void *GAMBAS_DebugApi[] =
 	(void *)DEBUG_get_object_access_type,
 	(void *)DEBUG_find_class,
 	(void *)CARRAY_get_array_bounds,
+	(void *)GB_DebugBreakOnError,
 	NULL
 };
 
@@ -2342,6 +2343,11 @@ const char *GB_CurrentComponent()
 void *GB_DebugGetExec(void)
 {
 	return &EXEC_current;
+}
+
+void GB_DebugBreakOnError(bool b)
+{
+	EXEC_break_on_error = b;
 }
 
 bool GB_SystemDebug(void)

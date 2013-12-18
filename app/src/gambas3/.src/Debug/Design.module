@@ -39,6 +39,7 @@ Public BalloonX As Integer
 Public BalloonY As Integer
 
 Private $sProfilePath As String
+Private $bUpdateBreakOnError As Boolean
 
 Public Sub Init()
  
@@ -112,6 +113,19 @@ Public Sub Pause()
   If $iState <> STATE_RUNNING Then Return
   $hProcess.Signal
 
+End
+
+Public Sub UpdateBreakOnError()
+  
+  If $iState = STATE_STOP Then Return
+  
+  If $iState = STATE_RUNNING Then
+    $bUpdateBreakOnError = True
+    $hProcess.Signal
+  Else
+    BreakOnError
+  Endif
+  
 End
 
 
@@ -235,6 +249,7 @@ Public Sub Debug_Read(Data As String)
   
       If iLine = 0 Then sClass = ""
       
+      $sError = ""
       If aData[1] Then 
         If sClass Then SetPosition(sClass, iLine)
       Else
@@ -576,7 +591,7 @@ End
 
 Private Sub WriteCommand(sCmd As String)
   
-  'Debug "---> "; sCmd
+  'Error "---> "; sCmd
   Debug.Write(sCmd)
   
 End
@@ -775,6 +790,8 @@ Private Sub Start(sCmd As String)
     $sCmdStart &= $sAddBreakpoint & "\n"
     $sAddBreakpoint = ""
   Endif
+  
+  If Project.BreakOnError Then $sCmdStart &= "b+\n"
 
   $sCmdStart &= sCmd
   '$sCmdStartRun = sCmd
@@ -978,6 +995,12 @@ Public Sub Command(sCmd As String, Optional iNewState As Integer = STATE_LAST)
   
 End
 
+Private Sub BreakOnError()
+
+  WriteCommand("b" & If(Project.BreakOnError, "+", "-"))
+
+End
+
 Private Sub Signal()
 
   'PRINT "Signal"
@@ -990,6 +1013,13 @@ Private Sub Signal()
     'Command($sCmdStartRun, FALSE, STATE_RUNNING)
     SetState(STATE_RUNNING)
     $bIgnoreNextInfo = True
+    Return
+  Endif
+
+  If $bUpdateBreakOnError Then
+    $bUpdateBreakOnError = False
+    BreakOnError
+    Command("", STATE_RUNNING)
     Return
   Endif
 

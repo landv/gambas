@@ -222,6 +222,16 @@ BEGIN_PROPERTY(System_TimeZone)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(System_BreakOnError)
+
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(EXEC_break_on_error);
+	else if (EXEC_debug)
+		EXEC_break_on_error = VPROP(GB_BOOLEAN);
+
+END_METHOD
+
+
 #endif
 
 GB_DESC NATIVE_User[] =
@@ -244,6 +254,7 @@ GB_DESC NATIVE_System[] =
 	GB_CONSTANT("Version", "s", GAMBAS_VERSION_STRING),
 	GB_CONSTANT("FullVersion", "s", VERSION),
 	GB_STATIC_PROPERTY_READ("Backtrace", "String[]", System_Backtrace),
+	GB_STATIC_PROPERTY("BreakOnError", "b", System_BreakOnError),
 
 	GB_STATIC_PROPERTY("Language", "s", System_Language),
 	GB_STATIC_PROPERTY("FirstDayOfWeek", "i", System_FirstDayOfWeek),

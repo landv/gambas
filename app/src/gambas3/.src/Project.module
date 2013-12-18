@@ -94,6 +94,7 @@ Public UseTerminal As Boolean
 Public UseHttpServer As Boolean
 Public Profiling As Boolean
 Public ProfileIndex As Integer
+Public BreakOnError As Boolean
 
 Public Running As Boolean
 
@@ -3086,6 +3087,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   UseHttpServer = False
   Profiling = False
   ProfileIndex = 0
+  BreakOnError = False
   Maintainer = ""
   Vendor = ""
   Address = ""
@@ -3326,6 +3328,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "profiling"
         Profiling = Val(sVal) <> 0
 
+      Case "breakonerror"
+        BreakOnError = Val(sVal) <> 0
+
       Case "createeachdirectory"
         CreateEachDirectory = Val(sVal) <> 0
 
@@ -3430,6 +3435,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If UseTerminal Then Print #hFic, "UseTerminal=1"
   If UseHttpServer Then Print #hFic, "UseHttpServer=1"
   If Profiling Then Print #hFic, "Profiling=1"
+  If BreakOnError Then Print #hFic, "BreakOnError=1"
   If Icon Then Print #hFic, "Icon="; Icon
 
   GetVersion()

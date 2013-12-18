@@ -78,7 +78,7 @@ bool EXEC_keep_library = FALSE; // do not unload libraries
 bool EXEC_string_add = FALSE; // next '&' operator is done for a '&='
 bool EXEC_main_hook_done = FALSE;
 bool EXEC_got_error = FALSE;
-//bool EXEC_always_stop_on_error = FALSE; // if CATCH and TRY must be ignored
+bool EXEC_break_on_error = FALSE; // if we must break into the debugger as soon as there is an error.
 
 const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0 };
 
@@ -899,7 +899,6 @@ void EXEC_jit_function_loop()
 void EXEC_function_loop()
 {
 	bool retry = FALSE;
-	//bool always_stop_on_error = EXEC_always_stop_on_error;
 
 	if (LIKELY(PC != NULL))
 	{
@@ -927,59 +926,57 @@ void EXEC_function_loop()
 					PROPAGATE();
 				}
 
-				//if (!always_stop_on_error)
+				if (EXEC_break_on_error)
+					DEBUG.Main(TRUE);
+
+				// Are we are in a TRY?
+				if (EP != NULL)
 				{
-					// Are we are in a TRY?
-					if (EP != NULL)
+					#if DEBUG_ERROR
+					fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
+					fprintf(stderr, "TRY\n");
+					#endif
+					ERROR_set_last(FALSE);
+
+					// No need to unwind the Gosub stack until the TRY stack position, because TRY GOSUB is forbidden
+					/*while (GP > EP)
 					{
-						#if DEBUG_ERROR
-						fprintf(stderr, "#1 EP = %d  SP = %d\n", EP - (VALUE *)STACK_base, SP - (VALUE *)STACK_base);
-						fprintf(stderr, "TRY\n");
-						#endif
-						ERROR_set_last(FALSE);
+						...
+					}*/
 
-						// No need to unwind the Gosub stack until the TRY stack position, because TRY GOSUB is forbidden
-						/*while (GP > EP)
-						{
-							...
-						}*/
+					// The stack is popped until reaching the stack position before the TRY
+					while (SP > EP)
+						POP();
 
-						// The stack is popped until reaching the stack position before the TRY
-						while (SP > EP)
-							POP();
-
-						// We go directly to the END TRY
-						PC = EC;
-						EP = NULL;
-						retry = TRUE;
-						goto __CONTINUE;
-					}
-
-					// Is there a CATCH in the function?
-					if (EC != NULL)
-					{
-						#if DEBUG_ERROR
-						fprintf(stderr, "#2 EC = %p\n", EC);
-						fprintf(stderr, "CATCH\n");
-						#endif
-
-						ERROR_set_last(TRUE);
-
-						// The stack is popped until reaching the stack position at the function start
-						while (SP > (BP + FP->n_local + FP->n_ctrl))
-							POP();
-
-						// Reset the Gosub stack pointer as all Gosub control variables saved have been released
-						GP = NULL;
-
-						PC = EC;
-						EC = NULL;
-						retry = TRUE;
-						goto __CONTINUE;
-					}
+					// We go directly to the END TRY
+					PC = EC;
+					EP = NULL;
+					retry = TRUE;
+					goto __CONTINUE;
 				}
-				//else
-				//	always_stop_on_error = FALSE;
+
+				// Is there a CATCH in the function?
+				if (EC != NULL)
+				{
+					#if DEBUG_ERROR
+					fprintf(stderr, "#2 EC = %p\n", EC);
+					fprintf(stderr, "CATCH\n");
+					#endif
+
+					ERROR_set_last(TRUE);
+
+					// The stack is popped until reaching the stack position at the function start
+					while (SP > (BP + FP->n_local + FP->n_ctrl))
+						POP();
+
+					// Reset the Gosub stack pointer as all Gosub control variables saved have been released
+					GP = NULL;
+
+					PC = EC;
+					EC = NULL;
+					retry = TRUE;
+					goto __CONTINUE;
+				}
 
 				// There is no error handler in the function
 

@@ -51,7 +51,7 @@
   { tabProject TabPanel
     MoveScaled(1,1,91,66)
     Arrangement = Arrange.Vertical
-    Count = 5
+    Count = 6
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -534,6 +534,13 @@
         Text = Shortcut(("Reset"), "R")
         Picture = Picture["icon:/small/undo"]
       }
+    }
+    Index = 5
+    Text = ("Statistics")
+    { gvwStat GridView
+      MoveScaled(10,7,16,16)
+      Expand = True
+      Border = False
     }
     Index = 0
   }
