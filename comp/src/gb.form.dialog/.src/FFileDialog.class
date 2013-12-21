@@ -79,19 +79,31 @@ End
 Public Sub fchChoose_Activate()
 
   Dim sPath As String
+  Dim aPath As String[]
 
-  sPath = fchChoose.SelectedPath
-  If Not sPath Or If IsDir(sPath) Then Return
-  
-  Dialog.AutoExt = chkAutoExt.Value
-  If Dialog.AutoExt Then sPath = SetExtension(sPath)
-  Dialog.Path = sPath
-  If fchChoose.Multi Then Paths = fchChoose.SelectedPaths
-  If Not fchChoose.ReadOnly Then 
-    If Exist(sPath) Then 
-      If Message.Warning(("This file already exists.\n\nDo you want to overwrite it?"), ("&Overwrite"), ("Cancel")) = 2 Then Return
-    Endif 
+  If fchChoose.Multi Then
+    
+    aPath = fchChoose.SelectedPaths
+    If aPath.Count = 0 Then Return
+    
+    Paths = aPath
+    
+  Else
+    
+    sPath = fchChoose.SelectedPath
+    If Not sPath Or If IsDir(sPath) Then Return
+    
+    Dialog.AutoExt = chkAutoExt.Value
+    If Dialog.AutoExt Then sPath = SetExtension(sPath)
+    Dialog.Path = sPath
+    If Not fchChoose.ReadOnly Then 
+      If Exist(sPath) Then 
+        If Message.Warning(("This file already exists.\n\nDo you want to overwrite it?"), ("&Overwrite"), ("Cancel")) = 2 Then Return
+      Endif 
+    Endif
+
   Endif
+
   Me.Close(True)
 
 End
