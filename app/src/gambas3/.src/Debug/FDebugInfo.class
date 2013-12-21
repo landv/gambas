@@ -711,7 +711,7 @@ Public Sub tabDebug_Click()
     Case TAB_ME
       DefineObject
     Case TAB_CONSOLE
-      FOutput.SetFocus
+      If FMain.IsDebugVisible() Then FOutput.SetFocus
     Case TAB_BREAK
       timBreakpoint_Timer
     Case TAB_COMPILATION

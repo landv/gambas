@@ -1153,7 +1153,7 @@ Public Sub OnProjectChange()
   mnuUseTerminal.Value = Project.UseTerminal
   mnuUseHttpServer.Value = Project.UseHttpServer
   mnuProfile.Value = Project.Profiling
-  mnuBreakOnError.Value = Project.BreakOnError
+  Action["breakerr"].Value = Project.BreakOnError
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
