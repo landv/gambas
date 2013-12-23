@@ -90,8 +90,10 @@ __ERROR:
 
 void gPicture::initialize()
 {
+#ifndef GTK3
 	pixmap = NULL;
 	mask = NULL;
+#endif
 	pixbuf = NULL;
 	surface = NULL;
 	_transparent = false;
@@ -105,6 +107,7 @@ gPicture::gPicture() : gShare()
 	initialize();
 }
 
+#ifndef GTK3
 static GdkPixmap *create_pixmap(int w, int h)
 {
 	GdkScreen *scr;
@@ -118,7 +121,9 @@ static GdkPixmap *create_pixmap(int w, int h)
 	gdk_drawable_set_colormap(GDK_DRAWABLE(pixmap), gdk_colormap_get_system());
 	return pixmap;
 }
+#endif
 
+#ifndef GTK3
 void gPicture::createMask(bool opaque)
 {
 	GdkGC *gc;
@@ -137,6 +142,7 @@ void gPicture::createMask(bool opaque)
 	
 	g_object_unref(gc);
 }
+#endif
 
 gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 {
@@ -153,12 +159,15 @@ gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 	_width = w;
 	_height = h;
 
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		pixmap = create_pixmap(w, h);
 		createMask(false);
 	}
-	else if (_type == PIXBUF)
+	else
+#endif
+	if (_type == PIXBUF)
 	{
 		pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, w, h);
 	}
@@ -191,6 +200,8 @@ gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
 
 }
 
+#ifndef GTK3
+
 // The gPicture takes the GdkPixmap object. Do not unreference it after.
 
 gPicture::gPicture(GdkPixmap *pixmap) : gShare()
@@ -203,6 +214,7 @@ gPicture::gPicture(GdkPixmap *pixmap) : gShare()
 	gdk_drawable_get_size((GdkDrawable *)pixmap, &_width, &_height);
 	pixmap = pixmap;
 }
+#endif
 
 gPicture::~gPicture()
 {
@@ -211,6 +223,7 @@ gPicture::~gPicture()
 
 void gPicture::invalidate()
 {
+#ifndef GTK3
 	if (pixmap && _type != PIXMAP)
 	{
 		g_object_unref(G_OBJECT(pixmap));
@@ -221,6 +234,7 @@ void gPicture::invalidate()
 			mask = NULL;
 		}
 	}
+#endif
 	
 	if (pixbuf && _type != PIXBUF)
 	{
@@ -243,6 +257,7 @@ GdkPixbuf *gPicture::getPixbuf()
 	if (pixbuf)
 		return pixbuf;
 	
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, width(), height());
@@ -269,7 +284,9 @@ GdkPixbuf *gPicture::getPixbuf()
 			g_object_unref(alpha);
 		}
 	}
-	else if (_type == SURFACE)
+	else
+#endif
+	if (_type == SURFACE)
 	{
 		// Convert cairo surface to pixbuf
 		fprintf(stderr, "gb.gtk: warning: cairo surface to pixbuf conversion not implemented yet.\n");
@@ -295,6 +312,7 @@ cairo_surface_t *gPicture::getSurface()
 	return surface;
 }
 
+#ifndef GTK3
 GdkPixmap *gPicture::getPixmap()
 {
 	if (_type == VOID)
@@ -320,6 +338,7 @@ GdkBitmap *gPicture::getMask()
 	getPixmap();
 	return mask;
 }
+#endif
 
 
 gPicture *gPicture::fromMemory(char *addr, unsigned int len)
@@ -348,11 +367,14 @@ gPicture *gPicture::fromData(const char *data, int width, int height)
 
 int gPicture::depth()
 {
-	int depth=0;
+	int depth = 0;
 
+#ifndef GTK3
 	if (pixmap) 
 		depth = gdk_drawable_get_depth(GDK_DRAWABLE(pixmap));
-	else if (pixbuf)
+	else
+#endif
+	if (pixbuf)
 		depth = 32;
 
 	return depth;
@@ -365,6 +387,7 @@ void gPicture::setTransparent(bool vl)
 		
 	_transparent = vl;
 	
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		if (_transparent)
@@ -378,15 +401,19 @@ void gPicture::setTransparent(bool vl)
 			}
 		}
 	}
+#endif
 }
 
 void gPicture::fill(gColor col)
 {
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		gt_pixmap_fill(pixmap, col, NULL);
 	}
-	else if (_type == PIXBUF)
+	else
+#endif
+	if (_type == PIXBUF)
 	{
 		int r, g, b, a;
 		union
@@ -511,7 +538,7 @@ gPicture* gPicture::fromNamedIcon(const char *name, int len)
 {
 	GtkIconTheme* theme;
 	GdkPixbuf *buf;
-	gPicture *pixmap=NULL;
+	gPicture *pic = NULL;
 	int r_type=32;
 	char *c_name, *r_name;
 	
@@ -540,10 +567,10 @@ gPicture* gPicture::fromNamedIcon(const char *name, int len)
 	g_free(c_name);
 	if (!buf) return NULL;
 
-	pixmap=gPicture::fromPixbuf(buf);
+	pic = gPicture::fromPixbuf(buf);
 	g_object_unref(buf);
 
-	return pixmap;
+	return pic;
 }
 
 void gPicture::clear()
@@ -553,18 +580,22 @@ void gPicture::clear()
 	_height = 0;
 	_type = VOID;
 	
+#ifndef GTK3
 	if (pixmap)
 		g_object_unref(G_OBJECT(pixmap));
 	if (mask)
 		g_object_unref(G_OBJECT(mask));
+
+	pixmap = NULL;
+	mask = NULL;
+#endif
+
 	if (pixbuf)
 		g_object_unref(G_OBJECT(pixbuf));
 	if (surface)
 		cairo_surface_destroy(surface);
 	
-	pixmap = NULL;
 	pixbuf = NULL;
-	mask = NULL;
 	surface = NULL;
 }
 
@@ -576,6 +607,7 @@ void gPicture::resize(int w, int h)
 		return;
 	}
 
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		GdkPixmap *buf;
@@ -604,7 +636,9 @@ void gPicture::resize(int w, int h)
 			g_object_unref(save);
 		}
 	}
-	else if (_type == PIXBUF)
+	else
+#endif
+	if (_type == PIXBUF)
 	{
 		GdkPixbuf *buf;
 		
@@ -638,6 +672,7 @@ gPicture *gPicture::copy(int x, int y, int w, int h)
 	if (_type == VOID || w <= 0 || h <= 0)
 		return new gPicture();
 
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		GdkGC *gc;
@@ -655,7 +690,9 @@ gPicture *gPicture::copy(int x, int y, int w, int h)
 			g_object_unref(gc);
 		}
 	}
-	else if (_type == PIXBUF)
+	else
+#endif
+	if (_type == PIXBUF)
 	{
 		GdkPixbuf *buf;
 		if (x == 0 && y == 0 && w == width() && h == height())
@@ -948,25 +985,26 @@ gPicture *gPicture::stretch(int w, int h, bool smooth)
 }
 
 
-void gPicture::draw(gPicture *pixmap, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+void gPicture::draw(gPicture *pic, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
-	if (isVoid() || pixmap->isVoid())
+	if (isVoid() || pic->isVoid())
 		return;
 
-	GT_NORMALIZE(x, y, w, h, sx, sy, sw, sh, pixmap->width(), pixmap->height());
+	GT_NORMALIZE(x, y, w, h, sx, sy, sw, sh, pic->width(), pic->height());
 
 	if (x >= width() || y >= height())
 		return;
 	
 
+#ifndef GTK3
 	if (_type == PIXMAP)
 	{
 		GdkPixmap *dst = getPixmap();
 		
-		if (pixmap->type() == gPicture::PIXMAP && !pixmap->isTransparent() && w == sw && h == sh)
+		if (pic->type() == gPicture::PIXMAP && !pic->isTransparent() && w == sw && h == sh)
 		{
 			GdkGC *gc = gdk_gc_new(GDK_DRAWABLE(dst));
-			GdkPixmap *src = pixmap->getPixmap();
+			GdkPixmap *src = pic->getPixmap();
 			gdk_draw_drawable(GDK_DRAWABLE(dst), gc, src, sx, sy, x, y, sw, sh);
 			g_object_unref(G_OBJECT(gc));
 		}
@@ -977,23 +1015,25 @@ void gPicture::draw(gPicture *pixmap, int x, int y, int w, int h, int sx, int sy
 			if (w != sw || h != sh)
 			{
 				gPicture *pic2;
-				pic2 = pixmap->copy(sx, sy, sw, sh);
-				pixmap = pic2->stretch(w, h, true);
+				pic2 = pic->copy(sx, sy, sw, sh);
+				pic = pic2->stretch(w, h, true);
 				delete pic2;
 				del = true;
 				sx = 0; sy = 0; sw = w; sh = h;
 			}
 			
-			gdk_draw_pixbuf(GDK_DRAWABLE(dst), NULL, pixmap->getPixbuf(), sx, sy, x, y, sw, sh, GDK_RGB_DITHER_MAX, 0, 0); 
+			gdk_draw_pixbuf(GDK_DRAWABLE(dst), NULL, pic->getPixbuf(), sx, sy, x, y, sw, sh, GDK_RGB_DITHER_MAX, 0, 0);
 			
 			if (del)
-				delete pixmap;
+				delete pic;
 		}
 	}
-	else if (_type == PIXBUF)
+	else
+#endif
+	if (_type == PIXBUF)
 	{
 		GdkPixbuf *dst = getPixbuf();
-		GdkPixbuf *src = pixmap->getPixbuf();
+		GdkPixbuf *src = pic->getPixbuf();
 		double scale_x, scale_y, offset_x, offset_y;
 		
 		scale_x = (double)w / sw;
@@ -1033,10 +1073,10 @@ static void destroy_key(char *key)
 	g_free(key);
 }
 
-static void destroy_value(gPicture *pixmap)
+static void destroy_value(gPicture *pic)
 {
 	//fprintf(stderr, "gPictureCache: destroy_value %p\n", pixmap);
-	pixmap->unref();
+	pic->unref();
 }
 
 void gPictureCache::init()
@@ -1049,13 +1089,13 @@ void gPictureCache::exit()
 	g_hash_table_destroy(cache);
 }
 
-void gPictureCache::put(const char *key, gPicture *pixmap)
+void gPictureCache::put(const char *key, gPicture *pic)
 {
 	if (!key || !*key) return;
 	
 	//fprintf(stderr, "gPictureCache: put %p\n", pixmap);
-	pixmap->ref();
-	g_hash_table_replace(cache, (gpointer)g_strdup(key), (gpointer)pixmap);
+	pic->ref();
+	g_hash_table_replace(cache, (gpointer)g_strdup(key), (gpointer)pic);
 }
 
 gPicture *gPictureCache::get(const char *key)

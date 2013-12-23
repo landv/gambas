@@ -47,21 +47,34 @@ Conversion between GDK and long type colors
 static GtkStateType _color_style_bg[] = { GTK_STATE_INSENSITIVE, GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
 static GtkStateType _color_style_fg[] = { GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
 
-void fill_gdk_color(GdkColor *gcol,gColor color, GdkColormap *cmap)
+#ifdef GTK3
+void fill_gdk_color(GdkColor *gcol, gColor color)
 {
 	int r, g, b;
-	
-	if (!cmap)
-		cmap = gdk_colormap_get_system();
-	
+
 	gt_color_to_rgb(color, &r, &g, &b);
-	
+
 	gcol->red = UNSCALE(r);
 	gcol->green = UNSCALE(g);
 	gcol->blue = UNSCALE(b);
-	
+}
+#else
+void fill_gdk_color(GdkColor *gcol, gColor color, GdkColormap *cmap)
+{
+	int r, g, b;
+
+	if (!cmap)
+		cmap = gdk_colormap_get_system();
+
+	gt_color_to_rgb(color, &r, &g, &b);
+
+	gcol->red = UNSCALE(r);
+	gcol->green = UNSCALE(g);
+	gcol->blue = UNSCALE(b);
+
 	gdk_colormap_alloc_color(cmap, gcol, TRUE, TRUE);
 }
+#endif
 
 gColor get_gdk_color(GdkColor *gcol)
 {
@@ -169,6 +182,19 @@ void gt_color_to_rgba(gColor color, int *r, int *g, int *b, int *a)
 gColor gt_rgba_to_color(int r, int g, int b, int a)
 {
 	return (gColor)(b | (g << 8) | (r << 16) | (a << 24));
+}
+
+void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a)
+{
+	*b = (color & 0xFF) / 255.0;
+	*g = ((color >> 8) & 0xFF) / 255.0;
+	*r = ((color >> 16) & 0xFF) / 255.0;
+	*a = ((color >> 24) & 0xFF) / 255.0;
+}
+
+gColor gt_frgba_to_color(double r, double g, double b, double a)
+{
+	return gt_rgba_to_color((int)(r * 255.0), (int)(g * 255.0), (int)(b * 255.0), (int)(a * 255.0));
 }
 
 void gt_rgb_to_hsv(int r, int g, int b, int *H, int *S,int *V )
@@ -337,7 +363,11 @@ gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 	GdkPixbuf *buf = NULL;
 	gPicture *pic;
 	
+#ifdef GTK3
+	gdk_window_get_geometry(win, NULL, NULL, &ww, &hh);
+#else
 	gdk_window_get_geometry(win, 0, 0, &ww, &hh, 0);
+#endif
 	
 	if (w <= 0 || h <= 0)
 	{
@@ -370,7 +400,13 @@ gPicture *gt_grab_window(GdkWindow *win, int x, int y, int w, int h)
 		h = hh - y;
 	
 	if (w > 0 && h > 0)
+	{
+#ifdef GTK3
+		buf = gdk_pixbuf_get_from_window(win, x, y, w, h);
+#else
 		buf = gdk_pixbuf_get_from_drawable(NULL, win, NULL, x, y, 0, 0, w, h);
+#endif
+	}
 	
 	if (w == ow && h == oh)
 		return new gPicture(buf);
@@ -1164,7 +1200,8 @@ GtkStyle *gt_get_widget_style(const char *name)
 	return st;
 }
 
-
+#ifdef GTK3
+#else
 void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc)
 {
 	GdkColor color;
@@ -1238,6 +1275,7 @@ void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_retu
 			*mask_return = NULL;
 	}
 }
+#endif
 
 #if 0
 void gt_pixbuf_replace_color(GdkPixbuf *pixbuf, gColor src, gColor dst, bool noteq)
@@ -1581,6 +1619,11 @@ gtk_widget_set_can_focus (GtkWidget *widget,
       gtk_widget_queue_resize (widget);
       g_object_notify (G_OBJECT (widget), "can-focus");
     }
+}
+
+void gtk_widget_get_allocation(GtkWidget *widget, GtkAllocation *allocation)
+{
+	*allocation = widget->allocation;
 }
 #endif
 

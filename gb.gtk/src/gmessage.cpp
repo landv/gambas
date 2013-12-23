@@ -96,10 +96,16 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	
 	title = gMessage::title();
 	
-	msg=gtk_dialog_new_with_buttons(title,NULL,
+#ifdef GTK3
+	msg = gtk_dialog_new_with_buttons(title, NULL,
+					GTK_DIALOG_MODAL,
+					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
+#else
+	msg = gtk_dialog_new_with_buttons(title, NULL,
 					(GtkDialogFlags)(GTK_DIALOG_MODAL+GTK_DIALOG_NO_SEPARATOR),
-					bt.bt1,1,bt.bt2,2,bt.bt3,3,NULL);
-	
+					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
+#endif
+
 	img=gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
 	label = gtk_label_new ("");
 	
@@ -115,7 +121,7 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	hrz=gtk_hbox_new(FALSE, 16);
   gtk_container_set_border_width(GTK_CONTAINER(hrz), 16);
   	
-	gtk_container_add (GTK_CONTAINER(GTK_DIALOG(msg)->vbox),hrz);
+	gtk_container_add (GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(msg))),hrz);
 	
 	gtk_container_add (GTK_CONTAINER(hrz),img);
 	gtk_box_set_child_packing(GTK_BOX(hrz), img, false, false, 0, GTK_PACK_START);
@@ -126,8 +132,8 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	gtk_widget_show_all(hrz);
 	
 	gtk_widget_realize(msg);
-	gdk_window_set_type_hint(msg->window,GDK_WINDOW_TYPE_HINT_UTILITY);
-	gtk_window_set_position(GTK_WINDOW(msg),GTK_WIN_POS_CENTER_ALWAYS);
+	gdk_window_set_type_hint(gtk_widget_get_window(msg), GDK_WINDOW_TYPE_HINT_UTILITY);
+	gtk_window_set_position(GTK_WINDOW(msg), GTK_WIN_POS_CENTER_ALWAYS);
 	
 	resp = run_dialog(GTK_DIALOG(msg));
 	gtk_widget_destroy(msg);
@@ -591,6 +597,35 @@ bool gDialog::selectFont()
 	return false;
 }
 
+#ifdef GTK3
+bool gDialog::selectColor()
+{
+	GtkColorChooserDialog *dialog;
+	GdkRGBA color;
+
+	gt_color_to_frgba(DIALOG_color, &color.red, &color.green, &color.blue, &color.alpha);
+
+	dialog = (GtkColorChooserDialog *)gtk_color_chooser_dialog_new(DIALOG_title, NULL);
+
+	gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(dialog), &color);
+
+	gtk_window_present(GTK_WINDOW(dialog));
+
+	if (run_dialog(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
+ 	{
+ 		gtk_widget_destroy(GTK_WIDGET(dialog));
+		gDialog::setTitle(NULL);
+		return true;
+ 	}
+
+	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(dialog), &color);
+	DIALOG_color = gt_frgba_to_color(color.red, color.green, color.blue, color.alpha);
+
+	gtk_widget_destroy(GTK_WIDGET(dialog));
+	gDialog::setTitle(NULL);
+	return false;
+}
+#else
 bool gDialog::selectColor()
 {
 	GtkColorSelectionDialog *msg;
@@ -603,7 +638,7 @@ bool gDialog::selectColor()
 	else
 		msg=(GtkColorSelectionDialog*)gtk_color_selection_dialog_new ("Select Color");
     
-	gtk_color_selection_set_current_color((GtkColorSelection*)msg->colorsel,&gcol);
+	gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(msg)), &gcol);
 	
 	gtk_window_present(GTK_WINDOW(msg));
 	if (run_dialog(GTK_DIALOG(msg)) != GTK_RESPONSE_OK)
@@ -613,7 +648,7 @@ bool gDialog::selectColor()
 		return true;
  	}
 	
-	gtk_color_selection_get_current_color((GtkColorSelection*)msg->colorsel,&gcol);
+	gtk_color_selection_get_current_color(GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(msg)), &gcol);
 	
 	DIALOG_color = get_gdk_color(&gcol);
 	
@@ -621,4 +656,5 @@ bool gDialog::selectColor()
 	gDialog::setTitle(NULL);
 	return false;
 }
+#endif
 

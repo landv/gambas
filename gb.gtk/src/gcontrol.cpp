@@ -105,17 +105,18 @@ int gPlugin::client()
 {
 	//GdkNativeWindow win = gtk_socket_get_id(GTK_SOCKET(widget));
 	//return (long)win;
-	GdkWindow *win = GTK_SOCKET(widget)->plug_window;
+	GdkWindow *win = gtk_socket_get_plug_window(GTK_SOCKET(widget));
 	if (!win)
 		return 0;
 	else
 		return (int)GDK_WINDOW_XID(win);
 }
 
-void gPlugin::plug(int id, bool prepared)
+void gPlugin::plug(int id)
 {
 	void (*func)(gControl *);
 	int i;
+	Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 
 	func = onPlug;
 	onPlug = NULL;
@@ -125,14 +126,11 @@ void gPlugin::plug(int id, bool prepared)
 		if (i == 0)
 			onPlug = func;
 			
-		if (!prepared) 
-			gtk_socket_steal(GTK_SOCKET(widget), (GdkNativeWindow)id);
-		else 
-			gtk_socket_add_id(GTK_SOCKET(widget), (GdkNativeWindow)id);
+		gtk_socket_add_id(GTK_SOCKET(widget), (Window)id);
 	}
 	
 	if (client())
-    XAddToSaveSet(gdk_display, client());
+    XAddToSaveSet(d, client());
 	else
 		emit(SIGNAL(onError));
 }
@@ -144,12 +142,12 @@ void gPlugin::discard()
 	#else
 	#ifdef GDK_WINDOWING_X11
 	
-	//gColor color;
-	
+	Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
+
 	if (!client()) return;
 	
-  XRemoveFromSaveSet(gdk_display, client());
-	XReparentWindow(gdk_display, client(), GDK_ROOT_WINDOW(), 0, 0);
+  XRemoveFromSaveSet(d, client());
+	XReparentWindow(d, client(), GDK_ROOT_WINDOW(), 0, 0);
 	
 	#else
 	stub("no-X11/gPlugin:discard()");
@@ -316,7 +314,11 @@ bool gControl::isEnabled() const
 
 bool gControl::isReallyVisible()
 {
+#if GTK_CHECK_VERSION(2, 20, 0)
+	return gtk_widget_get_mapped(border);
+#else
 	return GTK_WIDGET_MAPPED(border);
+#endif
 }
 
 void gControl::setEnabled(bool vl)
@@ -358,19 +360,21 @@ POSITION AND SIZE
 
 void gControl::getScreenPos(int *x, int *y)
 {
-	if (!border->window)
+	if (!gtk_widget_get_window(border))
 	{
 		*x = *y = 0;
 		return;
 	}
 	
-	gdk_window_get_origin(border->window, x, y);
+	gdk_window_get_origin(gtk_widget_get_window(border), x, y);
 	
 	#if GTK_CHECK_VERSION(2, 18, 0)
 	if (!gtk_widget_get_has_window(border))
 	{
-		*x += border->allocation.x;
-		*y += border->allocation.y;
+		GtkAllocation a;
+		gtk_widget_get_allocation(border, &a);
+		*x += a.x;
+		*y += a.y;
 	}
 	#endif
 }
@@ -416,8 +420,13 @@ static void send_configure (gControl *control)
 
   widget = control->border;
 
+#if GTK_CHECK_VERSION(2, 20, 0)
+	if (!gtk_widget_get_realized(widget))
+		return;
+#else
 	if (!GTK_WIDGET_REALIZED(widget))
 		return;
+#endif
 	
 // 	if (control->isWindow())
 // 	 g_debug("send configure to window: %s", control->name());
@@ -695,13 +704,13 @@ void gControl::setCursor(gCursor *vl)
 
 void gControl::updateCursor(GdkCursor *cursor)
 {
-  if (GDK_IS_WINDOW(border->window) && _inside)
+  if (GDK_IS_WINDOW(gtk_widget_get_window(border)) && _inside)
 	{
 		//fprintf(stderr, "updateCursor: %s %p\n", name(), cursor);
-		if (!cursor && parent() && parent()->border->window == border->window)
+		if (!cursor && parent() && gtk_widget_get_window(parent()->border) == gtk_widget_get_window(border))
 			parent()->updateCursor(parent()->getGdkCursor());
 		else
-			gdk_window_set_cursor(border->window, cursor);
+			gdk_window_set_cursor(gtk_widget_get_window(border), cursor);
 	}
 }
 
@@ -804,10 +813,10 @@ int gControl::handle()
 {
 	#ifndef GAMBAS_DIRECTFB
 	#ifdef GDK_WINDOWING_X11
-	if (!border->window)
+	if (!gtk_widget_get_window(border))
 		return 0;
 	else
-		return GDK_WINDOW_XID(border->window);
+		return GDK_WINDOW_XID(gtk_widget_get_window(border));
 	#else
 	stub("no-X11/gControl::handle()");
 	return 0;
@@ -845,13 +854,16 @@ void gControl::refresh(int x, int y, int w, int h)
 		// Buggy GTK+
 	  // gtk_widget_queue_draw_area(border, x, y, w, h);
 	  GdkRectangle r;
+		GtkAllocation a;
+
+		gtk_widget_get_allocation(border, &a);
 		
-		r.x = border->allocation.x + x;
-		r.y = border->allocation.y + y;
+		r.x = a.x + x;
+		r.y = a.y + y;
 		r.width = w;
 		r.height = h;
   
-		gdk_window_invalidate_rect(border->window, &r, TRUE);
+		gdk_window_invalidate_rect(gtk_widget_get_window(border), &r, TRUE);
 	}
 
 	afterRefresh();
@@ -902,7 +914,11 @@ bool gControl::hasFocus()
 	if (_proxy)
 		return _proxy->hasFocus();
 	else
+#if GTK_CHECK_VERSION(2, 18, 0)
+		return (border && gtk_widget_has_focus(border)) || (widget && gtk_widget_has_focus(widget)) || gApplication::activeControl() == this;
+#else
 		return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gApplication::activeControl() == this;
+#endif
 }
 
 gControl* gControl::next()
@@ -947,9 +963,9 @@ void gControl::lower()
 	
 	if (gtk_widget_get_has_window(border))
 	{
-		gdk_window_lower(border->window);
-		if (widget->window)
-			gdk_window_lower(widget->window);
+		gdk_window_lower(gtk_widget_get_window(border));
+		if (gtk_widget_get_window(widget))
+			gdk_window_lower(gtk_widget_get_window(widget));
 	}
 	else
 	{	
@@ -1008,9 +1024,9 @@ void gControl::raise()
 	
 	if (gtk_widget_get_has_window(border))
 	{
-		gdk_window_raise(border->window);
-		if (widget->window)
-			gdk_window_raise(widget->window);
+		gdk_window_raise(gtk_widget_get_window(border));
+		if (gtk_widget_get_window(widget))
+			gdk_window_raise(gtk_widget_get_window(widget));
 	}
 	else
 	{	
@@ -1059,10 +1075,10 @@ void gControl::setNext(gControl *ctrl)
 	
 	if (gtk_widget_get_has_window(ctrl->border) && gtk_widget_get_has_window(border))
 	{
-		stack[0] = GDK_WINDOW_XID(ctrl->border->window);
-		stack[1] = GDK_WINDOW_XID(border->window);
+		stack[0] = GDK_WINDOW_XID(gtk_widget_get_window(ctrl->border));
+		stack[1] = GDK_WINDOW_XID(gtk_widget_get_window(border));
 		
-		XRestackWindows(GDK_WINDOW_XDISPLAY(border->window), stack, 2 );
+		XRestackWindows(GDK_WINDOW_XDISPLAY(gtk_widget_get_window(border)), stack, 2 );
 	}
 	
 	ch = pr->_children;
@@ -1176,6 +1192,7 @@ void gControl::drawBorder(GdkEventExpose *e)
 	//if (!win)
 	{
 		GtkWidget *wid;
+		GtkAllocation a;
 		
 		if (frame)
 			wid = frame;
@@ -1185,10 +1202,11 @@ void gControl::drawBorder(GdkEventExpose *e)
 		if (GTK_IS_LAYOUT(wid))
 			win = GTK_LAYOUT(wid)->bin_window;
 		else
-			win = wid->window;
+			win = gtk_widget_get_window(wid);
 		
-		x = wid->allocation.x;
-		y = wid->allocation.y;
+		gtk_widget_get_allocation(wid, &a);
+		x = a.x;
+		y = a.y;
 	}
 	
   if (w < 1 || h < 1)
@@ -1275,8 +1293,10 @@ void gControl::registerControl()
 static gboolean cb_clip_children(GtkWidget *wid, GdkEventExpose *e, gContainer *d)
 {
 	GdkRegion *me;
-	
-	me = gdk_region_rectangle((GdkRectangle *)&wid->allocation);
+	GtkAllocation a;
+
+	gtk_widget_get_allocation(wid, &a);
+	me = gdk_region_rectangle((GdkRectangle *)&a);
 	
 	gdk_region_intersect(e->region, me);
 	
@@ -1835,7 +1855,7 @@ bool gControl::grab()
 	if (_grab)
 		return false;
 	
-	win = border->window;
+	win = gtk_widget_get_window(border);
 	
 	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, 
 	#if GTK_CHECK_VERSION(2, 18, 0)
@@ -2002,16 +2022,19 @@ bool gControl::isAncestorOf(gControl *child)
 
 void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
 {
+	GtkAllocation a;
+
 	if (background() == COLOR_DEFAULT)
 		return;
 	
-	cairo_t *cr = gdk_cairo_create(widget->window);
+	cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
 
 	gdk_cairo_region(cr, e->region);
 	cairo_clip(cr);
 	gt_cairo_set_source_color(cr, background());
 
-	cairo_rectangle(cr, border->allocation.x, border->allocation.y, width(), height());
+	gtk_widget_get_allocation(border, &a);
+	cairo_rectangle(cr, a.x, a.y, width(), height());
 	cairo_fill(cr);
 	
   cairo_destroy(cr);
@@ -2019,7 +2042,11 @@ void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
 
 bool gControl::canFocus() const
 {
+#if GTK_CHECK_VERSION(2, 18, 0)
+	return gtk_widget_get_can_focus(widget);
+#else
 	return GTK_WIDGET_CAN_FOCUS(widget);
+#endif
 }
 
 void gControl::setCanFocus(bool vl)

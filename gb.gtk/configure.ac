@@ -16,7 +16,7 @@ GB_COMPONENT_PKG_CONFIG(
   gtkopengl, GTKOPENGL, gb.gtk.opengl, [opengl],
   gtkglext-1.0
 )
-  
+
 AC_OUTPUT( \
 Makefile \
 src/Makefile \

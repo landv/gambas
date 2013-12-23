@@ -28,7 +28,7 @@ class gPlugin : public gControl
 {
 public:
 	gPlugin(gContainer *parent);
-	void plug(int id, bool prepared = false);
+	void plug(int id);
 	void discard();
 //"Properties"
 	int client();

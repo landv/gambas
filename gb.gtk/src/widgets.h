@@ -32,6 +32,11 @@
 #endif
 #endif
 #include <gtk/gtk.h>
+#ifdef GDK_WINDOWING_X11
+#ifdef GTK3
+#include <gtk/gtkx.h>
+#endif
+#endif
 
 #include <stdio.h>
 #include <string.h>

@@ -61,7 +61,11 @@ public:
 	void setCache();
 	void updateUseTablet();
 	
+#ifdef GTK3
+	cairo_surface_t *buffer;
+#else
 	GdkPixmap *buffer;
+#endif
 	GtkWidget *box;
 	uint _event_mask;
 	uint _old_bg_id;

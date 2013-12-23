@@ -103,12 +103,16 @@ void gt_ensure_visible(GtEnsureVisible *arg, int x, int y, int w, int h);
   if (sh > ((height) - sy)) \
     sh = ((height) - sy);
 
+#ifndef GTK3
 void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc);
+#endif
 
 // Creates a disabled version of a pixbuf
 
 GdkPixbuf *gt_pixbuf_create_disabled(GdkPixbuf *img);
+#ifndef GTK3
 void gt_pixbuf_render_pixmap_and_mask(GdkPixbuf *pixbuf, GdkPixmap **pixmap_return, GdkBitmap **mask_return, int alpha_threshold);
+#endif
 void gt_pixbuf_make_alpha(GdkPixbuf *pixbuf, gColor color);
 void gt_pixbuf_make_gray(GdkPixbuf *pixbuf);
 
@@ -137,8 +141,8 @@ void gt_layout_alignment(PangoLayout *layout, float w, float h, float *tw, float
 
 #if GTK_CHECK_VERSION(2, 18, 0)
 #else
-void
-gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus);
+void gtk_widget_set_can_focus(GtkWidget *widget, gboolean can_focus);
+void gtk_widget_get_allocation(GtkWidget *widget, GtkAllocation *allocation);
 #endif
 
 void gt_lower_widget(GtkWidget *widget);
