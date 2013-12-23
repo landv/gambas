@@ -1,0 +1,93 @@
+' Gambas module file
+
+Public Sub EnumerateSerialInterfaces()
+  
+  Dim i As Integer
+  
+  With FMain
+    
+    'Set operational parameters (used for testing only) 
+    .SerialPort1.Speed = "19200"
+    .SerialPort1.Parity = 0
+    .SerialPort1.DataBits = "8"
+    .SerialPort1.StopBits = "1"
+    .SerialPort1.FlowControl = 0
+    
+    'Clear Device Combo
+    FMain.ComboPortDeviceName.Clear()
+    
+    'Standard USB Ports
+    For i = 0 To 8
+      .SerialPort1.PortName = "/dev/ttyS" & Format(i, "0")
+      Try .SerialPort1.Open
+      If Not Error 
+        .ComboPortDeviceName.Add(.SerialPort1.PortName) 
+        .SerialPort1.close
+      Endif
+    Next
+    
+    'USB based ports
+    For i = 0 To 8
+      .SerialPort1.PortName = "/dev/ttyUSB" & Format(i, "0")
+      Try .SerialPort1.Open
+      If Not Error 
+        .ComboPortDeviceName.Add(.SerialPort1.PortName) 
+        .SerialPort1.close
+      Endif
+    Next
+    
+  End With
+  
+End
+
+Public Sub DisplaySerialInput(RX As String)
+  'This Routine displays serial data
+  
+  Dim R As String
+  Dim i As Integer
+  
+  With FMain 
+    
+    'Set cursor to the end of the text
+    .TextArea1.Pos = .TextArea1.Length
+    
+    'CR is ommited because the TextArea control displays it as CR+LF 
+    For i = 1 To Len(RX)
+      R = Mid$(RX, i, 1)
+      If R <> Chr$(13) Then
+        'Amend character
+        .TextArea1.insert(R)
+      Endif
+    Next  
+    
+    ' 'Use the following alternatively to the above. It displays ASCII-values in [] if it is a control character (ASCII-value < 32)
+    ' For i = 1 To Len(RX)
+    '   R = Mid$(RX, i, 1)
+    '   If Asc(R) > 31 Then
+    '     .TextArea1.insert(R)
+    '   Else
+    '     If R <> Chr$(13) 'Ommit CR because the TextArea control display it as CR+LF
+    '       .TextArea1.insert("[" & Format(Asc(R), "0") & "]" & R)
+    '     Else
+    '       .TextArea1.insert("[" & Format(Asc(R), "0") & "]")
+    '     Endif
+    '   Endif
+    ' Next
+    
+  End With
+  
+End
+
+Public Sub CheckRS232Status()
+  'This dipslays the status of the RS232 handshake lines
+  
+  With FMain.SerialPort1  
+    FMain.CheckDSR.Value = .DSR
+    FMain.CheckDTR.Value = .DTR
+    FMain.CheckCTS.Value = .CTS
+    FMain.CheckRTS.Value = .RTS
+    FMain.CheckDCD.Value = .DCD
+    FMain.CheckRNG.Value = .RNG
+  End With 
+  
+End

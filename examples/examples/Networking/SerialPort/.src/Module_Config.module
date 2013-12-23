@@ -1,0 +1,92 @@
+' Gambas module file
+
+Public AppSettings As Settings 
+
+Public Sub InitDefaultPath()
+  
+  AppSettings = New Settings
+  
+End
+
+Public Sub StoreSerialSettings(Port As SerialPort, PIndex As Integer)
+  'Parameters are for example stored in home/.config/Gambas3/RS232.conf
+  
+  Dim Headline As String
+
+  HeadLine = "SerialPort " & Format(PIndex, "0")
+  
+  'Store all parameters
+  With Port
+    AppSettings[HeadLine & "/Portname"] = .PortName
+    AppSettings[HeadLine & "/Speed"] = .Speed
+    AppSettings[HeadLine & "/DataBits"] = .DataBits
+    AppSettings[HeadLine & "/Stopbits"] = .StopBits
+    AppSettings[HeadLine & "/Parity"] = .Parity
+    AppSettings[HeadLine & "/FlowControl"] = .FlowControl
+  End With
+  
+End
+
+Public Sub RestoreSerialSettings(Port As SerialPort, Pindex As Integer)
+  'Parameters are for example stored in home/.config/Gambas3/RS232.conf
+  
+  Dim i As Integer
+  Dim HeadLine As String
+  
+  'Set parameter headline
+  HeadLine = "SerialPort " & Format(PIndex, "0")
+  
+  'Retrieve all RS232 settings from config file
+  With Port
+    .PortName = AppSettings[HeadLine & "/Portname", "/dev/ttyS0"]
+    .Speed = AppSettings[HeadLine & "/Speed", "9600"]
+    .DataBits = AppSettings[HeadLine & "/DataBits", "8"]
+    .StopBits = AppSettings[HeadLine & "/StopBits", "1"]
+    .Parity = AppSettings[HeadLine & "/Parity", 0]
+    .FlowControl = AppSettings[HeadLine & "/FlowControl", 0]
+  End With
+  
+  'Set the RS232 combos accordingly:
+  
+  'Finding Serial Device in Combo for Displaying
+  i = FMain.ComboPortDeviceName.Find(FMain.SerialPort1.PortName)
+  FMain.ComboPortDeviceName.index = i     
+  
+  'Finding Speed in Combo for Displaying
+  i = FMain.ComboSpeed.find(FMain.SerialPort1.Speed)
+  FMain.ComboSpeed.Index = i
+  
+  'Finding DataBits in Combo for Displaying
+  i = Fmain.ComboDataBits.find(FMain.Serialport1.DataBits)
+  Fmain.ComboDataBits.Index = i
+  
+  'Finding StopBits in Combo for Displaying
+  i = Fmain.ComboStopBits.find(FMain.Serialport1.StopBits)
+  Fmain.ComboStopBits.Index = i
+  
+  'Displaying Parity in Combo (0=NON, 1=EVEN, 2=ODD)
+  FMain.ComboParity.index = FMain.SerialPort1.Parity
+  
+  'Displaying Flow-Control in Combo
+  FMain.ComboHandShake.index = FMain.SerialPort1.FlowControl
+  
+End
+
+Public Sub StoreFormPosition(F As Form)
+  
+  With F
+    AppSettings[.name & "/left"] = .left
+    AppSettings[.name & "/top"] = .top
+  End With
+  
+End
+
+Public Sub RestoreFormPosition(F As Form)
+  
+  With F
+    .left = AppSettings[.name & "/left", 0]
+    .top = AppSettings[.name & "/top", 0]
+  End With
+  
+End
+

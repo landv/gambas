@@ -1,0 +1,246 @@
+' Gambas class file
+
+Public Sub _new()
+  
+End
+
+Public Sub Form_Open()
+  'This is a tested and fully operational example for how to use GAMBAS for serial (RS232) communications.
+  'The sourcecode is provided under GNU Public Licence. So feel free to use it for non-commercial or commercial purposes.
+  'The code is based on the example provided with Gambas 3.5.1 and the application published in the Gambas book available at:
+  'http://www.gambas-buch.de/dw/doku.php?id=k19: k19.1: k19.1.2: start
+  
+  'Features:
+  ' -Enumerates serial ports including USB types
+  ' -Change of comms parameters
+  ' -Storage and retrieval of comms parameters
+  ' -Display of incoming data
+  ' -Transmission of data
+  ' -Display of handshake line status
+  ' -Restoring of last window position as program start
+  '
+  'Have Fun
+  'Claus Dietrich/ 23.12.2013
+  '
+  '##############################################################################################################
+  'Example of RS232 properties for reference only:
+  'SerialPort1.PortName = "/dev/ttyS0"
+  'SerialPort1.Speed = "19200"
+  'SerialPort1.Parity = 0
+  'SerialPort1.DataBits = "8"
+  'SerialPort1.StopBits = "1"
+  'SerialPort1.FlowControl = 0
+  '##############################################################################################################
+  
+  'Enumerate all available RS232 Interfaces and Display them in the Combo
+  Module_RS232.EnumerateSerialInterfaces
+  
+  'Set the Default-Path for Storage of Program Parameters
+  Module_Config.InitDefaultPath
+  
+  'Load Port-Configuration from the config file and set the combos accordingly
+  Module_Config.RestoreSerialSettings(FMain.SerialPort1, 0)
+  
+  'Open the serial port
+  Try SerialPort1.Open()
+  If Error Then
+    FMain.Message("Unable to open " & SerialPort1.PortName & ": " & Error.Text)
+    FMain.ButtonChange.text = "Apply"
+    FMain.ComboPortDeviceName.text = ""
+  Else
+    FMain.ComboPortDeviceName.enabled = False
+    FMain.ComboSpeed.enabled = False
+    Fmain.ComboDataBits.enabled = False
+    Fmain.ComboStopBits.enabled = False
+    FMain.ComboParity.enabled = False
+    FMain.ComboHandShake.enabled = False
+    'Display Status of RS232 handshake lines
+    Module_RS232.CheckRS232Status()
+  Endif
+  
+  'Empty the TextArea controls
+  TextArea1.text = ""
+  TextArea2.text = ""
+  TextArea2.SetFocus
+  
+  'Restore the last position of the main window
+  Module_Config.RestoreFormPosition(FMain)
+  
+End
+
+Public Sub SerialPort1_Read()
+  'This routine reads the RS232 port
+
+  Dim Rx As String
+  'Sleep 0.025
+  
+  'Read it
+  Read #SerialPort1, Rx, Lof(SerialPort1)
+  'Display it
+  Module_RS232.DisplaySerialInput(Rx)
+  
+End
+
+Public Sub Form_Close()
+  'This routine is the central exit point of the appplication
+
+  Dim cwin As Window
+  
+  'Close all open windows
+  For Each cwin In Windows
+    cwin.Close 
+  Next
+  
+  'Store last position of the FMain Window
+  Module_Config.StoreFormPosition(FMain)
+  
+  'If open, close the serial port
+  If SerialPort1.Status = Net.active Then
+    SerialPort1.Close()
+  End If
+  
+End
+
+Public Sub TextArea1_KeyPress()
+  
+End
+
+Public Sub btnSend_Click()
+  
+  If SerialPort1.status = Net.Inactive Then
+    FMain.Message("Please open serial port first.")
+  Else
+    'FMain.CheckRTS.Value = True
+    'Wait 0.01
+    Write #SerialPort1, TextArea2.text, Len(TextArea2.text)
+    'Wait 0.5
+    'FMain.CheckRTS.Value = False
+  Endif 
+  
+End
+
+Public Sub ButtonChange_Click()
+  
+  With Fmain
+    
+    If FMain.ButtonChange.text = "Change" Then
+      .ButtonChange.text = "Apply"
+      .SerialPort1.close
+      .ComboPortDeviceName.enabled = True
+      .ComboSpeed.enabled = True
+      .ComboDataBits.enabled = True
+      .ComboStopBits.enabled = True
+      .ComboParity.enabled = True
+      .ComboHandShake.enabled = True    
+    Else
+      'Transfer combo settings to port
+      .SerialPort1.PortName = FMain.ComboPortDeviceName.text
+      .SerialPort1.Speed = FMain.ComboSpeed.text
+      .SerialPort1.Parity = FMain.ComboParity.index
+      .SerialPort1.DataBits = Fmain.ComboDataBits.Text
+      .SerialPort1.StopBits = Fmain.ComboStopBits.Text
+      .SerialPort1.FlowControl = Fmain.ComboHandShake.Index   
+      'Open serial port with new settings
+      Try FMain.SerialPort1.Open()
+      If Error Then
+        FMain.Message("Error while opening " & FMain.SerialPort1.PortName & ": " & Error.Text)
+      Else
+        'Store new Settings
+        Module_Config.StoreSerialSettings(FMain.SerialPort1, 0)
+        FMain.ButtonChange.text = "Change"
+        'Disabling all RS232 Combos
+        .ComboPortDeviceName.enabled = False
+        .ComboSpeed.enabled = False
+        .ComboDataBits.enabled = False
+        .ComboStopBits.enabled = False
+        .ComboParity.enabled = False
+        .ComboHandShake.enabled = False
+        'Update Status of RS232 Handshake Lines
+        Module_RS232.CheckRS232Status()       
+      Endif     
+    Endif
+    
+  End With
+  
+End
+
+Public Sub CheckDTR_Click()
+  'For setting DTR manually
+  
+  If FMain.SerialPort1.status = Net.Active
+    FMain.SerialPort1.DTR = CheckDTR.Value
+    Module_RS232.CheckRS232Status
+  Endif
+  
+End
+
+Public Sub CheckRTS_Click()
+  'For setting RTS manually
+  
+  If FMain.SerialPort1.Status = Net.Active
+    FMain.SerialPort1.RTS = CheckRTS.Value
+    Module_RS232.CheckRS232Status
+  Endif
+  
+End
+
+'The following routines cause following warnings:
+'"gbx3: warning: 3 allocation(s) non freed."
+'I couldn't find any solution yet.
+Public Sub SerialPort1_RTSChange(CurrentValue As Boolean)
+  
+  FMain.CheckRTS.Value = CurrentValue
+  
+End
+
+Public Sub SerialPort1_DSRChange(CurrentValue As Boolean)
+  
+  FMain.CheckDSR.Value = CurrentValue
+  
+End
+
+Public Sub SerialPort1_CTSChange(CurrentValue As Boolean)
+  
+  FMain.ChecCTS.Value = CurrentValue
+  
+End
+
+Public Sub SerialPort1_DCDChange(CurrentValue As Boolean)
+  
+  FMain.CheckDCD.Value = CurrentValue
+  
+End
+
+Public Sub SerialPort1_DTRChange(CurrentValue As Boolean)
+  
+  FMain.CheckDTR.Value = CurrentValue
+  
+End
+
+Public Sub SerialPort1_RNGChange(CurrentValue As Boolean)
+  
+  FMain.CheckRNG.Value = CurrentValue
+  
+End
+
+Public Sub MenuExit_Click()
+  'Close application by closing FMain. The close-event of Fmain is doing the rest.
+  
+  Me.close
+  
+End
+
+Public Sub MenuAbout_Click()
+  
+  'Center FAbout over FMain
+  FAbout.Move(FMain.left + FMain.width / 2 - FAbout.width / 2, Fmain.Top + FMain.height / 2 - FAbout.height / 2)
+  'Show it
+  FAbout.show
+  
+End
+
+Public Sub Message(sMsg As String)
+  
+  txtMessage.Text = sMsg
+  
+End
