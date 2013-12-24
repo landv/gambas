@@ -129,8 +129,8 @@ public:
 	void scroll(int x, int y);
 	void setScrollX(int vl);
 	void setScrollY(int vl);
-	virtual int scrollWidth();
-	virtual int scrollHeight();
+	//virtual int scrollWidth();
+	//virtual int scrollHeight();
 	int scrollBar();
 	void setScrollBar(int vl);
 
@@ -190,7 +190,7 @@ public:
 	GtkWidget *frame;
 	GtkScrolledWindow *_scroll;
 	short g_typ;
-	short mous;
+	short _mouse;
 	gControl *_proxy, *_proxy_for;
 	
 	unsigned dsg : 1;
@@ -254,8 +254,13 @@ public:
 	void setFramePadding(int padding);
 	virtual int getFrameWidth();
 	virtual gColor getFrameColor();
+#ifdef GTK3
+	void drawBorder(cairo_t *cr);
+	void drawBackground(GtkWidget *wid, cairo_t *cr);
+#else
 	void drawBorder(GdkEventExpose *e);
 	void drawBackground(GtkWidget *wid, GdkEventExpose *e);
+#endif
 	
 	virtual int minimumHeight();
 	void resolveFont(gFont *new_font);

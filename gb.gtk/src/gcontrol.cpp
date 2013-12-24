@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gcontrol.cpp
+	gcontrol.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -53,16 +53,58 @@
 static GList *controls=NULL;
 static GList *controls_destroyed=NULL;
 
-static const guchar _cursor_fdiag[] = {
-   0x3f, 0x00, 0x1f, 0x00, 0x0f, 0x00, 0x0f, 0x00, 0x13, 0x00, 0x21, 0x00,
-   0x40, 0x00, 0x80, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x84, 0x00, 0xc8,
-   0x00, 0xf0, 0x00, 0xf0, 0x00, 0xf8, 0x00, 0xfc };
-   
-static const guchar _cursor_bdiag[] = {
-   0x00, 0xfc, 0x00, 0xf8, 0x00, 0xf0, 0x00, 0xf0, 0x00, 0xc8, 0x00, 0x84,
-   0x00, 0x02, 0x00, 0x01, 0x80, 0x00, 0x40, 0x00, 0x21, 0x00, 0x13, 0x00,
-   0x0f, 0x00, 0x0f, 0x00, 0x1f, 0x00, 0x3f, 0x00 };
-   
+
+static const char *_cursor_fdiag[] =
+{
+"16 16 4 1",
+"# c None",
+"a c #000000",
+"b c #c0c0c0",
+". c #ffffff",
+"..........######",
+".aaaaaaaa.######",
+".a....ba.#######",
+".a...ba.########",
+".a....ab.#######",
+".a.b...ab.######",
+".abaa...ab.###..",
+".aa.ba...ab.#.a.",
+".a.#.ba...ab.aa.",
+"..###.ba...aaba.",
+"######.ba...b.a.",
+"#######.ba....a.",
+"########.ab...a.",
+"#######.ab....a.",
+"######.aaaaaaaa.",
+"######.........."
+};
+
+static const char *_cursor_bdiag[] =
+{
+"16 16 4 1",
+". c None",
+"a c #000000",
+"b c #c0c0c0",
+"# c #ffffff",
+"......##########",
+"......#aaaaaaaa#",
+".......#ab####a#",
+"........#ab###a#",
+".......#ba####a#",
+"......#ba###b#a#",
+"##...#ba###aaba#",
+"#a#.#ba###ab#aa#",
+"#aa#ba###ab#.#a#",
+"#abaa###ab#...##",
+"#a#b###ab#......",
+"#a####ab#.......",
+"#a###ba#........",
+"#a####ba#.......",
+"#aaaaaaaa#......",
+"##########......"
+};
+
+
 // Geometry optimization hack - Sometimes fails, so it is disabled...
 #define GEOMETRY_OPTIMIZATION 0
 
@@ -87,14 +129,14 @@ void gPlugin_OnPlug(GtkSocket *socket,gPlugin *data)
 gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 {
 	g_typ=Type_gPlugin;
-	
+
 	border=gtk_socket_new();
 	widget=border;
 	realize(false);
-	
+
 	onPlug=NULL;
 	onUnplug=NULL;
-	
+
 	g_signal_connect(G_OBJECT(widget),"plug-removed",G_CALLBACK(gPlugin_OnUnplug),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"plug-added",G_CALLBACK(gPlugin_OnPlug),(gpointer)this);
 
@@ -125,12 +167,12 @@ void gPlugin::plug(int id)
 	{
 		if (i == 0)
 			onPlug = func;
-			
+
 		gtk_socket_add_id(GTK_SOCKET(widget), (Window)id);
 	}
-	
+
 	if (client())
-    XAddToSaveSet(d, client());
+		XAddToSaveSet(d, client());
 	else
 		emit(SIGNAL(onError));
 }
@@ -141,19 +183,19 @@ void gPlugin::discard()
 	stub("DIRECTFB/gPlugin:discard()");
 	#else
 	#ifdef GDK_WINDOWING_X11
-	
+
 	Display *d = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 
 	if (!client()) return;
-	
-  XRemoveFromSaveSet(d, client());
+
+	XRemoveFromSaveSet(d, client());
 	XReparentWindow(d, client(), GDK_ROOT_WINDOW(), 0, 0);
-	
+
 	#else
 	stub("no-X11/gPlugin:discard()");
 	#endif
 	#endif
-	
+
 }
 
 
@@ -178,7 +220,7 @@ void gControl::cleanRemovedControls()
 		//controls_destroyed = g_list_remove(controls_destroyed, (gpointer)control);
 		gtk_widget_destroy(control->border);
 	}
-	
+
 	controls_destroyed = NULL;
 }
 
@@ -209,7 +251,7 @@ void gControl::initAll(gContainer *parent)
 	_font_set = false;
 	have_cursor = false;
 	use_base = false;
-	mous = CURSOR_DEFAULT;
+	_mouse = CURSOR_DEFAULT;
 	pr = parent;
 	_name = NULL;
 	visible = false;
@@ -242,7 +284,7 @@ void gControl::initAll(gContainer *parent)
 	_scroll = NULL;
 	hFree = NULL;
 	_grab = false;
-	
+
 	controls = g_list_append(controls,this);
 }
 
@@ -251,35 +293,35 @@ gControl::gControl()
 	initAll(NULL);
 }
 
-gControl::gControl(gContainer *parent) 
-{	
+gControl::gControl(gContainer *parent)
+{
 	initAll(parent);
 }
 
 gControl::~gControl()
 {
 	gMainWindow *win = window();
-	
+
 	emit(SIGNAL(onFinish));
-	
+
 	if (win && win->focus == this)
 		win->focus = 0;
-	
+
 	if (_proxy)
 		_proxy->_proxy_for = NULL;
 	if (_proxy_for)
 		_proxy_for->_proxy = NULL;
-	
+
 	if (gDrag::getSource() == this)
 		gDrag::cancel();
-	
+
 	if (curs) { delete curs; curs=NULL; }
 	gFont::assign(&fnt);
 	setName(NULL);
 
 	controls = g_list_remove(controls, this);
 	controls_destroyed = g_list_remove(controls_destroyed, this);
-	
+
 	#define CLEAN_POINTER(_p) if (_p == this) _p = NULL
 
 	CLEAN_POINTER(gApplication::_enter);
@@ -295,7 +337,7 @@ void gControl::destroy()
 {
 	if (_destroyed)
 		return;
-		
+
 	hide();
 
 	//fprintf(stderr, "added to destroy list: %p\n", this);
@@ -330,14 +372,14 @@ void gControl::setVisible(bool vl)
 {
 	if (vl == visible)
 		return;
-	
+
 	visible = vl;
-	
+
 	if (vl)
 	{
 		if (bufW <= 0 || bufH <= 0)
 			return;
-		
+
 		gtk_widget_show(border);
 	}
 	else
@@ -348,7 +390,7 @@ void gControl::setVisible(bool vl)
 			gtk_grab_remove(border);
 		gtk_widget_hide(border);
 	}
-	
+
 	if (pr) pr->performArrange();
 }
 
@@ -365,9 +407,9 @@ void gControl::getScreenPos(int *x, int *y)
 		*x = *y = 0;
 		return;
 	}
-	
+
 	gdk_window_get_origin(gtk_widget_get_window(border), x, y);
-	
+
 	#if GTK_CHECK_VERSION(2, 18, 0)
 	if (!gtk_widget_get_has_window(border))
 	{
@@ -415,10 +457,10 @@ void gControl::setHeight(int h)
 
 static void send_configure (gControl *control)
 {
-  GtkWidget *widget;
-  GdkEvent *event;
+	GtkWidget *widget;
+	GdkEvent *event;
 
-  widget = control->border;
+	widget = control->border;
 
 #if GTK_CHECK_VERSION(2, 20, 0)
 	if (!gtk_widget_get_realized(widget))
@@ -427,48 +469,48 @@ static void send_configure (gControl *control)
 	if (!GTK_WIDGET_REALIZED(widget))
 		return;
 #endif
-	
+
 // 	if (control->isWindow())
 // 	 g_debug("send configure to window: %s", control->name());
-	
+
 	event = gdk_event_new (GDK_CONFIGURE);
 
-  event->configure.window = NULL; //(GdkWindow *)g_object_ref(widget->window);
-  event->configure.send_event = TRUE;
-  event->configure.x = control->x();
-  event->configure.y = control->y();
-  event->configure.width = control->width();
-  event->configure.height = control->height();
-  
-  gtk_widget_event (widget, event);
-  gdk_event_free (event);
+	event->configure.window = NULL; //(GdkWindow *)g_object_ref(widget->window);
+	event->configure.send_event = TRUE;
+	event->configure.x = control->x();
+	event->configure.y = control->y();
+	event->configure.width = control->width();
+	event->configure.height = control->height();
+
+	gtk_widget_event (widget, event);
+	gdk_event_free (event);
 }
 
 void gControl::move(int x, int y)
 {
 	//GtkLayout *fx;
-	
-	if (x == bufX && y == bufY) 
+
+	if (x == bufX && y == bufY)
 		return;
-	
+
 	bufX = x;
 	bufY = y;
-	
+
 	//g_debug("move: %p: %d %d", this, x, y);
 	_dirty_pos = true;
 	if (pr)
 	{
 		// TODO: check the following optimization to see if it can be enabled again
-	  //if (gtk_widget_get_parent(border) == pr->getContainer())
-	  	pr->performArrange();
-  }
-	
+		//if (gtk_widget_get_parent(border) == pr->getContainer())
+			pr->performArrange();
+	}
+
 	#if GEOMETRY_OPTIMIZATION
-  gApplication::setDirty();
+	gApplication::setDirty();
 	#else
 	updateGeometry();
 	#endif
-	
+
 	send_configure(this);
 }
 
@@ -476,18 +518,18 @@ void gControl::resize(int w, int h)
 {
 	if (w < 1)
 		w = 0;
-		
+
 	if (h < minimumHeight())
 		h = minimumHeight();
-		
+
 	if (bufW == w && bufH == h)
 		return;
-	
+
 	if (w < 1 || h < 1)
 	{
 		bufW = w;
 		bufH = h;
-		
+
 		if (visible)
 			gtk_widget_hide(border);
 	}
@@ -495,7 +537,7 @@ void gControl::resize(int w, int h)
 	{
 		bufW = w;
 		bufH = h;
-		
+
 		if (frame && widget != border)
 		{
 			int fw = getFrameWidth() * 2;
@@ -504,23 +546,23 @@ void gControl::resize(int w, int h)
 			else
 				gtk_widget_show(widget);
 		}
-		
+
 		if (visible)
 			gtk_widget_show(border);
-	
+
 		//g_debug("resize: %p %s: %d %d", this, name(), w, h);
 		_dirty_size = true;
-		
+
 		#if GEOMETRY_OPTIMIZATION
 		gApplication::setDirty();
 		#else
 		updateGeometry();
 		#endif
 	}
-		
+
 	if (pr)
 		pr->performArrange();
-	
+
 	send_configure(this);
 }
 
@@ -528,10 +570,10 @@ void gControl::moveResize(int x, int y, int w, int h)
 {
 	if (pr)
 		pr->disableArrangement();
-	
+
 	resize(w, h);
 	move(x, y);
-	
+
 	if (pr)
 		pr->enableArrangement();
 }
@@ -545,15 +587,15 @@ void gControl::updateGeometry()
 // 		GtkLayout *fx = GTK_LAYOUT(gtk_widget_get_parent(border));
 // 		gtk_layout_move(fx, border, x(), y());
 // 	}
-// 	
+//
 // 	if (_dirty_size)
 // 	{
 // 		GtkAllocation a = { x(), y(), width(), height() };
 // 		g_debug("resize: %p -> %d %d", this, width(), height());
 // 		_dirty_size = false;
 // 		//gtk_widget_set_size_request(border, width(), height());
-// 		gtk_widget_size_allocate(border, 
-// 	}	
+// 		gtk_widget_size_allocate(border,
+// 	}
 	if (_dirty_pos || _dirty_size)
 	{
 		//g_debug("move-resize: %s: %d %d %d %d", this->name(), x(), y(), width(), height());
@@ -561,7 +603,7 @@ void gControl::updateGeometry()
 		{
 			if (pr)
 				pr->moveChild(this, x(), y());
-			
+
 			_dirty_pos = false;
 		}
 		if (_dirty_size)
@@ -583,20 +625,20 @@ APPEARANCE
 
 void gControl::setExpand (bool vl)
 {
-  if (vl == expa)
-    return;
-    
+	if (vl == expa)
+		return;
+
 	expa=vl;
-	
+
 	if (pr) pr->performArrange();
 }
 
 
 void gControl::setIgnore (bool vl)
 {
-  if (vl == igno)
-    return;
-    
+	if (vl == igno)
+		return;
+
 	igno=vl;
 	if (pr) pr->performArrange();
 }
@@ -619,7 +661,7 @@ gFont* gControl::font()
 		return fnt;
 	if (pr)
 		return pr->font();
-	
+
 	return gDesktop::font();
 }
 
@@ -628,7 +670,7 @@ void gControl::resolveFont(gFont *new_font)
 {
 	gFont *font = new gFont();
 	gControl *ctrl = this;
-	
+
 	font->mergeFrom(new_font);
 
 	for(;;)
@@ -643,9 +685,9 @@ void gControl::resolveFont(gFont *new_font)
 		if (ctrl->fnt)
 			font->mergeFrom(ctrl->fnt);
 	}
-	
+
 	gtk_widget_modify_font(widget, font->desc());
-	
+
 	gFont::set(&fnt, font);
 }
 
@@ -662,7 +704,7 @@ void gControl::setFont(gFont *ft)
 		gtk_widget_modify_font(widget, NULL);
 		_font_set = false;
 	}
-	
+
 	resize();
 }
 
@@ -672,14 +714,14 @@ int gControl::mouse()
 	if (_proxy)
 		return _proxy->mouse();
 	else
-		return mous;
+		return _mouse;
 }
 
 gCursor* gControl::cursor()
 {
 	if (_proxy)
 		return _proxy->cursor();
-	
+
 	if (!curs) return NULL;
 	return new gCursor(curs);
 }
@@ -691,7 +733,7 @@ void gControl::setCursor(gCursor *vl)
 		_proxy->setCursor(vl);
 		return;
 	}
-	
+
 	if (curs) { delete curs; curs=NULL;}
 	if (!vl)
 	{
@@ -704,7 +746,7 @@ void gControl::setCursor(gCursor *vl)
 
 void gControl::updateCursor(GdkCursor *cursor)
 {
-  if (GDK_IS_WINDOW(gtk_widget_get_window(border)) && _inside)
+	if (GDK_IS_WINDOW(gtk_widget_get_window(border)) && _inside)
 	{
 		//fprintf(stderr, "updateCursor: %s %p\n", name(), cursor);
 		if (!cursor && parent() && gtk_widget_get_window(parent()->border) == gtk_widget_get_window(border))
@@ -716,21 +758,20 @@ void gControl::updateCursor(GdkCursor *cursor)
 
 GdkCursor *gControl::getGdkCursor()
 {
-	GdkPixmap *pix;
-	GdkColor col = {0};
+	GdkPixbuf *pix;
 	GdkCursor *cr = NULL;
-	int m = mous;
-	
+	int m = _mouse;
+
 	if (gApplication::isBusy())
-    m = GDK_WATCH;
-	
+		m = GDK_WATCH;
+
 	if (m == CURSOR_CUSTOM)
 	{
 		if (curs && curs->cur)
 			return curs->cur;
 	}
-	
-	if (m != CURSOR_DEFAULT) 
+
+	if (m != CURSOR_DEFAULT)
 	{
 		if (m < GDK_LAST_CURSOR)
 		{
@@ -740,19 +781,19 @@ GdkCursor *gControl::getGdkCursor()
 		{
 			if (m == (GDK_LAST_CURSOR+1)) //FDiag
 			{
-				pix = gdk_bitmap_create_from_data(NULL, (const gchar *)_cursor_fdiag, 16, 16);
-				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
+				pix = gdk_pixbuf_new_from_xpm_data(_cursor_fdiag);
+				cr = gdk_cursor_new_from_pixbuf(gdk_display_get_default(), pix, 8, 8);
 				g_object_unref(pix);
 			}
 			else if (m == (GDK_LAST_CURSOR+2)) //BDiag
 			{
-				pix = gdk_bitmap_create_from_data(NULL, (const gchar *)_cursor_bdiag, 16, 16);
-				cr = gdk_cursor_new_from_pixmap(pix, pix, &col, &col, 0, 0);
+				pix = gdk_pixbuf_new_from_xpm_data(_cursor_bdiag);
+				cr = gdk_cursor_new_from_pixbuf(gdk_display_get_default(), pix, 8, 8);
 				g_object_unref(pix);
 			}
 		}
 	}
-	
+
 	return cr;
 }
 
@@ -763,15 +804,15 @@ void gControl::setMouse(int m)
 		_proxy->setMouse(m);
 		return;
 	}
-	
+
 	if (m == CURSOR_CUSTOM)
 	{
 		if (!curs || !curs->cur)
 			m = CURSOR_DEFAULT;
 	}
-	
-	mous = m;
-	
+
+	_mouse = m;
+
 	updateCursor(getGdkCursor());
 }
 
@@ -785,27 +826,27 @@ HANDLES
 
 bool gControl::isWindow() const
 {
-	return g_typ == Type_gMainWindow; 
+	return g_typ == Type_gMainWindow;
 }
 
 gMainWindow* gControl::window()
 {
-  if (isWindow())
-    return (gMainWindow *)this;
-  
-  if (!pr)
-    return NULL;
-  else
-    return pr->window();  
+	if (isWindow())
+		return (gMainWindow *)this;
+
+	if (!pr)
+		return NULL;
+	else
+		return pr->window();
 }
 
 gMainWindow* gControl::topLevel()
 {
 	gControl *child = this;
-	
+
 	while (!child->isTopLevel())
 		child = child->parent();
-		
+
 	return (gMainWindow *)child;
 }
 
@@ -825,7 +866,7 @@ int gControl::handle()
 	stub("DIRECTFB/gControl::handle()");
 	return 0;
 	#endif
-	
+
 }
 
 /*****************************************************************
@@ -848,21 +889,21 @@ void gControl::refresh()
 void gControl::refresh(int x, int y, int w, int h)
 {
 	if (x < 0 || y < 0 || w < 0 || h < 0)
-	  gtk_widget_queue_draw(border);
-	else	
+		gtk_widget_queue_draw(border);
+	else
 	{
 		// Buggy GTK+
-	  // gtk_widget_queue_draw_area(border, x, y, w, h);
-	  GdkRectangle r;
+		// gtk_widget_queue_draw_area(border, x, y, w, h);
+		GdkRectangle r;
 		GtkAllocation a;
 
 		gtk_widget_get_allocation(border, &a);
-		
+
 		r.x = a.x + x;
 		r.y = a.y + y;
 		r.width = w;
 		r.height = h;
-  
+
 		gdk_window_invalidate_rect(gtk_widget_get_window(border), &r, TRUE);
 	}
 
@@ -890,12 +931,12 @@ void gControl::setFocus()
 		_proxy->setFocus();
 		return;
 	}
-	
+
 	gMainWindow *win = window();
-	
+
 	if (!win)
 		return;
-	
+
 	if (win->isVisible())
 	{
 		//if (isVisible() && bufW > 0 && bufH > 0)
@@ -924,10 +965,10 @@ bool gControl::hasFocus()
 gControl* gControl::next()
 {
 	int index;
-	
+
 	if (!pr)
 		return NULL;
-	
+
 	index = pr->childIndex(this);
 	if (index < 0 || index >= pr->childCount())
 		return NULL;
@@ -938,10 +979,10 @@ gControl* gControl::next()
 gControl* gControl::previous()
 {
 	int index;
-	
+
 	if (!pr)
 		return NULL;
-	
+
 	index = pr->childIndex(this);
 	if (index <= 0)
 		return NULL;
@@ -960,7 +1001,7 @@ void gControl::lower()
 	GtkContainer *parent;
 
 	if (!pr) return;
-	
+
 	if (gtk_widget_get_has_window(border))
 	{
 		gdk_window_lower(gtk_widget_get_window(border));
@@ -968,19 +1009,19 @@ void gControl::lower()
 			gdk_window_lower(gtk_widget_get_window(widget));
 	}
 	else
-	{	
+	{
 		//fprintf(stderr, "gb.gtk: warning: gControl::lower(): no window\n");
-		
+
 		if (!(chd=gtk_container_get_children(GTK_CONTAINER(pr->getContainer())))) return;
-		
+
 		chd = g_list_first(chd);
-		
+
 		while(chd)
 		{
 			child = (GtkWidget*)chd->data;
-			
+
 			br = (gControl *)g_object_get_data(G_OBJECT(child), "gambas-control");;
-			
+
 			if (br && br != this)
 			{
 				x = br->x();
@@ -989,26 +1030,26 @@ void gControl::lower()
 				g_object_ref(G_OBJECT(br->border));
 				gtk_container_remove(parent, br->border);
 				gtk_container_add(parent, br->border);
-				
+
 				if (GTK_IS_LAYOUT(parent))
 					gtk_layout_move(GTK_LAYOUT(parent), br->border, x, y);
 				else
 					gtk_fixed_move(GTK_FIXED(parent), br->border, x, y);
-				
+
 				g_object_unref(G_OBJECT(br->border));
 			}
-			
+
 			chd = g_list_next(chd);
 		}
 	}
-	
+
 	g_ptr_array_remove(pr->_children, this);
-	
+
 	g_ptr_array_add(pr->_children, NULL);
 	p = pr->_children->pdata;
 	g_memmove(&p[1], &p[0], (pr->_children->len - 1) * sizeof(gpointer));
 	p[0] = this;
-	
+
 	//pr->ch_list = g_list_remove(pr->ch_list, this);
 	//pr->ch_list = g_list_prepend(pr->ch_list, this);
 	pr->updateFocusChain();
@@ -1021,7 +1062,7 @@ void gControl::raise()
 	GtkContainer *parent;
 
 	if (!pr) return;
-	
+
 	if (gtk_widget_get_has_window(border))
 	{
 		gdk_window_raise(gtk_widget_get_window(border));
@@ -1029,9 +1070,9 @@ void gControl::raise()
 			gdk_window_raise(gtk_widget_get_window(widget));
 	}
 	else
-	{	
+	{
 		//fprintf(stderr, "gb.gtk: warning: gControl::raise(): no window\n");
-		
+
 		x = left();
 		y = top();
 		parent = GTK_CONTAINER(gtk_widget_get_parent(border));
@@ -1044,13 +1085,13 @@ void gControl::raise()
 			gtk_layout_move(GTK_LAYOUT(parent), border, x, y);
 		else
 			gtk_fixed_move(GTK_FIXED(parent), border, x, y);
-		
+
 		g_object_unref(G_OBJECT(border));
 	}
-	
+
 	g_ptr_array_remove(pr->_children, this);
 	g_ptr_array_add(pr->_children, this);
-	
+
 	pr->updateFocusChain();
 	pr->performArrange();
 }
@@ -1063,28 +1104,28 @@ void gControl::setNext(gControl *ctrl)
 	Window stack[2];
 	GPtrArray *ch;
 	uint i;
-	
+
 	if (!ctrl)
 	{
 		raise();
 		return;
 	}
-	
+
 	if (ctrl == this || isTopLevel() || ctrl->parent() != parent())
 		return;
-	
+
 	if (gtk_widget_get_has_window(ctrl->border) && gtk_widget_get_has_window(border))
 	{
 		stack[0] = GDK_WINDOW_XID(gtk_widget_get_window(ctrl->border));
 		stack[1] = GDK_WINDOW_XID(gtk_widget_get_window(border));
-		
+
 		XRestackWindows(GDK_WINDOW_XDISPLAY(gtk_widget_get_window(border)), stack, 2 );
 	}
-	
+
 	ch = pr->_children;
 	g_ptr_array_remove(ch, this);
 	g_ptr_array_add(ch, NULL);
-	
+
 	for (i = 0; i < ch->len; i++)
 	{
 		if (g_ptr_array_index(ch, i) == ctrl)
@@ -1094,7 +1135,7 @@ void gControl::setNext(gControl *ctrl)
 			break;
 		}
 	}
-	
+
 	pr->updateFocusChain();
 	pr->performArrange();
 	#endif
@@ -1118,17 +1159,17 @@ void gControl::setAcceptDrops(bool vl)
 {
 	//GtkWidget *w;
 	//GtkTargetEntry entry[7];
-	
-  /* BM: ??
+
+	/* BM: ??
 	if (!pr) w=frame;
 	else w=widget;
 	*/
-	
+
 	if (vl == _accept_drops)
 		return;
-		
+
 	_accept_drops = vl;
-	
+
 	if (vl)
 	{
 		gtk_drag_dest_set(border, (GtkDestDefaults)0, NULL, 0, (GdkDragAction)(GDK_ACTION_COPY | GDK_ACTION_MOVE | GDK_ACTION_LINK));
@@ -1154,18 +1195,18 @@ void gControl::connectParent()
 	if (pr)
 	{
 		//gtk_widget_set_redraw_on_allocate(border, false);
-		
+
 		pr->insert(this, true);
 	}
-  
+
 	// BM: Widget has been created, so we can set its cursor if application is busy
 	if (gApplication::isBusy() && mustUpdateCursor())
-    setMouse(mouse());		
+		setMouse(mouse());
 }
 
 GList* gControl::controlList()
 {
-	return controls; 
+	return controls;
 }
 
 gColor gControl::getFrameColor()
@@ -1173,81 +1214,138 @@ gColor gControl::getFrameColor()
 	return gDesktop::lightfgColor();
 }
 
-void gControl::drawBorder(GdkEventExpose *e)
+#ifdef GTK3
+void gControl::drawBorder(cairo_t *cr)
 {
-	GdkDrawable *win;
 	GtkShadowType shadow;
 	gint x, y, w, h;
-	GtkStyle* st;
-	GdkRectangle clip;
-	
+	GtkWidget *wid;
+	GtkAllocation a;
+
 	if (getFrameBorder() == BORDER_NONE)
-    return;
-	
+		return;
+
 	x = 0;
 	y = 0;
-  w = width();
-  h = height();
-  
-	//if (!win)
-	{
-		GtkWidget *wid;
-		GtkAllocation a;
-		
-		if (frame)
-			wid = frame;
-		else
-			wid = widget;
-			
-		if (GTK_IS_LAYOUT(wid))
-			win = GTK_LAYOUT(wid)->bin_window;
-		else
-			win = gtk_widget_get_window(wid);
-		
-		gtk_widget_get_allocation(wid, &a);
-		x = a.x;
-		y = a.y;
-	}
-	
-  if (w < 1 || h < 1)
-  	return;
-  
+	w = width();
+	h = height();
+
+	if (frame)
+		wid = frame;
+	else
+		wid = widget;
+
+	gtk_widget_get_allocation(wid, &a);
+	x = a.x;
+	y = a.y;
+
+	if (w < 1 || h < 1)
+		return;
+
 	switch (getFrameBorder())
 	{
-    case BORDER_PLAIN:
-    {
-			cairo_t *cr;
-			
+		case BORDER_PLAIN:
+
+			gt_cairo_draw_rect(cr, x, y, w, h, getFrameColor());
+			return;
+
+		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
+		case BORDER_RAISED: shadow = GTK_SHADOW_OUT; break;
+		case BORDER_ETCHED: shadow = GTK_SHADOW_ETCHED_IN; break;
+
+		default:
+			return;
+	}
+
+	GtkStyle *st = gtk_widget_get_style(widget);
+	gtk_paint_shadow(st, cr, GTK_STATE_NORMAL, shadow, wid, NULL, x, y, w, h);
+}
+#else
+void gControl::drawBorder(GdkEventExpose *e)
+{
+	GdkWindow *win;
+	GtkShadowType shadow;
+	gint x, y, w, h;
+	cairo_t *cr;
+	GtkWidget *wid;
+	GtkAllocation a;
+
+	if (getFrameBorder() == BORDER_NONE)
+		return;
+
+	x = 0;
+	y = 0;
+	w = width();
+	h = height();
+
+	if (frame)
+		wid = frame;
+	else
+		wid = widget;
+
+	if (GTK_IS_LAYOUT(wid))
+		win = gtk_layout_get_bin_window(GTK_LAYOUT(wid));
+	else
+		win = gtk_widget_get_window(wid);
+
+	gtk_widget_get_allocation(wid, &a);
+	x = a.x;
+	y = a.y;
+
+	if (w < 1 || h < 1)
+		return;
+
+	switch (getFrameBorder())
+	{
+		case BORDER_PLAIN:
+
 			cr = gdk_cairo_create(win);
 			gt_cairo_draw_rect(cr, x, y, w, h, getFrameColor());
 			cairo_destroy(cr);
-      return;
-    }
-    
-    case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
-    case BORDER_RAISED: shadow = GTK_SHADOW_OUT; break;
-    case BORDER_ETCHED: shadow = GTK_SHADOW_ETCHED_IN; break;
-    
-    default: 
-      return;
-	}
-	
-	st = gtk_widget_get_style(widget);  
-	gdk_region_get_clipbox(e->region, &clip);
-  gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
-}
+			return;
 
+		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
+		case BORDER_RAISED: shadow = GTK_SHADOW_OUT; break;
+		case BORDER_ETCHED: shadow = GTK_SHADOW_ETCHED_IN; break;
+
+		default:
+			return;
+	}
+
+	GdkRectangle clip;
+	gdk_region_get_clipbox(e->region, &clip);
+	GtkStyle *st = gtk_widget_get_style(widget);
+	gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
+}
+#endif
+
+#ifdef GTK3
+static gboolean cb_frame_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
+{
+	control->drawBorder(cr);
+	return false;
+}
+#else
 static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
 {
 	control->drawBorder(e);
 	return false;
 }
+#endif
 
-static gboolean cb_draw_background(GtkWidget *wid, GdkEventExpose *e, gControl *control)
+#ifdef GTK3
+static gboolean cb_background_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
+{
+	control->drawBackground(wid, cr);
+	return false;
+}
+#else
+static gboolean cb_background_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
 {
 	control->drawBackground(wid, e);
 	return false;
 }
+#endif
 
 /*static void cb_size_allocate(GtkWidget *wid, GtkAllocation *a, gContainer *container)
 {
@@ -1257,32 +1355,32 @@ static gboolean cb_draw_background(GtkWidget *wid, GdkEventExpose *e, gControl *
 
 
 /*
-  The different cases managed by gControl::realize()
+	The different cases managed by gControl::realize()
 
-  border     frame      widget
-    0          0          W
-    0          F          W
-    B          0          W
-    B          F          W
+	border     frame      widget
+		0          0          W
+		0          F          W
+		B          0          W
+		B          F          W
 */
 
 static void add_container(GtkWidget *parent, GtkWidget *child)
 {
-  GtkWidget *ch;
-  
-  for(;;)
-  {
-    if (!GTK_IS_BIN(parent))
-      break;
-    
-    ch = gtk_bin_get_child(GTK_BIN(parent));
-    if (!ch)
-      break;
-      
-    parent = ch;
-  }
-  
-  gtk_container_add(GTK_CONTAINER(parent), child);
+	GtkWidget *ch;
+
+	for(;;)
+	{
+		if (!GTK_IS_BIN(parent))
+			break;
+
+		ch = gtk_bin_get_child(GTK_BIN(parent));
+		if (!ch)
+			break;
+
+		parent = ch;
+	}
+
+	gtk_container_add(GTK_CONTAINER(parent), child);
 }
 
 void gControl::registerControl()
@@ -1290,6 +1388,25 @@ void gControl::registerControl()
 	g_object_set_data(G_OBJECT(border), "gambas-control", this);
 }
 
+#ifdef GTK3
+/*static gboolean cb_clip_children(GtkWidget *wid, GdkEventExpose *e, gContainer *d)
+{
+	cairo_region_t *me;
+	GtkAllocation a;
+
+	gtk_widget_get_allocation(wid, &a);
+	me = cairo_region_create_rectangle((cairo_rectangle_int_t *)&a);
+
+	cairo_region_intersect(e->region, me);
+
+	cairo_region_destroy(me);
+
+	if (cairo_region_is_empty(e->region))
+		return TRUE;
+
+	return FALSE;
+}*/
+#else
 static gboolean cb_clip_children(GtkWidget *wid, GdkEventExpose *e, gContainer *d)
 {
 	GdkRegion *me;
@@ -1297,40 +1414,41 @@ static gboolean cb_clip_children(GtkWidget *wid, GdkEventExpose *e, gContainer *
 
 	gtk_widget_get_allocation(wid, &a);
 	me = gdk_region_rectangle((GdkRectangle *)&a);
-	
+
 	gdk_region_intersect(e->region, me);
-	
+
 	gdk_region_destroy(me);
-	
+
 	if (gdk_region_empty(e->region))
 		return TRUE;
-	
+
 	return FALSE;
 }
+#endif
 
 #if 0
 static gboolean cb_clip_by_parent(GtkWidget *wid, GdkEventExpose *e, gControl *d)
 {
 	GdkRegion *preg;
 	GdkRectangle prect = { 0, 0, d->parent()->width() - d->x(), d->parent()->height() - d->y() };
-	
+
 	fprintf(stderr, "area = %d %d %d %d  prect = %d %d %d %d\n",
 					e->area.x, e->area.y, e->area.width, e->area.height,
 					prect.x, prect.y, prect.width, prect.height);
-	
+
 	preg = gdk_region_rectangle(&prect);
-	
+
 	gdk_region_intersect(e->region, preg);
-	
+
 	gdk_region_destroy(preg);
-	
+
 	if (gdk_region_empty(e->region))
 		return TRUE;
-	
+
 	gdk_region_get_clipbox(e->region, &prect);
 	e->area = prect;
 	fprintf(stderr, "--> %d %d %d %d\n", prect.x, prect.y, prect.width, prect.height);
-	
+
 	return FALSE;
 }
 #endif
@@ -1348,12 +1466,12 @@ void gControl::realize(bool make_frame)
 			frame = gtk_alignment_new(0, 0, 1, 1);
 			gtk_widget_set_redraw_on_allocate(frame, TRUE);
 		}
-		
+
 		if (!border)
 			border = widget;
-		
+
 		//printf("border = %p / frame = %p / widget =%p\n", border, frame, widget);
-		
+
 		if (border != frame)
 		{
 			//printf("frame -> border\n");
@@ -1364,31 +1482,35 @@ void gControl::realize(bool make_frame)
 			//printf("widget -> frame\n");
 			add_container(frame, widget);
 		}
-		
+
 		if (!make_frame)
 			frame = 0;
 	}
 
 	connectParent();
 	initSignals();
-	
-  if (frame)
-		g_signal_connect_after(G_OBJECT(frame), "expose-event", G_CALLBACK(cb_frame_expose), (gpointer)this);
-	
+
+	if (frame)
+		ON_DRAW(frame, this, cb_frame_expose, cb_frame_draw);
+
 	if (!_no_background && !gtk_widget_get_has_window(border))
-		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
+		//g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
+		ON_DRAW(border, this, cb_background_expose, cb_background_draw);
+
 	/*else if (!isTopLevel())
 	{
 		fprintf(stderr, "clip by parent\n");
 		g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_clip_by_parent), (gpointer)this);
 	}*/
-	
+
+#ifndef GTK3
 	if (isContainer() && !gtk_widget_get_has_window(widget))
 		g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_clip_children), (gpointer)this);
-	
+#endif
+
 	//if (isContainer() && widget != border)
 	//	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
-	
+
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
 		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
@@ -1399,23 +1521,23 @@ void gControl::realize(bool make_frame)
 			| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK
 			| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
 	}
-		
+
 	registerControl();
 }
 
 void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 {
 	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
-	
+
 	border = GTK_WIDGET(_scroll);
 	widget = wid;
 	frame = 0;
 	_no_auto_grab = true;
-	
+
 	//gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
 	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_container_add(GTK_CONTAINER(_scroll), widget);
-	
+
 	if (!doNotRealize)
 		realize(false);
 	else
@@ -1424,66 +1546,66 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 
 void gControl::updateBorder()
 {
-  int padding;
-  
-  if (!frame)
-    return;
-    
-  if (!GTK_IS_ALIGNMENT(frame))
-  {
-    refresh();
-    return;
-  }
-  
-  switch (frame_border)
-  {
-    case BORDER_NONE: padding = 0; break;
-    case BORDER_PLAIN: padding = 1; break;
-    default: padding = 2; break; // TODO: Use style
-  }
-  
-  if ((int)frame_padding > padding)
-    padding = frame_padding;
-  
-  gtk_alignment_set_padding(GTK_ALIGNMENT(frame), padding, padding, padding, padding);
-  refresh();
-  //gtk_widget_queue_draw(frame);
+	int padding;
+
+	if (!frame)
+		return;
+
+	if (!GTK_IS_ALIGNMENT(frame))
+	{
+		refresh();
+		return;
+	}
+
+	switch (frame_border)
+	{
+		case BORDER_NONE: padding = 0; break;
+		case BORDER_PLAIN: padding = 1; break;
+		default: padding = 2; break; // TODO: Use style
+	}
+
+	if ((int)frame_padding > padding)
+		padding = frame_padding;
+
+	gtk_alignment_set_padding(GTK_ALIGNMENT(frame), padding, padding, padding, padding);
+	refresh();
+	//gtk_widget_queue_draw(frame);
 }
 
 int gControl::getFrameWidth()
 {
 	guint p;
-	
+
 	if (frame && GTK_IS_ALIGNMENT(frame))
 	{
-  	gtk_alignment_get_padding(GTK_ALIGNMENT(frame), &p, NULL, NULL, NULL);
-  	return p;
-  }
-  
-  if (_scroll)
-  {
+		gtk_alignment_get_padding(GTK_ALIGNMENT(frame), &p, NULL, NULL, NULL);
+		return p;
+	}
+
+	if (_scroll)
+	{
 		if (gtk_scrolled_window_get_shadow_type(_scroll) == GTK_SHADOW_NONE)
 			return 0;
 		else
 			return 2;
-  }
-  
-  switch (frame_border)
-  {
-    case BORDER_NONE: p = 0; break;
-    case BORDER_PLAIN: p = 1; break;
-    default: p = 2; break; // TODO: Use style
-  }
-  return p;
+	}
+
+	switch (frame_border)
+	{
+		case BORDER_NONE: p = 0; break;
+		case BORDER_PLAIN: p = 1; break;
+		default: p = 2; break; // TODO: Use style
+	}
+	return p;
 }
 
 void gControl::setFrameBorder(int border)
 {
-  if (border < BORDER_NONE || border > BORDER_ETCHED)
-    return;
-    
-  frame_border = border;
-  updateBorder();
+	if (border < BORDER_NONE || border > BORDER_ETCHED)
+		return;
+
+	frame_border = border;
+	updateBorder();
 }
 
 bool gControl::hasBorder() const
@@ -1505,17 +1627,17 @@ void gControl::setBorder(bool vl)
 	}
 	else
 		setFrameBorder(vl ? BORDER_SUNKEN : BORDER_NONE);
-	
+
 	_has_border = vl;
 }
 
 
 void gControl::setFramePadding(int padding)
 {
-  if (padding < 0)
-    padding = 0;
-  frame_padding = padding;
-  updateBorder();  
+	if (padding < 0)
+		padding = 0;
+	frame_padding = padding;
+	updateBorder();
 }
 
 
@@ -1565,13 +1687,13 @@ void gControl::setRealBackground(gColor color)
 void gControl::setBackground(gColor color)
 {
 	_bg_set = color != COLOR_DEFAULT;
-	
+
 	if (!_bg_set)
 	{
 		if (pr && !use_base)
 			color = pr->realBackground();
 	}
-			
+
 	setRealBackground(color);
 }
 
@@ -1613,13 +1735,13 @@ void gControl::setRealForeground(gColor color)
 void gControl::setForeground(gColor color)
 {
 	_fg_set = color != COLOR_DEFAULT;
-	
+
 	if (!_fg_set)
 	{
 		if (pr)
 			color = pr->realForeground();
 	}
-	
+
 	setRealForeground(color);
 }
 
@@ -1641,33 +1763,33 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 {
 	gContainer *oldpr;
 	bool was_visible = isVisible();
-	
+
 	// newpr can be equal to pr: for example, to move a control for one
 	// tab to another tab of the same TabStrip!
-	
+
 	if (!newpr || !newpr->getContainer())
 		return;
-	
+
 	if (was_visible) hide();
 	//gtk_widget_unrealize(border);
-	
+
 	oldpr = pr;
-	pr = newpr;	
-	
+	pr = newpr;
+
 	if (oldpr == newpr)
 	{
 		gtk_widget_reparent(border, newpr->getContainer());
 		oldpr->performArrange();
 	}
 	else
-	{		
+	{
 		if (oldpr)
 		{
 			gtk_widget_reparent(border, newpr->getContainer());
 			oldpr->remove(this);
 			oldpr->performArrange();
 		}
-		
+
 		newpr->insert(this);
 	}
 
@@ -1680,35 +1802,35 @@ int gControl::scrollX()
 {
 	if (!_scroll)
 		return 0;
-	
-	return (int)gtk_scrolled_window_get_hadjustment(_scroll)->value;
+
+	return (int)gtk_adjustment_get_value(gtk_scrolled_window_get_hadjustment(_scroll));
 }
 
 int gControl::scrollY()
 {
 	if (!_scroll)
 		return 0;
-	
-	return (int)gtk_scrolled_window_get_vadjustment(_scroll)->value;
+
+	return (int)gtk_adjustment_get_value(gtk_scrolled_window_get_vadjustment(_scroll));
 }
 
 void gControl::setScrollX(int vl)
 {
 	GtkAdjustment* adj;
 	int max;
-	
+
 	if (!_scroll)
 		return;
-		
+
 	adj = gtk_scrolled_window_get_hadjustment(_scroll);
-	
-	max = (int)(adj->upper - adj->page_size);
-	
-	if (vl < 0) 
+
+	max = (int)(gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj));
+
+	if (vl < 0)
 		vl = 0;
 	else if (vl > max)
 		vl = max;
-	
+
 	gtk_adjustment_set_value(adj, (gdouble)vl);
 }
 
@@ -1716,19 +1838,19 @@ void gControl::setScrollY(int vl)
 {
 	GtkAdjustment* adj;
 	int max;
-	
+
 	if (!_scroll)
 		return;
-		
+
 	adj = gtk_scrolled_window_get_vadjustment(_scroll);
-	
-	max = (int)(adj->upper - adj->page_size);
-	
-	if (vl < 0) 
+
+	max = (int)(gtk_adjustment_get_upper(adj) - gtk_adjustment_get_page_size(adj));
+
+	if (vl < 0)
 		vl = 0;
 	else if (vl > max)
 		vl = max;
-	
+
 	gtk_adjustment_set_value(adj, (gdouble)vl);
 }
 
@@ -1738,38 +1860,28 @@ void gControl::scroll(int x, int y)
 	setScrollY(y);
 }
 
-int gControl::scrollWidth()
+/*int gControl::scrollWidth()
 {
-	/*if (widget->requisition.width <= 0)
-	{
-		gtk_widget_realize(widget);
-		gtk_widget_size_request(widget, &widget->requisition);
-	}*/
 	return widget->requisition.width;
 }
 
 int gControl::scrollHeight()
 {
-	/*if (widget->requisition.height <= 0)
-	{
-		gtk_widget_realize(widget);
-		gtk_widget_size_request(widget, &widget->requisition);
-	}*/
 	return widget->requisition.height;
-}
+}*/
 
 int gControl::scrollBar()
 {
 	GtkPolicyType h, v;
 	int ret = 3;
-	
+
 	if (!_scroll)
 		return 0;
-	
+
 	gtk_scrolled_window_get_policy(_scroll, &h, &v);
 	if (h == GTK_POLICY_NEVER) ret--;
 	if (v == GTK_POLICY_NEVER) ret -= 2;
-	
+
 	return ret;
 }
 
@@ -1777,7 +1889,7 @@ void gControl::setScrollBar(int vl)
 {
 	if (!_scroll)
 		return;
-	
+
 	switch(vl)
 	{
 		case 0:
@@ -1816,12 +1928,12 @@ void gControl::setTracking(bool v)
 		_tracking = v;
 	/*
 	GtkWidget *wid;
-	
+
 	if (GTK_IS_EVENT_BOX(border))
 		wid = border;
 	else
 		wid = widget;
-	
+
 	if (v != _tracking)
 	{
 		uint event_mask = gtk_widget_get_events(wid);
@@ -1835,7 +1947,7 @@ void gControl::setTracking(bool v)
 		{
 			event_mask &= ~GDK_POINTER_MOTION_MASK;
 		}
-		
+
 		if (!_old_tracking)
 		{
 			gtk_widget_unrealize(wid);
@@ -1851,19 +1963,19 @@ bool gControl::grab()
 	GdkWindow *win;
 	gControl *old_control_grab;
 	bool save_tracking;
-	
+
 	if (_grab)
 		return false;
-	
+
 	win = gtk_widget_get_window(border);
-	
-	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL, 
+
+	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL,
 	#if GTK_CHECK_VERSION(2, 18, 0)
-	    gdk_window_get_cursor(win),
+			gdk_window_get_cursor(win),
 	#else
-		  NULL,
+			NULL,
 	#endif
-      gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
+			gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
 	{
 		fprintf(stderr, "gb.gtk: warning: cannot grab pointer\n");
 		return true;
@@ -1878,17 +1990,17 @@ bool gControl::grab()
 	_grab = true;
 	save_tracking = _tracking;
 	_tracking = true;
-	
+
 	old_control_grab = gApplication::_control_grab;
 	gApplication::_control_grab = this;
 
 	gApplication::enterLoop(this);
 
 	gApplication::_control_grab = old_control_grab;
-	
+
 	gdk_pointer_ungrab(GDK_CURRENT_TIME);
 	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
-	
+
 	_tracking = save_tracking;
 	_grab = false;
 	return false;
@@ -1897,15 +2009,15 @@ bool gControl::grab()
 bool gControl::hovered()
 {
 	//int x, y, xm, ym;
-	
+
 	if (!isVisible())
 		return false;
 	else
 		return _inside;
-	
+
 	/*getScreenPos(&x, &y);
 	gMouse::getScreenPos(&xm, &ym);
-	
+
 	return (xm >= x && ym >= y && xm < (x + width()) && ym < (y + height()));*/
 }
 
@@ -1917,18 +2029,18 @@ bool gControl::setProxy(gControl *proxy)
 	{
 		if (check == this)
 			return true;
-		
+
 		check = check->_proxy;
 	}
-	
+
 	if (_proxy)
 		_proxy->_proxy_for = NULL;
-	
+
 	_proxy = proxy;
-	
+
 	if (_proxy)
 		_proxy->_proxy_for = this;
-	
+
 	return false;
 }
 
@@ -1936,7 +2048,7 @@ void gControl::setNoTabFocus(bool v)
 {
 	if (_no_tab_focus == v)
 		return;
-	
+
 	_no_tab_focus = v;
 	if (pr)
 		pr->updateFocusChain();
@@ -1945,22 +2057,22 @@ void gControl::setNoTabFocus(bool v)
 void gControl::emitEnterEvent(bool no_leave)
 {
 	gContainer *cont;
-	
+
 	if (parent())
 		parent()->emitEnterEvent(true);
-	
+
 	if (!no_leave && isContainer())
 	{
 		cont = (gContainer *)this;
 		int i;
-		
+
 		for (i = 0; i < cont->childCount(); i++)
 			cont->child(i)->emitLeaveEvent();
 	}
-	
+
 	if (_inside)
 		return;
-	
+
 	_inside = true;
 
 	setMouse(mouse());
@@ -1972,7 +2084,7 @@ void gControl::emitEnterEvent(bool no_leave)
 			gApplication::_ignore_until_next_enter = NULL;
 		return;
 	}
-	
+
 	//fprintf(stderr, "RAISE ENTER: %s\n", name());
 	emit(SIGNAL(onEnterLeave), gEvent_Enter);
 }
@@ -1981,18 +2093,18 @@ void gControl::emitLeaveEvent()
 {
 	if (!_inside)
 		return;
-	
+
 	if (isContainer())
 	{
 		gContainer *cont = (gContainer *)this;
 		int i;
-		
+
 		for (i = 0; i < cont->childCount(); i++)
 			cont->child(i)->emitLeaveEvent();
 	}
-	
+
 	_inside = false;
-	
+
 	if (parent()) parent()->setMouse(parent()->mouse());
 
 	if (gApplication::_ignore_until_next_enter)
@@ -2009,7 +2121,7 @@ bool gControl::isAncestorOf(gControl *child)
 {
 	if (!isContainer())
 		return false;
-	
+
 	for(;;)
 	{
 		child = child->parent();
@@ -2020,13 +2132,28 @@ bool gControl::isAncestorOf(gControl *child)
 	}
 }
 
+#ifdef GTK3
+void gControl::drawBackground(GtkWidget *widget, cairo_t *cr)
+{
+	GtkAllocation a;
+
+	if (background() == COLOR_DEFAULT)
+		return;
+
+	gt_cairo_set_source_color(cr, background());
+
+	gtk_widget_get_allocation(border, &a);
+	cairo_rectangle(cr, a.x, a.y, width(), height());
+	cairo_fill(cr);
+}
+#else
 void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
 {
 	GtkAllocation a;
 
 	if (background() == COLOR_DEFAULT)
 		return;
-	
+
 	cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
 
 	gdk_cairo_region(cr, e->region);
@@ -2036,9 +2163,10 @@ void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
 	gtk_widget_get_allocation(border, &a);
 	cairo_rectangle(cr, a.x, a.y, width(), height());
 	cairo_fill(cr);
-	
-  cairo_destroy(cr);
+
+	cairo_destroy(cr);
 }
+#endif
 
 bool gControl::canFocus() const
 {

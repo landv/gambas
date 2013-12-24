@@ -142,7 +142,11 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 		data->_drop_2 = false; 
 	}*/
 	
+#if GTK_CHECK_VERSION(2, 22, 0)
+	switch (gdk_drag_context_get_suggested_action(context))
+#else
 	switch (context->suggested_action)
+#endif
 	{
   	case GDK_ACTION_MOVE: 
   		action = gDrag::Move; 
@@ -203,7 +207,11 @@ static gboolean sg_drag_motion(GtkWidget *widget, GdkDragContext *context, gint 
 	if (retval) 
 	{
 		//fprintf(stderr, "sg_drag_motion: accept\n");
+#if GTK_CHECK_VERSION(2, 22, 0)
+		gdk_drag_status(context, gdk_drag_context_get_suggested_action(context), time);
+#else
 		gdk_drag_status(context, context->suggested_action, time);
+#endif
 		return true;
 	}
 	

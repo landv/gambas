@@ -113,4 +113,10 @@ enum
 typedef
 	unsigned char uchar;
 
+#ifdef GTK3
+	#define ON_DRAW(_widget, _this, _gtk, _gtk3) g_signal_connect_after(G_OBJECT(_widget), "draw", G_CALLBACK(_gtk3), (gpointer)_this)
+#else
+	#define ON_DRAW(_widget, _this, _gtk, _gtk3) g_signal_connect_after(G_OBJECT(_widget), "expose-event", G_CALLBACK(_gtk), (gpointer)_this)
+#endif
+
 #endif

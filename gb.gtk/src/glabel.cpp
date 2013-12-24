@@ -25,21 +25,16 @@
 #include "widgets_private.h"
 #include "glabel.h"
 
-
-static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
+#ifdef GTK3
+static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 {
 	GtkStyle *style = gtk_widget_get_style(draw);
-	cairo_t *cr;
 	int vw, vh, lw, lh;
 	int fw = Max(d->getFramePadding(), d->getFrameWidth());
-	
-	cr = gdk_cairo_create(draw->window);
-	gdk_cairo_region(cr, e->region);
-	cairo_clip(cr);
-	
-	if (style) 
+
+	if (style)
 		gdk_cairo_set_source_color(cr, &style->fg[GTK_STATE_NORMAL]);
-	
+
 	switch (d->lay_x)
 	{
 		case 0: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
@@ -47,11 +42,11 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 		case 2: pango_layout_set_alignment(d->layout, PANGO_ALIGN_RIGHT); break;
 		case 3: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
 	}
-	
+
 	vw = d->width();
 	vh = d->height();
 	pango_layout_get_pixel_size(d->layout, &lw, &lh);
-	
+
 	if (!d->markup)
 	{
 		switch (d->lay_x)
@@ -59,10 +54,10 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 			case 0: vw = fw; break;
 			case 1: vw = (vw - lw) / 2; break;
 			case 2: vw =  vw - lw - fw; break;
-			case 3: 
-				if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL) 
+			case 3:
+				if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL)
 					vw = vw - lw - fw;
-				else 
+				else
 					vw = fw;
 				break;
 		}
@@ -70,28 +65,95 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	else
 		vw = fw;
 
-	
+
 	switch (d->lay_y)
 	{
 		case 0: vh = fw; break;
 		case 1: vh = (vh - lh) / 2; break;
 		case 2: vh = vh - lh - fw; break;
 	}
-	
+
 	if (vh < 0) vh = 0;
-	
-	vw += draw->allocation.x;
-	vh += draw->allocation.y;
-	
+
+	//vw += draw->allocation.x;
+	//vh += draw->allocation.y;
+
 	cairo_move_to(cr, vw, vh);
 	pango_cairo_show_layout(cr, d->layout);
-	//gdk_draw_layout(draw->window, gc, vw, vh, d->layout);	
-	cairo_destroy(cr);
-	
-	d->drawBorder(e);
-	
+	//gdk_draw_layout(draw->window, gc, vw, vh, d->layout);
+
+	d->drawBorder(cr);
+
 	return false;
 }
+#else
+static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
+{
+	GtkStyle *style = gtk_widget_get_style(draw);
+	cairo_t *cr;
+	int vw, vh, lw, lh;
+	int fw = Max(d->getFramePadding(), d->getFrameWidth());
+
+	cr = gdk_cairo_create(draw->window);
+	gdk_cairo_region(cr, e->region);
+	cairo_clip(cr);
+
+	if (style)
+		gdk_cairo_set_source_color(cr, &style->fg[GTK_STATE_NORMAL]);
+
+	switch (d->lay_x)
+	{
+		case 0: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
+		case 1: pango_layout_set_alignment(d->layout, PANGO_ALIGN_CENTER); break;
+		case 2: pango_layout_set_alignment(d->layout, PANGO_ALIGN_RIGHT); break;
+		case 3: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
+	}
+
+	vw = d->width();
+	vh = d->height();
+	pango_layout_get_pixel_size(d->layout, &lw, &lh);
+
+	if (!d->markup)
+	{
+		switch (d->lay_x)
+		{
+			case 0: vw = fw; break;
+			case 1: vw = (vw - lw) / 2; break;
+			case 2: vw =  vw - lw - fw; break;
+			case 3:
+				if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL)
+					vw = vw - lw - fw;
+				else
+					vw = fw;
+				break;
+		}
+	}
+	else
+		vw = fw;
+
+
+	switch (d->lay_y)
+	{
+		case 0: vh = fw; break;
+		case 1: vh = (vh - lh) / 2; break;
+		case 2: vh = vh - lh - fw; break;
+	}
+
+	if (vh < 0) vh = 0;
+
+	vw += draw->allocation.x;
+	vh += draw->allocation.y;
+
+	cairo_move_to(cr, vw, vh);
+	pango_cairo_show_layout(cr, d->layout);
+	//gdk_draw_layout(draw->window, gc, vw, vh, d->layout);
+	cairo_destroy(cr);
+
+	d->drawBorder(e);
+
+	return false;
+}
+#endif
 
 gLabel::gLabel(gContainer *parent) : gControl(parent)
 {
@@ -110,7 +172,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	
 	realize(false);
 
-	g_signal_connect_after(G_OBJECT(widget), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+	ON_DRAW(widget, this, cb_expose, cb_draw);
 	
 	setAlignment(ALIGN_NORMAL);
 	updateLayout();

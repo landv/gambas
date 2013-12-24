@@ -80,7 +80,115 @@ static void cb_click_check(GtkButton *object, gButton *data)
 	data->emit(SIGNAL(data->onClick));
 }
 
+#ifdef GTK3
+static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
+{
+	GdkPixbuf *img;
+	GdkRectangle rpix={0,0,0,0};
+	GdkRectangle rect;
+	GtkCellRendererState state;
+	gint py, px;
+	bool rtl, bcenter=false;
+	gint dx, dy;
 
+	rtl = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
+
+	gtk_widget_get_allocation(wid, &rect);
+
+	px = rect.width;
+
+	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_ACTIVE)
+	{
+	  gtk_widget_style_get (wid,
+				"child-displacement-x", &dx,
+				"child-displacement-y", &dy,
+				(void *)NULL);
+		rect.x += dx;
+		rect.y += dy;
+	}
+
+	//g_debug("button_expose: %d %d %d %d", e->area.x, e->area.y, e->area.width, e->area.height);
+	//g_debug("rect: %d %d %d %d", rect.x, rect.y, rect.width, rect.height);
+
+	if (data->rendpix)
+	{
+		if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_INSENSITIVE)
+		{
+		  if (!data->rendinc)
+		    data->rendinc = gt_pixbuf_create_disabled(data->rendpix);
+		  img = data->rendinc;
+    }
+		else
+		  img = data->rendpix;
+
+		rpix.width = gdk_pixbuf_get_width(img);
+		rpix.height = gdk_pixbuf_get_height(img);
+
+		py = (rect.height - rpix.height)/2;
+
+		bcenter = !(data->text()) || !(*data->text());
+
+		if (bcenter)
+		{
+			//fprintf(stderr, "draw pixbuf: %d %d\n", rect.x + (px-rpix.width)/2, rect.y + py);
+			//gdk_draw_pixbuf(GDK_DRAWABLE(win),gc,img,0,0,rect.x + (px-rpix.width)/2, rect.y + py,
+      //                                  -1,-1,GDK_RGB_DITHER_MAX,0,0);
+
+			gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
+
+			cairo_destroy(cr);
+			return false;
+		}
+
+		if (rtl)
+			gt_cairo_draw_pixbuf(cr, img, rect.x + rect.width - 6, rect.y + py, -1, -1, 1.0, NULL);
+		else
+			gt_cairo_draw_pixbuf(cr, img, rect.x + 6, rect.y + py, -1, -1, 1.0, NULL);
+
+		rect.width -= rpix.width;
+		rect.x += rpix.width;
+	}
+
+	gt_set_cell_renderer_text_from_font((GtkCellRendererText *)data->rendtxt, data->font());
+	g_object_set(G_OBJECT(data->rendtxt), "sensitive", true, (void *)NULL);
+
+	switch (gtk_widget_get_state(data->widget))
+	{
+		//case GTK_STATE_NORMAL:
+		//case GTK_STATE_ACTIVE: state=GTK_CELL_RENDERER_PRELIT; break;
+		//case GTK_STATE_PRELIGHT: state=GTK_CELL_RENDERER_PRELIT; break;
+		case GTK_STATE_SELECTED:
+			state = GTK_CELL_RENDERER_SELECTED;
+			break;
+
+		case GTK_STATE_INSENSITIVE:
+			state = GTK_CELL_RENDERER_INSENSITIVE;
+			g_object_set(G_OBJECT(data->rendtxt), "sensitive", false, (void *)NULL);
+			break;
+
+		default:
+			state = (GtkCellRendererState)0;
+			break;
+	}
+
+
+	/*rect.width-=12;
+	rect.x+=6;
+	if (rtl)
+	{
+		rect.width=px-rect.x-6;
+		rect.x=6;
+	}*/
+
+	if (rect.width >= 1 && rect.height >= 1)
+	{
+		gtk_cell_renderer_set_fixed_size(data->rendtxt, rect.width, rect.height);
+		gtk_cell_renderer_render(data->rendtxt, cr, wid, &rect, &rect, state);
+	}
+
+	return FALSE;
+}
+#else
 static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 {
 	cairo_t *cr;
@@ -198,6 +306,7 @@ static gboolean button_expose(GtkWidget *wid,GdkEventExpose *e,gButton *data)
 	
 	return FALSE;
 }
+#endif
 
 gButton::gButton(gContainer *par, Type typ) : gControl(par)
 {
@@ -272,7 +381,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 		g_object_set(G_OBJECT(rendtxt),"xalign",0.5,(void *)NULL);
 		g_object_set(G_OBJECT(rendtxt),"yalign",0.5,(void *)NULL);
 
-		g_signal_connect_after(G_OBJECT(widget),"expose-event",G_CALLBACK(button_expose),(gpointer)this);
+		ON_DRAW(widget, this, button_expose, button_draw);
 	}
 	else
 	{	
@@ -493,12 +602,20 @@ void gButton::setDefault(bool vl)
 	if (vl)
 	{
 		win->_default = this;
+#if GTK_CHECK_VERSION(2, 18, 0)
+		gtk_widget_set_can_default(widget, true);
+#else
 		GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_DEFAULT);
+#endif
 		//gtk_widget_grab_default (widget);
 	}
 	else
 	{
+#if GTK_CHECK_VERSION(2, 18, 0)
+		gtk_widget_set_can_default(widget, false);
+#else
 		GTK_WIDGET_UNSET_FLAGS(widget, GTK_CAN_DEFAULT);
+#endif
 		if (win->_default == this)
 			win->_default = NULL;
 	}

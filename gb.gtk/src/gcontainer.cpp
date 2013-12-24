@@ -324,7 +324,7 @@ int gContainer::clientX()
 	if (_client_x >= 0)
 		return _client_x;
 	
-	if (cont->window && border->window)
+	if (gtk_widget_get_window(cont) && gtk_widget_get_window(border))
 	{
 		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
 		xc += containerX();
@@ -353,7 +353,7 @@ int gContainer::clientY()
 	if (_client_y >= 0)
 		return _client_y;
 	
-	if (cont->window && border->window)
+	if (gtk_widget_get_window(cont) && gtk_widget_get_window(border))
 	{
 		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
 		yc += containerY();
@@ -405,24 +405,31 @@ int gContainer::clientWidth()
 	if (_client_w > 0)
 		return _client_w;
 	
-	if (cont != widget && cont->window)
+	if (cont != widget && gtk_widget_get_window(cont))
 	{
-		if ((width() != widget->allocation.width || height() != widget->allocation.height)
-		    && widget->allocation.width > 0 && widget->allocation.height > 0)
+		GtkAllocation a;
+
+		gtk_widget_get_allocation(widget, &a);
+
+		if ((width() != a.width || height() != a.height)
+		    && a.width > 0 && a.height > 0)
 		{
 			//g_debug("clientWidth: %s: %d", name(), width());
-			GtkAllocation a = { x(), y(), width(), height() };
+			a.x = x(); a.y = y(); a.width = width(); a.height = height();
 			gt_disable_warnings(true);
 			gtk_widget_size_allocate(widget, &a);
 			gt_disable_warnings(false);
 		}
 		//g_debug("ClientWidth: %s -> %d", this->name(), cont->allocation.width);
-		if (cont->allocation.width > 0)
-			return cont->allocation.width;
+
+		gtk_widget_get_allocation(cont, &a);
+
+		if (a.width > 0)
+			return a.width;
 	}
 	
 	if (_scroll)
-		return (int)gtk_scrolled_window_get_hadjustment(_scroll)->page_size;
+		return (int)gtk_adjustment_get_page_size(gtk_scrolled_window_get_hadjustment(_scroll));
 	
 	return width() - getFrameWidth() * 2;
 }
@@ -434,25 +441,31 @@ int gContainer::clientHeight()
 	if (_client_h > 0)
 		return _client_h;
 	
-	if (cont != widget && cont->window)
+	if (cont != widget && gtk_widget_get_window(cont))
 	{
-		if ((width() != widget->allocation.width || height() != widget->allocation.height)
-		    && widget->allocation.width > 0 && widget->allocation.height > 0)
+		GtkAllocation a;
+
+		gtk_widget_get_allocation(widget, &a);
+
+		if ((width() != a.width || height() != a.height)
+		    && a.width > 0 && a.height > 0)
 		{
 			//g_debug("clientHeight: %s: %d", name(), height());
-			GtkAllocation a = { x(), y(), width(), height() };
+			a.x = x(); a.y = y(); a.width = width(); a.height = height();
 			//gt_disable_warnings(true);
 			gtk_widget_size_allocate(widget, &a);
 			//gt_disable_warnings(false);
 			//gtk_container_resize_children(GTK_CONTAINER(widget));
 		}
 		//g_debug("ClientHeight: %s -> %d", this->name(), cont->allocation.height);
-		if (cont->allocation.height > 0)
-			return cont->allocation.height;
+		gtk_widget_get_allocation(cont, &a);
+
+		if (a.height > 0)
+			return a.height;
 	}
 	
 	if (_scroll)
-		return (int)gtk_scrolled_window_get_vadjustment(_scroll)->page_size;
+		return (int)gtk_adjustment_get_page_size(gtk_scrolled_window_get_vadjustment(_scroll));
 	
 	return height() - getFrameWidth() * 2;
 }
@@ -577,7 +590,7 @@ gControl *gContainer::findFirstFocus()
 		}
 		else
 		{
-			if (GTK_WIDGET_CAN_FOCUS(ch->widget) && !((ch->getClass() == Type_gButton) && ((gButton *)ch)->hasShortcut()))
+			if (gtk_widget_get_can_focus(ch->widget) && !((ch->getClass() == Type_gButton) && ((gButton *)ch)->hasShortcut()))
 				return ch;
 		}
 	}

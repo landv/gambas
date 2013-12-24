@@ -26,7 +26,36 @@
 #include "gdesktop.h"
 #include "gseparator.h"
 
-gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
+#ifdef GTK3
+static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gSeparator *data)
+{
+	gint x, y, w, h;
+	gColor color;
+
+	x = y = 0;
+	w = data->width();
+	h = data->height();
+
+	if (w == 1 || h == 1)
+	{
+		color = data->foreground();
+		if (color == COLOR_DEFAULT)
+			color = gDesktop::lightfgColor();
+
+		gt_cairo_set_source_color(cr, color);
+
+		cairo_rectangle(cr, x, y, w, h);
+		cairo_fill(cr);
+	}
+	else if (w>=h)
+		gtk_paint_hline(gtk_widget_get_style(wid), cr, GTK_STATE_NORMAL, wid, NULL, x, x + w, y + h / 2);
+	else
+		gtk_paint_vline(gtk_widget_get_style(wid), cr, GTK_STATE_NORMAL, wid, NULL, y, y + h, x + w / 2);
+
+	return false;
+}
+#else
+static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 {
 	gint x, y, w, h;
 	gColor color;
@@ -59,6 +88,7 @@ gboolean gSeparator_expose(GtkWidget *wid, GdkEventExpose *e, gSeparator *data)
 
 	return false;
 } 
+#endif
 
 gSeparator::gSeparator(gContainer *parent) : gControl(parent)
 {
@@ -68,7 +98,7 @@ gSeparator::gSeparator(gContainer *parent) : gControl(parent)
 
 	realize(false);
 
-	g_signal_connect(G_OBJECT(widget), "expose-event", G_CALLBACK(gSeparator_expose), (gpointer)this);
+	ON_DRAW(widget, this, cb_expose, cb_draw);
 }
 
 

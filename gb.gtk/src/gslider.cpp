@@ -63,7 +63,9 @@ void gSlider::init()
 		gtk_adjustment_set_page_size(adj, _page_step);
 	}
 	gtk_range_set_value(GTK_RANGE(widget), _value);
+#ifndef GTK3
 	gtk_range_set_update_policy(GTK_RANGE(widget), _tracking ? GTK_UPDATE_CONTINUOUS : GTK_UPDATE_DISCONTINUOUS);
+#endif
 
 	checkInverted();
 }
@@ -107,7 +109,9 @@ gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
 	init();
 	onChange = NULL;
 	
+#ifndef GTK3
 	gtk_range_set_update_policy(GTK_RANGE(widget),GTK_UPDATE_CONTINUOUS);
+#endif
 	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 }
 
@@ -238,7 +242,7 @@ void gSlider::setValue(int vl)
 void gSlider::orientation(int w,int h)
 {
 	GtkAdjustment *adj;
-	GtkType type;
+	GType type;
 	
 	type = (w < h) ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE;
 	
@@ -322,7 +326,7 @@ int gSlider::getDefaultSize()
 
 bool gSlider::isVertical() const
 {
-	return (GTK_WIDGET_TYPE(widget) == GTK_TYPE_VSCALE || GTK_WIDGET_TYPE(widget) == GTK_TYPE_VSCROLLBAR);
+	return (G_OBJECT_TYPE(widget) == GTK_TYPE_VSCALE || G_OBJECT_TYPE(widget) == GTK_TYPE_VSCROLLBAR);
 }
 
 void gSlider::checkInverted()
