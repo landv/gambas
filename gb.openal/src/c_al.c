@@ -612,7 +612,7 @@ GB_DESC AlDesc[] =
 	GB_CONSTANT("PITCH", "i",                      AL_PITCH),
 	GB_CONSTANT("POSITION", "i",                   AL_POSITION),
 	GB_CONSTANT("DIRECTION", "i",                  AL_DIRECTION),
-	GB_CONSTANT("VELOCITY ", "i",                  AL_VELOCITY),
+	GB_CONSTANT("VELOCITY", "i",                   AL_VELOCITY),
 	GB_CONSTANT("LOOPING", "i",                    AL_LOOPING),
 	GB_CONSTANT("BUFFER", "i",                     AL_BUFFER),
 	GB_CONSTANT("GAIN", "i",                       AL_GAIN),
