@@ -167,7 +167,7 @@ void gComboBox::create(bool readOnly)
 	{
 		GList *cells;
 		
-		widget = gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(tree->store), 0);
+		widget = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(tree->store));
 		entry = gtk_bin_get_child(GTK_BIN(widget));
 		use_base = true;
 

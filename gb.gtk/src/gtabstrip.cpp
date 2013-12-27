@@ -61,7 +61,7 @@ static int gTabStrip_buttonPress(GtkWidget *wid,GdkEventButton *e,gTabStrip *d)
 }
 #endif
 
-static void cb_click(GtkNotebook *nb,GtkNotebookPage *pg,guint pnum,gTabStrip *data)
+static void cb_click(GtkNotebook *nb, GtkWidget *pg, guint pnum, gTabStrip *data)
 {
 	data->performArrange();
 	data->emit(SIGNAL(data->onClick));
@@ -79,6 +79,50 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 	}
 }
 
+#ifdef GTK3
+static gboolean cb_button_draw(GtkWidget *wid, cairo_t *cr, gTabStrip *data)
+{
+	GdkPixbuf *img;
+	GdkRectangle rpix = {0,0,0,0};
+	GdkRectangle rect;
+	gint py, px;
+	gint dx, dy;
+
+	gtk_widget_get_allocation(wid, &rect);
+	px = rect.width;
+
+	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_ACTIVE)
+	{
+	  gtk_widget_style_get (wid,
+				"child-displacement-x", &dx,
+				"child-displacement-y", &dy,
+				(void *)NULL);
+		rect.x += dx;
+		rect.y += dy;
+	}
+
+	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_INSENSITIVE)
+	{
+		if (!data->_button_pixbuf_disabled)
+		{
+			data->_button_pixbuf_disabled = gt_pixbuf_create_disabled(data->_button_pixbuf_normal);
+			g_object_ref(G_OBJECT(data->_button_pixbuf_disabled));
+		}
+		img = data->_button_pixbuf_disabled;
+	}
+	else
+		img = data->_button_pixbuf_normal;
+
+	rpix.width = gdk_pixbuf_get_width(img);
+	rpix.height = gdk_pixbuf_get_height(img);
+
+	py = (rect.height - rpix.height)/2;
+
+	gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
+
+	return false;
+}
+#else
 static gboolean cb_button_fix(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
 {
 	gtk_button_set_relief(GTK_BUTTON(wid), GTK_RELIEF_NONE);
@@ -135,6 +179,7 @@ static gboolean cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *d
 	
 	return false;
 }
+#endif
 
 static void cb_button_clicked(GtkWidget *wid, gTabStrip *data)
 {
@@ -304,7 +349,11 @@ void gTabStripPage::setPicture(gPicture *picture)
 
 bool gTabStripPage::enabled() const
 {
+#if GTK_CHECK_VERSION(2, 18, 0)
+	return gtk_widget_get_sensitive(hbox);
+#else
 	return GTK_WIDGET_SENSITIVE(hbox);
+#endif
 }
 
 void gTabStripPage::setEnabled(bool v)
@@ -400,8 +449,11 @@ void gTabStripPage::updateButton()
 	{
 		_button = gtk_button_new();
 		gtk_button_set_focus_on_click(GTK_BUTTON(_button), false);
+#ifndef GTK3
 		g_signal_connect(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_fix), (gpointer)parent);
-		g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
+#endif
+		//g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
+		ON_DRAW(_button, parent, cb_button_expose, cb_button_draw);
 		g_signal_connect(G_OBJECT(_button), "clicked", G_CALLBACK(cb_button_clicked), (gpointer)parent);
 		g_object_set_data(G_OBJECT(_button), "gambas-tab-page", (void *)widget);
 		

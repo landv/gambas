@@ -28,6 +28,7 @@
 #include "gdesktop.h"
 #include "gtextarea.h"
 
+#ifndef GTK3
 // Private structure took from GTK+ 2.10 code. Used for setting the text area cursor.
 // **** May not work on future GTK+ versions ****
 
@@ -50,6 +51,7 @@ void gtk_text_layout_get_size(struct _GtkTextLayout  *layout, gint *width, gint 
 void gtk_text_layout_invalidate (struct _GtkTextLayout *layout, const GtkTextIter *start, const GtkTextIter *end);
 void gtk_text_layout_validate (struct _GtkTextLayout *layout, gint max_pixels);
 }
+#endif
 
 // Undo/Redo actions
 
@@ -669,6 +671,7 @@ void gTextArea::selSelect(int pos, int length)
 	gtk_text_buffer_select_range(_buffer, &start, &end);
 }
 
+#ifndef GTK3
 void gTextArea::updateCursor(GdkCursor *cursor)
 {
   GdkWindow *win = ((PrivateGtkTextWindow *)GTK_TEXT_VIEW(textview)->text_window)->bin_window;
@@ -687,8 +690,9 @@ void gTextArea::updateCursor(GdkCursor *cursor)
     gdk_cursor_unref(cursor);
   }
 }
+#endif
 
-void gTextArea::waitForLayout(int *tw, int *th)
+/*void gTextArea::waitForLayout(int *tw, int *th)
 {
   GtkTextIter start;
   GtkTextIter end;
@@ -717,7 +721,7 @@ int gTextArea::textHeight()
 	int w, h;
 	waitForLayout(&w, &h);
 	return h;
-}
+}*/
 
 int gTextArea::alignment() const
 {

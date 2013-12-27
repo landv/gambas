@@ -125,6 +125,7 @@ void gSpinBox::setWrap(bool vl)
 	gtk_spin_button_set_wrap(GTK_SPIN_BUTTON(widget),vl);
 }
 
+#ifndef GTK3
 void gSpinBox::updateCursor(GdkCursor *cursor)
 {
   GdkWindow *win;
@@ -144,6 +145,7 @@ void gSpinBox::updateCursor(GdkCursor *cursor)
     gdk_cursor_unref(cursor);
   }
 }
+#endif
 
 void gSpinBox::selectAll()
 {

@@ -49,8 +49,8 @@ public:
 	void setText(const char *txt);
 	void setWrap(bool vl);
 	
-	int textWidth();
-	int textHeight();
+	//int textWidth();
+	//int textHeight();
 	
 	int alignment() const;
 	void setAlignment(int vl);
@@ -90,8 +90,10 @@ public:
 	void (*onCursor)(gTextArea *sender);
 
 //"Private"
-  void updateCursor(GdkCursor *cursor);
-  void waitForLayout(int *tw, int *th);
+#ifndef GTK3
+  virtual void updateCursor(GdkCursor *cursor);
+#endif
+  //void waitForLayout(int *tw, int *th);
 	void clearUndoStack();
 	void clearRedoStack();
 	

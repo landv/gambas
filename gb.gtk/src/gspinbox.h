@@ -50,11 +50,14 @@ public:
 //"Signals"
 	void (*onChange)  (gSpinBox *sender);
 
+#ifndef GTK3
+	virtual void updateCursor(GdkCursor *cursor);
+#endif
+
 //"Private"
 private:
 	int _min;
 	int _max;
-	virtual void updateCursor(GdkCursor *cursor);
 };
 
 #endif

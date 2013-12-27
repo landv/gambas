@@ -67,18 +67,17 @@ static gboolean cb_unmap(GtkWidget *menu, gMenu *data)
 
 static int get_menu_pos(GtkWidget *menu)
 {
-  GtkMenuShell *par;
-	GList *iter;
+	GList *children, *iter;
 	int pos;
 	
-	if (!menu->parent)
+	if (!gtk_widget_get_parent(menu))
 	{
 		//g_debug("get_menu_pos: no parent for menu %p", menu);
 		return -1;
 	}
 	
-  par = (GtkMenuShell*)(menu->parent);
-  iter = g_list_first(par->children);
+	children = gtk_container_get_children(GTK_CONTAINER(gtk_widget_get_parent(menu)));
+  iter = g_list_first(children);
   
   for(pos = 0;; pos++) 
   {
@@ -87,9 +86,50 @@ static int get_menu_pos(GtkWidget *menu)
     iter = g_list_next(iter);
   }
   
+  g_list_free(children);
+
   return pos;
 }
 
+#ifdef GTK3
+static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
+{
+	int x, y, w, h;
+	gint indicator_size;
+	static GtkWidget *check_menu_item = NULL;
+
+	if (menu->checked())
+	{
+		GtkAllocation a;
+		gtk_widget_get_allocation(wid, &a);
+		x = a.x;
+		y = a.y;
+		w = a.width;
+		h = a.height;
+
+		indicator_size = 15;
+		if (w < indicator_size) indicator_size = w;
+		if (h < indicator_size) indicator_size = h;
+
+		x += (w - indicator_size) / 2;
+		y += (h - indicator_size) / 2;
+		w = indicator_size;
+		h = indicator_size;
+
+		if (!check_menu_item)
+			check_menu_item = gtk_check_menu_item_new();
+
+		gtk_widget_set_state(check_menu_item, gtk_widget_get_state(wid));
+
+		gtk_paint_check(gtk_widget_get_style(wid), cr,
+					gtk_widget_get_state(wid), GTK_SHADOW_IN,
+					check_menu_item, "check",
+					x + 1, y + 1, w - 2, h - 2);
+	}
+
+	return false;
+}
+#else
 static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 {
 	int x, y, w, h;
@@ -126,6 +166,7 @@ static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 	
 	return false;
 }
+#endif
 
 void gMenu::update()
 {
@@ -144,7 +185,7 @@ void gMenu::update()
 		{
 			g_object_ref(G_OBJECT(child));
 			if (_style == MENU)
-				gtk_menu_item_remove_submenu(menu);
+				gtk_menu_item_set_submenu(menu, NULL);
 		}
 
 		if (menu)
@@ -196,7 +237,8 @@ void gMenu::update()
 					check = gtk_image_new();
 					g_object_ref(check);
 					gtk_widget_set_size_request(check, 16, 16);
-					g_signal_connect_after(G_OBJECT(check), "expose-event", G_CALLBACK(cb_check_expose), (gpointer)this);
+					ON_DRAW(check, this, cb_check_expose, cb_check_draw);
+					//g_signal_connect_after(G_OBJECT(check), "expose-event", G_CALLBACK(cb_check_expose), (gpointer)this);
 					
 					//gtk_box_pack_start(GTK_BOX(hbox), check, false, false, 0);
 					//gtk_box_pack_start(GTK_BOX(hbox), image, false, false, 0);
@@ -491,7 +533,7 @@ gMenu::~gMenu()
 
 bool gMenu::enabled()
 {
-	return GTK_WIDGET_SENSITIVE(GTK_WIDGET(menu));
+	return gtk_widget_is_sensitive(GTK_WIDGET(menu));
 }
 
 void gMenu::setEnabled(bool vl)
@@ -643,7 +685,11 @@ void gMenu::doPopup(bool move, int x, int y)
 
 	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
 	
+#if GTK_CHECK_VERSION(2, 20, 0)
+	while (_current_popup && child && gtk_widget_get_mapped(GTK_WIDGET(child)))
+#else
 	while (_current_popup && child && GTK_WIDGET_MAPPED(child))
+#endif
 		MAIN_do_iteration(false);
 
 	_current_popup = save_current_popup;

@@ -310,6 +310,7 @@ void gTextBox::setAlignment(int al)
 	gtk_entry_set_alignment(GTK_ENTRY(entry), gt_from_alignment(al));
 }
 
+#ifndef GTK3
 void gTextBox::updateCursor(GdkCursor *cursor)
 {
   GdkWindow *win;
@@ -331,6 +332,7 @@ void gTextBox::updateCursor(GdkCursor *cursor)
     gdk_cursor_unref(cursor);
   }
 }
+#endif
 
 void gTextBox::clear()
 {

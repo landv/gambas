@@ -40,10 +40,10 @@ public:
 	void setToolTip(char *txt);
 	bool isVisible();
 	void setVisible(bool vl);
-	long screenX();
-	long screenY();
-	long width();
-	long height();
+	int screenX();
+	int screenY();
+	int width();
+	int height();
 	
 //"Methods"
 	void destroy();
@@ -73,15 +73,14 @@ public:
 	static bool hasSystemTray();
 
 //"Private"
-	GtkWidget *plug;
+	GtkStatusIcon *plug;
 	gPicture *_icon;
 	char *buftext;
 	bool onHide;
 	int _loopLevel;
 	gPicture *getIcon() { return _icon ? _icon : defaultIcon(); }
-	void refresh();
 	void updateTooltip();
-	void cleanUp();
+	void updatePicture();
 	
 	static GList *trayicons;
 	static gPicture *_default_icon;
@@ -89,7 +88,6 @@ public:
 private:
 
 	static int _visible_count;
-	GtkStyle *_style;
 };
 
 #endif
