@@ -636,8 +636,9 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 
 		if (_popup_menu_clicked)
 		{
-			send_click_event(_popup_menu_clicked);
+			CMENU *menu = _popup_menu_clicked;
 			_popup_menu_clicked = NULL;
+			send_click_event(menu);
 		}
 
 		MENU_popup_count++;
