@@ -131,10 +131,23 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gMainWindow *data)
 {
-	if (data->_background)
+	if (data->_picture)
 	{
-		gdk_window_clear(data->border->window);
-		//gdk_window_clear(GTK_LAYOUT(data->widget)->bin_window);
+		cairo_t *cr = gdk_cairo_create(wid->window);
+		cairo_pattern_t *pattern;
+
+		gdk_cairo_region(cr, e->region);
+		cairo_clip(cr);
+
+		pattern = cairo_pattern_create_for_surface(data->_picture->getSurface());
+		cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
+
+		cairo_set_source(cr, pattern);
+		cairo_rectangle(cr, 0, 0, data->width(), data->height());
+		cairo_fill(cr);
+
+		cairo_pattern_destroy(pattern);
+		cairo_destroy(cr);
 	}
 	
 	return false;
@@ -172,7 +185,6 @@ void gMainWindow::initialize()
 	_not_spontaneous = false;
 	_skip_taskbar = false;
 	_current = NULL;
-	_background = NULL;
 	_style = NULL;
 	_xembed = false;
 	_activate = false;
@@ -280,7 +292,6 @@ gMainWindow::~gMainWindow()
 	gPicture::assign(&_icon);
 	if (_title) g_free(_title);
 	g_object_unref(accel);
-	if (_background) g_object_unref(_background);
 	if (_style) g_object_unref(_style);
 	
 	if (_active == this)
@@ -887,7 +898,6 @@ void gMainWindow::remap()
 void gMainWindow::drawMask()
 {
 	GdkBitmap *mask;
-	GdkPixmap *back;
 	bool do_remap = false;
 	 
 	/*if (win_style) 
@@ -913,9 +923,6 @@ void gMainWindow::drawMask()
 	if (!isVisible())
 		return;
 	
-	//if (_background)
-	//	g_object_unref(_background);
-		
 	mask = (_mask && _picture) ? _picture->getMask() : NULL;
 	do_remap = !mask && _masked;
 	
@@ -926,31 +933,25 @@ void gMainWindow::drawMask()
 	//gdk_window_shape_combine_mask(border->window, mask, 0, 0);
   #endif
 
-	back = _picture ? _picture->getPixmap() : NULL;
-	gtk_widget_set_double_buffered(border, back == NULL);	
-	gtk_widget_set_double_buffered(widget, back == NULL);	
+	//back = _picture ? _picture->getPixmap() : NULL;
+	//gtk_widget_set_double_buffered(border, back == NULL);
+	//gtk_widget_set_double_buffered(widget, back == NULL);
 	
-	if (back)
+	if (_picture)
 	{
 		gtk_widget_realize(border);
 		gtk_widget_realize(widget);
-		gdk_window_set_back_pixmap(border->window, back, FALSE);
-		//gdk_window_set_back_pixmap(GTK_LAYOUT(widget)->bin_window, back, FALSE);
-		gdk_window_clear(border->window);
-		//gdk_window_clear(GTK_LAYOUT(widget)->bin_window);
-		gtk_widget_set_app_paintable(border, true);
-		gtk_widget_set_app_paintable(widget, true);
+		//gdk_window_set_back_pixmap(border->window, back, FALSE);
+		//gdk_window_clear(widget->window);
+		//gtk_widget_set_app_paintable(border, true);
+		//gtk_widget_set_app_paintable(widget, true);
+		for (int i = 0; i < controlCount(); i++)
+			getControl(i)->refresh();
 	}
 	else
 	{
 		setRealBackground(background());
 	}
-	
-	if (_background)
-		g_object_unref(_background);
-	_background = back;
-	if (_background)
-		g_object_ref(_background);
 	
 	_masked = mask != NULL;
 	
