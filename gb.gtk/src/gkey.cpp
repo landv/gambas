@@ -245,7 +245,7 @@ void gKey::setActiveControl(gControl *control)
 		
 		if (!_no_input_method)
 		{
-	  	gtk_im_context_set_client_window (_im_context, _im_control->widget->window);
+	  	gtk_im_context_set_client_window (_im_context, gtk_widget_get_window(_im_control->widget));
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
 			#if DEBUG_IM

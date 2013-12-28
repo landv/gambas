@@ -44,8 +44,13 @@ Conversion between GDK and long type colors
 #define SCALE(i) ((int)(i * 255.0 / 65535.0 + 0.5))
 #define UNSCALE(d) ((int)(d / 255.0 * 65535.0 + 0.5))
 
+#ifdef GTK3
+static GtkStateFlags _color_style_bg[] = { GTK_STATE_FLAG_NORMAL, GTK_STATE_FLAG_INSENSITIVE, (GtkStateFlags)-1 };
+static GtkStateFlags _color_style_fg[] = { GTK_STATE_FLAG_NORMAL, GTK_STATE_FLAG_ACTIVE, GTK_STATE_FLAG_PRELIGHT, (GtkStateFlags)-1 };
+#else
 static GtkStateType _color_style_bg[] = { GTK_STATE_INSENSITIVE, GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
 static GtkStateType _color_style_fg[] = { GTK_STATE_ACTIVE, GTK_STATE_PRELIGHT, GTK_STATE_NORMAL };
+#endif
 
 #ifdef GTK3
 void fill_gdk_color(GdkColor *gcol, gColor color)
@@ -81,6 +86,46 @@ gColor get_gdk_color(GdkColor *gcol)
 	return gt_rgb_to_color(SCALE(gcol->red), SCALE(gcol->green), SCALE(gcol->blue));
 }
 
+#ifdef GTK3
+
+static void set_color(GtkWidget *wid, gColor color, void (*func)(GtkWidget *, GtkStateFlags, const GdkRGBA *), bool fg)
+{
+	GdkRGBA gcol;
+	GdkRGBA *pcol;
+	int i;
+	//GtkStyleContext *style;
+	GtkStateFlags st;
+
+	if (color == COLOR_DEFAULT)
+	{
+		pcol = NULL;
+	}
+	else
+	{
+		gt_from_color(color, &gcol);
+		pcol = &gcol;
+
+		/*style = gtk_widget_get_style_context(wid);
+		if (fg)
+			gtk_style_context_get_color(style, GTK_STATE_FLAG_SELECTED, &scol);
+		else
+			gtk_style_context_get_background_color(style, GTK_STATE_FLAG_SELECTED, &scol);*/
+	}
+
+	for (i = 0;; i++)
+	{
+		st = fg ? _color_style_fg[i] : _color_style_bg[i];
+		if (st < 0)
+			break;
+		(*func)(wid, st, pcol);
+	}
+
+	/*if (color != COLOR_DEFAULT)
+		(*func)(wid, GTK_STATE_FLAG_SELECTED, &scol);*/
+}
+
+#else
+
 static void set_color(GtkWidget *wid, gColor color, void (*func)(GtkWidget *, GtkStateType, const GdkColor *), bool fg)
 {
 	GdkColor gcol;
@@ -107,6 +152,8 @@ static void set_color(GtkWidget *wid, gColor color, void (*func)(GtkWidget *, Gt
 	}
 }
 
+#endif
+
 gColor get_gdk_fg_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
@@ -117,7 +164,11 @@ gColor get_gdk_fg_color(GtkWidget *wid, bool enabled)
 
 void set_gdk_fg_color(GtkWidget *wid, gColor color)
 {
+#ifdef GTK3
+	set_color(wid, color, gtk_widget_override_color, true);
+#else
 	set_color(wid, color, gtk_widget_modify_fg, true);
+#endif
 }
 
 gColor get_gdk_bg_color(GtkWidget *wid, bool enabled)
@@ -130,7 +181,11 @@ gColor get_gdk_bg_color(GtkWidget *wid, bool enabled)
 
 void set_gdk_bg_color(GtkWidget *wid,gColor color)
 {
+#ifdef GTK3
+	set_color(wid, color, gtk_widget_override_background_color, false);
+#else
 	set_color(wid, color, gtk_widget_modify_bg, false);
+#endif
 }
 
 gColor get_gdk_text_color(GtkWidget *wid, bool enabled)
@@ -143,7 +198,11 @@ gColor get_gdk_text_color(GtkWidget *wid, bool enabled)
 
 void set_gdk_text_color(GtkWidget *wid,gColor color)
 {
+#ifdef GTK3
+	set_color(wid, color, gtk_widget_override_color, true);
+#else
 	set_color(wid, color, gtk_widget_modify_text, true);
+#endif
 }
 
 gColor get_gdk_base_color(GtkWidget *wid, bool enabled)
@@ -156,7 +215,11 @@ gColor get_gdk_base_color(GtkWidget *wid, bool enabled)
 
 void set_gdk_base_color(GtkWidget *wid,gColor color)
 {
+#ifdef GTK3
+	set_color(wid, color, gtk_widget_override_background_color, false);
+#else
 	set_color(wid, color, gtk_widget_modify_base, false);
+#endif
 }
 
 void gt_color_to_rgb(gColor color, int *r, int *g, int *b)
@@ -176,12 +239,12 @@ void gt_color_to_rgba(gColor color, int *r, int *g, int *b, int *a)
 	*b = color & 0xFF;
 	*g = (color >> 8) & 0xFF;
 	*r = (color >> 16) & 0xFF;
-	*a = (color >> 24) & 0xFF;
+	*a = 255 - ((color >> 24) & 0xFF);
 }
 
 gColor gt_rgba_to_color(int r, int g, int b, int a)
 {
-	return (gColor)(b | (g << 8) | (r << 16) | (a << 24));
+	return (gColor)(b | (g << 8) | (r << 16) | ((255 - a) << 24));
 }
 
 void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a)
@@ -189,8 +252,20 @@ void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a)
 	*b = (color & 0xFF) / 255.0;
 	*g = ((color >> 8) & 0xFF) / 255.0;
 	*r = ((color >> 16) & 0xFF) / 255.0;
-	*a = ((color >> 24) & 0xFF) / 255.0;
+	*a = 1 - ((color >> 24) & 0xFF) / 255.0;
 }
+
+#ifdef GTK3
+void gt_from_color(gColor color, GdkRGBA *rgba)
+{
+	gt_color_to_frgba(color, &rgba->red, &rgba->green, &rgba->blue, &rgba->alpha);
+}
+
+gColor gt_to_color(GdkRGBA *rgba)
+{
+	return gt_frgba_to_color(rgba->red, rgba->green, rgba->blue, rgba->alpha);
+}
+#endif
 
 gColor gt_frgba_to_color(double r, double g, double b, double a)
 {
@@ -1184,22 +1259,6 @@ void gt_ensure_visible(GtEnsureVisible *arg, int x, int y, int w, int h)
 	arg->scrollY = -cy;
 }
 
-GtkStyle *gt_get_style(const char *name, int type)
-{
-	GtkSettings *set = gtk_settings_get_default();
-	GtkStyle* st = gtk_rc_get_style_by_paths(set, NULL, name, type);
-	if (!st) st = gtk_widget_get_default_style();
-	return st;
-}
-
-GtkStyle *gt_get_widget_style(const char *name)
-{
-	GtkSettings *set = gtk_settings_get_default();
-	GtkStyle* st = gtk_rc_get_style_by_paths(set, name, NULL, G_TYPE_NONE);
-	if (!st) st = gtk_widget_get_default_style();
-	return st;
-}
-
 #ifdef GTK3
 #else
 void gt_pixmap_fill(GdkPixmap *pix, gColor col, GdkGC *gc)
@@ -1708,8 +1767,9 @@ void gt_cairo_draw_rect(cairo_t *cr, int x, int y, int w, int h, GB_COLOR color)
 	cairo_fill(cr);
 }
 
+#if GTK_CHECK_VERSION(3, 10, 0)
+#else
 // Function partially taken from the GTK+ source code.
-
 cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 {
 	gint width = gdk_pixbuf_get_width (pixbuf);
@@ -1798,7 +1858,7 @@ cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 
 	return surface;
 }
-
+#endif
 
 void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
@@ -1863,3 +1923,178 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 	if (source)
 		g_object_unref(pixbuf);
 }
+
+
+#ifdef GTK3
+void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h)
+{
+	if (border == BORDER_NONE)
+		return;
+
+	if (w < 2 || h < 2)
+		return;
+
+	if (border == BORDER_PLAIN)
+	{
+		gt_cairo_draw_rect(cr, x, y, w, h, color);
+		return;
+	}
+
+  gtk_style_context_save(st);
+
+	gtk_style_context_set_state(st, state);
+
+	if (border == BORDER_RAISED)
+	{
+		gtk_style_context_add_class(st, GTK_STYLE_CLASS_BUTTON);
+		gtk_render_frame(st, cr, x, y, w, h);
+	}
+	else if (border == BORDER_SUNKEN)
+	{
+		gtk_style_context_add_class(st, GTK_STYLE_CLASS_ENTRY);
+		gtk_render_frame(st, cr, x, y, w, h);
+	}
+	else if (border == BORDER_ETCHED)
+	{
+		gtk_style_context_add_class(st, GTK_STYLE_CLASS_FRAME);
+		gtk_render_frame(st, cr, x, y, w, h);
+	}
+
+	gtk_style_context_restore(st);
+}
+#endif
+
+// Style management
+
+#ifdef GTK3
+static int _style_context_loaded = 0;
+static GtkStyleContext *_style_context[9];
+#endif
+static int _style_loaded = 0;
+static GtkStyle *_style[8];
+
+static int type_to_index(GType type)
+{
+	if (type == GTK_TYPE_BUTTON)
+		return 0;
+	else if (type == GTK_TYPE_ENTRY)
+		return 1;
+	else if (type == GTK_TYPE_LAYOUT)
+		return 2;
+	else if (type == GTK_TYPE_TOOLTIP)
+		return 3;
+	else if (type == GTK_TYPE_SCROLLBAR)
+		return 4;
+	else if (type == GTK_TYPE_SCROLLED_WINDOW)
+		return 5;
+	else if (type == GTK_TYPE_CHECK_BUTTON)
+		return 6;
+	else if (type == GTK_TYPE_RADIO_BUTTON)
+		return 7;
+	else if (type == GTK_TYPE_WINDOW)
+		return 8;
+	else
+		return -1;
+}
+
+#ifdef GTK3
+
+const char *gt_get_style_class(GType type)
+{
+	static const char *_class[] = {
+		GTK_STYLE_CLASS_BUTTON, GTK_STYLE_CLASS_ENTRY, NULL, GTK_STYLE_CLASS_TOOLTIP,
+		GTK_STYLE_CLASS_SCROLLBAR, NULL, GTK_STYLE_CLASS_CHECK, GTK_STYLE_CLASS_RADIO, GTK_STYLE_CLASS_BACKGROUND
+	};
+
+	int index = type_to_index(type);
+	if (index < 0)
+		return NULL;
+	else
+		return _class[index];
+}
+
+GtkStyleContext *gt_get_style(GType type)
+{
+	int index = type_to_index(type);
+	if (index < 0)
+		return NULL;
+
+	if ((_style_context_loaded & (1 << index)) == 0)
+	{
+		GtkStyleContext *style = gtk_style_context_new();
+		GtkWidgetPath *path = gtk_widget_path_new();
+		const char *klass = gt_get_style_class(type);
+
+		if (klass)
+			gtk_style_context_add_class(style, klass);
+
+		gtk_widget_path_append_type(path, type);
+		gtk_style_context_set_path(style, path);
+		//gtk_widget_path_unref(path);
+
+		_style_context[index] = style;
+		_style_context_loaded |= (1 << index);
+	}
+
+	return _style_context[index];
+}
+
+#endif
+
+/*static const char *type_to_name(GType type)
+{
+	return g_type_name
+	if (type == GTK_TYPE_BUTTON)
+	{
+		case GTK_TYPE_BUTTON: return "GtkButton";
+		case GTK_TYPE_ENTRY: return "GtkEntry";
+		case GTK_TYPE_LAYOUT: return "GtkLayout";
+		case GTK_TYPE_TOOLTIP: return "GtkTooltip";
+		case GTK_TYPE_SCROLLBAR: return "GtkScrollbar";
+		case GTK_TYPE_SCROLLED_WINDOW: return "GtkScrolledWindow";
+		case GTK_TYPE_CHECK_BUTTON: return "GtkCheckButton";
+		case GTK_TYPE_RADIO_BUTTON: return "GtkRadioButton";
+		default: return -1;
+	}
+}*/
+
+static GtkStyle *get_style(const char *name, int type)
+{
+	GtkSettings *set = gtk_settings_get_default();
+	GtkStyle* st = gtk_rc_get_style_by_paths(set, NULL, name, type);
+	if (!st) st = gtk_widget_get_default_style();
+	return st;
+}
+
+static GtkStyle *get_widget_style(const char *name)
+{
+	GtkSettings *set = gtk_settings_get_default();
+	GtkStyle* st = gtk_rc_get_style_by_paths(set, name, NULL, G_TYPE_NONE);
+	if (!st) st = gtk_widget_get_default_style();
+	return st;
+}
+
+#ifdef GTK3
+GtkStyle *gt_get_old_style(GType type)
+#else
+GtkStyle *gt_get_style(GType type)
+#endif
+{
+	int index = type_to_index(type);
+	if (index < 0)
+		return NULL;
+
+	if ((_style_loaded & (1 << index)) == 0)
+	{
+		if (type == GTK_TYPE_TOOLTIP)
+			_style[index] = get_widget_style("gtk-tooltip");
+		else
+			_style[index] = get_style(g_type_name(type), type);
+
+		_style_loaded |= (1 << index);
+	}
+
+	return _style[index];
+}
+
+

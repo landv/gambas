@@ -143,6 +143,7 @@ public:
 	void configure();
 	void embedMenuBar(GtkWidget *border);
 	void emitResize();
+	void setGeometryHints();
 	
 	GtkWindowGroup *group;
 	GtkAccelGroup *accel;

@@ -52,7 +52,7 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		have_cursor = true;
 		use_base = true;
 		
-		entry = widget = gtk_entry_new();	
+		entry = widget = gtk_entry_new();
 		realize();
 		initEntry();
 	}

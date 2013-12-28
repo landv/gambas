@@ -107,7 +107,12 @@ gPicture::gPicture() : gShare()
 	initialize();
 }
 
-#ifndef GTK3
+#ifdef GTK3
+static cairo_surface_t *create_surface(int w, int h)
+{
+	return cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
+}
+#else
 static GdkPixmap *create_pixmap(int w, int h)
 {
 	GdkScreen *scr;
@@ -159,7 +164,12 @@ gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 	_width = w;
 	_height = h;
 
-#ifndef GTK3
+#ifdef GTK3
+	if (_type == SURFACE)
+	{
+		surface = create_surface(w, h);
+	}
+#else
 	if (_type == PIXMAP)
 	{
 		pixmap = create_pixmap(w, h);
@@ -200,19 +210,32 @@ gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
 
 }
 
-#ifndef GTK3
+#ifdef GTK3
+
+gPicture::gPicture(cairo_surface_t *surf) : gShare()
+{
+	initialize();
+	if (!surf)
+		return;
+	_type = SURFACE;
+	surface = surf;
+	_width = cairo_image_surface_get_width(surf);
+	_height = cairo_image_surface_get_height(surf);
+}
+
+#else
 
 // The gPicture takes the GdkPixmap object. Do not unreference it after.
 
-gPicture::gPicture(GdkPixmap *pixmap) : gShare()
+gPicture::gPicture(GdkPixmap *pix) : gShare()
 {
 	initialize();
-	if (!pixmap)
+	if (!pix)
 		return;
 		
 	_type = PIXMAP;
-	gdk_drawable_get_size((GdkDrawable *)pixmap, &_width, &_height);
-	pixmap = pixmap;
+	gdk_drawable_get_size((GdkDrawable *)pix, &_width, &_height);
+	pixmap = pix;
 }
 #endif
 
@@ -288,9 +311,12 @@ GdkPixbuf *gPicture::getPixbuf()
 #endif
 	if (_type == SURFACE)
 	{
-		// Convert cairo surface to pixbuf
-		fprintf(stderr, "gb.gtk: warning: cairo surface to pixbuf conversion not implemented yet.\n");
+#ifdef GTK3
+		pixbuf = gdk_pixbuf_get_from_surface(surface, 0, 0, _width, _height);
+#else
+		fprintf(stderr, "gb.gtk: warning: cairo surface to pixbuf conversion not implemented.\n");
 		return NULL;
+#endif
 	}
 	
 	_type = PIXBUF;
@@ -308,7 +334,9 @@ cairo_surface_t *gPicture::getSurface()
 	getPixbuf();
 	surface = gt_cairo_create_surface_from_pixbuf(pixbuf);
 	
-	//_type = SURFACE;
+#ifdef GTK3
+	_type = SURFACE;
+#endif
 	return surface;
 }
 
@@ -374,7 +402,7 @@ int gPicture::depth()
 		depth = gdk_drawable_get_depth(GDK_DRAWABLE(pixmap));
 	else
 #endif
-	if (pixbuf)
+	if (pixbuf || surface)
 		depth = 32;
 
 	return depth;
@@ -432,6 +460,15 @@ void gPicture::fill(gColor col)
 		
 		gdk_pixbuf_fill(pixbuf, color.value);
 	}
+#ifdef GTK3
+	else if (_type == SURFACE)
+	{
+		cairo_t *cr = cairo_create(surface);
+		gt_cairo_set_source_color(cr, col);
+		cairo_paint(cr);
+		cairo_destroy(cr);
+	}
+#endif
 	
 	invalidate();
 }
@@ -657,6 +694,16 @@ void gPicture::resize(int w, int h)
 		g_object_unref(G_OBJECT(pixbuf));
 		pixbuf = buf;
 	}
+#ifdef GTK3
+	else if (_type == SURFACE)
+	{
+		cairo_surface_t *buf = create_surface(w, h);
+		cairo_t *cr = cairo_create(buf);
+		cairo_set_source_surface(cr, surface, 0, 0);
+		cairo_paint(cr);
+		cairo_destroy(cr);
+	}
+#endif
 	
 	_width = w;
 	_height = h;
@@ -705,6 +752,19 @@ gPicture *gPicture::copy(int x, int y, int w, int h)
 		
 		ret = new gPicture(buf, _transparent);
 	}
+#ifdef GTK3
+	else if (_type == SURFACE)
+	{
+		cairo_surface_t *buf = create_surface(w, h);
+		cairo_t *cr = cairo_create(buf);
+		cairo_set_source_surface(cr, surface, x, y);
+		cairo_rectangle(cr, 0, 0, w, h);
+		cairo_fill(cr);
+		cairo_destroy(cr);
+
+		ret = new gPicture(buf);
+	}
+#endif
 	
 	return ret;
 }

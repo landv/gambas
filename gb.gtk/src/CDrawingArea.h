@@ -41,6 +41,9 @@ typedef
 	struct 
 	{
 		CWIDGET ob;
+#ifdef GTK3
+		cairo_t *context;
+#endif
 		bool merge;
 	} 
 	CDRAWINGAREA;

@@ -66,7 +66,7 @@ public:
 	
 	static void geometry(GdkRectangle *rect) { geometry(0, rect); }
 	static void availableGeometry(GdkRectangle *rect) { availableGeometry(0, rect); }
-	
+
 private:
 
 	static int _desktop_scale;

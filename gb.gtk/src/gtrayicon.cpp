@@ -119,6 +119,7 @@ static gboolean tray_focus_Out(GtkWidget *widget,GdkEventFocus *event,gTrayIcon 
 
 static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon *data)
 {
+	GdkScrollDirection dir;
 	int dt = 0;
 	int ort = 0;
 	
@@ -127,14 +128,31 @@ static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon 
 
 	if (data->onMouseWheel)
 	{
-		switch (event->direction)
+		dir = event->direction;
+
+#ifdef GTK3
+		if (dir == GDK_SCROLL_SMOOTH)
+		{
+			gdouble dx = 0, dy = 0;
+			gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
+			if (fabs(dy) > fabs(dx))
+				dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
+			else
+				dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
+		}
+#endif
+
+		switch (dir)
 		{
 			case GDK_SCROLL_UP: dt=1; ort=1; break;
 			case GDK_SCROLL_DOWN: dt=-1; ort=1; break;
 			case GDK_SCROLL_LEFT: dt=-1; ort=0; break;
 			case GDK_SCROLL_RIGHT:  dt=1; ort=0; break;
+#ifdef GTK3
+			case GDK_SCROLL_SMOOTH: break;
+#endif
 		}
-		
+
 		gMouse::validate();
 		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, 0, event->state);
 		gMouse::setWheel(dt, ort);

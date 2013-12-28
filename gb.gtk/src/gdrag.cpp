@@ -37,6 +37,24 @@
 #include "gclipboard.h"
 #include "gdrag.h"
 
+#ifdef GTK3
+struct _GtkTargetList
+{
+  GList *list;
+  guint ref_count;
+};
+
+struct _GtkTargetPair
+{
+  GdkAtom   target;
+  guint     flags;
+  guint     info;
+};
+
+typedef
+	struct _GtkTargetPair GtkTargetPair;
+#endif
+
 static GtkClipboard *_clipboard = NULL;
 
 static char *convert_format(char *fmt)
@@ -47,6 +65,27 @@ static char *convert_format(char *fmt)
 		return (char *)"text/plain;charset=utf-8";
 	return fmt;
 }
+
+#if GTK_CHECK_VERSION(2, 14, 0)
+#else
+static gint gtk_selection_data_get_length(const GtkSelectionData *sel)
+{
+	return sel->length;
+}
+
+static const guchar *gtk_selection_data_get_data(const GtkSelectionData *sel)
+{
+	return sel->data;
+}
+#endif
+
+#if GTK_CHECK_VERSION(2, 22, 0)
+#else
+static GList *gdk_drag_context_list_targets(GdkDragContext *context)
+{
+	return context->targets;
+}
+#endif
 
 /***********************************************************************
 
@@ -201,10 +240,9 @@ char *gClipboard::getText(int *len, const char *format)
 		return NULL;
 	
 	data = gtk_clipboard_wait_for_contents(_clipboard, target);
-	
-	*len = data->length;
+	*len = gtk_selection_data_get_length(data);
 	text = (char *)g_malloc(*len);
-	memcpy(text, data->data, *len);
+	memcpy(text, gtk_selection_data_get_data(data), *len);
 	
 	gtk_selection_data_free(data);
 	
@@ -477,7 +515,7 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 	GdkWindow *window;
 	GdkColor color;
 	GdkWindow *parent;
-	GtkAllocation *a;
+	GtkAllocation a;
 	
 	if (w < 0) w = control->width() - control->getFrameWidth() * 2;
 	if (h < 0) h = control->height() - control->getFrameWidth() * 2;
@@ -493,14 +531,14 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 	// Don't know why I should do that...
 	if (control->_scroll)
 	{
-		parent = control->widget->window;
+		parent = gtk_widget_get_window(control->widget);
 	}
 	else
 	{
-		parent = control->border->window;
-		a = &control->border->allocation;
-		x += a->x;
-		y += a->y;
+		parent = gtk_widget_get_window(control->border);
+		gtk_widget_get_allocation(control->border, &a);
+		x += a.x;
+		y += a.y;
 	}
 	
 	
@@ -599,7 +637,7 @@ char *gDrag::getFormat(int n)
 	if (!_context)
 		return NULL;
 	
-	tg = g_list_first(_context->targets);
+	tg = g_list_first(gdk_drag_context_list_targets(_context));
 	
 	while (tg)
 	{
@@ -648,8 +686,8 @@ static void cb_drag_data_received(GtkWidget *widget, GdkDragContext *context, gi
 	if (gDrag::getType() == gDrag::Text)
 	{
 		//fprintf(stderr, "cb_drag_data_received: %d '%.*s'\n", sel->length, sel->length, (char *)sel->data);
-		if (sel->length != -1)
-			gDrag::setDropText((char*)sel->data, sel->length);
+		if (gtk_selection_data_get_length(sel) != -1)
+			gDrag::setDropText((char*)gtk_selection_data_get_data(sel), gtk_selection_data_get_length(sel));
 		else
 			gDrag::setDropText(NULL);
 	}
@@ -657,8 +695,8 @@ static void cb_drag_data_received(GtkWidget *widget, GdkDragContext *context, gi
 	if (gDrag::getType() == gDrag::Image)
 	{
 		//fprintf(stderr, "Image\n");
-		if (sel->length != -1)
-			gDrag::setDropImage((char*)sel->data, sel->length);
+		if (gtk_selection_data_get_length(sel) != -1)
+			gDrag::setDropImage((char*)gtk_selection_data_get_data(sel), gtk_selection_data_get_length(sel));
 		else
 			gDrag::setDropImage(NULL);
 	}
@@ -680,7 +718,7 @@ bool gDrag::getData(const char *prefix)
 	if (norec || _local) // local DnD
 		return false;
 	
-	tg = g_list_first(_context->targets);
+	tg = g_list_first(gdk_drag_context_list_targets(_context));
 	
 	while (tg)
 	{

@@ -49,7 +49,11 @@ public:
 	virtual void setRealBackground(gColor color);
 
 //"Events"
-	void (*onExpose)(gDrawingArea *sender,int x,int y,int w,int h);
+#ifdef GTK3
+	void (*onExpose)(gDrawingArea *sender, cairo_t *cr);
+#else
+	void (*onExpose)(gDrawingArea *sender, int x, int y, int w, int h);
+#endif
 
 //"Private"
 	void init();

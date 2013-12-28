@@ -31,6 +31,29 @@ gDrawingArea Widget
 
 *****************************************************************************************/
 
+#ifdef GTK3
+static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gDrawingArea *data)
+{
+	if (data->cached())
+	{
+		data->drawBorder(cr);
+	}
+	else
+	{
+		//data->drawBackground();
+
+		if (data->onExpose)
+		{
+			data->_in_draw_event = true;
+			data->onExpose(data, cr);
+			data->_in_draw_event = false;
+		}
+		data->drawBorder(cr);
+	}
+
+	return false;
+}
+#else
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 {
 	if (data->cached())
@@ -52,6 +75,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 
 	return false;
 }
+#endif
 
 static void cb_size(GtkWidget *wid, GtkAllocation *a, gDrawingArea *data)
 {
@@ -132,7 +156,7 @@ void gDrawingArea::create(void)
 	realize(false);
 	
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
-	g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_expose), (gpointer)this);
+	ON_DRAW(border, this, cb_expose, cb_draw);
 	
 	updateUseTablet();
 	
@@ -240,14 +264,18 @@ void gDrawingArea::resizeCache()
 {
 	int bw, bh;
 	int w, h;
+#ifdef GTK3
+	cairo_surface_t *buf;
+#else
 	GdkPixmap *buf;
+#endif
 	GdkWindow *win;
 	cairo_t *cr;
 	
 	if (!_cached)
 		return;
 	
-	win = GTK_WIDGET(box)->window;
+	win = gtk_widget_get_window(GTK_WIDGET(box));
 	if (!win)
 		return;
 	
@@ -255,15 +283,26 @@ void gDrawingArea::resizeCache()
 	h = height();
 	
 	if (buffer)
+	{
+#ifdef GTK3
+		bw = cairo_image_surface_get_width(buffer);
+		bh = cairo_image_surface_get_height(buffer);
+#else
 		gdk_drawable_get_size(buffer, &bw, &bh);
+#endif
+	}
 	else
 		bw = bh = 0;
 	
 	if (bw != w || bh != h)
-	{		
+	{
+#ifdef GTK3
+		buf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, w, h);
+		cr = cairo_create(buf);
+#else
 		buf = gdk_pixmap_new(win, w, h, -1);
-		
 		cr = gdk_cairo_create(buf);
+#endif
 		
 		if (w > bw || h > bh || !buffer)
 		{
@@ -277,10 +316,18 @@ void gDrawingArea::resizeCache()
 			if (bw > w) bw = w;
 			if (bh > h) bh = h;
 			//gdk_draw_drawable(buf, gc2, buffer, 0, 0, 0, 0, bw, bh);
+#ifdef GTK3
+			cairo_set_source_surface(cr, buffer, 0, 0);
+#else
 			gdk_cairo_set_source_pixmap(cr, buffer, 0, 0);
+#endif
 			cairo_rectangle(cr, 0, 0, bw, bh);
 			cairo_fill(cr);
+#ifdef GTK3
+			cairo_surface_destroy(buffer);
+#else
 			g_object_unref(buffer);
+#endif
 		}
 		
 		buffer = buf;
@@ -296,7 +343,10 @@ void gDrawingArea::setCache()
 	if (!_cached)
 		return;
 
-	gdk_window_set_back_pixmap(box->window, buffer, FALSE);
+#ifdef GTK3
+#else
+	gdk_window_set_back_pixmap(gtk_widget_get_window(box), buffer, FALSE);
+#endif
 	refreshCache();
 }
 
@@ -363,7 +413,9 @@ void gDrawingArea::updateUseTablet()
 {
 	if (_use_tablet)
 		gMouse::initDevices();
+#ifndef GTK3
 	gtk_widget_set_extension_events(border, _use_tablet ? GDK_EXTENSION_EVENTS_CURSOR : GDK_EXTENSION_EVENTS_NONE);
+#endif
 	//fprintf(stderr, "gtk_widget_set_extension_events: %s %p: %d\n", name(), border, _use_tablet);
 }
 

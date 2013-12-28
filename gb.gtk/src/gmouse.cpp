@@ -269,6 +269,7 @@ int gMouse::getType()
 
 void gMouse::initDevices()
 {
+#ifndef GTK3
 	static bool done = false;
 	
 	GList *devices;
@@ -295,6 +296,7 @@ void gMouse::initDevices()
 	}
 	
 	done = true;
+#endif
 }
 
 double gMouse::getPointerX()

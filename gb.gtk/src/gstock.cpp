@@ -622,7 +622,6 @@ static void gStock_parse(char *vl, const char **result)
 gPicture* gStock::get(char *vl)
 {
 	GtkIconSet *item;
-	GtkStyle *style;
 	gPicture *tmp=NULL,*tmp2=NULL;
 	gchar **buf;
 	int size = -1;
@@ -667,8 +666,13 @@ gPicture* gStock::get(char *vl)
 	gStock_parse(buf[1],&stock_icon);
 	if (stock_icon)
 	{
-    style = gt_get_style("GtkButton", GTK_TYPE_BUTTON);
-		item=gtk_style_lookup_icon_set(style,stock_icon);
+#ifdef GTK3
+    GtkStyleContext *style = gt_get_style(GTK_TYPE_BUTTON);
+		item = gtk_style_context_lookup_icon_set(style, stock_icon);
+#else
+    GtkStyle *style = gt_get_style(GTK_TYPE_BUTTON);
+		item = gtk_style_lookup_icon_set(style, stock_icon);
+#endif
 		
 		if (!item)
 		{ 
@@ -676,9 +680,13 @@ gPicture* gStock::get(char *vl)
 			return NULL;
 		}	
 		
+#ifdef GTK3
+		img = gtk_icon_set_render_icon_pixbuf(item, style, (GtkIconSize)r_type);
+#else
 		img = gtk_icon_set_render_icon(item,style,
                                    gtk_widget_get_default_direction(),
                                    GTK_STATE_NORMAL,(GtkIconSize)r_type,NULL,NULL);
+#endif
 		tmp = new gPicture(img);
 	}
 	else

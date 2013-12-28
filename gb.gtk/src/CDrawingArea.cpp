@@ -48,34 +48,62 @@ static void cleanup_drawing(intptr_t _object)
 	PAINT_end();
 }
 
-static void Darea_Expose(gDrawingArea *sender,int x,int y,int w,int h) 
+#ifdef GTK3
+static void cb_expose(gDrawingArea *sender, cairo_t *cr)
 {
 	CWIDGET *_object = GetObject(sender);
 	GB_RAISE_HANDLER handler;
-	
+	cairo_t *save;
+
 	if (GB.CanRaise(THIS, EVENT_draw))
 	{
 		handler.callback = cleanup_drawing;
 		handler.data = (intptr_t)THIS;
-			
+
 		GB.RaiseBegin(&handler);
-		
+
+		save = THIS->context;
+		THIS->context = cr;
 		PAINT_begin(THIS);
-		PAINT_clip(x, y, w, h);
-		
+
 		GB.Raise(THIS, EVENT_draw, 0);
-		
+
 		PAINT_end();
-		
+		THIS->context = save;
+
 		GB.RaiseEnd(&handler);
 	}
 }
+#else
+static void cb_expose(gDrawingArea *sender,int x,int y,int w,int h)
+{
+	CWIDGET *_object = GetObject(sender);
+	GB_RAISE_HANDLER handler;
+
+	if (GB.CanRaise(THIS, EVENT_draw))
+	{
+		handler.callback = cleanup_drawing;
+		handler.data = (intptr_t)THIS;
+
+		GB.RaiseBegin(&handler);
+
+		PAINT_begin(THIS);
+		PAINT_clip(x, y, w, h);
+
+		GB.Raise(THIS, EVENT_draw, 0);
+
+		PAINT_end();
+
+		GB.RaiseEnd(&handler);
+	}
+}
+#endif
 
 
 BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 	InitControl(new gDrawingArea(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
-	WIDGET->onExpose = Darea_Expose;
+	WIDGET->onExpose = cb_expose;
 
 END_METHOD
 

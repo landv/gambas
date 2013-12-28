@@ -103,84 +103,97 @@ gMainWindow* gDesktop::activeWindow()
 	return gMainWindow::_active ? gMainWindow::_active->topLevel() : NULL;
 }
 
+#ifdef GTK3
+static gColor get_color(GType type, gColor default_color, GtkStateFlags state, bool fg, bool text)
+{
+	GtkStyleContext *st = gt_get_style(type);
+	GdkRGBA rgba;
+
+	if (!st)
+		return default_color;
+
+		if (fg)
+			gtk_style_context_get_color(st, state, &rgba);
+		else
+			gtk_style_context_get_background_color(st, state, &rgba);
+
+	return gt_to_color(&rgba);
+}
+#else
+static gColor get_color(GType type, gColor default_color, GtkStateType state, bool fg, bool text)
+{
+	GtkStyle *st = gt_get_style(type);
+	GdkColor *color;
+
+	if (!st)
+		return default_color;
+
+	if (text)
+	{
+		if (fg)
+			color = &st->text[state];
+		else
+			color = &st->base[state];
+	}
+	else
+	{
+		if (fg)
+			color = &st->fg[state];
+		else
+			color = &st->bg[state];
+	}
+	return get_gdk_color(color);
+}
+#endif
+
 gColor gDesktop::buttonfgColor()
 {
-	GtkStyle *st = gt_get_style("GtkButton", GTK_TYPE_BUTTON);
-
-	if (!st) return 0;
-	return get_gdk_color(&st->fg[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_BUTTON, 0, STATE_NORMAL, true, false);
 }
 
 gColor gDesktop::buttonbgColor()
 {
-	GtkStyle *st = gt_get_style("GtkButton", GTK_TYPE_BUTTON);	
-
-	if (!st) return 0xC0C0C0;
-	return get_gdk_color(&st->bg[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_BUTTON, 0xC0C0C0, STATE_NORMAL, false, false);
 }
 
 gColor gDesktop::fgColor()
 {	
-	GtkStyle *st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
-
-	if (!st) return 0;
-	return get_gdk_color(&st->fg[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_WINDOW, 0, STATE_NORMAL, true, false);
 }
 
 gColor gDesktop::bgColor()
 {
-	GtkStyle *st = gt_get_style("GtkLayout", GTK_TYPE_LAYOUT);
-
-	if (!st) return 0xC0C0C0;
-	return get_gdk_color(&st->bg[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_WINDOW, 0xC0C0C0, STATE_NORMAL, false, false);
 }
 
 gColor gDesktop::textfgColor()
 {
-	GtkStyle *st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
-
-	if (!st) return 0;
-	return get_gdk_color(&st->text[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_ENTRY, 0, STATE_NORMAL, true, true);
 }
 
 gColor gDesktop::textbgColor()
 {
-	GtkStyle *st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
-
-	if (!st) return 0xFFFFFF;
-	return get_gdk_color(&st->base[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_ENTRY, 0xFFFFFF, STATE_NORMAL, false, true);
 }
 
 gColor gDesktop::selfgColor()
 {
-	GtkStyle *st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
-
-	if (!st) return 0XFFFFFF;
-	return get_gdk_color(&st->text[GTK_STATE_SELECTED]);
+	return get_color(GTK_TYPE_ENTRY, 0xFFFFFF, STATE_SELECTED, true, true);
 }
 
 gColor gDesktop::selbgColor()
 {
-	GtkStyle *st = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
-
-	if (!st) return 0x0000FF;
-	return get_gdk_color(&st->base[GTK_STATE_SELECTED]);
+	return get_color(GTK_TYPE_ENTRY, 0x0000FF, STATE_SELECTED, false, true);
 }
 
 gColor gDesktop::tooltipForeground()
 {
-	GtkStyle *st = gt_get_widget_style("gtk-tooltip");
-
-	if (!st) return fgColor();
-	return get_gdk_color(&st->fg[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_TOOLTIP, 0, STATE_NORMAL, true, false);
 }
 
 gColor gDesktop::tooltipBackground()
 {
-	GtkStyle *st = gt_get_widget_style("gtk-tooltip");
-
-	if (!st) return bgColor();
-	return get_gdk_color(&st->bg[GTK_STATE_NORMAL]);
+	return get_color(GTK_TYPE_TOOLTIP, 0xC0C0C0, STATE_NORMAL, false, false);
 }
 
 gColor gDesktop::lightbgColor()
@@ -207,11 +220,10 @@ int gDesktop::width()
 
 int gDesktop::resolution()
 {
-	/*int d_pix=gdk_screen_get_height(gdk_screen_get_default());
-	int d_mm=gdk_screen_get_height_mm(gdk_screen_get_default());
-	
-	return (int)(d_pix*25.4)/d_mm;*/
-	return gdk_screen_get_resolution(gdk_screen_get_default());
+	gdouble res = gdk_screen_get_resolution(gdk_screen_get_default());
+	if (res == -1)
+		res = 96;
+	return res;
 }
 
 int gDesktop::scale()

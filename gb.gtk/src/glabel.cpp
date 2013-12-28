@@ -32,6 +32,9 @@ static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 	int vw, vh, lw, lh;
 	int fw = Max(d->getFramePadding(), d->getFrameWidth());
 
+	//d->drawBackground(cr);
+	d->drawBorder(cr);
+
 	if (style)
 		gdk_cairo_set_source_color(cr, &style->fg[GTK_STATE_NORMAL]);
 
@@ -80,9 +83,6 @@ static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 
 	cairo_move_to(cr, vw, vh);
 	pango_cairo_show_layout(cr, d->layout);
-	//gdk_draw_layout(draw->window, gc, vw, vh, d->layout);
-
-	d->drawBorder(cr);
 
 	return false;
 }
@@ -146,7 +146,6 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 
 	cairo_move_to(cr, vw, vh);
 	pango_cairo_show_layout(cr, d->layout);
-	//gdk_draw_layout(draw->window, gc, vw, vh, d->layout);
 	cairo_destroy(cr);
 
 	d->drawBorder(e);
@@ -169,11 +168,11 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	
 	border = widget = gtk_fixed_new();
 	layout = gtk_widget_create_pango_layout(border, "");
-	
+
 	realize(false);
 
 	ON_DRAW(widget, this, cb_expose, cb_draw);
-	
+
 	setAlignment(ALIGN_NORMAL);
 	updateLayout();
 }

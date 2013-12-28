@@ -1217,48 +1217,7 @@ gColor gControl::getFrameColor()
 #ifdef GTK3
 void gControl::drawBorder(cairo_t *cr)
 {
-	GtkShadowType shadow;
-	gint x, y, w, h;
-	GtkWidget *wid;
-	GtkAllocation a;
-
-	if (getFrameBorder() == BORDER_NONE)
-		return;
-
-	x = 0;
-	y = 0;
-	w = width();
-	h = height();
-
-	if (frame)
-		wid = frame;
-	else
-		wid = widget;
-
-	gtk_widget_get_allocation(wid, &a);
-	x = a.x;
-	y = a.y;
-
-	if (w < 1 || h < 1)
-		return;
-
-	switch (getFrameBorder())
-	{
-		case BORDER_PLAIN:
-
-			gt_cairo_draw_rect(cr, x, y, w, h, getFrameColor());
-			return;
-
-		case BORDER_SUNKEN: shadow = GTK_SHADOW_IN; break;
-		case BORDER_RAISED: shadow = GTK_SHADOW_OUT; break;
-		case BORDER_ETCHED: shadow = GTK_SHADOW_ETCHED_IN; break;
-
-		default:
-			return;
-	}
-
-	GtkStyle *st = gtk_widget_get_style(widget);
-	gtk_paint_shadow(st, cr, GTK_STATE_NORMAL, shadow, wid, NULL, x, y, w, h);
+	gt_draw_border(cr, gtk_widget_get_style_context(widget), GTK_STATE_FLAG_NORMAL, getFrameBorder(), getFrameColor(), 0, 0, width(), height());
 }
 #else
 void gControl::drawBorder(GdkEventExpose *e)
@@ -1336,13 +1295,13 @@ static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *con
 #ifdef GTK3
 static gboolean cb_background_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
 {
-	control->drawBackground(wid, cr);
+	control->drawBackground(cr);
 	return false;
 }
 #else
 static gboolean cb_background_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
 {
-	control->drawBackground(wid, e);
+	control->drawBackground(e);
 	return false;
 }
 #endif
@@ -1490,12 +1449,14 @@ void gControl::realize(bool make_frame)
 	connectParent();
 	initSignals();
 
-	if (frame)
-		ON_DRAW(frame, this, cb_frame_expose, cb_frame_draw);
-
+//#ifndef GTK3
 	if (!_no_background && !gtk_widget_get_has_window(border))
 		//g_signal_connect(G_OBJECT(border), "expose-event", G_CALLBACK(cb_draw_background), (gpointer)this);
-		ON_DRAW(border, this, cb_background_expose, cb_background_draw);
+		ON_DRAW_BEFORE(border, this, cb_background_expose, cb_background_draw);
+
+	if (frame)
+		ON_DRAW(frame, this, cb_frame_expose, cb_frame_draw);
+//#endif
 
 	/*else if (!isTopLevel())
 	{
@@ -2133,28 +2094,26 @@ bool gControl::isAncestorOf(gControl *child)
 }
 
 #ifdef GTK3
-void gControl::drawBackground(GtkWidget *widget, cairo_t *cr)
+void gControl::drawBackground(cairo_t *cr)
 {
-	GtkAllocation a;
-
 	if (background() == COLOR_DEFAULT)
 		return;
 
-	gt_cairo_set_source_color(cr, background());
+	//fprintf(stderr, "gControl::drawBackground\n");
 
-	gtk_widget_get_allocation(border, &a);
-	cairo_rectangle(cr, a.x, a.y, width(), height());
+	gt_cairo_set_source_color(cr, background());
+	cairo_rectangle(cr, 0, 0, width(), height());
 	cairo_fill(cr);
 }
 #else
-void gControl::drawBackground(GtkWidget *widget, GdkEventExpose *e)
+void gControl::drawBackground(GdkEventExpose *e)
 {
 	GtkAllocation a;
 
 	if (background() == COLOR_DEFAULT)
 		return;
 
-	cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
+	cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(border));
 
 	gdk_cairo_region(cr, e->region);
 	cairo_clip(cr);

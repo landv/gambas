@@ -74,95 +74,6 @@ static cairo_surface_t *check_image(void *img)
 	return (cairo_surface_t *)IMAGE.Check((GB_IMG *)img, &_image_owner);
 }
 
-// Function partially taken from the GTK+ source code.
-
-static cairo_surface_t *gdk_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
-{
-	gint width = gdk_pixbuf_get_width (pixbuf);
-	gint height = gdk_pixbuf_get_height (pixbuf);
-	guchar *gdk_pixels = gdk_pixbuf_get_pixels (pixbuf);
-	int gdk_rowstride = gdk_pixbuf_get_rowstride (pixbuf);
-	int n_channels = gdk_pixbuf_get_n_channels (pixbuf);
-	int cairo_stride;
-	guchar *cairo_pixels;
-	cairo_format_t format;
-	cairo_surface_t *surface;
-	static const cairo_user_data_key_t key = { 0 };
-	int j;
-
-	if (n_channels == 3)
-		format = CAIRO_FORMAT_RGB24;
-	else
-		format = CAIRO_FORMAT_ARGB32;
-
-	cairo_stride = cairo_format_stride_for_width (format, width);
-	cairo_pixels = (uchar *)g_malloc (height * cairo_stride);
-	surface = cairo_image_surface_create_for_data ((unsigned char *)cairo_pixels,
-																								format,
-																								width, height, cairo_stride);
-
-	cairo_surface_set_user_data (surface, &key,
-						cairo_pixels, (cairo_destroy_func_t)g_free);
-
-	for (j = height; j; j--)
-	{
-		guchar *p = gdk_pixels;
-		guchar *q = cairo_pixels;
-
-		if (n_channels == 3)
-		{
-			guchar *end = p + 3 * width;
-			
-			while (p < end)
-				{
-					#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-					q[0] = p[2];
-					q[1] = p[1];
-					q[2] = p[0];
-					#else
-					q[1] = p[0];
-					q[2] = p[1];
-					q[3] = p[2];
-					#endif
-					p += 3;
-					q += 4;
-				}
-		}
-		else
-		{
-			guchar *end = p + 4 * width;
-			guint t1,t2,t3;
-				
-			#define MULT(d,c,a,t) G_STMT_START { t = c * a + 0x7f; d = ((t >> 8) + t) >> 8; } G_STMT_END
-
-			while (p < end)
-				{
-					#if G_BYTE_ORDER == G_LITTLE_ENDIAN
-					MULT(q[0], p[2], p[3], t1);
-					MULT(q[1], p[1], p[3], t2);
-					MULT(q[2], p[0], p[3], t3);
-					q[3] = p[3];
-					#else	  
-					q[0] = p[3];
-					MULT(q[1], p[0], p[3], t1);
-					MULT(q[2], p[1], p[3], t2);
-					MULT(q[3], p[2], p[3], t3);
-					#endif
-					
-					p += 4;
-					q += 4;
-				}
-			
-			#undef MULT
-		}
-
-		gdk_pixels += gdk_rowstride;
-		cairo_pixels += cairo_stride;
-	}
-
-	return surface;
-}
-
 static GB_COLOR get_color(GB_PAINT *d, GB_COLOR col)
 {
 	if (col == GB_COLOR_DEFAULT)
@@ -292,21 +203,26 @@ static int Begin(GB_PAINT *d)
 	if (GB.Is(device, CLASS_Picture))
 	{
 		gPicture *picture = ((CPICTURE *)device)->picture;
-		GdkDrawable *pixmap;
-		
+
 		if (picture->isVoid())
 		{
 			GB.Error("Bad picture");
 			return TRUE;
 		}
-		
-		pixmap = (GdkDrawable *)picture->getPixmap();
+
 		w = picture->width();
 		h = picture->height();
+
+#ifdef GTK3
+		cairo_surface_t *target = picture->getSurface();
+		cairo_surface_reference(target);
+#else
+		GdkDrawable *pixmap = (GdkDrawable *)picture->getPixmap();
 		
 		target = 
 			cairo_xlib_surface_create(gdk_x11_drawable_get_xdisplay(pixmap), gdk_x11_drawable_get_xid(pixmap), 
 				gdk_x11_visual_get_xvisual(gdk_drawable_get_visual(pixmap)), w, h);
+#endif
 	}
 	else if (GB.Is(device, CLASS_Image))
 	{
@@ -323,12 +239,33 @@ static int Begin(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
-		GdkDrawable *dr;
-		GtkAllocation *a;
 		double dx = 0, dy = 0;
 		
 		w = wid->width();
 		h = wid->height();
+
+#ifdef GTK3
+		if (wid->cached())
+		{
+			EXTRA(d)->context = cairo_create(wid->buffer);
+		}
+		else
+		{
+			if (!wid->inDrawEvent())
+			{
+				GB.Error("Cannot paint outside of Draw event handler");
+				return TRUE;
+			}
+			
+			EXTRA(d)->context = ((CDRAWINGAREA *)device)->context;
+			cairo_reference(CONTEXT(d));
+		}
+
+		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
+		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
+
+#else
+		GdkDrawable *dr;
 
 		if (wid->cached())
 		{
@@ -343,30 +280,22 @@ static int Begin(GB_PAINT *d)
 				return TRUE;
 			}
 			
-			a = &wid->widget->allocation;
+			GtkAllocation *a = &wid->widget->allocation;
 			dx = a->x;
 			dy = a->y;
-			dr = wid->widget->window;
+			dr = gtk_widget_get_window(wid->widget);
 		}
 
 		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
 		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
 		
 		EXTRA(d)->context = gdk_cairo_create(dr);
+#endif
+
 		EXTRA(d)->dx = dx;
 		EXTRA(d)->dy = dy;
-		
+
 		cairo_translate(CONTEXT(d), dx, dy);
-		//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &EXTRA(d)->dx, &EXTRA(d)->dy);
-		//fprintf(stderr, "Begin: device offset = %g %g ", EXTRA(d)->dx, EXTRA(d)->dy);
-		
-		//dx += EXTRA(d)->dx;
-		//dy += EXTRA(d)->dy;
-		//cairo_surface_set_device_offset(cairo_get_target(CONTEXT(d)), dx, dy);
-		//cairo_surface_get_device_offset(cairo_get_target(CONTEXT(d)), &dx, &dy);
-		//fprintf(stderr, "-> device offset = %g %g\n", dx, dy);
-		//EXTRA(d)->font = CFONT_create(wid->font());
-		//GB.Ref(EXTRA(d)->font);
 	}
 	else if (GB.Is(device, CLASS_Printer))
 	{
@@ -1146,7 +1075,7 @@ static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
 
-	surface = gdk_cairo_create_surface_from_pixbuf(picture->getPixbuf());
+	surface = gt_cairo_create_surface_from_pixbuf(picture->getPixbuf());
 	
 	pattern = cairo_pattern_create_for_surface(surface);
 	cairo_surface_destroy(surface);
@@ -1352,6 +1281,55 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_pattern_destroy(pattern);
 }
 
+#ifdef GTK3
+static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
+{
+	cairo_t *cr = CONTEXT(d);
+	gPicture *pic = ((CPICTURE *)picture)->picture;
+	cairo_surface_t *surface;
+	cairo_pattern_t *pattern = NULL;
+	cairo_pattern_t *save;
+	cairo_matrix_t matrix;
+
+	cairo_save(cr);
+
+	save = cairo_get_source(cr);
+	cairo_pattern_reference(save);
+
+	surface = pic->getSurface();
+
+	pattern = cairo_pattern_create_for_surface(surface);
+
+	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
+
+	if (source && w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
+		cairo_pattern_set_filter(pattern, CAIRO_FILTER_NEAREST);
+
+	cairo_matrix_init_identity(&matrix);
+	cairo_matrix_translate(&matrix, x, y);
+	if (source)
+	{
+		cairo_matrix_scale(&matrix, w / source->w, h / source->h);
+		cairo_matrix_translate(&matrix, -source->x, -source->y);
+	}
+	else if (w > 0 && h > 0)
+		cairo_matrix_scale(&matrix, w / cairo_image_surface_get_width(surface), h / cairo_image_surface_get_height(surface));
+
+	cairo_matrix_invert(&matrix);
+	cairo_pattern_set_matrix(pattern, &matrix);
+	cairo_set_source(cr, pattern);
+
+	cairo_rectangle(cr, x, y, w, h);
+	cairo_fill(cr);
+
+	cairo_set_source(cr, save);
+	cairo_pattern_destroy(save);
+
+	cairo_restore(cr);
+
+	cairo_pattern_destroy(pattern);
+}
+#else
 static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
 {
 	cairo_pattern_t *pattern, *save;
@@ -1392,9 +1370,10 @@ static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float
 	
 	cairo_set_source(CONTEXT(d), save);
 	cairo_pattern_destroy(save);
-	
+
 	cairo_restore(CONTEXT(d));
 }
+#endif
 
 static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
 {

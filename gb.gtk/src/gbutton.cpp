@@ -93,7 +93,9 @@ static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
 
 	rtl = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
 
-	gtk_widget_get_allocation(wid, &rect);
+	rect.x = rect.y = 0;
+	rect.width = data->width();
+	rect.height = data->height();
 
 	px = rect.width;
 
@@ -818,10 +820,14 @@ void gButton::updateSize()
 	
 		if (type == Check || type == Radio)
 		{
+#ifdef GTK3
+			gtk_widget_get_preferred_size(border, NULL, &req);
+#else
 			g_signal_emit_by_name(border, "size-request",	&req);
-			m += req.width;
-			if (req.height > m)
-				m = req.height;
+#endif
+		m += req.width;
+		if (req.height > m)
+			m = req.height;
 		}
 		
 		mw += m;

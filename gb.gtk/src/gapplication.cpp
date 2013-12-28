@@ -319,7 +319,7 @@ static void gambas_handle_event(GdkEvent *event)
 		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
 		if (control)
 			break;
-		widget = widget->parent;
+		widget = gtk_widget_get_parent(widget);
 	}
 	
 	/*if (event->type == GDK_BUTTON_PRESS)
@@ -811,7 +811,7 @@ void gApplication::grabPopup()
 	//gtk_grab_add(_popup_grab);
 	//return;
 	
-	GdkWindow *win = _popup_grab->window;
+	GdkWindow *win = gtk_widget_get_window(_popup_grab);
 		
   int ret = gdk_pointer_grab(win, TRUE,
 			 (GdkEventMask)(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
@@ -1092,7 +1092,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	//oldGroup = enterGroup();
 	
 	gtk_window_set_modal(window, true);
-	gdk_window_set_override_redirect(owner->border->window, true);
+	gdk_window_set_override_redirect(gtk_widget_get_window(owner->border), true);
 	owner->show();
 	
 	old_popup_grab = _popup_grab;
@@ -1117,7 +1117,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	
 	_loop_owner = old_owner;
 
-	gdk_window_set_override_redirect(owner->border->window, false);
+	gdk_window_set_override_redirect(gtk_widget_get_window(owner->border), false);
 	gtk_window_set_modal(window, false);
 	//exitGroup(oldGroup);
 	
@@ -1242,7 +1242,7 @@ int gApplication::getScrollbarSize()
 			return 1;
 	}
 	
-  gtk_style_get(gt_get_style("GtkScrollbar", GTK_TYPE_SCROLLBAR), GTK_TYPE_SCROLLBAR,
+  gtk_style_get(gt_get_old_style(GTK_TYPE_SCROLLBAR), GTK_TYPE_SCROLLBAR,
 		"slider-width", &slider_width,
 		"trough-border", &trough_border,
 		/*"focus-line-width", &focus_line_width,
@@ -1256,7 +1256,7 @@ int gApplication::getScrollbarSpacing()
 {
 	gint v;
 	
-	gtk_style_get(gt_get_style("GtkScrolledWindow", GTK_TYPE_SCROLLED_WINDOW), GTK_TYPE_SCROLLED_WINDOW, 
+	gtk_style_get(gt_get_old_style(GTK_TYPE_SCROLLED_WINDOW), GTK_TYPE_SCROLLED_WINDOW,
 		"scrollbar-spacing", &v, 
 		(char *)NULL);
 	
@@ -1286,7 +1286,7 @@ void gApplication::getBoxFrame(int *w, int *h)
 	gboolean interior_focus;
 	int inner;
 
-	style = gt_get_style("GtkEntry", GTK_TYPE_ENTRY);
+	style = gt_get_old_style(GTK_TYPE_ENTRY);
 	
 	gtk_style_get(style, GTK_TYPE_ENTRY,
 		"focus-line-width", &focus_width,

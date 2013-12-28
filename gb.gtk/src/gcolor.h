@@ -29,30 +29,4 @@
 typedef
 	uint gColor;
 
-/* Functions implemented in gtools.cpp */
-
-gColor get_gdk_color(GdkColor *gcol);
-#ifdef GTK3
-void fill_gdk_color(GdkColor *gcol, gColor color);
-#else
-void fill_gdk_color(GdkColor *gcol, gColor color, GdkColormap *cmap = NULL);
-#endif
-gColor get_gdk_text_color(GtkWidget *wid, bool enabled);
-void set_gdk_text_color(GtkWidget *wid,gColor color);
-gColor get_gdk_base_color(GtkWidget *wid, bool enabled);
-void set_gdk_base_color(GtkWidget *wid,gColor color);
-gColor get_gdk_fg_color(GtkWidget *wid, bool enabled);
-void set_gdk_fg_color(GtkWidget *wid,gColor color);
-gColor get_gdk_bg_color(GtkWidget *wid, bool enabled);
-void set_gdk_bg_color(GtkWidget *wid,gColor color);
-
-void gt_color_to_rgb(gColor color, int *r, int *g, int *b);
-gColor gt_rgb_to_color(int r, int g, int b);
-void gt_color_to_rgba(gColor color, int *r, int *g, int *b, int *a);
-gColor gt_rgba_to_color(int r, int g, int b, int a);
-void gt_rgb_to_hsv(int r, int g, int b, int *h, int *s, int *v);
-void gt_hsv_to_rgb(int h, int s, int v, int *r, int *g, int *b);
-void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a);
-gColor gt_frgba_to_color(double r, double g, double b, double a);
-
 #endif

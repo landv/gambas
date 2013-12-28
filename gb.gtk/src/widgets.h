@@ -32,10 +32,14 @@
 #endif
 #endif
 #include <gtk/gtk.h>
-#ifdef GDK_WINDOWING_X11
+
 #ifdef GTK3
+
+#ifdef GDK_WINDOWING_X11
 #include <gtk/gtkx.h>
 #endif
+#include <gdk/gdkkeysyms-compat.h>
+
 #endif
 
 #include <stdio.h>
@@ -120,5 +124,30 @@ typedef
 	#define ON_DRAW_BEFORE(_widget, _this, _gtk, _gtk3) g_signal_connect(G_OBJECT(_widget), "expose-event", G_CALLBACK(_gtk), (gpointer)_this)
 	#define ON_DRAW(_widget, _this, _gtk, _gtk3) g_signal_connect_after(G_OBJECT(_widget), "expose-event", G_CALLBACK(_gtk), (gpointer)_this)
 #endif
+
+#ifdef GTK3
+
+#define STATE_T GtkStateFlags
+#define STYLE_T GtkStyleContext
+
+#define STATE_NORMAL GTK_STATE_FLAG_NORMAL
+#define STATE_ACTIVE GTK_STATE_FLAG_ACTIVE
+#define STATE_INSENSITIVE GTK_STATE_FLAG_INSENSITIVE
+#define STATE_PRELIGHT GTK_STATE_FLAG_PRELIGHT
+#define STATE_SELECTED GTK_STATE_FLAG_SELECTED
+
+#else
+
+#define STATE_T GtkStateType
+#define STYLE_T GtkStyle
+
+#define STATE_NORMAL GTK_STATE_NORMAL
+#define STATE_ACTIVE GTK_STATE_ACTIVE
+#define STATE_INSENSITIVE GTK_STATE_INSENSITIVE
+#define STATE_PRELIGHT GTK_STATE_PRELIGHT
+#define STATE_SELECTED GTK_STATE_SELECTED
+
+#endif
+
 
 #endif

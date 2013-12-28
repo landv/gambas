@@ -31,18 +31,6 @@
 
 void stub(const char *function);
 
-// bool drag_IsEnabled();
-// int drag_Action();
-// int drag_Type();
-// char* drag_Format();
-// char* drag_Text();
-// gPicture* drag_Image();
-// int drag_X();
-// int drag_Y();
-// gControl* drag_Widget();
-// void drag_setIcon(gPicture *pic);
-// gPicture* drag_Icon();
-
 void gt_exit();
 
 void g_stradd(gchar **res, const gchar *s);
@@ -63,11 +51,6 @@ char* gt_html_to_pango_string(const char *html, int len_html, bool newline);
 
 int gt_to_alignment(double halign, double valign = 0.5);
 double gt_from_alignment(int align, bool vertical = false);
-
-// Gets a style associated with a specified class, or else the default style
-
-GtkStyle *gt_get_style(const char *name, int type);
-GtkStyle *gt_get_widget_style(const char *name);
 
 // Global signal handlers
 
@@ -155,9 +138,63 @@ GtkWidget *gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
 
 // Cairo support
 
+#if GTK_CHECK_VERSION(3, 10, 0)
+#define gt_cairo_create_surface_from_pixbuf gdk_cairo_create_surface_from_pixbuf
+#else
 cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf);
+#endif
+
 void gt_cairo_set_source_color(cairo_t *cr, GB_COLOR color);
 void gt_cairo_draw_rect(cairo_t *cr, int x, int y, int w, int h, GB_COLOR color);
 void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source);
+
+// Color functions
+
+gColor get_gdk_color(GdkColor *gcol);
+#ifdef GTK3
+void fill_gdk_color(GdkColor *gcol, gColor color);
+#else
+void fill_gdk_color(GdkColor *gcol, gColor color, GdkColormap *cmap = NULL);
+#endif
+gColor get_gdk_text_color(GtkWidget *wid, bool enabled);
+void set_gdk_text_color(GtkWidget *wid,gColor color);
+gColor get_gdk_base_color(GtkWidget *wid, bool enabled);
+void set_gdk_base_color(GtkWidget *wid,gColor color);
+gColor get_gdk_fg_color(GtkWidget *wid, bool enabled);
+void set_gdk_fg_color(GtkWidget *wid,gColor color);
+gColor get_gdk_bg_color(GtkWidget *wid, bool enabled);
+void set_gdk_bg_color(GtkWidget *wid,gColor color);
+
+void gt_color_to_rgb(gColor color, int *r, int *g, int *b);
+gColor gt_rgb_to_color(int r, int g, int b);
+void gt_color_to_rgba(gColor color, int *r, int *g, int *b, int *a);
+gColor gt_rgba_to_color(int r, int g, int b, int a);
+void gt_rgb_to_hsv(int r, int g, int b, int *h, int *s, int *v);
+void gt_hsv_to_rgb(int h, int s, int v, int *r, int *g, int *b);
+void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a);
+gColor gt_frgba_to_color(double r, double g, double b, double a);
+
+#ifdef GTK3
+void gt_from_color(gColor color, GdkRGBA *rgba);
+gColor gt_to_color(GdkRGBA *rgba);
+#endif
+
+// Draw a control border
+
+#ifdef GTK3
+void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h);
+#endif
+
+// Style management
+
+#ifdef GTK3
+GtkStyleContext *gt_get_style(GType type);
+GtkStyle *gt_get_old_style(GType type);
+#else
+GtkStyle *gt_get_style(GType type);
+#define gt_get_old_style gt_get_style
+#endif
+
+
 
 #endif

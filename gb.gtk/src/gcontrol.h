@@ -256,10 +256,10 @@ public:
 	virtual gColor getFrameColor();
 #ifdef GTK3
 	void drawBorder(cairo_t *cr);
-	void drawBackground(GtkWidget *wid, cairo_t *cr);
+	void drawBackground(cairo_t *cr);
 #else
 	void drawBorder(GdkEventExpose *e);
-	void drawBackground(GtkWidget *wid, GdkEventExpose *e);
+	void drawBackground(GdkEventExpose *e);
 #endif
 	
 	virtual int minimumHeight();
