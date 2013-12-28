@@ -228,7 +228,7 @@ void gMainWindow::initWindow()
 		g_signal_connect_after(G_OBJECT(border), "map", G_CALLBACK(cb_show), (gpointer)this);
 		g_signal_connect(G_OBJECT(border),"unmap",G_CALLBACK(cb_hide),(gpointer)this);
 		//g_signal_connect_after(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_configure), (gpointer)this);
-		ON_DRAW(widget, this,cb_expose, cb_draw);
+		ON_DRAW_BEFORE(widget, this, cb_expose, cb_draw);
 		gtk_widget_add_events(border, GDK_STRUCTURE_MASK);
 	}
 	else
@@ -241,7 +241,7 @@ void gMainWindow::initWindow()
 		g_signal_connect(G_OBJECT(border), "window-state-event",G_CALLBACK(win_frame),(gpointer)this);
 		
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
-		ON_DRAW(widget, this,cb_expose, cb_draw);
+		ON_DRAW_BEFORE(widget, this, cb_expose, cb_draw);
 	}
 	
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
@@ -249,7 +249,7 @@ void gMainWindow::initWindow()
 	have_cursor = true; //parent() == 0 && !_xembed;
 }
 
-#ifdef GTK3
+#if 0 //def GTK3
 
 static void (*old_fixed_get_preferred_width)(GtkWidget *, gint *, gint *);
 static void (*old_fixed_get_preferred_height)(GtkWidget *, gint *, gint *);
@@ -266,22 +266,6 @@ static void gtk_fixed_get_preferred_height(GtkWidget *widget, gint *minimum_size
 	*minimum_size = 0;
 }
 
-static void (*old_window_get_preferred_width)(GtkWidget *, gint *, gint *);
-static void (*old_window_get_preferred_height)(GtkWidget *, gint *, gint *);
-
-static void gtk_window_get_preferred_width(GtkWidget *widget, gint *minimum_size, gint *natural_size)
-{
-	(*old_window_get_preferred_width)(widget, minimum_size, natural_size);
-	if (g_object_get_data(G_OBJECT(widget), "gambas-control"))
-		*minimum_size = 0;
-}
-
-static void gtk_window_get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size)
-{
-	(*old_window_get_preferred_height)(widget, minimum_size, natural_size);
-	if (g_object_get_data(G_OBJECT(widget), "gambas-control"))
-		*minimum_size = 0;
-}
 #endif
 
 gMainWindow::gMainWindow(int plug) : gContainer(NULL)
@@ -300,7 +284,7 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	
 	widget = gtk_fixed_new(); //gtk_layout_new(0,0);
 
-#ifdef GTK3
+#if 0 //def GTK3
 	static bool patch = FALSE;
 
 	if (!patch)
@@ -312,11 +296,11 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 		klass->get_preferred_width = gtk_fixed_get_preferred_width;
 		old_fixed_get_preferred_height = klass->get_preferred_height;
 		klass->get_preferred_height = gtk_fixed_get_preferred_height;
-		klass = (GtkWidgetClass *)GTK_FIXED_GET_CLASS(border);
+		/*klass = (GtkWidgetClass *)GTK_FIXED_GET_CLASS(border);
 		old_window_get_preferred_width = klass->get_preferred_width;
 		klass->get_preferred_width = gtk_window_get_preferred_width;
 		old_window_get_preferred_height = klass->get_preferred_height;
-		klass->get_preferred_height = gtk_window_get_preferred_height;
+		klass->get_preferred_height = gtk_window_get_preferred_height;*/
 
 		patch = true;
 	}
@@ -980,7 +964,8 @@ void gMainWindow::drawMask()
 		mask = NULL;
 
 	gdk_window_shape_combine_region(gtk_widget_get_window(border), mask, 0, 0);
-	cairo_region_destroy(mask);
+	if (mask)
+		cairo_region_destroy(mask);
 
 #else
 
@@ -1007,6 +992,7 @@ void gMainWindow::drawMask()
 	}
 	else
 	{
+		gtk_widget_set_app_paintable(border, FALSE);
 		setRealBackground(background());
 	}
 	

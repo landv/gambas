@@ -1991,7 +1991,7 @@ static int type_to_index(GType type)
 		return 6;
 	else if (type == GTK_TYPE_RADIO_BUTTON)
 		return 7;
-	else if (type == GTK_TYPE_WINDOW)
+	else if (type == GTK_TYPE_LABEL || type == GTK_TYPE_LAYOUT)
 		return 8;
 	else
 		return -1;
@@ -2040,23 +2040,6 @@ GtkStyleContext *gt_get_style(GType type)
 }
 
 #endif
-
-/*static const char *type_to_name(GType type)
-{
-	return g_type_name
-	if (type == GTK_TYPE_BUTTON)
-	{
-		case GTK_TYPE_BUTTON: return "GtkButton";
-		case GTK_TYPE_ENTRY: return "GtkEntry";
-		case GTK_TYPE_LAYOUT: return "GtkLayout";
-		case GTK_TYPE_TOOLTIP: return "GtkTooltip";
-		case GTK_TYPE_SCROLLBAR: return "GtkScrollbar";
-		case GTK_TYPE_SCROLLED_WINDOW: return "GtkScrolledWindow";
-		case GTK_TYPE_CHECK_BUTTON: return "GtkCheckButton";
-		case GTK_TYPE_RADIO_BUTTON: return "GtkRadioButton";
-		default: return -1;
-	}
-}*/
 
 static GtkStyle *get_style(const char *name, int type)
 {

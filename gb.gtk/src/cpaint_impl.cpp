@@ -214,7 +214,7 @@ static int Begin(GB_PAINT *d)
 		h = picture->height();
 
 #ifdef GTK3
-		cairo_surface_t *target = picture->getSurface();
+		target = picture->getSurface();
 		cairo_surface_reference(target);
 #else
 		GdkDrawable *pixmap = (GdkDrawable *)picture->getPixmap();

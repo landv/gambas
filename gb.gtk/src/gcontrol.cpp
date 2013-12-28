@@ -1412,6 +1412,58 @@ static gboolean cb_clip_by_parent(GtkWidget *wid, GdkEventExpose *e, gControl *d
 }
 #endif
 
+#ifdef GTK3
+
+//fprintf(stderr, "get_preferred_width [%p %s] %p\n", klass, G_OBJECT_TYPE_NAME(widget), klass->_gtk_reserved2);
+//fprintf(stderr, "get_preferred_height [%p %s] %p\n", klass, G_OBJECT_TYPE_NAME(widget), klass->_gtk_reserved3);
+
+#define PATCH_DECLARE(type) \
+static void type##_get_preferred_width(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(type); \
+	\
+	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved2)(widget, minimum_size, natural_size); \
+	if (g_object_get_data(G_OBJECT(widget), "gambas-control")) \
+		*minimum_size = 0; \
+} \
+static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	\
+	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved3)(widget, minimum_size, natural_size); \
+	if (g_object_get_data(G_OBJECT(widget), "gambas-control")) \
+		*minimum_size = 0; \
+}
+
+//fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(border), klass->get_preferred_width, klass->get_preferred_height);
+
+#define PATCH_CLASS(widget, type) \
+if (G_OBJECT_TYPE(widget) == type) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
+	if (klass->get_preferred_width != type##_get_preferred_width) \
+	{ \
+		klass->_gtk_reserved2 = (void (*)())klass->get_preferred_width; \
+		klass->get_preferred_width = type##_get_preferred_width; \
+		klass->_gtk_reserved3 = (void (*)())klass->get_preferred_height; \
+		klass->get_preferred_height = type##_get_preferred_height; \
+	} \
+}
+
+PATCH_DECLARE(GTK_TYPE_WINDOW)
+PATCH_DECLARE(GTK_TYPE_ENTRY)
+PATCH_DECLARE(GTK_TYPE_SPIN_BUTTON)
+PATCH_DECLARE(GTK_TYPE_BUTTON)
+PATCH_DECLARE(GTK_TYPE_FIXED)
+PATCH_DECLARE(GTK_TYPE_EVENT_BOX)
+PATCH_DECLARE(GTK_TYPE_ALIGNMENT)
+PATCH_DECLARE(GTK_TYPE_TOGGLE_BUTTON)
+PATCH_DECLARE(GTK_TYPE_SCROLLED_WINDOW)
+PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
+PATCH_DECLARE(GTK_TYPE_RADIO_BUTTON)
+
+#endif
+
 void gControl::realize(bool make_frame)
 {
 	if (!_scroll)
@@ -1445,6 +1497,23 @@ void gControl::realize(bool make_frame)
 		if (!make_frame)
 			frame = 0;
 	}
+
+#ifdef GTK3
+
+	PATCH_CLASS(border, GTK_TYPE_WINDOW)
+	else PATCH_CLASS(border, GTK_TYPE_ENTRY)
+	else PATCH_CLASS(border, GTK_TYPE_SPIN_BUTTON)
+	else PATCH_CLASS(border, GTK_TYPE_BUTTON)
+	else PATCH_CLASS(border, GTK_TYPE_FIXED)
+	else PATCH_CLASS(border, GTK_TYPE_EVENT_BOX)
+	else PATCH_CLASS(border, GTK_TYPE_ALIGNMENT)
+	else PATCH_CLASS(border, GTK_TYPE_TOGGLE_BUTTON)
+	else PATCH_CLASS(border, GTK_TYPE_SCROLLED_WINDOW)
+	else PATCH_CLASS(border, GTK_TYPE_CHECK_BUTTON)
+	else PATCH_CLASS(border, GTK_TYPE_RADIO_BUTTON)
+	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
+
+#endif
 
 	connectParent();
 	initSignals();

@@ -138,7 +138,9 @@ void gComboBox::create(bool readOnly)
 	lock();
 	
 	if (first)
+	{
 		border = gtk_alignment_new(0, 0, 1, 1); //gtk_event_box_new();
+	}
 	else
 		ind = index();
 	
@@ -167,8 +169,15 @@ void gComboBox::create(bool readOnly)
 	{
 		GList *cells;
 		
+#if GTK_CHECK_VERSION(2, 24, 0)
 		widget = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(tree->store));
+#else
+		widget = gtk_combo_box_entry_new_with_model(GTK_TREE_MODEL(tree->store), 0);
+#endif
 		entry = gtk_bin_get_child(GTK_BIN(widget));
+#ifdef GTK3
+		gtk_widget_set_hexpand(entry, FALSE);
+#endif
 		use_base = true;
 
 		g_signal_handler_disconnect(widget, g_signal_handler_find(widget, G_SIGNAL_MATCH_ID, g_signal_lookup("changed", G_OBJECT_TYPE(widget)), 0, 0, 0, 0));
@@ -414,8 +423,9 @@ void gComboBox::setText(const char *vl)
 
 static gboolean combo_set_model_and_sort(gComboBox *combo)
 {
+	//fprintf(stderr, "combo_set_model_and_sort\n");
 	gtk_combo_box_set_model(GTK_COMBO_BOX(combo->widget), GTK_TREE_MODEL(combo->tree->store));
-	
+
 	if (combo->isSorted())
 		combo->tree->sort();
 	
@@ -518,9 +528,9 @@ void gComboBox::remove(int pos)
 void gComboBox::resize(int w, int h)
 {
 	gControl::resize(w,h);
-	
-	if (entry)
-		gtk_widget_set_size_request(entry, width(), height());
+
+	/*if (entry)
+		gtk_widget_set_size_request(entry, 4, 4);*/
 }
 
 void gComboBox::setFont(gFont *f)
@@ -540,13 +550,20 @@ void gComboBox::setFocus()
 
 int gComboBox::minimumHeight()
 {
+	int h;
+#ifdef GTK3
+	gtk_widget_get_preferred_height(widget, &h, NULL);
+#else
 	GtkRequisition req;
 	
 	gtk_widget_size_request(widget, &req);
+	h = req.height;
+#endif
+
 	if (entry)
-		return req.height - 4;
+		return h - 4;
 	else
-		return req.height;
+		return h;
 }
 
 
