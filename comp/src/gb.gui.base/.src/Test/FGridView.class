@@ -52,3 +52,9 @@ Public Sub Form_Open()
   gvwinfo.Rows[6].Height = -1
 
 End
+
+Public Sub gvwInfo_ColumnClick(Column As Integer)
+
+  Debug Column
+
+End

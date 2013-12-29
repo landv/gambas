@@ -882,7 +882,7 @@ Public Sub ScrollArea_MouseMove()
   
   If Mouse.Left Then
     
-    If Y >= 0 Then
+    If Y >= $hColumns.Height Then
       For I = 1 To $aRowY.Max
         If Y < $aRowY[I] Then
           iRow = I + $iFirstRow - 1
@@ -971,8 +971,6 @@ Public Sub ScrollArea_MouseDown()
   Dim I, iOldRow As Integer
   Dim bCancel As Boolean
   Dim F As Integer = _GetFrameWidth()
-  
-  'Debug Mouse.X
   
   $MX = Mouse.X - F
   $MY = Mouse.Y - F
