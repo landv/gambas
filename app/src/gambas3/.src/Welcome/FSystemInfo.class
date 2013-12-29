@@ -137,8 +137,8 @@ Public Sub Form_Open()
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
   
-  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", "OpenGL": "libGL.so.*.*.*", 
-    "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
+  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
+    "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
   cFile = New Collection
   
   aText.Add("[Libraries]")
