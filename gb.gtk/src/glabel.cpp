@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "glabel.h"
 
 #ifdef GTK3

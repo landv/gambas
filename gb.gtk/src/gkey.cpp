@@ -28,7 +28,6 @@
 #include <unistd.h>
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gapplication.h"
 #include "gtrayicon.h"
 #include "gdesktop.h"

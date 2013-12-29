@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gspinbox.h"
 
 void  spin_change(GtkSpinButton *spinbutton,gSpinBox *data)

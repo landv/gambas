@@ -36,6 +36,8 @@ static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gDrawingArea *data)
 {
 	if (data->cached())
 	{
+		cairo_set_source_surface(cr, data->buffer, 0, 0);
+		cairo_paint(cr);
 		data->drawBorder(cr);
 	}
 	else
@@ -90,26 +92,6 @@ static void cb_size(GtkWidget *wid, GtkAllocation *a, gDrawingArea *data)
 	return false;
 }*/
 
-void gDrawingArea::init()
-{
-	/*gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
-		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
-		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 
-		| GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK);
-
-	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
-		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK
-		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK 
-		| GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK);*/
-
-	//GTK_WIDGET_UNSET_FLAGS(border, GTK_APP_PAINTABLE);
-	//GTK_WIDGET_SET_FLAGS(widget, GTK_CAN_FOCUS);
-		
-	//_event_mask = gtk_widget_get_events(widget);
-	
-	//g_signal_connect(G_OBJECT(border), "button-press-event",G_CALLBACK(cb_button_press),(gpointer)this);
-}	
-
 void gDrawingArea::create(void)
 {
 	int i;
@@ -156,7 +138,7 @@ void gDrawingArea::create(void)
 	realize(false);
 	
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
-	ON_DRAW(border, this, cb_expose, cb_draw);
+	ON_DRAW_BEFORE(border, this, cb_expose, cb_draw);
 	
 	updateUseTablet();
 	

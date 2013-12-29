@@ -24,7 +24,6 @@
 #define __GGLAREA_C
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gglarea.h"
 
 gGLArea::gGLArea(gContainer *parent, void (*init)(GtkWidget *)) : gControl(parent)

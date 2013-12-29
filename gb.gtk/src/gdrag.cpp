@@ -21,9 +21,6 @@
 
 ***************************************************************************/
 
-#include "widgets.h"
-#include "widgets_private.h"
-
 #ifndef GAMBAS_DIRECTFB
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
@@ -32,6 +29,7 @@
 #endif
 #endif
 
+#include "widgets.h"
 #include "gapplication.h"
 #include "gmainwindow.h"
 #include "gclipboard.h"

@@ -23,7 +23,6 @@
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gmoviebox.h"
 #include "gpicturebox.h"
 

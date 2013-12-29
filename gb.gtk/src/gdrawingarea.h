@@ -56,7 +56,6 @@ public:
 #endif
 
 //"Private"
-	void init();
 	void create();
 	void updateCache();
 	void resizeCache();

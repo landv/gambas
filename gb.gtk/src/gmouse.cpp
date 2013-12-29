@@ -25,7 +25,6 @@
 #define __GMOUSE_CPP
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gmouse.h"
 
 #ifndef GAMBAS_DIRECTFB

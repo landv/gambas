@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gb.form.font.h"
 
 #ifndef GAMBAS_DIRECTFB

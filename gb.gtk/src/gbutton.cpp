@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gapplication.h"
 #include "gmainwindow.h"
 #include "gbutton.h"
@@ -137,8 +136,6 @@ static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
       //                                  -1,-1,GDK_RGB_DITHER_MAX,0,0);
 
 			gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
-
-			cairo_destroy(cr);
 			return false;
 		}
 
@@ -182,7 +179,7 @@ static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
 		rect.x=6;
 	}*/
 
-	if (rect.width >= 1 && rect.height >= 1)
+	if (rect.width >= 1 && rect.height >= 1 && data->bufText && *data->bufText)
 	{
 		gtk_cell_renderer_set_fixed_size(data->rendtxt, rect.width, rect.height);
 		gtk_cell_renderer_render(data->rendtxt, cr, wid, &rect, &rect, state);
@@ -405,6 +402,8 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(cb_click),(gpointer)this);	
 	
 	
+	setText(NULL);
+
 	if (type == Tool) 
     setBorder(false);
 }
@@ -504,7 +503,8 @@ void gButton::setText(const char *st)
 		g_free(bufText);
 	}
 
- 	bufText = g_strdup(st);
+ 	bufText = st ? g_strdup(st) : NULL;
+
 	updateSize();
 	resize();
 	
@@ -526,15 +526,22 @@ void gButton::setText(const char *st)
 		
 	}
 	
-	shortcut = (int)gMnemonic_correctMarkup((char*)st,&buf);
+	if (bufText && *bufText)
+	{
+		shortcut = (int)gMnemonic_correctMarkup(bufText, &buf);
+
+		if (shortcut)
+			gtk_widget_add_accelerator(widget, "clicked", accel, (guint)shortcut, GDK_MOD1_MASK, (GtkAccelFlags)0);
 	
-	if (shortcut) 
-		gtk_widget_add_accelerator(widget, "clicked", accel, (guint)shortcut, GDK_MOD1_MASK, (GtkAccelFlags)0);
-	
-	g_object_set(G_OBJECT(rendtxt),"markup",buf,(void *)NULL);
-	
-	g_free(buf);
-	
+		g_object_set(G_OBJECT(rendtxt), "markup", buf, (void *)NULL);
+
+		g_free(buf);
+	}
+	else
+	{
+		g_object_set(G_OBJECT(rendtxt), "markup", "", (void *)NULL);
+	}
+
 	refresh();
 }
 
@@ -564,7 +571,7 @@ void gButton::setPicture(gPicture *npic)
   
 	if (rendpix) { g_object_unref(G_OBJECT(rendpix)); rendpix = NULL; }
 	if (rendinc) { g_object_unref(G_OBJECT(rendinc)); rendinc = NULL; }
-	
+
 	rendpix = new_rendpix;
 	
 	updateSize();

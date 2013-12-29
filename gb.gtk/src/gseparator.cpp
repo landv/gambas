@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gdesktop.h"
 #include "gseparator.h"
 
@@ -48,9 +47,9 @@ static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gSeparator *data)
 		cairo_fill(cr);
 	}
 	else if (w>=h)
-		gtk_paint_hline(gtk_widget_get_style(wid), cr, GTK_STATE_NORMAL, wid, NULL, x, x + w, y + h / 2);
+		gtk_render_line(gtk_widget_get_style_context(wid), cr, x, y + (h / 2), x + w - 1, y + (h / 2));
 	else
-		gtk_paint_vline(gtk_widget_get_style(wid), cr, GTK_STATE_NORMAL, wid, NULL, y, y + h, x + w / 2);
+		gtk_render_line(gtk_widget_get_style_context(wid), cr, x + (w / 2), y, x + (w / 2), y + h - 1);
 
 	return false;
 }

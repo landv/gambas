@@ -147,10 +147,7 @@ static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon 
 			case GDK_SCROLL_UP: dt=1; ort=1; break;
 			case GDK_SCROLL_DOWN: dt=-1; ort=1; break;
 			case GDK_SCROLL_LEFT: dt=-1; ort=0; break;
-			case GDK_SCROLL_RIGHT:  dt=1; ort=0; break;
-#ifdef GTK3
-			case GDK_SCROLL_SMOOTH: break;
-#endif
+			case GDK_SCROLL_RIGHT: default: dt=1; ort=0; break;
 		}
 
 		gMouse::validate();

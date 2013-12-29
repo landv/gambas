@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gmainwindow.h"
 #include "gapplication.h"
 #include "gmenu.h"

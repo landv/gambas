@@ -323,22 +323,36 @@ GdkPixbuf *gPicture::getPixbuf()
 	return pixbuf;
 }
 
+#ifdef GTK3
 cairo_surface_t *gPicture::getSurface()
 {
 	if (_type == VOID)
 		return NULL;
-	
-	if (surface)
-		return surface;
-	
-	getPixbuf();
-	surface = gt_cairo_create_surface_from_pixbuf(pixbuf);
-	
-#ifdef GTK3
+
+	if (_type != SURFACE)
+	{
+		getPixbuf();
+		surface = gt_cairo_create_surface_from_pixbuf(pixbuf);
+	}
+
 	_type = SURFACE;
-#endif
 	return surface;
 }
+#else
+cairo_surface_t *gPicture::getSurface()
+{
+	if (_type == VOID)
+		return NULL;
+
+	if (surface)
+		return surface;
+
+	getPixbuf();
+	surface = gt_cairo_create_surface_from_pixbuf(pixbuf);
+
+	return surface;
+}
+#endif
 
 #ifndef GTK3
 GdkPixmap *gPicture::getPixmap()

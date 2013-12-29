@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include <gdk/gdkkeysyms.h>
 
 #include "gapplication.h"

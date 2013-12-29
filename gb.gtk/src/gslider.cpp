@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gdesktop.h"
 #include "gscrollbar.h"
 #include "gslider.h"

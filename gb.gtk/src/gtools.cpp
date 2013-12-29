@@ -1925,53 +1925,14 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 }
 
 
-#ifdef GTK3
-void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h)
-{
-	if (border == BORDER_NONE)
-		return;
-
-	if (w < 2 || h < 2)
-		return;
-
-	if (border == BORDER_PLAIN)
-	{
-		gt_cairo_draw_rect(cr, x, y, w, h, color);
-		return;
-	}
-
-  gtk_style_context_save(st);
-
-	gtk_style_context_set_state(st, state);
-
-	if (border == BORDER_RAISED)
-	{
-		gtk_style_context_add_class(st, GTK_STYLE_CLASS_BUTTON);
-		gtk_render_frame(st, cr, x, y, w, h);
-	}
-	else if (border == BORDER_SUNKEN)
-	{
-		gtk_style_context_add_class(st, GTK_STYLE_CLASS_ENTRY);
-		gtk_render_frame(st, cr, x, y, w, h);
-	}
-	else if (border == BORDER_ETCHED)
-	{
-		gtk_style_context_add_class(st, GTK_STYLE_CLASS_FRAME);
-		gtk_render_frame(st, cr, x, y, w, h);
-	}
-
-	gtk_style_context_restore(st);
-}
-#endif
-
 // Style management
 
 #ifdef GTK3
 static int _style_context_loaded = 0;
-static GtkStyleContext *_style_context[9];
+static GtkStyleContext *_style_context[10];
 #endif
 static int _style_loaded = 0;
-static GtkStyle *_style[8];
+static GtkStyle *_style[10];
 
 static int type_to_index(GType type)
 {
@@ -1991,8 +1952,10 @@ static int type_to_index(GType type)
 		return 6;
 	else if (type == GTK_TYPE_RADIO_BUTTON)
 		return 7;
-	else if (type == GTK_TYPE_LABEL || type == GTK_TYPE_LAYOUT)
+	else if (type == GTK_TYPE_FRAME)
 		return 8;
+	else if (type == GTK_TYPE_LABEL || type == GTK_TYPE_LAYOUT)
+		return 9;
 	else
 		return -1;
 }
@@ -2003,7 +1966,8 @@ const char *gt_get_style_class(GType type)
 {
 	static const char *_class[] = {
 		GTK_STYLE_CLASS_BUTTON, GTK_STYLE_CLASS_ENTRY, NULL, GTK_STYLE_CLASS_TOOLTIP,
-		GTK_STYLE_CLASS_SCROLLBAR, NULL, GTK_STYLE_CLASS_CHECK, GTK_STYLE_CLASS_RADIO, GTK_STYLE_CLASS_BACKGROUND
+		GTK_STYLE_CLASS_SCROLLBAR, NULL, GTK_STYLE_CLASS_CHECK, GTK_STYLE_CLASS_RADIO,
+		GTK_STYLE_CLASS_FRAME, GTK_STYLE_CLASS_BACKGROUND
 	};
 
 	int index = type_to_index(type);
@@ -2080,4 +2044,51 @@ GtkStyle *gt_get_style(GType type)
 	return _style[index];
 }
 
+
+#ifdef GTK3
+
+// Draw a styled border
+
+void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h)
+{
+	if (border == BORDER_NONE)
+		return;
+
+	if (w < 2 || h < 2)
+		return;
+
+	if (border == BORDER_PLAIN)
+	{
+		gt_cairo_draw_rect(cr, x, y, w, h, color);
+		return;
+	}
+
+  //gtk_style_context_save(st);
+
+
+	if (border == BORDER_RAISED)
+	{
+		st = gt_get_style(GTK_TYPE_BUTTON);
+		gtk_style_context_set_state(st, state);
+		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_BUTTON);
+		gtk_render_frame(st, cr, x, y, w, h);
+	}
+	else if (border == BORDER_SUNKEN)
+	{
+		st = gt_get_style(GTK_TYPE_ENTRY);
+		gtk_style_context_set_state(st, state);
+		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_ENTRY);
+		gtk_render_frame(st, cr, x, y, w, h);
+	}
+	else if (border == BORDER_ETCHED)
+	{
+		st = gt_get_style(GTK_TYPE_FRAME);
+		gtk_style_context_set_state(st, state);
+		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_FRAME);
+		gtk_render_frame(st, cr, x, y, w, h);
+	}
+
+	//gtk_style_context_restore(st);
+}
+#endif
 

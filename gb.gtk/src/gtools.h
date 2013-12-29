@@ -195,6 +195,8 @@ GtkStyle *gt_get_style(GType type);
 #define gt_get_old_style gt_get_style
 #endif
 
-
+void gMnemonic_correctText(char *st,char **buf);
+guint gMnemonic_correctMarkup(char *st,char **buf);
+void gMnemonic_returnText(char *st,char **buf);
 
 #endif

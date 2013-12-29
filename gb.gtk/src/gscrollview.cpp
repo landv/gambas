@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gscrollview.h"
 
 static void cb_scroll(GtkAdjustment *Adj,gScrollView *data)

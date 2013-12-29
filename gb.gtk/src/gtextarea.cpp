@@ -22,13 +22,14 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gapplication.h"
 #include "gclipboard.h"
 #include "gdesktop.h"
 #include "gtextarea.h"
 
-#ifndef GTK3
+#ifdef GTK3
+#else
+
 // Private structure took from GTK+ 2.10 code. Used for setting the text area cursor.
 // **** May not work on future GTK+ versions ****
 
@@ -173,13 +174,13 @@ void gTextAreaAction::addText(char *add, int len)
 
 // Callbacks
 
-static gboolean cb_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, gTextArea *data)
+/*static gboolean cb_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, gTextArea *data)
 {
 	// Workaround GtkTextView internal cursor changes
 	if (gApplication::isBusy())
 		data->setMouse(data->mouse());
 	return FALSE;
-}
+}*/
 
 static void cb_changed(GtkTextBuffer *buf, gTextArea *data)
 {
@@ -326,7 +327,7 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	textview = gtk_text_view_new();
 	realizeScrolledWindow(textview);
 
-	g_signal_connect_after(G_OBJECT(textview), "motion-notify-event", G_CALLBACK(cb_motion_notify_event), (gpointer)this);	
+	//g_signal_connect_after(G_OBJECT(textview), "motion-notify-event", G_CALLBACK(cb_motion_notify_event), (gpointer)this);
 	g_signal_connect(G_OBJECT(textview), "key-press-event", G_CALLBACK(cb_keypress), (gpointer)this);
 	
 	_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
@@ -334,6 +335,9 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	g_signal_connect_after(G_OBJECT(_buffer), "mark-set", G_CALLBACK(cb_mark_set), (gpointer)this);
 	g_signal_connect(G_OBJECT(_buffer), "insert-text", G_CALLBACK(cb_insert_text), (gpointer)this);
 	g_signal_connect(G_OBJECT(_buffer), "delete-range", G_CALLBACK(cb_delete_range), (gpointer)this);
+
+	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview), 2);
+	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(textview), 2);
 
 	setBorder(true);
 	setWrap(false);
@@ -671,10 +675,15 @@ void gTextArea::selSelect(int pos, int length)
 	gtk_text_buffer_select_range(_buffer, &start, &end);
 }
 
-#ifndef GTK3
 void gTextArea::updateCursor(GdkCursor *cursor)
 {
-  GdkWindow *win = ((PrivateGtkTextWindow *)GTK_TEXT_VIEW(textview)->text_window)->bin_window;
+  GdkWindow *win;
+
+#ifdef GTK3
+	win = gtk_text_view_get_window(GTK_TEXT_VIEW(textview), GTK_TEXT_WINDOW_TEXT);
+#else
+	win = ((PrivateGtkTextWindow *)GTK_TEXT_VIEW(textview)->text_window)->bin_window;
+#endif
   
   gControl::updateCursor(cursor);
   
@@ -687,10 +696,13 @@ void gTextArea::updateCursor(GdkCursor *cursor)
   {
     cursor = gdk_cursor_new_for_display(gtk_widget_get_display(textview), GDK_XTERM);
     gdk_window_set_cursor(win, cursor);
+#ifdef GTK3
+    g_object_unref(cursor);
+#else
     gdk_cursor_unref(cursor);
+#endif
   }
 }
-#endif
 
 /*void gTextArea::waitForLayout(int *tw, int *th)
 {

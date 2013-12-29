@@ -26,7 +26,6 @@
 #include <unistd.h>
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gapplication.h"
 #include "gtrayicon.h"
 #include "gdesktop.h"
@@ -299,44 +298,34 @@ static void gambas_handle_event(GdkEvent *event)
 		goto __HANDLE_EVENT;
 	}
 	
-	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE || event->type == GDK_MOTION_NOTIFY)
-	{
-		fprintf(stderr, "widget = %p grab = %p _popup_grab = %p _button_grab = %p\n", widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
-		//fprintf(stderr, "widget = %p (%p) grab = %p (%p)\n", widget, widget ? g_object_get_data(G_OBJECT(widget), "gambas-control") : 0, 
-		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
-	}*/
-	
-	//fprintf(stderr, "grab = %p widget = %p %d\n", grab, widget, grab && !gtk_widget_is_ancestor(widget, grab));
-	
 	if (grab && widget != grab && !gtk_widget_is_ancestor(widget, grab))
 	{
 		//fprintf(stderr, "-> widget = grab\n");
 		widget = grab;
 	}
+
+	//fprintf(stderr, "grab = %p widget = %p %d\n", grab, widget, grab && !gtk_widget_is_ancestor(widget, grab));
 	
 	while (widget)
 	{
 		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
-		if (control)
+		if (control || grab)
 			break;
 		widget = gtk_widget_get_parent(widget);
 	}
 	
-	/*if (event->type == GDK_BUTTON_PRESS)
-		fprintf(stderr, "GDK_BUTTON_PRESS: %p %s\n", widget, control ? control->name() : NULL);
-	else if (event->type == GDK_BUTTON_RELEASE)
-		fprintf(stderr, "GDK_BUTTON_RELEASE: %p %s\n", widget, control ? control->name() : NULL);*/
-	
-	/*else if (event->type == GDK_KEY_PRESS)
-		fprintf(stderr, "GDK_KEY_PRESS: %p %s (%s)\n", widget, control ? control->name() : NULL, gApplication::activeControl() ? gApplication::activeControl()->name() : NULL);
-	*/
-	
+	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_BUTTON_RELEASE || event->type == GDK_MOTION_NOTIFY)
+	{
+		fprintf(stderr, "[%s] widget = %p grab = %p _popup_grab = %p _button_grab = %p\n",
+						event->type == GDK_BUTTON_PRESS ? "down" : event->type == GDK_BUTTON_RELEASE ? "up" : "move",
+						widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
+		//fprintf(stderr, "widget = %p (%p) grab = %p (%p)\n", widget, widget ? g_object_get_data(G_OBJECT(widget), "gambas-control") : 0,
+		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
+	}*/
+
 	if (!widget || !control)
 		goto __HANDLE_EVENT;
-	
-	//if (event->type == GDK_BUTTON_RELEASE)
-	//	fprintf(stderr, "GDK_BUTTON_RELEASE #3\n");
-	
+
 __FOUND_WIDGET:
 	
 	//fprintf(stderr, "control = %p %s\n", control, control->name());
@@ -530,7 +519,11 @@ __FOUND_WIDGET:
 				gApplication::exitLoop(control);
 			}
 			
+#if GTK_CHECK_VERSION(3, 4, 0)
+			if (gdk_event_triggers_context_menu(event))
+#else
 			if (event->button.button == 3 && event->type == GDK_BUTTON_PRESS)
+#endif
 				menu = true;
 			
 			if (!cancel)
@@ -571,6 +564,8 @@ __FOUND_WIDGET:
 		}
 			
 		case GDK_MOTION_NOTIFY:
+
+			gdk_event_request_motions(&event->motion);
 
 			save_control = control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root, button_grab);
 			
@@ -631,7 +626,7 @@ __FOUND_WIDGET:
 		
 			if (control->onMouseEvent && control->canRaise(control, gEvent_MouseWheel))
 			{
-				int dt, ort;
+				int dir, dt, ort;
 				
 				control->getScreenPos(&xc, &yc);
 				xs = (int)event->scroll.x_root;
@@ -639,7 +634,20 @@ __FOUND_WIDGET:
 				x = xs - xc;
 				y = ys - yc;
 
-				switch (event->scroll.direction)
+				dir = event->scroll.direction;
+
+#ifdef GTK3
+				if (dir == GDK_SCROLL_SMOOTH)
+				{
+					gdouble dx = 0, dy = 0;
+					gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
+					if (fabs(dy) > fabs(dx))
+						dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
+					else
+						dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
+				}
+#endif
+				switch (dir)
 				{
 					case GDK_SCROLL_DOWN: dt = -1; ort = 1; break;
 					case GDK_SCROLL_LEFT: dt = -1; ort = 0; break;

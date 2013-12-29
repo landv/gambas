@@ -25,7 +25,6 @@
 #include <time.h>
 
 #include "widgets.h"
-#include "widgets_private.h"
 
 #ifdef GDK_WINDOWING_X11
 #include <X11/extensions/shape.h>

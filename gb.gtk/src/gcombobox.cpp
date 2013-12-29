@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gmainwindow.h"
 #include "gdesktop.h"
 #include "gcombobox.h"

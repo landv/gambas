@@ -227,14 +227,15 @@ static int Begin(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_Image))
 	{
 		target = check_image(device);
-		cairo_surface_reference(target);
-		w = ((GB_IMG *)device)->width;
-		h = ((GB_IMG *)device)->height;
 		if (!target)
 		{
 			GB.Error("Bad image");
 			return TRUE;
 		}
+
+		cairo_surface_reference(target);
+		w = ((GB_IMG *)device)->width;
+		h = ((GB_IMG *)device)->height;
 	}
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
@@ -360,7 +361,12 @@ static void End(GB_PAINT *d)
 		GB.FreeArray(POINTER(&dx->font_stack));
 	GB.Unref(POINTER(&dx->font));
 	
-	if (GB.Is(device, CLASS_DrawingArea))
+	if (GB.Is(device, CLASS_Picture))
+	{
+		gPicture *picture = ((CPICTURE *)device)->picture;
+		picture->invalidate();
+	}
+	else if (GB.Is(device, CLASS_DrawingArea))
 	{
 		gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)device)->widget;
 		if (wid && wid->cached())

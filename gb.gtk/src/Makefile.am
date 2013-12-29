@@ -11,7 +11,7 @@ gb_gtk_la_CPPFLAGS = @GTK_INC@ -I$(top_srcdir)/share
 
 gb_gtk_la_SOURCES = \
 	gmemory.h gmemory.cpp gtag.h ggambastag.h gshare.h \
-	gb.gtk.h widgets.h widgets_private.h font-parser.h font-parser.cpp \
+	gb.gtk.h widgets.h font-parser.h font-parser.cpp \
 	gtools.cpp gcolor.h \
 	gstock.cpp gfont.cpp gpicture.cpp \
 	gdesktop.cpp gmessage.cpp \

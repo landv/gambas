@@ -90,9 +90,7 @@ public:
 	void (*onCursor)(gTextArea *sender);
 
 //"Private"
-#ifndef GTK3
   virtual void updateCursor(GdkCursor *cursor);
-#endif
   //void waitForLayout(int *tw, int *th);
 	void clearUndoStack();
 	void clearRedoStack();

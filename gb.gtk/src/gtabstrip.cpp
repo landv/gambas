@@ -22,7 +22,6 @@
 ***************************************************************************/
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gapplication.h"
 #include "gmouse.h"
 #include "gdesktop.h"

@@ -35,7 +35,6 @@
 #endif
 
 #include "widgets.h"
-#include "widgets_private.h"
 #include "gapplication.h"
 #include "gbutton.h"
 #include "gdrawingarea.h"
@@ -1524,7 +1523,7 @@ void gControl::realize(bool make_frame)
 		ON_DRAW_BEFORE(border, this, cb_background_expose, cb_background_draw);
 
 	if (frame)
-		ON_DRAW(frame, this, cb_frame_expose, cb_frame_draw);
+		ON_DRAW_BEFORE(frame, this, cb_frame_expose, cb_frame_draw);
 //#endif
 
 	/*else if (!isTopLevel())
@@ -1542,13 +1541,13 @@ void gControl::realize(bool make_frame)
 	//	g_signal_connect(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)this);
 
 	gtk_widget_add_events(widget, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
-		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK
+		| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK
 		| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
 
 	if (widget != border && (GTK_IS_WINDOW(border) || (GTK_IS_EVENT_BOX(border) && !gtk_event_box_get_visible_window(GTK_EVENT_BOX(border)))))
 	{
 		gtk_widget_add_events(border, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK
-			| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK
+			| GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK
 			| GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK);
 	}
 

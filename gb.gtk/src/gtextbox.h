@@ -65,9 +65,7 @@ public:
 	void (*onActivate)(gTextBox *sender);
 
 //"Private"
-#ifndef GTK3
   virtual void updateCursor(GdkCursor *cursor);
-#endif
   void initEntry();
   GtkWidget *entry;
 	virtual int minimumHeight();

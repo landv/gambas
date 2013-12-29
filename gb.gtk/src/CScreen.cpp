@@ -859,7 +859,7 @@ static void style_button(int x, int y, int w, int h, int value, int state, int f
 	{
 #ifdef GTK3
 		set_state(style, state);
-		gtk_render_background(style, _cr, x, y, w, h);
+		gtk_render_frame(style, _cr, x, y, w, h);
 		if (state & GB_DRAW_STATE_FOCUS)
 			paint_focus(style, x, y, w, h);
 #else
@@ -880,9 +880,13 @@ static void style_panel(int x, int y, int w, int h, int border, int state)
 	STYLE_T *style = get_style();
 
 #ifdef GTK3
-	gColor col;
-	col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
-	col = IMAGE.LighterColor(col);
+	gColor col = 0;
+
+	if (border == BORDER_PLAIN)
+	{
+		col = IMAGE.MergeColor(gDesktop::bgColor(), gDesktop::fgColor(), 0.5);
+		col = IMAGE.LighterColor(col);
+	}
 
 	gt_draw_border(_cr, style, get_state(state), border, col, x, y, w, h);
 
@@ -947,6 +951,7 @@ static void style_box(int x, int y, int w, int h, int state)
 #ifdef GTK3
 	set_state(style, state);
 	gtk_render_background(style, _cr, x, y, w, h);
+	gtk_render_frame(style, _cr, x, y, w, h);
 #else
 	if (strcmp(gApplication::getStyleName(), "oxygen-gtk") == 0)
 	{
