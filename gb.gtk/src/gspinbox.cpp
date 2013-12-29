@@ -24,11 +24,38 @@
 #include "widgets.h"
 #include "gspinbox.h"
 
-void  spin_change(GtkSpinButton *spinbutton,gSpinBox *data)
+static void cb_change(GtkSpinButton *spinbutton, gSpinBox *data)
 {
 	data->selectAll();
 	if (data->onChange) data->onChange(data);
 }
+
+#ifndef GTK3
+/*static gint my_spin_button_expose (GtkWidget *widget, GdkEventExpose *event)
+{
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(GTK_TYPE_SPIN_BUTTON);
+	gSpinBox *control = (gSpinBox *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+	int h, ret;
+
+	h = widget->requisition.height;
+	widget->requisition.height = control->height();
+
+	ret = (*(gint (*)(GtkWidget *, GdkEventExpose *))klass->_gtk_reserved5)(widget, event);
+
+	widget->requisition.height = h;
+	return ret;
+}*/
+
+
+static void my_spin_button_size_request(GtkWidget *widget, GtkRequisition *requisition)
+{
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(GTK_TYPE_SPIN_BUTTON);
+	gSpinBox *control = (gSpinBox *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+
+	(*(void (*)(GtkWidget *, GtkRequisition *))klass->_gtk_reserved5)(widget, requisition);
+	requisition->height = control->height();
+}
+#endif
 
 gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 {
@@ -41,12 +68,22 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 	
 	border = gtk_spin_button_new_with_range(_min, _max, 1);
 	widget = border;
-	
+
+#ifndef GTK3
+	// Patch the class so that the spin button arrows are drawn correctly
+	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(border);
+	if (klass->size_request != my_spin_button_size_request)
+	{
+		klass->_gtk_reserved5 = (void (*)())klass->size_request;
+		klass->size_request = my_spin_button_size_request;
+	}
+#endif
+
 	realize();
 	
 	onChange = NULL;
 	
-	g_signal_connect(G_OBJECT(widget),"value-changed",G_CALLBACK(spin_change),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 }
 
 /*
@@ -160,4 +197,3 @@ void gSpinBox::setBorder(bool vl)
 {
 	gtk_entry_set_has_frame(GTK_ENTRY(widget), vl);
 }
-
