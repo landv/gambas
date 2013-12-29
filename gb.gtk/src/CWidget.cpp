@@ -1006,7 +1006,7 @@ GB_DESC CPluginDesc[] =
   GB_DECLARE("Embedder", sizeof(CPLUGIN)), GB_INHERITS("Control"),
 
   GB_METHOD("_new", 0, CPLUGIN_new, "(Parent)Container;"),
-  GB_METHOD("Embed", 0, CPLUGIN_embed, "(Client)i[(Prepared)b]"),
+  GB_METHOD("Embed", 0, CPLUGIN_embed, "(Client)i"),
   GB_METHOD("Discard", 0, CPLUGIN_discard, 0),
   
   GB_PROPERTY_READ("Client", "i", CPLUGIN_client),

@@ -380,12 +380,18 @@ Public Function GetPaths() As String[]
 
   Dim aPath As New String[]
   Dim sFile As String
+  Dim sPath As String
 
   If GetMulti() Then
 
     For Each sFile In fvwChoose.Selection
       aPath.Add(dvwChoose.Current &/ sFile)
     Next
+    
+  Else
+    
+    sPath = GetPath()
+    If sPath Then aPath.Add(sPath)
 
   Endif
 

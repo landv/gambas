@@ -417,7 +417,7 @@ int main(int argc, char *argv[])
 		{
 			ERROR_hook();
 			
-			if (EXEC_debug)
+			if (EXEC_debug && DEBUG_is_init())
 			{
 				DEBUG.Main(TRUE);
 				main_exit(TRUE);

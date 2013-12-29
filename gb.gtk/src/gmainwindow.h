@@ -153,7 +153,6 @@ public:
 	gPicture *_icon;
 	gPicture *_picture;
 	char *_title;
-	GdkPixmap *_background;
 	GtkStyle *_style;
 	
 	gControl *focus;

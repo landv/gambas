@@ -4534,6 +4534,12 @@ Public Function IsFormPath(sPath As String) As Boolean
 
 End
 
+Public Sub IsProjectPath(sPath As String) As Boolean
+  
+  Return sPath Begins Project.Dir &/ "/"
+  
+End
+
 Public Function IsImagePath(sPath As String) As Boolean
 
   Return IMAGE_EXT.Exist(File.Ext(sPath))

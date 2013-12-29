@@ -624,8 +624,7 @@ Private Function MakeDebPackage(sSys As String)
   Dim sArch As String
   Dim sPackageName As String
   Dim sPackagePath As String
-  Dim aLine As String[]
-  Dim N As Integer
+  Dim sLine As String
       
   Inc Application.Busy
   
@@ -774,20 +773,18 @@ Private Function MakeDebPackage(sSys As String)
     Print #hFile, GetExtraDependencies(sSys);
   Endif 
   Print #hFile
-  aLine = Split($sDescription, "\n")
-  If aline.Count = 0 Then 
-    Print #hFile, "Description: This is ";
-    If Project.Title Then 
-      Print #hFile, Project.Title
-    Else 
-      Print #hFile, Project.Name
-    Endif 
+  
+  Print #hFile, "Description: ";
+  If Project.Title Then 
+    Print #hFile, Project.Title
   Else 
-    Print #hFile, "Description:"; IIf(Len(aLine[0]) > 60, Left$(aLine[0], 60), aLine[0])
-    For n = 1 To aLine.Count - 1  
-      Print #hFile, " "; Trim(aLine[n])
-    Next 
-  Endif
+    Print #hFile, Project.Name
+  Endif 
+  
+  For Each sLine In Split(Trim($sDescription), "\n")
+    Print #hFile, " "; sLine
+  Next
+
   Select Case Project.Type
     Case Project.TYPE_NORMAL
       Print #hFile, " This program is written in Gambas"
@@ -796,6 +793,7 @@ Private Function MakeDebPackage(sSys As String)
     Case Project.TYPE_COMPONENT
       Print #hFile, " This is a Gambas component written in Gambas"
   End Select
+  
   Close #hFile
   
   'debian/rules

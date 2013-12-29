@@ -16,7 +16,7 @@
         MoveScaled(0,0,10,4)
         ToolTip = ("Insert menu")
         AutoResize = True
-        Text = ("&Insert")
+        Text = Shortcut(("Insert"), "I")
         Picture = Picture["icon:/small/add"]
       }
       { btnNext ToolButton
@@ -29,7 +29,7 @@
       { btnDelete ToolButton
         MoveScaled(15,0,10,4)
         AutoResize = True
-        Text = ("&Delete")
+        Text = Shortcut(("Delete"), "D")
         Picture = Picture["icon:/small/delete"]
       }
       { Separator2 Separator

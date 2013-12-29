@@ -374,8 +374,9 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 	
 	if (_popup_menu_clicked)
 	{
-		send_click_event(_popup_menu_clicked);
+		CMENU *menu = _popup_menu_clicked;
 		_popup_menu_clicked = NULL;
+		send_click_event(menu);
 	}
 
 END_METHOD

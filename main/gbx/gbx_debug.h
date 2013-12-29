@@ -51,6 +51,8 @@ EXTERN DEBUG_INFO *DEBUG_info;
 
 #endif
 
+#define DEBUG_is_init() (DEBUG_info != NULL)
+
 void DEBUG_init(void);
 void DEBUG_exit(void);
 

@@ -193,29 +193,39 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 			{
 				if (len_pattern == 0)
 					THROW(E_REGEXP, "Missing '}'");
+
+				if (len_string == 0)
+					break;
 				
 				_next_pattern();
 				
-				if (cp == ',' || cp == '}')
-					break;
+				if (cp == '}')
+					return FALSE;
+
+				if (cp == ',')
+					goto NEXT_ELEMENT;
 				
 				if (len_string == 0)
 					return FALSE;
+
 				_next_string();
 				
-				if (tolower(cp) != tolower(cs))
+				if (tolower(cp) == tolower(cs))
+					continue;
+
+				for(;;)
 				{
-					for(;;)
-					{
-						_next_pattern();
-						if (cp == '}')
-							return FALSE;
-						if (cp == ',' || len_pattern == 0)
-							break;
-					}
-					string = save_string;
-					len_string = save_len_string;
+					_next_pattern();
+					if (cp == '}')
+						return FALSE;
+					if (cp == ',' || len_pattern == 0)
+						break;
 				}
+
+			NEXT_ELEMENT:
+
+				string = save_string;
+				len_string = save_len_string;
 			}
 			
 			while (cp != '}')

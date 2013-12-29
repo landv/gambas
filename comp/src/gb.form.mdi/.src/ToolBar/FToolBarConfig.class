@@ -159,8 +159,7 @@ Private Sub DrawItem(hCtrl As Control, sAction As String, bScreenshot As Boolean
   Dim bText As Boolean
   
   'If hItem.Tag Then hAction = MAction.Actions[hItem.Tag]
-   bText = Draw.W > (Draw.H * 2)
-  
+  bText = Draw.W > Draw.H
   
   Draw.FillRect(1, 1, Draw.W - 2, Draw.H - 2, Color.Background)
   
