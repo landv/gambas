@@ -20,6 +20,7 @@ SUBDIRS = \
  @crypt_dir@ \
  @qt4_dir@ \
  @gtk_dir@ \
+ @gtk3_dir@ \
  @opengl_dir@ \
  @desktop_dir@ \
  @pdf_dir@ \
