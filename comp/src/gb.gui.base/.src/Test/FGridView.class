@@ -29,7 +29,6 @@ Public Sub Form_Open()
   gvwinfo[6, 1].WordWrap = True
   gvwinfo[6, 1].RichText = "This program is a utility to find gambas source projects that use a named component or library.  It is intended for internal use only to help resolve which client programs need to be re-issued if the component/library is changed."
   gvwinfo[6, 1].Alignment = Align.TopLeft
-  gvwinfo.Rows[6].Height = -1
   gvwinfo[7, 0].Text = "State"
   gvwinfo[7, 1].Text = "Stable"
   gvwinfo[8, 0].Text = "Requires"
@@ -50,5 +49,6 @@ Public Sub Form_Open()
   ScrollArea(gvwInfo.Proxy).Shadow = True
   
   gvwinfo.Columns.Width = -1
+  gvwinfo.Rows[6].Height = -1
 
 End

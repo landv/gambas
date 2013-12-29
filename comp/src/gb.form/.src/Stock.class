@@ -17,6 +17,7 @@ Static Private $aList As String[]
 Static Private $aSizeDec As Integer[] = [256, 128, 64, 48, 32, 24, 22, 16]
 Static Private $aSizeInc As Integer[] = [16, 22, 24, 32, 48, 64, 128, 256]
 Static Private $bDebug As Boolean
+'Static Private $bDebugLoad As Boolean
 
 Class _DefaultStock
 
@@ -422,7 +423,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
     sName = File.Name(sPath)
     sDir = File.Dir(sPath)
     
-    'Error "-> "; sDir &/ sName
+    'If $bDebugLoad Then Error "-> "; sDir &/ sName
     
     If iRealSize Then
       
@@ -504,10 +505,14 @@ Static Public Function _get(Key As String, Optional {Default} As String) As Pict
       
       sFile = Key
       
+      'If Key = "tools" Then Error "Using default stock"
+      
       Try hPict = _DefaultStock.LoadImage(Key, iSize).Picture
       If Not Error Then Goto __RETURN
       Try hPict = PictureFromSvg(_DefaultStock.LoadSvgImage(Key), iSize)
       If Not Error Then Goto __RETURN
+      
+      'If Key = "tools" Then Error "...failed"
       
     Else
       
@@ -525,6 +530,12 @@ Static Public Function _get(Key As String, Optional {Default} As String) As Pict
         sFile = Key
         If Left(sFile) = "." Then sFile = Mid$(sFile, 2)
       Endif
+      
+      ' If Key = "tools" Then 
+      '   $bDebugLoad = True
+      ' Else
+      '   $bDebugLoad = False
+      ' Endif
       
       If sFile = "#" Then Continue
       

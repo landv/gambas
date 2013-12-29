@@ -239,23 +239,23 @@ msgstr "-"
 msgid "Integrated Development Environment for Gambas"
 msgstr "Gambas的整合發展環境"
 
-#: CBookmark.class:33
+#: CBookmark.class:40
 msgid "Define bookmark"
 msgstr ""
 
-#: CBookmark.class:38
+#: CBookmark.class:45
 msgid "Clear all bookmarks"
 msgstr ""
 
-#: CBookmark.class:42
+#: CBookmark.class:49
 msgid "Previous bookmark"
 msgstr ""
 
-#: CBookmark.class:47
+#: CBookmark.class:54
 msgid "Next bookmark"
 msgstr ""
 
-#: CClassInfo.class:571 FMain.form:388 FProperty.form:23
+#: CClassInfo.class:571 FMain.form:397 FProperty.form:23
 msgid "Properties"
 msgstr "屬性"
 
@@ -315,7 +315,7 @@ msgstr ""
 msgid "write-only"
 msgstr ""
 
-#: CClassInfo.class:627 Project.module:1641
+#: CClassInfo.class:627 Project.module:1625
 msgid "read-only"
 msgstr "唯讀"
 
@@ -675,11 +675,11 @@ msgstr ""
 msgid "Loading information on component &1..."
 msgstr "正在載入 &1 的資訊..."
 
-#: CComponent.class:1518 FFileProperty.class:164 FInfo.class:67
+#: CComponent.class:1518 FFileProperty.class:165 FProjectProperty.class:1358
 msgid "Classes"
 msgstr "Classes"
 
-#: CInsertColor.class:106 FEditor.form:263 FTextEditor.form:182
+#: CInsertColor.class:113 FEditor.form:263 FTextEditor.form:182
 msgid "Insert color"
 msgstr "插入顏色"
 
@@ -699,15 +699,17 @@ msgstr "警告! 找不到函式庫."
 msgid "Provides"
 msgstr "提供"
 
+#: CLibraryInfo.class:158 ComponentItem.class:153 FPropertyComponent.form:142
 #: LibraryItem.class:60
 msgid "Requires"
 msgstr "需求"
 
-#: FMain.form:669
+#: CModule.class:28 FCreateFile.form:153 FEditor.form:372 FForm.form:430
+#: FMain.form:685
 msgid "Form"
 msgstr "Form"
 
-#: CModule.class:28 FInfo.class:68
+#: CModule.class:28
 msgid "Forms"
 msgstr "Forms"
 
@@ -719,7 +721,7 @@ msgstr "Gambas forms"
 msgid "Gambas web pages"
 msgstr "Gambas 網頁"
 
-#: CModule.class:29 FCreateFile.form:174 FMain.form:677
+#: CModule.class:29 FCreateFile.form:174 FMain.form:693
 msgid "WebPage"
 msgstr "網頁"
 
@@ -731,7 +733,7 @@ msgstr "網頁"
 msgid "Gambas reports"
 msgstr "Gambas 報告"
 
-#: CModule.class:30 FCreateFile.form:195 FMain.form:685
+#: CModule.class:30 FCreateFile.form:195 FMain.form:701
 msgid "Report"
 msgstr "報表"
 
@@ -747,27 +749,28 @@ msgstr ""
 msgid "Event loop"
 msgstr ""
 
-#: Project.module:1743
+#: CProjectTree.class:285 FMain.form:301 FSearch.class:97 FSelectIcon.form:31
+#: Project.module:1740
 msgid "Project"
 msgstr "專案"
 
-#: CProjectTree.class:288 Project.module:1744
+#: CProjectTree.class:288 Project.module:1741
 msgid "Sources"
 msgstr "原始碼"
 
-#: CProjectTree.class:290 Project.module:1745
+#: CProjectTree.class:290 Project.module:1742
 msgid "Connections"
 msgstr "連結"
 
-#: CProjectTree.class:298 Project.module:1746
+#: CProjectTree.class:298 Project.module:1743
 msgid "Public"
 msgstr ""
 
-#: CProjectTree.class:299 Project.module:1747
+#: CProjectTree.class:299 Project.module:1744
 msgid "Data"
 msgstr "Data"
 
-#: CRecentFile.class:69 FMain.class:592
+#: CRecentFile.class:69 FMain.class:608
 msgid "Today"
 msgstr "今天"
 
@@ -787,7 +790,22 @@ msgstr "這個星期"
 msgid "This month"
 msgstr "這個月"
 
-#: FTranslate.class:554 Project.module:508
+#: CWaitingAnimation.class:56 FColorChooser.form:60 FConflict.class:218
+#: FConnectionEditor.class:387 FCreateFile.form:461 FDebugInfo.form:263
+#: FEditor.class:2348 FExportData.class:126 FFieldChooser.form:138
+#: FFileProperty.class:141 FFontChooser.form:40 FForm.class:3165
+#: FGotoLine.form:23 FHelpBrowser.form:61 FImageEditor.class:351
+#: FImageOffsetSelection.form:33 FImageQuality.form:30 FImageResize.form:49
+#: FImageRotate.form:32 FList.form:121 FMain.class:212 FMakeInstall.class:360
+#: FMenu.form:365 FNewConnection.form:277 FNewTable.form:86
+#: FNewTranslation.form:21 FOpenProject.form:158 FOption.class:675
+#: FPasteSpecial.form:77 FPasteTable.form:107 FProjectProperty.form:799
+#: FProjectVersion.class:209 FPropertyComponent.form:267 FProxy.form:57
+#: FReportBorderChooser.form:48 FReportBrushChooser.form:36
+#: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
+#: FSaveProjectAs.form:76 FSearch.class:869 FSelectExtraFile.form:43
+#: FSelectIcon.form:87 FSnippet.form:57 FTableChooser.form:68 FText.form:41
+#: FTextEditor.class:613 FTranslate.class:554 Project.module:478
 msgid "Cancel"
 msgstr "取消"
 
@@ -799,15 +817,17 @@ msgstr ""
 msgid "This program is published under the GNU General Public License."
 msgstr ""
 
+#: ComponentItem.class:139 FProjectProperty.class:1269
 #: FPropertyComponent.form:80
 msgid "Experimental"
 msgstr "測試"
 
+#: ComponentItem.class:141 FProjectProperty.class:1267
 #: FPropertyComponent.form:80
 msgid "Not finished but stable"
 msgstr "未完成但穩定"
 
-#: ComponentItem.class:143 FProjectProperty.class:1271
+#: ComponentItem.class:143 FProjectProperty.class:1273
 msgid "Deprecated"
 msgstr ""
 
@@ -843,43 +863,57 @@ msgstr ""
 msgid "Remove all"
 msgstr "全部移除"
 
-#: Design.module:159 Project.module:2178
+#: Design.module:173 Project.module:2183
 msgid "first"
 msgstr "第一個"
 
-#: Design.module:161 Project.module:2180
+#: Design.module:175 Project.module:2185
 msgid "second"
 msgstr "第二個"
 
-#: Design.module:163 Project.module:2182
+#: Design.module:177 Project.module:2187
 msgid "third"
 msgstr "第三個"
 
-#: Design.module:257 Project.module:2241
+#: Design.module:272 Project.module:2246
 msgid "in &1:&2."
 msgstr "於 &1:&2."
 
-#: Design.module:363
+#: Design.module:378
 msgid "Please send a bug report to the following mail address: &1"
 msgstr ""
 
-#: Design.module:363
+#: Design.module:378
 msgid "The program has stopped unexpectedly:"
 msgstr ""
 
-#: Design.module:367
-msgid "The program has returned\nthe value: &1"
-msgstr "這程式回傳\n數值 : &1"
+#: Design.module:382
+msgid ""
+"The program has returned\n"
+"the value: &1"
+msgstr ""
+"這程式回傳\n"
+"數值 : &1"
 
-#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
+#: Design.module:443 FColorChooser.form:54 FConnectionEditor.class:587
+#: FCreateFile.form:467 FFieldChooser.form:132 FFontChooser.form:34
+#: FGotoLine.form:17 FImageOffsetSelection.form:27 FImageQuality.form:24
+#: FImageResize.form:103 FImageRotate.form:26 FList.form:115 FMain.class:1872
+#: FMakeInstall.class:306 FMenu.form:360 FNewConnection.form:271
+#: FNewTable.form:80 FNewTranslation.form:15 FOpenProject.form:152
+#: FPasteSpecial.form:71 FProjectProperty.form:793 FPropertyComponent.form:261
+#: FProxy.form:63 FReportBorderChooser.form:54 FReportBrushChooser.form:42
+#: FReportCoordChooser.form:32 FReportPaddingChooser.form:69
+#: FSelectExtraFile.form:37 FSelectIcon.form:82 FSnippet.form:51
+#: FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "OK"
 
-#: Design.module:859
+#: Design.module:876
 msgid "Output terminal"
 msgstr "輸出終端機"
 
-#: Design.module:886
+#: Design.module:903
 msgid "No terminal emulator found."
 msgstr "找不到終端機模擬器."
 
@@ -900,8 +934,18 @@ msgid "Gambas Almost Means Basic!"
 msgstr "-"
 
 #: FAbout.form:57
-msgid "<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
-msgstr "<h2 align=center>授權條款</h2>\n\n<p align=center>本程式是自由軟體，您可以遵照自由軟體基金會 (Free Software Foundation)出版的 GNU 通用公共許可証條款 (GNU General Public License) 第二版來修改和重新發佈這一程式，或者自由選擇使用任何更新的版本。</p>\n\n<p align=center>    發佈這一程式的目的是希望它有用，但沒有任何擔保。甚至沒有適合特定目的而隱含的擔保。更詳細的情況請參閱 GNU 通用公共許可証。</p>\n"
+msgid ""
+"<h2 align=center>Licence</h2>\n"
+"\n"
+"<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n"
+"\n"
+"<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n"
+msgstr ""
+"<h2 align=center>授權條款</h2>\n"
+"\n"
+"<p align=center>本程式是自由軟體，您可以遵照自由軟體基金會 (Free Software Foundation)出版的 GNU 通用公共許可証條款 (GNU General Public License) 第二版來修改和重新發佈這一程式，或者自由選擇使用任何更新的版本。</p>\n"
+"\n"
+"<p align=center>    發佈這一程式的目的是希望它有用，但沒有任何擔保。甚至沒有適合特定目的而隱含的擔保。更詳細的情況請參閱 GNU 通用公共許可証。</p>\n"
 
 #: FAbout.form:63
 msgid "<h2 align=center>Authors</h2>\n"
@@ -919,107 +963,141 @@ msgstr "系統"
 msgid "Free"
 msgstr "可用"
 
-#: FConflict.class:24
+#: FConflict.class:23
 msgid "&Edit"
 msgstr "編輯(&E)"
 
-#: FConflict.class:24
-msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
-msgstr "這個檔案與版本 #&1 衝突.\n您必須解決衝突以使用此檔案."
+#: FConflict.class:23
+msgid ""
+"This file is in conflict with the revision #&1.\n"
+"You must resolve the conflict in order to use the file."
+msgstr ""
+"這個檔案與版本 #&1 衝突.\n"
+"您必須解決衝突以使用此檔案."
 
-#: FConflict.class:130
-msgid "Version conflict"
-msgstr "版本衝突"
+#: FConflict.class:116
+#, fuzzy
+msgid "Unable to load file:"
+msgstr "無法載入表格 '&1'."
 
-#: FConflict.class:185
-msgid "The file has been modified.\nDo you really want to close the dialog?"
-msgstr "檔案已修改.\n您確定要關閉對話視窗嗎?"
+#: FConflict.class:158 FCreateFile.form:237 FDebugInfo.class:70
+msgid "Text"
+msgstr "Text"
 
-#: FConflict.class:213
+#: FConflict.class:160 FCreateFile.form:216 FMain.form:712
+#: FReportBrushChooser.form:49 Project.module:205
+msgid "Image"
+msgstr "影像"
+
+#: FConflict.class:218
+msgid ""
+"The file has been modified.\n"
+"Do you really want to close the dialog?"
+msgstr ""
+"檔案已修改.\n"
+"您確定要關閉對話視窗嗎?"
+
+#: FConflict.class:246
 msgid "Some conflicts are not yet resolved."
 msgstr "有一些衝突未解決."
 
-#: FConflict.class:219
+#: FConflict.class:252
 msgid "Unable to resolve the conflict."
 msgstr "無法解決衝突."
 
-#: FConflict.class:248
-msgid "The file has been modified.\nDo you really want to open another file?"
-msgstr "檔案已修改.\n您確定要開啟另一個檔案嗎?"
+#: FConflict.class:281
+msgid ""
+"The file has been modified.\n"
+"Do you really want to open another file?"
+msgstr ""
+"檔案已修改.\n"
+"您確定要開啟另一個檔案嗎?"
 
-#: FConflict.class:256
+#: FConflict.class:289
 msgid "Conflict files"
 msgstr "衝突檔案"
 
-#: FConflict.form:47 FMain.form:735 FOpenProject.form:40
-msgid "Open"
-msgstr "開啟"
+#: FConflict.form:32
+msgid "Version conflict"
+msgstr "版本衝突"
 
+#: FConflict.form:71 FConnectionEditor.form:377 FEditor.form:144
+#: FForm.form:239 FImageEditor.form:123 FMain.form:783 FMenu.form:105
 #: FOutput.form:58 FProjectVersion.form:234 FTextEditor.form:108
 msgid "Cut"
 msgstr "剪下"
 
+#: FConflict.form:77 FConnectionEditor.form:149 FEditor.form:150
+#: FForm.form:246 FImageEditor.form:131 FList.form:92 FMain.form:790
+#: FMenu.form:111 FOutput.form:65 FProjectVersion.form:240 FSystemInfo.form:74
 #: FTextEditor.form:115
 msgid "Copy"
 msgstr "複製"
 
+#: FConflict.form:83 FConnectionEditor.form:157 FEditor.form:157
+#: FForm.form:259 FImageEditor.form:138 FList.form:98 FMain.form:797
+#: FMenu.form:117 FOutput.form:72 FPasteTable.form:101
 #: FProjectVersion.form:246 FTextEditor.form:122
 msgid "Paste"
 msgstr "貼上"
 
+#: FConflict.form:89 FConnectionEditor.form:405 FEditor.form:128
+#: FFieldChooser.form:121 FForm.form:222 FImageEditor.form:104 FList.form:104
+#: FOption.form:561 FOutput.form:41 FProjectVersion.form:252
 #: FTextEditor.form:91
 msgid "Undo"
 msgstr "復原"
 
+#: FConflict.form:95 FConnectionEditor.form:412 FEditor.form:135
+#: FForm.form:229 FImageEditor.form:112 FOutput.form:48
 #: FProjectVersion.form:258 FTextEditor.form:98
 msgid "Redo"
 msgstr "取消復原"
 
+#: FConflict.form:101 FEditor.form:452 FMenu.form:127 FProjectVersion.form:264
 #: FTextEditor.form:326
 msgid "Indent"
 msgstr "縮排"
 
+#: FConflict.form:107 FEditor.form:460 FMenu.form:133 FProjectVersion.form:270
 #: FTextEditor.form:334
 msgid "Unindent"
 msgstr "取消縮排"
 
-#: FConflict.form:112 FCreateFile.form:237 FDebugInfo.class:70
-msgid "Text"
-msgstr "Text"
+#: FConflict.form:149 FMain.form:751 FOpenProject.form:40
+msgid "Open"
+msgstr "開啟"
 
-#: FReportBrushChooser.form:49 Project.module:202
-msgid "Image"
-msgstr "影像"
+#: FConflict.form:151
+#, fuzzy
+msgid "Open..."
+msgstr "開啟"
 
-#: FConflict.form:129 FInfo.form:136
-msgid "Details"
-msgstr "詳細資料"
-
-#: FConflict.form:138
-msgid "Resolve conflict with"
-msgstr "解決衝突"
-
-#: FConflict.form:154 FInfo.form:30
-msgid "Information"
-msgstr "資訊"
-
+#: FConflict.form:157 FConnectionEditor.form:102 FEditor.form:323
+#: FForm.form:421 FImageEditor.form:328 FMenu.class:70 FSaveProjectAs.form:82
 #: FTextEditor.form:237
 msgid "Save"
 msgstr "儲存"
 
-#: FConflict.form:178
+#: FConflict.form:168
 msgid "Solve"
 msgstr "解決(v)"
 
+#: FConflict.form:174 FDebugInfo.form:270 FEditor.form:310
+#: FFileProperty.form:76 FForm.form:408 FImageEditor.form:335
+#: FImportTable.form:222 FPatch.form:105 FProjectVersion.form:323
 #: FSystemInfo.form:80 FTextEditor.form:244 FTips.form:84 FTranslate.form:297
 msgid "Close"
 msgstr "關閉"
 
+#: FConnectionEditor.class:44 FCreateFile.form:313 FDebugInfo.class:38
+#: FMakeInstall.form:184 FNewConnection.form:64 FNewTable.form:33
 #: FOption.form:1038
 msgid "Name"
 msgstr "名稱"
 
-#: FProxy.form:27
+#: FConnectionEditor.class:49 FCreateFile.form:364 FCreateProject.form:97
+#: FDebugInfo.class:76 FNewConnection.form:78 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "類型"
 
@@ -1043,7 +1121,7 @@ msgstr "獨一"
 msgid "Field"
 msgstr "欄位"
 
-#: FConnectionEditor.class:256 FMakeInstall.form:251 FProjectProperty.form:259
+#: FConnectionEditor.class:256 FMakeInstall.form:251 FProjectProperty.form:289
 msgid "Description"
 msgstr "描述"
 
@@ -1079,6 +1157,7 @@ msgstr "二進位物件"
 msgid "Boolean"
 msgstr "布林值"
 
+#: FConnectionEditor.class:710 FProjectVersion.class:288
 #: MConnection.module:115
 msgid "Date"
 msgstr "日期"
@@ -1147,7 +1226,7 @@ msgstr "無法刪除表格 '&1'."
 msgid "Select the CSV file to import"
 msgstr "選擇要匯入的 CSV 檔"
 
-#: FConnectionEditor.class:1619 FSearch.form:172 FTranslate.class:1199
+#: FConnectionEditor.class:1619 FSearch.form:172 FTranslate.class:1204
 msgid "All files"
 msgstr "全部的檔案"
 
@@ -1167,6 +1246,8 @@ msgstr ""
 msgid "Connection editor"
 msgstr "連結編輯器"
 
+#: FConnectionEditor.form:110 FEditor.form:317 FForm.form:415
+#: FHelpBrowser.form:67 FImageEditor.form:321 FTextEditor.form:231
 #: FTranslate.form:72
 msgid "Reload"
 msgstr "重新載入"
@@ -1183,7 +1264,8 @@ msgstr "新增表格"
 msgid "Delete table"
 msgstr "刪除表格"
 
-#: FOption.form:991 FProjectProperty.form:516 FPropertyComponent.form:236
+#: FConnectionEditor.form:133 FMain.form:897 FMakeInstall.form:642
+#: FOption.form:991 FProjectProperty.form:546 FPropertyComponent.form:236
 msgid "Remove"
 msgstr "移除"
 
@@ -1191,7 +1273,7 @@ msgstr "移除"
 msgid "Rename table"
 msgstr "重新命名表格"
 
-#: FConnectionEditor.form:141 FMain.form:788
+#: FConnectionEditor.form:141 FMain.form:804
 msgid "Rename"
 msgstr "重新命名(R)"
 
@@ -1207,6 +1289,7 @@ msgstr "貼上表格"
 msgid "Import text file"
 msgstr "匯入文字檔"
 
+#: FConnectionEditor.form:165 FImportTable.form:215 FOption.form:1015
 #: FTranslate.form:317
 msgid "Import"
 msgstr "匯入"
@@ -1219,7 +1302,8 @@ msgstr ""
 msgid "Fields"
 msgstr "欄位"
 
-#: FOption.form:1160 FProjectProperty.form:719 FPropertyComponent.form:230
+#: FConnectionEditor.form:233 FMain.class:1974 FMakeInstall.form:636
+#: FOption.form:1160 FProjectProperty.form:749 FPropertyComponent.form:230
 msgid "Add"
 msgstr "新增"
 
@@ -1251,6 +1335,7 @@ msgstr "執行查詢"
 msgid "New query"
 msgstr ""
 
+#: FConnectionEditor.form:363 FCreateFile.form:82 FMain.form:648
 #: FOption.form:977 FTranslate.form:67
 msgid "New"
 msgstr "新的"
@@ -1271,6 +1356,7 @@ msgstr "匯出到CSV檔"
 msgid "Export"
 msgstr "匯出(E)"
 
+#: FConnectionEditor.form:483 FForm.form:266 FList.form:64 FMain.form:811
 #: FMenu.form:95 FNewConnection.class:327 FOption.class:858 FTranslate.form:77
 msgid "Delete"
 msgstr "刪除"
@@ -1315,26 +1401,28 @@ msgstr "無法加入檔案."
 msgid "New file"
 msgstr "新增檔案"
 
-#: FCreateFile.form:111 FMain.form:653
+#: FCreateFile.form:111 FMain.form:669
 msgid "Module"
 msgstr "Module"
 
-#: FCreateFile.form:132 FDebugInfo.class:51 FMain.form:661
+#: FCreateFile.form:132 FDebugInfo.class:51 FMain.form:677
 msgid "Class"
 msgstr "Class"
 
-#: FCreateFile.form:258 FInfo.class:104 FMain.form:703
+#: FCreateFile.form:258 FMain.form:719
 msgid "HTML file"
 msgstr "HTML 檔"
 
-#: FCreateFile.form:279 FMain.form:710
+#: FCreateFile.form:279 FMain.form:726
 msgid "Style sheet"
 msgstr "樣式表"
 
-#: FCreateFile.form:300 FInfo.class:113 FMain.form:717
+#: FCreateFile.form:300 FMain.form:733
 msgid "Javascript file"
 msgstr ""
 
+#: FCreateFile.form:323 FCreateProject.form:273 FImportTable.form:57
+#: FMakePatch.form:63 FProjectProperty.form:311 FPropertyComponent.form:63
 #: FSearch.form:100
 msgid "Options"
 msgstr "選項"
@@ -1387,11 +1475,11 @@ msgstr "請輸入儲存庫的位置."
 msgid "The project has been successfully created."
 msgstr "專案建立成功."
 
-#: FCreateProject.form:66 FMain.form:230
+#: FCreateProject.form:66 FMain.form:239
 msgid "New project"
 msgstr "開啟新專案"
 
-#: FCreateProject.form:81 FProjectProperty.form:202
+#: FCreateProject.form:81 FProjectProperty.form:232
 msgid "Project type"
 msgstr "專案類型"
 
@@ -1420,7 +1508,9 @@ msgid "CGI Web application"
 msgstr "CGI 網頁應用程式"
 
 #: FCreateProject.form:258
-msgid "Application stored in a\nSubversion repository"
+msgid ""
+"Application stored in a\n"
+"Subversion repository"
 msgstr "存在於 Subversion 儲存庫中的應用程式"
 
 #: FCreateProject.form:287
@@ -1531,11 +1621,12 @@ msgstr "表達式"
 msgid "Function"
 msgstr "函數"
 
+#: FDebugInfo.class:55 FImageEditor.form:523 FImportTable.class:56
 #: FOption.form:642
 msgid "Line"
 msgstr "直線"
 
-#: FDebugInfo.class:62 FInfo.class:120 FMain.form:226 FTranslate.class:69
+#: FDebugInfo.class:62 FMain.form:235 FTranslate.class:69
 msgid "File"
 msgstr "檔案"
 
@@ -1555,6 +1646,7 @@ msgstr "訊息"
 msgid "native code"
 msgstr "原生碼"
 
+#: FDebugInfo.class:570 FImageEditor.form:610 FList.form:86
 #: FMakeInstall.form:660 FOption.class:675 FOutput.form:79
 msgid "Clear"
 msgstr "清除"
@@ -1575,11 +1667,11 @@ msgstr "靜態變數"
 msgid "Warnings"
 msgstr ""
 
-#: FDebugInfo.form:49 FMain.form:409
+#: FDebugInfo.form:49 FMain.form:418
 msgid "Debug"
 msgstr "除錯"
 
-#: FDebugInfo.form:60 FMain.form:519 FOption.form:346 FSearch.class:93
+#: FDebugInfo.form:60 FMain.form:535 FOption.form:346 FSearch.class:93
 msgid "Console"
 msgstr "控制台"
 
@@ -1667,11 +1759,17 @@ msgstr "沒發現搜尋字串."
 msgid "Stack backtrace"
 msgstr "堆疊回溯"
 
-#: FEditor.class:2382 FImageEditor.class:351 FTextEditor.class:604
-msgid "The file has been modified.\n\nAll your changes will be lost."
-msgstr "這個檔案已經被修改.\n\n全部您的異動將消失."
+#: FEditor.class:2348 FImageEditor.class:351 FTextEditor.class:613
+msgid ""
+"The file has been modified.\n"
+"\n"
+"All your changes will be lost."
+msgstr ""
+"這個檔案已經被修改.\n"
+"\n"
+"全部您的異動將消失."
 
-#: FEditor.class:2804 FTextEditor.class:990
+#: FEditor.class:2770 FTextEditor.class:1023
 msgid "(Declarations)"
 msgstr "(宣告)"
 
@@ -1691,7 +1789,7 @@ msgstr "搜尋定義"
 msgid "Open form"
 msgstr "開啟表單"
 
-#: FEditor.form:118 FForm.form:153 FMain.form:814
+#: FEditor.form:118 FForm.form:153 FMain.form:830
 msgid "Startup class"
 msgstr "起始 class(S)"
 
@@ -1707,7 +1805,7 @@ msgstr "尋找下一個"
 msgid "Find previous"
 msgstr "搜尋上一個"
 
-#: FEditor.form:192 FMain.form:1212
+#: FEditor.form:192 FMain.form:1257
 msgid "Run until current line"
 msgstr "執行到目前這行"
 
@@ -1755,7 +1853,7 @@ msgstr "格式化程式碼"
 msgid "Sort procedures"
 msgstr "將程序排序"
 
-#: FEditor.form:281 FImageEditor.form:281 FMain.form:496 FTextEditor.form:202
+#: FEditor.form:281 FImageEditor.form:281 FMain.form:512 FTextEditor.form:202
 msgid "View"
 msgstr "檢視"
 
@@ -1804,8 +1902,14 @@ msgid "&Overwrite"
 msgstr "覆寫(&O)"
 
 #: FExportData.class:126
-msgid "This file already exists.\n\nDo you want to overwrite it?"
-msgstr "檔案已存在.\n\n您要覆蓋它嗎?"
+msgid ""
+"This file already exists.\n"
+"\n"
+"Do you want to overwrite it?"
+msgstr ""
+"檔案已存在.\n"
+"\n"
+"您要覆蓋它嗎?"
 
 #: FExportData.form:31 FImportTable.form:100
 msgid "Delimiter character"
@@ -1847,15 +1951,15 @@ msgstr "連結"
 msgid "Table"
 msgstr "表格"
 
-#: FFileProperty.class:31 FInfo.class:83
+#: FFileProperty.class:31
 msgid "Gambas &1"
 msgstr ""
 
-#: FFileProperty.class:38 FInfo.class:91
+#: FFileProperty.class:38
 msgid "Gambas module"
 msgstr ""
 
-#: FFileProperty.class:40 FInfo.class:95
+#: FFileProperty.class:40
 msgid "Gambas class"
 msgstr ""
 
@@ -1863,43 +1967,44 @@ msgstr ""
 msgid "&1 properties"
 msgstr ""
 
-#: FFileProperty.class:84 FInfo.form:147
+#: FFileProperty.class:84
 msgid "Versioning"
 msgstr "版本控制"
 
-#: FFileProperty.class:91 FTranslate.form:303
+#: FFileProperty.class:92 FProjectProperty.form:781 FTranslate.form:303
 msgid "Statistics"
 msgstr "統計資料"
 
-#: FFileProperty.class:123 FInfo.class:240
+#: FFileProperty.class:124
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr "這個檔案已被鎖定, 下次提交的時候會被刪除."
 
-#: FFileProperty.class:125 FInfo.class:242
+#: FFileProperty.class:126
 msgid "This file is not versioned, and must be added to the repository."
 msgstr "這個檔案沒有被加入版本控制, 但必須被加入."
 
-#: FFileProperty.class:128 FInfo.class:245
+#: FFileProperty.class:129
 msgid "This file has not been modified since the last commit."
 msgstr "這個檔案自從上一次提交後已經更動."
 
-#: FProjectVersion.class:204 FSave.form:21 Project.module:3339
+#: FFileProperty.class:141 FMakeInstall.class:360 FProjectVersion.class:209
+#: FSave.form:21 Project.module:3356
 msgid "Continue"
 msgstr "繼續"
 
-#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:204
+#: FFileProperty.class:141 FProjectVersion.class:209
 msgid "You are going to cancel your changes!"
 msgstr "您將要取消您的修改!"
 
-#: FFileProperty.class:163 FInfo.class:66
+#: FFileProperty.class:164 FProjectProperty.class:1354
 msgid "Modules"
 msgstr "Modules"
 
-#: FFileProperty.class:168
+#: FFileProperty.class:169 FProjectProperty.class:1371
 msgid "Lines of code"
 msgstr ""
 
-#: FFileProperty.form:64 FInfo.form:170 FPatch.form:93 FProjectVersion.form:83
+#: FFileProperty.form:65 FPatch.form:93 FProjectVersion.form:83
 msgid "Revert"
 msgstr "還原...(R)"
 
@@ -1911,13 +2016,19 @@ msgstr "選擇字型"
 msgid "Bad form file"
 msgstr "檔案損壞"
 
-#: FForm.class:1301
+#: FForm.class:1308
 msgid "Component missing for control &1"
 msgstr "控制項 &1 缺少元件"
 
-#: FForm.class:3160
-msgid "The form has been modified.\n\nAll your changes will be lost."
-msgstr "表單已修改.\n\n您的修改將會遺失."
+#: FForm.class:3165
+msgid ""
+"The form has been modified.\n"
+"\n"
+"All your changes will be lost."
+msgstr ""
+"表單已修改.\n"
+"\n"
+"您的修改將會遺失."
 
 #: FForm.form:129
 msgid "Select"
@@ -1931,7 +2042,7 @@ msgstr "事件"
 msgid "Change into"
 msgstr "轉換為"
 
-#: FForm.form:146 FMain.form:740 FTextEditor.form:81
+#: FForm.form:146 FMain.form:756 FTextEditor.form:81
 msgid "Open code"
 msgstr "開啟程式碼"
 
@@ -2107,7 +2218,7 @@ msgstr "背景"
 msgid "Foreground"
 msgstr ""
 
-#: FFormStack.form:15 FMain.form:1477
+#: FFormStack.form:15 FMain.form:1543
 msgid "Hierarchy"
 msgstr "階層表"
 
@@ -2131,19 +2242,19 @@ msgstr "下移"
 msgid "Move bottom"
 msgstr "移到底部"
 
-#: FHelpBrowser.class:24 FProjectProperty.form:409
+#: FHelpBrowser.class:24 FProjectProperty.form:439
 msgid "Default language"
 msgstr "預設語言"
 
-#: FHelpBrowser.form:30 FMain.form:925
+#: FHelpBrowser.form:30 FMain.form:960
 msgid "Help browser"
 msgstr "說明瀏覽器"
 
-#: FHelpBrowser.form:41 FMain.form:546 FProfile.form:48
+#: FHelpBrowser.form:41 FMain.form:562 FProfile.form:48
 msgid "Go back"
 msgstr "返回"
 
-#: FHelpBrowser.form:47 FMain.form:553 FProfile.form:54
+#: FHelpBrowser.form:47 FMain.form:569 FProfile.form:54
 msgid "Go forward"
 msgstr "往前"
 
@@ -2387,7 +2498,7 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: FTranslate.class:70
+#: FImageProperty.form:360 FSelectIcon.form:54 FTranslate.class:70
 msgid "Size"
 msgstr "大小"
 
@@ -2427,11 +2538,11 @@ msgstr ""
 msgid "Preview"
 msgstr "預覽"
 
-#: FImageProperty.form:547 FOption.form:999 FProjectProperty.form:656
+#: FImageProperty.form:547 FOption.form:999 FProjectProperty.form:686
 msgid "Reset"
 msgstr "重設"
 
-#: FImageProperty.form:554 FMain.form:356 FPatch.form:86
+#: FImageProperty.form:554 FMain.form:365 FPatch.form:86
 msgid "Apply"
 msgstr ""
 
@@ -2559,70 +2670,6 @@ msgstr "鍵值欄位"
 msgid "Messages"
 msgstr "訊息"
 
-#: FInfo.class:11
-msgid "&1: &2"
-msgstr "-"
-
-#: FInfo.class:65
-msgid "Gambas project"
-msgstr "Gambas 專案"
-
-#: FInfo.class:69
-msgid "Lines of code: &1"
-msgstr "程式碼行: &1"
-
-#: FInfo.class:85
-msgid "UTF-8 &1"
-msgstr ""
-
-#: FInfo.class:93
-msgid "UTF-8 Gambas module"
-msgstr ""
-
-#: FInfo.class:97
-msgid "UTF-8 Gambas class"
-msgstr ""
-
-#: FInfo.class:99
-msgid "Picture"
-msgstr "影像"
-
-#: FInfo.class:101
-msgid "Text file"
-msgstr "純文字檔案"
-
-#: FInfo.class:107
-msgid "CSS file"
-msgstr "CSS 檔"
-
-#: FInfo.class:110
-msgid "XML file"
-msgstr "XML 檔案"
-
-#: FInfo.class:117
-msgid "ChangeLog"
-msgstr "-"
-
-#: FInfo.class:144
-msgid "&1, &2 line(s)"
-msgstr "&1, &2 行"
-
-#: FInfo.form:60 FProjectProperty.form:171 FPropertyComponent.form:58
-msgid "General"
-msgstr "一般的"
-
-#: FInfo.form:71
-msgid "Link to"
-msgstr "連結到"
-
-#: FInfo.form:110
-msgid "Last modified"
-msgstr "最後修改"
-
-#: FInfo.form:123 FMain.form:636
-msgid "Directory"
-msgstr "目錄"
-
 #: FList.class:103
 msgid "Item &1"
 msgstr "項目 &1"
@@ -2635,7 +2682,7 @@ msgstr "您確定要清除清單嗎?"
 msgid "Edit list property"
 msgstr "編輯列表屬性"
 
-#: FList.form:58 FMenu.form:80 FProjectProperty.form:510
+#: FList.form:58 FMenu.form:80 FProjectProperty.form:540
 msgid "Insert"
 msgstr ""
 
@@ -2659,391 +2706,424 @@ msgstr "無法刪除檔案或目錄"
 msgid "File or directory does not exist anymore."
 msgstr "檔案或目錄已不存在."
 
-#: FMain.class:613
+#: FMain.class:629
 msgid "Sort history"
 msgstr "排序紀錄"
 
-#: FMain.class:617 FOpenProject.form:71 FWelcome.form:42
+#: FMain.class:633 FOpenProject.form:71 FWelcome.form:42
 msgid "Sort by date"
 msgstr "以日期排序"
 
-#: FMain.class:617 FOpenProject.form:80 FWelcome.form:49
+#: FMain.class:633 FOpenProject.form:80 FWelcome.form:49
 msgid "Sort by name"
 msgstr "以名稱排序"
 
-#: FMain.class:617 FOpenProject.form:88 FWelcome.form:55
+#: FMain.class:633 FOpenProject.form:88 FWelcome.form:55
 msgid "Sort by path"
 msgstr "以路徑排序"
 
-#: FMain.class:628
+#: FMain.class:644
 msgid "&Clear history"
 msgstr "清除紀錄(&C)"
 
-#: FMain.class:794
+#: FMain.class:810
 msgid "New folder"
 msgstr "新增資料夾"
 
-#: FMain.class:865
-msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
-msgstr "您的系統並未安裝 GNU 翻譯工具.\n\n請安裝它們以進行翻譯."
+#: FMain.class:881
+msgid ""
+"The GNU translation tools are not installed on your system.\n"
+"\n"
+"Please install them to be able to do the translation."
+msgstr ""
+"您的系統並未安裝 GNU 翻譯工具.\n"
+"\n"
+"請安裝它們以進行翻譯."
 
-#: FMain.class:1103 FPropertyComponent.class:232
+#: FMain.class:1119 FPropertyComponent.class:232
 msgid "Library properties"
 msgstr ""
 
-#: FMain.class:1515
+#: FMain.class:1543
 msgid "Unable to drop file into the project."
 msgstr "無法將檔案拖入專案."
 
-#: FMain.class:1633
+#: FMain.class:1661
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "所有的備份檔以及輸出檔將會從專案目錄中移除."
 
-#: FMain.class:1633
+#: FMain.class:1661
 msgid "Clean"
 msgstr "清理"
 
-#: FMain.class:1844
+#: FMain.class:1872
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr "按下按鍵以重新顯示選單列: <p><b>&1</b> "
 
-#: FMain.class:1946
+#: FMain.class:1974
 msgid "Do you really want to add this file to the repository?"
 msgstr "您確定要將這個檔案加入儲存庫嗎?"
 
-#: FMain.class:2085
+#: FMain.class:2106
 msgid "Choose a profile"
 msgstr ""
 
-#: FMain.class:2086
+#: FMain.class:2107
 msgid "Profile for &1 project"
 msgstr ""
 
-#: FMain.class:2302 FProperty.class:947
+#: FMain.class:2323 FProperty.class:947
 msgid "Select a file"
 msgstr "選擇檔案"
 
-#: FMain.class:2306
+#: FMain.class:2327
 msgid "This file is located inside the project."
 msgstr ""
 
-#: FMain.form:237
+#: FMain.form:246
 msgid "Open project"
 msgstr "開啟專案"
 
-#: FMain.form:243
+#: FMain.form:252
 msgid "Open recent"
 msgstr "開啟最近的檔案(r)"
 
-#: FMain.form:250
+#: FMain.form:259
 msgid "Open example"
 msgstr "開啟範例(e)"
 
-#: FMain.form:258
+#: FMain.form:267
 msgid "Open file"
 msgstr ""
 
-#: FMain.form:266
+#: FMain.form:275
 msgid "Save project"
 msgstr "儲存專案"
 
-#: FMain.form:274 FSaveProjectAs.form:18
+#: FMain.form:283 FSaveProjectAs.form:18
 msgid "Save project as"
 msgstr "另存專案"
 
-#: FMain.form:285 FMakeInstall.class:306 FSave.class:28 FWelcome.class:58
+#: FMain.form:294 FMakeInstall.class:306 FSave.class:28 FWelcome.class:58
 msgid "Quit"
 msgstr "結束"
 
-#: FMain.form:297
+#: FMain.form:306
 msgid "Compile"
 msgstr "編譯"
 
-#: FMain.form:304
+#: FMain.form:313
 msgid "Compile All"
 msgstr "全部編譯(A)"
 
-#: FMain.form:314
+#: FMain.form:323
 msgid "Translate"
 msgstr "翻譯"
 
-#: FMain.form:323
+#: FMain.form:332
 msgid "Make"
 msgstr "製作"
 
-#: FMain.form:327
+#: FMain.form:336
 msgid "Executable"
 msgstr "可執行檔...(x)"
 
-#: FMain.form:334 FMakePatch.form:50
+#: FMain.form:343 FMakePatch.form:50
 msgid "Source archive"
 msgstr "原始碼歸檔(S)"
 
-#: FMain.form:341
+#: FMain.form:350
 msgid "Installation package"
 msgstr "可安裝套件...(I)"
 
-#: FMain.form:348
+#: FMain.form:357
 msgid "Patch"
 msgstr ""
 
-#: FMain.form:351
+#: FMain.form:360
 msgid "Create"
 msgstr ""
 
-#: FMain.form:366 FProjectVersion.form:95
+#: FMain.form:375 FProjectVersion.form:95
 msgid "Clean up"
 msgstr "清理"
 
-#: FMain.form:372
+#: FMain.form:381
 msgid "Refresh"
 msgstr "刷新(R)"
 
-#: FMain.form:378
+#: FMain.form:387
 msgid "Put on version control"
 msgstr "加入版本控制(v)"
 
-#: FMain.form:395 FPropertyComponent.form:44
+#: FMain.form:404 FPropertyComponent.form:44
 msgid "Component properties"
 msgstr "元件屬性"
 
-#: FMain.form:403
+#: FMain.form:412
 msgid "Version control"
 msgstr ""
 
-#: FMain.form:414
+#: FMain.form:423
 msgid "Run"
 msgstr "執行"
 
-#: FMain.form:421
+#: FMain.form:430
 msgid "Use terminal emulator"
 msgstr ""
 
-#: FMain.form:427 FProjectProperty.form:470
+#: FMain.form:436 FProjectProperty.form:500
 msgid "Use embedded HTTP server"
 msgstr ""
 
-#: FMain.form:433 FProjectProperty.form:435
+#: FMain.form:442 FProjectProperty.form:465
 msgid "Activate profiling"
 msgstr ""
 
-#: FMain.form:442
+#: FMain.form:451
 msgid "Pause"
 msgstr "暫停"
 
-#: FMain.form:449
+#: FMain.form:458
 msgid "Stop"
 msgstr "終止"
 
-#: FMain.form:456
+#: FMain.form:465
 msgid "Step"
 msgstr "步進"
 
-#: FMain.form:463
+#: FMain.form:472
 msgid "Forward"
 msgstr "向前"
 
-#: FMain.form:470
+#: FMain.form:479
 msgid "Finish"
 msgstr "完成(h)"
 
-#: FMain.form:480
+#: FMain.form:486
+msgid "Break on each error"
+msgstr ""
+
+#: FMain.form:496
 msgid "Open profile"
 msgstr ""
 
-#: FMain.form:486
+#: FMain.form:502
 msgid "Clear all breakpoints"
 msgstr "清除所有中斷點(a)"
 
-#: FMain.form:491
+#: FMain.form:507
 msgid "Close all debug windows"
 msgstr "關閉所有除錯視窗(d)"
 
-#: FMain.form:529
+#: FMain.form:545
 msgid "Status bar"
 msgstr "狀態列"
 
-#: FMain.form:537
+#: FMain.form:553
 msgid "Hide menubar"
 msgstr "隱藏選單列"
 
-#: FMain.form:560
+#: FMain.form:576
 msgid "Close all windows"
 msgstr "關閉全部視窗(a)"
 
-#: FMain.form:566
+#: FMain.form:582
 msgid "Tools"
 msgstr ""
 
-#: FMain.form:570
+#: FMain.form:586
 msgid "Find"
 msgstr "搜尋...(F)"
 
-#: FMain.form:576 FSearch.form:76
+#: FMain.form:592 FSearch.form:76
 msgid "Replace"
 msgstr "替換"
 
-#: FMain.form:586
+#: FMain.form:602
 msgid "Browse project"
 msgstr "瀏覽專案...(B)"
 
-#: FMain.form:593
+#: FMain.form:609
 msgid "Open a terminal"
 msgstr "開啟終端機...(O)"
 
-#: FMain.form:600
+#: FMain.form:616
 msgid "Send project by mail"
 msgstr ""
 
-#: FMain.form:606
+#: FMain.form:622
 msgid "Update all forms"
 msgstr ""
 
-#: FMain.form:615
+#: FMain.form:631
 msgid "Shortcuts"
 msgstr "快捷鍵"
 
-#: FMain.form:621 FOption.form:203
+#: FMain.form:637 FOption.form:203
 msgid "Preferences"
 msgstr "偏好設定"
 
-#: FMain.form:642
+#: FMain.form:652
+msgid "Directory"
+msgstr "目錄"
+
+#: FMain.form:658
 msgid "Project link"
 msgstr "專案連結...(P)"
 
-#: FMain.form:725
+#: FMain.form:741
 msgid "Other"
 msgstr "其他(O)"
 
-#: FMain.form:744
+#: FMain.form:760
 msgid "Open with"
 msgstr ""
 
-#: FMain.form:752
+#: FMain.form:768
 msgid "Compress all"
 msgstr ""
 
-#: FMain.form:758
+#: FMain.form:774
 msgid "Uncompress all"
 msgstr ""
 
-#: FMain.form:805
+#: FMain.form:821
 msgid "Copy file path"
 msgstr "複製檔案路徑(h)"
 
-#: FMain.form:823
+#: FMain.form:839
 msgid "Add to repository"
 msgstr "加入儲存庫(A)"
 
-#: FMain.form:848 FNewConnection.class:143
-msgid "New connection"
-msgstr "新連結"
-
-#: FMain.form:916
-msgid "?"
+#: FMain.form:844
+msgid "Filter"
 msgstr ""
 
-#: FMain.form:933 FTips.form:18
-msgid "Tips of the day"
-msgstr "每日提示"
-
-#: FMain.form:941
-msgid "System informations"
-msgstr "系統資訊...(S)"
-
-#: FMain.form:947
-msgid "About Gambas"
-msgstr "關於 Gambas(A)"
-
-#: FMain.form:961
+#: FMain.form:847
 msgid "Show exported classes"
 msgstr "顯示會出的類別"
 
-#: FMain.form:966
+#: FMain.form:852
 msgid "Show added files"
 msgstr "顯示加入的檔案"
 
-#: FMain.form:972
+#: FMain.form:857
+#, fuzzy
+msgid "Show files in conflict"
+msgstr "版本衝突"
+
+#: FMain.form:866
 msgid "Show all"
 msgstr ""
 
-#: FMain.form:1018 FProjectProperty.form:116
+#: FMain.form:883 FNewConnection.class:143
+msgid "New connection"
+msgstr "新連結"
+
+#: FMain.form:951
+msgid "?"
+msgstr ""
+
+#: FMain.form:968 FTips.form:18
+msgid "Tips of the day"
+msgstr "每日提示"
+
+#: FMain.form:976
+msgid "System informations"
+msgstr "系統資訊...(S)"
+
+#: FMain.form:982
+msgid "About Gambas"
+msgstr "關於 Gambas(A)"
+
+#: FMain.form:997
+#, fuzzy
+msgid "Current desktop"
+msgstr "目前的物件"
+
+#: FMain.form:1063 FProjectProperty.form:122
 msgid "Project properties"
 msgstr "專案屬性"
 
-#: FMain.form:1025
+#: FMain.form:1070
 msgid "Project version control"
 msgstr ""
 
-#: FMain.form:1039
+#: FMain.form:1084
 msgid "Refresh project"
 msgstr "刷新專案"
 
-#: FMain.form:1066 FMakeExecutable.form:15
+#: FMain.form:1111 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "製作執行檔"
 
-#: FMain.form:1081
+#: FMain.form:1126
 msgid "Make source archive"
 msgstr "建置原始碼歸檔"
 
-#: FMain.form:1089 FMakeInstall.form:112
+#: FMain.form:1134 FMakeInstall.form:112
 msgid "Make installation package"
 msgstr "建置可安裝套件"
 
-#: FMain.form:1111
+#: FMain.form:1156
 msgid "Properties sheet"
 msgstr "屬性表"
 
-#: FMain.form:1120
+#: FMain.form:1165
 msgid "Toolbox"
 msgstr "工具箱"
 
-#: FMain.form:1138 FOutput.form:151 FSearch.form:62
+#: FMain.form:1183 FOutput.form:151 FSearch.form:62
 msgid "Search"
 msgstr "搜尋"
 
-#: FMain.form:1162
+#: FMain.form:1207
 msgid "Compile all"
 msgstr "全部編譯"
 
-#: FMain.form:1204
+#: FMain.form:1249
 msgid "Finish current function"
 msgstr "完成目前的函數"
 
-#: FMain.form:1223
+#: FMain.form:1277
 msgid "Browse project..."
 msgstr "瀏覽專案..."
 
-#: FMain.form:1274
+#: FMain.form:1328
 msgid "&File"
 msgstr "檔案(&F)"
 
-#: FMain.form:1285
+#: FMain.form:1339
 msgid "&Project"
 msgstr "專案(&P)"
 
-#: FMain.form:1296
+#: FMain.form:1350
 msgid "&Debug"
 msgstr "除錯(&D)"
 
-#: FMain.form:1307
+#: FMain.form:1361
 msgid "&View"
 msgstr "顯示(&V)"
 
-#: FMain.form:1318
+#: FMain.form:1372
 msgid "&Tools"
 msgstr "工具(&T)"
 
-#: FMain.form:1329
+#: FMain.form:1383
 msgid "&?"
 msgstr "-"
 
-#: FMain.form:1376 FProjectProperty.form:607
+#: FMain.form:1392
+#, fuzzy
+msgid "GUI component"
+msgstr "元件"
+
+#: FMain.form:1442 FProjectProperty.form:637
 msgid "Reset filter"
 msgstr "重設篩選器"
 
-#: FMakeExecutable.class:18 FProjectProperty.class:1100
+#: FMakeExecutable.class:18 FProjectProperty.class:1102
 msgid "Gambas applications"
 msgstr "Gambas 應用程式"
 
@@ -3232,7 +3312,9 @@ msgid "Mimetypes"
 msgstr "檔案型態"
 
 #: FMakeInstall.form:578
-msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
+msgid ""
+"Enter the mimetypes handled by your application there.\n"
+"Please enter one mimetype by line.\n"
 msgstr ""
 
 #: FMakeInstall.form:590
@@ -3268,8 +3350,12 @@ msgid "Extra autoconf tests"
 msgstr "額外的 autoconf 測試"
 
 #: FMakeInstall.form:747
-msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr "為 configure 增加新的測試.\n<p><b>如果您不需要這個選項或是您不知道 <i>autoconf</i> 是甚麼, 請不要輸入.</b>"
+msgid ""
+"Add extra tests for the configuration process.\n"
+"<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
+msgstr ""
+"為 configure 增加新的測試.\n"
+"<p><b>如果您不需要這個選項或是您不知道 <i>autoconf</i> 是甚麼, 請不要輸入.</b>"
 
 #: FMakeInstall.form:755
 msgid "Destination directory"
@@ -3284,8 +3370,17 @@ msgid "Create package"
 msgstr "建立套件"
 
 #: FMakeInstall.form:773
-msgid "All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n"
-msgstr "已經收集了所有必要的資訊, 現在已可為您的應用程式建立套件...<p>按下<b>確定</b>以建立套件.\n<p>按下<b>上一步</b>以修改資訊.\n<p>按下<b>取消</b>以取消此操作.\n\n"
+msgid ""
+"All needed information have been collected. You can now create the installation packages for your application...\n"
+"<p>Click on the <b>OK</b> button to create the packages.\n"
+"<p>Click on the <b>Previous</b> button if you had made a mistake.\n"
+"<p>Click on the <b>Cancel</b> button to cancel the operation.\n"
+"\n"
+msgstr ""
+"已經收集了所有必要的資訊, 現在已可為您的應用程式建立套件...<p>按下<b>確定</b>以建立套件.\n"
+"<p>按下<b>上一步</b>以修改資訊.\n"
+"<p>按下<b>取消</b>以取消此操作.\n"
+"\n"
 
 #: FMakePatch.class:23
 msgid "Please select the origin archive."
@@ -3339,7 +3434,7 @@ msgstr ""
 msgid "*.gz;*.bz2;*.xz"
 msgstr ""
 
-#: FMakePatch.form:89 Project.module:4394
+#: FMakePatch.form:89 Project.module:4412
 msgid "Source packages"
 msgstr "原始碼軟件包"
 
@@ -3383,7 +3478,7 @@ msgstr "不適當的group名稱!"
 msgid "This menu is too deep !"
 msgstr "這選單太多層 !"
 
-#: FMenu.class:965 Project.module:5202
+#: FMenu.class:972 Project.module:5246
 msgid "modified"
 msgstr "已修改"
 
@@ -3455,7 +3550,7 @@ msgstr "密碼"
 msgid "Remember password"
 msgstr "記住密碼"
 
-#: FNewConnection.form:181 Project.module:199
+#: FNewConnection.form:181 Project.module:202
 msgid "Database"
 msgstr "資料庫"
 
@@ -3615,7 +3710,7 @@ msgstr ""
 msgid "Install Gambas font for code edition"
 msgstr ""
 
-#: FOption.form:371 Project.module:203
+#: FOption.form:371 Project.module:206
 msgid "Miscellaneous"
 msgstr "雜項"
 
@@ -3623,11 +3718,11 @@ msgstr "雜項"
 msgid "Sort properties"
 msgstr "將屬性排序"
 
-#: FOption.form:388 FProjectProperty.form:339 FPropertyComponent.form:97
+#: FOption.form:388 FProjectProperty.form:369 FPropertyComponent.form:97
 msgid "No"
 msgstr "否"
 
-#: FOption.form:388 FProjectProperty.form:339 FPropertyComponent.form:97
+#: FOption.form:388 FProjectProperty.form:369 FPropertyComponent.form:97
 msgid "Yes"
 msgstr "是"
 
@@ -3643,7 +3738,7 @@ msgstr "使用工具視窗"
 msgid "Toolbox size"
 msgstr "工具箱大小"
 
-#: FOption.form:454 FProjectProperty.form:209
+#: FOption.form:454 FProjectProperty.form:239
 msgid "Normal"
 msgstr "正常"
 
@@ -3683,7 +3778,7 @@ msgstr "匯出主題"
 msgid "Default tab size"
 msgstr "tab 內定值"
 
-#: FOption.form:624 FProjectProperty.form:314
+#: FOption.form:624 FProjectProperty.form:344
 msgid "space(s)"
 msgstr "空格"
 
@@ -3832,8 +3927,16 @@ msgid "Quiet external commands"
 msgstr "背景執行外部命令"
 
 #: FOutput.class:31
-msgid "Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"
-msgstr "歡迎使用Gambas控制台.\n要了解任一個表達式，打 '?' \n，然後按下RETURN.\n\n"
+msgid ""
+"Welcome to the Gambas console.\n"
+"To evaluate any expression, type '?' followed by\n"
+"the expression, then hit return.\n"
+"\n"
+msgstr ""
+"歡迎使用Gambas控制台.\n"
+"要了解任一個表達式，打 '?' \n"
+"，然後按下RETURN.\n"
+"\n"
 
 #: FOutput.form:30
 msgid "Console - Gambas"
@@ -3963,7 +4066,7 @@ msgstr "變數"
 msgid "Snapping value is incorrect."
 msgstr "截到的值不正確."
 
-#: FProjectProperty.class:408 Project.module:3338
+#: FProjectProperty.class:408 Project.module:3355
 msgid "Some components are missing: &1"
 msgstr "有些元件失效： &1"
 
@@ -3979,147 +4082,123 @@ msgstr "元件 &1 需要以下元件: <br>&2."
 msgid "The &1 component needs the &2 component."
 msgstr "元件 &1 需要元件 &2."
 
-#: FProjectProperty.class:1099
+#: FProjectProperty.class:1101
 msgid "Select a Gambas application"
 msgstr "選擇一個 Gambas 應用程式"
 
-#: FProjectProperty.class:1111
+#: FProjectProperty.class:1113
 msgid "<b>&1</b> does not export any class."
 msgstr "<b>&1</b> 沒有匯出類別."
 
-#: FProjectProperty.class:1119
+#: FProjectProperty.class:1121
 msgid "<b>&1</b> is already used as a library."
 msgstr "<b>&1</b> 已被當作函式庫使用."
 
-#: FProjectProperty.class:1269
+#: FProjectProperty.class:1271
 msgid "Stable"
 msgstr ""
 
-#: FProjectProperty.form:125
-msgid "GB_GUI=gb.qt4"
-msgstr "-"
+#: FProjectProperty.form:201 FPropertyComponent.form:58
+msgid "General"
+msgstr "一般的"
 
-#: FProjectProperty.form:131
-msgid "GB_GUI=gb.gtk"
-msgstr "-"
-
-#: FProjectProperty.form:137
-msgid "GB_STOCK_DEBUG=1"
-msgstr ""
-
-#: FProjectProperty.form:143
-msgid "GB_JIT_DEBUG=1"
-msgstr ""
-
-#: FProjectProperty.form:149
-msgid "GB_HTTPD_DEBUG=1"
-msgstr ""
-
-#: FProjectProperty.form:155
-msgid "GB_HTTPD_PORT=8080"
-msgstr ""
-
-#: FProjectProperty.form:161
-msgid "LANG=C ; LC_ALL=C"
-msgstr ""
-
-#: FProjectProperty.form:209
+#: FProjectProperty.form:239
 msgid "Component"
 msgstr "元件"
 
-#: FProjectProperty.form:209
+#: FProjectProperty.form:239
 msgid "Library"
 msgstr ""
 
-#: FProjectProperty.form:215
+#: FProjectProperty.form:245
 msgid "Version"
 msgstr "版本"
 
-#: FProjectProperty.form:241
+#: FProjectProperty.form:271
 msgid "Get from 'VERSION' file"
 msgstr "從 'VERSION' 檔案取得"
 
-#: FProjectProperty.form:248
+#: FProjectProperty.form:278
 msgid "Title"
 msgstr "標題"
 
-#: FProjectProperty.form:271
+#: FProjectProperty.form:301
 msgid "Author(s)"
 msgstr "作者"
 
-#: FProjectProperty.form:291
+#: FProjectProperty.form:321
 msgid "Edition"
 msgstr "編輯"
 
-#: FProjectProperty.form:302
+#: FProjectProperty.form:332
 msgid "Tab size"
 msgstr "Tab大小"
 
-#: FProjectProperty.form:322
+#: FProjectProperty.form:352
 msgid "Compilation"
 msgstr "編譯"
 
-#: FProjectProperty.form:333
+#: FProjectProperty.form:363
 msgid "Module symbols are public by default"
 msgstr "模組中的符號預設為公用"
 
-#: FProjectProperty.form:350
+#: FProjectProperty.form:380
 msgid "Form controls are public"
 msgstr "Form控制項為public"
 
-#: FProjectProperty.form:367
+#: FProjectProperty.form:397
 msgid "Activate warnings"
 msgstr ""
 
-#: FProjectProperty.form:381 FTranslate.form:107
+#: FProjectProperty.form:411 FTranslate.form:107
 msgid "Translation"
 msgstr "翻譯"
 
-#: FProjectProperty.form:392
+#: FProjectProperty.form:422
 msgid "Project is translatable"
 msgstr "專案可被翻譯的"
 
-#: FProjectProperty.form:424
+#: FProjectProperty.form:454
 msgid "Debugging"
 msgstr "除錯"
 
-#: FProjectProperty.form:452
+#: FProjectProperty.form:482
 msgid "Use a terminal emulator"
 msgstr "使用終端機模擬器"
 
-#: FProjectProperty.form:481
+#: FProjectProperty.form:511
 msgid "Environment"
 msgstr "環境"
 
-#: FProjectProperty.form:491
+#: FProjectProperty.form:521
 msgid "Arguments"
 msgstr "參數"
 
-#: FProjectProperty.form:544
+#: FProjectProperty.form:574
 msgid "Environment variables"
 msgstr "環境變數"
 
-#: FProjectProperty.form:563
+#: FProjectProperty.form:593
 msgid "&Insert"
 msgstr "插入(&I)"
 
-#: FProjectProperty.form:576 FPropertyComponent.form:198
+#: FProjectProperty.form:606 FPropertyComponent.form:198
 msgid "Components"
 msgstr "元件"
 
-#: FProjectProperty.form:615
+#: FProjectProperty.form:645
 msgid "Show only components used in project"
 msgstr "顯示使用在這專案中的元件"
 
-#: FProjectProperty.form:645
+#: FProjectProperty.form:675
 msgid "About component"
 msgstr "關於元件...(c)"
 
-#: FProjectProperty.form:677
+#: FProjectProperty.form:707
 msgid "Libraries"
 msgstr "函式庫"
 
-#: FProjectProperty.form:696
+#: FProjectProperty.form:726
 msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
 msgstr "<b>警告!</b> 專案執行檔和它所需的函式庫必須放在同一個目錄下, 否則將無法找到那些函式庫."
 
@@ -4147,19 +4226,19 @@ msgstr ""
 msgid "The project could not be committed."
 msgstr "無法提交專案."
 
-#: FProjectVersion.class:193
+#: FProjectVersion.class:194
 msgid "Unable to update project from repository."
 msgstr "無法從儲存庫更新專案."
 
-#: FProjectVersion.class:195
+#: FProjectVersion.class:196
 msgid "Project has been updated from repository successfully."
 msgstr "專案已成功從儲存庫更新."
 
-#: FProjectVersion.class:277
+#: FProjectVersion.class:282
 msgid "Revision"
 msgstr ""
 
-#: FProjectVersion.class:280 ProjectItem.class:82
+#: FProjectVersion.class:285 ProjectItem.class:82
 msgid "Author"
 msgstr "作者"
 
@@ -4491,15 +4570,15 @@ msgstr "編輯文字屬性"
 msgid "Use a fixed font"
 msgstr "使用固定字字形"
 
-#: FTextEditor.class:815
+#: FTextEditor.class:824
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "原來的檔案已儲存到專案目錄."
 
-#: FTextEditor.class:815
+#: FTextEditor.class:824
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "檔案已從 &1 bytes 壓縮到 &2 bytes (&3)."
 
-#: FTextEditor.class:821
+#: FTextEditor.class:830
 msgid "Unable to compress file."
 msgstr "無法壓縮檔案."
 
@@ -4599,7 +4678,7 @@ msgstr "總共 &1 個字串. 一個字串未翻譯. 已完成 &3%."
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "總共 &1 個字串. &2 未翻譯. 已完成 &3%."
 
-#: FTranslate.class:1114 Project.module:4359
+#: FTranslate.class:1119 Project.module:4377
 msgid "The '&1' command has failed."
 msgstr ""
 
@@ -6131,299 +6210,328 @@ msgstr ""
 msgid "Patch didn't apply:\n"
 msgstr ""
 
-#: Project.module:197
+#: Project.module:200
 msgid "Automation"
 msgstr "自動化"
 
-#: Project.module:198
+#: Project.module:201
 msgid "Basic"
 msgstr "基礎"
 
-#: Project.module:200
+#: Project.module:203
 msgid "Drawing"
 msgstr "繪圖"
 
-#: Project.module:201
+#: Project.module:204
 msgid "Games"
 msgstr "遊戲"
 
-#: Project.module:204
+#: Project.module:207
 msgid "Networking"
 msgstr "網路"
 
-#: Project.module:205
+#: Project.module:208
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: Project.module:206
+#: Project.module:209
 msgid "Printing"
 msgstr "列印"
 
-#: Project.module:207
+#: Project.module:210
 msgid "Sound"
 msgstr "聲音"
 
-#: Project.module:208
+#: Project.module:211
 msgid "Video"
 msgstr "視訊"
 
-#: Project.module:209
+#: Project.module:212
 msgid "Controls"
 msgstr "控制項"
 
-#: Project.module:210
+#: Project.module:213
 msgid "Multimedia"
 msgstr ""
 
-#: Project.module:478
+#: Project.module:448
 msgid "This project does not exist."
 msgstr "此專案不存在."
 
-#: Project.module:489
-msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
+#: Project.module:459
+msgid ""
+"Unable to find Gambas IDE executable in directory:\n"
+"\n"
+"&1"
 msgstr ""
 
-#: Project.module:502
+#: Project.module:472
 msgid "This is not a Gambas project."
 msgstr "這不是 Gambas 專案."
 
-#: Project.module:505
+#: Project.module:475
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr "這是 Gambas 1.0 專案. 用 Gambas 2 來轉換它."
 
-#: Project.module:508
+#: Project.module:478
 msgid "Convert"
 msgstr "轉換"
 
-#: Project.module:508
-msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
-msgstr "這是 Gambas 2.0 專案.\n\n您要轉換它嗎?"
+#: Project.module:478
+msgid ""
+"This is a Gambas 2.0 project.\n"
+"\n"
+"Do you want to convert it?"
+msgstr ""
+"這是 Gambas 2.0 專案.\n"
+"\n"
+"您要轉換它嗎?"
 
-#: Project.module:526
+#: Project.module:496
 msgid "Do not open"
 msgstr "不開啟"
 
-#: Project.module:526
+#: Project.module:496
 msgid "Open after all"
 msgstr "決定開啟"
 
-#: Project.module:526
-msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
-msgstr "此專案似乎已開啟.\n\n重複開啟同一個專案會導致資料損失."
+#: Project.module:496
+msgid ""
+"This project seems to be already opened.\n"
+"\n"
+"Opening the same project twice can lead to data loss."
+msgstr ""
+"此專案似乎已開啟.\n"
+"\n"
+"重複開啟同一個專案會導致資料損失."
 
-#: Project.module:532
+#: Project.module:502
 msgid "It cannot be converted."
 msgstr "不能轉換."
 
-#: Project.module:532
+#: Project.module:502
 msgid "This project is read-only."
 msgstr "這專案是唯讀的."
 
-#: Project.module:548
+#: Project.module:518
 msgid "Copying project inside a temporary directory..."
 msgstr "在暫存目錄下複製專案..."
 
-#: Project.module:551
+#: Project.module:521
 msgid "Unable to create temporary directory"
 msgstr "無法建立暫存目錄"
 
-#: Project.module:573
+#: Project.module:543
 msgid "Converting project structure..."
 msgstr "正在轉換專案結構..."
 
-#: Project.module:600
+#: Project.module:574
 msgid "Applying conversion..."
 msgstr "正在套用轉換..."
 
-#: Project.module:606
+#: Project.module:580
 msgid "Unable to apply conversion"
 msgstr "無法套用轉換"
 
-#: Project.module:700
+#: Project.module:683
 msgid "Some libraries used by the project are missing."
 msgstr ""
 
-#: Project.module:718
+#: Project.module:701
 msgid "Cannot open project file :\n"
 msgstr "無法開啟專案檔 :\n"
 
-#: Project.module:1271
+#: Project.module:1255
 msgid "Files"
 msgstr ""
 
-#: Project.module:1473
+#: Project.module:1457
 msgid "The following classes have circular inheritance:"
 msgstr "以下類別有循環繼承:"
 
-#: Project.module:1645
-msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
+#: Project.module:1630
+#, fuzzy
+msgid "ALPHA VERSION, USE AT YOUR OWN RISK!"
 msgstr "這是測試版, 您必須自己承擔使用的風險! :-)"
 
-#: Project.module:1923
+#: Project.module:1632
+#, fuzzy
+msgid "DEVELOPMENT VERSION, USE AT YOUR OWN RISK!"
+msgstr "這是測試版, 您必須自己承擔使用的風險! :-)"
+
+#: Project.module:1927
 msgid "Loading &1..."
 msgstr "正在載入 &1..."
 
-#: Project.module:1975
+#: Project.module:1979
 msgid "Cannot open a binary file."
 msgstr "無法開啟二進位檔."
 
-#: Project.module:2008
+#: Project.module:2012
 msgid "Cannot open file."
 msgstr "無法開啟檔案."
 
-#: Project.module:2064
+#: Project.module:2068
 msgid "File not found!"
 msgstr "找不到檔案!"
 
-#: Project.module:2184
+#: Project.module:2189
 msgid "&1th"
 msgstr "第 &1"
 
-#: Project.module:2237
+#: Project.module:2242
 msgid "in form definition"
 msgstr "表單內的定義"
 
-#: Project.module:2244
+#: Project.module:2249
 msgid "in &1."
 msgstr "於 &1."
 
-#: Project.module:2400
-msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
-msgstr "專案中某些原始碼發生衝突.\n請解決這些衝突以編譯專案."
+#: Project.module:2405
+msgid ""
+"Some project source files are in conflict.\n"
+"Please solve them if you want to compile the project."
+msgstr ""
+"專案中某些原始碼發生衝突.\n"
+"請解決這些衝突以編譯專案."
 
-#: Project.module:2404
+#: Project.module:2409
 msgid "Compiling project"
 msgstr "Compiling 專案"
 
-#: Project.module:2645
+#: Project.module:2650
 msgid "File already exists."
 msgstr "檔案已經存在."
 
-#: Project.module:2677
+#: Project.module:2682
 msgid "Directory already exists."
 msgstr "目錄已經存在."
 
-#: Project.module:2689
+#: Project.module:2694
 msgid "Cannot link template file."
 msgstr "無法連結模板檔."
 
-#: Project.module:2695
+#: Project.module:2700
 msgid "Cannot copy template file."
 msgstr "無法複製模板(template)檔."
 
-#: Project.module:2906
+#: Project.module:2919
 msgid "Making executable..."
 msgstr "製作執行檔..."
 
-#: Project.module:2950
+#: Project.module:2963
 msgid "Cannot make executable."
 msgstr "無法產生執行檔."
 
-#: Project.module:3530
+#: Project.module:3548
 msgid "Cannot write project file."
 msgstr "無法寫入專案檔."
 
-#: Project.module:3572
+#: Project.module:3590
 msgid "Unable to create desktop shortcut."
 msgstr "無法建立桌面捷徑."
 
-#: Project.module:3818
+#: Project.module:3836
 msgid "The directory will be removed at the next commit."
 msgstr "下次提交之前, 此目錄會被移除."
 
-#: Project.module:3835
+#: Project.module:3853
 msgid "You must define a startup class or form!"
 msgstr "您必需定義一個啟始的class或form"
 
-#: Project.module:3866
+#: Project.module:3884
 msgid "Please type a name."
 msgstr "請輸入一個名稱."
 
-#: Project.module:3870
+#: Project.module:3888
 msgid "This name contains a forbidden character:"
 msgstr "名稱含有不正確的字元:"
 
-#: Project.module:3874
+#: Project.module:3892
 msgid "The name cannot begins with a dot."
 msgstr "名稱不可以 '.' 開頭"
 
-#: Project.module:3878
+#: Project.module:3896
 msgid "This name is already used. Choose another one."
 msgstr "這名稱已經被使用.請選其他名稱."
 
-#: Project.module:3914
+#: Project.module:3932
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "類別名稱必須由英文字母或底線開頭, 後面再接著英文字母或數字."
 
-#: Project.module:3962
+#: Project.module:3980
 msgid "Destination already exists."
 msgstr ""
 
-#: Project.module:4174
+#: Project.module:4192
 msgid "Unable to rename '&1'"
 msgstr "無法重新命名 '&1'"
 
-#: Project.module:4290
+#: Project.module:4308
 msgid "Please type a project name."
 msgstr "請輸入一個專案名稱."
 
-#: Project.module:4298
+#: Project.module:4316
 msgid "The project name cannot begin with a dot."
 msgstr "專案名稱的第一個字元不可為 '.' (點)."
 
-#: Project.module:4301
+#: Project.module:4319
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "專案名稱不可有非 ascii 字元."
 
-#: Project.module:4302
+#: Project.module:4320
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "專案名稱不可含有以下字元: ? * / \\ SPACE"
 
-#: Project.module:4309
+#: Project.module:4327
 msgid "This project already exists."
 msgstr "這專案已經存在."
 
-#: Project.module:4312
+#: Project.module:4330
 msgid "The project directory already exists."
 msgstr "專案目錄已經存在."
 
-#: Project.module:4314
+#: Project.module:4332
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "無法建立專案目錄, 因為已經有一個相同名稱的檔案存在."
 
-#: Project.module:4370
+#: Project.module:4388
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4393
+#: Project.module:4411
 msgid "Create source package"
 msgstr "製作源碼軟件包"
 
-#: Project.module:4694
+#: Project.module:4713
 msgid "Cannot copy file &1."
 msgstr "無法複製檔案 &1."
 
-#: Project.module:4742
+#: Project.module:4761
 msgid "Cannot create link &1."
 msgstr "無法建立連結 &1."
 
-#: Project.module:4757
+#: Project.module:4776
 msgid "Cannot move a directory inside itself."
 msgstr "不能將目錄放到它自己裡面."
 
-#: Project.module:4825
+#: Project.module:4844
 msgid "Cannot move file &1."
 msgstr "無法移動檔案 &1."
 
-#: Project.module:5363
+#: Project.module:5023
+msgid "The following files couldn't be removed:"
+msgstr ""
+
+#: Project.module:5413
 msgid "Project cleanup..."
 msgstr "專案清理..."
 
-#: Project.module:5369
+#: Project.module:5419
 msgid "Project files conversion..."
 msgstr "專案檔案轉換..."
 
-#: Project.module:5399
+#: Project.module:5449
 msgid "Unable to convert &1"
 msgstr "無法轉換 &1"
 
@@ -6451,3 +6559,50 @@ msgstr ""
 msgid "command timeout"
 msgstr ""
 
+#~ msgid "GB_GUI=gb.gtk"
+#~ msgstr "-"
+
+#~ msgid "GB_GUI=gb.qt4"
+#~ msgstr "-"
+
+#~ msgid "Last modified"
+#~ msgstr "最後修改"
+
+#~ msgid "Link to"
+#~ msgstr "連結到"
+
+#~ msgid "&1, &2 line(s)"
+#~ msgstr "&1, &2 行"
+
+#~ msgid "ChangeLog"
+#~ msgstr "-"
+
+#~ msgid "XML file"
+#~ msgstr "XML 檔案"
+
+#~ msgid "CSS file"
+#~ msgstr "CSS 檔"
+
+#~ msgid "Text file"
+#~ msgstr "純文字檔案"
+
+#~ msgid "Picture"
+#~ msgstr "影像"
+
+#~ msgid "Lines of code: &1"
+#~ msgstr "程式碼行: &1"
+
+#~ msgid "Gambas project"
+#~ msgstr "Gambas 專案"
+
+#~ msgid "&1: &2"
+#~ msgstr "-"
+
+#~ msgid "Information"
+#~ msgstr "資訊"
+
+#~ msgid "Resolve conflict with"
+#~ msgstr "解決衝突"
+
+#~ msgid "Details"
+#~ msgstr "詳細資料"

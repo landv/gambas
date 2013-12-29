@@ -997,6 +997,8 @@ Public Sub mnuInsertEnv_Click()
   Dim aNewEnv As String[]
   Dim aEnv As String[]
   
+  If Not sNewEnv Then Return
+  
   For Each sNewEnv In Split(sNewEnv)
   
     aNewEnv = Scan(sNewEnv, "*=*")

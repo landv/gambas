@@ -9,43 +9,67 @@
   { mnuInsertEnv Menu
     { Menu1 Menu mnuInsertEnv
       Name = "Menu1"
-      Text = ("GB_GUI=gb.qt4")
+      #Translate = False
+      Text = "GB_GUI=gb.qt4"
       Tag = "GB_GUI=gb.qt4"
     }
     { Menu2 Menu mnuInsertEnv
       Name = "Menu2"
-      Text = ("GB_GUI=gb.gtk")
+      #Translate = False
+      Text = "GB_GUI=gb.gtk"
       Tag = "GB_GUI=gb.gtk"
     }
-    { Menu3 Menu mnuInsertEnv
-      Name = "Menu3"
-      Text = ("GB_STOCK_DEBUG=1")
-      Tag = "GB_STOCK_DEBUG=1"
+    { Menu9 Menu mnuInsertEnv
+      Name = "Menu9"
+      #Translate = False
+      Text = "GB_GUI=gb.gtk3"
+      Tag = "GB_GUI=gb.gtk3"
     }
-    { Menu4 Menu mnuInsertEnv
-      Name = "Menu4"
-      Text = ("GB_JIT_DEBUG=1")
-      Tag = "GB_JIT_DEBUG=1"
-    }
-    { Menu7 Menu mnuInsertEnv
-      Name = "Menu7"
-      Text = ("GB_HTTPD_DEBUG=1")
-      Tag = "GB_HTTPD_DEBUG=1"
-    }
-    { Menu6 Menu mnuInsertEnv
-      Name = "Menu6"
-      Text = ("GB_HTTPD_PORT=8080")
-      Tag = "GB_HTTPD_PORT=8080"
+    { Menu10 Menu
     }
     { Menu8 Menu mnuInsertEnv
       Name = "Menu8"
-      Text = ("GB_REVERSE=1")
+      #Translate = False
+      Text = "GB_REVERSE=1"
       Tag = "GB_REVERSE=1"
     }
     { Menu5 Menu mnuInsertEnv
       Name = "Menu5"
-      Text = ("LANG=C ; LC_ALL=C")
+      #Translate = False
+      Text = "LANG=C ; LC_ALL=C"
       Tag = "LANG=C,LC_ALL=C"
+    }
+    { Menu11 Menu
+    }
+    { Menu3 Menu mnuInsertEnv
+      Name = "Menu3"
+      #Translate = False
+      Text = "GB_STOCK_DEBUG=1"
+      Tag = "GB_STOCK_DEBUG=1"
+    }
+    { Menu4 Menu mnuInsertEnv
+      Name = "Menu4"
+      #Translate = False
+      Text = "GB_JIT_DEBUG=1"
+      Tag = "GB_JIT_DEBUG=1"
+    }
+    { Menu7 Menu mnuInsertEnv
+      Name = "Menu7"
+      #Translate = False
+      Text = "GB_HTTPD_DEBUG=1"
+      Tag = "GB_HTTPD_DEBUG=1"
+    }
+    { Menu6 Menu mnuInsertEnv
+      Name = "Menu6"
+      #Translate = False
+      Text = "GB_HTTPD_PORT=8080"
+      Tag = "GB_HTTPD_PORT=8080"
+    }
+    { Menu12 Menu mnuInsertEnv
+      Name = "Menu12"
+      #Translate = False
+      Text = "LIBOVERLAY_SCROLLBAR=0"
+      Tag = "LIBOVERLAY_SCROLLBAR=0"
     }
   }
   { tabProject TabPanel

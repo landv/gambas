@@ -1386,15 +1386,15 @@ Public Sub LoadConfig(Optional bInit As Boolean)
   Select Case Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Size"]
     Case "Medium"
       $iIconSize = ICON_MEDIUM
-      iDim = Desktop.Scale * 2
+      iDim = 12
     Case "Large"
       $iIconSize = ICON_LARGE
-      iDim = Desktop.Scale * 3
+      iDim = 12
     Case Else
       $iIconSize = ICON_SMALL
-      iDim = Desktop.Scale * 2
+      iDim = 12
   End Select
-  iDim += GetRealIconSize()
+  iDim += Max(Me.Font.Height, GetRealIconSize())
   $iButtonWidth = iDim
   
   aConfig = Settings["/gb.form.mdi/Toolbars/" &/ ToolbarKey &/ "Layout"]

@@ -25,9 +25,10 @@
 
 #include "main.h"
 
-#define USE_NOTHING 0
-#define USE_GB_QT4 1
-#define USE_GB_GTK 2
+#define USE_NOTHING  0
+#define USE_GB_QT4   1
+#define USE_GB_GTK   2
+#define USE_GB_GTK3  3
 
 GB_INTERFACE GB EXPORT;
 
@@ -54,6 +55,8 @@ int EXPORT GB_INIT(void)
 			use = USE_GB_QT4;
 		else if (strcmp(env, "gb.gtk") == 0)
 			use = USE_GB_GTK;
+		else if (strcmp(env, "gb.gtk3") == 0)
+			use = USE_GB_GTK3;
 	}
 	
 	if (use == USE_NOTHING)
@@ -70,7 +73,7 @@ int EXPORT GB_INIT(void)
 		}
 	}
 
-	comp = use == USE_GB_QT4 ? "gb.qt4" : "gb.gtk";
+	comp = use == USE_GB_QT4 ? "gb.qt4" : (use == USE_GB_GTK3 ? "gb.gtk3" : "gb.gtk");
 
 	if (GB.Component.Load(comp))
 	{

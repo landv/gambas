@@ -277,7 +277,7 @@ Public Sub Main()
   DESKTOP_FONT = Application.Font.ToString()
   Try Application.Font = Font[Settings["/Font"]]
 
-  'ScrollArea.Shadow = True
+  'Print Application.Theme
 
   OUTPUT_FILE = Temp$()
   EXAMPLES_DIR = System.Path &/ "share/gambas" & Split(System.Version, ".")[0] & "/examples"
@@ -4488,7 +4488,8 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     If Not $bTesting Then
       CComponent.LoadProjectComponent
       FToolBox.RefreshToolbar(bForce)
-      FCompletion.OnRefreshComponents()
+      FCompletion.OnRefreshComponents
+      FMain.OnRefreshComponents
       FProperty.RefreshAll
       'Why refreshing the project?
       'Project.Refresh

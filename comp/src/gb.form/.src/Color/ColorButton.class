@@ -37,7 +37,7 @@ Private Sub FillPicture()
     Draw.Rect(2, 2, $hPicture.Width - 4, $hPicture.Height - 4)
     Draw.LineStyle = Line.Solid
     Draw.FillStyle = Fill.None
-    Draw.Foreground = Color.Black
+    Draw.Foreground = Color.LightForeground
     Draw.Rect(0, 0, $hPicture.Width, $hPicture.Height)
     Draw.Foreground = Color.White
     Draw.Rect(1, 1, $hPicture.Width - 2, $hPicture.Height - 2)
@@ -51,7 +51,7 @@ End
 Private Sub ResizePicture()
 
   $hPicture = Null
-  Try $hPicture = New Picture($hButton.W - 12, $hButton.H - 12)
+  Try $hPicture = New Picture($hButton.W - 14, $hButton.H - 14)
   FillPicture
 
 End

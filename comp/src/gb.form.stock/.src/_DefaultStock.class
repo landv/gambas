@@ -11,6 +11,7 @@ Static Public Sub LoadImage(sKey As String, iSize As Integer) As Image
   
   sPath = "stock" &/ CStr(iSize) &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.png") Then sPath &= "-rtl"
+  'If sKey = "tools" Then Debug sPath
   Return Image.Load(sPath & ".png")
   
 End
@@ -21,6 +22,7 @@ Static Public Sub LoadSvgImage(sKey As String) As SvgImage
   
   sPath = "stock" &/ "scalable" &/ sKey
   If System.RightToLeft And If Exist(sPath & "-rtl.svg") Then sPath &= "-rtl"
+  'If sKey = "tools" Then Debug sPath
   Return SvgImage.Load(sPath & ".svg")
   
 End

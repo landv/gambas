@@ -390,7 +390,10 @@ Public Sub DrawingArea_Draw()
   Dim iWestWidth As Integer
   Dim iEastWidth As Integer
   
-  If $bBorder Then FW = Style.FrameWidth
+  If $bBorder Then 
+    FW = Style.FrameWidth
+    Paint.Save
+  Endif
   
   DW = Draw.W
   'If $bVBarVisible Then DW -= $hVBar.W
@@ -460,7 +463,7 @@ Public Sub DrawingArea_Draw()
   Endif
   
   If $bBorder Then 
-    Draw.Reset
+    Paint.Restore
     Style.PaintPanel(0, 0, DW, DH, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   

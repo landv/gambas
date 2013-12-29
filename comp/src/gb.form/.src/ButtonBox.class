@@ -153,11 +153,12 @@ Public Sub Background_Draw()
   FW = If($bBorder, Style.FrameWidth, 0)
   FH = If($bBorder, Style.FrameWidth, 0)
   
-  Draw.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
+  Paint.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
+  'Draw.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
   If $bBorder Then 
     '$hBackground.Background = Me.Background
     'Draw.Style.Panel(0, 0, Me.W, Me.H, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
-    Draw.Style.Box(0, 0, Me.W, Me.H, If(Me.HasFocus, Draw.Focus, Draw.Normal))
+    Style.PaintBox(0, 0, Me.W, Me.H, If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
 End

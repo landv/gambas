@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,177,86)
+  MoveScaled(0,0,177,93)
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -624,11 +624,37 @@
     { Menu6 Menu
     }
   }
+  { mnuGUI Menu
+    { Menu29 Menu mnuSetGUI
+      Name = "Menu29"
+      Text = ("Current desktop")
+    }
+    { Menu30 Menu
+    }
+    { Menu21 Menu mnuSetGUI
+      Name = "Menu21"
+      #Translate = False
+      Text = "QT4"
+      Tag = "gb.qt"
+    }
+    { Menu27 Menu mnuSetGUI
+      Name = "Menu27"
+      #Translate = False
+      Text = "GTK+2"
+      Tag = "gb.gtk"
+    }
+    { Menu28 Menu mnuSetGUI
+      Name = "Menu28"
+      #Translate = False
+      Text = "GTK+3"
+      Tag = "gb.gtk3"
+    }
+  }
   { sepMenu Separator
     MoveScaled(0,0,13,0)
   }
   { tlbMain ToolBar
-    MoveScaled(0,0,175,4)
+    MoveScaled(0,0,175,8)
     Visible = False
     Key = "main"
     { ToolButton1 ToolButton
@@ -685,7 +711,7 @@
       MoveScaled(25,0,4,4)
       ToolTip = ("Preferences")
       Action = "option"
-      Picture = Picture["icon:/small/tools"]
+      Picture = Picture["icon:/small/options"]
       Toggle = True
     }
     { ToolButton9 ToolButton
@@ -819,21 +845,21 @@
       Picture = Picture["icon:/small/forward"]
     }
     { btnFrom ToolButton
-      MoveScaled(85,0,4,4)
+      MoveScaled(84,0,4,4)
       ToolTip = ("Finish current function")
       Action = "return"
       Picture = Picture["icon:/small/eject"]
     }
     { btnUntil ToolButton mnuUntil
       Name = "btnUntil"
-      MoveScaled(88,0,4,4)
+      MoveScaled(87,0,4,4)
       ToolTip = ("Run until current line")
       Action = "until"
       Picture = Picture["icon:/small/jump"]
     }
     { btnBreakOnError ToolButton mnuBreakOnError
       Name = "btnBreakOnError"
-      MoveScaled(91,0,4,4)
+      MoveScaled(90,0,4,4)
       ToolTip = ("Break on each error")
       Action = "breakerr"
       Picture = Picture["icon:/small/error"]
@@ -944,12 +970,23 @@
       Border = False
       Menu = "mnuHelp"
     }
+    { btnGUI MenuButton
+      MoveScaled(13,4,11,4)
+      Visible = False
+      ToolTip = ("GUI component")
+      Action = "gui"
+      AutoResize = True
+      Picture = Picture["icon:/small/desktop"]
+      Border = False
+      Menu = "mnuGUI"
+      MenuOnly = True
+    }
   }
   { Separator7 Separator
-    MoveScaled(60,6,38,0)
+    MoveScaled(60,12,38,0)
   }
   { Panel1 Panel
-    MoveScaled(1,7,94,68)
+    MoveScaled(1,13,94,68)
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
@@ -1083,10 +1120,10 @@
     }
   }
   { timOpen #Timer
-    #MoveScaled(98,11)
+    #MoveScaled(98,17)
   }
   { panError VBox
-    MoveScaled(1,75,64,8)
+    MoveScaled(1,81,64,8)
     Visible = False
     { panErrorFrame Panel
       MoveScaled(0,0,62,6)
@@ -1115,7 +1152,7 @@
     }
   }
   { dwgWelcome DrawingArea
-    MoveScaled(101,32,15,18)
+    MoveScaled(101,38,15,18)
     Ignore = True
     Arrangement = Arrange.Fill
     Margin = True
@@ -1239,6 +1276,10 @@
     Shortcut = "Alt+Right"
     Picture = "icon:/small/right"
   }
+  { Action gui
+    Text = "GUI component"
+    Picture = "icon:/small/desktop"
+  }
   { Action help
     Text = "Help browser"
     Shortcut = "F1"
@@ -1358,7 +1399,7 @@
   { Action option
     Text = "Preferences"
     Shortcut = "Ctrl+Alt+P"
-    Picture = "icon:/small/tools"
+    Picture = "icon:/small/options"
   }
   { Action paste
     Text = "Paste"
@@ -1492,7 +1533,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,gui"
     Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
   }
 }

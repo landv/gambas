@@ -1127,6 +1127,12 @@ Public Sub UpdateMenu()
   
   mnuUseHttpServer.Visible = Project.CanUseHttpServer()
   
+  If Project.Components Then
+    Action["gui"].Visible = Project.Components.Exist("gb.gui")
+  Else
+    Action["gui"].Visible = False
+  Endif
+  
 End
 
 Public Sub OnProjectChange()
@@ -2325,3 +2331,60 @@ Private Sub OpenExternFile()
   Project.OpenFile(Dialog.Path)
   
 End
+
+Public Sub OnRefreshComponents()
+  
+  Dim iPos As Boolean
+  Dim sComp As String
+  Dim hMenu As Menu
+  
+  iPos = Project.Environment.Find("GB_GUI=*", gb.Like)
+  If iPos < 0 Then
+    btnGUI.Text = ("Current desktop")
+  Else
+    sComp = Scan(Project.Environment[iPos], "*=*")[1]
+    For Each hMenu In mnuGUI.Children
+      If hMenu.Tag = sComp Then
+        btnGUI.Text = hMenu.Text
+        Break
+      Endif
+    Next
+  Endif
+  
+End
+
+Public Sub mnuSetGUI_Click()
+  
+  Dim sComp As String
+  Dim iPos As Integer
+  Dim aEnv As String[] = Project.Environment
+  Dim sEnv As String
+  
+  sComp = Last.Tag
+  iPos = aEnv.Find("GB_GUI=*", gb.Like)
+  
+  If Not sComp Then
+    If iPos >= 0 Then 
+      aEnv.Remove(iPos)
+      Goto WRITE_PROJECT
+    Endif
+  Else
+    sEnv = "GB_GUI=" & sComp
+    If iPos < 0 Then
+      aEnv.Add(sEnv, 0)
+      Goto WRITE_PROJECT
+    Else If aEnv[iPos] <> sEnv Then
+      aEnv[iPos] = sEnv
+      Goto WRITE_PROJECT
+    Endif
+  Endif
+  
+  Return
+  
+WRITE_PROJECT:
+
+  Project.WriteProject(True)
+  OnRefreshComponents
+  
+End
+
