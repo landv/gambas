@@ -27,15 +27,15 @@
 #ifdef GTK3
 static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 {
-	GtkStyle *style = gtk_widget_get_style(draw);
+	GdkRGBA rgba;
 	int vw, vh, lw, lh;
 	int fw = Max(d->getFramePadding(), d->getFrameWidth());
 
 	//d->drawBackground(cr);
 	d->drawBorder(cr);
 
-	if (style)
-		gdk_cairo_set_source_color(cr, &style->fg[GTK_STATE_NORMAL]);
+	gt_from_color(d->realForeground(), &rgba);
+	gdk_cairo_set_source_rgba(cr, &rgba);
 
 	switch (d->lay_x)
 	{

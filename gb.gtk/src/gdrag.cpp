@@ -511,7 +511,6 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 	int i;
 	GdkWindowAttr attr = { 0 };
 	GdkWindow *window;
-	GdkColor color;
 	GdkWindow *parent;
 	GtkAllocation a;
 	
@@ -542,7 +541,13 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 	
 	if (!_frame_visible)
 	{
+#ifdef GTK3
+		GdkRGBA rgba;
+		gt_from_color(0, &rgba);
+#else
+		GdkColor color;
 		fill_gdk_color(&color, 0);
+#endif
 		
 		attr.wclass = GDK_INPUT_OUTPUT;
 		attr.window_type = GDK_WINDOW_CHILD;
@@ -550,7 +555,11 @@ static void show_frame(gControl *control, int x, int y, int w, int h)
 		for (i = 0; i < 4; i++)
 		{
 			window = gdk_window_new(parent, &attr, 0);
+#ifdef GTK3
+			gdk_window_set_background_rgba(window, &rgba);
+#else
 			gdk_window_set_background(window, &color);
+#endif
 			_frame[i] = window;
 		}
 	}

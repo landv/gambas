@@ -315,7 +315,11 @@ int gSlider::getDefaultSize()
 {
 	GtkRequisition req;
 	
-	gtk_widget_size_request(GTK_WIDGET(widget), &req);
+#ifdef GTK3
+	gtk_widget_get_preferred_size(widget, &req, NULL);
+#else
+	gtk_widget_size_request(widget, &req);
+#endif
 	
 	if (width() < height())
 		return req.width;

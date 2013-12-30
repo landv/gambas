@@ -136,6 +136,15 @@ typedef
 #define STATE_PRELIGHT GTK_STATE_FLAG_PRELIGHT
 #define STATE_SELECTED GTK_STATE_FLAG_SELECTED
 
+#define gtk_hbox_new(_homogeneous, _spacing) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, _spacing)
+#define gtk_vbox_new(_homogeneous, _spacing) gtk_box_new(GTK_ORIENTATION_VERTICAL, _spacing)
+
+#define gtk_hscale_new(_adj) gtk_scale_new(GTK_ORIENTATION_HORIZONTAL, _adj)
+#define gtk_vscale_new(_adj) gtk_scale_new(GTK_ORIENTATION_VERTICAL, _adj)
+
+#define gtk_hscrollbar_new(_adj) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL, _adj)
+#define gtk_vscrollbar_new(_adj) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL, _adj)
+
 #else
 
 #define STATE_T GtkStateType

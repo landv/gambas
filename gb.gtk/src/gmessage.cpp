@@ -117,8 +117,9 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 		g_free(buf);
 	}
 	
-	hrz=gtk_hbox_new(FALSE, 16);
-  gtk_container_set_border_width(GTK_CONTAINER(hrz), 16);
+	hrz = gtk_hbox_new(FALSE, gDesktop::scale());
+  gtk_container_set_border_width(GTK_CONTAINER(hrz), gDesktop::scale() * 2);
+	gtk_widget_set_size_request(hrz, gDesktop::scale() * 32, -1);
   	
 	gtk_container_add (GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(msg))),hrz);
 	
@@ -549,7 +550,42 @@ bool gDialog::selectFolder()
 
 	return run_file_dialog(msg);
 }
-	
+
+#ifdef GTK3
+bool gDialog::selectFont()
+{
+	GtkFontChooserDialog *dialog;
+	PangoFontDescription *desc;
+	gFont *font;
+
+	dialog = (GtkFontChooserDialog *)(DIALOG_title, NULL);
+
+	if (DIALOG_font)
+		gtk_font_chooser_set_font_desc(GTK_FONT_CHOOSER(dialog), pango_context_get_font_description(DIALOG_font->ct));
+
+	if (run_dialog(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK)
+ 	{
+ 		gtk_widget_destroy(GTK_WIDGET(dialog));
+		gDialog::setTitle(NULL);
+		return true;
+ 	}
+
+	desc = gtk_font_chooser_get_font_desc(GTK_FONT_CHOOSER(dialog));
+
+	gtk_widget_destroy(GTK_WIDGET(dialog));
+	gDialog::setTitle(NULL);
+
+	font = new gFont(desc);
+	setFont(font);
+	gFont::assign(&font);
+
+	pango_font_description_free(desc);
+
+	//printf("-> %s/%s/%s/%d\n", DIALOG_font->name(), DIALOG_font->bold() ? "BOLD" : "", DIALOG_font->italic() ? "ITALIC" : "", DIALOG_font->size());
+
+	return false;
+}
+#else
 bool gDialog::selectFont()
 {
 	GtkFontSelectionDialog *msg;
@@ -561,7 +597,7 @@ bool gDialog::selectFont()
 		msg=(GtkFontSelectionDialog*)gtk_font_selection_dialog_new (DIALOG_title);
 	else
 		msg=(GtkFontSelectionDialog*)gtk_font_selection_dialog_new ("Select Font");
-    
+
 
 	if (DIALOG_font)
 	{
@@ -595,6 +631,7 @@ bool gDialog::selectFont()
 	
 	return false;
 }
+#endif
 
 #ifdef GTK3
 bool gDialog::selectColor()

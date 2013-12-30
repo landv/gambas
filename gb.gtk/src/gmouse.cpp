@@ -27,14 +27,6 @@
 #include "widgets.h"
 #include "gmouse.h"
 
-#ifndef GAMBAS_DIRECTFB
-#ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#endif
-#endif
-
 int gMouse::_isValid = 0;
 int gMouse::_x;
 int gMouse::_y;
@@ -50,20 +42,21 @@ int gMouse::_dx = 0;
 int gMouse::_dy = 0;
 GdkEvent *gMouse::_event = 0;
 
+#ifdef GTK3
+static GdkDevice *get_pointer()
+{
+	return gdk_device_manager_get_client_pointer(gdk_display_get_device_manager(gdk_display_get_default()));
+}
+#endif
+
 void gMouse::move(int x, int y)
 {
-	GdkDisplay* dpy;
-	GdkWindow*  win = gdk_get_default_root_window();
-	#ifdef GAMBAS_DIRECTFB
-	stub("DIRECTFB/gMouse::move");
-	#else	
-	#ifdef GDK_WINDOWING_X11
-	dpy = gdk_display_get_default();
-	XWarpPointer(GDK_DISPLAY_XDISPLAY(dpy), GDK_WINDOW_XID(win), GDK_WINDOW_XID(win), 0, 0, 0, 0, x, y);
-	#else
-	stub("no-X11/gMouse::move");
-	#endif
-	#endif
+	GdkDisplay* dpy = gdk_display_get_default();
+#ifdef GTK3
+	gdk_device_warp(get_pointer(), gdk_display_get_default_screen(dpy), x, y);
+#else
+	gdk_display_warp_pointer(dpy, gdk_display_get_default_screen(dpy), x, y);
+#endif
 }
 
 int gMouse::button()
@@ -135,7 +128,11 @@ void gMouse::getScreenPos(int *x, int *y)
 	}
 	else
 	{
+#ifdef GTK3
+		gdk_device_get_position(get_pointer(), NULL, x, y);
+#else
 		gdk_display_get_pointer(gdk_display_get_default(), NULL, x, y, NULL);
+#endif
 	}
 }
 
@@ -146,7 +143,11 @@ int gMouse::screenX()
 	if (_isValid)
 		x = _screen_x;
 	else
+#ifdef GTK3
+		gdk_device_get_position(get_pointer(), NULL, &x, NULL);
+#else
 		gdk_display_get_pointer(gdk_display_get_default(), NULL, &x, NULL, NULL);
+#endif
 	
 	return x;
 }
@@ -158,7 +159,11 @@ int gMouse::screenY()
 	if (_isValid)
 		y = _screen_y;
 	else
+#ifdef GTK3
+		gdk_device_get_position(get_pointer(), NULL, NULL, &y);
+#else
 		gdk_display_get_pointer(gdk_display_get_default(), NULL, NULL, &y, NULL);
+#endif
 	
 	return y;
 }

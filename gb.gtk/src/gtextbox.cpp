@@ -255,15 +255,11 @@ void gTextBox::setBorder(bool vl)
 	
 	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
 	
-	/*if (vl)
-		gtk_entry_set_inner_border(GTK_ENTRY(entry), NULL);
-	else
-	{*/
+#ifndef GTK3
 		GtkBorder *border = gtk_border_new();
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), border);
 		gtk_border_free(border);
-	//}
-	
+#endif
 }
 
 void gTextBox::insert(char *txt, int len)
@@ -426,7 +422,11 @@ void gTextBox::updateCursor(GdkCursor *cursor)
   {
     cursor = gdk_cursor_new_for_display(gtk_widget_get_display(widget), GDK_XTERM);
     gdk_window_set_cursor(win, cursor);
+#ifdef GTK3
+		g_object_unref(cursor);
+#else
     gdk_cursor_unref(cursor);
+#endif
   }
 }
 

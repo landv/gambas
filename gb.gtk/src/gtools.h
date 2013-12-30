@@ -138,11 +138,7 @@ GtkWidget *gtk_window_group_get_current_grab(GtkWindowGroup *window_group);
 
 // Cairo support
 
-#if GTK_CHECK_VERSION(3, 10, 0)
-#define gt_cairo_create_surface_from_pixbuf gdk_cairo_surface_create_from_pixbuf
-#else
 cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf);
-#endif
 
 void gt_cairo_set_source_color(cairo_t *cr, GB_COLOR color);
 void gt_cairo_draw_rect(cairo_t *cr, int x, int y, int w, int h, GB_COLOR color);

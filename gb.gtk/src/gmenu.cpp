@@ -24,6 +24,7 @@
 #include "widgets.h"
 #include "gmainwindow.h"
 #include "gapplication.h"
+#include "gdesktop.h"
 #include "gmenu.h"
 
 typedef
@@ -101,8 +102,8 @@ static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
 	{
 		GtkAllocation a;
 		gtk_widget_get_allocation(wid, &a);
-		x = a.x;
-		y = a.y;
+		x = 0; //a.x;
+		y = 0; //a.y;
 		w = a.width;
 		h = a.height;
 
@@ -120,10 +121,11 @@ static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
 
 		gtk_widget_set_state(check_menu_item, gtk_widget_get_state(wid));
 
-		gtk_paint_check(gtk_widget_get_style(wid), cr,
-					gtk_widget_get_state(wid), GTK_SHADOW_IN,
-					check_menu_item, "check",
-					x + 1, y + 1, w - 2, h - 2);
+		GtkStyleContext *style = gtk_widget_get_style_context(check_menu_item);
+		gtk_style_context_set_state(style, GTK_STATE_FLAG_ACTIVE);
+
+		fprintf(stderr, "gtk_render_check: %d %d %d %d\n", x, y, w, h);
+		gtk_render_check(style, cr, x, y, w, h);
 	}
 
 	return false;
@@ -171,7 +173,6 @@ void gMenu::update()
 {
 	GtkMenuShell *shell = NULL;
 	gint pos;
-	GtkRequisition req;
 	
 	if (_no_update)
 		return;
@@ -207,9 +208,13 @@ void gMenu::update()
 			if (_style == SEPARATOR)
 			{
 				menu = (GtkMenuItem *)gtk_separator_menu_item_new();
+#ifdef GTK3
+#else
+				GtkRequisition req;
 				gtk_widget_size_request(GTK_WIDGET(menu), &req);
 				if (req.height > 5)
 					gtk_widget_set_size_request(GTK_WIDGET(menu), -1, 5);
+#endif
 				//g_debug("%p: create new separator %p", this, menu);
 			}
 			else if (_style == MENU)
@@ -217,7 +222,7 @@ void gMenu::update()
 				menu = (GtkMenuItem *)gtk_image_menu_item_new();
 				//g_debug("%p: create new menu %p", this, menu);
 				
-				hbox = gtk_hbox_new(false, 4);
+				hbox = gtk_hbox_new(false, gDesktop::scale() * 2);
 				//set_gdk_bg_color(hbox, 0xFF0000);
 				gtk_container_add(GTK_CONTAINER(menu), GTK_WIDGET(hbox));
 				
@@ -239,7 +244,6 @@ void gMenu::update()
 					ON_DRAW(check, this, cb_check_expose, cb_check_draw);
 					//g_signal_connect_after(G_OBJECT(check), "expose-event", G_CALLBACK(cb_check_expose), (gpointer)this);
 					
-					//gtk_box_pack_start(GTK_BOX(hbox), check, false, false, 0);
 					//gtk_box_pack_start(GTK_BOX(hbox), image, false, false, 0);
 					gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
 					gtk_box_pack_end(GTK_BOX(hbox), aclbl, false, false, 0);				
@@ -347,6 +351,7 @@ void gMenu::update()
 			{
 				gtk_image_set_from_pixbuf(GTK_IMAGE(image), NULL);
 				gtk_image_menu_item_set_image((GtkImageMenuItem *)menu, image);
+				gtk_widget_hide(check);
 			}
 			else if (_checked)
 			{

@@ -157,7 +157,7 @@ gColor gDesktop::buttonbgColor()
 
 gColor gDesktop::fgColor()
 {	
-	return get_color(GTK_TYPE_LABEL, 0, STATE_NORMAL, true, false);
+	return get_color(GTK_TYPE_LAYOUT, 0, STATE_NORMAL, true, false);
 }
 
 gColor gDesktop::bgColor()

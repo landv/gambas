@@ -1767,8 +1767,6 @@ void gt_cairo_draw_rect(cairo_t *cr, int x, int y, int w, int h, GB_COLOR color)
 	cairo_fill(cr);
 }
 
-#if GTK_CHECK_VERSION(3, 10, 0)
-#else
 // Function partially taken from the GTK+ source code.
 cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 {
@@ -1858,7 +1856,6 @@ cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 
 	return surface;
 }
-#endif
 
 void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
@@ -1929,16 +1926,14 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 
 #ifdef GTK3
 static int _style_context_loaded = 0;
-static GtkStyleContext *_style_context[10];
+static GtkStyleContext *_style_context[11];
 #endif
 static int _style_loaded = 0;
-static GtkStyle *_style[10];
+static GtkStyle *_style[11];
 
 static int type_to_index(GType type)
 {
-	if (type == GTK_TYPE_BUTTON)
-		return 0;
-	else if (type == GTK_TYPE_ENTRY)
+	if (type == GTK_TYPE_ENTRY)
 		return 1;
 	else if (type == GTK_TYPE_LAYOUT)
 		return 2;
@@ -1954,10 +1949,12 @@ static int type_to_index(GType type)
 		return 7;
 	else if (type == GTK_TYPE_FRAME)
 		return 8;
-	else if (type == GTK_TYPE_LABEL || type == GTK_TYPE_LAYOUT)
+	else if (type == GTK_TYPE_LABEL)
 		return 9;
+	else if (type == GTK_TYPE_BUTTON)
+		return 10;
 	else
-		return -1;
+		return 0;
 }
 
 #ifdef GTK3
@@ -1965,9 +1962,9 @@ static int type_to_index(GType type)
 const char *gt_get_style_class(GType type)
 {
 	static const char *_class[] = {
-		GTK_STYLE_CLASS_BUTTON, GTK_STYLE_CLASS_ENTRY, GTK_STYLE_CLASS_BACKGROUND, GTK_STYLE_CLASS_TOOLTIP,
-		GTK_STYLE_CLASS_SCROLLBAR, NULL, GTK_STYLE_CLASS_CHECK, GTK_STYLE_CLASS_RADIO,
-		GTK_STYLE_CLASS_FRAME, GTK_STYLE_CLASS_BACKGROUND
+		GTK_STYLE_CLASS_DEFAULT, GTK_STYLE_CLASS_ENTRY, GTK_STYLE_CLASS_BACKGROUND, GTK_STYLE_CLASS_TOOLTIP,
+		GTK_STYLE_CLASS_SCROLLBAR, GTK_STYLE_CLASS_DEFAULT, GTK_STYLE_CLASS_CHECK, GTK_STYLE_CLASS_RADIO,
+		GTK_STYLE_CLASS_FRAME, GTK_STYLE_CLASS_BACKGROUND, GTK_STYLE_CLASS_BUTTON
 	};
 
 	int index = type_to_index(type);

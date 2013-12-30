@@ -71,11 +71,19 @@ gCursor::gCursor(gCursor *cursor)
 	x = cursor->x;
 	y = cursor->y;
 	if (cur)
+#ifdef GTK3
+		g_object_ref(cur);
+#else
 		gdk_cursor_ref(cur);
+#endif
 }
 
 gCursor::~gCursor()
 {
 	if (cur)
+#ifdef GTK3
+		g_object_unref(cur);
+#else
 		gdk_cursor_unref(cur);
+#endif
 }
