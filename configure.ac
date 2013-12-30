@@ -45,6 +45,7 @@ GB_CONFIG_SUBDIRS(jit, gb.jit)
 GB_CONFIG_SUBDIRS(httpd, gb.httpd)
 GB_CONFIG_SUBDIRS(openssl, gb.openssl)
 GB_CONFIG_SUBDIRS(openal, gb.openal)
+GB_CONFIG_SUBDIRS(inotify, gb.inotify)
 
 AC_CONFIG_SUBDIRS(comp)
 AC_CONFIG_SUBDIRS(app)
