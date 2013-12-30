@@ -36,7 +36,6 @@ SUBDIRS = \
  @httpd_dir@ \
  @openssl_dir@ \
  @openal_dir@ \
- @inotify_dir@ \
  comp \
  app \
  examples \
