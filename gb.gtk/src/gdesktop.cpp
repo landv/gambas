@@ -111,10 +111,10 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 	if (!st)
 		return default_color;
 
-		if (fg)
-			gtk_style_context_get_color(st, state, &rgba);
-		else
-			gtk_style_context_get_background_color(st, state, &rgba);
+	if (fg)
+		gtk_style_context_get_color(st, state, &rgba);
+	else
+		gtk_style_context_get_background_color(st, state, &rgba);
 
 	return gt_to_color(&rgba);
 }
