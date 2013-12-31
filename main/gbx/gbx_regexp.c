@@ -184,6 +184,8 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 		{
 			const char *save_string;
 			int save_len_string;
+			const char *save_pattern;
+			int save_len_pattern;
 			
 			string--; len_string++;
 			save_string = string;
@@ -191,51 +193,58 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 			
 			for(;;)
 			{
-				if (len_pattern == 0)
-					THROW(E_REGEXP, "Missing '}'");
-
-				if (len_string == 0)
-					break;
-				
-				_next_pattern();
-				
-				if (cp == '}')
-					return FALSE;
-
-				if (cp == ',')
-					goto NEXT_ELEMENT;
-				
-				if (len_string == 0)
-					return FALSE;
-
-				_next_string();
-				
-				if (tolower(cp) == tolower(cs))
-					continue;
-
 				for(;;)
 				{
-					_next_pattern();
-					if (cp == '}')
-						return FALSE;
-					if (cp == ',' || len_pattern == 0)
+					if (len_pattern == 0)
+						THROW(E_REGEXP, "Missing '}'");
+
+					if (len_string == 0)
 						break;
+
+					_next_pattern();
+
+					if (cp == '}' || cp == ',')
+						break;
+
+					_next_string();
+
+					if (tolower(cp) == tolower(cs))
+						continue;
+
+					for(;;)
+					{
+						_next_pattern();
+						if (cp == '}')
+							return FALSE;
+						if (cp == ',' || len_pattern == 0)
+							break;
+					}
+
+					string = save_string;
+					len_string = save_len_string;
 				}
 
-			NEXT_ELEMENT:
+				if (len_pattern == 0)
+					return (len_string == 0);
 
+				save_pattern = pattern;
+				save_len_pattern = len_pattern;
+
+				while (cp != '}')
+				{
+					if (len_pattern == 0)
+						THROW(E_REGEXP, "Missing '}'");
+					_next_pattern();
+				}
+
+				if (REGEXP_match(pattern, len_pattern, string, len_string))
+					return TRUE;
+
+				pattern = save_pattern;
+				len_pattern = save_len_pattern;
 				string = save_string;
 				len_string = save_len_string;
 			}
-			
-			while (cp != '}')
-			{
-				if (len_pattern == 0)
-					THROW(E_REGEXP, "Missing '}'");
-				_next_pattern();
-			}
-			
-			continue;
 		}
 
 		if (cp == '\\')
