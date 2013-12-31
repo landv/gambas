@@ -215,7 +215,7 @@ void gComboBox::create(bool readOnly)
 	updateFocusHandler();
 	setBackground(background());
 	setForeground(foreground());
-	setFont(font());
+	updateFont();
 
 	if (ind >= 0)
 		setIndex(ind);
@@ -532,12 +532,13 @@ void gComboBox::resize(int w, int h)
 		gtk_widget_set_size_request(entry, 4, 4);*/
 }
 
-void gComboBox::setFont(gFont *f)
+void gComboBox::updateFont()
 {
-	gControl::setFont(f);
-	if (cell) g_object_set(G_OBJECT(cell), "font-desc", font() ? font()->desc() : NULL, (void *)NULL);
+	gControl::updateFont();
+	if (cell)
+		g_object_set(G_OBJECT(cell), "font-desc", font()->desc(), (void *)NULL);
 	if (entry)
-		gtk_widget_modify_font(entry, font() ? font()->desc() : NULL);
+		gtk_widget_modify_font(entry, font()->desc());
 }
 
 void gComboBox::setFocus()

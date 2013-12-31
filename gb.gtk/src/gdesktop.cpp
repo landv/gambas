@@ -54,6 +54,7 @@ bool gDesktop::rightToLeft()
 void gDesktop::init()
 {
 	_desktop_font = new gFont();
+	_desktop_font->setAll(true);
 	_desktop_scale = 0;
 }
 

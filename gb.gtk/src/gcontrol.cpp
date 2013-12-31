@@ -235,7 +235,8 @@ void gControl::initAll(gContainer *parent)
 	bufX = 0;
 	bufY = 0;
 	curs = NULL;
-	fnt = NULL;
+	_font = NULL;
+	_resolved_font = NULL;
 	g_typ = 0;
 	dsg = false;
 	expa = false;
@@ -247,7 +248,6 @@ void gControl::initAll(gContainer *parent)
 	frame_padding = 0;
 	_bg_set = false;
 	_fg_set = false;
-	_font_set = false;
 	have_cursor = false;
 	use_base = false;
 	_mouse = CURSOR_DEFAULT;
@@ -304,7 +304,7 @@ gControl::~gControl()
 	emit(SIGNAL(onFinish));
 
 	if (win && win->focus == this)
-		win->focus = 0;
+		win->focus = NULL;
 
 	if (_proxy)
 		_proxy->_proxy_for = NULL;
@@ -314,8 +314,18 @@ gControl::~gControl()
 	if (gDrag::getSource() == this)
 		gDrag::cancel();
 
-	if (curs) { delete curs; curs=NULL; }
-	gFont::assign(&fnt);
+	if (curs)
+	{
+		delete curs;
+		curs=NULL;
+	}
+
+	if (_font)
+	{
+		gFont::assign(&_font);
+		gFont::assign(&_resolved_font);
+	}
+
 	setName(NULL);
 
 	controls = g_list_remove(controls, this);
@@ -656,57 +666,88 @@ void gControl::setToolTip(char* vl)
 
 gFont* gControl::font()
 {
-	if (fnt)
-		return fnt;
-	if (pr)
+	if (_resolved_font)
+	{
+		//fprintf(stderr, "%p: font -> _resolved_font\n", this);
+		return _resolved_font;
+	}
+	else if (pr)
+	{
+		//fprintf(stderr, "%p: font -> parent\n", this);
 		return pr->font();
-
-	return gDesktop::font();
+	}
+	else
+	{
+		//fprintf(stderr, "%p: font -> desktop\n", this);
+		return gDesktop::font();
+	}
 }
 
-
-void gControl::resolveFont(gFont *new_font)
+void gControl::actualFontTo(gFont *ft)
 {
-	gFont *font = new gFont();
-	gControl *ctrl = this;
+	//fprintf(stderr, "actualFontTo: %s: %s / %s (_font = %s)\n", name(), ft->toString(), ft->toFullString(), _font ? _font->toFullString() : NULL);
+	font()->copyTo(ft);
+	ft->setAllFrom(_font);
+	//fprintf(stderr, "==> %s: %s / %s (_font = %s)\n", name(), ft->toString(), ft->toFullString(), _font ? _font->toFullString() : NULL);
+}
 
-	font->mergeFrom(new_font);
+void gControl::resolveFont()
+{
+	gFont *font;
 
-	for(;;)
+	if (_font)
 	{
-		if (font->isAllSet())
-			break;
+		font = new gFont();
+		font->mergeFrom(_font);
+		if (pr)
+			font->mergeFrom(pr->font());
+		else
+			font->mergeFrom(gDesktop::font());
 
-		ctrl = ctrl->parent();
-		if (!ctrl)
-			break;
-
-		if (ctrl->fnt)
-			font->mergeFrom(ctrl->fnt);
+		gFont::set(&_resolved_font, font);
 	}
-
-	gtk_widget_modify_font(widget, font->desc());
-
-	gFont::set(&fnt, font);
+	else
+		gFont::assign(&_resolved_font);
 }
 
 void gControl::setFont(gFont *ft)
 {
+	//fprintf(stderr, "setFont: %s: %s\n", name(), ft->toFullString());
 	if (ft)
-	{
-		resolveFont(ft);
-		_font_set = true;
-	}
-	else if (fnt)
-	{
-		gFont::assign(&fnt);
-		gtk_widget_modify_font(widget, NULL);
-		_font_set = false;
-	}
+		gFont::assign(&_font, ft);
+	else if (_font)
+		gFont::assign(&_font);
+
+	gFont::assign(&_resolved_font);
+
+	updateFont();
 
 	resize();
+
+	//fprintf(stderr, "--> %s: _font = %s\n", name(), _font ? _font->toFullString() : NULL);
 }
 
+static void cb_update_font(GtkWidget *widget, gpointer data)
+{
+	PangoFontDescription *desc = (PangoFontDescription *)data;
+	gtk_widget_modify_font(widget, desc);
+}
+
+void gControl::updateFont()
+{
+	resolveFont();
+	gtk_widget_modify_font(widget, font()->desc());
+
+	if (!isContainer() && GTK_IS_CONTAINER(widget))
+		gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)cb_update_font, (gpointer)font()->desc());
+
+	refresh();
+	updateSize();
+}
+
+void gControl::updateSize()
+{
+}
 
 int gControl::mouse()
 {
@@ -1422,7 +1463,7 @@ static void type##_get_preferred_width(GtkWidget *widget, gint *minimum_size, gi
 	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(type); \
 	\
 	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved2)(widget, minimum_size, natural_size); \
-	if (g_object_get_data(G_OBJECT(widget), "gambas-control")) \
+	if (minimum_size && g_object_get_data(G_OBJECT(widget), "gambas-control")) \
 		*minimum_size = 0; \
 } \
 static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
@@ -1430,7 +1471,7 @@ static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, g
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
 	\
 	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved3)(widget, minimum_size, natural_size); \
-	if (g_object_get_data(G_OBJECT(widget), "gambas-control")) \
+	if (minimum_size && g_object_get_data(G_OBJECT(widget), "gambas-control")) \
 		*minimum_size = 0; \
 }
 
@@ -1460,6 +1501,15 @@ PATCH_DECLARE(GTK_TYPE_TOGGLE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_SCROLLED_WINDOW)
 PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
 PATCH_DECLARE(GTK_TYPE_RADIO_BUTTON)
+
+int gt_get_preferred_width(GtkWidget *widget)
+{
+	int m, n;
+	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(G_OBJECT_TYPE(widget));
+	if (klass->_gtk_reserved2)
+		(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved2)(widget, &m, &n);
+	return m;
+}
 
 #endif
 
@@ -1552,6 +1602,7 @@ void gControl::realize(bool make_frame)
 	}
 
 	registerControl();
+	updateFont();
 }
 
 void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
@@ -1571,6 +1622,8 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 		realize(false);
 	else
 		registerControl();
+
+	updateFont();
 }
 
 void gControl::updateBorder()

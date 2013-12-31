@@ -49,7 +49,7 @@ public:
 	char* text();
 	void setText(char* vl);
 
-	virtual void setFont(gFont *ft);
+	virtual void updateFont();
 	virtual void setRealForeground(gColor color);
 
 //"Private"

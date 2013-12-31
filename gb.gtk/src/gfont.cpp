@@ -195,13 +195,38 @@ void gFont::reset()
 {
 	strike = false;
 	uline = false;
-	
+
 	_bold_set = false;
 	_italic_set = false;
 	_name_set = false;
 	_size_set = false;
 	_strikeout_set = false;
 	_underline_set = false;
+}
+
+void gFont::setAll(bool v)
+{
+	_bold_set = v;
+	_italic_set = v;
+	_name_set = v;
+	_size_set = v;
+	_strikeout_set = v;
+	_underline_set = v;
+}
+
+void gFont::setAllFrom(gFont *font)
+{
+	if (!font)
+		setAll(false);
+	else
+	{
+		_bold_set = font->_bold_set;
+		_italic_set = font->_italic_set;
+		_name_set = font->_name_set;
+		_size_set = font->_size_set;
+		_strikeout_set = font->_strikeout_set;
+		_underline_set = font->_underline_set;
+	}
 }
 
 void gFont::realize()
@@ -455,21 +480,25 @@ const char *gFont::toFullString()
 	GString *desc = g_string_new("");
 	char *ret;
 	
+	g_string_append_printf(desc, "[ ");
+
 	if (_name_set)
-		g_string_append_printf(desc, "name=%s ", name());
-	
+		g_string_append_printf(desc, "%s ", name());
+
 	if (_size_set)
-		g_string_append_printf(desc, "size=%g ", (double)((int)(size() * 10 + 0.5)) / 10);
+		g_string_append_printf(desc, "%g ", (double)((int)(size() * 10 + 0.5)) / 10);
 	
 	if (_bold_set)
-		g_string_append_printf(desc, "bold=%d ", bold());
+		g_string_append_printf(desc, "%s ", bold() ? "Bold" : "NotBold");
 	if (_italic_set)
-		g_string_append_printf(desc, "italic=%d ", italic());
+		g_string_append_printf(desc, "%s ", italic() ? "Italic" : "NotItalic");
 	if (_underline_set)
-		g_string_append_printf(desc, "underline=%d ", underline());
+		g_string_append_printf(desc, "%s ", underline() ? "Underline" : "NotUnderline");
 	if (_strikeout_set)
-		g_string_append_printf(desc, "strikeout=%d ", strikeout());
+		g_string_append_printf(desc, "%s ", strikeout() ? "Strikeout" : "NotStrikeout");
 
+	g_string_append_printf(desc, "]");
+	
 	ret = g_string_free(desc, false);
 	gt_free_later(ret);
 	return ret;

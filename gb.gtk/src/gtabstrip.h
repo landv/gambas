@@ -62,8 +62,7 @@ public:
 
 	virtual void setRealBackground(gColor color);
 	virtual void setRealForeground(gColor color);
-
-	virtual void setFont(gFont *ft);
+	virtual void updateFont();
 
 	gFont *textFont();
 	void setTextFont(gFont *ft);
@@ -83,7 +82,6 @@ private:
 	GPtrArray *_pages;
 	gFont *_textFont;
 	gTabStripPage *get(int ind) const;
-	void updateFont();
 	void destroyTab(int ind);
 };
 

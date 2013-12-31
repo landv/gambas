@@ -62,7 +62,6 @@ public:
 	virtual void resize(int w, int h);
 	virtual void setRealBackground(gColor vl);
 	virtual void setRealForeground(gColor vl);
-	virtual void setFont(gFont *f);
 	virtual void setFocus();
 	
 //"Signals"
@@ -78,6 +77,7 @@ public:
 	GtkWidget *_button;
 	int _model_dirty_timeout;
 	
+	virtual void updateFont();
 	void updateModel();
 	void updateSort();
 	char *indexToKey(int index);

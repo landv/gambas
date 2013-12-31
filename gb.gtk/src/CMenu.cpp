@@ -53,21 +53,28 @@ static int CMENU_check(void *_object)
 	return (MENU == NULL);
 }
 
+#ifndef GTK3
 static void delete_later(gMenu *menu)
 {
 	delete menu;
 }
+#endif
 
 static void delete_menu(gMenu *menu)
 {
+#ifdef GTK3
+	delete menu;
+#else
 	void *_object = menu->hFree;
 
 	if (!MENU)
 		return;
 
+	menu->willBeDeletedLater();
 	THIS->widget = NULL;
 
 	GB.Post((GB_CALLBACK)delete_later, (intptr_t)menu);
+#endif
 }
 
 static void cb_finish(gMenu *sender)

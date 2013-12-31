@@ -62,6 +62,7 @@ static int gTabStrip_buttonPress(GtkWidget *wid,GdkEventButton *e,gTabStrip *d)
 
 static void cb_click(GtkNotebook *nb, GtkWidget *pg, guint pnum, gTabStrip *data)
 {
+	data->updateFont();
 	data->performArrange();
 	data->emit(SIGNAL(data->onClick));
 }
@@ -186,6 +187,41 @@ static void cb_button_clicked(GtkWidget *wid, gTabStrip *data)
 		(*data->onClose)(data, data->getRealIndex((GtkWidget *)g_object_get_data(G_OBJECT(wid), "gambas-tab-page")));
 }
 
+#ifdef GTK3
+static void cb_scroll(GtkWidget *wid, GdkEvent *event, gTabStrip *data)
+{
+	int dir = event->scroll.direction;
+	int page;
+
+	if (dir == GDK_SCROLL_SMOOTH)
+	{
+		gdouble dx = 0, dy = 0;
+		gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
+		if (fabs(dy) > fabs(dx))
+			dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
+		else
+			dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
+	}
+
+	page = gtk_notebook_get_current_page(GTK_NOTEBOOK(data->widget));
+
+	switch (dir)
+	{
+		case GDK_SCROLL_UP:
+		case GDK_SCROLL_LEFT:
+			page--;
+			if (page >= 0)
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(data->widget), page);
+			break;
+		case GDK_SCROLL_RIGHT:
+		case GDK_SCROLL_DOWN: default:
+			page++;
+			if (page < gtk_notebook_get_n_pages(GTK_NOTEBOOK(data->widget)))
+				gtk_notebook_set_current_page(GTK_NOTEBOOK(data->widget), page);
+			break;
+	}
+}
+#endif
 
 /****************************************************************************
 	
@@ -257,7 +293,7 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	//g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
 	//g_signal_connect(G_OBJECT(fix),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
 	//g_signal_connect(G_OBJECT(fix),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
-	g_signal_connect_after(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)parent);	
+	g_signal_connect_after(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)parent);
 	
 	g_object_ref(widget);
 	g_object_ref(fix);
@@ -506,6 +542,9 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 	setCount(1);
   
 	g_signal_connect_after(G_OBJECT(widget), "switch-page", G_CALLBACK(cb_click), (gpointer)this);
+#ifdef GTK3
+	g_signal_connect(G_OBJECT(widget), "scroll-event", G_CALLBACK(cb_scroll), (gpointer)this);
+#endif
 }
 
 gTabStrip::~gTabStrip()
@@ -777,14 +816,10 @@ void gTabStrip::updateFont()
 {
 	int i;
 	
+	gContainer::updateFont();
+
 	for (i = 0; i < count(); i++)
 		get(i)->updateFont();	
-}
-
-void gTabStrip::setFont(gFont *font)
-{
-	gControl::setFont(font);
-	updateFont();
 }
 
 gFont *gTabStrip::textFont()

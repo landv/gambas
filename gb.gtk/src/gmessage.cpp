@@ -558,7 +558,7 @@ bool gDialog::selectFont()
 	PangoFontDescription *desc;
 	gFont *font;
 
-	dialog = (GtkFontChooserDialog *)(DIALOG_title, NULL);
+	dialog = (GtkFontChooserDialog *)gtk_font_chooser_dialog_new(DIALOG_title, NULL);
 
 	if (DIALOG_font)
 		gtk_font_chooser_set_font_desc(GTK_FONT_CHOOSER(dialog), pango_context_get_font_description(DIALOG_font->ct));

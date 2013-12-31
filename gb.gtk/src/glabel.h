@@ -42,8 +42,7 @@ public:
 
 	void setAlignment(int al);
 	void setBorder(int vl) { setFrameBorder(vl); }
-	void setText(char *st);
-	virtual void setFont(gFont *ft);
+	void setText(const char *st);
 	void setTransparent(bool vl);
 	void setAutoResize(bool vl);
 	void setPadding(int vl) { setFramePadding(vl); }
@@ -57,7 +56,8 @@ public:
 
 //"Private"
 	virtual gColor getFrameColor();
-	void updateSize(bool adjust = false, bool noresize = false);
+	virtual void updateSize();
+	void updateSize(bool adjust, bool noresize = false);
 	void updateLayout();
 	PangoLayout *layout;
 	int align,lay_x,lay_y;

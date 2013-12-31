@@ -115,8 +115,11 @@ public:
 	virtual void setRealForeground(gColor color);
 
 	virtual gFont *font();
+	void actualFontTo(gFont *ft);
 	virtual void setFont(gFont *ft);
-	bool ownFont() { return fnt != 0; }
+	bool ownFont() { return _font != NULL; }
+	virtual void updateFont();
+	virtual void updateSize();
 
 	bool canFocus() const;
 	void setCanFocus(bool vl);
@@ -184,7 +187,8 @@ public:
 // "Private"
 	gint bufW,bufH,bufX,bufY;
 	gCursor *curs;
-	gFont *fnt;
+	gFont *_font;
+	gFont *_resolved_font;
 	GtkWidget *widget;
 	GtkWidget *border;
 	GtkWidget *frame;
@@ -205,7 +209,6 @@ public:
 	unsigned _old_tracking : 1;            // real value when Tracking is false
 	unsigned _bg_set : 1;                  // Have a private background
 	unsigned _fg_set : 1;                  // Have a private foreground
-	unsigned _font_set : 1;                // Have a private font
 	unsigned have_cursor : 1;              // If gApplication::setBusy() must update the cursor
 	unsigned use_base : 1;                 // Use base and text color for foreground and background
 	unsigned visible : 1;                  // A control can be hidden if its width or height is zero
@@ -263,7 +266,7 @@ public:
 #endif
 	
 	virtual int minimumHeight();
-	void resolveFont(gFont *new_font);
+	void resolveFont();
 	
 	void emitEnterEvent(bool no_leave = false);
 	void emitLeaveEvent();

@@ -105,6 +105,7 @@ public:
 	void initialize();
 	gMenuStyle style() const { return _style; }
   void hideSeparators();
+	void willBeDeletedLater() { _delete_later = TRUE; }
 	
 private:
 
@@ -117,6 +118,7 @@ private:
 	unsigned _toggle : 1;
 	unsigned _no_update : 1;
 	unsigned _destroyed : 1;
+	unsigned _delete_later : 1;
 	unsigned top_level : 1;
 	unsigned _action : 1;
 	unsigned _visible : 1;

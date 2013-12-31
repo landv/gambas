@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CWidget.cpp
+	CWidget.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -25,7 +25,7 @@
 
 #include "widgets.h"
 #include "gapplication.h"
- 
+
 #include "CWidget.h"
 #include "CWindow.h"
 #include "CMenu.h"
@@ -108,7 +108,7 @@ static void set_action(void *control, bool v)
 void gb_plug_raise_plugged(gControl *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
-	
+
 	if (!_ob) return;
 	GB.Raise((void*)_ob,EVENT_Plugged,0);
 }
@@ -116,7 +116,7 @@ void gb_plug_raise_plugged(gControl *sender)
 void gb_plug_raise_unplugged(gControl *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
-	
+
 	if (!_ob) return;
 	GB.Raise((void*)_ob,EVENT_Unplugged,0);
 }
@@ -124,7 +124,7 @@ void gb_plug_raise_unplugged(gControl *sender)
 void gb_plug_raise_error(gControl *sender)
 {
 	CWIDGET *_ob=GetObject(sender);
-	
+
 	if (!_ob) return;
 	GB.Raise((void*)_ob,EVENT_PlugError,0);
 }
@@ -161,13 +161,13 @@ static int to_gambas_event(int type)
 static bool gb_can_raise(gControl *sender, int type)
 {
 	CWIDGET *ob = GetObject(sender);
-	if (!ob) 
+	if (!ob)
 		return false;
-	
+
 	type = to_gambas_event(type);
-	if (type < 0) 
+	if (type < 0)
 		return false;
-	
+
 	return GB.CanRaise(ob, type);
 }
 
@@ -175,17 +175,17 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 {
 	CWIDGET *ob = GetObject(sender);
 	bool ret = false;
-	
+
 	if (!ob) return false; // possible, for MouseDrag for example
-	
+
 	switch(type)
 	{
 		case gEvent_MouseDrag:
 			ret = GB.Raise(ob, EVENT_MouseDrag, 0);
 			break;
-			
+
 		case gEvent_MouseMenu:
-			
+
 			for(;;)
 			{
 				if (GB.CanRaise(ob, EVENT_Menu))
@@ -193,7 +193,7 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 					GB.Raise(ob, EVENT_Menu, 0);
 					return true;
 				}
-				
+
 				if (ob->popup)
 				{
 					gMainWindow *window = sender->window();
@@ -202,21 +202,21 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 						menu->popup();
 					return true;
 				}
-				
+
 				if (sender->isTopLevel())
 					break;
-				
+
 				sender = sender->parent();
 				ob = GetObject(sender);
 			}
-			
+
 			break;
-			
+
 		default:
 			ret = GB.Raise(ob, to_gambas_event(type), 0);
-		
+
 	}
-	
+
 	return ret;
 }
 
@@ -238,10 +238,10 @@ void gb_raise_FocusEvent(gControl *sender, int type)
 bool gb_raise_Drag(gControl *sender)
 {
 	CWIDGET *_object = GetObject(sender);
-	
+
 	if (!THIS)
 		return true;
-	
+
 	if (!GB.CanRaise(THIS, EVENT_Drag))
 	{
 		if (GB.CanRaise(THIS, EVENT_DragMove) || GB.CanRaise(THIS, EVENT_Drop))
@@ -249,24 +249,24 @@ bool gb_raise_Drag(gControl *sender)
 		else
 			return true;
 	}
-	
+
 	return GB.Raise(THIS, EVENT_Drag, 0);
 }
 
 void gb_raise_DragLeave(gControl *sender)
 {
 	CWIDGET *_object = GetObject(sender);
-	
+
 	GB.Raise(THIS, EVENT_DragLeave, 0);
 }
 
 bool gb_raise_DragMove(gControl *sender)
 {
 	CWIDGET *_object = GetObject(sender);
-	
+
 	if (!THIS)
 		return true;
-	
+
 	if (!GB.CanRaise(THIS, EVENT_DragMove))
 		return !GB.CanRaise(THIS, EVENT_Drag);
 
@@ -276,13 +276,13 @@ bool gb_raise_DragMove(gControl *sender)
 bool gb_raise_Drop(gControl *sender)
 {
 	CWIDGET *_object = GetObject(sender);
-	
+
 	if (!THIS)
 		return false;
-	
+
 	if (!GB.CanRaise(THIS, EVENT_Drop))
 		return false;
-	
+
 	GB.Raise(THIS, EVENT_Drop, 0);
 	return true;
 }
@@ -290,28 +290,28 @@ bool gb_raise_Drop(gControl *sender)
 void DeleteControl(gControl *control)
 {
 	CWIDGET *widget = (CWIDGET*)control->hFree;
-	
+
 	if (!widget)
 		return;
-	
+
 	GB.Detach(widget);
-	
+
 	GB.StoreVariant(NULL, POINTER(&widget->tag));
 	GB.StoreObject(NULL, POINTER(&widget->cursor));
-	
+
 	CACTION_register(widget, widget->action, NULL);
 	GB.FreeString(&widget->action);
-	
+
 	if (control->isTopLevel())
 		CWINDOW_check_main_window((CWINDOW*)widget);
-	
+
 	GB.Unref(POINTER(&widget->font));
 	GB.FreeString(&widget->popup);
-	
+
 	widget->font = NULL;
 	widget->widget = NULL;
 	GB.Unref(POINTER(&widget));
-	
+
 	control->hFree = NULL;
 }
 
@@ -320,13 +320,13 @@ void InitControl(gControl *control, CWIDGET *widget)
 {
 	static int n = 0;
 	char *name;
-	
+
 	GB.Ref((void*)widget);
-	
+
 	widget->widget = control;
 	control->hFree=(void*)widget;
 	//fprintf(stderr, "InitControl: %p %p\n", control, widget);
-	
+
 	name = GB.GetLastEventName();
 	if (!name)
 	{
@@ -337,7 +337,7 @@ void InitControl(gControl *control, CWIDGET *widget)
 	}
 	else
 		control->setName(name);
-	
+
 	control->onFinish = DeleteControl;
 	control->onMouseEvent = gb_raise_MouseEvent;
 	control->onKeyEvent = gb_raise_KeyEvent;
@@ -348,13 +348,13 @@ void InitControl(gControl *control, CWIDGET *widget)
 	control->onDrop = gb_raise_Drop;
 	control->onEnterLeave = gb_raise_EnterLeave;
 	control->canRaise = gb_can_raise;
-	
+
 	if (control->isContainer())
 	{
 		((gContainer *)control)->onBeforeArrange = CCONTAINER_cb_before_arrange;
 		((gContainer *)control)->onArrange = CCONTAINER_cb_arrange;
 	}
-	
+
 	if (control->parent())
 		CCONTAINER_raise_insert((CCONTAINER *)control->parent()->hFree, widget);
 }
@@ -362,13 +362,13 @@ void InitControl(gControl *control, CWIDGET *widget)
 CWIDGET *GetContainer(CWIDGET *control)
 {
 	if (!control) return NULL;
-	
+
 	if (!CLASS_UserContainer) CLASS_UserContainer=GB.FindClass("UserContainer");
 	if (!CLASS_UserControl) CLASS_UserControl=GB.FindClass("UserControl");
-	
+
 	if ( GB.Is (control,CLASS_UserContainer) || GB.Is (control,CLASS_UserControl) )
 		return (CWIDGET*)((CUSERCONTROL*)control)->container;
-	
+
 	return control;
 }
 
@@ -418,9 +418,9 @@ END_METHOD
 
 /**************************************************************************************
 
- Control
- 
- **************************************************************************************/
+Control
+
+**************************************************************************************/
 
 BEGIN_PROPERTY(CWIDGET_x)
 
@@ -472,25 +472,22 @@ BEGIN_PROPERTY(CCONTROL_font)
 
 	if (!THIS->font)
 	{
-		THIS->font = CFONT_create(CONTROL->font()->copy(), 0, THIS);
+		THIS->font = CFONT_create(new gFont(), 0, THIS);
 		GB.Ref(THIS->font);
 	}
-	
+
 	if (READ_PROPERTY)
 	{
-		CONTROL->font()->copyTo(((CFONT *)THIS->font)->font);
+		CONTROL->actualFontTo(((CFONT *)THIS->font)->font);
 		GB.ReturnObject(THIS->font);
 	}
 	else
 	{
-    CFONT *font = (CFONT *)VPROP(GB_OBJECT);
-    if (font)
-    	CONTROL->setFont(font->font);
+		CFONT *font = (CFONT *)VPROP(GB_OBJECT);
+		if (font)
+			CONTROL->setFont(font->font->copy());
 		else
-			CONTROL->setFont(0);
-		
-		if (THIS->font != font)
-			CONTROL->font()->copyTo(((CFONT *)THIS->font)->font);
+			CONTROL->setFont(NULL);
 	}
 
 END_PROPERTY
@@ -576,13 +573,13 @@ BEGIN_METHOD(CWIDGET_moveScaled, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 	y = (int)(VARG(y) * MAIN_scale + 0.5);
 	w = (MISSING(w) ? -1 : (int)(VARG(w) * MAIN_scale + 0.5));
 	h = (MISSING(h) ? -1 : (int)(VARG(h) * MAIN_scale + 0.5));
-	
+
 	if (w == 0) w = 1;
 	if (h == 0) h = 1;
 
 	CONTROL->move(x, y);
 	CONTROL->resize(w, h);
-	
+
 END_METHOD
 
 
@@ -592,7 +589,7 @@ BEGIN_METHOD(CWIDGET_resizeScaled, GB_FLOAT w; GB_FLOAT h)
 
 	w = (int)(VARG(w) * MAIN_scale);
 	h = (int)(VARG(h) * MAIN_scale);
-	
+
 	if (w == 0) w = 1;
 	if (h == 0) h = 1;
 
@@ -602,10 +599,10 @@ END_METHOD
 
 
 BEGIN_METHOD_VOID(CWIDGET_delete)
-	
+
 	if (CONTROL)
 		CONTROL->destroy();
-		
+
 END_METHOD
 
 
@@ -626,19 +623,19 @@ BEGIN_METHOD(CWIDGET_reparent, GB_OBJECT parent; GB_INTEGER x; GB_INTEGER y)
 
 	CCONTAINER *parent=(CCONTAINER*)VARG(parent);
 	int x, y;
-	
+
 	if (GB.CheckObject(parent))
 		return;
-	
+
 	x = CONTROL->x();
 	y = CONTROL->y();
-	
+
 	if (!MISSING(x) && !MISSING(y))
 	{
-    x = VARG(x);
-    y = VARG(y);
+		x = VARG(x);
+		y = VARG(y);
 	}
-	
+
 	CONTROL->reparent((gContainer*)parent->ob.widget, x, y);
 
 END_METHOD
@@ -667,7 +664,7 @@ BEGIN_PROPERTY(CWIDGET_next)
 		CWIDGET *next = (CWIDGET *)VPROP(GB_OBJECT);
 		CONTROL->setNext(next ? next->widget : NULL);
 	}
-  
+
 END_PROPERTY
 
 
@@ -680,7 +677,7 @@ BEGIN_PROPERTY(CWIDGET_previous)
 		CWIDGET *previous = (CWIDGET *)VPROP(GB_OBJECT);
 		CONTROL->setPrevious(previous ? previous->widget : NULL);
 	}
-  
+
 END_PROPERTY
 
 
@@ -740,7 +737,7 @@ BEGIN_PROPERTY(CWIDGET_background)
 			GB.GetProperty(GetObject(CONTROL->proxy()), "Background");
 		else
 			GB.SetProperty(GetObject(CONTROL->proxy()), "Background", GB_T_INTEGER, VPROP(GB_INTEGER));
-		
+
 		return;
 	}
 
@@ -760,7 +757,7 @@ BEGIN_PROPERTY(CWIDGET_foreground)
 			GB.GetProperty(GetObject(CONTROL->proxy()), "Foreground");
 		else
 			GB.SetProperty(GetObject(CONTROL->proxy()), "Foreground", GB_T_INTEGER, VPROP(GB_INTEGER));
-		
+
 		return;
 	}
 
@@ -775,7 +772,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CWIDGET_parent)
 
 	GB.ReturnObject(GetObject(CONTROL->parent()));
-	
+
 END_PROPERTY
 
 
@@ -800,7 +797,7 @@ BEGIN_PROPERTY(CWIDGET_tooltip)
 		GB.ReturnNewZeroString(CONTROL->toolTip());
 		return;
 	}
-	
+
 	CONTROL->setToolTip(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
@@ -827,7 +824,7 @@ END_METHOD
 BEGIN_METHOD(CWIDGET_drag, GB_VARIANT data; GB_STRING format)
 
 	GB.ReturnObject(CDRAG_drag(THIS, &VARG(data), MISSING(format) ? NULL : GB.ToZeroString(ARG(format))));
-	
+
 END_METHOD
 
 
@@ -842,11 +839,11 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CCONTROL_tracking)
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(CONTROL->isTracking());
-  else
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(CONTROL->isTracking());
+	else
 		CONTROL->setTracking(VPROP(GB_BOOLEAN));
-	
+
 END_PROPERTY
 
 
@@ -924,13 +921,13 @@ GB_DESC CWidgetDesc[] =
 	GB_METHOD("Show", NULL, CWIDGET_show, NULL),
 	GB_METHOD("Hide", NULL, CWIDGET_hide, NULL),
 	GB_METHOD("Reparent", NULL, CWIDGET_reparent, "(Parent)Container;[(X)i(Y)i]"),
-	
+
 	GB_METHOD("Raise", NULL, CWIDGET_raise, NULL),
 	GB_METHOD("Lower", NULL, CWIDGET_lower, NULL),
 
 	GB_PROPERTY("Next", "Control", CWIDGET_next),
 	GB_PROPERTY("Previous", "Control", CWIDGET_previous),
-	
+
 	GB_METHOD("SetFocus", NULL, CWIDGET_set_focus, NULL),
 	GB_METHOD("Refresh", NULL, CWIDGET_refresh, NULL),
 	//GB_METHOD("Screenshot", "Picture", CWIDGET_screenshot, 0),
@@ -964,7 +961,7 @@ GB_DESC CWidgetDesc[] =
 	GB_PROPERTY("Name", "s", CCONTROL_name),
 	GB_PROPERTY("Tag", "v", CWIDGET_tag),
 	GB_PROPERTY("Tracking", "b", CCONTROL_tracking),
-	GB_PROPERTY("Mouse", "i", CWIDGET_mouse), 
+	GB_PROPERTY("Mouse", "i", CWIDGET_mouse),
 	GB_PROPERTY("Cursor", "Cursor", Control_Cursor),
 	GB_PROPERTY("ToolTip", "s", CWIDGET_tooltip),
 	GB_PROPERTY("Drop", "b", CWIDGET_drop),
@@ -1003,22 +1000,22 @@ GB_DESC CWidgetDesc[] =
 
 GB_DESC CPluginDesc[] =
 {
-  GB_DECLARE("Embedder", sizeof(CPLUGIN)), GB_INHERITS("Control"),
+	GB_DECLARE("Embedder", sizeof(CPLUGIN)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", 0, CPLUGIN_new, "(Parent)Container;"),
-  GB_METHOD("Embed", 0, CPLUGIN_embed, "(Client)i"),
-  GB_METHOD("Discard", 0, CPLUGIN_discard, 0),
-  
-  GB_PROPERTY_READ("Client", "i", CPLUGIN_client),
-  //GB_PROPERTY("Border", "i<Border>", CPLUGIN_border),
-  
-  GB_EVENT("Embed", NULL, NULL, &EVENT_Plugged),
-  GB_EVENT("Close", NULL, NULL, &EVENT_Unplugged),
-  GB_EVENT("Error", NULL, NULL, &EVENT_PlugError), /* TODO */
-  
-  EMBEDDER_DESCRIPTION,
-  
-  GB_END_DECLARE
+	GB_METHOD("_new", 0, CPLUGIN_new, "(Parent)Container;"),
+	GB_METHOD("Embed", 0, CPLUGIN_embed, "(Client)i"),
+	GB_METHOD("Discard", 0, CPLUGIN_discard, 0),
+
+	GB_PROPERTY_READ("Client", "i", CPLUGIN_client),
+	//GB_PROPERTY("Border", "i<Border>", CPLUGIN_border),
+
+	GB_EVENT("Embed", NULL, NULL, &EVENT_Plugged),
+	GB_EVENT("Close", NULL, NULL, &EVENT_Unplugged),
+	GB_EVENT("Error", NULL, NULL, &EVENT_PlugError), /* TODO */
+
+	EMBEDDER_DESCRIPTION,
+
+	GB_END_DECLARE
 };
 
 

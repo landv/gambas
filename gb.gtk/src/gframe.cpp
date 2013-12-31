@@ -190,7 +190,7 @@ void gFrame::setText(char *vl)
 	{
 		label = gtk_label_new(vl);
 		gtk_frame_set_label_widget(GTK_FRAME(fr), label);
-		setFont(font());
+		updateFont();
 		setForeground(foreground());
 		gtk_widget_show(label);
 	}
@@ -198,11 +198,11 @@ void gFrame::setText(char *vl)
 		gtk_label_set_text(GTK_LABEL(label), (const gchar*)vl);
 }
 
-void gFrame::setFont(gFont *ft)
+void gFrame::updateFont()
 {
-	gControl::setFont(ft);
+	gContainer::updateFont();
 	if (label)
-		gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
+		gtk_widget_modify_font(label, font()->desc());
 }
 
 void gFrame::setRealForeground(gColor color)

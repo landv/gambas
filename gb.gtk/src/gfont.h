@@ -82,6 +82,8 @@ public:
 	PangoContext* ct;
 	PangoFontDescription *desc() { return pango_context_get_font_description(ct); }
 	bool isAllSet();
+	void setAll(bool v);
+	void setAllFrom(gFont *font);
 	void reset();
 	
 	unsigned _bold_set : 1;

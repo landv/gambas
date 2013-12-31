@@ -195,4 +195,8 @@ void gMnemonic_correctText(char *st,char **buf);
 guint gMnemonic_correctMarkup(char *st,char **buf);
 void gMnemonic_returnText(char *st,char **buf);
 
+#ifdef GTK3
+int gt_get_preferred_width(GtkWidget *widget);
+#endif
+
 #endif

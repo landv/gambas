@@ -80,7 +80,6 @@ public:
 	virtual void setVisible(bool vl);
 	virtual void setRealBackground(gColor vl);
 	virtual void setRealForeground(gColor vl);
-	virtual void setFont(gFont *ft);
 
 	virtual int clientWidth();
 	virtual int clientHeight();
@@ -144,6 +143,7 @@ public:
 	void embedMenuBar(GtkWidget *border);
 	void emitResize();
 	void setGeometryHints();
+	virtual void updateFont();
 	
 	GtkWindowGroup *group;
 	GtkAccelGroup *accel;

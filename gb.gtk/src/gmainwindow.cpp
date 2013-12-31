@@ -1376,9 +1376,9 @@ bool gMainWindow::isMenuBarVisible()
 	return menuBar && !_hideMenuBar && _showMenuBar; //|| (menuBar && GTK_WIDGET_MAPPED(GTK_WIDGET(menuBar)));
 }
 
-void gMainWindow::setFont(gFont *ft)
+void gMainWindow::updateFont()
 {
-	gContainer::setFont(ft);
+	gContainer::updateFont();
 	gMenu::updateFont(this);
 }
 
@@ -1498,7 +1498,6 @@ void gMainWindow::setGeometryHints()
 			geometry.min_height = bufH;
 
 			gdk_window_set_geometry_hints(gtk_widget_get_window(border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
-			fprintf(stderr, "setGeometryHints\n");
 		}
 	}
 }

@@ -64,7 +64,6 @@ public:
 	void setTristate(bool vl);
 	void setAutoResize(bool vl);
 	
-	virtual void setFont(gFont *ft);
 	virtual void setRealForeground(gColor color);
 	//virtual void setRealBackground(gColor color);
 
@@ -78,7 +77,6 @@ public:
 	int type;
 	char *bufText;
 	GtkCellRenderer *rendtxt;
-	GtkWidget *label;
 	GdkPixbuf *rendpix,*rendinc;
 	gPicture *pic;
 	int shortcut;
@@ -94,7 +92,7 @@ public:
 	bool hasShortcut();
 	void unsetOtherRadioButtons();
 	virtual int minimumHeight();
-	void updateSize();
+	virtual void updateSize();
 	
 	static bool isButton(gControl *control) { return control->getClass() == Type_gButton && ((gButton *)control)->type == Button; }
 };

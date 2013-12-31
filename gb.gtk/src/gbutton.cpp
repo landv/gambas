@@ -323,7 +323,6 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	disable = false;
 	bufText = NULL;
 	rendtxt = NULL;
-	label = NULL;
 	rendpix = NULL;
 	rendinc = NULL;
 	pic = NULL;
@@ -382,12 +381,6 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 
 		ON_DRAW(widget, this, button_expose, button_draw);
 	}
-	else
-	{	
-		label = gtk_label_new_with_mnemonic("");
-		gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_CENTER);
-		gtk_container_add (GTK_CONTAINER(widget), GTK_WIDGET(label));
-	}
 	
 	realize();
 	
@@ -432,56 +425,6 @@ bool gButton::inconsistent()
 	return vl;	
 }
 
-#if 0
-void gButton::setFont(gFont *ft)
-{
-	PangoFontDescription *desc=pango_context_get_font_description(ft->ct);
-	GtkBox *box;
-	GtkLabel *lbl;
-	GList *chd;
-
-  gControl::setFont(ft);
-
-	return; /* TODO */
-	
-	font_change=true;
-	if (type==4) { gtk_widget_modify_font(widget,desc); return; }
-
-	if (rendtxt)
-	{
-	}
-	else
-	{
-		box=(GtkBox*)gtk_bin_get_child(GTK_BIN(widget));
-		chd=gtk_container_get_children(GTK_CONTAINER(box));
-		chd=chd->next;
-		lbl=GTK_LABEL(chd->data);
-		gtk_widget_modify_font(GTK_WIDGET(lbl),desc);
-		g_list_free(chd);
-	}
-}
-#endif
-
-void gButton::setFont(gFont *ft)
-{
-	gControl::setFont(ft);
-	
-	if (label)
-		gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
-	
-	updateSize();
-}
-
-/*bool gButton::enabled()
-{
-	return GTK_WIDGET_SENSITIVE(widget);
-}
-
-void gButton::setEnabled(bool vl)
-{
-	gtk_widget_set_sensitive(widget, vl);
-}*/
-
 const char* gButton::text()
 {
 	//if (type == Tool) return this->toolTip();
@@ -490,7 +433,6 @@ const char* gButton::text()
 
 void gButton::setText(const char *st)
 {
-	GtkLabel *lbl=NULL;
 	GtkAccelGroup *accel;
 	char *buf;
 	
@@ -505,44 +447,41 @@ void gButton::setText(const char *st)
 
  	bufText = st ? g_strdup(st) : NULL;
 
-	updateSize();
-	resize();
-	
-	if (!rendtxt)
+	if (rendtxt)
 	{
-		lbl=(GtkLabel*)gtk_bin_get_child(GTK_BIN(widget));
-		if (!st) st="";
-		if (!strlen(st))
-		{ 
-			gtk_label_set_text(lbl,"");
-			g_object_set(G_OBJECT(lbl),"visible",false,(void *)NULL);
-			return;
+		if (bufText && *bufText)
+		{
+			shortcut = (int)gMnemonic_correctMarkup(bufText, &buf);
+
+			if (shortcut)
+				gtk_widget_add_accelerator(widget, "clicked", accel, (guint)shortcut, GDK_MOD1_MASK, (GtkAccelFlags)0);
+
+			if (rendtxt)
+				g_object_set(G_OBJECT(rendtxt), "markup", buf, (void *)NULL);
+
+			g_free(buf);
 		}
-		gMnemonic_correctText((char*)st,&buf);
-		gtk_label_set_text_with_mnemonic(lbl,buf);
-		g_object_set(G_OBJECT(lbl),"visible",true,(void *)NULL);
-		g_free(buf);
-		return;
-		
-	}
-	
-	if (bufText && *bufText)
-	{
-		shortcut = (int)gMnemonic_correctMarkup(bufText, &buf);
+		else
+		{
+			g_object_set(G_OBJECT(rendtxt), "markup", "", (void *)NULL);
+		}
 
-		if (shortcut)
-			gtk_widget_add_accelerator(widget, "clicked", accel, (guint)shortcut, GDK_MOD1_MASK, (GtkAccelFlags)0);
-	
-		g_object_set(G_OBJECT(rendtxt), "markup", buf, (void *)NULL);
-
-		g_free(buf);
+		refresh();
 	}
 	else
 	{
-		g_object_set(G_OBJECT(rendtxt), "markup", "", (void *)NULL);
+		if (bufText && *bufText)
+		{
+			gMnemonic_correctText((char*)st, &buf);
+			gtk_button_set_use_underline(GTK_BUTTON(widget), TRUE);
+			gtk_button_set_label(GTK_BUTTON(widget), buf);
+			g_free(buf);
+		}
+		else
+			gtk_button_set_label(GTK_BUTTON(widget), "");
 	}
 
-	refresh();
+	updateFont();
 }
 
 
@@ -792,9 +731,6 @@ void gButton::setRealForeground(gColor color)
 				(void *)NULL);
 		}
 	}
-	
-	if (label)
-		set_gdk_fg_color(label, color);
 }
 
 void gButton::setTristate(bool vl)
@@ -812,7 +748,6 @@ void gButton::setAutoResize(bool vl)
 
 void gButton::updateSize()
 {
-	GtkRequisition req;
 	int mw, mh;
 	
 	if (!_autoresize)
@@ -823,19 +758,27 @@ void gButton::updateSize()
 	
 	if (bufText && *bufText)
 	{
-		int m = font()->width(bufText, strlen(bufText));
+		gint m;
 	
 		if (type == Check || type == Radio)
 		{
 #ifdef GTK3
-			gtk_widget_get_preferred_size(border, NULL, &req);
+			int indicator_size, indicator_spacing, focus_width, focus_pad;
+			gtk_widget_style_get(widget,
+				"indicator-size", &indicator_size,
+				"indicator-spacing", &indicator_spacing,
+				"focus-line-width", &focus_width,
+        "focus-padding", &focus_pad,
+				(char *)NULL);
+			m = (indicator_size + indicator_spacing * 2 + 2 * (focus_width + focus_pad)) + indicator_spacing + font()->width(bufText, strlen(bufText));
 #else
+			GtkRequisition req;
 			g_signal_emit_by_name(border, "size-request",	&req);
+			m = req.width;
 #endif
-		m += req.width;
-		if (req.height > m)
-			m = req.height;
 		}
+		else
+			m = font()->width(bufText, strlen(bufText)) + 16;
 		
 		mw += m;
 	}
@@ -845,8 +788,6 @@ void gButton::updateSize()
 		if (mw) mw += 8;
 		mw += pic->width();
 	}
-	
-	mw += 16;
 	
 	if (mh < height())
 		mh = height();

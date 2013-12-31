@@ -498,7 +498,7 @@ void gContainer::insert(gControl *child, bool realize)
     
 	if (hasBackground() && !child->_bg_set) child->setBackground();
 	if (hasForeground() && !child->_fg_set) child->setForeground();
-  if (hasFont()) child->setFont(font());
+  child->updateFont();
 }
 
 void gContainer::remove(gControl *child)
@@ -647,22 +647,14 @@ void gContainer::updateFocusChain()
 	g_list_free(chain);
 }
 
-void gContainer::setFont(gFont *ft)
+void gContainer::updateFont()
 {
 	int i;
-	gControl *ch;
 
-	gControl::setFont(ft);
+	gControl::updateFont();
 
 	for (i = 0; i < childCount(); i++)
-	{
-		ch = child(i);
-		if (!ch->_font_set)
-		{
-			ch->setFont(ch->font());
-			ch->_font_set = false;
-		}
-	}	
+		child(i)->updateFont();
 }
 
 void gContainer::moveChild(gControl *child, int x, int y)
@@ -683,11 +675,6 @@ bool gContainer::hasBackground() const
 bool gContainer::hasForeground() const
 {
 	return _fg_set || (parent() && parent()->hasForeground());
-}
-
-bool gContainer::hasFont() const
-{
-	return _font_set || (parent() && parent()->hasFont());
 }
 
 void gContainer::setFullArrangement(gContainerArrangement *arr)

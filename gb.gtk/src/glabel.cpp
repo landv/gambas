@@ -173,7 +173,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	ON_DRAW(widget, this, cb_expose, cb_draw);
 
 	setAlignment(ALIGN_NORMAL);
-	updateLayout();
+	setText("");
 }
 
 gLabel::~gLabel()
@@ -213,6 +213,8 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 	gint w, h;
 	int fw;
 	
+	updateLayout();
+
 	if (_locked || !textdata || !*textdata)
 		return;
 	
@@ -280,7 +282,7 @@ char *gLabel::text()
 	return textdata;
 }
 
-void gLabel::setText(char *vl)
+void gLabel::setText(const char *vl)
 {
 	//bool no_text_before = !textdata || !*textdata;
 	
@@ -291,15 +293,7 @@ void gLabel::setText(char *vl)
 	else
 		textdata = 0;
 
-	updateLayout();
 	updateSize();
-	
-	/*if (_transparent)
-	{
-		if (no_text_before)
-			gtk_widget_shape_combine_mask(border, NULL, 0, 0);
-	}*/
-	
 	refresh();
 }
 
@@ -346,14 +340,6 @@ void gLabel::setAlignment(int al)
 }
 
 
-void gLabel::setFont(gFont *ft)
-{
-	gControl::setFont(ft);
-	updateLayout();
-	updateSize();
-  refresh();
-}
-
 void gLabel::resize(int w, int h)
 {
 	bool update = markup && width() != w;
@@ -371,4 +357,9 @@ void gLabel::setWrap(bool v)
 gColor gLabel::getFrameColor()
 {
 	return realForeground();
+}
+
+void gLabel::updateSize()
+{
+	updateSize(false);
 }
