@@ -47,14 +47,14 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 
 	void _next_pattern(void)
 	{
-		cp = *pattern;
-		pattern++; len_pattern--;
+		cp = *pattern++;
+		len_pattern--;
 	}
 
 	void _next_string(void)
 	{
-		cs = *string;
-		string++; len_string--;
+		cs = *string++;
+		len_string--;
 	}
 
 	/*if (len_pattern == 0 || len_string == 0)
@@ -190,45 +190,23 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 			string--; len_string++;
 			save_string = string;
 			save_len_string = len_string;
-			
+
+		NEXT_SUB_PATTERN:
+
 			for(;;)
 			{
-				for(;;)
-				{
-					if (len_pattern == 0)
-						THROW(E_REGEXP, "Missing '}'");
+				_next_pattern();
+				if (cp == ',' || cp == '}')
+					break;
+				_next_string();
+				if (tolower(cp) != tolower(cs))
+					break;
+			}
 
-					if (len_string == 0)
-						break;
-
-					_next_pattern();
-
-					if (cp == '}' || cp == ',')
-						break;
-
-					_next_string();
-
-					if (tolower(cp) == tolower(cs))
-						continue;
-
-					for(;;)
-					{
-						_next_pattern();
-						if (cp == '}')
-							return FALSE;
-						if (cp == ',' || len_pattern == 0)
-							break;
-					}
-
-					string = save_string;
-					len_string = save_len_string;
-				}
-
-				if (len_pattern == 0)
-					return (len_string == 0);
-
-				save_pattern = pattern;
-				save_len_pattern = len_pattern;
+			if (cp == ',' || cp == '}')
+			{
+				save_pattern = pattern - 1;
+				save_len_pattern = len_pattern + 1;
 
 				while (cp != '}')
 				{
@@ -242,9 +220,21 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 
 				pattern = save_pattern;
 				len_pattern = save_len_pattern;
-				string = save_string;
-				len_string = save_len_string;
+				_next_pattern();
 			}
+
+			while (cp != ',')
+			{
+				if (cp == '}')
+					return FALSE;
+
+				_next_pattern();
+			}
+
+			string = save_string;
+			len_string = save_len_string;
+
+			goto NEXT_SUB_PATTERN;
 		}
 
 		if (cp == '\\')
