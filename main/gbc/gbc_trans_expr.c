@@ -35,7 +35,7 @@
 #include "gbc_trans.h"
 #include "gb_code.h"
 
-/*#define DEBUG*/
+//#define DEBUG
 
 //static bool _accept_statement = FALSE;
 
