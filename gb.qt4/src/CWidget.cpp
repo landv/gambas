@@ -1799,13 +1799,13 @@ BEGIN_PROPERTY(CWIDGET_border_full)
 
 	if (READ_PROPERTY)
 	{
-		if (wid->frameStyle() == (QFrame::Box + QFrame::Plain))
+		if (wid->frameStyle() == (QFrame::Box + QFrame::Plain) && wid->lineWidth() == 1)
 			border = BORDER_PLAIN;
 		else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Sunken))
 			border = BORDER_SUNKEN;
 		else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Raised))
 			border = BORDER_RAISED;
-		else if (wid->frameStyle() == (QFrame::Box + QFrame::Sunken))
+		else if (wid->frameStyle() == (QFrame::StyledPanel + QFrame::Plain))
 			border = BORDER_ETCHED;
 		else
 			border = BORDER_NONE;
@@ -1814,15 +1814,13 @@ BEGIN_PROPERTY(CWIDGET_border_full)
 	}
 	else
 	{
-		lw = 1;
-
 		switch (VPROP(GB_INTEGER))
 		{
-			case BORDER_PLAIN: border = QFrame::Box + QFrame::Plain; break;
+			case BORDER_PLAIN: border = QFrame::Box + QFrame::Plain; lw = 1; break;
 			case BORDER_SUNKEN: border = QFrame::StyledPanel + QFrame::Sunken; lw = 2; break;
 			case BORDER_RAISED: border = QFrame::StyledPanel + QFrame::Raised; lw = 2; break;
-			case BORDER_ETCHED: border = QFrame::Box + QFrame::Sunken; break;
-			default: border = QFrame::NoFrame; break;
+			case BORDER_ETCHED: border = QFrame::StyledPanel + QFrame::Plain; lw = 2; break;
+			default: border = QFrame::NoFrame; lw = 0; break;
 		}
 
 		wid->setFrameStyle(border);

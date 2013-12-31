@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CLabel.h
+	CLabel.h
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -33,6 +33,7 @@
 
 #include "CWidget.h"
 #include "CPicture.h"
+#include "CContainer.h"
 
 #ifndef __CLABEL_CPP
 extern GB_DESC CLabelDesc[];
@@ -49,53 +50,57 @@ extern GB_DESC CSeparatorDesc[];
 #endif
 
 typedef
-  struct {
-    CWIDGET widget;
+	struct {
+		CWIDGET widget;
 		bool transparent;
-    }
-  CLABEL;
+		}
+	CLABEL;
 
 typedef
-  struct {
-    CWIDGET widget;
-    }
-  CSEPARATOR;
+	struct {
+		CWIDGET widget;
+		}
+	CSEPARATOR;
 
 class MyLabel : public QLabel
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  MyLabel(QWidget *parent);
-  void calcMinimumHeight(bool adjust = false);
-  bool getAutoResize() { return autoResize; }
-  void setAutoResize(bool a) { autoResize = a; calcMinimumHeight(); }
-  virtual void setText(const QString &);
-  void adjust();
-	
+	MyLabel(QWidget *parent);
+	void calcMinimumHeight(bool adjust = false);
+	bool getAutoResize() { return autoResize; }
+	void setAutoResize(bool a) { autoResize = a; calcMinimumHeight(); }
+	virtual void setText(const QString &);
+	void adjust();
+	int border() const { return _border; }
+	void setBorder(int border) { CCONTAINER_set_border(&_border, border, this); }
+
 protected:
 
-  virtual void changeEvent(QEvent *);
-  virtual void resizeEvent(QResizeEvent *);
+	virtual void changeEvent(QEvent *);
+	virtual void resizeEvent(QResizeEvent *);
+	virtual void paintEvent(QPaintEvent *);
 
 private:
 
 	unsigned autoResize : 1;
 	unsigned locked : 1;
+	char _border;
 };
 
 class MySeparator : public QWidget
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  MySeparator(QWidget *);
+	MySeparator(QWidget *);
 
 protected:
 
-  void paintEvent(QPaintEvent *);
+	void paintEvent(QPaintEvent *);
 };
 
 #endif

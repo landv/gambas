@@ -403,11 +403,10 @@ GB_DESC ApplicationDesc[] =
 static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state)
 {
 	opt.rect = QRect(x, y, w ,h);
-	if (state & GB_DRAW_STATE_DISABLED)
-		return;
-	
-	opt.state |= QStyle::State_Enabled;
-	
+	opt.state = QStyle::State_None;
+
+	if (!(state & GB_DRAW_STATE_DISABLED))
+		opt.state |= QStyle::State_Enabled;
 	if (state & GB_DRAW_STATE_FOCUS)
 		opt.state |= QStyle::State_HasFocus;
 	if (state & GB_DRAW_STATE_HOVER)
@@ -558,51 +557,7 @@ static void style_panel(QPainter *p, int x, int y, int w, int h, int border, int
 	QStyleOptionFrame opt;
 	init_option(opt, x, y, w, h, state);
 	
-	CCONTAINER_draw_frame(p, border, opt);
-	
-	/*opt.lineWidth = 2;
-	opt.midLineWidth = 0;	
-	
-	if (border == BORDER_NONE)
-		return;
-		
-	if (border == BORDER_PLAIN)
-	{
-		DP(d)->save();
-		DP(d)->setPen(state == GB_DRAW_STATE_DISABLED ? QApplication::palette().color(QPalette::Active, QPalette::WindowText) : QApplication::palette().color(QPalette::Disabled, QPalette::WindowText));
-		DP(d)->drawRect(x, y, w - 1, h - 1);
-		DP(d)->restore();
-		if DPM(d) 
-		{	
-			DPM(d)->save();
-			DPM(d)->setPen(Qt::color1);
-			DPM(d)->drawRect(x, y, w - 1, h - 1);
-			DPM(d)->restore();
-		}
-		return;
-	}
-	
-	if (border == BORDER_ETCHED)
-	{
-		pe = QStyle::PE_FrameGroupBox;
-	}
-	else
-	{
-		if (border == BORDER_RAISED)
-			opt.state |= QStyle::State_Raised;
-		else if (border == BORDER_SUNKEN)
-			opt.state |= QStyle::State_Sunken;
-		
-		pe = QStyle::PE_Frame;
-	}
-	
-	QApplication::style()->drawPrimitive(pe, &opt, DP(d));
-	if (DPM(d)) 
-	{
-		//DPM(d)->setRasterOp(Qt::OrROP);
-		QApplication::style()->drawPrimitive(pe, &opt, DPM(d));
-		//DPM(d)->setRasterOp(Qt::CopyROP);
-	}*/
+	CCONTAINER_draw_border_without_widget(p, border, opt);
 }
 			
 static void style_handle(QPainter *p, int x, int y, int w, int h, int vertical, int state)

@@ -317,6 +317,7 @@ Public Sub DrawingArea_MouseMove()
   
   Dim bPressed As Boolean
   
+  If Not Me.Enabled Then Return
   bPressed = Mouse.Inside($hDrawingArea)
   
   If $bPressed <> bPressed Then
@@ -359,27 +360,32 @@ Public Sub DrawingArea_Draw()
   bFlat = Not $bBorder 'And Not $bInside
 
   If $bInsideArrow Or If $bMenuOnly Then
-    Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, bFlat)
+    Style.PaintButton(0, 0, Me.W, Me.H, False, iFlag, bFlat)
     'Draw.Save
     'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
     'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
     'Draw.Restore
   Else
-    Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
+    Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
   Endif
     
   X = Desktop.Scale
   
   If $hPicture Then
     If Me.Enabled Then
-      Draw.Picture($hPicture, X, (Me.H - $hPicture.H) / 2)
+      Paint.DrawPicture($hPicture, X, (Me.H - $hPicture.H) / 2)
     Else
-      Draw.Picture($hPicture.Image.Desaturate().Picture, X, (Me.H - $hPicture.H) / 2)
+      Paint.DrawImage($hPicture.Image.Desaturate(), X, (Me.H - $hPicture.H) / 2)
     Endif
     X += $hPicture.H + Desktop.Scale
   Endif
   
   If $sText Then 
+    If Me.Enabled Then 
+      Draw.Foreground = Color.ButtonForeground
+    Else
+      Draw.Foreground = Color.Merge(Color.ButtonBackground, Color.ButtonForeground)
+    Endif
     sText = $sText
     If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
     If Not $hPicture And If Not $bArrow Then
@@ -396,7 +402,7 @@ Public Sub DrawingArea_Draw()
   
   If bDrawArrow Then
     'If $bBorder Or If $bInside Then Draw.Style.Separator(Me.W - Desktop.Scale * 3, 3, 3, Me.H - 6, True)
-    Draw.Style.Arrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
+    Style.PaintArrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
   Endif
   
 End

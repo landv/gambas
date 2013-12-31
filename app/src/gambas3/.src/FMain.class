@@ -282,7 +282,6 @@ Private Sub GetRootKey(sKey As String) As String
   
 End
 
-
 Private Function GetCurrentDir(Optional sKey As String) As String
   
   If sKey Then 
@@ -2338,14 +2337,20 @@ Public Sub OnRefreshComponents()
   Dim sComp As String
   Dim hMenu As Menu
   
+  For Each hMenu In mnuGUI.Children
+    If hMenu.Text Then hMenu.Checked = False
+  Next
+  
   iPos = Project.Environment.Find("GB_GUI=*", gb.Like)
   If iPos < 0 Then
     btnGUI.Text = ("Current desktop")
+    mnuSetGUICurrentDesktop.Checked = True
   Else
     sComp = Scan(Project.Environment[iPos], "*=*")[1]
     For Each hMenu In mnuGUI.Children
       If hMenu.Tag = sComp Then
         btnGUI.Text = hMenu.Text
+        hMenu.Checked = True
         Break
       Endif
     Next

@@ -53,7 +53,7 @@ End
 Private Sub GetDistribution() As String
 
   Dim cDist As Collection = ["lsb-release": "/etc/lsb-release", "vector": "/etc/vector-version", "slackware": "/etc/slackware-version", "debian": "/etc/debian_version",
-    "redhat": "/etc/redhat-release", "arch": "/etc/arch-release", "SuSE": "/etc/SuSE-release", "gentoo": "/etc/gentoo-release", "conectiva": "/etc/conectiva-release", 
+    "redhat": "/etc/redhat-release", "arch": "/etc/arch-release", "SuSE": "/etc/os-release", "gentoo": "/etc/gentoo-release", "conectiva": "/etc/conectiva-release", 
     "mandriva": "/etc/mandriva-release", "pardus": "/etc/pardus-release", "kanotix": "/etc/kanotix-release"]
   Dim sPath As String
   Dim sDistro As String

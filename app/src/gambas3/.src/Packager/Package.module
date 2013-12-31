@@ -793,6 +793,7 @@ Private Function MakeDebPackage(sSys As String)
     Case Project.TYPE_COMPONENT
       Print #hFile, " This is a Gambas component written in Gambas"
   End Select
+  
   Close #hFile
   
   'debian/rules

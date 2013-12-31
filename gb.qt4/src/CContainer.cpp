@@ -499,7 +499,7 @@ void MyFrame::setFrameStyle(int frame)
 	update();
 }
 
-void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w)
+static void _draw_border(QPainter *p, int frame, QWidget *w, QStyleOptionFrame &opt)
 {
 	QStyle *style;
 	QStyleOptionFrameV3 optv3;
@@ -507,7 +507,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 	QBrush save_brush;
 	//QRect rect = opt.rect;
 	
-	if (frame == 0)
+	if (frame == BORDER_NONE)
 		return;
 	
 	if (w)
@@ -564,31 +564,56 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 		default:
 			return;
 	}
-	
-	/*if (rect.x() > 0)
-		p->drawLine(rect.x(), rect.y(), rect.x(), rect.y() + rect.height() - 1);
-	if (rect.x() > 0)
-		p->drawLine(rect.x(), rect.y(), rect.x() + rect.width() - 1, rect.y());
-	if (w->parentWidget())
-	{
-		int dx, dy;
-		
-		dx = rect.x() + rect.width() - 1;
-		dy = rect.y() + rect.height() - 1;
-		if (dx < (w->parentWidget()->width() - 1))
-			p->drawLine(dx, rect.y(), dx, dy);
-		if (dy < (w->parentWidget()->height() - 1))
-			p->drawLine(rect.x(), dy, dx, dy);
-	}*/
 }
+
+void CCONTAINER_draw_border(QPainter *p, char frame, QWidget *wid)
+{
+	QStyleOptionFrame opt;
+	opt.init(wid);
+	opt.rect = QRect(0, 0, wid->width(), wid->height());
+	_draw_border(p, frame, wid, opt);
+}
+
+void CCONTAINER_draw_border_without_widget(QPainter *p, char frame, QStyleOptionFrame &opt)
+{
+	_draw_border(p, frame, NULL, opt);
+}
+
+
+void CCONTAINER_set_border(char *border, char new_border, QWidget *wid)
+{
+	int m;
+
+	if (new_border < BORDER_NONE || new_border > BORDER_ETCHED || new_border == *border)
+		return;
+
+	*border = new_border;
+
+	switch (new_border)
+	{
+		case BORDER_PLAIN:
+			m = 1;
+			break;
+
+		case BORDER_SUNKEN:
+		case BORDER_RAISED:
+		case BORDER_ETCHED:
+
+			m = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+			break;
+
+		default:
+			m = 0;
+	}
+
+	wid->setContentsMargins(m, m, m, m);
+	wid->update();
+}
+
 
 void MyFrame::drawFrame(QPainter *p)
 {
-	QStyleOptionFrame opt;
-	opt.init(this);
-	opt.rect = QRect(0, 0, width(), height());
-
-	CCONTAINER_draw_frame(p, _frame, opt, this);
+	CCONTAINER_draw_border(p, _frame, this);
 }
 
 int MyFrame::frameWidth()
@@ -597,15 +622,14 @@ int MyFrame::frameWidth()
 	{
 		case BORDER_PLAIN:
 			return 1;
-		
+
 		case BORDER_SUNKEN:
 		case BORDER_RAISED:
-			
 			return style()->pixelMetric(QStyle::PM_ComboBoxFrameWidth);
-			
+
 		case BORDER_ETCHED:
 			return 2;
-			
+
 		default:
 			return 0;
 	}

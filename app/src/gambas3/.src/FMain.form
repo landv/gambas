@@ -177,6 +177,34 @@
       Text = Shortcut(("Activate profiling"), "g")
       Toggle = True
     }
+    { mnuGUI Menu
+      Action = "gui"
+      Text = ("GUI component")
+      { mnuSetGUICurrentDesktop Menu mnuSetGUI
+        Name = "mnuSetGUICurrentDesktop"
+        Text = ("Current desktop")
+      }
+      { Menu30 Menu
+      }
+      { Menu21 Menu mnuSetGUI
+        Name = "Menu21"
+        #Translate = False
+        Text = "QT4"
+        Tag = "gb.qt"
+      }
+      { Menu27 Menu mnuSetGUI
+        Name = "Menu27"
+        #Translate = False
+        Text = "GTK+2"
+        Tag = "gb.gtk"
+      }
+      { Menu28 Menu mnuSetGUI
+        Name = "Menu28"
+        #Translate = False
+        Text = "GTK+3"
+        Tag = "gb.gtk3"
+      }
+    }
     { Menu14 Menu
     }
     { mnuPause Menu
@@ -622,32 +650,6 @@
   }
   { mnuBackward Menu
     { Menu6 Menu
-    }
-  }
-  { mnuGUI Menu
-    { Menu29 Menu mnuSetGUI
-      Name = "Menu29"
-      Text = ("Current desktop")
-    }
-    { Menu30 Menu
-    }
-    { Menu21 Menu mnuSetGUI
-      Name = "Menu21"
-      #Translate = False
-      Text = "QT4"
-      Tag = "gb.qt"
-    }
-    { Menu27 Menu mnuSetGUI
-      Name = "Menu27"
-      #Translate = False
-      Text = "GTK+2"
-      Tag = "gb.gtk"
-    }
-    { Menu28 Menu mnuSetGUI
-      Name = "Menu28"
-      #Translate = False
-      Text = "GTK+3"
-      Tag = "gb.gtk3"
     }
   }
   { sepMenu Separator
@@ -1278,6 +1280,7 @@
   }
   { Action gui
     Text = "GUI component"
+    Shortcut = ""
     Picture = "icon:/small/desktop"
   }
   { Action help

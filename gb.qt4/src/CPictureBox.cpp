@@ -39,6 +39,7 @@ MyPictureBox::MyPictureBox(QWidget *parent)
 : QLabel(parent)
 {
 	_autoresize = false;
+	_border = BORDER_NONE;
 }
 
 void MyPictureBox::updateBackground()
@@ -100,6 +101,13 @@ void MyPictureBox::adjustSize()
 		r = contentsRect();
 		resize(p->width() + width() - r.width(), p->height() + height() - r.height());
 	}
+}
+
+void MyPictureBox::paintEvent(QPaintEvent *e)
+{
+	QPainter p(this);
+	CCONTAINER_draw_border(&p, _border, this);
+	QLabel::paintEvent(e);
 }
 
 
@@ -174,6 +182,15 @@ BEGIN_PROPERTY(CPICTUREBOX_alignment)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(PictureBox_Border)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->border());
+	else
+		WIDGET->setBorder(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 
 GB_DESC CPictureBoxDesc[] =
 {
@@ -185,7 +202,7 @@ GB_DESC CPictureBoxDesc[] =
 	GB_PROPERTY("Picture", "Picture", CPICTUREBOX_picture),
 	GB_PROPERTY("Stretch", "b", CPICTUREBOX_stretch),
 	//GB_PROPERTY("Transparent", "b", CPICTUREBOX_transparent),
-	GB_PROPERTY("Border", "i", CWIDGET_border_full),
+	GB_PROPERTY("Border", "i", PictureBox_Border),
 	GB_PROPERTY("Alignment", "i", CPICTUREBOX_alignment),
 	GB_PROPERTY("AutoResize", "b", CPICTUREBOX_auto_resize),
 

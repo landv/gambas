@@ -150,6 +150,17 @@ BEGIN_PROPERTY(Label_Wrap)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Label_Border)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->border());
+	else
+		WIDGET->setBorder(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+//---------------------------------------------------------------------------
+
 GB_DESC CLabelDesc[] =
 {
   GB_DECLARE("Label", sizeof(CLABEL)), GB_INHERITS("Control"),
@@ -159,7 +170,7 @@ GB_DESC CLabelDesc[] =
   GB_PROPERTY("Text", "s", CLABEL_text),
   GB_PROPERTY("Caption", "s", CLABEL_text),
   GB_PROPERTY("Alignment", "i", CLABEL_alignment),
-  GB_PROPERTY("Border", "i", CWIDGET_border_full),
+  GB_PROPERTY("Border", "i", Label_Border),
   GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
   GB_PROPERTY("Padding", "i", CLABEL_margin),
   GB_PROPERTY("Transparent", "b", CLABEL_transparent),
@@ -180,7 +191,7 @@ GB_DESC CTextLabelDesc[] =
   GB_PROPERTY("Text", "s", CLABEL_text),
   GB_PROPERTY("Caption", "s", CLABEL_text),
   GB_PROPERTY("Alignment", "i", CTEXTLABEL_alignment),
-  GB_PROPERTY("Border", "i", CWIDGET_border_full),
+  GB_PROPERTY("Border", "i", Label_Border),
   GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
   GB_PROPERTY("Padding", "i", CLABEL_margin),
   GB_PROPERTY("Transparent", "b", CLABEL_transparent),
@@ -221,6 +232,7 @@ MyLabel::MyLabel(QWidget *parent) : QLabel(parent)
 {
 	autoResize = false;
 	locked = false;
+	_border = BORDER_NONE;
 	setIndent(0);
   calcMinimumHeight();
 }
@@ -384,6 +396,13 @@ void MyLabel::resizeEvent(QResizeEvent *e)
 void MyLabel::adjust()
 {
 	calcMinimumHeight(true);
+}
+
+void MyLabel::paintEvent(QPaintEvent *e)
+{
+	QPainter p(this);
+	CCONTAINER_draw_border(&p, _border, this);
+	QLabel::paintEvent(e);
 }
 
 /** class MySeparator ******************************************************/

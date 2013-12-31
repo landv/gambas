@@ -156,8 +156,7 @@ Public Sub Background_Draw()
   Paint.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
   'Draw.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
   If $bBorder Then 
-    '$hBackground.Background = Me.Background
-    'Draw.Style.Panel(0, 0, Me.W, Me.H, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
+    Paint.Background = iBg
     Style.PaintBox(0, 0, Me.W, Me.H, If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
@@ -226,8 +225,8 @@ Public Sub Background_Arrange()
   Dim aCtrl As New Control[]
   Dim X As Integer
   
-  FW = If($bBorder, Style.FrameWidth, 0)
-  FH = If($bBorder, Style.FrameWidth, 0)
+  FW = If($bBorder, Style.BoxFrameWidth, 0)
+  FH = If($bBorder, Style.BoxFrameWidth, 0)
   
   For Each hCtrl In $hBackground.Children
     If hCtrl Is ToolButton Then aCtrl.Add(hCtrl)
