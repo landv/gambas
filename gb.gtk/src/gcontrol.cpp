@@ -1462,7 +1462,7 @@ static void type##_get_preferred_width(GtkWidget *widget, gint *minimum_size, gi
 { \
 	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(type); \
 	\
-	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved2)(widget, minimum_size, natural_size); \
+	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved6)(widget, minimum_size, natural_size); \
 	if (minimum_size && g_object_get_data(G_OBJECT(widget), "gambas-control")) \
 		*minimum_size = 0; \
 } \
@@ -1470,7 +1470,7 @@ static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, g
 { \
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
 	\
-	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved3)(widget, minimum_size, natural_size); \
+	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved7)(widget, minimum_size, natural_size); \
 	if (minimum_size && g_object_get_data(G_OBJECT(widget), "gambas-control")) \
 		*minimum_size = 0; \
 }
@@ -1483,9 +1483,9 @@ if (G_OBJECT_TYPE(widget) == type) \
 	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
 	if (klass->get_preferred_width != type##_get_preferred_width) \
 	{ \
-		klass->_gtk_reserved2 = (void (*)())klass->get_preferred_width; \
+		klass->_gtk_reserved6 = (void (*)())klass->get_preferred_width; \
 		klass->get_preferred_width = type##_get_preferred_width; \
-		klass->_gtk_reserved3 = (void (*)())klass->get_preferred_height; \
+		klass->_gtk_reserved7 = (void (*)())klass->get_preferred_height; \
 		klass->get_preferred_height = type##_get_preferred_height; \
 	} \
 }
