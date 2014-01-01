@@ -417,10 +417,17 @@ BEGIN_PROPERTY(UserControl_Container)
 		GB.Error("Container must be a child control");
 		return;
 	}
-	
+
+	gColor bg = THIS_UC->container->ob.widget->background();
+	gColor fg = THIS_UC->container->ob.widget->foreground();
+
 	THIS_UC->container = (CCONTAINER *)GetObject(((gContainer *)ct->ob.widget)->proxyContainer());
 	WIDGET->setProxyContainer(WIDGET_CONT->proxyContainer());
 	WIDGET->setProxy(THIS_UC->container->ob.widget);
+
+	THIS_UC->container->ob.widget->setBackground(bg);
+	THIS_UC->container->ob.widget->setForeground(fg);
+
 	WIDGET_CONT->performArrange();
 
 END_PROPERTY
