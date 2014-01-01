@@ -254,8 +254,8 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 					int g = VPROP(GB_INTEGER);
 					if (g < -4)
 						g = -4;
-					else if (g > 16)
-						g = 16;
+					else if (g > 24)
+						g = 24;
 					//f->setPointSizeFloat((int)(powf(qApp->font().pointSizeFloat(), 1.0 + ((int)g / 16.0)) + 0.5));
 					f->setPointSizeF(GRADE_TO_SIZE(g, qApp->font().pointSizeF()));
 				}
