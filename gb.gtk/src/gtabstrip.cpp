@@ -194,6 +194,9 @@ static void cb_scroll(GtkWidget *wid, GdkEvent *event, gTabStrip *data)
 	int page;
 
 	if (dir == GDK_SCROLL_SMOOTH)
+		return;
+
+	/*
 	{
 		gdouble dx = 0, dy = 0;
 		gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
@@ -201,7 +204,7 @@ static void cb_scroll(GtkWidget *wid, GdkEvent *event, gTabStrip *data)
 			dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
 		else
 			dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
-	}
+	}*/
 
 	page = gtk_notebook_get_current_page(GTK_NOTEBOOK(data->widget));
 

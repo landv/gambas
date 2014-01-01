@@ -621,9 +621,9 @@ __FOUND_WIDGET:
 		case GDK_SCROLL:
 			
 			save_control = control = find_child(control, (int)event->scroll.x_root, (int)event->scroll.y_root);
-			
+
 		__SCROLL_TRY_PROXY:
-		
+
 			if (control->onMouseEvent && control->canRaise(control, gEvent_MouseWheel))
 			{
 				int dir, dt, ort;
@@ -639,14 +639,16 @@ __FOUND_WIDGET:
 #ifdef GTK3
 				if (dir == GDK_SCROLL_SMOOTH)
 				{
-					gdouble dx = 0, dy = 0;
+					/*gdouble dx = 0, dy = 0;
 					gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
 					if (fabs(dy) > fabs(dx))
 						dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
 					else
-						dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
+						dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;*/
+					goto __HANDLE_EVENT;
 				}
 #endif
+
 				switch (dir)
 				{
 					case GDK_SCROLL_DOWN: dt = -1; ort = 1; break;

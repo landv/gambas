@@ -132,14 +132,15 @@ static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon 
 
 #ifdef GTK3
 		if (dir == GDK_SCROLL_SMOOTH)
-		{
+			return false;
+		/*{
 			gdouble dx = 0, dy = 0;
 			gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
 			if (fabs(dy) > fabs(dx))
 				dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
 			else
 				dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
-		}
+		}*/
 #endif
 
 		switch (dir)

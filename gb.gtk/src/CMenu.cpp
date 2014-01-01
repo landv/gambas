@@ -365,16 +365,8 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CMENU_clear)
 
-	gMenu *mn;
-	int i, max;
-
-	max = MENU->childCount();
-
-	for (i = 0; i < max; i++)
-	{
-		mn = MENU->childMenu(i);
-		delete_menu(mn);
-	}
+	while (MENU->childCount())
+		delete_menu(MENU->childMenu(0));
 
 	THIS->init_shortcut = FALSE;
 
