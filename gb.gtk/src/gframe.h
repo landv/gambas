@@ -50,7 +50,11 @@ public:
 	void setText(char* vl);
 
 	virtual void updateFont();
+#ifdef GTK3
+	virtual void updateColor();
+#else
 	virtual void setRealForeground(gColor color);
+#endif
 
 //"Private"
   GtkWidget *fr;

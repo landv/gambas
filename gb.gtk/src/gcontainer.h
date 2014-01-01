@@ -86,7 +86,11 @@ public:
 	
 	virtual void performArrange();
 
+#ifndef GTK3
 	virtual void setBackground(gColor color = COLOR_DEFAULT);
+#else
+	virtual void updateColor();
+#endif
 	virtual void setForeground(gColor color = COLOR_DEFAULT);
 	virtual void updateFont();
 	

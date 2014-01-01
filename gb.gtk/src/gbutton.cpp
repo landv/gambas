@@ -385,14 +385,17 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	realize();
 	
 	gtk_widget_add_events(widget, GDK_POINTER_MOTION_MASK);
-	onClick=NULL;
+	onClick = NULL;
 	
 	if (type == Radio)
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(cb_click_radio),(gpointer)this);
 	else if (type == Check)
 		g_signal_connect(G_OBJECT(widget), "clicked", G_CALLBACK(cb_click_check), (gpointer)this);	
 	else
+	{
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(cb_click),(gpointer)this);	
+		setBackgroundButton();
+	}
 	
 	
 	setText(NULL);

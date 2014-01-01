@@ -315,7 +315,6 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	_align_normal = false;
 	
 	have_cursor = true;
-	use_base = true;
 	_undo_stack = NULL;
 	_redo_stack = NULL;
 	_not_undoable_action = 0;
@@ -326,6 +325,8 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 
 	textview = gtk_text_view_new();
 	realizeScrolledWindow(textview);
+
+	setBackgroundBase();
 
 	//g_signal_connect_after(G_OBJECT(textview), "motion-notify-event", G_CALLBACK(cb_motion_notify_event), (gpointer)this);
 	g_signal_connect(G_OBJECT(textview), "key-press-event", G_CALLBACK(cb_keypress), (gpointer)this);
@@ -854,3 +855,11 @@ void gTextArea::clear()
 	clearUndoStack();
 	clearRedoStack();
 }
+
+#ifdef GTK3
+void gTextArea::updateColor()
+{
+	gt_widget_set_background(textview, background(), _bg_name, &_bg_default);
+}
+#endif
+

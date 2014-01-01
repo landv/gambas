@@ -171,8 +171,13 @@ void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a)
 gColor gt_frgba_to_color(double r, double g, double b, double a);
 
 #ifdef GTK3
+
 void gt_from_color(gColor color, GdkRGBA *rgba);
 gColor gt_to_color(GdkRGBA *rgba);
+
+void gt_widget_set_background(GtkWidget *widget, gColor color, const char *name = NULL, const GdkRGBA *def_color = NULL);
+bool gt_style_lookup_color(GtkStyleContext *style, const char **names, const char **pname, GdkRGBA *rgba);
+
 #endif
 
 // Draw a control border

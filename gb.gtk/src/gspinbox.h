@@ -52,6 +52,8 @@ public:
 
 #ifndef GTK3
 	virtual void updateCursor(GdkCursor *cursor);
+#else
+	virtual void resize(int w, int h);
 #endif
 
 //"Private"

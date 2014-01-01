@@ -120,6 +120,16 @@ public:
 	bool ownFont() { return _font != NULL; }
 	virtual void updateFont();
 	virtual void updateSize();
+#ifdef GTK3
+	virtual void updateColor();
+	void setBackgroundName(const char *names[]);
+	void setBackgroundBase();
+	void setBackgroundButton();
+#else
+	void setBackgroundName(const char **) {}
+	void setBackgroundBase() { use_base = TRUE; }
+	void setBackgroundButton() {}
+#endif
 
 	bool canFocus() const;
 	void setCanFocus(bool vl);
@@ -196,6 +206,15 @@ public:
 	short g_typ;
 	short _mouse;
 	gControl *_proxy, *_proxy_for;
+#ifdef GTK3
+	gColor _bg, _fg;
+	const char *_bg_name;
+	const char **_bg_name_list;
+	GdkRGBA _bg_default;
+	const char *_fg_name;
+	const char **_fg_name_list;
+	GdkRGBA _fg_default;
+#endif
 	
 	unsigned dsg : 1;
 	unsigned expa : 1;

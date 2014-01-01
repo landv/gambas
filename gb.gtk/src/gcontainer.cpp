@@ -495,9 +495,11 @@ void gContainer::insert(gControl *child, bool realize)
     gtk_widget_realize(child->border);
 		gtk_widget_show_all(child->border);
 	}
-    
+
+#ifndef GTK3
 	if (hasBackground() && !child->_bg_set) child->setBackground();
 	if (hasForeground() && !child->_fg_set) child->setForeground();
+#endif
   child->updateFont();
 }
 
@@ -539,6 +541,7 @@ gControl *gContainer::find(int x, int y)
 }
 
 
+#ifndef GTK3
 void gContainer::setBackground(gColor color)
 {
 	int i;
@@ -551,8 +554,19 @@ void gContainer::setBackground(gColor color)
 		ch = gContainer::child(i);
 		if (!ch->_bg_set)
 			ch->setBackground();
-	}	
+	}
 }
+#endif
+
+#ifdef GTK3
+void gContainer::updateColor()
+{
+	int i;
+
+	for (i = 0; i < childCount(); i++)
+		gContainer::child(i)->updateColor();
+}
+#endif
 
 void gContainer::setForeground(gColor color)
 {

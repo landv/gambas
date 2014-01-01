@@ -327,8 +327,12 @@ gTabStripPage::~gTabStripPage()
 
 void gTabStripPage::updateColors()
 {
+#ifdef GTK3
+	gt_widget_set_background(widget, parent->realBackground());
+#else
 	set_gdk_bg_color(widget, parent->realBackground());
 	set_gdk_fg_color(label, parent->realForeground());
+#endif
 }
 
 void gTabStripPage::updateFont()
@@ -788,13 +792,25 @@ GtkWidget *gTabStrip::getContainer()
 		return NULL;
 }
 
-void gTabStrip::setRealBackground(gColor color)
+#ifdef GTK3
+void gTabStrip::updateColor()
 {
-	gControl::setRealBackground(color);
-	
+	//fprintf(stderr, "%s: updateColors\n", name());
+	gt_widget_set_background(border, realBackground());
+	gt_widget_set_background(widget, realBackground());
+
 	for (int i = 0; i < count(); i++)
 		get(i)->updateColors();
 }
+#else
+void gTabStrip::setRealBackground(gColor color)
+{
+	gControl::setRealBackground(color);
+
+	for (int i = 0; i < count(); i++)
+		get(i)->updateColors();
+}
+#endif
 
 void gTabStrip::setRealForeground(gColor color)
 {

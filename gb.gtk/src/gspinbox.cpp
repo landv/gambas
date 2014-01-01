@@ -61,7 +61,7 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 {
 	g_typ=Type_gSpinBox;
 	have_cursor = true;
-	use_base = true;
+	_no_background = TRUE;
 	
 	_min = 0;
 	_max = 100;
@@ -80,6 +80,7 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 #endif
 
 	realize();
+	setBackgroundBase();
 	
 	onChange = NULL;
 	
@@ -197,3 +198,16 @@ void gSpinBox::setBorder(bool vl)
 {
 	gtk_entry_set_has_frame(GTK_ENTRY(widget), vl);
 }
+
+#ifdef GTK3
+void gSpinBox::resize(int w, int h)
+{
+	int mw;
+
+	gtk_widget_get_preferred_width(widget, NULL, &mw);
+	if (w < mw)
+		w = mw;
+
+	gControl::resize(w, h);
+}
+#endif

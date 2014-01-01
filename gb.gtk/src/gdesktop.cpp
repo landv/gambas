@@ -106,8 +106,19 @@ gMainWindow* gDesktop::activeWindow()
 #ifdef GTK3
 static gColor get_color(GType type, gColor default_color, GtkStateFlags state, bool fg, bool text)
 {
+	static const char *bg_names[] = { "bg_color", "theme_bg_color", NULL };
+	static const char *fg_names[] = { "fg_color", "theme_fg_color", NULL };
+
 	GtkStyleContext *st = gt_get_style(type);
 	GdkRGBA rgba;
+
+	if (type == GTK_TYPE_WINDOW)
+	{
+		if (gt_style_lookup_color(st, fg ? fg_names : bg_names, NULL, &rgba))
+			return default_color;
+		else
+			return gt_to_color(&rgba);
+	}
 
 	if (!st)
 		return default_color;
@@ -158,12 +169,12 @@ gColor gDesktop::buttonbgColor()
 
 gColor gDesktop::fgColor()
 {	
-	return get_color(GTK_TYPE_LAYOUT, 0, STATE_NORMAL, true, false);
+	return get_color(GTK_TYPE_WINDOW, 0, STATE_NORMAL, true, false);
 }
 
 gColor gDesktop::bgColor()
 {
-	return get_color(GTK_TYPE_LAYOUT, 0xC0C0C0, STATE_NORMAL, false, false);
+	return get_color(GTK_TYPE_WINDOW, 0xC0C0C0, STATE_NORMAL, false, false);
 }
 
 gColor gDesktop::textfgColor()

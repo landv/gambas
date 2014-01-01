@@ -205,8 +205,16 @@ void gFrame::updateFont()
 		gtk_widget_modify_font(label, font()->desc());
 }
 
+#ifdef GTK3
+void gFrame::updateColor()
+{
+	gContainer::updateColor();
+	gt_widget_set_background(fr, background());
+}
+#else
 void gFrame::setRealForeground(gColor color)
 {
 	gControl::setRealForeground(color);
 	if (label) set_gdk_fg_color(label, color);
 }
+#endif

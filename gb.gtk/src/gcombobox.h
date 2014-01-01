@@ -60,7 +60,11 @@ public:
 	void remove(int pos);
 	
 	virtual void resize(int w, int h);
+#ifdef GTK3
+	virtual void updateColor();
+#else
 	virtual void setRealBackground(gColor vl);
+#endif
 	virtual void setRealForeground(gColor vl);
 	virtual void setFocus();
 	

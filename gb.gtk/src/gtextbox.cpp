@@ -143,10 +143,11 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		g_typ=Type_gTextBox;
 		
 		have_cursor = true;
-		use_base = true;
+		_no_background = TRUE;
 		
 		entry = widget = gtk_entry_new();
 		realize();
+		setBackgroundBase();
 		initEntry();
 	}
 	

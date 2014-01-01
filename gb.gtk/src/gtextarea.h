@@ -91,6 +91,9 @@ public:
 
 //"Private"
   virtual void updateCursor(GdkCursor *cursor);
+#ifdef GTK3
+	virtual void updateColor();
+#endif
   //void waitForLayout(int *tw, int *th);
 	void clearUndoStack();
 	void clearRedoStack();

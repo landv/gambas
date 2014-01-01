@@ -60,7 +60,11 @@ public:
 	virtual int childCount() const;
 	virtual gControl *child(int index) const;
 
+#ifndef GTK3
 	virtual void setRealBackground(gColor color);
+#else
+	virtual void updateColor();
+#endif
 	virtual void setRealForeground(gColor color);
 	virtual void updateFont();
 

@@ -284,6 +284,11 @@ void gControl::initAll(gContainer *parent)
 	hFree = NULL;
 	_grab = false;
 
+#ifdef GTK3
+	_fg = _bg = COLOR_DEFAULT;
+	_fg_name = _bg_name = NULL;
+#endif
+
 	controls = g_list_append(controls,this);
 }
 
@@ -1609,13 +1614,16 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 {
 	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
 
-	border = GTK_WIDGET(_scroll);
+	border = gtk_alignment_new(0, 0, 1, 1);
+	gtk_widget_set_redraw_on_allocate(border, TRUE);
 	widget = wid;
-	frame = 0;
+	frame = border;
 	_no_auto_grab = true;
 
 	//gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
 	gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_shadow_type(_scroll, GTK_SHADOW_NONE);
+	gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(_scroll));
 	gtk_container_add(GTK_CONTAINER(_scroll), widget);
 
 	if (!doNotRealize)
@@ -1692,24 +1700,12 @@ void gControl::setFrameBorder(int border)
 
 bool gControl::hasBorder() const
 {
-	if (_scroll)
-		return gtk_scrolled_window_get_shadow_type(_scroll) != GTK_SHADOW_NONE;
-	else
-		return getFrameBorder() != BORDER_NONE;
+	return getFrameBorder() != BORDER_NONE;
 }
 
 void gControl::setBorder(bool vl)
 {
-	if (_scroll)
-	{
-		if (vl)
-			gtk_scrolled_window_set_shadow_type(_scroll, GTK_SHADOW_IN);
-		else
-			gtk_scrolled_window_set_shadow_type(_scroll, GTK_SHADOW_NONE);
-	}
-	else
-		setFrameBorder(vl ? BORDER_SUNKEN : BORDER_NONE);
-
+	setFrameBorder(vl ? BORDER_SUNKEN : BORDER_NONE);
 	_has_border = vl;
 }
 
@@ -1730,6 +1726,38 @@ void gControl::setName(char *name)
 	if (name) _name = g_strdup(name);
 }
 
+#ifdef GTK3
+
+gColor gControl::realBackground()
+{
+	if (_bg != COLOR_DEFAULT)
+		return _bg;
+	else if (pr)
+		return pr->realBackground();
+	else
+		return gDesktop::bgColor();
+}
+
+gColor gControl::background()
+{
+	return _bg;
+}
+
+void gControl::setRealBackground(gColor color)
+{
+}
+
+void gControl::setBackground(gColor color)
+{
+	_bg = color;
+	//if (gtk_widget_get_has_window(border))
+	//gt_widget_set_background(border, realBackground());
+	//else
+	gt_widget_set_background(border, _bg, _bg_name, &_bg_default);
+	updateColor();
+}
+
+#else
 
 gColor gControl::realBackground()
 {
@@ -1778,6 +1806,8 @@ void gControl::setBackground(gColor color)
 
 	setRealBackground(color);
 }
+
+#endif
 
 gColor gControl::realForeground()
 {
@@ -2262,3 +2292,35 @@ void gControl::setCanFocus(bool vl)
 	gtk_widget_set_can_focus(widget, vl);
 }
 
+#ifdef GTK3
+void gControl::updateColor()
+{
+}
+
+void gControl::setBackgroundName(const char *names[])
+{
+	_bg_name_list = names;
+	if (!names)
+	{
+		_bg_name = NULL;
+		use_base = FALSE;
+		return;
+	}
+
+	if (!gt_style_lookup_color(gtk_widget_get_style_context(widget), names, &_bg_name, &_bg_default))
+		return;
+}
+
+void gControl::setBackgroundBase()
+{
+	static const char *bg_names[] = { "base_color", "theme_base_color", NULL };
+	setBackgroundName(bg_names);
+	use_base = TRUE;
+}
+
+void gControl::setBackgroundButton()
+{
+	const char *bg_names[] = { "button_bg_color", "theme_button_bg_color", "theme_bg_color", NULL };
+	setBackgroundName(bg_names);
+}
+#endif

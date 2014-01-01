@@ -155,7 +155,6 @@ void gComboBox::create(bool readOnly)
 	{
 		widget = gtk_combo_box_new_with_model(GTK_TREE_MODEL(tree->store));
 		entry = NULL;
-		use_base = false;
 
 		cell = gtk_cell_renderer_text_new ();
 		g_object_ref_sink(cell);
@@ -177,7 +176,6 @@ void gComboBox::create(bool readOnly)
 #ifdef GTK3
 		gtk_widget_set_hexpand(entry, FALSE);
 #endif
-		use_base = true;
 
 		g_signal_handler_disconnect(widget, g_signal_handler_find(widget, G_SIGNAL_MATCH_ID, g_signal_lookup("changed", G_OBJECT_TYPE(widget)), 0, 0, 0, 0));
 		
@@ -189,7 +187,7 @@ void gComboBox::create(bool readOnly)
 		//g_object_set(cell, "ypad", 0, (void *)NULL);
 		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
 	}
-	
+
 	if (first)
 	{
 		realize(false);
@@ -206,11 +204,14 @@ void gComboBox::create(bool readOnly)
 	if (entry)
 	{
 		initEntry();
+		setBackgroundBase();
 		//g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
 		//g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
 		g_signal_connect(G_OBJECT(entry), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
 		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	}
+	else
+		setBackgroundButton();
 	
 	updateFocusHandler();
 	setBackground(background());
@@ -225,21 +226,11 @@ void gComboBox::create(bool readOnly)
 
 gComboBox::gComboBox(gContainer *parent) : gTextBox(parent, true)
 {
-	/*if (!_style_init)
-	{
-		gtk_rc_parse_string(
-			"style \"gambas-default-combo-box-style\" {\n"
-			"  GtkComboBox::appears-as-list = 1\n"
-			"}\n"
-			"class \"GtkComboBox\" style : gtk \"gambas-default-combo-box-style\"\n"
-			);
-		_style_init = TRUE;
-	}*/
-
 	onChange = NULL;
 	onClick = NULL;
 	onActivate = NULL;
 	
+	_no_background = TRUE;
 	_last_key = 0;
 	_model_dirty = false;
 	_model_dirty_timeout = 0;
@@ -276,13 +267,21 @@ void gComboBox::popup()
 	gtk_combo_box_popup(GTK_COMBO_BOX(widget));
 }
 
+#ifdef GTK3
+void gComboBox::updateColor()
+{
+	gTextBox::updateColor();
+	if (entry)
+		gt_widget_set_background(entry, background(), _bg_name, &_bg_default);
+}
+#else
 void gComboBox::setRealBackground(gColor color)
 {
 	gControl::setRealBackground(color);
 	if (entry) 
 		set_gdk_base_color(entry, color);
 }
-
+#endif
 
 void gComboBox::setRealForeground(gColor color)
 {

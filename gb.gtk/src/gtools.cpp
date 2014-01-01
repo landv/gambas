@@ -256,6 +256,7 @@ void gt_color_to_frgba(gColor color, double *r, double *g, double *b, double *a)
 }
 
 #ifdef GTK3
+
 void gt_from_color(gColor color, GdkRGBA *rgba)
 {
 	gt_color_to_frgba(color, &rgba->red, &rgba->green, &rgba->blue, &rgba->alpha);
@@ -265,6 +266,7 @@ gColor gt_to_color(GdkRGBA *rgba)
 {
 	return gt_frgba_to_color(rgba->red, rgba->green, rgba->blue, rgba->alpha);
 }
+
 #endif
 
 gColor gt_frgba_to_color(double r, double g, double b, double a)
@@ -1924,12 +1926,14 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 
 // Style management
 
+#define NUM_STYLES 12
+
 #ifdef GTK3
 static int _style_context_loaded = 0;
-static GtkStyleContext *_style_context[11];
+static GtkStyleContext *_style_context[NUM_STYLES];
 #endif
 static int _style_loaded = 0;
-static GtkStyle *_style[11];
+static GtkStyle *_style[NUM_STYLES];
 
 static int type_to_index(GType type)
 {
@@ -1953,6 +1957,8 @@ static int type_to_index(GType type)
 		return 9;
 	else if (type == GTK_TYPE_BUTTON)
 		return 10;
+	else if (type == GTK_TYPE_WINDOW)
+		return 11;
 	else
 		return 0;
 }
@@ -1964,7 +1970,7 @@ const char *gt_get_style_class(GType type)
 	static const char *_class[] = {
 		GTK_STYLE_CLASS_DEFAULT, GTK_STYLE_CLASS_ENTRY, GTK_STYLE_CLASS_BACKGROUND, GTK_STYLE_CLASS_TOOLTIP,
 		GTK_STYLE_CLASS_SCROLLBAR, GTK_STYLE_CLASS_DEFAULT, GTK_STYLE_CLASS_CHECK, GTK_STYLE_CLASS_RADIO,
-		GTK_STYLE_CLASS_FRAME, GTK_STYLE_CLASS_BACKGROUND, GTK_STYLE_CLASS_BUTTON
+		GTK_STYLE_CLASS_FRAME, GTK_STYLE_CLASS_BACKGROUND, GTK_STYLE_CLASS_BUTTON, GTK_STYLE_CLASS_DEFAULT
 	};
 
 	int index = type_to_index(type);
@@ -2089,3 +2095,47 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 }
 #endif
 
+#ifdef GTK3
+
+void gt_widget_set_background(GtkWidget *widget, gColor color, const char *name, const GdkRGBA *def_color)
+{
+	if (color == COLOR_DEFAULT)
+	{
+		if (name)
+			gtk_widget_override_symbolic_color(widget, name, def_color);
+		else
+			gtk_widget_override_background_color(widget, GTK_STATE_FLAG_NORMAL, NULL);
+	}
+	else
+	{
+		GdkRGBA rgba;
+		gt_from_color(color, &rgba);
+		if (name)
+			gtk_widget_override_symbolic_color(widget, name, &rgba);
+		else
+			gtk_widget_override_background_color(widget, GTK_STATE_FLAG_NORMAL, &rgba);
+	}
+}
+
+bool gt_style_lookup_color(GtkStyleContext *style, const char **names, const char **pname, GdkRGBA *rgba)
+{
+	const char **p = names;
+	const char *name;
+
+	while((name = *p++))
+	{
+		if (gtk_style_context_lookup_color(style, name, rgba))
+			break;
+	}
+
+	if (name)
+	{
+		if (pname)
+			*pname = name;
+		return FALSE;
+	}
+	else
+		return TRUE;
+}
+
+#endif

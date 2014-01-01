@@ -27,6 +27,7 @@
 gProgressBar::gProgressBar(gContainer *parent)  : gControl(parent)
 {
 	_label = true;
+	_no_background = TRUE;
 	
 	g_typ = Type_gProgressBar;
 	
