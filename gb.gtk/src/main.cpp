@@ -47,7 +47,6 @@
 #include "CDialog.h"
 #include "CWatcher.h"
 #include "CWidget.h"
-#include "CProgress.h"
 #include "CDrawingArea.h"
 #include "CContainer.h"
 #include "CFrame.h"
@@ -154,7 +153,6 @@ extern "C"
 		CWindowDesc,
 		CWindowsDesc,
 		CFormDesc,
-		CProgressDesc,
 		CLabelDesc,
 		CTextLabelDesc,
 		CSliderDesc,

@@ -1,11 +1,19 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,32,32)
+  MoveScaled(0,0,54,59)
   Arrangement = Arrange.Fill
   Margin = True
-  { TreeView1 TreeView
-    MoveScaled(1,1,30,30)
-    Mode = Select.Multiple
+  { ToolPanel1 ToolPanel
+    MoveScaled(9,10,29,41)
+    Background = &H00FF00&
+    Count = 3
+    Index = 0
+    Text = ("ToolPanel1")
+    Index = 1
+    Text = ("Toolbar 1")
+    Index = 2
+    Text = ("Toolbar 2")
+    Index = 0
   }
 }

@@ -58,3 +58,16 @@ Public Sub GetTextFont() As Font
   Return btnTitle.Font
   
 End
+
+' Public Sub Form_MouseWheel()
+' 
+'   Dim hToolPanel As ToolPanel = Me.Parent.Parent.Parent
+'   
+'   If Mouse.Delta < 0 Then
+'     Try Inc hToolPanel.Index
+'   Else
+'     Try Dec hToolPanel.Index
+'   Endif
+' 
+' End
+' 

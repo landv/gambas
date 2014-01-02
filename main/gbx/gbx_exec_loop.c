@@ -828,8 +828,8 @@ _PUSH_MISC:
 
 	__PUSH_STRING:
 		
-		SP->type = T_STRING;
-		SP->_string.addr = NULL;
+		SP->type = T_CSTRING;
+		SP->_string.addr = ""; // NULL
 		SP->_string.start = SP->_string.len = 0;
 		SP++;
 		goto _NEXT;

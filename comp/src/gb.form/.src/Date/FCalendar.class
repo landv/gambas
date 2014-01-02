@@ -11,25 +11,49 @@ Private $bShort As Boolean
 
 Private $iCurrentTime As Integer = -1
 Private $dCurrentDate As Date
+Private $iMonthWidth As Integer
+
+Private mnuMonth As Menu
+
+Private Sub CalcMonthWidth()
+
+  Dim W As Integer
+  Dim iMonth As Integer
+  
+  For iMonth = 1 To 12
+    W = Max(W, btnMonth.Font.TextWidth(DConv(Format(Date(1972, iMonth, 1), "mmmm"))))
+  Next
+  
+  $iMonthWidth = W + btnMonth.Height
+  Debug $iMonthWidth
+  
+End
 
 Private Sub FillMonth(bShort As Boolean)
   
   Dim iMonth As Integer
   Dim sFormat As String
   Dim iIndex As Integer
+  Dim hMenu As Menu
   
-  If bShort = $bShort And If cmbMonth.Count Then Return
+  If bShort = $bShort And If mnuMonth.Children.Count Then Return
+  
+  mnuMonth.Children.Clear
   
   sFormat = If(bShort, "mmm", "mmmm")
   
-  iIndex = cmbMonth.Index
-  Object.Lock(cmbMonth)
-  cmbMonth.Clear
+  'iIndex = cmbMonth.Index
+  'Object.Lock(cmbMonth)
+  'cmbMonth.Clear
   For iMonth = 1 To 12
-    cmbMonth.Add(DConv(Format(Date(1972, iMonth, 1), sFormat)))
+    hMenu = New Menu(mnuMonth) As "mnuMonth"
+    hMenu.Text = DConv(Format(Date(1972, iMonth, 1), sFormat))
+    hMenu.Tag = iMonth
+    hMenu.Checked = Month($dDate) = iMonth
+    If hMenu.Checked Then btnMonth.Text = hMenu.Text
   Next 
-  cmbMonth.Index = iIndex
-  Object.Unlock(cmbMonth)
+  'cmbMonth.Index = iIndex
+  'Object.Unlock(cmbMonth)
   
   $bShort = bShort
   
@@ -52,6 +76,11 @@ Public Sub _new()
   
   panTime.W = Desktop.Scale * 16
   
+  mnuMonth = New Menu(Me, True)
+  mnuMonth.Name = "mnuMonth"
+  
+  btnMonth.Menu = "mnuMonth"
+
   FillMonth(False)
   
   $dDate = Now  
@@ -95,6 +124,7 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
   
   Dim dMonth As Date
   Dim dDate As Date
+  Dim hMenu As Menu
 
   If iYear <= 0 Then iYear = Year($dDate)
   If iMonth <= 0 Then iMonth = Month($dDate)
@@ -115,7 +145,14 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
   
     $dMonth = dMonth
     
-    cmbMonth.Index = Month($dMonth) - 1
+    For Each hMenu In mnuMonth.Children
+      If hMenu.Tag = Month($dMonth) Then
+        hMenu.Checked = True
+        btnMonth.Text = hMenu.Text
+      Else
+        hMenu.Checked = False
+      Endif
+    Next
     txtYear.Value = Year($dMonth)
     
   Endif
@@ -277,9 +314,9 @@ Public Sub dwgMonth_Draw()
 
 End
 
-Public Sub cmbMonth_Click()
+Public Sub mnuMonth_Click()
 
-  SetDate(0, cmbMonth.Index + 1)
+  SetDate(0, Last.Tag)
 
 End
 
@@ -403,8 +440,10 @@ End
 
 Public Sub UpdateFont()
 
-  cmbMonth.Height = Desktop.Scale * 4
-  panToolbar.H = cmbMonth.Height
+  btnMonth.Height = Desktop.Scale * 4
+  panToolbar.H = btnMonth.Height
+  CalcMonthWidth
+  Form_Resize
   
 End
 
@@ -458,7 +497,7 @@ Public Sub Form_Resize()
     btnPrevMonth.Show
   Endif
   
-  FillMonth(cmbMonth.Width < (Desktop.Scale * 12))
+  FillMonth(btnMonth.Width < $iMonthWidth)
 
 End
 
@@ -801,3 +840,4 @@ Public Sub btnOK_Click()
   dwgTime_DblClick
 
 End
+

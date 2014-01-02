@@ -45,12 +45,17 @@
         }
       }
       { btnRelative CheckBox
-        MoveScaled(20,0,11,4)
+        MoveScaled(17,0,11,4)
         AutoResize = True
         Text = ("Relative")
       }
+      { Panel1 Panel
+        MoveScaled(29,0,1,4)
+      }
       { txtSize SpinBox
-        MoveScaled(31,0,9,4)
+        MoveScaled(31,0,7,4)
+        Background = Color.Background
+        Border = False
       }
       { sldSize Slider
         MoveScaled(42,0,28,4)

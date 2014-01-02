@@ -33,6 +33,9 @@ gProgressBar::gProgressBar(gContainer *parent)  : gControl(parent)
 	
 	border = gtk_alignment_new(0,0,1,1);
 	widget = gtk_progress_bar_new();
+#ifdef GTK3
+	gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(widget), TRUE);
+#endif
 	realize(false);
 }
 

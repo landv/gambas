@@ -1,8 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
-  Arrangement = Arrange.Vertical
+  MoveScaled(0,0,95,68)
   Spacing = True
   Margin = True
   { TextBox1 TextBox
@@ -20,7 +19,7 @@
   { TabPanel1 TabPanel
     MoveScaled(4,33,53,23)
     #Translate = False
-    Background = Color.TextBackground
+    Background = &HFFFF00&
     Expand = True
     Border = False
     Count = 3
@@ -31,6 +30,20 @@
     Text = "Tab 2"
     Index = 2
     Text = "Tab 3"
+    Index = 0
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(55,2,34,27)
+    Background = &HFF7F7F&
+    Count = 4
+    Index = 0
+    Text = ("TabStrip1")
+    Index = 1
+    Text = ("")
+    Index = 2
+    Text = ("")
+    Index = 3
+    Text = ("")
     Index = 0
   }
 }

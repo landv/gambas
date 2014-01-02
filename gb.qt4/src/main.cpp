@@ -84,7 +84,6 @@
 #include "CWatch.h"
 #include "CScrollView.h"
 #include "CDrawingArea.h"
-#include "CProgress.h"
 #include "CMessage.h"
 #include "CSlider.h"
 #include "CScrollBar.h"
@@ -1018,7 +1017,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CTabStripContainerChildrenDesc, CTabStripContainerDesc, CTabStripDesc,
 	CScrollViewDesc,
 	CDrawingAreaDesc,
-	CProgressDesc, CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
+	CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
 	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
 	CDialogDesc,
 	#ifndef NO_X_WINDOW
