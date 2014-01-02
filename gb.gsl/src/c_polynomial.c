@@ -598,8 +598,7 @@ BEGIN_METHOD(Polynomial_new, GB_INTEGER size; GB_BOOLEAN complex)
 	bool complex = VARGOPT(complex, FALSE);
 	int size = VARGOPT(size, 0);
 	
-	if (size > 0)
-		GB.NewArray(POINTER(&THIS->data), complex ? sizeof(gsl_complex) : sizeof(double), size);
+	GB.NewArray(POINTER(&THIS->data), complex ? sizeof(gsl_complex) : sizeof(double), size);
 	
 	THIS->size = size;
 	THIS->complex = complex;
