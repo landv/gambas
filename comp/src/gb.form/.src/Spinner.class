@@ -4,19 +4,25 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border{Border.*}=None"
+Public Const _Properties As String = "*,Border{Border.*}=None,Label"
 Public Const _DefaultSize As String = "8,8"
 
 Property Border As Integer
+Property Label As Boolean
+Property Value As Float
+Property Enabled As Boolean
 
 Private $hDrawingArea As DrawingArea
 Private $fStartTime As Float
 Private $hTimer As Timer
 Private $iBorder As Integer
+Private $bLabel As Boolean
+Private $fValue As Float
 
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  Start
   
 End
 
@@ -52,11 +58,9 @@ Public Sub DrawingArea_Draw()
     D = Frac(Timer - $fStartTime) * Pi(2)
   Endif
   
-  If Not Me.Enabled Then iFlag += Draw.Disabled
-
-  X = Draw.W / 2
-  Y = Draw.H / 2
-  R = Min(Draw.W, Draw.H) / 2 * 7 / 8
+  X = Paint.W / 2
+  Y = Paint.H / 2
+  R = Min(Paint.W, Paint.H) / 2 * 7 / 8
   
   Paint.LineWidth = R / 8
   Paint.LineCap = Paint.LineCapRound
@@ -74,9 +78,14 @@ Public Sub DrawingArea_Draw()
     
   Next
   
+  If $bLabel Then
+    Paint.Background = Color.Foreground
+    Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
+  Endif
+  
 DRAW_BORDER:
   
-  If $iBorder Then Style.PaintPanel(0, 0, Draw.W, Draw.H, $iBorder, iFlag)
+  If $iBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, $iBorder, iFlag)
   
 End
 
@@ -96,5 +105,49 @@ Private Sub Border_Write(Value As Integer)
 
   $iBorder = Value
   $hDrawingArea.Refresh
+
+End
+
+Private Function Label_Read() As Boolean
+
+  Return $bLabel
+
+End
+
+Private Sub Label_Write(Value As Boolean)
+
+  $bLabel = Value
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Value_Read() As Float
+
+  Return $fValue
+
+End
+
+Private Sub Value_Write(Value As Float)
+
+  $fValue = Max(0, Min(1, Value))
+  $hDrawingArea.Refresh
+
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return Super.Enabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  If Value = Me.Enabled Then Return
+  Super.Enabled = Value
+  If Value Then
+    Start
+  Else
+    Stop
+  Endif
 
 End

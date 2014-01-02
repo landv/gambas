@@ -53,28 +53,35 @@ Public Sub DrawingArea_Draw()
   
   Dim F As Integer = Style.FrameWidth
   Dim W As Float
+  Dim iCol As Integer
   
-  W = (Draw.W - F) * $fValue
+  W = (Paint.W - F) * $fValue
   
-  Paint.FillRect(F, F, Draw.W - F * 2, Draw.H - F * 2, Color.Merge(Color.Background, Color.LightForeground))
-  Paint.FillRect(F, F, W - F, Draw.H - F * 2, Color.SelectedBackground)
-  Style.PaintPanel(0, 0, Draw.W, Draw.H, Border.Sunken)
+  iCol = Color.Merge(Color.Background, Color.LightForeground)
+  If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
+  Paint.FillRect(F, F, Paint.W - F * 2, Paint.H - F * 2, iCol)
+  
+  iCol = Color.SelectedBackground
+  If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
+  Paint.FillRect(F, F, W - F, Paint.H - F * 2, iCol)
+  
+  Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
   'Style.PaintPanel(F, F, W, Draw.H - F * 2, Border.Raised)
   
   If $bLabel Then
 
     Paint.Save
-    Paint.Rectangle(F, F, W - F, Draw.H - F * 2)
+    Paint.Rectangle(F, F, W - F, Paint.H - F * 2)
     Paint.Clip
     Paint.Background = Color.SelectedForeground
-    Paint.DrawText(Format($fValue, "0%"), 0, 0, Draw.W, Draw.H, Align.Center)
+    Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
     Paint.Restore
 
     Paint.Save
-    Paint.Rectangle(F + W, F, Draw.W - F * 2 - W, Draw.H - F * 2)
+    Paint.Rectangle(F + W, F, Paint.W - F * 2 - W, Paint.H - F * 2)
     Paint.Clip
     Paint.Background = Color.Foreground
-    Paint.DrawText(Format($fValue, "0%"), 0, 0, Draw.W, Draw.H, Align.Center)
+    Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
     Paint.Restore
 
   Endif

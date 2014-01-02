@@ -6,3 +6,9 @@ Public Sub Form_Open()
   Spinner1.Start
 
 End
+
+Public Sub Timer1_Timer()
+
+  Spinner1.Value += 0.005
+
+End
