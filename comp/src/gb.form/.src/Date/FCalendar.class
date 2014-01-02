@@ -25,7 +25,6 @@ Private Sub CalcMonthWidth()
   Next
   
   $iMonthWidth = W + btnMonth.Height
-  Debug $iMonthWidth
   
 End
 
@@ -33,7 +32,6 @@ Private Sub FillMonth(bShort As Boolean)
   
   Dim iMonth As Integer
   Dim sFormat As String
-  Dim iIndex As Integer
   Dim hMenu As Menu
   
   If bShort = $bShort And If mnuMonth.Children.Count Then Return

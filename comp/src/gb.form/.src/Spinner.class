@@ -1,0 +1,100 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border{Border.*}=None"
+Public Const _DefaultSize As String = "8,8"
+
+Property Border As Integer
+
+Private $hDrawingArea As DrawingArea
+Private $fStartTime As Float
+Private $hTimer As Timer
+Private $iBorder As Integer
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  
+End
+
+Public Sub Start()
+  
+  $fStartTime = Timer
+  $hTimer = New Timer As "Timer"
+  $hTimer.Delay = 50
+  $hTimer.Start
+  
+End
+
+Public Sub Stop()
+  
+  $fStartTime = 0
+  $hTimer = Null
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim iFlag As Integer
+  Dim A As Float
+  Dim X As Float
+  Dim Y As Float
+  Dim R As Variant
+  Dim D As Float
+  Dim I As Integer
+  Dim C As Float
+  
+  If Not Me.Design Then
+    If $fStartTime = 0 Then Goto DRAW_BORDER
+    D = Frac(Timer - $fStartTime) * Pi(2)
+  Endif
+  
+  If Not Me.Enabled Then iFlag += Draw.Disabled
+
+  X = Draw.W / 2
+  Y = Draw.H / 2
+  R = Min(Draw.W, Draw.H) / 2 * 7 / 8
+  
+  Paint.LineWidth = R / 8
+  Paint.LineCap = Paint.LineCapRound
+  
+  For I = 0 To 11
+    
+    A = Pi(2) * I / 12
+    C = Frac(1 + (D - A) / Pi(2))
+    
+    'Paint.Background = Color.Merge(Color.Background, Color.Foreground, C / 4)
+    Paint.Background = Color.SetAlpha(Color.Foreground, 255 * (1 - C / 4))
+    Paint.MoveTo(X + Cos(A) * R / 2, Y + Sin(A) * R / 2)
+    Paint.LineTo(X + Cos(A) * R, Y + Sin(A) * R)
+    Paint.Stroke
+    
+  Next
+  
+DRAW_BORDER:
+  
+  If $iBorder Then Style.PaintPanel(0, 0, Draw.W, Draw.H, $iBorder, iFlag)
+  
+End
+
+Public Sub Timer_Timer()
+  
+  $hDrawingArea.Refresh
+  
+End
+
+Private Function Border_Read() As Integer
+
+  Return $iBorder
+
+End
+
+Private Sub Border_Write(Value As Integer)
+
+  $iBorder = Value
+  $hDrawingArea.Refresh
+
+End
