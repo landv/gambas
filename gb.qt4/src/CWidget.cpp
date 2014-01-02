@@ -41,7 +41,6 @@
 #include "CClipboard.h"
 #include "CMenu.h"
 #include "CScrollView.h"
-#include "CProgress.h"
 #include "CDrawingArea.h"
 #include "CTextArea.h"
 
@@ -61,7 +60,6 @@
 #include <QWheelEvent>
 #include <QHash>
 #include <QAbstractScrollArea>
-#include <QProgressBar>
 #include <QAbstractEventDispatcher>
 #include <QListWidget>
 #include <QComboBox>
@@ -500,9 +498,6 @@ void CWIDGET_destroy(CWIDGET *_object)
 	CWIDGET_set_visible(THIS, false);
 	CWIDGET_set_flag(THIS, WF_DELETED);
 
-	if (qobject_cast<QProgressBar *>(WIDGET))
-		CPROGRESS_style_hack(THIS);
-	
 	WIDGET->deleteLater();
 }
 

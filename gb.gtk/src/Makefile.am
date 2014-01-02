@@ -16,7 +16,7 @@ gb_gtk_la_SOURCES = \
 	gstock.cpp gfont.cpp gpicture.cpp \
 	gdesktop.cpp gmessage.cpp \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
-	gbutton.cpp gprogressbar.cpp gslider.cpp glabel.cpp gsignals.cpp \
+	gbutton.cpp gslider.cpp glabel.cpp gsignals.cpp \
 	gpicturebox.cpp gcombobox.cpp gtextbox.cpp gtextarea.cpp \
 	gspinbox.cpp \
 	gframe.cpp gtabstrip.cpp gscrollview.cpp \
@@ -40,7 +40,6 @@ gb_gtk_la_SOURCES = \
 	CSeparator.h CSeparator.cpp \
 	CDrawingArea.h CDrawingArea.cpp \
 	CLabel.h CLabel.cpp \
-	CProgress.h CProgress.cpp \
 	CSlider.h CSlider.cpp \
 	CButton.h CButton.cpp \
 	CPictureBox.h CPictureBox.cpp \
@@ -67,7 +66,6 @@ gb_gtk_la_SOURCES = \
 	gseparator.h \
 	gtrayicon.h \
 	gplugin.h \
-	gprogressbar.h \
 	glabel.h \
 	gbutton.h \
 	gmoviebox.h \
