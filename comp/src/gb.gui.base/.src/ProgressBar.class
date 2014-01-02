@@ -55,7 +55,7 @@ Public Sub DrawingArea_Draw()
   Dim W As Float
   Dim iCol As Integer
   
-  W = (Paint.W - F) * $fValue
+  W = (Paint.W - F * 2) * $fValue
   
   iCol = Color.Merge(Color.Background, Color.LightForeground)
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
@@ -63,7 +63,7 @@ Public Sub DrawingArea_Draw()
   
   iCol = Color.SelectedBackground
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
-  Paint.FillRect(F, F, W - F, Paint.H - F * 2, iCol)
+  Paint.FillRect(F, F, W, Paint.H - F * 2, iCol)
   
   Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
   'Style.PaintPanel(F, F, W, Draw.H - F * 2, Border.Raised)
@@ -71,7 +71,7 @@ Public Sub DrawingArea_Draw()
   If $bLabel Then
 
     Paint.Save
-    Paint.Rectangle(F, F, W - F, Paint.H - F * 2)
+    Paint.Rectangle(F, F, W, Paint.H - F * 2)
     Paint.Clip
     Paint.Background = Color.SelectedForeground
     Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)

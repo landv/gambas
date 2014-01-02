@@ -3,12 +3,15 @@
 { Form Form
   MoveScaled(0,0,64,64)
   { ProgressBar1 ProgressBar
-    MoveScaled(13,18,32,4)
-    Enabled = False
+    MoveScaled(6,25,56,8)
   }
   { Timer1 #Timer
-    #MoveScaled(36,36)
+    #MoveScaled(42,13)
     Enabled = True
     Delay = 50
+  }
+  { Label1 Label
+    MoveScaled(21,6,24,6)
+    Text = ("Label1")
   }
 }
