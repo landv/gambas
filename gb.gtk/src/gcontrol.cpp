@@ -1511,8 +1511,8 @@ int gt_get_preferred_width(GtkWidget *widget)
 {
 	int m, n;
 	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(G_OBJECT_TYPE(widget));
-	if (klass->_gtk_reserved2)
-		(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved2)(widget, &m, &n);
+	if (klass->_gtk_reserved6)
+		(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved6)(widget, &m, &n);
 	return m;
 }
 
