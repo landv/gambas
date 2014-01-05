@@ -50,7 +50,7 @@ static void cb_change(GtkSpinButton *spinbutton, gSpinBox *data)
 static void my_spin_button_size_request(GtkWidget *widget, GtkRequisition *requisition)
 {
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(GTK_TYPE_SPIN_BUTTON);
-	gSpinBox *control = (gSpinBox *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+	gSpinBox *control = (gSpinBox *)gt_get_control(widget);
 
 	(*(void (*)(GtkWidget *, GtkRequisition *))klass->_gtk_reserved5)(widget, requisition);
 	requisition->height = control->height();

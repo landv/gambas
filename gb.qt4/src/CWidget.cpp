@@ -780,6 +780,13 @@ void CWIDGET_check_hovered()
 }
 #endif
 
+bool CWIDGET_is_design(CWIDGET *_object)
+{
+	return CWIDGET_test_flag(THIS, WF_DESIGN) || CWIDGET_test_flag(THIS, WF_DESIGN_LEADER);
+}
+
+//---------------------------------------------------------------------------
+
 BEGIN_PROPERTY(Control_X)
 
 	if (READ_PROPERTY)
@@ -876,7 +883,7 @@ BEGIN_PROPERTY(Control_Design)
 
 	if (READ_PROPERTY)
 	{
-		GB.ReturnBoolean(CWIDGET_test_flag(_object, WF_DESIGN) || CWIDGET_test_flag(_object, WF_DESIGN_LEADER));
+		GB.ReturnBoolean(CWIDGET_is_design(THIS));
 		return;
 	}
 
@@ -894,9 +901,9 @@ END_PROPERTY
 BEGIN_PROPERTY(Control_Enabled)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(QWIDGET(_object)->isEnabled());
+		GB.ReturnBoolean(WIDGET->isEnabled());
 	else
-		QWIDGET(_object)->setEnabled(VPROP(GB_BOOLEAN));
+		WIDGET->setEnabled(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
@@ -1523,7 +1530,7 @@ GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy)
 }
 
 
-/*int CWIDGET_get_real_foreground(CWIDGET *_object, bool return_default)
+int CWIDGET_get_real_foreground(CWIDGET *_object)
 {
 	GB_COLOR fg = CWIDGET_get_foreground(THIS);
 	
@@ -1533,12 +1540,10 @@ GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy)
 	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 	
 	if (parent)
-		return CWIDGET_get_real_foreground(parent, return_default);
-	else if (return_default)
-		return QApplication::palette().color(QPalette::WindowText).rgb() & 0xFFFFFF;
+		return CWIDGET_get_real_foreground(parent);
 	else
-		return COLOR_DEFAULT;
-}*/
+		return QApplication::palette().color(QPalette::WindowText).rgb() & 0xFFFFFF;
+}
 
 
 BEGIN_PROPERTY(Control_Background)

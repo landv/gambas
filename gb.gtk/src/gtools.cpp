@@ -26,6 +26,7 @@
 #include "gdesktop.h"
 #include "gtools.h"
 #include "gpicture.h"
+#include "gapplication.h"
 
 // HTML character entities
 #include "kentities.h"
@@ -1699,8 +1700,8 @@ static void add_again(GtkWidget *widget, GtkWidget *ignore)
 		return;
 	
 	parent = GTK_CONTAINER(gtk_widget_get_parent(ignore));
-	control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
-	parent_control = (gContainer *)g_object_get_data(G_OBJECT(parent), "gambas-control");
+	control = gt_get_control(widget);
+	parent_control = (gContainer *)gt_get_control(parent);
 	
 	if (control && parent_control)
 	{
@@ -2066,8 +2067,11 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 		return;
 	}
 
-  //gtk_style_context_save(st);
-
+	if (strcmp(gApplication::getStyleName(), "oxygen-gtk") == 0)
+	{
+		x -= 3;
+		w += 6;
+	}
 
 	if (border == BORDER_RAISED)
 	{
@@ -2090,8 +2094,6 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_FRAME);
 		gtk_render_frame(st, cr, x, y, w, h);
 	}
-
-	//gtk_style_context_restore(st);
 }
 #endif
 

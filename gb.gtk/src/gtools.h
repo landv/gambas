@@ -204,4 +204,7 @@ void gMnemonic_returnText(char *st,char **buf);
 int gt_get_preferred_width(GtkWidget *widget);
 #endif
 
+#define gt_get_control(_widget) ((gControl *)g_object_get_data(G_OBJECT(_widget), "gambas-control"))
+#define gt_register_control(_widget, _control) g_object_set_data(G_OBJECT(_widget), "gambas-control", _control)
+
 #endif

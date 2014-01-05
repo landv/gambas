@@ -189,6 +189,7 @@ void CWIDGET_reset_color(CWIDGET *_object);
 GB_COLOR CWIDGET_get_background(CWIDGET *_object, bool handle_proxy = false);
 GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy = false);
 int CWIDGET_get_real_background(CWIDGET *_object);
+int CWIDGET_get_real_foreground(CWIDGET *_object);
 void *CWIDGET_get_parent(void *_object);
 int CWIDGET_get_handle(void *_object);
 bool CWIDGET_is_visible(void *_object);
@@ -209,6 +210,7 @@ void CACTION_register(void *control, const char *old, const char *key);
 void CACTION_raise(void *control);
 bool CWIDGET_get_allow_focus(void *_object);
 void CWIDGET_set_allow_focus(void *_object, bool f);
+bool CWIDGET_is_design(CWIDGET *_object);
 
 #ifndef DO_NOT_DECLARE_EVENTS
 #ifndef __CWIDGET_CPP

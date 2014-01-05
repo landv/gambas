@@ -1065,7 +1065,7 @@ void gControl::lower()
 		{
 			child = (GtkWidget*)chd->data;
 
-			br = (gControl *)g_object_get_data(G_OBJECT(child), "gambas-control");;
+			br = gt_get_control(child);
 
 			if (br && br != this)
 			{
@@ -1389,7 +1389,7 @@ static void add_container(GtkWidget *parent, GtkWidget *child)
 
 void gControl::registerControl()
 {
-	g_object_set_data(G_OBJECT(border), "gambas-control", this);
+	gt_register_control(border, this);
 }
 
 #ifdef GTK3
@@ -1468,7 +1468,7 @@ static void type##_get_preferred_width(GtkWidget *widget, gint *minimum_size, gi
 	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(type); \
 	\
 	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved6)(widget, minimum_size, natural_size); \
-	if (minimum_size && g_object_get_data(G_OBJECT(widget), "gambas-control")) \
+	if (minimum_size && gt_get_control(widget)) \
 		*minimum_size = 0; \
 } \
 static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
@@ -1476,7 +1476,7 @@ static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, g
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
 	\
 	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved7)(widget, minimum_size, natural_size); \
-	if (minimum_size && g_object_get_data(G_OBJECT(widget), "gambas-control")) \
+	if (minimum_size && gt_get_control(widget)) \
 		*minimum_size = 0; \
 }
 

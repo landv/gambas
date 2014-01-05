@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  CScreen.h
+  CStyle.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2013-2014 - Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,33 +21,15 @@
 
 ***************************************************************************/
 
-#ifndef __CSCREEN_H
-#define __CSCREEN_H
+#ifndef __CSTYLE_H
+#define __CSTYLE_H
 
 #include "main.h"
 #include "gdesktop.h"
 #include "gapplication.h"
 
-#ifndef __CSCREEN_CPP
-extern GB_DESC ScreenDesc[];
-extern GB_DESC ScreensDesc[];
-extern GB_DESC DesktopDesc[];
-extern GB_DESC ApplicationDesc[];
-
-extern char *CAPPLICATION_Theme;
-
-#else
-
-#define SCREEN ((CSCREEN *)_object)
-
+#ifndef __CSTYLE_CPP
+extern GB_DESC StyleDesc[];
 #endif
 
-typedef
-	struct
-	{
-		GB_BASE ob;
-		int index;
-	}
-	CSCREEN;
-	
 #endif

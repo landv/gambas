@@ -135,6 +135,7 @@ typedef
 #define STATE_INSENSITIVE GTK_STATE_FLAG_INSENSITIVE
 #define STATE_PRELIGHT GTK_STATE_FLAG_PRELIGHT
 #define STATE_SELECTED GTK_STATE_FLAG_SELECTED
+#define STATE_FOCUSED GTK_STATE_FLAG_FOCUSED
 
 #define gtk_hbox_new(_homogeneous, _spacing) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, _spacing)
 #define gtk_vbox_new(_homogeneous, _spacing) gtk_box_new(GTK_ORIENTATION_VERTICAL, _spacing)
@@ -157,6 +158,5 @@ typedef
 #define STATE_SELECTED GTK_STATE_SELECTED
 
 #endif
-
 
 #endif

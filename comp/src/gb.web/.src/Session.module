@@ -334,6 +334,14 @@ Public Sub _get(Key As String) As Variant
   
 End
 
+Public Sub Exist(Key As String) As Boolean
+  
+  Init
+  If $cVal Then Return $cVal.Exist(Key)
+  
+End
+
+
 Public Sub _put(Value As Variant, Key As String)
 
   Init

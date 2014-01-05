@@ -28,6 +28,7 @@ gb_gtk_la_SOURCES = \
 	CFont.h CFont.cpp \
 	CKey.h CKey.cpp \
 	CScreen.h CScreen.cpp \
+	CStyle.h CStyle.cpp \
 	CMessage.h CMessage.cpp CDialog.h CDialog.cpp \
 	CDraw.h CDraw.cpp \
 	cpaint_impl.h cpaint_impl.cpp \

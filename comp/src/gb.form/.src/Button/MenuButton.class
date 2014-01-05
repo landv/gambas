@@ -303,6 +303,7 @@ Public Sub DrawingArea_MouseDown()
   Else
     $bInsideArrow = True ' if the arrow is hidden, the all button will popup the menu
   Endif
+  $hDrawingArea.SetFocus
   $hDrawingArea.Refresh
   
   If $bInsideArrow Or $bMenuOnly Then
@@ -349,9 +350,11 @@ Public Sub DrawingArea_Draw()
   Dim bFlat As Boolean
   Dim bDrawArrow As Boolean
   
-  If $bInside And If Me.Enabled And If Not Me.Design Then iFlag += Draw.Hover
-  If Not Me.Enabled Then iFlag += Draw.Disabled
-  If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
+  iFlag = Style.StateOf(Me)
+  
+  'If $bInside And If Me.Enabled And If Not Me.Design Then iFlag += Draw.Hover
+  'If Not Me.Enabled Then iFlag += Draw.Disabled
+  'If $hDrawingArea.HasFocus Then iFlag += Draw.Focus
   
   bDrawArrow = $bArrow And (Me.W > Desktop.Scale * 4)
   

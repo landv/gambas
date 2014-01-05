@@ -34,6 +34,7 @@
 
 #include "x11.h"
 #include "CScreen.h"
+#include "CStyle.h"
 #include "CDraw.h"
 #include "CConst.h"
 #include "CColor.h"

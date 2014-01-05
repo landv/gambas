@@ -364,8 +364,8 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 		
 		default:
 			_no_background = true;
-			border=gtk_button_new();
-			rendtxt=gtk_cell_renderer_text_new();
+			border = gtk_button_new();
+			rendtxt = gtk_cell_renderer_text_new();
 			typ = Button;
 			break;
 	}

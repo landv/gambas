@@ -270,14 +270,13 @@ static void gambas_handle_event(GdkEvent *event)
 	if (event->type == GDK_FOCUS_CHANGE)
 	{
 		control = NULL;
-		if (GTK_IS_WINDOW(widget))
-			control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
-		
+		//if (GTK_IS_WINDOW(widget))
+		//	control = gt_get_control(widget);
 		//fprintf(stderr, "GDK_FOCUS_CHANGE: widget = %p %d : %s  grab = %p\n", widget, GTK_IS_WINDOW(widget), control ? control->name() : NULL, grab);
 		
 		if (GTK_IS_WINDOW(widget))
 		{
-			control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+			control = gt_get_control(widget);
 			if (control)
 				gApplication::setActiveControl(control, event->focus_change.in);
 			else if (event->focus_change.in);
@@ -308,7 +307,7 @@ static void gambas_handle_event(GdkEvent *event)
 	
 	while (widget)
 	{
-		control = (gControl *)g_object_get_data(G_OBJECT(widget), "gambas-control");
+		control = gt_get_control(widget);
 		if (control || grab)
 			break;
 		widget = gtk_widget_get_parent(widget);
@@ -953,7 +952,7 @@ gControl* gApplication::controlItem(GtkWidget *wid)
 	
 	while (wid)
 	{
-		control = (gControl *)g_object_get_data(G_OBJECT(wid), "gambas-control");
+		control = gt_get_control(wid);
 		if (control)
 			return control;
 		wid = gtk_widget_get_parent(wid);
@@ -1319,11 +1318,14 @@ void gApplication::getBoxFrame(int *w, int *h)
 
 char *gApplication::getStyleName()
 {
-  GtkSettings *settings;
-	char *theme;
+	static char *_theme = NULL;
 
-  settings = gtk_settings_get_default();
-  g_object_get(settings, "gtk-theme-name", &theme, (char *)NULL);
-	return theme;
+	if (!_theme)
+	{
+		GtkSettings *settings = gtk_settings_get_default();
+		g_object_get(settings, "gtk-theme-name", &_theme, (char *)NULL);
+	}
+
+	return _theme;
 }
 

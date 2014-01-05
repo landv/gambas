@@ -17,6 +17,7 @@ gb_qt4_la_SOURCES = \
  gb.qt.h main.h main_moc.cpp main.cpp \
  CFont.h CFont.cpp \
  CScreen.h CScreen.cpp \
+ CStyle.h CStyle.cpp \
  CWidget.h CWidget_moc.cpp CWidget.cpp \
  CWindow.h CWindow_moc.cpp CWindow.cpp \
  CButton.h CButton_moc.cpp CButton.cpp \

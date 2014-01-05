@@ -58,6 +58,7 @@
 
 #include "CFont.h"
 #include "CScreen.h"
+#include "CStyle.h"
 #include "CWidget.h"
 #include "CWindow.h"
 #include "CButton.h"

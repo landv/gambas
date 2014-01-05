@@ -108,16 +108,38 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 {
 	static const char *bg_names[] = { "bg_color", "theme_bg_color", NULL };
 	static const char *fg_names[] = { "fg_color", "theme_fg_color", NULL };
+	static const char *base_bg_names[] = { "base_color", "theme_base_color", NULL };
+	static const char *base_fg_names[] = { "text_color", "theme_text_color", NULL };
+	static const char *sel_bg_names[] = { "selected_bg_color", "theme_selected_bg_color", NULL };
+	static const char *sel_fg_names[] = { "selected_fg_color", "theme_selected_fg_color", NULL };
+	static const char *tt_bg_names[] = { "tooltip_bg_color", "theme_tooltip_bg_color", NULL };
+	static const char *tt_fg_names[] = { "tooltip_fg_color", "theme_tooltip_fg_color", NULL };
 
 	GtkStyleContext *st = gt_get_style(type);
 	GdkRGBA rgba;
 
 	if (type == GTK_TYPE_WINDOW)
 	{
-		if (gt_style_lookup_color(st, fg ? fg_names : bg_names, NULL, &rgba))
-			return default_color;
+		if (!gt_style_lookup_color(st, fg ? fg_names : bg_names, NULL, &rgba))
+			goto __OK;
+	}
+	else if (type == GTK_TYPE_ENTRY)
+	{
+		if (state == GTK_STATE_FLAG_SELECTED)
+		{
+			if (!gt_style_lookup_color(st, fg ? sel_fg_names : sel_bg_names, NULL, &rgba))
+				goto __OK;
+		}
 		else
-			return gt_to_color(&rgba);
+		{
+			if (!gt_style_lookup_color(st, fg ? base_fg_names : base_bg_names, NULL, &rgba))
+				goto __OK;
+		}
+	}
+	else if (type == GTK_TYPE_TOOLTIP)
+	{
+		if (!gt_style_lookup_color(st, fg ? tt_fg_names : tt_bg_names, NULL, &rgba))
+			goto __OK;
 	}
 
 	if (!st)
@@ -127,6 +149,8 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 		gtk_style_context_get_color(st, state, &rgba);
 	else
 		gtk_style_context_get_background_color(st, state, &rgba);
+
+__OK:
 
 	return gt_to_color(&rgba);
 }
