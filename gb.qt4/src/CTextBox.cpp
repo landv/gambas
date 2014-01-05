@@ -385,39 +385,37 @@ static void combo_set_editable(void *_object, bool ed)
 	QString text;
 	bool hasFocus = COMBOBOX->hasFocus();
 	
+	if (ed == COMBOBOX->isEditable())
+		return;
+
 	COMBOBOX->blockSignals(true);
 	text = COMBOBOX->currentText();
 
 	if (ed)
 	{
-		if (!COMBOBOX->isEditable())
-		{
-			//CWidget::removeFilter(COMBOBOX);
-			COMBOBOX->setEditable(true);
-			COMBOBOX->setCompleter(0);
-			//CWidget::installFilter(COMBOBOX);
-			QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
+		//CWidget::removeFilter(COMBOBOX);
+		COMBOBOX->setEditable(true);
+		COMBOBOX->setCompleter(0);
+		//CWidget::installFilter(COMBOBOX);
+		QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
 
-			if (CWIDGET_test_flag(THIS, WF_DESIGN))
-			{
-				get(_object, &textbox);
-				//textbox->removeEventFilter(COMBOBOX);
-				COMBOBOX->setFocusProxy(0);
-			}
+		if (CWIDGET_test_flag(THIS, WF_DESIGN))
+		{
+			get(_object, &textbox);
+			//textbox->removeEventFilter(COMBOBOX);
+			COMBOBOX->setFocusProxy(0);
 		}
 	}
 	else
 	{
-		if (COMBOBOX->isEditable())
-		{
-			get(THIS, &textbox);
-			textbox->setFocusProxy(0);
-			COMBOBOX->setEditable(false);
-			COMBOBOX->update();
-		}
+		get(THIS, &textbox);
+		textbox->setFocusProxy(0);
+		COMBOBOX->setEditable(false);
+		COMBOBOX->update();
 	}
 	
 	combo_set_text(THIS, text);
+	CWIDGET_reset_color((CWIDGET *)THIS);
 
 	if (hasFocus)
 		COMBOBOX->setFocus();
