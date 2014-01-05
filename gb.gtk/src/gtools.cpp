@@ -2099,12 +2099,14 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 
 #ifdef GTK3
 
-void gt_widget_set_background(GtkWidget *widget, gColor color, const char *name, const GdkRGBA *def_color)
+void gt_widget_set_color(GtkWidget *widget, bool fg, gColor color, const char *name, const GdkRGBA *def_color)
 {
 	if (color == COLOR_DEFAULT)
 	{
 		if (name)
 			gtk_widget_override_symbolic_color(widget, name, def_color);
+		else if (fg)
+			gtk_widget_override_color(widget, GTK_STATE_FLAG_NORMAL, NULL);
 		else
 			gtk_widget_override_background_color(widget, GTK_STATE_FLAG_NORMAL, NULL);
 	}
@@ -2114,6 +2116,8 @@ void gt_widget_set_background(GtkWidget *widget, gColor color, const char *name,
 		gt_from_color(color, &rgba);
 		if (name)
 			gtk_widget_override_symbolic_color(widget, name, &rgba);
+		else if (fg)
+			gtk_widget_override_color(widget, GTK_STATE_FLAG_NORMAL, &rgba);
 		else
 			gtk_widget_override_background_color(widget, GTK_STATE_FLAG_NORMAL, &rgba);
 	}

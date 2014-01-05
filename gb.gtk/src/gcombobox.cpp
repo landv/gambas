@@ -129,19 +129,21 @@ char *gComboBox::indexToKey(int index)
 void gComboBox::create(bool readOnly)
 {
 	bool first = !border;
-	int ind = -1;
-	//bool focus = hasFocus();
+	char *save = NULL;
+	GB_COLOR bg, fg;
 	
 	//fprintf(stderr, "create: %d hasFocus = %d\n", readOnly, focus );
 	
 	lock();
 	
 	if (first)
-	{
 		border = gtk_alignment_new(0, 0, 1, 1); //gtk_event_box_new();
-	}
 	else
-		ind = index();
+	{
+		save = g_strdup(text());
+		bg = background();
+		fg = foreground();
+	}
 	
 	if (widget)
 	{
@@ -204,22 +206,26 @@ void gComboBox::create(bool readOnly)
 	if (entry)
 	{
 		initEntry();
-		setBackgroundBase();
+		setColorBase();
 		//g_signal_connect(G_OBJECT(entry), "key-press-event", G_CALLBACK(gcb_keypress), (gpointer)this);
 		//g_signal_connect(G_OBJECT(entry), "key-release-event", G_CALLBACK(gcb_keyrelease), (gpointer)this);
 		g_signal_connect(G_OBJECT(entry), "focus-in-event", G_CALLBACK(gcb_focus_in), (gpointer)this);
 		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	}
 	else
-		setBackgroundButton();
+		setColorButton();
 	
 	updateFocusHandler();
-	setBackground(background());
-	setForeground(foreground());
-	updateFont();
 
-	if (ind >= 0)
-		setIndex(ind);
+	if (!first)
+	{
+		setBackground(bg);
+		setForeground(fg);
+		updateFont();
+	}
+
+	setText(save);
+	g_free(save);
 	
 	unlock();
 }
@@ -272,7 +278,10 @@ void gComboBox::updateColor()
 {
 	gTextBox::updateColor();
 	if (entry)
-		gt_widget_set_background(entry, background(), _bg_name, &_bg_default);
+	{
+		gt_widget_set_color(entry, FALSE, background(), _bg_name, &_bg_default);
+		gt_widget_set_color(entry, TRUE, foreground(), _fg_name, &_fg_default);
+	}
 }
 #else
 void gComboBox::setRealBackground(gColor color)
@@ -367,6 +376,9 @@ void gComboBox::setIndex(int vl)
 	
 	updateModel();
 	gtk_combo_box_set_active(GTK_COMBO_BOX(widget), vl);
+
+	if (entry)
+		gTextBox::setText(itemText(vl));
 }
 
 void gComboBox::checkIndex()

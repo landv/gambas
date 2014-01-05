@@ -331,7 +331,7 @@ gTabStripPage::~gTabStripPage()
 void gTabStripPage::updateColors()
 {
 #ifdef GTK3
-	gt_widget_set_background(widget, parent->realBackground());
+	gt_widget_set_color(widget, FALSE, parent->realBackground());
 #else
 	set_gdk_bg_color(widget, parent->realBackground());
 	set_gdk_fg_color(label, parent->realForeground());
@@ -799,8 +799,8 @@ GtkWidget *gTabStrip::getContainer()
 void gTabStrip::updateColor()
 {
 	//fprintf(stderr, "%s: updateColors\n", name());
-	gt_widget_set_background(border, realBackground());
-	gt_widget_set_background(widget, realBackground());
+	gt_widget_set_color(border, false, realBackground());
+	gt_widget_set_color(widget, false, realBackground());
 
 	for (int i = 0; i < count(); i++)
 		get(i)->updateColors();

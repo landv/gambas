@@ -253,10 +253,19 @@ void gFont::initFlags()
 
 gFont::gFont() : gShare()
 {
-	GtkStyle *sty = gtk_widget_get_default_style();
-  realize();
+#ifdef GTK3
+	char *font;
+  g_object_get(gtk_settings_get_default(), "gtk-font-name", &font, (char *)NULL);
+	realize();
 	ct = gdk_pango_context_get();
-	pango_context_set_font_description(ct,sty->font_desc);
+	pango_context_set_font_description(ct, pango_font_description_from_string(font));
+	g_free(font);
+#else
+	GtkStyle *sty = gtk_widget_get_default_style();
+	realize();
+	ct = gdk_pango_context_get();
+	pango_context_set_font_description(ct, sty->font_desc);
+#endif
 }
 
 gFont::gFont(GtkWidget *wid) : gShare()

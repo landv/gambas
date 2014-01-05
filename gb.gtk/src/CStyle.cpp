@@ -589,13 +589,17 @@ static void style_handle(int x, int y, int w, int h, int vertical, int state)
 static void style_box(int x, int y, int w, int h, int state, GB_COLOR color)
 {
 	STYLE_T *style = get_style(GTK_TYPE_ENTRY);
+#ifdef GTK3
 	bool oxygen = false;
+#endif
 
 	if (strcmp(gApplication::getStyleName(), "oxygen-gtk") == 0)
 	{
 		x -= 3;
 		w += 6;
+#ifdef GTK3
 		oxygen = true;
+#endif
 	}
 
 	#ifdef GTK3

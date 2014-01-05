@@ -1750,10 +1750,33 @@ void gControl::setRealBackground(gColor color)
 void gControl::setBackground(gColor color)
 {
 	_bg = color;
-	//if (gtk_widget_get_has_window(border))
-	//gt_widget_set_background(border, realBackground());
-	//else
-	gt_widget_set_background(border, _bg, _bg_name, &_bg_default);
+	gt_widget_set_color(border, FALSE, _bg, _bg_name, &_bg_default);
+	updateColor();
+}
+
+gColor gControl::realForeground()
+{
+	if (_fg != COLOR_DEFAULT)
+		return _fg;
+	else if (pr)
+		return pr->realForeground();
+	else
+		return gDesktop::fgColor();
+}
+
+gColor gControl::foreground()
+{
+	return _fg;
+}
+
+void gControl::setRealForeground(gColor color)
+{
+}
+
+void gControl::setForeground(gColor color)
+{
+	_fg = color;
+	gt_widget_set_color(border, TRUE, _fg, _fg_name, &_fg_default);
 	updateColor();
 }
 
@@ -1807,8 +1830,6 @@ void gControl::setBackground(gColor color)
 	setRealBackground(color);
 }
 
-#endif
-
 gColor gControl::realForeground()
 {
 	if (_fg_set)
@@ -1856,6 +1877,8 @@ void gControl::setForeground(gColor color)
 
 	setRealForeground(color);
 }
+
+#endif
 
 void gControl::emit(void *signal)
 {
@@ -2297,30 +2320,36 @@ void gControl::updateColor()
 {
 }
 
-void gControl::setBackgroundName(const char *names[])
+void gControl::setColorNames(const char *bg_names[], const char *fg_names[])
 {
-	_bg_name_list = names;
-	if (!names)
+	_bg_name_list = bg_names;
+	_fg_name_list = fg_names;
+
+	if (!bg_names)
 	{
 		_bg_name = NULL;
+		_fg_name = NULL;
 		use_base = FALSE;
 		return;
 	}
 
-	if (!gt_style_lookup_color(gtk_widget_get_style_context(widget), names, &_bg_name, &_bg_default))
-		return;
+	gt_style_lookup_color(gtk_widget_get_style_context(widget), bg_names, &_bg_name, &_bg_default);
+	gt_style_lookup_color(gtk_widget_get_style_context(widget), fg_names, &_fg_name, &_fg_default);
 }
 
-void gControl::setBackgroundBase()
+void gControl::setColorBase()
 {
 	static const char *bg_names[] = { "base_color", "theme_base_color", NULL };
-	setBackgroundName(bg_names);
+	static const char *fg_names[] = { "text_color", "theme_text_color", NULL };
+	setColorNames(bg_names, fg_names);
 	use_base = TRUE;
 }
 
-void gControl::setBackgroundButton()
+void gControl::setColorButton()
 {
 	const char *bg_names[] = { "button_bg_color", "theme_button_bg_color", "theme_bg_color", NULL };
-	setBackgroundName(bg_names);
+	const char *fg_names[] = { "button_fg_color", "theme_button_fg_color", "theme_fg_color", NULL };
+	setColorNames(bg_names, fg_names);
+	use_base = FALSE;
 }
 #endif

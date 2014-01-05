@@ -209,7 +209,7 @@ void gFrame::updateFont()
 void gFrame::updateColor()
 {
 	gContainer::updateColor();
-	gt_widget_set_background(fr, background());
+	gt_widget_set_color(fr, FALSE, background());
 }
 #else
 void gFrame::setRealForeground(gColor color)

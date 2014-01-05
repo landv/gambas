@@ -122,13 +122,13 @@ public:
 	virtual void updateSize();
 #ifdef GTK3
 	virtual void updateColor();
-	void setBackgroundName(const char *names[]);
-	void setBackgroundBase();
-	void setBackgroundButton();
+	void setColorNames(const char *bg_names[], const char *fg_names[]);
+	void setColorBase();
+	void setColorButton();
 #else
-	void setBackgroundName(const char **) {}
-	void setBackgroundBase() { use_base = TRUE; }
-	void setBackgroundButton() {}
+	void setColorNames(const char **, const char **) {}
+	void setColorBase() { use_base = TRUE; }
+	void setColorButton() { use_base = FALSE; }
 #endif
 
 	bool canFocus() const;

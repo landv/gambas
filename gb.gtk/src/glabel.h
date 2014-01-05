@@ -55,7 +55,7 @@ public:
 	virtual void afterRefresh();
 
 //"Private"
-	virtual gColor getFrameColor();
+	//virtual gColor getFrameColor();
 	virtual void updateSize();
 	void updateSize(bool adjust, bool noresize = false);
 	void updateLayout();

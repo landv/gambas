@@ -394,7 +394,7 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 	else
 	{
 		g_signal_connect(G_OBJECT(widget),"clicked",G_CALLBACK(cb_click),(gpointer)this);	
-		setBackgroundButton();
+		setColorButton();
 	}
 	
 	

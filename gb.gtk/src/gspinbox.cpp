@@ -80,7 +80,7 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 #endif
 
 	realize();
-	setBackgroundBase();
+	setColorBase();
 	
 	onChange = NULL;
 	

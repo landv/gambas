@@ -147,7 +147,7 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		
 		entry = widget = gtk_entry_new();
 		realize();
-		setBackgroundBase();
+		setColorBase();
 		initEntry();
 	}
 	

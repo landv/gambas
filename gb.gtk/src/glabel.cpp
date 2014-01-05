@@ -354,10 +354,10 @@ void gLabel::setWrap(bool v)
 	updateSize(true);
 }
 
-gColor gLabel::getFrameColor()
+/*gColor gLabel::getFrameColor()
 {
 	return realForeground();
-}
+}*/
 
 void gLabel::updateSize()
 {

@@ -966,6 +966,8 @@ void gMainWindow::drawMask()
 	if (mask)
 		cairo_region_destroy(mask);
 
+	refresh();
+
 #else
 
 	GdkBitmap *mask = (_mask && _picture) ? _picture->getMask() : NULL;
