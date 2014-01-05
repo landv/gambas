@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,94,74)
+  MoveScaled(0,0,94,75)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -154,13 +154,12 @@
         Expand = True
         Text = ("Sort properties")
       }
-      { cmbSortProperty ComboBox
-        MoveScaled(43,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnSortProperty SwitchButton
+        MoveScaled(43,0,16,4)
+        Animated = True
       }
       { Panel2 Panel
-        MoveScaled(54,0,12,4)
+        MoveScaled(60,0,6,4)
       }
     }
     { HBox21 HBox
@@ -172,13 +171,12 @@
         Expand = True
         Text = ("Minimize at runtime")
       }
-      { cmbMinimize ComboBox
-        MoveScaled(43,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnMinimize SwitchButton
+        MoveScaled(43,0,16,4)
+        Animated = True
       }
       { Panel3 Panel
-        MoveScaled(54,0,12,4)
+        MoveScaled(60,0,6,4)
       }
     }
     { HBox26 HBox
@@ -190,13 +188,12 @@
         Expand = True
         Text = ("Use utility windows")
       }
-      { cmbUtility ComboBox
-        MoveScaled(43,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnUtility SwitchButton
+        MoveScaled(43,0,16,4)
+        Animated = True
       }
       { Panel13 Panel
-        MoveScaled(54,0,12,4)
+        MoveScaled(60,0,6,4)
       }
     }
     { HBox7 HBox
@@ -223,13 +220,12 @@
         Expand = True
         Text = ("Restore files when loading a project")
       }
-      { cmbStartupLoad ComboBox
-        MoveScaled(43,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnStartupLoad SwitchButton
+        MoveScaled(43,0,16,4)
+        Animated = True
       }
       { Panel23 Panel
-        MoveScaled(54,0,12,4)
+        MoveScaled(60,0,6,4)
       }
     }
     { HBox3 HBox
@@ -241,13 +237,12 @@
         Expand = True
         Text = ("Show tooltips")
       }
-      { cmbTooltip ComboBox
-        MoveScaled(43,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnTooltip SwitchButton
+        MoveScaled(43,0,16,4)
+        Animated = True
       }
       { Panel5 Panel
-        MoveScaled(54,0,12,4)
+        MoveScaled(60,0,6,4)
       }
     }
     Index = 1
@@ -347,13 +342,13 @@
         Text = ("Default tab size")
       }
       { txtTabSize SpinBox
-        MoveScaled(48,0,7,4)
+        MoveScaled(50,0,7,4)
         MinValue = 1
         MaxValue = 16
         Value = 2
       }
       { Label3 Label
-        MoveScaled(56,0,10,4)
+        MoveScaled(58,0,8,4)
         Text = ("space(s)")
       }
     }
@@ -367,7 +362,7 @@
         Text = ("Procedure separation")
       }
       { cmbProcLimit ComboBox
-        MoveScaled(48,0,18,4)
+        MoveScaled(50,0,16,4)
         ReadOnly = True
         List = [("None"), ("Line"), ("Blend"), ("Background")]
       }
@@ -381,13 +376,9 @@
         Expand = True
         Text = ("Highlight current line")
       }
-      { cmbShowCurrent ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel7 Panel
-        MoveScaled(59,0,7,4)
+      { btnShowCurrent SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox16 HBox
@@ -399,13 +390,9 @@
         Expand = True
         Text = ("Highlight modified lines")
       }
-      { cmbShowChange ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel8 Panel
-        MoveScaled(59,0,7,4)
+      { btnShowChange SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox15 HBox
@@ -417,13 +404,9 @@
         Expand = True
         Text = ("Show line numbers")
       }
-      { cmbLineNumber ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel9 Panel
-        MoveScaled(59,0,7,4)
+      { btnShowLineNumber SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox29 HBox
@@ -435,13 +418,9 @@
         Expand = True
         Text = ("Show spaces at end of line with dots")
       }
-      { cmbShowDots ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel16 Panel
-        MoveScaled(59,0,7,4)
+      { btnShowDots SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox42 HBox
@@ -453,13 +432,9 @@
         Expand = True
         Text = ("Procedure folding")
       }
-      { cmbFold ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel21 Panel
-        MoveScaled(59,0,7,4)
+      { btnFold SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox4 HBox
@@ -471,13 +446,9 @@
         Expand = True
         Text = ("Fold procedures by default")
       }
-      { cmbFoldProc ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel10 Panel
-        MoveScaled(59,0,7,4)
+      { btnFoldProc SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox20 HBox
@@ -489,13 +460,9 @@
         Expand = True
         Text = ("Keywords in upper case")
       }
-      { cmbUpperCaseKeywords ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel11 Panel
-        MoveScaled(59,0,7,4)
+      { btnUpperCaseKeywords SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     Index = 4
@@ -515,13 +482,9 @@
         Expand = True
         Text = ("Control structure automatic completion")
       }
-      { cmbControlStructCompletion ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel15 Panel
-        MoveScaled(59,0,7,4)
+      { btnControlStructCompletion SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox43 HBox
@@ -533,13 +496,9 @@
         Expand = True
         Text = ("Local variable automatic declaration")
       }
-      { cmbLocalVarDecl ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel22 Panel
-        MoveScaled(59,0,7,4)
+      { btnLocalVarDecl SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { Label48 Label
@@ -556,13 +515,9 @@
         Expand = True
         Text = ("Format on load & save")
       }
-      { cmbFormatOnLoad ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel20 Panel
-        MoveScaled(59,0,7,4)
+      { btnFormatOnLoad SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox30 HBox
@@ -574,13 +529,9 @@
         Expand = True
         Text = ("Indent local variable declaration")
       }
-      { cmbIndentDim ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel17 Panel
-        MoveScaled(59,0,7,4)
+      { btnIndentDim SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox31 HBox
@@ -592,13 +543,9 @@
         Expand = True
         Text = ("Remove useless spaces at end of line")
       }
-      { cmbRemoveSpace ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel18 Panel
-        MoveScaled(59,0,7,4)
+      { btnRemoveSpace SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { HBox32 HBox
@@ -610,13 +557,9 @@
         Expand = True
         Text = ("Keep successive void lines")
       }
-      { cmbKeepVoidLine ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
-      }
-      { Panel19 Panel
-        MoveScaled(59,0,7,4)
+      { btnKeepVoidLine SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
       }
     }
     { Label47 Label
@@ -624,61 +567,62 @@
       Font = Font["Bold"]
       Text = ("Code snippets")
     }
-    { chkSnippet CheckBox
-      MoveScaled(0,43,29,3)
-      Text = ("Activate code snippets")
-    }
-    { HBox27 HBox
-      MoveScaled(0,47,66,25)
-      Expand = True
+    { HBox9 HBox
+      MoveScaled(0,43,66,4)
       Spacing = True
-      { gvwSnippet GridView
-        MoveScaled(0,0,33,16)
+      Indent = True
+      { Label55 Label
+        MoveScaled(0,0,47,4)
         Expand = True
-        Mode = Select.Single
-        ScrollBar = Scroll.Vertical
+        Text = ("Activate code snippets")
       }
-      { VBox2 VBox
-        MoveScaled(46,1,17,30)
+      { btnCodeSnippet SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { Panel9 HBox
+      MoveScaled(0,48,67,25)
+      Expand = True
+      Indent = True
+      { HBox27 VBox
+        MoveScaled(0,0,66,24)
+        Expand = True
         Spacing = True
-        { btnInsertSnippet Button
-          MoveScaled(0,0,17,4)
-          AutoResize = True
-          Text = Shortcut(("New"), "N") & "..."
-          Picture = Picture["icon:/small/new"]
+        { gvwSnippet GridView
+          MoveScaled(0,0,33,16)
+          Expand = True
+          Mode = Select.Single
+          ScrollBar = Scroll.Vertical
         }
-        { btnEditSnippet Button
-          MoveScaled(0,5,17,4)
-          AutoResize = True
-          Text = Shortcut(("Edit"), "E") & "..."
-          Picture = Picture["icon:/small/edit"]
-        }
-        { btnRemoveSnippet Button
-          MoveScaled(0,10,17,4)
-          AutoResize = True
-          Text = Shortcut(("Remove"), "R")
-          Picture = Picture["icon:/small/delete"]
-        }
-        { btnUndoSnippet Button
-          MoveScaled(0,15,17,4)
-          Visible = False
-          AutoResize = True
-          Text = Shortcut(("Reset"), "s")
-          Picture = Picture["icon:/small/undo"]
-        }
-        { btnExportSnippet Button
-          MoveScaled(0,20,17,4)
-          Visible = False
-          AutoResize = True
-          Text = Shortcut(("Export"), "x") & "..."
-          Picture = Picture["icon:/small/save"]
-        }
-        { btnImportSnippet Button
-          MoveScaled(0,25,17,4)
-          Visible = False
-          AutoResize = True
-          Text = Shortcut(("Import"), "I") & "..."
-          Picture = Picture["icon:/small/open"]
+        { VBox2 HBox
+          MoveScaled(1,19,62,4)
+          Spacing = True
+          { btnInsertSnippet Button
+            MoveScaled(0,0,17,4)
+            AutoResize = True
+            Text = Shortcut(("New"), "N") & "..."
+            Picture = Picture["icon:/small/new"]
+          }
+          { btnEditSnippet Button
+            MoveScaled(18,0,17,4)
+            AutoResize = True
+            Text = Shortcut(("Edit"), "E") & "..."
+            Picture = Picture["icon:/small/edit"]
+          }
+          { btnRemoveSnippet Button
+            MoveScaled(36,0,17,4)
+            AutoResize = True
+            Text = Shortcut(("Remove"), "R")
+            Picture = Picture["icon:/small/delete"]
+          }
+          { btnImportSnippet Button
+            MoveScaled(0,25,17,4)
+            Visible = False
+            AutoResize = True
+            Text = Shortcut(("Import"), "I") & "..."
+            Picture = Picture["icon:/small/open"]
+          }
         }
       }
     }
@@ -832,13 +776,12 @@
         Expand = True
         Text = ("Display property help")
       }
-      { cmbIntegratedHelp ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnIntegratedHelp SwitchButton
+        MoveScaled(48,0,16,4)
+        Animated = True
       }
       { Panel4 Panel
-        MoveScaled(59,0,7,4)
+        MoveScaled(65,0,1,4)
       }
     }
     { HBox5 HBox
@@ -850,13 +793,12 @@
         Expand = True
         Text = ("Show documentation in popups")
       }
-      { cmbHelpCompletion ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnHelpCompletion SwitchButton
+        MoveScaled(48,0,16,4)
+        Animated = True
       }
       { Panel6 Panel
-        MoveScaled(59,0,7,4)
+        MoveScaled(65,0,1,4)
       }
     }
     { HBox28 HBox
@@ -868,13 +810,12 @@
         Expand = True
         Text = ("Always display optional messages")
       }
-      { cmbOptional ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnOptional SwitchButton
+        MoveScaled(48,0,16,4)
+        Animated = True
       }
-      { Panel14 Panel
-        MoveScaled(59,0,7,4)
+      { Panel7 Panel
+        MoveScaled(65,0,1,4)
       }
     }
     { HBox22 HBox
@@ -941,13 +882,12 @@
         Expand = True
         Text = ("Quiet external commands")
       }
-      { cmbOutput ComboBox
-        MoveScaled(48,0,10,4)
-        ReadOnly = True
-        List = [("No"), ("Yes")]
+      { btnOutput SwitchButton
+        MoveScaled(48,0,16,4)
+        Animated = True
       }
-      { Panel12 Panel
-        MoveScaled(59,0,7,4)
+      { Panel8 Panel
+        MoveScaled(65,0,1,4)
       }
     }
     Index = 0

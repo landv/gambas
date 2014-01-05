@@ -9,6 +9,8 @@ Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,4"
 Public Const _Similar As String = "Button"
 
+Event Click
+
 Property Value As Boolean
 Property Animated As Boolean
 Property Background As Integer
@@ -53,9 +55,15 @@ End
 
 Private Sub Value_Write(Value As Boolean)
 
+  Dim fValue As Float
+
   If $hTimer Then $hTimer.Stop
-  $fValue = IIf(Value, 1, 0)
-  $hDrawingArea.Refresh
+  fValue = IIf(Value, 1, 0)
+  If fValue <> $fValue Then
+    $fValue = fValue
+    $hDrawingArea.Refresh
+    Raise Click
+  Endif
 
 End
 
@@ -180,9 +188,11 @@ Public Sub Timer_Timer()
   If $fValue <= 0 Then
     $fValue = 0
     $hTimer.Stop
+    Raise Click
   Else If $fValue >= 1 Then
     $fValue = 1
     $hTimer.Stop
+    Raise Click
   Endif
   
   $hDrawingArea.Refresh

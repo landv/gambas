@@ -38,6 +38,8 @@ Private Sub ReadConfig()
         hCtrl.Value = vVal
       Case "ButtonBox"
         hCtrl.Text = vVal
+      Case "SwitchButton"
+        hCtrl.Value = vVal
       Default 
         Debug "Unmanaged type: "; Object.Type(hCtrl)
     
@@ -86,30 +88,31 @@ Public Sub _new()
     [cmbProjectFontSize, "/ProjectFontSize", 0],
     [cmbTitleFontSize, "/TitleFontSize", 0],
     [cmbToolbox, "/ToolboxSize", 0],
-    [cmbSortProperty, "/SortProperties", 1],
+    [btnSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
     [cmbProcLimit, "/Editor/ProcedureLimit", 2],
-    [cmbLineNumber, "/Editor/ShowLineNumbers", 0],
-    [cmbShowChange, "/Editor/ShowChange", 1],
-    [cmbShowCurrent, "/Editor/ShowCurrent", 1],
-    [cmbShowDots, "/Editor/ShowDots", 1],
-    [cmbFold, "/Editor/ShowFolding", 1],
-    [cmbFoldProc, "/Editor/Fold", 0],
-    [cmbOutput, "/QuietExternalCommands", 0],
-    [cmbUtility, "/UseUtilityWindows", 1],
-    [cmbStartupLoad, "/RestoreFiles", 1],
-    [cmbOptional, "/AlwaysDisplayOptionalMessages", 0],
-    [cmbTooltip, "/ShowTooltip", 0],
-    [cmbIntegratedHelp, "/PropertyHelp", 1],
-    [cmbHelpCompletion, "/ShowHelpInPopup", 1],
-    [cmbMinimize, "/MinimizeOnRun", 0],
-    [cmbUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
-    [cmbControlStructCompletion, "/Editor/ControlStructCompletion", 1],
-    [cmbLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
-    [cmbIndentDim, "/FormatCode/IndentLocal", 1],
-    [cmbRemoveSpace, "/FormatCode/RemoveSpaces", 0],
-    [cmbKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
-    [cmbFormatOnLoad, "/FormatCode/FormatOnLoad", 0]]
+    [btnShowLineNumber, "/Editor/ShowLineNumbers", 0],
+    [btnShowChange, "/Editor/ShowChange", 1],
+    [btnShowCurrent, "/Editor/ShowCurrent", 1],
+    [btnShowDots, "/Editor/ShowDots", 1],
+    [btnFold, "/Editor/ShowFolding", 1],
+    [btnFoldProc, "/Editor/Fold", 0],
+    [btnOutput, "/QuietExternalCommands", 0],
+    [btnUtility, "/UseUtilityWindows", 1],
+    [btnStartupLoad, "/RestoreFiles", 1],
+    [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
+    [btnTooltip, "/ShowTooltip", 0],
+    [btnIntegratedHelp, "/PropertyHelp", 1],
+    [btnHelpCompletion, "/ShowHelpInPopup", 1],
+    [btnMinimize, "/MinimizeOnRun", 0],
+    [btnUpperCaseKeywords, "/Editor/KeywordsUseUpperCase", 0],
+    [btnControlStructCompletion, "/Editor/ControlStructCompletion", 1],
+    [btnLocalVarDecl, "/Editor/LocalVariableDeclaration", 0],
+    [btnIndentDim, "/FormatCode/IndentLocal", 1],
+    [btnRemoveSpace, "/FormatCode/RemoveSpaces", 0],
+    [btnKeepVoidLine, "/FormatCode/KeepVoidLines", 0],
+    [btnFormatOnLoad, "/FormatCode/FormatOnLoad", 0],
+    [btnCodeSnippet, "/Editor/CodeSnippets", 1]]
   
   $bNoChange = True
   
@@ -139,8 +142,6 @@ Public Sub _new()
   Next
   
   RefreshStyle
-  
-  chkSnippet.Value = Settings["Editor/CodeSnippet", 1]
   
   gvwSnippet.Columns.Count = 2
   gvwSnippet.Columns[0].Width = Desktop.Scale * 8
@@ -284,8 +285,8 @@ End
 
 Public Sub cmbTooltip_Click()
 
-  Settings["/ShowTooltip"] = cmbTooltip.Index = 1
-  Application.ShowTooltips = cmbTooltip.Index = 1
+  Settings["/ShowTooltip"] = btnTooltip.Value
+  Application.ShowTooltips = btnTooltip.Value
   
 End
 
@@ -302,30 +303,30 @@ Public Sub cmbProcLimit_Click()
 
 End
 
-Public Sub cmbLineNumber_Click()
+Public Sub btnShowLineNumber_Click()
 
-  Settings["/Editor/ShowLineNumbers"] = cmbLineNumber.Index = 1
+  Settings["/Editor/ShowLineNumbers"] = btnShowLineNumber.Value
   RefreshEditor
 
 End
 
-Public Sub cmbShowChange_Click()
+Public Sub btnShowChange_Click()
 
-  Settings["/Editor/ShowChange"] = cmbShowChange.Index = 1
+  Settings["/Editor/ShowChange"] = btnShowChange.Value
   RefreshEditor
 
 End
 
-Public Sub cmbShowCurrent_Click()
+Public Sub btnShowCurrent_Click()
 
-  Settings["/Editor/ShowCurrent"] = cmbShowCurrent.Index = 1
+  Settings["/Editor/ShowCurrent"] = btnShowCurrent.Value
   RefreshEditor
 
 End
 
-Public Sub cmbShowDots_Click()
+Public Sub btnShowDots_Click()
 
-  Settings["/Editor/ShowDots"] = cmbShowDots.Index = 1
+  Settings["/Editor/ShowDots"] = btnShowDots.Value
   RefreshEditor
 
 End
@@ -355,9 +356,9 @@ Public Sub btnImport_Click()
 
 End
 
-Public Sub cmbSortProperty_Click()
+Public Sub btnSortProperty_Click()
 
-  Settings["/SortProperties"] = cmbSortProperty.Index = 1
+  Settings["/SortProperties"] = btnSortProperty.Value
   FProperty.ReadConfig
 
 End
@@ -432,28 +433,28 @@ Public Sub cmbToolbox_Click()
 
 End
 
-Public Sub cmbOutput_Click()
+Public Sub btnOutput_Click()
 
-  Settings["/QuietExternalCommands"] = cmbOutput.Index = 1
-
-End
-
-Public Sub cmbUtility_Click()
-
-  Settings["/UseUtilityWindows"] = cmbUtility.Index = 1
-  NeedRestart(cmbUtility)
+  Settings["/QuietExternalCommands"] = btnOutput.Value
 
 End
 
-Public Sub cmbStartupLoad_Click()
+Public Sub btnUtility_Click()
 
-  Settings["/RestoreFiles"] = cmbStartupLoad.Index = 1
+  Settings["/UseUtilityWindows"] = btnUtility.Value
+  NeedRestart(btnUtility)
 
 End
 
-Public Sub cmbOptional_Click()
+Public Sub btnStartupLoad_Click()
 
-  Settings["/AlwaysDisplayOptionalMessages"] = cmbOptional.Index = 1
+  Settings["/RestoreFiles"] = btnStartupLoad.Value
+
+End
+
+Public Sub btnOptional_Click()
+
+  Settings["/AlwaysDisplayOptionalMessages"] = btnOptional.Value
 
 End
 
@@ -470,22 +471,22 @@ End
 ' 
 ' End
 
-Public Sub cmbIntegratedHelp_Click()
+Public Sub btnIntegratedHelp_Click()
 
-  Settings["/PropertyHelp"] = cmbIntegratedHelp.Index = 1
+  Settings["/PropertyHelp"] = btnIntegratedHelp.Value
   FProperty.CheckIntegratedHelpSetting
   
 End
 
-Public Sub cmbHelpCompletion_Click()
+Public Sub btnHelpCompletion_Click()
 
-  Settings["/ShowHelpInPopup"] = cmbHelpCompletion.Index = 1
+  Settings["/ShowHelpInPopup"] = btnHelpCompletion.Value
   
 End
 
-Public Sub cmbMinimize_Click()
+Public Sub btnMinimize_Click()
 
-  Settings["/MinimizeOnRun"] = cmbMinimize.Index = 1
+  Settings["/MinimizeOnRun"] = btnMinimize.Value
   
 End
 
@@ -629,37 +630,37 @@ Public Sub mnuBackground_Click()
   
 End
 
-Public Sub cmbUpperCaseKeywords_Click()
+Public Sub btnUpperCaseKeywords_Click()
 
-  Settings["/Editor/KeywordsUseUpperCase"] = cmbUpperCaseKeywords.Index = 1
+  Settings["/Editor/KeywordsUseUpperCase"] = btnUpperCaseKeywords.Value
   RefreshEditor
 
 End
 
-Public Sub cmbControlStructCompletion_Click()
+Public Sub btnControlStructCompletion_Click()
 
-  Settings["/Editor/ControlStructCompletion"] = cmbControlStructCompletion.Index = 1
-  FEditor.StructControlCompletion = cmbControlStructCompletion.Index = 1
-
-End
-
-Public Sub cmbLocalVarDecl_Click()
-
-  Settings["/Editor/LocalVariableDeclaration"] = cmbLocalVarDecl.Index = 1
-  FEditor.LocalVariableDeclaration = cmbLocalVarDecl.Index = 1
+  Settings["/Editor/ControlStructCompletion"] = btnControlStructCompletion.Value
+  FEditor.StructControlCompletion = btnControlStructCompletion.Value
 
 End
 
-Public Sub cmbFold_Click()
+Public Sub btnLocalVarDecl_Click()
 
-  Settings["/Editor/ShowFolding"] = cmbFold.Index = 1  
+  Settings["/Editor/LocalVariableDeclaration"] = btnLocalVarDecl.Value
+  FEditor.LocalVariableDeclaration = btnLocalVarDecl.Value
+
+End
+
+Public Sub btnFold_Click()
+
+  Settings["/Editor/ShowFolding"] = btnFold.Value
   RefreshEditor
 
 End
 
-Public Sub cmbFoldProc_Click()
+Public Sub btnFoldProc_Click()
 
-  Settings["/Editor/Fold"] = cmbFoldProc.Index = 1  
+  Settings["/Editor/Fold"] = btnFoldProc.Value
 
 End
 
@@ -817,9 +818,9 @@ Public Sub gvwSnippet_Select()
 
 End
 
-Public Sub chkSnippet_Click()
+Public Sub btnCodeSnippet_Click()
 
-  Settings["/Editor/CodeSnippet"] = If(chkSnippet.Value, 1, 0)
+  Settings["/Editor/CodeSnippet"] = btnCodeSnippet.Value
 
 End
 
@@ -926,27 +927,27 @@ Public Sub ipnOption_Click()
   
 End
 
-Public Sub cmbIndentDim_Click()
+Public Sub btnIndentDim_Click()
 
-  Settings["/FormatCode/IndentLocal"] = cmbIndentDim.Index = 1
-
-End
-
-Public Sub cmbRemoveSpace_Click()
-
-  Settings["/FormatCode/RemoveSpaces"] = cmbRemoveSpace.Index = 1
+  Settings["/FormatCode/IndentLocal"] = btnIndentDim.Value
 
 End
 
-Public Sub cmbKeepVoidLine_Click()
+Public Sub btnRemoveSpace_Click()
 
-  Settings["/FormatCode/KeepVoidLines"] = cmbKeepVoidLine.Index = 1
+  Settings["/FormatCode/RemoveSpaces"] = btnRemoveSpace.Value
 
 End
 
-Public Sub cmbFormatOnLoad_Click()
+Public Sub btnKeepVoidLine_Click()
 
-  Settings["/FormatCode/FormatOnLoad"] = cmbFormatOnLoad.Index = 1
+  Settings["/FormatCode/KeepVoidLines"] = btnKeepVoidLine.Value
+
+End
+
+Public Sub btnFormatOnLoad_Click()
+
+  Settings["/FormatCode/FormatOnLoad"] = btnFormatOnLoad.Value
 
 End
 

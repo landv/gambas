@@ -2162,6 +2162,7 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
 
   Dim sGroup As String
   Dim hEditor As FEditor
+  Dim hSymbol As CSymbolInfo
 
   If Not hCtrl Then hCtrl = RootControl
 
@@ -2175,7 +2176,12 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
   If Not hEditor Then Return
 
   '' TODO: Undo should remove the possibly created event handler
-  If Not hEditor.GotoEvent(sGroup, sEvent, CSymbolInfo.TransformSignature(CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent].Signature, False)) Then
+  hSymbol = CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent]
+  If Not hSymbol Then
+    Error "gambas3: event '"; sEvent; "' does not exist on control '"; hCtrl.Kind; "'"
+    Return
+  Endif
+  If Not hEditor.GotoEvent(sGroup, sEvent, CSymbolInfo.TransformSignature(hSymbol.Signature, False)) Then
     Project.ShowFile(hEditor)
   Endif
 
