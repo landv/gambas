@@ -68,6 +68,7 @@
 #include <QSpinBox>
 #include <QSet>
 #include <QScrollBar>
+#include <QLineEdit>
  
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
@@ -1438,22 +1439,50 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (!THIS_EXT || (THIS_EXT->bg == COLOR_DEFAULT && THIS_EXT->fg == COLOR_DEFAULT))
 	{
 		w->setPalette(QPalette());
+		w->setAutoFillBackground(!THIS->flag.noBackground && THIS->flag.fillBackground);
 	}
 	else
 	{
 		bg = THIS_EXT->bg;
 		fg = THIS_EXT->fg;
 		
-		if (qobject_cast<QComboBox *>(w) || qobject_cast<QSpinBox *>(w))
+		if (qobject_cast<QComboBox *>(w))
+		{
+			QComboBox *cb = (QComboBox *)w;
+			palette = QPalette();
+
+			if (bg != COLOR_DEFAULT)
+			{
+				if (cb->isEditable())
+					palette.setColor(QPalette::Base, QColor((QRgb)bg));
+				else
+					palette.setColor(QPalette::Button, QColor((QRgb)bg));
+			}
+
+			if (fg != COLOR_DEFAULT)
+			{
+				if (cb->isEditable())
+					palette.setColor(QPalette::Text, QColor((QRgb)fg));
+				else
+					palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
+			}
+
+			w->setPalette(palette);
+		}
+		else if (qobject_cast<QSpinBox *>(w))
 		{
 			palette = QPalette();
-		
+
 			if (bg != COLOR_DEFAULT)
+			{
 				palette.setColor(QPalette::Base, QColor((QRgb)bg));
-			
+			}
+
 			if (fg != COLOR_DEFAULT)
-				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
-		
+			{
+				palette.setColor(QPalette::Text, QColor((QRgb)fg));
+			}
+
 			w->setPalette(palette);
 		}
 		else
@@ -1467,10 +1496,12 @@ void CWIDGET_reset_color(CWIDGET *_object)
 				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
 		
 			w->setPalette(palette);
+
+			w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));
 		}
-	}	
+
+	}
 	
-	w->setAutoFillBackground(!THIS->flag.noBackground && (THIS->flag.fillBackground || ((THIS_EXT && THIS_EXT->bg != COLOR_DEFAULT) && w->backgroundRole() == QPalette::Window)));
 	//w->setAutoFillBackground(THIS->bg != COLOR_DEFAULT);
 	
 	if (GB.Is(THIS, CLASS_TextArea))
