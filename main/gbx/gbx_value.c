@@ -754,7 +754,7 @@ __OBJECT:
 		if (class->has_convert)
 		{
 			void *unref = value->_object.object;
-			bool old_type = value->type;
+			TYPE old_type = value->type;
 
 			if (!((*class->convert)(value->_object.object, type, value)))
 			{

@@ -85,7 +85,7 @@ QSet<CWIDGET *> *_enter_leave_set = NULL;
 #define EXT(_ob) (((CWIDGET *)_ob)->ext)
 
 #define ENSURE_EXT(_ob) (EXT(_ob) ? EXT(_ob) : alloc_ext((CWIDGET *)(_ob)))
-	
+
 #define HANDLE_PROXY(_ob) \
 	while (EXT(_ob) && EXT(_ob)->proxy) \
 		_ob = (typeof _ob)(EXT(_ob)->proxy);
@@ -1484,8 +1484,10 @@ void CWIDGET_reset_color(CWIDGET *_object)
 }
 
 
-void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
+void CWIDGET_set_color(CWIDGET *_object, int bg, int fg, bool handle_proxy)
 {
+	if (handle_proxy) { HANDLE_PROXY(_object); }
+
 	ENSURE_EXT(THIS);
 	THIS_EXT->bg = bg;
 	THIS_EXT->fg = fg;
@@ -1494,8 +1496,10 @@ void CWIDGET_set_color(CWIDGET *_object, int bg, int fg)
 }
 
 
-GB_COLOR CWIDGET_get_background(CWIDGET *_object)
+GB_COLOR CWIDGET_get_background(CWIDGET *_object, bool handle_proxy)
 {
+	if (handle_proxy) { HANDLE_PROXY(_object); }
+
 	return THIS_EXT ? THIS_EXT->bg : COLOR_DEFAULT;
 }
 
@@ -1516,8 +1520,10 @@ int CWIDGET_get_real_background(CWIDGET *_object)
 }
 
 
-GB_COLOR CWIDGET_get_foreground(CWIDGET *_object)
+GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy)
 {
+	if (handle_proxy) { HANDLE_PROXY(_object); }
+
 	return THIS_EXT ? THIS_EXT->fg : COLOR_DEFAULT;
 }
 

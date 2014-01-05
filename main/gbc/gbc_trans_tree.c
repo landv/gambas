@@ -590,13 +590,14 @@ static void analyze_array()
 
 static void analyze_expr(short priority, short op_main)
 {
-	int op, op_curr, op_not;
-	int prio;
-	int nparam;
+	short op, op_curr, op_not;
+	short prio;
+	short nparam;
 
 	inc_level();
 
 	op_curr = op_main;
+	op_not = RS_NONE;
 	nparam = (op_main == RS_NONE || op_main == RS_UNARY) ? 0 : 1;
 
 	if (PATTERN_is(*current, RS_NEW))
@@ -638,9 +639,6 @@ READ_OPERATOR:
 		}
 	}
 	
-	/*if ((op == RS_BEGINS || op == RS_ENDS) && PATTERN_is(*current, RS_WITH))
-		current++;*/
-
 	if (priority)
 		prio = priority;
 	else if (op_curr == RS_NONE)
@@ -706,6 +704,8 @@ READ_OPERATOR:
 		{
 			add_operator(op_curr, nparam);
 			current--;
+			if (op_not != RS_NONE)
+				current--;
 			goto END;
 		}
 

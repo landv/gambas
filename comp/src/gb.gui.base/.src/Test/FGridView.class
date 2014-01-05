@@ -39,3 +39,9 @@ Public Sub Form_Open()
   gvwinfo.Columns.Width = -1
 
 End
+
+Public Sub gvwInfo_ColumnClick(Column As Integer)
+
+  Debug Column
+
+End

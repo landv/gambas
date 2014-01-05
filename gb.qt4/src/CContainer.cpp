@@ -1173,6 +1173,9 @@ BEGIN_PROPERTY(UserControl_Container)
 			GB.Error("Container must be a child control");
 		else
 		{
+			GB_COLOR bg = CWIDGET_get_background((CWIDGET *)current, true);
+			GB_COLOR fg = CWIDGET_get_foreground((CWIDGET *)current, true);
+
 			if (current)
 				CWIDGET_container_for(current, NULL);
 			CWIDGET_container_for(cont, THIS);
@@ -1181,6 +1184,8 @@ BEGIN_PROPERTY(UserControl_Container)
 
 			CWIDGET_update_design((CWIDGET *)THIS);
 			CCONTAINER_arrange(THIS);
+
+			CWIDGET_set_color((CWIDGET *)cont, bg, fg, true);
 
 			CWIDGET_register_proxy(THIS, cont);
 		}
