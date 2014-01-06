@@ -995,7 +995,7 @@ void gControl::setFocus()
 	}
 }
 
-bool gControl::hasFocus()
+bool gControl::hasFocus() const
 {
 	if (_proxy)
 		return _proxy->hasFocus();
@@ -1006,6 +1006,16 @@ bool gControl::hasFocus()
 		return (border && GTK_WIDGET_HAS_FOCUS(border)) || (widget && GTK_WIDGET_HAS_FOCUS(widget)) || gApplication::activeControl() == this;
 #endif
 }
+
+#if GTK_CHECK_VERSION(3, 2, 0)
+bool gControl::hasVisibleFocus() const
+{
+	if (_proxy)
+		return _proxy->hasVisibleFocus();
+	else
+		return (border && gtk_widget_has_visible_focus(border)) || (widget && gtk_widget_has_visible_focus(widget));
+}
+#endif
 
 gControl* gControl::next()
 {

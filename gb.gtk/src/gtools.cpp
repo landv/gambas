@@ -2073,6 +2073,8 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 		w += 6;
 	}
 
+	gboolean interior_focus;
+
 	if (border == BORDER_RAISED)
 	{
 		st = gt_get_style(GTK_TYPE_BUTTON);
@@ -2085,6 +2087,7 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 		st = gt_get_style(GTK_TYPE_ENTRY);
 		gtk_style_context_set_state(st, state);
 		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_ENTRY);
+
 		gtk_render_frame(st, cr, x, y, w, h);
 	}
 	else if (border == BORDER_ETCHED)
@@ -2093,6 +2096,13 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 		gtk_style_context_set_state(st, state);
 		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_FRAME);
 		gtk_render_frame(st, cr, x, y, w, h);
+	}
+
+	if (state & GTK_STATE_FLAG_FOCUSED)
+	{
+		gtk_style_context_get_style (st, "interior-focus", &interior_focus, NULL);
+		if (!interior_focus)
+			gtk_render_focus(st, cr, x, y, w, h);
 	}
 }
 #endif

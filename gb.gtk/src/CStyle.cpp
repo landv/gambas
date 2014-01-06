@@ -531,9 +531,6 @@ static void style_panel(int x, int y, int w, int h, int border, int state)
 	}
 
 	gt_draw_border(_cr, style, get_state(state), border, col, x, y, w, h);
-
-	if (state & GB_DRAW_STATE_FOCUS)
-		paint_focus(style, x, y, w, h);
 #else
 	GtkShadowType shadow;
 	GtkStateType st = get_state(state);
@@ -822,7 +819,7 @@ BEGIN_METHOD(Style_StateOf, GB_OBJECT control)
 
 	if (!widget->isEnabled())
 		state |= GB_DRAW_STATE_DISABLED;
-	if (widget->hasFocus() && !design)
+	if (widget->hasVisibleFocus() && !design)
 		state |= GB_DRAW_STATE_FOCUS;
 	if (widget->hovered() && !design)
 		state |= GB_DRAW_STATE_HOVER;

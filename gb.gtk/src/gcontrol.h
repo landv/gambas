@@ -159,7 +159,12 @@ public:
 	virtual void resize(int w, int h);
 	virtual void moveResize(int x, int y, int w, int h);
 	virtual void setFocus();
-	bool hasFocus();
+	bool hasFocus() const;
+#if GTK_CHECK_VERSION(3, 2, 0)
+	bool hasVisibleFocus() const;
+#else
+	bool hasVisibleFocus() const { return hasFocus(); }
+#endif
 	void resize() { resize(width(), height()); }
 	void show() { setVisible(true); }
 	void refresh();
