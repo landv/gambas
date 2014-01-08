@@ -567,12 +567,19 @@ __PUSH_GENERIC:
 			fast = 1;
 		else if (class->quick_array == CQA_COLLECTION)
 			fast = 2;
+		else
+		{
+			// Check the symbol existance, but *not virtually*
+			if (object && !VALUE_is_super(val))
+			{
+				CLASS *nvclass = val->_object.class;
+
+				if (nvclass->special[SPEC_GET] == NO_SYMBOL)
+					THROW(E_NARRAY, CLASS_get_name(nvclass));
+			}
+		}
 	}
 
-	// The first time we access a symbol, we must not be virtual to find it
-	if (defined && object && !VALUE_is_super(val))
-		class = val->_object.class;
-	
 	*PC |= fast << 6;
 	
 	goto __PUSH_ARRAY_2;

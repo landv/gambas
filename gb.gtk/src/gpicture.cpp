@@ -35,13 +35,14 @@ gPicture
 
 #define LOAD_INC 65536L
 
-static bool pixbufFromMemory(GdkPixbuf **pixbuf, char *addr, unsigned int len, bool *trans)
+static bool pixbufFromMemory(GdkPixbuf **ppixbuf, char *addr, unsigned int len, bool *trans)
 {
-	GdkPixbufLoader* loader;
+	GdkPixbufLoader *loader;
+	GdkPixbuf *pixbuf;
 	GError *error = NULL;
 	gsize size;
 
-	*pixbuf = 0;
+	*ppixbuf = 0;
 
 	loader = gdk_pixbuf_loader_new();
 	
@@ -63,23 +64,24 @@ static bool pixbufFromMemory(GdkPixbuf **pixbuf, char *addr, unsigned int len, b
 		goto __ERROR;
 	}
 	
-	(*pixbuf) = gdk_pixbuf_loader_get_pixbuf(loader);
-	g_object_ref(G_OBJECT(*pixbuf));
+	pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+	g_object_ref(pixbuf);
 	
-	if (gdk_pixbuf_get_n_channels(*pixbuf) == 3)
+	if (gdk_pixbuf_get_n_channels(pixbuf) == 3)
 	{
 		// Rowstride breaks gb.image (it is rounded up so that a line is always a four bytes multiple).
 		GdkPixbuf *aimg;
-		aimg = gdk_pixbuf_add_alpha(*pixbuf, FALSE, 0, 0, 0);
-		g_object_unref(G_OBJECT(*pixbuf));
-		g_object_ref(G_OBJECT(aimg));
-		*pixbuf = aimg;
+		aimg = gdk_pixbuf_add_alpha(pixbuf, FALSE, 0, 0, 0);
+		g_object_unref(pixbuf);
+		pixbuf = aimg;
 		*trans = false;
 	}
 	else
 		*trans = true;
 
 	g_object_unref(G_OBJECT(loader));
+
+	*ppixbuf = pixbuf;
 	return true;
 	
 __ERROR:
@@ -102,6 +104,7 @@ void gPicture::initialize()
 
 gPicture::gPicture() : gShare()
 {
+	//fprintf(stderr, "gPicture(): %p\n", this);
 	initialize();
 }
 
@@ -140,6 +143,7 @@ void gPicture::createMask(bool opaque)
 
 gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 {
+	//fprintf(stderr, "gPicture(): %p: %d %d %d %d\n", this, type, w, h, trans);
 	initialize();
 	
 	_transparent = trans;
@@ -169,6 +173,7 @@ gPicture::gPicture(gPictureType type, int w, int h, bool trans) : gShare()
 
 gPicture::gPicture(GdkPixbuf *image, bool trans) : gShare()
 {
+	//fprintf(stderr, "gPicture(image): %p: %p %d\n", this, image, trans);
 	initialize();
 	if (!image)
 		return;
@@ -206,6 +211,7 @@ gPicture::gPicture(GdkPixmap *pixmap) : gShare()
 
 gPicture::~gPicture()
 {
+	//fprintf(stderr, "~gPicture: %p\n", this);
 	clear();
 }
 
@@ -305,9 +311,11 @@ GdkPixmap *gPicture::getPixmap()
 		if (_type != PIXBUF)
 			getPixbuf();
 	
+		if (pixmap)
+			g_object_unref(G_OBJECT(pixmap));
 		if (mask)
 			g_object_unref(G_OBJECT(mask));
-	
+
 		gt_pixbuf_render_pixmap_and_mask(pixbuf, &pixmap, &mask, 128);
 	}
 	
@@ -330,7 +338,10 @@ gPicture *gPicture::fromMemory(char *addr, unsigned int len)
 	if (!pixbufFromMemory(&pixbuf, addr, len, &trans))
 		return 0;
 	else
-		return new gPicture(pixbuf);
+	{
+		gPicture *pic = new gPicture(pixbuf);
+		return pic;
+	}
 }
 
 gPicture *gPicture::fromData(const char *data, int width, int height)
@@ -549,6 +560,7 @@ gPicture* gPicture::fromNamedIcon(const char *name, int len)
 void gPicture::clear()
 {
 	//fprintf(stderr, "gPicture::clear: %p (%d %d) pixmap = %p pixbuf = %p\n", this, _width, _height, pixmap, pixbuf);
+
 	_width = 0;
 	_height = 0;
 	_type = VOID;

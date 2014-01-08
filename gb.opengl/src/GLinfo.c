@@ -421,7 +421,7 @@ BEGIN_METHOD(GLGETBOOLEANV, GB_INTEGER parameter)
 
 	if (!size)
 	{
-		GB.Error("Unknown parameter !");
+		GB.Error("Unknown parameter");
 		return;
 	}
 
@@ -445,7 +445,7 @@ BEGIN_METHOD(GLGETFLOATV, GB_INTEGER parameter)
 
 	if (!size)
 	{
-		GB.Error("Unknown parameter !");
+		GB.Error("Unknown parameter");
 		return;
 	}
 
@@ -469,7 +469,7 @@ BEGIN_METHOD(GLGETINTEGERV, GB_INTEGER parameter)
 
 	if (!size)
 	{
-		GB.Error("Unknown parameter !");
+		GB.Error("Unknown parameter");
 		return;
 	}
 
@@ -491,7 +491,10 @@ BEGIN_METHOD(GLGETSTRING, GB_INTEGER name)
 	const GLubyte *str = glGetString(VARG(name));
 	
 	if (!str)
-		 return;
+	{
+		GB.Error("Unknown name");
+		return;
+	}
 	 
 	GB.ReturnNewZeroString((char *)str);
 	 
