@@ -531,6 +531,7 @@ static void style_panel(int x, int y, int w, int h, int border, int state)
 	}
 
 	gt_draw_border(_cr, style, get_state(state), border, col, x, y, w, h);
+
 #else
 	GtkShadowType shadow;
 	GtkStateType st = get_state(state);

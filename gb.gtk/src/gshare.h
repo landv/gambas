@@ -26,9 +26,9 @@
 
 #include "gtag.h"
 
-//#define DEBUG_ME
+//#define DEBUG_SHARE 1
 
-#ifdef DEBUG_ME
+#ifdef DEBUG_SHARE
 
 class gShare
 {
