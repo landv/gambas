@@ -760,6 +760,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   For i = Max(Me._CurItem, 0) To Me.Children.Max
     hchild = Me.Children[i]
     If hchild.Fixed Then
+      hChildHints = hchild._GetSizeHints(W, fTH, W, H, iPreIndex)
       'on génère l'objet virtuel
       hTItem = New TControl
       'On associe le controle
