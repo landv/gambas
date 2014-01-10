@@ -615,7 +615,8 @@ int gMenu::childCount()
 	while (item)
 	{
 		mn=(gMenu*)item->data;
-		if (mn->pr == (void*)this) ct++;
+		if (mn->pr == (void*)this && !mn->_delete_later)
+			ct++;
 		item=g_list_next(item);
 	}
 	
@@ -634,7 +635,7 @@ gMenu* gMenu::childMenu(int pos)
 	while (item)
 	{
 		mn=(gMenu*)item->data;
-		if (mn->pr == (void*)this)
+		if (mn->pr == (void*)this && !mn->_delete_later)
 		{
 			if (ct==pos) return mn;
 			ct++;
