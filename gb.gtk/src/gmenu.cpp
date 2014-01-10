@@ -570,9 +570,9 @@ int gMenu::childCount()
 	GList *item;
 	gMenu *mn;
 	int ct=0;
-	
+
 	if (!menus) return 0;
-	
+
 	item=g_list_first(menus);
 	while (item)
 	{
@@ -580,7 +580,7 @@ int gMenu::childCount()
 		if (mn->pr == (void*)this) ct++;
 		item=g_list_next(item);
 	}
-	
+
 	return ct;
 }
 
@@ -589,9 +589,9 @@ gMenu* gMenu::childMenu(int pos)
 	GList *item;
 	gMenu *mn;
 	int ct=0;
-	
+
 	if (!menus) return NULL;
-	
+
 	item=g_list_first(menus);
 	while (item)
 	{
@@ -603,7 +603,7 @@ gMenu* gMenu::childMenu(int pos)
 		}
 		item=g_list_next(item);
 	}
-	
+
 	return NULL;
 }
 
