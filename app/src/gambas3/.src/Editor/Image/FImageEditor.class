@@ -58,6 +58,7 @@ Private $vChangeIndex As Variant
 Private Enum CHANGE_NOTHING, CHANGE_MOVE, CHANGE_RESIZE, CHANGE_ROTATE, CHANGE_POINT, CHANGE_INSERT, CHANGE_SELECT
 
 Private $bShowGrid As Boolean
+Private $hTextSelect As CImageSelection
 
 
 Public Sub _new(sPath As String)
@@ -90,7 +91,7 @@ Private Sub ClearSelection()
   $hMagnet = Null
   $hLastMagnet = Null
   $sMagnet = ""
-    $iChangeAction = CHANGE_NOTHING
+  $iChangeAction = CHANGE_NOTHING
   RefreshSelection
 
 End
@@ -397,7 +398,7 @@ Private Sub SetTool(sAction As String)
   
   'If $sTool = sAction Then Return
 
-  For Each hCtrl In [btnMove, btnDraw, btnErase, btnRectangle, btnEllipse, btnLine, btnMagic, btnPaste, btnEditSelection]
+  For Each hCtrl In [btnMove, btnDraw, btnErase, btnRectangle, btnEllipse, btnLine, btnMagic, btnPaste, btnEditSelection, btnText]
     Object.Lock(hCtrl)
     hCtrl.Value = hCtrl.Tag = sAction
     Object.Unlock(hCtrl)
@@ -422,17 +423,9 @@ Private Sub SetTool(sAction As String)
     Case "draw", "erase"
       $iMouse = Mouse.Cross
     
-    Case "rectangle", "ellipse", "line", "magic"
-      AddUndo($hSelect)
-      If $sTool = sAction Or If Not $hSelect Then 
-        ClearSelection
-      Endif
-      imvImage.Refresh
-      
-      If sAction = "magic" Then
-        $iMouse = Mouse.Custom
-        $hCursor = New Cursor(Picture["img/draw/magic.png"], 0, 0)
-      Endif
+    Case "magic"
+      $iMouse = Mouse.Custom
+      $hCursor = New Cursor(Picture["img/draw/magic.png"], 0, 0)
       
     Case "paste"
       hImage = FImageProperty.GetClipboard()
@@ -454,10 +447,19 @@ Private Sub SetTool(sAction As String)
       If $hSelect And If Not $hSelect.IsVoid() Then
         $hChangeRect = $hSelect.GetExtents()
       Endif
+      
+    Case "text"
+      $iMouse = Mouse.Cross
+      CreateSelection
+      $hTextSelect = $hSelect.Copy()
+      $hLastPoint = imvImage.ViewToImage(Point(imvImage.ScrollX + imvImage.ClientW / 2, imvImage.ScrollY + imvImage.ClientH / 2))
+      FImageProperty.ShowTextOption
 
   End Select
   
   $sTool = sAction
+  
+  If $sTool <> "text" Then FImageProperty.HideTextOption
 
 End
 
@@ -726,7 +728,7 @@ Public Sub imvImage_MouseDown()
       AddUndo($hSelect.Copy())
       $hLastPoint = GetImagePos()
       MagicWand
-    
+      
     Case "paste"
       
       If $hPaste Then
@@ -771,7 +773,7 @@ Public Sub imvImage_MouseDown()
   End Select
   
   imvImage_MouseMove()
-
+  
 End
 
 Private Sub UpdateInfo()
@@ -781,7 +783,7 @@ Private Sub UpdateInfo()
   If $hCurrentPoint.InRect(RectF(0, 0, $hImage.W, $hImage.H)) Or If $bPress Then
     sInfo = CStr(CInt($hCurrentPoint.X)) & " , " & CStr(CInt($hCurrentPoint.Y))
     If $bPress Then
-      If $sTool = "rectangle" Or If $sTool = "ellipse" Then
+      If $sTool = "rectangle" Or If $sTool = "ellipse" Or If $sTool = "text" Then
         If $bShift Then
           sInfo &= " ( " & (Abs(CInt($hCurrentPoint.X) - CInt($hLastPoint.X)) * 2) & " x " & (Abs(CInt($hCurrentPoint.Y) - CInt($hLastPoint.Y)) * 2) & " )"
         Else
@@ -862,7 +864,7 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
   If $sTool = "change" Or $sTool = "paste" And If Not $bPress Then Return hCurrent
   
   If $bPress Then
-    bIgnoreLast = $sTool = "rectangle" Or $sTool = "ellipse" Or $sTool = "line"
+    bIgnoreLast = $sTool = "rectangle" Or $sTool = "ellipse" Or $sTool = "line" Or $sTool = "text"
   Endif
   
   If $hMagnet And If hCurrent = $hMagnet Then Return hCurrent
@@ -995,27 +997,34 @@ Public Sub imvImage_MouseMove()
         If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect = $aUndo[$aUndo.Max].Copy()
+          WW = $hCurrentPoint.X - $hLastPoint.X + Sgn($hCurrentPoint.X - $hLastPoint.X)
+          HH = $hCurrentPoint.Y - $hLastPoint.Y + Sgn($hCurrentPoint.Y - $hLastPoint.Y)
           If $bShift Then
-            WW = $hCurrentPoint.X - $hLastPoint.X
-            HH = $hCurrentPoint.Y - $hLastPoint.Y
             $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
           Else
-            $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, $hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
+            $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, WW, HH)
           Endif
           imvImage.Refresh
         Endif
+      
+      Case "text"
+        
+        $hLastPoint = $hCurrentPoint
+        FImageProperty.RefreshTextOption
       
       Case "ellipse"
         
         If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect = $aUndo[$aUndo.Max].Copy()
+          WW = Abs($hCurrentPoint.X - $hLastPoint.X + Sgn($hCurrentPoint.X - $hLastPoint.X))
+          HH = Abs($hCurrentPoint.Y - $hLastPoint.Y + Sgn($hCurrentPoint.Y - $hLastPoint.Y))
           If $bShift Then
-            WW = Abs($hCurrentPoint.X - $hLastPoint.X) * Sqr(2)
-            HH = Abs($hCurrentPoint.Y - $hLastPoint.Y) * Sqr(2)
+            WW *= Sqr(2)
+            HH *= Sqr(2)
             $hSelect.Ellipse($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
           Else
-            $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), Abs($hCurrentPoint.X - $hLastPoint.X), Abs($hCurrentPoint.Y - $hLastPoint.Y))
+            $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), WW, HH)
           Endif
           imvImage.Refresh
         Endif
@@ -1235,20 +1244,13 @@ Public Sub imvImage_MouseUp()
       Endif
       $hSelect.CleanLastShape
 
-    Case "rectangle"
+    Case "rectangle", "ellipse"
       If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
         imvImage.Refresh
       Else
         ClearSelection
       Endif
     
-    Case "ellipse"
-      If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
-        imvImage.Refresh
-      Else
-        ClearSelection
-      Endif
-      
     Case "change"
       If $iChangeAction = CHANGE_NOTHING Then $hSelect.SelectAll
       If $hLastPoint <> $hCurrentPoint Then
@@ -1457,18 +1459,26 @@ Public Sub imvImage_Draw(hZoom As Image)
     Endif
     
     Paint.LineWidth = 2 / imvImage.Zoom
-    Paint.AntiAlias = False
-    'Paint.LineJoin = Paint.LineJoinRound
-    
-    Paint.Background = Color.White 'Color.SetAlpha(Color.White, 128)
-    Paint.Dash = Null
-    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE, True)
-    
-    Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
-    Paint.Dash = [2.0, 2.0]
     Paint.DashOffset = - $fDashOffset
-    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE, True)
-    
+    $hSelect.Paint($hImage, CImageSelection.ACTION_SELECT, True)
+
+    ' CImageSelection.PaintingSelection = True
+    ' 
+    ' Paint.LineWidth = 2 / imvImage.Zoom
+    ' Paint.AntiAlias = False
+    ' 'Paint.LineJoin = Paint.LineJoinRound
+    ' 
+    ' Paint.Background = Color.White 'Color.SetAlpha(Color.White, 128)
+    ' Paint.Dash = Null
+    ' $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE, True)
+    ' 
+    ' Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
+    ' Paint.Dash = [2.0, 2.0]
+    ' Paint.DashOffset = - $fDashOffset
+    ' $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE, True)
+    ' 
+    ' CImageSelection.PaintingSelection = False
+
     Paint.Restore
     
     bAnts = True
@@ -2733,5 +2743,19 @@ End
 Public Sub ReadConfig()
   
   Project.SetSmallFont(tlbMain)
+  
+End
+
+Public Sub btnHide_Click()
+
+  ClearSelection
+
+End
+
+Public Sub UpdateText(sText As String, sFont As String)
+  
+  $hSelect = $hTextSelect.Copy()
+  $hSelect.Text($hLastPoint.X, $hLastPoint.Y, sText, sFont, Align.Left)
+  imvImage.Refresh
   
 End

@@ -68,17 +68,10 @@ enum {
 	GB_PAINT_OPERATOR_SATURATE
 };
 
-/*enum
-{
-	GB_PAINT_LINE_STYLE_NONE = 0,
-	GB_PAINT_LINE_STYLE_SOLID = 1,
-	GB_PAINT_LINE_STYLE_DASH = 2,
-	GB_PAINT_LINE_STYLE_DOT = 3,
-	GB_PAINT_LINE_STYLE_DASH_DOT = 4,
-	GB_PAINT_LINE_STYLE_DASH_DOT_DOT = 5,
-	GB_PAINT_LINE_STYLE_CUSTOM = 6
-};*/
-
+enum {
+	GB_PAINT_PATH_MOVE,
+	GB_PAINT_PATH_LINE
+};
 
 struct GB_PAINT_DESC;
 
@@ -140,6 +133,9 @@ typedef
 	GB_PAINT;
 
 typedef
+	void (*GB_PAINT_OUTLINE_CB)(int, float, float);
+
+typedef
 	struct GB_PAINT_DESC {
 		// Size of the GB_PAINT structure extra data
 		int size;
@@ -167,6 +163,7 @@ typedef
 		
 		void (*PathExtents)(GB_PAINT *d, GB_EXTENTS *ext);
 		int (*PathContains)(GB_PAINT *d, float x, float y);
+		void (*PathOutline)(GB_PAINT *d, GB_PAINT_OUTLINE_CB cb);
 		
 		void (*Dash)(GB_PAINT *d, int set, float **dash, int *count);
 		void (*DashOffset)(GB_PAINT *d, int set, float *offset);

@@ -188,7 +188,7 @@ static int callback_error(int fd, int type, CPROCESS *process)
 		return TRUE;
 	}
 
-	/*printf("callback_error: (%d) %.*s\n", n, n, buffer);*/
+	//fprintf(stderr, "callback_error: (%d) %.*s\n", n, n, buffer);
 
 	GB_Raise(process, EVENT_Error, 1, GB_T_STRING, buffer, n);
 

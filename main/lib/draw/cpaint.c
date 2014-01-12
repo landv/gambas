@@ -616,6 +616,37 @@ IMPLEMENT_METHOD_PRESERVE(Paint_Stroke, Stroke)
 IMPLEMENT_PROPERTY_EXTENTS(Paint_PathExtents, PathExtents)
 
 
+static GB_ARRAY _outline;
+static GB_ARRAY _outline_p;
+
+static void make_path_outline(int cmd, float x, float y)
+{
+	if (!_outline)
+		GB.Array.New(&_outline, GB.FindClass("PointF[]"), 0);
+
+	if (cmd == GB_PAINT_PATH_MOVE)
+	{
+		GB.Array.New(&_outline_p, GB.FindClass("PointF"), 0);
+		GB.Ref(_outline_p);
+		*((void **)GB.Array.Add(_outline)) = _outline_p;
+	}
+
+	GEOM_POINTF *p = GEOM.CreatePointF(x, y);
+	*((void **)GB.Array.Add(_outline_p)) = p;
+	GB.Ref(p);
+}
+
+BEGIN_PROPERTY(Paint_PathOutline)
+
+	CHECK_DEVICE();
+
+	_outline = NULL;
+	PAINT->PathOutline(THIS, make_path_outline);
+	GB.ReturnObject(_outline);
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(Paint_ClipRect)
 
 	GB_EXTENTS ext;
@@ -1537,7 +1568,8 @@ GB_DESC PaintDesc[] =
 
 	GB_STATIC_PROPERTY_READ("PathExtents", "PaintExtents", Paint_PathExtents),
 	GB_STATIC_METHOD("PathContains", "b", Paint_PathContains, "(X)f(Y)f"),
-	
+	GB_STATIC_PROPERTY_READ("PathOutline", "PointF[][]", Paint_PathOutline),
+
 	GB_STATIC_PROPERTY("Brush", "PaintBrush", Paint_Brush),
 	GB_STATIC_PROPERTY("BrushOrigin", "PointF", Paint_BrushOrigin),
 	GB_STATIC_PROPERTY("Dash", "Float[]", Paint_Dash),
@@ -1596,6 +1628,7 @@ GB_DESC PaintDesc[] =
 	GB_STATIC_METHOD("DrawImage", NULL, Paint_DrawImage, "(Image)Image;(X)f(Y)f[(Width)f(Height)f(Opacity)f(Source)Rect;]"),
 	GB_STATIC_METHOD("DrawPicture", NULL, Paint_DrawPicture, "(Picture)Picture;(X)f(Y)f[(Width)f(Height)f(Source)Rect;]"),
 	GB_STATIC_METHOD("ZoomImage", NULL, Paint_ZoomImage, "(Image)Image;(Zoom)i(X)i(Y)i[(Grid)i(Source)Rect;]"),
+
 
 	GB_END_DECLARE
 };

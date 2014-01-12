@@ -464,9 +464,21 @@ Public Sub DrawingArea_Draw()
   
   If $bBorder Then 
     Paint.Restore
-    Style.PaintPanel(0, 0, DW, DH, Border.Sunken, If(Me.HasFocus, Draw.Focus, Draw.Normal))
+    Style.PaintPanel(0, 0, DW, DH, Border.Sunken, Style.StateOf($hDrawingArea)) 'If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
+End
+
+Public Sub DrawingArea_Enter()
+
+  $hDrawingArea.Refresh
+
+End
+
+Public Sub DrawingArea_Leave()
+
+  $hDrawingArea.Refresh
+
 End
 
 Public Sub DrawingArea_Arrange()

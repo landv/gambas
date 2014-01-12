@@ -79,6 +79,7 @@ Public Sub RefreshFamily()
   Dim hFont As Font
   Dim sFamily As String
   Dim sKey As String
+  Dim bExist As Boolean
 
   If $bNoRefresh Then Return
 
@@ -86,23 +87,48 @@ Public Sub RefreshFamily()
 
   $bNoChange = True
 
-  lstFamily.Clear
-  
-  For Each sFamily In Fonts
-    hFont = Font[sFamily]
-    If ShowFixed And Not hFont.Fixed Then Continue
-    'IF NOT hFont.Scalable THEN CONTINUE
-    lstFamily.Add(sFamily, sFamily) ', Picture[If(hFont.Fixed, "img/fixed.png", "img/scalable.png")])
-  Next
+  If lstFamily.Visible Then
 
-  If lstFamily.Exist(sKey) Then
-    lstFamily[sKey].Selected = True
+    lstFamily.Clear
+    
+    For Each sFamily In Fonts
+      hFont = Font[sFamily]
+      If ShowFixed And Not hFont.Fixed Then Continue
+      'IF NOT hFont.Scalable THEN CONTINUE
+      lstFamily.Add(sFamily, sFamily) ', Picture[If(hFont.Fixed, "img/fixed.png", "img/scalable.png")])
+      If sFamily = sKey Then bExist = True
+    Next
+  
+    If bExist Then
+      lstFamily[sKey].Selected = True
+    Else
+      lstFamily.MoveFirst
+      lstFamily.Item.Selected = True
+    Endif
+    
+    Family = lstFamily.Current.Key
+    Try lstFamily[Family].EnsureVisible
+    
   Else
-    lstFamily.MoveFirst
-    lstFamily.Item.Selected = True
+    
+    cmbFamily.Clear
+    
+    For Each sFamily In Fonts
+      hFont = Font[sFamily]
+      If ShowFixed And Not hFont.Fixed Then Continue
+      cmbFamily.Add(sFamily)
+      If sFamily = sKey Then bExist = True
+    Next
+  
+    If bExist Then
+      cmbFamily.Text = sKey
+    Else
+      cmbFamily.Index = 0
+    Endif
+    
+    Family = cmbFamily.Text
+    
   Endif
-  Family = lstFamily.Current.Key
-  Try lstFamily[Family].EnsureVisible
 
   $bNoChange = False
 
@@ -191,15 +217,19 @@ Private Sub RefreshExample()
 
   If $bNoRefresh Then Return
   If sFont = $sLast Then Return
-
-  txtExample.Font = Font[sFont]
+  
+  If txtExample.Visible Then
+    txtExample.Font = Font[sFont]
+    panExample.H = txtExample.Font.Height + 16
+  Endif
+  
   Size = Font[sFont].Size
   Grade = Font[sFont].Grade
-  panExample.H = txtExample.Font.Height + 16
   
   sldSize.Value = txtSize.Value
 
   If Not $bNoChange Then GetParent()._Change
+  If Not txtExample.Visible Then GetParent()._Activate
 
   $sLast = sFont
   
@@ -211,6 +241,13 @@ End
 Public Sub lstFamily_Select()
 
   Family = lstFamily.Current.Key
+  RefreshExample
+
+End
+
+Public Sub cmbFamily_Click()
+
+  Family = cmbFamily.Text
   RefreshExample
 
 End
@@ -350,4 +387,39 @@ Public Sub btnStrikeout_Click()
   Strikeout = btnStrikeout.Value
   RefreshExample
 
+End
+
+Public Sub panBorder_Arrange()
+
+  If panBorder.H < (Desktop.Scale * 12) Then
+  
+    If panExample.Visible Then
+      panExample.Hide
+      sepExample.Hide
+      lstFamily.Hide
+      sepFamily.Hide
+      lblFont.Hide
+      sepToolbar.Hide
+      cmbFamily.Show
+      cmbFamily.Lower
+    Endif
+  
+  Else
+  
+    If cmbFamily.Visible Then
+      cmbFamily.Hide
+      panExample.Show
+      sepExample.Show
+      lstFamily.Show
+      sepFamily.Show
+      lblFont.Show
+      sepToolbar.Show
+      lblFont.Lower
+    Endif
+  
+  Endif
+
+  RefreshFamily
+  RefreshExample
+  
 End

@@ -177,6 +177,16 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 				string--;
 				len_string++;
 			}
+
+			while (len_pattern && cp == ' ')
+				_next_pattern();
+
+			if (cp != ' ')
+			{
+				pattern--;
+				len_pattern++;
+			}
+
 			continue;
 		}
 

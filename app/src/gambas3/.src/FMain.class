@@ -1396,7 +1396,13 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case "update-all-forms"
       Project.UpdateAllForms
-    
+      
+    Case "open-terminal"
+      Desktop.OpenTerminal(Project.Dir)  
+      
+    Case "browse-project"
+      Desktop.Open(Project.Dir)
+  
   End Select 
   
 End
@@ -1804,12 +1810,6 @@ End
 '   
 ' End
 
-Public Sub mnuBrowse_Click()
-  
-  Desktop.Open(Project.Dir)
-  
-End
-
 Public Sub mnuEditWith_Show()
   
   Dim hProg As DesktopFile
@@ -1848,16 +1848,6 @@ End
 Public Sub btnClose_Click()
   
   panError.Hide
-  
-End
-
-Public Sub mnuTerminal_Click()
-  
-  ' If Desktop.Type = "KDE4" Then
-  '   Exec ["konsole", "--workdir", Project.Dir, "--notransparency"]
-  ' Else
-  Desktop.OpenTerminal(Project.Dir)  
-  'Endif
   
 End
 

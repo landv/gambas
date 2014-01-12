@@ -394,9 +394,18 @@
       Picture = Picture["img/draw/ellipse.png"]
       Toggle = True
     }
+    { btnText ToolButton btnTool
+      Name = "btnText"
+      MoveScaled(75,0,4,4)
+      Tag = "text"
+      ToolTip = ("Text")
+      Action = ".tool-text"
+      Picture = Picture["img/draw/text.png"]
+      Toggle = True
+    }
     { btnMagic ToolButton btnTool
       Name = "btnMagic"
-      MoveScaled(75,0,4,4)
+      MoveScaled(79,0,4,4)
       Tag = "magic"
       ToolTip = ("Magic wand")
       Action = ".tool-magic"
@@ -405,48 +414,57 @@
     }
     { btnEditSelection ToolButton btnTool
       Name = "btnEditSelection"
-      MoveScaled(79,0,4,4)
+      MoveScaled(83,0,4,4)
       Tag = "change"
       ToolTip = ("Edit selection")
       Action = ".tool-change"
       Picture = Picture["img/draw/move.png"]
       Toggle = True
     }
+    { Separator8 Separator
+      MoveScaled(87,0,1,4)
+    }
+    { btnHide ToolButton
+      MoveScaled(89,0,4,4)
+      ToolTip = ("Hide selection")
+      Action = ".hide"
+      Picture = Picture["img/draw/hide.png"]
+    }
     { btnInvert ToolButton
-      MoveScaled(83,0,4,4)
+      MoveScaled(92,0,4,4)
       ToolTip = ("Invert selection")
       Action = ".invert"
       Picture = Picture["img/draw/invert.png"]
     }
     { btnDuplicate ToolButton
-      MoveScaled(86,0,4,4)
+      MoveScaled(95,0,4,4)
       ToolTip = ("Duplicate selection")
       Action = ".duplicate"
       Picture = Picture["img/draw/duplicate.png"]
     }
     { btnOffset ToolButton
-      MoveScaled(90,0,4,4)
+      MoveScaled(99,0,4,4)
       ToolTip = ("Offset selection")
       Action = ".offset"
       Picture = Picture["img/draw/offset.png"]
     }
     { Separator5 Separator
-      MoveScaled(95,0,1,4)
+      MoveScaled(104,0,1,4)
     }
     { btnStroke ToolButton
-      MoveScaled(96,0,4,4)
+      MoveScaled(105,0,4,4)
       ToolTip = ("Stroke")
       Action = ".stroke"
       Picture = Picture["img/draw/draw-brush.png"]
     }
     { btnFill ToolButton
-      MoveScaled(100,0,4,4)
+      MoveScaled(109,0,4,4)
       ToolTip = ("Fill")
       Action = ".fill"
       Picture = Picture["icon:/small/fill"]
     }
     { btnClear ToolButton
-      MoveScaled(104,0,4,4)
+      MoveScaled(113,0,4,4)
       ToolTip = ("Clear")
       Action = ".clear"
       Picture = Picture["img/draw/draw-eraser.png"]
@@ -582,6 +600,10 @@
     Shortcut = ""
     Picture = "img/draw/vflip.png"
   }
+  { Action hide
+    Text = "Hide selection"
+    Picture = "img/draw/hide.png"
+  }
   { Action hide-selection
     Text = "Hide selection"
     Shortcut = "Esc"
@@ -692,6 +714,10 @@
     Text = "Rectangle"
     Picture = "img/draw/rectangle.png"
   }
+  { Action tool-text
+    Text = "Text"
+    Picture = "img/draw/text.png"
+  }
   { Action undo
     Text = "Undo"
     Shortcut = "Ctrl+Z"
@@ -726,7 +752,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,draw-grid,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
-    Default = "save,reload,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,draw-grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-magic,tool-change,invert,duplicate,offset,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
+    List = "save,reload,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,draw-grid,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,hide,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l,resize,rotate"
+    Default = "save,reload,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,draw-grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,|,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,|,hide,invert,duplicate,offset,|,stroke,fill,clear,|,rotate-r,rotate-l,resize,rotate"
   }
 }

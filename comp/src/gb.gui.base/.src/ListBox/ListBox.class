@@ -42,6 +42,7 @@ Public Sub _new()
   $hView.Mode = Select.Single
   $hView.Grid = False
   $hView.AutoResize = True
+  $hView._DoNotDrawSelection = True
   
   Me.Proxy = $hView
   
@@ -94,7 +95,14 @@ End
 
 Public Sub GridView_Data(Row As Integer, (Column) As Integer)
   
-  Try $hView.Data.Text = $aText[Row]
+  With $hView.Data
+    Try .Text = $aText[Row]
+    If Row = $hView.Row Then
+      .Background = Color.SelectedBackground
+      .Foreground = Color.SelectedForeground
+    Endif
+    
+  End With
   
 End
 

@@ -12,7 +12,7 @@
       Font = Font["Bold"]
       Padding = 4
     }
-    { Separator3 Separator
+    { sepToolbar Separator
       MoveScaled(3,7,35,0)
     }
     { panFont HBox
@@ -62,7 +62,7 @@
         Expand = True
       }
     }
-    { Separator1 Separator
+    { sepFamily Separator
       MoveScaled(17,14,35,0)
     }
     { lstFamily ListView
@@ -70,7 +70,7 @@
       Expand = True
       Border = False
     }
-    { Separator2 Separator
+    { sepExample Separator
       MoveScaled(16,28,35,0)
     }
     { panExample Panel
@@ -83,6 +83,12 @@
         Alignment = Align.Center
         Border = False
       }
+    }
+    { cmbFamily ComboBox
+      MoveScaled(40,1,27,4)
+      Visible = False
+      ReadOnly = True
+      Text = ("ComboBox1")
     }
   }
 }

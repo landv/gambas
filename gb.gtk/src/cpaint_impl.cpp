@@ -548,6 +548,40 @@ static int PathContains(GB_PAINT *d, float x, float y)
 	return cairo_in_fill(CONTEXT(d), (double)x + DX(d), (double)y + DY(d));
 }
 
+static void PathOutline(GB_PAINT *d, GB_PAINT_OUTLINE_CB cb)
+{
+	cairo_path_t *path;
+	cairo_path_data_t *data;
+	int i;
+
+	path = cairo_copy_path_flat(CONTEXT(d));
+
+	for (i = 0; i < path->num_data; i += path->data[i].header.length)
+	{
+    data = &path->data[i];
+    switch (data->header.type)
+		{
+			case CAIRO_PATH_MOVE_TO:
+				(*cb)(GB_PAINT_PATH_MOVE, data[1].point.x, data[1].point.y);
+				break;
+
+			case CAIRO_PATH_LINE_TO:
+				(*cb)(GB_PAINT_PATH_LINE, data[1].point.x, data[1].point.y);
+				break;
+
+			case CAIRO_PATH_CURVE_TO:
+				fprintf(stderr, "gb.gtk: warning: CAIRO_PATH_CURVE_TO not supported\n");
+				break;
+
+			case CAIRO_PATH_CLOSE_PATH:
+				fprintf(stderr, "gb.gtk: warning: CAIRO_PATH_CLOSE_PATH not supported\n");
+				break;
+    }
+	}
+
+	cairo_path_destroy(path);
+}
+
 static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 {
 	int i;
@@ -1427,6 +1461,7 @@ GB_PAINT_DESC PAINT_Interface =
 	Stroke,
 	PathExtents,
 	PathContains,
+	PathOutline,
 	Dash,
 	DashOffset,
 	FillRule,

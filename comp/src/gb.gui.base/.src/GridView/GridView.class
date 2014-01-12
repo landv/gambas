@@ -57,6 +57,8 @@ Event RowSize(Row As Integer)
 Event Sort
 Event Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
 
+Public _DoNotDrawSelection As Boolean
+
 Private $hView As ScrollArea
 Private $bGrid As Boolean = True
 Private $iMode As Integer
@@ -270,7 +272,10 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
         If W <= 0 Then Goto DRAW_GRID
         
       Endif
-        
+      
+      Inc X
+      W -= 2
+      
       If .Text Then
         If .WordWrap Then
           Draw.RichText(Html(.Text), X, Y, W, H, .Alignment)
@@ -623,7 +628,7 @@ Public Sub ScrollArea_Draw()
 
   ' Row selection
 
-  If $iMode Then
+  If $iMode And If Not _DoNotDrawSelection Then
 
     Y = YY
     X = XX

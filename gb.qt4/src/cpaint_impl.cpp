@@ -522,7 +522,28 @@ static int PathContains(GB_PAINT *d, float x, float y)
 	return PATH(d)->contains(point);
 }
 
-		
+static void PathOutline(GB_PAINT *d, GB_PAINT_OUTLINE_CB cb)
+{
+	QPainterPath *p = PATH(d);
+	int i, j;
+
+	if (!p)
+		return;
+
+	QList<QPolygonF> qoutline = p->toSubpathPolygons(QTransform());
+
+	for (i = 0; i < qoutline.count(); i++)
+	{
+		QPolygonF qpolygon = qoutline.at(i);
+
+		for (j = 0; j < qpolygon.count(); j++)
+		{
+			QPointF qpoint = qpolygon.at(j);
+			(*cb)(j == 0 ? GB_PAINT_PATH_MOVE : GB_PAINT_PATH_LINE, qpoint.x(), qpoint.y());
+		}
+	}
+}
+
 static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 {
 	QPen pen = PAINTER(d)->pen();
@@ -1296,6 +1317,7 @@ GB_PAINT_DESC PAINT_Interface =
 	Stroke,
 	PathExtents,
 	PathContains,
+	PathOutline,
 	Dash,
 	DashOffset,
 	FillRule,

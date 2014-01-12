@@ -1231,13 +1231,13 @@ End
 
 Public Sub txtGridRes_Change()
 
-  Try Project.ActiveForm.UpdateGrid
+  Try GetCurrent().UpdateGrid
 
 End
 
 Public Sub cmbGridSub_Click()
 
-  Try Project.ActiveForm.UpdateGrid
+  Try GetCurrent().UpdateGrid
 
 End
 
@@ -1257,4 +1257,39 @@ Public Sub GetOpacity() As Integer
   
   Return slbOpacity.Value
   
+End
+
+Public Sub HideTextOption()
+  
+  panText.Hide
+  'sepText.Hide
+  
+End
+
+Public Sub ShowTextOption()
+  
+  txtText.Text = ""
+  txtText.SetFocus
+  panText.Show
+  'sepText.Show
+  
+End
+
+Public Sub RefreshTextOption()
+  
+  GetCurrent().UpdateText(txtText.Text, fchText.Value)
+  
+End
+
+
+Public Sub txtText_Change()
+
+  RefreshTextOption
+
+End
+
+Public Sub fchText_Change()
+
+  RefreshTextOption
+
 End
