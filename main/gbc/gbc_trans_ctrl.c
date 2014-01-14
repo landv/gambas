@@ -867,6 +867,7 @@ void TRANS_case(void)
 		CODE_jump_if_true();
 
 		JOB->current++;
+		TRANS_newline();
 	}
 
 	control_jump_each_pos();
