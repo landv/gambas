@@ -46,7 +46,7 @@ public:
 	void setLine(int vl);
 	void setPosition(int vl);
 	void setReadOnly(bool vl);
-	void setText(const char *txt);
+	void setText(const char *txt, int len = -1);
 	void setWrap(bool vl);
 	
 	//int textWidth();
