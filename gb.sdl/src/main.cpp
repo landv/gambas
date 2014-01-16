@@ -144,7 +144,7 @@ static int my_loop()
 	while(myApp->HaveWindows())
 	{
 		myApp->ManageEvents();
-		GB.Loop(10);
+		GB.Loop(1); // Busy loop of 1 ms !
 		
 /*		errcode = glGetError();
 		

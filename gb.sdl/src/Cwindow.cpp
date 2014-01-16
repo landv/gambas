@@ -342,7 +342,7 @@ void myWin::Update(void)
 	// user doesn't want to refresh
 	if (cancel)
 	{
-		SDL_Delay(1);
+		//SDL_Delay(1);
 		return;
 	}
 	else
