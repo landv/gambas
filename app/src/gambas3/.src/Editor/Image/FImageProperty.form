@@ -431,12 +431,46 @@
       MoveScaled(3,126,60,22)
       Visible = False
       Margin = True
-      { fchText FontChooser
-        MoveScaled(1,1,57,8)
-        Border = False
+      { Panel11 HBox
+        MoveScaled(1,1,58,8)
+        { HPanel11 HPanel
+          MoveScaled(1,0,12,8)
+          { Label14 Label
+            MoveScaled(1,0,6,4)
+            Expand = True
+            Text = ("Font")
+          }
+          { btnAlignLeft ToolButton
+            MoveScaled(0,4,4,4)
+            ToolTip = ("Left align")
+            Picture = Picture["icon:/small/text-left"]
+            Radio = True
+            Toggle = True
+            Value = True
+          }
+          { btnAlignCenter ToolButton
+            MoveScaled(4,4,4,4)
+            ToolTip = ("Center align")
+            Picture = Picture["icon:/small/text-center"]
+            Radio = True
+            Toggle = True
+          }
+          { btnAlignRight ToolButton
+            MoveScaled(8,4,4,4)
+            ToolTip = ("Right align")
+            Picture = Picture["icon:/small/text-right"]
+            Radio = True
+            Toggle = True
+          }
+        }
+        { fchText FontChooser
+          MoveScaled(19,0,38,8)
+          Expand = True
+          Border = False
+        }
       }
       { txtText TextArea
-        MoveScaled(1,11,54,7)
+        MoveScaled(1,15,54,7)
         Expand = True
       }
     }

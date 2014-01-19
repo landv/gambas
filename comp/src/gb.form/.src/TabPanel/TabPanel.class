@@ -28,7 +28,7 @@ Private $hTabBarContainer As DrawingArea
 'Private $hLeftArrow As DrawingArea
 'Private $hRightArrow As DrawingArea
 Private $X As Integer
-Private $bArrow As Boolean
+'Private $bArrow As Boolean
 
 Private $aCont As New _TabPanelContainer[]
 Private $aButton As New _TabPanelButton[]
@@ -40,8 +40,14 @@ Private $iCurrent As Integer = -1
 Private $hPanel As DrawingArea
 
 Private $hTimerEnsureVisible As Timer
+Private $hTimerRepeat As Timer
+Private $iRepeatInc As Integer
+Private $iRepeatStart As Integer
 
 Private Const ARROW_WIDTH As Integer = 12
+
+Private $hRightArrow As DrawingArea
+Private $hLeftArrow As DrawingArea
 
 Public Sub _new()
 
@@ -58,6 +64,13 @@ Public Sub _new()
 
   $hTabBarContainer = New DrawingArea($hTabBar) As "TabBarContainer"
   $hTabBarContainer.Focus = True
+  
+  $hRightArrow = New DrawingArea($hTabBar) As "Arrow"
+  $hRightArrow.Ignore = True
+  $hRightArrow.Mouse = Mouse.Pointing
+  $hLeftArrow = New DrawingArea($hTabBar) As "Arrow"
+  $hLeftArrow.Ignore = True
+  $hLeftArrow.Mouse = Mouse.Pointing
 
   $hPanel = New DrawingArea(Me) As "Panel"
   $hPanel.Expand = True
@@ -83,6 +96,7 @@ End
 Public Sub EnsureCurrentVisible_Timer()
   
   Dim X, W As Integer
+  Dim iLeftIndex, iRightIndex As Integer
   
   $hTimerEnsureVisible = Null
   
@@ -103,8 +117,8 @@ Public Sub EnsureCurrentVisible_Timer()
         
         If X < ARROW_WIDTH Then
           W += ARROW_WIDTH - X
-        Else If X >= ($hTabBar.W - .W) Then
-          W -= X - ($hTabBar.W - .W)
+        Else If X >= ($hTabBar.W - .W - ARROW_WIDTH) Then
+          W -= X - ($hTabBar.W - .W - ARROW_WIDTH)
         Endif
         
         'M = .X + W - $hTabBar.W + ARROW_WIDTH
@@ -119,20 +133,11 @@ Public Sub EnsureCurrentVisible_Timer()
     '$X = Max($hTabBar.W - $hTabBarContainer.W, $X)
     '$X = Min(ARROW_WIDTH, $X)
     
-    If $aButton.Count Then
-      With $aButton[$aButton.Max]
-        $bArrow = ($X + .X) < 0
-      End With
-    Else
-      $bArrow = False
-    Endif
-      
   Else
     
     If Me.W <= ($aButton[$iCurrent].W + ARROW_WIDTH) Then 
   
       $X = - $aButton[$iCurrent].X
-      $bArrow = False
       
     Else
   
@@ -144,8 +149,8 @@ Public Sub EnsureCurrentVisible_Timer()
           X = $hTabBarContainer.X + .X
           W = .W
           
-          If X < 4 Then 
-            $X = $X + 4 - X
+          If X < ARROW_WIDTH Then 
+            $X = $X + ARROW_WIDTH - X
             X = $X + .X
           Endif
           
@@ -154,10 +159,6 @@ Public Sub EnsureCurrentVisible_Timer()
             'If $iCurrent < $aButton.Max Then 
             $X -= ARROW_WIDTH
           Endif
-          
-          'M = .X + W - $hTabBar.W + ARROW_WIDTH
-          'If $iCurrent < $aButton.Max Then M += ARROW_WIDTH
-          '$X = Max($X, - M)
           
         End With
     
@@ -170,22 +171,45 @@ Public Sub EnsureCurrentVisible_Timer()
     
     W = Me.W - $X
   
-    If $aButton.Count Then
-      With $aButton[$aButton.Max]
-        $bArrow = ($X + .X + .W) > $hTabBar.W
-      End With
-    Else
-      $bArrow = False
-    Endif
-      
   Endif
   
-  If $bArrow Then
-    W -= ARROW_WIDTH
-    If System.RightToLeft Then $X += ARROW_WIDTH
-  Endif
+  '$bArrow = False
+  
+  ' If $bArrow Then
+  '   W -= ARROW_WIDTH
+  '   If System.RightToLeft Then $X += ARROW_WIDTH
+  ' Endif
 
   $hTabBarContainer.Move($X, 0, W, $hTabBar.H)
+  
+  If $hTabBar.W >= (ARROW_WIDTH * 3) And If $aButton.Count Then
+    If System.RightToLeft Then
+      iLeftIndex = GetLastIndex()
+      iRightIndex = _GetFirstIndex()
+    Else
+      iLeftIndex = _GetFirstIndex()
+      iRightIndex = GetLastIndex()
+    Endif
+    $hLeftArrow.Visible = $X < (- $aButton[iLeftIndex].X) '+ $aButton[iIndex].X + $aButton[iIndex].W) > $hTabBar.W
+    $hRightArrow.Visible = ($X + $aButton[iRightIndex].X + $aButton[iRightIndex].W) > $hTabBar.W
+  Else
+    $hLeftArrow.Hide
+    $hRightArrow.Hide
+  Endif
+  
+  CheckMouse
+  
+End
+
+Private Sub CheckMouse()
+
+  Dim hButton As _TabPanelButton
+  
+  If Not $bClosable Then Return
+  
+  For Each hButton In $aButton
+    hButton.Update
+  Next
 
 End
 
@@ -223,7 +247,87 @@ Public Sub TabBar_Arrange()
   
   _EnsureCurrentVisible
   
+  $hRightArrow.Move($hTabBar.W - ARROW_WIDTH, 0, ARROW_WIDTH, $hTabBar.H)
+  $hLeftArrow.Move(0, 0, ARROW_WIDTH, $hTabBar.H)
+  
 End
+
+Public Sub Arrow_Enter()
+
+  Last.Refresh
+
+End
+
+Public Sub Arrow_Leave()
+
+  Last.Refresh
+  $hTimerRepeat = Null
+
+End
+
+Public Sub Arrow_Draw()
+
+  Paint.FillRect(0, 0, Paint.W, Paint.H - 1, _GetBackground())
+  Style.PaintArrow(0, 0, Paint.W, Paint.H, If(Last = $hLeftArrow, Align.Left, Align.Right), Style.StateOf(Last))
+  
+End
+
+Public Sub Arrow_MouseDown()
+  
+  If Mouse.Left Then
+    
+    If Last = $hRightArrow Xor System.RightToLeft Then
+      Try _MoveNext()
+      $iRepeatInc = 1
+    Else
+      Try _MovePrevious()
+      $iRepeatInc = -1
+    Endif
+    
+    $hTimerRepeat = New Timer As "TimerRepeat"
+    $hTimerRepeat.Delay = 100
+    $hTimerRepeat.Start
+    $iRepeatStart = 0
+    
+  Endif
+  
+End
+
+Public Sub Arrow_MouseUp()
+  
+  $hTimerRepeat = Null
+  
+End
+
+Public Sub TimerRepeat_Timer()
+  
+  If $iRepeatStart < 3 Then
+    Inc $iRepeatStart
+  Else
+    If $iRepeatInc > 0 Then
+      Try _MoveNext()
+    Else
+      Try _MovePrevious()
+    Endif
+    If Error Then $hTimerRepeat = Null
+  Endif
+  
+End
+
+
+Public Sub Arrow_DblClick()
+  
+  If Mouse.Left Then
+    If Last = $hRightArrow Then
+      Try Me.Index = GetLastIndex()
+    Else
+      Try Me.Index = _GetFirstIndex()
+    Endif
+  Endif
+  
+End
+
+
 
 Private Function Count_Read() As Integer
 
@@ -485,77 +589,6 @@ Public Sub TabBarContainer_Draw()
   End Select
   
 End
-
-Public Sub TabBar_Draw()
-  
-  Dim X As Integer
-  
-  If $bArrow Then
-
-    If System.RightToLeft Then
-
-      X = ARROW_WIDTH
-
-      If $bHighlight Then
-        Draw.FillRect(0, 0, ARROW_WIDTH, $hTabBar.H, _GetBackground())
-      Endif
-
-      Draw.Foreground = Color.LightForeground
-      Draw.Style.Arrow(0, 0, 8, $hTabBar.H, Align.Left)
-      Select Case $iOrientation
-        Case Align.Top
-          Draw.Line(X, $hTabBarContainer.H - 1, 0, $hTabBar.H - 1)
-        Case Align.Bottom
-          Draw.Line(X, 0, 0, 0)
-      End Select
-      
-    Else
-      
-      X = $hTabBar.W - ARROW_WIDTH
-  
-      If $bHighlight Then
-        Draw.FillRect(X, 0, ARROW_WIDTH, $hTabBar.H, _GetBackground())
-      Endif
-    
-      Draw.Foreground = Color.LightForeground
-      Draw.Style.Arrow($hTabBar.W - 8, 0, 8, $hTabBar.H, Align.Right)
-      Select Case $iOrientation
-        Case Align.Top
-          Draw.Line(X, $hTabBarContainer.H - 1, $hTabBar.W - 1, $hTabBar.H - 1)
-        Case Align.Bottom
-          Draw.Line(X, 0, $hTabBar.W - 1, 0)
-      End Select
-      
-    Endif
-    
-  Endif
-  
-End
-
-Public Sub TabBar_MouseDown()
-  
-  If Mouse.Left And If $bArrow Then
-    If System.RightToLeft Then
-      If Mouse.X < 6 Then Try Inc Me.Index
-    Else
-      If Mouse.X >= ($hTabBar.W - 6) Then Try Inc Me.Index
-    Endif
-  Endif
-  
-End
-
-Public Sub TabBar_DblClick()
-  
-  If Mouse.Left And If $bArrow Then
-    If System.RightToLeft Then
-      If Mouse.X < 6 Then Try Me.Index = Me.Count - 1
-    Else
-      If Mouse.X >= ($hTabBar.W - 6) Then Try Me.Index = Me.Count - 1
-    Endif
-  Endif
-  
-End
-
 
 Public Sub Panel_Draw()
   

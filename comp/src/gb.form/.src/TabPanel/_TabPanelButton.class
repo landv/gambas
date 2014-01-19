@@ -208,6 +208,7 @@ Private Sub Selected_Write(Value As Boolean)
 
   $bSelected = Value
   SetMouse
+  DrawingArea_MouseMove
   $hDrawingArea.Refresh
 
 End
@@ -296,20 +297,38 @@ End
 Public Sub DrawingArea_MouseMove()
   
   Dim bInClose As Boolean
+  Dim X As Integer
+  Dim bShowClose As Boolean
   
-  If System.RightToLeft Then
-    bInClose = (Mouse.ScreenX - Me.ScreenX) < BUTTON_SIZE
-  Else
-    bInClose = (Mouse.ScreenX - Me.ScreenX) > (Me.W - BUTTON_SIZE - 1) 
+  X = Mouse.ScreenX - Me.ScreenX
+  
+  If X >= 0 And If X < Me.W Then
+    bShowClose = GetParent().Closable
+  
+    If bShowClose Then
+      If System.RightToLeft Then
+        bInClose = (X >= 0) And (X < BUTTON_SIZE)
+      Else
+        bInClose = (X >= (Me.W - BUTTON_SIZE)) And (X < Me.W)
+      Endif
+    Endif
   Endif
   
-  If bInClose <> $bInClose Then
+  If bInClose <> $bInClose Or If bShowClose <> $bShowClose Then
     $bInClose = bInClose
+    $bShowClose = bShowClose
     SetMouse
     $hDrawingArea.Refresh
   Endif
   
 End
+
+Public Sub Update()
+  
+  DrawingArea_MouseMove
+  
+End
+
 
 Private Function RichText_Read() As String
 

@@ -11,18 +11,20 @@
     MoveScaled(5,7,36,23)
     #Translate = False
     Expand = True
+    Closable = True
     Highlight = True
     Index = 0
     Text = ""
     Index = 0
   }
   { TabPanel1 TabPanel
-    MoveScaled(4,33,53,23)
+    MoveScaled(4,33,30,23)
     #Translate = False
     Background = &HFFFF00&
     Expand = True
     Border = False
-    Count = 3
+    Count = 5
+    Closable = True
     Highlight = True
     Index = 0
     Text = "Tab 1"
@@ -30,6 +32,10 @@
     Text = "Tab 2"
     Index = 2
     Text = "Tab 3"
+    Index = 3
+    Text = "Tab 4"
+    Index = 4
+    Text = "Tab 5"
     Index = 0
   }
   { TabStrip1 TabStrip
@@ -37,11 +43,11 @@
     Background = &HFF7F7F&
     Count = 4
     Index = 0
-    Text = ("TabStrip1")
+    Text = ("&TabStrip1")
     Index = 1
-    Text = ("")
+    Text = ("&Bonbon")
     Index = 2
-    Text = ("")
+    Text = ("&Charles")
     Index = 3
     Text = ("")
     Index = 0

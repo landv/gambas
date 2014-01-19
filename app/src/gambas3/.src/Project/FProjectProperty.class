@@ -409,7 +409,6 @@ Private Sub RefreshComponents()
   Endif
 
   gvwComponent.Rows.Count = $aComp.Count
-  gvwComponent.Columns[1].Width = -1
   
   tabProject_Arrange
   
@@ -1247,6 +1246,8 @@ Public Sub tabProject_Arrange()
   For I = 0 To $aLibraries.Max
     gvwLibrary.Rows[I].H = -1
   Next
+
+  gvwComponent.Columns[1].Width = -1
 
 End
 

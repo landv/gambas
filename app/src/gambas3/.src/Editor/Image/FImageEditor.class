@@ -1009,7 +1009,7 @@ Public Sub imvImage_MouseMove()
       
       Case "text"
         
-        $hLastPoint = $hCurrentPoint
+        $hLastPoint = GetImagePos() '$hCurrentPoint
         FImageProperty.RefreshTextOption
       
       Case "ellipse"
@@ -1052,9 +1052,6 @@ Public Sub imvImage_MouseMove()
           
         Else If $iChangeAction Then
         
-          XC = $hChangeRect.X + $hChangeRect.W / 2
-          YC = $hChangeRect.Y + $hChangeRect.H / 2
-          
           If $sTool = "change" Then
             $hSelect = $aUndo[$aUndo.Max].Copy()
             hSelect = $hSelect
@@ -1066,13 +1063,26 @@ Public Sub imvImage_MouseMove()
           Select Case $iChangeAction
             
             Case CHANGE_RESIZE
-              If $bCtrl Then
-                hSelect.Scale(($hCurrentPoint.X - XC) / ($hLastPoint.X - XC), ($hCurrentPoint.X - XC) / ($hLastPoint.X - XC))
+              
+              If $bShift Then
+                XC = $hChangeRect.X + $hChangeRect.W / 2
+                YC = $hChangeRect.Y + $hChangeRect.H / 2
               Else
-                hSelect.Scale(($hCurrentPoint.X - XC) / ($hLastPoint.X - XC), ($hCurrentPoint.Y - YC) / ($hLastPoint.Y - YC))
+                XC = $hChangeRect.X
+                YC = $hChangeRect.Y
+              Endif
+              
+              If $bCtrl Then
+                hSelect.Scale(($hCurrentPoint.X - XC) / ($hLastPoint.X - XC), ($hCurrentPoint.X - XC) / ($hLastPoint.X - XC), Not $bShift)
+              Else
+                hSelect.Scale(($hCurrentPoint.X - XC) / ($hLastPoint.X - XC), ($hCurrentPoint.Y - YC) / ($hLastPoint.Y - YC), Not $bShift)
               Endif
               
             Case CHANGE_ROTATE
+              
+              XC = $hChangeRect.X + $hChangeRect.W / 2
+              YC = $hChangeRect.Y + $hChangeRect.H / 2
+              
               A = ($hLastPoint.X - XC) * ($hCurrentPoint.X - XC) + ($hLastPoint.Y - YC) * ($hCurrentPoint.Y - YC)
               Try A /= Hyp($hLastPoint.X - XC, $hLastPoint.Y - YC) * Hyp($hCurrentPoint.X - XC, $hCurrentPoint.Y - YC)
               If Not Error Then
@@ -1252,7 +1262,7 @@ Public Sub imvImage_MouseUp()
       Endif
     
     Case "change"
-      If $iChangeAction = CHANGE_NOTHING Then $hSelect.SelectAll
+      If $iChangeAction = CHANGE_NOTHING And If $hSelect Then $hSelect.SelectAll
       If $hLastPoint <> $hCurrentPoint Then
         RefreshSelection
       Else If $iChangeAction <> CHANGE_SELECT Then
@@ -1458,8 +1468,9 @@ Public Sub imvImage_Draw(hZoom As Image)
       
     Endif
     
-    Paint.LineWidth = 2 / imvImage.Zoom
+    Paint.LineWidth = 1 / imvImage.Zoom
     Paint.DashOffset = - $fDashOffset
+    
     $hSelect.Paint($hImage, CImageSelection.ACTION_SELECT, True)
 
     ' CImageSelection.PaintingSelection = True
@@ -1711,8 +1722,8 @@ End
 
 Public Sub timSelect_Timer()
 
-  $fDashOffset += 0.5
-  If $fDashOffset >= 4 Then $fDashOffset = 0
+  Inc $fDashOffset
+  If $fDashOffset >= 8 Then $fDashOffset = 0
   imvImage.Refresh
 
 End
@@ -2752,10 +2763,21 @@ Public Sub btnHide_Click()
 
 End
 
-Public Sub UpdateText(sText As String, sFont As String)
+Public Sub UpdateText(sText As String, sFont As String, iAlign As Integer)
   
   $hSelect = $hTextSelect.Copy()
-  $hSelect.Text($hLastPoint.X, $hLastPoint.Y, sText, sFont, Align.Left)
+  $hSelect.Text($hLastPoint.X, $hLastPoint.Y, sText, sFont, iAlign)
   imvImage.Refresh
   
+End
+
+Public Sub imvImage_MouseWheel()
+
+  If Mouse.Forward Then
+    btnZoomIn_Click
+  Else
+    btnZoomOut_Click
+  Endif
+  Stop Event
+
 End

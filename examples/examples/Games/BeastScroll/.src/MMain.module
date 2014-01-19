@@ -36,7 +36,7 @@ Public Sub Main()
     .Show()
   End With 
 
-  music.Load("b-title.mod")
+  Music.Load("b-title.mod")
   
   ciel = image.Load("bgd1_ciel.png")
   nuage1 = image.Load("sprite_nuages1.png")
@@ -64,13 +64,13 @@ Public Sub Main()
   scroll5b = Rnd(0, 640)
   scroll6 = 0
    
-  music.Play(-1, 1)
+  Music.Play(-1, 1)
 
 End
 
 Public Sub Screen_Draw()
   
-  Dim hImage As Image
+  'Dim hImage As Image
   
   'Screen.Clear
   

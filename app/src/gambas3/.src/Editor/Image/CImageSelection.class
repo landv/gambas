@@ -46,8 +46,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   Dim I As Integer
   Dim iMode As Integer
   Dim fDashOffset As Float
-  Dim hExtent As RectF
-  
+  'Dim hExtent As RectF
   
   fDashOffset = Paint.DashOffset
   
@@ -118,33 +117,33 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     
   Endif
 
-  If iAction = ACTION_SELECT Then
-      
-      For I = 0 To Shapes.Max
-        If Current < 0 Or If Current = I Or If bAll Then 
-          If Shapes[I].IsText Then
-            hExtent = Shapes[I].GetExtents()
-            Paint.Rectangle(hExtent.X, hExtent.Y, hExtent.Width, hExtent.Height)
-
-            Paint.AntiAlias = False
-            Paint.LineJoin = Paint.LineJoinMiter
-          
-            Paint.Background = Color.Yellow
-            Paint.Dash = Null
-            
-            Paint.Stroke(True)
-
-            Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
-            Paint.Dash = [2.0, 2.0]
-            Paint.DashOffset = 0
-            
-            Paint.Stroke()
-            
-          Endif
-        Endif
-      Next
-      
-  Endif
+  ' If iAction = ACTION_SELECT Then
+  '     
+  '     For I = 0 To Shapes.Max
+  '       If Current < 0 Or If Current = I Or If bAll Then 
+  '         If Shapes[I].IsText Then
+  '           hExtent = Shapes[I].GetExtents()
+  '           Paint.Rectangle(hExtent.X, hExtent.Y, hExtent.Width, hExtent.Height)
+  ' 
+  '           Paint.AntiAlias = False
+  '           Paint.LineJoin = Paint.LineJoinMiter
+  '         
+  '           Paint.Background = Color.Yellow
+  '           Paint.Dash = Null
+  '           
+  '           Paint.Stroke(True)
+  ' 
+  '           Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
+  '           Paint.Dash = [2.0, 2.0]
+  '           Paint.DashOffset = 0
+  '           
+  '           Paint.Stroke()
+  '           
+  '         Endif
+  '       Endif
+  '     Next
+  '     
+  ' Endif
   
   
   If iAction = ACTION_HANDLE Then
@@ -245,7 +244,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     Paint.Stroke(True)
     
     Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
-    Paint.Dash = [2.0, 2.0]
+    Paint.Dash = [4.0, 4.0]
     Paint.DashOffset = fDashOffset
     ' 
     ' If _Invert Then
@@ -392,6 +391,7 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Dim hPoly As PointF[]
   Dim hShape As CImageShape
   Dim hPoint As PointF
+  Dim hExtents As PaintExtents
 
   'If W = 0 Or If H = 0 Then Return
   
@@ -400,7 +400,8 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   hImage = New Image(1, 1)
   Paint.Begin(hImage)
   Paint.Font = Font[sFont]
-  Paint.Text(sText, X, Y) ', W, H, iAlign)
+  hExtents = Paint.TextExtents(sText)
+  Paint.Text(sText, X, Y, hExtents.Width, hExtents.Height, Align.TopNormal + iAlign) ', W, H, iAlign)
   hOutline = Paint.PathOutline
   
   For Each hPoly In hOutline
@@ -654,14 +655,22 @@ Public Sub Rotate(fAngle As Float)
   
 End
 
-Public Sub Scale(SX As Float, SY As Float)
+Public Sub Scale(SX As Float, SY As Float, Optional bTopLeft As Boolean)
   
   Dim hMatrix As New PaintMatrix
   Dim hExt As RectF = GetExtents()
   
-  hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
+  If bTopLeft Then 
+    hMatrix.Translate(hExt.X, hExt.Y)
+  Else
+    hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
+  Endif
   hMatrix.Scale(SX, SY)
-  hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  If bTopLeft Then 
+    hMatrix.Translate(- hExt.X, - hExt.Y)
+  Else
+    hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
+  Endif
   Apply(hMatrix)
   
 End

@@ -1277,7 +1277,17 @@ End
 
 Public Sub RefreshTextOption()
   
-  GetCurrent().UpdateText(txtText.Text, fchText.Value)
+  Dim iAlign As Integer
+  
+  If btnAlignCenter.Value Then
+    iAlign = Align.Center
+  Else If btnAlignRight.Value Then
+    iAlign = Align.Right
+  Else
+    iAlign = Align.Left
+  Endif
+  
+  GetCurrent().UpdateText(txtText.Text, fchText.Value, iAlign)
   
 End
 
@@ -1289,6 +1299,25 @@ Public Sub txtText_Change()
 End
 
 Public Sub fchText_Change()
+
+  RefreshTextOption
+
+End
+
+Public Sub btnAlignLeft_Click()
+
+  RefreshTextOption
+  
+
+End
+
+Public Sub btnAlignCenter_Click()
+
+  RefreshTextOption
+
+End
+
+Public Sub btnAlignRight_Click()
 
   RefreshTextOption
 
