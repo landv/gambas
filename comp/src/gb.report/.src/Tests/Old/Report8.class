@@ -24,7 +24,10 @@ Public Sub ReportLabel1_Data(Index As Integer)
 End
 
 Public Sub ReportPanel1_BeforeData()
-
+If hResult1.Max < ReportPanel1.DataIndex Then 
+  Print "error" & ReportPanel1.DataIndex
+  Return
+Endif
   hResult1.MoveTo(ReportPanel1.dataindex)
  Print "BeforeData = " & hResult1!firstname
   hResult2 = db.Exec("Select * From test where firstname=&1 LIMIT 1,20", hResult1!firstname)

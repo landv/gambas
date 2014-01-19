@@ -22,23 +22,29 @@
       Background = ReportBrush["#FFFF00"]
     }
   }
-  { ReportLabel1 ReportLabel
-    #MoveScaled(2,9,59,8)
+  { ReportPageBreak1 ReportPageBreak
+    #MoveScaled(5,10,60,5)
+  }
+  { ReportLabel1 ReportImage
+    #MoveScaled(1,12,59,8)
     Height = "7cm"
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["#00FF00"]
   }
   { ReportLabel2 ReportLabel
-    #MoveScaled(2,14,59,8)
+    #MoveScaled(2,18,59,8)
     Height = "2cm"
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["LinearGradient(1,0,0.28,0.35,[#00FF00,#FFFFFF],[0,1])"]
   }
-  { ReportLabel4 ReportLabel
+  { ReportLabel4 ReportImage
     #MoveScaled(3,23,59,8)
     Height = "6cm"
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["#00FF00"]
+  }
+  { ReportPageBreak2 ReportPageBreak
+    #MoveScaled(2,31,59,2)
   }
   { ReportLabel5 ReportLabel
     #MoveScaled(2,33,59,8)
@@ -46,8 +52,11 @@
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["#00FF00"]
   }
+  { ReportPageBreak3 ReportPageBreak
+    #MoveScaled(2,42,58,3)
+  }
   { ReportLabel3 ReportLabel
-    #MoveScaled(2,42,59,8)
+    #MoveScaled(1,44,59,8)
     Height = "2cm"
     Border = ReportBorder["Bottom:2mm #000000"]
     Background = ReportBrush["#00FF00"]

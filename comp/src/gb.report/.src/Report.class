@@ -33,7 +33,10 @@ Private $iCurSection As Integer
 Private $iCurPage As Integer = -1
 Private $iPaper As Integer = 2
 Private $iOrientation As Integer
+' Private $hPrinter As New Printer As "Printer"
 
+
+' Property Read Printer As Printer
 Property Resolution As Integer
 Property Scale As Float
 Property Read PageCount As Integer
@@ -317,55 +320,55 @@ Public Function Preview()
 
 End
 
-Public Function Image(Value As String, X As String, Y As String) As ReportBrush
+' Public Function Image(Value As String, X As String, Y As String) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 1
+'   hBrush._X = New TSizeParse(X)
+'   hBrush._Y = New TSizeParse(Y)
+'   hBrush._Image = Image.Load(Value)
+'   Return hBrush
+' 
+' End
+' 
+' Public Function LinearGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 2
+'   'hBrush.X = MRTools.ScanValue(X)
+'   'hBrush.Y = MRTools.ScanValue(Y)
+' 
+'   hBrush._Color = Colors
+'   hBrush._Pos = Positions
+'   Return hBrush
+' 
+' End
 
-  Dim hBrush As New ReportBrush
+' Public Function RadialGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 3
+'   'hBrush.X = MRTools.ScanValue(X)
+'   'hBrush.Y = MRTools.ScanValue(Y)
+' 
+'   hBrush._Color = Colors
+'   hBrush._Pos = Positions
+'   Return hBrush
+' 
+' End
 
-  hBrush._Type = 1
-  hBrush._X = New TSizeParse(X)
-  hBrush._Y = New TSizeParse(Y)
-  hBrush._Image = Image.Load(Value)
-  Return hBrush
-
-End
-
-Public Function LinearGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
-
-  Dim hBrush As New ReportBrush
-
-  hBrush._Type = 2
-  'hBrush.X = MRTools.ScanValue(X)
-  'hBrush.Y = MRTools.ScanValue(Y)
-
-  hBrush._Color = Colors
-  hBrush._Pos = Positions
-  Return hBrush
-
-End
-
-Public Function RadialGradient(Colors As Integer[], Positions As Float[]) As ReportBrush
-
-  Dim hBrush As New ReportBrush
-
-  hBrush._Type = 3
-  'hBrush.X = MRTools.ScanValue(X)
-  'hBrush.Y = MRTools.ScanValue(Y)
-
-  hBrush._Color = Colors
-  hBrush._Pos = Positions
-  Return hBrush
-
-End
-
-Public Sub {Color}(iColor As Integer) As ReportBrush
-
-  Dim hBrush As New ReportBrush
-
-  hBrush._Type = 0
-  hBrush._iValue = iColor
-  Return hBrush
-
-End
+' Public Sub {Color}(iColor As Integer) As ReportBrush
+' 
+'   Dim hBrush As New ReportBrush
+' 
+'   hBrush._Type = 0
+'   hBrush._iValue = iColor
+'   Return hBrush
+' 
+' End
 
 Public Sub Refresh()
 
@@ -686,9 +689,12 @@ Private Sub Orientation_Write(Value As Integer)
 
 End
 
-Public Sub Print()
-
+Public Sub Print(Optional hPrinter As Printer)
+  If hPrinter Then 
+  CPrint.PrintReport(Me, hPrinter)
+  Else
   CPrint.PrintReport(Me)
+  Endif
 
 End
 
@@ -746,3 +752,16 @@ Public Sub _Reset()
   $iPageCount = 0
 
 End
+
+' Private Function Printer_Read() As Printer
+' 
+'   Return $hPrinter
+' 
+' End
+
+
+' Public Sub Print2()
+'   
+'   _Reset
+'   
+' End

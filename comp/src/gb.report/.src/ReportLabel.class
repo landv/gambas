@@ -74,18 +74,19 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
       sText = $sText
     Endif
     If $fAngle = 0.0 Then
-      'hExt = Paint.TextExtents(sText)
+
       hRect = Paint.TextSize(sText)
-      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnitspaint(hRect.Width) + Me.Padding._Right + Me.Border._Right
+      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnitsPaint(hRect.Width) + Me.Padding._Right + Me.Border._Right
       fTextHeight = MTools.PixelsToUnitsPaint(hRect.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
       'Debug Paint.Font.Height * Paint.ResolutionX / Desktop.Resolution
       
     Else
       Paint.Save
+      Paint.Rotate($fAngle)
       Paint.Text(sText, 0, 0)
-      Paint.Rotate(Rad($fAngle))
-      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnits(Paint.PathExtents.Width) + Me.Padding._Right + Me.Border._Right
-      fTextHeight = MTools.PixelsToUnits(Paint.PathExtents.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+      hExt = Paint.PathExtents
+      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnitsPaint(hExt.Width) + Me.Padding._Right + Me.Border._Right
+      fTextHeight = MTools.PixelsToUnitsPaint(hExt.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
       Paint.Restore
     Endif
     hMyHints.Height = Max(hMyHints.Height, fTextHeight)
@@ -145,7 +146,7 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
     Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
   Else
     Paint.Translate(iX + iW / 2, iY + iH / 2)
-    Paint.Rotate(Rad($fAngle))
+    Paint.Rotate($fAngle)
     Paint.Translate(- (iX + iW / 2), - (iY + iH / 2))
     Paint.Text(sTempText, iX, iY, iW, iH, Align.Center)
     

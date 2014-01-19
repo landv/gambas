@@ -290,22 +290,6 @@ Preview
 m
 
 
-Image
-m
-ReportBrush
-(Value)s(X)s(Y)s
-LinearGradient
-m
-ReportBrush
-(Colors)Integer[];(Positions)Float[];
-RadialGradient
-m
-ReportBrush
-(Colors)Integer[];(Positions)Float[];
-Color
-m
-ReportBrush
-(iColor)i
 Refresh
 m
 
@@ -321,7 +305,7 @@ Report
 Print
 m
 
-
+[(hPrinter)Printer;]
 #ReportBorder
 
 C
@@ -420,6 +404,10 @@ _Image
 v
 Image
 
+Image
+M
+ReportBrush
+(hImage)Image;
 _Color
 v
 Integer[]
@@ -452,10 +440,6 @@ ToString
 m
 s
 
-ImageBrush
-M
-ReportBrush
-(hImage)Image;
 #ReportContainer
 ReportFrame
 
@@ -1033,6 +1017,13 @@ _Get
 M
 ReportPadding
 (Value)s
+#ReportPageBreak
+ReportControl
+C
+_Properties
+C
+s
+-*
 #ReportPanel
 ReportContainer
 C

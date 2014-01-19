@@ -1,0 +1,132 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,81,67)
+  Text = ("Printer Config")
+  Resizable = False
+  Arrangement = Arrange.Horizontal
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { Panel3 VBox
+    MoveScaled(3,4,53,60)
+    Expand = True
+    AutoResize = True
+    Spacing = True
+    Padding = 20
+    { ListView1 ListView
+      MoveScaled(0,0,52,20)
+    }
+    { Panel6 Expander
+      MoveScaled(1,21,51,37)
+      Text = ("More...")
+      Hidden = True
+      { Panel7 VBox
+        MoveScaled(1,2,44,32)
+        Spacing = True
+        Padding = 20
+        { HBox3 HBox
+          MoveScaled(1,2,50,4)
+          { Label8 Label
+            MoveScaled(1,1,18,3)
+            Text = ("Range")
+          }
+          { Panel10 Panel
+            MoveScaled(15,1,12,3)
+            Expand = True
+          }
+          { TextBox1 TextBox
+            MoveScaled(19,0,22,4)
+          }
+        }
+        { HBox1 HBox
+          MoveScaled(2,8,50,4)
+          { Label1 Label
+            MoveScaled(1,1,18,3)
+            Text = ("RectoVerso")
+          }
+          { Panel5 Panel
+            MoveScaled(15,1,12,3)
+            Expand = True
+          }
+          { ComboBox1 ComboBox
+            MoveScaled(20,1,18,3)
+            ReadOnly = True
+            List = [("None"), ("Long side"), ("Short side")]
+          }
+        }
+        { HBox2 HBox
+          MoveScaled(2,13,50,4)
+          { Label3 Label
+            MoveScaled(1,1,18,3)
+            Text = ("Paper")
+          }
+          { Panel8 Panel
+            MoveScaled(15,1,12,3)
+            Expand = True
+          }
+          { cmbPaper ComboBox
+            MoveScaled(20,1,18,3)
+            ReadOnly = True
+            List = [("None"), ("Long side"), ("Short side")]
+          }
+        }
+        { Panel9 Panel
+          MoveScaled(2,19,40,11)
+          Border = Border.Etched
+          { Label4 Label
+            MoveScaled(1,1,13,3)
+            Text = ("Width")
+          }
+          { Label5 Label
+            MoveScaled(23,1,13,3)
+            Text = ("Height")
+          }
+          { SpinBox2 SpinBox
+            MoveScaled(1,4,13,4)
+          }
+          { SpinBox3 SpinBox
+            MoveScaled(23,4,13,4)
+          }
+          { Label6 Label
+            MoveScaled(14,4,4,4)
+            Text = ("mm")
+          }
+          { Label7 Label
+            MoveScaled(36,4,4,4)
+            Text = ("mm")
+          }
+        }
+      }
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(58,4,1,16)
+  }
+  { Panel1 VBox
+    MoveScaled(61,6,17,45)
+    { Button1 Button
+      MoveScaled(0,0,16,16)
+      Picture = Picture["icon:/64/printer"]
+    }
+    { Panel4 Panel
+      MoveScaled(1,16,14,5)
+    }
+    { Label2 Label
+      MoveScaled(1,21,10,2)
+      Text = ("Copies :")
+    }
+    { SpinBox1 SpinBox
+      MoveScaled(0,23,16,4)
+    }
+    { Panel2 Panel
+      MoveScaled(2,30,12,6)
+      Expand = True
+    }
+    { Button2 Button
+      MoveScaled(2,38,15,5)
+      Text = Shortcut(("Cancel"), "C")
+      Picture = Picture["icon:/22/cancel"]
+    }
+  }
+}

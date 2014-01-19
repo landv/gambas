@@ -694,7 +694,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
           bForceNewPage = False
           hchild._DataIndex = j
           
-          If Not bForceNewPage Then bExitLoop = True
+          'If Not bForceNewPage Then 
+          bExitLoop = True
           Break
         Endif
         
@@ -741,10 +742,18 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       
       'On prévoie un sortie de boucle si l'enfant demande un affichage 1 par page
       If hchild.ForceNewPage Then bForceNewPage = True
+      
     Loop
     'Next '## fin de la boucle de répétition
     'Si la sortie anticipé est demandée alors on sort de la boucle
     If bExitLoop Then Break
+    If i < Me.Children.Max Then
+      If Me.Children[i + 1] Is ReportPageBreak Then 
+        bForceNewPage = True
+        Inc Me._CurItem
+        Inc i
+      Endif
+    Endif
     'Tout les objets on été répété alors on remet l'index à 0
     'hchild._DataIndex = 0
     'On incrémente le compteur des éléments traités
@@ -1085,7 +1094,8 @@ Private Function _Index_Read() As Integer
 End
 
 Private Sub _Index_Write(Value As Integer)
-  'If Super._Index = Value Then Return 
+  
+  If Super._Index = Value And If Super._Index > 0 Then Return 
   $bIndexChange = True
   Super._Index = Value
   

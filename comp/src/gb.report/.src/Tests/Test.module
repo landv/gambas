@@ -1,19 +1,9 @@
 ' Gambas module file
 
-' Public Sub Main()
+ Public Sub Main()
 '
-'   'Dim hReport As New Report11
-'   Dim hLabel As ReportLabel
-'   'hReport.Padding = ReportPadding["2cm"]
-'   '
-'   ' hLabel = New ReportLabel(hReport)
-'   ' 'hLabel.Padding = ReportPadding["1mm"]
-'   '
-'   ' hLabel.Border.Width = "1mm"
-'   ' hLabel.Text = "coucou"
-'   ' hLabel.Autoresize = True
-'   '
-'   ' hReport.Preview
-'   hReport.Print
-'
-' End
+  Dim hreport As New Report9
+  Dim hprinter As New Printer
+  hprinter.OutputFile = User.Home &/ "sortie.pdf"
+  hreport.Print(hprinter)
+ End

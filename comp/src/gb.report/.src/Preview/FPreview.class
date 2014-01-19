@@ -31,9 +31,9 @@ Public Sub _new()
   $hReport.Resolution = Printer1.Resolution
   If $hReport.Paper = Printer.Custom Then
     hSizeInt = New TSizeParse($hReport.Width)
-    Printer1.PaperWidth = hSizeInt.ToCm() / 10
+    Printer1.PaperWidth = hSizeInt.ToCm() * 10
     hSizeInt = New TSizeParse($hReport.Height)
-    Printer1.PaperHeight = hSizeInt.ToCm() / 10
+    Printer1.PaperHeight = hSizeInt.ToCm() * 10
   Endif
 
   'Debug Printer1.Orientation;; Printer1.PaperWidth;; Printer1.PaperHeight

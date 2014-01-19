@@ -211,7 +211,7 @@ Static Public Function RadialGradient(X As Float, Y As Float, Radius As Float, X
    Return hBrush
 End
 
-Static Public Function ImageBrush(hImage As Image) As ReportBrush
+Static Public Function Image(hImage As Image) As ReportBrush
   Dim hBrush As New ReportBrush
   
   hBrush._Image = hImage
