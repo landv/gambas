@@ -22,6 +22,7 @@ Property Orientation As Integer
 Property Highlight As Boolean
 Property Closable As Boolean
 Property Read Current As _TabPanelContainer
+Property Background As Integer
 
 Private $hTabBar As DrawingArea
 Private $hTabBarContainer As DrawingArea
@@ -63,17 +64,21 @@ Public Sub _new()
   ' $hRightArrow.Hide
 
   $hTabBarContainer = New DrawingArea($hTabBar) As "TabBarContainer"
+  $hTabBarContainer.Name = Me.Name & "_TabBarContainer"
   $hTabBarContainer.Focus = True
   
   $hRightArrow = New DrawingArea($hTabBar) As "Arrow"
   $hRightArrow.Ignore = True
   $hRightArrow.Mouse = Mouse.Pointing
+  $hRightArrow.Name = Me.Name & "_RightArrow"
   $hLeftArrow = New DrawingArea($hTabBar) As "Arrow"
   $hLeftArrow.Ignore = True
   $hLeftArrow.Mouse = Mouse.Pointing
+  $hLeftArrow.Name = Me.Name & "_LeftArrow"
 
   $hPanel = New DrawingArea(Me) As "Panel"
   $hPanel.Expand = True
+  $hPanel.Name = Me.Name & "_Panel"
   '$hPanel.Arrangement = Arrange.Fill
   '$hPanel.Padding = 1
 
@@ -267,7 +272,11 @@ End
 
 Public Sub Arrow_Draw()
 
-  Paint.FillRect(0, 0, Paint.W, Paint.H - 1, _GetBackground())
+  If $iOrientation = Align.Top Then
+    Paint.FillRect(0, 0, Paint.W, Paint.H - 1, _GetBackground())
+  Else
+    Paint.FillRect(0, 1, Paint.W, Paint.H - 1, _GetBackground())
+  Endif
   Style.PaintArrow(0, 0, Paint.W, Paint.H, If(Last = $hLeftArrow, Align.Left, Align.Right), Style.StateOf(Last))
   
 End
@@ -420,7 +429,11 @@ Private Sub UpdateCurrentContainer()
   If $iCurrent < 0 Then Return
   
   If $bBorder Then
-    $aCont[$iCurrent].Move(1, 0, $hPanel.W - 2, $hPanel.H - 1)
+    If $iOrientation = Align.Top Then
+      $aCont[$iCurrent].Move(1, 0, $hPanel.W - 2, $hPanel.H - 1)
+    Else
+      $aCont[$iCurrent].Move(1, 1, $hPanel.W - 2, $hPanel.H - 1)
+    Endif
   Else
     $aCont[$iCurrent].Move(0, 0, $hPanel.W, $hPanel.H)
   Endif
@@ -794,4 +807,17 @@ Public Sub TabBarContainer_KeyPress()
     
   End Select
   
+End
+
+Private Function Background_Read() As Integer
+
+  Return Super.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  Super.Background = Value
+  $hTabBar.Refresh
+
 End

@@ -7,23 +7,13 @@
   { TextBox1 TextBox
     MoveScaled(3,1,24,4)
   }
-  { TabPanel2 TabPanel
-    MoveScaled(5,7,36,23)
-    #Translate = False
-    Expand = True
-    Closable = True
-    Highlight = True
-    Index = 0
-    Text = ""
-    Index = 0
-  }
   { TabPanel1 TabPanel
-    MoveScaled(4,33,30,23)
+    MoveScaled(7,38,30,23)
     #Translate = False
     Background = &HFFFF00&
     Expand = True
-    Border = False
     Count = 5
+    Orientation = Align.Bottom
     Closable = True
     Highlight = True
     Index = 0
@@ -39,7 +29,7 @@
     Index = 0
   }
   { TabStrip1 TabStrip
-    MoveScaled(55,2,34,27)
+    MoveScaled(34,1,34,27)
     Background = &HFF7F7F&
     Count = 4
     Index = 0
@@ -51,5 +41,20 @@
     Index = 3
     Text = ("")
     Index = 0
+  }
+  { TabPanel2 TabPanel
+    MoveScaled(50,37,36,23)
+    #Translate = False
+    Expand = True
+    Closable = True
+    Highlight = True
+    Index = 0
+    Text = ""
+    Index = 0
+  }
+  { Timer1 #Timer
+    #MoveScaled(9,15)
+    Enabled = True
+    Delay = 100
   }
 }

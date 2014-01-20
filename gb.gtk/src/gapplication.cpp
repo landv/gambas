@@ -800,6 +800,7 @@ gControl *gApplication::_ignore_until_next_enter = NULL;
 gControl *gApplication::_button_grab = NULL;
 gControl *gApplication::_control_grab = NULL;
 gControl *gApplication::_active_control = NULL;
+gControl *gApplication::_previous_control = NULL;
 gControl *gApplication::_old_active_control = NULL;
 bool (*gApplication::onKeyEvent)(int) = NULL;
 guint32 gApplication::_event_time = 0;
@@ -1230,6 +1231,9 @@ void gApplication::setActiveControl(gControl *control, bool on)
 		return;
 	
 	//fprintf(stderr, "setActiveControl: %s %d\n", control->name(), on);
+
+	if (_active_control)
+		_previous_control = _active_control;
 
 	_active_control = on ? control : NULL;
 	gKey::setActiveControl(_active_control);

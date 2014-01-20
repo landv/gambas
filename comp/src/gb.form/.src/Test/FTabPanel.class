@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Private $hCtrl As Control
+
 
 Public Sub TabPanel2_GotFocus()
 
@@ -27,5 +29,21 @@ End
 Public Sub Form_DblClick()
 
   
+
+End
+
+Public Sub Timer1_Timer()
+
+  Dim hCtrl As Control
+
+  hCtrl = Application.ActiveControl
+  If hCtrl <> $hCtrl Then
+    $hCtrl = hCtrl
+    If $hCtrl Then
+      Print "Active: "; $hCtrl.Name
+    Else
+      Print "Active: NULL"
+    Endif
+  Endif
 
 End

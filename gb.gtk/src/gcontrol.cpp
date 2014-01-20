@@ -341,6 +341,7 @@ gControl::~gControl()
 	CLEAN_POINTER(gApplication::_enter);
 	CLEAN_POINTER(gApplication::_leave);
 	CLEAN_POINTER(gApplication::_active_control);
+	CLEAN_POINTER(gApplication::_previous_control);
 	CLEAN_POINTER(gApplication::_old_active_control);
 	CLEAN_POINTER(gApplication::_button_grab);
 	CLEAN_POINTER(gApplication::_control_grab);

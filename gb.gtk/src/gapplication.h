@@ -43,6 +43,7 @@ public:
   static bool isBusy() { return _busy; }
 
 	static gControl* activeControl() { return _active_control; }
+	static gControl* previousControl() { return _previous_control; }
 	static void setActiveControl(gControl *control, bool on);
 	
 	static void suspendEvents(bool vl);
@@ -98,6 +99,7 @@ public:
 	static gControl *_leave;
 	static gControl *_ignore_until_next_enter;
 	static gControl *_active_control;
+	static gControl *_previous_control;
 	static gControl *_old_active_control;
 	static gControl *_button_grab;
 	static gControl *_control_grab;

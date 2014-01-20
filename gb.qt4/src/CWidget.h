@@ -110,6 +110,7 @@ enum {
 
 extern GB_DESC CControlDesc[];
 extern CWIDGET *CWIDGET_active_control;
+extern CWIDGET *CWIDGET_previous_control;
 
 #else
 

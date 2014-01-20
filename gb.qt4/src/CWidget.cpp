@@ -73,6 +73,7 @@ static QMap<int, int> _x11_to_qt_keycode;
 #endif
 
 CWIDGET *CWIDGET_active_control = 0;
+CWIDGET *CWIDGET_previous_control = 0;
 static bool _focus_change = false;
 static CWIDGET *_old_active_control = 0;
 
@@ -2269,6 +2270,8 @@ void CWidget::setName(CWIDGET *object, const char *name)
 }
 #endif
 
+#define CLEAN_POINTER(_ptr) if ((_ptr) == THIS) _ptr = NULL
+
 void CWidget::destroy()
 {
 	QWidget *w = (QWidget *)sender();
@@ -2290,21 +2293,13 @@ void CWidget::destroy()
 		}
 	}
 	
-	if (_hovered == THIS)
-		_hovered = NULL;
-	
-	if (_official_hovered == THIS)
-		_official_hovered = NULL;
-	
-	if (_post_check_hovered_window == THIS)
-		_post_check_hovered_window = NULL;
-	
-	if (CWIDGET_active_control == THIS)
-		CWIDGET_active_control = NULL;
-	
-	if (_old_active_control == THIS)
-		_old_active_control = NULL;
-	
+	CLEAN_POINTER(_hovered);
+	CLEAN_POINTER(_official_hovered);
+	CLEAN_POINTER(_post_check_hovered_window);
+	CLEAN_POINTER(CWIDGET_active_control);
+	CLEAN_POINTER(CWIDGET_previous_control);
+	CLEAN_POINTER(_old_active_control);
+
 	if (THIS_EXT)
 	{
 		CACTION_register(THIS, THIS_EXT->action, NULL);
@@ -2367,7 +2362,7 @@ static void post_focus_change(void *)
 		}
 		
 		_old_active_control = current;
-		CWINDOW_activate(_old_active_control);
+		CWINDOW_activate(current);
 		
 		control = current;
 		while (control)
@@ -2394,7 +2389,8 @@ void CWIDGET_handle_focus(CWIDGET *control, bool on)
 	if (on == (CWIDGET_active_control == control))
 		return;
 	
-	//qDebug("CWIDGET_handle_focus: %p %s %d", control, control->name, on);
+	if (CWIDGET_active_control)
+		CWIDGET_previous_control = CWIDGET_active_control;
 	CWIDGET_active_control = on ? control : NULL;
 	handle_focus_change();
 }

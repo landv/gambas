@@ -165,6 +165,13 @@ BEGIN_PROPERTY(Application_ActiveControl)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Application_PreviousControl)
+
+	GB.ReturnObject(CWIDGET_previous_control);
+
+END_PROPERTY
+
+
 BEGIN_PROPERTY(Application_Busy)
 
 	int busy;
@@ -389,6 +396,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("Font", "Font", Application_Font),
 	GB_STATIC_PROPERTY_READ("ActiveWindow", "Window", Application_ActiveWindow),
 	GB_STATIC_PROPERTY_READ("ActiveControl", "Control", Application_ActiveControl),
+	GB_STATIC_PROPERTY_READ("PreviousControl", "Control", Application_PreviousControl),
 	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
 	GB_STATIC_PROPERTY("ShowTooltips", "b", Application_ShowTooltips),
