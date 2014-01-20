@@ -6,9 +6,9 @@ Export
 
 Private Function GetCallLocation() As String
 
-  Dim iCount As Integer = 3
+  Dim iCount As Integer = 1
 
-  While System.Backtrace[iCount] Begins "Logger"
+  While System.Backtrace[iCount] Begins "Logger" Or System.Backtrace[iCount] Begins "Formatter"
     Inc iCount
   Wend
 
