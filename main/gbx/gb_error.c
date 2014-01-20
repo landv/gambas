@@ -658,11 +658,9 @@ void ERROR_set_last(bool bt)
 	ERROR_last = ERROR_current->info;
 	if (ERROR_last.free)
 		STRING_ref(ERROR_last.msg);
+	STACK_free_backtrace(&ERROR_backtrace);
 	if (bt)
-	{
-		STACK_free_backtrace(&ERROR_backtrace);
 		ERROR_backtrace = STACK_get_backtrace();
-	}
 }
 
 void ERROR_define_last(void)
