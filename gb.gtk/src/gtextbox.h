@@ -28,6 +28,7 @@ class gTextBox : public gControl
 {
 public:
 	gTextBox(gContainer *parent, bool combo = false);
+	~gTextBox();
 
 //"Properties"
 	int alignment();
@@ -69,6 +70,10 @@ public:
   void initEntry();
   GtkWidget *entry;
 	virtual int minimumHeight();
+
+#ifdef GTK3
+	static GtkCssProvider *_style_provider;
+#endif
 };
 
 #endif

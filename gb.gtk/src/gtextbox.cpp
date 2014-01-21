@@ -22,6 +22,7 @@
 ***************************************************************************/
 
 #include "widgets.h"
+#include "gapplication.h"
 #include "gtextbox.h"
 
 #ifdef GTK3
@@ -118,6 +119,10 @@ struct _GtkEntryPrivate
 };
 #endif
 
+#ifdef GTK3
+GtkCssProvider *gTextBox::_style_provider = NULL;
+#endif
+
 static void cb_change_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
 {
 	gtk_editable_set_position(editable, *position);
@@ -138,6 +143,24 @@ static void cb_activate(GtkEntry *editable,gTextBox *data)
 
 gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 {
+#ifdef GTK3
+	if (!_style_provider)
+	{
+		const char *css;
+
+		_style_provider = gtk_css_provider_new();
+
+		if (strcmp(gApplication::getStyleName(), "Clearlooks-Phenix") == 0)
+			css = "GtkEntry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
+		else
+			css = "GtkEntry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; }";
+
+		gtk_css_provider_load_from_data(_style_provider, css, -1, NULL);
+	}
+
+	g_object_ref(_style_provider);
+#endif
+
 	if (!combo)
 	{
 		g_typ=Type_gTextBox;
@@ -153,6 +176,13 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 	
 	onChange = NULL;
 	onActivate = NULL;
+}
+
+gTextBox::~gTextBox()
+{
+#ifdef GTK3
+	g_object_unref(_style_provider);
+#endif
 }
 
 void gTextBox::initEntry()
@@ -256,10 +286,23 @@ void gTextBox::setBorder(bool vl)
 	
 	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
 	
-#ifndef GTK3
+#ifdef GTK3
+	GtkStyleContext *style = gtk_widget_get_style_context(entry);
+	if (vl)
+		gtk_style_context_remove_provider(style, GTK_STYLE_PROVIDER(_style_provider));
+	else
+		gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(_style_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+
+	gtk_style_context_invalidate(style);
+#else
+	if (vl)
+		gtk_entry_set_inner_border(GTK_ENTRY(entry), NULL);
+	else
+	{
 		GtkBorder *border = gtk_border_new();
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), border);
 		gtk_border_free(border);
+	}
 #endif
 }
 

@@ -129,21 +129,6 @@ Private Sub Border_Write(Value As Boolean)
 
 End
 
-' Public Sub Background_Arrange()
-'   
-'   '$hBackground.Move(0, 0, $hPanel.W, $hPanel.H)
-'   Dim iPad As Integer = If($bBorder, 3, 0)
-'   
-'   If $hButton.Visible Then
-'     $hTextBox.Move(iPad, iPad, $hBackground.W - $hButton.W - iPad * 2, $hBackground.H - iPad * 2)
-'     $hButton.Move($hBackground.W - $hButton.W - iPad, iPad, $hButton.W, $hBackground.H - iPad * 2)
-'   Else
-'     $hTextBox.Move(iPad, iPad, $hBackground.W - iPad * 2, $hBackground.H - iPad * 2)
-'   Endif
-'   
-' End
-
-
 Public Sub Background_Draw()
   
   'Dim FW, FH As Integer
@@ -151,12 +136,8 @@ Public Sub Background_Draw()
   
   If Me.Background <> Color.Default Then iBg = Me.Background
   
-  'FW = If($bBorder, Style.FrameWidth, 0)
-  'FH = If($bBorder, Style.FrameWidth, 0)
-  
-  'Draw.FillRect(FW, FH, Me.W - FW * 2, Me.H - FH * 2, iBg)
   If $bBorder Then 
-    Style.PaintBox(0, 0, Me.W, Me.H, Style.StateOf(Me), iBg)
+    Style.PaintBox(0, 0, Me.W, Me.H, Style.StateOf($hTextBox), iBg)
   Else
     Paint.FillRect(0, 0, Me.W, Me.H, iBg)
   Endif

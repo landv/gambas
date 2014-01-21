@@ -2053,7 +2053,7 @@ GtkStyle *gt_get_style(GType type)
 
 // Draw a styled border
 
-void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h)
+void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h, bool bg)
 {
 	if (border == BORDER_NONE)
 		return;
@@ -2087,7 +2087,8 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 		st = gt_get_style(GTK_TYPE_ENTRY);
 		gtk_style_context_set_state(st, state);
 		//gtk_style_context_add_class(st, GTK_STYLE_CLASS_ENTRY);
-
+		if (bg)
+			gtk_render_background(st, cr, x, y, w, h);
 		gtk_render_frame(st, cr, x, y, w, h);
 	}
 	else if (border == BORDER_ETCHED)

@@ -183,7 +183,7 @@ bool gt_style_lookup_color(GtkStyleContext *style, const char **names, const cha
 // Draw a control border
 
 #ifdef GTK3
-void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h);
+void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int border, gColor color, int x, int y, int w, int h, bool bg = false);
 #endif
 
 // Style management

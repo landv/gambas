@@ -1273,7 +1273,7 @@ gColor gControl::getFrameColor()
 #ifdef GTK3
 void gControl::drawBorder(cairo_t *cr)
 {
-	gt_draw_border(cr, gtk_widget_get_style_context(widget), GTK_STATE_FLAG_NORMAL, getFrameBorder(), getFrameColor(), 0, 0, width(), height());
+	gt_draw_border(cr, gtk_widget_get_style_context(widget), GTK_STATE_FLAG_NORMAL, getFrameBorder(), getFrameColor(), 0, 0, width(), height(), use_base);
 }
 #else
 void gControl::drawBorder(GdkEventExpose *e)
@@ -1330,7 +1330,10 @@ void gControl::drawBorder(GdkEventExpose *e)
 	GdkRectangle clip;
 	gdk_region_get_clipbox(e->region, &clip);
 	GtkStyle *st = gtk_widget_get_style(widget);
-	gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
+	if (use_base)
+		gtk_paint_box(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, "entry", x, y, w, h);
+	else
+		gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
 }
 #endif
 
@@ -1647,28 +1650,29 @@ void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 
 void gControl::updateBorder()
 {
-	int padding;
+	int pad;
 
 	if (!frame)
 		return;
 
 	if (!GTK_IS_ALIGNMENT(frame))
 	{
+		fprintf(stderr, "updateBorder: !alignment\n");
 		refresh();
 		return;
 	}
 
 	switch (frame_border)
 	{
-		case BORDER_NONE: padding = 0; break;
-		case BORDER_PLAIN: padding = 1; break;
-		default: padding = 2; break; // TODO: Use style
+		case BORDER_NONE: pad = 0; break;
+		case BORDER_PLAIN: pad = 1; break;
+		default: pad = gApplication::getFrameWidth(); break;
 	}
 
-	if ((int)frame_padding > padding)
-		padding = frame_padding;
+	if ((int)frame_padding > pad)
+		pad = frame_padding;
 
-	gtk_alignment_set_padding(GTK_ALIGNMENT(frame), padding, padding, padding, padding);
+	gtk_alignment_set_padding(GTK_ALIGNMENT(frame), pad, pad, pad, pad);
 	refresh();
 	//gtk_widget_queue_draw(frame);
 }

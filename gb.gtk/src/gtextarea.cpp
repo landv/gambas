@@ -337,8 +337,8 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	g_signal_connect(G_OBJECT(_buffer), "insert-text", G_CALLBACK(cb_insert_text), (gpointer)this);
 	g_signal_connect(G_OBJECT(_buffer), "delete-range", G_CALLBACK(cb_delete_range), (gpointer)this);
 
-	gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview), 2);
-	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(textview), 2);
+	/*gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview), 2);
+	gtk_text_view_set_right_margin(GTK_TEXT_VIEW(textview), 2);*/
 
 	setBorder(true);
 	setWrap(false);

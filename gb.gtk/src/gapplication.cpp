@@ -1276,20 +1276,57 @@ int gApplication::getScrollbarSpacing()
 	return v;
 }
 
-int gApplication::getFrameWidth()
-{
-	if (strcmp(getStyleName(), "oxygen-gtk") == 0)
-		return 3;
-	else
-		return 2;
-}
-
 int gApplication::getInnerWidth()
 {
 	if (strcmp(getStyleName(), "oxygen-gtk") == 0)
 		return 2;
 	else
 		return 0;
+}
+
+int gApplication::getFrameWidth()
+{
+	int w;
+#ifdef GTK3
+  GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
+  GtkBorder tmp;
+  GtkBorder border;
+
+	gtk_style_context_get_padding(context, (GtkStateFlags)0, &tmp);
+	gtk_style_context_get_border(context, (GtkStateFlags)0, &border);
+
+	tmp.top += border.top;
+	tmp.right += border.right;
+	tmp.bottom += border.bottom;
+	tmp.left += border.left;
+
+	w = MIN(tmp.top, tmp.left);
+	w = MIN(w, tmp.bottom);
+	w = MIN(w, tmp.right);
+	w = MAX(0, w - 1);
+
+#else
+	GtkStyle *style;
+	gint focus_width;
+	gboolean interior_focus;
+	//int inner;
+
+	style = gt_get_old_style(GTK_TYPE_ENTRY);
+
+	gtk_style_get(style, GTK_TYPE_ENTRY,
+		"focus-line-width", &focus_width,
+		"interior-focus", &interior_focus,
+		(char *)NULL);
+
+	w = MIN(style->xthickness, style->ythickness);
+
+	if (!interior_focus)
+		w += focus_width;
+
+	w += getInnerWidth();
+#endif
+
+	return w;
 }
 
 void gApplication::getBoxFrame(int *w, int *h)
