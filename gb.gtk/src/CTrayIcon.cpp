@@ -89,6 +89,11 @@ static void Tray_lostFocus(gTrayIcon *sender)
 	GB.Raise(sender->hFree,EVENT_LostFocus,0);
 }
 
+static void cb_mouse_wheel(gTrayIcon *sender)
+{
+	GB.Raise(sender->hFree, EVENT_MouseWheel, NULL);
+}
+
 static int CTRAYICON_check(void *_object)
 {
 	return TRAYICON == NULL;
@@ -110,6 +115,7 @@ BEGIN_METHOD_VOID(CTRAYICON_new)
 	TRAYICON->onDoubleClick=Tray_dblClick;
 	TRAYICON->onEnter=Tray_enter;
 	TRAYICON->onLeave=Tray_leave;
+	TRAYICON->onMouseWheel = cb_mouse_wheel;
 	
 	GB.Ref(THIS);
 	//Add_Tray(_object);

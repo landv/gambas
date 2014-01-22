@@ -1657,7 +1657,6 @@ void gControl::updateBorder()
 
 	if (!GTK_IS_ALIGNMENT(frame))
 	{
-		fprintf(stderr, "updateBorder: !alignment\n");
 		refresh();
 		return;
 	}
