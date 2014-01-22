@@ -151,9 +151,9 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		_style_provider = gtk_css_provider_new();
 
 		if (strcmp(gApplication::getStyleName(), "Clearlooks-Phenix") == 0)
-			css = "GtkEntry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
+			css = ".entry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
 		else
-			css = "GtkEntry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; }";
+			css = ".entry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; }";
 
 		gtk_css_provider_load_from_data(_style_provider, css, -1, NULL);
 	}

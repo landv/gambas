@@ -60,8 +60,8 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
   if (widget)
     toplevel = gtk_widget_get_toplevel(widget);
 
-  if (GTK_IS_WINDOW (toplevel))
-    return gtk_window_get_group(GTK_WINDOW (toplevel));
+  if (GTK_IS_WINDOW(toplevel))
+    return gtk_window_get_group(GTK_WINDOW(toplevel));
   else
     return gtk_window_get_group(NULL);
 }
@@ -113,12 +113,20 @@ static gControl *find_child(gControl *control, int rx, int ry, gControl *button_
 	int x, y;
 	
 	//fprintf(stderr, "find_child: %s ", control->name());
-	
 	if (gApplication::_control_grab)
 		return gApplication::_control_grab;
+
+	/*grab = gtk_grab_get_current();
+	if (grab)
+	{
+		child = gt_get_control(grab);
+		if (child)
+			return child;
+	}*/
+
 	if (button_grab)
 		return button_grab;
-	
+
 	control = control->topLevel();
 	
 	while (control->isContainer())
@@ -173,6 +181,7 @@ void gApplication::checkHoveredControl(gControl *control)
 static void gambas_handle_event(GdkEvent *event)
 {
   GtkWidget *widget;
+	GtkWidget *current_grab;
   GtkWidget *grab;
 	gControl *control, *save_control;
 	gControl *button_grab;
@@ -225,7 +234,15 @@ static void gambas_handle_event(GdkEvent *event)
 	widget = gtk_get_event_widget(event);
 	if (!widget)
 		goto __HANDLE_EVENT;
-	
+
+	current_grab = gtk_window_group_get_current_grab(get_window_group(widget)); //gtk_grab_get_current();
+#ifdef GTK3
+	if (event->type == GDK_BUTTON_PRESS && !current_grab)
+		gtk_grab_add(widget);
+	else if (event->type == GDK_BUTTON_RELEASE && current_grab)
+		gtk_grab_remove(current_grab);
+#endif
+
 	button_grab = gApplication::_button_grab;
 	if (event->type == GDK_BUTTON_RELEASE)
 		gApplication::_button_grab = NULL;
@@ -247,8 +264,8 @@ static void gambas_handle_event(GdkEvent *event)
 	}
 	else
 	{
-		//fprintf(stderr, "[3] popup: grab = %p / %p\n", gApplication::_popup_grab, grab);
-		grab = gtk_window_group_get_current_grab(get_window_group(widget));
+		grab = current_grab; //gtk_window_group_get_current_grab(get_window_group(widget));
+		//fprintf(stderr, "[3] popup: grab = %p / %p / %p\n", gApplication::_popup_grab, grab, gtk_grab_get_current());
 		if (!grab)
 			grab = gApplication::_popup_grab;
 		//fprintf(stderr, "[4] grab = %p\n", grab);
@@ -568,7 +585,7 @@ __FOUND_WIDGET:
 
 			save_control = control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root, button_grab);
 			
-			//fprintf(stderr, "GDK_MOTION_NOTIFY: %s\n", control->name());
+			//fprintf(stderr, "GDK_MOTION_NOTIFY: (%p %s) grab = %p\n", control, control->name(), button_grab);
 			
 			gApplication::checkHoveredControl(control);
 			
@@ -897,6 +914,28 @@ static void do_nothing()
 {
 }
 
+/*#ifdef GTK3
+static void (*_old_scrollbar_button_press)();
+static void (*_old_scrollbar_button_release)();
+
+static gint scrollbar_button_press(GtkWidget *widget, GdkEventButton *event)
+{
+	gint ret = ((gint (*)(GtkWidget *, GdkEventButton *))_old_scrollbar_button_press)(widget, event);
+	if (ret)
+		gtk_grab_add(widget);
+	return ret;
+}
+
+static gint scrollbar_button_release(GtkWidget *widget, GdkEventButton *event)
+{
+	gint ret = ((gint (*)(GtkWidget *, GdkEventButton *))_old_scrollbar_button_release)(widget, event);
+	if (ret)
+		gtk_grab_remove(widget);
+	return ret;
+}
+
+#endif*/
+
 void gApplication::init(int *argc, char ***argv)
 {
 	appEvents=0;
@@ -914,6 +953,19 @@ void gApplication::init(int *argc, char ***argv)
 	_group = gtk_window_group_new();
 	
 	_loop_owner = 0;
+
+/*#ifdef GTK3 // patch GtkRange class
+	GtkWidgetClass *klass;
+
+	klass = (GtkWidgetClass *)g_type_class_ref(GTK_TYPE_SCROLLBAR);
+
+	_old_scrollbar_button_press = (void (*)())klass->button_press_event;
+	klass->button_press_event = scrollbar_button_press;
+
+	_old_scrollbar_button_release = (void (*)())klass->button_release_event;
+	klass->button_release_event = scrollbar_button_release;
+
+#endif*/
 }
 
 void gApplication::exit()
