@@ -2931,6 +2931,9 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
     GetVersion()
 
+    ' Save project before making the executable
+    WriteProject(True)
+
     sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(sExecPath) & " " & Shell$(Project.Dir) & " > " & OUTPUT_FILE & " 2>&1"
     Shell sExec Wait
     If Process.LastValue Then Error.Raise(Trim(File.Load(OUTPUT_FILE)))
@@ -3508,33 +3511,6 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   Try Kill sPath
   Move sPath & ".tmp" To sPath
-
-  ' ' Creates the .startup file
-  ' ' This is done automatically by the compiler now!
-  '
-  ' sPath = Project.Dir &/ STARTUP_FILE
-  ' Try Kill sPath & ".tmp"
-  ' hFic = Open sPath & ".tmp" For Create
-  '
-  ' Print #hFic, Startup
-  ' Print #hFic, Title
-  ' Print #hFic, Stack
-  ' Print #hFic, If(StackTrace, "1", "0")
-  ' Print #hFic, Version
-  ' Print #hFic
-  '
-  ' For Each hComp In CComponent.All
-  '   If Libraries.Find(hComp.Key) >= 0 Then
-  '     Print #hFic, hComp.Key
-  '   Endif
-  ' Next
-  '
-  ' Print #hFic
-  '
-  ' Close #hFic
-  '
-  ' Try Kill sPath
-  ' Move sPath & ".tmp" To sPath
 
   WriteProjectTranslation
 
@@ -4391,6 +4367,7 @@ End
 
 Public Sub MakeSourcePackageTo(sPath As String)
 
+  WriteProject(True)
   MakeSourcePackageFromTo(Project.Dir, sPath)
 
 End
