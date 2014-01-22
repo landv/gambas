@@ -181,7 +181,8 @@ again:
 			/*
 			 * TODO: Implement the move cookie.
 			 */
-			GB.Raise(watch, *eventp, 1, GB_T_STRING, name, 0);
+			GB.Raise(watch, *eventp, 2, GB_T_STRING, name, 0,
+				 GB_T_BOOLEAN, !!(iev->mask & IN_ISDIR));
 		}
 	}
 }
@@ -370,18 +371,18 @@ GB_DESC CInotify[] = {
 	GB_CONSTANT("Unmount", "i", IN_UNMOUNT),
 	GB_CONSTANT("All", "i", IN_ALL_EVENTS),
 
-	GB_EVENT("Access", NULL, "(File)s", &EVENT_Access),
-	GB_EVENT("Attribute", NULL, "(File)s", &EVENT_Attribute),
-	GB_EVENT("CloseWrite", NULL, "(File)s", &EVENT_CloseWrite),
-	GB_EVENT("CloseNoWrite", NULL, "(File)s", &EVENT_CloseNoWrite),
-	GB_EVENT("Create", NULL, "(File)s", &EVENT_Create),
-	GB_EVENT("Delete", NULL, "(File)s", &EVENT_Delete),
-	GB_EVENT("Modify", NULL, "(File)s", &EVENT_Modify),
-	GB_EVENT("Move", NULL, "(File)s", &EVENT_Move),
-	GB_EVENT("MovedFrom", NULL, "(File)s", &EVENT_MovedFrom),
-	GB_EVENT("MovedTo", NULL, "(File)s", &EVENT_MovedTo),
-	GB_EVENT("Open", NULL, "(File)s", &EVENT_Open),
-	GB_EVENT("Unmount", NULL, "(File)s", &EVENT_Unmount),
+	GB_EVENT("Access", NULL, "(File)s(IsDir)b", &EVENT_Access),
+	GB_EVENT("Attribute", NULL, "(File)s(IsDir)b", &EVENT_Attribute),
+	GB_EVENT("CloseWrite", NULL, "(File)s(IsDir)b", &EVENT_CloseWrite),
+	GB_EVENT("CloseNoWrite", NULL, "(File)s(IsDir)b", &EVENT_CloseNoWrite),
+	GB_EVENT("Create", NULL, "(File)s(IsDir)b", &EVENT_Create),
+	GB_EVENT("Delete", NULL, "(File)s(IsDir)b", &EVENT_Delete),
+	GB_EVENT("Modify", NULL, "(File)s(IsDir)b", &EVENT_Modify),
+	GB_EVENT("Move", NULL, "(File)s(IsDir)b", &EVENT_Move),
+	GB_EVENT("MovedFrom", NULL, "(File)s(IsDir)b", &EVENT_MovedFrom),
+	GB_EVENT("MovedTo", NULL, "(File)s(IsDir)b", &EVENT_MovedTo),
+	GB_EVENT("Open", NULL, "(File)s(IsDir)b", &EVENT_Open),
+	GB_EVENT("Unmount", NULL, "(File)s(IsDir)b", &EVENT_Unmount),
 
 	GB_STATIC_METHOD("_exit", NULL, Inotify_exit, NULL),
 	GB_STATIC_METHOD("_get", "Inotify", Inotify_get, "(Path)s"),
