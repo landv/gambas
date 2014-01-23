@@ -26,7 +26,7 @@ Public Sub _new()
 
   'set the number of anchor rods to display in print out tables
   'nanchorrows = Module1.RoundUpInt(FMain.cAnchorRods.Count / 2)
-  ReportHBox7.DataCount = 6 'nanchorrows
+  ReportHBox7.DataCount = 13 'nanchorrows
 
   'set the number of report panels - one for each load combination result
   ReportPanel1.DataCount = 6 'FMain.AnalysisResults.Count
