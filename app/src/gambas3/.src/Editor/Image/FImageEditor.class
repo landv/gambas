@@ -2330,7 +2330,7 @@ Private Sub UpdateMenu()
   mnuAction.Visible = bVisible
   mnuZoom.Visible = bVisible
   
-  Action[".save,.reload,.undo,.redo,.tool-*,.invert,.stroke,.fill,.clear,.cut,.copy,.crop,.flip-h,.flip-v,.rotate-*,.rotate,.resize,.select-all,.hide-selection,.grid,.duplicate,.offset", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.tool-*,.invert,.stroke,.fill,.clear,.cut,.copy,.crop,.flip-h,.flip-v,.rotate-*,.rotate,.resize,.select-all,.hide-selection,.grid,.duplicate,.offset", Me].Visible = bVisible
   
 End
 

@@ -567,38 +567,10 @@ Private Sub UpdateMenu()
 
   Action["watch"].Enabled = Project.Running 'AND Len(Trim(edtEditor.Selection.Text)) > 0
 
-  'mnuWatch.Visible =
-  'btnWatch.Visible = Project.Running
-  'mnuUntil.Visible = mnuWatch.Visible
-
   bVisible = Not edtEditor.ReadOnly
 
-  mnuUndo.Visible = bVisible
-  mnuRedo.Visible = bVisible
-  mnuSepUndo.Visible = bVisible
-  mnuCut.Visible = bVisible
-  mnuPaste.Visible = bVisible
-  mnuPasteSpecial.Visible = bVisible
-  mnuComment.Visible = bVisible
-  mnuUncomment.Visible = bVisible
-  'mnuSepComment.Visible = bVisible
-  mnuReload.Visible = bVisible
-  mnuInsertColor.Visible = bVisible
-  mnuWatch.Visible = Not bVisible
-
-  btnUndo.Visible = bVisible
-  btnRedo.Visible = bVisible
-  btnCut.Visible = bVisible
-  btnPaste.Visible = bVisible
-  btnPasteSpecial.Visible = bVisible
-  btnInsertColor.Visible = bVisible
-  btnComment.Visible = bVisible
-  btnUncomment.Visible = bVisible
-  btnIndent.Visible = bVisible
-  btnUnIndent.Visible = bVisible
-  btnReload.Visible = bVisible
-  btnSave.Visible = bVisible
-  btnWatch.Visible = Not bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent", Me].Visible = bVisible
+  Action[".watch", Me].Visible = Not bVisible
 
 End
 

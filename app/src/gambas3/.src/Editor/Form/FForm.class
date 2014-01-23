@@ -177,16 +177,14 @@ Public Sub Reload() As Boolean
   'If $bAfterLock Then Stop
   Action[".lock", Me].Value = $bAfterLock
 
-  DrawTitle
-
   FFormStack.RefreshAll
 
   $bDoNotModify = False
   $bNoRefreshMenu = False
   
-  RefreshMenu
-
   $hUndo.Enable
+  
+  SetReadOnly
 
 End
 
@@ -2351,7 +2349,7 @@ Private Sub RefreshMenu()
   Action[".paste", Me].Enabled = CanPaste()
 
   mnuArrange.Visible = Not $bReadOnly
-  Action[".save,.reload,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
+  Action[".save,.lock,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
 
   bOn = Selection.Count >= 2 And Not $bReadOnly
 
@@ -2662,6 +2660,9 @@ Private Sub SetReadOnly()
   FFormStack.RefreshReadOnly
   RefreshProperty(True)
 
+  RefreshMenu
+  DrawTitle
+
 End
 
 Private Sub SetLock(bLock As Boolean)
@@ -2678,7 +2679,6 @@ Private Sub SetLock(bLock As Boolean)
   Endif
 
   SetReadOnly
-  DrawTitle
 
 End
 
@@ -2696,8 +2696,7 @@ End
 
 Public Sub LoadFile() As Boolean
 
-  If Reload() Then Return True
-  SetReadOnly
+  Return Reload()
 
 End
 
