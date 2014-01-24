@@ -1441,12 +1441,10 @@ void gMainWindow::embedMenuBar(GtkWidget *border)
 	}
 }
 
-void gMainWindow::getScreenPos(int *x, int *y)
+/*bool gMainWindow::getScreenPos(int *x, int *y)
 {
-	gContainer::getScreenPos(x, y);
-	//if (y && isMenuBarVisible())
-	//	*y += menuBarHeight();
-}
+	return gContainer::getScreenPos(x, y);
+}*/
 
 double gMainWindow::opacity()
 {

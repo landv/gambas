@@ -415,15 +415,17 @@ POSITION AND SIZE
 
 ******************************************************************/
 
-void gControl::getScreenPos(int *x, int *y)
+bool gControl::getScreenPos(int *x, int *y)
 {
 	if (!gtk_widget_get_window(border))
 	{
-		*x = *y = 0;
-		return;
+		*x = *y = 0; // widget is not realized
+		return true;
 	}
 
 	gdk_window_get_origin(gtk_widget_get_window(border), x, y);
+
+	//fprintf(stderr, "getScreenPos: %s: %d %d: %d\n", name(), *x, *y, gtk_widget_get_has_window(border));
 
 	#if GTK_CHECK_VERSION(2, 18, 0)
 	if (!gtk_widget_get_has_window(border))
@@ -434,6 +436,9 @@ void gControl::getScreenPos(int *x, int *y)
 		*y += a.y;
 	}
 	#endif
+
+	//fprintf(stderr, "getScreenPos: --> %d %d\n", *x, *y);
+	return false;
 }
 
 int gControl::screenX()
@@ -1520,6 +1525,7 @@ PATCH_DECLARE(GTK_TYPE_TOGGLE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_SCROLLED_WINDOW)
 PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
 PATCH_DECLARE(GTK_TYPE_RADIO_BUTTON)
+PATCH_DECLARE(GTK_TYPE_NOTEBOOK)
 
 int gt_get_preferred_width(GtkWidget *widget)
 {
@@ -1579,6 +1585,7 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS(border, GTK_TYPE_SCROLLED_WINDOW)
 	else PATCH_CLASS(border, GTK_TYPE_CHECK_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_RADIO_BUTTON)
+	else PATCH_CLASS(border, GTK_TYPE_NOTEBOOK)
 	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
 
 #endif
@@ -1686,19 +1693,19 @@ int gControl::getFrameWidth()
 		return p;
 	}
 
-	if (_scroll)
+	/*if (_scroll)
 	{
 		if (gtk_scrolled_window_get_shadow_type(_scroll) == GTK_SHADOW_NONE)
 			return 0;
 		else
-			return 2;
-	}
+			return gApplication::getFrameWidth();
+	}*/
 
 	switch (frame_border)
 	{
 		case BORDER_NONE: p = 0; break;
 		case BORDER_PLAIN: p = 1; break;
-		default: p = 2; break; // TODO: Use style
+		default: p = gApplication::getFrameWidth(); break;
 	}
 	return p;
 }

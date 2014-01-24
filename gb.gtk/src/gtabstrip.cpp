@@ -71,10 +71,19 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 {
 	if (wid == data->getContainer() && (alloc->width != data->_client_w || alloc->height != data->_client_h))
 	{
-		data->_client_x = alloc->x;
-		data->_client_y = alloc->y;
+		int tx, ty, px, py;
+
+		if (data->getScreenPos(&tx, &ty))
+			return;
+
+		gdk_window_get_origin(gtk_widget_get_window(wid), &px, &py);
+		//fprintf(stderr, "alloc: tab = %d %d page = %d %d alloc = %d %d\n", tx, ty, px, py, alloc->x, alloc->y);
+
+		data->_client_x = px - tx + alloc->x;
+		data->_client_y = py - ty + alloc->y;
 		data->_client_w = alloc->width;
 		data->_client_h = alloc->height;
+		//fprintf(stderr, "alloc: %s: %d %d %d %d\n", data->name(), data->_client_x, data->_client_y, alloc->width, alloc->height);
 		data->performArrange();
 	}
 }
@@ -195,16 +204,6 @@ static void cb_scroll(GtkWidget *wid, GdkEvent *event, gTabStrip *data)
 
 	if (dir == GDK_SCROLL_SMOOTH)
 		return;
-
-	/*
-	{
-		gdouble dx = 0, dy = 0;
-		gdk_event_get_scroll_deltas((GdkEvent *)event, &dx, &dy);
-		if (fabs(dy) > fabs(dx))
-			dir = (dy < 0) ? GDK_SCROLL_UP : GDK_SCROLL_DOWN;
-		else
-			dir = (dx < 0) ? GDK_SCROLL_LEFT : GDK_SCROLL_RIGHT;
-	}*/
 
 	page = gtk_notebook_get_current_page(GTK_NOTEBOOK(data->widget));
 
@@ -533,10 +532,10 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 	onClick = NULL;
 	onClose = NULL;
 	
-	border = gtk_event_box_new();
+	//border = gtk_event_box_new();
 	//gtk_event_box_set_visible_window(GTK_EVENT_BOX(border), false);
 	
-	widget = gtk_notebook_new();
+	border = widget = gtk_notebook_new();
 	gtk_notebook_set_scrollable(GTK_NOTEBOOK(widget), TRUE);
 	gtk_drag_dest_unset(widget);
 	

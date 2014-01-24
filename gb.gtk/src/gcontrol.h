@@ -72,7 +72,7 @@ public:
 	gControl *previous();
 	int screenX();
 	int screenY();
-	virtual void getScreenPos(int *x, int *y);
+	virtual bool getScreenPos(int *x, int *y);
 	char *toolTip();
 	bool isVisible() const { return visible; }
 	bool isReallyVisible();

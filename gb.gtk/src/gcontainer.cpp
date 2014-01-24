@@ -515,6 +515,8 @@ gControl *gContainer::find(int x, int y)
 	int i;
 	gControl *ch;
 	
+	//fprintf(stderr, "gContainer::find: %s (C %d %d %d %d) (S %d %d): %d %d\n", name(), clientX(), clientY(), clientWidth(), clientHeight(), scrollX(), scrollY(), x, y);
+
 	x -= clientX();
 	y -= clientY();
 	
@@ -533,10 +535,15 @@ gControl *gContainer::find(int x, int y)
 	for (i = childCount() - 1; i >= 0; i--)
 	{
 		ch = child(i);
+		//fprintf(stderr, "test: %s %d: %d %d %d %d / %d %d\n", ch->name(), ch->isVisible(), ch->x(), ch->y(), ch->width(), ch->height(), x, y);
 		if (ch->isVisible() && x >= ch->left() && y >= ch->top() && x < (ch->left() + ch->width()) && y < (ch->top() + ch->height()))
+		{
+			//fprintf(stderr, "--> %s\n", ch->name());
 			return ch;
+		}
 	}
 	
+	//fprintf(stderr, "--> NULL\n");
 	return NULL;
 }
 

@@ -112,7 +112,6 @@ static gControl *find_child(gControl *control, int rx, int ry, gControl *button_
 	gControl *child;
 	int x, y;
 	
-	//fprintf(stderr, "find_child: %s ", control->name());
 	if (gApplication::_control_grab)
 		return gApplication::_control_grab;
 
@@ -126,6 +125,8 @@ static gControl *find_child(gControl *control, int rx, int ry, gControl *button_
 
 	if (button_grab)
 		return button_grab;
+
+	//fprintf(stderr, "find_child: %s\n", control->name());
 
 	control = control->topLevel();
 	
