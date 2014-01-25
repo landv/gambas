@@ -4,17 +4,21 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Label=True"
+Public Const _Properties As String = "*,Action,Label=True,Pulse"
 Public Const _Group As String = "Form"
 Public Const _DefaultEvent As String = "MouseDown"
 Public Const _DefaultSize As String = "24,4"
 
 Property Label As Boolean
 Property Value As Float
+Property Pulse As Boolean
 
 Private $hDrawingArea As DrawingArea
 Private $fValue As Float
 Private $bLabel As Boolean = True
+Private $bPulse As Boolean
+Private $iPulse As Integer
+Private $hTimerPulse As Timer
 
 Public Sub _new()
   
@@ -38,12 +42,14 @@ End
 
 Private Function Value_Read() As Float
 
+  If $bPulse Then Return
   Return $fValue
 
 End
 
 Private Sub Value_Write(Value As Float)
 
+  If $bPulse Then Return
   $fValue = Max(0, Min(1, Value))
   $hDrawingArea.Refresh
 
@@ -52,10 +58,9 @@ End
 Public Sub DrawingArea_Draw()
   
   Dim F As Integer = Style.FrameWidth
+  Dim iWP As Integer
   Dim W As Float
   Dim iCol As Integer
-  
-  W = (Paint.W - F * 2) * $fValue
   
   iCol = Color.Merge(Color.Background, Color.LightForeground)
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
@@ -63,28 +68,87 @@ Public Sub DrawingArea_Draw()
   
   iCol = Color.SelectedBackground
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
-  Paint.FillRect(F, F, W, Paint.H - F * 2, iCol)
+  
+  If $bPulse Then
+    
+    iWP = (Paint.H - F * 2) * 2
+    W = Paint.W - F * 2 - iWP
+    If W >= 10 Then    
+      W *= $fValue
+      Paint.FillRect(F * 2 + W, F * 2, iWP - F * 2, Paint.H - F * 4, iCol)
+      Style.PaintPanel(F + W, F, iWP, Paint.H - F * 2, Border.Raised)
+    Endif
+    
+  Else
+  
+    W = (Paint.W - F * 2) * $fValue
+  
+    Paint.FillRect(F, F, W, Paint.H - F * 2, iCol)
+    
+    Style.PaintPanel(F, F, W, Draw.H - F * 2, Border.Raised)
+    
+    If $bLabel Then
+  
+      Paint.Save
+      Paint.Rectangle(F, F, W, Paint.H - F * 2)
+      Paint.Clip
+      Paint.Background = Color.SelectedForeground
+      Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
+      Paint.Restore
+  
+      Paint.Save
+      Paint.Rectangle(F + W, F, Paint.W - F * 2 - W, Paint.H - F * 2)
+      Paint.Clip
+      Paint.Background = Color.Foreground
+      Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
+      Paint.Restore
+  
+    Endif
+    
+  Endif
   
   Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
-  'Style.PaintPanel(F, F, W, Draw.H - F * 2, Border.Raised)
-  
-  If $bLabel Then
-
-    Paint.Save
-    Paint.Rectangle(F, F, W, Paint.H - F * 2)
-    Paint.Clip
-    Paint.Background = Color.SelectedForeground
-    Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
-    Paint.Restore
-
-    Paint.Save
-    Paint.Rectangle(F + W, F, Paint.W - F * 2 - W, Paint.H - F * 2)
-    Paint.Clip
-    Paint.Background = Color.Foreground
-    Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
-    Paint.Restore
-
-  Endif
   
 End
 
+
+Private Function Pulse_Read() As Boolean
+
+  Return $bPulse
+
+End
+
+Private Sub Pulse_Write(Value As Boolean)
+
+  If Value = $bPulse Then Return
+  
+  $bPulse = Value
+  
+  If Me.Design Then Return
+  
+  If $bPulse And If Me.W > (Me.H * 3) Then
+    $hTimerPulse = New Timer As "Pulse"
+    $hTimerPulse.Delay = 50
+    $hTimerPulse.Start
+    $fValue = 0
+    $iPulse = 1
+  Else
+    $hTimerPulse = Null
+  Endif
+
+End
+
+Public Sub Pulse_Timer()
+
+  $fValue += 0.05 * $iPulse
+  If $fValue < 0 Then
+    $fValue = 0
+    $iPulse = 1
+  Else If $fValue > 1 Then
+    $fValue = 1
+    $iPulse = -1
+  Endif
+  
+  $hDrawingArea.Refresh
+  
+End
