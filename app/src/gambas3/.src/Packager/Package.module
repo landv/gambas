@@ -1002,10 +1002,16 @@ Private Sub ChangelogToDebChangelog(sSys As String, sPackageName As String) As S
   Dim sVersion As String
   Dim sBits As String[]
   Dim previousLine As String
+  Dim sWord As String
+  Dim sNextWord As String
+  Dim aWord As String[]
   
   aLine = Split(ChangeLog, "\n")  
+  
   For Each sLine In aLine
+    
     If Left$(sLine, 1) = "*" Then 
+      
       If sDate <> "" Then
         'Debian packages don't accept an empty changelog line for the release:
         If previousLine = sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n" Then 
@@ -1022,17 +1028,44 @@ Private Sub ChangelogToDebChangelog(sSys As String, sPackageName As String) As S
         sVersion = $sVersion & "-" & CStr(Project.PackageVersion)
       Endif
       previousLine = sPackageName & " (" & sVersion & ") unstable; urgency=low" & "\n\n"
-      debChangelog = debChangelog & previousLine
+      debChangelog &= previousLine
+    
     Else 
+      
       If Trim$(sLine) <> "" Then
-        previousLine = "  * " & Right$(sLine, Len(sLine) - 2) & "\n" 
-        debChangelog = debChangelog & previousLine    
+        
+        aWord = Split(Right$(sLine, -2), " ")
+        previousLine = "  * "
+        sLine = ""
+        For Each sWord In aWord
+          Repeat
+            If String.Len(sWord) > 76 Then
+              sNextWord = String.Mid$(sWord, 77)
+              sWord = String.Left(sWord, 76)
+            Else
+              sNextWord = ""
+            Endif
+            If String.Len(sLine & sWord) > 76 Then
+              previousLine &= sLine & "\n    "
+              sLine = sWord
+            Else
+              sLine = LTrim(sLine & " " & sWord)
+            Endif
+            sWord = sNextWord
+          Until Not sWord
+        Next
+        If sLine Then previousLine &= sLine & "\n"
+        
+        debChangelog &= previousLine
+        
       Endif
+      
     Endif   
+    
   Next 
   
-  debChangelog = debChangelog & "\n -- " & Project.Maintainer & " <" & Project.Address & ">  " & sDate & "\n"
-   
+  debChangelog &= "\n -- " & Project.Maintainer & " <" & Project.Address & ">  " & sDate & "\n"
+  
   Return debChangelog 
 
 End
