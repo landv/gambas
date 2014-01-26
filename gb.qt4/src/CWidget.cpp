@@ -1788,12 +1788,14 @@ END_METHOD
 BEGIN_PROPERTY(Control_Drop)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(WIDGET->acceptDrops());
+		GB.ReturnBoolean(THIS->flag.drop);
 	else
 	{
-		WIDGET->setAcceptDrops(VPROP(GB_BOOLEAN));
+		THIS->flag.drop = VPROP(GB_BOOLEAN);
 		if (CWIDGET_test_flag(THIS, WF_SCROLLVIEW))
 			get_viewport(WIDGET)->setAcceptDrops(VPROP(GB_BOOLEAN));
+		else
+			WIDGET->setAcceptDrops(VPROP(GB_BOOLEAN));
 	}
 
 END_PROPERTY
@@ -3025,6 +3027,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	__DRAG_ENTER:
 	{
+		if (!control->flag.drop)
+			goto __NEXT;
+
 		if (CDRAG_drag_enter((QWidget *)widget, control, (QDropEvent *)event))
 		{
 			if (!((QDropEvent *)event)->isAccepted())
@@ -3037,6 +3042,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	__DRAG_MOVE:
 	{
+		if (!control->flag.drop)
+			goto __NEXT;
+
 		for(;;)
 		{
 			if (GB.CanRaise(control, EVENT_DragMove))
@@ -3063,12 +3071,18 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 	__DRAG_LEAVE:
 	{
+		if (!control->flag.drop)
+			goto __NEXT;
+
 		CDRAG_drag_leave(control);
 		goto __NEXT;
 	}
 	
 	__DROP:
 	{
+		if (!control->flag.drop)
+			goto __NEXT;
+
 		//if (!CWIDGET_test_flag(control, WF_NO_DRAG))
 		CDRAG_drag_leave(control);
 		if (CDRAG_drag_drop((QWidget *)widget, control, (QDropEvent *)event))

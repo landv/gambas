@@ -74,7 +74,8 @@ typedef
 			unsigned no_keyboard : 1;
 			unsigned tablet_pressed : 1;
 			unsigned has_action : 1;
-			unsigned _reserved : 6;
+			unsigned drop : 1;
+			unsigned _reserved : 5;
 			} flag;
 		int level;
 		char *name;
