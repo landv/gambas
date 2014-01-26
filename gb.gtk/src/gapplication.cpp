@@ -610,11 +610,11 @@ __FOUND_WIDGET:
 				cancel = control->onMouseEvent(control, gEvent_MouseMove);
 			
 				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
-				if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
+				if (!cancel && (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))
 						//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
 						&& gDrag::checkThreshold(control, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
 				{
-					control->onMouseEvent(control, gEvent_MouseDrag);
+					cancel = control->onMouseEvent(control, gEvent_MouseDrag);
 				}
 				gMouse::invalidate();
 				
@@ -1332,7 +1332,7 @@ int gApplication::getScrollbarSpacing()
 int gApplication::getInnerWidth()
 {
 	if (strcmp(getStyleName(), "oxygen-gtk") == 0)
-		return 2;
+		return 1;
 	else
 		return 0;
 }
@@ -1346,12 +1346,12 @@ int gApplication::getFrameWidth()
   GtkBorder border;
 
 	gtk_style_context_get_padding(context, (GtkStateFlags)0, &tmp);
-	gtk_style_context_get_border(context, (GtkStateFlags)0, &border);
+	/*gtk_style_context_get_border(context, (GtkStateFlags)0, &border);
 
 	tmp.top += border.top;
 	tmp.right += border.right;
 	tmp.bottom += border.bottom;
-	tmp.left += border.left;
+	tmp.left += border.left;*/
 
 	w = MIN(tmp.top, tmp.left);
 	w = MIN(w, tmp.bottom);

@@ -544,9 +544,7 @@ static void style_panel(int x, int y, int w, int h, int border, int state)
 		default: shadow = GTK_SHADOW_NONE;
 	}
 	
-	gtk_paint_shadow(style, _dr,
-		st, shadow, get_area(), NULL, NULL,
-		x, y, w, h);
+	gtk_paint_shadow(style, _dr, st, shadow, get_area(), NULL, NULL, x, y, w, h);
 
 	if (border == BORDER_PLAIN)
 	{
