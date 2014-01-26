@@ -41,7 +41,7 @@
 #include "x11.h"
 #endif
 
-static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state)
+static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state, GB_COLOR color = COLOR_DEFAULT, QPalette::ColorRole role = QPalette::Window)
 {
 	opt.rect = QRect(x, y, w ,h);
 	opt.state = QStyle::State_None;
@@ -54,6 +54,13 @@ static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state
 		opt.state |= QStyle::State_MouseOver;
 	if (state & GB_DRAW_STATE_ACTIVE)
 		opt.state |= QStyle::State_On | QStyle::State_Sunken | QStyle::State_Active;
+
+	if (color != GB_COLOR_DEFAULT)
+	{
+		QPalette palette;
+		palette.setColor(role, QColor::fromRgba((QRgb)(color ^ 0xFF000000)));
+		opt.palette = palette;
+	}
 }
 
 static void paint_focus(QPainter *p, int x, int y, int w, int h, int state)
@@ -221,14 +228,7 @@ static void style_box(QPainter *p, int x, int y, int w, int h, int state, GB_COL
 	//if (GB.Is(d->device, CLASS_DrawingArea))
 	//	opt.initFrom(QWIDGET(d->device));
 	
-	init_option(opt, x, y, w, h, state);
-
-	if (color != GB_COLOR_DEFAULT)
-	{
-		QPalette palette;
-		palette.setColor(QPalette::Base, QColor::fromRgba((QRgb)(color ^ 0xFF000000)));
-		opt.palette = palette;
-	}
+	init_option(opt, x, y, w, h, state, color, QPalette::Base);
 
 	opt.lineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt);
 	opt.midLineWidth = 0;
