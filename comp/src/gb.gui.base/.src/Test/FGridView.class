@@ -57,3 +57,15 @@ Public Sub gvwInfo_ColumnClick(Column As Integer)
   Debug Column
 
 End
+
+Public Sub gvwInfo_MouseDrag()
+
+  Drag(gvwInfo, "25", "text/plain")
+
+End
+
+Public Sub Label1_Drag()
+
+  Debug Drag.Formats.Join(",")
+
+End
