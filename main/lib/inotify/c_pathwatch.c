@@ -1,7 +1,7 @@
 /*
- * c_inotify.c - Inotify and .InotifyEvents classes
+ * c_pathwatch.c - PathWath and .PathWatchEvents classes
  *
- * Copyright (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#define __C_INOTIFY_C
+#define __C_PATHWATCH_C
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +31,7 @@
 #include <limits.h>
 
 #include "gambas.h"
-#include "c_inotify.h"
+#include "c_pathwatch.h"
 
 #define GB_ErrorErrno()	GB.Error(strerror(errno))
 
@@ -150,7 +150,7 @@ again:
 		watch = find_watch(*firstp, iev->wd);
 		if (!watch) {
 			if (getenv("GB_INOTIFY_DEBUG")) {
-				fprintf(stderr, "Inotify: Descriptor "
+				fprintf(stderr, "gb.inotify: Descriptor "
 					"%d not known. Name was '%s'\n",
 					iev->wd, iev->name);
 			}
@@ -166,8 +166,9 @@ again:
 			eventp = get_event(&iev->mask);
 			if (!eventp) {
 				if (getenv("GB_INOTIFY_DEBUG")) {
-					fprintf(stderr, "Inotify: Unhandled "
-						"event 0x%x of watch '%s'\n",
+					fprintf(stderr, "gb.inotify: "
+						"Unhandled event 0x%x "
+						"of watch '%s'\n",
 						oldmask ^ iev->mask,
 						watch->path);
 				}
@@ -205,10 +206,10 @@ static void INOTIFY_exit(void)
 }
 
 /**G
- * Return an inotify watch from its path. If the path is not watched, Null
- * is returned.
+ * Return a PathWatch from its path. If the path is not watched, Null is
+ * returned.
  **/
-BEGIN_METHOD(Inotify_get, GB_STRING path)
+BEGIN_METHOD(PathWatch_get, GB_STRING path)
 
 	CWATCH *watch;
 
@@ -224,7 +225,7 @@ END_METHOD
 /**G
  * Automatically free all remaining watches.
  **/
-BEGIN_METHOD_VOID(Inotify_exit)
+BEGIN_METHOD_VOID(PathWatch_exit)
 
 	CWATCH *watch = _ino.first, *next;
 
@@ -244,18 +245,18 @@ END_METHOD
  *
  * If the NoFollowLink parameter is given, symlinks are not followed.
  *
- * Events is a bitmask specifying which events are to be reported at all. If
- * you know that you only want to watch certain events, you should give them
- * here as this increases performance. By default, all events are watched.
+ * Events is a bitmask specifying which events are to be reported at all.
+ * The default mask is determined by the event handlers defined for this
+ * object.
  *
  * TODO: Maybe add support for IN_EXCL_UNLINK, IN_ONESHOT and IN_ONLYDIR.
  **/
-BEGIN_METHOD(Inotify_new, GB_STRING path; GB_BOOLEAN nofollow;
-			  GB_INTEGER mask)
+BEGIN_METHOD(PathWatch_new, GB_STRING path; GB_BOOLEAN nofollow;
+			    GB_INTEGER mask)
 
-	int wd;
-	uint32_t mask = VARGOPT(mask, IN_ALL_EVENTS);
-	char *path = GB.NewZeroString(GB.ToZeroString(ARG(path)));
+	int wd, i;
+	uint32_t mask = VARGOPT(mask, 0);
+	char *path = GB.NewString(STRING(path), LENGTH(path));
 
 	/* If this is the first watch, we need an inotify instance first.
 	 * We don't use the component's init function to set up _ino because
@@ -265,8 +266,23 @@ BEGIN_METHOD(Inotify_new, GB_STRING path; GB_BOOLEAN nofollow;
 	if (!_ino.first)
 		INOTIFY_init();
 
+	/* Get the mask */
+	if (!mask) {
+		for (i = 0; _event_table[i].eventp; i++) {
+			printf("Checking event %d: %d\n", *_event_table[i].eventp,
+				GB.CanRaise(THIS, *_event_table[i].eventp));
+			if (GB.CanRaise(THIS, *_event_table[i].eventp))
+				mask |= _event_table[i].mask;
+		}
+		/* But we need at least to watch one event. The IN_UNMOUNT event
+		 * seems a good one as it normally doesn't trigger too often. */
+		mask |= IN_UNMOUNT;
+	}
+	printf("mask=%u\n", mask);
+
 	if (VARGOPT(nofollow, 0))
 		mask |= IN_DONT_FOLLOW;
+
 	wd = inotify_add_watch(_ino.fd, path, mask);
 	if (wd == -1) {
 		GB.FreeString(&path);
@@ -290,7 +306,7 @@ END_METHOD
 /**G
  * Deallocate the watch.
  **/
-BEGIN_METHOD_VOID(Inotify_free)
+BEGIN_METHOD_VOID(PathWatch_free)
 
 	CWATCH *watches, *last = NULL;
 
@@ -317,11 +333,13 @@ END_METHOD
 
 /**G
  * Drop the reference which the object received because it is watched. When
- * the Inotify object is not referenced anywhere in your program, it will
+ * the PathWatch object is not referenced anywhere in your program, it will
  * now be freed.
  **/
-BEGIN_METHOD_VOID(Inotify_Release)
+BEGIN_METHOD_VOID(PathWatch_Release)
 
+	/* TODO: The user may be able to abuse this one... Maybe add a flag
+	 * or so... */
 	GB.Unref(&_object);
 
 END_METHOD
@@ -329,7 +347,7 @@ END_METHOD
 /**G
  * Return the watched path.
  **/
-BEGIN_PROPERTY(Inotify_Path)
+BEGIN_PROPERTY(PathWatch_Path)
 
 	GB.ReturnString(THIS->path);
 
@@ -338,7 +356,7 @@ END_PROPERTY
 /**G
  * This Variant is free for use by the Gambas programmer.
  **/
-BEGIN_PROPERTY(Inotify_Tag)
+BEGIN_PROPERTY(PathWatch_Tag)
 
 	if (READ_PROPERTY) {
 		GB.ReturnVariant(&THIS->tag);
@@ -348,8 +366,8 @@ BEGIN_PROPERTY(Inotify_Tag)
 
 END_PROPERTY
 
-GB_DESC CInotify[] = {
-	GB_DECLARE("Inotify", sizeof(CWATCH)),
+GB_DESC CPathWatch[] = {
+	GB_DECLARE("PathWatch", sizeof(CWATCH)),
 
 	/*
 	 * Inotify event bits
@@ -384,16 +402,16 @@ GB_DESC CInotify[] = {
 	GB_EVENT("Open", NULL, "(File)s(IsDir)b", &EVENT_Open),
 	GB_EVENT("Unmount", NULL, "(File)s(IsDir)b", &EVENT_Unmount),
 
-	GB_STATIC_METHOD("_exit", NULL, Inotify_exit, NULL),
-	GB_STATIC_METHOD("_get", "Inotify", Inotify_get, "(Path)s"),
+	GB_STATIC_METHOD("_exit", NULL, PathWatch_exit, NULL),
+	GB_STATIC_METHOD("_get", "PathWatch", PathWatch_get, "(Path)s"),
 
-	GB_METHOD("_new", NULL, Inotify_new, "(Path)s[(NoFollowLink)b(Events)i]"),
-	GB_METHOD("_free", NULL, Inotify_free, NULL),
-	GB_METHOD("Release", NULL, Inotify_Release, NULL),
+	GB_METHOD("_new", NULL, PathWatch_new, "(Path)s[(NoFollowLink)b(Events)i]"),
+	GB_METHOD("_free", NULL, PathWatch_free, NULL),
+	GB_METHOD("Release", NULL, PathWatch_Release, NULL),
 
-	GB_PROPERTY_SELF("Events", ".InotifyEvents"),
-	GB_PROPERTY_READ("Path", "s", Inotify_Path),
-	GB_PROPERTY("Tag", "v", Inotify_Tag),
+	GB_PROPERTY_SELF("Events", ".PathWatchEvents"),
+	GB_PROPERTY_READ("Path", "s", PathWatch_Path),
+	GB_PROPERTY("Tag", "v", PathWatch_Tag),
 
 	GB_END_DECLARE
 };
@@ -408,54 +426,32 @@ static void change_mask(CWATCH *watch, int set, uint32_t bits)
 	inotify_add_watch(_ino.fd, watch->path, watch->mask);
 }
 
-#define IMPLEMENT_InotifyEvent(which, bits)		\
-BEGIN_PROPERTY(InotifyEvents_ ## which)			\
-							\
-	if (READ_PROPERTY) {				\
-		GB.ReturnBoolean(THIS->mask & bits);	\
-		return;					\
-	}						\
-	change_mask(THIS, VPROP(GB_BOOLEAN), bits);	\
-							\
-END_PROPERTY
+/**G
+ * Return if the given flag is set. You can also combine multiple flags to
+ * check if they are set simultaneously.
+ **/
+BEGIN_METHOD(PathWatchEvents_get, GB_INTEGER flags)
 
-IMPLEMENT_InotifyEvent(Access, IN_ACCESS)
-IMPLEMENT_InotifyEvent(Attribute, IN_ATTRIB)
-IMPLEMENT_InotifyEvent(CloseWrite, IN_CLOSE_WRITE)
-IMPLEMENT_InotifyEvent(CloseNoWrite, IN_CLOSE_NOWRITE)
-IMPLEMENT_InotifyEvent(Close, IN_CLOSE)
-IMPLEMENT_InotifyEvent(Create, IN_CREATE)
-IMPLEMENT_InotifyEvent(Delete, IN_DELETE)
-IMPLEMENT_InotifyEvent(DeleteSelf, IN_DELETE_SELF)
-IMPLEMENT_InotifyEvent(Modify, IN_MODIFY)
-IMPLEMENT_InotifyEvent(MoveSelf, IN_MOVE_SELF)
-IMPLEMENT_InotifyEvent(MovedFrom, IN_MOVED_FROM)
-IMPLEMENT_InotifyEvent(MovedTo, IN_MOVED_TO)
-IMPLEMENT_InotifyEvent(Move, IN_MOVE)
-IMPLEMENT_InotifyEvent(Open, IN_OPEN)
-IMPLEMENT_InotifyEvent(Unmount, IN_UNMOUNT)
-IMPLEMENT_InotifyEvent(All, IN_ALL_EVENTS)
+	GB.ReturnBoolean(!!(THIS->mask & VARG(flags)));
 
-GB_DESC CInotifyEvents[] = {
-	GB_DECLARE(".InotifyEvents", 0),
+END_METHOD
+
+/**G
+ * Set or clear a flag. You can combine multiple flags to set or clear them
+ * en masse.
+ **/
+BEGIN_METHOD(PathWatchEvents_put, GB_BOOLEAN value; GB_INTEGER flags)
+
+	change_mask(THIS, !!VARG(value), VARG(flags));
+
+END_METHOD
+
+GB_DESC CPathWatchEvents[] = {
+	GB_DECLARE(".PathWatchEvents", 0),
 	GB_VIRTUAL_CLASS(),
 
-	GB_PROPERTY("Access", "b", InotifyEvents_Access),
-	GB_PROPERTY("Attribute", "b", InotifyEvents_Attribute),
-	GB_PROPERTY("CloseWrite", "b", InotifyEvents_CloseWrite),
-	GB_PROPERTY("CloseNoWrite", "b", InotifyEvents_CloseNoWrite),
-	GB_PROPERTY("Close", "b", InotifyEvents_Close),
-	GB_PROPERTY("Create", "b", InotifyEvents_Create),
-	GB_PROPERTY("Delete", "b", InotifyEvents_Delete),
-	GB_PROPERTY("DeleteSelf", "b", InotifyEvents_DeleteSelf),
-	GB_PROPERTY("Modify", "b", InotifyEvents_Modify),
-	GB_PROPERTY("MoveSelf", "b", InotifyEvents_MoveSelf),
-	GB_PROPERTY("MovedFrom", "b", InotifyEvents_MovedFrom),
-	GB_PROPERTY("MovedTo", "b", InotifyEvents_MovedTo),
-	GB_PROPERTY("Move", "b", InotifyEvents_Move),
-	GB_PROPERTY("Open", "b", InotifyEvents_Open),
-	GB_PROPERTY("Unmount", "b", InotifyEvents_Unmount),
-	GB_PROPERTY("All", "b", InotifyEvents_All),
+	GB_METHOD("_get", "b", PathWatchEvents_get, "(Flags)i"),
+	GB_METHOD("_put", NULL, PathWatchEvents_put, "(Value)b(Flags)i"),
 
 	GB_END_DECLARE
 };

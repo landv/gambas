@@ -1,7 +1,7 @@
 /*
- * c_inotify.h
+ * c_pathwatch.h
  *
- * Copyright (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef __C_INOTIFY_H
-#define __C_INOTIFY_H
+#ifndef __C_PATHWATCH_H
+#define __C_PATHWATCH_H
 
 #include "gambas.h"
 
 extern GB_INTERFACE GB;
 
-#ifndef __C_INOTIFY_C
-extern GB_DESC CInotify[];
-extern GB_DESC CInotifyEvents[];
+#ifndef __C_PATHWATCH_C
+extern GB_DESC CPathWatch[];
+extern GB_DESC CPathWatchEvents[];
 #endif
 
-#endif /* __C_INOTIFY_H */
+#endif /* __C_PATHWATCH_H */
