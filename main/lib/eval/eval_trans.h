@@ -60,7 +60,7 @@ bool TRANS_get_number(int index, TRANS_NUMBER *result);
 
 void TRANS_expression(void);
 bool TRANS_affectation(void);
-void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
+void TRANS_operation(short op, short nparam, PATTERN previous);
 
 /* eval_trans_tree.c */
 

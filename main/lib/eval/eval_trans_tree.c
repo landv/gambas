@@ -122,7 +122,7 @@ static void add_reserved_pattern(int reserved)
 
 
 
-static void add_operator_output(short op, short nparam, bool has_output)
+static void add_operator_output(short op, short nparam)
 {
 	PATTERN pattern;
 
@@ -146,8 +146,8 @@ static void add_operator_output(short op, short nparam, bool has_output)
 
 	pattern = PATTERN_make(RT_RESERVED, op);
 
-	if (op == RS_LBRA && has_output)
-		pattern = PATTERN_set_flag(pattern, RT_OUTPUT);
+	/*if (op == RS_LBRA && has_output)
+		pattern = PATTERN_set_flag(pattern, RT_OUTPUT);*/
 
 	add_pattern(pattern);
 
@@ -158,17 +158,17 @@ static void add_operator_output(short op, short nparam, bool has_output)
 
 static void add_operator(short op, short nparam)
 {
-	add_operator_output(op, nparam, FALSE);
+	add_operator_output(op, nparam);
 }
 
 
 
-static void add_subr(PATTERN subr_pattern, short nparam, bool has_output)
+static void add_subr(PATTERN subr_pattern, short nparam)
 {
 	PATTERN pattern;
 
-	if (has_output)
-		subr_pattern = PATTERN_set_flag(subr_pattern, RT_OUTPUT);
+	/*if (has_output)
+		subr_pattern = PATTERN_set_flag(subr_pattern, RT_OUTPUT);*/
 
 	add_pattern(subr_pattern);
 
@@ -188,8 +188,8 @@ static void analyze_make_array()
 		for(;;)
 		{
 			n++;
-			if (n > MAX_PARAM_OP)
-				THROW("Too many arguments");
+			/*if (n > MAX_PARAM_OP)
+				THROW("Too many arguments");*/
 			analyze_expr(0, RS_NONE);
 			
 			if (!checked)
@@ -204,14 +204,31 @@ static void analyze_make_array()
 					THROW("Missing ':'");
 				current++;
 				n++;
-				if (n > MAX_PARAM_OP)
-					THROW("Too many arguments");
+				/*if (n > MAX_PARAM_OP)
+					THROW("Too many arguments");*/
 				analyze_expr(0, RS_NONE);
 			}
 			
 			if (!PATTERN_is(*current, RS_COMMA))
 				break;
 			current++;
+
+			if (collection)
+			{
+				if (n == (MAX_PARAM_OP - 1))
+				{
+					add_operator(RS_COLON, 0);
+					n = 0;
+				}
+			}
+			else
+			{
+				if (n == MAX_PARAM_OP)
+				{
+					add_operator(RS_RSQR, 0);
+					n = 0;
+				}
+			}
 		}
 	}
 
@@ -322,20 +339,12 @@ static void analyze_single(int op)
 
 static void analyze_call()
 {
-	/*static PATTERN *output[MAX_PARAM_OP];*/
-
 	int nparam_post = 0;
 	PATTERN subr_pattern = NULL_PATTERN;
 	PATTERN last_pattern = get_last_pattern(1);
-	bool has_output = FALSE;
-	/*int i;
-	PATTERN *save_current;*/
 	SUBR_INFO *info;
 	bool optional = TRUE;
 
-	/*
-	get_pattern_subr(last_pattern, &subr);
-	*/
 	if (PATTERN_is_subr(last_pattern))
 	{
 		subr_pattern = last_pattern;
@@ -369,19 +378,6 @@ static void analyze_call()
 			current++;
 		}
 
-		#if 0
-		if (FALSE) /*(PATTERN_is(*current, RS_AMP))*/
-		{
-			current++;
-			output[nparam_post] = current;
-			has_output = TRUE;
-		}
-		else
-		{
-			output[nparam_post] = NULL;
-		}
-		#endif
-
 		if (optional && (PATTERN_is(*current, RS_COMMA) || PATTERN_is(*current, RS_RBRA)))
 		{
 			add_reserved_pattern(RS_OPTIONAL);
@@ -412,7 +408,7 @@ static void analyze_call()
 	*/
 
 	if (subr_pattern == NULL_PATTERN)
-		add_operator_output(RS_LBRA, nparam_post, has_output);
+		add_operator_output(RS_LBRA, nparam_post);
 	else
 	{
 		info = &COMP_subr_info[PATTERN_index(subr_pattern)];
@@ -422,32 +418,8 @@ static void analyze_call()
 		else if (nparam_post > info->max_param)
 			THROW2("Too many arguments to &1", info->name);
 
-		add_subr(subr_pattern, nparam_post, has_output);
+		add_subr(subr_pattern, nparam_post);
 	}
-
-	#if 0
-	if (has_output)
-	{
-		save_current = current;
-
-		for (i = nparam_post - 1; i >= 0; i--)
-		{
-			if (output[i] != NULL)
-			{
-				current = output[i];
-				analyze_expr(0, RS_NONE);
-				add_reserved_pattern(RS_AT);
-			}
-			else
-				add_reserved_pattern(RS_COMMA); /* Provoque un drop */
-		}
-
-		if (subr_pattern != NULL_PATTERN)
-			add_reserved_pattern(RS_RBRA); /* Provoque le PUSH RETURN dans le cas d'un call*/
-
-		current = save_current;
-	}
-	#endif
 }
 
 

@@ -654,13 +654,9 @@ BEGIN_METHOD(Array_Extract, GB_INTEGER start; GB_INTEGER length)
 END_METHOD
 
 
-BEGIN_METHOD(Array_Resize, GB_INTEGER size)
-
-	int size = VARG(size);
+void CARRAY_resize(CARRAY *_object, int size)
+{
 	int count = THIS->count;
-
-	if (check_not_multi(THIS))
-		return;
 
 	if (size > count)
 	{
@@ -673,6 +669,17 @@ BEGIN_METHOD(Array_Resize, GB_INTEGER size)
 	}
 
 	THIS->count = size;
+}
+
+
+BEGIN_METHOD(Array_Resize, GB_INTEGER size)
+
+	int size = VARG(size);
+
+	if (check_not_multi(THIS))
+		return;
+
+	CARRAY_resize(THIS, size);
 	
 END_METHOD
 

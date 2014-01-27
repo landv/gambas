@@ -1056,26 +1056,20 @@ void CODE_stop_event(void)
 #endif
 
 
-void CODE_subr(short subr, short nparam, short optype, bool output, bool fixed)
+void CODE_subr(short subr, short nparam, short optype, bool fixed)
 {
 	LAST_CODE;
 
-	if (output)
-		use_stack(0);
-	else
-		use_stack(1 - nparam);
+	use_stack(1 - nparam);
 
 	#ifdef DEBUG
-	printf("SUBR %s %d (%d)\n", output ? "OUTPUT" : "", subr, nparam);
+	printf("SUBR %d (%d)\n", subr, nparam);
 	#endif
 
 	if (optype == 0)
 	{
 		if (fixed)
 			nparam = 0;
-
-		/*if (output)
-			nparam |= CODE_CALL_OUTPUT;*/
 	}
 	else
 	{
@@ -1087,7 +1081,7 @@ void CODE_subr(short subr, short nparam, short optype, bool output, bool fixed)
 }
 
 
-void CODE_subr_output(short subr, short nparam, int output)
+/*void CODE_subr_output(short subr, short nparam, int output)
 {
 	LAST_CODE;
 
@@ -1099,7 +1093,7 @@ void CODE_subr_output(short subr, short nparam, int output)
 
 	subr += CODE_FIRST_SUBR;
 	write_short(((subr & 0xFF) << 8) | (nparam & 0xFF));
-}
+}*/
 
 
 void CODE_call(short nparam)

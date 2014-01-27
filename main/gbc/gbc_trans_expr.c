@@ -268,7 +268,7 @@ static void trans_subr(int subr, short nparam)
 	else if (nparam > info->max_param)
 		THROW("Too many arguments to &1()", info->name);
 
-	CODE_subr(info->opcode, nparam, info->optype, FALSE /* output */, (info->max_param == info->min_param));
+	CODE_subr(info->opcode, nparam, info->optype, info->max_param == info->min_param);
 }
 
 

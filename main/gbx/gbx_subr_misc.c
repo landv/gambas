@@ -290,45 +290,101 @@ _FREE:
 
 void SUBR_array(ushort code)
 {
+	static bool reuse = FALSE;
+
 	TYPE type;
-	int i;
-	GB_ARRAY array;
+	int i, j;
+	CARRAY *array;
+	bool next_reuse;
 
 	SUBR_ENTER();
 
-	type = SUBR_check_good_type(PARAM, NPARAM);
-	
-	if (type == T_NULL)
-		type = T_OBJECT;
-	
-	for (i = 0; i < NPARAM; i++)
-		VALUE_conv(&PARAM[i], type);
-	
-	GB_ArrayNew(&array, type, NPARAM);
-	OBJECT_REF(array);
+	if (NPARAM == 0)
+	{
+		NPARAM = MAX_PARAM_OP;
+		PARAM -= NPARAM;
+		next_reuse = TRUE;
+	}
+	else
+		next_reuse = FALSE;
+
+	if (reuse)
+	{
+		array = (CARRAY *)(PARAM[-1]._object.object);
+		type = array->type;
+	}
+	else
+	{
+		type = SUBR_check_good_type(PARAM, NPARAM);
+
+		if (type == T_NULL)
+			type = T_OBJECT;
+	}
 
 	for (i = 0; i < NPARAM; i++)
+		VALUE_conv(&PARAM[i], type);
+
+	if (reuse)
 	{
-		GB_Store(type, (GB_VALUE *)&PARAM[i], GB_ArrayGet(array, i));
+		j = array->count;
+		CARRAY_resize(array, j + NPARAM);
+	}
+	else
+	{
+		j = 0;
+		GB_ArrayNew(POINTER(&array), type, NPARAM);
+		OBJECT_REF(array);
+	}
+
+	for (i = 0; i < NPARAM; i++, j++)
+	{
+		GB_Store(type, (GB_VALUE *)&PARAM[i], GB_ArrayGet(array, j));
 		RELEASE(&PARAM[i]);
 	}
-		
-	PARAM->_object.class = OBJECT_class(array); //CLASS_Array;
-	PARAM->_object.object = array;
-	SP = PARAM + 1;
+
+	if (reuse)
+	{
+		SP = PARAM;
+	}
+	else
+	{
+		PARAM->_object.class = OBJECT_class(array); //CLASS_Array;
+		PARAM->_object.object = array;
+		SP = PARAM + 1;
+	}
+
+	reuse = next_reuse;
 }
 
 void SUBR_collection(ushort code)
 {
+	static bool reuse = FALSE;
+
 	int i;
 	GB_COLLECTION col;
 	char *key;
 	int len;
 	VALUE *vkey, *vval;
+	bool next_reuse;
 
 	SUBR_ENTER();
 
-	GB_CollectionNew(&col, GB_COMP_BINARY);
+	if (NPARAM == 0)
+	{
+		NPARAM = MAX_PARAM_OP - 1;
+		PARAM -= NPARAM;
+		next_reuse = TRUE;
+	}
+	else
+		next_reuse = FALSE;
+
+	if (reuse)
+		col = (GB_COLLECTION)(PARAM[-1]._object.object);
+	else
+	{
+		GB_CollectionNew(&col, GB_COMP_BINARY);
+		OBJECT_REF(col);
+	}
 
 	for (i = 0; i < NPARAM; i += 2)
 	{
@@ -345,10 +401,18 @@ void SUBR_collection(ushort code)
 		RELEASE(&PARAM[i + 1]);
 	}
 
-	OBJECT_REF(col);
-	PARAM->_object.class = OBJECT_class(col); //CLASS_Array;
-	PARAM->_object.object = col;
-	SP = PARAM + 1;
+	if (reuse)
+	{
+		SP = PARAM;
+	}
+	else
+	{
+		PARAM->_object.class = OBJECT_class(col); //CLASS_Array;
+		PARAM->_object.object = col;
+		SP = PARAM + 1;
+	}
+
+	reuse = next_reuse;
 }
 
 

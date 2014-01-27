@@ -45,22 +45,22 @@ static void analyze_expr(short priority, short op_main);
 static void analyze_array();
 
 
+static void THROW_EXPR_TOO_COMPLEX()
+{
+	THROW("Expression too complex");
+}
+
 static void inc_level()
 {
 	level++;
 	if (level > MAX_EXPR_LEVEL)
-	THROW("Expression too complex");
+		THROW_EXPR_TOO_COMPLEX();
 }
 
 
 static void dec_level()
 {
 	level--;
-}
-
-static void THROW_EXPR_TOO_COMPLEX()
-{
-	THROW("Expression too complex");
 }
 
 #define add_pattern(_pattern) \
@@ -244,8 +244,8 @@ static void analyze_make_array()
 		for(;;)
 		{
 			n++;
-			if (n > MAX_PARAM_OP)
-				THROW("Too many arguments");
+			/*if (n > MAX_PARAM_OP)
+				THROW("Too many arguments");*/
 			analyze_expr(0, RS_NONE);
 			
 			if (!checked)
@@ -260,14 +260,31 @@ static void analyze_make_array()
 					THROW(E_MISSING, "':'");
 				current++;
 				n++;
-				if (n > MAX_PARAM_OP)
-					THROW("Too many arguments");
+				/*if (n > MAX_PARAM_OP)
+					THROW("Too many arguments");*/
 				analyze_expr(0, RS_NONE);
 			}
 			
 			if (!PATTERN_is(*current, RS_COMMA))
 				break;
 			current++;
+
+			if (collection)
+			{
+				if (n == (MAX_PARAM_OP - 1))
+				{
+					add_operator(RS_COLON, 0);
+					n = 0;
+				}
+			}
+			else
+			{
+				if (n == MAX_PARAM_OP)
+				{
+					add_operator(RS_RSQR, 0);
+					n = 0;
+				}
+			}
 		}
 	}
 

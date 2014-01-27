@@ -181,7 +181,7 @@ static void trans_identifier(int index, bool first, bool point)
 }
 
 
-static void trans_subr(int subr, short nparam, bool output)
+static void trans_subr(int subr, short nparam)
 {
 	SUBR_INFO *info = &COMP_subr_info[subr];
 
@@ -192,11 +192,11 @@ static void trans_subr(int subr, short nparam, bool output)
 	else if (nparam > info->max_param)
 		THROW2("Too many arguments to &1()", info->name);
 
-	CODE_subr(info->opcode, nparam, info->optype, output, (info->max_param == info->min_param));
+	CODE_subr(info->opcode, nparam, info->optype, info->max_param == info->min_param);
 }
 
 
-void TRANS_operation(short op, short nparam, bool output, PATTERN previous)
+void TRANS_operation(short op, short nparam, PATTERN previous)
 {
 	COMP_INFO *info = &COMP_res_info[op];
 
@@ -221,12 +221,18 @@ void TRANS_operation(short op, short nparam, bool output, PATTERN previous)
 
 		case OP_RSQR:
 			find_subr(&subr_array_index, ".Array");
-			trans_subr(subr_array_index, nparam, FALSE);
+			if (nparam)
+				trans_subr(subr_array_index, nparam);
+			else
+				CODE_subr(COMP_subr_info[subr_array_index].opcode, MAX_PARAM_OP + 1, 0, TRUE);
 			break;
 
 		case OP_COLON:
 			find_subr(&subr_collection_index, ".Collection");
-			trans_subr(subr_collection_index, nparam, FALSE);
+			if (nparam)
+				trans_subr(subr_collection_index, nparam);
+			else
+				CODE_subr(COMP_subr_info[subr_collection_index].opcode, MAX_PARAM_OP, 0, TRUE);
 			break;
 
 		case OP_LBRA:
@@ -284,7 +290,7 @@ static void trans_expr_from_tree(PATTERN *tree)
 		else if (PATTERN_is_subr(pattern))
 		{
 			nparam = get_nparam(tree, &i);
-			trans_subr(PATTERN_index(pattern), nparam, PATTERN_is_output(pattern));
+			trans_subr(PATTERN_index(pattern), nparam);
 		}
 
 		else if (PATTERN_is_reserved(pattern))
@@ -349,7 +355,7 @@ static void trans_expr_from_tree(PATTERN *tree)
 			else
 			{
 				nparam = get_nparam(tree, &i);
-				TRANS_operation((short)PATTERN_index(pattern), nparam, PATTERN_is_output(pattern), prev_pattern);
+				TRANS_operation((short)PATTERN_index(pattern), nparam, prev_pattern);
 			}
 		}
 	}

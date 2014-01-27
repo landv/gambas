@@ -133,8 +133,8 @@ void CODE_return(int return_value);
 void CODE_push_char(char car);
 void CODE_push_void(void);
 
-void CODE_subr(short subr, short nparam, short optype, bool output, bool fixed);
-void CODE_subr_output(short subr, short nparam, int output);
+void CODE_subr(short subr, short nparam, short optype, bool fixed);
+//void CODE_subr_output(short subr, short nparam, int output);
 
 void CODE_call(short nparam);
 void CODE_call_byref(short nparam, uint64_t byref);

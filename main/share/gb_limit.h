@@ -64,7 +64,7 @@
 #define MAX_CLASS_UNKNOWN   65536
 
 /* Maximum number of array declarations in the same class - CANNOT CHANGE */
-#define MAX_CLASS_ARRAY     32678
+#define MAX_CLASS_ARRAY     32768
 
 /* Maximum number of local variables in a function - CANNOT CHANGE */
 #define MAX_LOCAL_SYMBOL    127

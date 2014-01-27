@@ -78,6 +78,7 @@ void *CARRAY_get_data_multi(CARRAY *_object, GB_INTEGER *arg, int nparam);
 void *CARRAY_out_of_bound();
 CLASS *CARRAY_get_array_class(CLASS *class, CTYPE ctype);
 int *CARRAY_get_array_bounds(CARRAY *_object);
+void CARRAY_resize(CARRAY *_object, int size);
 
 CARRAY *CARRAY_create_static(CLASS *class, void *ref, CLASS_ARRAY *desc, void *data);
 int CARRAY_get_static_count(CLASS_ARRAY *desc);
