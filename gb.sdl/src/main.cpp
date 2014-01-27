@@ -139,17 +139,10 @@ static void my_main(int *argc, char **argv)
 
 static int my_loop()
 {
-	//GLint errcode = 0;
-	
 	while(myApp->HaveWindows())
 	{
 		myApp->ManageEvents();
-		GB.Loop(1); // Busy loop of 1 ms !
-		
-/*		errcode = glGetError();
-		
-		if (errcode != GL_NO_ERROR)
-			std::cerr << "GB.SDL: an OpenGL error was detected : " << std::hex << errcode << std::endl; */
+		GB.Loop(10);
 	}
 
 	return 1;
