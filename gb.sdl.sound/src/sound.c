@@ -499,7 +499,7 @@ BEGIN_METHOD(CMUSIC_play, GB_INTEGER loops; GB_FLOAT fadein)
   /*Mix_HookMusicFinished(musicDone);*/
 
   //The 'Looping' param should be optional in gambas, default=0. Don't know how?
-  //BM Now do you now ? ;-)
+  //BM Now do you know ? ;-)
 
   fadevalue = VARGOPT(fadein, 0) * 1000;
   // if fadevalue is too small -> music doesn't want to play !
@@ -564,6 +564,20 @@ BEGIN_PROPERTY(CMUSIC_volume)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Music_State)
+
+	if (Mix_PlayingMusic())
+	{
+		if (Mix_PausedMusic())
+			GB.ReturnInteger(2);
+		else
+			GB.ReturnInteger(1);
+	}
+	else
+		GB.ReturnInteger(0);
+
+END_PROPERTY
+
 GB_DESC CMusicDesc[] =
 {
   GB_DECLARE("Music", 0),
@@ -578,6 +592,12 @@ GB_DESC CMusicDesc[] =
 
   GB_STATIC_PROPERTY("Volume", "f", CMUSIC_volume),
   GB_STATIC_PROPERTY("Pos", "f", CMUSIC_pos),
+
+  GB_STATIC_PROPERTY_READ("State", "i", Music_State),
+
+  GB_CONSTANT("Stopped", "i", 0),
+  GB_CONSTANT("Playing", "i", 1),
+  GB_CONSTANT("Paused", "i", 2),
 
   GB_END_DECLARE
 };
