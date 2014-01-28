@@ -177,6 +177,7 @@ static GB_ARRAY _clipboard_formats = NULL;
 void CLIPBOARD_has_changed()
 {
 	GB.Unref(POINTER(&_clipboard_formats));
+	_clipboard_formats = NULL;
 }
 
 static GB_ARRAY load_clipboard_formats()
