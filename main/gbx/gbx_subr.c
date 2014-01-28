@@ -189,6 +189,9 @@ TYPE SUBR_check_good_type(VALUE *param, int count)
 	int i;
 	TYPE type, type2;
 	
+	if (count == 0)
+		goto __VARIANT;
+
 	type = conv_type(param[0].type);
 	
 	if (TYPE_is_value(type))

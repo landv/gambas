@@ -68,10 +68,10 @@ static void trans_subr(int subr, int nparam)
 			ERROR_panic("Unknown intern subroutine: %s", tsi->name);
 	}
 
-	if (subr == TS_SUBR_ARRAY && nparam == 0)
-		CODE_subr(tsi->info->opcode, MAX_PARAM_OP + 1, 0, TRUE);
-	else if (subr == TS_SUBR_COLLECTION && nparam == 0)
-		CODE_subr(tsi->info->opcode, MAX_PARAM_OP, 0, TRUE);
+	if (subr == TS_SUBR_ARRAY && nparam > MAX_PARAM_OP)
+		CODE_subr(tsi->info->opcode, MAX_PARAM_OP + 1, CODE_CALL_VARIANT + MAX_PARAM_OP, FALSE);
+	else if (subr == TS_SUBR_COLLECTION && nparam > MAX_PARAM_OP)
+		CODE_subr(tsi->info->opcode, MAX_PARAM_OP, CODE_CALL_VARIANT + MAX_PARAM_OP - 1, FALSE);
 	else
 		CODE_subr(tsi->info->opcode, nparam, tsi->info->optype, tsi->info->min_param == tsi->info->max_param);
 

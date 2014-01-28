@@ -267,13 +267,14 @@ static void analyze_make_array()
 			
 			if (!PATTERN_is(*current, RS_COMMA))
 				break;
+
 			current++;
 
 			if (collection)
 			{
 				if (n == (MAX_PARAM_OP - 1))
 				{
-					add_operator(RS_COLON, 0);
+					add_operator(RS_COLON, MAX_PARAM_OP + 1);
 					n = 0;
 				}
 			}
@@ -281,7 +282,7 @@ static void analyze_make_array()
 			{
 				if (n == MAX_PARAM_OP)
 				{
-					add_operator(RS_RSQR, 0);
+					add_operator(RS_RSQR, MAX_PARAM_OP + 1);
 					n = 0;
 				}
 			}

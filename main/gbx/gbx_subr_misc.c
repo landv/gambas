@@ -299,14 +299,7 @@ void SUBR_array(ushort code)
 
 	SUBR_ENTER();
 
-	if (NPARAM == 0)
-	{
-		NPARAM = MAX_PARAM_OP;
-		PARAM -= NPARAM;
-		next_reuse = TRUE;
-	}
-	else
-		next_reuse = FALSE;
+	next_reuse = code & CODE_CALL_VARIANT;
 
 	if (reuse)
 	{
@@ -369,14 +362,7 @@ void SUBR_collection(ushort code)
 
 	SUBR_ENTER();
 
-	if (NPARAM == 0)
-	{
-		NPARAM = MAX_PARAM_OP - 1;
-		PARAM -= NPARAM;
-		next_reuse = TRUE;
-	}
-	else
-		next_reuse = FALSE;
+	next_reuse = code & CODE_CALL_VARIANT;
 
 	if (reuse)
 		col = (GB_COLLECTION)(PARAM[-1]._object.object);

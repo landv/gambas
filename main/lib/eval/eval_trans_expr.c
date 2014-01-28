@@ -221,18 +221,18 @@ void TRANS_operation(short op, short nparam, PATTERN previous)
 
 		case OP_RSQR:
 			find_subr(&subr_array_index, ".Array");
-			if (nparam)
-				trans_subr(subr_array_index, nparam);
+			if (nparam > MAX_PARAM_OP)
+				CODE_subr(COMP_subr_info[subr_array_index].opcode, MAX_PARAM_OP + 1, CODE_CALL_VARIANT + MAX_PARAM_OP, FALSE);
 			else
-				CODE_subr(COMP_subr_info[subr_array_index].opcode, MAX_PARAM_OP + 1, 0, TRUE);
+				trans_subr(subr_array_index, nparam);
 			break;
 
 		case OP_COLON:
 			find_subr(&subr_collection_index, ".Collection");
-			if (nparam)
-				trans_subr(subr_collection_index, nparam);
+			if (nparam > MAX_PARAM_OP)
+				CODE_subr(COMP_subr_info[subr_collection_index].opcode, MAX_PARAM_OP, CODE_CALL_VARIANT + MAX_PARAM_OP - 1, FALSE);
 			else
-				CODE_subr(COMP_subr_info[subr_collection_index].opcode, MAX_PARAM_OP, 0, TRUE);
+				trans_subr(subr_collection_index, nparam);
 			break;
 
 		case OP_LBRA:
