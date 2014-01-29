@@ -751,11 +751,11 @@ bool GB_CanRaise(void *object, int event_id)
 
 	LIST_for_each(obs, OBJECT_event(object)->observer)
 	{
-		if (OBJECT_active_parent(obs) && obs->event && obs->event[event_id])
+		if (OBJECT_parent(obs) && obs->event && obs->event[event_id])
 			return TRUE;
 	}
 	
-	if (!OBJECT_active_parent(object))
+	if (!OBJECT_parent(object))
 		return FALSE;
 	
 	event_tab = OBJECT_event(object)->event;
@@ -932,7 +932,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 	
 		parent = OBJECT_active_parent(object);
 		if (parent)
-		{	
+		{
 			func_id = get_event_func_id(OBJECT_event(object)->event, event_id);
 			if (func_id)
 			{
@@ -944,7 +944,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 						printf("parent is locked!\n");
 					fflush(NULL);
 				#endif
-			
+
 				if (!OBJECT_is_valid(parent))
 					OBJECT_detach(object);
 				else
