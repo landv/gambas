@@ -291,6 +291,17 @@ Public Sub HideAll()
 
 End
 
+Public Sub EditProperty(sProp As String)
+  
+  If Not $cIndex.Exist(sProp) Then Return
+
+  grdProperty.Row = $cIndex[sProp]
+  ShowProperty
+  If btnProperty.Visible Then btnProperty.Value = True
+  
+End
+
+
 Public Sub RefreshOne(hCtrl As CControl, sProp As String)
 
   Dim iRow As Integer
@@ -991,6 +1002,7 @@ Public Sub btnProperty_Click()
       $hEditor.Text = FReportBrushChooser.Value
 
     Case "ReportPadding"
+      
       If FReportPaddingChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportPaddingChooser.Value
 

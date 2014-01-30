@@ -87,3 +87,38 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage 
   
 End
 
+Public Sub ActionDialog(sAction As String) As Boolean
+
+  Dim vColor As Variant
+  
+  Select Case sAction
+    
+    Case Like ".text-*"
+      Return Super.ActionDialog(sAction)
+      
+    Case Like ".format-*"
+      If FColorChooser.Run() Then Return True
+      vColor = FColorChooser.Color
+      If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
+      Me.ActionValue = vColor
+      
+  End Select
+  
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  Select Case sAction
+    
+    Case Like ".text-*"
+      Super.ActionExec(hCtrl, sAction)
+      
+    Case ".format-background"
+      If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
+    
+    Case ".format-foreground"
+      If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", Me.ActionValue)
+    
+  End Select
+  
+End

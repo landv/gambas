@@ -2323,7 +2323,7 @@ End
 
 Public Sub OnRefreshComponents()
   
-  Dim iPos As Boolean
+  Dim iPos As Integer
   Dim sComp As String
   Dim hMenu As Menu
   
@@ -2331,11 +2331,9 @@ Public Sub OnRefreshComponents()
     If hMenu.Text Then hMenu.Checked = False
   Next
   
+  hMenu = Null
   iPos = Project.Environment.Find("GB_GUI=*", gb.Like)
-  If iPos < 0 Then
-    btnGUI.Text = ("Current desktop")
-    mnuSetGUICurrentDesktop.Checked = True
-  Else
+  If iPos >= 0 Then
     sComp = Scan(Project.Environment[iPos], "*=*")[1]
     For Each hMenu In mnuGUI.Children
       If hMenu.Tag = sComp Then
@@ -2343,7 +2341,13 @@ Public Sub OnRefreshComponents()
         hMenu.Checked = True
         Break
       Endif
+      hMenu = Null
     Next
+  Endif
+  
+  If Not hMenu Then
+    btnGUI.Text = ("Current desktop")
+    mnuSetGUICurrentDesktop.Checked = True
   Endif
   
 End

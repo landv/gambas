@@ -163,18 +163,16 @@ End
 
 Public Sub Background_Draw()
   
-  Dim FW As Integer
-  Dim iCol As Integer
+  Dim iBg As Integer = Color.TextBackground
   
-  If $bBorder Then FW = Style.FrameWidth
+  If Me.Background <> Color.Default Then iBg = Me.Background
   
-  iCol = Me.Background
-  If iCol = Color.Default Then iCol = Color.TextBackground
-  
-  Draw.FillRect(FW, FW, Draw.W - FW * 2, Draw.H - FW * 2, iCol)
-  
-  If $bBorder Then Draw.Style.Box(0, 0, $hBackground.W, $hBackground.H)
-  
+  If $bBorder Then 
+    Style.PaintBox(0, 0, Me.W, Me.H, Style.StateOf($hTextBox), iBg)
+  Else
+    Paint.FillRect(0, 0, Me.W, Me.H, iBg)
+  Endif
+
 End
 
 Private Function Editor_Read() As MaskBox

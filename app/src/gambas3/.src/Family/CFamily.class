@@ -12,6 +12,8 @@ Public Const AllowScaledProperty As Boolean = False
 Public Const HasMenuEditor As Boolean = False
 Public Const EmbedContainer As String = ""
 
+Public ActionValue As Variant
+
 Private $hTimer As Timer
 Private $hCurrentIcon As Control
 Private $bTrigger As Boolean
@@ -316,3 +318,115 @@ Finally
   $bTrigger = False
   
 End
+
+Public Sub ActionDialog(sAction As String) As Boolean
+
+  If sAction Begins ".text-" Then Return
+  
+  Return True
+  
+End
+
+Private Sub ToggleFont(sFont As String, sProp As String) As String
+  
+  Dim aFont As String[] = Split(sFont, ",")
+  Dim iPos As Integer
+  
+  iPos = aFont.Find(sProp)
+  If iPos < 0 Then
+    aFont.Add(sProp, 0)
+  Else
+    aFont.Remove(iPos)
+  Endif
+  
+  Return aFont.Join(",")
+  
+End
+
+Private Sub ZoomFont(sFont As String, sAction As String) As String
+  
+  Dim aFont As String[] = Split(sFont, ",")
+  Dim sSize As String
+  Dim I As Integer
+  Dim iPos As Integer
+  
+  iPos = -1
+  For I = 0 To aFont.Max
+    sSize = aFont[I]
+    If IsDigit(sSize) Or If Left(sSize) = "+" Or If Left(sSize) = "-" Then 
+      iPos = I
+      Break
+    Endif
+    sSize = ""
+  Next
+  
+  Select Case sAction
+    
+    Case "+"
+      
+      If Not sSize Then
+        sSize = "+1"
+      Else If IsDigit(sSize) Then
+        sSize = CStr(Min(256, CInt(sSize) + 2))
+      Else
+        sSize = Format(Min(24, CInt(sSize) + 1), "+0")
+      Endif
+      
+    Case "-"
+    
+      If Not sSize Then
+        sSize = "-1"
+      Else If IsDigit(sSize) Then
+        sSize = CStr(Max(1, CInt(sSize) - 2))
+      Else
+        sSize = Format(Max(-8, CInt(sSize) - 1), "+0")
+      Endif
+      
+    Case "0"
+
+      sSize = ""
+    
+  End Select
+  
+  If sSize = " 0" Then sSize = ""
+  
+  If iPos >= 0 Then aFont.Remove(iPos)
+  If sSize Then aFont.Add(sSize)
+  
+  Return aFont.Join(",")
+  
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  Dim sFont As String
+
+  Try sFont = hCtrl.GetProperty("Font")
+  If Error Then Return
+    
+  Select Case sAction
+    
+    Case ".text-bold"
+      sFont = ToggleFont(sFont, "Bold")
+    
+    Case ".text-italic"
+      sFont = ToggleFont(sFont, "Italic")
+    
+    Case ".text-underline"
+      sFont = ToggleFont(sFont, "Underline")
+    
+    Case ".text-zoom-in"
+      sFont = ZoomFont(sFont, "+")
+    
+    Case ".text-zoom-out"
+      sFont = ZoomFont(sFont, "-")
+    
+    Case ".text-zoom-normal"
+      sFont = ZoomFont(sFont, "0")
+    
+  End Select
+  
+  Try hCtrl.SetProperty("Font", sFont)
+
+End
+

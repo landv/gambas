@@ -1149,8 +1149,10 @@ End
 
 Public Sub tabBrush_Click()
 
-  If tabBrush.Index = 3 Then
+  If tabBrush.Text = ("Shapes") Then
     If Not $aShape Then InitShapes
+  Else If tabBrush.Text = ("Clipboard") Then
+    UpdateClipboard
   Endif
 
 End

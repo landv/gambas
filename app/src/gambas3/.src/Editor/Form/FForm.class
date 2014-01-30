@@ -2335,11 +2335,13 @@ End
 Private Sub RefreshMenu()
 
   Dim bOn As Boolean
-  Dim hCtrl As CControl
+  Dim hCCtrl As CControl
+  Dim hCtrl As Control
 
   If $bNoRefreshMenu Then Return
 
   Action[".menu", Me].Visible = Not $bReadOnly And $hFamily.HasMenuEditor
+  
   Action[".text-*,.format-*,.undo,.redo", Me].Visible = Not $bReadOnly
   
   bOn = Not IsNull(Master) And Not $bReadOnly
@@ -2349,7 +2351,8 @@ Private Sub RefreshMenu()
   Action[".paste", Me].Enabled = CanPaste()
 
   mnuArrange.Visible = Not $bReadOnly
-  Action[".save,.lock,.cut,paste-form,.delete,.lower,.raise,.menu,.arrange*", Me].Visible = Not $bReadOnly
+  Action[".save,.cut,paste-form,.delete,.lower,.raise,.arrange*", Me].Visible = Not $bReadOnly
+  Action[".lock", Me].Visible = Not $bReadOnly Or $bLocked
 
   bOn = Selection.Count >= 2 And Not $bReadOnly
 
@@ -2383,8 +2386,8 @@ Private Sub RefreshMenu()
   If Not $bReadOnly And If Selection.Count Then
     
     bOn = True
-    For Each hCtrl In Selection
-      If hCtrl.Parent <> Master.Parent Then
+    For Each hCCtrl In Selection
+      If hCCtrl.Parent <> Master.Parent Then
         bOn = False
         Break
       Endif
@@ -2403,6 +2406,12 @@ Private Sub RefreshMenu()
   Endif
   
   mnuStartup.Checked = Project.Startup = File.BaseName(Path)
+  
+  For Each hCtrl In tlbForm.Children
+    If hCtrl.Visible And If hCtrl.Tag Then
+      If Not Split(hCtrl.Tag).Exist(Family, gb.IgnoreCase) Then hCtrl.Hide
+    Endif
+  Next
 
 End
 
@@ -3136,10 +3145,10 @@ Public Sub Action_Activate(Key As String) As Boolean
       EmbedIntoContainer
     
     Case Like ".text-*"
-      DoActionText(Key)
+      DoAction(Key)
     
     Case Like ".format-*"
-      DoActionFormat(Key)
+      DoAction(Key)
     
     ' Case ".remove-from-container"
     '   RemoveFromContainer
@@ -3894,79 +3903,6 @@ Public Sub OnBackgroundChange()
   
 End
 
-Private Sub ToggleFont(sFont As String, sProp As String) As String
-  
-  Dim aFont As String[] = Split(sFont, ",")
-  Dim iPos As Integer
-  
-  iPos = aFont.Find(sProp)
-  If iPos < 0 Then
-    aFont.Add(sProp)
-  Else
-    aFont.Remove(iPos)
-  Endif
-  
-  Return aFont.Join(",")
-  
-End
-
-Private Sub ZoomFont(sFont As String, sAction As String) As String
-  
-  Dim aFont As String[] = Split(sFont, ",")
-  Dim sSize As String
-  Dim I As Integer
-  Dim iPos As Integer
-  
-  iPos = -1
-  For I = 0 To aFont.Max
-    sSize = aFont[I]
-    If IsDigit(sSize) Or If Left(sSize) = "+" Or If Left(sSize) = "-" Then 
-      iPos = I
-      Break
-    Endif
-    sSize = ""
-  Next
-  
-  Select Case sAction
-    
-    Case "+"
-      
-      If Not sSize Then
-        sSize = "+1"
-      Else If IsDigit(sSize) Then
-        sSize = CStr(Min(256, CInt(sSize) + 2))
-      Else
-        sSize = Format(Min(24, CInt(sSize) + 1), "+0")
-      Endif
-      
-    Case "-"
-    
-      If Not sSize Then
-        sSize = "-1"
-      Else If IsDigit(sSize) Then
-        sSize = CStr(Max(1, CInt(sSize) - 2))
-      Else
-        sSize = Format(Max(-8, CInt(sSize) - 1), "+0")
-      Endif
-      
-    Case "0"
-
-      sSize = ""
-    
-  End Select
-  
-  If sSize = " 0" Then sSize = ""
-  
-  If iPos >= 0 Then
-    aFont[iPos] = sSize
-  Else
-    aFont.Add(sSize)
-  Endif
-  
-  Return aFont.Join(",")
-  
-End
-
 Private Sub GetActionSelection() As Collection
 
   Dim cSelect As Collection
@@ -3979,71 +3915,15 @@ Private Sub GetActionSelection() As Collection
   
 End
 
-Private Sub DoActionText(sAction As String)
+Private Sub DoAction(sAction As String)
 
   Dim hCtrl As CControl
-  Dim sFont As String
+
+  If $hFamily.ActionDialog(sAction) Then Return
 
   $hUndo.Begin
   For Each hCtrl In GetActionSelection()
-    
-    Try sFont = hCtrl.GetProperty("Font")
-    If Error Then Continue
-    
-    Select Case sAction
-      
-      Case ".text-bold"
-        sFont = ToggleFont(sFont, "Bold")
-      
-      Case ".text-italic"
-        sFont = ToggleFont(sFont, "Italic")
-      
-      Case ".text-underline"
-        sFont = ToggleFont(sFont, "Underline")
-      
-      Case ".text-zoom-in"
-        sFont = ZoomFont(sFont, "+")
-      
-      Case ".text-zoom-out"
-        sFont = ZoomFont(sFont, "-")
-      
-      Case ".text-zoom-normal"
-        sFont = ZoomFont(sFont, "0")
-      
-    End Select
-    
-    Try hCtrl.SetProperty("Font", sFont)
-    
-  Next
-  $hUndo.End
-
-  FFormStack.RefreshAll
-
-End
-
-Private Sub DoActionFormat(sAction As String)
-
-  Dim hCtrl As CControl
-  Dim vColor As Variant
-
-  If FColorChooser.Run() Then Return
-
-  vColor = FColorChooser.Color
-  If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
-
-  $hUndo.Begin
-  For Each hCtrl In GetActionSelection()
-    
-    Select Case sAction
-      
-      Case ".format-background"
-        If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", vColor)
-      
-      Case ".format-foreground"
-        If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", vColor)
-      
-    End Select
-    
+    $hFamily.ActionExec(hCtrl, sAction)
   Next
   $hUndo.End
 

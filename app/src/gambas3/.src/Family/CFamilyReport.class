@@ -250,7 +250,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   Y = 0
   W = hCtrl.Width
   H = hCtrl.Height
-
+  
   'If paint.Device Then Paint.Begin(Draw.Device)
 
   If hCtrl["Background"] Then
@@ -284,33 +284,29 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
     Case "ReportLabel"
 
-      draw.Begin(Paint.Device)
       Draw.Foreground = &H819AFF&
-      draw.LineStyle = Line.DashDot
+      Draw.LineStyle = Line.DashDot
       Draw.Rect(0, 0, hCtrl.Width, hCtrl.Height)
-      draw.End
+      
       Try Paint.Font = Font[hCtrl["Font"]]
       If hCtrl["Rotate"] = 0.0 Then
-      
-      Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
+        Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       Else
-        Paint.Translate(X + W / 2, Y + H / 2)
-    
+        Paint.Translate(X + W / 2, Y + H / 2)    
         Paint.Rotate(Rad(hCtrl["Rotate"]))
         Paint.Translate(- (X + W / 2), - (Y + H / 2))
-        Paint.Text(hCtrl["Text"], X, Y, W, H, Align.Center)
+        Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
+        'Paint.Text(hCtrl["Text"], X, Y, W, H, Align.Center)
       Endif
       Paint.Fill
 
     Case "ReportTextLabel"
       
-      draw.Begin(Paint.Device)
       Draw.Foreground = &H819AFF&
-      draw.LineStyle = Line.Dash
+      Draw.LineStyle = Line.Dash
       Draw.Rect(X, Y, Paint.Width, Paint.H)
-      draw.End
       Try Paint.Font = Font[hCtrl["Font"]]
-      Paint.RichText(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
+      Paint.RichText(hCtrl["Text"], X, Y, W, H, Align.Center)
       'Paint.Fill
 
     Case "ReportLine"
@@ -500,4 +496,43 @@ Private Sub DrawVArrow(X As Integer, Y As Integer, W As Integer, H As Integer)
   Draw.Line(X, Y, X, Y + H)
   Draw.Polygon([X, Y, X - iMid, Y + iMid, X + iMid, Y + iMid])
   Draw.Polygon([X, Y + H, X - iMid, Y + H - iMid, X + iMid, Y + H - iMid])
+End
+
+
+Public Sub ActionDialog(sAction As String) As Boolean
+
+  'Dim vColor As Variant
+  
+  Select Case sAction
+    
+    Case Like ".text-*"
+      Return Super.ActionDialog(sAction)
+      
+    Case Like ".format-*"
+      FProperty.EditProperty(If(sAction = ".format-background", "Background", "Brush"))
+      Return True
+      'If FColorChooser.Run() Then Return True
+      ' vColor = FColorChooser.Color
+      ' If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
+      ' Me.ActionValue = vColor
+      
+  End Select
+  
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  Select Case sAction
+    
+    Case Like ".text-*"
+      Super.ActionExec(hCtrl, sAction)
+      
+    ' Case ".format-background"
+    '   If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
+    ' 
+    ' Case ".format-foreground"
+    '   If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", Me.ActionValue)
+    
+  End Select
+  
 End
