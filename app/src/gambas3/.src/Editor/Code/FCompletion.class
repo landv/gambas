@@ -86,7 +86,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   Select $sMode
     Case "."
       $sText = ""
-      If Len(sClass) = 1 Then 
+      If String.Len(sClass) = 1 Then 
         Dec Application.Busy
         Return
       Endif 
@@ -97,8 +97,8 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
       FillWithClasses
     Case "A"
       $sText = sClass
-      $iLen = Len(sClass)
-      $iCol -= Len(sClass)
+      $iLen = String.Len(sClass)
+      $iCol -= String.Len(sClass)
       FillWithIdent(sClass)
     Case "_"
       $sText = "_"
@@ -107,14 +107,14 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
       FillWithSpecial()
     Case "<"
       $sText = sClass
-      iPos = InStr(sClass, "_")
+      iPos = String.InStr(sClass, "_")
       If iPos Then 
         $iLen = iPos
       Else
         $iLen = 3
       Endif
-      $iCol -= Len(sClass) + 2
-      FillWithIdent(Left$(sClass, $iLen))
+      $iCol -= String.Len(sClass) + 2
+      FillWithIdent(String.Left$(sClass, $iLen))
     Case "/"
       iPos = String.RInStr(sClass, "/")
       $sText = String.Mid$(sClass, iPos + 1)
@@ -327,7 +327,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     iType = Val(Right$(sClass))
     sClass = Left$(sClass, -2)
     AddRow(CStr(iType) & sClass, sClass, hPic[iType])
-    $iMaxLen = Max($iMaxLen, Len(sClass))
+    $iMaxLen = Max($iMaxLen, String.Len(sClass))
   Next
   
 End
@@ -370,7 +370,7 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
   For Each sSymbol In aSymbol
     hSymbol = cSymbol[sSymbol]
     AddRow(CStr(MHelp.TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()])
-    $iMaxLen = Max($iMaxLen, Len(sSymbol))
+    $iMaxLen = Max($iMaxLen, String.Len(sSymbol))
   Next
 
 End
@@ -518,8 +518,12 @@ Private Sub FillWithIdent(sWord As String)
     If iLine < 0 Then Break 
     If iLine = $hEditor.Line Then Continue
 
-    sLine = Highlight.Purge($hEditor.Lines[iLine].Text)
-    sUCaseLine = UCase(sLine) ' Only ASCII characters are interesting there...
+    If $bGambas Then
+      sLine = Highlight.Purge($hEditor.Lines[iLine].Text)
+    Else
+      sLine = $hEditor.Lines[iLine].Text
+    Endif
+    sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
   
     iPos = 0
     Do
@@ -528,11 +532,11 @@ Private Sub FillWithIdent(sWord As String)
       If iPos = 0 Then Break
       If iPos > 1 Then
         sCar = String.Mid$(sLine, iPos - 1, 1)
-        If InStr(FEditor.IDENT_CAR, sCar) Then Break
+        If $hForm.IsWordChar(sCar) Then Break
       Endif
       For iPos2 = iPos + String.Len(sWord) To String.Len(sLine)
         sCar = String.Mid$(sLine, iPos2, 1)
-        If String.InStr(FEditor.IDENT_CAR, sCar) = 0 Then Break
+        If Not $hForm.IsWordChar(sCar) Then Break
       Next
       sCar = String.Mid$(sLine, iPos, iPos2 - iPos)
       If IsDigit(Left$(sCar)) Then Continue 
@@ -558,7 +562,7 @@ Private Sub FillWithIdent(sWord As String)
     Endif
   
     If Right(sWord) = "_" Then
-      AddEvents(aResult, Left(sOrg, -1))
+      AddEvents(aResult, String.Left(sOrg, -1))
     Endif
   Endif
 

@@ -72,7 +72,7 @@ Public Sub OnKeyPress() As Boolean
     
     CheckCompletion("/")
 
-  Else If InStr(FEditor.IDENT_CAR, Key.Text) Then
+  Else If Key.Text And If $hModule.IsWordChar(Key.Text) Then
 
     CheckCompletion("A")
 
@@ -83,5 +83,34 @@ End
 Private Function Enabled_Read() As Boolean
 
   Return $bCompletion
+
+End
+
+Public Sub GetWord(sLine As String, iPos As Integer) As String
+
+  Dim sCar As String
+  Dim iPos2 As Integer
+
+  iPos2 = iPos
+
+  Do
+    If iPos <= 0 Then Break
+    sCar = String.Mid$(sLine, iPos, 1)
+    If Not $hModule.IsWordChar(sCar) Then Break
+    Dec iPos
+  Loop
+
+  Inc iPos
+
+  Do
+    If iPos2 > String.Len(sLine) Then Break
+    sCar = String.Mid$(sLine, iPos, 1)
+    If Not $hModule.IsWordChar(sCar) Then Break
+    Inc iPos2
+  Loop
+
+  Return String.Mid$(sLine, iPos, iPos2 - iPos)
+
+Catch
 
 End

@@ -2026,7 +2026,7 @@ Public Sub CheckCompletion(sMode As String)
     If GetRightString(sLine) Then Return
     
     If Not FCompletion.VisibleFrom(Editor) Then
-      sWord = GetIdentifier(sLine & Key.Text, Editor.Column + 1)
+      sWord = $hCompletion.GetWord(sLine & Key.Text, Editor.Column + 1)
       If Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
@@ -2034,7 +2034,7 @@ Public Sub CheckCompletion(sMode As String)
   Else If sMode = "_" Then
     
     If Not FCompletion.VisibleFrom(Editor) Then
-      sWord = GetIdentifier(sLine, Editor.Column)
+      sWord = $hCompletion.GetWord(sLine, Editor.Column)
       If Len(sWord) >= 3 Then
         FCompletion.Open(Me, "A", sWord & "_")
       Endif
@@ -2059,7 +2059,7 @@ Public Sub CheckCompletion(sMode As String)
         
         $bCheckSignature = True
         
-        sWord = GetIdentifier(sLine, Editor.Column - 1)
+        sWord = $hCompletion.GetWord(sLine, Editor.Column - 1)
         If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
           iPos = Editor.Column
           Editor.Goto(Editor.Line, Editor.Column - String.Len(sWord) - 2)
@@ -2497,35 +2497,35 @@ Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
 
 End
 
-Static Public Function GetIdentifier(sLine As String, iPos As Integer) As String
-
-  Dim sCar As String
-  Dim iPos2 As Integer
-
-  iPos2 = iPos
-
-  Do
-    If iPos <= 0 Then Break
-    sCar = Mid$(sLine, iPos, 1)
-    If sCar = "?" Then Break
-    If InStr(IDENT_CAR, sCar) = 0 Then Break
-    Dec iPos
-  Loop
-
-  Inc iPos
-
-  Do
-    If iPos2 > Len(sLine) Then Break
-    sCar = Mid$(sLine, iPos, 1)
-    If InStr(IDENT_CAR, sCar) = 0 Then Break
-    Inc iPos2
-  Loop
-
-  Return Mid$(sLine, iPos, iPos2 - iPos)
-
-Catch
-
-End
+' Static Public Function GetIdentifier(sLine As String, iPos As Integer) As String
+' 
+'   Dim sCar As String
+'   Dim iPos2 As Integer
+' 
+'   iPos2 = iPos
+' 
+'   Do
+'     If iPos <= 0 Then Break
+'     sCar = String.Mid$(sLine, iPos, 1)
+'     If sCar = "?" Then Break
+'     If InStr(IDENT_CAR, sCar) = 0 Then Break
+'     Dec iPos
+'   Loop
+' 
+'   Inc iPos
+' 
+'   Do
+'     If iPos2 > String.Len(sLine) Then Break
+'     sCar = String.Mid$(sLine, iPos, 1)
+'     If InStr(IDENT_CAR, sCar) = 0 Then Break
+'     Inc iPos2
+'   Loop
+' 
+'   Return String.Mid$(sLine, iPos, iPos2 - iPos)
+' 
+' Catch
+' 
+' End
 
 Public Sub WatchExpression()
 
@@ -3705,3 +3705,8 @@ Public Sub mnuBookmark_Show()
   
 End
 
+Public Sub IsWordChar(sCar As String) As Boolean
+  
+  Return InStr(FEditor.IDENT_CAR, sCar) > 0
+  
+End
