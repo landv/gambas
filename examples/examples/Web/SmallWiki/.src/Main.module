@@ -52,17 +52,29 @@ Public Sub Main()
   Dim aPage As String[]
   Dim sDir As String
   
+  ' The wiki is stored in the following root directory.
+
   Root = User.Home &/ "wiki"
   Try Mkdir Root
-  
+
+  ' All pages are stored in a "data" directory stored in the root directory.
+  ' If the "data" directory does not exist, the wiki is initialized with a default root page.
+
   If Not Exist(Root &/ "data") Then 
     InitWiki
     Response.Redirect(Application.Root)
     Return
   Endif
 
+  ' The url path is directly converted to a relative directory path inside the "data" directory located in the root directory.
+  ' The page contents is stored inside a "~page" file located in that directory.
+  ' Consequently, no "~" character is allowed in the url path.
+  ' Each page modification is archived in a "~page.<date>.<user>" file, allowing changes to be undone.
+  
   Path = Request.Path
   If Path = "/" Then Path) = ""
+  
+  ' Handle resource files: images, style sheet...
   
   If Path And If Exist(".public" &/ Path) Then
     sExt = File.Ext(Path)
@@ -76,6 +88,8 @@ Public Sub Main()
     Response.End
     Return
   Endif
+  
+  ' Reject pages whose url includes a "~" character.
   
   If InStr(Path, "~") Then
     Response.Status = "404 Not Found"
