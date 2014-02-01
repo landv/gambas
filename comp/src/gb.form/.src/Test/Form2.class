@@ -56,6 +56,8 @@ Public Sub Form_Open()
   ButtonBox1._AddButton(ToolButton1)
   FileProperties1.Path = "~/chirachi.jpg"
   MenuButton1.SetFocus
+  DateChooser1.MinValue = Date(Now) + 5
+  DateChooser1.MaxValue = Date(Now) + 50
 
 End
 

@@ -117,12 +117,32 @@ Private Sub GetParent() As DateChooser
   
 End
 
+Private Sub CheckDate(dDate As Date) As Date
+  
+  Dim dMin, dMax As Date
+  
+  With GetParent()
+    dMin = .MinValue
+    dMax = .MaxValue
+  End With
+  
+  If dMin And If dDate < dMin Then Return dMin
+  If dMax And If dDate > dMax Then Return dMax
+  
+  Return dDate
+  
+End
+
 
 Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optional iDay As Integer)
   
   Dim dMonth As Date
   Dim dDate As Date
   Dim hMenu As Menu
+
+  If iYear = 0 And If iMonth = 0 And If iDay = 0 Then
+    $dDate = CheckDate($dDate)
+  Endif
 
   If iYear <= 0 Then iYear = Year($dDate)
   If iMonth <= 0 Then iMonth = Month($dDate)
@@ -132,12 +152,21 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
     Try dDate = Date(iYear, iMonth, iDay)
     If Not Error Then Break 
     Dec iDay
-    If iDay < 28 Then Return
+    If iDay < 28 Then 
+      dDate = Null
+      Break
+    Endif
   Loop
 
-  $dDate = dDate
+  If dDate And If CheckDate(dDate) <> dDate Then dDate = Null
   
-  dMonth = Date(Year(dDate), Month(dDate), 1)
+  If dDate Then
+    $dDate = dDate
+    dMonth = Date(Year(dDate), Month(dDate), 1)
+  Else
+    dMonth = $dMonth
+    $dMonth = Null
+  Endif
   
   If dMonth <> $dMonth Then
   
@@ -167,6 +196,12 @@ Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optio
   Endif
   
   dwgMonth.SetFocus
+  
+End
+
+Public Sub UpdateValue()
+  
+  SetDate()
   
 End
 
@@ -248,6 +283,11 @@ Public Sub dwgMonth_Draw()
     X = XD
     For I = 0 To 6
 
+      If CheckDate(dDate) <> dDate Then 
+        Draw.FillRect(X, Y, W, H, Color.Merge(Color.LightForeground, dwgMonth.Background))
+        Goto NEXT_DATE
+      Endif
+      
       hDate = GetParent()[dDate]
       
       iForeground = hDate.Foreground
@@ -302,6 +342,8 @@ Public Sub dwgMonth_Draw()
         Draw.FillStyle = Fill.Solid
         Draw.LineStyle = Line.None
       Endif
+
+    NEXT_DATE:
 
       X += W
       Inc dDate
@@ -387,25 +429,28 @@ Public Sub dwgMonth_KeyPress()
 
 End
 
-Private Sub CalcCurrentDate()
+Private Sub CalcCurrentDate() As Boolean
   
   Dim hDate As _DateChooser_Date
   Dim W, H As Integer
   Dim XD, YD As Integer
+  Dim dDate As Date
   
   $dCurrentDate = Null
   
   W = dwgMonth.ClientW / 7
   H = dwgMonth.ClientH / 7
   
-  If W = 0 Or H = 0 Then Return
+  If W = 0 Or H = 0 Then Return True
   
   XD = 0 '(Draw.W - W * 7) / 2
   YD = dwgMonth.ClientH - H * 6
 
-  If Mouse.Y < YD Then Return 
+  If Mouse.Y < YD Then Return True
   
-  $dCurrentDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
+  dDate = $dStart + Min(6, Mouse.X \ W) + ((Mouse.Y - YD) \ H) * 7
+  If CheckDate(dDate) <> dDate Then Return True
+  $dCurrentDate = dDate
   
   hDate = GetParent()[$dCurrentDate]
   dwgMonth.Tooltip = hDate.Text
@@ -723,7 +768,12 @@ End
 
 Public Sub dwgMonth_MouseMove()
 
-  CalcCurrentDate
+  If CalcCurrentDate() Then
+    dwgMonth.Mouse = Mouse.Default
+  Else
+    dwgMonth.Mouse = Mouse.Pointing
+  Endif
+  
   dwgMonth.Refresh
 
 End
@@ -839,3 +889,27 @@ Public Sub btnOK_Click()
 
 End
 
+
+Public Sub btnMonth_MouseWheel()
+
+  If Mouse.Forward Then
+    btnPrevMonth_Click
+  Else
+    btnNextMonth_Click
+  Endif
+
+End
+
+Public Sub dwgMonth_MouseWheel()
+
+  Dim dDate As Date
+  
+  If Mouse.Forward Then
+    dDate = DateAdd($dDate, gb.Day, -1)
+  Else
+    dDate = DateAdd($dDate, gb.Day, 1)
+  Endif
+  
+  SetDate(Year(dDate), Month(dDate), Day(dDate))
+
+End

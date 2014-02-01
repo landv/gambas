@@ -12,6 +12,8 @@ Property Read Colors As _DateChooser_Colors
 Property Mode As Integer
 Property Read Data As _DateChooser_Data
 Property Border As Boolean
+Property MinValue As Date
+Property MaxValue As Date
 
 Public Const DateOnly As Integer = 0
 Public Const DateTime As Integer = 1
@@ -30,6 +32,8 @@ Public Const _Group As String = "Chooser"
 Private $hCal As FCalendar
 Private $cData As New Collection
 Private $hData As _DateChooser_Data
+Private $dDateMin As Date
+Private $dDateMax As Date
 
 Public Sub _new()
   
@@ -92,7 +96,7 @@ Private Sub Month_Write(Value As Integer)
 
   Dim dDate As Date = Value_Read()
   
-  dDate = Date(Year(Value), Value, Day(dDate))
+  dDate = Date(Year(dDate), Value, Day(dDate))
   Value_Write(dDate)  
 
 End
@@ -224,5 +228,31 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $hCal.SetBorder(Value)
+
+End
+
+Private Function MinValue_Read() As Date
+
+  Return $dDateMin
+
+End
+
+Private Sub MinValue_Write(Value As Date)
+
+  $dDateMin = Value
+  $hCal.UpdateValue()
+
+End
+
+Private Function MaxValue_Read() As Date
+
+  Return $dDateMax
+
+End
+
+Private Sub MaxValue_Write(Value As Date)
+
+  $dDateMax = Value
+  $hCal.UpdateValue()
 
 End

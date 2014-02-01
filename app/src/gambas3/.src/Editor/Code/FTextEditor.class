@@ -1211,7 +1211,7 @@ End
 
 Public Sub IsWordChar(sCar As String) As Boolean
   
-  Return InStr("&~\"#'{([-|`_\\^@)]°=+}€$£%*!§:/;.,? \t", sCar) = 0
+  Return InStr("&~\"#'{([|`\\^@)]°=+}€$£%*!§:/;.,? \t", sCar) = 0
   
 End
 
