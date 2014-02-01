@@ -1,0 +1,62 @@
+BODY{
+  padding: 0px;
+  margin: 0px;
+}
+
+INPUT[type=submit] {
+  border: solid black 1px;
+  background: white;
+  color: black;
+  cursor: pointer;
+}
+
+INPUT[type=submit]:hover {
+  background: #E0E0E0;
+}
+
+.header {
+  background: gray;
+  color: white;
+  border-bottom: black solid 1px;
+  padding: 8px;
+}
+
+.title {
+  display: inline-table;
+}
+
+.login {
+  float: right;
+}
+
+.label-login {
+  display: inline-table;
+  font-weight: bold; 
+}
+
+.page {
+  padding: 8px;
+}
+
+.unknown {
+  color: red;
+  font-style: italic;  
+}
+
+.command {
+  display: inline-table;
+  margin-left: 8px;
+}
+
+.up {
+  display: inline-table;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+.edit {
+  border: none;
+  width: 100%;
+  height: 600px;
+  background: none;
+}

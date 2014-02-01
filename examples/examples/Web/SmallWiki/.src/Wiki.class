@@ -1,0 +1,46 @@
+' Gambas class file
+
+Private Sub _PrintTitle()
+
+  If Main.Path Then
+    Print Html(Main.Path);
+  Else
+    Print "/";
+  Endif
+
+End
+
+Private Sub _PrintPage()
+
+  Dim sPath As String
+
+  sPath = Main.GetPagePath()
+  
+  If Main.Edit Then
+    If Exist(sPath) Then Print File.Load(sPath);
+    Return
+  Endif
+  
+  If Not Main.Exist Then
+    Print "<div class=\"unknown\">This page does not exist."
+    If Session.Id Then Print " Click on the <b>Create</b> button to create it!"
+    Print "</div>"
+    Return
+  Endif
+  
+  Print Markup.Convert(File.Load(sPath));
+
+End
+
+Private Sub _PrintParent()
+
+  Dim sPath As String
+
+  sPath = Request.Path
+  If sPath Then
+    If File.Name(sPath) = "index" Then sPath = File.Dir(sPath)
+    sPath = File.Dir(sPath)
+  Endif
+  Print Application.Root &/ sPath;
+
+End
