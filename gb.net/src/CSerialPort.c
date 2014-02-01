@@ -198,7 +198,8 @@ int CSerialPort_stream_tell(GB_STREAM *stream, int64_t *pos)
 
 int CSerialPort_stream_flush(GB_STREAM *stream)
 {
-	return 0; /* OK */
+	void *_object = stream->tag;
+	return tcdrain(THIS->port);
 }
 
 int CSerialPort_stream_handle(GB_STREAM *stream)
