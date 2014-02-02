@@ -185,15 +185,15 @@ Public Function Open() As Boolean
   Dim iPort As Integer
 
   If Not $sServer Then
-    Error.Raise(("Server not set"))
+    Error.Raise("Server not set")
   Endif
 
   If Not $sUsername Then
-    Error.Raise(("Username not set"))
+    Error.Raise("Username not set")
   Endif
 
   If Not $sPassword Then
-    Error.Raise(("Password not set"))
+    Error.Raise("Password not set")
   Endif
 
   If $bDebug Then _PrintDebug("Connecting to " & Me.Host)
@@ -206,19 +206,19 @@ Public Function Open() As Boolean
       $oClient = New TCPClient
       If iPort = 0 Then
         iPort = 110
-        If $bDebug Then _PrintDebug(("Port not specified, using 110"))
+        If $bDebug Then _PrintDebug("Port not specified, using 110")
       Endif
 
     Case Net.SSL
       If iPort = 0 Then
         iPort = 995
-        If $bDebug Then _PrintDebug(("Port not specified, using 995"))
+        If $bDebug Then _PrintDebug("Port not specified, using 995")
       Endif
 
       $oClient = New SSLClient
 
     Case Else
-      Error.Raise(("Invalid connection type"))
+      Error.Raise("Invalid connection type")
 
   End Select
 
@@ -300,9 +300,9 @@ Public Function Close() As Boolean
   Dim Response As String
 
   If $iStatus <> Net.Connected Then
-    Error.Raise(("Not connected"))
+    Error.Raise("Not connected")
   Else If $bClosed Then
-    Error.Raise(("Already in UPDATE state"))
+    Error.Raise("Already in UPDATE state")
   Endif
 
   Response = Exec("QUIT")
