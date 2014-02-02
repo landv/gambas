@@ -29,6 +29,7 @@
 #include <sys/ioctl.h>
 #include <sys/poll.h>
 #include <time.h>
+#include <errno.h>
 
 #ifdef __CYGWIN__
 /* Cygwin defines FIONREAD in <sys/socket.h>. */
@@ -633,6 +634,34 @@ BEGIN_METHOD(SerialPort_Open, GB_INTEGER polling)
 
 END_METHOD
 
+BEGIN_PROPERTY(SerialPort_InputBufferSize)
+
+	int ret = 0;
+
+	if (THIS->status)
+	{
+		if (ioctl(THIS->port, TIOCINQ, &ret))
+			GB.Error("Unable to read input buffer size: &1", strerror(errno));
+	}
+
+	GB.ReturnInteger(ret);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(SerialPort_OutputBufferSize)
+
+	int ret = 0;
+
+	if (THIS->status)
+	{
+		if (ioctl(THIS->port, TIOCOUTQ, &ret))
+			GB.Error("Unable to read output buffer size: &1", strerror(errno));
+	}
+
+	GB.ReturnInteger(ret);
+
+END_PROPERTY
+
 // Here we declare the public interface of SerialPort class
 
 GB_DESC CSerialPortDesc[] =
@@ -684,6 +713,9 @@ GB_DESC CSerialPortDesc[] =
 	GB_PROPERTY_READ("CTS", "b", SerialPort_CTS),
 	GB_PROPERTY_READ("DCD", "b", SerialPort_DCD),
 	GB_PROPERTY_READ("RNG", "b", SerialPort_RNG),
+
+	GB_PROPERTY_READ("InputBufferSize", "i", SerialPort_InputBufferSize),
+	GB_PROPERTY_READ("OutputBufferSize", "i", SerialPort_OutputBufferSize),
 
 	GB_CONSTANT("_IsControl", "b", TRUE),
 	GB_CONSTANT("_IsVirtual", "b", TRUE),
