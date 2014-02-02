@@ -547,9 +547,11 @@ Public Sub Load()
         
         'If sClass = "Application" Then Stop
         
-        If Key = Project.Name And If Project.ExistClass(sClass) Then
-          bNextClass = True
-          Continue
+        If Key = Project.Name Then
+          If Project.ExistClass(sClass) Or If cClass[sClass] Then
+            bNextClass = True
+            Continue
+          Endif
         Endif
         
         sParent = aLine[iLine]
