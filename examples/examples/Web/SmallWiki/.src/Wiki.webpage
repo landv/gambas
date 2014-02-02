@@ -11,7 +11,7 @@
 
 <body <%If Main.Edit Then%>style="background: #F0F0F0;"<%Endif%>>
 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
 
 <div class="header">
     <div class="up">
@@ -33,11 +33,12 @@
       <div class="command">
         <%If Main.Exist Then%>
           <input type="submit" name="edit" value="Edit">
+          <input type="submit" name="delete" value="Delete">
+          <input type="submit" name="undo" value="Undo">
         <%Else%>
           <input type="submit" name="create" value="Create">
+          <input type="submit" name="undo" value="Undo">
         <%Endif%>
-        <input type="submit" name="delete" value="Delete">
-        <input type="submit" name="undo" value="Undo">
       </div>
     <%Endif%>
     <div class="login">
@@ -62,8 +63,13 @@
 
 <div class="page">
   <%If Main.Edit Then%>
-    <textarea class="edit" id="page" name="page"><%_PrintPage%></textarea>
-    <script type="text/javascript">document.getElementById('page').focus();</script>
+    <%If Main.Image Then%>
+      <p>Select the image file to upload...</p>
+      <input type="file" name="file" />
+    <%Else%>
+      <textarea class="edit" id="page" name="page"><%_PrintPage%></textarea>
+      <script type="text/javascript">document.getElementById('page').focus();</script>
+    <%Endif%>
   <%Else%>
     <%_PrintPage%>
   <%Endif%>

@@ -9,6 +9,8 @@ Private $aMarkup As String[]
 Private $cLink As Collection
 Private $aIndex As String[]
 Private $aTable As String[]
+Private $hMarkdown As Markdown
+Private $hLink As New MarkdownLink
 
 Private Sub GetIndent(sLine As String) As Integer
   
@@ -16,8 +18,9 @@ Private Sub GetIndent(sLine As String) As Integer
   
 End
 
-Public Sub Convert(sMarkup As String) As String
+Public Sub Convert(sMarkup As String, hMarkdown As Markdown) As String
   
+  $hMarkdown = hMarkdown
   $cLink = New Collection
   $aIndex = New String[]
   
@@ -74,8 +77,6 @@ Private Sub ConvertMarkup(aLine As String[]) As String
   For iLine = 0 To aLine.Max
     
     sLine = aLine[iLine]
-    
-    'If Trim(sLine) Begins "Les listes d'objets ne seront" Then Stop
     
     If $aMarkup.Count Then
       aResult.Add(ConvertLine(sLine))
@@ -465,7 +466,6 @@ Private Sub ConvertLine(sLine As String) As String
   Dim bEmph As Boolean
   Dim bStrong As Boolean
   Dim sText, sTitle, sLink As String
-  Dim bImageLink As Boolean
   Dim bBlank As Boolean
   
 MAIN_LOOP:
@@ -497,16 +497,7 @@ MAIN_LOOP:
   
     If sCar = "&" Then Goto ENTER_AMPERSAND
     
-    If sCar = "[" Then 
-      bImageLink = False
-      Goto ENTER_LINK
-    Endif
-    
-    If sCar = "!" And If Mid$(sLine, I + 1, 1) = "[" Then
-      Inc I
-      bImageLink = True
-      Goto ENTER_LINK
-    Endif
+    If sCar = "[" Then Goto ENTER_LINK
     
   Endif
   
@@ -667,7 +658,7 @@ ENTER_LINK:
       sLink = Mid$(sLine, I + 1, I1 - I - 1)
       I = I1
     Endif
-  Else If sCar = "[" And If Not bImageLink Then
+  Else If sCar = "[" Then
     I1 = InStr(sLine, "]", I + 1)
     If I1 > 0 Then
       sLink = $cLink[Mid$(sLine, I + 1, I1 - I - 1)]
@@ -677,48 +668,53 @@ ENTER_LINK:
     I = I2
   Endif
   
-  If bImageLink Then
-  
-    If sLink Then
-      
+  If sLink Then
+    
+    I1 = InStr(sLink, Chr$(34))
+    If I1 And If Right(sLink) = Chr$(34) Then
+      sTitle = Mid$(sLink, I1 + 1, -1)
+      sLink = Trim(Left$(sLink, I1 - 1))
     Else
-      
-      If sText Begins "//" Then sText = Application.Root &/ Mid$(sText, 3)
-      sResult = "<img src=\"" & Html(sText) & "\" />"
-      
-    Endif
-  
-  Else
-  
-    If sLink Then
-      
-      I1 = InStr(sLink, Chr$(34))
-      If I1 And If Right(sLink) = Chr$(34) Then
-        sTitle = Mid$(sLink, I1 + 1, -1)
-        sLink = Trim(Left$(sLink, I1 - 1))
-      Else
-        sTitle = ""
-        sLink = Trim$(sLink)
-      Endif
-      
-      bBlank = False
-      If sLink Begins "//" Then 
-        sLink = Application.Root &/ Mid$(sLink, 3)
-      Else If sLink Begins "./" Then
-        sLink = Application.Root &/ Request.Path &/ Mid$(sLink, 3)
-      Else If sLink Like "*://*" Then
-        bBlank = True
-      Endif
-      
-      sResult &= "<a href=\"" & Html$(sLink) & "\""
-      If sTitle Then sResult &= " title=\"" & Html$(sTitle) & "\""
-      If bBlank Then sResult &= " target=\"_blank\""
-      sResult &= ">" & sText & "</a>"
-      
+      sTitle = ""
+      sLink = Trim$(sLink)
     Endif
     
   Endif
   
+  If Not sLink And If InStr(sText, "/") Then
+    sLink = sText
+    sText = ""
+  Endif
+  
+  $hLink.Link = sLink
+  $hLink.Text = sText
+  $hLink.Title = sTitle
+  $hLink.Html = ""
+  
+  $hMarkdown.Link($hLink)
+  
+  If $hLink.Html Then
+    sResult &= $hLink.Html
+    Goto MAIN_LOOP
+  Endif
+  
+  sLink = $hLink.Link
+  sText = $hLink.Text
+  sTitle = $hLink.Title
+  
+  If Not sText Then sText = sLink
+  
+  If sLink Then
+    
+    bBlank = sLink Like "*://*" 
+    
+    sResult &= "<a href=\"" & Html$(sLink) & "\""
+    If sTitle Then sResult &= " title=\"" & Html$(sTitle) & "\""
+    If bBlank Then sResult &= " target=\"_blank\""
+    sResult &= ">" & sText & "</a>"
+    
+  Endif
+    
   Goto MAIN_LOOP
 
 End

@@ -4,6 +4,7 @@ Public Root As String
 Public Path As String
 Public Exist As Boolean
 Public Edit As Boolean
+Public Image As Boolean
 
 Public Sub GetPagePath(Optional bSuffix As Boolean) As String
 
@@ -39,10 +40,24 @@ Private Sub InitWiki()
   
 End
 
+Private Sub LockPage()
+
+  Dim sLock As String = File.Dir(GetPagePath()) &/ "~lock"
+  Dim hLock As File
+  Dim I As Integer
+  
+  For I = 1 To 20
+    Try hLock = Lock sLock
+    If Not Error Then Return
+    Sleep 0.1
+  Next
+  
+  Error.Raise("Unable to lock the current page")
+
+End
 
 Public Sub Main()
 
-  Dim sExt As String
   Dim iSize As Long
   Dim sMsg As String
   Dim sIdent As String
@@ -77,15 +92,7 @@ Public Sub Main()
   ' Handle resource files: images, style sheet...
   
   If Path And If Exist(".public" &/ Path) Then
-    sExt = File.Ext(Path)
-    If sExt = "css" Then
-      Response.ContentType = "text/css"
-    Else If sExt = "png" Then
-      Response.ContentType = "image.png"
-    Endif
-    Response.Begin
-    Print File.Load(".public" &/ Path);
-    Response.End
+    Response.SendFile(".public" &/ Path)
     Return
   Endif
   
@@ -122,20 +129,33 @@ Public Sub Main()
     
   Try iSize = Stat(GetPagePath()).Size
   {Exist} = iSize > 0
+  Image = IsImage(Path)
 
   If Session.Id Then
   
-    If Request.Exist("save") And If Request.Exist("page") Then
+    If Request.Exist("save") Then
     
-      MakeDir(File.Dir(GetPagePath()))
-      File.Save(GetPagePath(), Request["page"])
-      Copy GetPagePath() To GetPagePath(True)
-      Response.Redirect(Application.Root &/ Request.Path)
-      Return
+      If Request.Exist("page") Then
+        MakeDir(File.Dir(GetPagePath()))
+        LockPage
+        File.Save(GetPagePath(), Request["page"])
+        Copy GetPagePath() To GetPagePath(True)
+        Response.Redirect(Application.Root &/ Request.Path)
+        Return
+      Else If Request.Exist("file") And If Image Then
+        MakeDir(File.Dir(GetPagePath()))
+        LockPage
+        Try Kill GetPagePath()
+        Copy Request.Files["file"] To GetPagePath()
+        Copy GetPagePath() To GetPagePath(True)
+        Response.Redirect(Application.Root &/ Request.Path)
+        Return
+      Endif
       
     Else If Request.Exist("delete") Then
       
       If {Exist} Then
+        LockPage
         File.Save(GetPagePath(), "")
         Copy GetPagePath() To GetPagePath(True)
       Endif
@@ -147,6 +167,7 @@ Public Sub Main()
       sDir = File.Dir(GetPagePath())
       aPage = Dir(sDir, "~page.*").Sort(gb.Descent)
       If aPage.Count >= 2 Then
+        LockPage
         Try Kill sDir &/ aPage[0]
         Try Kill GetPagePath()
         Try Copy sDir &/ aPage[1] To GetPagePath()
@@ -162,6 +183,13 @@ Public Sub Main()
     
   Endif
 
+  If Image Then
+    If Not Session.Id Or If Request.Exist("show") Then
+      Response.SendFile(GetPagePath(), Response.GetContentTypeFrom(Path))
+      Return
+    Endif
+  Endif
+
   Wiki.Render
   
 Catch
@@ -173,3 +201,31 @@ Catch
   Response.End
 
 End
+
+Public Sub GetPageTitle(sPath As String) As String
+  
+  Dim sFile As String
+  Dim iPos As Integer
+  
+  sPath = Root &/ "data" &/ sPath &/ "~page"
+  If Not Exist(sPath) Then Return
+  
+  sFile = LTrim(File.Load(sPath))
+  
+  If sFile Begins "# " Then
+    iPos = InStr(sFile, "\n")
+    If iPos = 0 Then iPos = Len(sFile)
+    Return Trim(Mid$(sFile, 3, iPos - 3))
+  Endif
+  
+End
+
+Public Sub IsImage(sPath As String) As Boolean
+
+  Dim sExt As String
+  
+  sExt = File.Ext(sPath)
+  Return ["png", "jpg", "jpeg", "gif"].Exist(sExt)
+  
+End
+

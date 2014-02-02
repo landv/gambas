@@ -168,9 +168,9 @@ Public Sub End()
   
 End
 
-Private Sub GetContentType(sPath As String) As String
+Public Sub GetContentTypeFrom(Path As String) As String
   
-  Select Case Lower(File.Ext(sPath))
+  Select Case Lower(File.Ext(Path))
     Case "css"
       Return "text/css"
     Case "jpg", "jpeg", "jpe", "thumb"
@@ -231,7 +231,7 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
     Return
   Endif
 
-  If Not ContentType Then ContentType = GetContentType(Path)
+  If Not ContentType Then ContentType = GetContentTypeFrom(Path)
   Print "Content-type: "; ContentType
   Print $sHeader;
   'IF Name THEN PRINT "Content-location: "; "/" & CGI.Encode(Name)

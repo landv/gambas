@@ -28,7 +28,11 @@ Private Sub _PrintPage()
     Return
   Endif
   
-  Print Markup.Convert(File.Load(sPath));
+  If Main.Image Then
+    Print "<img src=\"" & Application.Root &/ Main.Path & "?show\" />";
+  Else
+    Print WikiMarkdown.ToHTML(File.Load(sPath));
+  Endif
 
 End
 

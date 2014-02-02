@@ -312,7 +312,9 @@ End
 
 Public Sub Abandon()
   
-  'Main.Log("Abandon")  
+  Init
+  
+  Main.Log("Abandon")
   
   If Not $sId Then Return
 

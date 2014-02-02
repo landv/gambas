@@ -14,11 +14,63 @@ INPUT[type=submit]:hover {
   background: #E0E0E0;
 }
 
+CODE {
+  background: #F0F0F0;
+  padding: 0px 1px;
+  display: inline;
+}
+
+PRE {
+  border: solid 1px #E0E0E0;
+  padding: 4px;
+}
+
+PRE CODE {
+  background: none;
+}
+
+TABLE {
+  border: solid #A0A0A0 1px;
+  padding: 0px;
+  border-collapse: collapse;
+}
+
+TABLE TD {
+  border: solid #A0A0A0 1px;
+  padding: 3px 6px;
+  vertical-align: top;
+}
+
+TABLE TH {
+  border: solid #A0A0A0 1px;
+  padding: 3px 6px;
+  text-align: left;
+}
+
+TABLE.example {
+  border: none;
+  border-left: solid #A0A0A0 8px;
+}
+
+TABLE.example TR {
+  border: none;
+}
+
+TABLE.example TD {
+  border: none;
+  padding-left: 8px;
+}
+
+TABLE.example TH {
+  border: none;
+  padding-left: 8px;
+}
+
 .header {
   background: gray;
   color: white;
   border-bottom: black solid 1px;
-  padding: 8px;
+  padding: 4px 8px;
 }
 
 .title {
@@ -35,7 +87,7 @@ INPUT[type=submit]:hover {
 }
 
 .page {
-  padding: 8px;
+  padding: 4px 8px;
 }
 
 .unknown {

@@ -1,0 +1,16 @@
+' Gambas class file
+
+Export
+Create
+
+Public Root As String
+
+Public Sub ToHTML(Markdown As String) As String
+  
+  Return Markup.Convert(Markdown, Me)
+  
+End
+
+Public Sub Link(({Link}) As MarkdownLink)
+  
+End
