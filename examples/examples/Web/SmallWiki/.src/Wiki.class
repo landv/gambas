@@ -23,7 +23,7 @@ Private Sub _PrintPage()
   
   If Not Main.Exist Then
     Print "<div class=\"unknown\">This page does not exist."
-    If Session.Id Then Print " Click on the <b>Create</b> button to create it!"
+    If Session.Id Then Print "<p>Click on the <b>Create</b> button to create it!"
     Print "</div>"
     Return
   Endif
@@ -41,10 +41,7 @@ Private Sub _PrintParent()
   Dim sPath As String
 
   sPath = Request.Path
-  If sPath Then
-    If File.Name(sPath) = "index" Then sPath = File.Dir(sPath)
-    sPath = File.Dir(sPath)
-  Endif
+  If sPath Then sPath = File.Dir(sPath)
   Print Application.Root &/ sPath;
 
 End

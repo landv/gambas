@@ -6,13 +6,14 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <link rel="stylesheet" href="<%/%>/style.css">
   <link rel="icon" href="<%/%>/logo.png" type="image/png">
-  <title><%_PrintTitle%></title>
+  <title>Gambas SmallWiki - <%_PrintTitle%></title>
 </head>
 
 <body <%If Main.Edit Then%>style="background: #F0F0F0;"<%Endif%>>
 
 <form method="post" enctype="multipart/form-data">
 
+<%If Not Request.Exist("v") Then%>
 <div class="header">
     <div class="up">
       <%If Main.Edit%>
@@ -61,13 +62,17 @@
 </div>
 <%Endif%>
 
+<%Endif%>
+
 <div class="page">
   <%If Main.Edit Then%>
     <%If Main.Image Then%>
       <p>Select the image file to upload...</p>
       <input type="file" name="file" />
     <%Else%>
+      <div class="edit-frame">
       <textarea class="edit" id="page" name="page"><%_PrintPage%></textarea>
+      </div>
       <script type="text/javascript">document.getElementById('page').focus();</script>
     <%Endif%>
   <%Else%>

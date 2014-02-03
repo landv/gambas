@@ -1,3 +1,7 @@
+HTML, BODY {
+  height: 100%;
+  }
+
 BODY{
   padding: 0px;
   margin: 0px;
@@ -21,13 +25,20 @@ CODE {
 }
 
 PRE {
+  background: #F0F0F0;
+  display: inline-table;
+  padding: 4px;
+  margin: 0px;
+}
+
+/*PRE {
   border: solid 1px #E0E0E0;
   padding: 4px;
 }
 
 PRE CODE {
   background: none;
-}
+}*/
 
 TABLE {
   border: solid #A0A0A0 1px;
@@ -72,6 +83,7 @@ TABLE.example TH {
   border-bottom: black solid 1px;
   padding: 4px 8px;
   box-shadow: 0 0 8px black;
+  height: 24px;
 }
 
 .title {
@@ -93,7 +105,9 @@ TABLE.example TH {
 
 .unknown {
   color: red;
-  font-style: italic;  
+  font-style: italic;
+  margin-top: 8px;
+  font-size: 150%;
 }
 
 .command {
@@ -107,9 +121,18 @@ TABLE.example TH {
   padding: 2px;
 }
 
+.edit-frame {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  top: 36px;
+  bottom: 0px;
+  padding: 8px;
+}
+
 .edit {
   border: none;
-  width: 100%;
-  height: 600px;
   background: none;
+  width: 100%;
+  height: 100%;
 }

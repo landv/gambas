@@ -7,7 +7,7 @@ Public Sub Link(hLink As MarkdownLink)
   Dim sPath As String
   
   If hLink.Link Begins "/" Then
-    sPath = Mid$(hLink.Link, 3)
+    sPath = Mid$(hLink.Link, 2)
   Else If hLink.Link Begins "./" Then
     sPath = Request.Path &/ Mid$(hLink.Link, 3)
   Else
