@@ -314,6 +314,8 @@ Public Sub Abandon()
   
   'Main.Log("Abandon")  
   
+  Init
+  
   If Not $sId Then Return
 
   Try Object.Call(Application.Startup, "Session_Abandon")
