@@ -48,9 +48,9 @@ Private Sub Configure()
   $hConfig.Clear()
   $hConfig.PrintCenter(("What to do?\nPlay again: [P]\nChange opponent: [o]\n\nQuit [q]"))
   Select Case Window.Ask(("Poq"))
-    Case 2
+    Case ("o")
       Configure_Opponent()
-    Case 3
+    Case ("q")
       Quit
   End Select
   $hConfig.Hide()
@@ -63,11 +63,11 @@ Private Sub Configure_Opponent()
   $hConfig.PrintCenter(("Play against whom?\n[h]uman, [N]ormal, [m]aster"))
   $bNPC = True
   Select Case Window.Ask(("hNm"))
-    Case 1
+    Case ("h")
       $bNPC = False
-    Case 2
+    Case ("n")
       $hNPC.Mode = NPC.Normal
-    Case 3
+    Case ("m")
       $hNPC.Mode = NPC.Master
   End Select
 

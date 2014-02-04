@@ -149,10 +149,21 @@ BEGIN_METHOD(Window_get, GB_INTEGER y; GB_INTEGER x)
 
 END_METHOD
 
+/**G
+ * Wait until the user typed one of the characters listed in Opts or until
+ * they typed wrong Tries times (infinity if not given).
+ *
+ * If there is an uppercase letter in the Opts string and the user hits
+ * Return, the first uppercase letter found in Opts is taken as the default
+ * value and the function returns. The case of letters does not matter in
+ * any other regard (this function is case-insensitive).
+ *
+ * This function returns the typed character (always in lowercase!).
+ **/
 BEGIN_METHOD(Window_Ask, GB_STRING opts; GB_INTEGER tries)
 
 	int t, ch, i;
-	char *o;
+	char *o, c;
 
 	t = VARGOPT(tries, -1);
 	o = STRING(opts);
@@ -170,11 +181,12 @@ BEGIN_METHOD(Window_Ask, GB_STRING opts; GB_INTEGER tries)
 			if (tolower(o[i]) == (char) ch)
 				goto found;
 	}
-	GB.ReturnInteger(0);
+	GB.ReturnNull();
 	return;
 
 found:
-	GB.ReturnInteger(i + 1);
+	c = tolower(o[i]);
+	GB.ReturnNewString(&c, 1);
 
 END_METHOD
 
@@ -722,7 +734,7 @@ GB_DESC CWindowDesc[] = {
 	GB_METHOD("_free", NULL, Window_free, NULL),
 	GB_METHOD("_get", ".Char.Attrs", Window_get, "(Y)i(X)i"),
 
-	GB_METHOD("Ask", "i", Window_Ask, "(Opts)s[(Tries)i]"),
+	GB_METHOD("Ask", "s", Window_Ask, "(Opts)s[(Tries)i]"),
 	GB_METHOD("Read", "i", Window_Read, "[(Timeout)i]"),
 	GB_METHOD("ReadLine", "s", Window_ReadLine, NULL),
 	GB_METHOD("Drain", NULL, Window_Drain, NULL),
