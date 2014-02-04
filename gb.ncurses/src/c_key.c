@@ -39,6 +39,7 @@ GB_DESC CKeyDesc[] = {
 	GB_NOT_CREATABLE(),
 
 	GB_CONSTANT("Return", "i", (int) '\n'),
+	GB_CONSTANT("Esc", "i", (int) '\x1b'),
 
 	GB_CONSTANT("Break", "i", KEY_BREAK),
 	GB_CONSTANT("Home", "i", KEY_HOME),
