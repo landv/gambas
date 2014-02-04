@@ -78,6 +78,33 @@ BEGIN_METHOD_VOID(Screen_init)
 
 END_METHOD
 
+static int CSCREEN_cursor(CSCREEN *scr, int mode)
+{
+	if (mode >= 0 && mode <= 2)
+		curs_set(mode);
+	else
+		return -1;
+	scr->cursor = mode;
+	return 0;
+}
+
+static void CSCREEN_echo(CSCREEN *scr, int mode)
+{
+	if (mode)
+		echo();
+	else
+		noecho();
+	scr->echo = mode;
+}
+
+BEGIN_METHOD_VOID(Screen_new)
+
+	CSCREEN_cursor(THIS, 1);
+	CSCREEN_echo(THIS, 1);
+	INPUT_mode(THIS, INPUT_CBREAK);
+
+END_METHOD
+
 #if 0
 BEGIN_METHOD(Screen_new, GB_STRING termpath)
 
@@ -155,16 +182,6 @@ GB_DESC CCursorDesc[] = {
 	GB_END_DECLARE
 };
 
-static int CSCREEN_cursor(CSCREEN *scr, int mode)
-{
-	if (mode >= 0 && mode <= 2)
-		curs_set(mode);
-	else
-		return -1;
-	scr->cursor = mode;
-	return 0;
-}
-
 BEGIN_PROPERTY(Screen_Cursor)
 
 	if (READ_PROPERTY) {
@@ -176,15 +193,6 @@ BEGIN_PROPERTY(Screen_Cursor)
 		GB.Error(E_UNSUPP);
 
 END_PROPERTY
-
-static void CSCREEN_echo(CSCREEN *scr, int mode)
-{
-	if (mode)
-		echo();
-	else
-		noecho();
-	scr->echo = mode;
-}
 
 BEGIN_PROPERTY(Screen_Echo)
 
