@@ -571,9 +571,10 @@ BEGIN_PROPERTY(Window_Pair)
 END_PROPERTY
 
 #define COLOR_METHOD(r, f, b)				\
-short pair = PAIR_NUMBER(getbkgd(THIS->content));	\
-short fg, bg;						\
+short pair, fg, bg;					\
+attr_t attr;						\
 							\
+wattr_get(THIS->content, &attr, &pair, NULL);		\
 pair_content(pair, &fg, &bg);				\
 if (READ_PROPERTY) {					\
 	GB.ReturnInteger(r);				\
@@ -584,7 +585,7 @@ if (pair == -1) {					\
 	GB.Error(GB_ERR_BOUND);				\
 	return;						\
 }							\
-wbkgd(THIS->content, COLOR_PAIR(pair) | ' ');		\
+wbkgd(THIS->content, COLOR_PAIR(pair) | attr | ' ');	\
 REFRESH();
 
 /*
