@@ -53,7 +53,8 @@ static void my_spin_button_size_request(GtkWidget *widget, GtkRequisition *requi
 	gSpinBox *control = (gSpinBox *)gt_get_control(widget);
 
 	(*(void (*)(GtkWidget *, GtkRequisition *))klass->_gtk_reserved5)(widget, requisition);
-	requisition->height = control->height();
+	if (control)
+		requisition->height = control->height();
 }
 #endif
 

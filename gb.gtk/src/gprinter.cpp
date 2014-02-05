@@ -691,15 +691,17 @@ void gPrinter::fixPrintDialog(GtkPrintUnixDialog *dialog)
 	const char *output = gtk_print_settings_get(gPrinter::_current->_settings, GTK_PRINT_SETTINGS_OUTPUT_URI);
 	
 	_dump_tree_entry = 1;
-	
-	if (g_str_has_suffix(output, ".pdf"))
-		_dump_tree_radio_button = 0;
-	if (g_str_has_suffix(output, ".ps"))
-		_dump_tree_radio_button = 2;
-	else if (g_str_has_suffix(output, ".svg"))
-		_dump_tree_radio_button = 3;
-	else
-		_dump_tree_radio_button = 0;
+	_dump_tree_radio_button = 0;
+
+	if (output)
+	{
+		if (g_str_has_suffix(output, ".pdf"))
+			_dump_tree_radio_button = 0;
+		if (g_str_has_suffix(output, ".ps"))
+			_dump_tree_radio_button = 2;
+		else if (g_str_has_suffix(output, ".svg"))
+			_dump_tree_radio_button = 3;
+	}
 	
 	dump_tree(GTK_WIDGET(dialog), dialog);
 }

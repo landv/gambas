@@ -1527,14 +1527,14 @@ PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
 PATCH_DECLARE(GTK_TYPE_RADIO_BUTTON)
 PATCH_DECLARE(GTK_TYPE_NOTEBOOK)
 
-int gt_get_preferred_width(GtkWidget *widget)
+/*int gt_get_preferred_width(GtkWidget *widget)
 {
 	int m, n;
 	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(G_OBJECT_TYPE(widget));
 	if (klass->_gtk_reserved6)
 		(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved6)(widget, &m, &n);
 	return m;
-}
+}*/
 
 #endif
 
