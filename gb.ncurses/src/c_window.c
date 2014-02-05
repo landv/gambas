@@ -539,11 +539,6 @@ BEGIN_PROPERTY(Window_Attributes)
 		attr_t attr;
 		short pair;
 
-		/* XXX: My ncurses header produces a GCC warning here
-		 *      because apparently wattr_get() is macro which does a
-		 *      NULL pointer check on its arguments of which two lay
-		 *      on the stack. So GCC correctly detects the non-
-		 *      necessity of that check. */
 		wattr_get(THIS->content, &attr, &pair, NULL);
 		GB.ReturnInteger(attr);
 		return;

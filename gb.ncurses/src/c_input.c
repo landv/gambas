@@ -63,11 +63,11 @@ static void INPUT_watch(int fd)
 
 	if (_watch_fd != -1)
 		GB.Watch(_watch_fd, GB_WATCH_NONE, NULL, 0);
-	if (fd == -1)
+	_watch_fd = fd;
+	if (_watch_fd == -1)
 		return;
 
-	GB.Watch(fd, GB_WATCH_READ, INPUT_callback, 0);
-	_watch_fd = fd;
+	GB.Watch(_watch_fd, GB_WATCH_READ, INPUT_callback, 0);
 }
 
 static void INPUT_callback(int fd, int flag, intptr_t arg)
