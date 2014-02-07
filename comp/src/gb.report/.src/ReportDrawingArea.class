@@ -1,9 +1,9 @@
 ' Gambas class file
 
-'Export
+Export
 Inherits ReportFrame
-
-Event Draw
+Event Layout(Width As Integer, Height As Integer, Index As Integer)
+Event Draw(Width As Integer, Height As Integer, Index As Integer)
 Public Const _Properties As String = "*"
 Public Const _Similar As String = "ReportImage"
 Public Const _DefaultEvent As String = "Draw"
@@ -23,7 +23,8 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
   Paint.ClipRect = hRect
   'Paint.
   Paint.Translate(iX, iY)
-  Raise Draw
+  
+  Raise Draw(hRect.Width, hRect.Height, DataIndex)
   Paint.Translate(- iX, - iY)
   Paint.Restore
 
