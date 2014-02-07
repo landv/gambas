@@ -3,6 +3,7 @@
 { Report Report
   #MoveScaled(0,0,64,92)
   Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Orientation = Printer.Landscape
   Index = 0
   Text = ("")
   { ReportLabel3 ReportLabel
@@ -88,7 +89,7 @@
       #MoveScaled(47,1,13,3)
       Width = "3cm"
       AutoResize = True
-      Text = ("Page $PAGE")
+      Text = ("Page $PAGE sur $NPAGE")
       UseField = True
     }
   }

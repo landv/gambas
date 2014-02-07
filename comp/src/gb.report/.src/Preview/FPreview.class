@@ -1,322 +1,343 @@
 ' Gambas class file
 
-Static Private $hReport As Report
-Static Private $aZoom As Integer[] = [12, 18, 25, 35, 50, 71, 100, 141, 200, 283, 400]
-
-Private $fScale As Float = 1
-Private $iPage As Integer = 1
-Private $hPrint As Report
-Private $iX As Integer
-Private $iY As Integer
-
+Private $aModeButtons As New ToolButton[]
+'Static Private $hReport As Report
+Private bFlag As Boolean
+Private $hPrinter As New Printer As "Printer"
 Static Public Function Run(hReport As Report)
 
   Dim hFPreview As FPreview
 
-  $hReport = hReport
+  
 
   hFpreview = New FPreview
+  
+  hFPreview.SetReport(hReport)
   hFpreview.ShowModal()
 
 End
 
 Public Sub _new()
-
-  Dim hSizeInt As TSizeParse
-
-  $hReport.Refresh
-  Printer1.Paper = $hReport.Paper
-  Printer1.Orientation = $hReport.Orientation
-  'Debug "Orientation avant impression : " & Printer1.Orientation
-  $hReport.Resolution = Printer1.Resolution
-  If $hReport.Paper = Printer.Custom Then
-    hSizeInt = New TSizeParse($hReport.Width)
-    Printer1.PaperWidth = hSizeInt.ToCm() * 10
-    hSizeInt = New TSizeParse($hReport.Height)
-    Printer1.PaperHeight = hSizeInt.ToCm() * 10
-  Endif
-
-  'Debug Printer1.Orientation;; Printer1.PaperWidth;; Printer1.PaperHeight
-
-  Me.Center
-
+  Dim s As String
+  'View.Report = New MyReport1
+  'SetReport(View.Report)
+  View.ScaleMode = ReportView.Page
+  $aModeButtons = [ToolButton1, ToolButton2, ToolButton4, ToolButton3]
+  
+  For Each s In Printer.List
+    cmbPrinter.Add(s)
+  Next
+  SelectPrinter
+  Button1.Tag = False
+'  Panel4.Layout = [7, 2]
+  'ToggleButton1_Click
 End
 
-Public Sub dwgPreview_Draw()
-  'Debug $fScale
-  'Paint.Scale($fScale, $fScale)
-  '$hReport.Layout
-
-  $hReport.Scale = $fScale
-  If $iPage < 0 Then Inc Application.Busy
-  $hReport._Layout($iPage)
-  If $iPage < 0 Then Dec Application.Busy
-
-  If $iPage < 0 Then
-    $iPage = $hReport.PageCount
-    spnPage.MaxValue = $hReport.PageCount
-    spnPage.Value = $iPage
-    Return
-  Endif
-
-  $hReport.Paint($iPage)
-
-  If $hReport._LayoutNotFinished Then
-    spnPage.MaxValue = $hReport.PageCount + 1
+Private Sub SelectPrinter(Optional sName As String)
+  
+  If sName Then
+    $hPrinter.Name = sName
   Else
-    lblPageCount.Text = " / " & $hReport.PageCount
-    spnPage.MaxValue = $hReport.PageCount
-    lblPageCount.Show
-    'btnLast.Enabled = False
+    $hPrinter.Name = Printer.Default
+    Object.Lock(cmbPrinter)
+    cmbPrinter.Index = cmbPrinter.List.Find(Printer.Default)
+    Object.Unlock(cmbPrinter)
   Endif
+  
+  'NOTE: force the printer fullpage mode because it make error on report placement
+  $hPrinter.FullPage = True
+  
+  tgbGrayScale.Value = $hPrinter.GrayScale
+  tgbFullPage.Value = $hPrinter.FullPage
+  tgbReverseCopies.Value = $hPrinter.ReverseOrder
+  tgbCollateCopies.Value = $hPrinter.CollateCopies
+  
+End
+
+
+
+
+
+Public Sub SetReport(hReport As Report)
+'View.Report = hReport
+View.Report = hReport
+GetValuesFromReport()
+End
+
+Private Sub GetValuesFromReport()
+  cmbPaper.Index = View.Report.Paper
+  $hPrinter.Orientation = View.Report.Orientation
+  
+  If View.Report.Paper = Printer.Custom Then
+  $hPrinter.PaperWidth = TSizeParse[View.Report.Width].ToCm() * 10
+  $hPrinter.PaperHeight = TSizeParse[View.Report.Height].ToCm() * 10
+  Else
+    $hPrinter.Paper = View.Report.Paper
+  Endif 
+  
+  
+  
+  cmbOrientation.Index = $hPrinter.Orientation
+  cmbDuplex.Index = $hPrinter.Duplex
+  cmbPaper.Index = $hPrinter.Paper
+  Object.Lock(spWidth)
+  spWidth.Value = $hPrinter.PaperWidth
+  Object.Unlock(spWidth)
+  Object.Lock(spHeight)
+  spHeight.Value = $hPrinter.PaperHeight
+  Object.Unlock(spHeight)
+End
+
+Public Sub Slider1_Change()
+Dim hButton As ToolButton
+  View.Scale = Slider1.Value / 100
+  lblZoom.Text = Str(Slider1.Value) & " %"
+    bFlag = True
+  For Each hButton In $aModeButtons
+    hButton.Value = False
+    
+  Next
+  bFlag = False  
 
 End
 
-Public Sub Form_Open()
+Public Sub View_Change()
 
-  If $hReport = Null Then Me.Close
+  Object.Lock(Slider1)
+    Slider1.Value = View.Scale * 100
+  Object.Unlock(Slider1)
+   lblZoom.Text = Str(Slider1.Value) & " %"
+End
 
-  'Report.Debug = True
+Public Sub Mode_Click()
 
-  btnAdjust.Value = True
+   Dim hButton As ToolButton
+   Dim hCurButton As ToolButton
+   If bFlag Then Return
+     bFlag = True
+     hCurButton = Last
+   For Each hButton In $aModeButtons
+     'Object.Lock(hButton)
+     'Print hButton, hCurButton, hButton = hCurButton
+     If hButton = hCurButton Then 
+     hButton.Value = True
+     Else
+     hButton.Value = False
+     Endif
+     'Object.Unlock(hButton)
+   Next
+bFlag = False
 
-  spnPage.SetFocus
+View.ScaleMode = hCurButton.Tag
 
 End
 
-Public Sub sldZoom_Change()
 
-  btnAdjust.Value = False
-  ResizeMe
+Public Sub tgbGrayScale_Click()
+
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.GrayScale = Last.Value
+  View._GrayScale = Last.Value
+
+End
+Public Sub tgbFullPage_Click()
+
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.FullPage = Last.Value
 
 End
 
-Private Sub ResizeMe()
+Public Sub tgbReverseCopies_Click()
 
-  Dim iWidth, iHeight As Integer
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.ReverseOrder = Last.value
+End
+
+Public Sub tgbCollateCopies_Click()
+
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.CollateCopies = Last.Value
+End
+
+Public Sub PictureBox2_MouseDown()
+
   
 
-  iWidth = Printer1.PaperWidth * Desktop.Resolution / 25.4
-  iHeight = Printer1.PaperHeight * Desktop.Resolution / 25.4
+End
 
-  If btnAdjust.Value Then
+Public Sub cmbOrientation_Change()
 
-    If Printer1.PaperWidth > Printer1.PaperHeight Then
-      $fScale = svwPreview.W / iWidth
-      If (iHeight * $fScale) > svwPreview.Height Then
-        $fScale = (svwPreview.W - Style.ScrollbarSize - 2) / iWidth
-      Endif
-      svwPreview.ScrollBar = Scroll.Vertical
-    Else
-      $fScale = (svwPreview.H - Style.ScrollbarSize - 2) / iHeight
-      If (iWidth * $fScale) > svwPreview.Width Then
-        $fScale = (svwPreview.H - Style.ScrollbarSize - 2) / iHeight
-      Endif
-      svwPreview.ScrollBar = Scroll.Horizontal
-    Endif
-    Object.Lock(sldZoom)
-    sldZoom.Value = $fScale * 100
-    Object.Unlock(sldZoom)
+End
+
+Public Sub cmbOrientation_Click()
+  If View.Report.Orientation = Last.Index Then Return
+  View.Report.Orientation = Last.Index
+  'View.Report.Refresh
+  View.Refresh
+  GetValuesFromReport
+  
+
+End
+
+Public Sub cmbPaper_Click()
+Dim i As Integer = Last.Index
+  'Print "id "; View.Report.paper
+  If View.Report.Paper = i Then Return 
+  View.Report.Paper = i
+  If i = 0 Then
+    pnlCustom.Enabled = True
   Else
-    svwPreview.ScrollBar = Scroll.Both
-    $fScale = sldZoom.Value / 100
+    pnlCustom.Enabled = False
+  View.Refresh
+  GetValuesFromReport
   Endif
 
-  sldZoom.Tooltip = CStr(sldZoom.Value) & "%"
-  Me.Title = ("Report preview") & " - " & sldZoom.Tooltip
+End
 
-  dwgPreview.Resize(iWidth * $fScale, iHeight * $fScale)
-  dwgPreview.Mouse = If(btnAdjust.Value, Mouse.Default, Mouse.SizeAll)
-  dwgPreview.Refresh
+Public Sub cmbDuplex_Click()
+
+  $hPrinter.Duplex = Last.index
 
 End
 
-' Public Sub ComboBox1_Click()
-'
-'   Printer1.Paper = A4 'Object.GetProperty(Printer, ComboBox1.Text)
-'
-'   'If ComboBox1.Text = "Custom" Then
-'   '  Frame3.Enabled = True
-'   'Else
-'   '  Frame3.Enabled = False
-'   '  txtWidth.Text = Int(Printer1.PaperWidth)
-'   '  txtHeight.Text = Int(Printer1.PaperHeight)
-'   'Endif
-'   '$hReport.Refresh()
-'   'Slider1_Change
-' End
+Public Sub ButtonBox1_Click()
 
-' Public Sub ComboBox2_Click()
-'
-'   Printer1.Orientation = ComboBox2.Index
-'   ComboBox1_Click
-'   ResizeMe
-'
-' End
-
-' Public Sub txtWidth_Change()
-'
-'   Printer1.PaperWidth = txtWidth.Text
-'
-'   ResizeMe
-'
-'   Catch
-'
-'
-' End
-
-' Public Sub txtHeight_Change()
-'
-'     Printer1.PaperHeight = txtHeight.Text
-'   ResizeMe
-'
-' End
-
-Public Sub btnZoomOut_Click()
-
-  Dim I As Integer
-  Dim iZoom As Integer
-
-  For I = $aZoom.Max DownTo 0
-    iZoom = $aZoom[I]
-    If iZoom < sldZoom.Value Then
-      sldZoom.Value = iZoom
-      Return
-    Endif
-  Next
-
-  sldZoom.Value = sldZoom.MinValue
+  Dialog.Path = User.Home
+  Dialog.Filter = ["*.pdf", "Pdf", "*.ps", "Postscript"]
+  If Not Dialog.OpenFile() Then
+    Last.Text = Dialog.Path
+    $hPrinter.OutputFile = Dialog.Path
+  Endif
 
 End
 
-Public Sub btnZoomIn_Click()
+Public Sub Form_Activate()
 
-  Dim iZoom As Integer
-
-  For Each iZoom In $aZoom
-    If iZoom > sldZoom.Value Then
-      sldZoom.Value = iZoom
-      Return
-    Endif
-  Next
-
-  sldZoom.Value = sldZoom.MaxValue
 
 End
 
-Public Sub btnPrint_Click()
+Public Sub TabPanel1_Click()
 
-  If Printer1.Configure() Then Return
-  'Printer1.OutputFile = "/home/benoit/gambas/3.0/trunk/comp/src/gb.report/test.pdf"
-  'Me.Enabled = False
-  Printer1.Print()
-  'Me.Enabled = True
-
-End
-
-Public Sub Printer1_Draw()
-
-  $hReport.Scale = 1
-  $hReport.Paint(Printer1.Page)
-
-End
-
-Public Sub Printer1_Begin()
-
-  '$hPrint = $hReport.Clone()
-  'Debug Object.Type($hReport)
-
-  $hReport.Layout
-  'Debug "Orientation a l'impression : " & Printer1.Orientation
-  Printer1.Count = $hReport.PageCount
-  'Print Printer1.Count
-
-End
-
-Public Sub Printer1_End()
-
-  $hPrint = Null
-
-End
-
-Public Sub Form_Arrange()
-
-  ResizeMe
-
-End
-
-Public Sub btnAdjust_Click()
-
-  ResizeMe
-
-End
-
-Public Sub btnZNorm_Click()
-
-  btnAdjust.Value = False
-  sldZoom.Value = 100
-
-End
-
-Public Sub spnPage_Change()
-
-  $iPage = Last.Value
-  dwgPreview.Refresh
-
-End
-
-Public Sub btnLast_Click()
-
-  If $hReport._LayoutNotFinished Then
-    $iPage = -1
-    dwgPreview.Refresh
+  If TabPanel1.Index = 0 Then
+    $hPrinter.OutputFile = ""
   Else
-    spnPage.Value = $hReport.PageCount
+    $hPrinter.OutputFile = ButtonBox1.Text
   Endif
 
 End
 
-Public Sub btnFirst_Click()
+Public Sub TextBox1_Change()
 
-  spnPage.Value = 1
-
-End
-
-Public Sub btnLeft_Click()
-
-  If spnPage.Value > spnPage.MinValue Then Dec spnPage.Value
+  View.Range = Last.Text
 
 End
 
-Public Sub btnRight_Click()
+Public Sub TextBox1_Click()
 
-  If spnPage.Value < spnPage.MaxValue Then Inc spnPage.Value
-
-End
-
-Public Sub dwgPreview_MouseDown()
-
-  $iX = svwPreview.ScrollX + Mouse.ScreenX
-  $iY = svwPreview.ScrollY + Mouse.ScreenY
+  Last.Text = ""
 
 End
 
-Public Sub dwgPreview_MouseMove()
+Public Sub spWidth_Change()
 
-  svwPreview.Scroll($iX - Mouse.ScreenX, $iY - Mouse.ScreenY)
+ View.Report.Width = Str(Last.Value) & "mm"
+ View.Refresh
+ 
+End
+
+Public Sub spHeight_Change()
+
+ View.Report.Height = Str(Last.Value) & "mm"
+ View.Refresh
 
 End
 
-Public Sub dwgPreview_MouseWheel()
+Public Sub Button2_Click()
 
-  If Mouse.Control Then
-    If Mouse.Delta > 0 Then
-      sldZoom.Value += 10
-    Else
-      sldZoom.Value -= 10
-    Endif
+  View._ForceLayout
 
-    Stop Event
+End
+
+Public Sub cmbPrinter_Click()
+
+  SelectPrinter(Last.Text)
+  
+
+End
+
+Public Sub Button1_Click()
+  
+  If Button1.Tag Then
+  'Button1.Picture = Picture["icon:/22/exec"]
+    $hPrinter.Cancel
+    Button1.Tag = False
+    
+  Else
+    If Not View.Report Then Return
+    Button1.Tag = True
+    Button1.Picture = Picture["icon:/22/cancel"]
+    Button1.Text = ("Cancel")
+    $hPrinter.Print
   Endif
+End
+
+
+Public Sub Printer_Begin()
+  hbZoom.Hide
+  hbPrinting.Show
+  Inc Application.Busy
+  ProgressBar1.Value = 0
+  ProgressBar1.Pulse = True
+  lblPrint.Text = ("Layout...")
+End
+
+Public Sub Printer_Paginate()
+  'View._ForceLayout
+  If View.Report._LayoutNotFinished Then
+    View.LockLayout
+    View.Report._Layout(View.Report.PageCount)
+  Else
+    $hPrinter.Count = View.PageCount
+    ProgressBar1.Pulse = False
+    lblPrint.Text = ("Printing...")
+    View.UnlockLayout
+  Endif
+'View.LockLayout
+  
+End
+
+Public Sub Printer_Draw()
+  If View._RangePages.Count = 0 Then 
+    View.Report.Paint($hPrinter.Page)
+  Else
+    View.Report.Paint(View._RangePages[$hPrinter.Page - 1])
+  Endif
+  ProgressBar1.Value = $hPrinter.Page / View.PageCount
+End
+
+
+Public Sub Printer_End()
+
+  'View.UnlockLayout
+  hbPrinting.Hide
+  hbZoom.Show
+  Dec Application.Busy
+  Button1.Picture = Picture["icon:/22/print"]
+  Button1.Text = ("Print")
+  Button1.Tag = False
+End
+
+
+
+
+Public Sub View_Layout(LayoutInProgress As Boolean)
+
+  'Button1.Enabled = Not LayoutInProgress
+
+End
+
+Public Sub Panel12_MouseDown()
+
+  
 
 End

@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Fast
 Public Value As Float
 Public Unit As String
 
@@ -58,4 +59,11 @@ Public Sub GetValue() As Float
 End
 
 
+Static Public Sub _get(Size As String) As TSizeParse
+  
+  Dim hSize As TSizeParse = New TSizeParse(Size)
+  
+  Return hSize
+
+End
 

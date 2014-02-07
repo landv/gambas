@@ -1,0 +1,33 @@
+' Gambas class file
+
+Inherits Task
+Private $hReport As Report
+
+Public Width As Integer
+Public Height As Integer
+Private Scale As Float
+Public Page As Integer
+
+Public Sub _new(hReport As Report, iPage As Integer, fScale As Float, W As Integer, H As Integer)
+  
+  $hReport = hReport
+  Width = W
+  Height = H
+  Scale = fScale
+  Page = iPage
+End
+
+
+Public Sub Main() As Variant
+  
+  Dim hImage As New Image(Width, Height, Color.White)
+  
+  Paint.Begin(hImage)
+  Paint.Scale(Scale, Scale)
+  $hReport.Paint(page)
+  Paint.End
+  
+  Return hImage.Pixels
+  
+    
+End

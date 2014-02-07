@@ -1,0 +1,106 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,90,57)
+  Text = ("Report preview")
+  Icon = Picture["icon:/small/zoom-fit"]
+  Arrangement = Arrange.Vertical
+  { Panel1 Panel
+    MoveScaled(0,0,88,4)
+    Arrangement = Arrange.Horizontal
+    { btnPrint ToolButton
+      MoveScaled(0,0,9,4)
+      AutoResize = True
+      Text = ("Print...")
+      Picture = Picture["icon:/small/printer"]
+    }
+    { Separator4 Separator
+      MoveScaled(10,0,1,4)
+    }
+    { btnFirst ToolButton
+      MoveScaled(11,0,4,4)
+      ToolTip = ("First page")
+      Picture = Picture["icon:/small/first"]
+    }
+    { btnLeft ToolButton
+      MoveScaled(15,0,4,4)
+      ToolTip = ("Previous page")
+      Picture = Picture["icon:/small/left"]
+    }
+    { Label1 Label
+      MoveScaled(19,0,5,4)
+      AutoResize = True
+      Text = ("Page")
+    }
+    { Panel2 Panel
+      MoveScaled(25,0,1,4)
+    }
+    { spnPage SpinBox
+      MoveScaled(27,0,8,4)
+      MinValue = 1
+    }
+    { lblPageCount Label
+      MoveScaled(36,0,5,4)
+      Visible = False
+      AutoResize = True
+    }
+    { btnRight ToolButton
+      MoveScaled(41,0,4,4)
+      ToolTip = ("Next page")
+      Picture = Picture["icon:/small/right"]
+    }
+    { btnLast ToolButton
+      MoveScaled(45,0,4,4)
+      ToolTip = ("Last page")
+      Picture = Picture["icon:/small/last"]
+    }
+    { Separator3 Separator
+      MoveScaled(49,0,1,4)
+    }
+    { btnAdjust ToolButton
+      MoveScaled(51,0,4,4)
+      ToolTip = ("Fit to window")
+      Picture = Picture["icon:/small/zoom-fit"]
+      Toggle = True
+    }
+    { btnZNorm ToolButton
+      MoveScaled(55,0,4,4)
+      ToolTip = ("Zoom 100%")
+      Picture = Picture["icon:/small/zoom-normal"]
+    }
+    { btnZoomOut ToolButton
+      MoveScaled(61,0,4,4)
+      ToolTip = ("Zoom out")
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { sldZoom Slider
+      MoveScaled(65,0,19,4)
+      MinValue = 12
+      MaxValue = 400
+      PageStep = 50
+      Value = 100
+    }
+    { btnZoomIn ToolButton
+      MoveScaled(84,0,4,4)
+      ToolTip = ("Zoom in")
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(11,6,14,0)
+  }
+  { svwPreview ScrollView
+    MoveScaled(1,9,42,32)
+    Background = Color.Background
+    Expand = True
+    Border = False
+    { dwgPreview DrawingArea
+      MoveScaled(1,0,21,8)
+      Background = &HFFFFFF&
+    }
+  }
+  { Printer1 #Printer
+    #MoveScaled(66,10)
+    FullPage = True
+  }
+}
