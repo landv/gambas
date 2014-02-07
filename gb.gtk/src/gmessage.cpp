@@ -41,6 +41,17 @@ static char *DIALOG_title=NULL;
 static gFont *DIALOG_font=NULL;
 static bool _dialog_show_hidden = false;
 
+static gboolean cb_show(GtkWidget *widget, gpointer data)
+{
+	GdkGeometry geometry;
+	geometry.min_width = gDesktop::scale() * 32;
+	geometry.min_height = gDesktop::scale() * 6;
+
+	gtk_window_set_geometry_hints(GTK_WINDOW(widget), widget, &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
+	return false;
+}
+
+
 static int run_dialog(GtkDialog *window)
 {
   gMainWindow *active;
@@ -84,7 +95,7 @@ static dlg_btn bt;
 
 guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 {
-	GtkWidget *msg,*hrz,*label,*img;
+	GtkWidget *msg, *hrz, *label, *img;
 	gint resp;
 	char *buf=NULL;
 	char *title;
@@ -105,8 +116,8 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
 #endif
 
-	img=gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
-	label = gtk_label_new ("");
+	img = gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
+	label = gtk_label_new("");
 	
 	if (sg) 
 		buf = gt_html_to_pango_string(sg, -1, true);
@@ -119,8 +130,7 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	
 	hrz = gtk_hbox_new(FALSE, gDesktop::scale());
   gtk_container_set_border_width(GTK_CONTAINER(hrz), gDesktop::scale() * 2);
-	gtk_widget_set_size_request(hrz, gDesktop::scale() * 32, -1);
-  	
+
 	gtk_container_add (GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(msg))),hrz);
 	
 	gtk_container_add (GTK_CONTAINER(hrz),img);
@@ -132,9 +142,12 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	gtk_widget_show_all(hrz);
 	
 	gtk_widget_realize(msg);
+
 	gdk_window_set_type_hint(gtk_widget_get_window(msg), GDK_WINDOW_TYPE_HINT_UTILITY);
 	gtk_window_set_position(GTK_WINDOW(msg), GTK_WIN_POS_CENTER_ALWAYS);
 	
+	g_signal_connect(G_OBJECT(msg), "show", G_CALLBACK(cb_show), (gpointer)NULL);
+
 	resp = run_dialog(GTK_DIALOG(msg));
 	gtk_widget_destroy(msg);
 	
