@@ -1267,6 +1267,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_free)
 
+	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
 	GB.Unref(POINTER(&THIS->watch));
 
 END_METHOD
