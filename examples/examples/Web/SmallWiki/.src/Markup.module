@@ -29,6 +29,13 @@ Public Sub Convert(sMarkup As String, hMarkdown As Markdown) As String
   
 End
 
+Private Sub IsWordLimit(sCar As String) As Boolean
+
+  If IsLetter(sCar) Or If IsDigit(sCar) Or If Len(sCar) >= 2 Then Return
+  Return True
+
+End
+
 Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) As String
   
   Dim iLine As Integer
@@ -489,7 +496,7 @@ End
 Private Sub ConvertLine(sLine As String) As String
   
   Dim sResult As String
-  Dim I As Integer
+  Dim I, L As Integer
   Dim sCar As String
   Dim I1, I2 As Integer
   Dim sPattern As String
@@ -501,23 +508,24 @@ Private Sub ConvertLine(sLine As String) As String
   
 MAIN_LOOP:
   
-  If I >= Len(sLine) Then 
+  If I >= String.Len(sLine) Then 
     If bEmph Then 
       sResult &= "</em>"
     Else If bStrong Then 
       sResult &= "</strong>"
     Endif
+    If bCode Then sResult &= "</code>"
     Return sResult
   Endif
   
   GoSub NEXT_CAR
   
   If sCar = "\\" Then
-    If I = Len(sLine) Then
+    If I = String.Len(sLine) Then
       sResult &= "<br>"
     Else
       GoSub NEXT_CAR
-      sResult &= sCar
+      sResult &= Html(sCar)
     Endif
     Goto MAIN_LOOP
   Endif
@@ -528,13 +536,19 @@ MAIN_LOOP:
   
     If sCar = "&" Then Goto ENTER_AMPERSAND
     
-    If sCar = "[" And If Mid$(sLine, I + 1, 1) <> " " Then Goto ENTER_LINK
+    If sCar = "[" And If String.Mid$(sLine, I + 1, 1) <> " " Then Goto ENTER_LINK
     
   Endif
   
-  If sCar = "`" Then Goto ENTER_CODE
+  If I = 1 Or If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Or If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+  
+    If sCar = "`" Then Goto ENTER_CODE
     
-  If sCar = "*" Then Goto ENTER_STAR
+    If sCar = "'" Then Goto ENTER_LIGHT_CODE
+      
+    If sCar = "*" Then Goto ENTER_STAR
+    
+  Endif
   
   If sCar = ">" Then 
     sCar = "&gt;"
@@ -548,12 +562,12 @@ NEXT_CAR:
 
   Inc I
   If I > Len(sLine) Then Error.Raise("Unexpected end of line")
-  sCar = Mid$(sLine, I, 1)
+  sCar = String.Mid$(sLine, I, 1)
   Return
   
 LOOK_CAR:
 
-  sCar = Mid$(sLine, I + 1, 1)
+  sCar = String.Mid$(sLine, I + 1, 1)
   Return
   
 ENTER_MARKUP:
@@ -570,7 +584,7 @@ ENTER_MARKUP:
   Repeat
     GoSub NEXT_CAR
   Until sCar = ">"
-  sPattern = Mid$(sLine, I1 + 1, I - I1 - 1)
+  sPattern = String.Mid$(sLine, I1 + 1, I - I1 - 1)
   
   'sPattern = LCase(sPattern)
   
@@ -593,9 +607,9 @@ ENTER_MARKUP:
 ENTER_AMPERSAND:
 
   For I1 = I To I + 6
-    sCar = Mid$(sLine, I1, 1)
+    sCar = String.Mid$(sLine, I1, 1)
     If sCar = ";" Then
-      sResult &= Mid$(sLine, I, I1 - I + 1)
+      sResult &= String.Mid$(sLine, I, I1 - I + 1)
       I = I1
       Goto MAIN_LOOP
     Else If sCar = "\n" Then 
@@ -607,29 +621,18 @@ ENTER_AMPERSAND:
   
 ENTER_CODE:
 
-  ' sResult &= "<code style=\"white-space:nowrap;\">"
-  ' I1 = 1
-  ' bCode = False
-  ' bCodeExit = False
-  ' Do
-  '   GoSub NEXT_CAR
-  '   If sCar = "`" Then
-  '     If Not bCode Then
-  '       Inc I1
-  '       Continue
-  '     Else
-  '       If Mid$(sLine, I, I1) = String$(I1, "`") Then
-  '         sResult &= "</code>"
-  '         I += I1 - 1
-  '         Break
-  '       Endif
-  '     Endif
-  '   Endif
-  '   sResult &= Html(sCar)
-  '   bCode = True
-  ' Loop
-  ' Goto MAIN_LOOP
-
+  sResult &= "<code style=\"white-space:nowrap;\">"
+  Do
+    GoSub NEXT_CAR
+    If sCar = "`" Then Break
+    sResult &= Html(sCar)
+  Loop
+  
+  sResult &= "</code>"
+  Goto MAIN_LOOP
+  
+ENTER_LIGHT_CODE:
+  
   If bCode Then
     sResult &= "</code>"
     bCode = False
@@ -637,6 +640,7 @@ ENTER_CODE:
     sResult &= "<code style=\"white-space:nowrap;\">"
     bCode = True
   Endif
+  
   Goto MAIN_LOOP
   
 ENTER_STAR:
@@ -673,11 +677,24 @@ ENTER_STRONG:
   
 ENTER_LINK:
 
-  I1 = InStr(sLine, "]", I + 1)
-  If I1 = 0 Then
-    I = Len(sLine)
-    Goto MAIN_LOOP
-  Else If I1 = (I + 1) Then
+  I1 = I
+  L = 0
+  Do
+    Inc I1
+    sCar = String.Mid$(sLine, I1, 1)
+    If Not sCar Then
+      sResult &= "["
+      Goto MAIN_LOOP
+    Endif
+    If sCar = "[" Then
+      Inc L
+    Else If sCar = "]" Then
+      If L = 0 Then Break
+      Dec L
+    Endif
+  Loop
+
+  If I1 = (I + 1) Then
     sResult &= "[]"
     Inc I
     Goto MAIN_LOOP
@@ -685,25 +702,25 @@ ENTER_LINK:
   
   sLink = ""
   sTitle = ""
-  sText = Mid$(sLine, I + 1, I1 - I - 1)
+  sText = String.Mid$(sLine, I + 1, I1 - I - 1)
   I = I1
   I2 = I
   Do
     GoSub LOOK_CAR
     If Not sCar Then Break
     Inc I
-    If Asc(sCar) > 32 Then Break
+    If Len(sCar) >= 2 Or If Asc(sCar) > 32 Then Break
   Loop
   If sCar = "(" Then
-    I1 = InStr(sLine, ")", I + 1)
+    I1 = String.InStr(sLine, ")", I + 1)
     If I1 > 0 Then
-      sLink = Mid$(sLine, I + 1, I1 - I - 1)
+      sLink = String.Mid$(sLine, I + 1, I1 - I - 1)
       I = I1
     Endif
   Else If sCar = "[" Then
-    I1 = InStr(sLine, "]", I + 1)
+    I1 = String.InStr(sLine, "]", I + 1)
     If I1 > 0 Then
-      sLink = $cLink[Mid$(sLine, I + 1, I1 - I - 1)]
+      sLink = $cLink[String.Mid$(sLine, I + 1, I1 - I - 1)]
       I = I1
     Endif
   Else
@@ -712,10 +729,10 @@ ENTER_LINK:
   
   If sLink Then
     
-    I1 = InStr(sLink, Chr$(34))
-    If I1 And If Right(sLink) = Chr$(34) Then
-      sTitle = Mid$(sLink, I1 + 1, -1)
-      sLink = Trim(Left$(sLink, I1 - 1))
+    I1 = String.InStr(sLink, Chr$(34))
+    If I1 And If String.Right(sLink) = Chr$(34) Then
+      sTitle = String.Mid$(sLink, I1 + 1, -1)
+      sLink = Trim(String.Left$(sLink, I1 - 1))
     Else
       sTitle = ""
       sLink = Trim$(sLink)

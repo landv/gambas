@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,61,20)
+  Text = ("Wave generator")
+  Icon = Picture["audio-headphones.png"]
+  { sldFrequency Slider
+    MoveScaled(16,2,44,4)
+    MaxValue = 1000
+  }
+  { btnPlay Button
+    MoveScaled(43,14,16,4)
+    Text = ("Play / Stop")
+  }
+  { Label1 Label
+    MoveScaled(2,2,11,4)
+    Text = ("Frequency")
+  }
+  { Label2 Label
+    MoveScaled(2,7,11,4)
+    Text = ("Volume")
+  }
+  { sldVolume Slider
+    MoveScaled(16,7,44,4)
+    MaxValue = 1000
+    Value = 800
+  }
+  { lblFrequency Label
+    MoveScaled(2,14,24,4)
+    Text = ("440 Hz")
+  }
+}

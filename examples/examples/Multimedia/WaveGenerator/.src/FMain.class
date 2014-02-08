@@ -1,0 +1,60 @@
+' Gambas class file
+
+Private $bPlay As Boolean
+Private $hAudio As MediaControl
+Private $hConv As MediaControl
+Private $hPlayer As MediaPipeline
+Private $hOutput As MediaControl
+
+Public Sub _new()
+
+End
+
+Public Sub Form_Open()
+
+  $hPlayer = New MediaPipeline
+
+  $hAudio = New MediaControl($hPlayer, "audiotestsrc")
+  $hConv = New MediaControl($hPlayer, "audioconvert")
+  $hOutput = New MediaControl($hPlayer, "alsasink")
+  
+  $hAudio.LinkTo($hConv)
+  $hConv.LinkTo($hOutput)
+  
+  SetFreq(440)
+
+End
+
+Public Sub btnPlay_Click()
+
+  $bPlay = Not $bPlay
+
+  If $bPlay Then
+    $hPlayer.Play
+  Else
+    $hPlayer.Pause
+  Endif
+
+End
+
+Private Sub SetFreq(fFreq As Float)
+
+  $hAudio["freq"] = fFreq
+  Object.Lock(sldFrequency)
+  sldFrequency.Value = (Log(fFreq) - Log(20)) / (Log(20000) - Log(20)) * 1000
+  Object.Unlock(sldFrequency)
+  lblFrequency.Text = Format(fFreq, "0.000") & " Hz"
+
+End
+
+Public Sub sldFrequency_Change()
+
+  SetFreq(Exp(Log(20) + (Log(20000) - Log(20)) * sldFrequency.Value / 1000))
+
+End
+
+Public Sub sldVolume_Change()
+
+  $hAudio["volume"] = sldVolume.Value / 1000
+
+End

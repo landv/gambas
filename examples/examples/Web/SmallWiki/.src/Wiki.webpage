@@ -27,7 +27,7 @@
     </div>
     <%If Main.Edit Then%>
       <div class="command">
-        <input type="submit" name="save" value="Save">
+        <input type="submit" name="save" id="save" value="Save" style="display:none;">
         <input type="submit" name="cancel" value="Cancel">
       </div>
     <%Else If Session.Id Then%>
@@ -73,8 +73,13 @@
       <div class="edit-frame">
       <textarea class="edit" id="page" name="page"><%_PrintPage%></textarea>
       </div>
-      <script type="text/javascript">document.getElementById('page').focus();</script>
+      <script type="text/javascript">
+        document.getElementById('page').focus();
+      </script>
     <%Endif%>
+    <script type="text/javascript">
+      document.getElementById('save').style.display = '';
+    </script>
   <%Else%>
     <%_PrintPage%>
   <%Endif%>
