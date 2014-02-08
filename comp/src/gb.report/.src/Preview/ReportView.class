@@ -320,7 +320,7 @@ Private Sub Layout()
   
   $iMinLine = FindPageLineByPos($fSpace + $View.ScrollY) - 1
   $iMaxLine = Max(1, FindPageLineByPos($View.ClientHeight + $View.ScrollY))
-  Print $iMinLine, $iMaxLine
+  'Print $iMinLine, $iMaxLine
   $iFirstPage = $iMinLine * $iNbrePageByLine
   $iLastPage = Min($iMaxLine * $iNbrePageByLine, $iNbrePage - 1)
   If $iNbrePageByLine <= $iNbrePage Then
