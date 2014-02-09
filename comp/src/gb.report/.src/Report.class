@@ -36,6 +36,7 @@ Private $iOrientation As Integer
 ' Private $hPrinter As New Printer As "Printer"
 
 
+
 ' Property Read Printer As Printer
 Property Resolution As Integer
 Property Scale As Float
@@ -137,7 +138,7 @@ Public Sub _Layout(Optional iPage As Integer = -1)
   _bInExec = True
   CBaseSection = $aSections[0].Ctrl
 
-  MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
+  'ReportUnits.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
 
   For i = $iCurSection To $aSections.Max
     Tsection = $aSections[i]
@@ -172,7 +173,7 @@ Public Sub _Layout(Optional iPage As Integer = -1)
   $iPageCount = $iCurPage + 1
   'Debug Me._PageChildren.Count
   _LayoutNotFinished = False
-  'MTools.PageCount = $iCount
+  'ReportUnits.PageCount = $iCount
   $iCurSection = 0
   '$iCurPage = -1
   $bLayoutIsDirty = False
@@ -192,7 +193,7 @@ Public Sub Paint(Page As Integer)
     'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
     'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
   Endif
-  MTools.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
+  'ReportUnits.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
   If $bLayoutIsDirty And $iPageCount = -1 Then Layout()
 
   'Set execution Flag to true
@@ -204,7 +205,7 @@ Public Sub Paint(Page As Integer)
   'Dec page
 
   'Paint.Clip
-  MTools.DrawCount = 0
+  'ReportUnits.DrawCount = 0
 
   'Paint.Reset
   Paint.Scale($fScale, $fScale)
@@ -219,7 +220,7 @@ Public Sub Paint(Page As Integer)
     TSection.Ctrl._Paint(Page, 0, 0, TSection, -1)
     TSection.Ctrl._PaintAfter(Page, 0, 0, TSection, -1)
   Next
-  'Debug "DrawCount = "; MTools.DrawCount
+  'Debug "DrawCount = "; ReportUnits.DrawCount
   'End of execution
   _bInExec = False
 
@@ -752,6 +753,8 @@ Public Sub _Reset()
   $iPageCount = 0
 
 End
+
+
 
 ' Private Function Printer_Read() As Printer
 ' 

@@ -18,6 +18,7 @@ Private fX As Float
 Private fY As Float
 Private fW As Float
 Private fH As Float
+Public Cache As Variant
 
 Public Function _SetGeometry(X As Float, Y As Float, W As Float, H As Float) As Float
 
@@ -42,24 +43,24 @@ End
 
 Private Function RealLeft_Read() As Float
 
-  Return MTools.UnitsToPixels(fX)
+  Return ReportUnits._ReportUnitsToPixels(fX)
 
 End
 
 Private Function RealTop_Read() As Float
 
-  Return MTools.UnitsToPixels(fY)
+  Return ReportUnits._ReportUnitsToPixels(fY)
 
 End
 
 Private Function RealWidth_Read() As Float
 
-  Return MTools.UnitsToPixels(fX + fW) - MTools.UnitsToPixels(fX)
+  Return ReportUnits._ReportUnitsToPixels(fX + fW) - ReportUnits._ReportUnitsToPixels(fX)
 
 End
 
 Private Function RealHeight_Read() As Float
 
-  Return MTools.UnitsToPixels(fY + fH) - MTools.UnitsToPixels(fY)
+  Return ReportUnits._ReportUnitsToPixels(fY + fH) - ReportUnits._ReportUnitsToPixels(fY)
 
 End

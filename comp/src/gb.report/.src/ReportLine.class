@@ -60,14 +60,14 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
   Dim iX, iY, W, H, W2, H2 As Integer
 
   If Me.LineStyle = Line.None Then Return
-  If Me.LineStyle <> Line.Solid Then Paint.Dash = MTools.GetBorder(Me.LineStyle)
-  Paint.LineWidth = MTools.UnitsToPixels($fLineWidth)
+  If Me.LineStyle <> Line.Solid Then Paint.Dash = ReportUnits.GetBorder(Me.LineStyle)
+  Paint.LineWidth = ReportUnits._ReportUnitsToPixels($fLineWidth)
 
-  iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left))
-  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top))
+  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left))
+  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top))
 
-  W = iX + hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Right)
-  H = iY + hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Bottom)
+  W = iX + hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Right)
+  H = iY + hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Bottom)
   Paint.Brush = Me._GetActualBrush(iX, iY, W, H)
   W2 = (iX + W) / 2
   H2 = (iY + H) / 2

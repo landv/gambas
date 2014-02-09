@@ -2,12 +2,27 @@
 
 { Report Report
   #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:3cm;Bottom:3cm;Left:3cm;Right:3cm"]
+  Spacing = "2cm"
   Index = 0
   Text = ("")
-  { ReportDrawingArea1 ReportDrawingArea
-    #MoveScaled(3,5,52,30)
-    Width = "7mm"
-    Height = "6cm"
+  { ReportLabel1 ReportLabel
+    #MoveScaled(7,1,54,8)
+    Font = Font["Bold,+12"]
+    AutoResize = True
+    Text = ("C'est la maison !")
+    Alignment = Align.Center
+  }
+  { ReportPanel1 ReportPanel
+    #MoveScaled(6,12,53,31)
+    AutoResize = True
+    { ReportDrawingArea1 ReportDrawingArea
+      #MoveScaled(0,0,52,30)
+      Width = "7mm"
+      Height = "6cm"
+      Border = ReportBorder["Top:2mm #000000;Bottom:2mm #000000;Left:2mm #000000;Right:2mm #000000;TopLeftCorner:16mm;TopRightCorner:16mm;BottomRightCorner:16mm;BottomLeftCorner:16mm"]
+      Cached = True
+    }
   }
   Index = 0
 }

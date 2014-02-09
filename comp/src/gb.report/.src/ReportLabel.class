@@ -76,8 +76,8 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
     If $fAngle = 0.0 Then
 
       hRect = Paint.TextSize(sText)
-      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnitsPaint(hRect.Width) + Me.Padding._Right + Me.Border._Right
-      fTextHeight = MTools.PixelsToUnitsPaint(hRect.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+      fTextWidth = Me.Padding._Left + Me.Border._Left + ReportUnits._PixelsToReportUnits(hRect.Width) + Me.Padding._Right + Me.Border._Right
+      fTextHeight = ReportUnits._PixelsToReportUnits(hRect.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
       'Debug Paint.Font.Height * Paint.ResolutionX / Desktop.Resolution
       
     Else
@@ -85,8 +85,8 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
       Paint.Rotate($fAngle)
       Paint.Text(sText, 0, 0)
       hExt = Paint.PathExtents
-      fTextWidth = Me.Padding._Left + Me.Border._Left + MTools.PixelsToUnitsPaint(hExt.Width) + Me.Padding._Right + Me.Border._Right
-      fTextHeight = MTools.PixelsToUnitsPaint(hExt.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
+      fTextWidth = Me.Padding._Left + Me.Border._Left + ReportUnits._PixelsToReportUnits(hExt.Width) + Me.Padding._Right + Me.Border._Right
+      fTextHeight = ReportUnits._PixelsToReportUnits(hExt.Height) + Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom
       Paint.Restore
     Endif
     hMyHints.Height = Max(hMyHints.Height, fTextHeight)
@@ -118,11 +118,11 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
   Endif
   
   
-  iX = (x + hControl.RealLeft + MTools.UnitsToPixels(Me.Padding._Left + Me.Border._Left))
-  iY = (y + hControl.RealTop + MTools.UnitsToPixels(Me.Padding._Top + Me.Border._Top))
-  iW = (hControl.RealWidth - MTools.UnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
+  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Border._Left))
+  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Border._Top))
+  iW = (hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Left + Me.Padding._Right + Me.Border._Left + Me.Border._Right))
   
-  iH = (hControl.RealHeight - MTools.UnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
+  iH = (hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Top + Me.Padding._Bottom + Me.Border._Top + Me.Border._Bottom))
   
   Paint.Brush = Me._GetActualBrush(iX, iY, iX + hControl.RealWidth, iY + hControl.RealHeight)
   

@@ -1,0 +1,16 @@
+[GB.REPORT]
+* NEW: A new widget ReportDrawingArea allow to draw freely on
+  the report page. It have an event draw that provide the size of 
+  the drawing (depending on the paint device resolution too.
+  Sometime you  can use ReportUnits.DesktopScale ratio to fix 
+  the size). 
+  A cached property, allow to call the event only when the device
+  resolution change, it is usefull when a draw need a lot of
+  computing.
+* NEW: MTool and Units have been merged to create a new shared 
+  module: ReportUnits. It provide functions for unit convertions
+ depended on paint resolution (for pixel convertion use it in a
+ paint session)
+ A property DesktopScale provide a ratio between Desktop pixel
+ size and printer size.
+* BUG: Add again forgotten files.

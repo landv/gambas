@@ -155,7 +155,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     
     'If hchild.RelPage = -1 Or hControl.RealPage + hchild.RelPage = Page - 1 Then
     
-    'Inc MTools.DrawCount
+    'Inc ReportUnits.DrawCount
     'hchild.Ctrl._Index = hchild.Index
     '$iIndex = DataIndex
     'If hControl.DataIndex > -1 Then $iIndex = hControl.DataIndex

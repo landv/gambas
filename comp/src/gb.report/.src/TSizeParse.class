@@ -28,7 +28,7 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
   
   If Not Unit Then Unit = "%"
   
-  If Not Units.AllowedUnits.Exist(Unit) Then 
+  If Not ReportUnits.AllowedUnits.Exist(Unit) Then 
     If Not bAllowRelative Or Unit <> "%" Then
       Error.Raise("Unknown unit")
     Endif
@@ -38,7 +38,7 @@ End
 
 Public Sub ToCm() As Float
 
-  Return Units.UnitToCm(Value, Unit)
+  Return ReportUnits.UnitToCm(Value, Unit)
   
 End
 
