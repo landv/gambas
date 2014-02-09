@@ -100,7 +100,7 @@ Public Sub Form_Open()
   ReadConfig
   
   AddClipboard(Null, "")
-  UpdateClipboard
+  'UpdateClipboard
   
 End
 
@@ -883,8 +883,15 @@ End
 
 Private Sub UpdateClipboard()
 
+  'Dim aFormat As String[]
+  'Dim iFormat As Integer
+  
   Inc Application.Busy
-  Try $aClipboard[0].Image = Clipboard.Paste()
+  'aFormat = Clipboard.Formats
+  'iFormat = aFormat.Find("image/*", gb.Like)
+  'If iFormat >= 0 Then 
+    Try $aClipboard[0].Image = Clipboard.Paste()
+  'Endif
   Dec Application.Busy
   
   If Not Error Then 

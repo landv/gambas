@@ -1,0 +1,120 @@
+' Gambas class file
+
+Inherits Markdown
+
+Public Sub Link(hLink As MarkdownLink)
+  
+  Dim sPath As String
+  Dim sLink As String = hLink.Link
+  Dim iPos As Integer
+  
+  If Main.Lang <> Main.DEFAULT_LANG Then hLink.Query = "l=" & Main.Lang
+  
+  If sLink Begins "/" Then
+    sPath = sLink
+  Else If sLink Begins "./" Then
+    sPath = Request.Path &/ Mid$(sLink, 3)
+  Else If sLink Begins "../" Then
+    sPath = Main.Path
+    While sLink Begins "../" 
+      If Not sPath Or If sPath = "/" Then Break
+      sLink = Mid$(sLink, 4)
+      sPath = File.Dir(sPath)
+    Wend
+    sPath &/= sLink
+  Else If Not sLink Then
+    
+    sLink = hLink.Text
+    iPos = InStr(sLink, ".")
+    If iPos Then
+      hLink.Text = ""
+      sPath = "/comp/gb" &/ Trim(Left$(sLink, iPos - 1)) &/ Trim(Mid$(sLink, iPos + 1))
+    Endif
+  Endif
+  
+  If Not sPath Then Return
+  
+  If Not hLink.Text Or If hLink.Text = hLink.Link Then
+    
+    If Main.IsImage(sPath) Then
+      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?show" & If(Main.Lang <> Main.DEFAULT_LANG, "&l=" & Main.Lang, "") & "\" />"
+      Return
+    Endif
+  
+    hLink.Text = Main.GetPageTitle(sPath)
+    
+  Endif
+  
+  hLink.Link = Application.Root &/ sPath 
+  
+End
+
+Public Sub Command(sCommand As String) As String[]
+
+  Dim aArg As String[]
+  Dim sDir As String
+  Dim aResult As String[]
+  Dim I As Integer
+  Dim iPos As Integer
+  Dim sPath As String
+  Dim sLetter, sLast As String
+  Dim aDir As String[]
+  
+  aArg = Split(sCommand, " ")
+  sCommand = aArg[0]
+  
+  If sCommand = "index" Then
+    
+    If aArg.Count >= 1 Then
+      
+      sDir = File.Dir(Main.GetPagePathFrom(aArg[1]))
+      aResult = New String[]
+      aDir = New String[]
+      
+      If IsDir(sDir) Then
+        For Each sDir In Dir(sDir, "*", gb.Directory)
+          sPath = "/" &/ aArg[1] &/ sDir
+          If Not Main.ExistPage(sPath) Then Continue
+          aDir.Add(Main.GetPageTitle(sPath) & "\n[" & sPath & "]")
+        Next
+        
+        If aDir.Count Then
+
+          aResult.Add("[[ index")
+          aResult.Add("==")
+            
+          aDir.Sort(gb.Natural)
+          
+          For I = 0 To aDir.Max
+            If I Then aResult.Add("==")
+            iPos = InStr(aDir[I], "\n")
+            sLetter = String.Left(aDir[I])
+            If sLetter <> sLast Then
+              aResult.Add("<div class=\"letter\">" & sLetter & "</div>")
+              sLast = sLetter
+            Endif
+            aResult.Add("--")
+            aResult.Add(Mid$(aDir[I], iPos + 1) & "\\")
+          Next
+          
+          aResult.Add("]]")
+          
+        Endif
+        
+      Endif
+      
+      Return aResult
+      
+    Endif
+  
+  Else If sCommand = "since" Or If sCommand = "only" Then
+  
+    Return ["<div class=\"since\">" & ("Since") & "&nbsp;" & Html(aArg[1]) & "</div>"]
+  
+  Else
+    
+    Return ["**COMMAND: `" & sCommand & "`**"]
+    
+  Endif
+  
+End

@@ -186,6 +186,8 @@ int main(int argc, char *argv[])
 	int i, n;
 	char *file = NULL;
 	int ret = 0;
+	const char *redirect_stderr = NULL;
+
 
 	//char log_path[256];
 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
@@ -297,6 +299,13 @@ int main(int argc, char *argv[])
 		else if (is_option_arg(argv, argc, &i, 'f', &EXEC_fifo_name))
 		{
 			EXEC_fifo = TRUE;
+		}
+		else if (is_option_arg(argv, argc, &i, 't', &redirect_stderr))
+		{
+			int fd = open(redirect_stderr, O_WRONLY);
+			if (fd < 0)
+				ERROR_fatal("cannot redirect stderr.");
+			dup2(fd, STDERR_FILENO);
 		}
 		else if (is_option(argv[i], 'k'))
 		{

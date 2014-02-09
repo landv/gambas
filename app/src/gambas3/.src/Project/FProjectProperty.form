@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,73)
+  MoveScaled(0,2,93,78)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -73,7 +73,7 @@
     }
   }
   { tabProject TabPanel
-    MoveScaled(1,1,91,66)
+    MoveScaled(1,1,91,71)
     Arrangement = Arrange.Vertical
     Count = 6
     Index = 0
@@ -94,7 +94,7 @@
       MoveScaled(53,11,29,0)
     }
     { HPanel1 HPanel
-      MoveScaled(1,11,84,50)
+      MoveScaled(1,11,84,55)
       Expand = True
       AutoResize = True
       Spacing = True
@@ -152,17 +152,17 @@
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,15,60,17)
+        MoveScaled(18,15,60,22)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,33,16,4)
+        MoveScaled(0,37,16,4)
         Font = Font["Bold"]
         Text = ("Author(s)")
       }
       { txtAuthor TextArea
-        MoveScaled(18,33,57,17)
+        MoveScaled(18,37,57,17)
         Expand = True
         Wrap = True
       }
@@ -170,7 +170,7 @@
     Index = 1
     Text = ("Options")
     { Panel6 VBox
-      MoveScaled(0,0,89,61)
+      MoveScaled(0,0,89,66)
       Spacing = True
       Margin = True
       { Label7 Label
@@ -318,8 +318,22 @@
           List = [("Yes"), ("No")]
         }
       }
-      { panHttpServer HBox
+      { HBox6 HBox
         MoveScaled(1,56,83,4)
+        Spacing = True
+        Indent = True
+        { Label9 Label
+          MoveScaled(0,0,46,4)
+          Text = ("Redirect standard error output")
+        }
+        { cmbRedirect ComboBox
+          MoveScaled(47,0,10,4)
+          ReadOnly = True
+          List = [("Yes"), ("No")]
+        }
+      }
+      { panHttpServer HBox
+        MoveScaled(1,61,83,4)
         Enabled = False
         Spacing = True
         Indent = True
@@ -569,12 +583,12 @@
     Index = 0
   }
   { btnOK Button
-    MoveScaled(59,68,16,4)
+    MoveScaled(59,73,16,4)
     Text = ("OK")
     Default = True
   }
   { btnCancel Button
-    MoveScaled(76,68,16,4)
+    MoveScaled(76,73,16,4)
     Text = ("Cancel")
     Cancel = True
   }

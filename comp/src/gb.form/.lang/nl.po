@@ -131,199 +131,468 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: DirView.class:378
-msgid "Cannot rename directory."
-msgstr ""
+#: .project:1
+msgid "More controls for graphical components"
+msgstr "Meer controls voor grafische componenten"
 
-#: DirView.class:399
-msgid "New folder"
-msgstr "Nieuwe map"
-
-#: DirView.class:415
-msgid "Cannot create directory."
-msgstr ""
-
-#: FCalendar.class:373
-msgid "Today"
-msgstr "Vandaag"
-
-#: FCalendar.class:380
-msgid "Previous month"
-msgstr "Vorige maand"
-
-#: FCalendar.class:387
-msgid "Next month"
-msgstr "Volgende maand"
-
-#: FColorChooser.class:571
-msgid "R"
-msgstr "R"
-
-#: FColorChooser.class:576
-msgid "G"
-msgstr "G"
-
-#: FColorChooser.class:581
-msgid "B"
-msgstr "B"
-
-#: FColorChooser.class:592
-msgid "H"
-msgstr "H"
-
-#: FColorChooser.class:597
-msgid "S"
-msgstr "S"
-
-#: FColorChooser.class:608
-msgid "V"
-msgstr "V"
-
-#: FColorChooser.class:624
-msgid "A"
-msgstr "A"
-
-#: FDirChooser.class:338
-msgid "All files (*)"
-msgstr "Alle bestanden (*)"
-
-#: FDirChooser.class:560
+#: CBookmarkList.class:46
 msgid "Home"
 msgstr "Startpunt"
 
-#: FDirChooser.class:561
+#: CBookmarkList.class:48
 msgid "Desktop"
 msgstr "Bureaublad"
 
-#: FDirChooser.class:562
+#: CBookmarkList.class:50
 msgid "System"
 msgstr "Systeem"
 
-#: FDirChooser.class:872
-msgid "&Add"
-msgstr "&Toevoegen"
+#: DirView.class:442
+msgid "Cannot rename directory."
+msgstr "Kan de map niet hernoemen"
 
-#: FDirChooser.class:878
-msgid "&Remove"
+#: DirView.class:472
+msgid "New folder"
+msgstr "Nieuwe map"
+
+#: DirView.class:490
+msgid "Cannot create directory."
+msgstr "Kan de map niet creëren"
+
+#: FCalendar.form:47
+msgid "Today"
+msgstr "Vandaag"
+
+#: FCalendar.form:53
+msgid "Previous month"
+msgstr "Vorige maand"
+
+#: FCalendar.form:87
+msgid "Next month"
+msgstr "Volgende maand"
+
+#: FCalendar.form:146
+msgid "Apply"
+msgstr "Toepassen"
+
+#: FColorChooser.form:78
+msgid "Follow color grid"
+msgstr "Volg kleurengrid"
+
+#: FColorChooser.form:124
+msgid "R"
+msgstr "R"
+
+#: FColorChooser.form:129
+msgid "G"
+msgstr "G"
+
+#: FColorChooser.form:134
+msgid "B"
+msgstr "B"
+
+#: FColorChooser.form:145
+msgid "H"
+msgstr "H"
+
+#: FColorChooser.form:150
+msgid "S"
+msgstr "S"
+
+#: FColorChooser.form:161
+msgid "V"
+msgstr "V"
+
+#: FColorChooser.form:177
+msgid "A"
+msgstr "A"
+
+#: FDirChooser.class:462
+msgid "All files (*)"
+msgstr "Alle bestanden (*)"
+
+#: FDirChooser.class:892
+msgid "&Bookmark current directory"
+msgstr "&Bladwijzer huidige directory"
+
+#: FDirChooser.class:900
+msgid "&Edit bookmarks..."
+msgstr "&Bewerk Bladwijzers..."
+
+#: FDirChooser.class:909
+msgid "Show &details"
+msgstr "Weergave &details"
+
+#: FDirChooser.class:915
+msgid "Show &hidden files"
+msgstr "Weergave &verborgen bestanden"
+
+#: FDirChooser.class:921
+msgid "Show &image preview"
+msgstr "Weergave &afbeeldingsvoorbeeld"
+
+#: FDirChooser.class:929
+msgid "&Rename"
+msgstr "&Hernoem"
+
+#: FDirChooser.class:934
+msgid "&Delete"
 msgstr "&Verwijderen"
 
-#: FDirChooser.class:901
-msgid "Parent directory"
+#: FDirChooser.class:941
+msgid "&Uncompress file"
+msgstr "&Decomprimeer bestand"
+
+#: FDirChooser.class:946
+msgid "&Create directory"
+msgstr "&Creëer map"
+
+#: FDirChooser.class:951
+msgid "Open in &file manager..."
+msgstr "Open in &bestandsmanager..."
+
+#: FDirChooser.class:956
+msgid "&Refresh"
+msgstr "&Ververs"
+
+#: FDirChooser.class:964
+msgid "&Properties"
+msgstr "&Eigenschappen"
+
+#: FDirChooser.class:1134
+msgid "Overwrite"
+msgstr "Overschrijf"
+
+#: FDirChooser.class:1134
+msgid "Overwrite all"
+msgstr "Overschrijf alles"
+
+#: FDirChooser.class:1134
+msgid "This file or directory already exists."
+msgstr "Dit bestand of map bestaat reeds."
+
+#: FDirChooser.class:1153
+msgid "Cannot list archive contents"
+msgstr "Kan archief inhoud niet weergeven"
+
+#: FDirChooser.class:1187
+msgid "Cannot uncompress file."
+msgstr "Kan bestand niet decomprimeren"
+
+#: FDirChooser.class:1187
+msgid "Unknown archive."
+msgstr "Onbekend archief."
+
+#: FDirChooser.class:1243
+msgid "Delete file"
+msgstr "Verwijder bestand"
+
+#: FDirChooser.class:1244
+msgid "Do you really want to delete that file?"
+msgstr "Wil je dit bestand werkelijk verwijderen?"
+
+#: FDirChooser.class:1251
+msgid "Unable to delete file."
+msgstr "Onmogelijk om bestand te verwijderen"
+
+#: FDirChooser.form:58
+msgid "Bookmarks"
 msgstr ""
 
-#: FDirChooser.class:913
-msgid "Refresh"
-msgstr "Verversen"
+#: FDirChooser.form:99
+msgid "Image preview"
+msgstr "Afbeeldingsvoorbeeld"
 
-#: FDirChooser.class:920
-msgid "Create directory"
-msgstr ""
+#: FDirChooser.form:107
+msgid "Detailed view"
+msgstr "Gedetaileerde weergave"
 
-#: FDirChooser.class:927
-msgid "View hidden files"
-msgstr ""
+#: FDirChooser.form:115
+msgid "File properties"
+msgstr "Bestandseigenschappen"
 
-#: FDirChooser.class:936
-msgid "Toggle view"
-msgstr ""
-
-#: FDirChooser.class:943
+#: FDirChooser.form:121
 msgid "Show files"
 msgstr "Toon bestanden"
 
-#: FFocusBug.class:34
-msgid "TextBox1"
-msgstr ""
+#: FDirChooser.form:127
+msgid "Parent directory"
+msgstr "Ouder map"
 
-#: FFocusBug.class:39
-msgid ""
-"Just press the Tab key.\n"
-"A message should appear"
-msgstr ""
-
-#: FFontChooser.class:409
-msgid "Family"
-msgstr "Family"
-
-#: FFontChooser.class:424
-msgid "Style"
-msgstr "Stijl"
-
-#: FFontChooser.class:430
-msgid "Bold"
-msgstr "Vet"
-
-#: FFontChooser.class:430
-msgid "Bold Italic"
-msgstr "Vet-cursief"
-
-#: FFontChooser.class:430
-msgid "Italic"
-msgstr "Cursief"
-
-#: FFontChooser.class:430
-msgid "Normal"
-msgstr "Normaal"
-
-#: FFontChooser.class:438
-msgid "Underline"
-msgstr "Onderstreept"
-
-#: FFontChooser.class:443
-msgid "Strikeout"
-msgstr "Doorgestreept"
-
-#: FFontChooser.class:453 FileView.class:78
-msgid "Size"
-msgstr "Grootte"
-
-#: FFontChooser.class:491
-msgid "How quickly daft jumping zebras vex"
-msgstr "How quickly daft jumping zebras vex"
-
-#: FInputBox.class:102 FWizard.class:59
+#: FDirChooser.form:188 FInputBox.form:43 FWizard.class:71
 msgid "OK"
 msgstr "OK"
 
-#: FInputBox.class:108 FWizard.class:168
+#: FSidePanel.class:976 FWizard.form:54
 msgid "Cancel"
 msgstr "Anuleren"
 
-#: FMain.class:38
-msgid "ButtonBox1"
-msgstr ""
-
-#: FMain.class:46
-msgid "TextArea1"
-msgstr ""
-
-#: FWizard.class:55
-msgid "&Next"
-msgstr "V&olgende"
-
-#: FWizard.class:156
-msgid "&Previous"
-msgstr "Vo&rige"
-
-#: FileView.class:77
+#: FEditBookmark.class:20 FileView.class:103
 msgid "Name"
 msgstr "Naam"
 
-#: FileView.class:80
+#: FEditBookmark.class:21
+msgid "Path"
+msgstr "Pad"
+
+#: FEditBookmark.class:109
+msgid "Do you really want to remove this bookmark?"
+msgstr "Wil je deze bladwijzer werkelijk verwijderen?"
+
+#: FEditBookmark.class:109
+msgid "Remove"
+msgstr "Verwijder"
+
+#: FEditBookmark.form:14
+msgid "Edit bookmarks"
+msgstr "Bladwijzer bewerken"
+
+#: FEditBookmark.form:33
+msgid "&Up"
+msgstr "&Omhoog"
+
+#: FEditBookmark.form:39
+msgid "&Down"
+msgstr "&Naar beneden"
+
+#: FEditBookmark.form:45
+msgid "&Remove"
+msgstr "&Verwijderen"
+
+#: FEditBookmark.form:56 FFileProperties.form:245
+msgid "Close"
+msgstr "Sluiten"
+
+#: FFileProperties.class:75
+msgid "Symbolic link"
+msgstr "Symbolische link"
+
+#: FFileProperties.class:94
+msgid "Image"
+msgstr "Afbeelding"
+
+#: FFileProperties.class:127
+msgid "&1 properties"
+msgstr "&1 eigenschappen"
+
+#: FFileProperties.class:158 Main.module:46
+msgid "&1 B"
+msgstr "-"
+
+#: FFileProperties.class:163
+msgid "no file"
+msgstr "geen bestand"
+
+#: FFileProperties.class:165
+msgid "one file"
+msgstr "een bestand"
+
+#: FFileProperties.class:167
+msgid "files"
+msgstr "bestanden"
+
+#: FFileProperties.class:171
+msgid "no directory"
+msgstr "geen map"
+
+#: FFileProperties.class:173
+msgid "one directory"
+msgstr "een map"
+
+#: FFileProperties.class:175
+msgid "directories"
+msgstr "mappen"
+
+#: FFileProperties.form:49
+msgid "General"
+msgstr "Algemeen"
+
+#: FFileProperties.form:82
+msgid "Type"
+msgstr "Type"
+
+#: FFileProperties.form:94
+msgid "Directory"
+msgstr ""
+
+#: FFileProperties.form:106 FileView.class:105
+msgid "Size"
+msgstr "Grootte"
+
+#: FFileProperties.form:118 FileView.class:107
 msgid "Last modified"
 msgstr "Laatste modificatie"
 
-#: Help.module:71
-msgid "The '/' character is forbidden inside file or directory names."
+#: FFileProperties.form:130
+msgid "Permissions"
+msgstr "Rechten"
+
+#: FFileProperties.form:143
+msgid "Owner"
+msgstr "Eigenaar"
+
+#: FFileProperties.form:155
+msgid "Group"
+msgstr "Groep"
+
+#: FFileProperties.form:166
+msgid "Preview"
+msgstr "Voorbeeld"
+
+#: FFileProperties.form:220
+msgid "Errors"
+msgstr "Fouten"
+
+#: FFontChooser.form:51
+msgid "Bold"
+msgstr "Vet"
+
+#: FFontChooser.form:58
+msgid "Italic"
+msgstr "Cursief"
+
+#: FFontChooser.form:65
+msgid "Underline"
+msgstr "Onderstreept"
+
+#: FFontChooser.form:72
+msgid "Strikeout"
+msgstr "Doorgestreept"
+
+#: FFontChooser.form:81
+msgid "Relative"
+msgstr "Relatief"
+
+#: FFontChooser.form:121
+msgid "How quickly daft jumping zebras vex"
+msgstr "How quickly daft jumping zebras vex"
+
+#: FFontChooser.form:131
+msgid "ComboBox1"
 msgstr ""
 
-#: Wizard.class:74
+#: FMessage.form:39
+msgid "Do not display this message again"
+msgstr "Deze boodschap niet meer weergeven"
+
+#: FSidePanel.class:966
+msgid "Hidden"
+msgstr "Verborgen"
+
+#: FSidePanel.class:970
+msgid "Transparent"
+msgstr "Transparant"
+
+#: FSwitchButton.form:17
+msgid "TextBox1"
+msgstr ""
+
+#: FSwitchButton.form:28 Form5.form:38
+msgid "ButtonBox1"
+msgstr "-"
+
+#: FSwitchButton.form:33
+msgid "Button1"
+msgstr ""
+
+#: FSwitchButton.form:38
+msgid "Label1"
+msgstr ""
+
+#: FTabPanel.form:45
+msgid "&TabStrip1"
+msgstr ""
+
+#: FTabPanel.form:47
+msgid "&Bonbon"
+msgstr ""
+
+#: FTabPanel.form:49
+msgid "&Charles"
+msgstr ""
+
+#: FWizard.form:60
+msgid "&Next"
+msgstr "V&olgende"
+
+#: FWizard.form:66
+msgid "&Previous"
+msgstr "Vo&rige"
+
+#: FileView.class:872
+msgid "Cannot rename file."
+msgstr "Kan bestand niet hernoemen"
+
+#: Form2.form:120
+msgid "MenuButton1"
+msgstr "-"
+
+#: Form2.form:125
+msgid "ButtonBox2"
+msgstr ""
+
+#: Form3.form:19
+msgid "1"
+msgstr "-"
+
+#: Form4.form:16
+msgid "ToolPanel1"
+msgstr ""
+
+#: Form4.form:18
+msgid "Toolbar 1"
+msgstr ""
+
+#: Form4.form:20
+msgid "Toolbar 2"
+msgstr ""
+
+#: Form5.form:20
+msgid "Menu2"
+msgstr ""
+
+#: Form5.form:24
+msgid "Menu3"
+msgstr ""
+
+#: Form5.form:28
+msgid "Menu4"
+msgstr ""
+
+#: Form5.form:32
+msgid "Menu5"
+msgstr ""
+
+#: Help.module:71
+msgid "The '/' character is forbidden inside file or directory names."
+msgstr "Het '/' karakter is verboden in bestands en directory namen."
+
+#: Main.module:48
+msgid "&1 KiB"
+msgstr "-"
+
+#: Main.module:50
+msgid "&1 MiB"
+msgstr "-"
+
+#: Main.module:52
+msgid "&1 GiB"
+msgstr "-"
+
+#: SwitchButton.class:94
+msgid "ON"
+msgstr ""
+
+#: SwitchButton.class:97
+msgid "OFF"
+msgstr ""
+
+#: Wizard.class:77
 msgid "Step #&1"
 msgstr "Stap #&1"
 
-#~ msgid "&1 K"
-#~ msgstr "&1 K"

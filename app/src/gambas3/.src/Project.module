@@ -91,6 +91,7 @@ Public ComponentState As Integer
 Public Authors As String
 Public VersionFile As Boolean
 Public UseTerminal As Boolean
+Public RedirectStderr As Boolean
 Public UseHttpServer As Boolean
 Public Profiling As Boolean
 Public ProfileIndex As Integer
@@ -3088,6 +3089,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   'Stack = 0
   'StackTrace = False
   UseTerminal = False
+  RedirectStderr = False
   UseHttpServer = False
   Profiling = False
   ProfileIndex = 0
@@ -3326,6 +3328,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "useterminal"
         UseTerminal = Val(sVal) <> 0
 
+      Case "redirectstderr"
+        RedirectStderr = Val(sVal) <> 0
+
       Case "usehttpserver"
         UseHttpServer = Val(sVal) <> 0
 
@@ -3437,6 +3442,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   'If Stack Then Print #hFic, "Stack="; Stack
   'If StackTrace Then Print #hFic, "StackTrace=1"
   If UseTerminal Then Print #hFic, "UseTerminal=1"
+  If RedirectStderr Then Print #hFic, "RedirectStderr=1"
   If UseHttpServer Then Print #hFic, "UseHttpServer=1"
   If Profiling Then Print #hFic, "Profiling=1"
   If BreakOnError Then Print #hFic, "BreakOnError=1"

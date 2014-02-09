@@ -1156,6 +1156,7 @@ Public Sub OnProjectChange()
   UpdateMenu
   mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
   mnuUseTerminal.Value = Project.UseTerminal
+  mnuRedirectStderr.Value = Project.RedirectStderr
   mnuUseHttpServer.Value = Project.UseHttpServer
   mnuProfile.Value = Project.Profiling
   Action["breakerr"].Value = Project.BreakOnError
@@ -1353,6 +1354,10 @@ Public Sub Action_Activate(Key As String) As Boolean
     
     Case "terminal"
       Project.UseTerminal = Action["terminal"].Value
+      Project.WriteProject(True)
+      
+    Case "redirect"
+      Project.RedirectStderr = Action["redirect"].Value
       Project.WriteProject(True)
       
     Case "httpserver"

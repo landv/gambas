@@ -41,6 +41,9 @@ Public BalloonY As Integer
 Private $sProfilePath As String
 Private $bUpdateBreakOnError As Boolean
 
+Private $sPipeError As String
+Private $hPipeError As File
+
 Public Sub Init()
  
   $sFifo = Debug.Begin()
@@ -133,6 +136,15 @@ Public Sub Process_Error(sData As String)
 
   Insert(sData)
 
+End
+
+Public Sub File_Read()
+  
+  Dim sData As String
+  
+  sData = Read #$hPipeError, Lof($hPipeError)
+  Insert(sData)
+  
 End
 
 
@@ -401,6 +413,11 @@ Private Sub AfterStop()
   $sRemoveBreakPoint = ""
 
   Debug.Stop
+  
+  If $sPipeError Then
+    $hPipeError.Close
+    $sPipeError = ""
+  Endif
 
   SetPosition("", 0)
 
@@ -904,7 +921,13 @@ Private Sub Start(sCmd As String)
         sProg = ""
       Endif
     Endif
-
+    
+    If Project.RedirectStderr Then
+      $sPipeError = Temp$()
+      aExec.Add("-t")
+      aExec.Add($sPipeError)
+    Endif
+    
   Endif
     
   Select Case sProg
@@ -928,6 +951,10 @@ Private Sub Start(sCmd As String)
     $hProcess = Exec aExec With aEnv As "Process"
   Else
     $hProcess = Exec aExec With aEnv For Input Output As "Process"
+  Endif
+  
+  If $sPipeError Then
+    $hPipeError = Pipe $sPipeError For Read Watch
   Endif
   
   SetState(STATE_STARTING)

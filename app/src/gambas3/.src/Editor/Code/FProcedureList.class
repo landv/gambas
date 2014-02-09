@@ -63,7 +63,7 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
 
   If $sClass Then
     
-    'cSymbol = CComponent.GetClassSymbols($sClass)
+    CComponent.GetClassSymbols($sClass)
     Try hSymbol = $hModule.Scan[sName]
 
     If hSymbol Then

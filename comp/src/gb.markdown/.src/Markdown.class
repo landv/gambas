@@ -4,6 +4,7 @@ Export
 Create
 
 Public Root As String
+Public Line As Integer
 
 Public Sub ToHTML(Markdown As String) As String
   
@@ -11,6 +12,10 @@ Public Sub ToHTML(Markdown As String) As String
   
 End
 
-Public Sub Link(({Link}) As MarkdownLink)
+Public Sub Link((sLink) As MarkdownLink)
+  
+End
+
+Public Sub Command((sCommand) As String) As String[]
   
 End

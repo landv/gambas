@@ -54,10 +54,10 @@ enum { MIME_UNKNOWN, MIME_TEXT, MIME_IMAGE };
 
 static int get_type(const QMimeData *src)
 {
-	if (src->formats().indexOf(QRegExp("text/.*")) >= 0)
-		return MIME_TEXT;
-	else if (src->hasImage())
+	if (src->hasImage())
 		return MIME_IMAGE;
+	else if (src->formats().indexOf(QRegExp("text/.*")) >= 0)
+		return MIME_TEXT;
 	else
 		return MIME_UNKNOWN;
 }

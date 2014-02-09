@@ -1,0 +1,82 @@
+' Gambas class file
+
+Private Sub _PrintTitle()
+
+  If Main.Path Then
+    Print Html(Main.Path);
+  Else
+    Print "/";
+  Endif
+
+End
+
+Private Sub _PrintPage()
+
+  Dim sPath As String
+  Dim sData As String
+
+  If Main.Edit Then
+    sPath = Main.GetPagePath()  
+    If Exist(sPath) Then sData = File.Load(sPath)
+    If Not sData Then sData = OldWiki.GetPage(Main.Path)
+    Print sData;
+    Return
+  Endif
+  
+  sPath = Main.Path
+  
+  Do
+  
+    If Not Main.ExistPage(sPath) Then
+      Print "<div class=\"unknown\">"; ("This page does not exist.")
+      If Session.Id Then Print "<p>"; ("Click on the <b>Create</b> button to create it!")
+      Print "</div>"
+      Return
+    Endif
+    
+    If Main.Image Then
+      Print "<img src=\"" & Application.Root &/ Main.Path & "?show\" />";
+      Break
+    Else
+      sData = File.Load(Main.GetPagePathFrom(sPath))
+      If sData Begins "-->" Then
+        sPath = Trim$(Mid$(sPath, 4))
+      Else
+        Print WikiMarkdown.ToHTML(sData);
+        Break
+      Endif
+    Endif
+    
+  Loop
+  
+Catch
+  
+  Print "<pre>"; Error.Text; "\nat line #"; WikiMarkdown.Line; "</pre>";
+
+End
+
+Private Sub _PrintParent()
+
+  Dim sPath As String
+
+  sPath = Request.Path
+  If sPath Then sPath = File.Dir(sPath)
+  Print Application.Root &/ sPath;
+
+End
+
+Private Sub _PrintLang()
+
+  Dim sLang As String
+  
+  Print "<select id=\"lang\" name=\"l\" onchange=\"document.form.submit();\">"
+
+  For Each sLang In Main.Languages
+    Print "<option value=\""; sLang; "\"";
+    If sLang = Main.Lang Then Print " selected";
+    Print ">"; Html(sLang); "</option>"
+  Next
+
+  Print "</select>"  
+
+End

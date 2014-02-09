@@ -11,7 +11,7 @@ libimage_la_CFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS_OPT)
 libimage_la_SOURCES = \
  image.h image.c
 
-gb_image_la_LIBADD = libimage.la
+gb_image_la_LIBADD = libimage.la @MATH_LIB@
 gb_image_la_LDFLAGS = -module @LD_FLAGS@
 gb_image_la_CFLAGS = -I$(top_srcdir)/share $(AM_CFLAGS)
 

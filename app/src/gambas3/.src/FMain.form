@@ -167,6 +167,11 @@
       Text = Shortcut(("Use terminal emulator"), "t")
       Toggle = True
     }
+    { mnuRedirectStderr Menu
+      Action = "redirect"
+      Text = ("Redirect standard error output")
+      Toggle = True
+    }
     { mnuUseHttpServer Menu
       Action = "httpserver"
       Text = ("Use embedded HTTP server")
@@ -1442,6 +1447,10 @@
     Text = "Quit"
     Shortcut = "Ctrl+Q"
     Picture = "icon:/small/quit"
+  }
+  { Action redirect
+    Text = "Redirect standard error output"
+    Shortcut = ""
   }
   { Action refresh-project
     Text = "Refresh"

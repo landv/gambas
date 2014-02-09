@@ -1,0 +1,417 @@
+' Gambas module file
+
+Private $hConn As Connection
+Private $bHasIndex As Boolean
+Private $sPath As String
+
+Private Sub OpenDatabase()
+
+  If $hConn Then Return
+
+  $hConn = New Connection
+  $hConn.Type = "mysql"
+  $hConn.Name = "wiki"
+  $hConn.User = "root"
+  $hConn.Open
+
+End
+
+Private Sub SolvePath(sPath As String) As String
+
+  Dim sRoot As String
+
+  sRoot = $sPath
+
+  While sPath Begins "../"
+    
+    sRoot = File.Dir(sRoot)
+    sPath = Mid(sPath, 4)
+    
+  Wend
+  
+  If Not sRoot Then sRoot = "/"
+  Return sRoot &/ sPath
+
+End
+
+Public Sub GetTitle(sPath As String) As String
+  
+  Dim rPage As Result
+  Dim sTitle As String
+  
+  OpenDatabase
+  
+  If Not sPath Then sPath = "/"
+  
+  rPage = $hConn.Find("page", "sLang = &1 AND sPath = &2", Main.Lang, sPath)
+  If rPage.Available Then 
+    sTitle = rPage!stitle
+    If sTitle Ends "#3" Then sTitle = Left(sTitle, -2)
+    Return sTitle
+  Endif
+  
+End
+
+
+Public Sub GetPage(sPath As String) As String
+  
+  Dim rPage As Result
+  Dim sLine As String
+  Dim aResult As String[]
+  Dim iIgnore As Integer
+  Dim iLevel As Integer
+  Dim aLevel As New String[]
+  Dim sLevel As String
+  Dim bCode As Boolean
+  Dim sTitle As String
+  
+  OpenDatabase
+  
+  If Not sPath Then sPath = "/"
+  $sPath = sPath
+  
+  rPage = $hConn.Find("page", "sLang = &1 AND sPath = &2", Main.Lang, sPath)
+  If Not rPage.Available Then Return
+
+  'Return rPage!sdesc
+
+  $bHasIndex = False
+
+  sTitle = rPage!stitle
+  If sTitle Ends "#3" Then sTitle = Left(sTitle, -2)
+  aResult = ["# " & sTitle, ""]
+
+  For Each sLine In Split(rPage!sdesc, "\n")
+    
+    sLine = RTrim(sLine)
+    
+    If Left(sLine) = "{" Then
+      sLevel = LCase(Trim(Mid$(sLine, 2)))
+      aLevel.Push(sLevel)
+      If sLevel Begins "only " And If sLevel <> "only 3.0" Then
+        Inc iIgnore
+      Endif
+      Inc iLevel
+      If iIgnore = 0 And If sLevel <> "only 3.0" Then 
+        If sLevel = "error" Then 
+          aResult.Add("### " & ("Errors"))
+        Else If sLevel = "example" Then
+          aResult.Add("### " & ("Examples"))
+        Else If sLevel = "seealso" Then
+          aResult.Add("### " & ("See also"))
+        Endif
+        
+        If sLevel = "example" Or If sLevel = "code" Then 
+          bCode = True
+        Else If sLevel = "error" Then
+          aResult.Add("[[ " & sLevel)
+          aResult.Add(("Message"))
+          aResult.Add("--")
+          aResult.Add(("Description"))
+          aResult.Add("==")
+        Else
+          aResult.Add("[[ " & sLevel)
+        Endif
+      Endif
+      Continue
+    Else If sLine = "}" And If aLevel.Count Then
+      sLevel = aLevel.Pop()
+      If iIgnore = 0 And If sLevel <> "only 3.0" Then 
+        If sLevel = "example" Or If sLevel = "code" Then 
+          bCode = False
+        Else
+          aResult.Add("]]")
+        Endif
+      Endif
+      Dec iLevel
+      If sLevel Begins "only" And sLevel <> "only 3.0" Then Dec iIgnore
+      Continue
+    Else If sLine = "==" Then
+      bCode = Not bCode
+      Continue
+    Endif
+    
+    If iIgnore Then Continue
+    
+    If bCode Then
+      If sLine = "--" Then 
+        aResult.Add("    ----")
+      Else If sLine Begins "<hr>" Then
+        aResult.Add("    ----")
+        aResult.Add("    " & Mid$(sLine, 5))
+      Else
+        aResult.Add("    " & sLine)
+      Endif
+    Else
+      If aLevel.Count Then
+        sLevel = aLevel[aLevel.Max]
+      Else
+        sLevel = ""
+      Endif
+      If Not Trim(sLine) Then
+        aResult.Add("")
+      Else
+        aResult.Insert(Split(Convert(sLine, sLevel), "\n"))
+      Endif
+    Endif
+    
+  Next
+  
+  Return aResult.Join("\n")
+  
+End
+
+Private Sub IsWordLimit(sCar As String) As Boolean
+
+  Return InStr("'_*=/.,;?!:() ", sCar) > 0
+  If IsLetter(sCar) Or If IsDigit(sCar) Then Return False
+  Return True
+
+End
+
+Private Sub Convert(sLine As String, sLevel As String) As String
+
+  Dim sResult As String
+  Dim I As Integer
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sLink As String
+  Dim iPos3 As Integer
+  Dim sTitle As String
+  Dim sCar As String
+  Dim sWait As String
+  Dim sQuote As String
+  Dim bCloseLink As Boolean
+  Dim bCode As Boolean
+  Dim bQuote As Boolean
+  Dim bUnderline As Boolean
+  Dim bItalic As Boolean
+  Dim bBold As Boolean
+  Dim iLevel As Integer
+  Dim bAllowStart As Boolean
+  Dim bAllowEnd As Boolean
+
+  If sLevel = "example" Then
+    If sLine = "-" Then Return "----"
+    If sLine Begins "<hr>" Then
+      sLine = Mid$(sLine, 5)
+      sResult = "----\n"
+    Endif
+  Endif
+  
+  If sLine = "-" Then Return "--"
+  If sLine = "][" Then Return "=="
+  If sLine = "--" Then Return "----"
+  
+
+  If sLine Begins "@" Then
+    If sLine = "@title-index" Then 
+      $bHasIndex = True
+      Return "@{index}"
+    Endif
+    Return "@{" & Trim(Mid$(sLine, 2)) & "}"
+  Endif
+
+  If sLine Begins "* " Then 
+    sResult = "* "
+    sLine = Mid$(sLine, 3)
+  Else If sLine Begins "** " Then 
+    sResult = "  * "
+    sLine = Mid$(sLine, 4)
+  Else If sLine Begins "# " Then 
+    sResult = "+ "
+    sLine = Mid$(sLine, 3)
+  Else If sLine Begins "## " Then 
+    sResult = "  + "
+    sLine = Mid$(sLine, 4)
+  Else If sLine Begins "+" Then
+    Repeat
+      sLine = Mid$(sLine, 2)
+      sResult &= "#"
+    Until sLine Not Begins "+"
+    sResult &= "# "
+    If $bHasIndex Then 
+      sResult &= "["
+      bCloseLink = True
+    Endif
+  Endif
+
+  If sLevel = "syntax" Then Goto NO_LINK
+
+  Do
+    
+    iPos = InStr(sLine, "[", iPos + 1)
+    If iPos = 0 Then Break
+    If iPos > 1 And If Mid$(sLine, iPos - 1, 1) = "\\" Then Continue
+    
+    iPos2 = iPos
+    iLevel = 0
+    Do
+      Inc iPos2
+      If iPos2 > Len(sLine) Then
+        iPos2 = 0
+        Break
+      Endif
+      sCar = Mid$(sLine, iPos2, 1)
+      If sCar = "[" Then
+        Inc iLevel
+      Else If sCar = "]" Then
+        If iLevel = 0 Then Break
+        Dec iLevel
+      Endif
+    Loop
+    
+    If iPos2 = 0 Then Break
+    
+    sLink = Mid$(sLine, iPos + 1, iPos2 - iPos - 1)
+    iPos3 = InStr(sLink, "|")
+    If iPos3 Then
+      sTitle = Mid$(sLink, iPos3 + 1)
+      sLink = Left$(sLink, iPos3 - 1)
+    Else
+      sTitle = ""
+    Endif
+    
+    If sLink Not Begins "/" And If sLink Not Begins "./" And If sLink Not Begins "../" And If sLink Not Like "http*://*" Then sLink = "/" & sLink
+    
+    If InStr(sLink, "/def/") Then
+      
+      sLink = GetTitle(SolvePath(sLink))
+      
+    Else
+    
+      If sTitle Then 
+        sLink = "[" & sTitle & "] (" & sLink & ")"
+      Else
+        sLink = "[" & sLink & "]"
+      Endif
+      
+    Endif
+    
+    If sLevel = "seealso" Then 
+      sLink = "* " & sLink
+      If iPos > 1 Then sLink = "\n" & sLink
+    Endif
+    
+    sLine = Left$(sLine, iPos - 1) & sLink & Mid$(sLine, iPos2 + 1)
+    iPos += Len(sLink)
+      
+  Loop
+
+NO_LINK:
+
+  Do
+    Inc I
+    'If I > String.Len(sLine) Then Break
+    sCar = String.Mid$(sLine, I, 1)
+    If Not sCar Then Break
+    
+    If sCar = "\\" Then
+      Inc I
+      sCar = String.Mid$(sLine, I, 1)
+      If sQuote Or If sCar Not Like "[/=a-zA-Z0-9_]" Then sCar = "\\" & sCar 
+      Goto ADD_CHAR
+    Endif
+    
+    If sWait Then
+      If sCar = "'" Then
+        If sQuote = "'" Then
+          sQuote = ""
+        Else
+          sQuote = sCar
+        Endif
+      Else If sCar = "\"" Then
+        If sQuote = "\"" Then
+          sQuote = ""
+        Else
+          sQuote = sCar
+        Endif
+      Endif
+    Endif
+    
+    If sWait Then
+      sResult &= sCar
+      If Not sQuote And If sCar = sWait Then 
+        sWait = ""
+        If sCar = "]" Then
+          If Left(LTrim(String.Mid$(sLine, I + 1))) = "(" Then
+            sWait = ")"
+          Endif
+        Endif
+      Endif
+      Continue
+    Endif
+    
+    ' If I > 1 And If I < String.Len(sLine) Then
+    '   If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Then
+    '     If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+    '       Goto ADD_CHAR
+    '     Endif
+    '   Endif
+    ' Endif
+    
+    bAllowStart = False
+    bAllowEnd = False
+
+    If I = 1 Or If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Then
+      If I < String.Len(sLine) And If String.Mid$(sLine, I + 1, 1) <> " " Then
+        bAllowStart = True
+      Endif
+    Endif
+    
+    If I = String.Len(sLine) Or If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+      If I > 1 And If String.Mid$(sLine, I - 1, 1) <> " " Then
+        bAllowEnd = True
+      Endif
+    Endif
+    
+    If sCar = "=" Then
+      If bCode And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bCode And If Not bAllowStart Then Goto ADD_CHAR
+      bCode = Not bCode
+      If bCode And If InStr("*_[", String.Mid$(sLine, I + 1, 1)) And If String.Mid$(sLine, I + 2, 1) <> "=" Then
+        sCar = "'"
+        bQuote = True
+      Else If Not bCode And If bQuote Then
+        sCar = "'"
+        bQuote = False
+      Else
+        sCar = "`"
+        bQuote = False
+      Endif
+    Else If sCar = "_" Then
+      If bUnderline And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bUnderline And If Not bAllowStart Then Goto ADD_CHAR
+      bUnderLine = Not bUnderLine
+      sCar = "~"
+    Else If sCar = "*" Then
+      If bBold And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bBold And If Not bAllowStart Then Goto ADD_CHAR
+      bBold = Not bBold
+      sCar = "**"
+    Else If sCar = "/" Then
+      If bItalic And If Not bAllowEnd Then Goto ADD_CHAR
+      If Not bItalic And If Not bAllowStart Then Goto ADD_CHAR
+      bItalic = Not bItalic
+      sCar = "*"
+    Else If sCar = "[" Then
+      If sLevel = "syntax" Then
+        sCar = "\\["
+      Else
+        sWait = "]"
+      Endif
+    Else If sCar = "<" Then
+      sWait = ">"
+    Endif
+    
+  ADD_CHAR:
+    
+    sResult &= sCar
+    
+  Loop
+  
+  If bCloseLink Then sResult &= "]"
+
+  Return sResult
+
+End
