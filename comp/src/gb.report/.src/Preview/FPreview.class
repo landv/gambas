@@ -69,6 +69,7 @@ Private Sub GetValuesFromReport()
   $hPrinter.Orientation = View.Report.Orientation
   
   If View.Report.Paper = Printer.Custom Then
+  pnlCustom.Enabled = True
   $hPrinter.PaperWidth = TSizeParse[View.Report.Width].ToCm() * 10
   $hPrinter.PaperHeight = TSizeParse[View.Report.Height].ToCm() * 10
   Else
