@@ -2,8 +2,9 @@
 
 Export
 
-Public {Null} As Variant
+Property Read {Null} As Variant
 
+Private $vNull As Variant
 Private $sStr As String
 Private $iPos As Integer
 Private $bUseNull As Boolean
@@ -242,13 +243,13 @@ Private Sub WriteValue(vVal As Variant)
 End
 
 
-Public Sub Decode(JSONString As String, Optional bUseNull As Boolean) As Variant
+Public Sub Decode(JSONString As String, Optional UseNull As Boolean) As Variant
   
   Dim vVal As Variant
   $sStr = JSONString
   $iPos = 1
-  $bUseNull = bUseNull
-  If bUseNull And If IsNull({Null}) Then {Null} = VarPtr({Null})
+  $bUseNull = UseNull
+  If UseNull And If IsNull($vNull) Then $vNull = VarPtr($vNull)
   vVal = ReadValue()
   $bUseNull = False
   $sStr = ""
@@ -262,4 +263,10 @@ Public Sub Encode(Value As Variant) As String
   WriteValue(Value)
   Return $sStr
   
+End
+
+Private Function Null_Read() As Variant
+
+  Return $vNull
+
 End
