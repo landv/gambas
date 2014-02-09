@@ -1,5 +1,5 @@
 /*
- * c_pathwatch.h
+ * c_watch.h
  *
  * Copyright (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -19,16 +19,16 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef __C_PATHWATCH_H
-#define __C_PATHWATCH_H
+#ifndef __C_WATCH_H
+#define __C_WATCH_H
 
 #include "gambas.h"
 
 extern GB_INTERFACE GB;
 
-#ifndef __C_PATHWATCH_C
-extern GB_DESC CPathWatch[];
-extern GB_DESC CPathWatchEvents[];
+#ifndef __C_WATCH_C
+extern GB_DESC CWatch[];
+extern GB_DESC CWatchEvents[];
 #endif
 
-#endif /* __C_PATHWATCH_H */
+#endif /* __C_WATCH_H */

@@ -21,14 +21,14 @@
 
 #define __MAIN_C
 
-#include "c_pathwatch.h"
+#include "c_watch.h"
 #include "main.h"
 
 GB_INTERFACE GB EXPORT;
 
 GB_DESC *GB_CLASSES[] EXPORT = {
-	CPathWatch,
-	CPathWatchEvents,
+	CWatch,
+	CWatchEvents,
 
 	NULL
 };

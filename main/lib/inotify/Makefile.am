@@ -9,4 +9,4 @@ gb_inotify_la_CPPFLAGS = @INOTIFY_INC@ -I$(top_srcdir)/share
 
 gb_inotify_la_SOURCES = \
  main.h main.c \
- c_pathwatch.h c_pathwatch.c
+ c_watch.h c_watch.c
