@@ -4,27 +4,15 @@ Export
 
 Inherits TextBox
 
-Public Const _Properties As String = "*,-Password,-MaxLength,Action,Mask"
+Public Const _Properties As String = "*,-Password,-MaxLength,Action,Mask,ShowDefault"
 'Public Const _DefaultEvent As String = "Click"
 'Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 Public Const _DrawWith As String = "TextBox"
 
-'Property Picture As Picture
-'Property Text As String
-'Property Read Length As Integer
-'Property ReadOnly As Boolean
-'Property Border As Boolean
-'Property Read Editor As TextBox
-'Property Button As Boolean
 Property Mask As String
-'Property MaskChar As String
+Property ShowDefault As Boolean
 
-'Private $hPanel As Panel
-'Private $hBackground As DrawingArea
-'Private $bBorder As Boolean
-'Private $hTextBox As TextBox
-'Private $hButton As ToolButton
 Private $hObserver As Observer
 
 Private Const MASK_CHARACTER As String = "90A6?"
@@ -39,6 +27,7 @@ Private $sSeparator As String
 Private $sAlign As String
 
 Private $iPosFocus As Integer
+Private $bShowDefault As Boolean
 
 Public Sub _new()
   
@@ -562,12 +551,26 @@ End
 Public Sub TextBox_Change()
   
   If Not $sMaskOrg Then Return
+  
   Object.Lock(Me)
-  If Me.HasFocus Then
+  If Me.HasFocus Or If $bShowDefault Then
     If Me.Text = "" Then Me.Text = MakeDefault()
   Else
     If Me.Text = MakeDefault() Then Me.Text = ""
   Endif
   Object.Unlock(Me)
   
+End
+
+Private Function ShowDefault_Read() As Boolean
+
+  Return $bShowDefault
+
+End
+
+Private Sub ShowDefault_Write(Value As Boolean)
+
+  $bShowDefault = Value
+  TextBox_Change
+
 End

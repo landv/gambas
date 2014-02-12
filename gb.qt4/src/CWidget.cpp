@@ -990,8 +990,8 @@ BEGIN_METHOD(Control_ResizeScaled, GB_FLOAT w; GB_FLOAT h)
 
 	int w, h;
 
-	w = (int)(VARG(w) * MAIN_scale);
-	h = (int)(VARG(h) * MAIN_scale);
+	w = (int)(VARG(w) * MAIN_scale + 0.5);
+	h = (int)(VARG(h) * MAIN_scale + 0.5);
 	
 	if (w == 0) w = 1;
 	if (h == 0) h = 1;

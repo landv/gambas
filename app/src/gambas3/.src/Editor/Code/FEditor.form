@@ -26,12 +26,6 @@
       Picture = Picture["img/16/form.png"]
       Shortcut = "F12"
     }
-    { mnuStartup Menu
-      Action = ".startup-class"
-      Text = Shortcut(("Startup class"), "S")
-      Picture = Picture["icon:/small/play"]
-      Shortcut = "Alt+S"
-    }
     { mnuSepGoto Menu
     }
     { mnuUndo Menu
@@ -560,11 +554,6 @@
     Text = "Open form"
     Shortcut = "F12"
     Picture = "img/16/form.png"
-  }
-  { Action startup-class
-    Text = "Startup class"
-    Shortcut = "Alt+S"
-    Picture = "icon:/small/play"
   }
   { Action ucase
     Text = "Upper case"

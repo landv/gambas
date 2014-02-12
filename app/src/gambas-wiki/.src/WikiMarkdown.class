@@ -15,13 +15,7 @@ Public Sub Link(hLink As MarkdownLink)
   Else If sLink Begins "./" Then
     sPath = Request.Path &/ Mid$(sLink, 3)
   Else If sLink Begins "../" Then
-    sPath = Main.Path
-    While sLink Begins "../" 
-      If Not sPath Or If sPath = "/" Then Break
-      sLink = Mid$(sLink, 4)
-      sPath = File.Dir(sPath)
-    Wend
-    sPath &/= sLink
+    sPath = Main.MakeAbsolute(sLink, Main.Path)
   Else If Not sLink Then
     
     sLink = hLink.Text
@@ -49,6 +43,12 @@ Public Sub Link(hLink As MarkdownLink)
   
 End
 
+Private Sub MakeError(sMsg As String) As String[]
+
+  Return ["*<span style=\"color:red;\">" & Html(sMsg) & "</span>*"]
+
+End
+
 Public Sub Command(sCommand As String) As String[]
 
   Dim aArg As String[]
@@ -59,23 +59,30 @@ Public Sub Command(sCommand As String) As String[]
   Dim sPath As String
   Dim sLetter, sLast As String
   Dim aDir As String[]
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim hSym As CSymbolInfo
+  Dim sTitle As String
   
-  aArg = Split(sCommand, " ")
+  aArg = Split(sCommand, " ", Chr$(34))
   sCommand = aArg[0]
   
   If sCommand = "index" Then
     
-    If aArg.Count >= 1 Then
+    If aArg.Count > 1 Then
       
       sDir = File.Dir(Main.GetPagePathFrom(aArg[1]))
       aResult = New String[]
       aDir = New String[]
       
       If IsDir(sDir) Then
+        
         For Each sDir In Dir(sDir, "*", gb.Directory)
           sPath = "/" &/ aArg[1] &/ sDir
           If Not Main.ExistPage(sPath) Then Continue
-          aDir.Add(Main.GetPageTitle(sPath) & "\n[" & sPath & "]")
+          sTitle = Main.GetPageTitle(sPath)
+          If aArg.Count > 2 And If Comp(Left(sTitle, Len(aArg[2])), aArg[2], gb.Language + gb.IgnoreCase) = 0 Then sTitle = LTrim(Mid$(sTitle, Len(aArg[2]) + 1))
+          aDir.Add(sTitle & "\n[" & sPath & "]")
         Next
         
         If aDir.Count Then
@@ -83,12 +90,12 @@ Public Sub Command(sCommand As String) As String[]
           aResult.Add("[[ index")
           aResult.Add("==")
             
-          aDir.Sort(gb.Natural)
+          aDir.Sort(gb.Natural + gb.IgnoreCase)
           
           For I = 0 To aDir.Max
             If I Then aResult.Add("==")
             iPos = InStr(aDir[I], "\n")
-            sLetter = String.Left(aDir[I])
+            sLetter = String.UCase(String.Left(aDir[I]))
             If sLetter <> sLast Then
               aResult.Add("<div class=\"letter\">" & sLetter & "</div>")
               sLast = sLetter
@@ -111,6 +118,40 @@ Public Sub Command(sCommand As String) As String[]
   
     Return ["<div class=\"since\">" & ("Since") & "&nbsp;" & Html(aArg[1]) & "</div>"]
   
+  Else If sCommand = "classes" And If Main.Component Then
+    
+    hComp = CComponent.Get(Main.Component)
+    If hComp Then Return hComp.GetClasses()
+
+    Return MakeError(("This component does not exist."))
+  
+  Else If sCommand = "symbols" And If Main.Class Then
+    
+    hComp = CComponent.Get(Main.Component)
+    If hComp Then
+      hClass = hComp[Main.Class]
+      If hClass Then Return hClass.GetSymbols()
+    Endif
+    
+    Return MakeError(("This class does not exist."))
+  
+  Else If sCommand = "syntax" And If Main.Symbol Then
+  
+    hComp = CComponent.Get(Main.Component)
+    If hComp Then
+      hClass = hComp[Main.Class]
+      If hClass Then 
+        hSym = hClass.Symbols[Main.Symbol]
+        If hSym Then Return hSym.GetSyntax()
+      Endif
+    Endif
+    
+    Return MakeError(("This symbol does not exist."))
+
+  Else If sCommand = "stat" Then
+    
+    Return Main.GetStat()
+
   Else
     
     Return ["**COMMAND: `" & sCommand & "`**"]

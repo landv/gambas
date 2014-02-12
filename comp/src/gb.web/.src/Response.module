@@ -119,6 +119,8 @@ Public Sub End()
   
   Dim sBuffer As String
   Dim sFile As String
+  Dim iSize As Long
+  
   'Dim hLog As File
 
   Dec $iBegin
@@ -134,12 +136,12 @@ Public Sub End()
     
     If ShouldCompress() Then
       If Split(CGI["HTTP_ACCEPT_ENCODING"], ",").Exist("gzip*", gb.Like) Then
-        If Stat(sFile).Size >= 128 Then
+        iSize = Stat(sFile).Size
+        If iSize >= 128 Then
           If CanUseCompression() Then
             AddHeader("Content-Encoding", "gzip")
             AddHeader("Vary", "Accept-Encoding")
             $hComp.File(sFile, sFile & ".gz", $hComp.Max)
-            'Exec ["gzip", "-9", sFile] Wait
             If Exist(sFile & ".gz") Then sFile &= ".gz"
           Endif
         Endif
@@ -147,10 +149,8 @@ Public Sub End()
     Endif
 
     $hFile = Open sFile For Read 
-    'hLog = Open "/tmp/response." & CStr(Application.Id) For Create
     AddHeader("Content-Length", Lof($hFile))
     Print $sHeader
-    'Main.Log("Header = " & $sHeader)
     $sHeader = ""
   
     While Not Eof($hFile)
@@ -165,6 +165,10 @@ Public Sub End()
     Flush
     
   Endif
+  
+'Catch
+  
+'  Main.Log(Error.Where & ": " & Error.Text, True)
   
 End
 

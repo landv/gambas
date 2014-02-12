@@ -42,7 +42,7 @@ EXTERN char *PROJECT_exec_path;
 EXTERN char *PROJECT_name;
 EXTERN char *PROJECT_title;
 EXTERN char *PROJECT_version;
-EXTERN char *PROJECT_startup;
+EXTERN const char *PROJECT_startup;
 EXTERN CLASS *PROJECT_class;
 EXTERN int PROJECT_argc;
 EXTERN char **PROJECT_argv;

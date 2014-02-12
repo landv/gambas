@@ -5,8 +5,8 @@ Public Const DEFAULT_LANG As String = "en"
 Public Languages As String[] = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", 
     "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
 
-Public SystemLanguages As String[] = ["C", "fr_FR.UTF-8", "de", "es_ES.UTF-8", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", 
-    "hu", "cs", "tr", "ar", "fa", "id", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
+Public SystemLanguages As String[] = ["C", "fr_FR.UTF-8", "de_DE.UTF-8", "es_ES.UTF-8", "it_IT.UTF-8", "nl_NL.UTF-8", "pl_PL.UTF-8", "pt_PT.UTF-8", "pt_BR.UTF-8", "mk_MK.UTF-8", "sq_AL.UTF-8", "ca_ES.UTF-8", 
+    "hu_HU.UTF-8", "cs_CZ.UTF-8", "tr_TR.UTF-8", "ar_AE.UTF-8", "fa_IR.UTF-8", "id_ID.UTF-8", "vi_VN.UTF-8", "ko_KR.UTF-8", "ja_JP.UTF-8", "ru_RU.UTF-8", "zh_CN.UTF-8", "zh_TW.UTF-8", "eo.UTF-8"]
 
 Public Lang As String
 Public Root As String
@@ -14,6 +14,25 @@ Public Path As String
 Public Exist As Boolean
 Public Edit As Boolean
 Public Image As Boolean
+
+Public Component As String
+Public Class As String
+Public Symbol As String
+
+Public Sub SetLanguage(sLang As String)
+
+  Dim iLang As Integer
+  
+  Lang = sLang
+  If Not Lang Then Lang = DEFAULT_LANG
+  iLang = Languages.Find(Lang)
+  If iLang >= 0 Then
+    System.Language = SystemLanguages[iLang]
+  Else
+    Lang = DEFAULT_LANG
+  Endif
+
+End
 
 Public Sub GetPagePath(Optional bSuffix As Boolean) As String
 
@@ -32,7 +51,7 @@ Public Sub GetPagePathFrom(sPath As String) As String
 End
 
 
-Private Sub MakeDir(sDir As String)
+Public Sub MakeDir(sDir As String)
 
   Dim sPath As String
   Dim sElt As String
@@ -88,11 +107,21 @@ Public Sub Main()
   Dim sPasswd As String
   Dim aPage As String[]
   Dim sDir As String
-  Dim iLang As Integer
+  Dim aPath As String[]
   
-  ' The wiki is stored in the following root directory.
-
   Root = User.Home &/ "wiki"
+
+  If Args[1] = "-restore" Then
+    If IsDir(Root) Then
+      Shell "rm -rf " & Shell$(Root & "~") & " >/dev/null 2>&1" Wait
+      Move Root To Root & "~"
+      Mkdir Root
+      Copy "passwd" To Root &/ "passwd"
+    Endif
+    OldWiki.Restore
+    Return
+  Endif
+
   Try Mkdir Root
 
   ' All pages are stored in a "data" directory stored in the root directory.
@@ -129,14 +158,7 @@ Public Sub Main()
     Return
   Endif
   
-  Lang = Request["l"]
-  If Not Lang Then Lang = DEFAULT_LANG
-  iLang = Languages.Find(Lang)
-  If iLang >= 0 Then
-    System.Language = SystemLanguages[iLang]
-  Else
-    Lang = DEFAULT_LANG
-  Endif
+  SetLanguage(Request["l"])
     
   If Request.Exist("logout") Then
     
@@ -161,6 +183,20 @@ Public Sub Main()
 
   {Exist} = Main.ExistPage(Path)
   Image = IsImage(Path)
+  
+  ' Analyze component path
+  If Path Begins "/comp/gb" Then
+    
+    CComponent.Init
+    aPath = Split(Path, "/", "", True)
+    Component = aPath[1]
+    If aPath.Count >= 3 Then {Class} = aPath[2]
+    If aPath.Count >= 4 Then 
+      Symbol = aPath[3]
+      If Left(Symbol) = "." Then Symbol = ":" & Mid$(Symbol, 2)
+    Endif
+    
+  Endif
 
   If Session.Id Then
   
@@ -222,10 +258,11 @@ Public Sub Main()
   Endif
 
   Wiki.Render
+  CComponent.Exit
   
 Catch
   
-  sMsg = Error.Where & ": " & Error.Text
+  sMsg = Error.Where & ": " & Error.Text & "\n" & Error.Backtrace.Join("\n")
   Response.Begin
   Response.ContentType = "text/plain;charset=utf-8"
   Print "<pre>"; sMsg; "</pre>"
@@ -233,10 +270,36 @@ Catch
 
 End
 
+Public Sub SolvePath(sPath As String) As String
+  
+  Dim sData As String
+  
+  Do
+  
+    If Not Main.ExistPage(sPath) Then Return sPath
+    
+    sData = File.Load(Main.GetPagePathFrom(sPath))
+    If sData Begins "-->" Then
+      sPath = MakeAbsolute(Trim$(Mid$(sData, 4)), sPath)
+    Else
+      Return sPath
+    Endif
+    
+  Loop
+  
+End
+
+
 Public Sub GetPageTitle(sPath As String) As String
   
   Dim sFile As String
   Dim iPos As Integer
+  Dim bComp As Boolean
+  
+  sPath = SolvePath(sPath)
+  bComp = sPath Begins "/comp/"
+  
+  If bComp And If sPath Like "/comp/*/*/*" Then Return GetSymbolTitle(sPath)
   
   sPath = Root &/ "data" &/ Lang &/ sPath &/ "~page"
   If Not Exist(sPath) Then Return 
@@ -246,7 +309,9 @@ Public Sub GetPageTitle(sPath As String) As String
   If sFile Begins "# " Then
     iPos = InStr(sFile, "\n")
     If iPos = 0 Then iPos = Len(sFile)
-    Return Trim(Mid$(sFile, 3, iPos - 3))
+    sFile = Trim(Mid$(sFile, 3, iPos - 3))
+    If Not bComp Then sFile = String.UCaseFirst(sFile)
+    Return sFile
   Endif
   
 End
@@ -320,3 +385,165 @@ Public Sub ExistPage(sPath As String) As Boolean
   
 End
 
+
+Public Function GetSymbolLink(hClass As CClassInfo, sSym As String, Optional sMyTitle As String, Optional sMyStaticTitle As String) As String
+
+  Dim hSym As CSymbolInfo
+  Dim sRes As String
+  Dim sComp As String
+  Dim sPath As String
+
+  hSym = hClass.Symbols[sSym]
+  If Not hSym Then Return
+
+  ' If $cCompRedirect Then
+  '   sComp = hSym.Component
+  '   While $cCompRedirect.Exist(sComp)
+  '     sComp = $cCompRedirect[sComp]
+  '   Wend
+  ' Endif
+  If Not sComp Then sComp = hSym.Component
+
+  If hSym.IsStatic() Then sMyTitle = sMyStaticTitle
+  
+  'sPath = GetSymbolPath(hSym)
+  sPath = "/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", "."))
+  If sMyTitle Then
+    sRes &= "[" & sMyTitle & "] (" & sPath & ")"
+  Else
+    sRes &= "[" & sPath & "]"
+  Endif
+  
+  'If hSym.IsStatic() Then sRes &= "**"
+
+  Return sRes
+
+End
+
+Public Function GetClassLinkFromName(sClass As String) As String
+
+  Dim sComp As String = Main.Component
+
+  If IsNull(CComponent.Get(sComp)[sClass]) Then
+    sComp = CComponent.Classes[sClass].Component
+  Endif
+
+  Return "<a href=\"" & Application.Root &/ LCase("comp" &/ sComp &/ sClass) & "\">" & Html(sClass) & "</a>"
+
+Catch
+
+  Return sClass
+
+End
+
+Public Sub GetStat() As String[]
+  
+  Dim nClass As Integer
+  Dim nSym As Integer
+  Dim sFile As String
+  Dim aFile As String[]
+  Dim iCpt As Integer
+  Dim sLine As String
+  Dim aIgnore As String[]
+  Dim sDir As String
+
+  sDir = System.Path &/ "share/gambas" & System.Version &/ "info"
+
+  aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.gtk3.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gui.base", "gb.geom"]
+
+  For Each sFile In Dir(sDir, "*.info")
+    If aIgnore.Find(sFile) >= 0 Then Continue
+    aFile = Split(File.Load(sDir &/ sFile), "\n", "", True)
+    iCpt = 0
+    For Each sLine In aFile
+      If Left(sLine) = "#" Then Inc iCpt
+    Next
+    nClass += iCpt
+    nSym += (aFile.Count - iCpt * 3) / 4
+  Next
+
+  Return [Subst(("There are &1 classes and &2 symbols in all Gambas components."), nClass, nSym)]
+
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
+End
+
+Public Sub GetSymbolTitle(Optional sPath As String) As String
+
+  Dim hSym As CSymbolInfo
+  Dim sTitle As String
+  Dim sComponent As String
+  Dim sClass As String
+  Dim sSymbol As String
+  Dim aPath As String[]
+  
+  If Not sPath Then
+    sComponent = Main.Component
+    sClass = Main.Class
+    sSymbol = Main.Symbol
+  Else
+    aPath = Split(sPath, "/", "", True)
+    sComponent = aPath[1]
+    sClass = aPath[2]
+    sSymbol = aPath[3]
+    If Left(sSymbol) = "." Then sSymbol = ":" & Mid$(sSymbol, 2)
+  Endif
+  
+  Try hSym = CComponent.Get(sComponent)[sClass].Symbols[sSymbol]
+  
+  If sPath Then
+    If Not hSym Then Return sSymbol & " ?"
+    If InStr("e:", hSym.Kind) Then
+      Return Mid$(hSym.Name, 2)
+    Else
+      Return hSym.Name
+    Endif
+  Endif
+  
+  If Not hSym Then Return sClass & "." & sSymbol & " (" & sComponent & ") ?"
+
+  Select Case Main.Symbol
+    Case "_new"
+      sTitle = "New " & hSym.Class
+    Case "_put"
+      sTitle = hSym.Class & "[] = ..."
+    Case "_get"
+      sTitle = hSym.Class & "[]"
+    Case "_call"
+      sTitle = hSym.Class & "()"
+    Case "_next"
+      sTitle = "For Each " & hSym.Class
+    Default
+      If InStr(":e", hSym.Kind) Then
+        sTitle = "Event " & hSym.Class & "." & Mid$(hSym.Name, 2)
+      Else
+        sTitle = hSym.Class & "." & hSym.Name
+      Endif
+  End Select
+
+  Return sTitle & " (" & hSym.Component & ")"
+  
+End
+
+Public Sub MakeAbsolute(sPath As String, sRoot As String) As String
+  
+  If sPath Begins "/" Then Return sPath
+
+  If sPath Begins "./" Then
+    If Not sRoot Then sRoot = "/"
+    Return sRoot &/ Mid$(sPath, 3)
+  Endif
+
+  While sPath Begins "../"
+    
+    sRoot = File.Dir(sRoot)
+    sPath = Mid(sPath, 4)
+    
+  Wend
+  
+  If Not sRoot Then sRoot = "/"
+  Return sRoot &/ sPath
+  
+End

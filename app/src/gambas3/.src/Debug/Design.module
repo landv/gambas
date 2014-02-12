@@ -1,5 +1,7 @@
 ' Gambas module file
 
+Public Startup As String
+
 Private Const STATE_LAST As Integer = -1
 Private Const STATE_STOP As Integer = 0
 Private Const STATE_RUNNING As Integer = 1
@@ -844,6 +846,11 @@ Private Sub Start(sCmd As String)
   ' Else
 
   aExec = [System.Path &/ "bin/gbx" & System.Version, "-g", "-f", $sFifo]
+  
+  If Startup Then 
+    aExec.Add("-s")
+    aExec.Add(Startup)
+  Endif
   
   If Project.CanUseHttpServer() Then 
     If Project.UseHttpServer Or If Project.Components.Exist("gb.httpd") Then

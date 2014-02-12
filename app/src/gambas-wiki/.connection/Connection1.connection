@@ -5,5 +5,5 @@ IgnoreCharset=False
 DisplayMetadata=False
 Database="wiki"
 User="root"
-Requests=[""]
+Requests=["select * from page where sHtml like 'Content-Type: image/%'"]
 

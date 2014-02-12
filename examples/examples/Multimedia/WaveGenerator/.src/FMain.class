@@ -6,17 +6,15 @@ Private $hConv As MediaControl
 Private $hPlayer As MediaPipeline
 Private $hOutput As MediaControl
 
-Public Sub _new()
-
-End
-
 Public Sub Form_Open()
 
   $hPlayer = New MediaPipeline
 
   $hAudio = New MediaControl($hPlayer, "audiotestsrc")
+  $hAudio["is-live"] = True
+  
   $hConv = New MediaControl($hPlayer, "audioconvert")
-  $hOutput = New MediaControl($hPlayer, "alsasink")
+  $hOutput = New MediaControl($hPlayer, "autoaudiosink")
   
   $hAudio.LinkTo($hConv)
   $hConv.LinkTo($hOutput)
@@ -56,5 +54,11 @@ End
 Public Sub sldVolume_Change()
 
   $hAudio["volume"] = sldVolume.Value / 1000
+
+End
+
+Public Sub cmbType_Click()
+
+  $hAudio["wave"] = cmbType.Index
 
 End

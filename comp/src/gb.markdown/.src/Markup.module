@@ -12,6 +12,7 @@ Private $aTable As String[]
 Private $aTablePos As Integer[]
 Private $hMarkdown As Markdown
 Private $hLink As New MarkdownLink
+Private $bComment As Boolean
 
 Private Sub GetIndent(sLine As String) As Integer
   
@@ -105,18 +106,31 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     
   Next
     
-  For iLine = 0 To aLine.Max
+  iLine = -1
+  While iLine < aLine.Max
     
-    If Not bDoNotSetLine Then $hMarkdown.Line = iLine
+    Inc iLine
     sLine = aLine[iLine]
     
-    If $aMarkup.Count Then
-      aResult.Add(ConvertLine(sLine))
-      Continue
+    If Not bDoNotSetLine Then 
+      $hMarkdown.Line = iLine
+      $hMarkdown.Current = sLine
     Endif
+    
+    'If $aMarkup.Count Then
+    '  aResult.Add(ConvertLine(sLine))
+    '  Continue
+    'Endif
     
     sLine = RTrim(sLine)
     If Not sLine Then sLine = aLine[iLine]
+  
+    If $bComment Then
+      iPos = InStr(sLine, "-->")
+      If iPos = 0 Then Continue
+      $bComment = False
+      sLine = Mid$(sLine, iPos + 4)
+    Endif
   
     ' Special command
     
@@ -127,7 +141,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       Else
         aCommand = $hMarkdown.Command(Mid$(sLine, 3, -1))
         If aCommand And If aCommand.Count Then
-          aResult.Add(ConvertMarkup(aCommand))
+          aLine.Insert(aCommand, iLine + 1)
         Endif
       Endif
       Continue
@@ -257,6 +271,8 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     If sLine = "[[" Or If sLine Begins "[[ " Then
       
       GoSub CLOSE_PARA
+      iIndent = GetIndent(sLine)
+      GoSub CLOSE_LIST
       GoSub CLOSE_CODE
         
       $aTable.Push("[[")
@@ -278,13 +294,15 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       If sLine = "]]" Then
         
         GoSub CLOSE_PARA
+        iIndent = GetIndent(sLine)
+        GoSub CLOSE_LIST
         GoSub CLOSE_CODE
         
         sTable = $aTable.Pop()
         iPos = $aTablePos.Pop()
         
-        If sTable = "[[" Then
-          aResult[iPos] = Replace(aResult[iPos], "<table", "<div><div")
+        If iPos >= 0 Then
+          aResult[iPos] = Replace(aResult[iPos], "<table", "<div class=\"table\"><div")
           aResult.Remove(iPos + 1)
           aResult.Add("</div></div>")
         Else
@@ -297,6 +315,8 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       Else If sLine = "--" Then
         
         GoSub CLOSE_PARA
+        iIndent = GetIndent(sLine)
+        GoSub CLOSE_LIST
         GoSub CLOSE_CODE
         
         sTable = $aTable[$aTable.Max]
@@ -307,11 +327,14 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         Endif
         bIgnorePar = True
         bInsidePar = True
+        $aTablePos[$aTablePos.Max] = -1
         Continue
         
       Else If sLine = "==" Then
         
         GoSub CLOSE_PARA
+        iIndent = GetIndent(sLine)
+        GoSub CLOSE_LIST
         GoSub CLOSE_CODE
         
         sTable = $aTable[$aTable.Max]
@@ -323,6 +346,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           aResult.Add("</td></tr><tr><td>")
         Endif
         $aTable[$aTable.Max] = "=="
+        $aTablePos[$aTablePos.Max] = -1
         bIgnorePar = True
         bInsidePar = True
         Continue
@@ -437,7 +461,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     
     aResult.Add(sLine)
     
-  Next
+  Wend
   
   GoSub CLOSE_CODE
   GoSub CLOSE_BLOCKQUOTE
@@ -455,7 +479,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         $aIndex[I] = Mid$($aIndex[I], iIndent + 1)
       Next
     Endif
-    aResult[iIndexPos] = ConvertMarkup($aIndex)
+    aResult[iIndexPos] = "<div class=\"index\">\n" & ConvertMarkup($aIndex) & "</div>\n"
   Endif
   
   $aMarkup = aSaveMarkup
@@ -528,6 +552,7 @@ Private Sub ConvertLine(sLine As String) As String
   Dim sText, sTitle, sLink As String
   Dim bBlank As Boolean
   Dim bUnderline As Boolean
+  Dim bLimitBefore, bLimitAfter As Boolean
   
 MAIN_LOOP:
   
@@ -555,21 +580,31 @@ MAIN_LOOP:
   
   If sCar = "<" Then Goto ENTER_MARKUP
   
-  If $aMarkup.Count = 0 Then
+  'If $aMarkup.Count = 0 Then
   
     If sCar = "&" Then Goto ENTER_AMPERSAND
     
     If sCar = "[" And If String.Mid$(sLine, I + 1, 1) <> " " Then Goto ENTER_LINK
     
+  'Endif
+  
+  If I = 1 Or If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Then
+    bLimitBefore = True
+  Else
+    bLimitBefore = False
   Endif
   
-  If I = 1 Or If IsWordLimit(String.Mid$(sLine, I - 1, 1)) Or If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+  If IsWordLimit(String.Mid$(sLine, I + 1, 1)) Then
+    bLimitAfter = True
+  Else
+    bLimitAfter = False
+  Endif
   
+  If bLimitBefore Or If bLimitAfter Then
     If sCar = "`" Then Goto ENTER_CODE
     If sCar = "'" Then Goto ENTER_LIGHT_CODE
     If sCar = "*" Then Goto ENTER_STAR
     If sCar = "~" Then Goto ENTER_UNDERLINE
-    
   Endif
   
   If sCar = ">" Then 
@@ -594,6 +629,12 @@ LOOK_CAR:
   
 ENTER_MARKUP:
 
+  If String.Mid$(sLine, I, 4) = "<!--" Then
+    I = String.Len(sLine)
+    $bComment = True
+    Goto MAIN_LOOP
+  Endif
+  
   I1 = I
   GoSub NEXT_CAR
   
@@ -612,7 +653,7 @@ ENTER_MARKUP:
   
   If Left$(sPattern) = "/" Then
     If $aMarkup.Count = 0 Or If LCase($aMarkup[$aMarkup.Max]) <> LCase(Mid$(sPattern, 2)) Then
-      Error.Raise("Mismatched markup: " & sPattern)
+      Error.Raise("Mismatched markup: <" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">")
     Endif
     sResult &= "<" & sPattern & ">"
     $aMarkup.Remove($aMarkup.Max)
@@ -655,12 +696,14 @@ ENTER_CODE:
   
 ENTER_LIGHT_CODE:
   
-  If bCode Then
+  If bCode And If bLimitAfter Then
     sResult &= "</code>"
     bCode = False
-  Else
+  Else If bLimitBefore Then
     sResult &= "<code style=\"white-space:nowrap;\">"
     bCode = True
+  Else
+    sResult &= "'"
   Endif
   
   Goto MAIN_LOOP
@@ -673,10 +716,10 @@ ENTER_STAR:
     Goto ENTER_STRONG
   Endif
   
-  If bEmph Then
+  If bEmph And If bLimitAfter Then
     sResult &= "</em>"
     bEmph = False
-  Else If Not bStrong Then
+  Else If Not bStrong And If bLimitBefore Then
     sResult &= "<em>"
     bEmph = True
   Else
@@ -686,10 +729,10 @@ ENTER_STAR:
 
 ENTER_STRONG:
 
-  If bStrong Then
+  If bStrong And If bLimitAfter Then
     sResult &= "</strong>"
     bStrong = False
-  Else If Not bEmph Then
+  Else If Not bEmph And If bLimitBefore Then
     sResult &= "<strong>"
     bStrong = True
   Else
@@ -699,12 +742,14 @@ ENTER_STRONG:
   
 ENTER_UNDERLINE:
 
-  If bUnderline Then
+  If bUnderline And If bLimitAfter Then
     sResult &= "</u>"
     bUnderline = False
-  Else
+  Else If bLimitBefore Then
     sResult &= "<u>"
     bUnderLine = True
+  Else
+    sResult &= "~"
   Endif
   Goto MAIN_LOOP
   

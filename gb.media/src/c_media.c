@@ -378,18 +378,28 @@ static bool set_value(GValue *value, GB_VALUE *v, GParamSpec *desc)
 			if (G_TYPE_IS_ENUM(type))
 			{
 				GEnumValue *enum_value;
+				int real_value;
 				
-				if (GB.Conv(v, GB_T_STRING))
-					return TRUE;
-				
-				enum_value = g_enum_get_value_by_nick(G_ENUM_CLASS(g_type_class_ref(type)), GB.ToZeroString((GB_STRING *)v));
-				if (!enum_value)
+				if (!GB.Conv(v, GB_T_INTEGER))
 				{
-					GB.Error("Unknown enumeration value");
-					return TRUE;
+					real_value = ((GB_INTEGER *)v)->value;
+				}
+				else
+				{
+					if (GB.Conv(v, GB_T_STRING))
+						return TRUE;
+
+					enum_value = g_enum_get_value_by_nick(G_ENUM_CLASS(g_type_class_ref(type)), GB.ToZeroString((GB_STRING *)v));
+					if (!enum_value)
+					{
+						GB.Error("Unknown enumeration value");
+						return TRUE;
+					}
+
+					real_value = enum_value->value;
 				}
 				
-				g_value_set_enum(value, enum_value->value);
+				g_value_set_enum(value, real_value);
 				break;
 			}
 

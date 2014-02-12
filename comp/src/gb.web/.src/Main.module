@@ -2,11 +2,11 @@
 
 Public AllowLog As Boolean
 
-Public Sub Log(sMsg As String)
+Public Sub Log(sMsg As String, Optional bForce As Boolean)
   
   Dim hFile As File
   
-  If Not AllowLog Then Return
+  If Not AllowLog And If Not bForce Then Return
   
   hFile = Open "/tmp/session.log" For Append 
   Print #hFile, sMsg

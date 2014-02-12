@@ -22,7 +22,7 @@
       <%Endif%>
     </div>
     <div class="title">
-      <%_PrintTitle%>
+      <%_PrintLink%>
     </div>
     <%If Main.Edit Then%>
       <div class="command">
@@ -81,6 +81,7 @@
     </script>
   <%Else%>
     <%_PrintPage%>
+    <p />
   <%Endif%>
 </div>
 

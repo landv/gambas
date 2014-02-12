@@ -50,7 +50,7 @@ char *PROJECT_exec_path = NULL;
 
 char *PROJECT_name = NULL;
 char *PROJECT_title = NULL;
-char *PROJECT_startup = NULL;
+const char *PROJECT_startup = NULL;
 char *PROJECT_version = NULL;
 CLASS *PROJECT_class = NULL;
 
@@ -113,6 +113,9 @@ static void project_component(char *name, int len)
 
 static void project_startup(char *name, int len)
 {
+	if (PROJECT_startup)
+		return;
+
 	if (len == 0)
 		raise_error("Project startup class name is void");
 

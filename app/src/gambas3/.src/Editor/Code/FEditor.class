@@ -553,7 +553,7 @@ Private Sub CreateMenu()
 
   mnuGoto.Visible = cFunc.count > 0
   mnuSepGoto.Visible = cFunc.count > 0
-  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
+  'mnuStartup.Checked = Project.Startup = File.BaseName(Path)
 
   UpdateMenu
 
@@ -3037,13 +3037,13 @@ Public Sub SetFoldedProc(aFold As Integer[])
 
 End
 
-Public Sub mnuStartup_Click()
-
-  If mnuStartup.Checked Then Return
-  mnuStartup.Checked = True
-  Project.DefineStartup(Path)
-
-End
+' Public Sub mnuStartup_Click()
+' 
+'   If mnuStartup.Checked Then Return
+'   mnuStartup.Checked = True
+'   Project.DefineStartup(Path)
+' 
+' End
 
 Public Sub mnuPasteAsString_Click()
 

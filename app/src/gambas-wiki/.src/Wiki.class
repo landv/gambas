@@ -10,10 +10,25 @@ Private Sub _PrintTitle()
 
 End
 
+Private Sub _PrintLink()
+
+  Dim aPath As String[]
+  Dim sElt As String
+  Dim sPath As String
+  
+  aPath = Split(Main.Path, "/", "", True)
+  For Each sElt In aPath
+    sPath &= "/" & sElt
+    Print "<a href=\""; Application.Root &/ sPath; "\">"; "/"; sElt; "</a>";
+  Next
+  
+End
+
 Private Sub _PrintPage()
 
   Dim sPath As String
   Dim sData As String
+  Dim iPos As Integer
 
   If Main.Edit Then
     sPath = Main.GetPagePath()  
@@ -22,36 +37,35 @@ Private Sub _PrintPage()
     Print sData;
     Return
   Endif
+
+  If Main.Image Then
+    Print "<img src=\"" & Application.Root &/ Main.Path & "?show\" />";
+    Return
+  Endif
   
-  sPath = Main.Path
+  sPath = Main.SolvePath(Main.Path)
   
-  Do
+  If Not Main.ExistPage(sPath) Then
+    Print "<div class=\"unknown\">"; ("This page does not exist.")
+    If Session.Id Then Print "<p>"; ("Click on the <b>Create</b> button to create it!")
+    Print "</div>"
+    Return
+  Endif
   
-    If Not Main.ExistPage(sPath) Then
-      Print "<div class=\"unknown\">"; ("This page does not exist.")
-      If Session.Id Then Print "<p>"; ("Click on the <b>Create</b> button to create it!")
-      Print "</div>"
-      Return
+  sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
+  If Main.Symbol Then
+    If sData Begins "# " Then
+      iPos = InStr(sData, "\n")
+      If iPos = 0 Then iPos = Len(sData)
+      sData = Mid$(sData, iPos + 1)
     Endif
-    
-    If Main.Image Then
-      Print "<img src=\"" & Application.Root &/ Main.Path & "?show\" />";
-      Break
-    Else
-      sData = File.Load(Main.GetPagePathFrom(sPath))
-      If sData Begins "-->" Then
-        sPath = Trim$(Mid$(sPath, 4))
-      Else
-        Print WikiMarkdown.ToHTML(sData);
-        Break
-      Endif
-    Endif
-    
-  Loop
+    sData = "# " & Main.GetSymbolTitle() & sData
+  Endif
+  Print WikiMarkdown.ToHTML(sData);
   
 Catch
   
-  Print "<pre>"; Error.Text; "\nat line #"; WikiMarkdown.Line; "</pre>";
+  Print "<pre>"; Html(Error.Text); " at line #"; WikiMarkdown.Line + 1; ":\n\n"; Html(WikiMarkdown.Current); "\n\nStack backtrace:\n\n"; Error.Backtrace.Join("\n"); "</pre>";
 
 End
 
@@ -62,6 +76,7 @@ Private Sub _PrintParent()
   sPath = Request.Path
   If sPath Then sPath = File.Dir(sPath)
   Print Application.Root &/ sPath;
+  If Main.Lang <> Main.DEFAULT_LANG Then Print "?l="; Main.Lang;
 
 End
 
@@ -71,7 +86,7 @@ Private Sub _PrintLang()
   
   Print "<select id=\"lang\" name=\"l\" onchange=\"document.form.submit();\">"
 
-  For Each sLang In Main.Languages
+  For Each sLang In Main.Languages.Copy().Sort()
     Print "<option value=\""; sLang; "\"";
     If sLang = Main.Lang Then Print " selected";
     Print ">"; Html(sLang); "</option>"

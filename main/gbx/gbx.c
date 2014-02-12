@@ -188,7 +188,6 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	const char *redirect_stderr = NULL;
 
-
 	//char log_path[256];
 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
 	//log_file = freopen(log_path, "w+", stderr);
@@ -226,6 +225,7 @@ int main(int argc, char *argv[])
 			printf(
 				"Options:\n"
 				"  -g               enter debugging mode\n"
+				"  -s <class>       override startup class\n"
 				"  -p <path>        activate profiling and debugging mode\n"
 				"  -k               do not unload shared libraries\n"
 				"  -H --httpd       run through an embedded http server\n"
@@ -299,6 +299,10 @@ int main(int argc, char *argv[])
 		else if (is_option_arg(argv, argc, &i, 'f', &EXEC_fifo_name))
 		{
 			EXEC_fifo = TRUE;
+		}
+		else if (is_option_arg(argv, argc, &i, 's', &PROJECT_startup))
+		{
+			continue;
 		}
 		else if (is_option_arg(argv, argc, &i, 't', &redirect_stderr))
 		{

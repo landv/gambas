@@ -2488,7 +2488,7 @@ Private Function CheckRunning(Optional bCompileAll As Boolean) As Boolean
 
 End
 
-Public Sub Run(Optional bCompileAll As Boolean, Optional iDebug As Integer)
+Public Sub Run(Optional bCompileAll As Boolean, Optional iDebug As Integer, Optional sStartup As String)
 
   If CheckRunning(bCompileAll) Then Return
 
@@ -2499,7 +2499,9 @@ Public Sub Run(Optional bCompileAll As Boolean, Optional iDebug As Integer)
   Else If iDebug = 3 Then
     Design.ReturnFrom
   Else
+    If sStartup Then Design.Startup = sStartup
     Design.Run
+    Design.Startup = ""
   Endif
 
 End

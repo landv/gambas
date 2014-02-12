@@ -2405,7 +2405,7 @@ Private Sub RefreshMenu()
 
   Endif
   
-  mnuStartup.Checked = Project.Startup = File.BaseName(Path)
+  Action[".run-me", Me].Visible = Not Project.Running
   
   For Each hCtrl In tlbForm.Children
     If hCtrl.Visible And If hCtrl.Tag Then
@@ -3153,6 +3153,9 @@ Public Sub Action_Activate(Key As String) As Boolean
     ' Case ".remove-from-container"
     '   RemoveFromContainer
 
+    Case ".run-me"
+      Project.Run(False, 0, Me.Name)
+
     Default
       Return True
 
@@ -3557,13 +3560,13 @@ Public Sub mnuChange_Click()
 
 End
 
-Public Sub mnuStartup_Click()
-
-  If mnuStartup.Checked Then Return
-  mnuStartup.Checked = True
-  Project.DefineStartup(Path)
-
-End
+' Public Sub mnuStartup_Click()
+' 
+'   If mnuStartup.Checked Then Return
+'   mnuStartup.Checked = True
+'   Project.DefineStartup(Path)
+' 
+' End
 
 Private Sub AddMenu(aMenu As String[], hMenu As Menu)
 

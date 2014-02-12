@@ -18,7 +18,7 @@ INPUT[type=submit]:hover {
   background: #E0E0E0;
 }
 
-P,UL,OL {
+P {
   margin-bottom: 0;
   margin-top: 1em;
 }
@@ -101,6 +101,9 @@ TABLE.example TH {
 }*/
 
 .header {
+  position: fixed;
+  left: 0;
+  right: 0;
   background: gray;
   color: white;
   border-bottom: black solid 1px;
@@ -111,6 +114,10 @@ TABLE.example TH {
 
 .title {
   display: inline-table;
+}
+
+.title A {
+  color: white;
 }
 
 .login {
@@ -128,12 +135,13 @@ TABLE.example TH {
 
 .page {
   padding: 4px 8px;
+  padding-top: 24px;
 }
 
 .unknown {
   color: red;
   font-style: italic;
-  margin-top: 8px;
+  margin-top: 24px;
   font-size: 125%;
 }
 
@@ -168,12 +176,19 @@ TABLE.example TH {
   height: 100%;
 }
 
+DIV.table {
+  margin-top: 1em;
+  }
+  
+DIV.table:first-child {
+  margin-top: 0;
+}
+
 DIV.box {
   display: inline-table;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
-  margin-top: 1em;
 }
 
 DIV.info {
@@ -184,7 +199,6 @@ DIV.info {
   padding-left: 48px;
   background: url('/wiki/info.png') 8px 8px no-repeat;
   height: 32px;
-  margin-top: 1em;
 }
 
 DIV.warning {
@@ -195,7 +209,6 @@ DIV.warning {
   padding-left: 48px;
   background: url('/wiki/warning.png') 8px 8px no-repeat;
   height: 32px;
-  margin-top: 1em;
 }
 
 DIV.tip {
@@ -206,7 +219,6 @@ DIV.tip {
   padding-left: 48px;
   background: url('/wiki/tip.png') 8px 8px no-repeat;
   height: 32px;
-  margin-top: 1em;
 }
 
 DIV.vb {
@@ -217,7 +229,6 @@ DIV.vb {
   padding-left: 48px;
   background: url('/wiki/vb.png') 8px 8px no-repeat;
   height: 32px;
-  margin-top: 1em;
 }
 
 DIV.critical {
@@ -228,14 +239,12 @@ DIV.critical {
   padding-left: 48px;
   background: url('/wiki/critical.png') 8px 8px no-repeat;
   height: 32px;
-  margin-top: 1em;
 }
 
 DIV.example, DIV.seealso {
   display: inline-table;
   border: none;
   padding: 0px;
-  margin-top: 1em;
 }
 
 /*DIV.example:before {
@@ -251,7 +260,6 @@ DIV.syntax {
   border: solid gray 1px;
   /*border-left: solid #A0A0A0 8px;*/
   padding: 8px 8px;
-  margin-top: 1em;
   font-family: monospace;
 }
 
@@ -280,4 +288,26 @@ TABLE.index TD {
   font-weight: bold;
   font-size: larger;
   vertical-align: baseline;
+}
+
+TABLE.no-border {
+  margin: 0;
+  border: none;
+}
+
+TABLE.no-border > TBODY > TR > TD {
+  border: none;
+}
+
+TABLE.no-border > TBODY > TR > TH {
+  border: none;
+}
+
+DIV.index {
+  display: inline-table;
+  border: solid 1px #C0C0C0;
+  font-size: 85%;
+  padding: 8px;
+  padding-right: 32px;
+  margin-top: 1em;
 }
