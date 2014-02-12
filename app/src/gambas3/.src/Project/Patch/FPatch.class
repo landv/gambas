@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
 
 Private $hPatch As New Patch
 Private $hObs As Observer
@@ -15,21 +15,20 @@ Public Sub Form_Open()
   gvwHunks.Columns[1].Expand = True
   gvwHunks.Columns[2].Expand = False
   gvwHunks.Columns[3].Expand = False
-  
+
   $hObs = New Observer(gvwHunks.Proxy) As "Observer"
 
   edtPatch.ReadConfig
   edtPatch.Flags[Editor.ShowLineNumbers] = True
-  
+
 End
 
 Private Sub Check(iRow As Integer, bActive As Boolean)
-  
+
   $hPatch[iRow].Active = bActive
   gvwHunks[iRow, 0].Picture = If(bActive, Picture["img/16/checked.png"], Picture["img/16/unchecked.png"])
-  
-End
 
+End
 
 Public Sub Observer_MouseDown()
 
@@ -37,7 +36,7 @@ Public Sub Observer_MouseDown()
   Dim iRow As Integer
 
   With gvwHunks
-    
+
     If .ColumnAt(Mouse.X) = 0 Then
       iRow = .RowAt(Mouse.Y)
       If iRow >= 0 Then
@@ -49,9 +48,9 @@ Public Sub Observer_MouseDown()
       Stop Event
     Endif
   End With
-    
+
 End
-  
+
 Public Sub gvwHunks_Select()
 
   With gvwHunks
@@ -59,7 +58,7 @@ Public Sub gvwHunks_Select()
       edtPatch.Text = ""
       Return
     Endif
-    
+
     If $hPatch[.Row].Active Then
       'gvwHunks[.Row, 0].Picture = Picture["img/16/checked.png"]
       edtPatch.Highlight = Highlight.Diff
@@ -73,11 +72,11 @@ Public Sub gvwHunks_Select()
 End
 
 Public Sub gvwHunks_Activate()
-  
+
   Dim iRow As Integer = gvwHunks.Row
-  
+
   If iRow >= 0 Then Check(iRow, Not $hPatch[iRow].Active)
-  
+
 End
 
 
@@ -98,7 +97,7 @@ Private Sub RefreshHunks()
   'iAltColor = Color.Merge(Color.TextBackground, Color.LightBackground)
 
   gvwHunks.Rows.Height = Max(gvwHunks.Font.Height, 20)
-  
+
   For iInd = gvwHunks.Rows.Count To $hPatch.Count - 1
     With $hPatch[iInd]
       Inc gvwHunks.Rows.Count
@@ -114,7 +113,7 @@ Private Sub RefreshHunks()
       'sLineInfo = aScan[0] & "\t--> " & aScan[1]
       gvwHunks[iInd, 2].Text = aScan[0]
       gvwHunks[iInd, 3].Text = "--> " & aScan[1]
-      
+
       ' If Even(iInd) Then
       '   For iJ = 0 To gvwHunks.Columns.Count - 1
       '     gvwHunks[iInd, iJ].Background = iAltColor
@@ -122,10 +121,10 @@ Private Sub RefreshHunks()
       ' Endif
     End With
   Next
-  
+
   gvwHunks.Columns[2].Width = -1
   gvwHunks.Columns[3].Width = -1
-  
+
   btnApply.Enabled = True
   btnRevert.Enabled = True
 
@@ -134,6 +133,7 @@ End
 Public Sub btnApply_Click()
 
   $hPatch.Apply()
+  Project.ReadProject()
   Project.Refresh(True)
 
 End
@@ -141,6 +141,7 @@ End
 Public Sub btnRevert_Click()
 
   $hPatch.Revert()
+  Project.ReadProject()
   Project.Refresh(True)
 
 End
@@ -161,17 +162,18 @@ Public Sub txtPath_Click()
 
   Dialog.Title = ("Select patch")
   Dialog.Filter = ["*.patch;*.diff", ("Patch/Diff files")]
-  
+  Dialog.Path = Project.Config["/FPatch/LastPatch", User.Home]
+
   If Dialog.OpenFile() Then Return
 
   If Not Project.IsTextFile(Dialog.Path) Then
     Message.Warning(("That file does not look like a patch file!"))
     Return
   Endif
-  
-  
+
+  Project.Config["/FPatch/LastPatch"] = Dialog.Path
   txtPath.Text = Dialog.Path
-  
+
   Inc Application.Busy
   $hPatch.Parse(File.Load(Dialog.Path))
   RefreshHunks()

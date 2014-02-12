@@ -1,6 +1,6 @@
 ' Gambas class file
 
-' (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
 
 '' Represent a patch hunk
 Public Struct Hunk
@@ -21,6 +21,8 @@ Static Private $sIgnoreFile As String
 Static Public Sub _init()
 
   $sIgnoreFile = "/tmp/gambas-patch-ignore" ' Prevent UID/PID leakage
+  File.Save($sIgnoreFile, "")
+  Chmod $sIgnoreFile To "rw-------"
   File.Save($sIgnoreFile, ".settings\n.action\n.info\n.list\n.startup\n.pot\n")
 
 End
