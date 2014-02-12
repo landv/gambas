@@ -37,7 +37,7 @@ End
 Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
   Dim X1, Y1, X2, Y2 As Float
- 
+ Dim iBorder As Integer
 
   'If Me.tag = "*" Then Stop
 
@@ -63,8 +63,9 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
   Else
     'If $hBorder.Shadow.Style > ReportShadowStyle.None Then PaintShadow(X1, Y1, hControl.RealWidth, hControl.RealHeight, $hBorder.RoundCorner._Active)
     If $hBorder.RoundCorner._Active Then
-
-        RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
+        iBorder = ReportUnits._ReportUnitsToPixels($hBorder._Top)
+        
+        RoundRect(X1 + iBorder, Y1 + iBorder, hControl.RealWidth - iBorder * 2, hControl.RealHeight - iBorder * 2,
         [ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopLeft1),
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight1),
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight1),
@@ -75,7 +76,7 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight2)])
 
     Else
-        If $hBoxShadow._RelX <> 0 Then
+        If $hBoxShadow._XOffset <> 0 Then
           
         Endif
         Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)

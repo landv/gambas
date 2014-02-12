@@ -2,8 +2,8 @@
 
 Private $aBoxShadow As New _ReportBoxShadow[]
 
-Property RelX As String
-Property RelY As String
+Property XOffset As String
+Property YOffset As String
 'Property Blur As String
 Property Spread As String
 Property Inset As Boolean
@@ -12,8 +12,8 @@ Property Read Count As Integer
 Property Read Max As Integer
 
 
-Property Read _RelX As Integer
-Property Read _RelY As Integer
+Property Read _XOffset As Integer
+Property Read _YOffset As Integer
 'Property Read _Blur As Integer
 Property Read _Spread As Integer
 
@@ -35,9 +35,9 @@ Static Public Function _get(sValue As String) As ReportBoxShadow
       
       Select Case i
         Case 0
-          hBoxShadow.RelX = s
+          hBoxShadow.XOffset = s
         Case 1
-          hBoxShadow.RelY = s
+          hBoxShadow.YOffset = s
         Case 2
           hBoxShadow.Blur = s
         Case 3
@@ -65,12 +65,12 @@ End
 '   
 ' End
 
-Public Sub Add(Optional RelX As String, RelY As String, iColor As Integer, Spread As String, Blur As String, Inset As Boolean)
+Public Sub Add(Optional XOffset As String, YOffset As String, iColor As Integer, Spread As String, Blur As String, Inset As Boolean)
   
   Dim hBoxShadow As New _ReportBoxShadow
   
-  If RelX Then hBoxShadow.RelX = RelX
-  If RelY Then hBoxShadow.RelY = RelY
+  If XOffset Then hBoxShadow.XOffset = XOffset
+  If YOffset Then hBoxShadow.YOffset = YOffset
   If iColor Then hBoxShadow.Color = iColor
   If SPread Then hBoxShadow.Spread = Spread
   If Blur Then hBoxShadow.Blur = Blur
@@ -87,27 +87,27 @@ End
 
 
 
-Private Function RelX_Read() As String
+Private Function XOffset_Read() As String
 
-  Return $aBoxShadow[0].RelX
-
-End
-
-Private Sub RelX_Write(Value As String)
-
-  $aBoxShadow[0].RelX = Value
+  Return $aBoxShadow[0].XOffset
 
 End
 
-Private Function RelY_Read() As String
+Private Sub XOffset_Write(Value As String)
 
-  Return $aBoxShadow[0].RelY
+  $aBoxShadow[0].XOffset = Value
 
 End
 
-Private Sub RelY_Write(Value As String)
+Private Function YOffset_Read() As String
 
-  $aBoxShadow[0].RelY = Value
+  Return $aBoxShadow[0].YOffset
+
+End
+
+Private Sub YOffset_Write(Value As String)
+
+  $aBoxShadow[0].YOffset = Value
 
 End
 
@@ -177,8 +177,8 @@ Public Sub _SetUnifiedValues()
   Dim SizeParse As TSizeParse
   For i = 0 To $aBoxShadow.Max
     With $aBoxShadow[i]
-      ._Relx = TSizeParse[.RelX].GetValue()
-      ._RelY = TSizeParse[.RelY].GetValue()
+      ._XOffset = TSizeParse[.XOffset].GetValue()
+      ._YOffset = TSizeParse[.YOffset].GetValue()
       ._Spread = TSizeParse[.Spread].GetValue()
       '._Blur = TSizeParse[.Blur].GetValue()
     End With
@@ -188,15 +188,15 @@ Public Sub _SetUnifiedValues()
   
 End
 
-Private Function _RelX_Read() As Integer
+Private Function _XOffset_Read() As Integer
 
-  Return $aBoxShadow[0]._Relx
+  Return $aBoxShadow[0]._XOffset
 
 End
 
-Private Function _RelY_Read() As Integer
+Private Function _YOffset_Read() As Integer
 
-  Return $aBoxShadow[0]._RelY
+  Return $aBoxShadow[0]._YOffset
 
 End
 
