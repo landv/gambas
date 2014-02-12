@@ -235,21 +235,26 @@ level  = compression level
 
 	You will never receive a erroneus 'level' value
 *********************************************************************************/
+
 static void c_File(char *source,char *target,int level)
 {
 	FILE *src;
 	gzFile dst;
-	unsigned int len;
+	size_t len;
 	char buf[GB_Z_BUFFER];
 	char bufmode[4]={'w','b',0,0};
 
-	if (level != Z_DEFAULT_COMPRESSION ) bufmode[2]=(char)(level+48);
+	if (level != Z_DEFAULT_COMPRESSION )
+		bufmode[2] = (char)(level + 48);
 
-	if ( (src=fopen(source,"r"))==NULL) {
-		GB.Error ("Unable to open file for reading"); return;
+	if ((src = fopen(source,"r")) == NULL)
+	{
+		GB.Error ("Unable to open file for reading");
+		return;
 	}
 
-	if ( (dst=gzopen(target,bufmode))==NULL) {
+	if ((dst = gzopen(target,bufmode)) == NULL)
+	{
 		fclose(src);
 		GB.Error ("Unable to open file for writing");
 		return;
@@ -257,10 +262,11 @@ static void c_File(char *source,char *target,int level)
 
 	while (!feof(src))
 	{
-		len=fread((void*)buf,sizeof(char),GB_Z_BUFFER,src);
-		if (len<GB_Z_BUFFER)
+		len = fread((void*)buf,sizeof(char),GB_Z_BUFFER,src);
+
+		if (len < GB_Z_BUFFER)
 		{
-			if ( ferror(src) )
+			if (ferror(src))
 			{
 				fclose(src);
 				gzclose(dst);
@@ -268,20 +274,22 @@ static void c_File(char *source,char *target,int level)
 				return;
 			}
 		}
-		if (!gzwrite(dst,buf,len))
+
+		if (len > 0)
 		{
-			fclose(src);
-			gzclose(dst);
-			GB.Error("Error while writing data");
-			return;
+			if (gzwrite(dst, buf, len) == 0)
+			{
+				fclose(src);
+				gzclose(dst);
+				GB.Error("Error while writing data");
+				return;
+			}
 		}
-		gzflush(dst,Z_SYNC_FLUSH);
 	}
 
 	fclose(src);
-	gzflush(dst,Z_SYNC_FLUSH);
+	gzflush(dst, Z_SYNC_FLUSH);
 	gzclose(dst);
-
 }
 
 /*********************************************************************************
