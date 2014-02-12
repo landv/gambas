@@ -1,0 +1,16 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:6cm;Bottom:6cm;Left:6cm;Right:6cm"]
+  Index = 0
+  Text = ("")
+  { ReportLabel1 ReportLabel
+    #MoveScaled(2,2,58,9)
+    Height = "7cm"
+    AutoResize = True
+    Border = ReportBorder["Top:2px #000000;Bottom:2px #000000;Left:2mm LinearGradient(0.74,0.7,0,0,[#000000,#FFFFFF],[0,1]);Right:2px #000000"]
+    Text = ("coucou")
+  }
+  Index = 0
+}

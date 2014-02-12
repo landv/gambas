@@ -65,7 +65,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
   
   'if the size choosed by the user is less than the font height, set the object to the font height
   
-  If Me.Autoresize Then
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     If Not IsNull(Me.Font) Then Paint.Font = Me.Font
     If Not $sText Then
       Raise Data(DataIndex)

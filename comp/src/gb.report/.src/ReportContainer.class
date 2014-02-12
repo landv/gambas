@@ -289,7 +289,7 @@ Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
   
   'Puis si besoins voir le besoin des enfants
-  If Me.Autoresize Then
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
     For Each hChild In Me.Children
       hChildHints = hchild._GetSizeHints(AvailableW - fWidth, AvailableH, AvailableW, AvailableH, DataIndex)
@@ -339,7 +339,7 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   'On ajoute la taille des objets fixes précédents
   fHeight = $fFixedSize
   
-  If Me.Autoresize Then
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     'On définit la taille au besoins des enfants
     For i = Me._CurItem To Me.Children.Max
       hChild = Me.Children[i]

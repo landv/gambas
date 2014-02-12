@@ -4,11 +4,14 @@
   #MoveScaled(0,0,64,64)
   Index = 0
   Text = ("")
-  { ReportLabel1 ReportLabel
-    #MoveScaled(2,2,58,9)
-    AutoResize = True
-    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-    Text = ("coucou")
+  { ReportPanel1 ReportPanel
+    #MoveScaled(4,5,59,31)
+    Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+    { ReportLabel1 ReportLabel
+      #MoveScaled(2,4,53,20)
+      Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+      Text = ("ReportLabel1")
+    }
   }
   Index = 0
 }

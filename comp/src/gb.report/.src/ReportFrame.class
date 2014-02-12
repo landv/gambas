@@ -16,7 +16,9 @@ Private $hBorder As New ReportBorder
 Private $hBackGround As ReportBrush
 
 Property Border As ReportBorder
+Property BoxShadow As ReportBoxShadow
 
+Private $hBoxShadow As New ReportBoxShadow
 Property BackGround As ReportBrush
 'Property Read _BorderWidth As Float
 
@@ -59,9 +61,10 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
     Paint.Stroke
 
   Else
-
+    'If $hBorder.Shadow.Style > ReportShadowStyle.None Then PaintShadow(X1, Y1, hControl.RealWidth, hControl.RealHeight, $hBorder.RoundCorner._Active)
     If $hBorder.RoundCorner._Active Then
-      RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
+
+        RoundRect(X1, Y1, hControl.RealWidth, hControl.RealHeight,
         [ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopLeft1),
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight1),
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight1),
@@ -70,8 +73,13 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._TopRight2),
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight2),
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight2)])
+
     Else
-      Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+        If $hBoxShadow._RelX <> 0 Then
+          
+        Endif
+        Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+
     Endif
 
     If Me.BackGround = Null Then
@@ -87,6 +95,15 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
   Endif
 
 End
+Private Sub PaintBoxShadow(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  
+  
+End
+
+
+
+
 
 Public Sub _PaintFrame((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
 
@@ -112,6 +129,7 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
   Y2 = (y + hControl.RealTop + hControl.RealHeight)
 'If Me.Tag = "**" Then Stop
   If $hBorder.RoundCorner._Active Then
+    Paint.AntiAlias = True
     fLeftWidth = ReportUnits._ReportUnitsToPixels($hBorder._Left) / 2
     paint.LineWidth = fLeftWidth * 2
     paint.Brush = $hBorder.Left.Brush._PaintBrush(X1, Y1, X2, Y2)
@@ -128,6 +146,7 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
     paint.Stroke
 
   Else
+    'Paint.AntiAlias = False
     fLeftWidth = ReportUnits._ReportUnitsToPixels($hBorder._Left)
     fRighWidth = ReportUnits._ReportUnitsToPixels($hBorder._Right)
     fTopWidth = ReportUnits._ReportUnitsToPixels($hBorder._Top)
@@ -159,6 +178,7 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
       paint.Rectangle(X1, Y1, fLeftWidth, Y2 - Y1)
       paint.Fill
     Endif
+    'Paint.AntiAlias = True
   Endif
   'Dec iLevel
   'Print String(iLevel, " ") & "restoré"
@@ -181,22 +201,9 @@ End
 
 Public Sub _SetUnifiedValues()
 
-  Dim hSizeParse As TSizeParse
-
-
-
-  Super._SetUnifiedValues()
-
-  hSizeParse = New TSizeParse($hBorder.Left.Width)
-  $hBorder._Left = hSizeParse.GetValue()
-  hSizeParse = New TSizeParse($hBorder.Right.Width)
-  $hBorder._Right = hSizeParse.GetValue()
-  hSizeParse = New TSizeParse($hBorder.Top.Width)
-  $hBorder._Top = hSizeParse.GetValue()
-  hSizeParse = New TSizeParse($hBorder.Bottom.Width)
-  $hBorder._Bottom = hSizeParse.GetValue()
-  $hBorder.RoundCorner._SetUnifiedValues()
-
+Super._SetUnifiedValues()
+$hBorder._SetUnifiedValues
+$hBoxShadow._SetUnifiedValues
 End
 
 Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
@@ -278,5 +285,18 @@ Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Rad
   Paint.relcurveto(0.0, - c2, radius_x[0] - c1, - radius_y[0], radius_x[0], - radius_y[0])
 
   'Paint.closepath()
+
+End
+
+
+Private Function BoxShadow_Read() As ReportBoxShadow
+
+  Return $hBoxShadow
+
+End
+
+Private Sub BoxShadow_Write(Value As ReportBoxShadow)
+
+  $hBoxShadow = Value
 
 End

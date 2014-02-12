@@ -30,7 +30,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
 
   hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
 
-  If Me.Autoresize Then
+  If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     If $hpic Then
       hpic = $hpic
     Else
