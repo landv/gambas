@@ -715,6 +715,11 @@ case "$DE" in
     open_gnome "${mailto}"
     ;;
 
+# BB 01Nov13: Fix to stop default web browser being run
+    lxde)
+    open_gnome "${mailto}"
+    ;;
+    
     xfce)
     open_xfce "${mailto}"
     ;;
