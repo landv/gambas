@@ -740,6 +740,7 @@ Static Private Sub MakeInheritance(hModule As Object, cSymbol As Collection, sPa
   'Debug hModule.Name;; "->";; sParent;; sComponent
   
   hModule.ParentClass = sParent
+  hModule.ParentComponent = sComponent
   If Not hModule.AutoCreatable Then hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
   cClassSymbol = CComponent.GetClassSymbols(sComponent &/ sParent)
   If cClassSymbol Then
@@ -871,6 +872,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim bExport As Boolean
   
   'Debug "ScanClass "; hModule.Name
+  
+  If hModule.Name = "Form" Then Stop
   
   hEditor = hModule.Editor
   hModule.AutoCreatable = False
@@ -1368,6 +1371,7 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
       ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
     Endif
     $hDumbClass.Parent = hPClass.ParentClass
+    $hDumbClass.ParentComponent = hPClass.ParentComponent
     $hDumbClass.Creatable = Not hPClass.NotCreatable
     $hDumbClass.AutoCreatable = hPClass.AutoCreatable
   Endif
