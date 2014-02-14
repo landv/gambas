@@ -344,21 +344,29 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 		switch (type)
 		{
 			case GB_T_FLOAT:
-				conv->_float.value = ABS(a);
+				if (IM(a))
+					return TRUE;
+				conv->_float.value = RE(a);
 				return FALSE;
 				
 			case GB_T_SINGLE:
-				conv->_single.value = ABS(a);
+				if (IM(a))
+					return TRUE;
+				conv->_single.value = RE(a);
 				return FALSE;
 				
 			case GB_T_INTEGER:
 			case GB_T_SHORT:
 			case GB_T_BYTE:
-				conv->_integer.value = ABS(a);
+				if (IM(a))
+					return TRUE;
+				conv->_integer.value = RE(a);
 				return FALSE;
 				
 			case GB_T_LONG:
-				conv->_long.value = ABS(a);
+				if (IM(a))
+					return TRUE;
+				conv->_long.value = RE(a);
 				return FALSE;
 				
 			case GB_T_STRING:
@@ -367,7 +375,7 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 				conv->_string.value.start = 0;
 				conv->_string.value.len = GB.StringLength(conv->_string.value.addr);
 				return FALSE;
-				
+
 			default:
 				return TRUE;
 		}
@@ -384,6 +392,10 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 				conv->_object.value = COMPLEX_create(conv->_single.value, 0);
 				return FALSE;
 
+			case GB_T_LONG:
+				conv->_object.value = COMPLEX_create((double)conv->_long.value, 0);
+				return FALSE;
+				
 			case GB_T_INTEGER:
 			case GB_T_SHORT:
 			case GB_T_BYTE:
