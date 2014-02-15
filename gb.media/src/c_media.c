@@ -1187,7 +1187,8 @@ static int cb_message(CMEDIAPIPELINE *_object)
 		{
 			switch (type)
 			{
-				case GST_MESSAGE_EOS: 
+				case GST_MESSAGE_EOS:
+					THIS->eof = TRUE;
 					GB.Raise(THIS, EVENT_End, 0); 
 					break;
 				
@@ -1268,10 +1269,10 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	return FALSE;
 }
 
-BEGIN_METHOD_VOID(MediaPipeline_new)
+BEGIN_METHOD(MediaPipeline_new, GB_INTEGER polling)
 	
 	if (!_from_element)
-		THIS->watch = GB.Every(250, (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
+		THIS->watch = GB.Every(VARGOPT(polling, 250), (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
 
 END_METHOD
 
@@ -1289,6 +1290,13 @@ BEGIN_METHOD_VOID(MediaPipeline_Play)
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Stop)
+
+	if (!THIS->eof)
+	{
+		gst_element_send_event(ELEMENT, gst_event_new_eos ());
+		while (!THIS->eof)
+			GB.Loop(50);
+	}
 
 	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
 
@@ -1470,7 +1478,7 @@ GB_DESC MediaPipelineDesc[] =
 	GB_DECLARE("MediaPipeline", sizeof(CMEDIAPIPELINE)),
 	GB_INHERITS("MediaContainer"),
 	
-	GB_METHOD("_new", NULL, MediaPipeline_new, NULL),
+	GB_METHOD("_new", NULL, MediaPipeline_new, "[(Polling)i]"),
 	GB_METHOD("_free", NULL, MediaPipeline_free, NULL),
 	
 	/*GB_CONSTANT("Null", "i", GST_STATE_NULL),
