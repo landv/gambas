@@ -60,7 +60,7 @@ typedef
 		unsigned state : 3;
 		unsigned error : 1;
 		unsigned borrow : 1;
-		unsigned eof : 1;
+		unsigned eos : 1;
 	}
 	CMEDIACONTROL;
 

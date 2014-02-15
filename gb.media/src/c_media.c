@@ -1165,7 +1165,6 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	{
 		type = GST_MESSAGE_TYPE(msg);
 		control = MEDIA_get_control_from_element(GST_MESSAGE_SRC(msg), FALSE);
-		//fprintf(stderr, "cb_message: control = %p\n", control);
 		
 		if (type == GST_MESSAGE_APPLICATION && control)
 		{
@@ -1188,7 +1187,7 @@ static int cb_message(CMEDIAPIPELINE *_object)
 			switch (type)
 			{
 				case GST_MESSAGE_EOS:
-					THIS->eof = TRUE;
+					THIS->eos = TRUE;
 					GB.Raise(THIS, EVENT_End, 0); 
 					break;
 				
@@ -1269,6 +1268,23 @@ static int cb_message(CMEDIAPIPELINE *_object)
 	return FALSE;
 }
 
+static void stop_pipeline(CMEDIACONTROL *_object)
+{
+	if (!THIS->eos)
+	{
+		int i;
+		gst_element_send_event(ELEMENT, gst_event_new_eos());
+		for (i = 0; i < 20; i++)
+		{
+			GB.Wait(50);
+			if (THIS->eos)
+				break;
+		}
+	}
+
+	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
+}
+
 BEGIN_METHOD(MediaPipeline_new, GB_INTEGER polling)
 	
 	if (!_from_element)
@@ -1278,27 +1294,21 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_free)
 
-	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
+	stop_pipeline(THIS);
 	GB.Unref(POINTER(&THIS->watch));
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Play)
 
+	THIS->eos = FALSE;
 	MEDIA_set_state(THIS, GST_STATE_PLAYING, TRUE);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Stop)
 
-	if (!THIS->eof)
-	{
-		gst_element_send_event(ELEMENT, gst_event_new_eos ());
-		while (!THIS->eof)
-			GB.Loop(50);
-	}
-
-	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
+	stop_pipeline(THIS);
 
 END_METHOD
 
@@ -1365,7 +1375,7 @@ BEGIN_METHOD(Media_Link, GB_OBJECT controls)
 	{
 		c1 = VALUE(&controls[i]);
 		c2 = VALUE(&controls[i + 1]);
-		if (GB.CheckObject(c1))
+		if ((i == 0 && GB.CheckObject(c1)) || GB.CheckObject(c2))
 			return;
 		gst_element_link(c1->elt, c2->elt);
 	}
