@@ -91,6 +91,7 @@ public:
 	void storeSettings();
 	
 	bool _preview;
+	bool _configure_ok;
 	GtkPrinter *_printer;
 	GtkPrintSettings *_settings;
 	

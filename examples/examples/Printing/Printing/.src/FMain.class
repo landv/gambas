@@ -40,6 +40,7 @@ Public Sub scrText_Draw()
   Paint.Translate(- scrText.ScrollX, - scrText.ScrollY)
   Paint.Background = Color.TextForeground
   Paint.DrawRichText(sText, 8, 8, scrText.ClientW - 16, scrText.ClientH - 16, Align.TopNormal)
+  'Debug Paint.ResolutionY;; ":";; Paint.TextSize("toto").Height;; Paint.TextExtents("toto").Height;; "/";; Paint.RichTextSize(sText, scrText.ClientW - 16).Height;; Paint.RichTextExtents(sText, scrText.ClientW - 16).Height
 
 End
 
@@ -114,9 +115,8 @@ Public Sub prtText_Draw()
   Paint.Stroke
   Paint.Rectangle(PRINT_MARGIN, PRINT_MARGIN, Paint.Width - PRINT_MARGIN * 2, Paint.Height - PRINT_MARGIN * 2)
   Paint.Clip
-  'Draw.RichText(sText, 8, 8, scrText.ClientW - 16, scrText.ClientH - 16, Align.TopNormal)
   Paint.DrawRichText(GetText(), PRINT_MARGIN, PRINT_MARGIN - (prtText.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * prtText.Count, Align.TopNormal)
-  'Draw.RichText(GetText(), PRINT_MARGIN, PRINT_MARGIN - (prtText.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * prtText.Count, Align.TopNormal)
+  'Debug Paint.ResolutionY;; ":";; Paint.TextSize("toto").Height;; Paint.TextExtents("toto").Height;; "/";; Paint.RichTextSize(GetText(), Paint.Width - PRINT_MARGIN * 2).Height;; Paint.RichTextExtents(GetText(), Paint.Width - PRINT_MARGIN * 2).Height
   Paint.ResetClip
   
 End

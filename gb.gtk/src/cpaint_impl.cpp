@@ -1028,19 +1028,30 @@ static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *
 
 static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
 {
+	float scale;
 	CFONT *font;
 	_Font(d, FALSE, (GB_FONT *)&font);
 	
-	*w = font->font->width(text, len);
-	*h = font->font->height(text, len);
+	scale = (float)d->resolutionY / gDesktop::resolution();
+
+	*w = font->font->width(text, len) * scale;
+	*h = font->font->height(text, len) * scale;
 }
 
 static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)
 {
+	float scale;
 	CFONT *font;
 	_Font(d, FALSE, (GB_FONT *)&font);
 
+	scale = (float)d->resolutionY / gDesktop::resolution();
+
+	if (sw > 0)
+		sw /= scale;
+
 	font->font->richTextSize(text, len, sw, w, h);
+	*w *= scale;
+	*h *= scale;
 }
 
 

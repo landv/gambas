@@ -48,6 +48,7 @@ static void cb_begin_cancel(GtkPrintOperation *operation, GtkPrintContext *conte
 	#endif
 	printer->storeSettings();
 	printer->cancel();
+	printer->_configure_ok = true;
 }
 
 static void cb_begin(GtkPrintOperation *operation, GtkPrintContext *context, gPrinter *printer)
@@ -212,6 +213,7 @@ bool gPrinter::run(bool configure)
 	if (configure)
 	{
 		_preview = false;
+		_configure_ok = false;
 		g_signal_connect(operation, "begin_print", G_CALLBACK(cb_begin_cancel), this);
 		g_signal_connect(operation, "preview", G_CALLBACK(cb_preview), this);
 		g_signal_connect(operation, "end_print", G_CALLBACK(cb_end), this);
@@ -260,12 +262,18 @@ bool gPrinter::run(bool configure)
 	res = gtk_print_operation_run(operation, action, active ? GTK_WINDOW(active->border) : NULL, &error);
 	_current = NULL;
 	//gtk_print_settings_to_file(gtk_print_operation_get_print_settings(operation), "/home/benoit/settings-after.txt", NULL);
-	
+
+	#if DEBUG_ME
+	fprintf(stderr, "_preview = %d\n", _preview);
+	#endif
+
 	if (_preview)
 	{
 		_preview = false;
 		res = GTK_PRINT_OPERATION_RESULT_CANCEL;
 	}
+	else if (_configure_ok)
+		res = GTK_PRINT_OPERATION_RESULT_APPLY;
 
 	if (res == GTK_PRINT_OPERATION_RESULT_ERROR)
 	{
