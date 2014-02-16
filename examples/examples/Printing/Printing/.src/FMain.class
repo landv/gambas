@@ -6,8 +6,8 @@ Public Sub Form_Open()
 
   Me.Center
 
-  txtText.Text = File.Load("molly-malone.txt")
   txtFontText.Text = Font["17"].ToString()
+  txtText.Text = File.Load("molly-malone.txt")
 
 End
 
@@ -35,10 +35,11 @@ Public Sub scrText_Draw()
 
   Dim sText As String = GetText()
   
-  Draw.FillRect(0, 0, Draw.W, Draw.H, Color.TextBackground)
-  Try Draw.Font = Font[txtFontText.Text]
-  Draw.Translate(- scrText.ScrollX, - scrText.ScrollY)
-  Draw.RichText(sText, 8, 8, scrText.ClientW - 16, scrText.ClientH - 16, Align.TopNormal)
+  Paint.FillRect(0, 0, Draw.W, Draw.H, Color.TextBackground)
+  Try Paint.Font = Font[txtFontText.Text]
+  Paint.Translate(- scrText.ScrollX, - scrText.ScrollY)
+  Paint.Background = Color.TextForeground
+  Paint.DrawRichText(sText, 8, 8, scrText.ClientW - 16, scrText.ClientH - 16, Align.TopNormal)
 
 End
 
@@ -113,7 +114,9 @@ Public Sub prtText_Draw()
   Paint.Stroke
   Paint.Rectangle(PRINT_MARGIN, PRINT_MARGIN, Paint.Width - PRINT_MARGIN * 2, Paint.Height - PRINT_MARGIN * 2)
   Paint.Clip
+  'Draw.RichText(sText, 8, 8, scrText.ClientW - 16, scrText.ClientH - 16, Align.TopNormal)
   Paint.DrawRichText(GetText(), PRINT_MARGIN, PRINT_MARGIN - (prtText.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * prtText.Count, Align.TopNormal)
+  'Draw.RichText(GetText(), PRINT_MARGIN, PRINT_MARGIN - (prtText.Page - 1) * (Paint.Height - PRINT_MARGIN * 2), Paint.Width - PRINT_MARGIN * 2, Paint.Height * prtText.Count, Align.TopNormal)
   Paint.ResetClip
   
 End

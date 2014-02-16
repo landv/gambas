@@ -888,7 +888,7 @@ static void add_space(GString *str)
 		g_string_append_c(str, ' ');
 }
 
-char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
+char *gt_html_to_pango_string(const char *html, int len_html, bool newline_are_break)
 {
 	static const char *title[] =
 	{
@@ -912,11 +912,14 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 	char *token, *markup, **attr;
 	const char *pp;
 	gsize len;
+	bool start_token = false;
 	bool end_token = false;
 	const char **pt;
 	int size = 3; // medium
 	char size_stack[size_stack_len];
 	int size_stack_ptr = 0;
+	bool newline = true;
+	bool inside_par = false;
 	
 	p_end = &html[len_html < 0 ? strlen(html) : len_html];
 	p_markup = NULL;
@@ -932,11 +935,13 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			if (p[1] == '/')
 			{
 				p_markup = &p[2];
+				start_token = false;
 				end_token = true;
 			}
 			else
 			{
 				p_markup = &p[1];
+				start_token = true;
 				end_token = false;
 			}
 			continue;
@@ -947,9 +952,18 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			if (!p_markup)
 			{
 				g_string_append(pango, "&gt;");
+				newline = false;
 				continue;
 			}
+
 			len = p - p_markup;
+
+			if (p[-1] == '/')
+			{
+				len--;
+				end_token = true;
+			}
+
 			if (len <= 0)
 			{
 				if (end_token) g_string_append(pango, "/");
@@ -966,10 +980,14 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			{
 				if (!strcasecmp(*pt, token))
 				{
-					if (end_token)
-						g_string_append_printf(pango, "</b></span>\n\n");
-					else
+					if (start_token && !end_token)
 						g_string_append_printf(pango, "<span %s><b>", pt[1]);
+					else if (end_token && !start_token)
+					{
+						g_string_append_printf(pango, "</b></span>\n");
+						g_string_append(pango, "<span size=\"smaller\">\n</span>");
+						newline = true;
+					}
 					goto __FOUND_TOKEN;
 				}
 			}
@@ -978,35 +996,36 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			{
 				if (!strcasecmp(*pt, token))
 				{
-					g_string_append_printf(pango, "<%s%s>", end_token ? "/" : "", *pt);
+					if (start_token != end_token)
+						g_string_append_printf(pango, "<%s%s>", end_token ? "/" : "", *pt);
 					goto __FOUND_TOKEN;
 				}
 			}
 			
 			if (!strcasecmp(token, "br") || !strcasecmp(token, "hr"))
 			{
-				if (!end_token)
+				if (start_token)
+				{
 					g_string_append(pango, "\n");
+					newline = true;
+				}
 				goto __FOUND_TOKEN;
 			}
 			
 			if (!strcasecmp(token, "p"))
 			{
-				if (!end_token)
+				if ((end_token || inside_par) && p[1])
 				{
-					if (pango->len > 0)
-					{
-						if (pango->str[pango->len - 1] != '\n')
-							g_string_append(pango, "\n");
-						g_string_append(pango, "\n");
-					}
+					g_string_append(pango, "\n\n");
+					newline = true;
 				}
+				inside_par = start_token;
 				goto __FOUND_TOKEN;
 			}
 			
 			if (!strcasecmp(token, "font"))
 			{
-				if (end_token)
+				if (end_token && !start_token)
 				{
 					if (size_stack_ptr > 0)
 					{
@@ -1016,7 +1035,7 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 					}
 					g_string_append(pango, "</span>");
 				}
-				else
+				else if (start_token && !end_token)
 				{
 					if (size_stack_ptr < size_stack_len)
 						size_stack[size_stack_ptr] = size;
@@ -1074,9 +1093,9 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			
 			if (!strcasecmp(token, "a") || !strncasecmp(token, "a href", 6))
 			{
-				if (!end_token)
+				if (start_token && !end_token)
 					g_string_append(pango, "<span foreground=\"blue\"><u>");
-				else
+				else if (end_token && !start_token)
 					g_string_append(pango, "</u></span>");
 				goto __FOUND_TOKEN;
 			}
@@ -1089,7 +1108,8 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 				p_markup++;
 			}
 			g_string_append(pango, "&gt;");
-			
+			newline = false;
+
 		__FOUND_TOKEN:
 		
 			g_free(token);
@@ -1097,9 +1117,10 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			continue;	
 		}
 		
-		if (c == '\n' && !newline)
+		if (c == '\n' && !newline_are_break)
 		{
-			add_space(pango);
+			if (!newline)
+				add_space(pango);
 			continue;
 		}
 		
@@ -1144,17 +1165,22 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline)
 			
 			g_string_append(pango, "&amp;");
 			p = entity_start - 1;
+			newline = false;
 			continue;
 		}
 	
 		if (c == ' ')
 		{
-			add_space(pango);
+			if (!newline)
+				add_space(pango);
 			continue;
 		}
 			
 		if (!p_markup)
+		{
 			g_string_append(pango, html_entity(*p));
+			newline = false;
+		}
 	}
 	
 	// Sometimes the first markup is not taken into account.
@@ -1524,7 +1550,6 @@ static void set_layout_from_font(PangoLayout *layout, gFont *font, bool add, int
 	
 	desc = pango_context_get_font_description(font->ct);
 
-	//desc = pango_font_description_copy(pango_layout_get_font_description(layout));
 	if (dpi && dpi != gDesktop::resolution())
 	{
 		int size = pango_font_description_get_size(desc);

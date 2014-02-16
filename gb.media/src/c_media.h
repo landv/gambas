@@ -46,6 +46,7 @@ extern GB_DESC MediaDesc[];
 #define ELEMENT THIS->elt
 #define PIPELINE ((GstPipeline *)THIS->elt)
 #define THIS_TAGLIST ((CMEDIATAGLIST *)_object)
+#define THIS_PIPELINE ((CMEDIAPIPELINE *)_object)
 
 #endif
 
@@ -53,9 +54,7 @@ typedef
 	struct {
 		GB_BASE ob;
 		GstElement *elt;
-		//char *type;
 		void *dest;
-		GB_TIMER *watch;
 		GB_VARIANT_VALUE tag;
 		unsigned state : 3;
 		unsigned error : 1;
@@ -68,7 +67,12 @@ typedef
 	CMEDIACONTROL CMEDIACONTAINER;
 
 typedef
-	CMEDIACONTROL CMEDIAPIPELINE;
+	struct {
+		CMEDIACONTROL control;
+		GB_TIMER *watch;
+		int polling;
+	}
+	CMEDIAPIPELINE;
 
 typedef
 	struct {

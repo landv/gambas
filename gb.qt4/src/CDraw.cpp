@@ -191,6 +191,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	QString t = "<font color=\"" + fg.name() + "\">" + text + "</font>";
 	qreal opacity = 1.0;
 	bool hasAlpha = fg.alpha() < 255;
+	int margin;
 
 	switch(get_horizontal_alignment((Qt::Alignment)align))
 	{
@@ -204,9 +205,11 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	
 	QTextDocument rt;
 	rt.setDocumentMargin(0);
+	rt.setDefaultFont(p->font());
+	margin = p->font().pointSize() * p->device()->physicalDpiY() / 96;
+	rt.setDefaultStyleSheet(QString("p { margin-bottom: %1px; } h1,h2,h3,h4,h5,h6 { margin-bottom: %1px; }").arg(margin));
 	rt.setHtml(t);
-	rt.setDefaultFont(p->font()); 
-	
+
 	if (w > 0)
 		rt.setTextWidth(w);
 		

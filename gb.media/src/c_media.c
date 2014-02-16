@@ -1258,32 +1258,48 @@ static int cb_message(CMEDIAPIPELINE *_object)
 
 static void stop_pipeline(CMEDIACONTROL *_object)
 {
-	if (!THIS->eos)
+	// "It is not allowed to post GST_MESSAGE_EOS when not in the PLAYING state." says the documentation
+	if ((THIS->state == GST_STATE_PLAYING) && !THIS->eos)
 	{
-		int i;
 		gst_element_send_event(ELEMENT, gst_event_new_eos());
-		for (i = 0; i < 20; i++)
+		while (!THIS->eos)
 		{
-			GB.Wait(50);
-			if (THIS->eos)
-				break;
+			cb_message(THIS_PIPELINE);
+			usleep(10000);
 		}
 	}
 
 	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
+	cb_message(THIS_PIPELINE);
 }
 
 BEGIN_METHOD(MediaPipeline_new, GB_INTEGER polling)
 	
 	if (!_from_element)
-		THIS->watch = GB.Every(VARGOPT(polling, 250), (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
+	{
+		int polling = VARGOPT(polling, 250);
+
+		if (polling <= 0)
+			polling = 250;
+		else if (polling < 10)
+			polling = 10;
+		else if (polling >= 1000)
+			polling = 1000;
+
+		THIS_PIPELINE->polling = polling;
+		THIS_PIPELINE->watch = GB.Every(polling, (GB_TIMER_CALLBACK)cb_message, (intptr_t)THIS);
+	}
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_free)
 
 	stop_pipeline(THIS);
-	GB.Unref(POINTER(&THIS->watch));
+	if (THIS_PIPELINE->watch)
+	{
+		//GB.Wait(THIS_PIPELINE->polling);
+		GB.Unref(POINTER(&THIS_PIPELINE->watch));
+	}
 
 END_METHOD
 
@@ -1291,6 +1307,7 @@ BEGIN_METHOD_VOID(MediaPipeline_Play)
 
 	THIS->eos = FALSE;
 	MEDIA_set_state(THIS, GST_STATE_PLAYING, TRUE);
+	cb_message(THIS_PIPELINE);
 
 END_METHOD
 
@@ -1303,12 +1320,14 @@ END_METHOD
 BEGIN_METHOD_VOID(MediaPipeline_Close)
 
 	MEDIA_set_state(THIS, GST_STATE_NULL, TRUE);
+	cb_message(THIS_PIPELINE);
 
 END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Pause)
 
 	MEDIA_set_state(THIS, GST_STATE_PAUSED, TRUE);
+	cb_message(THIS_PIPELINE);
 
 END_METHOD
 

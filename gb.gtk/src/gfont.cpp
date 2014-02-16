@@ -351,6 +351,7 @@ int gFont::ascent()
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
 	
+	//fprintf(stderr, "ascent: %d\n", pango_font_metrics_get_ascent(metric));
 	return gt_pango_to_pixel(pango_font_metrics_get_ascent(metric));
 }
 
@@ -359,7 +360,7 @@ float gFont::ascentF()
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
 	
-	return gt_pango_to_pixel((float)pango_font_metrics_get_ascent(metric));
+	return (float)pango_font_metrics_get_ascent(metric) / PANGO_SCALE;
 }
 
 int gFont::descent()
@@ -367,6 +368,7 @@ int gFont::descent()
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	PangoFontMetrics *metric=pango_context_get_metrics(ct,desc,NULL);
 	
+	//fprintf(stderr, "descent: %d\n", pango_font_metrics_get_descent(metric));
 	return gt_pango_to_pixel(pango_font_metrics_get_descent(metric));
 }
 
@@ -448,7 +450,7 @@ void gFont::setSize(double sz)
 {
 	PangoFontDescription *desc=pango_context_get_font_description(ct);
 	
-	pango_font_description_set_size (desc,(int)(sz*PANGO_SCALE));
+	pango_font_description_set_size (desc,(int)(sz*PANGO_SCALE+0.5));
 	
 	_size_set = true;
 	_height = 0;

@@ -6,7 +6,7 @@ Public Sub Timer1_Timer()
 
   $bColon = Not $bColon
   
-  LCDLabel2.Text = Format(Now, "hh" & If($bColon, ":", "") & "nn" & If($bColon, ":", "") & "ss")
+  LCDLabel2.Text = ";" & Format(Now, "hh" & If($bColon, ":", "") & "nn" & If($bColon, ":", "") & "ss") & ";"
 
 End
 
