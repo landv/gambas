@@ -298,6 +298,13 @@ static void return_value(const GValue *value)
 				else
 					GB.ReturnNewZeroString(enum_value->value_nick);
 			}
+			else if (type == GST_TYPE_CAPS)
+			{
+				char *caps;
+				caps = gst_caps_to_string((GstCaps *)g_value_get_boxed(value));
+				GB.ReturnNewZeroString(caps);
+				g_free(caps);
+			}
 			else
 			{
 				fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", G_VALUE_TYPE_NAME(value));
@@ -400,10 +407,28 @@ static bool set_value(GValue *value, GB_VALUE *v, GParamSpec *desc)
 				}
 				
 				g_value_set_enum(value, real_value);
-				break;
 			}
+			else if (type == GST_TYPE_CAPS)
+			{
+				GstCaps *caps;
 
-			fprintf(stderr, "gb.media: warning: unsupported datatype: %s\n", g_type_name(type));
+				if (GB.Conv(v, GB_T_STRING))
+					return TRUE;
+
+				caps = gst_caps_from_string(GB.ToZeroString((GB_STRING *)v));
+				if (!caps)
+				{
+					GB.Error("Incorrect filter");
+					return TRUE;
+				}
+
+				g_value_take_boxed(value, caps);
+			}
+			else
+			{
+				GB.Error("Unsupported datatype: &1", g_type_name(type));
+				return TRUE;
+			}
 	}
 	
 	return FALSE;
@@ -424,7 +449,6 @@ void MEDIA_set_property(void *_object, const char *property, GB_VALUE *v)
 	g_object_set_property(G_OBJECT(ELEMENT), property, &value);
 	g_value_unset(&value);
 }
-
 
 #if 0
 //---- MediaSignalArguments -----------------------------------------------
@@ -582,6 +606,7 @@ BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
 	CMEDIACONTAINER *parent;
 	MEDIA_TYPE *mtp;
 	GB_CLASS klass;
+	char *filter = NULL;
 	
 	//fprintf(stderr, "MediaControl_new: %p\n", THIS);
 
@@ -627,11 +652,19 @@ BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
 			}
 		}
 		else
+		{
 			type = GB.ToZeroString(ARG(type));
+			if (strchr(type, '/'))
+			{
+				filter = type;
+				type = "capsfilter";
+			}
+		}
 		
 		THIS->state = GST_STATE_NULL;
 		//THIS->type = GB.NewZeroString(type);
 		
+
 		ELEMENT = gst_element_factory_make(type, NULL);
 		if (!ELEMENT)
 		{
@@ -650,6 +683,9 @@ BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
 		}
 		else if (!GST_IS_PIPELINE(ELEMENT))
 			GB.CheckObject(parent);
+
+		if (filter)
+			MEDIA_set_property(THIS, "caps", (GB_VALUE *)ARG(type));
 	}
 		
 END_METHOD
@@ -971,60 +1007,12 @@ END_PROPERTY
 
 //---- MediaFilter --------------------------------------------------------
 
-static void set_filter(void *_object, const char *filter)
-{
-	GValue value = G_VALUE_INIT;
-	GstCaps *caps;
-	GParamSpec *desc;
-
-	desc = get_property(ELEMENT, "caps");
-	if (!desc)
-		return;
-
-	g_value_init(&value, desc->value_type);
-	
-	caps = gst_caps_from_string(filter);
-	if (!caps)
-	{
-		GB.Error("Incorrect filter");
-		return;
-	}
-	g_value_take_boxed(&value, caps);
-	g_object_set_property(G_OBJECT(ELEMENT), "caps", &value);
-	g_value_unset(&value);
-}
-
-BEGIN_METHOD(MediaFilter_new, GB_STRING filter)
-
-	if (!MISSING(filter))
-		set_filter(THIS, GB.ToZeroString(ARG(filter)));
-
-END_METHOD
-
 BEGIN_PROPERTY(MediaFilter_Filter)
 
 	if (READ_PROPERTY)
-	{
-		GParamSpec *desc;
-		GValue value = G_VALUE_INIT;
-		char *caps;
-	
-		desc = get_property(ELEMENT, "caps");
-		if (!desc)
-			return;
-		
-		g_value_init(&value, desc->value_type);
-		
-		g_object_get_property(G_OBJECT(ELEMENT), "caps", &value);
-		caps = gst_caps_to_string((GstCaps *)g_value_get_boxed(&value));
-		GB.ReturnNewZeroString(caps);
-		g_free(caps);
-		g_value_unset(&value);
-	}
+		MEDIA_return_property(THIS, "caps");
 	else
-	{
-		set_filter(THIS, GB.ToZeroString(PROP(GB_STRING)));
-	}
+		MEDIA_set_property(THIS, "caps", PROP(GB_VALUE));
 
 END_PROPERTY
 
@@ -1450,7 +1438,7 @@ GB_DESC MediaFilterDesc[] =
 	GB_DECLARE("MediaFilter", sizeof(CMEDIACONTROL)),
 	GB_INHERITS("MediaControl"),
 	
-	GB_METHOD("_new", NULL, MediaFilter_new, "[(Filter)s]"),
+	//GB_METHOD("_new", NULL, MediaFilter_new, NULL),
 	
 	GB_PROPERTY("Filter", "s", MediaFilter_Filter),
 
