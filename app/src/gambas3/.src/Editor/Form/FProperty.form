@@ -11,7 +11,7 @@
     }
   }
   { panProperty Panel
-    MoveScaled(4,16,54,4)
+    MoveScaled(4,1,54,4)
     AutoResize = True
     { lblName TextLabel
       MoveScaled(0,0,28,4)
@@ -27,20 +27,20 @@
     }
   }
   { sepProperty Separator
-    MoveScaled(8,21,14,0)
+    MoveScaled(8,6,14,0)
   }
   { Panel1 Panel
-    MoveScaled(2,23,56,22)
+    MoveScaled(2,8,56,36)
     Expand = True
     Arrangement = Arrange.Fill
     { grdProperty GridView
-      MoveScaled(28,2,25,19)
+      MoveScaled(28,2,25,31)
       Visible = False
       Background = Color.TextBackground
       Border = False
     }
     { panEditor HBox
-      MoveScaled(3,3,24,18)
+      MoveScaled(2,3,25,31)
       Visible = False
       Background = Color.TextBackground
       Ignore = True
@@ -72,6 +72,11 @@
         Border = False
         Menu = "mnuProperty"
         MenuOnly = True
+      }
+      { txtAngle AngleBox
+        MoveScaled(2,19,21,3)
+        Visible = False
+        Expand = True
       }
       { btnProperty ToolButton
         MoveScaled(12,9,3,3)

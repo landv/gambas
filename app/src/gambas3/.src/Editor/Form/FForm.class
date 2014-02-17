@@ -351,103 +351,104 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
 
         sProperty = Trim(Left$(sLine, iPos - 1))
         sValue = Trim(Mid$(sLine, iPos + 1))
+        
+        If Left$(sValue, 2) = "(\"" Then
+          If sValue Ends "\")" Then
+            sValue = Mid$(sValue, 2, -1)
+          Else
+            aScan = Scan(sValue, "(\"*\") & \"*\"")
+            sValue = "\"" & aScan[0] & aScan[1] & "\""
+          Endif
+        Endif
 
-        vValue = Val(sValue)
-        If IsNull(vValue) Then
-
-          If Left$(sValue, 2) = "(\"" Then
-            If sValue Ends "\")" Then
-              sValue = Mid$(sValue, 2, -1)
-            Else
-              aScan = Scan(sValue, "(\"*\") & \"*\"")
-              sValue = "\"" & aScan[0] & aScan[1] & "\""
+        If Left$(sValue, 1) = Chr$(34) Then
+          If sProperty = "Name" Then Continue
+          vValue = UnQuote(Mid$(sValue, 2, -1))
+          If sClass = "ComboBox" Or sClass = "ListBox" Then
+            If sProperty = "List" Then
+              vValue = Split(vValue, "\n")
             Endif
           Endif
-
-          If Left$(sValue, 1) = Chr$(34) Then
-            If sProperty = "Name" Then Continue
-            vValue = UnQuote(Mid$(sValue, 2, -1))
-            If sClass = "ComboBox" Or sClass = "ListBox" Then
-              If sProperty = "List" Then
-                vValue = Split(vValue, "\n")
-              Endif
-            Endif
-          Else If Left$(sValue) = "[" Then
-            aVal = New String[]
-            iPos = 0
+        Else If Left$(sValue) = "[" Then
+          aVal = New String[]
+          iPos = 0
+          Do
+            iPos = InStr(sValue, Chr$(34), iPos + 1)
+            If iPos = 0 Then Break
+            iPos2 = iPos
             Do
-              iPos = InStr(sValue, Chr$(34), iPos + 1)
-              If iPos = 0 Then Break
-              iPos2 = iPos
-              Do
-                iPos3 = InStr(sValue, "\\", iPos2 + 1)
-                iPos2 = InStr(sValue, Chr$(34), iPos2 + 1)
-                If iPos2 = 0 Then
-                  iPos2 = Len(sValue) + 1
-                  Break
-                Endif
-                If iPos3 = 0 Or If iPos3 > iPos2 Then Break
-                iPos2 = iPos3 + 1
-              Loop
-              aVal.Add(UnQuote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
-              iPos = iPos2 + 1
-            Loop
-            vValue = aVal '.Join("\n")
-          Else If UCase(sValue) = "TRUE" Then
-            vValue = True
-          Else If UCase(sValue) = "FALSE" Then
-            vValue = False
-          Else If sValue Begins "CDate(" Then
-            vValue = CDate(Mid$(sValue, 8, -2))
-          Else If UCase(sValue) = "NULL" Then
-            vValue = Null
-          Else If sValue Begins "Shortcut(" Then
-            
-            If InStr(sValue, "\\\"") Then Error "gambas3: "; File.Name(Path); ".form: "; sValue
-            
-            aScan = Scan(Mid$(sValue, 10), "(*),*)*")
-            vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(aScan[1])))
-            If aScan[2] Then vValue &= UnQuote(Trim(Mid$(Trim(aScan[2]), 2)))
-            
-          Else
-
-            For Each sProp In CControl.COMPLEX_STRING_PROPERTIES
-
-              If sValue Begins sProp Then
-                vValue = UnQuote$(Mid$(sValue, Len(sProp) + 2, -2))
-                sProp = ""
+              iPos3 = InStr(sValue, "\\", iPos2 + 1)
+              iPos2 = InStr(sValue, Chr$(34), iPos2 + 1)
+              If iPos2 = 0 Then
+                iPos2 = Len(sValue) + 1
                 Break
               Endif
+              If iPos3 = 0 Or If iPos3 > iPos2 Then Break
+              iPos2 = iPos3 + 1
+            Loop
+            aVal.Add(UnQuote(Mid$(sValue, iPos + 1, iPos2 - iPos - 1)))
+            iPos = iPos2 + 1
+          Loop
+          vValue = aVal '.Join("\n")
+        Else If UCase(sValue) = "TRUE" Then
+          vValue = True
+        Else If UCase(sValue) = "FALSE" Then
+          vValue = False
+        Else If sValue Begins "CDate(" Then
+          vValue = CDate(Mid$(sValue, 8, -2))
+        Else If UCase(sValue) = "NULL" Then
+          vValue = Null
+        Else If sValue Begins "Shortcut(" Then
+          
+          If InStr(sValue, "\\\"") Then Error "gambas3: "; File.Name(Path); ".form: "; sValue
+          
+          aScan = Scan(Mid$(sValue, 10), "(*),*)*")
+          vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(aScan[1])))
+          If aScan[2] Then vValue &= UnQuote(Trim(Mid$(Trim(aScan[2]), 2)))
+          
+        Else
 
-            Next
+          Try vValue = CFloat(sValue)
+          If Not Error Then Goto SET_PROPERTY
+          
+          Try vValue = CInt(sValue)
+          If Not Error Then Goto SET_PROPERTY
 
-            If sProp Then
+          For Each sProp In CControl.COMPLEX_STRING_PROPERTIES
 
-              iPos = InStr(sValue, ".")
-              If iPos Then
-                vValue = Mid$(sValue, iPos + 1)
-              Else
-                Error "Bad property value: "; sValue; " for "; sProp
-                
-                ' This is an object !
-              Endif
+            If sValue Begins sProp Then
+              vValue = UnQuote$(Mid$(sValue, Len(sProp) + 2, -2))
+              sProp = ""
+              Break
+            Endif
 
-              If sClass = "Form" Then
+          Next
 
-                If sProperty = "Border" Then
+          If sProp Then
 
-                  Select Case vValue
-                    Case "None"
-                      vValue = False
-                    Case "Resizable"
-                      vValue = True
-                      hCtrl.SetProperty("Resizable", True)
-                    Case "Fixed"
-                      vValue = True
-                      hCtrl.SetProperty("Resizable", False)
-                  End Select
+            iPos = InStr(sValue, ".")
+            If iPos Then
+              vValue = Mid$(sValue, iPos + 1)
+            Else
+              Error "Bad property value: "; sValue; " for "; sProp
+              
+              ' This is an object !
+            Endif
 
-                Endif
+            If sClass = "Form" Then
+
+              If sProperty = "Border" Then
+
+                Select Case vValue
+                  Case "None"
+                    vValue = False
+                  Case "Resizable"
+                    vValue = True
+                    hCtrl.SetProperty("Resizable", True)
+                  Case "Fixed"
+                    vValue = True
+                    hCtrl.SetProperty("Resizable", False)
+                End Select
 
               Endif
 
@@ -456,6 +457,8 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           Endif
 
         Endif
+
+      SET_PROPERTY:
 
         If hCtrl.SetProperty(sProperty, vValue) Then
           If Not $bNoWarning Then Print "gambas3: warning: cannot set property: "; hCtrl.Kind; "."; sProperty; " = "; sValue

@@ -488,6 +488,11 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
         vRealVal = Null
       Endif
       
+    Case "Angle"
+      If vRealVal Ends "°" Then vRealVal = String.Left$(vRealVal, -1)
+      VRealVal = Val(vRealVal)
+      If hProp.Argument Not Begins "Deg" Then VRealVal = Rad(vRealVal)
+      
   End Select
   
   Return vRealVal
@@ -706,7 +711,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
         Return "False"
       Endif
 
-    Case "i", "l", "f", "s", "d", "v"
+    Case "i", "l", "f", "s", "d", "v", "Angle"
 
       Return CStr(vVal)
 
@@ -735,7 +740,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
       Else
         Return hProp.ConstantList["#" & CStr(vVal)]
       Endif
-
+      
     Case Else ' Object
 
       Return vVal 'hProp.Type & " ?"
@@ -1618,7 +1623,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
       Case "Constant"
         sLine = sLine & hProp.ConstantClass & "." & vVal
-
+        
       Case "d"
 
         sLine = sLine & "CDate(" & Quote$(CStr(vVal)) & ")"

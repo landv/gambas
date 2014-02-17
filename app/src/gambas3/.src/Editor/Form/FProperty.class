@@ -343,6 +343,7 @@ End
 
 Public Function SaveProperty() As Boolean
 
+  Dim sVal As String
   Dim vVal As Variant
   Dim hCtrl As CControl
   Dim sMsg As String
@@ -352,22 +353,22 @@ Public Function SaveProperty() As Boolean
   If $hForm.ReadOnly Then Return
   If IsNull($hEditor) Then Return False
 
-  vVal = $hEditor.Text
-  If vVal = $sOldVal Then Return False
-  sOldVal = vVal
+  sVal = $hEditor.Text
+  If sVal = $sOldVal Then Return False
+  sOldVal = sVal
 
   Select $sType
 
     Case "Name"
 
-      If IsNull(vVal) Then Goto _CANCEL
+      If Not sVal Then Goto _CANCEL
 
-      If CControl.CheckName(vVal) Then
+      If CControl.CheckName(sVal) Then
         sMsg = ("Forbidden characters in control name.")
         Goto _CANCEL
       Endif
 
-      If $hObject.Rename(vVal) Then
+      If $hObject.Rename(sVal) Then
         sMsg = ("This name is already in use.")
         Goto _CANCEL
       Endif
@@ -377,36 +378,48 @@ Public Function SaveProperty() As Boolean
 
     Case "Group"
 
-      If CControl.CheckName(vVal) Then
+      If CControl.CheckName(sVal) Then
         sMsg = ("Forbidden characters in control group.")
         Goto _CANCEL
       Endif
+      
+      vVal = sVal
 
     Case "i", "l", "b", "Range", "Position", "Dimension"
 
-      vVal = Val(vVal)
-      If IsNull(vVal) Then Goto _BAD
+      Try vVal = CInt(Val(sVal))
+      If Error Then Goto _BAD
 
     Case "f"
 
-      Try vVal = CFloat(vVal)
-      If Error Then Goto _BAD
+      If Not IsNumber(sVal) Then Goto _BAD
+      vVal = CFloat(Val(sVal))
 
     Case "d"
 
-      Try vVal = CDate(vVal)
-      If Error Then Goto _BAD
+      If Not IsDate(sVal) Then Goto _BAD
+      vVal = CDate(Val(sVal))
 
     Case "Color"
 
-      If Not IsNull(Val(vVal)) Then vVal = Val(vVal)
+      If Not IsNull(Val(sVal)) Then 
+        vVal = Val(sVal)
+      Else
+        vVal = sVal
+      Endif
 
     Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Field"
+      
+      vVal = sVal
 
     Case "String[]", "Fields", "Field[]"
 
-      Try vVal = Split(vVal, "\n")
+      Try vVal = Split(sVal, "\n")
       If Error Then Goto _BAD
+
+    Case "Angle"
+      
+      vVal = $hEditor.Value
 
     Case Else ' Object
 
@@ -453,17 +466,18 @@ End
 
 Public Sub HideProperty() As Boolean
 
+  Dim hCtrl As Control
+  
   If $bIgnoreHide Then Return
 
   If $sLast Then
 
     If SaveProperty() Then Return True
 
-    cmbProperty.Hide
-    txtProperty.Hide
-    btnProperty.Hide
-    spnProperty.Hide
-    crdProperty.Hide
+    For Each hCtrl In panEditor.Children
+      hCtrl.Hide
+    Next
+
     panEditor.Hide
 
     ' If btnLock.Value Then
@@ -501,8 +515,8 @@ Private Sub CancelProperty()
   $sOldVal = grdProperty[$iLast, 1].Text
   'DEBUG "$sOldVal =";; $sOldVal
   If $hEditor.Text <> $sOldVal Then
-    If $hEditor Is SpinBox Then
-      Try $hEditor.Value = Val($sOldVal)
+    If $hEditor Is SpinBox Or If $hEditor Is AngleBox Then
+      Try $hEditor.Value = $sOldVal
     Else
       $hEditor.Text = $sOldVal
     Endif
@@ -725,7 +739,7 @@ Private Sub ShowProperty(Optional sFocus As String)
           'spnProperty.Suffix = " " & aArg[3]
         Endif
       Endif
-
+      
     Case "Position"
 
       hEditor = spnProperty
@@ -754,6 +768,9 @@ Private Sub ShowProperty(Optional sFocus As String)
 
     Case "ReportCoord"
       hEditor = crdProperty
+
+    Case "Angle"
+      hEditor = txtAngle
 
     Case Else 'object
 
@@ -1153,6 +1170,13 @@ Public Sub spnProperty_Change()
   SaveProperty
 
 End
+
+Public Sub txtAngle_Change()
+  
+  SaveProperty
+  
+End
+
 
 Public Sub RefreshReadOnly()
 
