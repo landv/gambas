@@ -488,10 +488,10 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
         vRealVal = Null
       Endif
       
-    Case "Angle"
-      If vRealVal Ends "°" Then vRealVal = String.Left$(vRealVal, -1)
-      VRealVal = Val(vRealVal)
-      If hProp.Argument Not Begins "Deg" Then VRealVal = Rad(vRealVal)
+    ' Case "Angle"
+    '   If vRealVal Ends "°" Then vRealVal = String.Left$(vRealVal, -1)
+    '   VRealVal = Val(vRealVal)
+    '   If hProp.Argument Not Begins "Deg" Then VRealVal = Rad(vRealVal)
       
   End Select
   

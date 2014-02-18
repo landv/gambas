@@ -411,7 +411,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
           Try vValue = CFloat(sValue)
           If Not Error Then Goto SET_PROPERTY
           
-          Try vValue = CInt(sValue)
+          Try vValue = CInt(Val(sValue))
           If Not Error Then Goto SET_PROPERTY
 
           For Each sProp In CControl.COMPLEX_STRING_PROPERTIES
