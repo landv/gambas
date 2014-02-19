@@ -373,3 +373,9 @@ Public Sub ButtonBox1_Change()
   $hPrinter.OutputFile = Last.Text
   
 End
+
+Public Sub TextBox2_Change()
+
+  $hPrinter.NumCopies = Last.Value
+
+End

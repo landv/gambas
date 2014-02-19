@@ -4,7 +4,8 @@ Fast
 Export
 Public AllowedUnits As String[] = ["m", "cm", "mm", "in", "pt", "px"]
 Property Read DesktopScale As Float
-
+Public _ReportWidth As Float
+'Public Ratio As Float
 Public Function GetFactorUnitToInch(Unit As String, Optional Resolution As Integer) As Float
 
   
@@ -58,11 +59,15 @@ End
 Public Function _ReportUnitsToPixels(Value As Float) As Float
 
   Dim f As Float
-
-  f = 0.3937 * Paint.ResolutionX
+  
+'Return Value * Ratio
+' If Value > 0 Then Stop
+  f = Value / _ReportWidth * Paint.Width
+  'f = 0.3937 * Paint.ResolutionX
   'f = ReportUnits.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
-
-  Return Value * f
+  
+  'Return Value * f
+  Return f
 
 End
 
@@ -70,9 +75,9 @@ Public Function _PixelsToReportUnits(Value As Float) As Float
 
   Dim f As Float
 
-  f = 0.3937 * Paint.ResolutionX 'ReportResolution
-
-  Return (Value) / f
+  'f = 0.3937 * Paint.ResolutionX 'ReportResolution
+  Return (value / Paint.ResolutionX * 2.54) '/ _ReportWidth * Paint.Width
+  'Return (Value) / f
 
 End
 

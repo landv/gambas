@@ -3,7 +3,7 @@
 Export
 Inherits ReportFrame
 
-Public Const _Properties As String = "*,Text,Format,Alignment{Align.*},Rotate,UseField" '"*,Text,Key,Format,Alignment{Align.*},UseField"
+Public Const _Properties As String = "*,Text,Format,Alignment{Align.*},Rotate{Angle:Degrees},UseField" '"*,Text,Key,Format,Alignment{Align.*},UseField"
 Public Const _Similar As String = "ReportTextLabel"
 Public Const _DefaultEvent As String = "Data"
 Private $sText As String
@@ -82,7 +82,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
       
     Else
       Paint.Save
-      Paint.Rotate($fAngle)
+      Paint.Rotate(Rad($fAngle))
       Paint.Text(sText, 0, 0)
       hExt = Paint.PathExtents
       fTextWidth = Me.Padding._Left + Me.Border._Left + ReportUnits._PixelsToReportUnits(hExt.Width) + Me.Padding._Right + Me.Border._Right
@@ -146,7 +146,7 @@ Public Sub _Paint((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As T
     Paint.Text(sTempText, iX, iY, iW, iH, $iAlignment)
   Else
     Paint.Translate(iX + iW / 2, iY + iH / 2)
-    Paint.Rotate($fAngle)
+    Paint.Rotate(Rad($fAngle))
     Paint.Translate(- (iX + iW / 2), - (iY + iH / 2))
     Paint.Text(sTempText, iX, iY, iW, iH, Align.Center)
     

@@ -76,6 +76,9 @@ Property Text As String
 Property Paper As Integer
 Property Orientation As Integer
 
+Public _Scale As Float
+
+
 Static Public Sub Main()
 
   Dim hObject As Object
@@ -147,6 +150,7 @@ Public Sub _Layout(Optional iPage As Integer = -1)
     CSection.Padding = CBaseSection.Padding
     CSection.Spacing = CBaseSection.Spacing
     CSection._SetUnifiedValues()
+    ReportUnits._ReportWidth = CBaseSection._Width
     TSection._SetGeometry(0, 0, CSection._Width, CSection._Height)
     Inc $iCurPage
     Do
@@ -187,16 +191,17 @@ End
 Public Sub Paint(Page As Integer)
 
   Dim TSection As TControl
-
+  Dim fScale As Float
   'Debug "**** "; Page;; Paint.ResolutionX;; Paint.ResolutionY
 
   If Me.Parent = Null Then
     'If $sOldWidth <> ((Paint.Width / $fScale) & " px") Then $bLayoutIsDirty = True
     'If $sOldHeight <> ((Paint.Height / $fScale) & " px") Then $bLayoutIsDirty = True
   Endif
+  ReportUnits._ReportWidth = $aSections[0].Ctrl._Width
   'ReportUnits.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
   If $bLayoutIsDirty And $iPageCount = -1 Then Layout()
-
+  Paint.Save
   'Set execution Flag to true
   _bInExec = True
 
@@ -212,8 +217,16 @@ Public Sub Paint(Page As Integer)
   ' If Paint.Device Is Printer Then
   '   Paint.Scale(Paint.ResolutionX / 1200, Paint.ResolutionY / 1200)
   ' Endif
-  Paint.Scale($fScale, $fScale)
-
+  ' If Paint.Device Is Printer Then
+  ' If ReportUnits._ReportUnitsToPixels($aSections[0].Ctrl._Width) > Paint.Width Then
+  '   
+  '   fScale = Paint.Width / ReportUnits._ReportUnitsToPixels($aSections[0].Ctrl._Width) 
+  '   
+  ' Paint.Scale($fScale, $fScale)
+  ' Endif
+  ' Endif
+  'Print Paint.Width
+  'ReportUnits.Ratio = Paint.Width / $aSections[0].Ctrl._Width
   ' With Paint.ClipExtents
   '   Debug "ClipExtents: "; .X;; .Y;; .Width;; .Height
   ' End With
@@ -227,7 +240,7 @@ Public Sub Paint(Page As Integer)
   'Debug "DrawCount = "; ReportUnits.DrawCount
   'End of execution
   _bInExec = False
-
+  Paint.Restore
 End
 
 Private Function PageCount_Read() As Integer

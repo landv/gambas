@@ -76,12 +76,17 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
         ReportUnits._ReportUnitsToPixels($hBorder.RoundCorner._BottomRight2)])
 
     Else
-        If $hBoxShadow._XOffset <> 0 Then
-          
-        Endif
+    
         Paint.Rectangle(X1, Y1, X2 - X1, Y2 - Y1)
+         'Now PaintingShadow
 
     Endif
+  ' If $hBoxShadow._XOffset <> 0 Then
+  ' Paint.FillRule = Paint.FillRuleEvenOdd
+  ' 'Paint.Rectangle(X1, Y1, hControl.RealWidth, hControl.RealHeight)
+  ' Paint.Rectangle(X1 + ReportUnits._ReportUnitsToPixels($hBoxShadow._XOffset), Y1 + ReportUnits._ReportUnitsToPixels($hBoxShadow._YOffset), hControl.RealWidth, hControl.RealHeight)
+  ' Paint.Stroke
+  ' Endif
 
     If Me.BackGround = Null Then
       paint.Clip
@@ -180,6 +185,11 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
       paint.Fill
     Endif
     'Paint.AntiAlias = True
+    '
+  
+
+
+
   Endif
   'Dec iLevel
   'Print String(iLevel, " ") & "restoré"

@@ -81,6 +81,7 @@ Public Sub _new(Optional hReport As Report)
   
   $Timer.Delay = 5
   $View = New ScrollArea(Me) As "View"
+  $View.ScrollBar = Scroll.Both
   'If Not $hReport Then $view.Enabled = False
   '$View.Background = Color.Red  
   
@@ -89,6 +90,7 @@ End
 Public Sub Timer_Timer()
   
   Dim hImg As New Image($fPageWidth, $fPageHeight, Color.White)
+  Dim hSvg As New SvgImage($fRealPageWidth, $fRealPageHeight)
   Dim i As Integer 
   Dim aDiff As Integer[]
   
@@ -101,20 +103,24 @@ Public Sub Timer_Timer()
     i = $aImageToLoad.Pop()
     'If $aImageLoaded.Exist(i) Then Return
     'Print "load : "; i
-    Paint.Begin(hImg)
-    Paint.Scale($fCurScale, $fCurScale)
+    Paint.Begin(hsvg)
     
     If _RangePages.Count > 0 Then
-    
-    $hReport.Paint(_RangePages[i - 1])
+      
+      $hReport.Paint(_RangePages[i - 1])
     Else
       
       $hReport.Paint(i)
+      
     Endif
     
-    
-    
     Paint.End
+    
+    Paint.Begin(hImg)
+    Paint.Scale($fCurScale, $fCurScale)
+    hsvg.Paint()
+    Paint.End
+    
     If $bGrayScale Then hImg = hImg.Desaturate()
     If Not $aImageLoaded.Exist(i) Then $aImageLoaded.Add(i)
     $cBuffer[i] = hImg 
@@ -251,12 +257,16 @@ End
 
 Public Function MakePageImage(Index As Integer) As Image
   
-  Dim hImg As New Image($fPageWidth, $fPageHeight, Color.White)
+  Dim hImg As New Image($fRealPageWidth, $fRealPageHeight, Color.White)
+  Dim hSvg As New SvgImage($fRealPageWidth, $fRealPageHeight)
+
+  Paint.Begin(hsvg)
+  $hReport.Paint(Index)
+  Paint.End
   
   Paint.Begin(hImg)
-  
   Paint.Scale($fCurScale, $fCurScale)
-  $hReport.Paint(Index)
+  hsvg.Paint  
   Paint.End
   
   Return hImg
@@ -366,7 +376,7 @@ Private Sub Layout()
     $aImageToLoad = $aImageToLoad.Reverse()
     $Timer.Start
   Endif
-  $View.ResizeContents($View.ClientWidth, $fSpace + Ceil($iNbrePage / $iNbrePageByLine) * ($fPageHeight + $fSpace))
+  $View.ResizeContents(Max($View.ClientWidth, $fPageWidth), $fSpace + Ceil($iNbrePage / $iNbrePageByLine) * ($fPageHeight + $fSpace))
   
 End
 
