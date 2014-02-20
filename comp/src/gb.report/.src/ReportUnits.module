@@ -5,6 +5,7 @@ Export
 Public AllowedUnits As String[] = ["m", "cm", "mm", "in", "pt", "px"]
 Property Read DesktopScale As Float
 Public _ReportWidth As Float
+Public _Scale As Float = 1.0
 'Public Ratio As Float
 Public Function GetFactorUnitToInch(Unit As String, Optional Resolution As Integer) As Float
 
@@ -62,7 +63,7 @@ Public Function _ReportUnitsToPixels(Value As Float) As Float
   
 'Return Value * Ratio
 ' If Value > 0 Then Stop
-  f = Value / _ReportWidth * Paint.Width
+  f = Value / _ReportWidth * (Paint.Width / _Scale)
   'f = 0.3937 * Paint.ResolutionX
   'f = ReportUnits.GetFactorUnitToInch("cm") * Resolution 'ReportResolution
   

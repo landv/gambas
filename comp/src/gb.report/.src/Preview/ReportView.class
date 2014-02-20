@@ -90,7 +90,7 @@ End
 Public Sub Timer_Timer()
   
   Dim hImg As New Image($fPageWidth, $fPageHeight, Color.White)
-  Dim hSvg As New SvgImage($fRealPageWidth, $fRealPageHeight)
+  'Dim hSvg As New SvgImage($fRealPageWidth, $fRealPageHeight)
   Dim i As Integer 
   Dim aDiff As Integer[]
   
@@ -103,7 +103,9 @@ Public Sub Timer_Timer()
     i = $aImageToLoad.Pop()
     'If $aImageLoaded.Exist(i) Then Return
     'Print "load : "; i
-    Paint.Begin(hsvg)
+    Paint.Begin(hImg)
+    ReportUnits._Scale = $fCurScale
+     Paint.Scale($fCurScale, $fCurScale)
     
     If _RangePages.Count > 0 Then
       
@@ -113,13 +115,13 @@ Public Sub Timer_Timer()
       $hReport.Paint(i)
       
     Endif
+    ReportUnits._Scale = 1.0
     
     Paint.End
     
-    Paint.Begin(hImg)
-    Paint.Scale($fCurScale, $fCurScale)
-    hsvg.Paint()
-    Paint.End
+    ' Paint.Begin(hImg)
+    ' hsvg.Paint()
+    ' Paint.End
     
     If $bGrayScale Then hImg = hImg.Desaturate()
     If Not $aImageLoaded.Exist(i) Then $aImageLoaded.Add(i)
