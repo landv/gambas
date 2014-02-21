@@ -8,7 +8,7 @@ Public Sub Link(hLink As MarkdownLink)
   Dim sLink As String = hLink.Link
   Dim iPos As Integer
   
-  If Main.Lang <> Main.DEFAULT_LANG Then hLink.Query = "l=" & Main.Lang
+  hLink.Query = Mid$(Main.LinkSuffix, 2)
   
   If sLink Begins "/" Then
     sPath = sLink
@@ -31,7 +31,7 @@ Public Sub Link(hLink As MarkdownLink)
   If Not hLink.Text Or If hLink.Text = hLink.Link Then
     
     If Main.IsImage(sPath) Then
-      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?v" & If(Main.Lang <> Main.DEFAULT_LANG, "&l=" & Main.Lang, "") & "\" />"
+      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?v" & "\" />"
       Return
     Endif
   

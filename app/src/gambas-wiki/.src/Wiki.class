@@ -19,7 +19,7 @@ Private Sub _PrintLink()
   aPath = Split(Main.Path, "/", "", True)
   For Each sElt In aPath
     sPath &= "/" & sElt
-    Print "<a href=\""; Application.Root &/ sPath; "\">"; "/"; sElt; "</a>";
+    Print "<a href=\""; Application.Root &/ sPath; Main.LinkSuffix; "\">"; "/"; sElt; "</a>";
   Next
   
 End
@@ -59,7 +59,8 @@ Private Sub _PrintPage()
       If iPos = 0 Then iPos = Len(sData)
       sData = Mid$(sData, iPos + 1)
     Endif
-    sData = "# " & Main.GetSymbolTitle() & sData
+    'sData = "# <a href=\"" & Application.Root &/ File.Dir(Main.Path) & "\" class=\"symbol\">" & Html(Main.GetSymbolTitle()) & "</a>\n" & sData
+    sData = "# " & Main.GetSymbolTitle() & "\n" & sData
   Endif
   Print WikiMarkdown.ToHTML(sData);
   
@@ -71,12 +72,12 @@ End
 
 Private Sub _PrintParent()
 
-  Dim sPath As String
+  'Dim sPath As String
 
-  sPath = Request.Path
-  If sPath Then sPath = File.Dir(sPath)
-  Print Application.Root &/ sPath;
-  If Main.Lang <> Main.DEFAULT_LANG Then Print "?l="; Main.Lang;
+  'sPath = Request.Path
+  'If sPath Then sPath = File.Dir(sPath)
+  'Print Application.Root &/ sPath; Main.LinkSuffix;
+  Print Application.Root; Main.LinkSuffix;
 
 End
 

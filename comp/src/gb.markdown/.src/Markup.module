@@ -292,7 +292,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         If aCommand Then aResult.Insert(aCommand)
         aResult.Add("<table class=\"" & sLine & "\">")
       Else
-        aResult.Add("<table>")
+        aResult.Add("<table class=\"table\">")
       Endif
       aResult.Add("<tr><th>")
       bIgnorePar = False

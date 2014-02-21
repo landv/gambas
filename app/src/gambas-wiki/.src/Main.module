@@ -16,17 +16,31 @@ Public Path As String
 Public Exist As Boolean
 Public Edit As Boolean
 Public Image As Boolean
+Public LinkSuffix As String
 
 Public Component As String
 Public Class As String
 Public Symbol As String
+
+Private Sub AddLinkSuffix(sReq As String)
+
+  If LinkSuffix Then
+    LinkSuffix &= "&"
+  Else
+    LinkSuffix = "?"
+  Endif
+  LinkSuffix &= sReq
+
+End
 
 Public Sub SetLanguage(sLang As String)
 
   Dim iLang As Integer
   
   Lang = sLang
-  If Not Lang Then Lang = DEFAULT_LANG
+  
+  If Not Lang Then Lang = DEFAULT_LANG 
+  
   iLang = Languages.Find(Lang)
   If iLang >= 0 Then
     System.Language = SystemLanguages[iLang]
@@ -34,6 +48,8 @@ Public Sub SetLanguage(sLang As String)
     Lang = DEFAULT_LANG
   Endif
 
+  If Lang <> DEFAULT_LANG Then AddLinkSuffix("l=" & sLang)
+  
 End
 
 Public Sub GetPagePath(Optional bSuffix As Boolean) As String
@@ -161,6 +177,7 @@ Public Sub Main()
   Endif
   
   SetLanguage(Request["l"])
+  If Request.Exist("v") Then AddLinkSuffix("v")
     
   If Request.Exist("logout") Then
     

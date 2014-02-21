@@ -58,7 +58,7 @@ PRE HR {
   border-top: solid #C0C0C0 1px;
 }
 
-TABLE {
+TABLE.table {
   border-bottom: solid #A0A0A0 1px;
   border-right: solid #A0A0A0 1px;
   padding: 0px;
@@ -67,14 +67,14 @@ TABLE {
   empty-cells: show;
 }
 
-TABLE TD {
+TABLE.table > TBODY > TR > TD {
   border-top: solid #A0A0A0 1px;
   border-left:  solid #A0A0A0 1px;
   padding: 3px 6px;
   vertical-align: top;
 }
 
-TABLE TH {
+TABLE.table > TBODY > TR > TH {
   border-top: solid #A0A0A0 1px;
   border-left:  solid #A0A0A0 1px;
   padding: 3px 6px;
@@ -120,6 +120,14 @@ TABLE.example TH {
   color: white;
 }
 
+.title-v {
+  font-size: 75%;
+}
+
+.title-v A {
+  color: gray;
+}
+
 .login {
   position: absolute;
   display: inline-table;
@@ -136,6 +144,10 @@ TABLE.example TH {
 .page {
   padding: 4px 8px;
   padding-top: 24px;
+}
+
+.page-v {
+  padding: 4px 8px;
 }
 
 .unknown {
@@ -264,8 +276,11 @@ DIV.syntax {
   white-space: pre;
 }
 
-DIV.syntax > P {
+DIV.syntax > P:first-child {
   margin-top: -1em;
+}
+
+DIV.syntax > P:last-child {
   margin-bottom: -1em;
 }
 
@@ -316,4 +331,8 @@ DIV.index {
   padding: 8px;
   padding-right: 32px;
   margin-top: 1em;
+}
+
+.symbol {
+  color: black;
 }

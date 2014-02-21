@@ -13,6 +13,17 @@
 
 <form name="form" method="post" enctype="multipart/form-data">
 
+<%If Request.Exist("v") Then%>
+
+<div class="page-v">
+
+<table border="0" cellpadding="0" cellspacing="0" style="margin-bottom:-1em;">
+  <tr valign="center"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png"></a>&nbsp;</td>
+  <td><div class="title-v"><%_PrintLink%></div></td></tr>
+</table>
+
+<%Else%>
+
 <div class="header">
     <div class="up">
       <%If Main.Edit%>
@@ -63,6 +74,9 @@
 <%Endif%>
 
 <div class="page">
+
+<%Endif%>
+
   <%If Main.Edit Then%>
     <%If Main.Image Then%>
       <div style="margin-top:32px;"></div>
