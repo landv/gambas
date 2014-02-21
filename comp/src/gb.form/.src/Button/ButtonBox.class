@@ -91,6 +91,7 @@ End
 Private Sub ReadOnly_Write(Value As Boolean)
 
   $hTextBox.ReadOnly = Value
+  $hButton.Enabled = Not Value
 
 End
 

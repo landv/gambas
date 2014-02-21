@@ -6,13 +6,14 @@
   Text = ("")
   { ReportLabel1 ReportLabel
     #MoveScaled(22,13,34,36)
+    Brush = ReportBrush["#FF0000"]
     Font = Font["Bold,,+20"]
     Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
     AutoResize = True
     Border = ReportBorder["Top:2mm #000000;Bottom:2mm #000000;Left:2mm #000000;Right:2mm #000000"]
     Text = ("Test")
     Alignment = Align.Center
-    Rotate = 57
+    Rotate = -15
   }
   Index = 0
 }

@@ -180,7 +180,7 @@ Public Sub _new(sName As String)
   Dim sGroup As String
   Dim aCtrl As String[]
 
-  sPath = System.Path &/ "lib/" & "gambas" & System.Version &/ sName & ".component"
+  sPath = Main.InfoDir &/ sName & ".component"
   'sPath = Main.ComponentFilePath &/ sName & ".component"
   hFile = Open sPath For Input
 
@@ -527,7 +527,7 @@ Public Sub Load()
 
 
   'sPath = Main.InfoFilePath &/ Name & ".info"
-  sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
+  sPath = Main.InfoDir &/ Key & ".info"
   If Not Exist(sPath) Then
     Print "<pre>Cannot load info file: " & sPath & "\n</pre>"
     Return

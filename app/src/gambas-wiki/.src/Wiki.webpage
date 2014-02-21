@@ -65,9 +65,9 @@
 <div class="page">
   <%If Main.Edit Then%>
     <%If Main.Image Then%>
-      <p />
+      <div style="margin-top:32px;"></div>
       <p><%=("Select the image file to upload...")%></p>
-      <input type="file" name="file" />
+      <p><input type="file" name="file" /></p>
     <%Else%>
       <div class="edit-frame">
       <textarea class="edit" id="page" name="page"><%_PrintPage%></textarea>

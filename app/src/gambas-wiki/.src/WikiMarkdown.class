@@ -31,7 +31,7 @@ Public Sub Link(hLink As MarkdownLink)
   If Not hLink.Text Or If hLink.Text = hLink.Link Then
     
     If Main.IsImage(sPath) Then
-      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?show" & If(Main.Lang <> Main.DEFAULT_LANG, "&l=" & Main.Lang, "") & "\" />"
+      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?v" & If(Main.Lang <> Main.DEFAULT_LANG, "&l=" & Main.Lang, "") & "\" />"
       Return
     Endif
   
@@ -159,3 +159,17 @@ Public Sub Command(sCommand As String) As String[]
   Endif
   
 End
+
+Public Sub Enter(sClass As String) As String[]
+  
+  If sClass = "syntax" Then Me.EnableCode(False)
+  
+End
+
+Public Sub Leave(sClass As String) As String[]
+  
+  If sClass = "syntax" Then Me.EnableCode(True)
+  
+End
+
+

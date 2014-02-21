@@ -8,8 +8,10 @@ Public Languages As String[] = [DEFAULT_LANG, "fr", "de", "es", "it", "nl", "pl"
 Public SystemLanguages As String[] = ["C", "fr_FR.UTF-8", "de_DE.UTF-8", "es_ES.UTF-8", "it_IT.UTF-8", "nl_NL.UTF-8", "pl_PL.UTF-8", "pt_PT.UTF-8", "pt_BR.UTF-8", "mk_MK.UTF-8", "sq_AL.UTF-8", "ca_ES.UTF-8", 
     "hu_HU.UTF-8", "cs_CZ.UTF-8", "tr_TR.UTF-8", "ar_AE.UTF-8", "fa_IR.UTF-8", "id_ID.UTF-8", "vi_VN.UTF-8", "ko_KR.UTF-8", "ja_JP.UTF-8", "ru_RU.UTF-8", "zh_CN.UTF-8", "zh_TW.UTF-8", "eo.UTF-8"]
 
+
+Public Root As String = User.Home &/ "wiki/gambas"
+Public InfoDir As String = User.Home &/ "wiki/info"
 Public Lang As String
-Public Root As String
 Public Path As String
 Public Exist As Boolean
 Public Edit As Boolean
@@ -109,7 +111,7 @@ Public Sub Main()
   Dim sDir As String
   Dim aPath As String[]
   
-  Root = User.Home &/ "wiki"
+  Root = User.Home &/ "wiki/gambas"
 
   If Args[1] = "-restore" Then
     If IsDir(Root) Then
@@ -251,7 +253,7 @@ Public Sub Main()
   Endif
 
   If Image Then
-    If Not Session.Id Or If Request.Exist("show") Then
+    If Not Session.Id Or If Request.Exist("v") Then
       Response.SendFile(GetPagePath(), GetContentTypeFrom(Path))
       Return
     Endif
@@ -447,7 +449,7 @@ Public Sub GetStat() As String[]
   Dim aIgnore As String[]
   Dim sDir As String
 
-  sDir = System.Path &/ "share/gambas" & System.Version &/ "info"
+  sDir = Main.InfoDir
 
   aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.gtk3.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gui.base", "gb.geom"]
 

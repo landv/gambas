@@ -20,3 +20,21 @@ End
 Public Sub Command((sCommand) As String) As String[]
   
 End
+
+Public Sub Enter((sClass) As String) As String[]
+  
+End
+
+Public Sub Leave((sClass) As String) As String[]
+  
+End
+
+Public Sub EnableCode(bEnabled As Boolean)
+  
+  If bEnabled Then
+    Inc Markup.EnableCode
+  Else
+    Dec Markup.EnableCode
+  Endif
+  
+End

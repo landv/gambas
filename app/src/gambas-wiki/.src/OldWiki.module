@@ -173,7 +173,7 @@ End
 
 Private Sub IsWordLimit(sCar As String) As Boolean
 
-  Return InStr("'_*=/.,;?!:() ", sCar) > 0
+  Return InStr("'_*=/.,;?!:()<> ", sCar) > 0
   If IsLetter(sCar) Or If IsDigit(sCar) Then Return False
   Return True
 
@@ -457,6 +457,8 @@ NO_LINK:
       If Not bItalic And If Not bAllowStart Then Goto ADD_CHAR
       bItalic = Not bItalic
       sCar = "*"
+    Else If sCar = "~" Then
+      sCar = "\\~"
     Else If sCar = "[" Then
       If sLevel = "syntax" Or String.Mid$(sLine, I + 1, 1) = " " Then
         sCar = "\\["
@@ -540,7 +542,9 @@ Public Sub Restore()
       
       sPath = rPage!spath
       If Left(File.Name(sPath)) = ":" Then Continue
+      If sPath Ends ".comment" Then Continue
       If sPath Begins "/comp/gb.qt/" Or If sPath = "/comp/gb.qt" Then Continue
+      If rPage!stitle Ends "#2" Then Continue
       
       Main.Path = sPath
       Main.Component = ""

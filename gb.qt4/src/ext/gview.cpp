@@ -2634,19 +2634,6 @@ void GEditor::docTextChanged()
 		docTextChangedLater();
 }
 
-#if 0
-void GEditor::baptizeVisible()
-{
-	doc->baptizeUntil(lastVisibleRow());
-}
-
-void GEditor::baptizeVisible(int x, int y)
-{
-	doc->baptizeUntil(lastVisibleRow(y));
-	//viewport()->update();
-}
-#endif
-
 void GEditor::inputMethodEvent(QInputMethodEvent *e)
 {
 	//qDebug("inputMethodEvent: %s\n", (const char *)e->commitString().toUtf8());
@@ -2659,14 +2646,6 @@ void GEditor::inputMethodEvent(QInputMethodEvent *e)
 
 	insert(e->commitString());
 	
-	/*if (QApplication::keypadNavigationEnabled() && 
-					hasFocus() && !hasEditFocus()
-					&& !e->preeditString().isEmpty()) 
-	{
-		setEditFocus(true);
-		selectAll();        // so text is replaced rather than appended to
-	}*/
-
 	#if 0
     int priorState = d->undoState;
     d->removeSelectedText();

@@ -5,10 +5,13 @@ Public Struct MarkupList
   iIndent As Integer
 End Struct
 
+Public EnableCode As Integer
+
 Private $aMarkup As String[]
 Private $cLink As Collection
 Private $aIndex As String[]
 Private $aTable As String[]
+Private $aTableClass As String[]
 Private $aTablePos As Integer[]
 Private $hMarkdown As Markdown
 Private $hLink As New MarkdownLink
@@ -25,6 +28,7 @@ Public Sub Convert(sMarkup As String, hMarkdown As Markdown) As String
   $hMarkdown = hMarkdown
   $cLink = New Collection
   $aIndex = New String[]
+  EnableCode = 0
   
   Return ConvertMarkup(Split(sMarkup, "\n"))
   
@@ -62,6 +66,8 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   Dim aSaveMarkup As String[]
   Dim aSaveTable As String[]
   Dim aSaveTablePos As Integer[]
+  Dim aSaveTableClass As String[]
+  Dim sClass As String
   
   aResult = New String[]
   
@@ -69,6 +75,8 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   $aMarkup = New String[]
   aSaveTable = $aTable
   $aTable = New String[]
+  aSaveTableClass = $aTableClass
+  $aTableClass = New String[]
   aSaveTablePos = $aTablePos
   $aTablePos = New Integer[]
   
@@ -274,11 +282,14 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       iIndent = GetIndent(sLine)
       GoSub CLOSE_LIST
       GoSub CLOSE_CODE
-        
+      
       $aTable.Push("[[")
       sLine = Trim(Mid$(sLine, 3))
+      $aTableClass.Push(sLine)
       $aTablePos.Push(aResult.Count)
       If sLine Then
+        aCommand = $hMarkdown.Enter(sLine)
+        If aCommand Then aResult.Insert(aCommand)
         aResult.Add("<table class=\"" & sLine & "\">")
       Else
         aResult.Add("<table>")
@@ -287,6 +298,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       bIgnorePar = False
       bInsidePar = False
       Continue
+      
     Endif
     
     If $aTable.Count Then
@@ -299,6 +311,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         GoSub CLOSE_CODE
         
         sTable = $aTable.Pop()
+        sClass = $aTableClass.Pop()
         iPos = $aTablePos.Pop()
         
         If iPos >= 0 Then
@@ -309,6 +322,9 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           aResult.Add("</td></tr>")
           aResult.Add("</table>")
         Endif
+        
+        aCommand = $hMarkdown.Leave(sClass)
+        If aCommand Then aResult.Insert(aCommand)
         
         Continue
       
@@ -385,26 +401,28 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     
     ' Code
     
-    If sLine Begins "    " Or If sLine Begins gb.Tab Then
+    If EnableCode >= 0 Then
+      If sLine Begins "    " Or If sLine Begins gb.Tab Then
       
-      If Left(sLine) = gb.Tab Then
-        sLine = Mid$(sLine, 2)
-      Else
-        sLine = Mid$(sLine, 5)
+        If Left(sLine) = gb.Tab Then
+          sLine = Mid$(sLine, 2)
+        Else
+          sLine = Mid$(sLine, 5)
+        Endif
+        If sLine = "----" Then
+          sLine = "<hr/>"
+        Else
+          sLine = Html$(sLine)
+        Endif
+        If Not bCode Then
+          GoSub CLOSE_PARA
+          bCode = True
+          sLine = "<div><pre><code>" & sLine
+        Endif
+        aResult.Add(sLine)
+        Continue
+        
       Endif
-      If sLine = "----" Then
-        sLine = "<hr/>"
-      Else
-        sLine = Html$(sLine)
-      Endif
-      If Not bCode Then
-        GoSub CLOSE_PARA
-        bCode = True
-        sLine = "<div><pre><code>" & sLine
-      Endif
-      aResult.Add(sLine)
-      Continue
-      
     Endif
     
     GoSub CLOSE_CODE
@@ -484,6 +502,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   
   $aMarkup = aSaveMarkup
   $aTable = aSaveTable
+  $aTableClass = aSaveTableClass
   $aTablePos = aSaveTablePos
   Return aResult.Join("\n")
   
