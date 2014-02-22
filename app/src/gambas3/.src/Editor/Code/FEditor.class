@@ -2389,6 +2389,7 @@ Private Sub FindDefinition() As Boolean
   Dim iCpt As Integer
   Dim sKeyword As String
   Dim iLine As Integer
+  Dim aSym As String[]
 
   iLine = Editor.Line
   iCol = Editor.Column
@@ -2457,6 +2458,29 @@ Private Sub FindDefinition() As Boolean
       Endif
       Return
 
+    Else If iCpt >= 1 And If Highlight.Types[iCpt] = Highlight.Symbol Then
+      
+      If Highlight.Symbols[iCpt - 1] = "GOTO" Or If Highlight.Symbols[iCpt - 1] = "GOSUB" Then
+        
+        While iLine > 0
+          Dec iLine
+          Highlight.Analyze(Editor.Lines[iLine].Text)
+          If IsCurrentProc() Then Break
+        Wend
+        
+        While iLine < (Editor.Lines.Count - 1)
+          Inc iLine
+          sLig = Editor.Lines[iLine].Text
+          aSym = Highlight.Analyze(Highlight.Purge(sLig))
+          If IsCurrentEndProc() Then Break
+          If aSym.Count = 2 And If aSym[1] = ":" And If aSym[0] == sKeyWord Then
+            CPosition.SaveCurrent
+            GotoCenter(iLine)
+            Return
+          Endif
+        Wend
+        
+      Endif
     Endif
   Endif
 
