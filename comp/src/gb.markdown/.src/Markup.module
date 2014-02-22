@@ -675,7 +675,7 @@ ENTER_MARKUP:
     If Not ["img", "hr", "br"].Exist(sPattern) Then 
       If $aMarkup.Count = 0 Then
         Error.Raise("Mismatched markup: </" & sPattern & ">")
-      Else If LCase($aMarkup[$aMarkup.Max]) <> LCase(Mid$(sPattern, 2)) Then
+      Else If LCase($aMarkup[$aMarkup.Max]) <> LCase(sPattern) Then
         Error.Raise("Mismatched markup: </" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">")
       Endif
       sResult &= "</" & sPattern & ">"
