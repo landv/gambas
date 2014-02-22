@@ -7,6 +7,7 @@ Private $bGotClasses As Boolean
 Private $bGotSymbols As Boolean
 
 Private $cImage As Collection
+Private $sLastLevel As String
 
 Private Sub OpenDatabase()
 
@@ -70,6 +71,7 @@ Public Sub GetPage(sPath As String) As String
   'Return rPage!sdesc
 
   $bHasIndex = False
+  $sLastLevel = ""
 
   sTitle = rPage!stitle
   If sTitle Ends "#3" Then sTitle = Left(sTitle, -2)
@@ -103,7 +105,7 @@ Public Sub GetPage(sPath As String) As String
         If sLevel = "error" Then 
           aResult.Add("### " & ("Errors"))
         Else If sLevel = "example" Then
-          aResult.Add("### " & ("Examples"))
+          If $sLastLevel <> "example" Then aResult.Add("### " & ("Examples"))
         Else If sLevel = "seealso" Then
           aResult.Add("### " & ("See also"))
         Endif
@@ -120,6 +122,7 @@ Public Sub GetPage(sPath As String) As String
           aResult.Add("[[ " & sLevel)
         Endif
       Endif
+      $sLastLevel = sLevel
       Continue
     Else If sLine = "}" And If aLevel.Count Then
       sLevel = aLevel.Pop()
@@ -257,10 +260,12 @@ Private Sub Convert(sLine As String, sLevel As String) As String
       sResult &= "#"
     Until sLine Not Begins "+"
     sResult &= "# "
+    sLine = Trim(sLine)
     If $bHasIndex Then 
       sResult &= "["
       bCloseLink = True
     Endif
+    $sLastLevel = ""
   Endif
 
   If sLevel = "syntax" Then Goto NO_LINK
@@ -300,7 +305,9 @@ Private Sub Convert(sLine As String, sLevel As String) As String
       sTitle = ""
     Endif
     
-    If sLink Not Begins "/" And If sLink Not Begins "./" And If sLink Not Begins "../" And If sLink Not Like "http*://*" And If InStr(sLink, ".") = 0 Then sLink = "/" & sLink
+    If sLink Not Begins "/" And If sLink Not Begins "./" And If sLink Not Begins "../" And If sLink Not Like "http*://*" Then
+      If InStr(sLink, ".") = 0 Or If InStr(sLink, "/") Then sLink = "/" & sLink
+    Endif
     
     If sLink Begins "/" Then sLink = String.LCase(sLink)
     

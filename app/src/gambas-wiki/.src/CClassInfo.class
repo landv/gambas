@@ -378,11 +378,20 @@ Public Function GetSymbols() As String[]
     Endif
   Endif
 
-  If Symbols.Exist("_get") Then
-    If Symbols.Exist("_put") Then
-      aResult.Add(Subst(("This class acts like a &1 / &2 array."), Main.GetSymbolLink(Me, "_get", ("read"), ("static read")), Main.GetSymbolLink(Me, "_put", ("write"), ("write"))) & "\\")
+  hSym = Symbols["_get"]
+  If hSym Then
+    If hSym.IsStatic() Then
+      If Symbols.Exist("_put") Then
+        aResult.Add(Subst(("This class acts like a &1 / &2 static array."), Main.GetSymbolLink(Me, "_get", ("read")), Main.GetSymbolLink(Me, "_put", ("write"))) & "\\")
+      Else
+        aResult.Add(Subst(("This class acts like a &1 static array."), Main.GetSymbolLink(Me, "_get", ("read-only"))) & "\\")
+      Endif
     Else
-      aResult.Add(Subst(("This class acts like &1."), Main.GetSymbolLink(Me, "_get", ("a read-only array"), ("a static read-only array"))) & "\\")
+      If Symbols.Exist("_put") Then
+        aResult.Add(Subst(("This class acts like a &1 / &2 array."), Main.GetSymbolLink(Me, "_get", ("read")), Main.GetSymbolLink(Me, "_put", ("write"))) & "\\")
+      Else
+        aResult.Add(Subst(("This class acts like a &1 array."), Main.GetSymbolLink(Me, "_get", ("read-only"))) & "\\")
+      Endif
     Endif
   Endif
 
@@ -394,13 +403,13 @@ Public Function GetSymbols() As String[]
     aResult.Add(Subst(("This class can be used as a &1."), Main.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
   Endif
 
-  aResult.Add("==")
+  If aResult[aResult.Max] <> "==" Then aResult.Add("==")
 
   If bStatic Then
 
     aResult.Add("[[ symbols")
-    If cSymbol["P"].Count Then aResult.Insert([("Static&nbsp;properties"), "--"])
-    If cSymbol["M"].Count Then aResult.Insert([("Static&nbsp;methods"), "--"])
+    If cSymbol["P"].Count Then aResult.Insert([Replace(("Static properties"), " ", "&nbsp;"), "--"])
+    If cSymbol["M"].Count Then aResult.Insert([Replace(("Static methods"), " ", "&nbsp;"), "--"])
     'IF cSymbol["E"].Count THEN sRes = sRes & "<td align=left><b>" & ("Events") & "</b></td>" & sSpace & "\n"
     If cSymbol["C"].Count Then aResult.Insert([("Constants"), "--"])
     aResult[aResult.Max] = "=="

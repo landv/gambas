@@ -58,7 +58,7 @@ PRE HR {
   border-top: solid #C0C0C0 1px;
 }
 
-TABLE.table {
+TABLE.table, TABLE.error {
   border-bottom: solid #A0A0A0 1px;
   border-right: solid #A0A0A0 1px;
   padding: 0px;
@@ -67,14 +67,14 @@ TABLE.table {
   empty-cells: show;
 }
 
-TABLE.table > TBODY > TR > TD {
+TABLE.table > TBODY > TR > TD, TABLE.error > TBODY > TR > TD {
   border-top: solid #A0A0A0 1px;
   border-left:  solid #A0A0A0 1px;
   padding: 3px 6px;
   vertical-align: top;
 }
 
-TABLE.table > TBODY > TR > TH {
+TABLE.table > TBODY > TR > TH, TABLE.error > TBODY > TR > TH {
   border-top: solid #A0A0A0 1px;
   border-left:  solid #A0A0A0 1px;
   padding: 3px 6px;
@@ -157,7 +157,7 @@ TABLE.example TH {
   font-size: 125%;
 }
 
-.error {
+DIV.error {
   color: red;
   font-style: italic;
   font-family: monospace;
@@ -335,8 +335,7 @@ DIV.index {
   display: inline-table;
   border: solid 1px #C0C0C0;
   font-size: 85%;
-  padding: 8px;
-  padding-right: 32px;
+  padding: 8px 32px 8px 0;
   margin-top: 1em;
 }
 
@@ -346,4 +345,11 @@ DIV.index {
 
 TABLE.symbols > TBODY > TR > TH {
   text-align: left;
+  vertical-align: top;
+  padding-right: 16px;
+}
+
+TABLE.symbols > TBODY > TR > TD {
+  vertical-align: top;
+  padding-right: 16px;
 }

@@ -47,7 +47,7 @@ Private Sub _PrintPage()
   
   If Not Main.ExistPage(sPath) Then
     Print "<div class=\"unknown\">"; ("This page does not exist.")
-    If Session.Id Then Print "<p>"; ("Click on the <b>Create</b> button to create it!")
+    'If Session.Id Then Print "<p>"; ("Click on the <b>Create</b> button to create it!")
     Print "</div>"
     Return
   Endif

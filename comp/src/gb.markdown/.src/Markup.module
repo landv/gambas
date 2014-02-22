@@ -729,7 +729,11 @@ ENTER_CODE:
   sResult &= "<code style=\"white-space:nowrap;\">"
   Do
     GoSub NEXT_CAR
-    If sCar = "`" Then Break
+    If sCar = "`" Then 
+      GoSub LOOK_CAR
+      If sCar <> "`" Then Break
+      Inc I
+    Endif
     sResult &= Html(sCar)
   Loop
   
