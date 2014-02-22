@@ -675,21 +675,29 @@ ENTER_MARKUP:
     If Not ["img", "hr", "br"].Exist(sPattern) Then 
       
       Do
-        If $aMarkup.Count = 0 Then Error.Raise("Mismatched markup: </" & sPattern & ">")
-
-        If LCase($aMarkup[$aMarkup.Max]) <> LCase(sPattern) Then
-          If LCase($aMarkup[$aMarkup.Max]) = "<p>" Then
-            sResult &= "</p>"
-            $aMarkup.Remove($aMarkup.Max)
-            Continue
-          Endif
-          Error.Raise("Mismatched markup: </" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">")
+        
+        If $aMarkup.Count = 0 Then 
+          sResult &= "<div class=\"error\">" & Html("Mismatched markup: </" & sPattern & ">") & "</div>"
+          Break
         Endif
+        
+        If LCase($aMarkup[$aMarkup.Max]) = LCase(sPattern) Then 
+          sResult &= "</" & sPattern & ">"
+          $aMarkup.Remove($aMarkup.Max)
+          Break
+        Endif
+
+        If LCase($aMarkup[$aMarkup.Max]) = "p" Then
+          sResult &= "</p>"
+          $aMarkup.Remove($aMarkup.Max)
+          Continue
+        Endif
+
+        sResult &= "<div class=\"error\">" & Html("Mismatched markup: </" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">") & "</div>"
+        Break
         
       Loop
         
-      sResult &= "</" & sPattern & ">"
-      $aMarkup.Remove($aMarkup.Max)
     Endif
   Else
     sResult &= "<" & sPattern & ">"
