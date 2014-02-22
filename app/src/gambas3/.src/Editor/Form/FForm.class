@@ -2167,8 +2167,8 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
 
   If Not hCtrl Then hCtrl = RootControl
 
-  If hCtrl.Kind = "Form" Then
-    sGroup = "Form"
+  If hCtrl = RootControl Then
+    sGroup = hCtrl.Kind
   Else
     sGroup = hCtrl.GetGroup()
   Endif
