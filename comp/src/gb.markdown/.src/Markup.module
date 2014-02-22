@@ -671,17 +671,22 @@ ENTER_MARKUP:
   'sPattern = LCase(sPattern)
   
   If Left$(sPattern) = "/" Then
-    If $aMarkup.Count = 0 Or If LCase($aMarkup[$aMarkup.Max]) <> LCase(Mid$(sPattern, 2)) Then
-      Error.Raise("Mismatched markup: <" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">")
+    sPattern = Mid$(sPattern, 2)
+    If Not ["img", "hr", "br"].Exist(sPattern) Then 
+      If $aMarkup.Count = 0 Then
+        Error.Raise("Mismatched markup: </" & sPattern & ">")
+      Else If LCase($aMarkup[$aMarkup.Max]) <> LCase(Mid$(sPattern, 2)) Then
+        Error.Raise("Mismatched markup: </" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">")
+      Endif
+      sResult &= "</" & sPattern & ">"
+      $aMarkup.Remove($aMarkup.Max)
     Endif
-    sResult &= "<" & sPattern & ">"
-    $aMarkup.Remove($aMarkup.Max)
   Else
     sResult &= "<" & sPattern & ">"
     If Right$(sPattern) <> "/" Then
       I1 = InStr(sPattern, " ")
       If I1 Then sPattern = Left(sPattern, I1 - 1)
-      $aMarkup.Add(sPattern)
+      If Not ["img", "hr", "br"].Exist(sPattern) Then $aMarkup.Add(sPattern)
     Endif
   Endif
   Goto MAIN_LOOP

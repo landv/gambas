@@ -459,7 +459,7 @@ Public Sub GetSyntax() As String[]
       sValue = Replace(GetClassVariableName(Type), ".", "")
       If sValue = sVar Then sValue &= "2"
 
-      sSyntax &= Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetSyntaxType(Type) & "\n\n"
+      sSyntax &= Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetSyntaxType(Type) & "\n"
       sSyntax &= sValue & " " & Keyword("=") & " "
       sSyntax &= sName & " " & Keyword("\\[") & GetSyntaxSignature() & Keyword("]")
 
@@ -484,7 +484,7 @@ Public Sub GetSyntax() As String[]
       sValue = Replace(GetClassVariableName(sType), ".", "")
       If sValue = sVar Then sValue &= "2"
 
-      sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetSyntaxType(sType) & "\n\n"
+      sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetSyntaxType(sType) & "\n"
       sSign = GetSyntaxSignature()
       sKeyword = Keyword(",")
       iPos = InStr(sSign, sKeyword)
@@ -511,19 +511,19 @@ Public Sub GetSyntax() As String[]
       If Type Then
         sValue = Replace(GetClassVariableName(Type), ".", "")
         If sValue = sVar Then sValue &= "2"
-        sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetSyntaxType(Type) & "\n\n"
-        sSyntax = sSyntax & Keyword("For Each") & " " & sValue & " " & Keyword("In") & " " & sName & "\n"
+        sSyntax = sSyntax & Keyword("Dim") & " " & sValue & " " & Keyword("As") & " " & GetSyntaxType(Type) & "\n"
+        sSyntax = sSyntax & Keyword("For Each") & " " & sValue & " " & Keyword("In") & " " & sName
       Else
-        sSyntax = sSyntax & Keyword("For Each") & " " & sName & "\n"
+        sSyntax = sSyntax & Keyword("For Each") & " " & sName
       Endif
 
-      sSyntax = sSyntax & "&nbsp;&nbsp;...<br/>" & Keyword("Next")
+      sSyntax &= "<br />&nbsp;&nbsp;...<br/>" & Keyword("Next")
 
     Case "_new"
 
       sName = GetClassVariableName(Class)
 
-      sSyntax &= Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetSyntaxType(Class) & "\n\n"
+      sSyntax &= Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetSyntaxType(Class) & "\n"
       sSyntax &= sName & " " & Keyword("=") & " " & Keyword("New") & " " & GetSyntaxType(Class)
       sSyntax &= " " & Keyword("(") & GetSyntaxSignature() & Keyword(")")
       If CComponent.Get(Component)[Class].HasEvents() Then

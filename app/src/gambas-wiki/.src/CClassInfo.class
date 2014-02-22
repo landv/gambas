@@ -398,7 +398,7 @@ Public Function GetSymbols() As String[]
 
   If bStatic Then
 
-    aResult.Add("[[ no-border")
+    aResult.Add("[[ symbols")
     If cSymbol["P"].Count Then aResult.Insert([("Static&nbsp;properties"), "--"])
     If cSymbol["M"].Count Then aResult.Insert([("Static&nbsp;methods"), "--"])
     'IF cSymbol["E"].Count THEN sRes = sRes & "<td align=left><b>" & ("Events") & "</b></td>" & sSpace & "\n"
@@ -425,7 +425,7 @@ Public Function GetSymbols() As String[]
 
   If bDynamic Then
 
-    aResult.Add("[[ no-border")
+    aResult.Add("[[ symbols")
     If cSymbol["p"].Count Then aResult.Insert([("Properties"), "--"])
     If cSymbol["m"].Count Then aResult.Insert([("Methods"), "--"])
     If cSymbol["e"].Count Then aResult.Insert([("Events"), "--"])
