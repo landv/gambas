@@ -302,7 +302,7 @@ Public Sub Button1_Click()
     Button1.Tag = True
     Button1.Picture = Picture["icon:/22/cancel"]
     Button1.Text = ("Cancel")
-    Print $hPrinter.Resolution
+    'Print $hPrinter.Resolution
     $hPrinter.Print
   Endif
   

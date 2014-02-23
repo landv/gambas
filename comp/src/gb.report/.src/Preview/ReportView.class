@@ -71,7 +71,8 @@ Event Progress
 Event Change
 Event Layout(LayoutInProgress As Boolean)
 Private $bLayout As Boolean
-
+Private $MX As Integer
+Private $MY As Integer
 Public Sub _new(Optional hReport As Report)
   
   If hReport Then Me.Report = hReport
@@ -186,7 +187,7 @@ Public Sub View_Draw()
     
     For j = 0 To $iNbrePageByLine - 1
       
-      X = $iRealCenter + $fRealSpace + (($fRealPageWidth + $fRealSpace) * j)
+      X = $iRealCenter + $fRealSpace + (($fRealPageWidth + $fRealSpace) * j) - $View.ScrollX / $fCurScale
       Y = $fRealSpace + (($fRealPageHeight + $fRealSpace) * iline) - $View.ScrollY / $fCurScale
       
       Paint.Rectangle(X + 10, Y + 10, $fRealPageWidth, $fRealPageHeight)
@@ -378,8 +379,8 @@ Private Sub Layout()
     $aImageToLoad = $aImageToLoad.Reverse()
     $Timer.Start
   Endif
-  $View.ResizeContents(Max($View.ClientWidth, $fPageWidth), $fSpace + Ceil($iNbrePage / $iNbrePageByLine) * ($fPageHeight + $fSpace))
-  
+  $View.ResizeContents(Max($View.ClientWidth, ($fPageWidth + 2 * $fSpace)), $fSpace + Ceil($iNbrePage / $iNbrePageByLine) * ($fPageHeight + $fSpace))
+  '$View.ScrollX = Max($View.ClientWidth, ($fPageWidth + 2 * $fSpace)) / 8
 End
 
 Public Sub View_Scroll()
@@ -649,3 +650,28 @@ Public Sub _ForceLayout()
   Layout
 End
 
+Public Sub View_MouseDown()
+  
+  If Mouse.Left Then 
+  $MX = Mouse.X
+  $MY = Mouse.Y
+  Endif
+  
+  
+End
+
+Public Sub View_MouseMove()
+  
+  If Mouse.Left Then
+    'Print $MX - Mouse.X
+    $View.ScrollX += $MX - Mouse.X
+    $MX = Mouse.X
+    
+    $View.ScrollY += $MY - Mouse.Y
+    $MY = Mouse.Y
+    
+    $tmrRedraw.Trigger
+    
+  Endif
+  
+End

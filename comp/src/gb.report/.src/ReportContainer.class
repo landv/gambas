@@ -85,62 +85,62 @@ Private Sub Spacing_Write(Value As String)
   
 End
 
-Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer, fScale As Float)
-  
-  Dim hChild As TControl
-  Dim vi As Integer
-  
-  Dim CX1, CX2, CY1, CY2 As Float
-  Dim hCont As ReportContainer
-  
-  With Paint.ClipExtents
-    CX1 = .X
-    CY1 = .Y
-    CX2 = .X2
-    CY2 = .Y2
-  End With
-  
-  X += hControl.RealLeft
-  Y += hControl.RealTop
-  
-  For Each hChild In Me.Children
-    vi = DataIndex
-    If hControl.DataIndex > -1 Then vi = hControl.DataIndex
-    
-    hChild._SkipPainting = False
-    
-    If Not Paint.Device Is Printer And If CX2 > CX1 And If CY2 > CY1 Then
-      If (X + hChild.RealLeft) > CX2 Then
-        hChild._SkipPainting = True
-        Continue
-      Endif
-      If (X + hChild.RealLeft + hChild.RealWidth) < CX1 Then
-        hChild._SkipPainting = True
-        Continue
-      Endif
-      If (Y + hChild.RealTop) > CY2 Then
-        hChild._SkipPainting = True
-        Continue
-      Endif
-      If (Y + hChild.RealTop + hChild.RealHeight) < CY1 Then
-        hChild._SkipPainting = True
-        Continue
-      Endif
-    Endif
-    
-    If hChild.RelPage >= 0 And If (hChild.RelPage + hControl.RealPage) <> Page Then
-      hChild._SkipPainting = True
-      Continue
-    Endif
-    
-    If hChild.Ctrl Is ReportContainer Then
-      hCont = hChild.Ctrl
-      hCont._ClipChildren(Page, X, Y, hChild, vi, fScale)
-    Endif
-    
-  Next
-  
-End
+' Public Sub _ClipChildren(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer, fScale As Float)
+'   
+'   Dim hChild As TControl
+'   Dim vi As Integer
+'   
+'   Dim CX1, CX2, CY1, CY2 As Float
+'   Dim hCont As ReportContainer
+'   
+'   With Paint.ClipExtents
+'     CX1 = .X
+'     CY1 = .Y
+'     CX2 = .X2
+'     CY2 = .Y2
+'   End With
+'   
+'   X += hControl.RealLeft
+'   Y += hControl.RealTop
+'   
+'   For Each hChild In Me.Children
+'     vi = DataIndex
+'     If hControl.DataIndex > -1 Then vi = hControl.DataIndex
+'     
+'     hChild._SkipPainting = False
+'     
+'     If Not Paint.Device Is Printer And If CX2 > CX1 And If CY2 > CY1 Then
+'       If (X + hChild.RealLeft) > CX2 Then
+'         hChild._SkipPainting = True
+'         Continue
+'       Endif
+'       If (X + hChild.RealLeft + hChild.RealWidth) < CX1 Then
+'         hChild._SkipPainting = True
+'         Continue
+'       Endif
+'       If (Y + hChild.RealTop) > CY2 Then
+'         hChild._SkipPainting = True
+'         Continue
+'       Endif
+'       If (Y + hChild.RealTop + hChild.RealHeight) < CY1 Then
+'         hChild._SkipPainting = True
+'         Continue
+'       Endif
+'     Endif
+'     
+'     If hChild.RelPage >= 0 And If (hChild.RelPage + hControl.RealPage) <> Page Then
+'       hChild._SkipPainting = True
+'       Continue
+'     Endif
+'     
+'     If hChild.Ctrl Is ReportContainer Then
+'       hCont = hChild.Ctrl
+'       hCont._ClipChildren(Page, X, Y, hChild, vi, fScale)
+'     Endif
+'     
+'   Next
+'   
+' End
 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, (DataIndex) As Integer)
   

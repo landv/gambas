@@ -1,0 +1,23 @@
+' Gambas class file
+
+Public Sub ReportDrawingArea1_Draw()
+  
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(Paint.Width, Paint.Height)
+  Paint.Stroke
+  
+End
+
+Public Sub Report_Open()
+  
+   ReportGridView1.Columns.Count = 3
+   ReportGridView1.Rows.Count = 20
+   
+  'Report.Debug = True
+End
+
+Public Sub rpTestShadow_Open()
+
+  
+
+End

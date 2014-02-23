@@ -138,6 +138,10 @@ _DrawWith
 C
 s
 TabPanel
+_DefaultEvent
+C
+s
+Open
 _LayoutNotFinished
 v
 b
@@ -261,6 +265,10 @@ i
 _Scale
 v
 f
+
+:Open
+:
+
 
 Main
 M
@@ -527,10 +535,6 @@ _Free
 m
 
 
-_ClipChildren
-m
-
-(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i(fScale)f
 _Paint
 m
 
@@ -853,6 +857,49 @@ _GetSizeHints
 m
 TSizeHint
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
+#ReportGridView
+ReportFrame
+C
+_Properties
+C
+s
+*
+_Similar
+C
+s
+ReportTextLabel
+_DefaultEvent
+C
+s
+Data
+Columns
+r
+_ReportGridViewColumns
+
+Rows
+r
+_ReportGridViewRows
+
+:Data
+:
+
+(Row)i(Column)i
+_new
+m
+
+
+_SetUnifiedValues
+m
+
+
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
+_Paint
+m
+
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportHBox
 ReportContainer
 C
@@ -1399,6 +1446,14 @@ m
 
 
 _ForceLayout
+m
+
+
+View_MouseDown
+m
+
+
+View_MouseMove
 m
 
 
