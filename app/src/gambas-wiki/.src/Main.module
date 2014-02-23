@@ -10,13 +10,14 @@ Public SystemLanguages As String[] = ["C", "fr_FR.UTF-8", "de_DE.UTF-8", "es_ES.
 
 
 Public Root As String = User.Home &/ "wiki/gambas"
-Public InfoDir As String = User.Home &/ "wiki/info"
+Public InfoDir As String
 Public Lang As String
 Public Path As String
 Public Exist As Boolean
 Public Edit As Boolean
 Public Image As Boolean
 Public LinkSuffix As String
+Public History As Integer
 
 Public Component As String
 Public Class As String
@@ -57,7 +58,7 @@ Public Sub GetPagePath(Optional bSuffix As Boolean) As String
   Dim sPath As String
   
   sPath = Root &/ "data" &/ Lang &/ Path &/ "~page"
-  If bSuffix Then sPath &= "." & Format(Now, "yyyyddmmhhnnssuu") & "." & Session["login"]
+  If bSuffix Then sPath &= "." & Format(Now, "yyyymmddhhnnssuu") & "." & Session["login"]
   Return sPath
   
 End
@@ -110,9 +111,20 @@ Private Sub LockPage()
 
 End
 
-Private Sub Redirect()
+Private Sub Redirect(Optional sMore As String)
 
-  Response.Redirect(Application.Root &/ Request.Path & "?l=" & Lang)
+  Dim sUrl As String
+
+  sUrl = Application.Root &/ Request.Path & LinkSuffix
+  If sMore Then 
+    If LinkSuffix Then
+      sUrl &= "&" & sMore
+    Else
+      sUrl &= "?" & sMore
+    Endif
+  Endif
+
+  Response.Redirect(sUrl)
 
 End
 
@@ -126,8 +138,11 @@ Public Sub Main()
   Dim aPage As String[]
   Dim sDir As String
   Dim aPath As String[]
+  Dim sLang As String
   
   Root = User.Home &/ "wiki/gambas"
+  InfoDir = User.Home &/ "wiki/info"
+  If Not Exist(InfoDir) Then InfoDir = ""
 
   If Args[1] = "-restore" Then
     If IsDir(Root) Then
@@ -176,6 +191,18 @@ Public Sub Main()
     Return
   Endif
   
+  If Request.Exist("lang") Then
+    sLang = Request["lang"]
+    If sLang = DEFAULT_LANG Then sLang = ""
+    If sLang <> Request["l"] Then
+      If sLang Then
+        Redirect("l=" & sLang)
+      Else
+        Redirect
+      Endif
+    Endif
+  Endif
+
   SetLanguage(Request["l"])
   If Request.Exist("v") Then AddLinkSuffix("v")
     
@@ -202,6 +229,7 @@ Public Sub Main()
 
   {Exist} = Main.ExistPage(Path)
   Image = IsImage(Path)
+  Try History = CInt(Request["h"])
   
   ' Analyze component path
   If Path Begins "/comp/gb" Then
@@ -224,7 +252,7 @@ Public Sub Main()
       If Request.Exist("page") Then
         MakeDir(File.Dir(GetPagePath()))
         LockPage
-        File.Save(GetPagePath(), Request["page"])
+        File.Save(GetPagePath(), Replace(Request["page"], "\r", ""))
         Copy GetPagePath() To GetPagePath(True)
         Redirect
         Return
@@ -264,7 +292,21 @@ Public Sub Main()
     Else If Request.Exist("create") Or If Request.Exist("edit") Then
       
       Edit = True
+    
+    Else If Request.Exist("prev") Then
       
+      History = Max(0, History + 1)
+      Redirect("h=" & CInt(History))
+    
+    Else If Request.Exist("next") Then
+      
+      History = Max(0, History - 1)
+      If History Then
+        Redirect("h=" & CInt(History))
+      Else
+        Redirect
+      Endif
+    
     Endif
     
   Endif
@@ -466,7 +508,11 @@ Public Sub GetStat() As String[]
   Dim aIgnore As String[]
   Dim sDir As String
 
-  sDir = Main.InfoDir
+  If Main.InfoDir Then
+    sDir = Main.InfoDir
+  Else
+    sDir = System.Path &/ "share/gambas" & System.Version &/ "info" 
+  Endif
 
   aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.gtk3.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gui.base", "gb.geom"]
 

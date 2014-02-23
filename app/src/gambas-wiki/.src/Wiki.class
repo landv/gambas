@@ -24,17 +24,56 @@ Private Sub _PrintLink()
   
 End
 
+Private Sub GetPage(sPath As String) As String
+
+  Dim sData As String
+  Dim iPos As Integer
+
+  sData = LTrim(File.Load(sPath))
+  If Main.Symbol Then
+    If sData Begins "# " Then
+      iPos = InStr(sData, "\n")
+      If iPos = 0 Then iPos = Len(sData)
+      sData = Mid$(sData, iPos + 1)
+    Endif
+    'sData = "# <a href=\"" & Application.Root &/ File.Dir(Main.Path) & "\" class=\"symbol\">" & Html(Main.GetSymbolTitle()) & "</a>\n" & sData
+    sData = "# " & Main.GetSymbolTitle() & "\n" & sData
+  Endif
+  
+  Return sData
+
+End
+
+Private Sub GetMaxHistory() As Integer
+
+  Dim sPath As String
+  Dim sDir As String
+
+  sPath = Main.SolvePath(Main.Path)
+  sDir = File.Dir(Main.GetPagePathFrom(sPath))
+  Return Dir(sDir, "~page*.*").Count - 1
+
+End
+
 Private Sub _PrintPage()
 
   Dim sPath As String
   Dim sData As String
   Dim iPos As Integer
+  Dim aFile As String[]
+  Dim sDir As String
+  Dim sLine As String
+  Dim sColor As String
+  Dim sResult As String
+  Dim aLine As String[]
+  Dim dDate As Date
+  Dim sDate As String
 
   If Main.Edit Then
     sPath = Main.GetPagePath()  
     If Exist(sPath) Then sData = File.Load(sPath)
     If Not sData Then sData = OldWiki.GetPage(Main.Path)
-    Print sData;
+    Print Html(sData);
     Return
   Endif
 
@@ -52,16 +91,62 @@ Private Sub _PrintPage()
     Return
   Endif
   
-  sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
-  If Main.Symbol Then
-    If sData Begins "# " Then
-      iPos = InStr(sData, "\n")
-      If iPos = 0 Then iPos = Len(sData)
-      sData = Mid$(sData, iPos + 1)
+  If Main.History Then
+    
+    sDir = File.Dir(Main.GetPagePathFrom(sPath))
+    aFile = Dir(sDir, "~page.*.*").Sort(gb.Descent)
+    If aFile.Count >= 2 Then
+      iPos = Min(Main.History - 1, aFile.Max - 1)
+      Exec ["diff", "-U", "10000", sDir &/ aFile[iPos + 1], sDir &/ aFile[iPos]] To sResult
+      
+      sDate = Mid$(aFile[iPos], 7)
+      dDate = Date(CInt(Mid$(sDate, 1, 4)), CInt(Mid$(sDate, 5, 2)), CInt(Mid$(sDate, 7, 2)), CInt(Mid$(sDate, 9, 2)), CInt(Mid$(sDate, 11, 2)), CInt(Mid$(sDate, 13, 2)))
+      Print "<h3>"; Html(Format(dDate, gb.GeneralDate)); " - "; Html(File.Ext(aFile[iPos])); "</h3>"
+      
+      If sResult Then
+      
+        aLine = Split(sResult, "\n")
+        aLine.Remove(0, 3)
+        
+        For Each sLine In aLine
+          
+          sColor = Left(sLine)
+          sLine = Mid$(sLine, 2)
+          
+          sData &= "<div style=\"background-color:"
+          If sColor = " " Then
+            sData &= "none"
+          Else If sColor = "+" Then
+            sData &= "#80FF80"
+          Else If sColor = "-" Then
+            sData &= "#FF8080"
+          Endif
+          sData &= ";\">"
+          If sColor = "-" Then sData &= "<s>"
+          
+          sData &= Html(sLine)
+          
+          If sColor = "-" Then sData &= "</s>"
+          sData &= "</div>"
+          If Not sLine Then sData &= "\n"
+          
+        Next
+        
+        Print "<div><pre>"; sData; "</pre></div>"
+        
+      Else
+        
+        Print "<div class=\"unknown\">"; ("No change."); "</div>"
+        
+      Endif
+        
+      Return
+      
     Endif
-    'sData = "# <a href=\"" & Application.Root &/ File.Dir(Main.Path) & "\" class=\"symbol\">" & Html(Main.GetSymbolTitle()) & "</a>\n" & sData
-    sData = "# " & Main.GetSymbolTitle() & "\n" & sData
+    
   Endif
+  
+  sData = GetPage(Main.GetPagePathFrom(sPath))  
   Print WikiMarkdown.ToHTML(sData);
   
 Catch
@@ -85,7 +170,7 @@ Private Sub _PrintLang()
 
   Dim sLang As String
   
-  Print "<select id=\"lang\" name=\"l\" onchange=\"document.form.submit();\">"
+  Print "<select id=\"lang\" name=\"lang\" onchange=\"document.form.submit();\">"
 
   For Each sLang In Main.Languages.Copy().Sort()
     Print "<option value=\""; sLang; "\"";

@@ -46,7 +46,15 @@
           <input type="submit" name="edit" value="<%=("Edit")%>">
           <input type="submit" name="delete" value="<%=("Delete")%>">
           <input type="submit" name="undo" value="<%=("Undo")%>">
-        <%Else%>
+          <%If Main.History < GetMaxHistory() Then%>
+          <input type="submit" name="prev" value="<%=("<")%>">
+          <%Else%>
+          <input type="submit" name="prev" value="<%=("<")%>" disabled>
+          <%Endif%>
+          <%If Main.History > 0 Then%>
+            <input type="submit" name="next" value="<%=(">")%>">
+          <%Endif%>
+        <% Else%>
           <input type="submit" name="create" value="<%=("Create")%>">
           <input type="submit" name="undo" value="<%=("Undo")%>">
         <%Endif%>

@@ -11,7 +11,7 @@ Public Sub GetPagePath(Optional bSuffix As Boolean) As String
   Dim sPath As String
   
   sPath = Root &/ "data" &/ Path &/ "~page"
-  If bSuffix Then sPath &= "." & Format(Now, "yyyyddmmhhnnssuu") & "." & Session["login"]
+  If bSuffix Then sPath &= "." & Format(Now, "yyyymmddhhnnssuu") & "." & Session["login"]
   Return sPath
   
 End

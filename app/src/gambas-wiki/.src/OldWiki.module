@@ -585,6 +585,7 @@ Public Sub Restore()
       sPath = Main.GetPagePathFrom(sPath)
       Main.MakeDir(File.Dir(sPath))
       File.Save(sPath, sPage)
+      File.Save(sPath & "." & Format(Now, "yyyymmddhhnnssuu") & ".admin", sPage)
       
     Next
     

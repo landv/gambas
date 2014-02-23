@@ -873,8 +873,6 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   
   'Debug "ScanClass "; hModule.Name
   
-  If hModule.Name = "Form" Then Stop
-  
   hEditor = hModule.Editor
   hModule.AutoCreatable = False
   hModule.NotCreatable = False
