@@ -64,6 +64,29 @@ Static Public Sub Init()
   
 End
 
+Static Public Sub ListAll() As String[]
+  
+  Dim sDir As String
+  Dim aComp As New String[]
+  Dim sComp As String
+  
+  If Main.InfoDir Then
+    sDir = Main.InfoDir
+  Else
+    sDir = Component.Path
+  Endif
+  
+  For Each sComp In Dir(sDir, "*.component")
+    aComp.Add(File.BaseName(sComp))
+  Next
+  
+  aComp.Sort
+  Return aComp
+  
+End
+
+
+
 Static Public Sub Exit()
 
   All = Null
@@ -84,7 +107,6 @@ Static Public Sub Get(sComp As String) As CComponent
   
   hComp.Load
   Return hComp
-  
   
 End
 

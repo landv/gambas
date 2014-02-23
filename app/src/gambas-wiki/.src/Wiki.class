@@ -24,26 +24,6 @@ Private Sub _PrintLink()
   
 End
 
-Private Sub GetPage(sPath As String) As String
-
-  Dim sData As String
-  Dim iPos As Integer
-
-  sData = LTrim(File.Load(sPath))
-  If Main.Symbol Then
-    If sData Begins "# " Then
-      iPos = InStr(sData, "\n")
-      If iPos = 0 Then iPos = Len(sData)
-      sData = Mid$(sData, iPos + 1)
-    Endif
-    'sData = "# <a href=\"" & Application.Root &/ File.Dir(Main.Path) & "\" class=\"symbol\">" & Html(Main.GetSymbolTitle()) & "</a>\n" & sData
-    sData = "# " & Main.GetSymbolTitle() & "\n" & sData
-  Endif
-  
-  Return sData
-
-End
-
 Private Sub GetMaxHistory() As Integer
 
   Dim sPath As String
@@ -68,6 +48,9 @@ Private Sub _PrintPage()
   Dim aLine As String[]
   Dim dDate As Date
   Dim sDate As String
+  Dim hStat As Stat
+  Dim hStatDef As Stat
+
 
   If Main.Edit Then
     sPath = Main.GetPagePath()  
@@ -85,10 +68,13 @@ Private Sub _PrintPage()
   sPath = Main.SolvePath(Main.Path)
   
   If Not Main.ExistPage(sPath) Then
-    Print "<div class=\"unknown\">"; ("This page does not exist.")
-    'If Session.Id Then Print "<p>"; ("Click on the <b>Create</b> button to create it!")
-    Print "</div>"
-    Return
+    If Main.Lang = Main.DEFAULT_LANG Then
+      Print "<div class=\"unknown\">"; ("This page does not exist."); "</div>"
+    Else
+      Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
+    Endif
+    If Not Main.ExistPage(sPath, Main.DEFAULT_LANG) Then Return
+    Main.Lang = Main.DEFAULT_LANG
   Endif
   
   If Main.History Then
@@ -117,9 +103,9 @@ Private Sub _PrintPage()
           If sColor = " " Then
             sData &= "none"
           Else If sColor = "+" Then
-            sData &= "#80FF80"
+            sData &= "#C0FFC0"
           Else If sColor = "-" Then
-            sData &= "#FF8080"
+            sData &= "#FFC0C0"
           Endif
           sData &= ";\">"
           If sColor = "-" Then sData &= "<s>"
@@ -146,7 +132,25 @@ Private Sub _PrintPage()
     
   Endif
   
-  sData = GetPage(Main.GetPagePathFrom(sPath))  
+  If Main.Lang <> Main.DEFAULT_LANG Then
+    hStat = Stat(Main.GetPagePathFrom(Main.Path))
+    hStatDef = Stat(Main.GetPagePathFrom(Main.Path, Main.DEFAULT_LANG))
+    If hStat And If hStatDef And If hStatDef.LastModified > hStat.LastModified Then
+      Print "<div><i><a href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
+    Endif
+  Endif
+  
+  sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
+  If Main.Symbol Then
+    If sData Begins "# " Then
+      iPos = InStr(sData, "\n")
+      If iPos = 0 Then iPos = Len(sData)
+      sData = Mid$(sData, iPos + 1)
+    Endif
+    'sData = "# <a href=\"" & Application.Root &/ File.Dir(Main.Path) & "\" class=\"symbol\">" & Html(Main.GetSymbolTitle()) & "</a>\n" & sData
+    sData = "# " & Main.GetSymbolTitle() & "\n" & sData
+  Endif
+  
   Print WikiMarkdown.ToHTML(sData);
   
 Catch
@@ -157,12 +161,7 @@ End
 
 Private Sub _PrintParent()
 
-  'Dim sPath As String
-
-  'sPath = Request.Path
-  'If sPath Then sPath = File.Dir(sPath)
-  'Print Application.Root &/ sPath; Main.LinkSuffix;
-  Print Application.Root; Main.LinkSuffix;
+  Print Html(Application.Root & Main.LinkSuffix);
 
 End
 

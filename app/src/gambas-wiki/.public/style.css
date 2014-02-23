@@ -32,6 +32,10 @@ H1,H2,H3,H4,H5,H6 {
   margin-bottom: 0;
 }
 
+H1:first-child {
+  margin-top: 0;
+}
+
 CODE {
   background: #F0F0F0;
   padding: 0px 1px;
@@ -112,6 +116,16 @@ TABLE.example TH {
   height: 24px;
 }
 
+.header-v {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: gray solid 1px;
+  padding: 4px 8px;
+  height: 16px;
+}
+
 .title {
   display: inline-table;
 }
@@ -143,18 +157,12 @@ TABLE.example TH {
 
 .page {
   padding: 4px 8px;
-  padding-top: 32px;
-}
-
-.page-v {
-  padding: 4px 8px;
+  padding-top: 40px;
 }
 
 .unknown {
   color: red;
   font-style: italic;
-  margin-top: 24px;
-  font-size: 125%;
 }
 
 DIV.error {

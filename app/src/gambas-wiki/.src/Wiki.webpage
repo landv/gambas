@@ -15,12 +15,14 @@
 
 <%If Request.Exist("v") Then%>
 
-<div class="page-v">
-
-<table border="0" cellpadding="0" cellspacing="0" style="margin-bottom:-1em;">
-  <tr valign="center"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png"></a>&nbsp;</td>
+<div class="header-v">
+<table border="0" cellpadding="0" cellspacing="0" style="position:fixed;background:white;">
+  <tr valign="center"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png" style="vertical-align:middle;"></a>&nbsp;</td>
   <td><div class="title-v"><%_PrintLink%></div></td></tr>
 </table>
+</div>
+
+<div class="page">
 
 <%Else%>
 
@@ -43,16 +45,24 @@
     <%Else If Session.Id Then%>
       <div class="command">
         <%If Main.Exist Then%>
-          <input type="submit" name="edit" value="<%=("Edit")%>">
-          <input type="submit" name="delete" value="<%=("Delete")%>">
-          <input type="submit" name="undo" value="<%=("Undo")%>">
-          <%If Main.History < GetMaxHistory() Then%>
-          <input type="submit" name="prev" value="<%=("<")%>">
+          <%If Main.History Then%>
+            <%If Main.History < GetMaxHistory() Then%>
+              <input type="submit" name="prev" value="<%=("<")%>">
+            <%Else%>
+              <input type="submit" name="prev" value="<%=("<")%>" disabled style="color:gray">
+            <%Endif%>
+            <%If Main.History > 0 Then%>
+              <input type="submit" name="next" value="<%=(">")%>">
+            <%Else%>
+              <input type="submit" name="next" value="<%=(">")%>" disabled style="color:gray">
+            <%Endif%>
           <%Else%>
-          <input type="submit" name="prev" value="<%=("<")%>" disabled>
-          <%Endif%>
-          <%If Main.History > 0 Then%>
-            <input type="submit" name="next" value="<%=(">")%>">
+            <input type="submit" name="edit" value="<%=("Edit")%>">
+            <input type="submit" name="delete" value="<%=("Delete")%>">
+            <input type="submit" name="undo" value="<%=("Undo")%>">
+            <%If GetMaxHistory() > 0 Then%>
+              <input type="submit" name="historic" value="<%=("Historic")%>">
+            <%Endif%>
           <%Endif%>
         <% Else%>
           <input type="submit" name="create" value="<%=("Create")%>">

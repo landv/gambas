@@ -8,8 +8,6 @@ Public Sub Link(hLink As MarkdownLink)
   Dim sLink As String = hLink.Link
   Dim iPos As Integer
   
-  hLink.Query = Mid$(Main.LinkSuffix, 2)
-  
   If sLink Begins "/" Then
     sPath = sLink
   Else If sLink Begins "./" Then
@@ -27,6 +25,8 @@ Public Sub Link(hLink As MarkdownLink)
   Endif
   
   If Not sPath Then Return
+  
+  hLink.Query = Mid$(Main.LinkSuffix, 2)
   
   If Not hLink.Text Or If hLink.Text = hLink.Link Then
     
@@ -151,6 +151,10 @@ Public Sub Command(sCommand As String) As String[]
   Else If sCommand = "stat" Then
     
     Return Main.GetStat()
+
+  Else If sCommand = "todo" Then
+    
+    Return Main.GetToDo()
 
   Else
     

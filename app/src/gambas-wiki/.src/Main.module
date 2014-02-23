@@ -63,9 +63,10 @@ Public Sub GetPagePath(Optional bSuffix As Boolean) As String
   
 End
 
-Public Sub GetPagePathFrom(sPath As String) As String
+Public Sub GetPagePathFrom(sPath As String, Optional sLang As String) As String
   
-  Return Root &/ "data" &/ Lang &/ sPath &/ "~page"
+  If Not sLang Then sLang = Lang
+  Return Root &/ "data" &/ sLang &/ sPath &/ "~page"
   
 End
 
@@ -292,6 +293,10 @@ Public Sub Main()
     Else If Request.Exist("create") Or If Request.Exist("edit") Then
       
       Edit = True
+      
+    Else If Request.Exist("historic") Then
+
+      Redirect("h=1")
     
     Else If Request.Exist("prev") Then
       
@@ -356,16 +361,18 @@ Public Sub GetPageTitle(sPath As String) As String
   Dim sFile As String
   Dim iPos As Integer
   Dim bComp As Boolean
+  Dim sRealPath As String
   
   sPath = SolvePath(sPath)
   bComp = sPath Begins "/comp/"
   
   If bComp And If sPath Like "/comp/*/*/*" Then Return GetSymbolTitle(sPath)
   
-  sPath = Root &/ "data" &/ Lang &/ sPath &/ "~page"
-  If Not Exist(sPath) Then Return 
+  sRealPath = Root &/ "data" &/ Lang &/ sPath &/ "~page"
+  If Not Exist(sRealPath) Then sRealPath = Root &/ "data" &/ DEFAULT_LANG &/ sPath &/ "~page"
+  If Not Exist(sRealPath) Then Return
   
-  sFile = LTrim(File.Load(sPath))
+  sFile = LTrim(File.Load(sRealPath))
   
   If sFile Begins "# " Then
     iPos = InStr(sFile, "\n")
@@ -437,11 +444,11 @@ Private Sub GetContentTypeFrom(sPath As String) As String
   
 End
 
-Public Sub ExistPage(sPath As String) As Boolean
+Public Sub ExistPage(sPath As String, Optional sLang As String) As Boolean
 
   Dim iSize As Long
   
-  Try iSize = Stat(GetPagePathFrom(sPath)).Size
+  Try iSize = Stat(GetPagePathFrom(sPath, sLang)).Size
   Return iSize > 0
   
 End
@@ -610,5 +617,88 @@ Public Sub MakeAbsolute(sPath As String, sRoot As String) As String
   
   If Not sRoot Then sRoot = "/"
   Return sRoot &/ sPath
+  
+End
+
+Public Sub GetToDo() As String[]
+  
+  Dim hComp As CComponent
+  Dim hClass As CClassInfo
+  Dim hSymbol As CSymbolInfo
+  Dim bPrintComponent As Boolean
+  Dim bPrintClass As Boolean
+  Dim sClass As String
+  Dim sComp As String
+  Dim sName As String
+  Dim iCpt As Integer
+  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base"]
+  Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
+  Dim sPath As String
+  Dim aResult As New String[]
+
+  CComponent.Init
+
+  For Each sComp In CComponent.ListAll()
+    
+    hComp = CComponent.Get(sComp)
+    hComp.Load
+    bPrintComponent = True
+
+    For Each sClass In hComp.ClassList
+  
+      If sClass = "." Then Continue
+      If InStr(sClass, "*") Then Continue
+      
+      hClass = hComp[sClass]
+  
+      bPrintClass = True
+  
+      'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
+      If aIgnore.Find(sComp) >= 0 Then Continue
+  
+      For Each hSymbol In hClass.Symbols
+  
+        If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
+        
+        sName = hSymbol.Name
+        
+        If hSymbol.Kind = "C" Then
+          
+          If Left(sName) = "_" Then Continue
+          
+        Else
+        
+          If LCase(sName) = "_free" Then Continue
+          If LCase(sName) = "_new" Then
+            If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
+          Endif
+          
+          If InStr(sName, "_") Then
+            If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
+          Endif
+          
+        Endif
+        
+        sPath = "/comp" &/ LCase(sComp &/ hSymbol.Class &/ Replace(hSymbol.Name, ":", "."))
+        If Not ExistPage(sPath) Then
+          
+          If bPrintComponent Then
+            aResult.Add("## [" & sComp & "] (/comp" &/ sComp & ")")
+            bPrintComponent = False
+          Endif
+          If bPrintClass Then
+            aResult.Add("* **[" & hClass.Name & "] (/comp" &/ sComp &/ LCase(hClass.Name) & ")**")
+            bPrintClass = False
+          Endif
+          aResult.Add("  * [" & sPath & "]")
+          Inc iCpt
+        Endif
+      Next
+    Next
+  
+  Next
+
+  aResult.Insert([Subst("There are &1 symbols to document yet.", CStr(iCpt)), ""], 0)
+  Return aResult
   
 End
