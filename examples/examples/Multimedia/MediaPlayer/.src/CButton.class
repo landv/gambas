@@ -93,6 +93,8 @@ Private Sub SetOpacity()
 
   Dim W, H As Integer
   Dim hFont As Font
+  
+  If Not $hImage Then Return
 
   $hDraw = $hImage.Stretch(Me.W - 4, Me.H - 4)
   Paint.Begin($hDraw)
@@ -204,3 +206,10 @@ Private Sub Font_Write(Value As Font)
   $hFont = Value.Copy()
 
 End
+
+Public Sub DrawingArea_Arrange()
+  
+  SetOpacity
+  
+End
+
