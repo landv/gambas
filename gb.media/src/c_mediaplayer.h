@@ -44,14 +44,15 @@ extern GB_DESC MediaPlayerBalanceChannelDesc[];
 #else
 
 #define THIS ((CMEDIAPLAYER *)_object)
-#define ELEMENT ((GstPipeline *)THIS->base.elt)
+#define THIS_CONTROL (&(THIS->base.control))
+#define ELEMENT ((GstPipeline *)(THIS_CONTROL->elt))
 #define BALANCE (GST_COLOR_BALANCE(ELEMENT))
 
 #endif
 
 typedef
 	struct {
-		CMEDIACONTROL base;
+		CMEDIAPIPELINE base;
 		int channel;
 	}
 	CMEDIAPLAYER;

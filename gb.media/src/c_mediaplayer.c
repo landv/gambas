@@ -337,7 +337,7 @@ BEGIN_PROPERTY(MediaPlayerVideo_Visualisation)
 		
 		set_flag(THIS, GST_PLAY_FLAG_VIS, FALSE);
 		
-		playing = THIS->base.state == GST_STATE_PLAYING;
+		playing = THIS_CONTROL->state == GST_STATE_PLAYING;
 		if (playing)
 			MEDIA_set_state(THIS, GST_STATE_PAUSED, FALSE);
 		

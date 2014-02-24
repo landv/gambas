@@ -1258,12 +1258,21 @@ static int cb_message(CMEDIAPIPELINE *_object)
 
 static void stop_pipeline(CMEDIACONTROL *_object)
 {
+	int try;
+
 	// "It is not allowed to post GST_MESSAGE_EOS when not in the PLAYING state." says the documentation
 	if ((THIS->state == GST_STATE_PLAYING) && !THIS->eos)
 	{
+		try = 0;
 		gst_element_send_event(ELEMENT, gst_event_new_eos());
 		while (!THIS->eos)
 		{
+			try++;
+			if (try > 25)
+			{
+				fprintf(stderr, "gb.media: warning: could not catch end of stream\n");
+				break;
+			}
 			cb_message(THIS_PIPELINE);
 			usleep(10000);
 		}
