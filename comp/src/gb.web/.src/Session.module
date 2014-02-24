@@ -197,11 +197,10 @@ Private Sub CheckUnique()
   Dim sPrefix As String
   Dim aKill As String[]
   Dim sKill As String
-  
-  If Not $bUnique Then Return
-  
-  Try hLock = Lock GetPath(".unique.lock")
-  If Error Then Return
+  Dim sFile As String
+  Dim sDir As String
+  Dim dNow As Date
+  Dim hStat As Stat
   
   If $sPrefix Then
     sPrefix = $sPrefix
@@ -209,15 +208,35 @@ Private Sub CheckUnique()
     sPrefix = CGI["REMOTE_ADDR"]
   Endif
   
-  Do
-    aKill = Dir(GetPath(), sPrefix & ":*")
-    If aKill.Count = 0 Then Break
-    For Each sKill In aKill
-      Try Kill GetPath(sKill)
-    Next
-  Loop
+  sDir = GetPath()
+    
+  If $bUnique Then 
   
-  Unlock #hLock
+    Try hLock = Lock GetPath(".unique.lock")
+    If Error Then Return
+    
+    Do
+      aKill = Dir(sDir, sPrefix & ":*")
+      If aKill.Count = 0 Then Break
+      For Each sKill In aKill
+        Try Kill sDir &/ sKill
+      Next
+    Loop
+    
+    Unlock #hLock
+  
+  Else
+
+    dNow = Now
+    For Each sFile In Dir(sDir, sPrefix & ":*")
+      Try hStat = Stat(sDir &/ sFile)
+      If Error Then Continue
+      If DateDiff(dNow, hStat.LastModified, gb.Hour) >= 24 Then
+        Try Kill sDir &/ sFile
+      Endif
+    Next
+    
+  Endif
   
 End
 
