@@ -434,7 +434,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
     Case Arrange.Horizontal
       SetHChildGeometry(X, Y, W, H, ContPage, TCont, bInFixed)
     Case Arrange.Column
-      SetCChildGeometry(X, Y, W, H, ContPage, TCont, bInFixed)
+      Me._SetCChildGeometry(X, Y, W, H, ContPage, TCont, bInFixed)
     Case Arrange.Fill
       SetFChildGeometry(X, Y, W, H, ContPage, TCont, bInFixed)
     Case Arrange.None
@@ -444,143 +444,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   
 End
 
-Private Sub SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
-  
-  Dim aPageItems As New TControl[] ''Éléments contenu par cette page
-  Dim aPageColumns As New TControl[][]
-  Dim aPageColumn As New TControl[]
-  Dim aColX As New Float[]
-  Dim hChildHints As TSizeHint ''Besoins en hauteur/largeur de l'enfant
-  Dim hChild As ReportControl  ''Un enfant reportcontrol
-  Dim oChild As Object
-  Dim TH, fHeight, fSpc As Float
-  Dim fExp As Float
-  Dim iNExp As Integer
-  
-  Dim i, j, k As Integer
-  Dim hTItem As TControl
-  'Dim bPass As Boolean
-  Dim fX, fY, fTmpY As Float
-  Dim bExitLoop As Boolean
-  
-  Dim fNextColStartPos, fCurColX As Float
-  
-  'Initialisation des variab  hchild.Indexhchild.Indexles
-  fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
-  'On retire les marges a la hauteur et les bordures
-  H = H - Me.Padding._Top - Me.Padding._Bottom - Me.Border._Top - Me.Border._Bottom
-  'on retire a la largeur les paddings (et les bordure ?)
-  W = W - Me.Padding._Left - Me.Padding._Right - Me.Border._Left - Me.Border._Right
-  
-  'On positionne le curseur de position au coin a gauche
-  X = Me.Padding._Left + Me.Border._Left
-  Y = Me.Padding._Top + Me.Border._Top
-  
-  'On initialise la hauteur total avec la hauteur disponible
-  TH = H
-  fCurColX = X
-  
-  'On va retirer a la hauteur totale les éléments fixes
-  For i = Me._CurItem To Me.Children.Max
-    hChild = Me.Children[i]
-    For j = hchild._DataIndex To hchild._Count - 1
-      hChildHints = hChild._GetSizeHints(W, TH, W, H)
-      hTItem = New TControl
-      hTItem.Ctrl = hChild
-      hTItem.SizeHint = hChildHints
-      ' Je cherche l'élément le plus large pour définir la position de la colonne suivante
-      If fNextColStartPos < fCurColX + hChildHints.Width Then fNextColStartPos = fCurColX + hChildHints.Width
-      'Si un des éléments de colonne dépasse la largeur et qu'il n'est pas dans la première colonne
-      'alors on annule toute la colonne
-      If fNextColStartPos > X + W Then
-        hchild._DataIndex = k
-        bExitLoop = True
-        'Print "trop large", fNextColStartPos, X + W
-        Break
-      Endif
-      'si on arrive en bas du container alor on change de colonne
-      If TH - hChildHints.Height < 0 Then
-        'Print TH - hChildHints.Height
-        aPageColumns.Add(aPageColumn)
-        aColX.Add(fCurColX)
-        aPageColumn = New TControl[]
-        fCurColX = fNextColStartPos + fspc
-        k = j
-        TH = H
-      Endif
-      TH = TH - hChildHints.Height - fspc
-      hTItem.Index = IIf(bInFixed, 0, j)
-      aPageColumn.Add(hTItem)
-      
-      'On l'ajoute a la page
-    Next
-    'Print j & "/" & hchild._Count
-    'Print Me._CurItem & "/" & Me.Children.Max
-    
-    If bExitLoop Then Break
-    hchild._DataIndex = 0
-    Inc Me._CurItem
-    
-  Next
-  If Not bExitLoop Then
-    aColX.Add(fCurColX)
-    aPageColumns.Add(aPageColumn)
-  Endif
-  
-  'On va mettre en page a présent
-  'On définit la taille des éléments étendus
-  If iNexp Then
-    fExp = (TH + fExp) / iNexp
-  Endif
-  i = 0
-  For Each aPageColumn In aPageColumns
-    fTmpY = Y
-    For Each hTItem In aPageColumn
-      
-      oChild = hTItem.Ctrl
-      'Si l'élément est étendu on lui applique la taille répartie
-      If oChild.Expand And Not oChild.Ignore Then
-        'If Me.Tag = "*" Then Stop
-        fHeight = fExp
-      Else
-        'sinon il maintien sa taille
-        fHeight = hTItem.SizeHint.Height
-      Endif
-      oChild._Index = hTItem.Index
-      'Print Object.Type(hChild) & "  " & fHeight
-      If Not oChild.Ignore Then
-        hTItem._SetGeometry(aColX[i], fTmpY, hTItem.SizeHint.Width, fHeight)
-        
-        oChild._SetChildGeometry(aColX[i], fTmpY, hTItem.SizeHint.Width, fHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
-        fTmpY += fHeight + fspc
-      Else
-        fX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
-        fY = Y + IIf(oChild._RelativeTop, H * oChild._Top / 100, oChild._Top)
-        hTItem._SetGeometry(fX, fY, hTItem.SizeHint.Width, fHeight)
-        oChild._SetChildGeometry(fX, fY, hTItem.SizeHint.Width, fHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
-      Endif
-      
-      If oChild Is ReportContainer Then
-        
-        If oChild._CurItem <= oChild.Children.max Then
-          'Print "il reste des éléments dans " & oChild.Tag & " a la page " & ContPage
-          'Print ochild.Children.max - ochild._CurItem
-          j = Me.Children.Find(oChild)
-          Me._CurItem = Min(Me._CurItem, j)
-        Endif
-        'ne pas incrémenter la lecture des enfants si je suis dans un élément fixe
-        If bInFixed Then ochild._CurItem = 0
-      Endif
-      
-    Next
-    Inc i
-    aPageItems.Insert(aPageColumn)
-  Next
-  'Fin du processus
-  'On ajoute cette page au dossier du conteneur
-  TCont._PageChildren[ContPage] = aPageItems
-  
-End
+
 
 Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   
@@ -681,7 +545,9 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'If hchild.tag = "**" Then Print iPreIndex
       'If iPreIndex = 9 Then Stop
       'on récupère la taille de l'enfant
+      
       hChildHints = hchild._GetSizeHints(W, fTH, W, H, iPreIndex)
+      
       'Les éléments fixes ont déja été traités on ne tient donc pas compte de leur hauteur
       'car elle a déja été déduite de l'espace restant. De meme on ignore les objets flottants (ignore=true)
       If Not hchild.Fixed And If Not hchild.Ignore Then
@@ -690,7 +556,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         'si la place restante est insuffisante
         'on provoque la sortie en fin de boucle
         If (fTH - hChildHints.Height) < 0 Or If fTH <= 0 Or bForceNewPage Then
-          
+          '  If hchild.Tag = "*" Then Stop
           bForceNewPage = False
           hchild._DataIndex = j
           
@@ -1127,3 +993,10 @@ Private Sub OnePiece_Write(Value As Boolean)
   $bOnePiece = Value
   
 End
+
+Public Sub _SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
+  
+  
+  
+End
+
