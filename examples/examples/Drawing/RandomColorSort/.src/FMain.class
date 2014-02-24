@@ -1,0 +1,265 @@
+' Gambas class file
+
+' RandomColorSort - Louis W. Adams, Jr. - February 2014
+' Drawing routine fixed by Benoît Minisini
+
+Const cFormWidth As Integer = 927                                   'Form size.
+Const cFormHeight As Integer = 800
+
+Const cChartWidthHeight As Integer = 783                            'Color chart size, width and height.
+Const cInset As Integer = 50                                        'Width of border around chart.
+Const cCircleRadius As Integer = 15                                 'Radius, in pixels, of color circles.
+
+'Create picture and initialize size.
+Private picChart As New Picture(cChartWidthHeight, cChartWidthHeight)
+
+Private a As Single                                                  'Color attributes.
+Private b As Single
+Private cc As Single
+Private hh As Single
+
+Private RR As Integer                                                'Color RGB values.
+Private GG As Integer
+Private BB As Integer
+
+Private iColorCount As Integer                                       'The number of colors to be plotted.
+
+Public Sub _new()
+  
+  With Me                                                           'Set up form size and display characteristics.
+    .Width = cFormWidth
+    .Height = cFormHeight
+    .Resizable = False
+    .Center
+  End With
+  
+  With daColorChart                                                 'Set up display area control size and other characteristics.
+    .Width = cChartWidthHeight
+    .Height = cChartWidthHeight
+  End With
+  
+  pnlControls.X = cChartWidthHeight + 20                            'Position panel 20 pixels to the right of the display area control.
+  pnlControls.Y = (cChartWidthHeight - pnlControls.Height) \ 2      'Vertically center the panel on the form.
+  
+  scrColorCount.Value = 9                                           'The initial number of colors to display is 2^9 = 512 colors.
+  
+End
+
+Private Sub RedrawPicture()
+  
+  Dim I As Integer
+  
+  iColorCount = 2 ^ scrColorCount.Value                             'Number of colors.
+  lblColorCount.Text = Trim(Format(iColorCount, "##,###"))          'Convert the number of colors into a text label.
+  
+  picChart.Fill(Color.White)                                        'Initialize picture by filling it with white.
+  'This also serves to "erase" a pre-existing picture.
+  
+  If chkDelay.Value Then                                            'Check to see if user wants a slow color display.
+    
+    For I = 1 To iColorCount
+      ComputeColor()
+      Paint.Begin(picChart)
+      DrawColorCircle()                                             'Paint/draw the color circle on the picture.
+      Paint.End
+      daColorChart.Refresh
+      Wait 0.25                                                     'Delay next color displayed.
+      If Not chkDelay.Value Then Break                              'Abort slow display if user unchecks checkbox.
+    Next
+    
+  Else                                                              'Display all colors at once.
+    
+    Paint.Begin(picChart)
+    For I = 1 To iColorCount
+      ComputeColor()
+      DrawColorCircle()                                             'Paint/draw the color circle on the picture.
+    Next
+    Paint.End
+    
+    daColorChart.Refresh
+    
+  End If
+  
+End
+
+Public Sub Form_Open()
+  
+  RedrawPicture
+  
+End
+
+Private Sub ComputeColor()
+  
+  RR = Rnd(0, 255)                                                  'Pick random RGB values for a color.
+  GG = Rnd(0, 255)
+  BB = Rnd(0, 255)
+  
+  cc = (Max(Max(RR, GG), BB) - Min(Min(RR, GG), BB)) / 255.0        'Chromaticness, the distance of the color from center.
+  hh = ATan2(((RR + GG) - 2 * BB), Sqr(3) * (RR - GG))              'Hue angle.
+  
+  a = cc * Cos(hh)                                                  'Color space coordinates, where a is the horizontal coordinate
+  b = cc * Sin(hh)                                                  'and b is the vertical coordinate. Both coordinates range from -1 to 1.
+  
+End
+
+Private Function XX(at As Single) As Integer                        'Convert a color coordinate into horizontal screen coordinate.
+  
+  Return ((cChartWidthHeight - 2 * cInset) * at + cChartWidthHeight) * 0.5
+  
+End
+
+Private Function YY(bt As Single) As Integer                        'Convert b color coordinate into vertical screen coordinate.
+  
+  Return (- (cChartWidthHeight - 2 * cInset) * bt + cChartWidthHeight) * 0.5
+  
+End
+
+Private Function DrawColorCircle()
+  
+  With Paint
+    .Brush = Paint.Color(Color.Black)                           'Draw solid black disk.
+    .Ellipse(XX(a) - cCircleRadius, YY(b) - cCircleRadius, 2 * cCircleRadius, 2 * cCircleRadius)
+    .Fill()
+    
+    .Brush = Paint.Color(Color.RGB(RR, GG, BB))                 'Draw slightly smaller color disk so a black outline remains around the disk.
+    .Ellipse(XX(a) - cCircleRadius + 1, YY(b) - cCircleRadius + 1, 2 * (cCircleRadius - 1), 2 * (cCircleRadius - 1))
+    .Fill()
+  End With
+  
+End
+
+Private Function DrawChartAxes()
+  
+  Dim I As Integer
+  Dim T As Single
+  
+  If chkAxes.Value Then
+    
+    With Paint                                                      'Paint mode is good for drawing lines.
+      
+      .AntiAlias = False                                          'Do not antialias vertical and horizontal lines. Using antialias blurs them a little.
+      
+      .Brush = Paint.Color(Color.Black)                           'Draw 3 pixel wide a and b axes.
+      .LineWidth = 3
+      
+      .MoveTo(XX(-1), YY(0))
+      .LineTo(XX(1), YY(0))
+      .Stroke
+      
+      .MoveTo(XX(0), YY(1))
+      .LineTo(XX(0), YY(-1))
+      .Stroke
+      
+      .AntiAlias = True                                           'Turn on antialiasing to smoothen angled dashed lines.
+      .Dash = [5, 5]                                              'The dashes are 5 pixels long separated by 5 pixel gaps.
+      
+      For I = 30 To 330 Step 30                                   'Major color hues are located at 30 degree increments.
+        If (I = 90) Or (I = 180) Or (I = 270) Then                'Omit dashed lines at 90, 180, and 270 degrees.
+          Continue
+        Else
+          .MoveTo(XX(0), YY(0))                                   'Draw 1-unit long lines from the coordinate center at
+          .LineTo(XX(Cos(Rad(I))), YY(Sin(Rad(I))))               'specified angles I.  Convert degrees to radians for
+          .Stroke                                                 'trig functions.
+        Endif
+      Next
+      
+    End With
+    
+    With Draw                                                       'Draw mode is good for displaying text.
+      
+      .Font.Name = "DejaVu Sans Mono"
+      .Foreground = Color.Black
+      .Font.Size = 20
+      .Font.Bold = False
+      
+      T = 1.09                                                                  'Radial distance for color letters.
+      
+      .Text("R", XX(T * Cos(Rad(30.0))), YY(T * Sin(Rad(30.0))), 1, 1, 3)       'Red.  Center the letter on a 1x1 pixel area; i.e., text base is along radial line.
+      .Text("Y", XX(0), YY(T), 1, 1, 3)                                         'Yellow
+      .Text("O", XX(T * Cos(Rad(60.0))), YY(T * Sin(Rad(60.0))), 1, 1, 3)       'Orange
+      '.Text("L", XX(T * Cos(Rad(120.0))), YY(T * Sin(Rad(120.0))), 1, 1, 3)     'Lime. Yellowish green. Not a standard hue.
+      .Text("G", XX(T * Cos(Rad(150.0))), YY(T * Sin(Rad(150.0))), 1, 1, 3)   'Green
+      .Text("C", XX(T * Cos(Rad(210.0))), YY(T * Sin(Rad(210.0))), 1, 1, 3)     'Cyan
+      .Text("B", XX(0), YY(- T), 1, 1, 3)                                       'Blue. This is computer display blue, which is slightly violet.
+      '.Text("BB", XX(T * Cos(Rad(240.0))), YY(T * Sin(Rad(240.0))), 1, 1, 3)    'Baby Blue, sky blue. This is what many people think of as blue.
+      .Text("V", XX(T * Cos(Rad(300.0))), YY(T * Sin(Rad(300.0))), 1, 1, 3)     'Violet
+      .Text("M", XX(T * Cos(Rad(330.0))), YY(T * Sin(Rad(330.0))), 1, 1, 3)     'Magenta
+      
+    End With
+    
+  End If
+  
+End
+
+Public Sub scrColorCount_Change()
+  
+  If chkDelay.Value Then                                            'In order to gracefully exit the slow color display loop when the number of colors is changed,
+    chkDelay.Value = False                                          'it is necessary to reset the control to stop slow display mode.
+  Endif
+  
+  'Wait                                                              'Execute all pending events before continuing. Otherwise duplicate scroll events are triggered
+  RedrawPicture                                                     'for high color counts. Don't know why!
+  
+End
+
+Public Sub btnSave_Click()
+  
+  Dim strFilter As New String[]
+  
+  strFilter.Add("*.png")                                            'GAMBAS can convert the picture into other file formats.
+  strFilter.Add("PNG")                                              'PNG uses lossless compression, and is used on the Internet.
+  
+  Dialog.Filter = strFilter                                         'Prompt user for file name.
+  
+  If (Dialog.SaveFile()) Then Return                                'Cancel request (exit subroutine) if user hit cancel button.
+  
+  picChart.Save(Dialog.Path)                                        'Save picture to file.
+  
+Catch
+  Message.Warning("Could not save image\n\n\t" & Dialog.Path & "\n \n" & Error.Text & ".  Be sure to end the filename with the .png extension!")
+  
+End
+
+Public Sub chkAxes_Click()
+  
+  daColorChart.Refresh
+  
+End
+
+Public Sub btnReDo_Click()
+  
+  RedrawPicture
+  
+End
+
+Public Sub chkDelay_Click()
+  
+  RedrawPicture
+  
+End
+
+Public Sub btnQuit_Click()
+  
+  If chkDelay.Value Then                                            'Properly terminate delayed graphics calls prior to exiting program.
+    chkDelay.Value = False                                          'Force quit on delayed colors.
+    Wait 0.5                                                        'Make sure delay loop times out.
+  Endif
+  
+  Me.Close
+  
+End
+
+Public Sub Form_Close()                                             'If user manually closes window, capture event and redirect to Quit routine.
+  
+  btnQuit_Click()
+  
+End
+
+Public Sub daColorChart_Draw()
+  
+  Draw.Picture(picChart, 0, 0)
+  If chkAxes.Value Then   
+    DrawChartAxes()                                                 'Show how the color space is divided up into hues.
+  Endif
+  
+End
