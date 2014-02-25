@@ -1,7 +1,6 @@
 ' Gambas class file
 
 Private $aModeButtons As New ToolButton[]
-'Static Private $hReport As Report
 Private bFlag As Boolean
 Private $hPrinter As New Printer As "Printer"
 Private $iCurPrinterResolution As Integer
@@ -20,18 +19,40 @@ End
 Public Sub _new()
   
   Dim s As String
-  'View.Report = New MyReport1
-  'SetReport(View.Report)
-  View.ScaleMode = ReportView.Page
+  Dim hButton As ToolButton
+  
   $aModeButtons = [ToolButton1, ToolButton2, ToolButton4, ToolButton3]
+  If Component.IsLoaded("gb.settings") Then 
+    'Settings.Read(Me, "FPreview")
+    Settings.Read(View, "View")
+    
+    If View.ScaleMode = View.Custom Then
+      Slider1.Value = View.Scale
+    Else
+      For Each hButton In $aModeButtons
+        hButton.Value = False
+      Next
+      $aModeButtons[View.ScaleMode - 1].Value = True
+      
+    Endif
+    
+    ButtonBox1.Text = Settings["FPreview/OutputFile"] 
+    $hPrinter.Name = Settings["FPreview/Printer"] 
+    If Settings["FPreview/PrintToFile"] = True Then TabPanel1.Index = 1
+    
+    $hPrinter.Duplex = Settings["FPreview/Duplex"] 
+    $hPrinter.GrayScale = Settings["FPreview/GrayScale"] 
+    $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
+    $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
+    
+  Endif
   
   For Each s In Printer.List
     cmbPrinter.Add(s)
   Next
-  SelectPrinter
+  
+  SelectPrinter($hPrinter.Name)
   Button1.Tag = False
-  '  Panel4.Layout = [7, 2]
-  'ToggleButton1_Click
   
 End
 
@@ -39,6 +60,9 @@ Private Sub SelectPrinter(Optional sName As String)
   
   If sName Then
     $hPrinter.Name = sName
+    Object.Lock(cmbPrinter)
+    Try cmbPrinter.Index = cmbPrinter.List.Find(sName)
+    Object.Unlock(cmbPrinter)
   Else
     $hPrinter.Name = Printer.Default
     Object.Lock(cmbPrinter)
@@ -57,7 +81,6 @@ Private Sub SelectPrinter(Optional sName As String)
 End
 
 Public Sub SetReport(hReport As Report)
-  'View.Report = hReport
   
   View.Report = hReport
   GetValuesFromReport()
@@ -92,14 +115,14 @@ End
 Public Sub Slider1_Change()
   
   Dim hButton As ToolButton
-
+  
   View.Scale = Slider1.Value / 100
   lblZoom.Text = Str(Slider1.Value) & " %"
   bFlag = True
   For Each hButton In $aModeButtons
     hButton.Value = False
-    
   Next
+  
   bFlag = False  
   
 End
@@ -121,16 +144,15 @@ Public Sub Mode_Click()
   If bFlag Then Return
   bFlag = True
   hCurButton = Last
+  
   For Each hButton In $aModeButtons
-    'Object.Lock(hButton)
-    'Print hButton, hCurButton, hButton = hCurButton
     If hButton = hCurButton Then 
       hButton.Value = True
     Else
       hButton.Value = False
     Endif
-    'Object.Unlock(hButton)
   Next
+  
   bFlag = False
   
   View.ScaleMode = hCurButton.Tag
@@ -163,14 +185,6 @@ Public Sub tgbCollateCopies_Click()
   
   Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
   $hPrinter.CollateCopies = Last.Value
-  
-End
-
-Public Sub PictureBox2_MouseDown()
-  
-End
-
-Public Sub cmbOrientation_Change()
   
 End
 
@@ -214,10 +228,6 @@ Public Sub ButtonBox1_Click()
     ButtonBox1.Text = Dialog.Path
     $hPrinter.OutputFile = Dialog.Path
   Endif
-  
-End
-
-Public Sub Form_Activate()
   
 End
 
@@ -275,9 +285,8 @@ End
 Public Sub Button1_Click()
   
   Dim iReturn As Integer
-
+  
   If Button1.Tag Then
-    'Button1.Picture = Picture["icon:/22/exec"]
     $hPrinter.Cancel
     Button1.Tag = False
     
@@ -289,20 +298,20 @@ Public Sub Button1_Click()
           iReturn = Message.Warning("This file already exist.\nDo you want to replace it ?", "Yes", "No")
           If iReturn = 2 Then 
             ButtonBox1.SetFocus
-            'ButtonBox1.se
+            
             Return 
           Endif
         Endif
-    Else
-      ButtonBox1_Click
-      Return
+      Else
+        ButtonBox1_Click
+        Return
       Endif
       
     Endif
     Button1.Tag = True
     Button1.Picture = Picture["icon:/22/cancel"]
     Button1.Text = ("Cancel")
-    'Print $hPrinter.Resolution
+    
     $hPrinter.Print
   Endif
   
@@ -320,7 +329,6 @@ Public Sub Printer_Begin()
 End
 
 Public Sub Printer_Paginate()
-  'View._ForceLayout
   
   If View.Report._LayoutNotFinished Then
     View.LockLayout
@@ -331,7 +339,6 @@ Public Sub Printer_Paginate()
     lblPrint.Text = ("Printing...")
     View.UnlockLayout
   Endif
-  'View.LockLayout
   
 End
 
@@ -358,12 +365,6 @@ Public Sub Printer_End()
   
 End
 
-Public Sub View_Layout(LayoutInProgress As Boolean)
-  
-  'Button1.Enabled = Not LayoutInProgress
-  
-End
-
 Public Sub Panel12_MouseDown()
   
 End
@@ -375,7 +376,25 @@ Public Sub ButtonBox1_Change()
 End
 
 Public Sub TextBox2_Change()
-
+  
   $hPrinter.NumCopies = Last.Value
+  
+End
 
+Public Sub Form_Close()
+  
+  If Component.IsLoaded("gb.settings") Then 
+    'Settings.Write(Me, "FPreview")
+    Settings.Write(View, "View")
+    Settings["FPreview/OutputFile"] = ButtonBox1.Text
+    Settings["FPreview/Printer"] = $hPrinter.Name
+    Settings["FPreview/PrintToFile"] = TabPanel1.Index = 1
+    Settings["FPreview/Duplex"] = cmbDuplex.Index
+    Settings["FPreview/GrayScale"] = tgbGrayScale.Value
+    Settings["FPreview/ReverseOrder"] = tgbReverseCopies.Value
+    Settings["FPreview/CollateCopies"] = tgbCollateCopies.Value
+    
+    Settings.Save()
+  Endif
+  
 End

@@ -19,6 +19,7 @@ Private $fSpace As Float
 Property Scale As Float
 Property _GrayScale As Boolean
 Private $bGrayScale As Boolean
+Property Settings As Variant[]
 
 
 Private $fRealPageHeight As Float
@@ -673,5 +674,20 @@ Public Sub View_MouseMove()
     $tmrRedraw.Trigger
     
   Endif
+  
+End
+
+Private Function Settings_Read() As Variant[]
+
+  Return [$fScale, CVariant($iScaleMode)]
+
+End
+
+Private Sub Settings_Write(Value As Variant[])
+
+  $fScale = Value[0]
+  $iScaleMode = Value[1]
+
+Catch
   
 End
