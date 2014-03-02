@@ -85,6 +85,7 @@ static int _last_child_error_errno = 0;
 
 static void init_child(void);
 static void exit_child(void);
+static void wait_child(CPROCESS *process);
 
 enum {
 	CHILD_NO_ERROR,
@@ -398,7 +399,7 @@ static void abort_child(int error)
 		close(fd);
 	}
 	
-	exit(255);
+	_exit(255);
 }
 
 static void init_child_tty(int fd)
@@ -443,12 +444,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	CARRAY *array;
 	int i, n;
 	sigset_t sig, old;
-	bool pwd;
 	int save_errno;
 
 	// for virtual terminal
 	int fd_master = -1;
-	int fd_slave;
 	char *slave = NULL;
 	//struct termios termios_stdin;
 	//struct termios termios_check;
@@ -518,6 +517,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	if (mode & PM_TERM)
 	{
 		#ifdef OS_OPENBSD
+		int fd_slave;
 		if (openpty(&fd_master, &fd_slave, NULL, NULL, NULL) < 0)
 			goto __ABORT_ERRNO;
 		#else
@@ -560,11 +560,11 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	sigaddset(&sig, SIGCHLD);
 	sigprocmask(SIG_BLOCK, &sig, &old);
 
-	pid = fork();
+	pid = vfork();
 	if (pid == (-1))
 	{
 		stop_process(process);
-		sigprocmask(SIG_SETMASK, &old, &sig);
+		sigprocmask(SIG_SETMASK, &old, NULL);
 		goto __ABORT_ERRNO;
 	}
 
@@ -635,16 +635,18 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			FREE(&argv);
 		}
 
-		sigprocmask(SIG_SETMASK, &old, &sig);
+		sigprocmask(SIG_SETMASK, &old, NULL);
 	}
 	
-	// child process
-	
-	else
+	else //------------ child process ----------------------------
 	{
+		int fd_slave;
+		bool pwd;
+		int ch_i, ch_n;
+
 		//bool stdin_isatty = isatty(STDIN_FILENO);
 		
-		sigprocmask(SIG_SETMASK, &old, &sig);
+		sigprocmask(SIG_SETMASK, &old, NULL);
 		
 		if (mode & PM_SHELL)
 			setpgid(0, 0);
@@ -718,10 +720,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (env)
 		{
 			char *str;
-			n = ARRAY_count(env->data);
-			for (i = 0; i < n; i++)
+			ch_n = ARRAY_count(env->data);
+			for (ch_i = 0; ch_i < ch_n; ch_i++)
 			{
-				str = ((char **)env->data)[i];
+				str = ((char **)env->data)[ch_i];
 				if (putenv(str))
 					ERROR_warning("cannot set environment string: %s", str);
 				if (strncmp(str, "PWD=", 4) == 0 && chdir(&str[4]) == 0)
@@ -734,9 +736,20 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			FILE_chdir(PROJECT_oldcwd);
 		
 		execvp(argv[0], (char **)argv);
-		//execve(argv[0], (char **)argv, environ);
 		abort_child(CHILD_CANNOT_EXEC);
 	}
+
+	#ifdef DEBUG_ME
+	fprintf(stderr, "run_process: check child state immediately\n");
+	#endif
+
+	usleep(1);
+	wait_child(process);
+	throw_last_child_error();
+
+	#ifdef DEBUG_ME
+	fprintf(stderr, "run_process: child is OK\n");
+	#endif
 
 	update_stream(process);
 	return;
@@ -748,10 +761,25 @@ __ABORT_ERRNO:
 	THROW_SYSTEM(save_errno, NULL);
 }
 
+static void wait_child(CPROCESS *process)
+{
+	int status;
+
+	if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
+	{
+		process->status = status;
+		_last_status = status;
+
+		#ifdef DEBUG_ME
+		fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
+		#endif
+
+		stop_process(process);
+	}
+}
 
 static void callback_child(int signum, intptr_t data)
 {
-	int status;
 	CPROCESS *process, *next;
 	//int buffer;
 
@@ -764,6 +792,7 @@ static void callback_child(int signum, intptr_t data)
 			ERROR_panic("Cannot read from SIGCHLD pipe: %s", strerror(errno));
 	}
 #endif
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, ">> callback_child\n");
 	#endif
@@ -771,23 +800,7 @@ static void callback_child(int signum, intptr_t data)
 	for (process = _running_process_list; process; )
 	{
 		next = process->next;
-
-		if (wait4(process->pid, &status, WNOHANG, NULL) == process->pid)
-		{
-			process->status = status;
-			_last_status = status;
-
-			#ifdef DEBUG_ME
-			fprintf(stderr, "Process %d has returned %d\n", process->pid, status);
-			#endif
-
-			/*printf("** signal_child\n");*/
-
-			stop_process(process);
-			//stop_process_after(process);
-			//break; // one exit at a time // why ?
-		}
-
+		wait_child(process);
 		process = next;
 	}
 
