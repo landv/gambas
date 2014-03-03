@@ -44,10 +44,10 @@ typedef struct {
 } CWATCH;
 
 typedef struct cinfo CINFO;
-typedef struct cinfo {
+struct cinfo {
 	struct inotify_event *iev;
 	CINFO *prev;
-} CINFO;
+};
 
 typedef struct {
 	int fd;
