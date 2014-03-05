@@ -45,7 +45,7 @@ static char *get_address(char *address)
 
 	len = GB.StringLength(address);
 
-	if (address[0] == '<' && address[len - 1] == '>')
+	if (address[len - 1] == '>' && strchr(address, '<'))
 		return address;
 
 	_tmp = GB.NewString("<", 1);
