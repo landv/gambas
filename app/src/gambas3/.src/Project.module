@@ -118,6 +118,8 @@ Public DEFAULT_FONT As String = "Monospace,9"
 Public DESKTOP_FONT As String
 
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
+Public Const WIKI_URL As String = "http://gambaswiki.org"
+Public Const WIKI_ROOT As String = "http://gambaswiki.org/wiki"
 
 Public Const FILTER_ADDED As String = " A"
 Public Const FILTER_EXPORTED As String = " X"
@@ -234,7 +236,7 @@ Public Sub InitWebView()
 
   'WebSettings.Fonts.StandardFont = Application.Font.Name
   WebSettings.Fonts.SansSerifFont = Application.Font.Name
-  WebSettings.Fonts.DefaultFontSize = Application.Font.Height * 1.2
+  WebSettings.Fonts.DefaultFontSize = Application.Font.Height
 
   hFont = Font[Settings["/ConsoleFont", DEFAULT_FONT]]
   WebSettings.Fonts.FixedFont = hFont.Name

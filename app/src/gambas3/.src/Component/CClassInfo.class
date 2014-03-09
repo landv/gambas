@@ -381,7 +381,7 @@ Public Sub GetHelpURL() As String
       'sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
       sPath &/= LCase(Name)
       
-      Return sPath & "?help&v3&" & MHelp.GetLanguage()
+      Return sPath & "?v&" & MHelp.GetLanguage()
     
     Endif
     

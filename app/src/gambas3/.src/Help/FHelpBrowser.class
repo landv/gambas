@@ -89,7 +89,7 @@ End
 Private Function GetHomeURL() As String
 
   'Debug MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
-  Return MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
+  Return MHelp.GetURL() & "?" & MHelp.GetLanguage()
 
 End
 
@@ -177,7 +177,7 @@ Public Sub webHelp_Load()
   
   ShowWaiting(False)
   $bError = False
-  btnModify.Enabled = webHelp.Url Begins "http://gambasdoc.org"
+  btnModify.Enabled = webHelp.Url Begins Project.WIKI_URL
   
 End
 
@@ -198,9 +198,9 @@ Public Sub btnModify_Click()
   Dim sUrl As String
   
   sUrl = webHelp.Url
-  If Not (sUrl Begins "http://gambasdoc.org") Then Return
+  If Not (sUrl Begins Project.WIKI_URL) Then Return
   
-  sUrl = Replace(sUrl, "http://gambasdoc.org/help", "http://gambasdoc.org/edit")
+  'sUrl = Replace(sUrl, "http://gambasdoc.org/help", "http://gambasdoc.org/edit")
   
   Project.OpenWebPage(sUrl)
   
@@ -296,7 +296,7 @@ Private Sub SetLang(sLang As String)
   sLang = MHelp.GetLanguage()
   
   sUrl = webHelp.Url
-  If sUrl Begins "http://gambasdoc.org/" Then
+  If sUrl Begins Project.WIKI_URL Then
     sUrl = Replace(sUrl, "&" & sOldLang, "")
     'Debug sUrl & "&" & sLang
     webHelp.Url = sUrl & "&" & sLang

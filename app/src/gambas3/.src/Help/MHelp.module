@@ -12,8 +12,6 @@ Public Const TYPE_SPECIAL As Integer = 6
 Public Const TYPE_COMPONENT As Integer = 7
 Public Const TYPE_FILE As Integer = 8
 
-Private Const ROOT_URL As String = "http://gambasdoc.org/help"
-
 Public $PopupHelpCache As Collection
 
 Private Sub GetPath(sPath As String) As String
@@ -84,9 +82,9 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   sName = LCase(hSymbol.Name)
   If Right(sName) = "$" Then sName = Left(sName, -1)
   If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
-    sLink = "help/lang"
+    sLink = "/lang"
   Else
-    sLink = "help/comp"
+    sLink = "/comp"
     sComp = hSymbol.Component
     If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
     sLink &= "/" & sComp
@@ -99,7 +97,7 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   If Exist(GetPath(FormatName(sLink)) & ".html")
     Project.OpenWebPage(GetPath(FormatName(sLink)) & ".html")
   Else
-    Project.OpenWebPage("http://gambasdoc.org" &/ sLink & "?v3&" & GetLanguage())
+    Project.OpenWebPage(Project.WIKI_URL &/ sLink & "?" & GetLanguage())
   Endif
   
 End
@@ -108,7 +106,7 @@ Public Sub GotoComponent(sComp As String)
   
   Dim sLink As String
   
-  sLink = "help/comp" &/ FormatName(sComp)
+  sLink = "/comp" &/ FormatName(sComp)
   Project.OpenWebPage(GetPath(sLink) & ".html")
   FHelpBrowser.Main
   
@@ -118,7 +116,7 @@ Public Sub GotoClass(sComp As String, sClass As String)
   
   Dim sLink As String
   
-  sLink = "help/comp" &/ FormatName(sComp) &/ FormatName(sClass)
+  sLink = "/comp" &/ FormatName(sComp) &/ FormatName(sClass)
   Project.OpenWebPage(GetPath(sLink) & ".html")
   
 End
@@ -133,7 +131,7 @@ Public Function GotoKeyword(sName As String, Optional sName2 As String) As Boole
   
   If Right(sName) = "$" Then sName = Left$(sName, -1)
   
-  sPath = GetPath("help/lang" &/ LCase(sName)) & ".html"
+  sPath = GetPath("/lang" &/ LCase(sName)) & ".html"
   If Not Exist(sPath) Then Return True
   Project.OpenWebPage(sPath)
   
@@ -147,7 +145,7 @@ Public Function GotoDatatype(sName As String) As Boolean
   
   Dim sPath As String
   
-  sPath = GetPath("help/lang/type" &/ LCase(sName)) & ".html"
+  sPath = GetPath("/lang/type" &/ LCase(sName)) & ".html"
   If Not Exist(sPath) Then Return True
   Project.OpenWebPage(sPath)
   
@@ -167,9 +165,9 @@ Public Function GetSymbolHelpPath(hSymbol As CSymbolInfo) As String
   sName = LCase(hSymbol.Name)
   
   If hSymbol.Component = "gb" And If hSymbol.Class = "." Then
-    sLink = "help/lang"
+    sLink = "/lang"
   Else
-    sLink = "help/comp"
+    sLink = "/comp"
     sComp = hSymbol.Component
     If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
     sLink &= "/" & sComp
@@ -288,7 +286,7 @@ End
 
 Public Sub GetURL(Optional sPath As String) As String
   
-  Return ROOT_URL &/ sPath
+  Return Project.WIKI_ROOT &/ sPath
   
 End
 
@@ -300,13 +298,13 @@ Public Sub GetLangURL(sSymbol As String) As String
   sSymbol = Replace(sSymbol, "$", "")
   If Right(sSymbol) = "?" Then sSymbol = "is" & Left(sSymbol, -1)
   
-  Return GetURL("lang") &/ sSymbol & "?help&v3&" & GetLanguage()
+  Return GetURL("lang") &/ sSymbol & "?v&" & GetLanguage()
   
 End
 
 Public Sub GetSpecialURL(sSymbol As String) As String
   
-  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?help&v3&" & GetLanguage()
+  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?v&" & GetLanguage()
   
 End
 
