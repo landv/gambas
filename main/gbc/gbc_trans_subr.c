@@ -54,9 +54,9 @@ static void trans_subr(int subr, int nparam)
 		{ ".Flush" }, { ".Exec" }, { ".Shell" }, { ".Wait" }, { ".Kill" }, 
 		{ ".Move" }, { ".Mkdir" }, { ".Rmdir" }, { ".Array" }, {".Collection" }, 
 		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
-		{ ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" }, { ".Randomize" }, 
-		{ ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" }, { ".Chmod" },
-		{ ".Chown" }, { ".Chgrp" }
+		{ ".LockWait" }, { ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" },
+		{ ".Randomize" }, { ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" },
+		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }
 	};
 
 	TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -583,8 +583,14 @@ void TRANS_lock(void)
 		THROW("Useless LOCK");
 		
 	TRANS_expression(FALSE);
-	
-	trans_subr(TS_SUBR_LOCK, 1);
+
+	if (TRANS_is(RS_WAIT))
+	{
+		TRANS_expression(FALSE);
+		trans_subr(TS_SUBR_LOCK_WAIT, 2);
+	}
+	else
+		trans_subr(TS_SUBR_LOCK, 1);
 }
 
 

@@ -448,6 +448,7 @@ SUBR_INFO COMP_subr_info[] =
 
 	{ ".Lock",             64,  0,  1     },
 	{ ".Unlock",           64,  1,  1     },
+	{ ".LockWait",         64,  2,  2     },
 
 	{ ".InputFrom",        65,  0,  1     },
 	{ ".OutputTo",         65,  1,  1     },
