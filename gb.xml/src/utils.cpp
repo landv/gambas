@@ -28,9 +28,9 @@
 #include <memory.h>
 
 #ifdef OS_MACOSX
-void *memrchr(void *s, int c, size_t n)
+void *memrchr(const char *s, int c, size_t n)
 {
-    void *start=s,*end=(s+n-1);
+    const char *start=s,*end=(s+n-1);
 
     while(end>=start)
     {
