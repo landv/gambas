@@ -219,10 +219,9 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
             If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
               bJustList = False
             Endif
-            aResult[aResult.Max] = "<p />"
-          Else
-            aResult.Remove(aResult.Max)
+            aResult[aResult.Max - 1] = "<p></p>\n" & aResult[aResult.Max - 1]
           Endif
+          aResult.Remove(aResult.Max)
         Else
           GoSub CLOSE_PARA
           aResult.Add(Space$(iCurrentIndent) & "<ul>")
@@ -232,14 +231,18 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         sLine = Mid$(sLine, 3)
         
       Else If sLine Begins "+ " Then
+        
         hMarkupList = New MarkupList
         hMarkupList.sType = "ol"
         hMarkupList.iIndent = iIndent + 1 + GetIndent(Mid$(sLine, 2))
         aList.Add(hMarkupList)
         bJustList = True
         If aResult.Count And If Trim(aResult[aResult.Max]) = "</ol>" Then
-          If Not Trim(aLine[iLine - 1]) And If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
-            bJustList = False
+          If Not Trim(aLine[iLine - 1]) Then
+            If iLine < aLine.Max And If GetIndent(aLine[iLine + 1]) >= hMarkupList.iIndent Then
+              bJustList = False
+            Endif
+            aResult[aResult.Max - 1] = "<p></p>\n" & aResult[aResult.Max - 1]
           Endif
           aResult.Remove(aResult.Max)
         Else
@@ -572,10 +575,13 @@ Private Sub ConvertLine(sLine As String) As String
   Dim bBlank As Boolean
   Dim bUnderline As Boolean
   Dim bLimitBefore, bLimitAfter As Boolean
+  Dim iLen As Integer
+  
+  iLen = String.Len(sLine)
   
 MAIN_LOOP:
-  
-  If I >= String.Len(sLine) Then 
+    
+  If I >= iLen Then 
     If bEmph Then 
       sResult &= "</em>"
     Else If bStrong Then 
@@ -588,7 +594,7 @@ MAIN_LOOP:
   GoSub NEXT_CAR
   
   If sCar = "\\" Then
-    If I = String.Len(sLine) Then
+    If I = iLen Then
       sResult &= "<br>"
     Else
       GoSub NEXT_CAR
@@ -620,7 +626,7 @@ MAIN_LOOP:
   Endif
   
   If bLimitBefore Or If bLimitAfter Then
-    If sCar = "`" Then Goto ENTER_CODE
+    If sCar = "`" And If Not bCode Then Goto ENTER_CODE
     If sCar = "'" Then Goto ENTER_LIGHT_CODE
     If sCar = "*" Then Goto ENTER_STAR
     If sCar = "~" Then Goto ENTER_UNDERLINE
@@ -636,9 +642,13 @@ MAIN_LOOP:
   
 NEXT_CAR:
 
-  Inc I
-  If I > Len(sLine) Then Error.Raise("Unexpected end of line")
-  sCar = String.Mid$(sLine, I, 1)
+  If I >= iLen Then
+    I = iLen + 1
+    sCar = ""
+  Else
+    Inc I
+    sCar = String.Mid$(sLine, I, 1)
+  Endif
   Return
   
 LOOK_CAR:
@@ -649,7 +659,7 @@ LOOK_CAR:
 ENTER_MARKUP:
 
   If String.Mid$(sLine, I, 4) = "<!--" Then
-    I = String.Len(sLine)
+    I = iLen
     $bComment = True
     Goto MAIN_LOOP
   Endif
@@ -665,7 +675,11 @@ ENTER_MARKUP:
   
   Repeat
     GoSub NEXT_CAR
-  Until sCar = ">"
+    If sCar = "" Then
+      sResult &= "<div class=\"error\">" & Html("Non terminated markup") & "</div>"
+      Return sResult
+    Endif
+  Until sCar = ">" 
   sPattern = String.Mid$(sLine, I1 + 1, I - I1 - 1)
   
   'sPattern = LCase(sPattern)
@@ -729,6 +743,10 @@ ENTER_CODE:
   sResult &= "<code style=\"white-space:nowrap;\">"
   Do
     GoSub NEXT_CAR
+    If sCar = "" Then
+      sResult &= "</code><div class=\"error\">Missing closing '`'</div>"
+      Return sResult
+    Endif
     If sCar = "`" Then 
       GoSub LOOK_CAR
       If sCar <> "`" Then Break
@@ -902,5 +920,9 @@ ENTER_LINK:
   Endif
     
   Goto MAIN_LOOP
+  
+Catch
+  
+  Return "<div><div class=\"error\"><b>" & Html$(Error.Text) & ":</b><br>" & Html$(sLine) & "</div></div>"
 
 End
