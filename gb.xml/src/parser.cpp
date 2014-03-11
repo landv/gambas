@@ -89,7 +89,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
             //Checking length
             char const *textpos = pos;
             size_t textlen = tag - pos;
-            Trim(textpos, textlen);
+            //Trim(textpos, textlen);
             if(textlen != 0)
             {
                 TextNode *text = XMLTextNode_New();
@@ -105,7 +105,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                 //Checking length
                 char const *textpos = pos;
                 size_t textlen = endData - pos;
-                Trim(textpos, textlen);
+                //Trim(textpos, textlen);
                 if(textlen != 0)
                 {
                     TextNode *text = XMLTextNode_New();

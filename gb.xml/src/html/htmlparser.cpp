@@ -60,7 +60,7 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
             //Checking length
             char const *textpos = pos;
             size_t textlen = tag - pos;
-            XML.Trim(textpos, textlen);
+            //XML.Trim(textpos, textlen);
             if(textlen != 0)
             {
                 TextNode *text = XML.XMLTextNode_New("", 0);
@@ -76,7 +76,7 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                 //Checking length
                 char const *textpos = pos;
                 size_t textlen = endData - pos;
-                XML.Trim(textpos, textlen);
+                //XML.Trim(textpos, textlen);
                 if(textlen != 0)
                 {
                     TextNode *text = XML.XMLTextNode_New("", 0);
