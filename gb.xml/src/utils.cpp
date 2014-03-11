@@ -27,6 +27,22 @@
 #include <stdlib.h>
 #include <memory.h>
 
+#ifdef OS_MACOSX
+void *memrchr(void *s, int c, size_t n)
+{
+    void *start=s,*end=(s+n-1);
+
+    while(end>=start)
+    {
+        if(*end==c)
+            return (void *)end;
+        else
+            end--;
+    }
+
+    return NULL;
+}
+#endif
 
 wchar_t nextUTF8Char(const char *&data, size_t len)
 {
