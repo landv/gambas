@@ -103,6 +103,11 @@ extern "C"
         (void *) static_cast<bool (*)(const wchar_t s)>(isWhiteSpace),
 
         (void *)ThrowXMLParseException,
+
+    #if defined(OS_MACOSX) || defined(__APPLE__)
+        (void*)memrchr,
+    #endif
+
         NULL
     };
     

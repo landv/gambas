@@ -152,7 +152,7 @@ const void* memrchrs(const char *source, size_t lensource, const char *comp, siz
     char *pos = (char*)source;
     do
     {
-        pos = (char*)(memrchr((void*)pos, ((char*)(comp))[lencomp - 1], lensource - (pos - source)));
+        pos = (char*)(memrchr(pos, ((char*)(comp))[lencomp - 1], lensource - (pos - source)));
         if(!pos) return 0;
         if(pos - lencomp < source) return 0;
         if(memcmp(pos - lencomp, comp, lencomp) != 0) continue;

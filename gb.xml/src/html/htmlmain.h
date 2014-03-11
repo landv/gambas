@@ -28,4 +28,8 @@
 extern "C" XML_INTERFACE XML;
 #endif
 
+#if defined(OS_MACOSX) || defined(__APPLE__)
+#define memrchr(s, c, n) XML.memrchr(s, c, n)
+#endif
+
 #endif

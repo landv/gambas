@@ -180,6 +180,9 @@ typedef struct
 
     void (*ThrowXMLParseException)(const char* nerror, const char *text, const size_t lenText, const char *posFailed);
 
+#if defined(OS_MACOSX) || defined(__APPLE__)
+    void* (*memrchr)(const char *s, int c, size_t n);
+#endif
 
     void *_null;
 

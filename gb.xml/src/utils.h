@@ -28,7 +28,7 @@
 
 #ifdef OS_MACOSX
 #include <string.h>
-void *memrchr(const void *s, int c, size_t n);
+void *memrchr(const char *s, int c, size_t n);
 #endif
 
 wchar_t nextUTF8Char(const char *&data, size_t len);
