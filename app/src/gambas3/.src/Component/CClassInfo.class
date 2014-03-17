@@ -374,14 +374,11 @@ Public Sub GetHelpURL() As String
     Else
 
       sPath = MHelp.GetURL("comp")
-      sComp = Component
-      'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-      'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+      sComp = MHelp.ActualComponent(Component)
       sPath &/= LCase(sComp)
-      'sPath &/= LCase(Left(Name) & Replace(Mid(Name, 2), "_", "."))
       sPath &/= LCase(Name)
       
-      Return sPath & "?v&" & MHelp.GetLanguage()
+      Return sPath & "?v&nh&" & MHelp.GetLanguage()
     
     Endif
     
@@ -640,7 +637,7 @@ Public Sub GetHelpHTML() As String
   sHtml = Replace(sHtml, "$(help)", sHelp)
   
   If sInfo Then 
-    sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo & "<hr class=\"border\">")
+    sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo)
   Endif
   
   If hClassInfo.Parent Then 

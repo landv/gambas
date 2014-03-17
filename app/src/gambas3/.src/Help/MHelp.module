@@ -14,6 +14,15 @@ Public Const TYPE_FILE As Integer = 8
 
 Public $PopupHelpCache As Collection
 
+Public Sub ActualComponent(sComp As String) As String
+  
+  If sComp = "gb.gui" Or If sComp = "gb.gtk" Or If sComp = "gb.gtk3" Then Return "gb.qt4"
+  If sComp = "gb.gui.opengl" Or If sComp = "gb.gtk.opengl" Or If sComp = "gb.gtk3.opengl" Then Return "gb.qt4.opengl"
+  Return sComp
+  
+End
+
+
 Private Sub GetPath(sPath As String) As String
   
   sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
@@ -85,8 +94,7 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
     sLink = "/lang"
   Else
     sLink = "/comp"
-    sComp = hSymbol.Component
-    If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+    sComp = ActualComponent(hSymbol.Component)
     sLink &= "/" & sComp
     If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
   Endif
@@ -298,13 +306,13 @@ Public Sub GetLangURL(sSymbol As String) As String
   sSymbol = Replace(sSymbol, "$", "")
   If Right(sSymbol) = "?" Then sSymbol = "is" & Left(sSymbol, -1)
   
-  Return GetURL("lang") &/ sSymbol & "?v&" & GetLanguage()
+  Return GetURL("lang") &/ sSymbol & "?v&nh&" & GetLanguage()
   
 End
 
 Public Sub GetSpecialURL(sSymbol As String) As String
   
-  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?v&" & GetLanguage()
+  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?v&nh&" & GetLanguage()
   
 End
 

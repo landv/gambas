@@ -1463,9 +1463,7 @@ Public Sub GetHelpURL() As String
       Return "gambas://library" &/ Key
     Else
       sPath = MHelp.GetURL("comp")
-      sComp = Key
-      'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-      'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+      sComp = MHelp.ActualComponent(Key)
       sPath &/= LCase(sComp)
       
       Return sPath & "?" & MHelp.GetLanguage()

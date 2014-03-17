@@ -134,21 +134,15 @@ Public Sub Refresh()
 
 End
 
-Private Sub ReadConfigEditor(hEditor As Editor)
-
-  hEditor.ReadConfig
-
-End
-
 Public Sub ReadConfig()
 
   $bToolBar = Settings["/Editor/Toolbar", True]
   panToolbar.Visible = $bToolbar
   Form_Arrange
 
-  ReadConfigEditor(edtEditor)
-  If $hEditor1 Then ReadConfigEditor($hEditor1)
-  If $hEditor2 Then ReadConfigEditor($hEditor2)
+  edtEditor.ReadConfig
+  If $hEditor1 Then $hEditor1.ReadConfig
+  If $hEditor2 Then $hEditor2.ReadConfig
 
   $hCompletion.ReadConfig
   $bCleanOnSave = Settings["/Editor/CleanOnSave", False]
@@ -2579,57 +2573,56 @@ End
 
 Private Sub RefreshBackground()
 
+  Dim aEditor As Editor[] = [$hEditor1, $hEditor2]
   Dim hEditor As Editor
+  Dim bHasFocus As Boolean
 
-  For Each hEditor In [$hEditor1, $hEditor2]
+  If aEditor.Exist(Editor) Then
 
-    If Not hEditor Then Continue
-
-    If hEditor.HasFocus Then
-      ReadConfigEditor(hEditor)
-    Else
-      hEditor.Styles[Highlight.Background].Color = Color.Background
-      hEditor.Flags[Editor.ShowCurrentLine] = False
-      hEditor.Flags[Editor.ShowModifiedLines] = False
-      hEditor.Flags[Editor.ShowLimits] = False
-    Endif
-
-  Next
+    For Each hEditor In aEditor
+      If hEditor And If hEditor.HasFocus Then 
+        bHasFocus = True
+        Break
+      Endif
+    Next
+  
+    For Each hEditor In aEditor
+  
+      If Not hEditor Then Continue
+  
+      hEditor.ReadConfig
+      If Not hEditor.HasFocus Then
+        If bHasFocus Then MTheme.InitEditor(hEditor, True)
+        hEditor.Flags[Editor.ShowCurrentLine] = False
+        hEditor.Flags[Editor.ShowModifiedLines] = False
+      Endif
+  
+    Next
+    
+  Endif
 
 End
 
 Public Sub Editors_GotFocus()
 
-  Dim hEditor As Editor = Last
-
-  Editor = hEditor
-  '$hInsertColor.SetEditor(Editor)
+  Editor = Last
   Project.SetCurrentPopup(mnuEditor)
 
-  If hEditor = $hEditor1 Or hEditor = $hEditor2 Then
-    RefreshBackground
-  Endif
+  RefreshBackground
 
 End
 
-' Public Sub Editors_MouseMove()
-'
-'   If Not Project.Running Then
-'     If FDebugInfo.IsHelpVisible() Or $bShowPopupHelp Then
-'         timShowHelp.Enabled = True
-'     Endif
-'     $X = Mouse.X
-'     $Y = Mouse.Y
-'   Endif
-'
-' End
+Public Sub Editors_LostFocus()
+  
+  RefreshBackground
+  
+End
 
 Public Sub Editors_MouseDown()
   
   CPosition.Disable
   
 End
-
 
 Public Sub Editors_MouseUp()
 
@@ -2947,7 +2940,7 @@ Private Sub InitEditor(hEditor As Editor)
     .TabSize = edtEditor.TabSize
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
   End With
-  ReadConfigEditor(hEditor)
+  hEditor.ReadConfig
 
 End
 

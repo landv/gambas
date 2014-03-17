@@ -775,9 +775,7 @@ Public Function GetHelpURL(Optional bShowFile As Boolean) As String
     Else
 
       sPath = MHelp.GetURL("comp")
-      sComp = Component
-      'If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
-      'If sComp = "gb.qt4.ext" Then sComp = "gb.qt.ext"
+      sComp = MHelp.ActualComponent(Component)
       sPath &/= LCase(sComp)
       sPath &/= LCase(Left(Class) & Replace(Mid(Class, 2), "_", "."))
       
@@ -786,7 +784,7 @@ Public Function GetHelpURL(Optional bShowFile As Boolean) As String
       sName = Replace(sName, ":", ".")
       sPath &/= sName
       
-      Return sPath & "?v&" & MHelp.GetLanguage()
+      Return sPath & "?v&nh&" & MHelp.GetLanguage()
       
     Endif
     

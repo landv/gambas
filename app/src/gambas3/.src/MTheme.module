@@ -89,20 +89,25 @@ Public Sub Copy(cColor As Collection) As Collection
 
 End
 
-Public Sub InitEditor(hEditor As Editor)
+Public Sub InitEditor(hEditor As Editor, Optional bDesaturate As Boolean)
   
   Dim iInd As Integer  
   Dim hStyle As New CStyle
   Dim iStyle As Integer
+  Dim iCol As Integer
   
   For iInd = 0 To ColorKeys.Max
     
     hStyle.FromString(Settings["Highlight" &/ ColorKeys[iInd], $cDefault[ColorKeys[iInd]]])
     iStyle = Object.GetProperty(Classes["Highlight"], ColorKeys[iInd])
     With hEditor.Styles[iStyle]
-      .Background = hStyle.Background
+      iCol = hStyle.Background
+      If bDesaturate Then iCol = Color.Desaturate(iCol)
+      .Background = iCol
       .Bold = hStyle.Bold
-      .Foreground = hStyle.Foreground
+      iCol = hStyle.Foreground
+      If bDesaturate Then iCol = Color.Desaturate(iCol)
+      .Foreground = iCol
       .Italic = hStyle.Italic
       .Underline = hStyle.Underline
     End With

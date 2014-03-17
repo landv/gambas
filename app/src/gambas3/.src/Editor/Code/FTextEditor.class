@@ -399,10 +399,49 @@ Public Sub Editors_Menu()
 
 End
 
-Public Sub Editors_GotFocus()
+Private Sub RefreshBackground()
+
+  Dim aEditor As Editor[] = [$hEditor1, $hEditor2]
+  Dim hEditor As Editor
+  Dim bHasFocus As Boolean
+
+  If aEditor.Exist(Editor) Then
+
+    For Each hEditor In aEditor
+      If hEditor And If hEditor.HasFocus Then 
+        bHasFocus = True
+        Break
+      Endif
+    Next
   
-  Editor = Last 
+    For Each hEditor In aEditor
+  
+      If Not hEditor Then Continue
+  
+      hEditor.ReadConfig
+      If Not hEditor.HasFocus Then
+        If bHasFocus Then MTheme.InitEditor(hEditor, True)
+        hEditor.Flags[Editor.ShowCurrentLine] = False
+        hEditor.Flags[Editor.ShowModifiedLines] = False
+      Endif
+  
+    Next
+    
+  Endif
+
+End
+
+Public Sub Editors_GotFocus()
+
+  Editor = Last
   Project.SetCurrentPopup(mnuEditor)
+  RefreshBackground
+
+End
+
+Public Sub Editors_LostFocus()
+  
+  RefreshBackground
   
 End
 
@@ -648,27 +687,27 @@ Private Sub InitEditor(hEditor As Editor)
 End
 
 Private Sub SetViewMode(iViewMode As Integer)
-  
-  If $iViewMode = iViewMode Then iViewMode = VIEWMODE_NORMAL 
+
+  If $iViewMode = iViewMode Then iViewMode = VIEWMODE_NORMAL
   $iViewMode = iViewMode
 
-  If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then 
+  If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then
     $hEditor1 = New Editor(Me) As "Editors"
     InitEditor($hEditor1)
     $hEditor2 = New Editor(Me) As "Editors"
     InitEditor($hEditor2)
     FSearch.OnNewForm(Me)
   Endif
-  
+
   Select Case $iViewMode
-  
+
     Case VIEWMODE_NORMAL
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
       edtEditor.Goto(Editor.Line, Editor.Column, True)
-      Editor = edtEditor  
-      
+      Editor = edtEditor
+
     Case VIEWMODE_HORIZONTAL
       $hEditor1.Reparent(splHorizontal)
       $hEditor2.Reparent(splHorizontal)
@@ -678,7 +717,7 @@ Private Sub SetViewMode(iViewMode As Integer)
       $hEditor1.Goto(Editor.Line, Editor.Column, True)
       $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
-  
+
     Case VIEWMODE_VERTICAL
       $hEditor1.Reparent(splVertical)
       $hEditor2.Reparent(splVertical)
@@ -688,14 +727,15 @@ Private Sub SetViewMode(iViewMode As Integer)
       $hEditor1.Goto(Editor.Line, Editor.Column, True)
       $hEditor2.Goto(Editor.Line, Editor.Column, True)
       Editor = $hEditor1
-  
-  End Select   
-  
-  $hInsertColor.SetEditor(Editor)
+
+  End Select
+
   Editor.SetFocus
   Form_Arrange
-  
+  Editors_Cursor
+
 End
+
 
 Public Sub mnuNoSplit_Click()
   

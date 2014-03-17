@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9.4286,14,126,71)
+  MoveScaled(9.4286,14,126,76)
   Icon = Picture["icon:/small/text"]
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -308,19 +308,27 @@
       Alignment = Align.Right
     }
   }
-  { edtEditor Editor Editors
-    Name = "edtEditor"
-    MoveScaled(23,8,44,28)
+  { Panel1 Panel
+    MoveScaled(9,6,38,63)
+    Background = Color.Background
     Expand = True
-    Border = False
-  }
-  { splHorizontal HSplit
-    MoveScaled(1,43,45,18)
-    Visible = False
-  }
-  { splVertical VSplit
-    MoveScaled(48,44,42,18)
-    Visible = False
+    Arrangement = Arrange.Fill
+    { edtEditor Editor Editors
+      Name = "edtEditor"
+      MoveScaled(3,1,24,16)
+      Expand = True
+      Border = False
+    }
+    { splHorizontal HSplit
+      MoveScaled(3,19,22,18)
+      Visible = False
+      Expand = True
+    }
+    { splVertical VSplit
+      MoveScaled(2,41,22,18)
+      Visible = False
+      Expand = True
+    }
   }
 }
 
