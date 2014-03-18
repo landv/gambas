@@ -4323,12 +4323,13 @@ Public Function CheckProjectName(sName As String, Optional sDir As String) As St
 
 End
 
-Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String)
+Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bWait As Boolean)
 
   Dim sCmd As String
   Dim sOpt As String
   Dim sIgnore As String
   Dim sTemp As String
+  Dim hProcess As Process
 
   Inc Application.Busy
 
@@ -4360,7 +4361,15 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String)
   Next
   sCmd &= " " & Shell$(File.Name(sFrom)) & " > /dev/null"
 
-  Shell sCmd Wait
+  If bWait Then
+    hProcess = Shell sCmd
+    While hProcess.State = Process.Running
+      Wait 0.1
+    Wend
+  Else
+    Shell sCmd Wait
+  Endif
+  
   If Not Exist(sTemp) Then Error.Raise(Subst$(("The '&1' command has failed."), "tar"))
 
   Try Kill sPath
@@ -4376,10 +4385,10 @@ Catch
 
 End
 
-Public Sub MakeSourcePackageTo(sPath As String)
+Public Sub MakeSourcePackageTo(sPath As String, Optional bWait As Boolean)
 
   WriteProject(True)
-  MakeSourcePackageFromTo(Project.Dir, sPath)
+  MakeSourcePackageFromTo(Project.Dir, sPath, bWait)
 
 End
 
@@ -5521,7 +5530,7 @@ Public Sub SendMail()
 
   Dim sTemp As String = Temp$()
 
-  sTemp = File.SetBaseName(Temp, GetDefaultArchiveBaseName()) & ".tar.gz"
+  sTemp = File.SetName(sTemp, GetDefaultArchiveBaseName()) & ".tar.gz"
   Try Kill sTemp
   MakeSourcePackageTo(sTemp)
   Desktop.SendMail(Null,,, If(Project.Title, Project.Title, Project.Name),, sTemp)

@@ -52,7 +52,7 @@ Public Sub GetLanguage(Optional bReturnVoidIfDefault As Boolean) As String
     If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
   Next
   
-  Return Left$(sLang, iPos - 1)
+  Return "l=" & Left$(sLang, iPos - 1)
   
 End
 
@@ -344,9 +344,11 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Dim sHtml As String
   Dim iPos As Integer
   Dim sTemp As String
+  Dim bHelpBrowser As Boolean
   
   If Not hWebView Then 
     If Not FHelpBrowser.Visible Then Return
+    bHelpBrowser = True
     hWebView = FHelpBrowser.webHelp
   Endif
   
@@ -430,6 +432,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
   Else If sUrl Then
     
+    If bHelpBrowser Then sUrl = Replace(sUrl, "v&nh", "")
     If sMore Then sUrl &= "&" & sMore
     sMore &= "&" & GetLanguage() ' ??
     If hWebView.Url <> sUrl Then 
@@ -469,10 +472,10 @@ End
 '' - `TYPE_SPECIAL` for a special method.
 '' - `TYPE_COMPONENT` for a component help page.
 
-Public Sub ShowHelpBrowserWith(hWebView As WebView, iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
+Public Sub ShowHelpBrowserWith(iType As Integer, sSymbol As String, Optional sClass As String, Optional sMore As String)
   
   FHelpBrowser.Show
-  InitWebViewWith(hWebView, iType, sSymbol, sClass, sMore)
+  InitWebViewWith(Null, iType, sSymbol, sClass, sMore)
   
 End
 

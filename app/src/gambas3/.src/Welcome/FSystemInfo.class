@@ -33,7 +33,7 @@ End
 '   
 ' End
 
-Private Sub ReadLsbRelease(sPath As String) As Collection
+Static Private Sub ReadLsbRelease(sPath As String) As Collection
 
   Dim cCol As New Collection
   Dim sLine As String
@@ -50,7 +50,7 @@ Private Sub ReadLsbRelease(sPath As String) As Collection
   
 End
 
-Private Sub GetDistribution() As String
+Static Private Sub GetDistribution() As String
 
   Dim cDist As Collection = ["lsb-release": "/etc/lsb-release", "vector": "/etc/vector-version", "slackware": "/etc/slackware-version", "debian": "/etc/debian_version",
     "redhat": "/etc/redhat-release", "arch": "/etc/arch-release", "SuSE": "/etc/os-release", "gentoo": "/etc/gentoo-release", "conectiva": "/etc/conectiva-release", 
@@ -85,24 +85,17 @@ Private Sub GetDistribution() As String
 
 End
 
-Public Sub Form_Open()
+Static Public Sub GetInfo() As String[]
 
   Dim aText As New String[]
-  Dim aLib As New String[]
   Dim sTemp As String
-  Dim sFile As String
   Dim cSearch As Collection
   Dim cFile As Collection
-  Dim sPattern As String
-  Dim sText As String
-  Dim I As Integer
-  Dim aLine As String[]
   Dim sDir As String
+  Dim sFile As String
+  Dim sPattern As String
+  Dim aLib As New String[]
   
-  Inc Application.Busy
-  
-  'txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
-
   aText.Add("[System]")
   aText.Add("Gambas=" & System.FullVersion)
   aText.Add("OperatingSystem=" & System.Family)
@@ -156,6 +149,25 @@ Public Sub Form_Open()
   Next
 
   aText.Insert(aLib.Sort())
+
+  Return aText
+    
+End
+
+
+
+Public Sub Form_Open()
+
+  Dim aText As String[]
+  Dim sText As String
+  Dim I As Integer
+  Dim aLine As String[]
+  
+  Inc Application.Busy
+  
+  'txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+
+  aText = GetInfo()
   
   gvwInfo.Rows.Count = aText.Count
   gvwInfo.Columns.Count = 3

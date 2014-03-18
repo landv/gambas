@@ -2435,19 +2435,19 @@ Private Sub FindDefinition() As Boolean
       '     MHelp.ShowWebViewWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
       '   Endif
       ' Else
-      MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_KEYWORD, sKeyword)
+      MHelp.ShowHelpBrowserWith(MHelp.TYPE_KEYWORD, sKeyword)
       'Endif
       Return
 
     Else If Highlight.Types[iCpt] = Highlight.DataType Then
 
       If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
-        MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_NATIVE, sKeyword)
+        MHelp.ShowHelpBrowserWith(MHelp.TYPE_NATIVE, sKeyword)
       Else
         hClass = CComponent.Classes[sKeyword]
         If hClass Then
           'MHelp.GotoClass(hClass.Component, hClass.Name)
-          MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, hClass.Name)
+          MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
         Endif
       Endif
       Return
@@ -2483,7 +2483,7 @@ Private Sub FindDefinition() As Boolean
   If Not hSymbol Then
     If sKeyword Then
       If CComponent.Classes.Exist(sKeyword) Then
-        MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_CLASS, sKeyword)
+        MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, sKeyword)
       Endif
     Endif
     Return
@@ -2495,7 +2495,7 @@ Private Sub FindDefinition() As Boolean
     CPosition.SaveCurrent
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   Else
-    MHelp.ShowHelpBrowserWith(Null, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
+    MHelp.ShowHelpBrowserWith(MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
   Endif
 
 End
