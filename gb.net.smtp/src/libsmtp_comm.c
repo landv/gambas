@@ -277,7 +277,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 	/* Ok, now lets give him the sender address */
 
 	g_string_sprintf (libsmtp_temp_gstring, "mail from: %s\r\n", \
-											libsmtp_session->From->str);
+											strchr(libsmtp_session->From->str, '<'));
 
 	if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
 	{
