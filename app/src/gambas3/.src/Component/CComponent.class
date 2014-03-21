@@ -547,8 +547,13 @@ Public Sub Load()
         
         'If sClass = "Application" Then Stop
         
+        ' If we are opening a project having the same name as the component, then that
+        ' project is assumed to be the gambas part of the component. And so the classes 
+        ' described in the '.info' file can be actually part of the gambas part and must
+        ' not be processed.
+        
         If Key = Project.Name Then
-          If Project.ExistClass(sClass) Or If cClass[sClass] Then
+          If Project.ExistClass(sClass) Then 'Or If cClass[sClass] Then
             bNextClass = True
             Continue
           Endif
