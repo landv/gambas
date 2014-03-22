@@ -286,6 +286,18 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
     
   Endif
 
+  iPos = 0
+  Do
+    iPos = InStr(sData, "$(WIKI:", iPos + 1)
+    If iPos = 0 Then Break
+    iPos2 = InStr(sData, ")", iPos)
+    If iPos2 = 0 Then Break
+    
+    sStr = "http://gambaswiki.org/wiki/" &/ Mid$(sData, iPos + 7, iPos2 - iPos - 7) & "?w&amp;l=" & $sLang
+    
+    sData = Left$(sData, iPos - 1) & sStr & Mid$(sData, iPos2 + 1)
+  Loop
+
   sData = ReplaceLink(sData, "href")
   sData = ReplaceLink(sData, "src")
   sData = Replace(sData, "$(LANG)", $sLang)
@@ -300,7 +312,7 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
     sData = Replace(sData, "$(STYLE)", "style.css")
     sData = Replace(sData, "$(RIGHT)", "right")
   Endif
-
+  
   File.Save(sDest, sData)
   
 End

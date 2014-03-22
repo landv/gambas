@@ -1,0 +1,99 @@
+' Gambas class file
+
+Public FirstName As String
+Public LastName As String
+Public Login As String
+Public Password As String
+Public Email As String
+Public Confirm As String
+
+Static Private $hLock As File
+
+Public Sub _compare(hUser As CUser) As Integer
+  
+  Return Comp(Login, hUser.Login)
+  
+End
+
+
+Static Public Sub Load() As CUser[]
+
+  Dim sUser As String
+  Dim aUser As String[]
+  Dim hUser As CUser
+  Dim aResult As New CUser[]
+  
+  If Exist(Main.Root &/ "passwd") Then
+    For Each sUser In Split(File.Load(Main.Root &/ "passwd"), "\n", "", True)
+    
+      aUser = Split(sUser, "\t")
+      aUser.Resize(6)
+      hUser = New CUser
+      hUser.Login = aUser[0]
+      hUser.Password = aUser[1]
+      hUser.FirstName = aUser[2]
+      hUser.LastName = aUser[3]
+      hUser.Email = aUser[4]
+      hUser.Confirm = aUser[5]
+      aResult.Add(hUser)
+      
+    Next
+  Endif
+  
+  Return aResult
+  
+End
+
+Static Public Sub Save(aUser As CUser[])
+
+  Dim hFile As File
+  Dim sTemp As String
+  Dim hUser As CUser
+  
+  sTemp = Temp$()
+  hFile = Open sTemp For Create
+  For Each hUser In aUser.Sort()
+    Print #hFile, hUser.Login, hUser.Password, hUser.FirstName, hUser.LastName, hUser.Email, hUser.Confirm
+  Next
+  Close #hFile
+  
+  ' Add Lock ... Wait
+  
+  Try Kill Main.Root &/ "passwd"
+  Copy sTemp To Main.Root &/ "passwd"
+  
+End
+
+Static Public Sub Find(aUser As CUser[], sLogin As String) As CUser
+
+  Dim hUser As CUser
+  
+  For Each hUser In aUser
+    If hUser.Login = sLogin Then Return hUser
+  Next
+  
+End
+
+Static Public Sub FindByEmail(aUser As CUser[], sEmail As String) As CUser
+
+  Dim hUser As CUser
+  
+  For Each hUser In aUser
+    If hUser.Email = sEmail Then Return hUser
+  Next
+  
+End
+
+Static Public Sub Lock() As Boolean
+  
+  Try $hLock = Lock Main.Root &/ "passwd.lock" Wait 5
+  If Error Then Return True
+  
+End
+
+Static Public Sub Unlock()
+  
+  Unlock $hLock
+  
+End
+

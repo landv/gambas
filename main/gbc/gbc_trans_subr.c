@@ -80,7 +80,7 @@ static void trans_subr(int subr, int nparam)
 
 static bool trans_stream_check(int default_stream, bool check)
 {
-	if (TRANS_is(RS_SHARP))
+	if (TRANS_is(RS_SHARP) || default_stream == TS_NONE)
 	{
 		TRANS_expression(FALSE);
 		
@@ -103,8 +103,8 @@ static bool trans_stream_check(int default_stream, bool check)
 	}
 	else
 	{
-		if (default_stream == TS_NONE)
-			THROW("Syntax error. &1 expected", "'#'");
+		//if (default_stream == TS_NONE)
+		//	THROW("Syntax error. &1 expected", "'#'");
 
 		CODE_push_number(default_stream);
 		return TRUE;

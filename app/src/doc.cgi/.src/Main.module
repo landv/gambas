@@ -2961,6 +2961,8 @@ Private Sub UndoPage()
   Dim rPage As Result
   Dim rArch As Result
 
+  Goto READ_ONLY
+
   rPage = DB.Edit("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
   If rPage.Available Then
 
@@ -2986,6 +2988,8 @@ Private Sub UndoPage()
     Endif
   Endif
 
+  READ_ONLY:
+
   Print "Content-type: text/html"
   Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri
   Print
@@ -3010,6 +3014,8 @@ Private Sub UpdatePage()
   Dim sField As String
   Dim bStop As Boolean
   Dim sTitle As String
+
+  Goto READ_ONLY
 
   rPage = DB.Create("page")
   rPage!sPath = $sPath
@@ -3170,6 +3176,8 @@ Private Sub UpdatePage()
 
   Endif
 
+  READ_ONLY:
+
   Print "Content-type: text/html"
   Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri;
   'IF $bImage AND IF Right($sUri, 8) <> "?refresh" THEN PRINT "?refresh";
@@ -3304,6 +3312,8 @@ Private Sub DoRenamePage()
   Dim bKeep As Boolean
   Dim sUri As String
 
+  Goto READ_ONLY
+
   cForm = GetForm()
   sNewPath = cForm!sNewPath
   bChild = cForm.Exist("bChild")
@@ -3344,6 +3354,8 @@ Private Sub DoRenamePage()
   Endif
 
   DB.Commit
+
+READ_ONLY:
 
   Print "Content-type: text/html"
   Print "Location: ";

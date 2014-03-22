@@ -261,10 +261,10 @@ static int Begin(GB_PAINT *d)
 			EXTRA(d)->context = ((CDRAWINGAREA *)device)->context;
 			cairo_reference(CONTEXT(d));
 
-			GtkAllocation a;
+			/*GtkAllocation a;
 			gtk_widget_get_allocation(wid->border, &a);
 			dx = a.x;
-			dy = a.y;
+			dy = a.y;*/
 		}
 
 		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();

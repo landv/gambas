@@ -844,12 +844,12 @@ static void hook_error(int code, char *error, char *where)
 	if (code > 0)
 	{
 		msg = msg + "[%1] %2.<br>%3";
-		msg = msg.arg(code).arg(error).arg(where);
+		msg = msg.arg(code).arg(TO_QSTRING(error)).arg(where);
 	}
 	else
 	{
 		msg = msg + "%1.<br>%2";
-		msg = msg.arg(error).arg(where);
+		msg = msg.arg(TO_QSTRING(error)).arg(where);
 	}
 
 	release_grab();

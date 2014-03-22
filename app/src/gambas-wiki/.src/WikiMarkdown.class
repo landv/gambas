@@ -155,6 +155,10 @@ Public Sub Command(sCommand As String) As String[]
   Else If sCommand = "todo" Then
     
     Return Main.GetToDo()
+    
+  Else If sCommand = "changes" Then
+    
+    Return Main.GetChanges()
 
   Else
     

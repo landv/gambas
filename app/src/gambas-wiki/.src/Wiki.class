@@ -31,7 +31,7 @@ Private Sub GetMaxHistory() As Integer
 
   sPath = Main.SolvePath(Main.Path)
   sDir = File.Dir(Main.GetPagePathFrom(sPath))
-  Return Dir(sDir, "~page*.*").Count - 1
+  Try Return Dir(sDir, "~page*.*").Count - 1
 
 End
 
@@ -103,9 +103,9 @@ Private Sub _PrintPage()
           If sColor = " " Then
             sData &= "none"
           Else If sColor = "+" Then
-            sData &= "#C0FFC0"
+            sData &= "#D8FFD8"
           Else If sColor = "-" Then
-            sData &= "#FFC0C0"
+            sData &= "#FFD8D8"
           Endif
           sData &= ";\">"
           If sColor = "-" Then sData &= "<s>"
@@ -122,7 +122,7 @@ Private Sub _PrintPage()
         
       Else
         
-        Print "<div class=\"unknown\">"; ("No change."); "</div>"
+        Print "<br><div class=\"unknown\">"; ("No change."); "</div>"
         
       Endif
         
@@ -136,22 +136,26 @@ Private Sub _PrintPage()
     hStat = Stat(Main.GetPagePathFrom(Main.Path))
     hStatDef = Stat(Main.GetPagePathFrom(Main.Path, Main.DEFAULT_LANG))
     If hStat And If hStatDef And If hStatDef.LastModified > hStat.LastModified Then
-      Print "<div><i><a href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
+      Print "<div><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
     Endif
   Endif
   
   sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
-  If Main.Symbol Then
+  If Main.Class Then
     If sData Begins "# " Then
       iPos = InStr(sData, "\n")
       If iPos = 0 Then iPos = Len(sData)
       sData = Mid$(sData, iPos + 1)
     Endif
     'sData = "# <a href=\"" & Application.Root &/ File.Dir(Main.Path) & "\" class=\"symbol\">" & Html(Main.GetSymbolTitle()) & "</a>\n" & sData
-    sData = "# " & Main.GetSymbolTitle() & "\n" & sData
+    If Main.Symbol Then
+      sData = "# " & Main.GetSymbolTitle() & "\n" & sData
+    Else
+      sData = "# " & Main.GetClassTitle() & "\n" & sData
+    Endif
   Endif
   
-  Print WikiMarkdown.ToHTML(sData);
+  Print WikiMarkdown.ToHTML(sData)
   
 Catch
   

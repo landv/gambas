@@ -17,7 +17,7 @@ Private Sub _PrintPage()
   sPath = Main.GetPagePath()
   
   If Main.Edit Then
-    If Exist(sPath) Then Print File.Load(sPath);
+    If Exist(sPath) Then Print Html(File.Load(sPath));
     Return
   Endif
   

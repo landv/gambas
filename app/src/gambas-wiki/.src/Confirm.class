@@ -1,0 +1,24 @@
+' Gambas class file
+
+Private Sub _Confirm() As Boolean
+
+  Dim aUser As CUser[]
+  Dim hUser As CUser
+  
+  If Not Request["key"] Then Return
+  If Not Request["login"] Then Return
+    
+  aUser = CUser.Load()
+  hUser = CUser.Find(aUser, Request["login"])
+  If Not hUser Then Return
+    
+  If hUser.Confirm <> Request["key"] Then Return
+  
+  hUser.Confirm = ""
+  CUser.Save(aUser)
+  
+  Main.Log("Registration confirmed", hUser.Login)
+  
+  Return True
+    
+End

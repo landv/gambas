@@ -93,7 +93,7 @@ Public Sub GetPage(sPath As String) As String
     
     sLine = RTrim(sLine)
     
-    If Left(sLine) = "{" Then
+    If Left(sLine) = "{" And If Not bCode Then
       sLevel = LCase(Trim(Mid$(sLine, 2)))
       If sLevel = "syntax no-title" Then sLevel = "syntax"
       aLevel.Push(sLevel)
@@ -150,6 +150,7 @@ Public Sub GetPage(sPath As String) As String
         aResult.Add("    ----")
         aResult.Add("    " & Mid$(sLine, 5))
       Else
+        If RTrim$(sLine) = "\\}" Then sLine = "}"
         aResult.Add("    " & sLine)
       Endif
     Else
@@ -475,7 +476,9 @@ NO_LINK:
     Else If sCar = "<" Then
       sWait = ">"
     Else If sCar = "'" Then
-      sCar = "\\'"
+      If bAllowStart Or If bAllowEnd Then
+        sCar = "\\'"
+      Endif
     Endif
     
   ADD_CHAR:

@@ -18,6 +18,7 @@ Public Edit As Boolean
 Public Image As Boolean
 Public LinkSuffix As String
 Public History As Integer
+Public UserName As String
 
 Public Component As String
 Public Class As String
@@ -58,7 +59,7 @@ Public Sub GetPagePath(Optional bSuffix As Boolean) As String
   Dim sPath As String
   
   sPath = Root &/ "data" &/ Lang &/ Path &/ "~page"
-  If bSuffix Then sPath &= "." & Format(Now, "yyyymmddhhnnssuu") & "." & Session["login"]
+  If bSuffix Then sPath &= "." & Format(Now, "yyyymmddhhnnssuu") & "." & UserName
   Return sPath
   
 End
@@ -90,7 +91,7 @@ Private Sub InitWiki()
   
   Mkdir Root &/ "data"
   Mkdir Root &/ "data/en"
-  Copy "passwd" To Root &/ "passwd"
+  'Copy "passwd" To Root &/ "passwd"
   Copy "page" To GetPagePath()
   Copy "page" To GetPagePath(True)
   
@@ -98,17 +99,10 @@ End
 
 Private Sub LockPage()
 
-  Dim sLock As String = File.Dir(GetPagePath()) &/ "~lock"
   Dim hLock As File
-  Dim I As Integer
   
-  For I = 1 To 20
-    Try hLock = Lock sLock
-    If Not Error Then Return
-    Sleep 0.1
-  Next
-  
-  Error.Raise("Unable to lock the current page")
+  Try hLock = Lock File.Dir(GetPagePath()) &/ "~lock" Wait 2
+  If Error Then Error.Raise("Unable to lock the current page")
 
 End
 
@@ -129,18 +123,218 @@ Private Sub Redirect(Optional sMore As String)
 
 End
 
+Public Sub Message(sMsg As String)
+  
+  Session["message"] = sMsg
+  
+End
+
+Public Sub Warning(sMsg As String)
+  
+  Session["warning"] = sMsg
+  
+End
+
+Private Sub CheckLogin(sLogin As String) As Boolean
+  
+  Dim I As Integer
+  Dim sCar As String
+  
+  If Len(sLogin) < 2 Or If Len(sLogin) > 16 Then
+    Warning("The login must have at least than 2 characters and at most 16 characters.")
+    Return True
+  Endif
+  
+  If Not IsLetter(Left(sLogin)) Then
+    Warning("The login must start with a letter.")
+    Return True
+  Endif
+  
+  For I = 2 To Len(sLogin)
+    sCar = Mid$(sLogin, I, 1)
+    If IsLetter(sCar) Or If IsDigit(sCar) Then Continue
+    Warning("The login can only include digits or letters")
+    Return True
+  Next
+  
+End
+
+Private Sub CheckPassword(sPassword As String) As Boolean
+
+  If Len(sPassword) < 4 Or If Len(sPassword) > 32 Then
+    Warning("The password must have at least 4 characters and at most 32 characters.")
+    Return True
+  Endif
+
+End
+
+Private Sub CheckEmail(sEmail As String) As Boolean
+
+  If sEmail Like "*@*.*" Then
+    If InStr(sEMail, "@", InStr(sEmail, "@") + 1) = 0 Then
+      Return
+    Endif
+  Endif
+
+  Warning("Invalid e-mail address.")
+  Return True
+
+End
+
+Private Sub RegisterUser() As Boolean
+
+  Dim sFirstName As String
+  Dim sLastName As String
+  Dim sLogin As String
+  Dim sPassword As String
+  Dim sEmail2 As String
+  Dim sEmail As String
+  Dim sPassword2 As String
+  Dim sKey As String
+  Dim I As Integer
+  Dim aUser As CUser[]
+  Dim hUser As CUser
+  Dim hSmtpClient As SmtpClient
+  Dim iResult As Integer
+  Dim iSeed As Integer
+
+  If CUser.Lock() Then
+    Warning("Database is locked. Try again later")
+    Return
+  Endif
+  
+  sLogin = Trim(Request["login"])
+  If Not sLogin Then
+    Warning("Please enter your login.")
+    Return
+  Endif
+  
+  sPassword = Trim(Request["password"])
+  If Not sPassword Then
+    Warning("Please enter your password.")
+    Return
+  Endif
+  
+  sPassword2 = Trim(Request["cpassword"])
+  If Not sPassword2 Then
+    Warning("Please enter the confirmation password.")
+    Return
+  Endif
+  
+  sFirstName = Trim(Request["fname"])
+  If Not sFirstName Then
+    Warning("Please enter your first name.")
+    Return
+  Endif
+
+  sLastName = Trim(Request["lname"])
+  If Not sLastName Then
+    Warning("Please enter your last name.")
+    Return
+  Endif
+
+  sEmail = Trim(Request["email"])
+  If Not sEmail Then
+    Warning("Please enter your e-mail.")
+    Return
+  Endif
+  
+  sEmail2 = Trim(Request["cemail"])
+  If Not sEmail2 Then
+    Warning("Please enter the confirmation e-mail.")
+    Return
+  Endif
+  
+  If CheckLogin(sLogin) Then Return
+  
+  If CheckPassword(sPassword) Then Return
+  
+  If sPassword2 <> sPassword Then
+    Warning("The confirmation password does not match.")
+    Return
+  Endif
+  
+  If CheckEmail(sEmail) Then Return
+  
+  If sEmail2 <> sEmail2 Then
+    Warning("The confirmation e-mail does not match.")
+    Return
+  Endif
+  
+  aUser = CUser.Load()
+
+  If CUser.Find(aUser, sLogin) Then
+    Warning("This login is already in use.")
+    Return
+  Endif
+  
+  If CUser.FindByEmail(aUser, sEmail) Then
+    Warning("This e-mail is already in use.")
+    Return
+  Endif
+  
+  Try iResult = CInt(Request["result"])
+  Try iSeed = CInt(Request["seed"])
+  Randomize iSeed
+  iSeed = Int(Rnd(0, 16777216))
+  If iSeed <> iResult Then
+    Warning("The result is incorrect.")
+    Return
+  Endif
+  
+  For I = 1 To 6
+    sKey &= Hex$(Int(Rnd(65536)), 4)
+  Next
+  
+  hSmtpClient = New SmtpClient
+  hSmtpClient.From = "noreply@gambasdoc.org"
+  hSmtpClient.To.Add(sFirstName & " " & sLastName & " <" & sEmail & ">")
+  hSmtpClient.Host = "smtp.hosting.blueleader.net"
+  hSmtpClient.Subject = "Gambas wiki registration confirmation"
+  hSmtpClient.Body = "Hi,\n\n"
+    "You have requested a Gambas wiki account.\n"
+    "Please click on the following link to confirm your registration:\n\n"
+    "http://" & Application.Host &/ Application.Root &/ "~confirm?key=" & URL.Encode(sKey) & "&login=" & URL.Encode(sLogin) & "\n\n"
+  
+  Try hSmtpClient.Send
+  If Error Then
+    Warning("Cannot send confirmation mail:" & " " & Error.Text)
+    Return
+  Endif
+  
+  hUser = New CUser
+  hUser.Login = sLogin
+  hUser.Password = sPassword
+  hUser.FirstName = sFirstName
+  hUser.LastName = sLastName
+  hUser.Email = sEmail
+  hUser.Confirm = sKey
+  aUser.Add(hUser)
+  CUser.Save(aUser)
+  
+  Message("You have been successfully registered! A confirmation mail has been sent...")
+  
+  CUser.Unlock
+  
+  Main.Log("Registration requested", sLogin)
+  
+  Response.Redirect(Application.Root &/ Request.Path)
+  Return True
+  
+End
+
 Public Sub Main()
 
   Dim sMsg As String
-  Dim sIdent As String
-  Dim iPos As Integer
-  Dim sLogin As String
-  Dim sPasswd As String
   Dim aPage As String[]
   Dim sDir As String
   Dim aPath As String[]
   Dim sLang As String
+  Dim hUser As CUser
+  Dim sData As String
+  Dim sPath As String
   
+  CGI["SCRIPT_NAME"] = "/wiki" ' Fix web server bug
   Root = User.Home &/ "wiki/gambas"
   InfoDir = User.Home &/ "wiki/info"
   If Not Exist(InfoDir) Then InfoDir = ""
@@ -150,7 +344,7 @@ Public Sub Main()
       Shell "rm -rf " & Shell$(Root & "~") & " >/dev/null 2>&1" Wait
       Move Root To Root & "~"
       Mkdir Root
-      Copy "passwd" To Root &/ "passwd"
+      'Copy "passwd" To Root &/ "passwd"
     Endif
     OldWiki.Restore
     Return
@@ -173,12 +367,29 @@ Public Sub Main()
   ' Each page modification is archived in a "~page.<date>.<user>" file, allowing changes to be undone.
   
   Path = Request.Path
-  If Path = "/" Then Path) = ""
+  If Right(Path) = "/" Then Path = Left(Path, -1)
   
   ' Handle resource files: images, style sheet...
   
   If Path And If Exist(".public" &/ Path) Then
     Response.SendFile(".public" &/ Path)
+    Return
+  Endif
+  
+  If Path = "/~register" Then
+    If Request.Exist("cancel") Then
+      Response.Redirect(Application.Root)
+      Return
+    Else If Request.Exist("confirm") Then
+      If RegisterUser() Then Return
+    Endif
+    Register.Render
+    If Session.Id And If Session["login"] = "" Then Session.Abandon
+    Return
+  Endif
+  
+  If Path = "/~confirm" Then
+    Confirm.Render
     Return
   Endif
   
@@ -206,28 +417,32 @@ Public Sub Main()
 
   SetLanguage(Request["l"])
   If Request.Exist("v") Then AddLinkSuffix("v")
+  If Request.Exist("nh") Then AddLinkSuffix("nh")
+  If Request.Exist("w") Then AddLinkSuffix("w")
     
   If Request.Exist("logout") Then
     
     Session.Abandon
+    
+  Else If Request.Exist("register") Then
+    
+    Response.Redirect(Application.Root &/ "~register")
+    Return
    
   Else If Request["login"] And If Request["password"] Then
     
     Session.Abandon
     
-    For Each sIdent In Split(File.Load(Root &/ "passwd"), "\n")
-      iPos = InStr(sIdent, ": ")
-      If iPos = 0 Then Continue
-      sLogin = Trim(Left(sIdent, iPos - 1))
-      sPasswd = Trim(Mid$(sIdent, iPos + 2))
-      If sLogin = Request["login"] And If sPasswd = Request["password"] Then
-        Session["login"] = sLogin
+    For Each hUser In CUser.Load()
+      If hUser.Login = Request["login"] And If hUser.Password = Request["password"] And If Not hUser.Confirm Then
+        Session["login"] = hUser.Login
         Break
       Endif
     Next
     
   Endif
 
+  UserName = Session["login"]
   {Exist} = Main.ExistPage(Path)
   Image = IsImage(Path)
   Try History = CInt(Request["h"])
@@ -253,16 +468,23 @@ Public Sub Main()
       If Request.Exist("page") Then
         MakeDir(File.Dir(GetPagePath()))
         LockPage
-        File.Save(GetPagePath(), Replace(Request["page"], "\r", ""))
-        Copy GetPagePath() To GetPagePath(True)
+        sData = Replace(Request["page"], "\r", "")
+        sPath = GetPagePath()
+        If Not Exist(sPath) Or If sData <> File.Load(sPath) Then
+          File.Save(sPath, sData)
+          Copy sPath To GetPagePath(True)
+          Main.Log(Main.Path)
+        Endif
         Redirect
         Return
       Else If Request.Exist("file") And If Image Then
-        MakeDir(File.Dir(GetPagePath()))
+        sPath = GetPagePath()
+        MakeDir(File.Dir(sPath))
         LockPage
-        Try Kill GetPagePath()
-        Copy Request.Files["file"] To GetPagePath()
-        Copy GetPagePath() To GetPagePath(True)
+        Try Kill sPath
+        Copy Request.Files["file"] To sPath
+        Copy sPath To GetPagePath(True)
+        Main.Log(Main.Path)
         Redirect
         Return
       Endif
@@ -270,22 +492,26 @@ Public Sub Main()
     Else If Request.Exist("delete") Then
       
       If {Exist} Then
+        sPath = GetPagePath()
         LockPage
-        File.Save(GetPagePath(), "")
-        Copy GetPagePath() To GetPagePath(True)
+        File.Save(sPath, "")
+        Copy sPath To GetPagePath(True)
+        Main.Log("Delete " & Main.Path)
       Endif
       Redirect
       Return
       
     Else If Request.Exist("undo") Then
       
-      sDir = File.Dir(GetPagePath())
+      sPath = GetPagePath()
+      sDir = File.Dir(sPath)
       aPage = Dir(sDir, "~page.*").Sort(gb.Descent)
       If aPage.Count >= 2 Then
         LockPage
         Try Kill sDir &/ aPage[0]
-        Try Kill GetPagePath()
-        Try Copy sDir &/ aPage[1] To GetPagePath()
+        Try Kill sPath
+        Try Copy sDir &/ aPage[1] To sPath
+        Main.Log("Undo " & Main.Path)
       Endif
       Redirect
       Return
@@ -311,7 +537,11 @@ Public Sub Main()
       Else
         Redirect
       Endif
+      
+    Else If Request.Exist("exit") Then
     
+      Redirect()
+
     Endif
     
   Endif
@@ -366,7 +596,10 @@ Public Sub GetPageTitle(sPath As String) As String
   sPath = SolvePath(sPath)
   bComp = sPath Begins "/comp/"
   
-  If bComp And If sPath Like "/comp/*/*/*" Then Return GetSymbolTitle(sPath)
+  If bComp Then
+    If sPath Like "/comp/*/*/?*" Then Return GetSymbolTitle(sPath)
+    If sPath Like "/comp/*/?*" Then Return GetClassTitle(sPath)
+  Endif
   
   sRealPath = Root &/ "data" &/ Lang &/ sPath &/ "~page"
   If Not Exist(sRealPath) Then sRealPath = Root &/ "data" &/ DEFAULT_LANG &/ sPath &/ "~page"
@@ -376,7 +609,7 @@ Public Sub GetPageTitle(sPath As String) As String
   
   If sFile Begins "# " Then
     iPos = InStr(sFile, "\n")
-    If iPos = 0 Then iPos = Len(sFile)
+    If iPos = 0 Then iPos = Len(sFile) + 1
     sFile = Trim(Mid$(sFile, 3, iPos - 3))
     If Not bComp Then sFile = String.UCaseFirst(sFile)
     Return sFile
@@ -472,7 +705,7 @@ Public Function GetSymbolLink(hClass As CClassInfo, sSym As String, Optional sMy
   ' Endif
   If Not sComp Then sComp = hSym.Component
 
-  If hSym.IsStatic() Then sMyTitle = sMyStaticTitle
+  If hSym.IsStatic() And If sMyStaticTitle Then sMyTitle = sMyStaticTitle
   
   'sPath = GetSymbolPath(hSym)
   sPath = "/comp" &/ LCase(sComp &/ hSym.Class &/ Replace(hSym.Name, ":", "."))
@@ -542,6 +775,35 @@ Catch
 
 End
 
+Public Sub GetClassTitle(Optional sPath As String) As String
+  
+  Dim hClass As CClassInfo
+  Dim sComponent As String
+  Dim sClass As String
+  Dim aPath As String[]
+  
+  If Not sPath Then
+    sComponent = Main.Component
+    sClass = Main.Class
+   Else
+    aPath = Split(sPath, "/", "", True)
+    sComponent = aPath[1]
+    sClass = aPath[2]
+  Endif
+  
+  Try hClass = CComponent.Get(sComponent)[sClass]
+  
+  If hClass Then
+    If sPath Then Return hClass.Name
+    Return hClass.Name & " (" & sComponent & ")"
+  Else
+    If sPath Then Return sClass
+    Return sClass & " (" & sComponent & ")?"
+  Endif
+  
+End
+
+
 Public Sub GetSymbolTitle(Optional sPath As String) As String
 
   Dim hSym As CSymbolInfo
@@ -574,7 +836,7 @@ Public Sub GetSymbolTitle(Optional sPath As String) As String
     Endif
   Endif
   
-  If Not hSym Then Return sClass & "." & sSymbol & " (" & sComponent & ") ?"
+  If Not hSym Then Return sClass & "." & sSymbol & " (" & sComponent & ")?"
 
   Select Case Main.Symbol
     Case "_new"
@@ -600,6 +862,11 @@ Public Sub GetSymbolTitle(Optional sPath As String) As String
 End
 
 Public Sub MakeAbsolute(sPath As String, sRoot As String) As String
+  
+  sPath = Trim(sPath)
+  
+  ' Fix incorrect symbolic links
+  If sPath Begins "comp/gb" Then Return "/" &/ sPath
   
   If sPath Begins "/" Then Return sPath
 
@@ -701,4 +968,52 @@ Public Sub GetToDo() As String[]
   aResult.Insert([Subst("There are &1 symbols to document yet.", CStr(iCpt)), ""], 0)
   Return aResult
   
+End
+
+Public Sub GetChanges() As String[]
+  
+  Dim aResult As New String[]
+  Dim aLine As String[]
+  Dim I As Integer
+  
+  If UserName <> "admin" Then
+    Return ["[[ warning", ("You must be administrator to view the last changes."), "]]"]
+  Endif
+  
+  aLine = Split(File.Load(Main.Root &/ "wiki.log"), "\n", "", True)
+  
+  If aLine.Count > 1000 Then aResult.Add("...")
+  
+  For I = Max(aLine.Count - 1000, 0) To aLine.Max
+    aResult.Add("    " & aLine[I])
+  Next
+  
+  Return aResult
+  
+End
+
+
+Public Sub Log(sText As String, Optional sUser As String)
+
+  Dim sLog As String = Main.Root &/ "wiki.log"
+  Dim hFile As File
+
+  If Exist(sLog) And If Stat(sLog).Size > 50000000 Then
+    Try Kill sLog & ".old"
+    Try Move sLog To sLog & ".old"
+    Try Kill sLog
+  Endif
+  
+  If Not sUser Then sUser = UserName
+  sUser = Left(sUser, 24)
+  sUser &= Space$(24 - Len(sUser))
+  
+  Try hFile = Open sLog For Append
+  If hFile Then
+    For Each sText In Split(sText, "\n")
+      Print #hFile, Format(Now, "mm/dd/yyyy hh:nn:ss.uu"); " | "; sUser; " | "; sText
+    Next
+    Close #hFile
+  Endif
+
 End

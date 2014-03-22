@@ -52,13 +52,14 @@ Private Sub MakeStock()
     sPath = Split(sPath, ";")[0]
     
     Print sIcon
-    
-    If sIcon = "earth" Then Stop
+    'If sIcon = "webcam" Then Stop
     
     For Each sSize In ["scalable", "16", "22", "32"]
       
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".png"
       'Try Kill "~/gambas/3.0/trunk/comp/src/gb.form.stock/stock" &/ sSize &/ sIcon & ".svg"
+      
+      bOK = False
       
       For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "Humanity/&2/&1", "gnome/&1/&2", "hicolor/&1/&2"]
     
@@ -103,7 +104,11 @@ Private Sub MakeStock()
         Endif
     
       Next
+      
+      If Not bOK Then Print sIcon;; "("; sSize; "): *NOT FOUND*"
+      
     Next
+    
   
   Wend
   

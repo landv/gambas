@@ -246,7 +246,7 @@ Private Function GetSymbolType(aSym As String[]) As String
     hSym = Symbols[sName]
     sName = Replace(sName, ":", ".")
     If hSym.Class <> Name Or hSym.Component <> Component Then
-      sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;\n"
+      sRes &= "*[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]*&nbsp;&nbsp;\n"
     Else
       sRes &= "[./" & LCase(sName) & "]&nbsp;&nbsp;\n"
     Endif
@@ -263,18 +263,12 @@ Public Function GetSymbols() As String[]
   Dim sSymbol As String
   Dim cSymbol As New Collection
   Dim hSym As CSymbolInfo
-  'Dim bSymbol As Boolean
   Dim bDynamic As Boolean
   Dim bStatic As Boolean
-  'Dim bParent As Boolean
-  'Dim bParentSymbol As Boolean
-  'Dim bParentDynamic As Boolean
-  'Dim bParentStatic As Boolean
   Dim sBreak As String
-  'Dim sSpace As String
   Dim sPrefix As String
   Dim aArray As String[]
-  'Dim aLine As String[]
+  Dim bHasSymbols As Boolean
 
   If Symbols.Count Then
 
@@ -287,15 +281,7 @@ Public Function GetSymbols() As String[]
       If hSym.IsHidden() Then Continue
       If Right$(hSym.Name) = "$" Then Continue
 
-      'bParent = hSym.Class <> Name Or hSym.Component <> Component
-
-      ' If bParent Then
-      '   bParentSymbol = True
-      '   sPrefix = ">"
-      ' Else
-      '   bSymbol = True
-      '   sPrefix = ""
-      ' Endif
+      bHasSymbols = True
 
       Select Case hSym.Kind
         Case "r", "p", "v"
@@ -403,7 +389,7 @@ Public Function GetSymbols() As String[]
     aResult.Add(Subst(("This class can be used as a &1."), Main.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
   Endif
 
-  If aResult[aResult.Max] <> "==" Then aResult.Add("==")
+  If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
 
   If bStatic Then
 

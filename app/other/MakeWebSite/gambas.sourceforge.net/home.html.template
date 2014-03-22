@@ -8,9 +8,6 @@
 
 <body style="height:100%;overflow:hidden;">
 
-<!--<div id="home-background">
-</div>-->
-
 <div class="home">
 
 <table class="none" border="0" style="height:100%;">
@@ -19,30 +16,18 @@
   <div id="presentation">
     
     <div id="title">Gambas Almost Means BASIC !</div>
-    <!--<div id="title-shadow">Gambas Almost Means BASIC !</div>-->
     
     <div>
     
     {<b><i>Gambas</i></b> is a free development environment based on a <i>Basic</i> interpreter with object extensions, a bit like <i>Visual Basic&#8482;</i> (but it is <i><b>NOT</b></i> a clone&nbsp;!).}
-    {Read the <a href="http://gambasdoc.org/help/doc/intro?view&$(LANG)">introduction</a> for more information.}
-    <!--{With <b><i>Gambas</i></b>, you can quickly design your program GUI with QT4 or GTK+, access MySQL, PostgreSQL, ODBC and SQLite databases, pilot applications with <i>D-Bus</i>, translate your program into any language, create network applications easily, make 3D OpenGL applications, make CGI web applications, and so on...}
-  
-    <p>-->
-    
+    {Read the <a href="$(WIKI:/doc/intro)">introduction</a> for more information.}
     </div>
     
-    <!--<table class="none" cellspacing="0" cellpadding="0" border="0" style="margin-top:16px;">
-    <tr valign="top">
-    <td class="none"><a class="image" href="http://gambasdoc.org/help/doc/formula?view&amp;$(LANG)"><img src="formula.png" border="0" alt="{The greatest formula of the world!}" title="{The greatest formula of the world!}"></a></td>
-    </tr>
-    </table>-->
-  
-    <div align="$(RIGHT)"><div id="see-news" class="all-news"><a href="http://gambasdoc.org/help/doc/news?$(LANG)&amp;view">{Click there to see all news}</a></div></div>
-    <!--<div class="all-news" align="right" style="position:absolute;box-shadow:0 0 8px black;z-index:-1;"><a href="http://gambasdoc.org/help/doc/news?$(LANG)&amp;view">{Last news}</a></div>
-    <div class="all-news" align="right"><a href="http://gambasdoc.org/help/doc/news?$(LANG)&amp;view">{Last news}</a></div>-->
+    <div align="$(RIGHT)"><div id="see-news" class="all-news"><a href="$(WIKI:/doc/news)">{Click there to see all news}</a></div></div>
+
     <div id="fade"></div>
     <div id="news">
-      <iframe id="news-frame" src="http://gambasdoc.org/help/doc/news?$(LANG)&amp;view" frameborder="0" scrolling="no">
+      <iframe id="news-frame" src="$(WIKI:/doc/news)" frameborder="0" scrolling="no">
         Your browser must support frames.
       </iframe>
     </div>
@@ -59,14 +44,14 @@
       <a class="download-orange" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas3/gambas3-$(DEV_VERSION).tar.bz2/download">
         {Download}&nbsp;<b>Gambas&nbsp;$(DEV_VERSION)</b>
       </a>
-      <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(DEV_VERSION)?view&amp;v3&amp;$(LANG)">{Release Notes}</a></div>
+      <div class="release-notes" align="center"><a href="http://gambaswiki.org/wiki/doc/release/$(DEV_VERSION)?w&amp;l=$(LANG)">{Release Notes}</a></div>
     </div>
     
     <div style="display:inline-table;">
       <a class="download-blue" target="_blank" href="http://sourceforge.net/projects/gambas/files/gambas2/$(OLD_VERSION)/gambas2-$(OLD_VERSION).tar.bz2/download">
         {Download}&nbsp;<b>Gambas&nbsp;$(OLD_VERSION)</b>
       </a>
-      <div class="release-notes" align="center"><a href="http://gambasdoc.org/help/doc/release/$(OLD_VERSION)?view&amp;$(LANG)">{Release Notes}</a></div>
+      <div class="release-notes" align="center"><a href="http://gambaswiki.org/wiki/doc/release/$(OLD_VERSION)?w&amp;l=$(LANG)">{Release Notes}</a></div>
     </div>
   
   </div>
@@ -76,7 +61,7 @@
     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="margin:0px;">
     <input type="hidden" name="cmd" value="_s-xclick">
     <input type="hidden" name="hosted_button_id" value="WL75JG57SMDE6">
-    <input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="{Donate with PayPal}">
+    <input type="image" src="https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif" name="submit" alt="{Donate with PayPal}" style="border:none;">
     <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
     </form>
     

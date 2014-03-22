@@ -65,6 +65,25 @@ Public Sub Render()
   
 End
 
+Public Sub ToString() As String
+  
+  Dim hFile As File
+  Dim sResult As String
+  
+  Inc $iLevel
+  
+  hFile = Open String For Write
+  Output To #hFile
+  Me.__Render()
+  Output To Default
+  sResult = Close #hFile
+  
+Finally
+  
+  Dec $iLevel
+  
+End
+
 Private Function Buffered_Read() As Boolean
 
   Return $bBuffered

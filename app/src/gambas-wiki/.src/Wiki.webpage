@@ -4,8 +4,14 @@
 
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" href="<%/%>/style.css">
-  <link rel="icon" href="<%/%>/logo.png" type="image/png">
+  <link rel="stylesheet" href="/wiki/style.css">
+  <%If System.RightToLeft Then%>
+  <link rel="stylesheet" href="/wiki/style-rtl.css">
+  <%Endif%>
+  <%If Request.Exist("w") Then%>
+  <link rel="stylesheet" href="/wiki/style-w.css">
+  <%Endif%>
+  <link rel="icon" href="/wiki/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
 </head>
 
@@ -15,23 +21,35 @@
 
 <%If Request.Exist("v") Then%>
 
-<div class="header-v">
-<table border="0" cellpadding="0" cellspacing="0" style="position:fixed;background:white;">
-  <tr valign="center"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png" style="vertical-align:middle;"></a>&nbsp;</td>
-  <td><div class="title-v"><%_PrintLink%></div></td></tr>
-</table>
-</div>
+  <%If Not Request.Exist("nh") Then%>
+  
+  <div class="header-v">
+  <table border="0" cellpadding="0" cellspacing="0" style="position:fixed;">
+    <tr valign="top"><td><a href="<%_PrintParent()%>"><img src="/wiki/up-gray.png" style="vertical-align:top;"></a>&nbsp;</td>
+    <td><div class="title-v"><%_PrintLink%></div></td></tr>
+  </table>
+  </div>
+  
+  <div class="page" style="padding-top: 28px;">
+  
+  <%Else%>
+  
+  <div class="page" style="padding-top: 4px;">
 
-<div class="page">
+  <%Endif%>
+  
+<%Else If Request.Exist("w") Then%>
+  
+  <div class="page" style="padding: 8px 16px;">
 
 <%Else%>
 
 <div class="header">
     <div class="up">
       <%If Main.Edit%>
-        <img src="<%/%>/edit.png">
+        <img src="/wiki/edit.png">
       <%Else%>
-        <a href="<%_PrintParent()%>"><img src="<%/%>/up.png"></a>
+        <a href="<%_PrintParent()%>"><img src="/wiki/up.png"></a>
       <%Endif%>
     </div>
     <div class="title">
@@ -39,51 +57,57 @@
     </div>
     <%If Main.Edit Then%>
       <div class="command">
-        <input type="submit" id="save" name="save" value="<%=("Save")%>" style="display:none;">
-        <input type="submit" name="cancel" value="<%=("Cancel")%>">
+        <input type="submit" id="save" name="save" value="<%= ("Save")%>" style="display:none;">
+        <input type="submit" name="cancel" value="<%= ("Cancel")%>">
       </div>
     <%Else If Session.Id Then%>
       <div class="command">
         <%If Main.Exist Then%>
           <%If Main.History Then%>
             <%If Main.History < GetMaxHistory() Then%>
-              <input type="submit" name="prev" value="<%=("<")%>">
+              <input type="submit" name="prev" value="<%= ("<")%>">
             <%Else%>
-              <input type="submit" name="prev" value="<%=("<")%>" disabled style="color:gray">
+              <input type="submit" name="prev" value="<%= ("<")%>" disabled style="color:gray">
             <%Endif%>
-            <%If Main.History > 0 Then%>
-              <input type="submit" name="next" value="<%=(">")%>">
+            <%If Main.History > 1 Then%>
+              <input type="submit" name="next" value="<%= (">")%>">
             <%Else%>
-              <input type="submit" name="next" value="<%=(">")%>" disabled style="color:gray">
+              <input type="submit" name="next" value="<%= (">")%>" disabled style="color:gray">
             <%Endif%>
+            <input type="submit" name="exit" value="<%= ("Exit")%>">
           <%Else%>
-            <input type="submit" name="edit" value="<%=("Edit")%>">
-            <input type="submit" name="delete" value="<%=("Delete")%>">
-            <input type="submit" name="undo" value="<%=("Undo")%>">
+            <input type="submit" name="edit" value="<%= ("Edit")%>">
+            <input type="submit" name="delete" value="<%= ("Delete")%>">
+            <input type="submit" name="undo" value="<%= ("Undo")%>">
             <%If GetMaxHistory() > 0 Then%>
-              <input type="submit" name="historic" value="<%=("Historic")%>">
+              <input type="submit" name="historic" value="<%= ("Historic")%>">
             <%Endif%>
           <%Endif%>
         <% Else%>
-          <input type="submit" name="create" value="<%=("Create")%>">
-          <input type="submit" name="undo" value="<%=("Undo")%>">
+          <input type="submit" name="create" value="<%= ("Create")%>">
+          <input type="submit" name="undo" value="<%= ("Undo")%>">
         <%Endif%>
       </div>
     <%Endif%>
     <div class="login">
       <%If Session.Id Then%>
-        <div class="label-login"><%=Session["login"]%></div>
-        <div class="command"><input type="submit" name="logout" value="<%=("Logout")%>"></div>
+        <div class="label-login"><%= Main.UserName%></div>
+        <div class="command"><input type="submit" name="logout" value="<%= ("Logout")%>"></div>
       <%Else%>
-        <div class="label-login"><%=("Login")%></div>
-        <input type="text" name="login" maxlength="16">
-        <div class="label-login"><%=("Password")%></div>
-        <input type="password" name="password" maxlength="16">
+        <div class="label-login"><%= ("Login")%>&nbsp;</div>
+        <input type="text" name="login" id="login" maxlength="16">
+        <div class="label-login"><%= ("Password")%>&nbsp;</div>
+        <input type="password" name="password" id="password" maxlength="16">
         <div class="command"><input type="submit" value="OK"></div>
+        <div class="command"><input type="submit" name="register" value="<%= ("Register")%>"></div>
       <%Endif%>
       <%_PrintLang%>
     </div>
 </div>
+
+<div class="page">
+
+<%Endif%>
 
 <%If Session["message"] Then%>
 <div class="message">
@@ -91,14 +115,10 @@
 </div>
 <%Endif%>
 
-<div class="page">
-
-<%Endif%>
-
   <%If Main.Edit Then%>
     <%If Main.Image Then%>
       <div style="margin-top:32px;"></div>
-      <p><%=("Select the image file to upload...")%></p>
+      <p><%= ("Select the image file to upload...")%></p>
       <p><input type="file" name="file" /></p>
     <%Else%>
       <div class="edit-frame">
@@ -113,7 +133,12 @@
     </script>
   <%Else%>
     <%_PrintPage%>
-    <p />
+    <p></p>
+    <%If Not Session.Id Then%>
+      <script type="text/javascript">
+        document.getElementById('login').focus();
+      </script>
+    <%Endif%>
   <%Endif%>
 </div>
 
