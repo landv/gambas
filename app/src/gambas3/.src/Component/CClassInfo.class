@@ -486,17 +486,20 @@ End
 Public Sub GetHelpHTML() As String
   
   Dim sClass As String = Name
-  Dim sHelp, sHtml, sWhere, sSymbols, sParSymbols, sInfo As String
+  Dim sHelp, sHtml, sWhere, sSymbols, sInfo As String
   Dim hSymbol As CSymbolInfo
   Dim cClassSymbols As Collection
-  Dim hClassInfo, hParentClass As CClassInfo
+  Dim hClassInfo As CClassInfo
   Dim aProperty, aEvent, aMethod, aConst, aVar As New String[]
-  Dim aParentProperty, aParentEvent, aParentMethod, aParentConst, aParentVar As New String[]
+  Dim aStaticProperty, aStaticMethod, aStaticVar As New String[]
   Dim sComp, sSymbolName As String
   Dim hArray As String[]
-  Dim sParent As String
   Dim sTitle As String
   Dim bHasDynamic As Boolean
+  Dim bHasSymbol As Boolean
+  Dim sParent As String
+  Dim hParentClass As CClassInfo
+  Dim sStr As String
 
   sHelp = Markup.Convert(GetHelpMarkup())
   
@@ -515,88 +518,124 @@ Public Sub GetHelpHTML() As String
       sComp = GetSymbolLink(hSymbol, sSymbolName)
       
       If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
+      If hSymbol.Class <> sClass Then sComp = "<i>" & sComp & "</i>"
 
       If IsLetter(hSymbol.Kind) Then
-        If hSymbol.Kind = UCase(hSymbol.Kind) Then 
-          sComp = "<b>" & sComp & "</b>"
+        If hSymbol.IsStatic() Then 
+          'sComp = "<b>" & sComp & "</b>"
         Else
           bHasDynamic = True
         Endif
       Endif
 
-      If hSymbol.Class = sClass Then
-        
-        Select Case LCase(hSymbol.Kind)
-          Case ":" 
-            aEvent.Add(sComp)
-          Case "m"
-            aMethod.Add(sComp)
-          Case "p", "r"
-            aProperty.Add(sComp)
-          Case "c"
-            aConst.Add(sComp)
-          Case "v"
-            aVar.Add(sComp)
-        End Select
-        
-      Else
-        
-        Select Case LCase(hSymbol.Kind)
-          Case ":" 
-            aParentEvent.Add(sComp)
-          Case "m"
-            aParentMethod.Add(sComp)
-          Case "p", "r"
-            aParentProperty.Add(sComp)
-          Case "c"
-            aParentConst.Add(sComp)
-          Case "v"
-            aParentVar.Add(sComp)
-        End Select
-        
-      Endif
+      bHasSymbol = True
       
+      Select Case hSymbol.Kind
+        Case ":" 
+          aEvent.Add(sComp)
+        Case "m"
+          aMethod.Add(sComp)
+        Case "M"
+          aStaticMethod.Add(sComp)
+        Case "p", "r"
+          aProperty.Add(sComp)
+        Case "P", "R"
+          aStaticProperty.Add(sComp)
+        Case "C"
+          aConst.Add(sComp)
+        Case "v"
+          aVar.Add(sComp)
+        Case "V"
+          aStaticVar.Add(sComp)
+      End Select
+        
     Next
     
-    For Each hArray In [aConst, aEvent, aMethod, aProperty, aVar, aParentConst, aParentEvent, aParentMethod, aParentProperty, aParentVar]
+    For Each hArray In [aConst, aEvent, aMethod, aProperty, aVar, aStaticMethod, aStaticProperty, aStaticVar]
       hArray.Sort
     Next
     
-    sParSymbols = ""
-    If aParentProperty.Count + aParentMethod.Count + aParentEvent.Count + aParentVar.Count Then
-      sParSymbols &= "<tr>"
-      If aParentProperty.Count Then sParSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aParentVar.Count Then sParSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aParentMethod.Count Then sParSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
-      If aParentEvent.Count Then sParSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
-      sParSymbols &= "</tr>"
-      sParSymbols &= "<tr valign=\"top\">"
-      If aParentProperty.Count Then sParSymbols &= "<td>" & aParentProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aParentVar.Count Then sParSymbols &= "<td>" & aParentVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aParentMethod.Count Then sParSymbols &= "<td>" & aParentMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      If aParentEvent.Count Then sParSymbols &= "<td>" & aParentEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      sParSymbols &= "</tr>"
-    Endif
+    ' sParSymbols = ""
+    ' If aParentProperty.Count + aParentMethod.Count + aParentEvent.Count + aParentVar.Count Then
+    '   sParSymbols &= "<tr>"
+    '   If aParentProperty.Count Then sParSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+    '   If aParentVar.Count Then sParSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+    '   If aParentMethod.Count Then sParSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+    '   If aParentEvent.Count Then sParSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
+    '   sParSymbols &= "</tr>"
+    '   sParSymbols &= "<tr valign=\"top\">"
+    '   If aParentProperty.Count Then sParSymbols &= "<td>" & aParentProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+    '   If aParentVar.Count Then sParSymbols &= "<td>" & aParentVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+    '   If aParentMethod.Count Then sParSymbols &= "<td>" & aParentMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+    '   If aParentEvent.Count Then sParSymbols &= "<td>" & aParentEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+    '   sParSymbols &= "</tr>"
+    ' Endif
     
     sSymbols = ""
-    If aProperty.Count + aMethod.Count + aEvent.Count + aVar.Count Then
-      sSymbols &= "<tr>"
+    
+    If aStaticMethod.Count + aStaticProperty.Count + aStaticVar.Count + aConst.Count Then
+      
+      sSymbols &= "<table class=\"none\"><tr valign=\"top\">"
+      
+      If aStaticProperty.Count Then sSymbols &= "<td nowrap><b>" & ("Static properties") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aStaticVar.Count Then sSymbols &= "<td nowrap><b>" & ("Static variables") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aStaticMethod.Count Then sSymbols &= "<td nowrap><b>" & ("Static methods") & "</b></td><td width=\"32\">&nbsp;</td>"
+      If aConst.Count Then sSymbols &= "<td><b>" & ("Constants") & "</b></td><td width=\"32\">&nbsp;</td>"
+
+      sSymbols &= "</tr><tr valign=\"top\">"
+
+      If aStaticProperty.Count Then sSymbols &= "<td>" & aStaticProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aStaticVar.Count Then sSymbols &= "<td>" & aStaticVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aStaticMethod.Count Then sSymbols &= "<td>" & aStaticMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      If aConst.Count Then sSymbols &= "<td>" & aConst.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
+      
+      sSymbols &= "</tr></table>"
+      
+    Endif
+      
+    If aProperty.Count + aVar.Count + aMethod.Count + aEvent.Count Then
+      
+      sSymbols &= "<table class=\"none\"><tr valign=\"top\">"
+      
       If aProperty.Count Then sSymbols &= "<td><b>" & ("Properties") & "</b></td><td width=\"32\">&nbsp;</td>"
       If aVar.Count Then sSymbols &= "<td><b>" & ("Variables") & "</b></td><td width=\"32\">&nbsp;</td>"
       If aMethod.Count Then sSymbols &= "<td><b>" & ("Methods") & "</b></td><td width=\"32\">&nbsp;</td>"
       If aEvent.Count Then sSymbols &= "<td><b>" & ("Events") & "</b></td><td width=\"32\">&nbsp;</td>"
-      sSymbols &= "</tr>"
-      sSymbols &= "<tr valign=\"top\">"
+      
+      sSymbols &= "</tr><tr valign=\"top\">"
+      
       If aProperty.Count Then sSymbols &= "<td>" & aProperty.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
       If aVar.Count Then sSymbols &= "<td>" & aVar.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
       If aMethod.Count Then sSymbols &= "<td>" & aMethod.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
       If aEvent.Count Then sSymbols &= "<td>" & aEvent.Join(" ") & "</td><td width=\"32\">&nbsp;</td>"
-      sSymbols &= "</tr>"
+      
+      sSymbols &= "</tr></table>"
+      
     Endif
     
   Endif
 
-  If Not bHasDynamic Then sInfo &= ("This class is static.")
+  If hClassInfo.Parent Then
+    
+    sParent = hClassInfo.Parent
+    hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
+    If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+    
+    If hClassInfo.Parent = hClassInfo.Name Then
+      sStr = ("This class reimplements &1")
+    Else
+      sStr = ("This class inherits &1")
+    Endif
+
+    sInfo &= Subst(sStr, Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), hParentClass.Name))
+
+    If hClassInfo.ParentComponent <> hClassInfo.Component Then
+      sInfo &= " " & Subst(("in &1"), Subst("<a href=\"&1\">&2</a>", Html(CComponent.All[hClassInfo.ParentComponent].GetHelpURL()), hClassInfo.ParentComponent))
+    Endif
+    
+    sInfo &= "<br>"
+    
+  Endif
   
   If hClassInfo.AutoCreatable Then sInfo &= ("This class can be used like an object by creating an hidden instance on demand.") & "<br>"
   If hClassInfo.Creatable Then 
@@ -608,6 +647,7 @@ Public Sub GetHelpHTML() As String
     Endif
     sInfo &= "<br>"
   Endif
+  If Not bHasDynamic Then sInfo &= ("This class is static.") & "<br>"
   
   hSymbol = cClassSymbols["_call"]
   If hSymbol Then
@@ -637,38 +677,32 @@ Public Sub GetHelpHTML() As String
   sHtml = Replace(sHtml, "$(help)", sHelp)
   
   If sInfo Then 
-    sHtml = Replace(sHtml, "<!--$(Info)-->", sInfo)
+    sHtml = Replace(sHtml, "<!--$(info)-->", sInfo)
   Endif
   
-  If hClassInfo.Parent Then 
-    
-    sParent = hClassInfo.Parent
-    
-    hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
-    If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
-    
-    sHtml = SubstPart(sHtml, "ShowInherits", True)
-    sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
-    sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
-    
-    sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
-    sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
-    
-  Else
-    
-    sHtml = SubstPart(sHtml, "ShowInherits", False)
-    
-  Endif
-  
-  sHtml = SubstPart(sHtml, "ShowConst", aConst.Count > 0)
-  sHtml = Replace(sHtml, "$(Const)", aConst.Join(" "))
+  ' If hClassInfo.Parent Then 
+  '   
+  '   sParent = hClassInfo.Parent
+  '   
+  '   hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
+  '   If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+  '   
+  '   sHtml = SubstPart(sHtml, "ShowInherits", True)
+  '   sHtml = SubstPart(sHtml, "ShowParConst", aParentConst.Count > 0)
+  '   sHtml = Replace(sHtml, "$(ParConst)", aParentConst.Join(" "))
+  '   
+  '   sHtml = Replace(sHtml, "$(Inherits)", Subst(("This class inherits &1."), Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), sParent)))
+  '   sHtml = Replace(sHtml, "$(ParSymbols)", sParSymbols)
+  '   
+  ' Else
+  '   
+  '   sHtml = SubstPart(sHtml, "ShowInherits", False)
+  '   
+  ' Endif
   
   sHtml = Replace(sHtml, "$(title)", sTitle)
-  sHtml = Replace(sHtml, "$(Symbols)", sSymbols)
-  
-  sHtml = Replace(sHtml, "''Symbols''", ("Symbols"))
-  sHtml = Replace(sHtml, "''Constants''", ("Constants"))
-  
+  sHtml = Replace(sHtml, "$(symbols)", sSymbols)
+  sHtml = SubstPart(sHtml, "ShowSymbols", bHasSymbol)
   sHtml = Replace(sHtml, "$(hide-title)", "")
   
   Return sHtml

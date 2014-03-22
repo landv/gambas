@@ -1241,6 +1241,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   If $cProjectFilter And If Not $cProjectFilter.Exist(sDir &/ sFile) Then Return
 
   sPath = sDir &/ sFile
+  
   sKey = sPath
   sParent = sDir
 
@@ -1262,6 +1263,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
   If Not ProjectTree.Exist(sParent) Then Return
 
+  If Not Exist(sPath) Then Return
   With Stat(sPath)
 
     If .Hidden Then Return
