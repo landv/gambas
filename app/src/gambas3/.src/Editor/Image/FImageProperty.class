@@ -9,6 +9,8 @@ Private $aClipboard As New CImageClipboard[]
 Private $aGradientPos As Float[]
 Private $aGradientColors As Integer[]
 
+Private $aTextAlign As String[] = ["nw", "n", "ne", "w", "ce", "e", "bw", "b", "be", "sw", "s", "se"]
+
 Private $iCurrentColor As Integer = -1
 
 Private $aLabel As Label[]
@@ -44,6 +46,12 @@ Public Sub _new()
   'fchIcon.Filter = ["*.png,*.jpg,*.jpeg,*.xpm,*.gif", ("Image files")]
   'fchIcon.Root = Project.Dir
   
+  Dim X As Integer
+  Dim Y As Integer
+  Dim hButton As ToolButton
+  Dim W, H, I As Integer
+  Dim iDefault As Integer
+  
   $aGradientColors = [Color.Black, Color.White]
   $aGradientPos = [0, 1]
   
@@ -66,6 +74,29 @@ Public Sub _new()
   
   $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFF],[0,1])"])
   $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFFFF],[0,1])"])
+  
+  W = panTextAlign.W \ 3
+  H = panTextAlign.H \ 4
+  
+  If System.RightToLeft Then
+    iDefault = 8
+  Else
+    iDefault = 6
+  Endif
+  
+  For Y = 0 To 3
+    For X = 0 To 2
+      hButton = New ToolButton(panTextAlign) As "TextAlign"
+      hButton.Move(X * W, Y * H, W, H)
+      hButton.Toggle = True
+      hButton.Radio = True
+      hButton.Border = False
+      hButton.Tag = I
+      Try hButton.Picture = Picture["img/draw/text-" & $aTextAlign[I] & ".png"]
+      hButton.Value = I = iDefault
+      Inc I
+    Next
+  Next
   
 End
 
@@ -1287,16 +1318,40 @@ End
 Public Sub RefreshTextOption()
   
   Dim iAlign As Integer
+  Dim hCtrl As ToolButton
+  Dim bAlignBase As Boolean
   
-  If btnAlignCenter.Value Then
-    iAlign = Align.Center
-  Else If btnAlignRight.Value Then
-    iAlign = Align.Right
-  Else
-    iAlign = Align.Left
-  Endif
+  For Each hCtrl In panTextAlign.Children
+    If hCtrl.Value Then
+      iAlign = hCtrl.Tag
+      Break
+    Endif
+  Next
   
-  GetCurrent().UpdateText(txtText.Text, fchText.Value, iAlign)
+  bAlignBase = iAlign >= 6 And iAlign <= 8
+  
+  Select Case iAlign
+    Case 0
+      iAlign = Align.TopLeft
+    Case 1
+      iAlign = Align.Top
+    Case 2
+      iAlign = Align.TopRight
+    Case 3, 6
+      iAlign = Align.Left
+    Case 4, 7
+      iAlign = Align.Center
+    Case 5, 8
+      iAlign = Align.Right
+    Case 9
+      iAlign = Align.BottomLeft
+    Case 10
+      iAlign = Align.Bottom
+    Case 11
+      iAlign = Align.BottomRight
+  End Select
+  
+  GetCurrent().UpdateText(txtText.Text, fchText.Value, iAlign, bAlignBase)
   
 End
 

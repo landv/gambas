@@ -1,7 +1,6 @@
 ' Gambas class file
 
 Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP, ACTION_EXTENT, ACTION_HANDLE, ACTION_MAGNET, ACTION_SELECT
-
 Public Enum MAGNET_NONE, MAGNET_RECTANGLE, MAGNET_ELLIPSE
 
 Private Enum CMD_MOVE_TO, CMD_LINE_TO ', CMD_RECTANGLE, CMD_ELLIPSE
@@ -384,7 +383,7 @@ Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer)
   
 End
 
-Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iAlign As Integer)
+Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iAlign As Integer, bAlignBase As Boolean)
 
   Dim hImage As Image
   Dim hOutline As PointF[][]
@@ -401,7 +400,28 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Paint.Begin(hImage)
   Paint.Font = Font[sFont]
   hExtents = Paint.TextExtents(sText)
-  Paint.Text(sText, X, Y, hExtents.Width, hExtents.Height, Align.TopNormal + iAlign) ', W, H, iAlign)
+  
+  Debug iAlign;; bAlignBase
+  
+  If Align.IsLeft(iAlign) Then
+    'X = X
+  Else If Align.IsRight(iAlign) Then
+    X -= hExtents.Width
+  Else If Align.IsCenter(iAlign) Then
+    X -= hExtents.Width / 2
+  Endif
+  
+  If bAlignBase Then
+    Y -= Paint.Font.Ascent
+  Else If Align.IsTop(iAlign) Then
+    'Y = Y
+  Else If Align.IsBottom(iAlign) Then
+    Y -= hExtents.Height
+  Else If Align.IsMiddle(iAlign) Then
+    Y -= hExtents.Height / 2
+  Endif
+  
+  Paint.Text(sText, X, Y, hExtents.Width, hExtents.Height, Align.TopLeft) ', W, H, iAlign)
   hOutline = Paint.PathOutline
   
   For Each hPoly In hOutline

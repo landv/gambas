@@ -2763,10 +2763,10 @@ Public Sub btnHide_Click()
 
 End
 
-Public Sub UpdateText(sText As String, sFont As String, iAlign As Integer)
+Public Sub UpdateText(sText As String, sFont As String, iAlign As Integer, bAlignBase As Boolean)
   
   $hSelect = $hTextSelect.Copy()
-  $hSelect.Text($hLastPoint.X, $hLastPoint.Y, sText, sFont, iAlign)
+  $hSelect.Text($hLastPoint.X, $hLastPoint.Y, sText, sFont, iAlign, bAlignBase)
   imvImage.Refresh
   
 End
