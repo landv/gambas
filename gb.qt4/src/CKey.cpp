@@ -204,10 +204,9 @@ END_PROPERTY
 BEGIN_PROPERTY(CKEY_normal)
 
   CHECK_VALID();
-  GB.ReturnBoolean((CKEY_info.state & Qt::KeyboardModifierMask) == 0);
+  GB.ReturnBoolean((CKEY_info.state & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier)) == 0);
 
 END_PROPERTY
-
 
 
 GB_DESC CKeyDesc[] =
