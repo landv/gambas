@@ -43,9 +43,9 @@ enum
 	ALIGN_JUSTIFY = 0x04, //Qt::AlignVCenter + Qt::AlignJustify	
 };
 
-#define ALIGN_IS_TOP(_align) (((_align) & 0xF0) == 0x1)
-#define ALIGN_IS_BOTTOM(_align) (((_align) & 0xF0) == 0x2)
-#define ALIGN_IS_MIDDLE(_align) (((_align) & 0xF0) == 0x0)
+#define ALIGN_IS_TOP(_align) (((_align) & 0xF0) == 0x10)
+#define ALIGN_IS_BOTTOM(_align) (((_align) & 0xF0) == 0x20)
+#define ALIGN_IS_MIDDLE(_align) (((_align) & 0xF0) == 0x00)
 #define ALIGN_IS_LEFT(_align) (((_align) & 0xF) == 0x1 || (((_align) & 0xF) == 0x0 && !GB.System.IsRightToLeft()))
 #define ALIGN_IS_RIGHT(_align) (((_align) & 0xF) == 0x2 || (((_align) & 0xF) == 0x0 && GB.System.IsRightToLeft()))
 #define ALIGN_IS_CENTER(_align) (((_align) & 0xF) == 0x3)
