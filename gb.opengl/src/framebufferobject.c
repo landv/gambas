@@ -105,7 +105,7 @@ END_METHOD
 
 BEGIN_METHOD(GLGENERATEMIPMAPEXT, GB_INTEGER target)
 
-	GenerateMipmapEXT(VARG(target));
+	glGenerateMipmapEXT(VARG(target));
 
 END_METHOD
 
@@ -166,7 +166,7 @@ BEGIN_METHOD(GLGETRENDERBUFFERPARAMETERIVEXT, GB_INTEGER target; GB_INTEGER pnam
 	GB_ARRAY iArray;
 
 	GB.Array.New(&iArray , GB_T_INTEGER , 1);
-	GetRenderbufferParameterivEXT(VARG(target), VARG(pname), params);
+	glGetRenderbufferParameterivEXT(VARG(target), VARG(pname), params);
 
 	*((GLuint *)GB.Array.Get(iArray, 0)) = params[0];
 	GB.ReturnObject(iArray);

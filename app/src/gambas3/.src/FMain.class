@@ -474,7 +474,17 @@ Public Sub mnuPopup_Show()
     mnuAddVersion.Hide
   Endif
   
-  mnuFilter.Visible = IsProject($sKey)
+  If IsProject($sKey)
+    mnuFilter.Show
+    If Project.AddedPaths And If Project.AddedPaths.Count > 0 Then
+      mnuAddVersionAll.Show
+    Else
+      mnuAddVersionAll.Hide
+    Endif
+  Else
+    mnuFilter.Hide
+    mnuAddVersionAll.Hide
+  Endif
     
 End
 
@@ -1965,10 +1975,26 @@ Public Sub mnuAddVersion_Click()
   
   If Not Project.IsAdded($sKey, True) Then Return
   
-  If Message.Question(("Do you really want to add this file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
+  'If Message.Question(("Do you really want to add this file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
   
   VersionControl.AddFile($sKey)
   If Project.IsFormPath($sKey) Then VersionControl.AddFile(File.SetExt($sKey, "class"))
+  Project.Refresh
+  
+End
+
+Public Sub mnuAddVersionAll_Click()
+  
+  Dim sPath As String
+  
+  If Message.Question(("Do you really want to add every file to the repository?"), ("Add"), ("Cancel")) = 2 Then Return
+  
+  For Each Project.AddedPaths
+    sPath = Project.AddedPaths.Key
+    VersionControl.AddFile(sPath)
+    If Project.IsFormPath(sPath) Then VersionControl.AddFile(File.SetExt(sPath, "class"))
+  Next
+  
   Project.Refresh
   
 End

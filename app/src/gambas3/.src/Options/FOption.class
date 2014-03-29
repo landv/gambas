@@ -1120,8 +1120,8 @@ Public Sub btnInstallFont_Click()
     Try Copy "font" &/ sFont To sDir &/ sFont
   Next
   
-  sConf = "~/.config/fontconfig/.fonts.conf"
-  'If Not Exist(sConf) Then sConf = "~/.fonts.conf"
+  sConf = "~/.config/fontconfig/fonts.conf"
+  'If Not Exist(sConf) Then sConf = "~/.config/fontconfig/.fonts.conf"
   
   If Not Exist(sConf) Then
     Try Copy "font/font.conf" To sConf

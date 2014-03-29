@@ -32,7 +32,7 @@
 static void set_font_from_string(gFont *font, const char *str)
 {
   gchar **tokens, **p;
-  gchar *elt;
+  gchar *copy, *elt;
   int grade;
   double size;
   
@@ -51,7 +51,8 @@ static void set_font_from_string(gFont *font, const char *str)
   p = tokens;
   for(p = tokens; *p; p++)
   {
-  	elt = *p;
+		copy = g_strdup(*p);
+  	elt = g_strstrip(copy);
   	
   	if (!strcasecmp(elt, "bold"))
   		font->setBold(true);
@@ -81,6 +82,8 @@ static void set_font_from_string(gFont *font, const char *str)
 				font->setName(elt);
 			}
 		}
+
+		g_free(copy);
   }
   
   g_strfreev(tokens);

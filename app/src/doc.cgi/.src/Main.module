@@ -2961,7 +2961,7 @@ Private Sub UndoPage()
   Dim rPage As Result
   Dim rArch As Result
 
-  Goto READ_ONLY
+  If $sUser <> "gambas" Then Goto READ_ONLY
 
   rPage = DB.Edit("page", "sPath = &1 AND sLang = &2", $sPath, $sLang)
   If rPage.Available Then
@@ -2988,7 +2988,7 @@ Private Sub UndoPage()
     Endif
   Endif
 
-  READ_ONLY:
+READ_ONLY:
 
   Print "Content-type: text/html"
   Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri
@@ -3015,7 +3015,7 @@ Private Sub UpdatePage()
   Dim bStop As Boolean
   Dim sTitle As String
 
-  Goto READ_ONLY
+  If $sUser <> "gambas" Then Goto READ_ONLY
 
   rPage = DB.Create("page")
   rPage!sPath = $sPath
@@ -3176,7 +3176,7 @@ Private Sub UpdatePage()
 
   Endif
 
-  READ_ONLY:
+READ_ONLY:
 
   Print "Content-type: text/html"
   Print "Location: http://" & Application.Env["HTTP_HOST"] &/ "help" &/ $sUri;
@@ -3312,7 +3312,7 @@ Private Sub DoRenamePage()
   Dim bKeep As Boolean
   Dim sUri As String
 
-  Goto READ_ONLY
+  If $sUser <> "gambas" Then Goto READ_ONLY
 
   cForm = GetForm()
   sNewPath = cForm!sNewPath

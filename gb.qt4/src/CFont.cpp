@@ -126,6 +126,7 @@ static void set_font_from_string(CFONT *_object, QString &str)
 		for (QStringList::Iterator it = list.begin(); it != list.end(); ++it )
 		{
 			elt = (*it);
+			elt = elt.trimmed();
 			flag = elt.toUpper();
 			size = elt.toDouble(&number);
 

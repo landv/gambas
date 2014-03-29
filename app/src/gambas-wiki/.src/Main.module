@@ -473,7 +473,7 @@ Public Sub Main()
         If Not Exist(sPath) Or If sData <> File.Load(sPath) Then
           File.Save(sPath, sData)
           Copy sPath To GetPagePath(True)
-          Main.Log(Main.Path)
+          Main.Log(Main.Path & " (" & Main.Lang & ")")
         Endif
         Redirect
         Return
@@ -484,7 +484,7 @@ Public Sub Main()
         Try Kill sPath
         Copy Request.Files["file"] To sPath
         Copy sPath To GetPagePath(True)
-        Main.Log(Main.Path)
+        Main.Log(Main.Path & " (" & Main.Lang & ")")
         Redirect
         Return
       Endif
@@ -496,7 +496,7 @@ Public Sub Main()
         LockPage
         File.Save(sPath, "")
         Copy sPath To GetPagePath(True)
-        Main.Log("Delete " & Main.Path)
+        Main.Log("Delete " & Main.Path & " (" & Main.Lang & ")")
       Endif
       Redirect
       Return
@@ -511,7 +511,7 @@ Public Sub Main()
         Try Kill sDir &/ aPage[0]
         Try Kill sPath
         Try Copy sDir &/ aPage[1] To sPath
-        Main.Log("Undo " & Main.Path)
+        Main.Log("Undo " & Main.Path & " (" & Main.Lang & ")")
       Endif
       Redirect
       Return
@@ -981,12 +981,13 @@ Public Sub GetChanges() As String[]
   Endif
   
   aLine = Split(File.Load(Main.Root &/ "wiki.log"), "\n", "", True)
+  aLine.Reverse
   
-  If aLine.Count > 1000 Then aResult.Add("...")
-  
-  For I = Max(aLine.Count - 1000, 0) To aLine.Max
+  For I = 0 To Min(999, aLine.Max)
     aResult.Add("    " & aLine[I])
   Next
+  
+  If aLine.Count > 1000 Then aResult.Add("...")
   
   Return aResult
   
@@ -1011,7 +1012,7 @@ Public Sub Log(sText As String, Optional sUser As String)
   Try hFile = Open sLog For Append
   If hFile Then
     For Each sText In Split(sText, "\n")
-      Print #hFile, Format(Now, "mm/dd/yyyy hh:nn:ss.uu"); " | "; sUser; " | "; sText
+      Print #hFile, Format(Now, "mm\\/dd\\/yyyy hh\\:nn\\:ss"); " | "; sUser; " | "; sText
     Next
     Close #hFile
   Endif
