@@ -401,8 +401,6 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Paint.Font = Font[sFont]
   hExtents = Paint.TextExtents(sText)
   
-  Debug iAlign;; bAlignBase
-  
   If Align.IsLeft(iAlign) Then
     'X = X
   Else If Align.IsRight(iAlign) Then
@@ -432,7 +430,6 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
       hShape.Add(hPoint)
     Next
   Next
-  
   
 End
 
