@@ -21,6 +21,7 @@ Property Prefix As String
 Property Unique As Boolean
 Property Modified As Boolean
 Property CookiePath As String
+Property Read Keys As String[]
 
 Private Sub LockSession() 
   
@@ -467,5 +468,18 @@ End
 Private Sub CookiePath_Write(Value As String)
 
   $sCookiePath = Value
+
+End
+
+
+Private Function Keys_Read() As String[]
+
+  Dim aKey As New String[]
+
+  For Each $cVal
+    aKey.Add($cVal.Key)
+  Next
+  Return aKey
+  
 
 End

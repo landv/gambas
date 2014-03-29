@@ -81,7 +81,7 @@ Public Sub Main()
   vObject = JSON.Decode("{\"a\":123,\"b\":\"toto\",\"c\":null,\"d\":true,\"e\":\"\"}", True)
   
   For Each vVal In vObject
-    Print vObject.Key; ": "; vVal
+    Print vObject.Key; ": "; vVal;; TypeOf(vVal)
   Next
   
 

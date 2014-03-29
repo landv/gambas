@@ -133,20 +133,31 @@ Private Sub ReadNumber(sNumber As String) As Variant
   
   Dim sCar As String
   Dim vNumber As Variant
+  Dim bFloat As Boolean
   
   Do
     sCar = GetChar()
     If Not sCar Then Break
-    If InStr("-+0123456789eE.", sCar) = 0 Then 
+    If InStr(".eE", sCar) Then
+      bFloat = True
+    Else If InStr("-+0123456789", sCar) = 0 Then 
       Dec $iPos
       Break
     Endif
     sNumber &= sCar
   Loop
   
-  Try vNumber = CFloat(sNumber)
-  If IsNull(vNumber) Then Error.Raise("Incorrect number")
-  Return vNumber
+  If bFloat Then
+    Try vNumber = CFloat(sNumber)
+    If Not Error Then Return vNumber
+  Else
+    Try vNumber = CInt(sNumber)
+    If Not Error Then Return vNumber
+    Try vNumber = CLong(sNumber)
+    If Not Error Then Return vNumber
+  Endif
+  
+  Error.Raise("Incorrect number")
   
 End
 
