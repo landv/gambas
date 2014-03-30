@@ -119,9 +119,30 @@
     }
   }
   { edtOutput Editor
-    MoveScaled(1,9,38,39)
+    MoveScaled(1,9,38,34)
+    NoTabFocus = True
     Expand = True
     Border = False
+    ReadOnly = True
+  }
+  { Separator2 Separator
+    MoveScaled(24,45,34,0)
+  }
+  { panEnter HBox
+    MoveScaled(1,49,92,5)
+    Background = Color.TextBackground
+    { lblEnter Label
+      MoveScaled(1,1,4,3)
+      Foreground = Color.SelectedBackground
+      Padding = 2
+      AutoResize = True
+      Text = ("?")
+    }
+    { txtEnter TextBox
+      MoveScaled(6,0,85,4)
+      Expand = True
+      Border = False
+    }
   }
 }
 

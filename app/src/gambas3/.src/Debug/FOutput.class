@@ -1,10 +1,11 @@
 ' Gambas class file
 
-'PUBLIC Shown AS Boolean
+Private $aHistory As New String[]
+Private $bGotError As Boolean
+Private $iHistory As Integer
+Private $sCurrent As String
 
-Private $iCol As Integer
-Private $iLine As Integer
-Private $bWelcome As Boolean
+'PUBLIC Shown AS Boolean
 
 Public Sub _new()
 
@@ -24,18 +25,9 @@ End
 Public Sub Clear()
 
   edtOutput.Clear
-  $iLine = 0
-
-  If Not $bWelcome Then
-
-    edtOutput.Text = ("Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n")
-    edtOutput.Goto(edtOutput.Lines.Count, 0)
-    $iCol = edtOutput.Column
-    $iLine = edtOutput.Line
-
-    $bWelcome = True
-
-  Endif
+  txtEnter.Clear
+  txtEnter.SetFocus
+  $iHistory = $aHistory.Count
 
 End
 
@@ -51,11 +43,10 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
   Endif
   
+  edtOutput.ReadOnly = False
   edtOutput.Print(sText)
+  edtOutput.ReadOnly = True
   
-  $iLine = edtOutput.Line
-  $iCol = edtOutput.Column
-
   If Not Action["console"].Value Then Action["console"].Value = True
 
 End
@@ -73,63 +64,17 @@ Public Sub ReadConfig()
   edtOutput.Flags[Editor.HideMargin] = True
   
   Project.SetSmallFont(tlbOutput)
+  
+  txtEnter.Font = edtOutput.Font
+  lblEnter.Font = edtOutput.Font
+  lblEnter.Font.Bold = True
+  panEnter.H = txtEnter.Font.Height + 4
 
 End
 
 Public Sub edtOutput_KeyPress()
 
-  Dim sText As String
-  Dim sVal As String
-  Dim bSemiColon As Boolean
-
-  If Key.Code = Key.Enter Or Key.Code = Key.Return Then
-
-    sText = edtOutput.Lines[edtOutput.Line].Text
-    If chkCharset.Value Then
-      Try sText = SConv$(sText)
-    Endif
-
-    If Design.IsRunning() Then
-
-      If $iLine = edtOutput.Line Then
-        sText = Mid$(sText, $iCol + 1)
-      Endif
-
-      edtOutput.Insert("\n")
-      Design.Send(sText & "\n")
-      'Debug
-      Stop Event
-
-    Else If Left$(sText) = "?" Then
-
-      sText = Mid$(sText, 2)
-      If Not sText Then Return
-
-      If Project.Running Then
-
-        edtOutput.Insert("\n")
-        Design.Command("!\t" & sText)
-        Stop Event
-
-      Else
-
-        If Right(sText) = ";" Then 
-          sText = Left$(sText, -1)
-          bSemiColon = True
-        Endif
-
-        Try sVal = Str(Eval(sText & "\n"))
-        If Error Then sVal = Error.Text
-        sVal = "\n" & DConv$(sVal)
-        If Not bSemiColon Then sVal &= "\n"
-        Insert(sVal)
-        Stop Event
-
-      Endif
-
-    Endif
-
-  Else If Key.Code = Key.Escape Then 
+  If Key.Code = Key.Escape Then 
   
     Action["console"].Value = False
 
@@ -138,9 +83,11 @@ Public Sub edtOutput_KeyPress()
     If Key.Code = Key["L"] Then
       Clear
     Else If Key.Code = Key["G"] Then 
+      edtOutput.ReadOnly = False
       edtOutput.Print(Chr$(7))
+      edtOutput.ReadOnly = True
     Endif
-
+    
   Endif
 
 End
@@ -164,14 +111,13 @@ End
 
 Public Sub Form_GotFocus()
 
-  edtOutput.SetFocus
+  txtEnter.SetFocus
 
 End
 
 Public Sub btnClear_Click()
 
   Clear
-  edtOutput.SetFocus
 
 End
 
@@ -322,7 +268,7 @@ End
 
 Public Sub btnSearch_Click()
 
-  edtOutput.SetFocus
+  txtEnter.SetFocus
   FSearch.WakeUp(False)
 
 End
@@ -339,3 +285,92 @@ End
 '   Print #Design.GetProcess(), Chr$(4);
 ' 
 ' End
+
+Public Sub txtEnter_Activate()
+
+  Dim sText As String
+  Dim bSemiColon As Boolean
+  Dim sVal As String
+
+  sText = txtEnter.Text
+  If $iHistory = $aHistory.Count Or If sText <> $aHistory[$iHistory] Then
+    $aHistory.Add(txtEnter.Text)
+    If $aHistory.Count > 256 Then $aHistory.Remove(0)
+  Endif
+  $iHistory = $aHistory.Count
+  txtEnter.Clear
+
+  If Design.IsRunning() Then
+
+    'edtOutput.Insert("\n")
+    Design.Send(sText & "\n")
+    'Debug
+    Stop Event
+
+  Else
+
+    sText = Trim(sText)
+    If Not sText Then Return
+
+    If Project.Running Then
+
+      'edtOutput.Insert("\n")
+      Design.Command("!\t" & sText)
+      Stop Event
+
+    Else
+
+      If Right(sText) = ";" Then 
+        sText = Left$(sText, -1)
+        bSemiColon = True
+      Endif
+
+      Try sVal = Str(Eval(sText & "\n"))
+      If Error Then
+        txtEnter.Text = Error.Text
+        txtEnter.Foreground = Color.Red
+        $bGotError = True
+      Else
+        sVal = DConv$(sVal)
+        If Not bSemiColon Then sVal &= "\n"
+        Insert(sVal)
+      Endif
+      Stop Event
+
+    Endif
+
+  Endif
+  
+
+End
+
+Public Sub txtEnter_KeyPress()
+
+  If $bGotError Then
+    $bGotError = False
+    txtEnter.Foreground = Color.Default
+    txtEnter.Clear
+  Endif
+  
+  If Key.Code = Key.Up Then
+    If $iHistory Then
+      If $iHistory = $aHistory.Count Then $sCurrent = txtEnter.Text
+      Dec $iHistory
+      txtEnter.Text = $aHistory[$iHistory]
+    Endif
+    Stop Event
+  Else If Key.Code = Key.Down Then
+    If $iHistory < $aHistory.Count Then
+      Inc $iHistory
+      If $iHistory = $aHistory.Count Then 
+        txtEnter.Text = $sCurrent
+      Else
+        txtEnter.Text = $aHistory[$iHistory]
+      Endif
+    Endif
+    Stop Event
+  Else
+    edtOutput_KeyPress
+  Endif
+
+End
