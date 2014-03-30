@@ -453,13 +453,13 @@ Private Sub SetTool(sAction As String)
       CreateSelection
       $hTextSelect = $hSelect.Copy()
       $hLastPoint = imvImage.ViewToImage(Point(imvImage.ScrollX + imvImage.ClientW / 2, imvImage.ScrollY + imvImage.ClientH / 2))
-      FImageProperty.ShowTextOption
+      FImageProperty.ShowTextOption(True, True)
 
   End Select
   
   $sTool = sAction
   
-  If $sTool <> "text" Then FImageProperty.HideTextOption
+  If $sTool <> "text" Then FImageProperty.ShowTextOption(False)
 
 End
 
@@ -1402,11 +1402,15 @@ Public Sub imvImage_Draw(hZoom As Image)
     imvImage._Paint(hZoom, hOffset.X, hOffset.Y)
   Endif
   
-  If bBalance And If Not $hSelect Then
+  If bBalance Then
     
-    hImage = hZoom.Copy()
-    FImageProperty.ApplyBalance(hImage)
-    imvImage._Paint(hImage, hOffset.X, hOffset.Y)
+    If Not $hSelect Or If $hSelect.IsVoid() Then
+    
+      hImage = hZoom.Copy()
+      FImageProperty.ApplyBalance(hImage)
+      imvImage._Paint(hImage, hOffset.X, hOffset.Y)
+      
+    Endif
     
   Endif
   
@@ -2431,6 +2435,7 @@ Public Sub btnGrid_Click()
 
   $bShowGrid = Not $bShowGrid
   imvImage.Refresh
+  FImageProperty.ShowGridOption($bShowGrid)
 
 End
 
@@ -2780,4 +2785,16 @@ Public Sub imvImage_MouseWheel()
   Endif
   Stop Event
 
+End
+
+Public Sub HasGrid() As Boolean
+  
+  Return $bShowGrid
+  
+End
+
+Public Sub GetTool() As String
+  
+  Return $sTool
+  
 End

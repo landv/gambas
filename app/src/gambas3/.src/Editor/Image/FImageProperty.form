@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,152)
+  MoveScaled(0,0,68,158)
   Persistent = True
   Arrangement = Arrange.Fill
   { Panel10 ScrollView
-    MoveScaled(1,1,65,150)
+    MoveScaled(2,1,65,156)
     Arrangement = Arrange.Vertical
     Border = False
     ScrollBar = Scroll.Vertical
@@ -200,10 +200,10 @@
       Index = 0
     }
     { Separator6 Separator
-      MoveScaled(18,61,15,0)
+      MoveScaled(18,59,15,0)
     }
     { Panel1 VBox
-      MoveScaled(1,62,63,14)
+      MoveScaled(1,60,63,14)
       Margin = True
       { HPanel1 HBox
         MoveScaled(0,0,62,4)
@@ -253,150 +253,244 @@
       }
     }
     { Separator3 Separator
-      MoveScaled(19,78,26,0)
+      MoveScaled(19,75,26,0)
     }
-    { Panel5 VBox
-      MoveScaled(1,80,63,35)
+    { Panel13 Panel
+      MoveScaled(1,76,64,42)
+      Arrangement = Arrange.Vertical
       Margin = True
-      { HPanel4 HBox
-        MoveScaled(0,0,62,4)
-        Spacing = True
-        { Label5 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Brightness")
+      { panEffect Expander
+        MoveScaled(1,1,62,36)
+        Arrangement = Arrange.Vertical
+        Border = False
+        Text = ("Effects")
+        TextFont = Font["Bold"]
+        Hidden = True
+        { HPanel4 HBox
+          MoveScaled(0,0,59,4)
+          Spacing = True
+          { Label5 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Brightness")
+          }
+          { slbBrightness SliderBox slbValue
+            Name = "slbBrightness"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MinValue = -255
+            MaxValue = 255
+          }
         }
-        { slbBrightness SliderBox slbValue
-          Name = "slbBrightness"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MinValue = -255
-          MaxValue = 255
+        { HPanel5 HBox
+          MoveScaled(0,4,59,4)
+          Spacing = True
+          { Label6 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Contrast")
+          }
+          { slbContrast SliderBox slbValue
+            Name = "slbContrast"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MinValue = -255
+            MaxValue = 255
+          }
         }
-      }
-      { HPanel5 HBox
-        MoveScaled(0,4,62,4)
-        Spacing = True
-        { Label6 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Contrast")
+        { HPanel8 HBox
+          MoveScaled(0,8,59,4)
+          Spacing = True
+          { Label9 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Gamma")
+          }
+          { slbGamma SliderBox slbValue
+            Name = "slbGamma"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MinValue = -255
+            MaxValue = 255
+          }
         }
-        { slbContrast SliderBox slbValue
-          Name = "slbContrast"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MinValue = -255
-          MaxValue = 255
+        { HPanel9 HBox
+          MoveScaled(0,12,59,4)
+          Spacing = True
+          { Label10 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Lightness")
+          }
+          { slbLightness SliderBox slbValue
+            Name = "slbLightness"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MinValue = -255
+            MaxValue = 255
+          }
         }
-      }
-      { HPanel8 HBox
-        MoveScaled(0,8,62,4)
-        Spacing = True
-        { Label9 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Gamma")
+        { HPanel6 HBox
+          MoveScaled(0,16,59,4)
+          Spacing = True
+          { Label7 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Hue")
+          }
+          { slbHue SliderBox slbValue
+            Name = "slbHue"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MinValue = -255
+            MaxValue = 255
+          }
         }
-        { slbGamma SliderBox slbValue
-          Name = "slbGamma"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MinValue = -255
-          MaxValue = 255
+        { HPanel7 HBox
+          MoveScaled(0,20,59,4)
+          Spacing = True
+          { Label8 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Saturation")
+          }
+          { slbSaturation SliderBox slbValue
+            Name = "slbSaturation"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MinValue = -255
+            MaxValue = 255
+          }
         }
-      }
-      { HPanel9 HBox
-        MoveScaled(0,12,62,4)
-        Spacing = True
-        { Label10 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Lightness")
+        { HPanel10 HBox
+          MoveScaled(0,24,59,4)
+          Spacing = True
+          { Label11 Label
+            MoveScaled(0,0,15,4)
+            Text = ("Blur")
+          }
+          { slbBlur SliderBox slbValue
+            Name = "slbBlur"
+            MoveScaled(19,0,40,4)
+            Expand = True
+            MaxValue = 127
+          }
         }
-        { slbLightness SliderBox slbValue
-          Name = "slbLightness"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MinValue = -255
-          MaxValue = 255
+        { Panel7 Panel
+          MoveScaled(21,28,5,1)
         }
-      }
-      { HPanel6 HBox
-        MoveScaled(0,16,62,4)
-        Spacing = True
-        { Label7 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Hue")
-        }
-        { slbHue SliderBox slbValue
-          Name = "slbHue"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MinValue = -255
-          MaxValue = 255
-        }
-      }
-      { HPanel7 HBox
-        MoveScaled(0,20,62,4)
-        Spacing = True
-        { Label8 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Saturation")
-        }
-        { slbSaturation SliderBox slbValue
-          Name = "slbSaturation"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MinValue = -255
-          MaxValue = 255
-        }
-      }
-      { HPanel10 HBox
-        MoveScaled(0,24,62,4)
-        Spacing = True
-        { Label11 Label
-          MoveScaled(0,0,15,4)
-          Text = ("Blur")
-        }
-        { slbBlur SliderBox slbValue
-          Name = "slbBlur"
-          MoveScaled(19,0,40,4)
-          Expand = True
-          MaxValue = 127
-        }
-      }
-      { Panel7 Panel
-        MoveScaled(21,29,5,1)
-      }
-      { HBox3 HBox
-        MoveScaled(0,31,62,4)
-        Spacing = True
-        { chkBalancePreview CheckBox
-          MoveScaled(0,0,14,4)
-          Visible = False
-          Text = ("Preview")
-          Value = CheckBox.True
-        }
-        { Panel6 Panel
-          MoveScaled(26,0,2,4)
-          Expand = True
-        }
-        { btnBalanceReset Button
-          MoveScaled(32,0,14,4)
-          AutoResize = True
-          Text = ("Reset")
-          Picture = Picture["icon:/small/undo"]
-        }
-        { btnBalanceApply Button
-          MoveScaled(47,0,14,4)
-          AutoResize = True
-          Text = Shortcut(("Apply"), "A")
-          Picture = Picture["icon:/small/apply"]
+        { HBox3 HBox
+          MoveScaled(0,29,58,4)
+          Spacing = True
+          { chkBalancePreview CheckBox
+            MoveScaled(0,0,14,4)
+            Visible = False
+            Text = ("Preview")
+            Value = CheckBox.True
+          }
+          { Panel6 Panel
+            MoveScaled(22,0,2,4)
+            Expand = True
+          }
+          { btnBalanceReset Button
+            MoveScaled(28,0,14,4)
+            AutoResize = True
+            Text = ("Reset")
+            Picture = Picture["icon:/small/undo"]
+          }
+          { btnBalanceApply Button
+            MoveScaled(43,0,14,4)
+            AutoResize = True
+            Text = Shortcut(("Apply"), "A")
+            Picture = Picture["icon:/small/apply"]
+          }
         }
       }
     }
-    { Separator4 Separator
-      MoveScaled(19,116,15,0)
+    { sepText Separator
+      MoveScaled(21,119,15,0)
     }
-    { HBox4 HBox
-      MoveScaled(2,118,62,6)
+    { panText VBox
+      MoveScaled(3,120,60,23)
+      Visible = False
+      Margin = True
+      { Panel11 HBox
+        MoveScaled(1,1,58,4)
+        Spacing = True
+        { Panel12 Panel
+          MoveScaled(0,0,12,4)
+          { btnTextCenter ToolButton btnTextAlign
+            Name = "btnTextCenter"
+            MoveScaled(4,0,4,4)
+            ToolTip = ("Centered")
+            Picture = Picture["icon:/small/text-center"]
+            Radio = True
+            Toggle = True
+          }
+          { btnTextRight ToolButton btnTextAlign
+            Name = "btnTextRight"
+            MoveScaled(8,0,4,4)
+            ToolTip = ("Right align")
+            Picture = Picture["icon:/small/text-right"]
+            Radio = True
+            Toggle = True
+          }
+          { btnTextLeft ToolButton btnTextAlign
+            Name = "btnTextLeft"
+            MoveScaled(0,0,4,4)
+            ToolTip = ("Left align")
+            Picture = Picture["icon:/small/text-left"]
+            Radio = True
+            Toggle = True
+            Value = True
+          }
+        }
+        { panTextAlign Panel
+          MoveScaled(12,0,17,4)
+          { btnTextTop ToolButton btnTextAlign
+            Name = "btnTextTop"
+            MoveScaled(0,0,4,4)
+            ToolTip = ("Top align")
+            Picture = Picture["img/draw/text-top.png"]
+            Radio = True
+            Toggle = True
+            Value = True
+          }
+          { btnTextMiddle ToolButton btnTextAlign
+            Name = "btnTextMiddle"
+            MoveScaled(4,0,4,4)
+            ToolTip = ("Middle align")
+            Picture = Picture["img/draw/text-middle.png"]
+            Radio = True
+            Toggle = True
+          }
+          { btnTextBase ToolButton btnTextAlign
+            Name = "btnTextBase"
+            MoveScaled(8,0,4,4)
+            ToolTip = ("Baseline align")
+            Picture = Picture["img/draw/text-base.png"]
+            Radio = True
+            Toggle = True
+          }
+          { btnTextBottom ToolButton btnTextAlign
+            Name = "btnTextBottom"
+            MoveScaled(12,0,4,4)
+            ToolTip = ("Bottom align")
+            Picture = Picture["img/draw/text-bottom.png"]
+            Radio = True
+            Toggle = True
+          }
+        }
+      }
+      { fchText FontChooser
+        MoveScaled(1,6,55,8)
+        Border = False
+      }
+      { txtText TextArea
+        MoveScaled(1,15,54,7)
+        Expand = True
+      }
+    }
+    { sepGrid Separator
+      MoveScaled(19,145,15,0)
+    }
+    { panGrid HBox
+      MoveScaled(2,147,62,6)
+      Visible = False
       Spacing = True
       Margin = True
       { Label12 Label
@@ -422,30 +516,6 @@
         ReadOnly = True
         List = ["1", "2", "4", "8"]
         Text = "4"
-      }
-    }
-    { Separator9 Separator
-      MoveScaled(21,125,15,0)
-    }
-    { panText VBox
-      MoveScaled(3,126,60,22)
-      Visible = False
-      Margin = True
-      { Panel11 HBox
-        MoveScaled(1,1,58,8)
-        Spacing = True
-        { panTextAlign Panel
-          MoveScaled(0,0,8,8)
-        }
-        { fchText FontChooser
-          MoveScaled(20,0,38,8)
-          Expand = True
-          Border = False
-        }
-      }
-      { txtText TextArea
-        MoveScaled(1,15,54,7)
-        Expand = True
       }
     }
   }

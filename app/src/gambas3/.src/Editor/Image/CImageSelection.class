@@ -401,6 +401,8 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Paint.Font = Font[sFont]
   hExtents = Paint.TextExtents(sText)
   
+  Debug hExtents.X;; hExtents.Y;; hExtents.Width;; hExtents.Height
+  
   If Align.IsLeft(iAlign) Then
     'X = X
   Else If Align.IsRight(iAlign) Then
@@ -410,16 +412,16 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Endif
   
   If bAlignBase Then
-    Y -= Paint.Font.Ascent
-  Else If Align.IsTop(iAlign) Then
     'Y = Y
+  Else If Align.IsTop(iAlign) Then
+    Y -= hExtents.Y
   Else If Align.IsBottom(iAlign) Then
-    Y -= hExtents.Height
+    Y = Y - hExtents.Y - hExtents.Height
   Else If Align.IsMiddle(iAlign) Then
-    Y -= hExtents.Height / 2
+    Y = Y - hExtents.Y - hExtents.Height / 2
   Endif
   
-  Paint.Text(sText, X, Y, hExtents.Width, hExtents.Height, Align.TopLeft) ', W, H, iAlign)
+  Paint.Text(sText, X - hExtents.X, Y)
   hOutline = Paint.PathOutline
   
   For Each hPoly In hOutline
