@@ -206,3 +206,16 @@ Public Sub panTitle_MouseDown()
   SetHidden(Not $bHidden)
 
 End
+
+Public Sub GetBorder() As Boolean
+  
+  Return panContainer.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panContainer.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
