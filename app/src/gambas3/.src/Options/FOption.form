@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,94,75)
+  MoveScaled(0,0,95,75)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -30,11 +30,11 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(0,0,93,73)
+    MoveScaled(1,1,93,73)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
-    Count = 7
+    Count = 8
     Index = 0
     Text = ("Interface")
     Picture = Picture["icon:/large/menu"]
@@ -486,13 +486,27 @@
         Animated = True
       }
     }
+    { HBox47 HBox
+      MoveScaled(0,14,66,4)
+      Spacing = True
+      Indent = True
+      { Label56 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Comments automatic insertion")
+      }
+      { btnComment SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
     { Label48 Label
-      MoveScaled(0,14,63,3)
+      MoveScaled(0,20,63,3)
       Font = Font["Bold"]
       Text = ("Explicit formating")
     }
     { HBox33 HBox
-      MoveScaled(0,18,66,4)
+      MoveScaled(0,24,66,4)
       Spacing = True
       Indent = True
       { Label31 Label
@@ -506,7 +520,7 @@
       }
     }
     { HBox30 HBox
-      MoveScaled(0,23,66,4)
+      MoveScaled(0,29,66,4)
       Spacing = True
       Indent = True
       { Label28 Label
@@ -520,7 +534,7 @@
       }
     }
     { HBox31 HBox
-      MoveScaled(0,28,66,4)
+      MoveScaled(0,34,66,4)
       Spacing = True
       Indent = True
       { Label29 Label
@@ -534,7 +548,7 @@
       }
     }
     { HBox32 HBox
-      MoveScaled(0,33,66,4)
+      MoveScaled(0,39,66,4)
       Spacing = True
       Indent = True
       { Label30 Label
@@ -547,13 +561,16 @@
         Animated = True
       }
     }
+    Index = 5
+    Text = ("Code snippets")
+    Picture = Picture["icon:/32/insert-text"]
     { Label47 Label
-      MoveScaled(0,39,63,3)
+      MoveScaled(0,0,63,3)
       Font = Font["Bold"]
       Text = ("Code snippets")
     }
     { HBox9 HBox
-      MoveScaled(0,43,66,4)
+      MoveScaled(0,4,66,4)
       Spacing = True
       Indent = True
       { Label55 Label
@@ -567,7 +584,7 @@
       }
     }
     { Panel9 HBox
-      MoveScaled(0,48,67,25)
+      MoveScaled(0,9,67,25)
       Expand = True
       Indent = True
       { HBox27 VBox
@@ -611,7 +628,7 @@
         }
       }
     }
-    Index = 5
+    Index = 6
     Text = ("Packaging")
     Picture = Picture["icon:/32/package"]
     { Label33 Label
@@ -744,7 +761,7 @@
         }
       }
     }
-    Index = 6
+    Index = 7
     Text = ("Help & applications")
     Picture = Picture["icon:/large/help"]
     { Label46 Label

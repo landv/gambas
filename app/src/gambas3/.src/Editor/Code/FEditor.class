@@ -17,6 +17,7 @@ Public Const NBR_COLOR As Integer = 15
 
 Static Public StructControlCompletion As Boolean = True
 Static Public LocalVariableDeclaration As Boolean = False
+Static Public AutoComment As Boolean = True
 Static Public ExpressionStart As Integer
 
 Static Private $cStructClose As New Collection(gb.IgnoreCase)
@@ -88,6 +89,7 @@ Static Public Sub _init()
   
   StructControlCompletion = Settings["/Editor/ControlStructCompletion", 1]
   LocalVariableDeclaration = Settings["/Editor/LocalVariableDeclaration", 0]
+  AutoComment = Settings["/Editor/AutoComment", 1]
   
 End
 
@@ -992,7 +994,7 @@ Public Sub Editors_KeyPress()
 
     sLine = Editor.Lines[iLine].Text
 
-    If IsComment(sLine) And If Not Key.Shift Then
+    If AutoComment And If IsComment(sLine) And If Not Key.Shift Then
 
       iInd = Editor.GetIndent(sLine)
       If Editor.Column > iInd Then
