@@ -682,6 +682,11 @@ ENTER_MARKUP:
   Until sCar = ">" 
   sPattern = String.Mid$(sLine, I1 + 1, I - I1 - 1)
   
+  If sPattern = "script" Or If sPattern Begins "script " Then
+    sResult &= "<div class=\"error\">" & Html("<script> is forbidden") & "</div>"
+    Return sResult
+  Endif
+  
   'sPattern = LCase(sPattern)
   
   If Left$(sPattern) = "/" Then
