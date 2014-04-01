@@ -685,6 +685,9 @@ ENTER_MARKUP:
   If sPattern = "script" Or If sPattern Begins "script " Then
     sResult &= "<div class=\"error\">" & Html("<script> is forbidden") & "</div>"
     Return sResult
+  Else If sPattern = "iframe" Or If sPattern Begins "iframe " Then
+    sResult &= "<div class=\"error\">" & Html("<iframe> is forbidden") & "</div>"
+    Return sResult
   Endif
   
   'sPattern = LCase(sPattern)
