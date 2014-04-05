@@ -2,7 +2,8 @@ dnl ---- configure.ac for Gambas development environment
 
 dnl ---- Initialization
 
-AC_INIT(configure.ac)
+m4_include([../version.m4])
+AC_INIT(gambas3-ide, GB_VERSION, GB_MAIL, [], GB_URL)
 GB_INIT_SHORT(ide)
 
 dnl ---- Check for Portland scripts

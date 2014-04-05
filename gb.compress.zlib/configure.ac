@@ -1,7 +1,9 @@
 dnl ---- Initialization
 
-AC_INIT(configure.ac)
+m4_include([../version.m4])
+AC_INIT(gambas3-gb-compress-zlib, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
+
 GB_INIT(gb.compress.zlib)
 AC_PROG_LIBTOOL
 

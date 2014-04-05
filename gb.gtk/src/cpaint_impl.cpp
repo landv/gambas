@@ -134,6 +134,9 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 	}
 	
 	cairo_set_line_width(CONTEXT(d), 1.0);
+	/*cairo_set_line_join(CONTEXT(d), CAIRO_LINE_JOIN_MITER);
+	cairo_set_miter_limit(CONTEXT(d), 10.0);
+	cairo_set_line_cap(CONTEXT(d), CAIRO_LINE_CAP_BUTT);*/
 	
 	dx->font = NULL;
 	dx->font_stack = NULL;

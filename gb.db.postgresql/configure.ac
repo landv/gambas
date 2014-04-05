@@ -1,7 +1,11 @@
+dnl ---- configure.ac for gb.db.postgresql driver
+
 dnl ---- Initialization
 
-AC_INIT(configure.ac)
+m4_include([../version.m4])
+AC_INIT(gambas3-gb-db-postgresql, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
+
 GB_INIT(gb.db.postgresql)
 AC_PROG_LIBTOOL
 

@@ -1,9 +1,12 @@
 dnl ---- configure.ac for gb.db.mysql driver
 
-AC_INIT(configure.ac)
+m4_include([../version.m4])
+AC_INIT(gambas3-gb-db-mysql, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
+
 GB_INIT(gb.db.mysql)
-LT_INIT
+AC_PROG_LIBTOOL
+dnl LT_INIT
 
 GB_COMPONENT(
   mysql, MYSQL, gb.db.mysql, [src],

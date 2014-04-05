@@ -1,8 +1,9 @@
 dnl ---- configure.ac for main programs
 
-AC_INIT
-AC_CONFIG_SRCDIR([configure.ac])
+m4_include([../version.m4])
+AC_INIT(gambas3-main, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
+
 GB_INIT(main)
 GB_MATH_FUNC
 LT_INIT 

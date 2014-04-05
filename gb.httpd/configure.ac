@@ -1,9 +1,8 @@
 dnl ---- configure.ac for gb.httpd
 
-AC_INIT(configure.ac)
+m4_include([../version.m4])
+AC_INIT(gambas3-gb-httpd, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
-dnl AC_CANONICAL_SYSTEM
-dnl AC_PROG_CC
 
 GB_INIT(gb.httpd)
 AC_PROG_LIBTOOL

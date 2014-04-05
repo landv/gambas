@@ -1,7 +1,9 @@
 dnl ---- configure.ac for gb.desktop
 
-AC_INIT(configure.ac)
+m4_include([../version.m4])
+AC_INIT(gambas3-gb-desktop, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
+
 GB_INIT(gb.desktop)
 AC_PROG_LIBTOOL
 
