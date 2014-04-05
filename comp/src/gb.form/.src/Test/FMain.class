@@ -30,5 +30,7 @@ Public Sub Form_Open()
   DateChooser1[Date(2013, 9, 4)].Text = "Aujourd'hui"
   DateChooser1[Date(2013, 9, 6)].Text = "Mon anniversaire"
   DateChooser1[Date(2013, 9, 28)].Text = "Papa"
+  
+  Balloon.Delete("Ceci est un message\nsur deux lignes !", ButtonBox1)
 
 End
