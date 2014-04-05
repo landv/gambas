@@ -232,7 +232,7 @@ void STREAM_unmap(char *addr, int len);
 int STREAM_read_direct(int fd, char *buffer, int len);
 int STREAM_write_direct(int fd, char *buffer, int len);
 
-void STREAM_lock(STREAM *stream);
+bool STREAM_lock(STREAM *stream);
 
 #define STREAM_is_closed(_stream) ((_stream)->type == NULL)
 #define STREAM_is_closed_for_writing(_stream) (STREAM_is_closed(_stream) && !(_stream)->common.redirected)

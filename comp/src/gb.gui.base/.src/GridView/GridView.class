@@ -838,7 +838,7 @@ Public Sub ScrollArea_MouseDrag()
   If Not Me.Enabled Then Return
   
   $bIgnoreMove = False
-  If $bResize Then 
+  If $bResize Or If $bMoveSelect Then 
     Stop Event
     Return
   Endif
@@ -877,8 +877,8 @@ Public Sub ScrollArea_MouseDown()
     Return
   Endif
   
-  If $bInRow Then
-    If $iMode = Select.Multiple Then
+  If $iMode = Select.Multiple Then
+    If $bInRow Then
       If Mouse.Control Then
         If $hRows._IsSelected($iRow) Then
           $hRows.UnSelect($iRow, 1)
@@ -891,7 +891,7 @@ Public Sub ScrollArea_MouseDown()
           $hMoveOldSelection = $hRows._SaveSelection()
           $bMoveSelect = True
         Endif
-      Else If Mouse.Shift And iOldRow >= 0 Then 
+      Else If Mouse.Shift And If iOldRow >= 0 Then 
         $hRows._GetSel().UnSelectAll
         $hRows.Select(iOldRow, 1)
         $iMoveSelectRow = iOldRow
@@ -899,12 +899,14 @@ Public Sub ScrollArea_MouseDown()
         $bMoveSelect = True
         Dec $iRow
         MoveTo($iRow + 1, -1)
-      Else
+      Else If Not _IsRowSelected($iRow) Then
         $hRows._GetSel().UnSelectAll
         $hRows.Select($iRow, 1)
         $iMoveSelectRow = $iRow
         $hMoveOldSelection = $hRows._SaveSelection()
         $bMoveSelect = True
+      Else
+        $iMoveSelectRow = $iRow
       Endif
     Endif
   Endif
@@ -949,8 +951,7 @@ End
 '   
 ' End
 
-
-Public Sub ScrollArea_MouseUp()
+Private Sub AfterMouseUp()
   
   $bResize = False
   $bMoveSelect = False
@@ -966,9 +967,23 @@ Public Sub ScrollArea_MouseUp()
   
 End
 
+
+Public Sub ScrollArea_MouseUp()
+  
+  'If $iMode = Select.Multiple And $bInRow And If $iRow = $iMoveSelectRow Then
+  '  If Mouse.Normal Then
+  '    $hRows._GetSel().UnSelectAll
+  '    $hRows.Select($iRow, 1)
+  '  Endif
+  'Endif
+  
+  AfterMouseUp
+  
+End
+
 Public Sub ScrollArea_DragLeave()
   
-  ScrollArea_MouseUp
+  AfterMouseUp
   
 End
 

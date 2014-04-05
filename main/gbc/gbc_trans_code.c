@@ -44,6 +44,9 @@ static void add_local(int sym_index, TYPE type, int value, bool used)
 	PARAM *loc;
 	bool warnings = JOB->warnings;
 
+	if (ARRAY_count(func->local) >= MAX_LOCAL_SYMBOL)
+		THROW("Too many local variables");
+
 	loc = ARRAY_add(&func->local);
 	loc->index = sym_index;
 	loc->type = type;

@@ -8,9 +8,9 @@ Public Sub Main()
   Dim sType As String
   Dim cEtablissement As New Collection
   
-  'hMail.Debug = True
+  hMail.Debug = True
   hMail.Host = "smtp.free.fr"
-  hMail.To.Add("benoit.minisini@gmail.com")
+  hMail.To.Add("Chuck Norris <benoit@minisini.fr>")
   hMail.From = "benoit@minisini.fr"
   
   sType = "la convention de rejets"
@@ -19,7 +19,7 @@ Public Sub Main()
   cEtablissement["code postal"] = "60880"
   cEtablissement["commune"] = "JAUX"
   
-  corps = utilisateur & " a modifié " & sType & " sur la concession" & cEtablissement["marque"] & " située au " & cEtablissement["adresse"] & " " & cEtablissement["code postal"] & " " & cEtablissement["commune"]
+  corps = utilisateur & " a modifié " & sType & " sur la concession " & cEtablissement["marque"] & " située au " & cEtablissement["adresse"] & " " & cEtablissement["code postal"] & " " & cEtablissement["commune"]
 
   hMail.Subject = " mySARP: On a modifié la convention de rejets d'une concession"
   'hMail.Body = corps

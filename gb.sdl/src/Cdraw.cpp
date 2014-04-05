@@ -32,7 +32,7 @@
 
 static CDRAW draw_stack[DRAW_STACK_MAX];
 static CDRAW *draw_current = 0;
-static GB_CLASS font_id = NULL;
+static CFONT *_default_font = NULL;
 
 #define THIS (draw_current)
 #define GFX (THIS->graphic)
@@ -41,6 +41,17 @@ static GB_CLASS font_id = NULL;
 #define IMAGEID(object) (CIMAGE_get((CIMAGE *)object))
 
 /**************************************************************************/
+
+static CFONT *get_default_font()
+{
+	if (!_default_font)
+	{
+		_default_font = (CFONT *)GB.New(GB.FindClass("Font"), NULL, NULL);
+		GB.Ref(_default_font);
+	}
+
+	return _default_font;
+}
 
 static bool check_graphic(void)
 {
@@ -73,13 +84,10 @@ void DRAW_begin(void *device)
 	THIS->backcolor = 0x00000000;
 	THIS->forecolor = 0x00FFFFFF;
 
-	if (!font_id)
-		font_id = GB.FindClass("Font");
-
 	if (FONT)
 		GB.Unref(POINTER(&FONT));
 
-	FONT = (CFONT *)GB.New(font_id, NULL, NULL);
+	FONT = get_default_font();
 	GB.Ref(FONT);
 	
 	if (GB.Is(device, CLASS_Window)) {
@@ -119,6 +127,13 @@ void DRAW_begin(void *device)
 	else
 		THIS--;
 }
+
+BEGIN_METHOD_VOID(Draw_exit)
+
+	if (_default_font)
+		GB.Unref(POINTER(&_default_font));
+
+END_METHOD
 
 BEGIN_METHOD(CDRAW_begin, GB_OBJECT device)
 
@@ -309,6 +324,8 @@ END_PROPERTY
 GB_DESC CDraw[] =
 {
   GB_DECLARE("Draw", 0), GB_NOT_CREATABLE(),
+
+  GB_STATIC_METHOD("_exit", NULL, Draw_exit, NULL),
 
   GB_STATIC_METHOD("Begin", NULL, CDRAW_begin, "(Device)o"),
   GB_STATIC_METHOD("End", NULL, CDRAW_end, NULL),

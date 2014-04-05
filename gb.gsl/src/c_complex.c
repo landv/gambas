@@ -290,21 +290,29 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 		switch (type)
 		{
 			case GB_T_FLOAT:
-				conv->_float.value = gsl_complex_abs(a->number);
+				if (GSL_IMAG(a->number))
+					return TRUE;
+				conv->_float.value = GSL_REAL(a->number);
 				return FALSE;
 				
 			case GB_T_SINGLE:
-				conv->_single.value = gsl_complex_abs(a->number);
+				if (GSL_IMAG(a->number))
+					return TRUE;
+				conv->_single.value = GSL_REAL(a->number);
 				return FALSE;
 				
 			case GB_T_INTEGER:
 			case GB_T_SHORT:
 			case GB_T_BYTE:
-				conv->_integer.value = gsl_complex_abs(a->number);
+				if (GSL_IMAG(a->number))
+					return TRUE;
+				conv->_integer.value = GSL_REAL(a->number);
 				return FALSE;
 				
 			case GB_T_LONG:
-				conv->_long.value = gsl_complex_abs(a->number);
+				if (GSL_IMAG(a->number))
+					return TRUE;
+				conv->_long.value = GSL_REAL(a->number);
 				return FALSE;
 				
 			case GB_T_STRING:
@@ -328,6 +336,10 @@ static bool _convert(CCOMPLEX *a, GB_TYPE type, GB_VALUE *conv)
 
 			case GB_T_SINGLE:
 				conv->_object.value = COMPLEX_create(gsl_complex_rect(conv->_single.value, 0));
+				return FALSE;
+
+			case GB_T_LONG:
+				conv->_object.value = COMPLEX_create(gsl_complex_rect((double)conv->_long.value, 0));
 				return FALSE;
 
 			case GB_T_INTEGER:

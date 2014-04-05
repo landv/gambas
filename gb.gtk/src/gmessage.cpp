@@ -42,6 +42,17 @@ static char *DIALOG_title=NULL;
 static gFont *DIALOG_font=NULL;
 static bool _dialog_show_hidden = false;
 
+
+static gboolean cb_show(GtkWidget *widget, gpointer data)
+{
+	GdkGeometry geometry;
+	geometry.min_width = gDesktop::scale() * 32;
+	geometry.min_height = gDesktop::scale() * 6;
+
+	gtk_window_set_geometry_hints(GTK_WINDOW(widget), widget, &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
+	return false;
+}
+
 static int run_dialog(GtkDialog *window)
 {
   gMainWindow *active;
@@ -128,6 +139,8 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	gtk_widget_realize(msg);
 	gdk_window_set_type_hint(msg->window,GDK_WINDOW_TYPE_HINT_UTILITY);
 	gtk_window_set_position(GTK_WINDOW(msg),GTK_WIN_POS_CENTER_ALWAYS);
+	
+	g_signal_connect(G_OBJECT(msg), "show", G_CALLBACK(cb_show), (gpointer)NULL);
 	
 	resp = run_dialog(GTK_DIALOG(msg));
 	gtk_widget_destroy(msg);

@@ -705,7 +705,7 @@ void gt_shortcut_parse(char *shortcut, guint *key, GdkModifierType *mods)
 	 g_free(res);
 }
 
-#define MAX_FREE_LATER 32
+#define MAX_FREE_LATER 16
 
 static char *_free_later_ptr[MAX_FREE_LATER] = { 0 };
 static int _free_later_index = 0;

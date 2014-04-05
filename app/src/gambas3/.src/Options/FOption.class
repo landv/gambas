@@ -1117,7 +1117,7 @@ Public Sub btnInstallFont_Click()
   Try Kill sDir &/ "GambasBold-12.bdf"
   Try Copy "font/GambasBold-12.bdf" To sDir &/ "GambasBold-12.bdf"
   
-  sConf = "~/.config/fontconfig/.fonts.conf"
+  sConf = "~/.config/fontconfig/fonts.conf"
   'If Not Exist(sConf) Then sConf = "~/.fonts.conf"
   
   If Not Exist(sConf) Then

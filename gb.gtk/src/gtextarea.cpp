@@ -380,12 +380,14 @@ char *gTextArea::text()
 	return text;
 }
 
-void gTextArea::setText(const char *txt)
+void gTextArea::setText(const char *txt, int len)
 {
 	if (!txt) 
-		txt = "";
+		len = 0;
 	
-	gtk_text_buffer_set_text(_buffer, (const gchar *)txt, -1);
+	begin();
+	gtk_text_buffer_set_text(_buffer, (const gchar *)txt, len);
+	end();
 }
 
 bool gTextArea::readOnly()
@@ -834,7 +836,9 @@ void gTextArea::redo()
 
 void gTextArea::clear()
 {
+	begin();
 	setText("");
 	clearUndoStack();
 	clearRedoStack();
+	end();
 }

@@ -89,7 +89,7 @@ public:
 	virtual int containerX();
 	virtual int containerY();
 
-	virtual void getScreenPos(int *x, int *y);
+	//virtual void getScreenPos(int *x, int *y);
 	
 	bool spontaneous() { return !_not_spontaneous; }
 	

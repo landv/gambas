@@ -214,46 +214,47 @@ Private Const ERR_210 As String = ("Too many external functions")
 Private Const ERR_211 As String = ("Too many functions")
 Private Const ERR_212 As String = ("Too many imbricated #If...#Endif")
 Private Const ERR_213 As String = ("Too many labels")
-Private Const ERR_214 As String = ("Too many nested control structures.")
-Private Const ERR_215 As String = ("Too many property synonymous")
-Private Const ERR_216 As String = ("Too many simultaneous new strings")
-Private Const ERR_217 As String = ("Too many static variables")
-Private Const ERR_218 As String = ("Too many unknown symbols")
-Private Const ERR_219 As String = ("Trailing backslash")
-Private Const ERR_220 As String = ("Type mismatch")
-Private Const ERR_221 As String = ("Type mismatch: wanted &1, got &2 instead")
-Private Const ERR_222 As String = ("Unable to create closure")
-Private Const ERR_223 As String = ("Unable to get file position")
-Private Const ERR_224 As String = ("Unable to load class file")
-Private Const ERR_225 As String = ("Unable to prepare function description")
-Private Const ERR_226 As String = ("Unexpected &1")
-Private Const ERR_227 As String = ("Unexpected end of line")
-Private Const ERR_228 As String = ("Unexpected string")
-Private Const ERR_229 As String = ("Unknown error")
-Private Const ERR_230 As String = ("Unknown file extension")
-Private Const ERR_231 As String = ("Unknown identifier: &1")
-Private Const ERR_232 As String = ("Unknown operator")
-Private Const ERR_233 As String = ("Unknown symbol '&2' in class '&1'")
-Private Const ERR_234 As String = ("Unknown user or group")
-Private Const ERR_235 As String = ("Unsupported datatype")
-Private Const ERR_236 As String = ("Unsupported string conversion")
-Private Const ERR_237 As String = ("Useless LOCK")
-Private Const ERR_238 As String = ("VarPtr() argument must be a dynamic, a static or a local variable")
-Private Const ERR_239 As String = ("Variant")
-Private Const ERR_240 As String = ("Void key")
-Private Const ERR_241 As String = ("Write error")
-Private Const ERR_242 As String = ("cannot find component")
-Private Const ERR_243 As String = ("cannot find library")
-Private Const ERR_244 As String = ("constant hidden by local declaration: &1")
-Private Const ERR_245 As String = ("extern function hidden by local declaration: &1")
-Private Const ERR_246 As String = ("function hidden by local declaration: &1")
-Private Const ERR_247 As String = ("global variable hidden by local declaration: &1")
-Private Const ERR_248 As String = ("unknown error")
-Private Const ERR_249 As String = ("unused argument: &1")
-Private Const ERR_250 As String = ("unused extern function: &1")
-Private Const ERR_251 As String = ("unused function: &1")
-Private Const ERR_252 As String = ("unused global variable: &1")
-Private Const ERR_253 As String = ("unused variable: &1")
+Private Const ERR_214 As String = ("Too many local variables")
+Private Const ERR_215 As String = ("Too many nested control structures.")
+Private Const ERR_216 As String = ("Too many property synonymous")
+Private Const ERR_217 As String = ("Too many simultaneous new strings")
+Private Const ERR_218 As String = ("Too many static variables")
+Private Const ERR_219 As String = ("Too many unknown symbols")
+Private Const ERR_220 As String = ("Trailing backslash")
+Private Const ERR_221 As String = ("Type mismatch")
+Private Const ERR_222 As String = ("Type mismatch: wanted &1, got &2 instead")
+Private Const ERR_223 As String = ("Unable to create closure")
+Private Const ERR_224 As String = ("Unable to get file position")
+Private Const ERR_225 As String = ("Unable to load class file")
+Private Const ERR_226 As String = ("Unable to prepare function description")
+Private Const ERR_227 As String = ("Unexpected &1")
+Private Const ERR_228 As String = ("Unexpected end of line")
+Private Const ERR_229 As String = ("Unexpected string")
+Private Const ERR_230 As String = ("Unknown error")
+Private Const ERR_231 As String = ("Unknown file extension")
+Private Const ERR_232 As String = ("Unknown identifier: &1")
+Private Const ERR_233 As String = ("Unknown operator")
+Private Const ERR_234 As String = ("Unknown symbol '&2' in class '&1'")
+Private Const ERR_235 As String = ("Unknown user or group")
+Private Const ERR_236 As String = ("Unsupported datatype")
+Private Const ERR_237 As String = ("Unsupported string conversion")
+Private Const ERR_238 As String = ("Useless LOCK")
+Private Const ERR_239 As String = ("VarPtr() argument must be a dynamic, a static or a local variable")
+Private Const ERR_240 As String = ("Variant")
+Private Const ERR_241 As String = ("Void key")
+Private Const ERR_242 As String = ("Write error")
+Private Const ERR_243 As String = ("cannot find component")
+Private Const ERR_244 As String = ("cannot find library")
+Private Const ERR_245 As String = ("constant hidden by local declaration: &1")
+Private Const ERR_246 As String = ("extern function hidden by local declaration: &1")
+Private Const ERR_247 As String = ("function hidden by local declaration: &1")
+Private Const ERR_248 As String = ("global variable hidden by local declaration: &1")
+Private Const ERR_249 As String = ("unknown error")
+Private Const ERR_250 As String = ("unused argument: &1")
+Private Const ERR_251 As String = ("unused extern function: &1")
+Private Const ERR_252 As String = ("unused function: &1")
+Private Const ERR_253 As String = ("unused global variable: &1")
+Private Const ERR_254 As String = ("unused variable: &1")
 '}
 
 ' E_CHILD specific errors, updated by hand
@@ -291,7 +292,7 @@ Public Sub Main()
   
   $aErr = New String[]
   
-  For Each sPath In ["~/gambas/3.0/trunk/main/gbx/gb_error.c", "~/gambas/3.0/trunk/main/gbc/gb_error.c"]
+  For Each sPath In ["~/gambas/3.0/branches/3.5/main/gbx/gb_error.c", "~/gambas/3.0/branches/3.5/main/gbc/gb_error.c"]
   
     hFile = Open sPath
     While Not Eof(hFile)
@@ -314,7 +315,7 @@ Public Sub Main()
     
   Next
   
-  Shell "cd ~/gambas/3.0/trunk/main; grep -h \"THROW(\" gbc/*.c share/*.h gbx/*.c" To sGrep
+  Shell "cd ~/gambas/3.0/branches/3.5/main; grep -h \"THROW(\" gbc/*.c share/*.h gbx/*.c" To sGrep
   
   For Each sLine In Split(sGrep, "\n")
     sLine = Trim(sLine)
@@ -333,7 +334,7 @@ Public Sub Main()
     Wend
   Next
   
-  Shell "cd ~/gambas/3.0/trunk/main; grep -h \"COMPILE_print(MSG_WARNING,\" gbc/*.c" To sGrep
+  Shell "cd ~/gambas/3.0/branches/3.5/main; grep -h \"COMPILE_print(MSG_WARNING,\" gbc/*.c" To sGrep
   
   For Each sLine In Split(sGrep, "\n")
     sLine = Trim(sLine)
@@ -359,7 +360,7 @@ Public Sub Main()
     Print $aErr[iInd]
   Next
   
-  sPath = "~/gambas/3.0/trunk/app/src/gambas3/.src/MErrorMessage.module"
+  sPath = "~/gambas/3.0/branches/3.5/app/src/gambas3/.src/MErrorMessage.module"
   sData = File.Load(sPath)
   iPos = InStr(sData, "\n'{\n")
   If iPos = 0 Then Return

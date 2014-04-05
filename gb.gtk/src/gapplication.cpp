@@ -594,11 +594,11 @@ __FOUND_WIDGET:
 				cancel = control->onMouseEvent(control, gEvent_MouseMove);
 			
 				//if (data->acceptDrops() && gDrag::checkThreshold(data, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
-				if ((event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK)) 
+				if (!cancel && (event->motion.state & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK | GDK_BUTTON3_MASK))
 						//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
 						&& gDrag::checkThreshold(control, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
 				{
-					control->onMouseEvent(control, gEvent_MouseDrag);
+					cancel = control->onMouseEvent(control, gEvent_MouseDrag);
 				}
 				gMouse::invalidate();
 				

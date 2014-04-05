@@ -356,25 +356,31 @@ POSITION AND SIZE
 
 ******************************************************************/
 
-void gControl::getScreenPos(int *x, int *y)
+bool gControl::getScreenPos(int *x, int *y)
 {
 	if (!border->window)
 	{
-		*x = *y = 0;
-		return;
+		*x = *y = 0; // widget is not realized
+		return true;
 	}
-	
-	gdk_window_get_origin(border->window, x, y);
-	
+
+	gdk_window_get_origin(gtk_widget_get_window(border), x, y);
+
+	//fprintf(stderr, "getScreenPos: %s: %d %d: %d\n", name(), *x, *y, gtk_widget_get_has_window(border));
+
 	#if GTK_CHECK_VERSION(2, 18, 0)
 	if (!gtk_widget_get_has_window(border))
 	{
-		*x += border->allocation.x;
-		*y += border->allocation.y;
+		GtkAllocation a;
+		gtk_widget_get_allocation(border, &a);
+		*x += a.x;
+		*y += a.y;
 	}
 	#endif
-}
 
+	//fprintf(stderr, "getScreenPos: --> %d %d\n", *x, *y);
+	return false;
+}
 int gControl::screenX()
 {
 	int x,y;

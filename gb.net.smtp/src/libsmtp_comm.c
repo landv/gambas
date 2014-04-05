@@ -277,7 +277,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 	/* Ok, now lets give him the sender address */
 
 	g_string_sprintf (libsmtp_temp_gstring, "mail from: %s\r\n", \
-											libsmtp_session->From->str);
+											strchr(libsmtp_session->From->str, '<'));
 
 	if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 2))
 	{
@@ -313,7 +313,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 			printf ("To: %s\n", (char *)libsmtp_temp_glist->data);
 		#endif
 		g_string_sprintf (libsmtp_temp_gstring, "rcpt to: %s\r\n", \
-				(char *)libsmtp_temp_glist->data);
+				strchr((char *)libsmtp_temp_glist->data, '<'));
 
 
 		/* Every recipient gets sent to the server */
@@ -353,9 +353,10 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 	for (libsmtp_temp=0; libsmtp_temp < g_list_length(libsmtp_session->CC);\
 				libsmtp_temp++)
 	{
-		libsmtp_temp_glist=g_list_nth (libsmtp_session->CC, libsmtp_temp);
+		libsmtp_temp_glist = g_list_nth (libsmtp_session->CC, libsmtp_temp);
+
 		g_string_sprintf (libsmtp_temp_gstring, "rcpt to: %s\r\n", \
-				(char *)libsmtp_temp_glist->data);
+				strchr((char *)libsmtp_temp_glist->data, '<'));
 
 
 		/* Every recipient gets sent to the server */
@@ -396,7 +397,7 @@ int libsmtp_dialogue (struct libsmtp_session_struct *libsmtp_session)
 	{
 		libsmtp_temp_glist=g_list_nth (libsmtp_session->BCC, libsmtp_temp);
 		g_string_sprintf (libsmtp_temp_gstring, "rcpt to: %s\r\n", \
-				(char *)libsmtp_temp_glist->data);
+				strchr((char *)libsmtp_temp_glist->data, '<'));
 
 
 		/* Every recipient gets sent to the server */

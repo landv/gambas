@@ -481,6 +481,7 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 		
 		if (FD_ISSET(wcb.fd, rfd))
 		{
+			FD_CLR(wcb.fd, rfd);
 			if (wcb.callback_read)
 			{
 				#ifdef DEBUG_WATCH
@@ -492,6 +493,7 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 
 		if (FD_ISSET(wcb.fd, wfd))
 		{
+			FD_CLR(wcb.fd, wfd);
 			if (wcb.callback_write)
 			{
 				#ifdef DEBUG_WATCH

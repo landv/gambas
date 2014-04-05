@@ -25,17 +25,18 @@
 
 #include "gambas.h"
 
-#include <qapplication.h>
-#include <qmime.h>
-#include <qclipboard.h>
-#include <qimage.h>
-#include <qevent.h>
-#include <qcolor.h>
-//Added by qt3to4:
+#include <QApplication>
+#include <QClipboard>
+#include <QImage>
+#include <QEvent>
+#include <QColor>
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QMimeData>
+#include <QLineEdit>
+#include <QTextEdit>
+#include <QSpinBox>
 
 #include "CWidget.h"
 #include "CImage.h"
@@ -176,6 +177,7 @@ static GB_ARRAY _clipboard_formats = NULL;
 void CLIPBOARD_has_changed()
 {
 	GB.Unref(POINTER(&_clipboard_formats));
+	_clipboard_formats = NULL;
 }
 
 static GB_ARRAY load_clipboard_formats()
@@ -545,7 +547,12 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 		if (GB.CanRaise(control, EVENT_DragMove) || GB.CanRaise(control, EVENT_Drop))
 			e->acceptProposedAction();
 		else
+		{
+			if (qobject_cast<QLineEdit *>(w) || qobject_cast<QTextEdit *>(w))
+				return false;
+
 			e->ignore();
+		}
 		return true;
 	}
 	

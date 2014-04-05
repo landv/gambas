@@ -94,6 +94,11 @@ static int CTRAYICON_check(void *_object)
 	return TRAYICON == NULL;
 }
 
+static void cb_mouse_wheel(gTrayIcon *sender)
+{
+	GB.Raise(sender->hFree, EVENT_MouseWheel, NULL);
+}
+
 BEGIN_METHOD_VOID(CTRAYICON_new)
 
 	THIS->base.widget = new gTrayIcon();
@@ -103,6 +108,7 @@ BEGIN_METHOD_VOID(CTRAYICON_new)
 	
 	TRAYICON->onMousePress=Tray_press;
 	TRAYICON->onMouseRelease=Tray_release;
+	TRAYICON->onMouseWheel=cb_mouse_wheel;
 	TRAYICON->onMenu=Tray_menu;
 	TRAYICON->onDestroy=Tray_destroy;
 	TRAYICON->onFocusEnter=Tray_gotFocus;

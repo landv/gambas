@@ -63,7 +63,7 @@ BEGIN_PROPERTY(CTEXTAREA_text)
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TEXTAREA->text());
 	else
-		TEXTAREA->setText( GB.ToZeroString(PROP(GB_STRING)) );
+		TEXTAREA->setText(PSTRING(), PLENGTH());
 
 END_PROPERTY
 

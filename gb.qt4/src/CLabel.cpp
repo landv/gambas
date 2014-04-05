@@ -273,24 +273,26 @@ void MyLabel::calcMinimumHeight(bool adjust)
 			
 			if (adjust)
 			{
-				//doc.adjustSize();
 				nw = doc.idealWidth();
 				doc.setTextWidth(nw);
-				nh = doc.size().height(); // Why (- 6) ? Don't know...
+				nh = doc.size().height();
 				nw = doc.size().width();
 				
 			}
 			else
 			{
-				nh = doc.size().height(); // Why (- 6) ? Don't know...
+				nh = doc.size().height();
 				nw = w;
 			}
 		}
 		else
 		{
-			nh = doc.size().height(); // Why (- 6) ? Don't know...
+			nh = doc.size().height();
 			nw = doc.size().width();
 		}
+
+		nw += 2; // Why? Don't know...
+		nh += 2;
 	}
 	else
 	{

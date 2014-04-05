@@ -944,8 +944,12 @@ void SUBR_lock(ushort code)
 			THROW(E_BADPATH);
 
 		STREAM_open(&stream, path, ST_WRITE | ST_CREATE | ST_DIRECT);
-		STREAM_lock(&stream);
-		
+		if (STREAM_lock(&stream))
+		{
+			STREAM_close(&stream);
+			THROW(E_LOCK);
+		}
+
 		file = CFILE_create(&stream, ST_WRITE | ST_CREATE | ST_DIRECT);
 		OBJECT_put(RETURN, file);
 		SUBR_LEAVE();

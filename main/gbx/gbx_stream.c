@@ -1463,7 +1463,7 @@ int STREAM_handle(STREAM *stream)
 }
 
 
-void STREAM_lock(STREAM *stream)
+bool STREAM_lock(STREAM *stream)
 {
 	int64_t pos;
 	int fd;
@@ -1473,7 +1473,7 @@ void STREAM_lock(STREAM *stream)
 		
 	fd = STREAM_handle(stream);
 	if (fd < 0)
-		THROW(E_LOCK);
+		return TRUE;
 
 	pos = lseek(fd, 0, SEEK_CUR);
 	if (pos < 0)
@@ -1487,24 +1487,26 @@ void STREAM_lock(STREAM *stream)
 		if (lockf(fd, F_TLOCK, 0))
 		{
 			if (errno == EAGAIN)
-				THROW(E_LOCK);
+				return TRUE;
 			else
 				goto __ERROR;
 		}
 		
 	#else
 	
-		fprintf(stderr, "locking is not implemented\n");
+		ERROR_warning("locking is not implemented");
 	
 	#endif
 
 	if (lseek(fd, pos, SEEK_SET) < 0)
 		goto __ERROR;
 
-	return;
+	return FALSE;
 
 __ERROR:
+
 	THROW_SYSTEM(errno, NULL);
+	return TRUE;
 }
 
 

@@ -1365,7 +1365,7 @@ void GDocument::colorize(int y, bool force)
 	int updateFrom;
 	bool undo;
 
-	if (highlightMode == None)
+	if (highlightMode == None || highlightCallback == NULL)
 		return;
 
 	if (y < 0)

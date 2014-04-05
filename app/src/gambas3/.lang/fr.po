@@ -315,7 +315,7 @@ msgstr "Cette classe se comporte comme un tableau accessible en &1."
 msgid "write-only"
 msgstr "écriture seule"
 
-#: CClassInfo.class:627 Project.module:1648
+#: CClassInfo.class:627 Project.module:1650
 msgid "read-only"
 msgstr "lecture seule"
 
@@ -675,7 +675,7 @@ msgstr "Gestion du XML"
 msgid "Loading information on component &1..."
 msgstr "Chargement des informations sur le composant &1..."
 
-#: CComponent.class:1507 FFileProperty.class:165 FInfo.class:67
+#: CComponent.class:1511 FFileProperty.class:165 FInfo.class:67
 msgid "Classes"
 msgstr "Classes"
 
@@ -747,23 +747,23 @@ msgstr "Évaluateur"
 msgid "Event loop"
 msgstr "Boucle d'évènements"
 
-#: Project.module:1759
+#: Project.module:1761
 msgid "Project"
 msgstr "Projet"
 
-#: CProjectTree.class:288 Project.module:1760
+#: CProjectTree.class:288 Project.module:1762
 msgid "Sources"
 msgstr "Sources"
 
-#: CProjectTree.class:290 Project.module:1761
+#: CProjectTree.class:290 Project.module:1763
 msgid "Connections"
 msgstr "Connexions"
 
-#: CProjectTree.class:298 Project.module:1762
+#: CProjectTree.class:298 Project.module:1764
 msgid "Public"
 msgstr "Public"
 
-#: CProjectTree.class:299 Project.module:1763
+#: CProjectTree.class:299 Project.module:1765
 msgid "Data"
 msgstr "Données"
 
@@ -787,7 +787,7 @@ msgstr "Cette semaine"
 msgid "This month"
 msgstr "Ce mois-ci"
 
-#: FTranslate.class:554 Project.module:510
+#: FTranslate.class:554 Project.module:512
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -843,19 +843,19 @@ msgstr "Conserver"
 msgid "Remove all"
 msgstr "Tout supprimer"
 
-#: Design.module:159 Project.module:2195
+#: Design.module:159 Project.module:2197
 msgid "first"
 msgstr "premier"
 
-#: Design.module:161 Project.module:2197
+#: Design.module:161 Project.module:2199
 msgid "second"
 msgstr "deuxième"
 
-#: Design.module:163 Project.module:2199
+#: Design.module:163 Project.module:2201
 msgid "third"
 msgstr "troisième"
 
-#: Design.module:257 Project.module:2258
+#: Design.module:257 Project.module:2260
 msgid "in &1:&2."
 msgstr "dans &1:&2."
 
@@ -935,7 +935,7 @@ msgstr "Niet in staat om bestand te laden:"
 msgid "Text"
 msgstr "Texte"
 
-#: Project.module:202
+#: Project.module:204
 msgid "Image"
 msgstr "Image"
 
@@ -1907,7 +1907,7 @@ msgstr "Le fichier n'est pas versionné, et doit être ajouté au référentiel.
 msgid "This file has not been modified since the last commit."
 msgstr "Ce fichier est inchangé depuis le dernier envoi vers le réferentiel."
 
-#: FProjectVersion.class:209 FSave.form:21 Project.module:3356
+#: FProjectVersion.class:209 FSave.form:21 Project.module:3361
 msgid "Continue"
 msgstr "Continuer"
 
@@ -2223,7 +2223,7 @@ msgstr "Taille normale"
 msgid "Print"
 msgstr "Imprimer"
 
-#: FHelpBrowser.form:123
+#: FHelpBrowser.form:124
 msgid "Modify documentation..."
 msgstr "Modifier la documentation..."
 
@@ -3583,7 +3583,7 @@ msgstr "Selectionnez l'archive source"
 msgid "*.gz;*.bz2;*.xz"
 msgstr "-"
 
-#: FMakePatch.form:89 Project.module:4411
+#: FMakePatch.form:89 Project.module:4390
 msgid "Source packages"
 msgstr "Paquetages sources"
 
@@ -3627,7 +3627,7 @@ msgstr "Nom de groupe incorrect !"
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FMenu.class:972 Project.module:5218
+#: FMenu.class:972 Project.module:5197
 msgid "modified"
 msgstr "modifié"
 
@@ -3703,7 +3703,7 @@ msgstr "Mot de passe"
 msgid "Remember password"
 msgstr "Se souvenir du mot de passe"
 
-#: FNewConnection.form:181 Project.module:199
+#: FNewConnection.form:181 Project.module:201
 msgid "Database"
 msgstr "Bases de données"
 
@@ -3863,7 +3863,7 @@ msgstr "Taille des titres"
 msgid "Install Gambas font for code edition..."
 msgstr "Installer la police Gambas dédiée à l'édition de code..."
 
-#: FOption.form:371 Project.module:203
+#: FOption.form:371 Project.module:205
 msgid "Miscellaneous"
 msgstr "Divers"
 
@@ -4243,7 +4243,7 @@ msgstr "Variable"
 msgid "Snapping value is incorrect."
 msgstr "Le pas de la grille est incorrecte."
 
-#: FProjectProperty.class:408 Project.module:3355
+#: FProjectProperty.class:408 Project.module:3360
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés : &1"
 
@@ -4927,7 +4927,7 @@ msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 chaînes de caractères. &2 ne sont pas traduites. &3% effectué."
 
-#: FTranslate.class:1118 Project.module:4376
+#: FTranslate.class:1118 Project.module:4354
 msgid "The '&1' command has failed."
 msgstr "La commande '&1' a échoué."
 
@@ -6132,186 +6132,190 @@ msgid "Too many labels"
 msgstr "Trop d'étiquettes"
 
 #: MErrorMessage.module:217
+msgid "Too many local variables"
+msgstr "Trop de variables locales"
+
+#: MErrorMessage.module:218
 msgid "Too many nested control structures."
 msgstr "Trop de structure de contrôles imbriquées"
 
-#: MErrorMessage.module:218
+#: MErrorMessage.module:219
 msgid "Too many property synonymous"
 msgstr "Trop de synonymes à la propriété"
 
-#: MErrorMessage.module:219
+#: MErrorMessage.module:220
 msgid "Too many simultaneous new strings"
 msgstr "Trop de créations simultanées de chaînes de caractères"
 
-#: MErrorMessage.module:220
+#: MErrorMessage.module:221
 msgid "Too many static variables"
 msgstr "Trop de variables statiques"
 
-#: MErrorMessage.module:221
+#: MErrorMessage.module:222
 msgid "Too many unknown symbols"
 msgstr "Trop de symboles inconnus"
 
-#: MErrorMessage.module:222
+#: MErrorMessage.module:223
 msgid "Trailing backslash"
 msgstr "'\\' en fin de chaîne"
 
-#: MErrorMessage.module:223
+#: MErrorMessage.module:224
 msgid "Type mismatch"
 msgstr "Type incorrect"
 
-#: MErrorMessage.module:224
+#: MErrorMessage.module:225
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr "Type incorrect: &1 attendu à la place de &2"
 
-#: MErrorMessage.module:225
+#: MErrorMessage.module:226
 msgid "Unable to create closure"
 msgstr "Impossible de créer la fermeture"
 
-#: MErrorMessage.module:226
+#: MErrorMessage.module:227
 msgid "Unable to get file position"
 msgstr "Impossible de lire la position du fichier"
 
-#: MErrorMessage.module:227
+#: MErrorMessage.module:228
 msgid "Unable to load class file"
 msgstr "Impossible de charger le fichier classe"
 
-#: MErrorMessage.module:228
+#: MErrorMessage.module:229
 msgid "Unable to prepare function description"
 msgstr "Impossible de préparer la description de la fonction"
 
-#: MErrorMessage.module:229
+#: MErrorMessage.module:230
 msgid "Unexpected &1"
 msgstr "&1 inattendu"
 
-#: MErrorMessage.module:230
+#: MErrorMessage.module:231
 msgid "Unexpected end of line"
 msgstr "Fin de ligne inattendue"
 
-#: MErrorMessage.module:231
+#: MErrorMessage.module:232
 msgid "Unexpected string"
 msgstr "Chaîne de caractères inattendue"
 
-#: MErrorMessage.module:232
+#: MErrorMessage.module:233
 msgid "Unknown error"
 msgstr "Erreur inconnue"
 
-#: MErrorMessage.module:233
+#: MErrorMessage.module:234
 msgid "Unknown file extension"
 msgstr "Extension de fichier inconnue"
 
-#: MErrorMessage.module:234
+#: MErrorMessage.module:235
 msgid "Unknown identifier: &1"
 msgstr "Identificateur inconnu: &1"
 
-#: MErrorMessage.module:235
+#: MErrorMessage.module:236
 msgid "Unknown operator"
 msgstr "Opérateur inconnu"
 
-#: MErrorMessage.module:236
+#: MErrorMessage.module:237
 msgid "Unknown symbol '&2' in class '&1'"
 msgstr "Symbole '&2' inconnu dans la classe '&1'"
 
-#: MErrorMessage.module:237
+#: MErrorMessage.module:238
 msgid "Unknown user or group"
 msgstr "Utilisateur ou groupe inconnu"
 
-#: MErrorMessage.module:238
+#: MErrorMessage.module:239
 msgid "Unsupported datatype"
 msgstr "Type de donnée non supporté"
 
-#: MErrorMessage.module:239
+#: MErrorMessage.module:240
 msgid "Unsupported string conversion"
 msgstr "Conversion de chaîne de caractères non supportée"
 
-#: MErrorMessage.module:240
+#: MErrorMessage.module:241
 msgid "Useless LOCK"
 msgstr "LOCK inutile"
 
-#: MErrorMessage.module:241
+#: MErrorMessage.module:242
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "L'argument de VarPtr() doit être une variable dynamique, une variable statique ou bien une variable locale"
 
-#: MErrorMessage.module:242
+#: MErrorMessage.module:243
 msgid "Variant"
 msgstr "Variant"
 
-#: MErrorMessage.module:243
+#: MErrorMessage.module:244
 msgid "Void key"
 msgstr "Clef vide"
 
-#: MErrorMessage.module:244
+#: MErrorMessage.module:245
 msgid "Write error"
 msgstr "Erreur d'écriture"
 
-#: MErrorMessage.module:245
+#: MErrorMessage.module:246
 msgid "cannot find component"
 msgstr "impossible de trouver le composant"
 
-#: MErrorMessage.module:246
+#: MErrorMessage.module:247
 msgid "cannot find library"
 msgstr "impossible de trouver la bibliothèque"
 
-#: MErrorMessage.module:247
+#: MErrorMessage.module:248
 msgid "constant hidden by local declaration: &1"
 msgstr "Contante masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:248
+#: MErrorMessage.module:249
 msgid "extern function hidden by local declaration: &1"
 msgstr "Fonction externe masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:249
+#: MErrorMessage.module:250
 msgid "function hidden by local declaration: &1"
 msgstr "Fonction masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:250
+#: MErrorMessage.module:251
 msgid "global variable hidden by local declaration: &1"
 msgstr "variable globale masquée par une déclaration locale : &1"
 
-#: MErrorMessage.module:251
+#: MErrorMessage.module:252
 msgid "unknown error"
 msgstr "erreur inconnue"
 
-#: MErrorMessage.module:252
+#: MErrorMessage.module:253
 msgid "unused argument: &1"
 msgstr "argument inutilisé : &1"
 
-#: MErrorMessage.module:253
+#: MErrorMessage.module:254
 msgid "unused extern function: &1"
 msgstr "fonction externe inutilisée : &1"
 
-#: MErrorMessage.module:254
+#: MErrorMessage.module:255
 msgid "unused function: &1"
 msgstr "fonction inutilisée : &1"
 
-#: MErrorMessage.module:255
+#: MErrorMessage.module:256
 msgid "unused global variable: &1"
 msgstr "variable globale inutilisée : &1"
 
-#: MErrorMessage.module:256
+#: MErrorMessage.module:257
 msgid "unused variable: &1"
 msgstr "variable inutilisée : &1"
 
-#: MErrorMessage.module:260
+#: MErrorMessage.module:261
 msgid "cannot open slave pseudo-terminal: "
 msgstr "impossible d'ouvrir le pseudo-terminal esclave: "
 
-#: MErrorMessage.module:261
+#: MErrorMessage.module:262
 msgid "cannot initialize pseudo-terminal: "
 msgstr "impossible d'initialiser le pseudo-terminal: "
 
-#: MErrorMessage.module:262
+#: MErrorMessage.module:263
 msgid "cannot plug standard input: "
 msgstr "impossible de connecter l'entrée standard: "
 
-#: MErrorMessage.module:263
+#: MErrorMessage.module:264
 msgid "cannot plug standard output and standard error: "
 msgstr "impossible de connecter la sortie standard et la sortie d'erreur: "
 
-#: MErrorMessage.module:264
+#: MErrorMessage.module:265
 msgid "cannot run executable: "
 msgstr "impossible de démarrer l'exécutable: "
 
-#: MHelp.module:282
+#: MHelp.module:280
 msgid "No help found."
 msgstr "Aide introuvable."
 
@@ -6471,295 +6475,295 @@ msgstr "Format d'archive des sources non supporté"
 msgid "Patch didn't apply:\n"
 msgstr "Le patch n'a pas été appliqué :\n"
 
-#: Project.module:197
+#: Project.module:199
 msgid "Automation"
 msgstr "Automatisation"
 
-#: Project.module:198
+#: Project.module:200
 msgid "Basic"
 msgstr "Exemples de base"
 
-#: Project.module:200
+#: Project.module:202
 msgid "Drawing"
 msgstr "Dessin"
 
-#: Project.module:201
+#: Project.module:203
 msgid "Games"
 msgstr "Jeux"
 
-#: Project.module:204
+#: Project.module:206
 msgid "Networking"
 msgstr "Programmation réseau"
 
-#: Project.module:205
+#: Project.module:207
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: Project.module:206
+#: Project.module:208
 msgid "Printing"
 msgstr "Impression"
 
-#: Project.module:207
+#: Project.module:209
 msgid "Sound"
 msgstr "Son"
 
-#: Project.module:208
+#: Project.module:210
 msgid "Video"
 msgstr "Vidéo"
 
-#: Project.module:209
+#: Project.module:211
 msgid "Controls"
 msgstr "Contrôles"
 
-#: Project.module:210
+#: Project.module:212
 msgid "Multimedia"
 msgstr "Multimedia"
 
-#: Project.module:480
+#: Project.module:482
 msgid "This project does not exist."
 msgstr "Ce projet n'existe pas."
 
-#: Project.module:491
+#: Project.module:493
 msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
 msgstr "Impossible de trouver l'exécutable de l'EDI Gambas dans le répertoire :\n\n&1"
 
-#: Project.module:504
+#: Project.module:506
 msgid "This is not a Gambas project."
 msgstr "Ce n'est pas un projet Gambas."
 
-#: Project.module:507
+#: Project.module:509
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr "Ceci est un projet Gambas 1.0. Utilisez Gambas 2 pour le convertir."
 
-#: Project.module:510
+#: Project.module:512
 msgid "Convert"
 msgstr "Convertir"
 
-#: Project.module:510
+#: Project.module:512
 msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
 msgstr "Ceci est un projet Gambas 2.0.\n\nDésirez-vous le convertir ?"
 
-#: Project.module:528
+#: Project.module:530
 msgid "Do not open"
 msgstr "Ne pas ouvrir"
 
-#: Project.module:528
+#: Project.module:530
 msgid "Open after all"
 msgstr "Ouvrir malgré tout"
 
-#: Project.module:528
+#: Project.module:530
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "Il semble que ce projet soit déjà ouvert.\n\nOuvrir le même projet deux fois peut provoquer des pertes de données."
 
-#: Project.module:534
+#: Project.module:536
 msgid "It cannot be converted."
 msgstr "Il ne peut être converti."
 
-#: Project.module:534
+#: Project.module:536
 msgid "This project is read-only."
 msgstr "Le projet est en lecture seule."
 
-#: Project.module:550
+#: Project.module:552
 msgid "Copying project inside a temporary directory..."
 msgstr "Copie du projet dans un répertoire temporaire..."
 
-#: Project.module:553
+#: Project.module:555
 msgid "Unable to create temporary directory"
 msgstr "Impossible de créer le répertoire temporaire"
 
-#: Project.module:575
+#: Project.module:577
 msgid "Converting project structure..."
 msgstr "Conversion de la structure du projet..."
 
-#: Project.module:602
+#: Project.module:604
 msgid "Applying conversion..."
 msgstr "Application de la conversion..."
 
-#: Project.module:608
+#: Project.module:610
 msgid "Unable to apply conversion"
 msgstr "Impossible d'appliquer la conversion"
 
-#: Project.module:711
+#: Project.module:713
 msgid "Some libraries used by the project are missing."
 msgstr "Des bibliothèques utilisées par le projet sont manquantes."
 
-#: Project.module:729
+#: Project.module:731
 msgid "Cannot open project file :\n"
 msgstr "Impossible d'ouvrir le projet :\n"
 
-#: Project.module:1480
+#: Project.module:1482
 msgid "The following classes have circular inheritance:"
 msgstr "Les classes suivantes ont un héritage circulaire&nbsp;:"
 
-#: Project.module:1652
+#: Project.module:1654
 msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
 msgstr "VERSION EN COURS DE DÉVELOPPEMENT, UTILISEZ-LA À VOS RISQUES ET PÉRILS ! :-)"
 
-#: Project.module:1946
+#: Project.module:1948
 msgid "Loading &1..."
 msgstr "Chargement de &1..."
 
-#: Project.module:1995
+#: Project.module:1997
 msgid "Cannot open a binary file."
 msgstr "Impossible d'ouvrir un fichier binaire."
 
-#: Project.module:2028
+#: Project.module:2030
 msgid "Cannot open file."
 msgstr "Impossible d'ouvrir le fichier."
 
-#: Project.module:2084
+#: Project.module:2086
 msgid "File not found!"
 msgstr "Fichier introuvable !"
 
-#: Project.module:2201
+#: Project.module:2203
 msgid "&1th"
 msgstr "&1ème"
 
-#: Project.module:2254
+#: Project.module:2256
 msgid "in form definition"
 msgstr "dans la définition du formulaire"
 
-#: Project.module:2261
+#: Project.module:2263
 msgid "in &1."
 msgstr "dans &1."
 
-#: Project.module:2417
+#: Project.module:2419
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Certains fichiers sources du projet sont en conflit.\nVeuillez résoudre ces conflits pour pouvoir compiler le projet."
 
-#: Project.module:2421
+#: Project.module:2423
 msgid "Compiling project"
 msgstr "Compilation du projet"
 
-#: Project.module:2662
+#: Project.module:2664
 msgid "File already exists."
 msgstr "Ce fichier existe déja."
 
-#: Project.module:2694
+#: Project.module:2696
 msgid "Directory already exists."
 msgstr "Le répertoire existe déja."
 
-#: Project.module:2706
+#: Project.module:2708
 msgid "Cannot link template file."
 msgstr "Impossible de créer le lien vers le fichier modèle."
 
-#: Project.module:2712
+#: Project.module:2714
 msgid "Cannot copy template file."
 msgstr "Impossible de copier le fichier modèle."
 
-#: Project.module:2923
+#: Project.module:2925
 msgid "Making executable..."
 msgstr "Génération de l'exécutable..."
 
-#: Project.module:2967
+#: Project.module:2972
 msgid "Cannot make executable."
 msgstr "Impossible de créer l'exécutable."
 
-#: Project.module:3547
+#: Project.module:3525
 msgid "Cannot write project file."
 msgstr "Impossible d'écrire le fichier projet."
 
-#: Project.module:3589
+#: Project.module:3567
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:3835
+#: Project.module:3813
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:3852
+#: Project.module:3830
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:3883
+#: Project.module:3861
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:3887
+#: Project.module:3865
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:3891
+#: Project.module:3869
 msgid "The name cannot begins with a dot."
 msgstr "Le nom ne peut pas commencer par un point."
 
-#: Project.module:3895
+#: Project.module:3873
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:3931
+#: Project.module:3909
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et être suivi par des lettres ou des chiffres. "
 
-#: Project.module:3979
+#: Project.module:3957
 msgid "Destination already exists."
 msgstr "La destination existe déjà."
 
-#: Project.module:4191
+#: Project.module:4169
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer « &1 »"
 
-#: Project.module:4307
+#: Project.module:4285
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:4315
+#: Project.module:4293
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:4318
+#: Project.module:4296
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:4319
+#: Project.module:4297
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
 
-#: Project.module:4326
+#: Project.module:4304
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:4329
+#: Project.module:4307
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:4331
+#: Project.module:4309
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Le répertoire du projet ne peut être créé car un fichier avec le même nom existe déjà."
 
-#: Project.module:4387
+#: Project.module:4365
 msgid "Unable to create source archive."
 msgstr "Impossible de créer l'archive source."
 
-#: Project.module:4410
+#: Project.module:4389
 msgid "Create source package"
 msgstr "Générer une archive des sources du projet"
 
-#: Project.module:4710
+#: Project.module:4689
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:4758
+#: Project.module:4737
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:4773
+#: Project.module:4752
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:4841
+#: Project.module:4820
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:5379
+#: Project.module:5358
 msgid "Project cleanup..."
 msgstr "Nettoyage du projet..."
 
-#: Project.module:5385
+#: Project.module:5364
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
-#: Project.module:5415
+#: Project.module:5394
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
 

@@ -567,15 +567,18 @@ void TRANS_expression(bool check_statement)
 	TRANS_TREE *tree;
 	int tree_length;
 
-	if (TRANS_is(RS_NEW))
+	if (!check_statement)
 	{
-		TRANS_new();
-		return;
-	}
-	else if (TRANS_is(RS_READ))
-	{
-		TRANS_read();
-		return;
+		if (TRANS_is(RS_NEW))
+		{
+			TRANS_new();
+			return;
+		}
+		else if (TRANS_is(RS_READ))
+		{
+			TRANS_read();
+			return;
+		}
 	}
 	
 	TRANS_tree(check_statement, &tree, &tree_length);

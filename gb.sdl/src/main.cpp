@@ -139,8 +139,6 @@ static void my_main(int *argc, char **argv)
 
 static int my_loop()
 {
-	//GLint errcode = 0;
-	
 	while(myApp->HaveWindows())
 	{
 		myApp->ManageEvents();

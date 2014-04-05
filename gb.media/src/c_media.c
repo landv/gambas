@@ -780,8 +780,13 @@ static GstIteratorResult iterator_next_pad(GstIterator *iter, GstPad **pad)
 	
 	ret = gst_iterator_next(iter, &value);
 	if (ret == GST_ITERATOR_OK)
-		*pad = g_value_get_boxed(&value);
-	
+	{
+		if (G_VALUE_HOLDS_BOXED(&value))
+			*pad = g_value_get_boxed(&value);
+		else
+			*pad = (GstPad *)g_value_get_object(&value);
+	}
+
 	return ret;
 }
 
@@ -1267,6 +1272,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_free)
 
+	MEDIA_set_state(THIS, GST_STATE_READY, TRUE);
 	GB.Unref(POINTER(&THIS->watch));
 
 END_METHOD
