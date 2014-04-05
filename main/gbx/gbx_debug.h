@@ -48,6 +48,7 @@
 
 EXTERN DEBUG_INTERFACE DEBUG;
 EXTERN DEBUG_INFO *DEBUG_info;
+EXTERN int DEBUG_inside_eval;
 
 #endif
 
@@ -67,11 +68,14 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret);
 int DEBUG_set_value(const char *sym, int len, VALUE *value);
 int DEBUG_get_object_access_type(void *object, CLASS *class, int *count);
 GB_CLASS DEBUG_find_class(const char *name);
-void DEBUG_enum_keys(void *object, char **key);
+void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb);
 
 void DEBUG_print_backtrace(STACK_BACKTRACE *bt);
 void DEBUG_print_current_backtrace(void);
 GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt);
+
+void DEBUG_enter_eval(void);
+void DEBUG_leave_eval(void);
 
 #define PROFILE_ENTER_FUNCTION() \
 	if (EXEC_profile && CP && CP->component == COMPONENT_main) \

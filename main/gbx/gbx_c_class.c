@@ -49,23 +49,6 @@ static void error(int code, CLASS *class, const char *name)
 	GB_Error((char *)(intptr_t)code, CLASS_get_name(class), name);
 }
 
-static CLASS_DESC *get_desc(CLASS *class, const char *name)
-{
-	int index;
-
-	index = CLASS_find_symbol(class, name);
-
-	//fprintf(stderr, "CLASS_find_symbol('%s', '%s') = %ld\n", CLASS_get_name(class), name, index);
-
-	if (index == NO_SYMBOL)
-	{
-		error(E_NSYMBOL, class, name);
-		return NULL;
-	}
-	else
-		return class->table[index].desc;
-}
-
 //---- Components ---------------------------------------------------------
 
 BEGIN_METHOD(Components_get, GB_STRING name)
@@ -533,99 +516,14 @@ END_METHOD
 BEGIN_METHOD(Object_SetProperty, GB_OBJECT object; GB_STRING property; GB_VARIANT value)
 
 	const char *name;
-	CLASS_DESC *desc;
-	CLASS *class;
-	char type;
 	void *object = VARG(object);
-	VALUE *value = (VALUE *)ARG(value);
 
 	if (GB_CheckObject(object))
 		return;
 
-	if (OBJECT_is_class(object))
-	{
-		class = (CLASS *)object;
-		object = NULL;
-	}
-	else
-	{
-		class = OBJECT_class(object);
-	}
-
 	name = GB_ToZeroString(ARG(property));
-	desc = get_desc(class, name);
 
-	if (!desc)
-		return;
-
-	type = CLASS_DESC_get_type(desc);
-
-	if (type == CD_PROPERTY || type == CD_VARIABLE)
-	{
-		if (!object)
-		{
-			if (!class->auto_create)
-			{
-				error(E_DYNAMIC, class, name);
-				return;
-			}
-			
-			object = EXEC_auto_create(class, TRUE);
-		}
-	}
-	else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_VARIABLE)
-	{
-		if (object)
-		{
-			error(E_STATIC, class, name);
-			return;
-		}
-	}
-	else if (type == CD_PROPERTY_READ  || type == CD_STATIC_PROPERTY_READ)
-	{
-		error(E_NWRITE, class, name);
-		return;
-	}
-	else
-	{
-		error(E_NPROPERTY, class, name);
-		return;
-	}
-
-	if (type == CD_VARIABLE)
-		VALUE_write(value, (char *)object + desc->variable.offset, desc->variable.type);
-	else if (type == CD_STATIC_VARIABLE)
-		VALUE_write(value, (char *)class->stat + desc->variable.offset, desc->variable.type);
-	else
-	{
-		if (desc->property.native)
-		{
-			VALUE_conv(value, desc->property.type);
-	
-			if (EXEC_call_native(desc->property.write, object, 0, value))
-			{
-				EXEC_set_native_error(TRUE);
-				return;
-			}
-		}
-		else
-		{
-			*SP = *value;
-			BORROW(SP);
-			SP++;
-	
-			EXEC.class = desc->property.class;
-			EXEC.object = object;
-			EXEC.nparam = 1;
-			EXEC.native = FALSE;
-			EXEC.index = (int)(intptr_t)desc->property.write;
-			//EXEC.func = &class->load->func[(long)desc->property.write];
-	
-			EXEC_function();
-	
-			/*VALUE_write(value, OBJECT_get_prop_addr(object, desc), desc->property.type);*/
-		}
-	}
+	GB_SetProperty(object, name, (GB_VALUE *)ARG(value));
 
 END_METHOD
 

@@ -775,7 +775,9 @@ static void command_eval(const char *cmd)
 		goto __END;
 	}
 	
+	GB_DEBUG.EnterEval();
 	val = (VALUE *)EVAL.Run(expr, GB_DEBUG.GetValue);
+	GB_DEBUG.LeaveEval();
 	if (!val)
 		goto __ERROR;
 

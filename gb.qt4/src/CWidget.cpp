@@ -1585,7 +1585,12 @@ BEGIN_PROPERTY(Control_Background)
 		if (READ_PROPERTY)
 			GB.GetProperty(THIS_EXT->proxy, "Background");
 		else
-			GB.SetProperty(THIS_EXT->proxy, "Background", GB_T_INTEGER, VPROP(GB_INTEGER));
+		{
+			GB_VALUE value;
+			value.type = GB_T_INTEGER;
+			value._integer.value = VPROP(GB_INTEGER);
+			GB.SetProperty(THIS_EXT->proxy, "Background", &value);
+		}
 		
 		return;
 	}
@@ -1609,8 +1614,13 @@ BEGIN_PROPERTY(Control_Foreground)
 		if (READ_PROPERTY)
 			GB.GetProperty(THIS_EXT->proxy, "Foreground");
 		else
-			GB.SetProperty(THIS_EXT->proxy, "Foreground", GB_T_INTEGER, VPROP(GB_INTEGER));
-		
+		{
+			GB_VALUE value;
+			value.type = GB_T_INTEGER;
+			value._integer.value = VPROP(GB_INTEGER);
+			GB.SetProperty(THIS_EXT->proxy, "Foreground", &value);
+		}
+
 		return;
 	}
 

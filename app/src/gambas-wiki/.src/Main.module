@@ -393,6 +393,11 @@ Public Sub Main()
     Return
   Endif
   
+  If Path = "/~stat" Then
+    HttpStat.Render
+    Return
+  Endif
+  
   ' Reject pages whose url includes a "~" character.
   
   If InStr(Path, "~") Then

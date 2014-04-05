@@ -250,7 +250,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
 }
 
 
-void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
+void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len, bool set_last)
 {
 	HASH_NODE *node;
 
@@ -258,7 +258,8 @@ void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len)
 		return NULL;
 	
 	node = *hash_table_lookup_node(hash_table, key, len);
-	hash_table->last = node;
+	if (set_last)
+		hash_table->last = node;
 
 	return node ? NODE_value(node) : NULL;
 }
@@ -320,7 +321,7 @@ void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len)
 }
 
 
-void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter)
+void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter, bool set_last)
 {
 	#ifdef KEEP_ORDER
 
@@ -329,7 +330,8 @@ void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter)
 	else
 		iter->node = iter->next;
 
-	hash_table->last = iter->node;
+	if (set_last)
+		hash_table->last = iter->node;
 
 	if (iter->node)
 	{
@@ -360,7 +362,8 @@ void *HASH_TABLE_next(HASH_TABLE *hash_table, HASH_ENUM *iter)
 	iter->node = enum_node;
 	iter->index = enum_i;
 
-	hash_table->last = enum_node;
+	if (set_last)
+		hash_table->last = enum_node;
 
 	if (enum_node)
 		return NODE_value(enum_node);
@@ -521,4 +524,9 @@ bool HASH_TABLE_get_last_key(HASH_TABLE *hash_table, char **key, int *len)
 
 	HASH_TABLE_get_key(hash_table, hash_table->last, key, len);
 	return FALSE;
+}
+
+void HASH_TABLE_set_last_key(HASH_TABLE *hash_table, char *key, int len)
+{
+	hash_table->last = (len == 0) ? NULL : *hash_table_lookup_node(hash_table, key, len);
 }

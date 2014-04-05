@@ -49,7 +49,7 @@ static void clear(CCOLLECTION *col)
 	
 	for(;;)
 	{
-		value = HASH_TABLE_next(col->hash_table, &iter);
+		value = HASH_TABLE_next(col->hash_table, &iter, FALSE);
 		if (value == NULL)
 			break;
 
@@ -61,7 +61,7 @@ static void clear(CCOLLECTION *col)
 	col->locked = FALSE;
 }
 
-#define get_key(_col, _key, _len) HASH_TABLE_lookup((_col)->hash_table, (_key), (_len))
+#define get_key(_col, _key, _len, _set_last) HASH_TABLE_lookup((_col)->hash_table, (_key), (_len), _set_last)
 
 #define add_key(_col, _key, _len) ((_len) == 0 ? (GB_Error((char *)E_VKEY), NULL) : HASH_TABLE_insert(((CCOLLECTION *)(_col))->hash_table, (_key), (_len)))
 
@@ -77,7 +77,7 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 		return;
 	}
 
-	value = HASH_TABLE_lookup(col->hash_table, key, len);
+	value = HASH_TABLE_lookup(col->hash_table, key, len, FALSE);
 	if (value == NULL)
 		return;
 
@@ -130,10 +130,15 @@ BEGIN_PROPERTY(Collection_Key)
 	char *key;
 	int len;
 
-	if (HASH_TABLE_get_last_key(THIS->hash_table, &key, &len))
-		GB_ReturnVoidString();
+	if (READ_PROPERTY)
+	{
+		if (HASH_TABLE_get_last_key(THIS->hash_table, &key, &len))
+			GB_ReturnVoidString();
+		else
+			GB_ReturnNewString(key, len);
+	}
 	else
-		GB_ReturnNewString(key, len);
+		HASH_TABLE_set_last_key(THIS->hash_table, PSTRING(), PLENGTH());
 
 END_PROPERTY
 
@@ -153,7 +158,7 @@ END_METHOD
 
 BEGIN_METHOD(Collection_Exist, GB_STRING key)
 
-	GB_ReturnBoolean(get_key(THIS, STRING(key), LENGTH(key)) != NULL);
+	GB_ReturnBoolean(get_key(THIS, STRING(key), LENGTH(key), FALSE) != NULL);
 
 END_METHOD
 
@@ -184,7 +189,7 @@ BEGIN_METHOD_VOID(Collection_next)
 	HASH_TABLE *hash_table = OBJECT(CCOLLECTION)->hash_table;
 	HASH_ENUM *iter = (HASH_ENUM *)GB_GetEnum();
 
-	value = HASH_TABLE_next(hash_table, iter);
+	value = HASH_TABLE_next(hash_table, iter, !DEBUG_inside_eval);
 
 	if (value == NULL)
 		GB_StopEnum();
@@ -196,7 +201,7 @@ END_METHOD
 
 BEGIN_METHOD(Collection_get, GB_STRING key)
 
-	GB_ReturnVariant(get_key(THIS, STRING(key), LENGTH(key)));
+	GB_ReturnVariant(get_key(THIS, STRING(key), LENGTH(key), !DEBUG_inside_eval));
 
 END_METHOD
 
@@ -254,7 +259,7 @@ GB_DESC NATIVE_Collection[] =
 
 	GB_PROPERTY_READ("Count", "i", Collection_Count),
 	GB_PROPERTY_READ("Length", "i", Collection_Count),
-	GB_PROPERTY_READ("Key", "s", Collection_Key),
+	GB_PROPERTY("Key", "s", Collection_Key),
 
 	GB_METHOD("Add", NULL, Collection_Add, "(Value)v(Key)s"),
 	GB_METHOD("Exist", "b", Collection_Exist, "(Key)s"),
@@ -306,7 +311,7 @@ bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
 {
 	VARIANT *var;
 
-	var = (VARIANT *)get_key((CCOLLECTION *)col, key, len);
+	var = (VARIANT *)get_key((CCOLLECTION *)col, key, len, !DEBUG_inside_eval);
 	value->type = T_VARIANT;
 	if (var)
 	{
@@ -332,7 +337,7 @@ bool GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *
 		return FALSE;
 	}
 
-	val = HASH_TABLE_next(hash_table, (HASH_ENUM *)iter);
+	val = HASH_TABLE_next(hash_table, (HASH_ENUM *)iter, !DEBUG_inside_eval);
 	if (!val)
 		return TRUE;
 

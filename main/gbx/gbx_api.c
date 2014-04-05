@@ -315,6 +315,8 @@ const void *GAMBAS_DebugApi[] =
 	(void *)DEBUG_find_class,
 	(void *)CARRAY_get_array_bounds,
 	(void *)GB_DebugBreakOnError,
+	(void *)DEBUG_enter_eval,
+	(void *)DEBUG_leave_eval,
 	NULL
 };
 
@@ -717,26 +719,97 @@ void GB_GetProperty(void *object, const char *name)
 	}
 }
 
-void GB_SetProperty(void *object, const char *property, ...)
+void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 {
-	static bool init = FALSE;
-	static GB_FUNCTION func;
-	
-	va_list args;
-	
-	if (!init)
-	{
-		GB_GetFunction(&func, (void *)CLASS_find("Object"), "SetProperty", NULL, NULL);
-		init = TRUE;
-	}
-	
-	GB_Push(2, GB_T_OBJECT, object, GB_T_STRING, property, strlen(property));
+	VALUE *value = (VALUE *)val;
+	CLASS_DESC *desc;
+	CLASS *class;
+	char type;
 
-	va_start(args, property);
-	push(1, args);
-	va_end(args);
-	
-	GB_Call(&func, 3, TRUE);
+	if (OBJECT_is_class(object))
+	{
+		class = (CLASS *)object;
+		object = NULL;
+	}
+	else
+	{
+		class = OBJECT_class(object);
+	}
+
+	desc = get_desc(class, name);
+
+	if (!desc)
+		return;
+
+	type = CLASS_DESC_get_type(desc);
+
+	if (type == CD_PROPERTY || type == CD_VARIABLE)
+	{
+		if (!object)
+		{
+			if (!class->auto_create)
+			{
+				error(E_DYNAMIC, class, name);
+				return;
+			}
+
+			object = EXEC_auto_create(class, TRUE);
+		}
+	}
+	else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_VARIABLE)
+	{
+		if (object)
+		{
+			error(E_STATIC, class, name);
+			return;
+		}
+	}
+	else if (type == CD_PROPERTY_READ  || type == CD_STATIC_PROPERTY_READ)
+	{
+		error(E_NWRITE, class, name);
+		return;
+	}
+	else
+	{
+		error(E_NPROPERTY, class, name);
+		return;
+	}
+
+	if (type == CD_VARIABLE)
+		VALUE_write(value, (char *)object + desc->variable.offset, desc->variable.type);
+	else if (type == CD_STATIC_VARIABLE)
+		VALUE_write(value, (char *)class->stat + desc->variable.offset, desc->variable.type);
+	else
+	{
+		if (desc->property.native)
+		{
+			VALUE_conv(value, desc->property.type);
+
+			if (EXEC_call_native(desc->property.write, object, 0, value))
+			{
+				EXEC_set_native_error(TRUE);
+				return;
+			}
+		}
+		else
+		{
+			*SP = *value;
+			BORROW(SP);
+			SP++;
+
+			EXEC.class = desc->property.class;
+			EXEC.object = object;
+			EXEC.nparam = 1;
+			EXEC.native = FALSE;
+			EXEC.index = (int)(intptr_t)desc->property.write;
+			//EXEC.func = &class->load->func[(long)desc->property.write];
+
+			EXEC_function();
+
+			/*VALUE_write(value, OBJECT_get_prop_addr(object, desc), desc->property.type);*/
+		}
+	}
+
 }
 
 
@@ -2021,7 +2094,7 @@ bool GB_HashTableGet(GB_HASHTABLE hash, const char *key, int len, void **data)
 	if (len <= 0)
 		len = strlen(key);
 
-	pdata = (void **)HASH_TABLE_lookup((HASH_TABLE *)hash, key, len);
+	pdata = (void **)HASH_TABLE_lookup((HASH_TABLE *)hash, key, len, FALSE);
 	if (pdata)
 	{
 		*data = *pdata;
@@ -2041,7 +2114,7 @@ void GB_HashTableEnum(GB_HASHTABLE hash, GB_HASHTABLE_ENUM_FUNC func)
 
 	for(;;)
 	{
-		data = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter);
+		data = (void **)HASH_TABLE_next((HASH_TABLE *)hash, &iter, FALSE);
 		if (!data)
 			break;
 

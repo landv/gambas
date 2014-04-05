@@ -917,7 +917,7 @@ typedef
 		GB_VALUE *(*Call)(GB_FUNCTION *, int, int);
 		void *(*GetClassInterface)(GB_CLASS, const char *);
 		void (*GetProperty)(void *, const char *);
-		void (*SetProperty)(void *, const char *, ...);
+		void (*SetProperty)(void *, const char *, GB_VALUE *value);
 		bool (*Serialize)(const char *path, GB_VALUE *value);
 		bool (*UnSerialize)(const char *path, GB_VALUE *value);
 

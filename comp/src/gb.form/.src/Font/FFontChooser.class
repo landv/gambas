@@ -180,6 +180,8 @@ Public Sub SetFont(sFont As String)
     txtSize.Value = Size
   Endif
   
+  txtExample.Text = ("How quickly daft jumping zebras vex")
+
   RefreshExample
 
 End
@@ -214,13 +216,27 @@ End
 Private Sub RefreshExample()
 
   Dim sFont As String = GetFont()
+  Dim hTextBox As TextBox
+  Dim H As Integer
 
   If $bNoRefresh Then Return
-  If sFont = $sLast Then Return
+  
+  
+  If sFont = $sLast And If panExample.Expand = cmbFamily.Visible Then Return
   
   If txtExample.Visible Then
-    txtExample.Font = Font[sFont]
-    panExample.H = txtExample.Font.Height + 16
+    txtExample.Font = Font[sFont & ",-2"]
+    txtExample2.Font = Font[sFont & ",0"]
+    txtExample3.Font = Font[sFont & ",+4"]
+    
+    For Each hTextBox In [txtExample, txtExample2, txtExample3]
+      hTextBox.H = hTextBox.Font.Height + 2
+      H += hTextBox.H
+    Next
+    
+    panExample.Expand = cmbFamily.Visible
+    panExample.H = H
+    
   Endif
   
   Size = Font[sFont].Size
@@ -389,21 +405,28 @@ Public Sub btnStrikeout_Click()
 
 End
 
-Public Sub panBorder_Arrange()
+Public Sub panBorder_BeforeArrange()
 
-  If panBorder.H < (Desktop.Scale * 12) Then
+  If panBorder.H < (Desktop.Scale * 20) Then
   
     If panExample.Visible Then
-      panExample.Hide
-      sepExample.Hide
       lstFamily.Hide
       sepFamily.Hide
       lblFont.Hide
       sepToolbar.Hide
       cmbFamily.Show
       cmbFamily.Lower
+      RefreshFamily
     Endif
   
+    If panBorder.H < (Desktop.Scale * 14) Then
+      panExample.Hide
+      sepExample.Hide
+    Else
+      panExample.Show
+      sepExample.Show
+    Endif
+    
   Else
   
     If cmbFamily.Visible Then
@@ -415,11 +438,27 @@ Public Sub panBorder_Arrange()
       lblFont.Show
       sepToolbar.Show
       lblFont.Lower
+      RefreshFamily
     Endif
   
   Endif
 
-  RefreshFamily
   RefreshExample
   
+End
+
+Public Sub txtExample_Change()
+  
+  Dim sText As String
+  Dim hTextBox As TextBox
+  
+  sText = Last.Text
+  For Each hTextBox In [txtExample, txtExample2, txtExample3]
+    If hTextBox <> Last Then 
+      Object.Lock(hTextBox)
+      hTextBox.Text = sText
+      Object.Unlock(hTextBox)
+    Endif
+  Next
+
 End

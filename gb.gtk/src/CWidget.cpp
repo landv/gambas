@@ -737,7 +737,12 @@ BEGIN_PROPERTY(CWIDGET_background)
 		if (READ_PROPERTY)
 			GB.GetProperty(GetObject(CONTROL->proxy()), "Background");
 		else
-			GB.SetProperty(GetObject(CONTROL->proxy()), "Background", GB_T_INTEGER, VPROP(GB_INTEGER));
+		{
+			GB_VALUE value;
+			value.type = GB_T_INTEGER;
+			value._integer.value = VPROP(GB_INTEGER);
+			GB.SetProperty(GetObject(CONTROL->proxy()), "Background", &value);
+		}
 
 		return;
 	}
@@ -757,7 +762,12 @@ BEGIN_PROPERTY(CWIDGET_foreground)
 		if (READ_PROPERTY)
 			GB.GetProperty(GetObject(CONTROL->proxy()), "Foreground");
 		else
-			GB.SetProperty(GetObject(CONTROL->proxy()), "Foreground", GB_T_INTEGER, VPROP(GB_INTEGER));
+		{
+			GB_VALUE value;
+			value.type = GB_T_INTEGER;
+			value._integer.value = VPROP(GB_INTEGER);
+			GB.SetProperty(GetObject(CONTROL->proxy()), "Foreground", &value);
+		}
 
 		return;
 	}

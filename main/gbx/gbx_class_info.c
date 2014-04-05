@@ -232,7 +232,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("Time", "d", NULL, "[(DateOrHour)v(Minute)i(Second)i(MilliSecond)i]"),
 	GB_METHOD("Week", "i", NULL, "[(Date)d(Mode)i(Plain)b]"),
 
-	GB_METHOD("DateAdd", "d", NULL, "(Date)d(Period)i(Interval)i"),
+	GB_METHOD("DateAdd", "d", NULL, "(Date)d(Period)i(Count)i"),
 	GB_METHOD("DateDiff", "i", NULL, "(Date1)d(Date2)d(Period)i"),
 
 	GB_METHOD("Eval", "v", NULL, "(Expression)s[(Context)Collection;]"),

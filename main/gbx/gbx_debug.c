@@ -43,6 +43,7 @@
 
 DEBUG_INTERFACE DEBUG;
 DEBUG_INFO *DEBUG_info = NULL;
+int DEBUG_inside_eval = 0;
 
 static bool calc_line_from_position(CLASS *class, FUNCTION *func, PCODE *addr, ushort *line)
 {
@@ -383,7 +384,7 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 	// A static read-only property, and object == NULL
 	// or a dynamic read-only property, and object != NULL
 	
-	if (!((type == 'r' && object) || (type == 'R' && !object)))
+	if (!((type == CD_PROPERTY_READ && object) || (type == CD_STATIC_PROPERTY_READ && !object)))
 		goto __NORMAL;
 	
 	TRY
@@ -431,7 +432,8 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 			goto __NORMAL;
 		
 		desc = CLASS_get_symbol_desc(class, "Key");
-		if (!desc || CLASS_DESC_get_type(desc) != type)
+		type = CLASS_DESC_get_type(desc);
+		if (!desc || (type != CD_PROPERTY_READ && type != CD_PROPERTY && type != CD_STATIC_PROPERTY_READ && type != CD_STATIC_PROPERTY && type != CD_VARIABLE && type != CD_STATIC_VARIABLE))
 			goto __NORMAL;
 	}
 	
@@ -529,16 +531,17 @@ GB_CLASS DEBUG_find_class(const char *name)
 	return (GB_CLASS)class;
 }
 
-void DEBUG_enum_keys(void *object, char **key)
+void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 {
-	static CLASS_DESC *desc;
-	static CENUM *cenum = NULL;
-	
 	CENUM *old;
+	CENUM *cenum = NULL;
 	CLASS *class;
 	bool err = FALSE;
 	char *str;
 	int len;
+	char *save_key;
+	int save_lkey;
+	GB_VALUE value;
 	
 	old = EXEC_enum;
 	
@@ -551,66 +554,63 @@ void DEBUG_enum_keys(void *object, char **key)
 	
 	TRY
 	{
-		if (!cenum)
-		{
-			desc = CLASS_get_symbol_desc(class, "Key");
-			
-			cenum = CENUM_create(object ? object : class);
-			
-			EXEC_enum = cenum;
-			EXEC_special(SPEC_FIRST, class, object, 0, TRUE);
-			EXEC_enum = old;
-			
-			if (cenum->stop)
-			{
-				err = TRUE;
-				goto __END;
-			}
-		}
-		
+		GB_GetProperty(object, "Key");
+		SUBR_get_string_len(&TEMP, &save_key, &save_lkey);
+
+		cenum = CENUM_create(object ? object : class);
+
 		EXEC_enum = cenum;
-		err = EXEC_special(SPEC_NEXT, class, object, 0, TRUE);
+		EXEC_special(SPEC_FIRST, class, object, 0, TRUE);
 		EXEC_enum = old;
-			
-		if (err || cenum->stop)
+
+		if (cenum->stop)
 		{
 			err = TRUE;
 			goto __END;
 		}
-			
-		if (desc->property.native)
+
+		for(;;)
 		{
-			EXEC_call_native(desc->property.read, object, desc->property.type, 0);
+			EXEC_enum = cenum;
+			err = EXEC_special(SPEC_NEXT, class, object, 0, TRUE);
+			EXEC_enum = old;
+
+			if (err || cenum->stop)
+			{
+				err = TRUE;
+				break;
+			}
+
+			GB_GetProperty(object, "Key");
+
 			SUBR_get_string_len(&TEMP, &str, &len);
+			(*cb)(str, len);
 		}
-		else
-		{
-			EXEC.class = desc->property.class;
-			EXEC.object = object;
-			EXEC.nparam = 0;
-			EXEC.native = FALSE;
-			EXEC.index = (int)(intptr_t)desc->property.read;
-
-			EXEC_function_keep();
-
-			SUBR_get_string_len(RP, &str, &len);
-		}
-		
-		STRING_free(key);
-		*key = STRING_new(str, len);
 		
 	__END:
-	
+
+		value.type = GB_T_CSTRING;
+		value._string.value.addr = save_key;
+		value._string.value.start = 0;
+		value._string.value.len = save_lkey;
+		GB_SetProperty(object, "Key", &value);
+
 		if (err)
-		{
 			OBJECT_UNREF(cenum);
-			STRING_free(key);
-		}
 	}
 	CATCH
 	{
 		OBJECT_UNREF(cenum);
-		STRING_free(key);
 	}
 	END_TRY
+}
+
+void DEBUG_enter_eval()
+{
+	DEBUG_inside_eval++;
+}
+
+void DEBUG_leave_eval()
+{
+	DEBUG_inside_eval--;
 }

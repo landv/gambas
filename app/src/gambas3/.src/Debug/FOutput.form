@@ -97,23 +97,30 @@
       ToolTip = ("Paste")
       Picture = Picture["icon:/small/paste"]
     }
+    { btnEcho ToolButton
+      MoveScaled(24,0,9,4)
+      ToolTip = ("Entered text echo")
+      AutoResize = True
+      Text = ("Echo")
+      Picture = Picture["icon:/small/insert-text"]
+      Toggle = True
+    }
     { Separator1 Separator
-      MoveScaled(24,0,1,4.1429)
+      MoveScaled(37,0,1,4.1429)
     }
     { btnSearch ToolButton
-      MoveScaled(26,0,11,4)
+      MoveScaled(39,0,11,4)
       AutoResize = True
       Text = ("Search") & "..."
       Picture = Picture["icon:/small/find"]
     }
     { sepCharset Separator
-      MoveScaled(40,0,1,4)
+      MoveScaled(53,0,1,4)
       Visible = False
     }
     { chkCharset CheckBox
-      MoveScaled(41,0,19,4)
+      MoveScaled(54,0,19,4)
       Visible = False
-      Expand = True
       AutoResize = True
       Text = ("Use system charset")
     }

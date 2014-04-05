@@ -74,11 +74,28 @@
       MoveScaled(16,28,35,0)
     }
     { panExample Panel
-      MoveScaled(3,38,69,7)
+      MoveScaled(2,34,69,14)
       Background = Color.TextBackground
-      Arrangement = Arrange.Fill
-      { txtExample TextBox
-        MoveScaled(0,0,68,6)
+      Arrangement = Arrange.Vertical
+      { txtExample TextBox txtExample
+        Name = "txtExample"
+        MoveScaled(0,0,64,4)
+        Font = Font["-2"]
+        Text = ("How quickly daft jumping zebras vex")
+        Alignment = Align.Center
+        Border = False
+      }
+      { txtExample2 TextBox txtExample
+        Name = "txtExample2"
+        MoveScaled(0,4,64,4)
+        Text = ("How quickly daft jumping zebras vex")
+        Alignment = Align.Center
+        Border = False
+      }
+      { txtExample3 TextBox txtExample
+        Name = "txtExample3"
+        MoveScaled(0,8,64,4)
+        Font = Font["+4"]
         Text = ("How quickly daft jumping zebras vex")
         Alignment = Align.Center
         Border = False

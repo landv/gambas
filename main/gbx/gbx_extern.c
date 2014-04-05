@@ -464,7 +464,7 @@ void EXTERN_release(void)
 		
 	for(;;)
 	{
-		cb = HASH_TABLE_next(_callbacks, &iter);
+		cb = HASH_TABLE_next(_callbacks, &iter, FALSE);
 		if (!cb)
 			break;
 		if (cb->exec.object)
@@ -501,7 +501,7 @@ void EXTERN_exit(void)
 		
 		for(;;)
 		{
-			cb = HASH_TABLE_next(_callbacks, &iter);
+			cb = HASH_TABLE_next(_callbacks, &iter, FALSE);
 			if (!cb)
 				break;
 			if (cb->exec.object)

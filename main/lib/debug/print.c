@@ -314,6 +314,12 @@ void PRINT_symbol(FILE *where, const char *sym, int len)
 	print_value((VALUE *)&value);
 }
 
+static void print_key(char *key, int len)
+{
+	fprintf(_where, " ");
+	print_string(key, len);
+}
+
 void PRINT_object(FILE *where, VALUE *value)
 {
 	VALUE conv;
@@ -382,39 +388,11 @@ void PRINT_object(FILE *where, VALUE *value)
 	
 	access = GB_DEBUG.GetObjectAccessType(object, class, &count);
 	
-	/*if (GB.Is(object, GB.FindClass("Collection")))
-	{
-		GB_COLLECTION_ITER iter;
-		count = GB.Collection.Count(object);
-		fprintf(_where, "C [%d]", count);
-		
-		GB_DEBUG.EnumCollection(object, &iter, NULL, NULL, NULL);
-		
-		for (i = 0; i < count; i++)
-		{
-			if (GB_DEBUG.EnumCollection(object, &iter, (GB_VARIANT *)&conv, &key, &len))
-				break;
-			fprintf(_where, " ");
-			print_string(key, len);
-		}
-		
-		//fprintf(_where, "\n");
-		return;
-	}*/
-	
 	if (access == GB_DEBUG_ACCESS_COLLECTION)
 	{
-		char *key = NULL;
-		
 		fprintf(_where, "C: [%d]", count);
 		
-		GB_DEBUG.EnumKeys(object, &key);
-		while (key)
-		{
-			fprintf(_where, " ");
-			print_string(key, STRING_length(key));
-			GB_DEBUG.EnumKeys(object, &key);
-		}
+		GB_DEBUG.EnumKeys(object, print_key);
 		fprintf(_where, " ");
 	}
 	else if (GB.Is(object, GB.FindClass("Array")))

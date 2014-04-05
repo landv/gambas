@@ -61,6 +61,9 @@ enum
 };
 
 typedef
+	void (*GB_DEBUG_ENUM_CB)(char *key, int len);
+
+typedef
 	struct {
 		void *(*GetExec)(void);
 		void *(*GetStack)(int frame);
@@ -73,12 +76,14 @@ typedef
 		bool (*GetValue)(const char *sym, int len, GB_VARIANT *ret);
 		int (*SetValue)(const char *sym, int len, VALUE *value);
 		void (*GetArrayValue)(GB_ARRAY array, int index, GB_VALUE *value);
-		void (*EnumKeys)(void *collection, char **key);
+		void (*EnumKeys)(void *collection, GB_DEBUG_ENUM_CB cb);
 		void *(*GetNextSortedSymbol)(void *klass, int *index);
 		int (*GetObjectAccessType)(void *object, CLASS *klass, int *count);
 		GB_CLASS (*FindClass)(const char *name);
 		int *(*GetArrayBounds)(void *array);
 		void (*BreakOnError)(bool);
+		void (*EnterEval)(void);
+		void (*LeaveEval)(void);
 		}
 	GB_DEBUG_INTERFACE;
 
