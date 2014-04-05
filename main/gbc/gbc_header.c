@@ -123,6 +123,9 @@ static void analyze_function_desc(TRANS_FUNC *func, int flag)
 
 	for(;;)
 	{
+		if (func->nparam >= MAX_PARAM_FUNC)
+			THROW("Too many arguments");
+
 		param = &func->param[func->nparam];
 		CLEAR(param);
 
