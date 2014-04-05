@@ -3,6 +3,7 @@
 Private Const ROUND_SIZE As Integer = 8
 Private Const PADDING As Integer = 8
 Private Const BACKGROUND_COLOR As Integer = &HFFFFDF&
+Private Const BACKGROUND_COLOR2 As Integer = &HBFBFA7& 
 
 Static Private $iDelay As Integer = 5000
 
@@ -14,6 +15,8 @@ Private $hCtrl As Control
 
 Private $X As Integer
 Private $Y As Integer
+Private $W As Integer
+Private $H As Integer
 Private $DX As Integer
 Private $DY As Integer
 Private $dShow As Float
@@ -104,8 +107,10 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
 '     X = Min(Desktop.W - ME.W, SX - ME.W \ 2 + 32)
 '   ENDIF
 ' 
-  If W <= 0 Then W = Me.W
-  If H <= 0 Then H = Me.H
+  If W <= 0 Then 
+    W = $W
+    H = $H
+  Endif
 
   If SX < CX And SX >= W Then 
     X = SX - W \ 2 - ARROW_HEIGHT
@@ -113,7 +118,9 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     X = SX - W \ 2 + ARROW_HEIGHT
   Endif
 
-  X = Desktop.X + Max(4, Min(Desktop.W - W - 4, X))
+  'X = Desktop.X + Max(4, Min(Desktop.W - W - 4, X))
+  X = Min(X, Desktop.X + Desktop.W - W - 4)
+  X = Max(X, Desktop.X)
 
   'IF SY < (Desktop.H \ 2) THEN 
   
@@ -121,32 +128,39 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
   If (SY >= CY And SY < (Desktop.Y + Desktop.Height - H)) Or SY < (Desktop.Y + H) Then 
     Y1 = 0
-    Y4 = ARROW_HEIGHT
-    Y2 = Y4 + 1
+    'Y4 = ARROW_HEIGHT
+    Y2 = ARROW_HEIGHT
     Y = SY
+    Y4 = Y2 
   Else 
     Y1 = H - 1
-    Y4 = H - ARROW_HEIGHT - 1
-    Y2 = Y4 - 1
+    'Y4 = H - ARROW_HEIGHT
+    Y2 = H - ARROW_HEIGHT - 1
     Y = SY - H
+    Y4 = Y2
   Endif
   
-  Y = Desktop.Y + Max(4, Min(Desktop.H - H - 4, Y))
-  
-  'DEBUG "X =";; X;; "Y =";; Y;; "W =";; W;; "H ="; H
-
   Y3 = Y2
   
+  'Y = Desktop.Y + Max(4, Min(Desktop.H - H - 4, Y))
+  Y = Min(Y, Desktop.Y + Desktop.H - H - 4)
+  Y = Max(Y, Desktop.Y)
+  
+  'Debug "X =";; X;; "Y =";; Y;; "W =";; W;; "H =";; H
+
   X1 = Min(Max(16, SX - X), W - 16)
   'X2 = W \ 2 - 12
   'X3 = X2 + 24
   If X1 < (W \ 2) Then 
     X2 = X1
+    X3 = X1 + ARROW_HEIGHT
   Else
     X2 = X1 - ARROW_HEIGHT
+    X3 = X1
   Endif
   X2 = Max(X2, 16)
-  X3 = X2 + Abs(Y2 - Y1) 'ARROW_HEIGHT
+
+  'Debug "X1="; X1;; "X2="; X2;; "X3="; X3
 
   Me.Move(X, Y, W, H)
   
@@ -193,26 +207,31 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Draw.FillColor = BACKGROUND_COLOR 'Me.Background
     'DrawInternalRect(1, ARROW_HEIGHT + 1, ME.W - 2, ME.H - (ARROW_HEIGHT + 1) * 2)
     Draw.Polygon([X1, Y1, X2, Y2, X3, Y3])
-
-     Draw.LineStyle = Line.Solid
-     Paint.Background = iColor
-     Paint.LineWidth = 1
-     Paint.MoveTo(X2, Y2)
-     Paint.LineTo(X1, Y1)
-     Paint.LineTo(X3, Y3)
-     Paint.Stroke
-     Paint.Background = BACKGROUND_COLOR 'Me.Background
-     Paint.MoveTo(X2, Y2)
-     Paint.LineTo(X3, Y3)
-     Paint.Stroke
-  
     Draw.End
+
+    Paint.Begin(hImage)    
+
+    Paint.Translate(0.5, 0.5)
+    'Paint.AntiAlias = False
+
+    Paint.Background = BACKGROUND_COLOR 'Me.Background
+    Paint.MoveTo(X2, Y4)
+    Paint.LineTo(X3, Y4)
+    Paint.Stroke
+
+    Paint.Background = iColor
+    'Paint.LineWidth = 1
+    Paint.MoveTo(X2, Y2)
+    Paint.LineTo(X1, Y1)
+    Paint.LineTo(X3, Y3)
+    Paint.Stroke
+    'Paint.FillRect(X2 + 1, Y4, X3 - X2, 1, BACKGROUND_COLOR)
+
+    Paint.End
     
-    'hImage = hPict.Image
-    'hImage = hImage.Erase()
     hImage.Replace(BACKGROUND_COLOR, Me.Background)
+    hImage.Replace(BACKGROUND_COLOR2, Color.Merge(Me.Background, Color.Gray))
     hImage.Replace(Color.TextBackground, Color.Transparent)
-    'Wait
     Me.Picture = hImage.Picture
     
     $sOld = sNew
@@ -244,7 +263,6 @@ End
 
 Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer, DY As Integer)
   
-  Dim W, H As Integer
   Dim hWin As Window
   
   'IF hCtrl <> $hCtrl THEN 
@@ -258,8 +276,10 @@ Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer
   txtMessage.Text = Replace(sMsg, "\n", "<br>")
   txtMessage.Adjust
   If txtMessage.W < 64 Then txtMessage.W = 64
-  'txtMessage.Adjust
-  'DEBUG txtMessage.W
+  
+  $W = txtMessage.W
+  $H = txtMessage.Font.RichTextHeight(txtMessage.Text, $W)
+  txtMessage.Resize($W, $H)
 
   $hCtrl = hCtrl
   ARROW_HEIGHT = Min(16, $hCtrl.H \ 4 + 8)
@@ -276,18 +296,18 @@ Public Sub Run(sMsg As String, hCtrl As Control, hIcon As Picture, DX As Integer
     imgIcon.Picture = hIcon
     imgIcon.Resize(hIcon.Width, hIcon.Height)
     imgIcon.Show
-    W = txtMessage.W + imgIcon.W + 8 + PADDING * 2
-    H = Max(txtMessage.H, imgIcon.H) + PADDING * 2 + ARROW_HEIGHT * 2
+    $W += imgIcon.W + 8 + PADDING * 2
+    $H = Max($H, imgIcon.H) + PADDING * 2 + ARROW_HEIGHT * 2
     imgIcon.Move(PADDING, PADDING + ARROW_HEIGHT)
     txtMessage.Move(imgIcon.X + imgIcon.W + 8, PADDING + ARROW_HEIGHT) ', ME.W - 32 - imgIcon.W - 8)
   Else
     imgIcon.Hide
-    W = txtMessage.W + PADDING * 2
-    H = txtMessage.H + PADDING * 2 + ARROW_HEIGHT * 2
+    $W += PADDING * 2
+    $H += PADDING * 2 + ARROW_HEIGHT * 2
     txtMessage.Move(PADDING, PADDING + ARROW_HEIGHT) ', ME.W - 32)
   Endif
 
-  MakeBorder(W, H)
+  MakeBorder($W, $H)
   
 End
 
@@ -412,5 +432,7 @@ Public Sub _new()
   Else
     Me.Background = Color.TooltipBackground
   Endif
-
+  
+  txtMessage.Foreground = Color.TooltipForeground
+  
 End
