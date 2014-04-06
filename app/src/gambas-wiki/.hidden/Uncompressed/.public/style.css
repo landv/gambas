@@ -5,35 +5,48 @@ HTML, BODY {
 BODY {
   padding: 0px;
   margin: 0px;
+  font-family: sans-serif;
+}
+
+INPUT {
+  border: solid gray 1px;
+  background: white;
+  color: black;
 }
 
 INPUT[type=submit] {
   border: solid black 1px;
-  background: white;
-  color: black;
   cursor: pointer;
+  box-shadow: 0 0 4px gray;
 }
 
 INPUT[type=submit]:hover {
-  background: #E0E0E0;
+  background: #E8E8E8;
+}
+
+#login {
+  width: 8em;
+}
+
+#password {
+  width: 8em;
+}
+
+A {
+  text-decoration: none;
 }
 
 P {
   margin-bottom: 0;
-  margin-top: 1em;
-}
-
-P:first-child,UL:first-child,OL:first-child {
-  margin-bottom: 0;
-  margin-top: 0;
+  margin-top: 0.75em;
 }
 
 H1,H2,H3,H4,H5,H6 {
   margin-bottom: 0;
 }
 
-H1:first-child {
-  margin-top: 0;
+H1,H2 {
+  letter-spacing: 1px;
 }
 
 CODE {
@@ -44,16 +57,15 @@ CODE {
 
 PRE {
   background: #F0F0F0;
-  display: inline-table;
+  display: inline-block;
   padding: 4px 8px;
   margin: 0px;
-  margin-top: 1em;
+  margin-top: 0.75em;
   border: solid #C0C0C0 1px;
 }
 
-PRE HR {
-  margin-top: 0.5em;
-  margin-bottom: -0.5em;
+HR {
+  margin-top: 0.75em;
   margin-left: -8px;
   margin-right: -8px;
   padding: 0px;
@@ -62,11 +74,15 @@ PRE HR {
   border-top: solid #C0C0C0 1px;
 }
 
+PRE HR {
+  margin-bottom: -0.75em;
+}
+
 TABLE.table, TABLE.error {
   border-bottom: solid #A0A0A0 1px;
   border-right: solid #A0A0A0 1px;
   padding: 0px;
-  margin-top: 1em;
+  margin-top: 0.75em;
   border-spacing: 0;
   empty-cells: show;
 }
@@ -116,8 +132,18 @@ TABLE.example TH {
   height: 24px;
 }
 
+.header-v {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: white;
+  border-bottom: gray solid 1px;
+  padding: 2px 8px;
+  height: 16px;
+}
+
 .title {
-  display: inline-table;
+  display: inline-block;
 }
 
 .title A {
@@ -134,13 +160,13 @@ TABLE.example TH {
 
 .login {
   position: absolute;
-  display: inline-table;
+  display: inline-block;
   right: 4px;
   top: 4px;
 }
 
 .label-login {
-  display: inline-table;
+  display: inline-block;
   font-weight: bold; 
   margin-left: 1em;
 }
@@ -150,26 +176,25 @@ TABLE.example TH {
   padding-top: 40px;
 }
 
-.page-v {
-  padding: 4px 8px;
-}
-
 .unknown {
   color: red;
   font-style: italic;
-  margin-top: 24px;
-  font-size: 125%;
 }
 
 DIV.error {
+  background: red;
+  color: white;
+  font-family: monospace;
+  padding: 1px 4px;
+}
+
+DIV.message {
   color: red;
   font-style: italic;
-  font-family: monospace;
-  white-space: pre;
 }
 
 .command {
-  display: inline-table;
+  display: inline-block;
   margin-left: 8px;
 }
 
@@ -178,7 +203,7 @@ DIV.error {
 }
 
 .up {
-  display: inline-table;
+  display: inline-block;
   vertical-align: middle;
   padding: 2px;
 }
@@ -200,120 +225,126 @@ DIV.error {
 }
 
 DIV.table {
-  margin-top: 1em;
+  margin-top: 0.75em;
   }
   
-DIV.table:first-child {
-  margin-top: 0;
-}
-
 DIV.box {
-  display: inline-table;
+  display: inline-block;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
 }
 
 DIV.info {
-  display: inline-table;
+  display: inline-block;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
   background: url('/wiki/info.png') 8px 8px no-repeat;
-  height: 32px;
+  min-height: 32px;
 }
 
 DIV.warning {
-  display: inline-table;
+  display: inline-block;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
   background: url('/wiki/warning.png') 8px 8px no-repeat;
-  height: 32px;
+  min-height: 32px;
 }
 
 DIV.tip {
-  display: inline-table;
+  display: inline-block;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
   background: url('/wiki/tip.png') 8px 8px no-repeat;
-  height: 32px;
+  min-height: 32px;
 }
 
 DIV.vb {
-  display: inline-table;
+  display: inline-block;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
   background: url('/wiki/vb.png') 8px 8px no-repeat;
-  height: 32px;
+  min-height: 32px;
 }
 
 DIV.critical {
-  display: inline-table;
+  display: inline-block;
   border: solid #A0A0A0 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
   background: url('/wiki/critical.png') 8px 8px no-repeat;
-  height: 32px;
+  min-height: 32px;
 }
 
 DIV.example, DIV.seealso {
-  display: inline-table;
+  display: inline-block;
   border: none;
   padding: 0px;
 }
 
-/*DIV.example:before {
-  content: 'Example';
-  display: block;
-  font-weight: bold;
-  font-size: larger;
-  margin-bottom: 0.5em;
-}*/
-
-DIV.syntax {
-  display: inline-table;
-  border: solid gray 1px;
-  /*border-left: solid #A0A0A0 8px;*/
-  padding: 8px 8px;
+TEXTAREA {
   font-family: monospace;
-  white-space: pre;
-}
-
-DIV.syntax > P:first-child {
-  margin-top: -1em;
-}
-
-DIV.syntax > P:last-child {
-  margin-bottom: -1em;
-}
-
-DIV.since {
-  display: inline-table;
-  background: #FF8080;
-  color: white;
-  font-weight: bold;
-  border: solid 1px red;
-  padding: 2px 6px;
 }
 
 TABLE.index {
   border: none;
   padding: 0px;
-  margin-top: 1em;
+  margin-top: 0.75em;
 }
 
 TABLE.index TD {
   border: none;
   padding: 1px 6px;
   vertical-align: baseline;
+}
+
+DIV.index {
+  display: inline-block;
+  border: solid 1px #C0C0C0;
+  font-size: 85%;
+  padding: 8px 32px 8px 0;
+  margin-top: 0.75em;
+}
+
+/*------------------------------------------------------------------*/
+
+/*DIV.example:before {
+  content: 'Example';
+  display: block;
+  font-weight: bold;
+  font-size: larger;
+  margin-bottom: 0.75em;
+}*/
+
+DIV.syntax {
+  display: inline-block;
+  border: solid gray 1px;
+  /*border-left: solid #A0A0A0 8px;*/
+  padding: 4px 8px;
+  font-family: monospace;
+  white-space: pre;
+}
+
+DIV.syntax > P:last-child {
+  margin-bottom: -0.75em;
+}
+
+DIV.since {
+  display: inline-block;
+  background: #FF8080;
+  color: white;
+  font-weight: bold;
+  border: solid 1px red;
+  padding: 2px 6px;
 }
 
 .letter {
@@ -324,6 +355,7 @@ TABLE.index TD {
 
 TABLE.no-border {
   margin: 0;
+  margin-top: 0.75em;
   border: none;
 }
 
@@ -333,14 +365,6 @@ TABLE.no-border > TBODY > TR > TD {
 
 TABLE.no-border > TBODY > TR > TH {
   border: none;
-}
-
-DIV.index {
-  display: inline-table;
-  border: solid 1px #C0C0C0;
-  font-size: 85%;
-  padding: 8px 32px 8px 0;
-  margin-top: 1em;
 }
 
 .symbol {
@@ -357,3 +381,20 @@ TABLE.symbols > TBODY > TR > TD {
   vertical-align: top;
   padding-right: 16px;
 }
+
+P:first-child,UL:first-child,OL:first-child,TABLE:first-child {
+  margin-top: 0;
+}
+
+H1:first-child {
+  margin-top: 0;
+}
+
+DIV.table:first-child {
+  margin-top: 0;
+}
+
+DIV.syntax > P:first-child {
+  margin-top: -0.75em;
+}
+

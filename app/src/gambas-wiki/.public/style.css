@@ -1,401 +1,61 @@
-HTML, BODY {
-  height: 100%;
-  }
-
-BODY {
-  padding: 0px;
-  margin: 0px;
-  font-family: sans-serif;
-}
-
-INPUT {
-  border: solid gray 1px;
-  background: white;
-  color: black;
-}
-
-INPUT[type=submit] {
-  border: solid black 1px;
-  cursor: pointer;
-  box-shadow: 0 0 4px gray;
-}
-
-INPUT[type=submit]:hover {
-  background: #E8E8E8;
-}
-
-#login {
-  width: 8em;
-}
-
-#password {
-  width: 8em;
-}
-
-A {
-  text-decoration: none;
-}
-
-P {
-  margin-bottom: 0;
-  margin-top: 0.75em;
-}
-
-P:first-child,UL:first-child,OL:first-child {
-  margin-bottom: 0;
-  margin-top: 0;
-}
-
-H1,H2,H3,H4,H5,H6 {
-  margin-bottom: 0;
-}
-
-H1:first-child {
-  margin-top: 0;
-}
-
-H1,H2 {
-  letter-spacing: 1px;
-}
-
-CODE {
-  background: #F0F0F0;
-  padding: 0px 1px;
-  display: inline;
-}
-
-PRE {
-  background: #F0F0F0;
-  display: inline-block;
-  padding: 4px 8px;
-  margin: 0px;
-  margin-top: 0.75em;
-  border: solid #C0C0C0 1px;
-}
-
-HR {
-  margin-top: 0.75em;
-  margin-left: -8px;
-  margin-right: -8px;
-  padding: 0px;
-  height: 1px;
-  border: none;
-  border-top: solid #C0C0C0 1px;
-}
-
-PRE HR {
-  margin-bottom: -0.75em;
-}
-
-TABLE.table, TABLE.error {
-  border-bottom: solid #A0A0A0 1px;
-  border-right: solid #A0A0A0 1px;
-  padding: 0px;
-  margin-top: 0.75em;
-  border-spacing: 0;
-  empty-cells: show;
-}
-
-TABLE.table > TBODY > TR > TD, TABLE.error > TBODY > TR > TD {
-  border-top: solid #A0A0A0 1px;
-  border-left:  solid #A0A0A0 1px;
-  padding: 3px 6px;
-  vertical-align: top;
-}
-
-TABLE.table > TBODY > TR > TH, TABLE.error > TBODY > TR > TH {
-  border-top: solid #A0A0A0 1px;
-  border-left:  solid #A0A0A0 1px;
-  padding: 3px 6px;
-  text-align: left;
-}
-
-/*TABLE.example {
-  border: none;
-  border-left: solid #A0A0A0 8px;
-}
-
-TABLE.example TR {
-  border: none;
-}
-
-TABLE.example TD {
-  border: none;
-  padding-left: 8px;
-}
-
-TABLE.example TH {
-  border: none;
-  padding-left: 8px;
-}*/
-
-.header {
-  position: fixed;
-  left: 0;
-  right: 0;
-  background: #CF6706;
-  color: white;
-  border-bottom: black solid 1px;
-  padding: 4px 8px;
-  box-shadow: 0 0 8px black;
-  height: 24px;
-}
-
-.header-v {
-  position: fixed;
-  left: 0;
-  right: 0;
-  background: white;
-  border-bottom: gray solid 1px;
-  padding: 2px 8px;
-  height: 16px;
-}
-
-.title {
-  display: inline-block;
-}
-
-.title A {
-  color: white;
-}
-
-.title-v {
-  font-size: 75%;
-}
-
-.title-v A {
-  color: gray;
-}
-
-.login {
-  position: absolute;
-  display: inline-block;
-  right: 4px;
-  top: 4px;
-}
-
-.label-login {
-  display: inline-block;
-  font-weight: bold; 
-  margin-left: 1em;
-}
-
-.page {
-  padding: 4px 8px;
-  padding-top: 40px;
-}
-
-.unknown {
-  color: red;
-  font-style: italic;
-}
-
-DIV.error {
-  background: red;
-  color: white;
-  font-family: monospace;
-  padding: 1px 4px;
-}
-
-DIV.message {
-  color: red;
-  font-style: italic;
-}
-
-.command {
-  display: inline-block;
-  margin-left: 8px;
-}
-
-#lang {
-  margin-left: 8px;
-}
-
-.up {
-  display: inline-block;
-  vertical-align: middle;
-  padding: 2px;
-}
-
-.edit-frame {
-  position: absolute;
-  left: 0px;
-  right: 0px;
-  top: 36px;
-  bottom: 0px;
-  padding: 8px;
-}
-
-.edit {
-  border: none;
-  background: none;
-  width: 100%;
-  height: 100%;
-}
-
-DIV.table {
-  margin-top: 0.75em;
-  }
-  
-DIV.table:first-child {
-  margin-top: 0;
-}
-
-DIV.box {
-  display: inline-block;
-  border: solid #A0A0A0 1px;
-  border-radius: 8px;
-  padding: 8px;
-}
-
-DIV.info {
-  display: inline-block;
-  border: solid #A0A0A0 1px;
-  border-radius: 8px;
-  padding: 8px;
-  padding-left: 48px;
-  background: url('/wiki/info.png') 8px 8px no-repeat;
-  min-height: 32px;
-}
-
-DIV.warning {
-  display: inline-block;
-  border: solid #A0A0A0 1px;
-  border-radius: 8px;
-  padding: 8px;
-  padding-left: 48px;
-  background: url('/wiki/warning.png') 8px 8px no-repeat;
-  min-height: 32px;
-}
-
-DIV.tip {
-  display: inline-block;
-  border: solid #A0A0A0 1px;
-  border-radius: 8px;
-  padding: 8px;
-  padding-left: 48px;
-  background: url('/wiki/tip.png') 8px 8px no-repeat;
-  min-height: 32px;
-}
-
-DIV.vb {
-  display: inline-block;
-  border: solid #A0A0A0 1px;
-  border-radius: 8px;
-  padding: 8px;
-  padding-left: 48px;
-  background: url('/wiki/vb.png') 8px 8px no-repeat;
-  min-height: 32px;
-}
-
-DIV.critical {
-  display: inline-block;
-  border: solid #A0A0A0 1px;
-  border-radius: 8px;
-  padding: 8px;
-  padding-left: 48px;
-  background: url('/wiki/critical.png') 8px 8px no-repeat;
-  min-height: 32px;
-}
-
-DIV.example, DIV.seealso {
-  display: inline-block;
-  border: none;
-  padding: 0px;
-}
-
-TEXTAREA {
-  font-family: monospace;
-}
-
-TABLE.index {
-  border: none;
-  padding: 0px;
-  margin-top: 0.75em;
-}
-
-TABLE.index TD {
-  border: none;
-  padding: 1px 6px;
-  vertical-align: baseline;
-}
-
-DIV.index {
-  display: inline-block;
-  border: solid 1px #C0C0C0;
-  font-size: 85%;
-  padding: 8px 32px 8px 0;
-  margin-top: 0.75em;
-}
-
-/*------------------------------------------------------------------*/
-
-/*DIV.example:before {
-  content: 'Example';
-  display: block;
-  font-weight: bold;
-  font-size: larger;
-  margin-bottom: 0.75em;
-}*/
-
-DIV.syntax {
-  display: inline-block;
-  border: solid gray 1px;
-  /*border-left: solid #A0A0A0 8px;*/
-  padding: 4px 8px;
-  font-family: monospace;
-  white-space: pre;
-}
-
-DIV.syntax > P:first-child {
-  margin-top: -0.75em;
-}
-
-DIV.syntax > P:last-child {
-  margin-bottom: -0.75em;
-}
-
-DIV.since {
-  display: inline-block;
-  background: #FF8080;
-  color: white;
-  font-weight: bold;
-  border: solid 1px red;
-  padding: 2px 6px;
-}
-
-.letter {
-  font-weight: bold;
-  font-size: larger;
-  vertical-align: baseline;
-}
-
-TABLE.no-border {
-  margin: 0;
-  margin-top: 0.75em;
-  border: none;
-}
-
-TABLE.no-border > TBODY > TR > TD {
-  border: none;
-}
-
-TABLE.no-border > TBODY > TR > TH {
-  border: none;
-}
-
-.symbol {
-  color: black;
-}
-
-TABLE.symbols > TBODY > TR > TH {
-  text-align: left;
-  vertical-align: top;
-  padding-right: 16px;
-}
-
-TABLE.symbols > TBODY > TR > TD {
-  vertical-align: top;
-  padding-right: 16px;
-}
-
+HTML,BODY{height:100%;}
+BODY{padding:0px;margin:0px;font-family:sans-serif;}
+INPUT{border:solid gray 1px;background:white;color:black;}
+INPUT[type=submit]{border:solid black 1px;cursor:pointer;box-shadow:0 0 4px gray;}
+INPUT[type=submit]:hover{background:#E8E8E8;}
+#login{width:8em;}
+#password{width:8em;}
+A{text-decoration:none;}
+P{margin-bottom:0;margin-top:0.75em;}
+H1,H2,H3,H4,H5,H6{margin-bottom:0;}
+H1,H2{letter-spacing:1px;}
+CODE{background:#F0F0F0;padding:0px 1px;display:inline;}
+PRE{background:#F0F0F0;display:inline-block;padding:4px 8px;margin:0px;margin-top:0.75em;border:solid #C0C0C0 1px;}
+HR{margin-top:0.75em;margin-left:-8px;margin-right:-8px;padding:0px;height:1px;border:none;border-top:solid #C0C0C0 1px;}
+PRE HR{margin-bottom:-0.75em;}
+TABLE.table,TABLE.error{border-bottom:solid #A0A0A0 1px;border-right:solid #A0A0A0 1px;padding:0px;margin-top:0.75em;border-spacing:0;empty-cells:show;}
+TABLE.table>TBODY>TR>TD,TABLE.error>TBODY>TR>TD{border-top:solid #A0A0A0 1px;border-left:solid #A0A0A0 1px;padding:3px 6px;vertical-align:top;}
+TABLE.table>TBODY>TR>TH,TABLE.error>TBODY>TR>TH{border-top:solid #A0A0A0 1px;border-left:solid #A0A0A0 1px;padding:3px 6px;text-align:left;}
+.header{position:fixed;left:0;right:0;background:#CF6706;color:white;border-bottom:black solid 1px;padding:4px 8px;box-shadow:0 0 8px black;height:24px;}
+.header-v{position:fixed;left:0;right:0;background:white;border-bottom:gray solid 1px;padding:2px 8px;height:16px;}
+.title{display:inline-block;}
+.title A{color:white;}
+.title-v{font-size:75%;}
+.title-v A{color:gray;}
+.login{position:absolute;display:inline-block;right:4px;top:4px;}
+.label-login{display:inline-block;font-weight:bold;margin-left:1em;}
+.page{padding:4px 8px;padding-top:40px;}
+.unknown{color:red;font-style:italic;}
+DIV.error{background:red;color:white;font-family:monospace;padding:1px 4px;}
+DIV.message{color:red;font-style:italic;}
+.command{display:inline-block;margin-left:8px;}
+#lang{margin-left:8px;}
+.up{display:inline-block;vertical-align:middle;padding:2px;}
+.edit-frame{position:absolute;left:0px;right:0px;top:36px;bottom:0px;padding:8px;}
+.edit{border:none;background:none;width:100%;height:100%;}
+DIV.table{margin-top:0.75em;}
+DIV.box{display:inline-block;border:solid #A0A0A0 1px;border-radius:8px;padding:8px;}
+DIV.info{display:inline-block;border:solid #A0A0A0 1px;border-radius:8px;padding:8px;padding-left:48px;background:url('/wiki/info.png')8px 8px no-repeat;min-height:32px;}
+DIV.warning{display:inline-block;border:solid #A0A0A0 1px;border-radius:8px;padding:8px;padding-left:48px;background:url('/wiki/warning.png')8px 8px no-repeat;min-height:32px;}
+DIV.tip{display:inline-block;border:solid #A0A0A0 1px;border-radius:8px;padding:8px;padding-left:48px;background:url('/wiki/tip.png')8px 8px no-repeat;min-height:32px;}
+DIV.vb{display:inline-block;border:solid #A0A0A0 1px;border-radius:8px;padding:8px;padding-left:48px;background:url('/wiki/vb.png')8px 8px no-repeat;min-height:32px;}
+DIV.critical{display:inline-block;border:solid #A0A0A0 1px;border-radius:8px;padding:8px;padding-left:48px;background:url('/wiki/critical.png')8px 8px no-repeat;min-height:32px;}
+DIV.example,DIV.seealso{display:inline-block;border:none;padding:0px;}
+TEXTAREA{font-family:monospace;}
+TABLE.index{border:none;padding:0px;margin-top:0.75em;}
+TABLE.index TD{border:none;padding:1px 6px;vertical-align:baseline;}
+DIV.index{display:inline-block;border:solid 1px #C0C0C0;font-size:85%;padding:8px 32px 8px 0;margin-top:0.75em;}
+DIV.syntax{display:inline-block;border:solid gray 1px;padding:4px 8px;font-family:monospace;white-space:pre;}
+DIV.syntax>P:last-child{margin-bottom:-0.75em;}
+DIV.since{display:inline-block;background:#FF8080;color:white;font-weight:bold;border:solid 1px red;padding:2px 6px;}
+.letter{font-weight:bold;font-size:larger;vertical-align:baseline;}
+TABLE.no-border{margin:0;margin-top:0.75em;border:none;}
+TABLE.no-border>TBODY>TR>TD{border:none;}
+TABLE.no-border>TBODY>TR>TH{border:none;}
+.symbol{color:black;}
+TABLE.symbols>TBODY>TR>TH{text-align:left;vertical-align:top;padding-right:16px;}
+TABLE.symbols>TBODY>TR>TD{vertical-align:top;padding-right:16px;}
+P:first-child,UL:first-child,OL:first-child,TABLE:first-child{margin-top:0;}
+H1:first-child{margin-top:0;}
+DIV.table:first-child{margin-top:0;}
+DIV.syntax>P:first-child{margin-top:-0.75em;}

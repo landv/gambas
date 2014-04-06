@@ -786,6 +786,7 @@ Public Sub GetClassTitle(Optional sPath As String) As String
   Dim sComponent As String
   Dim sClass As String
   Dim aPath As String[]
+  Dim hComp As CComponent
   
   If Not sPath Then
     sComponent = Main.Component
@@ -796,14 +797,15 @@ Public Sub GetClassTitle(Optional sPath As String) As String
     sClass = aPath[2]
   Endif
   
-  Try hClass = CComponent.Get(sComponent)[sClass]
+  Try hComp = CComponent.Get(sComponent)
+  Try hClass = hComp[sClass]
   
   If hClass Then
     If sPath Then Return hClass.Name
     Return hClass.Name & " (" & sComponent & ")"
   Else
     If sPath Then Return sClass
-    Return sClass & " (" & sComponent & ")?"
+    Return sClass & " (" & sComponent & ")"
   Endif
   
 End

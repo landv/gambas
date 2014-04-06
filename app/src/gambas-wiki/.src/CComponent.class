@@ -98,6 +98,7 @@ Static Public Sub Get(sComp As String) As CComponent
   
   Dim hComp As CComponent
 
+  Init
   hComp = All[sComp]
   
   If Not hComp Then

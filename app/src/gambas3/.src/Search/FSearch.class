@@ -118,6 +118,9 @@ Public Sub Update(Optional bForce As Boolean)
     radCurrentProcedure.Enabled = False
     radCurrentFile.Enabled = True
     radCurrentFile.Value = True
+    btnReplace.Enabled = False
+    btnReplaceAll.Enabled = False
+    cmbReplace.Enabled = False
   Else 
     $hCurrent = Project.ActiveForm
     If $hCurrent Then
@@ -132,6 +135,9 @@ Public Sub Update(Optional bForce As Boolean)
       radCurrentProcedure.Enabled = False
       radCurrentFile.Enabled = False
     Endif
+    btnReplace.Enabled = True
+    btnReplaceAll.Enabled = True
+    cmbReplace.Enabled = True
   Endif
   
   If radCurrentProcedure.Value And If Not radCurrentProcedure.Enabled Then

@@ -289,14 +289,14 @@ static void watch_fd(int fd, int flag, bool watch)
 	fprintf(stderr, "watch_fd: %d for %s: %s\n", fd, flag == WATCH_READ ? "read" : "write", watch ? "set" : "clear");
 	#endif
 
-	if (flag == WATCH_READ)
+	if (flag == GB_WATCH_READ)
 	{
 		if (watch)
 			FD_SET(fd, &read_fd);
 		else
 			FD_CLR(fd, &read_fd);
 	}
-	else if (flag == WATCH_WRITE)
+	else if (flag == GB_WATCH_WRITE)
 	{
 		if (watch)
 			FD_SET(fd, &write_fd);
@@ -399,8 +399,8 @@ static void watch_delete_callback(int fd)
 	
 	wcb = &watch_callback[pos];
 	wcb->fd = -1;
-	watch_fd(fd, WATCH_READ, FALSE);
-	watch_fd(fd, WATCH_WRITE, FALSE);
+	watch_fd(fd, GB_WATCH_READ, FALSE);
+	watch_fd(fd, GB_WATCH_WRITE, FALSE);
 	max_fd = find_max_fd();
 	
 	if (_do_not_really_delete_callback)
@@ -419,17 +419,17 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 
 	if (fd < 0 || fd > FD_SETSIZE)
 	{
-		if (type != WATCH_NONE)
+		if (type != GB_WATCH_NONE)
 			ERROR_warning("trying to watch fd #%d", fd);
 		return;
 	}
 
-	if (type == WATCH_NONE)
+	if (type == GB_WATCH_NONE)
 		watch_delete_callback(fd);
 	else
 	{
 		wcb = watch_create_callback(fd);
-		if (type == WATCH_READ)
+		if (type == GB_WATCH_READ)
 		{
 			wcb->callback_read = callback;
 			wcb->param_read = param;
@@ -448,8 +448,8 @@ void WATCH_watch(int fd, int type, void *callback, intptr_t param)
 			watch_delete_callback(fd);
 		else
 		{
-			watch_fd(fd, WATCH_READ, wcb->callback_read != NULL);
-			watch_fd(fd, WATCH_WRITE, wcb->callback_write != NULL);
+			watch_fd(fd, GB_WATCH_READ, wcb->callback_read != NULL);
+			watch_fd(fd, GB_WATCH_WRITE, wcb->callback_write != NULL);
 		}
 	}
 }
@@ -487,7 +487,7 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 				#ifdef DEBUG_WATCH
 				fprintf(stderr, "call read callback on fd %d\n", wcb.fd);
 				#endif
-				(*(wcb.callback_read))(wcb.fd, WATCH_READ, wcb.param_read);
+				(*(wcb.callback_read))(wcb.fd, GB_WATCH_READ, wcb.param_read);
 			}
 		}
 
@@ -499,7 +499,7 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 				#ifdef DEBUG_WATCH
 				fprintf(stderr, "call write callback on fd %d\n", wcb.fd);
 				#endif
-				(*(wcb.callback_write))(wcb.fd, WATCH_WRITE, wcb.param_write);
+				(*(wcb.callback_write))(wcb.fd, GB_WATCH_WRITE, wcb.param_write);
 			}
 		}
 	}
