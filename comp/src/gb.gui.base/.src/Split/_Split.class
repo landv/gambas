@@ -287,9 +287,9 @@ Private Sub Layout_Write(Value As Integer[])
   Next
   
   $cWeight = New Collection
-  For I = 0 To Min($hPanel.Children.Count - 1, Value.Max)
+  For I = 0 To $hPanel.Children.Count - 1
     hChild = $hPanel.Children[I]
-    If Value[I] > 0 Then
+    If I <= Value.Max And If Value[I] > 0 Then
       $cWeight[Object.Address(hChild)] = Value[I] / iTotal
       hChild.Show
     Else
