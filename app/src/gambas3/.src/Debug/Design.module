@@ -876,6 +876,7 @@ Private Sub Start(sCmd As String)
       $sProfilePath = Project.Dir &/ sFile
     Endif
     aExec.Add($sProfilePath)
+    
   Endif
   
   aExec.Add(File.Dir(SConv(Project.Path)))
