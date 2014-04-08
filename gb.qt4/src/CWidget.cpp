@@ -846,6 +846,18 @@ BEGIN_PROPERTY(Control_Height)
 
 END_PROPERTY
 
+/*CFONT *CWIDGET_get_real_font(CWIDGET *_object)
+{
+	if (THIS->font)
+		return THIS->font;
+
+	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
+	if (parent)
+		return CWIDGET_get_real_font(parent);
+	else
+		return NULL;
+}*/
+
 BEGIN_PROPERTY(Control_Font)
 
 	CFONT *font;

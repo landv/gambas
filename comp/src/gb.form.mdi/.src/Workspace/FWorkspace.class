@@ -799,3 +799,18 @@ Public Sub GetFont() As Font
   
 End
 
+
+Public Sub tabWorkspace_Move(Source As Integer, Target As Integer)
+
+  Dim hWindow As CWindow
+  Dim I As Integer
+
+  hWindow = $aWindow[Source]
+  $aWindow.Remove(Source)
+  $aWindow.Add(hWindow, Target)
+
+  For I = 0 To $aWindow.Max  
+    UpdateTitleFromIndex(I)
+  Next
+
+End

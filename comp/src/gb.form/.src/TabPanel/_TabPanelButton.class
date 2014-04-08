@@ -21,6 +21,14 @@ Private $bInClose As Boolean
 
 Private Const BUTTON_SIZE As Integer = 14
 
+Static Private $bDragging As Boolean
+Private $bDrag As Boolean
+Private $hDragImage As Image
+Private $hDragWindow As Window
+Private $DX As Integer
+Private $SX As Integer
+Private $hTimerDrag As Timer
+
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
@@ -55,6 +63,27 @@ Public Sub DrawingArea_Draw()
   Dim iBg As Integer
   
   hTabPanel = GetParent()
+  
+  ' If $bDrag Then 
+  '   
+  '   Draw.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
+  ' 
+  '   Draw.Foreground = Color.LightForeground
+  '   
+  '   Select Case $iOrientation
+  '   
+  '     Case Align.Top
+  '       Draw.Line(0, Me.H - 1, Me.W - 1, Me.H - 1)
+  '       
+  '     Case Align.Bottom
+  '       Draw.Line(0, 0, Me.W - 1, 0)
+  '       
+  '   End Select
+  '   
+  '   Return
+  ' 
+  ' Endif
+  
   iIndex = GetIndex()
   bHighlight = hTabPanel.Highlight And Not $bSelected
   bClosable = hTabPanel.Closable
@@ -98,6 +127,7 @@ Public Sub DrawingArea_Draw()
   Else
     Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
   Endif
+
   Draw.Foreground = Color.LightForeground
   
   bBorder = hTabPanel.Border
@@ -124,8 +154,8 @@ Public Sub DrawingArea_Draw()
       Endif
       
   End Select
-  
-  If $bShowClose Then
+
+  If $bShowClose And If Not $bDragging Then
     hPict = Picture[If($bInClose, "img/delete-h.png", "img/delete.png")]
     If System.RightToLeft Then
       Draw.Picture(hPict, 2, (Me.H - hPict.H) \ 2)
@@ -248,6 +278,20 @@ Public Sub DrawingArea_MouseDown()
   
 End
 
+Public Sub DrawingArea_MouseDrag()
+  
+  StartDrag
+  
+End
+
+Public Sub DrawingArea_MouseUp()
+  
+  StopDrag
+  
+End
+
+
+
 Public Sub DrawingArea_MouseWheel()
   
   Try Application.PreviousControl.SetFocus
@@ -307,6 +351,8 @@ Public Sub DrawingArea_MouseMove()
   Dim X As Integer
   Dim bShowClose As Boolean
   
+  If $bDrag Then TimerDrag_Timer
+  
   X = Mouse.ScreenX - Me.ScreenX
   
   If X >= 0 And If X < Me.W Then
@@ -332,6 +378,7 @@ End
 
 Public Sub Update()
   
+  If $bDrag Then Return
   DrawingArea_MouseMove
   
 End
@@ -349,5 +396,99 @@ Private Sub RichText_Write(Value As String)
   $bRichText = True
   UpdateLayout
   $hDrawingArea.Refresh
+
+End
+
+
+Private Sub StartDrag()
+
+  Dim hTabPanel As TabPanel = GetParent()
+
+  If $bDrag Then Return
+  If Not hTabPanel.Moveable Then Return
+  If Me.Parent.Children.Count <= 1 Then Return
+  
+  $hDragImage = New Image($hDrawingArea.W, $hDrawingArea.H, Color.Background)
+  Paint.Begin($hDragImage)
+  ' TODO: How to get the actual font of the control ???
+  Paint.Font = hTabPanel.TextFont
+  DrawingArea_Draw
+  Paint.End
+  
+  $bDrag = True
+  $bDragging = True
+  $hDrawingArea.Tracking = True
+  'Me.Parent.SetFocus
+  
+  $DX = Me.ScreenX
+  $SX = Mouse.ScreenX
+  
+  $hDragWindow = New Window
+  $hDragWindow.TopOnly = True
+  $hDragWindow.Border = False
+  $hDragWindow.Utility = True
+  $hDragWindow.SkipTaskbar = True
+  $hDragWindow.Move(Me.ScreenX, Me.ScreenY, $hDragImage.W, $hDragImage.H)
+  $hDragWindow.Picture = $hDragImage.Picture
+  $hDragWindow.Show
+
+  $hTimerDrag = New Timer As "TimerDrag"
+  $hTimerDrag.Delay = 1000
+  $hTimerDrag.Start
+
+  $hDrawingArea.Grab()
+  
+End
+
+Public Sub TimerDrag_Timer()
+
+  Dim hTabPanel As TabPanel = GetParent()
+  Dim hButton As _TabPanelButton
+  Dim DX, W As Integer
+  Dim bAfter As Boolean
+  Dim hTarget As _TabPanelButton
+  
+  $hDragWindow.X = $DX + Mouse.ScreenX - $SX
+  DX = Mouse.ScreenX '$hDragWindow.ScreenX + $hDrawingArea.W \ 2
+  
+  W = Desktop.Scale * 3
+  
+  For Each hButton In Me.Parent.Children
+    
+    If hButton = Me Then
+      If $hDragWindow.X < (hButton.ScreenX + hButton.W) Then Break
+      bAfter = True
+      Continue
+    Endif
+    
+    If bAfter Then
+    
+      'Debug "After";; $hDragWindow.X; " >= "; hButton.ScreenX
+      If $hDragWindow.X >= hButton.ScreenX Then hTarget = hButton
+    
+    Else
+    
+      'Debug "Before";; $hDragWindow.X; " <= "; hButton.ScreenX
+      If $hDragWindow.X <= hButton.ScreenX Then hTarget = hButton
+    
+    Endif
+    
+  Next
+
+  'Debug "----> "; hTabPanel._GetIndex(hTarget)
+
+  If hTarget Then hTabPanel._MoveTab(Me, hTarget, bAfter)
+
+End
+
+Private Sub StopDrag()
+
+  If Not $bDrag Then Return
+  $hDragWindow.Delete
+  $hTimerDrag.Stop
+  $hTimerDrag = Null
+  $hDrawingArea.Tracking = False
+  $bDrag = False
+  $bDragging = False
 
 End

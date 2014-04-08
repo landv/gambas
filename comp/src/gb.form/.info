@@ -2081,7 +2081,7 @@ C
 _Properties
 C
 s
-*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Highlight
+*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Moveable,Highlight
 _Similar
 C
 s
@@ -2106,6 +2106,10 @@ Index
 p
 i
 
+:Move
+:
+
+(Source)i(Target)i
 Count
 p
 i
@@ -2149,6 +2153,10 @@ _TabPanelContainer
 Background
 p
 i
+
+Moveable
+p
+b
 
 _new
 m
@@ -2254,6 +2262,10 @@ TabBarContainer_KeyPress
 m
 
 
+_MoveTab
+m
+
+(hSrc)_TabPanelButton;(hDst)_TabPanelButton;(bAfter)b
 #TableView
 GridView
 C

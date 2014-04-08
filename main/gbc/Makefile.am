@@ -7,13 +7,16 @@ noinst_PROGRAMS = gbcm3
 
 ##libgbcopt_la_CFLAGS= -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS_OPT)
 
-gbc3_LDADD = @MATH_LIB@
+gbc3_LDADD = @C_LIB@ @MATH_LIB@
 gbc3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
-gbi3_LDADD = @DL_LIB@
+gbi3_LDADD = @C_LIB@ @DL_LIB@
 gbi3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
 
+gba3_LDADD = @C_LIB@
 gba3_CFLAGS = -DGAMBAS_PATH="\"$(bindir)\"" $(AM_CFLAGS)
+
+gbcm3_LDADD = @C_LIB@
 
 gbc3_SOURCES = \
  gb_error.h gb_error.c \

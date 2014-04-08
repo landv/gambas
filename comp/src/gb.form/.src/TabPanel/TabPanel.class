@@ -3,13 +3,14 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Highlight"
+Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Moveable,Highlight"
 Public Const _Similar As String = "TabStrip"
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DefaultEvent As String = "Click"
 
 Event Click
 Event Close(Index As Integer)
+Event Move(Source As Integer, Target As Integer)
 
 Property Count As Integer
 Property Index As Integer
@@ -23,6 +24,7 @@ Property Highlight As Boolean
 Property Closable As Boolean
 Property Read Current As _TabPanelContainer
 Property Background As Integer
+Property Moveable As Boolean
 
 Private $hTabBar As DrawingArea
 Private $hTabBarContainer As DrawingArea
@@ -49,6 +51,7 @@ Private Const ARROW_WIDTH As Integer = 12
 
 Private $hRightArrow As DrawingArea
 Private $hLeftArrow As DrawingArea
+Private $bMoveable As Boolean
 
 Public Sub _new()
 
@@ -237,6 +240,7 @@ Private Sub UpdateLayout()
       hCtrl.Orientation = $iOrientation
       hCtrl.UpdateLayout
       hCtrl.Refresh
+      hCtrl.Raise
     Endif
   Next
   
@@ -819,5 +823,46 @@ Private Sub Background_Write(Value As Integer)
 
   Super.Background = Value
   $hTabBar.Refresh
+
+End
+
+Public Sub _MoveTab(hSrc As _TabPanelButton, hDst As _TabPanelButton, bAfter As Boolean)
+  
+  Dim S, T As Integer
+  Dim hSrcPanel As Control
+  
+  If hSrc = hDst Then Return
+
+  Object.Lock(Me)
+  
+  S = _GetIndex(hSrc)
+  $aButton.Remove(S)
+  hSrcPanel = $aCont[S]
+  $aCont.Remove(S)
+  
+  T = _GetIndex(hDst)
+  If bAfter Then Inc T
+  $aButton.Add(hSrc, T)
+  $aCont.Add(hSrcPanel, T)
+  
+  UpdateLayout
+  
+  Object.Unlock(Me)
+  
+  Raise Move(S, T)
+  
+  Index_Write(T)
+  
+End
+
+Private Function Moveable_Read() As Boolean
+
+  Return $bMoveable
+
+End
+
+Private Sub Moveable_Write(Value As Boolean)
+
+  $bMoveable = Value
 
 End

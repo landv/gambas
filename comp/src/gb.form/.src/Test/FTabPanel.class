@@ -18,11 +18,20 @@ End
 Public Sub Form_Open()
 
   Dim I As Integer
+  Dim hLabel As Label
   
   TabPanel2.Count = 12
   For I = 0 To 11
-    TabPanel2[I].Text = "Tab " & (I + 1)
+    TabPanel2.Index = I
+    TabPanel2.Text = "Tab " & (I + 1) & " " & String$(CInt(Rnd(1, 10)), "-")
+    hLabel = New Label(TabPanel2)
+    hLabel.Move(8, 8, 8, 8)
+    hLabel.AutoResize = True
+    hLabel.Text = CStr(I + 1)
+    hLabel.Font.Grade = 6
   Next
+  
+  TabPanel2.Index = 2
 
 End
 
