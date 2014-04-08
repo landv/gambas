@@ -1654,7 +1654,7 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
     sType = ReadSymbolType(aSym, iInd, sSymbol)
     If sType Then
       With $hVirtualSymbol
-        .Name = aSym[0]
+        .Name = aSym[iInd]
         .Class = Me.Name
         .Kind = "l"
         .LineNumber = iLine + 1
