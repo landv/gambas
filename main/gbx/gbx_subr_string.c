@@ -371,7 +371,9 @@ void SUBR_upper(ushort code)
 	SUBR_ENTER_PARAM(1);
 	
 	if (SUBR_check_string(PARAM))
-		STRING_void_value(&SP[-1]);
+	{
+		VOID_STRING(&SP[-1]);
+	}
 	else
 	{
 		len = PARAM->_string.len;
