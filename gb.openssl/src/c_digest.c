@@ -73,7 +73,7 @@ const static EVP_MD *_method;
  **/
 BEGIN_METHOD(Digest_get, GB_STRING method)
 
-	_method = EVP_get_digestbyname(STRING(method));
+	_method = EVP_get_digestbyname(GB.ToZeroString(ARG(method)));
 	if (!_method) {
 		GB.Error("Unknown digest method");
 		return;
