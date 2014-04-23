@@ -31,6 +31,7 @@ Property Read Data As _GridView_Data
 'Property Read Column As _DataView_Columns
 
 Private Const NEW_RECORD As String = "*"
+Private Const MAX_LENGTH As Integer = 65536
 
 'PRIVATE $hConn AS Connection
 Private $hCtrl As TableView
@@ -421,9 +422,9 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
       
       Case db.String
         If Not $sCharset Then
-          .Text = Left(vVal, 1024)
+          .Text = Left(vVal, MAX_LENGTH)
         Else
-          Try .Text = Conv$(Left(vVal, 1024), $sCharset, Desktop.Charset)
+          Try .Text = Conv$(Left(vVal, MAX_LENGTH), $sCharset, Desktop.Charset)
         Endif
         If $aType[Column].Length = 0 Then .Alignment = Align.TopNormal
         
@@ -431,7 +432,7 @@ Public Sub TableView_Data(Row As Integer, Column As Integer)
         .Text = Str(vVal)
         
       Case Else
-        Try .Text = Left(Str(vVal), 1024)
+        Try .Text = Left(Str(vVal), MAX_LENGTH)
         
     End Select
     

@@ -635,7 +635,7 @@ for gb_main_dir in $gb_main_dir_list; do
   if test -d $gb_main_dir; then
     cd $gb_main_dir
     for gb_search_dir in $gb_sub_dir_list; do
-      for gb_dir in $gb_search_dir/ $gb_search_dir/*/ $gb_search_dir/*/*/; do
+      for gb_dir in $gb_search_dir/ $gb_search_dir/*/ $gb_search_dir/*/*/ $gb_search_dir/*/*/*/; do
 
         gb_new_file_list=""
         gb_find_dir=""

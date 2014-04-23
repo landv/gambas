@@ -71,10 +71,10 @@ Public Sub btnOK_Click()
     
     Desktop.SendMail(["gambas@users.sourceforge.net"], aSendCC,, "[CRASH REPORT] " & If(Project.Title, Project.Title, Project.Name), "Hello,\n\nDamned, my program crashed Gambas!\n\n", sTemp)
     
+    Dec Application.Busy
+    
   Endif
 
-  Dec Application.Busy
-    
   $bWorking = False
   Me.Close
   
