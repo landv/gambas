@@ -76,7 +76,7 @@ const static EVP_CIPHER *_method;
  **/
 BEGIN_METHOD(Cipher_get, GB_STRING method)
 
-	_method = EVP_get_cipherbyname(STRING(method));
+	_method = EVP_get_cipherbyname(GB.ToZeroString(ARG(method)));
 	if (!_method) {
 		GB.Error("Unknown cipher method");
 		return;
@@ -162,27 +162,26 @@ static char *do_cipher(const unsigned char *data, unsigned int dlen,
 	while (dlen) {
 		ilen = MIN(dlen, 1024);
 		if (!EVP_CipherUpdate(&ctx, block, &blen, data, ilen))
-			return NULL;
-		if (!out)
-			out = GB.TempString((char *) block, blen);
-		else
-			out = GB.AddString(out, (char *) block, blen);
+			goto __ERROR;
+		out = GB.AddString(out, (char *) block, blen);
 		*length += blen;
 		data += ilen;
 		dlen -= ilen;
 	}
 	if (!EVP_CipherFinal_ex(&ctx, block, &blen))
-		return NULL;
+		goto __ERROR;
 	if (!EVP_CIPHER_CTX_cleanup(&ctx))
-		return NULL;
+		goto __ERROR;
 	if (blen) {
-		if (!out)
-			out = GB.TempString((char *) block, blen);
-		else
-			out = GB.AddString(out, (char *) block, blen);
+		out = GB.AddString(out, (char *) block, blen);
 		*length += blen;
 	}
 	return out;
+
+__ERROR:
+
+	GB.FreeString(&out);
+	return NULL;
 }
 
 typedef struct {
@@ -230,7 +229,7 @@ BEGIN_METHOD(CipherMethod_Encrypt, GB_STRING plain; GB_STRING key;
 		return;
 	}
 	res = GB.New(GB.FindClass("CipherText"), NULL, NULL);
-	res->cipher = GB.NewString(cipher, length);
+	res->cipher = cipher;
 	res->key = GB.NewString((char *) key, sizeof(key));
 	res->iv = GB.NewString((char *) iv, sizeof(iv));
 	GB.ReturnObject(res);
