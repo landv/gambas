@@ -170,6 +170,7 @@ GB_DESC CInputDesc[] = {
 	GB_STATIC_PROPERTY_READ("IsConsole", "b", Input_IsConsole),
 	GB_STATIC_PROPERTY("RepeatDelay", "i", Input_RepeatDelay),
 #endif
+	GB_END_DECLARE
 };
 
 #if 0
