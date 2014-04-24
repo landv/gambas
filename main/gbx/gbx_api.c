@@ -1122,7 +1122,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 			tsign = TYPE_transform_signature(&tsign, sign, nparam);
 		}
 
-		error = TYPE_compare_signature(desc->method.signature, desc->method.npmax, tsign, nparam);
+		error = TYPE_compare_signature(desc->method.signature, desc->method.npmax, tsign, nparam, FALSE);
 
 		if (nparam)
 			FREE(&tsign);

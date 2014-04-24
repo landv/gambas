@@ -58,7 +58,7 @@ static void check_event_method(CLASS *class, const char *name, CLASS_DESC_METHOD
 		n = desc->npmax;
 	}
 
-	if (TYPE_compare_signature(desc->signature, n, (TYPE *)event->param, n))
+	if (TYPE_compare_signature(desc->signature, n, (TYPE *)event->param, n, FALSE))
 		THROW(E_EVENT, CLASS_get_name(class), name, "Type mismatch");
 
 	if (desc->type != T_VOID)

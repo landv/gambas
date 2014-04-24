@@ -302,28 +302,48 @@ TYPE *TYPE_transform_signature(TYPE **signature, const char *sign, int npmax)
 	return tsign;
 }
 
+bool TYPE_are_compatible(TYPE type, TYPE ptype)
+{
+	if (type == ptype)
+		return TRUE;
 
-bool TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2)
+	if (!TYPE_are_objects(type, ptype))
+		return FALSE;
+
+	if (ptype == T_OBJECT)
+		return TRUE;
+
+	if (type == T_OBJECT)
+		return FALSE;
+
+	if (CLASS_inherits((CLASS *)type, (CLASS *)ptype))
+		return TRUE;
+
+	return FALSE;
+}
+
+bool TYPE_compare_signature(TYPE *sign1, int np1, TYPE *sign2, int np2, bool check_compat)
 {
 	int i;
 
-	/*fprintf(stderr, "TYPE_compare_signature\n");
-	
-	for (i = 0; i < np1; i++)
-		fprintf(stderr, " %p", (void *)sign1[i]);
-	fputc('\n', stderr);
-	
-	for (i = 0; i < np2; i++)
-		fprintf(stderr, " %p", (void *)sign2[i]);
-	fputc('\n', stderr);*/
-	
 	if (np1 != np2)
 		return TRUE;
 
-	for (i = 0; i < np1; i++)
+	if (check_compat)
 	{
-		if (sign1[i] != sign2[i])
-			return TRUE;
+		for (i = 0; i < np1; i++)
+		{
+			if (!TYPE_are_compatible(sign1[i], sign2[i]))
+				return TRUE;
+		}
+	}
+	else
+	{
+		for (i = 0; i < np1; i++)
+		{
+			if (sign1[i] != sign2[i])
+				return TRUE;
+		}
 	}
 
 	return FALSE;

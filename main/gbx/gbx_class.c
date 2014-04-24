@@ -991,13 +991,8 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 	TYPE *sd, *sp;
 	int nsd, nsp;
 	
-	if (desc->property.type != pdesc->property.type)
-	{
-		//fprintf(stderr, "type! %ld / %ld\n", desc->property.type, pdesc->property.type);
+	if (!TYPE_are_compatible(desc->property.type, pdesc->property.type))
 		return TRUE;
-	}
-	//else
-	//	return FALSE;
 	
 	switch (type)
 	{
@@ -1031,10 +1026,7 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 			return FALSE;
 	}
 
-	if (TYPE_compare_signature(sd, nsd, sp, nsp))
-		return TRUE;
-	else
-		return FALSE;
+	return TYPE_compare_signature(sd, nsd, sp, nsp, TRUE);
 }
 
 void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, int *first)
