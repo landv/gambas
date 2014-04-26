@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,84)
+  MoveScaled(0,0,88,84)
   Arrangement = Arrange.Vertical
   { mnuPopup Menu
     Text = ("Menu1")
@@ -20,7 +20,7 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(1,9,58,4)
+    MoveScaled(1,9,84,4)
     { Button1 Button
       MoveScaled(0,0,16,4)
       Text = ("Delete")
@@ -33,6 +33,14 @@
       MoveScaled(34,0,16,4)
       Text = ("Drag")
     }
+    { Button4 Button
+      MoveScaled(51,0,16,4)
+      Text = ("Reparent")
+    }
+    { Button5 Button
+      MoveScaled(68,0,16,4)
+      Text = ("Select")
+    }
   }
   { Separator1 Separator
     MoveScaled(28,27,12,0)
@@ -41,7 +49,6 @@
     MoveScaled(1,28,32,25)
     Drop = True
     Expand = True
-    Mode = Select.Multiple
     Sorted = True
     Editable = True
     Resizable = True

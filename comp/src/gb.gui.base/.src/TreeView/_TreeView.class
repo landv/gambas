@@ -174,7 +174,7 @@ Public Sub _GetParentItem(hItem As _TreeView_Item) As _TreeView_Item
   
 End
 
-Private Sub RemoveRec(Key As String)
+Private Sub RemoveRec(Key As String, Optional bDoNotDestroy As Boolean)
   
   Dim hItem As _TreeView_Item
   Dim hParent As _TreeView_Item
@@ -182,7 +182,7 @@ Private Sub RemoveRec(Key As String)
 
   hItem = $cItem[Key]
   
-  If hItem.Count Then
+  If Not bDoNotDestroy And If hItem.Count Then
     For Each sKey In hItem._GetChildren().Copy()
       RemoveRec(sKey)
     Next
@@ -198,7 +198,7 @@ Private Sub RemoveRec(Key As String)
     If Not hParent Then hParent = $hRoot
   Wend
   
-  $cItem.Remove(Key)
+  If Not bDoNotDestroy Then $cItem.Remove(Key)
   
 End
 
@@ -233,6 +233,64 @@ Public Sub Remove(Key As String)
   
 End
 
+Public Sub _ReparentItem(hItem As _TreeView_Item, Parent As String)
+  
+  Dim hParent, hCheck As _TreeView_Item
+  Dim sKey As String
+  Dim sCurrent As String
+  Dim bExpanded As Boolean
+  
+  If Not Parent Then
+    hParent = $hRoot
+  Else
+    hParent = $cItem[Parent]
+    If Not hParent Then Error.Raise("Unknown parent item: " & Parent)
+  Endif
+  
+  If hItem.ParentKey = Parent Then Return
+  
+  sCurrent = Key_Read()
+  
+  hCheck = hParent
+  While hCheck
+    If hCheck = hItem Then Error.Raise("New parent cannot be a child item")
+    sKey = hCheck.ParentKey
+    If Not sKey Then Break
+    hCheck = $cItem[sKey]
+  Wend
+  
+  $bNoUpdateHeight = True
+
+  bExpanded = hItem.Expanded
+  hItem.Expanded = False
+  sKey = hItem.Key
+  
+  RemoveRec(sKey, True)
+  _AddCount(0)
+  _GetParentItem(hItem)._ComputeGrandChildren()
+  
+  hParent._AddChild(sKey)
+  
+  hItem._Index = hParent.Count - 1
+  hItem._SetParent(Parent)
+  hItem._ComputeRows(1)
+  hParent._ComputeGrandChildren()
+  hItem.Expanded = bExpanded
+
+  $bNoUpdateHeight = False
+  
+  _UpdateItemHeight(hItem, True)
+  
+  If $bSorted Then _SortParent(Parent)
+  
+  ResizeColumns
+  _RefreshView
+  
+  _UpdateCurrent(sCurrent)  
+  
+End
+
+
 
 Private Sub GetNextItem(hItem As _Treeview_Item) As _TreeView_Item
   
@@ -240,7 +298,7 @@ Private Sub GetNextItem(hItem As _Treeview_Item) As _TreeView_Item
   Dim aChildren As String[]
   Dim iPos As Integer
   
-  If hItem.Count And If hItem.Expanded And If hItem.Count Then
+  If hItem.Count And If hItem.Expanded Then
     aChildren = hItem._GetChildren()
     Return $cItem[aChildren[0]]
   Endif
@@ -475,7 +533,7 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
     
     Endif
     
-    'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "]", X, Y, W, H, $hView.Columns[Column].Alignment)
+    'Draw.Text(hItem.Text & " (" & hItem._Index & ") [" & hItem._Rows & "] {" & hItem._GrandChildren & "}", X, Y, W, H, $hView.Columns[Column].Alignment)
     sText = hItem.RichText
     If sText Then
       Draw.RichText(sText, X, Y, W, H, Align.Normal)

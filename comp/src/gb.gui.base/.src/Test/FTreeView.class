@@ -1,9 +1,11 @@
 ' Gambas class file
 
+Private $sKey As String
+
 
 Public Sub Form_Open()
 
-  Dim sDir As String = "/home/benoit/Documents"
+  Dim sDir As String = "/home/benoit/Photos"
   Dim sFile As String
   Dim sPath As String
   Dim hDirPict As Picture
@@ -110,5 +112,20 @@ End
 Public Sub tvwTest_BeforeArrange()
 
   Debug
+
+End
+
+Public Sub Button4_Click()
+
+  $sKey = tvwTest.Key
+  
+  tvwTest.Current.Reparent("/home/benoit/Photos/Aumale")
+  Debug $sKey; " -> "; tvwTest.Key
+
+End
+
+Public Sub Button5_Click()
+
+  tvwTest.Key = $sKey
 
 End

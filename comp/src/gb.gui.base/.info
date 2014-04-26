@@ -2517,6 +2517,10 @@ _UpdateCurrent
 m
 
 (sKey)s
+_ReparentItem
+m
+
+(hItem)_TreeView_Item;(Parent)s
 _GetItemX
 m
 i
@@ -2760,10 +2764,26 @@ _IsRoot
 m
 b
 
+_ComputeDepth
+m
+
+
+_ComputeGrandChildren
+m
+
+
+_SetParent
+m
+
+(sParent)s
 _new
 m
 
 (sKey)s(sParent)s
+_ComputeRows
+m
+
+(iAdd)i
 _AddChild
 m
 
@@ -2820,3 +2840,7 @@ _get
 m
 s
 (Column)i
+Reparent
+m
+
+(NewParent)s

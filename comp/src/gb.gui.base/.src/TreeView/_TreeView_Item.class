@@ -54,17 +54,66 @@ Public Sub _IsRoot() As Boolean
   
 End
 
+Public Sub _ComputeDepth()
+  
+  Dim hTree As _TreeView
+  Dim iDepth As Integer
+  Dim sChild As String
+
+  If $sParent Then 
+    iDepth = GetTree()[$sParent]._Depth + 1
+  Else
+    iDepth = 0
+  Endif
+  
+  If iDepth = _Depth Then Return
+  
+  _Depth = iDepth
+  
+  If Not $aChildren Then Return
+  
+  hTree = GetTree()
+  
+  For Each sChild In $aChildren
+    hTree[sChild]._ComputeDepth()
+  Next
+  
+End
+
+Public Sub _ComputeGrandChildren()
+  
+  Dim sChild As String
+  Dim hTree As _TreeView
+  
+  _GrandChildren = 0
+  If Not $aChildren Then Return
+  
+  hTree = GetTree()
+  
+  For Each sChild In $aChildren
+    If hTree[sChild].Count Then Inc _GrandChildren
+  Next
+  
+End
+
+
+Public Sub _SetParent(sParent As String)
+  
+  $sParent = sParent
+  _ComputeDepth()
+  
+End
 
 Public Sub _new(sKey As String, sParent As String)
   
   $sKey = sKey
   $sParent = sParent
   
-  If sParent Then _Depth = GetTree()[sParent]._Depth + 1
+  _ComputeDepth()
   
   If sKey Then 
     _Rows = 1
-    ComputeRows(1)
+    _ComputeRows(1)
   Else
     $bExpanded = True
   Endif
@@ -180,7 +229,7 @@ Private Function Expanded_Read() As Boolean
 
 End
 
-Private Sub ComputeRows(iAdd As Integer)
+Public Sub _ComputeRows(iAdd As Integer)
 
   Dim hTree As _TreeView = GetTree()
   Dim sKey As String
@@ -222,7 +271,7 @@ Private Sub Expanded_Write(Value As Boolean)
 
   If _Rows = iOldRows Then Return
   
-  ComputeRows(_Rows - iOldRows)
+  _ComputeRows(_Rows - iOldRows)
   
   hTree._UpdateItemHeight(Me, True)
 
@@ -408,5 +457,15 @@ Public Sub _get(Column As Integer) As String
   If Column < 0 Then Error.Raise("Out of bounds")
   
   Try Return $aText[Column - 1]
+  
+End
+
+
+Public Sub Reparent(NewParent As String)
+  
+  Dim hTree As _TreeView = GetTree()
+  
+  If hTree Is ListView Then Error.Raise("Cannot reparent ListView items")
+  hTree._ReparentItem(Me, NewParent)
   
 End
