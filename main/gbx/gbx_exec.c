@@ -2031,3 +2031,13 @@ void EXEC_push_vargs(void)
 		PUSH();
 	}
 }
+
+void EXEC_drop_vargs(void)
+{
+	int nargs = (FP && FP->vararg) ? BP - PP : 0;
+
+	if (nargs == 0)
+		return;
+
+	RELEASE_MANY(SP, nargs);
+}

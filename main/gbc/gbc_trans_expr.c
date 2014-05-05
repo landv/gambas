@@ -39,6 +39,8 @@
 
 //static bool _accept_statement = FALSE;
 
+static bool _must_drop_vargs = FALSE;
+
 static short get_nparam(PATTERN *tree, int count, int *pindex, uint64_t *byref)
 {
 	PATTERN pattern;
@@ -325,6 +327,12 @@ static void trans_call(short nparam, uint64_t byref)
 	}
 		
 	CODE_call_byref(nparam, byref);
+
+	if (_must_drop_vargs)
+	{
+		CODE_drop_vargs();
+		_must_drop_vargs = FALSE;
+	}
 }
 
 static void trans_expr_from_tree(TRANS_TREE *tree, int count)
@@ -426,6 +434,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			}
 			else if (PATTERN_is(pattern, RS_3PTS))
 			{
+				_must_drop_vargs = TRUE;
 				CODE_push_vargs();
 			}
 			else

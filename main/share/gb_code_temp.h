@@ -1358,13 +1358,22 @@ void CODE_push_vargs(void)
 {
 	LAST_CODE;
 
-	use_stack(0);
-
 	#ifdef DEBUG
 	printf("PUSH VARGS\n");
 	#endif
 
 	write_ZZxx(C_PUSH_MISC, CPM_VARGS);
+}
+
+void CODE_drop_vargs(void)
+{
+	LAST_CODE;
+
+	#ifdef DEBUG
+	printf("DROP VARGS\n");
+	#endif
+
+	write_ZZxx(C_PUSH_MISC, CPM_DROP_VARGS);
 }
 
 #ifdef CODE_DUMP
