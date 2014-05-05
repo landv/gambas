@@ -1354,6 +1354,19 @@ void CODE_push_complex(void)
 	write_ZZxx(C_PUSH_MISC, CPM_COMPLEX);
 }
 
+void CODE_push_vargs(void)
+{
+	LAST_CODE;
+
+	use_stack(0);
+
+	#ifdef DEBUG
+	printf("PUSH VARGS\n");
+	#endif
+
+	write_ZZxx(C_PUSH_MISC, CPM_VARGS);
+}
+
 #ifdef CODE_DUMP
 
 void CODE_dump(PCODE *code, int count)

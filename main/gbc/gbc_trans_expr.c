@@ -424,6 +424,10 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			{
 				CODE_push_inf(TRUE);
 			}
+			else if (PATTERN_is(pattern, RS_3PTS))
+			{
+				CODE_push_vargs();
+			}
 			else
 			{
 				op = PATTERN_index(pattern);

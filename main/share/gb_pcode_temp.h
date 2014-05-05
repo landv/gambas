@@ -314,6 +314,7 @@ short PCODE_dump(FILE *out, ushort addr, PCODE *code)
 						case CPM_PINF: fprintf(out, "PUSH +INF"); break;
 						case CPM_MINF: fprintf(out, "PUSH -INF"); break;
 						case CPM_COMPLEX: fprintf(out, "PUSH COMPLEX"); break;
+						case CPM_VARGS: fprintf(out, "PUSH VARGS"); break;
 					}
 					break;
 

@@ -2014,3 +2014,20 @@ void EXEC_push_complex(void)
 	OBJECT_REF(ob);
 	SP++;
 }
+
+void EXEC_push_vargs(void)
+{
+	int i;
+	int nargs = (FP && FP->vararg) ? BP - PP : 0;
+
+	if (nargs == 0)
+		return;
+
+	STACK_check(nargs);
+
+	for (i = 0; i < nargs; i++)
+	{
+		*SP = PP[i];
+		PUSH();
+	}
+}

@@ -511,6 +511,12 @@ static void analyze_call()
 			{
 				add_reserved_pattern(RS_OPTIONAL);
 			}
+			else if (optional && PATTERN_is(*current, RS_3PTS) && PATTERN_is(current[1], RS_RBRA))
+			{
+				current++;
+				add_reserved_pattern(RS_3PTS);
+				nparam_post--;
+			}
 			else
 			{
 				if (PATTERN_is(*current, RS_AT) || PATTERN_is(*current, RS_BYREF))
@@ -524,7 +530,7 @@ static void analyze_call()
 			}
 	
 			nparam_post++;
-	
+
 			if (nparam_post >= MAX_PARAM_FUNC)
 				THROW("Too many arguments");
 		}
