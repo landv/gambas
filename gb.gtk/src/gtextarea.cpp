@@ -390,7 +390,10 @@ char *gTextArea::text()
 void gTextArea::setText(const char *txt, int len)
 {
 	if (!txt) 
+	{
+		txt = "";
 		len = 0;
+	}
 	
 	begin();
 	gtk_text_buffer_set_text(_buffer, (const gchar *)txt, len);
