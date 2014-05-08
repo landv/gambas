@@ -878,7 +878,7 @@ End
 ' 
 ' End
 
-Private Sub UpdateClipboard()
+Private Sub RefreshClipboard()
 
   'Dim aFormat As String[]
   'Dim iFormat As Integer
@@ -901,8 +901,9 @@ End
 
 Public Sub gvwClipboard_Select()
 
-  If gvwClipboard.Row = 0 Then UpdateClipboard
-
+  If gvwClipboard.Row = 0 Then RefreshClipboard
+  UpdateClipboard
+  
 End
 
 Public Sub gvwClipboard_Click()
@@ -991,6 +992,19 @@ Private Sub UpdateBalance()
     Try hImageEditor = hFile
     If Error Then Continue
     Try hImageEditor.UpdateBalance
+  Next
+
+End
+
+Private Sub UpdateClipboard()
+
+  Dim hFile As Object
+  Dim hImageEditor As FImageEditor
+  
+  For Each hFile In Project.Files
+    Try hImageEditor = hFile
+    If Error Then Continue
+    Try hImageEditor.UpdateClipboard
   Next
 
 End
@@ -1347,5 +1361,11 @@ End
 Public Sub panEffect_Arrange()
 
   panEffect.Parent.H = panEffect.H + Desktop.Scale * 2
+
+End
+
+Public Sub slbOpacity_Change()
+
+  UpdateBalance
 
 End

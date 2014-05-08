@@ -10,6 +10,7 @@ Public Shapes As New CImageShape[]
 Public _Invert As Boolean
 Public _Magnets As New PointF[]
 Public _Matrix As New PaintMatrix
+Public _BrushMatrix As New PaintMatrix
 Public Current As Integer = -1
 
 Static Public FindIndex As Variant
@@ -281,6 +282,7 @@ Public Sub Copy() As CImageSelection
   Next
 
   hSelect._Matrix = _Matrix.Copy()
+  hSelect._BrushMatrix = _BrushMatrix.Copy()
   
   hSelect.Current = Current
   
@@ -401,7 +403,7 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Paint.Font = Font[sFont]
   hExtents = Paint.TextExtents(sText)
   
-  Debug hExtents.X;; hExtents.Y;; hExtents.Width;; hExtents.Height
+  'Debug hExtents.X;; hExtents.Y;; hExtents.Width;; hExtents.Height
   
   If Align.IsLeft(iAlign) Then
     'X = X
@@ -634,6 +636,7 @@ Public Sub Apply(hMatrix As PaintMatrix)
     _Magnets[I] = hMatrix.Map(_Magnets[I])
   Next
   
+  _BrushMatrix = _BrushMatrix.Multiply(hMatrix)
   _Matrix = hMatrix.Multiply(_Matrix)
   
 End

@@ -205,7 +205,7 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   
   Dim hCtrl As Control = hCCtrl.Control
   Dim hPict As Picture
-  Dim hImage As Image
+  Dim hImage, hTemp As Image
   Dim hIcon As DrawingArea
   Dim hComp As Control
   Dim X, Y As Integer
@@ -222,7 +222,7 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   
   'Debug hCCtrl.Name;; sImage
   
-  If hCCtrl.GetProperty("Invert") Then sImage &= "-invert"
+  If hCCtrl.GetProperty("Invert") And If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
   
   hIcon = hCCtrl["#icon"]
   
@@ -256,10 +256,18 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   
     hPict = Picture["$arr-" & sImage]
     If Not hPict Then
+      
+      Try hTemp = Image.Load("img/family" &/ sImage & ".png")
+      If Error Then
+        Error "gambas3: warning: cannot load arrangement icon: " & sImage
+        hTemp = New Image(16, 16, Color.Transparent)
+      Endif
+
       hImage = New Image(ICON_SIZE, ICON_SIZE, Color.RGB(0, 0, 0, 96))
-      hImage.PaintImage(Image.Load("img/family" &/ sImage & ".png"), 0, 0)
+      hImage.PaintImage(hTemp, 0, 0)
       hPict = hImage.Picture
       Picture["$arr-" & sImage] = hPict
+      
     Endif
     
     hIcon = New DrawingArea(hCont) As "Icon"

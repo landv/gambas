@@ -405,6 +405,7 @@ Private Sub SetTool(sAction As String)
   Next
   
   If $sTool = "paste" Then
+    If sAction = "paste" Then DoPaste
     ClearPaste
   Endif
   
@@ -434,9 +435,11 @@ Private Sub SetTool(sAction As String)
         $hPaste = hImage
         
         $hPasteCurrent = New CImageSelection
-        $hPasteCurrent.Rectangle(($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2, $hPaste.W, $hPaste.H)
+        $hPasteCurrent.Rectangle(0, 0, $hPaste.W, $hPaste.H)
+        $hPasteCurrent.Translate(($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2)
+        
         $hPasteSelect = $hPasteCurrent.Copy()
-
+        
         $hChangeRect = $hPasteCurrent.GetExtents()
 
         imvImage.Refresh
@@ -628,6 +631,8 @@ Private Sub AddStroke(hPoint As PointF)
   Else
     $hStrokeExtents = $hStrokeExtents.Union(Rect($hLastPoint.X - iSize \ 2 - 1, $hLastPoint.Y - iSize \ 2 - 1, iSize * 2, iSize * 2))
   Endif
+  
+  $hStrokeExtents = $hStrokeExtents.Intersection(Rect(0, 0, $hImage.W, $hImage.H))
 
   If hPoint = $hLastPoint Then Return
   
@@ -734,11 +739,7 @@ Public Sub imvImage_MouseDown()
       If $hPaste Then
         $hLastPoint = GetImagePos()
         If $hMagnet Then $hLastPoint = $hMagnet
-        If $iChangeAction = CHANGE_NOTHING Then
-          DoPaste
-        Else
-          $hLastPoint = GetImagePos()
-        Endif
+        $hLastPoint = GetImagePos()
       Endif
       
     Case "change"
@@ -1116,7 +1117,7 @@ Public Sub imvImage_MouseMove()
   
   If $hChangeRect And If Not $bPress Then
     
-    iMouse = If($hPaste, Mouse.Pointing, Mouse.Arrow)
+    iMouse = Mouse.Arrow
     $iChangeAction = CHANGE_NOTHING
     $vChangeIndex = Null
     
@@ -1192,7 +1193,7 @@ Private Sub UpdateTool()
 End
 
 Public Sub Form_KeyPress()
-  
+
   $bShift = Key.Shift
   $bCtrl = Key.Control
   $bAlt = Key.Alt
@@ -1210,6 +1211,10 @@ Public Sub Form_KeyPress()
       Endif
       RefreshSelection
     Endif
+  Endif
+  
+  If $hPaste Then
+    If Key.Code = Key.Escape Then ClearSelection
   Endif
   
   imvImage_MouseMove
@@ -1579,14 +1584,16 @@ Public Sub imvImage_Draw(hZoom As Image)
         
         If $sTool = "line" Then
           Paint.LineWidth = 1
+          FImageProperty.PaintForStroke
           'Paint.AntiAlias = False
           Paint.LineJoin = Paint.LineJoinRound
         Else
           FImageProperty.PaintForStroke
+          If $sTool = "erase" Then Paint.Background = Color.SetAlpha(Color.Gray, 128)
           Paint.LineWidth *= imvImage.Zoom
         Endif
         
-        Paint.Background = Color.SetAlpha(Color.White, 128)
+        'Paint.Background = Color.SetAlpha(Color.White, 128)
         Paint.Dash = Null
         If Not Paint.Antialias Then Paint.Translate(imvImage.Zoom / 2, imvImage.Zoom / 2)
         Paint.MoveTo(hStart.X, hStart.Y)
@@ -1594,16 +1601,16 @@ Public Sub imvImage_Draw(hZoom As Image)
         Paint.Stroke
         Paint.Reset
         
-        Paint.Background = Color.SetAlpha(Color.Black, 128)
-        Paint.Dash = [2.0, 2.0]
-        Paint.DashOffset = - $fDashOffset
-        If Not Paint.Antialias Then Paint.Translate(imvImage.Zoom / 2, imvImage.Zoom / 2)
-        Paint.MoveTo(hStart.X, hStart.Y)
-        Paint.LineTo(hEnd.X, hEnd.Y)
-        Paint.Stroke
-        Paint.Reset
+        ' Paint.Background = Color.SetAlpha(Color.Black, 128)
+        ' Paint.Dash = [2.0, 2.0]
+        ' Paint.DashOffset = - $fDashOffset
+        ' If Not Paint.Antialias Then Paint.Translate(imvImage.Zoom / 2, imvImage.Zoom / 2)
+        ' Paint.MoveTo(hStart.X, hStart.Y)
+        ' Paint.LineTo(hEnd.X, hEnd.Y)
+        ' Paint.Stroke
+        ' Paint.Reset
         
-        bAnts = True
+        'bAnts = True
       
     End Select
     
@@ -1624,19 +1631,18 @@ Public Sub imvImage_Draw(hZoom As Image)
     Endif
     
     With $hPasteSelect.GetExtents()
-
-      hImage = New Image($hImage.W, $hImage.H, Color.Transparent)
+      hImage = New Image(.Width, .Height, Color.Transparent)
       
       Paint.Begin(hImage)
-      Paint.Matrix = $hPasteSelect._Matrix
-      Paint.Rectangle(($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2, $hPaste.W, $hPaste.H)
-      Paint.Brush = Paint.Image($hPaste, ($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2)
-      Paint.Fill
+      Paint.Brush = Paint.Image($hPaste)
+      $hPasteSelect.Translate(- .X, - .Y)
+      Paint.Brush.Matrix = $hPasteSelect._BrushMatrix.Copy()
+      $hPasteSelect.Paint(hImage, CImageSelection.ACTION_FILL)
+      $hPasteSelect.Translate(.X, .Y)
       Paint.End
-      
-      'imvImage._Paint(hImage, hOffset.X + .X * imvImage.Zoom, hOffset.Y + .Y * imvImage.Zoom)
-      imvImage._Paint(hImage, hOffset.X, hOffset.Y)
-      
+    
+      imvImage._Paint(hImage, hOffset.X + .X * imvImage.Zoom, hOffset.Y + .Y * imvImage.Zoom)
+    
     End With
     
     Paint.Restore
@@ -2216,27 +2222,12 @@ Private Sub DoPaste()
   hImage = $hImage.Copy()
   Paint.Begin(hImage)
 
-  ' If $hSelect Then 
-  '   $hSelect.Paint($hImage, CImageSelection.ACTION_CLIP)
-  '   Paint.Brush = Paint.Image($hPaste, $hChangeRect.X, $hChangeRect.Y)
-  '   Paint.Rectangle($hChangeRect.X, $hChangeRect.Y, $hChangeRect.W, $hChangeRect.H)
-  '   Paint.Fill
-  '   Paint.ResetClip
-  ' Else
-  '   Paint.DrawImage($hPaste, $hChangeRect.X, $hChangeRect.Y)
-  ' Endif
+  If $hSelect Then $hSelect.Paint($hImage, CImageSelection.ACTION_CLIP)
   
-    If $hSelect Then $hSelect.Paint($hImage, CImageSelection.ACTION_CLIP)
-    
-    With $hPasteSelect.GetExtents()
-
-      Paint.Matrix = $hPasteSelect._Matrix
-      Paint.Rectangle(($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2, $hPaste.W, $hPaste.H)
-      Paint.Brush = Paint.Image($hPaste, ($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2)
-      Paint.Fill
-      
-    End With
-
+  Paint.Brush = Paint.Image($hPaste) ', ($hImage.W - $hPaste.W) \ 2, ($hImage.H - $hPaste.H) \ 2)
+  Paint.Brush.Matrix = $hPasteSelect._BrushMatrix.Copy()
+  $hPasteSelect.Paint(hImage, CImageSelection.ACTION_FILL)
+  
   Paint.End
   
   SetImage(hImage)
@@ -2342,6 +2333,9 @@ Public Sub mnuHideSelection_Click()
   
   If $hSelect Then
     ClearSelection
+  Else If $hPaste Then
+    ClearPaste
+    SetTool("paste")
   Else
     FMain.HidePanels
   Endif
@@ -2427,9 +2421,20 @@ End
 
 Public Sub UpdateBalance()
   
+  If $hPaste Then $hPaste = FImageProperty.GetClipboard()
   imvImage.Refresh
   
 End
+
+Public Sub UpdateClipboard()
+  
+  If $sTool = "paste" Then 
+    ClearPaste
+    SetTool("paste")
+  Endif
+  
+End
+
 
 Public Sub btnGrid_Click()
 
@@ -2696,6 +2701,7 @@ Private Sub ClearPaste()
     $hPaste = Null
     $hPasteSelect = Null
     $hPasteCurrent = Null
+    $hChangeRect = Null
     imvImage.Refresh
     $iChangeAction = CHANGE_NOTHING
   Endif
