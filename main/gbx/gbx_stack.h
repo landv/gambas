@@ -99,8 +99,6 @@ STACK_BACKTRACE *STACK_get_backtrace(void);
 
 STACK_CONTEXT *STACK_get_frame(int frame);
 
-//void STACK_free_gosub_stack(STACK_GOSUB *gosub);
-
 #define STACK_get_previous_pc() ((STACK_frame_count <= 0) ? NULL : STACK_frame->pc)
 
 #define STACK_get_current() ((STACK_frame_count > 0) ? STACK_frame : NULL)

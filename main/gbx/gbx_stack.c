@@ -108,54 +108,6 @@ bool STACK_check(int need)
 }
 #endif
 
-#if 0
-void STACK_push_frame(STACK_CONTEXT *context, int need)
-{
-	int stack;
-  //fprintf(stderr, "current_stack = %u -> %u / %u\n", current_stack, _process_stack_base - current_stack, _process_stack_max);
-	
-	if ((uintptr_t)&stack < _process_stack_limit)
-		THROW(E_STACK);
-	
-	if ((char *)(SP + need + 8 + sizeof(STACK_CONTEXT)) >= STACK_limit) 
-	{
-		//fprintf(stderr, "**** STACK_GROW: STACK_push_frame\n");
-		//THROW(E_STACK);
-		STACK_grow();
-	}
-  
-  //if (((char *)SP + sizeof(STACK_CONTEXT) * 2) >= (char *)STACK_frame)
-  //  THROW(E_STACK);
-
-  STACK_frame--;
-  
-  //*STACK_frame = *context;
-  STACK_copy(STACK_frame, context);
-  
-  STACK_frame_count++;
-  STACK_limit = (char *)STACK_frame;
-
-  //fprintf(stderr, "STACK_push_frame: [%d]  PC = %p  FP = %p (%s)\n", STACK_frame_count, context->pc, context->fp,
-  //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
-}
-
-void STACK_pop_frame(STACK_CONTEXT *context)
-{
-  if (STACK_frame_count <= 0)
-    ERROR_panic("STACK_pop_frame: Stack frame is void");
-
-  //*context = *STACK_frame;
-  STACK_copy(context, STACK_frame);
-  
-  STACK_frame++;
-  STACK_frame_count--;
-  STACK_limit = (char *)STACK_frame;
-
-  //fprintf(stderr, "STACK_pop_frame: [%d] PC = %p  FP = %p (%s)\n", STACK_frame_count, context->pc, context->fp,
-  //  context->fp ? (context->fp->debug ? context->fp->debug->name : 0) : 0);
-}
-#endif
-
 bool STACK_has_error_handler(void)
 {
   int i;
@@ -202,22 +154,3 @@ STACK_BACKTRACE *STACK_get_backtrace(void)
 	 
 	return bt;
 }
-
-/*void STACK_free_gosub_stack(STACK_GOSUB *gosub)
-{
-	int i, j;
-	STACK_GOSUB *p;
-	
-	if (FP->n_ctrl)
-	{
-		for (i = 0, p = gosub; i < ARRAY_count(gosub); i++, p++)
-		{
-			for (j = 0; j < FP->n_ctrl; j++)
-				RELEASE(&p->ctrl[j]);
-			
-			FREE(&p->ctrl, "STACK_free_gosub_stack");
-		}
-	}
-	
-	ARRAY_delete(&gosub);
-}*/

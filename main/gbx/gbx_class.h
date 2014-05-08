@@ -99,7 +99,9 @@ typedef
 		char n_param;
 		char npmin;
 		char vararg;
-		bool fast;
+		unsigned fast : 1;
+		unsigned optional : 1;
+		unsigned _reserved : 6;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;

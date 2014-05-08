@@ -508,6 +508,7 @@ SUBR_INFO COMP_subr_info[] =
 #endif
 
 	{ "VarPtr",            89,  0,  1     },
+	{ "IsMissing",         89,  1,  1     },
 
 	{ ".Collection",       90,  0,  1, 63 },
 	

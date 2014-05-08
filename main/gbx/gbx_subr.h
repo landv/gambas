@@ -229,7 +229,7 @@ void SUBR_alloc(ushort code);
 void SUBR_free(void);
 void SUBR_realloc(ushort code);
 void SUBR_strptr(ushort code);
-void SUBR_varptr(void);
+void SUBR_varptr(ushort code);
 void SUBR_ptr(ushort code);
 void SUBR_make(ushort code);
 

@@ -55,6 +55,7 @@ bool CODE_check_pop_local_last(short *local);
 bool CODE_check_jump_not(void);
 
 bool CODE_check_varptr(void);
+bool CODE_check_ismissing(void);
 
 void CODE_allow_break(void);
 //void CODE_break(void);

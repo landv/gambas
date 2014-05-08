@@ -158,8 +158,7 @@ void SUBR_strptr(ushort code)
   SUBR_LEAVE();
 }
 
-
-void SUBR_varptr(void)
+void SUBR_varptr(ushort code)
 {
 	ushort op;
 	void *ptr;
@@ -170,70 +169,80 @@ void SUBR_varptr(void)
 	
 	op = (ushort)SUBR_get_integer(PARAM);
 	
-	if ((op & 0xFF00) == C_PUSH_LOCAL || (op & 0xFF00) == C_PUSH_PARAM)
+	if ((code & 0xFF) == 1)
 	{
-		if ((op & 0xFF00) == C_PUSH_PARAM)
-			val = &PP[(signed char)(op & 0xFF)];
-		else
-			val = &BP[op & 0xFF];
+		uint64_t optargs = BP[FP->n_local + FP->n_ctrl]._long.value;
 
-		switch(val->type)
-		{
-			case T_BOOLEAN:
-			case T_BYTE:
-			case T_SHORT:
-			case T_INTEGER:
-				ptr = &val->_integer.value;
-				break;
-				
-			case T_LONG:
-				ptr = &val->_long.value;
-				break;
-				
-			case T_SINGLE:
-				ptr = &val->_single.value;
-				break;
-				
-			case T_FLOAT:
-				ptr = &val->_float.value;
-				break;
-			
-			case T_DATE:
-				ptr = &val->_date.date;
-				break;
-			
-			case T_STRING:
-			case T_CSTRING:
-				ptr = val->_string.addr + val->_string.start;
-				break;
-				
-			case T_POINTER:
-				ptr = &val->_pointer.value;
-				break;
-			
-			default:
-			  THROW(E_TYPE, "Number", TYPE_get_name(val->type));
-		}
-	}
-	else if ((op & 0xF800) == C_PUSH_DYNAMIC)
-	{
-    var = &CP->load->dyn[op & 0x7FF];
-
-    if (OP == NULL)
-      THROW_ILLEGAL();
-
-    ptr = &OP[var->pos];
-  }
-	else if ((op & 0xF800) == C_PUSH_STATIC)
-	{
-    var = &CP->load->stat[op & 0x7FF];
-    ptr = (char *)CP->stat + var->pos;
+		RETURN->type = T_BOOLEAN;
+		RETURN->_boolean.value = (optargs & (1 << (FP->n_param + (op & 0xFF) - 256))) ? -1 : 0;
 	}
 	else
-		THROW_ILLEGAL();
+	{
+		if ((op & 0xFF00) == C_PUSH_LOCAL || (op & 0xFF00) == C_PUSH_PARAM)
+		{
+			if ((op & 0xFF00) == C_PUSH_PARAM)
+				val = &PP[(signed char)(op & 0xFF)];
+			else
+				val = &BP[op & 0xFF];
 
-  RETURN->type = T_POINTER;
-  RETURN->_pointer.value = ptr;
+			switch(val->type)
+			{
+				case T_BOOLEAN:
+				case T_BYTE:
+				case T_SHORT:
+				case T_INTEGER:
+					ptr = &val->_integer.value;
+					break;
+
+				case T_LONG:
+					ptr = &val->_long.value;
+					break;
+
+				case T_SINGLE:
+					ptr = &val->_single.value;
+					break;
+
+				case T_FLOAT:
+					ptr = &val->_float.value;
+					break;
+
+				case T_DATE:
+					ptr = &val->_date.date;
+					break;
+
+				case T_STRING:
+				case T_CSTRING:
+					ptr = val->_string.addr + val->_string.start;
+					break;
+
+				case T_POINTER:
+					ptr = &val->_pointer.value;
+					break;
+
+				default:
+					THROW(E_TYPE, "Number", TYPE_get_name(val->type));
+			}
+		}
+		else if ((op & 0xF800) == C_PUSH_DYNAMIC)
+		{
+			var = &CP->load->dyn[op & 0x7FF];
+
+			if (OP == NULL)
+				THROW_ILLEGAL();
+
+			ptr = &OP[var->pos];
+		}
+		else if ((op & 0xF800) == C_PUSH_STATIC)
+		{
+			var = &CP->load->stat[op & 0x7FF];
+			ptr = (char *)CP->stat + var->pos;
+		}
+		else
+			THROW_ILLEGAL();
+
+		RETURN->type = T_POINTER;
+		RETURN->_pointer.value = ptr;
+	}
 	
 	SUBR_LEAVE();
 }

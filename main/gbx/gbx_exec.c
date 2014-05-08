@@ -421,9 +421,11 @@ void EXEC_enter(void)
 {
 	int i;
 	FUNCTION *func; // = EXEC.func;
+	bool optional;
 	int nparam = EXEC.nparam;
 	void *object = EXEC.object;
 	CLASS *class = EXEC.class;
+	int64_t optargs;
 
 	#if DEBUG_STACK
 	fprintf(stderr, "\n| >> EXEC_enter(%s, %d, %d)\n", EXEC.class->name, EXEC.index, nparam);
@@ -441,6 +443,8 @@ void EXEC_enter(void)
 		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
 	#endif
 	
+	optional = func->optional;
+
 	// Check number of arguments
 
 	if (UNLIKELY(nparam < func->npmin))
@@ -453,14 +457,19 @@ void EXEC_enter(void)
 	for (i = 0; i < func->npmin; i++)
 		VALUE_conv(SP - nparam + i, func->param[i].type);
 
-	if (func->npmin < func->n_param)
+	if (optional)
 	{
+		optargs = 0;
+
 		// Optional arguments
 
 		for (i = func->npmin; i < Min(func->n_param, nparam); i++)
 		{
 			if (SP[- nparam + i].type == T_VOID)
+			{
+				optargs |= (1 << i);
 				SP[- nparam + i]._void.ptype = func->param[i].type;
+			}
 			else
 				VALUE_conv(SP - nparam + i, func->param[i].type);
 		}
@@ -473,6 +482,7 @@ void EXEC_enter(void)
 
 			for (i = nparam; i < func->n_param; i++)
 			{
+				optargs |= (1 << i);
 				SP->type = T_VOID;
 				SP->_void.ptype = func->param[i].type;
 				SP++;
@@ -530,6 +540,14 @@ void EXEC_enter(void)
 			SP->type = T_VOID;
 			SP++;
 		}
+	}
+
+	// Optional argument map
+	if (optional)
+	{
+		SP->type = T_LONG;
+		SP->_long.value = optargs;
+		SP++;
 	}
 
 	RP->type = T_VOID;
@@ -641,7 +659,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	nbyref = 1 + (*pc & 0xF);
 	pc_func = FP->code;
 
-	if (LIKELY(!PCODE_is(*pc_func, C_BYREF)))
+	if (!PCODE_is(*pc_func, C_BYREF))
 		return 0;
 
 	nbyref_func = 1 + (*pc_func & 0xF);
@@ -676,9 +694,11 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	}
 
 	pc--;
+
 	n = SP - PP;
 	RELEASE_MANY(SP, n);
 	SP -= nparam;
+
 	SP += nb;
 	OBJECT_UNREF(OP);
 	SP -= nb;
@@ -690,6 +710,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	return nb;
 }
 
+#if 0
 #define EXEC_LEAVE_BYREF() \
 	pc++; \
 	nbyref = 1 + (*pc & 0xF); \
@@ -740,7 +761,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	STACK_pop_frame(&EXEC_current); \
 	PC += nbyref + 1; \
 	goto __RETURN_VALUE;
-
+#endif
 
 void EXEC_leave_drop()
 {

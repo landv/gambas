@@ -332,6 +332,7 @@ EXTERN SUBR_INFO COMP_subr_info[];
 //EXTERN TABLE *COMP_subr_table;
 
 EXTERN int SUBR_VarPtr;
+EXTERN int SUBR_IsMissing;
 EXTERN int SUBR_Mid;
 EXTERN int SUBR_MidS;
 

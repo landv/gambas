@@ -349,9 +349,26 @@ bool CODE_check_varptr(void)
 	op = *last_code;
 	if (!((op & 0xFF00) == C_PUSH_LOCAL || (op & 0xFF00) == C_PUSH_PARAM || (op & 0xF800) == C_PUSH_STATIC || (op & 0xF800) == C_PUSH_DYNAMIC))
 		return TRUE;
-	
+
 	*last_code = C_PUSH_INTEGER;
 	write_short((short)op);
+	return FALSE;
+}
+
+bool CODE_check_ismissing(void)
+{
+	unsigned short op;
+	PCODE *last_code;
+
+	last_code = get_last_code();
+	if (!last_code)
+		return TRUE;
+
+	op = *last_code;
+	if ((op & 0xFF00) != C_PUSH_PARAM)
+		return TRUE;
+
+	*last_code = C_PUSH_QUICK | (op & 0xFF);
 	return FALSE;
 }
 

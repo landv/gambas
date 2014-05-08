@@ -582,6 +582,12 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 			if (func->fast)
 				have_jit_functions = TRUE;
 		}
+
+		func->optional = (func->npmin < func->n_param);
+		if (func->optional)
+			func->stack_usage++;
+
+		func->_reserved = 0;
 	}
 
 	/* Creation flags */
