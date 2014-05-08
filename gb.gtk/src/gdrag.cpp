@@ -42,12 +42,15 @@ struct _GtkTargetList
   guint ref_count;
 };
 
+#if GTK_CHECK_VERSION(3, 12, 0)
+#else
 struct _GtkTargetPair
 {
   GdkAtom   target;
   guint     flags;
   guint     info;
 };
+#endif
 
 typedef
 	struct _GtkTargetPair GtkTargetPair;
@@ -316,7 +319,12 @@ gControl *gDrag::drag(gControl *source, GtkTargetList *list)
 	
 	//fprintf(stderr, "gtk_drag_begin: start\n");
 
+
+#if GTK_CHECK_VERSION(3, 10, 0)
+	ct = gtk_drag_begin_with_coordinates(source->border, list, GDK_ACTION_COPY, 1, NULL, -1, -1);
+#else
 	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, 1, NULL);
+#endif
 	if (!ct)
 		return NULL;
 
