@@ -256,6 +256,8 @@ End
 
 Public Sub SetDir(sDir As String)
 
+  If sDir = dvwChoose.Current Then Return
+
   If IsBookmarkVisible() Then
     SetBookmark($hBookmarkList.FindBest(sDir))
   Endif

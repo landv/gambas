@@ -22,7 +22,8 @@ SUBDIRS = \
  @gtk_dir@ \
  @gtk3_dir@ \
  @opengl_dir@ \
- @desktop_dir@ \
+ @x11_dir@ \
+ @keyring_dir@ \
  @pdf_dir@ \
  @cairo_dir@ \
  @imageio_dir@ \
