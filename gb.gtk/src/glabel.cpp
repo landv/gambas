@@ -29,7 +29,8 @@ static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 {
 	GdkRGBA rgba;
 	int vw, vh, lw, lh;
-	int fw = Max(d->getFramePadding(), d->getFrameWidth());
+	int fw = d->getFramePadding() + d->getFrameWidth();
+	int xa = d->lay_x;
 
 	//d->drawBackground(cr);
 	d->drawBorder(cr);
@@ -37,36 +38,37 @@ static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 	gt_from_color(d->realForeground(), &rgba);
 	gdk_cairo_set_source_rgba(cr, &rgba);
 
-	switch (d->lay_x)
+	if (xa == 3)
+	{
+		if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL)
+			xa = 2;
+		else
+			xa = 0;
+	}
+
+	switch (xa)
 	{
 		case 0: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
 		case 1: pango_layout_set_alignment(d->layout, PANGO_ALIGN_CENTER); break;
 		case 2: pango_layout_set_alignment(d->layout, PANGO_ALIGN_RIGHT); break;
-		case 3: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
 	}
 
 	vw = d->width();
 	vh = d->height();
+
 	pango_layout_get_pixel_size(d->layout, &lw, &lh);
 
-	if (!d->markup)
+	if (!d->markup || !d->wrap())
 	{
-		switch (d->lay_x)
+		switch (xa)
 		{
 			case 0: vw = fw; break;
 			case 1: vw = (vw - lw) / 2; break;
 			case 2: vw =  vw - lw - fw; break;
-			case 3:
-				if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL)
-					vw = vw - lw - fw;
-				else
-					vw = fw;
-				break;
 		}
 	}
 	else
 		vw = fw;
-
 
 	switch (d->lay_y)
 	{
@@ -91,7 +93,8 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	GtkStyle *style = gtk_widget_get_style(draw);
 	cairo_t *cr;
 	int vw, vh, lw, lh;
-	int fw = Max(d->getFramePadding(), d->getFrameWidth());
+	int fw = d->getFramePadding() + d->getFrameWidth();
+	int xa = d->lay_x;
 
 	cr = gdk_cairo_create(draw->window);
 	gdk_cairo_region(cr, e->region);
@@ -100,36 +103,38 @@ static gboolean cb_expose(GtkWidget *draw, GdkEventExpose *e, gLabel *d)
 	if (style)
 		gdk_cairo_set_source_color(cr, &style->fg[GTK_STATE_NORMAL]);
 
-	switch (d->lay_x)
+	if (xa == 3)
 	{
-		case 0: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
-		case 1: pango_layout_set_alignment(d->layout, PANGO_ALIGN_CENTER); break;
-		case 2: pango_layout_set_alignment(d->layout, PANGO_ALIGN_RIGHT); break;
-		case 3: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
+		if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL)
+			xa = 2;
+		else
+			xa = 0;
 	}
 
 	vw = d->width();
 	vh = d->height();
+
+	pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT);
 	pango_layout_get_pixel_size(d->layout, &lw, &lh);
 
-	if (!d->markup)
+	switch (xa)
 	{
-		switch (d->lay_x)
+		case 0: pango_layout_set_alignment(d->layout, PANGO_ALIGN_LEFT); break;
+		case 1: pango_layout_set_alignment(d->layout, PANGO_ALIGN_CENTER); break;
+		case 2: pango_layout_set_alignment(d->layout, PANGO_ALIGN_RIGHT); break;
+	}
+
+	if (!d->markup || !d->wrap())
+	{
+		switch (xa)
 		{
 			case 0: vw = fw; break;
 			case 1: vw = (vw - lw) / 2; break;
 			case 2: vw =  vw - lw - fw; break;
-			case 3:
-				if (gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL)
-					vw = vw - lw - fw;
-				else
-					vw = fw;
-				break;
 		}
 	}
 	else
 		vw = fw;
-
 
 	switch (d->lay_y)
 	{
@@ -218,7 +223,7 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 	if (_locked || !textdata || !*textdata)
 		return;
 	
-	fw = Max(getFrameWidth(), getFramePadding());
+	fw = getFrameWidth() + getFramePadding();
 	
 	if (markup && _wrap)
 	{
@@ -233,8 +238,11 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 	pango_layout_set_width(layout, w);
 	
 	pango_layout_get_pixel_size(layout, &w, &h);
+	if (!adjust && _wrap)
+		w = width();
+	else
+		w += fw * 2;
 
-	w += fw * 2;
 	h += fw * 2;
 	
 	if ((!_autoresize && !adjust) || (noresize_width && w != width()))
