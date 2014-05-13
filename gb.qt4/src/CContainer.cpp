@@ -580,6 +580,26 @@ void CCONTAINER_draw_border_without_widget(QPainter *p, char frame, QStyleOption
 }
 
 
+int CCONTAINER_get_border_width(char border)
+{
+	switch (border)
+	{
+		case BORDER_PLAIN:
+			return 1;
+			break;
+
+		case BORDER_SUNKEN:
+		case BORDER_RAISED:
+		case BORDER_ETCHED:
+
+			return qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+			break;
+
+		default:
+			return 0;
+	}
+}
+
 void CCONTAINER_set_border(char *border, char new_border, QWidget *wid)
 {
 	int m;
@@ -588,28 +608,11 @@ void CCONTAINER_set_border(char *border, char new_border, QWidget *wid)
 		return;
 
 	*border = new_border;
-
-	switch (new_border)
-	{
-		case BORDER_PLAIN:
-			m = 1;
-			break;
-
-		case BORDER_SUNKEN:
-		case BORDER_RAISED:
-		case BORDER_ETCHED:
-
-			m = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
-			break;
-
-		default:
-			m = 0;
-	}
+	m = CCONTAINER_get_border_width(new_border);
 
 	wid->setContentsMargins(m, m, m, m);
 	wid->update();
 }
-
 
 void MyFrame::drawFrame(QPainter *p)
 {
