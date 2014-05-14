@@ -585,7 +585,10 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 
 		func->optional = (func->npmin < func->n_param);
 		if (func->optional)
+		{
 			func->stack_usage++;
+			func->n_ctrl++;
+		}
 
 		func->_reserved = 0;
 	}

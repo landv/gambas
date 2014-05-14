@@ -540,14 +540,15 @@ void EXEC_enter(void)
 			SP->type = T_VOID;
 			SP++;
 		}
-	}
 
-	// Optional argument map
-	if (optional)
-	{
-		SP->type = T_LONG;
-		SP->_long.value = optargs;
-		SP++;
+		// Optional argument map
+		if (optional)
+		{
+			SP--;
+			SP->type = T_LONG;
+			SP->_long.value = optargs;
+			SP++;
+		}
 	}
 
 	RP->type = T_VOID;

@@ -171,7 +171,7 @@ void SUBR_varptr(ushort code)
 	
 	if ((code & 0xFF) == 1)
 	{
-		uint64_t optargs = BP[FP->n_local + FP->n_ctrl]._long.value;
+		uint64_t optargs = BP[FP->n_local + FP->n_ctrl - 1]._long.value;
 
 		RETURN->type = T_BOOLEAN;
 		RETURN->_boolean.value = (optargs & (1 << (FP->n_param + (op & 0xFF) - 256))) ? -1 : 0;
