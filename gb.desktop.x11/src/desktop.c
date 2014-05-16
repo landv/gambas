@@ -149,7 +149,7 @@ BEGIN_PROPERTY(X11_RootWindow)
 
 	if (X11_init())
 		return;
-	
+
 	GB.ReturnInteger(X11_root);
 
 END_PROPERTY
@@ -166,7 +166,7 @@ BEGIN_PROPERTY(X11_Time)
 END_PROPERTY
 
 
-BEGIN_METHOD(X11_GetWindowProperty, GB_STRING name; GB_INTEGER window)
+BEGIN_METHOD(X11_GetWindowProperty, GB_INTEGER window; GB_STRING name)
 
 	char *value;
 	Atom type;
@@ -188,7 +188,7 @@ BEGIN_METHOD(X11_GetWindowProperty, GB_STRING name; GB_INTEGER window)
 		return;
 	}
 	
-	window = VARGOPT(window, X11_root);
+	window = VARG(window);
 	
 	value = X11_get_property(window, prop, &type, &format, &count);
 	if (!value)
@@ -271,7 +271,7 @@ BEGIN_METHOD(X11_GetWindowProperty, GB_STRING name; GB_INTEGER window)
 
 END_METHOD
 
-BEGIN_METHOD(X11_SetWindowProperty, GB_STRING name; GB_STRING type; GB_VARIANT value; GB_INTEGER window)
+BEGIN_METHOD(X11_SetWindowProperty, GB_INTEGER window; GB_STRING name; GB_STRING type; GB_VARIANT value)
 
 	Atom type;
 	Atom prop;
@@ -295,7 +295,7 @@ BEGIN_METHOD(X11_SetWindowProperty, GB_STRING name; GB_STRING type; GB_VARIANT v
 	count = 0;
 	format = 0;
 	
-	window = VARGOPT(window, X11_root);
+	window = VARG(window);
 	
 	switch(VARG(value).type)
 	{
@@ -398,7 +398,7 @@ BEGIN_METHOD(X11_SetWindowProperty, GB_STRING name; GB_STRING type; GB_VARIANT v
 	
 __ERROR:
 
-	GB.Error("Cannot deal with that datatype");
+	GB.Error("Datatype not supported");
 
 END_METHOD
 
@@ -654,14 +654,15 @@ GB_DESC X11Desc[] =
   
   //GB_STATIC_METHOD("Init", NULL, CDESKTOP_init, NULL),
   
+  GB_CONSTANT("None", "i", None),
   GB_CONSTANT("CurrentTime", "i", CurrentTime),
-  
+
 	GB_STATIC_METHOD("FindWindow", "Integer[]", X11_FindWindow, "[(Title)s(Application)s(Role)s]"),
 	GB_STATIC_METHOD("SendKey", NULL, X11_SendKey, "(Key)s(Press)b"),
 	GB_STATIC_PROPERTY_READ("RootWindow", "i", X11_RootWindow),
 	GB_STATIC_PROPERTY_READ("Time", "i", X11_Time),
-	GB_STATIC_METHOD("GetWindowProperty", "v", X11_GetWindowProperty, "(Property)s[(Window)i]"),
-	GB_STATIC_METHOD("SetWindowProperty", NULL, X11_SetWindowProperty, "(Property)s(Type)s(Value)v[(Window)i]"),
+	GB_STATIC_METHOD("GetWindowProperty", "v", X11_GetWindowProperty, "(Window)i(Property)s"),
+	GB_STATIC_METHOD("SetWindowProperty", NULL, X11_SetWindowProperty, "(Window)i(Property)s(Type)s(Value)v"),
 	GB_STATIC_METHOD("InternAtom", "i", X11_InternAtom, "(Atom)s[(Create)b]"),
 	GB_STATIC_METHOD("GetAtomName", "s", X11_GetAtomName, "(Atom)i"),
 	GB_STATIC_METHOD("SendClientMessageToRootWindow", NULL, X11_SendClientMessage, "(Message)s[(Data)Array;(Window)i]"),
@@ -672,7 +673,7 @@ GB_DESC X11Desc[] =
   GB_STATIC_METHOD("MinimizeWindow", NULL, X11_MinimizeWindow, "(Window)i(Minimized)b"),
   GB_STATIC_METHOD("Sync", NULL, X11_Sync, NULL),
   GB_STATIC_METHOD("Flush", NULL, X11_Flush, NULL),
-  
+
   GB_END_DECLARE
 };
 
@@ -756,8 +757,8 @@ GB_DESC X11WatcherDesc[] =
   GB_METHOD("_new", NULL, X11Watcher_new, "[(Window)i(Property)s]"),
   GB_METHOD("_free", NULL, X11Watcher_free, NULL),
   
-  GB_EVENT("Change", NULL, "(Window)i(Property)i", &EVENT_Change),
-  GB_EVENT("Window", NULL, "(Window)i(X)i(Y)i(Width)i(Height)i", &EVENT_Window),
+  GB_EVENT("Property", NULL, "(Window)i(Property)i", &EVENT_Change),
+  GB_EVENT("Configure", NULL, "(Window)i(X)i(Y)i(Width)i(Height)i", &EVENT_Window),
   
   GB_END_DECLARE
 };

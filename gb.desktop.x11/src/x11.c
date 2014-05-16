@@ -80,8 +80,8 @@ static X11_PROPERTY _window_save[2];
 
 static char *_property_value = NULL;
 
-static GB_FUNCTION _desktop_change_func;
-static GB_FUNCTION _desktop_window_func;
+static GB_FUNCTION _x11_property_notify_func;
+static GB_FUNCTION _x11_configure_notify_func;
 
 static void init_atoms()
 {
@@ -325,11 +325,8 @@ bool X11_do_init()
 		return FALSE;
 		
 	GB.Component.GetInfo("DISPLAY", POINTER(&_display));
-	GB.Component.GetInfo("ROOT_WINDOW", POINTER(&_root));
-  
-  /*_display = XOpenDisplay(NULL);
-  fprintf(stderr, "_display = %p\n", _display);
-  _root = DefaultRootWindow(_display);*/
+
+	_root = DefaultRootWindow(_display);
   
   X11_ready = _display != NULL;
   
@@ -755,8 +752,8 @@ void X11_enable_event_filter(bool enable)
 	{
 		GB_CLASS startup = GB.Application.StartupClass();
 		
-		GB.GetFunction(&_desktop_change_func, (void *)startup, "Desktop_Change", "ii", "");
-		GB.GetFunction(&_desktop_window_func, (void *)startup, "Desktop_Window", "iiiii", "");
+		GB.GetFunction(&_x11_property_notify_func, (void *)startup, "X11_PropertyNotify", "ii", "");
+		GB.GetFunction(&_x11_configure_notify_func, (void *)startup, "X11_ConfigureNotify", "iiiii", "");
 	}
 	
 	X11_event_filter_enabled = enable;
@@ -768,12 +765,12 @@ void X11_enable_event_filter(bool enable)
 
 void X11_event_filter(XEvent *e)
 {
-	if (e->type == PropertyNotify && GB_FUNCTION_IS_VALID(&_desktop_change_func))
+	if (e->type == PropertyNotify && GB_FUNCTION_IS_VALID(&_x11_property_notify_func))
 	{
 		GB.Push(2, GB_T_INTEGER, e->xany.window, GB_T_INTEGER, e->xproperty.atom);
-		GB.Call(&_desktop_change_func, 2, FALSE);
+		GB.Call(&_x11_property_notify_func, 2, FALSE);
 	}
-	else if (e->type == ConfigureNotify && GB_FUNCTION_IS_VALID(&_desktop_window_func))
+	else if (e->type == ConfigureNotify && GB_FUNCTION_IS_VALID(&_x11_configure_notify_func))
 	{
 		GB.Push(5, GB_T_INTEGER, e->xany.window,
 			GB_T_INTEGER, e->xconfigure.x,
@@ -781,7 +778,7 @@ void X11_event_filter(XEvent *e)
 			GB_T_INTEGER, e->xconfigure.width,
 			GB_T_INTEGER, e->xconfigure.height);
 			
-		GB.Call(&_desktop_window_func, 5, FALSE);
+		GB.Call(&_x11_configure_notify_func, 5, FALSE);
 	}
 }
 

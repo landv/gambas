@@ -158,7 +158,7 @@ End
 
 
 
-Public Sub Desktop_Change(Window As Integer, Atom As Integer)
+Public Sub X11_PropertyNotify(Window As Integer, Atom As Integer)
   
   Debug Window;; X11.GetAtomName(Atom)
   
@@ -167,7 +167,7 @@ Public Sub Desktop_Change(Window As Integer, Atom As Integer)
   
 End
 
-Public Sub Desktop_Window(Window As Integer, X As Integer, Y As Integer, W As Integer, H As Integer)
+Public Sub X11_ConfigureNotify(Window As Integer, X As Integer, Y As Integer, W As Integer, H As Integer)
   
   Debug Window;; X;; Y;; W;; H
   

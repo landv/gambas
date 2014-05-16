@@ -203,6 +203,7 @@ void gFrame::updateFont()
 	gContainer::updateFont();
 	if (label)
 		gtk_widget_modify_font(label, font()->desc());
+	performArrange();
 }
 
 #ifdef GTK3
@@ -218,3 +219,28 @@ void gFrame::setRealForeground(gColor color)
 	if (label) set_gdk_fg_color(label, color);
 }
 #endif
+
+int gFrame::containerX()
+{
+	return gApplication::getFrameWidth();
+}
+
+int gFrame::clientWidth()
+{
+	return width() - gApplication::getFrameWidth() * 2;
+}
+
+int gFrame::containerY()
+{
+	int y = gApplication::getFrameWidth();
+
+	if (label)
+		y = font()->height() * 3 / 2;
+
+	return y;
+}
+
+int gFrame::clientHeight()
+{
+	return height() - containerY() - gApplication::getFrameWidth();
+}

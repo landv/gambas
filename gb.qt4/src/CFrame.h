@@ -29,13 +29,14 @@
 #include "CWidget.h"
 #include "CContainer.h"
 
+#include <QGroupBox>
+
 #ifndef __CFRAME_CPP
 extern GB_DESC CFrameDesc[];
 #else
 
-#define QGROUPBOX(object) ((QGroupBox *)((CWIDGET *)object)->widget)
-#define WIDGET QGROUPBOX(_object)
 #define THIS ((CFRAME *)_object)
+#define WIDGET ((MyGroupBox *)((CWIDGET *)_object)->widget)
 
 #endif
 
@@ -43,8 +44,25 @@ typedef
   struct {
     CWIDGET widget;
     QWidget *container;
-    int arrangement;
+    CARRANGEMENT arrangement;
     }
   CFRAME;
+
+class MyGroupBox : public QGroupBox
+{
+  Q_OBJECT
+
+public:
+
+	MyGroupBox(QWidget *parent);
+	void updateInside();
+
+protected:
+
+  virtual void changeEvent(QEvent *e);
+	virtual void showEvent(QShowEvent *);
+	virtual void hideEvent(QHideEvent *);
+};
+
 
 #endif

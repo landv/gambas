@@ -41,7 +41,7 @@ Private Sub GetDimensions()
   
   If Not $aDim Then 
     $aDim = X11.GetWindowGeometry($iId)
-    aExt = X11.GetWindowProperty(Atom["_NET_FRAME_EXTENTS"], $iId)
+    aExt = X11.GetWindowProperty($iId, Atom["_NET_FRAME_EXTENTS"])
     $aDim[0] -= aExt[0]
     $aDim[1] -= aExt[2]
   Endif
@@ -105,7 +105,7 @@ End
 
 Private Function Name_Read() As String
 
-  Try Return X11.GetWindowProperty(Atom["_NET_WM_NAME"], $iId)[0]
+  Try Return X11.GetWindowProperty($iId, Atom["_NET_WM_NAME"])[0]
 
 End
 
@@ -113,14 +113,14 @@ Private Function VisibleName_Read() As String
 
   Dim sName As String
 
-  Try sName = X11.GetWindowProperty(Atom["_NET_WM_VISIBLE_NAME"], $iId)[0]
+  Try sName = X11.GetWindowProperty($iId, Atom["_NET_WM_VISIBLE_NAME"])[0]
   If Not sName Then Return Name_Read()
 
 End
 
 Private Function Desktop_Read() As Integer
 
-  Try Return X11.GetWindowProperty(Atom["_NET_WM_DESKTOP"], $iId)[0]
+  Try Return X11.GetWindowProperty($iId, Atom["_NET_WM_DESKTOP"])[0]
 
 End
 
@@ -132,7 +132,7 @@ End
 
 Private Function GetState() As String[]
 
-  Return X11.GetWindowProperty(Atom["_NET_WM_STATE"], $iId)
+  Return X11.GetWindowProperty($iId, Atom["_NET_WM_STATE"])
 
 End
 
@@ -164,7 +164,7 @@ Private Function Icon_Read() As Image
 
   Dim aIcon As Integer[]
 
-  aIcon = X11.GetWindowProperty(Atom["_NET_WM_ICON"], $iId)
+  aIcon = X11.GetWindowProperty($iId, Atom["_NET_WM_ICON"])
   If aIcon Then Return X11.MakeIcon(aIcon) 
 
 End
@@ -173,7 +173,7 @@ Private Function Minimized_Read() As Boolean
 
   Dim aProp As Integer[]
 
-  aProp = X11.GetWindowProperty(Atom["WM_STATE"], $iId)
+  aProp = X11.GetWindowProperty($iId, Atom["WM_STATE"])
   If aProp And If aProp[0] = 3 Then Return True
 
 End
@@ -269,7 +269,7 @@ Public Sub GetIcon(Width As Integer, Height As Integer) As Image
   Dim aIcon As Integer[]
   Dim hImage As Image
 
-  aIcon = X11.GetWindowProperty(Atom["_NET_WM_ICON"], $iId)
+  aIcon = X11.GetWindowProperty($iId, Atom["_NET_WM_ICON"])
   If Not aIcon Then Return
   
   hImage = X11.MakeIcon(aIcon, Width, Height)

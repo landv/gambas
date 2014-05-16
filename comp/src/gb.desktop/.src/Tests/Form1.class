@@ -14,7 +14,7 @@ Public Sub Button1_Click()
   Dim iDesktop As Integer
   Dim hWindow As DesktopWindow
   
-  iCurrentDesktop = X11.GetWindowProperty("_NET_CURRENT_DESKTOP", X11.RootWindow)[0]
+  iCurrentDesktop = X11.GetWindowProperty(X11.RootWindow, "_NET_CURRENT_DESKTOP")[0]
 
   For Each hPictureBox In ScrollView1.Children
     hPictureBox.Delete
@@ -22,14 +22,14 @@ Public Sub Button1_Click()
 
   _NET_CLIENT_LIST = X11.InternAtom("_NET_CLIENT_LIST")  
   _NET_WM_ICON = X11.InternAtom("_NET_WM_ICON")  
-  aWindow = X11.GetWindowProperty(_NET_CLIENT_LIST, X11.RootWindow)
+  aWindow = X11.GetWindowProperty(X11.RootWindow, _NET_CLIENT_LIST)
   For Each iWindow In aWindow
     hWindow = New DesktopWindow(iWindow)
     'iDesktop = X11.GetWindowProperty("_NET_WM_DESKTOP", hWindow)[0]
     iDesktop = hWindow.Desktop
     'If iDesktop <> iCurrentDesktop And If iDesktop >= 0 Then Continue
     
-    aIcon = X11.GetWindowProperty(_NET_WM_ICON, iWindow)
+    aIcon = X11.GetWindowProperty(iWindow, _NET_WM_ICON)
     hPictureBox = New PictureBox(ScrollView1)
     hPictureBox.Border = Border.Plain
     hPictureBox.Alignment = Align.Center

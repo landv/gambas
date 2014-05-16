@@ -72,6 +72,9 @@ bool X11_do_init();
 void X11_exit();
 void X11_sync(void);
 
+#define X11_get_screen_count() ScreenCount(X11_display)
+#define X11_get_root_window(_screen) RootWindow(X11_display, (_screen))
+
 /* Functions to deal with the _NET_WM_STATE and _NET_WM_TYPE property */
 void X11_window_change_property(Window window, bool visible, Atom property, bool set);
 bool X11_window_has_property(Window window, Atom property);

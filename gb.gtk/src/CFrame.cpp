@@ -98,6 +98,13 @@ GB_DESC CFrameDesc[] =
   GB_PROPERTY("Caption", "s", CFRAME_text),
   GB_PROPERTY("Text", "s", CFRAME_text),
   GB_PROPERTY("Title", "s", CFRAME_text),
+  GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+  GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+  GB_PROPERTY("Padding", "i", Container_Padding),
+  GB_PROPERTY("Spacing", "b", Container_Spacing),
+  GB_PROPERTY("Margin", "b", Container_Margin),
+  GB_PROPERTY("Indent", "b", Container_Indent),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 
   FRAME_DESCRIPTION,
 

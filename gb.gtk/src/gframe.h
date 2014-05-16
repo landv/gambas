@@ -37,7 +37,7 @@ public:
 	virtual void setBackground(gColor color = COLOR_DEFAULT);
 
 private:
-	
+
 	void create();
 };
 
@@ -49,6 +49,11 @@ public:
 	char* text();
 	void setText(char* vl);
 
+	virtual int containerX();
+	virtual int containerY();
+	virtual int clientWidth();
+	virtual int clientHeight();
+
 	virtual void updateFont();
 #ifdef GTK3
 	virtual void updateColor();
@@ -57,7 +62,7 @@ public:
 #endif
 
 //"Private"
-  GtkWidget *fr;
+	GtkWidget *fr;
 	GtkWidget *label;
 };
 

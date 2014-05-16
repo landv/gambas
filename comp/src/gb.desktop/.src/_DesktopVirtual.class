@@ -19,11 +19,11 @@ Public Sub Refresh()
   Dim aName As String[]
   Dim iInd As Integer
   
-  aDim = X11.GetWindowProperty(Atom["_NET_WORKAREA"])
+  aDim = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_WORKAREA"])
   iInd = $iIndex * 4
   Try $aGeom = [aDim[iInd], aDim[iInd + 1], aDim[iInd + 2], aDim[iInd + 3]]
   
-  aName = X11.GetWindowProperty(Atom["_NET_DESKTOP_NAMES"])
+  aName = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_DESKTOP_NAMES"])
   Try $sName = aName[$iIndex]
   
 End
@@ -67,9 +67,9 @@ Private Sub Name_Write(Value As String)
 
   $sName = Value
 
-  aName = X11.GetWindowProperty(Atom["_NET_DESKTOP_NAMES"])
+  aName = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_DESKTOP_NAMES"])
   Try aName[$iIndex] = $sName
-  X11.SetWindowProperty(Atom["_NET_DESKTOP_NAMES"], Atom["UTF8_STRING"], aName)
+  X11.SetWindowProperty(X11.RootWindow, Atom["_NET_DESKTOP_NAMES"], Atom["UTF8_STRING"], aName)
 
 End
 

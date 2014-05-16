@@ -23,48 +23,96 @@
 
 #define __CFRAME_CPP
 
-#include <qapplication.h>
-#include <QGroupBox>
+#include <QApplication>
+#include <QEvent>
 
 #include "gambas.h"
 
 #include "CFrame.h"
 
+//---------------------------------------------------------------------------
 
-BEGIN_METHOD(CFRAME_new, GB_OBJECT parent)
+MyGroupBox::MyGroupBox(QWidget *parent) : QGroupBox(parent)
+{
+}
 
-  QGroupBox *wid = new QGroupBox(QCONTAINER(VARG(parent)));
+void MyGroupBox::changeEvent(QEvent *e)
+{
+  QGroupBox::changeEvent(e);
+	if (e->type() == QEvent::FontChange || e->type() == QEvent::StyleChange)
+		updateInside();
+}
 
-  THIS->container = wid;
+void MyGroupBox::updateInside()
+{
+	int f = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+	setContentsMargins(f, fontMetrics().height() * 3 / 2, f, f);
+}
 
-  CWIDGET_new(wid, (void *)_object);
+// Warning! showEvent and hideEvent must be the same as in MyContainer class.
+
+void MyGroupBox::showEvent(QShowEvent *e)
+{
+	void *_object = CWidget::get(this);
+	QWidget::showEvent(e);
+	THIS->widget.flag.shown = TRUE;
+	CCONTAINER_arrange(THIS);
+}
+
+void MyGroupBox::hideEvent(QHideEvent *e)
+{
+	void *_object = CWidget::get(this);
+	QWidget::hideEvent(e);
+	THIS->widget.flag.shown = FALSE;
+}
+
+//---------------------------------------------------------------------------
+
+BEGIN_METHOD(Frame_new, GB_OBJECT parent)
+
+	MyGroupBox *wid = new MyGroupBox(QCONTAINER(VARG(parent)));
+
+	THIS->container = wid;
+
+	CWIDGET_new(wid, (void *)_object);
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CFRAME_text)
+BEGIN_PROPERTY(Frame_Text)
 
-  if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->title()));
-  else
-    WIDGET->setTitle(QSTRING_PROP());
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(TO_UTF8(WIDGET->title()));
+	else
+	{
+		WIDGET->setTitle(QSTRING_PROP());
+		WIDGET->updateInside();
+	}
 
 END_PROPERTY
 
 
 GB_DESC CFrameDesc[] =
 {
-  GB_DECLARE("Frame", sizeof(CFRAME)), GB_INHERITS("Container"),
+	GB_DECLARE("Frame", sizeof(CFRAME)), GB_INHERITS("Container"),
 
-  GB_METHOD("_new", NULL, CFRAME_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, Frame_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Caption", "s", CFRAME_text),
-  GB_PROPERTY("Text", "s", CFRAME_text),
-  GB_PROPERTY("Title", "s", CFRAME_text),
+	GB_PROPERTY("Caption", "s", Frame_Text),
+	GB_PROPERTY("Text", "s", Frame_Text),
+	GB_PROPERTY("Title", "s", Frame_Text),
+
+	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
+	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
+	GB_PROPERTY("Spacing", "b", Container_Spacing),
+	GB_PROPERTY("Margin", "b", Container_Margin),
+	GB_PROPERTY("Padding", "i", Container_Padding),
+	GB_PROPERTY("Indent", "b", Container_Indent),
+	GB_PROPERTY("Invert", "b", Container_Invert),
 
 	FRAME_DESCRIPTION,
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 

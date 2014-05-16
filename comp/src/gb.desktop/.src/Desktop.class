@@ -199,7 +199,7 @@ Static Private Sub GetDesktop() As String
       $sDesktop = "WINDOWMAKER"
     Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
       $sDesktop = "LXDE"
-    Else If InStr(X11.GetWindowProperty("_DT_SAVE_MODE"), "xfce4") Then
+    Else If InStr(X11.GetWindowProperty(X11.RootWindow, "_DT_SAVE_MODE"), "xfce4") Then
       $sDesktop = "XFCE"
     Else
       Select Case Application.Env["XDG_CURRENT_DESKTOP"]
@@ -295,7 +295,7 @@ End
 
 Static Private Function Current_Read() As Integer
 
-  Try Return X11.GetWindowProperty(Atom["_NET_CURRENT_DESKTOP"])[0]
+  Try Return X11.GetWindowProperty(X11.RootWindow, Atom["_NET_CURRENT_DESKTOP"])[0]
 
 End
 
@@ -307,7 +307,7 @@ End
 
 Static Private Function Count_Read() As Integer
 
-  Try Return X11.GetWindowProperty(Atom["_NET_NUMBER_OF_DESKTOPS"])[0]
+  Try Return X11.GetWindowProperty(X11.RootWindow, Atom["_NET_NUMBER_OF_DESKTOPS"])[0]
   Return 1
 
 End
@@ -326,7 +326,7 @@ End
 
 Static Private Function ActiveWindow_Read() As Integer
 
-  Return X11.GetWindowProperty(Atom["_NET_ACTIVE_WINDOW"])[0]
+  Return X11.GetWindowProperty(X11.RootWindow, Atom["_NET_ACTIVE_WINDOW"])[0]
 
 End
 
@@ -338,7 +338,7 @@ End
 
 Static Private Function Showing_Read() As Boolean
 
-  Return X11.GetWindowProperty(Atom["_NET_SHOWING_DESKTOP"])[0]
+  Return X11.GetWindowProperty(X11.RootWindow, Atom["_NET_SHOWING_DESKTOP"])[0]
 
 End
 

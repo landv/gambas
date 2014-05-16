@@ -19,7 +19,7 @@ End
 Public Sub Refresh()
   
   '$aWin = X11.GetWindowProperty(Atom["_NET_CLIENT_LIST"])
-  $aWin = X11.GetWindowProperty(Atom["_NET_CLIENT_LIST_STACKING"])
+  $aWin = X11.GetWindowProperty(X11.RootWindow, Atom["_NET_CLIENT_LIST_STACKING"])
   If Not $aWin Then $aWin = New Integer[]
   $cWin = Null
   
