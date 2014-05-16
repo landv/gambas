@@ -68,13 +68,6 @@ Public Sub Form_Open()
   
 End
 
-Public Sub UpdateImage()
-  
-  imvImage.Update
-  Wait
-  
-End
-
 Private Sub UpdateTitle()
 
   Me.Title = "QuasiRegular (" & Format(imvImage.Zoom, "0%") & ")"

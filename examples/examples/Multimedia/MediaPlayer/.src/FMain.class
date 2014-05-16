@@ -3,7 +3,9 @@
 'Property TagsX As Integer
 
 Private $hPlayer As MediaPlayer
-Private $hOutput As MediaControl
+Private $hImage As MediaControl
+Private $hFilter As MediaFilter
+Private $hOutput As MediaContainer
 Private $aVisualisation As MediaControl[]
 
 Private $fPos As Float
@@ -42,8 +44,16 @@ Private Sub MakeMediaPlayer()
   
   $hPlayer = New MediaPlayer As "MediaPlayer"
   
-  $hOutput = New MediaControl($hPlayer, "ximagesink")  
-  $hPlayer.Video.Output = $hOutput
+  '$hOutput = New MediaContainer($hPlayer)
+  '$hOutput.Name = "MyOutput"
+  
+  $hFilter = New MediaFilter($hPlayer)
+  $hImage = New MediaControl($hPlayer, "ximagesink")  
+  '$hFilter.LinkTo($hImage)
+
+  '$hOutput.AddInput($hImage)
+  
+  $hPlayer.Video.Output = $hImage
   
   $aVisualisation = New MediaControl[]
   AddVisualisation("", "")
@@ -149,14 +159,35 @@ Private Sub Dump(hCont As MediaContainer, Optional iIndent As Integer)
 
   Dim I As Integer
   Dim hCtrl As MediaControl
+  Dim sOutput As String
 
+  If iIndent = 0 Then 
+    Print "Source: "; $hPlayer.Input.Name
+    Print "[-------------------------------------------"
+  Endif
   For I = 0 To hCont.Children.Count - 1
     hCtrl = hCont.Children[I]
-    Print Space$(iIndent * 2); hCtrl;; hCtrl.Type;; hCtrl.Name
+    Print Space$(iIndent * 2); hCtrl;; hCtrl.Name;; "["; hCtrl.Type; "]";; "=>";; hCtrl.Parent.Name
+
+    For Each sOutput In hCtrl.Inputs
+      With hCtrl.GetLink(sOutput)
+        If Not .Peer Then Continue
+        Print Space$(iIndent * 2); "| "; sOutput; " <--- "; .Peer.Name; "."; .Output
+      End With
+    Next
+    
+    For Each sOutput In hCtrl.Outputs
+      With hCtrl.GetLink(sOutput)
+        If Not .Peer Then Continue
+        Print Space$(iIndent * 2); "| "; sOutput; " ---> "; .Peer.Name; "."; .Input
+      End With
+    Next
+    
     If hCtrl Is MediaContainer Then
       Dump(hCtrl, iIndent + 1)
     Endif
   Next
+  If iIndent = 0 Then Print "-------------------------------------------]"
 
 End
 
@@ -167,8 +198,6 @@ Private Sub Action(sAction As String)
   Dim sName As String
   Dim iName As Integer
   Dim sVideo As String
-  Dim I As Integer
-  Dim hCtrl As MediaControl
 
   Select sAction
     
@@ -198,9 +227,9 @@ Private Sub Action(sAction As String)
         Action("stop")
         $hPlayer.Subtitles.Enabled = False
         $hPlayer.URL = "v4l2://" & GetDevice(sVideo)
+        UpdateSubtitle
         FTags.Clear($hPlayer)
         Action("play")
-        
       Endif
       
     Case "info", "config"
@@ -230,7 +259,8 @@ Private Sub Action(sAction As String)
       
     Case "play"
       SuspendScreenSaver
-      $hOutput.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
+      $hImage.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
+      EnableVideoFilter
       Try $hPlayer.Play
       dwgVideo.Mouse = Mouse.Blank
       timTime.Start
@@ -421,11 +451,11 @@ Private Sub UpdateVisualisation()
   $hPlayer.Video.Visualisation = hVis
   If hVis Then
     GetButton("visualisation").Text = hVis.Tag
-    $hOutput.SetWindow(dwgVideo)
+    $hImage.SetWindow(dwgVideo)
     $hPlayer.Position = $hPlayer.Position
   Else
     GetButton("visualisation").Text = ""
-    $hOutput.SetWindow(Null)
+    $hImage.SetWindow(Null)
   Endif
 
 End
@@ -564,5 +594,15 @@ End
 Public Sub SetBalance(iIndex As Integer, iValue As Integer)
   
   $hPlayer.Balance[iIndex].Value = iValue
+  
+End
+
+Private Sub EnableVideoFilter()
+
+  'If $hPlayer.URL Begins "v4l2://" Then
+  '  $hFilter.Filter = "video/x-raw,width=640,height=480,framerate=30/1"
+  'Else
+  '  $hFilter.Filter = "video/x-raw"
+  'Endif
   
 End
