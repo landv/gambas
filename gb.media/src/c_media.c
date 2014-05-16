@@ -524,6 +524,7 @@ GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert)
 	if (!sample_caps)
 	{
 		GB.Error("No caps on video frame");
+		gst_sample_unref(sample);
 		return NULL;
 	}
 
@@ -535,6 +536,7 @@ GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert)
 	if (outwidth <= 0 || outheight <= 0)
 	{
 		GB.Error("Bad image dimensions");
+		gst_sample_unref(sample);
 		return NULL;
 	}
 
@@ -550,6 +552,7 @@ GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert)
 
 	gst_memory_unmap(memory, &info);
 
+	gst_sample_unref(sample);
 	return img;
 }
 
@@ -557,7 +560,6 @@ static GB_IMG *get_last_image(void *_object)
 {
 	GstElement *elt = GST_ELEMENT(ELEMENT);
 	GstSample *sample;
-	GB_IMG *img;
 
 	if (!GST_IS_BASE_SINK(elt))
 	{
@@ -569,9 +571,7 @@ static GB_IMG *get_last_image(void *_object)
 	if (sample == NULL)
 		return NULL;
 
-	img = MEDIA_get_image_from_sample(sample, TRUE);
-	gst_sample_unref(sample);
-	return img;
+	return MEDIA_get_image_from_sample(sample, TRUE);
 }
 
 
