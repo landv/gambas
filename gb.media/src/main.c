@@ -36,6 +36,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 {
 	//MediaSignalArgumentsDesc,
 	MediaTagListDesc,
+	MediaLinkDesc,
 	MediaControlDesc,
 	MediaFilterDesc,
 	MediaContainerChildrenDesc,

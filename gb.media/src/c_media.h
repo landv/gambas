@@ -32,6 +32,7 @@
 
 //extern GB_DESC MediaSignalArgumentsDesc[];
 extern GB_DESC MediaTagListDesc[];
+extern GB_DESC MediaLinkDesc[];
 extern GB_DESC MediaControlDesc[];
 extern GB_DESC MediaFilterDesc[];
 extern GB_DESC MediaContainerChildrenDesc[];
@@ -45,10 +46,21 @@ extern GB_DESC MediaDesc[];
 #define THIS_ARG ((CMEDIASIGNALARGUMENTS *)_object)
 #define ELEMENT THIS->elt
 #define PIPELINE ((GstPipeline *)THIS->elt)
+
 #define THIS_TAGLIST ((CMEDIATAGLIST *)_object)
 #define THIS_PIPELINE ((CMEDIAPIPELINE *)_object)
 
+#define THIS_LINK ((CMEDIALINK *)_object)
+#define LINK THIS_LINK->pad
+
 #endif
+
+typedef
+	struct {
+		GB_BASE ob;
+		GstPad *pad;
+	}
+	CMEDIALINK;
 
 typedef
 	struct {
@@ -102,5 +114,7 @@ bool MEDIA_get_flag(void *element, char *property, int flag);
 void MEDIA_set_flag(void *element, char *property, int flag, bool value);
 
 void MEDIA_set_property(void *_object, const char *property, GB_VALUE *v);
+
+GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert);
 
 #endif /* __C_MEDIA_H */

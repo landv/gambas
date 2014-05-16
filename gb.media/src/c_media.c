@@ -27,6 +27,8 @@
 
 #include "c_media.h"
 //#include <gst/interfaces/xoverlay.h>
+#include <gst/base/gstbasesink.h>
+#include <gst/video/video.h>
 #include <gst/video/videooverlay.h>
 
 static void *_from_element = NULL;
@@ -450,6 +452,129 @@ void MEDIA_set_property(void *_object, const char *property, GB_VALUE *v)
 	g_value_unset(&value);
 }
 
+GB_IMG *MEDIA_get_image_from_sample(GstSample *sample, bool convert)
+{
+	GstSample *temp;
+	GError *err = NULL;
+	GstStructure *s;
+	GstCaps *to_caps, *sample_caps;
+	gint outwidth = 0;
+	gint outheight = 0;
+	GstMemory *memory;
+	GstMapInfo info;
+	const char *format;
+	int gb_format;
+	GB_IMG *img;
+
+	switch (IMAGE.GetDefaultFormat())
+	{
+		case GB_IMAGE_BGRA:
+			format = "BGR";
+			gb_format = GB_IMAGE_BGR;
+			break;
+
+		case GB_IMAGE_RGBA:
+			format = "RGB";
+			gb_format = GB_IMAGE_RGB;
+			break;
+
+		default:
+			GB.Error("Unsupported default image format");
+			return NULL;
+	}
+
+	if (convert)
+	{
+		/* our desired output format (RGB or BGR) */
+		to_caps = gst_caps_new_simple ("video/x-raw",
+			"format", G_TYPE_STRING, format,
+			/* Note: we don't ask for a specific width/height here, so that
+				* videoscale can adjust dimensions from a non-1/1 pixel aspect
+				* ratio to a 1/1 pixel-aspect-ratio. We also don't ask for a
+				* specific framerate, because the input framerate won't
+				* necessarily match the output framerate if there's a deinterlacer
+				* in the pipeline. */
+			"pixel-aspect-ratio", GST_TYPE_FRACTION, 1, 1,
+			NULL);
+
+		temp = gst_video_convert_sample(sample, to_caps, 25 * GST_SECOND, &err);
+
+		if (temp == NULL && err)
+		{
+			GB.Error(err->message);
+			gst_caps_unref(to_caps);
+			gst_sample_unref(sample);
+			g_error_free(err);
+			return NULL;
+		}
+
+		gst_sample_unref(sample);
+		gst_caps_unref(to_caps);
+
+		sample = temp;
+	}
+
+	if (!sample)
+	{
+		GB.Error("Unable to retrieve or convert video frame");
+		return NULL;
+	}
+
+	sample_caps = gst_sample_get_caps(sample);
+	if (!sample_caps)
+	{
+		GB.Error("No caps on video frame");
+		return NULL;
+	}
+
+	//fprintf(stderr, "frame caps: %" GST_PTR_FORMAT, sample_caps);
+
+	s = gst_caps_get_structure (sample_caps, 0);
+	gst_structure_get_int (s, "width", &outwidth);
+	gst_structure_get_int (s, "height", &outheight);
+	if (outwidth <= 0 || outheight <= 0)
+	{
+		GB.Error("Bad image dimensions");
+		return NULL;
+	}
+
+	memory = gst_buffer_get_memory (gst_sample_get_buffer (sample), 0);
+	gst_memory_map(memory, &info, GST_MAP_READ);
+
+	/* create pixbuf from that - use our own destroy function */
+	/*pixbuf = gdk_pixbuf_new_from_data (info.data,
+			GDK_COLORSPACE_RGB, FALSE, 8, outwidth, outheight,
+			GST_ROUND_UP_4 (outwidth * 3), destroy_pixbuf, sample);*/
+
+	img = IMAGE.Create(outwidth, outheight, gb_format, info.data);
+
+	gst_memory_unmap(memory, &info);
+
+	return img;
+}
+
+static GB_IMG *get_last_image(void *_object)
+{
+	GstElement *elt = GST_ELEMENT(ELEMENT);
+	GstSample *sample;
+	GB_IMG *img;
+
+	if (!GST_IS_BASE_SINK(elt))
+	{
+		GB.Error("Not supported on this control");
+		return NULL;
+	}
+
+	sample = gst_base_sink_get_last_sample(GST_BASE_SINK(elt));
+	if (sample == NULL)
+		return NULL;
+
+	img = MEDIA_get_image_from_sample(sample, TRUE);
+	gst_sample_unref(sample);
+	return img;
+}
+
+
 #if 0
 //---- MediaSignalArguments -----------------------------------------------
 
@@ -554,6 +679,76 @@ BEGIN_PROPERTY(MediaTagList_Tags)
 
 END_PROPERTY
 
+//---- MediaLink ----------------------------------------------------------
+
+static CMEDIALINK *create_link(GstPad *pad)
+{
+	CMEDIALINK *ob;
+
+	ob = GB.New(GB.FindClass("MediaLink"), NULL, NULL);
+	ob->pad = pad;
+	return ob;
+}
+
+BEGIN_METHOD_VOID(MediaLink_free)
+
+	gst_object_unref(LINK);
+
+END_METHOD
+
+BEGIN_PROPERTY(MediaLink_Name)
+
+	char *name = gst_pad_get_name(LINK);
+	GB.ReturnNewZeroString(name);
+	g_free(name);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaLink_Peer)
+
+	GstPad *peer = gst_pad_get_peer(LINK);
+
+	if (!peer)
+	{
+		GB.ReturnNull();
+		return;
+	}
+
+	GB.ReturnObject(MEDIA_get_control_from_element(gst_pad_get_parent_element(peer), TRUE));
+	gst_object_unref(peer);
+
+END_PROPERTY
+
+static void return_peer_name(void *_object, GstPadDirection dir)
+{
+	if (gst_pad_get_direction(LINK) == dir)
+	{
+		GstPad *peer = gst_pad_get_peer(LINK);
+		if (peer)
+		{
+			char *name = gst_pad_get_name(peer);
+			GB.ReturnNewZeroString(name);
+			g_free(name);
+			gst_object_unref(peer);
+			return;
+		}
+	}
+
+	GB.ReturnVoidString();
+}
+
+BEGIN_PROPERTY(MediaLink_Input)
+
+	return_peer_name(THIS_LINK, GST_PAD_SRC);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaLink_Output)
+
+	return_peer_name(THIS_LINK, GST_PAD_SINK);
+
+END_PROPERTY
+
 //---- MediaControl -------------------------------------------------------
 
 DECLARE_EVENT(EVENT_State);
@@ -581,23 +776,13 @@ static MEDIA_TYPE _types[] =
 static void cb_pad_added(GstElement *element, GstPad *pad, CMEDIACONTROL *_object)
 {
 	char *name;
-	//GstPad *sinkpad;
-	
-	//fprintf(stderr, "cb_pad_added: %s\n", gst_element_factory_get_klass(gst_element_get_factory(ELEMENT)));
 
 	if (!THIS->dest)
 		return;
 	
-	/* We can now link this pad with the vorbis-decoder sink pad */
-	//sinkpad = gst_element_get_static_pad (decoder, "sink");
-	//gst_pad_link (pad, sinkpad);
-	
 	name = gst_pad_get_name(pad);
 	gst_element_link_pads(ELEMENT, name, ((CMEDIACONTROL *)THIS->dest)->elt, NULL);
 	g_free(name);
-	
-	//GB.Unref(POINTER(&THIS->dest));
-	//gst_object_unref (sinkpad);
 }
 
 BEGIN_METHOD(MediaControl_new, GB_OBJECT parent; GB_STRING type)
@@ -729,6 +914,15 @@ BEGIN_PROPERTY(MediaControl_Type)
 	
 END_PROPERTY
 
+BEGIN_PROPERTY(MediaControl_Parent)
+
+	GstElement *parent = GST_ELEMENT(gst_element_get_parent(ELEMENT));
+	GB.ReturnObject(MEDIA_get_control_from_element(parent, TRUE));
+	if (parent)
+		gst_object_unref(parent);
+
+END_PROPERTY
+
 BEGIN_PROPERTY(MediaControl_Name)
 
 	if (READ_PROPERTY)
@@ -801,7 +995,23 @@ BEGIN_METHOD(MediaControl_LinkTo, GB_OBJECT dest; GB_STRING output; GB_STRING in
 	input = MISSING(input) ? NULL : GB.ToZeroString(ARG(input));
 	if (input && !*input) input = NULL;
 	
-	gst_element_link_pads(ELEMENT, output, dest->elt, input);
+	if (output)
+	{
+		GstPad *pad = gst_element_get_static_pad (ELEMENT, output);
+		if (pad)
+		{
+			if (GST_PAD_IS_SRC(pad))
+			{
+				GstPad *peer = gst_pad_get_peer(pad);
+				gst_pad_unlink(pad, peer);
+				gst_object_unref(peer);
+			}
+			gst_object_unref(pad);
+		}
+	}
+
+	if (!gst_element_link_pads(ELEMENT, output, dest->elt, input))
+		GB.Error("Unable to link controls");
 
 END_METHOD
 
@@ -1009,6 +1219,55 @@ BEGIN_PROPERTY(MediaControl_Protocols)
 
 END_PROPERTY
 #endif
+
+BEGIN_METHOD(MediaControl_GetLink, GB_STRING name)
+
+	bool done = FALSE;
+	GstIterator *iter;
+	GstPad *pad;
+	char *name;
+	char *search;
+	CMEDIALINK *link = NULL;
+
+	search = GB.ToZeroString(ARG(name));
+	iter = gst_element_iterate_pads(ELEMENT);
+
+	while (!done)
+	{
+		switch (iterator_next_pad(iter, &pad))
+		{
+			case GST_ITERATOR_OK:
+				name = gst_pad_get_name(pad);
+				if (strcmp(name, search) == 0)
+				{
+					link = create_link(pad);
+					done = TRUE;
+					break;
+				}
+				g_free(name);
+				gst_object_unref(pad);
+				break;
+			case GST_ITERATOR_RESYNC:
+				gst_iterator_resync(iter);
+				break;
+			case GST_ITERATOR_ERROR:
+			case GST_ITERATOR_DONE:
+				done = TRUE;
+				break;
+		}
+	}
+
+	gst_iterator_free(iter);
+	GB.ReturnObject(link);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(MediaControl_GetLastImage)
+
+	GB.ReturnObject(get_last_image(THIS));
+
+END_PROPERTY
+
 
 //---- MediaFilter --------------------------------------------------------
 
@@ -1435,6 +1694,22 @@ GB_DESC MediaTagListDesc[] =
 };
 
 
+GB_DESC MediaLinkDesc[] =
+{
+	GB_DECLARE("MediaLink", sizeof(CMEDIALINK)),
+	GB_NOT_CREATABLE(),
+
+	GB_METHOD("_free", NULL, MediaLink_free, NULL),
+
+	GB_PROPERTY_READ("Name", "s", MediaLink_Name),
+	GB_PROPERTY_READ("Peer", "MediaControl", MediaLink_Peer),
+	GB_PROPERTY_READ("Input", "s", MediaLink_Input),
+	GB_PROPERTY_READ("Output", "s", MediaLink_Output),
+
+	GB_END_DECLARE
+};
+
+
 GB_DESC MediaControlDesc[] = 
 {
 	GB_DECLARE("MediaControl", sizeof(CMEDIACONTROL)),
@@ -1444,20 +1719,24 @@ GB_DESC MediaControlDesc[] =
 	
 	GB_PROPERTY("Name", "s", MediaControl_Name),
 	GB_PROPERTY_READ("Type", "s", MediaControl_Type),
+	GB_PROPERTY_READ("Parent", "MediaContainer", MediaControl_Parent),
 	GB_PROPERTY("State", "i", MediaControl_State),
 	GB_PROPERTY("Tag", "v", MediaControl_Tag),
 			
 	GB_METHOD("_put", NULL, MediaControl_put, "(Value)v(Property)s"),
 	GB_METHOD("_get", "v", MediaControl_get, "(Property)s"),
 	
-	GB_METHOD("LinkTo", NULL, MediaControl_LinkTo, "(Destination)MediaControl;[(Output)s(Input)s]"),
-	GB_METHOD("LinkLaterTo", NULL, MediaControl_LinkLaterTo, "(Destination)MediaControl;"),
+	GB_METHOD("LinkTo", NULL, MediaControl_LinkTo, "(Target)MediaControl;[(Output)s(Input)s]"),
+	GB_METHOD("LinkLaterTo", NULL, MediaControl_LinkLaterTo, "(Target)MediaControl;"),
 	
 	GB_PROPERTY_READ("Inputs", "String[]", MediaControl_Inputs),
 	GB_PROPERTY_READ("Outputs", "String[]", MediaControl_Outputs),
 	
+	GB_METHOD("GetLink", "MediaLink", MediaControl_GetLink, "(Name)s"),
+
 	GB_METHOD("SetWindow", NULL, MediaControl_SetWindow, "(Control)Control;[(X)i(Y)i(Width)i(Height)i]"),
-	
+	GB_METHOD("GetLastImage", "Image", MediaControl_GetLastImage, NULL),
+
 	GB_EVENT("State", NULL, NULL, &EVENT_State),
 	//GB_EVENT("Signal", NULL, "(Arg)MediaSignalArguments", &EVENT_Signal),
 	
