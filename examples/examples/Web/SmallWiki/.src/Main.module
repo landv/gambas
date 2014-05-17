@@ -87,7 +87,7 @@ Public Sub Main()
   ' Each page modification is archived in a "~page.<date>.<user>" file, allowing changes to be undone.
   
   Path = Request.Path
-  If Path = "/" Then Path) = ""
+  If Path = "/" Then Path = ""
   
   ' Handle resource files: images, style sheet...
   
