@@ -623,7 +623,11 @@ _INIT_AGAIN:
   ReadProject
 
   If Not ReadOnly Then
-    If Not Exist(Project.Dir &/ ".hidden") Then Project.InsertDirectory(Project.Dir &/ ".hidden")
+    
+    If Not Exist(Project.Dir &/ ".hidden") Then InsertDirectory(Project.Dir &/ ".hidden")
+    
+    CreateGitIgnore
+    
   Endif
   Dec $iNoRefresh
 
@@ -4980,6 +4984,39 @@ Catch
   Else
     Return Picture.Load(sPath)
   Endif
+
+End
+
+Private Sub CreateGitIgnore()
+
+  Dim sPath As String = Project.Dir &/ ".gitignore"
+  Dim sData As String
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  
+  If Not Exist(sPath) Then
+    Try Copy "gitignore" To sPath
+    Return
+  Endif
+
+  sData = File.Load(sPath)
+  iPos = InStr(sData, "#---- Gambas files to ignore (v1)")
+  If iPos Then Return
+  
+  iPos = InStr(sData, "#---- Gambas files to ignore")
+  If iPos Then
+    iPos2 = InStr(sData, "#----", iPos + 5)
+    If iPos2 Then
+      iPos2 = InStr(sData, "\n", iPos2)
+      If iPos2 = 0 Then iPos2 = Len(sData) + 1
+      sData = Left(sData, iPos - 1) & Mid$(sData, iPos2)
+    Endif
+  Endif
+  
+  sData = RTrim(sData)
+  If sData Then sData &= "\n"
+  
+  File.Save(sPath, sData & File.Load("gitignore"))
 
 End
 
