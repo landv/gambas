@@ -23,8 +23,11 @@
 
 #define __DATE_C
 
+#define _BSD_SOURCE
+
 #include <unistd.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "gb_common.h"
 #include "gb_common_buffer.h"
@@ -46,8 +49,6 @@
 #define get_current COMMON_get_current
 #define buffer_pos COMMON_pos
 #define get_size_left COMMON_get_size_left
-
-int DATE_timezone;
 
 static const char days_in_months[2][13] =
 {  /* error, jan feb mar apr may jun jul aug sep oct nov dec */
@@ -102,28 +103,6 @@ static short date_from_julian_year(short year)
 		return year + DATE_YEAR_MIN + 1;
 }
 
-void DATE_init_local(void)
-{
-	#if defined(OS_FREEBSD) || defined(OS_MACOSX) || defined(OS_OPENBSD)
-	{
-		time_t t = (time_t)0L;
-		struct tm *tm = localtime(&t);
-		DATE_timezone = tm->tm_gmtoff;
-		//DATE_daylight = tm->tm_isdst;
-	}
-	#else
-	tzset();
-	DATE_timezone = timezone;
-	//DATE_daylight = daylight;
-	#endif
-
-	#ifdef DEBUG_DATE
-	time_t t = (time_t)0L;
-	struct tm *tm = gmtime(&t);
-	fprintf(stderr, "TimeZone = %d DayLight = %d Hour = %d\n", DATE_timezone, daylight, tm->tm_hour);
-	#endif
-}
-
 void DATE_init(void)
 {
 	struct timeval tv;
@@ -134,6 +113,11 @@ void DATE_init(void)
 		_start_time = 0.0;
 
 	//DATE_init_local();
+}
+
+void DATE_init_local(void)
+{
+	tzset();
 }
 
 DATE_SERIAL *DATE_split(VALUE *value)
@@ -148,7 +132,7 @@ DATE_SERIAL *DATE_split(VALUE *value)
 	nmsec = value->_date.time;
 
 	if (nday > 0)
-		nmsec += DATE_timezone * 1000;
+		nmsec += DATE_get_timezone() * 1000;
 
 	if (nmsec < 0)
 	{
@@ -243,7 +227,7 @@ bool DATE_make(DATE_SERIAL *date, VALUE *val)
 	val->_date.date = nday;
 	val->_date.time = ((date->hour * 60) + date->min) * 60 + date->sec;
 	if (timezone)
-		val->_date.time -= DATE_timezone;
+		val->_date.time -= DATE_get_timezone();
 
 	if (val->_date.time < 0)
 	{
@@ -306,7 +290,7 @@ void DATE_now(VALUE *val)
 {
 	struct timeval tv;
 
-	if (gettimeofday(&tv, NULL) != 0)
+	if (gettimeofday(&tv, NULL))
 		val->type = T_NULL;
 	else
 	{
@@ -314,7 +298,6 @@ void DATE_now(VALUE *val)
 		DATE_from_time((time_t)tv.tv_sec, tv.tv_usec, val);
 	}
 }
-
 
 int DATE_to_string(char *buffer, VALUE *value)
 {
@@ -870,4 +853,11 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 		THROW(E_OVERFLOW);
 
 	return diff;
+}
+
+int DATE_get_timezone(void)
+{
+	time_t t = time(NULL);
+	struct tm *tm = localtime(&t);
+	return tm->tm_gmtoff;
 }

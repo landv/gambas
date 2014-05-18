@@ -70,10 +70,6 @@ enum {
   
 #ifndef GBX_INFO
 
-#ifndef __GBX_DATE_C
-extern int DATE_timezone;
-#endif
-	
 #define DATE_YEAR_MIN  -4801
 #define DATE_YEAR_MAX   9999
 
@@ -84,6 +80,7 @@ extern int DATE_timezone;
 	
 void DATE_init(void);
 void DATE_init_local(void);
+int DATE_get_timezone(void);
 DATE_SERIAL *DATE_split(VALUE *value);
 bool DATE_make(DATE_SERIAL *date, VALUE *val);
 void DATE_from_time(time_t time, int usec, VALUE *val);
