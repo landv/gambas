@@ -104,6 +104,8 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 	fprintf(stderr, "EVAL: %s\n", EVAL->source);
 	#endif
 
+	STACK_enable_for_eval();
+
 	nvar = EVAL->nvar;
 
 	STACK_check(nvar);
@@ -139,6 +141,7 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 	}
 	END_TRY
 	
+	STACK_disable_for_eval();
 	EXEC_debug = debug;
 	return error;
 }

@@ -68,9 +68,10 @@ void STACK_init(void)
 
 	STACK_process_stack_limit = (uintptr_t)&stack - max + 65536;
 	
-  STACK_limit = (STACK_base + STACK_size);
+  STACK_limit = STACK_base + STACK_size;
   STACK_frame = (STACK_CONTEXT *)STACK_limit;
   STACK_frame_count = 0;
+	STACK_limit -= STACK_FOR_EVAL * sizeof(VALUE);
 
   SP = (VALUE *)STACK_base;
 }
