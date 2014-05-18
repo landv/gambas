@@ -92,7 +92,8 @@ typedef
 		char npmin;                    // Minimum number of arguments
 		unsigned vararg : 1;           // If this function accepts extra arguments
 		unsigned fast : 1;             // If this function is jit compiled
-		unsigned _reserved : 14;
+		unsigned use_is_missing : 1;   // If this function uses IsMissing()
+		unsigned _reserved : 13;
 		short nlocal;                  // Local variable count
 		short nctrl;                   // Control structure variable count
 		

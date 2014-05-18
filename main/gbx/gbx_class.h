@@ -101,7 +101,8 @@ typedef
 		char vararg;
 		unsigned fast : 1;
 		unsigned optional : 1;
-		unsigned _reserved : 6;
+		unsigned use_is_missing : 1;
+		unsigned _reserved : 5;
 		short n_local;
 		short n_ctrl;
 		short stack_usage;
@@ -113,6 +114,17 @@ typedef
 		}
 	PACKED
 	FUNCTION;
+
+typedef
+	struct {
+		TYPE type;
+		char n_param;
+		char npmin;
+		char vararg;
+		unsigned char flag;
+		}
+	PACKED
+	FUNCTION_FLAG;
 
 typedef
 	struct {

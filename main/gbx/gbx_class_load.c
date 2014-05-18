@@ -496,6 +496,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	char *name;
 	int len;
 	bool have_jit_functions = FALSE;
+	uchar flag;
 	
 	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD));
 
@@ -576,6 +577,13 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	{
 		func = &class->load->func[i];
 		func->code = (ushort *)get_section("code", &section, NULL, _s);
+
+		flag = ((FUNCTION_FLAG *)func)->flag;
+
+		func->fast = (flag & 1) != 0;
+		func->optional = (func->npmin < func->n_param);
+		func->use_is_missing = (flag & 2) != 0;
+
 		if (func->fast)
 		{
 			func->fast = JIT_load();
@@ -583,8 +591,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 				have_jit_functions = TRUE;
 		}
 
-		func->optional = (func->npmin < func->n_param);
-		if (func->optional)
+		if (func->use_is_missing)
 		{
 			func->stack_usage++;
 			func->n_ctrl++;

@@ -542,7 +542,7 @@ void EXEC_enter(void)
 		}
 
 		// Optional argument map
-		if (optional)
+		if (optional && func->use_is_missing)
 		{
 			SP--;
 			SP->type = T_LONG;

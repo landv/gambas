@@ -271,6 +271,7 @@ static void trans_subr(int subr, short nparam)
 	}
 	else if (subr == SUBR_IsMissing)
 	{
+		JOB->func->use_is_missing = TRUE;
 		if (CODE_check_ismissing())
 			THROW("IsMissing() requires a function argument");
 	}

@@ -109,7 +109,7 @@ typedef
     char n_param;
     char npmin;
     char vararg;
-    char _reserved;
+    char flag;
     short n_local;
     short n_ctrl;
     short stack_usage;
