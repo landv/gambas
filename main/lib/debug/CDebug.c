@@ -76,6 +76,7 @@ static void callback_read(int fd, int type, intptr_t param)
 		}
     
     p = 0;
+
     for (i = 0; i < n; i++)
     {
       if (_buffer[i] == '\n')
@@ -87,6 +88,9 @@ static void callback_read(int fd, int type, intptr_t param)
         p = i + 1;
       }
     }
+
+    if (!_buffer)
+			break;
     
     if (p == 0 && n >= BUFFER_SIZE)
     {
