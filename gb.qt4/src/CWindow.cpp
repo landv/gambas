@@ -958,7 +958,7 @@ BEGIN_PROPERTY(CWINDOW_full_screen)
 END_PROPERTY
 
 
-#ifdef NO_X_WINDOW //------------------------------------------------------------------------------
+#ifdef NO_X_WINDOW
 
 BEGIN_PROPERTY(CWINDOW_stacking)
 
@@ -991,15 +991,6 @@ BEGIN_PROPERTY(CWINDOW_sticky)
 
 END_PROPERTY
 
-#if 0
-BEGIN_PROPERTY(CWINDOW_type)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(0);
-
-END_PROPERTY
-#endif
-
 BEGIN_PROPERTY(Window_Utility)
 
 	if (READ_PROPERTY)
@@ -1007,7 +998,9 @@ BEGIN_PROPERTY(Window_Utility)
 
 END_PROPERTY
 
-#else //-------------------------------------------------------------------------------------------
+#endif
+
+#ifndef NO_X_WINDOW
 
 static void manage_window_property(void *_object, void *_param, Atom property)
 {

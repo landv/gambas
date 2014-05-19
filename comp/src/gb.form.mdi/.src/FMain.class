@@ -10,7 +10,14 @@ End
 
 Public Sub Form_Open()
 
+  Application.MainWindow = Me
+
   $hWatcher = New Watcher(ToolButton1) As "Watcher"
+
+  Button2_Click
+  Button2_Click
+  Button2_Click
+  Button2_Click
 
 End
 
@@ -24,7 +31,6 @@ End
 Public Sub Button2_Click()
 
   Dim hForm As Form = New Form1
-  
   Workspace1.Add(hForm)
 
 End
@@ -36,5 +42,11 @@ Public Sub Button3_Click()
   Else
     Workspace1.Orientation = Align.Top
   Endif
+
+End
+
+Public Sub Workspace1_Activate()
+
+  Try Debug Workspace1.ActiveWindow.Title
 
 End

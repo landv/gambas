@@ -37,6 +37,20 @@ Public Sub Add(hWindow As Window, Optional Resizable As Boolean) As Window
   
 End
 
+Public Sub Detach(hWindow As Window)
+  
+  $hWorkspace.Detach(hWindow)
+  
+End
+
+Public Sub Attach(hWindow As Window)
+  
+  $hWorkspace.Attach(hWindow)
+  
+End
+
+
+
 Public Sub Lock()
   
   $hWorkspace.Lock

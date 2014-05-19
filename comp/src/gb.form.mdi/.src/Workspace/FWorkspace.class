@@ -104,6 +104,58 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
     
 End
 
+Private Sub GetTopLevelWindow(hCtrl As Control) As Window
+
+  Dim hWin As Window
+  
+  Do
+    hWin = hCtrl.Window
+    If hWin.TopLevel Then Return hWin
+    hCtrl = hWin.Parent
+  Loop
+
+End
+
+Public Sub Detach(hWin As Window)
+  
+  Dim iInd As Integer = GetIndex(hWin)
+  Dim hWindow As CWindow
+  
+  If iInd < 0 Then Error.Raise("Unknown window")
+  
+  hWindow = $aWindow[iInd]
+  If hWindow.Detached Then Return
+
+  tabWorkspace[iInd].Visible = False
+  'hWin.Utility = True
+  hWin.Reparent(Null)
+  hWin.Show
+  
+  hWindow.Detached = True
+    
+End
+
+Public Sub Attach(hWin As Window)
+  
+  Dim iInd As Integer = GetIndex(hWin)
+  Dim hWindow As CWindow
+  
+  If iInd < 0 Then Error.Raise("Unknown window")
+  
+  hWindow = $aWindow[iInd]
+  If Not hWindow.Detached Then Return
+
+  tabWorkspace[iInd].Visible = True
+  hWin.Utility = False
+  hWin.Reparent(panWorkspace)
+  If tabWorkspace.Index = iInd Then hWin.Show
+  
+  hWindow.Detached = False
+    
+End
+
+
+
 Public Sub SetResizable(hWin As Window, bResize As Boolean, Optional iGrid As Integer)
   
   Dim iInd As Integer = GetIndex(hWin)
@@ -242,10 +294,17 @@ Public Sub Watcher_Icon()
   
 End
 
+Public Sub Watcher_Activate()
+  
+  Activate(Last)
+  
+End
+
+
 Public Sub Watcher_Close()
   
-  'Debug Last.Name;; Last.Title;; Last.Closed
-  RemoveWindow(Last)
+  Dim hWin As Window = Last
+  RemoveWindow(hWin)
   
 End
 
@@ -288,10 +347,22 @@ Private Sub GetParent() As Workspace
   
 End
 
+Private Sub IsDetached(hWindow As Window) As Boolean
+
+  Dim iInd As Integer
+  
+  iInd = GetIndex(hWindow)
+  If iInd < 0 Then Return
+  Return Not tabWorkspace[iInd].Visible
+  
+End
+
+
 Public Sub Activate(Optional hWindow As Window)
   
   Dim hOld As CWindow
   Dim hWin As CWindow
+  Dim iInd As Integer
 
   'IF $iLock > 0 THEN RETURN
   
@@ -305,12 +376,16 @@ Public Sub Activate(Optional hWindow As Window)
     ' ENDIF
   
     If hWindow Then
-      'DEBUG "Set tab index"
-      Try tabWorkspace.Index = GetIndex(hWindow)
-      Return
+      iInd = GetIndex(hWindow)
+      If Not $aWindow[iInd].Detached Then
+        Try tabWorkspace.Index = iInd
+        Return
+      Endif
+    Else
+      iInd = tabWorkspace.Index
     Endif
-  
-    hWin = $aWindow[tabWorkspace.Index]
+    
+    hWin = $aWindow[iInd]
     If Not Object.IsValid(hWin.Window) Then Return
 
     hOld = $hCurrent
@@ -339,7 +414,7 @@ Public Sub Activate(Optional hWindow As Window)
         Endif
       End With
       
-      If hOld And If hOld <> hWin Then 
+      If hOld And If hOld <> hWin And If Not hOld.Detached And If Not hWin.Detached Then 
         $bNoClose = True
         'If $iNoWait = 0 Then Wait
         'DEBUG $bNoClose
@@ -562,8 +637,10 @@ Public Sub tabWorkspace_Menu()
 
   Dim iInd As Integer
   Dim hMenu As Menu
+  Dim hParent As Menu
   Dim aTitle As New String[]
   Dim sTitle As String
+  Dim hWin As CWindow
   
   'GetParent()._Menu
 
@@ -601,6 +678,32 @@ Public Sub tabWorkspace_Menu()
   
   Endif
   
+  hMenu = New Menu(mnuWindow) As "mnuDetach"
+  hMenu.Text = ("Detach current tab")
+  'hMenu.Picture = Picture["icon:/small/close"]
+  
+  hParent = New Menu(mnuWindow)
+  hParent.Text = ("Attach tab")
+  
+  For Each sTitle In aTitle
+    iInd = CInt(Mid$(sTitle, InStr(sTitle, "\t") + 1))
+    hWin = $aWindow[iInd]
+    If Not hWin.Detached Then Continue
+    With tabWorkspace[iInd]
+      hMenu = New Menu(hParent) As "mnuAttach"
+      If .Text Then
+        hMenu.Text = .Text
+      Else 
+        hMenu.Text = " "
+      Endif
+      hMenu.Picture = .Picture
+      hMenu.Checked = iInd = tabWorkspace.Index
+      hMenu.Tag = iInd
+    End With
+  Next 
+  
+  If hParent.Children.Count = 0 Then hParent.Hide
+  
   hMenu = New Menu(mnuWindow) As "btnClose"
   hMenu.Text = ("&Close current tab")
   hMenu.Picture = Picture["icon:/small/close"]
@@ -617,7 +720,7 @@ End
 
 Public Sub mnuWindow_Click()
   
-  tabWorkspace.Index = Last.Tag
+  Activate($aWindow[Last.Tag].Window)
   
 End
 
@@ -813,4 +916,16 @@ Public Sub tabWorkspace_Move(Source As Integer, Target As Integer)
     UpdateTitleFromIndex(I)
   Next
 
+End
+
+Public Sub mnuDetach_Click()
+
+  Detach($aWindow[tabWorkspace.Index].Window)
+  
+End
+
+Public Sub mnuAttach_Click()
+  
+  Attach($aWindow[Last.Tag].Window)
+  
 End
