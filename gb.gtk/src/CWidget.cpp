@@ -622,11 +622,14 @@ END_METHOD
 
 BEGIN_METHOD(CWIDGET_reparent, GB_OBJECT parent; GB_INTEGER x; GB_INTEGER y)
 
-	CCONTAINER *parent=(CCONTAINER*)VARG(parent);
+	CCONTAINER *parent = (CCONTAINER*)VARG(parent);
 	int x, y;
 
-	if (GB.CheckObject(parent))
-		return;
+	if (parent || !GB.Is(THIS, CLASS_Window))
+	{
+		if (GB.CheckObject(parent))
+			return;
+	}
 
 	x = CONTROL->x();
 	y = CONTROL->y();
@@ -637,7 +640,7 @@ BEGIN_METHOD(CWIDGET_reparent, GB_OBJECT parent; GB_INTEGER x; GB_INTEGER y)
 		y = VARG(y);
 	}
 
-	CONTROL->reparent((gContainer*)parent->ob.widget, x, y);
+	CONTROL->reparent(parent ? (gContainer*)parent->ob.widget : NULL, x, y);
 
 END_METHOD
 

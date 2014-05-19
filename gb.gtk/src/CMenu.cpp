@@ -137,12 +137,12 @@ static void cb_hide(gMenu *sender)
 	GB.Raise(THIS, EVENT_Hide, 0);
 }
 
-BEGIN_METHOD_VOID(CMENU_init)
+/*BEGIN_METHOD_VOID(CMENU_init)
 
 	CLASS_Menu = GB.FindClass("Menu");
 	CLASS_Window = GB.FindClass("Window");
 
-END_METHOD
+END_METHOD*/
 
 
 BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
@@ -463,7 +463,7 @@ GB_DESC CMenuDesc[] =
 	GB_DECLARE("Menu", sizeof(CMENU)),
 	GB_HOOK_CHECK(CMENU_check),
 
-	GB_STATIC_METHOD("_init", 0, CMENU_init, 0),
+	//GB_STATIC_METHOD("_init", 0, CMENU_init, 0),
 	GB_METHOD("_new", 0, CMENU_new, "(Parent)o[(Hidden)b]"),
 	GB_METHOD("_free", 0, CMENU_free, 0),
 

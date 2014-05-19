@@ -36,7 +36,7 @@ public:
 //"Properties"
 	bool hasBorder();
 	bool isResizable();
-	bool isUtility();
+	bool isUtility() const;
 	gPicture *icon() { return _icon; }
 	gPicture *picture() { return _picture; }
 	bool mask() { return _mask; }
@@ -100,6 +100,7 @@ public:
 
 //"Methods"
 	void center();
+	void showActivate();
 	void showModal();
 	void showPopup();
 	void showPopup(int x, int y);
@@ -182,6 +183,7 @@ public:
 	unsigned _maximized : 1;
 	unsigned _minimized : 1;
 	unsigned _fullscreen : 1;
+	unsigned _utility : 1;
 };
 
 #endif

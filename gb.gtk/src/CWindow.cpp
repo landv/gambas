@@ -395,7 +395,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CWINDOW_show)
 
-	WINDOW->show();
+	WINDOW->showActivate();
 
 END_METHOD
 
