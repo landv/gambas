@@ -46,8 +46,8 @@ class gFrame : public gContainer
 public:
 	gFrame(gContainer *parent);
 
-	char* text();
-	void setText(char* vl);
+	const char *text();
+	void setText(const char *vl);
 
 	virtual int containerX();
 	virtual int containerY();
@@ -63,7 +63,6 @@ public:
 
 //"Private"
 	GtkWidget *fr;
-	GtkWidget *label;
 };
 
 #endif

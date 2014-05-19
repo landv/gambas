@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gdesktop.cpp
+	gdesktop.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -60,7 +60,7 @@ void gDesktop::init()
 
 void gDesktop::exit()
 {
-  gFont::assign(&_desktop_font);
+	gFont::assign(&_desktop_font);
 }
 
 gFont* gDesktop::font()
@@ -71,8 +71,20 @@ gFont* gDesktop::font()
 
 void gDesktop::setFont(gFont *ft)
 {
-  gFont::set(&_desktop_font, ft->copy());
-  _desktop_scale = 0;
+	GList *iter;
+	gControl *control;
+
+	gFont::set(&_desktop_font, ft->copy());
+	_desktop_scale = 0;
+
+	iter = g_list_first(gControl::controlList());
+
+	while (iter)
+	{
+		control = (gControl *)iter->data;
+		control->updateFont();
+		iter = g_list_next(iter);
+	}
 }
 
 /*gControl* gDesktop::activeControl()
@@ -93,9 +105,9 @@ void gDesktop::setFont(gFont *ft)
 		}
 		iter=iter->next;
 	}
-	
+
 	return curr;
-	
+
 }*/
 
 gMainWindow* gDesktop::activeWindow()
@@ -192,7 +204,7 @@ gColor gDesktop::buttonbgColor()
 }
 
 gColor gDesktop::fgColor()
-{	
+{
 	return get_color(GTK_TYPE_WINDOW, 0, STATE_NORMAL, true, false);
 }
 
@@ -268,36 +280,36 @@ int gDesktop::scale()
 		gFont *ft = font();
 		_desktop_scale = GET_DESKTOP_SCALE(ft->size(), resolution());
 	}
-	
+
 /*	PangoLanguage *lng=NULL;
 	PangoContext* ct=gdk_pango_context_get();
 	GtkStyle *sty=gtk_widget_get_default_style();
 	PangoFontDescription *ft=sty->font_desc;
 	PangoFontMetrics* fm;
 	int val;
-	
+
 	if (!_desktop_scale)
 	{
-		if (getenv("LANG")) 
+		if (getenv("LANG"))
 			lng = pango_language_from_string(getenv("LANG"));
-			
+
 		fm = pango_context_get_metrics (ct,ft,lng);
-		
+
 		val = 1 + (pango_font_metrics_get_ascent(fm) + pango_font_metrics_get_descent(fm)) / PANGO_SCALE;
 		val = GET_DESKTOP_SCALE(val);
 		pango_font_metrics_unref(fm);
 		g_object_unref(G_OBJECT(ct));
-		
+
 		if (!val) val = 1;
 		_desktop_scale = val;
 	}*/
-	
+
 	return _desktop_scale;
 }
 
 gPicture* gDesktop::screenshot(int x, int y, int w, int h)
 {
-	return gt_grab_window(gdk_get_default_root_window(), x, y, w, h);	
+	return gt_grab_window(gdk_get_default_root_window(), x, y, w, h);
 }
 
 int gDesktop::count()
@@ -311,7 +323,7 @@ void gDesktop::geometry(int screen, GdkRectangle *rect)
 	rect->x = rect->y = rect->width = rect->height = 0;
 	if (screen < 0 || screen >= count())
 		return;
-	
+
 	rect->width = gdk_screen_get_width(gdk_display_get_screen(gdk_display_get_default(), screen));
 	rect->height = gdk_screen_get_height(gdk_display_get_screen(gdk_display_get_default(), screen));
 	//gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
@@ -322,7 +334,7 @@ void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
 	rect->x = rect->y = rect->width = rect->height = 0;
 	if (screen < 0 || screen >= count())
 		return;
-	
+
 	if (X11_get_available_geometry(screen, &rect->x, &rect->y, &rect->width, &rect->height))
 		geometry(screen, rect);
 }

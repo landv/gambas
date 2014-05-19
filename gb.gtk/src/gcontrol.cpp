@@ -49,8 +49,8 @@
 #include "gmouse.h"
 #include "gcontrol.h"
 
-static GList *controls=NULL;
-static GList *controls_destroyed=NULL;
+static GList *controls = NULL;
+static GList *controls_destroyed = NULL;
 
 
 static const char *_cursor_fdiag[] =
@@ -679,17 +679,17 @@ gFont* gControl::font()
 {
 	if (_resolved_font)
 	{
-		//fprintf(stderr, "%p: font -> _resolved_font\n", this);
+		//fprintf(stderr, "%s: font -> _resolved_font\n", name());
 		return _resolved_font;
 	}
 	else if (pr)
 	{
-		//fprintf(stderr, "%p: font -> parent\n", this);
+		//fprintf(stderr, "%s: font -> parent\n", name());
 		return pr->font();
 	}
 	else
 	{
-		//fprintf(stderr, "%p: font -> desktop\n", this);
+		//fprintf(stderr, "%s: font -> desktop\n", name());
 		return gDesktop::font();
 	}
 }

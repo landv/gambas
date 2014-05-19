@@ -95,7 +95,7 @@ void gPanel::create(void)
 		setNext(nextSibling);
 		setBackground(bg);
 		setForeground(fg);
-		setFont(font());
+		updateFont();
 		bufX = bufY = bufW = bufH = -1;
 		setGeometry(&rect);
 		
@@ -154,7 +154,7 @@ gFrame::gFrame(gContainer *parent) : gContainer(parent)
 	border = widget = gtk_fixed_new();
 	
 	fr = gtk_frame_new(NULL);
-	label = gtk_frame_get_label_widget(GTK_FRAME(fr));
+	//label = gtk_frame_get_label_widget(GTK_FRAME(fr));
 	gtk_container_set_border_width(GTK_CONTAINER(fr),0);
 	gtk_frame_set_shadow_type(GTK_FRAME(fr), GTK_SHADOW_ETCHED_IN);
 	gtk_container_add(GTK_CONTAINER(widget), fr);
@@ -164,15 +164,22 @@ gFrame::gFrame(gContainer *parent) : gContainer(parent)
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_frame_resize), (gpointer)this);
 }
 
-char *gFrame::text()
+const char *gFrame::text()
 {
-	if (!label) return (char *)"";
-	return (char*)gtk_label_get_text(GTK_LABEL(label));
+	const char *label = gtk_frame_get_label(GTK_FRAME(fr));
+	if (!label)
+		label = "";
+	return label;
 }
 
-void gFrame::setText(char *vl)
+void gFrame::setText(const char *vl)
 {
-	bool remove = false;
+	if (!vl)
+		vl = "";
+
+	gtk_frame_set_label(GTK_FRAME(fr), vl);
+
+	/*bool remove = false;
 	
 	remove = !vl || !*vl;
 	
@@ -195,11 +202,12 @@ void gFrame::setText(char *vl)
 		gtk_widget_show(label);
 	}
 	else
-		gtk_label_set_text(GTK_LABEL(label), (const gchar*)vl);
+		gtk_label_set_text(GTK_LABEL(label), (const gchar*)vl);*/
 }
 
 void gFrame::updateFont()
 {
+	GtkWidget *label = gtk_frame_get_label_widget(GTK_FRAME(fr));
 	gContainer::updateFont();
 	if (label)
 		gtk_widget_modify_font(label, font()->desc());
@@ -216,7 +224,7 @@ void gFrame::updateColor()
 void gFrame::setRealForeground(gColor color)
 {
 	gControl::setRealForeground(color);
-	if (label) set_gdk_fg_color(label, color);
+	//if (label) set_gdk_fg_color(label, color);
 }
 #endif
 
@@ -234,7 +242,7 @@ int gFrame::containerY()
 {
 	int y = gApplication::getFrameWidth();
 
-	if (label)
+	if (*text())
 		y = font()->height() * 3 / 2;
 
 	return y;
