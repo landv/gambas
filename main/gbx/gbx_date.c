@@ -855,9 +855,13 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 	return diff;
 }
 
+// Beware: System.TimeZone is what must be added to go to UTC
+// So if the shell command `date` displays "UTC+2", then that
+// function must return -7200!
+
 int DATE_get_timezone(void)
 {
 	time_t t = time(NULL);
 	struct tm *tm = localtime(&t);
-	return tm->tm_gmtoff;
+	return -tm->tm_gmtoff;
 }

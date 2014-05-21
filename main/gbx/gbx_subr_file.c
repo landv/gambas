@@ -34,6 +34,7 @@
 #include "gbx_regexp.h"
 #include "gbx_string.h"
 #include "gbx_c_file.h"
+#include "gbx_math.h"
 
 typedef
 	struct _stream {
@@ -779,9 +780,45 @@ void SUBR_mkdir(ushort code)
 }
 
 
-void SUBR_rmdir(void)
+void SUBR_rmdir(ushort code)
 {
-	SUBR_kill(2);
+	SUBR_ENTER();
+	int min, max;
+
+	switch (code & 0x3F)
+	{
+		case 0: // Deprecated RmDir
+			SUBR_kill(2);
+			return;
+
+		default: // Rand
+
+			if (NPARAM == 1)
+			{
+				VALUE_conv_integer(PARAM);
+				min = 0;
+				max = PARAM->_integer.value;
+			}
+			else
+			{
+				VALUE_conv_integer(PARAM);
+				VALUE_conv_integer(&PARAM[1]);
+				min = PARAM->_integer.value;
+				max = PARAM[1]._integer.value;
+				if (max < min)
+				{
+					int temp = max;
+					max = min;
+					min = temp;
+				}
+			}
+
+			RETURN->type = T_INTEGER;
+			RETURN->_integer.value = min + (int)(rnd() * (max + 1 - min));
+			break;
+	}
+
+	SUBR_LEAVE();
 }
 
 

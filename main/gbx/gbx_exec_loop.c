@@ -323,7 +323,7 @@ void EXEC_loop(void)
 		/* 84 Seek            */  &&_SUBR_CODE,
 		/* 85 Kill            */  &&_SUBR_CODE,
 		/* 86 Mkdir           */  &&_SUBR_CODE,
-		/* 87 Rmdir           */  &&_SUBR,
+		/* 87 Rmdir           */  &&_SUBR_CODE,
 		/* 88 Move            */  &&_SUBR_CODE,
 		/* 89 Copy            */  &&_SUBR_CODE,
 		/* 8A Link            */  &&_SUBR_CODE,

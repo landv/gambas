@@ -211,7 +211,7 @@ void SUBR_exist(ushort code);
 void SUBR_dir(ushort code);
 void SUBR_kill(ushort code);
 void SUBR_mkdir(ushort code);
-void SUBR_rmdir(void);
+void SUBR_rmdir(ushort code);
 void SUBR_move(ushort code);
 void SUBR_link(ushort code);
 void SUBR_temp(ushort code);
