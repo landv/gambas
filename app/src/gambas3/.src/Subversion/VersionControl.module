@@ -402,8 +402,21 @@ End
 
 Public Sub Update() As Boolean
 
+  Dim bResult As Integer
+  Dim sFile As String
+  Dim sPath As String
+  
   If $bSVN Then
-    Return Run(["svn", "update", SvnPath$($sRealDir), "--accept", "postpone"], True)
+    bResult = Run(["svn", "update", SvnPath$($sRealDir), "--accept", "postpone"], True)
+    For Each sFile In [".project", ".startup", ".component", ".info"]
+      sPath = $sRealDir &/ sFile
+      If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "theirs-full")
+    Next
+    For Each sFile In [".settings"]
+      sPath = $sRealDir &/ sFile
+      If Exist(sPath) And If InConflict(sPath) Then Resolve(sPath, "mine-full")
+    Next
+    Return bResult
   Endif
 
 End
@@ -442,10 +455,14 @@ Public Sub InConflict(sPath As String) As Boolean
 
 End
 
-Public Sub Resolve(sPath As String) As Boolean
+Public Sub Resolve(sPath As String, Optional sAccept As String) As Boolean
 
+  Dim aArg As String[]
+  
   If $bSVN Then
-    Run(["svn", "resolved", SvnPath$(sPath)])
+    aArg = ["svn", "resolved", SvnPath$(sPath)]
+    If sAccept Then aArg.Insert(["-accept", sAccept])
+    Run(aArg)
     Return Process.LastValue
   Endif
 
