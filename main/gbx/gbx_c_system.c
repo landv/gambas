@@ -218,7 +218,7 @@ END_METHOD
 
 BEGIN_PROPERTY(System_TimeZone)
 
-	GB_ReturnInteger(DATE_timezone);
+	GB_ReturnInteger(DATE_get_timezone());
 
 END_PROPERTY
 
