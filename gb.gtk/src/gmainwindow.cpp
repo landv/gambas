@@ -1324,13 +1324,24 @@ bool gMainWindow::isUtility() const
 
 void gMainWindow::setUtility(bool v)
 {
+	bool remap = false;
+
 	if (!isTopLevel())
 		return;
 	
 	// TODO: works only if the window is not mapped!
-	
+
 	_utility = v;
+	if (gtk_widget_get_mapped(border))
+	{
+		remap = true;
+		gtk_widget_unmap(border);
+	}
+
 	gtk_window_set_type_hint(GTK_WINDOW(border), v ? GDK_WINDOW_TYPE_HINT_UTILITY : GDK_WINDOW_TYPE_HINT_NORMAL);
+
+	if (remap)
+		gtk_widget_map(border);
 }
 #else
 bool gMainWindow::isUtility()

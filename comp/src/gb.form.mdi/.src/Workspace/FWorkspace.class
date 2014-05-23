@@ -13,6 +13,7 @@ Private $bNoClose As Boolean
 Private $iLock As Integer
 Private $bBorder As Boolean = True
 Private $hPicture As Picture
+Private $nDetach As Integer
 
 ' Public Sub _new()
 '   
@@ -122,6 +123,7 @@ Public Sub Detach(hWin As Window)
   Dim hWindow As CWindow
   
   If iInd < 0 Then Error.Raise("Unknown window")
+  If $nDetach = $aWindow.Max Then Error.Raise("Cannot detach the last window")
   
   hWindow = $aWindow[iInd]
   If hWindow.Detached Then Return
@@ -132,6 +134,7 @@ Public Sub Detach(hWin As Window)
   hWin.Show
   
   hWindow.Detached = True
+  Inc $nDetach
     
 End
 
@@ -146,14 +149,14 @@ Public Sub Attach(hWin As Window)
   If Not hWindow.Detached Then Return
 
   tabWorkspace[iInd].Visible = True
-  hWin.Utility = False
+  'hWin.Utility = False
   hWin.Reparent(panWorkspace)
   If tabWorkspace.Index = iInd Then hWin.Show
   
   hWindow.Detached = False
+  Dec $nDetach
     
 End
-
 
 
 Public Sub SetResizable(hWin As Window, bResize As Boolean, Optional iGrid As Integer)
@@ -680,6 +683,7 @@ Public Sub tabWorkspace_Menu()
   
   hMenu = New Menu(mnuWindow) As "mnuDetach"
   hMenu.Text = ("Detach current tab")
+  If $nDetach = $aWindow.Max Then hMenu.Enabled = False
   'hMenu.Picture = Picture["icon:/small/close"]
   
   hParent = New Menu(mnuWindow)

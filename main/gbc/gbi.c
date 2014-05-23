@@ -307,7 +307,7 @@ static void analyze_class(GB_DESC *desc)
 
 		if (hook == (intptr_t)GB_INHERITS_ID)
 			parent = (char *)desc->val1;
-		else if ((hook == (intptr_t)GB_NOT_CREATABLE_ID))
+		else if (hook == (intptr_t)GB_NOT_CREATABLE_ID)
 			nocreate = TRUE;
 		else if (hook == (intptr_t)GB_AUTO_CREATABLE_ID)
 			autocreate = TRUE;

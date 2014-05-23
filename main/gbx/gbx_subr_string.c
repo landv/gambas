@@ -34,6 +34,7 @@
 #include "gbx_regexp.h"
 #include "gbx_class.h"
 #include "gbx_string.h"
+#include "gbx_split.h"
 #include "gbx_c_array.h"
 #include "gbx_local.h"
 #include "gbx_compare.h"
@@ -677,8 +678,10 @@ void SUBR_split(ushort code)
 	CARRAY *array;
 	char *str;
 	int lstr;
-	char *sep = "";
-	char *esc = "";
+	char *sep = NULL;
+	int lsep = 0;
+	char *esc = NULL;
+	int lesc = 0;
 	bool no_void = FALSE;
 	bool keep_esc = FALSE;
 
@@ -687,14 +690,12 @@ void SUBR_split(ushort code)
 	VALUE_conv_string(PARAM);
 	VALUE_get_string(PARAM, &str, &lstr);
 
-	//SUBR_get_string_len(&PARAM[0], &str, &lstr);
-	
 	if (NPARAM >= 2)
 	{
-		sep = SUBR_get_string(&PARAM[1]);
+		SUBR_get_string_len(&PARAM[1], &sep, &lsep);
 		if (NPARAM >= 3)
 		{
-			esc = SUBR_get_string(&PARAM[2]);
+			SUBR_get_string_len(&PARAM[2], &esc, &lesc);
 			if (NPARAM >= 4)
 			{
 				no_void = SUBR_get_boolean(&PARAM[3]);
@@ -704,18 +705,7 @@ void SUBR_split(ushort code)
 		}
 	}
 
-	array = OBJECT_create(CLASS_StringArray, NULL, NULL, 0);
-
-	if (lstr)
-	{
-		if (*sep) STRING_ref(sep);
-		if (*esc) STRING_ref(esc);
-
-		CARRAY_split(array, str, lstr, sep, esc, no_void, keep_esc);
-
-		if (*sep) STRING_unref(&sep);
-		if (*esc) STRING_unref(&esc);
-	}
+	array = STRING_split(str, lstr, sep, lsep, esc, lesc, no_void, keep_esc);
 
 	RETURN->_object.class = CLASS_StringArray;
 	RETURN->_object.object = array;
@@ -1028,7 +1018,7 @@ __HTML:
 			STRING_make("&quot;", 6);
 		else if (c == '\'')
 			STRING_make("&#x27;", 6);
-		else if (c == 0xC2 && str[i + 1] == 0xA0)
+		else if (c == 0xC2 && (uchar)str[i + 1] == 0xA0)
 		{
 			STRING_make("&nbsp;", 6);
 			i++;

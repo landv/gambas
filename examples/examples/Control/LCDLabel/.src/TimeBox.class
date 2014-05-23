@@ -128,6 +128,13 @@ Public Sub SecondBox_MouseWheel()
   
 End
 
+Public Sub MinuteBox_Change()
+  
+  If $hMinute.Pos = $hMinute.Length Then 
+    $hSecond.SetFocus
+  Endif
+  
+End
 
 Public Sub Border_Draw()
   

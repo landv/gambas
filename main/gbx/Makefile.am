@@ -17,6 +17,7 @@ gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
 
 libgbx_a_SOURCES = \
  gb_error.h gb_error.c \
+ gbx_split.h gbx_split.c \
  gbx_exec_loop.c
 
 gbx3_SOURCES = \

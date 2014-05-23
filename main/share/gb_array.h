@@ -55,13 +55,13 @@ void *ARRAY_add_data_one(void *p_data, bool zero);
 
 #define ARRAY_add_one(_pdata, _zero) \
 ({ \
-	ARRAY *array = DATA_TO_ARRAY(*(_pdata)); \
+	ARRAY *__array = DATA_TO_ARRAY(*(_pdata)); \
 	__typeof__(*(_pdata)) ptr; \
-	int old_count = array->count; \
+	int old_count = __array->count; \
 	\
-	array->count++; \
+	__array->count++; \
 	\
-	if (array->count <= array->max) \
+	if (__array->count <= __array->max) \
 	{ \
 		ptr = *(_pdata) + old_count; \
 	} \

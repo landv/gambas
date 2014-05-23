@@ -205,7 +205,7 @@ void CODE_end_function(FUNCTION *func)
 
 static ushort *get_last_code()
 {
-	if (cur_func->last_code == CODE_NO_POS)
+	if ((ushort)cur_func->last_code == CODE_NO_POS)
 		return NULL;
 
 	return &cur_func->code[cur_func->last_code];
@@ -213,7 +213,7 @@ static ushort *get_last_code()
 
 static ushort *get_last_code2()
 {
-	if (cur_func->last_code2 == CODE_NO_POS)
+	if ((ushort)cur_func->last_code2 == CODE_NO_POS)
 		return NULL;
 
 	return &cur_func->code[cur_func->last_code2];

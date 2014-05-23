@@ -45,17 +45,8 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 	unsigned char cp;
 	unsigned char cs;
 
-	void _next_pattern(void)
-	{
-		cp = *pattern++;
-		len_pattern--;
-	}
-
-	void _next_string(void)
-	{
-		cs = *string++;
-		len_string--;
-	}
+	#define _next_pattern() (cp = *pattern++, len_pattern--)
+	#define _next_string(void) (cs = *string++, len_string--)
 
 	/*if (len_pattern == 0 || len_string == 0)
 		return FALSE;*/

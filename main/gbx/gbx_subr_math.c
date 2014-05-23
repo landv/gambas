@@ -165,7 +165,7 @@ __ASINH: PARAM->_float.value = __builtin_asinh(PARAM->_float.value); goto __END;
 __ACOSH: PARAM->_float.value = __builtin_acosh(PARAM->_float.value); goto __END;
 __ATANH: PARAM->_float.value = __builtin_atanh(PARAM->_float.value); goto __END;
 __EXP2: PARAM->_float.value = __builtin_exp2(PARAM->_float.value); goto __END;
-#ifdef OS_FREEBSD
+#if defined(OS_FREEBSD) || defined(__clang__)
 	__EXP10: PARAM->_float.value = exp10(PARAM->_float.value); goto __END;
 #else
 	__EXP10: PARAM->_float.value = __builtin_exp10(PARAM->_float.value); goto __END;

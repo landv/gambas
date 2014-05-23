@@ -286,7 +286,7 @@ Private Sub MaskText(sText As String) As String
   
 End
 
-Private Sub GotoCursor(iPos As Integer)
+Private Sub GotoCursor(iPos As Integer) As Boolean
   
   Dim sText As String = Me.Text
   Dim sCar As String
@@ -300,8 +300,11 @@ Private Sub GotoCursor(iPos As Integer)
       Inc iPos
     Wend
   Endif
-    
-  Me.Pos = iPos
+  
+  If Me.Pos <> iPos Then
+    Me.Pos = iPos
+    Return True
+  Endif
   
 End
 
@@ -315,6 +318,7 @@ Public Sub TextBox_KeyPress()
   Dim sInsert As String
   Dim bDelete As Boolean
   Dim bBefore As Boolean
+  Dim bChange As Boolean
   
   If Not $sMaskOrg Then Return
   
@@ -469,9 +473,13 @@ Public Sub TextBox_KeyPress()
     Endif
   Endif
   
+  Object.Lock(Me)
   If sText <> sTextOrg Then
     sText = MaskText(sText)
-    If Me.Text <> sText Then Me.Text = sText
+    If Me.Text <> sText Then 
+      Me.Text = sText
+      bChange = True
+    Endif
 
     If IsRightAlign(iPos) Then
       While iPos < Me.Length 
@@ -480,8 +488,11 @@ Public Sub TextBox_KeyPress()
       Wend
     Endif
   Endif
+  Object.Unlock(Me)
   
   GotoCursor(iPos)
+  
+  If bChange Then Raise Change
   
   'Me.Select(iPos, 1)
 

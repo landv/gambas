@@ -36,6 +36,7 @@
 
 #include "gbx_object.h"
 #include "gbx_string.h"
+#include "gbx_split.h"
 #include "gbx_stack.h"
 #include "gbx_exec.h"
 #include "gbx_c_array.h"
@@ -67,8 +68,7 @@ BEGIN_PROPERTY(Error_Text)
 			GB_ARRAY array;
 			char *result;
 			
-			GB_ArrayNew(&array, T_STRING, 0);
-			CARRAY_split(array, ERROR_last.msg, strlen(ERROR_last.msg), "|", "", FALSE, FALSE);
+			array = STRING_split(ERROR_last.msg, strlen(ERROR_last.msg), "|", 1, NULL, 0, FALSE, FALSE);
 			_arg = (char **)GB_ArrayGet(array, 0);
 			
 			result = STRING_subst(_arg[0], STRING_length(_arg[0]), get_subst);

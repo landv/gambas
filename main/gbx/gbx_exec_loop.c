@@ -184,6 +184,14 @@ static void *SubrTable[] =
 
 //---- Main interpreter loop ------------------------------------------------
 
+static	void _pop_ctrl(int ind)
+{
+	VALUE *val = &BP[ind];
+	RELEASE(val);
+	SP--;
+	*val = *SP;
+}
+
 void EXEC_loop(void)
 {
 	static const void *jump_table[256] =
@@ -449,14 +457,6 @@ void EXEC_loop(void)
 	int NO_WARNING(ind);
 	ushort code;
 	
-	void _pop_ctrl(int ind)
-	{
-		VALUE *val = &BP[ind];
-		RELEASE(val);
-		SP--;
-		*val = *SP;
-	}
-
 	goto _MAIN;
 
 /*-----------------------------------------------*/

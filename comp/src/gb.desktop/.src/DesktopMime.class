@@ -178,8 +178,9 @@ Static Private Sub LoadMimeDatabase()
       Close #hfile
     Endif
   Next
+  
   If $aMimesSuffix.Count = 0 Then
-    Error "gb.desktop: unable to found mime database"
+    Error "gb.desktop: unable to find mime database"
   Endif
   
 Catch
