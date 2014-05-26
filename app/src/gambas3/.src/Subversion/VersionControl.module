@@ -461,7 +461,7 @@ Public Sub Resolve(sPath As String, Optional sAccept As String) As Boolean
   
   If $bSVN Then
     aArg = ["svn", "resolved", SvnPath$(sPath)]
-    If sAccept Then aArg.Insert(["-accept", sAccept])
+    If sAccept Then aArg.Insert(["--accept", sAccept])
     Run(aArg)
     Return Process.LastValue
   Endif
