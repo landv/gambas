@@ -55,6 +55,7 @@ Public Snap As Integer
 Public Localize As Boolean
 Public Description As String
 Public Icon As String
+Private OldExecPath As String
 
 Public Systems As String[]
 Public Menus As Collection
@@ -81,7 +82,6 @@ Public TabSize As Integer
 Public Version As String
 Public FullVersion As String
 Public FullVersionWithRevision As String
-Public ExecPath As String
 Public SourcePath As String
 Public Language As String
 Public Type As Integer
@@ -2905,11 +2905,10 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
   DisableRefresh
 
-  sExecPath = Project.Dir &/ Project.Name & ".gambas"
-
+  sExecPath = GetExecPath()
+  
   If Not bSilent Then
 
-    sExecPath = GetExecPath()
     If Not Exist(File.Dir(sExecPath)) Then sExecPath = Project.Dir &/ File.Name(sExecPath)
 
     'IF Dialog.SaveFile() THEN RETURN TRUE
@@ -2921,10 +2920,13 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
     sExecPath = File.SetExt(sExecPath, "gambas")
     If sExecPath Begins (Project.Dir & "/") Then
-      ExecPath = Mid$(sExecPath, Len(Project.Dir) + 2)
+      sExecPath = Mid$(sExecPath, Len(Project.Dir) + 2)
     Else
-      ExecPath = sExecPath
+      sExecPath = sExecPath
     Endif
+    
+    Config["/Executable/Path"] = sExecPath
+    Config.Save
 
   Endif
 
@@ -3088,7 +3090,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Prefix = False
   PackageName = ""
   PackageVersion = 1
-  ExecPath = Project.Name & ".gambas"
   SourcePath = ""
   Type = TYPE_NORMAL
   ComponentState = CComponent.STABLE
@@ -3329,9 +3330,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "license"
         License = sVal
 
-      Case "execpath"
-        ExecPath = sVal
-
       Case "sourcepath"
         SourcePath = sVal
 
@@ -3361,6 +3359,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "mimetypes"
         MimeTypes = Split(sVal, ",", Chr$(34), True)
+        
+      Case "execpath"
+        OldExecPath = sVal
 
     End Select
 
@@ -3493,9 +3494,6 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If ControlPublic Then Print #hFic, "ControlPublic=1"
   If ModulePublic Then Print #hFic, "ModulePublic=1"
   If Not Warnings Then Print #hFic, "Warnings=0"
-  If ExecPath <> (Project.Name & ".gambas") Then
-    Print #hFic, "ExecPath="; ExecPath
-  Endif
   If SourcePath Then Print #hFic, "SourcePath="; SourcePath
 
   If Maintainer Then Print #hFic, "Maintainer="; Maintainer
@@ -3544,10 +3542,15 @@ End
 
 Public Sub GetExecPath() As String
 
-  If Left(ExecPath) = "/" Then
-    Return ExecPath
+  Dim sExecPath As String = Config["Executable/Path"]
+  
+  If Not sExecPath Then sExecPath = OldExecPath
+  If Not sExecPath Then sExecPath = Project.Name & ".gambas"
+  
+  If Left(sExecPath) = "/" Then
+    Return sExecPath
   Else
-    Return Project.Dir &/ ExecPath
+    Return Project.Dir &/ sExecPath
   Endif
 
 End
@@ -4361,7 +4364,7 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bW
   sCmd &= " --exclude=" & Shell$(".lang/*.pot")
   sCmd &= " --exclude=" & Shell$(".lang/.pot")
   sCmd &= " --exclude=" & Shell$(".xvpics")
-  sCmd &= " --exclude=" & Shell$(File.Name(ExecPath))
+  sCmd &= " --exclude=" & Shell$(File.Name(GetExecPath()))
   For Each sIgnore In GetIgnoreFiles()
     sCmd &= " --exclude=" & Shell$(sIgnore)
   Next

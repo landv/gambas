@@ -215,11 +215,18 @@ End
 
 Private Sub FillDatabaseList()
   
+  Dim aName As New String[]
   Dim hDatabase As Database
+  Dim sName As String
   
-  lvwDatabase.Clear
   For Each hDatabase In $hConn.Databases
-    lvwDatabase.Add(hDatabase.Name, hDatabase.Name, Picture["img/16/database.png"]).Selected = hDatabase.Name = Trim(txtDatabase.Text)
+    aName.Add(hDatabase.Name)
+  Next
+  aName.Sort(gb.Language + gb.Natural)
+
+  lvwDatabase.Clear
+  For Each sName In aName
+    lvwDatabase.Add(sName, sName, Picture["img/16/database.png"]).Selected = sName = Trim(txtDatabase.Text)
   Next
   Try lvwDatabase[Trim(txtDatabase.Text)].Selected = True
   UpdateCreateDatabase
