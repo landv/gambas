@@ -62,7 +62,7 @@ Private Sub RefreshPath()
   lblDir.Text = FormatPath(File.Dir($sPath))
   If String.Len(lblDir.Text) >= 32 Then lblDir.Tooltip = lblDir.Text
   
-  With Stat($sPath)
+  With DirCache[File.Dir($sPath)].GetInfo(File.Name($sPath))
     
     If hData Then
       

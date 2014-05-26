@@ -182,13 +182,15 @@ End
 
 Public Function _get(Key As String, Optional {Default} As Variant) As Variant
 
+  Dim hSlot As Collection
   Dim sSlot As String
 
   sSlot = GetSlot(Key)
-  If $cSlot.Exist(sSlot) Then
+  hSlot = $cSlot[sSlot]
+  If hSlot Then
     Key = File.Name(Key)
-    If $cSlot[sSlot].Exist(Key) Then
-      Return $cSlot[sSlot][Key]
+    If hSlot.Exist(Key) Then
+      Return hSlot[Key]
     Endif
   Endif
 
@@ -198,18 +200,22 @@ End
 
 Public Sub _put(Value As Variant, Key As String)
 
+  Dim hSlot As Collection
   Dim sSlot As String
 
   sSlot = GetSlot(Key)
-  If Not $cSlot.Exist(sSlot) Then $cSlot[sSlot] = New Collection
+  hSlot = $cSlot[sSlot]
+  If Not hSlot Then
+    hSlot = New Collection
+    $cSlot[sSlot] = hSlot
+  Endif
 
   Key = File.Name(Key)
-  'IF $cSlot[sSlot].Exist(Key) THEN
-  '  IF $cSlot[sSlot][Key] = sVal THEN RETURN
-  'ENDIF
 
-  $cSlot[sSlot][Key] = Value
-  $bModify = True
+  If hSlot[Key] <> Value Then
+    hSlot[Key] = Value
+    $bModify = True
+  Endif
 
 End
 

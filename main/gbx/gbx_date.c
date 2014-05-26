@@ -23,11 +23,12 @@
 
 #define __DATE_C
 
-#define _BSD_SOURCE
+//#define _BSD_SOURCE
 
 #include <unistd.h>
 #include <ctype.h>
 #include <time.h>
+#include <stdlib.h>
 
 #include "gb_common.h"
 #include "gb_common_buffer.h"
@@ -117,6 +118,10 @@ void DATE_init(void)
 
 void DATE_init_local(void)
 {
+	// Prevent glibc for calling stat("/etc/localtime") again and again...
+	if (!getenv("TZ"))
+		putenv("TZ=:/etc/localtime");
+
 	tzset();
 }
 
@@ -861,7 +866,15 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 
 int DATE_get_timezone(void)
 {
+	static time_t last = (time_t)0;
+	static int tz = 0;
+
 	time_t t = time(NULL);
-	struct tm *tm = localtime(&t);
-	return -tm->tm_gmtoff;
+	if ((t - last) >= 600)
+	{
+		struct tm *tm = localtime(&t);
+		tz = -tm->tm_gmtoff;
+	}
+
+	return tz;
 }

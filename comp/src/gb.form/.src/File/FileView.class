@@ -3,8 +3,6 @@
 Export
 Inherits UserControl
 
-Class DesktopMime
-
 Public Const _Properties As String = "*,Border=True,Mode{Select.*}=Single,Dir,ShowDetailed,ShowHidden,ShowDirectory,ShowPreview"
 Public Const _DefaultEvent As String = "Click"
 Public Const _Group As String = "View"
@@ -92,6 +90,13 @@ Static Public Sub _init()
 
 End
 
+Static Public Sub _exit()
+  
+  DirCache.Exit
+  
+End
+
+
 Public Sub _new()
   
   With $hIconView = New IconView(Me) As "View"
@@ -136,7 +141,7 @@ End
 
 Private Sub GetMimeIcon(sPath As String, iSize As Integer) As Picture
   
-  Try Return DesktopMime.FromFile(sPath).GetIcon(iSize).Picture
+  Try Return DirCache[File.Dir(sPath)].GetMimeIcon(File.Name(sPath), iSize).Picture
 
 End
 
@@ -195,7 +200,7 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   Try sIcon = $cExt[File.Ext(sPath)]
   If sIcon Then Return Picture["icon:/" & CStr(iSize) &/ sIcon]
     
-  With Stat(sPath)
+  With DirCache[File.Dir(sPath)].GetInfo(File.Name(sPath))
     
     If InStr(.Perm[System.User.Name], "x") Then Return Picture["icon:/" & CStr(iSize) &/ "exec"]
     
@@ -240,7 +245,7 @@ Private Sub GetIconSize() As Integer
 
 End
 
-Private Sub RefreshView()
+Private Sub RefreshView(Optional bInvalidate As Boolean)
   
   Dim sFile As String
   Dim sDir As String
@@ -254,6 +259,7 @@ Private Sub RefreshView()
   Dim I As Integer
   Dim sText As String
   Dim bRichText As Boolean
+  Dim hCache As DirCache
 
   Inc Application.Busy
   
@@ -277,10 +283,16 @@ Private Sub RefreshView()
   sDir = $sDir
   If Not sDir Then sDir = User.Home
   
-  Try aDir = Dir(sDir, "*").Sort()
+  hCache = DirCache[sDir]
+  If bInvalidate Then hCache.Invalidate
+  
+  'Try aDir = Dir(sDir, "*").Sort()
+  Try aDir = hCache.GetFiles()
+  hCache.Lock
   For Each sFile In aDir
     If Not $bShowHidden And If Left(sFile) = "." Or Right(sFile) = "~" Then Continue
-    With Stat(sDir &/ sFile)
+    'With Stat(sDir &/ sFile)
+    With hCache.GetInfo(sFile)
       If .Type = gb.Directory Then
         If Not $bShowDir Then Continue
         sPrefix = "0"
@@ -320,6 +332,7 @@ Private Sub RefreshView()
       Endif
     End With
   Next
+  hCache.Unlock
   
   If $hColumnView.Visible Then
     For I = 1 To $hColumnView.Columns.Max
@@ -403,7 +416,7 @@ End
 
 Public Sub Reload()
   
-  RefreshView
+  RefreshViewLater
   
 End
 
@@ -574,8 +587,8 @@ Public Sub View_Compare(Key As String, OtherKey As String)
   If iComp = 0 Then
     
     If $iSort Then
-      hStat = Stat(sDir &/ Mid$(Key, 2))
-      hStat2 = Stat(sDir &/ Mid$(OtherKey, 2))
+      hStat = DirCache[sDir].GetInfo(Mid$(Key, 2))
+      hStat2 = DirCache[sDir].GetInfo(Mid$(OtherKey, 2))
     Endif
     
     Select $iSort
@@ -764,7 +777,7 @@ End
 Private Sub IconSize_Write(Value As Integer)
   
   $iIconSize = Value
-  RefreshView
+  RefreshViewLater
   $hIconView.GridSize = Min(40, (Value + 8) \ 3)
   
 End
@@ -819,7 +832,7 @@ Private Sub ShowPreview_Write(Value As Boolean)
 
   If $bShowPreview = Value Then Return
   $bShowPreview = Value
-  RefreshView
+  RefreshViewLater
   
 End
 

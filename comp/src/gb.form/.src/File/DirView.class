@@ -130,7 +130,8 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
     .Editable = Not bNoEdit
     .MoveAfter(sAfter)
     
-    hStat = Stat(sDir &/ sFile)
+    'hStat = Stat(sDir &/ sFile)
+    hStat = DirCache[sDir].GetInfo(sFile)
 
     bRichText = False
     
@@ -157,6 +158,7 @@ Public Sub TreeView_Expand()
   Dim sFile As String
   Dim sDir As String
   Dim sDelete As String
+  Dim hCache As DirCache
 
   If Not $hTreeView.Item Then Stop
 
@@ -177,9 +179,13 @@ Public Sub TreeView_Expand()
 
   $hTreeView[sDelete].Delete
 
-  For Each sFile In Dir(sDir, "*", gb.Directory).Sort(gb.Natural + gb.IgnoreCase)
+  hCache = DirCache[sDir]
+  hCache.Lock
+  For Each sFile In hCache.GetFiles().Sort(gb.Natural + gb.IgnoreCase)
+    If hCache.GetInfo(sFile).Type <> gb.Directory Then Continue
     AddDir(sDir, sFile)
   Next
+  hCache.Unlock
 
   If $hTreeView[sDir].Children = 0 Then
     $hTreeView[sDir].Picture = GetIcon(sDir)

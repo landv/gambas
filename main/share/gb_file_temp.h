@@ -484,6 +484,8 @@ void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 	struct stat buf;
 	int ret;
 
+	//fprintf(stderr, "FILE_stat: %s\n", path);
+
 	if (FILE_is_relative(path))
 	{
 		/*if (!EXEC_arch)

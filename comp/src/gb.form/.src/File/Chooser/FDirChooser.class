@@ -716,6 +716,7 @@ End
 
 Public Sub mnuRefresh_Click()
 
+  DirCache[dvwChoose.Current].Clear
   dvwChoose.Reload
   fvwChoose.Reload
   
