@@ -586,6 +586,7 @@ Public Sub Load()
           Continue
         Endif
         
+        'If Key = PROJECT_NAME And If sClass = "Editor" Then Stop
         hClass = CreateClass(sClass, sParent, Key)
         
         sLig = aLine[iLine]
@@ -602,6 +603,7 @@ Public Sub Load()
       Endif
       
       If bNextClass Then Continue
+      'If Key = PROJECT_NAME Then Continue
       
       sSymbol = sLig
       hSym = New CSymbolInfo
@@ -1291,7 +1293,7 @@ Static Public Sub ScanSingleClass(hPModule As FEditor) As Collection
 End
 
 
-Static Public Function GetClassSymbols(sClass As String) As Collection
+Static Public Function GetClassSymbols(sClass As String, Optional sComponent As String) As Collection
   
   Dim hClass As CClassInfo
   Dim bClass As Boolean
@@ -1312,8 +1314,13 @@ Static Public Function GetClassSymbols(sClass As String) As Collection
   'Debug sClass
   'If sClass = "MaskBox" Then Stop
   
-  bClass = Project.ExistClass(sClass)
-  hClass = CComponent.Classes[sClass]
+  If sComponent Then
+    bClass = sComponent = PROJECT_NAME
+    hClass = CComponent.Classes[sComponent &/ sClass]
+  Else
+    bClass = Project.ExistClass(sClass)
+    hClass = CComponent.Classes[sClass]
+  Endif
   
   If Not bClass Then
     If hClass Then

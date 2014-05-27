@@ -560,7 +560,11 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	sigaddset(&sig, SIGCHLD);
 	sigprocmask(SIG_BLOCK, &sig, &old);
 
-	pid = vfork();
+	if (mode & PM_SHELL || mode & PM_TERM || env)
+		pid = vfork();
+	else
+		pid = vfork();
+
 	if (pid == (-1))
 	{
 		stop_process(process);
@@ -637,7 +641,6 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		sigprocmask(SIG_SETMASK, &old, NULL);
 	}
-	
 	else //------------ child process ----------------------------
 	{
 		int fd_slave;

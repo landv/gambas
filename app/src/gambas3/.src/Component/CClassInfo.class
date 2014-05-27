@@ -42,13 +42,14 @@ Public Sub _new(sName As String, sComp As String, Optional sParent As String)
     '  STOP
     '  Error.Raise(Error.Text)
     'ENDIF
-    For Each hSym In CComponent.GetClassSymbols(sParent) ' CComponent.Classes[sParent].Symbols
-      Symbols[hSym.Name] = hSym
-    Next
-    
     hParent = CComponent.Classes[sComp &/ sParent]
     If Not hParent Then hParent = CComponent.Classes[sParent]
     ParentComponent = hParent.Component
+
+    For Each hSym In CComponent.GetClassSymbols(sParent, ParentComponent) ' CComponent.Classes[sParent].Symbols
+      Symbols[hSym.Name] = hSym
+    Next
+    
   Endif
 
 End
