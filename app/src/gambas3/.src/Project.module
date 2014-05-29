@@ -2920,12 +2920,11 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
     sExecPath = File.SetExt(sExecPath, "gambas")
     If sExecPath Begins (Project.Dir & "/") Then
-      sExecPath = Mid$(sExecPath, Len(Project.Dir) + 2)
+      Config["/Executable/Path"] = Mid$(sExecPath, Len(Project.Dir) + 2)
     Else
-      sExecPath = sExecPath
+      Config["/Executable/Path"] = sExecPath
     Endif
     
-    Config["/Executable/Path"] = sExecPath
     Config.Save
 
   Endif

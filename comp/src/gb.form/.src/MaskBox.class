@@ -321,6 +321,9 @@ Public Sub TextBox_KeyPress()
   Dim bChange As Boolean
   
   If Not $sMaskOrg Then Return
+  If Me.ReadOnly Then
+    Return
+  Endif
   
   sText = UnmaskText(Me.Text)
   sTextOrg = sText

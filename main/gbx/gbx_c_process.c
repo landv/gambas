@@ -561,7 +561,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	sigprocmask(SIG_BLOCK, &sig, &old);
 
 	if (mode & PM_SHELL || mode & PM_TERM || env)
-		pid = vfork();
+		pid = fork();
 	else
 		pid = vfork();
 
