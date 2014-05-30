@@ -145,7 +145,6 @@ static void main_exit(bool silent)
 		FILE_exit();
 		STACK_exit();
 		ERROR_exit();
-		STRING_exit();
 	}
 	CATCH
 	{
@@ -154,6 +153,8 @@ static void main_exit(bool silent)
 		_exit(1);
 	}
 	END_TRY
+
+	STRING_exit();
 }
 
 static bool is_option(const char *arg, char option)

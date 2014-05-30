@@ -41,24 +41,39 @@
 #include "gbx_c_gambas.h"
 
 
-static int nvararg(void)
+static int get_arg_count(void)
 {
-	if (FP && FP->vararg)
-		return BP - PP;
+	if (DEBUG_inside_eval && DEBUG_info)
+	{
+		if (DEBUG_info->fp && DEBUG_info->fp->vararg)
+			return DEBUG_info->bp - DEBUG_info->pp;
+	}
 	else
-		return 0;
+	{
+		if (FP && FP->vararg)
+			return BP - PP;
+	}
+	return 0;
+}
+
+static VALUE *get_arg(int i)
+{
+	if (DEBUG_inside_eval && DEBUG_info)
+		return &DEBUG_info->pp[i];
+	else
+		return &PP[i];
 }
 
 BEGIN_PROPERTY(Param_Count)
 
-	GB_ReturnInteger(nvararg());
+	GB_ReturnInteger(get_arg_count());
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Param_Max)
 
-	GB_ReturnInteger(nvararg() - 1);
+	GB_ReturnInteger(get_arg_count() - 1);
 
 END_PROPERTY
 
@@ -66,12 +81,14 @@ END_PROPERTY
 BEGIN_METHOD(Param_get, GB_INTEGER index)
 
 	int index = VARG(index);
+	VALUE *arg;
 
-	if (index < 0 || index >= nvararg())
+	if (index < 0 || index >= get_arg_count())
 		THROW(E_BOUND);
 
-	VALUE_conv(&PP[index], T_VARIANT);
-	TEMP = PP[index];
+	arg = get_arg(index);
+	VALUE_conv(arg, T_VARIANT);
+	TEMP = *arg;
 	//VALUE_conv(&TEMP, T_VARIANT);
 
 END_METHOD
@@ -80,15 +97,17 @@ END_METHOD
 BEGIN_PROPERTY(Param_All)
 
 	GB_ARRAY all;
-	int nparam = nvararg();
+	int nparam = get_arg_count();
 	int i;
+	VALUE *arg;
 	
 	GB_ArrayNew(POINTER(&all), T_VARIANT, nparam);
 	
 	for (i = 0; i < nparam; i++)
 	{
-		VALUE_conv(&PP[i], T_VARIANT);
-		GB_StoreVariant((GB_VARIANT *)&PP[i], GB_ArrayGet(all, i));
+		arg = get_arg(i);
+		VALUE_conv(arg, T_VARIANT);
+		GB_StoreVariant((GB_VARIANT *)arg, GB_ArrayGet(all, i));
 	}
 	
 	GB_ReturnObject(all);
@@ -100,12 +119,13 @@ BEGIN_METHOD_VOID(Param_next)
 
 	int *index = (int *)GB_GetEnum();
 
-	if (*index >= nvararg())
+	if (*index >= get_arg_count())
 		GB_StopEnum();
 	else
 	{
-		VALUE_conv(&PP[*index], T_VARIANT);
-		TEMP = PP[*index];
+		VALUE *arg = get_arg(*index);
+		VALUE_conv(arg, T_VARIANT);
+		TEMP = *arg;
 		(*index)++;
 	}
 

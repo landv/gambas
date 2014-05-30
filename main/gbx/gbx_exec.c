@@ -951,7 +951,7 @@ void EXEC_function_loop()
 				if (EXEC_break_on_error)
 					DEBUG.Main(TRUE);
 
-				// Are we are in a TRY?
+				// Are we in a TRY?
 				if (EP != NULL)
 				{
 					#if DEBUG_ERROR
