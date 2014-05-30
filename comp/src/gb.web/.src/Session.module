@@ -61,7 +61,7 @@ Private Sub SaveSession()
     eNow = Now
     If (eNow - $eStartup) < (1 / 86400) Then Return
   
-    Main.Log("SaveSession: " & $sId & ": update timestamp")
+    Try Main.Log("SaveSession: " & $sId & ": update timestamp")
 
     LockSession
     
@@ -76,7 +76,7 @@ Private Sub SaveSession()
   
     sTemp = Temp$()
 
-    Main.Log("SaveSession: " & $sId)
+    Try Main.Log("SaveSession: " & $sId)
     
     'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
     hFile = Open sTemp For Write Create 
@@ -101,7 +101,7 @@ Private Sub SaveSession()
     
   Endif
     
-  Main.Log("SaveSession: OK")
+  Try Main.Log("SaveSession: OK")
 
   ' If Exist($sPath) Then
   '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
@@ -111,7 +111,7 @@ Private Sub SaveSession()
   
 Catch
   
-  Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
+  Try Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
   
 End
 
@@ -312,8 +312,7 @@ End
 
 Public Sub _exit()
   
-  Main.Log("Session._exit")
-  
+  Try Main.Log("Session._exit")
   SaveSession
   
 End
