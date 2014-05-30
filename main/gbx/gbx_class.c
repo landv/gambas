@@ -55,6 +55,9 @@
 //#define DEBUG_LOAD 1
 //#define DEBUG_DESC 1
 
+// We are exiting...
+bool CLASS_exiting = FALSE;
+
 /* Global class table */
 static TABLE _global_table;
 /* List of all classes */
@@ -285,6 +288,9 @@ static void class_replace_global(const char *name)
 
 static void release_class(CLASS *class)
 {
+	#if DEBUG_LOAD
+	fprintf(stderr, "Freeing %s\n", class->name);
+	#endif
 	OBJECT_release(class, NULL);
 	class->exit = TRUE;
 }
@@ -296,28 +302,41 @@ void CLASS_clean_up(bool silent)
 	CLASS *class;
 
 	#if DEBUG_LOAD
-	fprintf(stderr, "\n------------------- CLASS_exit -------------------\n\n");
+	fprintf(stderr, "\n------------------- CLASS_clean_up -------------------\n\n");
 	#endif
 
 	#if DEBUG_LOAD
 	fprintf(stderr, "Freeing auto-creatable objects...\n");
 	#endif
 
-	// Count how many classes should be freed
-	// And free automatic instances
+	CLASS_exiting = TRUE;
 
-	nc = 0;
+	// Free automatic instances
 
 	for (class = _classes; class; class = class->next)
 	{
 		if (class->instance)
 			OBJECT_UNREF(class->instance);
+	}
+
+	// Count how many classes should be freed
+
+	nc = 0;
+
+	for (class = _classes; class; class = class->next)
+	{
 		if (!CLASS_is_native(class) && class->state)
 		{
-			/*printf("Must free: %s\n", class->name);*/
+			#if DEBUG_LOAD
+			fprintf(stderr, "Must free: %s\n", class->name);
+			#endif
 			nc++;
 		}
 	}
+
+	#if DEBUG_LOAD
+	fprintf(stderr, "Must free %d classes...\n", nc);
+	#endif
 
 	#if DEBUG_LOAD
 	fprintf(stderr, "Calling _exit on loaded classes...\n");
@@ -333,7 +352,7 @@ void CLASS_clean_up(bool silent)
 	// Free classes having no instance
 
 	n = 0;
-	while (n < nc)
+	for(;;)
 	{
 		nb = n;
 
@@ -344,10 +363,6 @@ void CLASS_clean_up(bool silent)
 
 			if (class->count == 0 && !CLASS_is_native(class) && class->state && !class->exit)
 			{
-				/*printf("Freeing %s\n", class->name);*/
-				#if DEBUG_LOAD
-				fprintf(stderr, "Freeing %s\n", class->name);
-				#endif
 				release_class(class);
 				n++;
 			}

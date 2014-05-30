@@ -31,6 +31,9 @@
 #include "gbx_class_desc.h"
 #include "gbx_component.h"
 
+#ifndef __GBX_CLASS_C
+EXTERN bool CLASS_exiting;
+#endif
 
 typedef
 	int CLASS_ID;

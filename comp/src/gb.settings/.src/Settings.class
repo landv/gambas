@@ -225,9 +225,11 @@ Public Sub Clear(Optional ParentKey As String)
   Dim sSlot As String
 
   If Not ParentKey Then
+    If $cSlot.Count Then Return
     $cSlot.Clear
   Else
     sSlot = GetSlot(ParentKey &/ "g")
+    If Not $cSlot.Exist(sSlot) Then Return
     $cSlot.Remove(sSlot)
   Endif
 

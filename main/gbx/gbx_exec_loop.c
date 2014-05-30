@@ -184,7 +184,7 @@ static void *SubrTable[] =
 
 //---- Main interpreter loop ------------------------------------------------
 
-static	void _pop_ctrl(int ind)
+static void _pop_ctrl(int ind)
 {
 	VALUE *val = &BP[ind];
 	RELEASE(val);

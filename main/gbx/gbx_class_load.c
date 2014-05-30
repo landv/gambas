@@ -952,7 +952,10 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	if (class->error)
 		THROW_CLASS(class, "Loading has already failed", "");
-		
+
+	if (CLASS_exiting)
+		THROW_CLASS(class, "Program is exiting", "");
+
 	class->error = TRUE;
 
 	#if DEBUG_LOAD

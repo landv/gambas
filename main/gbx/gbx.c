@@ -67,6 +67,7 @@ FILE *log_file;
 
 static bool _welcome = FALSE;
 static bool _quit_after_main = FALSE;
+static bool _eval = FALSE;
 
 static void NORETURN my_exit(int ret)
 {
@@ -125,7 +126,9 @@ static void main_exit(bool silent)
 		EXTERN_release();
 		STREAM_exit();
 		OBJECT_exit();
+
 		CLASS_clean_up(silent);
+
 		SUBR_exit();
 		DEBUG_exit();
 		CFILE_exit();
@@ -143,6 +146,12 @@ static void main_exit(bool silent)
 		STACK_exit();
 		ERROR_exit();
 		STRING_exit();
+	}
+	CATCH
+	{
+		if (!silent)
+			ERROR_print_at(stderr, _eval, TRUE);
+		_exit(1);
 	}
 	END_TRY
 }
@@ -267,6 +276,8 @@ int main(int argc, char *argv[])
 		if (argc < 3)
 			ERROR_fatal("-e option needs an expression.");
 		
+		_eval = TRUE;
+
 		TRY
 		{
 			init(NULL, argc, argv);
