@@ -977,23 +977,69 @@ Public Sub GetToDo() As String[]
   
 End
 
+Private Sub MakeLink(sLink As String, sLang As String) As String
+
+  If Not sLang Then sLang = "en"
+  If Not sLink Then sLink = "/"
+  Return "[" & sLink & " (" & sLang & ")] (" & sLink & "?l=" & sLang & ")"
+
+End
+
 Public Sub GetChanges() As String[]
   
   Dim aResult As New String[]
   Dim aLine As String[]
   Dim I As Integer
+  Dim aCol As String[]
+  Dim sLink As String
+  Dim iPos As Integer
+  Dim sLang As String
   
-  If UserName <> "admin" Then
-    Return ["[[ warning", ("You must be administrator to view the last changes."), "]]"]
+  If Not UserName Then
+    Return ["[[ warning", ("You must be logged in to view the last changes."), "]]"]
   Endif
   
   aLine = Split(File.Load(Main.Root &/ "wiki.log"), "\n", "", True)
   aLine.Reverse
   
+  aResult.Add("<table class=\"table\">") '<colgroup><col width=\"80\"><col width=\"80\"><col width=\"360\"></colgroup>")
   For I = 0 To Min(999, aLine.Max)
-    aResult.Add("    " & aLine[I])
+    
+    aCol = Split(aLine[I], "|")
+    If aCol.Count < 3 Then Continue
+    aResult.Add("<tr><td>" & Left(Trim(aCol[0]), 19) & "</td><td>" & Trim(aCol[1]) & "</td>")
+    
+    sLink = Trim(aCol[2])
+    If InStr(sLink, "/") = "" Then
+      aResult.Add("<td>" & sLink & "</td>")
+    Else
+      sLang = ""
+      If Right(sLink) = ")" Then
+        iPos = RInStr(sLink, "(")
+        If iPos Then
+          sLang = Mid$(sLink, iPos + 1, 2)
+          sLink = Trim(Left(sLink, iPos - 1))
+        Endif
+      Endif
+      
+      If sLink Begins "Delete" Then
+        aResult.Add("<td>Delete " & MakeLink(Mid$(sLink, 8), sLang) & "</td>")
+      Else If sLink Begins "Undo" Then
+        aResult.Add("<td>Undo " & MakeLink(Mid$(sLink, 6), sLang) & "</td>")
+      Else If sLink Begins "/" Or If Not sLink Then
+        aResult.Add("<td>" & MakeLink(sLink, sLang) & "</td>")
+      Else
+        aResult.Add("<td>`" & sLink & "`</td>")
+      Endif
+      
+      aResult[aResult.Max] &= "</tr>"
+      
+    Endif
+    
   Next
   
+  aResult.Add("</table>")
+    
   If aLine.Count > 1000 Then aResult.Add("...")
   
   Return aResult
