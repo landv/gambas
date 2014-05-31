@@ -15,6 +15,8 @@ Static Public Sub _get(sDir As String) As DirCache
   
   Dim hCache As DirCache
   
+  If Right(sDir) <> "/" Then sDir &= "/"
+  
   hCache = $cCache[sDir]
   If Not hCache Then
     hCache = New DirCache(sDir)
@@ -121,6 +123,7 @@ End
 
 Public Sub Lock()
   
+  If $iLock = 0 Then CheckValid
   Inc $iLock
   
 End
