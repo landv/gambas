@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.c
+  c_x11systray.h
 
   (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,33 +21,18 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __C_X11SYSTRAY_H
+#define __C_X11SYSTRAY_H
 
-#include "x11.h"
-#include "c_x11.h"
-#include "c_x11systray.h"
 #include "main.h"
+#include "systray/systray.h"
+#include "systray/icons.h"
 
-GB_INTERFACE GB EXPORT;
-IMAGE_INTERFACE IMAGE EXPORT;
+#ifndef __C_X11SYSTRAY_C
+extern GB_DESC X11SystrayIconDesc[];
+extern GB_DESC X11SystrayDesc[];
+#endif
 
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-  X11Desc,
-  X11WatcherDesc,
-	X11SystrayIconDesc,
-	X11SystrayDesc,
-  NULL
-};
+void SYSTRAY_raise_arrange(void);
 
-int EXPORT GB_INIT(void)
-{
-	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);	
-	// Must be not be unloaded, because libxtst registers some exit procedure called at XCloseDisplay()
-  return -1;
-}
-
-void EXPORT GB_EXIT(void)
-{
-	X11_exit();
-}
+#endif

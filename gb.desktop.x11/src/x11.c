@@ -32,6 +32,8 @@
 
 #include "main.h"
 #include "x11.h"
+#include "c_x11.h"
+#include "systray/systray.h"
 
 #define MAX_WINDOW_PROP 16
 
@@ -746,29 +748,36 @@ char *X11_send_key(char *key, bool press)
 
 void X11_enable_event_filter(bool enable)
 {
+	static int count = 0;
+
 	void (*set_event_filter)(void *) = NULL;
 	
 	if (enable)
-	{
-		GB_CLASS startup = GB.Application.StartupClass();
-		
-		GB.GetFunction(&_x11_property_notify_func, (void *)startup, "X11_PropertyNotify", "ii", "");
-		GB.GetFunction(&_x11_configure_notify_func, (void *)startup, "X11_ConfigureNotify", "iiiii", "");
-	}
-	
-	X11_event_filter_enabled = enable;
-	
+		count++;
+	else
+		count--;
+
 	GB.Component.GetInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
 	if (set_event_filter)
-		(*set_event_filter)(enable ? X11_event_filter : 0);
+		(*set_event_filter)(count ? X11_event_filter : NULL);
 }
 
 void X11_event_filter(XEvent *e)
 {
+	static bool init = FALSE;
+
+	if (!init)
+	{
+		GB_CLASS startup = GB.Application.StartupClass();
+		GB.GetFunction(&_x11_property_notify_func, (void *)startup, "X11_PropertyNotify", "ii", "");
+		GB.GetFunction(&_x11_configure_notify_func, (void *)startup, "X11_ConfigureNotify", "iiiii", "");
+		init = TRUE;
+	}
+
 	if (e->type == PropertyNotify && GB_FUNCTION_IS_VALID(&_x11_property_notify_func))
 	{
 		GB.Push(2, GB_T_INTEGER, e->xany.window, GB_T_INTEGER, e->xproperty.atom);
-		GB.Call(&_x11_property_notify_func, 2, FALSE);
+		GB.Call(&_x11_property_notify_func, 2, TRUE);
 	}
 	else if (e->type == ConfigureNotify && GB_FUNCTION_IS_VALID(&_x11_configure_notify_func))
 	{
@@ -778,8 +787,11 @@ void X11_event_filter(XEvent *e)
 			GB_T_INTEGER, e->xconfigure.width,
 			GB_T_INTEGER, e->xconfigure.height);
 			
-		GB.Call(&_x11_configure_notify_func, 5, FALSE);
+		GB.Call(&_x11_configure_notify_func, 5, TRUE);
 	}
+
+	WATCHER_event_filter(e);
+	SYSTRAY_event_filter(e);
 }
 
 void X11_get_window_geometry(Window win, int *wx, int *wy, int *ww, int *wh)

@@ -92,7 +92,8 @@ void MyTrayIcon::setIcon(QPixmap &icon)
 
 void MyTrayIcon::drawContents(QPainter *p)
 {
-	p->drawPixmap((width() - _icon.width()) / 2, (height() - _icon.height()) / 2, _icon);
+	//p->drawPixmap((width() - _icon.width()) / 2, (height() - _icon.height()) / 2, _icon);
+	p->drawPixmap(0, 0, width(), height(), _icon);
 }
 
 

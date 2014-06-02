@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  desktop.c
+  c_x11.c
 
   (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,10 +21,10 @@
 
 ***************************************************************************/
 
-#define __DESKTOP_C
+#define __C_X11_C
 
 #include "x11.h"
-#include "desktop.h"
+#include "c_x11.h"
 
 //#define DEBUG_ICON 1
 
@@ -634,18 +634,21 @@ BEGIN_METHOD_VOID(X11_Sync)
 END_METHOD
 
 
-/*BEGIN_METHOD(Desktop_ActivateWindow, GB_INTEGER window)
+BEGIN_METHOD(X11_MoveWindow, GB_INTEGER window; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	intptr_t time;
-	
-	if (X11_init())
-		return;
-	
-	GB.Component.GetInfo("TIME", POINTER(&time));
-	
-	XSetInputFocus(X11_display, (Window)VARG(window), RevertToParent, (Time)time);
+	if (MISSING(w) || MISSING(h))
+		XMoveWindow(X11_display, VARG(window), VARG(x), VARG(y));
+	else
+		XMoveResizeWindow(X11_display, VARG(window), VARG(x), VARG(y), VARG(w), VARG(h));
 
-END_METHOD*/
+END_METHOD
+
+BEGIN_METHOD(X11_ResizeWindow, GB_INTEGER window; GB_INTEGER w; GB_INTEGER h)
+
+	XResizeWindow(X11_display, VARG(window), VARG(w), VARG(h));
+
+END_METHOD
+
 
 
 GB_DESC X11Desc[] =
@@ -673,22 +676,23 @@ GB_DESC X11Desc[] =
   GB_STATIC_METHOD("MinimizeWindow", NULL, X11_MinimizeWindow, "(Window)i(Minimized)b"),
   GB_STATIC_METHOD("Sync", NULL, X11_Sync, NULL),
   GB_STATIC_METHOD("Flush", NULL, X11_Flush, NULL),
+  GB_STATIC_METHOD("MoveWindow", NULL, X11_MoveWindow, "(Window)i(X)i(Y)i[(Width)i(Height)i]"),
+  GB_STATIC_METHOD("ResizeWindow", NULL, X11_ResizeWindow, "(Window)i(Width)i(Height)i"),
 
   GB_END_DECLARE
 };
 
-/****************************************************************************
+//---- X11Watcher ---------------------------------------------------------
 
-	_DesktopWatcher
+static CX11WATCHER *_watcher_list = NULL;
 
-****************************************************************************/
-
-static CDESKTOPWATCHER *_watcher_list = NULL;
-
-static void x11_event_filter(XEvent *e)
+void WATCHER_event_filter(XEvent *e)
 {
-	CDESKTOPWATCHER *watcher;
+	CX11WATCHER *watcher;
 	
+	if (!_watcher_list)
+		return;
+
 	if (e->type == PropertyNotify)
 	{
 		LIST_for_each(watcher, _watcher_list)
@@ -718,15 +722,6 @@ static void x11_event_filter(XEvent *e)
 	}
 }
 
-static void enable_event_filter(bool enable)
-{
-	void (*set_event_filter)(void *) = NULL;
-	
-	GB.Component.GetInfo("SET_EVENT_FILTER", POINTER(&set_event_filter));
-	if (set_event_filter)
-		(*set_event_filter)(enable ? x11_event_filter : 0);
-}
-
 BEGIN_METHOD(X11Watcher_new, GB_INTEGER window; GB_STRING property)
 
 	if (X11_init())
@@ -736,7 +731,7 @@ BEGIN_METHOD(X11Watcher_new, GB_INTEGER window; GB_STRING property)
 	WATCHER->property = MISSING(property) ? 0 : X11_intern_atom(GB.ToZeroString(ARG(property)), FALSE);
 	
 	if (!_watcher_list)
-		enable_event_filter(TRUE);
+		X11_enable_event_filter(TRUE);
 	
 	LIST_insert(&_watcher_list, WATCHER, &WATCHER->list);
 
@@ -746,13 +741,13 @@ BEGIN_METHOD_VOID(X11Watcher_free)
 
 	LIST_remove(&_watcher_list, WATCHER, &WATCHER->list);
 	if (!_watcher_list)
-		enable_event_filter(FALSE);
+		X11_enable_event_filter(FALSE);
 
 END_METHOD
 
 GB_DESC X11WatcherDesc[] =
 {
-  GB_DECLARE("X11Watcher", sizeof(CDESKTOPWATCHER)),
+  GB_DECLARE("X11Watcher", sizeof(CX11WATCHER)),
   
   GB_METHOD("_new", NULL, X11Watcher_new, "[(Window)i(Property)s]"),
   GB_METHOD("_free", NULL, X11Watcher_free, NULL),

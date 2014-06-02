@@ -44,8 +44,23 @@ End
 
 Private Sub GetProjectPath(sPath As String) As String
   
+  Dim hFile As File
+  Dim sHeader As String
+  
   Do
-    If Exist(sPath &/ ".project") Then Return sPath
+    
+    If Exist(sPath &/ ".project") Then 
+      
+      hFile = Open sPath &/ ".project"
+      sHeader = Read #hFile, -256
+      hFile.Close
+      
+      If sHeader Begins Project.PROJECT_MAGIC Or If sHeader Begins Project.PROJECT_MAGIC_2 Then
+        Return sPath
+      Endif
+      
+    Endif
+    
     sPath = File.Dir(sPath)
     If sPath = "/" Then Break
   Loop

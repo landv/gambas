@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  desktop.h
+  c_x11.h
 
   (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,13 +21,13 @@
 
 ***************************************************************************/
 
-#ifndef __DESKTOP_H
-#define __DESKTOP_H
+#ifndef __C_X11_H
+#define __C_X11_H
 
 #include "main.h"
 #include "gb_list.h"
 
-#ifndef __DESKTOP_C
+#ifndef __C_X11_C
 extern GB_DESC X11Desc[];
 extern GB_DESC X11WatcherDesc[];
 #endif
@@ -39,8 +39,10 @@ typedef
 		Window window;
 		LIST list;
 		}
-	CDESKTOPWATCHER;
+	CX11WATCHER;
 	
-#define WATCHER ((CDESKTOPWATCHER *)_object)
+#define WATCHER ((CX11WATCHER *)_object)
+
+void WATCHER_event_filter(XEvent *);
 
 #endif

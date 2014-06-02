@@ -226,10 +226,13 @@ gPicture *gTrayIcon::defaultIcon()
 
 void gTrayIcon::updatePicture()
 {
-	if (!plug || !_icon)
+	if (!plug)
 		return;
 
-	gtk_status_icon_set_from_pixbuf(plug, _icon->getPixbuf());
+	if (_icon)
+		gtk_status_icon_set_from_pixbuf(plug, _icon->getPixbuf());
+	else
+		gtk_status_icon_set_from_pixbuf(plug, defaultIcon()->getPixbuf());
 }
 
 void gTrayIcon::setPicture(gPicture *picture)
