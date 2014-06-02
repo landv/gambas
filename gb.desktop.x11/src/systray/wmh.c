@@ -133,6 +133,7 @@ int ewmh_set_window_atom32(Display *dpy, Window wnd, char *prop_name, CARD32 val
 	}
 }
 
+#if 0
 /* Set MWM hints */
 int mwm_set_hints(Display *dpy, Window wnd, unsigned long decorations, unsigned long functions)
 {
@@ -171,6 +172,7 @@ int mwm_set_hints(Display *dpy, Window wnd, unsigned long decorations, unsigned 
 			(unsigned char*) prop, PROP_MOTIF_WM_HINTS_ELEMENTS);
 	return x11_ok();
 }
+#endif
 
 #ifdef DEBUG
 /* Dumps EWMH atoms supported by WM */

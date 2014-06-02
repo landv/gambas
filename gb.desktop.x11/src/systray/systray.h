@@ -172,7 +172,7 @@ typedef
 #undef _POSIX_SOURCE
 #endif
 
-#define DEBUG 0
+//#define DEBUG
 
 void SYSTRAY_init(Display *display, Window window);
 void SYSTRAY_exit();

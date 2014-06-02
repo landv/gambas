@@ -38,7 +38,7 @@ void init_default_settings()
 {
 	settings.bg_color_str		= "gray";
 	settings.tint_color_str		= "white";
-	settings.scrollbars_highlight_color_str	= "white";
+	//settings.scrollbars_highlight_color_str	= "white";
 	settings.display_str		= NULL;
 #ifdef DEBUG
 	settings.log_level			= LOG_LEVEL_ERR;
@@ -56,8 +56,8 @@ void init_default_settings()
 	settings.skip_taskbar		= 1;
 	settings.transparent		= 0;
 	settings.vertical			= 0;
-	settings.grow_gravity		= GRAV_N | GRAV_W;
-	settings.icon_gravity		= GRAV_N | GRAV_W;
+	//settings.grow_gravity		= GRAV_N | GRAV_W;
+	//settings.icon_gravity		= GRAV_N | GRAV_W;
 	settings.wnd_type			= _NET_WM_WINDOW_TYPE_DOCK;
 	settings.wnd_layer			= NULL;
 	settings.wnd_name			= PROGNAME;
@@ -71,11 +71,11 @@ void init_default_settings()
 	settings.tint_level         = 0;
 	settings.fuzzy_edges        = 0;
 	settings.dockapp_mode		= DOCKAPP_NONE;
-	settings.scrollbars_size    = -1;
-	settings.scrollbars_mode    = SB_MODE_NONE;
-	settings.scrollbars_inc		= -1;
+	//settings.scrollbars_size    = -1;
+	//settings.scrollbars_mode    = SB_MODE_NONE;
+	//settings.scrollbars_inc		= -1;
 	settings.wm_strut_mode		= WM_STRUT_AUTO;
-	settings.kludge_flags		= 0;
+	settings.kludge_flags		= KLUDGE_USE_ICONS_HINTS;
 	settings.remote_click_name  = NULL;
 	settings.remote_click_btn   = REMOTE_CLICK_BTN_DEFAULT;
 	settings.remote_click_cnt   = REMOTE_CLICK_CNT_DEFAULT;
@@ -86,6 +86,7 @@ void init_default_settings()
 #endif
 }
 
+#if 0
 /* ******* general parsing utils ********* */
 
 #define PARSING_ERROR(msg,str) if (!silent) LOG_ERROR(("Parsing error: " msg ", \"%s\" found\n", str));
@@ -459,6 +460,7 @@ struct Param params[] = {
 	{NULL, "--xsync", "xsync", {&settings.xsync}, (param_parser_t) &parse_bool, 1, 1, 1, "true"},
 	{NULL, NULL, NULL, {NULL}}
 };
+#endif
 
 #if 0
 void usage(char *progname) 
@@ -766,6 +768,7 @@ void parse_rc()
 }
 #endif
 
+#if 0
 /* Interpret all settings that need an open display or other settings */
 void interpret_settings()
 {
@@ -903,6 +906,7 @@ void interpret_settings()
 	tray_data.scrollbars_data.scroll_base.x /= 2;
 	tray_data.scrollbars_data.scroll_base.y /= 2;
 }
+#endif
 
 /************** "main" ***********/
 int read_settings(int argc, char **argv) 
@@ -922,8 +926,8 @@ int read_settings(int argc, char **argv)
 	LOG_TRACE(("dockapp_mode = %d\n", settings.dockapp_mode));
 	LOG_TRACE(("full_pmt_search = %d\n", settings.full_pmt_search));
 	LOG_TRACE(("geometry_str = \"%s\"\n", settings.geometry_str));
-	LOG_TRACE(("grow_gravity = 0x%x\n", settings.grow_gravity));
-	LOG_TRACE(("icon_gravity = 0x%x\n", settings.icon_gravity));
+	//LOG_TRACE(("grow_gravity = 0x%x\n", settings.grow_gravity));
+	//LOG_TRACE(("icon_gravity = 0x%x\n", settings.icon_gravity));
 	LOG_TRACE(("icon_size = %d\n", settings.icon_size));
 	LOG_TRACE(("log_level = %d\n", settings.log_level));
 	LOG_TRACE(("max_tray_dims.x = %d\n", settings.max_tray_dims.x));
@@ -931,11 +935,11 @@ int read_settings(int argc, char **argv)
 	LOG_TRACE(("min_space_policy = %d\n", settings.min_space_policy));
 	LOG_TRACE(("need_help = %d\n", settings.need_help));
 	LOG_TRACE(("parent_bg = %d\n", settings.parent_bg));
-	LOG_TRACE(("scrollbars_highlight_color_str = \"%s\"\n", settings.scrollbars_highlight_color_str));
-	LOG_TRACE(("scrollbars_highlight_color.pixel = %ld\n", settings.scrollbars_highlight_color.pixel));
-	LOG_TRACE(("scrollbars_inc = %d\n", settings.scrollbars_inc));
-	LOG_TRACE(("scrollbars_mode = %d\n", settings.scrollbars_mode));
-	LOG_TRACE(("scrollbars_size = %d\n", settings.scrollbars_size));
+	//LOG_TRACE(("scrollbars_highlight_color_str = \"%s\"\n", settings.scrollbars_highlight_color_str));
+	//LOG_TRACE(("scrollbars_highlight_color.pixel = %ld\n", settings.scrollbars_highlight_color.pixel));
+	//LOG_TRACE(("scrollbars_inc = %d\n", settings.scrollbars_inc));
+	//LOG_TRACE(("scrollbars_mode = %d\n", settings.scrollbars_mode));
+	//LOG_TRACE(("scrollbars_size = %d\n", settings.scrollbars_size));
 	LOG_TRACE(("shrink_back_mode = %d\n", settings.shrink_back_mode));
 	LOG_TRACE(("slot_size = %d\n", settings.slot_size));
 	LOG_TRACE(("vertical = %d\n", settings.vertical));

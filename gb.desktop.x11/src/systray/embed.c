@@ -64,7 +64,7 @@ void *send_delayed_confirmation(void *dummy)
 int embedder_embed(struct TrayIcon *ti)
 {
 	int x, y, rc;
-	XSetWindowAttributes xswa;
+	//XSetWindowAttributes xswa;
 	/* If the icon is being embedded as hidden,
 	 * we just start listening for property changes 
 	 * to track _XEMBED mapped state */
@@ -83,8 +83,8 @@ int embedder_embed(struct TrayIcon *ti)
 				ti->l.icn_rect.x + x, ti->l.icn_rect.y + y, 
 				ti->l.wnd_sz.x, ti->l.wnd_sz.y, 0, 0, 0);
 	/* 2.5. Setup mid-parent window properties */
-	xswa.win_gravity = settings.bit_gravity;
-	XChangeWindowAttributes(tray_data.dpy, ti->mid_parent, CWWinGravity, &xswa);
+	//xswa.win_gravity = settings.bit_gravity;
+	//XChangeWindowAttributes(tray_data.dpy, ti->mid_parent, CWWinGravity, &xswa);
 #ifndef DEBUG_HIGHLIGHT_MIDPARENT
 	XSetWindowBackgroundPixmap(tray_data.dpy, ti->mid_parent, ParentRelative);
 #else
@@ -292,12 +292,18 @@ int embedder_reset_size(struct TrayIcon *ti)
 	} else {
 		/* If icon hints are to be respected, retrive the data */
 		if (settings.kludge_flags & KLUDGE_USE_ICONS_HINTS)
+		{
 			rc = x11_get_window_min_size(tray_data.dpy, ti->wid, &icon_sz.x, &icon_sz.y);
+			if (rc == SUCCESS)
+				fprintf(stderr, "embedder_reset_size: hint size: %ld %dx%d\n", ti->wid, icon_sz.x, icon_sz.y);
+			else
+				fprintf(stderr, "embedder_reset_size: hint size: none\n");
+		}
 		/* If this has failed, or icon hinst are not respected, or minimal size hints
 		 * are too small, fall back to default values */
 		if (!rc || 
 		    !(settings.kludge_flags & KLUDGE_USE_ICONS_HINTS) ||
-		     settings.kludge_flags & KLUDGE_FORCE_ICONS_SIZE ||
+		     (settings.kludge_flags & KLUDGE_FORCE_ICONS_SIZE) ||
 		    (icon_sz.x < settings.icon_size && icon_sz.y < settings.icon_size))
 		{
 			icon_sz.x = settings.icon_size;

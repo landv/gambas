@@ -630,12 +630,14 @@ void tray_create_phony_window()
 
 int tray_set_wm_hints()
 {
+#if 0
 	int mwm_decor = 0;
 	if (settings.deco_flags & DECO_TITLE)
 		mwm_decor |= MWM_DECOR_TITLE | MWM_DECOR_MENU;
 	if (settings.deco_flags & DECO_BORDER)
 		mwm_decor |= MWM_DECOR_RESIZEH | MWM_DECOR_BORDER;
 	mwm_set_hints(tray_data.dpy, tray_data.tray, mwm_decor, MWM_FUNC_ALL);
+#endif
 	if (settings.sticky) {
 		ewmh_add_window_state(tray_data.dpy, tray_data.tray, _NET_WM_STATE_STICKY);
 		ewmh_set_window_atom32(tray_data.dpy, tray_data.tray, _NET_WM_DESKTOP, 0xFFFFFFFF);

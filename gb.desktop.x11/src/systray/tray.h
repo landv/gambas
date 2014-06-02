@@ -18,7 +18,7 @@
 #include "systray.h"
 #include "common.h"
 #include "icons.h"
-#include "scrollbars.h"
+//#include "scrollbars.h"
 #include "xembed.h"
 
 /* Tray opcode messages from System Tray Protocol Specification 
@@ -107,7 +107,7 @@ struct TrayData {
 	struct XEMBEDData xembed_data;			/* XEMBED data */
 
 	/* Scrollbar data */
-	struct ScrollbarsData scrollbars_data;
+	//struct ScrollbarsData scrollbars_data;
 };
 extern struct TrayData tray_data;
 

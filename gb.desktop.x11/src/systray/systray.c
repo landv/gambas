@@ -853,7 +853,7 @@ void SYSTRAY_init(Display *display, Window window)
 	/* Read settings */
 	tray_init();
 	read_settings(0, NULL);
-#if DEBUG
+#ifdef DEBUG
 	settings.log_level = LOG_LEVEL_TRACE;
 #endif
 	/* Register cleanup and signal handlers */
@@ -879,7 +879,9 @@ void SYSTRAY_init(Display *display, Window window)
 #endif
 	if (settings.xsync)
 		XSynchronize(tray_data.dpy, True);
+#ifdef DEBUG
 	x11_trap_errors();
+#endif
 	/* Execute proper main() function */
 	//if (settings.remote_click_name != NULL)
 	//	return remote_main(argc, argv);

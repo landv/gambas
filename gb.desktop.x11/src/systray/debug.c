@@ -36,7 +36,7 @@ void print_message_to_stderr(const char *fmt,...)
 	va_start(va, fmt);
 	vsnprintf(msg, PATH_MAX, fmt, va);
 	va_end(va);
-	fprintf(stderr, msg);
+	fputs(msg, stderr);
 }
 
 #ifdef DEBUG
@@ -45,7 +45,9 @@ int trace_mode = False;
 
 void print_trace_header(const char *funcname, const char *fname, const int line)
 {
+#ifdef TRACE_PID
 	static pid_t pid = 0;
+#endif
 #ifdef TRACE_TIMESTAMP
 	{
         static char timestr[PATH_MAX+1];

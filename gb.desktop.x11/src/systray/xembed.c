@@ -308,7 +308,7 @@ void xembed_message(XClientMessageEvent ev)
 	long msgid;
 	LOG_TRACE(("this is an _XEMBED message, window: 0x%x, timestamp: %u, opcode: %u, \ndetail: 0x%x, data1 = 0x%x, data2 = 0x%x\n",
 	        ev.window, ev.data.l[0], ev.data.l[1], ev.data.l[2], ev.data.l[3], ev.data.l[4]));
-#if DEBUG
+#ifdef DEBUG
 	if (tray_data.xembed_data.current != NULL) 
 		LOG_TRACE(("XEMBED focus is in window 0x%x (pointer %p)\n", tray_data.xembed_data.current->wid, tray_data.xembed_data.current));
 	else
