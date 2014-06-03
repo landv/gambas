@@ -136,7 +136,7 @@ int embedder_unembed(struct TrayIcon *ti)
 		case CM_KDE:
 		case CM_FDO:
 			/* Unembed icon as described in system tray protocol */
-			if (ti->is_embedded) {
+			if (ti->is_embedded && !ti->is_destroyed) {
 				XSelectInput(tray_data.dpy, ti->wid, NoEventMask);
 				XUnmapWindow(tray_data.dpy, ti->wid);
 				XReparentWindow(tray_data.dpy, ti->wid, DefaultRootWindow(tray_data.dpy),
@@ -275,8 +275,8 @@ int embedder_refresh(struct TrayIcon *ti)
  * is used to reset size of the icon window */
 int embedder_reset_size(struct TrayIcon *ti)
 {
-	struct Point icon_sz;
 	int rc = FAILURE;
+	int iw, ih;
 	/* Do not reset size for non-KDE icons with size set if icon_resizes
 	 * are handled */
 	if (ti->is_size_set && (ti->cmode != CM_KDE) && !(settings.kludge_flags & KLUDGE_FORCE_ICONS_SIZE))
@@ -286,19 +286,30 @@ int embedder_reset_size(struct TrayIcon *ti)
 	 * that react badly to size changes */
 	if (ti->is_size_set) ti->num_size_resets++;
 	if (ti->num_size_resets > ICON_SIZE_RESETS_THRESHOLD) return SUCCESS;
-	if (ti->cmode == CM_KDE) {
-		icon_sz.x = settings.icon_size < KDE_ICON_SIZE ? settings.icon_size : KDE_ICON_SIZE;
-		icon_sz.y = icon_sz.x;
-	} else {
+
+	iw = ih = settings.icon_size;
+
+	if (ti->cmode == CM_KDE)
+	{
+		if (iw > KDE_ICON_SIZE)
+			iw = KDE_ICON_SIZE;
+		ih = iw;
+	}
+	else
+	{
 		/* If icon hints are to be respected, retrive the data */
 		if (settings.kludge_flags & KLUDGE_USE_ICONS_HINTS)
 		{
-			rc = x11_get_window_min_size(tray_data.dpy, ti->wid, &icon_sz.x, &icon_sz.y);
+			rc = x11_get_window_min_size(tray_data.dpy, ti->wid, &iw, &ih);
 			if (rc == SUCCESS)
-				fprintf(stderr, "embedder_reset_size: hint size: %ld %dx%d\n", ti->wid, icon_sz.x, icon_sz.y);
-			else
-				fprintf(stderr, "embedder_reset_size: hint size: none\n");
+			{
+				if (iw < 4 || ih < 4)
+					iw = ih = settings.icon_size;
+
+				//fprintf(stderr, "embedder_reset_size: hint size: %ld %dx%d\n", ti->wid, iw, ih);
+			}
 		}
+#if 0
 		/* If this has failed, or icon hinst are not respected, or minimal size hints
 		 * are too small, fall back to default values */
 		if (!rc || 
@@ -309,15 +320,23 @@ int embedder_reset_size(struct TrayIcon *ti)
 			icon_sz.x = settings.icon_size;
 			icon_sz.y = settings.icon_size;
 		}
+#endif
 	}
-	LOG_TRACE(("proposed icon size: %dx%d\n", icon_sz.x, icon_sz.y));
-	if (x11_set_window_size(tray_data.dpy, ti->wid, icon_sz.x, icon_sz.y)) {
-		ti->l.wnd_sz = icon_sz;
-		ti->w = icon_sz.x;
-		ti->h = icon_sz.y;
+	LOG_TRACE(("proposed icon size: %dx%d\n", iw, ih));
+	//fprintf(stderr, "proposed icon size: %dx%d\n", iw, ih);
+	if (x11_set_window_size(tray_data.dpy, ti->wid, iw, ih))
+	{
+		ti->l.wnd_sz.x = iw;
+		ti->l.wnd_sz.y = ih;
+		ti->iw = iw;
+		ti->ih = ih;
+		ti->w = iw;
+		ti->h = ih;
 		ti->is_size_set = True;
 		return SUCCESS;
-	} else {
+	}
+	else
+	{
 		ti->is_invalid = True;
 		return FAILURE;
 	}

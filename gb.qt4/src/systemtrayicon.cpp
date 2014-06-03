@@ -256,11 +256,12 @@ SystemTrayIcon::SystemTrayIcon()
     }
     trayIcons.append(this);
     setMouseTracking(true);
+		resize(22, 22);
 //#ifndef QT_NO_TOOLTIP
 //    setToolTip(q->toolTip());
 //#endif
-    if (sysTrayWindow != None)
-        addToTray();
+    /*if (sysTrayWindow != None)
+        addToTray();*/
 }
 
 
@@ -340,7 +341,8 @@ void SystemTrayIcon::addToTray()
     ev.xclient.format = 32;
     memcpy((char *)&ev.xclient.data, (const char *) l, sizeof(l));
     XSendEvent(display, sysTrayWindow, False, 0, &ev);
-    setMinimumSize(22, 22); // required at least on GNOME
+		//qDebug("addToTray: %d %d", width(), height());
+    setMinimumSize(width(), height()); // required at least on GNOME
 }
 
 // void SystemTrayIcon::updateIcon()

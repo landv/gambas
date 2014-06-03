@@ -98,8 +98,8 @@ struct XEMBEDAccel {
 #define xembed_send_activate_accelerator(dpy, dst, timestamp, id, overloaded) \
 	xembed_send_msg(dpy, dst, timestamp, XEMBED_ACTIVATE_ACCELERATOR, id, overloaded, 0)
 
-/* Retrive XEMBED data for the given icon */
-int xembed_retrive_data(struct TrayIcon *ti);
+/* Retrieve XEMBED data for the given icon */
+int xembed_retrieve_data(struct TrayIcon *ti);
 /* Post icon XEMBED data to window property */
 int xembed_post_data(struct TrayIcon *ti);
 /* Returns the next icon in tab chain */
@@ -194,18 +194,18 @@ void xembed_handle_event(XEvent ev)
 
 int xembed_check_support(struct TrayIcon *ti)
 {
-	int rc = xembed_retrive_data(ti);
+	int rc = xembed_retrieve_data(ti);
 	ti->is_xembed_supported = (rc == XEMBED_RESULT_OK);
 	return rc != XEMBED_RESULT_X11ERROR;
 }
 
 int xembed_get_mapped_state(struct TrayIcon *ti)
 {
-	/* It is OK to retrive data each time this function
+	/* It is OK to retrieve data each time this function
 	 * is called, since there is some overhead only during
-	 * initialization, when xembed_retrive_data is called 2 
+	 * initialization, when xembed_retrieve_data is called 2
 	 * times in a row(). */
-	int rc = xembed_retrive_data(ti);
+	int rc = xembed_retrieve_data(ti);
 	if (ti->is_xembed_supported && rc == XEMBED_RESULT_OK)
 		return ((ti->xembed_data[1] & XEMBED_MAPPED) != 0);
 	else {
@@ -470,7 +470,7 @@ struct TrayIcon *xembed_prev()
 	return tmp;
 }
 
-int xembed_retrive_data(struct TrayIcon *ti)
+int xembed_retrieve_data(struct TrayIcon *ti)
 {
 	Atom act_type;
 	int act_fmt;
@@ -479,6 +479,8 @@ int xembed_retrive_data(struct TrayIcon *ti)
 	int rc;
 	/* NOTE: x11_get_win_prop32 is not used since we need to distinguish between
 	 * X11 errors and absence of the property */
+	x11_ok();
+
 	rc = XGetWindowProperty(tray_data.dpy,
 					   ti->wid,
 					   tray_data.xembed_data.xa_xembed_info,
@@ -491,7 +493,8 @@ int xembed_retrive_data(struct TrayIcon *ti)
 					   &nitems,
 					   &bytesafter,
 					   &tmpdata);
-	if (!x11_ok() || rc != Success) return XEMBED_RESULT_X11ERROR;
+	if (rc != Success)
+		return XEMBED_RESULT_X11ERROR;
 	rc = (act_type == tray_data.xembed_data.xa_xembed_info && nitems == 2);
 	if (rc) {
 		data = (unsigned long*) tmpdata;

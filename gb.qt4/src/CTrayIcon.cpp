@@ -197,18 +197,20 @@ static void define_mask(CTRAYICON *_object)
 	WIDGET->setIcon(*p);
 	//WIDGET->setPaletteBackgroundColor(QColor(255, 0, 0));
 	WIDGET->resize(p->width(), p->height());
+	//qDebug("resize: %d %d", p->width(), p->height());
 
 	if (!THIS->icon)
 		delete p;
 	
-	#ifndef NO_X_WINDOW
+	/*#ifndef NO_X_WINDOW
 	// Needed, otherwise the icon does not appear in Gnome or XFCE notification area!
 	XSizeHints hints;
 	hints.flags = PMinSize;
 	hints.min_width = WIDGET->width();
 	hints.min_height = WIDGET->height();
 	XSetWMNormalHints(WIDGET->x11Display(), WIDGET->winId(), &hints);
-	#endif
+	qDebug("set hints: %ld %d %d", WIDGET->winId(), WIDGET->width(), WIDGET->height());
+	#endif*/
 }
 
 static void define_tooltip(CTRAYICON *_object)
@@ -303,8 +305,8 @@ BEGIN_METHOD_VOID(CTRAYICON_show)
 		#else
 		WIDGET->show();
 		#endif
-		define_mask(THIS);
-		define_tooltip(THIS);
+		//define_mask(THIS);
+		//define_tooltip(THIS);
 	}
 
 END_METHOD

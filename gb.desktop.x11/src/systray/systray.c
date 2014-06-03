@@ -138,8 +138,8 @@ void dump_tray_status()
 		LOG_INFO(("XEMBED focus: 0x%x\n", tray_data.xembed_data.current->wid));
 	else
 		LOG_INFO(("XEMBED focus: none\n"));
-	LOG_INFO(("currently managed icons:\n"));
-	icon_list_forall(&print_icon_data);
+	//LOG_INFO(("currently managed icons:\n"));
+	//icon_list_forall(&print_icon_data);
 	LOG_INFO(("-----------------------------------\n"));
 }
 
@@ -207,14 +207,26 @@ void remove_icon(Window w)
 	xembed_unembed(ti);
 	//layout_remove(ti);
 	icon_list_free(ti);
-	LOG_INFO(("removed icon %s (wid 0x%x)\n",
-				x11_get_window_name(tray_data.dpy, ti->wid, "<unknown>"), 
-				w));
-	/* no need to call embedder_update_positions(), as
-	 * scrollbars_click(SB_WND_MAX) will call it */
-	/* XXX: maybe we need a different name for this
-	 * routine instad of passing cryptinc constant? */
-	//scrollbars_click(SB_WND_MAX);
+	LOG_INFO(("removed icon %s (wid 0x%x)\n", x11_get_window_name(tray_data.dpy, ti->wid, "<unknown>"), w));
+	embedder_update_positions(False);
+	tray_update_window_props();
+	dump_tray_status();
+}
+
+/* Remove a destroyed icon from the tray */
+void destroy_icon(Window w)
+{
+	struct TrayIcon *ti;
+	//char *name;
+	/* Ignore false alarms */
+	if ((ti = icon_list_find(w)) == NULL) return;
+	dump_tray_status();
+	ti->is_destroyed = True;
+	embedder_unembed(ti);
+	xembed_unembed(ti);
+	//layout_remove(ti);
+	icon_list_free(ti);
+	LOG_INFO(("destroy icon (wid 0x%x)\n", w));
 	embedder_update_positions(False);
 	tray_update_window_props();
 	dump_tray_status();
@@ -535,7 +547,7 @@ void destroy_notify(XDestroyWindowEvent ev)
 		tray_acquire_selection();
 	} else if (ev.window != tray_data.tray) {
 		/* Try to remove icon from the tray */
-		remove_icon(ev.window);
+		destroy_icon(ev.window);
 #ifndef NO_NATIVE_KDE
 	} else if (kde_tray_is_old_icon(ev.window)) {
 		/* Since X Server may reuse window ids, remove ev.window
@@ -901,21 +913,7 @@ int SYSTRAY_get_count()
 
 CX11SYSTRAYICON *SYSTRAY_get(int i)
 {
-	CX11SYSTRAYICON *icon = NULL;
-
-	if (i >= 0 && i < icon_get_count())
-	{
-		i = icon_get_count() - i - 1;
-		for(;;)
-		{
-			icon = icon_list_next(icon);
-			if (i == 0)
-				break;
-			i--;
-		}
-	}
-
-	return icon;
+	return icon_get(i);
 }
 
 void SYSTRAY_refresh(void)

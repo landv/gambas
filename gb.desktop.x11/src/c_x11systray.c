@@ -110,13 +110,13 @@ END_PROPERTY
 
 BEGIN_PROPERTY(X11SystrayIcon_IconWidth)
 
-	GB.ReturnInteger(THIS_ICON->l.wnd_sz.x);
+	GB.ReturnInteger(THIS_ICON->iw);
 
 END_PROPERTY
 
 BEGIN_PROPERTY(X11SystrayIcon_IconHeight)
 
-	GB.ReturnInteger(THIS_ICON->l.wnd_sz.y);
+	GB.ReturnInteger(THIS_ICON->ih);
 
 END_PROPERTY
 
@@ -144,6 +144,12 @@ BEGIN_METHOD(X11SystrayIcon_Resize, GB_INTEGER w; GB_INTEGER h)
 
 END_METHOD
 
+BEGIN_PROPERTY(X11SystrayIcon_Handle)
+
+	GB.ReturnInteger((int)THIS_ICON->wid);
+
+END_PROPERTY
+
 
 GB_DESC X11SystrayIconDesc[] =
 {
@@ -160,6 +166,7 @@ GB_DESC X11SystrayIconDesc[] =
 	GB_PROPERTY_READ("IconWidth", "i", X11SystrayIcon_IconWidth),
 	GB_PROPERTY_READ("IconH", "i", X11SystrayIcon_IconHeight),
 	GB_PROPERTY_READ("IconHeight", "i", X11SystrayIcon_IconHeight),
+	GB_PROPERTY_READ("Handle", "i", X11SystrayIcon_Handle),
 
 	GB_METHOD("Move", NULL, X11SystrayIcon_Move, "(X)i(Y)i[(Width)i(Height)i]"),
 	GB_METHOD("Resize", NULL, X11SystrayIcon_Resize, "(Width)i(Height)i"),

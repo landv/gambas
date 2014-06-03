@@ -226,13 +226,20 @@ gPicture *gTrayIcon::defaultIcon()
 
 void gTrayIcon::updatePicture()
 {
+	GdkPixbuf *pixbuf;
+
 	if (!plug)
 		return;
 
 	if (_icon)
-		gtk_status_icon_set_from_pixbuf(plug, _icon->getPixbuf());
+		pixbuf = _icon->getPixbuf();
 	else
-		gtk_status_icon_set_from_pixbuf(plug, defaultIcon()->getPixbuf());
+		pixbuf = defaultIcon()->getPixbuf();
+
+	gtk_status_icon_set_from_pixbuf(plug, pixbuf);
+
+	_iconw = gdk_pixbuf_get_width(pixbuf);
+	_iconh = gdk_pixbuf_get_height(pixbuf);
 }
 
 void gTrayIcon::setPicture(gPicture *picture)
@@ -280,6 +287,16 @@ void gTrayIcon::setVisible(bool vl)
 
 			updatePicture();
 			updateTooltip();
+
+			#ifdef GDK_WINDOWING_X11
+			// Needed, otherwise the icon does not appear in Gnome or XFCE notification area!
+			XSizeHints hints;
+			hints.flags = PMinSize;
+			hints.min_width = _iconw;
+			hints.min_height = _iconh;
+			XSetWMNormalHints(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gtk_status_icon_get_x11_window_id(plug), &hints);
+			#endif
+
 
 			gtk_status_icon_set_visible(plug, TRUE);
 

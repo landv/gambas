@@ -33,6 +33,7 @@ struct TrayIcon {
 	Window wid; 				/* Window ID */
 	Window mid_parent; 			/* Mid-parent ID */
 	int x, y, w, h;
+	int iw, ih;
 	int cmode; 					/* Compatibility mode: CM_FDO/CM_KDE (see embed.h) */
 	int num_size_resets;        /* How many times size was reset */
 	unsigned long xembed_data[2];/* XEMBED data */
@@ -48,6 +49,7 @@ struct TrayIcon {
 	unsigned is_xembed_supported : 1;	/* Flag: does the icon support xembed */
 	unsigned is_size_set : 1;			/* Flag: has the size for the icon been set */
 	unsigned is_xembed_accepts_focus : 1;/* Flag: does the icon want focus */
+	unsigned is_destroyed : 1; /* If a DestroyNotify has been received */
 	unsigned invalid : 1;
 };
 
@@ -113,5 +115,6 @@ struct TrayIcon *icon_list_find(Window w);
 struct TrayIcon *icon_list_find_ex(Window w);
 
 int icon_get_count(void);
+struct TrayIcon *icon_get(int i);
 
 #endif

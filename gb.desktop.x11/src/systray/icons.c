@@ -25,7 +25,6 @@
 #include "assert.h"
 
 struct TrayIcon *icons_head = NULL;
-static int _count = 0;
 
 struct TrayIcon *icon_list_new(Window wid, int cmode)
 {
@@ -57,7 +56,6 @@ struct TrayIcon *icon_list_new(Window wid, int cmode)
 	new_icon->is_size_set = False;
 	new_icon->num_size_resets = 0;
 	LIST_ADD_ITEM(icons_head, new_icon);
-	_count++;
 	return new_icon;
 }
 
@@ -65,7 +63,6 @@ int icon_list_free(struct TrayIcon *ti)
 {
 	if (ti != NULL) {
 		LIST_DEL_ITEM(icons_head, ti);
-		_count--;
 		ti->is_invalid = TRUE;
 		GB.Unref(POINTER(&ti));
 	}
@@ -216,5 +213,35 @@ struct TrayIcon *icon_list_forall_from(struct TrayIcon *tgt, IconCallbackFunc cb
 
 int icon_get_count(void)
 {
-	return _count;
+	struct TrayIcon *icon;
+	int n = 0;
+
+	for (icon = icons_head; icon; icon = icon->next)
+	{
+		if (icon->is_visible && icon->w > 0 && icon->h > 0)
+			n++;
+	}
+
+	return n;
+}
+
+struct TrayIcon *icon_get(int i)
+{
+	struct TrayIcon *icon = NULL;
+
+	if (i >= 0 && i < icon_get_count())
+	{
+		i = icon_get_count() - i - 1;
+		for (icon = icons_head; icon; icon = icon->next)
+		{
+			if (icon->is_visible && icon->w > 0 && icon->h > 0)
+			{
+				if (i == 0)
+					break;
+				i--;
+			}
+		}
+	}
+
+	return icon;
 }

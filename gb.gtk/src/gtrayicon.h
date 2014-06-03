@@ -75,6 +75,7 @@ public:
 //"Private"
 	GtkStatusIcon *plug;
 	gPicture *_icon;
+	int _iconw, _iconh;
 	char *buftext;
 	bool onHide;
 	int _loopLevel;

@@ -797,6 +797,7 @@ static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, fl
 	
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 	if (pie)
+		//PATH(d)->lineTo(x + width / 2, y + height / 2);
 		PATH(d)->closeSubpath();
 }
 
