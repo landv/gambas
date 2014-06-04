@@ -403,7 +403,7 @@ End
 
 Public Sub Reload()
   
-  RefreshView
+  RefreshViewLater
   
 End
 
@@ -764,7 +764,7 @@ End
 Private Sub IconSize_Write(Value As Integer)
   
   $iIconSize = Value
-  RefreshView
+  RefreshViewLater
   $hIconView.GridSize = Min(40, (Value + 8) \ 3)
   
 End
@@ -819,7 +819,7 @@ Private Sub ShowPreview_Write(Value As Boolean)
 
   If $bShowPreview = Value Then Return
   $bShowPreview = Value
-  RefreshView
+  RefreshViewLater
   
 End
 

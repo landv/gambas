@@ -242,7 +242,10 @@ Public Function Open() As Boolean
     $msgCache = New Collection
   Endif
 
-  Return $iStatus
+  If $iStatus <> Net.Connected Then
+    Try Abort()
+    Error.Raise("Cannot authenticate")
+  Endif
 
 End
 
@@ -512,4 +515,9 @@ Public Sub Remove(Index As Integer)
   
   Me[Index].Delete
   
+End
+
+' For documentation
+Public Sub _new()
+
 End
