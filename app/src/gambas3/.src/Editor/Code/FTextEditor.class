@@ -1373,3 +1373,56 @@ Public Sub Delete()
   Super.Delete
 
 End
+
+Private Sub SortText(bDescent As Boolean)
+
+  Dim aText As String[]
+  Dim aPos As Integer[]
+  Dim aVoid As String[]
+  Dim iMode As Integer
+  Dim I As Integer
+  
+  If Editor.ReadOnly Then Return
+  If Not Editor.Selected Then Return
+  
+  Editor.StoreSelection
+  Editor.Begin
+  
+  aText = Split(Editor.Selection.Text, "\n")
+  
+  aPos = New Integer[]
+  aVoid = New String[]
+  For I = aText.Max DownTo 0
+    If Not Trim(aText[I]) Then 
+      aPos.Add(I)
+      aVoid.Add(aText[I])
+      aText.Remove(I)
+    Endif
+  Next
+  
+  iMode = gb.Natural
+  If bDescent Then iMode += gb.Descent
+  aText.Sort(iMode)
+  
+  For I = 0 To aVoid.Max
+    aText.Add(aVoid[I], aPos[I])
+  Next
+  
+  Editor.Insert(aText.Join("\n"))
+  Editor.End
+  Editor.RecallSelection
+  
+End
+
+Public Sub mnuSortAscent_Click()
+  
+  SortText(False)
+  
+End
+
+Public Sub mnuSortDescent_Click()
+  
+  SortText(True)
+  
+End
+
