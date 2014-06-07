@@ -61,6 +61,15 @@ typedef
 	}
 	HIGHLIGHT_NAME;
 
+typedef
+	struct
+	{
+		const char *cmd;
+		void *label;
+		bool select;
+	}
+	COMMAND;
+
 static HIGHLIGHT_NAME _highlight_name[] = {
 	{ HIGHLIGHT_HTML, "_DoHtml" },
 	{ HIGHLIGHT_CSS, "_DoCss" },
@@ -1235,6 +1244,28 @@ BEGIN_PROPERTY(Editor_LineOffset)
 END_PROPERTY
 
 #if 0
+BEGIN_METHOD(Editor_Command, GB_STRING command)
+
+	static COMMAND CommandList[] =
+	{
+		{ "move-left", &&__MOVE_LEFT },
+		{ "move-left-word", &&__MOVE_LEFT_WORD },
+		{ "select-left", &&__MOVE_LEFT, TRUE },
+		{ "select-left-word", &&__MOVE_LEFT_WORD, TRUE },
+		{ "move-right", &&__MOVE_RIGHT },
+		{ "move-right-word", &&__MOVE_RIGHT_WORD },
+		{ "select-right", &&__MOVE_RIGHT, TRUE },
+		{ "select-right-word", &&__MOVE_RIGHT_WORD, TRUE },
+		{ "move-up", &&__MOVE_UP },
+		{ "move-right-word", &&__MOVE_RIGHT_WORD },
+		{ "select-right", &&__MOVE_RIGHT, TRUE },
+		{ "select-right-word", &&__MOVE_RIGHT_WORD, TRUE },
+	};
+
+END_METHOD
+#endif
+
+#if 0
 BEGIN_PROPERTY(Editor_ShowLimits)
 
 	int limit;
@@ -1435,17 +1466,14 @@ GB_DESC CEditorDesc[] =
 	GB_CONSTANT("ShowLimits", "i", GEditor::ShowProcedureLimits),
 	GB_CONSTANT("BlendedLimits", "i", GEditor::BlendedProcedureLimits),
 	GB_CONSTANT("BackgroundLimits", "i", GEditor::ChangeBackgroundAtLimit),
-	//GB_CONSTANT("DrawWithRelief", "i", GEditor::DrawWithRelief),
 	GB_CONSTANT("ShowModifiedLines", "i", GEditor::ShowModifiedLines),
 	GB_CONSTANT("ShowCurrentLine", "i", GEditor::ShowCurrentLine),
 	GB_CONSTANT("ShowLineNumbers", "i", GEditor::ShowLineNumbers),
 	GB_CONSTANT("HighlightBraces", "i", GEditor::HighlightBraces),
 	GB_CONSTANT("HighlightImmediately", "i", GEditor::HighlightImmediately),
 	GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
-	//GB_CONSTANT("ShowCursorPosition", "i", GEditor::ShowCursorPosition),
 	GB_CONSTANT("HideMargin", "i", GEditor::HideMargin),
 	GB_CONSTANT("NoFolding", "i", GEditor::NoFolding),
-	//GB_CONSTANT("BlinkCursor", "i", GEditor::BlinkCursor),
 
 	GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
 	GB_METHOD("_free", NULL, CEDITOR_free, NULL),
@@ -1484,6 +1512,8 @@ GB_DESC CEditorDesc[] =
 	GB_METHOD("Paste", NULL, CEDITOR_paste, NULL),
 	GB_METHOD("Undo", NULL, CEDITOR_undo, NULL),
 	GB_METHOD("Redo", NULL, CEDITOR_redo, NULL),
+
+	//GB_METHOD("Command", NULL, Editor_command, "(Command)s"),
 
 	GB_PROPERTY_SELF("Styles", ".Editor.Styles"),
 

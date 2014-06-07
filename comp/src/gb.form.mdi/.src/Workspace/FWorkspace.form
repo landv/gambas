@@ -5,6 +5,36 @@
   Arrangement = Arrange.Fill
   { mnuWindow Menu
     Visible = False
+    { mnuShow Menu
+      Text = ("Show")
+    }
+    { mnuSort Menu
+      Text = ("Sort tabs")
+      Picture = Picture["icon:/small/sort-ascent"]
+    }
+    { Menu1 Menu
+    }
+    { mnuCloseRight Menu
+      Text = ("Close tabs on the right")
+    }
+    { mnuCloseOther Menu
+      Text = ("Close other tabs")
+    }
+    { mnuCloseAll Menu
+      Text = ("Close all tabs")
+    }
+    { Menu2 Menu
+    }
+    { mnuAttach Menu
+      Text = ("Attach tab")
+    }
+    { mnuDetach Menu
+      Text = ("Detach tab")
+    }
+    { mnuClose Menu
+      Text = ("Close tab")
+      Picture = Picture["icon:/small/close"]
+    }
   }
   { mnuMove Menu
     { mnuPreviousTab Menu

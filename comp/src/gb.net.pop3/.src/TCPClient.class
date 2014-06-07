@@ -89,7 +89,7 @@ End
 ''Close the socket. No further data can be sent or read.
 Public Sub Disconnect()
 
-  Close sSocket
+  Try Close sSocket
   'Debug "Connection closed by user"
 
 End

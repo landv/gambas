@@ -547,6 +547,9 @@ void gMainWindow::afterShow()
 
 void gMainWindow::setVisible(bool vl)
 {
+	if (!vl)
+		_hidden = true;
+
 	if (vl == isVisible())
 		return;
 
@@ -629,7 +632,6 @@ void gMainWindow::setVisible(bool vl)
 			focus = gApplication::activeControl();
 			
 		_not_spontaneous = visible;
-		_hidden = true;
 		gContainer::setVisible(false);
 		
 		if (_popup)

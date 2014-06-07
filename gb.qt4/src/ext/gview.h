@@ -240,6 +240,7 @@ public:
 	void movePreviousSameIndent(bool shift);
 	void moveNextSameIndent(bool shift);
 	void expand(bool shift);
+	void deleteCurrentLine();
 	
 	bool getInsertMode() const { return _insertMode; }
 	void setInsertMode(bool mode);

@@ -15,6 +15,8 @@ Private $bBorder As Boolean = True
 Private $hPicture As Picture
 Private $nDetach As Integer
 
+Private Enum CLOSE_ALL, CLOSE_OTHER, CLOSE_RIGHT
+
 ' Public Sub _new()
 '   
 '   If Not $hTile Then $hTile = Picture["img/hash.png"]
@@ -155,6 +157,8 @@ Public Sub Attach(hWin As Window)
   
   hWindow.Detached = False
   Dec $nDetach
+  
+  Activate
     
 End
 
@@ -492,28 +496,61 @@ Public Sub UpdateSize()
   
 End
 
-Public Sub btnClose_Click()
+Public Sub mnuClose_Click()
 
   $aWindow[tabWorkspace.Index].Window.Close
   'CheckWindow
 
 End
 
-Public Sub btnCloseOther_Click()
-  
+Private Sub CloseWindows(iMode As Integer)
+
   Dim hWindow As CWindow
   Dim hCurrent As CWindow
+  Dim bClose As Boolean
   
   hCurrent = $aWindow[tabWorkspace.Index]
   
   {Lock}
+  
   For Each hWindow In $aWindow.Copy()
-    If hWindow = hCurrent Then Continue
+    
+    Select Case iMode
+      Case CLOSE_OTHER
+        If hWindow = hCurrent Then Continue
+      Case CLOSE_RIGHT
+        If hWindow = hCurrent Then
+          bClose = True
+          Continue
+        Else If Not bClose Or If hWindow.Detached Then
+          Continue
+        Endif
+    End Select
+    
     If hWindow.Window.Close() Then Break
+    
   Next 
   
   'CheckWindow
   {Unlock}
+  
+End
+
+Public Sub mnuCloseOther_Click()
+  
+  CloseWindows(CLOSE_OTHER)
+  
+End
+
+Public Sub mnuCloseAll_Click()
+  
+  CloseWindows(CLOSE_ALL)
+
+End
+
+Public Sub mnuCloseRight_Click()
+  
+  CloseWindows(CLOSE_RIGHT)
   
 End
 
@@ -607,7 +644,7 @@ End
 
 Public Sub imgIcon_DblClick()
 
-  btnClose_Click
+  mnuClose_Click
 
 End
 
@@ -640,14 +677,13 @@ Public Sub tabWorkspace_Menu()
 
   Dim iInd As Integer
   Dim hMenu As Menu
-  Dim hParent As Menu
   Dim aTitle As New String[]
   Dim sTitle As String
   Dim hWin As CWindow
   
   'GetParent()._Menu
 
-  mnuWindow.Children.Clear
+  mnuShow.Children.Clear
 
   For iInd = 0 To tabWorkspace.Count - 1
     aTitle.Add(tabWorkspace[iInd].Text & "\t" & Format(iInd, "000"))
@@ -657,7 +693,7 @@ Public Sub tabWorkspace_Menu()
   For Each sTitle In aTitle
     iInd = CInt(Mid$(sTitle, InStr(sTitle, "\t") + 1))
     With tabWorkspace[iInd]
-      hMenu = New Menu(mnuWindow) As "mnuWindow"
+      hMenu = New Menu(mnuShow) As "mnuWindow"
       If .Text Then
         hMenu.Text = .Text
       Else 
@@ -669,32 +705,17 @@ Public Sub tabWorkspace_Menu()
     End With
   Next 
 
-  hMenu = New Menu(mnuWindow)
+  mnuSort.Enabled = $aWindow.Count >= 2
+  mnuDetach.Enabled = $nDetach < $aWindow.Max
   
-  If $aWindow.Count >= 2 Then  
-
-    hMenu = New Menu(mnuWindow) As "btnSort"
-    hMenu.Text = ("&Sort tabs")
-    hMenu.Picture = Picture["icon:/small/sort-ascent"]
-    
-    hMenu = New Menu(mnuWindow)
-  
-  Endif
-  
-  hMenu = New Menu(mnuWindow) As "mnuDetach"
-  hMenu.Text = ("Detach current tab")
-  If $nDetach = $aWindow.Max Then hMenu.Enabled = False
-  'hMenu.Picture = Picture["icon:/small/close"]
-  
-  hParent = New Menu(mnuWindow)
-  hParent.Text = ("Attach tab")
+  mnuAttach.Children.Clear
   
   For Each sTitle In aTitle
     iInd = CInt(Mid$(sTitle, InStr(sTitle, "\t") + 1))
     hWin = $aWindow[iInd]
     If Not hWin.Detached Then Continue
     With tabWorkspace[iInd]
-      hMenu = New Menu(hParent) As "mnuAttach"
+      hMenu = New Menu(mnuAttach) As "mnuAttach"
       If .Text Then
         hMenu.Text = .Text
       Else 
@@ -706,18 +727,11 @@ Public Sub tabWorkspace_Menu()
     End With
   Next 
   
-  If hParent.Children.Count = 0 Then hParent.Hide
+  mnuAttach.Enabled = mnuAttach.Children.Count > 0
   
-  hMenu = New Menu(mnuWindow) As "btnClose"
-  hMenu.Text = ("&Close current tab")
-  hMenu.Picture = Picture["icon:/small/close"]
-  
-  If $aWindow.Count >= 2 Then
-    hMenu = New Menu(mnuWindow) As "btnCloseOther"
-    hMenu.Text = ("Close &all other tabs")
-    hMenu.Picture = Picture["icon:/small/trash"]
-  Endif
-  
+  mnuCloseRight.Enabled = tabWorkspace.Index < (tabWorkspace.Count - 1)
+  mnuCloseOther.Enabled = $aWindow.Count >= 2
+    
   mnuWindow.Popup
   
 End
@@ -797,7 +811,7 @@ Public Sub SetOrientation(iOrientation As Integer)
   
 End
 
-Public Sub btnSort_Click()
+Public Sub mnuSort_Click()
   
   Dim iInd As Integer
   Dim aTitle As New String[]

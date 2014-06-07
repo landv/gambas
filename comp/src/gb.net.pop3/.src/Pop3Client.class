@@ -242,7 +242,10 @@ Public Function Open() As Boolean
     $msgCache = New Collection
   Endif
 
-  Return $iStatus
+  If $iStatus <> Net.Connected Then
+    Try Abort()
+    Error.Raise("Cannot authenticate")
+  Endif
 
 End
 

@@ -1834,8 +1834,12 @@ void GEditor::del(bool ctrl)
 	
 	if (x >= lineLength(y))
 	{
-		if (!_insertMode && y < (numLines() - 1))
+		if (y < (numLines() - 1))
+		{
+			if (_insertMode)
+				doc->insert(y, x, QString(), TRUE);
 			doc->remove(y, x, y + 1, 0);
+		}
 	}
 	else
 	{
@@ -1896,6 +1900,26 @@ void GEditor::backspace(bool ctrl)
 	}
 	
 	doc->end();
+}
+
+void GEditor::deleteCurrentLine()
+{
+	bool im;
+
+	if (doc->hasSelection())
+	{
+		doc->eraseSelection(_insertMode);
+		return;
+	}
+
+	im = _insertMode;
+	_insertMode = FALSE;
+	doc->begin();
+	cursorGoto(y, 0, FALSE);
+	cursorGoto(y + 1, 0, TRUE);
+	del(FALSE);
+	doc->end();
+	_insertMode = im;
 }
 
 void GEditor::tab(bool back)
@@ -2171,6 +2195,8 @@ void GEditor::keyPressEvent(QKeyEvent *e)
 				redo(); return;
 			case Qt::Key_A:
 				selectAll(); return;
+			case Qt::Key_D:
+				deleteCurrentLine(); return;
 		}
 	}
 
