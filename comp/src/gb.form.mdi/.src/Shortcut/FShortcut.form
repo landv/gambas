@@ -1,46 +1,62 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,86,56)
+  MoveScaled(0,0,91,84)
   Text = ("Configure shortcuts")
   Icon = Picture["icon:/small/shortcut"]
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Margin = True
   { tvwShortcut TableView
-    MoveScaled(1,1,76,47)
+    MoveScaled(3,1,76,70)
     Expand = True
+    Border = False
     Mode = Select.Single
     Header = GridView.Horizontal
     ScrollBar = Scroll.Vertical
+    Resizable = False
   }
   { timAfter #Timer
     #MoveScaled(63.4286,29.1429)
   }
+  { Separator1 Separator
+    MoveScaled(7,75,70,0)
+  }
   { HBox2 HBox
-    MoveScaled(1,51,84,4)
+    MoveScaled(1,77,89,6)
     Spacing = True
+    Margin = True
     { btnFind ToggleButton
-      MoveScaled(0,0,26,4)
+      MoveScaled(0,0,22,4)
+      AutoResize = True
       Text = ("Find shortcut")
       Picture = Picture["icon:/small/find"]
     }
     { btnDefault Button
-      MoveScaled(27,0,19,4)
+      MoveScaled(23,0,19,4)
+      AutoResize = True
       Text = ("Reset")
       Picture = Picture["icon:/small/refresh"]
     }
+    { btnLoad Button
+      MoveScaled(43,0,4,4)
+      ToolTip = ("Import")
+      Picture = Picture["icon:/small/open"]
+    }
+    { btnSave Button
+      MoveScaled(48,0,4,4)
+      ToolTip = ("Export")
+      Picture = Picture["icon:/small/save"]
+    }
     { Panel1 Panel
-      MoveScaled(47,0,2,4)
+      MoveScaled(53,0,2,3)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(50,0,16,4)
+      MoveScaled(56,0,16,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(67,0,16,4)
+      MoveScaled(73,0,16,4)
       Text = ("Cancel")
       Cancel = True
     }

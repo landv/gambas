@@ -51,15 +51,18 @@ End
 Private Sub Width_Write(Value As Integer)
   
   Dim bCancel As Boolean
+  Dim bSetLayout As Boolean
   
   If Value < 0 Then
     bCancel = GetView()._RaiseColumnSize(_Column)
     If Not bCancel Then Return
     Value = GetView()._GetPreferredWidth(_Column)
+    bSetLayout = True
   Endif
   
   If Value < 0 Or If Value > 1024 Or If Value = $W Then Return
   $W = Max(0, Value)
+  If bSetLayout Then _W = $W
   Raise _Refresh
   GetView()._RaiseColumnResize(_Column)
 

@@ -1556,6 +1556,19 @@ void PAINT_clip(int x, int y, int w, int h)
 	}
 }
 
+#ifdef GTK3
+#else
+void PAINT_clip_region(GdkRegion *region)
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	if (d)
+	{
+		gdk_cairo_region(CONTEXT(d), region);
+		cairo_clip(CONTEXT(d));
+	}
+}
+#endif
+
 cairo_t *PAINT_get_current_context()
 {
 	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();

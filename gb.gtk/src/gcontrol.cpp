@@ -1063,13 +1063,13 @@ void gControl::lower()
 
 	if (!pr) return;
 
-	if (gtk_widget_get_has_window(border))
+	/*if (gtk_widget_get_has_window(border))
 	{
 		gdk_window_lower(gtk_widget_get_window(border));
 		if (gtk_widget_get_window(widget))
 			gdk_window_lower(gtk_widget_get_window(widget));
 	}
-	else
+	else*/
 	{
 		//fprintf(stderr, "gb.gtk: warning: gControl::lower(): no window\n");
 
@@ -1124,16 +1124,14 @@ void gControl::raise()
 
 	if (!pr) return;
 
-	if (gtk_widget_get_has_window(border))
+	/*if (gtk_widget_get_has_window(border))
 	{
 		gdk_window_raise(gtk_widget_get_window(border));
 		if (gtk_widget_get_window(widget))
 			gdk_window_raise(gtk_widget_get_window(widget));
 	}
-	else
+	else*/
 	{
-		//fprintf(stderr, "gb.gtk: warning: gControl::raise(): no window\n");
-
 		x = left();
 		y = top();
 		parent = GTK_CONTAINER(gtk_widget_get_parent(border));
@@ -1926,6 +1924,9 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 	if (!newpr || !newpr->getContainer())
 		return;
 
+	if (pr == newpr && pr->getContainer() == newpr->getContainer())
+		return;
+
 	if (was_visible) hide();
 	//gtk_widget_unrealize(border);
 
@@ -1951,7 +1952,11 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 
 	//gtk_widget_realize(border);
 	move(x, y);
-	if (was_visible) show();
+	if (was_visible)
+	{
+		fprintf(stderr, "was_visible\n");
+		show();
+	}
 }
 
 int gControl::scrollX()

@@ -52,7 +52,7 @@ public:
 #ifdef GTK3
 	void (*onExpose)(gDrawingArea *sender, cairo_t *cr);
 #else
-	void (*onExpose)(gDrawingArea *sender, int x, int y, int w, int h);
+	void (*onExpose)(gDrawingArea *sender, GdkRegion *region, int dx, int dy);
 #endif
 
 //"Private"

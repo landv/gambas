@@ -73,6 +73,12 @@ int gKey::code()
 		code = GDK_Meta_L;
 	else if (code == GDK_Shift_R)
 		code = GDK_Shift_L;
+	else
+	{
+		int unicode = gdk_keyval_to_unicode(code);
+		if (unicode >= 32 && unicode < 127)
+			code = unicode;
+	}
 
 	return code;
 }
@@ -97,12 +103,12 @@ bool gKey::control()
 
 bool gKey::meta()
 {
-	return state() & GDK_MOD2_MASK; // || _event.keyval == GDK_Meta_L || _event.keyval == GDK_Meta_R;
+	return state() & GDK_META_MASK; // || _event.keyval == GDK_Meta_L || _event.keyval == GDK_Meta_R;
 }
 
 bool gKey::normal()
 {
-	return (state() & 0xFF) != 0;
+	return (state() & (GDK_MOD1_MASK | GDK_CONTROL_MASK | GDK_META_MASK | GDK_SHIFT_MASK)) == 0;
 }
 
 bool gKey::shift()
@@ -122,14 +128,19 @@ int gKey::fromString(char *str)
 	key = gdk_keyval_from_name(lstr);
 	g_free(lstr);
 	if (key) return key;
-	
+
 	lstr = g_ascii_strdown(str, -1);
 	key = gdk_keyval_from_name(lstr);
 	g_free(lstr);
 	if (key) return key;
 
 	key = gdk_keyval_from_name(str);
-	return key;
+	if (key) return key;
+
+	if (!str[1] && isascii(str[0]))
+		return str[0];
+	else
+		return 0;
 }
 
 void gKey::disable()

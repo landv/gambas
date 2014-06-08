@@ -741,7 +741,6 @@ void gContainer::hideHiddenChildren()
 
 void gContainer::reparent(gContainer *newpr, int x, int y)
 {
-	fprintf(stderr, "gContainer::reparent\n");
 	gControl::reparent(newpr, x, y);
 	hideHiddenChildren();
 }

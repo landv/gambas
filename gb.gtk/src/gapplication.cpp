@@ -236,6 +236,14 @@ static void gambas_handle_event(GdkEvent *event)
 	if (!widget)
 		goto __HANDLE_EVENT;
 
+	/*if (event->type == GDK_KEY_PRESS)
+		fprintf(stderr, "GDK_KEY_PRESS: keyval = %d state = %08X is_modifier = %d\n", event->key.keyval, event->key.state, event->key.is_modifier);*/
+
+	if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE) && (event->key.state & ~GDK_MODIFIER_MASK) == 0)
+	{
+		goto __HANDLE_EVENT;
+	}
+
 	current_grab = gtk_window_group_get_current_grab(get_window_group(widget)); //gtk_grab_get_current();
 #ifdef GTK3
 	if (event->type == GDK_BUTTON_PRESS && !current_grab)
@@ -292,7 +300,7 @@ static void gambas_handle_event(GdkEvent *event)
 		//	control = gt_get_control(widget);
 		//fprintf(stderr, "GDK_FOCUS_CHANGE: widget = %p %d : %s  grab = %p\n", widget, GTK_IS_WINDOW(widget), control ? control->name() : NULL, grab);
 		
-		if (GTK_IS_WINDOW(widget))
+		//if (GTK_IS_WINDOW(widget))
 		{
 			control = gt_get_control(widget);
 			if (control)
@@ -338,6 +346,12 @@ static void gambas_handle_event(GdkEvent *event)
 						widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
 		//fprintf(stderr, "widget = %p (%p) grab = %p (%p)\n", widget, widget ? g_object_get_data(G_OBJECT(widget), "gambas-control") : 0,
 		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
+	}*/
+
+	/*if (event->type == GDK_KEY_PRESS)
+	{
+		fprintf(stderr, "[GDK_KEY_PRESS] widget = %p grab = %p _popup_grab = %p _button_grab = %p\n",
+						widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
 	}*/
 
 	if (!widget || !control)
@@ -709,6 +723,8 @@ __FOUND_WIDGET:
 			
 			if (!control->_grab && gApplication::activeControl())
 				control = gApplication::activeControl();
+
+			//fprintf(stderr, "control = %p %s\n", control, control ? control->name() : "");
 			
 			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 			
@@ -1206,7 +1222,7 @@ GtkWindowGroup *gApplication::currentGroup()
 
 void gApplication::updateLastEventTime(GdkEvent *e)
 {
-	guint32 time;
+	/*guint32 time;
 	
 	switch (e->type)
 	{
@@ -1222,9 +1238,9 @@ void gApplication::updateLastEventTime(GdkEvent *e)
 			time = e->crossing.time; break;
 		default:
 			time = GDK_CURRENT_TIME;
-	}
+	}*/
 	
-	_event_time = time;
+	_event_time = gdk_event_get_time(e);
 }
 
 static void post_focus_change(void *)

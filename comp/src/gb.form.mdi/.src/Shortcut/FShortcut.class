@@ -1,7 +1,10 @@
 ' Gambas class file
 
+Private SHORTCUTS_MAGIC As String = "# Gambas shortcuts file 1.0"
+
 Private $aAction As CAction[]
 Private $hEditor As FShortcutEditor
+Private $hVoid As Picture
 
 Public Sub Run() As Boolean
   
@@ -14,17 +17,39 @@ Public Sub _new()
   $hEditor = New FShortcutEditor(Me)
   $hEditor.Hide
   $hEditor.Ignore = True
-
+  
 End
 
-
-Public Sub Form_Open()
+Private Sub RefreshTable()
 
   Dim iInd As Integer
   Dim hAction As CAction
   Dim hIcon As Picture
+
+  For iInd = 0 To $aAction.Max
+  
+    hAction = $aAction[iInd]
+  
+    tvwShortcut[iInd, 0].Text = hAction.Display
+    tvwShortcut[iInd, 0].Padding = 4
+    hIcon = hAction.Icon
+    If Not hIcon Then hIcon = $hVoid
+    tvwShortcut[iInd, 0].Picture = hIcon
+    tvwShortcut[iInd, 1].Text = hAction.Shortcut
+    tvwShortcut[iInd, 1].Padding = 4
+
+  Next
+  
+  tvwShortcut.Columns[1].Width = -1 'tvwShortcut.Width - Desktop.Scale * 24
+  tvwShortcut.Columns[1].Width += 12 * Desktop.Scale
+  tvwShortcut.Rows.Height = tvwShortcut.Font.Height + 8
+
+End
+
+Public Sub Form_Open()
+
+  Dim hAction As CAction
   Dim hImage As Image
-  Dim hVoid As Picture
   
   $aAction = New CAction[]
   For Each hAction In MAction.Actions
@@ -42,29 +67,12 @@ Public Sub Form_Open()
   tvwShortcut.Columns[1].Text = ("Shortcut")
   
   hImage = New Image(16, 16, Color.Transparent)
-  hVoid = hImage.Picture
+  $hVoid = hImage.Picture
   
-  For iInd = 0 To $aAction.Max
+  RefreshTable
   
-    hAction = $aAction[iInd]
-  
-    tvwShortcut[iInd, 0].Text = hAction.Display
-    tvwShortcut[iInd, 0].Padding = 4
-    hIcon = hAction.Icon
-    If Not hIcon Then hIcon = hVoid
-    tvwShortcut[iInd, 0].Picture = hIcon
-    tvwShortcut[iInd, 1].Text = hAction.Shortcut
-    tvwShortcut[iInd, 1].Padding = 4
-
-  Next
-  
-  tvwShortcut.Columns[1].Width = -1 'tvwShortcut.Width - Desktop.Scale * 24
-  tvwShortcut.Columns[1].Width += 6 * Desktop.Scale
-  tvwShortcut.Rows.Height = tvwShortcut.Font.Height + 8
-
-  '$hSettings = New Settings("gb.form.mdi")
   Settings.Read(Me, "gb.form.mdi/FShortcut")
-
+  
 End
 
 Public Sub btnCancel_Click()
@@ -184,6 +192,8 @@ Public Sub HandleKey() As Boolean
   
   Dim iRow As Integer = tvwShortcut.Row
   
+  If Not Key.Normal Then Return
+  
   Select Case Key.Code
     Case Key.Up
       Dec iRow
@@ -227,3 +237,100 @@ End
 '   tvwShortcut_Select
 ' 
 ' End
+
+Private Sub Export(sPath As String)
+
+  Dim hFile As File
+  Dim hAction As CAction
+  Dim aKey As New String[]
+  Dim sKey As String
+
+  hFile = Open sPath For Create
+  Print #hFile, SHORTCUTS_MAGIC
+
+  For Each hAction In $aAction
+    aKey.Add(hAction.Key)
+  Next
+  aKey.Sort
+  
+  For Each sKey In aKey
+    Print #hFile, sKey; "="; MAction.Actions[sKey].Shortcut
+  Next
+  
+  hFile.Close
+  
+Catch
+  
+  Message.Error(("Unable to export shortcut files.") & "\n\n" & Error.Text)
+  Try hFile.Close
+
+End
+
+Private Sub Import(sPath As String)
+
+  Dim hFile As File
+  Dim sMagic As String
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sShortcut As String
+  Dim hAction As CAction
+
+  hFile = Open sPath
+  Line Input #hFile, sMagic
+  If sMagic <> SHORTCUTS_MAGIC Then
+    Message.Error(("This file is not a Gambas shortcuts file."))
+    Close #hFile
+    Return
+  Endif
+
+  While Not Eof(hFile)
+    Line Input #hFile, sLine
+    sLine = Trim(sLine)
+    If Not sLine Or If Left(sLine) = "#" Or If Left(sLine) = ";" Then Continue
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    sShortcut = Trim(Mid$(sLine, iPos + 1))
+    sLine = Trim(Left$(sLine, iPos - 1))
+    hAction = MAction.Actions[sLine]
+    If Not hAction Then Continue
+    hAction.Shortcut = sShortcut
+  Wend
+  
+  hFile.Close
+  
+  RefreshTable
+  
+Catch
+  
+  Message.Error(("Unable to import shortcut files.") & "\n\n" & Error.Text)
+  Try Close #hFile
+
+End
+
+Public Sub btnSave_Click()
+
+  Dialog.Path = Settings["gb.form.mdi/FShortcut/Path", User.Home &/ Application.Name & ".gambas.shortcuts"]
+  Dialog.Filter = ["*.gambas.shortcuts", ("Gambas shortcuts files")]
+  Dialog.Title = ("Export shortcuts")
+  Try Dialog.AutoExt = True
+  If Dialog.SaveFile() Then Return
+  Settings["gb.form.mdi/FShortcut/Path"] = Dialog.Path
+  
+  Export(Dialog.Path)
+
+End
+
+Public Sub btnLoad_Click()
+
+  Dialog.Path = Settings["gb.form.mdi/FShortcut/Path", User.Home]
+  Dialog.Filter = ["*.gambas.shortcuts", ("Gambas shortcuts files")]
+  Dialog.Title = ("Import shortcuts")
+  If Dialog.OpenFile() Then Return
+  
+  'Enhanced Dialog.OpenFile() is buggy 
+  If Not Dialog.Path Or If IsDir(Dialog.Path) Then Return
+  Settings["gb.form.mdi/FShortcut/Path"] = Dialog.Path
+  
+  Import(Dialog.Path)
+  
+End

@@ -28,9 +28,15 @@
 #include "gkey.h"
 
 
-BEGIN_METHOD(CKEY_get, GB_STRING key)
+BEGIN_METHOD(Key_get, GB_STRING key)
 
-	GB.ReturnInteger(gKey::fromString(STRING(key))); 
+	char *key = GB.ToZeroString(ARG(key));
+
+	if (GB.GetProperty((void *)GB.FindClass("Key"), key))
+	{
+		GB.Error(NULL);
+		GB.ReturnInteger(gKey::fromString(GB.ToZeroString(ARG(key))));
+	}
 
 END_METHOD
 
@@ -41,56 +47,56 @@ END_METHOD
     return; \
   }
 
-BEGIN_PROPERTY(CKEY_text)
+BEGIN_PROPERTY(Key_Text)
 
   CHECK_VALID();
   GB.ReturnNewZeroString(gKey::text());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_code)
+BEGIN_PROPERTY(Key_Code)
 
   CHECK_VALID();
   GB.ReturnInteger(gKey::code());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_state)
+BEGIN_PROPERTY(Key_State)
 
   CHECK_VALID();
   GB.ReturnInteger(gKey::state());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_shift)
+BEGIN_PROPERTY(Key_Shift)
 
   CHECK_VALID();
   GB.ReturnBoolean(gKey::shift());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_control)
+BEGIN_PROPERTY(Key_Control)
 
   CHECK_VALID();
   GB.ReturnBoolean(gKey::control());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_alt)
+BEGIN_PROPERTY(Key_Alt)
 
   CHECK_VALID();
   GB.ReturnBoolean(gKey::alt());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_meta)
+BEGIN_PROPERTY(Key_Meta)
 
   CHECK_VALID();
   GB.ReturnBoolean(gKey::meta());
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_normal)
+BEGIN_PROPERTY(Key_Normal)
 
   CHECK_VALID();
   GB.ReturnBoolean(gKey::normal());
@@ -103,7 +109,7 @@ GB_DESC CKeyDesc[] =
 {
   GB_DECLARE("Key", 0), GB_VIRTUAL_CLASS(),
 
-  GB_STATIC_METHOD("_get", "i", CKEY_get, "(Key)s"),
+  GB_STATIC_METHOD("_get", "i", Key_get, "(Key)s"),
  
   GB_CONSTANT("Esc", "i", GDK_Escape),
   GB_CONSTANT("Escape", "i", GDK_Escape),
@@ -112,6 +118,8 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("BackSpace", "i", GDK_BackSpace),
   GB_CONSTANT("Return", "i", GDK_Return),
   GB_CONSTANT("Enter", "i", GDK_KP_Enter),
+  GB_CONSTANT("Ins", "i", GDK_Insert),
+  GB_CONSTANT("Del", "i", GDK_Delete),
   GB_CONSTANT("Insert", "i", GDK_Insert),
   GB_CONSTANT("Delete", "i", GDK_Delete),
   GB_CONSTANT("Pause", "i", GDK_Pause),
@@ -123,6 +131,8 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Up", "i", GDK_Up),
   GB_CONSTANT("Right", "i", GDK_Right),
   GB_CONSTANT("Down", "i", GDK_Down),
+  GB_CONSTANT("PgUp", "i", GDK_Page_Up),
+  GB_CONSTANT("PgDown", "i", GDK_Page_Down),
   GB_CONSTANT("PageUp", "i", GDK_Page_Up),
   GB_CONSTANT("PageDown", "i", GDK_Page_Down),
   GB_CONSTANT("ShiftKey", "i", GDK_Shift_L),
@@ -160,14 +170,14 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Help", "i", GDK_Help),
   GB_CONSTANT("Space", "i", GDK_space),
 
-  GB_STATIC_PROPERTY_READ("Text", "s", CKEY_text),
-  GB_STATIC_PROPERTY_READ("Code", "i", CKEY_code),
-  GB_STATIC_PROPERTY_READ("State", "i", CKEY_state),
-  GB_STATIC_PROPERTY_READ("Shift", "b", CKEY_shift),
-  GB_STATIC_PROPERTY_READ("Control", "b", CKEY_control),
-  GB_STATIC_PROPERTY_READ("Alt", "b", CKEY_alt),
-  GB_STATIC_PROPERTY_READ("Meta", "b", CKEY_meta),
-  GB_STATIC_PROPERTY_READ("Normal", "b", CKEY_normal),
+  GB_STATIC_PROPERTY_READ("Text", "s", Key_Text),
+  GB_STATIC_PROPERTY_READ("Code", "i", Key_Code),
+  GB_STATIC_PROPERTY_READ("State", "i", Key_State),
+  GB_STATIC_PROPERTY_READ("Shift", "b", Key_Shift),
+  GB_STATIC_PROPERTY_READ("Control", "b", Key_Control),
+  GB_STATIC_PROPERTY_READ("Alt", "b", Key_Alt),
+  GB_STATIC_PROPERTY_READ("Meta", "b", Key_Meta),
+  GB_STATIC_PROPERTY_READ("Normal", "b", Key_Normal),
 
   GB_END_DECLARE
 };

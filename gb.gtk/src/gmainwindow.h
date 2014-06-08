@@ -163,6 +163,9 @@ public:
 	
 	int _resize_last_w;
 	int _resize_last_h;
+
+	int _min_w;
+	int _min_h;
 	
 	unsigned _mask : 1;
 	unsigned top_only : 1;

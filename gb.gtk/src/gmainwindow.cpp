@@ -204,6 +204,7 @@ void gMainWindow::initialize()
 	_popup = false;
 	_maximized = _minimized = _fullscreen = false;
 	_resize_last_w = _resize_last_h = -1;
+	_min_w = _min_h = 0;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -324,6 +325,7 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	
 	realize(false);
 	
+	setCanFocus(true);
 	initWindow();
 }
 
@@ -500,27 +502,13 @@ void gMainWindow::emitOpen()
 		opened = true;
 		//_no_resize_event = true; // If the event loop is run during emitOpen(), some spurious configure events are received.
 		
-		// FIXME: the following does not work, it makes the window growing endlessly!
-			
-		/*if (isTopLevel()) 
+		if (!_min_w && !_min_h)
 		{
-			GdkGeometry geometry = { 0 };
-	
-			if (isModal())
-			{
-				geometry.min_width = 2; //bufW;
-				geometry.min_height = 2; //bufH;
-			}
-			else
-			{
-				geometry.min_width = 0;
-				geometry.min_height = 0;
-			}
-			
-			fprintf(stderr, "gtk_window_set_geometry_hints: %d %d\n", geometry.min_width, geometry.min_height);
-			gtk_window_set_geometry_hints(GTK_WINDOW(border), border, &geometry, GDK_HINT_MIN_SIZE);
-		}*/
-		
+			_min_w = width();
+			_min_h = height();
+		}
+
+
 		gtk_widget_realize(border);
 			
 		performArrange();
@@ -1123,7 +1111,8 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		
 		border = new_border;
 		registerControl();
-		
+		setCanFocus(false);
+
 		setParent(newpr);
 		connectParent();
 		borderSignals();
@@ -1157,7 +1146,8 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 
 		border = new_border;
 		registerControl();
-		
+		setCanFocus(true);
+
 		if (parent())
 		{
 			parent()->remove(this);
@@ -1181,7 +1171,9 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		_popup = false; //type == GTK_WINDOW_POPUP;
 	}
 	else
+	{
 		gContainer::reparent(newpr, x, y);	
+	}
 }
 
 
@@ -1521,8 +1513,8 @@ void gMainWindow::setGeometryHints()
 		{
 			GdkGeometry geometry;
 
-			geometry.min_width = bufW;
-			geometry.min_height = bufH;
+			geometry.min_width = _min_w;
+			geometry.min_height = _min_h;
 
 			gdk_window_set_geometry_hints(gtk_widget_get_window(border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
 		}

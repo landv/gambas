@@ -196,7 +196,7 @@ void gSlider::setMax(int vl)
 {
 	_max = vl;
 	if (_min >= _max)
-		_min = _max - 1;
+		_min = _max;
 	init();
 	updateMark();
 }
@@ -205,7 +205,7 @@ void gSlider::setMin(int vl)
 {
 	_min = vl;
 	if (_min >= _max)
-		_max = _min + 1;
+		_max = _min;
 	init();
 	updateMark();
 }

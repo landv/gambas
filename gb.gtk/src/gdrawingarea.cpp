@@ -69,7 +69,17 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 		if (data->onExpose)
 		{
 			data->_in_draw_event = true;
-			data->onExpose(data,e->area.x-wid->allocation.x,e->area.y-wid->allocation.y,e->area.width,e->area.height);
+
+			/*GdkRectangle *rect;
+			int i, n;
+			gdk_region_get_rectangles(e->region, &rect, &n);
+
+			for (i = 0; i < n; i++)
+				fprintf(stderr, "[%d] %d %d %d %d\n", i, rect[i].x, rect[i].y, rect[i].width, rect[i].height);
+
+			g_free(rect);*/
+
+			data->onExpose(data, e->region, wid->allocation.x, wid->allocation.y);
 			data->_in_draw_event = false;
 		}
 		data->drawBorder(e);

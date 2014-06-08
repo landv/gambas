@@ -31,74 +31,6 @@
 
 CKEY_INFO CKEY_info = { 0 };
 
-#if 0
-typedef
-  struct {
-    const char *name;
-    int key;
-    }
-  KEY_DEF;
-
-KEY_DEF _key_dict[] =
-{
-  { "BackSpace", Qt::Key_Backspace },
-  { "BackTab", Qt::Key_Backtab },
-  { "Control", Qt::Key_Control },
-  { "Delete", Qt::Key_Delete },
-  { "Down", Qt::Key_Down },
-  { "End", Qt::Key_End },
-  { "Enter", Qt::Key_Enter },
-  { "Escape", Qt::Key_Escape },
-  { "Home", Qt::Key_Home },
-  { "Insert", Qt::Key_Insert },
-  { "Left", Qt::Key_Left },
-  { "PageDown", Qt::Key_PageDown },
-  { "PageUp", Qt::Key_PageUp },
-  { "Pause", Qt::Key_Pause },
-  { "Print", Qt::Key_Print },
-  { "Return", Qt::Key_Return },
-  { "Right", Qt::Key_Right },
-  { "Shift", Qt::Key_Shift },
-  { "SysReq", Qt::Key_SysReq },
-  { "tab", Qt::Key_Tab },
-  { "Up", Qt::Key_Up },
-
-  { "Meta", Qt::Key_Meta },
-  { "Alt", Qt::Key_Alt },
-  { "CapsLock", Qt::Key_CapsLock },
-  { "NumLock", Qt::Key_NumLock },
-  { "ScrollLock", Qt::Key_ScrollLock },
-  { "F1", Qt::Key_F1 },
-  { "F2", Qt::Key_F2 },
-  { "F3", Qt::Key_F3 },
-  { "F4", Qt::Key_F4 },
-  { "F5", Qt::Key_F5 },
-  { "F6", Qt::Key_F6 },
-  { "F7", Qt::Key_F7 },
-  { "F8", Qt::Key_F8 },
-  { "F9", Qt::Key_F9 },
-  { "F10", Qt::Key_F10 },
-  { "F11", Qt::Key_F11 },
-  { "F12", Qt::Key_F12 },
-  { "F13", Qt::Key_F13 },
-  { "F14", Qt::Key_F14 },
-  { "F15", Qt::Key_F15 },
-  { "F16", Qt::Key_F16 },
-  { "F17", Qt::Key_F17 },
-  { "F18", Qt::Key_F18 },
-  { "F19", Qt::Key_F19 },
-  { "F20", Qt::Key_F20 },
-  { "F21", Qt::Key_F21 },
-  { "F22", Qt::Key_F22 },
-  { "F23", Qt::Key_F23 },
-  { "F24", Qt::Key_F24 },
-  { "Menu", Qt::Key_Menu },
-  { "Help", Qt::Key_Help },
-  { "Space", Qt::Key_Space },
-  { NULL , 0 }
-};
-#endif
-
 void CKEY_clear(int valid)
 {
   if (valid)
@@ -223,6 +155,8 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("BackSpace", "i", Qt::Key_Backspace),
   GB_CONSTANT("Return", "i", Qt::Key_Return),
   GB_CONSTANT("Enter", "i", Qt::Key_Enter),
+  GB_CONSTANT("Ins", "i", Qt::Key_Insert),
+  GB_CONSTANT("Del", "i", Qt::Key_Delete),
   GB_CONSTANT("Insert", "i", Qt::Key_Insert),
   GB_CONSTANT("Delete", "i", Qt::Key_Delete),
   GB_CONSTANT("Pause", "i", Qt::Key_Pause),
@@ -234,6 +168,8 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Up", "i", Qt::Key_Up),
   GB_CONSTANT("Right", "i", Qt::Key_Right),
   GB_CONSTANT("Down", "i", Qt::Key_Down),
+  GB_CONSTANT("PgUp", "i", Qt::Key_PageUp),
+  GB_CONSTANT("PgDown", "i", Qt::Key_PageDown),
   GB_CONSTANT("PageUp", "i", Qt::Key_PageUp),
   GB_CONSTANT("PageDown", "i", Qt::Key_PageDown),
   GB_CONSTANT("ShiftKey", "i", Qt::Key_Shift),

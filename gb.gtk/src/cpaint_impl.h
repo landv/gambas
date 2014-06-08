@@ -26,6 +26,7 @@
 
 #include "gambas.h"
 #include "gb.paint.h"
+#include <gdk/gdk.h>
 
 #ifndef __CPAINT_IMPL_C
 
@@ -37,6 +38,9 @@ extern GB_PAINT_MATRIX_DESC PAINT_MATRIX_Interface;
 void PAINT_begin(void *device);
 void PAINT_end();
 void PAINT_clip(int x, int y, int w, int h);
+#ifndef GTK3
+void PAINT_clip_region(GdkRegion *region);
+#endif
 cairo_t *PAINT_get_current_context();
 void *PAINT_get_current_device();
 bool PAINT_get_clip(int *x, int *y, int *w, int *h);

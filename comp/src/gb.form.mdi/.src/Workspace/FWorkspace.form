@@ -9,18 +9,22 @@
       Text = ("Show")
     }
     { mnuSort Menu
+      Action = "workspace-sort-tab"
       Text = ("Sort tabs")
       Picture = Picture["icon:/small/sort-ascent"]
     }
     { Menu1 Menu
     }
     { mnuCloseRight Menu
+      Action = "workspace-close-right"
       Text = ("Close tabs on the right")
     }
     { mnuCloseOther Menu
+      Action = "workspace-close-other"
       Text = ("Close other tabs")
     }
     { mnuCloseAll Menu
+      Action = "workspace-close-all"
       Text = ("Close all tabs")
     }
     { Menu2 Menu
@@ -32,6 +36,7 @@
       Text = ("Detach tab")
     }
     { mnuClose Menu
+      Action = "workspace-close"
       Text = ("Close tab")
       Picture = Picture["icon:/small/close"]
     }
@@ -107,6 +112,23 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action workspace-close
+    Text = "Close tab"
+    Shortcut = ""
+    Picture = "icon:/small/close"
+  }
+  { Action workspace-close-all
+    Text = "Close all tabs"
+    Shortcut = ""
+  }
+  { Action workspace-close-other
+    Text = "Close other tabs"
+    Shortcut = ""
+  }
+  { Action workspace-close-right
+    Text = "Close tabs on the right"
+    Shortcut = ""
+  }
   { Action workspace-next-tab
     Text = "Next tab"
     Shortcut = "Ctrl+PgDown"
@@ -114,5 +136,10 @@
   { Action workspace-previous-tab
     Text = "Previous tab"
     Shortcut = "Ctrl+PgUp"
+  }
+  { Action workspace-sort-tab
+    Text = "Sort tabs"
+    Shortcut = ""
+    Picture = "icon:/small/sort-ascent"
   }
 }

@@ -637,7 +637,7 @@ static CLASS_DESC *get_desc(CLASS *class, const char *name)
 		return class->table[index].desc;
 }
 
-void GB_GetProperty(void *object, const char *name)
+bool GB_GetProperty(void *object, const char *name)
 {
 	CLASS_DESC *desc;
 	CLASS *class;
@@ -659,7 +659,7 @@ void GB_GetProperty(void *object, const char *name)
 	desc = get_desc(class, name);
 
 	if (!desc)
-		return;
+		return TRUE;
 
 	type = CLASS_DESC_get_type(desc);
 
@@ -668,7 +668,7 @@ void GB_GetProperty(void *object, const char *name)
 		if (!object)
 		{
 			error(E_DYNAMIC, class, name);
-			return;
+			return TRUE;
 		}
 	}
 	else if (type == CD_STATIC_PROPERTY || type == CD_STATIC_PROPERTY_READ || type == CD_STATIC_VARIABLE || type == CD_CONSTANT)
@@ -676,13 +676,13 @@ void GB_GetProperty(void *object, const char *name)
 		if (object)
 		{
 			error(E_STATIC, class, name);
-			return;
+			return TRUE;
 		}
 	}
 	else
 	{
 		error(E_NPROPERTY, class, name);
-		return;
+		return TRUE;
 	}
 
 	if (type == CD_VARIABLE)
@@ -698,7 +698,7 @@ void GB_GetProperty(void *object, const char *name)
 			if (EXEC_call_native(desc->property.read, object, desc->property.type, 0))
 			{
 				EXEC_set_native_error(TRUE);
-				return;
+				return TRUE;
 			}
 		}
 		else
@@ -717,9 +717,11 @@ void GB_GetProperty(void *object, const char *name)
 			RP->type = T_VOID;
 		}
 	}
+
+	return FALSE;
 }
 
-void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
+bool GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 {
 	VALUE *value = (VALUE *)val;
 	CLASS_DESC *desc;
@@ -739,7 +741,7 @@ void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 	desc = get_desc(class, name);
 
 	if (!desc)
-		return;
+		return TRUE;
 
 	type = CLASS_DESC_get_type(desc);
 
@@ -750,7 +752,7 @@ void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 			if (!class->auto_create)
 			{
 				error(E_DYNAMIC, class, name);
-				return;
+				return TRUE;
 			}
 
 			object = EXEC_auto_create(class, TRUE);
@@ -761,18 +763,18 @@ void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 		if (object)
 		{
 			error(E_STATIC, class, name);
-			return;
+			return TRUE;
 		}
 	}
 	else if (type == CD_PROPERTY_READ  || type == CD_STATIC_PROPERTY_READ)
 	{
 		error(E_NWRITE, class, name);
-		return;
+		return TRUE;
 	}
 	else
 	{
 		error(E_NPROPERTY, class, name);
-		return;
+		return TRUE;
 	}
 
 	if (type == CD_VARIABLE)
@@ -788,7 +790,7 @@ void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 			if (EXEC_call_native(desc->property.write, object, 0, value))
 			{
 				EXEC_set_native_error(TRUE);
-				return;
+				return TRUE;
 			}
 		}
 		else
@@ -810,6 +812,7 @@ void GB_SetProperty(void *object, const char *name, GB_VALUE *val)
 		}
 	}
 
+	return FALSE;
 }
 
 
@@ -1255,12 +1258,6 @@ int GB_NParam(void)
 {
 	return EXEC_unknown_nparam;
 }
-
-
-/*bool GB_IsProperty(void)
-{
-	return FALSE; //EXEC_unknown_property;
-}*/
 
 
 const char *GB_GetUnknown(void)

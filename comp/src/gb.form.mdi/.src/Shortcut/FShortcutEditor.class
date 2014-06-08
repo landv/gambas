@@ -15,35 +15,35 @@ End
 
 Private Function Text_Read() As String
 
-  Return txtShortcut.Text
+  Return lblShortcut.Text
 
 End
 
 Private Sub Text_Write(Value As String)
 
-  If Not txtShortcut Then Return
+  If Not lblShortcut Then Return
   
   'Object.Lock(txtShortcut)
-  txtShortcut.Text = Value
+  lblShortcut.Text = Value
   'Object.Unlock(txtShortcut)
 
 End
 
 Public Sub btnClear_Click()
 
-  txtShortcut.Text = ""
+  lblShortcut.Text = ""
   CheckShortcut
 
 End
 
-Public Sub txtShortcut_KeyPress()
+Public Sub Form_KeyPress()
 
   Dim sShortcut As String
   
   If Not FShortcut.HandleKey() Then 
     sShortcut = MAction.FindShortcut()
     If sShortcut Then 
-      txtShortcut.Text = sShortcut
+      lblShortcut.Text = sShortcut
       CheckShortcut
     Endif
   Endif
@@ -56,7 +56,7 @@ Private Sub CheckShortcut()
   
   Dim hAction As CAction
   Dim hSame As CAction
-  Dim sShortcut As String = txtShortcut.Text
+  Dim sShortcut As String = lblShortcut.Text
   
   If sShortcut Then
   
@@ -72,7 +72,7 @@ Private Sub CheckShortcut()
   
   If hSame Then
     $bBadShortcut = True
-    Balloon.Warning(("This shortcut is already used by the following action:") & "<p><b>" & hSame.Display & "<b>", txtShortcut)
+    Balloon.Warning(("This shortcut is already used by the following action:") & "<br><br><b>" & hSame.Display & "</b>", lblShortcut)
   Else
     $bBadShortcut = False
     Balloon.Hide
@@ -98,10 +98,3 @@ Public Sub Form_Open()
   panSpace.Width = 2
 
 End
-
-Public Sub Form_GotFocus()
-  
-  txtShortcut.SetFocus
-  
-End
-

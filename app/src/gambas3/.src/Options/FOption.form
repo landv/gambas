@@ -450,6 +450,21 @@
         Animated = True
       }
     }
+    { Label57 Label
+      MoveScaled(0,50,63,3)
+      Font = Font["Bold"]
+      Text = ("Shortcuts")
+    }
+    { Panel2 HBox
+      MoveScaled(1,54,39,6)
+      Indent = True
+      { btnShortcut Button
+        MoveScaled(0,0,31,6)
+        AutoResize = True
+        Text = ("Configure shortcuts") & "..."
+        Picture = Picture["icon:/small/shortcut"]
+      }
+    }
     Index = 4
     Text = ("Code formatting")
     Picture = Picture["icon:/32/wizard"]

@@ -25,16 +25,14 @@ Private Sub InitShortcut()
   
   Dim iInd As Integer
   Dim sKey As String
+  Dim sList As String
   
   $cShortcut = New Collection
 
-  For iInd = Asc("A") To Asc("Z")
-    sKey = Chr$(iInd)
-    $cShortcut[Key[sKey]] = sKey
-  Next
+  sList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-*/."
 
-  For iInd = Asc("0") To Asc("9")
-    sKey = Chr$(iInd)
+  For iInd = 1 To Len(sList)
+    sKey = Mid$(sList, iInd, 1)
     $cShortcut[Key[sKey]] = sKey
   Next
 

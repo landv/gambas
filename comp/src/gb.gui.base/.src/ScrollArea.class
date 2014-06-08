@@ -402,7 +402,7 @@ Public Sub DrawingArea_Draw()
   'If $bHBarVisible Then DH -= $hHBar.H
   
   If $iBackground <> Color.Default Then 
-    Draw.FillRect(FW, FW, DW - FW * 2, DH - FW * 2, $iBackground)
+    Paint.FillRect(FW, FW, DW - FW * 2, DH - FW * 2, $iBackground)
   Endif
   
   'Debug Draw.Clip.X;; Draw.Clip.Y;; Draw.Clip.W;; Draw.Clip.H
