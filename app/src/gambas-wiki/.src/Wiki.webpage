@@ -17,6 +17,12 @@
 
 <body <%If Main.Edit Then%>style="background: #F0F0F0;"<%Endif%>>
 
+<%If Request.Exist("nt")%>
+<style type="text/css">
+H1 { display: none; }
+</style>
+<%Endif%>
+
 <form name="form" method="post" enctype="multipart/form-data">
 
 <%If Request.Exist("v") Then%>

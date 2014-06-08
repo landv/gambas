@@ -1,0 +1,39 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,66)
+  Visible = False
+  Action = "help-shortcut"
+  Text = ("IDE keyboard shortcuts")
+  Icon = Picture["icon:/small/shortcut"]
+  Persistent = True
+  Utility = True
+  Arrangement = Arrange.Fill
+  { tabShortcut TabPanel
+    MoveScaled(1,1,48,44)
+    Border = False
+    Count = 4
+    Index = 0
+    Text = ("Project")
+    Index = 1
+    Text = ("Editor")
+    Index = 2
+    Text = ("Debugger")
+    Index = 3
+    Text = ("Translation")
+    Index = 0
+  }
+  { webShortcut WebView
+    MoveScaled(16,17,40,40)
+    Ignore = True
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action help-shortcut
+    Text = "IDE keyboard shortcuts"
+    Picture = "icon:/small/shortcut"
+  }
+}

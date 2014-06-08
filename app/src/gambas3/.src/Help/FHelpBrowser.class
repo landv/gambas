@@ -89,7 +89,7 @@ End
 Private Function GetHomeURL() As String
 
   'Debug MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
-  Return MHelp.GetURL() & "?" & MHelp.GetLanguage()
+  Return MHelp.GetURL() & "?l=" & MHelp.GetLanguage()
 
 End
 
@@ -297,9 +297,9 @@ Private Sub SetLang(sLang As String)
   
   sUrl = webHelp.Url
   If sUrl Begins Project.WIKI_URL Then
-    sUrl = Replace(sUrl, "&" & sOldLang, "")
+    sUrl = Replace(sUrl, "&l=" & sOldLang, "")
     'Debug sUrl & "&" & sLang
-    webHelp.Url = sUrl & "&" & sLang
+    webHelp.Url = sUrl & "&l=" & sLang
   Endif
   
 End

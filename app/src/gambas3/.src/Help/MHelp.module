@@ -105,7 +105,7 @@ Public Sub GotoSymbol(hSymbol As CSymbolInfo)
   If Exist(GetPath(FormatName(sLink)) & ".html")
     Project.OpenWebPage(GetPath(FormatName(sLink)) & ".html")
   Else
-    Project.OpenWebPage(Project.WIKI_URL &/ sLink & "?" & GetLanguage())
+    Project.OpenWebPage(Project.WIKI_URL &/ sLink & "?l=" & GetLanguage())
   Endif
   
 End
@@ -306,13 +306,13 @@ Public Sub GetLangURL(sSymbol As String) As String
   sSymbol = Replace(sSymbol, "$", "")
   If Right(sSymbol) = "?" Then sSymbol = "is" & Left(sSymbol, -1)
   
-  Return GetURL("lang") &/ sSymbol & "?v&nh&" & GetLanguage()
+  Return GetURL("lang") &/ sSymbol & "?v&nh&l=" & GetLanguage()
   
 End
 
 Public Sub GetSpecialURL(sSymbol As String) As String
   
-  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?v&nh&" & GetLanguage()
+  Return GetURL("lang") &/ "special" &/ Mid$(sSymbol, 2) & "?v&nh&l=" & GetLanguage()
   
 End
 
@@ -434,7 +434,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
     If bHelpBrowser Then sUrl = Replace(sUrl, "v&nh", "")
     If sMore Then sUrl &= "&" & sMore
-    sMore &= "&" & GetLanguage() ' ??
+    sMore &= "&l=" & GetLanguage() ' ??
     If hWebView.Url <> sUrl Then 
       'Debug sUrl
       hWebView.Url = sUrl

@@ -379,12 +379,10 @@
     { mnuNew Menu
       Text = ("New")
       { mnuAddDirectory Menu
-        Action = "new-directory"
         Text = Shortcut(("Directory"), "D")
         Picture = Picture["icon:/small/directory"]
       }
       { mnuAddProjectLink Menu
-        Action = "new-project-link"
         Text = Shortcut(("Project link"), "P") & "..."
         Picture = Picture["img/logo/logo-16.png"]
         Visible = False
@@ -393,35 +391,30 @@
       }
       { mnuNewModule Menu mnuNewFile
         Name = "mnuNewModule"
-        Action = "new-module"
         Text = Shortcut(("Module"), "M") & "..."
         Picture = Picture["img/16/module.png"]
         Tag = "module"
       }
       { mnuNewClass Menu mnuNewFile
         Name = "mnuNewClass"
-        Action = "new-class"
         Text = Shortcut(("Class"), "C") & "..."
         Picture = Picture["img/16/class.png"]
         Tag = "class"
       }
       { mnuNewForm Menu mnuNewFile
         Name = "mnuNewForm"
-        Action = "new-form"
         Text = Shortcut(("Form"), "F") & "..."
         Picture = Picture["img/16/form.png"]
         Tag = "form"
       }
       { mnuNewWebPage Menu mnuNewFile
         Name = "mnuNewWebPage"
-        Action = "new-webpage"
         Text = Shortcut(("WebPage"), "W") & "..."
         Picture = Picture["img/16/webpage.png"]
         Tag = "webpage"
       }
       { mnuNewReport Menu mnuNewFile
         Name = "mnuNewReport"
-        Action = "new-report"
         Text = Shortcut(("Report"), "R") & "..."
         Picture = Picture["img/16/report.png"]
         Tag = "report"
@@ -430,7 +423,6 @@
       }
       { mnuNewImage Menu mnuNewFile
         Name = "mnuNewImage"
-        Action = "new-image"
         Text = Shortcut(("Image"), "I") & "..."
         Picture = Picture["icon:/small/image"]
         Tag = "image"
@@ -634,15 +626,21 @@
     Text = Shortcut(("?"), "?")
     { mnuViewExplorer Menu
       Action = "help"
-      Text = Shortcut(("Help browser"), "H")
+      Text = Shortcut(("Help browser"), "H") & "..."
       Picture = Picture["icon:/small/help"]
       Toggle = True
       Shortcut = "F1"
     }
     { mnuTip Menu
       Action = "tips"
-      Text = Shortcut(("Tips of the day"), "T")
+      Text = Shortcut(("Tips of the day"), "T") & "..."
       Picture = Picture["icon:/small/lamp"]
+    }
+    { mnuHelpShortcuts Menu
+      Action = "help-shortcut"
+      Text = ("Keyboard shortcuts") & "..."
+      Picture = Picture["icon:/small/shortcut"]
+      Toggle = True
     }
     { Menu8 Menu
     }
@@ -1296,6 +1294,11 @@
     Shortcut = "F1"
     Picture = "icon:/small/help"
   }
+  { Action help-shortcut
+    Text = "Keyboard shortcuts"
+    Shortcut = ""
+    Picture = "icon:/small/shortcut"
+  }
   { Action hide-menubar
     Text = "Hide menubar"
     Shortcut = "Ctrl+Alt+M"
@@ -1338,31 +1341,6 @@
     Text = "View"
     Picture = "$MenuButton"
   }
-  { Action new-class
-    Text = "Class"
-    Shortcut = ""
-    Picture = "img/16/class.png"
-  }
-  { Action new-directory
-    Text = "Directory"
-    Shortcut = ""
-    Picture = "icon:/small/directory"
-  }
-  { Action new-form
-    Text = "Form"
-    Shortcut = ""
-    Picture = "img/16/form.png"
-  }
-  { Action new-image
-    Text = "Image"
-    Shortcut = ""
-    Picture = "icon:/small/image"
-  }
-  { Action new-module
-    Text = "Module"
-    Shortcut = ""
-    Picture = "img/16/module.png"
-  }
   { Action new-other
     Text = "Other"
     Shortcut = ""
@@ -1372,21 +1350,6 @@
     Text = "New project"
     Shortcut = "Ctrl+N"
     Picture = "icon:/small/new"
-  }
-  { Action new-project-link
-    Text = "Project link"
-    Shortcut = ""
-    Picture = "img/logo/logo-16.png"
-  }
-  { Action new-report
-    Text = "Report"
-    Shortcut = ""
-    Picture = "img/16/report.png"
-  }
-  { Action new-webpage
-    Text = "WebPage"
-    Shortcut = ""
-    Picture = "img/16/webpage.png"
   }
   { Action open-extern
     Text = "Open file"

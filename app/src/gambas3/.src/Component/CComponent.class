@@ -1480,7 +1480,7 @@ Public Sub GetHelpURL() As String
       sComp = MHelp.ActualComponent(Key)
       sPath &/= LCase(sComp)
       
-      Return sPath & "?" & MHelp.GetLanguage()
+      Return sPath & "?l=" & MHelp.GetLanguage()
     Endif
     
   Endif

@@ -19,105 +19,121 @@ msgstr ""
 msgid "Integrated Development Environment for Gambas"
 msgstr ""
 
-#: CBookmark.class:33
+#: CBookmark.class:40
 msgid "Define bookmark"
 msgstr ""
 
-#: CBookmark.class:38
+#: CBookmark.class:45
 msgid "Clear all bookmarks"
 msgstr ""
 
-#: CBookmark.class:42
+#: CBookmark.class:49
 msgid "Previous bookmark"
 msgstr ""
 
-#: CBookmark.class:47
+#: CBookmark.class:54
 msgid "Next bookmark"
 msgstr ""
 
-#: CClassInfo.class:571 FMain.form:388 FProperty.form:23
+#: CClassInfo.class:581
+msgid "Static properties"
+msgstr ""
+
+#: CClassInfo.class:582 FDebugInfo.class:992
+msgid "Static variables"
+msgstr "Στατικές μεταβλητές"
+
+#: CClassInfo.class:583
+msgid "Static methods"
+msgstr ""
+
+#: CClassInfo.class:584
+msgid "Constants"
+msgstr "Σταθερές"
+
+#: CClassInfo.class:601 FMain.form:400 FProperty.form:24
 msgid "Properties"
 msgstr "Ιδιότητες"
 
-#: CClassInfo.class:572
+#: CClassInfo.class:602
 msgid "Variables"
 msgstr "Μεταβλητές"
 
-#: CClassInfo.class:573
+#: CClassInfo.class:603
 msgid "Methods"
 msgstr ""
 
-#: CClassInfo.class:574
+#: CClassInfo.class:604
 msgid "Events"
 msgstr "Γεγονότα"
 
-#: CClassInfo.class:602
-msgid "This class is static."
+#: CClassInfo.class:626
+msgid "This class reimplements &1"
 msgstr ""
 
-#: CClassInfo.class:604
+#: CClassInfo.class:628
+msgid "This class inherits &1"
+msgstr ""
+
+#: CClassInfo.class:634
+msgid "in &1"
+msgstr ""
+
+#: CClassInfo.class:641
 msgid "This class can be used like an object by creating an hidden instance on demand."
 msgstr ""
 
-#: CClassInfo.class:608
+#: CClassInfo.class:645
 msgid "This class is &1."
 msgstr ""
 
-#: CClassInfo.class:608
+#: CClassInfo.class:645
 msgid "creatable"
 msgstr ""
 
-#: CClassInfo.class:617
+#: CClassInfo.class:651
+msgid "This class is static."
+msgstr ""
+
+#: CClassInfo.class:655
 msgid "This class can be used as a &1."
 msgstr ""
 
-#: CClassInfo.class:617
+#: CClassInfo.class:655
 msgid "function"
 msgstr ""
 
-#: CClassInfo.class:622
+#: CClassInfo.class:660
 msgid "This class acts like a &1 / &2 array."
 msgstr ""
 
-#: CClassInfo.class:622
+#: CClassInfo.class:660
 msgid "read"
 msgstr ""
 
-#: CClassInfo.class:622
+#: CClassInfo.class:660
 msgid "write"
 msgstr ""
 
-#: CClassInfo.class:624
+#: CClassInfo.class:662
 msgid "This class acts like a &1 array."
 msgstr ""
 
-#: CClassInfo.class:624
+#: CClassInfo.class:662
 msgid "write-only"
 msgstr ""
 
-#: CClassInfo.class:627 Project.module:1641
+#: CClassInfo.class:665 Project.module:1636
 msgid "read-only"
 msgstr "Μόνο-ανάγνωση"
 
-#: CClassInfo.class:632
+#: CClassInfo.class:670
 msgid "This class is &1 with the FOR EACH keyword."
 msgstr ""
 
-#: CClassInfo.class:632
+#: CClassInfo.class:670
 msgid "enumerable"
 msgstr ""
-
-#: CClassInfo.class:657
-msgid "This class inherits &1."
-msgstr ""
-
-#: CClassInfo.class:672 MTheme.module:6
-msgid "Symbols"
-msgstr "Σύμβολα"
-
-#: CClassInfo.class:673
-msgid "Constants"
-msgstr "Σταθερές"
 
 #: CComponent.class:80
 msgid "Internal native classes"
@@ -148,8 +164,8 @@ msgid "Compression & decompression"
 msgstr "Συμπίεση & Αποσυμπίεση"
 
 #: CComponent.class:87
-msgid "MD5/DES crypting"
-msgstr "Κρυπτογραφία MD5/DES"
+msgid "MD5/DES/SHA crypting"
+msgstr ""
 
 #: CComponent.class:88
 msgid "More data containers"
@@ -158,10 +174,6 @@ msgstr ""
 #: CComponent.class:89 FCreateProject.form:293
 msgid "Database access"
 msgstr "Πρόσβαση σε βάση δεδομένων"
-
-#: CComponent.class:90
-msgid "Firebird database driver"
-msgstr "Οδηγός βάσης δεδομένων Firebird"
 
 #: CComponent.class:91
 msgid "Data bound controls"
@@ -196,60 +208,60 @@ msgid "Desktop management component"
 msgstr ""
 
 #: CComponent.class:99
-msgid "Gnome keyring support for desktop management component"
+msgid "X-Window library support"
 msgstr ""
 
 #: CComponent.class:100
+msgid "Gnome keyring support for desktop management component"
+msgstr ""
+
+#: CComponent.class:101
 msgid "D-Bus interface"
 msgstr "Διασύνδεση"
 
-#: CComponent.class:101
+#: CComponent.class:102
 msgid "Expression evaluator"
 msgstr "Αποτιμητής έκφρασης"
 
-#: CComponent.class:102
+#: CComponent.class:103
 msgid "Syntax highlighter routines"
 msgstr "Ρουτίνες υποσημείωσης συντακτικού"
 
-#: CComponent.class:103
+#: CComponent.class:104
 msgid "More controls for graphical components"
 msgstr "Περισσότερα στοιχεία ελέγχου για γραφικά στοιχεία"
 
-#: CComponent.class:104
+#: CComponent.class:105
 msgid "Enhanced standard dialogs"
 msgstr "Διάλογοι επαυξημένου προτύπου"
 
-#: CComponent.class:105
+#: CComponent.class:106
 msgid "Multi Document Interface"
 msgstr "Διασύνδεση Multi Document"
 
-#: CComponent.class:106
+#: CComponent.class:107
 msgid "Default icon theme"
 msgstr ""
 
-#: CComponent.class:107
+#: CComponent.class:108
 msgid "GNU Multiple Precision Arithmetic Library"
 msgstr ""
 
-#: CComponent.class:108
+#: CComponent.class:109
 msgid "GNU Scientific Library"
 msgstr ""
 
-#: CComponent.class:109
-msgid "GTK+ toolkit"
-msgstr "Εργαλειοθήκη GTK+"
-
 #: CComponent.class:110
-msgid "GTK+ toolkit extension"
-msgstr "Επέκταση εργαλειοθήκης GTK+"
+msgid "GTK+2 toolkit"
+msgstr ""
 
 #: CComponent.class:111
 msgid "OpenGL with GTK+ toolkit"
 msgstr ""
 
 #: CComponent.class:112
-msgid "GTK+ SVG renderer"
-msgstr "GTK+ SVG σχεδιαστής"
+msgid "GTK+3 toolkit"
+msgstr ""
 
 #: CComponent.class:113
 msgid "QT/GTK+ switcher component"
@@ -280,8 +292,8 @@ msgid "Image loading and saving"
 msgstr "Αποθήκευση και φόρτωση εικόνας"
 
 #: CComponent.class:120
-msgid "OpenLDAP client"
-msgstr "Πελάτης OpenLDAP"
+msgid "Filesystem events monitoring"
+msgstr ""
 
 #: CComponent.class:121
 msgid "Flexible logging system"
@@ -292,174 +304,178 @@ msgid "Online map viewer"
 msgstr ""
 
 #: CComponent.class:123
-msgid "GStreamer multimedia component"
+msgid "Gambas Markdown markup syntax"
 msgstr ""
 
 #: CComponent.class:124
-msgid "Memcached client"
+msgid "GStreamer multimedia component"
 msgstr ""
 
 #: CComponent.class:125
-msgid "MIME format management based on GMime library"
+msgid "Memcached client"
 msgstr ""
 
 #: CComponent.class:126
+msgid "MIME format management based on GMime library"
+msgstr ""
+
+#: CComponent.class:127
 msgid "MySQL specific routines"
 msgstr "MySQL ειδικές ρουτίνες"
 
-#: CComponent.class:127
+#: CComponent.class:128
 msgid "NCurses library"
 msgstr ""
 
-#: CComponent.class:128 FCreateProject.form:299
+#: CComponent.class:129 FCreateProject.form:299
 msgid "Network programming"
 msgstr "Προγραμματισμός δικτύωσης"
 
-#: CComponent.class:129
+#: CComponent.class:130
 msgid "Network high-level protocols management"
 msgstr "Διαχείριση πρωτόκολλων  δικτύωσης υψηλού επιπέδου"
 
-#: CComponent.class:130
+#: CComponent.class:131
 msgid "POP3 client"
 msgstr ""
 
-#: CComponent.class:131
+#: CComponent.class:132
 msgid "SMTP client"
 msgstr "SMTP πελάτης"
 
-#: CComponent.class:132
+#: CComponent.class:133
 msgid "OpenAL 3D audio library"
 msgstr ""
 
-#: CComponent.class:133
+#: CComponent.class:134
 msgid "3D programming with OpenGL"
 msgstr "Τρισδιάστατος προγραμματισμός μ OpenGL"
 
-#: CComponent.class:134
+#: CComponent.class:135
 msgid "OpenGL utility component"
 msgstr ""
 
-#: CComponent.class:135
+#: CComponent.class:136
 msgid "OpenGL shaders management"
 msgstr ""
 
-#: CComponent.class:136
+#: CComponent.class:137
 msgid "Simple OpenGL game engine based on MD2 format"
 msgstr ""
 
-#: CComponent.class:137
+#: CComponent.class:138
 msgid "OpenSSL library routines"
 msgstr ""
 
-#: CComponent.class:138
+#: CComponent.class:139
 msgid "GNU command option parser"
 msgstr "GNU αναλυτής επιλογών εντολών"
 
-#: CComponent.class:139
+#: CComponent.class:140
 msgid "Perl-compatible Regular Expression Matching"
 msgstr "Ταίριασμα Κανονικών εκφράσεων συμβατών με Perl"
 
-#: CComponent.class:140
+#: CComponent.class:141
 msgid "PDF renderer based on Poppler library"
 msgstr "PDF απόδοση βασισμένη στη βιβλιόθηκη Poppler"
 
-#: CComponent.class:141
+#: CComponent.class:142
 msgid "QT4 toolkit"
 msgstr "QT4 εργαλειοθήκη"
 
-#: CComponent.class:142
+#: CComponent.class:143
 msgid "QT4 toolkit extension"
 msgstr "QT4 επέκταση εργαλειοθήκης"
 
-#: CComponent.class:143
+#: CComponent.class:144
 msgid "QT4 WebKit component"
 msgstr "QT4 στοιχείο WebKit"
 
-#: CComponent.class:144
+#: CComponent.class:145
 msgid "OpenGL with QT4 toolkit"
 msgstr "OpenGL με QT4 εργαλειοθήκη"
 
-#: CComponent.class:145
+#: CComponent.class:146
 msgid "Report designer"
 msgstr "Αναφορά σχεδιαστή"
 
-#: CComponent.class:146
+#: CComponent.class:147
 msgid "SDL library"
 msgstr "SDL βιβλιοθήκη"
 
-#: CComponent.class:147
+#: CComponent.class:148
 msgid "SDL sound & CD-ROM management"
 msgstr "SDL ήχος και διαχείριση CD-ROM"
 
-#: CComponent.class:148
+#: CComponent.class:149
 msgid "Application settings management"
 msgstr "Διαχείριση ρυθμίσεων εφαρμόγής"
 
-#: CComponent.class:149
+#: CComponent.class:150
 msgid "Signals management"
 msgstr ""
 
-#: CComponent.class:150
+#: CComponent.class:151
 msgid "Video capture"
 msgstr "Λήψη βίντεο"
 
-#: CComponent.class:151
+#: CComponent.class:152
 msgid "Visual Basic compatibility"
 msgstr "Συμβατότητα Visual Basic"
 
-#: CComponent.class:152
+#: CComponent.class:153
 msgid "XML tools based on libxml"
 msgstr "XML εργαλεία που βασίζονται σε libxml"
 
-#: CComponent.class:153
+#: CComponent.class:154
 msgid "XML tools"
 msgstr ""
 
-#: CComponent.class:154
+#: CComponent.class:155
 msgid "HTML generator"
 msgstr ""
 
-#: CComponent.class:155
+#: CComponent.class:156
 msgid "XML-RPC protocol"
 msgstr "Πρωτόκολο XML-RPC"
 
-#: CComponent.class:156
+#: CComponent.class:157
 msgid "XSLT tools based on libxslt and libxml"
 msgstr ""
 
-#: CComponent.class:157
+#: CComponent.class:158
 msgid "Web applications tools"
 msgstr "Εργαλεία εφαρμογών παγκόσμιου ιστού"
 
-#: CComponent.class:163 FPropertyComponent.form:162
+#: CComponent.class:164 FPropertyComponent.form:162
 msgid "Graphical form management"
 msgstr "Διαχείριση γραφικής φόρμας"
 
-#: CComponent.class:164 FPropertyComponent.form:168
+#: CComponent.class:165 FPropertyComponent.form:168
 msgid "Event loop management"
 msgstr "Διαχείριση βρόχου γεγονότος"
 
-#: CComponent.class:166 FPropertyComponent.form:184
+#: CComponent.class:167 FPropertyComponent.form:184
 msgid "OpenGL display"
 msgstr "OpenGL εμφάνιση"
 
-#: CComponent.class:167
+#: CComponent.class:168
 msgid "Complex numbers"
 msgstr ""
 
-#: CComponent.class:168 FPropertyComponent.form:190
+#: CComponent.class:169 FPropertyComponent.form:190
 msgid "XML management"
 msgstr ""
 
-#: CComponent.class:458
+#: CComponent.class:459
 msgid "Loading information on component &1..."
 msgstr "Φόρτωμα πληροφορίας στο στοιχείο &1..."
 
-#: CComponent.class:1518 FFileProperty.class:164 FInfo.class:67
+#: CComponent.class:1533 FFileProperty.class:165 FProjectProperty.class:1361
 msgid "Classes"
 msgstr "Κλάσεις"
 
-#: CInsertColor.class:106 FEditor.form:263 FTextEditor.form:182
+#: CInsertColor.class:113 FEditor.form:257 FTextEditor.form:199
 msgid "Insert color"
 msgstr ""
 
@@ -483,11 +499,11 @@ msgstr "Παρέχει"
 msgid "Requires"
 msgstr "Απαιτεί"
 
-#: FMain.form:669
+#: FMain.form:719
 msgid "Form"
 msgstr "Φόρμα"
 
-#: CModule.class:28 FInfo.class:68
+#: CModule.class:28
 msgid "Forms"
 msgstr "Φόρμες"
 
@@ -499,7 +515,7 @@ msgstr "Gambas φόρμες"
 msgid "Gambas web pages"
 msgstr "Gambas ιστοσελίδες"
 
-#: CModule.class:29 FCreateFile.form:174 FMain.form:677
+#: CModule.class:29 FCreateFile.form:174 FMain.form:726
 msgid "WebPage"
 msgstr "Ιστοσελίδα"
 
@@ -511,7 +527,7 @@ msgstr "Ιστοσελίδες"
 msgid "Gambas reports"
 msgstr "Gambas αναφορές"
 
-#: CModule.class:30 FCreateFile.form:195 FMain.form:685
+#: CModule.class:30 FCreateFile.form:195 FMain.form:733
 msgid "Report"
 msgstr "Αναφορά"
 
@@ -527,27 +543,27 @@ msgstr ""
 msgid "Event loop"
 msgstr ""
 
-#: Project.module:1743
+#: FSearch.class:97 FSelectIcon.form:31 Project.module:1751
 msgid "Project"
 msgstr "Έργο"
 
-#: CProjectTree.class:288 Project.module:1744
+#: CProjectTree.class:288 Project.module:1752
 msgid "Sources"
 msgstr "Πηγαία"
 
-#: CProjectTree.class:290 Project.module:1745
+#: CProjectTree.class:290 Project.module:1753
 msgid "Connections"
 msgstr "Συνδέσεις"
 
-#: CProjectTree.class:298 Project.module:1746
+#: CProjectTree.class:298 Project.module:1754
 msgid "Public"
 msgstr ""
 
-#: CProjectTree.class:299 Project.module:1747
+#: CProjectTree.class:299 Project.module:1755
 msgid "Data"
 msgstr "Δεδομένα"
 
-#: CRecentFile.class:69 FMain.class:592
+#: CRecentFile.class:69 FMain.class:617
 msgid "Today"
 msgstr "Σήμερα"
 
@@ -567,7 +583,7 @@ msgstr ""
 msgid "This month"
 msgstr ""
 
-#: FTranslate.class:554 Project.module:508
+#: FTranslate.class:554 Project.module:483
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -587,7 +603,7 @@ msgstr "Πειραματικό"
 msgid "Not finished but stable"
 msgstr "Δεν τερμάτισε αλλά είναι σταθερό"
 
-#: ComponentItem.class:143 FProjectProperty.class:1271
+#: ComponentItem.class:143 FProjectProperty.class:1276
 msgid "Deprecated"
 msgstr ""
 
@@ -623,31 +639,23 @@ msgstr ""
 msgid "Remove all"
 msgstr "Αφαίρεσε τα όλα"
 
-#: Design.module:159 Project.module:2178
+#: Design.module:187 Project.module:2194
 msgid "first"
 msgstr "πρώτο"
 
-#: Design.module:161 Project.module:2180
+#: Design.module:189 Project.module:2196
 msgid "second"
 msgstr "δευτερόλεπτο"
 
-#: Design.module:163 Project.module:2182
+#: Design.module:191 Project.module:2198
 msgid "third"
 msgstr "τρίτο"
 
-#: Design.module:257 Project.module:2241
+#: Design.module:286 Project.module:2257
 msgid "in &1:&2."
 msgstr ""
 
-#: Design.module:363
-msgid "Please send a bug report to the following mail address: &1"
-msgstr ""
-
-#: Design.module:363
-msgid "The program has stopped unexpectedly:"
-msgstr ""
-
-#: Design.module:367
+#: Design.module:392
 msgid "The program has returned\nthe value: &1"
 msgstr "Το πρόγραμμα έχει επιστρέψει\nτην τιμή: &1"
 
@@ -655,11 +663,11 @@ msgstr "Το πρόγραμμα έχει επιστρέψει\nτην τιμή: 
 msgid "OK"
 msgstr "Εντάξει"
 
-#: Design.module:859
+#: Design.module:897
 msgid "Output terminal"
 msgstr "Τερματικό εξόδου"
 
-#: Design.module:886
+#: Design.module:924
 msgid "No terminal emulator found."
 msgstr "Δεν βρέθηκε εξομοιωτής τερματικού."
 
@@ -699,107 +707,103 @@ msgstr "Σύστημα"
 msgid "Free"
 msgstr "Ελεύθερο"
 
-#: FConflict.class:24
+#: FConflict.class:23
 msgid "&Edit"
 msgstr "&Επεξεργασία"
 
-#: FConflict.class:24
+#: FConflict.class:23
 msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
 msgstr "Αυτό το αρχείο έρχεται σε σύγκρουση με την αναθεώρηση  #&1.\nΠρέπει να επιλύσεις τη σύγκρουση για να μπορέσεις να χρησιμοποιήσεις το αρχείο."
 
-#: FConflict.class:130
-msgid "Version conflict"
-msgstr "Σύγκρουση έκδοσης"
+#: FConflict.class:116
+msgid "Unable to load file:"
+msgstr ""
 
-#: FConflict.class:185
-msgid "The file has been modified.\nDo you really want to close the dialog?"
-msgstr "Αυτό το αρχείο έχει τροποποιηθεί.\nΘέλεις πράγματι να κλείσεις το διάλογο;"
-
-#: FConflict.class:213
-msgid "Some conflicts are not yet resolved."
-msgstr "Δεν έχουν επιλυθεί μερικές συγκρούσεις."
-
-#: FConflict.class:219
-msgid "Unable to resolve the conflict."
-msgstr "Αδυναμία επίλυσης σύγκρουσης."
-
-#: FConflict.class:248
-msgid "The file has been modified.\nDo you really want to open another file?"
-msgstr "Αυτό το αρχείο έχει τροποποιηθεί.\nΘέλεις πράγματι να ανοίξεις άλλο αρχείο;"
-
-#: FConflict.class:256
-msgid "Conflict files"
-msgstr "Συγκρουόμενα αρχεία"
-
-#: FConflict.form:47 FMain.form:735 FOpenProject.form:40
-msgid "Open"
-msgstr "Άνοιγμα"
-
-#: FOutput.form:58 FProjectVersion.form:234 FTextEditor.form:108
-msgid "Cut"
-msgstr "Αποκοπή"
-
-#: FTextEditor.form:115
-msgid "Copy"
-msgstr "Αντιγραφή"
-
-#: FProjectVersion.form:246 FTextEditor.form:122
-msgid "Paste"
-msgstr "Επικόλληση"
-
-#: FTextEditor.form:91
-msgid "Undo"
-msgstr "Αναίρεση"
-
-#: FProjectVersion.form:258 FTextEditor.form:98
-msgid "Redo"
-msgstr "Επανέλαβε"
-
-#: FTextEditor.form:326
-msgid "Indent"
-msgstr "Εσοχή"
-
-#: FTextEditor.form:334
-msgid "Unindent"
-msgstr "Αφαίρεση εσοχης"
-
-#: FConflict.form:112 FCreateFile.form:237 FDebugInfo.class:70
+#: FImageEditor.form:576
 msgid "Text"
 msgstr "Κείμενο"
 
-#: FReportBrushChooser.form:49 Project.module:202
+#: FReportBrushChooser.form:49 Project.module:208
 msgid "Image"
 msgstr "Εικόνα"
 
-#: FConflict.form:129 FInfo.form:136
-msgid "Details"
-msgstr "Λεπτομέρειες"
+#: FConflict.class:218
+msgid "The file has been modified.\nDo you really want to close the dialog?"
+msgstr "Αυτό το αρχείο έχει τροποποιηθεί.\nΘέλεις πράγματι να κλείσεις το διάλογο;"
 
-#: FConflict.form:138
-msgid "Resolve conflict with"
-msgstr "Επίλυση σύγκρουση με"
+#: FConflict.class:246
+msgid "Some conflicts are not yet resolved."
+msgstr "Δεν έχουν επιλυθεί μερικές συγκρούσεις."
 
-#: FConflict.form:154 FInfo.form:30
-msgid "Information"
-msgstr "Πληροφορία"
+#: FConflict.class:252
+msgid "Unable to resolve the conflict."
+msgstr "Αδυναμία επίλυσης σύγκρουσης."
 
-#: FTextEditor.form:237
+#: FConflict.class:281
+msgid "The file has been modified.\nDo you really want to open another file?"
+msgstr "Αυτό το αρχείο έχει τροποποιηθεί.\nΘέλεις πράγματι να ανοίξεις άλλο αρχείο;"
+
+#: FConflict.class:289
+msgid "Conflict files"
+msgstr "Συγκρουόμενα αρχεία"
+
+#: FConflict.form:32
+msgid "Version conflict"
+msgstr "Σύγκρουση έκδοσης"
+
+#: FOutput.form:63 FProjectVersion.form:234 FTextEditor.form:112
+msgid "Cut"
+msgstr "Αποκοπή"
+
+#: FTextEditor.form:119
+msgid "Copy"
+msgstr "Αντιγραφή"
+
+#: FProjectVersion.form:246 FTextEditor.form:126
+msgid "Paste"
+msgstr "Επικόλληση"
+
+#: FTextEditor.form:95
+msgid "Undo"
+msgstr "Αναίρεση"
+
+#: FProjectVersion.form:258 FTextEditor.form:102
+msgid "Redo"
+msgstr "Επανέλαβε"
+
+#: FTextEditor.form:343
+msgid "Indent"
+msgstr "Εσοχή"
+
+#: FTextEditor.form:351
+msgid "Unindent"
+msgstr "Αφαίρεση εσοχης"
+
+#: FConflict.form:149 FMain.form:782 FOpenProject.form:40
+msgid "Open"
+msgstr "Άνοιγμα"
+
+#: FConflict.form:151
+msgid "Open..."
+msgstr ""
+
+#: FTextEditor.form:254
 msgid "Save"
 msgstr "Αποθήκευση"
 
-#: FConflict.form:178
+#: FConflict.form:168
 msgid "Solve"
 msgstr "Επίλυσε"
 
-#: FSystemInfo.form:80 FTextEditor.form:244 FTips.form:84 FTranslate.form:297
+#: FSystemInfo.form:80 FTextEditor.form:261 FTips.form:84 FTranslate.form:297
 msgid "Close"
 msgstr "Κλείσε"
 
-#: FOption.form:1038
+#: FOption.form:977
 msgid "Name"
 msgstr "Όνομα"
 
-#: FProxy.form:27
+#: FDebugInfo.class:76 FNewConnection.form:78 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "Τύπος"
 
@@ -823,7 +827,7 @@ msgstr "Μοναδικό"
 msgid "Field"
 msgstr "Πεδίο"
 
-#: FConnectionEditor.class:256 FMakeInstall.form:251 FProjectProperty.form:259
+#: FConnectionEditor.class:256 FMakeInstall.form:251 FProjectProperty.form:292
 msgid "Description"
 msgstr "Περιγραφή"
 
@@ -927,7 +931,7 @@ msgstr "Δεν μπορεί να γίνει η διαγραφή του πίνα�
 msgid "Select the CSV file to import"
 msgstr "Επέλεξε το CVS αρχείο προς εισαγωγή"
 
-#: FConnectionEditor.class:1619 FSearch.form:172 FTranslate.class:1199
+#: FConnectionEditor.class:1619 FSearch.form:172 FTranslate.class:1204
 msgid "All files"
 msgstr "Όλα τα αρχεία"
 
@@ -963,7 +967,7 @@ msgstr "Νέος πίνακας"
 msgid "Delete table"
 msgstr "Διαγραφή πίνακα"
 
-#: FOption.form:991 FProjectProperty.form:516 FPropertyComponent.form:236
+#: FOption.form:945 FProjectProperty.form:566 FPropertyComponent.form:236
 msgid "Remove"
 msgstr "Αφαίρεση"
 
@@ -971,7 +975,7 @@ msgstr "Αφαίρεση"
 msgid "Rename table"
 msgstr "Μετονομασία πίνακα"
 
-#: FConnectionEditor.form:141 FMain.form:788
+#: FConnectionEditor.form:141 FMain.form:835
 msgid "Rename"
 msgstr "Μετονομασία"
 
@@ -999,7 +1003,7 @@ msgstr ""
 msgid "Fields"
 msgstr "Πεδία"
 
-#: FOption.form:1160 FProjectProperty.form:719 FPropertyComponent.form:230
+#: FOption.form:1099 FProjectProperty.form:769 FPropertyComponent.form:230
 msgid "Add"
 msgstr "Πρόσθηκη"
 
@@ -1031,7 +1035,7 @@ msgstr "Εκτέλεση ερωτήματος"
 msgid "New query"
 msgstr ""
 
-#: FOption.form:977 FTranslate.form:67
+#: FOption.form:931 FTranslate.form:67
 msgid "New"
 msgstr "Νέο"
 
@@ -1039,7 +1043,7 @@ msgstr "Νέο"
 msgid "Remove query"
 msgstr ""
 
-#: FConnectionEditor.form:450 FOption.form:984
+#: FConnectionEditor.form:450 FOption.form:938
 msgid "Edit"
 msgstr "Επεξεργασία"
 
@@ -1047,16 +1051,40 @@ msgstr "Επεξεργασία"
 msgid "Export to CSV file"
 msgstr ""
 
-#: FConnectionEditor.form:459 FOption.form:1007 FTranslate.form:85
+#: FConnectionEditor.form:459 FTranslate.form:85
 msgid "Export"
 msgstr "Εξαγωγή"
 
-#: FMenu.form:95 FNewConnection.class:327 FOption.class:858 FTranslate.form:77
+#: FMenu.form:95 FNewConnection.class:334 FOption.class:867 FTranslate.form:77
 msgid "Delete"
 msgstr "Διαγραφή"
 
 #: FConvert.form:10
 msgid "Gambas 3 project conversion"
+msgstr ""
+
+#: FCrash.class:68 FTranslate.class:1119 Project.module:4382
+msgid "The '&1' command has failed."
+msgstr ""
+
+#: FCrash.class:84
+msgid "Unable to send bug report."
+msgstr ""
+
+#: FCrash.class:91
+msgid "The program has stopped unexpectedly!"
+msgstr ""
+
+#: FCrash.form:21
+msgid "Gambas interpreter crash"
+msgstr ""
+
+#: FCrash.form:56
+msgid "Send a bug report by mail"
+msgstr ""
+
+#: FCrash.form:61
+msgid "Don't join the project to the mail"
 msgstr ""
 
 #: FCreateFile.class:105
@@ -1095,23 +1123,23 @@ msgstr "Δεν μπορεί να προστεθεί το αρχείο."
 msgid "New file"
 msgstr "Νέο αρχείο"
 
-#: FCreateFile.form:111 FMain.form:653
+#: FCreateFile.form:111 FMain.form:705
 msgid "Module"
 msgstr "Μονάδα"
 
-#: FCreateFile.form:132 FDebugInfo.class:51 FMain.form:661
+#: FCreateFile.form:132 FDebugInfo.class:51 FMain.form:712
 msgid "Class"
 msgstr "Κλάση"
 
-#: FCreateFile.form:258 FInfo.class:104 FMain.form:703
+#: FCreateFile.form:258 FMain.form:750
 msgid "HTML file"
 msgstr "Αρχείο HTML"
 
-#: FCreateFile.form:279 FMain.form:710
+#: FCreateFile.form:279 FMain.form:757
 msgid "Style sheet"
 msgstr "Φύλλο στυλ"
 
-#: FCreateFile.form:300 FInfo.class:113 FMain.form:717
+#: FCreateFile.form:300 FMain.form:764
 msgid "Javascript file"
 msgstr ""
 
@@ -1167,11 +1195,11 @@ msgstr "Παρακαλώ εισήγαγε την τοποθεσία του απ�
 msgid "The project has been successfully created."
 msgstr "Το έργο δημιουργήθηκε με επιτυχία."
 
-#: FCreateProject.form:66 FMain.form:230
+#: FCreateProject.form:66 FMain.form:242
 msgid "New project"
 msgstr "Νέο έργο"
 
-#: FCreateProject.form:81 FProjectProperty.form:202
+#: FCreateProject.form:81 FProjectProperty.form:235
 msgid "Project type"
 msgstr "Τύπος έργου"
 
@@ -1283,7 +1311,7 @@ msgstr ""
 msgid "not available"
 msgstr "δεν είναι διαθέσιμο"
 
-#: FDebugExpr.class:472 FDebugInfo.class:39 FProjectProperty.class:140
+#: FDebugExpr.class:472 FDebugInfo.class:39 FProjectProperty.class:141
 msgid "Value"
 msgstr "Τιμή"
 
@@ -1311,11 +1339,11 @@ msgstr "Έκφραση"
 msgid "Function"
 msgstr "Συνάρτηση"
 
-#: FOption.form:642
+#: FOption.form:606
 msgid "Line"
 msgstr "Γραμμή"
 
-#: FDebugInfo.class:62 FInfo.class:120 FMain.form:226 FTranslate.class:69
+#: FDebugInfo.class:62 FMain.form:238 FTranslate.class:69
 msgid "File"
 msgstr "Αρχείο"
 
@@ -1335,7 +1363,7 @@ msgstr "Μήνυμα"
 msgid "native code"
 msgstr "Αυτόχθωνος κώδικας"
 
-#: FMakeInstall.form:660 FOption.class:675 FOutput.form:79
+#: FMakeInstall.form:660 FOption.class:684 FOutput.form:84
 msgid "Clear"
 msgstr "Καθάρισε"
 
@@ -1347,19 +1375,15 @@ msgstr "Θελεις πραγματικά να καθαρίσεις τη λίσ�
 msgid "Dynamic variables"
 msgstr "Δυναμικές μεταβλητές"
 
-#: FDebugInfo.class:992
-msgid "Static variables"
-msgstr "Στατικές μεταβλητές"
-
 #: FDebugInfo.class:1413
 msgid "Warnings"
 msgstr ""
 
-#: FDebugInfo.form:49 FMain.form:409
+#: FDebugInfo.form:49 FMain.form:421
 msgid "Debug"
 msgstr "Αποσφαλμάτωση"
 
-#: FDebugInfo.form:60 FMain.form:519 FOption.form:346 FSearch.class:93
+#: FDebugInfo.form:60 FMain.form:574 FOption.form:335 FSearch.class:93
 msgid "Console"
 msgstr "Κονσόλα"
 
@@ -1439,7 +1463,7 @@ msgstr ""
 msgid "Show search window"
 msgstr ""
 
-#: FDebugInfo.form:324 FSearch.class:486 FTranslate.class:516
+#: FDebugInfo.form:324 FSearch.class:492 FTranslate.class:516
 msgid "Search string cannot be found."
 msgstr "Αλφαριθμητικό αναζήτησης δεν μπορεί να βρεθεί."
 
@@ -1447,131 +1471,127 @@ msgstr "Αλφαριθμητικό αναζήτησης δεν μπορεί να
 msgid "Stack backtrace"
 msgstr "Ίχνος στοίβας"
 
-#: FEditor.class:2382 FImageEditor.class:351 FTextEditor.class:604
+#: FEditor.class:2316 FImageEditor.class:352 FTextEditor.class:652
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Αυτό το αρχείο έχει τροποποιηθεί.\n\nΌλες οι αλλαγές θα χαθούν."
 
-#: FEditor.class:2804 FTextEditor.class:990
+#: FEditor.class:2761 FTextEditor.class:1063
 msgid "(Declarations)"
 msgstr "(Δηλώσεις)"
 
-#: FEditor.form:93
+#: FEditor.form:94
 msgid "Go to"
 msgstr "Πήγαινε"
 
-#: FEditor.form:98 FGotoLine.form:12 FTextEditor.form:75
+#: FEditor.form:99 FGotoLine.form:12 FTextEditor.form:79
 msgid "Go to line"
 msgstr "Πήγαινε στη γραμμή"
 
-#: FEditor.form:104
+#: FEditor.form:105
 msgid "Find definition"
 msgstr "Αναζήτηση ορισμού"
 
-#: FEditor.form:111
+#: FEditor.form:112
 msgid "Open form"
 msgstr "Άνοιξε φόρμα"
 
-#: FEditor.form:118 FForm.form:153 FMain.form:814
-msgid "Startup class"
-msgstr "Κλάση Εκκίνησης"
-
-#: FEditor.form:167 FImageEditor.form:148 FTextEditor.form:132
+#: FEditor.form:161 FImageEditor.form:151 FTextEditor.form:136
 msgid "Select All"
 msgstr "Επιλογή όλων"
 
-#: FEditor.form:176 FOutput.form:89 FTextEditor.form:141
+#: FEditor.form:170 FOutput.form:94 FTextEditor.form:145
 msgid "Find next"
 msgstr "Αναζήτηση επομένου"
 
-#: FEditor.form:183 FOutput.form:96 FTextEditor.form:148
+#: FEditor.form:177 FOutput.form:101 FTextEditor.form:152
 msgid "Find previous"
 msgstr "Αναζήτηση προηγούμενου"
 
-#: FEditor.form:192 FMain.form:1212
+#: FEditor.form:186 FMain.form:1271
 msgid "Run until current line"
 msgstr "Εκτέλεση μέχρι τρέχουσα γραμμή"
 
-#: FEditor.form:199
+#: FEditor.form:193
 msgid "Toggle breakpoint"
 msgstr "Εναλλαγή σημείου διακοπής"
 
-#: FEditor.form:206
+#: FEditor.form:200
 msgid "Watch expression"
 msgstr "Παρακολοθούμενη έκφραση"
 
-#: FEditor.form:214 FTextEditor.form:157
+#: FEditor.form:208 FTextEditor.form:161
 msgid "Bookmarks"
 msgstr ""
 
-#: FEditor.form:218 FTextEditor.form:161
+#: FEditor.form:212 FTextEditor.form:165
 msgid "Advanced"
 msgstr "Προχωρημένα"
 
-#: FEditor.form:222 FTextEditor.form:172
+#: FEditor.form:216 FTextEditor.form:176
 msgid "Lower case"
 msgstr ""
 
-#: FEditor.form:229 FTextEditor.form:165
+#: FEditor.form:223 FTextEditor.form:169
 msgid "Upper case"
 msgstr ""
 
-#: FEditor.form:239
+#: FEditor.form:233
 msgid "Comment"
 msgstr "Σχόλιο"
 
-#: FEditor.form:246
+#: FEditor.form:240
 msgid "Uncomment"
 msgstr "Αφαίρεση σχολίου"
 
-#: FEditor.form:256 FPasteSpecial.form:19
+#: FEditor.form:250 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr "Ειδική επικόλληση"
 
-#: FEditor.form:269
+#: FEditor.form:263
 msgid "Format code"
 msgstr ""
 
-#: FEditor.form:275
+#: FEditor.form:269
 msgid "Sort procedures"
 msgstr ""
 
-#: FEditor.form:281 FImageEditor.form:281 FMain.form:496 FTextEditor.form:202
+#: FEditor.form:275 FImageEditor.form:288 FMain.form:551 FTextEditor.form:219
 msgid "View"
 msgstr "Προβολή"
 
-#: FEditor.form:285 FTextEditor.form:206
+#: FEditor.form:279 FTextEditor.form:223
 msgid "No split"
 msgstr "Κανένας διαχωρισμός"
 
-#: FEditor.form:291 FTextEditor.form:212
+#: FEditor.form:285 FTextEditor.form:229
 msgid "Horizontal split"
 msgstr "Οριζόντιος διαχωρισμός"
 
-#: FEditor.form:298 FTextEditor.form:219
+#: FEditor.form:292 FTextEditor.form:236
 msgid "Vertical split"
 msgstr "Κάθετος διαχωρισμός"
 
-#: FEditor.form:333 FPasteSpecial.form:51
+#: FEditor.form:327 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr "Επικόλλησε σαν αλφαριθμητικό"
 
-#: FEditor.form:338 FPasteSpecial.form:56
+#: FEditor.form:332 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr "Επικόλλησε σαν  αλφαριθμητικό πολλών γραμμών"
 
-#: FEditor.form:343 FPasteSpecial.form:41
+#: FEditor.form:337 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr "Επικόλλησε σαν σχόλια"
 
-#: FEditor.form:350 FOption.form:328
+#: FEditor.form:353 FHelpShortcut.form:24 FOption.form:317
 msgid "Editor"
 msgstr "Επεξεργαστής κειμένου"
 
-#: FEditor.form:485
+#: FEditor.form:488
 msgid "Make code pretty"
 msgstr ""
 
-#: FEditor.form:550 FTextEditor.form:416
+#: FEditor.form:553 FTextEditor.form:433
 msgid "Procedure list"
 msgstr "Λίστα διαδικασιών"
 
@@ -1627,15 +1647,15 @@ msgstr "Σύνδεση"
 msgid "Table"
 msgstr "Πίνακας"
 
-#: FFileProperty.class:31 FInfo.class:83
+#: FFileProperty.class:31
 msgid "Gambas &1"
 msgstr ""
 
-#: FFileProperty.class:38 FInfo.class:91
+#: FFileProperty.class:38
 msgid "Gambas module"
 msgstr ""
 
-#: FFileProperty.class:40 FInfo.class:95
+#: FFileProperty.class:40
 msgid "Gambas class"
 msgstr ""
 
@@ -1643,43 +1663,43 @@ msgstr ""
 msgid "&1 properties"
 msgstr ""
 
-#: FFileProperty.class:84 FInfo.form:147
+#: FFileProperty.class:84
 msgid "Versioning"
 msgstr "Ανάθεση έκδοσης"
 
-#: FFileProperty.class:91 FTranslate.form:303
+#: FFileProperty.class:92 FProjectProperty.form:801 FTranslate.form:303
 msgid "Statistics"
 msgstr "Στατιστικά"
 
-#: FFileProperty.class:123 FInfo.class:240
+#: FFileProperty.class:124
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr "Το αρχείο είναι κλειδωμένο και θα αφαιρεθεί στην επόμενη υποβολή."
 
-#: FFileProperty.class:125 FInfo.class:242
+#: FFileProperty.class:126
 msgid "This file is not versioned, and must be added to the repository."
 msgstr "Το αρχείο αυτό δεν έχει έκδοση και πρέπει να προστεθεί στο αποθετήριο."
 
-#: FFileProperty.class:128 FInfo.class:245
+#: FFileProperty.class:129
 msgid "This file has not been modified since the last commit."
 msgstr "Αυτό το αρχείο δεν έχει τροποποιηθεί από την τελαυταία υποβολή."
 
-#: FProjectVersion.class:204 FSave.form:21 Project.module:3339
+#: FSave.form:21 Project.module:3376
 msgid "Continue"
 msgstr "Συνέχισε"
 
-#: FFileProperty.class:140 FInfo.class:263 FProjectVersion.class:204
+#: FFileProperty.class:141 FProjectVersion.class:209
 msgid "You are going to cancel your changes!"
 msgstr "Θα ακυρώσεις τις αλλαγές σου!"
 
-#: FFileProperty.class:163 FInfo.class:66
+#: FFileProperty.class:164 FProjectProperty.class:1357
 msgid "Modules"
 msgstr "Μονάδες"
 
-#: FFileProperty.class:168
+#: FFileProperty.class:169 FProjectProperty.class:1374
 msgid "Lines of code"
 msgstr ""
 
-#: FFileProperty.form:64 FInfo.form:170 FPatch.form:93 FProjectVersion.form:83
+#: FFileProperty.form:65 FPatch.form:93 FProjectVersion.form:83
 msgid "Revert"
 msgstr "Επαναφορά"
 
@@ -1691,203 +1711,207 @@ msgstr "Επιλογή γραμματοσειράς"
 msgid "Bad form file"
 msgstr "Κακή μορφή αρχείου"
 
-#: FForm.class:1301
+#: FForm.class:1309
 msgid "Component missing for control &1"
 msgstr ""
 
-#: FForm.class:3160
+#: FForm.class:3185
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Έχει τροποιηθεί η φόρμα.\n\n.Όλες οι αλλαγές θα χαθούν."
 
-#: FForm.form:129
+#: FForm.form:130
 msgid "Select"
 msgstr "Επιλογή"
 
-#: FForm.form:134
+#: FForm.form:135
 msgid "Event"
 msgstr "Συμβάν"
 
-#: FForm.form:140
+#: FForm.form:141
 msgid "Change into"
 msgstr "Αλλαγή σε"
 
-#: FForm.form:146 FMain.form:740 FTextEditor.form:81
+#: FForm.form:147 FMain.form:787 FTextEditor.form:85
 msgid "Open code"
 msgstr "Άνοιξε κώδικα"
 
-#: FForm.form:162
+#: FForm.form:154
+msgid "Run that form"
+msgstr ""
+
+#: FForm.form:163
 msgid "Show tab"
 msgstr "Δείξε  στηλοθέτες"
 
-#: FForm.form:170
+#: FForm.form:171
 msgid "Move tab"
 msgstr "Μετακίνηση στηλοθέτη"
 
-#: FForm.form:175
+#: FForm.form:176
 msgid "First"
 msgstr "πρώτο"
 
-#: FForm.form:182 FSearch.form:198 FTips.form:72
+#: FForm.form:183 FSearch.form:198 FTips.form:72
 msgid "Previous"
 msgstr "Προηγούμενο"
 
-#: FForm.form:189 FSearch.form:192 FTips.form:78
+#: FForm.form:190 FSearch.form:192 FTips.form:78
 msgid "Next"
 msgstr "Επόμενο"
 
-#: FForm.form:196
+#: FForm.form:197
 msgid "Last"
 msgstr "Τελευταίο"
 
-#: FForm.form:207
+#: FForm.form:208
 msgid "Select all"
 msgstr "Επιλογή όλων"
 
-#: FForm.form:213
+#: FForm.form:214
 msgid "Unselect all"
 msgstr "Αποεπιλογή όλων"
 
-#: FForm.form:253
+#: FForm.form:254
 msgid "Copy at the same place"
 msgstr ""
 
-#: FForm.form:273
+#: FForm.form:274
 msgid "Delete container only"
 msgstr ""
 
-#: FForm.form:280
+#: FForm.form:281
 msgid "Embed into a container"
 msgstr ""
 
-#: FForm.form:289
+#: FForm.form:290
 msgid "Arrangement"
 msgstr "Διευθέτηση"
 
-#: FForm.form:293
+#: FForm.form:294
 msgid "Bring to foreground"
 msgstr "Φέρε στο προσκήνιο"
 
-#: FForm.form:300
+#: FForm.form:301
 msgid "Send to background"
 msgstr "Στείλε στο παρασκήνιο"
 
-#: FForm.form:310
+#: FForm.form:311
 msgid "Horizontal"
 msgstr "Οριζόντια"
 
-#: FForm.form:317
+#: FForm.form:318
 msgid "Rows"
 msgstr "Σειρές"
 
-#: FForm.form:323
+#: FForm.form:324
 msgid "Vertical"
 msgstr "Κάθετα"
 
-#: FForm.form:330
+#: FForm.form:331
 msgid "Columns"
 msgstr "Στήλες"
 
-#: FForm.form:339
+#: FForm.form:340
 msgid "Center horizontally"
 msgstr ""
 
-#: FForm.form:345
+#: FForm.form:346
 msgid "Center vertically"
 msgstr ""
 
-#: FForm.form:351
+#: FForm.form:352
 msgid "Alignment"
 msgstr "Ευθυγράμμιση"
 
-#: FForm.form:355
+#: FForm.form:356
 msgid "Align to left"
 msgstr "Ευθυγράμμιση αριστερά"
 
-#: FForm.form:361
+#: FForm.form:362
 msgid "Align to right"
 msgstr "Ευθυγράμμιση δεξιά"
 
-#: FForm.form:367
+#: FForm.form:368
 msgid "Align to top"
 msgstr "Ευθυγράμμιση πάνω"
 
-#: FForm.form:373
+#: FForm.form:374
 msgid "Align to bottom"
 msgstr "Ευθυγράμμιση κάτω"
 
-#: FForm.form:382
+#: FForm.form:383
 msgid "Same width"
 msgstr "Ίδιο πλάτος"
 
-#: FForm.form:388
+#: FForm.form:389
 msgid "Same height"
 msgstr "Ίδιο ύψος"
 
-#: FForm.form:398 FMenu.form:63
+#: FForm.form:399 FMenu.form:63
 msgid "Menu editor"
 msgstr "Επεξεργαστής μενού"
 
-#: FForm.form:452 FTextEditor.form:284
+#: FForm.form:453 FTextEditor.form:301
 msgid "Code"
 msgstr "Κώδικας"
 
-#: FForm.form:459
+#: FForm.form:460
 msgid "Lock form"
 msgstr "Κλείδωσε τη φόρμα"
 
-#: FForm.form:528
+#: FForm.form:537
 msgid "Toggle grid"
 msgstr "Εναλλαγή πλέγματος"
 
-#: FForm.form:647
+#: FForm.form:656
 msgid "Move tab first"
 msgstr "Μετακίνηση στηλοθέτη πρώτο"
 
-#: FForm.form:654
+#: FForm.form:663
 msgid "Move tab left"
 msgstr "Μετακίνηση στηλοθέτη αριστερά"
 
-#: FForm.form:661
+#: FForm.form:670
 msgid "Move tab right"
 msgstr "Μετακίνηση στηλοθέτη δεξιά"
 
-#: FForm.form:668
+#: FForm.form:677
 msgid "Move tab last"
 msgstr "Μετακίνηση στηλοθέτη τελευταίο"
 
-#: FForm.form:686 FOption.form:225
+#: FForm.form:696 FOption.form:214
 msgid "Bold"
 msgstr "Έντονα "
 
-#: FForm.form:693 FOption.form:229
+#: FForm.form:704 FOption.form:218
 msgid "Italic"
 msgstr "Πλάγια"
 
-#: FForm.form:700 FOption.form:233
+#: FForm.form:712 FOption.form:222
 msgid "Underline"
 msgstr "Υπογράμμιση"
 
-#: FForm.form:707
+#: FForm.form:720
 msgid "Bigger font"
 msgstr ""
 
-#: FForm.form:714
+#: FForm.form:728
 msgid "Smaller font"
 msgstr ""
 
-#: FForm.form:721 FOption.form:261
+#: FForm.form:736 FOption.form:250
 msgid "Default font"
 msgstr ""
 
-#: FForm.form:728 FOption.form:577 MTheme.module:6
+#: FForm.form:744 FOption.form:541 MTheme.module:6
 msgid "Background"
 msgstr "Υποβαθρο"
 
-#: FForm.form:735
+#: FForm.form:752
 msgid "Foreground"
 msgstr ""
 
-#: FFormStack.form:15 FMain.form:1477
+#: FFormStack.form:15 FMain.form:1557
 msgid "Hierarchy"
 msgstr "Ιεραρχία"
 
@@ -1911,19 +1935,19 @@ msgstr "Μετακίνηση κάτω"
 msgid "Move bottom"
 msgstr "Μετακίνηση στο κάτω μέρος"
 
-#: FHelpBrowser.class:24 FProjectProperty.form:409
+#: FHelpBrowser.class:24 FProjectProperty.form:442
 msgid "Default language"
 msgstr "Προκαθορισμένη γλώσσα"
 
-#: FHelpBrowser.form:30 FMain.form:925
+#: FHelpBrowser.form:30 FMain.form:996
 msgid "Help browser"
 msgstr "Πλοηγός βοήθειας"
 
-#: FHelpBrowser.form:41 FMain.form:546 FProfile.form:48
+#: FHelpBrowser.form:41 FMain.form:601 FProfile.form:48
 msgid "Go back"
 msgstr "Πήγαινε πίσω"
 
-#: FHelpBrowser.form:47 FMain.form:553 FProfile.form:54
+#: FHelpBrowser.form:47 FMain.form:608 FProfile.form:54
 msgid "Go forward"
 msgstr "Μετάβαση εμπρός"
 
@@ -1931,11 +1955,11 @@ msgstr "Μετάβαση εμπρός"
 msgid "Show help tree"
 msgstr ""
 
-#: FHelpBrowser.form:85 FImageEditor.form:286
+#: FHelpBrowser.form:85 FImageEditor.form:293
 msgid "Zoom in"
 msgstr "Σμίκρυνση"
 
-#: FHelpBrowser.form:91 FImageEditor.form:294
+#: FHelpBrowser.form:91 FImageEditor.form:301
 msgid "Zoom out"
 msgstr "Μεγένθυση"
 
@@ -1947,140 +1971,152 @@ msgstr ""
 msgid "Print"
 msgstr "Εκτύπωση"
 
-#: FHelpBrowser.form:123
+#: FHelpBrowser.form:124
 msgid "Modify documentation"
 msgstr ""
 
-#: FImageEditor.form:154
+#: FHelpShortcut.form:11
+msgid "IDE keyboard shortcuts"
+msgstr ""
+
+#: FHelpShortcut.form:26
+msgid "Debugger"
+msgstr ""
+
+#: FHelpShortcut.form:28 FProjectProperty.form:414 FTranslate.form:107
+msgid "Translation"
+msgstr "Μετάφραση"
+
+#: FImageEditor.form:157
 msgid "Hide selection"
 msgstr ""
 
-#: FImageEditor.form:159 MTheme.module:6
+#: FImageEditor.form:163 MTheme.module:6
 msgid "Selection"
 msgstr "Επιλογή"
 
-#: FImageEditor.form:164
+#: FImageEditor.form:168
 msgid "Invert selection"
 msgstr ""
 
-#: FImageEditor.form:172
+#: FImageEditor.form:176
 msgid "Duplicate selection"
 msgstr ""
 
-#: FImageEditor.form:180 FImageOffsetSelection.form:12
+#: FImageEditor.form:184 FImageOffsetSelection.form:12
 msgid "Offset selection"
 msgstr ""
 
-#: FImageEditor.form:187
+#: FImageEditor.form:191
 msgid "Shape grid"
 msgstr ""
 
-#: FImageEditor.form:225
+#: FImageEditor.form:229
 msgid "Action"
 msgstr ""
 
-#: FImageEditor.form:230
+#: FImageEditor.form:234
 msgid "Crop"
 msgstr ""
 
-#: FImageEditor.form:238 FImageProperty.form:279
+#: FImageEditor.form:242 FImageProperty.form:294
 msgid "Horizontal flip"
 msgstr "Οριζόντια αναστροφή"
 
-#: FImageEditor.form:245 FImageProperty.form:273
+#: FImageEditor.form:249 FImageProperty.form:288
 msgid "Vertical flip"
 msgstr "Κάθετη εναλλαγή"
 
-#: FImageEditor.form:252 FImageProperty.form:267
+#: FImageEditor.form:256 FImageProperty.form:282
 msgid "Rotate counter-clockwise"
 msgstr "Περιστρόφή αριστερόστροφα"
 
-#: FImageEditor.form:260 FImageProperty.form:261
+#: FImageEditor.form:264 FImageProperty.form:276
 msgid "Rotate clockwise"
 msgstr "Περιστροφή δεξιόστροφα"
 
-#: FImageEditor.form:268
+#: FImageEditor.form:275
 msgid "Resize"
 msgstr ""
 
-#: FImageEditor.form:275
+#: FImageEditor.form:282
 msgid "Rotate"
 msgstr ""
 
-#: FImageEditor.form:302
+#: FImageEditor.form:309
 msgid "Zoom normal"
 msgstr ""
 
-#: FImageEditor.form:310
+#: FImageEditor.form:317
 msgid "Zoom fit"
 msgstr ""
 
-#: FImageEditor.form:345
+#: FImageEditor.form:352
 msgid "Save as JPEG"
 msgstr ""
 
-#: FImageEditor.form:351
+#: FImageEditor.form:358
 msgid "Save as PNG"
 msgstr ""
 
-#: FImageEditor.form:357
+#: FImageEditor.form:364
 msgid "Save as BMP"
 msgstr ""
 
-#: FImageEditor.form:364
+#: FImageEditor.form:371
 msgid "Save as TIFF"
 msgstr ""
 
-#: FImageEditor.form:371
+#: FImageEditor.form:378
 msgid "Image editor"
 msgstr ""
 
-#: FImageEditor.form:473
+#: FImageEditor.form:452
 msgid "Drawing grid"
 msgstr ""
 
-#: FImageEditor.form:488
-msgid "Move"
-msgstr ""
-
-#: FImageEditor.form:499
-msgid "Draw"
-msgstr "Σχεδίαση"
-
-#: FImageEditor.form:509
-msgid "Erase"
-msgstr ""
-
-#: FImageEditor.form:533
-msgid "Rectangle"
-msgstr "Ορθογώνιο"
-
-#: FImageEditor.form:543
-msgid "Ellipse"
-msgstr "Έλλειψη"
-
-#: FImageEditor.form:553
-msgid "Magic wand"
-msgstr ""
-
-#: FImageEditor.form:563
-msgid "Edit selection"
-msgstr ""
-
-#: FImageEditor.form:596
-msgid "Stroke"
-msgstr ""
-
-#: FImageEditor.form:603
-msgid "Fill"
-msgstr ""
-
-#: FImageEditor.form:659
+#: FImageEditor.form:462
 msgid "Resize or stretch image"
 msgstr ""
 
-#: FImageEditor.form:668 FImageRotate.form:11
+#: FImageEditor.form:472 FImageRotate.form:11
 msgid "Rotate image"
+msgstr ""
+
+#: FImageEditor.form:515
+msgid "Move"
+msgstr ""
+
+#: FImageEditor.form:526
+msgid "Draw"
+msgstr "Σχεδίαση"
+
+#: FImageEditor.form:536
+msgid "Erase"
+msgstr ""
+
+#: FImageEditor.form:556
+msgid "Rectangle"
+msgstr "Ορθογώνιο"
+
+#: FImageEditor.form:566
+msgid "Ellipse"
+msgstr "Έλλειψη"
+
+#: FImageEditor.form:586
+msgid "Magic wand"
+msgstr ""
+
+#: FImageEditor.form:596
+msgid "Edit selection"
+msgstr ""
+
+#: FImageEditor.form:640
+msgid "Stroke"
+msgstr ""
+
+#: FImageEditor.form:647
+msgid "Fill"
 msgstr ""
 
 #: FImageOffsetSelection.form:22 FImageResize.form:127
@@ -2091,135 +2127,167 @@ msgstr "-"
 msgid "Duplicate"
 msgstr ""
 
-#: FImageProperty.class:795
+#: FImageProperty.class:792
 msgid "System clipboard"
 msgstr ""
 
-#: FImageProperty.class:1221
+#: FImageProperty.class:1249
 msgid "Arrow"
 msgstr ""
 
-#: FImageProperty.class:1222
+#: FImageProperty.class:1250
 msgid "Arrow #2"
 msgstr ""
 
-#: FImageProperty.class:1223
+#: FImageProperty.class:1251
 msgid "Triangle"
 msgstr ""
 
-#: FImageProperty.class:1224
+#: FImageProperty.class:1252
 msgid "Square triangle"
 msgstr ""
 
-#: FImageProperty.class:1225
+#: FImageProperty.class:1253
 msgid "Pentagon"
 msgstr ""
 
-#: FImageProperty.class:1226
+#: FImageProperty.class:1254
 msgid "Hexagon"
 msgstr ""
 
-#: FImageProperty.form:116 FReportBrushChooser.form:49
+#: FImageProperty.form:131 FReportBrushChooser.form:49
 msgid "Color"
 msgstr "Χρώμα"
 
-#: FImageProperty.form:147
+#: FImageProperty.form:162
 msgid "Gradient"
 msgstr ""
 
-#: FImageProperty.form:163 FReportBrushChooser.form:49
+#: FImageProperty.form:178 FReportBrushChooser.form:49
 msgid "Linear gradient"
 msgstr ""
 
-#: FImageProperty.form:170 FReportBrushChooser.form:49
+#: FImageProperty.form:185 FReportBrushChooser.form:49
 msgid "Radial gradient"
 msgstr ""
 
-#: FImageProperty.form:194 FReportBrushChooser.form:111
+#: FImageProperty.form:209 FReportBrushChooser.form:111
 msgid "Add gradient stop"
 msgstr ""
 
-#: FImageProperty.form:200 FReportBrushChooser.form:117
+#: FImageProperty.form:215 FReportBrushChooser.form:117
 msgid "Remove gradient stop"
 msgstr ""
 
-#: FImageProperty.form:206 FReportBrushChooser.form:123
+#: FImageProperty.form:221 FReportBrushChooser.form:123
 msgid "Select gradient stop color..."
 msgstr ""
 
-#: FImageProperty.form:212 FReportBrushChooser.form:129
+#: FImageProperty.form:227 FReportBrushChooser.form:129
 msgid "Invert gradient"
 msgstr ""
 
-#: FImageProperty.form:234 FReportBrushChooser.form:145
+#: FImageProperty.form:249 FReportBrushChooser.form:145
 msgid "Radius"
 msgstr "Ακτίνα"
 
-#: FImageProperty.form:301
+#: FImageProperty.form:316
 msgid "Clipboard"
 msgstr ""
 
-#: FImageProperty.form:313
+#: FImageProperty.form:328
 msgid "Shapes"
 msgstr ""
 
-#: FImageProperty.form:341
+#: FImageProperty.form:356
 msgid "Opacity"
 msgstr ""
 
-#: FTranslate.class:70
+#: FImageProperty.form:375 FSelectIcon.form:54 FTranslate.class:70
 msgid "Size"
 msgstr "Μέγεθος"
 
-#: FImageProperty.form:377
+#: FImageProperty.form:392
 msgid "Tolerance"
 msgstr ""
 
-#: FImageProperty.form:405
+#: FImageProperty.form:419
+msgid "Effects"
+msgstr ""
+
+#: FImageProperty.form:429
 msgid "Brightness"
 msgstr ""
 
-#: FImageProperty.form:423
+#: FImageProperty.form:447
 msgid "Contrast"
 msgstr ""
 
-#: FImageProperty.form:441
+#: FImageProperty.form:465
 msgid "Gamma"
 msgstr ""
 
-#: FImageProperty.form:459
+#: FImageProperty.form:483
 msgid "Lightness"
 msgstr ""
 
-#: FImageProperty.form:477
+#: FImageProperty.form:501
 msgid "Hue"
 msgstr ""
 
-#: FImageProperty.form:495
+#: FImageProperty.form:519
 msgid "Saturation"
 msgstr ""
 
-#: FImageProperty.form:513
+#: FImageProperty.form:537
 msgid "Blur"
 msgstr ""
 
-#: FImageProperty.form:535 FImportTable.form:187
+#: FImageProperty.form:559 FImportTable.form:187
 msgid "Preview"
 msgstr "Προεπισκόπηση"
 
-#: FImageProperty.form:547 FOption.form:999 FProjectProperty.form:656
+#: FImageProperty.form:571 FOption.form:1113 FProjectProperty.form:706
 msgid "Reset"
 msgstr "Μηδενισμός"
 
-#: FImageProperty.form:554 FMain.form:356 FPatch.form:86
+#: FImageProperty.form:578 FMain.form:368 FPatch.form:86
 msgid "Apply"
 msgstr ""
 
-#: FImageProperty.form:572
+#: FImageProperty.form:604
+msgid "Centered"
+msgstr ""
+
+#: FImageProperty.form:613
+msgid "Right align"
+msgstr ""
+
+#: FImageProperty.form:622
+msgid "Left align"
+msgstr ""
+
+#: FImageProperty.form:636
+msgid "Top align"
+msgstr ""
+
+#: FImageProperty.form:646
+msgid "Middle align"
+msgstr ""
+
+#: FImageProperty.form:655
+msgid "Baseline align"
+msgstr ""
+
+#: FImageProperty.form:664
+msgid "Bottom align"
+msgstr ""
+
+#: FImageProperty.form:696
 msgid "Grid resolution"
 msgstr ""
 
-#: FImageProperty.form:586
+#: FImageProperty.form:710
 msgid "Subdivision"
 msgstr ""
 
@@ -2339,70 +2407,6 @@ msgstr "Πεδία κλειδίου"
 msgid "Messages"
 msgstr "Μηνύματα"
 
-#: FInfo.class:11
-msgid "&1: &2"
-msgstr "-"
-
-#: FInfo.class:65
-msgid "Gambas project"
-msgstr "Gambas έργο"
-
-#: FInfo.class:69
-msgid "Lines of code: &1"
-msgstr ""
-
-#: FInfo.class:85
-msgid "UTF-8 &1"
-msgstr ""
-
-#: FInfo.class:93
-msgid "UTF-8 Gambas module"
-msgstr ""
-
-#: FInfo.class:97
-msgid "UTF-8 Gambas class"
-msgstr ""
-
-#: FInfo.class:99
-msgid "Picture"
-msgstr "Εικόνα"
-
-#: FInfo.class:101
-msgid "Text file"
-msgstr "Αρχείο κειμένου"
-
-#: FInfo.class:107
-msgid "CSS file"
-msgstr "Αρχείο CSS"
-
-#: FInfo.class:110
-msgid "XML file"
-msgstr "Αρχείο XML"
-
-#: FInfo.class:117
-msgid "ChangeLog"
-msgstr "ΗμερολόγιοΑλλαγών"
-
-#: FInfo.class:144
-msgid "&1, &2 line(s)"
-msgstr "&1, &2 γραμμή(ές)"
-
-#: FInfo.form:60 FProjectProperty.form:171 FPropertyComponent.form:58
-msgid "General"
-msgstr "Γενικά"
-
-#: FInfo.form:71
-msgid "Link to"
-msgstr "Σύνδεση με"
-
-#: FInfo.form:110
-msgid "Last modified"
-msgstr "Τελευταία τροποιημένο"
-
-#: FInfo.form:123 FMain.form:636
-msgid "Directory"
-msgstr "Κατάλογος"
-
 #: FList.class:103
 msgid "Item &1"
 msgstr "Αντικείμενο &1"
@@ -2415,7 +2419,7 @@ msgstr "Θέλεις πράγματι να καθαρίσεις τη λιστα;
 msgid "Edit list property"
 msgstr "Ιδιότητα επεξεργασίας λίστας"
 
-#: FList.form:58 FMenu.form:80 FProjectProperty.form:510
+#: FList.form:58 FMenu.form:80 FProjectProperty.form:560
 msgid "Insert"
 msgstr ""
 
@@ -2439,391 +2443,431 @@ msgstr "Δεν μπορεί να γίνει η διαγραφή αρχείου �
 msgid "File or directory does not exist anymore."
 msgstr ""
 
-#: FMain.class:613
+#: FMain.class:638
 msgid "Sort history"
 msgstr ""
 
-#: FMain.class:617 FOpenProject.form:71 FWelcome.form:42
+#: FMain.class:642 FOpenProject.form:71 FWelcome.form:42
 msgid "Sort by date"
 msgstr ""
 
-#: FMain.class:617 FOpenProject.form:80 FWelcome.form:49
+#: FMain.class:642 FOpenProject.form:80 FWelcome.form:49
 msgid "Sort by name"
 msgstr ""
 
-#: FMain.class:617 FOpenProject.form:88 FWelcome.form:55
+#: FMain.class:642 FOpenProject.form:88 FWelcome.form:55
 msgid "Sort by path"
 msgstr "Ταξινόμηση στο μονοπάτι"
 
-#: FMain.class:628
+#: FMain.class:653
 msgid "&Clear history"
 msgstr "&Καθάρισε το ιστορικό"
 
-#: FMain.class:794
+#: FMain.class:819
 msgid "New folder"
 msgstr "Νέος κατάλογος"
 
-#: FMain.class:865
+#: FMain.class:890
 msgid "The GNU translation tools are not installed on your system.\n\nPlease install them to be able to do the translation."
 msgstr "Τα εργαλεία μετάφρασης GNU δεν είναι εγκατεστημένα στο σύστημά σου.\n\nΕγκαταστήστε τα σας παρακαλούμε για μπορείτενα κάνετε τη μετάφραση."
 
-#: FMain.class:1103 FPropertyComponent.class:232
+#: FMain.class:1128 FPropertyComponent.class:232
 msgid "Library properties"
 msgstr ""
 
-#: FMain.class:1515
+#: FMain.class:1563
 msgid "Unable to drop file into the project."
 msgstr ""
 
-#: FMain.class:1633
+#: FMain.class:1681
 msgid "All backup or generated files will be removed from the project directory."
 msgstr "Όλα τα εφεδρικά αρχεία ή παραγόμενα αρχεία πρέπει να αφαιρεθούν από τον κατάλλογο του εγχειρήματος"
 
-#: FMain.class:1633
+#: FMain.class:1681
 msgid "Clean"
 msgstr "Καθαρισμός"
 
-#: FMain.class:1844
+#: FMain.class:1876
 msgid "To show the menu bar again, hit the following keys:<p><b>&1</b>"
 msgstr ""
 
-#: FMain.class:1946
-msgid "Do you really want to add this file to the repository?"
-msgstr "Θελεις πραγματικά να προσθέσεις το αρχείο αυτό στο αποθετήριο ;"
+#: FMain.class:1990
+msgid "Do you really want to add every file to the repository?"
+msgstr ""
 
-#: FMain.class:2085
+#: FMain.class:2126
 msgid "Choose a profile"
 msgstr ""
 
-#: FMain.class:2086
+#: FMain.class:2127
 msgid "Profile for &1 project"
 msgstr ""
 
-#: FMain.class:2302 FProperty.class:947
+#: FMain.class:2344 FProperty.class:975
 msgid "Select a file"
 msgstr ""
 
-#: FMain.class:2306
+#: FMain.class:2348
 msgid "This file is located inside the project."
 msgstr ""
 
-#: FMain.form:237
+#: FMain.form:249
 msgid "Open project"
 msgstr "Άνοιγμα έργου"
 
-#: FMain.form:243
+#: FMain.form:255
 msgid "Open recent"
 msgstr "Άνοιξε πρόσφατο"
 
-#: FMain.form:250
+#: FMain.form:262
 msgid "Open example"
 msgstr "Άνοιξε παράδειγμα"
 
-#: FMain.form:258
+#: FMain.form:270
 msgid "Open file"
 msgstr ""
 
-#: FMain.form:266
+#: FMain.form:278
 msgid "Save project"
 msgstr "Αποθήκευση έργου"
 
-#: FMain.form:274 FSaveProjectAs.form:18
+#: FMain.form:286 FSaveProjectAs.form:18
 msgid "Save project as"
 msgstr "Αποθήκευση έργου ως"
 
-#: FMain.form:285 FMakeInstall.class:306 FSave.class:28 FWelcome.class:58
+#: FMain.form:297 FMakeInstall.class:306 FSave.class:28 FWelcome.class:58
 msgid "Quit"
 msgstr "Τερματισμός"
 
-#: FMain.form:297
+#: FMain.form:309
 msgid "Compile"
 msgstr "Μεταγλώττισε"
 
-#: FMain.form:304
+#: FMain.form:316
 msgid "Compile All"
 msgstr "Μεταγλώττισε τα όλα"
 
-#: FMain.form:314
+#: FMain.form:326
 msgid "Translate"
 msgstr "Μετάφραση"
 
-#: FMain.form:323
+#: FMain.form:335
 msgid "Make"
 msgstr "Δημιούργησε"
 
-#: FMain.form:327
+#: FMain.form:339
 msgid "Executable"
 msgstr "Εκτελέσιμο"
 
-#: FMain.form:334 FMakePatch.form:50
+#: FMain.form:346 FMakePatch.form:50
 msgid "Source archive"
 msgstr "Πηγαία αρχειοθήκη"
 
-#: FMain.form:341
+#: FMain.form:353
 msgid "Installation package"
 msgstr "Εγκατάσταση πακέτου"
 
-#: FMain.form:348
+#: FMain.form:360
 msgid "Patch"
 msgstr ""
 
-#: FMain.form:351
+#: FMain.form:363
 msgid "Create"
 msgstr ""
 
-#: FMain.form:366 FProjectVersion.form:95
+#: FMain.form:378 FProjectVersion.form:95
 msgid "Clean up"
 msgstr "Καθαρισμός"
 
-#: FMain.form:372
+#: FMain.form:384
 msgid "Refresh"
 msgstr "Ανανέωση"
 
-#: FMain.form:378
+#: FMain.form:390
 msgid "Put on version control"
 msgstr ""
 
-#: FMain.form:395 FPropertyComponent.form:44
+#: FMain.form:407 FPropertyComponent.form:44
 msgid "Component properties"
 msgstr ""
 
-#: FMain.form:403
+#: FMain.form:415
 msgid "Version control"
 msgstr ""
 
-#: FMain.form:414
+#: FMain.form:426
 msgid "Run"
 msgstr "Εκτέλεση"
 
-#: FMain.form:421
+#: FMain.form:433
 msgid "Use terminal emulator"
 msgstr ""
 
-#: FMain.form:427 FProjectProperty.form:470
+#: FMain.form:439 FProjectProperty.form:502
+msgid "Redirect standard error output"
+msgstr ""
+
+#: FMain.form:445 FProjectProperty.form:520
 msgid "Use embedded HTTP server"
 msgstr ""
 
-#: FMain.form:433 FProjectProperty.form:435
+#: FMain.form:451 FProjectProperty.form:468
 msgid "Activate profiling"
 msgstr ""
 
-#: FMain.form:442
+#: FMain.form:457
+msgid "GUI component"
+msgstr ""
+
+#: FMain.form:461
+msgid "Current desktop"
+msgstr ""
+
+#: FMain.form:491
 msgid "Pause"
 msgstr "Παύση"
 
-#: FMain.form:449
+#: FMain.form:498
 msgid "Stop"
 msgstr "Σταμάτημα"
 
-#: FMain.form:456
+#: FMain.form:505
 msgid "Step"
 msgstr "Βήμα"
 
-#: FMain.form:463
+#: FMain.form:512
 msgid "Forward"
 msgstr "Μπροστά"
 
-#: FMain.form:470
+#: FMain.form:519
 msgid "Finish"
 msgstr "Τερματισμός"
 
-#: FMain.form:480
+#: FMain.form:525
+msgid "Break on each error"
+msgstr ""
+
+#: FMain.form:535
 msgid "Open profile"
 msgstr ""
 
-#: FMain.form:486
+#: FMain.form:541
 msgid "Clear all breakpoints"
 msgstr "Καθάρισε όλα τα σημεία διακοπής"
 
-#: FMain.form:491
+#: FMain.form:546
 msgid "Close all debug windows"
 msgstr "Κλείσε όλα τα παράθυρα αποσφαλμάτωσης"
 
-#: FMain.form:529
+#: FMain.form:584
 msgid "Status bar"
 msgstr "Γραμμή κατάστασης"
 
-#: FMain.form:537
+#: FMain.form:592
 msgid "Hide menubar"
 msgstr "Απόκρυψη γραμμής μενού"
 
-#: FMain.form:560
+#: FMain.form:615
 msgid "Close all windows"
 msgstr "Κλείσε όλα τα παράθυρα"
 
-#: FMain.form:566
+#: FMain.form:621
 msgid "Tools"
 msgstr ""
 
-#: FMain.form:570
+#: FMain.form:625
 msgid "Find"
 msgstr "Αναζήτηση"
 
-#: FMain.form:576 FSearch.form:76
+#: FMain.form:631 FSearch.form:76
 msgid "Replace"
 msgstr "Αντικατάσταση"
 
-#: FMain.form:586
+#: FMain.form:641
 msgid "Browse project"
 msgstr "Πλοήγηση στο έργο"
 
-#: FMain.form:593
+#: FMain.form:648
 msgid "Open a terminal"
 msgstr "Ανοιξε τερματικό"
 
-#: FMain.form:600
+#: FMain.form:655
 msgid "Send project by mail"
 msgstr ""
 
-#: FMain.form:606
+#: FMain.form:661
 msgid "Update all forms"
 msgstr ""
 
-#: FMain.form:615
+#: FMain.form:670 FOption.form:732
 msgid "Shortcuts"
 msgstr "Συντομεύσεις"
 
-#: FMain.form:621 FOption.form:203
+#: FMain.form:676 FOption.form:192
 msgid "Preferences"
 msgstr "Προτιμήσεις"
 
-#: FMain.form:642
+#: FMain.form:690
+msgid "Directory"
+msgstr "Κατάλογος"
+
+#: FMain.form:695
 msgid "Project link"
 msgstr ""
 
-#: FMain.form:725
+#: FMain.form:772
 msgid "Other"
 msgstr "Άλλα"
 
-#: FMain.form:744
+#: FMain.form:791
 msgid "Open with"
 msgstr ""
 
-#: FMain.form:752
+#: FMain.form:799
 msgid "Compress all"
 msgstr ""
 
-#: FMain.form:758
+#: FMain.form:805
 msgid "Uncompress all"
 msgstr ""
 
-#: FMain.form:805
+#: FMain.form:852
 msgid "Copy file path"
 msgstr "Αντιγραφή αρχείου επιρράματος (patch)"
 
-#: FMain.form:823
+#: FMain.form:861
+msgid "Startup class"
+msgstr "Κλάση Εκκίνησης"
+
+#: FMain.form:870
 msgid "Add to repository"
 msgstr "Προσθήκη στο αποθετήριο"
 
-#: FMain.form:848 FNewConnection.class:143
-msgid "New connection"
-msgstr "Νέα σύνδεση"
-
-#: FMain.form:916
-msgid "?"
+#: FMain.form:875
+msgid "Filter"
 msgstr ""
 
-#: FMain.form:933 FTips.form:18
-msgid "Tips of the day"
-msgstr "Συμβουλές της ημέρας"
-
-#: FMain.form:941
-msgid "System informations"
-msgstr ""
-
-#: FMain.form:947
-msgid "About Gambas"
-msgstr "Σχετικά με το Gambas"
-
-#: FMain.form:961
+#: FMain.form:878
 msgid "Show exported classes"
 msgstr ""
 
-#: FMain.form:966
+#: FMain.form:883
 msgid "Show added files"
 msgstr ""
 
-#: FMain.form:972
+#: FMain.form:888
+msgid "Show files in conflict"
+msgstr ""
+
+#: FMain.form:897
 msgid "Show all"
 msgstr ""
 
-#: FMain.form:1018 FProjectProperty.form:116
+#: FMain.form:903
+msgid "Add everything to repository"
+msgstr ""
+
+#: FMain.form:919 FNewConnection.class:143
+msgid "New connection"
+msgstr "Νέα σύνδεση"
+
+#: FMain.form:987 FOutput.form:203
+msgid "?"
+msgstr ""
+
+#: FMain.form:1004 FTips.form:18
+msgid "Tips of the day"
+msgstr "Συμβουλές της ημέρας"
+
+#: FMain.form:1010
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: FMain.form:1019
+msgid "System informations"
+msgstr ""
+
+#: FMain.form:1025
+msgid "About Gambas"
+msgstr "Σχετικά με το Gambas"
+
+#: FMain.form:1077 FProjectProperty.form:125
 msgid "Project properties"
 msgstr "Ιδιότητες έργου"
 
-#: FMain.form:1025
+#: FMain.form:1084
 msgid "Project version control"
 msgstr ""
 
-#: FMain.form:1039
+#: FMain.form:1098
 msgid "Refresh project"
 msgstr "Ανανέωση έργου"
 
-#: FMain.form:1066 FMakeExecutable.form:15
+#: FMain.form:1125 FMakeExecutable.form:15
 msgid "Make executable"
 msgstr "Δημιούργησε εκτελέσιμο"
 
-#: FMain.form:1081
+#: FMain.form:1140
 msgid "Make source archive"
 msgstr "Δημιούργησε πηγαία αρχειοθήκη"
 
-#: FMain.form:1089 FMakeInstall.form:112
+#: FMain.form:1148 FMakeInstall.form:112
 msgid "Make installation package"
 msgstr "Δημιούργησε πακέτο εγκατάστασης"
 
-#: FMain.form:1111
+#: FMain.form:1170
 msgid "Properties sheet"
 msgstr "Φύλλο ιδιοτήτων"
 
-#: FMain.form:1120
+#: FMain.form:1179
 msgid "Toolbox"
 msgstr "Εργαλειοθήκη"
 
-#: FMain.form:1138 FOutput.form:151 FSearch.form:62
+#: FMain.form:1197 FOutput.form:165 FSearch.form:62
 msgid "Search"
 msgstr "Αναζήτηση"
 
-#: FMain.form:1162
+#: FMain.form:1221
 msgid "Compile all"
 msgstr "Μεταγλώττισε τα όλα"
 
-#: FMain.form:1204
+#: FMain.form:1263
 msgid "Finish current function"
 msgstr "Τερματισμός τρέχουσας συνάρτησης"
 
-#: FMain.form:1223
+#: FMain.form:1291
 msgid "Browse project..."
 msgstr ""
 
-#: FMain.form:1274
+#: FMain.form:1342
 msgid "&File"
 msgstr "&Αρχείο"
 
-#: FMain.form:1285
+#: FMain.form:1353
 msgid "&Project"
 msgstr "&Εργο"
 
-#: FMain.form:1296
+#: FMain.form:1364
 msgid "&Debug"
 msgstr "Απο&σφαλμάτωση"
 
-#: FMain.form:1307
+#: FMain.form:1375
 msgid "&View"
 msgstr "&Προβολή"
 
-#: FMain.form:1318
+#: FMain.form:1386
 msgid "&Tools"
 msgstr "Ερ&γαλεία"
 
-#: FMain.form:1329
+#: FMain.form:1397
 msgid "&?"
 msgstr "-"
 
-#: FMain.form:1376 FProjectProperty.form:607
+#: FMain.form:1456 FProjectProperty.form:657
 msgid "Reset filter"
 msgstr ""
 
-#: FMakeExecutable.class:18 FProjectProperty.class:1100
+#: FMakeExecutable.class:18 FProjectProperty.class:1103
 msgid "Gambas applications"
 msgstr "Gambas εφαρμογές"
 
@@ -2947,7 +2991,7 @@ msgstr "Πληροφορίες πακέτου"
 msgid "Package name"
 msgstr "Όνομα πακέτου"
 
-#: FMakeInstall.form:151 FOption.form:1120
+#: FMakeInstall.form:151 FOption.form:1059
 msgid "Prefix package name with the vendor name"
 msgstr "Πρόσθεσε στο όνομα πακέτου πρόθεμα με το όνομα του πωλητή"
 
@@ -2959,19 +3003,19 @@ msgstr ""
 msgid "Maintainer information"
 msgstr "Πληροφορίες συντηρητή"
 
-#: FMakeInstall.form:200 FOption.form:1070
+#: FMakeInstall.form:200 FOption.form:1009
 msgid "E-mail"
 msgstr ""
 
-#: FMakeInstall.form:216 FOption.form:1054
+#: FMakeInstall.form:216 FOption.form:993
 msgid "Vendor name"
 msgstr "Όνομα πωλητή"
 
-#: FMakeInstall.form:232 FOption.form:1104
+#: FMakeInstall.form:232 FOption.form:1043
 msgid "URL"
 msgstr "URL"
 
-#: FMakeInstall.form:269 FOption.form:1086
+#: FMakeInstall.form:269 FOption.form:1025
 msgid "License"
 msgstr ""
 
@@ -3071,19 +3115,19 @@ msgstr "Όλη η αναγκαία πληροφορία έχει συλλεχθ�
 msgid "Please select the origin archive."
 msgstr ""
 
-#: FMakePatch.class:31
+#: FMakePatch.class:32
 msgid "Please select the origin project."
 msgstr ""
 
-#: FMakePatch.class:47
+#: FMakePatch.class:49
 msgid "Please enter the patch file name."
 msgstr ""
 
-#: FMakePatch.class:61
+#: FMakePatch.class:66
 msgid "Patch has been successfully generated."
 msgstr ""
 
-#: FMakePatch.class:66
+#: FMakePatch.class:71
 msgid "Unable to generate the patch."
 msgstr ""
 
@@ -3119,7 +3163,7 @@ msgstr ""
 msgid "*.gz;*.bz2;*.xz"
 msgstr ""
 
-#: FMakePatch.form:89 Project.module:4394
+#: FMakePatch.form:89 Project.module:4418
 msgid "Source packages"
 msgstr "Πακέτα πηγαίου κώδικα"
 
@@ -3135,7 +3179,7 @@ msgstr ""
 msgid "*.patch;*.diff"
 msgstr ""
 
-#: FMakePatch.form:107 FPatch.class:163
+#: FMakePatch.form:107 FPatch.class:164
 msgid "Patch/Diff files"
 msgstr ""
 
@@ -3163,7 +3207,7 @@ msgstr "Κακό όνομα ομάδας !"
 msgid "This menu is too deep !"
 msgstr "Αυτό το μενού είναι πολύ βαθύ !"
 
-#: FMenu.class:965 Project.module:5202
+#: FMenu.class:972 Project.module:5289
 msgid "modified"
 msgstr "τροποποιημένο"
 
@@ -3203,15 +3247,15 @@ msgstr "Δημιούργησε βάση δεδομένων '&1'"
 msgid "Delete database '&1'"
 msgstr "Διαγραφή βάσης δεδομένων '&1'"
 
-#: FNewConnection.class:318
+#: FNewConnection.class:325
 msgid "Unable to create database."
 msgstr "Αδυναμία δημιουργίας βάσης δεδομένων."
 
-#: FNewConnection.class:327
+#: FNewConnection.class:334
 msgid "Do you really want to delete the database '&1'?"
 msgstr "Θέλεις πράγματι να διαγράψεις τη βάση δεδομένων '&1';"
 
-#: FNewConnection.class:338
+#: FNewConnection.class:345
 msgid "Unable to delete database."
 msgstr "Αδυναμία διαγραφής βάσης."
 
@@ -3235,7 +3279,7 @@ msgstr "Συνθηματικό"
 msgid "Remember password"
 msgstr "Θυμίσου συνθηματικό"
 
-#: FNewConnection.form:181 Project.module:199
+#: FNewConnection.form:181 Project.module:205
 msgid "Database"
 msgstr "Βάση δεδομένων"
 
@@ -3315,323 +3359,335 @@ msgstr "-"
 msgid "Visual"
 msgstr "Εικονικός"
 
-#: FOption.class:73
+#: FOption.class:75
 msgid "Select a theme"
 msgstr "Επέλεξε ένα θέμα"
 
-#: FOption.class:74
+#: FOption.class:76
 msgid "Desktop"
 msgstr "Επιφάνεια εργασίας"
 
-#: FOption.class:75 FTranslate.class:134
+#: FOption.class:77 FTranslate.class:134
 msgid "(Default)"
 msgstr "(Προκαθορισμένη)"
 
-#: FOption.class:136
+#: FOption.class:140
 msgid "Define..."
 msgstr "Όρισε..."
 
-#: FOption.class:180
+#: FOption.class:182
 msgid "Gambas highlight theme files"
 msgstr "Gambas επισήμανση  αρχείων θεμάτων"
 
-#: FOption.class:181
+#: FOption.class:183
 msgid "Export a theme file"
 msgstr "Εξαγωγή αρχείου θέματος"
 
-#: FOption.class:344
+#: FOption.class:346
 msgid "Select a theme file"
 msgstr "Επέλεξε αρχείο θέματος"
 
-#: FOption.class:367
+#: FOption.class:369
 msgid "You need to restart the application to see your changes."
 msgstr "Πρέπει να επανεκκινήσεις την εφαρμογή για να δείς τις αλλαγές."
 
-#: FOption.class:675
+#: FOption.class:684
 msgid "Do you really want to clear the documentation cache?"
 msgstr ""
 
-#: FOption.class:858
+#: FOption.class:867
 msgid "Do you really want to delete this snippet?"
 msgstr ""
 
-#: FOption.class:1026
+#: FOption.class:1035
 msgid "Do you really want to reset the list to its default value?"
 msgstr ""
 
-#: FOption.class:1113
+#: FOption.class:1122
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr ""
 
-#: FOption.class:1113
+#: FOption.class:1122
 msgid "Install"
 msgstr ""
 
-#: FOption.form:214
+#: FOption.form:203
 msgid "Foreground color"
 msgstr "Χρώμα προσκηνίου"
 
-#: FOption.form:218
+#: FOption.form:207
 msgid "Background color"
 msgstr "Χρώμα υποβάθρου"
 
-#: FOption.form:244
+#: FOption.form:233
 msgid "Interface"
 msgstr "Διασύνδεση"
 
-#: FOption.form:250
+#: FOption.form:239
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
-#: FOption.form:284
+#: FOption.form:273
 msgid "Global size"
 msgstr ""
 
-#: FOption.form:306
+#: FOption.form:295
 msgid "Title size"
 msgstr ""
 
-#: FOption.form:364
+#: FOption.form:353
 msgid "Install Gambas font for code edition"
 msgstr ""
 
-#: FOption.form:371 Project.module:203
+#: FOption.form:360 Project.module:209
 msgid "Miscellaneous"
 msgstr "Διάφορα"
 
-#: FOption.form:382
+#: FOption.form:371
 msgid "Sort properties"
 msgstr "Ταξινόμηση ιδιοτήτων"
 
-#: FOption.form:388 FProjectProperty.form:339 FPropertyComponent.form:97
-msgid "No"
-msgstr "Όχι"
-
-#: FOption.form:388 FProjectProperty.form:339 FPropertyComponent.form:97
-msgid "Yes"
-msgstr "Ναι"
-
-#: FOption.form:404
+#: FOption.form:388
 msgid "Minimize at runtime"
 msgstr "Ελαχιστοποίηση κατά το χρόνο εκτέλεσης"
 
-#: FOption.form:426
+#: FOption.form:405
 msgid "Use utility windows"
 msgstr ""
 
-#: FOption.form:448
+#: FOption.form:422
 msgid "Toolbox size"
 msgstr "Μέγεθος εργαλειοθήκης"
 
-#: FOption.form:454 FProjectProperty.form:209
+#: FOption.form:428 FProjectProperty.form:242
 msgid "Normal"
 msgstr "Κανονικό"
 
-#: FOption.form:454
+#: FOption.form:428
 msgid "Small"
 msgstr "Μικρό"
 
-#: FOption.form:466
+#: FOption.form:440
 msgid "Restore files when loading a project"
 msgstr ""
 
-#: FOption.form:488
+#: FOption.form:457
 msgid "Show tooltips"
 msgstr "Δείξε υποδείξεις"
 
-#: FOption.form:502
+#: FOption.form:466
 msgid "Theme"
 msgstr "Θέμα"
 
-#: FOption.form:519
+#: FOption.form:483
 msgid "Icon theme"
 msgstr "Θέμα εικονιδίων"
 
-#: FOption.form:535
+#: FOption.form:499
 msgid "Color theme"
 msgstr ""
 
-#: FOption.form:549
+#: FOption.form:513
 msgid "Import theme"
 msgstr "Εισαγωγή θέματος"
 
-#: FOption.form:555
+#: FOption.form:519
 msgid "Export theme"
 msgstr "Εξαγωγή θέματος"
 
-#: FOption.form:612
+#: FOption.form:576
 msgid "Default tab size"
 msgstr "Προκαθορισμένο μέγεθος στηλοθέτη"
 
-#: FOption.form:624 FProjectProperty.form:314
+#: FOption.form:588 FProjectProperty.form:347
 msgid "space(s)"
 msgstr "κενό(ά)"
 
-#: FOption.form:636
+#: FOption.form:600
 msgid "Procedure separation"
 msgstr "Διαχωρισμός διαδικασιών"
 
-#: FOption.form:642
+#: FOption.form:606
 msgid "Blend"
 msgstr "Συγχώνευση"
 
-#: FOption.form:642 FProperty.class:750
+#: FOption.form:606 FProperty.class:778
 msgid "None"
 msgstr "Κανένα"
 
-#: FOption.form:654
+#: FOption.form:618
 msgid "Highlight current line"
 msgstr "Επισήμανση τρέχουσας γραμμή"
 
-#: FOption.form:676
+#: FOption.form:635
 msgid "Highlight modified lines"
 msgstr "Επισήμανε τροποποιημένες γραμμές"
 
-#: FOption.form:698
+#: FOption.form:652
 msgid "Show line numbers"
 msgstr "Δείξε αριθμούς γραμμών"
 
-#: FOption.form:720
+#: FOption.form:669
 msgid "Show spaces at end of line with dots"
 msgstr ""
 
-#: FOption.form:742
+#: FOption.form:686
 msgid "Procedure folding"
 msgstr ""
 
-#: FOption.form:764
+#: FOption.form:703
 msgid "Fold procedures by default"
 msgstr "Προκαθορισμένες διαδικασίες αναδίπλωσης"
 
-#: FOption.form:786
+#: FOption.form:720
 msgid "Keywords in upper case"
 msgstr "ΛέξειςΚλειδίου με κεφαλαία"
 
-#: FOption.form:800
+#: FOption.form:742
+msgid "Configure shortcuts"
+msgstr ""
+
+#: FOption.form:747
 msgid "Code formatting"
 msgstr ""
 
-#: FOption.form:806
+#: FOption.form:753
 msgid "Automatic formatting"
 msgstr ""
 
-#: FOption.form:817
+#: FOption.form:764
 msgid "Control structure automatic completion"
 msgstr ""
 
-#: FOption.form:839
+#: FOption.form:781
 msgid "Local variable automatic declaration"
 msgstr ""
 
-#: FOption.form:856
+#: FOption.form:798
+msgid "Comments automatic insertion"
+msgstr ""
+
+#: FOption.form:810
 msgid "Explicit formating"
 msgstr ""
 
-#: FOption.form:867
+#: FOption.form:821
 msgid "Format on load & save"
 msgstr ""
 
-#: FOption.form:889
+#: FOption.form:838
 msgid "Indent local variable declaration"
 msgstr ""
 
-#: FOption.form:911
+#: FOption.form:855
 msgid "Remove useless spaces at end of line"
 msgstr ""
 
-#: FOption.form:933
+#: FOption.form:872
 msgid "Keep successive void lines"
 msgstr ""
 
-#: FOption.form:950
+#: FOption.form:881
 msgid "Code snippets"
 msgstr ""
 
-#: FOption.form:955
+#: FOption.form:898
 msgid "Activate code snippets"
 msgstr ""
 
-#: FOption.form:1021
+#: FOption.form:960
 msgid "Packaging"
 msgstr ""
 
-#: FOption.form:1027
+#: FOption.form:966
 msgid "Default maintainer information"
 msgstr ""
 
-#: FOption.form:1133
+#: FOption.form:1065 FProjectProperty.form:372 FPropertyComponent.form:97
+msgid "No"
+msgstr "Όχι"
+
+#: FOption.form:1065 FProjectProperty.form:372 FPropertyComponent.form:97
+msgid "Yes"
+msgstr "Ναι"
+
+#: FOption.form:1072
 msgid "Source archives"
 msgstr ""
 
-#: FOption.form:1140
+#: FOption.form:1079
 msgid "These files will be ignored when making source archives."
 msgstr ""
 
-#: FOption.form:1180
+#: FOption.form:1119
 msgid "Help & applications"
 msgstr ""
 
-#: FOption.form:1186 MTheme.module:6
+#: FOption.form:1125 MTheme.module:6
 msgid "Help"
 msgstr "Βοήθεια"
 
-#: FOption.form:1197
+#: FOption.form:1136
 msgid "Display property help"
 msgstr "Εμφάνιση βοήθειας ιδιότητας"
 
-#: FOption.form:1219
+#: FOption.form:1157
 msgid "Show documentation in popups"
 msgstr ""
 
-#: FOption.form:1241
+#: FOption.form:1178
 msgid "Always display optional messages"
 msgstr ""
 
-#: FOption.form:1263
+#: FOption.form:1199
 msgid "Clear documentation cache"
 msgstr ""
 
-#: FOption.form:1276 FProxy.form:20
+#: FOption.form:1212 FProxy.form:20
 msgid "Proxy configuration"
 msgstr ""
 
-#: FOption.form:1284
+#: FOption.form:1220
 msgid "Applications"
 msgstr "Εφαρμογές"
 
-#: FOption.form:1295
+#: FOption.form:1231
 msgid "Browser"
 msgstr "Πλοηγός"
 
-#: FOption.form:1312
+#: FOption.form:1248
 msgid "Terminal"
 msgstr "Τερματικό"
 
-#: FOption.form:1329
+#: FOption.form:1265
 msgid "Quiet external commands"
 msgstr "Σιωπηλές εξωτερικές εντολές"
 
-#: FOutput.class:31
-msgid "Welcome to the Gambas console.\nTo evaluate any expression, type '?' followed by\nthe expression, then hit return.\n\n"
-msgstr "Καλώς ορίσατε στη Gambaw κονσόλα\n.Για αποτίμηση οποιασδήποτε έκφρασης, τυπώστε '?' ακολοθούμενο \nαπό την έκφραση,και μετά πατήστε return.\n\n"
-
-#: FOutput.form:30
+#: FOutput.form:35
 msgid "Console - Gambas"
 msgstr "Κονσόλα - Gambas"
 
-#: FOutput.form:108
+#: FOutput.form:113
 msgid "Undock console"
 msgstr "Αποπροσάρτηση κονσόλας"
 
-#: FOutput.form:115
+#: FOutput.form:120
 msgid "Keep above"
 msgstr "Κράτησε τα παραπάνω"
 
-#: FOutput.form:122
+#: FOutput.form:127
 msgid "Clear console"
 msgstr "Καθάρισε τη κονσόλα"
 
-#: FOutput.form:165
+#: FOutput.form:151
+msgid "Entered text echo"
+msgstr ""
+
+#: FOutput.form:153
+msgid "Echo"
+msgstr ""
+
+#: FOutput.form:178
 msgid "Use system charset"
 msgstr "Χρήση σύνολου χαρακτήρων συστήματος "
 
@@ -3663,7 +3719,7 @@ msgstr ""
 msgid "Also copy table data"
 msgstr ""
 
-#: FPatch.class:168
+#: FPatch.class:170
 msgid "That file does not look like a patch file!"
 msgstr ""
 
@@ -3731,175 +3787,147 @@ msgstr "Κληθέντα"
 msgid "Callers"
 msgstr "Κλήσεις"
 
-#: FProjectProperty.class:109
+#: FProjectProperty.class:110
 msgid "Not translatable"
 msgstr "Δεν μεταφράζεται"
 
-#: FProjectProperty.class:137
+#: FProjectProperty.class:138
 msgid "Variable"
 msgstr "Μεταβλητή"
 
-#: FProjectProperty.class:266
+#: FProjectProperty.class:268
 msgid "Snapping value is incorrect."
 msgstr "Η τιμή προσκόλλησης είναι λάθος"
 
-#: FProjectProperty.class:408 Project.module:3338
+#: FProjectProperty.class:410 Project.module:3375
 msgid "Some components are missing: &1"
 msgstr "Λείπουν μερικά στοιχεία: &1"
 
-#: FProjectProperty.class:534
+#: FProjectProperty.class:535
 msgid "These components are incompatible:<br>&1."
 msgstr "Τα στοιχεία είναι ασύμβατα:<br>&1."
 
-#: FProjectProperty.class:547
+#: FProjectProperty.class:548
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr "Το &1 στοιχείο χρειάζεται ένα από τα ακόλουθα στοιχεία:<br>&2."
 
-#: FProjectProperty.class:554
+#: FProjectProperty.class:555
 msgid "The &1 component needs the &2 component."
 msgstr "Το &1 στοιχείο χρειάζεται το &2 στοιχείο. "
 
-#: FProjectProperty.class:1099
+#: FProjectProperty.class:1102
 msgid "Select a Gambas application"
 msgstr ""
 
-#: FProjectProperty.class:1111
+#: FProjectProperty.class:1114
 msgid "<b>&1</b> does not export any class."
 msgstr ""
 
-#: FProjectProperty.class:1119
+#: FProjectProperty.class:1122
 msgid "<b>&1</b> is already used as a library."
 msgstr ""
 
-#: FProjectProperty.class:1269
+#: FProjectProperty.class:1274
 msgid "Stable"
 msgstr ""
 
-#: FProjectProperty.form:125
-msgid "GB_GUI=gb.qt4"
-msgstr ""
+#: FProjectProperty.form:204 FPropertyComponent.form:58
+msgid "General"
+msgstr "Γενικά"
 
-#: FProjectProperty.form:131
-msgid "GB_GUI=gb.gtk"
-msgstr ""
-
-#: FProjectProperty.form:137
-msgid "GB_STOCK_DEBUG=1"
-msgstr ""
-
-#: FProjectProperty.form:143
-msgid "GB_JIT_DEBUG=1"
-msgstr ""
-
-#: FProjectProperty.form:149
-msgid "GB_HTTPD_DEBUG=1"
-msgstr ""
-
-#: FProjectProperty.form:155
-msgid "GB_HTTPD_PORT=8080"
-msgstr ""
-
-#: FProjectProperty.form:161
-msgid "LANG=C ; LC_ALL=C"
-msgstr ""
-
-#: FProjectProperty.form:209
+#: FProjectProperty.form:242
 msgid "Component"
 msgstr "Στοιχείο"
 
-#: FProjectProperty.form:209
+#: FProjectProperty.form:242
 msgid "Library"
 msgstr "Βιβλιοθήκη"
 
-#: FProjectProperty.form:215
+#: FProjectProperty.form:248
 msgid "Version"
 msgstr "Έκδοση"
 
-#: FProjectProperty.form:241
+#: FProjectProperty.form:274
 msgid "Get from 'VERSION' file"
 msgstr ""
 
-#: FProjectProperty.form:248
+#: FProjectProperty.form:281
 msgid "Title"
 msgstr "Τίτλος"
 
-#: FProjectProperty.form:271
+#: FProjectProperty.form:304
 msgid "Author(s)"
 msgstr "Δημιουργός(οι)"
 
-#: FProjectProperty.form:291
+#: FProjectProperty.form:324
 msgid "Edition"
 msgstr "Έκδοση"
 
-#: FProjectProperty.form:302
+#: FProjectProperty.form:335
 msgid "Tab size"
 msgstr "Μέγεθος στηλοθέτη"
 
-#: FProjectProperty.form:322
+#: FProjectProperty.form:355
 msgid "Compilation"
 msgstr "Μεταγλώττιση"
 
-#: FProjectProperty.form:333
+#: FProjectProperty.form:366
 msgid "Module symbols are public by default"
 msgstr "Τα σύμβολα της μονάδας είναι εξ'ορισμού δημόσια."
 
-#: FProjectProperty.form:350
+#: FProjectProperty.form:383
 msgid "Form controls are public"
 msgstr "Οι φόρμες ελέγχου είναι δημόσιεε"
 
-#: FProjectProperty.form:367
+#: FProjectProperty.form:400
 msgid "Activate warnings"
 msgstr ""
 
-#: FProjectProperty.form:381 FTranslate.form:107
-msgid "Translation"
-msgstr "Μετάφραση"
-
-#: FProjectProperty.form:392
+#: FProjectProperty.form:425
 msgid "Project is translatable"
 msgstr "Το έργο είναι μεταφράσιμο"
 
-#: FProjectProperty.form:424
+#: FProjectProperty.form:457
 msgid "Debugging"
 msgstr "Αποσφαλμάτωση σε εξέλιξη"
 
-#: FProjectProperty.form:452
+#: FProjectProperty.form:485
 msgid "Use a terminal emulator"
 msgstr "Χρησιμοποίησε εξομοιωτή τερματικού"
 
-#: FProjectProperty.form:481
+#: FProjectProperty.form:531
 msgid "Environment"
 msgstr "Περιβάλλον"
 
-#: FProjectProperty.form:491
+#: FProjectProperty.form:541
 msgid "Arguments"
 msgstr "Παράμετροι"
 
-#: FProjectProperty.form:544
+#: FProjectProperty.form:594
 msgid "Environment variables"
 msgstr "Μεταβλητές περιβάλλοντος"
 
-#: FProjectProperty.form:563
+#: FProjectProperty.form:613
 msgid "&Insert"
 msgstr "&Εισαγωγή"
 
-#: FProjectProperty.form:576 FPropertyComponent.form:198
+#: FProjectProperty.form:626 FPropertyComponent.form:198
 msgid "Components"
 msgstr "Στοιχεία"
 
-#: FProjectProperty.form:615
+#: FProjectProperty.form:665
 msgid "Show only components used in project"
 msgstr "Δείξε μόνο τα στοιχεία που χρησιμοποιούνται στο έργο"
 
-#: FProjectProperty.form:645
+#: FProjectProperty.form:695
 msgid "About component"
 msgstr "Σχετικά με to αντικείμενο"
 
-#: FProjectProperty.form:677
+#: FProjectProperty.form:727
 msgid "Libraries"
 msgstr "Βιβλιοθήκες"
 
-#: FProjectProperty.form:696
+#: FProjectProperty.form:746
 msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
 msgstr ""
 
@@ -3927,19 +3955,19 @@ msgstr ""
 msgid "The project could not be committed."
 msgstr "Δεν κατέστη δυνατή η υποβολή του έργου."
 
-#: FProjectVersion.class:193
+#: FProjectVersion.class:194
 msgid "Unable to update project from repository."
 msgstr "Αδυναμία ανανέωσης του έργου από το αποθετήριο."
 
-#: FProjectVersion.class:195
+#: FProjectVersion.class:196
 msgid "Project has been updated from repository successfully."
 msgstr "Το έργο ανανεώθηκε με επιτυχία από το αποθετήριο."
 
-#: FProjectVersion.class:277
+#: FProjectVersion.class:282
 msgid "Revision"
 msgstr ""
 
-#: FProjectVersion.class:280 ProjectItem.class:82
+#: FProjectVersion.class:285 ProjectItem.class:82
 msgid "Author"
 msgstr "Δημιουργός"
 
@@ -3979,47 +4007,47 @@ msgstr ""
 msgid "Changes"
 msgstr "Αλλαγές"
 
-#: FProperty.class:355
+#: FProperty.class:367
 msgid "Forbidden characters in control name."
 msgstr "Απογορευμένοι χαρακτήρες στο όνομα ελέγχου."
 
-#: FProperty.class:360
+#: FProperty.class:372
 msgid "This name is already in use."
 msgstr "Το όνομα αυτό χρησιμοποιείται ήδη."
 
-#: FProperty.class:370
+#: FProperty.class:382
 msgid "Forbidden characters in control group."
 msgstr "Απογορευμένοι χαρακτήρες στην ομάδα ελέγχου."
 
-#: FProperty.class:430
+#: FProperty.class:454
 msgid "Incorrect property value."
 msgstr "Λανθασμένη ιδιότητα τιμής"
 
-#: FProperty.class:582
+#: FProperty.class:607
 msgid "The name of the control."
 msgstr "Το όνομα του στοιχείου ελέγχου."
 
-#: FProperty.class:593
+#: FProperty.class:618
 msgid "The event group that the control belongs to."
 msgstr "Η ομάδα συμβάντων στην οποία ανήκει το στοιχείο ελέγχου,"
 
-#: FProperty.class:607
+#: FProperty.class:632
 msgid "If the form and controls dimensions must follow the size of the default font."
 msgstr "Αν οι διαστάσεις της φόρμας και του αντικειμένου ελέγχου πρέπει να ακολουθούν την προκαθορισμένη γραμματοσειρά."
 
-#: FProperty.class:611
+#: FProperty.class:636
 msgid "If the control is public."
 msgstr "Αν το αντικείμενο ελέγχου είναι δημόσιο(public)"
 
-#: FProperty.class:615
+#: FProperty.class:640
 msgid "If the Text property must be translated."
 msgstr ""
 
-#: FProperty.class:636
+#: FProperty.class:661
 msgid "This property is virtual: it is only implemented in the IDE, and has no existence at runtime."
 msgstr ""
 
-#: FProperty.form:47
+#: FProperty.form:48
 msgid "Lock property"
 msgstr "Κλείδωσε την ιδιότητα"
 
@@ -4139,23 +4167,23 @@ msgstr ""
 msgid "New project name"
 msgstr ""
 
-#: FSearch.class:488
+#: FSearch.class:494
 msgid "Search string replaced once."
 msgstr "Αλφαριθμητικό αναζήτησης αντικαταστάθηκε μια φορά."
 
-#: FSearch.class:490
+#: FSearch.class:496
 msgid "Search string replaced &1 times."
 msgstr "Αλφαριθμητικό αναζήτησης αντικαταστάθηκε &1 φορές."
 
-#: FSearch.class:738
+#: FSearch.class:744
 msgid "One match"
 msgstr ""
 
-#: FSearch.class:740
+#: FSearch.class:746
 msgid "&1 matches"
 msgstr ""
 
-#: FSearch.class:869
+#: FSearch.class:875
 msgid "Do you really want to replace every string?"
 msgstr ""
 
@@ -4271,27 +4299,35 @@ msgstr "Ιδιότητα επεξεργασίας κειμένου"
 msgid "Use a fixed font"
 msgstr "Χρησιμοποίησε fixed γραμματοσειρά"
 
-#: FTextEditor.class:815
+#: FTextEditor.class:864
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr ""
 
-#: FTextEditor.class:815
+#: FTextEditor.class:864
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr ""
 
-#: FTextEditor.class:821
+#: FTextEditor.class:870
 msgid "Unable to compress file."
 msgstr ""
 
-#: FTextEditor.form:188
+#: FTextEditor.form:185
+msgid "Sort ascent"
+msgstr ""
+
+#: FTextEditor.form:190
+msgid "Sort descent"
+msgstr ""
+
+#: FTextEditor.form:205
 msgid "Compress file"
 msgstr ""
 
-#: FTextEditor.form:194
+#: FTextEditor.form:211
 msgid "Uncompress file"
 msgstr ""
 
-#: FTextEditor.form:253
+#: FTextEditor.form:270
 msgid "Text editor"
 msgstr "Επεξεργαστής κειμένου"
 
@@ -4377,10 +4413,6 @@ msgstr ""
 
 #: FTranslate.class:989
 msgid "&1 strings. &2 are not translated. &3% done."
-msgstr ""
-
-#: FTranslate.class:1114 Project.module:4359
-msgid "The '&1' command has failed."
 msgstr ""
 
 #: FTranslate.form:56
@@ -5572,186 +5604,190 @@ msgid "Too many labels"
 msgstr ""
 
 #: MErrorMessage.module:217
+msgid "Too many local variables"
+msgstr ""
+
+#: MErrorMessage.module:218
 msgid "Too many nested control structures."
 msgstr "Πάρα πολλές εμφωλευμένες δομές ελέγχου"
 
-#: MErrorMessage.module:218
+#: MErrorMessage.module:219
 msgid "Too many property synonymous"
 msgstr ""
 
-#: MErrorMessage.module:219
+#: MErrorMessage.module:220
 msgid "Too many simultaneous new strings"
 msgstr "Πάρα πολλά ταυτόχρονα νέα αλφαριθμητικά"
 
-#: MErrorMessage.module:220
+#: MErrorMessage.module:221
 msgid "Too many static variables"
 msgstr "Πάρα πολλές στατικές μεταβλητές"
 
-#: MErrorMessage.module:221
+#: MErrorMessage.module:222
 msgid "Too many unknown symbols"
 msgstr "Πάρα πολλά άγνωστα σύμβολα."
 
-#: MErrorMessage.module:222
+#: MErrorMessage.module:223
 msgid "Trailing backslash"
 msgstr ""
 
-#: MErrorMessage.module:223
+#: MErrorMessage.module:224
 msgid "Type mismatch"
 msgstr "Αταίριαστοι τύποι"
 
-#: MErrorMessage.module:224
+#: MErrorMessage.module:225
 msgid "Type mismatch: wanted &1, got &2 instead"
 msgstr "Αταίριαστοι τύποι: Χρειάζονταν  &1, ενώ πήρε &2"
 
-#: MErrorMessage.module:225
+#: MErrorMessage.module:226
 msgid "Unable to create closure"
 msgstr ""
 
-#: MErrorMessage.module:226
+#: MErrorMessage.module:227
 msgid "Unable to get file position"
 msgstr ""
 
-#: MErrorMessage.module:227
+#: MErrorMessage.module:228
 msgid "Unable to load class file"
 msgstr ""
 
-#: MErrorMessage.module:228
+#: MErrorMessage.module:229
 msgid "Unable to prepare function description"
 msgstr ""
 
-#: MErrorMessage.module:229
+#: MErrorMessage.module:230
 msgid "Unexpected &1"
 msgstr "Μη προσδοκόμενο &1"
 
-#: MErrorMessage.module:230
+#: MErrorMessage.module:231
 msgid "Unexpected end of line"
 msgstr ""
 
-#: MErrorMessage.module:231
+#: MErrorMessage.module:232
 msgid "Unexpected string"
 msgstr ""
 
-#: MErrorMessage.module:232
+#: MErrorMessage.module:233
 msgid "Unknown error"
 msgstr "Άγνωστο λάθος"
 
-#: MErrorMessage.module:233
+#: MErrorMessage.module:234
 msgid "Unknown file extension"
 msgstr "Άγνωστη επέκταση αρχείου"
 
-#: MErrorMessage.module:234
+#: MErrorMessage.module:235
 msgid "Unknown identifier: &1"
 msgstr "Άγνωστο αναγνωριστικό: &1"
 
-#: MErrorMessage.module:235
+#: MErrorMessage.module:236
 msgid "Unknown operator"
 msgstr "Άγνωστος τελεστής"
 
-#: MErrorMessage.module:236
+#: MErrorMessage.module:237
 msgid "Unknown symbol '&2' in class '&1'"
 msgstr ""
 
-#: MErrorMessage.module:237
+#: MErrorMessage.module:238
 msgid "Unknown user or group"
 msgstr ""
 
-#: MErrorMessage.module:238
+#: MErrorMessage.module:239
 msgid "Unsupported datatype"
 msgstr ""
 
-#: MErrorMessage.module:239
+#: MErrorMessage.module:240
 msgid "Unsupported string conversion"
 msgstr "Μη υποστηριζόμενη μετατροπή αλφαριθμητικού"
 
-#: MErrorMessage.module:240
+#: MErrorMessage.module:241
 msgid "Useless LOCK"
 msgstr "Άχρηστο LOCK"
 
-#: MErrorMessage.module:241
+#: MErrorMessage.module:242
 msgid "VarPtr() argument must be a dynamic, a static or a local variable"
 msgstr "Η παράμετρος της VarPtr() πρέπει να είναι δυναμική , ή στατική ή τοπική μεταβλητή "
 
-#: MErrorMessage.module:242
+#: MErrorMessage.module:243
 msgid "Variant"
 msgstr ""
 
-#: MErrorMessage.module:243
+#: MErrorMessage.module:244
 msgid "Void key"
 msgstr "Κενό κλειδί"
 
-#: MErrorMessage.module:244
+#: MErrorMessage.module:245
 msgid "Write error"
 msgstr "Σφάλμα εγγραφής"
 
-#: MErrorMessage.module:245
+#: MErrorMessage.module:246
 msgid "cannot find component"
 msgstr ""
 
-#: MErrorMessage.module:246
+#: MErrorMessage.module:247
 msgid "cannot find library"
 msgstr ""
 
-#: MErrorMessage.module:247
+#: MErrorMessage.module:248
 msgid "constant hidden by local declaration: &1"
 msgstr ""
 
-#: MErrorMessage.module:248
+#: MErrorMessage.module:249
 msgid "extern function hidden by local declaration: &1"
 msgstr ""
 
-#: MErrorMessage.module:249
+#: MErrorMessage.module:250
 msgid "function hidden by local declaration: &1"
 msgstr ""
 
-#: MErrorMessage.module:250
+#: MErrorMessage.module:251
 msgid "global variable hidden by local declaration: &1"
 msgstr ""
 
-#: MErrorMessage.module:251
+#: MErrorMessage.module:252
 msgid "unknown error"
 msgstr ""
 
-#: MErrorMessage.module:252
+#: MErrorMessage.module:253
 msgid "unused argument: &1"
 msgstr ""
 
-#: MErrorMessage.module:253
+#: MErrorMessage.module:254
 msgid "unused extern function: &1"
 msgstr ""
 
-#: MErrorMessage.module:254
+#: MErrorMessage.module:255
 msgid "unused function: &1"
 msgstr ""
 
-#: MErrorMessage.module:255
+#: MErrorMessage.module:256
 msgid "unused global variable: &1"
 msgstr ""
 
-#: MErrorMessage.module:256
+#: MErrorMessage.module:257
 msgid "unused variable: &1"
 msgstr ""
 
-#: MErrorMessage.module:260
+#: MErrorMessage.module:261
 msgid "cannot open slave pseudo-terminal: "
 msgstr ""
 
-#: MErrorMessage.module:261
+#: MErrorMessage.module:262
 msgid "cannot initialize pseudo-terminal: "
 msgstr ""
 
-#: MErrorMessage.module:262
+#: MErrorMessage.module:263
 msgid "cannot plug standard input: "
 msgstr ""
 
-#: MErrorMessage.module:263
+#: MErrorMessage.module:264
 msgid "cannot plug standard output and standard error: "
 msgstr ""
 
-#: MErrorMessage.module:264
+#: MErrorMessage.module:265
 msgid "cannot run executable: "
 msgstr ""
 
-#: MHelp.module:282
+#: MHelp.module:288
 msgid "No help found."
 msgstr "Δεν βρέθηκε βοήθεια"
 
@@ -5835,6 +5871,10 @@ msgstr "Αλφαριθμητικά"
 msgid "Subroutines"
 msgstr "Υπορουτίνες"
 
+#: MTheme.module:6
+msgid "Symbols"
+msgstr "Σύμβολα"
+
 #: Package.module:67
 msgid "'&1' is missing."
 msgstr "'&1' λείπει"
@@ -5859,351 +5899,363 @@ msgstr "Δημιουργία πακέτου για &1"
 msgid "The package build has failed."
 msgstr "Το χτίσιμο του πακέτου απέτυχε."
 
-#: Package.module:645
+#: Package.module:644
 msgid "Making build directory."
 msgstr "Δημιουργία καταλόγου κατασκευής"
 
-#: Package.module:673
+#: Package.module:672
 msgid "Creating desktop file..."
 msgstr "Δημιουργία αρχείου επιφάνειας εργασίας..."
 
-#: Package.module:681
+#: Package.module:680
 msgid "Sources are being debianizated."
 msgstr "Τα πηγαία μετατρέπονται για το Debian."
 
-#: Package.module:861
+#: Package.module:859
 msgid "Creating package..."
 msgstr "Δημιουργία πακέτου..."
 
-#: Package.module:870
+#: Package.module:868
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' απότυχε."
 
-#: Package.module:1093
+#: Package.module:1124
 msgid "Initializing ~/RPM directory."
 msgstr "Αρχικοποίηση καταλόγου ~/RPM"
 
-#: Package.module:1113
+#: Package.module:1144
 msgid "Creating source package."
 msgstr "Δημιουργία πηγαίου πακέτου"
 
-#: Package.module:1137
+#: Package.module:1168
 msgid "Creating .spec file."
 msgstr "Δημιουργία αρχείο .spec"
 
-#: Package.module:1371
+#: Package.module:1402
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' επέστρεψε το ακόλουθο λάθος κώδικα:"
 
-#: Package.module:1767
+#: Package.module:1798
 msgid "'tar' has returned the following error code:"
 msgstr "Το 'tar' επέστρεψε τον ακόλουθο κώδικα σφάλματος:"
 
-#: Patch.class:36
+#: Patch.class:38
 msgid "The directory is not a Gambas project"
 msgstr ""
 
-#: Patch.class:50
+#: Patch.class:52
 msgid "Unsupported source archive format"
 msgstr ""
 
-#: Patch.class:177
+#: Patch.class:179
 msgid "Patch didn't apply:\n"
 msgstr ""
 
-#: Project.module:197
+#: Project.module:203
 msgid "Automation"
 msgstr "Αυτοματοποίηση"
 
-#: Project.module:198
+#: Project.module:204
 msgid "Basic"
 msgstr "Βasic"
 
-#: Project.module:200
+#: Project.module:206
 msgid "Drawing"
 msgstr "Σχεδιάζω"
 
-#: Project.module:201
+#: Project.module:207
 msgid "Games"
 msgstr "Παιχνίδια"
 
-#: Project.module:204
+#: Project.module:210
 msgid "Networking"
 msgstr "Δικτύωση"
 
-#: Project.module:205
+#: Project.module:211
 msgid "OpenGL"
 msgstr "OpenGL"
 
-#: Project.module:206
+#: Project.module:212
 msgid "Printing"
 msgstr "Εκτύπωση"
 
-#: Project.module:207
+#: Project.module:213
 msgid "Sound"
 msgstr "Ήχος"
 
-#: Project.module:208
+#: Project.module:214
 msgid "Video"
 msgstr "Βίντεο"
 
-#: Project.module:209
+#: Project.module:215
 msgid "Controls"
 msgstr "Στοιχεία ελέγχου"
 
-#: Project.module:210
+#: Project.module:216
 msgid "Multimedia"
 msgstr "Πολυμέσα"
 
-#: Project.module:478
+#: Project.module:217
+msgid "Web"
+msgstr ""
+
+#: Project.module:453
 msgid "This project does not exist."
 msgstr "Αυτό το έργο δεν υπάρχει."
 
-#: Project.module:489
+#: Project.module:464
 msgid "Unable to find Gambas IDE executable in directory:\n\n&1"
 msgstr ""
 
-#: Project.module:502
+#: Project.module:477
 msgid "This is not a Gambas project."
 msgstr "Αυτό δεν είναι Gambas έργο."
 
-#: Project.module:505
+#: Project.module:480
 msgid "This is a Gambas 1.0 project. Use Gambas 2 to convert it."
 msgstr ""
 
-#: Project.module:508
+#: Project.module:483
 msgid "Convert"
 msgstr "Μετατροπή"
 
-#: Project.module:508
+#: Project.module:483
 msgid "This is a Gambas 2.0 project.\n\nDo you want to convert it?"
 msgstr ""
 
-#: Project.module:526
+#: Project.module:501
 msgid "Do not open"
 msgstr "Μην ανοίγεις"
 
-#: Project.module:526
+#: Project.module:501
 msgid "Open after all"
 msgstr "Άνοιγμα μετά από όλα"
 
-#: Project.module:526
+#: Project.module:501
 msgid "This project seems to be already opened.\n\nOpening the same project twice can lead to data loss."
 msgstr "Αυτό το έργο φαίνεται να είναι ήδη άνοιχτό..\n\nΑν ξανανοιχτεί πάλι υπάρχει κίνδυνος για απώλεια δεδομένων."
 
-#: Project.module:532
+#: Project.module:507
 msgid "It cannot be converted."
 msgstr "Δεν μπορεί να μετατραπεί."
 
-#: Project.module:532
+#: Project.module:507
 msgid "This project is read-only."
 msgstr "Αυτό το έργο είναι μόνο ανάγνωσης."
 
-#: Project.module:548
+#: Project.module:523
 msgid "Copying project inside a temporary directory..."
 msgstr ""
 
-#: Project.module:551
+#: Project.module:526
 msgid "Unable to create temporary directory"
 msgstr ""
 
-#: Project.module:573
+#: Project.module:548
 msgid "Converting project structure..."
 msgstr ""
 
-#: Project.module:600
+#: Project.module:579
 msgid "Applying conversion..."
 msgstr ""
 
-#: Project.module:606
+#: Project.module:585
 msgid "Unable to apply conversion"
 msgstr ""
 
-#: Project.module:700
+#: Project.module:692
 msgid "Some libraries used by the project are missing."
 msgstr ""
 
-#: Project.module:718
+#: Project.module:710
 msgid "Cannot open project file :\n"
 msgstr "Δεν μπορεί να ανοίξει το αρχείο του έργου :\n"
 
-#: Project.module:1271
+#: Project.module:1265
 msgid "Files"
 msgstr ""
 
-#: Project.module:1473
+#: Project.module:1468
 msgid "The following classes have circular inheritance:"
 msgstr "Οι ακόλουθες κλάσεις έχουν κυκλική κληρονομικότητα:"
 
-#: Project.module:1645
-msgid "ALPHA VERSION, USE AT YOUR OWN RISK! :-)"
-msgstr "ALPHA ΕΚΔΟΣΗ. ΧΡΗΣΙΜΟΠΟΙΗΣΕ ΜΕ ΔΙΚΟ ΣΟΥ ΡΙΣΚΟ! :-)"
+#: Project.module:1641
+msgid "ALPHA VERSION, USE AT YOUR OWN RISK!"
+msgstr ""
 
-#: Project.module:1923
+#: Project.module:1643
+msgid "DEVELOPMENT VERSION, USE AT YOUR OWN RISK!"
+msgstr ""
+
+#: Project.module:1938
 msgid "Loading &1..."
 msgstr "Φόρτωμα &1..."
 
-#: Project.module:1975
+#: Project.module:1990
 msgid "Cannot open a binary file."
 msgstr ""
 
-#: Project.module:2008
+#: Project.module:2023
 msgid "Cannot open file."
 msgstr "Δεν μπορεί να ανοίξει το αρχείο"
 
-#: Project.module:2064
+#: Project.module:2079
 msgid "File not found!"
 msgstr "Δεν βρέθηκα το αρχείο!"
 
-#: Project.module:2184
+#: Project.module:2200
 msgid "&1th"
 msgstr "&1ος"
 
-#: Project.module:2237
+#: Project.module:2253
 msgid "in form definition"
 msgstr "ορισμός μέσα στη φόρμα"
 
-#: Project.module:2244
+#: Project.module:2260
 msgid "in &1."
 msgstr ""
 
-#: Project.module:2400
+#: Project.module:2416
 msgid "Some project source files are in conflict.\nPlease solve them if you want to compile the project."
 msgstr "Μερικά πηγαία αρχεία έργου βρίσκονται σε σύγκρουση.\nΠαρακαλών επίλυσε τες αν θες να μεταγλωττιστεί το έργο."
 
-#: Project.module:2404
+#: Project.module:2420
 msgid "Compiling project"
 msgstr "Μεταγλώττιση έργου"
 
-#: Project.module:2645
+#: Project.module:2663
 msgid "File already exists."
 msgstr "Το αρχείο υπάρχει."
 
-#: Project.module:2677
+#: Project.module:2695
 msgid "Directory already exists."
 msgstr "Ο κατάλογος υπάρχει ήδη"
 
-#: Project.module:2689
+#: Project.module:2707
 msgid "Cannot link template file."
 msgstr ""
 
-#: Project.module:2695
+#: Project.module:2713
 msgid "Cannot copy template file."
 msgstr "Δεν αντιγράφετε το αρχείο υπόδειγμα."
 
-#: Project.module:2906
+#: Project.module:2933
 msgid "Making executable..."
 msgstr "Δημιουργία εκτελέσιμου..."
 
-#: Project.module:2950
+#: Project.module:2980
 msgid "Cannot make executable."
 msgstr "Δεν μπορεί να δημιουργηθεί το εκτελέσιμο."
 
-#: Project.module:3530
+#: Project.module:3539
 msgid "Cannot write project file."
 msgstr "Δεν μπορεί να γραφτεί το αρχείο του έργου."
 
-#: Project.module:3572
+#: Project.module:3586
 msgid "Unable to create desktop shortcut."
 msgstr "Αδυναμία δημιουργίας συντόμευσης επιφάνειας εργασίας."
 
-#: Project.module:3818
+#: Project.module:3832
 msgid "The directory will be removed at the next commit."
 msgstr "Ο κατάλογος θα αφαιρεθεί στην επόμενη υποβολή."
 
-#: Project.module:3835
+#: Project.module:3849
 msgid "You must define a startup class or form!"
 msgstr "Πρέπει να ορίσεις μια φόρμα ή κλάση!"
 
-#: Project.module:3866
+#: Project.module:3880
 msgid "Please type a name."
 msgstr "Παρακαλώ πληκτρολόγησε ένα όνομα."
 
-#: Project.module:3870
+#: Project.module:3884
 msgid "This name contains a forbidden character:"
 msgstr "Το όνομα αυτό περιέχει απαγορευμένο χαρακτήρα:"
 
-#: Project.module:3874
+#: Project.module:3888
 msgid "The name cannot begins with a dot."
 msgstr "Το όνομα δεν μπορεί να αρχίζει με τελεία."
 
-#: Project.module:3878
+#: Project.module:3892
 msgid "This name is already used. Choose another one."
 msgstr "Το όνομα αυτό χρησιμοποιείται ήδη. Επέλεξε ένα άλλο."
 
-#: Project.module:3914
+#: Project.module:3928
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Το όνομα μιας κλάσης πρέπει να αρχίζει με γράμμα , κάτω παύλα, ακολοθούμενο από οποιοδήποτε γράμμα ή αριθμητικό ψηφίο."
 
-#: Project.module:3962
+#: Project.module:3976
 msgid "Destination already exists."
 msgstr ""
 
-#: Project.module:4174
+#: Project.module:4188
 msgid "Unable to rename '&1'"
 msgstr "Αδυναμία μετονομασίας '&1'"
 
-#: Project.module:4290
+#: Project.module:4304
 msgid "Please type a project name."
 msgstr "Παρακαλώ πληκτρολόγησε το όνομα του έργου."
 
-#: Project.module:4298
+#: Project.module:4312
 msgid "The project name cannot begin with a dot."
 msgstr "Το όνομα του έργου δεν μπορεί να αρχίζει με τελεία."
 
-#: Project.module:4301
+#: Project.module:4315
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Χαρακτήρες μη-ASCII δεν επιτρέπονται στο όνομα έργου,"
 
-#: Project.module:4302
+#: Project.module:4316
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Απαγορεύεται να χρησιμοποιηθούν οι ακόλουθοι χαρακτήρες στο όνομα του έργου:  ? * / \\ SPACE"
 
-#: Project.module:4309
+#: Project.module:4323
 msgid "This project already exists."
 msgstr "Αυτό το έργο υπάρχει ήδη."
 
-#: Project.module:4312
+#: Project.module:4326
 msgid "The project directory already exists."
 msgstr "Ο κατάλογος του έργου υπάρχει ήδη."
 
-#: Project.module:4314
+#: Project.module:4328
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Ο κατάλογος του έργου δεν μπορεί να δημιουργηθεί γιατί υπάρχει ήδη ένα αρχείο με το ίδιο όνομα."
 
-#: Project.module:4370
+#: Project.module:4393
 msgid "Unable to create source archive."
 msgstr ""
 
-#: Project.module:4393
+#: Project.module:4417
 msgid "Create source package"
 msgstr "Δημιούργησε πακέτο πηγαίου κώδικα"
 
-#: Project.module:4694
+#: Project.module:4719
 msgid "Cannot copy file &1."
 msgstr "Δεν αντιγράφετε το αρχείο &1."
 
-#: Project.module:4742
+#: Project.module:4767
 msgid "Cannot create link &1."
 msgstr "Δεν μπορεί να δημιουργηθεί ο σύνδεσμος &1."
 
-#: Project.module:4757
+#: Project.module:4782
 msgid "Cannot move a directory inside itself."
 msgstr "Δεν μπορεί να μετακινηθεί ένας κατάλογος μέσα στον ευατό του."
 
-#: Project.module:4825
+#: Project.module:4850
 msgid "Cannot move file &1."
 msgstr "Δεν μπορεί να μετακινηθεί το αρχείο &1"
 
-#: Project.module:5363
+#: Project.module:5062
+msgid "The following files couldn't be removed:"
+msgstr ""
+
+#: Project.module:5456
 msgid "Project cleanup..."
 msgstr ""
 
-#: Project.module:5369
+#: Project.module:5462
 msgid "Project files conversion..."
 msgstr ""
 
-#: Project.module:5399
+#: Project.module:5492
 msgid "Unable to convert &1"
 msgstr ""
 

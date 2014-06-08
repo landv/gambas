@@ -787,7 +787,7 @@ msgstr "Vyžaduje"
 msgid "Form"
 msgstr "Formlulář"
 
-#: CModule.class:28 FInfo.class:68
+#: CModule.class:28
 msgid "Forms"
 msgstr "Formuláře"
 
@@ -1079,7 +1079,7 @@ msgstr "Uložit"
 msgid "Solve"
 msgstr "Vyřešit"
 
-#: FTips.form:84 FTranslate.form:297
+#: FSystemInfo.form:80 FTextEditor.form:261 FTips.form:84 FTranslate.form:297
 msgid "Close"
 msgstr "Zavřít"
 
@@ -1087,7 +1087,7 @@ msgstr "Zavřít"
 msgid "Name"
 msgstr "Název projektu"
 
-#: FProxy.form:27
+#: FDebugInfo.class:76 FNewConnection.form:78 FNewTable.form:48 FProxy.form:27
 msgid "Type"
 msgstr "Typ"
 
@@ -1931,15 +1931,15 @@ msgstr "Připojení"
 msgid "Table"
 msgstr "Tabulka"
 
-#: FFileProperty.class:31 FInfo.class:83
+#: FFileProperty.class:31
 msgid "Gambas &1"
 msgstr "-"
 
-#: FFileProperty.class:38 FInfo.class:91
+#: FFileProperty.class:38
 msgid "Gambas module"
 msgstr "Modul Gambasu"
 
-#: FFileProperty.class:40 FInfo.class:95
+#: FFileProperty.class:40
 msgid "Gambas class"
 msgstr "Třída Gambasu"
 
@@ -1947,7 +1947,7 @@ msgstr "Třída Gambasu"
 msgid "&1 properties"
 msgstr "&1 vlastnosti"
 
-#: FFileProperty.class:84 FInfo.form:147
+#: FFileProperty.class:84
 msgid "Versioning"
 msgstr "SVN"
 
@@ -1955,15 +1955,15 @@ msgstr "SVN"
 msgid "Statistics"
 msgstr "Statistiky"
 
-#: FFileProperty.class:124 FInfo.class:240
+#: FFileProperty.class:124
 msgid "This file is locked, and will be deleted on the next commit."
 msgstr "Tento soubor je uzamčen, a bude smazán s příštím commit-em."
 
-#: FFileProperty.class:126 FInfo.class:242
+#: FFileProperty.class:126
 msgid "This file is not versioned, and must be added to the repository."
 msgstr "Tento soubor není na svn, a musí být přidány do repositáře."
 
-#: FFileProperty.class:129 FInfo.class:245
+#: FFileProperty.class:129
 msgid "This file has not been modified since the last commit."
 msgstr "Tento soubor se nezměnil od posledního commit-u."
 
@@ -1971,7 +1971,7 @@ msgstr "Tento soubor se nezměnil od posledního commit-u."
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: FFileProperty.class:141 FInfo.class:263 FProjectVersion.class:209
+#: FFileProperty.class:141 FProjectVersion.class:209
 msgid "You are going to cancel your changes!"
 msgstr "Chystáte se zrušit změny!"
 
@@ -2239,11 +2239,11 @@ msgstr "Přejít vpřed"
 msgid "Show help tree"
 msgstr "Zobrazit strom nápovědy"
 
-#: FHelpBrowser.form:85 FIconEditor.form:153 FImageEditor.form:293
+#: FHelpBrowser.form:85 FImageEditor.form:293
 msgid "Zoom in"
 msgstr "Přiblížit"
 
-#: FHelpBrowser.form:91 FIconEditor.form:161 FImageEditor.form:301
+#: FHelpBrowser.form:91 FImageEditor.form:301
 msgid "Zoom out"
 msgstr "Oddálit"
 
@@ -2259,17 +2259,17 @@ msgstr "Tisk"
 msgid "Modify documentation"
 msgstr "Upravit dokumentaci"
 
-#: FIconEditor.class:1373
-msgid "Do you want to clear the image ?"
-msgstr "Opravdu chcete vymazat obrazek ?"
+#: FHelpShortcut.form:11
+msgid "IDE keyboard shortcuts"
+msgstr ""
 
-#: FIconEditor.class:1386
-msgid "This image has been modified.\nDo you want to save it ?"
-msgstr "Tento obrázek byl změněn.\nChcete jej uložit ?"
+#: FHelpShortcut.form:26
+msgid "Debugger"
+msgstr ""
 
-#: FIconEditor.form:95
-msgid "Clear all"
-msgstr "Vyčistit vše"
+#: FHelpShortcut.form:28 FProjectProperty.form:414 FTranslate.form:107
+msgid "Translation"
+msgstr "Překlad"
 
 #: FIconEditor.form:169
 msgid "Scroll"
@@ -2375,6 +2375,22 @@ msgstr "Akce"
 msgid "Crop"
 msgstr "Oříznout"
 
+#: FImageEditor.form:242 FImageProperty.form:294
+msgid "Horizontal flip"
+msgstr "Horizontální překlopení"
+
+#: FImageEditor.form:249 FImageProperty.form:288
+msgid "Vertical flip"
+msgstr "Vertikální překlopení"
+
+#: FImageEditor.form:256 FImageProperty.form:282
+msgid "Rotate counter-clockwise"
+msgstr "Rotace v protisměru"
+
+#: FImageEditor.form:264 FImageProperty.form:276
+msgid "Rotate clockwise"
+msgstr "Rotace ve směru"
+
 #: FImageEditor.form:275
 msgid "Resize"
 msgstr "Změna velikosti"
@@ -2427,9 +2443,21 @@ msgstr "Otočit obrázek"
 msgid "Move"
 msgstr "Pohyb"
 
+#: FImageEditor.form:526
+msgid "Draw"
+msgstr "Kreslit"
+
 #: FImageEditor.form:536
 msgid "Erase"
 msgstr "Vymazat"
+
+#: FImageEditor.form:556
+msgid "Rectangle"
+msgstr "Obdélník"
+
+#: FImageEditor.form:566
+msgid "Ellipse"
+msgstr "Elipsa"
 
 #: FImageEditor.form:586
 msgid "Magic wand"
@@ -2531,7 +2559,7 @@ msgstr "Tvary"
 msgid "Opacity"
 msgstr "Průhlednost"
 
-#: FTranslate.class:70
+#: FImageProperty.form:375 FSelectIcon.form:54 FTranslate.class:70
 msgid "Size"
 msgstr "Velikost"
 

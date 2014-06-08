@@ -379,7 +379,7 @@ Public Sub GetHelpURL() As String
       sPath &/= LCase(sComp)
       sPath &/= LCase(Name)
       
-      Return sPath & "?v&nh&" & MHelp.GetLanguage()
+      Return sPath & "?v&nh&l=" & MHelp.GetLanguage()
     
     Endif
     

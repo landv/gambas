@@ -784,7 +784,7 @@ Public Function GetHelpURL(Optional bShowFile As Boolean) As String
       sName = Replace(sName, ":", ".")
       sPath &/= sName
       
-      Return sPath & "?v&nh&" & MHelp.GetLanguage()
+      Return sPath & "?v&nh&l=" & MHelp.GetLanguage()
       
     Endif
     
