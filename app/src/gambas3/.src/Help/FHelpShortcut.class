@@ -6,6 +6,8 @@ Public Sub Form_Open()
   webShortcut.TextZoom = 0.8
   tabShortcut_Click
   
+  Settings.Read(Me)
+  
 End
 
 Public Sub tabShortcut_Click()
@@ -33,5 +35,11 @@ Public Sub Form_Arrange()
 
   webShortcut.Raise
   webShortcut.Move(tabShortcut.ClientX, tabShortcut.ClientY, tabShortcut.ClientW, tabShortcut.ClientH)
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
 
 End

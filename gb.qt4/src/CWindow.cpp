@@ -1331,12 +1331,12 @@ BEGIN_PROPERTY(Window_Opacity)
 	else
 	{
 		double opacity = VPROP(GB_INTEGER) / 100.0;
-		
+
 		if (opacity < 0.0)
 			opacity = 0.0;
 		else if (opacity > 1.0)
 			opacity = 1.0;
-		
+
 		WIDGET->setWindowOpacity(opacity);
 	}
 
@@ -1347,6 +1347,33 @@ BEGIN_PROPERTY(Window_Screen)
 	GB.ReturnInteger(QApplication::desktop()->screenNumber(WIDGET));
 
 END_PROPERTY
+
+BEGIN_PROPERTY(Window_Transparent)
+
+	bool trans = WINDOW->testAttribute(Qt::WA_TranslucentBackground);
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(trans);
+	else
+	{
+		bool new_trans = VPROP(GB_BOOLEAN);
+		if (trans == new_trans)
+			return;
+
+		if (!new_trans)
+		{
+			GB.Error("Transparent property cannot be reset");
+			return;
+		}
+
+		WINDOW->setAttribute(Qt::WA_TranslucentBackground, true);
+		THIS->container->setPaintBackgroundColor(true);
+		THIS->widget.flag.noBackground = true;
+		CWIDGET_reset_color((CWIDGET *)THIS);
+	}
+
+END_PROPERTY
+
 
 
 /***************************************************************************/
@@ -1444,7 +1471,8 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
 	GB_PROPERTY("Visible", "b", CWINDOW_visible),
 	GB_PROPERTY("Opacity", "i", Window_Opacity),
-	
+	GB_PROPERTY("Transparent", "b", Window_Transparent),
+
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("Padding", "i", Container_Padding),
 	GB_PROPERTY("Spacing", "b", Container_Spacing),

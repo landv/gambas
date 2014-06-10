@@ -460,8 +460,11 @@ Public Sub Resolve(sPath As String, Optional sAccept As String) As Boolean
   Dim aArg As String[]
   
   If $bSVN Then
-    aArg = ["svn", "resolved", SvnPath$(sPath)]
-    If sAccept Then aArg.Insert(["--accept", sAccept])
+    If sAccept Then 
+      aArg = ["svn", "resolve", SvnPath$(sPath), "--accept", sAccept]
+    Else
+      aArg = ["svn", "resolved", SvnPath$(sPath)]
+    Endif
     Run(aArg)
     Return Process.LastValue
   Endif

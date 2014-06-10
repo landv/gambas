@@ -211,8 +211,8 @@ public:
 	short g_typ;
 	short _mouse;
 	gControl *_proxy, *_proxy_for;
-#ifdef GTK3
 	gColor _bg, _fg;
+#ifdef GTK3
 	const char *_bg_name;
 	const char **_bg_name_list;
 	GdkRGBA _bg_default;

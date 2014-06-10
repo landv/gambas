@@ -461,6 +461,8 @@ End
 
 Public Sub Editors_Menu()
 
+  If Mouse.Control Then Return
+
   mnuForm.Visible = Project.ExistForm(Me.Name)
   CreateMenu
   mnuEditor.Popup
@@ -2632,6 +2634,15 @@ Public Sub Editors_MouseUp()
   
   CPosition.Enable
   CPosition.SaveCurrent
+
+  If Mouse.Control Then 
+    If Mouse.Left Then
+      FindDefinition
+    Else If Mouse.Right Then
+      CPosition.MovePrevious
+    Endif
+    Return
+  Endif
 
   If Not Editor.Selected Or If Editor.Selection.StartLine < Editor.Selection.EndLine Then
     Return

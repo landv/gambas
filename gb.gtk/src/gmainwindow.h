@@ -55,6 +55,7 @@ public:
 	bool isClosed() const { return !opened; }
 	bool isHidden() const { return _hidden; }
 	bool isPopup() const { return _popup; }
+	bool isTransparent() const { return _transparent; }
 	int screen();
 	
 	int controlCount();
@@ -76,8 +77,10 @@ public:
 	void setSticky(bool vl);
 	void setStacking(int vl);
   void setPersistent(bool vl);
+	void setTransparent(bool vl);
 	
 	virtual void setVisible(bool vl);
+	virtual void setBackground(gColor vl);
 	virtual void setRealBackground(gColor vl);
 	virtual void setRealForeground(gColor vl);
 
@@ -187,6 +190,7 @@ public:
 	unsigned _minimized : 1;
 	unsigned _fullscreen : 1;
 	unsigned _utility : 1;
+	unsigned _transparent : 1;
 };
 
 #endif

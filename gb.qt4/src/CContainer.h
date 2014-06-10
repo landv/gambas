@@ -128,6 +128,7 @@ public:
 	void drawFrame(QPainter *);
 	int frameWidth();
 	void setPixmap(QPixmap *pixmap);
+	void setPaintBackgroundColor(bool bg) { _bg = bg; }
 
 protected:
 
@@ -138,6 +139,7 @@ private:
 
 	int _frame;
 	QPixmap *_pixmap;
+	bool _bg;
 };
 
 class MyContainer : public MyFrame

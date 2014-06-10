@@ -41,7 +41,7 @@
 #include "gmouse.h"
 #include "gmainwindow.h"
 
-static gboolean win_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWindow *data)
+static gboolean cb_frame(GtkWidget *widget,GdkEventWindowState *event,gMainWindow *data)
 {
 	data->performArrange();
 	data->emit(SIGNAL(data->onState));
@@ -73,7 +73,7 @@ static gboolean cb_hide(GtkWidget *widget, gMainWindow *data)
 	//	gMainWindow::setActiveWindow(NULL);
 }
 
-static gboolean win_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
+static gboolean cb_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
 {
 	if (!gMainWindow::_current || data == gMainWindow::_current)
 		data->doClose();
@@ -121,6 +121,16 @@ static gboolean cb_configure(GtkWidget *widget, GdkEventConfigure *event, gMainW
 #ifdef GTK3
 static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gMainWindow *data)
 {
+	if (data->isTransparent())
+	{
+		if (data->background() == COLOR_DEFAULT)
+			gt_cairo_set_source_color(cr, 0xFF000000);
+		else
+			gt_cairo_set_source_color(cr, data->background());
+		cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+		cairo_paint(cr);
+	}
+
 	if (data->_picture)
 	{
 		cairo_pattern_t *pattern;
@@ -129,8 +139,7 @@ static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gMainWindow *data)
 		cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
 
 		cairo_set_source(cr, pattern);
-		cairo_rectangle(cr, 0, 0, data->width(), data->height());
-		cairo_fill(cr);
+		cairo_paint(cr);
 
 		cairo_pattern_destroy(pattern);
 	}
@@ -140,9 +149,26 @@ static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gMainWindow *data)
 #else
 static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gMainWindow *data)
 {
-	if (data->_picture)
+	bool draw_bg = data->isTransparent();
+	bool draw_pic = data->_picture;
+
+	if (!draw_bg && !draw_pic)
+		return false;
+
+	cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(wid));
+
+	if (draw_bg)
 	{
-		cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(wid));
+		if (data->background() == COLOR_DEFAULT)
+			gt_cairo_set_source_color(cr, 0xFF000000);
+		else
+			gt_cairo_set_source_color(cr, data->background());
+		cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+		cairo_paint(cr);
+	}
+
+	if (draw_pic)
+	{
 		cairo_pattern_t *pattern;
 
 		gdk_cairo_region(cr, e->region);
@@ -152,13 +178,12 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gMainWindow *data)
 		cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
 
 		cairo_set_source(cr, pattern);
-		cairo_rectangle(cr, 0, 0, data->width(), data->height());
-		cairo_fill(cr);
+		cairo_paint(cr);
 
 		cairo_pattern_destroy(pattern);
-		cairo_destroy(cr);
 	}
 
+	cairo_destroy(cr);
 	return false;
 }
 #endif
@@ -205,6 +230,7 @@ void gMainWindow::initialize()
 	_maximized = _minimized = _fullscreen = false;
 	_resize_last_w = _resize_last_h = -1;
 	_min_w = _min_h = 0;
+	_transparent = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -237,11 +263,11 @@ void gMainWindow::initWindow()
 		g_signal_connect(G_OBJECT(border), "show",G_CALLBACK(cb_show),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "hide",G_CALLBACK(cb_hide),(gpointer)this);
 		g_signal_connect(G_OBJECT(border), "configure-event",G_CALLBACK(cb_configure),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "delete-event",G_CALLBACK(win_close),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "window-state-event",G_CALLBACK(win_frame),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "delete-event",G_CALLBACK(cb_close),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "window-state-event",G_CALLBACK(cb_frame),(gpointer)this);
 		
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
-		ON_DRAW_BEFORE(widget, this, cb_expose, cb_draw);
+		ON_DRAW_BEFORE(border, this, cb_expose, cb_draw);
 	}
 	
 	gtk_window_add_accel_group(GTK_WINDOW(topLevel()->border), accel);
@@ -281,6 +307,7 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 		border = gtk_plug_new(plug);
 	else
 		border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
 	
 	widget = gtk_fixed_new(); //gtk_layout_new(0,0);
 
@@ -311,7 +338,6 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	
 	gtk_widget_realize(border);
 	gtk_widget_show(widget);
-	
 	gtk_widget_set_size_request(border, 1, 1);
 }
 
@@ -553,6 +579,8 @@ void gMainWindow::setVisible(bool vl)
 		visible = true;
 		_hidden = false;
 		
+		setTransparent(_transparent);
+
 		if (isTopLevel())
 		{
 			if (!_title || !*_title)
@@ -974,13 +1002,6 @@ void gMainWindow::drawMask()
 
 	gdk_window_shape_combine_mask(border->window, mask, 0, 0);
 
-	/*#ifdef GDK_WINDOWING_X11
-  XShapeCombineMask(GDK_WINDOW_XDISPLAY(border->window), GDK_WINDOW_XID(border->window), ShapeBounding, 0, 0,
-  	mask ? GDK_PIXMAP_XID(mask) : None, ShapeSet);
-  #else
-	//gdk_window_shape_combine_mask(border->window, mask, 0, 0);
-  #endif*/
-
 #endif
 
 	if (_picture)
@@ -990,7 +1011,7 @@ void gMainWindow::drawMask()
 		for (int i = 0; i < controlCount(); i++)
 			getControl(i)->refresh();
 	}
-	else
+	else if (!_transparent)
 	{
 		gtk_widget_set_app_paintable(border, FALSE);
 		setRealBackground(background());
@@ -1519,4 +1540,60 @@ void gMainWindow::setGeometryHints()
 			gdk_window_set_geometry_hints(gtk_widget_get_window(border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
 		}
 	}
+}
+
+void gMainWindow::setBackground(gColor vl)
+{
+	_bg = vl;
+	if (!_transparent)
+		gControl::setBackground(vl);
+}
+
+void gMainWindow::setTransparent(bool vl)
+{
+	if (!vl)
+		return;
+
+	_transparent = TRUE;
+
+	if (!isVisible())
+		return;
+
+#ifdef GTK3
+	GdkScreen *screen = NULL;
+	GdkVisual *visual = NULL;
+
+	screen = gtk_widget_get_screen(border);
+	visual = gdk_screen_get_rgba_visual(screen);
+	if (visual == NULL)
+		return;
+#else
+	GdkScreen *screen;
+	GdkColormap *colormap;
+
+	screen = gtk_widget_get_screen(border);
+	colormap = gdk_screen_get_rgba_colormap(screen);
+	if (colormap == NULL)
+		return;
+#endif
+
+	gtk_widget_unrealize(border);
+
+	gtk_widget_set_app_paintable(border, TRUE);
+
+	#ifdef GTK3
+	gtk_widget_set_visual(border, visual);
+#else
+	gtk_widget_set_colormap(border, colormap);
+#endif
+
+	gtk_widget_realize(border);
+
+	int w = width();
+	int h = height();
+
+	bufW = w - 1;
+	resize(w, h);
+
+	gtk_window_present(GTK_WINDOW(border));
 }

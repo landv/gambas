@@ -710,6 +710,31 @@ BEGIN_PROPERTY(Window_Screen)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Transparent)
+
+	bool trans = WINDOW->isTransparent();
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(trans);
+	else
+	{
+		bool new_trans = VPROP(GB_BOOLEAN);
+		if (trans == new_trans)
+			return;
+
+		if (!new_trans)
+		{
+			GB.Error("Transparent property cannot be reset");
+			return;
+		}
+
+		WINDOW->setTransparent(true);
+	}
+
+END_PROPERTY
+
+//-------------------------------------------------------------------------
+
 BEGIN_METHOD_VOID(CFORM_new)
 
 	if (!GB.Parent(_object))
@@ -835,6 +860,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("TopOnly", "b", CWINDOW_top_only),
 	GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
 	GB_PROPERTY("Opacity", "i", Window_Opacity),
+	GB_PROPERTY("Transparent", "b", Window_Transparent),
 
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("AutoResize", "b", Container_AutoResize),

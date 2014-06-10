@@ -301,6 +301,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 		if (!menuBar)
 		{
 			menuBar = new QMenuBar(topLevel);
+			menuBar->setAutoFillBackground(true);
 			window->menuBar = menuBar;
 		}
 

@@ -907,7 +907,7 @@ BEGIN_PROPERTY(Control_Design)
 		//CWIDGET_set_flag(THIS, WF_DESIGN);
 	}
 	else if (CWIDGET_test_flag(_object, WF_DESIGN) || CWIDGET_test_flag(_object, WF_DESIGN_LEADER))
-		GB.Error("Cannot reset Design property");
+		GB.Error("Design property cannot be reset");
 
 END_PROPERTY
 

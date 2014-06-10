@@ -284,8 +284,8 @@ void gControl::initAll(gContainer *parent)
 	hFree = NULL;
 	_grab = false;
 
-#ifdef GTK3
 	_fg = _bg = COLOR_DEFAULT;
+#ifdef GTK3
 	_fg_name = _bg_name = NULL;
 #endif
 
@@ -1813,10 +1813,7 @@ gColor gControl::realBackground()
 
 gColor gControl::background()
 {
-	if (_bg_set)
-		return realBackground();
-	else
-		return COLOR_DEFAULT;
+	return _bg;
 }
 
 static void set_background(GtkWidget *widget, gColor color, bool use_base)
@@ -1838,6 +1835,7 @@ void gControl::setRealBackground(gColor color)
 
 void gControl::setBackground(gColor color)
 {
+	_bg = color;
 	_bg_set = color != COLOR_DEFAULT;
 
 	if (!_bg_set)
@@ -1861,10 +1859,7 @@ gColor gControl::realForeground()
 
 gColor gControl::foreground()
 {
-	if (_fg_set)
-		return realForeground();
-	else
-		return COLOR_DEFAULT;
+	return _fg;
 }
 
 static void set_foreground(GtkWidget *widget, gColor color, bool use_base)
@@ -1886,6 +1881,7 @@ void gControl::setRealForeground(gColor color)
 
 void gControl::setForeground(gColor color)
 {
+	_fg = color;
 	_fg_set = color != COLOR_DEFAULT;
 
 	if (!_fg_set)

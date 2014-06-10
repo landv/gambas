@@ -475,7 +475,7 @@ void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height)
 ***************************************************************************/
 
 MyFrame::MyFrame(QWidget *parent)
-: QWidget(parent),_frame(0),_pixmap(0)
+: QWidget(parent),_frame(0),_pixmap(0),_bg(false)
 {
 }
 
@@ -651,10 +651,18 @@ void MyFrame::setPixmap(QPixmap *pixmap)
 void MyFrame::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);
+
+	if (_bg)
+	{
+		CWIDGET *window = CWidget::get(parentWidget());
+		GB_COLOR col = CWIDGET_get_background(window);
+		if (col != COLOR_DEFAULT)
+			painter.fillRect(e->rect(), CCOLOR_make(col));
+	}
+
 	if (_pixmap)
 		painter.drawTiledPixmap(0, 0, width(), height(), *_pixmap);
-	//else
-	//	painter.eraseRect(e->rect());
+
 	drawFrame(&painter);
 }
 

@@ -1810,7 +1810,7 @@ cairo_surface_t *gt_cairo_create_surface_from_pixbuf(const GdkPixbuf *pixbuf)
 	static const cairo_user_data_key_t key = { 0 };
 	int j;
 
-	//fprintf(stderr, "gt_cairo_create_surface_from_pixbuf: %d %d\n", width, height);
+	//fprintf(stderr, "gt_cairo_create_surface_from_pixbuf: %d %d / %d\n", width, height, n_channels);
 	
 	if (n_channels == 3)
 		format = CAIRO_FORMAT_RGB24;
