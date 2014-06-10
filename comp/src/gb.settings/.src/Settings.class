@@ -212,7 +212,7 @@ Public Sub _put(Value As Variant, Key As String)
 
   Key = File.Name(Key)
 
-  If hSlot[Key] <> Value Then
+  If TypeOf(Value) = gb.Object Or If hSlot[Key] <> Value Then
     hSlot[Key] = Value
     $bModify = True
   Endif

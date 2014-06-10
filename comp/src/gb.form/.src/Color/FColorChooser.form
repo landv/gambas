@@ -3,8 +3,23 @@
 { Form Form
   MoveScaled(9.1429,8,72,70)
   Arrangement = Arrange.Fill
+  { mnuCustom Menu
+    Visible = False
+    { mnuRemove Menu
+      Text = ("Remove color")
+      Picture = Picture["icon:/small/delete"]
+    }
+    { mnuRemoveAll Menu
+      Text = ("Remove all colors")
+      Picture = Picture["icon:/small/clear"]
+    }
+    { mnuSort Menu
+      Text = ("Sort colors")
+      Picture = Picture["icon:/small/sort-ascent"]
+    }
+  }
   { panBorder Panel
-    MoveScaled(3,3,67,60)
+    MoveScaled(3,3,67,66)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
@@ -133,7 +148,7 @@
         MoveScaled(32,11,1,3)
       }
       { VBox1 VBox
-        MoveScaled(34,1,16,19)
+        MoveScaled(34,1,14,19)
         Spacing = True
         { panColor DrawingArea
           MoveScaled(0,0,11,6)
@@ -151,6 +166,21 @@
           Mouse = Mouse.Cross
           Ignore = True
         }
+      }
+    }
+    { panCustomColors Panel
+      MoveScaled(1,56,63,7)
+      Visible = False
+      Arrangement = Arrange.Fill
+      Border = Border.Plain
+      { dwgCustomColors ScrollArea
+        MoveScaled(0,0,62,6)
+        Background = Color.TextBackground
+        Tracking = True
+        Mouse = Mouse.Pointing
+        PopupMenu = "mnuCustom"
+        Border = False
+        ScrollBar = Scroll.None
       }
     }
   }
