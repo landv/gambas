@@ -393,22 +393,32 @@ Public Sub ScrollArea_Draw()
       iCol2 = I
       With $hColumns[I]
         If .W > 0 And If $iHeader And Horizontal Then
-          'Draw.ClipRect = hClip.Intersection(Rect(X - 1, F, .Width + 1, H - F))
+
           ''If $bGrid Then Draw.FillRect(X - 1, F, 1, H - F, iGrid)
           If System.RightToLeft Then
             Paint.FillRect(X, F, 1, H - F, iGrid)
           Else
             Paint.FillRect(X - 1, F, 1, H - F, iGrid)
           Endif
+
+          Paint.Save
+
           If iSort = I Then
             WA = Min(16, H - F)
-            Style.PaintArrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
+            If WA < .Width Then Style.PaintArrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
             'Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
             'If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
+            Paint.Rectangle(X + 1, F, Max(0, .Width - WA - 4), H - F)
+            Paint.Clip
             Paint.DrawText(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
           Else
+            Paint.Rectangle(X + 1, F, .Width - 2, H - F)
+            Paint.Clip
             Paint.DrawText(.Text, X + 4, F, .Width - 8, H - F, .Alignment)
           Endif
+
+          Paint.Restore
+
         Endif
         X += .Width
       End With
@@ -457,10 +467,13 @@ Public Sub ScrollArea_Draw()
       H = $hRows._GetRowHeight(I)
       If H > 0 And If $iHeader And Vertical Then
         Paint.FillRect(X, Y - 1, W - F, 1, iGrid)
-        'Draw.ClipRect = hClip.Intersection(Rect(X, Y, W - F, H))
+        Paint.Save
+        Paint.Rectangle(X, Y + 1, W - F, H - 3)
+        Paint.Clip
         If I = $iRow Then Paint.Font.Bold = True
         Paint.DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 2, Align.Center)
         If I = $iRow Then Paint.Font.Bold = False
+        Paint.Restore
       Endif
       
       'Draw.Style.Handle(W - 2, Y, 2, H, True)
