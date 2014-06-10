@@ -2,6 +2,7 @@
 
 Private $aWindow As New CWindow[]
 Private $hCurrent As CWindow
+Private $hLast As CWindow
 Private $bMove As Boolean
 Private $X As Integer
 Private $Y As Integer
@@ -186,7 +187,8 @@ Public Sub SetResizable(hWin As Window, bResize As Boolean, Optional iGrid As In
 End
 
 Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
-  
+
+  Dim hWindow As CWindow  
   Dim iInd As Integer = GetIndex(hWin)
 
   'Debug "REMOVE "; hWin;; hWin.Title;; "["; iInd; "]"
@@ -201,7 +203,12 @@ Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
 
   Inc $iNoWait
 
-  If $hCurrent = $aWindow[iInd] Then $hCurrent = Null
+  hWindow = $aWindow[iInd]
+  If hWindow.Detached Then Dec $nDetach
+
+  If $hCurrent = hWindow Then $hCurrent = Null
+  If $hLast = hWindow Then $hLast = Null
+  
   $aWindow.Remove(iInd)  
   
   If $aWindow.Count Then
@@ -367,7 +374,6 @@ End
 
 Public Sub Activate(Optional hWindow As Window)
   
-  Dim hOld As CWindow
   Dim hWin As CWindow
   Dim iInd As Integer
 
@@ -395,8 +401,6 @@ Public Sub Activate(Optional hWindow As Window)
     hWin = $aWindow[iInd]
     If Not Object.IsValid(hWin.Window) Then Return
 
-    hOld = $hCurrent
-  
     $hCurrent = hWin
     
     'WITH tabWorkspace
@@ -414,21 +418,26 @@ Public Sub Activate(Optional hWindow As Window)
       Endif
       
       With $hCurrent.Window
-        .Show
+        If $hCurrent.Detached Then
+          .Raise
+        Else
+          .Show
+        Endif
         '.Raise
         If Not Application.ActiveControl Or If Application.ActiveControl.Window <> $hCurrent.Window Then
           .SetFocus
         Endif
       End With
       
-      If hOld And If hOld <> hWin And If Not hOld.Detached And If Not hWin.Detached Then 
-        $bNoClose = True
-        'If $iNoWait = 0 Then Wait
-        'DEBUG $bNoClose
-        hOld.Window.Hide
-        $bNoClose = False
-        'DEBUG $bNoClose
-        'WAIT 0.2
+      If Not $hCurrent.Detached And If $hCurrent <> $hLast Then 
+        
+        If $hLast Then
+          $bNoClose = True
+          $hLast.Window.Hide
+          $bNoClose = False
+        Endif
+        $hLast = $hCurrent
+        
       Endif
       
       UpdateTitle
