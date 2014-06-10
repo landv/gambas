@@ -30,9 +30,11 @@ Public Sub Form_Open()
   Dim Y As Integer
   Dim E As Float
 
+  Me.Background = &H40FFFFFF&
+
   $hWelcome = New CWelcome(dwgWelcome)
 
-  txtAuthor.Background = svwAuthor.Background
+  'txtAuthor.Background = svwAuthor.Background
 
   GetAuthor
   GetSupport
@@ -203,16 +205,17 @@ Private Sub GetAuthor()
     
   Next
 
-  txtAuthor.RichText = sText
-
-Finally
-
-  txtAuthor.Height = txtAuthor.TextHeight '+ 256
-  'PRINT txtAuthor.TextHeight
+  'txtAuthor.X = Desktop.Scale
+  'txtAuthor.W = txtAuthor.Parent.W - Desktop.Scale * 2
+  txtAuthor.Text = sText
+  txtAuthor.Adjust
+  txtAuthor.Height += 128
+  'txtAuthor.W = txtAuthor.Parent.W - Desktop.Scale * 2
 
 Catch
 
-  txtAuthor.RichText = Error.Text
+  txtAuthor.Text = Error.Text
+  txtAuthor.Adjust
 
 End
 
@@ -232,12 +235,6 @@ Private Sub GetSupport()
 
 End
 
-
-Public Sub Form_Show()
-
-  txtAuthor.Height = txtAuthor.TextHeight + 256
-
-End
 
 Public Sub btnGift_Click()
 

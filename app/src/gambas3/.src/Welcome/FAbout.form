@@ -6,13 +6,18 @@
   Text = ("About Gambas...")
   Icon = Picture["img/logo/logo-32-head.png"]
   Resizable = False
+  Transparent = True
+  Arrangement = Arrange.Vertical
   { dwgWelcome DrawingArea
     MoveScaled(0,0,67,21)
   }
   { svwAuthor ScrollView
-    MoveScaled(3,23,62,41)
+    MoveScaled(3,21,64,44)
+    Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
+    Margin = True
+    Padding = 16
     Border = False
     ScrollBar = Scroll.None
     { Panel2 Panel
@@ -41,13 +46,9 @@
       Text = ("<h2 align=center>Authors</h2>\n")
       Alignment = Align.Bottom
     }
-    { txtAuthor TextEdit
-      MoveScaled(4,125,68,11)
-      Background = Color.TextBackground
-      ReadOnly = True
-      Wrap = True
-      Border = False
-      ScrollBar = Scroll.None
+    { txtAuthor TextLabel
+      MoveScaled(7,124,41,8)
+      Text = ("TextLabel1")
     }
     { Panel3 Panel
       MoveScaled(28,138,10,42)
@@ -59,13 +60,11 @@
     Delay = 25
   }
   { picGradientTop PictureBox
-    MoveScaled(1,23,80,7)
+    MoveScaled(0,21,80,7)
+    Ignore = True
   }
   { picGradientBottom PictureBox
-    MoveScaled(1,57,80,7)
-  }
-  { Panel1 Panel
-    MoveScaled(0,21,82,0)
-    Background = &H000000&
+    MoveScaled(0,58,80,7)
+    Ignore = True
   }
 }
