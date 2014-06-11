@@ -90,6 +90,7 @@ static void cb_expose(gDrawingArea *sender, GdkRegion *region, int dx, int dy)
 		PAINT_begin(THIS);
 		gdk_region_offset(region, -dx, -dy);
 		PAINT_clip_region(region);
+		gdk_region_offset(region, dx, dy);
 
 		GB.Raise(THIS, EVENT_draw, 0);
 
