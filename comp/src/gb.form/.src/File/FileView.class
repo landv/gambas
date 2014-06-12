@@ -260,10 +260,13 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   Dim sText As String
   Dim bRichText As Boolean
   Dim hCache As DirCache
+  Dim iHiddenFg As Integer
 
   Inc Application.Busy
   
   $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
+  
+  iHiddenFg = Color.Merge(Color.TextBackground, Color.TextForeground, 0.66)
   
   aSel = GetSelection()
   
@@ -293,7 +296,7 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
     If Not $bShowHidden And If Left(sFile) = "." Or Right(sFile) = "~" Then Continue
     'With Stat(sDir &/ sFile)
     With hCache.GetInfo(sFile)
-      If .Type = gb.Directory Then
+      If hCache.IsDir(sFile) Then
         If Not $bShowDir Then Continue
         sPrefix = "0"
       Else
@@ -302,7 +305,7 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
       Endif
       hPict = GetIcon(sDir &/ sFile, iSize)
       If Not hPict Then 
-        If .Type = gb.Directory Then 
+        If hCache.IsDir(sFile) Then 
           hPict = hPictFolder
         Else 
           hPict = hPictFile
@@ -317,7 +320,7 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
         bRichText = True
       Endif
       If .Hidden Then
-        sText = "<font color=\"#" & Hex$(Color.LightForeground, 6) & "\">" & sText & "</font>"
+        sText = "<font color=\"#" & Hex$(iHiddenFg, 6) & "\">" & sText & "</font>"
         bRichText = True
       Endif
 

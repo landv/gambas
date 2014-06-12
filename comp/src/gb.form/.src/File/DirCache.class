@@ -9,6 +9,7 @@ Private $aList As String[]
 Private $dDate As Date
 Private $cStat As New Collection
 Private $cIcon As New Collection
+Private $cIsDir As New Collection
 Private $iLock As Integer
 
 Static Public Sub _get(sDir As String) As DirCache
@@ -89,6 +90,23 @@ Public Sub GetInfo(sFile As String) As Stat
   Return hInfo
   
 End
+
+Public Sub IsDir(sFile As String) As Boolean
+  
+  If CheckValid() Then Return
+  
+  If sFile = "" Then sFile = "/"
+
+  If Not $cIsDir.Exist(sFile) Then
+    
+    $cIsDir[sFile] = IsDir($sDir &/ sFile)
+    
+  Endif
+  
+  Return $cIsDir[sFile]
+  
+End
+
 
 Public Sub GetMimeIcon(sFile As String, iSize As Integer) As Image
   

@@ -182,7 +182,7 @@ Public Sub TreeView_Expand()
   hCache = DirCache[sDir]
   hCache.Lock
   For Each sFile In hCache.GetFiles().Sort(gb.Natural + gb.IgnoreCase)
-    If hCache.GetInfo(sFile).Type <> gb.Directory Then Continue
+    If Not hCache.IsDir(sFile) Then Continue
     AddDir(sDir, sFile)
   Next
   hCache.Unlock
