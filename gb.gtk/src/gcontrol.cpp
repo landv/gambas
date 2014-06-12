@@ -741,13 +741,21 @@ void gControl::setFont(gFont *ft)
 static void cb_update_font(GtkWidget *widget, gpointer data)
 {
 	PangoFontDescription *desc = (PangoFontDescription *)data;
+#ifdef GTK3
+	gtk_widget_override_font(widget, desc);
+#else
 	gtk_widget_modify_font(widget, desc);
+#endif
 }
 
 void gControl::updateFont()
 {
 	resolveFont();
+#ifdef GTK3
+	gtk_widget_override_font(widget, font()->desc());
+#else
 	gtk_widget_modify_font(widget, font()->desc());
+#endif
 
 	if (!isContainer() && GTK_IS_CONTAINER(widget))
 		gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)cb_update_font, (gpointer)font()->desc());

@@ -55,7 +55,7 @@ public:
 	void setTabVisible(int ind, bool vl);
 	bool removeTab(int ind);
 	void setClosable(bool v);
-	bool isClosable() const { return _button_pixbuf_normal != NULL; }
+	bool isClosable() const { return _closable; }
 
 	virtual int childCount() const;
 	virtual gControl *child(int index) const;
@@ -79,10 +79,11 @@ public:
 	virtual GtkWidget *getContainer();
 	int getRealIndex(GtkWidget *page) const;
 
-	GdkPixbuf *_button_pixbuf_normal;
-	GdkPixbuf *_button_pixbuf_disabled;
+	static cairo_surface_t *_button_normal;
+	static cairo_surface_t *_button_disabled;
 	
 private:
+	bool _closable;
 	GPtrArray *_pages;
 	gFont *_textFont;
 	gTabStripPage *get(int ind) const;

@@ -27,38 +27,50 @@
 #include "gdesktop.h"
 #include "gtabstrip.h"
 
-#if 0
-static int gTabStrip_buttonRelease(GtkWidget *wid,GdkEventButton *e,gTabStrip *d)
-{
-	if (!gApplication::userEvents()) return false;
+static const struct {
+  guint  	 width;
+  guint  	 height;
+  guint  	 bytes_per_pixel; /* 2:RGB16, 3:RGB, 4:RGBA */
+  guint8 	 pixel_data[16 * 16 * 4 + 1];
+} _close_button = {
+  16, 16, 4,
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0_a]\206`d_\344bd`x\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0__]v`d_\344ac_\204\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0bd`\335\261\264\254\377}\200z\356`b^\200\0\0\0\0\0\0"
+  "\0\0`b\\}z}w\355\260\263\253\377ce`\331\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0_a]v}\200z\356\272\275\265\377\201\203}\356`b^\200`b\\}z}w"
+  "\355\261\264\254\377|~y\355ad_n\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0ac]~\203\205\200\356\300\304\274\377\206\211\203\356\200\202"
+  "}\355\261\264\254\377|~y\356`d^x\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0bd`\177\212\215\210\356\301\304\274\377\271"
+  "\274\264\377\201\204}\356ac_y\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0bd`}\213\215\210\355\303\306\276\377"
+  "\272\276\266\377\177\201|\355`c\\w\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0bd^}\204\206\201\355\307\313\303\377\212"
+  "\215\206\355\203\205\200\355\261\264\254\377z|v\355`c\\w\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0aa]v\200\202~\355\302\306\276\377"
+  "\205\207\202\356bd^\200`b^}{}w\355\261\264\254\377z|v\355`c`o\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0dfa\342\271\274\264\377\203\205\200\355"
+  "`d^\200\0\0\0\0\0\0\0\0`b\\}|~y\354\261\264\254\377bd^\340\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0ab_\231cfa\341`b^z\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0^`\\wcfa\335`b^\222\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+  "\0\0\0",
+};
 
-	if (d->onMouseEvent)
-	{
-		gMouse::validate();
-		gMouse::setMouse((int)e->x, (int)e->y, 0, e->state);
-		d->onMouseEvent(d,gEvent_MouseRelease);
-		gMouse::invalidate();
-	}
-	
-	return false;
-}
 
-static int gTabStrip_buttonPress(GtkWidget *wid,GdkEventButton *e,gTabStrip *d)
-{
-	if (!gApplication::userEvents()) return false;
 
-	if (d->onMouseEvent)
-	{
-		gMouse::validate();
-		gMouse::setMouse((int)e->x, (int)e->y, e->button, e->state);
-		d->onMouseEvent(d,gEvent_MousePress);
-		gMouse::invalidate();
-	
-		if (e->button==3) d->onMouseEvent(d,gEvent_MouseMenu);
-	}
-	return false;
-}
-#endif
+cairo_surface_t *gTabStrip::_button_normal = NULL;
+cairo_surface_t *gTabStrip::_button_disabled = NULL;
 
 static void cb_click(GtkNotebook *nb, GtkWidget *pg, guint pnum, gTabStrip *data)
 {
@@ -90,105 +102,73 @@ static void cb_size_allocate(GtkWidget *wid, GtkAllocation *alloc, gTabStrip *da
 
 #ifdef GTK3
 static gboolean cb_button_draw(GtkWidget *wid, cairo_t *cr, gTabStrip *data)
+#else
+static gboolean cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
+#endif
 {
-	GdkPixbuf *img;
+#ifndef GTK3
+	cairo_t *cr;
+#endif
+	cairo_surface_t *img;
 	GdkRectangle rpix = {0,0,0,0};
-	GdkRectangle rect;
-	gint py, px;
-	gint dx, dy;
+	GdkRectangle rect = {0,0};
+	int py, px;
+	int dx, dy;
+
+#ifndef GTK3
+	GTK_BUTTON(wid)->relief = GTK_RELIEF_NORMAL;
+#endif
 
 	gtk_widget_get_allocation(wid, &rect);
-	px = rect.width;
-
-	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_ACTIVE)
-	{
-	  gtk_widget_style_get (wid,
-				"child-displacement-x", &dx,
-				"child-displacement-y", &dy,
-				(void *)NULL);
-		rect.x += dx;
-		rect.y += dy;
-	}
-
-	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_INSENSITIVE)
-	{
-		if (!data->_button_pixbuf_disabled)
-		{
-			data->_button_pixbuf_disabled = gt_pixbuf_create_disabled(data->_button_pixbuf_normal);
-			g_object_ref(G_OBJECT(data->_button_pixbuf_disabled));
-		}
-		img = data->_button_pixbuf_disabled;
-	}
-	else
-		img = data->_button_pixbuf_normal;
-
-	rpix.width = gdk_pixbuf_get_width(img);
-	rpix.height = gdk_pixbuf_get_height(img);
-
-	py = (rect.height - rpix.height)/2;
-
-	gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
-
-	return false;
-}
-#else
-static gboolean cb_button_fix(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
-{
-	gtk_button_set_relief(GTK_BUTTON(wid), GTK_RELIEF_NONE);
-	return false;
-}
-
-static gboolean cb_button_expose(GtkWidget *wid, GdkEventExpose *e, gTabStrip *data)
-{
-	cairo_t *cr;
-	GdkPixbuf *img;
-	GdkRectangle rpix = {0,0,0,0};
-	GdkRectangle rect = {0,0,0,0};
-	gint py, px;
-	gint dx, dy;
-
-	rect = wid->allocation;
-	px = rect.width;
-
-	if (GTK_WIDGET_STATE(data->widget) == GTK_STATE_ACTIVE)
-	{
-	  gtk_widget_style_get (wid,
-				"child-displacement-x", &dx,
-				"child-displacement-y", &dy,
-				(void *)NULL);
-		rect.x += dx;
-		rect.y += dy;
-	}
-
-	if (GTK_WIDGET_STATE(data->widget)==GTK_STATE_INSENSITIVE) 
-	{
-		if (!data->_button_pixbuf_disabled)
-		{
-			data->_button_pixbuf_disabled = gt_pixbuf_create_disabled(data->_button_pixbuf_normal);
-			g_object_ref(G_OBJECT(data->_button_pixbuf_disabled));
-		}
-		img = data->_button_pixbuf_disabled;
-	}
-	else
-		img = data->_button_pixbuf_normal;
-
-	rpix.width = gdk_pixbuf_get_width(img);
-	rpix.height = gdk_pixbuf_get_height(img);
-	
-	py = (rect.height - rpix.height)/2;
-	
-	cr = gdk_cairo_create(wid->window);
-	
-	gdk_cairo_region(cr, e->region);
-	cairo_clip(cr);
-	
-	gt_cairo_draw_pixbuf(cr, img, rect.x + (px - rpix.width) / 2, rect.y + py, -1, -1, 1.0, NULL);
-	
-	cairo_destroy(cr);
-	
-	return false;
-}
+#ifdef GTK3
+	rect.x = rect.y = 0;
 #endif
+	px = rect.width;
+
+#ifdef GTK3
+	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_ACTIVE)
+#else
+	if (GTK_WIDGET_STATE(data->widget) == GTK_STATE_ACTIVE)
+#endif
+	{
+	  gtk_widget_style_get (wid,
+				"child-displacement-x", &dx,
+				"child-displacement-y", &dy,
+				(void *)NULL);
+		rect.x += dx;
+		rect.y += dy;
+	}
+
+#ifdef GTK3
+	if (gtk_widget_get_state_flags(data->widget) & GTK_STATE_FLAG_INSENSITIVE)
+#else
+	if (GTK_WIDGET_STATE(data->widget) == GTK_STATE_INSENSITIVE)
+#endif
+		img = data->_button_disabled;
+	else
+		img = data->_button_normal;
+
+	rpix.width = cairo_image_surface_get_width(img);
+	rpix.height = cairo_image_surface_get_height(img);
+
+	py = (rect.height - rpix.height) / 2;
+
+	rect.x += (px - rpix.width) / 2;
+	rect.y += py;
+
+#ifndef GTK3
+	cr = gdk_cairo_create(wid->window);
+#endif
+
+	cairo_set_source_surface(cr, img, rect.x, rect.y);
+	cairo_paint(cr);
+
+#ifndef GTK3
+	cairo_destroy(cr);
+#endif
+
+	return false;
+}
 
 static void cb_button_clicked(GtkWidget *wid, gTabStrip *data)
 {
@@ -291,10 +271,6 @@ gTabStripPage::gTabStripPage(gTabStrip *tab)
 	updateColors();
 	updateFont();
 	
-	//g_signal_connect(G_OBJECT(widget),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
-	//g_signal_connect(G_OBJECT(widget),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
-	//g_signal_connect(G_OBJECT(fix),"button-press-event",G_CALLBACK(gTabStrip_buttonPress),(gpointer)parent);
-	//g_signal_connect(G_OBJECT(fix),"button-release-event",G_CALLBACK(gTabStrip_buttonRelease),(gpointer)parent);
 	g_signal_connect_after(G_OBJECT(widget), "size-allocate", G_CALLBACK(cb_size_allocate), (gpointer)parent);
 	
 	g_object_ref(widget);
@@ -349,8 +325,13 @@ void gTabStripPage::updateFont()
 	if (fnt)
 		desc = fnt->desc();
 
+#ifdef GTK3
+	gtk_widget_override_font(widget, desc);
+	gtk_widget_override_font(label, desc);
+#else
 	gtk_widget_modify_font(widget, desc);
 	gtk_widget_modify_font(label, desc);
+#endif
 }
 
 void gTabStripPage::setText(char *text)
@@ -441,46 +422,13 @@ void gTabStripPage::setVisible(bool v)
 	}
 }
 
-/*
-int gTabStripPage::count() const
+#ifndef GTK3
+static gboolean cb_button_fix(GtkWidget *wid, GdkEvent *e, gTabStripPage *data)
 {
-	return parent->tabCount();
-	
-	int i;
-	gControl *ch;
-	int ct = 0;
-	
-	for (i = 0; i < parent->childCount(); i++)
-	{
-		ch = parent->child(i);
-		if (gtk_widget_get_parent(ch->border) == widget)
-			ct++;
-	}
-	
-	return ct;
+	GTK_BUTTON(wid)->relief = GTK_RELIEF_NONE;
+	return false;
 }
-
-
-gControl *gTabStripPage::child(int n) const
-{
-	int i;
-	gControl *ch;
-	int ct = 0;
-	
-	for (i = 0; i < parent->childCount(); i++)
-	{
-		ch = parent->child(i);
-		if (gtk_widget_get_parent(ch->border) == widget)
-		{
-			if (ct == n)
-				return ch;
-			ct++;
-		}
-	}
-	
-	return NULL;
-}
-*/
+#endif
 
 void gTabStripPage::updateButton()
 {
@@ -490,8 +438,10 @@ void gTabStripPage::updateButton()
 	{
 		_button = gtk_button_new();
 		gtk_button_set_focus_on_click(GTK_BUTTON(_button), false);
-#ifndef GTK3
-		g_signal_connect(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_fix), (gpointer)parent);
+#ifdef GTK3
+		gtk_button_set_relief(GTK_BUTTON(_button), GTK_RELIEF_NONE);
+#else
+		g_signal_connect(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_fix), (gpointer)this);
 #endif
 		//g_signal_connect_after(G_OBJECT(_button), "expose-event", G_CALLBACK(cb_button_expose), (gpointer)parent);
 		ON_DRAW(_button, parent, cb_button_expose, cb_button_draw);
@@ -499,7 +449,7 @@ void gTabStripPage::updateButton()
 		g_object_set_data(G_OBJECT(_button), "gambas-tab-page", (void *)widget);
 		
 		gtk_widget_show(_button);
-		
+
 		gtk_box_pack_start(GTK_BOX(hbox), _button, FALSE, FALSE, 0);
 	}
 	else if (!v && _button)
@@ -526,8 +476,7 @@ gTabStrip::gTabStrip(gContainer *parent) : gContainer(parent)
 	g_typ = Type_gTabStrip;
 	_pages = g_ptr_array_new();
 	_textFont = NULL;
-	_button_pixbuf_normal = NULL;
-	_button_pixbuf_disabled = NULL;
+	_closable = false;
 	
 	onClick = NULL;
 	onClose = NULL;
@@ -673,7 +622,7 @@ bool gTabStrip::setCount(int vl)
 
 void gTabStrip::setOrientation(int vl)
 {
-    gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget),GtkPositionType(vl));
+	gtk_notebook_set_tab_pos(GTK_NOTEBOOK(widget),GtkPositionType(vl));
 }
 
 gPicture* gTabStrip::tabPicture(int ind) const
@@ -855,28 +804,39 @@ void gTabStrip::setClosable(bool v)
 {
 	int i;
 	
-	if (v == isClosable())
+	if (v == _closable)
 		return;
 	
-	if (_button_pixbuf_normal)
-	{
-		g_object_unref(G_OBJECT(_button_pixbuf_normal));
-		_button_pixbuf_normal = NULL;
-	}
-	if (_button_pixbuf_disabled)
-	{
-		g_object_unref(G_OBJECT(_button_pixbuf_disabled));
-		_button_pixbuf_disabled = NULL;
-	}
-		
+	_closable = v;
+
 	if (v)
 	{
-		_button_pixbuf_normal = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), GTK_STOCK_CLOSE, 16, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
-		g_object_ref(G_OBJECT(_button_pixbuf_normal));
+		if (!_button_normal)
+		{
+			GdkPixbuf *normal, *disabled;
+
+			normal = gtk_icon_theme_load_icon(gtk_icon_theme_get_default(), "window-close", 16, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
+			if (!normal)
+			{
+				normal = gdk_pixbuf_new_from_data(_close_button.pixel_data, GDK_COLORSPACE_RGB, TRUE, 8,
+																					_close_button.width, _close_button.height,
+																					_close_button.width * sizeof(int), NULL, NULL);
+			}
+
+			disabled = gt_pixbuf_create_disabled(normal);
+
+			_button_normal = gt_cairo_create_surface_from_pixbuf(normal);
+			_button_disabled = gt_cairo_create_surface_from_pixbuf(disabled);
+
+			g_object_unref(normal);
+			g_object_unref(disabled);
+
+		}
 	}
 	
 	for (i = 0; i < count(); i++)
 		get(i)->updateButton();
+
 }
 
 int gTabStrip::findIndex(gControl *child) const
