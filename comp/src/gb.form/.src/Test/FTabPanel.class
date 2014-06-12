@@ -27,8 +27,9 @@ Public Sub Form_Open()
     hLabel = New Label(TabPanel2)
     hLabel.Move(8, 8, 8, 8)
     hLabel.AutoResize = True
-    hLabel.Text = CStr(I + 1)
+    hLabel.Text = " " & CStr(I + 1) & " "
     hLabel.Font.Grade = 6
+    hLabel.Border = Border.Plain
   Next
   
   TabPanel2.Index = 2
