@@ -5,6 +5,10 @@ Private $bGotError As Boolean
 Private $iHistory As Integer
 Private $sCurrent As String
 
+Private $iLinkY As Integer
+Private $iLinkX As Integer
+Private $iLinkLen As Integer
+
 'PUBLIC Shown AS Boolean
 
 Public Sub _new()
@@ -19,6 +23,10 @@ Public Sub _new()
   btnAbove.Value = Settings["/FOutput/KeepAbove", False]
   btnEcho.Value = Settings["/FOutput/Echo", False]
   OnProjectDebug
+  
+  edtOutput.Styles[Highlight.Keyword].Underline = True
+  edtOutput.Styles[Highlight.Keyword].Bold = False
+  edtOutput.Styles[Highlight.Keyword].Foreground = Color.Blue
 
 End
 
@@ -380,3 +388,80 @@ Public Sub btnEcho_Click()
   Settings["/FOutput/Echo"] = btnEcho.Value
 
 End
+
+Public Sub edtOutput_Highlight()
+
+  If $iLinkLen = 0 Then Return
+  If $iLinkY <> Highlight.Line Then Return
+
+  Highlight.Add(Highlight.Keyword, $iLinkLen)
+
+End
+
+Public Sub edtOutput_MouseMove()
+
+  Dim X, Y As Integer
+  Dim sText As String
+  Dim iPos As Integer
+  Dim aScan As String[]
+  Dim iNewX As Integer
+  Dim iNewY As Integer
+  Dim iNewLen As Integer
+  
+  X = edtOutput.PosToColumn(Mouse.X, Mouse.Y)
+  Y = edtOutput.PosToLine(Mouse.Y)
+  
+  If Y >= 0 And If X >= 0 Then
+  
+    sText = edtOutput.Lines[Y].Text
+    
+    iPos = InStr(sText, ": ")
+    If iPos Then
+      aScan = Scan(Left(sText, iPos - 1), "*.*.*")
+      If aScan.Count = 3 And If IsDigit(aScan[2]) Then 
+        iNewY = Y
+        iNewX = 0
+        iNewLen = iPos - 1
+      Endif
+    Endif
+  Endif
+  
+  If $iLinkLen Then 
+    $iLinkLen = 0
+    edtOutput.Lines[$iLinkY].Refresh
+  Endif
+  
+  If iNewLen Then 
+    $iLinkX = iNewX
+    $iLinkY = iNewY
+    $iLinkLen = iNewLen
+    edtOutput.Lines[iNewY].Refresh
+  Endif
+  
+  If $iLinkLen Then 
+    edtOutput.Mouse = Mouse.Pointing
+  Else
+    edtOutput.Mouse = Mouse.Default
+  Endif
+
+End
+
+Public Sub edtOutput_Leave()
+
+  If $iLinkLen Then 
+    $iLinkLen = 0
+    edtOutput.Lines[$iLinkY].Refresh
+  Endif
+  
+End
+
+Public Sub edtOutput_MouseDown()
+
+  If $iLinkLen And If Mouse.Normal Then
+    If Not Project.Goto(Left$(edtOutput.Lines[$iLinkY].Text, $iLinkLen)) Then 
+      Stop Event
+    Endif
+  Endif
+
+End
+

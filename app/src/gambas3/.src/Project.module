@@ -5666,3 +5666,20 @@ Catch
   Message.Error("<b>Unable to update all forms!</b><p>" & Error.Text & "<br>" & Error.Where)
 
 End
+
+Public Sub Goto(sPosition As String) As Boolean
+
+  Dim aScan As String[]
+  Dim sClass As String
+  Dim iLine As Integer
+
+  aScan = Scan(sPosition, "*.*.*")
+  If aScan.Count <> 3 Then Return True
+  
+  sClass = aScan[0]
+  Try iLine = CInt(aScan[2])
+  If Error Then Return True
+  
+  If ExistClass(sClass) Then OpenFile(sClass, iLine)
+  
+End

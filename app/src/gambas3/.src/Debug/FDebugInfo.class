@@ -202,15 +202,7 @@ Public Sub lvwStack_Click()
   sLoc = lvwStack.Current.Text
   If InStr(sLoc, "(") Then Return
 
-  iPos = InStr(sLoc, ".")
-  If iPos = 0 Then Return
-  sFile = Left$(sLoc, iPos - 1)
-
-  iPos = RInStr(sLoc, ".")
-  If iPos = 0 Then Return
-  iLine = Val(Mid$(sLoc, iPos + 1))
-
-  If Project.ExistClass(sFile) Then Project.OpenFile(sFile, iLine)
+  Project.Goto(sLoc)
 
 Catch
 
