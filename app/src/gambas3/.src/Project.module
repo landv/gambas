@@ -1918,6 +1918,17 @@ Public Sub IsTextFile(sPath As String) As Boolean
 
 End
 
+Public Sub IsPatchFile(sPath As String) As Boolean
+
+  Dim hFile As File
+  Dim sHead As String
+
+  hFile = Open sPath
+  sHead = Read #hFile, -4
+  Return sHead = "diff"
+
+End
+
 Public Function LoadFile(sPath As String) As Object
 
   Dim hForm As Object
