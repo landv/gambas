@@ -77,8 +77,8 @@ Public Sub Begin(Device As Object)
   Paint.Begin(Device)
   Paint.LineWidth = 1
   Paint.AntiAlias = False
-  Paint.LineCap = Paint.LineCapSquare
-  Paint.LineJoin = Paint.LineJoinMiter
+  Paint.LineCap = Paint.LineCapButt
+  Paint.LineJoin = Paint.LineJoinRound
   
 End
 
@@ -253,13 +253,13 @@ Private Sub LineStyle_Write(Value As Integer)
     Case Line.Solid
       Paint.Dash = Null
     Case Line.Dash
-      Paint.Dash = [3, 3]
+      Paint.Dash = [3, 2]
     Case Line.Dot
-      Paint.Dash = [1, 3]
+      Paint.Dash = [1, 2]
     Case Line.DashDot
-      Paint.Dash = [3, 3, 1, 3]
+      Paint.Dash = [3, 2, 1, 2]
     Case Line.DashDotDot
-      Paint.Dash = [3, 3, 1, 3, 1, 3]
+      Paint.Dash = [3, 2, 1, 2, 1, 2]
     Default
       Return
   End Select
@@ -327,24 +327,31 @@ Public Sub Line(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   Dim fOffset As Float
   Dim hBrush As PaintBrush 
   Dim LW As Float
+  Dim iStyle As Integer = LineStyle_Read()
   
-  If X1 = X2 Then
-    LW = Paint.LineWidth
-    If Y2 < Y1 Then Swap Y1, Y2
-    Paint.FillRect(X1 - Int(LW / 2), Y1, LW, Y2 - Y1 + 1, GetForeground())
-  Else If Y1 = Y2 Then
-    LW = Paint.LineWidth
-    If X2 < X1 Then Swap X1, X2
-    Paint.FillRect(X1, Y1 - Int(LW / 2), X2 - X1 + 1, LW, GetForeground())
-  Else
-    hBrush = Paint.Brush  
-    Paint.Background = GetForeground()
-    fOffset = GetStrokeOffset()
-    Paint.MoveTo(X1 - fOffset, Y1 - fOffset)
-    Paint.LineTo(X2 + fOffset, Y2 + fOffset)
-    Paint.Stroke
-    Paint.Brush = hBrush
+  If iStyle = Line.None Then Return
+  
+  If iStyle = Line.Solid Then
+    If X1 = X2 Then
+      LW = Paint.LineWidth
+      If Y2 < Y1 Then Swap Y1, Y2
+      Paint.FillRect(X1 - Int(LW / 2), Y1, LW, Y2 - Y1 + 1, GetForeground())
+      Return
+    Else If Y1 = Y2 Then
+      LW = Paint.LineWidth
+      If X2 < X1 Then Swap X1, X2
+      Paint.FillRect(X1, Y1 - Int(LW / 2), X2 - X1 + 1, LW, GetForeground())
+      Return
+    Endif
   Endif
+  
+  hBrush = Paint.Brush  
+  Paint.Background = GetForeground()
+  fOffset = GetStrokeOffset()
+  Paint.MoveTo(X1 + fOffset, Y1 + fOffset)
+  Paint.LineTo(X2 + fOffset, Y2 + fOffset)
+  Paint.Stroke
+  Paint.Brush = hBrush
   
 End
 

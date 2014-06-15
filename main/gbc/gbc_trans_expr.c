@@ -763,6 +763,9 @@ bool TRANS_affectation(bool dup)
 	JOB->current = left;
 	TRANS_reference();
 
+	if (!PATTERN_is_newline(*JOB->current))
+		THROW(E_SYNTAX);
+
 	JOB->current = after;
 
 	return TRUE;

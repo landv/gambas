@@ -204,6 +204,31 @@ void gFont::reset()
 	_underline_set = false;
 }
 
+void gFont::setAll(bool v)
+{
+	_bold_set = v;
+	_italic_set = v;
+	_name_set = v;
+	_size_set = v;
+	_strikeout_set = v;
+	_underline_set = v;
+}
+
+void gFont::setAllFrom(gFont *font)
+{
+	if (!font)
+		setAll(false);
+	else
+	{
+		_bold_set = font->_bold_set;
+		_italic_set = font->_italic_set;
+		_name_set = font->_name_set;
+		_size_set = font->_size_set;
+		_strikeout_set = font->_strikeout_set;
+		_underline_set = font->_underline_set;
+	}
+}
+
 void gFont::realize()
 {
   ct = NULL;

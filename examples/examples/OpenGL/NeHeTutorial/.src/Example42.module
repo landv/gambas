@@ -90,7 +90,7 @@ Public Sub TexturedCylinder(radius As Float, height As Float, slices As Integer)
   Dim size As Integer
   Dim angle As Float
 
-  angle As Float = 2 * Pi / (- slices)
+  angle = 2 * Pi / (- slices)
   sint[0] = 0.0
   cost[0] = 1.0
   For i = 1 To slices

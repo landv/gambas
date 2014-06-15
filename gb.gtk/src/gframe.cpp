@@ -199,13 +199,6 @@ void gFrame::setText(char *vl)
 		gtk_label_set_text(GTK_LABEL(label), (const gchar*)vl);
 }
 
-void gFrame::setFont(gFont *ft)
-{
-	gControl::setFont(ft);
-	if (label)
-		gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
-}
-
 void gFrame::setRealForeground(gColor color)
 {
 	gControl::setRealForeground(color);

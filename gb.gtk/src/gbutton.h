@@ -64,7 +64,6 @@ public:
 	void setTristate(bool vl);
 	void setAutoResize(bool vl);
 	
-	virtual void setFont(gFont *ft);
 	virtual void setRealForeground(gColor color);
 	//virtual void setRealBackground(gColor color);
 

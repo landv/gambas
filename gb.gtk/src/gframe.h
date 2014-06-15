@@ -49,7 +49,6 @@ public:
 	char* text();
 	void setText(char* vl);
 
-	virtual void setFont(gFont *ft);
 	virtual void setRealForeground(gColor color);
 
 //"Private"

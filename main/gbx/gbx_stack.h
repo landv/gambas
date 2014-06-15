@@ -69,6 +69,8 @@ EXTERN uintptr_t STACK_process_stack_limit;
 
 #endif
 
+#define STACK_FOR_EVAL 16
+
 void STACK_init(void);
 void STACK_exit(void);
 
@@ -121,7 +123,7 @@ STACK_CONTEXT *STACK_get_frame(int frame);
 	STACK_copy(STACK_frame, _context); \
 	\
 	STACK_frame_count++; \
-	STACK_limit = (char *)STACK_frame; \
+	STACK_limit -= sizeof(STACK_CONTEXT); \
 })
 
 #define STACK_pop_frame(_context) \
@@ -129,7 +131,10 @@ STACK_CONTEXT *STACK_get_frame(int frame);
 	STACK_copy(_context, STACK_frame); \
 	STACK_frame++; \
 	STACK_frame_count--; \
-	STACK_limit = (char *)STACK_frame; \
+	STACK_limit += sizeof(STACK_CONTEXT); \
 })
+
+#define STACK_enable_for_eval() STACK_limit += STACK_FOR_EVAL * sizeof(VALUE)
+#define STACK_disable_for_eval() STACK_limit -= STACK_FOR_EVAL * sizeof(VALUE)
 
 #endif

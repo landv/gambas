@@ -352,16 +352,6 @@ void gButton::setFont(gFont *ft)
 }
 #endif
 
-void gButton::setFont(gFont *ft)
-{
-	gControl::setFont(ft);
-	
-	if (label)
-		gtk_widget_modify_font(label, fnt ? fnt->desc() : NULL);
-	
-	updateSize();
-}
-
 /*bool gButton::enabled()
 {
 	return GTK_WIDGET_SENSITIVE(widget);

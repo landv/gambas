@@ -225,6 +225,11 @@ void HtmlDocument_AddScriptIfNotIE(Document *doc, const char *src, size_t lenSrc
     XML.XMLNode_appendChild(head,comment);
 }
 
+Element* HtmlDocument_GetElementById(Document *doc, const char *id, const size_t lenId, int depth)
+{
+    return XML.XMLNode_getFirstChildByAttributeValue(doc, "id", 2, id, lenId, 0, depth);
+}
+
 void HtmlDocument_GetElementsByClassName(Document *doc, const char *className, const size_t lenClassName, GB_ARRAY *array, int depth)
 {
     XML.XMLNode_getGBChildrenByAttributeValue(doc, "class", 5, className, lenClassName, array, 0, depth);

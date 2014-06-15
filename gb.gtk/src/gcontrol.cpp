@@ -50,8 +50,8 @@
 #include "gmouse.h"
 #include "gcontrol.h"
 
-static GList *controls=NULL;
-static GList *controls_destroyed=NULL;
+static GList *controls = NULL;
+static GList *controls_destroyed = NULL;
 
 static const guchar _cursor_fdiag[] = {
    0x3f, 0x00, 0x1f, 0x00, 0x0f, 0x00, 0x0f, 0x00, 0x13, 0x00, 0x21, 0x00,
@@ -196,7 +196,8 @@ void gControl::initAll(gContainer *parent)
 	bufX = 0;
 	bufY = 0;
 	curs = NULL;
-	fnt = NULL;
+	_font = NULL;
+	_resolved_font = NULL;
 	g_typ = 0;
 	dsg = false;
 	expa = false;
@@ -276,7 +277,13 @@ gControl::~gControl()
 		gDrag::cancel();
 	
 	if (curs) { delete curs; curs=NULL; }
-	gFont::assign(&fnt);
+
+	if (_font)
+	{
+		gFont::assign(&_font);
+		gFont::assign(&_resolved_font);
+	}
+
 	setName(NULL);
 
 	controls = g_list_remove(controls, this);
@@ -612,57 +619,88 @@ void gControl::setToolTip(char* vl)
 
 gFont* gControl::font()
 {
-	if (fnt)
-		return fnt;
-	if (pr)
+	if (_resolved_font)
+	{
+		//fprintf(stderr, "%s: font -> _resolved_font\n", name());
+		return _resolved_font;
+	}
+	else if (pr)
+	{
+		//fprintf(stderr, "%s: font -> parent\n", name());
 		return pr->font();
-	
-	return gDesktop::font();
+	}
+	else
+	{
+		//fprintf(stderr, "%s: font -> desktop\n", name());
+		return gDesktop::font();
+	}
 }
 
-
-void gControl::resolveFont(gFont *new_font)
+void gControl::actualFontTo(gFont *ft)
 {
-	gFont *font = new gFont();
-	gControl *ctrl = this;
-	
-	font->mergeFrom(new_font);
+	//fprintf(stderr, "actualFontTo: %s: %s / %s (_font = %s)\n", name(), ft->toString(), ft->toFullString(), _font ? _font->toFullString() : NULL);
+	font()->copyTo(ft);
+	ft->setAllFrom(_font);
+	//fprintf(stderr, "==> %s: %s / %s (_font = %s)\n", name(), ft->toString(), ft->toFullString(), _font ? _font->toFullString() : NULL);
+}
 
-	for(;;)
+void gControl::resolveFont()
+{
+	gFont *font;
+
+	if (_font)
 	{
-		if (font->isAllSet())
-			break;
+		font = new gFont();
+		font->mergeFrom(_font);
+		if (pr)
+			font->mergeFrom(pr->font());
+		else
+			font->mergeFrom(gDesktop::font());
 
-		ctrl = ctrl->parent();
-		if (!ctrl)
-			break;
-
-		if (ctrl->fnt)
-			font->mergeFrom(ctrl->fnt);
+		gFont::set(&_resolved_font, font);
 	}
-	
-	gtk_widget_modify_font(widget, font->desc());
-	
-	gFont::set(&fnt, font);
+	else
+		gFont::assign(&_resolved_font);
 }
 
 void gControl::setFont(gFont *ft)
 {
+	//fprintf(stderr, "setFont: %s: %s\n", name(), ft->toFullString());
 	if (ft)
-	{
-		resolveFont(ft);
-		_font_set = true;
-	}
-	else if (fnt)
-	{
-		gFont::assign(&fnt);
-		gtk_widget_modify_font(widget, NULL);
-		_font_set = false;
-	}
-	
+		gFont::assign(&_font, ft);
+	else if (_font)
+		gFont::assign(&_font);
+
+	gFont::assign(&_resolved_font);
+
+	updateFont();
+
 	resize();
+
+	//fprintf(stderr, "--> %s: _font = %s\n", name(), _font ? _font->toFullString() : NULL);
 }
 
+static void cb_update_font(GtkWidget *widget, gpointer data)
+{
+	PangoFontDescription *desc = (PangoFontDescription *)data;
+	gtk_widget_modify_font(widget, desc);
+}
+
+void gControl::updateFont()
+{
+	resolveFont();
+	gtk_widget_modify_font(widget, font()->desc());
+
+	if (!isContainer() && GTK_IS_CONTAINER(widget))
+		gtk_container_forall(GTK_CONTAINER(widget), (GtkCallback)cb_update_font, (gpointer)font()->desc());
+
+	refresh();
+	updateSize();
+}
+
+void gControl::updateSize()
+{
+}
 
 int gControl::mouse()
 {

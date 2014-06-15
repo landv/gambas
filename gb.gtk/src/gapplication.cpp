@@ -956,24 +956,24 @@ void gApplication::setBusy(bool b)
 	GList *iter;
 	gControl *control;
 
-  if (b == _busy)
-    return;
+	if (b == _busy)
+		return;
 
-  _busy = b;
-  
-  iter = g_list_first(gControl::controlList());
-  
-  while (iter)
-  {
-    control = (gControl *)iter->data;
-    
-    if (control->mustUpdateCursor())
-    	control->setMouse(control->mouse());
-    
-    iter = g_list_next(iter);
-  }
-  
-  MAIN_do_iteration_just_events();
+	_busy = b;
+
+	iter = g_list_first(gControl::controlList());
+
+	while (iter)
+	{
+		control = (gControl *)iter->data;
+
+		if (control->mustUpdateCursor())
+			control->setMouse(control->mouse());
+
+		iter = g_list_next(iter);
+	}
+
+	MAIN_do_iteration_just_events();
 }
 
 static bool _dirty = false;

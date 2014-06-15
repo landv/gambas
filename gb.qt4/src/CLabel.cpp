@@ -46,7 +46,7 @@
 
 /***************************************************************************/
 
-BEGIN_METHOD(CLABEL_new, GB_OBJECT parent)
+BEGIN_METHOD(Label_new, GB_OBJECT parent)
 
   QLabel *wid = new MyLabel(QCONTAINER(VARG(parent)));
 
@@ -59,7 +59,7 @@ BEGIN_METHOD(CLABEL_new, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
+BEGIN_METHOD(TextLabel_new, GB_OBJECT parent)
 
   MyLabel *wid = new MyLabel(QCONTAINER(VARG(parent)));
 
@@ -73,7 +73,7 @@ BEGIN_METHOD(CTEXTLABEL_new, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_PROPERTY(CLABEL_text)
+BEGIN_PROPERTY(Label_Text)
 
   if (READ_PROPERTY)
     GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
@@ -83,7 +83,7 @@ BEGIN_PROPERTY(CLABEL_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CLABEL_alignment)
+BEGIN_PROPERTY(Label_Alignment)
 
   if (READ_PROPERTY)
     GB.ReturnInteger(CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_NORMAL, false));
@@ -93,7 +93,7 @@ BEGIN_PROPERTY(CLABEL_alignment)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CLABEL_auto_resize)
+BEGIN_PROPERTY(Label_AutoResize)
 
   if (READ_PROPERTY)
     GB.ReturnInteger(WIDGET->getAutoResize());
@@ -102,7 +102,7 @@ BEGIN_PROPERTY(CLABEL_auto_resize)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CLABEL_margin)
+BEGIN_PROPERTY(Label_Margin)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET->margin());
@@ -116,7 +116,7 @@ BEGIN_PROPERTY(CLABEL_margin)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CTEXTLABEL_alignment)
+BEGIN_PROPERTY(TextLabel_Alignment)
 
   if (READ_PROPERTY)
     GB.ReturnInteger(CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_NORMAL, false));
@@ -126,13 +126,13 @@ BEGIN_PROPERTY(CTEXTLABEL_alignment)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CLABEL_adjust)
+BEGIN_METHOD_VOID(Label_Adjust)
 
 	WIDGET->adjust();
 
 END_METHOD
 
-BEGIN_PROPERTY(CLABEL_transparent)
+BEGIN_PROPERTY(Label_Transparent)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->transparent);
@@ -154,16 +154,16 @@ GB_DESC CLabelDesc[] =
 {
   GB_DECLARE("Label", sizeof(CLABEL)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CLABEL_new, "(Parent)Container;"),
+  GB_METHOD("_new", NULL, Label_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Text", "s", CLABEL_text),
-  GB_PROPERTY("Caption", "s", CLABEL_text),
-  GB_PROPERTY("Alignment", "i", CLABEL_alignment),
+  GB_PROPERTY("Text", "s", Label_Text),
+  GB_PROPERTY("Caption", "s", Label_Text),
+  GB_PROPERTY("Alignment", "i", Label_Alignment),
   GB_PROPERTY("Border", "i", CWIDGET_border_full),
-  GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
-  GB_PROPERTY("Padding", "i", CLABEL_margin),
-  GB_PROPERTY("Transparent", "b", CLABEL_transparent),
-  GB_METHOD("Adjust", NULL, CLABEL_adjust, NULL),
+  GB_PROPERTY("AutoResize", "b", Label_AutoResize),
+  GB_PROPERTY("Padding", "i", Label_Margin),
+  GB_PROPERTY("Transparent", "b", Label_Transparent),
+  GB_METHOD("Adjust", NULL, Label_Adjust, NULL),
 
 	LABEL_DESCRIPTION,
 
@@ -175,17 +175,17 @@ GB_DESC CTextLabelDesc[] =
 {
   GB_DECLARE("TextLabel", sizeof(CLABEL)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTEXTLABEL_new, "(Parent)Container;"),
+  GB_METHOD("_new", NULL, TextLabel_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Text", "s", CLABEL_text),
-  GB_PROPERTY("Caption", "s", CLABEL_text),
-  GB_PROPERTY("Alignment", "i", CTEXTLABEL_alignment),
+  GB_PROPERTY("Text", "s", Label_Text),
+  GB_PROPERTY("Caption", "s", Label_Text),
+  GB_PROPERTY("Alignment", "i", TextLabel_Alignment),
   GB_PROPERTY("Border", "i", CWIDGET_border_full),
-  GB_PROPERTY("AutoResize", "b", CLABEL_auto_resize),
-  GB_PROPERTY("Padding", "i", CLABEL_margin),
-  GB_PROPERTY("Transparent", "b", CLABEL_transparent),
+  GB_PROPERTY("AutoResize", "b", Label_AutoResize),
+  GB_PROPERTY("Padding", "i", Label_Margin),
+  GB_PROPERTY("Transparent", "b", Label_Transparent),
   GB_PROPERTY("Wrap", "b", Label_Wrap),
-  GB_METHOD("Adjust", NULL, CLABEL_adjust, NULL),
+  GB_METHOD("Adjust", NULL, Label_Adjust, NULL),
 
 	TEXTLABEL_DESCRIPTION,
 
@@ -250,13 +250,8 @@ void MyLabel::calcMinimumHeight(bool adjust)
 	//qDebug("calcMinimumHeight: %p %s", ob, ((CWIDGET *)ob)->name);
 	
 	int w, h, nw, nh;
-	int f = frameWidth() + margin();
+	int f = contentsMargins().left() + margin();
 	QRect br;
-	
-	//if (f > 0 && f < 4)
-	//	f = 4;
-
-	//qDebug("calcMinimumHeight: f = %d", f);
 	
 	if (textFormat() == Qt::RichText)
 	{
@@ -291,8 +286,8 @@ void MyLabel::calcMinimumHeight(bool adjust)
 			nw = doc.size().width();
 		}
 
-		nw += 2; // Why? Don't know...
-		nh += 2;
+		//nw += 2; // Why? Don't know...
+		//nh += 2;
 	}
 	else
 	{
@@ -305,9 +300,10 @@ void MyLabel::calcMinimumHeight(bool adjust)
 	w = nw + f * 2;
 	h = nh + f * 2;
 
-	if (alignment() & Qt::AlignVCenter && nh < height())
+	int a = CCONST_alignment(WIDGET->alignment() & ALIGN_MASK, ALIGN_NORMAL, false);
+	if ((a == ALIGN_CENTER || a == ALIGN_LEFT || a == ALIGN_NORMAL || a == ALIGN_RIGHT) && nh < height())
 		nh = height();
-	
+
 	locked = true;
 	CWIDGET_resize(THIS, w, h);
 	locked = false;

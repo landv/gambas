@@ -112,6 +112,11 @@ void CCONTAINER_remove_child(void *_object);
 void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w = 0);
 void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height);
 
+void CCONTAINER_draw_border(QPainter *p, char border, QWidget *w);
+void CCONTAINER_draw_border_without_widget(QPainter *p, char border, QStyleOptionFrame &opt);
+void CCONTAINER_set_border(char *border, char new_border, QWidget *wid);
+int CCONTAINER_get_border_width(char border);
+
 class MyFrame : public QWidget
 {
 	Q_OBJECT
