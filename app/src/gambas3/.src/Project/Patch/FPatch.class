@@ -166,11 +166,6 @@ Public Sub txtPath_Click()
 
   If Dialog.OpenFile() Then Return
 
-  If Not Project.IsTextFile(Dialog.Path) Then
-    Message.Warning(("That file does not look like a patch file!"))
-    Return
-  Endif
-
   Project.Config["/FPatch/LastPatch"] = Dialog.Path
   txtPath.Text = Dialog.Path
 
