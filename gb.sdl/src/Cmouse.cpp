@@ -225,6 +225,27 @@ BEGIN_PROPERTY(CMOUSE_normal)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(Mouse_Show)
+
+	SDL_ShowCursor(SDL_ENABLE);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Mouse_Hide)
+
+	SDL_ShowCursor(SDL_DISABLE);
+
+END_METHOD
+
+BEGIN_PROPERTY(Mouse_Visible)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE);
+	else
+		SDL_ShowCursor(VPROP(GB_BOOLEAN) ? SDL_ENABLE : SDL_DISABLE);
+
+END_PROPERTY
+
 /***************************************************************************/
 /*
 GB_DESC CCursor[] =
@@ -245,6 +266,10 @@ GB_DESC CMouse[] =
   GB_DECLARE("Mouse", 0), GB_VIRTUAL_CLASS(),
 
   GB_STATIC_METHOD("Move", NULL, CMOUSE_move, "(X)i(Y)i"),
+
+  GB_STATIC_METHOD("Show", NULL, Mouse_Show, NULL),
+  GB_STATIC_METHOD("Hide", NULL, Mouse_Hide, NULL),
+  GB_STATIC_PROPERTY("Visible", "b", Mouse_Visible),
 
   GB_STATIC_PROPERTY_READ("ScreenX", "i", CMOUSE_screenx),
   GB_STATIC_PROPERTY_READ("ScreenY", "i", CMOUSE_screeny),
