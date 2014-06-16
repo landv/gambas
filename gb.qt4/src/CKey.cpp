@@ -83,7 +83,7 @@ BEGIN_PROPERTY(CKEY_code)
 
   CHECK_VALID();
 	
-	switch(CKEY_info.code)
+	/*switch(CKEY_info.code)
 	{
 		case Qt::Key_Shift:
 		case Qt::Key_Control:
@@ -92,9 +92,9 @@ BEGIN_PROPERTY(CKEY_code)
 			GB.ReturnInteger(0);
 			break;
 		
-		default:
+		default:*/
 			GB.ReturnInteger(CKEY_info.code);
-	}
+	//}
 
 END_PROPERTY
 

@@ -78,7 +78,7 @@ private:
 	int largestLine;
 	int x, y, xx;
 	int nx, ny;
-	bool cursor;
+	bool _cursor;
 	QTimer *blinkTimer;
 	QTimer *scrollTimer;
 	int x1m, x2m, y1m, y2m;
@@ -104,6 +104,7 @@ private:
 	bool _border;
 	bool _ensureCursorVisibleLater;
 	int _firstLineNumber;
+	QCursor _save_cursor;
 	
 	int lastx;
 	bool left;
@@ -290,6 +291,8 @@ public:
 	void getSelection(int *y1, int *x1, int *y2, int *x2) { return doc->getSelection(y1, x1, y2, x2, _insertMode); }
 	GString getSelectedText() { return doc->getSelectedText(_insertMode); }
 	void hideSelection() { doc->hideSelection(); }
+
+	void saveCursor();
 
 signals:
 

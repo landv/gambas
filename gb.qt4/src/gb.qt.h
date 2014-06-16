@@ -132,6 +132,7 @@ typedef
 		void *(*GetLink)(QObject *);
 		QPainter *(*GetCurrentPainter)();
 		uint (*GetBackgroundColor)(void *);
+		void (*MouseProperty)(void *, void *);
 		void *_null;
 		}
 	QT_INTERFACE;

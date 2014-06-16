@@ -92,11 +92,12 @@ static int _highlight_tag = 0;
 static bool _highlight_show_limit = false;
 static QString _highlight_text = "";
 static GHighlightArray *_highlight_data = NULL;
+static int _highlight_line = -1;
 
 static QT_PICTURE _breakpoint_picture = 0;
 static QT_PICTURE _bookmark_picture = 0;
 
-static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
+static void highlightCustom(GEditor *master, int line, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
 	void *_object = QT.GetObject((QWidget *)master);
 
@@ -106,6 +107,7 @@ static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &
 	_highlight_text = s.getString();
 	_highlight_show_limit = proc;
 	_highlight_data = data;
+	_highlight_line = line;
 
 	GB.NewArray(_highlight_data, sizeof(GHighlight), 0);
 
@@ -128,7 +130,13 @@ static void highlightCustom(GEditor *master, uint &state, bool &alternate, int &
 
 ****************************************************************************/
 
-BEGIN_PROPERTY(CHIGHLIGHT_state)
+BEGIN_PROPERTY(Highlight_Line)
+
+	GB.ReturnInteger(_highlight_line);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Highlight_State)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(_highlight_state);
@@ -137,7 +145,7 @@ BEGIN_PROPERTY(CHIGHLIGHT_state)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_alternate)
+BEGIN_PROPERTY(Highlight_AlternateState)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(_highlight_alternate);
@@ -146,7 +154,7 @@ BEGIN_PROPERTY(CHIGHLIGHT_alternate)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_tag)
+BEGIN_PROPERTY(Highlight_Tag)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(_highlight_tag);
@@ -155,7 +163,7 @@ BEGIN_PROPERTY(CHIGHLIGHT_tag)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_show_limit)
+BEGIN_PROPERTY(Highlight_ShowLimit)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(_highlight_show_limit);
@@ -164,7 +172,7 @@ BEGIN_PROPERTY(CHIGHLIGHT_show_limit)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CHIGHLIGHT_text)
+BEGIN_PROPERTY(Highlight_Text)
 
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TO_UTF8(_highlight_text));
@@ -173,7 +181,7 @@ BEGIN_PROPERTY(CHIGHLIGHT_text)
 
 END_PROPERTY
 
-BEGIN_METHOD(CHIGHLIGHT_add, GB_INTEGER state; GB_INTEGER len)
+BEGIN_METHOD(Highlight_Add, GB_INTEGER state; GB_INTEGER len)
 
 	GHighlight *h;
 
@@ -1243,6 +1251,15 @@ BEGIN_PROPERTY(Editor_LineOffset)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Editor_Mouse)
+
+	QT.MouseProperty(_object, _param);
+
+	if (!READ_PROPERTY)
+		WIDGET->saveCursor();
+
+END_PROPERTY
+
 #if 0
 BEGIN_METHOD(Editor_Command, GB_STRING command)
 
@@ -1372,12 +1389,13 @@ GB_DESC CHighlightDesc[] =
 	GB_CONSTANT("Preprocessor", "i", HIGHLIGHT_PREPROCESSOR),
 	GB_STATIC_PROPERTY_READ("Alternate", "i", Highlight_Alternate),
 
-	GB_STATIC_PROPERTY("State", "i", CHIGHLIGHT_state),
-	GB_STATIC_PROPERTY("Tag", "i", CHIGHLIGHT_tag),
-	GB_STATIC_PROPERTY("ShowLimit", "b", CHIGHLIGHT_show_limit),
-	GB_STATIC_PROPERTY("Text", "s", CHIGHLIGHT_text),
-	GB_STATIC_PROPERTY("AlternateState", "b", CHIGHLIGHT_alternate),
-	GB_STATIC_METHOD("Add", NULL, CHIGHLIGHT_add, "(State)i[(Count)i]"),
+	GB_STATIC_PROPERTY_READ("Line", "i", Highlight_Line),
+	GB_STATIC_PROPERTY("State", "i", Highlight_State),
+	GB_STATIC_PROPERTY("Tag", "i", Highlight_Tag),
+	GB_STATIC_PROPERTY("ShowLimit", "b", Highlight_ShowLimit),
+	GB_STATIC_PROPERTY("Text", "s", Highlight_Text),
+	GB_STATIC_PROPERTY("AlternateState", "b", Highlight_AlternateState),
+	GB_STATIC_METHOD("Add", NULL, Highlight_Add, "(State)i[(Count)i]"),
 
 	GB_END_DECLARE
 };
@@ -1574,6 +1592,8 @@ GB_DESC CEditorDesc[] =
 	GB_PROPERTY("ScrollX", "i", Editor_ScrollX),
 	GB_PROPERTY("ScrollY", "i", Editor_ScrollY),
 	GB_METHOD("Scroll", NULL, Editor_Scroll, "(X)i(Y)i"),
+
+	GB_PROPERTY("Mouse", "i", Editor_Mouse),
 
 	GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
 	GB_EVENT("Scroll", NULL, NULL, &EVENT_Scroll),

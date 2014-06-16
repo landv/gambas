@@ -134,6 +134,7 @@ DECLARE_PROPERTY(Control_Design);
 DECLARE_PROPERTY(Control_Enabled);
 DECLARE_PROPERTY(Control_Font);
 DECLARE_PROPERTY(Control_Action);
+DECLARE_PROPERTY(Control_Mouse);
 
 #define CWIDGET_set_flag(wid, _f) (((CWIDGET *)wid)->flag.f |= _f)
 #define CWIDGET_clear_flag(wid, _f) (((CWIDGET *)wid)->flag.f &= ~_f)

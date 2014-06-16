@@ -1257,7 +1257,7 @@ int GDocument::convState(int state)
 	}
 }
 
-void GDocument::highlightGambas(GEditor *editor, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
+void GDocument::highlightGambas(GEditor *editor, int line, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc)
 {
 	const char *src;
 	EVAL_ANALYZE result;
@@ -1430,7 +1430,7 @@ void GDocument::colorize(int y, bool force)
 			old = l->s;
 			GB.FreeArray(&l->highlight);
 			proc = l->proc;
-			(*highlightCallback)(views.first(), state, alternate, tag, l->s, &l->highlight, proc);
+			(*highlightCallback)(views.first(), yy,state, alternate, tag, l->s, &l->highlight, proc);
 			
 			updateAll |= proc != l->proc;
 			l->proc = proc;

@@ -84,7 +84,7 @@ class GCommand;
 class GEditor;
 
 typedef
-	void (*GHighlightCallback)(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *highlight, bool &proc);
+	void (*GHighlightCallback)(GEditor *master, int line, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *highlight, bool &proc);
 
 
 class GDocument
@@ -129,7 +129,7 @@ public:
 		Custom = 2
 	};
 
-	static void highlightGambas(GEditor *master, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc);
+	static void highlightGambas(GEditor *master, int line, uint &state, bool &alternate, int &tag, GString &s, GHighlightArray *data, bool &proc);
 
 	GArray<GLine> lines;
 	GArray<GEditor> views;

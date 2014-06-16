@@ -109,7 +109,7 @@ void GEditor::reset()
 	x1m = x2m = 0;
 	y1m = y2m = -1;
 	lastx = -1;
-	cursor = false;
+	_cursor = false;
 	lineNumberLength = 0;
 	center = false;
 	largestLine = 0;
@@ -149,6 +149,7 @@ GEditor::GEditor(QWidget *parent)
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
 	viewport()->setCursor(Qt::ibeamCursor);
+	saveCursor();
   viewport()->setBackgroundRole(QPalette::Base);
 	viewport()->setPaletteBackgroundColor(defaultColors[GLine::Background]);
 	viewport()->setFocusProxy(this);
@@ -804,7 +805,7 @@ void GEditor::paintText(QPainter &p, GLine *l, int x, int y, int xmin, int lmax,
 		p.setPen(styles[GLine::Normal].color);
 		//p.drawText(x, y, l->s.mid(pos).getString());
 		drawTextWithTab(p, xs, x, y, l->s.mid(pos).getString());
-		if (show_dots)
+		if (ps >= 0 && pos >= ps && show_dots)
 			paintDottedSpaces(p, row, pos, QMIN(xmin + lmax - pos, (int)l->s.length() - pos));
 	}
 }
@@ -1187,7 +1188,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 
 	// Text cursor
-	if (cursor && realRow == y)
+	if (_cursor && realRow == y)
 	{
 		QColor color = styles[GLine::Normal].color;
 		int xc = lineWidth(realRow, x);
@@ -2309,7 +2310,7 @@ bool GEditor::updateCursor()
 {
 	if (contentsX() + lastx >= margin)
 	{
-		viewport()->setCursor(Qt::IBeamCursor);
+		viewport()->setCursor(_save_cursor);
 		return false;
 	}
 	else
@@ -2482,14 +2483,14 @@ void GEditor::ensureCursorVisible()
 void GEditor::startBlink()
 {
 	blinkTimer->start(QApplication::cursorFlashTime() / 2, false);
-	cursor = true;
+	_cursor = true;
 	updateLine(y);
 }
 
 void GEditor::stopBlink()
 {
 	blinkTimer->stop();
-	cursor = false;
+	_cursor = false;
 	updateLine(y);
 }
 
@@ -2497,7 +2498,7 @@ void GEditor::blinkTimerTimeout()
 {
 	if (!doc->isReadOnly())
 	{
-		cursor = !cursor;
+		_cursor = !_cursor;
 		updateLine(y);
 	}
 }
@@ -3325,4 +3326,9 @@ void GEditor::expand(bool shift)
 		else
 			foldLine(y);
 	}
+}
+
+void GEditor::saveCursor()
+{
+	_save_cursor = viewport()->cursor();
 }
