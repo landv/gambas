@@ -1,83 +1,81 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(17,15,83,81)
+  MoveScaled(17,15,127,81)
   Text = ("Menu editor")
   Icon = Picture["icon:/small/menu"]
   Persistent = True
   Arrangement = Arrange.Vertical
   { VBox2 Panel
-    MoveScaled(1,1,80,30)
+    MoveScaled(1,1,125,69)
     Expand = True
     Arrangement = Arrange.Vertical
     { HBox5 HBox
-      MoveScaled(0,0,79,4)
+      MoveScaled(0,0,86,4)
       { btnInsert ToolButton
-        MoveScaled(0,0,10,4)
+        MoveScaled(0,0,9,4)
         ToolTip = ("Insert menu")
         AutoResize = True
         Text = Shortcut(("Insert"), "I")
         Picture = Picture["icon:/small/add"]
       }
-      { btnNext ToolButton
-        MoveScaled(11,0,4,4)
-        Visible = False
-        ToolTip = ("Next menu")
+      { btnInsertNext ToolButton
+        MoveScaled(9,0,13,4)
+        ToolTip = ("Insert menu after")
         AutoResize = True
-        Picture = Picture["icon:/small/next"]
+        Text = ("Insert after")
+        Picture = Picture["icon:/small/bottom"]
       }
       { btnDelete ToolButton
-        MoveScaled(15,0,10,4)
+        MoveScaled(24,0,10,4)
+        ToolTip = ("Delete menu")
         AutoResize = True
         Text = Shortcut(("Delete"), "D")
         Picture = Picture["icon:/small/delete"]
       }
       { Separator2 Separator
-        MoveScaled(25,0,1,4)
+        MoveScaled(34,0,1,4)
       }
       { btnCut ToolButton
-        MoveScaled(26,0,4,4)
+        MoveScaled(35,0,4,4)
         ToolTip = ("Cut")
         Picture = Picture["icon:/small/cut"]
       }
       { btnCopy ToolButton
-        MoveScaled(30,0,4,4)
+        MoveScaled(39,0,4,4)
         ToolTip = ("Copy")
         Picture = Picture["icon:/small/copy"]
       }
       { btnPaste ToolButton
-        MoveScaled(34,0,4,4)
+        MoveScaled(43,0,4,4)
         ToolTip = ("Paste")
         Picture = Picture["icon:/small/paste"]
       }
       { Separator1 Separator
-        MoveScaled(38,0,1,4)
+        MoveScaled(47,0,1,4)
       }
       { btnRight ToolButton
-        MoveScaled(39,0,4,4)
+        MoveScaled(48,0,4,4)
         ToolTip = ("Indent")
         Picture = Picture["icon:/small/indent"]
       }
       { btnLeft ToolButton
-        MoveScaled(43,0,4,4)
+        MoveScaled(52,0,4,4)
         ToolTip = ("Unindent")
         Picture = Picture["icon:/small/unindent"]
       }
       { btnUp ToolButton
-        MoveScaled(47,0,4,4)
+        MoveScaled(56,0,4,4)
         ToolTip = ("Move up")
         Picture = Picture["icon:/small/up"]
       }
       { btnDown ToolButton
-        MoveScaled(51,0,4,4)
+        MoveScaled(60,0,4,4)
         ToolTip = ("Move down")
         Picture = Picture["icon:/small/down"]
       }
-      { Separator4 Separator
-        MoveScaled(55,0,1,4)
-      }
       { txtSearch ButtonBox
-        MoveScaled(57,0,21,4)
+        MoveScaled(65,0,21,4)
         Expand = True
         Picture = Picture["icon:/small/find"]
       }
@@ -85,165 +83,191 @@
     { Separator3 Separator
       MoveScaled(12,6,16,0)
     }
-    { gvwMenu GridView
-      MoveScaled(4,7,54,21)
+    { Panel1 HBox
+      MoveScaled(1,7,123,61)
       Expand = True
-      Border = False
-      Mode = Select.Multiple
-      Grid = False
-    }
-  }
-  { Separator5 Separator
-    MoveScaled(1,32,16,0)
-  }
-  { VBox3 VBox
-    MoveScaled(1,33,80,37)
-    Spacing = True
-    Margin = True
-    { frmMenu HBox
-      MoveScaled(0,0,78,37)
-      Spacing = True
-      { panMenu HPanel
-        MoveScaled(1,1,59,35)
+      { gvwMenu GridView
+        MoveScaled(0,0,33,39)
         Expand = True
+        Border = False
+        Mode = Select.Multiple
+        Grid = False
+      }
+      { Separator5 Separator
+        MoveScaled(34,11,0,21)
+      }
+      { VBox3 VBox
+        MoveScaled(41,1,64,57)
         Spacing = True
-        { Label1 Label
-          MoveScaled(0,0,13,4)
-          #Translate = False
-          Text = "Name"
-        }
-        { txtName TextBox
-          MoveScaled(13,0,35,4)
-          Expand = True
-        }
-        { Label6 Label
-          MoveScaled(0,4,13,4)
-          #Translate = False
-          Text = "Group"
-        }
-        { txtGroup TextBox
-          MoveScaled(13,4,35,4)
-          Expand = True
-        }
-        { Label2 Label
-          MoveScaled(0,8,13,4)
-          #Translate = False
-          Text = "Caption"
-        }
-        { txtCaption TextBox
-          MoveScaled(13,8,35,4)
-          Expand = True
-        }
-        { Label8 Label
-          MoveScaled(0,12,13,4)
-          #Translate = False
-          Text = "Action"
-        }
-        { txtAction TextBox
-          MoveScaled(13,12,35,4)
-          Expand = True
-        }
-        { Label7 Label
-          MoveScaled(0,16,13,4)
-          #Translate = False
-          Text = "Tag"
-        }
-        { txtTag TextBox
-          MoveScaled(13,16,35,4)
-          Expand = True
-        }
-        { Label3 Label
-          MoveScaled(0,21,13,4)
-          #Translate = False
-          Text = "Shortcut"
-        }
-        { HBox3 HBox
-          MoveScaled(14,21,42,4)
+        Margin = True
+        { panMenu HPanel
+          MoveScaled(2,1,59,54)
           Expand = True
           Spacing = True
-          { chkCtrl CheckBox
-            MoveScaled(0,0,10,4)
+          { Label1 Label
+            MoveScaled(0,0,13,4)
             #Translate = False
-            Text = "CTRL"
+            Text = "Name"
           }
-          { chkShift CheckBox
-            MoveScaled(10,0,11,4)
-            #Translate = False
-            Text = "SHIFT"
-          }
-          { chkAlt CheckBox
-            MoveScaled(21,0,9,4)
-            #Translate = False
-            Text = "ALT"
-          }
-          { cmbShortcut ComboBox
-            MoveScaled(30,0,8,4)
+          { txtName TextBox
+            MoveScaled(13,0,35,4)
             Expand = True
-            ReadOnly = True
           }
-          { btnShortcut Button
-            MoveScaled(38,0,4,4)
-            Picture = Picture["icon:/small/clear"]
+          { Label6 Label
+            MoveScaled(0,4,13,4)
+            #Translate = False
+            Text = "Group"
+          }
+          { txtGroup TextBox
+            MoveScaled(13,4,35,4)
+            Expand = True
+          }
+          { Label2 Label
+            MoveScaled(0,8,13,4)
+            #Translate = False
+            Text = "Caption"
+          }
+          { txtCaption TextBox
+            MoveScaled(13,8,35,4)
+            Expand = True
+          }
+          { Label8 Label
+            MoveScaled(0,12,13,4)
+            #Translate = False
+            Text = "Action"
+          }
+          { txtAction TextBox
+            MoveScaled(13,12,35,4)
+            Expand = True
+          }
+          { Label7 Label
+            MoveScaled(0,16,13,4)
+            #Translate = False
+            Text = "Tag"
+          }
+          { txtTag TextBox
+            MoveScaled(13,16,35,4)
+            Expand = True
+          }
+          { Label3 Label
+            MoveScaled(0,21,13,4)
+            #Translate = False
+            Text = "Shortcut"
+          }
+          { HBox3 HBox
+            MoveScaled(14,21,42,4)
+            Expand = True
+            Spacing = True
+            { chkCtrl CheckBox
+              MoveScaled(0,0,10,4)
+              #Translate = False
+              AutoResize = True
+              Text = "CTRL"
+            }
+            { chkShift CheckBox
+              MoveScaled(10,0,11,4)
+              #Translate = False
+              AutoResize = True
+              Text = "SHIFT"
+            }
+            { chkAlt CheckBox
+              MoveScaled(21,0,9,4)
+              #Translate = False
+              AutoResize = True
+              Text = "ALT"
+            }
+            { cmbShortcut ComboBox
+              MoveScaled(30,0,8,4)
+              Expand = True
+              ReadOnly = True
+            }
+            { btnShortcut Button
+              MoveScaled(38,0,4,4)
+              Picture = Picture["icon:/small/clear"]
+            }
+          }
+          { Label5 Label
+            MoveScaled(0,26,13,4)
+            #Translate = False
+            Text = "Picture"
+          }
+          { HBox4 HBox
+            MoveScaled(14,26,37,4)
+            Expand = True
+            Spacing = True
+            { txtPicture TextBox
+              MoveScaled(0,0,27,4)
+              Expand = True
+              ReadOnly = True
+            }
+            { btnPicture Button
+              MoveScaled(28,0,4,4)
+              Picture = Picture["icon:/small/open"]
+            }
+            { btnKillPicture Button
+              MoveScaled(33,0,4,4)
+              Picture = Picture["icon:/small/clear"]
+            }
+          }
+          { Label4 Label
+            MoveScaled(0,31,13,4)
+            #Translate = False
+            Text = "Visible"
+          }
+          { chkVisible CheckBox
+            MoveScaled(14,31,4,4)
+            #Translate = False
+            Expand = True
+          }
+          { Label9 Label
+            MoveScaled(0,35,13,4)
+            #Translate = False
+            Text = "Enabled"
+          }
+          { chkEnabled CheckBox
+            MoveScaled(14,35,4,4)
+            #Translate = False
+            Expand = True
+          }
+          { Label10 Label
+            MoveScaled(0,39,13,4)
+            #Translate = False
+            Text = "Toggle"
+          }
+          { chkToggle CheckBox
+            MoveScaled(14,39,4,4)
+            #Translate = False
+            Expand = True
+          }
+          { Label11 Label
+            MoveScaled(0,43,13,4)
+            #Translate = False
+            Text = "Checked"
+          }
+          { chkChecked CheckBox
+            MoveScaled(14,43,4,4)
+            #Translate = False
+            Expand = True
+          }
+          { Label12 Label
+            MoveScaled(0,47,13,4)
+            #Translate = False
+            Text = "Translate"
+          }
+          { chkTranslate CheckBox
+            MoveScaled(14,47,4,4)
+            #Translate = False
+            Expand = True
           }
         }
-        { Label5 Label
-          MoveScaled(0,26,13,4)
-          #Translate = False
-          Text = "Picture"
-        }
-        { HBox4 HBox
-          MoveScaled(14,26,37,4)
-          Expand = True
-          Spacing = True
-          { txtPicture TextBox
-            MoveScaled(0,0,27,4)
-            Expand = True
-            ReadOnly = True
-          }
-          { btnPicture Button
-            MoveScaled(28,0,4,4)
-            Picture = Picture["icon:/small/open"]
-          }
-          { btnKillPicture Button
-            MoveScaled(33,0,4,4)
-            Picture = Picture["icon:/small/clear"]
-          }
+        { lblCreate Label
+          MoveScaled(3,2,37,4)
+          Font = Font["Italic"]
+          AutoResize = True
+          Text = ("Click on Insert to add a new menu.")
+          Alignment = Align.TopNormal
         }
       }
-      { panIcon VBox
-        MoveScaled(61,1,13,34)
-        { chkVisible CheckBox
-          MoveScaled(0,0,12,4)
-          #Translate = False
-          Text = "Visible"
-        }
-        { chkEnabled CheckBox
-          MoveScaled(0,4,12,4)
-          #Translate = False
-          Text = "Enabled"
-        }
-        { chkToggle CheckBox
-          MoveScaled(0,8,12,4)
-          #Translate = False
-          Text = "Toggle"
-        }
-        { chkChecked CheckBox
-          MoveScaled(0,12,12,4)
-          #Translate = False
-          Text = "Checked"
-        }
-        { chkTranslate CheckBox
-          MoveScaled(0,16,12,4)
-          #Translate = False
-          Text = "Translate"
-        }
-      }
-    }
-    { lblCreate Label
-      MoveScaled(3,2,37,4)
-      AutoResize = True
-      Text = ("Click on Insert to add a new menu.")
-      Alignment = Align.TopNormal
     }
   }
   { Separator6 Separator

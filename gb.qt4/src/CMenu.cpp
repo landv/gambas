@@ -254,6 +254,23 @@ static void toggle_menu(CMENU *_object)
 
 //---------------------------------------------------------------------------
 
+MyAction::MyAction(QObject *parent): QAction(parent)
+{
+}
+
+bool MyAction::event(QEvent *e)
+{
+	if (e->type() == QEvent::Shortcut)
+	{
+		activate(Trigger);
+		return true;
+	}
+
+	return QAction::event(e);
+}
+
+//---------------------------------------------------------------------------
+
 BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 	QAction *action;
@@ -285,7 +302,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			QObject::connect(menu->menu, SIGNAL(aboutToHide()), &CMenu::manager, SLOT(slotHidden()));
 		}
 
-		action = new QAction(menu->menu);
+		action = new MyAction(menu->menu);
 		action->setSeparator(true);
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
 
@@ -305,7 +322,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			window->menuBar = menuBar;
 		}
 
-		action = new QAction(menuBar);
+		action = new MyAction(menuBar);
 		menuBar->addAction(action);
 
 		action->setSeparator(true);

@@ -80,6 +80,18 @@ typedef
 typedef
   QList<CMENU *> CMenuList;
 
+class MyAction : public QAction
+{
+	Q_OBJECT
+
+public:
+
+	MyAction(QObject *parent);
+
+protected:
+
+	virtual bool event(QEvent *);
+};
 
 class CMenu : public QObject
 {

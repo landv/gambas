@@ -400,6 +400,7 @@ End
 
 Public Sub edtOutput_MouseMove()
 
+  Dim MX, MY As Integer
   Dim X, Y As Integer
   Dim sText As String
   Dim iPos As Integer
@@ -408,8 +409,16 @@ Public Sub edtOutput_MouseMove()
   Dim iNewY As Integer
   Dim iNewLen As Integer
   
-  X = edtOutput.PosToColumn(Mouse.X, Mouse.Y)
-  Y = edtOutput.PosToLine(Mouse.Y)
+  Try MX = Mouse.X
+  If Not Error Then 
+    MY = Mouse.Y
+  Else
+    MX = Mouse.ScreenX - edtOutput.ScreenX
+    MY = Mouse.ScreenY - edtOutput.ScreenY
+  Endif
+
+  X = edtOutput.PosToColumn(MX, MY)
+  Y = edtOutput.PosToLine(MY)
   
   If Y >= 0 And If X >= 0 Then
   
@@ -465,3 +474,9 @@ Public Sub edtOutput_MouseDown()
 
 End
 
+
+Public Sub edtOutput_Scroll()
+
+  edtOutput_MouseMove
+
+End

@@ -191,9 +191,6 @@ End
 Public Sub lvwStack_Click()
 
   Dim sLoc As String
-  Dim iPos As Integer
-  Dim sFile As String
-  Dim iLine As Integer
 
   Design.Command("@" & lvwStack.Key)
   FDebugExpr.RefreshAll

@@ -24,7 +24,7 @@ Private $hBorderS As Image
 Private $hBorderW As Image
 Private $hBorderE As Image
 
-Private $bFirstProject As Boolean
+Private $bInOpenExtern As Boolean
 
 Static Private $sCompressMessage As String
 
@@ -83,6 +83,8 @@ Public Sub Form_Open()
   'tvwProject_LostFocus
   
   frmWelcome = New FWelcome(dwgWelcome)
+  
+  UpdateGlobalLayout
   
 End
 
@@ -1144,25 +1146,48 @@ Public Sub UpdateMenu()
   
 End
 
+Private Sub UpdateGlobalLayout()
+
+  Dim bWelcome As Boolean
+  Dim bFake As Boolean
+  Dim hMenu As Menu
+  Dim hCtrl As Control
+
+  bWelcome = Not Project.Dir
+  bFake = Project.IsFake()
+
+  dwgWelcome.Visible = bWelcome
+
+  mnuFile.Visible = bWelcome Or Not bFake
+  mnuFile.Enabled = mnuFile.Visible
+  mnuFileExtern.Visible = bFake
+  mnuFileExtern.Enabled = mnuFileExtern.Visible
+  
+  mnuSave.Visible = Not bWelcome
+  mnuSaveAs.Visible = Not bWelcome
+
+  For Each hMenu In [mnuProject, mnuDebug, mnuView]
+    hMenu.Visible = Not bWelcome And Not bFake
+  Next
+  
+  mnuTool.Visible = Not bWelcome
+  For Each hMenu In [mnuBrowse, mnuTerminal, mnuSendMail, mnuUpdateAllForms]
+    hMenu.Visible = Not bFake
+  Next
+
+  For Each hCtrl In [panDebug, panProject, tlbMain]
+    hCtrl.Visible = Not bWelcome And Not bFake
+  Next
+  
+  sepMenu.Visible = bWelcome Or Not bFake
+
+End
+
 Public Sub OnProjectChange()
   
-  Dim hCtrl As Control
-  Dim hMenu As Menu
+  If $bInOpenExtern Then Return
   
-  If Not $bFirstProject Then
-    
-    $bFirstProject = True
-    
-    dwgWelcome.Hide
-    For Each hMenu In [mnuProject, mnuDebug, mnuView, mnuTool, mnuSave, mnuSaveAs]
-      hMenu.Show
-    Next
-    For Each hCtrl In [panDebug, panProject, tlbMain]
-      hCtrl.Show
-    Next
-    
-  Endif
-  
+  UpdateGlobalLayout
   UpdateMenu
   mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
   mnuUseTerminal.Value = Project.UseTerminal
@@ -1417,8 +1442,19 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case "browse-project"
       Desktop.Open(Project.Dir)
-  
+      
   End Select 
+  
+  If Left(Key) = "." And If Project.ActiveForm Then 
+    
+    Select Case Key
+      Case ".save"
+        Project.ActiveForm.Save
+      Case ".close"
+        Project.ActiveForm.Close
+    End Select
+    
+  Endif
   
 End
 
@@ -1934,7 +1970,7 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
   X = tvwProject.W \ 2
   
-  If FMain.Visible Then
+  If FMain.Visible And If panProject.Visible And If Not panProject.Hidden Then
     Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
     ' lblError.Text = Replace$(sMsg, "\n", "<br>")
     ' imgIcon.Picture = Picture["icon:/32/" & sIcon]
@@ -2339,17 +2375,42 @@ Private Sub CompressAll(sPath As String, bUncompress As Boolean)
   
 End
 
-Private Sub OpenExternFile()
+Public Sub OpenExternFile(Optional sPath As String)
   
-  Dialog.Title = ("Select a file")
-  If Dialog.OpenFile() Then Return
-  
-  If Project.IsProjectPath(Dialog.Path) Then
-    Message.Warning(("This file is located inside the project."))
-    Return
+  If Not sPath Then
+    Dialog.Title = ("Select a file")
+    If Dialog.OpenFile() Then Return
+    sPath = Dialog.Path
   Endif
   
-  Project.OpenFile(Dialog.Path)
+  $bInOpenExtern = True
+  
+  If Not Project.Dir Then
+    If Project.OpenFake() Then Goto CANNOT_OPEN
+  Endif
+
+  If Project.IsProjectPath(Dialog.Path) Then
+    Message.Warning(("This file is located inside the project."))
+    Goto CANNOT_OPEN
+  Endif
+  
+  If Project.IsSqliteFile(sPath) Then
+    sPath = MConnection.CreateSQLite(sPath)
+  Endif              
+  
+  If Not Project.OpenFile(sPath) Then
+    If Project.IsFake() Then
+      Project.CloseProject
+    Endif
+  Endif
+
+  $bInOpenExtern = False
+  OnProjectChange
+  Return
+  
+CANNOT_OPEN:
+
+  $bInOpenExtern = False
   
 End
 

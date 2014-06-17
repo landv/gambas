@@ -445,3 +445,35 @@ Catch
   Return True
 
 End
+
+Public Sub CreateSQLite(sPath As String) As String
+  
+  Dim sDir As String
+  Dim iInd As Integer
+  Dim sName As String
+  Dim hConfig As Settings
+  
+  sDir = Project.Dir &/ ".connection"
+  If Not Exist(sDir) Then Project.InsertDirectory(sDir)
+  
+  sName = File.BaseName(sPath)
+  If Exist(sDir &/ sName) Then
+    For iInd = 2 To 100
+      If Not Exist(sDir &/ sName & CStr(iInd)) Then Break
+    Next
+    sName &= CStr(iInd)
+  Endif
+
+  hConfig = New Settings(sDir &/ sName, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  hConfig["Connection/Type"] = "sqlite"
+  hConfig["Connection/Path"] = File.Dir(sPath)
+  hConfig["Connection/RememberPassword"] = False
+  hConfig["Connection/IgnoreCharset"] = False
+  hConfig["Connection/DisplayMetadata"] = False
+  hConfig["Connection/Database"] = File.Name(sPath)
+  hConfig.Save
+  
+  Project.InsertFile(sName, sDir)
+  Return sDir &/ sName
+  
+End

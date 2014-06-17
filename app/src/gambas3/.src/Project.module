@@ -336,7 +336,13 @@ Public Sub Main()
 
   Inc Application.Busy
 
-  If sPath Then Project.Open(sPath)
+  If sPath Then 
+    If IsDir(sPath) Then
+      Project.Open(sPath)
+    Else
+      FMain.OpenExternFile(sPath)
+    Endif
+  Endif
 
   'FProperty.Show
   'FToolBox.Show
@@ -642,7 +648,7 @@ _INIT_AGAIN:
 
   DefineStartup(Startup, True)
 
-  CRecentFile.Add(sDir)
+  If Not IsFake(sDir) Then CRecentFile.Add(sDir)
 
   If Not $bTesting
     FMain.OnProjectChange
@@ -748,7 +754,7 @@ Public Sub ReloadAll()
 
 End
 
-Private Function CloseProject() As Boolean
+Public Function CloseProject() As Boolean
 
   Dim hForm As Object
   Dim bModif As Boolean
@@ -824,7 +830,7 @@ Private Function CloseProject() As Boolean
       Workspace.Lock
       CloseAllWindows
       For Each hForm In Files
-        hForm.Delete
+        Try hForm.Delete
       Next
       Workspace.Unlock
     Endif
@@ -844,6 +850,12 @@ Private Function CloseProject() As Boolean
       Try Kill Project.Dir &/ ".lock"
       $hLock = Null
     Endif
+    
+    If IsFake() Then Shell "rm -rf " & Shell$(Project.Dir) Wait
+
+    Path = ""
+    {Dir} = ""
+    UpdateTitle
 
     Dec Application.Busy
 
@@ -1630,18 +1642,38 @@ End
 Private Sub UpdateTitle()
 
   Dim sTitle As String
+  Dim sPath As String
 
   If Path Then
-    sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
+    
+    If Not IsFake() Then
+      sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
+    Endif
+    
+    If ActiveForm Then
+      sPath = ActiveForm.Path
+      If IsProjectPath(sPath) Then
+        sPath = File.Name(sPath)
+      Else If sPath Begins User.Home Then 
+        sPath = "~/" &/ Mid$(sPath, Len(User.Home) + 1)
+      Endif
+      If sTitle Then sTitle &= " - "
+      sTitle &= sPath
+    Endif
+    
     If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
     sTitle &= " - "
+    
   Endif
+  
   sTitle &= Application.Title
+  
   If Application.Version Like "*.9[0-9].*" Then 
     sTitle &= " - " & ("ALPHA VERSION, USE AT YOUR OWN RISK!")
   Else If Application.Version Like "*.*.9[0-9]" Then 
     sTitle &= " - " & ("DEVELOPMENT VERSION, USE AT YOUR OWN RISK!")
   Endif
+  
   FMain.Title = sTitle
 
 End
@@ -1918,6 +1950,20 @@ Public Sub IsTextFile(sPath As String) As Boolean
 
 End
 
+Public Sub IsSqliteFile(sPath As String) As Integer
+
+  Dim hFile As File
+  Dim sText As String
+
+  hFile = Open sPath
+  sText = Read #hFile, -47
+  Close #hFile
+  
+  If sText = "** This file contains an SQLite 2.1 database **" Then Return 2
+  If sText Begins "SQLite format 3" Then Return 3
+  
+End
+
 Public Sub IsPatchFile(sPath As String) As Boolean
 
   Dim hFile As File
@@ -1934,6 +1980,7 @@ Public Function LoadFile(sPath As String) As Object
   Dim hForm As Object
   Dim bError As Boolean
   Dim sType As String
+  Dim sErr As String
 
   'DIM hActive AS Object
 
@@ -1995,13 +2042,18 @@ Public Function LoadFile(sPath As String) As Object
 
         Case Else
           ' Check that it is not a binary file
-          If Not IsTextFile(sPath) Then
+          If IsTextFile(sPath) Then
+            
+            hForm = New FTextEditor(sPath)
+          
+          Else
+            
             Dec Application.Busy
             Files[sPath] = Null
             FMain.ShowError(("Cannot open a binary file.") & "\n\n" & sPath, sPath)
             Return
+            
           Endif
-          hForm = New FTextEditor(sPath)
 
       End Select
 
@@ -2029,9 +2081,10 @@ Public Function LoadFile(sPath As String) As Object
 
 Catch
 
+  sErr = Error.Text & "\n" & Error.Where
   Dec Application.Busy
   Try Files[sPath] = Null
-  FMain.ShowError(("Cannot open file.") & "\n\n" & Error.Text & "\n" & Error.Where, sPath)
+  FMain.ShowError(("Cannot open file.") & "\n\n" & sErr, sPath)
 
 End
 
@@ -2843,6 +2896,8 @@ Public Sub Activate(hForm As Object)
   FSearch.Update
 
   CPosition.SaveCurrent
+  
+  UpdateTitle
 
 End
 
@@ -5692,5 +5747,32 @@ Public Sub Goto(sPosition As String) As Boolean
   If Error Then Return True
   
   If ExistClass(sClass) Then OpenFile(sClass, iLine)
+  
+End
+
+Public Sub IsFake(Optional sDir As String) As Boolean
+  
+  If Not sDir Then sDir = Project.Dir
+  Return sDir Begins Desktop.DataDir &/ "gambas3/fake/"
+  
+End
+
+
+Public Sub OpenFake() As Boolean
+  
+  Dim sDir As String
+  
+  If Project.Dir Then Return True
+  
+  sDir = Desktop.DataDir &/ "gambas3/fake" &/ CStr(Application.Handle)
+  Shell "rm -rf " & Shell(sDir) Wait
+  If MakeDir(sDir) Then Return True
+  
+  Try Mkdir sDir &/ ".src"
+  Try Mkdir sDir &/ ".hidden"
+  
+  Copy "template/_fake_project" To sDir &/ ".project"
+  
+  Return Project.Open(sDir)
   
 End

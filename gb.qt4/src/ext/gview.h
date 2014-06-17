@@ -104,7 +104,8 @@ private:
 	bool _border;
 	bool _ensureCursorVisibleLater;
 	int _firstLineNumber;
-	QCursor _save_cursor;
+	QCursor _saveCursor;
+	GString _cutBuffer;
 	
 	int lastx;
 	bool left;
@@ -241,8 +242,9 @@ public:
 	void movePreviousSameIndent(bool shift);
 	void moveNextSameIndent(bool shift);
 	void expand(bool shift);
+	void selectCurrentLine();
 	void deleteCurrentLine();
-	
+
 	bool getInsertMode() const { return _insertMode; }
 	void setInsertMode(bool mode);
 	

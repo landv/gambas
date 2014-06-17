@@ -387,12 +387,12 @@ Private Sub ReadMenu()
     
     End With
 
-    frmMenu.Show
+    panMenu.Show
     lblCreate.Hide
 
   Else
 
-    frmMenu.Hide
+    panMenu.Hide
     lblCreate.Show
 
   Endif
@@ -407,6 +407,7 @@ Private Sub DeleteMenu(iInd As Integer)
   $cName.Remove($aMenu[iInd].Name)
   $aMenu.Remove(iInd)
   gvwMenu.Rows.Remove(iInd)
+  SetModified
 
 End
 
@@ -441,8 +442,7 @@ Public Sub btnDelete_Click()
 
 End
 
-
-Public Sub btnInsert_Click()
+Private Sub InsertMenu(bAfter As Boolean)
 
   Dim hCMenu As CMenu
   Dim iIndex As Integer
@@ -453,13 +453,19 @@ Public Sub btnInsert_Click()
 
   iIndex = $iCurrent
   If iIndex < 0 Then iIndex = $aMenu.Max
-  Inc iIndex
+  
+  If bAfter Then Inc iIndex
 
   hCMenu = New CMenu
   hCMenu.Name = GetName()
   hCMenu.Caption = hCMenu.Name
   hCMenu.Translate = True
-  If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
+  
+  If bAfter Then
+    If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
+  Else
+    hCMenu.Level = $aMenu[iIndex].Level
+  Endif
 
   $cName[hCMenu.Name] = True
   'hCMenu.Caption = hCMenu.Name
@@ -476,6 +482,12 @@ Public Sub btnInsert_Click()
 
   txtName.SelectAll
   txtName.SetFocus
+
+End
+
+Public Sub btnInsert_Click()
+
+  InsertMenu(False)
 
 End
 
@@ -624,11 +636,9 @@ Public Sub txtCaption_Change()
 End
 
 
-Public Sub btnNext_Click()
+Public Sub btnInsertNext_Click()
 
-  If $iCurrent < $aMenu.Count Then
-    Inc gvwMenu.Row
-  Endif
+  InsertMenu(True)
 
 End
 
@@ -715,8 +725,8 @@ Private Sub SetCurrent(iCurrent As Integer)
 
   If iCurrent <> $iCurrent Then WriteMenu
   
+  gvwMenu.Rows.UnselectAll
   If iCurrent < 0 Or iCurrent >= $aMenu.Count Then 
-    gvwMenu.Rows.UnselectAll
     $iCurrent = -1
   Else
     Object.Lock(gvwMenu)
@@ -846,15 +856,20 @@ Public Sub btnPaste_Click()
 
   Dim sData As String
   Dim aMenu As String[]
+  Dim iStart As Integer
+  Dim iLength As Integer
   
   sData = Trim(Clipboard.Paste(MMime.MENU))
   If Not sData Then Return
   
   gvwMenu.Rows.UnselectAll
   
+  iStart = $iCurrent
+  iLength = 0
+  
   For Each sData In Split(sData, "\n")
     aMenu = Split(sData, ",", Chr$(34))
-    btnInsert_Click
+    InsertMenu(False)
     txtName.Text = aMenu[0]
     $aMenu[$iCurrent].Level = CInt(aMenu[1])
     txtCaption.Text = aMenu[2]
@@ -874,10 +889,13 @@ Public Sub btnPaste_Click()
     WriteMenu
     gvwMenu.Rows[$iCurrent].Selected = True
     Inc $iCurrent
+    Inc iLength
     ReadMenu
   Next
   
   ReadMenu
+  
+  gvwMenu.Select(iStart, iLength)
 
 End
 
@@ -920,6 +938,10 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
   Dim sElt As String
   
   'If Row >= $aMenu.Max Then Return
+  
+  If Row = gvwMenu.Row Then
+    gvwMenu.Data.Background = Color.SelectedBackground
+  Endif
   
   With $aMenu[Row]
   

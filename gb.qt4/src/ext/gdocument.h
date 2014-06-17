@@ -212,6 +212,8 @@ public:
 	void hideSelection();
 	void eraseSelection(bool insertMode);
 
+	bool insideUndo() const { return undoLevel; }
+
 	void emitTextChanged();
 
 private:

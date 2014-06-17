@@ -105,6 +105,12 @@ BEGIN_PROPERTY(Application_Args_Count)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Application_Args_Max)
+
+  GB_ReturnInt(PROJECT_argc - 1);
+
+END_PROPERTY
+
 
 BEGIN_METHOD(Application_Args_get, GB_INTEGER index)
 
@@ -257,6 +263,7 @@ GB_DESC NATIVE_AppArgs[] =
   GB_DECLARE_VIRTUAL("Args"),
 
   GB_STATIC_PROPERTY_READ("Count", "i", Application_Args_Count),
+  GB_STATIC_PROPERTY_READ("Max", "i", Application_Args_Max),
   GB_STATIC_METHOD("_get", "s", Application_Args_get, "(Index)i"),
   GB_STATIC_METHOD("_next", "s", Application_Args_next, NULL),
 

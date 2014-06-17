@@ -71,6 +71,7 @@ public:
 	GString upper() const;
 	bool hasUnicode() const;
 	bool hasTab() const { return find('\t') >= 0; }
+	void clear() { s.clear(); }
 	
 	static bool isStandardChar(ushort c);
 };

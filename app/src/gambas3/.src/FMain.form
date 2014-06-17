@@ -57,6 +57,46 @@
       Shortcut = "Ctrl+Q"
     }
   }
+  { mnuFileExtern Menu
+    Text = Shortcut(("File"), "F")
+    Visible = False
+    { Menu37 Menu mnuOpenExtern
+      Name = "Menu37"
+      Action = "open-extern"
+      Text = ("Open") & "..."
+      Picture = Picture["icon:/small/open"]
+      Shortcut = "Ctrl+O"
+    }
+    { Menu29 Menu
+    }
+    { Menu39 Menu
+      Action = ".save"
+      Text = ("Save")
+      Picture = Picture["icon:/small/save"]
+      Shortcut = "Ctrl+S"
+    }
+    { Menu40 Menu
+      Action = ".save-as"
+      Text = ("Save as") & "..."
+      Picture = Picture["icon:/small/save-as"]
+      Shortcut = "Ctrl+Alt+S"
+    }
+    { Menu41 Menu
+    }
+    { mnuClose Menu
+      Action = ".close"
+      Text = ("Close")
+      Picture = Picture["icon:/small/close"]
+      Shortcut = "Ctrl+W"
+    }
+    { Menu42 Menu mnuQuit
+      Name = "Menu42"
+      Action = "quit"
+      Text = ("Quit")
+      Picture = Picture["icon:/small/quit"]
+      Shortcut = "Ctrl+Q"
+    }
+  }
   { mnuProject Menu
     Text = Shortcut(("Project"), "P")
     Visible = False
@@ -1200,6 +1240,11 @@
     Text = "Clear all breakpoints"
     Shortcut = ""
   }
+  { Action close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
   { Action close-all-debug
     Text = "Close all debug windows"
     Shortcut = ""
@@ -1352,8 +1397,9 @@
     Picture = "icon:/small/new"
   }
   { Action open-extern
-    Text = "Open file"
-    Shortcut = ""
+    Text = "Open"
+    Shortcut = "Ctrl+O"
+    Picture = "icon:/small/open"
   }
   { Action open-profile
     Text = "Open profile"
@@ -1432,6 +1478,16 @@
     Text = "Finish"
     Shortcut = ""
     Picture = "icon:/small/eject"
+  }
+  { Action save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
+  { Action save-as
+    Text = "Save as"
+    Shortcut = "Ctrl+Alt+S"
+    Picture = "icon:/small/save-as"
   }
   { Action save-project
     Text = "Save project"

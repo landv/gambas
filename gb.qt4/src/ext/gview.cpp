@@ -1594,6 +1594,9 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 		if (mark)
 			doc->endSelection(y, x);
 		
+		if (oy != y && !doc->insideUndo())
+			_cutBuffer.clear();
+		
 		emit cursorMoved();
 	}
 	else if (center)
@@ -1903,6 +1906,12 @@ void GEditor::backspace(bool ctrl)
 	doc->end();
 }
 
+void GEditor::selectCurrentLine()
+{
+	cursorGoto(y, 0, FALSE);
+	cursorGoto(y + 1, 0, TRUE);
+}
+
 void GEditor::deleteCurrentLine()
 {
 	bool im;
@@ -1916,8 +1925,7 @@ void GEditor::deleteCurrentLine()
 	im = _insertMode;
 	_insertMode = FALSE;
 	doc->begin();
-	cursorGoto(y, 0, FALSE);
-	cursorGoto(y + 1, 0, TRUE);
+	selectCurrentLine();
 	del(FALSE);
 	doc->end();
 	_insertMode = im;
@@ -2009,6 +2017,17 @@ void GEditor::copy(bool mouse)
 
 void GEditor::cut()
 {
+	if (!doc->hasSelection())
+	{
+		doc->begin();
+		selectCurrentLine();
+		_cutBuffer += doc->getSelectedText(_insertMode);
+		QApplication::clipboard()->setText(_cutBuffer.getString(), QClipboard::Clipboard);
+		doc->eraseSelection(_insertMode);
+		doc->end();
+		return;
+	}
+
 	copy(false);
 	doc->eraseSelection(_insertMode);
 }
@@ -2310,7 +2329,7 @@ bool GEditor::updateCursor()
 {
 	if (contentsX() + lastx >= margin)
 	{
-		viewport()->setCursor(_save_cursor);
+		viewport()->setCursor(_saveCursor);
 		return false;
 	}
 	else
@@ -3330,5 +3349,5 @@ void GEditor::expand(bool shift)
 
 void GEditor::saveCursor()
 {
-	_save_cursor = viewport()->cursor();
+	_saveCursor = viewport()->cursor();
 }
