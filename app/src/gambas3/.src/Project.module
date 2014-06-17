@@ -681,7 +681,7 @@ _INIT_AGAIN:
     If sStatus And If Left(sStatus) <> "?" And If Left(sStatus) <> "D" Then VersionControl.RemoveFile(sPath)
   Endif 
 
-  If Settings["/RestoreFiles", 1] Then LastOpenedFiles
+  If Not IsFake() And If Settings["/RestoreFiles", 1] Then LastOpenedFiles
   
   CPosition.Clear
 
@@ -851,7 +851,7 @@ Public Function CloseProject() As Boolean
       $hLock = Null
     Endif
     
-    If IsFake() Then Shell "rm -rf " & Shell$(Project.Dir) Wait
+    'If IsFake() Then Shell "rm -rf " & Shell$(Project.Dir) Wait
 
     Path = ""
     {Dir} = ""
@@ -1646,26 +1646,26 @@ Private Sub UpdateTitle()
 
   If Path Then
     
-    If Not IsFake() Then
-      sTitle = Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
-    Endif
-    
     If ActiveForm Then
-      sPath = ActiveForm.Path
-      If IsProjectPath(sPath) Then
-        sPath = File.Name(sPath)
-      Else If sPath Begins User.Home Then 
-        sPath = "~/" &/ Mid$(sPath, Len(User.Home) + 1)
-      Endif
+      ' sPath = ActiveForm.Path
+      ' If IsProjectPath(sPath) Then
+      '   sPath = ActiveForm.Text
+      ' Else If sPath Begins User.Home Then 
+      '   sPath = "~/" &/ Mid$(sPath, Len(User.Home) + 1)
+      ' Endif
       If sTitle Then sTitle &= " - "
-      sTitle &= sPath
+      sTitle &= ActiveForm.Title
     Endif
     
-    If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
-    sTitle &= " - "
+    If Not IsFake() Then
+      If sTitle Then sTitle &= " - "
+      sTitle &= Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
+      If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
+    Endif
     
   Endif
   
+  If sTitle Then sTitle &= " - "
   sTitle &= Application.Title
   
   If Application.Version Like "*.9[0-9].*" Then 
@@ -5352,7 +5352,7 @@ Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean)
   sTitle = File.Name(sPath)
   'Endif
 
-  If hForm.IsModified() Then sTitle &= " [*]" & Left(("modified"), 0)
+  If hForm.IsModified() Then sTitle &= " (*)" & Left(("modified"), 0)
   If Not bNoReadOnly Then
     If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
   Endif
@@ -5362,6 +5362,8 @@ Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean)
   Endif
   
   If hForm.Title <> sTitle Then hForm.Title = sTitle
+  
+  UpdateTitle
 
 End
 
@@ -5491,7 +5493,7 @@ Public Sub IsReadOnly(sPath As String) As Boolean
   If Not Access(sPath, gb.Write) Then Return True
 
   Do
-    If sPath = Project.Dir Or If sPath = "/" Then Break
+    If sPath = Project.Dir Or If sPath = "/" Or If Not sPath Then Break
     If Stat(sPath).Type = gb.Link Then
       Return True
     Endif
@@ -5753,7 +5755,7 @@ End
 Public Sub IsFake(Optional sDir As String) As Boolean
   
   If Not sDir Then sDir = Project.Dir
-  Return sDir Begins Desktop.DataDir &/ "gambas3/fake/"
+  Return sDir = File.Dir(Temp$()) &/ "fake"
   
 End
 
@@ -5764,7 +5766,7 @@ Public Sub OpenFake() As Boolean
   
   If Project.Dir Then Return True
   
-  sDir = Desktop.DataDir &/ "gambas3/fake" &/ CStr(Application.Handle)
+  sDir = File.Dir(Temp$()) &/ "fake"
   Shell "rm -rf " & Shell(sDir) Wait
   If MakeDir(sDir) Then Return True
   

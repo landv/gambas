@@ -247,9 +247,10 @@ Private Sub UpdateTitleFromIndex(iInd As Integer)
   
   With $aWindow[iInd].Window
 
-    hObject = $aWindow[iInd].Window  
+    hObject = $aWindow[iInd].Window 
+    $aWindow[iInd].Text = .Text 
     Try sRichText = hObject.RichText    
-    If sRichText Then
+    If sRichText Then 
       tabWorkspace[iInd].RichText = sRichText
     Else
       tabWorkspace[iInd].Text = .Text
@@ -625,6 +626,13 @@ Public Sub Handle_MouseUp()
 
 End
 
+Public Function GetCountWindows() As Integer
+  
+  Return $aWindow.Count
+  
+End
+
+
 Public Function GetWindows() As Window[]
   
   Dim aWin As New Window[]
@@ -689,6 +697,7 @@ Public Sub tabWorkspace_Menu()
   Dim aTitle As New String[]
   Dim sTitle As String
   Dim hWin As CWindow
+  Dim sText As String
   
   'GetParent()._Menu
 
@@ -703,11 +712,9 @@ Public Sub tabWorkspace_Menu()
     iInd = CInt(Mid$(sTitle, InStr(sTitle, "\t") + 1))
     With tabWorkspace[iInd]
       hMenu = New Menu(mnuShow) As "mnuWindow"
-      If .Text Then
-        hMenu.Text = .Text
-      Else 
-        hMenu.Text = " "
-      Endif
+      sText = $aWindow[iInd].Text
+      If Not sText Then sText = " "
+      hMenu.Text = sText
       hMenu.Picture = .Picture
       hMenu.Checked = iInd = tabWorkspace.Index
       hMenu.Tag = iInd

@@ -67,6 +67,11 @@
       Picture = Picture["icon:/small/open"]
       Shortcut = "Ctrl+O"
     }
+    { Menu31 Menu
+      Action = ".reload"
+      Text = ("Reload")
+      Picture = Picture["icon:/small/revert"]
+    }
     { Menu29 Menu
     }
     { Menu39 Menu
@@ -1468,6 +1473,11 @@
     Text = "Refresh"
     Shortcut = ""
     Picture = "icon:/small/refresh"
+  }
+  { Action reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
   }
   { Action rename
     Text = "Rename"

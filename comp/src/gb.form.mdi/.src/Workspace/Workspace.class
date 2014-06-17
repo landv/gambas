@@ -13,6 +13,7 @@ Event Activate
 
 Property ActiveWindow As Window
 Property Read Windows As Window[]
+Property Read Count As Integer
 Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
@@ -163,5 +164,11 @@ End
 Private Sub Picture_Write(Value As Picture)
 
   $hWorkspace.SetPicture(Value)
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hWorkspace.GetCountWindows()
 
 End

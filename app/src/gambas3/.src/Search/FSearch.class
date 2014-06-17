@@ -148,6 +148,12 @@ Public Sub Update(Optional bForce As Boolean)
     radEverywhere.Value = True
   Endif
   
+  If Project.IsFake() Then
+    radSourceFileOnly.Enabled = False
+    radEverywhere.Enabled = False
+    If radSourceFileOnly.Value Or If radEverywhere.Value Then radCurrentFile.Value = True
+  Endif
+  
   UpdateTitle
   
 End
@@ -1028,6 +1034,7 @@ Public Sub OnProjectChange()
   gvwFind.Rows.Count = 0
   gvwFind.Hide
   $aBrowse.Clear
+  Update(True)
   
 End
 

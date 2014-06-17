@@ -1292,6 +1292,9 @@ End
 Public Sub wrkProject_Activate()
   
   Project.Activate(wrkProject.ActiveWindow)
+  If Project.IsFake() Then
+    If wrkProject.Count = 0 Then Me.Close
+  Endif
   
 End
 
@@ -1452,6 +1455,8 @@ Public Sub Action_Activate(Key As String) As Boolean
         Project.ActiveForm.Save
       Case ".close"
         Project.ActiveForm.Close
+      Case ".reload"
+        Project.ActiveForm.Reload
     End Select
     
   Endif
@@ -2399,9 +2404,9 @@ Public Sub OpenExternFile(Optional sPath As String)
   Endif              
   
   If Not Project.OpenFile(sPath) Then
-    If Project.IsFake() Then
-      Project.CloseProject
-    Endif
+    'If Project.IsFake() Then
+      'Project.CloseProject
+    'Endif
   Endif
 
   $bInOpenExtern = False
