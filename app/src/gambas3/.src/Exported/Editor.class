@@ -3,7 +3,9 @@
 Export
 
 Private $iStartLine As Integer
+Private $iStartColumn As Integer
 Private $iEndLine As Integer
+Private $iEndColumn As Integer
 
 Private $hLabel As TextLabel
 Private $hLabelTimer As Timer
@@ -143,21 +145,32 @@ Public Sub ReadConfig()
   
 End
 
-Public Sub StoreSelection()
+Public Sub StoreSelection(Optional bNoFullLines As Boolean)
 
   With Me
+    
     $iStartLine = .Selection.StartLine
+    $iStartColumn = .Selection.StartColumn
     $iEndLine = .Selection.EndLine
-    If .Selection.EndColumn > 0 Or Not .Selected Then Inc $iEndLine
+    $iEndColumn = .Selection.EndColumn
+    
+    If Not bNoFullLines Then 
+      If $iEndColumn > 0 Or Not .Selected Then 
+        Inc $iEndLine
+        $iEndColumn = 0
+        $iStartColumn = 0
+        RecallSelection
+      Endif
+    Endif
+    
   End With
   
-  RecallSelection
 
 End
 
 Public Sub RecallSelection()
 
-  Me.Select($iStartLine, 0, $iEndLine, 0)
+  Me.Select($iStartLine, $iStartColumn, $iEndLine, $iEndColumn)
 
 End
 

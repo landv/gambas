@@ -954,7 +954,7 @@ Public Sub mnuLowerCase_Click()
   If Editor.ReadOnly Then Return
   If Not Editor.Selected Then Return
   
-  Editor.StoreSelection
+  Editor.StoreSelection(True)
   Editor.Begin
   Editor.Insert(String.LCase(Editor.Selection.Text))
   Editor.End
@@ -967,7 +967,7 @@ Public Sub mnuUpperCase_Click()
   If Editor.ReadOnly Then Return
   If Not Editor.Selected Then Return
   
-  Editor.StoreSelection
+  Editor.StoreSelection(True)
   Editor.Begin
   Editor.Insert(String.UCase(Editor.Selection.Text))
   Editor.End

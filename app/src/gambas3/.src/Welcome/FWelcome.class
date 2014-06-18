@@ -4,6 +4,7 @@ Static Private $sPath As String
 
 Private btnNew As CCoolButton
 Private btnOpen As CCoolButton
+Private btnOpenExtern As CCoolButton
 Private btnRecent As CCoolButton
 Private btnExample As CCoolButton
 Private btnQuit As CCoolButton
@@ -51,13 +52,14 @@ Public Sub Form_Open()
   W = panButton.ClientW
 
   btnNew = New CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
-  btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project..."), "icon:/large/open", sFont) As "btnOpen"
+  btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
   btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
   btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
-  btnAbout = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("About Gambas..."), "icon:/large/gambas", sFont) As "btnAbout"
-  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 5, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
+  btnOpenExtern = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
+  btnAbout = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 5, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
+  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 6, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
 
-  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnAbout, btnQuit]
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnOpenExtern, btnAbout, btnQuit]
     hCtrl.Foreground = Color.White
     hCtrl.Highlight = &H61A7C3&
   Next
@@ -120,6 +122,12 @@ Public Sub btnOpen_Click()
   $sPath = FOpenProject.Run()
   txtFilter.SetFocus
   If $sPath Then Project.Open($sPath)
+
+End
+
+Public Sub btnOpenExtern_Click()
+
+  FMain.Action_Activate("open-extern")
 
 End
 
