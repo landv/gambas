@@ -416,10 +416,10 @@ Public Sub Init(sPath As String)
   
   Dec Application.Busy
   
-'Catch
+Catch
   
-'  Dec Application.Busy
-'  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Where & ": " & Error.Text)
+  Dec Application.Busy
+  Message.Error(Subst(("Unable to load profile file: &1"), File.Name(sPath)) & "\n\n" & Error.Where & ": " & Error.Text)
   
 End
 

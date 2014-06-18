@@ -873,7 +873,11 @@ End
 
 Public Sub tabWorkspace_Close(Index As Integer)
 
-  'Debug tabWorkspace.Index
+  If GetParent()._Close($aWindow[Index].Window) Then
+    Stop Event
+    Return
+  Endif
+  
   $aWindow[Index].Window.Close
 
 End

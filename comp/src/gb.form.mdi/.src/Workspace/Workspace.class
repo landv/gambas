@@ -9,7 +9,7 @@ Public Const _DefaultEvent As String = "Activate"
 Public Const _Group As String = "Special"
 
 Event Activate
-'EVENT WindowMenu
+Event Close({Window} As Window)
 
 Property ActiveWindow As Window
 Property Read Windows As Window[]
@@ -92,6 +92,15 @@ End
 Public Sub _Activate()
   
   Raise Activate
+  
+End
+
+Public Sub _Close(hWindow As Window) As Boolean
+
+  Dim bCancel As Boolean
+  
+  bCancel = Raise Close(hWindow)
+  Return bCancel
   
 End
 

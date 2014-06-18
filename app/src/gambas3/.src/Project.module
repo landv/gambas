@@ -309,30 +309,14 @@ Public Sub Main()
     DEFAULT_FONT = "Terminus,9"
   Endif
 
+  ' If sPath And If Not IsDir(sPath) Then
+  '   bOpenFile = True
+  ' Endif
+
   InitVersion
   InitWebView
-  'CRecentFile.Load
   FMain.Load
   Application.MainWindow = FMain
-
-  ' Do
-  '
-  '   If Not sPath Then sPath = FWelcome.Run()
-  '   'sPath = User.Home &/ "gambas/test/gambas"
-  '
-  '   If sPath Then
-  '     Project.Open(sPath)
-  '   Else
-  '     Project.Exit
-  '     FMain.Close
-  '     Return
-  '   Endif
-  '
-  '   If Project.Name Then Break
-  '
-  '   sPath = ""
-  '
-  ' Loop
 
   Inc Application.Busy
 
@@ -344,11 +328,6 @@ Public Sub Main()
     Endif
   Endif
 
-  'FProperty.Show
-  'FToolBox.Show
-  'FFormStack.Load
-
-  'If Settings["/ShowMascot", False] Then FMain.ShowShow
   FHelpBrowser.Load
   FHelpShortcut.Load
   FMain.Show
@@ -359,8 +338,6 @@ Public Sub Main()
   If Settings["/ShowTipOnStartup", True] Then
     FTips.Run
   Endif
-
-  'Project.Activate(NULL)
 
 End
 
@@ -454,6 +431,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Dim sExec As String
   Dim sPath As String
   Dim sStatus As String
+  Dim bIsFake As Boolean
 
   If Not Exist(sDir &/ ".project") Then
     FMain.ShowError(("This project does not exist.") & "\n\n" & sDir)
@@ -519,6 +497,7 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Endif
 
   If Right(sDir) = "/" Then sDir = Left(sDir, -1)
+  
   Project.Dir = sDir
 
   If bConvert Then
@@ -541,7 +520,10 @@ _INIT_AGAIN:
   Config = New Settings(Project.Dir &/ ".settings")
 
   ProjectFilter = ""
-  VersionControl.Refresh
+
+  bIsFake = IsFake(Project.Dir)
+  
+  If Not bIsFake Then VersionControl.Refresh
 
   If bConvert Then
 
@@ -646,9 +628,9 @@ _INIT_AGAIN:
     DoRefresh(False, True)
   Endif
 
-  DefineStartup(Startup, True)
+  If Not bIsFake Then DefineStartup(Startup, True)
 
-  If Not IsFake(sDir) Then CRecentFile.Add(sDir)
+  If Not bIsFake Then CRecentFile.Add(sDir)
 
   If Not $bTesting
     FMain.OnProjectChange
@@ -656,9 +638,13 @@ _INIT_AGAIN:
     FHelpBrowser.OnProjectChange
     FProfile.OnProjectChange
     'FOpenProject.OnUpdateRecent
-    Design.ClearOutput
-    Design.ReadBreakpoints
-    FDebugInfo.OnProjectChange
+    
+    If Not bIsFake Then
+      Design.ClearOutput
+      Design.ReadBreakpoints
+      FDebugInfo.OnProjectChange
+    Endif
+    
   Endif
 
   $hLock = hLock
@@ -1642,7 +1628,6 @@ End
 Private Sub UpdateTitle()
 
   Dim sTitle As String
-  Dim sPath As String
 
   If Path Then
     
@@ -2060,7 +2045,9 @@ Public Function LoadFile(sPath As String) As Object
     Endif
 
     Files[sPath] = hForm
+    
     If hForm Then
+      
       bError = hForm.LoadFile()
       If bError Then
         Files[sPath] = Null
@@ -3813,10 +3800,26 @@ Public Sub SetMessage((sMsg) As String)
 
 End
 
+Public Sub UnloadFile(sPath As String)
+
+  Dim hForm As Object
+
+  If Not Exist(sPath) Then Return
+
+  hForm = Files[sPath]
+
+  If hForm Then
+    hForm.Delete
+    Files[sPath] = Null
+  Endif
+
+  Try ProjectTree.Remove(sPath)
+
+End
+
 Public Sub DeleteFile(sPath As String)
 
   Dim sExt As String
-  Dim hForm As Object
   Dim bLink As Boolean
   Dim bProject As Boolean
   Dim sName As String
@@ -3830,14 +3833,7 @@ Public Sub DeleteFile(sPath As String)
   bProject = IsSourcePath(sPath)
   If bProject Then bReloadComponent = IsExported(sPath)
 
-  hForm = Files[sPath]
-
-  If hForm Then
-    hForm.Delete
-    Files[sPath] = Null
-  Endif
-
-  Try ProjectTree.Remove(sPath)
+  UnloadFile(sPath)
 
   If Not bLink Then
     Try Kill sPath & "~"

@@ -290,8 +290,6 @@ Public Sub DrawingArea_MouseUp()
   
 End
 
-
-
 Public Sub DrawingArea_MouseWheel()
   
   Try Application.PreviousControl.SetFocus
@@ -454,6 +452,8 @@ Public Sub TimerDrag_Timer()
   W = Desktop.Scale * 3
   
   For Each hButton In Me.Parent.Children
+    
+    If Not hButton.Visible Then Continue
     
     If hButton = Me Then
       If $hDragWindow.X < (hButton.ScreenX + hButton.W) Then Break

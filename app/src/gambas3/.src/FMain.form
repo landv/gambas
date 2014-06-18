@@ -68,14 +68,14 @@
       Shortcut = "Ctrl+O"
     }
     { Menu31 Menu
-      Action = ".reload"
+      Action = "_reload"
       Text = ("Reload")
       Picture = Picture["icon:/small/revert"]
     }
     { Menu29 Menu
     }
     { Menu39 Menu
-      Action = ".save"
+      Action = "_save"
       Text = ("Save")
       Picture = Picture["icon:/small/save"]
       Shortcut = "Ctrl+S"
@@ -89,7 +89,7 @@
     { Menu41 Menu
     }
     { mnuClose Menu
-      Action = ".close"
+      Action = "_close"
       Text = ("Close")
       Picture = Picture["icon:/small/close"]
       Shortcut = "Ctrl+W"
@@ -1216,6 +1216,21 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action _close
+    Text = "Close"
+    Shortcut = "Ctrl+W"
+    Picture = "icon:/small/close"
+  }
+  { Action _reload
+    Text = "Reload"
+    Shortcut = ""
+    Picture = "icon:/small/revert"
+  }
+  { Action _save
+    Text = "Save"
+    Shortcut = "Ctrl+S"
+    Picture = "icon:/small/save"
+  }
   { Action about
     Text = "About Gambas"
     Shortcut = ""
@@ -1244,11 +1259,6 @@
   { Action clear-break
     Text = "Clear all breakpoints"
     Shortcut = ""
-  }
-  { Action close
-    Text = "Close"
-    Shortcut = "Ctrl+W"
-    Picture = "icon:/small/close"
   }
   { Action close-all-debug
     Text = "Close all debug windows"
@@ -1474,11 +1484,6 @@
     Shortcut = ""
     Picture = "icon:/small/refresh"
   }
-  { Action reload
-    Text = "Reload"
-    Shortcut = ""
-    Picture = "icon:/small/revert"
-  }
   { Action rename
     Text = "Rename"
     Shortcut = "F2"
@@ -1488,11 +1493,6 @@
     Text = "Finish"
     Shortcut = ""
     Picture = "icon:/small/eject"
-  }
-  { Action save
-    Text = "Save"
-    Shortcut = "Ctrl+S"
-    Picture = "icon:/small/save"
   }
   { Action save-as
     Text = "Save as"

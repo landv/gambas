@@ -1289,25 +1289,11 @@ End
 '   
 ' END
 
-Public Sub wrkProject_Activate()
-  
-  Project.Activate(wrkProject.ActiveWindow)
-  If Project.IsFake() Then
-    If wrkProject.Count = 0 Then Me.Close
-  Endif
-  
-End
-
-Public Sub ActivateCurrentWindow()
-  
-  Try wrkProject.ActiveWindow.SetFocus
-  wrkProject_Activate ' If it already has the focus
-  
-End
-
 Public Sub Action_Activate(Key As String) As Boolean
   
   Dim hEditor As FEditor
+  Dim hCtrl As Object
+  Dim hAction As Action
   
   Select Key
       
@@ -1448,16 +1434,24 @@ Public Sub Action_Activate(Key As String) As Boolean
       
   End Select 
   
-  If Left(Key) = "." And If Project.ActiveForm Then 
+  If Left(Key) = "_" And If Project.ActiveForm Then 
     
-    Select Case Key
-      Case ".save"
-        Project.ActiveForm.Save
-      Case ".close"
-        Project.ActiveForm.Close
-      Case ".reload"
-        Project.ActiveForm.Reload
-    End Select
+    hAction = Action["." & Mid$(Key, 2), Project.ActiveForm]
+    For Each hCtrl In hAction.Controls
+      If hCtrl Is Menu Then
+        hCtrl.Value = True
+        Break
+      Endif
+    Next
+    
+    ' Select Case Key
+    '   Case ".save"
+    '     Project.ActiveForm.Save
+    '   Case ".close"
+    '     Project.ActiveForm.Close
+    '   Case ".reload"
+    '     Project.ActiveForm.Reload
+    ' End Select
     
   Endif
   
@@ -1481,12 +1475,6 @@ Public Sub tvwProject_GotFocus()
   
   RefreshMenu
   'txtSearchProject.SetFocus
-  
-End
-
-Public Sub wrkProject_WindowMenu()
-  
-  'DEBUG
   
 End
 
@@ -2485,3 +2473,45 @@ WRITE_PROJECT:
   
 End
 
+Public Sub wrkProject_Activate()
+  
+  Project.Activate(wrkProject.ActiveWindow)
+  
+  If Project.IsFake() Then
+    If wrkProject.Count = 0 Then Me.Close
+  Endif
+  
+End
+
+Public Sub ActivateCurrentWindow()
+  
+  Try wrkProject.ActiveWindow.SetFocus
+  wrkProject_Activate ' If it already has the focus
+  
+End
+
+Public Sub wrkProject_Close(Window As Window)
+
+  Dim hForm As Object = Window
+  Dim iResp As Integer
+
+  If Project.IsFake() Then
+    If hForm.IsModified() Then
+      iResp = Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Save"), ("Ignore"), ("Cancel"))
+      wrkProject.Lock
+      Select Case iResp
+        Case 1
+          hForm.Save
+          Project.UnloadFile(hForm.Path)
+        Case 2
+          Project.UnloadFile(hForm.Path)
+        Case 3
+      End Select
+      wrkProject.Unlock
+      Stop Event
+    Endif
+    
+  Endif
+
+  
+End
