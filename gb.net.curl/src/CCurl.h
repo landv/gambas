@@ -106,6 +106,7 @@ void CURL_stop(void *_object);
 void CURL_manage_error(void *_object, int error);
 
 void CURL_init_stream(void *_object);
+void CURL_init_options(void *_object);
 
 bool CURL_check_active(void *_object);
 

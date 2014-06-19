@@ -128,6 +128,7 @@ static void ftp_initialize_curl_handle(void *_object)
 	ftp_reset(THIS_FTP);
 	THIS_STATUS = NET_CONNECTING;
 	
+	CURL_init_options(THIS);
 	CURL_init_stream(THIS);
 }
 
