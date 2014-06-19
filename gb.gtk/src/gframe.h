@@ -51,6 +51,8 @@ public:
 
 	virtual int containerX();
 	virtual int containerY();
+	virtual int clientX();
+	virtual int clientY();
 	virtual int clientWidth();
 	virtual int clientHeight();
 

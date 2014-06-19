@@ -160,7 +160,7 @@ gFrame::gFrame(gContainer *parent) : gContainer(parent)
 	gtk_container_add(GTK_CONTAINER(widget), fr);
 	
   realize(false);
-  
+
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_frame_resize), (gpointer)this);
 }
 
@@ -233,9 +233,14 @@ int gFrame::containerX()
 	return gApplication::getFrameWidth();
 }
 
+int gFrame::clientX()
+{
+	return 0;
+}
+
 int gFrame::clientWidth()
 {
-	return width() - gApplication::getFrameWidth() * 2;
+	return width(); // - gApplication::getFrameWidth() * 2;
 }
 
 int gFrame::containerY()
@@ -248,7 +253,12 @@ int gFrame::containerY()
 	return y;
 }
 
+int gFrame::clientY()
+{
+	return 0;
+}
+
 int gFrame::clientHeight()
 {
-	return height() - containerY() - gApplication::getFrameWidth();
+	return height(); // - clientY() - gApplication::getFrameWidth();
 }
