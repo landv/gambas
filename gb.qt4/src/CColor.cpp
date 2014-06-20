@@ -130,6 +130,18 @@ BEGIN_PROPERTY(Color_TooltipForeground)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Color_LinkForeground)
+
+  return_color(QPalette::Link);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Color_VisitedForeground)
+
+  return_color(QPalette::LinkVisited);
+
+END_PROPERTY
+
 GB_DESC CColorDesc[] =
 {
   GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
@@ -147,6 +159,8 @@ GB_DESC CColorDesc[] =
   GB_STATIC_PROPERTY("TextForeground", "i", Color_TextForeground),
   GB_STATIC_PROPERTY("ButtonForeground", "i", Color_ButtonForeground),
   GB_STATIC_PROPERTY("TooltipForeground", "i", Color_TooltipForeground),
+  GB_STATIC_PROPERTY("LinkForeground", "i", Color_LinkForeground),
+  GB_STATIC_PROPERTY("VisitedForeground", "i", Color_VisitedForeground),
 
   GB_END_DECLARE
 };

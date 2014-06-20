@@ -125,7 +125,9 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 	static const char *sel_bg_names[] = { "selected_bg_color", "theme_selected_bg_color", NULL };
 	static const char *sel_fg_names[] = { "selected_fg_color", "theme_selected_fg_color", NULL };
 	static const char *tt_bg_names[] = { "tooltip_bg_color", "theme_tooltip_bg_color", NULL };
-	static const char *tt_fg_names[] = { "tooltip_fg_color", "theme_tooltip_fg_color", NULL };
+	static const char *tt_fg_names[] = { "link_fg_color", "theme_tooltip_fg_color", NULL };
+	static const char *link_fg_names[] = { "link_color", "theme_link_color", NULL };
+	static const char *visited_fg_names[] = { "visited_link_color", "theme_visited_link_color", NULL };
 
 	GtkStyleContext *st = gt_get_style(type);
 	GdkRGBA rgba;
@@ -151,6 +153,11 @@ static gColor get_color(GType type, gColor default_color, GtkStateFlags state, b
 	else if (type == GTK_TYPE_TOOLTIP)
 	{
 		if (!gt_style_lookup_color(st, fg ? tt_fg_names : tt_bg_names, NULL, &rgba))
+			goto __OK;
+	}
+	else if (type == GTK_TYPE_LINK_BUTTON)
+	{
+		if (!gt_style_lookup_color(st, fg ? link_fg_names : visited_fg_names, NULL, &rgba))
 			goto __OK;
 	}
 
@@ -241,6 +248,27 @@ gColor gDesktop::tooltipForeground()
 gColor gDesktop::tooltipBackground()
 {
 	return get_color(GTK_TYPE_TOOLTIP, 0xC0C0C0, STATE_NORMAL, false, false);
+}
+
+gColor gDesktop::linkForeground()
+{
+	return get_color(GTK_TYPE_LINK_BUTTON, 0x0000FF, STATE_NORMAL, true, false);
+}
+
+gColor gDesktop::visitedForeground()
+{
+#ifdef GTK3
+	return get_color(GTK_TYPE_LINK_BUTTON, 0x0080FF, STATE_NORMAL, false, false);
+#else
+	int r, g ,b, h, s, v;
+	gt_color_to_rgb(linkForeground(), &r, &g, &b);
+	gt_rgb_to_hsv(r, g, b, &h, &s, &v);
+	h -= 30;
+	if (h < 0)
+		h += 360;
+	gt_hsv_to_rgb(h, s, v, &r, &g, &b);
+	return gt_rgb_to_color(r, g, b);
+#endif
 }
 
 gColor gDesktop::lightbgColor()

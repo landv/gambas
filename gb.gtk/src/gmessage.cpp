@@ -110,13 +110,14 @@ guint custom_dialog(const gchar *icon,GtkButtonsType btn,char *sg)
 	msg = gtk_dialog_new_with_buttons(title, NULL,
 					GTK_DIALOG_MODAL,
 					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
+	img = gtk_image_new_from_icon_name(icon,GTK_ICON_SIZE_DIALOG);
 #else
 	msg = gtk_dialog_new_with_buttons(title, NULL,
 					(GtkDialogFlags)(GTK_DIALOG_MODAL+GTK_DIALOG_NO_SEPARATOR),
 					bt.bt1, 1, bt.bt2, 2, bt.bt3, 3, (char *)NULL);
+	img = gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
 #endif
 
-	img = gtk_image_new_from_stock(icon,GTK_ICON_SIZE_DIALOG);
 	label = gtk_label_new("");
 	
 	if (sg) 
@@ -173,7 +174,13 @@ int gMessage::showDelete(char *msg,char *btn1,char *btn2,char *btn3)
 	if (btn1) bt.bt1=btn1;
 	if (btn2) bt.bt2=btn2;
 	if (btn3) bt.bt3=btn3;
-	return custom_dialog(GTK_STOCK_DELETE,GTK_BUTTONS_OK,msg);
+	return custom_dialog(
+#ifdef GTK3
+		"user-trash",
+#else
+		GTK_STOCK_DELETE,
+#endif
+		GTK_BUTTONS_OK,msg);
 }
 
 int gMessage::showError(char *msg,char *btn1,char *btn2,char *btn3)
@@ -184,7 +191,13 @@ int gMessage::showError(char *msg,char *btn1,char *btn2,char *btn3)
 	if (btn1) bt.bt1=btn1;
 	if (btn2) bt.bt2=btn2;
 	if (btn3) bt.bt3=btn3;
-	return custom_dialog(GTK_STOCK_DIALOG_ERROR,GTK_BUTTONS_OK,msg);
+	return custom_dialog(
+#ifdef GTK3
+		"dialog-error",
+#else
+		GTK_STOCK_DIALOG_ERROR,
+#endif
+		GTK_BUTTONS_OK,msg);
 }
 
 int gMessage::showInfo(char *msg,char *btn1)
@@ -193,7 +206,13 @@ int gMessage::showInfo(char *msg,char *btn1)
 	bt.bt2=NULL;
 	bt.bt3=NULL;
 	if (btn1) bt.bt1=btn1;
-	return custom_dialog(GTK_STOCK_DIALOG_INFO,GTK_BUTTONS_OK,msg);
+	return custom_dialog(
+#ifdef GTK3
+		"dialog-information",
+#else
+		GTK_STOCK_DIALOG_INFO,
+#endif
+		GTK_BUTTONS_OK,msg);
 }
 
 int gMessage::showQuestion(char *msg,char *btn1,char *btn2,char *btn3)
@@ -204,7 +223,13 @@ int gMessage::showQuestion(char *msg,char *btn1,char *btn2,char *btn3)
 	if (btn1) bt.bt1=btn1;
 	if (btn2) bt.bt2=btn2;
 	if (btn3) bt.bt3=btn3;
-	return custom_dialog(GTK_STOCK_DIALOG_QUESTION,GTK_BUTTONS_OK,msg);
+	return custom_dialog(
+#ifdef GTK3
+		"dialog-question",
+#else
+		GTK_STOCK_DIALOG_QUESTION,
+#endif
+		GTK_BUTTONS_OK,msg);
 }
 
 int gMessage::showWarning(char *msg,char *btn1,char *btn2,char *btn3)
@@ -215,7 +240,13 @@ int gMessage::showWarning(char *msg,char *btn1,char *btn2,char *btn3)
 	if (btn1) bt.bt1=btn1;
 	if (btn2) bt.bt2=btn2;
 	if (btn3) bt.bt3=btn3;
-	return custom_dialog(GTK_STOCK_DIALOG_WARNING,GTK_BUTTONS_OK,msg);
+	return custom_dialog(
+#ifdef GTK3
+		"dialog-warning",
+#else
+		GTK_STOCK_DIALOG_WARNING,
+#endif
+		GTK_BUTTONS_OK,msg);
 }
 
 char *gMessage::title()
@@ -479,11 +510,14 @@ bool gDialog::openFile(bool multi)
 	GtkFileChooserDialog *msg;
 
 	msg = (GtkFileChooserDialog*)gtk_file_chooser_dialog_new(
-		DIALOG_title ? DIALOG_title : "Open file",
+		DIALOG_title ? DIALOG_title : GB.Translate("Open file"),
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_OPEN,
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+#ifdef GTK3
+		GB.Translate("Cancel"), GTK_RESPONSE_CANCEL, GB.Translate("Open"), GTK_RESPONSE_OK,
+#else
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+#endif
 		(void *)NULL);
 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
@@ -509,11 +543,14 @@ bool gDialog::saveFile()
 	GtkFileChooserDialog *msg;
 
 	msg = (GtkFileChooserDialog*)gtk_file_chooser_dialog_new(
-		DIALOG_title ? DIALOG_title : "Save file",
+		DIALOG_title ? DIALOG_title : GB.Translate("Save file"),
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_SAVE,
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+#ifdef GTK3
+		GB.Translate("Cancel"), GTK_RESPONSE_CANCEL, GB.Translate("Save"), GTK_RESPONSE_OK,
+#else
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_OK,
+#endif
 		(void *)NULL);
 	
 	gtk_file_chooser_set_do_overwrite_confirmation((GtkFileChooser*)msg, true);
@@ -540,11 +577,14 @@ bool gDialog::selectFolder()
 	GtkFileChooserDialog *msg;
 
 	msg = (GtkFileChooserDialog*)gtk_file_chooser_dialog_new(
-		DIALOG_title ? DIALOG_title : "Select directory",
+		DIALOG_title ? DIALOG_title : GB.Translate("Select directory"),
 		NULL,
 		GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_OPEN, GTK_RESPONSE_OK, 
+#ifdef GTK3
+		GB.Translate("Cancel"), GTK_RESPONSE_CANCEL, GB.Translate("Open"), GTK_RESPONSE_OK,
+#else
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN, GTK_RESPONSE_OK,
+#endif
 		(void *)NULL);
 	 
 	gtk_file_chooser_set_local_only((GtkFileChooser*)msg, true);
@@ -685,7 +725,7 @@ bool gDialog::selectColor()
 	if (DIALOG_title)
 		msg=(GtkColorSelectionDialog*)gtk_color_selection_dialog_new (DIALOG_title);
 	else
-		msg=(GtkColorSelectionDialog*)gtk_color_selection_dialog_new ("Select Color");
+		msg=(GtkColorSelectionDialog*)gtk_color_selection_dialog_new(GB.Translate("Select Color"));
     
 	gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(msg)), &gcol);
 	

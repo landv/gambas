@@ -1359,7 +1359,7 @@ int gApplication::getFrameWidth()
 #ifdef GTK3
   GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
   GtkBorder tmp;
-  GtkBorder border;
+  //GtkBorder border;
 
 	gtk_style_context_get_padding(context, (GtkStateFlags)0, &tmp);
 	/*gtk_style_context_get_border(context, (GtkStateFlags)0, &border);

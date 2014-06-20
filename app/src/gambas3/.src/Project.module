@@ -168,6 +168,8 @@ Public Config As Settings
 
 Public RestoringFiles As Boolean
 
+Public ShowFileInTitle As Boolean
+
 Private $aInheritance As New String[]
 Private $iNoRefresh As Integer
 Private $bDoRefresh As Boolean
@@ -309,12 +311,10 @@ Public Sub Main()
     DEFAULT_FONT = "Terminus,9"
   Endif
 
-  ' If sPath And If Not IsDir(sPath) Then
-  '   bOpenFile = True
-  ' Endif
-
   InitVersion
   InitWebView
+  ShowFileInTitle = Settings["/ShowFileInTitle", True]
+  
   FMain.Load
   Application.MainWindow = FMain
 
@@ -1625,21 +1625,23 @@ Private Sub RefreshSourceCache()
 
 End
 
-Private Sub UpdateTitle()
+Public Sub UpdateTitle()
 
   Dim sTitle As String
 
   If Path Then
     
-    If ActiveForm Then
-      ' sPath = ActiveForm.Path
-      ' If IsProjectPath(sPath) Then
-      '   sPath = ActiveForm.Text
-      ' Else If sPath Begins User.Home Then 
-      '   sPath = "~/" &/ Mid$(sPath, Len(User.Home) + 1)
-      ' Endif
-      If sTitle Then sTitle &= " - "
-      sTitle &= ActiveForm.Title
+    If ShowFileInTitle Then
+      If ActiveForm Then
+        ' sPath = ActiveForm.Path
+        ' If IsProjectPath(sPath) Then
+        '   sPath = ActiveForm.Text
+        ' Else If sPath Begins User.Home Then 
+        '   sPath = "~/" &/ Mid$(sPath, Len(User.Home) + 1)
+        ' Endif
+        If sTitle Then sTitle &= " - "
+        sTitle &= ActiveForm.Title
+      Endif
     Endif
     
     If Not IsFake() Then

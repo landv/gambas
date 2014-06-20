@@ -48,6 +48,8 @@ public:
 	static gColor lightfgColor();
 	static gColor tooltipForeground();
 	static gColor tooltipBackground();
+	static gColor linkForeground();
+	static gColor visitedForeground();
 
 	static gFont* font();
 	static void setFont(gFont *vl);

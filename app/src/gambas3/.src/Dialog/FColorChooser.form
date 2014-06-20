@@ -1,28 +1,30 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,56,61)
+  MoveScaled(0,2.1429,56,64)
   Text = ("Select a color")
   Persistent = True
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
-  { tabColor TabStrip
+  { tabColor TabPanel
     MoveScaled(1,1,53,45)
     Expand = True
     Arrangement = Arrange.Fill
-    Padding = 8
+    Margin = True
     Count = 2
     Index = 0
     Text = ("System")
     { lstSystem ListContainer
       MoveScaled(1,2,43,37)
+      Border = False
     }
     Index = 1
     Text = ("Free")
     { dlgColor ColorChooser
       MoveScaled(1,1,48,38)
       Expand = True
+      Border = False
       ShowCustom = True
     }
     Index = 0

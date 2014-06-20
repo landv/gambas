@@ -146,6 +146,8 @@ typedef
 #define gtk_hscrollbar_new(_adj) gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL, _adj)
 #define gtk_vscrollbar_new(_adj) gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL, _adj)
 
+#define gtk_modify_font gtk_override_font
+
 #else
 
 #define STATE_T GtkStateType

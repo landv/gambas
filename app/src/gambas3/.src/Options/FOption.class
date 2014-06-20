@@ -102,6 +102,7 @@ Public Sub _new()
     [btnStartupLoad, "/RestoreFiles", 1],
     [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
     [btnTooltip, "/ShowTooltip", 0],
+    [btnShowFileInTitle, "/ShowFileInTitle", 1],
     [btnIntegratedHelp, "/PropertyHelp", 1],
     [btnHelpCompletion, "/ShowHelpInPopup", 1],
     [btnMinimize, "/MinimizeOnRun", 0],
@@ -284,11 +285,19 @@ Public Sub cmbTitleFontSize_Click()
 
 End
 
-Public Sub cmbTooltip_Click()
+Public Sub btnTooltip_Click()
 
   Settings["/ShowTooltip"] = btnTooltip.Value
   Application.ShowTooltips = btnTooltip.Value
   
+End
+
+Public Sub btnShowFileInTitle_Click()
+
+  Settings["/ShowFileInTitle"] = btnShowFileInTitle.Value
+  Project.ShowFileInTitle = btnShowFileInTitle.Value
+  Project.UpdateTitle
+
 End
 
 Public Sub txtTabSize_Change()
@@ -1164,3 +1173,4 @@ Public Sub btnShortcut_Click()
   Action.Configure
 
 End
+
