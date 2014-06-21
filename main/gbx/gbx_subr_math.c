@@ -796,7 +796,8 @@ void SUBR_abs(ushort code)
 
 __BOOLEAN:
 
-	return;
+	P1->type = T_INTEGER;
+	goto __INTEGER;
 
 __BYTE:
 	
