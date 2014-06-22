@@ -76,11 +76,11 @@ public:
 //"Private"
 	int type;
 	char *bufText;
+	GtkWidget *_label;
 	GtkCellRenderer *rendtxt;
 	GdkPixbuf *rendpix,*rendinc;
 	gPicture *pic;
 	int shortcut;
-	unsigned scaled : 1;
 	unsigned disable : 1;
 	unsigned _toggle : 1;
 	unsigned _animated : 1;

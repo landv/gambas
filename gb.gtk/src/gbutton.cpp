@@ -89,6 +89,7 @@ static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
 	gint py, px;
 	bool rtl, bcenter=false;
 	gint dx, dy;
+	GtkStateFlags f;
 
 	rtl = gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
 
@@ -151,25 +152,20 @@ static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
 	gt_set_cell_renderer_text_from_font((GtkCellRendererText *)data->rendtxt, data->font());
 	g_object_set(G_OBJECT(data->rendtxt), "sensitive", true, (void *)NULL);
 
-	switch (gtk_widget_get_state(data->widget))
+
+	f = gtk_widget_get_state_flags(data->widget);
+
+	if (f & GTK_STATE_INSENSITIVE)
 	{
-		//case GTK_STATE_NORMAL:
-		//case GTK_STATE_ACTIVE: state=GTK_CELL_RENDERER_PRELIT; break;
-		//case GTK_STATE_PRELIGHT: state=GTK_CELL_RENDERER_PRELIT; break;
-		case GTK_STATE_SELECTED:
-			state = GTK_CELL_RENDERER_SELECTED;
-			break;
-
-		case GTK_STATE_INSENSITIVE:
-			state = GTK_CELL_RENDERER_INSENSITIVE;
-			g_object_set(G_OBJECT(data->rendtxt), "sensitive", false, (void *)NULL);
-			break;
-
-		default:
-			state = (GtkCellRendererState)0;
-			break;
+		state = GTK_CELL_RENDERER_INSENSITIVE;
+		g_object_set(G_OBJECT(data->rendtxt), "sensitive", false, (void *)NULL);
 	}
-
+	else if (f & GTK_STATE_SELECTED)
+	{
+		state = GTK_CELL_RENDERER_SELECTED;
+	}
+	else
+		state = (GtkCellRendererState)0;
 
 	/*rect.width-=12;
 	rect.x+=6;
@@ -313,29 +309,23 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 
 	g_typ = Type_gButton;
 	
+	disable = false;
 	_toggle = false;
 	_radio = false;
 	_animated = false;
 	_stretch = true;
 	_tristate = false;
 	_autoresize = false;
-	scaled = false;
-	disable = false;
 	bufText = NULL;
 	rendtxt = NULL;
 	rendpix = NULL;
 	rendinc = NULL;
+	_label = NULL;
 	pic = NULL;
 	shortcut = 0;
 	
 	switch(typ)
 	{
-		case Toggle:
-			_no_background = true;
-			rendtxt = gtk_cell_renderer_text_new();
-			border = gtk_toggle_button_new();
-			break;
-			
 		case Check:
 			border = gtk_check_button_new();
 			break;
@@ -355,6 +345,12 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 			}
 			break;
 		
+		case Toggle:
+			_no_background = true;
+			rendtxt = gtk_cell_renderer_text_new();
+			border = gtk_toggle_button_new();
+			break;
+
 		case Tool:
 			_no_background = true;
 			rendtxt = gtk_cell_renderer_text_new();
@@ -482,6 +478,9 @@ void gButton::setText(const char *st)
 		}
 		else
 			gtk_button_set_label(GTK_BUTTON(widget), "");
+
+		_label = gtk_bin_get_child(GTK_BIN(widget));
+		set_gdk_fg_color(_label, foreground());
 	}
 
 	updateFont();
@@ -626,13 +625,21 @@ void gButton::animateClick(bool on)
 	
 	if (!on && !_animated)
 	{
+#ifdef GTK3
+		gtk_widget_set_state_flags(widget, GTK_STATE_FLAG_ACTIVE, FALSE);
+#else
 		gtk_widget_set_state(widget, GTK_STATE_ACTIVE);
+#endif
 		_animated = true;
 	}
 	else if (on && _animated)
 	{
 		_animated = false;
+#ifdef GTK3
+		gtk_widget_set_state_flags(widget, GTK_STATE_FLAG_NORMAL, FALSE);
+#else
 		gtk_widget_set_state(widget, GTK_STATE_NORMAL);
+#endif
 		gtk_button_clicked(GTK_BUTTON(widget));
 	}
 }
@@ -715,6 +722,11 @@ void gButton::setStretch(bool vl)
 void gButton::setRealForeground(gColor color)
 {
 	gControl::setRealForeground(color);
+
+#ifndef GTK3
+	if (_label)
+		set_gdk_fg_color(_label, color);
+#endif
 
 	if (rendtxt)
 	{
