@@ -485,3 +485,10 @@ Private Sub NoKeyboard_Write(Value As Boolean)
   $bNoKeyboard = Value
   
 End
+
+Public Sub Clear()
+  
+  Cancel
+  Super.Clear
+  
+End

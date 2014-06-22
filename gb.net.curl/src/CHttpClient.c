@@ -226,6 +226,7 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		GB.Ref(custom_headers);
 	}
 	
+	CURL_init_options(THIS);
 	CURL_init_stream(THIS);
 }
 
@@ -393,7 +394,7 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	}
 
 	CURL_set_progress(THIS_CURL, TRUE);
-	
+
 	if (THIS->async)
 	{
 		CURL_start_post(THIS);

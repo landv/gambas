@@ -252,6 +252,11 @@ void CURL_init_stream(void *_object)
 	GB.Stream.SetAvailableNow(&THIS->stream, TRUE);
 }
 
+void CURL_init_options(void *_object)
+{
+	curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYPEER, THIS->ssl_verify_peer ? 1 : 0);
+	curl_easy_setopt(THIS_CURL, CURLOPT_SSL_VERIFYHOST , THIS->ssl_verify_host ? 2 : 0);
+}
 
 #define CHECK_PROGRESS_VAL(_var) if (THIS->_var != (int64_t)_var) { THIS->_var = (int64_t)_var; raise = TRUE; }
 
