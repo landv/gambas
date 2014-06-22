@@ -13,21 +13,14 @@ AC_PATH_PROG([LLVM_CONFIG], [llvm-config], [no])
 if test "x$LLVM_CONFIG" = xno; then
   touch DISABLED DISABLED.gb.jit
 else
-  AC_MSG_CHECKING(for LLVM - version >= $min_llvm_version)
+  AC_MSG_CHECKING(for LLVM, version >= $min_llvm_version)
 
   LLVM_VERSION=`$LLVM_CONFIG --version`
-  llvm_major_version=`echo $LLVM_VERSION | sed 's/svn.*//g' | sed 's/\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-  llvm_minor_version=`echo $LLVM_VERSION | sed 's/svn.*//g' | sed 's/\([[0-9]]*\).\([[0-9]]*\)/\2/'`
-  min_llvm_major_version=`echo $min_llvm_version | sed 's/\([[0-9]]*\).\([[0-9]]*\)/\1/'`
-  min_llvm_minor_version=`echo $min_llvm_version | sed 's/\([[0-9]]*\).\([[0-9]]*\)/\2/'`
   
-  if test $llvm_major_version -ge $min_llvm_major_version &&
-    test $llvm_minor_version -ge $min_llvm_minor_version; then
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no)
-    touch DISABLED DISABLED.gb.jit
-  fi
+  AX_COMPARE_VERSION($LLVM_VERSION, [ge], $min_llvm_version,
+   [AC_MSG_RESULT(yes)],
+   [AC_MSG_RESULT(no)
+    touch DISABLED DISABLED.gb.jit])
 fi
 
 GB_COMPONENT(
