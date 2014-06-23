@@ -15,7 +15,7 @@ AC_PATH_PROG([LLVM_CONFIG], [llvm-config], [no])
 if test "x$LLVM_CONFIG" = xno; then
   touch DISABLED DISABLED.gb.jit
 else
-  AC_MSG_CHECKING([for LLVM - version >= $min_llvm_version])
+  AC_MSG_CHECKING([for LLVM, version >= $min_llvm_version])
 
   LLVM_VERSION=`$LLVM_CONFIG --version`
 

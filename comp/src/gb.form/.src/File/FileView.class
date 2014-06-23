@@ -20,7 +20,7 @@ Property Current As String
 Property Mode As Integer
 Property ShowDetailed As Boolean
 Property ShowPreview As Boolean
-Property Read Selection As String[]
+Property Selection As String[]
 Property Filter As String[]
 Property Icon As Picture
 Property IconSize As Integer
@@ -32,6 +32,9 @@ Property Foreground As Integer
 
 'Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 Static Private $cExt As New Collection(gb.IgnoreCase)
+
+Private Const PREFIX_DIR As String = "0"
+Private Const PREFIX_FILE As String = "1"
 
 Private $sDir As String
 Private $bShowHidden As Boolean
@@ -245,6 +248,16 @@ Private Sub GetIconSize() As Integer
 
 End
 
+Private Sub GetCurrentDir() As String
+
+  If $sDir Then
+    Return $sDir
+  Else
+    Return User.Home
+  Endif
+
+End
+
 Private Sub RefreshView(Optional bInvalidate As Boolean)
   
   Dim sFile As String
@@ -264,6 +277,7 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
 
   Inc Application.Busy
   
+  $bRefreshTriggered = False
   $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
   
   iHiddenFg = Color.Merge(Color.TextBackground, Color.TextForeground, 0.66)
@@ -283,8 +297,7 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   
   iSize = GetIconSize()
   
-  sDir = $sDir
-  If Not sDir Then sDir = User.Home
+  sDir = GetCurrentDir()
   
   hCache = DirCache[sDir]
   If bInvalidate Then hCache.Invalidate
@@ -298,10 +311,10 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
     With hCache.GetInfo(sFile)
       If hCache.IsDir(sFile) Then
         If Not $bShowDir Then Continue
-        sPrefix = "0"
+        sPrefix = PREFIX_DIR
       Else
         If $aFilter And If CheckFilter(sFile) Then Continue
-        sPrefix = "1"
+        sPrefix = PREFIX_FILE
       Endif
       hPict = GetIcon(sDir &/ sFile, iSize)
       If Not hPict Then 
@@ -364,7 +377,7 @@ Private Sub RunPreview()
 
   If $hPreview Then $hPreview.Stop
   
-  $hPreview = New CTaskPreview($sDir, GetIconSize()) As "TaskPreview"
+  $hPreview = New CTaskPreview(GetCurrentDir(), GetIconSize()) As "TaskPreview"
 
 End
 
@@ -388,7 +401,7 @@ Public Sub TaskPreview_Read(Data As String)
     sPath = Left(sLine, iPos - 1)
     sPreview = Mid$(sLine, iPos + 1)
     
-    Try GetView()["1" & sPath].Picture = Image.Load(sPreview).Picture
+    Try GetView()[PREFIX_FILE & sPath].Picture = Image.Load(sPreview).Picture
     
   Next
   
@@ -404,7 +417,7 @@ End
 Private Sub RefreshViewLater()
   
   If $bRefreshTriggered Then Return
-  
+
   $bRefreshTriggered = True
   $hRefresh.Trigger
   
@@ -412,7 +425,7 @@ End
 
 Public Sub Refresh_Timer()
   
-  $bRefreshTriggered = False
+  If Not $bRefreshTriggered Then Return
   RefreshView
   
 End
@@ -482,15 +495,23 @@ Catch
   
 End
 
+Private Sub EnsureRefresh()
+
+  Refresh_Timer
+
+End
+
 Private Sub Current_Write(sFile As String)
   
   Dim sKey As String
   
   'Debug sFile
   
+  EnsureRefresh
+  
   GetView().UnselectAll
-  sKey = "0" & sFile
-  If Not GetView().Exist(sKey) Then sKey = "1" & sFile
+  sKey = PREFIX_DIR & sFile
+  If Not GetView().Exist(sKey) Then sKey = PREFIX_FILE & sFile
   If Not GetView().Exist(sKey) Then Return
   
   GetView()[sKey].Selected = True
@@ -575,8 +596,7 @@ Public Sub View_Compare(Key As String, OtherKey As String)
   Dim sDir As String
   Dim iComp As Integer
   
-  sDir = $sDir
-  If Not sDir Then sDir = User.Home
+  sDir = GetCurrentDir()
   
   If $hColumnView.Visible Then
     $iSort = $hColumnView.Columns.Sort
@@ -634,12 +654,9 @@ Private Function Selection_Read() As String[]
   Dim hView As Object
   Dim aSel As New String[]
   
-  If $hIconView.Visible Then
-    hView = $hIconView
-  Else
-    hView = $hColumnView
-  Endif
+  EnsureRefresh
   
+  hView = GetView()
   hView.MoveFirst
   While hView.Available
     If hView.Item.Selected Then
@@ -650,6 +667,27 @@ Private Function Selection_Read() As String[]
   
   Return aSel
   
+End
+
+Private Sub Selection_Write(Value As String[])
+
+  Dim hView As Object
+  Dim sFile As String
+  Dim hCache As DirCache
+  
+  If $hIconView.Mode = Select.None Then Return
+
+  EnsureRefresh
+
+  hCache = DirCache[GetCurrentDir()]
+  
+  hView = GetView()
+  hView.UnselectAll
+  For Each sFile In Value
+    sFile = If(hCache.IsDir(sFile), PREFIX_DIR, PREFIX_FILE) & sFile
+    Try hView[sFile].Selected = True
+  Next
+
 End
 
 Private Sub TakeSelection()
@@ -788,6 +826,7 @@ End
 Public Sub SelectAll()
   
   If $hIconView.Mode <> Select.Multiple Then Return
+  EnsureRefresh
   GetView().SelectAll()
   
 End
@@ -855,7 +894,7 @@ Public Sub View_Rename()
   
   Dim hView As Object = GetView()
   Dim sKey As String = hView.Item.Key
-  Dim sOldPath As String = $sDir &/ Mid$(sKey, 2)
+  Dim sOldPath As String = GetCurrentDir() &/ Mid$(sKey, 2)
   Dim sNewName As String = hView.Item.Text
   Dim sMsg As String
   
@@ -888,3 +927,4 @@ Catch
   Message.Error(("Cannot rename file.") & "\n\n" & Error.Text)
   
 End
+

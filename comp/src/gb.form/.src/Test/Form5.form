@@ -1,7 +1,8 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,44,32)
+  MoveScaled(0,0,92,79)
+  Arrangement = Arrange.Fill
   Margin = True
   { Menu1 Menu
     { Menu2 Menu
@@ -17,18 +18,7 @@
       Text = ("Menu5")
     }
   }
-  { ButtonBox1 ButtonBox
-    MoveScaled(1,1,29,5)
-    Text = ("ButtonBox1")
-  }
-  { ButtonBox2 ButtonBox
-    MoveScaled(2,8,29,5)
-    Text = ("ButtonBox1")
-    Border = False
-  }
-  { SwitchButton1 SwitchButton
-    MoveScaled(6,18,16,4)
-    Value = True
-    Animated = True
+  { FileChooser1 FileChooser
+    MoveScaled(2,1,78,59)
   }
 }

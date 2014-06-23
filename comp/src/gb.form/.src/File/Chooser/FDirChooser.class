@@ -149,6 +149,8 @@ Public Sub dvwChoose_Click()
 
   If txtFile.ReadOnly Then
     txtFile.Text = ""
+  Else
+    txtFile_Change
   Endif
 
   Raise Change
@@ -1428,5 +1430,11 @@ End
 Public Sub panToolbar_Arrange()
 
   UpdateDirText
+
+End
+
+Public Sub txtFile_Change()
+
+  Try fvwChoose.Current = txtFile.Text
 
 End
