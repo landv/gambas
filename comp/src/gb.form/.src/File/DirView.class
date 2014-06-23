@@ -237,20 +237,11 @@ End
 '   
 ' End
 
-
 Public Sub TreeView_Activate()
 
   Raise Activate
 
 End
-
-Public Sub TreeView_Click()
-
-  If $bNoEvent Then Return
-  Raise Click
-
-End
-
 
 Public Sub TreeView_Menu()
 

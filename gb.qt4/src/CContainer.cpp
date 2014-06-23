@@ -499,17 +499,17 @@ void MyFrame::setFrameStyle(int frame)
 	update();
 }
 
-void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidget *w)
+static void _draw_border(QPainter *p, int frame, QWidget *w, QStyleOptionFrame &opt)
 {
 	QStyle *style;
 	QStyleOptionFrameV3 optv3;
 	bool a;
 	QBrush save_brush;
 	//QRect rect = opt.rect;
-	
-	if (frame == 0)
+
+	if (frame == BORDER_NONE)
 		return;
-	
+
 	if (w)
 		style = w->style();
 	else
@@ -529,19 +529,19 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			if (a)
 				p->setRenderHint(QPainter::Antialiasing, true);
 			break;
-			
+
 		case BORDER_SUNKEN:
 			optv3.rect = opt.rect;
 			optv3.state = opt.state | QStyle::State_Sunken;
 			optv3.frameShape = QFrame::StyledPanel;
-			
+
 			save_brush = p->brush();
 			p->setBrush(QBrush());
 			style->drawPrimitive(QStyle::PE_Frame, &optv3, p, w);
 			p->setBrush(save_brush);
 			//style->drawControl(QStyle::CE_ShapedFrame, &optv3, p, w);
 			break;
-			
+
 		case BORDER_RAISED:
 			optv3.rect = opt.rect;
 			optv3.state = opt.state | QStyle::State_Raised;
@@ -552,7 +552,7 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			opt.state |= QStyle::State_Raised;
 			style->drawPrimitive(QStyle::PE_Frame, &opt, p, w);*/
 			break;
-			
+
 		case BORDER_ETCHED:
 			optv3.rect = opt.rect;
 			//optv3.state = opt.state | QStyle::State_Raised;
@@ -560,26 +560,23 @@ void CCONTAINER_draw_frame(QPainter *p, int frame, QStyleOptionFrame &opt, QWidg
 			style->drawPrimitive(QStyle::PE_FrameGroupBox, &optv3, p, w);
 			//qDrawShadeRect(p, opt.rect, opt.palette, true, 1, 0);
 			break;
-			
+
 		default:
 			return;
 	}
-	
-	/*if (rect.x() > 0)
-		p->drawLine(rect.x(), rect.y(), rect.x(), rect.y() + rect.height() - 1);
-	if (rect.x() > 0)
-		p->drawLine(rect.x(), rect.y(), rect.x() + rect.width() - 1, rect.y());
-	if (w->parentWidget())
-	{
-		int dx, dy;
-		
-		dx = rect.x() + rect.width() - 1;
-		dy = rect.y() + rect.height() - 1;
-		if (dx < (w->parentWidget()->width() - 1))
-			p->drawLine(dx, rect.y(), dx, dy);
-		if (dy < (w->parentWidget()->height() - 1))
-			p->drawLine(rect.x(), dy, dx, dy);
-	}*/
+}
+
+void CCONTAINER_draw_border(QPainter *p, char frame, QWidget *wid)
+{
+	QStyleOptionFrame opt;
+	opt.init(wid);
+	opt.rect = QRect(0, 0, wid->width(), wid->height());
+	_draw_border(p, frame, wid, opt);
+}
+
+void CCONTAINER_draw_border_without_widget(QPainter *p, char frame, QStyleOptionFrame &opt)
+{
+	_draw_border(p, frame, NULL, opt);
 }
 
 int CCONTAINER_get_border_width(char border)
