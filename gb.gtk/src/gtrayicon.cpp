@@ -275,6 +275,12 @@ bool gTrayIcon::isVisible()
 	return (bool)plug;
 }
 
+static void hide_icon(GtkStatusIcon *plug)
+{
+	gtk_status_icon_set_visible(plug, FALSE);
+	g_object_unref(plug);
+}
+
 void gTrayIcon::setVisible(bool vl)
 {
 	if (vl)
@@ -320,8 +326,7 @@ void gTrayIcon::setVisible(bool vl)
 	{
 		if (plug)
 		{
-			gtk_status_icon_set_visible(plug, FALSE);
-			g_object_unref(plug);
+			GB.Post((void (*)())hide_icon, (intptr_t)plug);
 			plug = NULL;
 			_visible_count--;
 		}

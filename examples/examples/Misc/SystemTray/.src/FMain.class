@@ -4,6 +4,8 @@ Private $hImage As Image
 
 Public Sub _new()
 
+  Me.Background = Color.SetAlpha(&H007FFF, 192)
+
 End
 
 Public Sub Form_Open()
@@ -11,7 +13,7 @@ Public Sub Form_Open()
   $hImage = Image.Load("bg.png")
   
   X11Systray.Show(draSystemTray.Handle)
-
+  
 End
 
 Static Public Sub X11Systray_Arrange()
@@ -48,14 +50,14 @@ End
 ' 
 ' End
 
-Public Sub draSystemTray_Arrange()
+Public Sub Form_Resize()
   
-  Dim DH As Integer
-
-  Paint.Begin(draSystemTray)
-  DH = 1 + draSystemTray.H / $hImage.H
-  Paint.DrawImage($hImage, 0, - DH, draSystemTray.W, draSystemTray.H + DH * 2)
-  Paint.End
+  ' Dim DH As Integer
+  ' 
+  ' Paint.Begin(draSystemTray)
+  ' DH = 1 + draSystemTray.H / $hImage.H
+  ' Paint.DrawImage($hImage, 0, - DH, draSystemTray.W, draSystemTray.H + DH * 2)
+  ' Paint.End
   ArrangeTray
 
 End

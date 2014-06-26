@@ -116,7 +116,7 @@ static void destroy_widget(CTRAYICON *_object)
 {
 	if (WIDGET)
 	{
-		delete WIDGET;
+		WIDGET->deleteLater();
 		THIS->widget = NULL;
 		TRAYICON_count--;
 		MAIN_check_quit();

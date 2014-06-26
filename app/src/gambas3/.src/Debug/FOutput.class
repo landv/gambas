@@ -437,7 +437,7 @@ Public Sub edtOutput_MouseMove()
   
   If $iLinkLen Then 
     $iLinkLen = 0
-    edtOutput.Lines[$iLinkY].Refresh
+    Try edtOutput.Lines[$iLinkY].Refresh
   Endif
   
   If iNewLen Then 
