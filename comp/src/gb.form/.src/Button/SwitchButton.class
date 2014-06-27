@@ -83,7 +83,7 @@ Public Sub DrawingArea_Draw()
     Else
       iCol = $iBg
     Endif
-    If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
+    If Not Me.Enabled Then iCol = Color.Desaturate(Color.Merge(iCol, Color.ButtonBackground))
   Else
     iCol = Color.Default
   Endif
@@ -164,6 +164,9 @@ End
 
 Public Sub DrawingArea_MouseUp()
   
+  If Not Me.Enabled Then Return
+  If Me.Design Then Return
+
   If $bPressed Then 
     $bPressed = False
     $hDrawingArea.Refresh
