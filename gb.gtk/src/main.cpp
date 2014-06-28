@@ -292,7 +292,7 @@ extern "C"
 		}
 		else if (!strcasecmp(key, "SET_EVENT_FILTER"))
 		{
-			*value = (void *)0;
+			*value = (void *)gApplication::setEventFilter;
 			return TRUE;
 		}
 		else if (!strcasecmp(key, "TIME"))

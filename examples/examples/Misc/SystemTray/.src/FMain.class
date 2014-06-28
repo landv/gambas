@@ -4,7 +4,7 @@ Private $hImage As Image
 
 Public Sub _new()
 
-  Me.Background = Color.SetAlpha(&H007FFF, 192)
+  'Me.Background = &H007FFF 'Color.SetAlpha(&H007FFF, 192)
 
 End
 
@@ -12,7 +12,7 @@ Public Sub Form_Open()
 
   $hImage = Image.Load("bg.png")
   
-  X11Systray.Show(draSystemTray.Handle)
+  X11Systray.Show(Me.Handle)
   
 End
 
@@ -27,11 +27,13 @@ Public Sub ArrangeTray()
   Dim I As Integer
   Dim X, Y, H As Integer
   
+  Debug
   X = 2
   Y = 2
   For I = 0 To X11Systray.Count - 1
     With X11Systray[I]
-      If (X + .IconW) >= (draSystemTray.W - 2) Then
+      Debug I;; .IconW;; .IconH
+      If (X + .IconW) >= (Me.ClientW - 2) Then
         X = 2
         Y += H + 2
         H = 0

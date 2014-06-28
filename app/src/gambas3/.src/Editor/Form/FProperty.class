@@ -955,7 +955,7 @@ Public Sub btnProperty_Click()
         sColor = ""
       Endif
 
-      If FColorChooser.Run(sColor) Then Goto _EXIT
+      If FColorChooser.Run(sColor, True) Then Goto _EXIT
       $hEditor.Text = FColorChooser.Color
 
     Case "Picture", "Image", "SvgImage"

@@ -303,7 +303,6 @@ void gTrayIcon::setVisible(bool vl)
 			XSetWMNormalHints(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gtk_status_icon_get_x11_window_id(plug), &hints);
 			#endif
 
-
 			gtk_status_icon_set_visible(plug, TRUE);
 
 			//g_signal_connect(G_OBJECT(plug), "destroy", G_CALLBACK(cb_destroy),(gpointer)this);
@@ -319,8 +318,9 @@ void gTrayIcon::setVisible(bool vl)
 			//g_signal_connect(G_OBJECT(plug),"expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 			
 			_visible_count++;
+
+			usleep(10000); // BUG: Embedding too fast sometimes fails with GTK+
 		}
-		
 	}
 	else
 	{

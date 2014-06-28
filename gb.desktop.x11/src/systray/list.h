@@ -64,11 +64,11 @@
 
 /* Clean the list h_ (pointer to the head) calling cbk_ for every
  * element of the list; tmp_ is a temporary variable */
+/* Do not call free(), deletion must be done by the callback */
 #define LIST_CLEAN_CBK(h_, tmp_, cbk_) do  {                           \
 	for (tmp_ = h_, h_ = (h_ != NULL) ? h_->next : NULL; tmp_ != NULL; \
 			tmp_ = h_, h_ = h_ != NULL ? h_->next : NULL) {            \
 		cbk_(tmp_);                                                    \
-		free(tmp_);                                                    \
 	}                                                                  \
 	h_ = NULL;                                                         \
 } while(0)

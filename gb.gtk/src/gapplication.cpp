@@ -1439,3 +1439,22 @@ char *gApplication::getStyleName()
 	return _theme;
 }
 
+static GdkFilterReturn x11_event_filter(GdkXEvent *xevent, GdkEvent *event, gpointer data)
+{
+	((X11_EVENT_FILTER)data)((XEvent *)xevent);
+	return GDK_FILTER_CONTINUE;
+}
+
+void gApplication::setEventFilter(X11_EVENT_FILTER filter)
+{
+	static X11_EVENT_FILTER save_filter = NULL;
+
+	if (save_filter)
+		gdk_window_remove_filter(NULL, (GdkFilterFunc)x11_event_filter, (gpointer)save_filter);
+
+	if (filter)
+		gdk_window_add_filter(NULL, (GdkFilterFunc)x11_event_filter, (gpointer)filter);
+
+	save_filter = filter;
+}
+

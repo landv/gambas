@@ -495,8 +495,11 @@ void tray_create_window(int argc, char **argv, Window window)
 	//XClassHint xch;
 	//XWMHints xwmh;
 	Atom net_system_tray_orientation;
+	Atom net_system_tray_visual;
 	Atom orient;
 	Atom protocols_atoms[2];
+	VisualID visual;
+
 	/* Create some atoms */
 	tray_data.xa_wm_delete_window = 
 		XInternAtom(tray_data.dpy, "WM_DELETE_WINDOW", False);
@@ -590,6 +593,17 @@ void tray_create_window(int argc, char **argv, Window window)
 			net_system_tray_orientation, net_system_tray_orientation, 32, 
 			PropModeReplace, 
 			(unsigned char *) &orient, 1);
+
+	XWindowAttributes attr;
+	XGetWindowAttributes(tray_data.dpy, tray_data.tray, &attr);
+
+	net_system_tray_visual = XInternAtom(tray_data.dpy, "_NET_SYSTEM_TRAY_VISUAL", False);
+	visual = XVisualIDFromVisual(attr.visual);
+
+	XChangeProperty(tray_data.dpy, tray_data.tray,
+		net_system_tray_visual, XA_VISUALID, 32, PropModeReplace,
+		(unsigned char *)&visual, 1);
+
 	/* Ask X server / WM to report certain events */
 	protocols_atoms[0] = tray_data.xa_wm_delete_window;
 	protocols_atoms[1] = tray_data.xa_wm_take_focus;

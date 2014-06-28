@@ -41,23 +41,29 @@ int x11_connection_status()
 
 int x11_error_handler(Display *dpy, XErrorEvent *err)
 {
+#ifdef DEBUG
 	static char msg[PATH_MAX], req_num_str[32], req_str[PATH_MAX];
 	trapped_x11_error_code = err->error_code;
 	XGetErrorText(dpy, trapped_x11_error_code, msg, sizeof(msg)-1);
 	snprintf(req_num_str, 32, "%d", err->request_code);
 	XGetErrorDatabaseText(dpy, "XRequest", req_num_str, "Unknown", req_str, PATH_MAX);
 	LOG_ERROR(("X11 error: %s (request: %s, resource 0x%x)\n", msg, req_str, err->request_code, err->minor_code, err->resourceid));
+#else
+	trapped_x11_error_code = err->error_code;
+#endif
 	return 0;
 }
 
 int x11_ok_helper(const char *file, const int line, const char *func)
 {
 	if (trapped_x11_error_code) {
+#ifdef DEBUG
 		LOG_ERROR(("X11 error %d detected at %s:%d:%s\n", 
 					trapped_x11_error_code,
 					file,
 					line,
 					func));
+#endif
 		trapped_x11_error_code = 0;
 		return FAILURE;
 	} else

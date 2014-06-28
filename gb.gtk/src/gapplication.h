@@ -24,6 +24,9 @@
 #ifndef __GAPPLICATION_H
 #define __GAPPLICATION_H
 
+typedef
+	void (*X11_EVENT_FILTER)(XEvent *);
+
 class gControl;
 class gMainWindow;
 
@@ -84,6 +87,8 @@ public:
 	static gMainWindow *mainWindow() { return _main_window; }
 	
 	static void checkHoveredControl(gControl *control);
+
+	static void setEventFilter(X11_EVENT_FILTER filter);
 
 	//"Private"
 	static bool _busy;

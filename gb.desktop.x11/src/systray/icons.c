@@ -165,19 +165,14 @@ struct TrayIcon *icon_list_find_ex(Window wid)
 	return NULL;
 }
 
-int icon_list_clean()
+void icon_list_clean(IconCallbackFunc cbk)
 {
-	struct TrayIcon *tmp;
-	LIST_CLEAN(icons_head, tmp);
-	return SUCCESS;
+	while (icons_head)
+	{
+		(*cbk)(icons_head);
+		icon_list_free(icons_head);
+	}
 }
-
-int icon_list_clean_callback(IconCallbackFunc cbk)
-{
-	struct TrayIcon *tmp;
-	LIST_CLEAN_CBK(icons_head, tmp, cbk);
-	return SUCCESS;
-}	
 
 /* TODO: is it necessary always to sort the full list? */
 void icon_list_sort(IconCmpFunc cmp)

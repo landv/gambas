@@ -106,7 +106,7 @@ int embedder_embed(struct TrayIcon *ti)
 	XMapWindow(tray_data.dpy, ti->mid_parent);
 	/* mid-parent must be lowered so that it does not osbcure 
 	 * scollbar windows */
-	XLowerWindow(tray_data.dpy, ti->mid_parent);
+	//XLowerWindow(tray_data.dpy, ti->mid_parent);
 	if (!x11_ok()) RETURN_STATUS(FAILURE);
 #ifndef DELAY_EMBEDDING_CONFIRMATION
 	/* 5. Send message confirming embedding */

@@ -95,11 +95,8 @@ struct TrayIcon *icon_list_forall(IconCallbackFunc cbk);
 /* Same as above, but start traversal from the icon specified by tgt */
 struct TrayIcon *icon_list_forall_from(struct TrayIcon *tgt, IconCallbackFunc cbk);
 
-/* Clear the whole list */
-int icon_list_clean();
-
 /* Clear the whole list, calling cbk for each icon */
-int icon_list_clean_callback(IconCallbackFunc cbk);
+void icon_list_clean(IconCallbackFunc cbk);
 
 /* Sort the list using comparison function specified by cmp. 
  * Memo for writing comparison functions:

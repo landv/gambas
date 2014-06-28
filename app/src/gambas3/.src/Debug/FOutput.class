@@ -377,6 +377,10 @@ Public Sub txtEnter_KeyPress()
       Endif
     Endif
     Stop Event
+  Else If Key.Code = Key.Home And If Key.Control Then
+    edtOutput.Goto(0, 0)
+    edtOutput.SetFocus
+    Stop Event
   Else
     edtOutput_KeyPress
   Endif

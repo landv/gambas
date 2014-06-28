@@ -53,6 +53,28 @@ static int tray_status_requested = 0;
 static Display *async_dpy;
 #endif
 
+static bool _refresh = FALSE;
+static bool _refresh_forced = FALSE;
+
+static void refresh_icons()
+{
+	embedder_update_positions(_refresh_forced);
+	tray_update_window_props();
+	_refresh = FALSE;
+	_refresh_forced = FALSE;
+}
+
+static void refresh_icons_later(bool forced)
+{
+	_refresh_forced |= forced;
+
+	if (_refresh)
+		return;
+
+	_refresh = TRUE;
+	GB.Post((void (*)())refresh_icons, (intptr_t)0);
+}
+
 void my_usleep(useconds_t usec)
 {
 	struct timeval timeout;
@@ -105,7 +127,7 @@ void cleanup()
 	if (x11_connection_status()) {
 		LOG_TRACE(("being nice to the icons\n"));
 		/* Clean the list unembedding icons one by one */
-		icon_list_clean_callback(&embedder_unembed);
+		icon_list_clean(&embedder_unembed);
 		/* Give away the selection */
 		if (tray_data.is_active) 
 			XSetSelectionOwner(tray_data.dpy, tray_data.xa_tray_selection, None, CurrentTime);
@@ -138,7 +160,7 @@ void dump_tray_status()
 		LOG_INFO(("XEMBED focus: 0x%x\n", tray_data.xembed_data.current->wid));
 	else
 		LOG_INFO(("XEMBED focus: none\n"));
-	//LOG_INFO(("currently managed icons:\n"));
+	LOG_INFO(("currently managed icons: %d\n", icon_get_count()));
 	//icon_list_forall(&print_icon_data);
 	LOG_INFO(("-----------------------------------\n"));
 }
@@ -174,8 +196,9 @@ void add_icon(Window w, int cmode)
 	}
 	if (!xembed_embed(ti)) goto failed1;
 	if (!embedder_embed(ti)) goto failed2;
-	embedder_update_positions(False);
-	tray_update_window_props();
+
+	refresh_icons_later(FALSE);
+
 	/* Report success */
 	LOG_INFO(("added icon %s (wid 0x%x) as %s\n", 
 			x11_get_window_name(tray_data.dpy, ti->wid, "<unknown>"),
@@ -208,8 +231,9 @@ void remove_icon(Window w)
 	//layout_remove(ti);
 	icon_list_free(ti);
 	LOG_INFO(("removed icon %s (wid 0x%x)\n", x11_get_window_name(tray_data.dpy, ti->wid, "<unknown>"), w));
-	embedder_update_positions(False);
-	tray_update_window_props();
+
+	refresh_icons_later(FALSE);
+
 	dump_tray_status();
 }
 
@@ -227,8 +251,9 @@ void destroy_icon(Window w)
 	//layout_remove(ti);
 	icon_list_free(ti);
 	LOG_INFO(("destroy icon (wid 0x%x)\n", w));
-	embedder_update_positions(False);
-	tray_update_window_props();
+
+	refresh_icons_later(FALSE);
+
 	dump_tray_status();
 }
 
@@ -260,8 +285,8 @@ void icon_track_visibility_changes(Window w)
 		//layout_remove(ti);
 		embedder_hide(ti);
 	}
-	embedder_update_positions(False);
-	tray_update_window_props();
+
+	refresh_icons_later(FALSE);
 }
 
 /* helper to identify invalid icons */
@@ -335,7 +360,7 @@ void perform_periodic_tasks(int mask)
 
 void expose(XExposeEvent ev)
 {
-	if (ev.window == tray_data.tray && settings.parent_bg && ev.count == 0) 
+	if (ev.window == tray_data.tray && settings.parent_bg && ev.count == 0)
 		tray_refresh_window(False);
 }
 
@@ -448,6 +473,7 @@ void client_message(XClientMessageEvent ev)
 		LOG_TRACE(("got WM_DELETE message, will now exit\n"));
 		//exit(0); // atexit will call cleanup()
 		cleanup();
+		return;
 	} 
 	/* Handle _NET_SYSTEM_TRAY_* messages */
 	if (ev.message_type == tray_data.xa_tray_opcode && tray_data.is_active) {
@@ -579,7 +605,10 @@ void configure_notify(XConfigureEvent ev)
 		/* Update icons positions */
 		/* XXX: internal API is bad. example below */
 		//icon_list_forall(&layout_translate_to_window);
-		embedder_update_positions(True);
+
+		//embedder_update_positions(True);
+		refresh_icons_later(TRUE);
+
 		/* Adjust window background if necessary */
 		tray_update_bg(False);
 		tray_refresh_window(True);
@@ -609,8 +638,7 @@ void configure_notify(XConfigureEvent ev)
 #ifdef DEBUG
 		print_icon_data(ti);
 #endif
-		embedder_update_positions(False);
-		tray_update_window_props();
+		refresh_icons_later(FALSE);
 #ifdef DEBUG
 		dump_tray_status();
 #endif
@@ -704,21 +732,12 @@ static void tray_main(int argc, char **argv, Window window)
 
 void SYSTRAY_event_filter(XEvent *e)
 {
-#if 0
-	/* Main event loop */
-	while ("my guitar gently wheeps") {
-		/* This is ugly and extra dependency. But who cares?
-		 * Rationale: we want to block unless absolutely needed.
-		 * This way we ensure that stalonetray does not show up
-		 * in powertop (i.e. does not eat unnecessary power and
-		 * CPU cycles) 
-		 * Drawback: handling of signals is very limited. XNextEvent()
-		 * does not if signal occurs. This means that graceful
-		 * exit on e.g. Ctrl-C cannot be implemented without hacks. */
-		while (XPending(tray_data.dpy) || tray_data.scrollbars_data.scrollbar_down == -1) {
-			XNextEvent(tray_data.dpy, &ev);
-#endif
-	XEvent ev = *e;
+	XEvent ev;
+
+	if (!tray_data.dpy)
+		return;
+
+	ev = *e;
 
 	xembed_handle_event(ev);
 	//scrollbars_handle_event(ev);
@@ -864,13 +883,16 @@ void SYSTRAY_init(Display *display, Window window)
 {
 	/* Read settings */
 	tray_init();
+
 	read_settings(0, NULL);
+	//settings.parent_bg = TRUE;
+
 #ifdef DEBUG
 	settings.log_level = LOG_LEVEL_TRACE;
 #endif
 	/* Register cleanup and signal handlers */
 	//atexit(cleanup);
-	signal(SIGUSR1, &request_tray_status_on_signal);
+	//signal(SIGUSR1, &request_tray_status_on_signal);
 #ifdef ENABLE_GRACEFUL_EXIT_HACK
 	signal(SIGINT, &exit_on_signal);
 	signal(SIGTERM, &exit_on_signal);
@@ -891,9 +913,7 @@ void SYSTRAY_init(Display *display, Window window)
 #endif
 	if (settings.xsync)
 		XSynchronize(tray_data.dpy, True);
-#ifdef DEBUG
 	x11_trap_errors();
-#endif
 	/* Execute proper main() function */
 	//if (settings.remote_click_name != NULL)
 	//	return remote_main(argc, argv);
@@ -918,5 +938,5 @@ CX11SYSTRAYICON *SYSTRAY_get(int i)
 
 void SYSTRAY_refresh(void)
 {
-	embedder_update_positions(TRUE);
+	refresh_icons_later(TRUE);
 }
