@@ -6,6 +6,7 @@ msgstr ""
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,43 +33,75 @@ msgstr "-"
 
 #: FMain1.form:79
 msgid "Reparent"
-msgstr ""
-
-#: FShortcut.form:15
-msgid "Configure shortcuts"
-msgstr "Snelkoppelingen configureren"
-
-#: FShortcut.form:38
-msgid "Find shortcut"
-msgstr "Vind snelkoppeling"
-
-#: FShortcut.form:44 FToolBarConfig.class:381
-msgid "Reset"
-msgstr "Opnieuw instellen"
-
-#: FShortcut.form:55
-msgid "OK"
 msgstr "-"
 
-#: FShortcut.form:61 FToolBarConfig.form:63
-msgid "Cancel"
-msgstr "Annuleren"
-
-#: FShortcut.class:40
+#: FShortcut.class:65
 msgid "Action"
 msgstr "Actie"
 
-#: FShortcut.class:42
+#: FShortcut.class:67
 msgid "Shortcut"
 msgstr "Snelkoppeling"
 
-#: FShortcut.class:170
+#: FShortcut.class:178
+msgid "Go back"
+msgstr "Ga terug"
+
+#: FShortcut.class:178
 msgid "You are going back to the default shortcuts."
 msgstr "Je gaat terug naar de standaard snelkoppeling."
 
-#: FShortcut.class:170
-msgid "Go back"
-msgstr "Ga terug"
+#: FShortcut.class:264
+msgid "Unable to export shortcut files."
+msgstr "Niet in staat om snelkoppeling bestanden te exporteren."
+
+#: FShortcut.class:281
+msgid "This file is not a Gambas shortcuts file."
+msgstr "Dit bestand is geen Gambas snelkoppeling bestand."
+
+#: FShortcut.class:305
+msgid "Unable to import shortcut files."
+msgstr "Niet in staat om snelkoppeling bestanden te importeren."
+
+#: FShortcut.class:313
+msgid "Gambas shortcuts files"
+msgstr "Gambas snelkoppeling bestanden"
+
+#: FShortcut.class:314
+msgid "Export shortcuts"
+msgstr "Exporteer snelkoppeling"
+
+#: FShortcut.class:327
+msgid "Import shortcuts"
+msgstr "Importeer snelkoppelingen"
+
+#: FShortcut.form:18
+msgid "Configure shortcuts"
+msgstr "Snelkoppelingen configureren"
+
+#: FShortcut.form:47
+msgid "Find shortcut"
+msgstr "Vind snelkoppeling"
+
+#: FShortcut.form:54 FToolBarConfig.class:381
+msgid "Reset"
+msgstr "Opnieuw instellen"
+
+#: FShortcut.form:60
+msgid "Import"
+msgstr "Importeer"
+
+#: FShortcut.form:66
+msgid "Export"
+msgstr "Exporteer"
+
+#: FShortcut.form:77
+msgid "OK"
+msgstr "-"
+
+#: FShortcut.form:83 FToolBarConfig.form:63
+msgid "Cancel"
+msgstr "Annuleren"
 
 #: FShortcutEditor.class:75
 msgid "This shortcut is already used by the following action:"
@@ -81,6 +114,30 @@ msgstr "Configureer &1 werkbalk"
 #: FToolBar.class:1197
 msgid "Configure main toolbar"
 msgstr "Configureer hoofd werkbalk"
+
+#: FToolBarConfig.class:47
+msgid "'&1' toolbar configuration"
+msgstr "'&1' werkbalk configuratie"
+
+#: FToolBarConfig.class:49
+msgid "Toolbar configuration"
+msgstr "Werkbalk configuratie"
+
+#: FToolBarConfig.class:141
+msgid "Separator"
+msgstr "Scheiding"
+
+#: FToolBarConfig.class:143
+msgid "Expander"
+msgstr "-"
+
+#: FToolBarConfig.class:145
+msgid "Space"
+msgstr "-"
+
+#: FToolBarConfig.class:381
+msgid "Do you really want to reset the toolbar?"
+msgstr "Wil je werkelijk de werkbalk resetten?"
 
 #: FToolBarConfig.form:36
 msgid "Configure..."
@@ -114,47 +171,43 @@ msgstr "&Ongedaan maken"
 msgid "&Close"
 msgstr "&Sluiten"
 
-#: FToolBarConfig.class:47
-msgid "'&1' toolbar configuration"
-msgstr "'&1' werkbalk configuratie"
+#: FWorkspace.form:36
+msgid "Show"
+msgstr "Toon"
 
-#: FToolBarConfig.class:49
-msgid "Toolbar configuration"
-msgstr "Werkbalk configuratie"
+#: FWorkspace.form:41
+msgid "Sort tabs"
+msgstr "Sorteer tabs"
 
-#: FToolBarConfig.class:141
-msgid "Separator"
-msgstr "-"
+#: FWorkspace.form:50
+msgid "Close tabs on the right"
+msgstr "Sluit tabs aan de rechterkant"
 
-#: FToolBarConfig.class:143
-msgid "Expander"
-msgstr ""
+#: FWorkspace.form:55
+msgid "Close other tabs"
+msgstr "Sluit overige tabs"
 
-#: FToolBarConfig.class:145
-msgid "Space"
-msgstr "-"
+#: FWorkspace.form:60
+msgid "Close all tabs"
+msgstr "Sluit alle tabs"
 
-#: FToolBarConfig.class:381
-msgid "Do you really want to reset the toolbar?"
-msgstr "Wil je werkelijk de werkbalk resetten?"
+#: FWorkspace.form:67
+msgid "Attach tab"
+msgstr "Tab bevestigen"
 
-#: FWorkspace.form:30
+#: FWorkspace.form:71
+msgid "Detach tab"
+msgstr "Tab loskoppelen"
+
+#: FWorkspace.form:76
+msgid "Close tab"
+msgstr "Sluit tab"
+
+#: FWorkspace.form:85
 msgid "Previous tab"
 msgstr "Vorige tab"
 
-#: FWorkspace.form:36
+#: FWorkspace.form:91
 msgid "Next tab"
 msgstr "Volgende tab"
-
-#: FWorkspace.class:597
-msgid "&Sort tabs"
-msgstr "&Sorteer tabs"
-
-#: FWorkspace.class:605
-msgid "&Close current tab"
-msgstr "&Sluit huidige tab"
-
-#: FWorkspace.class:610
-msgid "Close &all other tabs"
-msgstr "Sluit &alle andere tabs"
 

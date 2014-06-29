@@ -35,39 +35,73 @@ msgstr "Hilfe"
 msgid "Reparent"
 msgstr "Neu zuordnen"
 
-#: FShortcut.class:40
+#: FShortcut.class:65
 msgid "Action"
 msgstr "Aktion"
 
-#: FShortcut.class:41
+#: FShortcut.class:67
 msgid "Shortcut"
 msgstr "Kurzbefehl"
 
-#: FShortcut.class:168
+#: FShortcut.class:178
 msgid "Go back"
 msgstr "Zurück"
 
-#: FShortcut.class:168
+#: FShortcut.class:178
 msgid "You are going back to the default shortcuts."
 msgstr "Zurück zu den Standard-Kurzbefehlen."
 
-#: FShortcut.form:15
+#: FShortcut.class:264
+msgid "Unable to export shortcut files."
+msgstr ""
+
+#: FShortcut.class:281
+msgid "This file is not a Gambas shortcuts file."
+msgstr ""
+
+#: FShortcut.class:305
+msgid "Unable to import shortcut files."
+msgstr ""
+
+#: FShortcut.class:313
+msgid "Gambas shortcuts files"
+msgstr ""
+
+#: FShortcut.class:314
+#, fuzzy
+msgid "Export shortcuts"
+msgstr "Kurzbefehle einrichten"
+
+#: FShortcut.class:327
+#, fuzzy
+msgid "Import shortcuts"
+msgstr "Kurzbefehle einrichten"
+
+#: FShortcut.form:18
 msgid "Configure shortcuts"
 msgstr "Kurzbefehle einrichten"
 
-#: FShortcut.form:37
+#: FShortcut.form:47
 msgid "Find shortcut"
 msgstr "Kurzbefehl suchen"
 
-#: FShortcut.form:43 FToolBarConfig.class:382
+#: FShortcut.form:54 FToolBarConfig.class:381
 msgid "Reset"
 msgstr "Zurücksetzen"
 
-#: FShortcut.form:54
+#: FShortcut.form:60
+msgid "Import"
+msgstr ""
+
+#: FShortcut.form:66
+msgid "Export"
+msgstr ""
+
+#: FShortcut.form:77
 msgid "OK"
 msgstr "-"
 
-#: FShortcut.form:60 FToolBarConfig.form:63
+#: FShortcut.form:83 FToolBarConfig.form:63
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -75,11 +109,11 @@ msgstr "Abbrechen"
 msgid "This shortcut is already used by the following action:"
 msgstr "Dieser Kurzbefehl ist bereits mit der folgenen Aktion belegt:"
 
-#: FToolBar.class:1105
+#: FToolBar.class:1195
 msgid "Configure &1 toolbar"
 msgstr "Werkzeugleiste &1 einrichten"
 
-#: FToolBar.class:1107
+#: FToolBar.class:1197
 msgid "Configure main toolbar"
 msgstr "Hauptwerkzeugleiste einrichten"
 
@@ -103,7 +137,7 @@ msgstr "Erweiterer"
 msgid "Space"
 msgstr "Leerstelle"
 
-#: FToolBarConfig.class:382
+#: FToolBarConfig.class:381
 msgid "Do you really want to reset the toolbar?"
 msgstr "Wollen Sie die Werkzeugleiste wirklich zurücksetzen?"
 
@@ -139,22 +173,48 @@ msgstr "&Rückgängig"
 msgid "&Close"
 msgstr "&Schließen"
 
-#: FWorkspace.class:589
-msgid "&Sort tabs"
+#: FWorkspace.form:36
+msgid "Show"
+msgstr ""
+
+#: FWorkspace.form:41
+#, fuzzy
+msgid "Sort tabs"
 msgstr "Tabs &sortieren"
 
-#: FWorkspace.class:597
-msgid "&Close current tab"
-msgstr "Schließe aktuellen &Tab"
-
-#: FWorkspace.class:602
-msgid "Close &all other tabs"
+#: FWorkspace.form:50
+#, fuzzy
+msgid "Close tabs on the right"
 msgstr "Schließe &alle anderen Tabs"
 
-#: FWorkspace.form:30
+#: FWorkspace.form:55
+#, fuzzy
+msgid "Close other tabs"
+msgstr "Schließe &alle anderen Tabs"
+
+#: FWorkspace.form:60
+#, fuzzy
+msgid "Close all tabs"
+msgstr "Schließe &alle anderen Tabs"
+
+#: FWorkspace.form:67
+msgid "Attach tab"
+msgstr ""
+
+#: FWorkspace.form:71
+#, fuzzy
+msgid "Detach tab"
+msgstr "Nächster Tab"
+
+#: FWorkspace.form:76
+#, fuzzy
+msgid "Close tab"
+msgstr "Schließe aktuellen &Tab"
+
+#: FWorkspace.form:85
 msgid "Previous tab"
 msgstr "Vorheriger Tab"
 
-#: FWorkspace.form:36
+#: FWorkspace.form:91
 msgid "Next tab"
 msgstr "Nächster Tab"
