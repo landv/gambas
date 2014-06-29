@@ -464,7 +464,7 @@ Private Sub InsertMenu(bAfter As Boolean)
   If bAfter Then
     If iIndex > 0 Then hCMenu.Level = $aMenu[iIndex - 1].Level
   Else
-    hCMenu.Level = $aMenu[iIndex].Level
+    If iIndex >= 0 Then hCMenu.Level = $aMenu[iIndex].Level
   Endif
 
   $cName[hCMenu.Name] = True
