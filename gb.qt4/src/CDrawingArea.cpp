@@ -33,6 +33,7 @@
 
 #include "CDraw.h"
 #include "cpaint_impl.h"
+#include "CColor.h"
 #include "CDrawingArea.h"
 
 #ifndef NO_X_WINDOW
@@ -217,11 +218,15 @@ void MyDrawingArea::createBackground(int w, int h)
 	//p = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
 	//qDebug("color = %06X -> %06X", palette().color(backgroundRole()).rgb(), QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
 	
+#if 0
 	gc = XCreateGC(QX11Info::display(), _background, 0, 0);
 	//XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
 	XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel(CWIDGET_get_real_background((CWIDGET *)THIS)));
 	XFillRectangle(QX11Info::display(), _background, gc, 0, 0, w, h);
 	XFreeGC(QX11Info::display(), gc);
+#endif
+
+	_background_pixmap.fill(CCOLOR_make(CWIDGET_get_real_background((CWIDGET *)THIS)));
 	
 	//qDebug("XSetWindowBackgroundPixmap: %08X %08X", (int)winId(), (int)_background);
 	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
