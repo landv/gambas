@@ -2,7 +2,7 @@
 
 Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", "ruby", "sapphire", "visual", "obsidian", "quest", "quick"]
 Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick")]
-Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "epiphany", "seamonkey", "opera", "chromium"]
+Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "iceweasel", "epiphany", "seamonkey", "opera", "chromium"]
 Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "lxterminal", "xterm"]
 'Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
 
@@ -74,7 +74,7 @@ Public Sub _new()
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "KDE4", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
-  cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
+  cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm", "lxterminal"]
   'cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
   

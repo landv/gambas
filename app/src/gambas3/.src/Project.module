@@ -5162,6 +5162,9 @@ Public Sub OpenWebPage(sLink As String)
 
       Case "firefox"
         aTest = ["firefox", "mozilla-firefox"]
+        
+      Case "iceweasel"
+        aTest = ["iceweasel"]
 
       Case "seamonkey"
         aTest = ["seamonkey"]
@@ -5178,18 +5181,13 @@ Public Sub OpenWebPage(sLink As String)
         Else If Env["GNOME_DESKTOP_SESSION_ID"] Then
           aTest.Add("epiphany")
           aTest.Add("firefox")
+          aTest.Add("iceweasel")
         Endif
 
     End Select
 
-    aTest.Add("mozilla-firefox")
-    aTest.Add("firefox")
-    aTest.Add("mozilla")
-    aTest.Add("konqueror")
-    aTest.Add("seamonkey")
-    aTest.Add("chromium-browser")
-    aTest.Add("opera")
-
+    aTest.Insert(["mozilla-firefox", "firefox", "mozilla", "iceweasel", "konqueror", "seamonkey", "chromium-browser", "opera"])
+    
     For Each sExec In aTest
       bCheck = Not CheckProgram(sExec)
       If bCheck Then Break
@@ -5205,7 +5203,7 @@ Public Sub OpenWebPage(sLink As String)
     sLink = "file://" & Replace(sLink, "?", "%3F")
   Endif
 
-  If Browser = "firefox" Then
+  If Browser = "firefox" Or If Browser = "iceweasel" Then
     hFirefox = Shell "firefox -remote \"openURL(" & sLink & ",new-window)\"" Wait
     If hFirefox.Value = 2 Then
       Shell Browser & " " & Chr$(34) & sLink & Chr$(34)

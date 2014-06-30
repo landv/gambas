@@ -413,6 +413,8 @@ Public Sub edtOutput_MouseMove()
   Dim iNewY As Integer
   Dim iNewLen As Integer
   
+  If Not edtOutput.Hovered Then Return
+  
   Try MX = Mouse.X
   If Not Error Then 
     MY = Mouse.Y
