@@ -10,9 +10,7 @@ End
 
 Public Sub Form_Open()
 
-  $hImage = Image.Load("bg.png")
-  
-  X11Systray.Show(Me.Handle)
+  X11Systray.Show(dwgSystemTray.Handle)
   
 End
 
@@ -63,3 +61,4 @@ Public Sub Form_Resize()
   ArrangeTray
 
 End
+
