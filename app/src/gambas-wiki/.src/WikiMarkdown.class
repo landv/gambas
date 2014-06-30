@@ -63,6 +63,7 @@ Public Sub Command(sCommand As String) As String[]
   Dim hClass As CClassInfo
   Dim hSym As CSymbolInfo
   Dim sTitle As String
+  Dim sClass As String
   
   aArg = Split(sCommand, " ", Chr$(34))
   sCommand = aArg[0]
@@ -125,15 +126,23 @@ Public Sub Command(sCommand As String) As String[]
 
     Return MakeError(("This component does not exist."))
   
-  Else If sCommand = "symbols" And If Main.Class Then
+  Else If sCommand = "symbols" Then
     
-    hComp = CComponent.Get(Main.Component)
-    If hComp Then
-      hClass = hComp[Main.Class]
-      If hClass Then Return hClass.GetSymbols()
+    If aArg.Count >= 2 And If aArg[1] Then
+      sClass = aArg[1]
+    Else
+      sClass = Main.Class
     Endif
     
-    Return MakeError(("This class does not exist."))
+    If sClass Then
+      hComp = CComponent.Get(Main.Component)
+      If hComp Then
+        hClass = hComp[sClass]
+        If hClass Then Return hClass.GetSymbols()
+      Endif
+    Endif
+    
+    Return MakeError(sClass & ": " & ("This class does not exist."))
   
   Else If sCommand = "syntax" And If Main.Symbol Then
   
