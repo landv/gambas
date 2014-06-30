@@ -46,10 +46,10 @@
 #include "main.h"
 #include "CWebcam.h"
 
-#ifdef OS_FREEBSD
-  #include <stdint.h>
-#else
+#ifdef OS_LINUX
   #include <asm/types.h>
+#else
+  #include <stdint.h>
 #endif
 
 //

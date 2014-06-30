@@ -463,8 +463,9 @@ AC_DEFUN([GB_SYSTEM],
   AC_MSG_CHECKING(target system)
 
   case "${host}" in
-    *-*-linux* )
+    *-*-linux*-gnu* )
       SYSTEM=LINUX
+      AC_DEFINE(OS_GNU, 1, [Target system is of GNU family])
       AC_DEFINE(OS_LINUX, 1, [Target system is Linux])
       AC_DEFINE(SYSTEM, "Linux", [Operating system])
       ;;
@@ -502,7 +503,14 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(OS_SOLARIS, 1, [Target system is Solaris])
       AC_DEFINE(SYSTEM, "Solaris", [Operating system])
       ;;
-    *)
+    *-*-k*bsd*-gnu* )
+      SYSTEM=KFREEBSD
+      AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
+      AC_DEFINE(OS_GNU, 1, [Target system is of GNU family])
+      AC_DEFINE(OS_KFREEBSD, 1, [Target system is kFREEBSD])
+      AC_DEFINE(SYSTEM, "kFreeBSD", [Operating system])
+      ;;
+    * )
       SYSTEM=UNKNOWN
       AC_DEFINE(SYSTEM, "unknown", [Operating system])
       GB_MESSAGE([System is unknown])

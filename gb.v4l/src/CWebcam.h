@@ -31,11 +31,11 @@
 #include <linux/videodev2.h>
 #include <libv4lconvert.h>
 
-#ifdef OS_FREEBSD
-  #include <linux/videodev.h>
-#else
+#ifdef OS_LINUX
   #include <linux/types.h>
   #include "videodev.h"
+#else
+  #include <linux/videodev.h>
 #endif
 
 #include "gambas.h"
