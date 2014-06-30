@@ -435,7 +435,8 @@ void reparent_notify(XReparentEvent ev)
 	if (ti == NULL) return;
 	/* Reparenting out of the tray is one of non-destructive
 	 * ways to end XEMBED protocol (see spec) */
-	if (ti->is_embedded && ti->mid_parent != ev.parent) {
+	//if (ti->is_embedded && ti->mid_parent != ev.parent) {
+	if (ti->is_embedded && tray_data.tray != ev.parent) {
 		LOG_TRACE(("will now unembed 0x%x\n", ti->wid));
 #ifdef DEBUG
 		print_icon_data(ti);

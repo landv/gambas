@@ -44,7 +44,7 @@ struct TrayIcon *icon_list_new(Window wid, int cmode)
 	new_icon->wid = wid;
 	new_icon->l.wnd_sz.x = 0;
 	new_icon->l.wnd_sz.y = 0;
-	new_icon->mid_parent = None;
+	//new_icon->mid_parent = None;
 	new_icon->cmode = cmode;
 	new_icon->is_embedded = False;
 	new_icon->is_layed_out = False;
@@ -160,7 +160,7 @@ struct TrayIcon *icon_list_find_ex(Window wid)
 	/* Traverse the whole list */
 	struct TrayIcon *tmp;
 	for (tmp = icons_head; tmp != NULL; tmp = tmp->next)
-		if (tmp->wid == wid || tmp->mid_parent == wid)
+		if (tmp->wid == wid) // || tmp->mid_parent == wid)
 			return tmp;
 	return NULL;
 }

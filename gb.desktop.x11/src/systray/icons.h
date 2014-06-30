@@ -31,7 +31,7 @@ struct TrayIcon {
 	struct TrayIcon *next;
 	struct TrayIcon *prev;
 	Window wid; 				/* Window ID */
-	Window mid_parent; 			/* Mid-parent ID */
+	//Window mid_parent; 			/* Mid-parent ID */
 	int x, y, w, h;
 	int iw, ih;
 	int cmode; 					/* Compatibility mode: CM_FDO/CM_KDE (see embed.h) */
