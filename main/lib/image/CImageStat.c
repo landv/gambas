@@ -66,7 +66,7 @@ BEGIN_METHOD(CIMAGESTAT_call, GB_STRING path)
 	
 	if (IMAGE_get_info(&stream, &info))
 	{
-		GB.Error(IMAGE_error);
+		GB.Error("Unable to stat image: &1", IMAGE_error);
 		stat = NULL;
 	}
 	else
