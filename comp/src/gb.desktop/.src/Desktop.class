@@ -29,6 +29,13 @@ Static Private $cDesktop As Collection
 Static Private $cExt As Collection
 Static Private $aImgExt As String[]
 
+Static Public Sub _init()
+  
+  Component.Load("gb.desktop.x11")
+  
+End
+
+
 Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional Bcc As String[], Optional Subject As String, Optional Body As String, Optional Attachment As String)
 
   Dim aArg As String[]
