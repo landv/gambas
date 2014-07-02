@@ -198,7 +198,7 @@ bool GB_MatchString(const char *str, size_t lenStr, const char *pattern, size_t 
     }
     else if(mode == GB_STRCOMP_LIKE)
     {
-        if(GB.MatchString(str, lenStr, pattern, lenPattern))
+        if(GB.MatchString(pattern, lenPattern, str, lenStr) == true)
         {
             return true;
         }

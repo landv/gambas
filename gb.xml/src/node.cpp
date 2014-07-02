@@ -388,10 +388,10 @@ void XMLNode_addGBChildrenByAttributeValue(Node *node, const char *attrName, con
 {
     if(node->type == Node::ElementNode)
     {
-        Attribute *attr = XMLElement_GetAttribute((Element*)node, attrName, lenAttrName, mode);
+        Attribute *attr = XMLElement_GetAttribute((Element*)node, attrName, lenAttrName);
         if(attr)
         {
-            if(GB_MatchString(attr->attrValue, attr->lenAttrValue, attrValue, lenAttrValue))
+            if(GB_MatchString(attr->attrValue, attr->lenAttrValue, attrValue, lenAttrValue, mode))
             {
                 *(reinterpret_cast<void **>((GB.Array.Add(*array)))) = XMLNode_GetGBObject(node);
                 GB.Ref(node->GBObject);
