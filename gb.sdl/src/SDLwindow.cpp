@@ -98,6 +98,7 @@ void SDLwindow::Close()
 	if (!hSurface)
 		return;
 
+	GrabInput(false);
 	SDLcore::RegisterWindow(NULL);
 	hSurface = NULL;
 }
@@ -256,3 +257,12 @@ bool SDLwindow::IsShown()
 		return (false);
 }
 
+void SDLwindow::GrabInput(bool grab)
+{
+	SDL_WM_GrabInput(grab ? SDL_GRAB_ON : SDL_GRAB_OFF);
+}
+
+bool SDLwindow::IsInputGrabbed(void) const
+{
+	return SDL_WM_GrabInput(SDL_GRAB_QUERY) == SDL_GRAB_ON;
+}

@@ -66,6 +66,9 @@ public:
 	bool IsResizable(void ) { return (hResizable); };
 	bool IsShown(void );
 
+	void GrabInput(bool grab);
+	bool IsInputGrabbed(void) const;
+
 	// events :)
 	virtual void Quit(void ) = 0;
 	virtual void Resize(void ) = 0;

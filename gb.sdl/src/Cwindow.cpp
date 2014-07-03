@@ -215,6 +215,15 @@ BEGIN_PROPERTY(CWINDOW_id)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Grabbed)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WINDOWID->IsInputGrabbed());
+	else
+		WINDOWID->GrabInput(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 /***************************************************************************/
 
 GB_DESC CWindow[] =
@@ -246,6 +255,7 @@ GB_DESC CWindow[] =
   GB_PROPERTY_READ("Handle", "i", CWINDOW_id),
   GB_PROPERTY_READ("Id", "i", CWINDOW_id),
   GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
+  GB_PROPERTY("Grabbed", "b", Window_Grabbed),
 
   GB_EVENT("Close", "b", NULL, &EVENT_Close),
   GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
