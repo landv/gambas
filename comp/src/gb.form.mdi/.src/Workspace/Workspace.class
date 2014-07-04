@@ -10,6 +10,8 @@ Public Const _Group As String = "Special"
 
 Event Activate
 Event Close({Window} As Window)
+Event Attach({Window} As Window)
+Event Detach({Window} As Window)
 
 Property ActiveWindow As Window
 Property Read Windows As Window[]
@@ -30,13 +32,37 @@ Public Sub _new()
   
 End
 
+Private Sub GetWorkspace(hWindow As Window) As Workspace
+  
+  Dim hCtrl As Control = hWindow
+  
+  While hCtrl
+    If hCtrl Is Workspace Then Return hCtrl
+    hCtrl = hCtrl.Parent
+  Wend
+  
+End
+
+
 Public Sub Add(hWindow As Window, Optional Resizable As Boolean) As Window
+  
+  Dim hPrev As Workspace
+  
+  hPrev = GetWorkspace(hWindow)
+  If hPrev Then hPrev.Remove(hWindow)
   
   $hWorkspace.Add(hWindow, Resizable)
   
   Return hWindow
   
 End
+
+Public Sub Remove(hWindow As Window)
+  
+  $hWorkspace.Remove(hWindow)
+  
+End
+
 
 Public Sub Detach(hWindow As Window)
   
@@ -95,7 +121,7 @@ Public Sub _Activate()
   
 End
 
-Public Sub _Close(hWindow As Window) As Boolean
+Public Sub _RaiseClose(hWindow As Window) As Boolean
 
   Dim bCancel As Boolean
   
@@ -103,6 +129,19 @@ Public Sub _Close(hWindow As Window) As Boolean
   Return bCancel
   
 End
+
+Public Sub _RaiseAttach(hWindow As Window)
+  
+  Raise Attach(hWindow)
+  
+End
+
+Public Sub _RaiseDetach(hWindow As Window)
+  
+  Raise Detach(hWindow)
+  
+End
+
 
 ' Private Function ShowTitle_Read() As Boolean
 ' 

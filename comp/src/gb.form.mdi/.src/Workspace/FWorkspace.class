@@ -139,6 +139,8 @@ Public Sub Detach(hWin As Window)
   hWindow.Detached = True
   Inc $nDetach
     
+  GetParent()._RaiseDetach(hWin)
+  
 End
 
 Public Sub Attach(hWin As Window)
@@ -160,6 +162,8 @@ Public Sub Attach(hWin As Window)
   Dec $nDetach
   
   Activate
+  
+  GetParent()._RaiseAttach(hWin)
     
 End
 
@@ -873,7 +877,7 @@ End
 
 Public Sub tabWorkspace_Close(Index As Integer)
 
-  If GetParent()._Close($aWindow[Index].Window) Then
+  If GetParent()._RaiseClose($aWindow[Index].Window) Then
     Stop Event
     Return
   Endif

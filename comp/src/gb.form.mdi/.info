@@ -111,6 +111,14 @@ Special
 :
 
 (Window)Window;
+:Attach
+:
+
+(Window)Window;
+:Detach
+:
+
+(Window)Window;
 ActiveWindow
 p
 Window
@@ -151,6 +159,10 @@ Add
 m
 Window
 (hWindow)Window;[(Resizable)b]
+Remove
+m
+
+(hWindow)Window;
 Detach
 m
 
@@ -171,7 +183,15 @@ _Activate
 m
 
 
-_Close
+_RaiseClose
 m
 b
+(hWindow)Window;
+_RaiseAttach
+m
+
+(hWindow)Window;
+_RaiseDetach
+m
+
 (hWindow)Window;
