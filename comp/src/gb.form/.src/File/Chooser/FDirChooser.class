@@ -10,8 +10,6 @@ Event {Select}
 Event GetIcon(Path As String)
 Event ShowHidden
 Event Cancel
-Event OK
-'EVENT ShowHiddenChange
 
 Private mnuBookmark As Menu
 Private mnuEditBookmark As Menu
@@ -408,8 +406,9 @@ Public Sub fvwChoose_Select()
 
   If fvwChoose.Current Or If txtFile.ReadOnly Then
     txtFile.Text = fvwChoose.Current
-    If $bFile Then Raise Change
   Endif
+  
+  If $bFile Then Raise Change
   
 End
 
