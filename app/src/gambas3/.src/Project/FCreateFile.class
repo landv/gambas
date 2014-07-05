@@ -407,38 +407,41 @@ Private Sub ImportFile() As Boolean
   Dim sTemp As String
   Dim sExt As String
   
-  sTemp = fchExisting.Value
-  sDir = File.Dir(fchExisting.Value)
-  sName = File.Name(fchExisting.Value)
+  For Each sTemp In fchExisting.SelectedPaths
   
-  sExt = File.Ext(sTemp)
-  Select Case sExt
-  
-    Case "module"
-      sName = File.BaseName(Project.GetUniqueSourceName(sName))
-      Project.InsertSource(sName, "module", $sDir, sTemp,,, chkLink.Value)
-  
-    Case "class"
-      sName = File.BaseName(Project.GetUniqueSourceName(sName))
-      Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
-  
-    Case "form", "report"
-      sName = File.BaseName(Project.GetUniqueSourceName(sName))
-      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)
-      ImportDependencies(sName, sExt, sTemp, chkLink.Value)
-      Project.OpenForm(sName)
-          
-    Case "webpage"
-      sName = File.BaseName(Project.GetUniqueSourceName(sName))
-      Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-      Project.InsertSource(sName, "webpage", $sDir, sTemp, False, False, chkLink.Value)
-  
-    Default
-      sName = Project.GetUniqueName($sDir, sName)
-      Project.InsertFile(sName, $sDir, sTemp,, chkLink.Value)
-  
-  End Select
+    sDir = File.Dir(sTemp)
+    sName = File.Name(sTemp)
+    sExt = File.Ext(sTemp)
+    
+    Select Case sExt
+    
+      Case "module"
+        sName = File.BaseName(Project.GetUniqueSourceName(sName))
+        Project.InsertSource(sName, "module", $sDir, sTemp,,, chkLink.Value)
+    
+      Case "class"
+        sName = File.BaseName(Project.GetUniqueSourceName(sName))
+        Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
+    
+      Case "form", "report"
+        sName = File.BaseName(Project.GetUniqueSourceName(sName))
+        Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
+        Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)
+        ImportDependencies(sName, sExt, sTemp, chkLink.Value)
+        Project.OpenForm(sName)
+            
+      Case "webpage"
+        sName = File.BaseName(Project.GetUniqueSourceName(sName))
+        Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
+        Project.InsertSource(sName, "webpage", $sDir, sTemp, False, False, chkLink.Value)
+    
+      Default
+        sName = Project.GetUniqueName($sDir, sName)
+        Project.InsertFile(sName, $sDir, sTemp,, chkLink.Value)
+    
+    End Select
+    
+  Next
   
 End
 

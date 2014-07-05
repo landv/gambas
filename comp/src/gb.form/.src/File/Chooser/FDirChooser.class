@@ -1434,6 +1434,6 @@ End
 
 Public Sub txtFile_Change()
 
-  Try fvwChoose.Current = txtFile.Text
+  If Not GetMulti() Then Try fvwChoose.Current = txtFile.Text
 
 End
