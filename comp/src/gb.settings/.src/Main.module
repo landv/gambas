@@ -5,14 +5,21 @@ Private $iPos As Integer
 
 Public Sub Main()
 
-  ' Dim hSettings As Settings
-  ' Dim sKey As String
-  ' 
-  ' Print TypeOf("");; TypeOf(Null)
-  ' 
-  ' hSettings = New Settings("./test")
-  ' 
-  ' Print hSettings["Test/Test1"]
+  Dim hSettings As Settings
+  Dim sSlot As String
+  Dim sKey As String
+
+  hSettings = New Settings("~/.config/gambas3/gambas3.conf")
+  
+  For Each sSlot In hSettings.Keys
+    
+    Print "["; sSlot; "]"
+    For Each sKey In hSettings.Keys[sSlot]
+      Print sKey
+    Next
+    
+  Next
+
 
 End
 
