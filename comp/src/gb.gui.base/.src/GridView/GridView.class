@@ -66,6 +66,7 @@ Private $iHeader As Integer
 Private $bShowCursor As Boolean
 Private $bAutoResize As Boolean = True
 Private $iDefaultMouse As Integer '= Mouse.Default
+Private $iBg As Integer = Color.Default
 
 Private $iRow As Integer
 Private $iCol As Integer
@@ -254,6 +255,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
           
         Else
           
+          A = .Alignment
           If Align.IsMiddle(A) Then
             A = Align.Normal
           Else If Align.IsTop(A) Then
@@ -338,6 +340,13 @@ Public Sub ScrollArea_Draw()
   Dim iBg As Integer
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
+  
+  If $iBg = Color.Default Then 
+    iBg = Color.TextBackground
+  Else
+    iBg = $iBg
+  Endif
+  Paint.FillRect(0, 0, Paint.W, Paint.H, iBg)
   
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
   
@@ -491,9 +500,9 @@ Public Sub ScrollArea_Draw()
   
   If $iHeader = Both Then 
     If System.RightToLeft Then
-      Paint.FillRect($hView.ClientW - $hRows.Width - F, 0, $hRows.Width + F, $hColumns.Height + F, Color.ButtonBackground)
+      Paint.FillRect($hView.ClientW - $hRows.Width - F, 0, $hRows.Width + F, $hColumns.Height + F, iBg)
     Else
-      Paint.FillRect(0, 0, $hRows.Width + F, $hColumns.Height + F, Color.ButtonBackground)
+      Paint.FillRect(0, 0, $hRows.Width + F, $hColumns.Height + F, iBg)
     Endif
   Endif
   
@@ -2053,14 +2062,13 @@ End
 
 Private Function Background_Read() As Integer
 
-  Return $hView.Background
+  Return $iBg
 
 End
 
 Private Sub Background_Write(Value As Integer)
 
-  If Value = Color.Default Then Value = Color.TextBackground
-  $hView.Background = Value
+  $iBg = Value
 
 End
 

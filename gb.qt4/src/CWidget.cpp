@@ -82,6 +82,8 @@ static CWIDGET *_official_hovered = 0;
 
 QSet<CWIDGET *> *_enter_leave_set = NULL;
 
+static QT_COLOR_FUNC _after_set_color = NULL;
+
 #define EXT(_ob) (((CWIDGET *)_ob)->ext)
 
 #define ENSURE_EXT(_ob) (EXT(_ob) ? EXT(_ob) : alloc_ext((CWIDGET *)(_ob)))
@@ -1438,6 +1440,13 @@ static QWidget *get_color_widget(CWIDGET *_object)
 	return WIDGET;
 }
 
+QT_COLOR_FUNC CWIDGET_after_set_color(QT_COLOR_FUNC func)
+{
+	QT_COLOR_FUNC old = _after_set_color;
+	_after_set_color = func;
+	return old;
+}
+
 
 void CWIDGET_reset_color(CWIDGET *_object)
 {
@@ -1522,6 +1531,9 @@ void CWIDGET_reset_color(CWIDGET *_object)
 	if (GB.Is(THIS, CLASS_TextArea))
 		CTEXTAREA_set_foreground(THIS);
 	
+	if (_after_set_color)
+		(*_after_set_color)(THIS);
+
 	if (!GB.Is(THIS, CLASS_Container))
 		return;
 	

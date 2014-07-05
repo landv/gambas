@@ -59,6 +59,7 @@ DECLARE_EVENT(EVENT_DOWNLOAD);
 
 static QNetworkAccessManager *_network_access_manager = 0;
 static CWEBVIEW *_network_access_manager_view = 0;
+static QT_COLOR_FUNC _old_after_set_color;
 
 /*
 static WEBVIEW_ACTION _actions[] = 
@@ -161,6 +162,31 @@ static QWebPage::WebAction get_action(const char *name)
 }
 */
 
+static void after_set_color(void *_object)
+{
+	if (!GB.Is(THIS, CLASS_WebView))
+	{
+		if (_old_after_set_color)
+			(*_old_after_set_color)(THIS);
+		return;
+	}
+
+	if (QT.GetBackgroundColor(THIS) == GB_COLOR_DEFAULT)
+	{
+		QPalette palette = WIDGET->palette();
+		WIDGET->page()->setPalette(palette);
+		WIDGET->setAttribute(Qt::WA_OpaquePaintEvent, true);
+	}
+	else
+	{
+		qDebug("after_set_color");
+		QPalette palette = WIDGET->palette();
+		palette.setBrush(QPalette::Base, Qt::transparent);
+		WIDGET->page()->setPalette(palette);
+		WIDGET->setAttribute(Qt::WA_OpaquePaintEvent, false);
+	}
+}
+
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
   MyWebView *wid = new MyWebView(QT.GetContainer(VARG(parent)));
@@ -204,10 +230,16 @@ BEGIN_METHOD_VOID(WebView_free)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(WebView_init)
+
+	_old_after_set_color = QT.AfterSetColor(after_set_color);
+
+END_METHOD
+
 BEGIN_METHOD_VOID(WebView_exit)
 
 	delete _network_access_manager;
-	
+
 END_METHOD
 
 BEGIN_PROPERTY(WebView_Url)
@@ -539,17 +571,6 @@ BEGIN_PROPERTY(WebView_Document)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(WebView_Background)
-
-	QT.BackgroundProperty(_object, _param);
-
-	if (!READ_PROPERTY)
-	{
-		WIDGET->page()->setPalette(WIDGET->palette());
-	}
-
-END_PROPERTY
-
 /***************************************************************************/
 
 GB_DESC CWebViewAuthDesc[] =
@@ -570,8 +591,9 @@ GB_DESC CWebViewDesc[] =
 	
   GB_METHOD("_new", NULL, WebView_new, "(Parent)Container;"),
   GB_METHOD("_free", NULL, WebView_free, NULL),
+  GB_METHOD("_init", NULL, WebView_init, NULL),
   GB_METHOD("_exit", NULL, WebView_exit, NULL),
-	
+
 	GB_PROPERTY("Url", "s", WebView_Url),
 	GB_PROPERTY("Status", "s", WebView_Status),
 
@@ -617,8 +639,6 @@ GB_DESC CWebViewDesc[] =
 	GB_CONSTANT("_Properties", "s", "*,Url,Editable"),
 	GB_CONSTANT("_Group", "s", "View"),
 	
-	GB_PROPERTY("Background", "i", WebView_Background),
-
 	GB_EVENT("Click", NULL, "(Frame)WebFrame", &EVENT_CLICK),
 	GB_EVENT("Link", NULL, "(Url)s", &EVENT_LINK),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_PROGRESS),

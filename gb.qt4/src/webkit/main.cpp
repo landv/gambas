@@ -39,6 +39,8 @@
 #include "cwebview.h"
 #include "main.h"
 
+GB_CLASS CLASS_WebView;
+
 extern "C" {
 
 GB_INTERFACE GB EXPORT;
@@ -68,6 +70,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 int EXPORT GB_INIT(void)
 {
   GB.GetInterface("gb.qt4", QT_INTERFACE_VERSION, &QT);
+	CLASS_WebView = GB.FindClass("WebView");
   return 0;
 }
 

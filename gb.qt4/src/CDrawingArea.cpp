@@ -207,7 +207,7 @@ void MyDrawingArea::createBackground(int w, int h)
 	QX11Info xinfo = x11Info();
 	QPixmap p;
 	Qt::HANDLE old = _background;
-	GC gc;
+	//GC gc;
 	
 	_background = (Qt::HANDLE)XCreatePixmap(QX11Info::display(), RootWindow(QX11Info::display(), xinfo.screen()), w, h, xinfo.depth());
 	_background_pixmap = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);

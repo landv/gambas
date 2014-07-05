@@ -32,6 +32,7 @@
 #ifndef __MAIN_CPP
 extern "C" GB_INTERFACE GB;
 extern "C" QT_INTERFACE QT;
+extern GB_CLASS CLASS_WebView;
 #endif
 
 void MAIN_return_qvariant(const QVariant &result);

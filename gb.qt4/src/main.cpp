@@ -1042,7 +1042,6 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)CWIDGET_border_simple,
 	(void *)CWIDGET_border_full,
 	(void *)CWIDGET_scrollbar,
-	(void *)CWIDGET_background,
 	(void *)Control_Font,
 	(void *)CFONT_create,
 	(void *)CFONT_set,
@@ -1058,6 +1057,7 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)PAINT_get_current,
 	(void *)CWIDGET_get_background,
 	(void *)Control_Mouse,
+	(void *)CWIDGET_after_set_color,
 	NULL
 };
 

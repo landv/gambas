@@ -25,6 +25,7 @@
 #define __GB_QT_H
 
 #include "gambas.h"
+#include "gb.image.h"
 
 #ifdef OS_MACOSX
 //#define NO_X_WINDOW 1
@@ -108,6 +109,9 @@ typedef
 	void (*QT_FONT_FUNC)(QFont &, void *);
 
 typedef
+	void (*QT_COLOR_FUNC)(void *);
+
+typedef
 	struct {
 		intptr_t version;
 		void (*InitEventLoop)(void);
@@ -119,7 +123,6 @@ typedef
 		void (*FullBorderProperty)(void *, void *);
 		void (*ScrollBarProperty)(void *, void *);
 		void (*FontProperty)(void *, void *);
-		void (*BackgroundProperty)(void *, void *);
 		QT_FONT *(*CreateFont)(const QFont &, QT_FONT_FUNC, void *);
 		void (*SetFont)(QT_FONT_FUNC, void*, void *);
 		QT_PICTURE (*CreatePicture)(const QPixmap &);
@@ -134,6 +137,7 @@ typedef
 		QPainter *(*GetCurrentPainter)();
 		uint (*GetBackgroundColor)(void *);
 		void (*MouseProperty)(void *, void *);
+		QT_COLOR_FUNC (*AfterSetColor)(QT_COLOR_FUNC);
 		void *_null;
 		}
 	QT_INTERFACE;

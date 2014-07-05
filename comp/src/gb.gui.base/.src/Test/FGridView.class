@@ -43,7 +43,7 @@ Public Sub Form_Open()
     gvwInfo.Columns[I].Text = ["Bleu", "Blanc", "Rouge"][I]
   Next
   
-  gvwInfo[1, 1].Background = Color.White
+  gvwInfo[1, 1].Background = Color.Yellow
   
   ScrollArea(gvwInfo.Proxy).Shadow = True
   

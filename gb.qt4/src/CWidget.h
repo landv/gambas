@@ -130,6 +130,7 @@ DECLARE_PROPERTY(Control_Tag);
 DECLARE_PROPERTY(CWIDGET_border_full);
 DECLARE_PROPERTY(CWIDGET_border_simple);
 DECLARE_PROPERTY(CWIDGET_scrollbar);
+DECLARE_PROPERTY(Control_Background);
 DECLARE_PROPERTY(Control_Design);
 DECLARE_PROPERTY(Control_Enabled);
 DECLARE_PROPERTY(Control_Font);
@@ -189,6 +190,7 @@ void CWIDGET_update_design(CWIDGET *_object);
 void CWIDGET_iconset(QIcon &icon, const QPixmap &p, int size = 0);
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg, bool handle_proxy = false);
 void CWIDGET_reset_color(CWIDGET *_object);
+QT_COLOR_FUNC CWIDGET_after_set_color(QT_COLOR_FUNC func);
 GB_COLOR CWIDGET_get_background(CWIDGET *_object, bool handle_proxy = false);
 GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy = false);
 int CWIDGET_get_real_background(CWIDGET *_object);
@@ -214,6 +216,7 @@ void CACTION_raise(void *control);
 bool CWIDGET_get_allow_focus(void *_object);
 void CWIDGET_set_allow_focus(void *_object, bool f);
 bool CWIDGET_is_design(CWIDGET *_object);
+
 
 #ifndef DO_NOT_DECLARE_EVENTS
 #ifndef __CWIDGET_CPP
