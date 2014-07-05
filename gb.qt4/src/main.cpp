@@ -1042,6 +1042,7 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)CWIDGET_border_simple,
 	(void *)CWIDGET_border_full,
 	(void *)CWIDGET_scrollbar,
+	(void *)CWIDGET_background,
 	(void *)Control_Font,
 	(void *)CFONT_create,
 	(void *)CFONT_set,

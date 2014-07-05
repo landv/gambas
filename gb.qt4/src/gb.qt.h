@@ -119,6 +119,7 @@ typedef
 		void (*FullBorderProperty)(void *, void *);
 		void (*ScrollBarProperty)(void *, void *);
 		void (*FontProperty)(void *, void *);
+		void (*BackgroundProperty)(void *, void *);
 		QT_FONT *(*CreateFont)(const QFont &, QT_FONT_FUNC, void *);
 		void (*SetFont)(QT_FONT_FUNC, void*, void *);
 		QT_PICTURE (*CreatePicture)(const QPixmap &);

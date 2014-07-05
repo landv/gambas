@@ -539,6 +539,16 @@ BEGIN_PROPERTY(WebView_Document)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(WebView_Background)
+
+	QT.BackgroundProperty(_object, _param);
+
+	if (!READ_PROPERTY)
+	{
+		WIDGET->page()->setPalette(WIDGET->palette());
+	}
+
+END_PROPERTY
 
 /***************************************************************************/
 
@@ -607,6 +617,8 @@ GB_DESC CWebViewDesc[] =
 	GB_CONSTANT("_Properties", "s", "*,Url,Editable"),
 	GB_CONSTANT("_Group", "s", "View"),
 	
+	GB_PROPERTY("Background", "i", WebView_Background),
+
 	GB_EVENT("Click", NULL, "(Frame)WebFrame", &EVENT_CLICK),
 	GB_EVENT("Link", NULL, "(Url)s", &EVENT_LINK),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_PROGRESS),

@@ -32,28 +32,9 @@ Public Sub _new()
   
 End
 
-Private Sub GetWorkspace(hWindow As Window) As Workspace
-  
-  Dim hCtrl As Control = hWindow
-  
-  While hCtrl
-    If hCtrl Is Workspace Then Return hCtrl
-    hCtrl = hCtrl.Parent
-  Wend
-  
-End
-
-
-Public Sub Add(hWindow As Window, Optional Resizable As Boolean) As Window
-  
-  Dim hPrev As Workspace
-  
-  hPrev = GetWorkspace(hWindow)
-  If hPrev Then hPrev.Remove(hWindow)
+Public Sub Add(hWindow As Window, Optional Resizable As Boolean) 
   
   $hWorkspace.Add(hWindow, Resizable)
-  
-  Return hWindow
   
 End
 

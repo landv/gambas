@@ -1440,18 +1440,13 @@ Public Sub Action_Activate(Key As String) As Boolean
     For Each hCtrl In hAction.Controls
       If hCtrl Is Menu Then
         hCtrl.Value = True
-        Break
+        Return
       Endif
     Next
     
-    ' Select Case Key
-    '   Case ".save"
-    '     Project.ActiveForm.Save
-    '   Case ".close"
-    '     Project.ActiveForm.Close
-    '   Case ".reload"
-    '     Project.ActiveForm.Reload
-    ' End Select
+    If Key = "_close" Then
+      Project.ActiveForm.Close
+    Endif
     
   Endif
   

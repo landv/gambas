@@ -59,13 +59,28 @@ Private Function GetIndex(hWin As Window) As Integer
   
 End
 
+Private Sub GetWorkspace(hWindow As Window) As Workspace
+  
+  Dim hCtrl As Control = hWindow
+  
+  While hCtrl
+    If hCtrl Is Workspace Then Return hCtrl
+    hCtrl = hCtrl.Parent
+  Wend
+  
+End
+
 Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As Integer)
   
   Dim iInd As Integer
   Dim hWindow As CWindow
+  Dim hPrev As Workspace
 
   If GetIndex(hWin) >= 0 Then Return
 
+  hPrev = GetWorkspace(hWin)
+  If hPrev Then RemoveWindow(hWin)
+  
   If bResize Then  
     hWin.Reparent(dwgBorder)
   Else
@@ -195,8 +210,6 @@ Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
   Dim hWindow As CWindow  
   Dim iInd As Integer = GetIndex(hWin)
 
-  'Debug "REMOVE "; hWin;; hWin.Title;; "["; iInd; "]"
-  
   If iInd < 0 Then Return
 
   If bClose Then
@@ -240,7 +253,7 @@ End
 
 Public Sub Remove(Window As Window)
   
-  RemoveWindow(Window, True)
+  RemoveWindow(Window)
   
 End
 

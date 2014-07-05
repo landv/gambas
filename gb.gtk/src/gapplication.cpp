@@ -1319,6 +1319,7 @@ int gApplication::getScrollbarSize()
 
 	if (st) //g_type_from_name("OsBar"))
 	{
+		fprintf(stderr, "g_type_from_name: %ld\n", g_type_from_name("OsBar"));
 		char *env = getenv("LIBOVERLAY_SCROLLBAR");
 		if (!env || *env != '0')
 			return 1;
