@@ -3,7 +3,7 @@
 Static Private $hForm As FForm 'FForm
 Static Private $cPict As New Collection
 
-Private $bNoSelect As Integer
+Private $iNoSelect As Integer
 Private $hRefreshTimer As New Timer As "RefreshTimer"
 
 Private Sub GetForm() As Boolean
@@ -82,9 +82,9 @@ Private Sub FillTree(hCtrl As CControl, Optional sParent As String)
     'sImg = "img/32/form.png"
   Endif
 
-  Inc $bNoSelect 
+  Inc $iNoSelect 
   Try tvwControl[hCtrl.Name].Delete
-  Dec $bNoSelect
+  Dec $iNoSelect
   tvwControl.Add(hCtrl.Name, hCtrl.Name, hPict, sParent)
 
   'If hCtrl.Kind = "DataControl" Then Stop
@@ -169,7 +169,7 @@ Public Sub DoRefreshAll(Optional (sKey) As String, Optional bForce As Boolean)
   '   Try tvwControl[sKey].EnsureVisible
   ' Endif
   ' 
-  ' $bNoSelect = False
+  ' $iNoSelect = False
   
 End
 
@@ -250,9 +250,9 @@ Public Sub SelectCurrent()
   
   If tvwControl.Exist(sName) Then 
     Try tvwControl[sName].EnsureVisible
-    Inc $bNoSelect 
+    Inc $iNoSelect 
     tvwControl[sName].Selected = True
-    Dec $bNoSelect 
+    Dec $iNoSelect 
   Endif
 
 End
@@ -260,14 +260,16 @@ End
 
 Public Sub tvwControl_Select()
   
-  If $bNoSelect Then Return
+  If $iNoSelect Then Return
 
+  Inc $iNoSelect 
   If InStr(tvwControl.Current.Key, ".") Then 
     tvwControl.MoveParent
     Try $hForm.SelectControl(tvwControl.Item.Text)
   Else
     Try $hForm.SelectControl(tvwControl.Current.Text)
   Endif
+  Dec $iNoSelect
 
 End
 

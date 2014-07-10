@@ -972,6 +972,8 @@ Public Sub Select(hForm As FForm, Optional bMaster As Boolean)
   If IsNull(Parent) Then Return
   If Kind = "Menu" Then Return
 
+  If hForm.Selection.Count = 0 Then EnsureVisible
+
   If Selected Then
     UnSelect(hForm)
   Endif
@@ -997,10 +999,35 @@ Public Sub Select(hForm As FForm, Optional bMaster As Boolean)
     Next
   Endif
   
-  '$hForm.Selection[Name] = ME
-
 End
 
+Public Sub EnsureVisible()
+
+  Dim hTab As Object
+  Dim hCtrl As Control
+  Dim I As Integer
+
+  If Not Parent Then Return
+
+  If Parent.IsMultiContainer() Then
+    
+    hTab = Parent.Control
+    
+    For I = 0 To hTab.Count - 1
+      For Each hCtrl In hTab[I].Children
+        If hCtrl = Control Then
+          hTab.Index = I
+          I = hTab.Count
+          Break
+        Endif
+      Next
+    Next
+    
+  Endif
+
+  Parent.EnsureVisible
+
+End
 
 Public Sub UnSelect(hForm As FForm, Optional bDoNotRemove As Boolean)
 

@@ -168,11 +168,17 @@
         { Separator5 Separator
           MoveScaled(3,13,15,0)
         }
-        { txtTranslate TextArea
-          MoveScaled(1,15,39,5)
+        { Panel1 Panel
+          MoveScaled(1,14,40,6)
+          Background = Color.TextBackground
           Expand = True
-          Wrap = True
-          Border = False
+          Arrangement = Arrange.Fill
+          Padding = 2
+          { txtTranslate TextArea
+            MoveScaled(0,0,39,5)
+            Wrap = True
+            Border = False
+          }
         }
       }
     }

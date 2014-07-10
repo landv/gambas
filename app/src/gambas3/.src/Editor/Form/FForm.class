@@ -2427,9 +2427,7 @@ End
 
 Public Sub mnuControl_Click()
 
-  UnselectAll
-  Control[Last.Text].Select(Me, True)
-  RefreshProperty
+  SelectControl(Last.Text)
 
 End
 
@@ -3506,6 +3504,7 @@ Public Sub SelectControl(sControl As String)
 
   UnselectAll
   Control[sControl].Select(Me, True)
+  $bSelChange = True
   RefreshProperty
 
 End
