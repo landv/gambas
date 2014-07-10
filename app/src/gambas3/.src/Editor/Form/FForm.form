@@ -75,6 +75,10 @@
       Text = ("Select all")
       Shortcut = "Ctrl+A"
     }
+    { mnuSelectParent Menu
+      Action = ".select-parent"
+      Text = ("Select parent")
+    }
     { mnuUnselectAll Menu
       Action = ".unselect-all"
       Text = ("Unselect all")
@@ -832,6 +836,10 @@
   { Action select-all
     Text = "Select all"
     Shortcut = "Ctrl+A"
+  }
+  { Action select-parent
+    Text = "Select parent"
+    Shortcut = ""
   }
   { Action show-class
     Text = "Code"

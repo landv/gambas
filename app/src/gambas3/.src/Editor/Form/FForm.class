@@ -2589,6 +2589,21 @@ Public Sub mnuSelectAll_Click()
 
 End
 
+Public Sub mnuSelectParent_Click()
+  
+  Dim hParent As CControl
+  
+  If Not Master Then Return
+  
+  hParent = Master.Parent
+  UnselectAll
+  hParent.Select(Me, True)
+  SelectionChange
+  RefreshProperty
+  
+End
+
+
 Public Sub mnuUnselectAll_Click()
 
   If Master Then
