@@ -177,7 +177,7 @@ Public Sub Form_Open()
 
 End
 
-Private Sub SetReadOnly()
+Public Sub SetReadOnly()
 
   Dim bReadOnly As Boolean
 
@@ -185,11 +185,12 @@ Private Sub SetReadOnly()
     bReadOnly = True
   Endif
 
-  'If bReadOnly <> $bReadOnly Then
-    $bReadOnly = bReadOnly
-    UpdateMenu
-    DrawTitle
-  'Endif
+  $bReadOnly = bReadOnly
+  
+  Project.UpdateLockedAction(Me)
+  
+  UpdateMenu
+  DrawTitle
 
 End
 
@@ -2323,9 +2324,9 @@ Private Sub UpdateMenu()
   If $bReadOnly Then SetTool("move")
 
   mnuAction.Visible = bVisible
-  mnuZoom.Visible = bVisible
+  mnuSelection.Visible = bVisible
   
-  Action[".save,.undo,.redo,.tool-*,.invert,.stroke,.fill,.clear,.cut,.copy,.crop,.flip-h,.flip-v,.rotate-*,.rotate,.resize,.select-all,.hide-selection,.grid,.duplicate,.offset", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.tool-*,.hide,.invert,.stroke,.fill,.clear,.cut,.paste,.crop,.flip-h,.flip-v,.rotate-*,.rotate,.resize,.select-all,.duplicate,.offset", Me].Visible = bVisible
   
 End
 
@@ -2802,5 +2803,16 @@ End
 Public Sub GetTool() As String
   
   Return $sTool
+  
+End
+
+Public Sub Action_Activate(Key As String) As Boolean
+  
+  Select Case Key
+    Case ".locked"
+      Project.SetReadOnly(Path, Action[Key, Me].Value)
+    Case Else
+      Return True
+  End Select
   
 End

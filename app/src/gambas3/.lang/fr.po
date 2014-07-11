@@ -695,7 +695,7 @@ msgstr "Chargement des informations sur le composant &1..."
 msgid "Classes"
 msgstr "Classes"
 
-#: CInsertColor.class:113 FEditor.form:257 FTextEditor.form:199
+#: CInsertColor.class:113 FEditor.form:266 FTextEditor.form:207
 msgid "Insert color"
 msgstr "Insérer une couleur"
 
@@ -939,7 +939,7 @@ msgstr "Ce fichier entre en conflit avec la révision #&1.\nVous devez résoudre
 msgid "Unable to load file:"
 msgstr "Impossible de charger le fichier :"
 
-#: FImageEditor.form:576
+#: FImageEditor.form:598
 msgid "Text"
 msgstr "Texte"
 
@@ -971,31 +971,31 @@ msgstr "Fichiers en conflits"
 msgid "Version conflict"
 msgstr "Conflit de version"
 
-#: FOutput.form:63 FProjectVersion.form:234 FTextEditor.form:112
+#: FOutput.form:63 FProjectVersion.form:234 FTextEditor.form:121
 msgid "Cut"
 msgstr "Couper"
 
-#: FTextEditor.form:119
+#: FTextEditor.form:128
 msgid "Copy"
 msgstr "Copier"
 
-#: FProjectVersion.form:246 FTextEditor.form:126
+#: FProjectVersion.form:246 FTextEditor.form:135
 msgid "Paste"
 msgstr "Coller"
 
-#: FTextEditor.form:95
+#: FTextEditor.form:104
 msgid "Undo"
 msgstr "Annuler"
 
-#: FProjectVersion.form:258 FTextEditor.form:102
+#: FProjectVersion.form:258 FTextEditor.form:111
 msgid "Redo"
 msgstr "Rétablir"
 
-#: FTextEditor.form:343
+#: FTextEditor.form:363
 msgid "Indent"
 msgstr "Indenter"
 
-#: FTextEditor.form:351
+#: FTextEditor.form:371
 msgid "Unindent"
 msgstr "Désindenter"
 
@@ -1007,7 +1007,7 @@ msgstr "Ouvrir"
 msgid "Open..."
 msgstr "Ouvrir..."
 
-#: FSaveProjectAs.form:82 FTextEditor.form:254
+#: FSaveProjectAs.form:82 FTextEditor.form:266
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -1171,7 +1171,7 @@ msgstr "Voulez-vous vraiment supprimer cette requête ?"
 msgid "Connection editor"
 msgstr "Editeur de connexion"
 
-#: FTextEditor.form:248 FTranslate.form:73
+#: FTextEditor.form:260 FTranslate.form:73
 msgid "Reload"
 msgstr "Recharger"
 
@@ -1263,7 +1263,7 @@ msgstr "Nouveau"
 msgid "Remove query"
 msgstr "Supprimer la requête"
 
-#: FConnectionEditor.form:450 FOption.form:958
+#: FImageEditor.form:108 FOption.form:958 FTextEditor.form:100
 msgid "Edit"
 msgstr "Éditer"
 
@@ -1691,127 +1691,135 @@ msgstr "La chaîne recherchée est introuvable."
 msgid "Stack backtrace"
 msgstr "Pile des appels"
 
-#: FTextEditor.class:652
+#: FTextEditor.class:653
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
-#: FEditor.class:2772 FTextEditor.class:1063
+#: FEditor.class:2774 FTextEditor.class:1064
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
-#: FEditor.form:94
+#: FEditor.form:97
 msgid "Go to"
 msgstr "Aller à"
 
-#: FEditor.form:99 FGotoLine.form:12 FTextEditor.form:79
+#: FEditor.form:102 FGotoLine.form:12 FTextEditor.form:81
 msgid "Go to line"
 msgstr "Aller à la ligne"
 
-#: FEditor.form:105
-msgid "Find definition"
-msgstr "Trouver la définition"
-
-#: FEditor.form:112
-msgid "Open form"
-msgstr "Ouvrir le formulaire"
-
-#: FEditor.form:161 FImageEditor.form:151 FTextEditor.form:136
-msgid "Select All"
-msgstr "Tout sélectionner"
-
-#: FEditor.form:170 FOutput.form:94 FTextEditor.form:145
-msgid "Find next"
-msgstr "Poursuivre la recherche"
-
-#: FEditor.form:177 FOutput.form:101 FTextEditor.form:152
-msgid "Find previous"
-msgstr "Recherche en arrière"
-
-#: FEditor.form:186 FMain.form:1335
-msgid "Run until current line"
-msgstr "Exécuter jusqu'à la ligne courante"
-
-#: FEditor.form:193
-msgid "Toggle breakpoint"
-msgstr "Basculer un point d'arrêt"
-
-#: FEditor.form:200
-msgid "Watch expression"
-msgstr "Surveiller des expressions"
-
-#: FEditor.form:208 FTextEditor.form:161
+#: FEditor.form:107 FTextEditor.form:86
 msgid "Bookmarks"
 msgstr "Signets"
 
-#: FEditor.form:212 FTextEditor.form:165
+#: FEditor.form:112
+msgid "Find definition"
+msgstr "Trouver la définition"
+
+#: FEditor.form:119
+msgid "Open form"
+msgstr "Ouvrir le formulaire"
+
+#: FEditor.form:173 FImageEditor.form:157 FTextEditor.form:145
+msgid "Select All"
+msgstr "Tout sélectionner"
+
+#: FEditor.form:183 FOutput.form:94 FTextEditor.form:155
+msgid "Find next"
+msgstr "Poursuivre la recherche"
+
+#: FEditor.form:190 FOutput.form:101 FTextEditor.form:162
+msgid "Find previous"
+msgstr "Recherche en arrière"
+
+#: FEditor.form:199 FMain.form:1335
+msgid "Run until current line"
+msgstr "Exécuter jusqu'à la ligne courante"
+
+#: FEditor.form:206
+msgid "Toggle breakpoint"
+msgstr "Basculer un point d'arrêt"
+
+#: FEditor.form:213
+msgid "Watch expression"
+msgstr "Surveiller des expressions"
+
+#: FEditor.form:221 FTextEditor.form:171
 msgid "Advanced"
 msgstr "Avancé"
 
-#: FEditor.form:216 FTextEditor.form:176
+#: FEditor.form:225 FTextEditor.form:182
 msgid "Lower case"
 msgstr "Minuscules"
 
-#: FEditor.form:223 FTextEditor.form:169
+#: FEditor.form:232 FTextEditor.form:175
 msgid "Upper case"
 msgstr "Majuscules"
 
-#: FEditor.form:233
+#: FEditor.form:242
 msgid "Comment"
 msgstr "Mettre en commentaire"
 
-#: FEditor.form:240
+#: FEditor.form:249
 msgid "Uncomment"
 msgstr "Retirer les commentaires"
 
-#: FEditor.form:250 FPasteSpecial.form:19
+#: FEditor.form:259 FPasteSpecial.form:19
 msgid "Paste special"
 msgstr "Collage spécial"
 
-#: FEditor.form:263
+#: FEditor.form:272
 msgid "Format code"
 msgstr "Formater le code"
 
-#: FEditor.form:269
+#: FEditor.form:278
 msgid "Sort procedures"
 msgstr "Trier les procédures"
 
-#: FEditor.form:275 FImageEditor.form:288 FMain.form:615 FTextEditor.form:219
+#: FEditor.form:285 FImageEditor.form:295 FMain.form:615 FTextEditor.form:225
 msgid "View"
 msgstr "Affichage"
 
-#: FEditor.form:279 FTextEditor.form:223
+#: FEditor.form:289 FTextEditor.form:229
 msgid "No split"
 msgstr "Affichage complet"
 
-#: FEditor.form:285 FTextEditor.form:229
+#: FEditor.form:295 FTextEditor.form:235
 msgid "Horizontal split"
 msgstr "Séparation horizontale"
 
-#: FEditor.form:292 FTextEditor.form:236
+#: FEditor.form:302 FTextEditor.form:242
 msgid "Vertical split"
 msgstr "Séparation verticale"
 
-#: FEditor.form:327 FPasteSpecial.form:51
+#: FEditor.form:313 FForm.form:413 FImageEditor.form:334 FTextEditor.form:253
+msgid "Locked"
+msgstr "Verrouillé"
+
+#: FEditor.form:343 FPasteSpecial.form:51
 msgid "Paste as string"
 msgstr "Coller comme chaîne"
 
-#: FEditor.form:332 FPasteSpecial.form:56
+#: FEditor.form:348 FPasteSpecial.form:56
 msgid "Paste as multi-line string"
 msgstr "Coller comme chaîne sur plusieurs lignes"
 
-#: FEditor.form:337 FPasteSpecial.form:41
+#: FEditor.form:353 FPasteSpecial.form:41
 msgid "Paste as comments"
 msgstr "Coller comme commentaires"
 
-#: FEditor.form:353 FHelpShortcut.form:24 FOption.form:320
+#: FEditor.form:369 FHelpShortcut.form:24 FOption.form:320
 msgid "Editor"
 msgstr "Éditeur"
 
-#: FEditor.form:488
+#: FEditor.form:398 FImageEditor.form:412 FTextEditor.form:311
+msgid "Lock / unlock file"
+msgstr "Vérrouiller / déverrouiller le fichier"
+
+#: FEditor.form:512
 msgid "Make code pretty"
 msgstr "Réindenter le code"
 
-#: FEditor.form:553 FTextEditor.form:433
+#: FEditor.form:577 FTextEditor.form:453
 msgid "Procedure list"
 msgstr "Liste des procédures"
 
@@ -1927,15 +1935,15 @@ msgstr "Revenir"
 msgid "Select a font"
 msgstr "Choisissez une police"
 
-#: FForm.class:143
+#: FForm.class:142
 msgid "Bad form file"
 msgstr "Fichier formulaire incorrect"
 
-#: FForm.class:1309
+#: FForm.class:1305
 msgid "Component missing for control &1"
 msgstr "Composant introuvable pour le contrôle &1"
 
-#: FForm.class:3200
+#: FForm.class:3183
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 
@@ -1951,7 +1959,7 @@ msgstr "Evènement"
 msgid "Change into"
 msgstr "Transformer en"
 
-#: FForm.form:148 FMain.form:851 FTextEditor.form:85
+#: FForm.form:148 FMain.form:851 FTextEditor.form:91
 msgid "Open code"
 msgstr "Ouvrir le code"
 
@@ -1959,179 +1967,179 @@ msgstr "Ouvrir le code"
 msgid "Run that form"
 msgstr "Exécuter ce formulaire"
 
-#: FForm.form:164
-msgid "Show tab"
-msgstr "Afficher l'onglet"
-
-#: FForm.form:172
-msgid "Move tab"
-msgstr "Déplacer l'onglet"
-
-#: FForm.form:177
-msgid "First"
-msgstr "Début"
-
-#: FForm.form:184 FSearch.form:198 FTips.form:71
-msgid "Previous"
-msgstr "Précédent"
-
-#: FForm.form:191 FSearch.form:192 FTips.form:77
-msgid "Next"
-msgstr "Suivant"
-
-#: FForm.form:198
-msgid "Last"
-msgstr "Fin"
-
-#: FForm.form:209
-msgid "Select all"
-msgstr "Sélectionner tout"
-
-#: FForm.form:215
-msgid "Select parent"
-msgstr "Sélectionner le parent"
-
-#: FForm.form:220
-msgid "Unselect all"
-msgstr "Déselectionner tout"
-
-#: FForm.form:260
+#: FForm.form:199
 msgid "Copy at the same place"
 msgstr "Copier au même emplacement"
 
-#: FForm.form:280
+#: FForm.form:219
 msgid "Delete container only"
 msgstr "Supprimer le conteneur uniquement"
 
-#: FForm.form:287
+#: FForm.form:226
 msgid "Embed into a container"
 msgstr "Imbriquer dans un conteneur"
 
-#: FForm.form:296
+#: FForm.form:236
+msgid "Select all"
+msgstr "Sélectionner tout"
+
+#: FForm.form:242
+msgid "Select parent"
+msgstr "Sélectionner le parent"
+
+#: FForm.form:247
+msgid "Unselect all"
+msgstr "Déselectionner tout"
+
+#: FForm.form:253
+msgid "Show tab"
+msgstr "Afficher l'onglet"
+
+#: FForm.form:261
+msgid "Move tab"
+msgstr "Déplacer l'onglet"
+
+#: FForm.form:266
+msgid "First"
+msgstr "Début"
+
+#: FForm.form:273 FSearch.form:198 FTips.form:71
+msgid "Previous"
+msgstr "Précédent"
+
+#: FForm.form:280 FSearch.form:192 FTips.form:77
+msgid "Next"
+msgstr "Suivant"
+
+#: FForm.form:287
+msgid "Last"
+msgstr "Fin"
+
+#: FForm.form:294
 msgid "Arrangement"
 msgstr "Disposition"
 
-#: FForm.form:300
+#: FForm.form:298
 msgid "Bring to foreground"
 msgstr "Au premier plan"
 
-#: FForm.form:307
+#: FForm.form:305
 msgid "Send to background"
 msgstr "A l'arrière-plan"
 
-#: FForm.form:317
+#: FForm.form:315
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: FForm.form:324
+#: FForm.form:322
 msgid "Rows"
 msgstr "Lignes"
 
-#: FForm.form:330
+#: FForm.form:328
 msgid "Vertical"
 msgstr "Vertical"
 
-#: FForm.form:337
+#: FForm.form:335
 msgid "Columns"
 msgstr "Colonnes"
 
-#: FForm.form:346
+#: FForm.form:344
 msgid "Center horizontally"
 msgstr "Centrer horizontalement"
 
-#: FForm.form:352
+#: FForm.form:350
 msgid "Center vertically"
 msgstr "Centrer verticalement"
 
-#: FForm.form:358
+#: FForm.form:356
 msgid "Alignment"
 msgstr "Alignement"
 
-#: FForm.form:362
+#: FForm.form:360
 msgid "Align to left"
 msgstr "Aligner sur la gauche"
 
-#: FForm.form:368
+#: FForm.form:366
 msgid "Align to right"
 msgstr "Aligner sur la droite"
 
-#: FForm.form:374
+#: FForm.form:372
 msgid "Align to top"
 msgstr "Aligner sur le haut"
 
-#: FForm.form:380
+#: FForm.form:378
 msgid "Align to bottom"
 msgstr "Aligner sur le bas"
 
-#: FForm.form:389
+#: FForm.form:387
 msgid "Same width"
 msgstr "Même largeur"
 
-#: FForm.form:395
+#: FForm.form:393
 msgid "Same height"
 msgstr "Même hauteur"
 
-#: FForm.form:405 FMenu.form:66
+#: FForm.form:403 FMenu.form:66
 msgid "Menu editor"
 msgstr "Éditeur de menu"
 
-#: FForm.form:459 FTextEditor.form:301
+#: FForm.form:464 FTextEditor.form:304
 msgid "Code"
 msgstr "Code"
 
-#: FForm.form:466
-msgid "Lock form"
-msgstr "Verrouiller le formulaire"
+#: FForm.form:471
+msgid "Lock / unlock form"
+msgstr "Vérrouiller  / déverrouiller le formulaire"
 
-#: FForm.form:543
+#: FForm.form:548
 msgid "Toggle grid"
 msgstr "Bascule l'affichage de la grille"
 
-#: FForm.form:662
+#: FForm.form:667
 msgid "Move tab first"
 msgstr "Déplacer l'onglet au début"
 
-#: FForm.form:669
+#: FForm.form:674
 msgid "Move tab left"
 msgstr "Déplacer l'onglet à gauche"
 
-#: FForm.form:676
+#: FForm.form:681
 msgid "Move tab right"
 msgstr "Déplacer l'onglet à droite"
 
-#: FForm.form:683
+#: FForm.form:688
 msgid "Move tab last"
 msgstr "Déplacer l'onglet à la fin"
 
-#: FForm.form:702 FOption.form:217
+#: FForm.form:707 FOption.form:217
 msgid "Bold"
 msgstr "Gras"
 
-#: FForm.form:710 FOption.form:221
+#: FForm.form:715 FOption.form:221
 msgid "Italic"
 msgstr "Italique"
 
-#: FForm.form:718 FOption.form:225
+#: FForm.form:723 FOption.form:225
 msgid "Underline"
 msgstr "Souligné"
 
-#: FForm.form:726
+#: FForm.form:731
 msgid "Bigger font"
 msgstr "Police plus grande"
 
-#: FForm.form:734
+#: FForm.form:739
 msgid "Smaller font"
 msgstr "Police plus petite"
 
-#: FForm.form:742 FOption.form:253
+#: FForm.form:747 FOption.form:253
 msgid "Default font"
 msgstr "Police par défaut"
 
-#: FForm.form:750 FOption.form:561 MTheme.module:6
+#: FForm.form:755 FOption.form:561 MTheme.module:6
 msgid "Background"
 msgstr "Arrière-plan"
 
-#: FForm.form:758
+#: FForm.form:763
 msgid "Foreground"
 msgstr "Avant-plan"
 
@@ -2179,11 +2187,11 @@ msgstr "Aller en avant"
 msgid "Show help tree"
 msgstr "Afficher l'arborescence de l'aide"
 
-#: FHelpBrowser.form:85 FImageEditor.form:293
+#: FHelpBrowser.form:85 FImageEditor.form:300
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: FHelpBrowser.form:91 FImageEditor.form:301
+#: FHelpBrowser.form:91 FImageEditor.form:308
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
@@ -2211,135 +2219,135 @@ msgstr "Débogueur"
 msgid "Translation"
 msgstr "Traduction"
 
-#: FImageEditor.form:157
+#: FImageEditor.form:163
 msgid "Hide selection"
 msgstr "Cacher la sélection"
 
-#: FImageEditor.form:163 MTheme.module:6
+#: FImageEditor.form:170 MTheme.module:6
 msgid "Selection"
 msgstr "Sélection"
 
-#: FImageEditor.form:168
+#: FImageEditor.form:175
 msgid "Invert selection"
 msgstr "Inverser la sélection"
 
-#: FImageEditor.form:176
+#: FImageEditor.form:183
 msgid "Duplicate selection"
 msgstr "Dupliquer la sélection"
 
-#: FImageEditor.form:184 FImageOffsetSelection.form:12
+#: FImageEditor.form:191 FImageOffsetSelection.form:12
 msgid "Offset selection"
 msgstr "Agrandir ou rétrécir la sélection"
 
-#: FImageEditor.form:191
+#: FImageEditor.form:198
 msgid "Shape grid"
 msgstr "Grille de la forme"
 
-#: FImageEditor.form:229
+#: FImageEditor.form:236
 msgid "Action"
 msgstr "Action"
 
-#: FImageEditor.form:234
+#: FImageEditor.form:241
 msgid "Crop"
 msgstr "Découper"
 
-#: FImageEditor.form:242 FImageProperty.form:294
+#: FImageEditor.form:249 FImageProperty.form:294
 msgid "Horizontal flip"
 msgstr "Miroir horizontal"
 
-#: FImageEditor.form:249 FImageProperty.form:288
+#: FImageEditor.form:256 FImageProperty.form:288
 msgid "Vertical flip"
 msgstr "Miroir vertical"
 
-#: FImageEditor.form:256 FImageProperty.form:282
+#: FImageEditor.form:263 FImageProperty.form:282
 msgid "Rotate counter-clockwise"
 msgstr "Rotation de 90° vers la gauche"
 
-#: FImageEditor.form:264 FImageProperty.form:276
+#: FImageEditor.form:271 FImageProperty.form:276
 msgid "Rotate clockwise"
 msgstr "Rotation de 90° vers la droite"
 
-#: FImageEditor.form:275
+#: FImageEditor.form:282
 msgid "Resize"
 msgstr "Redimensionner"
 
-#: FImageEditor.form:282
+#: FImageEditor.form:289
 msgid "Rotate"
 msgstr "Rotation"
 
-#: FImageEditor.form:309
+#: FImageEditor.form:316
 msgid "Zoom normal"
 msgstr "Zoom normal"
 
-#: FImageEditor.form:317
+#: FImageEditor.form:324
 msgid "Zoom fit"
 msgstr "Zoom ajusté"
 
-#: FImageEditor.form:352
+#: FImageEditor.form:366
 msgid "Save as JPEG"
 msgstr "Enregistrer comme JPEG"
 
-#: FImageEditor.form:358
+#: FImageEditor.form:372
 msgid "Save as PNG"
 msgstr "Enregistrer comme PNG"
 
-#: FImageEditor.form:364
+#: FImageEditor.form:378
 msgid "Save as BMP"
 msgstr "Enregistrer comme BMP"
 
-#: FImageEditor.form:371
+#: FImageEditor.form:385
 msgid "Save as TIFF"
 msgstr "Enregistrer comme TIFF"
 
-#: FImageEditor.form:378
+#: FImageEditor.form:392
 msgid "Image editor"
 msgstr "Editeur d'image"
 
-#: FImageEditor.form:452
+#: FImageEditor.form:474
 msgid "Drawing grid"
 msgstr "Grille de dessin"
 
-#: FImageEditor.form:462
+#: FImageEditor.form:484
 msgid "Resize or stretch image"
 msgstr "Redimensionner ou étirer l'image"
 
-#: FImageEditor.form:472 FImageRotate.form:11
+#: FImageEditor.form:494 FImageRotate.form:11
 msgid "Rotate image"
 msgstr "Rotation de l'image"
 
-#: FImageEditor.form:515
+#: FImageEditor.form:537
 msgid "Move"
 msgstr "Déplacer"
 
-#: FImageEditor.form:526
+#: FImageEditor.form:548
 msgid "Draw"
 msgstr "Dessiner"
 
-#: FImageEditor.form:536
+#: FImageEditor.form:558
 msgid "Erase"
 msgstr "Gommer"
 
-#: FImageEditor.form:556
+#: FImageEditor.form:578
 msgid "Rectangle"
 msgstr "Rectangle"
 
-#: FImageEditor.form:566
+#: FImageEditor.form:588
 msgid "Ellipse"
 msgstr "Ellipse"
 
-#: FImageEditor.form:586
+#: FImageEditor.form:608
 msgid "Magic wand"
 msgstr "Baguette magique"
 
-#: FImageEditor.form:596
+#: FImageEditor.form:618
 msgid "Edit selection"
 msgstr "Modifier la sélection"
 
-#: FImageEditor.form:640
+#: FImageEditor.form:662
 msgid "Stroke"
 msgstr "Tracer"
 
-#: FImageEditor.form:647
+#: FImageEditor.form:669
 msgid "Fill"
 msgstr "Remplir"
 
@@ -4543,35 +4551,35 @@ msgstr "Editer les propriétés de texte"
 msgid "Use a fixed font"
 msgstr "Utiliser une police non proportionnelle"
 
-#: FTextEditor.class:864
+#: FTextEditor.class:865
 msgid "Original file has been saved in the <b>Project</b> folder."
 msgstr "Le fichier d'origine a été sauvegardé dans le répertoire <b>Projet</b>."
 
-#: FTextEditor.class:864
+#: FTextEditor.class:865
 msgid "The file has been compressed from &1 to &2 bytes (&3)."
 msgstr "La taille du fichier a été réduite de &1 à &2 octets (&3)."
 
-#: FTextEditor.class:870
+#: FTextEditor.class:871
 msgid "Unable to compress file."
 msgstr "Impossible de compresser le fichier."
 
-#: FTextEditor.form:185
+#: FTextEditor.form:192
 msgid "Sort ascent"
 msgstr "Tri ascendant"
 
-#: FTextEditor.form:190
+#: FTextEditor.form:198
 msgid "Sort descent"
 msgstr "Tri descendant"
 
-#: FTextEditor.form:205
+#: FTextEditor.form:213
 msgid "Compress file"
 msgstr "Compresser le fichier"
 
-#: FTextEditor.form:211
+#: FTextEditor.form:219
 msgid "Uncompress file"
 msgstr "Décompresser le fichier"
 
-#: FTextEditor.form:270
+#: FTextEditor.form:282
 msgid "Text editor"
 msgstr "Éditeur de texte"
 
@@ -6487,15 +6495,15 @@ msgstr "Impossible de déplacer le fichier &1."
 msgid "The following files couldn't be removed:"
 msgstr "Les fichiers suivants n'ont pu être supprimés :"
 
-#: Project.module:5520
+#: Project.module:5565
 msgid "Project cleanup..."
 msgstr "Nettoyage du projet..."
 
-#: Project.module:5526
+#: Project.module:5571
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
-#: Project.module:5556
+#: Project.module:5601
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
 

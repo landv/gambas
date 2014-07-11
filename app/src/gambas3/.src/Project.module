@@ -5350,7 +5350,7 @@ Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean)
 
   If hForm.IsModified() Then sTitle &= " (*)" & Left(("modified"), 0)
   If Not bNoReadOnly Then
-    If hForm.ReadOnly And If Not Project.ReadOnly And If Not Project.Running Then sTitle &= " [" & ("read-only") & "]"
+    If IsReadOnly(hForm.Path) Then sTitle &= " [" & ("read-only") & "]"
   Endif
   
   If Not IsProjectPath(sPath) Then
@@ -5497,6 +5497,51 @@ Public Sub IsReadOnly(sPath As String) As Boolean
   Loop
 
 End
+
+Public Sub UpdateLockedAction(hForm As Object)
+  
+  If ReadOnly Or If Running Then
+    Action[".locked", hForm].Visible = False
+  Else
+    Action[".locked", hForm].Visible = True
+    Action[".locked", hForm].Value = IsReadOnly(hForm.Path)
+  Endif
+  
+End
+
+
+Public Sub SetReadOnly(sPath As String, bReadOnly As Boolean)
+  
+  Dim sClass As String
+  Dim hForm As Object
+  
+  GoSub SET_READONLY
+  
+  If IsSourcePath(sPath) Then
+    sClass = File.BaseName(sPath)
+    sPath = FindPath(sClass)
+    GoSub SET_READONLY
+    sPath = FindForm(sClass)
+    If sPath Then GoSub SET_READONLY
+  Endif
+  
+  Return
+  
+SET_READONLY:
+
+  If bReadOnly Then
+    Try Chmod sPath To "r-.r-.r-.."
+  Else
+    Try Chmod sPath To "rw.rw.r..."
+  Endif
+  
+  hForm = Files[sPath]
+  If hForm Then Try hForm.SetReadOnly
+  
+  Return
+  
+End
+
 
 Public Sub StoreCombo(hCombo As ComboBox)
 

@@ -548,7 +548,7 @@ Public Sub mnuSelectAll_Click()
 End
 
 
-Private Sub SetReadOnly()
+Public Sub SetReadOnly()
 
   Dim bReadOnly As Boolean
 
@@ -556,13 +556,14 @@ Private Sub SetReadOnly()
     bReadOnly = True
   Endif
 
-  'If bReadOnly <> edtEditor.ReadOnly Then
-    edtEditor.ReadOnly = bReadOnly
-    If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
-    If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
-    UpdateMenu
-    DrawTitle
-  'Endif
+  edtEditor.ReadOnly = bReadOnly
+  If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
+  If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
+
+  Project.UpdateLockedAction(Me)
+
+  UpdateMenu
+  DrawTitle
 
 End
 
@@ -1190,7 +1191,8 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent", Me].Visible = bVisible
+  mnuAdvanced.Visible = bVisible
 
 End
 
@@ -1423,5 +1425,16 @@ End
 Public Sub mnuSortDescent_Click()
   
   SortText(True)
+  
+End
+
+Public Sub Action_Activate(Key As String) As Boolean
+  
+  Select Case Key
+    Case ".locked"
+      Project.SetReadOnly(Path, Action[Key, Me].Value)
+    Case Else
+      Return True
+  End Select
   
 End

@@ -19,9 +19,8 @@ Private $bDoNotModify As Boolean
 Private $bModify As Boolean
 Private $bSelChange As Boolean
 Private $bReadOnly As Boolean
-Private $bLocked As Boolean
 Private $bScaled As Boolean
-Private $bNoRefreshMenu As Boolean
+Private $bNoUpdateMenu As Boolean
 'PRIVATE $sType AS String
 
 ' Gestion de la souris
@@ -144,7 +143,7 @@ Public Sub Reload() As Boolean
     Return True
   Endif
 
-  $bNoRefreshMenu = True
+  $bNoUpdateMenu = True
 
   UnSelectAll
   RefreshProperty
@@ -158,8 +157,6 @@ Public Sub Reload() As Boolean
     Control[Me.Name] = Null
     AllMenus.Clear
   Endif
-
-  $bLocked = False
 
   $bDoNotModify = True
   $bAfterLock = False
@@ -180,7 +177,7 @@ Public Sub Reload() As Boolean
   FFormStack.RefreshAll
 
   $bDoNotModify = False
-  $bNoRefreshMenu = False
+  $bNoUpdateMenu = False
   
   $hUndo.Enable
   
@@ -623,7 +620,6 @@ Public Function Save(Optional bForce As Boolean) As Boolean
   ResetSave
 
   AddLine(Project.FORM_MAGIC)
-  If $bLocked Then AddLine("#LOCKED")
   AddLine()
 
   SaveOne(RootControl)
@@ -1829,7 +1825,7 @@ End
 Private Sub RefreshProperty(Optional bForce As Boolean)
 
   If $bSelChange Or bForce Then
-    RefreshMenu
+    UpdateMenu
     If Project.ActiveForm = Me Then FProperty.RefreshAll
     $bSelChange = False
   Endif
@@ -2312,7 +2308,7 @@ Private Sub CreateMenu()
 
   Endif
 
-  RefreshMenu
+  UpdateMenu
 
 End
 
@@ -2335,13 +2331,13 @@ Private Sub FillShowTabMenu()
 
 End
 
-Private Sub RefreshMenu()
+Private Sub UpdateMenu()
 
   Dim bOn As Boolean
   Dim hCCtrl As CControl
   Dim hCtrl As Control
 
-  If $bNoRefreshMenu Then Return
+  If $bNoUpdateMenu Then Return
 
   Action[".menu", Me].Visible = Not $bReadOnly And $hFamily.HasMenuEditor
   
@@ -2354,8 +2350,10 @@ Private Sub RefreshMenu()
   Action[".paste", Me].Enabled = CanPaste()
 
   mnuArrange.Visible = Not $bReadOnly
-  Action[".save,.cut,paste-form,.delete,.lower,.raise,.arrange*", Me].Visible = Not $bReadOnly
-  Action[".lock", Me].Visible = Not $bReadOnly Or $bLocked
+  mnuChange.Visible = Not $bReadOnly
+  If mnuChange.Children.Count = 0 Then mnuChange.Hide
+  
+  Action[".save,.cut,.paste,paste-form,.delete,.lower,.raise,.arrange*", Me].Visible = Not $bReadOnly
 
   bOn = Selection.Count >= 2 And Not $bReadOnly
 
@@ -2378,9 +2376,11 @@ Private Sub RefreshMenu()
     Endif
   Endif
 
-  Action[".move-tab*,.show-tab", Me].Visible = mnuShowTab.Visible
+  Action[".show-tab", Me].Visible = mnuShowTab.Visible
+  Action[".move-tab*", Me].Visible = mnuShowTab.Visible And Not $bReadOnly
+  If $bReadOnly Then mnuMoveTab.Hide
 
-  If Selection.Count = 1 And If Master <> RootControl And If Master.IsContainer() And If GetChildren(Master.Name).Count Then
+  If Not $bReadOnly And If Selection.Count = 1 And If Master <> RootControl And If Master.IsContainer() And If GetChildren(Master.Name).Count Then
     Action[".delete-container", Me].Visible = True
   Else
     Action[".delete-container", Me].Visible = False
@@ -2421,7 +2421,7 @@ End
 Sub SelectionChange()
 
   $bSelChange = True
-  RefreshMenu
+  UpdateMenu
   
 End
 
@@ -2676,34 +2676,19 @@ Private Sub DoAlign(sKey As String)
 
 End
 
-Private Sub SetReadOnly()
+Public Sub SetReadOnly()
 
   $bReadOnly = False
-  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Or If $bLocked Then
+  If Project.ReadOnly Or If Project.Running Or If Project.IsReadOnly(Path) Then
     $bReadOnly = True
   Endif
   FFormStack.RefreshReadOnly
   RefreshProperty(True)
 
-  RefreshMenu
+  Project.UpdateLockedAction(Me)
+
+  UpdateMenu
   DrawTitle
-
-End
-
-Private Sub SetLock(bLock As Boolean)
-
-  If bLock = $bLocked Then Return
-
-  $bLocked = bLock
-
-  If Not $bDoNotModify Then
-    If Me.Save(True) Then
-      $bLocked = Not bLock
-      Return
-    Endif
-  Endif
-
-  SetReadOnly
 
 End
 
@@ -3151,8 +3136,8 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case ".move-tab-next"
       MoveTab(Master, MOVE_NEXT)
 
-    Case ".lock"
-      SetLock(Action[".lock", Me].Value)
+    Case ".locked"
+      Project.SetReadOnly(Path, Action[Key, Me].Value)
       
     Case ".delete-container"
       DeleteContainer
@@ -3827,7 +3812,7 @@ End
 
 Public Sub tlbForm_Configure()
 
-  RefreshMenu
+  UpdateMenu
 
 End
 

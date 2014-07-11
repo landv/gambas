@@ -32,7 +32,81 @@
       Picture = Picture["icon:/small/play"]
       Shortcut = "Shift+F5"
     }
-    { Menu3 Menu
+    { mnuSepUndo Menu
+    }
+    { Menu6 Menu
+      Text = ("Edit")
+      { mnuUndo Menu
+        Action = ".undo"
+        Text = ("Undo")
+        Picture = Picture["icon:/small/undo"]
+        Shortcut = "Ctrl+Z"
+      }
+      { mnuRedo Menu
+        Action = ".redo"
+        Text = ("Redo")
+        Picture = Picture["icon:/small/redo"]
+        Shortcut = "Ctrl+Y"
+      }
+      { Menu2 Menu
+      }
+      { mnuCut Menu
+        Action = ".cut"
+        Text = ("Cut")
+        Picture = Picture["icon:/small/cut"]
+        Shortcut = "Ctrl+X"
+      }
+      { mnuCopy Menu
+        Action = ".copy"
+        Text = ("Copy")
+        Picture = Picture["icon:/small/copy"]
+        Shortcut = "Ctrl+C"
+      }
+      { mnuCopyAt Menu
+        Action = ".copy-same"
+        Text = ("Copy at the same place")
+        Shortcut = "Ctrl+Shift+C"
+      }
+      { mnuPaste Menu
+        Action = ".paste"
+        Text = ("Paste")
+        Picture = Picture["icon:/small/paste"]
+        Shortcut = "Ctrl+V"
+      }
+      { mnuDelete Menu
+        Action = ".delete"
+        Text = ("Delete")
+        Picture = Picture["icon:/small/delete"]
+        Shortcut = "Del"
+      }
+      { mnuDeleteContainer Menu
+        Action = ".delete-container"
+        Text = ("Delete container only")
+        Picture = Picture["img/16/delete-container.png"]
+        Visible = False
+      }
+      { mnuEmbedContainer Menu
+        Action = ".embed-container"
+        Text = ("Embed into a container")
+        Picture = Picture["img/16/embed-container.png"]
+        Visible = False
+      }
+      { mnuSep1 Menu
+      }
+      { mnuSelectAll Menu
+        Action = ".select-all"
+        Text = ("Select all")
+        Shortcut = "Ctrl+A"
+      }
+      { mnuSelectParent Menu
+        Action = ".select-parent"
+        Text = ("Select parent")
+      }
+      { mnuUnselectAll Menu
+        Action = ".unselect-all"
+        Text = ("Unselect all")
+        Shortcut = "Esc"
+      }
     }
     { mnuShowTab Menu
       Text = ("Show tab")
@@ -67,81 +141,6 @@
         Picture = Picture["icon:/small/last"]
         Shortcut = "Ctrl+Alt+End"
       }
-    }
-    { mnuSep1 Menu
-    }
-    { mnuSelectAll Menu
-      Action = ".select-all"
-      Text = ("Select all")
-      Shortcut = "Ctrl+A"
-    }
-    { mnuSelectParent Menu
-      Action = ".select-parent"
-      Text = ("Select parent")
-    }
-    { mnuUnselectAll Menu
-      Action = ".unselect-all"
-      Text = ("Unselect all")
-      Shortcut = "Esc"
-    }
-    { mnuSepUndo Menu
-    }
-    { mnuUndo Menu
-      Action = ".undo"
-      Text = ("Undo")
-      Picture = Picture["icon:/small/undo"]
-      Shortcut = "Ctrl+Z"
-    }
-    { mnuRedo Menu
-      Action = ".redo"
-      Text = ("Redo")
-      Picture = Picture["icon:/small/redo"]
-      Shortcut = "Ctrl+Y"
-    }
-    { Menu2 Menu
-    }
-    { mnuCut Menu
-      Action = ".cut"
-      Text = ("Cut")
-      Picture = Picture["icon:/small/cut"]
-      Shortcut = "Ctrl+X"
-    }
-    { mnuCopy Menu
-      Action = ".copy"
-      Text = ("Copy")
-      Picture = Picture["icon:/small/copy"]
-      Shortcut = "Ctrl+C"
-    }
-    { mnuCopyAt Menu
-      Action = ".copy-same"
-      Text = ("Copy at the same place")
-      Shortcut = "Ctrl+Shift+C"
-    }
-    { mnuPaste Menu
-      Action = ".paste"
-      Text = ("Paste")
-      Picture = Picture["icon:/small/paste"]
-      Shortcut = "Ctrl+V"
-    }
-    { mnuDelete Menu
-      Action = ".delete"
-      Text = ("Delete")
-      Picture = Picture["icon:/small/delete"]
-      Shortcut = "Del"
-    }
-    { mnuDeleteContainer Menu
-      Action = ".delete-container"
-      Text = ("Delete container only")
-      Picture = Picture["img/16/delete-container.png"]
-      Visible = False
-    }
-    { mnuEmbedContainer Menu
-      Action = ".embed-container"
-      Text = ("Embed into a container")
-      Picture = Picture["img/16/embed-container.png"]
-      Visible = False
-    }
-    { mnuSep2 Menu
     }
     { mnuArrange Menu
       Text = ("Arrangement")
@@ -239,6 +238,12 @@
     }
     { mnuSep4 Menu
     }
+    { Menu7 Menu
+      Action = ".locked"
+      Text = ("Locked")
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
     { mnuClose Menu
       Action = ".close"
       Text = ("Close")
@@ -285,8 +290,8 @@
     }
     { ToolButton7 ToolButton
       MoveScaled(10,0,4,4)
-      ToolTip = ("Lock form")
-      Action = ".lock"
+      ToolTip = ("Lock / unlock form")
+      Action = ".locked"
       Picture = Picture["icon:/small/lock"]
       Toggle = True
     }
@@ -759,8 +764,9 @@
     Text = "Toggle grid"
     Picture = "icon:/small/grid"
   }
-  { Action lock
-    Text = "Lock form"
+  { Action locked
+    Text = "Locked"
+    Shortcut = ""
     Picture = "icon:/small/lock"
   }
   { Action lower
@@ -887,7 +893,7 @@
 { Toolbars
   { Toolbar form
     Text = "Form"
-    List = "save,reload,show-class,lock,run-me,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
-    Default = "save,reload,show-class,lock,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    List = "save,reload,show-class,locked,run-me,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    Default = "save,reload,show-class,locked,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
   }
 }

@@ -10,6 +10,7 @@ Private $hModule As Object
 Private $sPattern As String
 Private $aPattern As String[]
 Private $hMenu As Menu
+Private $hObs As Observer
 
 Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   
@@ -33,7 +34,8 @@ Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   $hMenu.Name = "mnuInsertColor"
   hMenu = New Menu($hMenu)
   hMenuButton.Menu = $hMenu.Name
-  Object.Attach(hMenuButton, Me, "Button")
+  
+  $hObs = New Observer(hMenuButton) As "Button"
   
 End
 

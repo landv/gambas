@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(4,12,151,80)
+  MoveScaled(4,12,173,80)
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
@@ -13,6 +13,9 @@
       Action = ".goto-line"
       Text = ("Go to line") & "..."
       Shortcut = "Ctrl+G"
+    }
+    { mnuBookmark Menu
+      Text = ("Bookmarks")
     }
     { mnuDefinition Menu
       Action = ".find-definition"
@@ -28,42 +31,47 @@
     }
     { mnuSepGoto Menu
     }
-    { mnuUndo Menu
-      Action = ".undo"
-      Text = ("Undo")
-      Picture = Picture["icon:/small/undo"]
-      Shortcut = "Ctrl+Z"
-    }
-    { mnuRedo Menu
-      Action = ".redo"
-      Text = ("Redo")
-      Picture = Picture["icon:/small/redo"]
-      Shortcut = "Ctrl+Y"
-    }
-    { mnuSepUndo Menu
-    }
-    { mnuCut Menu
-      Text = ("Cut")
-      Picture = Picture["icon:/small/cut"]
-      Shortcut = "Ctrl+X"
-    }
-    { mnuCopy Menu
-      Text = ("Copy")
-      Picture = Picture["icon:/small/copy"]
-      Shortcut = "Ctrl+C"
-    }
-    { mnuPaste Menu
-      Action = ".paste"
-      Text = ("Paste")
-      Picture = Picture["icon:/small/paste"]
-      Shortcut = "Ctrl+V"
-    }
-    { Menu3 Menu
-    }
-    { mnuSelectAll Menu
-      Action = ".select-all"
-      Text = Shortcut(("Select All"), "A")
-      Shortcut = "Ctrl+A"
+    { Menu5 Menu
+      Text = ("Edit")
+      { mnuUndo Menu
+        Action = ".undo"
+        Text = ("Undo")
+        Picture = Picture["icon:/small/undo"]
+        Shortcut = "Ctrl+Z"
+      }
+      { mnuRedo Menu
+        Action = ".redo"
+        Text = ("Redo")
+        Picture = Picture["icon:/small/redo"]
+        Shortcut = "Ctrl+Y"
+      }
+      { mnuSepUndo Menu
+      }
+      { mnuCut Menu
+        Action = ".cut"
+        Text = ("Cut")
+        Picture = Picture["icon:/small/cut"]
+        Shortcut = "Ctrl+X"
+      }
+      { mnuCopy Menu
+        Action = ".copy"
+        Text = ("Copy")
+        Picture = Picture["icon:/small/copy"]
+        Shortcut = "Ctrl+C"
+      }
+      { mnuPaste Menu
+        Action = ".paste"
+        Text = ("Paste")
+        Picture = Picture["icon:/small/paste"]
+        Shortcut = "Ctrl+V"
+      }
+      { Menu3 Menu
+      }
+      { mnuSelectAll Menu
+        Action = ".select-all"
+        Text = Shortcut(("Select All"), "A")
+        Shortcut = "Ctrl+A"
+      }
     }
     { mnuSep2 Menu
     }
@@ -99,10 +107,7 @@
     }
     { mnuSepBookmark Menu
     }
-    { mnuBookmark Menu
-      Text = ("Bookmarks")
-    }
-    { Menu1 Menu
+    { mnuAdvanced Menu
       Text = ("Advanced")
       { mnuLowerCase Menu
         Action = ".lcase"
@@ -154,28 +159,34 @@
         Picture = Picture["icon:/small/sort-ascent"]
         Visible = False
       }
-      { mnuEditorView Menu
-        Text = ("View")
-        { mnuNoSplit Menu
-          Action = ".view-nosplit"
-          Text = ("No split")
-          Picture = Picture["icon:/small/view-normal"]
-        }
-        { mnuHorizontalSplit Menu
-          Action = ".view-hsplit"
-          Text = ("Horizontal split")
-          Picture = Picture["icon:/small/view-split-h"]
-          Shortcut = "Ctrl+H"
-        }
-        { mnuVerticalSplit Menu
-          Action = ".view-vsplit"
-          Text = ("Vertical split")
-          Picture = Picture["icon:/small/view-split-v"]
-          Shortcut = "Ctrl+J"
-        }
+    }
+    { mnuEditorView Menu
+      Text = ("View")
+      { mnuNoSplit Menu
+        Action = ".view-nosplit"
+        Text = ("No split")
+        Picture = Picture["icon:/small/view-normal"]
+      }
+      { mnuHorizontalSplit Menu
+        Action = ".view-hsplit"
+        Text = ("Horizontal split")
+        Picture = Picture["icon:/small/view-split-h"]
+        Shortcut = "Ctrl+H"
+      }
+      { mnuVerticalSplit Menu
+        Action = ".view-vsplit"
+        Text = ("Vertical split")
+        Picture = Picture["icon:/small/view-split-v"]
+        Shortcut = "Ctrl+J"
       }
     }
     { mnuSep5 Menu
+    }
+    { mnuLocked Menu
+      Action = ".locked"
+      Text = ("Locked")
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
     }
     { mnuClose Menu
       Action = ".close"
@@ -217,7 +228,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,149,4)
+    MoveScaled(0,0,159,4)
     Key = "editor"
     Text = ("Editor")
     Separator = True
@@ -242,9 +253,16 @@
       Action = ".show-form"
       Picture = Picture["img/16/form.png"]
     }
+    { btnLocked ToolButton
+      MoveScaled(10,0,4,4)
+      ToolTip = ("Lock / unlock file")
+      Action = ".locked"
+      Picture = Picture["icon:/small/lock"]
+      Toggle = True
+    }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(9,0,4,4)
+      MoveScaled(14,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -252,7 +270,7 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(12,0,4,4)
+      MoveScaled(17,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -260,7 +278,7 @@
     }
     { btnPaste MenuButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(15,0,6,4)
+      MoveScaled(20,0,6,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
@@ -269,7 +287,7 @@
     }
     { btnPasteSpecial ToolButton mnuPasteSpecial
       Name = "btnPasteSpecial"
-      MoveScaled(20,0,14,4)
+      MoveScaled(25,0,14,4)
       Visible = False
       ToolTip = ("Paste special")
       Action = ".paste-special"
@@ -278,14 +296,14 @@
       Picture = Picture["icon:/small/paste"]
     }
     { btnInsertColor MenuButton
-      MoveScaled(34,0,6,4)
+      MoveScaled(39,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
       Border = False
     }
     { btnBookmark MenuButton
-      MoveScaled(40,0,6,4)
+      MoveScaled(45,0,6,4)
       ToolTip = ("Bookmarks")
       Action = ".bookmark"
       Picture = Picture["icon:/small/bookmark"]
@@ -294,27 +312,27 @@
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(46,0,4,4)
+      MoveScaled(51,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(49,0,4,4)
+      MoveScaled(54,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(52,0,4,4)
+      MoveScaled(57,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(55,0,4,4)
+      MoveScaled(60,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -322,21 +340,21 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(58,0,4,4)
+      MoveScaled(63,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Picture = Picture["img/16/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(61,0,4,4)
+      MoveScaled(66,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Picture = Picture["img/16/uncomment.png"]
     }
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
-      MoveScaled(64,0,4,4)
+      MoveScaled(69,0,4,4)
       Visible = False
       ToolTip = ("Make code pretty")
       Action = ".pretty"
@@ -344,21 +362,21 @@
     }
     { btnBreakpoint ToolButton mnuBreakpoint
       Name = "btnBreakpoint"
-      MoveScaled(67,0,4,4)
+      MoveScaled(72,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(70,0,4,4)
+      MoveScaled(75,0,4,4)
       ToolTip = ("Watch expression")
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(73,0,4,4)
+      MoveScaled(78,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -366,7 +384,7 @@
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(78,0,4,4)
+      MoveScaled(83,0,4,4)
       Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
@@ -374,7 +392,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(81,0,4,4)
+      MoveScaled(86,0,4,4)
       Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
@@ -382,24 +400,24 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(84,0,4,4)
+      MoveScaled(89,0,4,4)
       Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
     { Separator2 Separator
-      MoveScaled(88,0,1,4)
+      MoveScaled(93,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(90,0,44,4)
+      MoveScaled(95,0,44,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["icon:/small/bottom"]
     }
     { lblInfo Label
-      MoveScaled(138,0,11,4)
+      MoveScaled(143,0,11,4)
       Font = Font["+4"]
       Expand = True
       Padding = 4
@@ -466,10 +484,12 @@
   }
   { Action copy
     Text = "Copy"
+    Shortcut = "Ctrl+C"
     Picture = "icon:/small/copy"
   }
   { Action cut
     Text = "Cut"
+    Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
   { Action find-definition
@@ -499,6 +519,11 @@
     Text = "Lower case"
     Shortcut = "Ctrl+Shift+L"
     Picture = "img/16/lcase.png"
+  }
+  { Action locked
+    Text = "Locked"
+    Shortcut = ""
+    Picture = "icon:/small/lock"
   }
   { Action paste
     Text = "Paste"
@@ -599,7 +624,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
-    Default = "save,reload,show-form,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
+    List = "save,reload,show-form,locked,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
+    Default = "save,reload,show-form,locked,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
   }
 }

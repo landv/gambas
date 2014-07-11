@@ -567,9 +567,11 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent", Me].Visible = bVisible
-  Action[".watch", Me].Visible = Not bVisible
-
+  Action[".save,.undo,.redo,.cut,.paste,.paste-special,.comment,.uncomment,.color,.indent,.unindent,.lcase,.ucase,.pretty", Me].Visible = bVisible
+  Action[".watch", Me].Visible = Project.Running
+  
+  mnuAdvanced.Visible = bVisible
+  
 End
 
 Public Sub mnuGoto_Click()
@@ -2266,7 +2268,7 @@ Public Sub Editors_Scroll()
 
 End
 
-Private Sub SetReadOnly()
+Public Sub SetReadOnly()
 
   Dim bReadOnly As Boolean
   
@@ -2274,11 +2276,11 @@ Private Sub SetReadOnly()
     bReadOnly = True
   Endif
 
-  'If bReadOnly <> edtEditor.ReadOnly Then
-    edtEditor.ReadOnly = bReadOnly
-    If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
-    If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
-  'Endif
+  edtEditor.ReadOnly = bReadOnly
+  If $hEditor1 Then $hEditor1.ReadOnly = bReadOnly
+  If $hEditor2 Then $hEditor2.ReadOnly = bReadOnly
+
+  Project.UpdateLockedAction(Me)
 
   DrawTitle
   UpdateMenu
@@ -3738,5 +3740,16 @@ End
 Public Sub IsWordChar(sCar As String) As Boolean
   
   Return InStr(FEditor.IDENT_CAR, sCar) > 0
+  
+End
+
+Public Sub Action_Activate(Key As String) As Boolean
+  
+  Select Case Key
+    Case ".locked"
+      Project.SetReadOnly(Path, Action[Key, Me].Value)
+    Case Else
+      Return True
+  End Select
   
 End
