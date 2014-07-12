@@ -12,5 +12,6 @@ gb_data_la_SOURCES = \
  c_list.h c_list.c \
  c_deque.h c_deque.c \
  c_circular.h c_circular.c \
- c_avltree.h c_avltree.c
+ c_avltree.h c_avltree.c \
+ c_graph.h c_graph.c
 
