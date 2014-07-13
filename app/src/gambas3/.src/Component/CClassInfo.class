@@ -709,3 +709,240 @@ Public Sub GetHelpHTML() As String
   Return sHtml
 
 End
+
+Public Function IsVirtual() As Boolean
+
+  Return Left$(Name) = "." Or Left$(Name) = "_"
+
+End
+
+Private Function GetSymbolType(aSym As String[]) As String
+
+  Dim sRes As String
+  Dim hSym As CSymbolInfo
+  Dim sName As String
+
+  If aSym.Count = 0 Then Return
+
+  For Each sName In aSym
+    hSym = Symbols[sName]
+    sName = Replace(sName, ":", ".")
+    If hSym.Class <> Name Or If hSym.Component <> Component Then
+      sRes &= "*[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]*&nbsp;&nbsp;\n"
+    Else If hSym.Class <> Wiki.Class Or If hSym.Component <> Wiki.Component Then
+      sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;\n"
+    Else
+      sRes &= "[./" & LCase(sName) & "]&nbsp;&nbsp;\n"
+    Endif
+  Next
+
+  Return sRes
+
+End
+
+Public Function WikiGetSymbols() As String[]
+
+  Dim aResult As New String[]
+  Dim sSymbol As String
+  Dim cSymbol As New Collection
+  Dim hSym As CSymbolInfo
+  Dim bDynamic As Boolean
+  Dim bStatic As Boolean
+  Dim sBreak As String
+  Dim sPrefix As String
+  Dim aArray As String[]
+  Dim bHasSymbols As Boolean
+
+  If Symbols.Count Then
+
+    For Each sSymbol In ["P", "C", "M", "p", "e", "m"]
+      cSymbol[sSymbol] = New String[]
+      cSymbol[">" & sSymbol] = New String[]
+    Next
+
+    For Each hSym In Symbols
+      If hSym.IsHidden() Then Continue
+      If Right$(hSym.Name) = "$" Then Continue
+
+      bHasSymbols = True
+
+      Select Case hSym.Kind
+        Case "r", "p", "v"
+          cSymbol[sPrefix & "p"].Add(hSym.Name)
+        Case "R", "P", "V"
+          cSymbol[sPrefix & "P"].Add(hSym.Name)
+        Case "C"
+          cSymbol[sPrefix & "C"].Add(hSym.Name)
+        Case ":", "e", "E"
+          hSym.Kind = "e"
+          cSymbol[sPrefix & "e"].Add(hSym.Name)
+        Case "m"
+          cSymbol[sPrefix & "m"].Add(hSym.Name)
+        Case "M"
+          cSymbol[sPrefix & "M"].Add(hSym.Name)
+        Default
+          Print hSym.Kind; " ?"
+      End Select
+      'IF InStr("rpm", hSym.Kind) THEN bDynamic = TRUE
+      If hSym.IsStatic() Then
+        'If bParent Then
+        '  bParentStatic = True
+        'Else
+          bStatic = True
+        'Endif
+      Else
+        'If bParent Then
+        '  bParentDynamic = True
+        'Else
+          bDynamic = True
+        'Endif
+      Endif
+    Next
+
+    For Each aArray In cSymbol
+      aArray.Sort
+    Next
+
+  Endif
+
+  'aResult.Add("### Symbols")
+  aResult.Add("[[")
+  aResult.Add("==")
+  
+  sBreak = "\\\n"
+
+  If Parent Then
+    
+    If Parent = Name Then
+      aResult.Add(("This class reimplements"))
+    Else
+      aResult.Add(("This class inherits"))
+    Endif
+
+    'sRes = sRes & " " & GetLink("/comp" &/ $hClass.ParentComponent &/ $hClass.Parent,,, "arrow")
+    aResult.Add("[/comp" &/ ParentComponent &/ LCase(Parent) & "]")
+
+    If ParentComponent <> Component Then
+      aResult.Add(Subst(("in &1"), "[/comp" &/ ParentComponent & "]"))
+    Endif
+    
+    aResult[aResult.Max] &= ".\\"
+    
+  Endif
+  
+  If IsVirtual() Then
+    aResult.Add(("This class is virtual.") & "\\")
+  Else If AutoCreatable Then
+    aResult.Add(("This class can be used like an object by creating a hidden instance on demand.") & "\\")
+  Endif
+
+  If Symbols.Exist("_new") And If Creatable And If Not IsVirtual() Then
+    'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
+    aResult.Add(Subst(("This class is &1."), Wiki.GetSymbolLink(Me, "_new", ("creatable"))) & "\\")
+  Else
+    If Not bDynamic Then
+      aResult.Add(("This class is static.") & "\\")
+    Else
+      aResult.Add(("This class is not creatable.") & "\\")
+    Endif
+  Endif
+
+  hSym = Symbols["_get"]
+  If hSym Then
+    If hSym.IsStatic() Then
+      If Symbols.Exist("_put") Then
+        aResult.Add(Subst(("This class acts like a &1 / &2 static array."), Wiki.GetSymbolLink(Me, "_get", ("read")), Wiki.GetSymbolLink(Me, "_put", ("write"))) & "\\")
+      Else
+        aResult.Add(Subst(("This class acts like a &1 static array."), Wiki.GetSymbolLink(Me, "_get", ("read-only"))) & "\\")
+      Endif
+    Else
+      If Symbols.Exist("_put") Then
+        aResult.Add(Subst(("This class acts like a &1 / &2 array."), Wiki.GetSymbolLink(Me, "_get", ("read")), Wiki.GetSymbolLink(Me, "_put", ("write"))) & "\\")
+      Else
+        aResult.Add(Subst(("This class acts like a &1 array."), Wiki.GetSymbolLink(Me, "_get", ("read-only"))) & "\\")
+      Endif
+    Endif
+  Endif
+
+  If Symbols.Exist("_next") Then
+    aResult.Add(Subst(("This class is &1 with the &2 keyword."), Wiki.GetSymbolLink(Me, "_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
+  Endif
+
+  If Symbols.Exist("_call") Then
+    aResult.Add(Subst(("This class can be used as a &1."), Wiki.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
+  Endif
+
+  If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
+
+  If bStatic Then
+
+    aResult.Add("[[ symbols")
+    If cSymbol["P"].Count Then aResult.Insert([Replace(("Static properties"), " ", "&nbsp;"), "--"])
+    If cSymbol["M"].Count Then aResult.Insert([Replace(("Static methods"), " ", "&nbsp;"), "--"])
+    'IF cSymbol["E"].Count THEN sRes = sRes & "<td align=left><b>" & ("Events") & "</b></td>" & sSpace & "\n"
+    If cSymbol["C"].Count Then aResult.Insert([("Constants"), "--"])
+    aResult[aResult.Max] = "=="
+    
+    If cSymbol["P"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["P"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["M"].Count Then         
+      aResult.Add(GetSymbolType(cSymbol["M"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["C"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["C"]))
+      aResult.Add("--")
+    Endif
+    aResult[aResult.Max] = "]]"
+
+  Endif
+
+  If bDynamic Then
+
+    aResult.Add("[[ symbols")
+    If cSymbol["p"].Count Then aResult.Insert([("Properties"), "--"])
+    If cSymbol["m"].Count Then aResult.Insert([("Methods"), "--"])
+    If cSymbol["e"].Count Then aResult.Insert([("Events"), "--"])
+    aResult[aResult.Max] = "=="
+    
+    If cSymbol["p"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["p"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["m"].Count Then         
+      aResult.Add(GetSymbolType(cSymbol["m"]))
+      aResult.Add("--")
+    Endif
+    
+    If cSymbol["e"].Count Then 
+      aResult.Add(GetSymbolType(cSymbol["e"]))
+      aResult.Add("--")
+    Endif
+    aResult[aResult.Max] = "]]"
+
+  Endif
+  
+  aResult.Add("]]")
+  Return aResult
+
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
+End
+
+Public Sub HasEvents() As Boolean
+
+  Dim hSym As CSymbolInfo
+
+  For Each hSym In Symbols
+    If hSym.IsHidden() Then Continue
+    If InStr(":eE", hSym.Kind) Then Return True
+  Next
+
+End

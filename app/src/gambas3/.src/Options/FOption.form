@@ -811,9 +811,6 @@
         MoveScaled(48,0,16,4)
         Animated = True
       }
-      { Panel4 Panel
-        MoveScaled(65,0,1,4)
-      }
     }
     { HBox5 HBox
       MoveScaled(0,9,66,4)
@@ -827,9 +824,6 @@
       { btnHelpCompletion SwitchButton
         MoveScaled(48,0,16,4)
         Animated = True
-      }
-      { Panel6 Panel
-        MoveScaled(65,0,1,4)
       }
     }
     { HBox28 HBox
@@ -845,67 +839,93 @@
         MoveScaled(48,0,16,4)
         Animated = True
       }
-      { Panel7 Panel
-        MoveScaled(65,0,1,4)
+    }
+    { HBox49 HBox
+      MoveScaled(0,19,66,4)
+      Spacing = True
+      Indent = True
+      { Label59 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Use offline help")
+      }
+      { btnOfflineHelp SwitchButton
+        MoveScaled(48,0,16,4)
+        Animated = True
       }
     }
-    { HBox22 HBox
-      MoveScaled(0,19,66,6)
+    { panDownloadHelp HBox
+      MoveScaled(0,24,66,5)
+      Visible = False
       Spacing = True
+      Indent = True
+      { btnDownloadHelp Button
+        MoveScaled(0,0,31,5)
+        AutoResize = True
+        Text = ("Download documentation")
+        Picture = Picture["icon:/small/down"]
+      }
+      { lblDocumentation Label
+        MoveScaled(33,1,25,3)
+        Font = Font["Italic,-1"]
+        Expand = True
+      }
+    }
+    { Panel4 HBox
+      MoveScaled(0,30,66,5)
       Indent = True
       { btnClearCache Button
-        MoveScaled(0,0,39,6)
+        MoveScaled(0,0,31,5)
         AutoResize = True
         Text = ("Clear documentation cache")
-        Picture = Picture["icon:/medium/trash"]
+        Picture = Picture["icon:/small/trash"]
       }
     }
-    { HBox35 HBox
-      MoveScaled(0,26,66,6)
-      Spacing = True
+    { Panel5 HBox
+      MoveScaled(0,36,66,5)
       Indent = True
       { btnProxy Button
-        MoveScaled(0,0,39,6)
+        MoveScaled(0,0,31,5)
         AutoResize = True
         Text = ("Proxy configuration") & "..."
-        Picture = Picture["icon:/medium/internet"]
+        Picture = Picture["icon:/small/internet"]
       }
     }
     { Label45 Label
-      MoveScaled(0,34,63,3)
+      MoveScaled(0,43,63,3)
       Font = Font["Bold"]
       Text = ("Applications")
     }
     { HBox12 HBox
-      MoveScaled(0,39,66,4)
+      MoveScaled(0,48,66,4)
       Spacing = True
       Indent = True
       { Label13 Label
-        MoveScaled(0,0,47,4)
+        MoveScaled(0,0,43,4)
         Expand = True
         Text = ("Browser")
       }
       { cmbBrowser ComboBox
-        MoveScaled(48,0,18,4)
+        MoveScaled(46,0,20,4)
         ReadOnly = True
       }
     }
     { HBox2 HBox
-      MoveScaled(0,44,66,4)
+      MoveScaled(0,53,66,4)
       Spacing = True
       Indent = True
       { Label4 Label
-        MoveScaled(0,0,47,4)
+        MoveScaled(0,0,44,4)
         Expand = True
         Text = ("Terminal")
       }
       { cmbTerminal ComboBox
-        MoveScaled(48,0,18,4)
+        MoveScaled(46,0,20,4)
         ReadOnly = True
       }
     }
     { HBox10 HBox
-      MoveScaled(0,49,66,4)
+      MoveScaled(0,58,66,4)
       Spacing = True
       Indent = True
       { Label16 Label
@@ -916,9 +936,6 @@
       { btnOutput SwitchButton
         MoveScaled(48,0,16,4)
         Animated = True
-      }
-      { Panel8 Panel
-        MoveScaled(65,0,1,4)
       }
     }
     Index = 0

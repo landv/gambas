@@ -4,8 +4,8 @@
 
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" href="/wiki/style.css">
-  <link rel="icon" href="/wiki/logo.png" type="image/png">
+  <link rel="stylesheet" href="<%/%>/style.css">
+  <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title>Gambas Documentation - Confirm</title>
 </head>
 
@@ -13,7 +13,7 @@
 
 <div class="header">
   <div class="up">
-    <a href="/wiki"><img src="/wiki/up.png"></a>
+    <a href="<%/%>"><img src="<%/%>/up.png"></a>
   </div>
   <div class="title">
     <b>Confirm registration</b>
@@ -28,7 +28,7 @@
 
 <%If _Confirm() Then%>
 <p><b>Congratulations! Your account is now activated.</b></p>
-<p><a href="/wiki">Return to the home page to login.</a></p>
+<p><a href="<%/%>">Return to the home page to login.</a></p>
 <%Else%>
 <div class="message">
 Registration has failed!

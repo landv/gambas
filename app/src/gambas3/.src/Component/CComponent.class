@@ -47,6 +47,9 @@ Static Private Similars As New Collection
 Static Private $hDumbClass As CClassInfo
 Static Private $hClass As CClassInfo
 
+Static Private $cImplement As New Collection
+Static Private $cRescue As New Collection
+
 Private $bCalcKey As Boolean
 
 Static Private Sub SortComponents()
@@ -329,18 +332,16 @@ Static Public Sub _init()
   Dim sFile As String
   Dim hComp As CComponent
   
+  $cImplement.Clear
+  
+  $cRescue["3.0:form"] = "gb.qt4"
+  $cRescue["3.0:openglviewer"] = "gb.qt4.opengl"
+  $cRescue["3.0:imageio"] = "gb.image.io"
+  $cRescue["3.0:eventloop"] = "gb.qt4"
+  $cRescue["3.0:xml"] = "gb.xml"
+
   $cName = New Collection
   InitComponentNames
-  
-  ' sLang = System.Language
-  ' iPos = InStr(sLang, "_")
-  ' IF iPos THEN
-  '   sLangShort = Left$(sLang, iPos - 1)
-  ' ELSE
-  '   sLangShort = sLang
-  ' ENDIF
-  
-  'OPEN Component.Path &/ "components" FOR READ AS #hFic
   
   aComp = Dir(Component.Path, "*.component").Sort()
   For Each sFile In aComp
@@ -432,6 +433,13 @@ Static Private Sub CreateClass(sClass As String, sParent As String, sComp As Str
   
 End
 
+Static Public Sub GetInfoDir() As String
+  
+  Return System.Path &/ "share/" & "gambas" & System.Version & "/info"
+  
+End
+
+
 Public Sub Load()
   
   Dim aLine As String[]
@@ -452,8 +460,10 @@ Public Sub Load()
   Dim sErr As String
   Dim iLine As Integer
   Dim sHelp As String
+  Dim sElt As String
   
   If Loaded Then Return
+  Loaded = True
   
   'Debug "Loading: "; Key
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
@@ -484,15 +494,31 @@ Public Sub Load()
   
   Else
     
+    If Key <> "gb" Then Get("gb").Load()
+
     For Each sLig In Require
-      All[sLig].Load
+      Get(sLig).Load
+    Next
+    
+    For Each sElt In Implement
+      $cImplement[sElt] = Name
+    Next
+  
+    For Each sElt In Need      
+      If $cImplement.Exist(sElt) Then Continue
+      sElt = "3.0:" & sElt
+      If $cRescue.Exist(sElt) Then 
+        Get($cRescue[sElt]).Load()
+      Else 
+        Error.Raise("No default component for implementation of " & sElt)
+      Endif 
     Next
   
     If Key = PROJECT_NAME Then
       sPath = Project.Dir &/ ".info"
       If Not Exist(sPath) Then Return
     Else
-      sPath = System.Path &/ "share/" & "gambas" & System.Version & "/info" &/ Key & ".info"
+      sPath = GetInfoDir() &/ Key & ".info"
       If Not Exist(sPath) Then
         Error "gambas3: warning: cannot find "; sPath
         Return
@@ -706,7 +732,6 @@ HAS_BEEN_LOADED:
   
   'PRINT "OK"
   
-  Loaded = True
   Return
   
 READ_HELP:
@@ -1550,5 +1575,44 @@ Public Sub Match(sFilter As String) As Boolean
     If InStr(Util.RemoveAccents(Implement.Join("\n")), sFilter, 1, gb.IgnoreCase) Then Return True
     
   Next
+  
+End
+
+Static Public Sub Get(sComp As String) As CComponent
+  
+  Return All[sComp]
+  
+End
+
+
+Public Function WikiGetClasses() As String[]
+
+  Dim aResult As New String[]
+  Dim sClass As String
+
+  Load()
+
+  aResult.Add("[[")
+  aResult.Add(("Classes"))
+  aResult.Add("==")
+
+  For Each sClass In ClassList
+    If Left(sClass) = "." Or If Left(sClass) = "_" Or If InStr(sClass, "*") Then Continue
+    'aClass.Add(sClass)
+    aResult.Add("[/comp" &/ Key &/ LCase(sClass) & "]&nbsp;&nbsp;")
+  Next
+  
+  aResult.Add("]]")
+  Return aResult
+
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
+End
+
+Public Sub _get(sClass As String) As CClassInfo
+  
+  Return Classes[Key &/ sClass]
   
 End

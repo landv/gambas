@@ -11,9 +11,9 @@ Public Sub Link(hLink As MarkdownLink)
   If sLink Begins "/" Then
     sPath = sLink
   Else If sLink Begins "./" Then
-    sPath = Request.Path &/ Mid$(sLink, 3)
+    sPath = Wiki.Path &/ Mid$(sLink, 3)
   Else If sLink Begins "../" Then
-    sPath = Main.MakeAbsolute(sLink, Main.Path)
+    sPath = Wiki.MakeAbsolute(sLink, Wiki.Path)
   Else If Not sLink Then
     
     sLink = hLink.Text
@@ -31,20 +31,20 @@ Public Sub Link(hLink As MarkdownLink)
   
   If Not sPath Then Return
   
-  hLink.Query = Mid$(Main.LinkSuffix, 2)
+  hLink.Query = Mid$(Wiki.LinkSuffix, 2)
   
   If Not hLink.Text Or If hLink.Text = hLink.Link Then
     
-    If Main.IsImage(sPath) Then
-      hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?v" & "\" />"
+    If Wiki.IsImage(sPath) Then
+      hLink.Html = "<img src=\"" & Html(MHelp.GetOfflinePath(sPath)) & "\" />"
       Return
     Endif
   
-    hLink.Text = Main.GetPageTitle(sPath)
+    hLink.Text = Wiki.GetPageTitle(sPath)
     
   Endif
   
-  hLink.Link = Application.Root &/ sPath 
+  hLink.Link = Wiki.WikiRoot &/ sPath 
   
 End
 
@@ -77,7 +77,7 @@ Public Sub Command(sCommand As String) As String[]
     
     If aArg.Count > 1 Then
       
-      sDir = File.Dir(Main.GetPagePathFrom(aArg[1]))
+      sDir = File.Dir(Wiki.GetPagePathFrom(aArg[1]))
       aResult = New String[]
       aDir = New String[]
       
@@ -85,8 +85,8 @@ Public Sub Command(sCommand As String) As String[]
         
         For Each sDir In Dir(sDir, "*", gb.Directory)
           sPath = "/" &/ aArg[1] &/ sDir
-          If Not Main.ExistPage(sPath) Then Continue
-          sTitle = Main.GetPageTitle(sPath)
+          If Not Wiki.ExistPage(sPath) Then Continue
+          sTitle = Wiki.GetPageTitle(sPath)
           If aArg.Count > 2 And If Comp(Left(sTitle, Len(aArg[2])), aArg[2], gb.Language + gb.IgnoreCase) = 0 Then sTitle = LTrim(Mid$(sTitle, Len(aArg[2]) + 1))
           aDir.Add(sTitle & "\n[" & sPath & "]")
         Next
@@ -124,10 +124,10 @@ Public Sub Command(sCommand As String) As String[]
   
     Return ["<div class=\"since\">" & ("Since") & "&nbsp;" & Html(aArg[1]) & "</div>"]
   
-  Else If sCommand = "classes" And If Main.Component Then
+  Else If sCommand = "classes" And If Wiki.Component Then
     
-    hComp = CComponent.Get(Main.Component)
-    If hComp Then Return hComp.GetClasses()
+    hComp = CComponent.All[Wiki.Component]
+    If hComp Then Return hComp.WikiGetClasses()
 
     Return MakeError(("This component does not exist."))
   
@@ -136,27 +136,27 @@ Public Sub Command(sCommand As String) As String[]
     If aArg.Count >= 2 And If aArg[1] Then
       sClass = aArg[1]
     Else
-      sClass = Main.Class
+      sClass = Wiki.Class
     Endif
     
     If sClass Then
-      hComp = CComponent.Get(Main.Component)
+      hComp = CComponent.Get(Wiki.Component)
       If hComp Then
         hClass = hComp[sClass]
-        If hClass Then Return hClass.GetSymbols()
+        If hClass Then Return hClass.WikiGetSymbols()
       Endif
     Endif
     
     Return MakeError(sClass & ": " & ("This class does not exist."))
   
-  Else If sCommand = "syntax" And If Main.Symbol Then
+  Else If sCommand = "syntax" And If Wiki.Symbol Then
   
-    hComp = CComponent.Get(Main.Component)
+    hComp = CComponent.Get(Wiki.Component)
     If hComp Then
-      hClass = hComp[Main.Class]
+      hClass = hComp[Wiki.Class]
       If hClass Then 
-        hSym = hClass.Symbols[Main.Symbol]
-        If hSym Then Return hSym.GetSyntax()
+        hSym = hClass.Symbols[Wiki.Symbol]
+        If hSym Then Return hSym.WikiGetSyntax()
       Endif
     Endif
     
@@ -164,15 +164,15 @@ Public Sub Command(sCommand As String) As String[]
 
   Else If sCommand = "stat" Then
     
-    Return Main.GetStat()
+    Return Wiki.GetStat()
 
   Else If sCommand = "todo" Then
     
-    Return Main.GetToDo()
+    Return "Unavailable in offline help."
     
   Else If sCommand = "changes" Then
     
-    Return Main.GetChanges()
+    Return "Unavailable in offline help."
 
   Else
     
@@ -194,4 +194,19 @@ Public Sub Leave(sClass As String) As String[]
   
 End
 
-
+Public Sub CheckURL(sURL As String, sMarkup As String) As String
+  
+  Dim sPath As String
+  Dim iPos As Integer
+  
+  If sURL Begins "/wiki/" Then
+    If sMarkup = "img" Then
+      sPath = Mid$(sURL, 7)
+      If sPath Ends "?v" Then sPath = Left(sPath, -2)
+      Return MHelp.GetOfflinePath(sPath)
+    Endif
+  Endif
+  
+  Return sURL
+  
+End

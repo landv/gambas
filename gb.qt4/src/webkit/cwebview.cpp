@@ -28,6 +28,7 @@
 #include <QNetworkProxy>
 #include <QWebPage>
 #include <QWebFrame>
+#include <QWebHistory>
 
 #include "ccookiejar.h"
 #include "cwebsettings.h"
@@ -247,7 +248,10 @@ BEGIN_PROPERTY(WebView_Url)
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->url().toString()));
 	else
-		WIDGET->setUrl(QUrl(QSTRING_PROP()));
+	{
+		QString url = QSTRING_PROP();
+		WIDGET->setUrl(QUrl(url));
+	}
 
 END_PROPERTY
 
@@ -796,6 +800,7 @@ void CWebView::iconChanged()
 void CWebView::urlChanged(const QUrl &)
 {
 	QWebFrame *frame = (QWebFrame *)sender();
+	//fprintf(stderr, "urlChanged: %p\n", frame);
 	void *_object = QT.GetObject(frame->page()->view());
 	GB.Raise(THIS, EVENT_CLICK, 1, GB_T_OBJECT, CWEBFRAME_get(frame));
 }
@@ -816,7 +821,7 @@ void CWebView::handleUnsupportedContent(QNetworkReply *reply)
 	void *_object = QT.GetObject(((QWebPage*)sender())->view());
 	CWEBDOWNLOAD *download;
 	
-	if (reply->error() == QNetworkReply::NoError) 
+	if (reply->error() == QNetworkReply::NoError)
 	{
 		download = WEB_create_download(reply);
 		

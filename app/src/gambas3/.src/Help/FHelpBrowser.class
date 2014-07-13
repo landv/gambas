@@ -8,6 +8,8 @@ Private $bError As Boolean
 Private $sLastUrl As String
 Private $bPrint As Boolean
 Private mnuLang As Menu
+'Private $hHistory As CHistory
+'Private $bIgnoreNextHistory As Boolean
 
 Public Sub _new()
   
@@ -38,6 +40,8 @@ Public Sub _new()
   btnHome.Menu = "mnuLang"
   
   movWaiting.Resize(64, 64)
+  
+  '$hHistory = New CHistory As "History"
   
 End
 
@@ -93,21 +97,31 @@ Private Function GetHomeURL() As String
 
 End
 
+Public Sub GotoURL(sUrl As String)
+  
+  webHelp.Url = sUrl
+  '$hHistory.Add(sUrl)
+  
+End
+
+
 Public Sub btnHome_Click()
   
-  webHelp.Url = GetHomeURL()
+  GotoURL(GetHomeURL())
   webHelp.TextZoom = 0.8
   
 End
 
 Public Sub btnBack_Click()
   
+  'GotoURL($hHistory.Backward())
   webHelp.Back
   
 End
 
 Public Sub btnForward_Click()
   
+  'GotoURL($hHistory.Forward())
   webHelp.Forward
   
 End
@@ -153,19 +167,42 @@ End
 
 Public Sub btnWebSite_Click()
   
-  webHelp.Url = "http://gambas.sourceforge.net"
+  GotoURL("http://gambas.sourceforge.net")
   webHelp.TextZoom = 0.8
   
 End
 
 Public Sub webHelp_Error()
   
+  Dim sLastUrl As String
+  
   ShowWaiting(False)
   
-  If $sLastUrl Begins "gambas://" Then 
+  If Not $sLastUrl Then 
+    sLastUrl = webHelp.Url
+  Else
+    sLastUrl = $sLastUrl
+    $sLastUrl = ""
+  Endif
+  
+  If sLastUrl Begins "/" Then sLastUrl = Project.WIKI_ROOT &/ sLastUrl
+  
+  If sLastUrl Begins "gambas://" Then 
+    
+    '$hHistory.Add(sLastUrl)
+    '$bIgnoreNextHistory = True
+    
     webHelp.Stop
-    MHelp.ManageSpecialLink(webHelp, $sLastUrl)
+    MHelp.ManageSpecialLink(webHelp, sLastUrl)
     Return
+  Else If sLastUrl Begins "wiki://" Then
+    
+    '$hHistory.Add(sLastUrl)
+    '$bIgnoreNextHistory = True
+    
+    MHelp.MakeOffline(webHelp, sLastUrl)
+    Return
+    
   Endif
   
   $bError = True
@@ -175,9 +212,17 @@ End
 
 Public Sub webHelp_Load()
   
+  ' Debug webHelp.Url;; $bIgnoreNextHistory
+  
   ShowWaiting(False)
   $bError = False
   btnModify.Enabled = webHelp.Url Begins Project.WIKI_URL
+  
+  ' If $bIgnoreNextHistory Then
+  '   $bIgnoreNextHistory = False
+  ' Else
+  '   $hHistory.Add(webHelp.Url)
+  ' Endif
   
 End
 
@@ -299,7 +344,7 @@ Private Sub SetLang(sLang As String)
   If sUrl Begins Project.WIKI_URL Then
     sUrl = Replace(sUrl, "&l=" & sOldLang, "")
     'Debug sUrl & "&" & sLang
-    webHelp.Url = sUrl & "&l=" & sLang
+    GotoURL(sUrl & "&l=" & sLang)
   Endif
   
 End
@@ -359,3 +404,15 @@ Public Sub movWaiting_MouseDown()
 
 End
 
+' Public Sub History_Change()
+'   
+'   btnBack.Enabled = $hHistory.IsBackwardEnabled()
+'   btnForward.Enabled = $hHistory.IsForwardEnabled()
+'   
+' End
+
+' Public Sub webHelp_Click(Frame As WebFrame)
+' 
+'   Debug Frame;; Frame.Url
+' 
+' End

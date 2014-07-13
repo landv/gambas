@@ -1,0 +1,71 @@
+' Gambas class file
+
+Event Change
+
+Private $aBackward As New String[]
+Private $aForward As New String[]
+Private $sIgnore As String
+
+Public Sub Clear()
+  
+  $aBackward.Clear
+  $aForward.Clear
+  Raise Change
+  
+End
+
+Public Sub Add(sElt As String)
+  
+  If sElt = $sIgnore Then
+    $sIgnore = ""
+    Return
+  Endif
+  
+  If $aBackward.Count And If $aBackward[$aBackward.Max] = sElt Then Return
+  
+  $aForward.Clear
+  $aBackward.Add(sElt)
+  Raise Change
+  
+End
+
+Public Sub Backward() As String
+  
+  Dim sElt As String
+  
+  If $aBackward.Count <= 1 Then Return
+  
+  $aForward.Add($aBackward.Pop())
+  sElt = $aBackward[$aBackward.Max]
+  $sIgnore = sElt
+  Raise Change
+  Return sElt
+  
+End
+
+Public Sub Forward() As String
+  
+  Dim sElt As String
+  
+  If $aForward.Count = 0 Then Return
+  
+  sElt = $aForward.Pop()
+  $aBackward.Add(sElt)
+  $sIgnore = sElt
+  Raise Change
+  Return sElt
+  
+End
+
+Public Sub IsBackwardEnabled() As Boolean
+  
+  Return $aBackward.Count > 1
+  
+End
+
+Public Sub IsForwardEnabled() As Boolean
+  
+  Return $aForward.Count > 0
+  
+End
+

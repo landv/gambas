@@ -51,7 +51,7 @@ Public Sub DrawingArea_Draw()
     $sText = Subst("<font color=\"&1\">", If(IsSelected(), "white", "black"))
     $sText &= "<font size=\"+1\"><b>" & .Name & "</b> " & .Version & "</font>"
     '$sText &= Subst("<font size=\"-1\" color=\"&1\"><b>", If(IsSelected(), "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
-    $sText &= "<hr><font size=\"-1\"><b>" & ("Location") & "&nbsp;:&nbsp;</b>" & Replace($sPath, System.User.Home, "~") & "</font>"
+    $sText &= "<hr><font size=\"-1\"><b>" & ("Location") & "&nbsp;:&nbsp;</b>" & Replace($sPath, User.Home, "~") & "</font>"
     If .NotFound Then
       $sText &= "<p><b><font color=\"red\">" & ("WARNING! Library not found.") & "</font></b>"
     Else

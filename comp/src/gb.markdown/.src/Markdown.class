@@ -29,12 +29,18 @@ Public Sub Leave((sClass) As String) As String[]
   
 End
 
-Public Sub EnableCode(bEnabled As Boolean)
+Public Sub EnableCode(Enabled As Boolean)
   
-  If bEnabled Then
+  If Enabled Then
     Inc Markup.EnableCode
   Else
     Dec Markup.EnableCode
   Endif
+  
+End
+
+Public Sub CheckURL(URL As String, (Markup) As String) As String
+  
+  Return URL
   
 End

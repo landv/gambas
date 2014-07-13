@@ -24,6 +24,8 @@ Static Property Read ConfigDir As String
 Static Property Read CacheDir As String
 Static Property Read RuntimeDir As String
 
+Static Property Read NetworkAvailable As Boolean
+
 Static Private $sDesktop As String
 Static Private $cDesktop As Collection
 Static Private $cExt As Collection
@@ -554,5 +556,21 @@ Static Private Function RuntimeDir_Read() As String
   Endif
   
   Return sPath
+
+End
+
+Static Private Function NetworkAvailable_Read() As Boolean
+
+  Dim sOutput As String
+  Dim sLine As String
+
+  Shell "LC_ALL=C ifconfig -a" To sOutput
+  
+  For Each sLine In Split(Trim(sOutput), "\n")
+    sLine = Trim(sLine)
+    If sLine Begins "inet addr:" Then
+      If sLine Not Begins "inet addr:127.0.0.1" Then Return True
+    Endif
+  Next
 
 End

@@ -12,7 +12,11 @@ Public Const TYPE_SPECIAL As Integer = 6
 Public Const TYPE_COMPONENT As Integer = 7
 Public Const TYPE_FILE As Integer = 8
 
+Public Enum OFFLINE_NO_NETWORK, OFFLINE_NOT_AVAILABLE, OFFLINE_UP_TO_DATE, OFFLINE_NEW_AVAILABLE
+
 Public $PopupHelpCache As Collection
+
+Private $bInitOffline As Boolean
 
 Public Sub ActualComponent(sComp As String) As String
   
@@ -297,8 +301,6 @@ Public Sub GetURL(Optional sPath As String) As String
   Return Project.WIKI_ROOT &/ sPath
   
 End
-
-
 
 Public Sub GetLangURL(sSymbol As String) As String
   
@@ -791,5 +793,142 @@ Public Sub FindMarkup(hEdit As Editor, iLine As Integer) As String
   Endif
   
   Return sHelp
+  
+End
+
+Public Sub ReadConfig()
+  
+  If Settings["/UseOfflineHelp"] Then
+    Project.WIKI_URL = "wiki://"
+    Project.WIKI_ROOT = "wiki://"
+  Else
+    Project.WIKI_URL = "http://gambaswiki.org/"
+    Project.WIKI_ROOT = Project.WIKI_URL &/ "wiki"
+  Endif
+  
+End
+
+Public Sub LoadOfflineHelpFile(sPath As String) As String
+  
+End
+
+Public Sub GetOfflineDir() As String
+  
+  Return Desktop.DataDir &/ "gambas3" &/ "wiki"
+  
+End
+
+Public Sub GetOfflinePath(sPath As String) As String
+  
+  Return Desktop.DataDir &/ "gambas3" &/ "wiki/data" &/ Wiki.Lang &/ sPath &/ "~page"
+  
+End
+
+Public Sub GetOfflineState() As Integer
+
+  Dim sTimestamp As String
+  Dim dDate As Date
+
+  If Not Desktop.NetworkAvailable Then Return OFFLINE_NO_NETWORK
+
+  Inc Application.Busy
+  
+  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  
+  Dec Application.Busy
+  
+  sTimestamp = Trim(sTimestamp)
+  If Not sTimestamp Then Return OFFLINE_NOT_AVAILABLE
+  
+  Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
+  If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then Return OFFLINE_UP_TO_DATE
+  
+  Return OFFLINE_NEW_AVAILABLE
+  
+End
+
+
+Public Sub MakeOffline(hWebView As WebView, sUrl As String)
+  
+  Dim sFile As String
+  Dim sHtml As String
+  Dim hFile As File
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim sQuery As String
+  Dim sPath As String
+  
+  Wiki.Root = GetOfflineDir()
+  Wiki.InfoDir = CComponent.GetInfoDir()
+  
+  If Not IsDir(Wiki.Root) Then
+    hWebView.HTML = "<h2>" & ("Please download the documentation from the option dialog.") & "</h2>"
+    Return
+  Endif
+  
+  If Not $bInitOffline Then
+    
+    For Each sFile In ["up.png", "critical.png", "info.png", "tip.png", "vb.png", "warning.png"]
+      Try Kill GetOfflineDir() &/ sFile
+      Copy "help/wiki" &/ sFile To GetOfflineDir() &/ sFile
+    Next
+  
+    File.Save(GetOfflineDir() &/ "style.css", Replace(File.Load("help/wiki/style.css"), "$(root)", GetOfflineDir()))
+    
+    $bInitOffline = True
+    
+  Endif
+  
+  iPos = InStr(sUrl, "?")
+  If iPos Then
+    sQuery = Mid$(sUrl, iPos + 1)
+    sUrl = Left(sUrl, iPos - 1)
+  Endif
+  
+  Wiki.Lang = Wiki.DEFAULT_LANG
+  Wiki.Path = "/" &/ Mid$(sUrl, 8)
+  Wiki.AnalyzePath()
+  
+  sPath = GetOfflineDir() &/ "data" &/ Wiki.Lang &/ Wiki.Path &/ "page.html"
+  If True Then 'Not Exist(sPath) Then
+  
+    hFile = Open sPath For Create
+    Output To #hFile
+    
+    sHtml = File.Load("help/wiki/page.html")
+    iPos = 0
+    
+    Do
+      
+      iPos2 = InStr(sHtml, "$(", iPos + 1)
+      If iPos2 = 0 Then
+        Print Mid$(sHtml, iPos + 1);
+        Break
+      Endif
+      
+      Print Mid$(sHtml, iPos + 1, iPos2 - iPos - 1);
+      iPos = InStr(sHtml, ")", iPos2 + 2)
+      If iPos = 0 Then Break
+      
+      Select Case Mid$(sHtml, iPos2 + 2, iPos - iPos2 - 2)
+        Case "root"
+          Print GetOfflineDir();
+        Case "parent"
+          Wiki.PrintParent
+        Case "link"
+          Wiki.PrintLink
+        Case "page"
+          Wiki.PrintPage
+      End Select
+      
+    Loop
+    
+    Output To Default
+    Close #hFile
+    
+  Endif
+
+  'Desktop.Open($sOffline)  
+  hWebView.Url = "file:///" &/ URL.Encode(sPath)
   
 End

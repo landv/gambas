@@ -126,12 +126,12 @@ TABLE.example TH {
   position: fixed;
   left: 0;
   right: 0;
-  background: #CF6706;
+  background: #D0D0D0; /*#CF6706;*/
   color: white;
   border-bottom: black solid 1px;
-  padding: 4px 8px;
+  padding: 0px 2px;
   box-shadow: 0 0 8px black;
-  height: 24px;
+  height: 20px;
 }
 
 .header-v {
@@ -243,7 +243,7 @@ DIV.info {
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
-  background: url('<%/%>/info.png') 8px 8px no-repeat;
+  background: url('$(root)/info.png') 8px 8px no-repeat;
   min-height: 32px;
 }
 
@@ -253,7 +253,7 @@ DIV.warning {
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
-  background: url('<%/%>/warning.png') 8px 8px no-repeat;
+  background: url('$(root)/warning.png') 8px 8px no-repeat;
   min-height: 32px;
 }
 
@@ -263,7 +263,7 @@ DIV.tip {
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
-  background: url('<%/%>/tip.png') 8px 8px no-repeat;
+  background: url('$(root)/tip.png') 8px 8px no-repeat;
   min-height: 32px;
 }
 
@@ -273,7 +273,7 @@ DIV.vb {
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
-  background: url('<%/%>/vb.png') 8px 8px no-repeat;
+  background: url('$(root)/vb.png') 8px 8px no-repeat;
   min-height: 32px;
 }
 
@@ -283,7 +283,7 @@ DIV.critical {
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
-  background: url('<%/%>/critical.png') 8px 8px no-repeat;
+  background: url('$(root)/critical.png') 8px 8px no-repeat;
   min-height: 32px;
 }
 

@@ -688,6 +688,24 @@ ENTER_MARKUP:
   Else If sPattern = "iframe" Or If sPattern Begins "iframe " Then
     sResult &= "<div class=\"error\">" & Html("<iframe> is forbidden") & "</div>"
     Return sResult
+  Else If sPattern Begins "img " Then
+    I1 = InStr(sPattern, "src=\"")
+    If I1 Then
+      I2 = InStr(sPattern, "\"", I1 + 5)
+      If I2 Then
+        sLink = Mid$(sPattern, I1 + 5, I2 - I1 - 5)
+        sPattern = Left(sPattern, I1 - 1) & "src=\"" & $hMarkdown.CheckURL(sLink, "img") & "\"" & Mid$(sPattern, I2 + 1)
+      Endif
+    Endif
+  Else If sPattern Begins "a " Then
+    I1 = InStr(sPattern, "href=\"")
+    If I1 Then
+      I2 = InStr(sPattern, "\"", I1 + 6)
+      If I2 Then
+        sLink = Mid$(sPattern, I1 + 6, I2 - I1 - 6)
+        sPattern = Left(sPattern, I1 - 1) & "href=\"" & $hMarkdown.CheckURL(sLink, "a") & "\"" & Mid$(sPattern, I2 + 1)
+      Endif
+    Endif
   Endif
   
   'sPattern = LCase(sPattern)
@@ -900,6 +918,7 @@ ENTER_LINK:
   $hLink.Title = sTitle
   $hLink.Html = ""
   $hLink.Query = ""
+  $hLink.Blank = False
   
   $hMarkdown.Link($hLink)
   
@@ -918,7 +937,8 @@ ENTER_LINK:
     
     If $hLink.Query Then sLink &= "?" & $hLink.Query
     
-    bBlank = sLink Like "*://*" 
+    bBlank = $hLink.Blank
+    'If sLink Begins "http://" Or If sLink Begins "https://" Then bBlank = True
     
     sResult &= "<a href=\"" & Html$(sLink) & "\""
     If sTitle Then sResult &= " title=\"" & Html$(sTitle) & "\""

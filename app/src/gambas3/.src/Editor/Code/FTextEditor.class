@@ -1166,9 +1166,6 @@ Public Sub panToolBar_Configure()
 
   UpdateMenu
 
-  Action[".compress,.uncompress", Me].Visible = $bShowCompress
-  Action[".proc", Me].Visible = Not $bNoHighlight
-
   If $bModule Then
     btnShowCode.Show
     mnuShowCode.Show
@@ -1193,6 +1190,9 @@ Private Sub UpdateMenu()
 
   Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent", Me].Visible = bVisible
   mnuAdvanced.Visible = bVisible
+
+  Action[".compress,.uncompress", Me].Visible = $bShowCompress And bVisible
+  Action[".proc", Me].Visible = Not $bNoHighlight
 
 End
 

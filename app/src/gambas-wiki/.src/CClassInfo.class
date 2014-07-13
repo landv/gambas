@@ -247,7 +247,7 @@ Private Function GetSymbolType(aSym As String[]) As String
     sName = Replace(sName, ":", ".")
     If hSym.Class <> Name Or If hSym.Component <> Component Then
       sRes &= "*[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]*&nbsp;&nbsp;\n"
-    Else If hSym.Class <> Main.Class Or If hSym.Componetn <> Main.Component Then
+    Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
       sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;\n"
     Else
       sRes &= "[./" & LCase(sName) & "]&nbsp;&nbsp;\n"

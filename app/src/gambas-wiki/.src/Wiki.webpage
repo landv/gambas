@@ -4,14 +4,14 @@
 
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <link rel="stylesheet" href="/wiki/style.css">
+  <link rel="stylesheet" href="<%/%>/style.css">
   <%If System.RightToLeft Then%>
-  <link rel="stylesheet" href="/wiki/style-rtl.css">
+  <link rel="stylesheet" href="<%/%>/style-rtl.css">
   <%Endif%>
   <%If Request.Exist("w") Then%>
-  <link rel="stylesheet" href="/wiki/style-w.css">
+  <link rel="stylesheet" href="<%/%>/style-w.css">
   <%Endif%>
-  <link rel="icon" href="/wiki/logo.png" type="image/png">
+  <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
 </head>
 
@@ -31,7 +31,7 @@ H1 { display: none; }
   
   <div class="header-v">
   <table border="0" cellpadding="0" cellspacing="0" style="position:fixed;">
-    <tr valign="top"><td><a href="<%_PrintParent()%>"><img src="/wiki/up-gray.png" style="vertical-align:top;"></a>&nbsp;</td>
+    <tr valign="top"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png" style="vertical-align:top;"></a>&nbsp;</td>
     <td><div class="title-v"><%_PrintLink%></div></td></tr>
   </table>
   </div>
@@ -53,9 +53,9 @@ H1 { display: none; }
 <div class="header">
     <div class="up">
       <%If Main.Edit%>
-        <img src="/wiki/edit.png">
+        <img src="<%/%>/edit.png">
       <%Else%>
-        <a href="<%_PrintParent()%>"><img src="/wiki/up.png"></a>
+        <a href="<%_PrintParent()%>"><img src="<%/%>/up.png"></a>
       <%Endif%>
     </div>
     <div class="title">

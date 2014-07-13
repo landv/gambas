@@ -59,8 +59,11 @@ End
 
 
 Static Private Sub HasHandler(hForm As Object) As Boolean
+
+  Dim bHasHandler As Boolean
   
-  Try Return Object.Class(hForm).Exist("Action_Activate")
+  Try bHasHandler = Object.Class(hForm)["Action_Activate"].Type
+  Return bHasHandler
   
 End
 
@@ -383,7 +386,6 @@ Private Sub Visible_Write(Value As Boolean)
   Dim hCtrl As Object
   
   For Each hCtrl In GetControls()
-    'DEBUG hCtrl;; Value
     hCtrl.Visible = Value
   Next
 

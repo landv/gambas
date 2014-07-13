@@ -118,8 +118,8 @@ Public DEFAULT_FONT As String = "Monospace,9"
 Public DESKTOP_FONT As String
 
 Public Const DEFAULT_URL As String = "http://www.endoftheinternet.com/"
-Public Const WIKI_URL As String = "http://gambaswiki.org"
-Public Const WIKI_ROOT As String = "http://gambaswiki.org/wiki"
+Public WIKI_URL As String = "http://gambaswiki.org"
+Public WIKI_ROOT As String = "http://gambaswiki.org/wiki"
 
 Public Const FILTER_ADDED As String = " A"
 Public Const FILTER_EXPORTED As String = " X"
@@ -314,7 +314,7 @@ Public Sub Main()
   InitVersion
   InitWebView
   ShowFileInTitle = Settings["/ShowFileInTitle", True]
-  
+  MHelp.ReadConfig
   FMain.Load
   Application.MainWindow = FMain
 
@@ -5817,5 +5817,30 @@ Public Sub OpenFake() As Boolean
   Copy "template/_fake_project" To sDir &/ ".project"
   
   Return Project.Open(sDir)
+  
+End
+
+Public Sub TildePath(sPath As String) As String
+  
+  Dim sHome As String = User.Home
+  
+  If Right(sHome) <> "/" Then sHome &= "/"
+  If IsDir(sPath) And If Right(sPath) <> "/" Then sPath &= "/"
+  
+  If sPath = sHome Then
+    sPath = "~"
+  Else If sPath Begins sHome Then 
+    sPath = "~" & Mid$(sPath, Len(sHome))
+  Endif
+  
+  Return sPath
+  
+End
+
+Public Sub UntildePath(sPath As String) As String
+  
+  If sPath = "~" Then Return User.Home
+  If sPath Begins "~/" Then Return User.Home &/ Mid$(sPath, 2)
+  Return sPath
   
 End

@@ -101,6 +101,7 @@ Public Sub _new()
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
     [btnOptional, "/AlwaysDisplayOptionalMessages", 0],
+    [btnOfflineHelp, "/UseOfflineHelp", 0],
     [btnTooltip, "/ShowTooltip", 0],
     [btnShowFileInTitle, "/ShowFileInTitle", 1],
     [btnIntegratedHelp, "/PropertyHelp", 1],
@@ -123,7 +124,7 @@ Public Sub _new()
   cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
-  'cmbImageEditor.Index = $aImageEditor.Find(Settings["/ImageEditor"]) + 1
+  panDownloadHelp.Visible = btnOfflineHelp.Value
   
   UpdateFont(txtGlobalFont.Text)
   
@@ -179,7 +180,7 @@ End
 
 Public Sub btnExport_Click()
 
-  Dialog.Path = Settings["/FOption/ThemePath", System.User.Home &/ System.User.Name & ".gambas.theme"]
+  Dialog.Path = Settings["/FOption/ThemePath", User.Home &/ User.Name & ".gambas.theme"]
   Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
   Dialog.Title = ("Export a theme file")
   Dialog.AutoExt = True
@@ -350,7 +351,7 @@ End
 
 Public Sub btnImport_Click()
 
-  Dialog.Path = Settings["/FOption/ThemePath", System.User.Home]
+  Dialog.Path = Settings["/FOption/ThemePath", User.Home]
   Dialog.Filter = ["*.gambas.theme", ("Gambas highlight theme files")]
   Dialog.Title = ("Select a theme file")
   If Dialog.OpenFile() Then Return
@@ -465,6 +466,15 @@ End
 Public Sub btnOptional_Click()
 
   Settings["/AlwaysDisplayOptionalMessages"] = btnOptional.Value
+
+End
+
+Public Sub btnOfflineHelp_Click()
+
+  Settings["/UseOfflineHelp"] = btnOfflineHelp.Value
+  MHelp.ReadConfig
+  panDownloadHelp.Visible = btnOfflineHelp.Value
+  UpdateDocumentationState
 
 End
 
@@ -940,6 +950,10 @@ Public Sub ipnOption_Click()
       InitBackground
     Endif
     
+  Else If ipnOption.Text = ("Help & applications") Then
+    
+    UpdateDocumentationState
+    
   Endif
   
 End
@@ -1174,3 +1188,107 @@ Public Sub btnShortcut_Click()
 
 End
 
+
+' Public Sub txtOfflineHelp_Click()
+' 
+'   Dialog.Title = ("Select the offline help directory")
+'   Dialog.Path = Project.UntildePath(txtOfflineHelp.Text)
+'   If Dialog.SelectDirectory() Then Return
+'   
+'   txtOfflineHelp.Text = Project.TildePath(Dialog.Path)  
+'   MHelp.ReadConfig
+'   
+' End
+
+' Public Sub txtOfflineHelp_Change()
+'   
+'   Settings["/OfflineHelpDir"] = txtOfflineHelp.Text
+' 
+' End
+' 
+' Public Sub txtOfflineHelp_KeyPress()
+' 
+'   If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
+'     txtOfflineHelp.Clear
+'   Endif
+' 
+' End
+
+Public Sub btnDownloadHelp_Click()
+
+  Dim sTimestamp As String
+  Dim dDate As Date
+  Dim sMsg As String
+  Dim sFile As String
+
+  Inc Application.Busy
+  
+  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  sTimestamp = Trim(sTimestamp)
+  If Not sTimestamp Then 
+    sMsg = ("The documentation is not available at the moment. Try again later.")
+    Goto FAIL
+  Endif
+  
+  Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
+  If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then
+    sMsg = ("The documentation is up to date.")
+    Goto FAIL
+  Endif
+  
+  sFile = File.SetName(MHelp.GetOfflineDir(), "wiki.tar.bz2")
+  Try Kill sFile
+  Exec ["wget", "-q", "-O", sFile, "http://gambaswiki.org/gambas-wiki.tar.bz2"] Wait
+  If Not Exist(sFile) Then
+    sMsg = ("Unable to download documentation.")
+    Goto FAIL
+  Endif
+  
+  Shell "cd " & Shell$(File.Dir(sFile)) & " && tar xfj " & Shell$(File.Name(sFile)) & " && mv gambas wiki" Wait
+  If Not Exist(MHelp.GetOfflineDir()) Then
+    Shell "rm -rf " & Shell(MHelp.GetOfflineDir()) & " " & Shell$(sFile) Wait
+    sMsg = ("Unable to uncompress documentation.")
+    Goto FAIL
+  Endif
+  
+  UpdateDocumentationState
+  Dec Application.Busy
+  Return
+  
+FAIL:
+
+  Dec Application.Busy
+  Message.Warning(sMsg)
+  Return
+
+End
+
+Private Sub UpdateDocumentationState()
+
+  If Not panDownloadHelp.Visible Then Return
+
+  Select Case MHelp.GetOfflineState()
+    
+    Case MHelp.OFFLINE_NO_NETWORK
+      lblDocumentation.Text = ("Network is not available.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+    
+    Case MHelp.OFFLINE_UP_TO_DATE
+      lblDocumentation.Text = ("Documentation is up to date.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+    
+    Case MHelp.OFFLINE_NEW_AVAILABLE
+      lblDocumentation.Text = ("A new documentation is available!")
+      lblDocumentation.Foreground = Color.Red
+      btnDownloadHelp.Enabled = True
+      
+    Case Else
+      lblDocumentation.Text = ("Documentation is not available.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+      
+  End Select
+
+End
