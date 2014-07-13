@@ -565,6 +565,7 @@ Static Private Function NetworkAvailable_Read() As Boolean
   Dim sLine As String
 
   Shell "LC_ALL=C ifconfig -a" To sOutput
+  If Not sOutput Then Shell "LC_ALL=C ip addr" To sOutput
   
   For Each sLine In Split(Trim(sOutput), "\n")
     sLine = Trim(sLine)
