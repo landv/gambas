@@ -4,7 +4,7 @@ Private $aBoxShadow As New _ReportBoxShadow[]
 
 Property XOffset As String
 Property YOffset As String
-'Property Blur As String
+Property Blur As String
 Property Spread As String
 Property Inset As Boolean
 Property Color As Integer
@@ -14,8 +14,9 @@ Property Read Max As Integer
 
 Property Read _XOffset As Float
 Property Read _YOffset As Float
-'Property Read _Blur As float
+Property Read _Blur As Float
 Property Read _Spread As Float
+Property Read _Active As Boolean
 
 
 Public Sub _new()
@@ -176,12 +177,14 @@ Public Sub _SetUnifiedValues()
   Dim i As Integer
   Dim SizeParse As TSizeParse
   For i = 0 To $aBoxShadow.Max
-    With $aBoxShadow[i]
-      $aBoxShadow[i]._XOffset = TSizeParse[.XOffset].GetValue()
-      $aBoxShadow[i]._YOffset = TSizeParse[.YOffset].GetValue()
-      $aBoxShadow[i]._Spread = TSizeParse[.Spread].GetValue()
+    'With 
+      $aBoxShadow[i]._XOffset = TSizeParse[$aBoxShadow[i].XOffset].GetValue()
+      $aBoxShadow[i]._YOffset = TSizeParse[$aBoxShadow[i].YOffset].GetValue()
+      $aBoxShadow[i]._Spread = TSizeParse[$aBoxShadow[i].Spread].GetValue()
+      $aBoxShadow[i]._Blur = TSizeParse[$aBoxShadow[i].Blur].GetValue()
+     
       '._Blur = TSizeParse[.Blur].GetValue()
-    End With
+    'End With
     
     
   Next
@@ -209,5 +212,11 @@ End
 Private Function _Spread_Read() As Float
 
   Return $aBoxShadow[0]._Spread
+
+End
+
+Private Function _Active_Read() As Boolean
+
+  Return Not ($aBoxShadow[0]._XOffset = 0 And $aBoxShadow[0]._YOffset = 0 And $aBoxShadow[0]._Blur = 0 And $aBoxShadow[0]._Spread = 0)
 
 End

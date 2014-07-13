@@ -3,6 +3,12 @@
 Export
 
 Inherits UserControl
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+'Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
+'Public Const _Family As String = "Report"
+
+
 
 Private $View As ScrollArea
 Private $hReport As Report
@@ -685,8 +691,8 @@ End
 
 Private Sub Settings_Write(Value As Variant[])
 
-  $fScale = Value[0]
-  $iScaleMode = Value[1]
+   $fScale = Value[0]
+   $iScaleMode = Value[1]
 
 Catch
   

@@ -4,11 +4,14 @@ Public Sub _new()
   'Report.Debug = True
   ' Me.Width = "5cm"
   ' Me.Height = "10cm"
-  
+  ReportPanel1.DataCount = 100
 End
 
 Public Sub Report_Open()
-Report.Debug = True
-  ReportPanel1.DataCount = 13
+
+'ReportPanel1.BoxShadow.XOffset = "1mm"
+'ReportPanel1.BoxShadow.YOffset = "1mm"
+  ReportPanel1.BoxShadow.Spread = "1mm"
+  ReportPanel1.BoxShadow.Blur = "1mm"
   
 End

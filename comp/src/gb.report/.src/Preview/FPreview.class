@@ -40,10 +40,10 @@ Public Sub _new()
     $hPrinter.Name = Settings["FPreview/Printer"] 
     If Settings["FPreview/PrintToFile"] = True Then TabPanel1.Index = 1
     
-    $hPrinter.Duplex = Settings["FPreview/Duplex"] 
-    $hPrinter.GrayScale = Settings["FPreview/GrayScale"] 
-    $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
-    $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
+    Try $hPrinter.Duplex = Settings["FPreview/Duplex"]
+    Try $hPrinter.GrayScale = Settings["FPreview/GrayScale"] 
+    Try $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
+    Try $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
     
   Endif
   
