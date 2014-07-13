@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,59,20)
+  MoveScaled(0,0,55,20)
   Visible = False
   Action = "help"
   Text = ("Help browser")
@@ -79,13 +79,6 @@
       AutoResize = True
       Text = ("Print")
       Picture = Picture["icon:/small/print"]
-    }
-    { btnModify ToolButton
-      MoveScaled(81,0,25,4)
-      Visible = False
-      AutoResize = True
-      Text = ("Modify documentation") & "..."
-      Picture = Picture["icon:/small/edit"]
     }
   }
   { Printer1 #Printer

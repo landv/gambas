@@ -104,11 +104,17 @@ Public Sub GotoURL(sUrl As String)
   
 End
 
-
-Public Sub btnHome_Click()
+Public Sub GotoHome()
   
   GotoURL(GetHomeURL())
   webHelp.TextZoom = 0.8
+  
+End
+
+
+Public Sub btnHome_Click()
+  
+  GotoHome()
   
 End
 
@@ -206,7 +212,6 @@ Public Sub webHelp_Error()
   Endif
   
   $bError = True
-  btnModify.Enabled = False
   
 End
 
@@ -216,7 +221,6 @@ Public Sub webHelp_Load()
   
   ShowWaiting(False)
   $bError = False
-  btnModify.Enabled = webHelp.Url Begins Project.WIKI_URL
   
   ' If $bIgnoreNextHistory Then
   '   $bIgnoreNextHistory = False
@@ -332,19 +336,19 @@ Public Sub Form_KeyPress()
   
 End
 
-Private Sub SetLang(sLang As String)
+Private Sub SetLang(Optional sLang As String)
   
   Dim sUrl As String
-  Dim sOldLang As String = MHelp.GetLanguage()
   
   MHelp.SetLanguage(sLang)
   sLang = MHelp.GetLanguage()
   
   sUrl = webHelp.Url
   If sUrl Begins Project.WIKI_URL Then
-    sUrl = Replace(sUrl, "&l=" & sOldLang, "")
-    'Debug sUrl & "&" & sLang
-    GotoURL(sUrl & "&l=" & sLang)
+    sUrl = URL.SetQuery(sUrl, "l", sLang)
+    GotoURL(sUrl)
+  Else If sUrl Begins "file:///" &/ MHelp.GetOfflineDir() Then
+    GotoURL(Project.WIKI_ROOT &/ Wiki.Path & "?l=" & sLang)
   Endif
   
 End

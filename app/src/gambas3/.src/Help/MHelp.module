@@ -56,7 +56,7 @@ Public Sub GetLanguage(Optional bReturnVoidIfDefault As Boolean) As String
     If Not IsLower(Mid$(sLang, iPos, 1)) Then Break
   Next
   
-  Return "l=" & Left$(sLang, iPos - 1)
+  Return Left$(sLang, iPos - 1)
   
 End
 
@@ -808,10 +808,6 @@ Public Sub ReadConfig()
   
 End
 
-Public Sub LoadOfflineHelpFile(sPath As String) As String
-  
-End
-
 Public Sub GetOfflineDir() As String
   
   Return Desktop.DataDir &/ "gambas3" &/ "wiki"
@@ -885,7 +881,7 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String)
     sUrl = Left(sUrl, iPos - 1)
   Endif
   
-  Wiki.Lang = Wiki.DEFAULT_LANG
+  Wiki.Lang = GetLanguage()
   Wiki.Path = "/" &/ Mid$(sUrl, 8)
   Wiki.AnalyzePath()
   

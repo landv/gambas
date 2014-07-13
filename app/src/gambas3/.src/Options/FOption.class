@@ -475,6 +475,7 @@ Public Sub btnOfflineHelp_Click()
   MHelp.ReadConfig
   panDownloadHelp.Visible = btnOfflineHelp.Value
   UpdateDocumentationState
+  FHelpBrowser.GotoHome
 
 End
 
