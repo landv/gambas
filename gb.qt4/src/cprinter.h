@@ -35,7 +35,6 @@ typedef
 		int page;
 		int page_count;
 		int duplex;
-		int num_copies;
 		bool cancel;
 		bool page_count_set;
 		bool printing;

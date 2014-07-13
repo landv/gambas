@@ -165,7 +165,6 @@ static void update_duplex(CPRINTER *_object)
 BEGIN_METHOD_VOID(Printer_new)
 
 	THIS->printer = new QPrinter(QPrinter::HighResolution);
-	THIS->num_copies = 1;
 	THIS->page_count = 1;
 
 END_METHOD
@@ -365,17 +364,19 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Printer_NumCopies)
 
-	if (READ_PROPERTY)
-		GB.ReturnInteger(THIS->num_copies);
+	if (PRINTER->supportsMultipleCopies())
+	{
+		if (READ_PROPERTY)
+			GB.ReturnInteger(PRINTER->copyCount());
+		else
+			PRINTER->setCopyCount(VPROP(GB_INTEGER));
+	}
 	else
 	{
-		int val = VPROP(GB_INTEGER);
-		
-		if (val >= 1 && val <= 32767)
-		{
-			PRINTER->setNumCopies(val);
-			THIS->num_copies = val;
-		}
+		if (READ_PROPERTY)
+			GB.ReturnInteger(PRINTER->numCopies());
+		else
+			PRINTER->setNumCopies(VPROP(GB_INTEGER));
 	}
 
 END_PROPERTY
