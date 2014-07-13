@@ -570,6 +570,8 @@ Static Private Function NetworkAvailable_Read() As Boolean
     sLine = Trim(sLine)
     If sLine Begins "inet addr:" Then
       If sLine Not Begins "inet addr:127.0.0.1" Then Return True
+    Else If sLine Begins "inet " Then
+      If sLine Not Begins "inet 127.0.0.1" Then Return True
     Endif
   Next
 
