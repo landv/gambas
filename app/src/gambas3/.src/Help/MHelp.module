@@ -434,9 +434,12 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
   Else If sUrl Then
     
-    If bHelpBrowser Then sUrl = Replace(sUrl, "v&nh", "")
+    If bHelpBrowser Then 
+      sUrl = URL.UnsetQuery(sUrl, "v")
+      sUrl = URL.UnsetQuery(sUrl, "nh")
+    Endif
+    sUrl = URL.SetQuery(sUrl, "l", GetLanguage())
     If sMore Then sUrl &= "&" & sMore
-    sMore &= "&l=" & GetLanguage() ' ??
     If hWebView.Url <> sUrl Then 
       'Debug sUrl
       hWebView.Url = sUrl

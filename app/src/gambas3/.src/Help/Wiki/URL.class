@@ -33,7 +33,7 @@ Static Public Sub Encode(Path As String) As String
     sCar = Mid$(Path, iInd, 1)
     If sCar = " " Then 
       sCar = "+"
-    Else If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("-._~,$!/", sCar) Then 
+    Else If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("-._~,$!/[]", sCar) Then 
     Else 
       sCar = "%" & Hex$(Asc(sCar), 2)
     Endif

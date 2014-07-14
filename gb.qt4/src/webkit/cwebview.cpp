@@ -725,7 +725,12 @@ void CWebView::loadFinished(bool ok)
 void CWebView::loadProgress(int progress)
 {
 	GET_SENDER();
-	THIS->progress = progress / 100.0;
+
+	double v = progress / 100.0;
+	if (THIS->progress == v)
+		return;
+
+	THIS->progress = v;
 	GB.Raise(THIS, EVENT_PROGRESS, 0);
 }
 
