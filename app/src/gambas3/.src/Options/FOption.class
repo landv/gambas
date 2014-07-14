@@ -1217,25 +1217,23 @@ End
 
 Public Sub btnDownloadHelp_Click()
 
-  Dim sTimestamp As String
-  Dim dDate As Date
   Dim sMsg As String
   Dim sFile As String
 
   Inc Application.Busy
   
-  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
-  sTimestamp = Trim(sTimestamp)
-  If Not sTimestamp Then 
-    sMsg = ("The documentation is not available at the moment. Try again later.")
-    Goto FAIL
-  Endif
-  
-  Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
-  If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then
-    sMsg = ("The documentation is up to date.")
-    Goto FAIL
-  Endif
+  ' Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  ' sTimestamp = Trim(sTimestamp)
+  ' If Not sTimestamp Then 
+  '   sMsg = ("The documentation is not available at the moment. Try again later.")
+  '   Goto FAIL
+  ' Endif
+  ' 
+  ' Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
+  ' If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then
+  '   sMsg = ("The documentation is up to date.")
+  '   Goto FAIL
+  ' Endif
   
   sFile = File.SetName(MHelp.GetOfflineDir(), "wiki.tar.bz2")
   Try Kill sFile

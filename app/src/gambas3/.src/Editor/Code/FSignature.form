@@ -33,27 +33,20 @@
     { panHelp HBox
       MoveScaled(2,8,36,21)
       Expand = True
-      { webHelp WebView
-        MoveScaled(2,2,28,15)
+      { webHelp HelpView
+        MoveScaled(3,3,20,9)
         Expand = True
+        NoHeader = True
       }
-      { panRight Panel
-        MoveScaled(31,2,1,13)
-        Arrangement = Arrange.Vertical
-        { panResizeTop Panel
-          MoveScaled(0,0,1,2)
-          Background = Color.LightForeground
-          Mouse = Mouse.SizeNESW
-        }
-        { Panel2 Panel
-          MoveScaled(0,4,1,5)
-          Expand = True
-        }
-        { panResizeBottom Panel
-          MoveScaled(0,11,1,2)
-          Background = Color.LightForeground
-          Mouse = Mouse.SizeNWSE
-        }
+      { panResizeBottom Panel
+        MoveScaled(32,13,2,2)
+        Mouse = Mouse.SizeNWSE
+        Ignore = True
+      }
+      { panResizeTop Panel
+        MoveScaled(32,2,2,2)
+        Mouse = Mouse.SizeNESW
+        Ignore = True
       }
     }
     { lblNewSignature TextLabel

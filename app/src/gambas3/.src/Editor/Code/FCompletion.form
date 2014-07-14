@@ -27,32 +27,24 @@
     { sepHelp Separator
       MoveScaled(9,1,0,13)
     }
-    { webHelp WebView
-      MoveScaled(10,1,54,13)
+    { webHelp HelpView
+      MoveScaled(11,2,51,11)
       Expand = True
+      NoHeader = True
     }
     { timHelp #Timer
       #MoveScaled(24,4)
       Delay = 100
     }
-    { panRight Panel
-      MoveScaled(65,1,1,13)
-      Background = Color.TextBackground
-      Arrangement = Arrange.Vertical
-      { panResizeTop Panel
-        MoveScaled(0,0,1,2)
-        Background = Color.LightForeground
-        Mouse = Mouse.SizeNESW
-      }
-      { Panel1 Panel
-        MoveScaled(0,4,1,5)
-        Expand = True
-      }
-      { panResizeBottom Panel
-        MoveScaled(0,11,1,2)
-        Background = Color.LightForeground
-        Mouse = Mouse.SizeNWSE
-      }
+    { panResizeBottom Panel
+      MoveScaled(64,12,2,2)
+      Mouse = Mouse.SizeNWSE
+      Ignore = True
+    }
+    { panResizeTop Panel
+      MoveScaled(64,1,2,2)
+      Mouse = Mouse.SizeNESW
+      Ignore = True
     }
   }
 }

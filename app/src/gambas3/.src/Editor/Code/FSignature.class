@@ -9,14 +9,11 @@ Private $DY As Integer
 Private $iMinW As Integer
 Private $iMinH As Integer
 Private $iMaxY As Integer
-Private $sLastUrl As String
 Private $hSymbol As CSymbolInfo
 Private $X As Integer
 Private $iArrow As Integer
 
 Public Sub _new()
-  
-  webHelp.Zoom = 0.8
   
 End
 
@@ -31,16 +28,18 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
     MHelp.InitWebViewWith(webHelp, MHelp.TYPE_SYMBOL, $hSymbol.Name, $hSymbol.Class, "noimage")
     sepHelp.Show
     panHelp.Show
-    panRight.Show
-    $iMinW = Max(128, lblNewSignature.W + 2 + panRight.W + btnHelp.W)
+    panResizeTop.Show
+    panResizeBottom.Show
+    $iMinW = Max(128, lblNewSignature.W + 2 + panResizeTop.W + btnHelp.W)
     $iMinH = Desktop.Scale * 24
     Me.Resize(Max(Me.W, $iMinW), Max(Me.H, $iMinH))
   Else
     sepHelp.Hide
     panHelp.Hide
-    panRight.Hide
+    panResizeTop.Hide
+    panResizeBottom.Hide
     If hForm Then
-      Me.Resize(lblNewSignature.W + 4 + If($bUseHelp, btnHelp.W + panRight.W, 0), lblNewSignature.H + 6)
+      Me.Resize(lblNewSignature.W + 4 + If($bUseHelp, btnHelp.W + panResizeTop.W, 0), lblNewSignature.H + 6)
     Else
       Me.H = lblNewSignature.H + 6
     Endif
@@ -235,21 +234,6 @@ Public Sub webHelp_GotFocus()
 
 End
 
-Public Sub webHelp_Link(Url As String)
-
-  $sLastUrl = Url
-
-End
-
-Public Sub webHelp_Error()
-
-  If $sLastUrl Begins "gambas://" Then 
-    webHelp.Stop
-    MHelp.ManageSpecialLink(webHelp, $sLastUrl)
-  Endif
-
-End
-
 Public Sub btnHelp_MouseDown()
 
   $bShowHelp = Not $bShowHelp
@@ -273,5 +257,14 @@ End
 Public Sub btnHelp_Leave()
 
   btnHelp.Refresh
+
+End
+
+Public Sub panHelp_Arrange()
+
+  panResizeTop.Move(panHelp.W - panResizeTop.W, 0)
+  panResizeBottom.Move(panHelp.W - panResizeBottom.W, panHelp.H - panResizeBottom.H)
+  panResizeTop.Raise
+  panResizeBottom.Raise
 
 End

@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,55,20)
+  MoveScaled(0,0,59,32)
   Visible = False
   Action = "help"
   Text = ("Help browser")
@@ -91,20 +91,18 @@
     MoveScaled(2,9,80,29)
     Expand = True
     { tvwClasses TreeView
-      MoveScaled(8,1,31,27)
+      MoveScaled(3,1,16,27)
       Visible = False
       Expand = True
       Sorted = True
       Border = False
     }
-    { !webHelp WebView
-      MoveScaled(42,2,29,15)
-      #Public = True
-      Expand = True
+    { webHelp HelpView
+      MoveScaled(22,2,28,16)
     }
   }
   { movWaiting MovieBox
-    MoveScaled(19,5,9,8)
+    MoveScaled(31,5,9,8)
     Visible = False
     Ignore = True
     Path = "img/waiting.gif"

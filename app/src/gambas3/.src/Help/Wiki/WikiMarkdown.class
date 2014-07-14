@@ -197,7 +197,6 @@ End
 Public Sub CheckURL(sURL As String, sMarkup As String) As String
   
   Dim sPath As String
-  Dim iPos As Integer
   
   If sURL Begins "/wiki/" Then
     If sMarkup = "img" Then

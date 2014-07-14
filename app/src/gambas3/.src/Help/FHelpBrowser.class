@@ -5,11 +5,8 @@ Property Read {Error} As Boolean
 Static Private $aLang As String[] = ["en", "fr", "de", "es", "it", "nl", "pl", "pt", "pt_BR", "mk", "sq", "ca", "hu", "tr", "ar", "fa", "vi", "ko", "ja", "ru", "zh", "zh_TW", "eo"]
 
 Private $bError As Boolean
-Private $sLastUrl As String
 Private $bPrint As Boolean
 Private mnuLang As Menu
-'Private $hHistory As CHistory
-'Private $bIgnoreNextHistory As Boolean
 
 Public Sub _new()
   
@@ -178,82 +175,24 @@ Public Sub btnWebSite_Click()
   
 End
 
-Public Sub webHelp_Error()
-  
-  Dim sLastUrl As String
-  
-  ShowWaiting(False)
-  
-  If Not $sLastUrl Then 
-    sLastUrl = webHelp.Url
-  Else
-    sLastUrl = $sLastUrl
-    $sLastUrl = ""
-  Endif
-  
-  If sLastUrl Begins "/" Then sLastUrl = Project.WIKI_ROOT &/ sLastUrl
-  
-  If sLastUrl Begins "gambas://" Then 
-    
-    '$hHistory.Add(sLastUrl)
-    '$bIgnoreNextHistory = True
-    
-    webHelp.Stop
-    MHelp.ManageSpecialLink(webHelp, sLastUrl)
-    Return
-  Else If sLastUrl Begins "wiki://" Then
-    
-    '$hHistory.Add(sLastUrl)
-    '$bIgnoreNextHistory = True
-    
-    MHelp.MakeOffline(webHelp, sLastUrl)
-    Return
-    
-  Endif
-  
-  $bError = True
-  
-End
-
-Public Sub webHelp_Load()
-  
-  ' Debug webHelp.Url;; $bIgnoreNextHistory
-  
-  ShowWaiting(False)
-  $bError = False
-  
-  ' If $bIgnoreNextHistory Then
-  '   $bIgnoreNextHistory = False
-  ' Else
-  '   $hHistory.Add(webHelp.Url)
-  ' Endif
-  
-End
-
-Public Sub webHelp_Link(Url As String)
-  
-  $sLastUrl = Url
-  
-End
-
 Private Function Error_Read() As Boolean
   
   Return $bError
   
 End
 
-Public Sub btnModify_Click()
-  
-  Dim sUrl As String
-  
-  sUrl = webHelp.Url
-  If Not (sUrl Begins Project.WIKI_URL) Then Return
-  
-  'sUrl = Replace(sUrl, "http://gambasdoc.org/help", "http://gambasdoc.org/edit")
-  
-  Project.OpenWebPage(sUrl)
-  
-End
+' Public Sub btnModify_Click()
+'   
+'   Dim sUrl As String
+'   
+'   sUrl = webHelp.Url
+'   If Not (sUrl Begins Project.WIKI_URL) Then Return
+'   
+'   'sUrl = Replace(sUrl, "http://gambasdoc.org/help", "http://gambasdoc.org/edit")
+'   
+'   Project.OpenWebPage(sUrl)
+'   
+' End
 
 Public Sub btnShowPanel_Click()
   
@@ -372,51 +311,3 @@ Public Sub OnProjectChange()
   Endif
   
 End
-
-Public Sub webHelp_NewWindow((Modal) As Boolean)
-
-  Project.OpenWebPage($sLastUrl)
-
-End
-
-Private Sub ShowWaiting(bShow As Boolean)
-
-  If movWaiting.Visible = bShow Then Return
-
-  movWaiting.Visible = bShow
-  movWaiting.Playing = bShow
-
-End
-
-Public Sub webHelp_Progress()
-
-  ShowWaiting(webHelp.Progress < 1)
-
-End
-
-Public Sub Form_Arrange()
-
-  With webHelp
-    movWaiting.Move(.ScreenX - Me.ScreenX + (.W - movWaiting.W) \ 2, .ScreenY - Me.ScreenY + (.H - movWaiting.H) \ 2)
-  End With
-
-End
-
-Public Sub movWaiting_MouseDown()
-
-  ShowWaiting(False)
-
-End
-
-' Public Sub History_Change()
-'   
-'   btnBack.Enabled = $hHistory.IsBackwardEnabled()
-'   btnForward.Enabled = $hHistory.IsForwardEnabled()
-'   
-' End
-
-' Public Sub webHelp_Click(Frame As WebFrame)
-' 
-'   Debug Frame;; Frame.Url
-' 
-' End

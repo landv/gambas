@@ -402,7 +402,8 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   If Kind = "Menu" Then
     Object.Attach(hCtrl, hForm, "MenuControl")
   Else
-    Object.Attach(hCtrl, hForm, "Control")
+    Try Object.Attach(hCtrl, hForm, "Control")
+    If Error Then Stop
   Endif
   
   VirtualCoord = hClass.Family <> "Form" And Not Virtual

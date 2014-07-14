@@ -57,47 +57,56 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim F As Integer = Style.FrameWidth
+  Dim F As Integer = Max(4, Style.FrameWidth + 2)
   Dim iWP As Integer
   Dim W As Float
   Dim iCol As Integer
   
   iCol = Color.Merge(Color.Background, Color.LightForeground)
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
-  Paint.FillRect(F, F, Paint.W - F * 2, Paint.H - F * 2, iCol)
+  
+  'Paint.FillRect(F, F, Paint.W - F * 2, Paint.H - F * 2, iCol)
   
   iCol = Color.SelectedBackground
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
   
+  'Draw.Foreground = Color.LightForeground
+  'Draw.Rect(0, 0, Paint.W, Paint.H)
+
+  Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
+  
+  Paint.Rectangle(F, F, Paint.W - F * 2, Paint.H - F * 2)
+  Paint.Clip
+  
   If $bPulse Then
     
-    iWP = (Paint.H - F * 2) * 2
-    W = Paint.W - F * 2 - iWP
+    iWP = Paint.H * 2
+    W = Paint.W - iWP
     If W >= 10 Then    
       W *= $fValue
-      Paint.FillRect(F * 2 + W, F * 2, iWP - F * 2, Paint.H - F * 4, iCol)
-      Style.PaintPanel(F + W, F, iWP, Paint.H - F * 2, Border.Raised)
+      Paint.FillRect(W, 0, iWP, Paint.H, iCol)
+      'Style.PaintPanel(W, 0, iWP, Paint.H, Border.Raised)
     Endif
     
   Else
   
-    W = (Paint.W - F * 2) * $fValue
+    W = Paint.W * $fValue
   
-    Paint.FillRect(F, F, W, Paint.H - F * 2, iCol)
+    Paint.FillRect(0, 0, W, Paint.H, iCol)
     
-    Style.PaintPanel(F, F, W, Draw.H - F * 2, Border.Raised)
+    'Style.PaintPanel(F, F, W, Draw.H - F * 2, Border.Raised)
     
     If $bLabel Then
   
       Paint.Save
-      Paint.Rectangle(F, F, W, Paint.H - F * 2)
+      Paint.Rectangle(0, 0, W, Paint.H)
       Paint.Clip
       Paint.Background = Color.SelectedForeground
       Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
       Paint.Restore
   
       Paint.Save
-      Paint.Rectangle(F + W, F, Paint.W - F * 2 - W, Paint.H - F * 2)
+      Paint.Rectangle(W, 0, Paint.W - W, Paint.H)
       Paint.Clip
       Paint.Background = Color.Foreground
       Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
@@ -106,8 +115,6 @@ Public Sub DrawingArea_Draw()
     Endif
     
   Endif
-  
-  Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
   
 End
 

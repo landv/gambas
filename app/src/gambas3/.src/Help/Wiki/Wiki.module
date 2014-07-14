@@ -380,56 +380,56 @@ Public Sub IsImage(sPath As String) As Boolean
   
 End
 
-Private Sub GetContentTypeFrom(sPath As String) As String
-  
-  Select Case Lower(File.Ext(sPath))
-    Case "css"
-      Return "text/css"
-    Case "jpg", "jpeg", "jpe", "thumb"
-      Return "image/jpeg"
-    Case "png"
-      Return "image/png"
-    Case "gif"
-      Return "image/gif"
-    Case "tiff", "tif"
-      Return "image/tiff"
-    Case "odt"
-      Return "application/vnd.oasis.opendocument.text"
-    Case "doc"
-      Return "application/msword"
-    Case "ods"
-      Return "application/vnd.oasis.opendocument.spreadsheet"
-    Case "xls"
-      Return "application/msexcel"
-    Case "pdf"
-      Return "application/pdf"
-    Case "zip"
-      Return "application/zip"
-    Case "html", "htm"
-      Return "text/html"
-    Case "txt"
-      Return "text/plain"
-    Case "avi"
-      Return "video/x-msvideo"
-    Case "mpg", "mpeg"
-      Return "video/mpeg"
-    Case "ps"
-      Return "application/postscript"
-    Case "dwg"
-      Return "application/acad"
-    Case "wav"
-      Return "audio/x-wav"
-    Case "ogg"
-      Return "application/ogg"
-    Case "jar"
-      Return "application/x-jar"
-    'Case "xml", "kml"
-    '  Return "text/plain"
-    Case Else 
-      Return "application/octet-stream"
-  End Select
-  
-End
+' Private Sub GetContentTypeFrom(sPath As String) As String
+'   
+'   Select Case Lower(File.Ext(sPath))
+'     Case "css"
+'       Return "text/css"
+'     Case "jpg", "jpeg", "jpe", "thumb"
+'       Return "image/jpeg"
+'     Case "png"
+'       Return "image/png"
+'     Case "gif"
+'       Return "image/gif"
+'     Case "tiff", "tif"
+'       Return "image/tiff"
+'     Case "odt"
+'       Return "application/vnd.oasis.opendocument.text"
+'     Case "doc"
+'       Return "application/msword"
+'     Case "ods"
+'       Return "application/vnd.oasis.opendocument.spreadsheet"
+'     Case "xls"
+'       Return "application/msexcel"
+'     Case "pdf"
+'       Return "application/pdf"
+'     Case "zip"
+'       Return "application/zip"
+'     Case "html", "htm"
+'       Return "text/html"
+'     Case "txt"
+'       Return "text/plain"
+'     Case "avi"
+'       Return "video/x-msvideo"
+'     Case "mpg", "mpeg"
+'       Return "video/mpeg"
+'     Case "ps"
+'       Return "application/postscript"
+'     Case "dwg"
+'       Return "application/acad"
+'     Case "wav"
+'       Return "audio/x-wav"
+'     Case "ogg"
+'       Return "application/ogg"
+'     Case "jar"
+'       Return "application/x-jar"
+'     'Case "xml", "kml"
+'     '  Return "text/plain"
+'     Case Else 
+'       Return "application/octet-stream"
+'   End Select
+'   
+' End
 
 Public Sub ExistPage(sPath As String, Optional sLang As String) As Boolean
 
@@ -722,13 +722,13 @@ Public Sub GetToDo() As String[]
   
 End
 
-Private Sub MakeLink(sLink As String, sLang As String) As String
-
-  If Not sLang Then sLang = "en"
-  If Not sLink Then sLink = "/"
-  Return "[" & sLink & " (" & sLang & ")] (" & sLink & "?l=" & sLang & ")"
-
-End
+' Private Sub MakeLink(sLink As String, sLang As String) As String
+' 
+'   If Not sLang Then sLang = "en"
+'   If Not sLink Then sLink = "/"
+'   Return "[" & sLink & " (" & sLang & ")] (" & sLink & "?l=" & sLang & ")"
+' 
+' End
 
 ' Public Sub Log(sText As String, Optional sUser As String)
 ' 
@@ -784,17 +784,6 @@ Public Sub PrintPage()
   Dim sPath As String
   Dim sData As String
   Dim iPos As Integer
-  Dim aFile As String[]
-  Dim sDir As String
-  Dim sLine As String
-  Dim sColor As String
-  Dim sResult As String
-  Dim aLine As String[]
-  Dim dDate As Date
-  Dim sDate As String
-  Dim hStat As Stat
-  Dim hStatDef As Stat
-  Dim iPo2 As Integer
 
   If Wiki.Image Then
     Print "<img src=\"" & WikiRoot &/ Wiki.Path & "?v\" />";

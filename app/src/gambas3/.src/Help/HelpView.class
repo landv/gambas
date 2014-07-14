@@ -1,0 +1,123 @@
+' Gambas class file
+
+Export
+
+Public Const _Properties As String = "*,NoHeader"
+Public Const _DrawWith As String = "WebView"
+
+Inherits WebView
+
+Property NoHeader As Boolean
+
+Private $hObs As Observer
+Private $hObsForm As Observer
+Private $hSpinner As Spinner
+Private $sLastUrl As String
+Private $bNoHeader As Boolean
+
+Public Sub _new()
+
+  Me.Zoom = 0.8
+  $hObs = New Observer(Me) As "WebView"
+  $hObsForm = New Observer(Me.Parent) As "Container"
+  
+  $hSpinner = New Spinner(Me.Window)
+  $hSpinner.Hide
+  $hSpinner.Ignore = True
+  $hSpinner.ResizeScaled(16, 16)
+  
+End
+
+Private Sub ShowWaiting(bShow As Boolean)
+
+  If $hSpinner.Visible = bShow Then Return
+
+  If bShow Then
+    $hSpinner.Show
+    $hSpinner.Raise
+    $hSpinner.Start
+  Else
+    $hSpinner.Stop
+    $hSpinner.Hide
+  Endif
+
+
+End
+
+Public Sub WebView_Error()
+  
+  Dim sLastUrl As String
+  
+  ShowWaiting(False)
+  
+  If Not $sLastUrl Then 
+    sLastUrl = Me.Url
+  Else
+    sLastUrl = $sLastUrl
+    $sLastUrl = ""
+  Endif
+  
+  If sLastUrl Begins "/" Then sLastUrl = Project.WIKI_ROOT &/ sLastUrl
+  
+  If sLastUrl Begins "gambas://" Then 
+    
+    Me.Stop
+    MHelp.ManageSpecialLink(Me, sLastUrl)
+    Return
+  Else If sLastUrl Begins "wiki://" Then
+    
+    MHelp.MakeOffline(Me, sLastUrl, $bNoHeader)
+    Return
+    
+  Endif
+  
+End
+
+Public Sub Container_Arrange()
+  
+  Dim hWin As Window
+  
+  If Not $hSpinner Then Return
+  
+  With Me
+    hWin = $hSpinner.Window
+    $hSpinner.Move(.ScreenX - hWin.ScreenX - hWin.ClientX + (.W - $hSpinner.W) \ 2, .ScreenY - hWin.ScreenY - hWin.ClientY + (.H - $hSpinner.H) \ 2)
+  End With
+  
+End
+
+Public Sub WebView_Load()
+  
+  ShowWaiting(False)
+  
+End
+
+Public Sub WebView_Link(Url As String)
+  
+  $sLastUrl = Url
+  
+End
+
+Public Sub WebView_NewWindow((Modal) As Boolean)
+
+  Project.OpenWebPage($sLastUrl)
+
+End
+
+Public Sub WebView_Progress()
+
+  ShowWaiting(Me.Progress < 1)
+
+End
+
+Private Function NoHeader_Read() As Boolean
+
+  Return $bNoHeader
+
+End
+
+Private Sub NoHeader_Write(Value As Boolean)
+
+  $bNoHeader = Value
+
+End

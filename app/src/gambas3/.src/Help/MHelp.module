@@ -810,6 +810,7 @@ End
 
 Public Sub GetOfflineDir() As String
   
+  Project.MakeDir(Desktop.DataDir &/ "gambas3" &/ "wiki")
   Return Desktop.DataDir &/ "gambas3" &/ "wiki"
   
 End
@@ -844,7 +845,7 @@ Public Sub GetOfflineState() As Integer
 End
 
 
-Public Sub MakeOffline(hWebView As WebView, sUrl As String)
+Public Sub MakeOffline(hWebView As WebView, sUrl As String, Optional bNoHeader As Boolean)
   
   Dim sFile As String
   Dim sHtml As String
@@ -858,7 +859,7 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String)
   Wiki.InfoDir = CComponent.GetInfoDir()
   
   If Not IsDir(Wiki.Root) Then
-    hWebView.HTML = "<h2>" & ("Please download the documentation from the option dialog.") & "</h2>"
+    hWebView.HTML = "<h2>" & ("Documentation is not available.") & "</h2>"
     Return
   Endif
   
@@ -915,6 +916,13 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String)
           Wiki.PrintLink
         Case "page"
           Wiki.PrintPage
+        Case "noheader"
+          If bNoHeader Then 
+            Print "<style type=\"text/css\">"
+            Print ".header { display: none; }"
+            Print ".page { padding-top: 4px; }"
+            Print "</style>"
+          Endif
       End Select
       
     Loop
@@ -926,5 +934,10 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String)
 
   'Desktop.Open($sOffline)  
   hWebView.Url = "file:///" &/ URL.Encode(sPath)
+  
+Catch
+  
+  Output To Default
+  hWebView.Html = "<h3>" & ("This page does not exist.") & "</h3>"
   
 End
