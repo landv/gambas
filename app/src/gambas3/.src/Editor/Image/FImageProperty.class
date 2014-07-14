@@ -122,6 +122,11 @@ Private Sub RememberGradient(hBrush As CReportBrush)
   
 End
 
+Public Sub SetColor(iColor As Integer)
+  
+  cchColor.Value = Color.SetAlpha(iColor, 0)
+  
+End
 
 
 Public Sub GetColor(Optional bIgnoreOpacity As Boolean) As Integer

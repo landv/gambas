@@ -420,6 +420,13 @@ void ERROR_define(const char *pattern, char *arg[])
 				
 				*msg = 0;
 			}
+
+			/*fprintf(stderr, "msg: %s\n", ERROR_current->info.msg);
+			if (strcmp(ERROR_current->info.msg, "Type mismatch: wanted WebView, got Function instead") == 0)
+			{
+				BREAKPOINT();
+				STRING_watch = ERROR_current->info.msg;
+			}*/
 		}
 	}
 	else if (ERROR_current->info.code == E_CUSTOM)
@@ -431,8 +438,8 @@ void ERROR_define(const char *pattern, char *arg[])
 		}
 		else
 		{
-		ERROR_current->info.msg = (char *)_message[E_UNKNOWN];
-		ERROR_current->info.free = FALSE;
+			ERROR_current->info.msg = (char *)_message[E_UNKNOWN];
+			ERROR_current->info.free = FALSE;
 		}
 	}
 	else
@@ -716,7 +723,7 @@ void ERROR_hook(void)
 		if (handle_error)
 		{
 			no_rec = TRUE;
-			ERROR_copy(&save, &last);
+			ERROR_save(&save, &last);
 			
 			TRY
 			{

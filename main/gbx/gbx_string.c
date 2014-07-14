@@ -48,6 +48,10 @@
 #define DEBUG_ME
 #endif
 
+#if DEBUG_STRING
+char *STRING_watch = NULL;
+#endif
+
 /*#ifdef DEBUG_ME
 extern FILE *MEMORY_log;
 #undef stderr
@@ -280,6 +284,9 @@ static void clear_pool(void)
 		while (str)
 		{
 			next = *((STRING **)str);
+			#ifdef DEBUG_ME
+			fprintf(stderr, "%p\n", str);
+			#endif
 			_my_free(str);
 			str = next;
 		}
@@ -492,12 +499,15 @@ void STRING_free(char **ptr)
 	*ptr = NULL;
 }
 
-void STRING_ref(char *ptr)
+void STRING_ref_real(char *ptr)
 {
 	STRING *str;
 
 	if (ptr == NULL)
 		return;
+
+	if (ptr == STRING_watch)
+		BREAKPOINT();
 
 	str = STRING_from_ptr(ptr);
 
@@ -513,12 +523,15 @@ void STRING_ref(char *ptr)
 }
 
 
-void STRING_unref(char **ptr)
+void STRING_unref_real(char **ptr)
 {
 	STRING *str;
 
 	if (*ptr == NULL)
 		return;
+
+	if (*ptr == STRING_watch)
+		BREAKPOINT();
 
 	str = STRING_from_ptr(*ptr);
 

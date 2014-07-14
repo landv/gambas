@@ -60,6 +60,8 @@ Private Enum CHANGE_NOTHING, CHANGE_MOVE, CHANGE_RESIZE, CHANGE_ROTATE, CHANGE_P
 Private $bShowGrid As Boolean
 Private $hTextSelect As CImageSelection
 
+Private $sLastColor As Integer
+
 
 Public Sub _new(sPath As String)
   
@@ -1218,6 +1220,12 @@ Public Sub Form_KeyPress()
     If Key.Code = Key.Escape Then ClearSelection
   Endif
   
+  If $sTool = "draw" Then
+    If LCase(Key.Text) = "x" Then
+      FImageProperty.SetColor($sLastColor)
+    Endif
+  Endif
+  
   imvImage_MouseMove
   
 End
@@ -1243,6 +1251,12 @@ Public Sub imvImage_MouseUp()
   Select Case $sTool
     
     Case "draw", "erase"
+      
+      If $sTool = "draw" Then
+        If $hImage[$hLastPoint.X, $hLastPoint.Y] <> FImageProperty.GetColor() Then
+          $sLastColor = $hImage[$hLastPoint.X, $hLastPoint.Y]
+        Endif
+      Endif
       
       hImage = $hImage.Copy()
       Paint.Begin(hImage)

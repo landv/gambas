@@ -351,7 +351,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   If Not hWebView Then 
     If Not FHelpBrowser.Visible Then Return
     bHelpBrowser = True
-    hWebView = FHelpBrowser.webHelp
+    hWebView = FHelpBrowser.GetBrowser()
   Endif
   
   If iType = TYPE_NATIVE Then

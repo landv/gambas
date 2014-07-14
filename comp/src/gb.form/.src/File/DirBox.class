@@ -22,7 +22,7 @@ Public Sub _new()
   
   $hButtonBox = New ButtonBox(Me) As "Button"
   Me.Proxy = $hButtonBox
-  $hButtonBox.Picture = Picture["icon:/small/font"]
+  $hButtonBox.Picture = Picture["icon:/small/directory"]
   $hButtonBox.ReadOnly = True
   
   $hButton = New ToolButton(Me) As "ClearButton"
@@ -59,11 +59,11 @@ End
 
 Public Sub Button_Click()
   
-  Dialog.Font = Font[$hButtonBox.Text]
-  If Dialog.SelectFont() Then Return
+  Dialog.Path = $hButtonBox.Text
+  If Dialog.SelectDirectory() Then Return
   
-  $hButtonBox.Text = Dialog.Font.ToString()
-  $hButtonBox.Foreground = Color.Foreground
+  $hButtonBox.Text = Dialog.Path
+  '$hButtonBox.Foreground = Color.Foreground
   
   Raise Click
   Raise Change
@@ -72,7 +72,7 @@ End
 
 Public Sub ClearButton_Click()
   
-  $hButtonBox.Text = Application.Font.ToString()
-  $hButtonBox.Foreground = Color.LightForeground
+  $hButtonBox.Text = ""
+  '$hButtonBox.Foreground = Color.LightForeground
   
 End

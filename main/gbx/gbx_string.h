@@ -151,9 +151,16 @@ char *STRING_conv_to_UTF8(const char *name, int len);
 
 #if DEBUG_STRING
 
+#ifndef __STRING_C
+extern char *STRING_watch;
+#endif
+
 void STRING_free(char **ptr);
-void STRING_ref(char *ptr);
-void STRING_unref(char **ptr);
+void STRING_ref_real(char *ptr);
+void STRING_unref_real(char **ptr);
+
+#define STRING_ref(_p) fprintf(stderr, "<< %s >> ", __func__), STRING_ref_real(_p)
+#define STRING_unref(_p) fprintf(stderr, "<< %s >> ", __func__), STRING_unref_real(_p)
 
 #else
 
