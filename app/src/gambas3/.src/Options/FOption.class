@@ -1219,6 +1219,7 @@ Public Sub btnDownloadHelp_Click()
 
   Dim sMsg As String
   Dim sFile As String
+  Dim sDir As String
 
   Inc Application.Busy
   
@@ -1235,7 +1236,10 @@ Public Sub btnDownloadHelp_Click()
   '   Goto FAIL
   ' Endif
   
-  sFile = File.SetName(MHelp.GetOfflineDir(), "wiki.tar.bz2")
+  sDir = MHelp.GetOfflineDir()
+  
+  Project.MakeDir(File.Dir(sDir))
+  sFile = File.Dir(sDir) &/ "wiki.tar.bz2"
   Try Kill sFile
   Exec ["wget", "-q", "-O", sFile, "http://gambaswiki.org/gambas-wiki.tar.bz2"] Wait
   If Not Exist(sFile) Then
@@ -1243,9 +1247,10 @@ Public Sub btnDownloadHelp_Click()
     Goto FAIL
   Endif
   
+  Debug "cd " & Shell$(File.Dir(sFile)) & " && tar xfj " & Shell$(File.Name(sFile)) & " && mv gambas wiki"
   Shell "cd " & Shell$(File.Dir(sFile)) & " && tar xfj " & Shell$(File.Name(sFile)) & " && mv gambas wiki" Wait
-  If Not Exist(MHelp.GetOfflineDir()) Then
-    Shell "rm -rf " & Shell(MHelp.GetOfflineDir()) & " " & Shell$(sFile) Wait
+  If Not IsDir(sDir) Then
+    Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
     sMsg = ("Unable to uncompress documentation.")
     Goto FAIL
   Endif

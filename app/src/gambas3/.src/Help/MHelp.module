@@ -455,18 +455,20 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   
 End
 
-'' Description
-'' -----------
+'' # Description
+'' 
 '' Initialize the help browser with the help on a specific symbol, and show it automatically.
-'' Arguments
-'' ---------
+'' 
+'' # Arguments
+'' 
 '' - *hWebView* is the WebView control to initialize.
 '' - *iType* is the type of the symbol.
 '' - *sSymbol* is the symbol.
 '' - *sClass* is the class if the symbol is a member of this class.
 '' - *sMore* is a suffix that will be added to the URL of the help page.
-'' Symbol types
-'' ------------
+'' 
+'' # Symbol types
+'' 
 '' The #iType# argument can be one of the following constants, defined in the MHelp module:
 '' - `TYPE_NATIVE` for a native datatype.
 '' - `TYPE_CLASS` for a class.
@@ -813,7 +815,6 @@ End
 
 Public Sub GetOfflineDir() As String
   
-  Project.MakeDir(Desktop.DataDir &/ "gambas3" &/ "wiki")
   Return Desktop.DataDir &/ "gambas3" &/ "wiki"
   
 End
@@ -828,6 +829,7 @@ Public Sub GetOfflineState() As Integer
 
   Dim sTimestamp As String
   Dim dDate As Date
+  Dim sDir As String
 
   If Not Desktop.NetworkAvailable Then Return OFFLINE_NO_NETWORK
 
@@ -840,8 +842,9 @@ Public Sub GetOfflineState() As Integer
   sTimestamp = Trim(sTimestamp)
   If Not sTimestamp Then Return OFFLINE_NOT_AVAILABLE
   
-  Try dDate = Stat(MHelp.GetOfflineDir()).LastModified
-  If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then Return OFFLINE_UP_TO_DATE
+  sDir = MHelp.GetOfflineDir()
+  Try dDate = Stat(File.SetName(sDir, "wiki.tar.bz2")).LastModified
+  If IsDir(sDir) And If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then Return OFFLINE_UP_TO_DATE
   
   Return OFFLINE_NEW_AVAILABLE
   
@@ -941,6 +944,6 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String, Optional bNoHeader A
 Catch
   
   Output To Default
-  hWebView.Html = "<h3>" & ("This page does not exist.") & "</h3>"
+  hWebView.Html = "<h2>" & ("This page does not exist.") & "</h2>"
   
 End
