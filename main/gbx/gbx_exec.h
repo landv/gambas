@@ -203,7 +203,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 
 void EXEC_nop(void);
 
-void EXEC_push_unknown(ushort code);
+void EXEC_push_unknown(void);
 void EXEC_push_array(ushort code);
 int EXEC_push_unknown_event(bool unknown);
 //void EXEC_push_special(void);

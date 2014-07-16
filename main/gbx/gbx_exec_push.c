@@ -34,7 +34,7 @@
 #include "gbx_struct.h"
 #include "gbx_local.h"
 
-void EXEC_push_unknown(ushort code)
+void EXEC_push_unknown(void)
 {
 	static void *jump[] = {
 		&&_PUSH_GENERIC,               // 0
@@ -62,9 +62,12 @@ void EXEC_push_unknown(ushort code)
 	bool defined;
 	VALUE *val;
 
+	// EXEC_object can change *PC by calling EXEC_push_unknown() recursively
+	// So don't store *PC anywhere
+
 	defined = EXEC_object(&SP[-1], &class, &object);
 
-	goto *jump[code & 0xF];
+	goto *jump[*PC & 0xF];
 
 
 _PUSH_GENERIC:

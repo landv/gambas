@@ -574,7 +574,7 @@ _PUSH_ARRAY:
 
 _PUSH_UNKNOWN:
 
-	EXEC_push_unknown(code);
+	EXEC_push_unknown();
 	goto _NEXT;
 
 /*-----------------------------------------------*/
