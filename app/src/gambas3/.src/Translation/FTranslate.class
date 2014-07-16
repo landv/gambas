@@ -194,6 +194,8 @@ Private Sub SetLang(Optional sLang As String) As Boolean
     VersionControl.AddFile(sPath)
     $bDeleteIfVoid = True
     'SHELL "cp " & Project.Quote(sDir &/ ".pot") & " " & Project.Quote(sPath) WAIT
+  Else If Stat(sPath).Size = 0 Then
+    $bDeleteIfVoid = True
   Else
     Try MergeMessage(sPath, Shell$(sPath) & " " & Shell$(sDir &/ ".pot"))
     If Error Then
@@ -1249,12 +1251,15 @@ Private Sub ShiftToSort(Optional sSortText As String)
 
   End With
 
-  Try cvwTranslate.MoveTo(sLastKey)
-  If Not cvwTranslate.Available Then
-    cvwTranslate.MoveFirst
+  If cvwTranslate.Count Then
+    Try cvwTranslate.MoveTo(sLastKey)
+    If Not cvwTranslate.Available Then
+      cvwTranslate.MoveFirst
+    Endif
+    cvwTranslate.item.Selected = True
+    cvwTranslate.Item.EnsureVisible()
   Endif
-  cvwTranslate.item.Selected = True
-  cvwTranslate.Item.EnsureVisible()
+  
   DisplayTrans
   ResizeTable
 
