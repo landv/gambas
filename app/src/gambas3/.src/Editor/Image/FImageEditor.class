@@ -2830,3 +2830,9 @@ Public Sub Action_Activate(Key As String) As Boolean
   End Select
   
 End
+
+Public Sub Form_Close()
+
+  Project.AddRecentFile(Me)
+
+End

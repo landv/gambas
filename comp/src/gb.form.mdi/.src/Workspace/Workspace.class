@@ -44,6 +44,12 @@ Public Sub Remove(hWindow As Window)
   
 End
 
+Public Sub Exist(hWindow As Window) As Boolean
+  
+  Return $hWorkspace.Exist(hWindow)
+  
+End
+
 
 Public Sub Detach(hWindow As Window)
   

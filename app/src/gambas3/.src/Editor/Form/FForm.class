@@ -3794,6 +3794,7 @@ End
 Public Sub Form_Close()
 
   HideFrame
+  Project.AddRecentFile(Me)
   '$hUndo = Null
 
 End

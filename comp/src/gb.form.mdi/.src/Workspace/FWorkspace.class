@@ -205,6 +205,13 @@ Public Sub SetResizable(hWin As Window, bResize As Boolean, Optional iGrid As In
   
 End
 
+Public Sub Exist(hWin As Window) As Boolean
+  
+  Return GetIndex(hWin) >= 0
+  
+End
+
+
 Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
 
   Dim hWindow As CWindow  

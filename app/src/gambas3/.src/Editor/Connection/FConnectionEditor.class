@@ -348,6 +348,7 @@ Public Sub Form_Close()
   splTable.Hide
   Try $hConn.Close
   
+  Project.AddRecentFile(Me)
   Project.Files[Path] = Null
   
 End

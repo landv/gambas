@@ -127,6 +127,7 @@ Public Const FILTER_CONFLICT As String = " C"
 
 Public Files As New Collection
 Public ExternFiles As New Collection
+Public RecentFiles As String[]
 
 Public AboutToQuit As Boolean
 
@@ -669,6 +670,7 @@ _INIT_AGAIN:
 
   If Not IsFake() And If Settings["/RestoreFiles", 1] Then LastOpenedFiles
   
+  RecentFiles = New String[]
   CPosition.Clear
 
   Dec Application.Busy
@@ -5842,5 +5844,12 @@ Public Sub UntildePath(sPath As String) As String
   If sPath = "~" Then Return User.Home
   If sPath Begins "~/" Then Return User.Home &/ Mid$(sPath, 2)
   Return sPath
+  
+End
+
+Public Sub AddRecentFile(hForm As Object)
+  
+  RecentFiles.Add(hForm.Path)
+  If RecentFiles.Count > 20 Then RecentFiles.Remove(0, RecentFiles.Count - 20)
   
 End

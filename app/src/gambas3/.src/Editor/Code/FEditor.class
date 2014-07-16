@@ -998,7 +998,7 @@ Public Sub Editors_KeyPress()
 
     sLine = Editor.Lines[iLine].Text
 
-    If AutoComment And If IsComment(sLine) And If Not Key.Shift Then
+    If AutoComment And If IsComment(sLine) And If Key.Shift Then
 
       iInd = Editor.GetIndent(sLine)
       If Editor.Column > iInd Then
@@ -3752,4 +3752,10 @@ Public Sub Action_Activate(Key As String) As Boolean
       Return True
   End Select
   
+End
+
+Public Sub Form_Close()
+
+  Project.AddRecentFile(Me)
+
 End

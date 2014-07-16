@@ -19,7 +19,8 @@
       Shortcut = "Ctrl+O"
     }
     { mnuOpenRecent Menu
-      Text = Shortcut(("Open recent"), "r")
+      Text = ("Open recent")
+      Picture = Picture["icon:/small/recent"]
       { Menu4 Menu
       }
     }
@@ -499,6 +500,12 @@
         Tag = "text"
       }
     }
+    { mnuOpenRecentFile Menu
+      Text = ("Recent")
+      Picture = Picture["icon:/small/recent"]
+      { Menu32 Menu
+      }
+    }
     { Menu2 Menu
     }
     { mnuEditFile Menu
@@ -614,6 +621,12 @@
     { mnuNewConnection Menu
       Text = Shortcut(("New connection"), "N") & "..."
       Picture = Picture["icon:/small/new"]
+    }
+    { mnuOpenRecentFile2 Menu
+      Text = ("Recent")
+      Picture = Picture["icon:/small/recent"]
+      { Menu34 Menu
+      }
     }
     { Menu17 Menu
     }
@@ -1088,7 +1101,7 @@
         Delay = 500
       }
       { tvwProject TreeView
-        MoveScaled(0,9,20,54)
+        MoveScaled(0,16,20,47)
         Drop = True
         Expand = True
         Border = False
