@@ -356,7 +356,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Printer_GrayScale)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(!PRINTER->colorMode() == QPrinter::GrayScale);
+		GB.ReturnBoolean(PRINTER->colorMode() == QPrinter::GrayScale);
 	else
 		PRINTER->setColorMode(VPROP(GB_BOOLEAN) ? QPrinter::GrayScale : QPrinter::Color);
 
