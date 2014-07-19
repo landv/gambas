@@ -171,6 +171,14 @@ int SDLwindow::GetDepth()
 		return (0);
 }
 
+void* SDLwindow::GetData()
+{
+	if (hSurface)
+		return (hSurface->pixels);
+	else
+		return (0);
+}
+
 void SDLwindow::SetCursorShape(int shape)
 {
       if (!hCursor)

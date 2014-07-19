@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  Cwindow.cpp
+	Cwindow.cpp
 
-  (c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
+	(c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -30,6 +30,7 @@
 #include "Ckey.h"
 #include "Cmouse.h"
 #include "Cdraw.h"
+#include "Cimage.h"
 
 #include "SDL.h"
 
@@ -115,7 +116,7 @@ BEGIN_PROPERTY(CWINDOW_framerate)
 	else
 	{
 		double val = VPROP(GB_FLOAT);
-		
+
 		if (val < 0)
 			return;
 
@@ -224,59 +225,67 @@ BEGIN_PROPERTY(Window_Grabbed)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(Window_Screenshot)
+
+	GB.ReturnObject(CIMAGE_create_from_window(WINDOWID));
+
+END_METHOD
+
 /***************************************************************************/
 
 GB_DESC CWindow[] =
 {
-  GB_DECLARE("Window", sizeof(CWINDOW)),
+	GB_DECLARE("Window", sizeof(CWINDOW)),
 
-  GB_METHOD("_new", NULL, CWINDOW_new, "[(OpenGL)b]"),
-  GB_METHOD("_free", NULL, CWINDOW_free, NULL),
+	GB_METHOD("_new", NULL, CWINDOW_new, "[(OpenGL)b]"),
+	GB_METHOD("_free", NULL, CWINDOW_free, NULL),
 
-  GB_METHOD("Show", NULL, CWINDOW_show, NULL),
-  GB_METHOD("Close", NULL, CWINDOW_close, NULL),
-  GB_METHOD("Clear", NULL, CWINDOW_clear, NULL),
-  GB_METHOD("Fill", NULL, CWINDOW_fill, "(Color)i"),
-  GB_METHOD("Refresh", NULL, CWINDOW_refresh, NULL),
-  GB_METHOD("Update", NULL, CWINDOW_refresh, NULL),
+	GB_METHOD("Show", NULL, CWINDOW_show, NULL),
+	GB_METHOD("Close", NULL, CWINDOW_close, NULL),
+	GB_METHOD("Clear", NULL, CWINDOW_clear, NULL),
+	GB_METHOD("Fill", NULL, CWINDOW_fill, "(Color)i"),
+	GB_METHOD("Refresh", NULL, CWINDOW_refresh, NULL),
+	GB_METHOD("Update", NULL, CWINDOW_refresh, NULL),
 
-  GB_PROPERTY("Caption", "s", CWINDOW_text),
+	GB_PROPERTY("Caption", "s", CWINDOW_text),
 //  GB_PROPERTY("Cursor", "Cursor;", CWINDOW_cursor),
-  GB_PROPERTY("Framerate", "f", CWINDOW_framerate),
-  GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
-  GB_PROPERTY("Height", "i", CWINDOW_height),
-  GB_PROPERTY("Mouse", "i", CWINDOW_mouse),
-  GB_PROPERTY("Text", "s", CWINDOW_text),
-  GB_PROPERTY("Title", "s", CWINDOW_text),
-  GB_PROPERTY("Tracking", "b", CWINDOW_tracking),
-  GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
-  GB_PROPERTY("Width", "i", CWINDOW_width),
+	GB_PROPERTY("Framerate", "f", CWINDOW_framerate),
+	GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
+	GB_PROPERTY("Height", "i", CWINDOW_height),
+	GB_PROPERTY("Mouse", "i", CWINDOW_mouse),
+	GB_PROPERTY("Text", "s", CWINDOW_text),
+	GB_PROPERTY("Title", "s", CWINDOW_text),
+	GB_PROPERTY("Tracking", "b", CWINDOW_tracking),
+	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
+	GB_PROPERTY("Width", "i", CWINDOW_width),
 
-  GB_PROPERTY_READ("Handle", "i", CWINDOW_id),
-  GB_PROPERTY_READ("Id", "i", CWINDOW_id),
-  GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
-  GB_PROPERTY("Grabbed", "b", Window_Grabbed),
+	GB_PROPERTY_READ("Handle", "i", CWINDOW_id),
+	GB_PROPERTY_READ("Id", "i", CWINDOW_id),
+	GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
+	GB_PROPERTY("Grabbed", "b", Window_Grabbed),
 
-  GB_EVENT("Close", "b", NULL, &EVENT_Close),
-  GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
-  GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
-  GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
-  GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
-  GB_EVENT("JoyAxisMove", NULL, NULL, &EVENT_JoyAxisMotion),
-  GB_EVENT("JoyBallMove", NULL, NULL, &EVENT_JoyBallMotion),
-  GB_EVENT("JoyButtonPress", NULL, NULL, &EVENT_JoyButtonPressed),
-  GB_EVENT("JoyButtonRelease", NULL, NULL, &EVENT_JoyButtonReleased),
-  GB_EVENT("JoyHatMove", NULL, NULL, &EVENT_JoyHatMotion),
-  GB_EVENT("Leave", NULL, NULL, &EVENT_Leave),
-  GB_EVENT("Draw", "b", NULL, &EVENT_Refresh),
-  GB_EVENT("KeyPress", NULL, NULL, &EVENT_KeyPressed),
-  GB_EVENT("KeyRelease", NULL, NULL, &EVENT_KeyReleased),
-  GB_EVENT("MouseMove", NULL, NULL, &EVENT_MouseMove),
-  GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
-  GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
-  GB_EVENT("Open", NULL, NULL, &EVENT_Open),
+	GB_METHOD("Screenshot", "Image", Window_Screenshot, NULL),
 
-  GB_END_DECLARE
+	GB_EVENT("Close", "b", NULL, &EVENT_Close),
+	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
+	GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
+	GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
+	GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
+	GB_EVENT("JoyAxisMove", NULL, NULL, &EVENT_JoyAxisMotion),
+	GB_EVENT("JoyBallMove", NULL, NULL, &EVENT_JoyBallMotion),
+	GB_EVENT("JoyButtonPress", NULL, NULL, &EVENT_JoyButtonPressed),
+	GB_EVENT("JoyButtonRelease", NULL, NULL, &EVENT_JoyButtonReleased),
+	GB_EVENT("JoyHatMove", NULL, NULL, &EVENT_JoyHatMotion),
+	GB_EVENT("Leave", NULL, NULL, &EVENT_Leave),
+	GB_EVENT("Draw", "b", NULL, &EVENT_Refresh),
+	GB_EVENT("KeyPress", NULL, NULL, &EVENT_KeyPressed),
+	GB_EVENT("KeyRelease", NULL, NULL, &EVENT_KeyReleased),
+	GB_EVENT("MouseMove", NULL, NULL, &EVENT_MouseMove),
+	GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
+	GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
+	GB_EVENT("Open", NULL, NULL, &EVENT_Open),
+
+	GB_END_DECLARE
 };
 
 /***************************************************************************/
@@ -319,7 +328,7 @@ void myWin::Quit(void)
 void myWin::Update(void)
 {
 	Uint32 ticks, diff;
-	
+
 	// no refresh event
 	if (!GB.CanRaise(hWindow, EVENT_Refresh))
 	{
@@ -335,7 +344,7 @@ void myWin::Update(void)
 		double d = WINDOW(hWindow)->lastTime + WINDOW(hWindow)->FPSLimit;
 
 		//fprintf(stderr, "%d %g %g %d\n", ticks, d, WINDOW(hWindow)->lastTime, d < ticks);
-		
+
 		if (d > ticks)
 		{
 			SDL_Delay(1);
@@ -365,7 +374,7 @@ void myWin::Update(void)
 
 		if (value > 0)
 			WINDOW(hWindow)->currentFPS = Uint32(1000 / value + 0.5);
-		else 
+		else
 			WINDOW(hWindow)->currentFPS = 0;
 
 		WINDOW(hWindow)->countFrames = 0;
@@ -373,9 +382,9 @@ void myWin::Update(void)
 	}
 	else
 		WINDOW(hWindow)->countFrames++;*/
-	
+
 	WINDOW(hWindow)->countFrames++;
-	
+
 	diff = ticks - WINDOW(hWindow)->startTime;
 	if (diff > 1000)
 	{
@@ -396,7 +405,7 @@ void myWin::Open(void)
 		glLoadIdentity();
 		glOrtho(0.0f, GLdouble(this->GetWidth()), GLdouble(this->GetHeight()), 0.0f, -1, 1);
 		glMatrixMode(GL_MODELVIEW);
-	}	
+	}
 
 	if (GB.CanRaise(hWindow, EVENT_Open))
 		GB.Raise(hWindow, EVENT_Open,0);
@@ -456,7 +465,7 @@ void myWin::JoyEvent(SDL_Event& event)
 	default:
 		break;
 	}
-	
+
 	CJOY_info.valid = false;
 }
 
@@ -485,11 +494,11 @@ static void convert_unicode_to_utf8(Uint16 unicode, char *buffer)
 void myWin::KeyEvent(SDL_KeyboardEvent *keyEvent, int eventType)
 {
 	CKEY_info.valid++;
-	
+
 	CKEY_info.code = keyEvent->keysym.sym;
 	CKEY_info.state = keyEvent->keysym.mod;
 	convert_unicode_to_utf8(keyEvent->keysym.unicode, CKEY_info.text);
-	
+
 	//SDLapp->LockX11();
 	//CKEY_info.code = XKeycodeToKeysym(SDLapp->X11appDisplay(), keyEvent->keysym.scancode, 0);
 	//SDLapp->UnlockX11();

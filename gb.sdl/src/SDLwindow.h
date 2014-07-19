@@ -45,6 +45,10 @@ public:
 	int GetWidth(void );
 	int GetHeight(void );
 	int GetDepth(void );
+	void* GetData(void );
+
+	void Lock(void) { if (hSurface) SDL_LockSurface(hSurface); }
+	void Unlock(void) { if (hSurface) SDL_UnlockSurface(hSurface); }
 
 	const char* GetTitle(void ) { return (hTitle.c_str()); };
 	SDL_Surface* GetSdlSurface(void ) { return (hSurface); };

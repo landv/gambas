@@ -100,13 +100,9 @@ static void take_image(CIMAGE *_object, SDLsurface *image)
 CIMAGE *CIMAGE_create(SDLsurface *image)
 {
 	CIMAGE *img;
-	static GB_CLASS class_id = NULL;
 
-	if (!class_id)
-		class_id = GB.FindClass("Image");
+	img = (CIMAGE *)GB.New(CLASS_Image, NULL, NULL);
 
-	img = (CIMAGE *)GB.New(class_id, NULL, NULL);
-  
 	if (image)
 	{
 		(image->GetTexture())->Sync();
@@ -114,8 +110,40 @@ CIMAGE *CIMAGE_create(SDLsurface *image)
 	}
 	else
 		take_image(img, new SDLsurface());
-	
+
 	return img;
+}
+
+CIMAGE *CIMAGE_create_from_window(SDLwindow *window)
+{
+	GB_IMG *img;
+	uchar *line, *top, *bottom;
+	uint size;
+	int y;
+
+	if (window->GetWidth() <= 0 || window->GetHeight() <= 0)
+		return NULL;
+
+	img = IMAGE.Create(window->GetWidth(), window->GetHeight(), GB_IMAGE_RGBA, NULL);
+	glReadPixels(0, 0, img->width, img->height, GL_RGBA, GL_UNSIGNED_BYTE, img->data);
+
+	size = img->width * sizeof(uint);
+	GB.Alloc(POINTER(&line), size);
+	top = img->data;
+	bottom = img->data + img->height * size;
+
+	for (y = 0; y < img->height / 2; y++)
+	{
+		bottom -= size;
+		memcpy(line, top, size);
+		memcpy(top, bottom, size);
+		memcpy(bottom, line, size);
+		top += size;
+	}
+
+	GB.Free(POINTER(&line));
+
+	return (CIMAGE *)img;
 }
 
 /***************************************************************************/

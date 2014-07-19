@@ -26,6 +26,7 @@
 
 #include "main.h"
 #include "SDLsurface.h"
+#include "SDLwindow.h"
 
 typedef
 	struct {
@@ -45,5 +46,6 @@ extern GB_DESC CImage[];
 
 SDLsurface *CIMAGE_get(CIMAGE *);
 CIMAGE *CIMAGE_create(SDLsurface *);
+CIMAGE *CIMAGE_create_from_window(SDLwindow *window);
 
 #endif /* __CIMAGE_H */
