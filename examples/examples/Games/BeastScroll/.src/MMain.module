@@ -68,11 +68,30 @@ Public Sub Main()
 
 End
 
+Private Sub DrawText(sText As String, X As Integer, Y As Integer)
+
+  Dim I As Integer
+  Dim J As Integer
+  
+  Draw.Foreground = Color.Black
+  For I = -1 To 1
+    For J = -1 To 1
+      Draw.Text(sText, X + I, Y + J)
+    Next
+  Next
+  Draw.Foreground = Color.White
+  Draw.Text(sText, X, Y)
+
+End
+
 Public Sub Screen_Draw()
   
   'Dim hImage As Image
   
   'Screen.Clear
+  
+  'Screen.Clear
+  'Goto PRINT_TEXT
   
   scroll = scroll + speed
   Dec (scroll1)
@@ -151,8 +170,13 @@ Public Sub Screen_Draw()
   
   #Endif
 
-  Draw.ForeColor = Color.White
-  Draw.Text(Screen.Framerate & " FPS", 10, 10)
+PRINT_TEXT:
+
+  Print Screen.Framerate; " FPS\r";
+  DrawText(Screen.Framerate & " FPS", 10, 16)
+  DrawText("[F1]   Toggle fullscreen", 10, 32)
+  DrawText("[F5]   Take screenshot to ~/BeastScroll.png", 10, 48)
+  DrawText("[ESC]  Quit", 10, 64)
   
 End
 
@@ -164,7 +188,13 @@ End
 
 Public Sub Screen_KeyPress()
   
-  If (key.Code = key.F1) Then Screen.FullScreen = Not Screen.FullScreen
-  If (key.Code = key.Esc) Then Screen.Close()
+  Select Case Key.Code
+    Case Key.F1
+      Screen.FullScreen = Not Screen.FullScreen
+    Case Key.Esc
+      Screen.Close
+    Case Key.F5
+      Screen.Screenshot().Save("~/BeastScroll.png")
+  End Select
   
 End
