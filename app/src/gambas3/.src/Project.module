@@ -324,8 +324,10 @@ Public Sub Main()
   If sPath Then 
     If IsDir(sPath) Then
       Project.Open(sPath)
-    Else
+    Else If Exist(sPath) Then
       FMain.OpenExternFile(sPath)
+    Else
+      FMain.ShowWarning(("File not found!") & "\n\n<tt>" & sPath & "</tt>")
     Endif
   Endif
 
@@ -691,6 +693,7 @@ _INIT_AGAIN:
     
   Endif
 
+  Application.Restart = ["gambas3", Project.Dir]
   'SetMessage(("OK"))
   Return
 
@@ -1944,7 +1947,9 @@ Public Sub IsSqliteFile(sPath As String) As Integer
   Dim hFile As File
   Dim sText As String
 
-  hFile = Open sPath
+  Try hFile = Open sPath
+  If Error Then Return
+  
   sText = Read #hFile, -47
   Close #hFile
   
@@ -2131,7 +2136,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
 
   Try Stat(sPath, True)
   If Error Then
-    FMain.ShowWarning(("File not found!") & "\n" & sPath)
+    FMain.ShowWarning(("File not found!") & "\n\n<tt>" & sPath & "</tt>")
     Project.Refresh
     Return
   Endif

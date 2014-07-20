@@ -26,6 +26,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QToolTip>
+#include <QSessionManager>
 
 #include "gambas.h"
 #include "main.h"
@@ -50,8 +51,10 @@
 
 #define MAX_SCREEN 16
 
-static int screen_busy = 0;
 char *CAPPLICATION_Theme = 0;
+GB_ARRAY CAPPLICATION_Restart = NULL;
+
+static int screen_busy = 0;
 static CSCREEN *_screens[MAX_SCREEN] = { NULL };
 
 static CSCREEN *get_screen(int num)
@@ -80,14 +83,7 @@ static void free_screens(void)
 	}
 }
 
-
-BEGIN_METHOD_VOID(Application_exit)
-
-	GB.FreeString(&CAPPLICATION_Theme);
-	free_screens();
-
-END_METHOD
-
+//-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Desktop_X)
 
@@ -133,6 +129,29 @@ BEGIN_PROPERTY(Desktop_HasSystemTray)
 	#endif
 
 END_PROPERTY
+
+BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	GB.ReturnObject(CPICTURE_grab(0, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, 0), VARGOPT(h, 0)));
+
+END_METHOD
+
+
+BEGIN_PROPERTY(Desktop_Scale)
+
+	GB.ReturnInteger(MAIN_scale);
+
+END_PROPERTY
+
+//-------------------------------------------------------------------------
+
+BEGIN_METHOD_VOID(Application_exit)
+
+	GB.FreeString(&CAPPLICATION_Theme);
+	GB.StoreObject(NULL, POINTER(&CAPPLICATION_Restart));
+	free_screens();
+
+END_METHOD
 
 static void set_font(QFont &font, void *object = 0)
 {
@@ -195,13 +214,6 @@ BEGIN_PROPERTY(Application_Busy)
 END_PROPERTY
 
 
-BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
-
-	GB.ReturnObject(CPICTURE_grab(0, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, 0), VARGOPT(h, 0)));
-
-END_METHOD
-
-
 BEGIN_PROPERTY(Application_ShowTooltips)
 
 	if (READ_PROPERTY)
@@ -217,7 +229,15 @@ BEGIN_PROPERTY(Application_MainWindow)
 	if (READ_PROPERTY)
 		GB.ReturnObject(CWINDOW_Main);
 	else
+	{
 		CWINDOW_Main = (CWINDOW *)VPROP(GB_OBJECT);
+		if (CWINDOW_MainDesktop >= 0)
+		{
+			MyMainWindow *win = (MyMainWindow *)CWINDOW_Main->widget.widget;
+			X11_window_set_desktop(win->winId(), win->isVisible(), CWINDOW_MainDesktop);
+			CWINDOW_MainDesktop = -1;
+		}
+	}
 
 END_PROPERTY
 
@@ -250,13 +270,16 @@ BEGIN_PROPERTY(Application_Theme)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(Desktop_Scale)
+BEGIN_PROPERTY(Application_Restart)
 
-	GB.ReturnInteger(MAIN_scale);
+	if (READ_PROPERTY)
+		GB.ReturnObject(CAPPLICATION_Restart);
+	else
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&CAPPLICATION_Restart));
 
 END_PROPERTY
 
-
+//-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Screens_Count)
 
@@ -336,6 +359,8 @@ BEGIN_PROPERTY(Screen_AvailableHeight)
 
 END_PROPERTY
 
+//-------------------------------------------------------------------------
+
 GB_DESC ScreenDesc[] =
 {
 	GB_DECLARE("Screen", sizeof(CSCREEN)), GB_NOT_CREATABLE(), GB_AUTO_CREATABLE(),
@@ -402,6 +427,7 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("ShowTooltips", "b", Application_ShowTooltips),
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),
+	GB_STATIC_PROPERTY("Restart", "String[]", Application_Restart),
 
 	GB_END_DECLARE
 };

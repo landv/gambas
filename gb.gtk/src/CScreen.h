@@ -35,6 +35,7 @@ extern GB_DESC DesktopDesc[];
 extern GB_DESC ApplicationDesc[];
 
 extern char *CAPPLICATION_Theme;
+extern GB_ARRAY CAPPLICATION_Restart;
 
 #else
 

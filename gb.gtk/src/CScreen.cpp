@@ -40,6 +40,7 @@ extern bool CWINDOW_Embedded;
 extern int MAIN_scale;
 
 char *CAPPLICATION_Theme = 0;
+GB_ARRAY CAPPLICATION_Restart = NULL;
 
 static int _busy = 0;
 
@@ -263,6 +264,18 @@ BEGIN_PROPERTY(Application_Theme)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Application_Restart)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(CAPPLICATION_Restart);
+	else
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&CAPPLICATION_Restart));
+
+END_PROPERTY
+
+
+//-------------------------------------------------------------------------
+
 BEGIN_PROPERTY(Screens_Count)
 
 	GB.ReturnInteger(gDesktop::count());
@@ -406,9 +419,9 @@ GB_DESC ApplicationDesc[] =
 	GB_STATIC_PROPERTY("MainWindow", "Window", Application_MainWindow),
 	GB_STATIC_PROPERTY("Busy", "i", Application_Busy),
 	GB_STATIC_PROPERTY("ShowTooltips", "b", Application_ShowTooltips),
-	
 	GB_STATIC_PROPERTY("Embedder", "i", Application_Embedder),
 	GB_STATIC_PROPERTY("Theme", "s", Application_Theme),
+	GB_STATIC_PROPERTY("Restart", "String[]", Application_Restart),
 
 	GB_END_DECLARE
 };

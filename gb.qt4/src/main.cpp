@@ -328,6 +328,24 @@ QEventLoop *MyApplication::eventLoop = 0;
 MyApplication::MyApplication(int &argc, char **argv)
 : QApplication(argc, argv)
 {
+	if (isSessionRestored())
+	{
+		bool ok;
+		int desktop;
+
+		if (argc >= 2 && ::strcmp(argv[argc - 2], "-session-desktop") == 0)
+		{
+			desktop = QString(argv[argc - 1]).toInt(&ok);
+			if (ok)
+				CWINDOW_MainDesktop = desktop;
+
+			//qDebug("session desktop: %d", CWINDOW_MainDesktop);
+
+			argc -= 2;
+		}
+	}
+
+	QObject::connect(this, SIGNAL(commitDataRequest(QSessionManager &)), SLOT(commitDataRequested(QSessionManager &)));
 }
 
 void MyApplication::initClipboard()
@@ -478,6 +496,45 @@ void MyApplication::setTooltipEnabled(bool b)
 		
 	_tooltip_disable = b;
 	setEventFilter(b);
+}
+
+void MyApplication::commitDataRequested(QSessionManager &session)
+{
+	QStringList cmd;
+
+	if (CAPPLICATION_Restart)
+	{
+		int i;
+		char **str;
+
+		str = (char **)GB.Array.Get(CAPPLICATION_Restart, 0);
+		for (i = 0; i < GB.Array.Count(CAPPLICATION_Restart); i++)
+		{
+			if (str[i])
+				cmd += str[i];
+			else
+				cmd += "";
+		}
+	}
+
+	cmd += "-session";
+	cmd += sessionId();
+
+	if (CWINDOW_Main)
+	{
+		cmd += "-session-desktop";
+		cmd += QString::number(X11_window_get_desktop(CWINDOW_Main->widget.widget->winId()));
+		/*cmd += "-session-data";
+		cmd += QString::number(CWINDOW_Main->x) + ","
+		       + QString::number(CWINDOW_Main->y) + ","
+					 + QString::number(CWINDOW_Main->w) + ","
+					 + QString::number(CWINDOW_Main->h) + ","
+					 + QString::number(QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget));*/
+	}
+
+	//qDebug("commitDataRequested: %s", QT_ToUTF8(cmd.join(" ")));
+
+	session.setRestartCommand(cmd);
 }
 
 #ifndef NO_X_WINDOW

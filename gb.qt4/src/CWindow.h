@@ -106,6 +106,7 @@ extern GB_DESC CWindowsDesc[];
 extern GB_DESC CFormDesc[];
 
 extern CWINDOW *CWINDOW_Main;
+extern int CWINDOW_MainDesktop;
 extern CWINDOW *CWINDOW_Current;
 extern CWINDOW *CWINDOW_Active;
 extern CWINDOW *CWINDOW_LastActive;

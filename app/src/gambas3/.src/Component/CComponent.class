@@ -1579,8 +1579,13 @@ Public Sub Match(sFilter As String) As Boolean
 End
 
 Static Public Sub Get(sComp As String) As CComponent
+
+  Dim hComp As CComponent
   
-  Return All[sComp]
+  hComp = All[sComp]
+  hComp.Load
+  Return hComp
+  
   
 End
 

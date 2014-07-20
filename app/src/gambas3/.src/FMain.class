@@ -2427,6 +2427,8 @@ Public Sub OpenExternFile(Optional sPath As String)
     Goto CANNOT_OPEN
   Endif
   
+  Application.Restart = ["gambas3", sPath]
+
   If Project.IsSqliteFile(sPath) Then
     sPath = MConnection.CreateSQLite(sPath)
   Endif              

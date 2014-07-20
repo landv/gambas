@@ -57,6 +57,8 @@ static bool _daemon = FALSE;
 extern char **environ;
 
 
+//-------------------------------------------------------------------------
+
 BEGIN_PROPERTY(Application_Path)
 
   GB_ReturnString(PROJECT_path);
@@ -98,6 +100,8 @@ BEGIN_PROPERTY(Application_Version)
 
 END_PROPERTY
 
+
+//-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Application_Args_Count)
 
@@ -145,6 +149,26 @@ BEGIN_METHOD_VOID(Application_Args_next)
 END_METHOD
 
 
+BEGIN_PROPERTY(Application_Args_All)
+
+	GB_ARRAY array;
+	int i;
+	char *arg;
+
+	GB_ArrayNew(&array, GB_T_STRING, PROJECT_argc);
+	for (i = 0; i < PROJECT_argc; i++)
+	{
+		arg = PROJECT_argv[i];
+		if (arg && *arg)
+			*(char **)GB_ArrayGet(array, i) = STRING_new_zero(arg);
+	}
+
+  GB_ReturnObject(array);
+
+END_PROPERTY
+
+//-------------------------------------------------------------------------
+
 BEGIN_PROPERTY(Application_Env_Count)
 
 	int n = 0;
@@ -191,6 +215,8 @@ BEGIN_METHOD_VOID(Application_Env_next)
   }
 
 END_METHOD
+
+//-------------------------------------------------------------------------
 
 static void init_again(int old_pid)
 {
@@ -264,6 +290,7 @@ GB_DESC NATIVE_AppArgs[] =
 
   GB_STATIC_PROPERTY_READ("Count", "i", Application_Args_Count),
   GB_STATIC_PROPERTY_READ("Max", "i", Application_Args_Max),
+  GB_STATIC_PROPERTY_READ("All", "String[]", Application_Args_All),
   GB_STATIC_METHOD("_get", "s", Application_Args_get, "(Index)i"),
   GB_STATIC_METHOD("_next", "s", Application_Args_next, NULL),
 

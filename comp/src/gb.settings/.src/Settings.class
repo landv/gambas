@@ -5,6 +5,7 @@ Create Static
 
 Class Window
 Class Desktop
+Class DesktopWindow
 Class Screens
 
 Static Property Read DefaultDir As String
@@ -19,6 +20,8 @@ Private $bModify As Boolean
 
 Property Read Keys As _Settings_Keys
 Property Read Path As String
+
+'Static Private $cObserver As New Collection
 
 Private Sub Load()
   
@@ -331,10 +334,28 @@ End
 ' 
 ' END
 
+' Public Sub Window_Activate()
+' 
+'   Dim hObserver As Observer
+'   Dim hDesktopWin As DesktopWindow
+'   
+'   hObserver = $cObserver[Last.Id]
+'   If Not hObserver Then Return
+'   
+'   hDesktopWin = New DesktopWindow(Last.Id)
+'   Try hDesktopWin.Desktop = hObserver.Tag
+'   Debug Last.Name;; "Desktop:";; hObserver.Tag;; "(";; hDesktopWin.Desktop; ")"
+'   $cObserver[Last.Id] = Null
+'   
+' End
+
+
 Private Sub ReadWindow(hWindow As Window, sKey As String)
 
   Dim aPos As Integer[]
   Dim X, Y, W, H, S As Integer
+  ' Dim D As Integer
+  ' Dim hObserver As Observer
 
   aPos = Me[sKey &/ "Geometry"]
 
@@ -359,6 +380,16 @@ Private Sub ReadWindow(hWindow As Window, sKey As String)
   X += Screens[S].AvailableX
   Y += Screens[S].AvailableY
 
+  ' If Not hWindow.Parent And If Component.IsLoaded("gb.desktop") Then
+  '   D = -1
+  '   Try D = aPos[5]
+  '   If D >= 0 Then 
+  '     hObserver = New Observer(hWindow, True) As "Window"
+  '     hObserver.Tag = D
+  '     $cObserver[hWindow.Id] = hObserver
+  '   Endif
+  ' Endif
+
   ' If Object.Type(hWindow) = "FHelpBrowser" Then
   '   Print "ReadWindow: "; X;; Y; " / "; S;; Screens[S].AvailableX;; Screens[S].AvailableY
   ' Endif
@@ -381,18 +412,28 @@ End
 Private Sub WriteWindow(hWindow As Window, sKey As String)
 
   Dim X, Y, W, H, S As Integer
-  
-  ' If Object.Type(hWindow) = "FHelpBrowser" Then
-  '   Print "WriteWindow: "; hWindow.X;; hWindow.Y; " / "; S;; Screens[S].AvailableX;; Screens[S].AvailableY
-  ' Endif
+  'Dim D As Integer
+  Dim aVal As Integer[]
+  'Dim hDesktopWin As DesktopWindow
   
   S = hWindow.Screen
   X = hWindow.X - Screens[S].AvailableX
   Y = hWindow.Y - Screens[S].AvailableY
   W = hWindow.Width
   H = hWindow.Height
+  
+  aVal = [X, Y, W, H, S]
+  
+  ' If Not hWindow.Parent And If Component.IsLoaded("gb.desktop") Then
+  '   hDesktopWin = New DesktopWindow(hWindow.Id)
+  '   D = -1
+  '   Try D = hDesktopWin.Desktop
+  '   If Error Then Debug Error.Text
+  '   Debug hWindow.Name;; "Desktop:";; D
+  '   If D >= 0 Then aVal.Add(D)
+  ' Endif
 
-  Me[sKey &/ "Geometry"] = [X, Y, W, H, S]
+  Me[sKey &/ "Geometry"] = aVal
 
 End
 

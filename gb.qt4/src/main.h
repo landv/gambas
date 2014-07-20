@@ -30,6 +30,7 @@
 #include <QApplication>
 #include <QTimerEvent>
 #include <QEventLoop>
+#include <QSessionManager>
 
 #define DO_NOT_USE_QT_INTERFACE
 #include "gb.qt.h"
@@ -103,10 +104,12 @@ public:
   
   static QEventLoop *eventLoop;
 	
+
 public slots:
 	
 	void linkDestroyed(QObject *);
 	void clipboardHasChanged();
+	void commitDataRequested(QSessionManager &);
   
 private:
   static bool _tooltip_disable;

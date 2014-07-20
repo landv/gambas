@@ -28,12 +28,14 @@
 
 #ifndef __CSCREEN_CPP
 extern GB_DESC DesktopDesc[];
+extern GB_DESC ApplicationSessionDesc[];
 extern GB_DESC ApplicationDesc[];
 extern GB_DESC ScreensDesc[];
 extern GB_DESC ScreenDesc[];
 extern GB_DESC StyleDesc[];
 
 extern char *CAPPLICATION_Theme;
+extern GB_ARRAY CAPPLICATION_Restart;
 #else
 
 #define SCREEN ((CSCREEN *)_object)
