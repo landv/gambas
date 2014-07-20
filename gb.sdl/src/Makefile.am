@@ -2,7 +2,6 @@ COMPONENT = gb.sdl
 include $(top_srcdir)/component.am
 
 gblib_LTLIBRARIES = gb.sdl.la
-EXTRA_DIST = data
 
 gb_sdl_la_LIBADD = @SDL_LIB@
 gb_sdl_la_LDFLAGS = -module @LD_FLAGS@ @SDL_LDFLAGS@

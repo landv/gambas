@@ -225,9 +225,9 @@ BEGIN_PROPERTY(Window_Grabbed)
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(Window_Screenshot)
+BEGIN_METHOD(Window_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	GB.ReturnObject(CIMAGE_create_from_window(WINDOWID));
+	GB.ReturnObject(CIMAGE_create_from_window(WINDOWID, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, -1), VARGOPT(h, -1)));
 
 END_METHOD
 
@@ -264,7 +264,7 @@ GB_DESC CWindow[] =
 	GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
 	GB_PROPERTY("Grabbed", "b", Window_Grabbed),
 
-	GB_METHOD("Screenshot", "Image", Window_Screenshot, NULL),
+	GB_METHOD("Screenshot", "Image", Window_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_EVENT("Close", "b", NULL, &EVENT_Close),
 	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),

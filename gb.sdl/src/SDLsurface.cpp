@@ -34,14 +34,20 @@ SDLsurface::SDLsurface()
 {
 	hTexture = new SDLtexture(this);
 	hSurface = 0;
+	ref = 1;
 }
 
 SDLsurface::SDLsurface(char *data, int width, int height)
 {
 	hTexture = new SDLtexture(this);
-	
+	ref = 1;
+
 	hSurface = SDL_CreateRGBSurfaceFrom((void *)data, width, height, 32, width * sizeof(int), 
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
+#else
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+#endif
 
 	if (!hSurface)
 		SDLcore::RaiseError(SDL_GetError());
@@ -53,6 +59,7 @@ SDLsurface::SDLsurface(const SDLsurface& surf)
 {
 #define cpySurf surf.hSurface
 
+	ref = 1;
 	hTexture = new SDLtexture(this);
 	hSurface = 0;
 
@@ -87,6 +94,7 @@ SDLsurface::SDLsurface(const SDLsurface& surf)
 
 SDLsurface::SDLsurface(SDL_Surface* surf)
 {
+	ref = 1;
 	hTexture = new SDLtexture(this);
 	hSurface = surf;
 	hTexture->ToLoad();
@@ -94,6 +102,7 @@ SDLsurface::SDLsurface(SDL_Surface* surf)
 
 SDLsurface::SDLsurface(int Width, int Height)
 {
+	ref = 1;
 	hTexture = new SDLtexture(this);
 	hSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Width, Height, 32,
 		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);

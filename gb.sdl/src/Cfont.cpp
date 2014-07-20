@@ -73,7 +73,7 @@ END_METHOD
 BEGIN_METHOD(CFONT_width, GB_STRING text)
 
 	int width, height;
-	FONT->SizeText(STRING(text), &width, &height);
+	FONT->SizeText(STRING(text), LENGTH(text), &width, &height);
 	GB.ReturnInteger(width);
 
 END_METHOD
@@ -81,7 +81,7 @@ END_METHOD
 BEGIN_METHOD(CFONT_height, GB_STRING text)
 
 	int width, height;
-	FONT->SizeText(STRING(text), &width, &height);
+	FONT->SizeText(STRING(text), LENGTH(text), &width, &height);
 	GB.ReturnInteger(height);
 
 END_METHOD
@@ -90,7 +90,13 @@ BEGIN_METHOD(CFONT_image, GB_STRING text)
 
 	CIMAGE *img;
 	
-	SDLsurface *txt = FONT->RenderText(GB.ToZeroString(ARG(text)));
+	SDLsurface *txt = FONT->RenderText(STRING(text), LENGTH(text));
+	if (!txt)
+	{
+		GB.ReturnNull();
+		return;
+	}
+	
 	img = CIMAGE_create(txt);
 	
 	GB.ReturnObject(img);

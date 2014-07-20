@@ -72,12 +72,15 @@ public:
 	bool IsFontUnderline(void );
 	bool IsFontScalable(void );
 
-	void SizeText(const char* text, int *width, int *height);
-	SDLsurface* RenderText(const char* text);
+	void SizeText(const char* text, int len, int *width, int *height);
+	SDLsurface* RenderText(const char *text, int len);
 
 private:
 	void OpenFont(const char* file);
 	
+	SDLsurface *_last_surface;
+	char *_last_text;
+
 	int hfontsize;
 	std::string hfontname;
 	int hSDLfontstyle;

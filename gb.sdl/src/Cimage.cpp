@@ -31,7 +31,7 @@
 
 static void free_image(GB_IMG *img, void *image)
 {
-	delete (SDLsurface *)image;
+	((SDLsurface *)image)->Unref();
 }
 
 static void check_modified(GB_IMG *img)
@@ -70,10 +70,9 @@ static void sync_image(GB_IMG *image)
 	image->sync = false;
 }
 
-
 static GB_IMG_OWNER _image_owner = {
 	"gb.sdl",
-	GB_IMAGE_BGRA,
+	DEFAULT_IMAGE_FORMAT,
 	free_image,
 	free_image,
 	temp_image,
@@ -114,18 +113,23 @@ CIMAGE *CIMAGE_create(SDLsurface *image)
 	return img;
 }
 
-CIMAGE *CIMAGE_create_from_window(SDLwindow *window)
+CIMAGE *CIMAGE_create_from_window(SDLwindow *window, int x, int y, int w, int h)
 {
 	GB_IMG *img;
 	uchar *line, *top, *bottom;
 	uint size;
-	int y;
 
-	if (window->GetWidth() <= 0 || window->GetHeight() <= 0)
+	if (w < 0)
+		w = window->GetWidth();
+
+	if (h < 0)
+		h = window->GetHeight();
+
+	if (w <= 0 || h <= 0)
 		return NULL;
 
-	img = IMAGE.Create(window->GetWidth(), window->GetHeight(), GB_IMAGE_RGBA, NULL);
-	glReadPixels(0, 0, img->width, img->height, GL_RGBA, GL_UNSIGNED_BYTE, img->data);
+	img = IMAGE.Create(w, h, GB_IMAGE_RGBA, NULL);
+	glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, img->data);
 
 	size = img->width * sizeof(uint);
 	GB.Alloc(POINTER(&line), size);

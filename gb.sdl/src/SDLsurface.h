@@ -37,6 +37,9 @@ public:
 	SDLsurface(int Width, int Height);
 	~SDLsurface();
 
+	void Ref() { ref++; }
+	void Unref() { ref--; if (ref <= 0) delete this; }
+
 	void Create(int Width, int Height, int Depth = 0);
 //	void LoadFromMem(char* addr, long len);
 
@@ -62,6 +65,7 @@ public:
 	unsigned char *data(void) { return (unsigned char *)GetData(); }
 
 private:
+	int ref;
 	SDLtexture *hTexture;
 	SDL_Surface *hSurface;
 };

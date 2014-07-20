@@ -25,20 +25,11 @@
 #include "SDLapp.h"
 #include "gb_common.h"
 #include "main.h"
-
-//#include <algorithm>
-//#include <iostream>
-//#include <sstream>
 #include <string>
 #include <ctype.h>
 
-#define DEFAULT_FONT_SIZE 12
-#define DEFAULT_FONT "_default.bdf"
-/*
-#ifndef TTF_STYLE_STRIKETHROUGH
-#define TTF_STYLE_STRIKETHROUGH	0x08
-#endif
-*/
+#include "default_font.h"
+
 #if 0
 typedef struct {
 	std::string name;
@@ -142,25 +133,210 @@ void SDLfont::Init()
 	XCloseDisplay(disp);
 }
 #endif
+
+#define UNICODE_INVALID 0xFFFFFFFFU
+
+static const char _char_length[256] =
+{
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
+};
+
+#define utf8_get_char_length(_c) ((int)_char_length[(unsigned char)(_c)])
+
+static int utf8_get_length(const char *sstr, int len)
+{
+	const uchar *str = (const uchar *)sstr;
+	int ulen;
+	int i;
+
+	ulen = 0;
+
+	for (i = 0; i < len; i++)
+	{
+		if ((str[i] & 0xC0) != 0x80)
+			ulen++;
+	}
+
+	return ulen;
+}
+
+static uint utf8_to_unicode(const char *sstr, int len)
+{
+	const uchar *str = (const uchar *)sstr;
+	uint unicode;
+
+	switch (len)
+	{
+		case 2:
+			unicode = (str[1] & 0x3F) + ((str[0] & 0x1F) << 6);
+			if (unicode < 0x80)
+				goto _INVALID;
+			break;
+
+		case 3:
+			unicode = (str[2] & 0x3F) + ((str[1] & 0x3F) << 6) + ((str[0] & 0xF) << 12);
+			if (unicode < 0x800)
+				goto _INVALID;
+			break;
+
+		case 4:
+			unicode = (str[3] & 0x3F) + ((str[2] & 0x3F) << 6) + ((str[1] & 0x3F) << 12) + ((str[0] & 0x7) << 18);
+			if (unicode < 0x10000)
+				goto _INVALID;
+			break;
+
+		case 5:
+			unicode = (str[4] & 0x3F) + ((str[3] & 0x3F) << 6) + ((str[2] & 0x3F) << 12) + ((str[1] & 0x3F) << 18) + ((str[0] & 0x3) << 24);
+			if (unicode < 0x200000)
+				goto _INVALID;
+			break;
+
+		case 6:
+			unicode = (str[5] & 0x3F) + ((str[4] & 0x3F) << 6) + ((str[3] & 0x3F) << 12) + ((str[2] & 0x3F) << 18) + ((str[1] & 0x3F) << 24) + ((str[0] & 0x1) << 30);
+			if (unicode < 0x4000000)
+				goto _INVALID;
+			break;
+
+		default:
+			unicode = str[0];
+			break;
+	}
+
+	return unicode;
+
+_INVALID:
+
+	return UNICODE_INVALID;
+}
+
+
+static void render_default_font(uint *dest, int size, const char *text, int len)
+{
+	static void *jump[] = { &&__0, &&__1, &&__2, &&__3, &&__4, &&__5, &&__6, &&__7, &&__8, &&__9, &&__A, &&__B, &&__C, &&__D, &&__E, &&__F };
+	static void *jump2[] = { &&__00, &&__10, &&__20, &&__30, &&__40, &&__50, &&__60, &&__70, &&__80, &&__90, &&__A0, &&__B0, &&__C0, &&__D0, &&__E0, &&__F0 };
+
+	int lc;
+	const char *src;
+	uint *p;
+	int y;
+	uchar line;
+	uint code;
+	uint col = 0xFFFFFFFF;
+
+	size *= DEFAULT_FONT_WIDTH;
+
+	for(;;)
+	{
+		if (!*text)
+			break;
+
+		lc = utf8_get_char_length(*text);
+		code = utf8_to_unicode(text, lc);
+		text += lc;
+
+		if (code >= 33 && code <= 126)
+			src = _default_font_33_126 + DEFAULT_FONT_HEIGHT * (code - 33);
+		else if (code >= 160 && code <= 687)
+			src = _default_font_160_687 + DEFAULT_FONT_HEIGHT * (code - 160);
+		else
+			src = NULL;
+
+		if (src)
+		{
+			p = dest;
+
+			for (y = 0; y < DEFAULT_FONT_HEIGHT; y++)
+			{
+				line = *src++;
+				if (!line)
+				{
+					p += size;
+					continue;
+				}
+
+				goto *jump[line & 0xF];
+
+				__1: p[0] = col; goto __0;
+				__2: p[1] = col; goto __0;
+				__3: p[0] = p[1] = col; goto __0;
+				__4: p[2] = col; goto __0;
+				__5: p[0] = p[2] = col; goto __0;
+				__6: p[1] = p[2] = col; goto __0;
+				__7: p[0] = p[1] = p[2] = col; goto __0;
+				__8: p[3] = col; goto __0;
+				__9: p[0] = p[3] = col; goto __0;
+				__A: p[1] = p[3] = col; goto __0;
+				__B: p[0] = p[1] = p[3] = col; goto __0;
+				__C: p[2] = p[3] = col; goto __0;
+				__D: p[0] = p[2] = p[3] = col; goto __0;
+				__E: p[1] = p[2] = p[3] = col; goto __0;
+				__F: p[0] = p[1] = p[2] = p[3] = col; goto __0;
+				__0:
+
+				goto *jump2[line >> 4];
+
+				__10: p[4] = col; goto __00;
+				__20: p[5] = col; goto __00;
+				__30: p[4] = p[5] = col; goto __00;
+				__40: p[6] = col; goto __00;
+				__50: p[4] = p[6] = col; goto __00;
+				__60: p[5] = p[6] = col; goto __00;
+				__70: p[4] = p[5] = p[6] = col; goto __00;
+				__80: p[7] = col; goto __00;
+				__90: p[4] = p[7] = col; goto __00;
+				__A0: p[5] = p[7] = col; goto __00;
+				__B0: p[4] = p[5] = p[7] = col; goto __00;
+				__C0: p[6] = p[7] = col; goto __00;
+				__D0: p[4] = p[6] = p[7] = col; goto __00;
+				__E0: p[5] = p[6] = p[7] = col; goto __00;
+				__F0: p[4] = p[5] = p[6] = p[7] = col; goto __00;
+				__00:
+
+				p += size;
+			}
+		}
+
+		dest += DEFAULT_FONT_WIDTH;
+	}
+}
+
+
+//-------------------------------------------------------------------------
+
 SDLfont::SDLfont(const char *fontfile)
 {
-	hfontsize = DEFAULT_FONT_SIZE;
+	hfontsize = DEFAULT_FONT_HEIGHT;
+	hSDLfont = 0;
+	_last_surface = 0;
+	_last_text = 0;
 
-	if (!fontfile)
+	/*if (!fontfile)
 	{
 		hfontname = GB.System.Path();
 		hfontname += "/share/gambas" GAMBAS_VERSION_STRING "/gb.sdl/" DEFAULT_FONT;
 	}
 	else
-		hfontname = fontfile;
-	
-	hSDLfont = 0;
+		hfontname = fontfile;*/
 
-	OpenFont(hfontname.c_str());
+	if (fontfile)
+	{
+		hfontname = fontfile;
+		OpenFont(hfontname.c_str());
+	}
 }
 
 SDLfont::~SDLfont()
 {
+	GB.FreeString(&_last_text);
+	if (_last_surface)
+		_last_surface->Unref();
 	if (hSDLfont)
 		TTF_CloseFont(hSDLfont);
 }
@@ -203,6 +379,9 @@ const char* SDLfont::GetFontName(void )
 
 void SDLfont::SetFontSize(int size)
 {
+	if (!hSDLfont)
+		return;
+
 	int style = TTF_GetFontStyle(hSDLfont);
 	hfontsize = size;
 
@@ -212,6 +391,9 @@ void SDLfont::SetFontSize(int size)
 
 void SDLfont::SetFontBold(bool state)
 {
+	if (!hSDLfont)
+		return;
+
 	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_BOLD))
 		return;
 	
@@ -220,12 +402,18 @@ void SDLfont::SetFontBold(bool state)
 
 bool SDLfont::IsFontBold(void )
 {
-	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_BOLD);
+	if (!hSDLfont)
+		return false;
+	else
+		return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_BOLD);
 }
 
 
 void SDLfont::SetFontItalic(bool state)
 {
+	if (!hSDLfont)
+		return;
+
 	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_ITALIC))
 		return;
 	
@@ -234,7 +422,10 @@ void SDLfont::SetFontItalic(bool state)
 
 bool SDLfont::IsFontItalic(void )
 {
-	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_ITALIC);
+	if (!hSDLfont)
+		return false;
+	else
+		return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_ITALIC);
 }
 
 void SDLfont::SetFontStrikeout(bool state)
@@ -255,6 +446,9 @@ bool SDLfont::IsFontStrikeout(void )
 
 void SDLfont::SetFontUnderline(bool state)
 {
+	if (!hSDLfont)
+		return;
+
 	if (state == (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_UNDERLINE))
 		return;
 	
@@ -263,39 +457,110 @@ void SDLfont::SetFontUnderline(bool state)
 
 bool SDLfont::IsFontUnderline(void )
 {
-	return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_UNDERLINE);
+	if (!hSDLfont)
+		return false;
+	else
+		return (TTF_GetFontStyle(hSDLfont) & TTF_STYLE_UNDERLINE);
 }
 
 bool SDLfont::IsFontScalable(void )
 {
-	return true;
+	if (!hSDLfont)
+		return false;
+	else
+		return true;
 }
 
 int SDLfont::GetFontAscent(void )
 {
-	return TTF_FontAscent(hSDLfont);
+	if (hSDLfont)
+		return TTF_FontAscent(hSDLfont);
+	else
+		return DEFAULT_FONT_ASCENT;
 }
 
 int SDLfont::GetFontDescent(void )
 {
-	return TTF_FontDescent(hSDLfont);
+	if (hSDLfont)
+		return TTF_FontDescent(hSDLfont);
+	else
+		return DEFAULT_FONT_DESCENT;
 }
 
 bool SDLfont::IsFontFixed(void )
 {
-	return (TTF_FontFaceIsFixedWidth(hSDLfont));
+	if (hSDLfont)
+		return (TTF_FontFaceIsFixedWidth(hSDLfont));
+	else
+		return true;
 }
 
-void SDLfont::SizeText(const char *text, int *width, int *height)
+void SDLfont::SizeText(const char *text, int len, int *width, int *height)
 {
-	TTF_SizeUTF8(hSDLfont, text, width, height);
+	if (len == 0)
+	{
+		*width = 0;
+		*height = GetFontAscent() + GetFontDescent();
+		return;
+	}
+
+	if (hSDLfont)
+	{
+		TTF_SizeUTF8(hSDLfont, GB.TempString(text, len), width, height);
+		return;
+	}
+
+	*width = utf8_get_length(text, len) * DEFAULT_FONT_WIDTH;
+	*height = DEFAULT_FONT_HEIGHT;
 }
 
-SDLsurface* SDLfont::RenderText(const char* text)
+SDLsurface* SDLfont::RenderText(const char *text, int len)
 {
-	SDL_Color fg = {0xFF, 0xFF, 0xFF};
+	SDL_Surface *result;
 
-	SDL_Surface *result = TTF_RenderUTF8_Blended(hSDLfont, text, fg);
-	SDLsurface *surf = new SDLsurface(result);
-	return (surf);
+	if (len <= 0 || len >= 1024)
+		return NULL;
+
+	if (_last_surface)
+	{
+		if (len == GB.StringLength(_last_text) && strncmp(text, _last_text, len) == 0)
+		{
+			_last_surface->Ref();
+			return _last_surface;
+		}
+	}
+
+	if (hSDLfont)
+	{
+		SDL_Color fg = {0xFF, 0xFF, 0xFF};
+
+		result = TTF_RenderUTF8_Blended(hSDLfont, GB.TempString(text, len), fg);
+	}
+	else
+	{
+		int size = utf8_get_length(text, len);
+
+		result = SDL_CreateRGBSurface(SDL_SWSURFACE, size * DEFAULT_FONT_WIDTH, DEFAULT_FONT_HEIGHT, 32,
+		#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+				0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
+		#else
+				0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+		#endif
+
+		if (SDL_MUSTLOCK(result))
+			SDL_LockSurface(result);
+		render_default_font((uint *)result->pixels, size, text, len);
+		if (SDL_MUSTLOCK(result))
+			SDL_UnlockSurface(result);
+	}
+
+	GB.FreeString(&_last_text);
+	_last_text = GB.NewString(text, len);
+
+	if (_last_surface)
+		_last_surface->Unref();
+	_last_surface = new SDLsurface(result);
+	_last_surface->Ref();
+
+	return _last_surface;
 }

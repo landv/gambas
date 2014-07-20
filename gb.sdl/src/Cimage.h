@@ -28,6 +28,13 @@
 #include "SDLsurface.h"
 #include "SDLwindow.h"
 
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define DEFAULT_IMAGE_FORMAT GB_IMAGE_ARGB
+#else
+#define DEFAULT_IMAGE_FORMAT GB_IMAGE_BGRA
+#endif
+
+
 typedef
 	struct {
 		GB_IMG img;
@@ -46,6 +53,6 @@ extern GB_DESC CImage[];
 
 SDLsurface *CIMAGE_get(CIMAGE *);
 CIMAGE *CIMAGE_create(SDLsurface *);
-CIMAGE *CIMAGE_create_from_window(SDLwindow *window);
+CIMAGE *CIMAGE_create_from_window(SDLwindow *window, int x, int y, int w, int h);
 
 #endif /* __CIMAGE_H */

@@ -207,7 +207,9 @@ BEGIN_METHOD(CDRAW_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 	if (GB.CheckObject(THIS->font))
 		return;
 
-	SDLsurface *txt = FONT->font->RenderText(GB.ToZeroString(ARG(text)));
+	SDLsurface *txt = FONT->font->RenderText(STRING(text), LENGTH(text));
+	if (!txt)
+		return;
 	
 /*	if (THIS->backcolor != 0)
 	{
@@ -220,7 +222,7 @@ BEGIN_METHOD(CDRAW_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 	
 	GFX->SetColor(THIS->forecolor);
 	GFX->Blit(txt, VARG(x), VARG(y));
-	delete txt;
+	txt->Unref();
 	
 END_METHOD
 
