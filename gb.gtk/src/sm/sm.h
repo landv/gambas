@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  CWindow.h
+  sm.h
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2014 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,49 +21,18 @@
 
 ***************************************************************************/
 
-#ifndef __CWINDOW_H
-#define __CWINDOW_H
+#ifndef __SM_H
+#define __SM_H
 
-#include "main.h"
-#include "gmainwindow.h"
-#include "CWidget.h"
-#include "CPicture.h"
+#include "gnome-client.h"
 
-typedef  
-	struct
-	{
-		CWIDGET ob;
-		int ret;
-		unsigned embed : 1;
-	}  
-	CWINDOW;
+G_BEGIN_DECLS
 
-typedef
-	CWINDOW CFORM;
+void session_manager_init(int *argc, char ***argv);
+void session_manager_exit(void);
+int session_manager_get_desktop(void);
+void session_manager_set_desktop(int desktop);
 
-#ifndef __CWINDOW_CPP
-
-extern GB_DESC CWindowMenusDesc[];
-extern GB_DESC CWindowControlsDesc[];
-extern GB_DESC CWindowDesc[];
-//extern GB_DESC CWindowTypeDesc[];
-extern GB_DESC CWindowsDesc[];
-extern GB_DESC CFormDesc[];
-
-extern CWINDOW *CWINDOW_Active;
-extern CWINDOW *CWINDOW_Main;
-
-#else
-
-#define THIS ((CWINDOW *)_object)
-#define WINDOW ((gMainWindow*)THIS->ob.widget)
-  
-#endif
-
-void CWINDOW_check_main_window(CWINDOW *win);
-bool CWINDOW_must_quit();
-void CWINDOW_close_all();
-void CWINDOW_delete_all();
+G_END_DECLS
 
 #endif
-

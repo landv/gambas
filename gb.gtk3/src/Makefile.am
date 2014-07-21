@@ -90,4 +90,19 @@ gb_gtk3_la_SOURCES = \
 	gtools.h kentities.h \
 	gprinter.h gprinter.cpp \
 	gglarea.h gglarea.cpp \
-	x11.h x11.c
+	x11.h x11.c \
+	sm/bonobo-macros.h \
+	sm/gnome-macros.h \
+	sm/gnome-program.h \
+	sm/gnome-uidefs.h \
+	sm/gnome-ui-init.h \
+	sm/libgnomeui.h \
+	sm/libgnomeuiP.h \
+	sm/gnome-client.h \
+	sm/gnome-client.c \
+	sm/gnome-ice.h \
+	sm/gnome-ice.c \
+	sm/gnome-marshal.h \
+	sm/gnome-marshal.c \
+	sm/gnometypebuiltins.h \
+	sm/gnometypebuiltins.c

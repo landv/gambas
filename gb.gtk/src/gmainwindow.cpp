@@ -31,6 +31,7 @@
 #endif
 
 #include "x11.h"
+#include "sm/sm.h"
 
 #include "gapplication.h"
 #include "gdesktop.h"
@@ -619,6 +620,17 @@ void gMainWindow::setVisible(bool vl)
 				
 				if (parent)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(parent->border));
+			}
+
+			if (gApplication::mainWindow() == this)
+			{
+				int desktop = session_manager_get_desktop();
+				if (desktop >= 0)
+				{
+					//fprintf(stderr, "X11_window_set_desktop: %d (%d)\n", desktop, true);
+					X11_window_set_desktop((Window)handle(), true, desktop);
+					session_manager_set_desktop(-1);
+				}
 			}
 		}
 		else 
@@ -1596,4 +1608,23 @@ void gMainWindow::setTransparent(bool vl)
 	resize(w, h);
 
 	gtk_window_present(GTK_WINDOW(border));
+}
+
+bool gMainWindow::closeAll()
+{
+	int i;
+	gMainWindow *win;
+
+	for(i = 0; i < count(); i++)
+	{
+		win = get(i);
+		if (!win)
+			break;
+		if (win == gApplication::mainWindow())
+			continue;
+		if (win->close())
+			return true;
+	}
+
+	return false;
 }

@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "widgets.h"
+#include "x11.h"
 #include "gapplication.h"
 #include "gtrayicon.h"
 #include "gdesktop.h"
@@ -36,6 +37,7 @@
 #include "gclipboard.h"
 #include "gmouse.h"
 #include "gprinter.h"
+#include "sm/sm.h"
 #include "gmainwindow.h"
 
 //#define DEBUG_ENTER_LEAVE 1
@@ -843,7 +845,7 @@ bool gApplication::_fix_printer_dialog = false;
 gMainWindow *gApplication::_main_window = NULL;
 void (*gApplication::onEnterEventLoop)();
 void (*gApplication::onLeaveEventLoop)();
-
+bool gApplication::_must_quit = false;
 
 void gApplication::grabPopup()
 {
@@ -953,12 +955,36 @@ static gint scrollbar_button_release(GtkWidget *widget, GdkEventButton *event)
 
 #endif*/
 
+static gboolean master_client_save_yourself(GnomeClient *client, gint phase, GnomeSaveStyle save_style, gboolean is_shutting_down, GnomeInteractStyle interact_style, gboolean fast, gpointer user_data)
+{
+	if (gApplication::mainWindow())
+	{
+		//fprintf(stderr, "master_client_save_yourself: %d\n", X11_window_get_desktop((Window)(gApplication::mainWindow()->handle())));
+		session_manager_set_desktop(X11_window_get_desktop((Window)(gApplication::mainWindow()->handle())));
+	}
+	return true;
+}
+
+static void master_client_die(GnomeClient *client, gpointer user_data)
+{
+	if (gApplication::mainWindow())
+		gApplication::mainWindow()->close();
+	else
+		gMainWindow::closeAll();
+
+	gApplication::quit();
+	MAIN_check_quit();
+}
+
 void gApplication::init(int *argc, char ***argv)
 {
 	appEvents=0;
 	
 	gtk_init(argc, argv);
- 
+	session_manager_init(argc, argv);
+	g_signal_connect(gnome_master_client(), "save-yourself", G_CALLBACK(master_client_save_yourself), NULL);
+	g_signal_connect(gnome_master_client(), "die", G_CALLBACK(master_client_die), NULL);
+
 	gdk_event_handler_set((GdkEventFunc)gambas_handle_event, NULL, NULL);
 	
 	gClipboard::init();
@@ -987,6 +1013,8 @@ void gApplication::init(int *argc, char ***argv)
 
 void gApplication::exit()
 {
+	session_manager_exit();
+	
 	if (_title)
 		g_free(_title);
 
@@ -1311,15 +1339,14 @@ void gApplication::setActiveControl(gControl *control, bool on)
 
 int gApplication::getScrollbarSize()
 {
-	GtkStyle* st;
+	//GtkStyle* st;
 	gint trough_border;
 	gint slider_width;
 	
-	st = gtk_rc_get_style_by_paths(gtk_settings_get_default(), NULL, "OsBar", G_TYPE_NONE);
+	//st = gtk_rc_get_style_by_paths(gtk_settings_get_default(), NULL, "OsBar", G_TYPE_NONE);
 
-	if (st) //g_type_from_name("OsBar"))
+	if (g_type_from_name("OsBar"))
 	{
-		fprintf(stderr, "g_type_from_name: %ld\n", g_type_from_name("OsBar"));
 		char *env = getenv("LIBOVERLAY_SCROLLBAR");
 		if (!env || *env != '0')
 			return 1;
@@ -1459,3 +1486,12 @@ void gApplication::setEventFilter(X11_EVENT_FILTER filter)
 	save_filter = filter;
 }
 
+void gApplication::setMainWindow(gMainWindow *win)
+{
+	_main_window = win;
+}
+
+void gApplication::quit()
+{
+	_must_quit = true;
+}

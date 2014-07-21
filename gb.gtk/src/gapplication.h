@@ -36,6 +36,7 @@ public:
 	static void init(int *argc, char ***argv);
 	static void quit();
 	static void exit();
+	static bool mustQuit() { return _must_quit; }
 
 	static int controlCount();
 
@@ -83,7 +84,7 @@ public:
 	static void grabPopup();
 	static void ungrabPopup();
 	
-	static void setMainWindow(gMainWindow *win) { _main_window = win; }
+	static void setMainWindow(gMainWindow *win);
 	static gMainWindow *mainWindow() { return _main_window; }
 	
 	static void checkHoveredControl(gControl *control);
@@ -92,6 +93,7 @@ public:
 
 	//"Private"
 	static bool _busy;
+	static bool _must_quit;
 	static char *_title;
 	static int _loopLevel;
 	static int _in_popup;

@@ -127,28 +127,6 @@ static bool close_window(CWINDOW *_object, int ret = 0)
 	return WINDOW->close();
 }
 
-static bool closeAll()
-{
-	int i;
-	gMainWindow *win;
-	CWINDOW *window;
-	
-	for(i = 0; i < gMainWindow::count(); i++)
-	{
-		win = gMainWindow::get(i);
-		if (!win)
-			break;
-		//fprintf(stderr, "closeAll: try %p\n", win);
-		window = (CWINDOW *)GetObject(win);
-		if (window == CWINDOW_Main)
-			continue;
-		if (close_window(window))
-			return true;
-	}
-	
-	return false;
-}
-
 void CWINDOW_delete_all()
 {
 	int i;
@@ -196,7 +174,7 @@ static bool gb_raise_window_Close(gMainWindow *sender)
 	
 	if (CWINDOW_Main && sender == CWINDOW_Main->ob.widget)
 	{
-		if (closeAll())
+		if (gMainWindow::closeAll())
 			return true;
 		if (!sender->isPersistent())
 		{

@@ -231,7 +231,7 @@ BEGIN_PROPERTY(Application_MainWindow)
 	else
 	{
 		CWINDOW_Main = (CWINDOW *)VPROP(GB_OBJECT);
-		if (CWINDOW_MainDesktop >= 0)
+		if (CWINDOW_Main && CWINDOW_MainDesktop >= 0)
 		{
 			MyMainWindow *win = (MyMainWindow *)CWINDOW_Main->widget.widget;
 			X11_window_set_desktop(win->winId(), win->isVisible(), CWINDOW_MainDesktop);

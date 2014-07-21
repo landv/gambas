@@ -11,7 +11,7 @@ GB_CHECK_XWINDOW()
 
 GB_COMPONENT_PKG_CONFIG(
   gtk, GTK, gb.gtk, [src],
-  'gtk+-2.0 >= 2.16' 'librsvg-2.0 >= 2.14.3' 'cairo >= 1.6.0' 'cairo-ft >= 1.6.0' 'gtk+-unix-print-2.0 >= 2.10'
+  'gtk+-2.0 >= 2.16' 'librsvg-2.0 >= 2.14.3' 'cairo >= 1.6.0' 'cairo-ft >= 1.6.0' 'gtk+-unix-print-2.0 >= 2.10' sm ice
 )
 
 GB_COMPONENT_PKG_CONFIG(

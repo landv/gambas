@@ -4,30 +4,35 @@
   MoveScaled(27.7143,27.7143,61.5714,46.7143)
   Text = ("FExplorer")
   Icon = Picture["icon:/16/directory"]
-  Arrangement = Arrange.Fill
+  Arrangement = Arrange.Vertical
   { mnuFile Menu
-    Text = ("&File")
+    Text = Shortcut(("File"), "F")
     { mnuViewHidden Menu
-      Text = ("&View hidden files")
+      Text = Shortcut(("View hidden files"), "V")
     }
     { mnuViewRefresh Menu
-      Text = ("&Refresh")
+      Text = Shortcut(("Refresh"), "R")
       Picture = Picture["icon:/16/refresh"]
       Shortcut = "F5"
     }
     { Menu1 Menu
     }
     { mnuAbout Menu
-      Text = ("&About...")
+      Text = Shortcut(("About"), "A") & "..."
     }
     { mnuQuit Menu
-      Text = ("&Quit")
+      Text = Shortcut(("Quit"), "Q")
       Picture = Picture["icon:/16/quit"]
     }
   }
+  { Separator1 Separator
+    MoveScaled(27,4,19,0)
+  }
   { ivwExplorer IconView
-    MoveScaled(2,4,44,30)
+    MoveScaled(2,9,44,30)
+    Expand = True
     Mode = Select.Multiple
     Editable = True
+    Border = False
   }
 }

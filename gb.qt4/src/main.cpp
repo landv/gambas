@@ -516,6 +516,8 @@ void MyApplication::commitDataRequested(QSessionManager &session)
 				cmd += "";
 		}
 	}
+	else
+		cmd += arguments().at(0);
 
 	cmd += "-session";
 	cmd += sessionId();
@@ -531,8 +533,6 @@ void MyApplication::commitDataRequested(QSessionManager &session)
 					 + QString::number(CWINDOW_Main->h) + ","
 					 + QString::number(QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget));*/
 	}
-
-	//qDebug("commitDataRequested: %s", QT_ToUTF8(cmd.join(" ")));
 
 	session.setRestartCommand(cmd);
 }

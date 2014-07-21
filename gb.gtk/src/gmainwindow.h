@@ -132,7 +132,8 @@ public:
 	static gMainWindow *_active;
 	static void setActiveWindow(gControl *control);
 	static gMainWindow *_current;
-	
+	static bool closeAll();
+
 //"Private"
   void initialize();
 	void drawMask();

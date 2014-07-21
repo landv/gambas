@@ -9,6 +9,7 @@ Static Public Sub Main()
   Dim hForm As Form
 
   hForm = New FExplorer(System.User.Home)
+  Application.MainWindow = hForm
   hForm.Show
 
 End
