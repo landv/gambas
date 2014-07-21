@@ -37,7 +37,6 @@
 
 #include "gnome-client.h"
 #include "gnome-uidefs.h"
-#include "gnome-ui-init.h"
 #include "gnome-ice.h"
 #include "gnome-marshal.h"
 
@@ -52,7 +51,6 @@
 static int _sm_desktop = -1;
 
 static GtkWidget *client_grab_widget = NULL;
-static gboolean sm_connect_default = TRUE;
 
 enum {
   SAVE_YOURSELF,
@@ -1295,12 +1293,6 @@ gnome_client_post_args_parse(GnomeProgram *app, GnomeModuleInfo *mod_info)
 void
 gnome_client_disable_master_connection (void)
 {
-	if (gnome_program_get () == NULL) {
-		sm_connect_default = FALSE;
-	} else {
-		g_object_set (G_OBJECT (gnome_program_get()),
-			      GNOME_CLIENT_PARAM_SM_CONNECT, FALSE, NULL);
-	}
 }
 #endif /* GNOME_DISABLE_DEPRECATED_SOURCE */
 

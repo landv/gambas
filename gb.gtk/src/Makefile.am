@@ -93,9 +93,7 @@ gb_gtk_la_SOURCES = \
 	x11.h x11.c \
 	sm/bonobo-macros.h \
 	sm/gnome-macros.h \
-	sm/gnome-program.h \
 	sm/gnome-uidefs.h \
-	sm/gnome-ui-init.h \
 	sm/libgnomeui.h \
 	sm/libgnomeuiP.h \
 	sm/gnome-client.h \

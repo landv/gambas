@@ -47,7 +47,7 @@
 #define GDK_THREADS_LEAVE()
 #endif
 
-#include "gnome-program.h"
+//#include "gnome-program.h"
 
 G_BEGIN_DECLS
 
@@ -202,8 +202,8 @@ struct _GnomeClientClass
   gpointer padding2;
 };
 
-#define GNOME_CLIENT_MODULE gnome_client_module_info_get()
-const GnomeModuleInfo *gnome_client_module_info_get (void) G_GNUC_CONST;
+//#define GNOME_CLIENT_MODULE gnome_client_module_info_get()
+//const GnomeModuleInfo *gnome_client_module_info_get (void) G_GNUC_CONST;
 
 #define GNOME_CLIENT_PARAM_SM_CONNECT "sm-connect"
 
