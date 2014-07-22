@@ -681,6 +681,7 @@ Static Private Function Themes_Read() As String[]
   Dim aTheme As New String[]
   Dim sDir As String
   Dim sPath As String
+  Dim sTheme As String
   
   If IsDir("~/.icons") Then
     For Each sDir In Dir("~/.icons", "*", gb.Directory)
@@ -703,13 +704,12 @@ ADD_THEME:
   sPath &/= "index.theme"
   If Not Exist(sPath) Then Return
   If Stat(sPath).Type = gb.Link Then Return
-  If InStr(File.Load(sPath), "\nHidden=True") Then Return
+  Try sTheme = File.Load(sPath)
+  If Error Then Return
+  If InStr(sTheme, "\nHidden=True") Then Return
   aTheme.Add(sDir)
   Return
   
-  aTheme.Sort(gb.IgnoreCase)
-  Return aTheme
-
 End
 
 Static Private Function Icons_Read() As String[]
