@@ -1057,7 +1057,7 @@ Private Function GetClassVariableName(sClass As String) As String
   Dim sRes As String
 
   If Len(sClass) = 1 Then
-    sClass = CSymbolInfo.GetNativeType(sClass)
+    sClass = $cTypeName[sClass]
     If InStr("aeiou", LCase(Left$(sClass))) Then
       sRes = "an" & sClass
     Else

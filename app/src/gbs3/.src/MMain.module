@@ -313,7 +313,7 @@ Private Sub GenerateFiles(Path As String)
       Continue       
     Endif
     
-    If aSym.Count >= 2 And If aSym[0] = "USE" Then 
+    If aSym.Count >= 2 And If aSym[0] == "USE" Then 
       
       For iInd = 1 To aSym.Max Step 2
         If Highlight.Types[iInd] <> Highlight.String Then CompileError(Path, iLine, "Syntax error")
