@@ -54,6 +54,9 @@ typedef
 	}
 	CDNSCLIENT;
 
+int dns_init(void);
+void dns_exit(void);
+
 void dns_callback(intptr_t lParam);
 void* dns_get_name(void* v_obj);
 void* dns_get_ip(void* v_obj);
@@ -61,6 +64,5 @@ void dns_event(CDNSCLIENT *mythis);
 void dns_close_all(CDNSCLIENT *mythis);
 int dns_thread_getname(CDNSCLIENT *mythis);
 int dns_thread_getip(CDNSCLIENT *mythis);
-int dns_set_async_mode(int myval,CDNSCLIENT *mythis);
 
 #endif

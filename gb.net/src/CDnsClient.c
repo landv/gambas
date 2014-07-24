@@ -36,6 +36,7 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <errno.h>
+#include <assert.h>
 #include "main.h"
 
 #include "CDnsClient.h"
@@ -48,8 +49,29 @@ static int dns_count=0;
 static sem_t dns_th_pipe;
 static int dns_r_pipe=-1;
 static int dns_w_pipe=-1;
+static int dns_async_count=0; /* protected by dns_th_pipe */
 
 DECLARE_EVENT(EVENT_Finished);
+
+int dns_init(void)
+{
+	int dpipe[2];
+
+	if (pipe(dpipe))
+		return 1;
+	dns_r_pipe=dpipe[0];
+	dns_w_pipe=dpipe[1];
+	sem_init(&dns_th_pipe,0,1);
+	return 0;
+}
+
+void dns_exit(void)
+{
+	close(dns_r_pipe);
+	close(dns_w_pipe);
+	dns_r_pipe=-1;
+	dns_w_pipe=-1;
+}
 
 /**********************************************************
  DnsClient pipe message protocol:
@@ -68,6 +90,22 @@ static bool read_dns_pipe(void *data, size_t length)
 	}
 	
 	return FALSE;
+}
+
+/* Callers hold the dns_th_pipe semaphore as we change dns_async_count! */
+static void dns_start_async(void)
+{
+	assert(dns_async_count >= 0);
+	if (!dns_async_count++)
+		GB.Watch(dns_r_pipe, GB_WATCH_READ, (void *) dns_callback, 0);
+}
+
+/* Callers hold the dns_th_pipe semaphore */
+static void dns_stop_async(void)
+{
+	if (!--dns_async_count)
+		GB.Watch(dns_r_pipe, GB_WATCH_NONE, (void *) dns_callback, 0);
+	assert(dns_async_count >= 0);
 }
 
 void dns_callback(intptr_t lParam)
@@ -154,6 +192,9 @@ void dns_callback(intptr_t lParam)
 					GB.Post((void (*)())dns_event, (intptr_t)mythis);
 				}
 			}
+			/* Release one DnsClient in async mode */
+			if (mythis->iAsync)
+				dns_stop_async();
 		}
 		GB.Free(POINTER(&Buf));
 	}
@@ -283,7 +324,13 @@ int dns_thread_getname(CDNSCLIENT *mythis)
 	sem_wait(&mythis->sem_id);
 	mythis->i_id++;
 	sem_post(&mythis->sem_id);
+
 	mythis->iStatus=1;
+	/* We need to register the watch in the main thread to not anger qt */
+	sem_wait(&dns_th_pipe);
+	dns_start_async();
+	sem_post(&dns_th_pipe);
+
 	if (pthread_create(&mythis->th_id,NULL,dns_get_name,(void*)mythis) )
 	{
 		mythis->iStatus=0;
@@ -298,28 +345,18 @@ int dns_thread_getip(CDNSCLIENT *mythis)
 	sem_wait(&mythis->sem_id);
 	mythis->i_id++;
 	sem_post(&mythis->sem_id);
+
 	mythis->iStatus=1;
+	sem_wait(&dns_th_pipe);
+	dns_start_async();
+	sem_post(&dns_th_pipe);
+
 	if (pthread_create(&mythis->th_id,NULL,dns_get_ip,(void*)mythis) )
 	{
 		mythis->iStatus=0;
 		return 1;
 	}
 	pthread_detach(mythis->th_id);
-	return 0;
-}
-
-int dns_set_async_mode(int myval,CDNSCLIENT *mythis)
-{
-	int dpipe[2];
-	if (myval && (dns_r_pipe==-1))
-	{
-		if (pipe(dpipe)) return 1;
-		dns_r_pipe=dpipe[0];
-		dns_w_pipe=dpipe[1];
-		sem_init(&dns_th_pipe,0,1);
-		GB.Watch(dns_r_pipe , GB_WATCH_READ , (void *)dns_callback,0);
-	}
-	mythis->iAsync=myval;
 	return 0;
 }
 
@@ -376,10 +413,12 @@ END_PROPERTY
 BEGIN_PROPERTY ( CDNSCLIENT_Async )
 
 
-  	if (READ_PROPERTY) { GB.ReturnBoolean(THIS->iAsync); return; }
-	if (THIS->iStatus) { GB.Error("Async mode can not be changed while working"); return; }
-	if ( !dns_set_async_mode (VPROP(GB_BOOLEAN),THIS)) return;
-	GB.Error("No resources available start asynchronous mode");
+  	if (READ_PROPERTY)
+	{
+		GB.ReturnBoolean(THIS->iAsync);
+		return;
+	}
+	THIS->iAsync = VPROP(GB_BOOLEAN);
 
 END_PROPERTY
 
@@ -440,17 +479,7 @@ BEGIN_METHOD_VOID(CDNSCLIENT_free)
 	}
 	dns_count--;
 	if (!dns_count)
-	{
 		GB.Free(POINTER(&dns_object));
-		if (dns_r_pipe != -1)
-		{
-			GB.Watch(dns_r_pipe , GB_WATCH_NONE , (void *)dns_callback,0);
-			close(dns_r_pipe);
-			close(dns_w_pipe);
-			dns_r_pipe=-1;
-			dns_w_pipe=-1;
-		}
-	}
   }
 
 END_METHOD
@@ -483,7 +512,6 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostName)
   {
   	if ( THIS->iAsync)
 	{ /* Asynchronous mode */
-
 		sem_wait(&THIS->sem_id);
 		THIS->i_id++;
 		sem_post(&THIS->sem_id);
@@ -496,11 +524,11 @@ BEGIN_METHOD_VOID(CDNSCLIENT_GetHostName)
 	}
 	else
 	{ /* Synchronous mode */
-    inet_aton(THIS->sHostIP,&addr);
+		inet_aton(THIS->sHostIP,&addr);
 #ifdef __sun__
-	stHost=gethostbyaddr((const char *)&addr,sizeof(addr),AF_INET);
+		stHost=gethostbyaddr((const char *)&addr,sizeof(addr),AF_INET);
 #else
-	stHost=gethostbyaddr(&addr,sizeof(addr),AF_INET);
+		stHost=gethostbyaddr(&addr,sizeof(addr),AF_INET);
 #endif
 		if (stHost==NULL)
 		{

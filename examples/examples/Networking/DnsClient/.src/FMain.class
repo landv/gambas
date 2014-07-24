@@ -272,22 +272,6 @@ Public Sub Form_Open()
   Working = 0
 End
 
-
-
-Public Sub Form_Close()
-
-  A._Free()
-  B._Free()
-  C._Free()
-  D._Free()
-  E._Free()
-  F._Free()
-  G._Free()
-
-
-
-End
-
 Public Sub ComboBox1_Click()
 
   Select Case ComboBox1.Index

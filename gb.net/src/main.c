@@ -57,11 +57,11 @@ int EXPORT GB_INIT(void)
 	NET.Socket.ConnectTCP=CSocket_connect_socket;
 	NET.Socket.Peek=CSocket_peek_data;
 
-	return 0;
+	return dns_init();
 }
 
 void EXPORT GB_EXIT()
 {
-
+	dns_exit();
 }
 
