@@ -32,36 +32,12 @@ Public Sub Client_Found()
 
 End
 
-' ''Raised when an error occurs
-' Public Sub Client_Error()
-' 
-'   Select Case sSocket.Status
-' 
-'     Case Net.CannotCreateSocket
-'       Error.Raise("The system does not allow to create a socket")
-' 
-'     Case Net.HostNotFound
-'       Error.Raise("Host not Found")
-' 
-'     Case Net.ConnectionRefused
-'       Error.Raise("Unable to Connect. Connection Refused")
-' 
-'     Case Net.CannotRead
-'       Error.Raise("Error Reading Data")
-' 
-'     Case Net.CannotWrite
-'       Error.Raise("Error Writing Data")
-' 
-'   End Select
-' 
-' End
-
-''Connect to Host trough Port
 Public Sub Connect(sHost As String, iPort As Integer)
 
   If Not sHost Then sHost = "localhost"
   If iPort = 0 Then iPort = 25
 
+  $hSocket.Timeout = 10000
   $hSocket.Connect(sHost, iPort)
   $hSocket.Blocking = True
   Me.Stream = $hSocket
@@ -70,24 +46,37 @@ Public Sub Connect(sHost As String, iPort As Integer)
     If $hSocket.Status = Net.Connected Or If $hSocket.Status <= 0 Then Break
     Wait 0.1
   Loop
+  
+  If $hSocket.Status < 0 Then
+  
+    Select Case $hSocket.Status
+  
+      Case Net.CannotCreateSocket
+        Error.Raise("Cannot create socket")
+  
+      Case Net.HostNotFound
+        Error.Raise("Host not Found")
+  
+      Case Net.ConnectionRefused
+        Error.Raise("Connection Refused")
+  
+      Case Net.CannotRead
+        Error.Raise("Read error")
+  
+      Case Net.CannotWrite
+        Error.Raise("Write error")
+  
+    End Select
+    
+  Endif
 
 End
 
-''Close the socket. No further data can be sent or read.
 Public Sub Disconnect()
 
   Try $hSocket.Close
-  'Debug "Connection closed by user"
 
 End
-
-' ''Send data to the server.
-' Public Function Send(Data As String, Multiline As Boolean) As String
-' 
-'   If sSocket.Status = Net.Connected Then Return Super.Send(Data, Multiline)
-' 
-' End
-
 
 Private Function Connected_Read() As Boolean
 

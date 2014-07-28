@@ -24,62 +24,11 @@ Private Sub CheckMime()
   Dim iPos As Integer
   Dim sCharset As String
   
-  ' static int decode_mime(char *mime)
-  ' {
-  '   char *p, *p2;
-  ' 
-  '   GB.FreeString(&_mime_type);
-  '   GB.FreeString(&_mime_subtype);
-  '   GB.FreeString(&_mime_charset);
-  '   
-  '   _mime_charset = GB.NewZeroString(GB.System.Charset());
-  '   
-  '   if (!mime || !*mime)
-  '   {
-  '     _mime_type = GB.NewZeroString("text");
-  '     _mime_subtype = GB.NewZeroString("plain");
-  '     _mime_encoding = LIBSMTP_ENC_QUOTED;
-  '     return FALSE;
-  '   }
-  
   If Not Mime Then
     Mime = "text/plain;charset=" & System.Charset
     Encoding = Encode.ENC_QUOTED
     Return
   Endif
-  
-  ' 
-  '   p = mime;
-  '   p2 = index(p, '/');
-  '   if (!p2)
-  '   {
-  '     GB.Error("Cannot find MIME subtype");
-  '     return TRUE;
-  '   }
-  ' 
-  '   _mime_type = GB.NewString(p, p2 - p);
-  ' 
-  '   p = p2 + 1;
-  '   p2 = index(p, ';');
-  '   if (p2)
-  '   {
-  '     _mime_subtype = GB.NewString(p, p2 - p);
-  '     
-  '     p = p2 + 1;
-  '     if (strncasecmp(p, "CHARSET=", 8))
-  '     {
-  '       GB.Error("Syntax error in MIME charset");
-  '       return TRUE;
-  '     }
-  '     p += 8;
-  '     GB.FreeString(&_mime_charset);
-  '     _mime_charset = GB.NewString(p, &mime[strlen(mime)] - p);
-  '   }
-  '   else
-  '   {
-  '     _mime_subtype = GB.NewString(p, &mime[strlen(mime)] - p);
-  '   }
-  ' 
   
   iPos = RInStr(Mime, ";")
   If iPos Then
@@ -91,22 +40,6 @@ Private Sub CheckMime()
     If Mime Not Like "*/*" Then Goto SYNTAX_ERROR
   Endif
   
-  
-  '   if (!strcmp(_mime_type, "text") || !strcmp(_mime_type, "message"))
-  '   {
-  '     _mime_encoding = LIBSMTP_ENC_QUOTED;
-  '   }
-  '   else
-  '   {
-  '     if (!strcmp(_mime_type, "multipart"))
-  '       _mime_encoding = LIBSMTP_ENC_7BIT;
-  '     else
-  '       _mime_encoding = LIBSMTP_ENC_BASE64;
-  '   }
-  ' 
-  '   return FALSE;
-  ' }
-  ' 
   If Mime Begins "text/" Or If Mime Begins "message/" Then
     Encoding = Encode.ENC_QUOTED
   Else If Mime Begins "multipart/" Then
@@ -125,26 +58,11 @@ End
 
 Public Sub SetBoundary(hSession As SmtpSession)
   
-  ' void libsmtp_set_boundary(struct libsmtp_part_struct *part, int index)
-  ' {
-  '   static char pattern[33];
-  '   static char digits[] = "0123456789ABCDEF";
-  '   int i;
-  '   
-  '   for(i = 0; i < 32; i++)
-  '     pattern[i] = digits[(random() >> 4) & 0xF];
-  '   
-  '   pattern[32] = 0;
-  ' 
-  '   g_string_sprintf(part->Boundary, "----%s%02d", pattern, index);
-  ' }
-  ' 
-  
   Dim sBoundary As String
   Dim I As Integer
   Dim sDigit As String = "0123456789ABCDEF"
   
-  For I = 1 To 32 - SizeOf(gb.Pointer) * 2
+  For I = 1 To 16
     sBoundary &= Mid$(sDigit, Int(Rnd(16)) + 1, 1)
   Next
   
@@ -156,6 +74,7 @@ End
 Public Sub SendHeaders(hSession As SmtpSession)
   
   Dim sHeader As String
+  Dim sErr As String
   
   sHeader = "Content-Type: " & Mime
   
@@ -179,6 +98,11 @@ Public Sub SendHeaders(hSession As SmtpSession)
   hSession.Print("Content-Length: " & Len(Data))
   
   hSession.Print
+  
+Catch
+  
+  sErr = Error.Text
+  Error.Raise("Unable to send headers of part #" & hSession.GetPartIndex(Me) & ": " & sErr)
   
 End
 

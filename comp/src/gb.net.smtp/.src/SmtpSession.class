@@ -3,12 +3,15 @@
 Static Private $sOpenSSLPath As String
 
 Public LastCode As String
+Public LastAnswer As String
 Public _Debug As Boolean
 
+Property Read Client As SmtpClient
 Property Stream As Stream
 Property Read Connected As Boolean
 
 Private $hStream As Stream
+Private $hClient As SmtpClient
 
 Public _Count As Integer
 
@@ -31,9 +34,13 @@ End
 
 Public Sub Disconnect()
 
+  $hClient = Null
+
 End
 
-Public Sub Connect((Host) As String, (Port) As Integer)
+Public Sub Connect(hClient As SmtpClient, (Host) As String, (Port) As Integer)
+
+ $hClient = hClient
 
 End
 
@@ -82,6 +89,7 @@ Public Function GetLine(Optional bMulti As Boolean) As String
     
   Endif
   
+  LastAnswer = sLine
   iPos = InStr(sLine, " ")
   If iPos = 0 Then 
     LastCode = ""
@@ -121,4 +129,10 @@ Public Sub PrintHeader(sHeader As String, sStr As String)
 
   Encode.PrintQuotedHeader($hStream, sHeader, sStr, _Debug)
   
+End
+
+Private Function Client_Read() As SmtpClient
+
+  Return $hClient
+
 End

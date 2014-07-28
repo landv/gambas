@@ -24,9 +24,6 @@ Property Read Bcc As String[]
 Property Alternative As Boolean
 Property Read Count As Integer
 
-Public _NoGreeting As Boolean
-Public _Stream As Stream
-
 Private $bDebug As Boolean
 Private $sHost As String
 Private $iPort As Integer
@@ -45,6 +42,14 @@ Private $aPart As New SmtpPart[]
 Private $bAlternative As Boolean
 Private $hSession As SmtpSession
 Private $iEncrypt As Integer
+
+Static Public Sub _init()
+  
+  ' Compatibility with the old gb.net.smtp component that didn't require it
+  Component.Load("gb.net")
+  
+End
+
 
 Public Sub Add(Data As String, Optional MimeType As String, Name As String)
   
@@ -241,51 +246,11 @@ Private Sub BeginSession()
   If $aPart.Count > 1 Then
     
     hPart = New SmtpPart("multipart/" & If($bAlternative, "alternative", "mixed"), "Main part")
+    hPart.Data = "This is a MIME " & hPart.Mime & " message."
     $aPart.Add(hPart, 0)
     bParent = True
     
   Endif
-  
-'     
-'     main_part->Tag = -1;
-'     //parent = -1;
-'     
-'     for (i = 0; i < npart; i++)
-'     {
-'       p = &THIS->parts[i];
-'       
-'       parent_part = main_part;
-'     
-'       decode_mime(p->mime);
-'     
-'       if (!p->name_set)
-'       {
-'         sprintf(buffer, "MIME part #%d", i + 1);
-'         name = buffer;
-'       }
-'       else if (!p->name)
-'         name = "";
-'       else
-'         name = p->name;
-'       
-'       part = libsmtp_part_new(parent_part, _mime_type, _mime_subtype, _mime_encoding, _mime_charset, name, -1, THIS->session);
-'       if (!part)
-'       {
-'         GB.Error("Cannot add part: &1", libsmtp_strerr(THIS->session));
-'         return TRUE;    
-'       }
-'       
-'       part->Tag = i;
-'       #ifdef DEBUG_ME
-'       fprintf(stderr, "part = %p  parent_part = %p  Tag = %d\n", part, parent_part, i);
-'       #endif
-'       p->part = part;
-'     }
-'   }
-'   
-'   return FALSE;
-' }
-' 
 
 End
 
@@ -315,7 +280,7 @@ Private Sub Connect()
 
   Dim sData As String
   
-  $hSession.Connect($sHost, $iPort)
+  $hSession.Connect(Me, $sHost, $iPort)
   
   If $iEncrypt <> Net.TLS Then
     ' greetings
@@ -337,52 +302,15 @@ Private Sub Authenticate()
   
   If Not $sUser Then Return
   
-  ' int libsmtp_authenticate(struct libsmtp_session_struct *session, const char *user, const char *password)
-  ' {
-  '   GString *temp_gstring;  /* Temp gstring */
-  '   int len_user = strlen(user);
-  '   int len_password = strlen(password);
-  '   int len_auth = strlen("auth plain ");
-  '   char buffer[len_user + len_password + len_auth + 3];
-  '   char *p;
-  ' 
-  '   temp_gstring = g_string_new (NULL);
-  ' 
-  '   /* We enter the auth stage now */
-  '   session->Stage = LIBSMTP_AUTH_STAGE;
-  ' 
-  '   /* Send the AUTH PLAIN authentification */
-  ' 
-  '   p = buffer;
-  '   strcpy(p, "auth plain "); p += len_auth;
-  '   *p++ = 0;
-  '   strcpy(p, user); p += len_user;
-  '   *p++ = 0;
-  '   strcpy(p, password); p += len_password;
-  '   strcpy(p, "\r\n"); p += 2;
-  ' 
-  '   if (libsmtp_int_send_base64(buffer, p - buffer, session, len_auth))
-  '     return LIBSMTP_ERRORSENDFATAL;
-  ' 
-  '   if (libsmtp_int_read(temp_gstring, session, 2))
-  '     return LIBSMTP_ERRORSENDFATAL;
-  ' 
-  '   if (session->LastResponseCode != 235)
-  '   {
-  '     /* We couldn't authenticate */
-  '     libsmtp_close(session);
-  '     session->ErrorCode = LIBSMTP_AUTHERR;
-  '     return LIBSMTP_AUTHERR;
-  '   }
-  ' 
-  '   return LIBSMTP_NOERR;  
-  ' }
-  ' 
   sData = $hSession.Send("AUTH PLAIN")
   If $hSession.LastCode <> "334" Then Error.Raise("Unsupported authentication method")
   
   sData = $hSession.Send(Base64$($sUser & Chr$(0) & $sUser & Chr$(0) & $sPassword))
   If $hSession.LastCode <> "235" Then Error.Raise("Authentication failed")
+  
+Catch
+  
+  Error.Raise("Unable to authenticate: " & Error.Text)
   
 End
 
@@ -411,6 +339,10 @@ Private Sub SendRecipients()
     
   Next
 
+Catch
+  
+  Error.Raise("Unable to send recipients: " & Error.Text)
+  
 End
 
 Static Public Sub FormatDate(dDate As Date) As String
@@ -429,184 +361,29 @@ End
 
 Private Sub SendHeaders()
 
-'   /* Now we send through all the headers. No more responses will come from
-'     the mailserver until we end the DATA part. */
-' 
-'   // BM: Put the Date field
-'   // For example: Date: Sat, 18 Jul 2009 12:47:43 +0100
-'   
-'   date = get_current_time();
-'   if (date)
-'   {
-'     g_string_sprintf (libsmtp_temp_gstring, "Date: %s\r\n", date);
-' 
-'     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-'       return LIBSMTP_ERRORSENDFATAL;
-'   }
-' 
-  
   $hSession.PrintHeader("Date", FormatDate(Now))
 
-'   /* First the From: header */
-' 
-'   g_string_sprintf (libsmtp_temp_gstring, "From: %s\r\n", \
-'                       libsmtp_session->From->str);
-' 
-'   if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-'     return LIBSMTP_ERRORSENDFATAL;
-
   $hSession.PrintHeader("From", FormatAddress($sFrom))
-' 
-'   /* Then the Subject: header */
-' 
-'   // BM: if the subject is not ASCII, then it is UTF-8
-' 
-'   if (is_ascii_string(libsmtp_session->Subject->str))
-'   {
-'     g_string_sprintf (libsmtp_temp_gstring, "Subject: %s\r\n", \
-'                         libsmtp_session->Subject->str);
-'   
-'     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-'       return LIBSMTP_ERRORSENDFATAL;
-'   }
-'   else
-'   {
-'     /*g_string_assign(libsmtp_temp_gstring, "Subject: =?utf-8?q?");
-'     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-'       return LIBSMTP_ERRORSENDFATAL;*/
-'     
-'     if (libsmtp_int_send_quoted_header("Subject:", libsmtp_session->Subject->str, libsmtp_session->Subject->len, libsmtp_session))
-'       return LIBSMTP_ERRORSENDFATAL;
-'   
-'     //g_string_assign(libsmtp_temp_gstring, "?=\r\n");
-'     //if (libsmtp_int_send(libsmtp_temp_gstring, libsmtp_session, 1))
-'     //  return LIBSMTP_ERRORSENDFATAL;
-'   }
 
   $hSession.PrintHeader("Subject", $sSubject)
-
-' 
-'   /* Then we send all the To: addresses */
-' 
-'   g_string_assign (libsmtp_temp_gstring, "To: ");
-' 
-'   for (libsmtp_temp=0; libsmtp_temp < g_list_length(libsmtp_session->To);\
-'       libsmtp_temp++)
-'   {
-'     /* Select the respective node of the linked list */
-'     libsmtp_temp_glist=g_list_nth (libsmtp_session->To, libsmtp_temp);
-' 
-'     /* If this is the last entry of the list, don't append a comma */
-'     if (libsmtp_temp==(g_list_length (libsmtp_session->To)-1))
-'     {
-'       g_string_append (libsmtp_temp_gstring, libsmtp_temp_glist->data);
-'       g_string_append (libsmtp_temp_gstring, "\r\n");
-'     }
-'     else
-'     {
-'       g_string_append (libsmtp_temp_gstring, libsmtp_temp_glist->data);
-'       g_string_append (libsmtp_temp_gstring, ", ");
-'     }
-'   }
-'   /* Send the line to the server */
-' 
-'   if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-'     return LIBSMTP_ERRORSENDFATAL;
 
   If $aTo.Count Then $hSession.PrintHeader("To", $aTo.Join(","))
   If $aCc.Count Then $hSession.PrintHeader("CC", $aCc.Join(","))
 
-' 
-'   /* Then we iterate through all CC recipients */
-' 
-'   if (g_list_length (libsmtp_session->CC))
-'   {
-'     g_string_assign (libsmtp_temp_gstring, "CC: ");
-' 
-'     for (libsmtp_temp=0; libsmtp_temp < g_list_length(libsmtp_session->CC);\
-'         libsmtp_temp++)
-'     {
-'       /* Select the respective node of the linked list */
-'       libsmtp_temp_glist=g_list_nth (libsmtp_session->CC, libsmtp_temp);
-' 
-'       /* If this is the last entry of the list, don't append a comma */
-'       if (libsmtp_temp==(g_list_length (libsmtp_session->CC)-1))
-'       {
-'         g_string_append (libsmtp_temp_gstring, libsmtp_temp_glist->data);
-'         g_string_append (libsmtp_temp_gstring, "\r\n");
-'       }
-'       else
-'       {
-'         g_string_append (libsmtp_temp_gstring, libsmtp_temp_glist->data);
-'         g_string_append (libsmtp_temp_gstring, ", ");
-'       }
-'     }
-'     /* Send the line to the server */
-' 
-'     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-'       return LIBSMTP_ERRORSENDFATAL;
-'   }
-' 
-'   return LIBSMTP_NOERR;
-' 
-
-
-End
-
-Private Sub SendMimeHeaders()
-
-  '   /* If we use the MIME stuff we tell them this, too */
-  '   g_string_assign (libsmtp_temp_gstring, "Mime-Version: 1.0\r\n");
-  ' 
-  '   #ifdef LIBSMTP_DEBUG
-  '     printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
-  '   #endif
-  ' 
-  '   if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-  '     return LIBSMTP_ERRORSENDFATAL;
-  
   $hSession.Print("MIME-Version: 1.0")
   
-  ' 
-  '   /* If there are no parts defined by now, we assume its
-  '      text/plain MIME type and US-ASCII charset */
-  ' 
-  '   if (!libsmtp_session->Parts)
-  '   {
-  '     g_string_assign (libsmtp_temp_gstring, "Content-Type: text/plain; charset=\"us-ascii\"\r\n");
-  ' 
-  '     #ifdef LIBSMTP_DEBUG
-  '       printf ("libsmtp_mime_headers: %s", libsmtp_temp_gstring->str);
-  '     #endif
-  ' 
-  '     if (libsmtp_int_send (libsmtp_temp_gstring, libsmtp_session, 1))
-  '       return LIBSMTP_ERRORSENDFATAL;
-  '   }
+  If $aPart.Count = 0 Then $hSession.Print("Content-Type: text/plain; charset=\"us-ascii\"")
 
+Catch
   
-  If $aPart.Count = 0 Then
-    
-    $hSession.Print("Content-Type: text/plain; charset=\"us-ascii\"")
+  Error.Raise("Unable to send headers: " & Error.Text)
   
-  Else
-  
-    $aPart[0].SendHeaders($hSession)
-    
-  Endif
-  
-  ' 
-  '   /* We enter the data stage now */
-  '   libsmtp_session->Stage = LIBSMTP_MIMEHEADERS_STAGE;
-  ' 
-  '   return LIBSMTP_NOERR;
-  ' 
-  
-
 End
 
 Public Sub Send()
   
   Dim I As Integer
+  Dim sErr As String
   
   If Not $sFrom Then
     Error.Raise("The From property must be set")
@@ -626,13 +403,10 @@ Public Sub Send()
   
   SendHeaders
 
-  SendMimeHeaders
-
-  If $aPart.Count = 1 Then
+  $aPart[0].SendHeaders($hSession)
+  $aPart[0].Send($hSession)
     
-    $aPart[0].Send($hSession)
-    
-  Else If $aPart.Count > 1 Then
+  If $aPart.Count > 1 Then
     
     For I = 1 To $aPart.Max
       
@@ -652,6 +426,12 @@ Public Sub Send()
   Endif
 
   EndSession
+  
+Catch
+  
+  sErr = Error.Text
+  Try $hSession.Disconnect
+  Error.Raise("Unable to send mail: " & sErr)
     
 End
 
