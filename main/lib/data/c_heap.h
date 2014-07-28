@@ -1,7 +1,7 @@
 /*
- * main.c - gb.data glue
+ * c_heap.h
  *
- * Copyright (C) 2012/3 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2014 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,60 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#define __MAIN_C
+#ifndef __C_HEAP_H
+#define __C_HEAP_H
 
-#include "c_list.h"
-#include "c_deque.h"
-#include "c_circular.h"
-#include "c_avltree.h"
-//#include "c_trie.h"
-#include "c_graph.h"
-//#include "c_graphmatrix.h"
-#include "c_heap.h"
-#include "main.h"
+#include "gambas.h"
 
-GB_INTERFACE GB EXPORT;
+extern GB_INTERFACE GB;
 
-GB_DESC *GB_CLASSES[] EXPORT = {
-	CList,
-	CListBackwards,
-	CListItem,
+#ifndef __C_HEAP_C
+extern GB_DESC CHeap[];
+#endif
 
-	CDeque,
-	CStack,
-	CQueue,
-	CPrioQueue,
-
-	CCircular,
-
-	CAvlTree,
-
-	//CTrie,
-
-	CGraph,
-	CEdge,
-	CGraphVertices,
-	CGraphVertex,
-	CVertexInEdges,
-	CVertexOutEdges,
-	CVertexAdjacent,
-	CGraphEdges,
-
-	//CGraphMatrix,
-	//CMatrixVertex,
-	//CMatrixEdge,
-
-	CHeap,
-
-	NULL
-};
-
-int EXPORT GB_INIT()
-{
-	return 0;
-}
-
-
-void EXPORT GB_EXIT()
-{
-}
+#endif /* __C_HEAP_H */

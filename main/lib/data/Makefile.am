@@ -4,7 +4,7 @@ include $(top_srcdir)/component.am
 gblib_LTLIBRARIES = gb.data.la
 
 gb_data_la_LDFLAGS = -module @LD_FLAGS@
-gb_data_la_CPPFLAGS  = -I$(top_srcdir)/share
+gb_data_la_CPPFLAGS  = -I$(top_srcdir)/share -I$(top_srcdir)/gbx
 gb_data_la_CFLAGS = $(AM_CFLAGS)
 
 gb_data_la_SOURCES = \
@@ -13,5 +13,6 @@ gb_data_la_SOURCES = \
  c_deque.h c_deque.c \
  c_circular.h c_circular.c \
  c_avltree.h c_avltree.c \
- c_graph.h c_graph.c
+ c_graph.h c_graph.c \
+ c_heap.h c_heap.c
 
