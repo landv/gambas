@@ -143,8 +143,11 @@ void COMPONENT_load_all_finish(void)
 
 	LIST_for_each_name(comp, _component_load, load)
 	{
-		//fprintf(stderr, "load exported class: %s\n", comp->name);
-		ARCHIVE_load_exported_class(comp->archive);
+		ARCHIVE_load_exported_class(comp->archive, AR_FIND_ONLY);
+	}
+	LIST_for_each_name(comp, _component_load, load)
+	{
+		ARCHIVE_load_exported_class(comp->archive, AR_LOAD_ONLY);
 	}
 }
 

@@ -39,6 +39,9 @@ install-exec-local:
 		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
 		xdg-mime install $(srcdir)/mime/application-x-gambasserverpage.xml; \
 	fi
+	@echo "Installing the Gambas appdata file"
+	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/appdata
+	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/appdata
 
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gambas$(GAMBAS_VERSION)

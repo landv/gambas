@@ -9,7 +9,6 @@ SUBDIRS = \
  @sqlite3_dir@ \
  @net_dir@ \
  @curl_dir@ \
- @smtp_dir@ \
  @mime_dir@ \
  @pcre_dir@ \
  @sdl_dir@ \

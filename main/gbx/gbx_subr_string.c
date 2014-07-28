@@ -855,11 +855,16 @@ static int _is_punct(int c)
 	return ((c > 32) && (c < 128) && !(_is_letter(c) || _is_digit(c)));
 }
 
+static int _is_alnum(int c)
+{
+	return _is_letter(c) || _is_digit(c);
+}
+
 void SUBR_is_chr(ushort code)
 {
 	static void *jump[] =
 	{
-		NULL, _is_ascii, _is_letter, _is_lower, _is_upper, _is_digit, _is_hexa, _is_space, _is_blank, _is_punct
+		NULL, _is_ascii, _is_letter, _is_lower, _is_upper, _is_digit, _is_hexa, _is_space, _is_blank, _is_punct, _is_alnum
 	};
 
 	char *addr;

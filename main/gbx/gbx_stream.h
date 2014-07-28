@@ -197,7 +197,7 @@ STREAM_CLASS stream = \
 
 #endif
 
-#define STREAM_BUFFER_SIZE 256
+#define STREAM_BUFFER_SIZE 1024
 
 bool STREAM_in_archive(const char *path);
 //int STREAM_get_readable(int fd, long *len);

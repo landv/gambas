@@ -129,7 +129,7 @@ void JIT_compile_and_execute(){
 	while(classes_to_load.size() > load_classes_size){
 		CLASS* klass = classes_to_load.back(); classes_to_load.pop_back();
 		
-		klass->state = CS_READY;
+		klass->loaded = true;
 		klass->ready = true;
 		
 		JIF.F_CLASS_run_inits(klass);

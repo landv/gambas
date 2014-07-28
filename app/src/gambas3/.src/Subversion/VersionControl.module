@@ -53,7 +53,7 @@ Public Sub Refresh()
     If $bSvn17 Then
       $bSVN = False
       Shell "svn status " & Shell$(SvnPath$($sRealDir) &/ ".project") & " 2>&1" To sResult
-      If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" Then $bSvn = True
+      If Process.LastValue = 0 And If sResult Not Like "svn:*W155007*:*" And If sResult Not Like "svn:*W155010*:*" Then $bSvn = True
     Else
       $bSVN = Exist($sRealDir &/ ".svn")
     Endif

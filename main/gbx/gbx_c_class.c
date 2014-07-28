@@ -133,7 +133,7 @@ BEGIN_METHOD(Classes_get, GB_STRING name)
 		return;
 	}
 
-	if (!class->state)
+	if (!CLASS_is_loaded(class))
 	{
 		GB_Error("Class is not loaded");
 		return;
@@ -153,33 +153,6 @@ BEGIN_METHOD(Class_Load, GB_STRING name)
 
 END_METHOD
 
-/*
-BEGIN_METHOD_VOID(Classes_next)
-
-	TABLE *table = CLASS_get_table();
-	int *index = (int *)GB_GetEnum();
-	CLASS *class;
-
-	for(;;)
-	{
-		if (*index >= TABLE_count(table))
-		{
-			GB_StopEnum();
-			break;
-		}
-
-		class = ((CLASS_SYMBOL *)TABLE_get_symbol(table, *index))->class;
-		(*index)++;
-
-		if (class->state)
-		{
-			GB_ReturnObject(class);
-			break;
-		}
-	}
-
-END_METHOD
-*/
 
 BEGIN_METHOD_VOID(Classes_next)
 
@@ -201,7 +174,7 @@ BEGIN_METHOD_VOID(Classes_next)
 			break;
 		}
 
-		if (class->state)
+		if (CLASS_is_loaded(class))
 		{
 			GB_ReturnObject(class);
 			break;

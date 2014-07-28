@@ -1646,17 +1646,19 @@ Public Sub imvImage_Draw(hZoom As Image)
     Endif
     
     With $hPasteSelect.GetExtents()
-      hImage = New Image(.Width, .Height, Color.Transparent)
+      If .Width > 0 And If .Height > 0 Then
+        hImage = New Image(.Width, .Height, Color.Transparent)
+        
+        Paint.Begin(hImage)
+        Paint.Brush = Paint.Image($hPaste)
+        $hPasteSelect.Translate(- .X, - .Y)
+        Paint.Brush.Matrix = $hPasteSelect._BrushMatrix.Copy()
+        $hPasteSelect.Paint(hImage, CImageSelection.ACTION_FILL)
+        $hPasteSelect.Translate(.X, .Y)
+        Paint.End
       
-      Paint.Begin(hImage)
-      Paint.Brush = Paint.Image($hPaste)
-      $hPasteSelect.Translate(- .X, - .Y)
-      Paint.Brush.Matrix = $hPasteSelect._BrushMatrix.Copy()
-      $hPasteSelect.Paint(hImage, CImageSelection.ACTION_FILL)
-      $hPasteSelect.Translate(.X, .Y)
-      Paint.End
-    
-      imvImage._Paint(hImage, hOffset.X + .X * imvImage.Zoom, hOffset.Y + .Y * imvImage.Zoom)
+        imvImage._Paint(hImage, hOffset.X + .X * imvImage.Zoom, hOffset.Y + .Y * imvImage.Zoom)
+      Endif
     
     End With
     

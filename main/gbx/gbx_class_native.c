@@ -322,7 +322,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
 	/* Class is loaded */
 
-	class->state = CS_LOADED;
+	class->loaded = TRUE;
 	class->error = FALSE;
 	
 	/* Run the static initializer */
@@ -331,7 +331,6 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
 	/* Class is ready */
 
-	class->state = CS_READY;
 	class->ready = TRUE;
 
 	//total += MEMORY_size - alloc;
@@ -343,6 +342,7 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 
 CLASS *CLASS_register(GB_DESC *ptr)
 {
-	return CLASS_register_class(ptr, CLASS_check_global(((CLASS_DESC_GAMBAS *)ptr)->name));
+	const char *name = ((CLASS_DESC_GAMBAS *)ptr)->name;
+	return CLASS_register_class(ptr, CLASS_check_global(CLASS_find_global(name)));
 }
 

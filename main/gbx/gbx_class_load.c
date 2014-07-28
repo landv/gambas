@@ -345,7 +345,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	else
 		sclass = CLASS_find(name);
 	
-	if (sclass->state)
+	if (CLASS_is_loaded(sclass))
 	{
 		if (!sclass->is_struct)
 			THROW_CLASS(class, "Class already exists: ", name);
@@ -466,7 +466,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	
 	sclass->is_struct = TRUE;
 	
-	sclass->state = CS_READY;
+	sclass->loaded = TRUE;
 	sclass->ready = TRUE;
 	return;
 	
@@ -947,7 +947,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 	
 	//size_t alloc = MEMORY_size;
 	
-	if (class->state >= CS_LOADED)
+	if (CLASS_is_loaded(class))
 		return;
 
 	if (class->error)
@@ -1243,7 +1243,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	/* ...and usable ! */
 
-	class->state = CS_LOADED;
+	class->loaded = TRUE;
 	class->error = FALSE;
 
 	/* Init breakpoints */
@@ -1299,7 +1299,7 @@ void CLASS_load_real(CLASS *class)
 
 	_load_class_from_jit = FALSE;
 	
-	if (class->state == CS_NULL)
+	if (!CLASS_is_loaded(class))
 	{
 		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']' && !class->array_type)
 		{
@@ -1312,12 +1312,12 @@ void CLASS_load_real(CLASS *class)
 	
 	if (load_from_jit)
 	{
-		class->state = CS_LOADED;
+		class->loaded = TRUE;
 		class->ready = FALSE;
 	}
 	else
 	{
-		class->state = CS_READY;
+		class->loaded = TRUE;
 		class->ready = TRUE;
 		
 		CLASS_run_inits(class);

@@ -27,7 +27,7 @@ End
 Public Sub Connect(Host As String, Port As Integer)
 
   'Debug "Executing OpenSSL"
-  sProcess = Exec [OpenSSLPath, "s_client", "-quiet", "-connect", Shell(Host) & ":" & Shell(Port)] For Read Write As "Client"
+  sProcess = Exec [OpenSSLPath, "s_client", "-quiet", "-connect", Host & ":" & Port] For Read Write As "Client"
 
   sProcess.Blocking = True
   sProcess.EndOfLine = gb.Windows

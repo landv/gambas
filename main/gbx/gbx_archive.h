@@ -31,6 +31,11 @@
 #include "gb_arch.h"
 #include "gb_list.h"
 
+// ARCHIVE_load_exported_class() pass argument
+#define AR_FIND_ONLY      1
+#define AR_LOAD_ONLY      2
+#define AR_FIND_AND_LOAD  3
+
 typedef
   struct {
     LIST list;
@@ -40,6 +45,7 @@ typedef
     TABLE *classes;
 		const char *path;
 		void *current_component;
+		struct _CLASS **exported;
     unsigned translation_loaded : 1;
 		unsigned exported_classes_loaded : 1;
     }
@@ -68,7 +74,7 @@ void ARCHIVE_load_main(void);
 ARCHIVE *ARCHIVE_create(const char *name, const char *path);
 void ARCHIVE_delete(ARCHIVE *arch);
 void ARCHIVE_load(ARCHIVE *arch, bool load_exp);
-void ARCHIVE_load_exported_class(ARCHIVE *arch);
+void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass);
 
 bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find);
 

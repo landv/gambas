@@ -300,7 +300,7 @@ static bool init_breakpoint(DEBUG_BREAK *brk)
 
 	//fprintf(stderr, "init_breakpoint: id = %d\n", brk->id);
 
-	if (brk->addr || brk->class->state == CS_NULL)
+	if (brk->addr || !CLASS_is_loaded(brk->class))
 	{
 		WARNING("Breakpoint is pending");
 		return TRUE;

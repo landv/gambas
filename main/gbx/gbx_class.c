@@ -106,7 +106,7 @@ static void exit_class(CLASS *class, bool native)
 	if (CLASS_is_native(class) != native)
 		return;
 	
-	if (class->state < CS_LOADED)
+	if (!CLASS_is_loaded(class))
 		return;
 
 	EXEC_public(class, NULL, "_exit", 0);
@@ -187,15 +187,17 @@ static void unload_class(CLASS *class)
 	FREE(&class->table);
 	FREE(&class->sort);
 
-	class->state = CS_NULL;
+	class->ready = FALSE;
+	class->loaded = FALSE;
 }
 
 #define SWAP_FIELD(_v, _s, _d, _f) (_v = _s->_f, _s->_f = _d->_f, _d->_f = _v)
 
-static void class_replace_global(const char *name)
+static void class_replace_global(CLASS *class)
 {
 	CLASS_DESC_SYMBOL *cds;
-	CLASS *class, *parent;
+	CLASS *parent;
+	const char *name;
 	char *old_name;
 	CLASS *old_class;
 	int len;
@@ -206,11 +208,11 @@ static void class_replace_global(const char *name)
 	int nprefix;
 	int i;
 
-	class = CLASS_find_global(name);
-	if (class->state)
+	if (CLASS_is_loaded(class))
 	{
 		//fprintf(stderr, "class_replace_global: %p %s\n", class, name);
 		
+		name = class->name;
 		len = strlen(name);
 
 		nprefix = 0;
@@ -325,7 +327,7 @@ void CLASS_clean_up(bool silent)
 
 	for (class = _classes; class; class = class->next)
 	{
-		if (!CLASS_is_native(class) && class->state)
+		if (!CLASS_is_native(class) && CLASS_is_loaded(class))
 		{
 			#if DEBUG_LOAD
 			fprintf(stderr, "Must free: %s\n", class->name);
@@ -361,7 +363,7 @@ void CLASS_clean_up(bool silent)
 			/*if (!CLASS_is_native(class) && class->ready && !class->exit)
 				printf("%s: %d ready = %d\n", class->name, class->count, class->ready);*/
 
-			if (class->count == 0 && !CLASS_is_native(class) && class->state && !class->exit)
+			if (class->count == 0 && !CLASS_is_native(class) && CLASS_is_loaded(class) && !class->exit)
 			{
 				release_class(class);
 				n++;
@@ -390,7 +392,7 @@ void CLASS_clean_up(bool silent)
 
 			for (class = _classes; class; class = class->next)
 			{
-				if (!CLASS_is_native(class) && class->state && !class->exit && (!class->array_class || class->array_class->exit)) // && !class->astruct_class)
+				if (!CLASS_is_native(class) && CLASS_is_loaded(class) && !class->exit && (!class->array_class || class->array_class->exit)) // && !class->astruct_class)
 				{
 					if (!silent)
 						fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 5d %s\n", class->count, class->name);
@@ -448,7 +450,7 @@ CLASS *CLASS_look(const char *name, int len)
 	int index;
 
 	#if DEBUG_COMP
-	fprintf(stderr, "CLASS_look: %s in %s\n", name, _global ? "global" : "local");
+	fprintf(stderr, "CLASS_look: %s in %s", name, _global ? "global" : "local");
 	#endif
 
 	/*if (strncasecmp(name, "listbox", 7) == 0)
@@ -531,8 +533,6 @@ CLASS *CLASS_find(const char *name)
 
 	ALLOC_ZERO(&class, sizeof(CLASS));
 	csym->class = class;
-	//class->state = CS_NULL;
-	//class->count = 0;
 	class->ref = 1;
 	
 	class->next = _classes;
@@ -565,7 +565,7 @@ CLASS *CLASS_get(const char *name)
 {
 	CLASS *class = CLASS_find(name);
 
-	if (class->state == CS_NULL)
+	if (!CLASS_is_loaded(class))
 		CLASS_load(class);
 
 	return class;
@@ -1376,20 +1376,17 @@ void CLASS_search_special(CLASS *class)
 }
 
 
-CLASS *CLASS_check_global(char *name)
+CLASS *CLASS_check_global(CLASS *class)
 {
-	CLASS *class;
-
-	class = CLASS_find_global(name);
-	if (class->state)
+	if (CLASS_is_loaded(class))
 	{
 		if (COMPONENT_current && class->component == COMPONENT_current)
 			ERROR_panic("Class '%s' declared twice in the component '%s'.", CLASS_get_name(class), class->component->name);
 
-		if (class->has_child)
-			THROW(E_CLASS, name, "Overriding an already inherited class is forbidden", "");
+		/*if (class->has_child)
+			THROW(E_CLASS, class->name, "Overriding an already inherited class is forbidden", "");*/
 			
-		class_replace_global(name);
+		class_replace_global(class);
 	}
 
 	return class;

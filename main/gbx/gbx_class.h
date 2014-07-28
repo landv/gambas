@@ -235,13 +235,6 @@ typedef
 	PACKED
 	CLASS_LOAD;
 
-enum
-{
-	CS_NULL = 0,
-	CS_LOADED = 1,
-	CS_READY = 2
-};
-
 enum {
 	CO_EQUAL, CO_EQUALF, CO_EQUALO,
 	CO_COMP, CO_COMPF, CO_COMPO,
@@ -262,21 +255,23 @@ typedef
 		struct _CLASS *parent;            //  16  24  Inherited class
 		char *name;                       //  20  32  Class name
 
-		unsigned state : 2;               //          Initialization state
-		unsigned ready : 1;               //          Class is ready (<=> state == CS_READY)
+		unsigned loaded : 1;              //          Class is loaded
+		unsigned ready : 1;               //          Class is loaded and ready
 		unsigned debug : 1;               //          Debugging information ?
 		unsigned free_name : 1;           //          Must free the class name
 		unsigned free_event : 1;          //          Must free class->event
 		unsigned in_load : 1;             //          Class being loaded
 		unsigned exit : 1;                //          Marker used by CLASS_exit
 		unsigned auto_create : 1;         //          Automatically instanciated
+
+		unsigned quick_array : 2;         //          Array accessor optimization type
 		unsigned no_create : 1;           //          Cannot instanciate this class
 		unsigned is_virtual : 1;          //          Virtual class (name beginning with a dot)
-		unsigned swap : 1;                //          class endianness was swapped
-		unsigned enum_static : 1;         //          if class enumeration is static
-		unsigned quick_array : 2;         //          array accessor optimization type
+		unsigned swap : 1;                //          Class endianness was swapped
+		unsigned enum_static : 1;         //          If class enumeration is static
 		unsigned is_stream : 1;           //          If the class inherits stream
 		unsigned global : 1;              //          If the class is in the global table
+
 		unsigned is_native : 1;           //          If the class is native (i.e. written in C/C++)
 		unsigned error : 1;               //          Loading or registering the class has failed
 		unsigned is_observer : 1;         //          This is the Observer class
@@ -285,12 +280,13 @@ typedef
 		unsigned is_array_of_struct : 1;  //          This class is an array of struct
 		unsigned init_dynamic : 1;        //          If there is a special function to call at instanciation
 		unsigned must_check : 1;          //          The class has a check function
+
 		unsigned has_child : 1;           //          The class has an inherited child class
-		unsigned unknown_static : 1;      //          if _unknown is static
-		unsigned property_static : 1;     //          if _property is static
-		unsigned has_convert : 1;         //          if the _convert interface is implemented
-		unsigned has_operators : 1;       //          if the _operators interface is implemented
-		unsigned _reserved : 2;           //  24  36 
+		unsigned unknown_static : 1;      //          If _unknown is static
+		unsigned property_static : 1;     //          If _property is static
+		unsigned has_convert : 1;         //          If the _convert interface is implemented
+		unsigned has_operators : 1;       //          If the _operators interface is implemented
+		unsigned _reserved : 3;           //  24  36
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
@@ -472,7 +468,7 @@ bool CLASS_inherits(CLASS *class, CLASS *parent);
 CLASS *CLASS_replace_global(const char *name);
 CLASS *CLASS_look_global(const char *name, int len);
 CLASS *CLASS_find_global(const char *name);
-CLASS *CLASS_check_global(char *name);
+CLASS *CLASS_check_global(CLASS *class);
 
 void CLASS_ref(void *object);
 bool CLASS_unref(void *object, bool can_free);
@@ -541,5 +537,8 @@ CLASS *CLASS_register(GB_DESC *desc);
 #define CLASS_has_operator(_class, _op) (((void **)(_class)->operators)[_op] != NULL)
 #define CLASS_get_operator_strength(_class) (((intptr_t *)(_class)->operators)[CO_STRENGTH])
 #define CLASS_set_operator_strength(_class, _strength) (((intptr_t *)(_class)->operators)[CO_STRENGTH] = (_strength))
+
+#define CLASS_is_loaded(_class) ((_class)->loaded)
+#define CLASS_is_ready(_class) ((_class)->ready)
 
 #endif /* _CLASS_H */

@@ -1,0 +1,96 @@
+' Gambas class file
+
+Inherits SmtpSession
+
+Property Read Connected As Boolean
+
+Private $hSocket As New Socket
+
+Public Sub _new()
+
+  'Wait 10 seconds before timing out
+  $hSocket.Timeout = 10000
+  $hSocket.EndOfLine = gb.Windows
+  
+End
+
+Public Sub Client_Ready()
+
+  'Debug "Connected to remote host " & sSocket.Path
+
+End
+
+Public Sub Client_Closed()
+
+  Debug "Connection Closed by foreign host."
+
+End
+
+Public Sub Client_Found()
+
+  'Debug "Host Found. Connecting..."
+
+End
+
+' ''Raised when an error occurs
+' Public Sub Client_Error()
+' 
+'   Select Case sSocket.Status
+' 
+'     Case Net.CannotCreateSocket
+'       Error.Raise("The system does not allow to create a socket")
+' 
+'     Case Net.HostNotFound
+'       Error.Raise("Host not Found")
+' 
+'     Case Net.ConnectionRefused
+'       Error.Raise("Unable to Connect. Connection Refused")
+' 
+'     Case Net.CannotRead
+'       Error.Raise("Error Reading Data")
+' 
+'     Case Net.CannotWrite
+'       Error.Raise("Error Writing Data")
+' 
+'   End Select
+' 
+' End
+
+''Connect to Host trough Port
+Public Sub Connect(sHost As String, iPort As Integer)
+
+  If Not sHost Then sHost = "localhost"
+  If iPort = 0 Then iPort = 25
+
+  $hSocket.Connect(sHost, iPort)
+  $hSocket.Blocking = True
+  Me.Stream = $hSocket
+
+  Do
+    If $hSocket.Status = Net.Connected Or If $hSocket.Status <= 0 Then Break
+    Wait 0.1
+  Loop
+
+End
+
+''Close the socket. No further data can be sent or read.
+Public Sub Disconnect()
+
+  Try $hSocket.Close
+  'Debug "Connection closed by user"
+
+End
+
+' ''Send data to the server.
+' Public Function Send(Data As String, Multiline As Boolean) As String
+' 
+'   If sSocket.Status = Net.Connected Then Return Super.Send(Data, Multiline)
+' 
+' End
+
+
+Private Function Connected_Read() As Boolean
+
+  Return $hSocket.Status = Net.Connected
+
+End

@@ -77,7 +77,8 @@ GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
   EVAL->exec_class.ref = 1;
   EVAL->exec_class.count = 1;
   EVAL->exec_class.name = ".Eval";
-  EVAL->exec_class.state = CS_READY;
+  EVAL->exec_class.loaded = TRUE;
+  EVAL->exec_class.ready = TRUE;
   EVAL->exec_class.load = &EVAL->class_load;
 
   return GB.Eval(EVAL, get_value);
