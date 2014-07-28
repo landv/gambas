@@ -267,7 +267,7 @@ END_METHOD
 
 #define ITER 1
 
-/**G
+/**G#
  * Encrypt a plaintext with a password to a standalone string.
  *
  * If 'salt' is given, it should be an 8-byte string. If it is not, it is
@@ -315,7 +315,7 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd;
 
 END_METHOD
 
-/**G
+/**G#
  * Decrypt a ciphertext obtained from EncryptSalted().
  **/
 BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
@@ -423,6 +423,14 @@ BEGIN_PROPERTY(CipherText_InitVector)
 
 END_PROPERTY
 
+BEGIN_METHOD(CipherText_new, GB_STRING ciph; GB_STRING key; GB_STRING iv)
+
+	THIS->cipher = GB.NewString(STRING(ciph), LENGTH(ciph));
+	THIS->key = GB.NewString(STRING(key), LENGTH(key));
+	THIS->iv = GB.NewString(STRING(iv), LENGTH(iv));
+
+END_METHOD
+
 BEGIN_METHOD_VOID(CipherText_free)
 
 	GB.FreeString(&THIS->cipher);
@@ -433,12 +441,12 @@ END_METHOD
 
 GB_DESC CCipherText[] = {
 	GB_DECLARE("CipherText", sizeof(CCIPHERTEXT)),
-	GB_NOT_CREATABLE(),
 
 	GB_PROPERTY_READ("Cipher", "s", CipherText_Cipher),
 	GB_PROPERTY_READ("Key", "s", CipherText_Key),
 	GB_PROPERTY_READ("InitVector", "s", CipherText_InitVector),
 
+	GB_METHOD("_new", NULL, CipherText_new, "(Cipher)s(Key)s(InitVector)s"),
 	GB_METHOD("_free", NULL, CipherText_free, NULL),
 
 	GB_END_DECLARE

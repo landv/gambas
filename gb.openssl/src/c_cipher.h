@@ -27,4 +27,3 @@ extern GB_DESC CCipher[], CCipherMethod[], CCipherText[];
 #endif
 
 #endif /* __C_CIPHER_H */
-
