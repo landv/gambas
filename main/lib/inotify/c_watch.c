@@ -40,6 +40,7 @@ typedef struct {
 	int wd;
 	uint32_t mask;
 	char *path;
+	int paused;
 	GB_VARIANT_VALUE tag;
 } CWATCH;
 
@@ -119,7 +120,7 @@ static int *get_event(uint32_t *maskp)
 	return NULL;
 }
 
-/* Foward */
+/* Forward */
 static void INOTIFY_exit(void);
 
 static void destroy_watch(CWATCH *watch)
@@ -195,7 +196,7 @@ again:
 				}
 				break;
 			}
-			if (!GB.CanRaise(watch, *eventp))
+			if (!GB.CanRaise(watch, *eventp) || watch->paused)
 				continue;
 
 			/*
@@ -365,6 +366,7 @@ BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow;
 	THIS->wd = wd;
 	THIS->mask = mask;
 	THIS->path = path;
+	THIS->paused = 0;
 	THIS->tag.type = GB_T_NULL;
 
 	GB.HashTable.Add(_ino.watches, (char *) &wd, sizeof(wd), THIS);
@@ -382,11 +384,59 @@ BEGIN_METHOD_VOID(Watch_free)
 END_METHOD
 
 /**G
+ * Resume a paused watch. Whether the watch was actually paused does not
+ * matter.
+ */
+BEGIN_METHOD_VOID(Watch_Resume)
+
+	inotify_add_watch(_ino.fd, THIS->path, THIS->mask);
+
+END_METHOD
+
+/**G
+ * Pause a watch. You can pause a watch multiple times. This has no effect.
+ *
+ * A paused watch will not monitor any events -- without formally altering
+ * the events bitmask -- and thus not inflict any interruption by events
+ * from the kernel.
+ */
+BEGIN_METHOD_VOID(Watch_Pause)
+
+	/* We can't really pause as the kernel won't allow us to set an
+	 * empty mask. We pick an unlikely one here and add special logic
+	 * to the event dispatching code to prevent an event from being
+	 * raised if the watch is paused. */
+	inotify_add_watch(_ino.fd, THIS->path, IN_DELETE_SELF);
+
+END_METHOD
+
+/**G
  * Return the watched path.
  **/
 BEGIN_PROPERTY(Watch_Path)
 
 	GB.ReturnString(THIS->path);
+
+END_PROPERTY
+
+/**G
+ * Return or set if the watch is paused.
+ *
+ * {seealso
+ *   Pause(), Resume()
+ * }
+ **/
+BEGIN_PROPERTY(Watch_IsPaused)
+
+	if (READ_PROPERTY) {
+		GB.ReturnBoolean(THIS->paused);
+		return;
+	}
+	THIS->paused = VPROP(GB_BOOLEAN);
+	if (THIS->paused)
+		CALL_METHOD_VOID(Watch_Pause);
+	else
+		CALL_METHOD_VOID(Watch_Resume);
 
 END_PROPERTY
 
@@ -437,6 +487,9 @@ GB_DESC CWatch[] = {
 	GB_STATIC_METHOD("_exit", NULL, Watch_exit, NULL),
 	GB_STATIC_METHOD("_get", "Watch", Watch_get, "(Path)s"),
 
+	GB_METHOD("Resume", NULL, Watch_Resume, NULL),
+	GB_METHOD("Pause", NULL, Watch_Pause, NULL),
+
 	GB_STATIC_PROPERTY_READ("Name", "s", Watch_Name),
 	GB_STATIC_PROPERTY_READ("IsDir", "b", Watch_IsDir),
 	GB_STATIC_PROPERTY_READ("Unmount", "b", Watch_Unmount),
@@ -447,6 +500,7 @@ GB_DESC CWatch[] = {
 
 	GB_PROPERTY_SELF("Events", ".Watch.Events"),
 	GB_PROPERTY_READ("Path", "s", Watch_Path),
+	GB_PROPERTY("IsPaused", "b", Watch_IsPaused),
 	GB_PROPERTY("Tag", "v", Watch_Tag),
 
 	GB_END_DECLARE
