@@ -22,6 +22,9 @@
 #define __C_DEQUE_C
 
 #include "gambas.h"
+#include "gb_common.h" /* EXTERN for gbx_type.h */
+#include "gbx_type.h" /* TYPE_is_object() */
+
 #include "c_list.h"
 #include "c_deque.h"
 
@@ -41,6 +44,19 @@ static CDEQUE_ELEM *CDEQUE_new_elem(GB_VARIANT *variant)
 	LIST_init(&new->list);
 	GB.StoreVariant(variant, &new->var);
 	return new;
+}
+
+static CDEQUE_ELEM *CDEQUE_copy_elem(CDEQUE_ELEM *elem)
+{
+	CDEQUE_ELEM *copy;
+
+	GB.Alloc((void **) &copy, sizeof(*copy));
+	LIST_init(&copy->list);
+	copy->prio = elem->prio;
+	memcpy(&copy->var, &elem->var, sizeof(copy->var));
+	if (TYPE_is_object(copy->var.type))
+		GB.Ref(copy->var.value._object);
+	return copy;
 }
 
 static void CDEQUE_destroy_elem(CDEQUE_ELEM *elem)
@@ -205,6 +221,26 @@ BEGIN_METHOD_VOID(Deque_Clear)
 
 END_METHOD
 
+static void CDEQUE_copy(CDEQUE *src, CDEQUE *dst)
+{
+	LIST *node;
+
+	list_for_each(node, &src->elements)
+		CDEQUE_push_back(dst, CDEQUE_copy_elem(get_elem(node)));
+}
+
+BEGIN_METHOD_VOID(Deque_Copy)
+
+	CDEQUE *copy;
+
+	/* This method is also used by Queue and Stack, so get the right
+	 * class. */
+	copy = GB.New(GB.GetClass(THIS), NULL, NULL);
+	CDEQUE_copy(THIS, copy);
+	GB.ReturnObject(copy);
+
+END_METHOD
+
 BEGIN_PROPERTY(Deque_IsEmpty)
 
 	GB.ReturnBoolean(CDEQUE_is_empty(THIS));
@@ -241,6 +277,7 @@ GB_DESC CDeque[] = {
 	GB_METHOD("PeekBack", "v", Deque_PeekBack, NULL),
 
 	GB_METHOD("Clear", NULL, Deque_Clear, NULL),
+	GB_METHOD("Copy", "Deque", Deque_Copy, NULL),
 
 	GB_PROPERTY_READ("IsEmpty", "b", Deque_IsEmpty),
 	GB_PROPERTY_READ("Size", "i", Deque_Size),
@@ -263,6 +300,7 @@ GB_DESC CStack[] = {
 	GB_METHOD("Peek", "v", Deque_PeekBack, NULL),
 
 	GB_METHOD("Clear", NULL, Deque_Clear, NULL),
+	GB_METHOD("Copy", "Stack", Deque_Copy, NULL),
 
 	GB_PROPERTY_READ("IsEmpty", "b", Deque_IsEmpty),
 	GB_PROPERTY_READ("Size", "i", Deque_Size),
@@ -287,6 +325,7 @@ GB_DESC CQueue[] = {
 	GB_METHOD("Peek", "v", Deque_PeekFront, NULL),
 
 	GB_METHOD("Clear", NULL, Deque_Clear, NULL),
+	GB_METHOD("Copy", "Queue", Deque_Copy, NULL),
 
 	GB_PROPERTY_READ("IsEmpty", "b", Deque_IsEmpty),
 	GB_PROPERTY_READ("Size", "i", Deque_Size),
@@ -299,6 +338,8 @@ GB_DESC CQueue[] = {
  * The higher the priority, the closer to the beginning the value will be
  * enqueued. For equal priorities, the later added element will be enqueued
  * at a higher index.
+ *
+ * TODO: This is an O(n) search over a linked list. We gotta change that!
  */
 
 static void CPRIOQ_enqueue(CDEQUE *dq, CDEQUE_ELEM *elem, int prio)
