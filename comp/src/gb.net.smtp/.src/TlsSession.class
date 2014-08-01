@@ -23,7 +23,16 @@ End
 
 Public Sub Disconnect()
 
+  Dim I As Integer
+  
   $hProcess.Kill()
+
+  ' Wait for the openssl process death
+  For I = 1 To 20
+    If Not $hProcess Then Break
+    Wait
+    Sleep 0.05
+  Next
 
 End
 
