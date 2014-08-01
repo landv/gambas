@@ -1617,12 +1617,12 @@ BEGIN_PROPERTY(MediaPipeline_Position)
 	}
 	else
 	{
-		guint64 pos = VPROP(GB_FLOAT) * 1E9;
+		gint64 pos = VPROP(GB_FLOAT) * 1E9;
 		
 		if (pos < 0) 
 			pos = 0;
-		
-		gst_element_seek_simple(ELEMENT, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT, pos);
+
+		gst_element_seek_simple(ELEMENT, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT, (guint64)pos);
 	}
 
 END_PROPERTY

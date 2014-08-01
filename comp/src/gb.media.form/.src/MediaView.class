@@ -1,0 +1,60 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _IsControl As Boolean = True
+Public Const _Group As String = "Media"
+Public Const _Properties As String = "*,Border,Control=True,URL{Path}"
+
+Property URL As String
+Property Border As Boolean
+Property Control As Boolean
+
+Private $hView As FMediaPlayer
+Private $sUrl As String
+
+Public Sub _new()
+  
+  $hView = New FMediaPlayer(Me)
+  
+End
+
+Private Function URL_Read() As String
+
+  Return $sUrl
+
+End
+
+Private Sub URL_Write(Value As String)
+
+  $sUrl = Value
+  If Me.Design Then Return
+  $hView.SetUrl($sUrl)
+
+End
+
+Private Function Control_Read() As Boolean
+
+  Return $hView.GetShowControl()
+
+End
+
+Private Sub Control_Write(Value As Boolean)
+
+  $hView.SetShowControl(Value)
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.GetBorder()
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.SetBorder(Value)
+
+End

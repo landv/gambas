@@ -5,6 +5,11 @@ Export
 Static Private $aDay As String[] 
 Static Private $aMonth As String[] 
 
+Public Const _IsControl As Boolean = True
+Public Const _IsVirtual As Boolean = True
+Public Const _Group As String = "Network"
+Public Const _Properties As String = "Host,Port,User,Password,Encrypt{Net.None;SSL;TLS}=None"
+
 Property Debug As Boolean
 
 Property Host As String

@@ -1,0 +1,235 @@
+' Gambas class file
+
+'Static Private $hLogo As Image
+
+Private $hPlayer As MediaPlayer
+Private $hImage As MediaControl
+Private $fPos As Float
+Private $fLength As Float
+
+Private $hPause1 As Panel
+Private $hPause2 As Panel
+Private $iMute As Integer
+
+Private Sub MakeMediaPlayer()
+  
+  If $hPlayer Then Return
+  
+  $hPlayer = New MediaPlayer As "MediaPlayer"
+  '$hFilter = New MediaFilter($hPlayer)
+  $hImage = New MediaControl($hPlayer, "ximagesink")  
+  $hPlayer.Video.Output = $hImage
+  '$hImage.SetWindow(dwgVideo)
+  
+  ' $aVisualisation = New MediaControl[]
+  ' AddVisualisation("", "")
+  ' AddVisualisation("goom", "Goom")
+  ' AddVisualisation("goom2k1", "Goom2")
+  ' AddVisualisation("libvisual_bumpscope", "Bump")
+  ' AddVisualisation("libvisual_corona", "Corona")
+  ' AddVisualisation("libvisual_infinite", "Infinite")
+  ' AddVisualisation("libvisual_jakdaw", "Jakdaw")
+  ' AddVisualisation("libvisual_jess", "Jess")
+  ' AddVisualisation("monoscope", "Mono")
+  ' AddVisualisation("libvisual_oinksie", "Oinksie")
+  ' AddVisualisation("libvisual_lv_analyzer", "Analyzer")
+  ' AddVisualisation("libvisual_lv_scope", "Scope")
+  ' AddVisualisation("spacescope", "Space")
+  ' AddVisualisation("spectrascope", "Spectra")
+  ' AddVisualisation("synaescope", "Synae")
+  ' AddVisualisation("wavescope", "Wave")
+  ' 
+  ' $iVisualisation = 0
+  ' UpdateVisualisation
+  
+End
+
+Private Sub ShowPause()
+  
+  If $hPause1 Then Return
+  Object.Lock(dwgVideo)
+  $hPause1 = New Panel(dwgVideo)
+  $hPause1.Background = Color.White
+  $hPause2 = New Panel(dwgVideo)
+  $hPause2.Background = Color.White
+  Object.Unlock(dwgVideo)
+  dwgVideo_Arrange
+  
+End
+
+Private Sub HidePause()
+
+  If Not $hPause1 Then Return
+  Object.Lock(dwgVideo)
+  $hPause1.Delete
+  $hPause2.Delete
+  $hPause1 = Null
+  $hPause2 = Null
+  Object.Unlock(dwgVideo)
+
+End
+
+
+Public Sub SetUrl(sUrl As String)
+  
+  MakeMediaPlayer
+  $hPlayer.URL = Media.URL(sUrl)
+  
+End
+
+Public Sub btnPlay_Click()
+
+  If Not $hPlayer Then Return
+  timTime.Start
+  dwgTime.Refresh
+  sldVolume_Change
+  $hImage.SetWindow(dwgVideo)
+  $hPlayer.Play
+  HidePause
+  
+End
+
+Public Sub btnPause_Click()
+
+  If Not $hPlayer Then Return
+  $hPlayer.Pause
+  ShowPause
+  timTime.Stop
+
+End
+
+Public Sub btnStop_Click()
+
+  If Not $hPlayer Then Return
+  $hPlayer.Stop
+  HidePause
+  timTime.Stop
+  $fLength = 0
+
+End
+
+Public Sub dwgVideo_Arrange()
+
+  Dim W, H As Integer
+
+  H = Desktop.Scale * 8
+  W = H * 2
+
+  'lblTime.Move(dwgVideo.W - W, dwgVideo.H - H, W, H)
+
+  If $hPause1 Then $hPause1.Move(dwgVideo.W \ 2 - 32, dwgVideo.H \ 2 - 32, 24, 64)
+  If $hPause2 Then $hPause2.Move(dwgVideo.W \ 2 + 8, dwgVideo.H \ 2 - 32, 24, 64)
+
+End
+
+Public Sub GetShowControl() As Boolean
+  
+  Return panControl.Visible
+  
+End
+
+Public Sub SetShowControl(bShow As Boolean)
+  
+  panControl.Visible = bShow
+  dwgTime.Visible = bShow
+  
+End
+
+Public Sub GetBorder() As Boolean
+  
+  Return panBorder.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean) As Boolean
+  
+  If bBorder Then
+    panBorder.Border = Border.Plain
+    panBorder.Margin = True
+  Else
+    panBorder.Border = Border.None
+    panBorder.Margin = False
+  Endif
+  
+End
+
+Private Sub UpdateTime()
+
+  Dim fPos As Float
+
+  fPos = $hPlayer.Position
+  If fPos = 0 Then Return
+  $fPos = fPos
+  If $fLength = 0 Then $fLength = $hPlayer.Duration
+  dwgTime.Refresh
+  
+End
+
+
+Public Sub timTime_Timer()
+
+  UpdateTime
+
+End
+
+Public Sub dwgTime_Draw()
+
+  Dim sText As String
+  
+  If Not $hPlayer Or If $hPlayer.State = Media.Null Then Return
+  
+  If $fLength > 0 Then Paint.FillRect(4, 6, (dwgTime.W - 8) * Min(1, $fPos / $fLength), dwgTime.H - 12, &HC0C0C0&)
+  
+  If $fPos = 0 Then
+    sText = "00:00:00"
+  Else
+    sText = Format(CDate(($fPos + 0.5) / 86400), "hh:nn:ss") '& " / " & Format(CDate($fLength / 86400), "hh:nn:ss")
+  Endif
+  Paint.DrawText(sText, 0, 0, dwgTime.W - 4, dwgTime.H, Align.Right)
+
+End
+
+Private Sub SetPos(fPos As Float)
+  
+  If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
+    If $fLength Then
+      $fPos = fPos * $fLength
+      $hPlayer.Position = $fPos
+      dwgTime.Refresh
+    Endif
+  Endif
+  
+End
+
+
+Public Sub dwgTime_MouseDown()
+  
+  If Mouse.Left Then SetPos(Mouse.X / dwgTime.W)
+  
+End
+
+Public Sub dwgTime_MouseMove()
+  
+  If Mouse.Left Then SetPos(Mouse.X / dwgTime.W)
+  
+End
+
+Public Sub sldVolume_Change()
+
+  sldVolume.Tooltip = CStr(sldVolume.Value) & "%"
+  If Not $hPlayer Then Return
+  $hPlayer.Audio.Volume = sldVolume.Value / 100
+
+End
+
+Public Sub btnVolume_Click()
+
+  If sldVolume.Enabled Then
+    $iMute = sldVolume.Value
+    sldVolume.Value = 0
+  Else
+    sldVolume.Value = $iMute
+  Endif
+  sldVolume.Enabled = Not sldVolume.Enabled
+
+End

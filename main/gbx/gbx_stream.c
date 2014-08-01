@@ -721,13 +721,10 @@ static char *input(STREAM *stream, bool line, char *escape)
 	}
 
 	if (len > 0)
-		//add_string(addr, &len_str, stream->common.buffer + start, len);
 		addr = STRING_add(addr, buffer + start, len);
 	else if (len < 0)
 		addr = STRING_extend(addr, STRING_length(addr) + len);
 
-	//STRING_extend_end(addr);
-	
 	stream->common.buffer = buffer;
 	stream->common.buffer_pos = buffer_pos;
 	stream->common.buffer_len = buffer_len;
