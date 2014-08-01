@@ -32,10 +32,12 @@ Public Sub Client_Found()
 
 End
 
-Public Sub Connect(sHost As String, iPort As Integer)
+Public Sub Connect(hClient As SmtpClient, sHost As String, iPort As Integer)
 
   If Not sHost Then sHost = "localhost"
   If iPort = 0 Then iPort = 25
+
+  Super.Connect(hClient, sHost, iPort)
 
   $hSocket.Timeout = 10000
   $hSocket.Connect(sHost, iPort)
