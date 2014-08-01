@@ -101,7 +101,6 @@ CFILE *CFILE_create(STREAM *stream, int mode)
 	return file;
 }
 
-
 static CFILE *create_default_stream(FILE *file, int mode)
 {
 	CFILE *ob;

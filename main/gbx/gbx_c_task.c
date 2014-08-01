@@ -42,6 +42,7 @@
 #include "gbx_signal.h"
 #include "gbx_event.h"
 
+#include "gbx_c_file.h"
 #include "gbx_c_task.h"
 
 //#define DEBUG_ME 1
@@ -72,6 +73,7 @@ static void has_forked(void)
 {
 	CTASK *task;
 	pid_t pid = getpid();
+	STREAM *stream;
 	
 	FILE_init();
 	EXEC_debug = FALSE;
@@ -84,6 +86,11 @@ static void has_forked(void)
 	EXEC_Hook.post = NULL;
 	//EXEC_Hook.quit = NULL;
 	
+	stream = CSTREAM_stream(CFILE_out);
+
+	stream->common.eol = 0;
+	STREAM_blocking(stream, TRUE);
+
 	task = _task_list;
 	while (task)
 	{
