@@ -774,7 +774,6 @@ Public Function WikiGetSymbols() As String[]
         Case "C"
           cSymbol[sPrefix & "C"].Add(hSym.Name)
         Case ":", "e", "E"
-          hSym.Kind = "e"
           cSymbol[sPrefix & "e"].Add(hSym.Name)
         Case "m"
           cSymbol[sPrefix & "m"].Add(hSym.Name)

@@ -76,55 +76,40 @@
       Spacing = True
       { Panel3 HBox
         MoveScaled(0,0,27,4)
-        { lblList Label
-          MoveScaled(0,0,10,4)
-          Visible = False
-          Font = Font["Bold,+2"]
-          Foreground = &H3398C3&
-          Padding = 4
-          AutoResize = True
-        }
-        { Panel4 Panel
-          MoveScaled(14,0,2,4)
-          Visible = False
-        }
-        { Panel5 Panel
-          MoveScaled(17,0,11,5)
+        { panFilter Panel
+          MoveScaled(2,0,21,4)
           Expand = True
           Arrangement = Arrange.Fill
           Padding = 1
-          { panFilter Panel
-            MoveScaled(0,0,10,4)
-            Expand = True
-            Arrangement = Arrange.Fill
-            Padding = 1
-            Border = Border.Plain
-            { txtFilter ButtonBox
-              MoveScaled(1,0,9,4)
-              Foreground = Color.LightForeground
-              Picture = Picture["icon:/small/clear"]
-              Border = False
-            }
+          Border = Border.Plain
+          { txtFilter ButtonBox
+            MoveScaled(1,0,9,4)
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
+          { txtFilterExample ButtonBox
+            MoveScaled(10,0,9,4)
+            Visible = False
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
           }
         }
-        { lblList2 Label
-          MoveScaled(0,2,11,5)
-          Visible = False
-          Font = Font["Bold,+2"]
-          Foreground = &HDF6B00&
-          Ignore = True
-          Padding = 4
-        }
       }
-      { lstRecent ListContainer
-        MoveScaled(4,8,17,20)
+      { lstRecent ScrollView
+        MoveScaled(3,8,11,18)
         Expand = True
+        Spacing = True
         Border = False
+        ScrollBar = Scroll.Vertical
       }
-      { lstExample ListContainer
-        MoveScaled(8,8,17,20)
+      { lstExample ScrollView
+        MoveScaled(14,9,11,18)
         Expand = True
+        Spacing = True
         Border = False
+        ScrollBar = Scroll.Vertical
       }
     }
   }

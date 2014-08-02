@@ -18,16 +18,12 @@
       Arrangement = Arrange.Fill
       { panProject Panel
         MoveScaled(1,1,26,53)
+        Background = Color.TextBackground
         Arrangement = Arrange.Vertical
-        { panProjectTitle Panel
-          MoveScaled(1,1,20,9)
-          Background = Color.TextBackground
+        { panProjectItem Panel
+          MoveScaled(1,1,18,11)
           Arrangement = Arrange.Fill
-          Padding = 2
-        }
-        { Separator1 Separator
-          MoveScaled(1,11,12,0)
-          Background = Color.TextBackground
+          Margin = True
         }
         { tvwProject TreeView
           MoveScaled(2,13,22,37)

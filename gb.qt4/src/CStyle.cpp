@@ -41,6 +41,15 @@
 #include "x11.h"
 #endif
 
+static QWidget *_fake = 0;
+
+static QWidget *get_fake_widget()
+{
+	if (!_fake)
+		_fake = new QWidget;
+	return _fake;
+}
+
 static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state, GB_COLOR color = COLOR_DEFAULT, QPalette::ColorRole role = QPalette::Window)
 {
 	opt.rect = QRect(x, y, w ,h);
@@ -233,13 +242,26 @@ static void style_box(QPainter *p, int x, int y, int w, int h, int state, GB_COL
 	opt.lineWidth = QApplication::style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt);
 	opt.midLineWidth = 0;
 	opt.state |= QStyle::State_Sunken;
+	p->save();
+	p->setBrush(Qt::NoBrush);
 	//opt.features = QStyleOptionFrameV2::None;
 	
 	if (color == GB_COLOR_DEFAULT)
 		QApplication::style()->drawPrimitive(QStyle::PE_FrameLineEdit, &opt, p);
 	else
-		QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, p);
+	{
+		if (::strcmp(qApp->style()->metaObject()->className(), "QGtkStyle") == 0)
+		{
+			QWidget *w = get_fake_widget();
+			w->setAttribute(Qt::WA_SetPalette, true);
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, p, w);
+			w->setAttribute(Qt::WA_SetPalette, false);
+		}
+		else
+			QApplication::style()->drawPrimitive(QStyle::PE_PanelLineEdit, &opt, p);
+	}
 
+	p->restore();
 	//paint_focus(d, x, y, w, h, state);
 	//if (state & GB_DRAW_STATE_FOCUS)
 	//	QApplication::style()->drawControl(QStyle::CE_FocusFrame, &opt, DP(d), GB.Is(d->device, CLASS_DrawingArea) ? QWIDGET(d->device) : NULL);

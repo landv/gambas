@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Private $sPath As String
+Static Private $hLogo As Image
 
 Private btnNew As CCoolButton
 Private btnOpen As CCoolButton
@@ -24,7 +25,8 @@ Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 Private $hWelcome As CWelcome
 Private $iSort As Integer = CRecentFile.SORT_BY_DATE
 
-Static Private $hLogo As Image
+Private $hRecent As CProjectList
+Private $hExample As CProjectList
 
 Static Public Function Run() As String
 
@@ -36,6 +38,14 @@ Static Public Function Run() As String
   Return $sPath
 
 End
+
+Public Sub _new()
+  
+  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Vertical) As "ProjectItem"
+  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Vertical) As "ProjectItem"
+  
+End
+
 
 Public Sub Form_Open()
 
@@ -68,7 +78,7 @@ Public Sub Form_Open()
 
   $iSort = Settings["/FWelcome/SortRecent", CRecentFile.SORT_BY_DATE]
   UpdateMenuSort
-  FillRecent
+  $hRecent.Fill
 
   If CRecentFile.All.Count Then
     Toggle(LIST_RECENT)
@@ -156,40 +166,34 @@ End
 
 Private Sub Toggle(iState As Integer)
 
-  'IF iState = $iRecent THEN
-  '  $iRecent = LIST_NONE
-  'ELSE
-    $iRecent = iState
-  'ENDIF
+  $iRecent = iState
 
-  'ME.Border = Window.Resizable
-
-  If $iRecent Then
-    'btnQuit.Move(8, 216 + cvwRecent.H + 8)
-    'cvwRecent.Move(360 - cvwRecent.W, 216)
-    panList.Raise
-    lstRecent.Visible = $iRecent = LIST_RECENT
-    lstExample.Visible = $iRecent = LIST_EXAMPLE
-    panList.Visible = True
-    If $iRecent = LIST_RECENT Then
-      lblList.Text = ("Recent projects")
-      'panFilter.Show
-    Else
-      lblList.Text = ("Examples")
-      'panFilter.Hide
-    Endif
-    FilterList
-    txtFilter.SetFocus
-    lblList2.Text = lblList.Text
-    panList_Arrange
-  Else
-    panList.Visible = False
-  Endif
-
-  If $iRecent = LIST_EXAMPLE Then 
-    FillExample
-  Endif
-  
+  Select Case $iRecent
+    
+    Case LIST_NONE
+      panList.Hide
+      
+    Case LIST_RECENT
+      panList.Raise
+      lstRecent.Show
+      txtFilter.Show
+      lstExample.Hide
+      txtFilterExample.Hide
+      panList.Show
+      txtFilter.SetFocus
+      
+    Case LIST_EXAMPLE
+      panList.Raise
+      lstRecent.Hide
+      txtFilter.Hide
+      lstExample.Show
+      txtFilterExample.Show
+      panList.Show
+      txtFilterExample.SetFocus
+      $hExample.Fill
+    
+  End Select
+    
   btnExample.Background = If($iRecent = LIST_EXAMPLE, Color.TextBackground, Color.Default)
   btnExample.Foreground = If($iRecent = LIST_EXAMPLE, Color.TextForeground, Color.White)
   btnRecent.Background = If($iRecent = LIST_RECENT, Color.TextBackground, Color.Default)
@@ -272,12 +276,6 @@ End
 '   End With
 '   
 ' End
-
-Public Sub chkSortRecent_Click()
-
-  FillRecent  
-
-End
 
 Public Sub lblWebSite_MouseDown()
 
@@ -377,201 +375,14 @@ End
 Public Sub mnuSort_Click()
   
   $iSort = Last.Tag
-  lstRecent.Clear
-  FillRecent
+  $hRecent.SetSort($iSort)
   UpdateMenuSort
   
 End
 
-Public Sub panList_Arrange()
+Public Sub ProjectItem_Click(Path As String)
 
-  lblList2.Move(lblList.X + 1, lblList.Y + 1, lblList.W, lblList.H)
-  lblList2.Lower
-
-End
-
-Public Sub txtFilter_Click()
-
-  txtFilter.Clear
-
-End
-
-Public Sub txtFilter_Change()
-
-  FilterList
-
-End
-
-Private Sub FilterList()
-
-  Dim hList As ListContainer
-  Dim sFilter As String = Trim(txtFilter.Text)
-  Dim hCtrl, hLast As Control
-  Dim hFirst, hProjectItem As ProjectItem
-  
-  If $iRecent = LIST_RECENT Then
-    hList = lstRecent
-  Else
-    hList = lstExample
-  Endif
-  
-  hList.Lock
-  
-  If Not sFilter Then
-    sFilter = "*"
-  Else
-    sFilter = "*" & String.LCase(sFilter) & "*"
-  Endif
-  
-  For Each hCtrl In hList.Children
-    
-    If hCtrl Is ProjectItem Then
-      hProjectItem = hCtrl
-      hProjectItem.Visible = hProjectItem.Match(sFilter)
-      If hProjectItem.Visible Then 
-        If Not hFirst Then hFirst = hProjectItem
-      Endif
-    Endif
-    
-  Next
-  
-  For Each hCtrl In hList.Children
-    
-    If hCtrl Is DrawingArea Then
-      If hLast Then hLast.Hide
-      hLast = hCtrl
-    Else If hCtrl Is ProjectItem And If hCtrl.Visible Then
-      If hLast Then hLast.Show
-      hLast = Null
-    Endif
-    
-  Next
-  
-  If hLast Then hLast.Hide
-  
-  $hFirst = hFirst
-  
-  'lstRecent.Select(hFirst)
-  hList.Unlock
-  
-End
-
-Private Sub FillRecent()
-  
-  Dim hProjectItem As ProjectItem
-  Dim hFirst As ProjectItem
-  Dim aRecent As CRecentFile[]
-  Dim hRecent As CRecentFile
-  'Dim bHighlight As Boolean
-  Dim sTitle As String
-  Dim sLastTitle As String
-  Dim hDrawingArea As DrawingArea
-  
-  If lstRecent.Count And If Not CRecentFile.OutOfDate Then Return
-
-  Inc Application.Busy
-
-  'panRecent.Hide
-  lstRecent.Lock
-  Object.Lock(lstRecent)
-  lstRecent.Clear
-
-  aRecent = CRecentFile.Get($iSort)
-
-  For Each hRecent In aRecent
-    
-    sTitle = hRecent.GetTitle($iSort)
-    
-    If sTitle <> sLastTitle Then
-      hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
-      With hDrawingArea
-        .Enabled = False
-        .Tag = sTitle 
-        .Font = Font["Bold"]
-        .H = .Font.Height + If(sLastTitle, 16, 8)
-        .Foreground = Color.SelectedBackground
-        'Y += .H
-      End With
-      sLastTitle = sTitle
-    Endif
-    
-    hProjectItem = New ProjectItem(lstRecent) As "ProjectItem"
-    Object.Lock(hProjectItem)
-    'hProjectItem.Y = Y
-    'Y += hProjectItem.H
-    'If bHighlight Then hProjectItem.Background = Color.LightBackground
-    'bHighlight = Not bHighlight
-    If Not hFirst Then hFirst = hProjectItem
-    hProjectItem.Path = hRecent.Path
-    
-  Next
-  
-  ' Workaround a scrollview bug that does not show the scrollbars.
-  lstRecent.Unlock 
-  Object.Unlock(lstRecent)
-  'panRecent.Show
-  
-  Dec Application.Busy
-  
-  timLayout.Trigger
-  
-End
-
-Private Sub FillExample()
-
-  Dim sExample As String
-  Dim sDir As String
-  Dim sLastDir As String
-  Dim hDrawingArea As DrawingArea
-  Dim hProjectItem As ProjectItem
-  Dim sGroup As String
-  'Dim bHighlight As Boolean
-  
-  If lstExample.Children.Count Then Return
-
-  Inc Application.Busy
-  lstExample.Lock
-  Object.Lock(lstExample)
-
-  For Each sExample In Project.GetExamples()
-  
-    sDir = File.Dir(sExample)
-    If sDir <> sLastDir Then
-      hDrawingArea = New DrawingArea(lstExample) As "dwgExample"
-      With hDrawingArea
-        .Enabled = False
-        sGroup = Project.ExampleTitle[sDir]
-        .Tag = sGroup
-        .Font = Font["Bold"]
-        .H = .Font.Height + If(sLastDir, 16, 8)
-        .Foreground = Color.SelectedBackground
-      End With
-      'bHighlight = False
-      sLastDir = sDir
-    Endif
-    
-    hProjectItem = New ProjectItem(lstExample) As "ProjectItem"
-    'If bHighlight Then hProjectItem.Background = Color.LightBackground
-    'bHighlight = Not bHighlight
-    Object.Lock(hProjectItem)
-    hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
-    hProjectItem.Group = sGroup
-  
-  Next
-
-  'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
-  lstExample.Unlock
-  Object.Unlock(lstExample)
-
-  Dec Application.Busy
-  
-  timLayout.Trigger
-
-End
-
-Public Sub ProjectItem_Click()
-
-  $sPath = Last.Path
+  $sPath = Path
   Project.Open($sPath)
 
 End

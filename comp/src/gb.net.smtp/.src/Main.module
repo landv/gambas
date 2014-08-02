@@ -7,7 +7,7 @@ Public Sub Main()
   hClient.Host = "smtp.gmail.com"
   hClient.Encrypt = Net.SSL
   hClient.User = "g4mba5@gmail.com"
-  Print "Password:";
+  Print "Password:"
   Line Input hClient.Password
   hClient.Debug = True
   

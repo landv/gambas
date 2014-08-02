@@ -84,12 +84,13 @@ Public Sub DrawingArea_Draw()
       iCol = $iBg
     Endif
     If Not Me.Enabled Then iCol = Color.Desaturate(Color.Merge(iCol, Color.ButtonBackground))
+    iCol = Color.SetAlpha(iCol, 255 * (1 - $fValue))    
   Else
     iCol = Color.Default
   Endif
   
-  Style.PaintBox(0, 0, Paint.W, Paint.H, iFlag, Color.SetAlpha(iCol, 255 * (1 - $fValue)))
-
+  Style.PaintBox(0, 0, Paint.W, Paint.H, iFlag, iCol)
+  
   Paint.Background = Color.SelectedForeground
   Paint.DrawText(("ON"), 0, 0, Paint.W / 2, Paint.H, Align.Center)  
   

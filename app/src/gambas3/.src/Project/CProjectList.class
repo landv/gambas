@@ -1,0 +1,259 @@
+' Gambas class file
+
+Public Enum TYPE_RECENT, TYPE_EXAMPLE
+
+Event Click(Path As String)
+
+Private $hList As ScrollView
+Private $hFilter As ButtonBox
+Private $iSort As Integer
+Private $iType As Integer
+Private $hObserver As Observer
+Private $iArrange As Integer
+
+Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
+  
+  $hList = hList
+  $hFilter = hFilter
+  $iType = iType
+  $iArrange = iArrange
+  
+  $hObserver = New Observer($hFilter) As "Filter"
+  
+End
+
+Public Sub SetSort(iSort As Integer)
+  
+  $iSort = iSort
+  Fill(True)
+  
+End
+
+Private Sub FillWithExample()
+
+  Dim sExample As String
+  Dim sDir As String
+  Dim sLastDir As String
+  Dim hDrawingArea As DrawingArea
+  Dim hProjectItem As ProjectBox
+  Dim sGroup As String
+  Dim hPanel As Panel
+  'Dim bHighlight As Boolean
+  
+  If $hList.Children.Count Then Return
+
+  Inc Application.Busy
+  $hList.Arrangement = Arrange.None
+
+  For Each sExample In Project.GetExamples()
+  
+    sDir = File.Dir(sExample)
+    If sDir <> sLastDir Then
+      If $iArrange = Arrange.Row And If $hList.Children.Count Then
+        hPanel = New Panel($hList)
+        hPanel.Resize(1, 1)
+        hPanel.Expand = True
+      Endif
+      hDrawingArea = New DrawingArea($hList) As "dwgTitle"
+      With hDrawingArea
+        .Enabled = False
+        .Tag = Project.ExampleTitle[sDir]
+        sGroup = .Tag
+        '.Font = Font["Bold"]
+        .H = .Font.Height + If(sLastDir, 2, 1) * Desktop.Scale
+        If $iArrange = Arrange.Row Then .Expand = True
+      End With
+      'bHighlight = False
+      sLastDir = sDir
+    Endif
+    
+    hProjectItem = New ProjectBox($hList) As "ProjectItem"
+    If $iArrange = Arrange.Row Then
+      hProjectItem.ResizeScaled(32, 16)
+    Else
+      hProjectItem.ResizeScaled(1, 9)
+    Endif
+    hProjectItem.ShowAuthors = True
+    hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
+    hProjectItem.Group = sGroup
+  
+  Next
+
+  'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
+  $hList.Arrangement = $iArrange
+  Dec Application.Busy
+
+End
+
+Private Sub FillWithRecent(bClear As Boolean)
+  
+  Dim hProjectItem As ProjectBox
+  'Dim hFirst As ProjectBox
+  Dim aRecent As CRecentFile[]
+  Dim hRecent As CRecentFile
+  'Dim bHighlight As Boolean
+  Dim sTitle As String
+  Dim sLastTitle As String
+  Dim hDrawingArea As DrawingArea
+  Dim hPanel As Panel
+  
+  If Not bClear Then
+    If $hList.Children.Count And If Not CRecentFile.OutOfDate Then Return
+  Endif
+
+  Inc Application.Busy
+
+  'panRecent.Hide
+  'lstRecent.Lock
+  $hList.Arrangement = Arrange.None
+  $hList.Children.Clear
+
+  aRecent = CRecentFile.Get($iSort)
+
+  For Each hRecent In aRecent
+    
+    sTitle = hRecent.GetTitle($iSort)
+    
+    If sTitle <> sLastTitle Then
+      If $iArrange = Arrange.Row Then
+        If $hList.Children.Count Then
+          hPanel = New Panel($hList)
+          hPanel.Resize(1, 1)
+          hPanel.Expand = True
+        Endif
+      Endif
+      hDrawingArea = New DrawingArea($hList) As "dwgTitle"
+      With hDrawingArea
+        .Enabled = False
+        .Tag = sTitle 
+        '.Font = Font["Bold"]
+        .H = .Font.Height + If(sLastTitle, 2, 1) * Desktop.Scale
+        If $iArrange = Arrange.Row Then .Expand = True
+      End With
+      sLastTitle = sTitle
+    Endif
+    
+    hProjectItem = New ProjectBox($hList) As "ProjectItem"
+    If $iArrange = Arrange.Row Then
+      hProjectItem.ResizeScaled(32, 16)
+    Else
+      hProjectItem.ResizeScaled(1, 9)
+    Endif
+    hProjectItem.ShowAuthors = True
+    hProjectItem.Path = hRecent.Path
+    
+  Next
+  
+  'If hFirst Then hFirst.Selected = True
+  
+  ' Workaround a scrollview bug that does not show the scrollbars.
+  'lstRecent.Unlock 
+  'panRecent.Show
+  
+  $hList.Arrangement = $iArrange
+  Dec Application.Busy
+  
+End
+
+Public Sub Fill(Optional bClear As Boolean)
+  
+  Select Case $iType
+    Case TYPE_RECENT
+      FillWithRecent(bClear)
+    Case TYPE_EXAMPLE
+      FillWithExample
+  End Select
+  
+End
+
+Public Sub ApplyFilter(sFilter As String)
+
+  Dim hCtrl, hLast As Control
+  Dim hProjectItem As ProjectBox
+
+  $hList.Arrangement = Arrange.None
+  
+  If Not sFilter Then
+    sFilter = "*"
+  Else
+    sFilter = "*" & String.LCase(sFilter) & "*"
+  Endif
+  
+  
+  For Each hCtrl In $hList.Children
+    
+    If hCtrl Is ProjectBox Then
+      hProjectItem = hCtrl
+      hProjectItem.Visible = hProjectItem.Match(sFilter)
+      ' If hProjectItem.Visible Then 
+      '   If Not hFirst Then hFirst = hProjectItem
+      ' Endif
+    Endif
+    
+  Next
+  
+  For Each hCtrl In $hList.Children
+    
+    If hCtrl Is DrawingArea Then
+      If hLast Then hLast.Hide
+      hLast = hCtrl
+    Else If hCtrl Is ProjectBox And If hCtrl.Visible Then
+      If hLast Then hLast.Show
+      hLast = Null
+    Endif
+    
+  Next
+  
+  If hLast Then hLast.Hide
+  
+  $hList.Arrangement = Arrange.Row
+  
+  'hFirst.Selected = True
+  'hList.Unlock
+  
+End
+
+
+Public Sub dwgTitle_Draw()
+  
+  Dim P As Integer
+  Dim hDrawingArea As DrawingArea = Last  
+  
+  Paint.Background = Color.LightForeground
+  Paint.DrawText(hDrawingArea.Tag, 1, 0, Paint.W - P * 2, Paint.H, Align.BottomNormal)
+  
+End
+
+
+Public Sub ProjectItem_Click()
+  
+  Raise Click(Last.Path)
+  
+End
+
+
+Public Sub GetFirst() As String
+
+  Dim hChild As Control
+  Dim hProjectItem As ProjectBox
+
+  For Each hChild In $hList.Children
+    Try hProjectItem = hChild
+    If Not Error And If hProjectItem.Visible Then Return hProjectItem.Path
+  Next
+
+End
+
+
+Public Sub Filter_Click()
+
+  $hFilter.Text = ""
+
+End
+
+Public Sub Filter_Change()
+
+  ApplyFilter($hFilter.Text)
+
+End
+

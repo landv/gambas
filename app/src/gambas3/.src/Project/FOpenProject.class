@@ -6,10 +6,14 @@ Static Private $bAnother As Boolean
 Static Public InAnotherWindow As Boolean
 
 Private $iSort As Integer
+Private $bControl As Boolean
+Private $hRecent As CProjectList
+Private $hExample As CProjectList
 
 Public Sub Run(Optional bAnother As Boolean) As String
 
   $bAnother = bAnother
+  $sPath = ""
   
   Inc Application.Busy
   If Me.ShowModal() Then 
@@ -22,35 +26,26 @@ End
 
 Public Sub _new()
   
-  ' $hProjectItem = New ProjectItem(panProjectTitle)
-  ' $hProjectItem.Highlight = False
-  ' panProject.Reparent(dchProject.FileView.Parent)
+  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT) As "ProjectItem"
+  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE) As "ProjectItem"
   
 End
 
 
 Public Sub btnOK_Click()
 
-  Dim sPath As String
-  Dim hProjectItem As ProjectItem
-  
-  If tabProject.Index = 0 Then
-    sPath = pchProject.Path
-  Else If tabProject.Index = 1 Then
-    hProjectItem = lstRecent.Current
-    Try sPath = hProjectItem.Path
-  Else If tabProject.Index = 2 Then
-    hProjectItem = lstExample.Current
-    Try sPath = hProjectItem.Path
+  If tabProject.Text = ("Open") Then
+    $sPath = pchProject.Path
+  Else If tabProject.Text = ("Recent") Then
+    If Not $sPath Then $sPath = $hRecent.GetFirst()
+  Else If tabProject.Text = ("Examples") Then
+    If Not $sPath Then $sPath = $hExample.GetFirst()
   Endif
 
-  If Not sPath Then Return
-
-  $sPath = sPath
-  'Settings["/FOpenProject/Path"] = $sPath
-  'tabProject.Index = 0
-  lstRecent.Clear
+  If Not $sPath Then Return
+  lstRecent.Children.Clear
   
+  InAnotherWindow = $bControl
   Me.Close(True)
 
 End
@@ -77,7 +72,7 @@ Public Sub Form_Open()
   tabProject_Click
 
   InAnotherWindow = False
-  btnOther.Visible = $bAnother
+  lblAnother.Visible = $bAnother
   
   $iSort = Settings["/FOpenProject/SortRecent", CRecentFile.SORT_BY_DATE]
   
@@ -181,120 +176,15 @@ End
 '
 ' End
 
-Private Sub ApplyFilter(hList As ListContainer, sFilter As String)
-
-  Dim hCtrl, hLast As Control
-  Dim hFirst, hProjectItem As ProjectItem
-  
-  hList.Lock
-  
-  If Not sFilter Then
-    sFilter = "*"
-  Else
-    sFilter = "*" & String.LCase(sFilter) & "*"
-  Endif
-  
-  
-  For Each hCtrl In hList.Children
-    
-    If hCtrl Is ProjectItem Then
-      hProjectItem = hCtrl
-      hProjectItem.Visible = hProjectItem.Match(sFilter)
-      If hProjectItem.Visible Then 
-        If Not hFirst Then hFirst = hProjectItem
-      Endif
-    Endif
-    
-  Next
-  
-  For Each hCtrl In hList.Children
-    
-    If hCtrl Is DrawingArea Then
-      If hLast Then hLast.Hide
-      hLast = hCtrl
-    Else If hCtrl Is ProjectItem And If hCtrl.Visible Then
-      If hLast Then hLast.Show
-      hLast = Null
-    Endif
-    
-  Next
-  
-  If hLast Then hLast.Hide
-  
-  hList.Select(hFirst)
-  hList.Unlock
-  
-End
-
-Private Sub FillRecent()
-  
-  Dim hProjectItem As ProjectItem
-  Dim hFirst As ProjectItem
-  Dim aRecent As CRecentFile[]
-  Dim hRecent As CRecentFile
-  'Dim bHighlight As Boolean
-  Dim sTitle As String
-  Dim sLastTitle As String
-  Dim Y As Integer
-  Dim hDrawingArea As DrawingArea
-  
-  If lstRecent.Count And If Not CRecentFile.OutOfDate Then Return
-
-  Inc Application.Busy
-
-  'panRecent.Hide
-  lstRecent.Lock
-  lstRecent.Clear
-
-  aRecent = CRecentFile.Get($iSort)
-
-  For Each hRecent In aRecent
-    
-    sTitle = hRecent.GetTitle($iSort)
-    
-    If sTitle <> sLastTitle Then
-      hDrawingArea = New DrawingArea(lstRecent) As "dwgExample"
-      With hDrawingArea
-        .Enabled = False
-        .Tag = sTitle 
-        .Font = Font["Bold"]
-        .H = .Font.Height + If(sLastTitle, 16, 8)
-        .Foreground = Color.SelectedBackground
-        Y += .H
-      End With
-      sLastTitle = sTitle
-    Endif
-    
-    hProjectItem = New ProjectItem(lstRecent) As "ProjectItem"
-    hProjectItem.ShowAuthors = True
-    hProjectItem.Y = Y
-    Y += hProjectItem.H
-    'If bHighlight Then hProjectItem.Background = Color.LightBackground
-    'bHighlight = Not bHighlight
-    If Not hFirst Then hFirst = hProjectItem
-    hProjectItem.Path = hRecent.Path
-    
-  Next
-  
-  If hFirst Then lstRecent.Select(hFirst)
-  
-  ' Workaround a scrollview bug that does not show the scrollbars.
-  lstRecent.Unlock 
-  'panRecent.Show
-  
-  Dec Application.Busy
-  
-End
-
 Public Sub tabProject_Click()
 
-  If tabProject.Index = 1 Then 
-    FillRecent
-    ApplyFilter(lstRecent, txtFilter.Text)
+  If tabProject.Text = ("Recent") Then 
+    $hRecent.Fill
+    $hRecent.ApplyFilter(txtFilter.Text)
     txtFilter.SetFocus
-  Else If tabProject.Index = 2 Then 
-    FillExample
-    ApplyFilter(lstExample, txtFilterExample.Text)
+  Else If tabProject.Text = ("Examples") Then 
+    $hExample.Fill
+    $hExample.ApplyFilter(txtFilterExample.Text)
     txtFilterExample.SetFocus
   Endif  
 
@@ -306,74 +196,10 @@ Public Sub lstRecent_Activate()
   
 End
 
-Private Sub FillExample()
-
-  Dim sExample As String
-  Dim sDir As String
-  Dim sLastDir As String
-  Dim hDrawingArea As DrawingArea
-  Dim hProjectItem As ProjectItem
-  Dim sGroup As String
-  'Dim bHighlight As Boolean
-  
-  If lstExample.Children.Count Then Return
-
-  Inc Application.Busy
-  lstExample.Lock
-
-  For Each sExample In Project.GetExamples()
-  
-    sDir = File.Dir(sExample)
-    If sDir <> sLastDir Then
-      hDrawingArea = New DrawingArea(lstExample) As "dwgExample"
-      With hDrawingArea
-        .Enabled = False
-        .Tag = Project.ExampleTitle[sDir]
-        sGroup = .Tag
-        .Font = Font["Bold"]
-        .H = .Font.Height + If(sLastDir, 16, 8)
-        .Foreground = Color.SelectedBackground
-      End With
-      'bHighlight = False
-      sLastDir = sDir
-    Endif
-    
-    hProjectItem = New ProjectItem(lstExample) As "ProjectItem"
-    'If bHighlight Then hProjectItem.Background = Color.LightBackground
-    'bHighlight = Not bHighlight
-    hProjectItem.ShowAuthors = True
-    hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
-    hProjectItem.Group = sGroup
-  
-  Next
-
-  'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
-  lstExample.Unlock
-
-  Dec Application.Busy
-
-End
-
-Public Sub dwgExample_Draw()
-  
-  Dim hDrawingArea As DrawingArea = Last
-  
-  With hDrawingArea
-    Draw.Font = .Font
-    Draw.Foreground = .Foreground
-    'Draw.Line(0, .H / 2 - 1, .W - 1, .H / 2 - 1)
-    'Draw.Transparent = FALSE
-    Draw.Text(.Tag, 4, 0, .W - 16, .H - 4, Align.BottomNormal)
-    Draw.Line(4, .H - 4, .W - 9, .H - 4)
-  End With
-  
-End
-
-
 Public Sub OnUpdateRecent()
   
   lstRecent.Clear
-  If tabProject.Index = 1 Then FillRecent
+  If tabProject.Text = ("Recent") Then $hRecent.Fill
   
 End
 
@@ -402,79 +228,65 @@ Public Sub radSort_Click()
 
   $iSort = Last.Tag
   
-  If tabProject.Index = 1 Then
-    lstRecent.Clear
-    FillRecent
-    ApplyFilter(lstRecent, txtFilter.Text)
+  If tabProject.Text = ("Recent") Then
+    $hRecent.SetSort(Last.Tag)
+    $hRecent.ApplyFilter(txtFilter.Text)
     txtFilter.SetFocus
   Endif
 
 End
 
-Public Sub txtFilter_Click()
+Public Sub ProjectItem_Click(sPath As String)
+  
+  InAnotherWindow = Mouse.Control
+  $sPath = sPath
+  btnOK.Value = True
+  
+End
 
-  txtFilter.Text = ""
+Public Sub pchProject_Activate()
+
+  btnOK.Value = True  
 
 End
 
-Public Sub txtFilter_Change()
+Public Sub Form_KeyPress()
 
-  ApplyFilter(lstRecent, txtFilter.Text)
-
-End
-
-
-Public Sub txtFilter_KeyPress()
-
-  If Key.Code = Key.Down Then
-    lstRecent.ScrollView_KeyPress
-    Stop Event
-  Else If Key.Code = Key.Up Then
-    lstRecent.ScrollView_KeyPress
-    Stop Event
-  Else If Key.Code = Key.Return And If Key.Shift Then
-    btnOther.Value = True
+  If $bAnother And If Key.Code = Key.ControlKey Then
+    $bControl = True
+    btnOK.Text = ("Open in another window")
+    btnOK.AutoResize = True
   Endif
 
 End
 
-Public Sub ProjectItem_Click()
-  
-  Dim hListContainer As ListContainer = Last.Parent.Parent
-  
-  hListContainer.Select(Last)
-  
-End
+Public Sub Form_KeyRelease()
 
-Public Sub txtFilterExample_Change()
-
-  ApplyFilter(lstExample, txtFilterExample.Text)
+  If $bAnother And If Key.Code = Key.ControlKey Then
+    $bControl = False
+    btnOK.Text = ("Open")
+    btnOK.AutoResize = False
+    btnOK.W = btnCancel.W
+  Endif
 
 End
 
-Public Sub txtFilterExample_Click()
+Public Sub txtFilter_KeyPress()
 
-  txtFilterExample.Text = ""
+  If Key.Control Then
+    If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
+      btnOK.Value = True
+    Endif
+  Endif
 
 End
 
 Public Sub txtFilterExample_KeyPress()
 
-  If Key.Code = Key.Down Then
-    lstExample.ScrollView_KeyPress
-    Stop Event
-  Else If Key.Code = Key.Up Then
-    lstExample.ScrollView_KeyPress
-    Stop Event
-  Else If Key.Code = Key.Return And If Key.Shift Then
-    btnOther.Value = True
+  If Key.Control Then
+    If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
+      btnOK.Value = True
+    Endif
   Endif
-
-End
-
-
-Public Sub pchProject_Activate()
-
-  btnOK.Value = True  
 
 End

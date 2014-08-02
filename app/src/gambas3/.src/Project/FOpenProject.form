@@ -24,16 +24,23 @@
     Picture = Picture["icon:/small/open-recent"]
     { panRecent Panel
       MoveScaled(1,1,83,60)
+      Background = Color.TextBackground
       Arrangement = Arrange.Vertical
       { HBox2 HBox
         MoveScaled(1,1,78,6)
         Spacing = True
         Margin = True
-        { txtFilter ButtonBox
-          MoveScaled(1,0,24,4)
-          Foreground = Color.LightForeground
+        { Panel2 Panel
+          MoveScaled(1,0,25,5)
           Expand = True
-          Picture = Picture["icon:/small/clear"]
+          Arrangement = Arrange.Fill
+          Border = Border.Plain
+          { txtFilter ButtonBox
+            MoveScaled(0,0,24,4)
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
         }
         { radSortByDate RadioButton radSort
           Name = "radSortByDate"
@@ -58,13 +65,15 @@
           Text = ("Sort by path")
         }
       }
-      { Separator2 Separator
-        MoveScaled(22,9,18,0)
-      }
-      { lstRecent ListContainer
-        MoveScaled(3,19,49,38)
+      { lstRecent ScrollView
+        MoveScaled(3,13,73,43)
+        Background = Color.TextBackground
         Expand = True
+        Arrangement = Arrange.Row
+        Spacing = True
+        Margin = True
         Border = False
+        ScrollBar = Scroll.Vertical
       }
     }
     Index = 2
@@ -72,24 +81,32 @@
     Picture = Picture["icon:/small/help"]
     { Panel3 VBox
       MoveScaled(1,1,92,60)
+      Background = Color.TextBackground
       { HBox3 HBox
         MoveScaled(2,2,78,6)
-        Spacing = True
         Margin = True
-        { txtFilterExample ButtonBox
-          MoveScaled(1,0,24,4)
-          Foreground = Color.LightForeground
+        { Panel4 Panel
+          MoveScaled(2,1,25,5)
           Expand = True
-          Picture = Picture["icon:/small/clear"]
+          Arrangement = Arrange.Fill
+          Border = Border.Plain
+          { txtFilterExample ButtonBox
+            MoveScaled(0,0,24,4)
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
         }
       }
-      { Separator3 Separator
-        MoveScaled(23,10,18,0)
-      }
-      { lstExample ListContainer
-        MoveScaled(3,17,80,38)
+      { lstExample ScrollView
+        MoveScaled(4,13,73,43)
+        Background = Color.TextBackground
         Expand = True
+        Arrangement = Arrange.Row
+        Spacing = True
+        Margin = True
         Border = False
+        ScrollBar = Scroll.Vertical
       }
     }
     Index = 0
@@ -97,18 +114,19 @@
   { HBox1 HBox
     MoveScaled(1,71,112,4)
     Spacing = True
-    { Panel1 Panel
-      MoveScaled(31,0,3,4)
-      Expand = True
-    }
-    { btnOther Button
-      MoveScaled(49,0,27,4)
+    { lblAnother Label
+      MoveScaled(2,0,34,4)
+      Font = Font["Italic"]
       AutoResize = True
-      Text = ("Open in another window")
+      Text = ("Press CTRL to open the project in another window")
+    }
+    { Panel1 Panel
+      MoveScaled(45,0,3,4)
+      Expand = True
     }
     { btnOK Button
       MoveScaled(78,0,15,4)
-      Text = ("OK")
+      Text = ("Open")
       Default = True
     }
     { btnCancel Button

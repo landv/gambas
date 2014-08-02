@@ -1,0 +1,378 @@
+' Gambas class file
+
+Inherits UserControl
+
+Event Click
+
+Static Private $hSmallFont As Font
+
+Property ShowPath As Boolean
+Property Path As String
+Property Highlight As Boolean
+Property Selected As Boolean
+'Property Background As Integer
+'Property Read IdealHeight As Integer
+Property ShowAuthors As Boolean
+Property Read Info As CProjectInfo
+Public Group As String ' for examples
+
+Private $hDrawingArea As DrawingArea
+Private $sPath As String
+Private $hProjectInfo As CProjectInfo
+Private $hIcon As Image
+Private $bShowPath As Boolean
+Private $bShowAuthors As Boolean
+
+Private Const ICON_SIZE As Integer = 32
+
+Private $bCanHighlight As Boolean = True
+Private $bHighlight As Boolean
+
+Private $hObs As Observer
+
+'Private $iIdealH As Integer
+Private $iIdealW As Integer
+Private $bSelected As Boolean
+
+Public Sub _new()
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  $hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Focus = True
+  
+  $hObs = New Observer(Me) As "ProjectItem"
+  
+  If Not $hSmallFont Then
+    $hSmallFont = Me.Font.Copy()
+    $hSmallFont.Size *= 0.75
+  Endif
+  
+End
+
+  
+Private Sub SetPath(sPath As String)
+  
+  $sPath = sPath
+  $hProjectInfo = New CProjectInfo(sPath)
+  $hIcon = Null
+  
+  $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
+  $iIdealW = 0
+  'Me.H = Me.IdealHeight
+  Me.Refresh
+  
+End
+
+
+Private Sub GetTitle() As String
+  
+  Dim sTitle As String
+  Dim bSelected As Boolean
+  
+  bSelected = Me.Background = Color.SelectedBackground
+
+  With $hProjectInfo
+    sTitle = .Title
+    If Not sTitle Then sTitle = .Name
+    sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
+    sTitle &= Subst("<br><font size=\"-1\" color=\"#&1\">", Hex$(If(bSelected, Color.SelectedForeground, Color.Gradient(Color.TextBackground, Color.TextForeground, 0.75)), 6)) & .Title
+    If $bShowAuthors And If .Authors And If .Authors.Count Then
+      If .Title Then sTitle &= " - "
+      sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
+    Endif
+    sTitle &= "</font>"
+    If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+  End With
+  
+  Return sTitle
+
+End
+
+
+Public Sub DrawingArea_Draw()
+  
+  Dim sTitle As String
+  Dim X, Y, W, H, HT As Integer
+  Dim XS, YS, WS, HS As Integer
+  Dim sText As String
+  Dim P As Integer
+  Dim bSmall As Boolean
+  Dim hScrollView As ScrollView
+  
+  If Not $hProjectInfo Then Return
+  
+  bSmall = $hDrawingArea.H <= Desktop.Scale * 12
+  P = Desktop.Scale
+  
+  X = 1
+  Y = 1
+  W = Paint.W - 1
+  H = Paint.H - 1
+  
+  If Me.Parent Is ScrollView Then
+    hScrollView = Me.Parent
+    If hScrollView.Arrangement = Arrange.Vertical And If hScrollView.ScrollH > hScrollView.ClientH Then
+      W -= P
+    Endif
+  Endif
+  
+  
+  XS = X
+  YS = Y
+  WS = W
+  HS = H
+  
+  With $hProjectInfo
+    
+    If Not $hIcon Then
+      $hIcon = Project.StretchIcon(.Icon, ICON_SIZE)
+    Endif
+    
+    Paint.Brush = Paint.RadialGradient(X, Y, W / 2, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
+    Paint.Rectangle(X, Y, W, H)
+    Paint.Fill
+    
+    Paint.Rectangle(X + 0.5, Y + 0.5, W - 1, H - 1)
+    Paint.Background = If($hDrawingArea.HasFocus, Color.LightBackground, Color.Merge(Color.LightForeground, Color.TextBackground))
+    Paint.LineWidth = If($hDrawingArea.HasFocus, 2, 1)
+    Paint.Stroke
+
+    Paint.Save
+    
+    X += P
+    Y += P
+    W -= P * 2
+    H -= P * 2
+    
+    Paint.Rectangle(X, Y, W, H)
+    Paint.Clip
+    
+    Paint.DrawImage($hIcon, X, Y)
+    
+    If bSmall Then
+    
+      X += ICON_SIZE + P
+    
+      Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
+      sText = "<b>" & Html(.Name) & "</b>&nbsp;&nbsp;" & .Version
+      Paint.Font = Font["+1"]
+      Paint.DrawRichText(sText, X, Y, Paint.W - X, Paint.H, Align.TopLeft)
+      HT = Paint.Font.Height
+
+      sText = .Description
+      If Not sText Then sText = .Title
+      Paint.Font = Font["-1"]
+      
+      W = Paint.W - X - P * 2
+      H = Paint.H - Y - HT - P - 3
+      sText = Ellipsize(sText, W, H)
+      Paint.DrawRichText(Html(sText), X, Y + HT + 3, W, H, Align.TopLeft)
+      
+    Else
+      
+      X += ICON_SIZE + P
+
+      Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
+      sText = .Name
+      Paint.Font = Font["Bold,+1"]
+      Paint.DrawText(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
+      
+      Paint.Font.Bold = False
+      sText = .Version
+      Paint.DrawText(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft)
+      
+      X -= ICON_SIZE + P
+      
+      sText = .Description
+      If Not sText Then sText = .Title
+      Paint.Font = Font["-1"]
+      
+      W = Paint.W - X - P * 2
+      H = Paint.H - Y - ICON_SIZE - P * 2
+      sText = Ellipsize(sText, W, H)
+      Paint.DrawRichText(Html(sText), X, Y + ICON_SIZE + P, W, H, Align.TopLeft)
+      
+    Endif
+    
+  End With
+  
+  Paint.Restore
+  
+  If $bHighlight Then Paint.FillRect(XS, YS, WS, HS, Color.SetAlpha(Color.LightBackground, 192))
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  If $bCanHighlight Then
+    'If not $bHighlight Then 
+      '$hDrawingArea.Background = Color.LightBackground
+      $bHighlight = True
+      $hDrawingArea.Refresh
+    'Endif
+  Endif
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  If $bHighlight Then 
+    '$hDrawingArea.Background = Color.Default
+    $bHighlight = False
+    $hDrawingArea.Refresh
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyPress()
+
+  If Key.Code = Key.Space Then Raise Click
+
+End
+
+' Private Function Background_Read() As Integer
+' 
+'   Return Super.Background
+' 
+' End
+' 
+' Private Sub Background_Write(Value As Integer)
+' 
+'   Super.Background = Value
+'   $hDrawingArea.Background = Color.Default
+' 
+' End
+
+Private Function ShowPath_Read() As Boolean
+
+  Return $bShowPath
+
+End
+
+Private Sub ShowPath_Write(Value As Boolean)
+
+  $bShowPath = Value
+  Me.Refresh
+
+End
+
+Private Function Path_Read() As String
+
+  Return $sPath
+
+End
+
+Private Sub Path_Write(Value As String)
+
+  SetPath(Value)
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bCanHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bCanHighlight = Value
+  $hDrawingArea.Mouse = If(Value, Mouse.Pointing, Mouse.Default)
+
+End
+
+' Private Function IdealHeight_Read() As Integer
+'   
+'   Dim X, H As Integer
+' 
+'   If Not $hProjectInfo Then Return 0
+' 
+'   If $hProjectInfo.Description Then
+'     If Me.W = $iIdealW Then Return $iIdealH
+'   Else
+'     If $iIdealW Then Return $iIdealH
+'   Endif
+'   $iIdealW = Me.W
+' 
+'   X = ICON_SIZE + PADDING * 2
+'   'If $hProjectInfo Then
+'   '  sTitle = GetTitle()
+'     'H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
+'     H = $hDrawingArea.Font.Height * 2 + PADDING * 2
+'   'Endif
+' 
+'   H = Max(H, X)
+'   If $bShowPath Then H += Desktop.Scale * 2
+'   
+'   If $hProjectInfo.Description Then
+'     H += $hSmallFont.RichTextHeight(Html($hProjectInfo.Description), Me.W - X - PADDING)
+'   Endif
+'   
+'   $iIdealH = H
+'   
+'   'Debug File.Name($sPath);; $iIdealW;; $iIdealH
+' 
+'   Return H
+'   
+' End
+
+Private Function Info_Read() As CProjectInfo
+
+  Return $hProjectInfo
+
+End
+
+Public Sub DrawingArea_MouseDown()
+  
+  If Mouse.Left Then Raise Click
+  
+End
+
+Private Function ShowAuthors_Read() As Boolean
+
+  Return $bShowAuthors
+
+End
+
+Private Sub ShowAuthors_Write(Value As Boolean)
+
+  $bShowAuthors = Value
+  $hDrawingArea.Refresh
+
+End
+
+Public Sub Match(sFilter As String) As Boolean
+
+  If Not sFilter Then Return True
+  With $hProjectInfo
+    If .Name Like sFilter Then Return True
+    If String.LCase(.Title) Like sFilter Then Return True
+    If $bShowAuthors And If String.LCase(.Authors.Join(" ")) Like sFilter Then Return True
+    If String.LCase(Group) Like sFilter Then Return True
+  End With
+  
+End
+
+Private Function Selected_Read() As Boolean
+
+  Return $bSelected
+
+End
+
+Private Sub Selected_Write(Value As Boolean)
+
+  $bSelected = Value
+  $hDrawingArea.Refresh
+
+End
+
+Private Sub Ellipsize(sText As String, W As Integer, H As Integer) As String
+
+  While Paint.Font.RichTextHeight(Html(sText), W) >= H
+    sText = String.Left(sText, -2) 
+    If Not sText Then Return
+    sText &= "…"
+  Wend
+  Return sText
+
+End

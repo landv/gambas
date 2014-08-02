@@ -873,9 +873,13 @@ BEGIN_METHOD_VOID(Container_Children_Clear)
 	QObjectList list;
 	QObject *ob;
 	int i;
+	bool locked;
 
 	if (!wid)
 		return;
+
+	locked = THIS_ARRANGEMENT->locked;
+	THIS_ARRANGEMENT->locked = true;
 
 	list = wid->children();
 
@@ -885,6 +889,9 @@ BEGIN_METHOD_VOID(Container_Children_Clear)
 		if (ob->isWidgetType())
 			CWIDGET_destroy(CWidget::getRealExisting(ob));
 	}
+
+	THIS_ARRANGEMENT->locked = locked;
+	CCONTAINER_arrange(THIS);
 
 END_METHOD
 

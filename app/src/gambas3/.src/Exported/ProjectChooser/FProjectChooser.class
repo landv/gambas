@@ -1,11 +1,11 @@
 ' Gambas class file
 
-Private $hProjectItem As ProjectItem
+Private $hProjectItem As ProjectBox
 Private $sLast As String
 
 Public Sub _new()
   
-  $hProjectItem = New ProjectItem(panProjectTitle)
+  $hProjectItem = New ProjectBox(panProjectItem)
   $hProjectItem.Highlight = False
   panProject.Reparent(dchProject.FileView.Parent)
   
@@ -94,8 +94,6 @@ Public Sub dchProject_Change()
   panProject.Show
   dchProject.FileView.Hide
   
-  splProject_Resize
-
 End
 
 Private Sub GetParent() As ProjectChooser
@@ -107,12 +105,6 @@ End
 Public Sub dchProject_Activate()
 
   GetParent()._RaiseActivate
-
-End
-
-Public Sub splProject_Resize()
-
-  panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
 
 End
 
