@@ -1516,7 +1516,9 @@ void STREAM_lof(STREAM *stream, int64_t *len)
 
 	if (STREAM_is_closed(stream))
 		THROW(E_CLOSED);
-		
+
+	*len = 0;
+
 	if (stream->type->lof)
 	{
 		if (!(*(stream->type->lof))(stream, len))
