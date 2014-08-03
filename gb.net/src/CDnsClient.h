@@ -64,5 +64,6 @@ void dns_event(CDNSCLIENT *mythis);
 void dns_close_all(CDNSCLIENT *mythis);
 int dns_thread_getname(CDNSCLIENT *mythis);
 int dns_thread_getip(CDNSCLIENT *mythis);
+int dns_set_async_mode(int myval,CDNSCLIENT *mythis);
 
 #endif
