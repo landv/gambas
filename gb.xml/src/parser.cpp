@@ -129,21 +129,21 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                 if(!curElement)//Pas d'élément courant
                 {
                     //ERREUR : CLOSING TAG WHEREAS NONE IS OPEN
-                    throw(XMLParseException("Closing tag whereas none is open",
+                    throw(XMLParseException_New("Closing tag whereas none is open",
                                             data, lendata, pos - 1));
 
                 }
                 if((endData) < pos + curElement->lenTagName)//Impossible que les tags correspondent
                 {
                     //ERREUR : TAG MISMATCH
-                    throw(XMLParseException("Tag mismatch",
+                    throw(XMLParseException_New("Tag mismatch",
                     data, lendata, pos - 1));
                 }
                 //Les tags ne correspondent pas
                 else if(memcmp(pos, curElement->tagName, curElement->lenTagName) != 0)
                 {
                     //ERREUR : TAG MISMATCH
-                    throw(XMLParseException("Tag mismatch",
+                    throw(XMLParseException_New("Tag mismatch",
                     data, lendata, pos - 1));
                 }
                 else//Les tags correspondent, on remonte
@@ -165,7 +165,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                     if(!tag)//Commentaire sans fin
                     {
                         //ERREUR : NEVER-ENDING COMMENT
-                        throw(XMLParseException("Never-ending comment",
+                        throw(XMLParseException_New("Never-ending comment",
                         data, lendata, pos - 1));
                     }
 
@@ -182,7 +182,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                     if(!tag)//Cdata sans fin
                     {
                         //ERREUR : UNENDED CDATA
-                        throw(XMLParseException("Never-ending CDATA",
+                        throw(XMLParseException_New("Never-ending CDATA",
                         data, lendata, pos - 1));
                     }
 
@@ -198,7 +198,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                     tag = (char*)memchr(pos, '>', endData - pos);
                     if(!tag)//Doctype sans fin
                     {
-                        throw(XMLParseException("Never-ending DOCTYPE",
+                        throw(XMLParseException_New("Never-ending DOCTYPE",
                         data, lendata, pos - 1));
                     }
 
@@ -208,7 +208,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                 else// ... ?
                 {
                     //ERREUR : INVALID TAG
-                    throw(XMLParseException("Invalid Tag",
+                    throw(XMLParseException_New("Invalid Tag",
                     data, lendata, pos - 1));
                 }
             }
@@ -217,7 +217,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                 tag = (char*)memchrs(pos, endData - pos, "?>", 2);//Looking for the end of the PI
                 if(!tag)//Endless PI
                 {
-                    throw(XMLParseException("Never-ending Processing instruction",
+                    throw(XMLParseException_New("Never-ending Processing instruction",
                     data, lendata, pos - 1));
                 }
 
@@ -228,7 +228,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
             else// ... ?
             {
                 //ERREUR : INVALID TAG
-                throw(XMLParseException("Invalid Tag",
+                throw(XMLParseException_New("Invalid Tag",
                 data, lendata, pos - 1));
             }
         }//Si tout va bien, on a un nouvel élément
@@ -239,7 +239,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                 if(pos > endData)
                 {
                     //ERREUR : NEVER-ENDING TAG
-                    throw(XMLParseException("Never-ending tag",
+                    throw(XMLParseException_New("Never-ending tag",
                     data, lendata, pos - 1));
                 }
             }
@@ -282,7 +282,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                         else
                         {
                             //ERREUR : INVALID TAG
-                            throw(XMLParseException("Invalid tag",
+                            throw(XMLParseException_New("Invalid tag",
                             data, lendata, pos - 1));
                         }
                     }
@@ -295,7 +295,7 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                     if(delimiter != '"' && delimiter != '\'')
                     {
                         //ERREUR : EXPECTED ATTRIBUTE DELIMITER
-                        throw(XMLParseException("Expected attribute delimiter",
+                        throw(XMLParseException_New("Expected attribute delimiter",
                         data, lendata, pos - 1));
                     }
                     pos++;

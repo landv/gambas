@@ -95,6 +95,9 @@ void XMLNode_NewGBObject(Node *node)
     case Node::DocumentNode:
         node->GBObject = (CNode*)GB.New(GB.FindClass("XmlDocument"), 0, 0);
         break;
+    case Node::AttributeNode:
+        node->GBObject = (CNode*)GB.New(GB.FindClass("XmlNode"), 0, 0);
+        break;
     default:
         fprintf(stderr, "FATAL : tried to create a Gambas object with invalid type.");
         exit(EXIT_FAILURE);

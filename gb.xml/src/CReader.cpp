@@ -49,7 +49,7 @@ try
 }
 catch(XMLParseException &e)
 {
-    GB.Error(e.what());
+    GB.Error(e.errorWhat);
 }
 
 END_METHOD
@@ -144,18 +144,6 @@ GB.ReturnNewString(attr->attrValue, attr->lenAttrValue);
 
 END_METHOD
 
-/*BEGIN_METHOD(CReaderNodeAttr_put, GB_STRING value; GB_STRING name)
-
-if(!THIS->foundNode) 
-{
-    return;
-}
-if(!THIS->foundNode->isElement()) return;
-THIS->foundNode->toElement()->setAttribute(STRING(name), LENGTH(name), 
-                                           STRING(value), LENGTH(value));
-
-END_METHOD*/
-
 BEGIN_PROPERTY(CReaderNodeAttr_count)
 
 if(!THIS->foundNode || THIS->state == READ_END_CUR_ELEMENT)
@@ -172,6 +160,32 @@ else
 {
 GB.ReturnInteger(0);
 }
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CReaderNodeAttr_name)
+
+if(!THIS->curAttrEnum)
+{
+    GB.Error("No enumerated attribute available");
+    GB.ReturnNull();
+    return;
+}
+
+GB.ReturnNewString(THIS->curAttrEnum->attrName, THIS->curAttrEnum->lenAttrName);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CReaderNodeAttr_value)
+
+if(!THIS->curAttrEnum)
+{
+    GB.Error("No enumerated attribute available");
+    GB.ReturnNull();
+    return;
+}
+
+GB.ReturnNewString(THIS->curAttrEnum->attrValue, THIS->curAttrEnum->lenAttrValue);
 
 END_PROPERTY
 
@@ -192,34 +206,6 @@ THIS->flags[flag] = VARG(value);
 END_METHOD
 
 BEGIN_PROPERTY(CReaderNode_type)
-
-/*if(!THIS->foundNode) 
-{
-    GB.ReturnInteger(0);
-    return;
-}
-
-
-if(THIS->curAttrEnum)
-{
-    GB.ReturnInteger(READ_ATTRIBUTE);
-    return;
-}
-
-switch(THIS->foundNode->getType())
-{
-    case Node::ElementNode:
-        GB.ReturnInteger(NODE_ELEMENT);break;
-    case Node::Comment:
-        GB.ReturnInteger(NODE_COMMENT);break;
-    case Node::NodeText:
-        GB.ReturnInteger(NODE_TEXT);break;
-    case Node::CDATA:
-        GB.ReturnInteger(NODE_CDATA);break;
-    default:
-        GB.ReturnInteger(0);
-}
-*/
 
 GB.ReturnInteger(THIS->state);
 END_PROPERTY
@@ -299,10 +285,6 @@ BEGIN_PROPERTY(CReader_storedNodes)
 
 if(!READ_PROPERTY) return;
 
-//GBI::ObjectArray<Node> *nodes = new GBI::ObjectArray<Node>("XmlNode", *(THIS->storedElements));
-//GB.ReturnObject(nodes->array);
-//delete nodes;
-
 GB.ReturnObject(0);
 
 END_PROPERTY
@@ -369,9 +351,10 @@ GB_DESC CReaderNodeAttributesDesc[] =
 	GB_DECLARE(".XmlReader.Node.Attributes", 0), GB_VIRTUAL_CLASS(),
 
     GB_METHOD("_get", "s", CReaderNodeAttr_get, "(Name)s"),
-    //GB_METHOD("_put", "s", CReaderNodeAttr_put, "(Value)s(Name)s"),
     GB_METHOD("_next", "s", CReaderNodeAttr_next, ""),
     GB_PROPERTY_READ("Count", "i", CReaderNodeAttr_count),
+    GB_PROPERTY_READ("Name", "i", CReaderNodeAttr_name),
+    GB_PROPERTY_READ("Value", "i", CReaderNodeAttr_value),
 
 	GB_END_DECLARE
 };

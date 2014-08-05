@@ -87,7 +87,7 @@ try
 }
 catch(XMLParseException &e)
 {
-    GB.Error(e.what());
+    GB.Error(e.errorWhat);
 }
 
 
@@ -105,11 +105,24 @@ GB.ReturnInteger(THIS->state);
 
 END_PROPERTY
 
-BEGIN_METHOD(CExplorer_document, GB_OBJECT doc)
+BEGIN_METHOD(CExplorer_load, GB_OBJECT doc)
 
 THIS->Load((Document*)(VARGOBJ(CDocument, doc)->node));
 
 END_METHOD
+
+BEGIN_PROPERTY(CExplorer_document)
+
+if(READ_PROPERTY)
+{
+    XML_ReturnNode(THIS->loadedDocument);
+}
+else
+{
+    THIS->Load((Document*)(VPROPOBJ(CDocument)->node));
+}
+
+END_PROPERTY
 
 GB_DESC CExplorerReadFlagsDesc[] =
 {
@@ -127,7 +140,8 @@ GB_DESC CExplorerDesc[] =
 
     GB_METHOD("_new", "", CExplorer_new, "[(Document)XmlDocument]"),
     GB_METHOD("_free", "", CExplorer_free, ""),
-    GB_METHOD("Load", "", CExplorer_document, "(Document)XmlDocument"),
+    GB_METHOD("Load", "", CExplorer_load, "(Document)XmlDocument"),
+    GB_PROPERTY("Document", "XMLDocument", CExplorer_document),
     GB_PROPERTY_SELF("ReadFlags", ".XmlExplorerReadFlags"),
     GB_PROPERTY_READ("Node", "XmlNode", CExplorer_Node),
     GB_PROPERTY_READ("Eof", "b", CExplorer_eof),

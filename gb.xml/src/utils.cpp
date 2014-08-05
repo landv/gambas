@@ -280,14 +280,47 @@ void XML_Format(GB_VALUE *value, char* &dst, size_t &lenDst)
 
 /************************************ Error Management ************************************/
 
+void XMLParseException_AnalyzeText(XMLParseException *ex, const char *text, const size_t lenText, const char *posFailed) throw();
+
 void ThrowXMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed)
 {
-    throw XMLParseException(nerror, text, lenText, posFailed);
+    throw XMLParseException_New(nerror, text, lenText, posFailed);
 }
 
-XMLParseException::XMLParseException(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw()
-    : near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
+XMLParseException* XMLParseException_New()//Void initializer
 {
+    XMLParseException *exception = new XMLParseException;
+    memset(exception, 0, sizeof(XMLParseException));
+    exception->line = 1;
+    exception->column = 1;
+    return exception;
+}
+
+XMLParseException* XMLParseException_New(const char *nerror, size_t posFailed)
+{
+    XMLParseException *exception = XMLParseException_New();
+    size_t lenError;
+    char *error;
+
+    lenError = strlen(nerror) + 1;
+    error = (char*) malloc(lenError);
+    memcpy(error, nerror, lenError);
+
+    exception->errorWhat = (char*)malloc(37 + lenError);
+    sprintf(exception->errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
+    exception->errorWhat[36 + lenError] = 0;
+
+    free(error);
+
+    return exception;
+}
+
+XMLParseException* XMLParseException_New(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw()
+{
+    XMLParseException *exception = XMLParseException_New();
+    size_t lenError;
+    char *error;
+
     lenError = strlen(nerror) + 1;
     error = (char*) malloc(lenError);
     memcpy(error, nerror, lenError);
@@ -296,76 +329,63 @@ XMLParseException::XMLParseException(const char *nerror, const char *data, const
     
     if(posFailed == 0)
     {
-        errorWhat = (char*)malloc(17 + lenError);
-        sprintf(errorWhat, "Parse error : %s !", error);
-        errorWhat[16 + lenError] = 0;
-        return;
+        exception->errorWhat = (char*)malloc(17 + lenError);
+        sprintf(exception->errorWhat, "Parse error : %s !", error);
+        exception->errorWhat[16 + lenError] = 0;
+        return exception;
     }
     else if(!data || !lenData)
     {
-        errorWhat = (char*)malloc(37 + lenError);
-        sprintf(errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
-        errorWhat[36 + lenError] = 0;
-        return;
+        exception->errorWhat = (char*)malloc(37 + lenError);
+        sprintf(exception->errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
+        exception->errorWhat[36 + lenError] = 0;
+        return exception;
     }
-    if(posFailed > data + lenData || posFailed < data) return;
-    AnalyzeText(data, lenData, posFailed);
+
+    if(posFailed > data + lenData || posFailed < data) return exception;
+    XMLParseException_AnalyzeText(exception, data, lenData, posFailed);
 
 
-    errorWhat = (char*)malloc(61 + lenError + lenNear);
-    memset(errorWhat, 0, 61 + lenError + lenNear);
-    sprintf(errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", error, line, column, near);
-    errorWhat[60 + lenError + lenNear] = 0;
+    exception->errorWhat = (char*)malloc(61 + lenError + exception->lenNear);
+    memset(exception->errorWhat, 0, 61 + lenError + exception->lenNear);
+    sprintf(exception->errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", error, exception->line, exception->column, exception->near);
+    exception->errorWhat[60 + lenError + exception->lenNear] = 0;
+
+    return exception;
 }
 
-XMLParseException::XMLParseException(const char *nerror, size_t posFailed) throw()
-    : near(0), error(0), lenError(0), lenNear(0), line(1), column(1)
+
+void XMLParseException_Free(XMLParseException* &ex) throw()
 {
-    lenError = strlen(nerror) + 1;
-    error = (char*) malloc(lenError);
-    memcpy(error, nerror, lenError);
-
-    //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
-
-    errorWhat = (char*)malloc(37 + lenError);
-    sprintf(errorWhat, "Parse error : %s !\n Position %zu", error, posFailed);
-    errorWhat[36 + lenError] = 0;
+    if(ex->near) free(ex->near);
+    free(ex);
+    ex = 0;
 }
 
-XMLParseException::~XMLParseException() throw()
-{
-    if(near) free(near);
-    if(error) free(error);
-}
-
-void XMLParseException::AnalyzeText(const char *text, const size_t lenText, const char *posFailed) throw()
+void XMLParseException_AnalyzeText(XMLParseException *ex, const char *text, const size_t lenText, const char *posFailed) throw()
 {
     for(const char *pos = text; pos < posFailed; ++pos)
     {
-        ++column;
+        ++ex->column;
         if(*pos == '\n')
         {
-            column = 1;
-            ++line;
+            ex->column = 1;
+            ++ex->line;
         }
         else if(*pos == '\r')
         {
             if(*(pos + 1) == '\n') ++pos;
-            column = 1;
-            ++line;
+            ex->column = 1;
+            ++ex->line;
         }
     }
     
-    lenNear = text + lenText <= posFailed + 20 ?  text + lenText - posFailed : 20;
-    if(lenNear == 0) return;
-    near = (char*)malloc(lenNear + 1);
-    memcpy(near, posFailed, lenNear);
-    near[lenNear] = 0;
+    ex->lenNear = text + lenText <= posFailed + 20 ?  text + lenText - posFailed : 20;
+    if(ex->lenNear == 0) return;
+    ex->near = (char*)malloc(ex->lenNear + 1);
+    memcpy(ex->near, posFailed, ex->lenNear);
+    ex->near[ex->lenNear] = 0;
 }
 
-const char* XMLParseException::what() const throw()
-{
-    return errorWhat;
-}
 
 

@@ -13,11 +13,13 @@ extern "C" GB_INTERFACE GB;
 
 
 struct Node;
+struct Attribute;
 
 typedef struct CNode
 {
     GB_BASE ob;
     Node *node;
+    Attribute *curAttrEnum;
 }CNode;
 
 typedef CNode CDocument;

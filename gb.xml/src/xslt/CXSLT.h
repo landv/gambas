@@ -31,4 +31,14 @@
 extern GB_DESC CXsltDesc[];
 #endif
 
+class XSLTException
+{
+public:
+    XSLTException(const char *error) throw();
+    const char* what();
+private:
+    const char *error;
+
+};
+
 #endif

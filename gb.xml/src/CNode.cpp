@@ -27,6 +27,7 @@
 #include "serializer.h"
 #include <stdlib.h>
 
+#define THISOBJ ((CNode*)_object)
 #define THIS (static_cast<CNode*>(_object)->node)
 
 #define NODE_BASE 0
@@ -35,8 +36,10 @@
 #define NODE_COMMENT 3
 #define NODE_CDATA 4
 #define NODE_ATTRIBUTE 5
+#define NODE_DOCUMENT 6
 
 BEGIN_METHOD_VOID(CNode_new)
+
 if(XMLNode_NoInstanciate()) return;
 
 
@@ -253,12 +256,42 @@ else
     *reinterpret_cast<Attribute**>(GB.GetEnum()) = attr;
 }
 
+THISOBJ->curAttrEnum = attr;
+
 if(attr == 0) {GB.StopEnum(); return;}
+
 
 XML_ReturnNode(attr);
 
 
 END_METHOD
+
+
+BEGIN_PROPERTY(CElementAttributes_name)
+
+if(!THISOBJ->curAttrEnum)
+{
+    GB.Error("No enumerated attribute available");
+    GB.ReturnNull();
+    return;
+}
+
+GB.ReturnNewString(THISOBJ->curAttrEnum->attrName, THISOBJ->curAttrEnum->lenAttrName);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(CElementAttributes_value)
+
+if(!THISOBJ->curAttrEnum)
+{
+    GB.Error("No enumerated attribute available");
+    GB.ReturnNull();
+    return;
+}
+
+GB.ReturnNewString(THISOBJ->curAttrEnum->attrValue, THISOBJ->curAttrEnum->lenAttrValue);
+
+END_PROPERTY
 
 BEGIN_PROPERTY(CNode_childNodes)
 
@@ -341,6 +374,8 @@ GB_DESC CElementAttributesDesc[] =
     GB_METHOD("_put", "s", CElementAttributes_put, "(Value)s(Name)s"),
     GB_METHOD("_next", "XmlNode", CElementAttributes_next, ""),
     GB_PROPERTY_READ("Count", "i", CElementAttributes_count),
+    GB_PROPERTY_READ("Name", "s", CElementAttributes_name),
+    GB_PROPERTY_READ("Value", "s", CElementAttributes_value),
     GB_END_DECLARE
 };
 

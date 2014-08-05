@@ -21,6 +21,7 @@ using namespace std;
 
 #define DEBUG std::cerr << "XMLDBG (" << __FILE__ << ":" <<__LINE__ << ") :"
 #define DEBUGH DEBUG << endl
+
 #endif
 
 typedef struct Node
@@ -97,6 +98,17 @@ typedef struct TextNode : public Node
 typedef TextNode CommentNode;
 
 typedef TextNode CDATANode;
+
+typedef struct XMLParseException
+{
+    char *near;
+    size_t lenNear;
+
+    size_t line;
+    size_t column;
+
+    char *errorWhat;
+}XMLParseException;
 
 //Gambas XML component interface
 

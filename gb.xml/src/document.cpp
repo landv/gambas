@@ -166,7 +166,7 @@ void XMLDocument_SetContent(Document *doc, const char *content, size_t len) thro
             {
                 if(doc->docType == XMLDocumentType)//Strict document
                 {
-                    throw XMLParseException("Extra root element", 0, 0, 0);
+                    throw XMLParseException_New("Extra root element", 0, 0, 0);
                 }
             }
                 
@@ -178,50 +178,9 @@ void XMLDocument_SetContent(Document *doc, const char *content, size_t len) thro
     
     free(elements);
     if(newRoot) doc->root = (Element*)newRoot;
-
-    
-    /*if(!newRoot)
-    {
-        throw XMLParseException("No valid element root found", 0, 0, 0);
-    }*/
-    
-    //this->setRoot(newRoot);
-
-    //if(!root) throw HTMLParseException(0, 0, "somewhere", "No valid root element found.");
 }
 
-/*
-void Document::toString(char **output, size_t *len, int indent)
-{
-    //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
-    *len = 38 + (indent >= 0 ? 1 : 0); root->addStringLen(len, indent);
-    *output = (char*)malloc(*len);
-    memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
-    *output += 38;
-    if(indent >= 0) 
-    {
-        **output = SCHAR_N;
-        ++(*output);
-    }
-    root->addString(output, indent);
-    (*output) -= (*len);
-}
 
-void Document::toGBString(char **output, size_t *len, int indent)
-{
-    //<?xml version="1.0" encoding="UTF-8"?> //Len = 38
-    *len = 38 + (indent >= 0 ? 1 : 0); root->addStringLen(len, indent);
-    *output = GB.TempString(0, *len);
-    memcpy(*output, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 38);
-    *output += 38;
-    if(indent >= 0) 
-    {
-        **output = SCHAR_N;
-        ++(*output);
-    }
-    root->addString(output, indent);
-    (*output) -= (*len);
-}*/
 
 void XMLDocument_Save(Document *doc, const char *fileName, bool indent)
 {

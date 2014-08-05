@@ -55,9 +55,10 @@ void Explorer::Init()
 
 void Explorer::Load(Document *doc)
 {
-    //UNREF(loadedDocument);
     Clear();
     loadedDocument = doc;
+    CNode *obj = XMLNode_GetGBObject(loadedDocument);
+    GB.Ref(obj);
     //GB.Ref(doc);
 
     Read();
@@ -66,7 +67,11 @@ void Explorer::Load(Document *doc)
 
 void Explorer::Clear()
 {
-    if(loadedDocument) XMLNode_DestroyParent((Node*)loadedDocument);
+    if(loadedDocument)
+    {
+        CNode *obj = XMLNode_GetGBObject(loadedDocument);
+        GB.Unref(POINTER(&obj));
+    }
     loadedDocument = 0;
     curNode = 0;
     this->eof = false;
@@ -104,7 +109,7 @@ int Explorer::MoveNext()
             return nextNode->type;
         }
         //si plus d'enfants ni de frère, on remonte
-        else if(curNode->parent && curNode != loadedDocument->root)
+        else if(curNode->parent && curNode != loadedDocument->root && curNode->parent != loadedDocument)
         {
             curNode = curNode->parent;
             endElement = true;

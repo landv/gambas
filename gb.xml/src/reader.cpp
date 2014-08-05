@@ -142,7 +142,7 @@ int Reader::ReadChar(char car)
     {
         if(inTag)//Si on est déjà dans un tag
         {
-            throw XMLParseException("Invalid tag Name", pos);
+            throw XMLParseException_New("Invalid tag Name", pos);
         }
         inNewTag = true;
         inTagName = true;
