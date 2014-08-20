@@ -357,13 +357,13 @@ End
 
 Public Sub SetPath(sPath As String)
 
-  Dim bError As Boolean
+  Dim sMsg As String
   
-  If Not Exist(sPath) Then bError = True
-
   If txtFile.ReadOnly Then
+    If Not Exist(sPath) Then sMsg = ("File not found.")
     SetDir(sPath)
   Else
+    If Not IsDir(File.Dir(sPath)) Then sMsg = ("Directory not found.")
     SetDir(File.Dir(sPath))
   Endif
 
@@ -378,7 +378,7 @@ Public Sub SetPath(sPath As String)
     
   Endif
   
-  If bError Then Message.Error(("Path not found:") & "\n\n" & sPath)
+  If sMsg Then Message.Error(sMsg & "\n\n" & sPath)
 
 End
 

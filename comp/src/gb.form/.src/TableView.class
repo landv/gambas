@@ -198,6 +198,16 @@ Public Sub GridView_Scroll()
   
 End
 
+Public Sub GridView_Arrange()
+  
+  If $bDoNotHideEditor Then
+    MoveEditor
+  Else
+    HideEditor
+  Endif
+  
+End
+
 Public Sub GridView_Resize()
   
   HideEditor
