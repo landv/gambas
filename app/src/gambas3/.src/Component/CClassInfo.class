@@ -749,7 +749,7 @@ Public Function WikiGetSymbols() As String[]
   Dim bDynamic As Boolean
   Dim bStatic As Boolean
   Dim sBreak As String
-  Dim sPrefix As String
+  'Dim sPrefix As String
   Dim aArray As String[]
   Dim bHasSymbols As Boolean
 
@@ -757,7 +757,7 @@ Public Function WikiGetSymbols() As String[]
 
     For Each sSymbol In ["P", "C", "M", "p", "e", "m"]
       cSymbol[sSymbol] = New String[]
-      cSymbol[">" & sSymbol] = New String[]
+      'cSymbol[">" & sSymbol] = New String[]
     Next
 
     For Each hSym In Symbols
@@ -768,17 +768,17 @@ Public Function WikiGetSymbols() As String[]
 
       Select Case hSym.Kind
         Case "r", "p", "v"
-          cSymbol[sPrefix & "p"].Add(hSym.Name)
+          cSymbol["p"].Add(hSym.Name)
         Case "R", "P", "V"
-          cSymbol[sPrefix & "P"].Add(hSym.Name)
+          cSymbol["P"].Add(hSym.Name)
         Case "C"
-          cSymbol[sPrefix & "C"].Add(hSym.Name)
+          cSymbol["C"].Add(hSym.Name)
         Case ":", "e", "E"
-          cSymbol[sPrefix & "e"].Add(hSym.Name)
+          cSymbol["e"].Add(hSym.Name)
         Case "m"
-          cSymbol[sPrefix & "m"].Add(hSym.Name)
+          cSymbol["m"].Add(hSym.Name)
         Case "M"
-          cSymbol[sPrefix & "M"].Add(hSym.Name)
+          cSymbol["M"].Add(hSym.Name)
         Default
           Print hSym.Kind; " ?"
       End Select
@@ -804,7 +804,6 @@ Public Function WikiGetSymbols() As String[]
 
   Endif
 
-  'aResult.Add("### Symbols")
   aResult.Add("[[")
   aResult.Add("==")
   

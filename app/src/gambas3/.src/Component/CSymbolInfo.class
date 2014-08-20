@@ -80,7 +80,7 @@ End
 
 Public Function IsStatic() As Boolean
 
-  Return UCase(Kind) = Kind
+  If UCase(Kind) = Kind And If Kind <> ":" Then Return True
 
 End
 

@@ -442,8 +442,9 @@ Public Function Open(sDir As String, Optional bInAnotherWindow As Boolean) As Bo
   Endif
 
   If bInAnotherWindow Then
-    Config.Save
-    Settings.Save
+    
+    Try Config.Save
+    Try Settings.Save
 
     sExec = Application.Path &/ File.Name(Args[0])
     If Not Exist(sExec) Then sExec &= ".gambas"

@@ -812,11 +812,9 @@ Public Sub btnAverage_Click()
   $bAverage = Not $bAverage
   
   gvwProfile.Columns[4].Width = If($bAverage, -1, 0)
-  gvwProfile.Refresh
+  'gvwProfile.Refresh
   gvwCalled.Columns[3].Width = If($bAverage, -1, 0)
-  gvwCalled.Refresh
-  'gvwCaller.Refresh
-  'gvwSource.Refresh
+  'gvwCalled.Refresh
 
 End
 

@@ -4,8 +4,6 @@ Inherits UserControl
 
 Event Click
 
-Static Private $hSmallFont As Font
-
 Property ShowPath As Boolean
 Property Path As String
 Property Highlight As Boolean
@@ -15,6 +13,8 @@ Property Selected As Boolean
 Property ShowAuthors As Boolean
 Property Read Info As CProjectInfo
 Public Group As String ' for examples
+
+Static Private $hGradient As Image
 
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
@@ -42,9 +42,16 @@ Public Sub _new()
   
   $hObs = New Observer(Me) As "ProjectItem"
   
-  If Not $hSmallFont Then
-    $hSmallFont = Me.Font.Copy()
-    $hSmallFont.Size *= 0.75
+  If Not $hGradient Then
+    
+    $hGradient = New Image(128, 128)
+    
+    Paint.Begin($hGradient)
+    Paint.Brush = Paint.RadialGradient(0, 0, 64, 0, 0, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
+    Paint.Rectangle(0, 0, 128, 128)
+    Paint.Fill
+    Paint.End
+    
   Endif
   
 End
@@ -64,34 +71,33 @@ Private Sub SetPath(sPath As String)
 End
 
 
-Private Sub GetTitle() As String
-  
-  Dim sTitle As String
-  Dim bSelected As Boolean
-  
-  bSelected = Me.Background = Color.SelectedBackground
-
-  With $hProjectInfo
-    sTitle = .Title
-    If Not sTitle Then sTitle = .Name
-    sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
-    sTitle &= Subst("<br><font size=\"-1\" color=\"#&1\">", Hex$(If(bSelected, Color.SelectedForeground, Color.Gradient(Color.TextBackground, Color.TextForeground, 0.75)), 6)) & .Title
-    If $bShowAuthors And If .Authors And If .Authors.Count Then
-      If .Title Then sTitle &= " - "
-      sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
-    Endif
-    sTitle &= "</font>"
-    If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
-  End With
-  
-  Return sTitle
-
-End
+' Private Sub GetTitle() As String
+'   
+'   Dim sTitle As String
+'   Dim bSelected As Boolean
+'   
+'   bSelected = Me.Background = Color.SelectedBackground
+' 
+'   With $hProjectInfo
+'     sTitle = .Title
+'     If Not sTitle Then sTitle = .Name
+'     sTitle = "<b>" & .Name & "</b>&nbsp;" & .Version
+'     sTitle &= Subst("<br><font size=\"-1\" color=\"#&1\">", Hex$(If(bSelected, Color.SelectedForeground, Color.Gradient(Color.TextBackground, Color.TextForeground, 0.75)), 6)) & .Title
+'     If $bShowAuthors And If .Authors And If .Authors.Count Then
+'       If .Title Then sTitle &= " - "
+'       sTitle &= "<i>" & If(.Authors.Count = 1, ("Author"), ("Authors")) & " : " & .Authors.Join(", ") & "</i>"
+'     Endif
+'     sTitle &= "</font>"
+'     If $bShowPath Then sTitle &= Subst("<br><font size=\"-1\" color=\"&1\"><b>", If(bSelected, "white", "gray")) & Replace($sPath, System.User.Home, "~") & "</b></font>"
+'   End With
+'   
+'   Return sTitle
+' 
+' End
 
 
 Public Sub DrawingArea_Draw()
   
-  Dim sTitle As String
   Dim X, Y, W, H, HT As Integer
   Dim XS, YS, WS, HS As Integer
   Dim sText As String
@@ -131,6 +137,7 @@ Public Sub DrawingArea_Draw()
     Paint.Brush = Paint.RadialGradient(X, Y, W / 2, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
     Paint.Rectangle(X, Y, W, H)
     Paint.Fill
+    'Paint.DrawImage($hGradient, X, Y, W, W)
     
     Paint.Rectangle(X + 0.5, Y + 0.5, W - 1, H - 1)
     Paint.Background = If($hDrawingArea.HasFocus, Color.LightBackground, Color.Merge(Color.LightForeground, Color.TextBackground))

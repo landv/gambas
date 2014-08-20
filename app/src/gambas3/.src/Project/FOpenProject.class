@@ -80,6 +80,8 @@ Public Sub Form_Open()
     If hCtrl.Tag = $iSort Then hCtrl.Value = True
   Next
   
+  InitButton
+  
   Dec Application.Busy
 
 End
@@ -190,11 +192,11 @@ Public Sub tabProject_Click()
 
 End
 
-Public Sub lstRecent_Activate()
-  
-  btnOK.Value = True
-  
-End
+' Public Sub lstRecent_Activate()
+'   
+'   btnOK.Value = True
+'   
+' End
 
 Public Sub OnUpdateRecent()
   
@@ -204,11 +206,11 @@ Public Sub OnUpdateRecent()
 End
 
 
-Public Sub lstExample_Activate()
-
-  btnOK.Value = True
-
-End
+' Public Sub lstExample_Activate()
+' 
+'   btnOK.Value = True
+' 
+' End
 
 ' Public Sub splProject_Resize()
 ' 
@@ -260,13 +262,19 @@ Public Sub Form_KeyPress()
 
 End
 
+Private Sub InitButton()
+
+  $bControl = False
+  btnOK.Text = ("Open")
+  btnOK.AutoResize = False
+  btnOK.W = btnCancel.W
+
+End
+
 Public Sub Form_KeyRelease()
 
   If $bAnother And If Key.Code = Key.ControlKey Then
-    $bControl = False
-    btnOK.Text = ("Open")
-    btnOK.AutoResize = False
-    btnOK.W = btnCancel.W
+    InitButton
   Endif
 
 End

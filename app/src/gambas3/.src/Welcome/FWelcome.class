@@ -387,13 +387,13 @@ Public Sub ProjectItem_Click(Path As String)
 
 End
 
-Public Sub txtFilter_Activate()
-
-  If Not $hFirst Then Return
-  $sPath = $hFirst.Path
-  Project.Open($sPath)
-
-End
+' Public Sub txtFilter_Activate()
+' 
+'   If Not $hFirst Then Return
+'   $sPath = $hFirst.Path
+'   Project.Open($sPath)
+' 
+' End
 
 Public Sub btnAbout_Click()
   
@@ -453,4 +453,3 @@ Public Sub panButton_BeforeArrange()
   dwgFrame.Move(0, 0, panButton.W, panButton.H)
 
 End
-

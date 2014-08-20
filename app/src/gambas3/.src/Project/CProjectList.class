@@ -257,3 +257,11 @@ Public Sub Filter_Change()
 
 End
 
+Public Sub Filter_Activate()
+  
+  Dim sFirst As String = GetFirst()
+  If sFirst Then Raise Click(sFirst)
+  
+End
+
+
