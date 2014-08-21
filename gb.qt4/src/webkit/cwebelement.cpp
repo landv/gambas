@@ -41,8 +41,8 @@ CWEBELEMENT *CWEBELEMENT_create(const QWebElement &elt)
 		return NULL;
 	
 	_object = GB.New(GB.FindClass("WebElement"), 0, 0);
-	//qDebug("create WebFrame %p", _object);
 	ELT = new QWebElement(elt);
+	//qDebug("create WebElement %p / %p (%ld)", THIS, ELT, THIS->ob.ref);
 	return THIS;
 }
 
@@ -61,6 +61,7 @@ END_METHOD*/
 
 BEGIN_METHOD_VOID(WebElement_free)
 
+	//qDebug("WebElement_free: %p / %p", THIS, ELT);
 	delete ELT;
 
 END_METHOD
@@ -162,6 +163,7 @@ BEGIN_METHOD(WebElement_FindAll, GB_STRING selector)
 	for (i = 0; i < result.count(); i++)
 	{
 		elt = CWEBELEMENT_create(result.at(i));
+		GB.Ref(elt);
 		*((CWEBELEMENT **)GB.Array.Get(array, i)) = elt;
 	}
 	
