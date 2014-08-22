@@ -567,7 +567,14 @@ END_METHOD
 
 BEGIN_METHOD(HttpClient_Put, GB_STRING contentType; GB_STRING data; GB_OBJECT headers; GB_STRING target)
 
-	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), GB.ToZeroString(ARG(data)), 0, VARG(headers), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
+	http_send(THIS, SEND_PUT, GB.ToZeroString(ARG(contentType)), STRING(data), LENGTH(data), VARGOPT(headers, NULL), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
+
+END_METHOD
+
+
+BEGIN_METHOD(HttpClient_PutFile, GB_STRING contentType; GB_STRING file; GB_OBJECT headers; GB_STRING target)
+
+	http_send(THIS, SEND_PUT | SEND_FILE, GB.ToZeroString(ARG(contentType)), STRING(file), LENGTH(file), VARGOPT(headers, NULL), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
 
 END_METHOD
 
@@ -593,6 +600,7 @@ GB_DESC CHttpClientDesc[] =
   GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("Put", NULL, HttpClient_Put, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("PostFile", NULL, HttpClient_PostFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
+  GB_METHOD("PutFile", NULL, HttpClient_PutFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
 
   GB_PROPERTY("Auth", "i", HttpClient_Auth),
   GB_PROPERTY("CookiesFile", "s",HttpClient_CookiesFile),
