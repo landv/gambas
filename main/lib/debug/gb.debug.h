@@ -107,6 +107,7 @@ typedef
 			void (*Exit)(void);
 			void (*Begin)(void *cp, void *fp);
 			void (*End)(void *cp, void *fp);
+			void (*Cancel)(void);
 			}
 			Profile;
 		void *_null;

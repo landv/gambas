@@ -109,6 +109,15 @@ void PROFILE_init(const char *path)
 	get_time();
 }
 
+void PROFILE_cancel(void)
+{
+	if (_init)
+	{
+		close(fileno(_file));
+		_init = FALSE;
+	}
+}
+
 void PROFILE_exit(void)
 {
 	if (!_init)

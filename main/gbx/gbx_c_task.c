@@ -78,7 +78,11 @@ static void has_forked(void)
 	FILE_init();
 	EXEC_debug = FALSE;
 	EXEC_task = TRUE;
-	
+	if (EXEC_profile)
+		DEBUG.Profile.Cancel();
+	EXEC_profile = FALSE;
+	EXEC_profile_instr = FALSE;
+
 	EXEC_Hook.loop = NULL;
 	EXEC_Hook.wait = NULL;
 	EXEC_Hook.timer = NULL;

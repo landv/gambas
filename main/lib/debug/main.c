@@ -56,6 +56,7 @@ void *GB_DEBUG_1[] EXPORT =
 	(void *)PROFILE_exit,
 	(void *)PROFILE_begin,
 	(void *)PROFILE_end,
+	(void *)PROFILE_cancel,
 	NULL
 };
 

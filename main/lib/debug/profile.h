@@ -29,5 +29,6 @@ void PROFILE_exit(void);
 void PROFILE_add(void *cp, void *fp, void *pc);
 void PROFILE_begin(void *cp, void *fp);
 void PROFILE_end(void *cp, void *fp);
+void PROFILE_cancel(void);
 
 #endif
