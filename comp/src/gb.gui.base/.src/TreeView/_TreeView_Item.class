@@ -316,9 +316,12 @@ End
 Public Sub Clear()
   
   Dim hTree As _TreeView = GetTree()
+  
+  hTree._SaveSelection
   While $aChildren.Count
     hTree.Remove($aChildren[0])
   Wend
+  hTree._RestoreSelection
   
 End
 

@@ -54,6 +54,9 @@ Private $hSortTimer As Timer
 Private $bNoRoot As Boolean
 Private $bNoUpdateHeight As Boolean
 
+Private $iSaveSelection As Integer
+Private $aSaveSelection As String[]
+
 Public Sub _new()
   
   $hView = New GridView(Me) As "GridView"
@@ -215,6 +218,8 @@ Public Sub Remove(Key As String)
   
   If Not hItem Then Error.Raise("Unknown item: " & Key)
   
+  _SaveSelection
+  
   iRow = _ItemToRow(hItem)
   
   sCurrent = Key_Read()
@@ -229,6 +234,7 @@ Public Sub Remove(Key As String)
   
   If iRow >= 0 Then UpdateRowHeight(Null, iRow, -1)
   
+  _RestoreSelection
   _RefreshView
   
 End
@@ -1287,14 +1293,12 @@ End
 
 Public Sub GridView_Sort()
 
-  Dim aSel As String[]
-  
-  aSel = Selection_Read()
+  _SaveSelection
   
   SortItemRec($hRoot)
-  _RefreshView
   
-  Selection_Write(aSel)
+  _RestoreSelection
+  _RefreshView
   
 End
 
@@ -1330,6 +1334,27 @@ Private Sub Selection_Write(Value As String[])
     If hItem Then hItem.Selected = True
   Next
 
+End
+
+Public Sub _SaveSelection()
+  
+  If $iSaveSelection = 0 Then
+    $aSaveSelection = Selection_Read()
+  Endif
+  
+  Inc $iSaveSelection
+  
+End
+
+Public Sub _RestoreSelection()
+  
+  Dec $iSaveSelection
+  
+  If $iSaveSelection = 0 Then 
+    Selection_Write($aSaveSelection)
+    $aSaveSelection = Null
+  Endif
+  
 End
 
 Private Function ScrollX_Read() As Integer
