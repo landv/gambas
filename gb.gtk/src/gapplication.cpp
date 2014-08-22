@@ -42,6 +42,8 @@
 
 //#define DEBUG_ENTER_LEAVE 1
 
+static bool _debug_keypress = false;
+
 /**************************************************************************
 	
 	Global event handler
@@ -238,8 +240,8 @@ static void gambas_handle_event(GdkEvent *event)
 	if (!widget)
 		goto __HANDLE_EVENT;
 
-	/*if (event->type == GDK_KEY_PRESS)
-		fprintf(stderr, "GDK_KEY_PRESS: keyval = %d state = %08X is_modifier = %d\n", event->key.keyval, event->key.state, event->key.is_modifier);*/
+	if (_debug_keypress && event->type == GDK_KEY_PRESS)
+		fprintf(stderr, "GDK_KEY_PRESS: keyval = %d state = %08X is_modifier = %d\n", event->key.keyval, event->key.state, event->key.is_modifier);
 
 	if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE) && (event->key.state & ~GDK_MODIFIER_MASK) == 0)
 	{
@@ -996,6 +998,10 @@ void gApplication::init(int *argc, char ***argv)
 	_group = gtk_window_group_new();
 	
 	_loop_owner = 0;
+
+	char *env = getenv("GB_GTK_DEBUG_KEYPRESS");
+	if (env && strcmp(env, "0"))
+		_debug_keypress = true;
 
 /*#ifdef GTK3 // patch GtkRange class
 	GtkWidgetClass *klass;
