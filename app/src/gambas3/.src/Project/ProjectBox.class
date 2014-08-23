@@ -161,8 +161,8 @@ Public Sub DrawingArea_Draw()
       X += ICON_SIZE + P
     
       Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
-      sText = "<b>" & Html(.Name) & "</b>&nbsp;&nbsp;" & .Version
       Paint.Font = Font["+1"]
+      sText = "<b>" & Html(.Name) & "</b>&nbsp;&nbsp;" & .Version
       Paint.DrawRichText(sText, X, Y, Paint.W - X, Paint.H, Align.TopLeft)
       HT = Paint.Font.Height
 
@@ -172,8 +172,7 @@ Public Sub DrawingArea_Draw()
       
       W = Paint.W - X - P * 2
       H = Paint.H - Y - HT - P - 3
-      sText = Ellipsize(sText, W, H)
-      Paint.DrawRichText(Html(sText), X, Y + HT + 3, W, H, Align.TopLeft)
+      DrawEllipsizedText(sText, X, Y + HT + 3, W, H)
       
     Else
       
@@ -196,8 +195,7 @@ Public Sub DrawingArea_Draw()
       
       W = Paint.W - X - P * 2
       H = Paint.H - Y - ICON_SIZE - P * 2
-      sText = Ellipsize(sText, W, H)
-      Paint.DrawRichText(Html(sText), X, Y + ICON_SIZE + P, W, H, Align.TopLeft)
+      DrawEllipsizedText(sText, X, Y + ICON_SIZE + P, W, H)
       
     Endif
     
@@ -373,13 +371,41 @@ Private Sub Selected_Write(Value As Boolean)
 
 End
 
-Private Sub Ellipsize(sText As String, W As Integer, H As Integer) As String
-
-  While Paint.Font.RichTextHeight(Html(sText), W) >= H
-    sText = String.Left(sText, -2) 
-    If Not sText Then Return
-    sText &= "…"
-  Wend
-  Return sText
-
+Private Sub DrawEllipsizedText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  Dim aElt As String[] = Split(sText, " \n")
+  Dim sElt As String
+  Dim I As Integer
+  Dim HL As Integer = Paint.Font.Height
+  Dim YT, WT As Integer
+  
+  sText = ""
+  YT = 0
+  
+  For I = 0 To aElt.Max
+    sElt = aElt[I]
+    
+    If (YT + HL * 2) > H Then
+      WT = Paint.Font.TextWidth(LTrim(sText & " " & sElt & "…"))
+      If WT > W Then
+        Paint.DrawText(sText & "…", X, Y + YT, W, H, Align.TopLeft)
+        Return
+      Endif
+    Else
+      WT = Paint.Font.TextWidth(LTrim(sText & " " & sElt))
+      If WT > W Then
+        Paint.DrawText(sText, X, Y + YT, W, H, Align.TopLeft)
+        sText = ""
+        YT += HL
+      Endif
+    Endif
+    
+    sText = RTrim(sText & " " & sElt)
+    
+  Next
+  
+  Paint.DrawText(sText, X, Y + YT, W, H, Align.TopLeft)
+  
 End
+
+

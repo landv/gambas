@@ -12,8 +12,6 @@ Private btnQuit As CCoolButton
 Private btnAbout As CCoolButton
 
 Private $iRecent As Integer
-Private $hFirst As ProjectItem
-'Private $hPicture As Picture
 
 Private Const LIST_NONE As Integer = 0
 Private Const LIST_RECENT As Integer = 1
@@ -420,33 +418,33 @@ End
 ' 
 ' End
 
-Public Sub timLayout_Timer()
-
-  Dim hList As ListContainer
-  Dim hCtrl As Control
-  Dim hProjectItem As ProjectItem
-  
-  If $iRecent = LIST_RECENT Then
-    hList = lstRecent
-  Else
-    hList = lstExample
-  Endif
-  
-  hList.Lock
-  
-  For Each hCtrl In hList.Children
-    
-    If hCtrl Is ProjectItem Then
-      hProjectItem = hCtrl
-      Object.Unlock(hProjectItem)
-      hProjectItem.ProjectItem_BeforeArrange
-    Endif
-    
-  Next
-  
-  hList.Unlock
-
-End
+' Public Sub timLayout_Timer()
+' 
+'   Dim hList As ListContainer
+'   Dim hCtrl As Control
+'   Dim hProjectItem As ProjectItem
+'   
+'   If $iRecent = LIST_RECENT Then
+'     hList = lstRecent
+'   Else
+'     hList = lstExample
+'   Endif
+'   
+'   hList.Lock
+'   
+'   For Each hCtrl In hList.Children
+'     
+'     If hCtrl Is ProjectItem Then
+'       hProjectItem = hCtrl
+'       Object.Unlock(hProjectItem)
+'       hProjectItem.ProjectItem_BeforeArrange
+'     Endif
+'     
+'   Next
+'   
+'   hList.Unlock
+' 
+' End
 
 Public Sub panButton_BeforeArrange()
 
