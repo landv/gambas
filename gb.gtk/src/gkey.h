@@ -48,12 +48,11 @@ public:
 	
 	static void setActiveControl(gControl *control);
 
+	static bool raiseEvent(int type, gControl *control, const char *text);
+
 private:
 	static GdkEventKey _event;
 	static bool _valid;
-	static GtkIMContext *_im_context;
-	static gControl *_im_control;
-	static bool _no_input_method;
 };
 
 #endif

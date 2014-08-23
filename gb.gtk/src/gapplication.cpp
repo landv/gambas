@@ -76,7 +76,7 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
 	return FALSE;
 }*/
 
-static bool raise_key_event_to_parent_window(gControl *control, int type)
+/*static bool raise_key_event_to_parent_window(gControl *control, int type)
 {
 	gMainWindow *win;
 	
@@ -94,7 +94,7 @@ static bool raise_key_event_to_parent_window(gControl *control, int type)
 	}
 	
 	return false;
-}
+}*/
 
 static bool check_crossing_event(GdkEvent *event)
 {
@@ -193,7 +193,6 @@ static void gambas_handle_event(GdkEvent *event)
 	int x, y, xs, ys, xc, yc;
 	bool cancel;
 	int type;
-	bool parent_got_it;
 	
 	if (gApplication::_fix_printer_dialog)
 	{
@@ -240,13 +239,21 @@ static void gambas_handle_event(GdkEvent *event)
 	if (!widget)
 		goto __HANDLE_EVENT;
 
-	if (_debug_keypress && event->type == GDK_KEY_PRESS)
-		fprintf(stderr, "GDK_KEY_PRESS: keyval = %d state = %08X is_modifier = %d\n", event->key.keyval, event->key.state, event->key.is_modifier);
-
-	if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE) && (event->key.state & ~GDK_MODIFIER_MASK) == 0)
+	if (_debug_keypress && (event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE))
 	{
-		goto __HANDLE_EVENT;
+		fprintf(stderr, "%s: keyval = %d state = %08X (%08X) is_modifier = %d\n", event->type == GDK_KEY_PRESS ? "GDK_KEY_PRESS" : "GDK_KEY_RELEASE",
+						event->key.keyval, event->key.state, event->key.state & ~GDK_MODIFIER_MASK, event->key.is_modifier);
 	}
+
+	/*if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE))
+	{
+		if (event->key.state & ~GDK_MODIFIER_MASK) // == 0)
+		{
+			if (_debug_keypress)
+				fprintf(stderr, "ignore key event\n");
+			goto __HANDLE_EVENT;
+		}
+	}*/
 
 	current_grab = gtk_window_group_get_current_grab(get_window_group(widget)); //gtk_grab_get_current();
 #ifdef GTK3
@@ -732,45 +739,20 @@ __FOUND_WIDGET:
 			
 			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 			
-			parent_got_it = false;
-			
 			if (control)
 			{
-			__KEY_TRY_PROXY:
-			
-				win = control->window();
-				
 				if (!gKey::enable(control, &event->key))
-				{
-					if (!parent_got_it)
-					{
-						parent_got_it = true;
-						
-						if (gApplication::onKeyEvent)
-							cancel = gApplication::onKeyEvent(type);
-						
-						if (!cancel)
-							cancel = raise_key_event_to_parent_window(control, type);
-					}
-					
-					if (!cancel && control->onKeyEvent && control->canRaise(control, type)) 
-					{
-						//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
-						//fprintf(stderr, "onKeyEvent: %p %d %p %s\n", event, type, control, control->name());
-						cancel = control->onKeyEvent(control, type);
-					}
-				}
+					cancel = gKey::raiseEvent(type, control, NULL);
+				else
+					cancel = true;
+
 				gKey::disable();
 				
 				if (cancel)
 					goto __RETURN;
 				
-				if (control->_proxy_for)
-				{
-					control = control->_proxy_for;
-					goto __KEY_TRY_PROXY;
-				}
-				
+				win = control->window();
+
 				if (event->key.keyval == GDK_Escape)
 				{
 					if (control->_grab)
@@ -778,7 +760,7 @@ __FOUND_WIDGET:
 						gApplication::exitLoop(control);
 						goto __RETURN;
 					}
-					
+
 					if (check_button(win->_cancel))
 					{
 						win->_cancel->setFocus();

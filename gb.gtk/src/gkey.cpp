@@ -31,6 +31,7 @@
 #include "gapplication.h"
 #include "gtrayicon.h"
 #include "gdesktop.h"
+#include "gmainwindow.h"
 #include "gkey.h"
 
 //#define DEBUG_IM 1
@@ -42,11 +43,12 @@ gKey
 **************************************************************************/
 
 bool gKey::_valid = false;
-bool gKey::_no_input_method = false;
 GdkEventKey gKey::_event;
-GtkIMContext *gKey::_im_context = NULL;
-gControl *gKey::_im_control = NULL;
-char *_im_text = NULL;
+
+static GtkIMContext *_im_context = NULL;
+static gControl *_im_control = NULL;
+static bool _no_input_method = false;
+//char *_im_text = NULL;
 
 const char *gKey::text()
 {
@@ -151,71 +153,45 @@ void gKey::disable()
 	_valid = false;
 	_event.keyval = 0;
 	_event.state = 0;
-	g_free(_event.string);
+	//g_free(_event.string);
 }
 
 bool gKey::enable(gControl *control, GdkEventKey *event)
 {
-	bool filter;
-	
-	//if (widget != _im_widget)
-	//	return true;
+	bool f = false;
 	
 	if (_valid)
 		disable();
 		
 	_valid = true;
-	_event = *event;
-	
-	if (_event.type == GDK_KEY_PRESS && !_no_input_method && control == _im_control)
+	if (event)
 	{
-		#if DEBUG_IM
-		fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
-		#endif
-		filter = gtk_im_context_filter_keypress(_im_context, &_event);
-		#if DEBUG_IM
-		fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", filter, event->string);
-		#endif
+		_event = *event;
+	
+		if (!_no_input_method && control == _im_control)
+		{
+			#if DEBUG_IM
+			fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
+			#endif
+			f = gtk_im_context_filter_keypress(_im_context, &_event);
+			#if DEBUG_IM
+			fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", f, event->string);
+			#endif
+		}
 	}
-	else
-		filter = false;
-  
-  if (filter && _im_text)
-  {
-		_event.string = g_strdup(_im_text);
-		//_event.keyval = 0;
-		filter = false;
-  }
-  else
-  	_event.string = g_strdup(_event.string);
-  
-  if (!filter)
-  {
-		//#if DEBUG_IM
-  	//fprintf(stderr, "gKey::enable: gtk_im_context_reset\n");
-		//#endif
-  	//gtk_im_context_reset(_im_context);
-  	if (_im_text)
-  	{
-  		g_free(_im_text);
-  		_im_text = NULL;
-  	}
-  }
-  
-  //fprintf(stderr, "gKey::enable: --> %d\n", filter);
-  return filter;
+
+  return f;
 }
 
-static void cb_im_commit(GtkIMContext *context, const gchar *str, gpointer pointer)
+static void cb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
 {
 	#if DEBUG_IM
 	fprintf(stderr, "cb_im_commit: %s\n", str);
 	#endif
 	
-	if (_im_text)
-		g_free(_im_text);
-		
-	_im_text = g_strdup(str);
+	gKey::enable(_im_control, NULL);
+	gKey::raiseEvent(gEvent_KeyPress, _im_control, str);
+	gKey::disable();
 }
 
 void gKey::init()
@@ -227,8 +203,6 @@ void gKey::init()
 void gKey::exit()
 {
 	disable();
-	if (_im_text)
-		g_free(_im_text);
 	g_object_unref(_im_context);
 }
 
@@ -263,4 +237,64 @@ void gKey::setActiveControl(gControl *control)
 			#endif
 		}		
 	}
+}
+
+static bool raise_key_event_to_parent_window(gControl *control, int type)
+{
+	gMainWindow *win;
+
+	while (control->parent())
+	{
+		win = control->parent()->window();
+		if (win->onKeyEvent && win->canRaise(win, type))
+		{
+			//fprintf(stderr, "onKeyEvent: %d %p %s\n", type, win, win->name());
+			if (win->onKeyEvent(win, type))
+				return true;
+		}
+
+		control = win;
+	}
+
+	return false;
+}
+
+bool gKey::raiseEvent(int type, gControl *control, const char *text)
+{
+	bool parent_got_it = false;
+	bool cancel = false;
+
+	if (text)
+		_event.string = (gchar *)text;
+
+__KEY_TRY_PROXY:
+
+	if (!parent_got_it)
+	{
+		parent_got_it = true;
+
+		if (gApplication::onKeyEvent)
+			cancel = gApplication::onKeyEvent(type);
+
+		if (!cancel)
+			cancel = raise_key_event_to_parent_window(control, type);
+	}
+
+	if (!cancel && control->onKeyEvent && control->canRaise(control, type))
+	{
+		//fprintf(stderr, "gEvent_KeyPress on %p %s\n", control, control->name());
+		//fprintf(stderr, "onKeyEvent: %p %d %p %s\n", event, type, control, control->name());
+		cancel = control->onKeyEvent(control, type);
+	}
+
+	if (cancel)
+		return true;
+
+	if (control->_proxy_for)
+	{
+		control = control->_proxy_for;
+		goto __KEY_TRY_PROXY;
+	}
+
+	return false;
 }

@@ -630,6 +630,7 @@ void gButton::animateClick(bool on)
 #else
 		gtk_widget_set_state(widget, GTK_STATE_ACTIVE);
 #endif
+		refresh();
 		_animated = true;
 	}
 	else if (on && _animated)
