@@ -475,8 +475,8 @@ SUBR_INFO COMP_subr_info[] =
 	{ ".Chown",            72,  4,  2     },
 	{ ".Chgrp",            72,  5,  2     },
 #endif
-	{ "Swap",              73,  1,  1,  2 }, // at least one argument, because 73 is a deprecated Copy() too.
-	{ "Swap$",             73,  1,  1,  2 },
+	{ "Swap",              73,  0,  1,  2 }, // at least one argument, because 73 is a deprecated Copy() too.
+	{ "Swap$",             73,  0,  1,  2 },
 	
 	{ "IsNan",             74,  1,  1     },
 	{ "IsInf",             74,  2,  1     },

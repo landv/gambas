@@ -286,6 +286,9 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("MkPointer", "s", NULL, "(Value)p"),
 	GB_METHOD("MkPointer$", "s", NULL, "(Value)p"),
 
+	GB_METHOD("Swap", "s", NULL, "(String)s[(Endianness)i]"),
+	GB_METHOD("Swap$", "s", NULL, "(String)s[(Endianness)i]"),
+
 	GB_METHOD("Bool@", "b", NULL, "(Pointer)p"),
 	GB_METHOD("Byte@", "c", NULL, "(Pointer)p"),
 	GB_METHOD("Short@", "h", NULL, "(Pointer)p"),

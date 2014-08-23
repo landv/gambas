@@ -127,7 +127,7 @@ void PROFILE_exit(void)
 	
 	if (!_new_line)
 		fputc('\n', _file);
-		
+
 	fclose(_file);
 }
 
