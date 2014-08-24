@@ -173,7 +173,6 @@ Public Sub Init(sPath As String)
       If sLine <> "[1]" Then Error.Raise(("Bad profile file format"))
       bVer = True
     Endif
-    
     ' The last line should be a void line, otherwise the file has been truncated. So always ignore it.
     If hFile.EndOfFile Then Break
     

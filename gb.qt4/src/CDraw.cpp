@@ -185,6 +185,8 @@ void DRAW_text(QPainter *p, const QString &text, float x, float y, float w, floa
 
 void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w, float h, int align, QPainter *p2)
 {
+	static QTextDocument *doc = NULL;
+
 	QString a;
 	float tw, th;
 	QColor fg = p->pen().color();
@@ -203,18 +205,22 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	if (a.length())
 		t = "<div align=\"" + a + "\">" + t + "</div>";
 	
-	QTextDocument rt;
-	rt.setDocumentMargin(0);
-	rt.setDefaultFont(p->font());
+	if (!doc)
+	{
+		doc = new QTextDocument;
+		doc->setDocumentMargin(0);
+	}
+
+	doc->setDefaultFont(p->font());
 	margin = p->font().pointSize() * p->device()->physicalDpiY() / 96;
-	rt.setDefaultStyleSheet(QString("p { margin-bottom: %1px; } h1,h2,h3,h4,h5,h6 { margin-bottom: %1px; }").arg(margin));
-	rt.setHtml(t);
+	doc->setDefaultStyleSheet(QString("p { margin-bottom: %1px; } h1,h2,h3,h4,h5,h6 { margin-bottom: %1px; }").arg(margin));
+	doc->setHtml(t);
 
 	if (w > 0)
-		rt.setTextWidth(w);
+		doc->setTextWidth(w);
 		
-	tw = rt.idealWidth();
-	th = rt.size().height();
+	tw = doc->idealWidth();
+	th = doc->size().height();
 
 	if (w < 0) w = tw;
 	if (h < 0) h = th;
@@ -233,7 +239,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	}
 	
 	p->translate(x, y);
-	rt.drawContents(p);
+	doc->drawContents(p);
 	p->translate(-x, -y);
 	
 	if (hasAlpha)
@@ -242,7 +248,7 @@ void DRAW_rich_text(QPainter *p, const QString &text, float x, float y, float w,
 	if (p2) 
 	{
 		p2->translate(x, y);
-		rt.drawContents(p2);
+		doc->drawContents(p2);
 		p2->translate(-x, -y);
 	}
 }

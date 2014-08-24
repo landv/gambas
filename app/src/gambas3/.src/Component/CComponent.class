@@ -461,6 +461,7 @@ Public Sub Load()
   Dim iLine As Integer
   Dim sHelp As String
   Dim sElt As String
+  Dim cCycle As Collection
   
   If Loaded Then Return
   Loaded = True
@@ -528,6 +529,7 @@ Public Sub Load()
     ' List of exported classes
     
     Try aList = Split(File.Load(File.SetExt(sPath, "list")), "\n", "", True)
+    ' TODO: remove duplicates. Normally it should be done in gbi3 program.
     If Error Then
       Error "gambas3: warning: cannot read "; File.SetExt(sPath, "list")
       Return
@@ -549,6 +551,7 @@ Public Sub Load()
   Repeat
     
     bAgain = False
+    cCycle = New Collection
     
     aLine = Split(File.Load(sPath), "\n")
     If aLine.Count And If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
@@ -564,13 +567,16 @@ Public Sub Load()
         bNextClass = False
         
         sClass = Mid$(sLig, 2)
+        'Print Key; ": "; sClass
         
         'DEBUG sClass
         
         If Classes.Exist(Key &/ sClass) Then
-          'DEBUG "Class exists"
-          bNextClass = True
-          Continue
+          If Not cCycle.Exist(sClass) Then 
+            'DEBUG "Class exists"
+            bNextClass = True
+            Continue
+          Endif
         Endif
         
         'If sClass = "Application" Then Stop
@@ -613,16 +619,23 @@ Public Sub Load()
         Endif
         
         'If Key = PROJECT_NAME And If sClass = "Editor" Then Stop
-        hClass = CreateClass(sClass, sParent, Key)
         
-        sLig = aLine[iLine]
-        Inc iLine
+        If Not cCycle.Exist(sClass) Then
+          hClass = CreateClass(sClass, sParent, Key)
+          cCycle[sClass] = True
         
-        hClass.Creatable = InStr(sLig, "C")
-        hClass.AutoCreatable = InStr(sLig, "A")
+          sLig = aLine[iLine]
+          Inc iLine
+          
+          hClass.Creatable = InStr(sLig, "C")
+          hClass.AutoCreatable = InStr(sLig, "A")
+        Else
+          Inc iLine
+        Endif
         
         GoSub READ_HELP
-        hClass.Help = sHelp
+        If hClass.Help Then hClass.Help &= "\n\n"
+        hClass.Help &= sHelp
         
         Continue
         

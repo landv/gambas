@@ -64,6 +64,7 @@
 #include "gb_arch.h"
 #include "gb_common_swap.h"
 #include "gb_array.h"
+#include "gb_table.h"
 #include "gambas.h"
 
 static char _root[PATH_MAX + 1] = { 0 };
@@ -82,6 +83,8 @@ static bool _analyze = FALSE;
 static bool _no_include_warning = TRUE;
 
 static char **_components = NULL;
+
+static TABLE *_classes = NULL;
 
 static void analyze(const char *comp, bool include);
 
@@ -284,6 +287,17 @@ static int sort_symbol(const int *a, const int *b)
 	return strcmp(_sort_symbol[*a].name, _sort_symbol[*b].name);
 }
 
+static void add_class(const char *name)
+{
+	int index;
+
+	if (out_list)
+	{
+		if (!TABLE_add_symbol(_classes, name, strlen(name), &index))
+			fprintf(out_list, "%s\n", name);
+	}
+}
+
 static void analyze_class(GB_DESC *desc)
 {
 	const char *name = desc->name;
@@ -296,8 +310,7 @@ static void analyze_class(GB_DESC *desc)
 	GB_DESC *p;
 	int i;
 
-	if (out_list) // && name[0] != '.')
-		fprintf(out_list, "%s\n", name);
+	add_class(name);
 
 	desc++;
 
@@ -453,7 +466,7 @@ static bool analyze_native_component(const char *path)
 		//ret = TRUE;
 	}
 
-	// Do not close shared libraries,except on openbsd that seems to feel better with
+	// Do not close shared libraries, except on openbsd that seems to feel better with
 	#ifdef OS_OPENBSD
 	lt_dlclose(lib);
 	#endif
@@ -467,6 +480,8 @@ static bool analyze_gambas_component(const char *path)
 	ARCH *arch;
 	ARCH_FIND find;
 	bool ret = TRUE;
+	char *list;
+	char *name;
 
 	if (_verbose)
 		fprintf(stderr, "Loading gambas component: %s\n", path);
@@ -487,7 +502,20 @@ static bool analyze_gambas_component(const char *path)
 		goto __RETURN;
 	}
 
-	fwrite(&arch->addr[find.pos], 1, find.len, out_list);
+	ALLOC(&list, find.len + 1);
+	memcpy(list, &arch->addr[find.pos], find.len);
+	list[find.len] = 0;
+
+	name = strtok(list, "\n");
+	while (name)
+	{
+		add_class(name);
+		name = strtok(NULL, "\n");
+	}
+
+	FREE(&list);
+
+	//fwrite(&arch->addr[find.pos], 1, find.len, out_list);
 	ret = FALSE;
 
 __RETURN:
@@ -564,10 +592,13 @@ static void analyze(const char *comp, bool include)
 			error(FALSE, "Cannot write file: %s", path_list);
 			return;
 		}
+
+		TABLE_create(&_classes, sizeof(SYMBOL), TF_IGNORE_CASE);
 	}
 	
 	fflush(stdout);
 	ok = TRUE;
+
 
 	if (native)
 	{
@@ -588,6 +619,8 @@ static void analyze(const char *comp, bool include)
 
 	if (!include)
 	{
+		TABLE_delete(&_classes);
+
 		fclose(out_info);
 		fclose(out_list);
 	

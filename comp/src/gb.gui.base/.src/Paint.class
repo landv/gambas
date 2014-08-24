@@ -1,0 +1,49 @@
+' Gambas class file
+
+Export
+
+Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
+  
+  Dim I, S, L As Integer
+  Dim HL As Integer = Paint.Font.Height
+  Dim sLine As String
+  Dim sSep As String
+  Dim sCar As String
+  Dim SL As Integer
+  Dim WT As Integer
+  Dim HT As Integer
+  
+  HT = HL
+  SL = 1
+  L = String.Len(Text)
+  
+  For I = 1 To L
+    
+    sCar = String.Mid$(Text, I, 1)
+    If I < L And If InStr(" \n", sCar) = 0 Then Continue
+    
+    sLine = String.Mid$(Text, SL, I - SL)
+    
+    If (HT + HL) > H Then
+      WT = Paint.Font.TextWidth(sLine & "…")
+      If WT > W Then
+        Return String.Left(Text, S - 1) & "…"
+      Endif
+    Else
+      WT = Paint.Font.TextWidth(sLine)
+      If WT > W Then
+        Text = String.Left(Text, S - 1) & "\n" & String.Mid$(Text, S + 1)
+        HT += HL
+        SL = S + 1
+      Endif
+    Endif
+    
+    sSep = sCar
+    S = I
+    If sSep = "\n" Then HT += HL
+    
+  Next
+  
+  Return Text
+  
+End

@@ -26,12 +26,13 @@
       MoveScaled(1,1,83,60)
       Background = Color.TextBackground
       Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
       { HBox2 HBox
-        MoveScaled(1,1,78,6)
+        MoveScaled(1,1,78,4)
         Spacing = True
-        Margin = True
         { Panel2 Panel
-          MoveScaled(1,0,25,5)
+          MoveScaled(1,0,25,4)
           Expand = True
           Arrangement = Arrange.Fill
           Border = Border.Plain
@@ -71,7 +72,6 @@
         Expand = True
         Arrangement = Arrange.Row
         Spacing = True
-        Margin = True
         Border = False
         ScrollBar = Scroll.Vertical
       }
@@ -82,11 +82,12 @@
     { Panel3 VBox
       MoveScaled(1,1,92,60)
       Background = Color.TextBackground
+      Spacing = True
+      Margin = True
       { HBox3 HBox
-        MoveScaled(2,2,78,6)
-        Margin = True
+        MoveScaled(2,2,78,4)
         { Panel4 Panel
-          MoveScaled(2,1,25,5)
+          MoveScaled(1,0,25,4)
           Expand = True
           Arrangement = Arrange.Fill
           Border = Border.Plain
@@ -104,7 +105,6 @@
         Expand = True
         Arrangement = Arrange.Row
         Spacing = True
-        Margin = True
         Border = False
         ScrollBar = Scroll.Vertical
       }

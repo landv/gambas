@@ -45,6 +45,7 @@ Public Sub Connect(hClient As SmtpClient, sHost As String, iPort As Integer)
   Me.Stream = $hSocket
 
   Do
+    'Print $hSocket.Status
     If $hSocket.Status = Net.Connected Or If $hSocket.Status <= 0 Then Break
     Wait 0.1
   Loop
@@ -77,6 +78,7 @@ End
 Public Sub Disconnect()
 
   Try $hSocket.Close
+  Super.Disconnect
 
 End
 

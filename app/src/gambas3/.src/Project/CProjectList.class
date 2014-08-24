@@ -60,7 +60,7 @@ Private Sub FillWithExample()
         .Tag = Project.ExampleTitle[sDir]
         sGroup = .Tag
         '.Font = Font["Bold"]
-        .H = .Font.Height + If(sLastDir, 2, 1) * Desktop.Scale
+        .H = .Font.Height + If(sLastDir, 1, 0) * Desktop.Scale
         If $iArrange = Arrange.Row Then .Expand = True
       End With
       'bHighlight = False
@@ -127,7 +127,7 @@ Private Sub FillWithRecent(bClear As Boolean)
         .Enabled = False
         .Tag = sTitle 
         '.Font = Font["Bold"]
-        .H = .Font.Height + If(sLastTitle, 2, 1) * Desktop.Scale
+        .H = .Font.Height + If(sLastTitle, 1, 0) * Desktop.Scale
         If $iArrange = Arrange.Row Then .Expand = True
       End With
       sLastTitle = sTitle

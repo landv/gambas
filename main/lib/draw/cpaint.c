@@ -1477,6 +1477,45 @@ BEGIN_PROPERTY(Paint_Tag)
 
 END_PROPERTY
 
+#if 0
+Static Public Sub DrawEllipsizedText(Text As String, X As Integer, Y As Integer, W As Integer, H As Integer, Optional Alignment As Integer = Align.TopLeft)
+
+  Dim aElt As String[] = Split(Text, " \n")
+  Dim sElt As String
+  Dim I As Integer
+  Dim HL As Integer = Paint.Font.Height
+  Dim YT, WT As Integer
+  Dim sText As String
+
+  YT = 0
+
+  For I = 0 To aElt.Max
+    sElt = aElt[I]
+
+    If (YT + HL * 2) > H Then
+      WT = Paint.Font.TextWidth(LTrim(sText & " " & sElt & "…"))
+      If WT > W Then
+        Paint.DrawText(sText & "…", X, Y + YT, W, H, Align.TopLeft)
+        Return
+      Endif
+    Else
+      WT = Paint.Font.TextWidth(LTrim(sText & " " & sElt))
+      If WT > W Then
+        Paint.DrawText(sText, X, Y + YT, W, H, Align.TopLeft)
+        sText = ""
+        YT += HL
+      Endif
+    Endif
+
+    sText = RTrim(sText & " " & sElt)
+
+  Next
+
+  Paint.DrawText(sText, X, Y + YT, W, H, Align.TopLeft)
+
+End
+#endif
+
 //-- Style API --------------------------------------------------------------
 
 #define GET_COORD() \
