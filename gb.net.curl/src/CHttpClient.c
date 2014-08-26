@@ -188,12 +188,8 @@ static void http_initialize_curl_handle(void *_object, GB_ARRAY custom_headers)
 		THIS_CURL = curl_easy_init();
 	}
 	
-	if (!THIS->async)
-	{
-		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
-		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
-	}
-	
+	curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL,1);
+	curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT,THIS->timeout);
 	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 	curl_easy_setopt(THIS_CURL, CURLOPT_USERAGENT, THIS_HTTP->sUserAgent);

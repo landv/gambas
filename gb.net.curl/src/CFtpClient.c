@@ -110,12 +110,8 @@ static void ftp_initialize_curl_handle(void *_object)
 		#endif
 	}
 
-	if (!THIS->async)
-	{
-		curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL, 1);
-		curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT, THIS->timeout);
-	}
-	
+	curl_easy_setopt(THIS_CURL, CURLOPT_NOSIGNAL, 1);
+	curl_easy_setopt(THIS_CURL, CURLOPT_TIMEOUT, THIS->timeout);
 	curl_easy_setopt(THIS_CURL, CURLOPT_VERBOSE, (bool)THIS->debug);
 	curl_easy_setopt(THIS_CURL, CURLOPT_PRIVATE,(char*)_object);
 	
