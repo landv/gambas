@@ -566,7 +566,7 @@ GB_DESC CColorDesc[] =
   GB_CONSTANT("Violet", "i", 0x8000FF),
   GB_CONSTANT("Pink", "i", 0xFF80FF),
 
-  GB_CONSTANT("Transparent", "i", 0xFFFFFFFF),
+  GB_CONSTANT("Transparent", "i", 0xFF000000),
 
   GB_STATIC_METHOD("RGB", "i", Color_RGB, "(Red)i(Green)i(Blue)i[(Alpha)i]"),
   GB_STATIC_METHOD("HSV", "i", Color_HSV, "(Hue)i(Saturation)i(Value)i[(Alpha)i]"),

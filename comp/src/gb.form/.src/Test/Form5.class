@@ -1,1 +1,15 @@
 ' Gambas class file
+
+Private $hPict As Picture
+
+Public Sub DrawingArea1_Draw()
+
+  Draw.Picture($hPict, 16, 16)
+
+End
+
+Public Sub Form_Open()
+
+  $hPict = Picture["icon:/small/color-picker"]
+
+End

@@ -83,7 +83,7 @@ static void insert_cache(const char *key, CPICTURE *pict)
 	if (_ok) \
 	{ \
 		if (img.depth() < 32 && !img.isNull()) \
-			img = img.convertToFormat(QImage::Format_ARGB32); \
+			img = img.convertToFormat(QImage::Format_ARGB32_Premultiplied); \
 	} \
 	_image = new QImage(img); \
 }

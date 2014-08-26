@@ -91,14 +91,14 @@ static void *temp_image(GB_IMG *img)
 	if (!img->data)
 		image = new QImage();
 	else
-		image = new QImage((uchar *)img->data, img->width, img->height, QImage::Format_ARGB32);
+		image = new QImage((uchar *)img->data, img->width, img->height, QImage::Format_ARGB32_Premultiplied);
 	
 	return image;
 }
 
 static GB_IMG_OWNER _image_owner = {
 	"gb.qt4",
-	GB_IMAGE_BGRA,
+	GB_IMAGE_BGRP,
 	free_image,
 	free_image,
 	temp_image,
@@ -135,8 +135,8 @@ CIMAGE *CIMAGE_create(QImage *image)
 	
 	if (image)
 	{
-		if (!image->isNull() && image->format() != QImage::Format_ARGB32)
-			*image = image->convertToFormat(QImage::Format_ARGB32);
+		if (!image->isNull() && image->format() != QImage::Format_ARGB32_Premultiplied)
+			*image = image->convertToFormat(QImage::Format_ARGB32_Premultiplied);
 		take_image(img, image);
 	}
 	else
@@ -148,33 +148,21 @@ CIMAGE *CIMAGE_create(QImage *image)
 BEGIN_PROPERTY(IMAGE_Picture)
 
 	CPICTURE *pict;
+	QImage img;
 	
 	check_image(THIS);
 
 	pict = (CPICTURE *)GB.New(GB.FindClass("Picture"), NULL, NULL);
 	if (!QIMAGE->isNull())
-		*pict->pixmap = QPixmap::fromImage(*QIMAGE);
+	{
+		img = *QIMAGE;
+		img.detach();
+		*pict->pixmap = QPixmap::fromImage(img);
+	}
 
 	GB.ReturnObject(pict);
 
 END_PROPERTY
-
-#if 0
-BEGIN_METHOD(CIMAGE_resize, GB_INTEGER width; GB_INTEGER height)
-
-	check_image(THIS);
-
-	if (QIMAGE->isNull())
-	{
-		take_image(THIS, new QImage(VARG(width), VARG(height), QImage::Format_ARGB32));
-	}
-	else
-	{
-		take_image(THIS, new QImage(QIMAGE->copy(0, 0, VARG(width), VARG(height))));
-	}
-
-END_METHOD
-#endif
 
 BEGIN_METHOD(IMAGE_Load, GB_STRING path)
 
@@ -183,7 +171,7 @@ BEGIN_METHOD(IMAGE_Load, GB_STRING path)
 
 	if (CPICTURE_load_image(&p, STRING(path), LENGTH(path)))
 	{
-		p->convertToFormat(QImage::Format_ARGB32);
+		//p->convertToFormat(QImage::Format_ARGB32);
 		img = CIMAGE_create(p);
 		GB.ReturnObject(img);
 	}

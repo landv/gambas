@@ -211,12 +211,13 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "gridview", "tableview"
       hCtrl = New GridView(hParent)
-      hCtrl.Columns.Count = 2
       hCtrl.Rows.Count = 4
+      hCtrl.Columns.Count = 4
+      'hCtrl.Columns[0].W = Desktop.Scale * 16
       hCtrl.Grid = True
       hCtrl[0, 0].Text = sName
-      hCtrl.Columns[0].W = -1
-      hCtrl.Rows.H = -1
+      hCtrl[0, 0].ColumnSpan = hCtrl.Columns.Count
+      'hCtrl.Rows.H = -1
 
     Case "menu"
       hCtrl = New Menu(hParent)
@@ -884,7 +885,6 @@ Public Sub UpdateName()
       
     Case "GridView", "TableView"
       Control[0, 0].Text = Name
-      Control.Columns[0].W = -1
 
     Case "ListBox"
       Control[0].Text = Name
@@ -897,9 +897,6 @@ Public Sub UpdateName()
       Else
         If Not HasText() Then Control.Text = Name
       Endif
-
-    Case "GridView"
-      Control[0, 0].Text = Name
 
     Case "DrawingArea", "ScrollArea"
       Control.Refresh

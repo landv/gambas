@@ -3,14 +3,19 @@
 { Form Form
   MoveScaled(0,0,72,75)
   Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(6,1,25,4)
+    { txtPadding SpinBox
+      MoveScaled(3,0,8,4)
+    }
+  }
   { gvwInfo GridView
-    MoveScaled(5,6,34,31)
+    MoveScaled(6,10,44,31)
     Expand = True
     Border = False
     Mode = Select.Multiple
     ShowCursor = True
-    Header = GridView.Both
-    AutoResize = False
+    Header = GridView.Horizontal
     Sorted = True
   }
   { TextBox1 TextBox

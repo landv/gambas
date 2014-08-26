@@ -314,6 +314,8 @@ Private Sub UpdateRecentFile(hParent As Menu)
   Dim sPath As String
   Dim hMenu As Menu
   
+  If Not Project.RecentFiles Then Return
+  
   hParent.Children.Clear
   
   For Each sPath In Project.RecentFiles.Sort()

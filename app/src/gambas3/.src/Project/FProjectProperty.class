@@ -463,9 +463,9 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
       
     End Select
     
-    .Padding = 4
+    '.Padding = 4
     .Alignment = Align.TopNormal
-    .Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground)
+    .Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
     
   End With
   
@@ -1373,11 +1373,6 @@ Private Sub UpdateStat()
   Inc gvwStat.Rows.Count
   gvwStat[N, 0].Text = ("Lines of code")
   gvwStat[N, 1].Text = Format(Project.GetLinesOfCode(), ",0")
-
-  For N = 0 To gvwStat.Rows.Max
-    gvwStat[N, 0].Padding = 8
-    gvwStat[N, 1].Padding = 8
-  Next
 
   gvwStat.Columns[0].Width = -1
   gvwStat.Columns[0].Width += 16

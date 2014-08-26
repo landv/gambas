@@ -76,7 +76,7 @@ static QImage _default_trayicon;
 MyTrayIcon::MyTrayIcon() : SystemTrayIcon()
 {
 	if (_default_trayicon.isNull())
-		_default_trayicon = QImage(_default_trayicon_data, DEFAULT_TRAYICON_WIDTH, DEFAULT_TRAYICON_HEIGHT, QImage::Format_ARGB32);
+		_default_trayicon = QImage(_default_trayicon_data, DEFAULT_TRAYICON_WIDTH, DEFAULT_TRAYICON_HEIGHT, QImage::Format_ARGB32_Premultiplied);
 
 	_icon = QPixmap(_default_trayicon);
 }

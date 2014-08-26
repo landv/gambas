@@ -47,3 +47,95 @@ Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
   Return Text
   
 End
+
+Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 8)
+  
+  Dim hShadow As Image
+  Dim hFont As Font
+  Dim hBrush As PaintBrush
+  Dim DX, DY As Integer
+  
+  If Radius < 1 Then Return
+  Radius = Min(256, Radius)
+  
+  hFont = Paint.Font
+  hBrush = Paint.Brush
+  
+  With Paint.TextSize(Text)
+    hShadow = New Image(Ceil(.W) + 2 + Radius * 2, Ceil(.H) + 2 + Radius * 2, Color.Transparent) '&HFF000000)
+    
+    DX = W - .W
+    DY = H - .H
+  
+    Paint.Begin(hShadow)
+    Paint.Font = hFont
+    Paint.Brush = hBrush
+
+    If Align.IsCenter(Alignment) Then
+      DX /= 2
+    Else If Align.IsLeft(Alignment) Then
+      DX = 0
+    Endif
+    
+    If Align.IsMiddle(Alignment) Then
+      DY /= 2
+    Else If Align.IsTop(Alignment) Then
+      DY = 0
+    Endif
+  
+    Paint.DrawText(Text, X - DX, Y - DY, W, H, Alignment)
+    Paint.End
+    hShadow.Fuzzy(Radius)
+    
+  End With
+  
+  Paint.DrawImage(hShadow, DX, DY)
+  'Paint.DrawImage(hShadow, DX, DY) 
+  
+End
+
+Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 8)
+  
+  Dim hShadow As Image
+  Dim hFont As Font
+  Dim hBrush As PaintBrush
+  Dim DX, DY As Integer
+  
+  If Radius < 1 Then Return
+  Radius = Min(256, Radius)
+  
+  hFont = Paint.Font
+  hBrush = Paint.Brush
+  
+  With Paint.RichTextSize(Text, W)
+    hShadow = New Image(Ceil(.W) + 2 + Radius * 2, Ceil(.H) + 2 + Radius * 2, Color.Transparent) '&HFF000000)
+    
+    DX = W - .W
+    DY = H - .H
+  
+    Paint.Begin(hShadow)
+    Paint.Font = hFont
+    Paint.Brush = hBrush
+
+    If Align.IsCenter(Alignment) Then
+      DX /= 2
+    Else If Align.IsLeft(Alignment) Then
+      DX = 0
+    Endif
+    
+    If Align.IsMiddle(Alignment) Then
+      DY /= 2
+    Else If Align.IsTop(Alignment) Then
+      DY = 0
+    Endif
+  
+    Paint.DrawRichText(Text, X - DX, Y - DY, W, H, Alignment)
+    Paint.End
+    hShadow.Fuzzy(Radius)
+    
+  End With
+  
+  Paint.DrawImage(hShadow, DX, DY)
+  'Paint.DrawImage(hShadow, DX, DY) 
+  
+End

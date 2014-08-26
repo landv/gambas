@@ -172,7 +172,7 @@ Public Sub _Layout()
   For Each hCol In $aColumns
     hCol._X = X
     X += hCol.Width
-    H = Max(H, hView.Font.TextHeight(hCol.Text))
+    H = Max(H, hView.Font.TextHeight(hCol.Text) + hView.Padding * 2)
   Next
   
   If System.RightToLeft Then

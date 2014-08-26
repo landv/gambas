@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted"
+Public Const _Properties As String = "*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,Padding{Range:0;63}=2,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 
@@ -27,6 +27,7 @@ Property ShowCursor As Boolean
 Property Read Current As _GridView_Cell
 Property Font As Font
 Property Sorted As Boolean
+Property Padding As Integer
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -112,6 +113,7 @@ Private $bSorted As Boolean
 Private $bHasDrawEvent As Boolean
 
 Private $hObsClick As Observer
+Private $iPadding As Integer = 2
 
 Public Sub _new()
   
@@ -205,6 +207,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
   Dim A As Integer
   Dim iColor As Integer
   Dim bCancel As Boolean
+  Dim iPadding As Integer
 
   Draw.Save
   
@@ -223,11 +226,13 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
     
     Draw.FillRect(X, Y, W, H, iColor)
     
-    If .Padding Then
-      X += .Padding
-      Y += .Padding
-      W -= .Padding * 2
-      H -= .Padding * 2
+    iPadding = Max($iPadding, .Padding)
+    
+    If iPadding Then
+      X += iPadding
+      Y += iPadding
+      W -= iPadding * 2
+      H -= iPadding * 2
     Endif
     
     If W > 0 And If H > 0 Then
@@ -266,8 +271,8 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
         
           DrawAlignedPicture(hPict, X, Y, W, H, A)
           
-          W -= hPict.W + .Padding
-          If Not System.RightToLeft Then X += hPict.W + .Padding
+          W -= hPict.W + iPadding
+          If Not System.RightToLeft Then X += hPict.W + iPadding
           
         Endif
         
@@ -318,6 +323,18 @@ DRAW_GRID:
   Draw.Restore
 
 End
+
+Private Sub DrawText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer, iAlign As Integer, iPadding As Integer)
+  
+  X += iPadding
+  Y += iPadding
+  W -= iPadding * 2
+  H -= iPadding * 2
+  If W <= 0 Or If H <= 0 Then Return
+  Paint.DrawText(sText, X, Y, W, H, iAlign)
+  
+End
+
 
 Public Sub ScrollArea_Draw()
   
@@ -385,7 +402,7 @@ Public Sub ScrollArea_Draw()
     iBg = Color.Background
   Endif
   
-  ' Vertical header
+  ' Column headers
   
   iSort = $hColumns.Sort
   bAscent = $hColumns.Ascending
@@ -414,16 +431,16 @@ Public Sub ScrollArea_Draw()
 
           If iSort = I Then
             WA = Min(16, H - F)
-            If WA < .Width Then Style.PaintArrow(X + .Width - WA, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
+            If WA < .Width Then Style.PaintArrow(X + .Width - WA - $iPadding, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
             'Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
             'If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
             Paint.Rectangle(X + 1, F, Max(0, .Width - WA - 4), H - F)
             Paint.Clip
-            Paint.DrawText(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
+            DrawText(.Text, X + 4, F, .Width - WA + $iPadding, H - F, .Alignment, $iPadding)
           Else
             Paint.Rectangle(X + 1, F, .Width - 2, H - F)
             Paint.Clip
-            Paint.DrawText(.Text, X + 4, F, .Width - 8, H - F, .Alignment)
+            DrawText(.Text, X + 4, F, .Width - 8, H - F, .Alignment, $iPadding)
           Endif
 
           Paint.Restore
@@ -446,7 +463,7 @@ Public Sub ScrollArea_Draw()
     Endif
   Endif
     
-  ' Horizontal header
+  ' Row headers
 
   $iFirstRow = iRow
   $aRowY.Clear
@@ -480,7 +497,7 @@ Public Sub ScrollArea_Draw()
         Paint.Rectangle(X, Y + 1, W - F, H - 3)
         Paint.Clip
         If I = $iRow Then Paint.Font.Bold = True
-        Paint.DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 2, Align.Center)
+        DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 2, Align.Center, $iPadding)
         If I = $iRow Then Paint.Font.Bold = False
         Paint.Restore
       Endif
@@ -922,7 +939,7 @@ Public Sub ScrollArea_MouseMove()
   
   If Not System.RightToLeft Then X -= $hRows.W
   
-  If Mouse.Left Then
+  If Mouse.Left Or If Mouse.Right Then
     
     If Y >= $hColumns.Height Then
       For I = 1 To $aRowY.Max
@@ -1876,8 +1893,9 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim hFont As Font
   Dim iColSpan As Integer
   Dim D As Integer
+  Dim iPadding As Integer
   
-  PW = Me.Font.TextWidth($hColumns[iCol].Text) + 8 + If($bSorted, 16, 0)
+  PW = Me.Font.TextWidth($hColumns[iCol].Text) + $iPadding * 2 + If($bSorted, 16, 0)
   
   I = Max(0, $hRows._FindRowFromPos($hView.ScrollY))
   For I = I To Min(1000 + I, $hRows.Max)
@@ -1897,7 +1915,8 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
     
     With hData
       
-      W = Max(8, .Padding * 2)
+      iPadding = Max($iPadding, .Padding)
+      W = iPadding * 2
       hFont = .Font
       If Not hFont Then hFont = Me.Font
       
@@ -1909,7 +1928,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
       
       If .Picture Then
         W += .Picture.Width
-        If .Text Or If .RichText Then W += .Padding
+        If .Text Or If .RichText Then W += iPadding
       Endif
       
       PW = Max(PW, (W + D - 1) \ D)
@@ -1918,7 +1937,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
     
   Next
   
-  Return PW
+  Return PW + 2
   
 End
 
@@ -2077,4 +2096,17 @@ Public Sub GridViewClick_MouseDown()
   
   If $bInCell Then Raise Click
   
+End
+
+Private Function Padding_Read() As Integer
+
+  Return $iPadding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  $iPadding = Value
+  $hView.Refresh
+
 End

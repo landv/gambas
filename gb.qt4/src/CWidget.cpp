@@ -3207,7 +3207,7 @@ void CWIDGET_iconset(QIcon &icon, const QPixmap &pixmap, int size)
 	
 	if (size > 0)
 	{
-		img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32);
+		img = pixmap.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied);
 		size = ((size + 1) & ~3);
 		img = img.scaled(size, size, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 		normal = QPixmap::fromImage(img);

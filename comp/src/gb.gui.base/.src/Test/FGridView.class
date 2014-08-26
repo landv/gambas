@@ -4,13 +4,14 @@
 Public Sub Form_Open()
 
   Dim I As Integer
+  Dim hCtrl As GridView
   
   Print gvwInfo.W;; gvwInfo.H;; "/";; Me.W;; Me.H
   
-  gvwinfo.Clear
+  'gvwinfo.Clear
   gvwinfo.Columns.Count = 3
   gvwinfo.Rows.Count = 10
-  gvwinfo.Rows.Resizable = True
+  'gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Name"
   gvwinfo[0, 1].Text = "compsrch"
   gvwinfo[1, 0].Text = "Version"
@@ -47,8 +48,12 @@ Public Sub Form_Open()
   
   ScrollArea(gvwInfo.Proxy).Shadow = True
   
+  'gvwInfo[0, 0].ColumnSpan = gvwInfo.Columns.Count
+  
   gvwinfo.Columns.Width = -1
   gvwinfo.Rows[6].Height = -1
+  
+  txtPadding.Value = gvwInfo.Padding
 
 End
 
@@ -73,5 +78,16 @@ End
 Public Sub TextBox1_KeyPress()
 
   Debug Key.Code
+
+End
+
+Public Sub txtPadding_Change()
+
+  Dim C As Integer
+  
+  gvwinfo.Padding = txtPadding.Value
+  ' For C = 0 To gvwInfo.Columns.Max
+  '   gvwInfo.Columns[C].W = -1
+  ' Next
 
 End

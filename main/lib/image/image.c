@@ -598,6 +598,9 @@ void IMAGE_take(GB_IMG *img, GB_IMG_OWNER *owner, void *owner_handle, int width,
 
 void IMAGE_delete(GB_IMG *img)
 {
+	#ifdef DEBUG_ME
+	fprintf(stderr, "IMAGE_delete: %p\n", img);
+	#endif
 	//IMAGE_take(img, &_image_owner, NULL, 0, 0, NULL);
 	
 	// Release the temporary handle before the owner, because the temporary owner may write to the data before freeing!
@@ -634,6 +637,7 @@ void IMAGE_fill(GB_IMG *img, GB_COLOR col)
 	//SYNCHRONIZE(img); unneeded, as the entire image will be replaced
 	
 	col = GB_COLOR_to_format(col, img->format);
+	//fprintf(stderr, "fill with %08X\n", col);
 	while (p != pm)
 		*p++ = col;	
 	
@@ -891,7 +895,7 @@ void IMAGE_make_transparent(GB_IMG *img, GB_COLOR col)
 
 void IMAGE_set_default_format(int format)
 {
-	_default_format = GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(format);
+	_default_format = format; //GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(format);
 }
 
 int IMAGE_get_default_format()
@@ -1590,6 +1594,8 @@ void IMAGE_blur(GB_IMG *img, int radius) //top_x, top_y, width, height, radius )
 	uint mul_sum = mul_table[radius];
 	uint shg_sum = shg_table[radius];
 	
+	//fprintf(stderr, "blur: format = %d / %02X%02X%02X%02X\n", img->format, pixels[0], pixels[1], pixels[2], pixels[3]);
+
 	if (GB_IMAGE_FMT_IS_32_BITS(img->format))
 	{
 		for (y = 0; y < height; y++)

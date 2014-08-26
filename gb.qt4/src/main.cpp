@@ -919,70 +919,6 @@ static void hook_error(int code, char *error, char *where)
 	//qApp->exit();
 }
 
-#if 0
-static int hook_image(CIMAGE **pimage, GB_IMAGE_INFO *info) //void **pdata, int width, int height, int format)
-{
-	CIMAGE *image = *pimage;
-	QImage *img;
-
-	if (!image)
-	{
-		img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
-
-		if (info->data)
-			GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
-
-		GB.New(POINTER(&image), GB.FindClass("Image"), NULL, NULL);
-		delete image->image;
-		image->image = img;
-
-		*pimage = image;
-	}
-	else
-	{
-		info->data = image->image->bits();
-		info->width = image->image->width();
-		info->height = image->image->height();
-		info->format = image->image->hasAlphaChannel() ? GB_IMAGE_BGRA : GB_IMAGE_BGRX;
-	}
-
-	return 0;
-}
-
-static int hook_picture(CPICTURE **ppicture, GB_PICTURE_INFO *info)
-{
-	CPICTURE *picture = *ppicture;
-	QImage *img;
-
-	if (!picture)
-	{
-		if (info->format == GB_IMAGE_BGRA || info->format == GB_IMAGE_BGRX)
-			img = new QImage((uchar *)info->data, info->width, info->height, info->format == GB_IMAGE_BGRA ? QImage::Format_ARGB32 : QImage::Format_RGB32);
-		else
-		{
-			img = new QImage(info->width, info->height, GB_IMAGE_TRANSPARENT(info->format) ? QImage::Format_ARGB32 : QImage::Format_RGB32);
-			GB.Image.Convert(img->bits(), GB_IMAGE_BGRA, info->data, info->format, info->width, info->height);
-		}
-
-		GB.New(POINTER(&picture), GB.FindClass("Picture"), NULL, NULL);
-		delete picture->pixmap;
-		*picture->pixmap = QPixmap::fromImage(*img);
-		delete img;
-
-		*ppicture = picture;
-	}
-	else
-	{
-		info->data = NULL;
-		info->format = GB_IMAGE_BGRA;
-		info->width = picture->pixmap->width();
-		info->height = picture->pixmap->height();
-	}
-
-	return 0;
-}
-#endif
-
 static void QT_InitWidget(QWidget *widget, void *object, int fill_bg)
 {
 	((CWIDGET *)object)->flag.fillBackground = fill_bg;	
@@ -1167,7 +1103,7 @@ int EXPORT GB_INIT(void)
 	GB.Component.Load("gb.image");
 	GB.Component.Load("gb.gui.base");
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
-  IMAGE.SetDefaultFormat(GB_IMAGE_BGRA);
+  IMAGE.SetDefaultFormat(GB_IMAGE_BGRP);
 	DRAW_init();
 	
 	CLASS_Control = GB.FindClass("Control");

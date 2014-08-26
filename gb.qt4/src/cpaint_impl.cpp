@@ -1507,7 +1507,7 @@ void MyPaintEngine::drawTextItem(const QPointF &p, const QTextItem &textItem)
 
 MyPaintEngine MyPaintDevice::engine;
 
-MyPaintDevice::MyPaintDevice() : QPaintDevice() //QImage(1, 1, QImage::Format_ARGB32)
+MyPaintDevice::MyPaintDevice() : QPaintDevice()
 {
 }
 
