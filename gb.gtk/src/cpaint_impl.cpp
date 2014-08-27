@@ -1278,7 +1278,6 @@ static void TransformMap(GB_TRANSFORM matrix, double *x, double *y)
 static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
 	cairo_t *cr = CONTEXT(d);
-	gPicture *picture = CIMAGE_get((CIMAGE *)image);
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern = NULL;
 	cairo_pattern_t *save;
@@ -1295,7 +1294,7 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	//if (source)
 	//	pixbuf = gdk_pixbuf_new_subpixbuf(pixbuf, source->x, source->y, source->w, source->h);
 	
-	surface = picture->getSurface();
+	surface = check_image(image); //picture->getSurface();
 
 	pattern = cairo_pattern_create_for_surface(surface);
 

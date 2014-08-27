@@ -187,8 +187,6 @@ extern "C"
 	void *GB_GTK_1[] EXPORT =
 	{
 		(void *)GTK_INTERFACE_VERSION,
-		(void *)GTK_GetPicture,
-		(void *)GTK_GetImage,
 		(void *)GTK_CreateGLArea,
 		NULL
 	};

@@ -38,8 +38,6 @@ typedef
 	struct 
 	{
 		intptr_t version;
-		void *(*GetPicture)(GdkPixbuf *buf);
-		void *(*GetImage)(GdkPixbuf *buf);
 		GtkWidget *(*CreateGLArea)(void *control, void *parent, void (*init)(GtkWidget *));
 		void *_null;
 	}  
