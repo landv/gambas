@@ -603,7 +603,26 @@ END_METHOD
 
 IMPLEMENT_PROPERTY_BOOLEAN(Paint_Invert, Invert)
 IMPLEMENT_PROPERTY_INTEGER(Paint_FillStyle, FillStyle)
-IMPLEMENT_PROPERTY_UNSIGNED_INTEGER(Paint_Background, Background)
+
+BEGIN_PROPERTY(Paint_Background)
+
+	uint value;
+
+	CHECK_DEVICE();
+
+	if (READ_PROPERTY)
+	{
+		PAINT->Background(THIS, FALSE, &value);
+		GB.ReturnInteger(value);
+	}
+	else
+	{
+		value = (uint)VPROP(GB_INTEGER);
+		PAINT->Background(THIS, TRUE, &value);
+		GB.StoreObject(NULL, POINTER(&THIS->brush));
+	}
+
+END_METHOD
 
 IMPLEMENT_PROPERTY_BOOLEAN(Paint_Antialias, Antialias)
 IMPLEMENT_METHOD(Paint_Save, Save)

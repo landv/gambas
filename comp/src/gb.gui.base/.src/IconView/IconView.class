@@ -867,7 +867,11 @@ Public Sub ScrollArea_MouseDown()
     If bCtrl Then
       ToggleCurrentItem(iPos)
     Else
-      SetCurrentItem(iPos)
+      If $aItems[iPos].Selected Then
+        ' do nothing when clicking inside the selection
+      Else
+        SetCurrentItem(iPos)
+      Endif
     Endif
     
   Else

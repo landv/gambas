@@ -31,6 +31,7 @@ Public Sub GambasDirectory_Create()
   End With
 
   Catch
+    Print "(unknown)"
     ' Opening the /proc file may fail because the directory may have been
     ' deleted already (if the process was relatively short-lived and this
     ' event took longer than that to get from the kernel to us).

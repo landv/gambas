@@ -2063,7 +2063,7 @@ static inline int myRound(double d)
 	return d >= 0.0 ? (int)(d + 0.5) : (int)( d - ((int)d-1) + 0.5 ) + ((int)d-1);
 }
 
-static inline int get_gamma (int base, int strength)
+static inline int get_gamma(int base, int strength)
 {
 	return between0And255(myRound(255.0 * pow(base / 255.0, 1.0 / pow(10, strength / 255.0))));
 }

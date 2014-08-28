@@ -48,27 +48,31 @@ Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
   
 End
 
-Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 8)
+Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 4)
   
   Dim hShadow As Image
   Dim hFont As Font
   Dim hBrush As PaintBrush
   Dim DX, DY As Integer
+  Dim iBackground As Integer
   
-  If Radius < 1 Then Return
+  If Radius < 0 Then Return
   Radius = Min(256, Radius)
   
   hFont = Paint.Font
+  iBackground = Paint.Background
   hBrush = Paint.Brush
   
   With Paint.TextSize(Text)
-    hShadow = New Image(Ceil(.W) + 2 + Radius * 2, Ceil(.H) + 2 + Radius * 2, Color.Transparent) '&HFF000000)
-    
+
+    hShadow = New Image(Ceil(.W) + 2 + Radius * 2, Ceil(.H) + 2 + Radius * 2, Color.Transparent)
+
     DX = W - .W
     DY = H - .H
   
     Paint.Begin(hShadow)
     Paint.Font = hFont
+    Paint.Background = iBackground
     Paint.Brush = hBrush
 
     If Align.IsCenter(Alignment) Then
@@ -83,31 +87,33 @@ Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Fl
       DY = 0
     Endif
   
-    Paint.DrawText(Text, X - DX, Y - DY, W, H, Alignment)
+    Paint.DrawText(Text, Radius - DX, Radius - DY, W, H, Alignment)
     Paint.End
     hShadow.Fuzzy(Radius)
     
   End With
   
-  Paint.DrawImage(hShadow, DX, DY)
-  'Paint.DrawImage(hShadow, DX, DY) 
+  Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius)
   
 End
 
-Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 8)
+Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 4)
   
   Dim hShadow As Image
   Dim hFont As Font
   Dim hBrush As PaintBrush
   Dim DX, DY As Integer
+  Dim iBackground As Integer
   
-  If Radius < 1 Then Return
+  If Radius < 0 Then Return
   Radius = Min(256, Radius)
   
   hFont = Paint.Font
+  iBackground = Paint.Background
   hBrush = Paint.Brush
   
   With Paint.RichTextSize(Text, W)
+
     hShadow = New Image(Ceil(.W) + 2 + Radius * 2, Ceil(.H) + 2 + Radius * 2, Color.Transparent) '&HFF000000)
     
     DX = W - .W
@@ -115,6 +121,7 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
   
     Paint.Begin(hShadow)
     Paint.Font = hFont
+    Paint.Background = iBackground
     Paint.Brush = hBrush
 
     If Align.IsCenter(Alignment) Then
@@ -129,13 +136,12 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
       DY = 0
     Endif
   
-    Paint.DrawRichText(Text, X - DX, Y - DY, W, H, Alignment)
+    Paint.DrawRichText(Text, Radius - DX, Radius - DY, W, H, Alignment)
     Paint.End
     hShadow.Fuzzy(Radius)
     
   End With
   
-  Paint.DrawImage(hShadow, DX, DY)
-  'Paint.DrawImage(hShadow, DX, DY) 
+  Paint.DrawImage(hShadow, X + DX - Radius, X + DY - Radius)
   
 End

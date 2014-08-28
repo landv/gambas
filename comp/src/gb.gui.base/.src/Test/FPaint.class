@@ -5,18 +5,20 @@ Public Sub DrawingArea1_Draw()
 
   Dim sText As String
 
+  Image.Debug = True
+
   sText = "<b>Bonjour</b> tout le monde ! <font color=\"red\">Gambas <i>rules !</i></font>"
 
   Paint.Font = Font["Ubuntu,20"]
 
   Paint.Background = Color.Gray
-  Paint.DrawRichTextShadow(sText, 0, 0, Paint.W, Paint.H, Align.TopLeft, 2)
+  Paint.DrawRichTextShadow(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.TopLeft, 2)
   Paint.Background = Color.Black
-  Paint.DrawRichText(sText, 0, 0, Paint.W, Paint.H, Align.TopLeft)
+  Paint.DrawRichText(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.TopLeft)
 
   Paint.Background = Color.Black
-  Paint.DrawRichTextShadow(sText, 1, 1, Paint.W, Paint.H, Align.Center, 2)
+  Paint.DrawRichTextShadow(sText, 17, 17, Paint.W - 32, Paint.H - 32, Align.Center, 2)
   Paint.Background = Color.White
-  Paint.DrawRichText(sText, 0, 0, Paint.W, Paint.H, Align.Center)
+  Paint.DrawRichText(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.Center)
 
 End
