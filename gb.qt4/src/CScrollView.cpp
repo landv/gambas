@@ -69,6 +69,12 @@ void MyScrollView::showEvent(QShowEvent *e)
 	QScrollArea::showEvent(e);
 }
 
+void MyScrollView::doUpdateScrollbars()
+{
+	QEvent e(QEvent::LayoutRequest);
+	qApp->sendEvent(this, &e);
+}
+
 /***************************************************************************
 
 	class MyContents
@@ -90,8 +96,10 @@ MyContents::MyContents(MyScrollView *scrollview)
 	THIS->widget.flag.shown = shown;
 	timer = false;
 	_mustfind = false;
+	_dirty = false;
 }
 
+#if 0
 void MyContents::autoResize(void)
 {
 	CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(sw);
@@ -103,99 +111,84 @@ void MyContents::autoResize(void)
 	int i;
 	int x, y;
 
-	if (!sw->isVisible())
+	if (!sw->isVisible() || !_dirty)
 		return;
-	
+
 	#ifdef DEBUG
 	qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
 	#endif
-	
+
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
 	ww = hh = -1;
 	oldw = width(); oldh = height();
-	
+
 	#ifdef DEBUG
 	qDebug("old = %d %d", oldw, oldh);
 	#endif
 
 	//bh = sw->horizontalScrollBar()->blockSignals(true);
 	//bv = sw->verticalScrollBar()->blockSignals(true);
-	
+
 	x = sw->horizontalScrollBar()->value();
 	y = sw->verticalScrollBar()->value();
-	
+
 	sw->_noscroll = true;
+	this->removeEventFilter(sw);
 	sw->_scrollx = x;
 	sw->_scrolly = y;
-	
+
 	if (THIS->arrangement.mode)
 	{
 		ww = sw->width() - sw->frameWidth() * 2;
 		hh = sw->height() - sw->frameWidth() * 2;
-	
+
 		//qDebug("autoResize: (%d %d) (%d %d)", sw->viewport()->width(), sw->viewport()->height(), ww, hh);
 		#ifdef DEBUG
 		qDebug("resize first %d %d", ww, hh);
 		#endif
-		resize(ww, hh);
+		// resize(ww, hh);
 		//sw->updateScrollBars();
 	}
-	else //if (_mustfind)  // _mustfind is not set to true if we unhide a scrollview child control
+	else
 	{
 		findRightBottom();
-		
-		/*w = h = 0;
-		
-		if (right)
-			w = right->x() + right->width();
-		if (bottom)
-			h = bottom->y() + bottom->height();	
-		
-		sw->setHorizontalScrollBarPolicy(sw->horizontalScrollBarPolicy());
-		ww = sw->viewport()->width();
-		hh = sw->viewport()->height(); //visibleHeight();	
-
-		if (w <= ww && h <= hh)
-		{
-			if (!sw->horizontalScrollBar()->isVisible() && !sw->verticalScrollBar()->isVisible())
-				goto __END;
-		}*/
 	}
 
 	//qDebug("autoResize: %s", THIS->widget.name);
-	
+
 	for(i = 0; i < 3; i++)
 	{
 		if (THIS->arrangement.mode)
 		{
 			//findRightBottom();
-			CCONTAINER_get_max_size(THIS, &w, &h);
+			CCONTAINER_get_max_size(THIS, 0, 0, ww, hh, &w, &h);
 			//resize(w, h);
 			//sw->updateScrollBars();
 		}
 		else
 		{
 			w = h = 0;
-			
+
 			if (right)
 				w = right->x() + right->width();
 			if (bottom)
-				h = bottom->y() + bottom->height();	
+				h = bottom->y() + bottom->height();
 		}
-		
+
 		#ifdef DEBUG
-		qDebug("want size %d %d", w, h);
+		qDebug("[%d] want size %d %d", i, w, h);
 		#endif
-		
+
 		if (ww < 0)
 		{
 			//qDebug("#1: %d", i);
-			sw->setHorizontalScrollBarPolicy(sw->horizontalScrollBarPolicy());
+			sw->doUpdateScrollbars();
+			//sw->setHorizontalScrollBarPolicy(sw->horizontalScrollBarPolicy());
 			ww = sw->viewport()->width();
-			hh = sw->viewport()->height(); //visibleHeight();	
+			hh = sw->viewport()->height(); //visibleHeight();
 		}
-		
+
 		if (w < ww || THIS->arrangement.mode == ARRANGE_VERTICAL || THIS->arrangement.mode == ARRANGE_ROW)
 		{
 			w = ww;
@@ -203,7 +196,7 @@ void MyContents::autoResize(void)
 		}
 		else
 			cw = false;
-			
+
 		if (h < hh || THIS->arrangement.mode == ARRANGE_HORIZONTAL || THIS->arrangement.mode == ARRANGE_COLUMN)
 		{
 			h = hh;
@@ -211,40 +204,40 @@ void MyContents::autoResize(void)
 		}
 		else
 			ch = false;
-		
+
 		if (w != width() || h != height())
 		{
 			#ifdef DEBUG
 			qDebug("resize %d %d", w, h);
 			#endif
-		
+
 			//if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
 			//	qDebug("resize %d %d", w, h);
-			
+
 			resize(w, h);
-			
+
 			//CCONTAINER_arrange(THIS);
-			
+
 			//qDebug("#2: %d", i);
-			sw->setHorizontalScrollBarPolicy(sw->horizontalScrollBarPolicy());
-			//sw->updateScrollBars();
-					
+			sw->doUpdateScrollbars();
+			//sw->setHorizontalScrollBarPolicy(sw->horizontalScrollBarPolicy());
+
 			if (cw)
 				w = sw->viewport()->width();
 			if (ch)
 				h = sw->viewport()->height();
-				
+
 			if (w != width() || h != height())
 			{
 				#ifdef DEBUG
 				qDebug("resize again %d %d", w, h);
 				#endif
-				
+
 				//if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
 				//	qDebug("resize again %d %d", w, h);
-			
+
 				resize(w, h);
-				
+
 				//THIS->arrangement.locked = locked;
 				//CCONTAINER_arrange(THIS);
 				//CCONTAINER_arrange(THIS);
@@ -263,36 +256,130 @@ void MyContents::autoResize(void)
 		#endif
 		CCONTAINER_arrange(THIS);
 	}
-	
-	/*if (x != old_x)
-	{
-		sw->horizontalScrollBar()->blockSignals(bh);
-		sw->horizontalScrollBar()->setValue(x);
-	}
-	else
-	{
-		sw->horizontalScrollBar()->setValue(x);
-		sw->horizontalScrollBar()->blockSignals(bh);
-	}
-	
-	if (y != old_y)
-	{
-		sw->verticalScrollBar()->blockSignals(bv);
-		sw->verticalScrollBar()->setValue(y);
-	}
-	else
-	{
-		sw->verticalScrollBar()->setValue(y);
-		sw->verticalScrollBar()->blockSignals(bv);
-	}*/
 
 	sw->_noscroll = false;
 	if (x != sw->horizontalScrollBar()->value())
 		sw->horizontalScrollBar()->setValue(x);
 	if (y != sw->verticalScrollBar()->value())
 		sw->verticalScrollBar()->setValue(y);
-	
+	this->installEventFilter(sw);
+
+	sw->doUpdateScrollbars();
+
 	timer = false;
+	_dirty = false;
+
+	#ifdef DEBUG
+	qDebug("autoResize: FIN: (%s %p) viewport: %d %d container: %d %d\n", THIS->widget.name, THIS, sw->viewport()->width(), sw->viewport()->height(), width(), height());
+	#endif
+}
+#endif
+
+void MyContents::autoResize(void)
+{
+	CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(sw);
+	int w, h;
+	int ww, hh;
+	int oldw, oldh;
+	bool locked;
+	int sbsize;
+
+	if (!sw->isVisible() || !_dirty)
+		return;
+
+	#ifdef DEBUG
+	qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
+	#endif
+
+	sbsize = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + QMAX(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing));
+
+	locked = THIS->arrangement.locked;
+	THIS->arrangement.locked = true;
+	ww = hh = -1;
+	oldw = width(); oldh = height();
+
+	#ifdef DEBUG
+	qDebug("current size = %d x %d", oldw, oldh);
+	#endif
+
+	sw->_noscroll = true;
+	this->removeEventFilter(sw);
+
+	ww = sw->width() - sw->frameWidth() * 2;
+	hh = sw->height() - sw->frameWidth() * 2;
+
+	switch(THIS->arrangement.mode)
+	{
+		case ARRANGE_NONE:
+
+			findRightBottom();
+
+			w = h = 0;
+
+			if (right)
+				w = right->x() + right->width();
+			if (bottom)
+				h = bottom->y() + bottom->height();
+
+			ww = MAX(w, ww);
+			hh = MAX(h, hh);
+
+			break;
+
+		case ARRANGE_VERTICAL:
+		case ARRANGE_ROW:
+
+			CCONTAINER_get_max_size(THIS, 0, 0, ww, 65536, &w, &h);
+			if (h > hh)
+			{
+				ww -= sbsize;
+				CCONTAINER_get_max_size(THIS, 0, 0, ww, 65536, &w, &hh);
+			}
+
+			break;
+
+		case ARRANGE_HORIZONTAL:
+		case ARRANGE_COLUMN:
+
+			CCONTAINER_get_max_size(THIS, 0, 0, 65536, hh, &w, &h);
+			if (w > ww)
+			{
+				hh -= sbsize;
+				CCONTAINER_get_max_size(THIS, 0, 0, 65536, hh, &ww, &h);
+			}
+
+			break;
+
+		case ARRANGE_FILL:
+
+			break;
+	}
+
+	#ifdef DEBUG
+	qDebug("new size = %d x %d", ww, hh);
+	#endif
+
+	resize(ww, hh);
+
+	THIS->arrangement.locked = locked;
+	if (width() != oldw || height() != oldh)
+	{
+		#ifdef DEBUG
+		qDebug("size has changed => arrange again with locked = %d", THIS->arrangement.locked);
+		#endif
+		CCONTAINER_arrange(THIS);
+	}
+
+	sw->_noscroll = false;
+	/*if (x != sw->horizontalScrollBar()->value())
+		sw->horizontalScrollBar()->setValue(x);
+	if (y != sw->verticalScrollBar()->value())
+		sw->verticalScrollBar()->setValue(y);*/
+	this->installEventFilter(sw);
+	sw->doUpdateScrollbars();
+
+	timer = false;
+	_dirty = false;
 
 	#ifdef DEBUG
 	qDebug("autoResize: FIN: (%s %p) viewport: %d %d container: %d %d\n", THIS->widget.name, THIS, sw->viewport()->width(), sw->viewport()->height(), width(), height());
@@ -349,7 +436,7 @@ void MyContents::findRightBottom(void)
 	_mustfind = false;
 
 	#ifdef DEBUG
-	CSCROLLVIEW *_object = (CSCROLLVIEW *)CWidget::get(sw);
+	_object = CWidget::get(sw);
 	if (!qstrcmp(THIS->widget.name, "svwWorkspace"))
 	{
 		CWIDGET *wr = CWidget::get(right);
@@ -445,6 +532,7 @@ void MyContents::childEvent(QChildEvent *e)
 
 void MyContents::checkAutoResizeLater()
 {
+	_dirty = true;
 	if (timer)
 		return;
 	
@@ -455,9 +543,11 @@ void MyContents::checkAutoResizeLater()
 void CSCROLLVIEW_arrange(void *_object)
 {
 	if (THIS->container && THIS->container->isVisible())
-		//THIS->container->checkAutoResizeLater();
-		THIS->container->autoResize();
+	{
+		THIS->container->checkAutoResizeLater();
+		//THIS->container->autoResize();
 		//THIS->container->checkWidget(child->widget);
+	}
 }
 
 /***************************************************************************
@@ -689,7 +779,8 @@ void CScrollView::scrolled(void)
 	
 	if (WIDGET->_noscroll)
 	{
-		//qDebug("no scroll!");
+		qDebug("no scroll!");
+		BREAKPOINT();
 		if (WIDGET->_scrollx != WIDGET->horizontalScrollBar()->value())
 			WIDGET->horizontalScrollBar()->setValue(WIDGET->_scrollx);
 		if (WIDGET->_scrolly != WIDGET->verticalScrollBar()->value())

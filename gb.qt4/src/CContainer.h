@@ -106,7 +106,7 @@ DECLARE_PROPERTY(Container_Border);
 DECLARE_PROPERTY(Container_Invert);
 
 void CCONTAINER_arrange(void *_object);
-void CCONTAINER_get_max_size(void *_object, int *w, int *h);
+void CCONTAINER_get_max_size(void *_object, int xc, int yc, int wc, int hc, int *w, int *h);
 void CCONTAINER_insert_child(void *_object);
 void CCONTAINER_remove_child(void *_object);
 void CCONTAINER_decide(CWIDGET *control, bool *width, bool *height);

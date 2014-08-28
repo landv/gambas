@@ -360,6 +360,7 @@ void CCONTAINER_arrange(void *_object)
 }
 
 static int max_w, max_h;
+static int _gms_x, _gms_y, _gms_w, _gms_h;
 
 static void gms_move_widget(QWidget *wid, int x, int y)
 {
@@ -393,19 +394,30 @@ static void gms_move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 #define FUNCTION_NAME get_max_size
 #undef RESIZE_CONTAINER
 #define RESIZE_CONTAINER(_object, _cont, _w, _h) (0)
+#undef GET_WIDGET_CONTENTS
+#define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
+	_x = _gms_x; \
+	_y = _gms_y; \
+	_w = _gms_w; \
+	_h = _gms_h;
+
 //#undef IS_WIDGET_VISIBLE
 //#define IS_WIDGET_VISIBLE(_cont) (1)
 #define GET_MAX_SIZE
 
 #include "gb.form.arrangement.h"
 
-void CCONTAINER_get_max_size(void *_object, int *w, int *h)
+void CCONTAINER_get_max_size(void *_object, int xc, int yc, int wc, int hc, int *w, int *h)
 {
 	bool locked = THIS_ARRANGEMENT->locked;
 	THIS_ARRANGEMENT->locked = false;
 	
 	max_w = 0;
 	max_h = 0;
+	_gms_x = xc;
+	_gms_y = yc;
+	_gms_w = wc;
+	_gms_h = hc;
 	get_max_size(THIS);
 	*w = max_w + THIS_ARRANGEMENT->padding + (THIS_ARRANGEMENT->margin ? MAIN_scale : 0);
 	*h = max_h + THIS_ARRANGEMENT->padding + (THIS_ARRANGEMENT->margin ? MAIN_scale : 0);
