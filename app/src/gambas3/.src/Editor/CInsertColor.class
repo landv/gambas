@@ -106,15 +106,21 @@ End
 
 Public Sub MenuColor_Click()
   
-  GetEditor().Insert(Last.Tag)
+  With GetEditor()
+    .Insert(Last.Tag)
+    .SetFocus
+  End With
   
 End
 
 Public Sub Button_Click()
   
-  If FColorChooser.Run("", False, ("Insert color")) Then Return
+  If FColorChooser.Run("", False, ("Insert color"), $aPattern) Then Return
   
-  GetEditor().Insert($sPattern & Hex$(FColorChooser.Value, 6))
+  With GetEditor()
+    .Insert(FColorChooser.Prefix & Hex$(FColorChooser.Value, 6))
+    .SetFocus
+  End With
   
 End
 

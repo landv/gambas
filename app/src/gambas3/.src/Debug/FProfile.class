@@ -409,6 +409,9 @@ Public Sub Init(sPath As String)
   Object.Lock(gvwProfile)
   gvwProfile.Columns.Sort = 2
   gvwProfile.Columns.Ascending = True
+  For I = 0 To gvwProfile.Columns.Max
+    gvwProfile.Columns[I].Width = -1
+  Next
   Object.Unlock(gvwProfile)
   gvwProfile_Sort
   
@@ -437,21 +440,21 @@ Public Sub gvwProfile_Data(Row As Integer, Column As Integer)
       Case 0
         .RichText = hProf.GetTitle()
       Case 1
-        .Text = hProf.Count
+        .Text = Format(hProf.Count, ",0")
       Case 2
         If $bPercent Then
           .Text = Format(hProf.Time / $iTime * 100, "0.00")
         Else
-          .Text = hProf.Time
+          .Text = Format(hProf.Time, ",0")
         Endif
       Case 3
         If $bPercent Then
           .Text = Format(hProf.Self / $iTime * 100, "0.00")
         Else
-          .Text = hProf.Self
+          .Text = Format(hProf.Self, ",0")
         Endif
       Case 4
-        .Text = Format(hProf.Time / hProf.Count, "0.##")
+        .Text = Format(hProf.Time / hProf.Count, ",0.##")
     End Select
     
   End With
@@ -599,7 +602,7 @@ Public Sub ReadOneConfig()
   edtSource.Flags[Editor.NoFolding] = True
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetSmallFont(gvwSource)
-  gvwSource.Width = gvwSource.Font.TextWidth("999999") * 4
+  UpdateSource
     
 End
 
@@ -667,7 +670,7 @@ Public Sub Form_Open()
   End With
   
   With gvwSource
-    .Columns.Count = 2
+    .Columns.Count = 3
     .Columns.Resizable = False
     .Columns[0].Text = ("Duration")
     .Columns[0].Alignment = Align.Right
@@ -675,6 +678,10 @@ Public Sub Form_Open()
     .Columns[1].Text = ("Calls")
     .Columns[1].Alignment = Align.Right
     .Columns[1].Expand = True
+    .Columns[2].Text = ("Average")
+    .Columns[2].Alignment = Align.Right
+    .Columns[2].Width = 0
+    .Columns[2].Expand = True
   End With
   
   gvwProfile.Row = 0
@@ -775,17 +782,17 @@ Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
       Case 0
         .RichText = hProf.GetTitle()
       Case 1
-        .Text = hProf.Count
+        .Text = Format(hProf.Count, ",0")
       Case 2
         iTime = hProf.Time '- hProf.RecTime
         If $bPercent Then
           .Text = Format(iTime / $iTime * 100, "0.00")
         Else
-          .Text = iTime
+          .Text = Format(iTime, ",0")
         Endif
       Case 3
         iTime = hProf.Time '- hProf.RecTime
-        .Text = Format(iTime / hProf.Count, "0.##")
+        .Text = Format(iTime / hProf.Count, ",0.##")
     End Select
     
   End With
@@ -814,9 +821,9 @@ Public Sub btnAverage_Click()
   $bAverage = Not $bAverage
   
   gvwProfile.Columns[4].Width = If($bAverage, -1, 0)
-  'gvwProfile.Refresh
   gvwCalled.Columns[3].Width = If($bAverage, -1, 0)
-  'gvwCalled.Refresh
+  gvwSource.Columns[2].Width = If($bAverage, -1, 0)
+  UpdateSource
 
 End
 
@@ -934,7 +941,7 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
         If $bPercent Then
           .Text = Format(iTime / $hCurrent.Time * 100, "0.00")
         Else
-          .Text = iTime
+          .Text = Format(iTime, ",0")
         Endif
         
       Case 1
@@ -946,7 +953,18 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
         Endif
         
         If iCount < 1 Then Return
-        .Text = CStr(iCount) & " "
+        .Text = Format(iCount, ",0")
+        
+      Case 2
+        
+        If Row = 0 Then
+          iCount = $hCurrent.Count
+        Else
+          Try iCount = $cCount[$sCurrentClass][Row + $iFirstLine]
+        Endif
+        If iCount < 1 Then Return
+        
+        .Text = Format(iTime / iCount, ",0.##")
         
     End Select
     
@@ -1012,5 +1030,11 @@ Public Sub btnSave_Click()
   If Error Then
     Message.Error(("Unable to save profile.") & "\n\n" & Error.Text)
   Endif
+
+End
+
+Private Sub UpdateSource()
+
+  gvwSource.Width = gvwSource.Font.TextWidth("999999") * (4 + If($bAverage, 2, 0))
 
 End

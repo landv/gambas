@@ -2,43 +2,26 @@
 
 Static Public Color As String
 Static Public Value As Integer
+Static Public Prefix As String
 
 Static Private $sColor As String
 Static Private $bAlpha As Boolean
 Static Private $aSystem As String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "LightForeground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground", "TooltipBackground", "TooltipForeground", "LinkForeground", "VisitedForeground"]
 Static Private $sTitle As String
+Static Private $aPrefix As String[]
 
 Private Const DEFAULT_COLOR As String = "-"
 
 Private $cColor As New Collection
 
-Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean, Optional sTitle As String) As Boolean
+Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean, Optional sTitle As String, Optional aPrefix As String[]) As Boolean
 
   $sColor = sColor
   $bAlpha = bAlpha
   $sTitle = sTitle
-  'IF NOT $sColor THEN $sColor = Color
-  'IF NOT $sColor THEN $sColor = "&H" & Hex$(Value, 6)
-  If FColorChooser.ShowModal() Then
-    Color = $sColor
-    If $sColor Then
-      Try Value = Val($sColor)
-      If Error Then 
-        Value = Object.GetProperty(Classes["Color"], $sColor)
-      Else 
-        If $bAlpha Then
-          Color = "&H" & Hex$(Value, 8) & "&"
-        Else
-          Color = "&H" & Hex$(Value, 6) & "&"
-        Endif
-      Endif
-    Else
-      Value = -1
-    Endif
-    'DEBUG Value;; "'"; Color; "'"
-  Else
-    Return True
-  Endif
+  $aPrefix = aPrefix
+
+  Return Not FColorChooser.ShowModal() 
 
 End
 
@@ -80,13 +63,47 @@ Private Sub AddColor(sText As String, sTag As String, sColor As String)
 
 End
 
+' Private Sub GetCurrentColor() As String
+'   
+'   If tabColor.Index = 1 Then
+'     Return dlgColor.SelectedColor
+'   Else
+'     Try Return lstSystem.Current.Tag
+'   Endif
+'   
+' End
+' 
+' Private Sub GetCurrentColorValue() As Integer
+' 
+'   Dim sColor As String
+' 
+'   sColor = GetCurrentColor()
+'   If sColor Then
+'     Try Value = Val(sColor)
+'     If Error Then 
+'       Value = Object.GetProperty(Classes["Color"], sColor)
+'     Else 
+'       If $bAlpha Then
+'         Color = "&H" & Hex$(Value, 8) & "&"
+'       Else
+'         Color = "&H" & Hex$(Value, 6) & "&"
+'       Endif
+'     Endif
+'   Else
+'     Value = -1
+'   Endif
+' 
+' End
+' 
+
 Public Sub btnOK_Click()
 
-  If tabColor.Index = 1 Then
-    $sColor = dlgColor.SelectedColor
+  If $aPrefix And If $aPrefix.Count Then
+    Prefix = $aPrefix[cmbPrefix.Index]
   Else
-    Try $sColor = lstSystem.Current.Tag
+    Prefix = ""
   Endif
+  
   Me.Close(True)
 
 End
@@ -109,7 +126,15 @@ Public Sub Form_Open()
     AddColor(sSystem, sSystem, sSystem)
   Next
 
+  cmbPrefix.List = $aPrefix
+  If $aPrefix Then
+    cmbPrefix.Show
+  Else
+    cmbPrefix.Hide
+  Endif
+
   If Not IsNull(Val($sColor)) Then
+    lstSystem.Select($cColor[DEFAULT_COLOR])
     dlgColor.SelectedColor = Val($sColor)
     tabColor.Index = 1
   Else
@@ -128,6 +153,8 @@ Public Sub Form_Open()
   Else
     $sTitle = ("Select a color")
   Endif
+  
+  UpdateColor
 
 End
 
@@ -148,5 +175,63 @@ End
 Public Sub Form_Close()
 
   Settings.Write(Me)  
+
+End
+
+Private Sub UpdateColor()
+
+  Dim sColor As String
+  Dim iSel As Integer
+  Dim I As Integer
+
+  If tabColor.Index = 0 Then
+    sColor = lstSystem.Current.Tag
+  Else
+    sColor = CStr(dlgColor.Value)
+  Endif
+
+  If Not sColor Then
+    Color = ""
+    Value = -1
+    sColor = "FFFFFF"
+  Else If IsLetter(Left(sColor)) Then
+    Color = sColor
+    Value = Object.GetProperty(Classes["Color"], sColor)
+    sColor = Hex$(Value, 6)
+  Else
+    Value = Val(sColor)
+    If $bAlpha Then
+      Color = "&H" & Hex$(Value, 8) & "&"
+      sColor = Hex$(Value, 8)
+    Else
+      Color = "&H" & Hex$(Value, 6) & "&"
+      sColor = Hex$(Value, 6)
+    Endif
+  Endif
+
+  If $aPrefix Then
+    iSel = cmbPrefix.Index
+    For I = 0 To $aPrefix.Max
+      cmbPrefix[I].Text = $aPrefix[I] & sColor
+    Next
+  Endif
+
+End
+
+Public Sub lstSystem_Click()
+
+  UpdateColor
+
+End
+
+Public Sub dlgColor_Change()
+
+  UpdateColor
+
+End
+
+Public Sub tabColor_Click()
+
+  UpdateColor
 
 End

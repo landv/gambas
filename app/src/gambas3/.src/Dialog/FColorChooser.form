@@ -30,20 +30,24 @@
     Index = 0
   }
   { Panel2 Panel
-    MoveScaled(13,59,40,4)
+    MoveScaled(1,59,53,4)
     Arrangement = Arrange.Horizontal
     Spacing = True
+    { cmbPrefix ComboBox
+      MoveScaled(2,0,15,4)
+      ReadOnly = True
+    }
     { Panel1 Panel
-      MoveScaled(0,0,8,4)
+      MoveScaled(19,0,2,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(9,0,15,4)
+      MoveScaled(22,0,15,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(25,0,15,4)
+      MoveScaled(38,0,15,4)
       Text = ("Cancel")
       Cancel = True
     }
