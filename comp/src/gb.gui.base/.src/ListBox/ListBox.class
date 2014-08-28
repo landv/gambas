@@ -97,7 +97,7 @@ Public Sub GridView_Data(Row As Integer, (Column) As Integer)
   
   With $hView.Data
     Try .Text = $aText[Row]
-    If Row = $hView.Row Then
+    If $hView.Rows[Row].Selected Then
       .Background = Color.SelectedBackground
       .Foreground = Color.SelectedForeground
     Endif

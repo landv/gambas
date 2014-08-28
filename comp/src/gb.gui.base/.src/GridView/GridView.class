@@ -819,8 +819,6 @@ Public Sub ScrollArea_MouseMove()
 
   If $hRows.Count = 0 And If $hColumns.Count = 0 Then Return
   
-  'Debug Mouse.X
-  
   MX = Mouse.X - F
   MY = Mouse.Y - F
   
@@ -948,12 +946,19 @@ Public Sub ScrollArea_MouseMove()
           Break
         Endif
       Next
-      If iRow < 0 Then iRow = $hRows._FindRowFromPos(Y - $hColumns.Height + $hView.ScrollY)
+    Endif
+    
+    If Y < 0 Or If Y >= $hColumns.Height Then
+      If iRow < 0 Then 
+        iRow = $hRows._FindRowFromPos(Y - $hColumns.Height + $hView.ScrollY)
+      Endif
     Endif
     
     If Not bInRowHeader Then
+      
       X += $hView.ScrollX
       iCol = $hColumns._FindColumnFromPos(X)
+      
     Endif
     
   Endif
@@ -1087,6 +1092,12 @@ Public Sub ScrollArea_MouseDown()
   
   If $bInCell Then
     
+    If Not $hTimerScroll Then
+      $hTimerScroll = New Timer As "TimerScroll"
+      $hTimerScroll.Delay = 50
+      $hTimerScroll.Start
+    Endif
+  
   Else If Mouse.X < $hRows.Width And If Mouse.Y > $hColumns.H Then
     I = $hRows._FindRowFromPos(Mouse.Y - $hColumns.Height + $hView.ScrollY)
     If I >= 0 Then 
@@ -1313,7 +1324,6 @@ End
 
 Public Sub _EnsureVisible(iRow As Integer, iCol As Integer)
   
-  'Debug iRow;; iCol
   If Not $hTimerEnsureVisible Then $hTimerEnsureVisible = New Timer As "TimerEnsureVisible"
   If $iRowEV < 0 Then $hTimerEnsureVisible.Trigger
   
@@ -2107,6 +2117,7 @@ End
 Private Sub Padding_Write(Value As Integer)
 
   $iPadding = Value
+  ScrollArea_Arrange
   $hView.Refresh
 
 End

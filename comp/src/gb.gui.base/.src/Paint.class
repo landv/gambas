@@ -142,6 +142,6 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
     
   End With
   
-  Paint.DrawImage(hShadow, X + DX - Radius, X + DY - Radius)
+  Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius)
   
 End
