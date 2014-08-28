@@ -434,13 +434,13 @@ Public Sub ScrollArea_Draw()
             If WA < .Width Then Style.PaintArrow(X + .Width - WA - $iPadding, F, WA, H - F, If(bAscent, Align.Bottom, Align.Top))
             'Draw.ClipRect = hClip.Intersection(Rect(X, F, Max(0, .Width - WA - 2), H - F))
             'If Draw.ClipRect Then Draw.Text(.Text, X + 4, F, .Width - WA - 8, H - F, .Alignment)
-            Paint.Rectangle(X + 1, F, Max(0, .Width - WA - 4), H - F)
+            Paint.Rectangle(X, F, Max(0, .Width - WA - 2), H - F)
             Paint.Clip
-            DrawText(.Text, X + 4, F, .Width - WA + $iPadding, H - F, .Alignment, $iPadding)
+            DrawText(.Text, X + 1, F, .Width - WA - $iPadding - 2, H - F - 2, .Alignment, Max(1, $iPadding))
           Else
             Paint.Rectangle(X + 1, F, .Width - 2, H - F)
             Paint.Clip
-            DrawText(.Text, X + 4, F, .Width - 8, H - F, .Alignment, $iPadding)
+            DrawText(.Text, X + 1, F, .Width - 2, H - F - 2, .Alignment, Max(1, $iPadding))
           Endif
 
           Paint.Restore

@@ -67,7 +67,7 @@ Private Function Height_Read() As Integer
 
   With GetView()
     If $aColumns.Count Then
-      If .Header = .Horizontal Or If .Header = .Both Then Return $iHeight + 8
+      If .Header = .Horizontal Or If .Header = .Both Then Return $iHeight + 2
     Endif
   End With
 
