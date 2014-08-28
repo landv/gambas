@@ -31,6 +31,10 @@ extern "C" {
 #include "gb_common_buffer.h"
 }
 
+#ifdef __CYGWIN__
+#define __finite finite
+#endif
+
 llvm::Value* JIT_conv_to_variant(Expression* value, llvm::Value* val, bool on_stack, bool* no_ref_variant){
 	llvm::Value* ret;
 	if (TYPE_is_string(value->type)){

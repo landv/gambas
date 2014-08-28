@@ -565,7 +565,7 @@ AC_DEFUN([GB_SHARED_LIBRARY_EXT],
   case "${host}" in
     *-*-cygwin* )
       SHLIBEXT="la"
-      AC_DEFINE(SHARED_LIBRARY_EXT, "la", [Shared library extension is '.la'])
+      AC_DEFINE(SHARED_LIBRARY_EXT, "dll", [Shared library extension is '.dll'])
       ;;
     *-*-darwin* )
       SHLIBEXT="dylib"

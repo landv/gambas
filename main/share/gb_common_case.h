@@ -24,6 +24,10 @@
 #ifndef __GB_COMMON_CASE_H
 #define __GB_COMMON_CASE_H
 
+#ifdef __CYGWIN__
+#include <strings.h>
+#endif
+
 #include <ctype.h>
 #include <string.h>
 

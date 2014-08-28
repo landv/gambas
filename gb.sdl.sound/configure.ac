@@ -15,7 +15,7 @@ GB_COMPONENT(
   sdlsound, SDLSOUND, gb.sdl.sound, [src],
   [GB_FIND(SDL_mixer.h SDL_cdrom.h, `sdl-config --prefix`, include/SDL)],
   [GB_FIND(libSDL_mixer.$SHLIBEXT, /usr /usr/local `sdl-config --prefix`, lib)],
-  [-lSDL_mixer],
+  [-lSDL_mixer -lSDL],
   [$SDL_CFLAGS])
 
 AC_OUTPUT( \

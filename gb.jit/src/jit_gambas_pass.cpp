@@ -38,6 +38,14 @@
 
 #include "main.h"
 
+#ifdef __CYGWIN__
+#define __finite finite
+#define __isnan __isnand
+#define __isinf __isinfd
+#endif
+#define FUNCTION_NAME(s) _FN(s)
+#define _FN(s) #s
+
 using namespace llvm;
 
 namespace {
@@ -94,7 +102,7 @@ bool GambasPass::runOnFunction(Function &F){
 				
 				CI->eraseFromParent();
 				changed = true;
-			} else if (name == "__finite"){
+			} else if (name == FUNCTION_NAME(__finite)){
 				ConstantFP* op = dyn_cast<ConstantFP>(CI->getArgOperand(0));
 				if (!op)
 					continue;
@@ -104,7 +112,7 @@ bool GambasPass::runOnFunction(Function &F){
 				CI->replaceAllUsesWith(res);
 				CI->eraseFromParent();
 				changed = true;
-			} else if (name == "__isnan"){
+			} else if (name == FUNCTION_NAME(__isnan)){
 				ConstantFP* op = dyn_cast<ConstantFP>(CI->getArgOperand(0));
 				if (!op)
 					continue;
@@ -114,7 +122,7 @@ bool GambasPass::runOnFunction(Function &F){
 				CI->replaceAllUsesWith(res);
 				CI->eraseFromParent();
 				changed = true;
-			} else if (name == "__isinf"){
+			} else if (name == FUNCTION_NAME(__isinf)){
 				ConstantFP* op = dyn_cast<ConstantFP>(CI->getArgOperand(0));
 				if (!op)
 					continue;

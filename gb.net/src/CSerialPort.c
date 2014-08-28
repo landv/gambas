@@ -34,6 +34,8 @@
 #ifdef __CYGWIN__
 /* Cygwin defines FIONREAD in <sys/socket.h>. */
 #include <sys/socket.h>
+/* TIOCOUTQ is not implemented on Cygwin */
+#define TIOCOUTQ ((unsigned int) -1)
 #endif /* __CYGWIN__ */
 
 #include "main.h"

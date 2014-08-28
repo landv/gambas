@@ -46,6 +46,9 @@
 #include "gbx_c_task.h"
 
 //#define DEBUG_ME 1
+#ifdef __CYGWIN__
+#define FIONREAD TIOCINQ
+#endif
 
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Error);

@@ -24,6 +24,10 @@
 #ifndef __GAMBAS_H
 #define __GAMBAS_H
 
+#ifdef __CYGWIN__
+#include <strings.h>
+#endif
+
 #include "config.h"
 #include <stdint.h>
 #include <stddef.h>

@@ -65,6 +65,12 @@ extern "C" {
 
 #define LONG_TYPE (TARGET_BITS == 64 ? llvmType(getInt64Ty) : llvmType(getInt32Ty))
 
+#ifdef __CYGWIN__
+#define __finite finite
+#define __isnan __isnand
+#define __isinf __isinfd
+#endif
+
 const size_t TYPE_sizeof_memory_tab[16] = { 0, 1, 1, 2, 4, 8, 4, 8, 8, sizeof(void *), sizeof(void *), sizeof(void *), sizeof(VARIANT), 0, 0, 0 };
 
 ///DEBUG

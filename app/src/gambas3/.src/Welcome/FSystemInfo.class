@@ -76,10 +76,14 @@ Static Private Sub GetDistribution() As String
     
   Next
   
-  sDistro = File.Load("/etc/issue")
-  If sDistro Then
-    iPos = InStr(sDistro, "\\")
-    If iPos Then sDistro = Left(sDistro, iPos - 1)
+  If Exist("/etc/issue") Then
+     sDistro = File.Load("/etc/issue")
+     If sDistro Then
+        iPos = InStr(sDistro, "\\")
+        If iPos Then sDistro = Left(sDistro, iPos - 1)
+     Endif
+  Else
+     Exec ["uname", "-s"] To sDistro 
   Endif
   Return Trim(sDistro)
 
@@ -129,9 +133,13 @@ Static Public Sub GetInfo() As String[]
     Try sTemp = Format(CInt(sTemp) / 1024, "0") & "M"
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
-  
-  cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
-    "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
+  If System.Family = "Cygwin" Then
+     cSearch = ["Qt4": "libQtCore.dll.a", "GTK+": "libgtk-x11-2*.dll.a", "SDL": "libSDL*.dll.a", "GStreamer": "libgstreamer-*.dll.a", "Poppler": "libpoppler.dll.a", "Curl": "libcurl.dll.a", "OpenGL": "libGL.dll.a", 
+      "Cairo": "libcairo.dll.a", "DBus": "libdbus-[0-9].dll.a"]
+  Else 
+     cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
+     "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
+  EndIf
   cFile = New Collection
   
   aText.Add("[Libraries]")
