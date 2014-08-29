@@ -321,6 +321,12 @@ void MyContents::autoResize(void)
 			if (bottom)
 				h = bottom->y() + bottom->height();
 
+			if ((w > ww) && sw->horizontalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
+				hh -= sbsize;
+
+			if ((h > hh) && sw->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
+				ww -= sbsize;
+
 			ww = MAX(w, ww);
 			hh = MAX(h, hh);
 
