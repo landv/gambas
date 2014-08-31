@@ -795,6 +795,9 @@ Private Sub UpdateInfo()
         Endif
       Endif
     Endif
+    
+    sInfo &= " [#" & Hex$($hImage[$hCurrentPoint.X, $hCurrentPoint.Y], 8) & "]"
+    
   Endif
   
   FImageProperty.UpdateInfo(sInfo)

@@ -495,6 +495,12 @@ Public Sub mnuPopup_Show()
     
   Endif
   
+  If IsDir(sCurrent) Or If Left($sKey) = "$" Then
+    mnuOpenWithFileManager.Show
+  Else
+    mnuOpenWithFileManager.Hide
+  Endif
+    
   If bProject Then
     mnuAddVersion.Visible = Project.IsAdded($sKey)
   Else
@@ -1451,7 +1457,10 @@ Public Sub Action_Activate(Key As String) As Boolean
       
     Case "uncompress-all"
       CompressAll(tvwProject.Key, True)
-      
+    
+    Case "open-file-manager"
+      Desktop.Open(GetCurrentDir())
+    
     Case "update-all-forms"
       Project.UpdateAllForms
       
@@ -2300,7 +2309,7 @@ End
 
 Public Sub UpdatePosition((bStart) As Boolean, bEnd As Boolean)
   
-  'btnGoBack.Enabled = Not bStart
+  btnGoBack.Enabled = Not bStart
   btnGoForward.Enabled = Not bEnd
   
 End

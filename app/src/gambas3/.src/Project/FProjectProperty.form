@@ -174,7 +174,7 @@
       Spacing = True
       Margin = True
       { panSearchProject Panel
-        MoveScaled(1,0,29,3)
+        MoveScaled(1,1,29,3)
         Background = Color.TextBackground
         Expand = True
         Arrangement = Arrange.Horizontal
@@ -316,14 +316,6 @@
       }
     }
     Index = 3
-    Text = ("Statistics")
-    { gvwStat GridView
-      MoveScaled(10,7,62,25)
-      Expand = True
-      Border = False
-      Padding = 8
-    }
-    Index = 4
     Text = ("Environment")
     { VBox1 VBox
       MoveScaled(1,1,84,29)
@@ -403,7 +395,7 @@
         }
       }
     }
-    Index = 5
+    Index = 4
     Text = ("Options")
     { Panel6 VBox
       MoveScaled(0,0,89,66)
@@ -583,6 +575,14 @@
           List = [("Yes"), ("No")]
         }
       }
+    }
+    Index = 5
+    Text = ("Statistics")
+    { gvwStat GridView
+      MoveScaled(10,7,62,25)
+      Expand = True
+      Border = False
+      Padding = 8
     }
     Index = 0
   }

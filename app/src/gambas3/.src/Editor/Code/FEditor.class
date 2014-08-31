@@ -422,7 +422,7 @@ Public Sub Editors_Cursor()
 
   If Editor.Line = Editor.CurrentLine Then Design.CheckErrorMessage(Me)
 
-  CPosition.SaveCurrent
+  CPosition.SaveCurrent(Me)
 
 End
 
@@ -2474,7 +2474,7 @@ Private Sub FindDefinition() As Boolean
           aSym = Highlight.Analyze(Highlight.Purge(sLig))
           If IsCurrentEndProc() Then Break
           If aSym.Count = 2 And If aSym[1] = ":" And If aSym[0] == sKeyWord Then
-            CPosition.SaveCurrent
+            CPosition.SaveCurrent(Me)
             GotoCenter(iLine)
             Return
           Endif
@@ -2498,7 +2498,7 @@ Private Sub FindDefinition() As Boolean
   'PRINT hSymbol.Class
 
   If hSymbol.LineNumber Then 'And If Not bPopupHelp Then
-    CPosition.SaveCurrent
+    CPosition.SaveCurrent(Me)
     Project.OpenFile(hSymbol.Class, hSymbol.LineNumber)
   Else
     MHelp.ShowHelpBrowserWith(MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class)
@@ -2635,7 +2635,7 @@ Public Sub Editors_MouseUp()
   'HideMessage
   
   CPosition.Enable
-  CPosition.SaveCurrent
+  CPosition.SaveCurrent(Me)
 
   If Mouse.Control Then 
     If Mouse.Left Then

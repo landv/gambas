@@ -931,7 +931,7 @@ Public Sub Editors_Cursor()
     $hCompletion.Hide
   Endif
   
-  CPosition.SaveCurrent
+  CPosition.SaveCurrent(Me)
 
 End
 
@@ -944,7 +944,7 @@ End
 Public Sub Editors_MouseUp()
   
   CPosition.Enable
-  CPosition.SaveCurrent
+  CPosition.SaveCurrent(Me)
   
 End
 

@@ -1,0 +1,69 @@
+' Gambas module file
+
+Private Const NO_ACCENTS As String = "AEIOUYBCDFGHJKLMNPQRSTVWXZaeiouybcdfghjklmnpqrstvwxz"
+
+Public Sub Main()
+
+  Dim hFont As Font = Font["Gambas,9"]
+  Dim WC As Integer = hFont.TextWidth(" ")
+  Dim hImage As New Image(WC * 2, hFont.Height, Color.White)
+  Dim iCode As Integer
+  Dim iComp As Integer
+  Dim X As Integer
+  Dim iScore As Integer
+  Dim aScore As New Integer[52]
+  Dim aAccent As New String[52]
+  Dim iBest As Integer
+  Dim Y As Integer
+  Dim I As Integer
+  
+  'For iCode = 65 To 687
+  For iCode = 7680 To 7935
+    
+    Print Format(iCode, "###");; String.Chr(iCode);;
+    iBest = 1024
+    
+    For iComp = 1 To 52
+      
+      hImage.Fill(Color.White)
+      Paint.Begin(hImage)
+      Paint.Font = hFont
+      Paint.DrawText(Mid$(NO_ACCENTS, iComp, 1) & String.Chr(iCode), 0, 0, WC * 2, hImage.H, Align.TopLeft)
+      Paint.End
+      
+      iScore = 0
+      For Y = 0 To hImage.H - 1
+        For X = 0 To WC - 1
+          If hImage[X, Y] <> hImage[X + WC, Y] Then 
+            Inc iScore
+            If hImage[X, Y] = Color.Black Then Inc iScore
+          Endif
+        Next
+      Next
+      
+      aScore[iComp - 1] = iScore
+      If iScore < iBest Then iBest = iScore
+      
+    Next
+    
+    For iComp = 1 To 52
+      If aScore[iComp - 1] = iBest Then 
+        Print Mid$(NO_ACCENTS, iComp, 1);
+        aAccent[iComp - 1] &= String.Chr(iCode)
+        Break
+      Endif
+    Next
+    
+    Print
+    
+  Next
+  
+  For I = 1 To 52
+    
+    Print aAccent[I - 1]; "["; Mid$(NO_ACCENTS, I, 1); "]";
+    
+  Next
+  Print
+
+
+End

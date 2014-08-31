@@ -515,6 +515,11 @@
     { mnuEditClass Menu
       Text = Shortcut(("Open code"), "c")
     }
+    { mnuOpenWithFileManager Menu
+      Action = "open-file-manager"
+      Text = ("Open in file manager") & "..."
+      Picture = Picture["icon:/small/file-manager"]
+    }
     { mnuEditWith Menu
       Text = ("Open with")
       { Menu23 Menu
@@ -943,6 +948,7 @@
     }
     { btnGoBack MenuButton
       MoveScaled(136,0,6,4)
+      Enabled = False
       ToolTip = ("Go back")
       Action = "go-back"
       Picture = Picture["icon:/small/left"]
@@ -1429,6 +1435,11 @@
     Text = "Open"
     Shortcut = "Ctrl+O"
     Picture = "icon:/small/open"
+  }
+  { Action open-file-manager
+    Text = "Open in file manager"
+    Shortcut = ""
+    Picture = "icon:/small/file-manager"
   }
   { Action open-profile
     Text = "Open profile"

@@ -26,16 +26,14 @@ Static Private Sub UpdatePosition()
 End
 
 
-Static Public Sub SaveCurrent()
+Static Public Sub SaveCurrent(hForm As Object)
 
-  Dim hForm As Object
   Dim hEditor As Editor
   Dim hPos As CPosition
 
   If $iDisable Then Return
-
-  hForm = Project.ActiveForm
   If Not hForm Then Return
+  If hForm <> Project.ActiveForm Then Return
 
   hPos = New CPosition
   With hForm
