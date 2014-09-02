@@ -389,7 +389,7 @@ GB_DESC WebElementDesc[] =
 	GB_METHOD("Enclose", NULL, WebElement_Enclose, "(Markup)s"),
 	GB_METHOD("Replace", NULL, WebElement_Replace, "(Markup)s"),
 	
-	GB_METHOD("Paint", NULL, WebElement_Paint, "[(Clip)Rect]"),
+	GB_METHOD("Paint", NULL, WebElement_Paint, "[(Clip)Rect;]"),
 	
 	GB_PROPERTY_SELF("Style", ".WebElement.Style"),
 	
