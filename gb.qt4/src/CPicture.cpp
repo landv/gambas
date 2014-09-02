@@ -357,6 +357,7 @@ BEGIN_PROPERTY(CPICTURE_image)
 	QImage *image = new QImage();
 	
 	*image = THIS->pixmap->toImage();
+	image->detach();
 
 	GB.ReturnObject(CIMAGE_create(image));
 

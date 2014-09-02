@@ -783,16 +783,15 @@ void CScrollView::scrolled(void)
 	
 	//qDebug("scrolled: %d %d", WIDGET->horizontalScrollBar()->value(), WIDGET->verticalScrollBar()->value());
 	
-	if (WIDGET->_noscroll)
+	/*if (WIDGET->_noscroll)
 	{
-		qDebug("no scroll!");
-		BREAKPOINT();
+		//qDebug("no scroll!");
 		if (WIDGET->_scrollx != WIDGET->horizontalScrollBar()->value())
 			WIDGET->horizontalScrollBar()->setValue(WIDGET->_scrollx);
 		if (WIDGET->_scrolly != WIDGET->verticalScrollBar()->value())
 			WIDGET->verticalScrollBar()->setValue(WIDGET->_scrolly);
 		return;
-	}
+	}*/
 
 	if (WIDGET->_scroll_sent)
 		return;
