@@ -23,6 +23,8 @@
 
 #define __CWEBSETTINGS_CPP
 
+#include <unistd.h>
+
 #include <QNetworkDiskCache>
 #include <QNetworkProxy>
 
@@ -189,6 +191,18 @@ BEGIN_PROPERTY(WebSettingsCache_Path)
 		GB.ReturnString(_cache_path);
 	else
 	{
+		QString path = QSTRING_PROP();
+		QString root = QString(GB.System.Home());
+
+		if (root.at(root.length() - 1) != '/')
+			root += '/';
+		root += ".cache/";
+		if (!path.startsWith(root))
+		{
+			GB.Error("Cache directory must be located inside ~/.cache");
+			return;
+		}
+
 		GB.StoreString(PROP(GB_STRING), &_cache_path);
 		set_cache(_cache_enabled);
 	}
@@ -203,6 +217,21 @@ BEGIN_PROPERTY(WebSettingsCache_Enabled)
 		set_cache(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
+
+static void remove_file(const char *path)
+{
+	if (unlink(path))
+		rmdir(path);
+}
+
+BEGIN_METHOD_VOID(WebSettingsCache_Clear)
+
+	if (!_cache_path || !*_cache_path)
+		return;
+
+	GB.BrowseDirectory(_cache_path, NULL, remove_file);
+
+END_METHOD
 
 
 /***************************************************************************/
@@ -373,6 +402,7 @@ GB_DESC CWebSettingsCacheDesc[] =
 	
 	GB_STATIC_PROPERTY("Enabled", "b", WebSettingsCache_Enabled),
 	GB_STATIC_PROPERTY("Path", "s", WebSettingsCache_Path),
+	GB_STATIC_METHOD("Clear", NULL, WebSettingsCache_Clear, NULL),
 	
 	GB_END_DECLARE
 };
