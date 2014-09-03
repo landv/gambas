@@ -133,8 +133,11 @@ Public Sub _Layout()
       
       With $aColumns[I]
         If .Expand Then
-          W += ._GetExplicitWidth()
-          Inc NX
+          WX = ._GetExplicitWidth()
+          If WX Then
+            W += WX
+            Inc NX
+          Endif
         Else
           W += .Width
         Endif

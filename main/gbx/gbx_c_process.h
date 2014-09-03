@@ -56,6 +56,7 @@ typedef
     unsigned to_string : 1;
 		unsigned process_group : 1;
 		unsigned ignore : 1;
+		unsigned error : 1;
     char *result;
     GB_VARIANT_VALUE tag;
   }

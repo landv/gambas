@@ -36,6 +36,7 @@ Private $iCustom As Integer = -1
 Private $iLastCustom As Integer
 Private Const CUSTOM_D As Integer = 6
 Private CUSTOM_W As Integer
+Private $iNoCustomColor As Integer
 
 Public Sub _new()
 
@@ -115,7 +116,9 @@ Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boole
 
   If $iColor <> $iOldColor Then
     $iOldColor = $iColor
+    Inc $iNoCustomColor
     GetParent()._RaiseChange()
+    Dec $iNoCustomColor
   Endif
 
 End
@@ -131,7 +134,10 @@ End
 
 Public Function GetColor() As Integer
 
-  If GetCustom() Then AddCustomColor($iColor)
+  If $iNoCustomColor = 0 Then
+    If GetCustom() Then AddCustomColor($iColor)
+  Endif
+  
   Return $iColor
 
 End

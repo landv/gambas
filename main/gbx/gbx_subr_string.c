@@ -921,7 +921,7 @@ void SUBR_tr(void)
 
 void SUBR_quote(ushort code)
 {
-	static void *jump[4] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64 };
+	static void *jump[8] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64, &&__JAVASCRIPT, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL };
 	char *str;
 	int lstr;
 	int i;
@@ -937,7 +937,7 @@ void SUBR_quote(ushort code)
 	
 	STRING_start_len(lstr);
 	
-	goto *jump[code & 0x3];
+	goto *jump[code & 0x7];
 	
 __QUOTE:
 	
@@ -1061,8 +1061,46 @@ __BASE64:
 			STRING_make(out, 4);
 		}
 	}
+
+	goto __END;
+
+__JAVASCRIPT:
+	{
+		STRING_make_char('\'');
+
+		for (i = 0; i < lstr; i++)
+		{
+			c = str[i];
+			//if (c >= ' ' && c <= 126 && c != '\\' && c != '"')
+			if (c >= ' ' && c != '\\' && c != '\'')
+				STRING_make_char(c);
+			else
+			{
+				STRING_make_char('\\');
+				if (c == '\n')
+					c = 'n';
+				else if (c == '\r')
+					c = 'r';
+				else if (c == '\t')
+					c = 't';
+				else if (!(c == '\'' || c == '\\'))
+				{
+					snprintf(buf, sizeof(buf), "x%02X", c);
+					STRING_make(buf, 3);
+					continue;
+				}
+				STRING_make_char(c);
+			}
+		}
+
+		STRING_make_char('\'');
+	}
 	
 	goto __END;
+
+__ILLEGAL:
+
+	THROW_ILLEGAL();
 
 __END:
 

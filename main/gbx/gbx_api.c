@@ -199,6 +199,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_TempFile,
 	(void *)GB_CopyFile,
 	(void *)GB_BrowseProject,
+	(void *)GB_BrowseDirectory,
 	(void *)GB_StatFile,
 
 	(void *)GB_Store,
@@ -248,6 +249,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_SystemPath,
 	(void *)FILE_init,
 	(void *)GB_SystemDebug,
+	(void *)PROJECT_get_home,
 
 	(void *)GB_ArrayNew,
 	(void *)GB_ArrayCount,
@@ -2376,7 +2378,7 @@ char *GB_RealFileName(const char *name, int len)
 	return real;
 }
 
-static GB_BROWSE_CALLBACK _browse_project_func;
+static GB_BROWSE_PROJECT_CALLBACK _browse_project_func;
 
 static void project_file_found(const char *path)
 {
@@ -2386,7 +2388,7 @@ static void project_file_found(const char *path)
 	(*_browse_project_func)(path, info.size);
 }
 
-void GB_BrowseProject(GB_BROWSE_CALLBACK func)
+void GB_BrowseProject(GB_BROWSE_PROJECT_CALLBACK func)
 {
 	ARCHIVE *arch = NULL;
 	
@@ -2398,6 +2400,11 @@ void GB_BrowseProject(GB_BROWSE_CALLBACK func)
 	}
 	else
 		ARCHIVE_browse(arch, func);
+}
+
+void GB_BrowseDirectory(const char *dir, GB_BROWSE_CALLBACK before, GB_BROWSE_CALLBACK after)
+{
+	FILE_recursive_dir(dir, before, after, 0, FALSE);
 }
 
 

@@ -701,10 +701,18 @@ End
 
 Public Sub btnClearCache_Click()
 
+  Dim sErr As String
+  
   If Message.Question(("Do you really want to clear the documentation cache?"), ("Clear"), ("Cancel")) <> 1 Then Return
   Inc Application.Busy
-  Shell "rm -rf " & Shell$(WebSettings.Cache.Path) &/ "*" Wait
+  WebSettings.Cache.Clear()
   Dec Application.Busy
+  
+Catch
+  
+  sErr = Error.Text
+  Application.Busy = 0
+  Message.Error(("Unable to clear documentation cache.") & "\n\n" & sErr)
 
 End
 
@@ -938,7 +946,7 @@ End
 
 Public Sub ipnOption_Click()
 
-  If ipnOption.Text = ("Code formatting") Then
+  If ipnOption.Text = ("Code snippets") Then
     
     If gvwSnippet.Rows.Count = 0 Then
       RefreshSnippet

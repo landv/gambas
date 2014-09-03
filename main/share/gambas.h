@@ -628,7 +628,13 @@ typedef
 /* Type of the GB.BrowseProject() callback */
 
 typedef
-	void (*GB_BROWSE_CALLBACK)(const char *, int64_t);
+	void (*GB_BROWSE_PROJECT_CALLBACK)(const char *, int64_t);
+
+
+/* Type of the GB.BrowseDirectory() callback */
+
+typedef
+	void (*GB_BROWSE_CALLBACK)(const char *);
 
 
 /* Type of a timer callback */
@@ -1027,7 +1033,8 @@ typedef
 		char *(*TempDir)(void);
 		char *(*TempFile)(const char *);
 		bool (*CopyFile)(const char *, const char *);
-		void (*BrowseProject)(GB_BROWSE_CALLBACK);
+		void (*BrowseProject)(GB_BROWSE_PROJECT_CALLBACK);
+		void (*BrowseDirectory)(const char *, GB_BROWSE_CALLBACK, GB_BROWSE_CALLBACK);
 		bool (*StatFile)(const char *, GB_FILE_STAT *, bool);
 
 		void (*Store)(GB_TYPE, GB_VALUE *, void *);
@@ -1081,6 +1088,7 @@ typedef
 			char *(*Path)(void);
 			void (*HasForked)(void);
 			bool (*Debug)(void);
+			char *(*Home)(void);
 			}
 		System;
 

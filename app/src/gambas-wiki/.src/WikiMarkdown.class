@@ -11,7 +11,7 @@ Public Sub Link(hLink As MarkdownLink)
   If sLink Begins "/" Then
     sPath = sLink
   Else If sLink Begins "./" Then
-    sPath = Request.Path &/ Mid$(sLink, 3)
+    sPath = Main.Path &/ Mid$(sLink, 3)
   Else If sLink Begins "../" Then
     sPath = Main.MakeAbsolute(sLink, Main.Path)
   Else If Not sLink Then

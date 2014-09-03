@@ -10,6 +10,7 @@ Private $iSort As Integer
 Private $iType As Integer
 Private $hObserver As Observer
 Private $iArrange As Integer
+Private $hObsList As Observer
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -19,6 +20,7 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $iArrange = iArrange
   
   $hObserver = New Observer($hFilter) As "Filter"
+  $hObsList = New Observer(hList) As "ScrollView"
   
 End
 
@@ -60,7 +62,7 @@ Private Sub FillWithExample()
         .Tag = Project.ExampleTitle[sDir]
         sGroup = .Tag
         '.Font = Font["Bold"]
-        .H = .Font.Height + If(sLastDir, 1, 0) * Desktop.Scale
+        .H = .Font.Height
         If $iArrange = Arrange.Row Then .Expand = True
       End With
       'bHighlight = False
@@ -127,7 +129,7 @@ Private Sub FillWithRecent(bClear As Boolean)
         .Enabled = False
         .Tag = sTitle 
         '.Font = Font["Bold"]
-        .H = .Font.Height + If(sLastTitle, 1, 0) * Desktop.Scale
+        .H = .Font.Height
         If $iArrange = Arrange.Row Then .Expand = True
       End With
       sLastTitle = sTitle
@@ -170,6 +172,7 @@ Public Sub ApplyFilter(sFilter As String)
 
   Dim hCtrl, hLast As Control
   Dim hProjectItem As ProjectBox
+  Dim bShowEnd As Boolean
 
   $hList.Arrangement = Arrange.None
   
@@ -178,7 +181,6 @@ Public Sub ApplyFilter(sFilter As String)
   Else
     sFilter = "*" & String.LCase(sFilter) & "*"
   Endif
-  
   
   For Each hCtrl In $hList.Children
     
@@ -195,11 +197,21 @@ Public Sub ApplyFilter(sFilter As String)
   For Each hCtrl In $hList.Children
     
     If hCtrl Is DrawingArea Then
-      If hLast Then hLast.Hide
+      If hLast Then 
+        hLast.Hide
+      Endif
       hLast = hCtrl
-    Else If hCtrl Is ProjectBox And If hCtrl.Visible Then
-      If hLast Then hLast.Show
-      hLast = Null
+      bShowEnd = False
+    Else If hCtrl Is ProjectBox Then
+      If hCtrl.Visible Then
+        If hLast Then 
+          hLast.Show
+        Endif
+        hLast = Null
+        bShowEnd = True
+      Endif
+    Else
+      hCtrl.Visible = bShowEnd
     Endif
     
   Next
@@ -265,3 +277,8 @@ Public Sub Filter_Activate()
 End
 
 
+Public Sub ScrollView_GotFocus()
+  
+  $hFilter.SetFocus
+  
+End

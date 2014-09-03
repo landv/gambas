@@ -54,16 +54,18 @@ Public Sub dwgFractal_Draw()
   Dim X, Y, I, J As Float
   Dim YT As Integer
   Dim HT As Integer
+  Dim H As Integer
   
-  hImage = New Image(Draw.Clip.W, Draw.Clip.H)
-  For I = 0 To hImage.W Step $hRose.W
-    For J = 0 To hImage.H Step $hRose.H
-      hImage.DrawImage($hRose, I, J)
+  'hImage = New Image(Draw.Clip.W, Draw.Clip.H)
+  For I = 0 To Paint.W Step $hRose.W
+    For J = 0 To Paint.H Step $hRose.H
+      'hImage.DrawImage($hRose, I, J)
+      Paint.DrawImage($hRose, I, J)
     Next
   Next
   
-  X = $XC + (Draw.Clip.X - dwgFractal.W / 2) * $fScale
-  Y = $YC + (Draw.Clip.Y - dwgFractal.H / 2) * $fScale
+  X = $XC - (dwgFractal.W / 2) * $fScale
+  Y = $YC - (dwgFractal.H / 2) * $fScale
   
   'If $bFast Then
     
@@ -72,10 +74,17 @@ Public Sub dwgFractal_Draw()
     
   'Else
 
-    Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
-    HT = hImage.H \ NTASK
+    'Draw.Image(hImage, Draw.Clip.X, Draw.Clip.Y)
+    HT = CInt(Paint.H) \ NTASK
     For I = 0 To NTASK - 1
-      If $aResult[I] Then Draw.Image($aResult[I], Draw.Clip.X, Draw.Clip.Y + YT)
+      If $aResult[I] Then
+        If I < (NTASK - 1) Then
+          H = HT
+        Else
+          H = Paint.H - YT
+        Endif
+        Paint.DrawImage($aResult[I], 0, YT, Paint.W, H)
+      Endif
       'RunTask(0, X, Y, 0, YT, hImage.W, HT)
       'Y += HT * $fScale
       YT += HT
@@ -218,7 +227,7 @@ End
 
 Public Sub Form_Resize()
 
-  Redraw(True)
+  Redraw(False) '(True)
 
 End
 

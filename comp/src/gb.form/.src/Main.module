@@ -113,7 +113,8 @@ Public Sub Main()
   Dim hPict As Picture
   Dim hImage As Image
 
-  hPict = Picture["icon:/32/color-picker"]
-  hImage = hPict.Image.Stretch(16, 16)
+  hPict = Picture["icon:/small/left"]
+  hPict.Image.Desaturate
+  hPict.Save("~/left.png")
   
 End

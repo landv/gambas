@@ -334,7 +334,7 @@ Public Sub Main()
   Dim sData As String
   Dim sPath As String
   
-  'CGI["SCRIPT_NAME"] = "/wiki" ' Fix web server bug
+  CGI["SCRIPT_NAME"] = "/wiki" ' Fix web server bug
   Root = User.Home &/ "wiki/gambas"
   InfoDir = User.Home &/ "wiki/info"
   If Not Exist(InfoDir) Then InfoDir = ""
@@ -401,6 +401,11 @@ Public Sub Main()
   
   If Path = "/~stat" Then
     HttpStat.Render
+    Return
+  Endif
+  
+  If Path Begins "/~dump" Then
+    CGI.Dump
     Return
   Endif
   
