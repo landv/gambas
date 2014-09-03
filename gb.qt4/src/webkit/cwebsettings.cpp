@@ -23,6 +23,7 @@
 
 #define __CWEBSETTINGS_CPP
 
+#include <errno.h>
 #include <unistd.h>
 
 #include <QNetworkDiskCache>
@@ -218,10 +219,25 @@ BEGIN_PROPERTY(WebSettingsCache_Enabled)
 
 END_PROPERTY
 
+static int _clear_error;
+static char *_clear_path;
+
 static void remove_file(const char *path)
 {
-	if (unlink(path))
-		rmdir(path);
+	if (rmdir(path) == 0)
+		return;
+
+	if (errno == ENOTDIR)
+	{
+		if (unlink(path) == 0)
+			return;
+	}
+
+	if (_clear_error == 0)
+	{
+		_clear_error = errno;
+		_clear_path = GB.NewZeroString(path);
+	}
 }
 
 BEGIN_METHOD_VOID(WebSettingsCache_Clear)
@@ -229,7 +245,16 @@ BEGIN_METHOD_VOID(WebSettingsCache_Clear)
 	if (!_cache_path || !*_cache_path)
 		return;
 
+	_clear_error = 0;
 	GB.BrowseDirectory(_cache_path, NULL, remove_file);
+
+	if (_clear_error)
+	{
+		GB.Error("Unable to remove '&1': &2", _clear_path, strerror(_clear_error));
+		GB.FreeString(&_clear_path);
+	}
+
+	set_cache(_cache_enabled);
 
 END_METHOD
 
