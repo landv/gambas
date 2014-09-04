@@ -62,13 +62,6 @@ Private $hTextSelect As CImageSelection
 
 Private $sLastColor As Integer
 
-Public Struct MaskSegment
-  X As Integer
-  Y As Integer
-  X2 As Integer
-  Y2 As Integer
-End Struct
-
 Public Sub _new(sPath As String)
   
   Me.Name = File.Name(sPath)
@@ -2507,18 +2500,10 @@ Public Sub GetImageInfo() As String
   
 End
 
-Private Sub CreateSelectionFromMask(hImage As Image) As CImageShape[]
+Fast Private Sub CreateSelectionFromMask(hImage As Image) As Polygon[]
   
   Dim X, Y As Integer
   Dim CW, CB As Integer
-  Dim cSegment As New Collection
-  Dim aSegment As MaskSegment[]
-  Dim N As Integer
-  Dim hSegment As MaskSegment
-  Dim aShape As New CImageShape[]
-  Dim hShape As CImageShape
-  Dim hOther As MaskSegment
-  Dim hStart As MaskSegment
   Dim I As Integer
   Dim W As Integer
   Dim hPoly As Polygon
@@ -2543,37 +2528,30 @@ Private Sub CreateSelectionFromMask(hImage As Image) As CImageShape[]
       hPoly.Add(X + W, Y)
       hPoly.Add(X + W, Y + 1)
       hPoly.Add(X, Y + 1)
-      'hPoly.Add(X, Y)
-      aPoly = Clipper.Union(aPoly, [hPoly])
+      aPoly.Add(hPoly)
       
       X = I
       
     Next
   Next
   
-  aPoly = Clipper.Clean(aPoly)
   aPoly = Clipper.Simplify(aPoly, Clipper.FillWinding)
   aPoly = Clipper.Clean(aPoly)
-  
-  For Each hPoly In aPoly
-    hShape = New CImageShape
-    hShape.Points = hPoly
-    $hSelect.AddShape(hShape)
-  Next
+  Return aPoly
   
 End
 
-
-
-Fast Private Sub MagicWand()
-
+Fast Private Sub CreateMask() As Image
+  
   Dim hMask As Image
   Dim aPoint As New Integer[]
   Dim X, X1, X2, Y, XL, XR As Integer
   Dim WW, HH As Integer
   Dim C As Integer
   Dim fTolerance As Float
-  Dim I As Integer
+  Dim aPoly As Polygon[]
+  Dim hPoly As Polygon
+  Dim hShape As CImageShape
   
   WW = $hImage.W
   HH = $hImage.H
@@ -2582,8 +2560,6 @@ Fast Private Sub MagicWand()
   Y = $hLastPoint.Y
   
   If X < 0 Or If Y < 0 Or If X >= WW Or If Y >= HH Then Return
-  
-  Inc Application.Busy
   
   fTolerance = FImageProperty.GetTolerance() / 255
   
@@ -2645,7 +2621,37 @@ Fast Private Sub MagicWand()
     
   Wend
   
-  CreateSelectionFromMask(hMask)
+  Return hMask
+  
+End
+
+
+Private Sub MagicWand()
+
+  Dim hMask As Image
+  Dim aPoint As New Integer[]
+  Dim X, X1, X2, Y, XL, XR As Integer
+  Dim WW, HH As Integer
+  Dim C As Integer
+  Dim fTolerance As Float
+  Dim aPoly As Polygon[]
+  Dim hPoly As Polygon
+  Dim hShape As CImageShape
+  
+  Inc Application.Busy
+  
+  hMask = CreateMask()
+  
+  If hMask Then
+    aPoly = CreateSelectionFromMask(hMask)
+    aPoly = Clipper.Simplify(aPoly, Clipper.FillWinding)
+    
+    For Each hPoly In aPoly
+      hShape = New CImageShape
+      hShape.Points = hPoly
+      $hSelect.AddShape(hShape)
+    Next
+  Endif
   
   Dec Application.Busy
 
