@@ -44,7 +44,7 @@ static GEOM_POINTF *from_point(IntPoint p)
 	return GEOM.CreatePointF((double)p.X / SCALE, (double)p.Y / SCALE);
 }
 
-static bool is_polygon_closed(Polygon &p)
+static bool is_polygon_closed(Path &p)
 {
 	int n = p.size() - 1;
 
@@ -54,7 +54,7 @@ static bool is_polygon_closed(Polygon &p)
 	return p[0].X == p[n].X && p[0].Y == p[n].Y;
 }
 
-static void set_polygon_closed(Polygon &p, bool closed)
+static void set_polygon_closed(Path &p, bool closed)
 {
 	if (is_polygon_closed(p) == closed)
 		return;
@@ -65,7 +65,7 @@ static void set_polygon_closed(Polygon &p, bool closed)
 		p.erase(p.begin() + p.size() - 1);
 }
 
-static bool to_polygons(Polygons &polygons, GB_ARRAY array)
+static bool to_polygons(Paths &polygons, GB_ARRAY array)
 {
 	int count;
 	CPOLYGON *p;
@@ -92,7 +92,7 @@ static bool to_polygons(Polygons &polygons, GB_ARRAY array)
 	return false;
 }
 
-static GB_ARRAY from_polygons(Polygons &polygons, bool closed)
+static GB_ARRAY from_polygons(Paths &polygons, bool closed)
 {
 	GB_ARRAY a;
 	CPOLYGON *p;
@@ -178,7 +178,7 @@ static bool _convert_polygon(CPOLYGON *_object, GB_TYPE type, GB_VALUE *conv)
 
 BEGIN_METHOD(Polygon_new, GB_INTEGER size)
 
-	POLY = new Polygon;
+	POLY = new Path;
 
 	if (!MISSING(size))
 		POLY->resize(VARG(size));
@@ -243,13 +243,13 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Polygon_Reverse)
 
-	ReversePolygon(*POLY);
+	ReversePath(*POLY);
 
 END_METHOD
 
 BEGIN_METHOD(Polygon_Simplify, GB_INTEGER fill)
 
-	Polygons result;
+	Paths result;
 
 	SimplifyPolygon(*POLY, result, (PolyFillType)VARGOPT(fill, pftNonZero));
 
@@ -328,15 +328,21 @@ END_PROPERTY
 
 BEGIN_METHOD(Clipper_Offset, GB_OBJECT polygons; GB_FLOAT delta; GB_INTEGER join; GB_FLOAT limit; GB_BOOLEAN do_not_fix)
 
-	Polygons polygons;
-	Polygons result;
+	Paths polygons;
+	Paths result;
 
 	if (to_polygons(polygons, VARG(polygons)))
 		return;
 
 	SimplifyPolygons(polygons, result, pftNonZero);
 	polygons = result;
-	OffsetPolygons(polygons, result, VARG(delta) * SCALE, (JoinType)VARGOPT(join, jtSquare), VARGOPT(limit, 0.0), !VARGOPT(do_not_fix, false));
+
+	ClipperOffset co;
+	co.AddPaths(polygons, (JoinType)VARGOPT(join, jtSquare), etClosedPolygon);
+	co.MiterLimit = VARGOPT(limit, 0.0);
+	co.Execute(result, VARG(delta) * SCALE);
+
+	//OffsetPaths(polygons, result, VARG(delta) * SCALE, (JoinType)VARGOPT(join, jtSquare), VARGOPT(limit, 0.0), !VARGOPT(do_not_fix, false));
 
 	GB.ReturnObject(from_polygons(result, true));
 
@@ -345,8 +351,8 @@ END_METHOD
 
 BEGIN_METHOD(Clipper_Simplify, GB_OBJECT polygons; GB_INTEGER fill)
 
-	Polygons polygons;
-	Polygons result;
+	Paths polygons;
+	Paths result;
 
 	if (to_polygons(polygons, VARG(polygons)))
 		return;
@@ -359,8 +365,8 @@ END_METHOD
 
 BEGIN_METHOD(Clipper_Clean, GB_OBJECT polygons; GB_FLOAT distance)
 
-	Polygons polygons;
-	Polygons result;
+	Paths polygons;
+	Paths result;
 
 	if (to_polygons(polygons, VARG(polygons)))
 		return;
@@ -376,7 +382,8 @@ END_METHOD
 static void execute(ClipType action, PolyFillType fill, void *subject, void *clip)
 {
 	Clipper c;
-	Polygons psubject, pclip, result;
+	Paths psubject, pclip, result;
+	PolyTree tree;
 
 	if (to_polygons(psubject, subject))
 		return;
@@ -384,11 +391,13 @@ static void execute(ClipType action, PolyFillType fill, void *subject, void *cli
 	if (clip && to_polygons(pclip, clip))
 		return;
 
-	c.AddPolygons(psubject, ptSubject);
+	c.AddPaths(psubject, ptSubject, true);
 	if (clip)
-		c.AddPolygons(pclip, ptClip);
+		c.AddPaths(pclip, ptClip, true);
 
-	c.Execute(action, result, fill, fill);
+	c.StrictlySimple(true);
+	c.Execute(action, tree, fill, fill);
+	ClosedPathsFromPolyTree(tree, result);
 
 	GB.ReturnObject(from_polygons(result, true));
 }

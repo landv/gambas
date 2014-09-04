@@ -378,7 +378,7 @@ Public Sub mnuSort_Click()
   
 End
 
-Public Sub ProjectItem_Click(Path As String)
+Public Sub ProjectItem_Click(Path As String, (Another) As Boolean)
 
   $sPath = Path
   Project.Open($sPath)

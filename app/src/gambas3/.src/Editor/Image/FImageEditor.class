@@ -62,6 +62,12 @@ Private $hTextSelect As CImageSelection
 
 Private $sLastColor As Integer
 
+Public Struct MaskSegment
+  X As Integer
+  Y As Integer
+  X2 As Integer
+  Y2 As Integer
+End Struct
 
 Public Sub _new(sPath As String)
   
@@ -2501,134 +2507,63 @@ Public Sub GetImageInfo() As String
   
 End
 
-Fast Private Sub CreateSelectionFromMask(hImage As Image) As CImageShape[]
-
-  Dim X, Y, XX, YY, X2, Y2 As Integer
-  Dim XL, YL, XR, YR As Integer
+Private Sub CreateSelectionFromMask(hImage As Image) As CImageShape[]
+  
+  Dim X, Y As Integer
+  Dim CW, CB As Integer
+  Dim cSegment As New Collection
+  Dim aSegment As MaskSegment[]
+  Dim N As Integer
+  Dim hSegment As MaskSegment
   Dim aShape As New CImageShape[]
   Dim hShape As CImageShape
-  Dim DX, DY, D As Integer
-  Dim bLeft As Boolean
-  Dim bRight As Boolean
-  ' Dim N As Integer
-  ' Dim C As Integer
-  Dim hRect As Rect
+  Dim hOther As MaskSegment
+  Dim hStart As MaskSegment
+  Dim I As Integer
+  Dim W As Integer
+  Dim hPoly As Polygon
+  Dim aPoly As New Polygon[]
   
-  hRect = Rect(0, 0, hImage.W, hImage.H)
+  CW = Color.White
+  CB = Color.Black
   
   For Y = 0 To hImage.H - 1
-    
     For X = 0 To hImage.W - 1
       
-      ' Inc N
-      ' If N Mod 10 = 0 Then
-      ' C = hImage[X, Y]
-      ' hImage[X, Y] = Color.Red
-      ' imvImage.Update(hImage)
-      ' Wait
-      ' hImage[X, Y] = C
-      ' Endif
+      If hImage[X, Y] <> CB Then Continue
       
-      If hImage[X, Y] = Color.Black Then
-        
-        If X And If hImage[X - 1, Y] <> Color.White Then Continue
-        
-        X2 = X
-        Y2 = Y
-        
-        hShape = New CImageShape
-        hShape.Add(PointF(X2, Y2))
-        DX = 1
-        DY = 0
-        
-        Do
-          
-          'imvImage.Update(hImage)
-          'Wait
-          
-          XX = X2 + DX
-          YY = Y2 + DY
-          
-          If DX = 1 And If DY = 0 Then
-            XL = X2
-            YL = Y2 - 1
-            XR = X2
-            YR = Y2
-          Else If DX = 0 And If DY = 1 Then
-            XL = X2
-            YL = Y2
-            XR = X2 - 1
-            YR = Y2
-          Else If DX = -1 And If DY = 0 Then
-            XL = X2 - 1
-            YL = Y2
-            XR = X2 - 1
-            YR = Y2 - 1
-          Else If DX = 0 And If DY = -1 Then
-            XL = X2 - 1
-            YL = Y2 - 1
-            XR = X2
-            YR = Y2 - 1
-          Endif
-          
-          If hRect.Contains(XL, YL) Then
-            bLeft = hImage[XL, YL] <> Color.White
-            If bLeft Then hImage[XL, YL] = Color.Blue
-          Else
-            bLeft = False
-          Endif
-          
-          If hRect.Contains(XR, YR) Then
-            bRight = hImage[XR, YR] <> Color.White
-            If bRight Then hImage[XR, YR] = Color.Blue
-          Else
-            bRight = False
-          Endif
-          
-          ' Inc N
-          ' If N Mod 10 = 0 Then
-          '   imvImage.Update(hImage)
-          '   Wait
-          ' Endif
-          
-          If Not bRight Then
-            
-            ' Turn right
-            D = DX
-            DX = - DY
-            DY = D
-          
-          Else If bLeft Then
-            
-            ' Turn left
-            D = DX
-            DX = DY
-            DY = - D
-          
-          Else
-            
-            ' Continue in the same direction
-            hShape.Add(PointF(XX, YY))
-            hImage[XR, YR] = Color.Blue
-            X2 = XX
-            Y2 = YY
-            If X2 = X And If Y2 = Y Then Break
-            
-          Endif
-          
-        Loop
-        
-        hShape.Clean
-        aShape.Add(hShape)
-        
-      Endif
+      W = 1
+      For I = X + 1 To hImage.W - 1
+        If hImage[I, Y] <> CB Then Break
+        Inc W
+      Next
+      
+      hPoly = New Polygon
+      hPoly.Add(X, Y)
+      hPoly.Add(X + W, Y)
+      hPoly.Add(X + W, Y + 1)
+      hPoly.Add(X, Y + 1)
+      'hPoly.Add(X, Y)
+      aPoly = Clipper.Union(aPoly, [hPoly])
+      
+      X = I
       
     Next
   Next
   
-  Return aShape
+  aPoly = Clipper.Clean(aPoly)
+  aPoly = Clipper.Simplify(aPoly, Clipper.FillWinding)
+  aPoly = Clipper.Clean(aPoly)
+  
+  For Each hPoly In aPoly
+    hShape = New CImageShape
+    hShape.Points = hPoly
+    $hSelect.AddShape(hShape)
+  Next
   
 End
+
+
 
 Fast Private Sub MagicWand()
 
@@ -2638,6 +2573,7 @@ Fast Private Sub MagicWand()
   Dim WW, HH As Integer
   Dim C As Integer
   Dim fTolerance As Float
+  Dim I As Integer
   
   WW = $hImage.W
   HH = $hImage.H
@@ -2670,9 +2606,9 @@ Fast Private Sub MagicWand()
     For X = X1 To X2
     
       ' I = hMask[X, Y]
-      ' hMask[X, Y] = Color.Red
+      ' hMask[X, Y] = Color.Green
       ' imvImage.Update(hMask)
-      ' Wait 0.1
+      ' Wait
       ' hMask[X, Y] = I
   
       If hMask[X, Y] = Color.Black Then Continue
@@ -2709,7 +2645,7 @@ Fast Private Sub MagicWand()
     
   Wend
   
-  $hSelect.MergeWith(CreateSelectionFromMask(hMask), $bShift)
+  CreateSelectionFromMask(hMask)
   
   Dec Application.Busy
 

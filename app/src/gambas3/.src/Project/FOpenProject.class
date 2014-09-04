@@ -26,8 +26,8 @@ End
 
 Public Sub _new()
   
-  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT) As "ProjectItem"
-  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE) As "ProjectItem"
+  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Row) As "ProjectItem"
+  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Row) As "ProjectItem"
   
 End
 
@@ -43,9 +43,7 @@ Public Sub btnOK_Click()
   Endif
 
   If Not $sPath Then Return
-  lstRecent.Children.Clear
   
-  InAnotherWindow = $bControl
   Me.Close(True)
 
 End
@@ -73,6 +71,8 @@ Public Sub Form_Open()
 
   InAnotherWindow = False
   lblAnother.Visible = $bAnother
+  $hRecent.AllowOpenExtern = $bAnother
+  $hExample.AllowOpenExtern = $bAnother
   
   $iSort = Settings["/FOpenProject/SortRecent", CRecentFile.SORT_BY_DATE]
   
@@ -200,7 +200,7 @@ End
 
 Public Sub OnUpdateRecent()
   
-  lstRecent.Clear
+  $hRecent.Clear
   If tabProject.Text = ("Recent") Then $hRecent.Fill
   
 End
@@ -238,9 +238,9 @@ Public Sub radSort_Click()
 
 End
 
-Public Sub ProjectItem_Click(sPath As String)
+Public Sub ProjectItem_Click(sPath As String, bAnother As Boolean)
   
-  InAnotherWindow = Mouse.Control
+  InAnotherWindow = $bControl Or bAnother
   $sPath = sPath
   btnOK.Value = True
   

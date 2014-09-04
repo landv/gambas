@@ -3,6 +3,7 @@
 Inherits UserControl
 
 Event Click
+Event DblClick
 
 Property ShowPath As Boolean
 Property Path As String
@@ -346,9 +347,15 @@ Private Function Info_Read() As CProjectInfo
 
 End
 
-Public Sub DrawingArea_MouseDown()
+Public Sub DrawingArea_MouseUp()
   
   If Mouse.Left Then Raise Click
+  
+End
+
+Public Sub DrawingArea_DblClick()
+  
+  If Mouse.Left Then Raise DblClick
   
 End
 

@@ -39,7 +39,7 @@ extern GB_DESC ClipperDesc[];
 typedef
 	struct {
 		GB_BASE ob;
-		Polygon *poly;
+		Path *poly;
 		//bool closed;
 	}
 	CPOLYGON;

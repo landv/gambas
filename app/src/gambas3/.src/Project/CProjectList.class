@@ -2,7 +2,9 @@
 
 Public Enum TYPE_RECENT, TYPE_EXAMPLE
 
-Event Click(Path As String)
+Event Click(Path As String, Another As Boolean)
+
+Property AllowOpenExtern As Boolean
 
 Private $hList As ScrollView
 Private $hFilter As ButtonBox
@@ -11,6 +13,8 @@ Private $iType As Integer
 Private $hObserver As Observer
 Private $iArrange As Integer
 Private $hObsList As Observer
+Private $hButton As ToolButton
+Private $bOpenExtern As Boolean
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -21,6 +25,15 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   
   $hObserver = New Observer($hFilter) As "Filter"
   $hObsList = New Observer(hList) As "ScrollView"
+  
+  $hButton = New ToolButton(hList.Window) As "Button"
+  $hButton.Ignore = True
+  $hButton.Hide
+  $hButton.Text = ("Open in another window") & "…"
+  $hButton.ResizeScaled(3, 3)
+  $hButton.AutoResize = True
+  $hButton.Font.Grade = -2
+  $hButton.Mouse = Mouse.Pointing
   
 End
 
@@ -87,6 +100,14 @@ Private Sub FillWithExample()
 
 End
 
+Public Sub Clear()
+  
+  HideButton
+  $hList.Children.Clear
+  
+End
+
+
 Private Sub FillWithRecent(bClear As Boolean)
   
   Dim hProjectItem As ProjectBox
@@ -108,7 +129,7 @@ Private Sub FillWithRecent(bClear As Boolean)
   'panRecent.Hide
   'lstRecent.Lock
   $hList.Arrangement = Arrange.None
-  $hList.Children.Clear
+  Clear()
 
   aRecent = CRecentFile.Get($iSort)
 
@@ -145,6 +166,8 @@ Private Sub FillWithRecent(bClear As Boolean)
     hProjectItem.Path = hRecent.Path
     
   Next
+  
+  ApplyFilter($hFilter.Text)
   
   'If hFirst Then hFirst.Selected = True
   
@@ -236,12 +259,44 @@ Public Sub dwgTitle_Draw()
   
 End
 
+Private Sub HideButton()
+
+  $hButton.Hide
+  $hButton.Reparent($hButton.Window)
+
+End
 
 Public Sub ProjectItem_Click()
-  
-  Raise Click(Last.Path)
+
+  Raise Click(Last.Path, False)
   
 End
+
+Public Sub Button_Click()
+  
+  Raise Click(Last.Parent.Parent.Path, True)
+  
+End
+
+Public Sub ProjectItem_Enter()
+  
+  Dim hProject As ProjectBox
+  
+  If Not $bOpenExtern Then Return
+  hProject = Last  
+  $hButton.Reparent(hProject.Children[0])
+  $hButton.Move(hProject.W - $hButton.W - Desktop.Scale, hProject.H - $hButton.H - Desktop.Scale)
+  $hButton.Show
+  
+End
+
+Public Sub ProjectItem_Leave()
+  
+  If Not $bOpenExtern Then Return
+  HideButton
+  
+End
+
 
 
 Public Sub GetFirst() As String
@@ -281,4 +336,17 @@ Public Sub ScrollView_GotFocus()
   
   $hFilter.SetFocus
   
+End
+
+Private Function AllowOpenExtern_Read() As Boolean
+
+  Return $bOpenExtern
+
+End
+
+Private Sub AllowOpenExtern_Write(Value As Boolean)
+
+  $bOpenExtern = Value
+  If Not Value Then $hButton.Hide
+
 End
