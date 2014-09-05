@@ -1,5 +1,5 @@
 /*
- * c_graph.h
+ * c_graphmatrix.h
  *
  * Copyright (C) 2014 Tobias Boege <tobias@gambas-buch.de>
  *
@@ -19,17 +19,15 @@
  * MA 02110-1301, USA.
  */
 
-#ifndef __C_GRAPH_H
-#define __C_GRAPH_H
+#ifndef __C_GRAPHMATRIX_H
+#define __C_GRAPHMATRIX_H
 
 #include "gambas.h"
 
 extern GB_INTERFACE GB;
 
-#ifndef __C_GRAPH_C
-extern GB_DESC CGraph[], CGraphVertices[], CGraphVertex[], CVertexInEdges[],
-	       CVertexOutEdges[], CVertexAdjacent[], CGraphEdges[],
-	       CGraphEdge[];
+#ifndef __C_GRAPHMATRIX_C
+extern GB_DESC CGraphMatrix[], CMatrixVertex[], CMatrixEdge[];
 #endif
 
-#endif /* __C_GRAPH_H */
+#endif /* __C_GRAPHMATRIX_H */

@@ -21,8 +21,9 @@
 
 #define __C_GRAPH_C
 
-#include "gambas.h"
+#include <stdio.h>
 
+#include "gambas.h"
 #include "c_graph.h"
 
 typedef struct {
@@ -42,9 +43,14 @@ BEGIN_PROPERTY(Graph_NoProperty)
 
 END_PROPERTY
 
-BEGIN_METHOD(Graph_call, GB_INTEGER count; GB_BOOLEAN d; GB_BOOLEAN w)
+BEGIN_METHOD(Graph_call, GB_BOOLEAN d; GB_BOOLEAN w)
 
-	//GB.GetClass("GraphMatrix");
+	GB_CLASS GraphMatrixClass;
+
+	GB.Push(2, GB_T_BOOLEAN, VARGOPT(d, 0),
+		   GB_T_BOOLEAN, VARGOPT(w, 0));
+	GraphMatrixClass = GB.FindClass("GraphMatrix");
+	GB.ReturnObject(GB.New(GraphMatrixClass, NULL, (void *) (intptr_t) 2));
 
 END_METHOD
 
@@ -70,29 +76,27 @@ GB_DESC CGraph[] = {
 	GB_DECLARE("Graph", sizeof(CGRAPH)),
 	GB_NOT_CREATABLE(),
 
-	GB_STATIC_METHOD("_call", "Graph", Graph_call, "[(Count)i(Directed)b(Weighted)b]"),
+	GB_STATIC_METHOD("_call", "Graph", Graph_call, "[(Directed)b(Weighted)b]"),
 	GB_METHOD("_free", NULL, Graph_free, NULL),
 
 	GB_METHOD("_getVertex", "_Graph_Vertex", Graph_NoMethod, "(Vertex)s"),
-	GB_METHOD("_getEdge", "Edge", Graph_NoMethod, "(Src)s(Dst)s"),
+	GB_METHOD("_getEdge", "_Graph_Edge", Graph_NoMethod, "(Src)s(Dst)s"),
 
 	GB_METHOD("_nextVertex", "s", Graph_NoMethod, NULL),
-	GB_METHOD("_nextEdge", "Edge", Graph_NoMethod, NULL),
+	GB_METHOD("_nextEdge", "String[]", Graph_NoMethod, NULL),
+
+	GB_METHOD("_countVertices", "i", Graph_NoMethod, NULL),
+	GB_METHOD("_countEdges", "i", Graph_NoMethod, NULL),
+
+	GB_METHOD("Add", "_Graph_Vertex", Graph_NoMethod, "(Name)s"),
+	GB_METHOD("Remove", NULL, Graph_NoMethod, "(Vertex)s"),
+	GB_METHOD("Connect", "_Graph_Edge", Graph_NoMethod, "(Src)s(Dst)s"),
+	GB_METHOD("Disconnect", NULL, Graph_NoMethod, "(Src)s(Dst)s"),
+
+	GB_PROPERTY("Tag", "v", Graph_Tag),
 
 	GB_PROPERTY_SELF("Vertices", ".Graph.Vertices"),
 	GB_PROPERTY_SELF("Edges", ".Graph.Edges"),
-	GB_PROPERTY("Tag", "v", Graph_Tag),
-
-	/* Synonyms... */
-#if 0
-	GB_METHOD("_get", ".Graph.Vertex", , "(Vertex)i"),
-	GB_METHOD("_put", NULL, , "(Value)v(Vertex)i"),
-	GB_METHOD("_next", "i", , NULL),
-	GB_METHOD("Add", "i", , "(Value)v"),
-	GB_METHOD("Remove", NULL, , "(Vertex)i"),
-	GB_METHOD("Connect", "i", , "(Src)i(Dest)i[(Weight)f]"),
-	GB_METHOD("Disconnect", NULL, , "(Edge)i"),
-#endif
 
 	GB_END_DECLARE
 };
@@ -145,7 +149,7 @@ END_METHOD
 BEGIN_METHOD(GraphVertices_get, GB_STRING vert)
 
 	GB.Push(1, GB_T_STRING, STRING(vert), LENGTH(vert));
-	CALL_GRAPH("_getVertex", 1, "s", "_Graph_Vertex");
+	CALL_GRAPH("_getVertex", 1, "s", NULL);
 
 END_METHOD
 
@@ -154,7 +158,6 @@ BEGIN_PROPERTY(GraphVertices_Count)
 	TRY_CALL_GRAPH("_countVertices", 0, NULL, "i");
 
 	/* Default: enumerate the vertices, counting */
-	/* BeginEnum? */
 
 END_PROPERTY
 
@@ -170,27 +173,41 @@ GB_DESC CGraphVertices[] = {
 	GB_END_DECLARE
 };
 
+BEGIN_PROPERTY(GraphVertex_InDegree)
+
+	/* Default: enumerate */
+
+END_PROPERTY
+
+BEGIN_PROPERTY(GraphVertex_OutDegree)
+
+	/* Default: enumerate */
+
+END_PROPERTY
+
 GB_DESC CGraphVertex[] = {
 	GB_DECLARE("_Graph_Vertex", 0),
 	GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_nextInEdge", "Edge", Graph_NoMethod, NULL),
-	GB_METHOD("_nextOutEdge", "Edge", Graph_NoMethod, NULL),
+	GB_METHOD("_nextInEdge", "String[]", Graph_NoMethod, NULL),
+	GB_METHOD("_nextOutEdge", "String[]", Graph_NoMethod, NULL),
 	GB_METHOD("_nextAdjacent", "s", Graph_NoMethod, NULL),
+
+	GB_PROPERTY_READ("InDegree", "i", GraphVertex_InDegree),
+	GB_PROPERTY_READ("OutDegree", "i", GraphVertex_OutDegree),
+	GB_PROPERTY("Name", "s", Graph_NoProperty),
+	GB_PROPERTY("Value", "v", Graph_NoProperty),
 
 	GB_PROPERTY_SELF("InEdges", ".Vertex.InEdges"),
 	GB_PROPERTY_SELF("OutEdges", ".Vertex.OutEdges"),
 	GB_PROPERTY_SELF("Adjacent", ".Vertex.Adjacent"),
-	//GB_PROPERTY_READ("InDegree", "i", GraphVertex_InDegree),
-	//GB_PROPERTY_READ("OutDegree", "i", GraphVertex_OutDegree),
-	GB_PROPERTY("Value", "v", Graph_NoProperty),
 
 	GB_END_DECLARE
 };
 
 BEGIN_METHOD_VOID(VertexInEdges_next)
 
-	CALL_GRAPH("_nextInEdge", 0, NULL, "Edge");
+	CALL_GRAPH("_nextInEdge", 0, NULL, "String[]");
 
 END_METHOD
 
@@ -198,14 +215,14 @@ GB_DESC CVertexInEdges[] = {
 	GB_DECLARE(".Vertex.InEdges", 0),
 	GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_next", "Edge", VertexInEdges_next, NULL),
+	GB_METHOD("_next", "String[]", VertexInEdges_next, NULL),
 
 	GB_END_DECLARE
 };
 
 BEGIN_METHOD_VOID(VertexOutEdges_next)
 
-	CALL_GRAPH("_nextOutEdge", 0, NULL, "Edge");
+	CALL_GRAPH("_nextOutEdge", 0, NULL, "String[]");
 
 END_METHOD
 
@@ -213,7 +230,7 @@ GB_DESC CVertexOutEdges[] = {
 	GB_DECLARE(".Vertex.OutEdges", 0),
 	GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_next", "Edge", VertexOutEdges_next, NULL),
+	GB_METHOD("_next", "String[]", VertexOutEdges_next, NULL),
 
 	GB_END_DECLARE
 };
@@ -235,7 +252,7 @@ GB_DESC CVertexAdjacent[] = {
 
 BEGIN_METHOD_VOID(GraphEdges_next)
 
-	CALL_GRAPH("_nextEdge", 0, NULL, "Edge");
+	CALL_GRAPH("_nextEdge", 0, NULL, "String[]");
 
 END_METHOD
 
@@ -243,18 +260,7 @@ BEGIN_METHOD(GraphEdges_get, GB_STRING src; GB_STRING dst)
 
 	GB.Push(2, GB_T_STRING, STRING(src), LENGTH(src),
 	           GB_T_STRING, STRING(dst), LENGTH(dst));
-	CALL_GRAPH("_getEdge", 2, "ss", "Edge");
-
-END_METHOD
-
-BEGIN_METHOD(GraphEdges_Exist, GB_STRING src; GB_STRING dst)
-
-	GB_VALUE *ret;
-
-	GB.Push(2, GB_T_STRING, STRING(src), LENGTH(src),
-	           GB_T_STRING, STRING(dst), LENGTH(dst));
-	CALL_GRAPH_VAL("_getEdge", 2, "ss", "Edge", ret);
-	GB.ReturnBoolean(ret->_object.value != NULL);
+	CALL_GRAPH("_getEdge", 2, "ss", NULL);
 
 END_METHOD
 
@@ -270,80 +276,25 @@ GB_DESC CGraphEdges[] = {
 	GB_DECLARE(".Graph.Edges", 0),
 	GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_next", "Edge", GraphEdges_next, NULL),
-	GB_METHOD("_get", "Edge", GraphEdges_get, "(Src)s(Dst)s"),
-	GB_METHOD("Exist", "b", GraphEdges_Exist, "(Src)s(Dst)s"),
+	GB_METHOD("_next", "String[]", GraphEdges_next, NULL),
+	GB_METHOD("_get", "_Graph_Edge", GraphEdges_get, "(Src)s(Dst)s"),
+	GB_METHOD("Exist", "b", Graph_NoMethod, "(Src)s(Dst)s"),
 
 	GB_PROPERTY_READ("Count", "i", GraphEdges_Count),
 
 	GB_END_DECLARE
 };
 
-typedef struct {
-	GB_BASE ob;
-	char *src, *dst;
-	float weight;
-} CEDGE;
+GB_DESC CGraphEdge[] = {
+	GB_DECLARE("_Graph_Edge", 0),
+	GB_VIRTUAL_CLASS(),
 
-#define EDGE	((CEDGE *) _object)
+	GB_PROPERTY_READ("Src", "s", Graph_NoProperty),
+	GB_PROPERTY_READ("Dst", "s", Graph_NoProperty),
+	GB_PROPERTY("Weight", "f", Graph_NoProperty),
 
-BEGIN_METHOD(Edge_new, GB_STRING src; GB_STRING dst; GB_FLOAT weight)
-
-	EDGE->src = MISSING(src) ? NULL : GB.NewString(STRING(src), LENGTH(src));
-	EDGE->dst = MISSING(dst) ? NULL : GB.NewString(STRING(dst), LENGTH(dst));
-	EDGE->weight = MISSING(weight) ? 0 : VARG(weight);
-
-END_METHOD
-
-BEGIN_METHOD_VOID(Edge_free)
-
-	GB.FreeString(&EDGE->src);
-	GB.FreeString(&EDGE->dst);
-
-END_METHOD
-
-BEGIN_PROPERTY(Edge_Src)
-
-	if (READ_PROPERTY) {
-		GB.ReturnString(EDGE->src);
-		return;
-	}
-	EDGE->src = GB.NewString(PSTRING(), PLENGTH());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Edge_Dst)
-
-	if (READ_PROPERTY) {
-		GB.ReturnString(EDGE->dst);
-		return;
-	}
-	EDGE->dst = GB.NewString(PSTRING(), PLENGTH());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Edge_Weight)
-
-	if (READ_PROPERTY) {
-		GB.ReturnFloat(EDGE->weight);
-		return;
-	}
-	EDGE->weight = VPROP(GB_FLOAT);
-
-END_PROPERTY
-
-GB_DESC CEdge[] = {
-	GB_DECLARE("Edge", sizeof(CEDGE)),
-
-	GB_METHOD("_new", NULL, Edge_new, "[(Src)s(Dst)s(Weight)f]"),
-	GB_METHOD("_free", NULL, Edge_free, NULL),
-
-	GB_PROPERTY("Src", "s", Edge_Src),
-	GB_PROPERTY("Dst", "s", Edge_Dst),
-	GB_PROPERTY("Weight", "f", Edge_Weight),
-
-	GB_PROPERTY("Source", "s", Edge_Src),
-	GB_PROPERTY("Destination", "s", Edge_Dst),
+	GB_PROPERTY_READ("Source", "s", Graph_NoProperty),
+	GB_PROPERTY_READ("Destination", "s", Graph_NoProperty),
 
 	GB_END_DECLARE
 };

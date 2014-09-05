@@ -27,7 +27,7 @@
 #include "c_avltree.h"
 //#include "c_trie.h"
 #include "c_graph.h"
-//#include "c_graphmatrix.h"
+#include "c_graphmatrix.h"
 #include "c_heap.h"
 #include "main.h"
 
@@ -50,19 +50,20 @@ GB_DESC *GB_CLASSES[] EXPORT = {
 	//CTrie,
 
 	CGraph,
-	CEdge,
 	CGraphVertices,
 	CGraphVertex,
 	CVertexInEdges,
 	CVertexOutEdges,
 	CVertexAdjacent,
 	CGraphEdges,
+	CGraphEdge,
 
-	//CGraphMatrix,
-	//CMatrixVertex,
-	//CMatrixEdge,
+	CGraphMatrix,
+	CMatrixVertex,
+	CMatrixEdge,
 
 	CHeap,
+//	CPrioSet,
 
 	NULL
 };
