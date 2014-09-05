@@ -334,10 +334,14 @@ BEGIN_METHOD_VOID(WebView_Forward)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(WebView_Reload)
+BEGIN_METHOD(WebView_Reload, GB_BOOLEAN bypass)
 
+	bool bypass = VARGOPT(bypass, false);
 	WIDGET->stop();
-	WIDGET->reload();
+	if (bypass)
+		WIDGET->page()->triggerAction(QWebPage::ReloadAndBypassCache);
+	else
+		WIDGET->reload();
 
 END_METHOD
 
@@ -623,7 +627,7 @@ GB_DESC CWebViewDesc[] =
 
 	GB_METHOD("Back", NULL, WebView_Back, NULL),
 	GB_METHOD("Forward", NULL, WebView_Forward, NULL),
-	GB_METHOD("Reload", NULL, WebView_Reload, NULL),
+	GB_METHOD("Reload", NULL, WebView_Reload, "[(BypassCache)b]"),
 	GB_METHOD("Stop", NULL, WebView_Stop, NULL),
 	
 	GB_PROPERTY("NewView", "WebView", WebView_NewView),
