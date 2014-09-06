@@ -2549,9 +2549,6 @@ Fast Private Sub CreateMask() As Image
   Dim WW, HH As Integer
   Dim C As Integer
   Dim fTolerance As Float
-  Dim aPoly As Polygon[]
-  Dim hPoly As Polygon
-  Dim hShape As CImageShape
   
   WW = $hImage.W
   HH = $hImage.H
@@ -2629,11 +2626,6 @@ End
 Private Sub MagicWand()
 
   Dim hMask As Image
-  Dim aPoint As New Integer[]
-  Dim X, X1, X2, Y, XL, XR As Integer
-  Dim WW, HH As Integer
-  Dim C As Integer
-  Dim fTolerance As Float
   Dim aPoly As Polygon[]
   Dim hPoly As Polygon
   Dim hShape As CImageShape

@@ -57,6 +57,7 @@ public:
 //"Private"
 	//virtual gColor getFrameColor();
 	virtual void updateSize();
+	virtual void updateBorder();
 	void updateSize(bool adjust, bool noresize = false);
 	void updateLayout();
 	PangoLayout *layout;

@@ -32,28 +32,21 @@ Public Sub _new()
 End
 
 
-Public Sub btnOK_Click()
+Public Sub btnOpen_Click()
 
   If tabProject.Text = ("Open") Then
-    $sPath = pchProject.Path
+     $sPath = pchProject.Path
   Else If tabProject.Text = ("Recent") Then
     If Not $sPath Then $sPath = $hRecent.GetFirst()
   Else If tabProject.Text = ("Examples") Then
     If Not $sPath Then $sPath = $hExample.GetFirst()
   Endif
-
+  
   If Not $sPath Then Return
   
   Me.Close(True)
 
 End
-
-Public Sub btnCancel_Click()
-
-  Me.Close
-
-End
-
 
 Public Sub Form_Open()
 
@@ -70,7 +63,6 @@ Public Sub Form_Open()
   tabProject_Click
 
   InAnotherWindow = False
-  lblAnother.Visible = $bAnother
   $hRecent.AllowOpenExtern = $bAnother
   $hExample.AllowOpenExtern = $bAnother
   
@@ -80,7 +72,7 @@ Public Sub Form_Open()
     If hCtrl.Tag = $iSort Then hCtrl.Value = True
   Next
   
-  InitButton
+  pchProject.ShowAnother = $bAnother
   
   Dec Application.Busy
 
@@ -96,88 +88,6 @@ Public Sub Form_Close()
   
 End
 
-' Public Sub dchProject_Icon(Path As String)
-' 
-'   If Exist(Path &/ ".project") Then 
-'     dchProject.Icon = Project.GetIcon(Path)    
-'   Endif  
-' 
-' End
-' 
-' Private Sub GetProjectPath(sPath As String) As String
-'   
-'   Do
-'     If Exist(sPath &/ ".project") Then Return sPath
-'     sPath = File.Dir(sPath)
-'     If sPath = "/" Then Break
-'   Loop
-'   
-' Catch
-'   
-' End
-' 
-' 
-' Public Sub dchProject_Change()
-' 
-'   Dim sPath As String
-'   Dim hProjectTree As CProjectTree
-'   
-'   sPath = GetProjectPath(dchProject.Value)
-'   
-'   If Not sPath Then
-'     $sLast = ""
-'     panProject.Hide
-'     dchProject.FileView.Show
-'     Return 
-'   Endif
-'   
-'   If sPath = $sLast Then Return
-'   
-'   $sLast = sPath
-'   
-'   $hProjectItem.Path = sPath
-'   hProjectTree = New CProjectTree(tvwProject, sPath)
-'   
-'   panProject.Show
-'   dchProject.FileView.Hide
-'   
-'   splProject_Resize
-' 
-' End
-
-' Public Sub fvwProject_Activate()
-' 
-'   Dim sPath As String = fvwProject.Dir &/ fvwProject.Current
-'   Dim sProg As String
-' 
-'   If IsDir(sPath) Then
-'     dchProject.Value = sPath
-'     Return
-'   Endif
-'   
-'   If sPath Like "*.tar.gz" Then
-'     sProg = "tar xfz"
-'   Else If sPath Like "*.tar.bz2" Then
-'     sProg = "tar xfj"
-'   Else
-'     Return
-'   Endif
-'   
-'   If Message.Question("<b>" & fvwProject.Current & "</b><p>" & ("Do you want to uncompress this archive?"), ("Uncompress"), ("Cancel")) = 2 Then Return
-'   
-'   Shell "cd " & Shell$(File.Dir(sPath)) & " && " & sProg & " " & Shell$(sPath) Wait
-'   dchProject.Reload
-' 
-' End
-
-' Public Sub fvwProject_Icon(Path As String)
-'
-'  If Exist(Path &/ ".project") Then 
-'    fvwProject.Icon = Project.GetIcon(Path, 16)    
-'  Endif    
-'
-' End
-
 Public Sub tabProject_Click()
 
   If tabProject.Text = ("Recent") Then 
@@ -192,12 +102,6 @@ Public Sub tabProject_Click()
 
 End
 
-' Public Sub lstRecent_Activate()
-'   
-'   btnOK.Value = True
-'   
-' End
-
 Public Sub OnUpdateRecent()
   
   $hRecent.Clear
@@ -205,24 +109,10 @@ Public Sub OnUpdateRecent()
   
 End
 
-
-' Public Sub lstExample_Activate()
-' 
-'   btnOK.Value = True
-' 
-' End
-
-' Public Sub splProject_Resize()
-' 
-'   panProjectTitle.H = $hProjectItem.IdealHeight + panProjectTitle.Padding * 2
-' 
-' End
-
-Public Sub btnOther_Click()
+Public Sub btnOpenAnother_Click()
 
   InAnotherWindow = True
-  btnOK_Click
-  
+  btnOpen_Click
 
 End
 
@@ -242,40 +132,13 @@ Public Sub ProjectItem_Click(sPath As String, bAnother As Boolean)
   
   InAnotherWindow = $bControl Or bAnother
   $sPath = sPath
-  btnOK.Value = True
+  btnOpen_Click
   
 End
 
 Public Sub pchProject_Activate()
 
-  btnOK.Value = True  
-
-End
-
-Public Sub Form_KeyPress()
-
-  If $bAnother And If Key.Code = Key.ControlKey Then
-    $bControl = True
-    btnOK.Text = ("Open in another window")
-    btnOK.AutoResize = True
-  Endif
-
-End
-
-Private Sub InitButton()
-
-  $bControl = False
-  btnOK.Text = ("Open")
-  btnOK.AutoResize = False
-  btnOK.W = btnCancel.W
-
-End
-
-Public Sub Form_KeyRelease()
-
-  If $bAnother And If Key.Code = Key.ControlKey Then
-    InitButton
-  Endif
+  btnOpen_Click
 
 End
 
@@ -283,7 +146,7 @@ Public Sub txtFilter_KeyPress()
 
   If Key.Control Then
     If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
-      btnOK.Value = True
+      btnOpen_Click
     Endif
   Endif
 
@@ -293,8 +156,21 @@ Public Sub txtFilterExample_KeyPress()
 
   If Key.Control Then
     If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
-      btnOK.Value = True
+      btnOpen_Click
     Endif
   Endif
+
+End
+
+Public Sub pchProject_Cancel()
+
+  Me.Close
+
+End
+
+Public Sub pchProject_Open(Path As String, Extern As Boolean)
+
+  InAnotherWindow = Extern
+  btnOpen_Click
 
 End

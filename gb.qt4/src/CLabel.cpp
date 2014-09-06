@@ -155,7 +155,10 @@ BEGIN_PROPERTY(Label_Border)
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET->border());
 	else
+	{
 		WIDGET->setBorder(VPROP(GB_INTEGER));
+		WIDGET->calcMinimumHeight();
+	}
 
 END_PROPERTY
 

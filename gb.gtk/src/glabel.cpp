@@ -167,7 +167,7 @@ gLabel::gLabel(gContainer *parent) : gControl(parent)
 	_mask_dirty = false;
 	_transparent = false;
 	_locked = false;
-	_wrap = true;
+	_wrap = false;
 	align = -1;
 	
 	border = widget = gtk_fixed_new();
@@ -224,7 +224,7 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 		return;
 	
 	fw = getFrameWidth() + getFramePadding();
-	
+
 	if (markup && _wrap)
 	{
 		w = width() - fw * 2;
@@ -238,13 +238,14 @@ void gLabel::updateSize(bool adjust, bool noresize_width)
 	pango_layout_set_width(layout, w);
 	
 	pango_layout_get_pixel_size(layout, &w, &h);
+
 	if (!adjust && _wrap)
 		w = width();
 	else
 		w += fw * 2;
 
 	h += fw * 2;
-	
+
 	if ((!_autoresize && !adjust) || (noresize_width && w != width()))
 		return;
 		
@@ -369,5 +370,12 @@ void gLabel::setWrap(bool v)
 
 void gLabel::updateSize()
 {
+	updateSize(false);
+}
+
+
+void gLabel::updateBorder()
+{
+	gControl::updateBorder();
 	updateSize(false);
 }

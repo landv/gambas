@@ -13,7 +13,7 @@ Private $iType As Integer
 Private $hObserver As Observer
 Private $iArrange As Integer
 Private $hObsList As Observer
-Private $hButton As ToolButton
+Private $hButton As Button
 Private $bOpenExtern As Boolean
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
@@ -26,7 +26,7 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hObserver = New Observer($hFilter) As "Filter"
   $hObsList = New Observer(hList) As "ScrollView"
   
-  $hButton = New ToolButton(hList.Window) As "Button"
+  $hButton = New Button(hList.Window) As "Button"
   $hButton.Ignore = True
   $hButton.Hide
   $hButton.Text = ("Open in another window") & "…"

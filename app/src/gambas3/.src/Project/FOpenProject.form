@@ -9,27 +9,29 @@
   Spacing = True
   Margin = True
   { tabProject TabPanel
-    MoveScaled(1,1,96,69)
+    MoveScaled(1,1,110,69)
     Expand = True
-    Arrangement = Arrange.Fill
+    Arrangement = Arrange.Vertical
     Count = 3
     Index = 0
     Text = ("Open")
     Picture = Picture["icon:/small/open"]
     { pchProject ProjectChooser
-      MoveScaled(6,4,81,54)
+      MoveScaled(2,1,98,59)
+      Expand = True
+      ShowButton = True
     }
     Index = 1
     Text = ("Recent")
     Picture = Picture["icon:/small/open-recent"]
-    { panRecent Panel
-      MoveScaled(1,1,83,60)
+    { Panel5 VBox
+      MoveScaled(2,2,91,56)
       Background = Color.TextBackground
-      Arrangement = Arrange.Vertical
+      Expand = True
       Spacing = True
       Margin = True
       { HBox2 HBox
-        MoveScaled(1,1,78,4)
+        MoveScaled(0,0,78,4)
         Spacing = True
         { Panel2 Panel
           MoveScaled(1,0,25,4)
@@ -67,7 +69,7 @@
         }
       }
       { lstRecent ScrollView
-        MoveScaled(3,13,73,43)
+        MoveScaled(2,12,73,43)
         Background = Color.TextBackground
         Expand = True
         Arrangement = Arrange.Row
@@ -82,6 +84,7 @@
     { Panel3 VBox
       MoveScaled(1,1,92,60)
       Background = Color.TextBackground
+      Expand = True
       Spacing = True
       Margin = True
       { HBox3 HBox
@@ -110,29 +113,5 @@
       }
     }
     Index = 0
-  }
-  { HBox1 HBox
-    MoveScaled(1,71,112,4)
-    Spacing = True
-    { lblAnother Label
-      MoveScaled(2,0,34,4)
-      Font = Font["Italic"]
-      AutoResize = True
-      Text = ("Press CTRL to open the project in another window")
-    }
-    { Panel1 Panel
-      MoveScaled(45,0,3,4)
-      Expand = True
-    }
-    { btnOK Button
-      MoveScaled(78,0,15,4)
-      Text = ("Open")
-      Default = True
-    }
-    { btnCancel Button
-      MoveScaled(95,0,15,4)
-      Text = ("Cancel")
-      Cancel = True
-    }
   }
 }

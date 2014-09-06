@@ -2,6 +2,7 @@
 
 Private $hProjectItem As ProjectBox
 Private $sLast As String
+Private $bShowButton As Boolean
 
 Public Sub _new()
   
@@ -69,6 +70,15 @@ Catch
   
 End
 
+Private Sub ShowButton()
+
+  If Not $bShowButton Or If Not $sLast Then
+    panOpen.Hide
+  Else
+    panOpen.Show
+  Endif
+
+End
 
 Public Sub dchProject_Change()
 
@@ -76,23 +86,27 @@ Public Sub dchProject_Change()
   Dim hProjectTree As CProjectTree
   
   sPath = GetProjectPath(dchProject.Value)
+  If sPath = $sLast Then Return
   
   If Not sPath Then
+    
     $sLast = ""
     panProject.Hide
     dchProject.FileView.Show
-    Return 
+
+  Else
+
+    $sLast = sPath
+    
+    $hProjectItem.Path = sPath
+    hProjectTree = New CProjectTree(tvwProject, sPath)
+    
+    panProject.Show
+    dchProject.FileView.Hide
+    
   Endif
   
-  If sPath = $sLast Then Return
-  
-  $sLast = sPath
-  
-  $hProjectItem.Path = sPath
-  hProjectTree = New CProjectTree(tvwProject, sPath)
-  
-  panProject.Show
-  dchProject.FileView.Hide
+  ShowButton
   
 End
 
@@ -129,5 +143,49 @@ End
 Public Sub SetBorder(Value As Boolean)
 
   dchProject.Border = Value
+
+End
+
+Public Sub GetShowButton() As Boolean
+  
+  Return $bShowButton
+  
+End
+
+Public Sub SetShowButton(Value As Boolean)
+  
+  $bShowButton = Value
+  ShowButton
+  
+End
+
+Public Sub GetShowAnother() As Boolean
+  
+  Return btnOpenAnother.Visible
+  
+End
+
+Public Sub SetShowAnother(Value As Boolean)
+
+  btnOpenAnother.Visible = Value  
+  
+End
+
+Public Sub btnOpen_Click()
+
+  GetParent()._RaiseOpen($sLast, False)
+
+End
+
+Public Sub btnOpenAnother_Click()
+
+  GetParent()._RaiseOpen($sLast, True)
+  
+
+End
+
+Public Sub btnCancel_Click()
+
+  GetParent()._RaiseCancel()
 
 End

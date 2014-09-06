@@ -4,16 +4,20 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border"
+Public Const _Properties As String = "*,Border,ShowButton"
 Public Const _DefaultEvent As String = "Activate"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "Chooser"
 
 Event Activate
+Event Open(Path As String, Extern As Boolean)
+Event Cancel
 
 Property Settings As Variant[]
 Property Path As String
 Property Border As Boolean
+Property ShowButton As Boolean
+Property ShowAnother As Boolean
 
 Private $hForm As FProjectChooser
 
@@ -41,6 +45,12 @@ Public Sub _RaiseActivate()
   
 End
 
+Public Sub _RaiseChange(sPath As String)
+  
+  Raise Change(sPath)
+  
+End
+
 Private Function Path_Read() As String
 
   Return $hForm.GetPath()
@@ -64,3 +74,40 @@ Private Sub Border_Write(Value As Boolean)
   $hForm.SetBorder(Value)
 
 End
+
+Private Function ShowButton_Read() As Boolean
+
+  Return $hForm.GetShowButton()
+
+End
+
+Private Sub ShowButton_Write(Value As Boolean)
+
+  $hForm.SetShowButton(Value)
+
+End
+
+Private Function ShowAnother_Read() As Boolean
+
+  Return $hForm.GetShowAnother()
+
+End
+
+Private Sub ShowAnother_Write(Value As Boolean)
+
+  $hForm.SetShowAnother(Value)
+
+End
+
+Public Sub _RaiseOpen(sPath As String, bExtern As Boolean)
+  
+  Raise Open(sPath, bExtern)
+  
+End
+
+Public Sub _RaiseCancel()
+  
+  Raise Cancel
+  
+End
+
