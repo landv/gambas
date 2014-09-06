@@ -113,12 +113,10 @@ Private Sub UpdateLabelDir()
     
   Else
 
-    sDir = Mid$(dvwChoose.Current, Len(dvwChoose.Root) + 1)
-
-    If Left(sDir) <> "/" Then sDir = "/" & sDir
-    If Right(sDir) = "/" Then sDir = Left(sDir, -1)
+    sDir = Mid$(dvwChoose.Current, 2)
+    If Right$(sDir) = "/" Then sDir = Left(sDir, -1)
     
-    $sDirText = Trim(Replace(sDir, "/", "  ·  "))
+    $sDirText = Trim(Replace(sDir, "/", "  ›  "))
     
     UpdateDirText
     'txtDir.Visible = sDir
@@ -1440,5 +1438,11 @@ End
 Public Sub txtFile_Change()
 
   If Not GetMulti() Then Try fvwChoose.Current = txtFile.Text
+
+End
+
+Public Sub btnBookmark_Click()
+
+  dvwChoose.Current = dvwChoose.Root
 
 End

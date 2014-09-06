@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,Root,Picture,ShowHidden"
+Public Const _Properties As String = "*,Border=True,Root,Picture,ShowHidden,HideRoot"
 Public Const _DefaultEvent As String = "Click"
 Public Const _Group As String = "View"
 
@@ -21,6 +21,7 @@ Property Border As Boolean
 Property Icon As Picture
 Property Read Renaming As Boolean
 Property Settings As Variant[]
+Property HideRoot As Boolean
 
 Private $sRoot As String
 Private $hTreeView As TreeView
@@ -32,6 +33,7 @@ Private $bNoExpand As Boolean
 Private $bNoEvent As Boolean
 Private $hTimerExpand As Timer
 Private $bInRename As Boolean
+Private $bHideRoot As Boolean
 
 Public Sub _new()
 
@@ -44,7 +46,6 @@ Public Sub _new()
 
 End
 
-
 Private Function GetRoot() As String
 
   If Trim($sRoot) Then Return $sRoot
@@ -52,7 +53,14 @@ Private Function GetRoot() As String
 
 End
 
+Private Sub UpdateHideRoot()
 
+  Dim hGridView As GridView
+  
+  hGridView = $hTreeView.Children[0]
+  hGridView.Rows[0].H = If($bHideRoot, 0, -1)
+
+End
 
 Private Sub ClearView()
 
@@ -73,6 +81,8 @@ Private Sub ClearView()
   Endif
   $bNoEvent = False
 
+  UpdateHideRoot
+  
 End
 
 
@@ -364,6 +374,7 @@ Private Sub Picture_Write(hPict As Picture)
   Endif
 
   $hTreeView[GetRoot()].Picture = $hRootPict
+  UpdateHideRoot
 
 End
 
@@ -561,5 +572,18 @@ Private Sub Settings_Write(Value As Variant[])
 Catch
 
   Debug Error.Where; ": "; Error.Text
+
+End
+
+Private Function HideRoot_Read() As Boolean
+
+  Return $bHideRoot
+
+End
+
+Private Sub HideRoot_Write(Value As Boolean)
+
+  $bHideRoot = Value
+  UpdateHideRoot
 
 End

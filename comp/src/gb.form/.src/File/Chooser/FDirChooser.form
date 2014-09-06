@@ -1,34 +1,30 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(23,39,85,64)
+  MoveScaled(23,39,107,86)
   Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
   { mnuPopup Menu
   }
   { panBorder Panel
-    MoveScaled(0,0,79,50)
+    MoveScaled(0,0,90,59)
     Expand = True
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
     { VBox1 VBox
-      MoveScaled(2,3,76,46)
+      MoveScaled(2,3,82,53)
       Expand = True
       { panToolbar HBox
         MoveScaled(1,1,74,4)
         AutoResize = True
-        { btnBookmark MenuButton
-          MoveScaled(1,0,9,4)
-          ToolTip = ("Bookmarks")
-          AutoResize = True
-          Picture = Picture["icon:/small/home"]
-          Arrow = False
-          Border = False
-          MenuOnly = True
+        { btnParent ToolButton
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/up"]
         }
         { txtDir Label
-          MoveScaled(11,0,11,4)
+          MoveScaled(6,0,11,4)
           Expand = True
         }
         { Panel1 Panel
@@ -76,25 +72,38 @@
           ToolTip = ("Show files")
           Picture = Picture["icon:/small/view-split-h"]
         }
-        { btnParent ToolButton
-          MoveScaled(67,0,4,4)
-          ToolTip = ("Parent directory")
-          Picture = Picture["icon:/small/up"]
-        }
       }
       { Separator2 Separator
         MoveScaled(30,6,39,0)
       }
       { splChoose HSplit
-        MoveScaled(6,7,56,37)
+        MoveScaled(6,7,67,43)
         Expand = True
-        { dvwChoose DirView
-          MoveScaled(2,3,26,33)
-          Border = False
-          Picture = Picture["icon:/small/home"]
+        { panDirectory Panel
+          MoveScaled(2,4,27,38)
+          Arrangement = Arrange.Vertical
+          { btnBookmark MenuButton
+            MoveScaled(3,2,18,4)
+            Background = Color.TextBackground
+            ToolTip = ("Bookmarks")
+            AutoResize = True
+            Picture = Picture["icon:/small/home"]
+            Border = False
+            MenuOnly = True
+          }
+          { Separator1 Separator
+            MoveScaled(6,7,12,0)
+          }
+          { dvwChoose DirView
+            MoveScaled(0,9,26,28)
+            Expand = True
+            Border = False
+            Picture = Picture["icon:/small/home"]
+            HideRoot = True
+          }
         }
         { panView Panel
-          MoveScaled(30,2,25,33)
+          MoveScaled(38,5,25,33)
           Visible = False
           Arrangement = Arrange.Fill
           { fvwChoose FileView
@@ -106,7 +115,7 @@
     }
   }
   { panFilter HBox
-    MoveScaled(0,51,84,11)
+    MoveScaled(3,60,84,11)
     Spacing = True
     { panExtension VBox
       MoveScaled(1,1,62,9)

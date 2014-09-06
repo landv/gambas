@@ -878,7 +878,7 @@ Public Sub ScrollArea_MouseDown()
     
     If Not bCtrl And If $iMode <> Select.Single Then UnselectAll
     
-    If $iMode = Select.Multiple Then
+    If $iMode = Select.Multiple And If Mouse.Left Then
       $bSelRect = True
       $X1 = X
       $Y1 = Y
@@ -920,6 +920,7 @@ Public Sub ScrollArea_MouseMove()
   If Not Me.Enabled Or If Me.Design Then Return
   If $aItems.Count = 0 Then Return
   If $iMode = Select.None Then Return
+  If Not Mouse.Left Then Return
   
   X = Mouse.X + $hView.ScrollX
   Y = Mouse.Y + $hView.ScrollY

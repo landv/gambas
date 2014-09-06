@@ -9,6 +9,7 @@ Public Sub _new()
   $hProjectItem = New ProjectBox(panProjectItem)
   $hProjectItem.Highlight = False
   panProject.Reparent(dchProject.FileView.Parent)
+  panProject.Hide
   
 End
 
