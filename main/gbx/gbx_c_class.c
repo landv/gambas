@@ -829,7 +829,8 @@ GB_DESC NATIVE_Classes[] =
 
 GB_DESC NATIVE_Class[] =
 {
-	GB_DECLARE("Class", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE("Class", sizeof(CLASS)),
+	GB_NOT_CREATABLE(),
 
 	GB_STATIC_METHOD("Load", "Class", Class_Load, "(Name)s"),
 
@@ -858,7 +859,7 @@ GB_DESC NATIVE_Class[] =
 
 GB_DESC NATIVE_Object[] =
 {
-	GB_DECLARE("Object", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL("Object"),
 
 	GB_STATIC_METHOD("GetProperty", "v", Object_GetProperty, "(Object)o(Property)s"),
 	GB_STATIC_METHOD("SetProperty", NULL, Object_SetProperty, "(Object)o(Property)s(Value)v"),

@@ -133,6 +133,9 @@ CLASS *CLASS_register_class(GB_DESC *ptr, CLASS *class)
 				break;
 
 			case (intptr_t)GB_NOT_CREATABLE_ID:
+				class->no_create = TRUE;
+				break;
+
 			case (intptr_t)GB_VIRTUAL_CLASS_ID:
 				class->no_create = TRUE;
 				class->is_virtual = TRUE;
