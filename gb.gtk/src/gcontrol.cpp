@@ -1755,14 +1755,14 @@ void gControl::setName(char *name)
 
 #ifdef GTK3
 
-gColor gControl::realBackground()
+gColor gControl::realBackground(bool no_default)
 {
 	if (_bg != COLOR_DEFAULT)
 		return _bg;
 	else if (pr)
 		return pr->realBackground();
 	else
-		return gDesktop::bgColor();
+		return no_default ? gDesktop::bgColor() : COLOR_DEFAULT;
 }
 
 gColor gControl::background()
@@ -1781,14 +1781,14 @@ void gControl::setBackground(gColor color)
 	updateColor();
 }
 
-gColor gControl::realForeground()
+gColor gControl::realForeground(bool no_default)
 {
 	if (_fg != COLOR_DEFAULT)
 		return _fg;
 	else if (pr)
-		return pr->realForeground();
+		return pr->realForeground(no_default);
 	else
-		return gDesktop::fgColor();
+		return no_default ? gDesktop::fgColor() : COLOR_DEFAULT;
 }
 
 gColor gControl::foreground()
@@ -1809,14 +1809,14 @@ void gControl::setForeground(gColor color)
 
 #else
 
-gColor gControl::realBackground()
+gColor gControl::realBackground(bool no_default)
 {
 	if (_bg_set)
 		return use_base ? get_gdk_base_color(widget, isEnabled()) : get_gdk_bg_color(widget, isEnabled());
 	else if (pr)
-		return pr->realBackground();
+		return pr->realBackground(no_default);
 	else
-		return gDesktop::bgColor();
+		return no_default ? gDesktop::bgColor() : COLOR_DEFAULT;
 }
 
 gColor gControl::background()
@@ -1855,14 +1855,14 @@ void gControl::setBackground(gColor color)
 	setRealBackground(color);
 }
 
-gColor gControl::realForeground()
+gColor gControl::realForeground(bool no_default)
 {
 	if (_fg_set)
 		return use_base ? get_gdk_text_color(widget, isEnabled()) : get_gdk_fg_color(widget, isEnabled());
 	else if (pr)
 		return pr->realForeground();
 	else
-		return gDesktop::fgColor();
+		return no_default ? gDesktop::fgColor() : COLOR_DEFAULT;
 }
 
 gColor gControl::foreground()
@@ -1881,10 +1881,6 @@ static void set_foreground(GtkWidget *widget, gColor color, bool use_base)
 void gControl::setRealForeground(gColor color)
 {
 	set_foreground(widget, color, use_base);
-	/*set_foreground(border, color, use_base);
-	if (border != frame && GTK_IS_WIDGET(frame))
-		set_foreground(frame, color, use_base);
-	if (frame != widget)*/
 }
 
 void gControl::setForeground(gColor color)

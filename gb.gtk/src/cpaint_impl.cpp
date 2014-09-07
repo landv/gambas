@@ -79,7 +79,7 @@ static GB_COLOR get_color(GB_PAINT *d, GB_COLOR col)
 	if (col == GB_COLOR_DEFAULT)
 	{
 		if (GB.Is(d->device, CLASS_DrawingArea))
-			col = (((CWIDGET *)d->device)->widget)->realBackground();
+			col = (((CWIDGET *)d->device)->widget)->realBackground(true);
 		else
 			col = 0xFFFFFF;
 	}

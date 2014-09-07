@@ -555,7 +555,7 @@ void gContainer::setBackground(gColor color)
 	gControl *ch;
 	
 	gControl::setBackground(color);
-	
+
 	for (i = 0; i < childCount(); i++)
 	{
 		ch = gContainer::child(i);

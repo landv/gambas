@@ -115,7 +115,7 @@ END_PROPERTY
 
 GB_DESC CColorDesc[] =
 {
-  GB_DECLARE("Color", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE_STATIC("Color"),
 
   GB_STATIC_PROPERTY("Background", "i", Color_Background),
   GB_STATIC_PROPERTY("SelectedBackground", "i", Color_SelectedBackground),

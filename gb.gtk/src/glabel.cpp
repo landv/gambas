@@ -35,7 +35,7 @@ static gboolean cb_draw(GtkWidget *draw, cairo_t *cr, gLabel *d)
 	//d->drawBackground(cr);
 	d->drawBorder(cr);
 
-	gt_from_color(d->realForeground(), &rgba);
+	gt_from_color(d->realForeground(true), &rgba);
 	gdk_cairo_set_source_rgba(cr, &rgba);
 
 	if (xa == 3)

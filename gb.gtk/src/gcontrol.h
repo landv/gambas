@@ -109,8 +109,8 @@ public:
 	gColor foreground();
 	virtual void setBackground(gColor color = COLOR_DEFAULT);
 	virtual void setForeground(gColor color = COLOR_DEFAULT);
-	gColor realBackground();
-	gColor realForeground();
+	gColor realBackground(bool no_default = false);
+	gColor realForeground(bool no_default = false);
 	virtual void setRealBackground(gColor color);
 	virtual void setRealForeground(gColor color);
 

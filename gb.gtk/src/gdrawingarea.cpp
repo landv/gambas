@@ -298,7 +298,7 @@ void gDrawingArea::resizeCache()
 		
 		if (w > bw || h > bh || !buffer)
 		{
-			gt_cairo_set_source_color(cr, realBackground());
+			gt_cairo_set_source_color(cr, realBackground(true));
 			cairo_rectangle(cr, 0, 0, w, h);
 			cairo_fill(cr);
 		}

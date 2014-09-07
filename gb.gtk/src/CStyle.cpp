@@ -834,7 +834,7 @@ BEGIN_METHOD(Style_BackgroundOf, GB_OBJECT control)
 	if (GB.CheckObject(control))
 		return;
 
-	GB.ReturnInteger(control->widget->realBackground());
+	GB.ReturnInteger(control->widget->realBackground(true));
 
 END_METHOD
 
@@ -845,7 +845,7 @@ BEGIN_METHOD(Style_ForegroundOf, GB_OBJECT control)
 	if (GB.CheckObject(control))
 		return;
 
-	GB.ReturnInteger(control->widget->realForeground());
+	GB.ReturnInteger(control->widget->realForeground(true));
 
 END_METHOD
 
