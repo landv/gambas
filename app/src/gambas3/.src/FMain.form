@@ -345,8 +345,8 @@
       Visible = False
     }
     { mnuHideMenu Menu
-      Action = "hide-menubar"
       Text = ("Hide menubar")
+      Picture = Picture["icon:/small/text-fill"]
       Shortcut = "Ctrl+Alt+M"
     }
     { Menu3 Menu
@@ -937,6 +937,12 @@
       Picture = Picture["icon:/small/error"]
       Toggle = True
     }
+    { btnShowMenu ToolButton
+      MoveScaled(94,0,4,4)
+      Visible = False
+      ToolTip = ("Show menubar")
+      Picture = Picture["icon:/small/text-fill"]
+    }
     { Panel3 Panel
       MoveScaled(98,0,1,4)
     }
@@ -1378,10 +1384,6 @@
     Text = "Keyboard shortcuts"
     Shortcut = ""
     Picture = "icon:/small/shortcut"
-  }
-  { Action hide-menubar
-    Text = "Hide menubar"
-    Shortcut = "Ctrl+Alt+M"
   }
   { Action httpserver
     Text = "Use embedded HTTP server"

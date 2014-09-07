@@ -1179,6 +1179,9 @@ Public Sub UpdateMenu()
     Action["gui"].Visible = False
   Endif
   
+  btnShowMenu.Visible = Not Me.Menus.Visible
+  btnShowMenu.Raise
+  
 End
 
 Private Sub UpdateGlobalLayout()
@@ -1860,7 +1863,7 @@ Public Sub Form_KeyPress()
       CPosition.MovePrevious
       Stop Event
     Endif
-
+    
   Endif
   
 End
@@ -1933,9 +1936,9 @@ Public Sub mnuHideMenu_Click()
   If Me.Menus.Visible Then
     Me.Menus.Hide
     sepMenu.Hide
-    'btnShowMenu.Show
+    btnShowMenu.Show
     Settings["/ShowMenus"] = Me.Menus.Visible
-    Message.Optional(Subst(("To show the menu bar again, hit the following keys:<p><b>&1</b>"), mnuHideMenu.Shortcut), ("OK"), "HideMenu", "menu", Settings["/AlwaysDisplayOptionalMessages"])
+    'Message.Optional(Subst(("To show the menu bar again, hit the following keys:<p><b>&1</b>"), mnuHideMenu.Shortcut), ("OK"), "HideMenu", "menu", Settings["/AlwaysDisplayOptionalMessages"])
   Else
     btnShowMenu_Click
   Endif
@@ -1946,7 +1949,7 @@ Public Sub btnShowMenu_Click()
   
   Me.Menus.Show
   sepMenu.Show
-  'btnShowMenu.Hide
+  btnShowMenu.Hide
   Settings["/ShowMenus"] = Me.Menus.Visible
   
 End
@@ -2579,3 +2582,12 @@ Public Sub mnuOpenRecentFile_Click()
   Project.OpenFile(sPath)
   
 End
+
+' Public Sub Form_KeyRelease()
+' 
+'   If Key.Code = Key.AltKey And If $bHideMenuOnAltRelease Then
+'     $bHideMenuOnAltRelease = False
+'     Me.Menus.Hide
+'   Endif
+' 
+' End
