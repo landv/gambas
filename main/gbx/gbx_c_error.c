@@ -150,7 +150,7 @@ END_PROPERTY
 
 GB_DESC NATIVE_Error[] =
 {
-  GB_DECLARE("Error", 0), GB_VIRTUAL_CLASS(),
+  GB_DECLARE_STATIC("Error"),
 
   GB_STATIC_PROPERTY_READ("Code", "i", Error_Code),
   GB_STATIC_PROPERTY_READ("Text", "s", Error_Text),

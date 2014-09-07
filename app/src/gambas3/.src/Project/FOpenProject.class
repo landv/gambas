@@ -168,7 +168,7 @@ Public Sub pchProject_Cancel()
 
 End
 
-Public Sub pchProject_Open(Path As String, Extern As Boolean)
+Public Sub pchProject_Open((Path) As String, Extern As Boolean)
 
   InAnotherWindow = Extern
   btnOpen_Click

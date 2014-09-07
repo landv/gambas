@@ -422,9 +422,13 @@ Public Sub DrawingArea_Draw()
 
     'Draw.ClipRect = hClip '(hClip.X, hClip.Y, hClip.W, hClip.H)
 
+    If $bShadow Then Paint.Save
+
     Raise Draw
 
     If $bShadow Then
+      
+      Paint.Restore
       
       ' Draw.Clip(hClip.X, hClip.Y + $iShadowN, hClip.W, hClip.H - $iShadowN - $iShadowS)
       ' If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, 16 - ($hVBar.Value - $hVBar.MinValue)), Draw.W, 16)

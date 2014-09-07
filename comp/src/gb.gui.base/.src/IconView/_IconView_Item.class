@@ -242,7 +242,7 @@ Private Sub GetBackground(hIconView As IconView, Optional bSelected As Boolean) 
   Dim iColor As Integer
   
   If bSelected Then 
-    iColor = Color.SelectedBackground  
+    iColor = Color.LightBackground
   Else
     iColor = hIconView.Background
     If iColor = Color.Default Then iColor = Color.TextBackground

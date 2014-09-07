@@ -18,13 +18,25 @@
       { panToolbar HBox
         MoveScaled(1,1,74,4)
         AutoResize = True
-        { btnParent ToolButton
+        { btnBack ToolButton
           MoveScaled(0,0,4,4)
+          Enabled = False
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/left"]
+        }
+        { btnForward ToolButton
+          MoveScaled(4,0,4,4)
+          Enabled = False
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/right"]
+        }
+        { btnParent ToolButton
+          MoveScaled(9,0,4,4)
           ToolTip = ("Parent directory")
           Picture = Picture["icon:/small/up"]
         }
         { txtDir Label
-          MoveScaled(6,0,11,4)
+          MoveScaled(14,0,11,4)
           Expand = True
         }
         { Panel1 Panel
@@ -84,7 +96,6 @@
           Arrangement = Arrange.Vertical
           { btnBookmark MenuButton
             MoveScaled(3,2,18,4)
-            Background = Color.TextBackground
             ToolTip = ("Bookmarks")
             AutoResize = True
             Picture = Picture["icon:/small/home"]

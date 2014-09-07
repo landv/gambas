@@ -533,7 +533,7 @@ GB_DESC CColorInfoDesc[] =
 
 GB_DESC CColorDesc[] =
 {
-  GB_DECLARE("Color", 0), GB_NOT_CREATABLE(),
+  GB_DECLARE_STATIC("Color"),
 
   GB_CONSTANT("Default", "i", COLOR_DEFAULT),
 

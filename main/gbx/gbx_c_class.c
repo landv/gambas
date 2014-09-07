@@ -777,7 +777,7 @@ END_METHOD
 
 GB_DESC NATIVE_Symbol[] =
 {
-	GB_DECLARE(".Symbol", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".Symbol"),
 
 	GB_PROPERTY_READ("Name", "s", Symbol_Name),
 	GB_PROPERTY_READ("Kind", "i", Symbol_Kind),
@@ -793,7 +793,7 @@ GB_DESC NATIVE_Symbol[] =
 
 GB_DESC NATIVE_Components[] =
 {
-	GB_DECLARE("Components", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("Components"),
 
 	GB_STATIC_METHOD("_next", "Component", Components_next, NULL),
 	GB_STATIC_METHOD("_get", "Component", Components_get, "(Name)s"),
@@ -804,7 +804,8 @@ GB_DESC NATIVE_Components[] =
 
 GB_DESC NATIVE_Component[] =
 {
-	GB_DECLARE("Component", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE("Component", sizeof(COMPONENT)),
+	GB_NOT_CREATABLE(),
 
 	//GB_STATIC_METHOD("_get", "Component", library_get, "(Name)s"),
 	GB_STATIC_METHOD("Load", "Component", Component_Load, "(Name)s"),
@@ -818,7 +819,7 @@ GB_DESC NATIVE_Component[] =
 
 GB_DESC NATIVE_Classes[] =
 {
-	GB_DECLARE("Classes", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("Classes"),
 
 	GB_STATIC_METHOD("_next", "Class", Classes_next, NULL),
 	GB_STATIC_METHOD("_get", "Class", Classes_get, "(Name)s"),
@@ -859,7 +860,7 @@ GB_DESC NATIVE_Class[] =
 
 GB_DESC NATIVE_Object[] =
 {
-	GB_DECLARE_VIRTUAL("Object"),
+	GB_DECLARE_STATIC("Object"),
 
 	GB_STATIC_METHOD("GetProperty", "v", Object_GetProperty, "(Object)o(Property)s"),
 	GB_STATIC_METHOD("SetProperty", NULL, Object_SetProperty, "(Object)o(Property)s(Value)v"),

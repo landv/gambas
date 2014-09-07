@@ -8,6 +8,7 @@
   { HBox1 HBox
     MoveScaled(8,2,84,5)
     #Translate = False
+    Spacing = True
     { Button1 Button
       MoveScaled(0,0,16,4)
       #Translate = False
@@ -22,11 +23,14 @@
       MoveScaled(36,0,16,4)
       Text = ("Balloon")
     }
+    { Label1 Label
+      MoveScaled(56,0,24,4)
+      Text = ("Label1")
+    }
   }
   { Panel1 HBox
     MoveScaled(3,9,102,64)
     #Translate = False
-    Background = &HDFEFFF&
     Expand = True
     { FileChooser1 FileChooser
       MoveScaled(4,4,85,56)

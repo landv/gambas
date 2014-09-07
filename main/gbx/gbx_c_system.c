@@ -236,7 +236,7 @@ END_METHOD
 
 GB_DESC NATIVE_User[] =
 {
-	GB_DECLARE("User", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("User"),
 
 	GB_STATIC_PROPERTY_READ("Name", "s", User_Name),
 	GB_STATIC_PROPERTY_READ("Id", "i", User_Id),
@@ -248,7 +248,7 @@ GB_DESC NATIVE_User[] =
 
 GB_DESC NATIVE_System[] =
 {
-	GB_DECLARE("System", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("System"),
 
 	GB_STATIC_PROPERTY_READ("Path", "s", System_Path),
 	GB_CONSTANT("Version", "s", GAMBAS_VERSION_STRING),

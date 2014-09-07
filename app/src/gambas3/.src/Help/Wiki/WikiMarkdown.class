@@ -166,13 +166,9 @@ Public Sub Command(sCommand As String) As String[]
     
     Return Wiki.GetStat()
 
-  Else If sCommand = "todo" Then
+  Else If sCommand = "todo" Or If sCommand = "changes" Then
     
-    Return "Unavailable in offline help."
-    
-  Else If sCommand = "changes" Then
-    
-    Return "Unavailable in offline help."
+    Return ["Unavailable in offline help."]
 
   Else
     

@@ -155,7 +155,7 @@ END_PROPERTY
 
 GB_DESC NATIVE_Param[] =
 {
-	GB_DECLARE("Param", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("Param"),
 
 	GB_STATIC_PROPERTY_READ("Count", "i", Param_Count),
 	GB_STATIC_PROPERTY_READ("Max", "i", Param_Max),
@@ -175,7 +175,7 @@ GB_DESC NATIVE_Param[] =
 
 GB_DESC NATIVE_Gambas[] =
 {
-	GB_DECLARE("gb", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("gb"),
 
 	GB_CONSTANT("Binary", "i", GB_COMP_BINARY),
 	GB_CONSTANT("IgnoreCase", "i", GB_COMP_NOCASE),

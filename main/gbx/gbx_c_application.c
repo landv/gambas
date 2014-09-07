@@ -284,9 +284,11 @@ END_PROPERTY
 
 #endif
 
+//-------------------------------------------------------------------------
+
 GB_DESC NATIVE_AppArgs[] =
 {
-  GB_DECLARE_VIRTUAL("Args"),
+  GB_DECLARE_STATIC("Args"),
 
   GB_STATIC_PROPERTY_READ("Count", "i", Application_Args_Count),
   GB_STATIC_PROPERTY_READ("Max", "i", Application_Args_Max),
@@ -300,7 +302,7 @@ GB_DESC NATIVE_AppArgs[] =
 
 GB_DESC NATIVE_AppEnv[] =
 {
-  GB_DECLARE_VIRTUAL("Env"),
+  GB_DECLARE_STATIC("Env"),
 
   GB_STATIC_PROPERTY_READ("Count", "i", Application_Env_Count),
   GB_STATIC_METHOD("_get", "s", Application_Env_get, "(Key)s"),
@@ -313,7 +315,7 @@ GB_DESC NATIVE_AppEnv[] =
 
 GB_DESC NATIVE_App[] =
 {
-  GB_DECLARE_VIRTUAL("Application"),
+  GB_DECLARE_STATIC("Application"),
 
   GB_STATIC_PROPERTY_SELF("Args", "Args"),
   GB_STATIC_PROPERTY_SELF("Env", "Env"),

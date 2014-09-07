@@ -920,7 +920,6 @@ Public Sub ScrollArea_MouseMove()
   If Not Me.Enabled Or If Me.Design Then Return
   If $aItems.Count = 0 Then Return
   If $iMode = Select.None Then Return
-  If Not Mouse.Left Then Return
   
   X = Mouse.X + $hView.ScrollX
   Y = Mouse.Y + $hView.ScrollY
@@ -932,8 +931,8 @@ Public Sub ScrollArea_MouseMove()
   '   Endif
   ' Endif
   
-  SetHoverItem(iPos)
-  If $bSelRect Then UpdateSelRect(X, Y)
+  If Not Mouse.Left And If Not Mouse.Right Then SetHoverItem(iPos)
+  If $bSelRect And If Mouse.Left Then UpdateSelRect(X, Y)
   
 End
 

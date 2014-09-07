@@ -834,7 +834,7 @@ END_METHOD
 
 GB_DESC NATIVE_String[] =
 {
-	GB_DECLARE("String", 0),  GB_VIRTUAL_CLASS(),
+	GB_DECLARE_STATIC("String"),
 
 	GB_STATIC_METHOD("Len", "i", String_Len, "(String)s"),
 

@@ -361,6 +361,9 @@ typedef
 
 #define GB_NOT_CREATABLE() { GB_NOT_CREATABLE_ID }
 
+#define GB_DECLARE_STATIC(name) \
+	{ name, (intptr_t)GB_VERSION, (intptr_t)0 }, GB_NOT_CREATABLE()
+
 
 /* Auto creatable class macro */
 

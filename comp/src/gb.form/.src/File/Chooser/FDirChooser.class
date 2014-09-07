@@ -31,6 +31,11 @@ Private $hWatch As Watcher
 Private $bPressed As Boolean
 Private $sDirText As String
 
+Private $sLast As String
+Private $aHistory As New String[]
+Private $iHistory As Integer = -1
+Private $bNoSaveHistory As Boolean
+
 Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
 
 
@@ -83,6 +88,8 @@ Public Sub _new(Optional bFile As Boolean)
   Endif
   
   SetBookmark($hBookmarkList.FindBest(System.User.Home))
+  $sLast = dvwChoose.Current
+  SaveToHistory
   
 End
 
@@ -113,10 +120,10 @@ Private Sub UpdateLabelDir()
     
   Else
 
-    sDir = Mid$(dvwChoose.Current, 2)
+    sDir = dvwChoose.Current
     If Right$(sDir) = "/" Then sDir = Left(sDir, -1)
     
-    $sDirText = Trim(Replace(sDir, "/", "  ›  "))
+    $sDirText = Trim(Replace(sDir, "/", " / ")) ' ›
     
     UpdateDirText
     'txtDir.Visible = sDir
@@ -128,6 +135,11 @@ End
 
 
 Public Sub dvwChoose_Click()
+
+  If dvwChoose.Current = $sLast Then Return
+  
+  SaveToHistory
+  $sLast = dvwChoose.Current
 
   If panView.Visible Then 
     fvwChoose.Dir = dvwChoose.Current
@@ -1444,5 +1456,47 @@ End
 Public Sub btnBookmark_Click()
 
   dvwChoose.Current = dvwChoose.Root
+
+End
+
+Private Sub UpdateHistoryButtons()
+
+  btnBack.Enabled = $iHistory > 0
+  btnForward.Enabled = $iHistory < $aHistory.Max
+  If btnBack.Enabled Then btnBack.Tooltip = $aHistory[$iHistory - 1]
+  If btnForward.Enabled Then btnForward.Tooltip = $aHistory[$iHistory + 1]
+
+End
+
+Private Sub SaveToHistory()
+
+  If $bNoSaveHistory Then Return
+  
+  $aHistory.Resize($iHistory + 1)
+  $aHistory.Add(dvwChoose.Current)
+  Inc $iHistory
+  UpdateHistoryButtons
+
+End
+
+Public Sub btnBack_Click()
+
+  If $iHistory = 0 Then Return
+  $bNoSaveHistory = True
+  Dec $iHistory
+  SetDir($aHistory[$iHistory])
+  $bNoSaveHistory = False
+  UpdateHistoryButtons
+
+End
+
+Public Sub btnForward_Click()
+
+  If $iHistory = $aHistory.Max Then Return
+  $bNoSaveHistory = True
+  Inc $iHistory
+  SetDir($aHistory[$iHistory])
+  $bNoSaveHistory = False
+  UpdateHistoryButtons
 
 End
