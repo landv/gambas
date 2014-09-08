@@ -2,8 +2,21 @@
 
 ' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
 
+'' Get the edited patch back
+Property Read {Patch} As Patch
+
 Private $hPatch As New Patch
 Private $hObs As Observer
+  ' Whether we behave like a window or just an embedded control (see FMakePatch, Step #4)
+Private $bWindowed As Boolean
+
+Public Sub _new(Optional Windowed As Boolean = True)
+
+  $bWindowed = Windowed
+  Panel3.Visible = Windowed
+  HBox2.Visible = Windowed
+
+End
 
 Public Sub Form_Open()
 
@@ -39,7 +52,7 @@ Public Sub Observer_MouseDown()
 
     If .ColumnAt(Mouse.X) = 0 Then
       iRow = .RowAt(Mouse.Y)
-      If iRow >= 0 Then
+      If iRow >= 0 And .Row >= 0 Then
         bSelect = Not $hPatch[.Row].Active
         For Each iRow In .Rows.Selection
           Check(iRow, bSelect)
@@ -154,7 +167,10 @@ End
 
 Public Sub Form_Close()
 
-  Settings.Write(Me)
+  ' Save configuration only if we're windowed (else we're just a
+  ' control in some other window where it makes no sense to save
+  ' our geometry).
+  If $bWindowed Then Settings.Write(Me)
 
 End
 
@@ -175,8 +191,24 @@ Public Sub txtPath_Click()
   txtPath.Text = Dialog.Path
 
   Inc Application.Busy
-  $hPatch.Parse(File.Load(Dialog.Path))
-  RefreshHunks()
+    Parse(File.Load(Dialog.Path))
   Dec Application.Busy
+
+End
+
+Public Sub Parse(sFile As String)
+
+  Inc Application.Busy
+  $hPatch.Parse(sFile)
+  RefreshHunks()
+
+  Finally
+    Dec Application.Busy
+
+End
+
+Private Function Patch_Read() As Patch
+
+  Return $hPatch
 
 End

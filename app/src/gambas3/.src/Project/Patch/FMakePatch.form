@@ -12,7 +12,7 @@
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 4
+    Count = 5
     TextFont = Font["Bold,+3"]
     ShowIndex = True
     Border = False
@@ -47,11 +47,16 @@
         Text = ("Automatic patch name")
         Value = CheckBox.True
       }
+      { chkEditPatch CheckBox
+        MoveScaled(1,21,64,4)
+        Text = ("Edit Patch")
+        Value = CheckBox.True
+      }
       { Panel2 Panel
-        MoveScaled(14,22,19,2)
+        MoveScaled(14,26,19,2)
       }
       { TextLabel1 TextLabel
-        MoveScaled(0,25,69,3)
+        MoveScaled(0,29,69,3)
         Font = Font["Italic,-1"]
         Text = ("This wizard will generate a patch between an origin project and the current project.")
       }
@@ -74,6 +79,13 @@
       Border = True
     }
     Index = 3
+    Text = ("Edit patch")
+    { panViewer Panel
+      MoveScaled(2,1,70,45)
+      Expand = True
+      Arrangement = Arrange.Fill
+    }
+    Index = 4
     Text = ("Choose patch file name")
     { fchPatch FileChooser
       MoveScaled(0,1,77,51)

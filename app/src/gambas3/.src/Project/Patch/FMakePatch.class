@@ -3,6 +3,7 @@
 ' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
 
 Private $sOldName As String
+Private $hViewer As FPatch
 
 Public Sub wizMakePatch_BeforeChange()
 
@@ -41,7 +42,7 @@ Public Sub wizMakePatch_BeforeChange()
 
 End
 
-Public Sub wizMakePatch_Close()
+Private Function GetDiff() As String
 
   Dim sOld As String
 
@@ -57,12 +58,27 @@ Public Sub wizMakePatch_Close()
   Endif
 
   Project.Config["/FMakePatch/MakeName"] = CBool(chkMakeName.Value)
+  Project.Config["/FMakePatch/EditPatch"] = CBool(chkEditPatch.Value)
   If Not chkMakeName.Value Then
     Project.Config["/FMakePatch/PatchName"] = fchPatch.Value
   Endif
 
   Project.Save()
-  File.Save(fchPatch.Value, Patch.GenerateForOld(sOld))
+  Return Patch.GenerateForOld(sOld)
+
+End
+
+Public Sub wizMakePatch_Close()
+
+  Dim sDiff As String
+
+  ' Get the edited patch
+  If chkEditPatch.Value And If $hViewer Then
+    sDiff = $hViewer.Patch.MakeText()
+  Else
+    sDiff = GetDiff()
+  Endif
+  File.Save(fchPatch.Value, sDiff)
   Message.Info(("Patch has been successfully generated."))
   Me.Close()
 
@@ -96,8 +112,11 @@ Public Sub Form_Open()
   Settings.Read(fchPatch)
 
   chkMakeName.Value = Project.Config["/FMakePatch/MakeName", True]
+  chkEditPatch.Value = Project.Config["/FMakePatch/EditPatch", True]
   fchOld.SelectedPath = Project.Config["/FMakePatch/LastArchive", User.Home]
   pchOld.Path = Project.Config["/FMakePatch/LastProject", User.Home]
+
+  $hViewer = New FPatch(panViewer, False)
 
 End
 
@@ -113,6 +132,11 @@ Public Sub wizMakePatch_Change()
   Dim sName As String
 
   If wizMakePatch.Index = 3 Then
+    Try $hViewer.Parse(GetDiff())
+    If Error Then
+      Message.Error(("Unable to generate the patch.") & "\n\n" & Error.Text)
+    Endif
+  Else If wizMakePatch.Index = 4 Then
     If chkMakeName.Value Then
       sName = $sOldName
       sName &= "~"
@@ -125,5 +149,11 @@ Public Sub wizMakePatch_Change()
       fchPatch.SelectedPath = Project.Config["/FMakePatch/PatchName"]
     Endif
   Endif
+
+End
+
+Public Sub chkEditPatch_Click()
+
+  wizMakePatch[3].Enabled = chkEditPatch.Value
 
 End
