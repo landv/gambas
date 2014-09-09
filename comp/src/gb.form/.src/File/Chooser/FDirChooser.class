@@ -29,7 +29,6 @@ Private $hCurrentBookmark As CBookmark
 Private $bShowBookmark As Boolean
 Private $hWatch As Watcher
 Private $bPressed As Boolean
-Private $sDirText As String
 
 Private $sLast As String
 Private $aHistory As New String[]
@@ -37,14 +36,28 @@ Private $iHistory As Integer = -1
 Private $bNoSaveHistory As Boolean
 
 Static Private $aIconSize As Integer[] = [16, 22, 32, 48, 64, 96, 128, 192, 256]
+Static Private $hGradient As Image
 
 
 Public Sub _new(Optional bFile As Boolean)
 
   Dim hChild As Control
+  Dim iCol As Integer
   
   DirView = dvwChoose
   FileView = fvwChoose
+  
+  $hGradient = New Image(dwgGradient.W, dwgGradient.H, Color.Transparent)
+  
+  Paint.Begin($hGradient)
+
+  iCol = Style.BackgroundOf(Me)
+  
+  Paint.Brush = Paint.LinearGradient(0, 0, Paint.W, 0, [Color.SetAlpha(iCol, 255), iCol], [0, 1])
+  Paint.Rectangle(0, 0, Paint.W, Paint.H)
+  Paint.Fill
+  
+  Paint.End
   
   ScrollArea(DirView.Proxy.Proxy.Proxy).Shadow = True
   
@@ -109,29 +122,43 @@ End
 
 Private Sub UpdateLabelDir()
   
-  Dim sDir As String
+  Dim sDir As String = dvwChoose.Current
+  Dim sName As String
+  Dim sPath As String
+  Dim hDirButton As DirButton
+  Dim hCtrl As Control
+  
+  For Each hCtrl In panDir.Children
+    If hCtrl Is DirButton Then hCtrl.Delete
+  Next
+  
+  sPath = "/"
+  For Each sName In Split(Mid$(sDir, 2), "/")
+    
+    sPath &/= sName
+    hDirButton = New DirButton(panDir) As "DirButton"
+    hDirButton.Path = sPath
+    
+  Next
 
-  If dvwChoose.Current = "/" Then
-    
-    $sDirText = ""
-    txtDir.Text = ""
-    'txtDir.Hide
-    btnParent.Enabled = False
-    
+  btnParent.Enabled = sDir <> "/"
+  
+  dwgGradient.Raise
+  
+End
+
+Public Sub DirButton_Click()
+  
+  Dim sDir As String = Last.Path
+  
+  If sDir = dvwChoose.Current Then
+    Reload
   Else
-
-    sDir = dvwChoose.Current
-    If Right$(sDir) = "/" Then sDir = Left(sDir, -1)
-    
-    $sDirText = Trim(Replace(sDir, "/", " / ")) ' ›
-    
-    UpdateDirText
-    'txtDir.Visible = sDir
-    btnParent.Enabled = True
-    
+    SetDir(sDir)
   Endif
   
 End
+
 
 
 Public Sub dvwChoose_Click()
@@ -1418,34 +1445,19 @@ Public Sub SetShowPreview(bPreview As Boolean)
   
 End
 
-Private Sub Ellipsize(sText As String, hFont As Font, W As Integer) As String
-  
-  Dim sCar As String = "…"
-  Dim iPos As Integer
-  
-  If Not sText Then Return
-  If hFont.TextWidth(sText) <= W Then Return sText
-  
-  For iPos = 1 To String.Len(sText)
-    If hFont.TextWidth(String.Left(sText, iPos) & sCar) > W Then Break
-  Next
-  
-  Return String.Left(sText, iPos - 1) & sCar
-  
-End
 
-Private Sub UpdateDirText()
-
-  txtDir.Text = Ellipsize($sDirText, txtDir.Font, txtDir.W)
-
-End
+' Private Sub UpdateDirText()
+' 
+'   txtDir.Text = Ellipsize($sDirText, txtDir.Font, txtDir.W)
+' 
+' End
 
 
-Public Sub panToolbar_Arrange()
-
-  UpdateDirText
-
-End
+' Public Sub panToolbar_Arrange()
+' 
+'   UpdateDirText
+' 
+' End
 
 Public Sub txtFile_Change()
 
@@ -1498,5 +1510,23 @@ Public Sub btnForward_Click()
   SetDir($aHistory[$iHistory])
   $bNoSaveHistory = False
   UpdateHistoryButtons
+
+End
+
+Public Sub btnRoot_Click()
+
+  dvwChoose.Current = "/"
+
+End
+
+Public Sub dwgGradient_Draw()
+
+  Paint.DrawImage($hGradient, 0, 0)
+
+End
+
+Public Sub panDir_Arrange()
+
+  dwgGradient.Move(panDir.W - dwgGradient.W, 0, dwgGradient.W, panDir.H)
 
 End

@@ -23,6 +23,8 @@
 
 #define __GBX_C_GAMBAS_C
 
+#include <syslog.h>
+
 #include "gbx_info.h"
 #include "gbx_local.h"
 #include "gbx_compare.h"

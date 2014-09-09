@@ -683,26 +683,6 @@ BEGIN_PROPERTY(CSCROLLVIEW_scrollbar)
 
 END_PROPERTY
 
-#if 0
-BEGIN_PROPERTY(CSCROLLVIEW_background)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(THIS->container->palette().color(QPalette::Window).rgb() & 0xFFFFFF);
-	else
-	{
-		QPalette pal;
-		
-		if (VPROP(GB_INTEGER) != COLOR_DEFAULT)
-		{
-			pal = THIS->container->palette();
-			pal.setColor(QPalette::Window, QColor((QRgb)VPROP(GB_INTEGER)));
-		}
-		THIS->container->setPalette(pal);
-	}
-
-END_PROPERTY
-#endif
-
 BEGIN_PROPERTY(ScrollView_Border)
 
 	CWIDGET_border_simple(_object, _param);

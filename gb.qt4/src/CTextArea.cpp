@@ -126,8 +126,7 @@ static void set_text_color(void *_object)
 	}
 	else
 	{
-		col = QColor((QRgb)fg);
-		fmt.setForeground(col);
+		fmt.setForeground(TO_QCOLOR(fg));
 	}
 	
 	//WIDGET->setTextColor(col);

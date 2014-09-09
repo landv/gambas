@@ -116,6 +116,7 @@ protected:
 	virtual void hideEvent(QHideEvent *);
 	//virtual void drawContents(QPainter *p);
 	virtual void setPalette(const QPalette &);
+	virtual void changeEvent(QEvent *);
 
 private:
 

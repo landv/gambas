@@ -67,7 +67,7 @@ static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state
 	if (color != GB_COLOR_DEFAULT)
 	{
 		QPalette palette;
-		palette.setColor(role, QColor::fromRgba((QRgb)(color ^ 0xFF000000)));
+		palette.setColor(role, TO_QCOLOR(color));
 		opt.palette = palette;
 	}
 }

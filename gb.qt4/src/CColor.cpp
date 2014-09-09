@@ -39,7 +39,7 @@ static uint get_light_foreground()
 
 QColor CCOLOR_light_foreground()
 {
-	return QColor((QRgb)get_light_foreground());
+	return TO_QCOLOR(get_light_foreground());
 }
 
 QColor CCOLOR_make(GB_COLOR color)

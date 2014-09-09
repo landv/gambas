@@ -1339,94 +1339,6 @@ BEGIN_PROPERTY(Control_NoTabFocus)
 
 END_PROPERTY
 
-#if 0
-
-/*
-static QColor get_background(CWIDGET *_object, QWidget *wid)
-{
-	QPalette pal(wid->palette());
-	QColorGroup::ColorRole role = (QColorGroup::ColorRole)OBJECT(CWIDGET)->background;
-
-	return pal.color(QPalette::Active, role);
-}
-
-static void test_color(CWIDGET *_object, QWidget *wid)
-{
-	QColor b, f, bp, fp;
-
-	if (!wid->ownPalette() || !wid->parentWidget())
-		return;
-
-	f = wid->paletteForegroundColor();
-	fp = wid->parentWidget()->paletteForegroundColor();
-
-	if (f != fp)
-		return;
-
-	b = get_background(_object, wid);
-	bp = get_background(CWidget::get(wid->parentWidget()), wid->parentWidget());
-
-	if (b != bp)
-		return;
-
-	wid->unsetPalette();
-}
-*/
-
-BEGIN_PROPERTY(CWIDGET_background)
-
-	QWidget *wid = QWIDGET(_object);
-	QPalette pal(wid->palette());
-	QColorGroup::ColorRole role = (QColorGroup::ColorRole)OBJECT(CWIDGET)->background;
-
-	//qDebug("bm = %d (%d %d)", wid->backgroundMode(), QWidget::PaletteButton, QWidget::PaletteBase);
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(pal.color(QPalette::Active, role).rgb() & 0xFFFFFF);
-	else
-	{
-		pal.setColor(role, QColor((QRgb)VPROP(GB_INTEGER)));
-		wid->setPalette(pal);
-		//test_color((CWIDGET *)_object, wid);
-	}
-
-#if 0
-	if (READ_PROPERTY)
-		GB.ReturnInteger((int)(WIDGET->paletteBackgroundColor().rgb() & 0xFFFFFF));
-	else
-		WIDGET->setPaletteBackgroundColor(QColor((QRgb)PROPERTY(int)));
-#endif
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(CWIDGET_foreground)
-
-	QWidget *wid;
-
-	if (GB.Is(_object, GB.FindClass("Container")))
-		wid = ((CCONTAINER *)_object)->container;
-	else
-		wid = QWIDGET(_object);
-
-	if (READ_PROPERTY)
-	{
-		GB.ReturnInteger((int)(wid->paletteForegroundColor().rgb() & 0xFFFFFF));
-		return;
-	}
-	else
-	{
-		QPalette pal(QWIDGET(_object)->palette());
-
-		pal.setColor(QColorGroup::Foreground, QColor((QRgb)VPROP(GB_INTEGER)));
-		pal.setColor(QColorGroup::Text, QColor((QRgb)VPROP(GB_INTEGER)));
-		wid->setPalette(pal);
-		//test_color((CWIDGET *)_object, wid);
-	}
-
-END_PROPERTY
-#endif
-
 
 static QWidget *get_color_widget(CWIDGET *_object)
 {
@@ -1478,17 +1390,17 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			if (bg != COLOR_DEFAULT)
 			{
 				if (cb->isEditable())
-					palette.setColor(QPalette::Base, QColor((QRgb)bg));
+					palette.setColor(QPalette::Base, TO_QCOLOR(bg));
 				else
-					palette.setColor(QPalette::Button, QColor((QRgb)bg));
+					palette.setColor(QPalette::Button, TO_QCOLOR(bg));
 			}
 
 			if (fg != COLOR_DEFAULT)
 			{
 				if (cb->isEditable())
-					palette.setColor(QPalette::Text, QColor((QRgb)fg));
+					palette.setColor(QPalette::Text, TO_QCOLOR(fg));
 				else
-					palette.setColor(QPalette::ButtonText, QColor((QRgb)fg));
+					palette.setColor(QPalette::ButtonText, TO_QCOLOR(fg));
 			}
 
 			w->setPalette(palette);
@@ -1499,12 +1411,12 @@ void CWIDGET_reset_color(CWIDGET *_object)
 
 			if (bg != COLOR_DEFAULT)
 			{
-				palette.setColor(QPalette::Base, QColor((QRgb)bg));
+				palette.setColor(QPalette::Base, TO_QCOLOR(bg));
 			}
 
 			if (fg != COLOR_DEFAULT)
 			{
-				palette.setColor(QPalette::Text, QColor((QRgb)fg));
+				palette.setColor(QPalette::Text, TO_QCOLOR(fg));
 			}
 
 			w->setPalette(palette);
@@ -1514,10 +1426,10 @@ void CWIDGET_reset_color(CWIDGET *_object)
 			palette = QPalette();
 		
 			if (bg != COLOR_DEFAULT)
-				palette.setColor(w->backgroundRole(), QColor((QRgb)bg));
+				palette.setColor(w->backgroundRole(), TO_QCOLOR(bg));
 			
 			if (fg != COLOR_DEFAULT)
-				palette.setColor(w->foregroundRole(), QColor((QRgb)fg));
+				palette.setColor(w->foregroundRole(), TO_QCOLOR(fg));
 		
 			w->setPalette(palette);
 
@@ -1562,7 +1474,7 @@ GB_COLOR CWIDGET_get_background(CWIDGET *_object, bool handle_proxy)
 }
 
 
-int CWIDGET_get_real_background(CWIDGET *_object)
+GB_COLOR CWIDGET_get_real_background(CWIDGET *_object)
 {
 	GB_COLOR bg = CWIDGET_get_background(THIS);
 	
@@ -1586,7 +1498,7 @@ GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy)
 }
 
 
-int CWIDGET_get_real_foreground(CWIDGET *_object)
+GB_COLOR CWIDGET_get_real_foreground(CWIDGET *_object)
 {
 	GB_COLOR fg = CWIDGET_get_foreground(THIS);
 	

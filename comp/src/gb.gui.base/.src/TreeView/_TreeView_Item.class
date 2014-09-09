@@ -271,6 +271,8 @@ Private Sub Expanded_Write(Value As Boolean)
 
   If _Rows = iOldRows Then Return
   
+  hTree._SaveSelection
+  
   _ComputeRows(_Rows - iOldRows)
   
   hTree._UpdateItemHeight(Me, True)
@@ -278,6 +280,8 @@ Private Sub Expanded_Write(Value As Boolean)
   hTree._UpdateCurrent(sCurrent)
   hTree._RaiseExpand($sKey, $bExpanded)
 
+  hTree._RestoreSelection
+  
   If Value Then hTree._EnsureVisible(Me, True)
   
 End

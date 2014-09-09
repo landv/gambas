@@ -422,7 +422,7 @@ void MySeparator::paintEvent( QPaintEvent * )
 	{
 		void *_object = CWidget::getReal(this);
 		uint color = CWIDGET_get_foreground(&THIS->widget);
-		p.setPen(color == COLOR_DEFAULT ? CCOLOR_light_foreground() : QColor((QRgb)color));
+		p.setPen(color == COLOR_DEFAULT ? CCOLOR_light_foreground() : TO_QCOLOR(color));
 		if (width() >= height())
 			p.drawLine(0, height() / 2, width() - 1, height() / 2);
 		else

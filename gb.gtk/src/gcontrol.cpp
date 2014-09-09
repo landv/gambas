@@ -1760,7 +1760,7 @@ gColor gControl::realBackground(bool no_default)
 	if (_bg != COLOR_DEFAULT)
 		return _bg;
 	else if (pr)
-		return pr->realBackground();
+		return pr->realBackground(no_default);
 	else
 		return no_default ? gDesktop::bgColor() : COLOR_DEFAULT;
 }
@@ -1860,7 +1860,7 @@ gColor gControl::realForeground(bool no_default)
 	if (_fg_set)
 		return use_base ? get_gdk_text_color(widget, isEnabled()) : get_gdk_fg_color(widget, isEnabled());
 	else if (pr)
-		return pr->realForeground();
+		return pr->realForeground(no_default);
 	else
 		return no_default ? gDesktop::fgColor() : COLOR_DEFAULT;
 }

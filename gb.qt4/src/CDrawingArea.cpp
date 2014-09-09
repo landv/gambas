@@ -30,6 +30,7 @@
 #include <QX11Info>
 #include <QColormap>
 #include <QTimer>
+#include <QEvent>
 
 #include "CDraw.h"
 #include "cpaint_impl.h"
@@ -41,7 +42,12 @@
 #include <X11/Xlib.h>
 #endif
 
+#ifdef FontChange
+#undef FontChange
+#endif
+
 DECLARE_EVENT(EVENT_Draw);
+DECLARE_EVENT(EVENT_Font);
 
 
 /***************************************************************************
@@ -170,7 +176,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	bg = CWIDGET_get_background((CWIDGET *)THIS); 
 	if (bg != COLOR_DEFAULT)
 	{
-		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, QColor((QRgb)bg));
+		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, TO_QCOLOR(bg));
 	}
 	
 	PAINT_clip(r.x(), r.y(), r.width(), r.height());
@@ -474,6 +480,16 @@ void MyDrawingArea::hideEvent(QHideEvent *e)
 	MyContainer::hideEvent(e);
 }
 
+void MyDrawingArea::changeEvent(QEvent *e)
+{
+	if (e->type() == QEvent::FontChange)
+	{
+		MyContainer::changeEvent(e);
+		void *_object = CWidget::get(this);
+		GB.Raise(THIS, EVENT_Font, 0);
+	}
+}
+
 /***************************************************************************
 
 	DrawingArea
@@ -671,6 +687,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
 	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
+	GB_EVENT("Font", NULL, NULL, &EVENT_Font),
 
 	//GB_INTERFACE("Draw", &DRAW_Interface),
 	GB_INTERFACE("Paint", &PAINT_Interface),
@@ -679,7 +696,3 @@ GB_DESC CDrawingAreaDesc[] =
 
 	GB_END_DECLARE
 };
-
-
-
-

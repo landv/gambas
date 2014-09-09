@@ -42,6 +42,7 @@
 #include <QBrush>
 #include <QPen>
 #include <QTransform>
+#include <QColor>
 
 #define QT_INTERFACE_VERSION 1
 
@@ -61,6 +62,8 @@
 
 #define QSTRING_ARG(_arg) (QString::fromUtf8((const char *)(VARG(_arg).addr + VARG(_arg).start), VARG(_arg).len))
 #define QSTRING_PROP() (QString::fromUtf8((const char *)(VPROP(GB_STRING).addr + VPROP(GB_STRING).start), VPROP(GB_STRING).len))
+
+#define TO_QCOLOR(_col) QColor::fromRgba((QRgb)((_col) ^ 0xFF000000))
 
 typedef
 	struct {

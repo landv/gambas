@@ -33,8 +33,10 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <syslog.h>
 
 #include "gb_common.h"
+#include "gb_common_case.h"
 #include "gb_error.h"
 #include "gbx_api.h"
 #include "gbx_class.h"
@@ -46,9 +48,26 @@
 #include "gbx_exec.h"
 #include "gbx_extern.h"
 #include "gbx_object.h"
-
 #include "gbx_c_process.h"
 #include "gbx_c_system.h"
+
+typedef
+	struct {
+		const char *prefix;
+		int prio;
+	}
+	SYSLOG_PREFIX;
+
+static const SYSLOG_PREFIX _syslog_prefix[] =
+{
+	{ "[error]", LOG_ERR },
+	{ "[warning]", LOG_WARNING },
+	{ "[notice]", LOG_NOTICE },
+	{ "[info]", LOG_INFO },
+	{ "[debug]", LOG_DEBUG },
+	{ NULL, 0 }
+};
+
 
 BEGIN_PROPERTY(User_Home)
 
@@ -231,8 +250,51 @@ BEGIN_PROPERTY(System_BreakOnError)
 
 END_METHOD
 
+BEGIN_METHOD(System_Log, GB_STRING message)
+
+	static bool _opened = FALSE;
+
+	const SYSLOG_PREFIX *p;
+	char *msg;
+	int len;
+	int lenp;
+	int prio;
+
+	msg = STRING(message);
+	len = LENGTH(message);
+	prio = LOG_INFO;
+
+	for (p = _syslog_prefix; p->prefix; p++)
+	{
+		lenp = strlen(p->prefix);
+		if (len >= (lenp + 2) && strncasecmp(msg, p->prefix, lenp) == 0)
+		{
+			msg += lenp + 2;
+			len -= lenp + 2;
+			prio = p->prio;
+			break;
+		}
+	}
+
+	while (len > 0 && *msg == ' ')
+		msg++, len--;
+
+	if (len <= 0)
+		return;
+
+	if (!_opened)
+	{
+		_opened = TRUE;
+		openlog(PROJECT_name, LOG_PID, LOG_INFO);
+	}
+
+	syslog(prio, "%.*s", len, msg);
+
+END_METHOD
 
 #endif
+
+//-------------------------------------------------------------------------
 
 GB_DESC NATIVE_User[] =
 {
@@ -275,8 +337,10 @@ GB_DESC NATIVE_System[] =
 	
 	GB_STATIC_METHOD("GetExternSymbol", "p", System_GetExternSymbol, "(Library)s(Symbol)s"),
 	GB_STATIC_METHOD("_Breakpoint", NULL, System_Breakpoint, NULL),
-	
+
 	GB_STATIC_PROPERTY_SELF("User", "User"),
+
+	GB_STATIC_METHOD("Log", NULL, System_Log, "(Message)s"),
 
 	GB_END_DECLARE
 };
