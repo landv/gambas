@@ -497,7 +497,7 @@ Public Sub ScrollArea_Draw()
         Paint.Rectangle(X, Y + 1, W - F, H - 3)
         Paint.Clip
         If I = $iRow Then Paint.Font.Bold = True
-        DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 2, Align.Center, $iPadding)
+        DrawText($hRows._GetRowText(I), X, Y + 2, W - F, H - 3, Align.Center, $iPadding)
         If I = $iRow Then Paint.Font.Bold = False
         Paint.Restore
       Endif

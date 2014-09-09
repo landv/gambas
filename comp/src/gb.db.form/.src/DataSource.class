@@ -6,6 +6,7 @@ Inherits Panel
 
 Event Change
 Event BeforeSave(Data As Result)
+Event BeforeDelete(Keys As Variant[])
 
 Property Connection As Connection
 Property Table As String
@@ -488,16 +489,20 @@ Catch
   
 End
 
-Public Sub _DeleteCurrent()
+Public Sub _DeleteCurrent() As Boolean
   
   Dim aVal As Variant[]
   Dim aKey As String[]
   Dim hSrc As DataSource
   Dim sKey As String
   Dim iPos As Integer
+  Dim bCancel As Boolean
 
   aVal = Me.Current
-  If Not aVal Then Return
+  If Not aVal Then Return True
+  
+  bCancel = Raise BeforeDelete(Current_Read())
+  If bCancel Then Return True
   
   aKey = $hTable.Keys
   
@@ -522,7 +527,7 @@ Public Function Remove() As Boolean
   Endif
   
   If $iIndex >= 0 And $iIndex < $hTable.Count Then
-    _DeleteCurrent()
+    If _DeleteCurrent() Then Return
     Create(True)
   Else
     Create()

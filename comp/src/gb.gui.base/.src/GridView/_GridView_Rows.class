@@ -70,6 +70,15 @@ Private Sub Count_Write(Value As Integer)
     Wend
   Endif
   
+  If $cText Then
+    For Each $cText
+      If CInt($cText.Key) >= Value Then
+        'Debug "Remove text from " & $cText.Key
+        $cText.Remove($cText.Key)
+      Endif
+    Next
+  Endif
+  
   If hView.Row >= $nRows Then hView.Row = -1
   
   With hView
@@ -204,7 +213,7 @@ Private Function Width_Read() As Integer
         If $iWidth Then
           Return $iWidth
         Else
-          Return Max(.Font.TextWidth("9"), .Font.TextWidth("0")) * (1 + CInt(Log10(Max(1, $nRows)))) + .Padding * 2 + 2
+          Return Max(.Font.TextWidth("9"), .Font.TextWidth("0")) * (2 + CInt(Log10(Max(1, $nRows)))) + .Padding * 2 + 2
         Endif
       Endif
     Endif
@@ -420,6 +429,7 @@ Public Sub _Clear()
   If $cHeight Then
     $cHeight.Clear
     $aHeight.Clear
+    If $cText Then $cText.Clear
   Endif
   
   $hSel.UnSelectAll

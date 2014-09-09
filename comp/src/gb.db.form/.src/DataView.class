@@ -231,6 +231,7 @@ Private Sub Load()
   Inc $iNoRefresh 
   'Object.Lock($hCtrl)
   $bNoActivate = True
+  $hCtrl.Clear
   $hCtrl.Rows.Count = $hTable.Count
   $iRowNewRecord = -1
   '$hCtrl.Rows.H = GetDefaultRowHeight()
