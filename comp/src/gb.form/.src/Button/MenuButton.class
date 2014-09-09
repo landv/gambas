@@ -25,7 +25,6 @@ Property MenuOnly As Boolean
 Property Value As Boolean
 Property AutoResize As Boolean
 Property Border As Boolean
-Property Font As Font
 
 Private $hDrawingArea As DrawingArea
 Private $hPicture As Picture
@@ -447,15 +446,8 @@ Private Sub MenuOnly_Write(Value As Boolean)
 
 End
 
-Private Function Font_Read() As Font
-
-  Return Super.Font
-
-End
-
-Private Sub Font_Write(Value As Font)
-
-  Super.Font = Value
+Public Sub DrawingArea_Font()
+  
   UpdateSize
-
+  
 End

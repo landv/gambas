@@ -47,6 +47,7 @@ public:
 	virtual void resize(int w, int h);
 	virtual void setEnabled(bool vl);
 	virtual void setRealBackground(gColor color);
+	virtual void updateFont();
 
 //"Events"
 #ifdef GTK3
@@ -54,6 +55,7 @@ public:
 #else
 	void (*onExpose)(gDrawingArea *sender, GdkRegion *region, int dx, int dy);
 #endif
+	void (*onFontChange)(gDrawingArea *sender);
 
 //"Private"
 	void create();

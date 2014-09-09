@@ -189,6 +189,7 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	_use_tablet = false;
 	
 	onExpose = NULL;
+	onFontChange = NULL;
 		
 	g_typ = Type_gDrawingArea;
 	
@@ -417,4 +418,10 @@ void gDrawingArea::setUseTablet(bool vl)
 		return;
 	_use_tablet = vl;
 	create();
+}
+
+void gDrawingArea::updateFont()
+{
+	gContainer::updateFont();
+	emit(SIGNAL(onFontChange));
 }

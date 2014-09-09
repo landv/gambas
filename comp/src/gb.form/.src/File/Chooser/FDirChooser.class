@@ -127,9 +127,13 @@ Private Sub UpdateLabelDir()
   Dim sPath As String
   Dim hDirButton As DirButton
   Dim hCtrl As Control
+  Dim aCtrl As New Control[]
   
   For Each hCtrl In panDir.Children
-    If hCtrl Is DirButton Then hCtrl.Delete
+    If hCtrl Is DirButton Then aCtrl.Add(hCtrl)
+  Next
+  For Each hCtrl In aCtrl
+    hCtrl.Delete
   Next
   
   sPath = "/"
@@ -152,7 +156,9 @@ Public Sub DirButton_Click()
   Dim sDir As String = Last.Path
   
   If sDir = dvwChoose.Current Then
-    Reload
+    ' Just refresh the file view
+    DirCache[dvwChoose.Current].Clear
+    fvwChoose.Reload
   Else
     SetDir(sDir)
   Endif

@@ -33,7 +33,7 @@ Event Rename
 Event Cancel
 Event Compare(Key As String, OtherKey As String)
 
-Static Private $bNoEvent As Boolean
+Static Private $iNoEvent As Integer
 
 Private $hView As GridView
 Private $cItem As New Collection
@@ -500,9 +500,9 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
       
         If hItem.Count Then
           If hItem.Expanded Then
-            Style.PaintArrow(X + W, Y + H \ 2 - 8, 16, 16, Align.Bottom)
+            Style.PaintArrow(X + W + 2, Y + H \ 2 - 6, 12, 12, Align.Bottom)
           Else
-            Style.PaintArrow(X + W, Y + H \ 2 - 8, 16, 16, Align.Left)
+            Style.PaintArrow(X + W + 2, Y + H \ 2 - 6, 12, 12, Align.Left)
           Endif
         Endif
         
@@ -522,9 +522,9 @@ Public Sub GridView_Draw(X As Integer, Y As Integer, W As Integer, H As Integer,
       
         If hItem.Count Then
           If hItem.Expanded Then
-            Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Bottom)
+            Style.PaintArrow(X + 2, Y + H \ 2 - 6, 12, 12, Align.Bottom)
           Else
-            Style.PaintArrow(X, Y + H \ 2 - 8, 16, 16, Align.Right)
+            Style.PaintArrow(X + 2, Y + H \ 2 - 6, 12, 12, Align.Right)
           Endif
         Endif
         
@@ -813,9 +813,9 @@ End
 Public Sub _UpdateCurrent(sKey As String)
 
   If Not $cItem.Exist(sKey) Then Return
-  $bNoEvent = True
+  Inc $iNoEvent
   Key_Write(sKey)
-  $bNoEvent = False
+  Dec $iNoEvent
   
 End
 
@@ -824,7 +824,7 @@ Public Sub GridView_Select()
   
   Dim sCursor As String
   
-  If $bNoEvent Then Return
+  If $iNoEvent Then Return
   If $hView.Row < 0 Then Return
   
   sCursor = $sCursor
@@ -1327,12 +1327,17 @@ Private Sub Selection_Write(Value As String[])
   Dim sKey As String
   Dim hItem As _TreeView_Item
   
+  Inc $iNoEvent
   UnselectAll
   For Each sKey In Value
     If Not sKey Then Continue
     hItem = $cItem[sKey]
     If hItem Then hItem.Selected = True
   Next
+  Dec $iNoEvent
+  
+  If $iNoEvent Then Return
+  Raise Select
 
 End
 
@@ -1351,9 +1356,11 @@ Public Sub _RestoreSelection()
   Dec $iSaveSelection
   
   If $iSaveSelection = 0 Then 
-    Object.Lock(Me)
+    Inc $iNoEvent
+    Inc $iSaveSelection
     Selection_Write($aSaveSelection)
-    Object.Unlock(Me)
+    Dec $iSaveSelection
+    Dec $iNoEvent
     $aSaveSelection = Null
   Endif
   

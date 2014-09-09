@@ -10,7 +10,7 @@ Public Sub Form_Open()
   
   For Each sPath In Dir(sDir).Sort(gb.Language + gb.IgnoreCase)
     If IsDir(sDir &/ sPath) Then
-      IconView1.Add(sPath, sPath, Picture["icon:/64/directory"])
+      IconView1.Add(sPath, sPath, Picture["icon:/64/directory"]).RichText = "<font color=\"#808080\">" & sPath & "</font>"
     Else
       IconView1.Add(sPath, sPath, Picture["icon:/64/file"])
     Endif

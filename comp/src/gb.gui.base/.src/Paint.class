@@ -13,6 +13,8 @@ Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
   Dim WT As Integer
   Dim HT As Integer
   
+  If Not Text Then Return
+  
   HT = HL
   SL = 1
   L = String.Len(Text)
@@ -45,6 +47,54 @@ Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
   Next
   
   Return Text
+  
+End
+
+Static Private Sub HtmlLeft(sHtml As String, iPos As Integer) As String
+
+  Dim sRes As String
+  Dim bMarkup As Boolean
+  Dim sCar As String
+  Dim I As Integer
+
+  For I = 1 To String.Len(sHtml)
+    sCar = String.Mid(sHtml, I, 1)
+    If sCar = "<" Then
+      bMarkup = True
+      sRes &= sCar
+      Continue
+    Else If sCar = ">" Then
+      bMarkup = False
+      sRes &= sCar
+      Continue
+    Endif
+    If bMarkup Or If I <= iPos Then sRes &= sCar
+  Next
+
+  Return sRes
+  
+End
+
+Static Public Sub TrimRichText(RichText As String, W As Float, H As Float) As String
+  
+  Dim I As Integer
+  Dim sCar As String
+  Dim bMarkup As Boolean
+  
+  If Not RichText Then Return
+  
+  For I = 1 To String.Len(RichText)
+    sCar = String.Mid(RichText, I, 1)
+    If sCar = "<" Then
+      bMarkup = True
+    Else If sCar = ">" Then
+      bMarkup = False
+    Endif
+    If bMarkup Then Continue
+    If Paint.Font.RichTextHeight(HtmlLeft(RichText, I) & "…", W) > H Then Break
+  Next
+  
+  Return HtmlLeft(RichText, I - 1) & "…"
   
 End
 

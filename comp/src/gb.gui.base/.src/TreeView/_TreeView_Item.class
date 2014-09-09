@@ -257,6 +257,8 @@ Private Sub Expanded_Write(Value As Boolean)
   
   If $bExpanded = Value Then Return
   
+  hTree._SaveSelection
+  
   sCurrent = hTree.Key
   
   $bExpanded = Value
@@ -270,8 +272,6 @@ Private Sub Expanded_Write(Value As Boolean)
   Endif
 
   If _Rows = iOldRows Then Return
-  
-  hTree._SaveSelection
   
   _ComputeRows(_Rows - iOldRows)
   

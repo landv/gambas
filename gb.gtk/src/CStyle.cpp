@@ -281,7 +281,7 @@ static void paint_focus(STYLE_T *style, int x, int y, int w, int h, STATE_T stat
 static void style_arrow(int x, int y, int w, int h, int type, int state)
 {
 	GtkArrowType arrow;
-	STYLE_T *style = get_style();
+	STYLE_T *style = get_style(GTK_TYPE_BUTTON);
 	
 	switch (type)
 	{

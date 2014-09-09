@@ -34,7 +34,8 @@
 #include "CWidget.h"
 #include "CContainer.h"
 
-DECLARE_EVENT(EVENT_draw);
+DECLARE_EVENT(EVENT_Draw);
+DECLARE_EVENT(EVENT_Font);
 
 
 /***************************************************************************
@@ -55,7 +56,7 @@ static void cb_expose(gDrawingArea *sender, cairo_t *cr)
 	GB_RAISE_HANDLER handler;
 	cairo_t *save;
 
-	if (GB.CanRaise(THIS, EVENT_draw))
+	if (GB.CanRaise(THIS, EVENT_Draw))
 	{
 		handler.callback = cleanup_drawing;
 		handler.data = (intptr_t)THIS;
@@ -66,7 +67,7 @@ static void cb_expose(gDrawingArea *sender, cairo_t *cr)
 		THIS->context = cr;
 		PAINT_begin(THIS);
 
-		GB.Raise(THIS, EVENT_draw, 0);
+		GB.Raise(THIS, EVENT_Draw, 0);
 
 		PAINT_end();
 		THIS->context = save;
@@ -80,7 +81,7 @@ static void cb_expose(gDrawingArea *sender, GdkRegion *region, int dx, int dy)
 	CWIDGET *_object = GetObject(sender);
 	GB_RAISE_HANDLER handler;
 
-	if (GB.CanRaise(THIS, EVENT_draw))
+	if (GB.CanRaise(THIS, EVENT_Draw))
 	{
 		handler.callback = cleanup_drawing;
 		handler.data = (intptr_t)THIS;
@@ -92,7 +93,7 @@ static void cb_expose(gDrawingArea *sender, GdkRegion *region, int dx, int dy)
 		PAINT_clip_region(region);
 		gdk_region_offset(region, dx, dy);
 
-		GB.Raise(THIS, EVENT_draw, 0);
+		GB.Raise(THIS, EVENT_Draw, 0);
 
 		PAINT_end();
 
@@ -101,11 +102,18 @@ static void cb_expose(gDrawingArea *sender, GdkRegion *region, int dx, int dy)
 }
 #endif
 
+static void cb_font_change(gDrawingArea *sender)
+{
+	CWIDGET *_object = GetObject(sender);
+	GB.Raise(THIS, EVENT_Font, 0);
+}
+
 
 BEGIN_METHOD(CDRAWINGAREA_new, GB_OBJECT parent)
 
 	InitControl(new gDrawingArea(CONTAINER(VARG(parent))), (CWIDGET*)THIS);
 	WIDGET->onExpose = cb_expose;
+	WIDGET->onFontChange = cb_font_change;
 
 END_METHOD
 
@@ -215,8 +223,9 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_METHOD("Clear", 0, CDRAWINGAREA_clear, NULL),
 	GB_METHOD("Refresh", NULL, DrawingArea_Refresh, "[(X)i(Y)i(Width)i(Height)i]"),
 
-	GB_EVENT("Draw", 0, 0, &EVENT_draw),
-	
+	GB_EVENT("Draw", 0, 0, &EVENT_Draw),
+	GB_EVENT("Font", 0, 0, &EVENT_Font),
+
 	GB_INTERFACE("Paint", &PAINT_Interface),
 	
 	DRAWINGAREA_DESCRIPTION,
