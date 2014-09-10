@@ -605,6 +605,7 @@ Static Private Sub GetInheritance(aPath As String[], sTheme As String) As String
   Dim aInheritance As String[] = [sTheme]
   Dim sPath As String
   Dim sLine As String
+  Dim sChildTheme As String
   
   For Each sPath In aPath
   
@@ -613,8 +614,10 @@ Static Private Sub GetInheritance(aPath As String[], sTheme As String) As String
       For Each sLine In Split(File.Load(sPath &/ sTheme &/ "index.theme"), "\n")
         
         If InStr(sLine, "Inherits") Then 
-          For Each sTheme In Split(Scan(sLine, "*=*")[1])
-            aInheritance.Insert(GetInheritance(aPath, sTheme))
+          For Each sChildTheme In Split(Scan(sLine, "*=*")[1])
+            If sChildTheme = sTheme Then Continue
+            If aInheritance.Exist(sChildTheme) Then Continue
+            aInheritance.Insert(GetInheritance(aPath, sChildTheme))
           Next
           Break
         Endif

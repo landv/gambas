@@ -258,6 +258,13 @@ Private Sub GetCurrentDir() As String
 
 End
 
+Static Public Sub _GetHiddenColor() As Integer
+  
+  Return Color.Merge(Color.TextBackground, Color.TextForeground, 0.66)
+  
+End
+
+
 Private Sub RefreshView(Optional bInvalidate As Boolean)
   
   Dim sFile As String
@@ -280,7 +287,7 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   $bRefreshTriggered = False
   $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
   
-  iHiddenFg = Color.Merge(Color.TextBackground, Color.TextForeground, 0.66)
+  iHiddenFg = _GetHiddenColor()
   
   aSel = GetSelection()
   

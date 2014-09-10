@@ -151,7 +151,7 @@ Private Sub AddDir(sDir As String, sFile As String, Optional bIgnoreHidden As Bo
       bRichText = True
     Endif
     If hStat.Hidden Then
-      sText = "<font color=\"#" & Hex$(Color.LightForeground, 6) & "\">" & sText & "</font>"
+      sText = "<font color=\"#" & Hex$(FileView._GetHiddenColor(), 6) & "\">" & sText & "</font>"
       bRichText = True
     Endif
 
