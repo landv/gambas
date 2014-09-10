@@ -494,14 +494,15 @@ Private Sub CreateMenu()
   mnuGoto.Children.Clear
 
   cSymbol = CComponent.GetClassSymbols(Me.Name)
-
-  For Each hSymbol In cSymbol
-
-    If LCase(hSymbol.Kind) <> "m" Then Continue
-    If hSymbol.LineNumber = 0 Then Continue
-    cFunc.Add(hSymbol.Name)
-
-  Next
+  If cSymbol Then
+    For Each hSymbol In cSymbol
+  
+      If LCase(hSymbol.Kind) <> "m" Then Continue
+      If hSymbol.LineNumber = 0 Then Continue
+      cFunc.Add(hSymbol.Name)
+  
+    Next
+  Endif
 
   cFunc.Sort(gb.IgnoreCase + gb.Natural)
   hParent = mnuGoto
@@ -2785,6 +2786,10 @@ Private Sub FillProcCombo()
   Dim cSymbol As Collection
   Dim sText As String
   Dim sName As String
+  Dim aPrivate As String[]
+  Dim aStaticPrivate As String[]
+  Dim aStaticPublic As String[]
+  Dim aPublic As String[]
 
   'DIM fTime AS Float
   'DIM iInd AS Integer
@@ -2809,23 +2814,65 @@ Private Sub FillProcCombo()
   
   If Project.IsSourcePath(Path) Then
     cSymbol = CComponent.GetClassSymbols(Me.Name)
+    If Not cSymbol Then cSymbol = New Collection
   Else
     cSymbol = CComponent.ScanSingleClass(Me)
   Endif
 
+  aStaticPrivate = New String[]
+  aPrivate = New String[]
+  aStaticPublic = New String[]
+  aPublic = New String[]
+  
   For Each hSymbol In cSymbol
 
     If LCase(hSymbol.Kind) <> "m" Then Continue
     If hSymbol.LineNumber = 0 Then Continue
     If hSymbol.Class <> Me.Name Then Continue
-    $aProc.Add(hSymbol.Name)
-
+    
+    sName = hSymbol.Name
+    
+    If hSymbol.IsStatic() Then
+      If hSymbol.NotPublic Then
+        aStaticPrivate.Add(sName)
+      Else
+        aStaticPublic.Add(sName)
+      Endif
+    Else
+      If hSymbol.NotPublic Then
+        aPrivate.Add(sName)
+      Else
+        aPublic.Add(sName)
+      Endif
+    Endif
+    
   Next
 
-  $aProc.Sort(gb.IgnoreCase)
+  aStaticPrivate.Sort(gb.IgnoreCase)
+  aPrivate.Sort(gb.IgnoreCase)
+  aStaticPublic.Sort(gb.IgnoreCase)
+  aPublic.Sort(gb.IgnoreCase)
+
+  If aStaticPublic.Count Then
+    $aProc.Add("-STATIC PUBLIC")
+    $aProc.Insert(aStaticPublic)
+  Endif
+  If aPublic.Count Then
+    $aProc.Add("-PUBLIC")
+    $aProc.Insert(aPublic)
+  Endif
+  If aStaticPrivate.Count Then
+    $aProc.Add("-STATIC PRIVATE")
+    $aProc.Insert(aStaticPrivate)
+  Endif
+  If aPrivate.Count Then
+    $aProc.Add("-PRIVATE")
+    $aProc.Insert(aPrivate)
+  Endif
 
   For Each sName In $aProc
 
+    If sName Begins "-" Then Continue
     hSymbol = cSymbol[sName]
     'cmbProc.Add(sName)
     $cProc[hSymbol.Name] = hSymbol.LineNumber - 1

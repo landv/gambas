@@ -21,6 +21,8 @@ End
 
 Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
   
+  Dim I As Integer
+  
   $hModule = hModule
   $sClass = sClass
   ' Copy it, as it can disappear during the Editor_Change() method
@@ -32,9 +34,12 @@ Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurren
   gvwProc.Rows.UnselectAll
   gvwProc.Columns.Count = 1
   Project.SetNormalFont(gvwProc)
-  gvwProc.Rows.H = gvwProc.Font.Height + 4
+  'gvwProc.Rows.H = gvwProc.Font.Height + 4
+  For I = 0 To aProc.Max
+    If aProc[I] Begins "-" Then gvwProc.Rows[I].H = Desktop.Scale * 1.5
+  Next
 
-  Me.Resize(W, Min(H, gvwProc.Rows.Count * gvwProc.Rows.Height + 2))
+  Me.Resize(W, Min(H, gvwProc.ScrollHeight + 2))
   Try gvwProc[$iCurrent, 0].EnsureVisible
   
   $sFind = ""
@@ -54,10 +59,10 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
   Dim hSymbol As CSymbolInfo
   Dim sName As String
   
-  'Dim hColor As Color
-  
   Try sName = $aProc[Row]
   If Not sName Then Return
+  
+  If sName Begins "-" Then Return
   
   gvwProc.Data.Text = sName
 
@@ -84,7 +89,7 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
     'gvwProc.Data.Picture = Picture["img/16/point.png"]
     'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
     If FCompletion.GetSpecialMethods().Exist(sName, gb.IgnoreCase) Then 
-      gvwProc.Data.Background = Color.Background
+      gvwProc.Data.Foreground = Color.SelectedBackground
     Endif
   Else If InStr(sName, "_") Then
     'gvwProc.Data.Picture = Picture["img/16/event.png"]
@@ -97,7 +102,7 @@ Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
     gvwProc.Data.Background = Color.SelectedBackground
     gvwProc.Data.Foreground = Color.SelectedForeground
   Else If Row = $iInit Then
-    gvwProc.Data.Background = Color.LightBackground
+    gvwProc.Data.Background = Color.Merge(Color.LightBackground, Color.TextBackground)
   Endif
   
 End
@@ -113,6 +118,7 @@ Private Sub SetCurrent(iCurrent As Integer)
   Dim iOld As Integer = $iCurrent
   
   If iCurrent = iOld Then Return
+  If iCurrent >= 0 And If $aProc[iCurrent] = "-" Then Return
   
   $iCurrent = iCurrent
   If iOld >= 0 Then gvwProc.Rows[iOld].Refresh
@@ -200,3 +206,23 @@ End
 '   Debug gvwProc.ScrollY
 ' 
 ' End
+
+Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim sName As String
+  Dim WT As Float
+  
+  Try sName = $aProc[Row]
+  If sName Not Begins "-" Then Return
+  sName = Mid$(sName, 2)
+  
+  Paint.Font.Grade = -3
+  WT = Paint.TextSize(sName).Width + Desktop.Scale 
+  
+  Paint.FillRect(X - 2, Y + Height \ 2, Width + 4, 1, Color.LightForeground)
+  Paint.FillRect(X + (Width - WT) / 2, Y, WT, Height, Color.TextBackground)
+  
+  Paint.Background = Color.LightForeground
+  Paint.DrawText(sName, X, Y, Width, Height, Align.Center)
+
+End
