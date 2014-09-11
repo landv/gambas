@@ -21,26 +21,24 @@ End
 
 Public Sub Init(hModule As FEditor, sClass As String, aProc As String[], iCurrent As Integer, W As Integer, H As Integer)
   
-  Dim I As Integer
-  
   $hModule = hModule
   $sClass = sClass
   ' Copy it, as it can disappear during the Editor_Change() method
   $aProc = aProc.Copy()
   $iInit = iCurrent
-  $iCurrent = iCurrent
+  $iCurrent = -1
   
   gvwProc.Rows.Count = aProc.Count
   gvwProc.Rows.UnselectAll
   gvwProc.Columns.Count = 1
   Project.SetNormalFont(gvwProc)
   'gvwProc.Rows.H = gvwProc.Font.Height + 4
-  For I = 0 To aProc.Max
-    If aProc[I] Begins "-" Then gvwProc.Rows[I].H = Desktop.Scale * 1.5
-  Next
+  ' For I = 0 To aProc.Max
+  '   If aProc[I] Begins "-" Then gvwProc.Rows[I].H = Desktop.Scale * 1.5
+  ' Next
 
   Me.Resize(W, Min(H, gvwProc.ScrollHeight + 2))
-  Try gvwProc[$iCurrent, 0].EnsureVisible
+  Try gvwProc[iCurrent, 0].EnsureVisible
   
   $sFind = ""
   $dFind = Timer
@@ -53,59 +51,6 @@ Public Sub Exit()
   
 End
 
-
-Public Sub gvwProc_Data(Row As Integer, (Column) As Integer)
-  
-  Dim hSymbol As CSymbolInfo
-  Dim sName As String
-  
-  Try sName = $aProc[Row]
-  If Not sName Then Return
-  
-  If sName Begins "-" Then Return
-  
-  gvwProc.Data.Text = sName
-
-  If $sClass Then
-    
-    CComponent.GetClassSymbols($sClass)
-    Try hSymbol = $hModule.Scan[sName]
-
-    If hSymbol Then
-      If hSymbol.Kind = "M" Then gvwProc.Data.Font.Bold = True
-      If hSymbol.NotPublic Then 
-        'hColor = Color(Color.Foreground)
-        'hColor.Value = 255 - (255 - hColor.Value) * 0.6
-        gvwProc.Data.Foreground = Color.Merge(Color.Foreground, Color.Background, 0.4)
-      Endif
-      'gvwProc.Data.Picture = Picture[hSymbol.GetIcon()]
-    Else
-      gvwProc.Data.Foreground = Color.Merge(Color.Foreground, Color.Background, 0.4)
-    Endif
-  
-  Endif
-    
-  If Left(sName) = "_" Then 
-    'gvwProc.Data.Picture = Picture["img/16/point.png"]
-    'gvwProc.Data.Foreground = Color.Lighter(Color.Foreground)
-    If FCompletion.GetSpecialMethods().Exist(sName, gb.IgnoreCase) Then 
-      gvwProc.Data.Foreground = Color.SelectedBackground
-    Endif
-  Else If InStr(sName, "_") Then
-    'gvwProc.Data.Picture = Picture["img/16/event.png"]
-    gvwProc.Data.Font.Italic = True
-  Else If sName == "main" Then
-    gvwProc.Data.Background = Color.Background
-  Endif
-  
-  If Row = $iCurrent Then 
-    gvwProc.Data.Background = Color.SelectedBackground
-    gvwProc.Data.Foreground = Color.SelectedForeground
-  Else If Row = $iInit Then
-    gvwProc.Data.Background = Color.Merge(Color.LightBackground, Color.TextBackground)
-  Endif
-  
-End
 
 Public Sub gvwProc_MouseUp()
   
@@ -207,22 +152,59 @@ End
 ' 
 ' End
 
-Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, (Column) As Integer)
 
+  Dim hSymbol As CSymbolInfo
   Dim sName As String
   Dim WT As Float
   
   Try sName = $aProc[Row]
-  If sName Not Begins "-" Then Return
-  sName = Mid$(sName, 2)
+  If Not sName Then Return
+
+  If sName Begins "-" Then 
   
-  Paint.Font.Grade = -3
-  WT = Paint.TextSize(sName).Width + Desktop.Scale 
+    sName = Mid$(sName, 2)
+    
+    Paint.Font.Grade = -2
+    WT = Paint.TextSize(sName).Width + Desktop.Scale 
+    
+    Paint.FillRect(X - 2, Y + Height \ 2, Width + 4, 1, Color.Merge(Color.LightForeground, Color.TextBackground))
+    Paint.FillRect(X + (Width - WT) / 2, Y, WT, Height, Color.TextBackground)
+    
+    Paint.Background = Color.LightForeground
+    Paint.DrawText(sName, X, Y, Width, Height, Align.Center)
+    
+    Return
+    
+  Endif
   
-  Paint.FillRect(X - 2, Y + Height \ 2, Width + 4, 1, Color.LightForeground)
-  Paint.FillRect(X + (Width - WT) / 2, Y, WT, Height, Color.TextBackground)
   
-  Paint.Background = Color.LightForeground
-  Paint.DrawText(sName, X, Y, Width, Height, Align.Center)
+  If Row = $iCurrent Then Paint.FillRect(X, Y, Width, Height, Color.Merge(Color.LightBackground, Color.TextBackground))
+  
+  Paint.Background = Color.TextForeground
+  Paint.Font.Bold = False
+  Paint.Font.Italic = False
+
+  If $sClass Then
+    
+    CComponent.GetClassSymbols($sClass)
+    Try hSymbol = $hModule.Scan[sName]
+    If hSymbol And If hSymbol.Kind = "M" Then Paint.Font.Bold = True
+  
+  Endif
+    
+  If Left(sName) = "_" Then 
+    If FCompletion.GetSpecialMethods().Exist(sName, gb.IgnoreCase) Then 
+      Paint.Background = Color.SelectedBackground
+    Endif
+  Else If InStr(sName, "_") Then
+    'gvwProc.Data.Picture = Picture["img/16/event.png"]
+    Paint.Font.Italic = True
+  Endif
+  
+  If hSymbol And If hSymbol.NotPublic Then Paint.Background = Color.Merge(Paint.Background, Color.TextBackground)
+  
+  If Row = $iInit Then Paint.DrawTextShadow(sName, X + 2, Y, Width - 4, Height, Align.Left)
+  Paint.DrawText(sName, X + 2, Y, Width - 4, Height, Align.Left)
 
 End

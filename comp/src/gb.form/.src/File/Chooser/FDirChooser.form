@@ -18,34 +18,23 @@
       { panToolbar HBox
         MoveScaled(1,1,74,4)
         AutoResize = True
-        { btnBack ToolButton
-          MoveScaled(0,0,4,4)
-          Enabled = False
-          ToolTip = ("Parent directory")
-          Picture = Picture["icon:/small/left"]
-        }
-        { btnForward ToolButton
-          MoveScaled(4,0,4,4)
-          Enabled = False
-          Picture = Picture["icon:/small/right"]
-        }
         { btnParent ToolButton
-          MoveScaled(8,0,4,4)
+          MoveScaled(1,0,4,4)
           Visible = False
           ToolTip = ("Parent directory")
           Picture = Picture["icon:/small/up"]
         }
         { btnRoot ToolButton
-          MoveScaled(12,0,4,4)
+          MoveScaled(5,0,4,4)
           ToolTip = ("Root directory")
           Picture = Picture["icon:/small/computer"]
         }
         { Panel2 Panel
-          MoveScaled(16,0,1,4)
+          MoveScaled(9,0,1,4)
           Visible = False
         }
         { panDir HBox
-          MoveScaled(18,0,8,4)
+          MoveScaled(11,0,8,4)
           Expand = True
           { dwgGradient DrawingArea
             MoveScaled(6,0,2,4)
@@ -53,8 +42,19 @@
           }
         }
         { Separator3 Separator
-          MoveScaled(27,0,0,4)
+          MoveScaled(20,0,0,4)
           Visible = False
+        }
+        { btnBack ToolButton
+          MoveScaled(21,0,4,4)
+          Enabled = False
+          ToolTip = ("Parent directory")
+          Picture = Picture["icon:/small/left"]
+        }
+        { btnForward ToolButton
+          MoveScaled(25,0,4,4)
+          Enabled = False
+          Picture = Picture["icon:/small/right"]
         }
         { panIconSize HBox
           MoveScaled(29,0,23,4)

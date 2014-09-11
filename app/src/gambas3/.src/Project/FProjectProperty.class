@@ -1345,37 +1345,41 @@ Public Sub tabProject_Click()
 
 End
 
+Private Sub AddStat(sName As String, sValue As String)
+
+  Dim N As Integer
+  
+  N = gvwStat.Rows.Count
+  Inc gvwStat.Rows.Count
+  gvwStat[N, 0].Text = sName
+  gvwStat[N, 0].Foreground = Color.LightForeground
+  gvwStat[N, 1].Text = sValue
+  
+End
+
+
 Private Sub UpdateStat()
 
   Dim hModule As CModule
-  Dim N As Integer
+  Dim iSize As Long
   
   gvwStat.Columns.Count = 2
   gvwStat.Rows.Count = 0
   
-  Inc gvwStat.Rows.Count
-  gvwStat[0, 0].Text = ("Modules")
-  gvwStat[0, 1].Text = CStr(Project.GetCount("module"))
-
-  Inc gvwStat.Rows.Count
-  gvwStat[1, 0].Text = ("Classes")
-  gvwStat[1, 1].Text = CStr(Project.GetCount("class"))
+  AddStat(("Modules"), CStr(Project.GetCount("module")))
+  AddStat(("Classes"), CStr(Project.GetCount("class")))
 
   For Each hModule In CModule.All
     If Not hModule.Used Then Continue
-    N = gvwStat.Rows.Count
-    Inc gvwStat.Rows.Count
-    gvwStat[N, 0].Text = hModule.NamePlural
-    gvwStat[N, 1].Text = CStr(Project.GetCount(hModule.Key))
+    AddStat(hModule.NamePlural, CStr(Project.GetCount(hModule.Key)))
   Next
 
-  N = gvwStat.Rows.Count
-  Inc gvwStat.Rows.Count
-  gvwStat[N, 0].Text = ("Lines of code")
-  gvwStat[N, 1].Text = Format(Project.GetLinesOfCode(), ",0")
+  AddStat(("Lines of code"), Format(Project.GetLinesOfCode(), ",0"))
+  
+  Try iSize = Stat(Project.GetExecPath()).Size
+  If iSize Then AddStat(("Executable size"), Format(iSize, ",0") & " " & ("bytes"))
 
   gvwStat.Columns[0].Width = -1
   gvwStat.Columns[0].Width += 16
-  gvwStat.Rows.Height = gvwStat.Font.Height + 16
   
 End

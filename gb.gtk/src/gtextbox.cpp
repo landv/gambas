@@ -150,10 +150,10 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 
 		_style_provider = gtk_css_provider_new();
 
-		if (strcmp(gApplication::getStyleName(), "Clearlooks-Phenix") == 0)
+		/*if (strcmp(gApplication::getStyleName(), "Clearlooks-Phenix") == 0)
 			css = ".entry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
-		else
-			css = ".entry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; }";
+		else*/
+		css = ".entry { border-width: 0; padding: 1px 2px 0px 2px; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
 
 		gtk_css_provider_load_from_data(_style_provider, css, -1, NULL);
 	}
@@ -300,6 +300,8 @@ void gTextBox::setBorder(bool vl)
 	else
 	{
 		GtkBorder *border = gtk_border_new();
+		border->left = border->right = 2;
+		border->top = 1;
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), border);
 		gtk_border_free(border);
 	}

@@ -2,7 +2,7 @@
 
 Export
 
-Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
+Static Public Sub TrimText(Text As String, W As Float, Optional H As Float) As String
   
   Dim I, S, L As Integer
   Dim HL As Integer = Paint.Font.Height
@@ -15,6 +15,7 @@ Static Public Sub TrimText(Text As String, W As Float, H As Float) As String
   
   If Not Text Then Return
   
+  If H = 0 Then H = HT
   HT = HL
   SL = 1
   L = String.Len(Text)
@@ -75,13 +76,14 @@ Static Private Sub HtmlLeft(sHtml As String, iPos As Integer) As String
   
 End
 
-Static Public Sub TrimRichText(RichText As String, W As Float, H As Float) As String
+Static Public Sub TrimRichText(RichText As String, W As Float, Optional H As Float) As String
   
   Dim I As Integer
   Dim sCar As String
   Dim bMarkup As Boolean
   
   If Not RichText Then Return
+  If H = 0 Then H = Paint.Font.Height
   
   For I = 1 To String.Len(RichText)
     sCar = String.Mid(RichText, I, 1)

@@ -37,7 +37,7 @@ Public Sub _new()
   $hPanel = New Panel(Me.Window)
   $hPanel.Background = Color.TextBackground
   $hPanel.Ignore = True
-  $hPanel.Arrangement = Arrange.Fill
+  '$hPanel.Arrangement = Arrange.Fill
   $hPanel.Hide
   
   $hComboBox = New ComboBox($hPanel) As "Editor"
@@ -116,6 +116,7 @@ Private Sub MoveEditor()
   Dim X, Y, W, H As Integer
   Dim MX, MY As Integer
   Dim hEditor As Object
+  Dim P As Variant
   
   If Not $hEditor Then Return 
   
@@ -142,28 +143,22 @@ Private Sub MoveEditor()
     W = Min(Me.ClientW - Me.Rows.W, .Width)
     H = Min(Me.ClientH - Me.Columns.H, .Height)
     
-    If W < 4 Or If H < 4 Then
+    P = Max(Me.Padding, .Padding)
+    P = Max(0, P - 1)
+
+    If (W - P * 2) < 4 Or If H < 4 Then
       HideEditor
       Return
     Endif
     
-    
     $hPanel.Move(X, Y, W, H)
-    ' Else
-    '   $hEditor.Move(X, Y, .Width + 1, .Height + 1)
-    ' Endif
+    $hEditor.Move(P, 0, W - P * 2, H)
     
-    ' Debug .X;; .Y;; .W;; .H;; "/";; Me.ClientW;; Me.ClientH;; "/";; Me.W;; Me.H
-    ' 
-    ' If .X < 0 Or If .Y < 0 Or If (.X + .W) > Me.W Or If (.Y + .H) > Me.H Then
-    '   
-    '   HideEditor
-    '   
-    ' Else
     $hEditor.Font = Me.Font
     $hEditor.Show
     $hPanel.Show
     $hPanel.Raise
+    $hEditor.Raise
     
     'Debug $iRow;; $iCol; " : ";; .Width;; .Height; " / "; $hEditor.Width;; $hEditor.Height
   End With

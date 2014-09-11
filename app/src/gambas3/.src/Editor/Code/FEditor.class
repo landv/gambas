@@ -3170,7 +3170,7 @@ Private Sub ToggleProcList()
   FillProcCombo
   iCurrent = $aProc.Find(btnProc.Text)
 
-  iCurrent = FProcedureList.Popup(Me, Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, btnProc.W, Me.ClientH - panToolbar.H - Desktop.Scale)
+  iCurrent = FProcedureList.Popup(Me, Me.Name, $aProc, iCurrent, btnProc.ScreenX, btnProc.ScreenY + btnProc.H, Desktop.Scale * 48, Me.ClientH - panToolbar.H - Desktop.Scale)
   If iCurrent >= 0 Then
     Try iLine = $cProc[$aProc[iCurrent]]
     GotoFunction(iLine)

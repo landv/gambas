@@ -1132,29 +1132,20 @@ void gControl::raise()
 
 	if (!pr) return;
 
-	/*if (gtk_widget_get_has_window(border))
-	{
-		gdk_window_raise(gtk_widget_get_window(border));
-		if (gtk_widget_get_window(widget))
-			gdk_window_raise(gtk_widget_get_window(widget));
-	}
-	else*/
-	{
-		x = left();
-		y = top();
-		parent = GTK_CONTAINER(gtk_widget_get_parent(border));
-		g_object_ref(G_OBJECT(border));
-		gtk_container_remove(parent, border);
-		gtk_container_add(parent, border);
+	x = left();
+	y = top();
+	parent = GTK_CONTAINER(gtk_widget_get_parent(border));
+	g_object_ref(G_OBJECT(border));
+	gtk_container_remove(parent, border);
+	gtk_container_add(parent, border);
 
-		//pr->moveChild(this, x, y);
-		if (GTK_IS_LAYOUT(parent))
-			gtk_layout_move(GTK_LAYOUT(parent), border, x, y);
-		else
-			gtk_fixed_move(GTK_FIXED(parent), border, x, y);
+	//pr->moveChild(this, x, y);
+	if (GTK_IS_LAYOUT(parent))
+		gtk_layout_move(GTK_LAYOUT(parent), border, x, y);
+	else
+		gtk_fixed_move(GTK_FIXED(parent), border, x, y);
 
-		g_object_unref(G_OBJECT(border));
-	}
+	g_object_unref(G_OBJECT(border));
 
 	g_ptr_array_remove(pr->_children, this);
 	g_ptr_array_add(pr->_children, this);

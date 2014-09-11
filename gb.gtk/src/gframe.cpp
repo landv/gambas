@@ -135,7 +135,7 @@ void gPanel::setBackground(gColor color)
 {
 	bool set = _bg_set;
 	
-	gControl::setBackground(color);
+	gContainer::setBackground(color);
 	
 	if (set != _bg_set)
 		create();

@@ -695,7 +695,7 @@ Public Sub ScrollArea_Draw()
       
       If _IsRowSelected(I) Then
         'Paint.Rectangle(X, Y, $hColumns._GetWidth(), H)
-        Paint.Rectangle(F, Y, $hView.ClientW - F * 2, H)
+        Paint.Rectangle(F, Y, $hView.ClientW - F * 2, H - 1)
         Paint.Fill
       Endif
       
@@ -733,7 +733,7 @@ End
 
 Public Sub _GetFrameWidth() As Integer
   
-  If $hView.Border Then Return Style.FrameWidth
+  If $hView.Border Then Return 1 'Return Style.FrameWidth
   
 End
 

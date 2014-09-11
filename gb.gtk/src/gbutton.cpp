@@ -160,20 +160,12 @@ static gboolean button_draw(GtkWidget *wid, cairo_t *cr, gButton *data)
 		state = GTK_CELL_RENDERER_INSENSITIVE;
 		g_object_set(G_OBJECT(data->rendtxt), "sensitive", false, (void *)NULL);
 	}
-	else if (f & GTK_STATE_SELECTED)
+	/*else if (f & GTK_STATE_SELECTED)
 	{
 		state = GTK_CELL_RENDERER_SELECTED;
-	}
+	}*/
 	else
 		state = (GtkCellRendererState)0;
-
-	/*rect.width-=12;
-	rect.x+=6;
-	if (rtl)
-	{
-		rect.width=px-rect.x-6;
-		rect.x=6;
-	}*/
 
 	if (rect.width >= 1 && rect.height >= 1 && data->bufText && *data->bufText)
 	{

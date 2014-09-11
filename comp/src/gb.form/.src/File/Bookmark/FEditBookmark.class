@@ -52,7 +52,7 @@ Public Sub tvwBookmark_Data(Row As Integer, Column As Integer)
 
 End
 
-Public Sub tvwBookmark_Activate()
+Public Sub tvwBookmark_Click()
 
   Dim hBookmark As CBookmark = $hBookmarks[tvwBookmark.Row]
   

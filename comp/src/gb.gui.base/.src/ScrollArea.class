@@ -391,7 +391,7 @@ Public Sub DrawingArea_Draw()
   Dim iEastWidth As Integer
   
   If $bBorder Then 
-    FW = Style.FrameWidth
+    FW = 1 'Style.FrameWidth
     Paint.Save
   Endif
   
@@ -414,7 +414,8 @@ Public Sub DrawingArea_Draw()
     hFrame = New Rect(FW, FW, DW - FW * 2, DH - FW * 2)  
     If hClip Then 
       hClip = hClip.Intersection(hFrame)
-      Draw.ClipRect = hClip
+      Paint.Rectangle(hClip.X, hClip.Y, hClip.W, hClip.H)
+      Paint.Clip()
     Endif
   Endif
   
@@ -440,14 +441,16 @@ Public Sub DrawingArea_Draw()
   
       If $bVBarVisible Then
         LoadFades()
-        Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+        Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+        Paint.Clip()
         If $hVBar.Value > $hVBar.MinValue Then Draw.Tile($hFadeN, 0, $iShadowN - Max(0, $hFadeN.H - ($hVBar.Value - $hVBar.MinValue)), DW, $hFadeN.H)
         If $hVBar.Value < $hVBar.MaxValue Then Draw.Tile($hFadeS, 0, DH - $hFadeS.H - $iShadowS + Max(0, $hFadeS.H - ($hVBar.MaxValue - $hVBar.Value)), DW, $hFadeS.H)
       Endif
       
       If $bHBarVisible Then
         LoadFades()
-        Draw.Clip(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+        Paint.Rectangle(hClip.X + $iShadowW, hClip.Y + $iShadowN, hClip.W - $iShadowW - $iShadowE, hClip.H - $iShadowN - $iShadowS)
+        Paint.Clip()
         bWestShadow = $hHBar.Value > $hHBar.MinValue
         bEastShadow = $hHBar.Value < $hHBar.MaxValue
         iWestWidth = $hHBar.Value - $hHBar.MinValue
@@ -462,13 +465,11 @@ Public Sub DrawingArea_Draw()
       
     Endif
 
-    Draw.Clip.Enabled = False
-
   Endif
   
   If $bBorder Then 
     Paint.Restore
-    Style.PaintPanel(0, 0, DW, DH, Border.Sunken, Style.StateOf($hDrawingArea)) 'If(Me.HasFocus, Draw.Focus, Draw.Normal))
+    Style.PaintPanel(0, 0, DW, DH, Border.Plain, Style.StateOf($hDrawingArea)) 'If(Me.HasFocus, Draw.Focus, Draw.Normal))
   Endif
   
 End
@@ -606,7 +607,7 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   Dim XX, YY, WW, HH As Float
   
   If $bBorder Then
-    F = Style.FrameWidth
+    F = 1 'Style.FrameWidth
     X -= F
     Y -= F
     W += F * 2
