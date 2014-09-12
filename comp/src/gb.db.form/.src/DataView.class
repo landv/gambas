@@ -48,7 +48,7 @@ Private $bCreate As Boolean = True
 Private $iMode As Integer
 
 'Private $bRefreshColumn As Boolean
-Private $bNoActivate As Boolean
+Private $iNoActivate As Integer
 Private $iHighlight As Integer
 Private $bHighlight As Boolean
 
@@ -179,12 +179,12 @@ Private Sub RefreshColumns()
   Next
   
   'Object.Lock($hCtrl)
-  $bNoActivate = True
+  Inc $iNoActivate 
   $hCtrl.Columns.Count = $aColumns.Count
   RefreshLabels
   '$hCtrl.AutoResize = False
   '$hCtrl.AutoResize = True
-  $bNoActivate = False
+  Dec $iNoActivate
   'Object.Unlock($hCtrl)
   
 End
@@ -230,12 +230,12 @@ Private Sub Load()
   
   Inc $iNoRefresh 
   'Object.Lock($hCtrl)
-  $bNoActivate = True
+  Inc $iNoActivate
   $hCtrl.Clear
   $hCtrl.Rows.Count = $hTable.Count
   $iRowNewRecord = -1
   '$hCtrl.Rows.H = GetDefaultRowHeight()
-  $bNoActivate = False
+  Dec $iNoActivate
   'Object.Unlock($hCtrl)
   
   $hCtrl.Refresh
@@ -243,9 +243,10 @@ Private Sub Load()
   If hSrc.Index < 0 Then 
     SetCreate(True)
     If bReset Then 
-      $bNoActivate = True
+      Inc $iNoActivate
       $hCtrl.MoveTo(0, 0)
-      $bNoActivate = False
+      '$hCtrl.Row = -1
+      Dec $iNoActivate
     Endif
   Else
     $hCtrl.Row = hSrc.Index
@@ -255,9 +256,9 @@ Private Sub Load()
   'Try $hCtrl.Rows[$iRowNewRecord].Text = "" '$iRowNewRecord + 1
   If CanEdit() Then
     CreateNewRecord
-    $bNoActivate = True
+    Inc $iNoActivate
     If hSrc.Index < 0 Then $hCtrl.Row = $iRowNewRecord
-    $bNoActivate = False
+    Dec $iNoActivate
   Endif
 
   Dec $iNoRefresh 
@@ -468,8 +469,14 @@ End
 
 Private Sub CanEdit() As Boolean
   
+  Dim hSrc As DataSource
+  
   If Not $bEditable Then Return False
   If Not $hTable Then Return False
+  
+  hSrc = GetSource()
+  If hSrc.ReadOnly Then Return False
+  
   Return True
   
 End
@@ -509,7 +516,7 @@ Public Sub TableView_Click()
   
   Dim hField As DataField
   
-  If $bNoActivate Then Return
+  If $iNoActivate Then Return
   If $hCtrl.Rows.Count = 0 Then Return
   If $hCtrl.Row < 0 Then Return
   'If Not $bCreate Then Return  
@@ -601,9 +608,11 @@ End
 
 Public Sub TableView_Change()
 
-  If $bNoActivate Then Return
+  If $iNoActivate Then Return
   
   If HasNewRecord() And If $hCtrl.Row = $hCtrl.Rows.Max Then 
+    SetCreate(True)
+  Else If $hCtrl.Row < 0 Then
     SetCreate(True)
   Else
     SetCreate(False)
@@ -617,7 +626,9 @@ Public Sub TableView_Change()
     
   Endif
   
+  Inc $iNoActivate
   Raise Activate
+  Dec $iNoActivate
   
 End
 
@@ -808,7 +819,7 @@ End
 
 Public Sub MoveTo(Index As Integer)
   
-  'If Index = $hCtrl.Row Then Return
+  SetCreate(False)
   $hCtrl.Row = Index
   $hCtrl.Rows[$hCtrl.Row].Selected = True
   
@@ -835,9 +846,9 @@ End
 Private Sub ShowNewRecord()
   
   If Not HasNewRecord() Then 
-    $bNoActivate = True
+    Inc $iNoActivate
     Inc $hCtrl.Rows.Count
-    $bNoActivate = False
+    Dec $iNoActivate
     $iRowNewRecord = $hCtrl.Rows.Max
     $hCtrl.Rows[$iRowNewRecord].Text = NEW_RECORD
   Else
@@ -1159,10 +1170,10 @@ Private Sub Editable_Write(Value As Boolean)
   If Not Value Then HideNewRecord
   $bEditable = Value
   $hCtrl.ShowCursor = $bEditable
-  If Value Then 
+  'If Value Then 
     'CreateNewRecord
-    Me.Create
-  Endif
+   Create()
+  'Endif
 
 End
 

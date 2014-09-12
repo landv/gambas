@@ -34,6 +34,22 @@ Public Sub _new()
   
 End
 
+Private Sub UpdateControl()
+
+  Dim bReadOnly As Boolean
+
+  bReadOnly = $hInfo.ReadOnly Or $hSource.ReadOnly
+  
+  If $hInfo.Type <> db.Blob Then
+    If $hCtrl Is ComboBox Then
+      $hCtrl.Enabled = Not bReadOnly
+    Else
+      Try $hCtrl.ReadOnly = bReadOnly
+    Endif
+  Endif
+  
+End
+
 Private Sub CreateControl()
   
   Dim hTextBox As TextBox
@@ -43,7 +59,6 @@ Private Sub CreateControl()
   Dim hButtonBox As ButtonBox
   Dim sType As String
   Dim bFocus As Boolean
-  Dim bReadOnly As Boolean
   
   Select $hInfo.Type
   
@@ -121,28 +136,6 @@ Private Sub CreateControl()
   
   End Select
   
-  bReadOnly = $hInfo.ReadOnly
-  'IF $hSource.Index < 0 AND $hInfo.Key THEN bReadOnly = FALSE
-  
-  If $hInfo.Type <> db.Blob Then
-    If $hCtrl Is ComboBox Then
-      $hCtrl.Enabled = Not bReadOnly
-    Else
-      Try $hCtrl.ReadOnly = bReadOnly
-    Endif
-  Endif
-  
-  ' If Object.Parent(Me) Then
-  '   If Object.CanRaise(Me, "Format") Then
-  '     Debug Me.Name; " Format !"
-  '     Raise Format
-  '   Else
-  '     Debug Me.Name; " No format ?"
-  '     $hCtrl.Font.Bold = $hInfo.Key
-  '     $hCtrl.Background = If(bReadOnly, Color.ButtonBackground, Color.Default)
-  '   Endif
-  ' Endif
-  
   If bFocus Then $hCtrl.SetFocus
   
   Me.Proxy = $hCtrl
@@ -168,6 +161,8 @@ Public Sub Update()
   
   $vVal = $hSource[$sKey]
   SetValue($vVal)
+  
+  UpdateControl
   
 End
 

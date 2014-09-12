@@ -296,7 +296,6 @@ End
 
 Private Function Load() As Boolean
   
-  
   If _Check() Then Goto VOID
   
   Try $hTable = New DataTable($hConn, $sTable, GetFilter())
