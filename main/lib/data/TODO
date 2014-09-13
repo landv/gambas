@@ -26,9 +26,9 @@ AvlTree:
 * NEW: Add a Copy() method to return a deep copy of an AvlTree.
 * NEW: Split() is a new method of AvlTree to return the left or right
   subtree of a given node or both.
-* NEW: Add Insert() to insert an AvlTree into another one.
-* NEW: Add PreOrder, PostOrder, Reverse and LevelOrder virtual properties to
-  specify the enumeration flavour.
+* NEW: Add Insert() to insert an AvlTree into another one. (See a thread on
+  stackoverflow about an O(log n) algorithm for that.)
+* NEW: Add the Reverse virtual property to traver in reverse in-order.
 
 Trie:
 * BUG: Maintain lexicographical order in Trie.
@@ -37,3 +37,22 @@ Graph:
 * Write down the hidden methods and their signatures
 * Set down the relationships between methods; which default implementation
   calls what; what is minimum needed to implement a fully-functional Graph
+
+RedBlackTree:
+* NEW: RedBlackTree class.
+
+SearchTree:
+* NEW: SearchTree is the base class of all search trees.
+
+PrioQueue:
+* NEW: Re-implement PrioQueue using a RedBlackTree.
+  -> contain structures (key, time, value) where key is the key and time
+  is a logical timestamp (rbtree->clock++). If key1 == key2, then compare
+  the unique insertion timestamps.
+* OPT: Don't have Integer priority parameters. Consistently use
+  GB.CompVariant() to compare elements. This is at least as mighty as
+  integer priorities, but better encapsulated.
+
+- First: Graph, PrioSet, Trie.
+- Use libtree to provide some trees (if possible).
+- General, navigatable tree class.

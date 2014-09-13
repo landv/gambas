@@ -51,14 +51,16 @@ GB_DESC *GB_CLASSES[] EXPORT = {
 
 	CGraph,
 	CGraphVertices,
-	CGraphVertex,
-	CVertexInEdges,
-	CVertexOutEdges,
-	CVertexAdjacent,
 	CGraphEdges,
+	CGraphInEdges,
+	CGraphOutEdges,
+	CGraphAdjacent,
+	CGraphVertex,
 	CGraphEdge,
 
 	CGraphMatrix,
+	CMatrixVertices,
+	CMatrixEdges,
 	CMatrixVertex,
 	CMatrixEdge,
 

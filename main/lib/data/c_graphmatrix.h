@@ -27,7 +27,8 @@
 extern GB_INTERFACE GB;
 
 #ifndef __C_GRAPHMATRIX_C
-extern GB_DESC CGraphMatrix[], CMatrixVertex[], CMatrixEdge[];
+extern GB_DESC CGraphMatrix[], CMatrixVertices[], CMatrixEdges[],
+	       CMatrixVertex[], CMatrixEdge[];
 #endif
 
 #endif /* __C_GRAPHMATRIX_H */

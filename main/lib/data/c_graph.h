@@ -26,9 +26,40 @@
 
 extern GB_INTERFACE GB;
 
+typedef struct {
+	void *_getVertex;
+	void *_getEdge;
+
+	void *_nextVertex;
+	void *_nextEdge;
+
+	void *_countVertices;
+	void *_countEdges;
+
+	void *_nextInEdge;
+	void *_nextOutEdge;
+	void *_nextAdjacent;
+
+	void *_vertexProperty;
+	void *_edgeProperty;
+
+	void *_vertexUnknown;
+	void *_edgeUnknown;
+} GRAPH_DESC;
+
+typedef struct {
+	GB_BASE ob;
+	GRAPH_DESC *desc;
+	char *vertex;
+	GB_ARRAY edge;
+	GB_VARIANT_VALUE tag;
+} CGRAPH;
+
+extern GRAPH_DESC *get_desc(void *_object);
+
 #ifndef __C_GRAPH_C
-extern GB_DESC CGraph[], CGraphVertices[], CGraphVertex[], CVertexInEdges[],
-	       CVertexOutEdges[], CVertexAdjacent[], CGraphEdges[],
+extern GB_DESC CGraph[], CGraphVertices[], CGraphEdges[], CGraphInEdges[],
+	       CGraphOutEdges[], CGraphAdjacent[], CGraphVertex[],
 	       CGraphEdge[];
 #endif
 

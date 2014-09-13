@@ -766,8 +766,7 @@ GB_DESC CAvlTree[] = {
 
 #if 0
 GB_DESC CAvlTreeSplit[] = {
-	GB_DECLARE(".AvlTree.Split", 0),
-	GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".AvlTree.Split"),
 
 	GB_PROPERTY_READ("Left", "AvlTree", AvlTreeSplit_Left),
 	GB_PROPERTY_READ("Right", "AvlTree", AvlTreeSplit_Right),

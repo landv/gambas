@@ -1310,8 +1310,7 @@ GB_DESC CList[] = {
 };
 
 GB_DESC CListBackwards[] = {
-	GB_DECLARE(".List.Backwards", 0),
-	GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".List.Backwards"),
 
 	GB_METHOD("_next", "v", ListBackwards_next, NULL),
 
@@ -1349,8 +1348,7 @@ BEGIN_PROPERTY(ListItem_IsValid)
 END_PROPERTY
 
 GB_DESC CListItem[] = {
-	GB_DECLARE(".List.Item", 0),
-	GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".List.Item"),
 
 	GB_METHOD("Append", NULL, ListItem_Append, "(Value)v"),
 	GB_METHOD("Prepend", NULL, ListItem_Prepend, "(Value)v"),

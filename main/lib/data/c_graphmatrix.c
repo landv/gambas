@@ -21,10 +21,10 @@
 
 #define __C_GRAPHMATRIX_C
 
-#include <stdio.h>
 #include <assert.h>
 
 #include "gambas.h"
+#include "c_graph.h"
 #include "c_graphmatrix.h"
 
 #define E_NOVERTEX	"Vertex does not exist"
@@ -45,22 +45,28 @@ typedef struct {
 	char *name;
 } VERT;
 
-/* Used as virtual object selector or in enumeration states */
-union vertex_edge {
+/* Virtual object selector or part of enumeration state */
+union virt {
 	unsigned int vertex;
 	struct {
-		unsigned int src;
-		unsigned int dst;
-	} edge;
+		unsigned int src, dst;
+	};
 };
 
 typedef struct {
-	GB_BASE ob;
+	CGRAPH base;
 	int directed : 1;
 	int weighted : 1;
 	GB_HASHTABLE names;
 	VERT *matrix;
-	union vertex_edge v;
+	/*
+	 * NOTE: This field is used by the "true" virtual object portions of
+	 * this class: GraphMatrix.Vertices[x] and GraphMatrix.Edges[x, y].
+	 *
+	 * In the enumerators (InEdges, OutEdges, Adjacent), we must use the
+	 * "current" vertex/edge which is stored within ->base.
+	 */
+	union virt v;
 	void *gsl_matrix; /* Cache gb.gsl Matrix object of this */
 } CMATRIX;
 
@@ -71,7 +77,7 @@ BEGIN_METHOD(Matrix_new, GB_BOOLEAN d; GB_BOOLEAN w)
 	THIS->directed = VARGOPT(d, 0);
 	THIS->weighted = VARGOPT(w, 0);
 	THIS->v.vertex = -1;
-	THIS->v.edge.src = THIS->v.edge.dst = -1;
+	THIS->v.src = THIS->v.dst = -1;
 	GB.HashTable.New(&THIS->names, GB_COMP_NOCASE);
 	GB.NewArray(&THIS->matrix, sizeof(*THIS->matrix), 0);
 	THIS->gsl_matrix = NULL;
@@ -105,6 +111,12 @@ static unsigned int get_vertex(CMATRIX *mat, const char *str, size_t len)
 	return (unsigned int) vert;
 }
 
+static unsigned int get_cur_vertex(CMATRIX *mat)
+{
+	return get_vertex(mat, mat->base.vertex,
+		GB.StringLength(mat->base.vertex));
+}
+
 BEGIN_METHOD(Matrix_getVertex, GB_STRING vert)
 
 	unsigned int vert = get_vertex(THIS, STRING(vert), LENGTH(vert));
@@ -131,14 +143,13 @@ BEGIN_METHOD(Matrix_getEdge, GB_STRING src; GB_STRING dst)
 		GB.Error(E_NOEDGE);
 		return;
 	}
-	THIS->v.edge.src = src;
-	THIS->v.edge.dst = dst;
+	THIS->v.src = src; THIS->v.dst = dst;
 	GB.ReturnSelf(THIS);
 
 END_METHOD
 
 struct enum_state {
-	union vertex_edge cur;
+	union virt v;
 	GB_ARRAY e;
 };
 
@@ -146,11 +157,11 @@ BEGIN_METHOD_VOID(Matrix_nextVertex)
 
 	struct enum_state *state = GB.GetEnum();
 
-	if (state->cur.vertex == GB.Count(THIS->matrix)) {
+	if (state->v.vertex == GB.Count(THIS->matrix)) {
 		GB.StopEnum();
 		return;
 	}
-	GB.ReturnString(THIS->matrix[state->cur.vertex++].name);
+	GB.ReturnString(THIS->matrix[state->v.vertex++].name);
 
 END_METHOD
 
@@ -182,7 +193,7 @@ static int next_edge(CMATRIX *mat, unsigned int *srcp, unsigned int *dstp)
 BEGIN_METHOD_VOID(Matrix_nextEdge)
 
 	struct enum_state *state = GB.GetEnum();
-	unsigned int src = state->cur.edge.src, dst = state->cur.edge.dst;
+	unsigned int src = state->v.src, dst = state->v.dst;
 
 	if (!state->e) {
 		GB.Array.New(&state->e, GB_T_STRING, 2);
@@ -198,7 +209,7 @@ BEGIN_METHOD_VOID(Matrix_nextEdge)
 		GB.Unref(&state->e);
 		return;
 	}
-	state->cur.edge.src = src; state->cur.edge.dst = dst;
+	state->v.src = src; state->v.dst = dst;
 found:;
 	GB_STRING str;
 
@@ -231,6 +242,115 @@ BEGIN_METHOD_VOID(Matrix_countEdges)
 			if (THIS->matrix[i].edges[j].set)
 				edges++;
 	GB.ReturnInteger(edges);
+
+END_METHOD
+
+static int next_edge_vertical(CMATRIX *mat, unsigned int *srcp,
+					    unsigned int *dstp)
+{
+	unsigned int src = *srcp, dst = *dstp;
+	unsigned int count = GB.Count(mat->matrix);
+
+	do {
+		src = (src + 1) % count;
+		if (!src)
+			dst++;
+		if (dst >= count)
+			return -1;
+	} while (!mat->matrix[src].edges[dst].set);
+	*srcp = src;
+	*dstp = dst;
+	return 0;
+}
+
+BEGIN_METHOD_VOID(Matrix_nextInEdge)
+
+	struct enum_state *state = GB.GetEnum();
+	unsigned int src = state->v.src, dst = THIS->v.vertex;
+
+	if (!state->e) {
+		dst = THIS->v.vertex = get_cur_vertex(THIS);
+		GB.Array.New(&state->e, GB_T_STRING, 2);
+		GB.Ref(state->e);
+		if (THIS->matrix[src].edges[dst].set)
+			goto found;
+	}
+	if (next_edge_vertical(THIS, &src, &dst) || dst != THIS->v.vertex) {
+		GB.StopEnum();
+		GB.Unref(&state->e);
+		return;
+	}
+	state->v.src = src;
+found:;
+	GB_STRING str;
+
+	str.type = GB_T_STRING;
+
+	str.value.addr = THIS->matrix[src].name;
+	str.value.start = 0;
+	str.value.len = GB.StringLength(str.value.addr);
+	GB.StoreString(&str, GB.Array.Get(state->e, 0));
+
+	str.value.addr = THIS->matrix[dst].name;
+	str.value.len = GB.StringLength(str.value.addr);
+	GB.StoreString(&str, GB.Array.Get(state->e, 1));
+	GB.ReturnObject(state->e);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Matrix_nextOutEdge)
+
+	struct enum_state *state = GB.GetEnum();
+	unsigned int src = THIS->v.vertex, dst = state->v.dst;
+
+	if (!state->e) {
+		src = THIS->v.vertex = get_cur_vertex(THIS);
+		GB.Array.New(&state->e, GB_T_STRING, 2);
+		GB.Ref(state->e);
+		if (THIS->matrix[src].edges[dst].set)
+			goto found;
+	}
+	if (next_edge(THIS, &src, &dst) || src != THIS->v.vertex) {
+		GB.StopEnum();
+		GB.Unref(&state->e);
+		return;
+	}
+	state->v.dst = dst;
+found:;
+	GB_STRING str;
+
+	str.type = GB_T_STRING;
+
+	str.value.addr = THIS->matrix[src].name;
+	str.value.start = 0;
+	str.value.len = GB.StringLength(str.value.addr);
+	GB.StoreString(&str, GB.Array.Get(state->e, 0));
+
+	str.value.addr = THIS->matrix[dst].name;
+	str.value.len = GB.StringLength(str.value.addr);
+	GB.StoreString(&str, GB.Array.Get(state->e, 1));
+	GB.ReturnObject(state->e);
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Matrix_nextAdjacent)
+
+	struct enum_state *state = GB.GetEnum();
+	unsigned int src = THIS->v.vertex, dst = state->v.dst;
+
+	if (!state->e) {
+		src = THIS->v.vertex = get_cur_vertex(THIS);
+		state->e = (void *) 1;
+		if (THIS->matrix[src].edges[dst].set)
+			goto found;
+	}
+	if (next_edge(THIS, &src, &dst) || src != THIS->v.vertex) {
+		GB.StopEnum();
+		return;
+	}
+	state->v.dst = dst;
+found:
+	GB.ReturnString(THIS->matrix[dst].name);
 
 END_METHOD
 
@@ -315,27 +435,24 @@ BEGIN_METHOD(Matrix_Remove, GB_STRING vert)
 
 END_METHOD
 
-/**G
- * A newly created edge has weight 1. You can use the return value of this
- * method to change it.
- */
-BEGIN_METHOD(Matrix_Connect, GB_STRING src; GB_STRING dst)
+BEGIN_METHOD(Matrix_Connect, GB_STRING src; GB_STRING dst; GB_FLOAT w)
 
 	unsigned int src = get_vertex(THIS, STRING(src), LENGTH(src)),
 		     dst = get_vertex(THIS, STRING(dst), LENGTH(dst));
+	float w = VARGOPT(w, 1);
 
 	if (src == -1 || dst == -1) {
 		GB.Error(E_NOVERTEX);
 		return;
 	}
 	THIS->matrix[src].edges[dst].set = 1;
-	THIS->matrix[src].edges[dst].weight = 1;
-	THIS->v.edge.src = src; THIS->v.edge.dst = dst;
+	THIS->matrix[src].edges[dst].weight = w;
+	THIS->v.src = src; THIS->v.dst = dst;
 	update_gsl_matrix(THIS, src, dst);
 	/* Duplicate if the graph is undirected */
 	if (!THIS->directed && src != dst) {
 		THIS->matrix[dst].edges[src].set = 1;
-		THIS->matrix[dst].edges[src].weight = 1;
+		THIS->matrix[dst].edges[src].weight = w;
 		update_gsl_matrix(THIS, dst, src);
 	}
 
@@ -408,8 +525,8 @@ GB_DESC CGraphMatrix[] = {
 	GB_METHOD("_new", NULL, Matrix_new, "[(Directed)b(Weighted)b]"),
 	GB_METHOD("_free", NULL, Matrix_free, NULL),
 
-	GB_METHOD("_getVertex", "_Matrix_Vertex", Matrix_getVertex, "(Vertex)s"),
-	GB_METHOD("_getEdge", "_Matrix_Edge", Matrix_getEdge, "(Src)s(Dst)s"),
+	GB_METHOD("_getVertex", ".Matrix.Vertex", Matrix_getVertex, "(Vertex)s"),
+	GB_METHOD("_getEdge", ".Matrix.Edge", Matrix_getEdge, "(Src)s(Dst)s"),
 
 	GB_METHOD("_nextVertex", "s", Matrix_nextVertex, NULL),
 	GB_METHOD("_nextEdge", "String[]", Matrix_nextEdge, NULL),
@@ -417,10 +534,17 @@ GB_DESC CGraphMatrix[] = {
 	GB_METHOD("_countVertices", "i", Matrix_countVertices, NULL),
 	GB_METHOD("_countEdges", "i", Matrix_countEdges, NULL),
 
-	GB_METHOD("Add", "_Matrix_Vertex", Matrix_Add, "(Name)s"),
+	GB_METHOD("_nextInEdge", "String[]", Matrix_nextInEdge, NULL),
+	GB_METHOD("_nextOutEdge", "String[]", Matrix_nextOutEdge, NULL),
+	GB_METHOD("_nextAdjacent", "s", Matrix_nextAdjacent, NULL),
+
+	GB_METHOD("Add", ".Matrix.Vertex", Matrix_Add, "(Name)s"),
 	GB_METHOD("Remove", NULL, Matrix_Remove, "(Vertex)s"),
-	GB_METHOD("Connect", "_Matrix_Edge", Matrix_Connect, "(Src)s(Dst)s"),
+	GB_METHOD("Connect", ".Matrix.Edge", Matrix_Connect, "(Src)s(Dst)s[(Weight)f]"),
 	GB_METHOD("Disconnect", NULL, Matrix_Disconnect, "(Src)s(Dst)s"),
+
+	GB_PROPERTY_SELF("Vertices", ".Matrix.Vertices"),
+	GB_PROPERTY_SELF("Edges", ".Matrix.Edges"),
 
 	/*
 	 * Require gb.gsl.
@@ -431,97 +555,38 @@ GB_DESC CGraphMatrix[] = {
 	GB_END_DECLARE
 };
 
-static int next_edge_vertical(CMATRIX *mat, unsigned int *srcp,
-					    unsigned int *dstp)
-{
-	unsigned int src = *srcp, dst = *dstp;
-	unsigned int count = GB.Count(mat->matrix);
+BEGIN_METHOD(MatrixVertices_get, GB_STRING vert)
 
-	do {
-		src = (src + 1) % count;
-		if (!src)
-			dst++;
-		if (dst >= count)
-			return -1;
-	} while (!mat->matrix[src].edges[dst].set);
-	*srcp = src;
-	*dstp = dst;
-	return 0;
-}
-
-BEGIN_METHOD_VOID(MatrixVertex_nextInEdge)
-
-	struct enum_state *state = GB.GetEnum();
-	unsigned int src = state->cur.edge.src, dst = THIS->v.vertex;
-
-	if (!state->e) {
-		GB.Array.New(&state->e, GB_T_STRING, 2);
-		GB.Ref(state->e);
-		if (THIS->matrix[src].edges[dst].set)
-			goto found;
-	}
-	if (next_edge_vertical(THIS, &src, &dst) || dst != THIS->v.vertex) {
-		GB.StopEnum();
-		GB.Unref(&state->e);
-		return;
-	}
-	state->cur.edge.src = src;
-found:;
-	GB_STRING str;
-
-	str.type = GB_T_STRING;
-
-	str.value.addr = THIS->matrix[src].name;
-	str.value.start = 0;
-	str.value.len = GB.StringLength(str.value.addr);
-	GB.StoreString(&str, GB.Array.Get(state->e, 0));
-
-	str.value.addr = THIS->matrix[dst].name;
-	str.value.len = GB.StringLength(str.value.addr);
-	GB.StoreString(&str, GB.Array.Get(state->e, 1));
-	GB.ReturnObject(state->e);
+	THIS->v.vertex = get_vertex(THIS, STRING(vert), LENGTH(vert));
+	GB.ReturnSelf(THIS);
 
 END_METHOD
 
-BEGIN_METHOD_VOID(MatrixVertex_nextOutEdge)
+GB_DESC CMatrixVertices[] = {
+	GB_DECLARE_VIRTUAL(".Matrix.Vertices"),
+	GB_INHERITS(".Graph.Vertices"),
 
-	struct enum_state *state = GB.GetEnum();
-	unsigned int src = THIS->v.vertex, dst = state->cur.edge.dst;
+	GB_METHOD("_get", ".Matrix.Vertex", MatrixVertices_get, "(Vertex)s"),
 
-	if (!state->e) {
-		GB.Array.New(&state->e, GB_T_STRING, 2);
-		GB.Ref(state->e);
-		if (THIS->matrix[src].edges[dst].set)
-			goto found;
-	}
-	if (next_edge(THIS, &src, &dst) || src != THIS->v.vertex) {
-		GB.StopEnum();
-		GB.Unref(&state->e);
-		return;
-	}
-	state->cur.edge.dst = dst;
-found:;
-	GB_STRING str;
+	GB_END_DECLARE
+};
 
-	str.type = GB_T_STRING;
+BEGIN_METHOD(MatrixEdges_get, GB_STRING src; GB_STRING dst)
 
-	str.value.addr = THIS->matrix[src].name;
-	str.value.start = 0;
-	str.value.len = GB.StringLength(str.value.addr);
-	GB.StoreString(&str, GB.Array.Get(state->e, 0));
-
-	str.value.addr = THIS->matrix[dst].name;
-	str.value.len = GB.StringLength(str.value.addr);
-	GB.StoreString(&str, GB.Array.Get(state->e, 1));
-	GB.ReturnObject(state->e);
+	THIS->v.src = get_vertex(THIS, STRING(src), LENGTH(src));
+	THIS->v.dst = get_vertex(THIS, STRING(dst), LENGTH(dst));
+	GB.ReturnSelf(THIS);
 
 END_METHOD
 
-BEGIN_METHOD_VOID(MatrixVertex_nextAdjacent)
+GB_DESC CMatrixEdges[] = {
+	GB_DECLARE_VIRTUAL(".Matrix.Edges"),
+	GB_INHERITS(".Graph.Edges"),
 
-	/* TODO */
+	GB_METHOD("_get", ".Matrix.Edge", MatrixEdges_get, "(Src)s(Dst)s"),
 
-END_METHOD
+	GB_END_DECLARE
+};
 
 BEGIN_PROPERTY(MatrixVertex_InDegree)
 
@@ -547,11 +612,18 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MatrixVertex_Name)
 
+	char *name = THIS->matrix[THIS->v.vertex].name;
+
 	if (READ_PROPERTY) {
-		GB.ReturnString(THIS->matrix[THIS->v.vertex].name);
+		GB.ReturnString(name);
 		return;
 	}
-	/* delete old name from ->names, then register new one */
+	GB.HashTable.Remove(THIS->names, name, GB.StringLength(name));
+	GB.FreeString(&THIS->matrix[THIS->v.vertex].name);
+	THIS->matrix[THIS->v.vertex].name =
+		GB.NewString(PSTRING(), PLENGTH());
+	GB.HashTable.Add(THIS->names, PSTRING(), PLENGTH(),
+			 (void *) (intptr_t) THIS->v.vertex);
 
 END_PROPERTY
 
@@ -566,13 +638,8 @@ BEGIN_PROPERTY(MatrixVertex_Value)
 END_METHOD
 
 GB_DESC CMatrixVertex[] = {
-	GB_DECLARE("_Matrix_Vertex", 0),
-	GB_INHERITS("_Graph_Vertex"),
-	GB_VIRTUAL_CLASS(),
-
-	GB_METHOD("_nextInEdge", "String[]", MatrixVertex_nextInEdge, NULL),
-	GB_METHOD("_nextOutEdge", "String[]", MatrixVertex_nextOutEdge, NULL),
-	GB_METHOD("_nextAdjacent", "s", MatrixVertex_nextAdjacent, NULL),
+	GB_DECLARE_VIRTUAL(".Matrix.Vertex"),
+	GB_INHERITS(".Graph.Vertex"),
 
 	GB_PROPERTY_READ("InDegree", "i", MatrixVertex_InDegree),
 	GB_PROPERTY_READ("OutDegree", "i", MatrixVertex_OutDegree),
@@ -584,7 +651,7 @@ GB_DESC CMatrixVertex[] = {
 
 BEGIN_PROPERTY(MatrixEdge_Src)
 
-	int src = THIS->v.edge.src;
+	int src = THIS->v.src;
 
 	GB.ReturnString(THIS->matrix[src].name);
 
@@ -592,7 +659,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MatrixEdge_Dst)
 
-	int dst = THIS->v.edge.dst;
+	int dst = THIS->v.dst;
 
 	GB.ReturnString(THIS->matrix[dst].name);
 
@@ -600,7 +667,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(MatrixEdge_Weight)
 
-	int src = THIS->v.edge.src, dst = THIS->v.edge.dst;
+	int src = THIS->v.src, dst = THIS->v.dst;
 
 	if (READ_PROPERTY) {
 		GB.ReturnFloat(THIS->matrix[src].edges[dst].weight);
@@ -613,9 +680,8 @@ BEGIN_PROPERTY(MatrixEdge_Weight)
 END_PROPERTY
 
 GB_DESC CMatrixEdge[] = {
-	GB_DECLARE("_Matrix_Edge", 0),
-	GB_INHERITS("_Graph_Edge"),
-	GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".Matrix.Edge"),
+	GB_INHERITS(".Graph.Edge"),
 
 	GB_PROPERTY_READ("Src", "s", MatrixEdge_Src),
 	GB_PROPERTY_READ("Dst", "s", MatrixEdge_Dst),
