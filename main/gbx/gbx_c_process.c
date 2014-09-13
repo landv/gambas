@@ -434,6 +434,53 @@ static void init_child_tty(int fd)
 	}
 }
 
+static const char *search_program_in_path(char *name)
+{
+	char *search;
+	char *p, *p2;
+	int len;
+	const char *path = NULL;
+
+	if (strchr(name, '/'))
+		return name;
+
+	search = getenv("PATH");
+	if (!search || !*search)
+		search = "/usr/bin:/bin";
+
+	search = STRING_new_zero(search);
+
+	//fprintf(stderr, "search_program_in_path: '%s' in '%s'\n", name, search);
+
+	p = search;
+	for(;;)
+	{
+		p2 = strchr(p, ':');
+		if (p2)
+			len = p2 - p;
+		else
+			len = strlen(p);
+
+		if (len > 0)
+		{
+			p[len] = 0;
+			//fprintf(stderr, "trying: %s\n", p);
+			path = FILE_cat(p, name, NULL);
+			if (access(path, X_OK) == 0)
+				break;
+		}
+
+		if (!p2)
+			break;
+
+		p = p2 + 1;
+	}
+
+	STRING_free(&search);
+	//fprintf(stderr, "--> %s\n", path);
+	return path;
+}
+
 static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 {
 	static const char *shell[] = { "/bin/sh", "-c", NULL, NULL };
@@ -452,6 +499,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	//struct termios termios_stdin;
 	//struct termios termios_check;
 	struct termios termios_master;
+	const char *exec;
 
 	if (mode & PM_SHELL)
 	{
@@ -468,6 +516,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		if (argv[2] == NULL || *argv[2] == 0)
 			return;
+
+		exec = argv[0];
 		
 		process->process_group = TRUE;
 	}
@@ -483,18 +533,19 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		memcpy(argv, array->data, sizeof(*argv) * n);
 		argv[n] = NULL;
 
+		exec = search_program_in_path(argv[0]);
+		if (!exec)
+		{
+			IFREE(argv);
+			THROW(E_NEXIST);
+		}
+
 		for (i = 0; i < n; i++)
 		{
 			if (!argv[i])
 				argv[i] = "";
 		}
 
-		if (*argv[0] == '/' && !FILE_exist(argv[0]))
-		{
-			FREE(&argv);
-			THROW(E_NEXIST);
-		}
-		
 		#ifdef DEBUG_ME
 		{
 			int i;
@@ -738,7 +789,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		if (!pwd)
 			FILE_chdir(PROJECT_oldcwd);
 		
-		execvp(argv[0], (char **)argv);
+		execv(exec, (char **)argv);
 		abort_child(CHILD_CANNOT_EXEC);
 	}
 
@@ -942,7 +993,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	#endif
 }
 
-
+//-------------------------------------------------------------------------
 
 BEGIN_METHOD_VOID(Process_exit)
 
