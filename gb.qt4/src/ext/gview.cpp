@@ -1546,7 +1546,7 @@ bool GEditor::cursorGoto(int ny, int nx, bool mark)
 	else if (ny >= numLines())
 	{
 		ny = numLines() - 1;
-		nx = QMIN(nx, lineLength(ny));
+		nx = lineLength(ny);
 	}
 	else
 		ny = checkFolded(ny);
