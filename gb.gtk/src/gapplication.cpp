@@ -741,11 +741,13 @@ __FOUND_WIDGET:
 			
 			if (control)
 			{
-				if (!gKey::enable(control, &event->key))
-					cancel = gKey::raiseEvent(type, control, NULL);
-				else
-					cancel = true;
+				if (gKey::enable(control, &event->key))
+				{
+					gKey::disable();
+					goto __HANDLE_EVENT;
+				}
 
+				cancel = gKey::raiseEvent(type, control, NULL);
 				gKey::disable();
 				
 				if (cancel)

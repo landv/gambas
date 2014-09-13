@@ -47,7 +47,14 @@ GdkEventKey gKey::_event;
 
 static GtkIMContext *_im_context = NULL;
 static gControl *_im_control = NULL;
+static bool _im_no_commit = false;
 static bool _no_input_method = false;
+static GdkWindow *_im_window = NULL;
+
+#define MAX_CODE 16
+static uint _key_code[MAX_CODE] = { 0 };
+
+
 //char *_im_text = NULL;
 
 const char *gKey::text()
@@ -162,20 +169,24 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
 	
 	if (_valid)
 		disable();
-		
+
 	_valid = true;
 	if (event)
 	{
+		if (event->type == GDK_KEY_RELEASE)
+			_im_no_commit = false;
+
 		_event = *event;
-	
+		_event.window = _im_window;
+
 		if (!_no_input_method && control == _im_control)
 		{
 			#if DEBUG_IM
-			fprintf(stderr, "gKey::enable: event->string = '%s'\n", event->string);
+			fprintf(stderr, "gKey::enable: %p event->string = '%s' %d\n", event, event->string, (event->state & (1 << 25)) != 0);
 			#endif
 			f = gtk_im_context_filter_keypress(_im_context, &_event);
 			#if DEBUG_IM
-			fprintf(stderr, "gKey::enable: filter -> %d event->string = '%s'\n", f, event->string);
+			fprintf(stderr, "gKey::enable: %p filter -> %d event->string = '%s'\n", event, f, event->string);
 			#endif
 		}
 	}
@@ -185,18 +196,42 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
 
 static void cb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
 {
+	bool disable = false;
+
 	#if DEBUG_IM
 	fprintf(stderr, "cb_im_commit: %s\n", str);
 	#endif
 	
-	gKey::enable(_im_control, NULL);
+	if (_im_no_commit)
+		return;
+
+	if (!gKey::valid())
+	{
+		gKey::enable(_im_control, NULL);
+		disable = true;
+	}
+
 	gKey::raiseEvent(gEvent_KeyPress, _im_control, str);
-	gKey::disable();
+
+	if (disable)
+		gKey::disable();
+
+	_im_no_commit = true;
 }
 
 void gKey::init()
 {
+	GdkWindowAttr attr;
+
+	attr.event_mask = GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
+	attr.width = attr.height = 1;
+	attr.wclass = GDK_INPUT_ONLY;
+	attr.window_type = GDK_WINDOW_TOPLEVEL;
+
+	_im_window = gdk_window_new(NULL, &attr, 0);
+
 	_im_context = gtk_im_multicontext_new();
+
   g_signal_connect (_im_context, "commit", G_CALLBACK(cb_im_commit), NULL);
 }
 
@@ -213,7 +248,7 @@ void gKey::setActiveControl(gControl *control)
 		if (!_no_input_method)
 		{
 			#if DEBUG_IM
-			fprintf(stderr, "gtm_im_context_focus_out\n");
+			fprintf(stderr, "gtk_im_context_focus_out\n");
 			#endif
 	  	gtk_im_context_set_client_window (_im_context, 0);
 			gtk_im_context_focus_out(_im_context);
@@ -229,13 +264,15 @@ void gKey::setActiveControl(gControl *control)
 		
 		if (!_no_input_method)
 		{
-	  	gtk_im_context_set_client_window (_im_context, gtk_widget_get_window(_im_control->widget));
+	  	gtk_im_context_set_client_window (_im_context, _im_window); //gtk_widget_get_window(_im_control->widget));
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
 			#if DEBUG_IM
-			fprintf(stderr, "gtm_im_context_focus_in\n");
+			fprintf(stderr, "gtk_im_context_focus_in\n");
 			#endif
-		}		
+		}
+
+		memset(_key_code, 0, sizeof(uint) * MAX_CODE);
 	}
 }
 
@@ -259,6 +296,43 @@ static bool raise_key_event_to_parent_window(gControl *control, int type)
 	return false;
 }
 
+static bool can_raise(GdkEventKey *event)
+{
+	int i;
+
+	if (event->type == GDK_KEY_PRESS)
+	{
+		for (i = 0; i < MAX_CODE; i++)
+		{
+			if (event->keyval == _key_code[i])
+				return false;
+		}
+		for (i = 0; i < MAX_CODE; i++)
+		{
+			if (!_key_code[i])
+			{
+				//fprintf(stderr, "store key %d\n", event->keyval);
+				_key_code[i] = event->keyval;
+				break;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		for (i = 0; i < MAX_CODE; i++)
+		{
+			if (event->keyval == _key_code[i])
+			{
+				//fprintf(stderr, "remove key %d\n", event->keyval);
+				_key_code[i] = 0;
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
 bool gKey::raiseEvent(int type, gControl *control, const char *text)
 {
 	bool parent_got_it = false;
@@ -266,6 +340,9 @@ bool gKey::raiseEvent(int type, gControl *control, const char *text)
 
 	if (text)
 		_event.string = (gchar *)text;
+
+	if (!can_raise(&_event))
+		return false;
 
 __KEY_TRY_PROXY:
 
