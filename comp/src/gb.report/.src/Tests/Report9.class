@@ -9,9 +9,9 @@ End
 
 Public Sub Report_Open()
 
-'ReportPanel1.BoxShadow.XOffset = "1mm"
-'ReportPanel1.BoxShadow.YOffset = "1mm"
-  ReportPanel1.BoxShadow.Spread = "1mm"
-  ReportPanel1.BoxShadow.Blur = "1mm"
-  
+ReportPanel1.BoxShadow.XOffset = "1mm"
+ReportPanel1.BoxShadow.YOffset = "-1mm"
+  'ReportPanel1.BoxShadow.Spread = "2mm"
+  ReportPanel1.BoxShadow.Blur = "4mm"
+  Me.Clear
 End

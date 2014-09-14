@@ -20,7 +20,7 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
   
   For I = 1 To Len(Size)
     sCar = Mid$(Size, I, 1)
-    If Not IsDigit(sCar) And If sCar <> "." Then Break
+    If Not IsDigit(sCar) And If sCar <> "-" And If sCar <> "." Then Break
   Next
   
   Value = CFloat(Left$(Size, I - 1))

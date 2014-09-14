@@ -390,6 +390,16 @@ Private Sub Layout()
   '$View.ScrollX = Max($View.ClientWidth, ($fPageWidth + 2 * $fSpace)) / 8
 End
 
+Public Sub View_MouseWheel()
+  
+  If Mouse.Control Then
+  Stop Event
+    Me.Scale += (Mouse.Delta * 0.1)
+  Endif
+End
+
+
+
 Public Sub View_Scroll()
   
   '$aImageToLoad.Clear

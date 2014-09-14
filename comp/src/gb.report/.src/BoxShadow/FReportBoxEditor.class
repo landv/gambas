@@ -1,0 +1,26 @@
+' Gambas class file
+
+Private hBorder As New ReportBorder
+Public Sub Form_Open()
+
+  
+
+End
+
+Public Sub DrawingArea1_Draw()
+
+  Dim X, Y, Width, Height As Float
+  
+  X = Paint.Width / 3 / 2
+  Y = Paint.Height / 3 / 2
+  Width = Paint.Width / 3 * 2
+  Height = Paint.Height / 3 * 2
+  
+  'Paint.FillRect(0, 0, Paint.Width, Paint.Height, Color.White)
+  
+  
+  Paint.Rectangle(X, Y, Width, Height)
+  Paint.Stroke
+  
+
+End
