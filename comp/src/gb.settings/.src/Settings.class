@@ -13,13 +13,17 @@ Static Property Read DefaultDir As String
 Static Private $sStr As String
 Static Private $iPos As Integer
 
+Property Read Keys As _Settings_Keys
+Property Read Path As String
+'Property Shared As Boolean
+
 Private $sPath As String
 Private $sTitle As String
 Private $cSlot As Collection
 Private $bModify As Boolean
 
-Property Read Keys As _Settings_Keys
-Property Read Path As String
+'Private $bShared As Boolean
+'Private $dDateLoad As Date
 
 'Static Private $cObserver As New Collection
 
@@ -32,8 +36,15 @@ Private Sub Load()
   Dim iPos As Integer
   Dim hCol As Collection
 
+  'Debug $sPath
+
   $cSlot = New Collection
-  If Not Exist($sPath) Then Return
+  If Not Exist($sPath) Then 
+    '$dDateLoad = Now
+    Return
+  Endif
+
+  '$dDateLoad = Stat($sPath).LastModified
 
   hFile = Open $sPath
 
@@ -125,6 +136,8 @@ Public Sub Save()
 
   If Not $bModify Then Return
 
+  'Debug $sPath
+
   For Each cSlot In $cSlot
     aKey.Add($cSlot.Key)
   Next
@@ -161,6 +174,8 @@ Public Sub Save()
   Try Kill $sPath & "~"
   Try Move $sPath To $sPath & "~"
   Try Move $sPath & "#" To $sPath
+  
+  '$dDateLoad = Stat($sPath).LastModified
 
 Finally
 
@@ -194,6 +209,10 @@ Public Function _get(Key As String, Optional {Default} As Variant) As Variant
 
   Dim hSlot As Collection
   Dim sSlot As String
+  'Dim dDate As Date
+
+  'Try dDate = Stat($sPath).LastModified
+  'If dDate And If dDate > $dDateLoad Then Load()
 
   sSlot = GetSlot(Key)
   hSlot = $cSlot[sSlot]
@@ -225,6 +244,7 @@ Public Sub _put(Value As Variant, Key As String)
   If TypeOf(Value) = gb.Object Or If hSlot[Key] <> Value Then
     hSlot[Key] = Value
     $bModify = True
+    'Save()
   Endif
 
 End
@@ -244,111 +264,9 @@ Public Sub Clear(Optional ParentKey As String)
   Endif
 
   $bModify = True
+  'Save()
 
 End
-
-' PUBLIC FUNCTION MakeWindowKey(sWin AS String, sKey AS String) AS String
-' 
-'   RETURN "Window" &/ sWin &/ sKey
-' 
-' END
-' 
-' 
-' PUBLIC SUB LoadWindowPos(hForm AS Form, sKey AS String)
-' 
-'   DIM sPos AS String
-'   DIM cPos AS String[]
-' 
-'   'Dump($cData)
-' 
-'   sPos = ReadString(MakeWindowKey(sKey, "Pos"))
-'   IF Not sPos THEN RETURN
-' 
-'   'PRINT "LoadWindowPos: "; sKey; ": "; sPos
-' 
-'   cPos = Split(sPos, ",")
-'   IF cPos.Count = 4 THEN
-'     hForm.Move(cPos[0], cPos[1], cPos[2], cPos[3])
-'   ELSE
-'     hForm.Move(cPos[0], cPos[1])
-'   ENDIF
-' 
-' END
-' 
-' 
-' PUBLIC SUB SaveWindowPos(hWindow AS Form, sKey AS String, OPTIONAL bSaveSize AS Boolean = TRUE)
-' 
-'   DIM sPos AS String
-' 
-'   sPos = CStr(hWindow.X) & "," & CStr(hWindow.Y)
-'   IF bSaveSize THEN
-'     sPos = sPos & "," & CStr(hWindow.Width) & "," & CStr(hWindow.Height)
-'   ENDIF
-' 
-'   WriteString(MakeWindowKey(sKey, "Pos"), sPos)
-'   'PRINT "SaveWindowPos: "; sKey; ": "; sPos
-' 
-' END
-' 
-' 
-' PUBLIC SUB LoadWindowSize(hForm AS Form, sKey AS String)
-' 
-'   DIM sPos AS String
-'   DIM cPos AS String[]
-' 
-'   'Dump($cData)
-' 
-'   sPos = ReadString(MakeWindowKey(sKey, "Pos"))
-'   IF Not sPos THEN RETURN
-' 
-'   'PRINT "LoadWindowPos: "; sKey; ": "; sPos
-' 
-'   cPos = Split(sPos, ",")
-'   hForm.Resize(cPos[0], cPos[1])
-' 
-' END
-' 
-' 
-' PUBLIC SUB SaveWindowSize(hWindow AS Form, sKey AS String)
-' 
-'   DIM sPos AS String
-' 
-'   sPos = CStr(hWindow.W) & "," & CStr(hWindow.H)
-'   WriteString(MakeWindowKey(sKey, "Pos"), sPos)
-'   'PRINT "SaveWindowPos: "; sKey; ": "; sPos
-' 
-' END
-' 
-' 
-' PUBLIC SUB SaveSplitterPos(hSplitter AS Object, sWindow AS String, sKey AS String)
-' 
-'   TRY WriteString(MakeWindowKey(sWindow, sKey), hSplitter.Layout)
-'   IF ERROR THEN PRINT Error.Text
-' 
-' END
-' 
-' PUBLIC SUB LoadSplitterPos(hSplitter AS Object, sWindow AS String, sKey AS String)
-' 
-'   TRY hSplitter.Layout = ReadString(MakeWindowKey(sWindow, sKey))
-'   IF ERROR THEN PRINT Error.Text
-' 
-' END
-
-' Public Sub Window_Activate()
-' 
-'   Dim hObserver As Observer
-'   Dim hDesktopWin As DesktopWindow
-'   
-'   hObserver = $cObserver[Last.Id]
-'   If Not hObserver Then Return
-'   
-'   hDesktopWin = New DesktopWindow(Last.Id)
-'   Try hDesktopWin.Desktop = hObserver.Tag
-'   Debug Last.Name;; "Desktop:";; hObserver.Tag;; "(";; hDesktopWin.Desktop; ")"
-'   $cObserver[Last.Id] = Null
-'   
-' End
-
 
 Private Sub ReadWindow(hWindow As Window, sKey As String)
 
@@ -849,3 +767,15 @@ Static Private Sub FromString(Value As String) As Variant
   Return vVal
   
 End
+
+' Private Function Shared_Read() As Boolean
+' 
+'   Return $bShared
+' 
+' End
+' 
+' Private Sub Shared_Write(Value As Boolean)
+' 
+'   $bShared = Value
+' 
+' End

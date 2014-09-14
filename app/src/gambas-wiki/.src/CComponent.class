@@ -520,6 +520,7 @@ Public Sub Load()
   Dim iLine As Integer
   Dim sHelp As String
   Dim sElt As String
+  Dim cCycle As Collection
   
   If $bLoaded Then Return
 
@@ -581,6 +582,7 @@ Public Sub Load()
   Repeat
     
     bAgain = False
+    cCycle = New Collection
     
     aLine = Split(File.Load(sPath), "\n")
     If aLine.Count And If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
@@ -600,9 +602,11 @@ Public Sub Load()
         'DEBUG sClass
         
         If Classes.Exist(Key &/ sClass) Then
-          'DEBUG "Class exists"
-          bNextClass = True
-          Continue
+          If Not cCycle.Exist(sClass) Then 
+            'DEBUG "Class exists"
+            bNextClass = True
+            Continue
+          Endif
         Endif
         
         'If sClass = "Application" Then Stop
@@ -637,31 +641,25 @@ Public Sub Load()
           Continue
         Endif
         
-        hClass = CreateClass(sClass, sParent, Key)
+        If Not cCycle.Exist(sClass) Then
+          hClass = CreateClass(sClass, sParent, Key)
+          cCycle[sClass] = True
         
-        sLig = aLine[iLine]
-        Inc iLine
-        
-        hClass.Creatable = InStr(sLig, "C")
-        hClass.AutoCreatable = InStr(sLig, "A")
-        
-          sHelp = ""
-          While iLine < aLine.Count
-            If Left(aLine[iLine]) <> "'" Then Break
-            sHelp &= Mid$(aLine[iLine], 2) & "\n"
-            Inc iLine
-          Wend
+          sLig = aLine[iLine]
+          Inc iLine
           
-          If sHelp Then
-            sHelp = RTrim(sHelp)
-            If InStr(sHelp, "\n") = 0 Then sHelp = LTrim(sHelp)
-          Endif
+          hClass.Creatable = InStr(sLig, "C")
+          hClass.AutoCreatable = InStr(sLig, "A")
+        Else
+          Inc iLine
+        Endif
         
-        
-        hClass.Help = sHelp
+        GoSub READ_HELP
+        If hClass.Help Then hClass.Help &= "\n\n"
+        hClass.Help &= sHelp
         
         Continue
-        
+
       Endif
       
       If bNextClass Then Continue
@@ -694,18 +692,7 @@ Public Sub Load()
         Endif
       Endif
       
-        sHelp = ""
-        While iLine < aLine.Count
-          If Left(aLine[iLine]) <> "'" Then Break
-          sHelp &= Mid$(aLine[iLine], 2) & "\n"
-          Inc iLine
-        Wend
-        
-        If sHelp Then
-          sHelp = RTrim(sHelp)
-          If InStr(sHelp, "\n") = 0 Then sHelp = LTrim(sHelp)
-        Endif
-      
+      GoSub READ_HELP
       hSym.Help = sHelp
       
     Wend
@@ -777,6 +764,22 @@ HAS_BEEN_LOADED:
   'PRINT "OK"
   
   Loaded = True
+  
+READ_HELP:
+
+  sHelp = ""
+  While iLine < aLine.Count
+    If Left(aLine[iLine]) <> "'" Then Break
+    sHelp &= Mid$(aLine[iLine], 2) & "\n"
+    Inc iLine
+  Wend
+  
+  If sHelp Then
+    sHelp = RTrim(sHelp)
+    If InStr(sHelp, "\n") = 0 Then sHelp = LTrim(sHelp)
+  Endif
+      
+  Return
   
 End
 

@@ -664,6 +664,9 @@ void gMainWindow::setVisible(bool vl)
 		
 		if (_popup)
 			gApplication::exitLoop(this);
+
+		if (gApplication::_button_grab && !gApplication::_button_grab->isReallyVisible())
+				gApplication::setButtonGrab(NULL);
 	}
 }
 
@@ -1018,6 +1021,7 @@ void gMainWindow::drawMask()
 
 	if (_picture)
 	{
+		gtk_widget_set_app_paintable(border, TRUE);
 		gtk_widget_realize(border);
 		gtk_widget_realize(widget);
 		for (int i = 0; i < controlCount(); i++)
@@ -1593,7 +1597,7 @@ void gMainWindow::setTransparent(bool vl)
 
 	gtk_widget_set_app_paintable(border, TRUE);
 
-	#ifdef GTK3
+#ifdef GTK3
 	gtk_widget_set_visual(border, visual);
 #else
 	gtk_widget_set_colormap(border, colormap);

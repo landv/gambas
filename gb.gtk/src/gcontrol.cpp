@@ -371,6 +371,9 @@ bool gControl::isEnabled() const
 
 bool gControl::isReallyVisible()
 {
+	if (!isTopLevel() && !topLevel()->isReallyVisible())
+		return false;
+	
 #if GTK_CHECK_VERSION(2, 20, 0)
 	return gtk_widget_get_mapped(border);
 #else

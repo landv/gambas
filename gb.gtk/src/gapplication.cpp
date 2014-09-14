@@ -265,8 +265,8 @@ static void gambas_handle_event(GdkEvent *event)
 
 	button_grab = gApplication::_button_grab;
 	if (event->type == GDK_BUTTON_RELEASE)
-		gApplication::_button_grab = NULL;
-	
+		gApplication::setButtonGrab(NULL);
+
 	if (gApplication::_control_grab)
 	{
 		control = gApplication::_control_grab;
@@ -495,11 +495,7 @@ __FOUND_WIDGET:
 				if (control->canFocus() && !control->hasFocus())
 					control->setFocus();
 				if (!control->_no_auto_grab)
-				{
-					//fprintf(stderr, "grab %s\n", control->name());
-					gApplication::_button_grab = control;
-					//gtk_grab_add(control->border);
-				}
+					gApplication::setButtonGrab(control);
 			}
 
 			
@@ -1184,7 +1180,7 @@ void gApplication::enterPopup(gMainWindow *owner)
 	_in_popup++;
 	
 	// Remove possible current button grab
-	_button_grab = NULL;
+	gApplication::setButtonGrab(NULL);
 //
 	//oldGroup = enterGroup();
 	

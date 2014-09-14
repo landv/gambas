@@ -56,6 +56,13 @@ Private Sub _PrintPage()
     sPath = Main.GetPagePath()  
     If Exist(sPath) Then sData = File.Load(sPath)
     If Not sData Then sData = OldWiki.GetPage(Main.Path)
+    If Not sData Then
+      If Main.Symbol Then
+        sData = "@{syntax}\n"
+      Else If Main.Class Then
+        sData = "@{symbols}\n"
+      Endif
+    Endif
     Print Html(sData);
     Return
   Endif

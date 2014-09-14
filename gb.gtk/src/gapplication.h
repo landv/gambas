@@ -91,6 +91,8 @@ public:
 
 	static void setEventFilter(X11_EVENT_FILTER filter);
 
+	static void setButtonGrab(gControl *grab) { _button_grab = grab; }
+
 	//"Private"
 	static bool _busy;
 	static bool _must_quit;
