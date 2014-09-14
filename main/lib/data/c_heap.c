@@ -224,15 +224,69 @@ BEGIN_METHOD_VOID(Heap_Remove)
 
 END_METHOD
 
+/*
+ * Comparison by identity works as follows:
+ *  - if both are objects and have _identity() methods which return
+ *    variants, the return value is the comparison of those variants,
+ *  - if they are objects without _identity(), they are compared based
+ *    on their addresses in memory,
+ *  - else they are not objects and are normally compared.
+ */
+static int compare_identity(CHEAP *heap, GB_VARIANT_VALUE *a,
+			    GB_VARIANT_VALUE *b)
+{
+	static int has_identity;
+	static GB_FUNCTION aid;
+	static GB_VARIANT_VALUE *last = NULL;
+	static GB_VALUE x;
+
+	GB_FUNCTION bid;
+	GB_VALUE *y;
+
+	if (!TYPE_is_object(a->type) || !TYPE_is_object(b->type))
+		return compare3(heap, a, b);
+
+	if (last != a) {
+		if (!GB.GetFunction(&aid, a->value._object, "_identity",
+				    NULL, "v")) {
+			has_identity = 1;
+			memcpy(&x, GB.Call(&aid, 0, 0), sizeof(x));
+		} else {
+			has_identity = 0;
+		}
+		GB.Error(NULL); /* Clear any GetFunction error */
+		last = a;
+	}
+
+	/* No _identity()? */
+	if (!has_identity || GB.GetFunction(&bid, b->value._object,
+					    "_identity", NULL, "v")) {
+		GB.Error(NULL);
+		return a->value._object != b->value._object;
+	}
+
+	y = GB.Call(&bid, 0, 0);
+	return compare3(heap, &x._variant.value, &y->_variant.value);
+}
+
 /**G
  * Find all occurences of `Old' and replace them by `New'. This is an O(n)
- * operation. Additionally the heap has to be rebuilt as soon as there are
+ * operation. Additionally the heap has to be rebuilt as soon as there is
  * more than one replacement made.
  *
  * If `New' is Null, then the entry will be deleted.
  *
- * The search for objects is done by identity, i.e. by their addresses in
- * memory, and *not* by using the _compare() method.
+ * The search for objects is done by identity and *not* by using the
+ * _compare() method. "By identity" means that if two objects are to be
+ * compared and both have a special _identity() method returning a Variant,
+ * the return values of these methods are compared.
+ *
+ * If one of the objects does not implement the _identity() method, the
+ * default is comparison by object addresses in memory. This strategy lets
+ * you save primitive data types (Integer, Boolean, String), etc. in the
+ * heap. But you can also *distinct* objects in equivalence classes. The
+ * _compare() method defines your equivalence relation, the identity
+ * comparison enables to discern different objects.
  *
  * If we are a heap of objects whose _compare() methods compare some sort of
  * priority, and `Old' is the same object as `New', this can be used to
@@ -249,22 +303,7 @@ BEGIN_METHOD(Heap_Update, GB_VARIANT old; GB_VARIANT new)
 
 	old = &VARG(old); new = &VARG(new);
 	for (i = 0; i < count; i++) {
-		/*
-		 * Assumes that the identity comparison is unequally
-		 * stricter than the _compare() comparison but identity
-		 * equality implies _compare() identity -- so that we
-		 * don't reject identity-equal objects in the _compare()
-		 * check.
-		 *
-		 * That is to say: we assume that _compare() imposes at
-		 * least a reflexive relation.
-		 */
-		if (compare1(THIS, old, i))
-			continue;
-		/* Compare objects by identity */
-		if (TYPE_is_object(THIS->h[i].type)
-		 && (!TYPE_is_object(old->type)
-		  || THIS->h[i].value._object != old->value._object))
+		if (compare_identity(THIS, old, &THIS->h[i]))
 			continue;
 		/*
 		 * Make Null delete the entry. We don't count that as a
@@ -365,15 +404,3 @@ GB_DESC CHeap[] = {
 
 	GB_END_DECLARE
 };
-
-#if 0
-GB_DESC CPrioSet[] = {
-	GB_DECLARE("PrioSet", sizeof(CPRIOSET)),
-
-	GB_METHOD("_new", NULL, PrioSet_new, ""),
-	GB_METHOD("_free", NULL, PrioSet_free, NULL),
-
-	GB_METHOD("Insert", NULL),
-	GB_METHOD
-};
-#endif
