@@ -5140,9 +5140,7 @@ Public Function CheckProgram(sProg As String) As Boolean
 
   iPos = InStr(sProg, " ")
   If iPos Then sProg = Left(sProg, iPos - 1)
-
-  Shell "which " & sProg & " >/dev/null 2>&1" Wait
-  If Process.LastValue Then Return True
+  Return system.Exist(sProg)
 
 End
 
@@ -5855,5 +5853,22 @@ Public Sub AddRecentFile(hForm As Object)
   
   RecentFiles.Add(hForm.Path)
   If RecentFiles.Count > 20 Then RecentFiles.Remove(0, RecentFiles.Count - 20)
+  
+End
+
+Public Sub RequireProgram(aProg As String[]) As String
+
+  Dim sProg As String
+  Dim aMissing As New String[]
+  
+  For Each sProg In aProg
+    If Not System.Exist(sProg) Then aMissing.Add(sProg)
+  Next
+  
+  If aMissing.Count = 1 Then
+    Return Subst(("The &1 program is not installed on your system."), "<b><tt>" & aMissing[0] & "</tt></b>")
+  Else If aMissing.Count > 1 Then
+    Return Subst(("The following programs are not installed on your system: &1."), "<b><tt>" & aMissing.Join("</tt></b>, <tt><b>") & "</tt></b>")
+  Endif
   
 End

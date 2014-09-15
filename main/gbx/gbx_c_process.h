@@ -75,5 +75,6 @@ enum
 
 CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env);
 void CPROCESS_wait_for(CPROCESS *process, int timeout);
+const char *CPROCESS_search_program_in_path(char *name);
 
 #endif

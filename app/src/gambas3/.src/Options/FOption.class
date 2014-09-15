@@ -1231,6 +1231,9 @@ Public Sub btnDownloadHelp_Click()
 
   Inc Application.Busy
   
+  sMsg = Project.RequireProgram(["wget", "tar"])
+  If sMsg Then Goto FAIL
+  
   ' Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
   ' sTimestamp = Trim(sTimestamp)
   ' If Not sTimestamp Then 

@@ -137,7 +137,7 @@ Public Sub DrawingArea_Draw()
       $hIcon = Project.StretchIcon(.Icon, ICON_SIZE)
     Endif
     
-    Paint.Brush = Paint.RadialGradient(X, Y, W / 2, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
+    Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
     Paint.Rectangle(X, Y, W, H)
     Paint.Fill
     'Paint.Brush = Null

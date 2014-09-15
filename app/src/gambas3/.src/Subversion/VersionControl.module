@@ -37,8 +37,7 @@ Public Sub Refresh()
   $sRealDir = Trim($sRealDir)
 
   If Not $bCheckSVN Then
-    Exec ["which", "svn"] To sResult
-    $bHasSVN = Trim(sResult)
+    $bHasSVN = System.Exist("svn")
     $bCheckSVN = True
   Endif
   

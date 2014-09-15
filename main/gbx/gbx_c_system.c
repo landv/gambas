@@ -292,6 +292,24 @@ BEGIN_METHOD(System_Log, GB_STRING message)
 
 END_METHOD
 
+BEGIN_METHOD(System_Find, GB_STRING program)
+
+	const char *path;
+
+	path = CPROCESS_search_program_in_path(GB_ToZeroString(ARG(program)));
+	if (!path)
+		GB_ReturnNull();
+	else
+		GB_ReturnNewZeroString(path);
+
+END_METHOD
+
+BEGIN_METHOD(System_Exist, GB_STRING program)
+
+	GB_ReturnBoolean(CPROCESS_search_program_in_path(GB_ToZeroString(ARG(program))) != NULL);
+
+END_METHOD
+
 #endif
 
 //-------------------------------------------------------------------------
@@ -341,6 +359,9 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_PROPERTY_SELF("User", "User"),
 
 	GB_STATIC_METHOD("Log", NULL, System_Log, "(Message)s"),
+
+	GB_STATIC_METHOD("Exist", "b", System_Exist, "(Program)s"),
+	GB_STATIC_METHOD("Find", "s", System_Find, "(Program)s"),
 
 	GB_END_DECLARE
 };

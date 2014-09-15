@@ -434,21 +434,28 @@ static void init_child_tty(int fd)
 	}
 }
 
-static const char *search_program_in_path(char *name)
+const char *CPROCESS_search_program_in_path(char *name)
 {
 	char *search;
 	char *p, *p2;
 	int len;
-	const char *path = NULL;
+	const char *path;
 
 	if (strchr(name, '/'))
-		return name;
+	{
+		if (access(name, X_OK) == 0)
+			return name;
+		else
+			return NULL;
+	}
 
 	search = getenv("PATH");
 	if (!search || !*search)
 		search = "/usr/bin:/bin";
 
 	search = STRING_new_zero(search);
+
+	path = NULL;
 
 	//fprintf(stderr, "search_program_in_path: '%s' in '%s'\n", name, search);
 
@@ -468,6 +475,7 @@ static const char *search_program_in_path(char *name)
 			path = FILE_cat(p, name, NULL);
 			if (access(path, X_OK) == 0)
 				break;
+			path = NULL;
 		}
 
 		if (!p2)
@@ -533,7 +541,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		memcpy(argv, array->data, sizeof(*argv) * n);
 		argv[n] = NULL;
 
-		exec = search_program_in_path(argv[0]);
+		exec = CPROCESS_search_program_in_path(argv[0]);
 		if (!exec)
 		{
 			IFREE(argv);
@@ -1180,7 +1188,7 @@ GB_DESC NATIVE_Process[] =
 
 	GB_STATIC_PROPERTY_READ("LastState", "i", Process_LastState),
 	GB_STATIC_PROPERTY_READ("LastValue", "i", Process_LastValue),
-	
+
 	GB_PROPERTY_READ("Id", "i", Process_Id),
 	GB_PROPERTY_READ("Handle", "i", Process_Id),
 	GB_PROPERTY_READ("State", "i", Process_State),

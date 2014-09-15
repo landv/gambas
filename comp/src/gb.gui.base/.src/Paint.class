@@ -100,7 +100,7 @@ Static Public Sub TrimRichText(RichText As String, W As Float, Optional H As Flo
   
 End
 
-Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 4)
+Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = -1, Optional Opacity As Float = 0.5)
   
   Dim hShadow As Image
   Dim hFont As Font
@@ -108,7 +108,7 @@ Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Fl
   Dim DX, DY As Integer
   Dim iBackground As Integer
   
-  If Radius < 0 Then Return
+  If Radius < 0 Then Radius = Desktop.Scale \ 3
   Radius = Min(256, Radius)
   
   hFont = Paint.Font
@@ -145,11 +145,11 @@ Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Fl
     
   End With
   
-  Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius)
+  Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius,,, Opacity)
   
 End
 
-Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = 4)
+Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W As Float, H As Float, Optional Alignment As Integer = Align.TopLeft, Optional Radius As Integer = -1, Optional Opacity As Float = 0.5)
   
   Dim hShadow As Image
   Dim hFont As Font
@@ -157,7 +157,7 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
   Dim DX, DY As Integer
   Dim iBackground As Integer
   
-  If Radius < 0 Then Return
+  If Radius < 0 Then Radius = Desktop.Scale \ 3
   Radius = Min(256, Radius)
   
   hFont = Paint.Font
@@ -194,6 +194,6 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
     
   End With
   
-  Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius)
+  Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius,,, Opacity)
   
 End

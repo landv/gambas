@@ -114,8 +114,8 @@ Public Sub Move()
   Dim hForm As Object
   
   Inc $iDisable
-  hForm = Project.OpenFile(Path)
-  If {Line} >= 0 Then hForm.Goto({Line}, Column)
+  Try hForm = Project.OpenFile(Path)
+  If hForm And If {Line} >= 0 Then hForm.Goto({Line}, Column)
   Dec $iDisable
   
 End

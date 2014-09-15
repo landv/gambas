@@ -47,7 +47,7 @@ Public Sub btnOK_Click()
     
     sCore = Project.Dir &/ "core"    
     If Not Exist(sCore) Then sCore &= "." & $hProcess.Id
-    If Exist(sCore) Then
+    If Exist(sCore) And If System.Exist("gdb") Then
       Shell "gdb gbx3 " & Shell$(sCore) & " -batch -ex \"bt full\" >" & Shell$(sDir &/ "gdb.txt") & " 2>&1" Wait
       ' hProcess = Shell "gdb gbx3 " & Shell$(sCore) & " -batch -ex \"bt full\" >" & Shell$(sDir &/ "gdb.txt") & " 2>&1"
       ' While hProcess.State = Process.Running
