@@ -5140,7 +5140,7 @@ Public Function CheckProgram(sProg As String) As Boolean
 
   iPos = InStr(sProg, " ")
   If iPos Then sProg = Left(sProg, iPos - 1)
-  Return system.Exist(sProg)
+  Return Not System.Exist(sProg)
 
 End
 
