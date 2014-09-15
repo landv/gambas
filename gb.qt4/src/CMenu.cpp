@@ -28,6 +28,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QKeyEvent>
+#include <QActionGroup>
 
 #include "gambas.h"
 #include "gb_common.h"
@@ -224,7 +225,7 @@ static void update_accel_recursive(CMENU *_object)
 
 static void update_check(CMENU *_object)
 {
-	if (THIS->checked || THIS->toggle)
+	if (THIS->checked || THIS->toggle || THIS->radio)
 	{
 		ACTION->setCheckable(true);
 		ACTION->setChecked(THIS->checked);
@@ -251,6 +252,41 @@ static void toggle_menu(CMENU *_object)
 	qDebug("--> %d", ACTION->isChecked());
 }
 #endif
+
+static void update_action_group(QMenu *parent)
+{
+	int i;
+	QAction *action;
+	CMENU *menu;
+	QActionGroup *group = NULL;
+
+	for (i = 0; i < parent->actions().count(); i++)
+	{
+		action = parent->actions().at(i);
+		menu = CMenu::dict[action];
+		if (!menu || menu->deleted)
+			continue;
+
+		if (menu->radio)
+		{
+			if (!group)
+			{
+				if (action->actionGroup())
+					group = action->actionGroup();
+				else
+					group = new QActionGroup(parent);
+			}
+			action->setActionGroup(group);
+		}
+		else
+		{
+			group = NULL;
+			action->setActionGroup(NULL);
+		}
+
+		//qDebug("action '%s' -> %p", TO_UTF8(action->text()), (void *)group);
+	}
+}
 
 //---------------------------------------------------------------------------
 
@@ -463,7 +499,7 @@ BEGIN_PROPERTY(Menu_Checked)
 	else
 	{
 		if (READ_PROPERTY)
-			GB.ReturnBoolean(THIS->checked);
+			GB.ReturnBoolean(ACTION->isChecked());
 		else
 		{
 			THIS->checked = VPROP(GB_BOOLEAN);
@@ -487,11 +523,26 @@ BEGIN_PROPERTY(Menu_Toggle)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Menu_Radio)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->radio);
+	else if (THIS->radio != VPROP(GB_BOOLEAN))
+	{
+		THIS->radio = VPROP(GB_BOOLEAN);
+		if (!CMENU_is_toplevel(THIS))
+			update_action_group(((CMENU *)THIS->parent)->menu);
+		update_check(THIS);
+	}
+
+END_PROPERTY
+
+
 static void send_click_event(CMENU *_object);
 
 BEGIN_PROPERTY(Menu_Value)
 
-	if (THIS->toggle)
+	if (THIS->toggle || THIS->radio)
 	{
 		Menu_Checked(_object, _param);
 		return;
@@ -754,6 +805,7 @@ GB_DESC CMenuDesc[] =
 	GB_PROPERTY("Shortcut", "s", Menu_Shortcut),
 	GB_PROPERTY("Visible", "b", Menu_Visible),
 	GB_PROPERTY("Toggle", "b", Menu_Toggle),
+	GB_PROPERTY("Radio", "b", Menu_Radio),
 	GB_PROPERTY("Value", "b", Menu_Value),
 	GB_PROPERTY("Action", "s", Menu_Action),
 	GB_PROPERTY_READ("Window", "Window", Menu_Window),
@@ -784,7 +836,7 @@ QHash<QAction *, CMENU *> CMenu::dict;
 
 static void send_click_event(CMENU *_object)
 {
-	if (THIS->toggle)
+	if (THIS->toggle && !THIS->radio)
 	{
 		THIS->checked = !THIS->checked;
 		update_check(THIS);

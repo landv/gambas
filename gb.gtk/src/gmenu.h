@@ -45,6 +45,7 @@ public:
 //"Properties"
 	bool checked() const { return _checked; }
 	bool toggle() const { return _toggle; }
+	bool radio() const { return _radio; }
 	bool enabled();
 	gMenu* childMenu(int pos);
 	int childCount();
@@ -60,6 +61,7 @@ public:
 
 	void setChecked(bool vl);
 	void setToggle(bool vl);
+	void setRadio(bool vl);
 	void setEnabled(bool vl);
 	void setShortcut(char *txt);
 	void setText(const char *vl);
@@ -106,7 +108,8 @@ public:
 	gMenuStyle style() const { return _style; }
   void hideSeparators();
 	void willBeDeletedLater() { _delete_later = TRUE; }
-	
+	void setRadio();
+
 private:
 
 	gMenuStyle _style, _oldstyle;
@@ -116,6 +119,7 @@ private:
 	char *_text;
 	unsigned _checked : 1;
 	unsigned _toggle : 1;
+	unsigned _radio : 1;
 	unsigned _no_update : 1;
 	unsigned _destroyed : 1;
 	unsigned _delete_later : 1;

@@ -97,11 +97,11 @@
         MoveScaled(34,11,0,21)
       }
       { VBox3 VBox
-        MoveScaled(41,1,64,57)
+        MoveScaled(41,1,64,59)
         Spacing = True
         Margin = True
         { panMenu HPanel
-          MoveScaled(2,1,59,54)
+          MoveScaled(2,1,59,56)
           Expand = True
           Spacing = True
           { Label1 Label
@@ -239,23 +239,33 @@
             #Translate = False
             Expand = True
           }
-          { Label11 Label
+          { Label13 Label
             MoveScaled(0,43,13,4)
             #Translate = False
-            Text = "Checked"
+            Text = "Radio"
           }
-          { chkChecked CheckBox
+          { chkRadio CheckBox
             MoveScaled(14,43,4,4)
             #Translate = False
             Expand = True
           }
-          { Label12 Label
+          { Label11 Label
             MoveScaled(0,47,13,4)
+            #Translate = False
+            Text = "Checked"
+          }
+          { chkChecked CheckBox
+            MoveScaled(14,47,4,4)
+            #Translate = False
+            Expand = True
+          }
+          { Label12 Label
+            MoveScaled(0,51,13,4)
             #Translate = False
             Text = "Translate"
           }
           { chkTranslate CheckBox
-            MoveScaled(14,47,4,4)
+            MoveScaled(14,51,4,4)
             #Translate = False
             Expand = True
           }

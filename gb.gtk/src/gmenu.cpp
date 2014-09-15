@@ -49,7 +49,16 @@ static void mnu_destroy (GtkWidget *object, gMenu *data)
 
 static void mnu_activate(GtkMenuItem *menuitem, gMenu *data)
 {
-	if (!data->child && data->onClick) data->onClick(data);
+	if (data->child)
+		return;
+
+	if (data->radio())
+		data->setRadio();
+	else if (data->toggle())
+		data->setChecked(!data->checked());
+
+	if (data->onClick)
+		data->onClick(data);
 }
 
 static gboolean cb_map(GtkWidget *menu, gMenu *data)
@@ -94,75 +103,124 @@ static int get_menu_pos(GtkWidget *menu)
 #ifdef GTK3
 static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
 {
-	int x, y, w, h;
-	gint indicator_size;
 	static GtkWidget *check_menu_item = NULL;
+	static GtkWidget *radio_menu_item = NULL;
 
-	if (menu->checked())
+	int x, y, w, h;
+	gint indicator_size = 0;
+	GtkStateFlags state;
+	GtkWidget *item;
+	GtkStyleContext *style;
+
+	GtkAllocation a;
+	gtk_widget_get_allocation(wid, &a);
+	x = 0; //a.x;
+	y = 0; //a.y;
+	w = a.width;
+	h = a.height;
+
+	if (menu->radio())
 	{
-		GtkAllocation a;
-		gtk_widget_get_allocation(wid, &a);
-		x = 0; //a.x;
-		y = 0; //a.y;
-		w = a.width;
-		h = a.height;
-
-		indicator_size = 15;
-		if (w < indicator_size) indicator_size = w;
-		if (h < indicator_size) indicator_size = h;
-
-		x += (w - indicator_size) / 2;
-		y += (h - indicator_size) / 2;
-		w = indicator_size;
-		h = indicator_size;
-
+		if (!radio_menu_item)
+			radio_menu_item = gtk_radio_menu_item_new(NULL);
+		item = radio_menu_item;
+		style = gtk_widget_get_style_context(item);
+		gtk_style_context_add_class(style, GTK_STYLE_CLASS_RADIO);
+	}
+	else
+	{
 		if (!check_menu_item)
 			check_menu_item = gtk_check_menu_item_new();
-
-		gtk_widget_set_state(check_menu_item, gtk_widget_get_state(wid));
-
-		GtkStyleContext *style = gtk_widget_get_style_context(check_menu_item);
-		gtk_style_context_set_state(style, GTK_STATE_FLAG_ACTIVE);
-
-		//fprintf(stderr, "gtk_render_check: %d %d %d %d\n", x, y, w, h);
-		gtk_render_check(style, cr, x, y, w, h);
+		item = check_menu_item;
+		style = gtk_widget_get_style_context(item);
+		gtk_style_context_add_class(style, GTK_STYLE_CLASS_CHECK);
 	}
 
+	gtk_widget_style_get(item, "indicator-size", &indicator_size, NULL);
+	//fprintf(stderr, "indicator_size = %d\n", indicator_size);
+	indicator_size = MAX(16, indicator_size);
+	//if (w < indicator_size) indicator_size = w;
+	//if (h < indicator_size) indicator_size = h;
+
+	x += (w - indicator_size) / 2;
+	y += (h - indicator_size) / 2;
+	w = indicator_size;
+	h = indicator_size;
+
+	state = gtk_widget_get_state_flags(wid);
+
+	if (menu->checked())
+		state = (GtkStateFlags)((int)state | GTK_STATE_FLAG_ACTIVE);
+
+	gtk_widget_set_state_flags(item, state, true);
+
+	style = gtk_widget_get_style_context(wid);
+	gtk_style_context_save(style);
+	gtk_style_context_set_state(style, state);
+
+	if (menu->radio())
+	{
+    gtk_style_context_add_class(style, GTK_STYLE_CLASS_RADIO);
+		//gtk_render_background(style, cr, x, y, w, h);
+		gtk_render_option(style, cr, x, y, indicator_size, indicator_size);
+	}
+	else
+	{
+    gtk_style_context_add_class(style, GTK_STYLE_CLASS_CHECK);
+		//gtk_render_background(style, cr, x, y, w, h);
+		gtk_render_check(style, cr, x, y, indicator_size, indicator_size);
+	}
+
+	gtk_style_context_restore(style);
 	return false;
 }
 #else
 static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 {
+	static GtkWidget *check_menu_item = NULL;
+	static GtkWidget *radio_menu_item = NULL;
+
 	int x, y, w, h;
 	gint indicator_size;
-	static GtkWidget *check_menu_item = NULL;
-	
-	if (menu->checked())
-	{
-		x = wid->allocation.x;
-		y = wid->allocation.y;
-		w = wid->allocation.width;
-		h = wid->allocation.height;
-		
-		indicator_size = 15;
-		if (w < indicator_size) indicator_size = w;
-		if (h < indicator_size) indicator_size = h;
-		
-		x += (w - indicator_size) / 2;
-		y += (h - indicator_size) / 2;
-		w = indicator_size;
-		h = indicator_size;
+	GtkShadowType shadow;
 
+	x = wid->allocation.x;
+	y = wid->allocation.y;
+	w = wid->allocation.width;
+	h = wid->allocation.height;
+
+	indicator_size = h;
+	if (w < indicator_size) indicator_size = w;
+	if (h < indicator_size) indicator_size = h;
+
+	x += (w - indicator_size) / 2;
+	y += (h - indicator_size) / 2;
+	w = indicator_size;
+	h = indicator_size;
+
+	shadow = menu->checked() ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
+
+	if (menu->radio())
+	{
+		if (!radio_menu_item)
+			radio_menu_item = gtk_radio_menu_item_new(NULL);
+
+		gtk_paint_option(wid->style, wid->window,
+					(GtkStateType)GTK_WIDGET_STATE(wid), shadow,
+					&e->area, radio_menu_item, "radiobutton",
+					x + 1, y + 1, w - 2, h - 2);
+	}
+	else
+	{
 		if (!check_menu_item)
 			check_menu_item = gtk_check_menu_item_new();
-		
+
 		gtk_widget_set_state(check_menu_item, (GtkStateType)GTK_WIDGET_STATE(wid));
-		
+
 		gtk_paint_check(wid->style, wid->window,
-					(GtkStateType)GTK_WIDGET_STATE(wid), GTK_SHADOW_IN,
+					(GtkStateType)GTK_WIDGET_STATE(wid), shadow,
 					&e->area, check_menu_item, "check",
 					x + 1, y + 1, w - 2, h - 2);
-		
 	}
 	
 	return false;
@@ -173,6 +231,7 @@ void gMenu::update()
 {
 	GtkMenuShell *shell = NULL;
 	gint pos;
+	int size;
 	
 	if (_no_update)
 		return;
@@ -240,7 +299,8 @@ void gMenu::update()
 					
 					check = gtk_image_new();
 					g_object_ref(check);
-					gtk_widget_set_size_request(check, 18, 18);
+					size = window()->font()->height();
+					gtk_widget_set_size_request(check, size, size);
 					ON_DRAW(check, this, cb_check_expose, cb_check_draw);
 					//g_signal_connect_after(G_OBJECT(check), "expose-event", G_CALLBACK(cb_check_expose), (gpointer)this);
 					
@@ -343,18 +403,8 @@ void gMenu::update()
 			}
 			else
 				gtk_label_set_text(GTK_LABEL(aclbl), "\t");
-		}
-		
-		if (!top_level)
-		{
-			if (!_picture && !_checked)
-			{
-				gtk_image_set_from_pixbuf(GTK_IMAGE(image), NULL);
-				gtk_image_menu_item_set_image((GtkImageMenuItem *)menu, image);
-				gtk_widget_show(image);
-				gtk_widget_hide(check);
-			}
-			else if (_checked)
+
+			if (_checked || _radio || _toggle)
 			{
 				gtk_image_menu_item_set_image((GtkImageMenuItem *)menu, check);
 				gtk_widget_show(check);
@@ -367,7 +417,6 @@ void gMenu::update()
 				gtk_widget_show(image);
 				gtk_widget_hide(check);
 			}
-			
 		}
 		
 		setColor();
@@ -403,7 +452,8 @@ void gMenu::initialize()
 	_picture = NULL;
 	_name = NULL;
 	_toggle = false;
-	
+	_radio = false;
+
 	_style = NOTHING;
 	_oldstyle = NOTHING;
 	
@@ -601,6 +651,13 @@ void gMenu::setChecked(bool vl)
 void gMenu::setToggle(bool vl)
 {
 	_toggle = vl;
+	update();
+}
+
+void gMenu::setRadio(bool vl)
+{
+	_radio = vl;
+	update();
 }
 
 int gMenu::childCount()
@@ -868,8 +925,13 @@ void gMenu::hideSeparators()
 void gMenu::setFont()
 {
 	gMainWindow *win = window();
+#ifdef GTK3
+	if (label) gtk_widget_override_font(GTK_WIDGET(label), win->font()->desc());
+	if (aclbl) gtk_widget_override_font(GTK_WIDGET(aclbl), win->font()->desc());
+#else
 	if (label) gtk_widget_modify_font(GTK_WIDGET(label), win->font()->desc());
 	if (aclbl) gtk_widget_modify_font(GTK_WIDGET(aclbl), win->font()->desc());
+#endif
 }
 
 void gMenu::setColor()
@@ -915,7 +977,11 @@ void gMenu::updateFont(gMainWindow *win)
 	if (win->menuBar)
 	{
 		//fprintf(stderr, "set menu bar font\n");
-		gtk_widget_modify_font(GTK_WIDGET(win->menuBar), win->ownFont() ? win->font()->desc() : NULL);	
+#ifdef GTK3
+		gtk_widget_override_font(GTK_WIDGET(win->menuBar), win->ownFont() ? win->font()->desc() : NULL);
+#else
+		gtk_widget_modify_font(GTK_WIDGET(win->menuBar), win->ownFont() ? win->font()->desc() : NULL);
+#endif
 	}
 	
 	if (!menus) 
@@ -931,17 +997,47 @@ void gMenu::updateFont(gMainWindow *win)
 	}
 }
 
-/*void gMenu::setTearOff(bool v)
+void gMenu::setRadio()
 {
-	if (child)
-		gtk_menu_set_tearoff_state(child, v);
+	gMenu *child;
+	GList *item;
+	GList *start = NULL;
+
+	if (top_level)
+		return;
+
+	item = g_list_first(menus);
+	while (item)
+	{
+		child = (gMenu*)item->data;
+		if (child->parent() == pr && !child->_delete_later)
+		{
+			if (child->radio())
+			{
+				if (!start)
+					start = item;
+				if (child == this)
+					break;
+			}
+			else
+				start = NULL;
+		}
+
+		item = g_list_next(item);
+	}
+
+	item = start;
+	while (item)
+	{
+		child = (gMenu*)item->data;
+		if (child->parent() == pr && !child->_delete_later)
+		{
+			if (!child->radio())
+				break;
+
+			child->setChecked(child == this);
+		}
+
+		item = g_list_next(item);
+	}
 }
-
-bool gMenu::isTearOff() const
-{
-	if (child)
-		return gtk_menu_get_tearoff_state(child);
-	else
-		return false;
-}*/
-

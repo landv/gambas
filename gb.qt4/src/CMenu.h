@@ -68,7 +68,7 @@ typedef
 		char *save_text;
     unsigned deleted : 1;
     unsigned toggle : 1;
-    //unsigned noshortcut : 1;
+		unsigned radio : 1;
     unsigned exec : 1;
 		unsigned checked : 1;
 		unsigned disabled : 1;

@@ -120,6 +120,7 @@ Private Sub CreateMenu(hCCtrl As CControl)
     .Visible = hCCtrl.GetPropertyDefault("Visible")
     .Checked = hCCtrl.GetPropertyDefault("Checked")
     .Toggle = hCCtrl.GetPropertyDefault("Toggle")
+    .Radio = hCCtrl.GetPropertyDefault("Radio")
     .SetShortcut(hCCtrl.GetPropertyDefault("Shortcut"))
     .Picture = hCCtrl.GetPropertyDefault("Picture")
     .Tag = hCCtrl.GetPropertyDefault("Tag")
@@ -248,6 +249,7 @@ Private Sub SaveAllMenu()
       hCtrl.SetProperty("Enabled", .Enabled)
       hCtrl.SetProperty("Checked", .Checked)
       hCtrl.SetProperty("Toggle", .Toggle)
+      hCtrl.SetProperty("Radio", .Radio)
       hCtrl.SetProperty("Shortcut", .GetShortcut())
       hCtrl.SetProperty("Picture", .Picture)
       hCtrl.SetProperty("Tag", .Tag)
@@ -333,6 +335,7 @@ Private Sub WriteMenu() As Boolean
     .Enabled = chkEnabled.Value
     .Checked = chkChecked.Value
     .Toggle = chkToggle.Value
+    .Radio = chkRadio.Value
     .Translate = chkTranslate.Value
     .Ctrl = chkCtrl.Value
     .Shift = chkShift.Value
@@ -374,6 +377,7 @@ Private Sub ReadMenu()
       chkEnabled.Value = .Enabled
       chkChecked.Value = .Checked
       chkToggle.Value = .Toggle
+      chkRadio.Value = .Radio
       chkTranslate.Value = .Translate
       chkCtrl.Value = .Ctrl
       chkShift.Value = .Shift
@@ -814,7 +818,7 @@ Private Sub GetMenu(hMenu As CMenu) As String
   
   With hMenu
     
-    Return .Name & "," & .Level & "," & Quote(.Caption) & "," & .Action & "," & .Group & "," & .Visible & "," & .Enabled & "," & .Checked & "," & .Toggle & "," & .Translate & "," &
+    Return .Name & "," & .Level & "," & Quote(.Caption) & "," & .Action & "," & .Group & "," & .Visible & "," & .Enabled & "," & .Checked & "," & .Toggle & "," & .Radio & "," & .Translate & "," &
       .Ctrl & "," & .Shift & "," & .Alt & "," & Quote(.Shortcut) & "," & Quote(.Picture) & "," & Quote(.Tag)
     
   End With
@@ -881,13 +885,14 @@ Public Sub btnPaste_Click()
     chkEnabled.Value = CBool(aMenu[6])
     chkChecked.Value = CBool(aMenu[7])
     chkToggle.Value = CBool(aMenu[8])
-    chkTranslate.Value = CBool(aMenu[9])
-    chkCtrl.Value = CBool(aMenu[10])
-    chkShift.Value = CBool(aMenu[11])
-    chkAlt.Value = CBool(aMenu[12])
-    cmbShortcut.Text = aMenu[13]
-    SetPicture(aMenu[14])
-    txtTag.Text = aMenu[15]
+    chkRadio.Value = CBool(aMenu[9])
+    chkTranslate.Value = CBool(aMenu[10])
+    chkCtrl.Value = CBool(aMenu[11])
+    chkShift.Value = CBool(aMenu[12])
+    chkAlt.Value = CBool(aMenu[13])
+    cmbShortcut.Text = aMenu[14]
+    SetPicture(aMenu[15])
+    txtTag.Text = aMenu[16]
     WriteMenu
     gvwMenu.Rows[$iCurrent].Selected = True
     Inc $iCurrent
@@ -1012,6 +1017,12 @@ Public Sub chkEnabled_Click()
 End
 
 Public Sub chkToggle_Click()
+
+  WriteMenu
+
+End
+
+Public Sub chkRadio_Click()
 
   WriteMenu
 

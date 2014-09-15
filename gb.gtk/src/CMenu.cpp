@@ -41,8 +41,6 @@ static GB_FUNCTION _init_shortcut_func;
 
 static void send_click_event(void *_object)
 {
-	if (MENU->toggle())
-		MENU->setChecked(!MENU->checked());
 	GB.Raise(THIS, EVENT_Click, 0);
 	CACTION_raise(THIS);
 	GB.Unref(POINTER(&_object));
@@ -145,7 +143,7 @@ static void cb_hide(gMenu *sender)
 END_METHOD*/
 
 
-BEGIN_METHOD(CMENU_new, GB_OBJECT parent; GB_BOOLEAN hidden)
+BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 	void *parent = VARG(parent);
 	bool hidden;
@@ -199,7 +197,7 @@ __OK:
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CMENU_free)
+BEGIN_METHOD_VOID(Menu_free)
 
 	GB.FreeString(&THIS->save_text);
 	if (MENU) MENU->destroy();
@@ -207,7 +205,7 @@ BEGIN_METHOD_VOID(CMENU_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(CMENU_text)
+BEGIN_PROPERTY(Menu_Text)
 
 	if (READ_PROPERTY)
 	{
@@ -230,7 +228,7 @@ BEGIN_PROPERTY(CMENU_text)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_picture)
+BEGIN_PROPERTY(Menu_Picture)
 
 	if (READ_PROPERTY)
 	{
@@ -246,7 +244,7 @@ BEGIN_PROPERTY(CMENU_picture)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENUITEM_enabled)
+BEGIN_PROPERTY(Menu_Enabled)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(MENU->enabled()); return; }
 	MENU->setEnabled(VPROP(GB_BOOLEAN));
@@ -254,7 +252,7 @@ BEGIN_PROPERTY(CMENUITEM_enabled)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENUITEM_checked)
+BEGIN_PROPERTY(Menu_Checked)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(MENU->checked());
@@ -264,11 +262,11 @@ BEGIN_PROPERTY(CMENUITEM_checked)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_value)
+BEGIN_PROPERTY(Menu_Value)
 
-	if (MENU->toggle())
+	if (MENU->toggle() || MENU->radio())
 	{
-		CMENUITEM_checked(_object, _param);
+		Menu_Checked(_object, _param);
 		return;
 	}
 
@@ -285,7 +283,7 @@ BEGIN_PROPERTY(CMENU_value)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_shortcut)
+BEGIN_PROPERTY(Menu_Shortcut)
 
 	if (READ_PROPERTY)
 	{
@@ -298,41 +296,41 @@ BEGIN_PROPERTY(CMENU_shortcut)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CMENU_visible)
+BEGIN_PROPERTY(Menu_Visible)
 
 	if (READ_PROPERTY) { GB.ReturnBoolean(MENU->isVisible()); return; }
 	MENU->setVisible(VPROP(GB_BOOLEAN));
 
 END_PROPERTY
 
-BEGIN_METHOD_VOID(CMENU_show)
+BEGIN_METHOD_VOID(Menu_Show)
 
 	MENU->setVisible(true);
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CMENU_hide)
+BEGIN_METHOD_VOID(Menu_Hide)
 
 	MENU->setVisible(false);
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CMENU_delete)
+BEGIN_METHOD_VOID(Menu_Delete)
 
 	delete_menu(MENU);
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CMENU_count)
+BEGIN_PROPERTY(MenuChildren_Count)
 
 	GB.ReturnInteger(MENU->childCount());
 
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CMENU_next)
+BEGIN_METHOD_VOID(MenuChildren_next)
 
 	CMENU *Mn;
 	gMenu *mn;
@@ -349,7 +347,7 @@ BEGIN_METHOD_VOID(CMENU_next)
 END_PROPERTY
 
 
-BEGIN_METHOD(CMENU_get, GB_INTEGER index)
+BEGIN_METHOD(MenuChildren_get, GB_INTEGER index)
 
 	int index = VARG(index);
 
@@ -363,7 +361,7 @@ BEGIN_METHOD(CMENU_get, GB_INTEGER index)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CMENU_clear)
+BEGIN_METHOD_VOID(MenuChildren_Clear)
 
 	while (MENU->childCount())
 		delete_menu(MENU->childMenu(0));
@@ -373,7 +371,7 @@ BEGIN_METHOD_VOID(CMENU_clear)
 END_PROPERTY
 
 
-BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
+BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
 
 	if (!MISSING(x) && !MISSING(y))
 		MENU->popup(VARG(x), VARG(y));
@@ -390,7 +388,7 @@ BEGIN_METHOD(CMENU_popup, GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
-BEGIN_PROPERTY(CMENU_tag)
+BEGIN_PROPERTY(Menu_Tag)
 
 	if (READ_PROPERTY)
 		GB.ReturnVariant(&THIS->tag);
@@ -399,7 +397,7 @@ BEGIN_PROPERTY(CMENU_tag)
 
 END_METHOD
 
-BEGIN_PROPERTY(CMENU_toggle)
+BEGIN_PROPERTY(Menu_Toggle)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(MENU->toggle());
@@ -408,13 +406,22 @@ BEGIN_PROPERTY(CMENU_toggle)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMENU_window)
+BEGIN_PROPERTY(Menu_Radio)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(MENU->radio());
+	else
+		MENU->setRadio(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Menu_Window)
 
 	GB.ReturnObject(GetObject(MENU->window()));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CMENU_name)
+BEGIN_PROPERTY(Menu_Name)
 
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(MENU->name());
@@ -449,10 +456,10 @@ GB_DESC CMenuChildrenDesc[] =
 {
 	GB_DECLARE(".Menu.Children", sizeof(CMENU)), GB_VIRTUAL_CLASS(),
 
-	GB_METHOD("_next", "Menu", CMENU_next, 0),
-	GB_METHOD("_get", "Menu", CMENU_get, "(Index)i"),
-	GB_METHOD("Clear", 0, CMENU_clear, 0),
-	GB_PROPERTY_READ("Count", "i", CMENU_count),
+	GB_METHOD("_next", "Menu", MenuChildren_next, 0),
+	GB_METHOD("_get", "Menu", MenuChildren_get, "(Index)i"),
+	GB_METHOD("Clear", 0, MenuChildren_Clear, 0),
+	GB_PROPERTY_READ("Count", "i", MenuChildren_Count),
 
 	GB_END_DECLARE
 };
@@ -464,34 +471,35 @@ GB_DESC CMenuDesc[] =
 	GB_HOOK_CHECK(CMENU_check),
 
 	//GB_STATIC_METHOD("_init", 0, CMENU_init, 0),
-	GB_METHOD("_new", 0, CMENU_new, "(Parent)o[(Hidden)b]"),
-	GB_METHOD("_free", 0, CMENU_free, 0),
+	GB_METHOD("_new", 0, Menu_new, "(Parent)o[(Hidden)b]"),
+	GB_METHOD("_free", 0, Menu_free, 0),
 
 
-	GB_PROPERTY("Name", "s", CMENU_name),
-	GB_PROPERTY("Caption", "s", CMENU_text),
-	GB_PROPERTY("Text", "s", CMENU_text),
+	GB_PROPERTY("Name", "s", Menu_Name),
+	GB_PROPERTY("Caption", "s", Menu_Text),
+	GB_PROPERTY("Text", "s", Menu_Text),
 	GB_PROPERTY("_Text", "s", Menu_SaveText),
-	GB_PROPERTY("Enabled", "b", CMENUITEM_enabled),
-	GB_PROPERTY("Checked", "b", CMENUITEM_checked),
-	GB_PROPERTY("Tag", "v", CMENU_tag),
-	GB_PROPERTY("Picture", "Picture", CMENU_picture),
-	GB_PROPERTY("Shortcut", "s", CMENU_shortcut),
-	GB_PROPERTY("Visible", "b", CMENU_visible),
-	GB_PROPERTY("Toggle", "b", CMENU_toggle),
-	GB_PROPERTY("Value", "b", CMENU_value),
+	GB_PROPERTY("Enabled", "b", Menu_Enabled),
+	GB_PROPERTY("Checked", "b", Menu_Checked),
+	GB_PROPERTY("Tag", "v", Menu_Tag),
+	GB_PROPERTY("Picture", "Picture", Menu_Picture),
+	GB_PROPERTY("Shortcut", "s", Menu_Shortcut),
+	GB_PROPERTY("Visible", "b", Menu_Visible),
+	GB_PROPERTY("Toggle", "b", Menu_Toggle),
+	GB_PROPERTY("Radio", "b", Menu_Radio),
+	GB_PROPERTY("Value", "b", Menu_Value),
 	//GB_PROPERTY("TearOff", "b", CMENU_tear_off),
 	GB_PROPERTY("Action", "s", Menu_Action),
-	GB_PROPERTY_READ("Window", "Window", CMENU_window),
+	GB_PROPERTY_READ("Window", "Window", Menu_Window),
 
 	GB_PROPERTY_SELF("Children", ".Menu.Children"),
 
 	MENU_DESCRIPTION,
 
-	GB_METHOD("Popup", 0, CMENU_popup, "[(X)i(Y)i]"),
-	GB_METHOD("Delete", 0, CMENU_delete, 0),
-	GB_METHOD("Show", 0, CMENU_show, 0),
-	GB_METHOD("Hide", 0, CMENU_hide, 0),
+	GB_METHOD("Popup", 0, Menu_Popup, "[(X)i(Y)i]"),
+	GB_METHOD("Delete", 0, Menu_Delete, 0),
+	GB_METHOD("Show", 0, Menu_Show, 0),
+	GB_METHOD("Hide", 0, Menu_Hide, 0),
 
 	GB_EVENT("Click", 0, 0, &EVENT_Click),
 	GB_EVENT("Show", 0, 0, &EVENT_Show),

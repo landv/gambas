@@ -11,6 +11,7 @@ Public Enabled As Boolean
 Public Visible As Boolean
 Public Checked As Boolean
 Public Toggle As Boolean
+Public Radio As Boolean
 Public Level As Integer
 Public Picture As String
 Public Tag As String
@@ -73,6 +74,6 @@ End
 
 Public Sub ToString() As String
   
-  Return [Name, Caption, Shortcut, Group, CStr(Ctrl), CStr(Shift), CStr(Alt), CStr(Enabled), CStr(Visible), CStr(Checked), CStr(Translate), CStr(Toggle), CStr(Level), Picture, Tag, Action].Join(":")
+  Return [Name, Caption, Shortcut, Group, CStr(Ctrl), CStr(Shift), CStr(Alt), CStr(Enabled), CStr(Visible), CStr(Checked), CStr(Translate), CStr(Toggle), CStr(Radio), CStr(Level), Picture, Tag, Action].Join(":")
   
 End

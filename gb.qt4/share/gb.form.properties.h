@@ -48,7 +48,7 @@
 #define CLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=Normal,Border{Border.*},Transparent"
 #define CLCDNUMBER_PROPERTIES "*,Value,Digits{Range:1;64}=1,SmallDecimalPoint,Style{LCDNumber.Outline;Filled;Flat}=Outline,Mode{LCDNumber.Decimal;Hexadecimal;Binary}=Decimal,Border{Border.*}"
 #define CLISTBOX_PROPERTIES "*,List,Border=True,Mode{Select.*}=Single,Sorted"
-#define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Toggle,Checked,Visible=True,Tag,Shortcut"
+#define CMENU_PROPERTIES "Action,Text,Picture,Enabled=True,Radio,Toggle,Checked,Visible=True,Tag,Shortcut"
 #define CMOVIEBOX_PROPERTIES "*,Path,Playing,Alignment{Align.*}=TopLeft,Border{Border.*}"
 #define CPANEL_PROPERTIES "*," CARRANGEMENT_PROPERTIES ",Border{Border.*}"
 #define CPICTUREBOX_PROPERTIES "*,Picture,Stretch,AutoResize,Alignment{Align.*}=TopLeft,Border{Border.*}"
