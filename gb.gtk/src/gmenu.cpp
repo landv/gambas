@@ -137,10 +137,7 @@ static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
 	}
 
 	gtk_widget_style_get(item, "indicator-size", &indicator_size, NULL);
-	//fprintf(stderr, "indicator_size = %d\n", indicator_size);
 	indicator_size = MAX(16, indicator_size);
-	//if (w < indicator_size) indicator_size = w;
-	//if (h < indicator_size) indicator_size = h;
 
 	x += (w - indicator_size) / 2;
 	y += (h - indicator_size) / 2;
@@ -179,6 +176,7 @@ static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 {
 	static GtkWidget *check_menu_item = NULL;
 	static GtkWidget *radio_menu_item = NULL;
+	GtkWidget *item;
 
 	int x, y, w, h;
 	gint indicator_size;
@@ -189,38 +187,45 @@ static gboolean cb_check_expose(GtkWidget *wid, GdkEventExpose *e, gMenu *menu)
 	w = wid->allocation.width;
 	h = wid->allocation.height;
 
-	indicator_size = h;
-	if (w < indicator_size) indicator_size = w;
-	if (h < indicator_size) indicator_size = h;
+	if (menu->radio())
+	{
+		if (!radio_menu_item)
+			radio_menu_item = gtk_radio_menu_item_new(NULL);
+		item = radio_menu_item;
+	}
+	else
+	{
+		if (!check_menu_item)
+			check_menu_item = gtk_check_menu_item_new();
+		item = check_menu_item;
+	}
+
+	gtk_widget_style_get(item, "indicator-size", &indicator_size, (char *)NULL);
+	indicator_size = MAX(16, indicator_size);
 
 	x += (w - indicator_size) / 2;
 	y += (h - indicator_size) / 2;
 	w = indicator_size;
 	h = indicator_size;
 
+	gtk_widget_set_state(item, (GtkStateType)GTK_WIDGET_STATE(wid));
+
 	shadow = menu->checked() ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
 
 	if (menu->radio())
 	{
-		if (!radio_menu_item)
-			radio_menu_item = gtk_radio_menu_item_new(NULL);
-
 		gtk_paint_option(wid->style, wid->window,
 					(GtkStateType)GTK_WIDGET_STATE(wid), shadow,
 					&e->area, radio_menu_item, "radiobutton",
-					x + 1, y + 1, w - 2, h - 2);
+					x, y, w, h);
 	}
 	else
 	{
-		if (!check_menu_item)
-			check_menu_item = gtk_check_menu_item_new();
-
-		gtk_widget_set_state(check_menu_item, (GtkStateType)GTK_WIDGET_STATE(wid));
 
 		gtk_paint_check(wid->style, wid->window,
 					(GtkStateType)GTK_WIDGET_STATE(wid), shadow,
 					&e->area, check_menu_item, "check",
-					x + 1, y + 1, w - 2, h - 2);
+					x, y, w, h);
 	}
 	
 	return false;
@@ -299,7 +304,7 @@ void gMenu::update()
 					
 					check = gtk_image_new();
 					g_object_ref(check);
-					size = window()->font()->height();
+					size = MAX(18, window()->font()->height());
 					gtk_widget_set_size_request(check, size, size);
 					ON_DRAW(check, this, cb_check_expose, cb_check_draw);
 					//g_signal_connect_after(G_OBJECT(check), "expose-event", G_CALLBACK(cb_check_expose), (gpointer)this);
