@@ -82,12 +82,13 @@ Private Sub RefreshPath()
         lblType.Text = ("Directory")
       Else If Component.IsLoaded("gb.desktop") Then
         hMime = DesktopMime.FromFile($sPath)
-        Try lblType.Text = String.UCaseFirst(hMime.GetComment())
-        Try picIcon.Picture = hMime.GetIcon(64).Picture
-        If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
-        
-        If hMime.Type Like "image/*" Then
-          tabInfo[TAB_PREVIEW].Visible = True
+        If hMime Then
+          lblType.Text = String.UCaseFirst(hMime.GetComment())
+          Try picIcon.Picture = hMime.GetIcon(64).Picture
+          If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
+          If hMime.Type Like "image/*" Then
+            tabInfo[TAB_PREVIEW].Visible = True
+          Endif
         Endif
       Else If $aImgExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
         picIcon.Picture = Picture["icon:/64/image"]
