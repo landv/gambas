@@ -46,11 +46,6 @@ Private Function GetDiff() As String
 
   Dim sOld As String
 
-  If Not fchPatch.Value Then
-    Message.Warning(("Please enter the patch file name."))
-    Return
-  Endif
-
   If radArchive.Value Then
     sOld = fchOld.SelectedPath
   Else
@@ -71,6 +66,11 @@ End
 Public Sub wizMakePatch_Close()
 
   Dim sDiff As String
+
+  If Not fchPatch.Value Then
+    Message.Warning(("Please enter the patch file name."))
+    Return
+  Endif
 
   ' Get the edited patch
   If chkEditPatch.Value And If $hViewer Then
