@@ -82,7 +82,7 @@ Private Sub RefreshPath()
         lblType.Text = ("Directory")
       Else If Component.IsLoaded("gb.desktop") Then
         hMime = DesktopMime.FromFile($sPath)
-        lblType.Text = String.UCaseFirst(hMime.GetComment())
+        Try lblType.Text = String.UCaseFirst(hMime.GetComment())
         Try picIcon.Picture = hMime.GetIcon(64).Picture
         If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
         

@@ -85,7 +85,6 @@ Public FullVersionWithRevision As String
 Public SourcePath As String
 Public Language As String
 Public Type As Integer
-Public ComponentState As Integer
 'Public Stack As Integer
 'Public StackTrace As Boolean
 Public Authors As String
@@ -620,8 +619,10 @@ _INIT_AGAIN:
     If Not Exist(Project.Dir &/ ".hidden") Then InsertDirectory(Project.Dir &/ ".hidden")
     
     CreateGitIgnore
+    CreateComponentFile
     
   Endif
+  
   Dec $iNoRefresh
 
   Inc Project.TimeStamp
@@ -3153,7 +3154,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   PackageVersion = 1
   SourcePath = ""
   Type = TYPE_NORMAL
-  ComponentState = CComponent.STABLE
   CreateShortcut = False
   RunAfterMakingExec = ""
   Language = ""
@@ -3260,13 +3260,6 @@ Public Sub ReadProject(Optional bConvert As Boolean)
           Case "component"
             Type = TYPE_COMPONENT
         End Select
-
-      Case "alphacomponent"
-        If Val(sVal) Then ComponentState = CComponent.UNSTABLE
-
-      Case "state"
-        ComponentState = Val(sVal)
-        If ComponentState < 0 Or ComponentState > 2 Then ComponentState = CComponent.UNSTABLE
 
       Case "controlpublic"
         ControlPublic = Val(sVal) <> 0
@@ -3589,6 +3582,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Move sPath & ".tmp" To sPath
 
   WriteProjectTranslation
+  UpdateComponentFile
 
   FMain.UpdateTranslate
   FMain.UpdateMenu
@@ -5870,5 +5864,149 @@ Public Sub RequireProgram(aProg As String[]) As String
   Else If aMissing.Count > 1 Then
     Return Subst(("The following programs are not installed on your system: &1."), "<b><tt>" & aMissing.Join("</tt></b>, <tt><b>") & "</tt></b>")
   Endif
+  
+End
+
+Private Sub CreateComponentFile()
+  
+  Dim hFile As File
+  
+  If Type = TYPE_NORMAL Then Return
+  If Exist(Project.Dir &/ ".component") Then Return
+  
+  hFile = Open Project.Dir &/ ".component" For Create 
+  Print #hFile, "[Component]"
+  Print #hFile, "Key="; Project.Name
+  Print #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
+  Close #hFile    
+  
+End
+
+Public Sub ReadComponentFile() As Collection
+  
+  Dim sPath As String = Project.Dir &/ ".component"
+  Dim hFile As File
+  Dim sLine As String
+  Dim sGroup As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim aNeed As String[]
+  Dim aRequire As String[]
+  Dim aImplement As String[]
+  Dim cComp As New Collection
+  
+  If Type = TYPE_NORMAL Then Return
+
+  cComp["State"] = CComponent.STABLE
+  
+  If Not Exist(sPath) Then Return cComp
+  
+  aNeed = New String[]
+  aRequire = New String[]
+  aImplement = New String[]
+  
+  hFile = Open sPath
+  
+  Line Input #hFile, sLine
+  If Trim(sLine) <> "[Component]" Then Return
+  
+  For Each sLine In hFile.Lines
+    
+    sLine = Trim(sLine)
+    If Not sLine Then Continue 
+    If Left(sLine) = ";" Then Continue
+    
+    If Left(sLine) = "[" Then 
+      If sLine = "[Component]" Then Break 
+      sGroup = Mid$(sLine, 2, -1)
+      Continue
+    Endif 
+    
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    sKey = LCase(Left(sLine, iPos - 1))
+    sLine = Mid$(sLine, iPos + 1)
+    
+    Select Case sKey
+      Case "need", "needs"
+        cComp["Need"] = Split(sLine, ",")
+      Case "require", "requires"
+        cComp["Require"] = Split(sLine, ",")
+      Case "implement", "implements"
+        cComp["Implement"] = Split(sLine, ",")
+      Case "state"
+        cComp["State"] = CInt(sLine)
+      Case "hidden"
+        cComp["Hidden"] = sLine = "True"
+      Case "compatibleuntil"
+        cComp["CompatibleUntil"] = sLine
+    End Select 
+    
+  Next
+  
+  hFile.Close
+  
+  Return cComp
+  
+Catch
+  
+  Message.Error(("Unable to read component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  
+End
+
+Public Sub WriteComponentFile(cComp As Collection) As Boolean
+
+  Dim sPath As String = Project.Dir &/ ".component"
+  Dim hFile As File
+  Dim bNew As Boolean
+  Dim aData As String[]
+  Dim sData As String
+
+  If Type = TYPE_NORMAL Then Return
+
+  If Not cComp Then cComp = New Collection
+
+  hFile = Open Temp$("component") For Create 
+  
+  Print #hFile, "[Component]"
+  Print #hFile, "Key="; Name
+  Print #hFile, "Version="; MajorVersion; "."; MinorVersion; "."; ReleaseVersion
+
+  If cComp["State"] Then Print #hFile, "State="; cComp["State"]
+
+  If cComp["Hidden"] Then Print #hFile, "Hidden=True"
+
+  If Authors Then Print #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
+
+  aData = cComp["Implement"]
+  If aData And If aData.Count Then Print #hFile, "Implements="; aData.Join(",")
+
+  aData = cComp["Need"]
+  If aData And If aData.Count Then Print #hFile, "Needs="; aData.Join(",")
+
+  aData = cComp["Require"]
+  If aData And If aData.Count Then Print #hFile, "Requires="; aData.Join(",")
+
+  sData = cComp["CompatibleUntil"]
+  If sData And If sData <> "0.0.0" Then Print #hFile, "CompatibleUntil="; sData
+  
+  Close #hFile    
+  
+  bNew = Not Exist(sPath)
+  Try Kill sPath
+  Copy Temp$("component") To sPath
+  If bNew Then VersionControl.AddFile(sPath)
+  
+Catch 
+
+  Message.Error(("Cannot write component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
+  Return True
+  
+End
+
+Public Sub UpdateComponentFile()
+  
+  If Type = TYPE_NORMAL Then Return
+  WriteComponentFile(ReadComponentFile())
   
 End

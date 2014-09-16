@@ -8,6 +8,8 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
+  { mnuAdd Menu
+  }
   { tabComponent TabPanel
     MoveScaled(1,1,73,54)
     Arrangement = Arrange.Vertical
@@ -138,27 +140,20 @@
       Expand = True
       Spacing = True
       Indent = True
-      { VBox4 VBox
-        MoveScaled(1,1,36,21)
+      { lstRequire ListBox
+        MoveScaled(1,2,35,20)
         Expand = True
-        Spacing = True
-        { cmbRequire ComboBox
-          MoveScaled(0,0,35,4)
-          ReadOnly = True
-        }
-        { lstRequire ListBox
-          MoveScaled(0,4,35,17)
-          Expand = True
-          Sorted = True
-        }
+        Sorted = True
       }
       { VBox5 VBox
         MoveScaled(38,1,21,21)
         Spacing = True
-        { btnAdd Button
-          MoveScaled(0,0,17,4)
-          Text = Shortcut(("Add"), "A")
+        { btnAdd MenuButton
+          MoveScaled(0,0,16,4)
+          Text = ("Add")
           Picture = Picture["icon:/small/add"]
+          Menu = "mnuAdd"
+          MenuOnly = True
         }
         { btnRemove Button
           MoveScaled(0,5,17,4)

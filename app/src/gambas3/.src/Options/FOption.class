@@ -1258,7 +1258,6 @@ Public Sub btnDownloadHelp_Click()
     Goto FAIL
   Endif
   
-  Debug "cd " & Shell$(File.Dir(sFile)) & " && tar xfj " & Shell$(File.Name(sFile)) & " && mv gambas wiki"
   Shell "cd " & Shell$(File.Dir(sFile)) & " && tar xfj " & Shell$(File.Name(sFile)) & " && mv gambas wiki" Wait
   If Not IsDir(sDir) Then
     Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait

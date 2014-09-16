@@ -25,7 +25,8 @@ Public Sub Form_Open()
   edtOutput.ReadConfig
   edtOutput.Text = ""
   chkOther.Visible = $bAnother
-  
+  Settings.Read(dchProject, "dchProject")
+      
   Dec Application.Busy
 
 End
@@ -208,9 +209,6 @@ Public Sub wizProject_BeforeChange()
   
   Select Case wizProject.Index
     
-    Case 0
-      Settings.Read(dchProject, "dchProject")
-      
     Case 1
       panRepository.Visible = $bRepository
       panIdent.Visible = Not $bRepository

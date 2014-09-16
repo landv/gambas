@@ -54,7 +54,9 @@ Public Sub Panel_Draw()
   
   Draw.Picture($hPict, 8, ($hPanel.H - $hPict.H) \ 2)
   'If $bInside Then Draw.Foreground = Color.Gradient($hPanel.Foreground, $iHighlight)
-  Draw.Text($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
+  Paint.Background = $hPanel.Foreground
+  Paint.DrawTextShadow($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
+  Paint.DrawText($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
   
   ' If $bArrow Then
   '   Draw.Picture(Picture["img/16/white-arrow.png"], Draw.W - 24, (Draw.H - 16) \ 2)

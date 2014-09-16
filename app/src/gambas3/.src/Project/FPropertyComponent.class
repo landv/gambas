@@ -1,6 +1,7 @@
 ' Gambas class file
 
 ' Component
+'Private $cComp As Collection
 Private $aNeed As String[]
 Private $aRequire As String[]
 Private $aImplement As String[]
@@ -26,69 +27,32 @@ Public Sub btnCancel_Click()
 End
 
 Private Sub ReadComponentFile()
-  
-  Dim sPath As String = Project.Dir &/ ".component"
-  Dim hFile As File
-  Dim sLine As String
-  Dim sGroup As String
-  Dim iPos As Integer
-  Dim sKey As String
+
+  Dim cComp As Collection
   Dim aVer As String[]
   
   $aNeed = New String[]
   $aRequire = New String[]
   $aImplement = New String[]
-  cmbComponentState.Index = Project.ComponentState
-  cmbHidden.Index = 1
   
-  If Not Exist(sPath) Then Return
+  cComp = Project.ReadComponentFile()
+  If Not cComp Then Return
   
-  hFile = Open sPath
-  
-  Line Input #hFile, sLine
-  If Trim(sLine) <> "[Component]" Then Return
-  
-  For Each sLine In hFile.Lines
-    
-    sLine = Trim(sLine)
-    If Not sLine Then Continue 
-    If Left(sLine) = ";" Then Continue
-    
-    If Left(sLine) = "[" Then 
-      If sLine = "[Component]" Then Break 
-      sGroup = Mid$(sLine, 2, -1)
-      Continue
-    Endif 
-    
-    iPos = InStr(sLine, "=")
-    If iPos = 0 Then Continue
-    sKey = LCase(Left(sLine, iPos - 1))
-    sLine = Mid$(sLine, iPos + 1)
-    
-    Select Case sKey
-      Case "need", "needs"
-        $aNeed = Split(sLine, ",")
-      Case "require", "requires"
-        $aRequire = Split(sLine, ",")
-      Case "implement", "implements"
-        $aImplement = Split(sLine, ",")
-      Case "state"
-        Try cmbComponentState.Index = CInt(sLine)
-      Case "hidden"
-        cmbHidden.Index = If(sLine = "True", 0, 1)
-      Case "compatibleuntil"
-        chkCompat.Value = True
-        Try aVer = Split(sLine, ".")
-        Try txtMajor.Value = CInt(aVer[0])
-        Try txtMinor.Value = CInt(aVer[1])
-        Try txtRelease.Value = CInt(aVer[2])
-    End Select 
-    
-  Next
-  
-Catch 
+  If cComp.Exist("Need") Then $aNeed = cComp["Need"]
+  If cComp.Exist("Require") Then $aRequire = cComp["Require"]
+  If cComp.Exist("Implement") Then $aRequire = cComp["Implement"]
+  cmbComponentState.Index = cComp["State"]
+  cmbHidden.Index = If(cComp["Hidden"], 0, 1)
 
-  Debug Error.Text;; Error.Where
+  Try aVer = Split(cComp["CompatibleUntil"], ".")
+  If aVer And If aVer.Count = 3 Then
+    chkCompat.Value = True
+    Try txtMajor.Value = CInt(aVer[0])
+    Try txtMinor.Value = CInt(aVer[1])
+    Try txtRelease.Value = CInt(aVer[2])
+  Else
+    chkCompat.Value = False
+  Endif
   
 End
 
@@ -102,84 +66,57 @@ Private Sub WriteFeatures(hCont As Container, aFeature As String[])
   
 End
 
-Public Sub UpdateComponent()
-  
-  ReadComponent
-  WriteComponent
-  
-End
-
-
 Private Sub WriteComponent() As Boolean
 
-  Dim sPath As String = Project.Dir &/ ".component"
-  Dim hFile As File
-  'Dim hExportInfo As CExportInfo
-  Dim bNew As Boolean
-  Dim sVer As String
+  Dim cComp As New Collection
 
-  'HideEditor
-  Project.ComponentState = cmbComponentState.Index
-  
+  cComp["State"] = cmbComponentState.Index
+
   $aNeed.Clear
   WriteFeatures(panNeed, $aNeed)
   WriteFeatures(panNeed2, $aNeed)
 
-  hFile = Open Temp$("component") For Create 
+  cComp["Hidden"] = cmbHidden.Index = 0
+  cComp["Implement"] = $aImplement
+  cComp["Need"] = $aNeed
+  cComp["Require"] = $aRequire
+  If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
   
-  Print #hFile, "[Component]"
-  Print #hFile, "Key="; Project.Name
-  Print #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
-  If cmbComponentState.Index Then Print #hFile, "State="; cmbComponentState.Index
-  If cmbHidden.Index = 0 Then Print #hFile, "Hidden=True"
-  If Project.Authors Then Print #hFile, "Authors="; Replace(Project.Authors, "\n", ",")
-  If $aImplement.Count Then Print #hFile, "Implements="; $aImplement.Join(",")
-  If $aNeed.Count Then Print #hFile, "Needs="; $aNeed.Join(",")
-  If $aRequire.Count Then Print #hFile, "Requires="; $aRequire.Join(",")
-  If chkCompat.Value Then
-    sVer = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
-    If sVer <> "0.0.0" Then Print #hFile, "CompatibleUntil="; sVer
-  Endif
-  'Print #hFile
-  
-  Close #hFile    
-  
-  bNew = Not Exist(sPath)
-  Try Kill sPath
-  Copy Temp$("component") To sPath
-  If bNew Then VersionControl.AddFile(sPath)
-  
-Catch 
+  Project.WriteComponentFile(cComp)
 
-  Message.Error(("Cannot write component description file.") & "\n\n" & Error.Text & "\n" & Error.Where)
-  Return True
-  
 End
 
 Private Sub ReadComponent()
 
+  Dim aComp As String[]
   Dim hComp As CComponent
-  Dim aComp As New String[]
-
+  Dim sComp As String
+  Dim hMenu As Menu
+  
   ReadComponentFile
   
+  aComp = New String[]
   For Each hComp In CComponent.All
     If hComp.Hidden Then Continue
     If hComp.Key = CComponent.PROJECT_NAME Then Continue
     If hComp.Key = Project.Name Then Continue 
     If hComp.Key = "gb" Then Continue
+    If $aRequire.Exist(hComp.Key) Then Continue
     aComp.Add(hComp.Key)
   Next
   aComp.Sort
-  cmbRequire.List = aComp
- 
+  
+  mnuAdd.Children.Clear
+  For Each sComp In aComp
+    hMenu = New Menu(mnuAdd) As "mnuAddRequire"
+    hMenu.Text = sComp
+  Next
+
   lstRequire.List = $aRequire
   
   ReadFeatures(panNeed, $aNeed)
   ReadFeatures(panNeed2, $aNeed)
   
-  'txtImplement.Text = GetForm()
-
 End
 
 Private Sub ReadFeatures(hCont As Container, aFeature As String[])
@@ -201,12 +138,6 @@ Private Sub AddRequire(sComp As String)
   
 End
 
-
-Public Sub btnAdd_Click()
-
-  AddRequire(cmbRequire.Text)
-
-End
 
 Public Sub btnRemove_Click()
 
@@ -255,5 +186,11 @@ Public Sub chkCompat_Click()
   txtMajor.Enabled = chkCompat.Value
   txtMinor.Enabled = chkCompat.Value
   txtRelease.Enabled = chkCompat.Value
+
+End
+
+Public Sub mnuAddRequire_Click()
+
+  AddRequire(Last.Text)
 
 End

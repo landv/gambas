@@ -251,7 +251,6 @@ Private Function DoApply() As Boolean
   SaveEnvironment
 
   Project.WriteProject
-  If Project.Type <> Project.TYPE_NORMAL Then FPropertyComponent.UpdateComponent
   Project.MakeDirectoryIcon
   Project.Compile
 

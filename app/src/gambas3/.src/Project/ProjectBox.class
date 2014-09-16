@@ -125,7 +125,6 @@ Public Sub DrawingArea_Draw()
     Endif
   Endif
   
-  
   XS = X
   YS = Y
   WS = W
@@ -168,9 +167,8 @@ Public Sub DrawingArea_Draw()
     
       sText = .Name & " "
       Paint.Font = Font["+1"]
-      Paint.Background = Color.SetAlpha(iCol, 128)
-      Paint.DrawTextShadow(sText, X, Y, W, H, Align.TopLeft, 2)
       Paint.Background = iCol
+      Paint.DrawTextShadow(sText, X, Y, W, H, Align.TopLeft)
       Paint.DrawText(sText, X, Y, W, H, Align.TopLeft)
       WT = Paint.Font.TextWidth(sText)
       
@@ -197,9 +195,8 @@ Public Sub DrawingArea_Draw()
       Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
       sText = .Name
       Paint.Font = Font["+1"]
-      Paint.Background = Color.SetAlpha(iCol, 128)
-      Paint.DrawTextShadow(sText, X, Y, Paint.W, Paint.H, Align.TopLeft, 2)
       Paint.Background = iCol
+      Paint.DrawTextShadow(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
       Paint.DrawText(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
       
       Paint.Font.Bold = False
