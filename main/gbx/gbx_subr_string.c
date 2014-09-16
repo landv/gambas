@@ -1071,8 +1071,7 @@ __JAVASCRIPT:
 		for (i = 0; i < lstr; i++)
 		{
 			c = str[i];
-			//if (c >= ' ' && c <= 126 && c != '\\' && c != '"')
-			if (c >= ' ' && c != '\\' && c != '\'')
+			if (c >= ' ' && c <= 126 && c != '\\' && c != '\'')
 				STRING_make_char(c);
 			else
 			{

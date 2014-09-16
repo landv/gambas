@@ -977,7 +977,7 @@ static void add_string()
 							i = xdigit_val(get_char_offset(2));
 							if (i >= 0)
 							{
-								car = (car << 4) | i;
+								car = (car << 4) | (uchar)i;
 								*p = car;
 								source_ptr += 2;
 								continue;

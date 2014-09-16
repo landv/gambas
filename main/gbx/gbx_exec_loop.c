@@ -717,7 +717,7 @@ _PUSH_INTEGER:
 
 _PUSH_CHAR:
 
-	STRING_char_value(SP, (char)GET_UX());
+	STRING_char_value(SP, GET_UX());
 	SP++;
 	goto _NEXT;
 

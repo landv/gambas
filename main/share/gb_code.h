@@ -134,7 +134,7 @@ void CODE_dup(void);
 
 void CODE_return(int return_value);
 
-void CODE_push_char(char car);
+void CODE_push_char(uchar car);
 void CODE_push_void(void);
 
 void CODE_subr(short subr, short nparam, short optype, bool fixed);

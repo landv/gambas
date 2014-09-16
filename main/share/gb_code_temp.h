@@ -1031,7 +1031,7 @@ void CODE_stop(void)
 #endif /* PROJECT_COMP */
 
 
-void CODE_push_char(char car)
+void CODE_push_char(uchar car)
 {
 	LAST_CODE;
 
