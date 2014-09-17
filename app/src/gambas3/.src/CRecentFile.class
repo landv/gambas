@@ -108,7 +108,7 @@ Static Public Sub Load()
   nRecent = $hSettings["/Recent/Count", 0]
   
   If nRecent = 0 Then
-    nRecent = Settings["/Recent/Count"]
+    nRecent = Settings["/Recent/Count", 0]
     If nRecent Then
       $hSettings["/Recent/Count"] = nRecent
       For iInd = 1 To nRecent
