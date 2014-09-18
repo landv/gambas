@@ -153,6 +153,7 @@ Private Sub MoveEditor()
     
     $hPanel.Move(X, Y, W, H)
     $hEditor.Move(P, 0, W - P * 2, H)
+    $hPanel.Background = Style.BackgroundOf($hEditor)
     
     $hEditor.Font = Me.Font
     $hEditor.Show

@@ -1931,6 +1931,8 @@ Private Sub MakeHeader(Optional sTitle As String, Optional sWarn As String)
 
   Print
 
+  Print "<div><div style=\"display:inline-table;color:white;background:red;padding:8px;font-size:150%;font-weight:bold;margin:8px 0;\">THIS WIKI IS DEPRECATED AND IS READ-ONLY. THE NEW WIKI IS <a href=\"http://gambaswiki.org\">THERE</a>.</div></div>"
+
   If Not $bShow And ($bHelp Or $bHistory) Then
 
     Print "<table class=\"tabheader frame\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tr>"

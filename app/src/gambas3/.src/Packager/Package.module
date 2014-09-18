@@ -2016,7 +2016,7 @@ Private Function MakeArchPackage(sSys As String)
     Print #hFile, "# Maintainer : " & Project.Maintainer & " <" & Project.Address & ">"
     Print #hFile, ""
     Print #hFile, "pkgname="; $sPackageName
-    Print #hFile, "_realname="; $sPackageName
+    Print #hFile, "_realname="; $sName
     Print #hFile, "pkgdesc=\"" & sPkgDesc & "\""
     Print #hFile, "pkgver=" & $sVersion
     Print #hFile, "pkgrel=1"
@@ -2104,7 +2104,7 @@ Private Function MakeArchPackage(sSys As String)
      RunCommand(sCmd, sBuildDir)
   Next 
 
-  RunCommand("cp " & String.LCase$($sName) & "-" & $sVersion & "-1*.tar.* " & Shell$(Path) &/ "", sBuildDir)
+  RunCommand("cp " & $sPackageName & "-" & $sVersion & "-1*.tar.* " & Shell$(Path) &/ "", sBuildDir)
 
   ' Remove build dir
   Shell "rm -rf " & Shell(sBuildDir) Wait

@@ -385,6 +385,7 @@ Private Sub LastOpenedFiles()
   Inc Application.Busy
   RestoringFiles = True
   Workspace.Lock
+  CPosition.Disable
 
   nOpen = Config["/OpenFile/Count", 0]
   iActive = Config["/OpenFile/Active", 0]
@@ -412,6 +413,7 @@ Private Sub LastOpenedFiles()
     Activate(hActive)
     Workspace.ActiveWindow = hActive
   Endif
+  CPosition.Enable
 
 Finally
 
@@ -2970,7 +2972,6 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   DisableRefresh
 
   sExecPath = GetExecPath()
-  If Not Exist(File.Dir(sExecPath)) Then sExecPath = Project.Dir &/ File.Name(sExecPath)
   
   If Not bSilent Then
 
@@ -3602,11 +3603,13 @@ Public Sub GetExecPath() As String
   If Not sExecPath Then sExecPath = OldExecPath
   If Not sExecPath Then sExecPath = Project.Name & ".gambas"
   
-  If Left(sExecPath) = "/" Then
-    Return sExecPath
-  Else
-    Return Project.Dir &/ sExecPath
+  If Left(sExecPath) <> "/" Then
+    sExecPath = Project.Dir &/ sExecPath
   Endif
+
+  If Not Exist(File.Dir(sExecPath)) Then sExecPath = Project.Dir &/ File.Name(sExecPath)
+  
+  Return sExecPath
 
 End
 
