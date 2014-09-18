@@ -824,21 +824,40 @@ END_METHOD
 
 ******************************************************************************/
 
+static int get_rotation(void *_object)
+{
+	return (THIS->rotation + THIS->page->getRotate() + 720) % 360;
+}
+
+static void get_page_size(void *_object, int *w, int *h)
+{
+	int rotation = get_rotation(THIS);
+
+	if (rotation == 90 || rotation == 270)
+	{
+		if (w) *w =  (int)(THIS->page->getMediaHeight() * THIS->scale);
+		if (h) *h = (int)(THIS->page->getMediaWidth() * THIS->scale);
+	}
+	else
+	{
+		if (w) *w = (int)(THIS->page->getMediaWidth() * THIS->scale);
+		if (h) *h =  (int)(THIS->page->getMediaHeight() * THIS->scale);
+	}
+}
+
 BEGIN_PROPERTY (PDFPAGE_width)
 
-	if ( (THIS->rotation==90) || (THIS->rotation==270) ) 
-		GB.ReturnInteger((int32_t)(THIS->page->getMediaHeight()*THIS->scale));
-	else
-		GB.ReturnInteger((int32_t)(THIS->page->getMediaWidth()*THIS->scale));
+	int w;
+	get_page_size(THIS, &w, NULL);
+	GB.ReturnInteger(w);
 
 END_PROPERTY
 
 BEGIN_PROPERTY (PDFPAGE_height)
 
-	if ( (THIS->rotation==90) || (THIS->rotation==270) )
-		GB.ReturnInteger((int32_t)(THIS->page->getMediaWidth()*THIS->scale));
-	else	
-		GB.ReturnInteger((int32_t)(THIS->page->getMediaHeight()*THIS->scale));
+	int h;
+	get_page_size(THIS, NULL, &h);
+	GB.ReturnInteger(h);
 
 END_PROPERTY
 
@@ -847,19 +866,10 @@ static uint32_t *get_page_data(CPDFDOCUMENT *_object, int32_t x, int32_t y, int3
 	SplashBitmap *map;
 	uint32_t *data;
 	int32_t w, h;
-	int32_t rw;
-	int32_t rh;
+	int rw;
+	int rh;
 
-	if ( (THIS->rotation==90) || (THIS->rotation==270) )
-	{
-		rh=(int32_t)(THIS->page->getMediaWidth()*THIS->scale);
-		rw=(int32_t)(THIS->page->getMediaHeight()*THIS->scale);
-	}
-	else
-	{
-		rw=(int32_t)(THIS->page->getMediaWidth()*THIS->scale);
-		rh=(int32_t)(THIS->page->getMediaHeight()*THIS->scale);
-	}
+	get_page_size(THIS, &rw, &rh);
 
 	w = *width;
 	h = *height;
@@ -1195,7 +1205,7 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 
 		el = &(THIS->Found[count++]); //(CPDFFIND*)&((CPDFFIND*)THIS->Found)[GB.Count(POINTER(THIS->Found))-1];
 		
-		switch (THIS->rotation)
+		switch (get_rotation(THIS))
 		{
 			case 0:
 				el->x0=(x0*THIS->scale);
