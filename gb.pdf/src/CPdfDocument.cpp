@@ -1112,7 +1112,7 @@ static void aux_get_link_dimensions(void *_object, CPDFRECT *rect)
 	w=w-l;
 	h=h-t;	
 
-	switch (THIS->rotation)
+	switch (get_rotation(THIS))
 	{
 		case 0:
 			rect->x = (l*THIS->scale);
@@ -1169,6 +1169,8 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 	int nlen=0;
 	bool sensitive=false;
 	int count;
+	double x, y, w, h, wp, hp;
+	int rotation;
 
 	// TODO: Use UCS-4BE on big endian systems?
 	if (GB.ConvString ((char **)(void *)&block,STRING(Text),LENGTH(Text),"UTF-8",GB_SC_UNICODE))
@@ -1205,41 +1207,39 @@ BEGIN_METHOD (PDFPAGE_find,GB_STRING Text; GB_BOOLEAN Sensitive;)
 
 		el = &(THIS->Found[count++]); //(CPDFFIND*)&((CPDFFIND*)THIS->Found)[GB.Count(POINTER(THIS->Found))-1];
 		
-		switch (get_rotation(THIS))
+		x = x0;
+		y = y0;
+		w = x1 - x0;
+		h = y1 - y0;
+
+		wp = THIS->page->getMediaWidth();
+		hp = THIS->page->getMediaHeight();
+		rotation = THIS->page->getRotate();
+		if (rotation == 90 || rotation == 270)
 		{
-			case 0:
-				el->x0=(x0*THIS->scale);
-				el->y0=(y0*THIS->scale);
-				el->x1=((x1-x0)*THIS->scale);
-				el->y1=((y1-y0)*THIS->scale);
-				break;
-
-			case 90:
-				el->y1=((x1-x0)*THIS->scale);
-				el->x1=(y1-y0);
-				el->y0=(x0*THIS->scale);
-				el->x0=((THIS->page->getMediaHeight()-y0-el->x1)*THIS->scale);
-				el->x1=(el->x1*THIS->scale);
-				break;
-
-			case 180:
-				el->x1=(x1-x0);
-				el->y1=(y1-y0);
-				el->x0=((THIS->page->getMediaWidth()-x0-el->x1)*THIS->scale);
-				el->y0=((THIS->page->getMediaHeight()-y0-el->y1)*THIS->scale);
-				el->x1=(el->x1*THIS->scale);
-				el->y1=(el->y1*THIS->scale);
-				break;
-
-			case 270:
-				el->x1=((y1-y0)*THIS->scale);
-				el->y1=(x1-x0);
-				el->x0=(y0*THIS->scale);
-				el->y0=((THIS->page->getMediaWidth()-x0-el->y1)*THIS->scale);
-				el->y1=(el->y1*THIS->scale);
-				break;
-
+			x0 = wp; wp = hp; hp = x0;
 		}
+
+		rotation = THIS->rotation; //get_rotation(THIS);
+		while (rotation > 0)
+		{
+			x0 = wp; wp = hp; hp = x0;
+
+			x0 = wp - y - h;
+			y0 = x;
+
+			x = w; w = h; h = x;
+
+			x = x0;
+			y = y0;
+
+			rotation -= 90;
+		}
+
+		el->x0 = x * THIS->scale;
+		el->y0 = y * THIS->scale;
+		el->x1 = w * THIS->scale;
+		el->y1 = h * THIS->scale;
 	}
 
 	delete textdev;
