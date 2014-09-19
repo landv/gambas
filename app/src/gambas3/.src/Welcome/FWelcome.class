@@ -181,6 +181,7 @@ Private Sub Toggle(iState As Integer)
       txtFilter.SetFocus
       
     Case LIST_EXAMPLE
+      $hExample.Fill
       panList.Raise
       lstRecent.Hide
       txtFilter.Hide
@@ -188,7 +189,6 @@ Private Sub Toggle(iState As Integer)
       txtFilterExample.Show
       panList.Show
       txtFilterExample.SetFocus
-      $hExample.Fill
     
   End Select
     

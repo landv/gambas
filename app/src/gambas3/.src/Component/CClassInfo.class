@@ -638,17 +638,20 @@ Public Sub GetHelpHTML() As String
     
   Endif
   
-  If hClassInfo.AutoCreatable Then sInfo &= ("This class can be used like an object by creating an hidden instance on demand.") & "<br>"
-  If hClassInfo.Creatable Then 
-    hSymbol = cClassSymbols["_new"]
-    If hSymbol Then
-      sInfo &= Subst(("This class is &1."), GetSymbolLink(hSymbol, ("creatable")))
-    Else
-      sInfo &= Subst(("This class is &1."), ("creatable"))
-    Endif
-    sInfo &= "<br>"
+  If hClassInfo.AutoCreatable And If bHasDynamic Then
+    sInfo &= ("This class can be used like an object by creating an hidden instance on demand.") & "<br>"
   Endif
-  If Not bHasDynamic Then sInfo &= ("This class is static.") & "<br>"
+  
+  If hClassInfo.Creatable And If cClassSymbols.Exist("_new") Then 
+    hSymbol = cClassSymbols["_new"]
+   sInfo &= Subst(("This class is &1."), GetSymbolLink(hSymbol, ("creatable"))) & "<br>"
+  Else
+    If Not bHasDynamic Then 
+    Else
+      sInfo &= ("This class is static.") & "<br>"
+    Endif
+      sInfo &= ("This class is not cretable.") & "<br>"
+  Endif
   
   hSymbol = cClassSymbols["_call"]
   If hSymbol Then
@@ -830,7 +833,7 @@ Public Function WikiGetSymbols() As String[]
   
   If IsVirtual() Then
     aResult.Add(("This class is virtual.") & "\\")
-  Else If AutoCreatable Then
+  Else If AutoCreatable And If bDynamic Then
     aResult.Add(("This class can be used like an object by creating a hidden instance on demand.") & "\\")
   Endif
 
