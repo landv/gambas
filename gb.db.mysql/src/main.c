@@ -682,6 +682,38 @@ static void close_database(DB_DATABASE *db)
 
 /*****************************************************************************
 
+	get_collations()
+
+	Return the available collations as a Gambas string array.
+
+*****************************************************************************/
+
+static GB_ARRAY get_collations(DB_DATABASE *db)
+{
+	const char *query = "show collation like '%'";
+
+	MYSQL_RES *res;
+	GB_ARRAY array;
+	MYSQL_ROW row;
+	int i, n;
+
+	if (do_query(db, "Unable to get collations: &1", &res, query, 0))
+		return NULL;
+
+	n = mysql_num_rows(res);
+
+	GB.Array.New(&array, GB_T_STRING, n);
+	for (i = 0; i < n; i++)
+	{
+		row = mysql_fetch_row(res);
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(row[0]);
+	}
+
+	return array;
+}
+
+/*****************************************************************************
+
 	format_value()
 
 	This function transforms a gambas value into a string value that can
@@ -1615,16 +1647,32 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 			DB.Query.Add(" ");
 			DB.Query.Add(type);
 
+			if (fp->collation && *fp->collation)
+			{
+				char *p = strchr(fp->collation, '_');
+				if (!p || p == fp->collation)
+				{
+					GB.Error("Incorrect collation");
+					return TRUE;
+				}
+
+				DB.Query.Add(" CHARACTER SET ");
+				DB.Query.AddLength(fp->collation, p - fp->collation);
+				DB.Query.Add(" COLLATE ");
+				DB.Query.Add(fp->collation);
+			}
+
 			if (fp->def.type != GB_T_NULL)
 			{
-				DB.Query.Add(" NOT NULL DEFAULT ");
+				DB.Query.Add(" NOT NULL DEFAULT");
 				DB.FormatVariant(&_driver, &fp->def, DB.Query.AddLength);
 			}
 			else if (DB.StringArray.Find(primary, fp->name) >= 0)
 			{
-				DB.Query.Add(" NOT NULL ");
+				DB.Query.Add(" NOT NULL");
 			}
 		}
+
 	}
 
 	if (primary)
@@ -1767,8 +1815,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 
 static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
-	const char *query =
-			"show columns from `&1` like '&2'";
+	const char *query = "show full columns from `&1` like '&2'";
 
 	MYSQL_RES *res;
 	MYSQL_ROW row;
@@ -1802,16 +1849,16 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	info->def.type = GB_T_NULL;
 
-	if ((info->type == GB_T_INTEGER || info->type == GB_T_LONG) && strstr(row[5], "auto_increment"))
+	if ((info->type == GB_T_INTEGER || info->type == GB_T_LONG) && strstr(row[6], "auto_increment"))
 		info->type = DB_T_SERIAL;
 	else
 	{
-		if (!*row[2] || row[2][0] != 'Y')
+		if (!*row[3] || row[3][0] != 'Y')
 		{
 			def.type = GB_T_VARIANT;
 			def.value.type = GB_T_NULL;
 
-			val = row[4];
+			val = row[5];
 
 			/* (BM) seems there is a bug in mysql */
 			if (info->type == GB_T_DATE && val && strlen(val) >= 5 && strncmp(val, "00000", 5) == 0)
@@ -1824,6 +1871,11 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 			}
 		}
 	}
+
+	if (row[2] && *row[2])
+		info->collation = GB.NewZeroString(row[2]);
+	else
+		info->collation = NULL;
 
 	mysql_free_result(res);
 	return FALSE;
@@ -2357,27 +2409,29 @@ static int user_info(DB_DATABASE *db, const char *name, DB_USER *info )
 	_token = _host - 1;
 	_token[0] = 0;
 
-if (do_query(db, "Unable to check user info: &1@&2", &res, query, 2, _name, _host)){
+	if (do_query(db, "Unable to check user info: &1@&2", &res, query, 2, _name, _host))
+	{
 		free(_name);
 		return TRUE;
-}
+	}
 
-if (mysql_num_rows(res) != 1){
-	GB.Error("user_info: Non unique user found");
-	free(_name);
-				mysql_free_result(res);
-	return TRUE;
-}
+	if (mysql_num_rows(res) != 1)
+	{
+		GB.Error("user_info: Non unique user found");
+		free(_name);
+					mysql_free_result(res);
+		return TRUE;
+	}
 
-row = mysql_fetch_row(res);
+	row = mysql_fetch_row(res);
 
-info->name = NULL;
-if ( strcmp(row[0], "Y") == 0 || strcmp(row[1], "Y") == 0)
-	info->admin = 1;
-else
-	info->admin = 0;
+	info->name = NULL;
+	if ( strcmp(row[0], "Y") == 0 || strcmp(row[1], "Y") == 0)
+		info->admin = 1;
+	else
+		info->admin = 0;
 
-if (row[3])
+	if (row[3])
 		info->password = GB.NewZeroString(row[3]); //password is encrypted in mysql
 
 	mysql_free_result(res);

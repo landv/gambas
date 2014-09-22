@@ -23,6 +23,7 @@ Private $aField As New CField[]
 Private $cFieldName As New Collection
 Private $aIndexField As New CIndexField[]
 Private $cFieldInfo As New Collection
+Private $aCollations As String[]
 
 Private $bMetadata As Boolean
 
@@ -33,7 +34,7 @@ Public Sub _new(sPath As String)
   
   With tbvField
     
-    .Columns.Count = 5
+    .Columns.Count = 6
     
     With tbvField.Columns[0]
       .Text = " "
@@ -57,6 +58,11 @@ Public Sub _new(sPath As String)
     
     With tbvField.Columns[4]
       .Text = ("Default value")
+      .Width = Desktop.Scale * 24
+    End With
+    
+    With tbvField.Columns[5]
+      .Text = ("Collation")
       .Width = Desktop.Scale * 24
     End With
     
@@ -225,6 +231,15 @@ Public Sub Reload() As Boolean
   Inc Application.Busy
   
   $hConn.Open
+  
+  $aCollations = Null
+  Try $aCollations = $hConn.Collations.Sort()
+  If $aCollations Then
+    $aCollations.Add("", 0)
+    tbvField.Columns[5].Width = Desktop.Scale * 24
+  Else
+    tbvField.Columns[5].Width = 0
+  Endif
   'DB.Current = $hConn
   
   sTitle = $hConn.Type & "://"
@@ -251,8 +266,8 @@ Public Sub Reload() As Boolean
   $bMetadata = hConfig["Connection/DisplayMetadata"]
   
   If $bMetadata Then
-    tbvField.Columns.Count = 6
-    With tbvField.Columns[5]
+    tbvField.Columns.Count = 7
+    With tbvField.Columns[6]
       .Text = ("Description")
       .Width = Desktop.Scale * 24
     End With
@@ -262,7 +277,7 @@ Public Sub Reload() As Boolean
       .Width = Desktop.Scale * 24
     End With
   Else
-    tbvField.Columns.Count = 5
+    tbvField.Columns.Count = 6
     tbvIndex.Columns.Count = 3
   Endif
 
@@ -630,8 +645,11 @@ Public Sub tbvField_Data(Row As Integer, Column As Integer)
         
       Case 4
         .Text = Str(hCField.DefaultValue)
-      
+        
       Case 5
+        .Text = hCField.Collation
+      
+      Case 6
         .Text = hCField.Description
         
     End Select
@@ -723,10 +741,13 @@ Public Sub tbvField_Click()
       Endif
       
     Case 5
-      tbvField.Edit
+      If $aCollations Then tbvField.Edit($aCollations, True)
 
     Case 6
-      If hField.Index Then tbvField.Edit
+      tbvField.Edit
+
+    ' Case 7
+    '   If hField.Index Then tbvField.Edit
       
   End Select
   
@@ -862,11 +883,15 @@ Public Sub tbvField_Save(Row As Integer, Column As Integer, sData As String)
     
     Case 5
       
+      hField.Collation = sData
+    
+    Case 6
+      
       hField.Description = sData
       
   End Select
   
-  If Column < 5 Then
+  If Column < 6 Then
     ModifyTable
   Else
     ModifyMetadata
@@ -1273,7 +1298,7 @@ Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As Strin
   With hTable
     
     For Each hCField In $aField
-      .Fields.Add(hCField.Name, hCField.Type, hCField.Length, hCField.DefaultValue)
+      .Fields.Add(hCField.Name, hCField.Type, hCField.Length, hCField.DefaultValue, hCField.Collation)
     Next
     
     .PrimaryKey = aPrimaryKey

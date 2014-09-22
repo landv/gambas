@@ -640,6 +640,8 @@ static void fill_field_info(DB_FIELD *info, PGresult *res, int row, int col)
 			}
 		}
 	}	
+
+	info->collation = GB.NewZeroString(PQgetvalue(res, row, col + 5));
 }
 
 
@@ -767,6 +769,36 @@ static void close_database(DB_DATABASE *db)
 		PQfinish(conn);
 }
 
+
+/*****************************************************************************
+
+	get_collations()
+
+	Return the available collations as a Gambas string array.
+
+*****************************************************************************/
+
+static GB_ARRAY get_collations(DB_DATABASE *db)
+{
+	const char *query =
+		"select collname from pg_collation;";
+
+	GB_ARRAY array;
+	PGresult *res;
+	int i;
+
+	if (do_query(db, "Unable to get collations: &1", &res, query, 0))
+		return NULL;
+
+	GB.Array.New(&array, GB_T_STRING, PQntuples(res));
+
+	for (i = 0; i < PQntuples(res); i++)
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(PQgetvalue(res, i, 0));
+
+	PQclear(res);
+
+	return array;
+}
 
 /*****************************************************************************
 
@@ -1239,9 +1271,10 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
 	const char *qfield_all=
 			"SELECT col.attname, col.atttypid::int, col.atttypmod, "
-					"col.attnotnull, def.adsrc, col.atthasdef "
+					"col.attnotnull, def.adsrc, col.atthasdef, pg_collation.collname "
 			"FROM pg_catalog.pg_class tbl, pg_catalog.pg_attribute col "
 							"LEFT JOIN pg_catalog.pg_attrdef def ON (def.adnum = col.attnum AND def.adrelid = col.attrelid) "
+							"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
 			"WHERE tbl.relname = '&1' AND "
 					"col.attrelid = tbl.oid AND "
 					"col.attnum > 0 AND "
@@ -1250,9 +1283,10 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
         
 	char *qfield_schema_all =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, pg_attribute.atttypmod, "
-						"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+						"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
 				"from pg_class, pg_attribute "
 						"LEFT JOIN pg_catalog.pg_attrdef  ON (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) "
+							"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
 				"where pg_class.relname = '&1' "
 						"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
 						"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
@@ -1838,6 +1872,13 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 			DB.Query.Add(" ");
 			DB.Query.Add(type);
 
+			if (fp->collation && *fp->collation)
+			{
+				DB.Query.Add(" COLLATE \"");
+				DB.Query.Add(fp->collation);
+				DB.Query.Add("\"");
+			}
+
 			if (fp->def.type != GB_T_NULL)
 			{
 				DB.Query.Add(" NOT NULL DEFAULT ");
@@ -2006,9 +2047,10 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 {
 	const char *query =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
 		"from pg_class, pg_attribute "
 		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+		"left join pg_collation on (pg_collation.oid = pg_attribute.attcollation) "
 		"where pg_class.relname = '&1' "
 		"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
 		"and pg_attribute.attname = '&2' "
@@ -2017,9 +2059,10 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	const char *query_schema =
 		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
 		"from pg_class, pg_attribute "
 		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+		"left join pg_collation on (pg_collation.oid = pg_attribute.attcollation) "
 		"where pg_class.relname = '&1' "
 		"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
 		"and pg_attribute.attname = '&2' "

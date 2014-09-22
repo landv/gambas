@@ -49,6 +49,7 @@
 #undef HAVE_UNISTD_H
 #endif
 
+#include "gb.db.proto.h"
 #include "main.h"
 
 
@@ -432,7 +433,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 
 *****************************************************************************/
 
-static char *get_quote(void)
+static const char *get_quote(void)
 {
 	return QUOTE_STRING;
 }
@@ -618,6 +619,20 @@ fflush(stderr);
 		SQL_Handle_free(conn);
 		db->handle = NULL;
 	}
+}
+
+
+/*****************************************************************************
+
+	get_collations()
+
+	Return the available collations as a Gambas string array.
+
+*****************************************************************************/
+
+static GB_ARRAY get_collations(DB_DATABASE *db)
+{
+	return NULL;
 }
 
 
@@ -886,7 +901,7 @@ if(result!=NULL){
 *****************************************************************************/
 
 
-static int exec_query(DB_DATABASE *db, char *query, DB_RESULT * result, char *err)
+static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT * result, const char *err)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1371,7 +1386,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT result, char *name, DB_DATABASE *db)
+static int field_index(DB_RESULT result, const char *name, DB_DATABASE *db)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1556,7 +1571,7 @@ static int rollback_transaction(DB_DATABASE *db)
 
 *****************************************************************************/
 
-static int table_init(DB_DATABASE *db, char *table, DB_INFO * info)
+static int table_init(DB_DATABASE *db, const char *table, DB_INFO * info)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1667,7 +1682,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int table_index(DB_DATABASE *db, char *table, DB_INFO * info)
+static int table_index(DB_DATABASE *db, const char *table, DB_INFO * info)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -1848,7 +1863,7 @@ static void table_release(DB_DATABASE *db, DB_INFO * info)
 
 *****************************************************************************/
 
-static int table_exist(DB_DATABASE *db, char *table)
+static int table_exist(DB_DATABASE *db, const char *table)
 {
 
 #ifdef ODBC_DEBUG_HEADER
@@ -2057,7 +2072,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int table_primary_key(DB_DATABASE *db, char *table, char ***primary)
+static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2147,7 +2162,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int table_is_system(DB_DATABASE *db, char *table)
+static int table_is_system(DB_DATABASE *db, const char *table)
 {
 	return FALSE;
 }
@@ -2167,7 +2182,7 @@ static int table_is_system(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static int table_delete(DB_DATABASE *db, char *table)
+static int table_delete(DB_DATABASE *db, const char *table)
 {
 	int exit;
 	SQLCHAR query[101] = "DROP TABLE ";
@@ -2200,7 +2215,7 @@ static int table_delete(DB_DATABASE *db, char *table)
 
 *****************************************************************************/
 
-static int table_create(DB_DATABASE *db, char *table, DB_FIELD * fields, char **primary, char *not_used)
+static int table_create(DB_DATABASE *db, const char *table, DB_FIELD * fields, char **primary, const char *type_not_used)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2329,7 +2344,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int field_exist(DB_DATABASE *db, char *table, char *field)
+static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2408,7 +2423,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int field_list(DB_DATABASE *db, char *table, char ***fields)
+static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2506,7 +2521,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, char *table, char *field, DB_FIELD * info)
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD * info)
 {
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2585,7 +2600,6 @@ fflush(stderr);
 
 	}
 
-
 	info->name = NULL;
 	info->type = conv_type(atol((char *)coltype));
 	info->length = 0;
@@ -2602,6 +2616,8 @@ fflush(stderr);
 		info->type = DB_T_SERIAL;
 
 	info->def.type = GB_T_NULL;
+
+	info->collation = NULL;
 
 	SQLFreeHandle(SQL_HANDLE_STMT, statHandle);
 
@@ -2623,7 +2639,7 @@ fflush(stderr);
 
 *****************************************************************************/
 
-static int index_exist(DB_DATABASE *db, char *table, char *index)
+static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 {
 	//GB.Error("ODBC does not implement this function - index_exist");
 	return FALSE;
@@ -2647,7 +2663,7 @@ static int index_exist(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_list(DB_DATABASE *db, char *table, char ***indexes)
+static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 {
 	//GB.Error("ODBC does not implement this function - index_list");
 	return (-1);
@@ -2670,7 +2686,7 @@ static int index_list(DB_DATABASE *db, char *table, char ***indexes)
 
 *****************************************************************************/
 
-static int index_info(DB_DATABASE *db, char *table, char *index,	DB_INDEX * info)
+static int index_info(DB_DATABASE *db, const char *table, const char *index,	DB_INDEX * info)
 {
 //GB.Error("ODBC does not implement this function");
 	return TRUE;
@@ -2692,7 +2708,7 @@ static int index_info(DB_DATABASE *db, char *table, char *index,	DB_INDEX * info
 
 *****************************************************************************/
 
-static int index_delete(DB_DATABASE *db, char *table, char *index)
+static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
 //GB.Error("ODBC does not implement this function");
 	return TRUE;
@@ -2715,8 +2731,7 @@ static int index_delete(DB_DATABASE *db, char *table, char *index)
 
 *****************************************************************************/
 
-static int index_create(DB_DATABASE *db, char *table, char *index,
-												DB_INDEX * info)
+static int index_create(DB_DATABASE *db, const char *table, const char *index, DB_INDEX * info)
 {
 //GB.Error("ODBC does not implement this function");
 	return TRUE;
@@ -2736,7 +2751,7 @@ static int index_create(DB_DATABASE *db, char *table, char *index,
 
 *****************************************************************************/
 
-static int database_exist(DB_DATABASE *db, char *name)
+static int database_exist(DB_DATABASE *db, const char *name)
 {
 	//GB.Error("ODBC does not implement this function");
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
@@ -2793,7 +2808,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
 *****************************************************************************/
 
-static int database_is_system(DB_DATABASE *db, char *name)
+static int database_is_system(DB_DATABASE *db, const char *name)
 {
 	//GB.Error("ODBC does not implement this function");
 	return FALSE;
@@ -2809,7 +2824,7 @@ static int database_is_system(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static char *table_type(DB_DATABASE *db, char *table, char *type)
+static char *table_type(DB_DATABASE *db, const char *table, const char *type)
 {
 	if (type)
 		GB.Error("ODBC does not have any table types");
@@ -2830,7 +2845,7 @@ static char *table_type(DB_DATABASE *db, char *table, char *type)
 
 *****************************************************************************/
 
-static int database_delete(DB_DATABASE *db, char *name)
+static int database_delete(DB_DATABASE *db, const char *name)
 {
 	//GB.Error("ODBC does not implement this function");
 	return TRUE;
@@ -2851,7 +2866,7 @@ static int database_delete(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static int database_create(DB_DATABASE *db, char *name)
+static int database_create(DB_DATABASE *db, const char *name)
 {
 	//GB.Error("ODBC does not implement this function");
 	return TRUE;
@@ -2871,7 +2886,7 @@ static int database_create(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static int user_exist(DB_DATABASE *db, char *name)
+static int user_exist(DB_DATABASE *db, const char *name)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 
@@ -2928,7 +2943,7 @@ static int user_list(DB_DATABASE *db, char ***users)
 
 *****************************************************************************/
 
-static int user_info(DB_DATABASE *db, char *name, DB_USER * info)
+static int user_info(DB_DATABASE *db, const char *name, DB_USER * info)
 {
 	//GB.Error("ODBC does not implement this function");
 	return TRUE;
@@ -2949,7 +2964,7 @@ static int user_info(DB_DATABASE *db, char *name, DB_USER * info)
 
 *****************************************************************************/
 
-static int user_delete(DB_DATABASE *db, char *name)
+static int user_delete(DB_DATABASE *db, const char *name)
 {
 	//GB.Error("ODBC can't delete users");
 	return TRUE;
@@ -2971,7 +2986,7 @@ static int user_delete(DB_DATABASE *db, char *name)
 
 *****************************************************************************/
 
-static int user_create(DB_DATABASE *db, char *name, DB_USER * info)
+static int user_create(DB_DATABASE *db, const char *name, DB_USER * info)
 {
 	//GB.Error("ODBC can't create users");
 	return TRUE;
@@ -2993,7 +3008,7 @@ static int user_create(DB_DATABASE *db, char *name, DB_USER * info)
 
 *****************************************************************************/
 
-static int user_set_password(DB_DATABASE *db, char *name, char *password)
+static int user_set_password(DB_DATABASE *db, const char *name, const char *password)
 {
 	//GB.Error("ODBC can't set user's password");
 	return TRUE;
@@ -3005,72 +3020,7 @@ static int user_set_password(DB_DATABASE *db, char *name, char *password)
 
 *****************************************************************************/
 
-static DB_DRIVER _driver = {
-	"odbc",
-	(void *) open_database,
-	(void *) close_database,
-	(void *) format_value,
-	(void *) format_blob,
-	(void *) exec_query,
-	(void *) begin_transaction,
-	(void *) commit_transaction,
-	(void *) rollback_transaction,
-	(void *) get_quote,
-	{
-	 (void *) query_init,
-	 (void *) query_fill,
-	 (void *) blob_read,
-	 (void *) query_release,
-	 {
-		(void *) field_type,
-		(void *) field_name,
-		(void *) field_index,
-		(void *) field_length,
-		},
-	 },
-
-	{
-	 (void *) field_exist,
-	 (void *) field_list,
-	 (void *) field_info,
-	 },
-
-	{
-	 (void *) table_init,
-	 (void *) table_index,
-	 (void *) table_release,
-	 (void *) table_exist,
-	 (void *) table_list,
-	 (void *) table_primary_key,
-	 (void *) table_is_system,
-	 (void *) table_type,
-	 (void *) table_delete,
-	 (void *) table_create,
-	 },
-	{
-	 (void *) index_exist,
-	 (void *) index_list,
-	 (void *) index_info,
-	 (void *) index_delete,
-	 (void *) index_create,
-	 },
-	{
-	 (void *) database_exist,
-	 (void *) database_list,
-	 (void *) database_is_system,
-	 (void *) database_delete,
-	 (void *) database_create,
-	 },
-	{
-	 (void *) user_exist,
-	 (void *) user_list,
-	 (void *) user_info,
-	 (void *) user_delete,
-	 (void *) user_create,
-	 (void *) user_set_password}
-
-};
-
+DECLARE_DRIVER(_driver, "odbc");
 
 /*****************************************************************************
 

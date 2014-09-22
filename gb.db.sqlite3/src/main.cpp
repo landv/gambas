@@ -50,6 +50,7 @@ static char _buffer[32];
 
 static int _print_query = FALSE;
 static bool _need_field_type = FALSE;
+static char *_table_schema = NULL;
 
 /*****************************************************************************
 
@@ -587,6 +588,21 @@ static int db_version()
 	return dbversion;
 }
 
+/* Get the schema of a table */
+static char *get_table_schema(DB_DATABASE *db, const char *table)
+{
+	char *schema = NULL;
+	Dataset *res;
+
+	if (!do_query(db, "Unable to get table schema: &1", &res, "select sql from sqlite_master where type = 'table' and tbl_name = '&1'", 1, table))
+	{
+		schema = GB.NewZeroString((char *)res->fv(0).get_asString().data());
+		res->close();
+	}
+
+	return schema;
+}
+
 /*****************************************************************************
 
   get_quote()
@@ -714,6 +730,28 @@ static void close_database(DB_DATABASE * db)
 		conn->disconnect();
 		delete conn;
 	}
+}
+
+
+/*****************************************************************************
+
+	get_collations()
+
+	Return the available collations as a Gambas string array.
+
+*****************************************************************************/
+
+static GB_ARRAY get_collations(DB_DATABASE *db)
+{
+	static const char *const collations[] = { "BINARY", "NOCASE", "RTRIM" };
+	GB_ARRAY array;
+	int i;
+
+	GB.Array.New(&array, GB_T_STRING, 3);
+	for (i = 0; i < 3; i++)
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(collations[i]);
+
+	return array;
 }
 
 
@@ -1635,6 +1673,12 @@ static int table_create(DB_DATABASE * db, const char *table, DB_FIELD * fields, 
 			DB.Query.Add(" ");
 			DB.Query.Add(type);
 
+			if (fp->collation && *fp->collation)
+			{
+				DB.Query.Add(" COLLATE ");
+				DB.Query.Add(fp->collation);
+			}
+
 			if (fp->def.type != GB_T_NULL)
 			{
 				DB.Query.Add(" NOT NULL DEFAULT ");
@@ -1778,7 +1822,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 {
 	const char *query = "PRAGMA table_info('&1')";
 
-	Dataset *res, *res_autoinc;
+	Dataset *res;
 	GB_VARIANT def;
 	char *val;
 	char *_fieldName = NULL;
@@ -1789,10 +1833,8 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	//sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
 	fType type;
 	result_set *r;
-	char *schema;
-	char *p, *p2;
-	char *search;
 	bool autoinc;
+	char *schema;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
 	{
@@ -1842,39 +1884,81 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	}*/
 	
 	autoinc = false;
-	
-	if (strstr(_fieldType, "INTEGER"))
+	info->collation = NULL;
+
+	if (_table_schema)
+		schema = _table_schema;
+	else
+		schema = get_table_schema(db, table);
+
+	if (schema)
 	{
-		if (!do_query(db, "Unable to get table schema: &1", &res_autoinc, "select sql from sqlite_master where type = 'table' and tbl_name = '&1'", 1, table))
+		char *p, *p2;
+		char *field_desc;
+		int len;
+
+		p = strchr(schema, '(');
+		if (p)
 		{
-			schema = (char *)res_autoinc->fv(0).get_asString().data();
-			
-			search = (char *)alloca(2 + strlen(_fieldName));
-			sprintf(search, "'%s'", _fieldName);
-			
-			p = strchr(schema, '(');
-			if (p)
+			while (*p != ')')
 			{
-				p = strstr(p, search);
+				p++;
+				p2 = strchr(p, ',');
+				if (!p2)
+					p2 = p + strlen(p) - 1;
+
+				while (p < p2 && *p == ' ')
+					p++;
+
+				if (*p == '\'')
+					p++;
+
+				len = strlen(_fieldName);
+				if ((p2 - p) < len || strncasecmp(p, _fieldName, len))
+				{
+					p = p2;
+					continue;
+				}
+
+				p += len;
+				if (*p == '\'')
+					p++;
+
+				len = p2 - p;
+				if (len <= 0)
+					break;
+				
+				field_desc = GB.NewString(p, len);
+
+				if (strstr(_fieldType, "INTEGER"))
+				{
+					if (strstr(field_desc, "AUTOINCREMENT"))
+						autoinc = true;
+				}
+
+				p = strstr(field_desc, "COLLATE");
 				if (p)
 				{
-					p2 = strchr(p, ',');
+					p += 7;
+					while (*p == ' ')
+						p++;
+
+					p2 = strchr(p, ' ');
 					if (!p2)
-						p2 = strchr(p, ')');
-					if (p2)
-					{
-						p = strstr(p, "AUTOINCREMENT");
-						if (p && p < p2)
-							autoinc = true;
-					}
+						p2 = field_desc + len;
+					info->collation = GB.NewString(p, p2 - p);
 				}
+
+				GB.FreeString(&field_desc);
+				break;
 			}
-			
-			res_autoinc->close();
+
 		}
-		
 	}
 	
+	if (!_table_schema)
+		GB.FreeString(&schema);
+
 	type = GetFieldType(_fieldType, (unsigned int *) &info->length);
 
 	if (autoinc)

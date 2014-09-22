@@ -680,8 +680,6 @@ END_PROPERTY
 
 BEGIN_PROPERTY(ComboBox_Border)
 
-	GET_TEXT_BOX();
-
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(COMBOBOX->hasFrame());
 	else

@@ -334,6 +334,20 @@ BEGIN_PROPERTY(CCONNECTION_ignore_charset)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Connection_Collations)
+
+	GB_ARRAY array;
+
+	CHECK_DB();
+
+	array = THIS->driver->GetCollations(&THIS->db);
+	if (array)
+		GB.ReturnObject(array);
+	else
+		GB.Error("Collations are not supported");
+
+END_PROPERTY
+
 BEGIN_METHOD_VOID(CCONNECTION_begin)
 
   CHECK_DB();
@@ -748,6 +762,7 @@ GB_DESC CConnectionDesc[] =
   GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_PROPERTY_READ("Error", "i", CCONNECTION_error),
   GB_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
+  GB_PROPERTY_READ("Collations", "String[]", Connection_Collations),
   GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
 
   GB_METHOD("Open", NULL, CCONNECTION_open, NULL),
@@ -802,6 +817,7 @@ GB_DESC CDBDesc[] =
   GB_STATIC_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_STATIC_PROPERTY_READ("Error", "i", CCONNECTION_error),
   GB_STATIC_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
+  GB_STATIC_PROPERTY_READ("Collations", "String[]", Connection_Collations),
   GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
 
   GB_STATIC_PROPERTY("Debug", "b", CCONNECTION_debug),

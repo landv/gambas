@@ -7,6 +7,7 @@ Public Length As Integer
 Public Key As Boolean
 Public OldName As String
 Public Description As String
+Public Collation As String
 
 Public Sub _new(Optional hField As Field)
 
@@ -19,6 +20,7 @@ Public Sub _new(Optional hField As Field)
       Type = .Type
       DefaultValue = .Default
       Length = .Length
+      Collation = .Collation
       
       Key = hField.Table.PrimaryKey.Find(Name) >= 0
     

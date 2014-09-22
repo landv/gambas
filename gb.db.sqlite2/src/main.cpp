@@ -622,6 +622,21 @@ static void close_database(DB_DATABASE *db)
 
 /*****************************************************************************
 
+	get_collations()
+
+	Return the available collations as a Gambas string array.
+
+*****************************************************************************/
+
+static GB_ARRAY get_collations(DB_DATABASE *db)
+{
+	return NULL;
+}
+
+
+
+/*****************************************************************************
+
 	format_value()
 
 	This function transforms a gambas value into a string value that can
@@ -1624,7 +1639,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		return TRUE;
 	}
 
-	result_set* r = (result_set*) res->getExecRes();
+	result_set *r = (result_set*) res->getExecRes();
 	if ((n = r->records.size()) == 0)
 	{
 		GB.Error("Unable to find field &1.&2", table, field);
@@ -1668,6 +1683,8 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 			GB.StoreVariant(&def, &info->def);
 		}
 	}
+
+	info->collation = NULL;
 
 	res->close();
 	return FALSE;

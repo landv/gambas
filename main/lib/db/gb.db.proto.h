@@ -29,6 +29,7 @@
 static const char *get_quote(void);
 static int open_database(DB_DESC *desc,  DB_DATABASE *db);
 static void close_database(DB_DATABASE *db);
+static GB_ARRAY get_collations(DB_DATABASE *db);
 static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add);
 static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add);
 static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, const char *err);
@@ -86,6 +87,7 @@ static DB_DRIVER _driver = \
   begin_transaction, \
   commit_transaction, \
   rollback_transaction, \
+  get_collations, \
   get_quote, \
   { \
     query_init, \

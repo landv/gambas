@@ -31,18 +31,13 @@
 '***************************************************************************
 
 Public hPdf As New PdfDocument
-Private timer_count As Integer
 Public cIndex As Integer 
 Public CurrentPage As Integer 
 Public CurrentZoom As Float = 1.0
 Private bExit As Boolean
-Private pdf_path As String 
-Private Embedded_In_Form As String
 Private currentSearchResult As Short = 0 'Contains the information which of the search results on this page is marked
 Private NumberOfSearchResults As Integer
 Private currentSearchResultSynonyms As Short = 0
-Private Product_Information_Dir As String
-Private Synonyms As New String[20, 20]
 Private ScrollXPositionBeforeZoom As Float
 Private ScrollYPositionBeforeZoom As Float
 
@@ -126,7 +121,6 @@ Public Sub RenderPage(Optional FoundText As String, Optional Casesensetivity As 
    'has canged the parameters FoundText and Casesensetivity are only of interrest if the funktion is called from a search frunction
    '--------------------------------------------------------------------------
    Dim hPic As Picture 
-   Dim Bc As Integer 
    
    ScrollXPositionBeforeZoom = ViewPort.ScrollX / ViewPort.ScrollWidth
    ScrollYPositionBeforeZoom = ViewPort.ScrollY / ViewPort.ScrollHeight
@@ -340,7 +334,6 @@ Private Sub FindNext()
    '    This function finds the next string in the pdf matching the search string located after the current search result
    '---------------------------------------------------------------------------   
    Dim hPic As Picture 
-   Dim Bc As Integer 
    Dim currentSearchPage As Short = CurrentPage ' contains the information on which page the search funktion searched the last time
    Dim LastPageToSearch As Short                ' contains the information which page is the last page for the find function
    
@@ -388,7 +381,7 @@ Private Sub FindNext()
    Endif
    
 Catch
-   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.")
+   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.\n\n" & Error.Where & ": " & Error.Text)
    
 End
 
@@ -397,7 +390,6 @@ Private Sub FindPrevious()
    '    This function finds the next string in the pdf matching the search string located before the current search result
    '---------------------------------------------------------------------------
    Dim hPic As Picture 
-   Dim Bc As Integer 
    Dim currentSearchPage As Short = CurrentPage ' contains the information on which page the search funktion searched the last time
    Dim LastPageToSearch As Short                ' contains the information which page is the last page for the find function
    
@@ -475,26 +467,6 @@ Public Sub BtSearchPrev_Click()
       currentSearchResult = currentSearchResult - 1
       RenderPage(txtFind.Text)
    Endif
-   
-End
-
-Public Sub txtFind_Change()
-   '---------------------------------------------------------------------------
-   'When the user starts to type in a new search string this function removes all previous search results and in case 
-   'the last search was not successful it turns the bachground color from red back to white 
-   '---------------------------------------------------------------------------
-   
-   If txtFind.Background = Color.Lighter(16711680) Then
-      txtFind.Background = Color.White
-      
-   Endif
-   
-   currentSearchResult = 0
-   currentSearchResultSynonyms = 0
-   BtSearchNext.Enabled = False
-   BtSearchPrev.Enabled = False
-   
-   RenderPage()
    
 End
 
