@@ -2487,8 +2487,8 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
 
   If bAll Then
     'CleanUp
-    DeleteCompiledFiles
     WriteProject(True)
+    DeleteCompiledFiles
   Endif
 
   sBefore = GetInfoFile()
@@ -3453,7 +3453,7 @@ Public Sub WriteProjectTranslation()
 
     hFic = Open sPath For Create
     Print #hFic, "# "; Path
-    Print #hFic, File.Load("pot-header.txt")
+    Print #hFic, CTranslation.SubstHeader(File.Load("pot-header.txt"))
     If Title Then
       Print #hFic, "#: .project:1"
       Print #hFic, "msgid \""; Escape(Title); "\""

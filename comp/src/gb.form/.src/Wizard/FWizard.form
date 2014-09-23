@@ -6,7 +6,7 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   { panTitle Panel
-    MoveScaled(1,1,61,5)
+    MoveScaled(1,1,61,6)
     Arrangement = Arrange.Horizontal
     Spacing = True
     Margin = True
@@ -23,7 +23,7 @@
     }
   }
   { panWizard Panel
-    MoveScaled(1,7,61,31)
+    MoveScaled(1,8,61,30)
     Expand = True
     Arrangement = Arrange.Fill
     Padding = 2
@@ -40,12 +40,12 @@
     }
     { btnNext Button
       MoveScaled(22,0,17,4)
-      Text = ("&Next")
+      Text = Shortcut(("Next"), "N")
       Picture = Picture["icon:/small/forward"]
     }
     { btnPrevious Button
       MoveScaled(4,0,17,4)
-      Text = ("&Previous")
+      Text = Shortcut(("Previous"), "P")
       Picture = Picture["icon:/small/rewind"]
     }
   }

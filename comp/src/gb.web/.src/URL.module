@@ -50,7 +50,7 @@ End
 
 Public Sub Encode(Path As String) As String
   
-  Return Quote(Path)
+  Return URL.Quote(Path)
   
 End
 
@@ -78,7 +78,7 @@ End
 
 Public Sub Decode(Path As String) As String
   
-  Return UnQuote(Path)
+  Return URL.UnQuote(Path)
   
 End
 

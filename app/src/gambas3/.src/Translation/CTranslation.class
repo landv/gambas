@@ -15,6 +15,25 @@ Public Sub _new(sLang As String)
   
 End
 
+Static Public Sub SubstHeader(sHeader As String, Optional sLang As String) As String
+
+  Dim sDate As String
+  
+  sDate = Format(DateAdd(Now, gb.Second, System.TimeZone), "yyyy-mm-dd hh:nn UTC")
+  
+  sHeader = Replace(sHeader, "$(PACKAGE)", Project.Name)
+  sHeader = Replace(sHeader, "$(VERSION)", Project.FullVersion)
+  sHeader = Replace(sHeader, "$(NOW)", sDate)
+  sHeader = Replace(sHeader, "$(DATE)", sDate)
+  sHeader = Replace(sHeader, "$(NAME)", Settings["/Identity/Name", User.Name])
+  sHeader = Replace(sHeader, "$(MAIL)", Settings["/Identity/Mail", User.Name & "@" & System.Host])
+  sHeader = Replace(sHeader, "$(LANG)", sLang)
+  
+  Return sHeader
+  
+End
+
+
 Private Sub LoadTranslation(sLang As String) 
   
   Dim sPath As String
@@ -25,6 +44,7 @@ Private Sub LoadTranslation(sLang As String)
   Dim sMsgComment As String
   Dim iMode As Integer
   Dim bFuzzy As Boolean
+  Dim iPos As Integer
   
   sPath = Language.GetPath(sLang, "po")
   If Not Exist(sPath) Then Return 
@@ -36,6 +56,12 @@ Private Sub LoadTranslation(sLang As String)
     If Not sLine Then Break
     Header &= sLine & "\n"
   Wend
+
+  iPos = InStr(Header, "#, fuzzy")
+  If iPos = 0 Then iPos = InStr(Header, "#,fuzzy")
+  If iPos Then Header = Left(Header, iPos - 1)
+
+  Header &= SubstHeader(File.Load("po-header.txt"), sLang)
 
   Do
 

@@ -74,6 +74,8 @@ Public Sub Form_Open()
   
   pchProject.ShowAnother = $bAnother
   
+  If $bAnother Then tabProject.Index = 1
+  
   Dec Application.Busy
 
 End
