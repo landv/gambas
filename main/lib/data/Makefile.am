@@ -15,5 +15,7 @@ gb_data_la_SOURCES = \
  c_avltree.h c_avltree.c \
  c_graph.h c_graph.c \
  c_graphmatrix.h c_graphmatrix.c \
- c_heap.h c_heap.c
+ c_heap.h c_heap.c \
+ trie.h trie.c \
+ c_trie.h c_trie.c
 

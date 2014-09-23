@@ -25,7 +25,7 @@
 #include "c_deque.h"
 #include "c_circular.h"
 #include "c_avltree.h"
-//#include "c_trie.h"
+#include "c_trie.h"
 #include "c_graph.h"
 #include "c_graphmatrix.h"
 #include "c_heap.h"
@@ -47,7 +47,8 @@ GB_DESC *GB_CLASSES[] EXPORT = {
 
 	CAvlTree,
 
-	//CTrie,
+	CTrie,
+	CTriePrefix,
 
 	CGraph,
 	CGraphVertices,
@@ -65,7 +66,6 @@ GB_DESC *GB_CLASSES[] EXPORT = {
 	CMatrixEdge,
 
 	CHeap,
-//	CPrioSet,
 
 	NULL
 };
