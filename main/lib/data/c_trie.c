@@ -270,8 +270,10 @@ BEGIN_METHOD(Trie_Complete, GB_STRING prefix)
 		return;
 	}
 
-	s = GB.NewString(STRING(prefix), LENGTH(prefix));
-	s = GB.AddString(s, p.node->key + p.i, p.node->len - p.i);
+	s = GB.TempString(STRING(prefix), LENGTH(prefix));
+	/* Again, we need to special-case p.node->len - p.i == 0. */
+	if (p.node->len - p.i)
+		s = GB.AddString(s, p.node->key + p.i, p.node->len - p.i);
 	GB.ReturnString(s);
 
 END_METHOD
