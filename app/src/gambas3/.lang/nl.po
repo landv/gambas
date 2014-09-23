@@ -98,7 +98,7 @@ msgid "This class is static."
 msgstr "Deze klasse is statisch."
 
 #: CClassInfo.class:653
-msgid "This class is not cretable."
+msgid "This class is not creatable."
 msgstr "Deze klasse kan niet aangemaakt worden."
 
 #: CClassInfo.class:658
@@ -119,7 +119,7 @@ msgstr "lezen"
 
 #: CClassInfo.class:663
 msgid "write"
-msgstr "schrijven"
+msgstr "schrijf"
 
 #: CClassInfo.class:665
 msgid "This class acts like a &1 array."
@@ -139,7 +139,7 @@ msgstr "Deze klasse is &1 met het FOREACH trefwoord."
 
 #: CClassInfo.class:673
 msgid "enumerable"
-msgstr "Telbaar"
+msgstr "Opsombaar"
 
 #: CClassInfo.class:818
 msgid "This class reimplements"
@@ -155,11 +155,7 @@ msgstr "Deze klasse is virtueel."
 
 #: CClassInfo.class:837
 msgid "This class can be used like an object by creating a hidden instance on demand."
-msgstr "Deze klass kan gebruikt worden als een object door een verborgen voorbeeld op aanvraag."
-
-#: CClassInfo.class:847
-msgid "This class is not creatable."
-msgstr "Deze klasse kan niet aangemaakt worden."
+msgstr "Deze klasse kan gebruikt worden zoals een object door een verborgen instatie te creëren op verzoek"
 
 #: CClassInfo.class:855
 msgid "This class acts like a &1 / &2 static array."
@@ -183,7 +179,7 @@ msgstr "statische functie"
 
 #: CComponent.class:83
 msgid "Internal native classes"
-msgstr "Interne native klassen"
+msgstr "Interne inheemse klassen"
 
 #: CComponent.class:84
 msgid "Program arguments parser"
@@ -191,7 +187,7 @@ msgstr "Programma argumenten parser"
 
 #: CComponent.class:85
 msgid "Cairo graphic library"
-msgstr "Cairo graphische bibliotheek"
+msgstr "Cairo grafische bibliotheek"
 
 #: CComponent.class:86
 msgid "Chart drawing"
@@ -275,7 +271,7 @@ msgstr "Syntaxis accentueer routines"
 
 #: CComponent.class:107
 msgid "More controls for graphical components"
-msgstr "Meer controls voor grafisch compnent"
+msgstr "Meer controles voor grafisch component"
 
 #: CComponent.class:108
 msgid "Enhanced standard dialogs"
@@ -327,7 +323,7 @@ msgstr "Afbeeldingen beheer"
 
 #: CComponent.class:120
 msgid "Image filtering component"
-msgstr "Beeldfilterbewerkingen component"
+msgstr "Beeldfilterbewerking component"
 
 #: CComponent.class:121
 msgid "Image routines from the Imlib2 library"
@@ -355,7 +351,7 @@ msgstr "-"
 
 #: CComponent.class:127
 msgid "GStreamer multimedia component"
-msgstr "-"
+msgstr "GStreamer multimedia component"
 
 #: CComponent.class:128
 msgid "Multimedia controls"
@@ -415,7 +411,7 @@ msgstr "Eenvoudige OpenGL game engine gebaseerd op MD2 formaat"
 
 #: CComponent.class:142
 msgid "OpenSSL library routines"
-msgstr "-"
+msgstr "OpenSSL bibliotheek routines"
 
 #: CComponent.class:143
 msgid "GNU command option parser"
@@ -455,7 +451,7 @@ msgstr "SDL bibliotheek"
 
 #: CComponent.class:152
 msgid "SDL sound & CD-ROM management"
-msgstr "SDL geluid & CD-ROM management"
+msgstr "SDL geluid & CD-ROM beheer"
 
 #: CComponent.class:153
 msgid "Application settings management"
@@ -483,7 +479,7 @@ msgstr "XML gereedschappen"
 
 #: CComponent.class:159
 msgid "HTML generator"
-msgstr "-"
+msgstr "HTML generator"
 
 #: CComponent.class:160
 msgid "XML-RPC protocol"
@@ -733,9 +729,9 @@ msgstr "Financiële steun"
 msgid "Thanks to"
 msgstr "Bedankt aan"
 
-#: FAbout.form:20
-msgid "About Gambas..."
-msgstr "Over Gambas..."
+#: FAbout.form:20 FMain.form:1118 FWelcome.class:67
+msgid "About Gambas"
+msgstr "Over Gambas"
 
 #: FAbout.form:48
 msgid "Gambas Almost Means Basic!"
@@ -791,7 +787,7 @@ msgstr "Sommige conflicten zijn nog niet opgelost."
 
 #: FConflict.class:252
 msgid "Unable to resolve the conflict."
-msgstr "Niet mogelijk om het conflict op te lossen."
+msgstr "Niet in staat om het conflict op te lossen."
 
 #: FConflict.class:281
 msgid "The file has been modified.\nDo you really want to open another file?"
@@ -831,7 +827,7 @@ msgstr "Inspringen"
 
 #: FTextEditor.form:371
 msgid "Unindent"
-msgstr "Inspring verwijderen"
+msgstr "Inspringen verwijderen"
 
 #: FProjectChooser.form:75
 msgid "Open"
@@ -853,7 +849,7 @@ msgstr "Oplossen"
 msgid "Close"
 msgstr "Sluiten"
 
-#: FOption.form:999
+#: FOption.form:256
 msgid "Name"
 msgstr "Naam"
 
@@ -871,7 +867,7 @@ msgstr "Standaardwaarde"
 
 #: FConnectionEditor.class:65
 msgid "Collation"
-msgstr ""
+msgstr "Collatie"
 
 #: FConnectionEditor.class:76 FDebugExpr.class:470 FHelpBrowser.form:52
 msgid "Index"
@@ -943,7 +939,7 @@ msgstr "Serieel"
 
 #: FConnectionEditor.class:729 MConnection.module:119 MErrorMessage.module:155
 msgid "String"
-msgstr "Tekenreeks"
+msgstr "-"
 
 #: FConnectionEditor.class:818
 msgid "This name is already in used."
@@ -1025,7 +1021,7 @@ msgstr "Nieuwe tabel"
 msgid "Delete table"
 msgstr "Verwijder tabel"
 
-#: FOption.form:967 FProjectProperty.form:464 FPropertyComponent.form:229
+#: FOption.form:1262 FProjectProperty.form:464 FPropertyComponent.form:229
 msgid "Remove"
 msgstr "Verwijderen"
 
@@ -1061,7 +1057,7 @@ msgstr "-"
 msgid "Fields"
 msgstr "Velden"
 
-#: FOption.form:1121 FProjectProperty.form:458 FPropertyComponent.form:221
+#: FOption.form:1310 FProjectProperty.form:458 FPropertyComponent.form:221
 msgid "Add"
 msgstr "Toevoegen"
 
@@ -1093,7 +1089,7 @@ msgstr "Voer query uit"
 msgid "New query"
 msgstr "Nieuwe query"
 
-#: FOption.form:953 FTranslate.form:68
+#: FOption.form:1248 FTranslate.form:68
 msgid "New"
 msgstr "Nieuw"
 
@@ -1101,7 +1097,7 @@ msgstr "Nieuw"
 msgid "Remove query"
 msgstr "Verwijder query"
 
-#: FImageEditor.form:108 FOption.form:960 FTextEditor.form:100
+#: FImageEditor.form:108 FOption.form:1255 FTextEditor.form:100
 msgid "Edit"
 msgstr "Bewerken"
 
@@ -1243,7 +1239,7 @@ msgstr "Project 'checkout' faalde."
 
 #: FCreateProject.class:187
 msgid "Cannot create project!"
-msgstr "Kan project niet kreëren"
+msgstr "Kan project niet creëren"
 
 #: FCreateProject.class:235
 msgid "Please enter the location of the repository."
@@ -1295,7 +1291,7 @@ msgstr "Internationalisatie"
 
 #: FCreateProject.form:305
 msgid "Settings files management"
-msgstr "Instellingsbestanden beheer"
+msgstr "Instellingen bestandsbeheer"
 
 #: FCreateProject.form:311
 msgid "Regular expressions"
@@ -1315,7 +1311,7 @@ msgstr "Afbeelding bewerken"
 
 #: FCreateProject.form:335
 msgid "Scientific computing"
-msgstr "-"
+msgstr "Wetenschappelijk rekenen"
 
 #: FCreateProject.form:341
 msgid "Visual Basic™ conversion help"
@@ -1393,7 +1389,7 @@ msgstr "Expressie"
 msgid "Function"
 msgstr "Functie"
 
-#: FOption.form:628
+#: FOption.form:745
 msgid "Line"
 msgstr "Regel"
 
@@ -1417,13 +1413,13 @@ msgstr "Bericht"
 msgid "native code"
 msgstr "inheemse kode"
 
-#: FMakeInstall.form:660 FOption.class:706 FOutput.form:84
+#: FMakeInstall.form:660 FOption.class:712 FOutput.form:84
 msgid "Clear"
 msgstr "Wissen"
 
 #: FDebugInfo.class:559
 msgid "Do you want to clear the expression list ?"
-msgstr "Weet u zeker dat u deze expression lijst wilt wissen ?"
+msgstr "Weet u zeker dat u deze expressie lijst wilt wissen ?"
 
 #: FDebugInfo.class:981
 msgid "Dynamic variables"
@@ -1437,7 +1433,7 @@ msgstr "Waarschuwingen"
 msgid "Debug"
 msgstr "Fouten opsporen"
 
-#: FDebugInfo.form:60 FMain.form:645 FOption.form:340 FSearch.class:93
+#: FDebugInfo.form:60 FMain.form:645 FOption.form:456 FSearch.class:93
 msgid "Console"
 msgstr "Konsole"
 
@@ -1463,7 +1459,7 @@ msgstr "Huidig object"
 
 #: FDebugInfo.form:122
 msgid "Watch"
-msgstr "Bewaak"
+msgstr "Bekijk"
 
 #: FDebugInfo.form:135
 msgid "Add expression"
@@ -1575,7 +1571,7 @@ msgstr "Omzetten breekpunt"
 
 #: FEditor.form:213
 msgid "Watch expression"
-msgstr "Expressie observeren"
+msgstr "Expressie bekijken"
 
 #: FEditor.form:221 FTextEditor.form:171
 msgid "Advanced"
@@ -1595,7 +1591,7 @@ msgstr "Toelichting"
 
 #: FEditor.form:249
 msgid "Uncomment"
-msgstr "Toelichting marks verwijderen."
+msgstr "Toelichting verwijderen."
 
 #: FEditor.form:259 FPasteSpecial.form:19
 msgid "Paste special"
@@ -1641,7 +1637,7 @@ msgstr "Plakken als multi-regel string"
 msgid "Paste as comments"
 msgstr "Plakken als commentaar"
 
-#: FEditor.form:369 FHelpShortcut.form:24 FOption.form:322
+#: FEditor.form:369 FHelpShortcut.form:24 FOption.form:438
 msgid "Editor"
 msgstr "Editor"
 
@@ -1715,7 +1711,7 @@ msgstr "-"
 
 #: FFileProperty.class:38
 msgid "Gambas module"
-msgstr "-"
+msgstr "Gambas module"
 
 #: FFileProperty.class:40
 msgid "Gambas class"
@@ -1751,7 +1747,7 @@ msgstr "Doorgaan"
 
 #: FFileProperty.class:141 FProjectVersion.class:209
 msgid "You are going to cancel your changes!"
-msgstr "U gaat uw veranderingen annuleren!"
+msgstr "Je gaat je veranderingen annuleren!"
 
 #: FFileProperty.class:164 FProjectProperty.class:1368
 msgid "Modules"
@@ -1783,7 +1779,7 @@ msgstr "Het formulier is veranderd.\n\nAll uw veranderingen gaan verloren."
 
 #: FForm.form:131
 msgid "Select"
-msgstr "Selecteren"
+msgstr "Selecteer"
 
 #: FForm.form:136
 msgid "Event"
@@ -1945,15 +1941,15 @@ msgstr "Verplaats tab naar rechts"
 msgid "Move tab last"
 msgstr "Verplaatst laatste tab"
 
-#: FForm.form:707 FOption.form:219
+#: FForm.form:707 FOption.form:220
 msgid "Bold"
 msgstr "Vet"
 
-#: FForm.form:715 FOption.form:223
+#: FForm.form:715 FOption.form:224
 msgid "Italic"
 msgstr "Cursief"
 
-#: FForm.form:723 FOption.form:227
+#: FForm.form:723 FOption.form:228
 msgid "Underline"
 msgstr "Onderstrepen"
 
@@ -1965,11 +1961,11 @@ msgstr "Grotere lettertype"
 msgid "Smaller font"
 msgstr "Kleiner lettertype"
 
-#: FForm.form:747 FOption.form:255
+#: FForm.form:747 FOption.form:371
 msgid "Default font"
 msgstr "Standaard lettertype"
 
-#: FForm.form:755 FOption.form:563 MTheme.module:6
+#: FForm.form:755 FOption.form:680 MTheme.module:6
 msgid "Background"
 msgstr "Achtergrond"
 
@@ -2007,7 +2003,7 @@ msgstr "Standaard taal"
 
 #: FHelpBrowser.form:29 FMain.form:1089
 msgid "Help browser"
-msgstr "-"
+msgstr "Help browser"
 
 #: FHelpBrowser.form:40 FMain.form:672 FProfile.form:48
 msgid "Go back"
@@ -2309,7 +2305,7 @@ msgstr "-"
 msgid "Preview"
 msgstr "Voorbeeld"
 
-#: FImageProperty.form:571 FOption.form:1135 FProjectProperty.form:395
+#: FImageProperty.form:571 FOption.form:1324 FProjectProperty.form:395
 msgid "Reset"
 msgstr "-"
 
@@ -2395,7 +2391,7 @@ msgstr "(Automatische sleutel)"
 
 #: FImportTable.class:271
 msgid "Field_&1"
-msgstr "-"
+msgstr "Veld_&1"
 
 #: FImportTable.class:385
 msgid "Not enough values"
@@ -2419,7 +2415,7 @@ msgstr "Een record is geïmporteerd."
 
 #: FImportTable.class:424
 msgid "&1 records imported."
-msgstr "&1 records geimporteerd."
+msgstr "&1 records geïmporteerd."
 
 #: FImportTable.form:38
 msgid "Import file"
@@ -2463,7 +2459,7 @@ msgstr "De eerste regel bevat de veld namen"
 
 #: FImportTable.form:175
 msgid "Key field"
-msgstr "Sleutel veld"
+msgstr "Sleutelveld"
 
 #: FImportTable.form:195
 msgid "Messages"
@@ -2471,7 +2467,7 @@ msgstr "Berichten"
 
 #: FList.class:103
 msgid "Item &1"
-msgstr "-"
+msgstr "Element &1"
 
 #: FList.class:153
 msgid "Do you really want to clear the list?"
@@ -2583,7 +2579,7 @@ msgstr "Recent geopend"
 
 #: FMain.form:278
 msgid "Open example"
-msgstr "Openen voorbeeld"
+msgstr "Open voorbeeld"
 
 #: FMain.form:286 FWelcome.class:66
 msgid "Open file"
@@ -2659,7 +2655,7 @@ msgstr "Component eigenschappen"
 
 #: FMain.form:486
 msgid "Version control"
-msgstr "Versie controle"
+msgstr "Versiecontrole"
 
 #: FMain.form:497
 msgid "Run"
@@ -2671,7 +2667,7 @@ msgstr "Gebruik terminal emulator"
 
 #: FMain.form:510 FProjectProperty.form:775
 msgid "Redirect standard error output"
-msgstr "-"
+msgstr "Standaard fouten uitvoer omleiden"
 
 #: FMain.form:516 FProjectProperty.form:793
 msgid "Use embedded HTTP server"
@@ -2703,7 +2699,7 @@ msgstr "Stap"
 
 #: FMain.form:583
 msgid "Forward"
-msgstr "Volgende"
+msgstr "Voorwaarts"
 
 #: FMain.form:590
 msgid "Finish"
@@ -2765,11 +2761,11 @@ msgstr "Verzend project per mail"
 msgid "Update all forms"
 msgstr "Alle formulieren bijwerken"
 
-#: FMain.form:741 FOption.form:754
+#: FMain.form:741 FOption.form:871
 msgid "Shortcuts"
 msgstr "Sneltoetsen"
 
-#: FMain.form:747 FOption.form:197
+#: FMain.form:747 FOption.form:198
 msgid "Preferences"
 msgstr "Voorkeuren"
 
@@ -2787,7 +2783,7 @@ msgstr "Overig"
 
 #: FMain.form:850 FOpenProject.form:44
 msgid "Recent"
-msgstr "Opnieuw verzenden"
+msgstr "Recent"
 
 #: FMain.form:871
 msgid "Open in file manager"
@@ -2859,11 +2855,7 @@ msgstr "Toetsenbord snelkoppelingen"
 
 #: FMain.form:1112
 msgid "System informations"
-msgstr "Systeem informatie"
-
-#: FMain.form:1118 FWelcome.class:67
-msgid "About Gambas"
-msgstr "Over Gambas"
+msgstr "Systeeminformatie"
 
 #: FMain.form:1170 FProjectProperty.form:125
 msgid "Project properties"
@@ -2899,7 +2891,7 @@ msgstr "Toolbox"
 
 #: FMain.form:1290 FOutput.form:165 FSearch.form:62
 msgid "Search"
-msgstr "Zoek"
+msgstr "Zoeken"
 
 #: FMain.form:1314
 msgid "Compile all"
@@ -2983,7 +2975,7 @@ msgstr "Bestand of map"
 
 #: FMakeInstall.class:306 Package.module:199
 msgid "The packages have been successfully created."
-msgstr "De packages zijn succesvol gemaakt."
+msgstr "De pakketten zijn succesvol gemaakt."
 
 #: FMakeInstall.class:342
 msgid "Please enter your name."
@@ -2995,11 +2987,11 @@ msgstr "Geef je email adres a.u.b."
 
 #: FMakeInstall.class:360
 msgid "There is no CHANGELOG entry for this release."
-msgstr "Er is geen veranderingsbericht opgegeven voor deze uitgave."
+msgstr "Er is geen WIJZIGINGSLOG opgegeven voor deze uitgave."
 
 #: FMakeInstall.class:367
 msgid "Please enter the first CHANGELOG entry."
-msgstr "Geef de eerste CHANGLOG vermelding."
+msgstr "Geef de eerste WIJZIGINGSLOG vermelding."
 
 #: FMakeInstall.class:378
 msgid "Please choose at least one target distribution."
@@ -3031,11 +3023,11 @@ msgstr "Kies a.u.b een doelmap voor ieder extra bestand."
 
 #: FMakeInstall.class:468
 msgid "The package cannot be stored inside the project directory."
-msgstr "Het pakket kan niet worden opgeslagen in de project directorie."
+msgstr "Het pakket kan niet worden opgeslagen in de project map."
 
 #: FMakeInstall.class:506
 msgid "Initial release"
-msgstr "Eerste uitgave"
+msgstr "Initiële uitgave"
 
 #: FMakeInstall.class:752
 msgid "Menus"
@@ -3069,31 +3061,31 @@ msgstr "Pakket informatie"
 msgid "Package name"
 msgstr "Pakketnaam"
 
-#: FMakeInstall.form:151 FOption.form:1081
+#: FMakeInstall.form:151 FOption.form:344
 msgid "Prefix package name with the vendor name"
 msgstr "Gebruik verkoper naam als voorvoegsel voor pakketnaam"
 
 #: FMakeInstall.form:158
 msgid "Package version"
-msgstr "Pakket versie"
+msgstr "Pakketversie"
 
 #: FMakeInstall.form:173
 msgid "Maintainer information"
-msgstr "Onderhouder informatie"
+msgstr "Onderhouderinformatie"
 
-#: FMakeInstall.form:200 FOption.form:1031
+#: FMakeInstall.form:200 FOption.form:272
 msgid "E-mail"
 msgstr "-"
 
-#: FMakeInstall.form:216 FOption.form:1015
+#: FMakeInstall.form:216 FOption.form:294
 msgid "Vendor name"
 msgstr "Naam verkoper"
 
-#: FMakeInstall.form:232 FOption.form:1065
+#: FMakeInstall.form:232 FOption.form:328
 msgid "URL"
 msgstr "-"
 
-#: FMakeInstall.form:269 FOption.form:1047
+#: FMakeInstall.form:269
 msgid "License"
 msgstr "Licentie"
 
@@ -3230,7 +3222,7 @@ msgid "Automatic patch name"
 msgstr "Automatische patch naam"
 
 #: FMakePatch.form:76
-msgid "Edit Patch"
+msgid "Edit patch"
 msgstr "Patch bewerken"
 
 #: FMakePatch.form:87
@@ -3247,15 +3239,11 @@ msgstr "-"
 
 #: FMakePatch.form:97 Project.module:4485
 msgid "Source packages"
-msgstr "Bron code package"
+msgstr "Broncode pakketten"
 
 #: FMakePatch.form:101
 msgid "Select project directory"
 msgstr "Selecteer project map"
-
-#: FMakePatch.form:110
-msgid "Edit patch"
-msgstr "Patch bewerken"
 
 #: FMakePatch.form:118
 msgid "Choose patch file name"
@@ -3275,7 +3263,7 @@ msgstr "Menus zijn gewijzigd!"
 
 #: FMenu.class:306
 msgid "Please enter a menu name."
-msgstr "Geef een menu naam. "
+msgstr "Voer een menu naam in. "
 
 #: FMenu.class:312
 msgid "Bad menu name !"
@@ -3319,7 +3307,7 @@ msgstr "Voer de naam van de database in."
 
 #: FNewConnection.class:129
 msgid "Please enter password"
-msgstr "Voer je paswoord in"
+msgstr "Voer je wachtwoord in"
 
 #: FNewConnection.class:131
 msgid "Connection properties"
@@ -3335,7 +3323,7 @@ msgstr "Creëer database '&1'"
 
 #: FNewConnection.class:201
 msgid "Delete database '&1'"
-msgstr "Verwijder database '1'"
+msgstr "Verwijder database '&1'"
 
 #: FNewConnection.class:325
 msgid "Unable to create database."
@@ -3445,349 +3433,353 @@ msgstr "Sapphire"
 msgid "Visual"
 msgstr "-"
 
-#: FOption.class:75
+#: FOption.class:81
 msgid "Select a theme"
 msgstr "Selecteer een thema"
 
-#: FOption.class:76
+#: FOption.class:82
 msgid "Desktop"
 msgstr "Bureaublad"
 
-#: FOption.class:77 FTranslate.class:134
+#: FOption.class:83 FTranslate.class:134
 msgid "(Default)"
 msgstr "(Standaard)"
 
-#: FOption.class:142
+#: FOption.class:155
 msgid "Define..."
 msgstr "Definieer..."
 
-#: FOption.class:184
+#: FOption.class:190
 msgid "Gambas highlight theme files"
 msgstr "Gambas accentueer thema bestanden"
 
-#: FOption.class:185
+#: FOption.class:191
 msgid "Export a theme file"
 msgstr "Exporteer een thema bestand"
 
-#: FOption.class:356
+#: FOption.class:362
 msgid "Select a theme file"
 msgstr "Selecteer een thema bestand"
 
-#: FOption.class:379
+#: FOption.class:385
 msgid "You need to restart the application to see your changes."
-msgstr "U moet de applicatie herstarten om uw wijzigingen te zien."
+msgstr "Je dient de applicatie te herstarten om je wijzigingen te zien."
 
-#: FOption.class:706
+#: FOption.class:712
 msgid "Do you really want to clear the documentation cache?"
 msgstr "Weet je zeker dat je de document cache wilt wissen ?"
 
-#: FOption.class:715
+#: FOption.class:721
 msgid "Unable to clear documentation cache."
 msgstr "Niet in staat om documentatie cache te wissen "
 
-#: FOption.class:895
+#: FOption.class:901
 msgid "Do you really want to delete this snippet?"
 msgstr "Weet je zeker dat je dit snippet wilt verwijderen ?"
 
-#: FOption.class:1067
+#: FOption.class:1073
 msgid "Do you really want to reset the list to its default value?"
 msgstr "Weet je zeker dat je de lijst wil terug zetten naar zijn standaard waarden?"
 
-#: FOption.class:1154
+#: FOption.class:1160
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr "Weet je zeker dat je het Gambas lettertype in je persoonlijke lettertype map wilt installeren?"
 
-#: FOption.class:1154
+#: FOption.class:1160
 msgid "Install"
 msgstr "Installeer"
 
-#: FOption.class:1257
+#: FOption.class:1263
 msgid "Unable to download documentation."
 msgstr "Niet in staat om documentatie te downloaded."
 
-#: FOption.class:1264
+#: FOption.class:1270
 msgid "Unable to uncompress documentation."
 msgstr "Niet in staat om documentatie te comprimeren."
 
-#: FOption.class:1287
+#: FOption.class:1293
 msgid "Network is not available."
 msgstr "Netwerk is niet beschikbaar."
 
-#: FOption.class:1292
+#: FOption.class:1298
 msgid "Documentation is up to date."
 msgstr "Documentatie is actueel"
 
-#: FOption.class:1297
+#: FOption.class:1303
 msgid "A new documentation is available!"
 msgstr "Een nieuw document is beschikbaar!"
 
-#: FOption.class:1302 MHelp.module:868
+#: FOption.class:1308 MHelp.module:868
 msgid "Documentation is not available."
 msgstr "Documentatie is niet beschikbaar"
 
-#: FOption.form:208
+#: FOption.form:209
 msgid "Foreground color"
 msgstr "Voorgrond kleur"
 
-#: FOption.form:212
+#: FOption.form:213
 msgid "Background color"
 msgstr "Achtergrond kleur"
 
-#: FOption.form:238
-msgid "Interface"
-msgstr "Interface"
+#: FOption.form:239
+msgid "Identity"
+msgstr "Identiteit"
 
-#: FOption.form:244
-msgid "Fonts"
-msgstr "Lettertypen"
+#: FOption.form:283
+msgid "Package maintainer"
+msgstr "Pakket onderhouder"
 
-#: FOption.form:278
-msgid "Global size"
-msgstr "Globale grootte"
+#: FOption.form:310
+msgid "Default license"
+msgstr "Standaard licentie"
 
-#: FOption.form:300
-msgid "Title size"
-msgstr "Afmeting titel"
-
-#: FOption.form:358
-msgid "Install Gambas font for code edition"
-msgstr "Installeer Gambas lettertype voor code editie"
-
-#: FOption.form:365 Project.module:211
-msgid "Miscellaneous"
-msgstr "Diversen"
-
-#: FOption.form:376
-msgid "Sort properties"
-msgstr "Sorteer eigenschappen"
-
-#: FOption.form:393
-msgid "Minimize at runtime"
-msgstr "Minimaliseer tijdens uitvoering"
-
-#: FOption.form:410
-msgid "Use utility windows"
-msgstr "Gebruik utility venster"
-
-#: FOption.form:427
-msgid "Toolbox size"
-msgstr "Afmeting gereedschapskist"
-
-#: FOption.form:433 FProjectProperty.form:242
-msgid "Normal"
-msgstr "Normaal"
-
-#: FOption.form:433
-msgid "Small"
-msgstr "Klein"
-
-#: FOption.form:445
-msgid "Restore files when loading a project"
-msgstr "Herstel bestanden bij laden van een project"
-
-#: FOption.form:462
-msgid "Show tooltips"
-msgstr "Toon tooltips"
-
-#: FOption.form:479
-msgid "Show file name in window title"
-msgstr "Toon bestandsnaam in venster titel"
-
-#: FOption.form:488
-msgid "Theme"
-msgstr "Thema"
-
-#: FOption.form:505
-msgid "Icon theme"
-msgstr "Icoon thema"
-
-#: FOption.form:521
-msgid "Color theme"
-msgstr "Kleuren thema"
-
-#: FOption.form:535
-msgid "Import theme"
-msgstr "Importeer thema"
-
-#: FOption.form:541
-msgid "Export theme"
-msgstr "Exporteer thema"
-
-#: FOption.form:598
-msgid "Default tab size"
-msgstr "Aanbevolen tab grootte"
-
-#: FOption.form:610 FProjectProperty.form:620
-msgid "space(s)"
-msgstr "spatie(s)"
-
-#: FOption.form:622
-msgid "Procedure separation"
-msgstr "Procedure afscheiding"
-
-#: FOption.form:628
-msgid "Blend"
-msgstr "Invoegen"
-
-#: FOption.form:628 FProperty.class:778
-msgid "None"
-msgstr "Geen"
-
-#: FOption.form:640
-msgid "Highlight current line"
-msgstr "Accentueer huidige regel"
-
-#: FOption.form:657
-msgid "Highlight modified lines"
-msgstr "Accentueer veranderde regels"
-
-#: FOption.form:674
-msgid "Show line numbers"
-msgstr "Toon lijn nummers"
-
-#: FOption.form:691
-msgid "Show spaces at end of line with dots"
-msgstr "Toon spaties aan het einde van een regel met punten"
-
-#: FOption.form:708
-msgid "Procedure folding"
-msgstr "Procedure inklappen"
-
-#: FOption.form:725
-msgid "Fold procedures by default"
-msgstr "Procedures standaard inklappen"
-
-#: FOption.form:742
-msgid "Keywords in upper case"
-msgstr "Sleutelwoorden in hoofdletters"
-
-#: FOption.form:764
-msgid "Configure shortcuts"
-msgstr "Configureer snelkoppelingen"
-
-#: FOption.form:769
-msgid "Code formatting"
-msgstr "Code formatering"
-
-#: FOption.form:775
-msgid "Automatic formatting"
-msgstr "Automatische formatering"
-
-#: FOption.form:786
-msgid "Control structure automatic completion"
-msgstr "Control structuur automatisch vervolledigen"
-
-#: FOption.form:803
-msgid "Local variable automatic declaration"
-msgstr "Lokale variabelen automatische declaratie"
-
-#: FOption.form:820
-msgid "Comments automatic insertion"
-msgstr "Automatisch toelichtingen invoeging"
-
-#: FOption.form:832
-msgid "Explicit formating"
-msgstr "Expliciete formatering"
-
-#: FOption.form:843
-msgid "Format on load & save"
-msgstr "Formaat bij laden & opslaan"
-
-#: FOption.form:860
-msgid "Indent local variable declaration"
-msgstr "Lokale variabele declaratie inspringen"
-
-#: FOption.form:877
-msgid "Remove useless spaces at end of line"
-msgstr "Verwijder overbodige spaties aan het einde van de regel"
-
-#: FOption.form:894
-msgid "Keep successive void lines"
-msgstr "Hou opeenvolgende lege regels"
-
-#: FOption.form:903
-msgid "Code snippets"
-msgstr "-"
-
-#: FOption.form:920
-msgid "Activate code snippets"
-msgstr "Activeer code snippets"
-
-#: FOption.form:982
-msgid "Packaging"
-msgstr "-"
-
-#: FOption.form:988
-msgid "Default maintainer information"
-msgstr "Standaard informatie onderhouder "
-
-#: FOption.form:1087 FProjectProperty.form:645 FPropertyComponent.form:99
+#: FOption.form:350 FProjectProperty.form:645 FPropertyComponent.form:99
 msgid "No"
 msgstr "Nee"
 
-#: FOption.form:1087 FProjectProperty.form:645 FPropertyComponent.form:99
+#: FOption.form:350 FProjectProperty.form:645 FPropertyComponent.form:99
 msgid "Yes"
 msgstr "Ja"
 
-#: FOption.form:1094
-msgid "Source archives"
-msgstr "Broncode archieven"
+#: FOption.form:354
+msgid "Interface"
+msgstr "Interface"
 
-#: FOption.form:1101
-msgid "These files will be ignored when making source archives."
-msgstr "Deze bestanden worden genegeerd bij het maken van broncode archieven."
+#: FOption.form:360
+msgid "Fonts"
+msgstr "Lettertypen"
 
-#: FOption.form:1141
+#: FOption.form:394
+msgid "Global size"
+msgstr "Globale grootte"
+
+#: FOption.form:416
+msgid "Title size"
+msgstr "Afmeting titel"
+
+#: FOption.form:474
+msgid "Install Gambas font for code edition"
+msgstr "Installeer Gambas lettertype voor code editie"
+
+#: FOption.form:481 Project.module:211
+msgid "Miscellaneous"
+msgstr "Diversen"
+
+#: FOption.form:492
+msgid "Sort properties"
+msgstr "Sorteer eigenschappen"
+
+#: FOption.form:509
+msgid "Minimize at runtime"
+msgstr "Minimaliseer tijdens uitvoering"
+
+#: FOption.form:526
+msgid "Use utility windows"
+msgstr "Gebruik utility venster"
+
+#: FOption.form:543
+msgid "Toolbox size"
+msgstr "Afmeting gereedschapskist"
+
+#: FOption.form:549 FProjectProperty.form:242
+msgid "Normal"
+msgstr "Normaal"
+
+#: FOption.form:549
+msgid "Small"
+msgstr "Klein"
+
+#: FOption.form:561
+msgid "Restore files when loading a project"
+msgstr "Herstel bestanden bij laden van een project"
+
+#: FOption.form:578
+msgid "Show tooltips"
+msgstr "Toon tooltips"
+
+#: FOption.form:595
+msgid "Show file name in window title"
+msgstr "Toon bestandsnaam in venster titel"
+
+#: FOption.form:604
+msgid "Theme"
+msgstr "Thema"
+
+#: FOption.form:621
+msgid "Icon theme"
+msgstr "Icoon thema"
+
+#: FOption.form:637
+msgid "Color theme"
+msgstr "Kleuren thema"
+
+#: FOption.form:651
+msgid "Import theme"
+msgstr "Importeer thema"
+
+#: FOption.form:657
+msgid "Export theme"
+msgstr "Exporteer thema"
+
+#: FOption.form:715
+msgid "Default tab size"
+msgstr "Standaard tab grootte"
+
+#: FOption.form:727 FProjectProperty.form:620
+msgid "space(s)"
+msgstr "spatie(s)"
+
+#: FOption.form:739
+msgid "Procedure separation"
+msgstr "Procedure afscheiding"
+
+#: FOption.form:745
+msgid "Blend"
+msgstr "Mengen"
+
+#: FOption.form:745 FProperty.class:778
+msgid "None"
+msgstr "Geen"
+
+#: FOption.form:757
+msgid "Highlight current line"
+msgstr "Accentueer huidige regel"
+
+#: FOption.form:774
+msgid "Highlight modified lines"
+msgstr "Accentueer veranderde regels"
+
+#: FOption.form:791
+msgid "Show line numbers"
+msgstr "Toon lijnnummers"
+
+#: FOption.form:808
+msgid "Show spaces at end of line with dots"
+msgstr "Toon spaties aan het einde van een regel met punten"
+
+#: FOption.form:825
+msgid "Procedure folding"
+msgstr "Procedure inklappen"
+
+#: FOption.form:842
+msgid "Fold procedures by default"
+msgstr "Procedures standaard inklappen"
+
+#: FOption.form:859
+msgid "Keywords in upper case"
+msgstr "Sleutelwoorden in hoofdletters"
+
+#: FOption.form:881
+msgid "Configure shortcuts"
+msgstr "Configureer snelkoppelingen"
+
+#: FOption.form:886
 msgid "Help & applications"
 msgstr "Help & applicaties"
 
-#: FOption.form:1147 MTheme.module:6
+#: FOption.form:892 MTheme.module:6
 msgid "Help"
 msgstr "Help"
 
-#: FOption.form:1158
+#: FOption.form:903
 msgid "Display property help"
 msgstr "Eigenschappen help weergeven"
 
-#: FOption.form:1175
+#: FOption.form:920
 msgid "Show documentation in popups"
 msgstr "Toon documentatie in popups"
 
-#: FOption.form:1192
+#: FOption.form:937
 msgid "Always display optional messages"
 msgstr "Optionele boodschappen altijd laten zien"
 
-#: FOption.form:1209
+#: FOption.form:954
 msgid "Use offline help"
 msgstr "Gebruik offline hulp"
 
-#: FOption.form:1227
+#: FOption.form:972
 msgid "Download documentation"
 msgstr "Documentatie downloaden"
 
-#: FOption.form:1245
+#: FOption.form:990
 msgid "Clear documentation cache"
 msgstr "Wis documentatie cache"
 
-#: FOption.form:1257 FProxy.form:20
+#: FOption.form:1002 FProxy.form:20
 msgid "Proxy configuration"
 msgstr "Proxy configuratie"
 
-#: FOption.form:1265
+#: FOption.form:1010
 msgid "Applications"
 msgstr "Toepassingen"
 
-#: FOption.form:1276
+#: FOption.form:1021
 msgid "Browser"
 msgstr "Browser"
 
-#: FOption.form:1293
+#: FOption.form:1038
 msgid "Terminal"
 msgstr "Terminal"
 
-#: FOption.form:1310
+#: FOption.form:1055
 msgid "Quiet external commands"
 msgstr "Stille externe commandos"
+
+#: FOption.form:1064
+msgid "Code formatting"
+msgstr "Code formatering"
+
+#: FOption.form:1070
+msgid "Automatic formatting"
+msgstr "Automatische formatering"
+
+#: FOption.form:1081
+msgid "Control structure automatic completion"
+msgstr "Control structuur automatisch vervolledigen"
+
+#: FOption.form:1098
+msgid "Local variable automatic declaration"
+msgstr "Lokale variabelen automatische declaratie"
+
+#: FOption.form:1115
+msgid "Comments automatic insertion"
+msgstr "Automatisch toelichtingen invoeging"
+
+#: FOption.form:1127
+msgid "Explicit formating"
+msgstr "Expliciete formatering"
+
+#: FOption.form:1138
+msgid "Format on load & save"
+msgstr "Formaat bij laden & opslaan"
+
+#: FOption.form:1155
+msgid "Indent local variable declaration"
+msgstr "Lokale variabele declaratie inspringen"
+
+#: FOption.form:1172
+msgid "Remove useless spaces at end of line"
+msgstr "Verwijder overbodige spaties aan het einde van de regel"
+
+#: FOption.form:1189
+msgid "Keep successive void lines"
+msgstr "Hou opeenvolgende lege regels"
+
+#: FOption.form:1198
+msgid "Code snippets"
+msgstr "-"
+
+#: FOption.form:1215
+msgid "Activate code snippets"
+msgstr "Activeer code snippets"
+
+#: FOption.form:1277
+msgid "Source archives"
+msgstr "Broncode archieven"
+
+#: FOption.form:1290
+msgid "These files will be ignored when making source archives."
+msgstr "Deze bestanden worden genegeerd bij het maken van broncode archieven."
 
 #: FOutput.form:35
 msgid "Console - Gambas"
@@ -3923,7 +3915,7 @@ msgstr "Niet vertaalbaar"
 
 #: FProjectProperty.class:138
 msgid "Variable"
-msgstr "Variabel"
+msgstr "Variabele"
 
 #: FProjectProperty.class:267
 msgid "Snapping value is incorrect."
@@ -4027,7 +4019,7 @@ msgstr "Argumenten"
 
 #: FProjectProperty.form:554
 msgid "Environment variables"
-msgstr "Omgevings variabelen"
+msgstr "Omgevingsvariabelen"
 
 #: FProjectProperty.form:574
 msgid "&Insert"
@@ -4171,11 +4163,11 @@ msgstr "De gebeurtenis groep waar de control bij hoort."
 
 #: FProperty.class:632
 msgid "If the form and controls dimensions must follow the size of the default font."
-msgstr "Of het formulier en controls dimensies de grootte van het standaard lettertype dienen te volgen."
+msgstr "Of het formulier en controle dimensies de grootte van het standaard lettertype dienen te volgen."
 
 #: FProperty.class:636
 msgid "If the control is public."
-msgstr "Of de control publiek is."
+msgstr "Of de controle publiek is."
 
 #: FProperty.class:640
 msgid "If the Text property must be translated."
@@ -4227,7 +4219,7 @@ msgstr "Standaard proxy"
 
 #: FProxy.form:76
 msgid "HTTP proxy"
-msgstr "-"
+msgstr "HTTP proxy"
 
 #: FProxy.form:76
 msgid "No proxy"
@@ -4287,7 +4279,7 @@ msgstr "De volgende bestanden zijn gewijzigd. Wil je ze opslaan?"
 
 #: FSaveProjectAs.class:38
 msgid "Cannot save a project inside its own directory."
-msgstr "Kan geen project opslaan in zijn eigen directory."
+msgstr "Kan geen project opslaan in zijn eigen map."
 
 #: FSaveProjectAs.class:63
 msgid "Unable to save the project."
@@ -4323,7 +4315,7 @@ msgstr "Weet je zeker dat je alle strings wilt vervangen?"
 
 #: FSearch.form:43
 msgid "Search & Replace"
-msgstr "Zoek en vervang"
+msgstr "Zoeken en vervangen"
 
 #: FSearch.form:106
 msgid "Case sensitive"
@@ -4335,7 +4327,7 @@ msgstr "Enkel woorden"
 
 #: FSearch.form:116
 msgid "Regular expression"
-msgstr "Reguliere expressies"
+msgstr "Reguliere expressie"
 
 #: FSearch.form:121
 msgid "Highlight result"
@@ -4363,7 +4355,7 @@ msgstr "Huidig bestand"
 
 #: FSearch.form:166
 msgid "Source files"
-msgstr "Bron bestanden"
+msgstr "Broncode bestanden"
 
 #: FSearch.form:205
 msgid "Browse"
@@ -4383,7 +4375,7 @@ msgstr "SVG beeldbestand"
 
 #: FSelectIcon.class:32
 msgid "Image files"
-msgstr "Beeldbestanden"
+msgstr "Afbeeldingsbestanden"
 
 #: FSelectIcon.form:18
 msgid "Select a picture"
@@ -4415,11 +4407,11 @@ msgstr "-"
 
 #: FSystemInfo.form:17
 msgid "System information"
-msgstr "Systeem informatie"
+msgstr "Systeeminformatie"
 
 #: FSystemInfo.form:41
 msgid "Please copy these informations in all your bug reports."
-msgstr "Kopiëer deze informatie in al je bug rapporten."
+msgstr "Kopiëer a.u.b. deze informatie in al je bug rapporten."
 
 #: FTableChooser.form:16
 msgid "Choose a table"
@@ -4487,7 +4479,7 @@ msgstr "Taal"
 
 #: FTranslate.class:152
 msgid "Translation files"
-msgstr "Vertaalde bestanden"
+msgstr "Vertalingsbestanden"
 
 #: FTranslate.class:284
 msgid "Cannot read translation file for language '&1'"
@@ -4531,11 +4523,11 @@ msgstr "Kan vertaalbestand niet laden."
 
 #: FTranslate.class:951
 msgid "Translated string symbols do not match untranslated string ones."
-msgstr "Vertaalde en onvertaalde tekst symbolen komen niet overeen."
+msgstr "Vertaalde en onvertaalde string symbolen komen niet overeen."
 
 #: FTranslate.class:964
 msgid "Everything seems to be correct."
-msgstr "Alles lijkt korrect te zijn."
+msgstr "Alles lijkt correct te zijn."
 
 #: FTranslate.class:987
 msgid "&1 strings. Everything is translated!"
@@ -4575,7 +4567,7 @@ msgstr "Wis deze vertaling"
 
 #: FTranslate.form:171
 msgid "This string must not be translated"
-msgstr "Deze text moet niet vertaald worden"
+msgstr "Deze string moet niet vertaald worden"
 
 #: FTranslate.form:177
 msgid "Copy untranslated string"
@@ -4607,7 +4599,7 @@ msgstr "Nieuw project..."
 
 #: FWelcome.class:64
 msgid "Recent projects"
-msgstr "Recente projects"
+msgstr "Recente projecten"
 
 #: FWelcome.form:27
 msgid "Welcome to Gambas 3"
@@ -5195,11 +5187,11 @@ msgstr "Inhoud reeds gewist"
 
 #: MErrorMessage.module:81
 msgid "Default case already defined"
-msgstr ""
+msgstr "Standaard case al gedefinieerd"
 
 #: MErrorMessage.module:82
 msgid "Default case must be the last one"
-msgstr ""
+msgstr "Standaard case dient de laatste te zijn"
 
 #: MErrorMessage.module:83
 msgid "Device is full"
@@ -5483,7 +5475,7 @@ msgstr "Stapelregister is vol"
 
 #: MErrorMessage.module:153
 msgid "Standard type"
-msgstr "Standaard typen"
+msgstr "Standaard type"
 
 #: MErrorMessage.module:154
 msgid "Stream is closed"
@@ -5627,7 +5619,7 @@ msgstr "De speciale methode &1 kan niet worden geïmplementeerd"
 
 #: MErrorMessage.module:190
 msgid "The special method &1 cannot be static"
-msgstr "De speciale methode &1 moet STATIC zijn"
+msgstr "De speciale methode &1 kan niet STATIC zijn"
 
 #: MErrorMessage.module:191
 msgid "The special method &1 must be a function"
@@ -5739,7 +5731,7 @@ msgstr "Teveel locale variabelen"
 
 #: MErrorMessage.module:218
 msgid "Too many nested control structures."
-msgstr "Teveel geneste control structuren."
+msgstr "Teveel geneste controle structuren."
 
 #: MErrorMessage.module:219
 msgid "Too many property synonymous"
@@ -5803,7 +5795,7 @@ msgstr "Onbekende fout"
 
 #: MErrorMessage.module:234
 msgid "Unknown file extension"
-msgstr "Onbekende bestands extensie"
+msgstr "Onbekende bestandsextensie"
 
 #: MErrorMessage.module:235
 msgid "Unknown identifier: &1"
@@ -5823,7 +5815,7 @@ msgstr "Onbekende gebruiker of groep"
 
 #: MErrorMessage.module:239
 msgid "Unsupported datatype"
-msgstr "Niet ondersteunde datatype"
+msgstr "Niet ondersteund datatype"
 
 #: MErrorMessage.module:240
 msgid "Unsupported string conversion"
@@ -5971,7 +5963,7 @@ msgstr "Bewerken regel"
 
 #: MTheme.module:6
 msgid "Errors"
-msgstr "Foutmeldingen"
+msgstr "Fouten"
 
 #: MTheme.module:6
 msgid "Highlighting"
@@ -5999,7 +5991,7 @@ msgstr "-"
 
 #: MTheme.module:6
 msgid "Strings"
-msgstr "Tekenreeksen"
+msgstr "-"
 
 #: MTheme.module:6
 msgid "Subroutines"
@@ -6019,11 +6011,11 @@ msgstr "'&1' en '&2' missen."
 
 #: Package.module:172
 msgid "Saving CHANGELOG file."
-msgstr "Opslaan CHANGELOG bestand."
+msgstr "Opslaan WIJZIGINGSLOG bestand."
 
 #: Package.module:543
 msgid "Making &1 support package..."
-msgstr "Maak &1 ondersteuningspakket"
+msgstr "&1 ondersteuningspakke maken..."
 
 #: Package.module:581
 msgid "Creating package for &1."
@@ -6031,11 +6023,11 @@ msgstr "Pakket aanmaken voor &1."
 
 #: Package.module:612
 msgid "The package build has failed."
-msgstr "Het package maken is mislukt."
+msgstr "Het pakket maken is mislukt."
 
 #: Package.module:644
 msgid "Making build directory."
-msgstr "Maak bouwdirectorie."
+msgstr "Bouwdirectorie maken."
 
 #: Package.module:672
 msgid "Creating desktop file..."
@@ -6079,7 +6071,7 @@ msgstr "De map is geen Gambas project"
 
 #: Patch.class:52
 msgid "Unsupported source archive format"
-msgstr "Niet ondersteund formaat bronarchief"
+msgstr "Niet ondersteund formaat broncode archief"
 
 #: Patch.class:179
 msgid "Patch didn't apply:\n"
@@ -6103,7 +6095,7 @@ msgstr "Spellen"
 
 #: Project.module:212
 msgid "Networking"
-msgstr "Netwerkprogramma's"
+msgstr "Netwerken"
 
 #: Project.module:213
 msgid "OpenGL"
@@ -6183,7 +6175,7 @@ msgstr "Het project is in alleen lees mode."
 
 #: Project.module:513
 msgid "Copying project inside a temporary directory..."
-msgstr "Kopieer project naar een tijdelijke directory..."
+msgstr "Kopieer project in een tijdelijke directory..."
 
 #: Project.module:516
 msgid "Unable to create temporary directory"
@@ -6287,7 +6279,7 @@ msgstr "Kan bestand niet schrijf beveiligen."
 
 #: Project.module:3644
 msgid "Unable to create desktop shortcut."
-msgstr "Niet mogelijk om snelkoppeling op bureaublad aan te maken."
+msgstr "Niet in staat om snelkoppeling op bureaublad aan te maken."
 
 #: Project.module:3899
 msgid "The directory will be removed at the next commit."
@@ -6295,11 +6287,11 @@ msgstr "De map wordt verwijdert bij de volgende 'commit'."
 
 #: Project.module:3916
 msgid "You must define a startup class or form!"
-msgstr "Je moet een startup klass of formulier opgeven!"
+msgstr "Je dient een startup klass of formulier op te geven!"
 
 #: Project.module:3947
 msgid "Please type a name."
-msgstr "Typ aub een naam."
+msgstr "Voer aub een naam in."
 
 #: Project.module:3951
 msgid "This name contains a forbidden character:"
@@ -6347,11 +6339,11 @@ msgstr "Dit project bestaat al."
 
 #: Project.module:4393
 msgid "The project directory already exists."
-msgstr "De project directorie bestaat al."
+msgstr "De project map bestaat al."
 
 #: Project.module:4395
 msgid "The project directory cannot be created because a file with the same name already exists."
-msgstr "De project directorie kan niet worden aangemaakt om er al een bestand bestaat met dezelfde naam."
+msgstr "De project map kan niet worden aangemaakt om er al een bestand bestaat met dezelfde naam."
 
 #: Project.module:4460
 msgid "Unable to create source archive."
@@ -6403,7 +6395,7 @@ msgstr "De volgende applicaties zijn niet geïnstalleerd op je systeem: &1"
 
 #: Project.module:5956
 msgid "Unable to read component description file."
-msgstr "Niet in staat om component onschrijvingsbestand te lezen."
+msgstr "Niet in staat om omschrijvingsbestand van component te lezen."
 
 #: Project.module:6005
 msgid "Cannot write component description file."
