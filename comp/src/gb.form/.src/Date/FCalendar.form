@@ -83,17 +83,20 @@
           Picture = Picture["icon:/small/clock"]
           Alignment = Align.Center
         }
-        { txtHour TextBox
-          MoveScaled(4,0,4,4)
+        { Panel3 Panel
+          MoveScaled(2,0,10,4)
+          Background = Color.TextBackground
           Expand = True
-          Alignment = Align.Right
-          Border = False
-        }
-        { txtMinute TextBox
-          MoveScaled(8,0,4,4)
-          Expand = True
-          Alignment = Align.Right
-          Border = False
+          { txtMinute TextBox
+            MoveScaled(4,0,4,4)
+            Alignment = Align.Right
+            Border = False
+          }
+          { txtHour TextBox
+            MoveScaled(0,0,4,4)
+            Alignment = Align.Right
+            Border = False
+          }
         }
         { btnOK ToolButton
           MoveScaled(13,0,4,4)

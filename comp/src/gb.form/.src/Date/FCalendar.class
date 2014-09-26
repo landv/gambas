@@ -563,6 +563,7 @@ Public Sub dwgTime_Draw()
   Dim X, Y, DX, DY, DW, DH As Integer
   Dim SW, SH As Float
   Dim sFormat As String = GetTimeFormat()
+  Dim sTime As String
   
   DW = dwgTime.W \ 4
   DH = dwgTime.H \ 12
@@ -570,7 +571,10 @@ Public Sub dwgTime_Draw()
   DY = (dwgTime.H - DH * 12) \ 2
   
   SH = (DH - 2) / Draw.Font.Height
-  SW = (DW - 4) / Draw.Font.TextWidth(GetTimeFormat())
+  sTime = GetTimeFormat()
+  sTime = Replace(sTime, "h", "0")
+  sTime = Replace(sTime, "n", "0")
+  SW = (DW - 6) / Draw.Font.TextWidth(sTime)
   Draw.Font.Size *= Min(SH, SW)
   
   Draw.FillColor = Color.ButtonBackground
@@ -762,7 +766,16 @@ Public Sub dwgTime_MouseMove()
   Dim iLast As Integer = $iCurrentTime
   
   CalcCurrentTime
-  If $iCurrentTime <> iLast Then dwgTime.Refresh
+
+  If $iCurrentTime < 0 Then
+    dwgTime.Mouse = Mouse.Default
+  Else
+    dwgTime.Mouse = Mouse.Pointing
+  Endif
+  
+  If $iCurrentTime <> iLast Then 
+    dwgTime.Refresh
+  Endif
 
 End
 

@@ -2242,7 +2242,7 @@ Public Sub txtSearchProject_KeyPress()
   Select Case Key.Code
     
     Case Key.Esc
-      btnSearchClear_Click
+      If txtSearch.Text Then btnSearchClear_Click
       Return
     
     Case Key.Up

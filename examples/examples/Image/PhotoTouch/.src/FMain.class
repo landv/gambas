@@ -229,7 +229,6 @@ Public Sub _new()
   CreateButtons(aButton, cTooltip, panToolbarBrowser)
   
   dwgPath = New DrawingArea(panToolbarBrowser) As "dwgPath"
-  dwgPath.Painted = True
   dwgPath.Expand = True
   dwgPath.Font = Font["Bold,+5"]
   
@@ -676,16 +675,18 @@ End
 
 Private Sub PaintOutlineText(sText As String, X As Float, Y As Float, W As Float, H As Float)
   
-  Dim I, J As Integer
+  ' Dim I, J As Integer
+  ' 
+  ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  ' For I = -1 To 1
+  '   For J = -1 To 1
+  '     Paint.DrawRichText(sText, X + I + 2, Y + J + 2, 4096, H - 4, Align.Left)
+  '   Next
+  ' Next
   
-  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
-  For I = -1 To 1
-    For J = -1 To 1
-      Paint.DrawRichText(sText, X + I + 2, Y + J + 2, 4096, H - 4, Align.Left)
-    Next
-  Next
-  'Paint.Fill
-  Paint.Brush = Paint.Color(Color.LightForeground)
+  Paint.Brush = Paint.Color(Color.Black)
+  Paint.DrawRichTextShadow(sText, X + 2, Y + 2, 4096, H - 4, Align.Left, 4)
+  Paint.Brush = Paint.Color(Color.White)
   Paint.DrawRichText(sText, X + 2, Y + 2, 4096, H - 4, Align.Left)
   
 End
@@ -1024,7 +1025,7 @@ Private Sub FillImageBrowser(Optional bNoWait As Boolean)
       With Stat($sDir &/ $aPath[I])
         sText = "<b>" & Html(File.Name($aPath[I])) & "</b><br>" & Format(.LastModified, gb.LongDate) & "<br>" & GetSize(.Size)
       End With
-      ivwImage.Add(I, sText, hImage.Picture)
+      ivwImage.Add(I, "", hImage.Picture).RichText = sText
       If (Timer - fLastTime) > 1 Then
         fLastTime = Timer
         Wait

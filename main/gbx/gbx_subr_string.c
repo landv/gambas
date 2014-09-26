@@ -921,7 +921,7 @@ void SUBR_tr(void)
 
 void SUBR_quote(ushort code)
 {
-	static void *jump[8] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64, &&__JAVASCRIPT, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL };
+	static void *jump[8] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64 }; //, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL };
 	char *str;
 	int lstr;
 	int i;
@@ -937,7 +937,7 @@ void SUBR_quote(ushort code)
 	
 	STRING_start_len(lstr);
 	
-	goto *jump[code & 0x7];
+	goto *jump[code & 0x3];
 	
 __QUOTE:
 	
@@ -1064,6 +1064,7 @@ __BASE64:
 
 	goto __END;
 
+#if 0
 __JAVASCRIPT:
 	{
 		STRING_make_char('\'');
@@ -1100,6 +1101,7 @@ __JAVASCRIPT:
 __ILLEGAL:
 
 	THROW_ILLEGAL();
+#endif
 
 __END:
 

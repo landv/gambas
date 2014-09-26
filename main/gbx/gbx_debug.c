@@ -432,8 +432,11 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 			goto __NORMAL;
 		
 		desc = CLASS_get_symbol_desc(class, "Key");
+		if (!desc)
+			goto __NORMAL;
+
 		type = CLASS_DESC_get_type(desc);
-		if (!desc || (type != CD_PROPERTY_READ && type != CD_PROPERTY && type != CD_STATIC_PROPERTY_READ && type != CD_STATIC_PROPERTY && type != CD_VARIABLE && type != CD_STATIC_VARIABLE))
+		if (type != CD_PROPERTY_READ && type != CD_PROPERTY && type != CD_STATIC_PROPERTY_READ && type != CD_STATIC_PROPERTY && type != CD_VARIABLE && type != CD_STATIC_VARIABLE)
 			goto __NORMAL;
 	}
 	

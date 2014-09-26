@@ -411,6 +411,9 @@ void *my_realloc(void *alloc, size_t new_len)
 	int size;
 	int new_size;
 	
+	if (!alloc)
+		return my_malloc(new_len);
+
 	ptr = alloc;
 	ptr--;
 	size = (int)*ptr;
