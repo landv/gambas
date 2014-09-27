@@ -2793,7 +2793,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		if (!real || !original)
 			goto _DESIGN;
 		#endif
-			
+
 		if (control->flag.no_keyboard)
 			goto _DESIGN;
 

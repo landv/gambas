@@ -1167,10 +1167,31 @@ Private Sub Compare_Write(Value As Integer)
 
 End
 
+Private Sub UpdateRenameBox() As Boolean
+
+  Dim hItem As _TreeView_Item
+  Dim X As Integer
+  Dim W As Integer
+  
+  If Not $hRenameBox Then Return
+  
+  hItem = $cItem[$sKeyRenaming]
+  
+  X = hItem.X - $hView.ScrollX
+  If hItem.Picture Then X += hItem.Picture.W + 2
+  W = $hView.Columns[0].Width - X
+  If W < 32 Then 
+    Cancel
+    Return
+  Endif
+  
+  $hRenameBox.Move(X, hItem.Y, W, hItem.H)
+
+End
+
 Public Sub _Rename(hItem As _TreeView_Item)
   
   Dim X As Integer
-  Dim W As Integer
   Dim SX As Integer
   
   _EnsureVisible(hItem)
@@ -1183,17 +1204,13 @@ Public Sub _Rename(hItem As _TreeView_Item)
     $hView.ScrollX = SX
   Loop
   
-  X -= SX
-  If hItem.Picture Then X += hItem.Picture.W + 2
-  W = $hView.ClientW - X
-  If W < 32 Then Return
-  
-  $hRenameBox = New RenameBox(Me) As "Editor"
-  $hRenameBox.Move(X, hItem.Y, W, hItem.H)
+  $hRenameBox = New RenameBox(Me, $hView.Padding) As "Editor"
   $hRenameBox.Text = hItem.Text
   $hRenameBox.SetFocus
   
   $sKeyRenaming = hItem.Key
+  
+  UpdateRenameBox
   
 End
 
@@ -1303,6 +1320,12 @@ Public Sub GridView_Sort()
 End
 
 Public Sub GridView_Scroll()
+  
+  Cancel
+  
+End
+
+Public Sub GridView_Arrange()
   
   Cancel
   
@@ -1428,6 +1451,7 @@ Public Sub GridView_ColumnSize(Column As Integer)
   Endif
   
   $hView.Columns[Column].W = W + 8
+  UpdateRenameBox
   
 End
 

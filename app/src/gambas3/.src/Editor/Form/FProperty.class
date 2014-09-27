@@ -842,6 +842,7 @@ Public Sub txtProperty_KeyPress()
 
         txtProperty.Text = ""
         SaveProperty
+        Stop Event
 
       Endif
     Endif
@@ -1250,5 +1251,11 @@ End
 Public Sub cmbProperty_MouseWheel()
 
   NextComboProperty(Mouse.Delta > 0)
+
+End
+
+Public Sub Form_Activate()
+
+  Project.SetCurrentPopup(Null)
 
 End

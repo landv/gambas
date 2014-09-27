@@ -7,12 +7,13 @@ Property Alignment As Integer
 
 Private $hTextArea As TextArea
 
-Public Sub _new()
+Public Sub _new(iPadding As Integer)
 
-  Me.Padding = 1
+  Me.Padding = Max(0, iPadding - 1)
   Me.Arrangement = Arrange.Fill
   Me.Ignore = True
-  Me.Background = Color.TextForeground
+  Me.Border = Border.Plain
+  Me.Background = Color.TextBackground
   
   $hTextArea = New TextArea(Me)
   $hTextArea.ScrollBar = Scroll.None

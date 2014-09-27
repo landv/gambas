@@ -843,8 +843,24 @@ End
 
 Private Sub Rename(sKey As String)
   
+  Dim hEditor As TextArea
+  Dim sText As String
+  Dim iLen As Integer
+  Dim sExt As String
+  
   $bInRename = True
   tvwProject[sKey].Rename
+  
+  Try hEditor = Application.ActiveControl
+  If Error Then Return
+  
+  sText = hEditor.Text
+  iLen = String.Len(sText) 
+  If sText Not Begins "." Then
+    sExt = File.Ext(sText)
+    If sExt Then iLen -= String.Len(sExt) + 1
+  Endif
+  hEditor.Select(0, iLen)
   
 End
 
