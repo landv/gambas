@@ -96,23 +96,15 @@ BEGIN_METHOD(Trie_put, GB_VARIANT value; GB_STRING key)
 	GB_VARIANT_VALUE *val;
 
 	if (VARG(value).type == GB_T_NULL) {
-		if (trie_remove(THIS->root, STRING(key), LENGTH(key),
-				value_dtor)) {
-			GB.Error(ERR_OOM);
-			return;
-		}
+		trie_remove(THIS->root, STRING(key), LENGTH(key),
+			    value_dtor);
 		UPDATE_TIME();
 		return;
 	}
 	GB.Alloc((void **) &val, sizeof(*val));
 	val->type = GB_T_NULL;
 	GB.StoreVariant(ARG(value), val);
-	if (trie_insert(THIS->root, STRING(key), LENGTH(key), val)) {
-		GB.StoreVariant(NULL, val);
-		GB.Free((void **) &val);
-		GB.Error(ERR_OOM);
-		return;
-	}
+	trie_insert(THIS->root, STRING(key), LENGTH(key), val);
 	UPDATE_TIME();
 
 END_METHOD
@@ -175,8 +167,13 @@ next:
 	node = top->node->children[top->idx];
 visit:
 	if (!top->visited) {
-		THIS->key = GB.AddString(THIS->key, top->node->key,
-					 top->node->len);
+		/* AddString() will take the root node's len == 0 as a
+		 * request to use strlen(). Make that a special case. */
+		if (top->node->len) {
+			THIS->key = GB.AddString(THIS->key,
+					top->node->key,
+					top->node->len);
+		}
 	} else {
 		struct stack *old = top;
 
@@ -270,11 +267,14 @@ BEGIN_METHOD(Trie_Complete, GB_STRING prefix)
 		return;
 	}
 
-	s = GB.TempString(STRING(prefix), LENGTH(prefix));
+	s = GB.NewString(STRING(prefix), LENGTH(prefix));
 	/* Again, we need to special-case p.node->len - p.i == 0. */
 	if (p.node->len - p.i)
 		s = GB.AddString(s, p.node->key + p.i, p.node->len - p.i);
 	GB.ReturnString(s);
+	GB.ReturnBorrow();
+	GB.FreeString(&s);
+	GB.ReturnRelease();
 
 END_METHOD
 

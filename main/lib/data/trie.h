@@ -50,10 +50,10 @@ extern struct trie *new_trie(void);
 extern void destroy_trie(struct trie *trie, void (*dtor)(void *));
 extern void clear_trie(struct trie *trie, void (*dtor)(void *));
 
-extern int trie_insert(struct trie *trie, const char *key, size_t len,
-		       void *value);
-extern int trie_remove(struct trie *trie, const char *key, size_t len,
-		       void (*dtor)(void *));
+extern void trie_insert(struct trie *trie, const char *key, size_t len,
+			void *value);
+extern void trie_remove(struct trie *trie, const char *key, size_t len,
+			void (*dtor)(void *));
 
 extern struct trie *trie_find(const struct trie *trie, const char *key,
 			      size_t len);

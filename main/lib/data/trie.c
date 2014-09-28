@@ -24,11 +24,11 @@
 
 #include "trie.h"
 
+#include "c_trie.h"
+
 /**
  * __key_index() - Return a unique number for the character
  * @c: char
- *
- * If `c' is not a trie key character, this function returns -1.
  */
 static inline int __key_index(char c)
 {
@@ -54,15 +54,14 @@ static inline int popcnt(uint64_t word)
  *                          corresponding to a key character
  * @node: struct trie
  * @c:    the character
- *
- * This returns -1 on invalid character.
  */
 static inline int __key_to_array_index(const struct trie *node, char c)
 {
-	int i = __key_index(c), n;
+	int i = __key_index(c), j, n;
 
-	n = i >= MASK_SIZE ? popcnt(node->mask[0]) : 0;
-	n += popcnt(node->mask[INDEX(i)] & ((1UL << OFFSET(i)) - 1));
+	for (j = n = 0; i >= MASK_SIZE; j++, i -= MASK_SIZE)
+		n += popcnt(node->mask[j]);
+	n += popcnt(node->mask[j] & ((1UL << i) - 1));
 	return n;
 }
 
@@ -112,7 +111,7 @@ static inline struct trie *get_continuation(const struct trie *node, char c)
 	int i = __key_index(c);
 	int j = __key_to_array_index(node, c);
 
-	if (i == -1 || !test_bit(node, i))
+	if (!test_bit(node, i))
 		return NULL;
 	return node->children[j];
 }
@@ -213,9 +212,7 @@ static struct trie *new_node(const char *key, size_t len, void *value)
 	/*if (!len)
 		len = strlen(key);*/
 
-	trie = malloc(sizeof(*trie) + len);
-	if (!trie)
-		return NULL;
+	GB.Alloc((void **) &trie, sizeof(*trie) + len);
 	memset(trie->mask, 0, sizeof(trie->mask));
 	trie->children = NULL;
 	trie->nchildren = 0;
@@ -240,10 +237,10 @@ struct trie *new_trie(void)
  */
 static void destroy_node(struct trie *node, void (*dtor)(void *))
 {
-	free(node->children);
+	GB.Free((void **) &node->children);
 	if (node->value && dtor)
 		dtor(node->value);
-	free(node);
+	GB.Free((void **) &node);
 }
 
 /**
@@ -272,7 +269,7 @@ void clear_trie(struct trie *trie, void (*dtor)(void *))
 	for (i = 0; i < trie->nchildren; i++)
 		destroy_trie(trie->children[i], dtor);
 	memset(trie->mask, 0, sizeof(trie->mask));
-	free(trie->children);
+	GB.Free((void **) &trie->children);
 	trie->children = NULL;
 	trie->nchildren = 0;
 	if (trie->value)
@@ -288,13 +285,12 @@ void clear_trie(struct trie *trie, void (*dtor)(void *))
  * @child2: struct trie, may be NULL
  *
  * This function writes the apropriate mask for the array into the `mask'
- * argument. If one of the keys was found to contain illegal characters,
- * nothing is written and -1 is returned.
+ * argument.
  *
  * The `child2' can be NULL in which case it is ignored and not assigned to
  * the array.
  */
-static inline int __sort_two_children(const struct trie *array[2],
+static inline void __sort_two_children(const struct trie *array[2],
 				       uint64_t mask[4],
 				       const struct trie *child1,
 				       const struct trie *child2)
@@ -303,8 +299,6 @@ static inline int __sort_two_children(const struct trie *array[2],
 
 	i = __key_index(*child1->key);
 	j = child2 ? __key_index(*child2->key) : 0; /* just to initialise */
-	if (i == -1 || j == -1)
-		return -1;
 	if (!child2 || i < j) {
 		array[0] = child1;
 		if (child2)
@@ -316,7 +310,6 @@ static inline int __sort_two_children(const struct trie *array[2],
 	__set_bit(mask, i);
 	if (child2)
 		__set_bit(mask, j);
-	return 0;
 }
 
 /**
@@ -326,8 +319,8 @@ static inline int __sort_two_children(const struct trie *array[2],
  * @len:   length
  * @value: the value
  */
-static int __trie_insert_split(struct __trie_find_res *res, const char *key,
-			       size_t len, void *value)
+static void __trie_insert_split(struct __trie_find_res *res, const char *key,
+				size_t len, void *value)
 {
 	struct trie *node = res->node, *bottom, *branch = NULL;
 	struct trie **topchildren;
@@ -346,24 +339,16 @@ static int __trie_insert_split(struct __trie_find_res *res, const char *key,
 	 */
 	bottom = new_node(&node->key[res->i], node->len - res->i,
 			  node->value);
-	if (!bottom)
-		return -1;
 
 	if (have_branch) {
 		branch = new_node(&key[res->j], len - res->j, value);
-		if (!branch)
-			goto error_free;
-		topchildren = malloc(2 * sizeof(*topchildren));
+		GB.Alloc((void **) &topchildren, 2 * sizeof(*topchildren));
 	} else {
-		topchildren = malloc(sizeof(*topchildren));
+		GB.Alloc((void **) &topchildren, sizeof(*topchildren));
 	}
-	if (!topchildren)
-		goto error_free2;
-	/* While doing the malloc() stuff, we can already realloc() the
+	/* While doing the Alloc() stuff, we can already Realloc() the
 	 * "top" node here... */
-	node = realloc(node, sizeof(*node) + res->j);
-	if (!node)
-		goto error_free3;
+	GB.Realloc((void **) &node, sizeof(*node) + res->j);
 	/* Link the split node into the trie again */
 	int i = __key_to_array_index(res->parent, *node->key);
 
@@ -376,7 +361,7 @@ static int __trie_insert_split(struct __trie_find_res *res, const char *key,
 	 * After we have copied them from the "top" node, we can set the
 	 * members there correctly to: ->mask, ->children, ->nchildren,
 	 * ->value and ->len need tweaking while ->key was cut properly by
-	 * realloc().
+	 * Realloc().
 	 */
 	memcpy(bottom->mask, node->mask, sizeof(bottom->mask));
 	bottom->children = node->children;
@@ -386,9 +371,8 @@ static int __trie_insert_split(struct __trie_find_res *res, const char *key,
 	 * __sort_two_children() is aware that `branch' may be NULL.
 	 */
 	memset(node->mask, 0, sizeof(node->mask));
-	if (__sort_two_children((const struct trie **) topchildren,
-				node->mask, bottom, branch) == -1)
-		goto error_free3;
+	__sort_two_children((const struct trie **) topchildren,
+			    node->mask, bottom, branch);
 	node->children = topchildren;
 	node->nchildren = have_branch ? 2 : 1;
 	node->value = NULL;
@@ -401,16 +385,6 @@ static int __trie_insert_split(struct __trie_find_res *res, const char *key,
 	 */
 	if (!have_branch)
 		node->value = value;
-
-	return 0;
-
-error_free3:
-	free(topchildren);
-error_free2:
-	destroy_node(branch, NULL);
-error_free:
-	destroy_node(bottom, NULL);
-	return -1;
 }
 
 /**
@@ -420,8 +394,8 @@ error_free:
  * @len:   length
  * @value: the value
  */
-static int __trie_insert_child(struct __trie_find_res *res, const char *key,
-			       size_t len, void *value)
+static void __trie_insert_child(struct __trie_find_res *res, const char *key,
+				size_t len, void *value)
 {
 	struct trie *node = res->parent, *child, **children;
 	int i, j, k;
@@ -436,28 +410,18 @@ static int __trie_insert_child(struct __trie_find_res *res, const char *key,
 	 */
 
 	child = new_node(&key[res->j], len - res->j, value);
-	if (!child)
-		return -1;
 	i = __key_index(*child->key);
 	j = __key_to_array_index(node, *child->key);
-	if (i == -1 || j == -1)
-		goto error_free;
-	children = realloc(node->children, (node->nchildren + 1) *
-					   sizeof(*children));
-	if (!children)
-		goto error_free;
+	children = node->children;
+	GB.Realloc((void **) &children, (node->nchildren + 1) *
+					sizeof(*children));
+
 	for (k = node->nchildren; k > j; k--)
 		children[k] = children[k - 1];
 	children[k] = child;
 	node->children = children;
 	node->nchildren++;
 	set_bit(node, i);
-
-	return 0;
-
-error_free:
-	destroy_node(child, NULL);
-	return -1;
 }
 
 /**
@@ -471,25 +435,28 @@ error_free:
  * node. Note that the NULL pointer is an invalid `value' and is used to
  * detect value-less nodes, so don't use it!
  */
-int trie_insert(struct trie *trie, const char *key, size_t len, void *value)
+void trie_insert(struct trie *trie, const char *key, size_t len, void *value)
 {
 	struct __trie_find_res res = __trie_find(trie, key, len);
 
 	if (res.node) {
 		if (__is_exact(&res, len)) {
 			res.node->value = value;
-			return 0;
+			return;
 		}
-		return __trie_insert_split(&res, key, len, value);
+		__trie_insert_split(&res, key, len, value);
+	} else {
+		return __trie_insert_child(&res, key, len, value);
 	}
-	return __trie_insert_child(&res, key, len, value);
 }
 
 /**
  * __trie_remove_leaf() - Remove a leaf node
- * @res: struct __trie_find_res
+ * @res:  struct __trie_find_res
+ * @dtor: value destructor
  */
-static int __trie_remove_leaf(struct __trie_find_res *res)
+static void __trie_remove_leaf(struct __trie_find_res *res,
+			       void (*dtor)(void *))
 {
 	struct trie *node = res->node, *parent = res->parent;
 	int i, j, k;
@@ -521,7 +488,7 @@ static int __trie_remove_leaf(struct __trie_find_res *res)
 	 * a value).
 	 */
 	if (parent->nchildren == 1) { /* i) */
-		free(parent->children);
+		GB.Free((void **) &parent->children);
 		parent->children = NULL;
 		parent->nchildren = 0;
 		/* a) */
@@ -536,54 +503,46 @@ static int __trie_remove_leaf(struct __trie_find_res *res)
 			other = parent->children[1];
 		else
 			other = parent->children[0];
-		parent = realloc(parent, sizeof(*parent) + parent->len
-							 + other->len);
-		if (!parent)
-			return -1;
+		GB.Realloc((void **) &parent, sizeof(*parent) + parent->len
+							      + other->len);
 		memcpy(parent->key + parent->len, other->key, other->len);
 		parent->len += other->len;
 		/* does a) */
 		memcpy(parent->mask, other->mask, sizeof(parent->mask));
-		free(parent->children);
+		GB.Free((void **) &parent->children);
 		parent->children = other->children;
 		parent->nchildren = other->nchildren;
 		parent->value = other->value;
 		/* Do NOT destroy_node() as we copied its ->children! */
-		free(other);
+		GB.Free((void **) &other);
 	} else { /* iii) */
-		struct trie **tmp;
-
 		/* does a) */
 		for (k = j + 1; k < parent->nchildren; k++)
 			parent->children[k - 1] = parent->children[k];
 		parent->nchildren--;
-		tmp = parent->children;
-		parent->children = realloc(tmp, parent->nchildren *
-					   sizeof(*parent->children));
-		if (!parent->children) {
-			parent->children = tmp;
-			return -1;
-		}
+		GB.Realloc((void **) &parent->children, parent->nchildren *
+						sizeof(*parent->children));
 		clear_bit(parent, i);
 	}
 
-	destroy_node(node, NULL); /* The value is destroyed in the caller */
-	return 0;
+	destroy_node(node, dtor);
 }
 
 /**
  * __trie_remove_interior() - Remove an interior node
- * @res: struct __trie_find_res
+ * @res:  struct __trie_find_res
+ * @dtor: value destructor
  */
-static int __trie_remove_interior(struct __trie_find_res *res)
+static void __trie_remove_interior(struct __trie_find_res *res,
+				   void (*dtor)(void *))
 {
 	/*
 	 * Let's see: an interior node can only have 2 or more children, so
 	 * we cannot possibly do any compression of the nodes. We just erase
 	 * the value and leave the trie structure as-is.
 	 */
+	dtor(res->node->value);
 	res->node->value = NULL;
-	return 0;
 }
 
 /**
@@ -592,12 +551,9 @@ static int __trie_remove_interior(struct __trie_find_res *res)
  * @key:  the key
  * @len:  length
  * @dtor: value destructor
- *
- * This function may fail due to memory allocation issues or if the key is
- * empty (for thou shalt not dare remove the root node).
  */
-int trie_remove(struct trie *trie, const char *key, size_t len,
-		void (*dtor)(void *))
+void trie_remove(struct trie *trie, const char *key, size_t len,
+		 void (*dtor)(void *))
 {
 	struct __trie_find_res res;
 	struct trie *node;
@@ -609,15 +565,17 @@ int trie_remove(struct trie *trie, const char *key, size_t len,
 	 * Delete a value from the root anyways.
 	 */
 	if (!node || !__is_exact(&res, len) || !node->value)
-		return 0;
-	dtor(node->value);
-	node->value = NULL;
-	if (node == trie)
-		return 0;
+		return;
+	if (node == trie) {
+		dtor(node->value);
+		node->value = NULL;
+		return;
+	}
 
 	if (!node->children)
-		return __trie_remove_leaf(&res);
-	return __trie_remove_interior(&res);
+		__trie_remove_leaf(&res, dtor);
+	else
+		__trie_remove_interior(&res, dtor);
 }
 
 /**
