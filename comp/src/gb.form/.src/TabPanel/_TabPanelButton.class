@@ -61,6 +61,7 @@ Public Sub DrawingArea_Draw()
   Dim iIndex As Integer
   Dim hPict As Picture
   Dim iBg As Integer
+  Dim hFont As Font
   
   hTabPanel = GetParent()
   
@@ -89,19 +90,14 @@ Public Sub DrawingArea_Draw()
   bClosable = hTabPanel.Closable
   
   If bHighlight Then
-    Draw.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
+    Paint.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
   Else
     iBg = hTabPanel.Background
-    If iBg <> Color.Default Then Draw.FillRect(0, 0, Me.W, Me.H, iBg)
+    If iBg <> Color.Default Then Paint.FillRect(0, 0, Me.W, Me.H, iBg)
   Endif
   
   iFg = Me.Foreground
   If iFg = Color.Default Then iFg = Color.Foreground
-  
-  Draw.Foreground = iFg
-  If Not $bSelected And If $hDrawingArea.Hovered Then
-    Draw.Foreground = Color.Gradient(iFg, Color.LightForeground)
-  Endif
   
   X = 0
   W = Me.W
@@ -109,11 +105,11 @@ Public Sub DrawingArea_Draw()
   If $hPicture Then
     If System.RightToLeft Then
       W -= $hPicture.W
-      Draw.Picture($hPicture, Me.W - $hPicture.W - 4, (Me.H - $hPicture.H) / 2)
+      Paint.DrawPicture($hPicture, Me.W - $hPicture.W - 4, (Me.H - $hPicture.H) / 2)
     Else
       X += $hPicture.W
       W = Me.W - X
-      Draw.Picture($hPicture, 4, (Me.H - $hPicture.H) / 2)
+      Paint.DrawPicture($hPicture, 4, (Me.H - $hPicture.H) / 2)
     Endif
   Endif
   
@@ -122,12 +118,25 @@ Public Sub DrawingArea_Draw()
     If System.RightToLeft Then X += BUTTON_SIZE
   Endif
   
-  If $bRichText Then
-    Draw.RichText($sText, X, 0, W, Me.Height, Align.Center)
-  Else
-    Draw.Text($sText, X, 0, W, Me.Height, Align.Center)
+  Paint.Background = iFg
+  hFont = hTabPanel.TextFont
+  If Not hFont Then hFont = hTabPanel.Font
+  Paint.Font = hFont
+  
+  If Not $bSelected And If $hDrawingArea.Hovered Then
+    If $bRichText Then
+      Paint.DrawRichTextShadow($sText, X, 0, W, Me.Height, Align.Center)
+    Else
+      Paint.DrawTextShadow($sText, X, 0, W, Me.Height, Align.Center, -1)
+    Endif
   Endif
-
+  
+  If $bRichText Then
+    Paint.DrawRichText($sText, X, 0, W, Me.Height, Align.Center)
+  Else
+    Paint.DrawText($sText, X, 0, W, Me.Height, Align.Center)
+  Endif
+  
   Draw.Foreground = Color.LightForeground
   
   bBorder = hTabPanel.Border

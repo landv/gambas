@@ -24,6 +24,7 @@ Public Sub Form_Open()
   For I = 0 To 11
     TabPanel2.Index = I
     TabPanel2.Text = "Tab " & (I + 1) & " " & String$(CInt(Rnd(1, 10)), "-")
+    TabPanel2.Picture = Picture["icon:/16/bookmark"]
     hLabel = New Label(TabPanel2)
     hLabel.Move(8, 8, 8, 8)
     hLabel.AutoResize = True

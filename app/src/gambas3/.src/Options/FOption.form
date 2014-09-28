@@ -341,86 +341,6 @@
       }
     }
     Index = 2
-    Text = ("Theme")
-    Picture = Picture["icon:/large/color"]
-    { Label27 Label
-      MoveScaled(0,0,63,3)
-      Font = Font["Bold"]
-      Text = ("Theme")
-    }
-    { HBox11 HBox
-      MoveScaled(1,3,65,4)
-      Spacing = True
-      Indent = True
-      { Label12 Label
-        MoveScaled(0,0,18,4)
-        Expand = True
-        Text = ("Icon theme")
-      }
-      { cmbIconTheme ComboBox
-        MoveScaled(20,0,45,4)
-        ReadOnly = True
-      }
-    }
-    { HBox1 HBox
-      MoveScaled(1,9,65,4)
-      Indent = True
-      { Label54 Label
-        MoveScaled(0,0,18,4)
-        Expand = True
-        Text = ("Color theme")
-      }
-      { cmbTheme ComboBox
-        MoveScaled(20,0,32,4)
-        ReadOnly = True
-      }
-      { Panel1 Panel
-        MoveScaled(52,0,1,4)
-      }
-      { btnImport ToolButton
-        MoveScaled(53,0,4,4)
-        ToolTip = ("Import theme")
-        Picture = Picture["icon:/small/open"]
-      }
-      { btnExport ToolButton
-        MoveScaled(57,0,4,4)
-        ToolTip = ("Export theme")
-        Picture = Picture["icon:/small/save"]
-      }
-      { btnUndo ToolButton
-        MoveScaled(61,0,4,4)
-        ToolTip = ("Undo")
-        Picture = Picture["icon:/small/undo"]
-      }
-    }
-    { svwTheme ScrollView
-      MoveScaled(1,15,64,38)
-      Foreground = Color.TextForeground
-      Expand = True
-      Arrangement = Arrange.Vertical
-      Spacing = True
-      Margin = True
-      Padding = 4
-      Border = False
-      ScrollBar = Scroll.Vertical
-    }
-    Index = 3
-    Text = ("Background")
-    Picture = Picture["icon:/large/image"]
-    { Label14 Label
-      MoveScaled(1,1,15,3)
-      Font = Font["Bold"]
-      Text = ("Background")
-    }
-    { svwBackground ScrollView
-      MoveScaled(1,5,63,64)
-      Expand = True
-      Arrangement = Arrange.Row
-      Spacing = True
-      Border = False
-      ScrollBar = Scroll.Vertical
-    }
-    Index = 4
     Text = ("Editor")
     Picture = Picture["img/control/editor.png"]
     { Label44 Label
@@ -575,6 +495,86 @@
         Text = ("Configure shortcuts") & "..."
         Picture = Picture["icon:/small/shortcut"]
       }
+    }
+    Index = 3
+    Text = ("Theme")
+    Picture = Picture["icon:/large/color"]
+    { Label27 Label
+      MoveScaled(0,0,63,3)
+      Font = Font["Bold"]
+      Text = ("Theme")
+    }
+    { HBox11 HBox
+      MoveScaled(1,3,65,4)
+      Spacing = True
+      Indent = True
+      { Label12 Label
+        MoveScaled(0,0,18,4)
+        Expand = True
+        Text = ("Icon theme")
+      }
+      { cmbIconTheme ComboBox
+        MoveScaled(20,0,45,4)
+        ReadOnly = True
+      }
+    }
+    { HBox1 HBox
+      MoveScaled(1,9,65,4)
+      Indent = True
+      { Label54 Label
+        MoveScaled(0,0,18,4)
+        Expand = True
+        Text = ("Color theme")
+      }
+      { cmbTheme ComboBox
+        MoveScaled(20,0,32,4)
+        ReadOnly = True
+      }
+      { Panel1 Panel
+        MoveScaled(52,0,1,4)
+      }
+      { btnImport ToolButton
+        MoveScaled(53,0,4,4)
+        ToolTip = ("Import theme")
+        Picture = Picture["icon:/small/open"]
+      }
+      { btnExport ToolButton
+        MoveScaled(57,0,4,4)
+        ToolTip = ("Export theme")
+        Picture = Picture["icon:/small/save"]
+      }
+      { btnUndo ToolButton
+        MoveScaled(61,0,4,4)
+        ToolTip = ("Undo")
+        Picture = Picture["icon:/small/undo"]
+      }
+    }
+    { svwTheme ScrollView
+      MoveScaled(1,15,64,38)
+      Foreground = Color.TextForeground
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
+      Padding = 4
+      Border = False
+      ScrollBar = Scroll.Vertical
+    }
+    Index = 4
+    Text = ("Background")
+    Picture = Picture["icon:/large/image"]
+    { Label14 Label
+      MoveScaled(1,1,15,3)
+      Font = Font["Bold"]
+      Text = ("Background")
+    }
+    { svwBackground ScrollView
+      MoveScaled(1,5,63,64)
+      Expand = True
+      Arrangement = Arrange.Row
+      Spacing = True
+      Border = False
+      ScrollBar = Scroll.Vertical
     }
     Index = 5
     Text = ("Help & applications")

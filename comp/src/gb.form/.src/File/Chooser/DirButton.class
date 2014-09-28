@@ -46,9 +46,9 @@ Public Sub DirButton_Draw()
   Paint.Background = Style.ForegroundOf(Me)
 
   If Me.Hovered Then 
-    Paint.Background = Color.SetAlpha(Paint.Background, 128)
+    'Paint.Background = Color.SetAlpha(Paint.Background, 128)
     Paint.DrawTextShadow($sText, Desktop.Scale * 1.75, 0, Paint.W - Desktop.Scale, Paint.H, Align.Left)
-    Paint.Background = Color.SetAlpha(Paint.Background, 0)
+    'Paint.Background = Color.SetAlpha(Paint.Background, 0)
   Endif
   Paint.DrawText($sText, Desktop.Scale * 1.75, 0, Paint.W - Desktop.Scale, Paint.H, Align.Left)
   
