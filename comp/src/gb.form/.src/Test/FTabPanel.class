@@ -20,8 +20,8 @@ Public Sub Form_Open()
   Dim I As Integer
   Dim hLabel As Label
   
-  TabPanel2.Count = 12
-  For I = 0 To 11
+  TabPanel2.Count = 2
+  For I = 0 To TabPanel2.Count - 1
     TabPanel2.Index = I
     TabPanel2.Text = "Tab " & (I + 1) & " " & String$(CInt(Rnd(1, 10)), "-")
     TabPanel2.Picture = Picture["icon:/16/bookmark"]
@@ -33,8 +33,6 @@ Public Sub Form_Open()
     hLabel.Border = Border.Plain
   Next
   
-  TabPanel2.Index = 2
-
 End
 
 Public Sub Form_DblClick()

@@ -414,8 +414,10 @@ Public Sub DrawingArea_Draw()
     hFrame = New Rect(FW, FW, DW - FW * 2, DH - FW * 2)  
     If hClip Then 
       hClip = hClip.Intersection(hFrame)
-      Paint.Rectangle(hClip.X, hClip.Y, hClip.W, hClip.H)
-      Paint.Clip()
+      If hClip Then
+        Paint.Rectangle(hClip.X, hClip.Y, hClip.W, hClip.H)
+        Paint.Clip()
+      Endif
     Endif
   Endif
   

@@ -18,17 +18,17 @@
     Spacing = True
     { btnUp Button
       MoveScaled(0,0,18,4)
-      Text = ("&Up")
+      Text = Shortcut(("Up"), "U")
       Picture = Picture["icon:/small/up"]
     }
     { btnDown Button
       MoveScaled(19,0,18,4)
-      Text = ("&Down")
+      Text = Shortcut(("Down"), "D")
       Picture = Picture["icon:/small/down"]
     }
     { btnDelete Button
       MoveScaled(38,0,18,4)
-      Text = ("&Remove")
+      Text = Shortcut(("Remove"), "R")
       Picture = Picture["icon:/small/delete"]
     }
     { Panel1 Panel
@@ -38,7 +38,6 @@
     { btnClose Button
       MoveScaled(68,0,18,4)
       Text = ("Close")
-      Picture = Picture["icon:/small/close"]
       Cancel = True
     }
   }

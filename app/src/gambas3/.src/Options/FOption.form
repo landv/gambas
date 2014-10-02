@@ -357,15 +357,21 @@
         Expand = True
         Text = ("Default tab size")
       }
-      { txtTabSize SpinBox
-        MoveScaled(50,0,7,4)
-        MinValue = 1
-        MaxValue = 16
-        Value = 2
-      }
-      { Label3 Label
-        MoveScaled(58,0,8,4)
-        Text = ("space(s)")
+      { Panel3 HBox
+        MoveScaled(50,0,16,4)
+        Spacing = True
+        { txtTabSize SpinBox
+          MoveScaled(0,0,6,4)
+          Expand = True
+          MinValue = 1
+          MaxValue = 16
+          Value = 2
+        }
+        { Label3 Label
+          MoveScaled(8,0,8,4)
+          AutoResize = True
+          Text = ("space(s)")
+        }
       }
     }
     { HBox18 HBox
