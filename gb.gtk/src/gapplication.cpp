@@ -580,7 +580,10 @@ __FOUND_WIDGET:
 				while (control)
 				{
 					if (control->onMouseEvent(control, gEvent_MouseMenu))
+					{
+						cancel = true;
 						break;
+					}
 					control = control->_proxy_for;
 				}
 			}

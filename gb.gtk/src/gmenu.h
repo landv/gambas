@@ -42,6 +42,8 @@ public:
 	static void updateColor(gMainWindow *win);
 	static gMenu *findFromName(gMainWindow *win, const char *name);
 
+	static int popupCount() { return _popup_count; }
+
 //"Properties"
 	bool checked() const { return _checked; }
 	bool toggle() const { return _toggle; }
@@ -129,6 +131,7 @@ private:
 
 	static gMenu *_current_popup;
 	static int _in_popup;
+	static int _popup_count;
   
 	void doPopup(bool move, int x = 0, int y = 0);
   void update();

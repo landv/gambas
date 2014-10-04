@@ -190,8 +190,9 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 			{
 				if (GB.CanRaise(ob, EVENT_Menu))
 				{
-					GB.Raise(ob, EVENT_Menu, 0);
-					return true;
+					int old = gMenu::popupCount();
+					if (GB.Raise(ob, EVENT_Menu, 0) || old != gMenu::popupCount())
+						return true;
 				}
 
 				if (ob->popup)

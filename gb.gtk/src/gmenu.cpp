@@ -36,6 +36,7 @@ typedef
 
 gMenu *gMenu::_current_popup = NULL;
 int gMenu::_in_popup = 0;
+int gMenu::_popup_count = 0;
 
 static GList *menus = NULL;
 
@@ -741,7 +742,8 @@ void gMenu::doPopup(bool move, int x, int y)
 	_current_popup = this;
 	
 	_in_popup++;
-
+	_popup_count++;
+	
 	gtk_menu_popup(child, NULL, NULL, move ? (GtkMenuPositionFunc)position_menu : NULL, (gpointer)pos, 0, gApplication::lastEventTime());
 	
 #if GTK_CHECK_VERSION(2, 20, 0)
