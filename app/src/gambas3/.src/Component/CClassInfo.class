@@ -498,6 +498,7 @@ Public Sub GetHelpHTML() As String
   Dim sTitle As String
   Dim bHasDynamic As Boolean
   Dim bHasSymbol As Boolean
+  Dim bHasDynamicVariable As Boolean
   Dim sParent As String
   Dim hParentClass As CClassInfo
   Dim sStr As String
@@ -546,6 +547,7 @@ Public Sub GetHelpHTML() As String
           aConst.Add(sComp)
         Case "v"
           aVar.Add(sComp)
+          bHasDynamicVariable = True
         Case "V"
           aStaticVar.Add(sComp)
       End Select
@@ -645,12 +647,14 @@ Public Sub GetHelpHTML() As String
   If hClassInfo.Creatable And If cClassSymbols.Exist("_new") Then 
     hSymbol = cClassSymbols["_new"]
    sInfo &= Subst(("This class is &1."), GetSymbolLink(hSymbol, ("creatable"))) & "<br>"
+  Else If hClassInfo.Creatable And If bHasDynamicVariable Then
+   sInfo &= Subst(("This class is &1."), ("creatable")) & "<br>"
   Else
     If Not bHasDynamic Then 
-    Else
       sInfo &= ("This class is static.") & "<br>"
-    Endif
+    Else
       sInfo &= ("This class is not creatable.") & "<br>"
+    Endif
   Endif
   
   hSymbol = cClassSymbols["_call"]
