@@ -1,15 +1,14 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,80,54)
+  MoveScaled(0,0,80,65)
   Arrangement = Arrange.Fill
   { panBorder Panel
-    MoveScaled(1,1,77,51)
+    MoveScaled(1,1,77,58)
     Arrangement = Arrange.Vertical
     Border = Border.Plain
     { lblFont Label
       MoveScaled(3,1,32,4)
-      Font = Font["Bold"]
       Padding = 4
     }
     { sepToolbar Separator
@@ -73,33 +72,11 @@
     { sepExample Separator
       MoveScaled(16,28,35,0)
     }
-    { panExample Panel
-      MoveScaled(2,34,69,14)
+    { txtExample Label
+      MoveScaled(4,36,62,8)
       Background = Color.TextBackground
-      Arrangement = Arrange.Vertical
-      { txtExample TextBox txtExample
-        Name = "txtExample"
-        MoveScaled(0,0,64,4)
-        Font = Font["-2"]
-        Text = ("How quickly daft jumping zebras vex")
-        Alignment = Align.Center
-        Border = False
-      }
-      { txtExample2 TextBox txtExample
-        Name = "txtExample2"
-        MoveScaled(0,4,64,4)
-        Text = ("How quickly daft jumping zebras vex")
-        Alignment = Align.Center
-        Border = False
-      }
-      { txtExample3 TextBox txtExample
-        Name = "txtExample3"
-        MoveScaled(0,8,64,4)
-        Font = Font["+4"]
-        Text = ("How quickly daft jumping zebras vex")
-        Alignment = Align.Center
-        Border = False
-      }
+      Foreground = Color.TextForeground
+      Alignment = Align.Center
     }
     { cmbFamily ComboBox
       MoveScaled(40,1,27,4)

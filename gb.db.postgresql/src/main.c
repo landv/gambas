@@ -565,7 +565,7 @@ static int db_version(DB_DATABASE *db)
 	if (!do_query(db, NULL, &res, vquery, 0))
 	{
 		unsigned int verMain, verMajor, verMinor;
-		sscanf(PQgetvalue(res, 0, 0),"%2u.%2u.%2u", &verMain, &verMajor, &verMinor);
+		sscanf(PQgetvalue(res, 0, 0), "%2u.%2u.%2u", &verMain, &verMajor, &verMinor);
 		dbversion = ((verMain * 10000) + (verMajor * 100) + verMinor);
 		PQclear(res);
 	}
@@ -582,7 +582,7 @@ static int db_version(DB_DATABASE *db)
      - atthasdef
 */
 
-static void fill_field_info(DB_FIELD *info, PGresult *res, int row, int col)
+static void fill_field_info(DB_DATABASE *db, DB_FIELD *info, PGresult *res, int row, int col)
 {
 	char *val;
 	Oid type;
@@ -641,7 +641,10 @@ static void fill_field_info(DB_FIELD *info, PGresult *res, int row, int col)
 		}
 	}	
 
-	info->collation = GB.NewZeroString(PQgetvalue(res, row, col + 5));
+	if (db->flags.no_collation)
+		info->collation = NULL;
+	else
+		info->collation = GB.NewZeroString(PQgetvalue(res, row, col + 5));
 }
 
 
@@ -734,6 +737,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	db->flags.no_table_type = TRUE;
 	db->flags.no_nest = TRUE;
 	db->flags.schema = TRUE;
+	db->flags.no_collation = db->version < 90100;
 
 	/* encoding */
 
@@ -786,6 +790,9 @@ static GB_ARRAY get_collations(DB_DATABASE *db)
 	GB_ARRAY array;
 	PGresult *res;
 	int i;
+
+	if (db->flags.no_collation)
+		return NULL;
 
 	if (do_query(db, "Unable to get collations: &1", &res, query, 0))
 		return NULL;
@@ -1269,28 +1276,57 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-	const char *qfield_all=
-			"SELECT col.attname, col.atttypid::int, col.atttypmod, "
-					"col.attnotnull, def.adsrc, col.atthasdef, pg_collation.collname "
-			"FROM pg_catalog.pg_class tbl, pg_catalog.pg_attribute col "
-							"LEFT JOIN pg_catalog.pg_attrdef def ON (def.adnum = col.attnum AND def.adrelid = col.attrelid) "
-							"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
-			"WHERE tbl.relname = '&1' AND "
-					"col.attrelid = tbl.oid AND "
-					"col.attnum > 0 AND "
-					"not col.attisdropped "
-			"ORDER BY col.attnum ASC;";
-        
-	char *qfield_schema_all =
-		"select pg_attribute.attname, pg_attribute.atttypid::int, pg_attribute.atttypmod, "
-						"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
-				"from pg_class, pg_attribute "
-						"LEFT JOIN pg_catalog.pg_attrdef  ON (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) "
-							"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
-				"where pg_class.relname = '&1' "
-						"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
-						"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
-						"and pg_attribute.attrelid = pg_class.oid ";
+	const char *qfield_all;
+	char *qfield_schema_all;
+
+	if (db->flags.no_collation)
+	{
+		qfield_all=
+				"SELECT col.attname, col.atttypid::int, col.atttypmod, "
+						"col.attnotnull, def.adsrc, col.atthasdef "
+				"FROM pg_catalog.pg_class tbl, pg_catalog.pg_attribute col "
+								"LEFT JOIN pg_catalog.pg_attrdef def ON (def.adnum = col.attnum AND def.adrelid = col.attrelid) "
+				"WHERE tbl.relname = '&1' AND "
+						"col.attrelid = tbl.oid AND "
+						"col.attnum > 0 AND "
+						"not col.attisdropped "
+				"ORDER BY col.attnum ASC;";
+
+		qfield_schema_all =
+			"select pg_attribute.attname, pg_attribute.atttypid::int, pg_attribute.atttypmod, "
+							"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+					"from pg_class, pg_attribute "
+							"LEFT JOIN pg_catalog.pg_attrdef  ON (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) "
+					"where pg_class.relname = '&1' "
+							"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+							"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+							"and pg_attribute.attrelid = pg_class.oid ";
+	}
+	else
+	{
+		qfield_all=
+				"SELECT col.attname, col.atttypid::int, col.atttypmod, "
+						"col.attnotnull, def.adsrc, col.atthasdef, pg_collation.collname "
+				"FROM pg_catalog.pg_class tbl, pg_catalog.pg_attribute col "
+								"LEFT JOIN pg_catalog.pg_attrdef def ON (def.adnum = col.attnum AND def.adrelid = col.attrelid) "
+								"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
+				"WHERE tbl.relname = '&1' AND "
+						"col.attrelid = tbl.oid AND "
+						"col.attnum > 0 AND "
+						"not col.attisdropped "
+				"ORDER BY col.attnum ASC;";
+
+		qfield_schema_all =
+			"select pg_attribute.attname, pg_attribute.atttypid::int, pg_attribute.atttypmod, "
+							"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
+					"from pg_class, pg_attribute "
+							"LEFT JOIN pg_catalog.pg_attrdef  ON (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) "
+								"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
+					"where pg_class.relname = '&1' "
+							"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
+							"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+							"and pg_attribute.attrelid = pg_class.oid ";
+	}
                 
 	PGresult *res;
 	int i, n;
@@ -1324,7 +1360,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 	{
 		f = &info->field[i];
 		
-		fill_field_info(f, res, i, 1);
+		fill_field_info(db, f, res, i, 1);
 		
 		f->name = GB.NewZeroString(PQgetvalue(res, i, 0));
 	}
@@ -2045,29 +2081,59 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 
 static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
-	const char *query =
-		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
-		"from pg_class, pg_attribute "
-		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
-		"left join pg_collation on (pg_collation.oid = pg_attribute.attcollation) "
-		"where pg_class.relname = '&1' "
-		"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
-		"and pg_attribute.attname = '&2' "
-		"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
-		"and pg_attribute.attrelid = pg_class.oid";
+	const char *query;
+	const char *query_schema;
 
-	const char *query_schema =
-		"select pg_attribute.attname, pg_attribute.atttypid::int, "
-		"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
-		"from pg_class, pg_attribute "
-		"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
-		"left join pg_collation on (pg_collation.oid = pg_attribute.attcollation) "
-		"where pg_class.relname = '&1' "
-		"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
-		"and pg_attribute.attname = '&2' "
-		"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
-		"and pg_attribute.attrelid = pg_class.oid";
+	if (db->flags.no_collation)
+	{
+		query =
+			"select pg_attribute.attname, pg_attribute.atttypid::int, "
+			"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+			"from pg_class, pg_attribute "
+			"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+			"where pg_class.relname = '&1' "
+			"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
+			"and pg_attribute.attname = '&2' "
+			"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+			"and pg_attribute.attrelid = pg_class.oid";
+
+		query_schema =
+			"select pg_attribute.attname, pg_attribute.atttypid::int, "
+			"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef "
+			"from pg_class, pg_attribute "
+			"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+			"where pg_class.relname = '&1' "
+			"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
+			"and pg_attribute.attname = '&2' "
+			"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+			"and pg_attribute.attrelid = pg_class.oid";
+	}
+	else
+	{
+		query =
+			"select pg_attribute.attname, pg_attribute.atttypid::int, "
+			"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
+			"from pg_class, pg_attribute "
+			"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+			"left join pg_collation on (pg_collation.oid = pg_attribute.attcollation) "
+			"where pg_class.relname = '&1' "
+			"and (pg_class.relnamespace not in (select oid from pg_namespace where nspname = 'information_schema')) "
+			"and pg_attribute.attname = '&2' "
+			"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+			"and pg_attribute.attrelid = pg_class.oid";
+
+		query_schema =
+			"select pg_attribute.attname, pg_attribute.atttypid::int, "
+			"pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
+			"from pg_class, pg_attribute "
+			"left join pg_attrdef on (pg_attrdef.adrelid = pg_attribute.attrelid and pg_attrdef.adnum = pg_attribute.attnum) "
+			"left join pg_collation on (pg_collation.oid = pg_attribute.attcollation) "
+			"where pg_class.relname = '&1' "
+			"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&3')) "
+			"and pg_attribute.attname = '&2' "
+			"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
+			"and pg_attribute.attrelid = pg_class.oid";
+	}
 
 	PGresult *res;
 	char *schema;
@@ -2090,7 +2156,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		return TRUE;
 	}
 
-	fill_field_info(info, res, 0, 1);
+	fill_field_info(db, info, res, 0, 1);
 
 	PQclear(res);
 	return FALSE;

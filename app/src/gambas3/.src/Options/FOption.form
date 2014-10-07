@@ -148,14 +148,8 @@
         Expand = True
         Text = ("Default font")
       }
-      { btnClearGlobalFont ToolButton
-        MoveScaled(16,0,4,4)
-        Picture = Picture["icon:/small/clear"]
-      }
-      { txtGlobalFont ButtonBox
+      { txtGlobalFont FontBox
         MoveScaled(21,0,44,4)
-        Picture = Picture["icon:/small/font"]
-        ReadOnly = True
       }
     }
     { HBox45 HBox
@@ -205,10 +199,8 @@
         Expand = True
         Text = ("Editor")
       }
-      { txtEditorFont ButtonBox
+      { txtEditorFont FontBox
         MoveScaled(21,0,44,4)
-        Picture = Picture["icon:/small/font"]
-        ReadOnly = True
       }
     }
     { HBox24 HBox
@@ -220,10 +212,8 @@
         Expand = True
         Text = ("Console")
       }
-      { txtConsoleFont ButtonBox
+      { txtConsoleFont FontBox
         MoveScaled(21,0,44,4)
-        Picture = Picture["icon:/small/font"]
-        ReadOnly = True
       }
     }
     { HBox46 HBox

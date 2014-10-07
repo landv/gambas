@@ -558,9 +558,9 @@ fflush(stderr);
 	/* flags */
 	db->flags.no_table_type = TRUE;
 	db->flags.no_seek = (odbc->FetchScroll_exist == SQL_FALSE);
-
 	db->flags.no_serial = TRUE;		// Need to be done!
 	db->flags.no_blob = FALSE;			// Need to be done!
+	db->flags.no_collation = TRUE;
 
 	db->handle = odbc;
 	return FALSE;

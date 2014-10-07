@@ -46,6 +46,8 @@ Private Sub ReadConfig()
         hCtrl.Value = vVal
       Case "TextBox"
         hCtrl.Text = vVal
+      Case "FontBox"
+        hCtrl.Value = vVal
       Default 
         Debug "Unmanaged type: "; Object.Type(hCtrl)
     
@@ -75,21 +77,20 @@ Public Sub _new()
   Dim hColor As DrawingArea
   Dim hButton As Button
 
-  txtGlobalFont._AddButton(btnClearGlobalFont)
-
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
   cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "KDE4", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm", "lxterminal"]
-  'cmbImageEditor.List = [("(Default)"), "GIMP", "Kolour Paint", "Krita"]
+  txtEditorFont.Default = Project.DEFAULT_FONT
+  txtConsoleFont.Default = Project.DEFAULT_FONT
   
   $cLast = MTheme.ReadSettings(Settings, "/Highlight", True)
   $cCurrent = MTheme.Copy($cLast)
   
   $aConfig = [
-    [txtEditorFont, "/Editor/Font", Project.DEFAULT_FONT],
-    [txtConsoleFont, "/ConsoleFont", Project.DEFAULT_FONT],
+    [txtEditorFont, "/Editor/Font", ""],
+    [txtConsoleFont, "/ConsoleFont", ""],
     [txtGlobalFont, "/Font", ""],
     [cmbProjectFontSize, "/ProjectFontSize", 0],
     [cmbTitleFontSize, "/TitleFontSize", 0],
@@ -138,7 +139,7 @@ Public Sub _new()
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   panDownloadHelp.Visible = btnOfflineHelp.Value
   
-  UpdateFont(txtGlobalFont.Text)
+  UpdateFont(txtGlobalFont.Value)
   
   $bNoChange = False
   
@@ -220,7 +221,7 @@ Private Sub RefreshEditor()
   RefreshStyle
   
   MTheme.WriteSettings(Settings, "Highlight", $cCurrent)
-  Settings["/Editor/Font"] = txtEditorFont.Text
+  Settings["/Editor/Font"] = txtEditorFont.Value
   
   Project.RefreshBreakpointPicture
   
@@ -241,7 +242,7 @@ Private Sub RefreshConsole()
   
   If $bNoChange Then Return
   
-  Settings["/ConsoleFont"] = txtConsoleFont.Text
+  Settings["/ConsoleFont"] = txtConsoleFont.Value
   FOutput.ReadConfig
   Project.InitWebView
   
@@ -528,7 +529,7 @@ Public Sub dwgStyle_Draw()
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
 
-  Draw.Font = Font[txtEditorFont.Text]
+  Draw.Font = Font[txtEditorFont.Value]
   If hStyle.Underline Then Draw.Font.Underline = True
   If hStyle.Italic Then Draw.Font.Italic = True
   
@@ -722,24 +723,14 @@ Catch
 
 End
 
-Public Sub txtEditorFont_Click()
+Public Sub txtEditorFont_Change()
 
-  Dim sFont As String
-
-  sFont = FFontChooser.Run(txtEditorFont.Text)
-  If Not sFont Then Return
-  txtEditorFont.Text = sFont
   RefreshEditor
 
 End
 
-Public Sub txtConsoleFont_Click()
+Public Sub txtConsoleFont_Change()
 
-  Dim sFont As String
-
-  sFont = FFontChooser.Run(txtConsoleFont.Text)
-  If Not sFont Then Return
-  txtConsoleFont.Text = sFont
   RefreshConsole
 
 End
@@ -757,26 +748,12 @@ Private Sub UpdateFont(sFont As String)
     RefreshWindow
   Endif
 
-  If sFont Then
-    txtGlobalFont.Text = sFont
-    txtGlobalFont.Foreground = Color.Default
-  Else
-    txtGlobalFont.Text = Project.DESKTOP_FONT
-    txtGlobalFont.Foreground = Color.LightForeground
-  Endif
-  
-  'NeedRestart(txtGlobalFont)
-  
 End
 
 
-Public Sub txtGlobalFont_Click()
+Public Sub txtGlobalFont_Change()
 
-  Dim sFont As String
-
-  sFont = FFontChooser.Run(txtGlobalFont.Text)
-  If Not sFont Then Return
-  UpdateFont(sFont)
+  UpdateFont(txtGlobalFont.Value)
 
 End
 
@@ -790,7 +767,7 @@ Private Sub RefreshSnippet()
   
   CSampleCode.Init
   gvwSnippet.Rows.Count = CSampleCode.All.Count
-  gvwSnippet.Rows.Height = Font[txtEditorFont.Text].Height + 8
+  gvwSnippet.Rows.Height = Font[txtEditorFont.Value].Height + 8
   gvwSnippet.Refresh
   
 End
@@ -829,7 +806,7 @@ Public Sub gvwSnippet_Data(Row As Integer, Column As Integer)
   
   With gvwSnippet
     .Data.Padding = 4
-    .Data.Font = Font[txtEditorFont.Text]
+    .Data.Font = Font[txtEditorFont.Value]
     If Column = 0 Then
       .Data.Text = hSampleCode.Trigger
       If hSampleCode.Default Then .Data.Font.Italic = True
@@ -1132,20 +1109,6 @@ End
 Public Sub cmbPrefix_Click()
 
   Settings["/Packager/UsePrefix"] = cmbPrefix.Index = 1
-
-End
-
-Public Sub txtGlobalFont_KeyPress()
-
-  If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
-    btnClearGlobalFont_Click
-  Endif
-
-End
-
-Public Sub btnClearGlobalFont_Click()
-
-  If Settings["/Font"] Then UpdateFont("")
 
 End
 

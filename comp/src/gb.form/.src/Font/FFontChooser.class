@@ -25,7 +25,7 @@ Public Sub _new()
   'lstSize.List = ["6", "7", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24", "28", "32", "36", "40", "48", "56", "64", "72", "80", "96", "112", "128"]
   
   StylePanel = panStyle
-  Preview = panExample
+  Preview = txtExample
   
   SetFont("")
 
@@ -180,7 +180,7 @@ Public Sub SetFont(sFont As String)
     txtSize.Value = Size
   Endif
   
-  txtExample.Text = ("How quickly daft jumping zebras vex")
+  txtExample.Text = ("How quickly daft jumping zebras vex") & "\n0123456789 àéîöùÀÉÎÖÙ"
 
   RefreshExample
 
@@ -216,27 +216,15 @@ End
 Private Sub RefreshExample()
 
   Dim sFont As String = GetFont()
-  Dim hTextBox As TextBox
-  Dim H As Integer
 
   If $bNoRefresh Then Return
   
-  
-  If sFont = $sLast And If panExample.Expand = cmbFamily.Visible Then Return
+  If sFont = $sLast And If txtExample.Expand = cmbFamily.Visible Then Return
   
   If txtExample.Visible Then
-    txtExample.Font = Font[sFont & ",-2"]
-    txtExample2.Font = Font[sFont & ",0"]
-    txtExample3.Font = Font[sFont & ",+4"]
-    
-    For Each hTextBox In [txtExample, txtExample2, txtExample3]
-      hTextBox.H = hTextBox.Font.Height + 2
-      H += hTextBox.H
-    Next
-    
-    panExample.Expand = cmbFamily.Visible
-    panExample.H = H
-    
+    txtExample.Font = Font[GetFont()]
+    txtExample.H = Max(Desktop.Scale * 4, Min(Desktop.Scale * 16, txtExample.Font.Height * 3))
+    txtExample.Expand = cmbFamily.Visible
   Endif
   
   Size = Font[sFont].Size
@@ -409,7 +397,7 @@ Public Sub panBorder_BeforeArrange()
 
   If panBorder.H < (Desktop.Scale * 20) Then
   
-    If panExample.Visible Then
+    If txtExample.Visible Then
       lstFamily.Hide
       sepFamily.Hide
       lblFont.Hide
@@ -420,10 +408,10 @@ Public Sub panBorder_BeforeArrange()
     Endif
   
     If panBorder.H < (Desktop.Scale * 14) Then
-      panExample.Hide
+      txtExample.Hide
       sepExample.Hide
     Else
-      panExample.Show
+      txtExample.Show
       sepExample.Show
     Endif
     
@@ -431,7 +419,7 @@ Public Sub panBorder_BeforeArrange()
   
     If cmbFamily.Visible Then
       cmbFamily.Hide
-      panExample.Show
+      txtExample.Show
       sepExample.Show
       lstFamily.Show
       sepFamily.Show
@@ -445,20 +433,4 @@ Public Sub panBorder_BeforeArrange()
 
   RefreshExample
   
-End
-
-Public Sub txtExample_Change()
-  
-  Dim sText As String
-  Dim hTextBox As TextBox
-  
-  sText = Last.Text
-  For Each hTextBox In [txtExample, txtExample2, txtExample3]
-    If hTextBox <> Last Then 
-      Object.Lock(hTextBox)
-      hTextBox.Text = sText
-      Object.Unlock(hTextBox)
-    Endif
-  Next
-
 End

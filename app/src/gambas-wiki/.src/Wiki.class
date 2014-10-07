@@ -72,82 +72,92 @@ Private Sub _PrintPage()
     Return
   Endif
   
-  sPath = Main.SolvePath(Main.Path)
-  
-  If Not Main.ExistPage(sPath) Then
-    If Main.Lang = Main.DEFAULT_LANG Then
-      Print "<div class=\"unknown\">"; ("This page does not exist."); "</div>"
-    Else
-      Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
-    Endif
-    If Not Main.ExistPage(sPath, Main.DEFAULT_LANG) Then Return
-    Main.Lang = Main.DEFAULT_LANG
-  Endif
-  
-  If Main.History Then
+  If Main.Preview Then
     
-    sDir = File.Dir(Main.GetPagePathFrom(sPath))
-    aFile = Dir(sDir, "~page.*.*").Sort(gb.Descent)
-    If aFile.Count >= 2 Then
-      iPos = Min(Main.History - 1, aFile.Max - 1)
-      Exec ["diff", "-U", "10000", sDir &/ aFile[iPos + 1], sDir &/ aFile[iPos]] To sResult
-      
-      sDate = Mid$(aFile[iPos], 7)
-      dDate = Date(CInt(Mid$(sDate, 1, 4)), CInt(Mid$(sDate, 5, 2)), CInt(Mid$(sDate, 7, 2)), CInt(Mid$(sDate, 9, 2)), CInt(Mid$(sDate, 11, 2)), CInt(Mid$(sDate, 13, 2)))
-      Print "<h3>"; Html(Format(dDate, gb.GeneralDate)); " - "; Html(File.Ext(aFile[iPos])); "</h3>"
-      
-      If sResult Then
-      
-        aLine = Split(sResult, "\n")
-        aLine.Remove(0, 3)
-        
-        For Each sLine In aLine
-          
-          sColor = Left(sLine)
-          sLine = Mid$(sLine, 2)
-          
-          sData &= "<div style=\"background-color:"
-          If sColor = " " Then
-            sData &= "none"
-          Else If sColor = "+" Then
-            sData &= "#D8FFD8"
-          Else If sColor = "-" Then
-            sData &= "#FFD8D8"
-          Endif
-          sData &= ";\">"
-          If sColor = "-" Then sData &= "<s>"
-          
-          sData &= Html(sLine)
-          
-          If sColor = "-" Then sData &= "</s>"
-          sData &= "</div>"
-          If Not sLine Then sData &= "\n"
-          
-        Next
-        
-        Print "<div><pre>"; sData; "</pre></div>"
-        
+    sData = Request["page"]
+    Print "<div class=\"unknown\">"; ("Warning! This is a preview. Click on the [Cancel] button to go back to the edit page."); "</div>"
+    
+  Else
+  
+    sPath = Main.SolvePath(Main.Path)
+    
+    If Not Main.ExistPage(sPath) Then
+      If Main.Lang = Main.DEFAULT_LANG Then
+        Print "<div class=\"unknown\">"; ("This page does not exist."); "</div>"
       Else
+        Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
+      Endif
+      If Not Main.ExistPage(sPath, Main.DEFAULT_LANG) Then Return
+      Main.Lang = Main.DEFAULT_LANG
+    Endif
+    
+    If Main.History Then
+      
+      sDir = File.Dir(Main.GetPagePathFrom(sPath))
+      aFile = Dir(sDir, "~page.*.*").Sort(gb.Descent)
+      If aFile.Count >= 2 Then
+        iPos = Min(Main.History - 1, aFile.Max - 1)
+        Exec ["diff", "-U", "10000", sDir &/ aFile[iPos + 1], sDir &/ aFile[iPos]] To sResult
         
-        Print "<br><div class=\"unknown\">"; ("No change."); "</div>"
+        sDate = Mid$(aFile[iPos], 7)
+        dDate = Date(CInt(Mid$(sDate, 1, 4)), CInt(Mid$(sDate, 5, 2)), CInt(Mid$(sDate, 7, 2)), CInt(Mid$(sDate, 9, 2)), CInt(Mid$(sDate, 11, 2)), CInt(Mid$(sDate, 13, 2)))
+        Print "<h3>"; Html(Format(dDate, gb.GeneralDate)); " - "; Html(File.Ext(aFile[iPos])); "</h3>"
+        
+        If sResult Then
+        
+          aLine = Split(sResult, "\n")
+          aLine.Remove(0, 3)
+          
+          For Each sLine In aLine
+            
+            sColor = Left(sLine)
+            sLine = Mid$(sLine, 2)
+            
+            sData &= "<div style=\"background-color:"
+            If sColor = " " Then
+              sData &= "none"
+            Else If sColor = "+" Then
+              sData &= "#D8FFD8"
+            Else If sColor = "-" Then
+              sData &= "#FFD8D8"
+            Endif
+            sData &= ";\">"
+            If sColor = "-" Then sData &= "<s>"
+            
+            sData &= Html(sLine)
+            
+            If sColor = "-" Then sData &= "</s>"
+            sData &= "</div>"
+            If Not sLine Then sData &= "\n"
+            
+          Next
+          
+          Print "<div><pre>"; sData; "</pre></div>"
+          
+        Else
+          
+          Print "<br><div class=\"unknown\">"; ("No change."); "</div>"
+          
+        Endif
+          
+        Return
         
       Endif
-        
-      Return
       
     Endif
     
-  Endif
-  
-  If Main.Lang <> Main.DEFAULT_LANG Then
-    hStat = Stat(Main.GetPagePathFrom(Main.Path))
-    hStatDef = Stat(Main.GetPagePathFrom(Main.Path, Main.DEFAULT_LANG))
-    If hStat And If hStatDef And If hStatDef.LastModified > hStat.LastModified Then
-      Print "<div><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
+    If Main.Lang <> Main.DEFAULT_LANG Then
+      hStat = Stat(Main.GetPagePathFrom(Main.Path))
+      hStatDef = Stat(Main.GetPagePathFrom(Main.Path, Main.DEFAULT_LANG))
+      If hStat And If hStatDef And If hStatDef.LastModified > hStat.LastModified Then
+        Print "<div><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
+      Endif
     Endif
+    
+    sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
+    
   Endif
   
-  sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
   If Main.Class Then
     If sData Begins "# " Then
       iPos = InStr(sData, "\n")

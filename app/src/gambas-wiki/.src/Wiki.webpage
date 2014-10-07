@@ -63,8 +63,14 @@ H1 { display: none; }
     </div>
     <%If Main.Edit Then%>
       <div class="command">
-        <input type="submit" id="save" name="save" value="<%= ("Save")%>" style="display:none;">
-        <input type="submit" name="cancel" value="<%= ("Cancel")%>">
+        <input type="submit" id="preview" name="preview" value="<%=("Preview")%>">
+        <input type="submit" id="save" name="save" value="<%=("Save")%>" style="display:none;">
+        <input type="submit" name="cancel" value="<%=("Cancel")%>">
+      </div>
+    <%Else If Main.Preview Then%>
+      <div class="command">
+        <input type="submit" id="save" name="save" value="<%=("Save")%>">
+        <input type="button" name="cancel" value="<%=("Cancel")%>" onclick="window.history.back();">
       </div>
     <%Else If Session.Id Then%>
       <div class="command">
@@ -137,6 +143,9 @@ H1 { display: none; }
     <script type="text/javascript">
       document.getElementById('save').style.display = '';
     </script>
+  <%Else If Main.Preview Then%>
+    <%_PrintPage%>
+    <input type="hidden" id="page" name="page" value="<%=Request["page"]%>">
   <%Else%>
     <%_PrintPage%>
     <p></p>

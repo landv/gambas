@@ -590,6 +590,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	db->flags.no_serial = TRUE;
 	db->flags.no_blob = TRUE;
 	db->flags.no_nest = TRUE;
+	db->flags.no_collation = TRUE;
 
 	db->db_name_char = ".";
 	

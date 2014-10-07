@@ -5,6 +5,7 @@ Export
 Static Property Read Paths As String[]
 Static Property {Date} As Date
 Static Property AutoExt As Boolean
+Static Property ShowFixed As Boolean
 
 Static Public Function OpenFile(Optional Multi As Boolean) As Boolean
   
@@ -60,5 +61,24 @@ End
 Static Private Sub AutoExt_Write(Value As Boolean)
 
   FFileDialog.AutoExt = Value
+
+End
+
+Static Public Function SelectFont() As Boolean
+  
+  Return FFontDialog.SelectFont()
+  
+End
+
+
+Static Private Function ShowFixed_Read() As Boolean
+
+  Return FFontDialog.ShowFixed
+
+End
+
+Static Private Sub ShowFixed_Write(Value As Boolean)
+
+  FFontDialog.ShowFixed = Value
 
 End

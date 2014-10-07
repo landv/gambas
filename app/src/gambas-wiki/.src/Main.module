@@ -16,6 +16,7 @@ Public Path As String
 Public Exist As Boolean
 Public Edit As Boolean
 Public Image As Boolean
+Public Preview As Boolean
 Public LinkSuffix As String
 Public History As Integer
 Public UserName As String
@@ -505,6 +506,10 @@ Public Sub Main()
         Return
       Endif
       
+    Else If Request.Exist("preview") Then
+      
+      Preview = True
+      
     Else If Request.Exist("delete") Then
       
       If {Exist} Then
@@ -521,8 +526,8 @@ Public Sub Main()
       
       sPath = GetPagePath()
       sDir = File.Dir(sPath)
-      aPage = Dir(sDir, "~page.*").Sort(gb.Descent)
-      If aPage.Count >= 2 Then
+      Try aPage = Dir(sDir, "~page.*").Sort(gb.Descent)
+      If aPage And If aPage.Count >= 2 Then
         LockPage
         Try Kill sDir &/ aPage[0]
         Try Kill sPath
