@@ -18,11 +18,10 @@
     { HBox3 HBox
       MoveScaled(1,1,77,56)
       Expand = True
-      Spacing = True
-      Margin = True
       { lstType ListContainer
         MoveScaled(1,1,32,54)
         Mouse = Mouse.Pointing
+        Border = False
         { panModule HBox panType
           Name = "panModule"
           MoveScaled(0,0,31,5)
@@ -204,10 +203,14 @@
           }
         }
       }
+      { Separator2 Separator
+        MoveScaled(33,27,0,8)
+      }
       { panOption VBox
         MoveScaled(34,1,42,52)
         Expand = True
         Spacing = True
+        Margin = True
         { Label9 Label
           MoveScaled(0,0,25,4)
           Font = Font["Bold"]

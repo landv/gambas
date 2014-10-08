@@ -4,12 +4,8 @@ Private $sPath As String
 Private $sDir As String
 Private $sType As String
 Private $bDoNotSetName As Boolean
-Private $iFilter As Integer 
-Private $aFilter As String[]
-Private $aFilterType As String[]
-
-Private $bInitExistingTab As Boolean
-Private $bUpdateExistingTab As Boolean
+Private $bInitFileChooser As Boolean
+Private $bInitFilter As Boolean
 
 Public Sub Run(sPath As String, sDir As String, sType As String)
   
@@ -31,8 +27,7 @@ Public Sub lstType_Click()
   Dim sPrefix As String
   Dim hChild As Control
   Dim bOpt As Boolean
-  Dim iFilter As Integer
-  
+ 
   sPrefix = lstType.Current.Tag
   For Each hChild In panOption.Children
     If Not hChild.Tag Then Continue
@@ -55,27 +50,68 @@ Public Sub lstType_Click()
     Object.Unlock(txtName)
   Endif 
   
-  iFilter = $aFilterType.Find(LCase(sPrefix))
-  $iFilter = iFilter
-  $bUpdateExistingTab = True
+  'iFilter = $aFilterType.Find(LCase(sPrefix))
+  '$iFilter = iFilter
+  '$bUpdateExistingTab = True
   
   txtName.SelectAll
   txtName.SetFocus
+  $bInitFilter = False
   
-  UpdateExistingTab
+  'UpdateExistingTab
   
 End
 
-Public Sub InitExistingTab()
+Public Sub InitFilter()
   
-  If $bInitExistingTab Then Return
+  Dim aFilter As String[]
+  Dim hModule As CModule
+  Dim sType As String
+  
+  If $bInitFilter Then Return
+  
+  If Not $bInitFileChooser Then
+    Settings.Read(fchExisting)
+    $bInitFileChooser = True
+  Endif
+  
+  sType = lstType.Current.Tag
+  
+  If Project.IsSourceDir($sDir) Then
+    
+    Select Case sType
+      
+      Case "module"
+        aFilter = ["*.module", ("Gambas modules")]
+      Case "class"
+        aFilter = ["*.class", ("Gambas classes")]
+      Case Else
+        hModule = CModule[sType]
+        aFilter = ["*." & hModule.Key, hModule.NameFilter]
+      
+    End Select
 
-  Settings.Read(fchExisting)
+  Else
   
-  fchExisting.Filter = $aFilter
+    Select Case sType
+      Case "image"
+        aFilter = ["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files")]
+      Case "html"
+        aFilter = ["*.htm;*.html", ("HTML files")]
+      Case "css"
+        aFilter = ["*.css", ("Cascading style sheets")]
+      Case "js"
+        aFilter = ["*.js", ("Javascript files")]
+        
+    End Select
+    
+  Endif
   
-  $bInitExistingTab = True
-  $bUpdateExistingTab = True
+  fchExisting.Filter = aFilter
+  
+  UpdateExistingTab
+  
+  $bInitFilter = True
   
 End
 
@@ -87,6 +123,7 @@ Public Sub Form_Open()
   'Dim aFilter As String[]
   Dim hPanel As Container
   Dim hPictureBox As PictureBox
+  Dim aFilterType As String[]
 
   $bDoNotSetName = False
   
@@ -94,35 +131,20 @@ Public Sub Form_Open()
 
   If Project.IsSourceDir($sDir) Then
 
-    $aFilterType = ["module", "class"]
-    
+    aFilterType = ["module", "class"]
     For Each hModule In CModule.All
-    
-      $aFilterType.Add(hModule.Key)
-    
+      aFilterType.Add(hModule.Key)
     Next
     
-    $aFilter = ["*.module", ("Gambas modules"), "*.class", ("Gambas classes")]
-  
-    For Each hModule In CModule.All
-    
-      If Not hModule.Used Then Continue
-    
-      $aFilter.Add("*." & hModule.Key)
-      $aFilter.Add(hModule.NameFilter)
-    
-    Next
-  
   Else
   
-    $aFilterType = ["image", "html", "css", "js", "text"]
-    $aFilter = ["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files"), "*.htm;*.html", ("HTML files"), "*.css", ("Cascading style sheets"), "*.js", ("Javascript files")]
+    aFilterType = ["image", "html", "css", "js", "text"]
     
   Endif
   
   For Each hPanel In lstType.Children
     If Not hPanel.Tag Then Continue
-    hPanel.Visible = $aFilterType.Exist(hPanel.Tag)
+    hPanel.Visible = aFilterType.Exist(hPanel.Tag)
     If Not hPanel.Visible Then Continue
     hPictureBox = hPanel.Children[0]
     'hPictureBox.W = hPictureBox.H
@@ -140,9 +162,6 @@ Public Sub Form_Open()
     cmbParent.Text = Project.GetParentClass($sPath)
   Endif
   
-  $bInitExistingTab = False
-  UpdateExistingTab
-  
   lstType.Select(Null)
   If Not $sType Then $sType = "module"
   For Each hCtrl In lstType.Children
@@ -152,7 +171,7 @@ Public Sub Form_Open()
     Endif
   Next
   
-  fchExisting_Change
+  tabFile.Index = 0
 
 End
 
@@ -466,24 +485,16 @@ End
 Public Sub Form_Close()
 
   Settings.Write(Me)  
-  Settings.Write(fchExisting)  
+  Settings.Write(fchExisting)
+  $bInitFileChooser = False
   
 End
 
 Private Sub UpdateExistingTab()
   
-  If tabFile.Index <> 1 Then Return
-  If Not $bUpdateExistingTab Then Return
-  
-  If $iFilter >= 0 Then
-    fchExisting.FilterIndex = $iFilter
-    $iFilter = -1
-  Endif
   If CModule.Ext.Exist(lstType.Current.Tag) Then 
     fchExisting.ShowHidden = True
   Endif
-  
-  $bUpdateExistingTab = False
   
 End
 
@@ -491,8 +502,7 @@ End
 Public Sub tabFile_Click()
 
   If tabFile.Index = 1 Then 
-    InitExistingTab
-    UpdateExistingTab
+    InitFilter
   Endif
 
   fchExisting_Change
