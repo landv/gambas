@@ -22,13 +22,13 @@ Public Sub btnCancel_Click()
 
 End
 
-Public Sub lstType_Click()
+Public Sub lvwType_Select()
 
   Dim sPrefix As String
   Dim hChild As Control
   Dim bOpt As Boolean
  
-  sPrefix = lstType.Current.Tag
+  sPrefix = lvwType.Key
   For Each hChild In panOption.Children
     If Not hChild.Tag Then Continue
     hChild.Visible = Split(hChild.Tag, ",").Exist(sPrefix)
@@ -75,7 +75,7 @@ Public Sub InitFilter()
     $bInitFileChooser = True
   Endif
   
-  sType = lstType.Current.Tag
+  sType = lvwType.Key
   
   If Project.IsSourceDir($sDir) Then
     
@@ -124,54 +124,65 @@ Public Sub Form_Open()
   Dim hPanel As Container
   Dim hPictureBox As PictureBox
   Dim aFilterType As String[]
+  Dim sType As String
 
   $bDoNotSetName = False
   
   Settings.Read(Me)
+  
+  lvwType.Clear
 
   If Project.IsSourceDir($sDir) Then
 
     aFilterType = ["module", "class"]
+    
+    lvwType.Add("module", ("Module"), Project.MakeModuleIcon("module", 32).Picture)
+    lvwType.Add("class", ("Class"), Project.MakeModuleIcon("class", 32).Picture)
+    
     For Each hModule In CModule.All
       aFilterType.Add(hModule.Key)
+      lvwType.Add(hModule.Key, hModule.Name, Project.MakeModuleIcon(hModule.Key, 32).Picture)
     Next
     
   Else
   
     aFilterType = ["image", "html", "css", "js", "text"]
     
+    lvwType.Add("image", ("Image"), Picture["icon:/32/image"])
+    lvwType.Add("text", ("Text file"), Picture["icon:/32/text"])
+    lvwType.Add("html", ("HTML file"), Picture["icon:/32/html"])
+    lvwType.Add("css", ("Style sheet"), Picture["icon:/32/html"])
+    lvwType.Add("js", ("Javascript file"), Picture["icon:/32/script"])
+
   Endif
   
-  For Each hPanel In lstType.Children
-    If Not hPanel.Tag Then Continue
-    hPanel.Visible = aFilterType.Exist(hPanel.Tag)
-    If Not hPanel.Visible Then Continue
-    hPictureBox = hPanel.Children[0]
-    'hPictureBox.W = hPictureBox.H
-    hModule = CModule[hPanel.Tag]
-    If Not hModule Then Continue
-    hPanel.Visible = hModule.Used
-    If hPanel.Visible Then
-      If Not hPictureBox.Picture Then hPictureBox.Picture = Project.MakeModuleIcon(hPanel.Tag, 32).Picture
-    Endif
-  Next
+  ' For Each hPanel In lstType.Children
+  '   If Not hPanel.Tag Then Continue
+  '   hPanel.Visible = aFilterType.Exist(hPanel.Tag)
+  '   If Not hPanel.Visible Then Continue
+  '   hPictureBox = hPanel.Children[0]
+  '   'hPictureBox.W = hPictureBox.H
+  '   hModule = CModule[hPanel.Tag]
+  '   If Not hModule Then Continue
+  '   hPanel.Visible = hModule.Used
+  '   If hPanel.Visible Then
+  '     If Not hPictureBox.Picture Then hPictureBox.Picture = Project.MakeModuleIcon(hPanel.Tag, 32).Picture
+  '   Endif
+  ' Next
   
   cmbParent.List = Project.GetClassesOnly()
   cmbParent.Add(("(No parent)"), 0)
   If Project.IsSourcePath($sPath) Then
     cmbParent.Text = Project.GetParentClass($sPath)
   Endif
+  If cmbParent.Index < 0 Then cmbParent.Index = 0
   
-  lstType.Select(Null)
   If Not $sType Then $sType = "module"
-  For Each hCtrl In lstType.Children
-    If hCtrl.Tag = $sType Then 
-      lstType.Select(hCtrl)
-      Break 
-    Endif
-  Next
+  lvwType[$sType].Selected = True
   
   tabFile.Index = 0
+  
+  lvwType_Select
 
 End
 
@@ -195,7 +206,7 @@ End
 
 Private Sub CreateFile() As Boolean
   
-  Dim sType As String = lstType.Current.Tag
+  Dim sType As String = lvwType.Key
   Dim sName As String = Trim(txtName.Text)
   Dim sMsg As String
   Dim sTemp As String
@@ -492,7 +503,7 @@ End
 
 Private Sub UpdateExistingTab()
   
-  If CModule.Ext.Exist(lstType.Current.Tag) Then 
+  If CModule.Ext.Exist(lvwType.Key) Then 
     fchExisting.ShowHidden = True
   Endif
   
