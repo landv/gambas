@@ -393,12 +393,12 @@ void SDLfont::SetFontSize(int size)
 	TTF_SetFontStyle(hSDLfont, style);
 }
 
-void SDLfont::getDefaultFontScale()
+int SDLfont::GetDefaultFontScale()
 {
 	if (hfontsize <= DEFAULT_FONT_HEIGHT)
 		return DEFAULT_FONT_HEIGHT;
 	else
-		return hfontsize / DEFAULT_FONT_HEIGHT
+		return hfontsize / DEFAULT_FONT_HEIGHT;
 }
 
 void SDLfont::SetFontBold(bool state)
