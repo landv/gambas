@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Static Public ShowFixed As Boolean
+Static Public FixedOnly As Boolean
 
 Static Public Function SelectFont() As Boolean
   
@@ -11,7 +11,11 @@ End
 
 Public Sub btnOK_Click()
 
-  Dialog.Font = Font[dlgFont.SelectedFont]
+  If dlgFont.SelectedFont Then
+    Dialog.Font = Font[dlgFont.SelectedFont]
+  Else
+    Dialog.Font = Null
+  Endif
   Me.Close(True)
 
 End
@@ -24,8 +28,12 @@ End
 
 Public Sub Form_Open()
 
-  dlgFont.FixedOnly = ShowFixed
-  dlgFont.SelectedFont = Dialog.Font.ToString()
+  dlgFont.FixedOnly = FixedOnly
+  If Dialog.Font Then
+    dlgFont.SelectedFont = Dialog.Font.ToString()
+  Else
+    dlgFont.SelectedFont = Null
+  Endif
 
 End
 

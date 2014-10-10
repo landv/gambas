@@ -3,9 +3,11 @@
 Export 
 
 Static Property Read Paths As String[]
-Static Property {Date} As Date
 Static Property AutoExt As Boolean
-Static Property ShowFixed As Boolean
+
+Static Property {Date} As Date
+
+Static Property FixedOnly As Boolean
 
 Static Public Function OpenFile(Optional Multi As Boolean) As Boolean
   
@@ -71,14 +73,14 @@ Static Public Function SelectFont() As Boolean
 End
 
 
-Static Private Function ShowFixed_Read() As Boolean
+Static Private Function FixedOnly_Read() As Boolean
 
-  Return FFontDialog.ShowFixed
+  Return FFontDialog.FixedOnly
 
 End
 
-Static Private Sub ShowFixed_Write(Value As Boolean)
+Static Private Sub FixedOnly_Write(Value As Boolean)
 
-  FFontDialog.ShowFixed = Value
+  FFontDialog.FixedOnly = Value
 
 End

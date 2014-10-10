@@ -374,19 +374,31 @@ void SDLfont::SetFontName(char* name)
 #endif
 const char* SDLfont::GetFontName(void )
 {
-	return hfontname.substr((hfontname.find_last_of("/"))+1).c_str();
+	if (!hSDLfont)
+		return "";
+	else
+		return hfontname.substr((hfontname.find_last_of("/"))+1).c_str();
 }
 
 void SDLfont::SetFontSize(int size)
 {
+	hfontsize = size;
+
 	if (!hSDLfont)
 		return;
 
 	int style = TTF_GetFontStyle(hSDLfont);
-	hfontsize = size;
 
 	OpenFont(hfontname.c_str());
 	TTF_SetFontStyle(hSDLfont, style);
+}
+
+void SDLfont::getDefaultFontScale()
+{
+	if (hfontsize <= DEFAULT_FONT_HEIGHT)
+		return DEFAULT_FONT_HEIGHT;
+	else
+		return hfontsize / DEFAULT_FONT_HEIGHT
 }
 
 void SDLfont::SetFontBold(bool state)

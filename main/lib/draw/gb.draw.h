@@ -72,6 +72,7 @@ typedef
 			void *(*GetCurrent)();
 			void (*Begin)(void *);
 			void (*End)();
+			bool (*IsPainted)(void *);
 			}
 			Paint;
 		}

@@ -143,6 +143,12 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(CDRAWINGAREA_clear)
 
+	if (DRAW.Paint.IsPainted(THIS))
+	{
+		GB.Error("DrawingArea is being painted");
+		return;
+	}
+
 	WIDGET->clear();
 
 END_METHOD

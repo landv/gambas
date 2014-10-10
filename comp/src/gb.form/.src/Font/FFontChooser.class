@@ -434,3 +434,16 @@ Public Sub panBorder_BeforeArrange()
   RefreshExample
   
 End
+
+Public Sub SetShowRelative(bRelative As Boolean)
+  
+  btnRelative.Visible = bRelative
+  If Not bRelative Then btnRelative.Value = False
+  
+End
+
+Public Sub GetShowRelative() As Boolean
+  
+  Return btnRelative.Visible
+  
+End

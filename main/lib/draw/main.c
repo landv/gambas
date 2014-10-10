@@ -53,6 +53,7 @@ void *GB_DRAW_1[] EXPORT =
 	(void *)PAINT_get_current,
 	(void *)PAINT_begin,
 	(void *)PAINT_end,
+	(void *)PAINT_is_painted,
 	NULL
 };
 

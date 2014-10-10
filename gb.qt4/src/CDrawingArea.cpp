@@ -355,8 +355,16 @@ void MyDrawingArea::refreshBackground()
 
 void MyDrawingArea::clearBackground()
 {
+	if (drawn)
+	{
+		GB.Error("DrawingArea is being painted");
+		return;
+	}
+
 	if (_cached)
+	{
 		createBackground(width(), height());
+	}
 	else
 	{
 		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);

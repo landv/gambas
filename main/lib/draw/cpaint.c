@@ -80,15 +80,21 @@ GB_PAINT *PAINT_get_current()
 GB_PAINT *PAINT_from_device(void *device)
 {
 	GB_PAINT *d;
-	
+
 	for (d = _current; d; d = d->previous)
 	{
 		if (d->device == device && d->opened)
 			break;
 	}
-	
+
 	return d;
 }
+
+bool PAINT_is_painted(void *device)
+{
+	return PAINT_from_device(device) != NULL;
+}
+
 
 bool PAINT_open(GB_PAINT *paint)
 {

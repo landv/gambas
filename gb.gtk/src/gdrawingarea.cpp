@@ -25,6 +25,13 @@
 #include "gmouse.h"
 #include "gdrawingarea.h"
 
+#ifdef GTK3
+#define UNREF_BUFFER() (cairo_surface_destroy(buffer), buffer = NULL)
+#else
+#define UNREF_BUFFER() (g_object_unref(G_OBJECT(buffer)), buffer = NULL)
+#endif
+
+
 /****************************************************************************************
 
 gDrawingArea Widget
@@ -199,7 +206,7 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 gDrawingArea::~gDrawingArea()
 {
 	if (buffer)
-		g_object_unref(G_OBJECT(buffer));
+		UNREF_BUFFER();
 }
 
 void gDrawingArea::resize(int w, int h)
@@ -244,8 +251,7 @@ void gDrawingArea::setCached(bool vl)
 	
 	if (!_cached)
 	{
-		g_object_unref(G_OBJECT(buffer));
-		buffer = NULL;
+		UNREF_BUFFER();
 		set_gdk_bg_color(border, background());	
 	}
 	
@@ -316,11 +322,8 @@ void gDrawingArea::resizeCache()
 #endif
 			cairo_rectangle(cr, 0, 0, bw, bh);
 			cairo_fill(cr);
-#ifdef GTK3
-			cairo_surface_destroy(buffer);
-#else
-			g_object_unref(buffer);
-#endif
+
+			UNREF_BUFFER();
 		}
 		
 		buffer = buf;
@@ -368,9 +371,9 @@ void gDrawingArea::clear()
 {
 	if (_cached && buffer) 
 	{
-		g_object_unref(buffer);
-		buffer = NULL;
+		UNREF_BUFFER();
 		resizeCache();
+		setCache();
 	}
 }
 
