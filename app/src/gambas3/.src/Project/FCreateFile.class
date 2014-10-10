@@ -123,7 +123,6 @@ Public Sub Form_Open()
   'Dim aFilter As String[]
   Dim hPanel As Container
   Dim hPictureBox As PictureBox
-  Dim aFilterType As String[]
   Dim sType As String
 
   $bDoNotSetName = False
@@ -134,20 +133,17 @@ Public Sub Form_Open()
 
   If Project.IsSourceDir($sDir) Then
 
-    aFilterType = ["module", "class"]
-    
     lvwType.Add("module", ("Module"), Project.MakeModuleIcon("module", 32).Picture)
     lvwType.Add("class", ("Class"), Project.MakeModuleIcon("class", 32).Picture)
     
     For Each hModule In CModule.All
-      aFilterType.Add(hModule.Key)
-      lvwType.Add(hModule.Key, hModule.Name, Project.MakeModuleIcon(hModule.Key, 32).Picture)
+      If hModule.Used Then
+        lvwType.Add(hModule.Key, hModule.Name, Project.MakeModuleIcon(hModule.Key, 32).Picture)
+      Endif
     Next
     
   Else
   
-    aFilterType = ["image", "html", "css", "js", "text"]
-    
     lvwType.Add("image", ("Image"), Picture["icon:/32/image"])
     lvwType.Add("text", ("Text file"), Picture["icon:/32/text"])
     lvwType.Add("html", ("HTML file"), Picture["icon:/32/html"])

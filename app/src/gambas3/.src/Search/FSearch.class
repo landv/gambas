@@ -18,7 +18,7 @@ Private $hCurrent As Object
 Private $sGrep As String
 Private $bReplace As Boolean
 Private $aBrowse As New CFindResult[]
-Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS"]
+Private $aExt As String[] = ["JPG", "JPEG", "BMP", "GIF", "PNG", "ICO", "XPM", "GAMBAS", "WAV", "OGG"]
 Private $bCancel As Boolean
 
 Private $cGrepCache As New Collection
@@ -712,6 +712,8 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
     If sName Begins "vgcore." Then Continue
     If sName Begins "callgrind.out." Then Continue
     If sName Begins "cachegrind.out." Then Continue
+    
+    If Not Project.IsTextFile(sPath) Then Continue
     
     If sFile Begins ".src/" Then
       FDebugInfo.SetSearchListInfo(sName)
