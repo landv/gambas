@@ -437,7 +437,7 @@ void SDLgfx::DrawEllipse(int x, int y, int w, int h)
 }
 
 void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
-		 int srcWidth, int srcHeight, int width, int height)
+		 int srcWidth, int srcHeight, int width, int height, bool no_filter)
 {
 	if ((srcX > surface->GetWidth()) || (srcY > surface->GetHeight()))
 		return;
@@ -490,6 +490,9 @@ void SDLgfx::Blit(SDLsurface *surface, int x, int y, int srcX, int srcY,
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, info.Index);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, no_filter ? GL_NEAREST : GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, no_filter ? GL_NEAREST : GL_LINEAR);
+	
 	glTranslatef(myWidth + x, myHeight + y, 0.0f);
 	glRotatef(rotz, 0, 0, 1);
 	glScalef(scalex, scaley, 0.0f);

@@ -393,12 +393,15 @@ void SDLfont::SetFontSize(int size)
 	TTF_SetFontStyle(hSDLfont, style);
 }
 
-int SDLfont::GetDefaultFontScale()
+int SDLfont::GetScale()
 {
+	if (hSDLfont)
+		return 1;
+
 	if (hfontsize <= DEFAULT_FONT_HEIGHT)
-		return DEFAULT_FONT_HEIGHT;
-	else
-		return hfontsize / DEFAULT_FONT_HEIGHT;
+		return 1;
+
+	return hfontsize / DEFAULT_FONT_HEIGHT;
 }
 
 void SDLfont::SetFontBold(bool state)
@@ -488,7 +491,7 @@ int SDLfont::GetFontAscent(void )
 	if (hSDLfont)
 		return TTF_FontAscent(hSDLfont);
 	else
-		return DEFAULT_FONT_ASCENT;
+		return DEFAULT_FONT_ASCENT * GetScale();
 }
 
 int SDLfont::GetFontDescent(void )
@@ -496,7 +499,7 @@ int SDLfont::GetFontDescent(void )
 	if (hSDLfont)
 		return TTF_FontDescent(hSDLfont);
 	else
-		return DEFAULT_FONT_DESCENT;
+		return DEFAULT_FONT_DESCENT * GetScale();
 }
 
 bool SDLfont::IsFontFixed(void )
@@ -522,8 +525,8 @@ void SDLfont::SizeText(const char *text, int len, int *width, int *height)
 		return;
 	}
 
-	*width = utf8_get_length(text, len) * DEFAULT_FONT_WIDTH;
-	*height = DEFAULT_FONT_HEIGHT;
+	*width = utf8_get_length(text, len) * DEFAULT_FONT_WIDTH * GetScale();
+	*height = DEFAULT_FONT_HEIGHT * GetScale();
 }
 
 SDLsurface* SDLfont::RenderText(const char *text, int len)
@@ -575,4 +578,9 @@ SDLsurface* SDLfont::RenderText(const char *text, int len)
 	_last_surface->Ref();
 
 	return _last_surface;
+}
+
+int SDLfont::GetDefaultFontSize()
+{
+	return DEFAULT_FONT_HEIGHT;
 }

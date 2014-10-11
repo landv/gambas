@@ -75,7 +75,8 @@ public:
 	void SizeText(const char* text, int len, int *width, int *height);
 	SDLsurface* RenderText(const char *text, int len);
 
-	int GetDefaultFontScale();
+	int GetScale();
+	static int GetDefaultFontSize();
 
 private:
 	void OpenFont(const char* file);

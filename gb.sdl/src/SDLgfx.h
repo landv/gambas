@@ -50,7 +50,7 @@ public:
 	void SetFillStyle(int style);
 
 	void Clear(void);
-	void Blit(SDLsurface* s, int x, int y, int srcX = 0, int srcY = 0, int srcWidth = -1, int srcHeight = -1, int width = -1, int height = -1);
+	void Blit(SDLsurface* s, int x, int y, int srcX = 0, int srcY = 0, int srcWidth = -1, int srcHeight = -1, int width = -1, int height = -1, bool no_filter = false);
 	void DrawPixel(int x, int y);
 	void DrawLine(int x1, int y1, int x2, int y2);
 	void DrawRect(int x, int y, int w, int h);

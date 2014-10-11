@@ -202,6 +202,8 @@ END_METHOD
 
 BEGIN_METHOD(CDRAW_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 
+	int scale;
+
 	CHECK_GRAPHIC();
 
 	if (GB.CheckObject(THIS->font))
@@ -221,7 +223,14 @@ BEGIN_METHOD(CDRAW_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 	}*/
 	
 	GFX->SetColor(THIS->forecolor);
-	GFX->Blit(txt, VARG(x), VARG(y));
+
+	scale = FONT->font->GetScale();
+
+	if (scale == 1)
+		GFX->Blit(txt, VARG(x), VARG(y));
+	else
+		GFX->Blit(txt, VARG(x), VARG(y), 0, 0, -1, -1, txt->GetWidth() * scale, txt->GetHeight() * scale, true);
+
 	txt->Unref();
 	
 END_METHOD

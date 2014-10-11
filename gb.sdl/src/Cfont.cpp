@@ -190,6 +190,13 @@ BEGIN_PROPERTY(CFONT_scalable)
 	GB.ReturnBoolean(FONT->IsFontScalable());
 
 END_PROPERTY
+
+BEGIN_PROPERTY(Font_DefaultFontSize)
+
+	GB.ReturnInteger(FONT->GetDefaultFontSize());
+
+END_PROPERTY
+
 #if 0
 GB_DESC CFonts[] =
 {
@@ -227,6 +234,7 @@ GB_DESC CFont[] =
   GB_METHOD("Height", "i", CFONT_height, "(Text)s"),
   GB_METHOD("Image", "Image", CFONT_image, "(Text)s"),
   
+  GB_STATIC_PROPERTY_READ("DefaultFontSize", "i", Font_DefaultFontSize),
 /*
   GB_PROPERTY("Grade", "i", CFONT_grade),
 */
