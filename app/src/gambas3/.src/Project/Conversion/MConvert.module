@@ -152,6 +152,12 @@ Private Sub ConvertForm(sPath As String)
         Endif
       Else If sProp = "Spacing" Then
         sFullLine = "Spacing = True"
+      Else If sProp = "Arrangement" Then
+        If sValue = "LeftRight" Then
+          sFullLine = "Arrangement = Arrange.Row"
+        Else If sValue = "TopBottom" Then
+          sFullLine = "Arrangement = Arrange.Column"
+        Endif
       Else If sClass = "WebBrowser" Then
         If ["Java", "JavaScript", "Path", "Plugins", "Zoom"].Exist(sProp) Then Continue
       Else If sClass = "ValueBox" Then
