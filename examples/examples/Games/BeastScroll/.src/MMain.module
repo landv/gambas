@@ -68,7 +68,7 @@ Public Sub Main()
 
 End
 
-Private Sub DrawText(sText As String, X As Integer, Y As Integer)
+Private Sub DrawText(sText As String, X As Integer, Y As Integer) As Integer
 
   Dim I As Integer
   Dim J As Integer
@@ -82,6 +82,8 @@ Private Sub DrawText(sText As String, X As Integer, Y As Integer)
   Draw.Foreground = Color.White
   Draw.Text(sText, X, Y)
 
+  Return Y + Draw.Font.Height(" ") + 4
+
 End
 
 Public Sub Screen_Draw()
@@ -92,6 +94,8 @@ Public Sub Screen_Draw()
   
   'Screen.Clear
   'Goto PRINT_TEXT
+  
+  Dim Y As Integer
   
   scroll = scroll + speed
   Dec (scroll1)
@@ -173,10 +177,14 @@ Public Sub Screen_Draw()
 PRINT_TEXT:
 
   Print Screen.Framerate; " FPS\r";
-  DrawText(Screen.Framerate & " FPS", 10, 16)
-  DrawText("[F1]   Toggle fullscreen", 10, 32)
-  DrawText("[F5]   Take screenshot to ~/BeastScroll.png", 10, 48)
-  DrawText("[ESC]  Quit", 10, 64)
+  
+  Y = 10
+  Draw.Font.Size = Font.DefaultFontSize * 2
+  Y = DrawText(Screen.Framerate & " FPS", 10, Y)
+  Draw.Font.Size = Font.DefaultFontSize
+  Y = DrawText("[F1]   Toggle fullscreen", 10, Y)
+  Y = DrawText("[F5]   Take screenshot to ~/BeastScroll.png", 10, Y)
+  Y = DrawText("[ESC]  Quit", 10, Y)
   
 End
 
