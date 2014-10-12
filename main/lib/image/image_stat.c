@@ -616,6 +616,6 @@ bool IMAGE_get_info(IMAGE_STREAM *stream, IMAGE_INFO *result)
 	if (err)
 		IMAGE_error = "Cannot read file";
 
-	return TRUE;
+	return err;
 }
 
