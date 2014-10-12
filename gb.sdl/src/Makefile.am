@@ -30,4 +30,5 @@ gb_sdl_la_SOURCES = \
  Ckey.h Ckey.cpp \
  Cmouse.h Cmouse.cpp \
  Cwindow.h Cwindow.cpp \
+ default_font.h \
  main.h main.cpp
