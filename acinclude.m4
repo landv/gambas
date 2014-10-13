@@ -626,30 +626,37 @@ gb_save=`pwd`
 gb_file_list="$1"
 
 gb_main_dir_list="$2"
-gb_main_dir_list_64=`echo "$gb_main_dir_list" | sed s/"lib"/"lib64"/g`
-
-if test "$gb_main_dir_list_64" != "$gb_main_dir_list"; then
-  gb_main_dir_list="$gb_main_dir_list_64 $gb_main_dir_list";
-fi
-
 gb_sub_dir_list="$3"
+
 gb_sub_dir_list_64=`echo "$gb_sub_dir_list" | sed s/"lib"/"lib64"/g`
+
+## if there is 'lib' inside sub-directories, then we decide to search "lib64" first.
 
 if test "$gb_sub_dir_list_64" != "$gb_sub_dir_list"; then
   gb_sub_dir_list="$gb_sub_dir_list_64 $gb_sub_dir_list";
+
+  gb_main_dir_list_64=`echo "$gb_main_dir_list" | sed s/"lib"/"lib64"/g`
+
+  if test "$gb_main_dir_list_64" != "$gb_main_dir_list"; then
+    gb_main_dir_list="$gb_main_dir_list_64 $gb_main_dir_list";
+  fi
+
 fi
 
 for gb_main_dir in $gb_main_dir_list; do
+  dnl echo "search $gb_main_dir"
   if test -d $gb_main_dir; then
     cd $gb_main_dir
     for gb_search_dir in $gb_sub_dir_list; do
       for gb_dir in $gb_search_dir/ $gb_search_dir/*/ $gb_search_dir/*/*/ $gb_search_dir/*/*/*/; do
 
+        dnl echo "search subdir $gb_dir"
         gb_new_file_list=""
         gb_find_dir=""
 
         for gb_file in $gb_file_list; do
 
+          dnl echo "search file $gb_file"
           gb_find=no
           if test -r "$gb_main_dir/$gb_dir/$gb_file" || test -d "$gb_main_dir/$gb_dir/$gb_file"; then
 
@@ -668,6 +675,7 @@ for gb_main_dir in $gb_main_dir_list; do
           fi
 
           if test "$gb_find" = "yes"; then
+            dnl echo "FOUND!"
             if test "x$gb_find_dir" = "x"; then
               if test "x$gb_val" = "x"; then
                 gb_val="$gb_main_dir/$gb_dir"
