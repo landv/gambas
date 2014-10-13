@@ -97,7 +97,7 @@ Public ProfileIndex As Integer
 Public BreakOnError As Boolean
 
 Public Running As Boolean
-Public JustUpdateVersion As Boolean
+'Public JustUpdateVersion As Boolean
 
 'Private Recent As New String[]
 'Private RecentDate As New Date[]
@@ -271,13 +271,13 @@ Public Sub Main()
     Else If sArg = "--version" Or If sArg = "-V" Then
       Print Application.Version
       Quit
-    Else If sArg = "-u" Then
-      Project.JustUpdateVersion = True
-      Project.Dir = Args[iInd + 1]
-      Project.Path = Project.Dir &/ PROJECT_FILE
-      Project.ReadProject(False)
-      Project.Exit
-      Quit
+    ' Else If sArg = "-u" Then
+    '   Project.JustUpdateVersion = True
+    '   Project.Dir = Args[iInd + 1]
+    '   Project.Path = Project.Dir &/ PROJECT_FILE
+    '   Project.ReadProject(False)
+    '   Project.Exit
+    '   Quit
     Else If Left(sArg) = "-" Then
       Error "gambas3: unknown option: " & sArg
       Quit
@@ -3205,16 +3205,16 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Startup = sVal
 
       Case "component"
-        If JustUpdateVersion Then
-          Components.Add(sVal)
-        Else
+        'If JustUpdateVersion Then
+        '  Components.Add(sVal)
+        'Else
           hComp = CComponent.All[sVal]
           If hComp And If Not hComp.Hidden Then
             Components.Add(sVal)
           Else
             aMissing.Add(sVal)
           Endif
-        Endif
+        'Endif
 
       Case "library"
         If bConvert Then
@@ -3437,7 +3437,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Close hFic
 
   VersionFile = Not GetVersion(True)
-  If JustUpdateVersion Then Return
+  'If JustUpdateVersion Then Return
 
   If aMissing.Count Then
     sMsg = Subst(("Some components are missing: &1"), aMissing.Join(", "))
@@ -3493,7 +3493,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   If Project.ReadOnly Then Return
 
-  If Not JustUpdateVersion Then
+  'If Not JustUpdateVersion Then
 
     If Type
       ' If bMakeShortcut Then
@@ -3508,7 +3508,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
       If Not bComponentDoNotChange Then RefreshComponents
     Endif
     
-  Endif
+  'Endif
 
   ' Creates the .project file
 
@@ -3599,7 +3599,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Try Kill sPath
   Move sPath & ".tmp" To sPath
   
-  If JustUpdateVersion Then Return
+  'If JustUpdateVersion Then Return
 
   WriteProjectTranslation
   UpdateComponentFile
