@@ -28,8 +28,8 @@ fi
 
 GB_COMPONENT(
   jit, JIT, gb.jit, [src],
-  [GB_FIND(llvm/Config/llvm-config.h llvm-c/Core.h, /usr/lib/llvm* /usr/local/lib /usr/local /usr/lib /usr `$LLVM_CONFIG --prefix`, include)],
-  [GB_FIND(libLLVM-$LLVM_VERSION.$SHLIBEXT, /usr/lib/llvm* /usr/local /usr `$LLVM_CONFIG --prefix`, lib)],
+  [GB_FIND(llvm/Config/llvm-config.h llvm-c/Core.h, `$LLVM_CONFIG --prefix` /usr/lib/llvm* /usr/local /usr, include)],
+  [GB_FIND(libLLVM-$LLVM_VERSION.$SHLIBEXT, `$LLVM_CONFIG --prefix` /usr/lib/llvm* /usr/local /usr, lib)],
   [$C_LIB `$LLVM_CONFIG --ldflags` -lLLVM-$LLVM_VERSION],
   [-I../../main/gbx -I../../main/share -D_DEBUG -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS])
 

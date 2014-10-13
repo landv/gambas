@@ -213,9 +213,9 @@ Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional
   
   $hLabel.Foreground = Me.Styles[Highlight.Normal].Foreground
   If bError Then
-    $hLabel.Background = Color.Merge(Me.Styles[Highlight.Breakpoint].Foreground, Style.BackgroundOf(Me))
+    $hLabel.Background = Color.Merge(Me.Styles[Highlight.Breakpoint].Foreground, Style.BackgroundOf(Me), 0.3)
   Else
-    $hLabel.Background = Color.Merge(Me.Styles[Highlight.CurrentLine].Foreground, Style.BackgroundOf(Me))
+    $hLabel.Background = Color.Merge(Me.Styles[Highlight.CurrentLine].Foreground, Style.BackgroundOf(Me), 0.3)
   Endif
   $hLabel.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
 

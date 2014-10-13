@@ -51,14 +51,13 @@ Private Sub _PrintPage()
   Dim hStat As Stat
   Dim hStatDef As Stat
 
-
   If Main.Edit Then
     sPath = Main.GetPagePath()  
     If Exist(sPath) Then sData = File.Load(sPath)
     If Not sData Then sData = OldWiki.GetPage(Main.Path)
     If Not sData Then
       If Main.Symbol Then
-        sData = "@{syntax}\n"
+        sData = "@{syntax}\n" & Main.GetDefaultPage()
       Else If Main.Class Then
         sData = "@{symbols}\n"
       Endif
@@ -75,7 +74,7 @@ Private Sub _PrintPage()
   If Main.Preview Then
     
     sData = Request["page"]
-    Print "<div class=\"unknown\">"; ("Warning! This is a preview. Click on the [Cancel] button to go back to the edit page."); "</div>"
+    Print "<div class=\"unknown\">"; Subst(("Warning! This is a preview. Click on the <b>&1</b> button to go back to the edit page."), ("Cancel")); "</div>"
     
   Else
   

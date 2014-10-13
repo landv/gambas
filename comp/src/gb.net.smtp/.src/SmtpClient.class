@@ -350,7 +350,9 @@ Catch
   
 End
 
-Static Public Sub FormatDate(dDate As Date) As String
+Static Public Sub FormatDate({Date} As Date) As String
+
+  Dim dDate As Date = {Date}
 
   If Not dDate Then dDate = Now
   dDate -= Frac(Date(Now)) ' Go to GMT
