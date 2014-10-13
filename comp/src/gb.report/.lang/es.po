@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gb.report 3.6.0\n"
-"PO-Revision-Date: 2014-10-13 16:37 UTC\n"
+"PO-Revision-Date: 2014-10-13 17:30 UTC\n"
 "Last-Translator: jesus <jesus@jesus-linux>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -42,12 +42,20 @@ msgid "Orientation"
 msgstr "Orientación"
 
 #: FOptions.form:72 FPreview.form:214
+msgid "Landscape"
+msgstr "Paisaje"
+
+#: FOptions.form:72 FPreview.form:214
 msgid "Portrait"
 msgstr "Retrato"
 
-#: FOptions.form:72 FPreview.form:214
-msgid "Landscape"
-msgstr "Paisaje"
+#: FPreview.class:313 FPrint.form:192
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: FPreview.class:327
+msgid "Layout..."
+msgstr "Disposición..."
 
 #: FPreview.form:67
 msgid "Report preview"
@@ -85,10 +93,6 @@ msgstr "Archivo"
 msgid "Paper"
 msgstr "Papel"
 
-#: FPreview.form:229 Form1.form:78
-msgid "Custom"
-msgstr ""
-
 #: FPreview.form:229
 msgid "A3"
 msgstr "-"
@@ -105,9 +109,9 @@ msgstr "-"
 msgid "B5"
 msgstr "-"
 
-#: FPreview.form:229
-msgid "Letter"
-msgstr "-"
+#: FPreview.form:229 Form1.form:78
+msgid "Custom"
+msgstr ""
 
 #: FPreview.form:229
 msgid "Executive"
@@ -115,6 +119,10 @@ msgstr "-"
 
 #: FPreview.form:229
 msgid "Legal"
+msgstr "-"
+
+#: FPreview.form:229
+msgid "Letter"
 msgstr "-"
 
 #: FPreview.form:243 FPrint.form:130
@@ -134,16 +142,16 @@ msgid "Recto Verso"
 msgstr ""
 
 #: FPreview.form:293 FPrint.form:100
+msgid "Long side"
+msgstr "Lado largo"
+
+#: FPreview.form:293 FPrint.form:100
 msgid "None"
 msgstr "Ninguno"
 
 #: FPreview.form:293 FPrint.form:100
 msgid "Short side"
 msgstr "Lado corto"
-
-#: FPreview.form:293 FPrint.form:100
-msgid "Long side"
-msgstr "Lado largo"
 
 #: FPreview.form:308
 msgid "Gray Scale"
@@ -172,14 +180,6 @@ msgstr "Copias"
 #: FPreview.form:385
 msgid "Print"
 msgstr "Imprimir"
-
-#: FPreview.class:313 FPrint.form:192
-msgid "Cancel"
-msgstr "Cancelar"
-
-#: FPreview.class:327
-msgid "Layout..."
-msgstr "Disposición..."
 
 #: FPrint.form:38
 msgid "Printer Config"
