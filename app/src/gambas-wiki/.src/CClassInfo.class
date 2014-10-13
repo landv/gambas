@@ -271,6 +271,8 @@ Public Function GetSymbols() As String[]
   Dim sPrefix As String
   Dim aArray As String[]
   Dim bHasSymbols As Boolean
+  Dim bHasDynamicVariable As Boolean
+  Dim sCreatable As String
 
   If Symbols.Count Then
 
@@ -288,6 +290,7 @@ Public Function GetSymbols() As String[]
       Select Case hSym.Kind
         Case "r", "p", "v"
           cSymbol[sPrefix & "p"].Add(hSym.Name)
+          If hSym.Kind = "v" Then bHasDynamicVariable = True
         Case "R", "P", "V"
           cSymbol[sPrefix & "P"].Add(hSym.Name)
         Case "C"
@@ -355,15 +358,29 @@ Public Function GetSymbols() As String[]
     aResult.Add(("This class can be used like an object by creating a hidden instance on demand.") & "\\")
   Endif
 
-  If Symbols.Exist("_new") And If Creatable And If Not IsVirtual() Then
-    'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
-    aResult.Add(Subst(("This class is &1."), Main.GetSymbolLink(Me, "_new", ("creatable"))) & "\\")
-  Else
-    If Not bDynamic Then
-      aResult.Add(("This class is static.") & "\\")
-    Else
-      aResult.Add(("This class is not creatable.") & "\\")
+  sCreatable = ""
+  
+  If Creatable And If Not IsVirtual() Then
+    If Symbols.Exist("_new") Then
+      'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
+      sCreatable = Subst(("This class is &1."), Main.GetSymbolLink(Me, "_new", ("creatable"))) & "\\"
+    Else 
+      sCreatable = Subst(("This class is &1."), ("creatable")) & "\\"
     Endif
+  Endif
+  
+  If Not sCreatable Then
+    If Not bDynamic Then
+      sCreatable = ("This class is static.") & "\\"
+    Else
+      sCreatable = ("This class is not creatable.") & "\\"
+    Endif
+  Endif
+  
+  aResult.Add(sCreatable)
+
+  If Symbols.Exist("_call") Then
+    aResult.Add(Subst(("This class can be used as a &1."), Main.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
   Endif
 
   hSym = Symbols["_get"]
@@ -385,10 +402,6 @@ Public Function GetSymbols() As String[]
 
   If Symbols.Exist("_next") Then
     aResult.Add(Subst(("This class is &1 with the &2 keyword."), Main.GetSymbolLink(Me, "_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
-  Endif
-
-  If Symbols.Exist("_call") Then
-    aResult.Add(Subst(("This class can be used as a &1."), Main.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
   Endif
 
   If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")

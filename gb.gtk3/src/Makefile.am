@@ -103,4 +103,5 @@ gb_gtk3_la_SOURCES = \
 	sm/gnome-marshal.h \
 	sm/gnome-marshal.c \
 	sm/gnometypebuiltins.h \
-	sm/gnometypebuiltins.c
+	sm/gnometypebuiltins.c \
+	sm/sm.h
