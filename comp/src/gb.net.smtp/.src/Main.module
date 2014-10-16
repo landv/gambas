@@ -2,11 +2,11 @@
 
 Public Sub Main()
 
-  ' Dim hClient As New SmtpClient
-  ' 
+  Dim hClient As New SmtpClient
+  
   ' hClient.Host = "smtp.gmail.com"
   ' hClient.Encrypt = Net.SSL
-  ' hClient.User = "g4mba5@gmail.com"
+  ' hClient.User = "benoit.minisini@gmail.com"
   ' Print "Password:"
   ' Line Input hClient.Password
   ' hClient.Debug = True
@@ -16,28 +16,28 @@ Public Sub Main()
   ' hClient.To.Add("Benoît Minisini <benoit.minisini@gmail.com>")
   ' hClient.Body = "This is a test e-mail.\nI hope it will work...\n\nIl était une fois un tout petit bébé   \n=====\nJOLI HISTOIRE.\n  Il y a une pièce jointe !"
   ' hClient.Add(File.Load("~/TexteDehorsilpleut.odt"), "application/vnd.oasis.opendocument.text", "Dehors il pleut.odt")
-  ' hClient.Add(File.Load("~/Zeno.png"), "image/png", "zeno.png")
+  ' hClient.Add(File.Load("~/balloon.png"), "image/png", "balloon.png")
   ' hClient.Send
 
-  Dim hMsg As New SmtpClient
-
-  hMsg.Debug = True
-  hMsg.To.Add("somebody@gmail.com")
-  hMsg.Subject = "Test"
-  hMsg.Add("Something" & "\n\n" & ("-- \nPowered by ") & Application.Name & "\n")
-  hMsg.From = "somebody@gmail.com"
-  hMsg.Host = "smtp.gmail.com"
-  hMsg.Port = 465
-  'hMsg.User = "unknown@gmail.com"
-  'hMsg.Password = "donotknow"
-  'hMsg.Encrypt = Net.SSL
-
-  Try hMsg.Send()
-  If Not Error Then
-    Print "Send successfully"
-  Else
-    Print "Send Failed: "; Error.Text
-  Endif
+  ' Dim hMsg As New SmtpClient
+  ' 
+  ' hMsg.Debug = True
+  ' hMsg.To.Add("somebody@gmail.com")
+  ' hMsg.Subject = "Test"
+  ' hMsg.Add("Something" & "\n\n" & ("-- \nPowered by ") & Application.Name & "\n")
+  ' hMsg.From = "somebody@gmail.com"
+  ' hMsg.Host = "smtp.gmail.com"
+  ' hMsg.Port = 465
+  ' 'hMsg.User = "unknown@gmail.com"
+  ' 'hMsg.Password = "donotknow"
+  ' 'hMsg.Encrypt = Net.SSL
+  ' 
+  ' Try hMsg.Send()
+  ' If Not Error Then
+  '   Print "Send successfully"
+  ' Else
+  '   Print "Send Failed: "; Error.Text
+  ' Endif
 
 
 End
