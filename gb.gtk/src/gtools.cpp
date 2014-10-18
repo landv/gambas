@@ -1129,6 +1129,7 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline_are_b
 			const char *entity_start = ++p;
 			int entity_len;
 			int entity_unicode;
+			char *endptr;
 			
 // 			if ((p_end - p) >= 6 && !strncasecmp(p, "&nbsp;", 6))
 // 			{
@@ -1153,10 +1154,34 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline_are_b
 				}
 				else
 				{
-					const struct entity *e = kde_findEntity(entity_start, entity_len);
-					if (e)
+					entity_unicode = -1;
+					endptr = NULL;
+					errno = 0;
+
+					if (*entity_start == '#')
 					{
-						entity_unicode = e->code;
+						if (entity_start[1] == 'x')
+						{
+							entity_unicode = strtol(&entity_start[2], &endptr, 16);
+							if (entity_unicode <= 0)
+								entity_unicode = -1;
+						}
+						else if (isdigit(entity_start[1]))
+						{
+							entity_unicode = strtol(&entity_start[1], &endptr, 10);
+							if (entity_unicode <= 0)
+								entity_unicode = -1;
+						}
+					}
+					else
+					{
+						const struct entity *e = kde_findEntity(entity_start, entity_len);
+						if (e)
+							entity_unicode = e->code;
+					}
+
+					if (entity_unicode >= 0)
+					{
 						g_string_append_unichar(pango, entity_unicode);
 						continue;
 					}
