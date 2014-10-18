@@ -341,6 +341,10 @@ void gControl::widgetSignals()
 	g_signal_connect(G_OBJECT(widget),"focus-in-event",G_CALLBACK(gcb_focus_in),(gpointer)this);
 	g_signal_connect(G_OBJECT(widget),"focus-out-event",G_CALLBACK(gcb_focus_out),(gpointer)this);
 	//g_signal_connect(G_OBJECT(widget),"event",G_CALLBACK(sg_event),(gpointer)this);
+	if (widget != border)
+	{
+		g_signal_connect(G_OBJECT(widget), "drag-end", G_CALLBACK(sg_drag_end), (gpointer)this);
+	}
 }
 
 void gControl::initSignals()

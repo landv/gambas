@@ -54,7 +54,7 @@ public:
 	
 	static gControl *dragText(gControl *source, char *text, char *format = 0);
 	static gControl *dragImage(gControl *source, gPicture *image);
-	static void end() { _end = true; }
+	static void end();
 	static void cancel();
 	
 	static gControl *getSource() { return _source; }
@@ -110,7 +110,7 @@ private:
 	static gControl *_dest;
 	static guint32 _time;
 	static bool _local;
-	static bool _end;
+	static volatile bool _end;
 };
 
 #endif

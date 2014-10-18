@@ -70,7 +70,8 @@ public:
 	static GtkWindowGroup *enterGroup();
 	static void exitGroup(GtkWindowGroup *oldGroup);
 	static guint32 lastEventTime() { return _event_time; }
-	static void updateLastEventTime(GdkEvent *e);
+	static GdkEvent *lastEvent() { return _event; }
+	static void updateLastEvent(GdkEvent *e);
 
 	static bool (*onKeyEvent)(int type);
 	
@@ -113,6 +114,7 @@ public:
 	static gControl *_button_grab;
 	static gControl *_control_grab;
 	static guint32 _event_time;
+	static GdkEvent *_event;
 	static gMainWindow *_main_window;
 	static bool _close_next_window;
 	static bool _fix_printer_dialog;
