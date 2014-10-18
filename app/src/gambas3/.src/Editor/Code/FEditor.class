@@ -962,30 +962,30 @@ Public Sub Editors_KeyPress()
       For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
         If InStr(sLine, "[heap]") Then
           aScan = Scan(sLine, "*-* *")
-          Print "Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
+          Print "------------ Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
           Break
         Endif
       Next
       
-      aClass = New String[]
-      
-      For Each hClass In Classes
-        aClass.Add(hClass.Name)
-      Next
-      
-      aClass.Sort
-      
-      For Each sClass In aClass
-        Try hClass = Classes[sClass]
-        If Error Then Continue
-        With hClass
-          iOldCount = 0
-          Try iOldCount = $cLastClassCount[sClass]
-          If .Count = iOldCount Then Continue
-          Print sClass; ": "; .Count;; "("; Format(.Count - iOldCount, "+0"); ")"
-          $cLastClassCount[sClass] = .Count
-        End With
-      Next
+      ' aClass = New String[]
+      ' 
+      ' For Each hClass In Classes
+      '   aClass.Add(hClass.Name)
+      ' Next
+      ' 
+      ' aClass.Sort
+      ' 
+      ' For Each sClass In aClass
+      '   Try hClass = Classes[sClass]
+      '   If Error Then Continue
+      '   With hClass
+      '     iOldCount = 0
+      '     Try iOldCount = $cLastClassCount[sClass]
+      '     If .Count = iOldCount Then Continue
+      '     Print sClass; ": "; .Count;; "("; Format(.Count - iOldCount, "+0"); ")"
+      '     $cLastClassCount[sClass] = .Count
+      '   End With
+      ' Next
       
     Endif
 

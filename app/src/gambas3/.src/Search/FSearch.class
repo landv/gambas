@@ -405,6 +405,7 @@ Private Sub Run(iAction As Integer)
   Dim iTry As Integer
   Dim nReplace As Integer
   Dim hEditor As FEditor
+  Dim hTextEditor As Editor
   Dim iLastPos As Integer
   
   If InitSearch() Then Return
@@ -416,6 +417,9 @@ Private Sub Run(iAction As Integer)
       CurrentProcedureName = hEditor.GetProcAt(hEditor.Editor.Line)
     Endif
   Endif
+  
+  Try hTextEditor = $hCurrent.Editor
+  If Error Then Return
   
   aResult = GrepFile($hCurrent)
   

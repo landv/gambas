@@ -220,9 +220,9 @@ Public Sub _GetTextRect(hRect As Rect, bHorizontal As Boolean) As Rect
     If $hPicture Then Y += $hPicture.H + 4
     
     If $sRichText Then
-      H = GetIconView().Font.RichTextHeight($sRichText, hRect.W - 4) '+ 4
+      H = GetIconView().Font.RichTextHeight($sRichText, hRect.W) '+ 4
     Else
-      H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W - 4) '+ 4
+      H = GetIconView().Font.RichTextHeight(Html($sText), hRect.W) '+ 4
     Endif
     HT = Min(H, hRect.H - (Y - hRect.Y) - 8)
     

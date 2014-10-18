@@ -1304,10 +1304,11 @@ Public Sub _RenameItem(hItem As _IconView_Item)
   _EnsureVisible($iRename)
   GetIconGeometry($iRename, hRect)
   hRect = hItem._GetTextRect(hRect, $bHorizontal)
+  hRect.Adjust(-1)
   
   If Not $hRenameBox Then 
     Object.Lock(Me)
-    $hRenameBox = New RenameBox(Me) As "RenameBox"
+    $hRenameBox = New RenameBox(Me, 0) As "RenameBox"
     Object.Unlock(Me)
   Endif
   

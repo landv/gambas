@@ -1430,7 +1430,7 @@ void GDocument::colorize(int y, bool force)
 			old = l->s;
 			GB.FreeArray(&l->highlight);
 			proc = l->proc;
-			(*highlightCallback)(views.first(), yy,state, alternate, tag, l->s, &l->highlight, proc);
+			(*highlightCallback)(views.first(), yy, state, alternate, tag, l->s, &l->highlight, proc);
 			
 			updateAll |= proc != l->proc;
 			l->proc = proc;

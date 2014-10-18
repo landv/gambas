@@ -61,7 +61,7 @@ typedef
 			unsigned no_blob : 1;         /* Blob fields are not supported */
 			unsigned no_seek : 1;         /* Cannot seek anywhere in a Result */
 			unsigned no_nest : 1;         /* Cannot nest transactions */
-			unsigned no_case : 1;         /* If table, field and index names can be case sensitive or not */
+			unsigned no_case : 1;         /* table, field and index names must be converted to lower case */
 			unsigned schema : 1;          /* If table names can be prefixed by a schema name and a dot */
 			unsigned no_collation : 1;    /* No collation support at field level */
 			}
@@ -232,6 +232,7 @@ typedef
 		struct {
 			void (*Init)(void);
 			void (*Add)(const char *);
+			void (*AddLower)(const char *);
 			void (*AddLength)(const char *, int);
 			char *(*Get)(void);
 			char *(*GetNew)(void);

@@ -413,6 +413,26 @@ void q_add(const char *str)
 		q_add_length(str, strlen(str));
 }
 
+void q_add_lower(const char *str)
+{
+	int i, len;
+	char *lstr;
+
+	if (!str)
+		return;
+
+	len = strlen(str);
+
+	if (len <= 0)
+		return;
+
+	lstr = GB.TempString(str, len);
+	for (i = 0; i < len; i++)
+		lstr[i] = GB.ToLower(lstr[i]);
+
+	q_add_length(lstr, len);
+}
+
 char *q_get(void)
 {
 	q_dump_temp();
@@ -639,6 +659,7 @@ void *GB_DB_1[] EXPORT = {
 
 	(void *)q_init,
 	(void *)q_add,
+	(void *)q_add_lower,
 	(void *)q_add_length,
 	(void *)q_get,
 	(void *)q_steal,

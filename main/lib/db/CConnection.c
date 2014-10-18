@@ -276,6 +276,15 @@ BEGIN_PROPERTY(CCONNECTION_error)
 END_PROPERTY
 
 
+/*BEGIN_PROPERTY(Connection_Transaction)
+
+  CHECK_DB();
+
+	GB.ReturnInteger(THIS->trans);
+
+END_PROPERTY*/
+
+
 BEGIN_METHOD_VOID(CCONNECTION_open)
 
   CHECK_DB();
@@ -761,6 +770,7 @@ GB_DESC CConnectionDesc[] =
   GB_PROPERTY_READ("Version", "i", CCONNECTION_version),
   GB_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_PROPERTY_READ("Error", "i", CCONNECTION_error),
+  //GB_PROPERTY_READ("Transaction", "i", Connection_Transaction),
   GB_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
   GB_PROPERTY_READ("Collations", "String[]", Connection_Collations),
   GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
@@ -816,6 +826,7 @@ GB_DESC CDBDesc[] =
   GB_STATIC_PROPERTY_READ("Version", "i", CCONNECTION_version),
   GB_STATIC_PROPERTY_READ("Opened", "b", CCONNECTION_opened),
   GB_STATIC_PROPERTY_READ("Error", "i", CCONNECTION_error),
+  //GB_STATIC_PROPERTY_READ("Transaction", "i", Connection_Transaction),
   GB_STATIC_PROPERTY("IgnoreCharset", "b", CCONNECTION_ignore_charset),
   GB_STATIC_PROPERTY_READ("Collations", "String[]", Connection_Collations),
   GB_STATIC_PROPERTY_READ("Handle", "p", Connection_Handle),
