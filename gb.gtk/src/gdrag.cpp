@@ -145,7 +145,7 @@ static void cb_clear_text(GtkClipboard *clipboard, gpointer text)
 
 static void cb_get_text(GtkClipboard *clipboard, GtkSelectionData *selection, guint info, gpointer text)
 {
-	gtk_selection_data_set_text(selection, (const char *)text, -1);
+	gtk_selection_data_set(selection, selection->target, 8, (guchar *)text, strlen((char *)text));
 }
 
 int gClipboard::getType()
