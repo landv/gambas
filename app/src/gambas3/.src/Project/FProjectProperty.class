@@ -16,6 +16,7 @@ Private $aEnv As String[]
 Private $aComp As String[]
 Private $cComp As New Collection
 
+Private $aComponents As String[]
 Private $aLibraries As String[]
 
 Private $iDoNotRefreshComponent As Integer
@@ -80,6 +81,7 @@ Public Sub Form_Open()
     cmbProfile.Index = If(.Profiling, 0, 1)
     cmbHttpServer.Index = If(.UseHttpServer, 0, 1)
     $aLibraries = .Libraries.Copy()
+    $aComponents = .Components.Copy()
 
   End With
   
@@ -331,8 +333,7 @@ Private Sub GetRequire(sComp As String) As String[]
   
 End
 
-
-Private Sub RefreshComponents()
+Private Sub RefreshComponents(Optional bKeep As Boolean)
 
   Dim sLib As String
   Dim sDep As String
@@ -341,6 +342,8 @@ Private Sub RefreshComponents()
   Dim aComp As New String[]
   Dim hLibInfo As CLibraryInfo
   Dim aNotFound As New String[]
+  Dim aComponent As String[]
+  Dim bCheck As Boolean
 
   If $iDoNotRefreshComponent Then Return
 
@@ -348,15 +351,26 @@ Private Sub RefreshComponents()
 
   gvwComponent.Clear
   
-  $cComp.Clear
+  If bKeep Then
+    aComponent = New String[]
+  Else
+    aComponent = Project.Components
+  Endif
   
   For Each hComp In CComponent.All
     If hComp.Library Then Continue
-    If hComp.Key = CComponent.PROJECT_NAME Then Continue
-    aComp.Add(hComp.Key)
+    sLib = hComp.Key
+    If sLib = CComponent.PROJECT_NAME Then Continue
+    aComp.Add(sLib)
+    If bKeep Then
+      bCheck = False
+      Try bCheck = $cComp[sLib].Value
+      If bCheck And If sLib <> "gb" Then aComponent.Add(sLib)
+    Endif
   Next 
   aComp.Sort
   
+  $cComp.Clear
   $aComp = New String[]
   
   For Each sLib In aComp
@@ -368,11 +382,11 @@ Private Sub RefreshComponents()
     hCompItem = New ComponentItem(hComp) As "Component"
     'bDark = Not bDark
     $cComp[hComp.Key] = hCompItem
-    hCompItem.Locked = sLib = "gb" Or $bShowUsed
+    hCompItem.Locked = sLib = "gb" 'Or $bShowUsed
     
   Next
   
-  For Each sLib In Project.Components
+  For Each sLib In aComponent
     $cComp[sLib].Check("")
     For Each sDep In GetRequire(sLib)
       If Not $cComp.Exist(sDep) Then
@@ -410,6 +424,7 @@ Private Sub RefreshComponents()
   Endif
 
   gvwComponent.Rows.Count = $aComp.Count
+  gvwComponent.Rows.Height = -1
   
   tabProject_Arrange
   
@@ -691,7 +706,7 @@ End
 Public Sub chkShowUsed_Click()
 
   $bShowUsed = chkShowUsed.Value
-  RefreshComponents
+  RefreshComponents(True)
 
 End
 
@@ -867,6 +882,7 @@ End
 
 Public Sub btnUndo_Click()
 
+  $aComponents = Project.Components.Copy()
   RefreshComponents
 
 End
@@ -1133,7 +1149,7 @@ Public Sub btnInsertLib_Click()
   
   Project.UpdateLibraries($aLibraries)
   RefreshLibraries
-  RefreshComponents
+  RefreshComponents(True)
 
 End
 
@@ -1173,7 +1189,7 @@ Private Sub RemoveLibrary(sPath As String)
     $aLibraries.Remove(iPos)
     Project.UpdateLibraries($aLibraries)
     RefreshLibraries
-    RefreshComponents
+    RefreshComponents(True)
   Endif
   
 End
@@ -1214,7 +1230,7 @@ Public Sub btnUndoLib_Click()
 
   $aLibraries = Project.Libraries.Copy()
   RefreshLibraries
-  RefreshComponents
+  RefreshComponents(True)
 
 End
 
@@ -1327,7 +1343,7 @@ End
 
 Public Sub timFilterComponent_Timer()
 
-  RefreshComponents
+  RefreshComponents(True)
   timFilterComponent.Stop
 
 End
