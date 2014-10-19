@@ -91,6 +91,7 @@ Public Sub _new(Optional bFile As Boolean)
   
   If Not bFile Then 
     UpdateFilterPanel
+    UpdateView
   Else
     btnView_Click
     btnView.Visible = False
@@ -219,12 +220,20 @@ Private Sub UpdateZoom()
   
 End
 
+Private Sub UpdateView()
+
+  panView.Visible = $bView
+  mnuShowDetailed.Visible = $bView
+  mnuShowPreview.Visible = $bView
+  btnDetail.Visible = $bView
+  btnPreview.Visible = $bView
+
+End
 
 Public Sub btnView_Click()
 
   $bView = Not $bView
-  panView.Visible = $bView
-  mnuShowDetailed.Visible = $bView
+  UpdateView
   If $bView Then
     fvwChoose.Dir = dvwChoose.Current
     splChoose.Layout = [1, 2]

@@ -571,10 +571,17 @@
       AutoResize = True
       Text = ("All needed information have been collected. You can now create the installation packages for your application...\n<p>Click on the <b>OK</b> button to create the packages.\n<p>Click on the <b>Previous</b> button if you had made a mistake.\n<p>Click on the <b>Cancel</b> button to cancel the operation.\n\n")
     }
-    { edtLog Editor
-      MoveScaled(7,21,65,35)
+    { Panel5 Panel
+      MoveScaled(7,21,66,36)
       Expand = True
-      ReadOnly = True
+      Arrangement = Arrange.Fill
+      Border = Border.Plain
+      { edtLog Editor
+        MoveScaled(0,0,65,35)
+        Expand = True
+        Border = False
+        ReadOnly = True
+      }
     }
     Index = 0
   }

@@ -4428,8 +4428,6 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bW
 
   Inc Application.Busy
 
-  Save
-
   If Right$(sPath, 3) = ".gz" Then
     sOpt = "z"
   Else If Right$(sPath, 4) = ".bz2" Then
@@ -4482,6 +4480,7 @@ End
 
 Public Sub MakeSourcePackageTo(sPath As String, Optional bWait As Boolean)
 
+  Save
   WriteProject(True)
   MakeSourcePackageFromTo(Project.Dir, sPath, bWait)
 

@@ -288,7 +288,7 @@ Private Sub RegisterUser() As Boolean
   Next
   
   hSmtpClient = New SmtpClient
-  hSmtpClient.From = "noreply@gambasdoc.org"
+  hSmtpClient.From = "noreply@gambaswiki.org"
   hSmtpClient.To.Add(sFirstName & " " & sLastName & " <" & sEmail & ">")
   hSmtpClient.Host = "smtp.hosting.blueleader.net"
   hSmtpClient.Subject = "Gambas wiki registration confirmation"

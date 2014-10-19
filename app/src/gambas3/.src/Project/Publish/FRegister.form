@@ -1,0 +1,81 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,32)
+  Text = ("Register")
+  Icon = Picture["icon:/small/identity"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { HBox2 HBox
+    MoveScaled(1,1,58,4)
+    Spacing = True
+    { Label1 Label
+      MoveScaled(0,0,17,4)
+      Text = ("Login")
+    }
+    { txtLogin TextBox
+      MoveScaled(28,0,24,4)
+      Expand = True
+    }
+  }
+  { HBox3 HBox
+    MoveScaled(1,6,58,4)
+    Spacing = True
+    { Label2 Label
+      MoveScaled(0,0,17,4)
+      Text = ("Password")
+    }
+    { txtPassword TextBox
+      MoveScaled(28,0,24,4)
+      Expand = True
+    }
+  }
+  { HBox5 HBox
+    MoveScaled(1,11,58,4)
+    Spacing = True
+    { Label3 Label
+      MoveScaled(0,0,17,4)
+      Text = ("Full name")
+    }
+    { txtName TextBox
+      MoveScaled(28,0,24,4)
+      Expand = True
+    }
+  }
+  { HBox4 HBox
+    MoveScaled(1,16,58,4)
+    Spacing = True
+    { Label4 Label
+      MoveScaled(0,0,17,4)
+      Text = ("E-mail")
+    }
+    { txtEmail TextBox
+      MoveScaled(28,0,24,4)
+      Expand = True
+    }
+  }
+  { Panel2 Panel
+    MoveScaled(24,23,9,1)
+    Expand = True
+  }
+  { HBox1 HBox
+    MoveScaled(1,27,62,4)
+    Spacing = True
+    { Panel1 Panel
+      MoveScaled(4,0,4,4)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(24,0,16,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(45,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

@@ -1,0 +1,335 @@
+' Gambas module file
+
+Private Root As String
+
+Private $hConn As Connection
+Private $iUser As Integer
+
+Private Sub PrintError(sErr As String)
+
+  Response.ContentType = "text/plain;charset=utf-8"
+  Response.Begin
+  Print sErr
+  Response.End
+
+End
+
+Private Sub PrintOK()
+
+  Response.ContentType = "text/plain;charset=utf-8"
+  Response.Begin
+  Print "10 OK"
+  Response.End
+
+End
+
+Public Sub Main()
+
+  Dim sErr As String
+  ' Dim sField As String
+  
+  Root = User.Home &/ "farm"
+  
+  Select Case Request.Path
+    
+    Case "/register" ' register a new account
+    
+      RegisterUser
+    
+    Case "/confirm" ' confirm registration
+    
+      ConfirmRegistration
+    
+    Case "/publish" ' publish software
+      
+      PublishSoftware
+      
+    Case "/get" ' get info about software
+      
+    Case "/search" ' search for software
+      
+    Case "/download" ' download software
+      
+    Case "/screenshot" ' download screenshot
+    
+    Case "/vote" ' vote or remove a vote for a software
+    
+    ' Case "/test"
+    '   
+    '   Response.ContentType = "text/plain;charset=utf-8"
+    '   Response.Begin
+    '   Print "99 This is a test!"
+    '   For Each sField In Request.Fields
+    '     Print sField; ": "; Request[sField]
+    '   Next
+    '   Response.End
+    
+    Case Else
+      
+      PrintError("11 Unknown command")
+    
+  End Select
+  
+Catch
+  
+  sErr = "12 Unexpected error\n\n" & Error.Text & "\n\n" & Error.Backtrace.Join("\n")
+  PrintError(sErr)
+
+End
+
+Private Sub OpenDatabase()
+  
+  If $hConn Then Return
+  
+  $hConn = New Connection
+  $hConn.Type = "postgresql"
+  $hConn.Name = "gambas3_farm"
+  $hConn.Open
+  
+End
+
+
+Private Sub RegisterUser()
+
+  Dim sLogin As String
+  Dim sPassword As String
+  Dim sName As String
+  Dim rUser As Result
+  Dim I As Integer
+  Dim sKey As String
+  Dim hSmtpClient As SmtpClient
+  Dim sErr As String
+  Dim sEmail As String
+  
+  OpenDatabase
+  
+  sLogin = Request["login"]
+  sPassword = Request["password"]
+  sName = Request["name"]
+  sEmail = Request["email"]
+  
+  If Not sLogin Or If Not sPassword Or If Not sEmail Then
+    PrintError("13 Syntax error")
+    Return
+  Endif
+  
+  For I = 1 To 6
+    sKey &= Hex$(Int(Rnd(65536)), 4)
+  Next
+
+  rUser = DB.Create("user")
+  rUser!login = sLogin
+  rUser!password = sPassword
+  rUser!name = sName
+  rUser!confirm = sKey
+  Try rUser.Update
+  
+  If Error Then
+    PrintError("21 Login already in use")
+    Return
+  Endif
+  
+  hSmtpClient = New SmtpClient
+  hSmtpClient.From = "noreply@gambaswiki.org"
+  hSmtpClient.To.Add(sName & " <" & sEmail & ">")
+  hSmtpClient.Host = "smtp.free.fr" '"smtp.hosting.blueleader.net"
+  hSmtpClient.Subject = "Gambas farm registration confirmation"
+  hSmtpClient.Body = "Hi,\n\n"
+    "You have requested a Gambas farm account.\n"
+    "Please click on the following link to confirm your registration:\n\n"
+    "http://" & Application.Host &/ Application.Root &/ "confirm?key=" & URL.Encode(sKey) & "&login=" & URL.Encode(sLogin) & "\n\n"
+  
+  Try hSmtpClient.Send
+  If Error Then
+    sErr = Error.Text
+    Try DB.Delete("user", "login = &1", sLogin)
+    PrintError("22 Cannot send confirmation mail\n\n" & sErr)
+    Return
+  Endif
+
+  PrintOK
+  
+End
+
+
+Private Sub ConfirmRegistration()
+
+  Dim sLogin As String
+  Dim sKey As String
+  Dim rUser As Result
+  
+  OpenDatabase
+  
+  sLogin = Request["login"]
+  sKey = Request["key"]
+  
+  rUser = DB.Edit("user", "login = &1", sLogin)
+  If Not rUser.Available Then
+    PrintError("31 Unknown user")
+    Return
+  Endif
+  
+  If rUser!confirm <> sKey Then
+    PrintError("32 Confirmation failed")
+    Return
+  Endif
+
+  rUser!confirm = ""
+  rUser.Update
+  
+  PrintOK
+
+End
+
+Private Sub CheckUser() As Boolean
+
+  Dim sLogin As String
+  Dim sPassword As String
+  Dim rUser As Result
+
+  OpenDatabase
+  
+  sLogin = Request["login"]
+  sPassword = Request["password"]
+  
+  rUser = DB.Find("user", "login = &1", sLogin)
+  If Not rUser.Available Then Goto FAILED
+  If rUser!password <> sPassword Then Goto FAILED
+  
+  $iUser = rUser!id
+  Return
+
+FAILED:
+
+  PrintError("14 Authentication failed")
+  Return True
+  
+End
+
+Private Sub CheckVersion(sVersion As String) As Boolean
+
+  Dim aVersion As String[]
+  Dim I As Integer
+
+  aVersion = Split(sVersion, ".")
+  If aVersion.Count > 3 Then Return True
+  For I = 0 To aVersion.Max
+    If Not IsDigit(aVersion[I]) Then Return True
+  Next
+  
+
+End
+
+Private Sub CopySoftwareFile($iId As Integer, sDest As String, sSource As String)
+
+  sDest = Root &/ CStr($iId) &/ sDest
+  Try Kill sDest
+  Copy sSource To sDest
+
+End
+
+Private Sub PublishSoftware()
+
+  Dim sName As String
+  Dim sVersion As String
+  Dim sDesc As String
+  Dim sGambas As String
+  Dim sChecksum As String
+  Dim sSource As String
+  Dim rSoftware As Result
+  Dim sIcon As String
+  Dim sScreenshot As String
+  Dim aVersion As String[]
+  
+  If CheckUser() Then Return
+
+  sName = Request["name"]
+  sVersion = Request["version"]
+  sDesc = Request["desc"]
+  sGambas = Request["gambas"]
+  sChecksum = Request["checksum"]
+  sSource = Request["source"]
+  sIcon = Request["icon"]
+  sScreenshot = Request["screenshot"]
+  
+  If Not sName Then
+    PrintError("13 Name missing")
+    Return
+  Endif
+  
+  If Not sVersion Then
+    PrintError("13 Version missing.")
+    Return
+  Endif
+  
+  If Not sChecksum Then
+    PrintError("13 Checksum missing")
+    Return
+  Endif
+  
+  If Not sIcon Then
+    PrintError("13 Icon missing")
+    Return
+  Endif
+  
+  If Not sSource Or If Not Request.Files["source"] Then
+    PrintError("13 Source archive missing")
+    Return
+  Endif
+  
+  If CheckVersion(sVersion) Then
+    PrintError("41 Incorrect version")
+    Return
+  Endif
+  
+  If CheckVersion(sGambas) Then
+    PrintError("42 Incorrect Gambas version")
+    Return
+  Endif
+  
+  If sSource Not Ends ".tar.gz" And If sSource Not Ends ".tar.bz2" Then
+    PrintError("44 Unsupported source archive format")
+    Return
+  Endif
+  
+  If sIcon Not Ends ".png" Then
+    PrintError("45 Unsupported icon format")
+    Return
+  Endif
+  
+  aVersion = Split(sVersion, ".")
+  sName &= "_" & aVersion[0]
+  
+  rSoftware = DB.Edit("software", "name = &1", sName)
+  If rSoftware.Available Then
+    If rSoftware!owner <> $iUser Then
+      PrintError("43 Software already exists")
+      Return
+    Endif
+  Else
+    rSoftware = DB.Create("software")
+    rSoftware!name = sName
+    rSoftware!owner = $iUser
+  Endif
+  
+  rSoftware!version = sVersion
+  rSoftware!description = sDesc
+  rSoftware!gambas = sGambas
+  rSoftware!checksum = sChecksum
+  rSoftware!date = Now
+  rSoftware.Update
+  
+  rSoftware = DB.Find("software", "name = &1", sName)
+  
+  Try Mkdir Root
+  Try Mkdir Root &/ CStr(rSoftware!id)
+  
+  CopySoftwareFile(rSoftware!id, "source.tar." & File.Ext(sSource), Request.Files["source"])
+  CopySoftwareFile(rSoftware!id, "icon.png", Request.Files["icon"])
+  If sScreenshot Then
+    CopySoftwareFile(rSoftware!id, "screenshot." & File.Ext(sScreenshot), Request.Files["screenshot"])
+  Endif
+  
+  PrintOK
+
+End

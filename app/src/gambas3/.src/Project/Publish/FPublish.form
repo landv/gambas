@@ -1,0 +1,163 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,71,54)
+  Text = ("Publish project")
+  Icon = Picture["icon:/medium/internet"]
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  { Panel5 VBox
+    MoveScaled(1,0,65,29)
+    Spacing = True
+    Margin = True
+    { Label6 Label
+      MoveScaled(1,1,23,3)
+      Font = Font["Bold"]
+      Text = ("Identity")
+    }
+    { HBox1 HBox
+      MoveScaled(1,5,58,4)
+      Spacing = True
+      Indent = True
+      { Label5 Label
+        MoveScaled(0,0,26,4)
+        Text = ("Farm")
+      }
+      { cmbFarm ComboBox
+        MoveScaled(28,0,24,4)
+        Expand = True
+      }
+    }
+    { HBox2 HBox
+      MoveScaled(1,10,58,4)
+      Spacing = True
+      Indent = True
+      { Label1 Label
+        MoveScaled(0,0,26,4)
+        Text = ("Login")
+      }
+      { txtLogin TextBox
+        MoveScaled(28,0,24,4)
+        Expand = True
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(1,15,58,4)
+      Spacing = True
+      Indent = True
+      { Label2 Label
+        MoveScaled(0,0,26,4)
+        Text = ("Password")
+      }
+      { txtPassword TextBox
+        MoveScaled(28,0,24,4)
+        Expand = True
+        Password = True
+      }
+    }
+    { HBox6 HBox
+      MoveScaled(1,20,58,3)
+      Spacing = True
+      Indent = True
+      { Label4 Label
+        MoveScaled(0,0,26,3)
+      }
+      { chkRememberPassword CheckBox
+        MoveScaled(28,0,25,3)
+        Expand = True
+        Text = ("Remember password")
+      }
+    }
+    { HBox8 HBox
+      MoveScaled(1,24,58,4)
+      Spacing = True
+      Indent = True
+      { Panel4 Panel
+        MoveScaled(0,0,26,4)
+      }
+      { btnRegister Button
+        MoveScaled(32,0,23,4)
+        Text = ("Register") & "..."
+        Picture = Picture["icon:/small/identity"]
+      }
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(21,30,13,0)
+  }
+  { Panel6 VBox
+    MoveScaled(1,31,64,15)
+    Spacing = True
+    Margin = True
+    { Label7 Label
+      MoveScaled(1,1,23,3)
+      Font = Font["Bold"]
+      Text = ("Project")
+    }
+    { HBox5 HBox
+      MoveScaled(1,5,58,4)
+      Spacing = True
+      Indent = True
+      { Label3 Label
+        MoveScaled(0,0,26,4)
+        Text = ("Screenshot")
+      }
+      { txtScreenshot ButtonBox
+        MoveScaled(28,0,26,4)
+        Expand = True
+        Picture = Picture["icon:/small/image"]
+        ReadOnly = True
+      }
+    }
+    { HBox7 HBox
+      MoveScaled(1,10,58,4)
+      Spacing = True
+      Indent = True
+      { Label8 Label
+        MoveScaled(0,0,26,4)
+        Text = ("Require Gambas version")
+      }
+      { cmbGambasVersion ComboBox
+        MoveScaled(28,0,11,4)
+        #Translate = False
+        List = ["3.3", "3.4", "3.5", "3.6"]
+      }
+      { Panel2 Panel
+        MoveScaled(44,1,5,2)
+        Expand = True
+      }
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(32,47,10,0)
+  }
+  { HBox4 HBox
+    MoveScaled(1,48,68,6)
+    Spacing = True
+    Margin = True
+    { spnPublish Spinner
+      MoveScaled(1,0,4,4)
+      Enabled = False
+    }
+    { lblMessage Label
+      MoveScaled(7,1,16,4)
+      Expand = True
+    }
+    { btnPublish Button
+      MoveScaled(19,0,16,4)
+      Text = ("Publish")
+      Picture = Picture["icon:/small/internet"]
+    }
+    { btnAbort Button
+      MoveScaled(35,0,16,4)
+      Visible = False
+      Text = ("Abort")
+      Picture = Picture["icon:/small/stop"]
+    }
+    { btnCancel Button
+      MoveScaled(51,0,16,4)
+      Text = ("Close")
+    }
+  }
+}

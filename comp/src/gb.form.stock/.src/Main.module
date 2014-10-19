@@ -23,6 +23,7 @@ Private Sub MakeStock()
   Dim aLine As String[]
   Dim sIcon As String
   Dim sPath As String
+  Dim sPathOrg As String
   Dim sTheme As String
   Dim sSize As String
   Dim sTemplate As String
@@ -32,6 +33,8 @@ Private Sub MakeStock()
   Dim hImage As Image
   Dim hSvgImage As SvgImage
   Dim bOK As Boolean
+  Dim bFound As Boolean
+  Dim sTest As String
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/icon.map"
   
@@ -51,8 +54,12 @@ Private Sub MakeStock()
     If Not sPath Then Continue
     sPath = Split(sPath, ";")[0]
     
-    Print sIcon
-    'If sIcon = "webcam" Then Stop
+    If sPath Begins "[elementary]" Then sPath = Mid$(sPath, InStr(sPath, "]") + 1)
+    
+    Print sIcon;; sPath
+    If sIcon = "favorite" Then Stop
+    
+    sPathOrg = sPath
     
     For Each sSize In ["scalable", "16", "22", "32"]
       
@@ -63,9 +70,28 @@ Private Sub MakeStock()
       
       For Each sTheme In ["elementary/&2/&1", "Tango/&1/&2", "Humanity/&2/&1", "gnome/&1/&2", "hicolor/&1/&2"]
     
+        If sIcon = "favorite" And If sTheme Begins "elementary/" Then Continue
+    
         sTemplate = "/usr/share/icons" &/ sTheme
         'If Not Exist(sTemplate) Then Continue
     
+        If sPathOrg Begins "$(mime)/" Then
+          
+          bFound = False
+          
+          For Each sTest In ["mimetypes", "mimes"]
+            sPath = Subst(sTemplate, sSize, sTest)
+            If Exist(sPath) Then
+              sPath = Replace(sPathOrg, "$(mime)", sTest)
+              bFound = True
+              Break
+            Endif
+          Next
+          
+          If Not bFound Then Goto NEXT_ICON
+      
+        Endif
+      
         If sSize = "scalable" Then
           sExt = ".svg"
           bOK = True
@@ -104,6 +130,8 @@ Private Sub MakeStock()
         Endif
     
       Next
+      
+    NEXT_ICON:
       
       If Not bOK Then Print sIcon;; "("; sSize; "): *NOT FOUND*"
       

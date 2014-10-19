@@ -1,0 +1,178 @@
+' Gambas class file
+
+Private $hForm As HttpForm
+Private $sResult As String
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Public Sub btnRegister_Click()
+
+  FRegister.ShowModal
+
+End
+
+Public Sub btnPublish_Click()
+
+  PublishSoftware
+
+End
+
+Private Sub GetCheckSum(sPath As String) As String
+  
+  Dim sChecksum As String
+  Dim iPos As Integer
+  
+  Exec ["sha512sum", sPath] To sChecksum
+  iPos = InStr(sChecksum, " ")
+  sChecksum = Left(sChecksum, iPos - 1)
+  Return sChecksum
+  
+Catch
+  
+  Error.Raise("Unable to compute checksum")
+  
+End
+
+
+Private Sub PublishSoftware()
+
+  Dim sSource As String
+  Dim sIcon As String
+  Dim sChecksum As String
+  Dim sErr As String
+  Dim sScreenshot As String
+  
+  spnPublish.Enabled = True
+  btnPublish.Hide
+  btnCancel.Hide
+  btnAbort.Show
+  
+  sSource = Temp$()
+  sSource = File.Dir(sSource) &/ File.BaseName(sSource) & ".tar.bz2" 'Project.GetDefaultArchiveBaseName() & ".tar.bz2"
+  Project.MakeSourcePackageTo(sSource)
+  
+  sChecksum = GetCheckSum(sSource)
+  
+  If Project.Icon Then
+    sIcon = Project.Dir &/ Project.Icon
+  Else
+    sIcon = "img/logo/project.png"
+  Endif
+  
+  sScreenshot = txtScreenshot.Text
+
+  $hForm = New HttpForm As "FarmClient"
+  $hForm.URL = "http://localhost/farm/publish" '"http://" & cmbFarm.Text &/ "farm/publish"
+  $hForm.Async = True
+  
+  $hForm.Add("login", txtLogin.Text)
+  $hForm.Add("password", txtPassword.Text)
+  $hForm.Add("name", Project.Name)
+  $hForm.Add("version", CStr(Project.MajorVersion) & "." & CStr(Project.MinorVersion) & "." & CStr(Project.ReleaseVersion))
+  $hForm.Add("desc", Project.Description)
+  $hForm.Add("gambas", cmbGambasVersion.Text)
+  $hForm.Add("checksum", sChecksum)
+  $hForm.AddFile("icon", sIcon, "icon.png")
+  $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
+  If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
+  $hForm.Submit()
+
+Catch
+  
+  sErr = Error.Text
+  btnAbort_Click
+  Message.Error(("Unable to publish project.") & "\n\n" & sErr)
+
+End
+
+Public Sub FarmClient_Connect()
+  
+  lblMessage.Text = ("Connected to farm...")
+  
+End
+
+Public Sub FarmClient_Progress()
+  
+  Debug $hForm.Uploaded; " / "; $hForm.TotalUploaded
+  lblMessage.Text = Subst(("Sending project (&1)"), Format($hForm.Uploaded / $hForm.TotalUploaded, "0%"))
+  
+End
+
+Public Sub FarmClient_Read()
+
+  Dim sBuffer As String
+  
+  lblMessage.Text = ("Reading server response...")
+  sBuffer = Read #$hForm, Lof($hForm)
+  $sResult &= sBuffer
+  
+End
+
+Private Sub PublishEnd()
+
+  lblMessage.Text = ""
+  btnPublish.Show
+  btnAbort.Hide
+  btnCancel.Show
+  spnPublish.Enabled = False
+  $hForm = Null
+
+End
+
+Public Sub FarmClient_Error()
+  
+  PublishEnd
+  Message.Error(("Unable to publish project.") & "\n\n" & $hForm.ErrorText)
+  
+End
+
+Public Sub FarmClient_Finished()
+  
+  Dim iPos As Integer
+  
+  PublishEnd
+  
+  If $sResult Not Begins "10 OK" Then
+    iPos = InStr($sResult, " ")
+    $sResult = Mid$($sResult, iPos + 1)
+    Message.Error(("Unable to publish project.") & "\n\n" & $sResult)
+  Else
+    Message(("The project has been successfully published."))
+  Endif
+  
+End
+
+
+Public Sub btnAbort_Click()
+
+  Try $hForm.Stop
+  PublishEnd
+
+End
+
+Public Sub txtScreenshot_Click()
+
+  Dialog.Title = ("Select a screenshot of your project")
+  Dialog.Filter = ["*.png;*.jpg;*.jpeg", ("Picture files")]
+  Dialog.Path = txtScreenshot.Text
+  If Dialog.OpenFile() Then Return
+  
+  txtScreenshot.Text = Dialog.Path
+
+End
