@@ -1870,7 +1870,9 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 		else
 			comma = TRUE;
 
+		DB.Query.Add(QUOTE_STRING);
 		DB.Query.AddLower(fp->name);
+		DB.Query.Add(QUOTE_STRING);
 
 		if (fp->type == DB_T_SERIAL)
 		{
@@ -1935,7 +1937,9 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 			if (i > 0)
 				DB.Query.Add(",");
 
+			DB.Query.Add(QUOTE_STRING);
 			DB.Query.AddLower(primary[i]);
+			DB.Query.Add(QUOTE_STRING);
 		}
 
 		DB.Query.Add(")");
