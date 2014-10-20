@@ -9,7 +9,7 @@
     Text = ("<h1>Gambas Movie Player</h1>\n\n<p>This example is based on the MPlayer movie player and was made by Benoît Minisini</p>")
   }
   { panButton Panel
-    MoveScaled(0,26,46,6)
+    MoveScaled(2,35,46,6)
     { btnPlay Button
       MoveScaled(1,1,4,4)
       Enabled = False
@@ -30,15 +30,13 @@
       Picture = Picture["icon:/small/open"]
     }
   }
-  { dwgMoviePlayer DrawingArea
-    MoveScaled(5,18,9,5)
-    Visible = False
-    Enabled = False
-    Background = &H000000&
-    Focus = True
-  }
   { timShow #Timer
     #MoveScaled(32,17)
     Delay = 500
+  }
+  { embPlayer Embedder
+    MoveScaled(7,20,23,13)
+    Visible = False
+    Background = &H000000&
   }
 }
