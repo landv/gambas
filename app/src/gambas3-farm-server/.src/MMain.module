@@ -112,6 +112,7 @@ Private Sub RegisterUser()
   sLogin = Request["login"]
   sPassword = Request["password"]
   sName = Request["name"]
+  If Not sName Then sName = sLogin
   sEmail = Request["email"]
   
   If Not sLogin Then
@@ -194,7 +195,7 @@ Private Sub ConfirmRegistration()
   rUser.Update
   
   Response.Begin
-  Print "<h1>Welcome "; Html(sLogin); "</h1><h2>Your account has been successfully activated!</h2>"
+  Print "<h1>Welcome "; Html(rUser!name); "!</h1><h2>Your account has been successfully activated.</h2>"
   Response.End
 
 End
