@@ -236,9 +236,8 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
   Endif
 
   If Not ContentType Then ContentType = GetContentTypeFrom(Path)
-  Print "Content-type: "; ContentType
+  Print "Content-Type: "; ContentType
   Print $sHeader;
-  'IF Name THEN PRINT "Content-location: "; "/" & CGI.Encode(Name)
   
   $hFile = Open Path For Read 
 

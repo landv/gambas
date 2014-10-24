@@ -78,6 +78,9 @@ Public Url As String
 Public License As String
 Public CreateEachDirectory As Boolean
 
+Public PublishTags As String[]
+Public PublishDependencies As String[]
+
 Public TabSize As Integer
 Public Version As String
 Public FullVersion As String
@@ -3181,6 +3184,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Url = ""
   License = ""
   CreateEachDirectory = False
+  PublishTags = New String[]
+  PublishDependencies = New String[]
+  
 
   For Each sLig In hFic.Lines
 
@@ -3429,6 +3435,12 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         
       Case "execpath"
         OldExecPath = sVal
+        
+      Case "tags"
+        PublishTags = Split(sVal)
+        
+      Case "dependencies"
+        PublishDependencies = Split(sVal)
 
     End Select
 
@@ -3593,6 +3605,9 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     If ExtraDependencies[sSys] Then Print #hFic, "ExtraDependencies="; sSys; ":"; Quote(ExtraDependencies[sSys])
     If ExtraFiles[sSys] Then Print #hFic, "ExtraFiles="; sSys; ":"; Quote(ExtraFiles[sSys])
   Next
+
+  If PublishTags And If PublishTags.Count Then Print #hFic, "Tags="; PublishTags.Join(",")
+  If PublishDependencies And If PublishDependencies.Count Then Print #hFic, "Dependencies="; PublishDependencies.Join(",")
 
   Close #hFic
 

@@ -964,7 +964,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Container_Border)
 
 	MyContainer *w = qobject_cast<MyContainer *>(THIS->container);
-	
+
 	if (!w)
 		return;
 
@@ -973,6 +973,23 @@ BEGIN_PROPERTY(Container_Border)
 	else
 	{
 		w->setFrameStyle(VPROP(GB_INTEGER));
+		arrange_now(CONTAINER);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Container_SimpleBorder)
+
+	MyContainer *w = qobject_cast<MyContainer *>(THIS->container);
+
+	if (!w)
+		return;
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(w->frameStyle());
+	else
+	{
+		w->setFrameStyle(VPROP(GB_BOOLEAN) ? BORDER_PLAIN : BORDER_NONE);
 		arrange_now(CONTAINER);
 	}
 

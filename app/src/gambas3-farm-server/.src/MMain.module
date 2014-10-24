@@ -46,14 +46,20 @@ Public Sub Main()
       
     Case "/get" ' get info about software
       
-    Case "/search" ' search for software
+      GetSoftware
       
     Case "/download" ' download software
       
-    Case "/screenshot" ' download screenshot
-    
+      DownloadSoftware
+      
     Case "/vote" ' vote or remove a vote for a software
+      
+      VoteSoftware
     
+    Case "/search" ' search for software
+      
+      SearchSoftware
+      
     ' Case "/test"
     '   
     '   Response.ContentType = "text/plain;charset=utf-8"
@@ -108,8 +114,18 @@ Private Sub RegisterUser()
   sName = Request["name"]
   sEmail = Request["email"]
   
-  If Not sLogin Or If Not sPassword Or If Not sEmail Then
-    PrintError("13 Syntax error")
+  If Not sLogin Then
+    PrintError("13 Bad request\nMissing login")
+    Return
+  Endif
+  
+  If Not sPassword Then
+    PrintError("13 Bad request\nMissing password")
+    Return
+  Endif
+  
+  If Not sEmail Then
+    PrintError("13 Bad request\nMissing e-mail")
     Return
   Endif
   
@@ -125,7 +141,7 @@ Private Sub RegisterUser()
   Try rUser.Update
   
   If Error Then
-    PrintError("21 Login already in use")
+    PrintError("14 Login already in use")
     Return
   Endif
   
@@ -143,7 +159,7 @@ Private Sub RegisterUser()
   If Error Then
     sErr = Error.Text
     Try DB.Delete("user", "login = &1", sLogin)
-    PrintError("22 Cannot send confirmation mail\n\n" & sErr)
+    PrintError("15 Cannot send confirmation mail\n\n" & sErr)
     Return
   Endif
 
@@ -165,23 +181,25 @@ Private Sub ConfirmRegistration()
   
   rUser = DB.Edit("user", "login = &1", sLogin)
   If Not rUser.Available Then
-    PrintError("31 Unknown user")
+    PrintError("16 Unknown user")
     Return
   Endif
   
   If rUser!confirm <> sKey Then
-    PrintError("32 Confirmation failed")
+    PrintError("17 Confirmation failed")
     Return
   Endif
 
   rUser!confirm = ""
   rUser.Update
   
-  PrintOK
+  Response.Begin
+  Print "<h1>Welcome "; Html(sLogin); "</h1><h2>Your account has been successfully activated!</h2>"
+  Response.End
 
 End
 
-Private Sub CheckUser() As Boolean
+Private Sub CheckUser(Optional bIgnoreFail As Boolean) As Boolean
 
   Dim sLogin As String
   Dim sPassword As String
@@ -195,13 +213,14 @@ Private Sub CheckUser() As Boolean
   rUser = DB.Find("user", "login = &1", sLogin)
   If Not rUser.Available Then Goto FAILED
   If rUser!password <> sPassword Then Goto FAILED
+  If rUser!confirm Then Goto FAILED
   
   $iUser = rUser!id
   Return
 
 FAILED:
 
-  PrintError("14 Authentication failed")
+  If Not bIgnoreFail Then PrintError("18 Authentication failed")
   Return True
   
 End
@@ -216,7 +235,6 @@ Private Sub CheckVersion(sVersion As String) As Boolean
   For I = 0 To aVersion.Max
     If Not IsDigit(aVersion[I]) Then Return True
   Next
-  
 
 End
 
@@ -226,6 +244,22 @@ Private Sub CopySoftwareFile($iId As Integer, sDest As String, sSource As String
   Try Kill sDest
   Copy sSource To sDest
 
+End
+
+Private Sub GetCheckSum(sPath As String) As String
+  
+  Dim sChecksum As String
+  Dim iPos As Integer
+  
+  Exec ["sha256sum", sPath] To sChecksum
+  iPos = InStr(sChecksum, " ")
+  sChecksum = Left(sChecksum, iPos - 1)
+  Return sChecksum
+  
+Catch
+  
+  Error.Raise("Unable to compute checksum")
+  
 End
 
 Private Sub PublishSoftware()
@@ -240,6 +274,10 @@ Private Sub PublishSoftware()
   Dim sIcon As String
   Dim sScreenshot As String
   Dim aVersion As String[]
+  Dim sMyChecksum As String
+  Dim sURL As String
+  Dim aTag As String[]
+  Dim aDep As String[]
   
   If CheckUser() Then Return
 
@@ -251,49 +289,58 @@ Private Sub PublishSoftware()
   sSource = Request["source"]
   sIcon = Request["icon"]
   sScreenshot = Request["screenshot"]
+  sURL = Request["url"]
+  aTag = Split(Request["tags"])
+  aDep = Split(Request["dependencies"])
   
   If Not sName Then
-    PrintError("13 Name missing")
+    PrintError("13 Bad request\nName missing")
     Return
   Endif
   
   If Not sVersion Then
-    PrintError("13 Version missing.")
+    PrintError("13 Bad request\nVersion missing.")
     Return
   Endif
   
   If Not sChecksum Then
-    PrintError("13 Checksum missing")
+    PrintError("13 Bad request\nChecksum missing")
     Return
   Endif
   
   If Not sIcon Then
-    PrintError("13 Icon missing")
+    PrintError("13 Bad request\nIcon missing")
     Return
   Endif
   
   If Not sSource Or If Not Request.Files["source"] Then
-    PrintError("13 Source archive missing")
+    PrintError("13 Bad request\nSource archive missing")
     Return
   Endif
   
   If CheckVersion(sVersion) Then
-    PrintError("41 Incorrect version")
+    PrintError("19 Incorrect version")
     Return
   Endif
   
   If CheckVersion(sGambas) Then
-    PrintError("42 Incorrect Gambas version")
+    PrintError("20 Incorrect Gambas version")
     Return
   Endif
   
   If sSource Not Ends ".tar.gz" And If sSource Not Ends ".tar.bz2" Then
-    PrintError("44 Unsupported source archive format")
+    PrintError("21 Unsupported source archive format")
     Return
   Endif
   
   If sIcon Not Ends ".png" Then
-    PrintError("45 Unsupported icon format")
+    PrintError("22 Unsupported icon format")
+    Return
+  Endif
+  
+  sMyChecksum = GetCheckSum(Request.Files["source"])
+  If sMyChecksum <> sChecksum Then 
+    PrintError("23 Bad checksum")
     Return
   Endif
   
@@ -303,7 +350,7 @@ Private Sub PublishSoftware()
   rSoftware = DB.Edit("software", "name = &1", sName)
   If rSoftware.Available Then
     If rSoftware!owner <> $iUser Then
-      PrintError("43 Software already exists")
+      PrintError("24 Software already exists")
       Return
     Endif
   Else
@@ -316,6 +363,7 @@ Private Sub PublishSoftware()
   rSoftware!description = sDesc
   rSoftware!gambas = sGambas
   rSoftware!checksum = sChecksum
+  rSoftware!url = sURL
   rSoftware!date = Now
   rSoftware.Update
   
@@ -331,5 +379,237 @@ Private Sub PublishSoftware()
   Endif
   
   PrintOK
+
+End
+
+Private Sub FindSoftware() As Result
+
+  Dim sId As String
+  Dim iId As Integer
+  Dim rSoftware As Result
+
+  sId = Request["id"]
+  
+  If Not sId Then
+    PrintError("13 Bad request\nId missing")
+    Return
+  Endif
+
+  Try iId = CInt(sId)
+  If iId Then
+    rSoftware = DB.Find("software", "id = &1", iId)
+  Else
+    rSoftware = DB.Find("software", "checksum = &1", sId)
+  Endif
+  
+  If rSoftware.Count <> 1 Then
+    PrintError("25 Unknown software")
+    Return
+  Endif
+  
+  Return rSoftware
+
+End
+
+Private Sub GetSoftware()
+
+  Dim rSoftware As Result
+  Dim sPath As String
+  Dim rUser As Result
+  Dim sOwner As String
+  Dim rVote As Result
+  
+  OpenDatabase
+  
+  CheckUser(True)
+
+  rSoftware = FindSoftware()
+  If Not rSoftware Then Return
+
+  If Request.Exist("icon") Then
+    
+    Response.SendFile(Root &/ CStr(rSoftware!id) &/ "icon.png")
+      
+  Else If Request.Exist("screenshot") Then
+      
+    Try sPath = Dir(Root &/ CStr(rSoftware!id), "screenshot.*")[0]
+    If Error Then
+      PrintError("26 No screenshot")
+    Else
+      Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
+    Endif
+  
+  Else
+    
+    Response.ContentType = "text/plain;charset=utf-8"
+    Response.Begin
+    
+    rUser = DB.Find("user", "id = &1", rSoftware!owner)
+    If rUser.Available Then sOwner = rUser!name
+    If Not sOwner Then sOwner = "?"
+    
+    Print "10 OK"
+    Print "Id="; rSoftware!id
+    Print "Name="; Quote(rSoftware!name)
+    Print "Version="; Quote(rSoftware!version)
+    Print "UploadDate="; Format(rSoftware!date, "yyyymmddhhnnss")
+    Print "Description="; Quote(rSoftware!description)
+    Print "URL="; Quote(rSoftware!url)
+    Print "RequiredGambasVersion="; Quote(rSoftware!gambas)
+    Print "Checksum="; Quote(rSoftware!checksum)
+    Print "DownloadCount="; rSoftware!download
+    Print "VoteCount="; rSoftware!vote
+    Print "Owner="; Quote(sOwner)
+    
+    If $iUser Then
+      rVote = DB.Find("vote", "software = &1 AND \"user\" = &2", rSoftware!id, $iUser)
+      If rVote.Available Then
+        Print "YourVote=1"
+      Else
+        Print "YourVote=0"
+      Endif
+    Endif
+    
+    Response.End
+    
+  Endif
+
+End
+
+Private Sub DownloadSoftware()
+
+  Dim rSoftware As Result
+  Dim sPath As String
+  
+  OpenDatabase
+
+  rSoftware = FindSoftware()
+  If Not rSoftware Then Return
+
+  Try sPath = Dir(Root &/ CStr(rSoftware!id), "source.*")[0]
+  If Error Then
+    PrintError("27 No source")
+  Else
+    
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"" & Left(rSoftware!name, -2) & "-" & rSoftware!version & "." & File.Ext(sPath) & "\"")
+    Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
+    
+    rSoftware = DB.Edit("software", "id = &1", rSoftware!id)
+    Inc rSoftware!download
+    rSoftware.Update
+    
+  Endif
+      
+End
+
+Private Sub VoteSoftware()
+
+  Dim rSoftware As Result
+  Dim rVote As Result
+  
+  OpenDatabase
+  
+  If CheckUser() Then Return
+
+  rSoftware = FindSoftware()
+  If Not rSoftware Then Return
+
+  If Request.Exist("clear") Then
+    Try DB.Delete("vote", "software = &1 AND user = &2", rSoftware!id, $iUser)
+  Else
+    rVote = DB.Create("vote")
+    rVote!software = rSoftware!id
+    rVote!user = $iUser
+    Try rVote.Update
+  Endif
+
+  PrintOK
+
+End
+
+Private Sub SearchSoftware()
+
+  Dim sFilter As String
+  Dim sSort As String
+  Dim sFrom As String
+  Dim aFrom As String[]
+  Dim iFromId As Integer
+  Dim dDate As Date
+  Dim sReq As String
+  Dim rSoftware As Result
+  Dim aSoftware As String[]
+  
+  OpenDatabase
+  
+  sFilter = Request["filter"]
+  sSort = Request["sort"]
+  sFrom = Request["from"]
+  
+  If Not sSort Then
+    PrintError("28 No sort criteria")
+    Return
+  Endif
+  
+  If sFrom Then
+    aFrom = Split(sFrom)
+    If aFrom.Count = 2 Then 
+      sFrom = aFrom[0]
+      If Not IsDigit(sFrom) Then
+      Endif
+      iFromId = CInt(aFrom[1])
+    Else
+      sFrom = ""
+    Endif
+  Endif
+  
+  Select Case sSort
+    Case "date"
+      If sFrom Then
+        dDate = Date(CInt(Left$(sFrom, 4)), CInt(Mid$(sFrom, 5, 2)), CInt(Mid$(sFrom, 7, 2)), CInt(Mid$(sFrom, 9, 2)), CInt(Mid$(sFrom, 11, 2)), CInt(Mid$(sFrom, 13, 2)), CInt(Mid$(sFrom, 15, 3)))
+        sReq = DB.Subst("(date = &1 AND id > &2) OR (date > &1)", dDate, iFromId)
+      Endif
+    Case "vote"
+      If sFrom Then sReq = DB.Subst("(vote = &1 AND id > &2) OR (vote > &1)", CInt(sFrom), iFromId)
+    Case "download"
+      If sFrom Then sReq = DB.Subst("(download = &1 AND id > &2) OR (download > &1)", CInt(sFrom), iFromId)
+    Case Else
+      PrintError("29 Unknown sort criteria")
+      Return
+  End Select
+  
+  rSoftware = DB.Limit(50).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & ",id")
+  
+  Response.ContentType = "text/plain;charset=utf-8"
+  Response.Begin
+  Print "10 OK"
+
+  If rSoftware.Count Then
+    
+    aSoftware = New String[]
+    While rSoftware.Available
+      aSoftware.Add(rSoftware!id)
+      rSoftware.MoveNext
+    Wend
+    
+    Print "Result="; aSoftware.Join(",")
+    
+    rSoftware.MoveLast
+    
+    Print "From=";
+    If sSort = "date" Then
+      Print Format(rSoftware!date, "yyyymmddhhnnssuuu");
+    Else
+      Print rSoftware[sSort];
+    Endif
+    Print ","; rSoftware!id
+    
+  Else
+    
+    Print
+    Print
+    
+  Endif
+  
+  Response.End
 
 End

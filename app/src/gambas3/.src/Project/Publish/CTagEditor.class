@@ -1,0 +1,117 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Private $hView As ScrollView
+Private $hEditor As TextBox
+Private $hBorder As Panel
+
+Public Sub _new()
+
+  $hBorder = New Panel(Me)
+  $hBorder.Border = Border.Plain
+  $hBorder.Arrangement = Arrange.Fill
+  
+  $hView = New ScrollView($hBorder) As "View"
+  $hView.Border = False
+  $hView.Background = Color.TextBackground
+  $hView.Arrangement = Arrange.Row
+  $hView.Margin = True
+  $hView.Spacing = True
+  
+  $hEditor = New TextBox($hView) As "Editor"
+  $hEditor.Border = False
+  ResizeEditor
+  
+End
+
+Private Sub ResizeEditor()
+
+  $hEditor.Resize(Desktop.Scale * 2 + Max(Desktop.Scale * 12, $hEditor.Font.TextWidth($hEditor.Text) + 8), $hEditor.Font.Height + Desktop.Scale)
+  $hEditor.Raise
+  $hView.EnsureVisible($hEditor.X, $hEditor.Y - Desktop.Scale, $hEditor.W, $hEditor.H + Desktop.Scale * 2)
+
+End
+
+Public Sub View_MouseDown()
+  
+  ResizeEditor
+  $hEditor.SetFocus
+  
+End
+
+Public Sub Editor_Change()
+  
+  ResizeEditor
+  
+End
+
+Private Sub AddTag(sTag As String)
+
+  Dim hTag As CTag
+
+  sTag = Trim(sTag)
+  If Not sTag Then Return
+  If GetTags().Exist(sTag) Then Return
+  
+  hTag = New CTag($hView)
+  hTag.Text = sTag
+  
+  $hEditor.Text = ""
+  ResizeEditor
+  
+
+End
+
+Public Sub Editor_Activate()
+
+  AddTag($hEditor.Text)
+
+End
+
+Public Sub Editor_KeyPress()
+  
+  Dim hTag As CTag
+  Dim sText As String
+  
+  If Key.Code = Key.Backspace And If $hEditor.Length = 0 Then
+    If $hView.Children.Count >= 2 Then
+      hTag = $hView.Children[$hView.Children.Count - 2]
+      sText = hTag.Text
+      hTag.Delete
+      $hEditor.Text = sText
+      $hEditor.Pos = $hEditor.Length
+      ResizeEditor
+      Stop Event
+    Endif
+  Endif
+  
+End
+
+Public Sub GetTags() As String[]
+
+  Dim hChild As Control
+  Dim aTag As New String[]
+  
+  For Each hChild In $hView.Children
+    If hChild Is CTag Then
+      aTag.Add(CTag(hChild).Text)
+    Endif
+  Next
+  
+  Return aTag
+  
+End
+
+Public Sub SetTags(aTag As String[])
+
+  Dim sTag As String
+  
+  For Each sTag In aTag
+    AddTag(sTag)
+  Next
+  
+End
+

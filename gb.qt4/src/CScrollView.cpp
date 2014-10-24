@@ -577,7 +577,7 @@ BEGIN_METHOD(CSCROLLVIEW_new, GB_OBJECT parent)
 	CWIDGET_set_visible((CWIDGET *)THIS, true);
 	
 	// Border.Sunken by default
-	wid->setLineWidth(2);
+	wid->setLineWidth(3);
 	wid->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 
 END_METHOD

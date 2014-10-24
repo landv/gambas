@@ -103,6 +103,7 @@ DECLARE_PROPERTY(Container_Spacing);
 DECLARE_PROPERTY(Container_Margin);
 DECLARE_PROPERTY(Container_Indent);
 DECLARE_PROPERTY(Container_Border);
+DECLARE_PROPERTY(Container_SimpleBorder);
 DECLARE_PROPERTY(Container_Invert);
 
 void CCONTAINER_arrange(void *_object);
