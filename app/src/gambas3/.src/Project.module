@@ -2806,6 +2806,8 @@ Public Sub MakeDir(sDir As String) As Boolean
   Dim sPath As String
   Dim sElt As String
 
+  If sDir Begins "~/" Then sDir = User.Home &/ Mid$(sDir, 3)
+
   For Each sElt In Split(sDir, "/")
     sPath &/= sElt
     Try Mkdir "/" & sPath
