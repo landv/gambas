@@ -256,8 +256,6 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
 
-  'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
-
   'DB.Debug = True
   
   For iInd = 1 To Args.Count - 1
@@ -289,6 +287,8 @@ Public Sub Main()
       Break
     Endif
   Next
+
+  If Not Settings["/ShowMenus", True] Then Env["APPMENU_DISPLAY_BOTH"] = "1"
 
   Application.Theme = Settings["/Theme"]
   DESKTOP_FONT = Application.Font.ToString()
