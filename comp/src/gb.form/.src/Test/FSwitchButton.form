@@ -2,29 +2,20 @@
 
 { Form Form
   MoveScaled(0,0,77,54)
-  { TextBox1 TextBox
-    MoveScaled(1,2,23,6)
-    Text = ("TextBox1")
-  }
   { SwitchButton2 SwitchButton
-    MoveScaled(16,33,16,4)
+    MoveScaled(4,18,16,4)
     Value = True
     Animated = True
   }
-  { ButtonBox1 ButtonBox
-    MoveScaled(15,24,24,5)
-    Text = ("ButtonBox1")
+  { SwitchButton1 SwitchButton
+    MoveScaled(3,8,16,4)
+    Enabled = False
+    Value = True
+    Animated = True
   }
-  { Button1 Button
-    MoveScaled(6,14,16,4)
-    Text = ("Button1")
-  }
-  { Label1 Label
-    MoveScaled(27,8,15,7)
-    Text = ("Label1")
-    Border = Border.Sunken
-  }
-  { FontBox1 FontBox
-    MoveScaled(38,38,32,4)
+  { SwitchButton3 SwitchButton
+    MoveScaled(3,13,16,4)
+    Enabled = False
+    Animated = True
   }
 }

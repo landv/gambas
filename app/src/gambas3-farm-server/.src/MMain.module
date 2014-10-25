@@ -194,6 +194,7 @@ Private Sub ConfirmRegistration()
   rUser!confirm = ""
   rUser.Update
   
+  Response.ContentType = "text/html;charset=utf-8"
   Response.Begin
   Print "<h1>Welcome "; Html(rUser!name); "!</h1><h2>Your account has been successfully activated.</h2>"
   Response.End

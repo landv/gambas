@@ -12,6 +12,7 @@ Public Sub _new()
   
   $hDraw = New DrawingArea(Me) As "DrawingArea"
   $hDraw.Arrangement = Arrange.Horizontal
+  $hDraw.Mouse = Mouse.Pointing
   
   $hButton = New ToolButton($hDraw) As "Button"
   $hButton.Picture = Picture["icon:/small/close"]

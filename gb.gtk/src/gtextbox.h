@@ -71,6 +71,8 @@ public:
   GtkWidget *entry;
 	virtual int minimumHeight();
 
+	unsigned _changed : 1;
+
 #ifdef GTK3
 	static GtkCssProvider *_style_provider;
 #endif

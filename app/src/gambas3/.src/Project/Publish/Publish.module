@@ -1,0 +1,178 @@
+' Gambas module file
+
+Private $hForm As HttpForm
+Private $sResult As String
+Private $sGoodMsg As String
+Private $sBadMsg As String
+Private $hWin As Object
+
+Private Sub GetCheckSum(sPath As String) As String
+  
+  Dim sChecksum As String
+  Dim iPos As Integer
+  
+  Exec ["sha256sum", sPath] To sChecksum
+  iPos = InStr(sChecksum, " ")
+  sChecksum = Left(sChecksum, iPos - 1)
+  Return sChecksum
+  
+Catch
+  
+  Error.Raise("Unable to compute checksum")
+  
+End
+
+Public Sub RegisterUser(hWin As Window, sFarm As String, sLogin As String, sPassword As String, sFullName As String, sEmail As String)
+  
+  Dim sErr As String
+
+  $hWin = hWin
+
+  $sResult = ""
+
+  $hForm = New HttpForm As "FarmClient"
+  $hForm.URL = "http://" & sFarm &/ "farm/publish"
+  $hForm.Async = True
+  
+  $hForm.Add("login", sLogin)
+  $hForm.Add("password", sPassword)
+  $hForm.Add("name", sFullName)
+  $hForm.Add("email", sEmail)
+  
+  $sGoodMsg = ("You have been successfully registered.\n\nYou will receive a confirmation e-mail at the provided address to activate your account.")
+  $sBadMsg = ("Unable to register user.")
+  
+  $hForm.Submit()
+
+Catch
+  
+  sErr = Error.Text
+  Message.Error($sBadMsg & "\n\n" & sErr)
+  
+End
+
+Private Sub SetMessage(sMsg As String)
+
+  Try $hWin.SetMessage(sMsg)
+
+End
+
+
+Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String)
+
+  Dim sSource As String
+  Dim sIcon As String
+  Dim sChecksum As String
+  Dim sErr As String
+  
+  $hWin = hWin
+  
+  SetMessage("Making source package...")
+  Wait
+
+  sSource = Temp$()
+  sSource = File.Dir(sSource) &/ File.BaseName(sSource) & ".tar.bz2" 'Project.GetDefaultArchiveBaseName() & ".tar.bz2"
+  Project.MakeSourcePackageTo(sSource)
+  
+  sChecksum = GetCheckSum(sSource)
+  
+  If Project.Icon Then
+    sIcon = Project.Dir &/ Project.Icon
+  Else
+    sIcon = "img/logo/project.png"
+  Endif
+  
+  If Not Exist(sIcon) Then sIcon = ""
+  
+  $sResult = ""
+
+  $hForm = New HttpForm As "FarmClient"
+  $hForm.URL = "http://localhost/farm/publish" '"http://" & cmbFarm.Text &/ "farm/publish"
+  $hForm.Async = True
+  
+  $hForm.Add("login", sLogin)
+  $hForm.Add("password", sPassword)
+  $hForm.Add("name", Project.Name)
+  $hForm.Add("version", CStr(Project.MajorVersion) & "." & CStr(Project.MinorVersion) & "." & CStr(Project.ReleaseVersion))
+  $hForm.Add("desc", Project.Description)
+  $hForm.Add("gambas", sGambasVersion)
+  $hForm.Add("checksum", sChecksum)
+  $hForm.AddFile("icon", sIcon, "icon.png")
+  $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
+  If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
+
+  $sGoodMsg = ("The project has been successfully published.")
+  $sBadMsg = ("Unable to publish project.")
+
+  $hForm.Submit()
+  
+Catch
+  
+  sErr = Error.Text
+  Message.Error($sBadMsg & "\n\n" & sErr)
+
+End
+
+Public Sub FarmClient_Connect()
+  
+  SetMessage(("Connected to farm..."))
+  
+End
+
+' Public Sub FarmClient_Progress()
+'   
+'   Debug $hForm.Uploaded; " / "; $hForm.TotalUploaded
+'   lblMessage.Text = Subst(("Sending project (&1)"), Format($hForm.Uploaded / $hForm.TotalUploaded, "0%"))
+'   
+' End
+
+Public Sub FarmClient_Read()
+
+  Dim sBuffer As String
+  
+  SetMessage(("Reading server response..."))
+  sBuffer = Read #$hForm, Lof($hForm)
+  $sResult &= sBuffer
+  
+End
+
+Private Sub PublishEnd()
+
+  SetMessage("")
+  Try $hWin.OnPublishEnd()
+  $hForm = Null
+  $hWin = Null
+
+End
+
+Public Sub FarmClient_Error()
+  
+  Message.Error($sBadMsg & "\n\n" & $hForm.ErrorText)
+  PublishEnd
+  
+End
+
+Public Sub FarmClient_Finished()
+  
+  Dim iPos As Integer
+  
+  PublishEnd
+  
+  If $sResult <> "*" Then
+    If $sResult Not Begins "10 OK" Then
+      iPos = InStr($sResult, " ")
+      $sResult = Mid$($sResult, iPos + 1)
+      Message.Error($sBadMsg & "\n\n" & $sResult)
+    Else
+      Message($sGoodMsg)
+    Endif
+  Endif
+  
+End
+
+Public Sub Abort()
+  
+  $sResult = "*"
+  $hForm.Stop
+  
+End

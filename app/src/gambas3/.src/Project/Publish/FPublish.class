@@ -1,10 +1,5 @@
 ' Gambas class file
 
-Private $hForm As HttpForm
-Private $sResult As String
-Private $sGoodMsg As String
-Private $sBadMsg As String
-
 Public Sub Run() As Boolean
 
   Return Not Me.ShowModal()
@@ -23,159 +18,36 @@ Public Sub btnCancel_Click()
 
 End
 
-Public Sub btnRegister_Click()
-
-  RegisterUser
-
-End
-
 Public Sub btnPublish_Click()
 
-  PublishSoftware
-
-End
-
-Private Sub GetCheckSum(sPath As String) As String
-  
-  Dim sChecksum As String
-  Dim iPos As Integer
-  
-  Exec ["sha256sum", sPath] To sChecksum
-  iPos = InStr(sChecksum, " ")
-  sChecksum = Left(sChecksum, iPos - 1)
-  Return sChecksum
-  
-Catch
-  
-  Error.Raise("Unable to compute checksum")
-  
-End
-
-
-Private Sub PublishSoftware()
-
-  Dim sSource As String
-  Dim sIcon As String
-  Dim sChecksum As String
-  Dim sErr As String
-  Dim sScreenshot As String
-  
   spnPublish.Enabled = True
   btnPublish.Hide
   btnCancel.Hide
   btnAbort.Show
   
-  lblMessage.Text = ("Making source package...")
-  Wait
-
-  sSource = Temp$()
-  sSource = File.Dir(sSource) &/ File.BaseName(sSource) & ".tar.bz2" 'Project.GetDefaultArchiveBaseName() & ".tar.bz2"
-  Project.MakeSourcePackageTo(sSource)
-  
-  sChecksum = GetCheckSum(sSource)
-  
-  If Project.Icon Then
-    sIcon = Project.Dir &/ Project.Icon
-  Else
-    sIcon = "img/logo/project.png"
-  Endif
-  
-  If Not Exist(sIcon) Then sIcon = ""
-  
-  sScreenshot = txtScreenshot.Text
-
-  $sResult = ""
-
-  $hForm = New HttpForm As "FarmClient"
-  $hForm.URL = "http://localhost/farm/publish" '"http://" & cmbFarm.Text &/ "farm/publish"
-  $hForm.Async = True
-  
-  $hForm.Add("login", txtLogin.Text)
-  $hForm.Add("password", txtPassword.Text)
-  $hForm.Add("name", Project.Name)
-  $hForm.Add("version", CStr(Project.MajorVersion) & "." & CStr(Project.MinorVersion) & "." & CStr(Project.ReleaseVersion))
-  $hForm.Add("desc", Project.Description)
-  $hForm.Add("gambas", cmbGambasVersion.Text)
-  $hForm.Add("checksum", sChecksum)
-  $hForm.AddFile("icon", sIcon, "icon.png")
-  $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
-  If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
-
-  $sGoodMsg = ("The project has been successfully published.")
-  $sBadMsg = ("Unable to publish project.")
-
-  $hForm.Submit()
-
-Catch
-  
-  sErr = Error.Text
-  btnAbort_Click
-  Message.Error($sBadMsg & "\n\n" & sErr)
-
-End
-
-Public Sub FarmClient_Connect()
-  
-  lblMessage.Text = ("Connected to farm...")
+  Publish.PublishSoftware(Me, txtScreenshot.Text, txtLogin.Text, txtPassword.Text, cmbGambasVersion.Text)
   
 End
 
-' Public Sub FarmClient_Progress()
-'   
-'   Debug $hForm.Uploaded; " / "; $hForm.TotalUploaded
-'   lblMessage.Text = Subst(("Sending project (&1)"), Format($hForm.Uploaded / $hForm.TotalUploaded, "0%"))
-'   
-' End
-
-Public Sub FarmClient_Read()
-
-  Dim sBuffer As String
+Public Sub SetMessage(sMsg As String)
   
-  lblMessage.Text = ("Reading server response...")
-  sBuffer = Read #$hForm, Lof($hForm)
-  $sResult &= sBuffer
+  lblMessage.Text = sMsg
   
 End
 
-Private Sub PublishEnd()
 
-  lblMessage.Text = ""
+Public Sub OnPublishEnd()
+
   btnPublish.Show
   btnAbort.Hide
   btnCancel.Show
   spnPublish.Enabled = False
-  $hForm = Null
 
 End
-
-Public Sub FarmClient_Error()
-  
-  PublishEnd
-  Message.Error($sBadMsg & "\n\n" & $hForm.ErrorText)
-  
-End
-
-Public Sub FarmClient_Finished()
-  
-  Dim iPos As Integer
-  
-  PublishEnd
-  
-  If $sResult Not Begins "10 OK" Then
-    iPos = InStr($sResult, " ")
-    $sResult = Mid$($sResult, iPos + 1)
-    Message.Error($sBadMsg & "\n\n" & $sResult)
-  Else
-    Message($sGoodMsg)
-  Endif
-  
-End
-
 
 Public Sub btnAbort_Click()
 
-  Try $hForm.Stop
-  PublishEnd
+  Publish.Abort
 
 End
 
@@ -192,6 +64,7 @@ End
 
 Public Sub Form_Open()
 
+  cmbFarm.List = Settings["/Publish/FarmList"]
   cmbFarm.Text = Settings["/Publish/Farm"]
   txtLogin.Text = Settings["/Publish/Login"]
   chkRememberPassword.Value = Settings["/Publish/RememberPassword", False]
@@ -219,58 +92,3 @@ Public Sub Form_Close()
 
 End
 
-Private Sub RegisterUser()
-  
-  Dim sEmail As String
-  Dim sLogin As String
-  Dim sPassword As String
-  Dim sErr As String
-  Dim sConfirmPassword As String
-
-  sLogin = Trim(txtLogin.Text)
-  If Not sLogin Then
-    Balloon.Error(("Please enter your login."), txtLogin)
-    Return
-  Endif
-
-  sPassword = Trim(txtPassword.Text)
-  If Not sPassword Then
-    Balloon.Error(("Please enter your password."), txtLogin)
-    Return
-  Endif
-
-  sConfirmPassword = Trim(txtConfirmPassword.Text)
-  If sPassword <> sConfirmPassword Then
-    Balloon.Error(("Confirm password does not match."), txtConfirmPassword)
-    Return
-  Endif
-
-  sEmail = Trim$(txtEmail.Text)
-  If Not sEmail Or If InStr(sEmail, "@") = 0 Then
-    Balloon.Error(("Please enter a valid e-mail address."), txtEmail)
-    Return
-  Endif
-  
-  $sResult = ""
-
-  $hForm = New HttpForm As "FarmClient"
-  $hForm.URL = "http://localhost/farm/register" '"http://" & cmbFarm.Text &/ "farm/publish"
-  $hForm.Async = True
-  
-  $hForm.Add("login", sLogin)
-  $hForm.Add("password", sPassword)
-  $hForm.Add("name", Trim(txtFullName.Text))
-  $hForm.Add("email", sEmail)
-  
-  $sGoodMsg = ("The user has been successfully registered.\n\nYou will receive a confirmation e-mail at the provided address to activate your account.")
-  $sBadMsg = ("Unable to register user.")
-  
-  $hForm.Submit()
-
-Catch
-  
-  sErr = Error.Text
-  btnAbort_Click
-  Message.Error($sBadMsg & "\n\n" & sErr)
-  
-End

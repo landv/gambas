@@ -1,0 +1,173 @@
+' Gambas class file
+
+Private Sub GetParent() As ListEditor
+
+  Return Me.Parent
+
+End
+
+Public Sub GetBorder() As Boolean
+  
+  Return panData.Border <> Border.None
+  
+End
+
+Public Sub SetBorder(bBorder As Boolean)
+  
+  panData.Border = If(bBorder, Border.Plain, Border.None)
+  
+End
+
+Public Sub GetList() As String[]
+  
+  Return lstData.List
+  
+End
+
+Private Sub UnSelect()
+
+  If lstData.Index < 0 Then Return
+  lstData.Index = -1
+  GetParent()._RaiseSelect
+
+End
+
+Public Sub SetList(aList As String[])
+  
+  UnSelect
+  txtData.Clear
+  lstData.List = aList
+  GetParent()._RaiseChange
+  
+End
+
+
+
+Public Sub btnAdd_Click()
+
+  Dim sAdd As String
+  
+  If lstData.Index < 0 Then
+    sAdd = txtData.Text
+    If Not sAdd Then Return
+    lstData.Add(sAdd)
+    GetParent()._RaiseChange
+  Endif
+  
+  UnSelect
+  txtData.Clear
+  txtData.SetFocus
+
+End
+
+Public Sub lstData_Select()
+
+  If lstData.Index >= 0 Then 
+    txtData.Text = lstData.Text
+    txtData.SetFocus
+  Endif
+  
+  GetParent()._RaiseSelect
+
+End
+
+Public Sub txtData_Change()
+
+  If lstData.Index < 0 Then Return
+  lstData.Current.Text = txtData.Text
+  If Not txtData.Text Then 
+    btnRemove_Click
+  Else
+    GetParent()._RaiseChange
+  Endif
+
+End
+
+Public Sub btnRemove_Click()
+
+  Dim aList As String[]
+  
+  If lstData.Index >= 0 Then 
+    aList = lstData.List
+    aList.Remove(lstData.Index)
+    UnSelect
+    lstData.List = aList
+    GetParent()._RaiseChange
+  Endif
+  
+  txtData.Clear
+  txtData.SetFocus
+
+End
+
+Public Sub txtData_Activate()
+
+  btnAdd.Value = True
+
+End
+
+Public Sub btnUp_Click()
+
+  If lstData.Index < 1 Then Return
+  Swap lstData[lstData.Index - 1].Text, lstData[lstData.Index].Text
+  Dec lstData.Index
+  GetParent()._RaiseChange
+
+End
+
+Public Sub btnDown_Click()
+
+  If lstData.Index < 0 Or If lstData.Index = lstData.Count - 1 Then Return
+  Swap lstData[lstData.Index].Text, lstData[lstData.Index + 1].Text
+  Inc lstData.Index
+  GetParent()._RaiseChange
+
+End
+
+' Public Sub btnUp_DblClick()
+' 
+'   Dim aList As String[]
+'   Dim sElt As String
+'   
+'   If lstData.Index < 1 Then Return
+'     
+'   aList = lstData.List
+'   sElt = aList[lstData.Index]
+'   aList.Remove(lstData.Index)
+'   aList.Add(sElt, 0)
+'   lstData.List = aList
+'   lstData.Index = 0
+' 
+' End
+' 
+' Public Sub btnDown_DblClick()
+' 
+'   Dim aList As String[]
+'   Dim sElt As String
+'   
+'   If lstData.Index < 0 Or If lstData.Index = lstData.Count - 1 Then Return
+'     
+'   aList = lstData.List
+'   sElt = aList[lstData.Index]
+'   aList.Remove(lstData.Index)
+'   aList.Add(sElt)
+'   lstData.List = aList
+'   lstData.Index = lstData.Count - 1
+' 
+' End
+' 
+Public Sub GetText() As String
+  
+  If lstData.Index >= 0 Then Return lstData.Text
+  
+End
+
+Public Sub SetText(sText As String)
+  
+  If Not sText Then Return
+  If lstData.Index >= 0 Then 
+    lstData.Current.Text = sText
+    GetParent()._RaiseChange
+  Endif
+
+End

@@ -1326,7 +1326,7 @@ TabStrip
 _IsMultiContainer
 C
 b
--1
+T
 _DefaultEvent
 C
 s
@@ -1692,6 +1692,57 @@ m
 
 
 ScrollView_KeyPress
+m
+
+
+#ListEditor
+UserControl
+C
+_Properties
+C
+s
+*,List,Border=True
+_DefaultSize
+C
+s
+24,32
+_Similar
+C
+s
+ListBox
+_Group
+C
+s
+View
+List
+p
+String[]
+
+Border
+p
+b
+
+Text
+p
+s
+
+:Select
+:
+
+
+:Change
+:
+
+
+_new
+m
+
+
+_RaiseSelect
+m
+
+
+_RaiseChange
 m
 
 
@@ -2177,7 +2228,7 @@ TabStrip
 _IsMultiContainer
 C
 b
--1
+T
 _DefaultEvent
 C
 s
@@ -2475,7 +2526,7 @@ TabStrip
 _IsMultiContainer
 C
 b
--1
+T
 :Click
 :
 
@@ -2617,7 +2668,7 @@ TabStrip
 _IsMultiContainer
 C
 b
--1
+T
 :BeforeChange
 :
 

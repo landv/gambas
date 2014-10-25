@@ -76,6 +76,7 @@ Public Sub DrawingArea_Draw()
   Dim X As Float
   Dim Y As Integer
   Dim H As Float
+  Dim hColor As ColorInfo
 
   If $fValue > 0 Then
     If $iBg = Color.Default Then
@@ -83,18 +84,27 @@ Public Sub DrawingArea_Draw()
     Else
       iCol = $iBg
     Endif
-    If Not Me.Enabled Then iCol = Color.Desaturate(Color.Merge(iCol, Color.ButtonBackground))
+    If Not Me.Enabled Then 
+      hColor = Color[iCol] 'Color.Merge(iCol, Color.ButtonBackground)]
+      hColor.Saturation /= 2
+      iCol = hColor.Color 'Color.Desaturate(Color.Merge(iCol, Color.ButtonBackground))
+    Endif
     iCol = Color.SetAlpha(iCol, 255 * (1 - $fValue))    
   Else
-    iCol = Color.Default
+    iCol = Style.BackgroundOf(Me)
+    'If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
   Endif
   
-  Style.PaintBox(0, 0, Paint.W, Paint.H, iFlag, iCol)
+  Style.PaintBox(0, 0, Paint.W, Paint.H, iFlag And Not Style.Disabled, iCol)
   
-  Paint.Background = Color.SelectedForeground
+  iCol = Color.SelectedForeground
+  'If Not Me.Enabled Then iCol = Color.Merge(iCol, Style.BackgroundOf(Me))
+  Paint.Background = iCol
   Paint.DrawText(("ON"), 0, 0, Paint.W / 2, Paint.H, Align.Center)  
   
-  Paint.Background = Color.Foreground
+  iCol = Color.Foreground
+  If Not Me.Enabled Then iCol = Color.Merge(iCol, Style.BackgroundOf(Me))
+  Paint.Background = iCol
   Paint.DrawText(("OFF"), Paint.W / 2, 0, Paint.W / 2, Paint.H, Align.Center)  
   
   

@@ -123,8 +123,19 @@ struct _GtkEntryPrivate
 GtkCssProvider *gTextBox::_style_provider = NULL;
 #endif
 
+static gboolean raise_change(gTextBox *data)
+{
+	if (data->_changed)
+	{
+		data->emit(SIGNAL(data->onChange));
+		data->_changed = false;
+	}
+	return FALSE;
+}
+
 static void cb_change_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
 {
+	data->_changed = false;
 	gtk_editable_set_position(editable, *position);
 	data->emit(SIGNAL(data->onChange));
 	*position = gtk_editable_get_position(editable);
@@ -132,7 +143,11 @@ static void cb_change_insert(GtkEditable *editable, gchar *new_text, gint new_te
 
 static void cb_change_delete(GtkEditable *editable, gint start_pos, gint end_pos, gTextBox *data)
 {
-	data->emit(SIGNAL(data->onChange));	
+	if (!data->_changed)
+	{
+		data->_changed = true;
+		g_timeout_add(0, (GSourceFunc)raise_change, data);
+	}
 }
 
 static void cb_activate(GtkEntry *editable,gTextBox *data)
@@ -174,6 +189,7 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		initEntry();
 	}
 	
+	_changed = false;
 	onChange = NULL;
 	onActivate = NULL;
 }

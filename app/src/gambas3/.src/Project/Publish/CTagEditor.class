@@ -13,6 +13,7 @@ Public Sub _new()
   $hBorder = New Panel(Me)
   $hBorder.Border = Border.Plain
   $hBorder.Arrangement = Arrange.Fill
+  $hBorder.Mouse = Mouse.Text
   
   $hView = New ScrollView($hBorder) As "View"
   $hView.Border = False

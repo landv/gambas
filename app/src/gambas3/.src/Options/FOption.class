@@ -138,6 +138,7 @@ Public Sub _new()
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   panDownloadHelp.Visible = btnOfflineHelp.Value
+  lstFarm.List = Settings["/Publish/FarmList"]
   
   UpdateFont(txtGlobalFont.Value)
   
@@ -1049,7 +1050,7 @@ Public Sub btnResetIgnore_Click()
 
   If Message.Warning(("Do you really want to reset the list to its default value?"), ("Cancel"), ("Reset")) = 1 Then Return
 
-  Settings["/IgnoreFiles"] = ""
+  Settings["/IgnoreFiles"] = Null
   LoadIgnoreFiles
 
 End
@@ -1274,5 +1275,60 @@ Private Sub UpdateDocumentationState()
       btnDownloadHelp.Enabled = False
       
   End Select
+
+End
+
+Public Sub lstFarm_Select()
+  
+  If lstFarm.Text Then
+    txtFarm.Text = lstFarm.Text
+    panRegister.Enabled = True
+  Else
+    txtFarm.Clear
+    panRegister.Enabled = False
+  Endif
+  
+End
+
+Public Sub lstFarm_Change()
+  
+  Settings["/Publish/FarmList"] = lstFarm.List
+  
+End
+
+Public Sub btnRegister_Click()
+
+  Dim sLogin As String
+  Dim sPassword As String
+  Dim sConfirmPassword As String
+  Dim sEmail As String
+
+  sLogin = Trim(txtLogin.Text)
+  If Not sLogin Then
+    Balloon.Error(("Please enter your login."), txtLogin)
+    Return
+  Endif
+  
+  sPassword = Trim(txtPassword.Text)
+  If Not sPassword Then
+    Balloon.Error(("Please enter your password."), txtPassword)
+    Return
+  Endif
+  
+  sConfirmPassword = Trim(txtConfirmPassword.Text)
+  
+  If sPassword <> sConfirmPassword Then
+    Balloon.Error(("Confirm password does not match."), txtConfirmPassword)
+    Return
+  Endif
+  
+  sEmail = Trim$(txtMail.Text)
+  If Not sEmail Or If InStr(sEmail, "@") = 0 Then
+    ipnOption.Index = 0
+    Balloon.Error(("Please enter a valid e-mail address."), txtMail)
+    Return
+  Endif
+  
+  Publish.RegisterUser(Me, lstFarm.Text, sLogin, sPassword, Trim(txtName.Text), sEmail)
 
 End

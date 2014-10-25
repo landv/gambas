@@ -1,0 +1,48 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,37)
+  Arrangement = Arrange.Fill
+  { panData Panel
+    MoveScaled(2,2,55,33)
+    Arrangement = Arrange.Vertical
+    Border = Border.Plain
+    { lstData ListBox
+      MoveScaled(1,1,52,24)
+      Expand = True
+      Border = False
+    }
+    { Separator1 Separator
+      MoveScaled(7,26,13,0)
+    }
+    { HBox1 HBox
+      MoveScaled(1,28,52,4)
+      Background = Color.TextBackground
+      { txtData TextBox
+        MoveScaled(0,0,23,4)
+        Expand = True
+        Border = False
+      }
+      { btnAdd ToolButton
+        MoveScaled(33,0,4,4)
+        ToolTip = ("Add item")
+        Picture = Picture["icon:/small/add"]
+      }
+      { btnRemove ToolButton
+        MoveScaled(37,0,4,4)
+        ToolTip = ("Remove item")
+        Picture = Picture["icon:/small/delete"]
+      }
+      { btnUp ToolButton
+        MoveScaled(41,0,4,4)
+        ToolTip = ("Move item up")
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnDown ToolButton
+        MoveScaled(45,0,4,4)
+        ToolTip = ("Move item down")
+        Picture = Picture["icon:/small/down"]
+      }
+    }
+  }
+}

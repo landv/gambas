@@ -93,6 +93,8 @@ Public Sub SendHeaders(hSession As SmtpSession)
 
   hSession.Print(sHeader)
   
+  hSession.Print("Content-Disposition: " & If(Not Name, "inline", "attachment"))
+  
   If Mime Not Begins "multipart/" Then hSession.Print("Content-Transfer-Encoding: " & Encode.Format(Encoding))
   
   hSession.Print("Content-Length: " & Len(Data))

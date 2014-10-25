@@ -1955,7 +1955,7 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 	move(x, y);
 	if (was_visible)
 	{
-		fprintf(stderr, "was_visible\n");
+		//fprintf(stderr, "was_visible\n");
 		show();
 	}
 }
