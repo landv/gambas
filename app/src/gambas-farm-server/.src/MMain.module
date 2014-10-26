@@ -28,6 +28,11 @@ Public Sub Main()
   Dim sErr As String
   ' Dim sField As String
   
+  If Args[1] = "-init-db" Then
+    InitDatabase
+    Return
+  Endif
+  
   Root = User.Home &/ "farm"
   
   Select Case Request.Path
@@ -95,9 +100,91 @@ Private Sub OpenDatabase()
   $hConn.Type = "postgresql"
   $hConn.Name = "gambas3_farm"
   $hConn.Open
+  DB.Current = $hConn
   
 End
 
+Private Sub InitDatabase()
+
+  Dim hConn As New Connection
+  Dim hTable As Table
+  
+  hConn.Type = "postgresql"
+  hConn.Open
+  Try hConn.Databases.Add("gambas3_farm")
+  hConn.Close
+  
+  OpenDatabase
+
+  If DB.Tables.Exist("name") Then 
+    Error "Database is apparently already initialized."
+    Quit 1
+  Endif
+  
+  Print "Creating table 'name'..."
+  hTable = DB.Tables.Add("name")
+  hTable.Fields.Add("id", db.Serial)
+  hTable.Fields.Add("name", db.String, 64)
+  hTable.Fields.Add("cname", db.String, 64)
+  hTable.PrimaryKey = ["id"]
+  hTable.Update
+  hTable.Indexes.Add("name_index_cname", ["cname"], True)
+  
+  Print "Creating table 'software'..."
+  hTable = DB.Tables.Add("software")
+  hTable.Fields.Add("id", db.Serial)
+  hTable.Fields.Add("owner", db.Integer)
+  hTable.Fields.Add("name", db.String, 64)
+  hTable.Fields.Add("version", db.String, 16)
+  hTable.Fields.Add("date", db.Date)
+  hTable.Fields.Add("description", db.String)
+  hTable.Fields.Add("url", db.String)
+  hTable.Fields.Add("gambas", db.String, 16)
+  hTable.Fields.Add("dependencies", db.String)
+  hTable.Fields.Add("checksum", db.String, 128)
+  hTable.Fields.Add("download", db.Integer)
+  hTable.Fields.Add("vote", db.Integer)
+  hTable.PrimaryKey = ["id"]
+  hTable.Update
+  hTable.Indexes.Add("software_index_date", ["date", "id"], True)
+  hTable.Indexes.Add("software_index_vote", ["vote", "id"], True)
+  hTable.Indexes.Add("software_index_download", ["download", "id"], True)
+  hTable.Indexes.Add("software_index_name", ["name"], True)
+  hTable.Indexes.Add("software_index_checksum", ["checksum"], True)
+  
+  Print "Creating table 'tag'..."
+  hTable = DB.Tables.Add("tag")
+  hTable.Fields.Add("software", db.Integer)
+  hTable.Fields.Add("tag", db.Integer)
+  hTable.PrimaryKey = ["software", "tag"]
+  hTable.Update
+  
+  Print "Creating table 'user'..."
+  hTable = DB.Tables.Add("user")
+  hTable.Fields.Add("id", db.Serial)
+  hTable.Fields.Add("login", db.String, 16)
+  hTable.Fields.Add("password", db.String, 128)
+  hTable.Fields.Add("name", db.String, 64)
+  hTable.Fields.Add("confirm", db.String, 32)
+  hTable.PrimaryKey = ["id"]
+  hTable.Update
+  hTable.Indexes.Add("user_index_login", ["login"], True)
+  
+  Print "Creating table 'vote'..."
+  hTable = DB.Tables.Add("vote")
+  hTable.Fields.Add("software", db.Integer)
+  hTable.Fields.Add("user", db.Integer)
+  hTable.PrimaryKey = ["software", "user"]
+  hTable.Update
+  
+  Print "Database initialized."
+
+Catch
+  
+  Error Error.Text & "\n\n" & Error.Backtrace.Join(" ")
+  Quit 1
+
+End
 
 Private Sub RegisterUser()
 
@@ -151,9 +238,25 @@ Private Sub RegisterUser()
   Endif
   
   hSmtpClient = New SmtpClient
-  hSmtpClient.From = "noreply@gambaswiki.org"
+  
+  hSmtpClient.Host = Settings["/SMTP/Host"]
+  hSmtpClient.Port = Settings["/SMTP/Port", 0]
+  hSmtpClient.User = Settings["/SMTP/User"]
+  hSmtpClient.Password = Settings["/SMTP/Password"]
+  Select Case Settings["/SMTP/Encrypt"]
+    Case "SSL"
+      hSmtpClient.Encrypt = Net.SSL
+    Case "TLS"
+      hSmtpClient.Encrypt = Net.TLS
+  End Select
+  
+  hSmtpClient.From = "noreply@"
+  If Application.Host = "localhost" Then
+    hSmtpClient.From &= "gambaswiki.org"
+  Else
+    hSmtpClient.From &= Application.Host
+  Endif
   hSmtpClient.To.Add(sName & " <" & sEmail & ">")
-  hSmtpClient.Host = "smtp.free.fr" '"smtp.hosting.blueleader.net"
   hSmtpClient.Subject = "Gambas farm registration confirmation"
   hSmtpClient.Body = "Hi,\n\n"
     "You have requested a Gambas farm account.\n"
@@ -164,7 +267,7 @@ Private Sub RegisterUser()
   If Error Then
     sErr = Error.Text
     Try DB.Delete("user", "login = &1", sLogin)
-    PrintError("15 Cannot send confirmation mail\n\n" & sErr)
+    PrintError("15 Cannot send confirmation mail\n" & sErr)
     Return
   Endif
 
@@ -283,10 +386,10 @@ Private Sub PublishSoftware()
   Dim sMyChecksum As String
   Dim sURL As String
   Dim aTag As String[]
-  Dim aDep As String[]
   Dim sTag As String
   Dim rTag As Result
   Dim iTag As Integer
+  Dim sDep As String
   
   If CheckUser() Then Return
 
@@ -300,7 +403,7 @@ Private Sub PublishSoftware()
   sScreenshot = Request["screenshot"]
   sURL = Request["url"]
   aTag = Split(Request["tags"])
-  aDep = Split(Request["dependencies"])
+  sDep = Request["dependencies"]
   
   If Not sName Then
     PrintError("13 Bad request\nName missing")
@@ -376,6 +479,7 @@ Private Sub PublishSoftware()
   rSoftware!checksum = sChecksum
   rSoftware!url = sURL
   rSoftware!date = Now
+  rSoftware!dependencies = sDep
   rSoftware.Update
   
   rSoftware = DB.Find("software", "name = &1", sName)

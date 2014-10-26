@@ -1871,3 +1871,21 @@ Public Sub btnAddQuery_Click()
   tabRequest.Index = $aRequest.Max
   
 End
+
+Private Sub SaveTableDef()
+
+  Dim hConfig As Settings
+  Dim hTable As Table
+  
+  hConfig = New Settings(Path, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  
+  For Each hTable In $hConn.Tables
+    
+    If hTable.System Then Continue
+    If hTable.Name Begins MConnection.METADATA_TABLE_PREFIX Then Continue
+    
+    
+    
+  Next
+  
+End

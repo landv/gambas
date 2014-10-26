@@ -31,7 +31,7 @@ Public Sub RegisterUser(hWin As Window, sFarm As String, sLogin As String, sPass
   $sResult = ""
 
   $hForm = New HttpForm As "FarmClient"
-  $hForm.URL = "http://" & sFarm &/ "farm/publish"
+  $hForm.URL = "http://" & sFarm &/ "farm/register"
   $hForm.Async = True
   
   $hForm.Add("login", sLogin)
@@ -42,6 +42,7 @@ Public Sub RegisterUser(hWin As Window, sFarm As String, sLogin As String, sPass
   $sGoodMsg = ("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon.")
   $sBadMsg = ("Unable to register user.")
   
+  'SetMessage(("Connecting..."))
   $hForm.Submit()
 
 Catch
@@ -51,14 +52,14 @@ Catch
   
 End
 
-Private Sub SetMessage(sMsg As String)
+' Private Sub SetMessage(sMsg As String)
+' 
+'   Try $hWin.SetMessage(sMsg)
+' 
+' End
 
-  Try $hWin.SetMessage(sMsg)
 
-End
-
-
-Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String, aTag As String[], aRequire As String[])
+Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String, aTag As String[], aRequire As String[])
 
   Dim sSource As String
   Dim sIcon As String
@@ -67,7 +68,7 @@ Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As Stri
   
   $hWin = hWin
   
-  SetMessage("Making source package...")
+  'SetMessage(("Making source package..."))
   Wait
 
   sSource = Temp$()
@@ -87,7 +88,7 @@ Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As Stri
   $sResult = ""
 
   $hForm = New HttpForm As "FarmClient"
-  $hForm.URL = "http://localhost/farm/publish" '"http://" & cmbFarm.Text &/ "farm/publish"
+  $hForm.URL = "http://" & sFarm &/ "/farm/publish"
   $hForm.Async = True
   
   $hForm.Add("login", sLogin)
@@ -106,6 +107,7 @@ Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As Stri
   $sGoodMsg = ("The project has been successfully published.")
   $sBadMsg = ("Unable to publish project.")
 
+  'SetMessage(("Connecting..."))
   $hForm.Submit()
   
 Catch
@@ -117,7 +119,7 @@ End
 
 Public Sub FarmClient_Connect()
   
-  SetMessage(("Connected to farm..."))
+  'SetMessage(("Connected."))
   
 End
 
@@ -132,7 +134,7 @@ Public Sub FarmClient_Read()
 
   Dim sBuffer As String
   
-  SetMessage(("Reading server response..."))
+  'SetMessage(("Reading server response..."))
   sBuffer = Read #$hForm, Lof($hForm)
   $sResult &= sBuffer
   
@@ -140,7 +142,7 @@ End
 
 Private Sub PublishEnd()
 
-  SetMessage("")
+  'SetMessage("")
   Try $hWin.OnPublishEnd()
   $hForm = Null
   $hWin = Null

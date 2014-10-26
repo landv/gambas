@@ -1293,8 +1293,17 @@ End
 Public Sub lstFarm_Change()
   
   Settings["/Publish/FarmList"] = lstFarm.List
+  lstFarm_Select
   
 End
+
+Public Sub OnPublishEnd()
+  
+  Me.Enabled = True
+  spnRegister.Hide
+  
+End
+
 
 Public Sub btnRegister_Click()
 
@@ -1329,6 +1338,14 @@ Public Sub btnRegister_Click()
     Return
   Endif
   
+  spnRegister.Show
+  Me.Enabled = False
   Publish.RegisterUser(Me, lstFarm.Text, sLogin, sPassword, Trim(txtName.Text), sEmail)
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Save
 
 End

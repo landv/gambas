@@ -25,7 +25,7 @@ Public Sub btnPublish_Click()
   btnCancel.Hide
   btnAbort.Show
   
-  Publish.PublishSoftware(Me, txtScreenshot.Text, txtLogin.Text, txtPassword.Text, cmbGambasVersion.Text, tagEditor.GetTags(), lstRequire.List)
+  Publish.PublishSoftware(Me, GetFarm(), txtScreenshot.Text, txtLogin.Text, txtPassword.Text, cmbGambasVersion.Text, tagEditor.GetTags(), lstRequire.List)
   
 End
 
@@ -69,7 +69,7 @@ Public Sub Form_Open()
   cmbFarm.List = Settings["/Publish/FarmList"]
   
   cmbFarm.Text = Settings["/Publish/Farm"]
-  If Not cmbFarm.Text Then cmbFarm.Text = cmbFarm[0].Text
+  cmbFarm.Index = 0
   
   txtLogin.Text = Settings["/Publish/Login"]
   chkRememberPassword.Value = Settings["/Publish/RememberPassword", False]
