@@ -97,7 +97,9 @@ Private Sub OpenDatabase()
   If $hConn Then Return
   
   $hConn = New Connection
-  $hConn.Type = "postgresql"
+  $hConn.Type = Settings["/Database/Type"]
+  $hConn.User = Settings["/Database/User"]
+  $hConn.Password = Settings["/Database/Password"]
   $hConn.Name = "gambas3_farm"
   $hConn.Open
   DB.Current = $hConn
@@ -109,7 +111,7 @@ Private Sub InitDatabase()
   Dim hConn As New Connection
   Dim hTable As Table
   
-  hConn.Type = "postgresql"
+  hConn.Type = Settings["/Database/Type"]
   hConn.Open
   Try hConn.Databases.Add("gambas3_farm")
   hConn.Close
