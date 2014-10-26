@@ -120,7 +120,7 @@ Public Sub DrawingArea_Draw()
   
   Paint.Background = iFg
   hFont = hTabPanel.TextFont
-  If Not hFont Then hFont = Style.FontOf(hTabPanel)
+  If Not hFont Then hFont = hTabPanel.Font
   Paint.Font = hFont
   
   If Not $bSelected And If $hDrawingArea.Hovered Then
