@@ -25,7 +25,7 @@ Public Sub btnPublish_Click()
   btnCancel.Hide
   btnAbort.Show
   
-  Publish.PublishSoftware(Me, txtScreenshot.Text, txtLogin.Text, txtPassword.Text, cmbGambasVersion.Text)
+  Publish.PublishSoftware(Me, txtScreenshot.Text, txtLogin.Text, txtPassword.Text, cmbGambasVersion.Text, tagEditor.GetTags(), lstRequire.List)
   
 End
 
@@ -64,8 +64,13 @@ End
 
 Public Sub Form_Open()
 
+  Settings.Read(Me)
+
   cmbFarm.List = Settings["/Publish/FarmList"]
+  
   cmbFarm.Text = Settings["/Publish/Farm"]
+  If Not cmbFarm.Text Then cmbFarm.Text = cmbFarm[0].Text
+  
   txtLogin.Text = Settings["/Publish/Login"]
   chkRememberPassword.Value = Settings["/Publish/RememberPassword", False]
   If chkRememberPassword.Value Then
@@ -73,12 +78,18 @@ Public Sub Form_Open()
   Endif
   
   tagEditor.SetTags(Project.PublishTags)
-  tagRequire.SetTags(Project.PublishDependencies)
+  tagEditor.SetCompletion("CTagCompletion")
+  
+  lstRequire.List = Project.PublishDependencies
+  
+  cmbGambasVersion.Text = Project.PublishGambasVersion
 
 End
 
 Public Sub Form_Close()
 
+  Settings.Write(Me)
+  
   Settings["/Publish/Farm"] = cmbFarm.Text
   Settings["/Publish/Login"] = txtLogin.Text
   Settings["/Publish/RememberPassword"] = CBool(chkRememberPassword.Value)
@@ -87,8 +98,15 @@ Public Sub Form_Close()
   Endif
 
   Project.PublishTags = tagEditor.GetTags()
-  Project.PublishDependencies = tagRequire.GetTags()
+  Project.PublishDependencies = lstRequire.List
+  Project.PublishGambasVersion = cmbGambasVersion.Text
   Project.WriteProject
 
 End
 
+
+Public Sub GetFarm() As String
+  
+  Return cmbFarm.Text
+  
+End

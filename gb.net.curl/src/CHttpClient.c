@@ -616,4 +616,3 @@ GB_DESC CHttpClientDesc[] =
   
   GB_END_DECLARE
 };
-

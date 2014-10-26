@@ -99,7 +99,7 @@ DECLARE_EVENT(EVENT_Hide);
 DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
 
-DECLARE_METHOD(CWINDOW_show);
+DECLARE_METHOD(Window_Show);
 
 CWINDOW *CWINDOW_Main = 0;
 int CWINDOW_MainDesktop = -1;
@@ -333,7 +333,7 @@ static void show_later(CWINDOW *_object)
 	GB.Unref(POINTER(&_object));
 }
 
-BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent)
+BEGIN_METHOD(Window_new, GB_OBJECT parent)
 
 	MyMainWindow *win = 0;
 	MyContainer *container;
@@ -488,7 +488,7 @@ BEGIN_METHOD_VOID(CFORM_main)
 	CWINDOW *form = (CWINDOW *)GB.AutoCreate(GB.GetClass(NULL), 0);
 	
 	if (!form->hidden)
-		CWINDOW_show(form, NULL);
+		Window_Show(form, NULL);
 		
 END_METHOD
 
@@ -501,9 +501,9 @@ BEGIN_METHOD(CFORM_load, GB_OBJECT parent)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CWINDOW_free)
+BEGIN_METHOD_VOID(Window_free)
 
-	//qDebug("CWINDOW_free");
+	//qDebug("Window_free");
 
 	GB.StoreObject(NULL, POINTER(&(THIS->icon)));
 	GB.StoreObject(NULL, POINTER(&(THIS->picture)));
@@ -635,7 +635,7 @@ static bool do_close(CWINDOW *_object, int ret, bool destroyed = false)
 	return (!closed);
 }
 
-BEGIN_METHOD(CWINDOW_close, GB_INTEGER ret)
+BEGIN_METHOD(Window_Close, GB_INTEGER ret)
 
 	int ret = VARGOPT(ret, 0);
 
@@ -644,7 +644,7 @@ BEGIN_METHOD(CWINDOW_close, GB_INTEGER ret)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CWINDOW_raise)
+BEGIN_METHOD_VOID(Window_Raise)
 
 	if (!THIS->toplevel)
 	{
@@ -663,7 +663,7 @@ BEGIN_METHOD_VOID(CWINDOW_raise)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CWINDOW_show)
+BEGIN_METHOD_VOID(Window_Show)
 
 	if (emit_open_event(THIS))
 		return;
@@ -679,14 +679,13 @@ BEGIN_METHOD_VOID(CWINDOW_show)
 	}
 	else
 	{
-		WINDOW->showActivate(); //parent ? parent->widget.widget : 0);
-		//THIS->widget.flag.visible = true;
+		WINDOW->showActivate();
 	}
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CWINDOW_hide)
+BEGIN_METHOD_VOID(Window_Hide)
 
 	THIS->hidden = true;
 	
@@ -701,7 +700,7 @@ BEGIN_METHOD_VOID(CWINDOW_hide)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CWINDOW_show_modal)
+BEGIN_METHOD_VOID(Window_ShowModal)
 
 	THIS->ret = 0;
 	THIS->mustCenter = true;
@@ -743,7 +742,7 @@ BEGIN_METHOD(Window_ShowPopup, GB_INTEGER x; GB_INTEGER y)
 END_METHOD
 
 
-BEGIN_PROPERTY(CWINDOW_modal)
+BEGIN_PROPERTY(Window_Modal)
 
 	if (THIS->toplevel)
 		GB.ReturnBoolean(WINDOW->isModal());
@@ -753,7 +752,7 @@ BEGIN_PROPERTY(CWINDOW_modal)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_top_level)
+BEGIN_PROPERTY(Window_TopLevel)
 
 	GB.ReturnBoolean(THIS->toplevel);
 
@@ -772,7 +771,7 @@ END_PROPERTY
 END_METHOD*/
 
 
-BEGIN_PROPERTY(CWINDOW_persistent)
+BEGIN_PROPERTY(Window_Persistent)
 
 	/*
 	if (READ_PROPERTY)
@@ -802,7 +801,7 @@ BEGIN_PROPERTY(CWINDOW_persistent)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_text)
+BEGIN_PROPERTY(Window_Text)
 
 	if (READ_PROPERTY)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->windowTitle()));
@@ -818,26 +817,7 @@ BEGIN_PROPERTY(CWINDOW_text)
 END_PROPERTY
 
 
-#if 0
-BEGIN_PROPERTY(CWINDOW_border)
-
-	if (!THIS->toplevel)
-	{
-		if (READ_PROPERTY)
-			GB.ReturnInteger(0);
-	}
-	else
-	{
-		if (READ_PROPERTY)
-			GB.ReturnInteger(WINDOW->getBorder());
-		else
-			WINDOW->setBorder(VPROP(GB_INTEGER));
-	}
-
-END_PROPERTY
-#endif
-
-BEGIN_PROPERTY(CWINDOW_border)
+BEGIN_PROPERTY(Window_Border)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WINDOW->hasBorder());
@@ -846,7 +826,8 @@ BEGIN_PROPERTY(CWINDOW_border)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWINDOW_resizable)
+
+BEGIN_PROPERTY(Window_Resizable)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(WINDOW->isResizable());
@@ -855,7 +836,8 @@ BEGIN_PROPERTY(CWINDOW_resizable)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CWINDOW_icon)
+
+BEGIN_PROPERTY(Window_Icon)
 
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->icon);
@@ -868,7 +850,7 @@ BEGIN_PROPERTY(CWINDOW_icon)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_picture)
+BEGIN_PROPERTY(Window_Picture)
 
 	if (READ_PROPERTY)
 		GB.ReturnObject(THIS->picture);
@@ -890,7 +872,7 @@ BEGIN_PROPERTY(CWINDOW_picture)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_mask)
+BEGIN_PROPERTY(Window_Mask)
 
 	/*if (THIS->embedded)
 	{
@@ -938,21 +920,21 @@ static void manage_window_state(void *_object, void *_param, Qt::WindowState sta
 	}
 }
 
-BEGIN_PROPERTY(CWINDOW_minimized)
+BEGIN_PROPERTY(Window_Minimized)
 
 	manage_window_state(_object, _param, Qt::WindowMinimized);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_maximized)
+BEGIN_PROPERTY(Window_Maximized)
 
 	manage_window_state(_object, _param, Qt::WindowMaximized);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_full_screen)
+BEGIN_PROPERTY(Window_FullScreen)
 
 	manage_window_state(_object, _param, Qt::WindowFullScreen);
 
@@ -961,7 +943,7 @@ END_PROPERTY
 
 #ifdef NO_X_WINDOW
 
-BEGIN_PROPERTY(CWINDOW_stacking)
+BEGIN_PROPERTY(Window_Stacking)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(0);
@@ -969,7 +951,7 @@ BEGIN_PROPERTY(CWINDOW_stacking)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_top_only)
+BEGIN_PROPERTY(Window_TopOnly)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(FALSE);
@@ -977,7 +959,7 @@ BEGIN_PROPERTY(CWINDOW_top_only)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_skip_taskbar)
+BEGIN_PROPERTY(Window_SkipTaskbar)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(FALSE);
@@ -985,7 +967,7 @@ BEGIN_PROPERTY(CWINDOW_skip_taskbar)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_sticky)
+BEGIN_PROPERTY(Window_Sticky)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(FALSE);
@@ -1019,7 +1001,7 @@ static void manage_window_property(void *_object, void *_param, Atom property)
 	}
 }
 
-BEGIN_PROPERTY(CWINDOW_stacking)
+BEGIN_PROPERTY(Window_Stacking)
 
 	int p;
 	
@@ -1047,7 +1029,7 @@ BEGIN_PROPERTY(CWINDOW_stacking)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_top_only)
+BEGIN_PROPERTY(Window_TopOnly)
 
 	if (!THIS->toplevel)
 	{
@@ -1069,7 +1051,7 @@ BEGIN_PROPERTY(CWINDOW_top_only)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_skip_taskbar)
+BEGIN_PROPERTY(Window_SkipTaskbar)
 
 	manage_window_property(_object, _param, X11_atom_net_wm_state_skip_taskbar);
 
@@ -1079,7 +1061,7 @@ BEGIN_PROPERTY(CWINDOW_skip_taskbar)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CWINDOW_sticky)
+BEGIN_PROPERTY(Window_Sticky)
 
 	if (!THIS->toplevel)
 	{
@@ -1127,7 +1109,7 @@ END_PROPERTY
 #endif //------------------------------------------------------------------------------------------
 
 
-BEGIN_METHOD_VOID(CWINDOW_center)
+BEGIN_METHOD_VOID(Window_Center)
 
 	if (!THIS->toplevel)
 		return;
@@ -1137,9 +1119,9 @@ BEGIN_METHOD_VOID(CWINDOW_center)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CWINDOW_delete)
+BEGIN_METHOD_VOID(Window_Delete)
 
-	//qDebug("CWINDOW_delete %p", THIS);
+	//qDebug("Window_Delete %p", THIS);
 
 	do_close(THIS, 0);
 
@@ -1151,16 +1133,16 @@ BEGIN_METHOD_VOID(CWINDOW_delete)
 END_METHOD
 
 
-BEGIN_PROPERTY(CWINDOW_visible)
+BEGIN_PROPERTY(Window_Visible)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(!WINDOW->isHidden());
 	else
 	{
 		if (VPROP(GB_BOOLEAN))
-			CWINDOW_show(_object, _param);
+			Window_Show(_object, _param);
 		else
-			CWINDOW_hide(_object, _param);
+			Window_Hide(_object, _param);
 	}
 
 END_PROPERTY
@@ -1214,9 +1196,9 @@ BEGIN_METHOD_VOID(Window_Controls_next)
 END_PROPERTY
 
 
-BEGIN_METHOD(CWINDOW_reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
+BEGIN_METHOD(Window_Reparent, GB_OBJECT container; GB_INTEGER x; GB_INTEGER y)
 
-	//qDebug("CWINDOW_reparent");
+	//qDebug("Window_Reparent");
 	reparent_window(THIS, VARG(container), !MISSING(x) && !MISSING(y), VARG(x), VARG(y));
 
 END_METHOD
@@ -1234,7 +1216,7 @@ BEGIN_METHOD(Window_Controls_get, GB_STRING name)
 END_METHOD
 
 
-BEGIN_PROPERTY(CWINDOW_closed)
+BEGIN_PROPERTY(Window_Closed)
 
 	GB.ReturnBoolean(!THIS->opened);
 
@@ -1436,41 +1418,41 @@ GB_DESC CWindowDesc[] =
 	GB_CONSTANT("Above", "i", 1),
 	GB_CONSTANT("Below", "i", 2),
 
-	GB_METHOD("_new", NULL, CWINDOW_new, "[(Parent)Control;]"),
-	GB_METHOD("_free", NULL, CWINDOW_free, NULL),
+	GB_METHOD("_new", NULL, Window_new, "[(Parent)Control;]"),
+	GB_METHOD("_free", NULL, Window_free, NULL),
 	GB_METHOD("_get", "Control", Window_Controls_get, "(Name)s"),
 
-	GB_METHOD("Close", "b", CWINDOW_close, "[(Return)i]"),
-	GB_METHOD("Raise", NULL, CWINDOW_raise, NULL),
-	GB_METHOD("Show", NULL, CWINDOW_show, NULL),
-	GB_METHOD("Hide", NULL, CWINDOW_hide, NULL),
-	GB_METHOD("ShowModal", "i", CWINDOW_show_modal, NULL),
-	GB_METHOD("ShowDialog", "i", CWINDOW_show_modal, NULL),
+	GB_METHOD("Close", "b", Window_Close, "[(Return)i]"),
+	GB_METHOD("Raise", NULL, Window_Raise, NULL),
+	GB_METHOD("Show", NULL, Window_Show, NULL),
+	GB_METHOD("Hide", NULL, Window_Hide, NULL),
+	GB_METHOD("ShowModal", "i", Window_ShowModal, NULL),
+	GB_METHOD("ShowDialog", "i", Window_ShowModal, NULL),
 	GB_METHOD("ShowPopup", "i", Window_ShowPopup, "[(X)i(Y)i]"),
-	GB_METHOD("Center", NULL, CWINDOW_center, NULL),
-	GB_PROPERTY_READ("Modal", "b", CWINDOW_modal),
-	GB_PROPERTY_READ("TopLevel", "b", CWINDOW_top_level),
-	GB_PROPERTY_READ("Closed", "b", CWINDOW_closed),
+	GB_METHOD("Center", NULL, Window_Center, NULL),
+	GB_PROPERTY_READ("Modal", "b", Window_Modal),
+	GB_PROPERTY_READ("TopLevel", "b", Window_TopLevel),
+	GB_PROPERTY_READ("Closed", "b", Window_Closed),
 
-	GB_METHOD("Delete", NULL, CWINDOW_delete, NULL),
+	GB_METHOD("Delete", NULL, Window_Delete, NULL),
 
-	GB_METHOD("Reparent", NULL, CWINDOW_reparent, "(Container)Container;[(X)i(Y)i]"),
+	GB_METHOD("Reparent", NULL, Window_Reparent, "(Container)Container;[(X)i(Y)i]"),
 
-	GB_PROPERTY("Persistent", "b", CWINDOW_persistent),
-	GB_PROPERTY("Text", "s", CWINDOW_text),
-	GB_PROPERTY("Title", "s", CWINDOW_text),
-	GB_PROPERTY("Caption", "s", CWINDOW_text),
-	GB_PROPERTY("Icon", "Picture", CWINDOW_icon),
-	GB_PROPERTY("Picture", "Picture", CWINDOW_picture),
-	GB_PROPERTY("Mask", "b", CWINDOW_mask),
-	GB_PROPERTY("Minimized", "b", CWINDOW_minimized),
-	GB_PROPERTY("Maximized", "b", CWINDOW_maximized),
-	GB_PROPERTY("FullScreen", "b", CWINDOW_full_screen),
-	GB_PROPERTY("TopOnly", "b", CWINDOW_top_only),
-	GB_PROPERTY("Stacking", "i", CWINDOW_stacking),
-	GB_PROPERTY("Sticky", "b", CWINDOW_sticky),
-	GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
-	GB_PROPERTY("Visible", "b", CWINDOW_visible),
+	GB_PROPERTY("Persistent", "b", Window_Persistent),
+	GB_PROPERTY("Text", "s", Window_Text),
+	GB_PROPERTY("Title", "s", Window_Text),
+	GB_PROPERTY("Caption", "s", Window_Text),
+	GB_PROPERTY("Icon", "Picture", Window_Icon),
+	GB_PROPERTY("Picture", "Picture", Window_Picture),
+	GB_PROPERTY("Mask", "b", Window_Mask),
+	GB_PROPERTY("Minimized", "b", Window_Minimized),
+	GB_PROPERTY("Maximized", "b", Window_Maximized),
+	GB_PROPERTY("FullScreen", "b", Window_FullScreen),
+	GB_PROPERTY("TopOnly", "b", Window_TopOnly),
+	GB_PROPERTY("Stacking", "i", Window_Stacking),
+	GB_PROPERTY("Sticky", "b", Window_Sticky),
+	GB_PROPERTY("SkipTaskbar", "b", Window_SkipTaskbar),
+	GB_PROPERTY("Visible", "b", Window_Visible),
 	GB_PROPERTY("Opacity", "i", Window_Opacity),
 	GB_PROPERTY("Transparent", "b", Window_Transparent),
 
@@ -1484,8 +1466,8 @@ GB_DESC CWindowDesc[] =
 	
 	//GB_PROPERTY("Type", "i", CWINDOW_type),
 	GB_PROPERTY("Utility", "b", Window_Utility),
-	GB_PROPERTY("Border", "b", CWINDOW_border),
-	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
+	GB_PROPERTY("Border", "b", Window_Border),
+	GB_PROPERTY("Resizable", "b", Window_Resizable),
 
 	GB_PROPERTY_READ("Screen", "i", Window_Screen),
 
@@ -2467,7 +2449,7 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	if (reparented)
 	{
 		if (!hidden)
-			CWINDOW_show(THIS, NULL);
+			Window_Show(THIS, NULL);
 	}
 }
 

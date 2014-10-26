@@ -60,6 +60,10 @@ Public Sub Main()
       
       SearchSoftware
       
+    Case "/tags" ' search for tag
+      
+      GetTags
+      
     ' Case "/test"
     '   
     '   Response.ContentType = "text/plain;charset=utf-8"
@@ -280,6 +284,9 @@ Private Sub PublishSoftware()
   Dim sURL As String
   Dim aTag As String[]
   Dim aDep As String[]
+  Dim sTag As String
+  Dim rTag As Result
+  Dim iTag As Integer
   
   If CheckUser() Then Return
 
@@ -349,6 +356,8 @@ Private Sub PublishSoftware()
   aVersion = Split(sVersion, ".")
   sName &= "_" & aVersion[0]
   
+  DB.Begin
+  
   rSoftware = DB.Edit("software", "name = &1", sName)
   If rSoftware.Available Then
     If rSoftware!owner <> $iUser Then
@@ -380,8 +389,31 @@ Private Sub PublishSoftware()
     CopySoftwareFile(rSoftware!id, "screenshot." & File.Ext(sScreenshot), Request.Files["screenshot"])
   Endif
   
+  DB.Delete("tag", "software = &1", rSoftware!id)
+  
+  For Each sTag In aTag
+    
+    rTag = DB.Find("name", "cname = &1", Lower(sTag))
+    If Not rTag.Available Then
+      rTag = DB.Create("name")
+      rTag!name = sTag
+      rTag!cname = Lower(sTag)
+      rTag.Update
+      rTag = DB.Find("name", "cname = &1", Lower(sTag))
+    Endif
+    iTag = rTag!id
+    
+    rTag = DB.Create("tag")
+    rTag!software = rSoftware!id
+    rTag!tag = iTag
+    rTag.Update
+    
+  Next
+  
+  DB.Commit
+  
   PrintOK
-
+  
 End
 
 Private Sub FindSoftware() As Result
@@ -612,6 +644,30 @@ Private Sub SearchSoftware()
     
   Endif
   
+  Response.End
+
+End
+
+Private Sub GetTags()
+
+  Dim sTag As String
+  Dim rTag As Result
+  
+  OpenDatabase
+  
+  sTag = Lower(Request["name"])
+  If sTag Then
+    rTag = DB.Limit(32).Find("name", "cname LIKE &1 ORDER BY cname", sTag & "%")
+  Else
+    rTag = DB.Limit(32).Find("name", "ORDER BY cname")
+  Endif
+  
+  Response.ContentType = "text/plain;charset=utf-8"
+  Response.Begin
+  Print "10 OK"
+  For Each rTag
+    Print rTag!name
+  Next
   Response.End
 
 End

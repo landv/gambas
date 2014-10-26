@@ -1,10 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,71,79)
+  MoveScaled(0,0,71,81)
   Text = ("Publish project")
   Icon = Picture["icon:/medium/internet"]
-  Resizable = False
   Arrangement = Arrange.Vertical
   { Panel1 Panel
     MoveScaled(2,2,59,41)
@@ -53,12 +52,14 @@
       Expand = True
     }
     { Label7 Label
-      MoveScaled(0,25,14,4)
+      MoveScaled(0,25,19,4)
       Font = Font["Bold"]
-      Text = ("Requires")
+      Text = ("Dependencies")
     }
-    { tagRequire CTagEditor
-      MoveScaled(0,29,58,10)
+    { lstRequire ListEditor
+      MoveScaled(1,29,57,11)
+      Expand = True
+      Moveable = False
     }
   }
   { Panel3 Panel
@@ -144,7 +145,7 @@
     { btnAbort Button
       MoveScaled(35,0,16,4)
       Visible = False
-      Text = ("Abort")
+      Text = ("Stop")
       Picture = Picture["icon:/small/stop"]
     }
     { btnCancel Button

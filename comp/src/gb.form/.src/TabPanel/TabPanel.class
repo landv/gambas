@@ -534,7 +534,7 @@ End
 
 Private Function TextFont_Read() As Font
 
-  Return $hTabBar.Font
+  Return Style.FontOf($hTabBar)
 
 End
 

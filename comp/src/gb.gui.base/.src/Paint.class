@@ -123,6 +123,7 @@ Static Public Sub DrawTextShadow(Text As String, X As Float, Y As Float, W As Fl
     DY = H - .H
   
     Paint.Begin(hShadow)
+    
     Paint.Font = hFont
     Paint.Background = iBackground
     Paint.Brush = hBrush

@@ -366,7 +366,17 @@ static void apply_font(QFont &font, void *object = 0)
 static void Font(GB_PAINT *d, int set, GB_FONT *font)
 {
 	if (set)
-		PAINTER(d)->setFont(*((CFONT *)(*font))->font);
+	{
+		QFont f(*((CFONT *)(*font))->font);
+		PAINTER(d)->setFont(f);
+
+		// Strange bug of QT. Sometimes the font does not applies (cf. DrawTextShadow)
+		if (f != PAINTER(d)->font())
+		{
+			f.fromString(f.toString());
+			PAINTER(d)->setFont(f);
+		}
+	}
 	else
 		*font = CFONT_create(PAINTER(d)->font(), apply_font);
 }

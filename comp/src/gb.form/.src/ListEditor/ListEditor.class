@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,List,Border=True"
+Public Const _Properties As String = "*,List,Border=True,Moveable=True"
 Public Const _DefaultSize As String = "24,32"
 Public Const _Similar As String = "ListBox"
 Public Const _Group As String = "View"
@@ -12,6 +12,7 @@ Public Const _Group As String = "View"
 Property List As String[]
 Property Border As Boolean
 Property Text As String
+Property Moveable As Boolean
 
 Event Select
 Event Change
@@ -69,5 +70,17 @@ End
 Private Sub Text_Write(Value As String)
 
   $hForm.SetText(Value)
+
+End
+
+Private Function Moveable_Read() As Boolean
+
+  Return $hForm.GetMoveable()
+
+End
+
+Private Sub Moveable_Write(Value As Boolean)
+
+  $hForm.SetMoveable(Value)
 
 End

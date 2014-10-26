@@ -7,6 +7,7 @@ Inherits UserControl
 Private $hView As ScrollView
 Private $hEditor As TextBox
 Private $hBorder As Panel
+Private $hCompletion As Completion
 
 Public Sub _new()
 
@@ -24,7 +25,15 @@ Public Sub _new()
   
   $hEditor = New TextBox($hView) As "Editor"
   $hEditor.Border = False
+  $hEditor.MaxLength = 24
   ResizeEditor
+  
+End
+
+Public Sub SetCompletion(sClass As String)
+  
+  $hCompletion = Object.New(sClass, [$hEditor])
+  Object.Attach($hCompletion, Me, "Completion")
   
 End
 
@@ -55,7 +64,7 @@ Private Sub AddTag(sTag As String)
 
   sTag = Trim(sTag)
   If Not sTag Then Return
-  If GetTags().Exist(sTag) Then Return
+  If GetTags().Exist(sTag, gb.IgnoreCase) Then Return
   
   hTag = New CTag($hView)
   hTag.Text = sTag
@@ -89,6 +98,11 @@ Public Sub Editor_KeyPress()
     Endif
   Endif
   
+  If Key.Text Then
+    If IsDigit(Key.Text) Or If IsLetter(Key.Text) Or If InStr(" -.\b\n\r\e", Key.Text) Then Return
+    Stop Event
+  Endif
+  
 End
 
 Public Sub GetTags() As String[]
@@ -116,3 +130,8 @@ Public Sub SetTags(aTag As String[])
   
 End
 
+Public Sub Completion_Activate()
+  
+  Editor_Activate
+  
+End

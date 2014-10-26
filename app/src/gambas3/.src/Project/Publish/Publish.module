@@ -39,7 +39,7 @@ Public Sub RegisterUser(hWin As Window, sFarm As String, sLogin As String, sPass
   $hForm.Add("name", sFullName)
   $hForm.Add("email", sEmail)
   
-  $sGoodMsg = ("You have been successfully registered.\n\nYou will receive a confirmation e-mail at the provided address to activate your account.")
+  $sGoodMsg = ("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon.")
   $sBadMsg = ("Unable to register user.")
   
   $hForm.Submit()
@@ -58,7 +58,7 @@ Private Sub SetMessage(sMsg As String)
 End
 
 
-Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String)
+Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String, aTag As String[], aRequire As String[])
 
   Dim sSource As String
   Dim sIcon As String
@@ -99,6 +99,8 @@ Public Sub PublishSoftware(hWin As Window, sScreenshot As String, sLogin As Stri
   $hForm.Add("checksum", sChecksum)
   $hForm.AddFile("icon", sIcon, "icon.png")
   $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
+  $hForm.Add("tags", aTag.Join(","))
+  $hForm.Add("dependencies", aRequire.Join(","))
   If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
 
   $sGoodMsg = ("The project has been successfully published.")

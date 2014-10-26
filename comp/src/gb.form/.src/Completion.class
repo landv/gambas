@@ -1,0 +1,182 @@
+' Gambas class file
+
+Export
+
+Event Activate
+
+Property Delay As Integer
+
+Private $hObserver As Observer
+Private $hTimer As Timer
+Private $hPopup As Panel
+Private $hListBox As ListBox
+Private $hWatcher As Watcher
+
+Private Sub FindTextBox(hCtrl As Control) As Control
+  
+  If hCtrl Is Container Then
+    For Each hCtrl In Container(hCtrl).Children
+      If hCtrl Is TextBox Then Return hCtrl
+    Next
+  Else If hCtrl Is TextBox Then
+    Return hCtrl
+  Endif
+  
+End
+
+
+Private Sub GetTextBox() As TextBox
+
+  Return $hObserver.Object
+
+End
+
+Public Sub _new(hCtrl As Control)
+  
+  hCtrl = FindTextBox(hCtrl)
+  
+  $hObserver = New Observer(hCtrl, True) As "TextBox"
+  $hWatcher = New Watcher(hCtrl) As "TextBox"
+  
+  $hTimer = New Timer As "Timer"
+  $hTimer.Delay = 350
+  
+End
+
+Public Sub TextBox_Change()
+  
+  HideList
+  $hTimer.Stop
+  $hTimer.Start
+  
+End
+
+Private Sub HideList()
+
+  If $hPopup Then $hPopup.Hide
+  $hTimer.Stop
+
+End
+
+Public Sub TextBox_KeyPress()
+  
+  If $hPopup And If $hPopup.Visible Then
+    Select Case Key.Code
+      Case Key.Down
+        Try Inc $hListBox.Index
+        Stop Event
+        Return
+      Case Key.Up
+        If $hListBox.Index > 0 Then Dec $hListBox.Index
+        Stop Event
+        Return
+      Case Key.Enter, Key.Return
+        ListBox_Click
+        Stop Event
+        Return
+    End Select
+  Endif
+  
+  If Key.Code = Key.Escape Then HideList
+  
+End
+
+
+Public Sub Timer_Timer()
+
+  Dim aList As String[]
+  Dim hCtrl As TextBox
+  Dim H, Y As Integer
+  
+  $hTimer.Stop
+  
+  aList = Me.Get(GetTextBox().Text)
+  If Not aList Or If aList.Count = 0 Then Return
+  
+  If Not $hPopup Then
+    
+    '$hPopup = New Window As "Popup"
+    '$hPopup.Arrangement = Arrange.Fill
+    '$hPopup.Border = False
+    '$hPopup.SkipTaskbar = True
+    '$hPopup.TopOnly = True
+    '$hPopup.Persistent = True
+    
+    $hPopup = New Panel(GetTextBox().Window)
+    $hPopup.Ignore = True
+    $hPopup.Border = Border.Plain
+    $hPopup.Arrangement = Arrange.Fill
+    
+    $hListBox = New ListBox($hPopup) As "ListBox"
+    $hListBox.Border = False
+    
+  Endif
+  
+  $hListBox.List = aList
+  $hListBox.Index = 0 'Me.GetIndex()
+  
+  hCtrl = GetTextBox()
+  Y = hCtrl.ScreenY - hCtrl.Window.ScreenY + hCtrl.H
+  H = ($hPopup.Font.Height + 6) * Min(8, aList.Count) + 2
+  H = Min(H, hCtrl.Window.H - Y)
+  $hPopup.Move(hCtrl.ScreenX - hCtrl.Window.ScreenX, Y, Max(hCtrl.W, Desktop.Scale * 24), H)
+  $hPopup.Raise
+  $hPopup.Show
+  'hCtrl.Window.Show
+  
+End
+
+Public Sub Popup_Activate()
+  
+  With GetTextBox()
+    .Window.Show
+    .SetFocus
+  End With
+  
+End
+
+
+Public Sub TextBox_Hide()
+  
+  HideList
+  
+End
+
+Public Sub TextBox_Move()
+  
+  HideList
+  
+End
+
+Public Sub TextBox_Resize()
+  
+  HideList
+  
+End
+
+Private Function Delay_Read() As Integer
+
+  Return $hTimer.Delay
+
+End
+
+Private Sub Delay_Write(Value As Integer)
+
+  $hTimer.Delay = Value
+
+End
+
+Public Sub ListBox_Click()
+  
+  GetTextBox().Text = $hListBox.Text
+  HideList
+  Raise Activate
+  
+End
+
+Public Sub Get(Text As String) As String[]
+  
+  If Len(Text) < 3 Then Return
+  Return ["Gambas", "Almost", "Means", "Basic!", Text]
+  
+End

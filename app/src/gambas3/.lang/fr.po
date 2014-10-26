@@ -222,9 +222,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"POT-Creation-Date: 2014-10-25 13:15 UTC\n"
-"PO-Revision-Date: 2014-10-25 13:05 UTC\n"
-"Last-Translator: benoit <benoit@black-tower>\n"
+"POT-Creation-Date: 2014-10-26 00:00 UTC\n"
+"PO-Revision-Date: 2014-10-25 23:59 UTC\n"
+"Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -759,7 +759,7 @@ msgid "Provides"
 msgstr "Fournit"
 
 #: CLibraryInfo.class:158 ComponentItem.class:153 FPropertyComponent.form:144
-#: FPublish.form:102 LibraryItem.class:60
+#: LibraryItem.class:60
 msgid "Requires"
 msgstr "Nécessite"
 
@@ -1135,7 +1135,7 @@ msgstr "Résoudre"
 #: FConflict.form:174 FDebugInfo.form:270 FEditor.form:320
 #: FFileProperty.form:76 FForm.form:420 FImageEditor.form:356
 #: FImportTable.form:222 FMain.form:361 FPatch.form:105
-#: FProjectVersion.form:323 FPublish.form:212 FSystemInfo.form:80
+#: FProjectVersion.form:323 FPublish.form:220 FSystemInfo.form:80
 #: FTextEditor.form:273 FTips.form:83 FTranslate.form:305
 msgid "Close"
 msgstr "Fermer"
@@ -2979,7 +2979,7 @@ msgstr "Patch"
 msgid "Create"
 msgstr "Créer"
 
-#: FMain.form:446 FPublish.form:199
+#: FMain.form:446 FPublish.form:207
 msgid "Publish"
 msgstr "Publier"
 
@@ -3035,7 +3035,7 @@ msgstr "Bureau courant"
 msgid "Pause"
 msgstr "Pause"
 
-#: FMain.form:575
+#: FMain.form:575 FPublish.form:214
 msgid "Stop"
 msgstr "Arrêter"
 
@@ -3712,11 +3712,11 @@ msgid "User"
 msgstr "Utilisateur"
 
 #: FNewConnection.form:151 FOption.form:1405 FProjectVersion.form:142
-#: FProxy.form:47 FPublish.form:156
+#: FProxy.form:47 FPublish.form:160
 msgid "Password"
 msgstr "Mot de passe"
 
-#: FNewConnection.form:171 FProjectVersion.form:155 FPublish.form:177
+#: FNewConnection.form:171 FProjectVersion.form:155 FPublish.form:181
 msgid "Remember password"
 msgstr "Se souvenir du mot de passe"
 
@@ -3900,7 +3900,7 @@ msgstr "Avant-plan"
 msgid "Background color"
 msgstr "Arrière-plan"
 
-#: FOption.form:259
+#: FOption.form:259 FPublish.form:121
 msgid "Identity"
 msgstr "Identité"
 
@@ -4165,15 +4165,14 @@ msgid "Publishing"
 msgstr "Publication"
 
 #: FOption.form:1352
-#, fuzzy
 msgid "Publishing servers"
-msgstr "Publication"
+msgstr "Serveurs de publication"
 
 #: FOption.form:1374
 msgid "Register on"
 msgstr "S'enregistrer sur"
 
-#: FOption.form:1390 FPublish.form:141
+#: FOption.form:1390 FPublish.form:145
 msgid "Login"
 msgstr "Identifiant"
 
@@ -4186,14 +4185,14 @@ msgid "Register"
 msgstr "S'enregistrer"
 
 #: FOption.form:1455
-#, fuzzy
 msgid ""
-"To activate your account, a confirmation mail will be sent to the e-mail address specified in the <b>Identity</b> panel.\n"
+"A confirmation mail will be sent to the e-mail address specified in the <b>Identity</b> panel. Click on the link included in that mail to activate your account.\n"
 "<p>\n"
 "<b>Your e-mail will not be stored on the publishing server.</b>"
 msgstr ""
-"Afin d'activer votre compte, un courrier de confirmation va être envoyé à l'adresse e-mail spécifiée dans le panneau <b>Identité</n><p>\n"
-"Notez que votre e-mail ne sera <b>pas</b> stockée sur le serveur de publication."
+"Un courriel de confirmation sera envoyé à l'adresse spécifié dans le panneau <b>Identité</b>. Cliquez sur le lien inclus dans ce courriel pour activer votre compte.\n"
+"<p>\n"
+"<b>Votre adresse se sera pas stockée sur le serveur de publication.</b>"
 
 #: FOutput.form:35
 msgid "Console - Gambas"
@@ -4647,29 +4646,29 @@ msgstr "Proxy SOCKS5"
 msgid "Select a screenshot of your project"
 msgstr "Choisissez une capture d'écran de votre projet"
 
-#: FPublish.form:39
+#: FPublish.form:40
 msgid "Publish project"
 msgstr "Publier un projet"
 
-#: FPublish.form:57
+#: FPublish.form:58
 msgid "Screenshot"
 msgstr "Capture d'écran"
 
-#: FPublish.form:74
+#: FPublish.form:75
 msgid "Require Gambas version"
 msgstr "Version de Gambas nécessaire"
 
-#: FPublish.form:91
+#: FPublish.form:92
 msgid "Tags"
 msgstr "Étiquettes"
 
-#: FPublish.form:126
+#: FPublish.form:102
+msgid "Dependencies"
+msgstr "Dépendences"
+
+#: FPublish.form:130
 msgid "Farm"
 msgstr "Ferme"
-
-#: FPublish.form:206
-msgid "Abort"
-msgstr ""
 
 #: FReportBorderChooser.form:43
 msgid "Configure border"
@@ -6871,28 +6870,31 @@ msgstr "Impossible d'écrire le fichier de description du composant."
 
 #: Publish.module:42
 msgid ""
-"The user has been successfully registered.\n"
+"You have been successfully registered.\n"
 "\n"
-"You will receive a confirmation e-mail at the provided address to activate your account."
+"You will receive a confirmation e-mail soon."
 msgstr ""
+"Vous avez été enregistré avec succès.\n"
+"\n"
+"Vous recevrez un courriel de confirmation bientôt."
 
 #: Publish.module:43
 msgid "Unable to register user."
 msgstr "Impossible d'enregistrer l'utilisateur."
 
-#: Publish.module:104
+#: Publish.module:106
 msgid "The project has been successfully published."
 msgstr "Le projet a été publié avec succès."
 
-#: Publish.module:105
+#: Publish.module:107
 msgid "Unable to publish project."
 msgstr "Impossible de publier le projet."
 
-#: Publish.module:118
+#: Publish.module:120
 msgid "Connected to farm..."
 msgstr "Connection au serveur..."
 
-#: Publish.module:133
+#: Publish.module:135
 msgid "Reading server response..."
 msgstr ""
 
@@ -6943,6 +6945,3 @@ msgstr "Cette classe n'existe pas."
 #: WikiMarkdown.class:163
 msgid "This symbol does not exist."
 msgstr "Ce symbole n'existe pas."
-
-#~ msgid "Farms"
-#~ msgstr "Serveurs de publication"

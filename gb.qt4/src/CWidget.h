@@ -193,8 +193,11 @@ void CWIDGET_reset_color(CWIDGET *_object);
 QT_COLOR_FUNC CWIDGET_after_set_color(QT_COLOR_FUNC func);
 GB_COLOR CWIDGET_get_background(CWIDGET *_object, bool handle_proxy = false);
 GB_COLOR CWIDGET_get_foreground(CWIDGET *_object, bool handle_proxy = false);
+
 GB_COLOR CWIDGET_get_real_background(CWIDGET *_object);
 GB_COLOR CWIDGET_get_real_foreground(CWIDGET *_object);
+void *CWIDGET_get_real_font(CWIDGET *_object);
+
 void *CWIDGET_get_parent(void *_object);
 int CWIDGET_get_handle(void *_object);
 bool CWIDGET_is_visible(void *_object);

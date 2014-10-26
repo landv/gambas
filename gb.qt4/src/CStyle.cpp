@@ -428,6 +428,19 @@ BEGIN_METHOD(Style_ForegroundOf, GB_OBJECT control)
 
 END_METHOD
 
+#if 0
+BEGIN_METHOD(Style_FontOf, GB_OBJECT control)
+
+	CWIDGET *control = (CWIDGET *)VARG(control);
+
+	if (GB.CheckObject(control))
+		return;
+
+	GB.ReturnObject(CWIDGET_get_real_font(control));
+
+END_METHOD
+#endif
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
@@ -458,6 +471,7 @@ GB_DESC StyleDesc[] =
 	GB_STATIC_METHOD("StateOf", "i", Style_StateOf, "(Control)Control;"),
 	GB_STATIC_METHOD("BackgroundOf", "i", Style_BackgroundOf, "(Control)Control;"),
 	GB_STATIC_METHOD("ForegroundOf", "i", Style_ForegroundOf, "(Control)Control;"),
+	//GB_STATIC_METHOD("FontOf", "Font", Style_FontOf, "(Control)Control;"),
 
 	GB_END_DECLARE
 };

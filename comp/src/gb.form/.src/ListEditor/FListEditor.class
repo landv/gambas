@@ -171,3 +171,17 @@ Public Sub SetText(sText As String)
   Endif
 
 End
+
+Public Sub GetMoveable() As Boolean
+  
+  Return btnUp.Visible
+  
+End
+
+Public Sub SetMoveable(bShow As Boolean)
+  
+  btnUp.Visible = bShow
+  btnDown.Visible = bShow
+  
+End
+

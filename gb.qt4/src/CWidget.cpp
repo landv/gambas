@@ -848,17 +848,17 @@ BEGIN_PROPERTY(Control_Height)
 
 END_PROPERTY
 
-/*CFONT *CWIDGET_get_real_font(CWIDGET *_object)
+void *CWIDGET_get_real_font(CWIDGET *_object)
 {
 	if (THIS->font)
-		return THIS->font;
+		return CFONT_create(*((CFONT *)THIS->font)->font);
 
 	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
 	if (parent)
 		return CWIDGET_get_real_font(parent);
 	else
-		return NULL;
-}*/
+		return CFONT_create(qApp->font());
+}
 
 BEGIN_PROPERTY(Control_Font)
 
@@ -2337,7 +2337,7 @@ void CWIDGET_handle_focus(CWIDGET *control, bool on)
 	if (on == (CWIDGET_active_control == control))
 		return;
 	
-	if (CWIDGET_active_control)
+	if (CWIDGET_active_control && !_focus_change)
 		CWIDGET_previous_control = CWIDGET_active_control;
 	CWIDGET_active_control = on ? control : NULL;
 	handle_focus_change();
