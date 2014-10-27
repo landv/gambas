@@ -729,13 +729,29 @@ __FOUND_WIDGET:
 			if (!control->_grab && gApplication::activeControl())
 				control = gApplication::activeControl();
 
-			//fprintf(stderr, "control = %p %s\n", control, control ? control->name() : "");
-			
+			//if (event->type == GDK_KEY_PRESS)
+			//	fprintf(stderr, "GDK_KEY_PRESS: control = %p %s %p %08X\n", control, control ? control->name() : "", event, event->key.state);
+
 			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 			
 			if (control)
 			{
 				if (gKey::enable(control, &event->key))
+				{
+					gKey::disable();
+					if (gKey::canceled())
+					{
+						//if (type == gEvent_KeyPress) fprintf(stderr, "canceled\n");
+						goto __RETURN;
+					}
+					else
+					{
+						//if (type == gEvent_KeyPress) fprintf(stderr, "handle\n");
+						goto __HANDLE_EVENT;
+					}
+				}
+
+				if (gKey::mustIgnoreEvent(&event->key))
 				{
 					gKey::disable();
 					goto __HANDLE_EVENT;
@@ -745,8 +761,15 @@ __FOUND_WIDGET:
 				gKey::disable();
 				
 				if (cancel)
+				{
+					//if (type == gEvent_KeyPress) fprintf(stderr, "canceled #2\n");
 					goto __RETURN;
-				
+				}
+				else
+				{
+					//if (type == gEvent_KeyPress) fprintf(stderr, "handle #2\n");
+				}
+
 				win = control->window();
 
 				if (event->key.keyval == GDK_Escape)

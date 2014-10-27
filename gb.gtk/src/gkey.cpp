@@ -43,6 +43,7 @@ gKey
 **************************************************************************/
 
 bool gKey::_valid = false;
+bool gKey::_canceled = false;
 GdkEventKey gKey::_event;
 
 static GtkIMContext *_im_context = NULL;
@@ -50,9 +51,10 @@ static gControl *_im_control = NULL;
 static bool _im_no_commit = false;
 static bool _no_input_method = false;
 static GdkWindow *_im_window = NULL;
+static signed char _im_state_required = 0;
 
-#define MAX_CODE 16
-static uint _key_code[MAX_CODE] = { 0 };
+//#define MAX_CODE 16
+//static uint _key_code[MAX_CODE] = { 0 };
 
 
 //char *_im_text = NULL;
@@ -171,9 +173,10 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
 		disable();
 
 	_valid = true;
+	_canceled = false;
 	if (event)
 	{
-		if (event->type == GDK_KEY_RELEASE)
+		//if (event->type == GDK_KEY_RELEASE)
 			_im_no_commit = false;
 
 		_event = *event;
@@ -184,6 +187,7 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
 			#if DEBUG_IM
 			fprintf(stderr, "gKey::enable: %p event->string = '%s' %d\n", event, event->string, (event->state & (1 << 25)) != 0);
 			#endif
+
 			f = gtk_im_context_filter_keypress(_im_context, &_event);
 			#if DEBUG_IM
 			fprintf(stderr, "gKey::enable: %p filter -> %d event->string = '%s'\n", event, f, event->string);
@@ -191,7 +195,24 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
 		}
 	}
 
-  return f;
+  return f || _canceled;
+}
+
+bool gKey::mustIgnoreEvent(GdkEventKey *e)
+{
+	if (_im_state_required < 0)
+	{
+		_im_state_required = (e->state & (1 << 25)) != 0;
+		return false;
+	}
+
+	if (((e->state & (1 << 25)) != 0) == _im_state_required)
+		return false;
+
+#if DEBUG_IM
+	fprintf(stderr, "ignore event\n");
+#endif
+	return true;
 }
 
 static void cb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
@@ -199,10 +220,10 @@ static void cb_im_commit(GtkIMContext *context, const char *str, gpointer pointe
 	bool disable = false;
 
 	#if DEBUG_IM
-	fprintf(stderr, "cb_im_commit: %s\n", str);
+	fprintf(stderr, "cb_im_commit: %s (_im_no_commit = %d)\n", str, _im_no_commit);
 	#endif
 	
-	if (_im_no_commit)
+	if (gKey::mustIgnoreEvent(&gKey::_event))
 		return;
 
 	if (!gKey::valid())
@@ -211,7 +232,10 @@ static void cb_im_commit(GtkIMContext *context, const char *str, gpointer pointe
 		disable = true;
 	}
 
-	gKey::raiseEvent(gEvent_KeyPress, _im_control, str);
+	gKey::_canceled = gKey::raiseEvent(gEvent_KeyPress, _im_control, str);
+#if DEBUG_IM
+	fprintf(stderr, "cb_im_commit: canceled = %d\n", gKey::_canceled);
+#endif
 
 	if (disable)
 		gKey::disable();
@@ -231,7 +255,6 @@ void gKey::init()
 	_im_window = gdk_window_new(NULL, &attr, 0);
 
 	_im_context = gtk_im_multicontext_new();
-
   g_signal_connect (_im_context, "commit", G_CALLBACK(cb_im_commit), NULL);
 }
 
@@ -268,11 +291,12 @@ void gKey::setActiveControl(gControl *control)
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
 			#if DEBUG_IM
-			fprintf(stderr, "gtk_im_context_focus_in\n");
+			fprintf(stderr, "gtk_im_context_focus_in: %s\n", gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context)));
 			#endif
+			_im_state_required = -1;
 		}
 
-		memset(_key_code, 0, sizeof(uint) * MAX_CODE);
+		//memset(_key_code, 0, sizeof(uint) * MAX_CODE);
 	}
 }
 
@@ -296,6 +320,7 @@ static bool raise_key_event_to_parent_window(gControl *control, int type)
 	return false;
 }
 
+#if 0
 static bool can_raise(GdkEventKey *event)
 {
 	int i;
@@ -332,6 +357,7 @@ static bool can_raise(GdkEventKey *event)
 		return false;
 	}
 }
+#endif
 
 bool gKey::raiseEvent(int type, gControl *control, const char *text)
 {
@@ -341,8 +367,8 @@ bool gKey::raiseEvent(int type, gControl *control, const char *text)
 	if (text)
 		_event.string = (gchar *)text;
 
-	if (!can_raise(&_event))
-		return false;
+	//if (!can_raise(&_event))
+	//	return false;
 
 __KEY_TRY_PROXY:
 
