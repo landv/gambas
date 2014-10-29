@@ -370,7 +370,7 @@ static void Font(GB_PAINT *d, int set, GB_FONT *font)
 		QFont f(*((CFONT *)(*font))->font);
 		PAINTER(d)->setFont(f);
 
-		// Strange bug of QT. Sometimes the font does not applies (cf. DrawTextShadow)
+		// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)
 		if (f != PAINTER(d)->font())
 		{
 			f.fromString(f.toString());
