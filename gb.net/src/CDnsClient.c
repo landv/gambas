@@ -360,7 +360,7 @@ int dns_thread_getip(CDNSCLIENT *mythis)
 	return 0;
 }
 
-int dns_set_async_mode(int myval, CDNSCLIENT *mythis)
+void dns_set_async_mode(int myval, CDNSCLIENT *mythis)
 {
 	mythis->iAsync = myval;
 }
