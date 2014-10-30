@@ -65,6 +65,12 @@ Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As Strin
   Dim sIcon As String
   Dim sChecksum As String
   Dim sErr As String
+  Dim aGambasVersion As String[]
+  
+  If sGambasVersion Then 
+    aGambasVersion = Split(sGambasVersion, ".")
+    sGambasVersion = CStr(CInt(aGambasVersion[0]) * 100 + CInt(aGambasVersion[1]))
+  Endif
   
   $hWin = hWin
   
@@ -77,15 +83,17 @@ Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As Strin
   
   sChecksum = GetCheckSum(sSource)
   
-  If Project.Icon Then
-    sIcon = Project.Dir &/ Project.Icon
-  Else
+  If Project.Icon Then sIcon = Project.Dir &/ Project.Icon
+  If Not sIcon Or If Not Exist(sIcon) Then
     sIcon = "img/logo/project.png"
   Endif
   
   If Not Exist(sIcon) Then sIcon = ""
   
   $sResult = ""
+
+  $sGoodMsg = ("The project has been successfully published.")
+  $sBadMsg = ("Unable to publish project.")
 
   $hForm = New HttpForm As "FarmClient"
   $hForm.URL = "http://" & sFarm &/ "/farm/publish"
@@ -94,7 +102,8 @@ Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As Strin
   $hForm.Add("login", sLogin)
   $hForm.Add("password", sPassword)
   $hForm.Add("name", Project.Name)
-  $hForm.Add("version", CStr(Project.MajorVersion) & "." & CStr(Project.MinorVersion) & "." & CStr(Project.ReleaseVersion))
+  $hForm.Add("version", Project.MajorVersion * 10000 + Project.MinorVersion)
+  $hForm.Add("release", Project.ReleaseVersion)
   $hForm.Add("desc", Project.Description)
   $hForm.Add("gambas", sGambasVersion)
   $hForm.Add("checksum", sChecksum)
@@ -104,16 +113,13 @@ Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As Strin
   $hForm.Add("dependencies", aRequire.Join(","))
   If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
 
-  $sGoodMsg = ("The project has been successfully published.")
-  $sBadMsg = ("Unable to publish project.")
-
   'SetMessage(("Connecting..."))
   $hForm.Submit()
   
 Catch
   
-  sErr = Error.Text
-  Message.Error($sBadMsg & "\n\n" & sErr)
+  PublishEnd
+  Message.Error($sBadMsg & "\n\n" & Error.Text & "\n\n" & Error.Backtrace.Join(" "))
 
 End
 
@@ -142,6 +148,7 @@ End
 
 Private Sub PublishEnd()
 
+  If Not $hForm Then Return
   'SetMessage("")
   Try $hWin.OnPublishEnd()
   $hForm = Null

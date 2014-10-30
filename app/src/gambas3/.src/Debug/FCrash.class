@@ -23,6 +23,11 @@ Public Sub btnOK_Click()
   'Dim hProcess As Process
   Dim aSendCC As String[]
 
+  If txtDesc.Visible And If txtDesc.Foreground <> Color.Default Then
+    txtDesc.SetFocus
+    Return
+  Endif
+    
   If $bWorking Then Return
   $bWorking = True
   
@@ -69,7 +74,7 @@ Public Sub btnOK_Click()
     
     If Stat(sTemp).Size <= 256000 Then aSendCC = ["gambas-user@lists.sourceforge.net"]
     
-    Desktop.SendMail(["gambas@users.sourceforge.net"], aSendCC,, "[CRASH REPORT] " & If(Project.Title, Project.Title, Project.Name), "Hello,\n\nDamned, my program crashed Gambas!\n\n", sTemp)
+    Desktop.SendMail(["gambas@users.sourceforge.net"], aSendCC,, "[CRASH REPORT] " & If(Project.Title, Project.Title, Project.Name), "Hello,\n\nDamned, my program crashed Gambas that way :\n\n" & Trim(txtDesc.Text) & "\n\n", sTemp)
     
     Dec Application.Busy
     
@@ -89,6 +94,7 @@ End
 Public Sub Form_Open()
 
   lblMessage.Text = "<h2>" & ("The program has stopped unexpectedly!") & "</h2>" & Html(Debug.GetSignal($hProcess.Value)) & " (" & $hProcess.Value & ")" ' & Subst(("Please send a bug report to the following mail address: &1"), "gambas-user@users.sourceforge.net.")
+  chkSend_Click
 
 End
 
@@ -110,3 +116,32 @@ End
 '   spnWait.Move(spnWait.Parent.W - spnWait.Width - Desktop.Scale, 0)
 ' 
 ' End
+
+Public Sub chkSend_Click()
+
+  txtDesc.Visible = chkSend.Value
+  chkNoProject.Enabled = chkSend.Value
+  Me.H = Desktop.Scale * If(txtDesc.Visible, 50, 30)
+  txtDesc_LostFocus
+
+End
+
+Public Sub txtDesc_LostFocus()
+  
+  If txtDesc.Length = 0 Then
+    txtDesc.Text = ("Please describe how to reproduce the crash here.")
+    txtDesc.Foreground = Color.LightForeground
+    txtDesc.Font.Italic = True
+  Endif
+  
+End
+
+Public Sub txtDesc_GotFocus()
+  
+  If txtDesc.Foreground <> Color.Default Then
+    txtDesc.Text = ""
+    txtDesc.Foreground = Color.Default
+    txtDesc.Font.Italic = False
+  Endif
+  
+End

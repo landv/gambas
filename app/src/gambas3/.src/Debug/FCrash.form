@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,69,30)
+  MoveScaled(0,0,69,44)
   Text = ("Gambas interpreter crash")
   Icon = Picture["img/64/atari.png"]
   Resizable = False
@@ -34,17 +34,22 @@
         }
         { chkNoProject CheckBox
           MoveScaled(0,4,43,4)
+          Enabled = False
           Text = ("Don't join the project to the mail")
         }
       }
     }
   }
-  { Panel3 Panel
-    MoveScaled(19,23,22,1)
+  { txtDesc TextArea
+    MoveScaled(1,23,67,13)
+    Visible = False
     Expand = True
   }
+  { Panel3 Panel
+    MoveScaled(19,37,22,1)
+  }
   { HBox1 HBox
-    MoveScaled(1,25,58,4)
+    MoveScaled(3,39,58,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(6,0,4,4)
