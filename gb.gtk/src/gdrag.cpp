@@ -150,9 +150,8 @@ static void cb_get_text(GtkClipboard *clipboard, GtkSelectionData *selection, gu
 
 int gClipboard::getType()
 {
-	if (gtk_clipboard_wait_is_text_available(_clipboard)) return Text;
 	if (gtk_clipboard_wait_is_image_available(_clipboard)) return Image;
-	
+	if (gtk_clipboard_wait_is_text_available(_clipboard)) return Text;
 	return Nothing;
 }
 
