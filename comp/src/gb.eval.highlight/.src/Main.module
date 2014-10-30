@@ -46,18 +46,16 @@ End
 
 Public Sub Main()
 
-  Dim sLine As String
-
-  Highlight.State = Highlight.Normal
-  Highlight.Tag = 0
-  
-  For Each sLine In Split(File.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Login.webpage"), "\n")
-    
-    Highlight.Text = sLine
-    If InStr(sLine, "<!--") Then Stop
-  
-    HighlightHTML.Run(STYLE_HTML)
-    
-  Next
+  ' Dim sLine As String
+  ' 
+  ' Highlight.State = Highlight.Normal
+  ' Highlight.Tag = 0
+  ' 
+  ' For Each sLine In Split(File.Load("test.css"), "\n")
+  '   
+  '   Highlight.Text = sLine
+  '   HighlightCSS.Run()
+  '   
+  ' Next
 
 End

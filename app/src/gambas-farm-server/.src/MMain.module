@@ -137,21 +137,22 @@ Private Sub InitDatabase()
   hTable.Fields.Add("id", db.Serial)
   hTable.Fields.Add("owner", db.Integer)
   hTable.Fields.Add("name", db.String, 64)
-  hTable.Fields.Add("version", db.String, 16)
+  hTable.Fields.Add("version", db.Integer)
+  hTable.Fields.Add("release", db.Integer)
   hTable.Fields.Add("date", db.Date)
   hTable.Fields.Add("description", db.String)
   hTable.Fields.Add("url", db.String)
-  hTable.Fields.Add("gambas", db.String, 16)
+  hTable.Fields.Add("gambas", db.Integer)
   hTable.Fields.Add("dependencies", db.String)
   hTable.Fields.Add("checksum", db.String, 128)
-  hTable.Fields.Add("download", db.Integer)
-  hTable.Fields.Add("vote", db.Integer)
+  hTable.Fields.Add("download", db.Integer,, 0)
+  hTable.Fields.Add("vote", db.Integer,, 0)
   hTable.PrimaryKey = ["id"]
   hTable.Update
   hTable.Indexes.Add("software_index_date", ["date", "id"], True)
   hTable.Indexes.Add("software_index_vote", ["vote", "id"], True)
   hTable.Indexes.Add("software_index_download", ["download", "id"], True)
-  hTable.Indexes.Add("software_index_name", ["name"], True)
+  hTable.Indexes.Add("software_index_name", ["name", "version"], True)
   hTable.Indexes.Add("software_index_checksum", ["checksum"], True)
   
   Print "Creating table 'tag'..."
@@ -336,19 +337,6 @@ FAILED:
   
 End
 
-Private Sub CheckVersion(sVersion As String) As Boolean
-
-  Dim aVersion As String[]
-  Dim I As Integer
-
-  aVersion = Split(sVersion, ".")
-  If aVersion.Count > 3 Then Return True
-  For I = 0 To aVersion.Max
-    If Not IsDigit(aVersion[I]) Then Return True
-  Next
-
-End
-
 Private Sub CopySoftwareFile($iId As Integer, sDest As String, sSource As String)
 
   sDest = Root &/ CStr($iId) &/ sDest
@@ -384,7 +372,6 @@ Private Sub PublishSoftware()
   Dim rSoftware As Result
   Dim sIcon As String
   Dim sScreenshot As String
-  Dim aVersion As String[]
   Dim sMyChecksum As String
   Dim sURL As String
   Dim aTag As String[]
@@ -392,11 +379,13 @@ Private Sub PublishSoftware()
   Dim rTag As Result
   Dim iTag As Integer
   Dim sDep As String
+  Dim sRelease As String
   
   If CheckUser() Then Return
 
   sName = Request["name"]
   sVersion = Request["version"]
+  sRelease = Request["release"]
   sDesc = Request["desc"]
   sGambas = Request["gambas"]
   sChecksum = Request["checksum"]
@@ -417,6 +406,11 @@ Private Sub PublishSoftware()
     Return
   Endif
   
+  If Not sRelease Then
+    PrintError("13 Bad request\nRelease missing.")
+    Return
+  Endif
+  
   If Not sChecksum Then
     PrintError("13 Bad request\nChecksum missing")
     Return
@@ -432,41 +426,41 @@ Private Sub PublishSoftware()
     Return
   Endif
   
-  If CheckVersion(sVersion) Then
+  If Not IsInteger(sVersion) Then
     PrintError("19 Incorrect version")
-    Return
   Endif
   
-  If CheckVersion(sGambas) Then
-    PrintError("20 Incorrect Gambas version")
+  If Not IsInteger(sRelease) Then
+    PrintError("20 Incorrect release")
+  Endif
+  
+  If sGambas And If Not IsInteger(sGambas) Then
+    PrintError("21 Incorrect Gambas version")
     Return
   Endif
   
   If sSource Not Ends ".tar.gz" And If sSource Not Ends ".tar.bz2" Then
-    PrintError("21 Unsupported source archive format")
+    PrintError("22 Unsupported source archive format")
     Return
   Endif
   
   If sIcon Not Ends ".png" Then
-    PrintError("22 Unsupported icon format")
+    PrintError("23 Unsupported icon format")
     Return
   Endif
   
   sMyChecksum = GetCheckSum(Request.Files["source"])
   If sMyChecksum <> sChecksum Then 
-    PrintError("23 Bad checksum")
+    PrintError("24 Bad checksum")
     Return
   Endif
-  
-  aVersion = Split(sVersion, ".")
-  sName &= "_" & aVersion[0]
   
   DB.Begin
   
   rSoftware = DB.Edit("software", "name = &1", sName)
   If rSoftware.Available Then
     If rSoftware!owner <> $iUser Then
-      PrintError("24 Software already exists")
+      PrintError("25 Software already exists")
       Return
     Endif
   Else
@@ -475,9 +469,17 @@ Private Sub PublishSoftware()
     rSoftware!owner = $iUser
   Endif
   
-  rSoftware!version = sVersion
+  If IsNull(rSoftware!vote) Then rSoftware!vote = 0
+  If IsNull(rSoftware!download) Then rSoftware!download = 0
+  
+  rSoftware!version = CInt(sVersion)
+  rSoftware!release = CInt(sRelease)
   rSoftware!description = sDesc
-  rSoftware!gambas = sGambas
+  If sGambas Then
+    rSoftware!gambas = CInt(sGambas)
+  Else
+    rSoftware!gambas = Null
+  Endif
   rSoftware!checksum = sChecksum
   rSoftware!url = sURL
   rSoftware!date = Now
@@ -527,23 +529,43 @@ Private Sub FindSoftware() As Result
   Dim sId As String
   Dim iId As Integer
   Dim rSoftware As Result
+  Dim sVersion As String
 
   sId = Request["id"]
+  sVersion = Request["version"]
   
   If Not sId Then
     PrintError("13 Bad request\nId missing")
     Return
   Endif
 
+  If sVersion And If Not IsInteger(sVersion) Then
+    PrintError("13 Bad request\nIncorrect version")
+    Return
+  Endif
+
   Try iId = CInt(sId)
-  If iId Then
-    rSoftware = DB.Find("software", "id = &1", iId)
+  
+  If sVersion Then
+  
+    If iId Then
+      rSoftware = DB.Find("software", "id = &1 AND version = &1", iId, CInt(sVersion))
+    Else
+      rSoftware = DB.Find("software", "checksum = &1 AND version = &1", sId, CInt(sVersion))
+    Endif
+    
   Else
-    rSoftware = DB.Find("software", "checksum = &1", sId)
+    
+    If iId Then
+      rSoftware = DB.Limit(1).Find("software", "id = &1 ORDER BY version DESC", iId)
+    Else
+      rSoftware = DB.Limit(1).Find("software", "checksum = &1 ORDER BY version DESC", sId)
+    Endif
+    
   Endif
   
   If rSoftware.Count <> 1 Then
-    PrintError("25 Unknown software")
+    PrintError("26 Unknown software")
     Return
   Endif
   
@@ -574,7 +596,7 @@ Private Sub GetSoftware()
       
     Try sPath = Dir(Root &/ CStr(rSoftware!id), "screenshot.*")[0]
     If Error Then
-      PrintError("26 No screenshot")
+      PrintError("27 No screenshot")
     Else
       Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
     Endif
@@ -591,11 +613,12 @@ Private Sub GetSoftware()
     Print "10 OK"
     Print "Id="; rSoftware!id
     Print "Name="; Quote(rSoftware!name)
-    Print "Version="; Quote(rSoftware!version)
+    Print "Version="; rSoftware!version
+    Print "Release="; rSoftware!release
     Print "UploadDate="; Format(rSoftware!date, "yyyymmddhhnnss")
     Print "Description="; Quote(rSoftware!description)
     Print "URL="; Quote(rSoftware!url)
-    Print "RequiredGambasVersion="; Quote(rSoftware!gambas)
+    Print "RequiredGambasVersion="; rSoftware!gambas
     Print "Checksum="; Quote(rSoftware!checksum)
     Print "DownloadCount="; rSoftware!download
     Print "VoteCount="; rSoftware!vote
@@ -628,7 +651,7 @@ Private Sub DownloadSoftware()
 
   Try sPath = Dir(Root &/ CStr(rSoftware!id), "source.*")[0]
   If Error Then
-    PrintError("27 No source")
+    PrintError("28 No source")
   Else
     
     Response.AddHeader("Content-Disposition", "attachment; filename=\"" & Left(rSoftware!name, -2) & "-" & rSoftware!version & "." & File.Ext(sPath) & "\"")
@@ -686,7 +709,7 @@ Private Sub SearchSoftware()
   sFrom = Request["from"]
   
   If Not sSort Then
-    PrintError("28 No sort criteria")
+    PrintError("29 No sort criteria")
     Return
   Endif
   
@@ -713,10 +736,11 @@ Private Sub SearchSoftware()
     Case "download"
       If sFrom Then sReq = DB.Subst("(download = &1 AND id > &2) OR (download > &1)", CInt(sFrom), iFromId)
     Case Else
-      PrintError("29 Unknown sort criteria")
+      PrintError("30 Unknown sort criteria")
       Return
   End Select
   
+  If sReq Then sReq = " WHERE " & sReq
   rSoftware = DB.Limit(50).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & ",id")
   
   Response.ContentType = "text/plain;charset=utf-8"
