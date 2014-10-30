@@ -21,6 +21,10 @@
       MoveScaled(28,0,15,4)
       List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4"), ("Élément 5"), ("Élément 6"), ("Élément 7")]
     }
+    { Button3 ToggleButton
+      MoveScaled(45,0,16,4)
+      Text = ("Editable")
+    }
   }
   { DataSource1 DataSource
     MoveScaled(1,6,55,40)
@@ -33,7 +37,6 @@
       MoveScaled(2,11,52,18)
       Expand = True
       Labels = ["Identificateur", "Type", "Nom", "Téléphone"]
-      Editable = True
       Grid = True
     }
     { DataCheckBox1 DataCheckBox

@@ -1384,11 +1384,14 @@ Public Sub RemoveControl(sName As String)
   
   sCtrl = GetSelection(True, [hCCtrl])
   hParent = hCCtrl.Parent
+  $hUndo.Begin
   If hParent.IsMultiContainer() Then
     $hUndo.Add("PutSelection", [sCtrl, hCCtrl.Parent.Name, hParent.Control.Index])
   Else
     $hUndo.Add("PutSelection", [sCtrl, hCCtrl.Parent.Name])
   Endif
+  $hUndo.Add("UnselectAll")
+  $hUndo.End
   
   If hCCtrl.Selected Then
     hCCtrl.UnSelect(Me)
@@ -1787,6 +1790,7 @@ Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As I
   $bSelectNew = True
   '$aSelectNew = New CControl[]
   $hUndo.Begin
+  'UnSelectAll
   If iIndex >= 0 Then Try Control[sParent].Control.Index = iIndex
   FromString(sData, Control[sParent])
   $hUndo.End

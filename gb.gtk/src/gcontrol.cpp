@@ -107,6 +107,36 @@ static const char *_cursor_bdiag[] =
 // Geometry optimization hack - Sometimes fails, so it is disabled...
 #define GEOMETRY_OPTIMIZATION 0
 
+
+#ifdef GTK3
+static gboolean cb_frame_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
+{
+	control->drawBorder(cr);
+	return false;
+}
+#else
+static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
+{
+	control->drawBorder(e);
+	return false;
+}
+#endif
+
+#ifdef GTK3
+static gboolean cb_background_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
+{
+	control->drawBackground(cr);
+	return false;
+}
+#else
+static gboolean cb_background_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
+{
+	control->drawBackground(e);
+	return false;
+}
+#endif
+
+
 /****************************************************************************
 
 gPlugin
@@ -129,17 +159,19 @@ gPlugin::gPlugin(gContainer *parent) : gControl(parent)
 {
 	g_typ=Type_gPlugin;
 
-	border=gtk_socket_new();
-	widget=border;
+	border = gtk_socket_new();
+	widget = border;
 	realize(false);
 
-	onPlug=NULL;
-	onUnplug=NULL;
+	onPlug = NULL;
+	onUnplug = NULL;
 
-	g_signal_connect(G_OBJECT(widget),"plug-removed",G_CALLBACK(gPlugin_OnUnplug),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"plug-added",G_CALLBACK(gPlugin_OnPlug),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "plug-removed", G_CALLBACK(gPlugin_OnUnplug), (gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "plug-added", G_CALLBACK(gPlugin_OnPlug), (gpointer)this);
 
-	g_object_set(G_OBJECT(widget),"can-focus",TRUE, (void *)NULL);
+	ON_DRAW_BEFORE(border, this, cb_background_expose, cb_background_draw);
+
+	setCanFocus(true);
 }
 
 int gPlugin::client()
@@ -203,6 +235,7 @@ void gPlugin::discard()
 CREATION AND DESTRUCTION
 
 ******************************************************************/
+
 void gControl::cleanRemovedControls()
 {
 	GList *iter;
@@ -1342,34 +1375,6 @@ void gControl::drawBorder(GdkEventExpose *e)
 }
 #endif
 
-#ifdef GTK3
-static gboolean cb_frame_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
-{
-	control->drawBorder(cr);
-	return false;
-}
-#else
-static gboolean cb_frame_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
-{
-	control->drawBorder(e);
-	return false;
-}
-#endif
-
-#ifdef GTK3
-static gboolean cb_background_draw(GtkWidget *wid, cairo_t *cr, gControl *control)
-{
-	control->drawBackground(cr);
-	return false;
-}
-#else
-static gboolean cb_background_expose(GtkWidget *wid, GdkEventExpose *e, gControl *control)
-{
-	control->drawBackground(e);
-	return false;
-}
-#endif
-
 /*static void cb_size_allocate(GtkWidget *wid, GtkAllocation *a, gContainer *container)
 {
 	if (!container->isTopLevel())
@@ -1526,6 +1531,7 @@ PATCH_DECLARE(GTK_TYPE_SCROLLED_WINDOW)
 PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
 PATCH_DECLARE(GTK_TYPE_RADIO_BUTTON)
 PATCH_DECLARE(GTK_TYPE_NOTEBOOK)
+PATCH_DECLARE(GTK_TYPE_SOCKET)
 
 /*int gt_get_preferred_width(GtkWidget *widget)
 {
@@ -1586,6 +1592,7 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS(border, GTK_TYPE_CHECK_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_RADIO_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_NOTEBOOK)
+	else PATCH_CLASS(border, GTK_TYPE_SOCKET)
 	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
 
 #endif
@@ -1948,7 +1955,7 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 	move(x, y);
 	if (was_visible)
 	{
-		fprintf(stderr, "was_visible\n");
+		//fprintf(stderr, "was_visible\n");
 		show();
 	}
 }

@@ -521,10 +521,10 @@ Private Sub RunCommand(sCmd As String, Optional sDir As String)
   If sDir Then
     AddLog("cd " & Shell$(sDir))
     AddLog(sCmd)
-    Shell "(cd " & SConv(Shell$(sDir)) & ";" & sCmd & ") 2>&1" For Read As "Process"
+    Shell "(cd " & SConv(Shell$(sDir)) & ";" & sCmd & ") 2>&1" For Input As "Process"
   Else
     AddLog(sCmd)
-    Shell sCmd & " 2>&1" For Read As "Process"
+    Shell sCmd & " 2>&1" For Input As "Process"
   Endif
   Repeat
     Sleep 0.01 

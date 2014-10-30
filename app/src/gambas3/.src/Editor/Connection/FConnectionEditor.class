@@ -266,6 +266,9 @@ Public Sub Reload() As Boolean
   $bMetadata = hConfig["Connection/DisplayMetadata"]
   
   If $bMetadata Then
+    
+    MConnection.CreateMetadataTable($hConn)
+    
     tbvField.Columns.Count = 7
     With tbvField.Columns[6]
       .Text = ("Description")
@@ -276,9 +279,12 @@ Public Sub Reload() As Boolean
       .Text = ("Description")
       .Width = Desktop.Scale * 24
     End With
+    
   Else
+    
     tbvField.Columns.Count = 6
     tbvIndex.Columns.Count = 3
+    
   Endif
 
   LoadRequest
@@ -444,7 +450,7 @@ Private Sub ReloadTable()
     cDescField = New Collection
     cDescIndex = New Collection
     
-    Try hResult = $hConn.Find(MConnection.METADATA_TABLE_NAME, "sTable = &1", $sTable)
+    Try hResult = $hConn.Find(MConnection.METADATA_TABLE_NAME, "sTableName = &1", $sTable)
     If hResult And If hResult.Available Then 
       
       For Each hResult
@@ -1346,11 +1352,12 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   Dim rTable As Result
   
   Dim sError As String
+  Dim bTrans As Boolean
   
   ' If $hFieldEditor.Hide() Then Return True
   ' If $hIndexEditor.Hide() Then Return True
   
-  If $bModifyTable Then
+  If $bModifyTable Or If sOldTable Then
   
     For Each hCField In $aField
       If hCField.Key Then
@@ -1428,13 +1435,21 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
     
     If Not MConnection.CreateMetadataTable($hConn) Then
     
+      bTrans = True
       $hConn.Begin
-      Try $hConn.Delete(MConnection.METADATA_TABLE_NAME, "sTable = &1", $sTable)
       
+      Try $hConn.Delete(MConnection.METADATA_TABLE_NAME, "sTableName = &1", $sTable)
+      
+      ' rResult = $hConn.Exec("select pg_attribute.attname, pg_attribute.atttypid::int, pg_attribute.atttypmod, pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname from pg_class, pg_attribute LEFT JOIN pg_catalog.pg_attrdef ON"
+      '   " (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) LEFT JOIN pg_collation ON (pg_collation.oid = pg_attribute.attcollation) where pg_class.relname = '__gb_metadata' and (pg_class.relnamespace in (select oid from pg_namespace where"
+      '   " nspname = 'public')) and pg_attribute.attnum > 0 and not pg_attribute.attisdropped and pg_attribute.attrelid = pg_class.oid")
+      ' 
+      ' rResult = $hConn.Exec("select relname from pg_class where (relkind = 'r' or relkind = 'v') and (relname = '__gb_metadata') and (relnamespace in (select oid from pg_namespace where nspname = 'public'))")
+      ' 
       For Each hCField In $aField
         If Not hCField.Description Then Continue
         rInfo = $hConn.Create(MConnection.METADATA_TABLE_NAME)
-        rInfo!sTable = $sTable
+        rInfo!sTableName = $sTable
         rInfo!iType = MConnection.MD_FIELD
         rInfo!sKey = hCField.Name
         rInfo!sValue = hCField.Description
@@ -1445,7 +1460,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
         If Not hCIndexField.Index Then Continue
         If Not hCIndexField.Description Then Continue
         rInfo = $hConn.Create(MConnection.METADATA_TABLE_NAME)
-        rInfo!sTable = $sTable
+        rInfo!sTableName = $sTable
         rInfo!iType = MConnection.MD_INDEX
         rInfo!sKey = hCIndexField.Index
         rInfo!sValue = hCIndexField.Description
@@ -1453,6 +1468,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
       Next
       
       $hConn.Commit
+      bTrans = False
       
     Endif
       
@@ -1467,8 +1483,8 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
 Finally
   
   sError = Error.Text
-  
-  'If Not sOldTable Then
+
+  $hConn.Rollback
   
   If sTemp Then
     Try $hConn.Tables.Remove(sTemp)

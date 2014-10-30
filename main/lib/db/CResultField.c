@@ -59,13 +59,24 @@ int CRESULTFIELD_find(CRESULT *result, const char *name, bool error)
     if (result->handle)
       index = result->driver->Result.Field.Index(result->handle, (char *)name, &result->conn->db);
     else
-    {
-      for (index = 0; index < result->info.nfield; index++)
-      {
-        if (strcmp(name, result->info.field[index].name) == 0)
-          break;
-      }
-    }
+		{
+			if (result->conn->db.flags.no_case)
+			{
+				for (index = 0; index < result->info.nfield; index++)
+				{
+					if (strcasecmp(name, result->info.field[index].name) == 0)
+						break;
+				}
+			}
+			else
+			{
+				for (index = 0; index < result->info.nfield; index++)
+				{
+					if (strcmp(name, result->info.field[index].name) == 0)
+						break;
+				}
+			}
+		}
 
     if (index < 0 || index >= result->info.nfield)
     {

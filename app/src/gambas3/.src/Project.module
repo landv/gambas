@@ -253,8 +253,6 @@ Public Sub Main()
   Dim iInd As Integer
   Dim sArg As String
 
-  'Application.Env["APPMENU_DISPLAY_BOTH"] = "1"
-
   'DB.Debug = True
   
   For iInd = 1 To Args.Count - 1
@@ -286,6 +284,8 @@ Public Sub Main()
       Break
     Endif
   Next
+
+  If Not Settings["/ShowMenus", True] Then Env["APPMENU_DISPLAY_BOTH"] = "1"
 
   Application.Theme = Settings["/Theme"]
   DESKTOP_FONT = Application.Font.ToString()
@@ -2802,6 +2802,8 @@ Public Sub MakeDir(sDir As String) As Boolean
 
   Dim sPath As String
   Dim sElt As String
+
+  If sDir Begins "~/" Then sDir = User.Home &/ Mid$(sDir, 3)
 
   For Each sElt In Split(sDir, "/")
     sPath &/= sElt

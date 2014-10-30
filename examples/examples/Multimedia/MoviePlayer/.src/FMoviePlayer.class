@@ -7,9 +7,9 @@ Private $bShow As Boolean
 
 Public Sub Form_Resize()
 
-  dwgMoviePlayer.Move(8, 8, Me.ClientW - 16, Me.ClientH - panButton.H - 8)
+  embPlayer.Move(8, 8, Me.ClientW - 16, Me.ClientH - panButton.H - 8)
   panButton.Move(0, Me.CLientH - panButton.H, Me.CLientW)
-  txtAbout.Move(16, 16, dwgMoviePlayer.W - 16, dwgMoviePlayer.H - 16)
+  txtAbout.Move(16, 16, embPlayer.W - 16, embPlayer.H - 16)
 
 End
 
@@ -25,7 +25,7 @@ Public Sub btnPlay_Click()
 
   txtAbout.Visible = False
 
-  With dwgMoviePlayer
+  With embPlayer
     Form_Resize
     .Show
     .Enabled = False
@@ -36,13 +36,13 @@ Public Sub btnPlay_Click()
 
   $bShow = True
 
-  $hProcess = Exec ["mplayer", "-wid", CStr(dwgMoviePlayer.Handle), Conv$($sPath, Desktop.Charset, System.Charset)] For Read Write As "Process"
+  $hProcess = Exec ["mplayer", "-wid", CStr(embPlayer.Handle), Conv$($sPath, Desktop.Charset, System.Charset)] For Input Output As "Process"
 
   btnStop.Enabled = True
   btnPlay.Enabled = False
   btnPause.Enabled = True
 
-  'dwgMoviePlayer.Hide
+  'embPlayer.Hide
   'timShow.Enabled = True
 
 End
@@ -75,6 +75,7 @@ Public Sub Process_Read()
   Dim sData As String
   
   sData = Read #Last, -255
+  Print sData;
   
 End
 
@@ -88,7 +89,7 @@ Public Sub Process_Kill()
   btnPause.Enabled = False
   btnPlay.Enabled = True
   btnStop.Enabled = False
-  dwgMoviePlayer.Hide
+  embPlayer.Hide
   txtAbout.Show
   'PRINT "STOP"
 
@@ -125,18 +126,11 @@ Public Sub btnOpen_Click()
   
 End
 
-
-Public Sub Form_Open()
-
-  Print "Wid = "; Hex$(dwgMoviePlayer.id)
-
-End
-
 Public Sub timShow_Timer()
 
-  dwgMoviePlayer.Resize(1, 1)
-  dwgMoviePlayer.Show
-  FORM_Resize
+  embPlayer.Resize(1, 1)
+  embPlayer.Show
+  Form_Resize
   timShow.Enabled = False
 
 End

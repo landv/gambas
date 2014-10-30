@@ -46,6 +46,7 @@ install-exec-local:
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gambas$(GAMBAS_VERSION)
 	@rm -f $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION)
+	@rm -f $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION)
 	@(cd $(srcdir)/src; for p in `cat INSTALL`; do rm -f $(DESTDIR)$(bindir)/$$p.gambas; done)
 
 dist-hook:

@@ -736,6 +736,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	db->flags.no_table_type = TRUE;
 	db->flags.no_nest = TRUE;
+	db->flags.no_case = TRUE;
 	db->flags.schema = TRUE;
 	db->flags.no_collation = db->version < 90100;
 
@@ -1117,7 +1118,7 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 	if (PQftable((PGresult *)result, index) != oid){
 		numfields = PQnfields((PGresult *)result);
 		while ( ++index < numfields){
-				if (strcmp(PQfname((PGresult *)result, index),
+				if (strcasecmp(PQfname((PGresult *)result, index),
 							fld) == 0){ //Check Fieldname
 						if (PQftable((PGresult *)result, index) == oid){ //check oid
 				break; // is the required table oid
@@ -1321,7 +1322,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 							"pg_attribute.attnotnull, pg_attrdef.adsrc, pg_attribute.atthasdef, pg_collation.collname "
 					"from pg_class, pg_attribute "
 							"LEFT JOIN pg_catalog.pg_attrdef  ON (pg_attrdef.adnum = pg_attribute.attnum AND pg_attrdef.adrelid = pg_attribute.attrelid) "
-								"LEFT JOIN pg_collation ON (pg_collation.oid = col.attcollation) "
+								"LEFT JOIN pg_collation ON (pg_collation.oid = pg_attribute.attcollation) "
 					"where pg_class.relname = '&1' "
 							"and (pg_class.relnamespace in (select oid from pg_namespace where nspname = '&2')) "
 							"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
@@ -1870,7 +1871,7 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 			comma = TRUE;
 
 		DB.Query.Add(QUOTE_STRING);
-		DB.Query.Add(fp->name);
+		DB.Query.AddLower(fp->name);
 		DB.Query.Add(QUOTE_STRING);
 
 		if (fp->type == DB_T_SERIAL)
@@ -1936,7 +1937,9 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 			if (i > 0)
 				DB.Query.Add(",");
 
-			DB.Query.Add(primary[i]);
+			DB.Query.Add(QUOTE_STRING);
+			DB.Query.AddLower(primary[i]);
+			DB.Query.Add(QUOTE_STRING);
 		}
 
 		DB.Query.Add(")");

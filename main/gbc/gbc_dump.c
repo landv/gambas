@@ -594,6 +594,11 @@ static void insert_class_info(CLASS *class, FILE *fw)
 				switch(TYPE_get_id(type))
 				{
 					case T_BOOLEAN:
+						if (cst->value)
+							fputc('T', _finfo);
+						fputc('\n', _finfo);
+						break;
+
 					case T_BYTE:
 					case T_SHORT:
 					case T_INTEGER:

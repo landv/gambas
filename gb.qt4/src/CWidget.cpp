@@ -2337,7 +2337,7 @@ void CWIDGET_handle_focus(CWIDGET *control, bool on)
 	if (on == (CWIDGET_active_control == control))
 		return;
 	
-	if (CWIDGET_active_control)
+	if (CWIDGET_active_control && !_focus_change)
 		CWIDGET_previous_control = CWIDGET_active_control;
 	CWIDGET_active_control = on ? control : NULL;
 	handle_focus_change();

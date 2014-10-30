@@ -466,9 +466,10 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 		if (bt[i].pc)
 		{
 			n++;
-			fprintf(stderr, "%d: %s\n", n, DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
+			fprintf(stderr, "%s ", DEBUG_get_position(bt[i].cp, bt[i].fp, bt[i].pc));
 		}
 	}
+	fputc('\n', stderr);
 	
 	STACK_backtrace_set_end(end);
 }

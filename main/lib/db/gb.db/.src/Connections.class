@@ -88,9 +88,7 @@ Static Public Sub _get(Name As String) As Connection
   Close #hFile
   
   If bPassword Then
-    If Not Component.IsLoaded("gb.desktop") Then
-      Error "gb.db: warning: "; Application.Name &/ Name; ": unable to retrieve connection password: gb.desktop component Is required"
-    Else
+    If Component.IsLoaded("gb.desktop") Then
       Try hConn.Password = Desktop.Passwords[Application.Name &/ Name]
       If Error Then
         Error "gb.db: warning: "; Application.Name &/ Name; ": unable to retrieve connection password: "; Error.Text

@@ -193,7 +193,7 @@ static void gambas_handle_event(GdkEvent *event)
 	int x, y, xs, ys, xc, yc;
 	bool cancel;
 	int type;
-	
+
 	if (gApplication::_fix_printer_dialog)
 	{
 		widget = gtk_get_event_widget(event);
@@ -256,12 +256,6 @@ static void gambas_handle_event(GdkEvent *event)
 	}*/
 
 	current_grab = gtk_window_group_get_current_grab(get_window_group(widget)); //gtk_grab_get_current();
-#ifdef GTK3
-	if (event->type == GDK_BUTTON_PRESS && !current_grab)
-		gtk_grab_add(widget);
-	else if (event->type == GDK_BUTTON_RELEASE && current_grab)
-		gtk_grab_remove(current_grab);
-#endif
 
 	button_grab = gApplication::_button_grab;
 	if (event->type == GDK_BUTTON_RELEASE)
@@ -280,7 +274,7 @@ static void gambas_handle_event(GdkEvent *event)
 		grab = GTK_WIDGET(gMenu::currentPopup()->child);
 		//fprintf(stderr, "[2] popup menu: grab = %p\n", grab);
 		if (get_window_group(grab) != get_window_group(widget) && (event->type == GDK_ENTER_NOTIFY || event->type == GDK_LEAVE_NOTIFY))
-			return;
+			goto __RETURN;
 	}
 	else
 	{
@@ -407,7 +401,7 @@ __FOUND_WIDGET:
 	
 	cancel = false;
 	
-	gApplication::updateLastEventTime(event);
+	gApplication::updateLastEvent(event);
 	
 	switch ((int)event->type)
 	{
@@ -638,6 +632,7 @@ __FOUND_WIDGET:
 						//&& (abs(gMouse::x() - gMouse::y()) + abs(gMouse::startX() - gMouse::startY())) > 8)
 						&& gDrag::checkThreshold(control, gMouse::x(), gMouse::y(), gMouse::startX(), gMouse::startY()))
 				{
+					//fprintf(stderr, "gEvent_MouseDrag: event = %p\n", gApplication::lastEvent());
 					cancel = control->onMouseEvent(control, gEvent_MouseDrag);
 				}
 				gMouse::invalidate();
@@ -734,13 +729,29 @@ __FOUND_WIDGET:
 			if (!control->_grab && gApplication::activeControl())
 				control = gApplication::activeControl();
 
-			//fprintf(stderr, "control = %p %s\n", control, control ? control->name() : "");
-			
+			//if (event->type == GDK_KEY_PRESS)
+			//	fprintf(stderr, "GDK_KEY_PRESS: control = %p %s %p %08X\n", control, control ? control->name() : "", event, event->key.state);
+
 			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 			
 			if (control)
 			{
 				if (gKey::enable(control, &event->key))
+				{
+					gKey::disable();
+					if (gKey::canceled())
+					{
+						//if (type == gEvent_KeyPress) fprintf(stderr, "canceled\n");
+						goto __RETURN;
+					}
+					else
+					{
+						//if (type == gEvent_KeyPress) fprintf(stderr, "handle\n");
+						goto __HANDLE_EVENT;
+					}
+				}
+
+				if (gKey::mustIgnoreEvent(&event->key))
 				{
 					gKey::disable();
 					goto __HANDLE_EVENT;
@@ -750,8 +761,15 @@ __FOUND_WIDGET:
 				gKey::disable();
 				
 				if (cancel)
+				{
+					//if (type == gEvent_KeyPress) fprintf(stderr, "canceled #2\n");
 					goto __RETURN;
-				
+				}
+				else
+				{
+					//if (type == gEvent_KeyPress) fprintf(stderr, "handle #2\n");
+				}
+
 				win = control->window();
 
 				if (event->key.keyval == GDK_Escape)
@@ -792,10 +810,8 @@ __HANDLE_EVENT:
 	gtk_main_do_event(event);
 	
 __RETURN:
-	
+
 	(void)0;
-	//if (ungrab)
-	//	gtk_grab_remove(widget);
 }
 
 
@@ -831,6 +847,7 @@ gMainWindow *gApplication::_main_window = NULL;
 void (*gApplication::onEnterEventLoop)();
 void (*gApplication::onLeaveEventLoop)();
 bool gApplication::_must_quit = false;
+GdkEvent *gApplication::_event = NULL;
 
 void gApplication::grabPopup()
 {
@@ -1237,26 +1254,9 @@ GtkWindowGroup *gApplication::currentGroup()
 		return gtk_window_get_group(NULL);
 }
 
-void gApplication::updateLastEventTime(GdkEvent *e)
+void gApplication::updateLastEvent(GdkEvent *e)
 {
-	/*guint32 time;
-	
-	switch (e->type)
-	{
-		case GDK_KEY_PRESS: case GDK_KEY_RELEASE: 
-			time = e->key.time; break;
-		case GDK_BUTTON_PRESS: case GDK_2BUTTON_PRESS: case GDK_3BUTTON_PRESS: case GDK_BUTTON_RELEASE:
-			time = e->button.time; break;
-		case GDK_MOTION_NOTIFY:
-			time = e->motion.time; break;
-		case GDK_SCROLL:
-			time = e->scroll.time; break;
-		case GDK_ENTER_NOTIFY: case GDK_LEAVE_NOTIFY:
-			time = e->crossing.time; break;
-		default:
-			time = GDK_CURRENT_TIME;
-	}*/
-	
+	_event = e;
 	_event_time = gdk_event_get_time(e);
 }
 

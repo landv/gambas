@@ -43,6 +43,7 @@ public:
 //"Private"
 	static void disable();
 	static bool enable(gControl *control, GdkEventKey *e);
+	static bool canceled() { return _canceled; }
 	static void init();
 	static void exit();
 	
@@ -50,8 +51,12 @@ public:
 
 	static bool raiseEvent(int type, gControl *control, const char *text);
 
-private:
+	static bool mustIgnoreEvent(GdkEventKey *e);
+
+	static bool _canceled;
 	static GdkEventKey _event;
+
+private:
 	static bool _valid;
 };
 

@@ -127,6 +127,7 @@ Public Sub Form_Open()
 
   edtLog.ReadConfig
   edtLog.Flags[Editor.ShowModifiedLines] = False
+  edtLog.Flags[Editor.HideMargin] = True
   edtLog.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
 End

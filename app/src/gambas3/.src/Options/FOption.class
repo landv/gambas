@@ -1129,6 +1129,7 @@ Public Sub btnInstallFont_Click()
     Try Copy "font" &/ sFont To sDir &/ sFont
   Next
   
+  Project.MakeDir("~/.config/fontconfig")
   sConf = "~/.config/fontconfig/fonts.conf"
   'If Not Exist(sConf) Then sConf = "~/.config/fontconfig/.fonts.conf"
   

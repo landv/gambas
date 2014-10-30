@@ -32,8 +32,11 @@
 #include "widgets.h"
 #include "gapplication.h"
 #include "gmainwindow.h"
+#include "gmouse.h"
 #include "gclipboard.h"
 #include "gdrag.h"
+
+//#define DEBUG_ME 1
 
 #ifdef GTK3
 struct _GtkTargetList
@@ -142,7 +145,7 @@ static void cb_clear_text(GtkClipboard *clipboard, gpointer text)
 
 static void cb_get_text(GtkClipboard *clipboard, GtkSelectionData *selection, guint info, gpointer text)
 {
-	gtk_selection_data_set_text(selection, (const char *)text, -1);
+	gtk_selection_data_set(selection, gtk_selection_data_get_target(selection), 8, (guchar *)text, strlen((char *)text));
 }
 
 int gClipboard::getType()
@@ -274,20 +277,21 @@ int gDrag::_x = -1;
 int gDrag::_y = -1;
 GdkDragContext *gDrag::_context = NULL;
 guint32 gDrag::_time = 0;
-volatile bool gDrag::_got_data = false;
 bool gDrag::_local = false;
-bool gDrag::_end = false;
+volatile bool gDrag::_got_data = false;
+volatile bool gDrag::_end = false;
 
 void gDrag::setIcon(gPicture *vl)
 {  
-	//g_debug("gDrag::setIcon: %p", vl);
 	gPicture::assign(&_icon, vl);
 }
 
 void gDrag::cancel()
 {
-	//fprintf(stderr, "gDrag::cancel\n");
-	
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::cancel\n");
+	#endif
+
 	hide();
 	setIcon(NULL);
 	setDropText(NULL);
@@ -303,6 +307,10 @@ void gDrag::cancel()
 	_got_data = false;
 	_local = false;
 	_active = false;
+
+#if DEBUG_ME
+	fprintf(stderr, "_active -> false\n");
+#endif
 }
 
 void gDrag::exit()
@@ -314,23 +322,30 @@ gControl *gDrag::drag(gControl *source, GtkTargetList *list)
 {
 	GdkDragContext *ct;
 	gControl *dest;
+	int button;
 
-	_local = true;
-	
-	//fprintf(stderr, "gtk_drag_begin: start\n");
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::drag: source = %p list = %p event = %p\n", source, list, gApplication::lastEvent());
+	#endif
 
+	button = gMouse::left() ? 1 : gMouse::middle() ? 2 : gMouse::right() ? 3 : 0;
 
 #if GTK_CHECK_VERSION(3, 10, 0)
-	ct = gtk_drag_begin_with_coordinates(source->border, list, GDK_ACTION_COPY, 1, NULL, -1, -1);
+	ct = gtk_drag_begin_with_coordinates(source->border, list, GDK_ACTION_COPY, button, gApplication::lastEvent(), -1, -1);
 #else
-	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, 1, NULL);
+	ct = gtk_drag_begin(source->border, list, GDK_ACTION_COPY, button, gApplication::lastEvent());
 #endif
 	if (!ct)
 		return NULL;
 
-	//fprintf(stderr, "gtk_drag_begin: finish\n");
-	
-	if (_icon) 
+	_local = true;
+	_active = true;
+
+#if DEBUG_ME
+	fprintf(stderr, "gDrag::drag: begin\n");
+#endif
+
+	if (_icon)
 	{
 		GdkPixbuf *icon = _icon->getIconPixbuf();
 		gtk_drag_set_icon_pixbuf(ct, icon, _icon_x, _icon_y);
@@ -338,16 +353,19 @@ gControl *gDrag::drag(gControl *source, GtkTargetList *list)
 			g_object_unref(G_OBJECT(icon));
 	}
 	
+	_end = false;
 	while (!_end)
 		MAIN_do_iteration(true);
 	
 	gtk_target_list_unref(list);	
 	
-	_end = false;
-	
 	dest = _destination;
 	cancel();
 	
+#if DEBUG_ME
+	fprintf(stderr, "gDrag::drag: end\n");
+#endif
+
 	return dest;
 }
 
@@ -357,8 +375,10 @@ gControl *gDrag::dragText(gControl *source, char *text, char *format)
 	
 	//cancel();
 	
-	//fprintf(stderr, "dragText: %s\n", text);
-	
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::dragText: %s\n", text);
+	#endif
+
 	setDropText(text);
 	
 	list = gtk_target_list_new (NULL, 0);
@@ -406,8 +426,10 @@ void gDrag::setDropInfo(int type, char *format)
 
 void gDrag::setDropData(int action, int x, int y, gControl *source, gControl *dest)
 {
-	//g_debug("gDrag::setDropData: action = %d x = %d y = %d source = %p\n", action, x, y, source);
-	
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::setDropData: action = %d x = %d y = %d source = %p\n", action, x, y, source);
+	#endif
+
 	_x = x;
 	_y = y;
 	_action = action;
@@ -418,8 +440,10 @@ void gDrag::setDropData(int action, int x, int y, gControl *source, gControl *de
 
 void gDrag::setDropText(char *text, int len)
 {
-	//fprintf(stderr, "gDrag::setDropText: text = '%s' %d\n", text, len);
-	
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::setDropText: text = '%s' %d\n", text, len);
+	#endif
+
 	g_free(_text);
 	if (text)
 	{
@@ -467,12 +491,20 @@ void gDrag::setDropImage(char *buf, int len)
 
 bool gDrag::checkThreshold(gControl *control, int x, int y, int sx, int sy)
 {
-  return gtk_drag_check_threshold(control->border, sx, sy, x, y);
+	if (_active)
+		return false;
+	else
+		return gtk_drag_check_threshold(control->border, sx, sy, x, y);
 } 
 
 GdkDragContext *gDrag::enable(GdkDragContext *context, gControl *control, guint32 time)
 {
 	GdkDragContext *old = _context;
+
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::enable\n");
+	#endif
+
 	_enabled++;
 	_context = context;
 	_time = time;
@@ -483,6 +515,11 @@ GdkDragContext *gDrag::enable(GdkDragContext *context, gControl *control, guint3
 GdkDragContext *gDrag::disable(GdkDragContext *context)
 {
 	GdkDragContext *old = _context;
+
+	#if DEBUG_ME
+		fprintf(stderr, "gDrag::disable\n");
+	#endif
+
 	_context = context;
 	_enabled--;
 	return old;
@@ -698,9 +735,12 @@ int gDrag::getType()
 
 static void cb_drag_data_received(GtkWidget *widget, GdkDragContext *context, gint x, gint y, GtkSelectionData *sel, guint info, guint time, gControl *data)
 {
+#if DEBUG_ME
+	fprintf(stderr, "cb_drag_data_received\n");
+#endif
+
 	if (gDrag::getType() == gDrag::Text)
 	{
-		//fprintf(stderr, "cb_drag_data_received: %d '%.*s'\n", sel->length, sel->length, (char *)sel->data);
 		if (gtk_selection_data_get_length(sel) != -1)
 			gDrag::setDropText((char*)gtk_selection_data_get_data(sel), gtk_selection_data_get_length(sel));
 		else
@@ -727,8 +767,11 @@ bool gDrag::getData(const char *prefix)
 	char *cfmt;
 	gulong id;
 	static bool norec = false;
+	gControl *dest;
 	
-	//fprintf(stderr, "getData: norec = %d _local = %d\n", norec, _local);
+#if DEBUG_ME
+	fprintf(stderr, "getData: norec = %d _local = %d\n", norec, _local);
+#endif
 	
 	if (norec || _local) // local DnD
 		return false;
@@ -745,8 +788,12 @@ bool gDrag::getData(const char *prefix)
 		if (strlen(cfmt) >= strlen(prefix) && !strncasecmp(cfmt, prefix, strlen(prefix)))
 		{ 
 			g_free(format);
-			id = g_signal_connect(_dest->border, "drag-data-received", G_CALLBACK(cb_drag_data_received), (gpointer)_dest);
-			
+
+			dest = _dest;
+
+			id = g_signal_connect(dest->border, "drag-data-received", G_CALLBACK(cb_drag_data_received), (gpointer)dest);
+			//fprintf(stderr, "gDrag::getData: g_signal_connect -> %p %ld\n", dest->border, id);
+
 			_got_data = false;
 			
 			norec = true;
@@ -758,8 +805,9 @@ bool gDrag::getData(const char *prefix)
 	
 			norec = false;
 			
-			g_signal_handler_disconnect(_dest->border, id);
-	
+			//fprintf(stderr, "gDrag::getData: g_signal_disconnect -> %p %ld\n", dest->border, id);
+			g_signal_handler_disconnect(dest->border, id);
+
 			return false;
 		}
 			
@@ -800,3 +848,8 @@ gPicture *gDrag::getImage(bool fromOutside)
 	return _picture;
 }
 
+void gDrag::end()
+{
+	_end = true;
+	_active = false;
+}

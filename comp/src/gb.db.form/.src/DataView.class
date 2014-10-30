@@ -861,6 +861,7 @@ Private Sub HideNewRecord()
   
   If Not HasNewRecord() Then Return
   Dec $hCtrl.Rows.Count
+  $iRowNewRecord = -1
   
 End
 
