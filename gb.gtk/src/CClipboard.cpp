@@ -183,7 +183,10 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 	char *format = NULL;
 	char *text;
 	int len;
+	int type;
 	
+	type = gClipboard::getType();
+
 	if (!MISSING(format))
 	{
 		format = GB.ToZeroString(ARG(format));
@@ -192,9 +195,11 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 			GB.ReturnVariant(NULL);
 			return;
 		}
+		if (strncasecmp(format, "text/", 5) == 0)
+			type = gClipboard::Text;
 	}
 	
-	switch(gClipboard::getType())
+	switch(type)
 	{
 		case gClipboard::Text:
 			text = gClipboard::getText(&len, format);

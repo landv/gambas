@@ -126,6 +126,7 @@ static void paste(const QMimeData *data, const char *fmt)
 {
 	QString format;
 	QByteArray ba;
+	int type;
 
 	if (fmt)
 		format = fmt;
@@ -138,7 +139,12 @@ static void paste(const QMimeData *data, const char *fmt)
 		return;
 	}
 
-	switch(get_type(data))
+	if (format.startsWith("text/"))
+		type = MIME_TEXT;
+	else
+		type = get_type(data);
+
+	switch(type)
 	{
 		case MIME_TEXT:
 			ba = data->data(format);

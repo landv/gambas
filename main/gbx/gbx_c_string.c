@@ -45,6 +45,8 @@
 
 #include "gbx_c_string.h"
 
+//#define DEBUG_CACHE
+
 #define UNICODE_INVALID 0xFFFFFFFFU
 
 static const char _char_length[256] =
@@ -182,6 +184,7 @@ static void utf8_from_unicode(uint code, char *sstr)
 /***************************************************************************/
 
 char *STRING_utf8_current = NULL;
+static const char *_utf8_current_start = NULL;
 
 #define UTF8_MAX_COUNT 256
 #define UTF8_MAX_CACHE 64
@@ -197,28 +200,40 @@ struct {
 	}
 _utf8 = { { 0 } };
 
-static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
+static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 {
-	const uchar *str = (const uchar *)sstr;
+	const uchar *str;
 	int i, j, pos;
 	int min_index, min_i;
 	
+#ifdef DEBUG_CACHE
+	fprintf(stderr, "utf8_get_pos: [%p] %p %d %d\n", ref, start, len, index);
+#endif
+	
 	if (index <= 0)
 		return 0;
-	
-	//fprintf(stderr, "utf8_get_pos: %p %d %d\n", sstr, len, index);
-	
-	if (ref != STRING_utf8_current || sstr != STRING_utf8_current)
+
+	if (ref != STRING_utf8_current || start != _utf8_current_start)
 	{
-		//fprintf(stderr, "STRING_utf8_current = %p\n", STRING_utf8_current);
 		STRING_utf8_current = (char *)ref;
+		_utf8_current_start = start;
+#ifdef DEBUG_CACHE
+		fprintf(stderr, "current -> %p / %ld\n", STRING_utf8_current, _utf8_current_start - STRING_utf8_current);
+#endif
 		CLEAR(&_utf8);
 	}
 	
+	 str = (const uchar *)start;
+
 	if (index < UTF8_MAX_COUNT)
 	{
 		if (index <= _utf8.last_pos)
+		{
+#ifdef DEBUG_CACHE
+		fprintf(stderr, "cached -> %d\n", _utf8.pos[index]);
+#endif
 			return _utf8.pos[index];
+		}
 		
 		pos = _utf8.pos[_utf8.last_pos];
 		
@@ -231,11 +246,18 @@ static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
 			_utf8.pos[++_utf8.last_pos] = pos;
 
 			if (index == _utf8.last_pos)
+			{
+#ifdef DEBUG_CACHE
+		fprintf(stderr, "search -> %d\n", pos);
+#endif
 				return pos;
+			}
 		}
 	}
 	
-	//fprintf(stderr, "index = %d\n", index);
+#ifdef DEBUG_CACHE
+	fprintf(stderr, "index = %d\n", index);
+#endif
 	
 	if (index == _utf8.lindex)
 		return _utf8.lpos;
@@ -252,7 +274,9 @@ static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
 		
 		if ((index >= _utf8.cindex[i]) && (index < (_utf8.cindex[i] + 256)))
 		{
-			//fprintf(stderr, "use cache %d (%d)\n", i, _utf8.cindex[i]);
+#ifdef DEBUG_CACHE
+			fprintf(stderr, "use cache %d (%d)\n", i, _utf8.cindex[i]);
+#endif
 			pos = _utf8.cpos[i];
 			j = _utf8.cindex[i];
 			goto __CALC_POS;
@@ -277,7 +301,9 @@ static int utf8_get_pos(const char *ref, const char *sstr, int len, int index)
 		i = _utf8.cindex[min_i];
 	}
 	
-	//fprintf(stderr, "add cache %d: %d / %d\n", _utf8.cnext, j, index - i);
+#ifdef DEBUG_CACHE
+	fprintf(stderr, "add cache %d: %d / %d\n", _utf8.cnext, j, index - i);
+#endif
 
 	for (; i < j; i++)
 	{
