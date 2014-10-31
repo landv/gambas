@@ -80,7 +80,7 @@ Public Sub Main() As Integer
   
   If bCompile Then 
     
-    If Left(File.Name(Application.Args[0]), -1) = "gbw" Then 
+    If Left(File.Name(Args[0]), -1) = "gbw" Then 
       If $bVerbose Then Print "gbs: compiling server page"
       $sPath = MServerPage.Make($sPath)
       If $bVerbose Then 
@@ -111,6 +111,9 @@ Public Sub Main() As Integer
   $aAppArgs.Insert(["gbr3", sCacheDir &/ $sMd5 &/ sName], 0)
   'Print $aAppArgs.Join(" ")
   Exec $aAppArgs Wait
+  If Process.LastState = Process.Crashed Then
+    Error "Segmentation fault"
+  Endif
   Return Process.LastValue
   
 End
@@ -198,6 +201,7 @@ Private Sub MakeVirtualProject()
   
   $hOutFile = Open $sPrjPath &/ ".src/MMain.module" For Write Create 
   Print #$hOutFile, "' Gambas module file\n"
+  If $bFast Then Print #$hOutFile, "Fast"
   
   $iLevel = 0
   If $bExecuteFromArgs Then
@@ -257,8 +261,6 @@ Private Sub GenerateFiles(Path As String)
   
   If $bVerbose Then Print "gbs: process file: "; Path
   
-  If $bFast Then sCodeBuf = "Fast\n"
-
   Inc $iLevel
   
   $aIncFiles.Add(Path)
@@ -354,9 +356,9 @@ Private Sub GenerateFiles(Path As String)
   
   If bAutoMain And Not IsNull(sCodeBuf) And $iLevel = 1 Then 
     If $bVerbose Then Print "gbs: Main procedure not defined, create it"
-    Print #$hOutFile, "PUBLIC SUB Main()"
+    Print #$hOutFile, "Public Sub Main()"
     Print #$hOutFile, sCodeBuf
-    Print #$hOutFile, "END"
+    Print #$hOutFile, "End"
   Endif
   
   Close #hFile
