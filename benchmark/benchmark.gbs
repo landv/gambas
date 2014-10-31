@@ -1,0 +1,60 @@
+#!/usr/bin/env gbs3
+
+Private Sub RunScript(sScript As String, sRun As String) As Float
+
+  Dim sResult As String
+  Dim fTime As Float
+  
+  Print "<!-- Running benchmark: '";sRun;" ";sScript; "' -->"
+  
+  Shell "/usr/bin/time -v " & sRun & " " & sScript & " 2>&1 >/dev/null" To sResult
+  If Not sResult Then Error.Raise("Script '" & sRun & " " & sScript & "' failed!")
+  For Each sResult in Split(sResult, "\n")
+    sResult = Trim(sResult)
+    If sResult Begins "User time" Or If sResult Begins "System time" Then
+      fTime += CFloat(Mid$(sResult, Instr(sResult, ":") + 2))
+    Endif
+  Next
+  
+  Return fTime
+
+End
+
+Dim sBenchmark As String
+Dim cResult As Collection
+Dim aResult As New Collection[]
+Dim sLang As String 
+
+For Each sBenchmark In Dir(Application.Dir, "*.gbs")
+
+  sBenchmark = File.BaseName(sBenchmark)
+  If sBenchmark = "benchmark" Then Continue
+
+  cResult = New Collection
+  aResult.Add(cResult)
+  
+  cResult!name = sBenchmark
+  cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c")
+  cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c")
+  cResult!python = RunScript(sBenchmark & ".py", "python")
+  cResult!perl = RunScript(sBenchmark & ".pl", "perl")
+
+Next
+
+Print "<table class=\"table\">"
+Print "  <tr>\n    <th>Benchmark</th>"
+For Each sLang In ["Python","Perl","Gambas","Gambas + JIT"]
+  Print "    <th style=\"width:12em;\">"; Html(sLang);"</th>"
+Next
+Print "  </tr>"
+For Each cResult In aResult
+  Print "  <tr>"
+  Print "    <td>[./";cResult!name; "]</td>"
+  Print "    <td align=\"right\">";CStr(cResult!python);"&nbsp;</td>"
+  Print "    <td align=\"right\">";CStr(cResult!perl);"&nbsp;</td>"
+  Print "    <td align=\"right\">";CStr(cResult!gambas);"&nbsp;</td>"
+  Print "    <td align=\"right\">";CStr(cResult!gambasjit);"&nbsp;</td>"
+  Print "  </tr>"
+Next
+Print "</table>"
+
