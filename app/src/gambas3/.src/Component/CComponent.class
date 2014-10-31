@@ -44,6 +44,7 @@ Static Public Features As New Collection
 Static Private $cName As Collection
 Static Private Similars As New Collection
 
+Static Private $bScanFoundEvent As Boolean
 Static Private $hDumbClass As CClassInfo
 Static Private $hClass As CClassInfo
 
@@ -647,7 +648,6 @@ Public Sub Load()
       
       sSymbol = sLig
       hSym = New CSymbolInfo
-      Classes[Key &/ sClass].Symbols[sSymbol] = hSym
       
       hSym.Name = sSymbol
       hSym.Class = sClass
@@ -673,6 +673,8 @@ Public Sub Load()
         Endif
       Endif
       
+      Classes[Key &/ sClass].AddSymbol(hSym)
+
       GoSub READ_HELP
       hSym.Help = sHelp
       
@@ -695,6 +697,8 @@ Public Sub Load()
     If Not IsLetter(Left(sClass)) Then Continue
     
     hClass = Classes[Key &/ sClass]
+    
+    hClass.InitEvents()
     
     hSym = hClass.Symbols["_IsControl"]
     If hSym And If hSym.Value Then
@@ -794,6 +798,7 @@ Static Private Sub MakeInheritance(hModule As Object, cSymbol As Collection, sPa
   If cClassSymbol Then
     For Each hSymbol In cClassSymbol
       cSymbol[hSymbol.Name] = hSymbol
+      If hSymbol.IsEvent() And If Not hSymbol.IsHidden() Then $bScanFoundEvent = True
     Next
   Endif
   
@@ -938,6 +943,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     
   Endif
   
+  $bScanFoundEvent = False
+  
   For iLine = 0 To hEditor.Lines.Count - 1
     
     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
@@ -1012,6 +1019,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
           sKind = ":"
           bStatic = False
           Inc iInd
+          $bScanFoundEvent = True
           Break
         Case "SUB", "PROCEDURE", "FUNCTION"
           sKind = "m"
@@ -1406,6 +1414,7 @@ Static Public Function GetClassSymbols(sClass As String, Optional sComponent As 
     $hDumbClass.Parent = hPModule.ParentClass
     $hDumbClass.Creatable = False
     $hDumbClass.AutoCreatable = False
+    $hDumbClass.HasEvents = $bScanFoundEvent
     '$hDumbClass.ParentComponent = hPModule.ParentComponent
   Else If hPClass Then
     cSymbol = hPClass.Scan
@@ -1425,6 +1434,7 @@ Static Public Function GetClassSymbols(sClass As String, Optional sComponent As 
     $hDumbClass.ParentComponent = hPClass.ParentComponent
     $hDumbClass.Creatable = Not hPClass.NotCreatable
     $hDumbClass.AutoCreatable = hPClass.AutoCreatable
+    $hDumbClass.HasEvents = $bScanFoundEvent
   Endif
   
   $hDumbClass.Symbols = cSymbol

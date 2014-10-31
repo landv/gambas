@@ -8,6 +8,7 @@ Public AutoCreatable As Boolean
 Public Component As String
 Public ParentComponent As String
 Public DefaultEvent As String
+Public HasEvents As Boolean
 Public Events As String[]
 Public PropertyList As String[]
 Public Properties As Collection
@@ -50,6 +51,8 @@ Public Sub _new(sName As String, sComp As String, Optional sParent As String)
       Symbols[hSym.Name] = hSym
     Next
     
+    HasEvents = hParent.HasEvents
+    
   Endif
 
 End
@@ -81,6 +84,30 @@ Public Sub CopyFrom(hClass As CClassInfo, sType As String, sNewType As String)
     Endif
   
   End With  
+  
+End
+
+
+Public Sub InitEvents()
+  
+  Dim hSym As CSymbolInfo
+  
+  If Not HasEvents Then Return
+  
+  Events = New String[]
+  
+  For Each hSym In Symbols
+    If hSym.IsHidden() Then Continue
+    If hSym.IsEvent() Then 
+      If Left$(hSym.Name) = ":" Then
+        Events.Add(Mid$(hSym.Name, 2))
+      Else
+        Events.Add(hSym.Name)
+      Endif
+    Endif
+  Next
+  
+  Events.Sort
   
 End
 
@@ -237,18 +264,6 @@ Public Sub InitControl()
   Next
 
   Try DefaultEvent = Symbols["_DefaultEvent"].Value
-
-  Events = New String[]
-  For Each hSym In Symbols
-    If hSym.Kind = ":" Then
-      If Left$(hSym.Name) = ":" Then
-        Events.Add(Mid$(hSym.Name, 2))
-      Else
-        Events.Add(hSym.Name)
-      Endif
-    Endif
-  Next
-  Events.Sort
 
   ' Taille par défaut
   
@@ -940,14 +955,21 @@ Catch
   Return ["`" & Error.Where & ": " & Error.Text & "`"]
 
 End
+' 
+' Public Sub HasEvents() As Boolean
+' 
+'   Dim hSym As CSymbolInfo
+' 
+'   For Each hSym In Symbols
+'     If hSym.IsHidden() Then Continue
+'     If InStr(":eE", hSym.Kind) Then Return True
+'   Next
+' 
+' End
 
-Public Sub HasEvents() As Boolean
-
-  Dim hSym As CSymbolInfo
-
-  For Each hSym In Symbols
-    If hSym.IsHidden() Then Continue
-    If InStr(":eE", hSym.Kind) Then Return True
-  Next
-
+Public Sub AddSymbol(hSym As CSymbolInfo)
+  
+  Symbols[hSym.Name] = hSym
+  If hSym.IsEvent() And Not hSym.IsHidden() Then HasEvents = True
+  
 End

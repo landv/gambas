@@ -77,6 +77,12 @@ Public Function IsHidden() As Boolean
 
 End
 
+Public Sub IsEvent() As Boolean
+  
+  Return InStr(":eE", Kind) > 0
+  
+End
+
 
 Public Function IsStatic() As Boolean
 
@@ -1332,7 +1338,7 @@ Public Sub WikiGetSyntax() As String[]
       sSyntax &= Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetSyntaxType(Class) & "\n"
       sSyntax &= sName & " " & Keyword("=") & " " & Keyword("New") & " " & GetSyntaxType(Class)
       sSyntax &= " " & Keyword("(") & GetSyntaxSignature() & Keyword(")")
-      If CComponent.Get(Component)[Class].HasEvents() Then
+      If CComponent.Get(Component)[Class].HasEvents Then
         sSyntax &= " <b>[</b> " & Keyword("As") & " \"<i>event name</i>\" <b>]</b>"
       Endif
 

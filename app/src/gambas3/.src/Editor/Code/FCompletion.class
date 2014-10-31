@@ -389,16 +389,16 @@ Private Sub GetEvents(sCtrl As String) As String[]
   If Not $bGambas Then Return
   
   sPath = Project.FindForm(GetClass())
-  If Not sPath Then Return  
-  Try hForm = Project.LoadFile(sPath)
-  If Not hForm Then Return
+  If sPath Then Try hForm = Project.LoadFile(sPath)
 
   sCtrl = LCase(sCtrl)
 
-  If LCase(sCtrl) = LCase(hForm.Family) Then 
-    $sEventClass = hForm.Family
-  Else
-    Try $sEventClass = hForm.Control[sCtrl].Kind
+  If hForm Then
+    If LCase(sCtrl) = LCase(hForm.Family) Then 
+      $sEventClass = hForm.Family
+    Else
+      Try $sEventClass = hForm.Control[sCtrl].Kind
+    Endif
   Endif
   
   If $sEventClass Then Try aEvent = CComponent.Classes[$sEventClass].Events
