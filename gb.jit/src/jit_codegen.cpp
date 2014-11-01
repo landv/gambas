@@ -5645,7 +5645,7 @@ llvm::Value* SubrExpression::codegen_get_value(){
 			//FIXME if a destructor throws an error, this does not work ...
 			codegen_value
 			llvm::Value* ret;
-			if (args[1]->type == args[2]->type){
+			if (args[1]->type == args[2]->type || (TYPE_is_string(args[1]->type) && TYPE_is_string(args[2]->type))){
 				ret = builder->CreateSelect(param[0], param[1], param[2]);
 				gen_if_else(param[0], [&](){
 					release(param[2], args[2]->type);
