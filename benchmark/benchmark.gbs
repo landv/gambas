@@ -20,15 +20,37 @@ Private Sub RunScript(sScript As String, sRun As String) As Float
 
 End
 
+Private Sub FormatResult(cResult As Collection, sLang As String) As String
+
+  Dim bBetter As Boolean = True
+  Dim sFormat As String
+  Dim sTest As String
+
+  For Each sTest In ["python","perl","gambas"]
+    If cResult[sTest] < cResult[sLang] Then
+      bBetter = False
+      Break
+    Endif
+  Next
+
+  sFormat = Format(cResult[sLang], "0.00")
+  If bBetter Then sFormat = "<b>" & sFormat & "</b>"
+  Return sFormat
+
+End
+
 Dim sBenchmark As String
 Dim cResult As Collection
 Dim aResult As New Collection[]
 Dim sLang As String 
+Dim sResult As String
+Dim iPos As Integer
 
 For Each sBenchmark In Dir(Application.Dir, "*.gbs")
 
   sBenchmark = File.BaseName(sBenchmark)
   If sBenchmark = "benchmark" Then Continue
+  If Args[1] And If sBenchmark <> Args[1] Then Continue
 
   cResult = New Collection
   aResult.Add(cResult)
@@ -41,6 +63,24 @@ For Each sBenchmark In Dir(Application.Dir, "*.gbs")
 
 Next
 
+' Print "<div style=\"border:solid 1px gray;padding:8px;display:inline-table;background:\">"
+' 
+' Exec ["uname", "-srv"] To sResult
+' Print "<b>Kernel:</b> ";Html(sResult);"<br>"
+'
+' Exec ["cat", "/proc/cpuinfo"] To sResult
+' For Each sResult In Split(sResult, "\n")
+'   If sResult Begins "model name" Then
+'     iPos = Instr(sResult, ":")
+'     If iPos Then
+'       Print "<b>CPU:</b> ";Html(Mid$(sResult, iPos+1));"<br>"
+'     Endif
+'     Break
+'   Endif
+' Next
+' 
+' Print "</div>"
+
 Print "<table class=\"table\">"
 Print "<tr>\n<th>Benchmark</th>"
 For Each sLang In ["Python","Perl","Gambas","Gambas + JIT"]
@@ -49,10 +89,10 @@ Next
 Print "</tr>"
 For Each cResult In aResult
   Print "<tr>"
-  Print "<td>[./";cResult!name; "]</td>"
-  Print "<td align=\"right\">"; Format(cResult!python, "0.00");"&nbsp;</td>"
-  Print "<td align=\"right\">"; Format(cResult!perl, "0.00");"&nbsp;</td>"
-  Print "<td align=\"right\">"; Format(cResult!gambas, "0.00");"&nbsp;</td>"
+  Print "<td><tt>";cResult!name; "</tt></td>"
+  Print "<td align=\"right\">"; FormatResult(cResult, "python");"&nbsp;</td>"
+  Print "<td align=\"right\">"; FormatResult(cResult, "perl");"&nbsp;</td>"
+  Print "<td align=\"right\">"; FormatResult(cResult, "gambas");"&nbsp;</td>"
   Print "<td align=\"right\">"; Format(cResult!gambasjit, "0.00");"&nbsp;</td>"
   Print "</tr>"
 Next
