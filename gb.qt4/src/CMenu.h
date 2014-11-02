@@ -109,6 +109,7 @@ public:
 public slots:
 
   void slotTriggered(QAction *);
+  void slotToggled(bool);
   void slotDestroyed();
   void slotShown();
   void slotHidden();

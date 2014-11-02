@@ -340,6 +340,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 		action = new MyAction(menu->menu);
 		action->setSeparator(true);
+		QObject::connect(action, SIGNAL(toggled(bool)), &CMenu::manager, SLOT(slotToggled(bool)));
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
 
 		menu->menu->addAction(action);
@@ -499,7 +500,9 @@ BEGIN_PROPERTY(Menu_Checked)
 	else
 	{
 		if (READ_PROPERTY)
-			GB.ReturnBoolean(ACTION->isChecked());
+		{
+			GB.ReturnBoolean(THIS->checked);
+		}
 		else
 		{
 			THIS->checked = VPROP(GB_BOOLEAN);
@@ -996,6 +999,19 @@ void CMenu::unrefChildren(QWidget *w)
 		GB.Unref(POINTER(&child));
 	}
 }*/
+
+void CMenu::slotToggled(bool checked)
+{
+	CMENU *_object = dict[(QAction *)sender()];
+
+	if (!_object)
+		return;
+
+	if (!THIS->radio)
+		return;
+
+	THIS->checked = checked;
+}
 
 void CMenu::slotDestroyed(void)
 {
