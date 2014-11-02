@@ -97,6 +97,15 @@ void CARRAY_release_static(CLASS *class, CLASS_ARRAY *desc, void *data);
  	__data; \
 })
 
+#define CARRAY_get_data_throw(_array, _index) \
+({ \
+	int __index = (_index); \
+	CARRAY *__array = (CARRAY *)(_array); \
+  if ((__index < 0) || (__index >= __array->count)) \
+  	THROW(E_BOUND); \
+	(void *)((char *)(__array->data) + __index * __array->size); \
+})
+
 
 #endif  // #ifndef __GBX_CLASS_INFO_C 
 

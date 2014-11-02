@@ -538,6 +538,7 @@ _FIN:
 	PC++;
 }
 
+#if 0
 void EXEC_push_array(ushort code)
 {
 	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_QUICK_ARRAY, &&__PUSH_QUICK_COLLECTION, &&__PUSH_ARRAY };
@@ -606,11 +607,14 @@ __PUSH_GENERIC:
 	return;*/
 
 __PUSH_QUICK_ARRAY:
-	
-	EXEC_object_fast(val, &class, &object);
-	
+
+	// Optimization test
+
+	//EXEC_object_fast(val, &class, &object);
+	EXEC_object_array(val, class, object);
+
 	VALUE_conv_integer(&val[1]);
-	
+
 	if (np == 1)
 	{
 		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
@@ -619,17 +623,23 @@ __PUSH_QUICK_ARRAY:
 	{
 		for (i = 2; i <= np; i++)
 			VALUE_conv_integer(&val[i]);
-		
+
 		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
 	}
-	
+
 	if (!data)
 		PROPAGATE();
-	
-	VALUE_read(val, data, ((CARRAY *)object)->type);
-	
+
+	//VALUE_read(val, data, ((CARRAY *)object)->type);
+	if (TYPE_is_object(((CARRAY *)object)->type))
+		fast = T_OBJECT;
+	else
+		fast = ((CARRAY *)object)->type;
+
+	VALUE_read_inline_type(val, data, fast);
+
 	goto __PUSH_QUICK_END;
-	
+
 __PUSH_QUICK_COLLECTION:
 
 	EXEC_object_fast(val, &class, &object);
@@ -646,12 +656,38 @@ __PUSH_QUICK_END:
 	PUSH();
 	OBJECT_UNREF(object);
 	return;
-	
+
 __PUSH_ARRAY:
 
 	defined = EXEC_object(val, &class, &object);
 	
 __PUSH_ARRAY_2:
+
+	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
+		THROW(E_NARRAY, CLASS_get_name(class));
+
+	OBJECT_UNREF(object);
+	SP--;
+	//SP[-1] = SP[0];
+	VALUE_copy(&SP[-1], &SP[0]);
+
+	if (!defined)
+		VALUE_conv_variant(&SP[-1]);
+}
+#endif
+
+// JIT needs it
+void EXEC_push_array(ushort code)
+{
+	CLASS *class;
+	OBJECT *object;
+	GET_NPARAM(np);
+	bool defined;
+	VALUE *val;
+
+	val = &SP[-np];
+	np--;
+	defined = EXEC_object(val, &class, &object);
 
 	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
 		THROW(E_NARRAY, CLASS_get_name(class));

@@ -177,6 +177,14 @@ void EXEC_loop(void);
 		EXEC_object_other(_val, _pclass, _pobject); \
 })
 
+#define EXEC_object_array(_val, _vclass, _vobject) \
+	_vobject = (_val)->_object.object; \
+	if (!(_vobject)) \
+		THROW(E_NULL); \
+	_vclass = (_vobject)->class; \
+	if ((_val) == EXEC_super) \
+		EXEC_super = (_val)->_object.super;
+
 CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject);
 CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject);
 bool EXEC_object_other(VALUE *val, CLASS **pclass, OBJECT **pobject);

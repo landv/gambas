@@ -532,4 +532,119 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 	} \
 })
 
+#define VALUE_read_inline_type(_value, _addr, _ctype, _type, _label_noref, _label_ref) \
+({ \
+	static void *jump[17] = { \
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE, \
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, &&__OBJECT \
+		}; \
+	\
+	for(;;) \
+	{ \
+		(_value)->type = (_type); \
+		goto *jump[_ctype]; \
+		\
+	__BOOLEAN: \
+		\
+		(_value)->_boolean.value = (*((unsigned char *)(_addr)) != 0) ? (-1) : 0; \
+		goto _label_noref; \
+		\
+	__BYTE: \
+		\
+		(_value)->_byte.value = *((unsigned char *)(_addr)); \
+		goto _label_noref; \
+		\
+	__SHORT: \
+		\
+		(_value)->_short.value = *((short *)(_addr)); \
+		goto _label_noref; \
+		\
+	__INTEGER: \
+		\
+		(_value)->_integer.value = *((int *)(_addr)); \
+		goto _label_noref; \
+		\
+	__LONG: \
+		\
+		(_value)->_long.value = *((int64_t *)(_addr)); \
+		goto _label_noref; \
+		\
+	__SINGLE: \
+		\
+		(_value)->_single.value = *((float *)(_addr)); \
+		goto _label_noref; \
+		\
+	__FLOAT: \
+		\
+		(_value)->_float.value = *((double *)(_addr)); \
+		goto _label_noref; \
+		\
+	__DATE: \
+		\
+		(_value)->_date.date = ((int *)(_addr))[0]; \
+		(_value)->_date.time = ((int *)(_addr))[1]; \
+		goto _label_noref; \
+		\
+	__STRING: \
+		\
+		{ \
+			char *str = *((char **)(_addr)); \
+			\
+			(_value)->type = T_STRING; \
+			(_value)->_string.addr = str; \
+			(_value)->_string.start = 0; \
+			(_value)->_string.len = STRING_length(str); \
+			\
+			goto _label_ref; \
+		} \
+		\
+	__CSTRING: \
+		\
+		{ \
+			char *str = *((char **)(_addr)); \
+			\
+			(_value)->type = T_CSTRING; \
+			(_value)->_string.addr = str; \
+			(_value)->_string.start = 0; \
+			(_value)->_string.len = (str == NULL) ? 0 : strlen(str); \
+			\
+			goto _label_noref; \
+		} \
+		\
+	__OBJECT: \
+		\
+		(_value)->_object.object = *((void **)(_addr)); \
+		goto _label_ref; \
+		\
+	__POINTER: \
+		\
+		(_value)->_pointer.value = *((void **)(_addr)); \
+		goto _label_noref; \
+		break; \
+		\
+	__VARIANT: \
+		\
+		(_value)->_variant.type = T_VARIANT; \
+		(_value)->_variant.vtype = ((VARIANT *)(_addr))->type; \
+		\
+		if ((_value)->_variant.vtype == T_VOID) \
+			(_value)->_variant.vtype = T_NULL; \
+		\
+		VARIANT_copy_value(&(_value)->_variant, ((VARIANT *)(_addr))); \
+		\
+		goto _label_ref; \
+		\
+	__CLASS: \
+		\
+		(_value)->_class.class = *((void **)(_addr)); \
+		(_value)->_class.super = NULL; \
+		goto _label_noref; \
+		\
+	__VOID: \
+	__FUNCTION: \
+	__NULL: \
+		THROW_ILLEGAL(); \
+	} \
+})
+
 #endif

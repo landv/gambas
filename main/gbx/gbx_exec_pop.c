@@ -293,110 +293,19 @@ _FIN:
   PC++;
 }
 
-
 void EXEC_pop_array(ushort code)
 {
-	static const void *jump[] = { &&__POP_GENERIC, &&__POP_QUICK_ARRAY, && __POP_QUICK_COLLECTION, &&__POP_ARRAY };
-	
   CLASS *class;
   OBJECT *object;
   GET_NPARAM(np);
-  int i;
-  void *data;
-  bool defined;
   VALUE *val;
   VALUE swap;
-	int fast;
 
   val = &SP[-np];
-	goto *jump[((unsigned char)code) >> 6];
-
-__POP_GENERIC:
-
-	defined = EXEC_object(val, &class, &object);
-	
-	fast = 3;
-
-	if (defined)
-	{
-		if (class->quick_array == CQA_ARRAY)
-			fast = 1;
-		else if (class->quick_array == CQA_COLLECTION)
-			fast = 2;
-		else
-		{
-			// Check the symbol existance, but *not virtually*
-			if (object && !VALUE_is_super(val))
-			{
-				CLASS *nvclass = val->_object.class;
-
-				if (nvclass->special[SPEC_PUT] == NO_SYMBOL)
-					THROW(E_NARRAY, CLASS_get_name(nvclass));
-			}
-		}
-	}
-
-	*PC |= fast << 6;
-	
-	goto __POP_ARRAY_2;
-
-__POP_QUICK_ARRAY:
-
-  EXEC_object_fast(val, &class, &object);
-
-	TYPE type = ((CARRAY *)object)->type;
-	
-	VALUE_copy(&swap, &val[0]);
-	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);
-	
-	VALUE_conv(&val[0], type);
-	VALUE_conv_integer(&val[1]);
-	
-	if (np == 2)
-	{
-		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
-	}
-	else
-	{
-		for (i = 2; i < np; i++)
-			VALUE_conv_integer(&val[i]);
-		
-		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
-	}
-	if (data == NULL)
-		PROPAGATE();
-	VALUE_write(val, data, type);
-	
-	SP = val + 1;
-	RELEASE_MANY(SP, 2);
-	//OBJECT_UNREF(object);
-	return;
-	
-__POP_QUICK_COLLECTION:
-
-  EXEC_object_fast(val, &class, &object);
-
-	VALUE_conv_variant(&val[-1]);
-	VALUE_conv_string(&val[1]);
-	
-	if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
-		PROPAGATE();
-	
-	RELEASE_MANY(SP, 3);
-	return;
-	
-__POP_ARRAY:
     
-  defined = EXEC_object(val, &class, &object);
-
-__POP_ARRAY_2:
+  EXEC_object(val, &class, &object);
 
 	/* swap object and value to be inserted */
-
-	//swap = val[0];
-	//val[0] = val[-1];
-	//val[-1] = swap;
 	VALUE_copy(&swap, &val[0]);
 	VALUE_copy(&val[0], &val[-1]);
 	VALUE_copy(&val[-1], &swap);

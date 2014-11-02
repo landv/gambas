@@ -80,7 +80,7 @@ bool EXEC_main_hook_done = FALSE;
 bool EXEC_got_error = FALSE;
 bool EXEC_break_on_error = FALSE; // if we must break into the debugger as soon as there is an error.
 
-const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0 };
+const char EXEC_should_borrow[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2, 2, 0, 0, 1 };
 
 const char *EXEC_unknown_name;
 bool EXEC_unknown_property;

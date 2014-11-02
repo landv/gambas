@@ -65,9 +65,12 @@
 
 static void my_VALUE_class_read(CLASS *class, VALUE *value, char *addr, CTYPE ctype, void *ref);
 static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
+static void _push_array(ushort code);
+static void _pop_array(ushort code);
+
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compn(ushort code);
-static void _SUBR_compi(ushort code);
+//static void _SUBR_compi(ushort code);
 static void _SUBR_add(ushort code);
 static void _SUBR_sub(ushort code);
 static void _SUBR_mul(ushort code);
@@ -77,8 +80,8 @@ static void _SUBR_div(ushort code);
 
 static void *SubrTable[] =
 {
-	/* 28 */  NULL,                 _SUBR_compn,          _SUBR_compi,          _SUBR_compi,
-	/* 2C */  _SUBR_compi,          _SUBR_compi,          SUBR_near,            SUBR_case,
+	/* 28 */  NULL,                 _SUBR_compn,          NULL,                 NULL,
+	/* 2C */  NULL,                 NULL,                 SUBR_near,            SUBR_case,
 	/* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
 	/* 34 */  SUBR_neg,             SUBR_quo,             SUBR_rem,             SUBR_pow,
 	/* 38 */  SUBR_and_,            SUBR_and_,            SUBR_and_,            SUBR_not,
@@ -238,10 +241,10 @@ void EXEC_loop(void)
 		/* 27 NEXT            */  &&_ENUM_NEXT,
 		/* 28 =               */  &&_SUBR_COMP,
 		/* 29 <>              */  &&_SUBR_CODE,
-		/* 2A >               */  &&_SUBR_CODE,
-		/* 2B <=              */  &&_SUBR_CODE,
-		/* 2C <               */  &&_SUBR_CODE,
-		/* 2D >=              */  &&_SUBR_CODE,
+		/* 2A >               */  &&_SUBR_COMPI,
+		/* 2B <=              */  &&_SUBR_COMPI,
+		/* 2C <               */  &&_SUBR_COMPI,
+		/* 2D >=              */  &&_SUBR_COMPI,
 		/* 2E ==              */  &&_SUBR,
 		/* 2F CASE            */  &&_SUBR_CODE,
 		/* 30 +               */  &&_SUBR_CODE,
@@ -566,8 +569,7 @@ _PUSH_PARAM:
 /*-----------------------------------------------*/
 
 _PUSH_ARRAY:
-
-	EXEC_push_array(code);
+	_push_array(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -659,7 +661,7 @@ _POP_CTRL:
 
 _POP_ARRAY:
 
-	EXEC_pop_array(code);
+	_pop_array(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -2272,6 +2274,200 @@ _SUBR_COMP:
 		P1->_boolean.value = -result;	
 		goto _NEXT;
 	}
+
+/*-----------------------------------------------*/
+
+_SUBR_COMPI:
+	{
+		static void *jump[] = {
+			&&__SCI_VARIANT, &&__SCI_BOOLEAN, &&__SCI_BYTE, &&__SCI_SHORT, &&__SCI_INTEGER, &&__SCI_LONG, &&__SCI_SINGLE, &&__SCI_FLOAT, &&__SCI_DATE,
+			&&__SCI_STRING, &&__SCI_STRING, &&__SCI_POINTER, &&__SCI_ERROR, &&__SCI_ERROR, &&__SCI_ERROR, &&__SCI_NULL, &&__SCI_OBJECT,
+			&&__SCI_OBJECT_FLOAT, &&__SCI_FLOAT_OBJECT, &&__SCI_OBJECT_OTHER, &&__SCI_OTHER_OBJECT, &&__SCI_OBJECT_OBJECT
+			};
+
+		static void *test[] = { &&__GT, &&__LE, &&__LT, &&__GE };
+
+		char NO_WARNING(result);
+		VALUE *NO_WARNING(P1);
+		VALUE *NO_WARNING(P2);
+		TYPE NO_WARNING(type);
+
+		P1 = SP - 2;
+		P2 = P1 + 1;
+
+		type = code & 0x1F;
+		goto *jump[type];
+
+	__SCI_BOOLEAN:
+	__SCI_BYTE:
+	__SCI_SHORT:
+	__SCI_INTEGER:
+
+		result = P1->_integer.value > P2->_integer.value ? 1 : P1->_integer.value < P2->_integer.value ? -1 : 0;
+		goto __SCI_END;
+
+	__SCI_LONG:
+
+		VALUE_conv(P1, T_LONG);
+		VALUE_conv(P2, T_LONG);
+
+		result = P1->_long.value > P2->_long.value ? 1 : P1->_long.value < P2->_long.value ? -1 : 0;
+		goto __SCI_END;
+
+	__SCI_DATE:
+
+		VALUE_conv(P1, T_DATE);
+		VALUE_conv(P2, T_DATE);
+
+		result = DATE_comp_value(P1, P2);
+		goto __SCI_END;
+
+	__SCI_NULL:
+	__SCI_STRING:
+
+		VALUE_conv_string(P1);
+		VALUE_conv_string(P2);
+
+		result = STRING_compare(P1->_string.addr + P1->_string.start, P1->_string.len, P2->_string.addr + P2->_string.start, P2->_string.len);
+
+		RELEASE_STRING(P1);
+		RELEASE_STRING(P2);
+		goto __SCI_END;
+
+	__SCI_SINGLE:
+
+		VALUE_conv(P1, T_SINGLE);
+		VALUE_conv(P2, T_SINGLE);
+
+		result = P1->_single.value > P2->_single.value ? 1 : P1->_single.value < P2->_single.value ? -1 : 0;
+		goto __SCI_END;
+
+	__SCI_FLOAT:
+
+		VALUE_conv_float(P1);
+		VALUE_conv_float(P2);
+
+		result = P1->_float.value > P2->_float.value ? 1 : P1->_float.value < P2->_float.value ? -1 : 0;
+		goto __SCI_END;
+
+	__SCI_POINTER:
+
+		VALUE_conv(P1, T_POINTER);
+		VALUE_conv(P2, T_POINTER);
+
+		result = P1->_pointer.value > P2->_pointer.value ? 1 : P1->_pointer.value < P2->_pointer.value ? -1 : 0;
+		goto __SCI_END;
+
+	__SCI_OBJECT:
+
+		result = OBJECT_comp_value(P1, P2);
+		//RELEASE_OBJECT(P1);
+		//RELEASE_OBJECT(P2);
+		goto __SCI_END_RELEASE;
+
+	__SCI_OBJECT_FLOAT:
+
+		result = EXEC_comparator(OP_OBJECT_FLOAT, CO_COMPF, P1, P2);
+		goto __SCI_END;
+
+	__SCI_FLOAT_OBJECT:
+
+		result = EXEC_comparator(OP_FLOAT_OBJECT, CO_COMPF, P1, P2);
+		goto __SCI_END;
+
+	__SCI_OBJECT_OTHER:
+
+		result = EXEC_comparator(OP_OBJECT_OTHER, CO_COMPO, P1, P2);
+		goto __SCI_END;
+
+	__SCI_OTHER_OBJECT:
+
+		result = EXEC_comparator(OP_OTHER_OBJECT, CO_COMPO, P1, P2);
+		goto __SCI_END;
+
+	__SCI_OBJECT_OBJECT:
+
+		result = EXEC_comparator(OP_OBJECT_OBJECT, CO_COMP, P1, P2);
+		goto __SCI_END;
+
+	__SCI_VARIANT:
+
+		{
+			bool variant = FALSE;
+			int op;
+
+			if (TYPE_is_variant(P1->type))
+			{
+				VARIANT_undo(P1);
+				variant = TRUE;
+			}
+
+			if (TYPE_is_variant(P2->type))
+			{
+				VARIANT_undo(P2);
+				variant = TRUE;
+			}
+
+			op = EXEC_check_operator(P1, P2, CO_COMP);
+			if (op)
+			{
+				op += T_OBJECT;
+				if (!(variant || P1->type == T_OBJECT || P2->type == T_OBJECT))
+					*PC |= op;
+				goto *jump[op];
+			}
+
+			type = Max(P1->type, P2->type);
+
+			if (type == T_NULL || TYPE_is_string(type))
+			{
+				TYPE typem = Min(P1->type, P2->type);
+				if (!TYPE_is_string(typem))
+					THROW(E_TYPE, TYPE_get_name(typem), TYPE_get_name(type));
+			}
+			else if (TYPE_is_object(type))
+				goto __SCI_ERROR;
+			else if (TYPE_is_void(type))
+				THROW(E_NRETURN);
+
+			if (!variant)
+				*PC |= type;
+
+			goto *jump[type];
+		}
+
+	__SCI_ERROR:
+
+		THROW(E_TYPE, "Number, Date or String", TYPE_get_name(type));
+
+	__SCI_END_RELEASE:
+
+		RELEASE(P1);
+		RELEASE(P2);
+
+	__SCI_END:
+
+		P1->type = T_BOOLEAN;
+		SP--;
+
+		goto *test[(code >> 8) - (C_GT >> 8)];
+
+	__GT:
+		P1->_boolean.value = result > 0 ? -1 : 0;
+		goto _NEXT;
+
+	__GE:
+		P1->_boolean.value = result >= 0 ? -1 : 0;
+		goto _NEXT;
+
+	__LT:
+		P1->_boolean.value = result < 0 ? -1 : 0;
+		goto _NEXT;
+
+	__LE:
+		P1->_boolean.value = result <= 0 ? -1 : 0;
+		goto _NEXT;
+	}
 }
 
 
@@ -3117,6 +3313,7 @@ __END:
 	SP--;
 }
 
+#if 0
 static void _SUBR_compi(ushort code)
 {
 	static void *jump[] = {
@@ -3308,4 +3505,259 @@ __LE:
 	P1->_boolean.value = result <= 0 ? -1 : 0;
 	return;
 }
+#endif
 
+static void _push_array(ushort code)
+{
+	static const void *jump[] = {
+		&&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC,
+		&&__PUSH_ARRAY, &&__PUSH_ARRAY, &&__PUSH_ARRAY, &&__PUSH_ARRAY,
+		&&__PUSH_NATIVE_ARRAY, NULL, &&__PUSH_NATIVE_ARRAY_SINGLE, &&__PUSH_NATIVE_ARRAY_SINGLE,
+		&&__PUSH_NATIVE_COLLECTION, NULL, NULL, NULL
+	};
+
+	CLASS *class;
+	OBJECT *object;
+	ushort np = GET_3X();
+	int i;
+	void *NO_WARNING(data);
+	bool defined;
+	VALUE *NO_WARNING(val);
+	uint fast;
+	CARRAY *array;
+
+	goto *jump[((unsigned char)code) >> 4];
+
+__PUSH_GENERIC:
+
+	val = &SP[-np];
+	np--;
+
+	defined = EXEC_object(val, &class, &object);
+
+	fast = 0x41 + np;
+
+	if (defined)
+	{
+		if (class->quick_array == CQA_ARRAY)
+		{
+			if (np == 1)
+			{
+				array = (CARRAY *)object;
+				if (TYPE_is_object(array->type))
+					fast = 0xB0;
+				else
+					fast = 0xA0 + array->type;
+			}
+			else
+				fast = 0x80 + np;
+		}
+		else if (class->quick_array == CQA_COLLECTION)
+			fast = 0xC0;
+		else
+		{
+			// Check the symbol existance, but *not virtually*
+			if (object && !VALUE_is_super(val))
+			{
+				CLASS *nvclass = val->_object.class;
+
+				if (nvclass->special[SPEC_GET] == NO_SYMBOL)
+					THROW(E_NARRAY, CLASS_get_name(nvclass));
+			}
+		}
+	}
+
+	*PC = (*PC & 0xFF00) | fast;
+
+	goto __PUSH_ARRAY_2;
+
+__PUSH_NATIVE_ARRAY:
+
+	val = &SP[-np];
+	np--;
+	EXEC_object_array(val, class, object);
+
+	for (i = 1; i <= np; i++)
+		VALUE_conv_integer(&val[i]);
+
+	data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np);
+	if (!data)
+		PROPAGATE();
+
+	VALUE_read(val, data, ((CARRAY *)object)->type);
+	goto __PUSH_NATIVE_END;
+
+__PUSH_NATIVE_COLLECTION:
+
+	val = &SP[-2];
+	EXEC_object_fast(val, &class, &object);
+
+	VALUE_conv_string(&val[1]);
+	//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
+	GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
+
+	RELEASE_STRING(&val[1]);
+	goto __PUSH_NATIVE_END;
+
+__PUSH_NATIVE_ARRAY_SINGLE:
+
+	val = &SP[-2];
+	np &= 0x1F;
+
+	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
+
+	VALUE_conv_integer(&val[1]);
+
+	data = CARRAY_get_data_throw(array, val[1]._integer.value);
+
+	VALUE_read_inline_type(val, data, np, array->type, __PUSH_NATIVE_END_NOREF, __PUSH_NATIVE_END);
+
+__PUSH_NATIVE_END_NOREF:
+
+	SP = val + 1;
+	OBJECT_UNREF(object);
+	return;
+
+__PUSH_NATIVE_END:
+
+	SP = val;
+	PUSH();
+	OBJECT_UNREF(object);
+	return;
+
+__PUSH_ARRAY:
+
+	val = &SP[-np];
+	np--;
+	defined = EXEC_object(val, &class, &object);
+
+__PUSH_ARRAY_2:
+
+	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
+		THROW(E_NARRAY, CLASS_get_name(class));
+
+	OBJECT_UNREF(object);
+	SP--;
+	//SP[-1] = SP[0];
+	VALUE_copy(&SP[-1], &SP[0]);
+
+	if (!defined)
+		VALUE_conv_variant(&SP[-1]);
+}
+
+static void _pop_array(ushort code)
+{
+	static const void *jump[] = { &&__POP_GENERIC, &&__POP_QUICK_ARRAY, && __POP_QUICK_COLLECTION, &&__POP_ARRAY };
+
+	CLASS *class;
+	OBJECT *object;
+	ushort np = GET_3X();
+	int i;
+	void *data;
+	bool defined;
+	VALUE *NO_WARNING(val);
+	VALUE swap;
+	int fast;
+
+	val = &SP[-np];
+	goto *jump[((unsigned char)code) >> 6];
+
+__POP_GENERIC:
+
+	defined = EXEC_object(val, &class, &object);
+
+	fast = 3;
+
+	if (defined)
+	{
+		if (class->quick_array == CQA_ARRAY)
+			fast = 1;
+		else if (class->quick_array == CQA_COLLECTION)
+			fast = 2;
+		else
+		{
+			// Check the symbol existance, but *not virtually*
+			if (object && !VALUE_is_super(val))
+			{
+				CLASS *nvclass = val->_object.class;
+
+				if (nvclass->special[SPEC_PUT] == NO_SYMBOL)
+					THROW(E_NARRAY, CLASS_get_name(nvclass));
+			}
+		}
+	}
+
+	*PC |= fast << 6;
+
+	goto __POP_ARRAY_2;
+
+__POP_QUICK_ARRAY:
+
+	EXEC_object_array(val, class, object);
+
+	TYPE type = ((CARRAY *)object)->type;
+
+	VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);
+
+	//VALUE_conv(&val[0], type);
+	VALUE_conv_integer(&val[1]);
+
+	if (np == 2)
+	{
+		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
+	}
+	else
+	{
+		for (i = 2; i < np; i++)
+			VALUE_conv_integer(&val[i]);
+
+		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
+	}
+	if (data == NULL)
+		PROPAGATE();
+
+	VALUE_write(val, data, type);
+
+	SP = val + 1;
+	RELEASE(SP - 1);
+	RELEASE(SP - 2);
+	SP -= 2;
+	//OBJECT_UNREF(object);
+	return;
+
+__POP_QUICK_COLLECTION:
+
+	EXEC_object_fast(val, &class, &object);
+
+	VALUE_conv_variant(&val[-1]);
+	VALUE_conv_string(&val[1]);
+
+	if (GB_CollectionSet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)&val[-1]))
+		PROPAGATE();
+
+	RELEASE_MANY(SP, 3);
+	return;
+
+__POP_ARRAY:
+
+	defined = EXEC_object(val, &class, &object);
+
+__POP_ARRAY_2:
+
+	/* swap object and value to be inserted */
+
+	//swap = val[0];
+	//val[0] = val[-1];
+	//val[-1] = swap;
+	VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);
+
+	if (EXEC_special(SPEC_PUT, class, object, np, TRUE))
+		THROW(E_NARRAY, CLASS_get_name(class));
+
+	POP(); /* free the object */
+}
