@@ -28,7 +28,7 @@ Public Age As Integer
 
 Property Read ReadOnly As Boolean
 
-Static Private $aExt As String[] = ["htm", "html", "xml", "kml", "svg", "css", "webpage", "js", "c", "h", "cpp"]
+Static Private $aExt As String[] = ["htm", "html", "xml", "kml", "svg", "css", "webpage", "js", "c", "h", "cpp", "gbs"]
 
 Private $bNoHighlight As Boolean
 Private $bShowCompress As Boolean
@@ -99,6 +99,8 @@ Public Sub LoadFile() As Boolean
         edtEditor.Highlight = Highlight.C
       Case "cpp", "h"
         edtEditor.Highlight = Highlight.CPlusPlus
+      Case "gbs"
+        edtEditor.Highlight = Highlight.Gambas
       Case Else 
         edtEditor.Highlight = Highlight.HTML
     End Select

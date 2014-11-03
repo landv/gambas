@@ -13,7 +13,7 @@ Private $iType As Integer
 Private $hObserver As Observer
 Private $iArrange As Integer
 Private $hObsList As Observer
-Private $hButton As Button
+Private $hButton As Label
 Private $bOpenExtern As Boolean
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
@@ -26,7 +26,7 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hObserver = New Observer($hFilter) As "Filter"
   $hObsList = New Observer(hList) As "ScrollView"
   
-  $hButton = New Button(hList.Window) As "Button"
+  $hButton = New Label(hList.Window) As "Button"
   $hButton.Ignore = True
   $hButton.Hide
   $hButton.Text = ("Open in another window") & "…"
@@ -34,6 +34,8 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hButton.AutoResize = True
   $hButton.Font.Grade = -2
   $hButton.Mouse = Mouse.Pointing
+  $hButton.Border = False
+  $hButton.Font.Underline = True
   
 End
 
@@ -176,6 +178,7 @@ Private Sub FillWithRecent(bClear As Boolean)
   'panRecent.Show
   
   $hList.Arrangement = $iArrange
+  $hList.ScrollY = 0
   Dec Application.Busy
   
 End
@@ -272,7 +275,19 @@ Public Sub ProjectItem_Click()
   
 End
 
-Public Sub Button_Click()
+Public Sub Button_Enter()
+  
+  $hButton.Foreground = Color.LinkForeground
+  
+End
+
+Public Sub Button_Leave()
+  
+  $hButton.Foreground = Color.Default
+  
+End
+
+Public Sub Button_MouseDown()
   
   Raise Click(Last.Parent.Parent.Path, True)
   

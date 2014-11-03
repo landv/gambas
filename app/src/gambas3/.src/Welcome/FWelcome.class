@@ -364,7 +364,10 @@ Private Sub UpdateMenuSort()
   Dim hMenu As Menu
   
   For Each hMenu In mnuSort.Children
-    hMenu.Checked = hMenu.Tag = $iSort
+    If hMenu.Tag = $iSort Then 
+      hMenu.Checked = True
+      Break
+    Endif
   Next
   
 End
@@ -374,7 +377,7 @@ Public Sub mnuSort_Click()
   
   $iSort = Last.Tag
   $hRecent.SetSort($iSort)
-  UpdateMenuSort
+  'UpdateMenuSort
   
 End
 

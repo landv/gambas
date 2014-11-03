@@ -15,7 +15,7 @@ Property ShowAuthors As Boolean
 Property Read Info As CProjectInfo
 Public Group As String ' for examples
 
-Static Private $hGradient As Image
+'Static Private $hGradient As Image
 
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
@@ -34,26 +34,28 @@ Private $hObs As Observer
 'Private $iIdealH As Integer
 Private $iIdealW As Integer
 Private $bSelected As Boolean
+Private $sToolTip As String
 
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Mouse = Mouse.Pointing
   $hDrawingArea.Focus = True
+  $hDrawingArea.Tracking = True
   
   $hObs = New Observer(Me) As "ProjectItem"
   
-  If Not $hGradient Then
-    
-    $hGradient = New Image(128, 128)
-    
-    Paint.Begin($hGradient)
-    Paint.Brush = Paint.RadialGradient(0, 0, 64, 0, 0, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
-    Paint.Rectangle(0, 0, 128, 128)
-    Paint.Fill
-    Paint.End
-    
-  Endif
+  ' If Not $hGradient Then
+  '   
+  '   $hGradient = New Image(128, 128)
+  '   
+  '   Paint.Begin($hGradient)
+  '   Paint.Brush = Paint.RadialGradient(0, 0, 64, 0, 0, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.8), Color.TextBackground], [0.0, 1.0])
+  '   Paint.Rectangle(0, 0, 128, 128)
+  '   Paint.Fill
+  '   Paint.End
+  '   
+  ' Endif
   
 End
 
@@ -64,7 +66,7 @@ Private Sub SetPath(sPath As String)
   $hProjectInfo = New CProjectInfo(sPath)
   $hIcon = Null
   
-  $hDrawingArea.ToolTip = Replace($sPath, System.User.Home, "~")
+  $sToolTip = Replace($sPath, System.User.Home, "~")
   $iIdealW = 0
   'Me.H = Me.IdealHeight
   Me.Refresh
@@ -95,6 +97,16 @@ End
 '   Return sTitle
 ' 
 ' End
+
+Public Sub DrawingArea_MouseMove()
+  
+  If Rect(Desktop.Scale, Desktop.Scale, ICON_SIZE, ICON_SIZE).Contains(Mouse.X, Mouse.Y) Then
+    $hDrawingArea.Tooltip = $sToolTip
+  Else
+    $hDrawingArea.Tooltip = ""
+  Endif
+  
+End
 
 
 Public Sub DrawingArea_Draw()
@@ -215,6 +227,7 @@ Public Sub DrawingArea_Draw()
       
       W = Paint.W - X - P * 2
       H = Paint.H - Y - ICON_SIZE - P * 2
+      If $bHighlight Then H -= Desktop.Scale * 2
       Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + ICON_SIZE + P, W, H)
       
     Endif

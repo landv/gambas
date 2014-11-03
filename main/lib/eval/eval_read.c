@@ -40,7 +40,7 @@ PUBLIC const char *READ_source_ptr;
 #define source_ptr READ_source_ptr
 
 static bool is_init = FALSE;
-static bool begin_line = FALSE;
+static bool _begin_line = FALSE;
 
 static char ident_car[256];
 static char first_car[256];
@@ -63,6 +63,7 @@ enum
 	GOTO_QUOTED_IDENT, 
 	GOTO_NUMBER,
 	GOTO_ERROR,
+	GOTO_SHARP,
 	GOTO_OTHER
 };
 
@@ -87,6 +88,8 @@ static void READ_init(void)
 				first_car[i] = GOTO_COMMENT;
 			else if (i == '"')
 				first_car[i] = GOTO_STRING;
+			else if (i == '#')
+				first_car[i] = GOTO_SHARP;
 			else if ((i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || i == '$' || i == '_')
 				first_car[i] = GOTO_IDENT;
 			else if (i == '{')
@@ -540,7 +543,7 @@ static void add_identifier(bool no_res)
 		}
 		else if (index == RS_CLASS)
 		{
-			can_be_reserved = begin_line && isspace(car);
+			can_be_reserved = _begin_line && isspace(car);
 		}
 		else
 		{
@@ -716,23 +719,23 @@ static void add_identifier()
 			break;
 			
 		__CLASS:
-			can_be_reserved = canres_car[car] && begin_line;
+			can_be_reserved = canres_car[car] && _begin_line;
 			break;
 			
 		__STRUCT:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END) || PATTERN_is(last_pattern, RS_NEW));
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub || PATTERN_is(last_pattern, RS_AS) || PATTERN_is(last_pattern, RS_END) || PATTERN_is(last_pattern, RS_NEW));
 			break;
 			
 		__SUB_PROCEDURE_FUNCTION:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub || PATTERN_is(last_pattern, RS_END));
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub || PATTERN_is(last_pattern, RS_END));
 			break;
 		
 		__CONST_EXTERN:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub);
 			break;
 			
 		__ENUM:
-			can_be_reserved = canres_car[car] && (begin_line || last_pub);
+			can_be_reserved = canres_car[car] && (_begin_line || last_pub);
 			break;
 			
 		__READ:
@@ -1205,7 +1208,7 @@ static void add_string_for_analyze()
 
 PUBLIC void EVAL_read(void)
 {
-	static void *jump_char[9] =
+	static void *jump_char[10] =
 	{
 		&&__BREAK, 
 		&&__SPACE, 
@@ -1215,6 +1218,7 @@ PUBLIC void EVAL_read(void)
 		&&__QUOTED_IDENT,
 		&&__NUMBER,
 		&&__ERROR, 
+		&&__SHARP,
 		&&__OTHER
 	};
 	
@@ -1223,7 +1227,7 @@ PUBLIC void EVAL_read(void)
 	READ_init();
 
 	source_ptr = EVAL->source;
-	begin_line = TRUE;
+	_begin_line = TRUE;
 	
 #if ENABLE_BIG_COMMENT
 	if (EVAL->comment)
@@ -1245,7 +1249,7 @@ PUBLIC void EVAL_read(void)
 		if (car == '\n')
 		{
 			add_newline();
-			begin_line = TRUE;
+			_begin_line = TRUE;
 		}
 		continue;
 
@@ -1265,7 +1269,7 @@ PUBLIC void EVAL_read(void)
 			while (car != '\n' && car != 0);
 		}
 
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 
 
@@ -1275,26 +1279,38 @@ PUBLIC void EVAL_read(void)
 			add_string_for_analyze();
 		else
 			add_string();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 
 	__IDENT:
 		
 		add_identifier();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 
 	__QUOTED_IDENT:
 		
 		add_quoted_identifier();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 		
 	__NUMBER:
 	
 		add_number();
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
+
+	__SHARP:
+
+		if (_begin_line)
+		{
+			_begin_line = FALSE;
+			if (get_char_offset(1) == '!' && EVAL->analyze)
+			{
+				add_comment();
+				continue;
+			}
+		}
 	
 	__OTHER:
 	
@@ -1306,7 +1322,7 @@ PUBLIC void EVAL_read(void)
 		if (add_number())
 			add_operator();
 		
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 	
 #if ENABLE_BIG_COMMENT
@@ -1332,7 +1348,7 @@ PUBLIC void EVAL_read(void)
 			}
 		}
 
-		begin_line = FALSE;
+		_begin_line = FALSE;
 		continue;
 #endif
 	}

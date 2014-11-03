@@ -680,6 +680,7 @@ Public Sub UpdateRecentMenu()
       hMenu = New Menu(hMenuTitle) As "mnuSortRecent"
       hMenu.Text = sMenu
       hMenu.Tag = iVal
+      hMenu.Radio = True
       Object.Lock(hMenu)
       hMenu.Checked = iSort = iVal
       Object.Unlock(hMenu)

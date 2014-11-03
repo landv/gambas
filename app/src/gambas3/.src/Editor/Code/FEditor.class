@@ -70,7 +70,7 @@ Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
 Private $hCompletion As CCompletion
 
-Static Private $cLastClassCount As New Collection
+'Static Private $cLastClassCount As New Collection
 
 
 Static Public Sub _init()
@@ -867,10 +867,10 @@ Public Sub Editors_KeyPress()
   Dim bStop As Boolean
   Dim aSymbol As String[]
   Dim aScan As String[]
-  Dim hClass As Class
-  Dim aClass As String[]
-  Dim sClass As String
-  Dim iOldCount As Integer
+  'Dim hClass As Class
+  'Dim aClass As String[]
+  'Dim sClass As String
+  'Dim iOldCount As Integer
 
   If $hCompletion.OnKeyPress() Then Return
 
