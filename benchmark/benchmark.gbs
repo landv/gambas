@@ -58,7 +58,7 @@ For Each sBenchmark In Dir(Application.Dir, "*.gbs")
   cResult!name = sBenchmark
   cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c")
   cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c")
-  cResult!python = RunScript(sBenchmark & ".py", "python")
+  cResult!python = RunScript(sBenchmark & ".py", "python2")
   cResult!perl = RunScript(sBenchmark & ".pl", "perl")
 
 Next
