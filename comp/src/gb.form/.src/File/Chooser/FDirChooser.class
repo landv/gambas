@@ -124,7 +124,7 @@ End
 
 Private Sub UpdateLabelDir()
   
-  Dim sDir As String = dvwChoose.Current
+  Dim sDir As String
   Dim sName As String
   Dim sPath As String
   Dim hDirButton As DirButton
@@ -138,10 +138,17 @@ Private Sub UpdateLabelDir()
     hCtrl.Delete
   Next
   
+  sDir = dvwChoose.Current
+  
   sPath = "/"
   For Each sName In Split(Mid$(sDir, 2), "/")
     
     sPath &/= sName
+    
+    If Not IsBookmarkVisible() Then
+      If dvwChoose.Root Begins sPath Then Continue
+    Endif
+    
     hDirButton = New DirButton(panDir) As "DirButton"
     hDirButton.Path = sPath
     
@@ -280,10 +287,15 @@ Private Sub UpdateBookmarkButton()
   If IsBookmarkVisible() And If $hCurrentBookmark Then
     btnBookmark.Text = $hCurrentBookmark.Name
     btnBookmark.Picture = Picture[$hCurrentBookmark.Icon]
+    btnRoot.Picture = Picture["icon:/small/system"]
     mnuEditBookmark.Enabled = $hBookmarkList.GetEditableCount() > 0
+    btnBookmark.Show
+    dvwChoose.HideRoot = True
   Else
-    btnBookmark.Text = File.Name(dvwChoose.Root)
-    btnBookmark.Picture = dvwChoose.Picture 'Picture["icon:/small/directory"]
+    'btnBookmark.Text = File.Name(dvwChoose.Root)
+    btnRoot.Picture = dvwChoose.Picture 'Picture["icon:/small/directory"]
+    dvwChoose.HideRoot = False
+    btnBookmark.Hide
   Endif
   
   btnBookmark.Tooltip = dvwChoose.Root
@@ -1578,7 +1590,11 @@ End
 
 Public Sub btnRoot_Click()
 
-  dvwChoose.Current = "/"
+  If IsBookmarkVisible() Then
+    SetDir("/")
+  Else
+    SetDir(dvwChoose.Root)
+  Endif
 
 End
 
@@ -1591,5 +1607,12 @@ End
 Public Sub panDir_Arrange()
 
   dwgGradient.Move(panDir.W - dwgGradient.W, 0, dwgGradient.W, panDir.H)
+
+End
+
+Public Sub btnBookmark_Menu()
+
+  dvwChoose.Current = dvwChoose.Root
+  dvwChoose_Menu
 
 End

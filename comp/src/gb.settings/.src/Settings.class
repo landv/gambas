@@ -15,17 +15,12 @@ Static Private $iPos As Integer
 
 Property Read Keys As _Settings_Keys
 Property Read Path As String
-'Property Shared As Boolean
 
 Private $sPath As String
 Private $sTitle As String
 Private $cSlot As Collection
 Private $bModify As Boolean
-
-'Private $bShared As Boolean
-'Private $dDateLoad As Date
-
-'Static Private $cObserver As New Collection
+Private $cModify As Collection
 
 Private Sub Load()
   
@@ -39,6 +34,7 @@ Private Sub Load()
   'Debug $sPath
 
   $cSlot = New Collection
+  $cModify = New Collection
   If Not Exist($sPath) Then 
     '$dDateLoad = Now
     Return
@@ -127,39 +123,57 @@ End
 Public Sub Save()
 
   Dim aKey As New String[]
+  Dim cSave As Collection
   Dim cSlot As Collection
   Dim sKey As String
   Dim hFile As File
   Dim vVal As Variant
-  Dim iInd As Integer
+  Dim sTemp As String
   Dim hLock As File
+  Dim cModify As Collection
 
   If Not $bModify Then Return
 
   'Debug $sPath
 
+  $bModify = False
+  
+  hLock = Lock $sPath & ".lock" Wait 2
+  
+  sTemp = $sPath & "#"
+
+  ' For iInd = 1 To 10
+  '   Try hLock = Lock $sPath & ".lock"
+  '   If Error And If iInd = 10 Then Error.Propagate
+  '   If Not Error Then Break
+  '   Sleep 0.2
+  ' Next
+
+  cSave = $cSlot
+  cModify = $cModify
+  Load
+  For Each cSlot In cSave
+    For Each vVal In cSlot
+      sKey = cSave.Key &/ cSlot.Key
+      If cModify.Exist(sKey) Then 
+        Me[sKey] = vVal
+      Endif
+    Next
+  Next
+
   For Each cSlot In $cSlot
     aKey.Add($cSlot.Key)
   Next
-
   aKey.Sort
 
-  $bModify = False
-  
-  For iInd = 1 To 10
-    Try hLock = Lock $sPath & ".lock"
-    If Error And If iInd = 10 Then Error.Propagate
-    If Not Error Then Break
-    Sleep 0.2
-  Next
-  
-  hFile = Open $sPath & "#" For Create 
+  hFile = Open sTemp For Create 
 
   If $sTitle Then
     Print #hFile, "# "; $sTitle
   Endif
 
   For Each sKey In aKey
+    
     cSlot = $cSlot[sKey]
     If cSlot.Count Then
       Print #hFile, "[" & sKey & "]"
@@ -173,14 +187,14 @@ Public Sub Save()
   Close #hFile
   Try Kill $sPath & "~"
   Try Move $sPath To $sPath & "~"
-  Try Move $sPath & "#" To $sPath
+  Try Move sTemp To $sPath
   
   '$dDateLoad = Stat($sPath).LastModified
 
 Finally
 
   Try Kill $sPath & ".lock"
-  Try Kill $sPath & "#"
+  Try Kill sTemp
   Try Kill $sPath & "~"
   Try Unlock #hLock
   
@@ -211,21 +225,43 @@ Public Function _get(Key As String, Optional {Default} As Variant) As Variant
   Dim sSlot As String
   'Dim dDate As Date
 
-  'Try dDate = Stat($sPath).LastModified
-  'If dDate And If dDate > $dDateLoad Then Load()
-
   sSlot = GetSlot(Key)
+  Key = File.Name(Key)
+  
   hSlot = $cSlot[sSlot]
-  If hSlot Then
-    Key = File.Name(Key)
-    If hSlot.Exist(Key) Then
-      Return hSlot[Key]
-    Endif
+  If hSlot And If hSlot.Exist(Key) Then
+    Return hSlot[Key]
   Endif
 
   Return {Default}
 
 End
+
+Private Sub SameSetting(vOld As Variant, vNew As Variant) As Boolean
+  
+  Dim I As Integer
+  Dim vOldVal As Variant
+  Dim vNewVal As Variant
+  
+  If IsNull(vOld) And If IsNull(vNew) Then Return True
+  If TypeOf(vOld) <> gb.Object And If TypeOf(vNew) <> gb.Object Then
+    Return vOld = vNew
+  Endif
+  If Not (vOld Is Array) Then Return
+  If Not (vNew Is Array) Then Return
+  If vOld.Count <> vNew.Count Then Return
+  
+  For I = 0 To vOld.Max
+    vOldVal = vOld[I]
+    vNewVal = vNew[I]
+    If TypeOf(vOldVal) = gb.Object Or If TypeOf(vNewVal) = gb.Object Then Return
+    If vOldVal <> vNewVal Then Return
+  Next
+  
+  Return True
+  
+End
+
 
 Public Sub _put(Value As Variant, Key As String)
 
@@ -241,8 +277,9 @@ Public Sub _put(Value As Variant, Key As String)
 
   Key = File.Name(Key)
 
-  If TypeOf(Value) = gb.Object Or If hSlot[Key] <> Value Then
+  If Not SameSetting(hSlot[Key], Value) Then
     hSlot[Key] = Value
+    $cModify[sSlot &/ Key] = True
     $bModify = True
     'Save()
   Endif
@@ -255,15 +292,18 @@ Public Sub Clear(Optional ParentKey As String)
   Dim sSlot As String
 
   If Not ParentKey Then
-    If $cSlot.Count Then Return
-    $cSlot.Clear
+    If $cSlot.Count Then
+      $cSlot.Clear
+      $bModify = True
+    Endif
   Else
     sSlot = GetSlot(ParentKey &/ "g")
-    If Not $cSlot.Exist(sSlot) Then Return
-    $cSlot.Remove(sSlot)
+    If $cSlot.Exist(sSlot) Then 
+      $cSlot.Remove(sSlot)
+      $bModify = True
+    Endif
   Endif
 
-  $bModify = True
   'Save()
 
 End
@@ -332,6 +372,7 @@ Private Sub WriteWindow(hWindow As Window, sKey As String)
   Dim X, Y, W, H, S As Integer
   'Dim D As Integer
   Dim aVal As Integer[]
+  
   'Dim hDesktopWin As DesktopWindow
   
   S = hWindow.Screen
@@ -767,15 +808,3 @@ Static Private Sub FromString(Value As String) As Variant
   Return vVal
   
 End
-
-' Private Function Shared_Read() As Boolean
-' 
-'   Return $bShared
-' 
-' End
-' 
-' Private Sub Shared_Write(Value As Boolean)
-' 
-'   $bShared = Value
-' 
-' End

@@ -4,7 +4,7 @@ C
 _IsControl
 C
 b
--1
+T
 _Group
 C
 s
@@ -12,7 +12,7 @@ Media
 _Properties
 C
 s
-*,Border,Control=True,URL{Path}
+*,Border,ShowControl=True,ShowVideo=True,URL{Path}
 URL
 p
 s
@@ -21,11 +21,27 @@ Border
 p
 b
 
-Control
+ShowControl
+p
+b
+
+ShowVideo
 p
 b
 
 _new
+m
+
+
+Play
+m
+
+
+Pause
+m
+
+
+Stop
 m
 
 

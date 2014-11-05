@@ -1,8 +1,10 @@
 ' Gambas class file
 
 Class DesktopMime
+Class MediaView
 
 Static Private $aImgExt As String[] = ["png", "jpg", "jpeg", "gif", "bmp", "xpm"]
+Static Private $aAudioExt As String[] = ["wav", "mp3", "ogg", "flac"]
 
 Private $sPath As String
 
@@ -12,13 +14,19 @@ Private $sError As String
 Private $bPreview As Boolean
 Private $hPreview As Image
 
-Private TAB_PREVIEW As Integer = 1
-Private TAB_ERROR As Integer = 2
+Private $hViewer As MediaView
+
+Private TAB_IMAGE_PREVIEW As Integer = 1
+Private TAB_MEDIA_PREVIEW As Integer = 2
+Private TAB_ERROR As Integer = 3
+
+Private $bMedia As Boolean
 
 Public Sub Run(sPath As String) As Boolean
   
   SetPath(sPath)
   btnClose.Show
+  panMediaClose.Show
   tabInfo.Border = False
   Return Not FFileProperties.ShowModal()
   
@@ -87,13 +95,19 @@ Private Sub RefreshPath()
           Try picIcon.Picture = hMime.GetIcon(64).Picture
           If Error Then Error "gb.form: unable to find icon for mimetype: "; hMime.GenericIcon
           If hMime.Type Like "image/*" Then
-            tabInfo[TAB_PREVIEW].Visible = True
+            tabInfo[TAB_IMAGE_PREVIEW].Visible = True
+          Else If $bMedia And If hMime.Type Like "audio/*" Then
+            tabInfo[TAB_MEDIA_PREVIEW].Visible = True
           Endif
         Endif
       Else If $aImgExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
         picIcon.Picture = Picture["icon:/64/image"]
         lblType.Text = ("Image")
-        tabInfo[TAB_PREVIEW].Visible = True
+        tabInfo[TAB_IMAGE_PREVIEW].Visible = True
+      Else If $bMedia And If $aAudioExt.Exist(File.Ext($sPath), gb.IgnoreCase) Then
+        picIcon.Picture = Picture["icon:/64/audio"]
+        lblType.Text = ("Audio")
+        tabInfo[TAB_MEDIA_PREVIEW].Visible = True
       Endif
       
     Endif
@@ -262,25 +276,50 @@ Public Sub _new()
 
   panIcon.H = 64 + Desktop.Scale * 2
   picIcon.Resize(64, 64)
-  tabInfo[TAB_PREVIEW].Visible = False
+  tabInfo[TAB_IMAGE_PREVIEW].Visible = False
+  tabInfo[TAB_MEDIA_PREVIEW].Visible = False
   tabInfo[TAB_ERROR].Visible = False
+  $bMedia = Component.IsLoaded("gb.media")
   
 End
 
 Public Sub tabInfo_Click()
 
-  If tabInfo.Index = TAB_PREVIEW Then
+  If tabInfo.Index = TAB_IMAGE_PREVIEW Then
+    
     If Not $bPreview Then
+      
       $bPreview = True
-      Try $hPreview = Image.Load($sPath)
-      If Error Then
-        ShowError(Error.Text & "\n")
-      Else
-        imvPreview.Image = $hPreview
-        btnZoomFit.Value = True
-      Endif
+      
+      $hPreview = Image.Load($sPath)
+      imvPreview.Image = $hPreview
+      btnZoomFit.Value = True
+      
     Endif
+    
+  Else If tabInfo.Index = TAB_MEDIA_PREVIEW Then
+
+    If Not $bPreview Then
+      
+      $bPreview = True
+      
+      Component.Load("gb.media.form")
+      
+      $hViewer = New MediaView(tabInfo)
+      $hViewer.Expand = True
+      $hViewer.Border = False
+      $hViewer.ShowVideo = False
+      $hViewer.Lower
+      $hViewer.URL = $sPath
+      $hViewer.Play
+      
+    Endif
+    
   Endif
+  
+Catch
+
+  ShowError(Error.Text & "\n")
 
 End
 
@@ -341,7 +380,8 @@ End
 
 Public Sub imvPreview_Arrange()
 
-  If tabInfo.Index <> TAB_PREVIEW Then Return
-  If btnZoomFit.Value Then btnZoomFit_Click
+  If tabInfo.Index = TAB_IMAGE_PREVIEW Then 
+    If btnZoomFit.Value Then btnZoomFit_Click
+  Endif
 
 End

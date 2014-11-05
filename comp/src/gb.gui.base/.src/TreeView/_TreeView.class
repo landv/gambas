@@ -1179,7 +1179,7 @@ Private Sub UpdateRenameBox() As Boolean
   
   X = hItem.X - $hView.ScrollX
   If hItem.Picture Then X += hItem.Picture.W + 2
-  W = $hView.Columns[0].Width - X
+  W = Min($hView.ClientW, $hView.Columns[0].Width) - X
   If W < 32 Then 
     Cancel
     Return
@@ -1195,6 +1195,7 @@ Public Sub _Rename(hItem As _TreeView_Item)
   Dim SX As Integer
   
   _EnsureVisible(hItem)
+  Wait
   Key_Write(hItem.Key)
   
   Do

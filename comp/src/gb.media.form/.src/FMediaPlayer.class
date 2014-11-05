@@ -10,6 +10,9 @@ Private $fLength As Float
 Private $hPause1 As Panel
 Private $hPause2 As Panel
 Private $iMute As Integer
+Private $bNoVideo As Boolean
+Private $sName As String
+Private $bMutedIcon As Boolean
 
 Private Sub MakeMediaPlayer()
   
@@ -74,6 +77,7 @@ Public Sub SetUrl(sUrl As String)
   
   MakeMediaPlayer
   $hPlayer.URL = Media.URL(sUrl)
+  $sName = File.Name(sUrl)
   
 End
 
@@ -83,7 +87,7 @@ Public Sub btnPlay_Click()
   timTime.Start
   dwgTime.Refresh
   sldVolume_Change
-  $hImage.SetWindow(dwgVideo)
+  If Not $bNoVideo Then $hImage.SetWindow(dwgVideo)
   $hPlayer.Play
   HidePause
   
@@ -178,15 +182,22 @@ Public Sub dwgTime_Draw()
   
   If Not $hPlayer Or If $hPlayer.State = Media.Null Then Return
   
-  If $fLength > 0 Then Paint.FillRect(4, 6, (dwgTime.W - 8) * Min(1, $fPos / $fLength), dwgTime.H - 12, &HC0C0C0&)
-  
   If $fPos = 0 Then
     sText = "00:00:00"
   Else
     sText = Format(CDate(($fPos + 0.5) / 86400), "hh:nn:ss") '& " / " & Format(CDate($fLength / 86400), "hh:nn:ss")
   Endif
+  
+  If $fLength > 0 Then
+    sText &= " / " & Format(CDate(($fLength + 0.5) / 86400), "hh:nn:ss")
+  Else
+    sText &= " / 00:00:00"
+  Endif
+  
   Paint.DrawText(sText, 0, 0, dwgTime.W - 4, dwgTime.H, Align.Right)
 
+  If $fLength > 0 Then Paint.FillRect(6, 7, (dwgTime.W - 12) * Min(1, $fPos / $fLength), dwgTime.H - 14, Color.SetAlpha(Color.Foreground, 192))
+  
 End
 
 Private Sub SetPos(fPos As Float)
@@ -219,6 +230,18 @@ Public Sub sldVolume_Change()
   sldVolume.Tooltip = CStr(sldVolume.Value) & "%"
   If Not $hPlayer Then Return
   $hPlayer.Audio.Volume = sldVolume.Value / 100
+  
+  If sldVolume.Value = 0 Then
+    If Not $bMutedIcon Then
+      btnVolume.Picture = Picture["icon:/small/muted"]
+      $bMutedIcon = True
+    Endif
+  Else
+    If $bMutedIcon Then
+      btnVolume.Picture = Picture["icon:/small/volume"]
+      $bMutedIcon = False
+    Endif
+  Endif
 
 End
 
@@ -233,3 +256,56 @@ Public Sub btnVolume_Click()
   sldVolume.Enabled = Not sldVolume.Enabled
 
 End
+
+Public Sub GetShowVideo() As Boolean
+  
+  Return Not $bNoVideo
+  
+End
+
+Public Sub SetShowVideo(Value As Boolean)
+  
+  $bNoVideo = Not Value
+  'panViewer.Background = If(Value, Color.Black, Color.Default)
+  'dwgVideo.Background = If(Value, Color.Black, Color.Default)
+  
+End
+
+
+Public Sub dwgVideo_Draw()
+
+  If $bNoVideo Then
+    'Paint.DrawPicture(Picture["icon:/64/audio"], dwgVideo.W \ 2 - 32, dwgVideo.H \ 2 - 32)
+    Paint.Background = Color.White
+    Paint.Font.Grade = 2
+    Paint.DrawTextShadow($sName, 0, dwgVideo.H \ 2 - Desktop.Scale * 2, dwgVideo.W, Desktop.Scale * 4, Align.Center, 3, 1)
+    Paint.DrawText($sName, 0, dwgVideo.H \ 2 - Desktop.Scale * 2, dwgVideo.W, Desktop.Scale * 4, Align.Center)
+  Endif
+
+End
+
+Public Sub Form_Close()
+
+  Try $hPlayer.Stop
+
+End
+
+Public Sub Play()
+  
+  btnPlay_Click
+  
+End
+
+Public Sub Pause()
+  
+  btnPause_Click
+  
+End
+
+Public Sub Stop()
+  
+  btnStop_Click
+  
+End
+
+

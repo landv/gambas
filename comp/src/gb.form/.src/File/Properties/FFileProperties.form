@@ -7,7 +7,7 @@
     MoveScaled(1,1,52,47)
     Expand = True
     Arrangement = Arrange.Vertical
-    Count = 3
+    Count = 4
     Index = 0
     Text = ("General")
     { panIcon HBox
@@ -151,6 +151,15 @@
       }
     }
     Index = 2
+    Text = ("Preview")
+    { panMediaClose VBox
+      MoveScaled(12,35,37,6)
+      Visible = False
+      { Separator3 Separator
+        MoveScaled(12,1,21,0)
+      }
+    }
+    Index = 3
     Text = ("Errors")
     Picture = Picture["icon:/small/warning"]
     { txtError TextArea
@@ -169,7 +178,7 @@
     Index = 0
   }
   { btnClose Button
-    MoveScaled(27,1,17,4)
+    MoveScaled(31,1,17,4)
     Visible = False
     Ignore = True
     Text = ("Close")

@@ -5,10 +5,12 @@ Inherits DrawingArea
 Event Click
 
 Property Path As String
+Property Label As String
 
 Private $hObs As Observer
 Private $sPath As String
 Private $sText As String
+Private $sLabel As String
 
 Public Sub _new()
   
@@ -74,6 +76,7 @@ End
 
 Private Sub GetText() As String
 
+  If $sLabel Then Return $sLabel
   Return File.Name($sPath)
   
 End
@@ -114,5 +117,17 @@ Private Sub Path_Write(Value As String)
 
   $sPath = Value
   UpdateSize
+
+End
+
+Private Function Label_Read() As String
+
+  Return $sLabel
+
+End
+
+Private Sub Label_Write(Value As String)
+
+  $sLabel = Value
 
 End
