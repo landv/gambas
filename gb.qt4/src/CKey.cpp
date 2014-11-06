@@ -66,7 +66,7 @@ BEGIN_METHOD(CKEY_get, GB_STRING key)
 END_METHOD
 
 #define CHECK_VALID() \
-  if (CKEY_info.valid == 0) \
+  if (!CKEY_is_valid()) \
   { \
     GB.Error("No keyboard event data"); \
     return; \

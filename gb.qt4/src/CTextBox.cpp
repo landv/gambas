@@ -83,6 +83,7 @@ BEGIN_METHOD(TextBox_new, GB_OBJECT parent)
 
 	QObject::connect(wid, SIGNAL(textChanged(const QString &)), &CTextBox::manager, SLOT(onChange()));
 	QObject::connect(wid, SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
+	QObject::connect(wid, SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
 
 	wid->setAlignment(Qt::AlignLeft);
 
@@ -398,6 +399,7 @@ static void combo_set_editable(void *_object, bool ed)
 		COMBOBOX->setCompleter(0);
 		//CWidget::installFilter(COMBOBOX);
 		QObject::connect(COMBOBOX->lineEdit(), SIGNAL(returnPressed()), &CTextBox::manager, SLOT(onActivate()));
+		QObject::connect(COMBOBOX->lineEdit(), SIGNAL(selectionChanged()), &CTextBox::manager, SLOT(onSelectionChanged()));
 
 		if (CWIDGET_test_flag(THIS, WF_DESIGN))
 		{
@@ -763,6 +765,29 @@ void CTextBox::onClick()
 	GET_SENDER();
 	raise_click_event(THIS);
 }
+
+
+void CTextBox::onSelectionChanged(void)
+{
+	GET_SENDER();
+	GET_TEXT_BOX();
+
+	if (THIS->locked)
+		return;
+
+	if (CCONTROL_last_event_type == QEvent::MetaCall)
+	{
+		THIS->locked = true;
+		set_selection(textbox, THIS->start, THIS->length);
+		THIS->locked = false;
+	}
+	else
+	{
+		get_selection(textbox, &THIS->start, &THIS->length);
+	}
+}
+
+
 
 
 /***************************************************************************
