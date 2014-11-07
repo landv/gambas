@@ -3550,7 +3550,7 @@ __PUSH_GENERIC:
 					fast = 0xA0 + array->type;
 			}
 			else
-				fast = 0x80 + np;
+				fast = 0x81 + np;
 		}
 		else if (class->quick_array == CQA_COLLECTION)
 			fast = 0xC0;
