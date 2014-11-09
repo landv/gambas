@@ -1,11 +1,15 @@
 #!/usr/bin/env gbs3
 
-Private Sub RunScript(sScript As String, sRun As String) As Float
+Private Sub RunScript(sScript As String, sRun As String, bGambasOnly As Boolean) As Float
 
   Dim sResult As String
   Dim fTime As Float
   
-  Print "<!-- Running benchmark: '"; sRun; " "; sScript; "' -->"
+  If bGambasOnly Then
+    Print "Running benchmark: '"; sRun; " "; sScript; "'"
+  Else
+    Print "<!-- Running benchmark: '"; sRun; " "; sScript; "' -->"
+  Endif
   
   Shell "/usr/bin/time -v " & sRun & " " & sScript & " 2>&1 >/dev/null" To sResult
   If Not sResult Then Error.Raise("Script '" & sRun & " " & sScript & "' failed!")
@@ -45,21 +49,34 @@ Dim aResult As New Collection[]
 Dim sLang As String 
 Dim sResult As String
 Dim iPos As Integer
+Dim bGambasOnly As Boolean
+Dim sBenchmarkOnly As String
+Dim I As Integer
+
+For I = 1 To Args.Max
+
+  If Args[I] = "-gambas" Then
+    bGambasOnly = True
+  Else
+    sBenchmarkOnly = Args[I]
+  Endif
+
+Next
 
 For Each sBenchmark In Dir(Application.Dir, "*.gbs")
 
   sBenchmark = File.BaseName(sBenchmark)
   If sBenchmark = "benchmark" Then Continue
-  If Args[1] And If sBenchmark <> Args[1] Then Continue
+  If sBenchmarkOnly And If sBenchmark <> sBenchmarkOnly Then Continue
 
   cResult = New Collection
   aResult.Add(cResult)
   
   cResult!name = sBenchmark
-  cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c")
-  cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c")
-  cResult!python = RunScript(sBenchmark & ".py", "python2")
-  cResult!perl = RunScript(sBenchmark & ".pl", "perl")
+  If Not bGambasOnly Then cResult!gambasjit = RunScript(sBenchmark & ".gbs", "gbs3 -f -c", bGambasOnly)
+  cResult!gambas = RunScript(sBenchmark & ".gbs", "gbs3 -c", bGambasOnly)
+  If Not bGambasOnly Then cResult!python = RunScript(sBenchmark & ".py", "python", bGambasOnly)
+  If Not bGambasOnly Then cResult!perl = RunScript(sBenchmark & ".pl", "perl", bGambasOnly)
 
 Next
 
@@ -81,20 +98,30 @@ Next
 ' 
 ' Print "</div>"
 
-Print "<table class=\"table\">"
-Print "<tr>\n<th>Benchmark</th>"
-For Each sLang In ["Python", "Perl", "Gambas", "Gambas + JIT"]
-  Print "<th style=\"width:12em;\">"; Html(sLang); "</th>"
-Next
-Print "</tr>"
-For Each cResult In aResult
-  Print "<tr>"
-  Print "<td><tt>"; cResult!name; "</tt></td>"
-  Print "<td align=\"right\">"; FormatResult(cResult, "python"); "&nbsp;</td>"
-  Print "<td align=\"right\">"; FormatResult(cResult, "perl"); "&nbsp;</td>"
-  Print "<td align=\"right\">"; FormatResult(cResult, "gambas"); "&nbsp;</td>"
-  Print "<td align=\"right\">"; Format(cResult!gambasjit, "0.00"); "&nbsp;</td>"
+If bGambasOnly Then
+
+  For Each cResult In aResult
+    Print cResult!name; Space$(20 - Len(cResult!name)); ": "; Format(cResult!gambas, "0.00")
+  Next
+
+Else
+
+  Print "<table class=\"table\">"
+  Print "<tr>\n<th>Benchmark</th>"
+  For Each sLang In ["Python", "Perl", "Gambas", "Gambas + JIT"]
+    Print "<th style=\"width:12em;\">"; Html(sLang); "</th>"
+  Next
   Print "</tr>"
-Next
-Print "</table>"
+  For Each cResult In aResult
+    Print "<tr>"
+    Print "<td><tt>"; cResult!name; "</tt></td>"
+    Print "<td align=\"right\">"; FormatResult(cResult, "python"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; FormatResult(cResult, "perl"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; FormatResult(cResult, "gambas"); "&nbsp;</td>"
+    Print "<td align=\"right\">"; Format(cResult!gambasjit, "0.00"); "&nbsp;</td>"
+    Print "</tr>"
+  Next
+  Print "</table>"
+  
+Endif
 

@@ -74,15 +74,15 @@ Static Public Sub SendMail({To} As String[], Optional Cc As String[], Optional B
 
 End
 
-Static Public Sub {Open}({Url} As String, Optional {Wait} As Boolean)
+Static Public Sub {Open}(Url As String, Optional {Wait} As Boolean)
 
-  If {Url} = "~" Then
-    {Url} = User.Home
-  Else If {Url} Begins "~/" Then
-    {Url} = User.Home & Mid$({Url}, 2)
+  If Url = "~" Then
+    Url = User.Home
+  Else If Url Begins "~/" Then
+    Url = User.Home & Mid$(Url, 2)
   Endif
 
-  Main.RunXdgUtil("xdg-open", [{Url}], {Wait})
+  Main.RunXdgUtil("xdg-open", [Url], {Wait})
 
 End
 

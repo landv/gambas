@@ -29,7 +29,7 @@ sub poly($)
 } 
 
 my $res;
-for (1..10) {
+for (1..4) {
     $res = poly(0.2);
     print "$res\n";
 } 

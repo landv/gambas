@@ -120,18 +120,27 @@ End
 
 Private Function ParseArgs() As String
   
-  Dim s As String
-  Dim i As Integer
+  Dim I As Integer
   Dim sApp As String
-  
-  For i = 1 To Application.Args.Count - 1
-    s = Application.Args[i]
+
+  For I = 1 To Args.Max
     
-    If Left(s) = "-" Then 
-      If s = "--version" Or If s = "-V" Then 
+    If Args[I] = "--" Then
+      Inc I
+      Break
+    Else If Left(Args[I]) <> "-" Then
+      Break
+    Endif
+    
+    Select Case Args[I]
+      
+      Case "-V", "--version"
+        
         Print Application.Version
         Quit
-      Else If s = "--license" Or If s = "-L" Then 
+
+      Case "-L", "--license"
+        
         Print
         If File.Name(Args[0]) = ("gbs" & System.Version) Then
           Print "GAMBAS Scripter version " & Application.Version 
@@ -140,43 +149,47 @@ Private Function ParseArgs() As String
         Endif
         Print File.Load("license")
         Quit
-      Else If s = "--help" Or If s = "-h" Then
-        
+      
+      Case "-h", "--help"
+      
         If File.Name(Args[0]) = ("gbs" & System.Version) Then
           Print File.Load("usage-gbs")
         Else
           Print File.Load("usage-gbw")
         Endif
-        
         Quit
         
-      Else If s = "--nocache" Or If s = "-c" Then
+      Case "-c", "--nocache"
         
         $bNoCache = True
         
-      Else If s = "--verbose" Or If s = "-v" Then
+      Case "-v", "--verbose"
         
         $bVerbose = True
         
-      Else If s = "-e" Then
+      Case "-e"
         
         $bExecuteFromArgs = True
         
-      Else If s = "-f" Or If s = "--fast" Then
+      Case "-f", "--fast"
         
         $bFast = True
         
-      Endif
-    Else 
-      If Not IsNull(sApp) Then 
-        $aAppArgs.Add(s)
-        Continue 
-      Endif
-      sApp = s
-      
-    Endif
+      Case Else
+        
+        Error "gbs3: Unknown option: "; Args[I]
+        Quit 1
+        
+    End Select
     
   Next
+  
+  sApp = Args[I]
+  Inc I
+  While I < Args.Count
+    $aAppArgs.Add(Args[I])
+    Inc I
+  Wend
   
   Return sApp
   
@@ -235,7 +248,7 @@ End
 
 Private Sub CompileError(sPath As String, iLine As Integer, sMessage As String)
   
-  Error sPath; "."; iLine; ": "; sMessage
+  Error "gbs3: "; sPath; "."; iLine; ": "; sMessage
   CComponent.Exit
   Quit
   

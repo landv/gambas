@@ -68,7 +68,6 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 static void _push_array(ushort code);
 static void _pop_array(ushort code);
 static void _quit(ushort code);
-static void _break(ushort code);
 
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compn(ushort code);
@@ -1849,7 +1848,47 @@ _BREAK:
 	//DEBUG_where(); fputc('\n', stderr);
 
 	if (EXEC_debug)
-		_break(code);
+	{
+		//TRACE.ec = PC + 1;
+		//TRACE.ep = SP;
+
+		TC = PC + 1;
+		TP = SP;
+
+		if (CP && CP->component == COMPONENT_main)
+		{
+			if (EXEC_profile_instr)
+				DEBUG.Profile.Add(CP, FP, PC);
+
+			ind = GET_UX();
+
+			if (ind == 0)
+			{
+				if (!DEBUG_info->stop)
+					goto _NEXT;
+
+				// Return from (void stack)
+				if (DEBUG_info->leave)
+				{
+					if (STACK_get_current()->pc)
+						goto _NEXT;
+					if (FP == DEBUG_info->fp)
+						goto _NEXT;
+					if (BP > DEBUG_info->bp)
+						goto _NEXT;
+				}
+				// Forward or Return From
+				else if (DEBUG_info->fp != NULL)
+				{
+					if (BP > DEBUG_info->bp)
+						goto _NEXT;
+				}
+				// otherwise, Next
+			}
+
+			DEBUG.Breakpoint(ind);
+		}
+	}
 	else
 		*PC = C_NOP;
 
@@ -3719,45 +3758,5 @@ static void _quit(ushort code)
 			EXEC_quit_value = (uchar)SP->_integer.value;
 			EXEC_quit();
 			break;
-	}
-}
-
-static void _break(ushort code)
-{
-	TC = PC + 1;
-	TP = SP;
-
-	if (CP && CP->component == COMPONENT_main)
-	{
-		if (EXEC_profile_instr)
-			DEBUG.Profile.Add(CP, FP, PC);
-
-		code &= 0xFF;
-
-		if (code == 0)
-		{
-			if (!DEBUG_info->stop)
-				return;
-
-			// Return from (void stack)
-			if (DEBUG_info->leave)
-			{
-				if (STACK_get_current()->pc)
-					return;
-				if (FP == DEBUG_info->fp)
-					return;
-				if (BP > DEBUG_info->bp)
-					return;
-			}
-			// Forward or Return From
-			else if (DEBUG_info->fp != NULL)
-			{
-				if (BP > DEBUG_info->bp)
-					return;
-			}
-			// otherwise, Next
-		}
-
-		DEBUG.Breakpoint(code);
 	}
 }

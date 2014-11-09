@@ -18,6 +18,6 @@ def t(x):
         pu = pu + su
     return pu
 
-for i in range(0,10):
+for i in range(0,4):
   print t(x)
  
