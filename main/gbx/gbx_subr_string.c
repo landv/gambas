@@ -919,9 +919,17 @@ void SUBR_tr(void)
 	SUBR_LEAVE();
 }
 
+static void make_hex_char(uchar c)
+{
+	static const char hex_digit[] = "0213456789ABCDEF";
+
+	STRING_make_char(hex_digit[c >> 4]);
+	STRING_make_char(hex_digit[c & 7]);
+}
+
 void SUBR_quote(ushort code)
 {
-	static void *jump[8] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64 }; //, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL };
+	static void *jump[8] = { &&__QUOTE, &&__SHELL, &&__HTML, &&__BASE64, &&__URL , &&__ILLEGAL, &&__ILLEGAL, &&__ILLEGAL };
 	char *str;
 	int lstr;
 	int i;
@@ -937,7 +945,7 @@ void SUBR_quote(ushort code)
 	
 	STRING_start_len(lstr);
 	
-	goto *jump[code & 0x3];
+	goto *jump[code & 0x7];
 	
 __QUOTE:
 	
@@ -1064,6 +1072,26 @@ __BASE64:
 
 	goto __END;
 
+__URL:
+
+	// Warning! '/' is not encoded, so that the function is more pratical, by supposing that no file url will have '/' in its name.
+
+	for (i = 0; i < lstr; i++)
+	{
+		c = str[i];
+		if (c == ' ')
+			STRING_make_char('+');
+		else if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || index("-._~,$!/", c))
+			STRING_make_char(c);
+		else
+		{
+			STRING_make_char('%');
+			make_hex_char(c);
+		}
+	}
+
+	goto __END;
+
 #if 0
 __JAVASCRIPT:
 	{
@@ -1098,10 +1126,11 @@ __JAVASCRIPT:
 	
 	goto __END;
 
+#endif
+
 __ILLEGAL:
 
 	THROW_ILLEGAL();
-#endif
 
 __END:
 
@@ -1127,7 +1156,7 @@ static int read_hex_digit(unsigned char c)
 
 void SUBR_unquote(ushort code)
 {
-	static void *jump[2] = { &&__UNQUOTE, &&__UNBASE64 };
+	static void *jump[4] = { &&__UNQUOTE, &&__FROM_BASE64, &&__FROM_URL, &&__ILLEGAL };
 	
 	char *str;
 	int lstr;
@@ -1184,7 +1213,7 @@ __UNQUOTE:
 	
 	goto __END;
 	
-__UNBASE64:
+__FROM_BASE64:
 
 	{
 		char buf[4];
@@ -1223,6 +1252,31 @@ __UNBASE64:
 	}
 	
 	goto __END;
+
+__FROM_URL:
+
+	for (i = 0; i < lstr; i++)
+	{
+		c = str[i];
+		if (c == '+')
+			c = ' ';
+		else if (c == '%')
+		{
+			if (i >= (lstr - 2))
+				break;
+
+			c = (read_hex_digit(str[i + 1]) << 4) + read_hex_digit(str[i + 2]);
+			i += 2;
+		}
+
+		STRING_make_char(c);
+	}
+
+	goto __END;
+
+__ILLEGAL:
+
+	THROW_ILLEGAL();
 	
 __END:
 	

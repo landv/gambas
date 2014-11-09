@@ -97,7 +97,7 @@ H1 { display: none; }
           <%Endif%>
         <% Else%>
           <input type="submit" name="create" value="<%= ("Create")%>">
-          <input type="submit" name="undo" value="<%= ("Undo")%>">
+          <%--<input type="submit" name="undo" value="<%= ("Undo")%>">--%>
         <%Endif%>
       </div>
     <%Endif%>
@@ -129,7 +129,8 @@ H1 { display: none; }
 
   <%If Main.Edit Then%>
     <%If Main.Image Then%>
-      <div style="margin-top:32px;"></div>
+      <div style="margin-top:8px;"></div>
+      <img src="<%=Application.Root &/ Main.Path%>?v"/>
       <p><%= ("Select the image file to upload...")%></p>
       <p><input type="file" name="file" /></p>
     <%Else%>

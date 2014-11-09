@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,41,6)
+  MoveScaled(0,0,19,13)
   Margin = True
   { Menu1 Menu
     { Menu2 Menu
@@ -17,7 +17,11 @@
       Text = ("Menu5")
     }
   }
-  { DirBox1 DirBox
-    MoveScaled(1,1,39,4)
+  { SwitchButton1 SwitchButton
+    MoveScaled(1,1,17,5)
+    Value = True
+  }
+  { SwitchButton2 SwitchButton
+    MoveScaled(1,7,17,5)
   }
 }

@@ -81,13 +81,34 @@ Private Sub _PrintPage()
     sPath = Main.SolvePath(Main.Path)
     
     If Not Main.ExistPage(sPath) Then
-      If Main.Lang = Main.DEFAULT_LANG Then
-        Print "<div class=\"unknown\">"; ("This page does not exist."); "</div>"
+      
+      If Main.Symbol Or If Main.Class Then
+        
+        If Main.Lang <> Main.DEFAULT_LANG Then
+          Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
+        Endif
+
+        ' We use an automatic page
+        Main.Lang = Main.DEFAULT_LANG
+        If Main.Symbol Then
+          sData = "@{syntax}\n" & Main.GetDefaultPage()
+        Else If Main.Class Then
+          sData = "@{symbols}\n"
+        Endif
+        Goto DISPLAY_PAGE
+        
       Else
-        Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
+        
+        If Main.Lang = Main.DEFAULT_LANG Then
+          Print "<div class=\"unknown\">"; ("This page does not exist."); "</div>"
+        Else
+          Print "<div class=\"unknown\">"; ("This page does not exist in that language."); "</div>"
+        Endif
+        If Not Main.ExistPage(sPath, Main.DEFAULT_LANG) Then Return
+        Main.Lang = Main.DEFAULT_LANG
+        
       Endif
-      If Not Main.ExistPage(sPath, Main.DEFAULT_LANG) Then Return
-      Main.Lang = Main.DEFAULT_LANG
+      
     Endif
     
     If Main.History Then
@@ -156,6 +177,8 @@ Private Sub _PrintPage()
     sData = LTrim(File.Load(Main.GetPagePathFrom(sPath)))
     
   Endif
+  
+DISPLAY_PAGE:
   
   If Main.Class Then
     If sData Begins "# " Then

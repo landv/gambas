@@ -1113,6 +1113,8 @@ Public Sub GetDefaultPage() As String
     
   Loop
   
+  If hSymbol.Help Then sResult = Trim(sResult) & "\n" & hSymbol.Help
+  
   Return sResult
   
 End

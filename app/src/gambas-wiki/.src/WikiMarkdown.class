@@ -37,6 +37,9 @@ Public Sub Link(hLink As MarkdownLink)
     
     If Main.IsImage(sPath) Then
       hLink.Html = "<img src=\"" & Application.Root &/ sPath & "?v" & "\" />"
+      If Session.Id Then
+        hLink.Html = "<a href=\"" & Application.Root &/ sPath & "\">" & hLink.Html & "</a>"
+      Endif
       Return
     Endif
   

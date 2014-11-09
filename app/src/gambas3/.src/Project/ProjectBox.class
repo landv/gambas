@@ -156,9 +156,18 @@ Public Sub DrawingArea_Draw()
     
     Paint.AntiAlias = False
     Paint.Rectangle(X, Y, W - 1, H - 1)
-    'Paint.Background = If($hDrawingArea.HasFocus, Color.LightBackground, Color.Merge(Color.LightForeground, Color.TextBackground))
-    Paint.Background = If($hDrawingArea.HasFocus, Color.LightBackground, Color.LightForeground)
-    Paint.LineWidth = If($hDrawingArea.HasFocus, 2, 1)
+    
+    If $hDrawingArea.HasFocus Then
+    
+      Paint.Background = Color.LightBackground
+      Paint.LineWidth = 2
+    
+    Else
+      
+      Paint.Background = Color.SetAlpha(Color.LightForeground, 160)
+      
+    Endif
+    
     Paint.Stroke
     Paint.AntiAlias = True
 

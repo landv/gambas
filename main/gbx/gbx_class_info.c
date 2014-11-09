@@ -311,10 +311,25 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	
 	GB_METHOD("Html", "s", NULL, "(String)s"),
 	GB_METHOD("Html$", "s", NULL, "(String)s"),
-	
+
+	GB_METHOD("Base64", "s", NULL, "(String)s"),
+	GB_METHOD("Base64$", "s", NULL, "(String)s"),
+
+	GB_METHOD("Url", "s", NULL, "(String)s"),
+	GB_METHOD("Url$", "s", NULL, "(String)s"),
+
 	GB_METHOD("Unquote", "s", NULL, "(String)s"),
 	GB_METHOD("Unquote$", "s", NULL, "(String)s"),
 	
+	GB_METHOD("UnBase64", "s", NULL, "(String)s"),
+	GB_METHOD("UnBase64$", "s", NULL, "(String)s"),
+
+	GB_METHOD("FromBase64", "s", NULL, "(String)s"),
+	GB_METHOD("FromBase64$", "s", NULL, "(String)s"),
+
+	GB_METHOD("FromUrl", "s", NULL, "(String)s"),
+	GB_METHOD("FromUrl$", "s", NULL, "(String)s"),
+
 	GB_METHOD("Odd", "b", NULL, "(Value)i"),
 	GB_METHOD("Even", "b", NULL, "(Value)i"),
 

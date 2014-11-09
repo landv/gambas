@@ -12,23 +12,22 @@ Media
 _Properties
 C
 s
-*,Border,ShowControl=True,ShowVideo=True,URL{Path}
+*,Border=True,ShowControl=True,URL{Path}
 URL
 p
 s
 
+'Return or set the path or the URL of the media file to play.
 Border
 p
 b
 
+'Return or set if the control has a border.
 ShowControl
 p
 b
 
-ShowVideo
-p
-b
-
+'Return or set if the controls are visible.
 _new
 m
 
@@ -37,11 +36,14 @@ Play
 m
 
 
+'Start playing the media file.
 Pause
 m
 
 
+'Pause the media.
 Stop
 m
 
 
+'Stop playing the media.

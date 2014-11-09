@@ -1599,6 +1599,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(MediaPipeline_Pause)
 
+	if (THIS->state != GST_STATE_PLAYING)
+		return;
+	
 	MEDIA_set_state(THIS, GST_STATE_PAUSED, TRUE);
 	cb_message(THIS_PIPELINE);
 
