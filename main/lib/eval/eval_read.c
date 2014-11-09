@@ -779,8 +779,11 @@ static void add_identifier()
 		index = RESERVED_find_subr(start, len);
 		if (index >= 0)
 		{
-			type = RT_SUBR;
-			goto __ADD_PATTERN;
+			if (COMP_subr_info[index].min_param == 0 || car == '(')
+			{
+				type = RT_SUBR;
+				goto __ADD_PATTERN;
+			}
 		}
 	}
 
