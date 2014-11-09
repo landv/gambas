@@ -39,8 +39,8 @@ Public Sub EnableCode(Enabled As Boolean)
   
 End
 
-Public Sub CheckURL(URL As String, (Markup) As String) As String
+Public Sub CheckURL({Url} As String, (Markup) As String) As String
   
-  Return URL
+  Return {Url}
   
 End
