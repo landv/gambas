@@ -17,6 +17,7 @@ Private $bVerbose As Boolean
 Private $aImplemented As New String[]
 Private $bExecuteFromArgs As Boolean
 Private $bFast As Boolean
+Private $sUse As String
 
 Public Sub Main() As Integer
   
@@ -122,7 +123,7 @@ Private Function ParseArgs() As String
   
   Dim I As Integer
   Dim sApp As String
-
+  
   For I = 1 To Args.Max
     
     If Args[I] = "--" Then
@@ -133,12 +134,12 @@ Private Function ParseArgs() As String
     Endif
     
     Select Case Args[I]
-      
+        
       Case "-V", "--version"
         
         Print Application.Version
         Quit
-
+        
       Case "-L", "--license"
         
         Print
@@ -149,9 +150,9 @@ Private Function ParseArgs() As String
         Endif
         Print File.Load("license")
         Quit
-      
+        
       Case "-h", "--help"
-      
+        
         If File.Name(Args[0]) = ("gbs" & System.Version) Then
           Print File.Load("usage-gbs")
         Else
@@ -174,6 +175,11 @@ Private Function ParseArgs() As String
       Case "-f", "--fast"
         
         $bFast = True
+      Case "-u"
+        If Not (Application.Args[I + 1] Begins "-") Then
+          $sUse = Application.Args[I + 1]
+          Inc I
+        Endif
         
       Case Else
         
@@ -288,7 +294,7 @@ Private Sub GenerateFiles(Path As String)
     If sLine Like "#!*" Then Continue 
     
     aSym = Highlight.Analyze(sLine)
-
+    
     If aSym.Count Then
       If Highlight.Types[aSym.Max] = Highlight.Comment Or If Highlight.Types[aSym.Max] = Highlight.Help Then
         aSym.Remove(aSym.Max)
@@ -456,6 +462,17 @@ Private Sub GenerateFilesFromArgs(sLine As String)
   Dim s As String
   Dim i As Integer
   Dim sCode As String
+  
+  'Use management
+  If $sUse
+    For Each s In Split($sUse)
+      If Not CComponent.All.Exist(s) Then CompileError(sLine, 0, Subst("Unknown component: &1", s))
+      $cComponents[CComponent.All[s].SortKey] = s
+      $aSortKey.Add(CComponent.All[s].SortKey)
+      $aImplemented.Insert(CComponent.All[s].Implement)
+    Next
+    s = ""
+  Endif
   
   For i = 1 To Len(sLine) 
     s = Mid(sLine, i, 1)

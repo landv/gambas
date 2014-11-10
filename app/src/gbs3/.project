@@ -1,5 +1,5 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.6.90
+# Compiled with Gambas 3.6.0
 Title=gbs3
 Startup=MMain
 Icon=icon.png
@@ -8,7 +8,7 @@ VersionFile=1
 Component=gb.eval
 Description="Gambas Script"
 Authors="Fabien Bodard, Benoit Minisini"
-Arguments="-c\n/home/benoit/comment-at-last-END-bug.gbs3"
+Arguments="-u\ngb.scanner\n-e\ndim s as string:for each s in scanners:print s:next\n"
 TabSize=2
 Maintainer=benoit
 Vendor=Princeton
