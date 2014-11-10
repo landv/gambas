@@ -1,0 +1,96 @@
+' Gambas class file
+
+'Private Setting As Settings
+
+Public Sub _new()
+  
+End
+
+Public Sub Form_Open()
+  
+  Dim s As String
+  
+  For Each s In Scanners
+    ListView1.Add(s, s, Picture["icon:/22/devices/scanner"])
+  Next
+  
+  If Settings["Scanner/Name"] <> Null Then 
+    
+    ListView1[Settings["Scanner/Name"]].Selected = True
+  Else
+    ListView1.MoveFirst
+    ListView1.Item.Selected = True
+  Endif
+  
+End
+
+Public Sub ListView1_Select()
+  
+  Dim Sc As String = ListView1.current.Key
+  Dim s As String
+  If ListView1.current.Key <> Settings["Scanner/Name"] Then 
+  Settings.Clear("Scanner")
+  Settings["Scanner/Name"] = ListView1.Current.Key
+  Endif
+  cmbMode.Clear
+  cmbResolution.Clear
+  If Scanners[sc].Exist("Mode") Then 
+    cmbMode.Enabled = True
+    For Each s In Scanners[sc]["Mode"].List
+      cmbMode.Add(s)
+    Next
+    If Settings["Scanner/Mode"] <> Null Then
+      cmbMode.Index = cmbMode.List.Find(Settings["Scanner/Mode"])
+    Else
+      cmbMode.Index = 0
+    Endif
+  Else
+    cmbMode.Enabled = False 
+  Endif
+  
+  If Scanners[sc].Exist("Resolution") Then 
+    cmbResolution.Enabled = True
+    For Each s In Scanners[sc]["Resolution"].List
+      cmbResolution.Add(s)
+    Next
+    cmbResolution.Index = cmbResolution.List.Find(Scanners[sc]["Resolution"].Value)
+    If Settings["Scanner/Resolution"] <> Null Then
+      cmbResolution.Index = cmbResolution.List.Find(Settings["Scanner/Resolution"])
+    Else
+      cmbResolution.Index = 0
+    Endif
+  Else
+    cmbResolution.Enabled = False
+  Endif
+  
+  
+  
+  spWidth.MaxValue = Scanners[Sc]["Width"].MaxValue
+  spWidth.MinValue = Scanners[Sc]["Width"].MinValue
+  spWidth.Value = Scanners[Sc]["Width"].MaxValue
+  lblWUnit.Text = Scanners[Sc]["Width"].Unit
+  
+  spHeight.MaxValue = Scanners[Sc]["Height"].MaxValue
+  spHeight.MinValue = Scanners[Sc]["Height"].MinValue
+  spHeight.Value = Scanners[Sc]["Height"].MaxValue
+  lblHUnit.Text = Scanners[Sc]["Height"].Unit
+Catch
+End
+
+Public Sub cmbMode_Click()
+  
+  Settings["Scanner/Mode"] = cmbMode.Current.Text
+  
+End
+
+Public Sub cmbResolution_Click()
+  
+  Settings["Scanner/Resolution"] = cmbResolution.Current.Text
+  
+End
+
+Public Sub Button1_Click()
+
+  Me.Close
+
+End

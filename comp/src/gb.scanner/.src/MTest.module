@@ -1,0 +1,14 @@
+' Gambas module file
+
+Public Sub Main()
+  
+
+Dim hImg As Image
+
+Dim hscan As New Scanner("hpaio:/net/HP_LaserJet_M1536dnf_MFP?ip=192.168.1.25")
+hScan["Mode"].Value = "Color"
+hScan["Resolution"].Value = 300
+hImg = hscan.Scan()
+hImg.Save("~/fa.png")
+End
+
