@@ -1,0 +1,292 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*"
+Public Const _Group As String = "View"
+'Public Const _Similar As String = "IconView"
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+
+Property Count As Integer
+Property DocWidth As Integer
+
+Property DocHeight As Integer
+Property Zoom, Scale As Float
+
+Private $fScale As Float = 1.0
+Private $View As ScrollArea
+Private $tmrDraw As New Timer As "tmrDraw"
+
+Private $colDoc As New Collection
+Private $BaseDoc As New _Document As "Doc"
+Private $iCount As Integer = 1
+Private $iMaxDocWidth As Integer
+Private $iMaxDocHeight As Integer
+
+Private $iMaxPerLine As Integer
+Private $iNbreLines As Integer
+Private $iFirstVisibleDoc As Integer
+Private $iLastVisibleDoc As Integer
+Private $colImageCache As New Collection
+Private $tmrLoad As New Timer As "tmrLoad"
+Private $iImgLoaded As New Integer[]
+Private $iImgToLoad As New Integer[]
+Private $iSpace As Integer = 10
+Event Draw(Index As Integer)
+
+Public Sub _new()
+  
+  $View = New ScrollArea(Me) As "View"
+  $View.Background = Color.DarkGray
+  $BaseDoc.Width = 210
+  $BaseDoc.Height = 290
+  $tmrLoad.Delay = 5
+  Layout
+  
+End
+
+Public Sub _get(Index As Integer) As _Document
+  
+  Dim tmpDoc As _Document
+  
+  If $colDoc.Exist(Index) Then Return $colDoc[Index]
+  
+  tmpDoc = New _Document As "Doc"
+  tmpDoc._Index = Index
+  Return tmpDoc
+  
+End
+
+Public Sub _Validate(hDoc As _Document)
+  'This Function is called each time a _DocSize is modified
+  'So if the hDoc is different than the basedoc then the page info is stored
+  
+  If hDoc.Width <> $BaseDoc.Width Or If hDoc.Height <> $BaseDoc.Height Then
+    $colDoc[hDoc._Index] = hDoc
+  Else
+    If $colDoc.Exist(hDoc._Index) Then $colDoc.Remove(hDoc._Index)
+  Endif
+  layout
+  
+End
+
+Private Sub Layout()
+  
+  Dim hDoc As _Document
+  Dim aTmp As New Integer[]
+  Dim i As Integer
+  Dim fRelMaxdocWidth, fRelMaxDocHeight, fRelSpace As Float
+  'Look For Max Sizes
+  $iMaxDocHeight = $BaseDoc.Height 
+  $iMaxDocWidth = $BaseDoc.Width 
+  
+  For Each hDoc In $colDoc
+    $iMaxDocHeight = Max($iMaxDocHeight, hDoc.Height)
+    $iMaxDocWidth = Max($iMaxDocWidth, hDoc.Width)
+  Next
+  
+  'Get scaled sizes
+  fRelMaxdocWidth = $iMaxDocWidth * $fScale
+  fRelMaxDocHeight = $iMaxDocHeight * $fScale
+  fRelSpace = $iSpace * $fScale
+  
+  
+  
+  'Look how many page i can show horizontally
+  
+  $iMaxPerLine = Max(Floor($View.ClientW / fRelMaxdocWidth), 1)
+  
+  'So i can know how many line i will need
+  
+  $iNbreLines = Max(Ceil($iCount / $iMaxPerLine) + 1, 1)
+  
+  
+  'Find the first and last doc
+  $iFirstVisibleDoc = Floor(($View.scrolly * $fScale + fRelSpace) / (fRelMaxDocHeight + fRelSpace)) * $iMaxPerLine
+  Print "scroll : " & ($View.scrolly * $fScale + fRelSpace)
+  Print (fRelMaxDocHeight + fRelSpace)
+  Print ($View.scrolly * $fScale + fRelSpace) / (fRelMaxDocHeight + fRelSpace)
+  $iLastVisibleDoc = Min(Ceil(($View.scrolly + $View.ClientH + fRelSpace) / (fRelMaxDocHeight + fRelSpace)) * $iMaxPerLine, $iCount)
+  'Print $iFirstVisibleDoc
+  'Remove all uneeded images from the cache
+  For Each i In $iImgLoaded
+    If i < $iFirstVisibleDoc Or If i >= $iLastVisibleDoc + 1 Then
+      'Print "Unload Page : " & i
+      $colDoc[i] = Null
+    Else
+      aTmp.Add(i)
+    Endif
+  Next
+  'and update the cache dic
+  $iImgLoaded = aTmp
+  
+  For i = $iFirstVisibleDoc To $iLastVisibleDoc
+    If Not $iImgLoaded.Exist(i) Then
+      $iImgToLoad.Add(i)
+    Else
+      Continue
+    Endif
+  Next
+  
+  If Not $tmrLoad.Enabled And If $iImgToLoad.Count > 0 Then
+    $iImgToLoad = $iImgToLoad.Reverse()
+    $tmrLoad.Start
+  Endif
+  'resize the scroll content
+  $View.ResizeContents(fRelSpace + (fRelMaxdocWidth + fRelSpace) * $iMaxPerLine + fRelSpace, fRelSpace + (fRelMaxDocHeight * $iNbreLines + fRelSpace * 2))
+  
+End
+
+Public Sub tmrLoad_Timer()
+  
+  Dim hImg As Image
+  Dim i As Integer
+  Dim hDoc As _Document
+  Dim iH, iW As Integer
+
+  If $iImgToLoad.Count > 0 Then 
+    i = $iImgToLoad.Pop()
+    
+    If $colDoc.Exist(i) Then
+      iW = $colDoc[i].Width
+      iH = $colDoc[i].Height
+    Else
+      iW = $BaseDoc.Width
+      iH = $BaseDoc.Height
+    Endif
+    
+    hImg = New Image(iW, iH, Color.White)
+    Paint.Begin(hImg)
+    Raise Draw(i)
+    Paint.End
+    
+    If Not $iImgLoaded.Exist(i) Then $iImgLoaded.Add(i)
+    $colImageCache[i] = hImg
+  Else
+    $tmrLoad.Stop
+  Endif
+  
+End
+
+
+Public Sub View_Draw()
+  
+  Dim i As Integer
+  Dim j As Integer
+  Dim iCurPage As Integer
+  Dim hDoc As _Document
+  Dim tmpImage As Image
+  
+  
+  Paint.Scale($fScale, $fScale)
+  
+  
+  For j = 0 To $iNbreLines - 1
+    
+    For i = 0 To $iMaxPerLine - 1
+      
+      If iCurPage < $iFirstVisibleDoc Then 
+        Inc iCurPage
+        Continue
+      Endif
+      
+      If iCurPage > $iLastVisibleDoc Then Break
+      
+      If $colDoc.Exist(iCurPage) Then 
+        hdoc = $colDoc[iCurPage]
+      Else
+        hdoc = $BaseDoc
+      Endif
+      
+      Paint.Rectangle(($iSpace + $iMaxDocWidth / 2) + (($iMaxDocWidth + $iSpace) * i - hdoc.Width / 2) - $View.ScrollX, ($iSpace + $iMaxDocHeight / 2) + ($iMaxDocHeight + $iSpace) * j - hdoc.Height / 2 - $View.ScrollY, hDoc.Width, hDoc.Height)
+      Paint.Font.Grade = 10
+      Paint.Brush = Paint.Color(Color.White)
+      Paint.Fill(True)
+      Paint.Brush = Paint.Color(Color.Black)
+      Paint.Text(iCurPage, ($iSpace + $iMaxDocWidth / 2) + (($iMaxDocWidth + $iSpace) * i - hdoc.Width / 2) - $View.ScrollX,
+       ($iSpace + $iMaxDocHeight / 2) + ($iMaxDocHeight + $iSpace) * j - hdoc.Height / 2 - $View.ScrollY + paint.Font.Height)
+      Paint.Stroke
+      
+      'Try Draw.Image($colImageCache[iCurPage], (10 + $iMaxDocWidth / 2) + (($iMaxDocWidth + 10) * i - hdoc.Width / 2) - $View.ScrollX, (10 + $iMaxDocHeight / 2) + ($iMaxDocHeight + 10) * j - hdoc.Height / 2 - $View.ScrollY)
+      If iCurPage >= $iCount - 1 Then Break
+      Inc iCurPage
+    Next
+    If iCurPage > $iLastVisibleDoc Then Break
+  Next
+  
+End
+
+'Trigger Drawing
+Public Sub tmrDraw_Timer()
+  
+  $View.Refresh
+  
+End
+
+Public Sub View_Arrange()
+  
+  Layout
+  $View.Refresh
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $iCount 
+  
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+  $iCount = Value
+  Layout
+  
+End
+
+Public Sub View_Scroll()
+  $tmrLoad.Stop
+  layout
+  
+End
+
+
+Private Function DocWidth_Read() As Integer
+
+  Return $BaseDoc.Width
+
+End
+
+Private Sub DocWidth_Write(Value As Integer)
+
+  $BaseDoc.Width = Max(Value, 0)
+  Layout
+End
+
+Private Function DocHeight_Read() As Integer
+
+  Return $BaseDoc.Height
+
+End
+
+Private Sub DocHeight_Write(Value As Integer)
+
+  $BaseDoc.Height = Max(Value, 0)
+  Layout
+  
+End
+
+Private Function Zoom_Read() As Float
+
+  Return $fScale
+
+End
+
+Private Sub Zoom_Write(Value As Float)
+
+  $fScale = Min(Max(Value, 0), 1)
+  layout
+  $View.Refresh 
+End
