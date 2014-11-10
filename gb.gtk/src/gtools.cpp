@@ -2059,7 +2059,7 @@ GtkStyleContext *gt_get_style(GType type)
 
 #endif
 
-static GtkStyle *get_style(const char *name, int type)
+static GtkStyle *get_style(const char *name, GType type)
 {
 	GtkSettings *set = gtk_settings_get_default();
 	GtkStyle* st = gtk_rc_get_style_by_paths(set, NULL, name, type);
