@@ -141,6 +141,8 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 	dx->font = NULL;
 	dx->font_stack = NULL;
 	
+	cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
+
 	return FALSE;
 }
 
@@ -268,6 +270,7 @@ static int Begin(GB_PAINT *d)
 			gtk_widget_get_allocation(wid->border, &a);
 			dx = a.x;
 			dy = a.y;*/
+
 		}
 
 		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
@@ -337,7 +340,7 @@ static int Begin(GB_PAINT *d)
 		rx = (int)gtk_print_context_get_dpi_x(context);
 		ry = (int)gtk_print_context_get_dpi_y(context);
 		
-		cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
+		//cairo_get_matrix(CONTEXT(d), &EXTRA(d)->init);
 		/*cairo_identity_matrix(CONTEXT(d));
 		cairo_get_matrix(CONTEXT(d), &t);
 		fprintf(stderr, "matrix: [%g %g %g]\n        [%g %g %g]\n", t.xx, t.xy, t.x0, t.yx, t.yy, t.y0);*/
@@ -1073,13 +1076,14 @@ static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 			cairo_set_matrix(CONTEXT(d), t);
 		else
 		{
-			if (EXTRA(d)->print_context)
+			//if (EXTRA(d)->print_context)
 				cairo_set_matrix(CONTEXT(d), &EXTRA(d)->init);
-			else
+			/*else
 			{
+				cairo_
 				cairo_identity_matrix(CONTEXT(d));
 				cairo_translate(CONTEXT(d), EXTRA(d)->dx, EXTRA(d)->dy);
-			}
+			}*/
 		}
 	}
 	else
