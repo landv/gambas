@@ -2,20 +2,22 @@
 
 { Form Form
   MoveScaled(0,0,77,54)
-  { SwitchButton2 SwitchButton
-    MoveScaled(4,18,16,4)
-    Value = True
-    Animated = True
-  }
   { SwitchButton1 SwitchButton
     MoveScaled(3,8,16,4)
-    Enabled = False
     Value = True
     Animated = True
   }
   { SwitchButton3 SwitchButton
     MoveScaled(3,13,16,4)
-    Enabled = False
     Animated = True
+  }
+  { SwitchButton2 SwitchButton
+    MoveScaled(4,18,16,4)
+    Value = True
+    Animated = True
+  }
+  { TextBox1 TextBox
+    MoveScaled(10,26,24,4)
+    Text = ("TextBox1")
   }
 }

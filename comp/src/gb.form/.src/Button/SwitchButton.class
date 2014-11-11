@@ -112,7 +112,7 @@ Public Sub DrawingArea_Draw()
   X = W * $fValue + F
   Y = F
   H = Paint.H - F * 2
-  Style.PaintButton(X, Y, W, H, $bPressed, iFlag)
+  Style.PaintButton(X, Y, W, H, $bPressed, Style.StateOf($hDrawingArea))
   
   Paint.Background = Color.SetAlpha(Color.Black, 240)
   Paint.LineWidth = Desktop.Scale / 4
@@ -137,6 +137,7 @@ End
 
 Public Sub DrawingArea_GotFocus()
   
+  Debug
   $hDrawingArea.Refresh
   
 End
@@ -173,15 +174,7 @@ Public Sub DrawingArea_MouseDown()
   
 End
 
-Public Sub DrawingArea_MouseUp()
-  
-  If Not Me.Enabled Then Return
-  If Me.Design Then Return
-
-  If $bPressed Then 
-    $bPressed = False
-    $hDrawingArea.Refresh
-  Endif
+Private Sub ToggleAnimate()
   
   If $hTimer Then
     If $fValue < 0.5 Then
@@ -193,6 +186,21 @@ Public Sub DrawingArea_MouseUp()
   Else
     Me.Value = Not Me.Value
   Endif
+  
+End
+
+
+Public Sub DrawingArea_MouseUp()
+  
+  If Not Me.Enabled Then Return
+  If Me.Design Then Return
+
+  If $bPressed Then 
+    $bPressed = False
+    $hDrawingArea.Refresh
+  Endif
+  
+  ToggleAnimate
   
 End
 
@@ -224,4 +232,30 @@ Private Sub Background_Write(Value As Integer)
   $iBg = Value
   $hDrawingArea.Refresh
 
+End
+
+Public Sub DrawingArea_MouseWheel()
+  
+  If Not Mouse.Forward Xor Me.Value Then
+    ToggleAnimate
+  Endif
+  
+End
+
+Public Sub DrawingArea_KeyPress()
+  
+  Select Key.Code
+    
+    Case Key.Left
+      If Me.Value Then ToggleAnimate
+      
+    Case Key.Right
+      If Not Me.Value Then ToggleAnimate
+      
+    Case Key.Space
+      ToggleAnimate
+    
+    
+  End Select
+  
 End
