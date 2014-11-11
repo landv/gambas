@@ -15,7 +15,7 @@
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
 </head>
 
-<body <%If Main.Edit Then%>style="background: #F0F0F0;"<%Endif%>>
+<body <%If Main.Edit Then%>style="overflow:hidden;"<%Endif%>>
 
 <%If Request.Exist("nt")%>
 <style type="text/css">
@@ -30,17 +30,19 @@ H1 { display: none; }
   <%If Not Request.Exist("nh") Then%>
   
   <div class="header-v">
-  <table border="0" cellpadding="0" cellspacing="0" style="position:fixed;">
-    <tr valign="top"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png" style="vertical-align:top;"></a>&nbsp;</td>
-    <td><div class="title-v"><%_PrintLink%></div></td></tr>
-  </table>
+    <div class="header-inside">
+    <table border="0" cellpadding="0" cellspacing="0" style="position:fixed;">
+      <tr valign="top"><td><a href="<%_PrintParent()%>"><img src="<%/%>/up-gray.png" style="vertical-align:top;"></a>&nbsp;</td>
+      <td><div class="title-v"><%_PrintLink%></div></td></tr>
+    </table>
+    </div>
   </div>
   
-  <div class="page" style="padding-top: 28px;">
+  <div class="page" style="padding-top:4px;top:1.2em;">
   
   <%Else%>
   
-  <div class="page" style="padding-top: 4px;">
+  <div class="page" style="padding-top:4px;top:0;">
 
   <%Endif%>
   
@@ -51,57 +53,9 @@ H1 { display: none; }
 <%Else%>
 
 <div class="header">
-    <div class="up">
-      <%If Main.Edit%>
-        <img src="<%/%>/edit.png">
-      <%Else%>
-        <a href="<%_PrintParent()%>"><img src="<%/%>/up.png"></a>
-      <%Endif%>
-    </div>
-    <div class="title">
-      <%_PrintLink%>
-    </div>
-    <%If Main.Edit Then%>
-      <div class="command">
-        <input type="submit" id="preview" name="preview" value="<%=("Preview")%>">
-        <input type="submit" id="save" name="save" value="<%=("Save")%>" style="display:none;">
-        <input type="submit" name="cancel" value="<%=("Cancel")%>">
-      </div>
-    <%Else If Main.Preview Then%>
-      <div class="command">
-        <input type="submit" id="save" name="save" value="<%=("Save")%>">
-        <input type="button" name="cancel" value="<%=("Cancel")%>" onclick="window.history.back();">
-      </div>
-    <%Else If Session.Id Then%>
-      <div class="command">
-        <%If Main.Exist Then%>
-          <%If Main.History Then%>
-            <%If Main.History < GetMaxHistory() Then%>
-              <input type="submit" name="prev" value="<%= ("<")%>">
-            <%Else%>
-              <input type="submit" name="prev" value="<%= ("<")%>" disabled style="color:gray">
-            <%Endif%>
-            <%If Main.History > 1 Then%>
-              <input type="submit" name="next" value="<%= (">")%>">
-            <%Else%>
-              <input type="submit" name="next" value="<%= (">")%>" disabled style="color:gray">
-            <%Endif%>
-            <input type="submit" name="exit" value="<%= ("Exit")%>">
-          <%Else%>
-            <input type="submit" name="edit" value="<%= ("Edit")%>">
-            <input type="submit" name="delete" value="<%= ("Delete")%>">
-            <input type="submit" name="undo" value="<%= ("Undo")%>">
-            <%If GetMaxHistory() > 0 Then%>
-              <input type="submit" name="historic" value="<%= ("Historic")%>">
-            <%Endif%>
-          <%Endif%>
-        <% Else%>
-          <input type="submit" name="create" value="<%= ("Create")%>">
-          <%--<input type="submit" name="undo" value="<%= ("Undo")%>">--%>
-        <%Endif%>
-      </div>
-    <%Endif%>
-    <div class="login">
+  <div class="header-inside">
+    
+    <div class="login"><div style="float:right;">
       <%If Session.Id Then%>
         <div class="label-login"><%= Main.UserName%></div>
         <div class="command"><input type="submit" name="logout" value="<%= ("Logout")%>"></div>
@@ -110,14 +64,72 @@ H1 { display: none; }
         <input type="text" name="login" id="login" maxlength="16">
         <div class="label-login"><%= ("Password")%>&nbsp;</div>
         <input type="password" name="password" id="password" maxlength="16">
-        <div class="command"><input type="submit" value="OK"></div>
-        <div class="command"><input type="submit" name="register" value="<%= ("Register")%>"></div>
+        <div class="command"><input type="submit" id="ok" value="OK"></div>
+        <div class="command"><input type="submit" id="register" name="register" value="<%= ("Register")%>"></div>
+      <%Endif%>
+    </div></div>
+    
+    <div class="header-bar">
+      <div class="up">
+        <%If Main.Edit%>
+          <img src="<%/%>/edit.png">
+        <%Else%>
+          <a href="<%_PrintParent()%>"><img src="<%/%>/up.png"></a>
+        <%Endif%>
+      </div>
+      <div class="title">
+        <%_PrintLink%>
+      </div>
+      <%If Main.Edit Then%>
+        <div class="command">
+          <input type="submit" id="preview" name="preview" value="<%=("Preview")%>">
+          <input type="submit" id="save" name="save" value="<%=("Save")%>" style="display:none;">
+          <input type="submit" name="cancel" value="<%=("Cancel")%>">
+        </div>
+      <%Else If Main.Preview Then%>
+        <div class="command">
+          <input type="submit" id="save" name="save" value="<%=("Save")%>">
+          <input type="button" name="cancel" value="<%=("Cancel")%>" onclick="window.history.back();">
+        </div>
+      <%Else If Session.Id Then%>
+        <div class="command">
+          <%If Main.Exist Then%>
+            <%If Main.History Then%>
+              <%If Main.History < GetMaxHistory() Then%>
+                <input type="submit" name="prev" value="<%= ("<")%>">
+              <%Else%>
+                <input type="submit" name="prev" value="<%= ("<")%>" disabled style="color:gray">
+              <%Endif%>
+              <%If Main.History > 1 Then%>
+                <input type="submit" name="next" value="<%= (">")%>">
+              <%Else%>
+                <input type="submit" name="next" value="<%= (">")%>" disabled style="color:gray">
+              <%Endif%>
+              <input type="submit" name="exit" value="<%= ("Exit")%>">
+            <%Else%>
+              <input type="submit" name="edit" value="<%= ("Edit")%>">
+              <input type="submit" name="delete" value="<%= ("Delete")%>">
+              <input type="submit" name="undo" value="<%= ("Undo")%>">
+              <%If GetMaxHistory() > 0 Then%>
+                <input type="submit" name="historic" value="<%= ("Historic")%>">
+              <%Endif%>
+            <%Endif%>
+          <% Else%>
+            <input type="submit" name="create" value="<%= ("Create")%>">
+            <%--<input type="submit" name="undo" value="<%= ("Undo")%>">--%>
+          <%Endif%>
+        </div>
       <%Endif%>
       <%_PrintLang%>
     </div>
+  </div>
 </div>
 
+<%If Main.Edit Then%>
+<div class="page-edit">
+<%Else%>
 <div class="page">
+<%Endif%>
 
 <%Endif%>
 

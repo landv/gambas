@@ -1033,7 +1033,7 @@ Public Sub GetChanges() As String[]
       If Right(sLink) = ")" Then
         iPos = RInStr(sLink, "(")
         If iPos Then
-          sLang = Mid$(sLink, iPos + 1, 2)
+          sLang = Mid$(sLink, iPos + 1, -1)
           sLink = Trim(Left(sLink, iPos - 1))
         Endif
       Endif

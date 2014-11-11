@@ -170,7 +170,7 @@ Private Sub _PrintPage()
       hStat = Stat(Main.GetPagePathFrom(Main.Path))
       hStatDef = Stat(Main.GetPagePathFrom(Main.Path, Main.DEFAULT_LANG))
       If hStat And If hStatDef And If hStatDef.LastModified > hStat.LastModified Then
-        Print "<div><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
+        Print "<div class=\"unknown\"><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Main.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
       Endif
     Endif
     
