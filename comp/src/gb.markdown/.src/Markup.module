@@ -733,6 +733,7 @@ ENTER_MARKUP:
           Continue
         Endif
 
+        sResult &= "</" & $aMarkup[$aMarkup.Max] & ">"
         sResult &= "<div class=\"error\">" & Html("Mismatched markup: </" & sPattern & "> against <" & $aMarkup[$aMarkup.Max] & ">") & "</div>"
         Break
         
