@@ -3,7 +3,7 @@
 Export
 Create
 
-Public Root As String
+'Public Root As String
 Public Line As Integer
 Public Current As String
 
@@ -13,19 +13,19 @@ Public Sub ToHTML(Markdown As String) As String
   
 End
 
-Public Sub Link((sLink) As MarkdownLink)
+Public Sub Link(({Link}) As MarkdownLink)
   
 End
 
-Public Sub Command((sCommand) As String) As String[]
+Public Sub Command((Command) As String) As String[]
   
 End
 
-Public Sub Enter((sClass) As String) As String[]
+Public Sub Enter((Class) As String) As String[]
   
 End
 
-Public Sub Leave((sClass) As String) As String[]
+Public Sub Leave((Class) As String) As String[]
   
 End
 

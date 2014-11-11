@@ -21,7 +21,7 @@ Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
 Private $hWelcome As CWelcome
-Private $iSort As Integer = CRecentFile.SORT_BY_DATE
+Private $iSort As Integer = CRecentProject.SORT_BY_DATE
 
 Private $hRecent As CProjectList
 Private $hExample As CProjectList
@@ -74,11 +74,11 @@ Public Sub Form_Open()
 
   ' Fill recent list
 
-  $iSort = Settings["/FWelcome/SortRecent", CRecentFile.SORT_BY_DATE]
+  $iSort = Settings["/FWelcome/SortRecent", CRecentProject.SORT_BY_DATE]
   UpdateMenuSort
   $hRecent.Fill
 
-  If CRecentFile.All.Count Then
+  If CRecentProject.All.Count Then
     Toggle(LIST_RECENT)
   Else
     Toggle(LIST_EXAMPLE)
@@ -93,7 +93,7 @@ End
 
 Public Sub cvwRecent_Click()
 
-  $sPath = CRecentFile.All[Val(Last.Key)].Path
+  $sPath = CRecentProject.All[Val(Last.Key)].Path
   Me.Close
 
 End

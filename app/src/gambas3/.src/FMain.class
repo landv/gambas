@@ -561,9 +561,9 @@ Public Sub UpdateRecentMenu()
   Dim hMenu As Menu
   Dim sMenu As String
   Dim sPath As String
-  Dim aList As CRecentFile[]
+  Dim aList As CRecentProject[]
   Dim iSort As Integer
-  Dim hRecentFile As CRecentFile
+  Dim hRecentFile As CRecentProject
   Dim sTitle As String
   Dim sLastTitle As String
   Dim hMenuTitle As Menu
@@ -575,16 +575,16 @@ Public Sub UpdateRecentMenu()
   
   Inc Application.Busy
   
-  iSort = Settings["/FWelcome/SortRecent", CRecentFile.SORT_BY_DATE]
+  iSort = Settings["/FWelcome/SortRecent", CRecentProject.SORT_BY_DATE]
   
   mnuOpenRecent.Children.Clear
-  mnuOpenRecent.Enabled = CRecentFile.All.Count > 0
+  mnuOpenRecent.Enabled = CRecentProject.All.Count > 0
   
   If mnuOpenRecent.Enabled Then
     
-    aList = CRecentFile.Get(iSort)
+    aList = CRecentProject.Get(iSort)
     
-    If iSort = CRecentFile.SORT_BY_PATH Then
+    If iSort = CRecentProject.SORT_BY_PATH Then
       
       For Each hRecentFile In aList
         
@@ -804,7 +804,7 @@ End
 
 Public Sub mnuClearRecent_Click()
   
-  CRecentFile.Clear
+  CRecentProject.Clear
   UpdateRecentMenu
   
 End
@@ -1780,7 +1780,7 @@ End
 
 Public Sub mnuOpenRecent_Show()
   
-  If $bUpdateRecentMenu And If Not CRecentFile.OutOfDate Then Return  
+  If $bUpdateRecentMenu And If Not CRecentProject.OutOfDate Then Return  
   UpdateRecentMenu
   $bUpdateRecentMenu = True
   

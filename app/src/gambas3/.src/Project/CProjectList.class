@@ -114,8 +114,8 @@ Private Sub FillWithRecent(bClear As Boolean)
   
   Dim hProjectItem As ProjectBox
   'Dim hFirst As ProjectBox
-  Dim aRecent As CRecentFile[]
-  Dim hRecent As CRecentFile
+  Dim aRecent As CRecentProject[]
+  Dim hRecent As CRecentProject
   'Dim bHighlight As Boolean
   Dim sTitle As String
   Dim sLastTitle As String
@@ -123,7 +123,7 @@ Private Sub FillWithRecent(bClear As Boolean)
   Dim hPanel As Panel
   
   If Not bClear Then
-    If $hList.Children.Count And If Not CRecentFile.OutOfDate Then Return
+    If $hList.Children.Count And If Not CRecentProject.OutOfDate Then Return
   Endif
 
   Inc Application.Busy
@@ -133,7 +133,7 @@ Private Sub FillWithRecent(bClear As Boolean)
   $hList.Arrangement = Arrange.None
   Clear()
 
-  aRecent = CRecentFile.Get($iSort)
+  aRecent = CRecentProject.Get($iSort)
 
   For Each hRecent In aRecent
     

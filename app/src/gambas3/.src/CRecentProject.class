@@ -2,7 +2,7 @@
 
 Public Enum SORT_BY_DATE, SORT_BY_NAME, SORT_BY_PATH 
 
-Static Public All As New CRecentFile[]
+Static Public All As New CRecentProject[]
 Static Public Sort As Integer
 
 Static Private $hSettings As Settings
@@ -27,7 +27,7 @@ Public Sub _new(sPath As String, dDate As Date)
   
 End
 
-Public Sub _compare(hRecentFile As CRecentFile) As Integer
+Public Sub _compare(hRecentFile As CRecentProject) As Integer
   
   Select Case Sort
     Case SORT_BY_NAME
@@ -96,7 +96,7 @@ Static Public Sub Load()
   Dim nRecent As Integer
   Dim iInd As Integer
   Dim sPath As String
-  Dim hRecentFile As CRecentFile
+  Dim hRecentFile As CRecentProject
 
   If Not $hSettings Then
     $hSettings = New Settings("gambas3.recent")
@@ -118,12 +118,12 @@ Static Public Sub Load()
     Endif
   Endif
   
-  All = New CRecentFile[]
+  All = New CRecentProject[]
 
   For iInd = 1 To nRecent
     sPath = $hSettings["/Recent/File[" & CStr(iInd) & "]"]
     If sPath Then
-      hRecentFile = New CRecentFile(sPath, CDate($hSettings["/Recent/Date[" & CStr(iInd) & "]"]))
+      hRecentFile = New CRecentProject(sPath, CDate($hSettings["/Recent/Date[" & CStr(iInd) & "]"]))
       If hRecentFile.IsValid() Then
         All.Add(hRecentFile)
         If All.Count >= MAX_RECENT Then Break
@@ -135,13 +135,11 @@ Static Public Sub Load()
   
 End
 
-Static Public Sub Save()
+Static Private Sub Save()
 
   Dim iInd As Integer
 
-  Load
-
-  $hSettings.Clear("/Recent")
+  $hSettings.Clear
 
   $hSettings["/Recent/Count"] = All.Count
 
@@ -162,7 +160,7 @@ End
 Static Public Sub Add(sPath As String)
 
   Dim iInd As Integer
-  Dim hRecentFile As CRecentFile
+  Dim hRecentFile As CRecentProject
   
   Load
 
@@ -182,7 +180,7 @@ Static Public Sub Add(sPath As String)
 
   Wend
 
-  hRecentFile = New CRecentFile(sPath, CStr(Now))
+  hRecentFile = New CRecentProject(sPath, CStr(Now))
   If Not hRecentFile.IsValid() Then Return
   
   All.Add(hRecentFile, 0)
@@ -196,7 +194,7 @@ Static Public Sub Add(sPath As String)
 
 End
 
-Static Public Sub Get(Optional iSort As Integer) As CRecentFile[]
+Static Public Sub Get(Optional iSort As Integer) As CRecentProject[]
   
   Load
   

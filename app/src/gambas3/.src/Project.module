@@ -307,7 +307,7 @@ Public Sub Main()
   If $bTesting And If sPath Then
     InitVersion
     InitWebView
-    CRecentFile.Load
+    CRecentProject.Load
     FMain.Load
     Project.Open(sPath)
     'FSearch.FindProject("else")
@@ -649,7 +649,7 @@ _INIT_AGAIN:
 
   If Not bIsFake Then DefineStartup(Startup, True)
 
-  If Not bIsFake Then CRecentFile.Add(sDir)
+  If Not bIsFake Then CRecentProject.Add(sDir)
 
   If Not $bTesting
     FMain.OnProjectChange
@@ -891,7 +891,7 @@ Public Sub Exit()
 
   CSampleCode.Exit
   CLibraryInfo.Exit
-  CRecentFile.Exit
+  CRecentProject.Exit
   CComponent.Exit
 
 End

@@ -871,12 +871,12 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String, Optional bNoHeader A
   
   If Not $bInitOffline Then
     
-    For Each sFile In ["up.png", "critical.png", "info.png", "tip.png", "vb.png", "warning.png"]
+    For Each sFile In ["up.png", "critical.png", "info.png", "tip.png", "vb.png", "warning.png", "error-bg.png"]
       Try Kill GetOfflineDir() &/ sFile
       Copy "help/wiki" &/ sFile To GetOfflineDir() &/ sFile
     Next
   
-    File.Save(GetOfflineDir() &/ "style.css", Replace(File.Load("help/wiki/style.css"), "$(root)", GetOfflineDir()))
+    File.Save(GetOfflineDir() &/ "style.css", Replace(File.Load("help/wiki/style.css"), "<%/%>", GetOfflineDir()))
     
     $bInitOffline = True
     

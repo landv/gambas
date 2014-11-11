@@ -246,11 +246,11 @@ Private Function GetSymbolType(aSym As String[]) As String
     hSym = Symbols[sName]
     sName = Replace(sName, ":", ".")
     If hSym.Class <> Name Or If hSym.Component <> Component Then
-      sRes &= "*[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]*&nbsp;&nbsp;\n"
-    Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
       sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;\n"
+    Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
+      sRes &= "<span class=\"inherit\">~[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]~</span>&nbsp;&nbsp;\n"
     Else
-      sRes &= "[./" & LCase(sName) & "]&nbsp;&nbsp;\n"
+      sRes &= "<span class=\"inherit\">~[./" & LCase(sName) & "]~</span>&nbsp;&nbsp;\n"
     Endif
   Next
 
@@ -328,7 +328,7 @@ Public Function GetSymbols() As String[]
   Endif
 
   'aResult.Add("### Symbols")
-  aResult.Add("[[")
+  aResult.Add("[[ desc")
   aResult.Add("==")
   
   sBreak = "\\\n"
@@ -404,7 +404,8 @@ Public Function GetSymbols() As String[]
     aResult.Add(Subst(("This class is &1 with the &2 keyword."), Main.GetSymbolLink(Me, "_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
   Endif
 
-  If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
+  'If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
+  'If bHasSymbols Then aResult.Add("\\")
 
   If bStatic Then
 
