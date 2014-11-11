@@ -799,26 +799,6 @@ m
 #DocumentView
 UserControl
 C
-_Properties
-C
-s
-*
-_Group
-C
-s
-View
-_IsControl
-C
-b
-T
-_IsContainer
-C
-b
-
-Count
-p
-i
-
 DocWidth
 p
 i
@@ -826,6 +806,18 @@ i
 DocHeight
 p
 i
+
+Count
+p
+i
+
+Max
+r
+i
+
+Layout
+r
+_DocumentLayout
 
 Zoom
 p
@@ -835,31 +827,23 @@ Scale
 p
 f
 
+:Layout
+:
+
+(Page)i
 :Draw
 :
 
-(Index)i
+(Page)i
 _new
 m
 
 
-_get
-m
-_Document
-(Index)i
-_Validate
-m
-
-(hDoc)_Document;
 tmrLoad_Timer
 m
 
 
 View_Draw
-m
-
-
-tmrDraw_Timer
 m
 
 

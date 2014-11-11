@@ -2,9 +2,10 @@
 
 Public Sub _new()
 '$Pdf.Open("/home/fabien/Downloads/IntroProgBash.pdf")
-DocumentView1.Count = 10
+DocumentView1.Count = 50
+DocumentView1.Zoom = 0.5
 End
 
 Public Sub Form_Open()
-DocumentView1[1].Resize(297, 210)
+
 End
