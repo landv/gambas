@@ -76,7 +76,7 @@ CWIDGET *CWIDGET_active_control = 0;
 CWIDGET *CWIDGET_previous_control = 0;
 static bool _focus_change = false;
 static CWIDGET *_old_active_control = 0;
-extern int CCONTROL_last_event_type = 0;
+int CCONTROL_last_event_type = 0;
 
 static CWIDGET *_hovered = 0;
 static CWIDGET *_official_hovered = 0;

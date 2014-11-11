@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  csvgimage.cpp
+	csvgimage.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -38,7 +38,7 @@ static void release(CSVGIMAGE *_object)
 		delete RENDERER;
 		RENDERER = NULL;
 	}
-	
+
 	if (GENERATOR)
 	{
 		delete GENERATOR;
@@ -59,13 +59,13 @@ QSvgGenerator *SVGIMAGE_begin(CSVGIMAGE *_object, QPainter **painter)
 			GB.Error("SvgImage size is not defined");
 			return NULL;
 		}
-		
+
 		THIS->file = GB.NewZeroString(GB.TempFile(NULL));
 		THIS->generator = new QSvgGenerator();
 		GENERATOR->setSize(QSize(THIS->width, THIS->height));
 		//GENERATOR->setViewBox(QRectF(0, 0, THIS->width, THIS->height));
 		GENERATOR->setFileName(THIS->file);
-		
+
 		if (RENDERER)
 		{
 			*painter = new QPainter(GENERATOR);
@@ -74,7 +74,7 @@ QSvgGenerator *SVGIMAGE_begin(CSVGIMAGE *_object, QPainter **painter)
 		else
 			*painter = NULL;
 	}
-	
+
 	return GENERATOR;
 }
 
@@ -97,16 +97,16 @@ BEGIN_PROPERTY(SvgImage_Width)
 		GB.ReturnFloat(THIS->width);
 	else
 		THIS->width = VPROP(GB_FLOAT);
-	
+
 END_PROPERTY
 
 BEGIN_PROPERTY(SvgImage_Height)
-	
+
 	if (READ_PROPERTY)
 		GB.ReturnFloat(THIS->height);
 	else
 		THIS->height = VPROP(GB_FLOAT);
-	
+
 END_PROPERTY
 
 BEGIN_METHOD(SvgImage_Resize, GB_FLOAT width; GB_FLOAT height)
@@ -135,7 +135,7 @@ static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 		error = "Unable to load SVG file: unable to create renderer";
 		goto __RETURN;
 	}
-	
+
 	release(THIS);
 	THIS->renderer = renderer;
 	THIS->width = renderer->defaultSize().width();
@@ -147,7 +147,7 @@ __RETURN:
 
 	if (renderer)
 		delete renderer;
-	
+
 	GB.ReleaseFile(addr, len);
 	return error;
 }
@@ -166,7 +166,7 @@ BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 		GB.Error(err);
 		return;
 	}
-	
+
 	GB.ReturnObject(svgimage);
 
 END_METHOD
@@ -176,10 +176,10 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 	QPainter *painter = PAINT_get_current();
 	float x, y;
 	const char *err;
-	
+
 	if (!painter)
 		return;
-	
+
 	if (THIS->file)
 	{
 		err = load_file(THIS, THIS->file, GB.StringLength(THIS->file));
@@ -189,20 +189,20 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 			return;
 		}
 	}
-	
+
 	if (!RENDERER)
 		return;
 
 	if (THIS->width <= 0 || THIS->height <= 0)
 		return;
-	
+
 	PAINT_get_current_point(&x, &y);
 	RENDERER->render(painter, QRectF(x, y, THIS->width, THIS->height));
 
 END_METHOD
 
 BEGIN_METHOD(SvgImage_Save, GB_STRING file)
-	
+
 	if (!THIS->file)
 	{
 		QPainter *painter;
@@ -214,10 +214,10 @@ BEGIN_METHOD(SvgImage_Save, GB_STRING file)
 		if (painter)
 			delete painter;
 	}
-	
+
 	if (GB.CopyFile(THIS->file, GB.FileName(STRING(file), LENGTH(file))))
 		return;
-	
+
 	load_file(THIS, THIS->file, GB.StringLength(THIS->file));
 
 END_METHOD
@@ -230,23 +230,23 @@ END_METHOD
 
 GB_DESC SvgImageDesc[] =
 {
-  GB_DECLARE("SvgImage", sizeof(CSVGIMAGE)),
+	GB_DECLARE("SvgImage", sizeof(CSVGIMAGE)),
 
-  GB_METHOD("_new", NULL, SvgImage_new, "[(Width)f(Height)f]"),
-  GB_METHOD("_free", NULL, SvgImage_free, NULL),
+	GB_METHOD("_new", NULL, SvgImage_new, "[(Width)f(Height)f]"),
+	GB_METHOD("_free", NULL, SvgImage_free, NULL),
 
-  GB_PROPERTY("Width", "f", SvgImage_Width),
-  GB_PROPERTY("Height", "f", SvgImage_Height),
-  GB_METHOD("Resize", NULL, SvgImage_Resize, "(Width)f(Height)f"),
+	GB_PROPERTY("Width", "f", SvgImage_Width),
+	GB_PROPERTY("Height", "f", SvgImage_Height),
+	GB_METHOD("Resize", NULL, SvgImage_Resize, "(Width)f(Height)f"),
 
-  GB_STATIC_METHOD("Load", "SvgImage", SvgImage_Load, "(Path)s"),
-  GB_METHOD("Save", NULL, SvgImage_Save, "(Path)s"),
+	GB_STATIC_METHOD("Load", "SvgImage", SvgImage_Load, "(Path)s"),
+	GB_METHOD("Save", NULL, SvgImage_Save, "(Path)s"),
 	GB_METHOD("Paint", NULL, SvgImage_Paint, NULL),
 
-  GB_METHOD("Clear", NULL, SvgImage_Clear, NULL),
+	GB_METHOD("Clear", NULL, SvgImage_Clear, NULL),
 
-  GB_INTERFACE("Paint", &PAINT_Interface),
+	GB_INTERFACE("Paint", &PAINT_Interface),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
