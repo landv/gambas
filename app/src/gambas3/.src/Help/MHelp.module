@@ -876,7 +876,7 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String, Optional bNoHeader A
       Copy "help/wiki" &/ sFile To GetOfflineDir() &/ sFile
     Next
   
-    File.Save(GetOfflineDir() &/ "style.css", Replace(File.Load("help/wiki/style.css"), "$(root)", GetOfflineDir()))
+    File.Save(GetOfflineDir() &/ "style.css", Replace(File.Load("help/wiki/style.css"), "<%/%>", GetOfflineDir()))
     
     $bInitOffline = True
     
