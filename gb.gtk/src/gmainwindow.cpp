@@ -232,6 +232,7 @@ void gMainWindow::initialize()
 	_resize_last_w = _resize_last_h = -1;
 	_min_w = _min_h = 0;
 	_transparent = false;
+	_utility = false;
 
 	onOpen = NULL;
 	onShow = NULL;

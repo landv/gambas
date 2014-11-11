@@ -6,11 +6,11 @@ Inherits UserControl
 
 Public Const _IsControl As Boolean = True
 Public Const _Group As String = "Media"
-Public Const _Properties As String = "*,Border,Control=True,URL{Path}"
+Public Const _Properties As String = "*,Border=True,ShowControl=True,URL{Path}"
 
-Property URL As String
-Property Border As Boolean
-Property Control As Boolean
+Property URL As String '' Return or set the path or the URL of the media file to play.
+Property Border As Boolean  '' Return or set if the control has a border.
+Property ShowControl As Boolean '' Return or set if the controls are visible.
 
 Private $hView As FMediaPlayer
 Private $sUrl As String
@@ -35,13 +35,13 @@ Private Sub URL_Write(Value As String)
 
 End
 
-Private Function Control_Read() As Boolean
+Private Function ShowControl_Read() As Boolean
 
   Return $hView.GetShowControl()
 
 End
 
-Private Sub Control_Write(Value As Boolean)
+Private Sub ShowControl_Write(Value As Boolean)
 
   $hView.SetShowControl(Value)
 

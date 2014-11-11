@@ -46,4 +46,6 @@ extern CKEY_INFO CKEY_info;
 
 void CKEY_clear(int valid);
 
+#define CKEY_is_valid() (CKEY_info.valid != 0)
+
 #endif

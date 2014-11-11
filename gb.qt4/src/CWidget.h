@@ -113,6 +113,8 @@ extern GB_DESC CControlDesc[];
 extern CWIDGET *CWIDGET_active_control;
 extern CWIDGET *CWIDGET_previous_control;
 
+extern int CCONTROL_last_event_type;
+
 #else
 
 #define THIS (((CWIDGET *)_object))

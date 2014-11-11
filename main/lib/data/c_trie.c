@@ -132,7 +132,7 @@ BEGIN_METHOD_VOID(Trie_next)
 
 	struct enum_state *state = GB.GetEnum();
 	struct stack *top;
-	struct trie *node;
+	struct trie *node = NULL; /* silence compiler with "goto visit" */
 
 	if (!state->start) {
 		state->start = 1;
@@ -221,7 +221,15 @@ BEGIN_METHOD(Trie_Exist, GB_STRING key)
 
 END_METHOD
 
-typedef struct CPREFIX CPREFIX;
+typedef struct CPREFIX {
+	GB_BASE ob;
+	CTRIE *trie;
+	struct trie_prefix p;
+	char *key;
+	char *prefix;
+	uint64_t time;
+} CPREFIX;
+
 static int init_prefix(CPREFIX *p, CTRIE *trie, char *prefix, size_t len);
 
 /**G
@@ -321,15 +329,6 @@ GB_DESC CTrie[] = {
 	GB_END_DECLARE
 };
 
-typedef struct CPREFIX {
-	GB_BASE ob;
-	CTRIE *trie;
-	struct trie_prefix p;
-	char *key;
-	char *prefix;
-	uint64_t time;
-} CPREFIX;
-
 #undef THIS
 #define THIS	((CPREFIX *) _object)
 #define TRIE	(THIS->trie)
@@ -393,7 +392,7 @@ BEGIN_METHOD_VOID(TriePrefix_next)
 
 	struct enum_state *state = GB.GetEnum();
 	struct stack *top;
-	struct trie *node;
+	struct trie *node = NULL; /* silence compiler */
 
 	if (!state->start) {
 		state->start = 1;

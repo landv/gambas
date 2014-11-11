@@ -99,6 +99,7 @@ Static Public Sub GetInfo() As String[]
   Dim sFile As String
   Dim sPattern As String
   Dim aLib As New String[]
+  Dim aSearchPath As New String[]
   
   aText.Add("[System]")
   aText.Add("Gambas=" & System.FullVersion)
@@ -134,16 +135,19 @@ Static Public Sub GetInfo() As String[]
     If Not Error Then aText.Add("Memory=" & sTemp)
   Endif
   If System.Family = "Cygwin" Then
-     cSearch = ["Qt4": "libQtCore.dll.a", "GTK+": "libgtk-x11-2*.dll.a", "SDL": "libSDL*.dll.a", "GStreamer": "libgstreamer-*.dll.a", "Poppler": "libpoppler.dll.a", "Curl": "libcurl.dll.a", "OpenGL": "libGL.dll.a", 
-      "Cairo": "libcairo.dll.a", "DBus": "libdbus-[0-9].dll.a"]
+     aSearchPath = ["/bin", "/lib", "/usr/lib"]
+     cSearch = ["Qt4": "cygQtCore*.dll", "GTK+": "cyggtk-x11-2*.dll", "GTK+3": "cyggtk-3-*.dll", "SDL": "cygSDL-*.dll", "GStreamer": "cyggstreamer-*.dll", "Poppler": "cygpoppler-*.dll", "Curl": "cygcurl-*.dll", "OpenGL": "cygGL-*.dll", 
+      "Cairo": "cygcairo-[0-9]*.dll", "DBus": "cygdbus-[0-9]*.dll"]
   Else 
+     aSearchPath = ["/lib", "/usr/lib"]
      cSearch = ["Qt4": "libQtCore.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
      "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
-  Endif
+  EndIf
   cFile = New Collection
   
   aText.Add("[Libraries]")
-  For Each sDir In ["/lib", "/usr/lib"]
+  'For Each sDir In ["/bin", "/lib", "/usr/lib"]
+  For Each sDir In aSearchPath
     For Each sFile In RDir(sDir, "", gb.File, False).Sort(gb.IgnoreCase)
       sFile = File.Name(sFile)
       For Each sPattern In cSearch

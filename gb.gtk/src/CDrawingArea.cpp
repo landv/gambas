@@ -44,7 +44,7 @@ DECLARE_EVENT(EVENT_Font);
 
 ***************************************************************************/
 
-static void cleanup_drawing(intptr_t _object)
+static void cleanup_drawing(intptr_t _unused)
 {
 	PAINT_end();
 }
@@ -59,7 +59,7 @@ static void cb_expose(gDrawingArea *sender, cairo_t *cr)
 	if (GB.CanRaise(THIS, EVENT_Draw))
 	{
 		handler.callback = cleanup_drawing;
-		handler.data = (intptr_t)THIS;
+		handler.data = (intptr_t)0;
 
 		GB.RaiseBegin(&handler);
 

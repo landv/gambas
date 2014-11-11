@@ -441,6 +441,23 @@ static void query_get_param(int index, char **str, int *len, char quote)
 	}
 }
 
+static void check_connection(MYSQL *conn)
+{
+	unsigned long thread_id;
+
+	thread_id = mysql_thread_id(conn);
+
+	mysql_ping(conn);
+
+	if (mysql_thread_id(conn) != thread_id)
+	{
+		if (DB.IsDebug())
+			fprintf(stderr, "gb.db.mysql: connection lost\n");
+		// Connection has been reestablished, set utf8 again
+		mysql_query(conn, "set names 'utf8'");
+	}
+}
+
 /* Internal function to run a query */
 
 static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
@@ -452,7 +469,6 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
 	const char *query;
 	MYSQL_RES *res;
 	int ret;
-	unsigned long thread_id;
 
 	if (nsubst)
 	{
@@ -468,16 +484,10 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
 		query = qtemp;
 
 	if (DB.IsDebug())
-		fprintf(stderr, "mysql: %p: %s\n", conn, query);
+		fprintf(stderr, "gb.db.mysql: %p: %s\n", conn, query);
 
-	thread_id = mysql_thread_id(conn);
-	mysql_ping(conn);
-	if (mysql_thread_id(conn) != thread_id)
-	{
-		// Connection has been reestablished, set utf8 again
-		mysql_query(conn, "set names 'utf8'");
-	}
-	
+	check_connection(conn);
+
 	if (mysql_query(conn, query))
 	{
 		ret = TRUE;
@@ -1207,6 +1217,8 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 	/* Nom de la table */
 
 	info->table = GB.NewZeroString(table);
+
+	check_connection(conn);
 
 	res = mysql_list_fields( conn, table, 0);
 	if (!res)
@@ -2118,6 +2130,7 @@ static int database_exist(DB_DATABASE *db, const char *name)
 	MYSQL_RES *res;
 	int exist;
 
+	check_connection(conn);
 	res = mysql_list_dbs(conn, name);
 	if (!res)
 	{
@@ -2154,6 +2167,7 @@ static int database_list(DB_DATABASE *db, char ***databases)
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 
+	check_connection(conn);
 	res = mysql_list_dbs(conn, 0);
 	if (!res){
 		db->error = mysql_errno(conn);
@@ -2282,19 +2296,18 @@ static int user_exist(DB_DATABASE *db, const char *name)
 	_token[0] = 0;
 
 
-if (do_query(db, "Unable to check user: &1@&2", &res, query, 2, _name, _host)){
-		free(_name);
-		//free(_host);
-		return FALSE;
-}
+	if (do_query(db, "Unable to check user: &1@&2", &res, query, 2, _name, _host))
+	{
+			free(_name);
+			return FALSE;
+	}
 
-exist = mysql_num_rows(res) == 1;
+	exist = mysql_num_rows(res) == 1;
 
-free(_name);
-//free(_host);
+	free(_name);
 	mysql_free_result(res);
 
-return exist;
+	return exist;
 }
 
 /*****************************************************************************
