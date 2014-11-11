@@ -20,6 +20,7 @@ Private $sPath As String
 Private $sTitle As String
 Private $cSlot As Collection
 Private $bModify As Boolean
+Private $bModifyAll As Boolean
 Private $cModify As Collection
 
 Private Sub Load()
@@ -149,17 +150,21 @@ Public Sub Save()
   '   Sleep 0.2
   ' Next
 
-  cSave = $cSlot
-  cModify = $cModify
-  Load
-  For Each cSlot In cSave
-    For Each vVal In cSlot
-      sKey = cSave.Key &/ cSlot.Key
-      If cModify.Exist(sKey) Then 
-        Me[sKey] = vVal
-      Endif
+  If Not $bModifyAll Then
+
+    cSave = $cSlot
+    cModify = $cModify
+    Load
+    For Each cSlot In cSave
+      For Each vVal In cSlot
+        sKey = cSave.Key &/ cSlot.Key
+        If cModify.Exist(cSave.Key) Or If cModify.Exist(sKey) Then 
+          Me[sKey] = vVal
+        Endif
+      Next
     Next
-  Next
+    
+  Endif
 
   For Each cSlot In $cSlot
     aKey.Add($cSlot.Key)
@@ -295,11 +300,13 @@ Public Sub Clear(Optional ParentKey As String)
     If $cSlot.Count Then
       $cSlot.Clear
       $bModify = True
+      $bModifyAll = True
     Endif
   Else
     sSlot = GetSlot(ParentKey &/ "g")
     If $cSlot.Exist(sSlot) Then 
       $cSlot.Remove(sSlot)
+      $cModify[sSlot] = True
       $bModify = True
     Endif
   Endif
