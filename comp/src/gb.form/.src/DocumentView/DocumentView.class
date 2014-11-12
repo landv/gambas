@@ -3,6 +3,8 @@
 Export
 Inherits UserControl
 
+Enum Portrait, Paysage
+
 Property DocWidth As Integer
 Property DocHeight As Integer
 Property Count As Integer
@@ -19,94 +21,155 @@ Private $iFirstVisibleLine As Integer
 Private $iFirstVisibleDocument As Integer
 Private $iLastVisibleDocument As Integer
 Private $iLastVisibleLine As Integer
-
-
-Private $iCount As Integer = 40
-
+Private $colLayout As New Collection
+Private $colImage As New Collection
+Private $iCount As Integer = 1
 
 Private $fScaledDocWidth As Float  ''Largeur reelle du doc a l'affichage (zoom)
 Private $fScaledDocHeight As Float ''Hauteur reelle du doc a l'affichage (zoom)
 Private $fScaledSpace As Float     '' Taille reelle de l'espacement a l'affichage(zoom)
 Private $fMaxPageHeight As Float ''Hauteur du plus grand doc
 Private $fMaxPageWidth As Float  ''Largeur du plus grand doc
-Private $iSpace As Integer = 20    ''Taille de l'espacement
+Private $iSpace As Integer = 30    ''Taille de l'espacement
 Private $iNbreLines As Integer     ''Nombre de ligne totale
 Private $tmrLoad As New Timer As "tmrLoad"
+Private $tmrRefresh As New Timer As "tmrRefresh"
 Private $aImageToLoad As New Integer[]
 Private $aImageLoaded As New Integer[]
 Private $iNbreDocByLine As Integer
 
-Private $fZoom As Float = 0.2
+Private $fZoom As Float = 1.0
 
 Event Layout(Page As Integer)
-Event Draw(Page As Integer)
+Event Draw(Page As Integer, Width As Integer, Height As Integer)
 
 Public Sub _new()
   
   $hView = New ScrollArea(Me) As "View"
   $hView.Background = Color.DarkGray
-  
+  $tmrLoad.Delay = 1
+
 End
 
 Public Sub tmrLoad_Timer()
+  
   Dim hImg As Image
   Dim iPage As Integer
+  Dim iDocWidth, iDocHeight As Integer
+  
+  If $aImageToLoad.Count = 0 Then
+    $tmrLoad.Stop
+    Return
+  Endif
+  
   iPage = $aImageToLoad.pop()
-  Raise Layout(iPage)
-  hImg = New Image($iDocWidth, $iDocHeight, Color.White)
+  
+  If $colLayout.Exist(iPage) Then
+    iDocWidth = $colLayout[iPage].Width
+    iDocHeight = $colLayout[iPage].Height
+  Else
+    iDocWidth = $iDocWidth
+    iDocHeight = $iDocHeight
+  Endif
+  
+  'Raise Layout(iPage)
+  
+  hImg = New Image(iDocWidth * $fzoom, iDocHeight * $fzoom, Color.White)
   Draw.Begin(hImg)
-    Raise Draw(iPage)
+  'Paint.Scale($fzoom, $fzoom)
+  Raise Draw(iPage, iDocWidth * $fzoom, iDocHeight * $fzoom)
   Draw.End
+  $colImage[iPage] = hImg
+  $aImageLoaded.Add(iPage)
+  $tmrRefresh.Trigger
 End
 
 Public Sub View_Draw()
-
+  
   Dim i, j, k As Integer
   Dim iDocX, iDocY As Integer
   Dim fShad As Float = $fScaledSpace / 4
   
-
-  
-  k = $iFirstVisibleDocument
+  k = $iFirstVisibleDocument 
   For i = $iFirstVisibleLine To $iLastVisibleLine
     For j = 0 To $iNbreDocByLine - 1
+      If $colLayout.Exist(k) Then
+        $fScaledDocWidth = $colLayout[k].Width * $fzoom
+        $fScaledDocHeight = $colLayout[k].Height * $fzoom
+      Else
+        $fScaledDocWidth = $iDocWidth * $fzoom
+        $fScaledDocHeight = $iDocHeight * $fzoom
+      Endif
       'Define the doc position
-      iDocX = $fScaledSpace + j * ($fScaledDocWidth + $fScaledSpace) - $hView.ScrollX
-      iDocY = $fScaledSpace + i * ($fScaledDocHeight + $fScaledSpace) - $hView.ScrollY
+      iDocX = $fScaledSpace + (j * ($fMaxPageWidth + $fScaledSpace)) + ($fMaxPageWidth - $fScaledDocWidth) / 2 - $hView.ScrollX
+      iDocY = $fScaledSpace + i * ($fMaxPageHeight + $fScaledSpace) + ($fMaxPageHeight - $fScaledDocHeight) / 2 - $hView.ScrollY
       
       'Draw the doc
       Paint.Rectangle(iDocX + fShad, iDocY + fShad, $fScaledDocWidth, $fScaledDocHeight)
+      
       Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 125))
+      
       Paint.Fill
-      Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
-      Paint.Brush = Paint.Color(Color.White)
-      Paint.Fill(True)
-      Paint.Brush = Paint.Color(Color.Black)
-      Paint.Stroke
+      
+      If $colImage.Exist(k) Then
+        Draw.Image($colImage[k].Stretch($fScaledDocWidth, $fScaledDocHeight), iDocX, iDocY)
+        Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
+        Paint.Brush = Paint.Color(Color.Black)
+        Paint.Stroke
+      Else
+        Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
+        Paint.Brush = Paint.Color(Color.White)
+        Paint.Fill(True)
+        Paint.Brush = Paint.Color(Color.Black)
+        Paint.Stroke
+      Endif
       Paint.Font.Grade = 20 * $fzoom
       Paint.Text(k, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight, Align.Center)
       Paint.Fill
       
       Inc k
-      If k > $iCount Then Break
+      If k >= $iCount Then Break
     Next
-    If k > $iCount Then Break
+    If k >= $iCount Then Break
   Next
+  
+End
 
+Public Sub RefreshLayoutNeeds()
+  
+  Dim i As Integer
+  
+  For i = 0 To $iCount - 1
+    Raise Layout(i)
+    
+    If $hLayout.Width <> 0 Or If $hLayout.Height <> 0 Or If $hLayout.Orientation <> 1 Then
+      $colLayout[i] = $hLayout
+      $hLayout = New _DocumentLayout
+    Endif
+  Next
+  DoLayout
+  
 End
 
 Private Sub DoLayout()
   
-  
-  
-  
+  Dim hLayout As _DocumentLayout
+  Dim i As Integer
+  Dim atmp As New Integer[]
+  $tmrLoad.Stop
   'Found the maxPage Size
+  $fMaxPageHeight = $iDocHeight
+  $fMaxPageWidth = $iDocWidth
+  
+  For Each hLayout In $colLayout
+    $fMaxPageWidth = Max($fMaxPageWidth, hLayout.Width)
+    $fMaxPageHeight = Max($fMaxPageHeight, hLayout.Height)
+  Next
+  
+  $fMaxPageWidth = $fMaxPageWidth * $fzoom
+  $fMaxPageHeight = $fMaxPageHeight * $fzoom
   $fScaledSpace = $iSpace * $fzoom
-  $fScaledDocHeight = $iDocHeight * $fzoom
-  $fScaledDocWidth = $iDocWidth * $fzoom
-  $fMaxPageWidth = $fScaledDocWidth
-  $fMaxPageHeight = $fScaledDocHeight
-
+  
   'Calculate the Max doc per line (mini 1 doc)
   $iNbreDocByLine = Max(($hView.ClientW - $fScaledSpace) / ($fMaxPageWidth + $fScaledSpace), 1)
   Debug "Nombre de doc par lignes : " & $iNbreDocByLine
@@ -117,18 +180,37 @@ Private Sub DoLayout()
   
   'Calculate the first visible line
   $iFirstVisibleLine = Floor($hView.ScrollY / ($fMaxPageHeight + $iSpace))
-  $iFirstVisibleDocument = $iFirstVisibleLine * $iNbreDocByLine + 1
+  $iFirstVisibleDocument = $iFirstVisibleLine * $iNbreDocByLine 
   Debug "Premier doc visible : " & $iFirstVisibleDocument
   'Calculate how many doc are visibles
   $iLastVisibleLine = Ceil(($hView.ScrollY + $hView.ClientH) / ($fMaxPageHeight + $fScaledSpace)) 
-  $iLastVisibleDocument = Min($iLastVisibleLine * $iNbreDocByLine, $iCount)
+  $iLastVisibleDocument = Min($iLastVisibleLine * $iNbreDocByLine, $iCount) - 1
   Debug "Dernier doc : " & $iLastVisibleDocument
   
   'Setup the virtual space
   $hView.ResizeContents($hView.ClientW, $fScaledSpace + ($fMaxPageHeight + $fScaledSpace) * $iNbreLines)
   
-  'Setup the ImageToLoad array
+  'Remove all unused image from the buffer
+  For i = 0 To $aImageLoaded.Max
+    If $aImageLoaded[i] < $iFirstVisibleDocument Or If $aImageLoaded[i] > $iLastVisibleDocument Then
+      $colImage[$aImageLoaded[i]] = Null
+      Debug "Remove image : " & $aImageLoaded[i]
+    Else
+      atmp.Add($aImageLoaded[i])
+    Endif
+  Next
+  $aImageLoaded = atmp
   
+  'Setup the images to load
+  
+  For i = $iFirstVisibleDocument To $iLastVisibleDocument 
+    If Not $aImageLoaded.Exist(i) Then
+      If Not $aImageToLoad.Exist(i) Then $aImageToLoad.push(i)
+    Endif
+  Next
+  $aImageToLoad.Sort
+  $aImageToLoad = $aImageToLoad.Reverse()
+  If $aImageToLoad.Count > 0 Then $tmrLoad.Start
   
 End
 
@@ -165,6 +247,7 @@ End
 Private Sub Count_Write(Value As Integer)
   
   $iCount = Value
+  RefreshLayoutNeeds
   
 End
 
@@ -181,7 +264,8 @@ Private Function Layout_Read() As _DocumentLayout
 End
 
 Public Sub View_Arrange()
-  
+  'RefreshAll
+
   DoLayout
   
 End
@@ -192,17 +276,36 @@ Public Sub View_Scroll()
   
 End
 
-
-
 Private Function Zoom_Read() As Float
-
+  
   Return $fzoom
-
+  
 End
 
 Private Sub Zoom_Write(Value As Float)
   'entre 0.1 et 2
+  
   $fzoom = Min(Max(Value, 0.1), 2)
+  'just refresh image in the cache don't clear them
+  $aImageLoaded.Clear
+  $aImageToLoad.Clear
+  'RefreshAll
   DoLayout
-  $hView.Refresh
+  $tmrRefresh.Trigger
+
 End
+
+Private Sub RefreshAll()
+  
+  $aImageLoaded.Clear
+  $aImageToLoad.Clear
+  $colImage.Clear
+  
+End
+
+Public Sub tmrRefresh_Timer()
+  
+  $hView.Refresh
+  
+End
+

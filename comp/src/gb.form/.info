@@ -834,7 +834,7 @@ f
 :Draw
 :
 
-(Page)i
+(Page)i(Width)i(Height)i
 _new
 m
 
@@ -847,11 +847,19 @@ View_Draw
 m
 
 
+RefreshLayoutNeeds
+m
+
+
 View_Arrange
 m
 
 
 View_Scroll
+m
+
+
+tmrRefresh_Timer
 m
 
 
@@ -2939,6 +2947,21 @@ d
 _View
 v
 DateChooser
+
+#_DocumentLayout
+
+C
+Width
+v
+i
+
+Height
+v
+i
+
+Orientation
+v
+i
 
 #_FilePropertiesData
 

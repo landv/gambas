@@ -1,57 +1,8 @@
 ' Gambas class file
 
-Property Width, W As Integer  ''Width in Pixel
-Property Height, H As Integer ''Height in Pixel
-
-Private $iWidth As Integer
-Private $iHeight As Integer
-Public _Index As Integer
-
-Event _foo
-
-Public Sub _new()
-  
-  
-  
-End
+Export
+Public Width As Integer
+Public Height As Integer
+Public Orientation As Integer = 1
 
 
-Private Function Width_Read() As Integer
-
-  Return $iWidth
-
-End
-
-Private Sub Width_Write(Value As Integer)
-
-  $iWidth = Value
-  GetParent()._Validate(Me)
-
-End
-
-Private Function Height_Read() As Integer
-
-  Return $iHeight
-
-End
-
-Private Sub Height_Write(Value As Integer)
-
-  $iHeight = Value
-  GetParent()._Validate(Me)
-
-End
-
-Private Function GetParent() As DocumentView
-  
-  Dim hParent As DocumentView = Object.Parent(Me)
-  Return hParent
-  
-End
-
-Public Sub Resize(Width As Integer, Height As Integer)
-  
-  $iWidth = Width
-  $iHeight = Height
-  GetParent()._Validate(Me)
-End

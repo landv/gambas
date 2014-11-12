@@ -2,10 +2,36 @@
 
 Public Sub _new()
 '$Pdf.Open("/home/fabien/Downloads/IntroProgBash.pdf")
-DocumentView1.Count = 50
+DocumentView1.Count = 10
 DocumentView1.Zoom = 0.5
 End
 
 Public Sub Form_Open()
+
+End
+
+Public Sub SpinBox1_Change()
+
+  DocumentView1.Zoom = Last.value / 100
+  
+
+End
+
+Public Sub DocumentView1_Layout(Page As Integer)
+Print
+  If Page = 2 Then
+    
+    Last.Layout.Width = 10
+    Last.Layout.Height = 10
+    
+    
+    
+  Endif
+
+End
+
+Public Sub DocumentView1_MouseDown()
+
+  
 
 End
