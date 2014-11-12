@@ -35,15 +35,16 @@ Public Sub _init()
 
   Name["eo"] = ("Esperanto (Anywhere!)")
 
-  Name["es"] = ("Spanish (Spain)")
+  Name["es"] = ("Spanish (Common)")
   Name["es_AR"] = ("Spanish (Argentina)")
+  Name["es_ES"] = ("Spanish (Spain)")
 
   Name["et_EE"] = ("Estonian (Estonia)")
 
   Name["eu"] = ("Basque (Basque country)")
-  
+
   Name["fa"] = ("Farsi (Iran)")
-  
+
   Name["fi"] = ("Finnish (Finland)")
 
   Name["fr"] = ("French (France)")
@@ -65,8 +66,8 @@ Public Sub _init()
 
   Name["ir"] = ("Irish (Ireland)")
 
-  Name["is"] = ("Icelandic (Iceland)") 
-  
+  Name["is"] = ("Icelandic (Iceland)")
+
   Name["it"] = ("Italian (Italy)")
 
   Name["ja"] = ("Japanese (Japan)")
@@ -78,7 +79,7 @@ Public Sub _init()
   Name["la"] = ("Latin")
 
   Name["lt"] = ("Lithuanian (Lithuania)")
-  
+
   Name["ml"] = ("Malayalam (India)")
 
   Name["mk"] = ("Macedonian (Republic of Macedonia)")
@@ -96,7 +97,7 @@ Public Sub _init()
   Name["pt_BR"] = ("Portuguese (Brazil)")
 
   Name["qcv_ES"] = ("Valencian (Valencian Community, Spain)")
-  
+
   Name["ro"] = ("Romanian (Romania)")
 
   Name["ru"] = ("Russian (Russia)")
@@ -123,7 +124,7 @@ Public Sub _init()
 End
 
 Public Sub Find(Optional sLang As String) As String
-  
+
   Dim iPos As Integer
   Dim sOrg As String
 
@@ -153,22 +154,20 @@ Public Sub Find(Optional sLang As String) As String
 
 End
 
-
 Public Function ToName(Optional sLang As String) As String
 
   Dim sName As String
-  
+
   sLang = Find(sLang)
   sName = Name[sLang]
 
-  If sName Then 
+  If sName Then
     Return sName
   Else
     Return ("Unknown") & " (" & sLang & ")"
   Endif
 
 End
-
 
 Public Function FromName(sName As String) As String
 
@@ -181,7 +180,6 @@ Public Function FromName(sName As String) As String
   Next
 
 End
-
 
 Public Function GetAll() As String[]
 
@@ -198,11 +196,8 @@ Public Function GetAll() As String[]
 
 End
 
-
 Public Sub GetPath(sLang As String, sExt As String) As String
-  
+
   Return Project.Dir &/ ".lang" &/ sLang & "." & sExt
-  
+
 End
-
-
