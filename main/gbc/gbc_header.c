@@ -887,7 +887,7 @@ static bool header_library(void)
 		return FALSE;
 
 	if (!PATTERN_is_string(*JOB->current))
-		THROW("Library name must be a string");
+		THROW("Extern library name must be a string");
 
 	JOB->default_library = PATTERN_index(*JOB->current);
 	JOB->current++;
@@ -982,19 +982,26 @@ static bool header_use(void)
 	if (!TRANS_is(RS_USE))
 		return FALSE;
 
-	if (!PATTERN_is_string(*JOB->current))
-		THROW("USE must be followed by a string");
-
 	CLASS_begin_init_function(JOB->class, FUNC_INIT_STATIC);
 
-	TRANS_string(*JOB->current);
+	for(;;)
+	{
+		if (!PATTERN_is_string(*JOB->current))
+			THROW("Component name must be a string");
 
-	JOB->current++;
+		TRANS_string(*JOB->current);
+		TRANS_subr(TS_SUBR_USE, 1);
+		CODE_drop();
+
+		JOB->current++;
+
+		if (!TRANS_is(RS_COMMA))
+			break;
+	}
+
 	if (!PATTERN_is_newline(*JOB->current))
 		THROW("Syntax error");
 
-	TRANS_subr(TS_SUBR_USE, 1);
-	CODE_drop();
 	return TRUE;
 }
 
