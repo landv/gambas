@@ -169,6 +169,8 @@ Private Sub DoLayout()
   $fMaxPageWidth = $fMaxPageWidth * $fzoom
   $fMaxPageHeight = $fMaxPageHeight * $fzoom
   $fScaledSpace = $iSpace * $fzoom
+  '$fScaledDocHeight = $iDocHeight * $fzoom
+  '$fScaledDocWidth = $iDocWidth * $fzoom
   
   'Calculate the Max doc per line (mini 1 doc)
   $iNbreDocByLine = Max(($hView.ClientW - $fScaledSpace) / ($fMaxPageWidth + $fScaledSpace), 1)
@@ -179,7 +181,7 @@ Private Sub DoLayout()
   Debug "Nombre de lignes : " & $iNbreLines
   
   'Calculate the first visible line
-  $iFirstVisibleLine = Floor($hView.ScrollY / ($fMaxPageHeight + $iSpace))
+  $iFirstVisibleLine = Floor($hView.ScrollY / ($fMaxPageHeight + $fScaledSpace))
   $iFirstVisibleDocument = $iFirstVisibleLine * $iNbreDocByLine 
   Debug "Premier doc visible : " & $iFirstVisibleDocument
   'Calculate how many doc are visibles
