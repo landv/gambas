@@ -110,6 +110,7 @@ COMP_INFO COMP_res_info[] =
 	{ "Let"                                                       },
 	{ "+Inf"                                                      },
 	{ "-Inf"                                                      },
+	{ "Use"                                                       },
 
 	{ "Print"                                                     },
 	{ "Input"                                                     },
@@ -507,6 +508,7 @@ SUBR_INFO COMP_subr_info[] =
 
 #ifndef __EVAL_RESERVED_C
 	{ ".Sleep",            88,  0,  1     },
+	{ ".Use",              88,  1,  1     },
 #endif
 
 	{ "VarPtr",            89,  0,  1     },

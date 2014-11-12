@@ -227,6 +227,7 @@ void CLASS_delete(CLASS **class);
 
 CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global);
 void CLASS_check_unused_global(CLASS *class);
+void CLASS_begin_init_function(CLASS *class, int type);
 
 void CLASS_add_function(CLASS *class, TRANS_FUNC *decl);
 void CLASS_add_event(CLASS *class, TRANS_EVENT *decl);

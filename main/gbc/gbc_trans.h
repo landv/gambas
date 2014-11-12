@@ -99,7 +99,8 @@ enum {
 	TS_SUBR_OPEN_MEMORY,
 	TS_SUBR_CHMOD,
 	TS_SUBR_CHOWN,
-	TS_SUBR_CHGRP
+	TS_SUBR_CHGRP,
+	TS_SUBR_USE
 	};
 
 enum {
@@ -157,6 +158,7 @@ void TRANS_operation(short op, short nparam, bool output, PATTERN previous);
 void TRANS_new(void);
 TYPE TRANS_variable_get_type(void);
 void TRANS_class(int index);
+bool TRANS_string(PATTERN pattern);
 
 /* trans_tree.c */
 
@@ -242,6 +244,7 @@ void TRANS_error(void);
 void TRANS_scan(void);
 void TRANS_randomize(void);
 void TRANS_mid(void);
+void TRANS_use(void);
 
 #endif
 

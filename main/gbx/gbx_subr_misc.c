@@ -76,19 +76,31 @@ void SUBR_wait(ushort code)
 }
 
 
-void SUBR_sleep(void)
+void SUBR_sleep(ushort code)
 {
-	double wait;
-	struct timespec rem;
-
 	SUBR_ENTER_PARAM(1);
 
-	wait = SUBR_get_float(PARAM);
+	if ((code & 0x3F) == 0)
+	{
+		double wait;
+		struct timespec rem;
 
-	rem.tv_sec = (time_t)(int)wait;
-	rem.tv_nsec = (int)(frac(wait) * 1E9);
+		wait = SUBR_get_float(PARAM);
 
-	while (nanosleep(&rem, &rem) < 0);
+		rem.tv_sec = (time_t)(int)wait;
+		rem.tv_nsec = (int)(frac(wait) * 1E9);
+
+		while (nanosleep(&rem, &rem) < 0);
+	}
+	else
+	{
+		char *name = SUBR_get_string(PARAM);
+		COMPONENT *comp = COMPONENT_find(name);
+		if (!comp)
+			comp = COMPONENT_create(name);
+
+		COMPONENT_load(comp);
+	}
 
 	SUBR_LEAVE();
 }

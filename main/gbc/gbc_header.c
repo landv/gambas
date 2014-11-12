@@ -36,6 +36,7 @@
 #include "gbc_compile.h"
 #include "gbc_trans.h"
 #include "gbc_header.h"
+#include "gb_code.h"
 
 /*#define DEBUG*/
 
@@ -976,6 +977,28 @@ static bool header_structure(void)
 	return TRUE;
 }
 
+static bool header_use(void)
+{
+	if (!TRANS_is(RS_USE))
+		return FALSE;
+
+	if (!PATTERN_is_string(*JOB->current))
+		THROW("USE must be followed by a string");
+
+	CLASS_begin_init_function(JOB->class, FUNC_INIT_STATIC);
+
+	TRANS_string(*JOB->current);
+
+	JOB->current++;
+	if (!PATTERN_is_newline(*JOB->current))
+		THROW("Syntax error");
+
+	TRANS_subr(TS_SUBR_USE, 1);
+	CODE_drop();
+	return TRUE;
+}
+
+
 static void check_class_header()
 {
 	while (TRUE) //(JOB->current < JOB->end)
@@ -1072,6 +1095,9 @@ void HEADER_do(void)
 			continue;
 
 		if (header_library())
+			continue;
+
+		if (header_use())
 			continue;
 
 		/*if (PATTERN_is_command(*JOB->current))

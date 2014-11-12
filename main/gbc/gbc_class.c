@@ -623,8 +623,6 @@ int CLASS_add_unknown(CLASS *class, int index)
 	return num;
 }
 
-
-
 int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
 {
 	CLASS_ARRAY *desc;
@@ -644,12 +642,20 @@ int CLASS_add_array(CLASS *class, TRANS_ARRAY *array)
 	return num;
 }
 
+
+void CLASS_begin_init_function(CLASS *class, int type)
+{
+	FUNCTION *func = &class->function[type];
+	CODE_begin_function(func);
+	JOB->func = func;
+}
+
+
 void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 {
 	CLASS_SYMBOL *sym = CLASS_declare(class, decl->index, TRUE);
 	VARIABLE *var;
 	int count;
-	FUNCTION *func;
 
 	sym->global.type = decl->type;
 
@@ -673,10 +679,8 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 
 		//class->size_stat += var->size;
 
-		func = &class->function[FUNC_INIT_STATIC];
-		CODE_begin_function(func);
-		JOB->func = func;
-		
+		CLASS_begin_init_function(class, FUNC_INIT_STATIC);
+
 		if (TRANS_has_init_var(decl))
 		{
 			FUNCTION_add_all_pos_line();
@@ -700,10 +704,8 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 
 		//class->size_dyn += var->size;
 		
-		func = &class->function[FUNC_INIT_DYNAMIC];
-		CODE_begin_function(func);
-		JOB->func = func;
-		
+		CLASS_begin_init_function(class, FUNC_INIT_DYNAMIC);
+
 		if (TRANS_has_init_var(decl))
 		{
 			FUNCTION_add_all_pos_line();

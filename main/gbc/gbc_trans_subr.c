@@ -56,7 +56,7 @@ static void trans_subr(int subr, int nparam)
 		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
 		{ ".LockWait" }, { ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" },
 		{ ".Randomize" }, { ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" },
-		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }
+		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }, { ".Use" }
 	};
 
 	TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -952,6 +952,8 @@ void TRANS_mid()
 	
 	JOB->current = save;
 }
+
+
 
 #if 0
 void TRANS_scan(void)

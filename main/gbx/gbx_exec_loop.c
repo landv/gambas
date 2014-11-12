@@ -352,7 +352,7 @@ void EXEC_loop(void)
 		/* 95 Free            */  &&_SUBR,
 		/* 96 Realloc         */  &&_SUBR_CODE,
 		/* 97 StrPtr          */  &&_SUBR_CODE,
-		/* 98 Sleep           */  &&_SUBR,
+		/* 98 Sleep...        */  &&_SUBR_CODE,
 		/* 99 VarPtr          */  &&_SUBR_CODE,
 		/* 9A Collection      */  &&_SUBR_CODE,
 		/* 9B Tr$             */  &&_SUBR,

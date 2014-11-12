@@ -158,6 +158,14 @@ static void push_string(int index, bool trans)
 	}
 }
 
+bool TRANS_string(PATTERN pattern)
+{
+	if (!PATTERN_is_string(pattern))
+		return TRUE;
+	push_string(PATTERN_index(pattern), FALSE);
+	return FALSE;
+}
+
 
 void TRANS_class(int index)
 {

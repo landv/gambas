@@ -991,9 +991,15 @@ __SHELL:
 	
 	// TODO: The following works with bash, but not with dash!
 	
+	STRING_make_char('\'');
+
 	for (i = 0; i < lstr; i++)
 	{
 		c = str[i];
+		if (c == '\'')
+			STRING_make_char(c);
+		STRING_make_char(c);
+		/*
 		if (c == '\n')
 			STRING_make("$'\\n'", 5);
 		else if (c == '\r')
@@ -1012,8 +1018,11 @@ __SHELL:
 			STRING_make_char('\\');
 			STRING_make_char(c);
 		}
+		*/
 	}
 	
+	STRING_make_char('\'');
+
 	goto __END;
 
 __HTML:

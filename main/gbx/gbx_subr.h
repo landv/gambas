@@ -238,7 +238,7 @@ void SUBR_make(ushort code);
 void SUBR_error(void);
 void SUBR_shell(void);
 void SUBR_wait(ushort code);
-void SUBR_sleep(void);
+void SUBR_sleep(ushort code);
 void SUBR_exec(ushort code);
 void SUBR_eval(ushort code);
 void SUBR_array(ushort code);

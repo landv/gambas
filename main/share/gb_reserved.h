@@ -163,6 +163,7 @@ typedef
 		RS_LET,
 		RS_PINF,
 		RS_MINF,
+		RS_USE,
 
 		RS_PRINT,
 		RS_INPUT,
