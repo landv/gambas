@@ -750,17 +750,18 @@ Private Function GetSymbolType(aSym As String[]) As String
     hSym = Symbols[sName]
     sName = Replace(sName, ":", ".")
     If hSym.Class <> Name Or If hSym.Component <> Component Then
-      sRes &= "*[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]*&nbsp;&nbsp;\n"
-    Else If hSym.Class <> Wiki.Class Or If hSym.Component <> Wiki.Component Then
       sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;\n"
+    Else If hSym.Class <> Wiki.Class Or If hSym.Component <> Wiki.Component Then
+      sRes &= "<span class=\"inherit\">~[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]~</span>&nbsp;&nbsp;\n"
     Else
-      sRes &= "[./" & LCase(sName) & "]&nbsp;&nbsp;\n"
+      sRes &= "<span class=\"inherit\">~[./" & LCase(sName) & "]~</span>&nbsp;&nbsp;\n"
     Endif
   Next
 
   Return sRes
 
 End
+
 
 Public Function WikiGetSymbols() As String[]
 
@@ -771,15 +772,17 @@ Public Function WikiGetSymbols() As String[]
   Dim bDynamic As Boolean
   Dim bStatic As Boolean
   Dim sBreak As String
-  'Dim sPrefix As String
+  Dim sPrefix As String
   Dim aArray As String[]
   Dim bHasSymbols As Boolean
+  Dim bHasDynamicVariable As Boolean
+  Dim sCreatable As String
 
   If Symbols.Count Then
 
     For Each sSymbol In ["P", "C", "M", "p", "e", "m"]
       cSymbol[sSymbol] = New String[]
-      'cSymbol[">" & sSymbol] = New String[]
+      cSymbol[">" & sSymbol] = New String[]
     Next
 
     For Each hSym In Symbols
@@ -790,17 +793,19 @@ Public Function WikiGetSymbols() As String[]
 
       Select Case hSym.Kind
         Case "r", "p", "v"
-          cSymbol["p"].Add(hSym.Name)
+          cSymbol[sPrefix & "p"].Add(hSym.Name)
+          If hSym.Kind = "v" Then bHasDynamicVariable = True
         Case "R", "P", "V"
-          cSymbol["P"].Add(hSym.Name)
+          cSymbol[sPrefix & "P"].Add(hSym.Name)
         Case "C"
-          cSymbol["C"].Add(hSym.Name)
+          cSymbol[sPrefix & "C"].Add(hSym.Name)
         Case ":", "e", "E"
-          cSymbol["e"].Add(hSym.Name)
+          hSym.Kind = "e"
+          cSymbol[sPrefix & "e"].Add(hSym.Name)
         Case "m"
-          cSymbol["m"].Add(hSym.Name)
+          cSymbol[sPrefix & "m"].Add(hSym.Name)
         Case "M"
-          cSymbol["M"].Add(hSym.Name)
+          cSymbol[sPrefix & "M"].Add(hSym.Name)
         Default
           Print hSym.Kind; " ?"
       End Select
@@ -826,7 +831,8 @@ Public Function WikiGetSymbols() As String[]
 
   Endif
 
-  aResult.Add("[[")
+  'aResult.Add("### Symbols")
+  aResult.Add("[[ desc")
   aResult.Add("==")
   
   sBreak = "\\\n"
@@ -852,19 +858,33 @@ Public Function WikiGetSymbols() As String[]
   
   If IsVirtual() Then
     aResult.Add(("This class is virtual.") & "\\")
-  Else If AutoCreatable And If bDynamic Then
+  Else If AutoCreatable Then
     aResult.Add(("This class can be used like an object by creating a hidden instance on demand.") & "\\")
   Endif
 
-  If Symbols.Exist("_new") And If Creatable And If Not IsVirtual() Then
-    'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
-    aResult.Add(Subst(("This class is &1."), Wiki.GetSymbolLink(Me, "_new", ("creatable"))) & "\\")
-  Else
-    If Not bDynamic Then
-      aResult.Add(("This class is static.") & "\\")
-    Else
-      aResult.Add(("This class is not creatable.") & "\\")
+  sCreatable = ""
+  
+  If Creatable And If Not IsVirtual() Then
+    If Symbols.Exist("_new") Then
+      'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
+      sCreatable = Subst(("This class is &1."), Wiki.GetSymbolLink(Me, "_new", ("creatable"))) & "\\"
+    Else 
+      sCreatable = Subst(("This class is &1."), ("creatable")) & "\\"
     Endif
+  Endif
+  
+  If Not sCreatable Then
+    If Not bDynamic Then
+      sCreatable = ("This class is static.") & "\\"
+    Else
+      sCreatable = ("This class is not creatable.") & "\\"
+    Endif
+  Endif
+  
+  aResult.Add(sCreatable)
+
+  If Symbols.Exist("_call") Then
+    aResult.Add(Subst(("This class can be used as a &1."), Wiki.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
   Endif
 
   hSym = Symbols["_get"]
@@ -888,11 +908,8 @@ Public Function WikiGetSymbols() As String[]
     aResult.Add(Subst(("This class is &1 with the &2 keyword."), Wiki.GetSymbolLink(Me, "_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
   Endif
 
-  If Symbols.Exist("_call") Then
-    aResult.Add(Subst(("This class can be used as a &1."), Wiki.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
-  Endif
-
-  If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
+  'If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")
+  'If bHasSymbols Then aResult.Add("\\")
 
   If bStatic Then
 
@@ -955,17 +972,7 @@ Catch
   Return ["`" & Error.Where & ": " & Error.Text & "`"]
 
 End
-' 
-' Public Sub HasEvents() As Boolean
-' 
-'   Dim hSym As CSymbolInfo
-' 
-'   For Each hSym In Symbols
-'     If hSym.IsHidden() Then Continue
-'     If InStr(":eE", hSym.Kind) Then Return True
-'   Next
-' 
-' End
+
 
 Public Sub AddSymbol(hSym As CSymbolInfo)
   

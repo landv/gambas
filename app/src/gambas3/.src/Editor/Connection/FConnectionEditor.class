@@ -1877,8 +1877,6 @@ Private Sub SaveTableDef()
   Dim hConfig As Settings
   Dim hTable As Table
   
-  hConfig = New Settings(Path, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
-  
   For Each hTable In $hConn.Tables
     
     If hTable.System Then Continue
@@ -1887,5 +1885,8 @@ Private Sub SaveTableDef()
     
     
   Next
+  
+  hConfig = New Settings(Path, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  
   
 End

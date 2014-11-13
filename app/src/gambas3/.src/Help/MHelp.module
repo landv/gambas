@@ -926,7 +926,7 @@ Public Sub MakeOffline(hWebView As WebView, sUrl As String, Optional bNoHeader A
           If bNoHeader Then 
             Print "<style type=\"text/css\">"
             Print ".header { display: none; }"
-            Print ".page { padding-top: 4px; }"
+            Print ".page { top: 0; }"
             Print "</style>"
           Endif
       End Select

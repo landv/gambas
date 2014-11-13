@@ -59,7 +59,6 @@ Public Sub Command(sCommand As String) As String[]
   Dim aArg As String[]
   Dim sDir As String
   Dim aResult As String[]
-  Dim I As Integer
   Dim iPos As Integer
   Dim sPath As String
   Dim sLetter, sLast As String
@@ -69,6 +68,8 @@ Public Sub Command(sCommand As String) As String[]
   Dim hSym As CSymbolInfo
   Dim sTitle As String
   Dim sClass As String
+  Dim iStart As Integer
+  Dim I, J, K, N, NC As Integer
   
   aArg = Split(sCommand, " ", Chr$(34))
   sCommand = aArg[0]
@@ -81,6 +82,13 @@ Public Sub Command(sCommand As String) As String[]
       aResult = New String[]
       aDir = New String[]
       
+      NC = 2
+      For I = 1 To aArg.Max
+        If aArg[I] Begins "col=" Then
+          Try NC = CInt(Mid$(aArg[I], 5))
+        Endif
+      Next
+      
       If IsDir(sDir) Then
         
         For Each sDir In Dir(sDir, "*", gb.Directory)
@@ -88,29 +96,38 @@ Public Sub Command(sCommand As String) As String[]
           If Not Wiki.ExistPage(sPath) Then Continue
           sTitle = Wiki.GetPageTitle(sPath)
           If aArg.Count > 2 And If Comp(Left(sTitle, Len(aArg[2])), aArg[2], gb.Language + gb.IgnoreCase) = 0 Then sTitle = LTrim(Mid$(sTitle, Len(aArg[2]) + 1))
+          
+          Do
+            sLetter = String.Left(sTitle)
+            If Len(sLetter) > 1 Then Break
+            If Not IsPunct(sLetter) Then Break
+            If Not sTitle Then Break
+            sTitle = String.Mid$(sTitle, 2)
+          Loop
+          
+          If Not sTitle Then sTitle = " "
+          
           aDir.Add(sTitle & "\n[" & sPath & "]")
         Next
         
         If aDir.Count Then
 
-          aResult.Add("[[ index")
-          aResult.Add("==")
+          aResult.Add("<table class=\"no-border full\">")
             
           aDir.Sort(gb.Natural + gb.IgnoreCase)
           
+          iStart = 0
           For I = 0 To aDir.Max
-            If I Then aResult.Add("==")
-            iPos = InStr(aDir[I], "\n")
             sLetter = String.UCase(String.Left(aDir[I]))
             If sLetter <> sLast Then
-              aResult.Add("<div class=\"letter\">" & sLetter & "</div>")
+              If I Then GoSub MAKE_INDEX_LETTER
               sLast = sLetter
+              iStart = I
             Endif
-            aResult.Add("--")
-            aResult.Add(Mid$(aDir[I], iPos + 1) & "\\")
           Next
+          GoSub MAKE_INDEX_LETTER
           
-          aResult.Add("]]")
+          aResult.Add("</table>")
           
         Endif
         
@@ -175,6 +192,31 @@ Public Sub Command(sCommand As String) As String[]
     Return ["**COMMAND: `" & sCommand & "`**"]
     
   Endif
+  
+MAKE_INDEX_LETTER:
+  
+  aResult.Add("<tr><td><div class=\"letter\">" & sLast & "&nbsp;</div></td>")
+  
+  N = (I - iStart + NC - 1) \ NC 
+  J = iStart
+  
+  For K = 1 To NC
+    
+    aResult.Add("<td width=\"" & CStr(100 \ NC) & "%\">")
+  
+    For J = J To J + N - 1
+      If J >= I Then Break
+      iPos = InStr(aDir[J], "\n")
+      aResult.Add(Mid$(aDir[J], iPos + 1) & "\\")
+    Next
+  
+    aResult.Add("</td>")
+    
+  Next
+  
+  aResult.Add("</tr>")
+  
+  Return
   
 End
 
