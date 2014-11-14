@@ -799,6 +799,30 @@ m
 #DocumentView
 UserControl
 C
+_Properties
+C
+s
+*,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding,Spacing,ShowShadow
+_Group
+C
+s
+View
+_Similar
+C
+s
+GridView
+_ShowPageNumber
+v
+b
+
+Portrait
+C
+i
+0
+Paysage
+C
+i
+1
 DocWidth
 p
 i
@@ -817,7 +841,7 @@ i
 
 Layout
 r
-_DocumentLayout
+_DocumentItem
 
 Zoom
 p
@@ -827,6 +851,26 @@ Scale
 p
 f
 
+Arrangement
+p
+i
+
+VisibleCount
+p
+i
+
+Padding
+p
+i
+
+Spacing
+p
+i
+
+ShowShadow
+p
+b
+
 :Layout
 :
 
@@ -835,6 +879,10 @@ f
 :
 
 (Page)i(Width)i(Height)i
+:Zoom
+:
+
+
 _new
 m
 
@@ -859,7 +907,19 @@ View_Scroll
 m
 
 
+Refresh
+m
+
+
 tmrRefresh_Timer
+m
+
+
+Goto
+m
+
+(Page)i
+View_MouseWheel
 m
 
 
@@ -2948,7 +3008,7 @@ _View
 v
 DateChooser
 
-#_DocumentLayout
+#_DocumentItem
 
 C
 Width

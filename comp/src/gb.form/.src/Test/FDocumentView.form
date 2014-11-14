@@ -1,13 +1,57 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,97,64)
-  Arrangement = Arrange.Vertical
-  { DocumentView1 DocumentView
-    MoveScaled(4,1,73,52)
+  MoveScaled(0,0,131,68)
+  Arrangement = Arrange.Horizontal
+  { DV DocumentView
+    MoveScaled(2,4,78,58)
     Expand = True
   }
-  { SpinBox1 SpinBox
-    MoveScaled(7,56,79,5)
+  { Panel1 Panel
+    MoveScaled(84,1,39,55)
+    { SliderBox1 SliderBox
+      MoveScaled(10,10,25,4)
+      MaxValue = 200
+    }
+    { Label2 Label
+      MoveScaled(2,10,8,4)
+      Text = ("Zoom :")
+    }
+    { CheckBox1 CheckBox
+      MoveScaled(2,42,26,3)
+      Text = ("Show Shadow")
+      Value = CheckBox.True
+    }
+    { SpinBox2 SpinBox
+      MoveScaled(17,24,19,4)
+    }
+    { Label3 Label
+      MoveScaled(1,24,14,4)
+      Text = ("Padding")
+    }
+    { Label4 Label
+      MoveScaled(1,30,14,4)
+      Text = ("Spacing")
+    }
+    { SpinBox3 SpinBox
+      MoveScaled(17,30,19,4)
+    }
+    { Label5 Label
+      MoveScaled(1,36,11,4)
+      Text = ("Scale Mode")
+    }
+    { TextBox1 TextBox
+      MoveScaled(8,49,19,4)
+    }
+    { Label6 Label
+      MoveScaled(2,49,7,4)
+      Text = ("Goto :")
+    }
+    { ComboBox1 ComboBox
+      MoveScaled(17,36,18,4)
+      ReadOnly = True
+      List = [("None"), ("Horizontal"), ("Vertical"), ("Row"), ("Column"), ("Fill")]
+      Text = ("ComboBox1")
+    }
   }
 }

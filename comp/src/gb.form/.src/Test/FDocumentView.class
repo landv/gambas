@@ -1,37 +1,75 @@
 ' Gambas class file
 
-Public Sub _new()
-'$Pdf.Open("/home/fabien/Downloads/IntroProgBash.pdf")
-DocumentView1.Count = 10
-DocumentView1.Zoom = 0.5
+Class PdfDocument
+
+Private hpdf As New PdfDocument
+Static Public Sub _init()
+  
+  Component.Load("gb.pdf")
+  
 End
+
 
 Public Sub Form_Open()
-
-End
-
-Public Sub SpinBox1_Change()
-
-  DocumentView1.Zoom = Last.value / 100
   
+  hpdf.Open("/home/fabien/Downloads/IntroProgBash.pdf")
+  DV.Count = hpdf.Count
+  'DocumentView31.Arrangement = Arrange.Horizontal
+  ComboBox1.Index = 0
+End
+
+Public Sub DV_Layout(Page As Integer)
+
+  Last.Layout.Height = hpdf[Page + 1].Height / 0.72
+  Last.Layout.Width = hpdf[Page + 1].Width / 0.72
 
 End
 
-Public Sub DocumentView1_Layout(Page As Integer)
-Print
-  If Page = 2 Then
-    
-    Last.Layout.Width = 10
-    Last.Layout.Height = 10
-    
-    
-    
-  Endif
+Public Sub SpinBox3_Change()
+
+  DV.Spacing = Last.Value
 
 End
 
-Public Sub DocumentView1_MouseDown()
+Public Sub SpinBox2_Change()
 
-  
+  DV.Padding = Last.Value
+
+End
+
+Public Sub CheckBox1_Click()
+
+  DV.ShowShadow = Last.Value
+
+End
+Public Sub DV_Draw(Page As Integer, Width As Integer, Height As Integer)
+
+  'Debug "Load image : " & Page & "   | " & Width & " | " & height
+  Draw.Image(hpdf[Page + 1].Image, 0, 0)
+End
+
+Public Sub DV_Zoom()
+  'Print Last.Zoom
+  hpdf.Zoom = Last.Zoom / 0.72
+ Object.Lock(SliderBox1)
+ SliderBox1.Value = Last.Zoom * 100
+ Object.Unlock(SliderBox1)
+End
+
+Public Sub SliderBox1_Change()
+
+  DV.Zoom = Last.Value / 100
+
+End
+
+Public Sub ComboBox1_Click()
+
+  DV.Arrangement = Last.index
+
+End
+
+Public Sub TextBox1_Activate()
+
+  DV.Goto(Last.Text)
 
 End
