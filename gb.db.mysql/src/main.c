@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 
 #include <mysql.h>
 
@@ -48,7 +49,15 @@ static char _buffer[125];
 static DB_DRIVER _driver;
 /*static int _print_query = FALSE;*/
 
+// Cached queries
+#define CACHE(_db) ((GB_HASHTABLE)(_db)->data)
 
+typedef
+	struct {
+		MYSQL_RES *res;
+		time_t timestamp;
+	}
+	CACHE_ENTRY;
 
 /* internal function to quote a value stored as a string */
 
@@ -460,8 +469,7 @@ static void check_connection(MYSQL *conn)
 
 /* Internal function to run a query */
 
-static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
-										const char *qtemp, int nsubst, ...)
+static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres, const char *qtemp, int nsubst, ...)
 {
 	MYSQL *conn = (MYSQL *)db->handle;
 	va_list args;
@@ -508,6 +516,62 @@ static int do_query(DB_DATABASE *db, const char *error, MYSQL_RES **pres,
 	return ret;
 }
 
+static int do_query_cached(DB_DATABASE *db, const char *error, MYSQL_RES **pres, char *key, const char *qtemp, int nsubst, ...)
+{
+	CACHE_ENTRY *entry;
+	int len_key;
+	bool added;
+	time_t t;
+	va_list args;
+	int i;
+	const char *query;
+	int ret;
+
+	if (nsubst)
+	{
+		va_start(args, nsubst);
+		if (nsubst > 3)
+			nsubst = 3;
+		for (i = 0; i < nsubst; i++)
+			query_param[i] = va_arg(args, char *);
+
+		query = DB.SubstString(qtemp, 0, query_get_param);
+		key = DB.SubstString(key, 0, query_get_param);
+	}
+	else
+		query = qtemp;
+
+	len_key = strlen(key);
+	added = GB.HashTable.Get(CACHE(db), key, len_key, POINTER(&entry));
+	if (added)
+	{
+		GB.AllocZero(POINTER(&entry), sizeof(CACHE_ENTRY));
+		GB.HashTable.Add(CACHE(db), key, len_key, entry);
+	}
+
+	t = time(NULL);
+
+	//fprintf(stderr, "-- do_query_cached: %s [ %p %ld ]\n", key, entry->res, entry->timestamp);
+
+	if (entry->res &&  (t - entry->timestamp) < 30)
+	{
+		mysql_data_seek(entry->res, 0);
+		*pres = entry->res;
+		return 0;
+	}
+
+	entry->timestamp = t;
+
+	if (entry->res)
+		mysql_free_result(entry->res);
+
+	ret = do_query(db, error, &entry->res, query, 0);
+	if (ret == 0)
+		*pres = entry->res;
+	return ret;
+}
+
+
 /* Internal function to return database version number as a XXYYZZ integer number*/
 
 static int db_version(DB_DATABASE *db)
@@ -549,6 +613,41 @@ static bool search_result(MYSQL_RES *res, const char *name, MYSQL_ROW *row)
 	}
 		
 	return (i >= mysql_num_rows(res));
+}
+
+// Clear the query cache
+
+static void free_cache(void *data)
+{
+	GB.Free(&data);
+}
+
+static void clear_cache(DB_DATABASE *db)
+{
+	GB.HashTable.Enum(CACHE(db), free_cache);
+	GB.HashTable.Free((GB_HASHTABLE *)&db->data);
+}
+
+static void remove_cache_entry(DB_DATABASE *db, char *key)
+{
+	CACHE_ENTRY *entry;
+
+	if (GB.HashTable.Get(CACHE(db), key, -1, POINTER(&entry)))
+		return;
+
+	mysql_free_result(entry->res);
+	GB.Free(POINTER(&entry));
+	GB.HashTable.Remove((GB_HASHTABLE *)&db->data, key, -1);
+}
+
+static void clear_table_cache(DB_DATABASE *db, const char *table)
+{
+	char key[strlen(table) + 5];
+
+	strcpy(key, "sts:"); strcat(key, table); remove_cache_entry(db, key);
+	strcpy(key, "sc:"); strcat(key, table); remove_cache_entry(db, key);
+	strcpy(key, "sfc:"); strcat(key, table); remove_cache_entry(db, key);
+	strcpy(key, "si:"); strcat(key, table); remove_cache_entry(db, key);
 }
 
 /*****************************************************************************
@@ -660,12 +759,12 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 		return TRUE;
 	}
 
-	/* set dbversion */
 	db->handle = conn;
 	db->version = db_version(db);
 
 	set_character_set(db);
 	
+	GB.HashTable.New(POINTER(&db->data), GB_COMP_BINARY);
 	/* flags: none at the moment */
 	return FALSE;
 }
@@ -684,6 +783,8 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 static void close_database(DB_DATABASE *db)
 {
 	MYSQL *conn = (MYSQL *)db->handle;
+
+	clear_cache(db);
 
 	if (conn)
 		mysql_close(conn);
@@ -1282,8 +1383,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 
 static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 {
-	char *qindex =
-		"show index from `&1`";
+	char *qindex = "show index from `&1`";
 
 	MYSQL_RES *res;
 	MYSQL_ROW row;
@@ -1291,7 +1391,7 @@ static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 
 	/* Index primaire */
 
-	if (do_query(db, "Unable to get primary index: &1", &res, qindex, 1, table))
+	if (do_query_cached(db, "Unable to get primary index: &1", &res, "si:&1", qindex, 1, table))
 		return TRUE;
 
 	for ( i = 0, n = 0;  i < mysql_num_rows(res); i++ )
@@ -1329,7 +1429,6 @@ static int table_index(DB_DATABASE *db, const char *table, DB_INFO *info)
 		}
 	}
 
-	mysql_free_result(res);
 	return FALSE;
 }
 
@@ -1367,17 +1466,11 @@ static void table_release(DB_DATABASE *db, DB_INFO *info)
 static int table_exist(DB_DATABASE *db, const char *table)
 {
 	MYSQL_RES *res;
-	int exist;
 
-	const char *query =
-		"show tables like '&1'";
-
-	if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
+	if (do_query_cached(db, "Unable to check table: &1", &res, "st", "show tables", 0))
 		return FALSE;
 
-	exist = !search_result(res, table, NULL);
-	mysql_free_result(res);
-	return exist;
+	return !search_result(res, table, NULL);
 }
 
 
@@ -1401,24 +1494,20 @@ static int table_list(DB_DATABASE *db, char ***tables)
 {
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	long i;
-	long rows;
+	int i;
+	int rows;
 
-	const char *query =
-		"show tables";
-
-	if (do_query(db, "Unable to get tables", &res, query, 0))
+	if (do_query_cached(db, "Unable to get tables", &res, "st", "show tables", 0))
 		return -1;
 
 	rows = mysql_num_rows(res);
 	GB.NewArray(tables, sizeof(char *), rows);
 
-	for (i = 0; i < rows; i++){
+	for (i = 0; i < rows; i++)
+	{
 		row = mysql_fetch_row(res);
 		(*tables)[i] = GB.NewZeroString(row[0]);
 	}
-
-	mysql_free_result(res);
 
 	return rows;
 }
@@ -1440,14 +1529,13 @@ static int table_list(DB_DATABASE *db, char ***tables)
 
 static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary)
 {
-	const char *query =
-		"show index from `&1`";
+	const char *query = "show index from `&1`";
 
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	int i;
 
-	if (do_query(db, "Unable to get primary key: &1", &res, query, 1, table))
+	if (do_query_cached(db, "Unable to get primary key: &1", &res, "si:&1", query, 1, table))
 		return TRUE;
 
 	GB.NewArray(primary, sizeof(char *), 0);
@@ -1458,8 +1546,6 @@ static int table_primary_key(DB_DATABASE *db, const char *table, char ***primary
 		if (strcmp("PRIMARY", row[2]) == 0)
 			*(char **)GB.Add(primary) = GB.NewZeroString(row[4]);
 	}
-
-	mysql_free_result(res);
 
 	return FALSE;
 }
@@ -1486,28 +1572,7 @@ static int database_is_system(DB_DATABASE *db, const char *name);
 
 static int table_is_system(DB_DATABASE *db, const char *table)
 {
-	MYSQL_RES *res;
-	MYSQL_ROW row;
-	int system;
-
-	if (do_query(db, "Unable to check database: &1", &res, "select database()", 0))
-		return FALSE;
-
-	if (mysql_num_rows(res) != 1 )
-	{
-		GB.Error("Unable to check database: More than one current database !?");
-		return FALSE;
-	}
-
-	/* (BM) Check that the current database is mysql */
-	/* (BM) All tables of 'mysql' database are system */
-
-	row = mysql_fetch_row(res);
-	system = database_is_system(db, row[0]);
-
-	mysql_free_result(res);
-
-	return system;
+	return db->flags.system;
 }
 
 
@@ -1528,8 +1593,7 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 {
 	static char buffer[16];
 
-	const char *query =
-		"show table status like '&1'";
+	const char *query = "show table status like '&1'";
 
 	const char *update =
 		"alter table `&1` type = &2";
@@ -1537,14 +1601,15 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 
-	if (settype){
-		if (do_query(db, "Cannot set table &1 to type &2", &res, update, 2, table, settype))
+	if (settype)
+	{
+		clear_table_cache(db, table);
+		if (do_query(db, "Cannot set table type: &1", &res, update, 2, table, settype))
 				return NULL;
 	}
 
-	if (do_query(db, "Invalid table: &1", &res, query, 1, table)){
+	if (do_query_cached(db, "Invalid table: &1", &res, "sts:&1", query, 1, table))
 		return NULL;
-	}
 
 	if (search_result(res, table, &row))
 	{
@@ -1555,7 +1620,6 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 	if (!row[1]) return "VIEW"; // the table is a view
 
 	strcpy(buffer, row[1]);
-	mysql_free_result(res);
 	return buffer;
 }
 
@@ -1576,6 +1640,8 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *settype)
 
 static int table_delete(DB_DATABASE *db, const char *table)
 {
+	clear_table_cache(db, table);
+	remove_cache_entry(db, "st");
 	return do_query(db, "Unable to delete table: &1", NULL, "drop table `&1`", 1, table);
 }
 
@@ -1684,7 +1750,6 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 				DB.Query.Add(" NOT NULL");
 			}
 		}
-
 	}
 
 	if (primary)
@@ -1726,6 +1791,7 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 		DB.Query.Add(tabletype);
 	}
 
+	remove_cache_entry(db, "st");
 	/* printf("table_create syntax: %s\n", DB.Query.Get());*/
 	return do_query(db, "Cannot create table: &1", NULL, DB.Query.Get(), 0);
 }
@@ -1746,19 +1812,14 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 
 static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
-	const char *query =
-			"show columns from `&1` like '&2'";
+	const char *query = "show columns from `&1`";
 
 	MYSQL_RES *res;
-	int exist;
 
-	if (do_query(db, "Unable to check field: &1", &res, query, 2, table, field))
+	if (do_query_cached(db, "Unable to check field: &1", &res, "sc:&1", query, 1, table))
 		return FALSE;
 
-	exist = !search_result(res, field, NULL);
-	mysql_free_result(res);
-
-	return exist;
+	return !search_result(res, field, NULL);
 }
 
 
@@ -1782,14 +1843,13 @@ static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 
 static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
-	const char *query =
-		"show columns from `&1`";
+	const char *query = "show columns from `&1`";
 
 	long i, n;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 
-	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
+	if (do_query_cached(db, "Unable to get field: &1", &res, "sc:&1", query, 1, table))
 		return -1;
 
 	n = mysql_num_rows(res);
@@ -1804,7 +1864,6 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 		}
 	}
 
-	mysql_free_result(res);
 	return n;
 }
 
@@ -1827,7 +1886,7 @@ static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 
 static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
-	const char *query = "show full columns from `&1` like '&2'";
+	const char *query = "show full columns from `&1`";
 
 	MYSQL_RES *res;
 	MYSQL_ROW row;
@@ -1836,7 +1895,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	int type;
 	long len = 0;
 
-	if (do_query(db, "Unable to get field info: &1", &res, query, 2, table, field))
+	if (do_query_cached(db, "Unable to get field info: &1", &res, "sfc:&1", query, 1, table))
 		return TRUE;
 
 	if (search_result(res, field, &row))
@@ -1889,7 +1948,6 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	else
 		info->collation = NULL;
 
-	mysql_free_result(res);
 	return FALSE;
 }
 
@@ -1909,14 +1967,13 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 {
-	const char *query =
-			"show index from `&1`";
+	const char *query = "show index from `&1`";
 
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	int i, n;
 
-	if (do_query(db, "Unable to check index: &1", &res, query, 1, table))
+	if (do_query_cached(db, "Unable to check index: &1", &res, "si:&1", query, 1, table))
 		return FALSE;
 
 	for ( i = 0, n = 0; i < mysql_num_rows(res); i++ )
@@ -1926,12 +1983,7 @@ static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 				n++;
 	}
 
-	mysql_free_result(res);
-	if (n <= 0){
-		return FALSE;
-	}
-
-	return TRUE;
+	return (n > 0);
 }
 
 /*****************************************************************************
@@ -1959,30 +2011,29 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 	MYSQL_ROW row;
 	long i, n, no_indexes;
 
-	if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
+	if (do_query_cached(db, "Unable to get indexes: &1", &res, "si:&1", query, 1, table))
 		return -1;
 
-	for ( i = 0, no_indexes = 0; i < mysql_num_rows(res); i++ )
+	for (i = 0, no_indexes = 0; i < mysql_num_rows(res); i++ )
 	{
 		/* Count the number of 1st sequences in Seq_in_index to
 			give nmber of indexes. row[3] */
 		row = mysql_fetch_row(res);
-		if ( atoi(row[3]) == 1)
-				no_indexes++;
+		if (atoi(row[3]) == 1)
+			no_indexes++;
 	}
 
 
 	GB.NewArray(indexes, sizeof(char *), no_indexes);
 	mysql_data_seek(res, 0); /* move back to first record */
 
-	for ( i = 0, n = 0; i < mysql_num_rows(res); i++ )
+	for (i = 0, n = 0; i < mysql_num_rows(res); i++ )
 	{
 		row = mysql_fetch_row(res);
-		if ( atoi(row[3]) == 1 /* Start of a new index */)
+		if (atoi(row[3]) == 1 /* Start of a new index */)
 			(*indexes)[n++] = GB.NewZeroString(row[2]); /* (BM) The name is row[2], not row[4] */
 	}
 
-	mysql_free_result(res);
 	return no_indexes;
 }
 
@@ -2004,14 +2055,13 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 
 static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_INDEX *info)
 {
-	const char *query =
-		"show index from `&1`";
+	const char *query = "show index from `&1`";
 
 	MYSQL_RES *res;
 	MYSQL_ROW row = 0;
 	int i, n;
 
-	if (do_query(db, "Unable to get index info: &1", &res, query, 2, table, index))
+	if (do_query_cached(db, "Unable to get index info: &1", &res, "si:&1", query, 1, table))
 		return TRUE;
 
 	n = mysql_num_rows(res);
@@ -2049,7 +2099,6 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
 		i++; /* (BM) i must be incremented */
 	}
 
-	mysql_free_result(res);
 	info->fields = DB.Query.GetNew();
 
 	return FALSE;
@@ -2072,9 +2121,8 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index, DB_
 
 static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 {
-	return
-		do_query(db, "Unable to delete index: &1", NULL,
-			"drop index `&1` on `&2`", 1, index, table);
+	clear_table_cache(db, table);
+	return do_query(db, "Unable to delete index: &1", NULL, "drop index `&1` on `&2`", 1, index, table);
 }
 
 /*****************************************************************************
@@ -2108,6 +2156,7 @@ static int index_create(DB_DATABASE *db, const char *table, const char *index, D
 	DB.Query.Add(info->fields);
 	DB.Query.Add(" )");
 
+	clear_table_cache(db, table);
 	return do_query(db, "Cannot create index: &1", NULL, DB.Query.Get(), 0);
 }
 
@@ -2231,9 +2280,7 @@ static int database_delete(DB_DATABASE *db, const char *name)
 		return TRUE;
 	}
 
-	return
-		do_query(db, "Unable to delete database: &1", NULL,
-		"drop database `&1`", 1, name);
+	return do_query(db, "Unable to delete database: &1", NULL, "drop database `&1`", 1, name);
 }
 
 /*****************************************************************************
@@ -2252,9 +2299,7 @@ static int database_delete(DB_DATABASE *db, const char *name)
 
 static int database_create(DB_DATABASE *db, const char *name)
 {
-	return
-		do_query(db, "Unable to create database: &1", NULL,
-		"create database `&1`", 1, name);
+	return do_query(db, "Unable to create database: &1", NULL, "create database `&1`", 1, name);
 }
 
 
@@ -2298,8 +2343,8 @@ static int user_exist(DB_DATABASE *db, const char *name)
 
 	if (do_query(db, "Unable to check user: &1@&2", &res, query, 2, _name, _host))
 	{
-			free(_name);
-			return FALSE;
+		free(_name);
+		return FALSE;
 	}
 
 	exist = mysql_num_rows(res) == 1;
@@ -2494,8 +2539,7 @@ static int user_delete(DB_DATABASE *db, const char *name)
 //Still need to look at the removal of privileges
 // _ret =  do_query(db, "Unable to delete user: &1", NULL,
 //	           "revoke all on *.* from &1@&2", 2, _name, _host);
-	_ret =  do_query(db, "Unable to delete user: &1", NULL,
-						_delete, 2, _name, _host);
+	_ret =  do_query(db, "Unable to delete user: &1", NULL, _delete, 2, _name, _host);
 	free(_name);
 	return _ret;
 }
@@ -2591,9 +2635,7 @@ static int user_set_password(DB_DATABASE *db, const char *name, const char *pass
 
 	free(_name);
 
-	return
-			do_query(db, "Cannot change user password: &1",
-				NULL, DB.Query.Get(), 0);
+	return do_query(db, "Cannot change user password: &1", NULL, DB.Query.Get(), 0);
 }
 
 

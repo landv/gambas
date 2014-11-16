@@ -370,7 +370,15 @@ Public Sub DrawingArea_Draw()
   Else
     Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
   Endif
-    
+  
+  If bFlat And If Not $bPressed And If $hDrawingArea.HasFocus Then
+    Paint.AntiAlias = False
+    Paint.Rectangle(2, 2, Me.W - 4, Me.H - 4)
+    Paint.Background = Color.SelectedBackground
+    Paint.Stroke
+    Paint.AntiAlias = True
+  Endif
+  
   X = Desktop.Scale
   
   If $hPicture Then

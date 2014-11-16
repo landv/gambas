@@ -64,6 +64,7 @@ typedef
 			unsigned no_case : 1;         /* table, field and index names must be converted to lower case */
 			unsigned schema : 1;          /* If table names can be prefixed by a schema name and a dot */
 			unsigned no_collation : 1;    /* No collation support at field level */
+			unsigned system : 1;          /* system database */
 			}
 			flags;
 		struct {

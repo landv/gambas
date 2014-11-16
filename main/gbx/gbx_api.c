@@ -221,6 +221,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_Eval,
 
 	(void *)GB_Alloc,
+	(void *)GB_AllocZero,
 	(void *)GB_Free,
 	(void *)GB_Realloc,
 
@@ -2022,6 +2023,11 @@ void *GB_Eval(void *expr, void *func)
 void GB_Alloc(void **addr, int len)
 {
 	ALLOC(addr, len);
+}
+
+void GB_AllocZero(void **addr, int len)
+{
+	ALLOC_ZERO(addr, len);
 }
 
 void GB_Free(void **addr)

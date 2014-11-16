@@ -23,6 +23,7 @@ Private $hTimerPulse As Timer
 Public Sub _new()
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  Me.Proxy = $hDrawingArea
   
 End
 

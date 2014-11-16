@@ -230,6 +230,8 @@ Public Sub Reload() As Boolean
   
   Inc Application.Busy
   
+  DB.Debug = True
+  
   $hConn.Open
   
   $aCollations = Null
@@ -291,7 +293,8 @@ Public Sub Reload() As Boolean
   UpdateRequest
   
   LoadList($sTable)
-  
+  UpdateDefinition
+    
   DrawTitle
   Me.Enabled = True
   
@@ -438,6 +441,8 @@ Private Sub ReloadTable()
   Dim hResult As Result
   Dim cDescField As Collection
   Dim cDescIndex As Collection
+  
+  UpdateDefinition($sTable)
   
   $aField.Clear
   $cFieldName.Clear
@@ -1289,7 +1294,7 @@ Private Sub RemoveIndexFromTable(sTable As String)
   
 End
 
-Private Sub WriteTableDef(sName As String, sType As String, aPrimaryKey As String[], Optional bKill As Boolean)
+Private Sub WriteTableInDatabase(sName As String, sType As String, aPrimaryKey As String[], Optional bKill As Boolean)
   
   Dim hTable As Table
   Dim hCField As CField
@@ -1384,9 +1389,9 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
         sTemp = sOldTable 'MConnection.CopyTableData($hConn, sOldName)
       Endif
       
-      'WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+      'WriteTableInDatabase(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
       RemoveIndexFromTable(sOldTable)
-      WriteTableDef($sTable, $sType, aPrimaryKey)
+      WriteTableInDatabase($sTable, $sType, aPrimaryKey)
       
     Else
       
@@ -1394,8 +1399,8 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
         sTemp = MConnection.CopyTableData($hConn, $sTable)
       Endif
       
-      WriteTableDef(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
-      WriteTableDef($sTable, $sType, aPrimaryKey)
+      WriteTableInDatabase(MConnection.GetTempTableName($hConn), $sType, aPrimaryKey, True)
+      WriteTableInDatabase($sTable, $sType, aPrimaryKey)
       
     Endif
     
@@ -1615,6 +1620,7 @@ Public Sub btnKill_Click()
   If CheckCurrent() Then Return
   
   $hConn.Tables.Remove($sTable)
+  UpdateDefinition($sTable)
   lvwTable.Remove("T" & $sTable)
   datData.Reset
   btnRequest_Click
@@ -1872,21 +1878,62 @@ Public Sub btnAddQuery_Click()
   
 End
 
-Private Sub SaveTableDef()
+Private Sub UpdateDefinition(Optional sTable As String)
 
-  Dim hConfig As Settings
+  Dim hSettings As Settings
+  Dim aDesc As String[]
+  Dim sDefaultValue As String
   Dim hTable As Table
+  Dim hField As Field
+  Dim hIndex As Index
+  Dim sDesc As String
+  Dim aTable As String[]
   
-  For Each hTable In $hConn.Tables
+  hSettings = New Settings(Path, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  
+  If Not sTable Then 
+    hSettings.Clear("Definition")
+    aTable = New String[]
+    For Each hTable In $hConn.Tables
+      If hTable.System Then Continue
+      If hTable.Name Begins MConnection.METADATA_TABLE_PREFIX Then Continue
+      If sTable And If hTable.Name <> sTable Then Continue
+      aTable.Add(hTable.Name)
+    Next
+  Else
+    aTable = [sTable]
+    hSettings["Definition" &/ sTable] = ""
+  Endif
+  
+  For Each sTable In aTable
     
-    If hTable.System Then Continue
-    If hTable.Name Begins MConnection.METADATA_TABLE_PREFIX Then Continue
+    hTable = $hConn.Tables[sTable]
     
+    aDesc = New String[]
+    aDesc.Add(hTable.Type)
+    aDesc.Add(hTable.PrimaryKey.Join())
     
+    For Each hField In hTable.Fields
+      sDefaultValue = hField.Default
+      If sDefaultValue Then sDefaultValue = Quote(sDefaultValue)
+      sDesc = hField.Name & "," & CStr(hField.Type) & "," & hField.Length
+      If sDefaultValue Or If hField.Collation Then
+        sDesc &= "," & sDefaultValue & "," & hField.Collation
+      Endif
+      aDesc.Add(sDesc)
+    Next
+    
+    For Each hIndex In hTable.Indexes
+      If hIndex.Primary Then Continue
+      sDesc = "@" & hIndex.Name
+      If hIndex.Unique Then sDesc &= "!"
+      aDesc.Add(sDesc & "," & hIndex.Fields.Join())
+    Next
+    
+    hSettings["Definition" &/ sTable] = aDesc.Join(";")
     
   Next
   
-  hConfig = New Settings(Path, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
-  
+  hSettings.Save
   
 End

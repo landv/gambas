@@ -167,6 +167,7 @@ bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
 bool GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len);
 
 void GB_Alloc(void **addr, int len);
+void GB_AllocZero(void **addr, int len);
 void GB_Free(void **addr);
 void GB_Realloc(void **addr, int len);
 

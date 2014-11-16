@@ -1059,6 +1059,7 @@ typedef
 		GB_VALUE *(*Eval)(void *, void *);
 
 		void (*Alloc)(void **, int);
+		void (*AllocZero)(void **, int);
 		void (*Free)(void **);
 		void (*Realloc)(void **, int);
 
