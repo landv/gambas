@@ -179,7 +179,6 @@ static char *do_cipher(const unsigned char *data, unsigned int dlen,
 	return out;
 
 __ERROR:
-
 	GB.FreeString(&out);
 	return NULL;
 }
@@ -228,10 +227,12 @@ BEGIN_METHOD(CipherMethod_Encrypt, GB_STRING plain; GB_STRING key;
 		GB.Error("Encryption failed");
 		return;
 	}
-	res = GB.New(GB.FindClass("CipherText"), NULL, NULL);
-	res->cipher = cipher;
-	res->key = GB.NewString((char *) key, sizeof(key));
-	res->iv = GB.NewString((char *) iv, sizeof(iv));
+
+	GB.Push(3, GB_T_STRING, cipher, length,
+		   GB_T_STRING, key, sizeof(key),
+		   GB_T_STRING, iv, sizeof(iv));
+	res = GB.New(GB.FindClass("CipherText"), NULL, (void*)(intptr_t) 3);
+	GB.FreeString(&cipher);
 	GB.ReturnObject(res);
 
 END_METHOD
@@ -243,7 +244,7 @@ BEGIN_METHOD(CipherMethod_Decrypt, GB_OBJECT ciph)
 
 	CCIPHERTEXT *ciph = VARG(ciph);
 	unsigned int length;
-	char *plain, *res;
+	char *plain;
 
 	plain = do_cipher((uchar *) ciph->cipher,
 			  GB.StringLength(ciph->cipher),
@@ -253,10 +254,9 @@ BEGIN_METHOD(CipherMethod_Decrypt, GB_OBJECT ciph)
 		GB.Error("Decryption failed");
 		return;
 	}
-	res = GB.NewString(plain, length);
-	GB.ReturnString(res);
+	GB.ReturnString(plain);
 	GB.ReturnBorrow();
-	GB.FreeString(&res);
+	GB.FreeString(&plain);
 	GB.ReturnRelease();
 
 END_METHOD
@@ -308,6 +308,7 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd;
 	res = GB.NewZeroString("Salted__");
 	res = GB.AddString(res, (char *) salt, sizeof(salt));
 	res = GB.AddString(res, cipher, length);
+	GB.FreeString(&cipher);
 	GB.ReturnString(res);
 	GB.ReturnBorrow();
 	GB.FreeString(&res);
@@ -324,7 +325,7 @@ BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
 	unsigned char key[EVP_CIPHER_key_length(_method)];
 	unsigned char iv[EVP_CIPHER_iv_length(_method)];
 	unsigned int clen, length;
-	char *plain, *res;
+	char *plain;
 
 	if (!strstr(STRING(cipher), "Salted__")) {
 		GB.Error("Unrecognised cipher string format");
@@ -342,10 +343,9 @@ BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
 		GB.Error("Decryption failed");
 		return;
 	}
-	res = GB.NewString(plain, length);
-	GB.ReturnString(res);
+	GB.ReturnString(plain);
 	GB.ReturnBorrow();
-	GB.FreeString(&res);
+	GB.FreeString(&plain);
 	GB.ReturnRelease();
 
 END_METHOD
