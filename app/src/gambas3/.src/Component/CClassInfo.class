@@ -518,6 +518,10 @@ Public Sub GetHelpHTML() As String
   Dim hParentClass As CClassInfo
   Dim sStr As String
 
+  ' sHelp = GetHelpMarkup()
+  ' sHelp &= "\n" & WikiGetSymbols().Join("\n")
+  ' Return WikiMarkdown.ToHTML(sHelp)
+
   sHelp = Markup.Convert(GetHelpMarkup())
   
   hClassInfo = CComponent.GetClassDescription(sClass)
@@ -535,7 +539,7 @@ Public Sub GetHelpHTML() As String
       sComp = GetSymbolLink(hSymbol, sSymbolName)
       
       If hSymbol.NotPublic Or If hSymbol.IsHidden() Then Continue
-      If hSymbol.Class <> sClass Then sComp = "<i>" & sComp & "</i>"
+      If hSymbol.Class = sClass Then sComp = "<u>" & sComp & "</u>"
 
       If IsLetter(hSymbol.Kind) Then
         If hSymbol.IsStatic() Then 
@@ -548,7 +552,7 @@ Public Sub GetHelpHTML() As String
       bHasSymbol = True
       
       Select Case hSymbol.Kind
-        Case ":" 
+        Case ":"
           aEvent.Add(sComp)
         Case "m"
           aMethod.Add(sComp)

@@ -1018,6 +1018,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         Case "EVENT"
           sKind = ":"
           bStatic = False
+          bPublic = True
           Inc iInd
           $bScanFoundEvent = True
           Break

@@ -321,6 +321,7 @@ Public Function Save() As Boolean
   If Not $bModifyTable And If Not $bModifyMetadata Then Return
   
   If SaveTable() Then Return True
+  UpdateDefinition
   $bModifyTable = False
   $bModifyMetadata = False
   
@@ -442,7 +443,7 @@ Private Sub ReloadTable()
   Dim cDescField As Collection
   Dim cDescIndex As Collection
   
-  UpdateDefinition($sTable)
+  'UpdateDefinition($sTable)
   
   $aField.Clear
   $cFieldName.Clear
@@ -1620,7 +1621,7 @@ Public Sub btnKill_Click()
   If CheckCurrent() Then Return
   
   $hConn.Tables.Remove($sTable)
-  UpdateDefinition($sTable)
+  'UpdateDefinition($sTable)
   lvwTable.Remove("T" & $sTable)
   datData.Reset
   btnRequest_Click
@@ -1878,62 +1879,105 @@ Public Sub btnAddQuery_Click()
   
 End
 
-Private Sub UpdateDefinition(Optional sTable As String)
+Private Sub UpdateDefinition()
 
-  Dim hSettings As Settings
-  Dim aDesc As String[]
-  Dim sDefaultValue As String
+  Dim sPath As String
+  Dim bCreate As Boolean
+  Dim hFile As File
+  Dim aTable As String[]
   Dim hTable As Table
   Dim hField As Field
   Dim hIndex As Index
-  Dim sDesc As String
-  Dim aTable As String[]
+  Dim sTable As String
+
+  sPath = File.SetExt(Path, ".template")
+  If Not Exist(sPath) Then bCreate = True
   
-  hSettings = New Settings(Path, Trim(Mid$(Project.CONNECTION_MAGIC, 2)))
+  hFile = Open sPath For Create
   
-  If Not sTable Then 
-    hSettings.Clear("Definition")
-    aTable = New String[]
-    For Each hTable In $hConn.Tables
-      If hTable.System Then Continue
-      If hTable.Name Begins MConnection.METADATA_TABLE_PREFIX Then Continue
-      If sTable And If hTable.Name <> sTable Then Continue
-      aTable.Add(hTable.Name)
-    Next
-  Else
-    aTable = [sTable]
-    hSettings["Definition" &/ sTable] = ""
-  Endif
+  aTable = New String[]
+  For Each hTable In $hConn.Tables
+    If hTable.System Then Continue
+    If hTable.Name Begins MConnection.METADATA_TABLE_PREFIX Then Continue
+    'If sTable And If hTable.Name <> sTable Then Continue
+    aTable.Add(hTable.Name)
+  Next
+
+  Print #hFile, Project.TEMPLATE_MAGIC
   
   For Each sTable In aTable
     
     hTable = $hConn.Tables[sTable]
     
-    aDesc = New String[]
-    aDesc.Add(hTable.Type)
-    aDesc.Add(hTable.PrimaryKey.Join())
+    Print #hFile, "{ Table"
+    Print #hFile, "  Name="; Quote(hTable.Name)
+    If hTable.Type Then Print #hFile, "  Type="; Quote(hTable.Type)
+    Print #hFile, "  PrimaryKey=[\""; hTable.PrimaryKey.Join("\",\""); "\"]"
     
     For Each hField In hTable.Fields
-      sDefaultValue = hField.Default
-      If sDefaultValue Then sDefaultValue = Quote(sDefaultValue)
-      sDesc = hField.Name & "," & CStr(hField.Type) & "," & hField.Length
-      If sDefaultValue Or If hField.Collation Then
-        sDesc &= "," & sDefaultValue & "," & hField.Collation
+      
+      Print #hFile, "  { Field"
+      Print #hFile, "    Name="; Quote(hField.Name)
+      Print #hFile, "    Type=";
+      
+      Select hField.Type
+        Case db.Blob
+          Print #hFile, "db.Blob"
+        Case db.Boolean
+          Print #hFile, "db.Boolean"
+        Case db.Date
+          Print #hFile, "db.Date"
+        Case db.Float
+          Print #hFile, "db.Float"
+        Case db.Integer
+          Print #hFile, "db.Integer"
+        Case db.Long
+          Print #hFile, "db.Long"
+        Case db.Serial
+          Print #hFile, "db.Serial"
+        Case db.String
+          Print #hFile, "db.String"
+          If hField.Length Then Print #hFile, "    Length="; hField.Length
+        Case Else
+          Error.Raise("Unknown database field type")
+      End Select
+      
+      If hField.Default Then
+        Print #hFile, "    Default=";
+        If hField.Type = db.String Then
+          Print #hFile, Quote(hField.Default)
+        Else If hField.Type = db.Boolean Then
+          Print #hFile, If(hField.Default, "True", "False")
+        Else If hField.Type = db.Date Then
+          Print #hFile, "CDate(\";CStr(hField.Default);" \ ")"
+        Else
+          Print #hFile, CStr(hField.Default)
+        Endif
       Endif
-      aDesc.Add(sDesc)
+      
+      If hField.Collation Then
+        Print #hFile, "    Collation="; Quote(hField.Collation)
+      Endif
+      
+      Print #hFile, "  }"
+      
     Next
     
     For Each hIndex In hTable.Indexes
       If hIndex.Primary Then Continue
-      sDesc = "@" & hIndex.Name
-      If hIndex.Unique Then sDesc &= "!"
-      aDesc.Add(sDesc & "," & hIndex.Fields.Join())
+      Print #hFile, "  { Index "
+      Print #hFile, "    Name="; Quote(hIndex.Name)
+      Print #hFile, "    Unique="; If(hIndex.Unique, "True", "False")
+      Print #hFile, "    Fields=[\""; hIndex.Fields.Join("\",\""); "\"]"
+      Print #hFile, "  }"
     Next
     
-    hSettings["Definition" &/ sTable] = aDesc.Join(";")
+    Print #hFile, "}"
     
   Next
   
-  hSettings.Save
+  Close #hFile
+  
+  If bCreate Then VersionControl.AddFile(sPath)
   
 End
