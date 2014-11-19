@@ -484,6 +484,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     
   Wend
   
+  GoSub CLOSE_PARA
   GoSub CLOSE_CODE
   GoSub CLOSE_BLOCKQUOTE
   iIndent = 0
