@@ -209,7 +209,11 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       Endif
       
       iPos = InStr(sLine, " ")
-      If iPos Then sList = Left(sLine, iPos - 1)
+      If iPos Then 
+        sList = Left(sLine, iPos - 1)
+      Else
+        sList = ""
+      Endif
       
       If sList = "*" Or If sList = "-" Then
         
