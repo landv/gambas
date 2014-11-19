@@ -150,7 +150,7 @@ End
 
 Private Sub ResetDatabase()
   
-  panDatabase.Hide
+  panChooseDatabase.Hide
   $hConn.Close
   txtDatabase.Text = ""
   
@@ -168,20 +168,33 @@ End
 
 Public Sub cmbType_Click()
 
-  If LCase(cmbType.Text) = "sqlite" Then
-    panPath.Show
-    panHost.Hide
-    panLogin.Enabled = False
-    txtPath.SetFocus
-    chkRememberPassword.Value = 0
-    txtUser.Text = ""
-    txtPassword.Text = ""
-  Else
-    panPath.Hide
-    panHost.Show
-    panLogin.Enabled = True
-    txtHost.SetFocus
-  Endif
+  Select LCase(cmbType.Text)
+
+    Case "sqlite" 
+      panPath.Show
+      panHost.Hide
+      panLogin.Hide
+      txtPath.SetFocus
+      chkRememberPassword.Value = 0
+      txtUser.Text = ""
+      txtPassword.Text = ""
+      panDatabase.Show
+      
+    Case "template"
+      panPath.Hide
+      panHost.Hide
+      panDatabase.Hide
+      panLogin.Hide
+      
+    Default
+      panPath.Hide
+      panHost.Show
+      panLogin.Show
+      txtHost.SetFocus
+      panDatabase.Show
+    
+  End Select
+    
   ResetDatabase
 
 End
@@ -238,7 +251,7 @@ Public Sub txtDatabase_Click()
 
   Dim hConfig As New Collection
 
-  If Not panDatabase.Visible Then
+  If Not panChooseDatabase.Visible Then
   
     Inc Application.Busy
     lvwDatabase.Clear
@@ -246,13 +259,13 @@ Public Sub txtDatabase_Click()
     MConnection.InitFrom($hConn, hConfig, txtName.Text)
     $hConn.Open
     FillDatabaseList
-    panDatabase.Show
+    panChooseDatabase.Show
     
     Dec Application.Busy
   
   Else
   
-    panDatabase.Hide
+    panChooseDatabase.Hide
     $hConn.Close
   
   Endif
@@ -296,7 +309,7 @@ End
 
 Public Sub lvwDatabase_Activate()
 
-  panDatabase.Hide
+  panChooseDatabase.Hide
 
 End
 

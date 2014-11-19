@@ -334,6 +334,7 @@ Public Sub Main()
   Dim hUser As CUser
   Dim sData As String
   Dim sPath As String
+  Dim sText As String
   
   CGI["SCRIPT_NAME"] = "/wiki" ' Fix web server bug
   Root = User.Home &/ "wiki/gambas"
@@ -398,15 +399,24 @@ Public Sub Main()
   If Path = "/~confirm" Then
     Confirm.Render
     Return
-  Endif
-  
-  If Path = "/~stat" Then
+  Else If Path = "/~stat" Then
     HttpStat.Render
     Return
-  Endif
-  
-  If Path Begins "/~dump" Then
+  Else If Path Begins "/~dump" Then
     CGI.Dump
+    Return
+  Else If Path = "/~babelmark" Then
+    sText = Request["text"]
+    If Len(sText) > 1000 Then
+      Response.Status = "500"
+      Response.Begin
+      Response.End
+    Else
+      Response.ContentType = "text/plain;charset=utf-8"
+      Response.Begin
+      Print "{\"name\":\"Gambas\",\"version\":\""; System.FullVersion; "\",\"html\":"; Quote(Markdown.ToHTML(sText)); "}"
+      Response.End
+    Endif
     Return
   Endif
   

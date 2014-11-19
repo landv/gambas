@@ -83,7 +83,7 @@ static void open_connection(CCONNECTION *_object)
 	THIS->limit = 0;
 	THIS->trans = 0;
 
-	THIS->db.flags.system = THIS->driver->Database.IsSystem(&THIS->db, THIS->desc.name);
+	THIS->db.flags.system = !THIS->desc.name || THIS->driver->Database.IsSystem(&THIS->db, THIS->desc.name);
 }
 
 static bool check_opened(CCONNECTION *_object)
@@ -755,7 +755,7 @@ END_PROPERTY
 
 GB_DESC CConnectionDesc[] =
 {
-	GB_DECLARE("Connection", sizeof(CCONNECTION)),
+	GB_DECLARE("_Connection", sizeof(CCONNECTION)),
 
 	GB_METHOD("_new", NULL, CCONNECTION_new, "[(DatabaseURL)s]"),
 	GB_METHOD("_free", NULL, CCONNECTION_free, NULL),

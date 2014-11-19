@@ -225,46 +225,60 @@ Public Sub Reload() As Boolean
     $hConn.Close
   Endif
   
-  $hConn = New Connection
-  MConnection.InitFrom($hConn, hConfig, Me.Name, True)
-  
   Inc Application.Busy
+    
+  ' If hConfig["Connection/Type"] = "Template" Then
+  '   
+  '   $hConn = Null
+  '   
+  '   panData.Hide
+  '   btnRequest.Hide
+  '   
+  '   $sTitle = "template:///" & File.BaseName(Path)
+  '   
+  ' Else
+    
+    $hConn = New Connection
+    MConnection.InitFrom($hConn, hConfig, Me.Name, True)
   
-  DB.Debug = True
-  
-  $hConn.Open
-  
-  $aCollations = Null
-  Try $aCollations = $hConn.Collations.Sort()
-  If $aCollations Then
-    $aCollations.Add("", 0)
-    tbvField.Columns[5].Width = Desktop.Scale * 24
-  Else
-    tbvField.Columns[5].Width = 0
-  Endif
-  'DB.Current = $hConn
-  
-  sTitle = $hConn.Type & "://"
-  If $hConn.User Then sTitle &= $hConn.User & "@"
-  If $hConn.Host Then
-    sTitle &= $hConn.Host
-  Else
-    If $hConn.Type = "sqlite" Then
-      sTitle &= "~"
+    $hConn.Open
+    
+    $aCollations = Null
+    Try $aCollations = $hConn.Collations.Sort()
+    If $aCollations Then
+      $aCollations.Add("", 0)
+      tbvField.Columns[5].Width = Desktop.Scale * 24
     Else
-      sTitle &= "localhost"
+      tbvField.Columns[5].Width = 0
     Endif
-  Endif
-  sTitle &= "/" & $hConn.Name
+    'DB.Current = $hConn
+    
+    sTitle = $hConn.Type & "://"
+    If $hConn.User Then sTitle &= $hConn.User & "@"
+    If $hConn.Host Then
+      sTitle &= $hConn.Host
+    Else
+      If $hConn.Type = "sqlite" Then
+        sTitle &= "~"
+      Else
+        sTitle &= "localhost"
+      Endif
+    Endif
+    sTitle &= "/" & $hConn.Name
+    
+    $sTitle = sTitle
+    
+    dvwData.Editable = False
+    datData.Connection = $hConn
+    datRequest.Connection = $hConn
+    
+    panData.Show
+    btnRequest.Show
   
-  $sTitle = sTitle
+  ' Endif
   
-  lblTitle.Text = "  " & sTitle & "  "
-  
-  dvwData.Editable = False
-  datData.Connection = $hConn
-  datRequest.Connection = $hConn
-  
+  lblTitle.Text = "  " & $sTitle & "  "
+    
   $bMetadata = hConfig["Connection/DisplayMetadata"]
   
   If $bMetadata Then
@@ -1883,100 +1897,11 @@ Private Sub UpdateDefinition()
 
   Dim sPath As String
   Dim bCreate As Boolean
-  Dim hFile As File
-  Dim aTable As String[]
-  Dim hTable As Table
-  Dim hField As Field
-  Dim hIndex As Index
-  Dim sTable As String
 
   sPath = File.SetExt(Path, ".template")
   If Not Exist(sPath) Then bCreate = True
   
-  hFile = Open sPath For Create
-  
-  aTable = New String[]
-  For Each hTable In $hConn.Tables
-    If hTable.System Then Continue
-    If hTable.Name Begins MConnection.METADATA_TABLE_PREFIX Then Continue
-    'If sTable And If hTable.Name <> sTable Then Continue
-    aTable.Add(hTable.Name)
-  Next
-
-  Print #hFile, Project.TEMPLATE_MAGIC
-  
-  For Each sTable In aTable
-    
-    hTable = $hConn.Tables[sTable]
-    
-    Print #hFile, "{ Table"
-    Print #hFile, "  Name="; Quote(hTable.Name)
-    If hTable.Type Then Print #hFile, "  Type="; Quote(hTable.Type)
-    Print #hFile, "  PrimaryKey=[\""; hTable.PrimaryKey.Join("\",\""); "\"]"
-    
-    For Each hField In hTable.Fields
-      
-      Print #hFile, "  { Field"
-      Print #hFile, "    Name="; Quote(hField.Name)
-      Print #hFile, "    Type=";
-      
-      Select hField.Type
-        Case db.Blob
-          Print #hFile, "db.Blob"
-        Case db.Boolean
-          Print #hFile, "db.Boolean"
-        Case db.Date
-          Print #hFile, "db.Date"
-        Case db.Float
-          Print #hFile, "db.Float"
-        Case db.Integer
-          Print #hFile, "db.Integer"
-        Case db.Long
-          Print #hFile, "db.Long"
-        Case db.Serial
-          Print #hFile, "db.Serial"
-        Case db.String
-          Print #hFile, "db.String"
-          If hField.Length Then Print #hFile, "    Length="; hField.Length
-        Case Else
-          Error.Raise("Unknown database field type")
-      End Select
-      
-      If hField.Default Then
-        Print #hFile, "    Default=";
-        If hField.Type = db.String Then
-          Print #hFile, Quote(hField.Default)
-        Else If hField.Type = db.Boolean Then
-          Print #hFile, If(hField.Default, "True", "False")
-        Else If hField.Type = db.Date Then
-          Print #hFile, "CDate(\";CStr(hField.Default);" \ ")"
-        Else
-          Print #hFile, CStr(hField.Default)
-        Endif
-      Endif
-      
-      If hField.Collation Then
-        Print #hFile, "    Collation="; Quote(hField.Collation)
-      Endif
-      
-      Print #hFile, "  }"
-      
-    Next
-    
-    For Each hIndex In hTable.Indexes
-      If hIndex.Primary Then Continue
-      Print #hFile, "  { Index "
-      Print #hFile, "    Name="; Quote(hIndex.Name)
-      Print #hFile, "    Unique="; If(hIndex.Unique, "True", "False")
-      Print #hFile, "    Fields=[\""; hIndex.Fields.Join("\",\""); "\"]"
-      Print #hFile, "  }"
-    Next
-    
-    Print #hFile, "}"
-    
-  Next
-  
-  Close #hFile
+  File.Save(sPath, $hConn.GetTemplate())
   
   If bCreate Then VersionControl.AddFile(sPath)
   

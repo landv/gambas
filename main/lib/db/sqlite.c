@@ -199,7 +199,7 @@ __SQLITE3:
 
 *****************************************************************************/
 
-DB_DRIVER DB_sqlite_pseudo_driver = 
+DB_DRIVER DB_sqlite_pseudo_driver =
 {
 	"sqlite",
 	open_database,

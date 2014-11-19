@@ -645,7 +645,7 @@ static void clear_table_cache(DB_DATABASE *db, const char *table)
 	char key[strlen(table) + 5];
 
 	strcpy(key, "sts:"); strcat(key, table); remove_cache_entry(db, key);
-	strcpy(key, "sc:"); strcat(key, table); remove_cache_entry(db, key);
+	//strcpy(key, "sc:"); strcat(key, table); remove_cache_entry(db, key);
 	strcpy(key, "sfc:"); strcat(key, table); remove_cache_entry(db, key);
 	strcpy(key, "si:"); strcat(key, table); remove_cache_entry(db, key);
 }
@@ -1812,11 +1812,11 @@ static int table_create(DB_DATABASE *db, const char *table, DB_FIELD *fields, ch
 
 static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 {
-	const char *query = "show columns from `&1`";
+	const char *query = "show full columns from `&1`";
 
 	MYSQL_RES *res;
 
-	if (do_query_cached(db, "Unable to check field: &1", &res, "sc:&1", query, 1, table))
+	if (do_query_cached(db, "Unable to check field: &1", &res, "sfc:&1", query, 1, table))
 		return FALSE;
 
 	return !search_result(res, field, NULL);
@@ -1843,13 +1843,13 @@ static int field_exist(DB_DATABASE *db, const char *table, const char *field)
 
 static int field_list(DB_DATABASE *db, const char *table, char ***fields)
 {
-	const char *query = "show columns from `&1`";
+	const char *query = "show full columns from `&1`";
 
 	long i, n;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 
-	if (do_query_cached(db, "Unable to get field: &1", &res, "sc:&1", query, 1, table))
+	if (do_query_cached(db, "Unable to get field: &1", &res, "sfc:&1", query, 1, table))
 		return -1;
 
 	n = mysql_num_rows(res);

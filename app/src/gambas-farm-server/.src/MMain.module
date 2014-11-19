@@ -28,10 +28,18 @@ Public Sub Main()
   Dim sErr As String
   ' Dim sField As String
   
-  If Args[1] = "-init-db" Then
+  If Args[1] = "-i" Or If Args[1] = "--init" Then
+    
     InitDatabase
     Return
+    
+  Else If Not Application.Host Then
+    
+    Print Replace(File.Load("usage.txt"), "$(prog)", File.Name(Args[0]))
+    Return
+    
   Endif
+  
   
   Root = User.Home &/ "farm"
   
@@ -96,11 +104,7 @@ Private Sub OpenDatabase()
   
   If $hConn Then Return
   
-  $hConn = New Connection
-  $hConn.Type = Settings["/Database/Type"]
-  $hConn.User = Settings["/Database/User"]
-  $hConn.Password = Settings["/Database/Password"]
-  $hConn.Name = "gambas3_farm"
+  $hConn = Connections["gambas3_farm"]
   $hConn.Open
   DB.Current = $hConn
   
@@ -108,83 +112,83 @@ End
 
 Private Sub InitDatabase()
 
-  Dim hConn As New Connection
-  Dim hTable As Table
+  'Dim hConn As New Connection
+  'Dim hTable As Table
   
-  hConn.Type = Settings["/Database/Type"]
-  hConn.Open
-  Try hConn.Databases.Add("gambas3_farm")
-  hConn.Close
-  
-  OpenDatabase
+  Print "Create 'gambas3_farm' database..."
+  Connections.Create("gambas3_farm")
+  Print "Database created."
 
-  If DB.Tables.Exist("name") Then 
-    Error "Database is apparently already initialized."
-    Quit 1
-  Endif
+  ' OpenDatabase
+  ' 
+  ' If DB.Tables.Exist("name") Then 
+  '   Error "Database is apparently already initialized."
+  '   Quit 1
+  ' Endif
+  ' 
+  ' Print "Creating table 'name'..."
+  ' hTable = DB.Tables.Add("name")
+  ' hTable.Fields.Add("id", db.Serial)
+  ' hTable.Fields.Add("name", db.String, 64)
+  ' hTable.Fields.Add("cname", db.String, 64)
+  ' hTable.PrimaryKey = ["id"]
+  ' hTable.Update
+  ' hTable.Indexes.Add("name_index_cname", ["cname"], True)
+  ' 
+  ' Print "Creating table 'software'..."
+  ' hTable = DB.Tables.Add("software")
+  ' hTable.Fields.Add("id", db.Serial)
+  ' hTable.Fields.Add("owner", db.Integer)
+  ' hTable.Fields.Add("name", db.String, 64)
+  ' hTable.Fields.Add("version", db.Integer)
+  ' hTable.Fields.Add("release", db.Integer)
+  ' hTable.Fields.Add("date", db.Date)
+  ' hTable.Fields.Add("description", db.String)
+  ' hTable.Fields.Add("url", db.String)
+  ' hTable.Fields.Add("gambas", db.Integer)
+  ' hTable.Fields.Add("dependencies", db.String)
+  ' hTable.Fields.Add("checksum", db.String, 128)
+  ' hTable.Fields.Add("download", db.Integer,, 0)
+  ' hTable.Fields.Add("vote", db.Integer,, 0)
+  ' hTable.PrimaryKey = ["id"]
+  ' hTable.Update
+  ' hTable.Indexes.Add("software_index_date", ["date", "id"], True)
+  ' hTable.Indexes.Add("software_index_vote", ["vote", "id"], True)
+  ' hTable.Indexes.Add("software_index_download", ["download", "id"], True)
+  ' hTable.Indexes.Add("software_index_name", ["name", "version"], True)
+  ' hTable.Indexes.Add("software_index_checksum", ["checksum"], True)
+  ' 
+  ' Print "Creating table 'tag'..."
+  ' hTable = DB.Tables.Add("tag")
+  ' hTable.Fields.Add("software", db.Integer)
+  ' hTable.Fields.Add("tag", db.Integer)
+  ' hTable.PrimaryKey = ["software", "tag"]
+  ' hTable.Update
+  ' 
+  ' Print "Creating table 'user'..."
+  ' hTable = DB.Tables.Add("user")
+  ' hTable.Fields.Add("id", db.Serial)
+  ' hTable.Fields.Add("login", db.String, 16)
+  ' hTable.Fields.Add("password", db.String, 128)
+  ' hTable.Fields.Add("name", db.String, 64)
+  ' hTable.Fields.Add("confirm", db.String, 32)
+  ' hTable.PrimaryKey = ["id"]
+  ' hTable.Update
+  ' hTable.Indexes.Add("user_index_login", ["login"], True)
+  ' 
+  ' Print "Creating table 'vote'..."
+  ' hTable = DB.Tables.Add("vote")
+  ' hTable.Fields.Add("software", db.Integer)
+  ' hTable.Fields.Add("user", db.Integer)
+  ' hTable.PrimaryKey = ["software", "user"]
+  ' hTable.Update
   
-  Print "Creating table 'name'..."
-  hTable = DB.Tables.Add("name")
-  hTable.Fields.Add("id", db.Serial)
-  hTable.Fields.Add("name", db.String, 64)
-  hTable.Fields.Add("cname", db.String, 64)
-  hTable.PrimaryKey = ["id"]
-  hTable.Update
-  hTable.Indexes.Add("name_index_cname", ["cname"], True)
-  
-  Print "Creating table 'software'..."
-  hTable = DB.Tables.Add("software")
-  hTable.Fields.Add("id", db.Serial)
-  hTable.Fields.Add("owner", db.Integer)
-  hTable.Fields.Add("name", db.String, 64)
-  hTable.Fields.Add("version", db.Integer)
-  hTable.Fields.Add("release", db.Integer)
-  hTable.Fields.Add("date", db.Date)
-  hTable.Fields.Add("description", db.String)
-  hTable.Fields.Add("url", db.String)
-  hTable.Fields.Add("gambas", db.Integer)
-  hTable.Fields.Add("dependencies", db.String)
-  hTable.Fields.Add("checksum", db.String, 128)
-  hTable.Fields.Add("download", db.Integer,, 0)
-  hTable.Fields.Add("vote", db.Integer,, 0)
-  hTable.PrimaryKey = ["id"]
-  hTable.Update
-  hTable.Indexes.Add("software_index_date", ["date", "id"], True)
-  hTable.Indexes.Add("software_index_vote", ["vote", "id"], True)
-  hTable.Indexes.Add("software_index_download", ["download", "id"], True)
-  hTable.Indexes.Add("software_index_name", ["name", "version"], True)
-  hTable.Indexes.Add("software_index_checksum", ["checksum"], True)
-  
-  Print "Creating table 'tag'..."
-  hTable = DB.Tables.Add("tag")
-  hTable.Fields.Add("software", db.Integer)
-  hTable.Fields.Add("tag", db.Integer)
-  hTable.PrimaryKey = ["software", "tag"]
-  hTable.Update
-  
-  Print "Creating table 'user'..."
-  hTable = DB.Tables.Add("user")
-  hTable.Fields.Add("id", db.Serial)
-  hTable.Fields.Add("login", db.String, 16)
-  hTable.Fields.Add("password", db.String, 128)
-  hTable.Fields.Add("name", db.String, 64)
-  hTable.Fields.Add("confirm", db.String, 32)
-  hTable.PrimaryKey = ["id"]
-  hTable.Update
-  hTable.Indexes.Add("user_index_login", ["login"], True)
-  
-  Print "Creating table 'vote'..."
-  hTable = DB.Tables.Add("vote")
-  hTable.Fields.Add("software", db.Integer)
-  hTable.Fields.Add("user", db.Integer)
-  hTable.PrimaryKey = ["software", "user"]
-  hTable.Update
-  
-  Print "Database initialized."
+  ' Print "Database initialized."
 
 Catch
   
-  Error Error.Text & "\n\n" & Error.Backtrace.Join(" ")
+  Error "Unable to create database: "; Error.Text
+  Error "\n"; Error.Backtrace.Join(" ")
   Quit 1
 
 End

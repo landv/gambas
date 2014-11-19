@@ -1,0 +1,160 @@
+# Gambas Database Template File 3.0
+{ Table
+  Name="__gb_metadata_v2"
+  Type="InnoDB"
+  PrimaryKey=["sTableName","iType","sKey"]
+  { Field
+    Name="sTableName"
+    Type=db.String
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="iType"
+    Type=db.Integer
+  }
+  { Field
+    Name="sKey"
+    Type=db.String
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="sValue"
+    Type=db.String
+    Collation="latin1_swedish_ci"
+  }
+}
+{ Table
+  Name="software"
+  Type="InnoDB"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Integer
+  }
+  { Field
+    Name="owner"
+    Type=db.Integer
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="version"
+    Type=db.String
+    Length=16
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="date"
+    Type=db.Date
+  }
+  { Field
+    Name="description"
+    Type=db.String
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="gambas"
+    Type=db.String
+    Length=8
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="md5sum"
+    Type=db.String
+    Length=64
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="download"
+    Type=db.Integer
+  }
+  { Field
+    Name="note"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="software_depend"
+  Type="InnoDB"
+  PrimaryKey=["software","dependency"]
+  { Field
+    Name="software"
+    Type=db.Integer
+  }
+  { Field
+    Name="dependency"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="software_tag"
+  Type="InnoDB"
+  PrimaryKey=["software","tag"]
+  { Field
+    Name="software"
+    Type=db.Integer
+  }
+  { Field
+    Name="tag"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="software_vote"
+  Type="InnoDB"
+  PrimaryKey=["software","user"]
+  { Field
+    Name="software"
+    Type=db.Integer
+  }
+  { Field
+    Name="user"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="tag"
+  Type="InnoDB"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Integer
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=128
+    Collation="latin1_swedish_ci"
+  }
+}
+{ Table
+  Name="user"
+  Type="InnoDB"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Integer
+  }
+  { Field
+    Name="login"
+    Type=db.String
+    Length=16
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="password"
+    Type=db.String
+    Length=128
+    Collation="latin1_swedish_ci"
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+    Collation="latin1_swedish_ci"
+  }
+}

@@ -30,7 +30,7 @@
       #Translate = False
       Expand = True
       ReadOnly = True
-      List = ["MySQL", "PostgreSQL", "SQLite", "ODBC"]
+      List = ["MySQL", "PostgreSQL", "SQLite", "ODBC", "Template"]
     }
   }
   { panHost HBox
@@ -103,68 +103,73 @@
       }
     }
   }
-  { HBox6 HBox
-    MoveScaled(1,35,68,4)
-    { Label6 Label
-      MoveScaled(0,0,18,4)
-      Text = ("Database")
-    }
-    { txtDatabase ButtonBox
-      MoveScaled(27,0,23,4)
-      Expand = True
-      Picture = Picture["icon:/small/view-detail"]
-    }
-  }
-  { panDatabase HBox
-    MoveScaled(1,40,68,19)
-    Visible = False
-    { Label8 Label
-      MoveScaled(0,0,18,3)
-    }
-    { VBox1 VBox
-      MoveScaled(32,0,35,18)
-      Expand = True
-      Spacing = True
-      { lvwDatabase ListView
-        MoveScaled(0,0,31,11)
+  { panDatabase VBox
+    MoveScaled(1,35,69,32)
+    AutoResize = True
+    Spacing = True
+    { HBox6 HBox
+      MoveScaled(0,0,68,4)
+      { Label6 Label
+        MoveScaled(0,0,18,4)
+        Text = ("Database")
+      }
+      { txtDatabase ButtonBox
+        MoveScaled(27,0,23,4)
         Expand = True
+        Picture = Picture["icon:/small/view-detail"]
       }
-      { panDatabaseAction HBox
-        MoveScaled(0,12,34,4)
+    }
+    { panChooseDatabase HBox
+      MoveScaled(0,5,68,19)
+      Visible = False
+      { Label8 Label
+        MoveScaled(0,0,18,3)
+      }
+      { VBox1 VBox
+        MoveScaled(32,0,35,18)
+        Expand = True
         Spacing = True
-        { btnCreateDatabase Button
-          MoveScaled(0,0,14,4)
+        { lvwDatabase ListView
+          MoveScaled(0,0,31,11)
           Expand = True
-          Picture = Picture["icon:/small/new"]
         }
-        { btnDeleteDatabase Button
-          MoveScaled(15,0,14,4)
-          Expand = True
-          Picture = Picture["icon:/small/delete"]
+        { panDatabaseAction HBox
+          MoveScaled(0,12,34,4)
+          Spacing = True
+          { btnCreateDatabase Button
+            MoveScaled(0,0,14,4)
+            Expand = True
+            Picture = Picture["icon:/small/new"]
+          }
+          { btnDeleteDatabase Button
+            MoveScaled(15,0,14,4)
+            Expand = True
+            Picture = Picture["icon:/small/delete"]
+          }
         }
       }
     }
-  }
-  { HBox3 HBox
-    MoveScaled(1,60,68,3)
-    { Label10 Label
-      MoveScaled(0,0,18,3)
+    { HBox3 HBox
+      MoveScaled(0,25,68,3)
+      { Label10 Label
+        MoveScaled(0,0,18,3)
+      }
+      { chkIgnoreCharset CheckBox
+        MoveScaled(27,0,24,3)
+        Expand = True
+        Text = ("Ignore database charset")
+      }
     }
-    { chkIgnoreCharset CheckBox
-      MoveScaled(27,0,24,3)
-      Expand = True
-      Text = ("Ignore database charset")
-    }
-  }
-  { HBox8 HBox
-    MoveScaled(1,64,68,3)
-    { Label12 Label
-      MoveScaled(0,0,18,3)
-    }
-    { chkDisplayMetadata CheckBox
-      MoveScaled(27,0,24,3)
-      Expand = True
-      Text = ("Display metadata")
+    { HBox8 HBox
+      MoveScaled(0,29,68,3)
+      { Label12 Label
+        MoveScaled(0,0,18,3)
+      }
+      { chkDisplayMetadata CheckBox
+        MoveScaled(27,0,24,3)
+        Expand = True
+        Text = ("Display metadata")
+      }
     }
   }
   { Panel2 Panel

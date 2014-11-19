@@ -29,73 +29,112 @@ Static Private Sub Init()
   
 End
 
+Static Private Sub ReadConnectionFile(sName As String) As Collection
 
-Static Public Sub _get(Name As String) As Connection
-  
   Dim sPath As String
+  Dim cData As New Collection
   Dim hFile As File
-  Dim hConn As Connection
   Dim sLine As String
+  Dim bInConnection As Boolean
   Dim aLine As String[]
-  Dim bPassword As Boolean
   
-  Init()
-  
-  If $cConn.Exist(Name) Then Return $cConn[Name]
-  
-  sPath = "../.connection" &/ Name & ".connection"
+  sPath = "../.connection" &/ sName & ".connection"
   If Not Exist(sPath) Then Return
   
-  hConn = New Connection
   hFile = Open sPath
   
   While Not Eof(hFile)
     
     Line Input #hFile, sLine
     If Left(sLine) = "#" Then Continue
-    If Left(sLine) = "[" Then Continue
+    If Left(sLine) = "[" Then 
+      bInConnection = sLine = "[Connection]"
+      Continue
+    Endif
     
-    aLine = Scan(sLine, "*=*")
-    If aLine.Count < 2 Then Continue
-    
-    Select Case LCase(aLine[0])
-    
-      Case "type"
-        hConn.Type = UnQuote(aLine[1])
+    If bInConnection Then
       
-      Case "path", "host"
-        hConn.Host = UnQuote(aLine[1])
+      aLine = Scan(sLine, "*=*")
+      If aLine.Count < 2 Then Continue
+      
+      Select Case LCase(aLine[0])
+      
+        Case "type"
+          cData["type"] = UnQuote(aLine[1])
         
-      Case "port"
-        hConn.Port = UnQuote(aLine[1])
-        
-      Case "database"
-        hConn.Name = UnQuote(aLine[1])
-        
-      Case "ignorecharset"
-        hConn.IgnoreCharset = LCase(aLine[1]) = "true"
-        
-      Case "user"
-        hConn.User = UnQuote(aLine[1])
-        
-      Case "rememberpassword"
-        bPassword = LCase(aLine[1]) = "true"
-    
-    End Select
+        Case "path", "host"
+          cData["host"] = UnQuote(aLine[1])
+          
+        Case "port"
+          cData["port"] = UnQuote(aLine[1])
+          
+        Case "database"
+          cData["name"] = UnQuote(aLine[1])
+          
+        Case "ignorecharset"
+          cData["ignorecharset"] = LCase(aLine[1]) = "true"
+          
+        Case "user"
+          cData["user"] = UnQuote(aLine[1])
+          
+        Case "rememberpassword"
+          cData["rememberpassword"] = LCase(aLine[1]) = "true"
+      
+      End Select
+      
+    Endif
     
   Wend
   
   Close #hFile
   
+  Return cData
+  
+End
+
+Static Private Sub GetConnectionFrom(sName As String, cData As Collection) As Connection
+
+  Dim hConn As Connection
+  Dim bPassword As Boolean
+  
+  hConn = New Connection
+  hConn.Type = cData["type"]
+  hConn.Host = cData["host"]
+  hConn.Port = cData["port"]
+  hConn.Name = cData["name"]
+  hConn.IgnoreCharset = cData["ignorecharset"]
+  hConn.User = cData["user"]
+  
+  bPassword = cData["rememberpassword"]
+        
   If bPassword Then
     If Component.IsLoaded("gb.desktop") Then
-      Try hConn.Password = Desktop.Passwords[Application.Name &/ Name]
+      Try hConn.Password = Desktop.Passwords[Application.Name &/ sName]
       If Error Then
-        Error "gb.db: warning: "; Application.Name &/ Name; ": unable to retrieve connection password: "; Error.Text
+        Error "gb.db: warning: "; Application.Name &/ sName; ": unable to retrieve connection password: "; Error.Text
       Endif
     Endif
   Endif
   
+  Return hConn
+  
+End
+
+
+
+Static Public Sub _get(Name As String) As Connection
+  
+  Dim hConn As Connection
+  Dim cData As Collection
+  
+  Init()
+  
+  If $cConn.Exist(Name) Then Return $cConn[Name]
+  
+  cData = ReadConnectionFile(Name)
+  If Not cData Then Return
+  
+  hConn = GetConnectionFrom(cData)
   $cConn[Name] = hConn
   Return hConn
   
@@ -123,3 +162,41 @@ Static Private Function Key_Read() As String
   Return $sKey
 
 End
+
+Static Public Sub Create(Name As String) As Connection
+
+  Dim cData As Collection
+  Dim hConn As Connection
+  Dim hConnDB As Connection
+  Dim sPath As String
+  
+  Init()
+  
+  cData = ReadConnectionFile(Name)
+  If Not cData Then Return
+
+  hConn = GetConnectionFrom(cData)
+  
+  sPath = "../.connection" &/ Name & ".template"
+  If Exist(sPath) Then
+    
+    hConnDB = New Connection
+    hConnDB.Type = hConn.Type
+    hConnDB.Host = hConn.Host
+    hConnDB.Port = hConn.Port
+    hConnDB.Open
+    If Not hConnDB.Databases.Exist(hConn.Name) Then
+      hConnDB.Databases.Add(hConn.Name)
+    Endif
+    hConnDB.Close
+
+    hConn.Open
+    hConn.ApplyTemplate(File.Load(sPath))
+    hConn.Close
+    
+  Endif
+    
+  Return hConn
+  
+End
+

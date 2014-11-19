@@ -1,0 +1,210 @@
+' Gambas class file
+
+Export
+
+Inherits _Connection
+
+Private Const TEMPLATE_MAGIC As String = "# Gambas Database Template File 3.0"
+
+Public Sub ApplyTemplate(Template As String)
+  
+  Dim hConn As Connection
+  Dim hFile As File
+  Dim sLine As String
+  
+  Dim cTable As Collection
+  Dim cField As Collection
+  Dim cIndex As Collection
+  Dim cCurrent As Collection
+  Dim iLine As Integer
+  Dim iPos As Integer
+  Dim sTable As Variant
+  Dim hTable As Table
+  Dim iLength As Integer
+  
+  hFile = Open String Template
+  
+  Line Input #hFile, sLine
+  If sLine <> "# Gambas Database Template File 3.0" Then Error.Raise("Bad database template format")
+  iLine = 1
+  
+  For Each sLine In hFile.Lines
+    
+    Inc iLine
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If sLine Begins "#" Then Continue
+    
+    If sLine = "}" Then
+      If cIndex Then
+        cTable["Indexes"].Add(cIndex)
+        cIndex = Null
+        cCurrent = cTable
+      Else If cField Then
+        cTable["Fields"].Add(cIndex)
+        cField = Null
+        cCurrent = cTable
+      Else If cTable Then
+        GoSub CREATE_TABLE
+        cTable = Null
+        cCurrent = Null
+      Else
+        Goto SYNTAX_ERROR
+      Endif
+    Endif
+    
+    If cIndex Then
+    Else If cField Then
+    Else If cTable Then
+      If sLine = "{ Index" Then
+        cIndex = New Collection
+        cCurrent = cIndex
+        Continue
+      Else If sLine = "{ Field" Then
+        cField = New Collection
+        cCurrent = cField
+        Continue
+      Endif
+    Else
+      If sLine <> "{ Table" Then Goto SYNTAX_ERROR
+      cTable = New Collection
+      cTable["Fields"] = New Collection[]
+      cTable["Indexes"] = New Collection[]
+      cCurrent = cTable
+      Continue
+    Endif
+    
+    iPos = InStr(sLine, "=")
+    If iPos <= 1 Then Goto SYNTAX_ERROR
+    ' FIXME: Calling Eval() is not very secure!
+    Try cCurrent[Trim(Left(sLine, iPos - 1))] = Eval(Trim(Mid$(sLine, iPos + 1)))
+    If Error Then Goto SYNTAX_ERROR
+    
+  Next
+  
+  If cCurrent Then Goto SYNTAX_ERROR
+  
+  Close #hFile
+    
+SYNTAX_ERROR:
+
+  Error.Raise("Syntax error in database template at line " & CStr(iLine))
+  
+CREATE_TABLE:
+
+  sTable = cTable["Name"]
+  If Not sTable Then Return
+  If hConn.Tables.Exist(sTable) Then Return
+  
+  hTable = hConn.Tables.Add(sTable, cTable["Type"])
+  For Each cField In cTable["Fields"]
+    iLength = 0
+    Try iLength = cField["Length"]
+    hTable.Fields.Add(cField["Name"], cField["Type"], iLength, cField["Default"], cField["Collation"])
+  Next
+  
+  hTable.PrimaryKey = cTable["PrimaryKey"]
+  hTable.Update
+  
+  For Each cIndex In cTable["Indexes"]
+    hTable.Indexes.Add(cIndex["Name"], cIndex["Fields"], cIndex["Unique"])
+  Next
+
+End
+
+Public Sub GetTemplate() As String
+
+  Dim hFile As File
+  Dim aTable As String[]
+  Dim hTable As Table
+  Dim sTable As String
+  Dim hField As Field
+  Dim hIndex As Index
+  Dim sTemplate As String
+
+  hFile = Open String For Write
+  
+  aTable = New String[]
+  For Each hTable In Me.Tables
+    If hTable.System Then Continue
+    'If sTable And If hTable.Name <> sTable Then Continue
+    aTable.Add(hTable.Name)
+  Next
+
+  Print #hFile, TEMPLATE_MAGIC
+  
+  For Each sTable In aTable
+    
+    hTable = Me.Tables[sTable]
+    
+    Print #hFile, "{ Table"
+    Print #hFile, "  Name="; Quote(hTable.Name)
+    If hTable.Type Then Print #hFile, "  Type="; Quote(hTable.Type)
+    Print #hFile, "  PrimaryKey=[\""; hTable.PrimaryKey.Join("\",\""); "\"]"
+    
+    For Each hField In hTable.Fields
+      
+      Print #hFile, "  { Field"
+      Print #hFile, "    Name="; Quote(hField.Name)
+      Print #hFile, "    Type=";
+      
+      Select hField.Type
+        Case db.Blob
+          Print #hFile, "db.Blob"
+        Case db.Boolean
+          Print #hFile, "db.Boolean"
+        Case db.Date
+          Print #hFile, "db.Date"
+        Case db.Float
+          Print #hFile, "db.Float"
+        Case db.Integer
+          Print #hFile, "db.Integer"
+        Case db.Long
+          Print #hFile, "db.Long"
+        Case db.Serial
+          Print #hFile, "db.Serial"
+        Case db.String
+          Print #hFile, "db.String"
+          If hField.Length Then Print #hFile, "    Length="; hField.Length
+        Case Else
+          Error.Raise("Unknown database field type")
+      End Select
+      
+      If hField.Default Then
+        Print #hFile, "    Default=";
+        If hField.Type = db.String Then
+          Print #hFile, Quote(hField.Default)
+        Else If hField.Type = db.Boolean Then
+          Print #hFile, If(hField.Default, "True", "False")
+        Else If hField.Type = db.Date Then
+          Print #hFile, "CDate(\";CStr(hField.Default);" \ ")"
+        Else
+          Print #hFile, CStr(hField.Default)
+        Endif
+      Endif
+      
+      If hField.Collation Then
+        Print #hFile, "    Collation="; Quote(hField.Collation)
+      Endif
+      
+      Print #hFile, "  }"
+      
+    Next
+    
+    For Each hIndex In hTable.Indexes
+      If hIndex.Primary Then Continue
+      Print #hFile, "  { Index "
+      Print #hFile, "    Name="; Quote(hIndex.Name)
+      Print #hFile, "    Unique="; If(hIndex.Unique, "True", "False")
+      Print #hFile, "    Fields=[\""; hIndex.Fields.Join("\",\""); "\"]"
+      Print #hFile, "  }"
+    Next
+    
+    Print #hFile, "}"
+    
+  Next
+  
+  sTemplate = Close #hFile
+  Return sTemplate
+  
+End

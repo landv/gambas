@@ -3530,7 +3530,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
       
       bMakeArray = True
       If I > 0 Then 
-        If aType[I - 1] = Highlight.Symbol Or If aSym[I - 1] = ")" Then bMakeArray = False
+        If aType[I - 1] = Highlight.Symbol Or If aSym[I - 1] = ")" Or If aSym[I - 1] = "ME" Or If aSym[I - 1] = "SUPER" Then bMakeArray = False
       Endif
       
       If bMakeArray Then

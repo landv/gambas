@@ -12,7 +12,7 @@ Public Enum MD_VERSION = 0, MD_FIELD = 1, MD_INDEX = 2, MD_TABLE = 3
 
 Private $bError As Boolean
 
-Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean) As Boolean
+Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean) 
   
   hConn.Type = LCase(hConfig["Connection/Type"])
   If hConn.Type = "sqlite" Then
@@ -371,7 +371,8 @@ End
 
 Public Sub NeedPassword(sType As String) As Boolean
   
-  Return LCase(sType) <> "sqlite"
+  sType = LCase(sType)
+  Return sType <> "sqlite" And sType <> "template"
   
 End
 
