@@ -8,7 +8,6 @@ Private Const TEMPLATE_MAGIC As String = "# Gambas Database Template File 3.0"
 
 Public Sub ApplyTemplate(Template As String)
   
-  Dim hConn As Connection
   Dim hFile As File
   Dim sLine As String
   
@@ -21,6 +20,7 @@ Public Sub ApplyTemplate(Template As String)
   Dim sTable As Variant
   Dim hTable As Table
   Dim iLength As Integer
+  Dim sErr As String
   
   hFile = Open String Template
   
@@ -41,16 +41,20 @@ Public Sub ApplyTemplate(Template As String)
         cIndex = Null
         cCurrent = cTable
       Else If cField Then
-        cTable["Fields"].Add(cIndex)
+        cTable["Fields"].Add(cField)
         cField = Null
         cCurrent = cTable
       Else If cTable Then
         GoSub CREATE_TABLE
         cTable = Null
+        cIndex = Null
+        cField = Null
         cCurrent = Null
       Else
+        sErr = "Unexpected '}'"
         Goto SYNTAX_ERROR
       Endif
+      Continue
     Endif
     
     If cIndex Then
@@ -66,7 +70,10 @@ Public Sub ApplyTemplate(Template As String)
         Continue
       Endif
     Else
-      If sLine <> "{ Table" Then Goto SYNTAX_ERROR
+      If sLine <> "{ Table" Then
+        sErr = "`{ Table` expected"
+        Goto SYNTAX_ERROR
+      Endif
       cTable = New Collection
       cTable["Fields"] = New Collection[]
       cTable["Indexes"] = New Collection[]
@@ -85,18 +92,20 @@ Public Sub ApplyTemplate(Template As String)
   If cCurrent Then Goto SYNTAX_ERROR
   
   Close #hFile
+  Return
     
 SYNTAX_ERROR:
 
-  Error.Raise("Syntax error in database template at line " & CStr(iLine))
+  If Not sErr Then sErr = "`" & sLine & "`"
+  Error.Raise("Syntax error in database template at line " & CStr(iLine) & ": " & sErr)
   
 CREATE_TABLE:
 
   sTable = cTable["Name"]
   If Not sTable Then Return
-  If hConn.Tables.Exist(sTable) Then Return
+  If Me.Tables.Exist(sTable) Then Return
   
-  hTable = hConn.Tables.Add(sTable, cTable["Type"])
+  hTable = Me.Tables.Add(sTable, cTable["Type"])
   For Each cField In cTable["Fields"]
     iLength = 0
     Try iLength = cField["Length"]
@@ -109,6 +118,8 @@ CREATE_TABLE:
   For Each cIndex In cTable["Indexes"]
     hTable.Indexes.Add(cIndex["Name"], cIndex["Fields"], cIndex["Unique"])
   Next
+  
+  Return
 
 End
 
