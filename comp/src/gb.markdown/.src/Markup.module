@@ -200,7 +200,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       Endif
   
       If Left(sLine) = "-" And If Right(sLine) = "-" Then
-        sText = Replace(sLine, " ", "")
+        'sText = Replace(sLine, " ", "")
         If Len(sText) >= 3 And If sText = String$(Len(sText), "-") Then
           GoSub CLOSE_PARA
           aResult.Add("<hr />")

@@ -137,26 +137,6 @@ TABLE.desc > TBODY > TR > TH {
   padding: 6px 12px;
 }
 
-
-/*TABLE.example {
-  border: none;
-  border-left: solid #A0A0A0 8px;
-}
-
-TABLE.example TR {
-  border: none;
-}
-
-TABLE.example TD {
-  border: none;
-  padding-left: 8px;
-}
-
-TABLE.example TH {
-  border: none;
-  padding-left: 8px;
-}*/
-
 .header {
   left: 0;
   top: 0;
@@ -278,14 +258,14 @@ DIV.table {
   
 DIV.box {
   display: inline-block;
-  border: solid #A0A0A0 1px;
+  border: solid #D8D8D8 1px;
   border-radius: 8px;
   padding: 8px;
 }
 
 DIV.info {
   display: inline-block;
-  border: solid #A0A0A0 1px;
+  border: solid #D8D8D8 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
@@ -295,7 +275,7 @@ DIV.info {
 
 DIV.warning {
   display: inline-block;
-  border: solid #A0A0A0 1px;
+  border: solid #D8D8D8 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
@@ -305,7 +285,7 @@ DIV.warning {
 
 DIV.tip {
   display: inline-block;
-  border: solid #A0A0A0 1px;
+  border: solid #D8D8D8 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
@@ -315,7 +295,7 @@ DIV.tip {
 
 DIV.vb {
   display: inline-block;
-  border: solid #A0A0A0 1px;
+  border: solid #D8D8D8 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
@@ -325,7 +305,7 @@ DIV.vb {
 
 DIV.critical {
   display: inline-block;
-  border: solid #A0A0A0 1px;
+  border: solid #D8D8D8 1px;
   border-radius: 8px;
   padding: 8px;
   padding-left: 48px;
@@ -375,7 +355,6 @@ DIV.index {
 DIV.syntax {
   display: inline-block;
   border: solid #D8D8D8 2px;
-  /*border-left: solid #A0A0A0 8px;*/
   padding: 4px 8px;
   font-family: monospace;
   white-space: pre-wrap;
@@ -442,6 +421,8 @@ TABLE.full {
 
 UL, OL {
   padding-left: 2em;
+  margin-bottom: 0;
+  margin-top: 0.75em;
 }
 
 P:first-child,UL:first-child,OL:first-child,TABLE:first-child {

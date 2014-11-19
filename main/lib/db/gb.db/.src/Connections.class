@@ -175,7 +175,7 @@ Static Public Sub Create(Name As String) As Connection
   cData = ReadConnectionFile(Name)
   If Not cData Then Return
 
-  hConn = GetConnectionFrom(cData)
+  hConn = GetConnectionFrom(Name, cData)
   
   sPath = "../.connection" &/ Name & ".template"
   If Exist(sPath) Then

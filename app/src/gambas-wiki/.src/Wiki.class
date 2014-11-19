@@ -50,6 +50,7 @@ Private Sub _PrintPage()
   Dim sDate As String
   Dim hStat As Stat
   Dim hStatDef As Stat
+  Dim hClass As CClassInfo
 
   If Main.Edit Then
     sPath = Main.GetPagePath()  
@@ -79,6 +80,28 @@ Private Sub _PrintPage()
   Else
   
     sPath = Main.SolvePath(Main.Path)
+    
+    If Not Main.ExistPage(sPath) Then
+      Main.Lang = Main.DEFAULT_LANG
+      sPath = Main.SolvePath(Main.Path)
+    Endif
+    
+    If Not Main.ExistPage(sPath) And If Main.Symbol Then
+      
+      Do
+        
+        hClass = CComponent.Get(Main.Component)[Main.Class]
+        If Not hClass.Parent Then Break
+
+        Main.Component = hClass.ParentComponent
+        Main.Class = hClass.Parent
+
+        sPath = Main.SolvePath("/comp/" & LCase(Main.Component &/ Main.Class &/ Main.Symbol))
+        If Main.ExistPage(sPath) Then Break
+        
+      Loop
+      
+    Endif
     
     If Not Main.ExistPage(sPath) Then
       
@@ -198,7 +221,9 @@ DISPLAY_PAGE:
   
 Catch
   
-  Print "<pre>"; Html(Error.Text); " at line #"; WikiMarkdown.Line + 1; ":\n\n"; Html(WikiMarkdown.Current); "\n\nStack backtrace:\n\n"; Error.Backtrace.Join("\n"); "</pre>";
+  Print "<pre>"; Html(Error.Text); " at line #"; WikiMarkdown.Line + 1; ":\n\n"; Html(WikiMarkdown.Current); "\n\nStack backtrace:\n\n"; Error.Backtrace.Join("\n")
+  Print Main.Component; " / "; Main.Class; " / "; Main.Symbol
+  Print "</pre>";
 
 End
 
