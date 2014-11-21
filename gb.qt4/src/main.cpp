@@ -815,8 +815,8 @@ static void hook_main(int *argc, char ***argv)
 
 static void hook_quit()
 {
-	CWINDOW_close_all();
-	CWINDOW_delete_all();
+	CWINDOW_close_all(true);
+	CWINDOW_delete_all(true);
 
 	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 }

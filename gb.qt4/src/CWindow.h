@@ -255,8 +255,8 @@ void CWINDOW_set_cancel_button(CWINDOW *win, QPushButton *button, bool on);
 void CWINDOW_define_mask(CWINDOW *_object);
 void CWINDOW_ensure_active_window();
 bool CWINDOW_must_quit();
-bool CWINDOW_close_all();
-void CWINDOW_delete_all();
+bool CWINDOW_close_all(bool main);
+void CWINDOW_delete_all(bool main);
 //void CWINDOW_fix_menubar(CWINDOW *window);
 
 #endif

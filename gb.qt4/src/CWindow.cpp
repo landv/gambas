@@ -1766,9 +1766,15 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 void on_error_show_modal(MODAL_INFO *info)
 {
+	#ifdef DEBUG_WINDOW
 	qDebug("on_error_show_modal");
+	#endif
 	
-	info->that->_enterLoop = false;
+	// info->that can be NULL if the dialog is destroyed during the event loop
+
+	if (info->that)
+		info->that->_enterLoop = false;
+
 	MyApplication::eventLoop->exit();
 
 	GB.Debug.LeaveEventLoop();
@@ -2173,7 +2179,7 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 }
 
 
-bool CWINDOW_close_all()
+bool CWINDOW_close_all(bool main)
 {
 	QList<CWINDOW *> list(CWindow::list);
 	CWINDOW *win;
@@ -2194,6 +2200,9 @@ bool CWINDOW_close_all()
 		}
 	}
 
+	if (main && CWINDOW_Main)
+		ret = do_close(CWINDOW_Main, 0);
+
 	#if DEBUG_WINDOW
 	qDebug(">>> CLOSE ALL");
 	#endif
@@ -2201,7 +2210,7 @@ bool CWINDOW_close_all()
 	return ret;
 }
 
-void CWINDOW_delete_all()
+void CWINDOW_delete_all(bool main)
 {
 	QList<CWINDOW *> list(CWindow::list);
 	CWINDOW *win;
@@ -2217,7 +2226,10 @@ void CWINDOW_delete_all()
 		if (win != CWINDOW_Main)
 			CWIDGET_destroy((CWIDGET *)win);
 	}
-	
+
+	if (main && CWINDOW_Main)
+		CWIDGET_destroy((CWIDGET *)CWINDOW_Main);
+
 	#if DEBUG_WINDOW
 	qDebug("DELETE ALL >>>");
 	#endif
@@ -2270,7 +2282,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 
 	if (!cancel && THIS == CWINDOW_Main)
 	{
-		if (CWINDOW_close_all())
+		if (CWINDOW_close_all(false))
 			cancel = true;
 	}
 
@@ -2301,7 +2313,7 @@ void MyMainWindow::closeEvent(QCloseEvent *e)
 	{
 		if (CWINDOW_Main == THIS)
 		{
-			CWINDOW_delete_all();
+			CWINDOW_delete_all(false);
 			#if DEBUG_WINDOW
 			qDebug("CWINDOW_Main -> NULL");
 			#endif

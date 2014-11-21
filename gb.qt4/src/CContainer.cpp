@@ -409,8 +409,12 @@ static void gms_move_resize_widget(QWidget *wid, int x, int y, int w, int h)
 
 void CCONTAINER_get_max_size(void *_object, int xc, int yc, int wc, int hc, int *w, int *h)
 {
-	bool locked = THIS_ARRANGEMENT->locked;
-	THIS_ARRANGEMENT->locked = false;
+	int add;
+	CCONTAINER_ARRANGEMENT *arr = THIS_ARRANGEMENT;
+	bool locked;
+
+	locked = arr->locked;
+	arr->locked = false;
 	
 	max_w = 0;
 	max_h = 0;
@@ -419,10 +423,18 @@ void CCONTAINER_get_max_size(void *_object, int xc, int yc, int wc, int hc, int 
 	_gms_w = wc;
 	_gms_h = hc;
 	get_max_size(THIS);
-	*w = max_w + THIS_ARRANGEMENT->padding + (THIS_ARRANGEMENT->margin ? MAIN_scale : 0);
-	*h = max_h + THIS_ARRANGEMENT->padding + (THIS_ARRANGEMENT->margin ? MAIN_scale : 0);
+
+	if (arr->margin)
+		add = arr->padding ? arr->padding : MAIN_scale;
+	else if (!arr->spacing)
+		add = arr->padding;
+	else
+		add = 0;
+
+	*w = max_w + add;
+	*h = max_h + add;
 	
-	THIS_ARRANGEMENT->locked = locked;
+	arr->locked = locked;
 }
 
 
