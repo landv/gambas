@@ -1468,7 +1468,7 @@ Public Sub _RaiseSelect()
   
 End
 
-Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = -1)
+Public Sub Select(Optional Start As Integer = 0, Optional Length As Integer = 1)
   
   $hRows.Select(Start, Length)
   
