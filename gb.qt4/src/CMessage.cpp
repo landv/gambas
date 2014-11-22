@@ -140,7 +140,9 @@ static int make_message(int type, int nbmax, void *_param)
 	parent = qApp->activeWindow();
 	if (!parent)
 	{
-		if (CWINDOW_Main)
+		if (CWINDOW_Current)
+			parent = CWINDOW_Current->widget.widget;
+		else if (CWINDOW_Main)
 			parent = CWINDOW_Main->widget.widget;
 	}
 	
