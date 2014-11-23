@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Type{ValueBox.*}=Number,Value,ReadOnly,Border=True"
+Public Const _Properties As String = "*,Action,Text,Type{ValueBox.*}=Number,ReadOnly,Border=True"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 
@@ -320,14 +320,26 @@ Private Sub Text_Write(Value As String)
   Select Case $iType
     
     Case {Number}
-      If IsNumber(Value) Then Value_Write(Val(Value))
+      If IsNumber(Value) Then 
+        Value_Write(Val(Value))
+      Else
+        Value_Write(0)
+      Endif
       
     Case {Date}, {Time}, DateTime
-      If IsDate(Value) Then Value_Write(Val(Value))
+      If IsDate(Value) Then 
+        Value_Write(Val(Value))
+      Else
+        Value_Write(Null)
+      Endif
       
     Case Currency
       Value = Trim(Replace(Value, GetCurrency(), ""))
-      If IsNumber(Value) Then Value_Write(Val(Value))
+      If IsNumber(Value) Then 
+        Value_Write(Val(Value))
+      Else
+        Value_Write(0)
+      Endif
       
     Case IPAddress
       Value_Write(Value)
