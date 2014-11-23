@@ -743,7 +743,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	/* encoding */
 
 	if (PQsetClientEncoding(conn, GB.System.Charset()))
-		fprintf(stderr, "gb.db.postgresql: cannot set encoding to %s\n", GB.System.Charset());
+		fprintf(stderr, "gb.db.postgresql: warning: cannot set encoding to %s\n", GB.System.Charset());
 
 	if (!do_query(db, NULL, &res, query, 0))
 	{

@@ -1,0 +1,69 @@
+' Gambas module file
+
+Private $aRequest As New HttpForm[]
+
+Public Sub Add(hRequest As HttpForm)
+  
+  Dim hObs As Observer
+  
+  'hRequest.Debug = True
+  hObs = New Observer(hRequest) As "Request"
+  $aRequest.Add(hRequest)
+  If $aRequest.Count = 1 Then
+    hRequest.Submit
+  Endif
+  
+End
+
+Public Sub Remove(hRequest As HttpForm)
+
+  Dim iPos As Integer
+  
+  iPos = $aRequest.FindByRef(hRequest)
+  If iPos >= 0 Then
+    If iPos = 0 Then 
+      hRequest.Stop
+    Else
+      $aRequest.Remove(iPos)
+    Endif
+  Endif
+  
+End
+
+
+Public Sub Request_Finished()
+  
+  If $aRequest.Count = 0 Then Return
+  If $aRequest[0] = Last Then
+    $aRequest.Remove(0)
+    If $aRequest.Count Then
+      $aRequest[0].Submit
+    Endif
+  Endif
+  
+End
+
+Public Sub Request_Error()
+  
+  Request_Finished
+  
+End
+
+Public Sub Request_Cancel()
+  
+  Request_Finished
+  
+End
+
+
+
+Public Sub Clear()
+
+  If $aRequest.Count = 0 Then Return
+  
+  $aRequest[0].Stop
+  $aRequest.Clear
+  
+End
+
+

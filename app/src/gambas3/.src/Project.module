@@ -81,6 +81,7 @@ Public CreateEachDirectory As Boolean
 Public PublishTags As String[]
 Public PublishDependencies As String[]
 Public PublishGambasVersion As String
+Public PublishWebSite As String
 
 Public TabSize As Integer
 Public Version As String
@@ -3191,6 +3192,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   PublishTags = New String[]
   PublishDependencies = New String[]
   PublishGambasVersion = ""
+  PublishWebSite = ""
 
   For Each sLig In hFic.Lines
 
@@ -3448,6 +3450,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         
       Case "dependencies"
         PublishDependencies = Split(sVal)
+        
+      Case "website"
+        PublishWebSite = sVal
 
     End Select
 
@@ -3616,6 +3621,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PublishTags And If PublishTags.Count Then Print #hFic, "Tags="; PublishTags.Join(",")
   If PublishDependencies And If PublishDependencies.Count Then Print #hFic, "Dependencies="; PublishDependencies.Join(",")
   If PublishGambasVersion Then Print #hFic, "GambasVersion="; PublishGambasVersion
+  If PublishWebSite Then Print #hFic, "WebSite="; PublishWebSite
 
   Close #hFic
 

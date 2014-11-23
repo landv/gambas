@@ -1,7 +1,7 @@
 ' Gambas module file
 
 Private $hForm As HttpForm
-Private $sResult As String
+Private $sFarm As String
 Private $sGoodMsg As String
 Private $sBadMsg As String
 Private $hWin As Object
@@ -28,7 +28,7 @@ Public Sub RegisterUser(hWin As Window, sFarm As String, sLogin As String, sPass
 
   $hWin = hWin
 
-  $sResult = ""
+  $sFarm = sFarm
 
   $hForm = New HttpForm As "FarmClient"
   $hForm.URL = "http://" & sFarm &/ "farm/register"
@@ -59,7 +59,7 @@ End
 ' End
 
 
-Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String, aTag As String[], aRequire As String[])
+Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As String, sLogin As String, sPassword As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String)
 
   Dim sSource As String
   Dim sIcon As String
@@ -89,7 +89,7 @@ Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As Strin
   
   If Not Exist(sIcon) Then sIcon = ""
   
-  $sResult = ""
+  $sFarm = ""
 
   $sGoodMsg = ("The project has been successfully published.")
   $sBadMsg = ("Unable to publish project.")
@@ -110,6 +110,7 @@ Public Sub PublishSoftware(hWin As Window, sFarm As String, sScreenshot As Strin
   $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
   $hForm.Add("tags", aTag.Join(","))
   $hForm.Add("dependencies", aRequire.Join(","))
+  $hForm.Add("url", sURL)
   If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
 
   'SetMessage(("Connecting..."))
@@ -135,19 +136,10 @@ End
 '   
 ' End
 
-Public Sub FarmClient_Read()
-
-  Dim sBuffer As String
-  
-  'SetMessage(("Reading server response..."))
-  sBuffer = Read #$hForm, Lof($hForm)
-  $sResult &= sBuffer
-  
-End
-
 Private Sub PublishEnd()
 
   If Not $hForm Then Return
+  If $sFarm And If $hForm["login"] Then Settings["/Publish" &/ $sFarm &/ "Login"] = $hForm["login"]
   'SetMessage("")
   Try $hWin.OnPublishEnd()
   $hForm = Null
@@ -162,17 +154,27 @@ Public Sub FarmClient_Error()
   
 End
 
+Public Sub FarmClient_Progress()
+  
+  
+  
+End
+
+
 Public Sub FarmClient_Finished()
   
   Dim iPos As Integer
+  Dim sResult As String
+  
+  sResult = $hForm.Peek()
   
   PublishEnd
   
-  If $sResult <> "*" Then
-    If $sResult Not Begins "10 OK" Then
-      iPos = InStr($sResult, " ")
-      $sResult = Mid$($sResult, iPos + 1)
-      Message.Error($sBadMsg & "\n\n" & $sResult)
+  If sResult Then
+    If sResult Not Begins "10 OK" Then
+      iPos = InStr(sResult, " ")
+      sResult = Mid$(sResult, iPos + 1)
+      Message.Error($sBadMsg & "\n\n" & sResult)
     Else
       Message($sGoodMsg)
     Endif
@@ -182,7 +184,47 @@ End
 
 Public Sub Abort()
   
-  $sResult = "*"
   $hForm.Stop
+  
+End
+
+Public Sub GetDate(sDate As String) As Date
+  
+  Dim dDate As Date
+
+  If Len(sDate) = 14 Then
+    Try dDate = Date(CInt(Mid(sDate, 1, 4)), CInt(Mid(sDate, 5, 2)), CInt(Mid(sDate, 7, 2)), CInt(Mid$(sDate, 9, 2)), CInt(Mid$(sDate, 11, 2)), CInt(Mid$(sDate, 13, 2)))
+  Else If Len(sDate) = 8 Then
+    Try dDate = Date(CInt(Mid(sDate, 1, 4)), CInt(Mid(sDate, 5, 2)), CInt(Mid(sDate, 7, 2)))
+  Endif
+
+  Return dDate
+  
+End
+
+Public Sub GetResult(sResult As String) As Collection
+  
+  Dim cResult As New Collection
+  Dim aResult As String[]
+  Dim sLine As String
+  Dim iPos As Integer
+  
+  Print sResult
+  
+  aResult = Split(sResult, "\r\n", "", True)
+  If aResult[0] <> "10 OK" Then 
+    iPos = InStr(aResult[0], " ")
+    'cResult["Error"] = Mid$(aResult[0], iPos + 1)
+    cResult["Error"] = Replace(Mid$(sResult, iPos + 1), "\r", "")
+    Return cResult
+  Endif
+  aResult.Remove(0)
+  For Each sLine In aResult
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    cResult[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 1))
+  Next
+  
+  Return cResult
   
 End

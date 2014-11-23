@@ -1,0 +1,164 @@
+' Gambas class file
+
+Event Change
+
+Public Enum STATE_WAIT, STATE_WAIT_ICON, STATE_WAIT_BACKGROUND, STATE_READY, STATE_ERROR
+Public Const ICON_SIZE As Integer = 32
+
+Public State As Integer
+Public Id As Integer
+Public Name As String
+Public Version As String
+Public UploadDate As Date
+Public Description As String
+Public URL As String
+Public RequiredGambasVersion As String
+Public Checksum As String
+Public Owner As String
+Public DownloadCount As Integer
+Public VoteCount As Integer
+Public YourVote As Boolean
+Public Icon As Image
+Public Background As Image
+Public Tags As String[]
+
+Public ErrorText As String
+
+Private $sFarm As String
+
+Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
+  
+  Id = iId
+  $sFarm = sFarm
+  
+End
+
+Public Sub Start()
+
+  Dim hRequest As FarmRequest
+  
+  hRequest = New FarmRequest($sFarm) As "Request"
+  hRequest.GetSoftware(Id)
+  
+  hRequest = New FarmRequest($sFarm) As "Request"
+  hRequest.GetSoftwareIcon(Id)
+  
+End
+
+
+Public Sub Request_Finished()
+  
+  Dim hReq As FarmRequest = Last
+  Dim cResult As Collection
+  
+  If hReq.HasFailed() Then
+    ErrorText = hReq.ErrorText
+    State = STATE_ERROR
+    Raise Change
+    Return
+  Endif
+  
+  On State Goto WAIT_INFO, WAIT_ICON
+  Return
+  
+WAIT_INFO:
+  
+  cResult = hReq.Result
+  
+  Name = UnQuote(cResult["Name"])
+  Try Version = CStr(CInt(Left(cResult["Version"], -4))) & "." & CStr(CInt(Right$(cResult["Version"], 4))) & "." & cResult["Release"]
+  
+  UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
+  Description = UnQuote(cResult["Description"])
+  URL = UnQuote$(cResult["URL"])
+  Try RequiredGambasVersion = CStr(CInt(Left(cResult["RequiredGambasVersion"], -2))) & "." & CStr(CInt(Right(cResult["RequiredGambasVersion"], 2)))
+  Checksum = UnQuote(cResult["Checksum"])
+  Try DownloadCount = CInt(cResult["DownloadCount"])
+  Try VoteCount = CInt(cResult["VoteCount"])
+  Owner = UnQuote(cResult["Owner"])
+  YourVote = cResult["YourVote"] <> "0"
+  Tags = Split(cResult["Tags"])
+
+  State = STATE_WAIT_ICON
+  Raise Change
+  Return
+
+WAIT_ICON:
+
+  Try Icon = Image.Load(hReq.ResultFile).Stretch(-1, ICON_SIZE)
+  
+  'If Icon Then MakeBackground
+  
+'   $sResult = ""
+'   $hForm.URL = "http://" & $sFarm &/ "farm/get?background"
+'   $hForm.Submit
+'   State = STATE_WAIT_BACKGROUND
+'   Raise Change
+'   Return
+' 
+' WAIT_BACKGROUND:
+' 
+'   sTemp = Temp$()
+'   File.Save(sTemp, $sResult)
+'   Try Background = Image.Load(sTemp)
+'   Kill sTemp
+'   
+'   If Background Then
+'     Background = Background.Copy(0, Max(0, Background.H \ 2 - Desktop.Scale * 8), Background.Width, Desktop.Scale * 16).Fuzzy(8).Opacity(0.3)
+'   Endif
+
+  State = STATE_READY
+  Raise Change
+  Return
+
+End
+
+Public Sub IsFinished() As Boolean
+  
+  Return State = STATE_READY Or State = STATE_ERROR
+  
+End
+
+' Public Sub Abort()
+'   
+'   Try $hForm.Stop
+'   State = STATE_READY
+'   $hForm = Null
+'  
+' End
+' 
+' Private Sub MakeBackground()
+' 
+'   Dim X, Y As Integer
+'   Dim iCol As Integer
+'   Dim I As Integer
+'   
+'   Background = New Image(128, 128, Color.White)
+'   
+'   Randomize Val("&H" & Right(Checksum, 8))
+'   
+'   Paint.Begin(Background)
+'   
+'   For I = 1 To 64
+'     
+'     X = Rand(0, Background.W - 1)
+'     Y = Rand(0, Background.H - 1)
+'     
+'     iCol = Icon[Rand(Icon.W - 1), Rand(Icon.H - 1)]
+'     If Color[iCol].Alpha >= 128 Then iCol = Color.White
+'     iCol = Color.SetAlpha(iCol, 192)
+' 
+'     Paint.Ellipse(X, Y, 64, 64)
+'     Paint.Ellipse(X - Background.W, Y, 64, 64)
+'     Paint.Ellipse(X, Y - Background.H, 64, 64)
+'     Paint.Ellipse(X - Background.W, Y - Background.H, 64, 64)
+'     Paint.Background = iCol
+'     Paint.Fill
+'     
+'   Next
+'   
+'   Paint.End
+'   
+'   Background = Background.Opacity(0.3)
+' 
+' End

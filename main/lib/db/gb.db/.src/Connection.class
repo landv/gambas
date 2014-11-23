@@ -105,17 +105,21 @@ CREATE_TABLE:
   If Not sTable Then Return
   If Me.Tables.Exist(sTable) Then Return
   
+  'Print "create table: "; sTable;; cTable["Type"];; cTable["Fields"].Count
   hTable = Me.Tables.Add(sTable, cTable["Type"])
   For Each cField In cTable["Fields"]
     iLength = 0
     Try iLength = cField["Length"]
+    'Print "create field: "; cField["Name"];; cField["Type"];; iLength;; cField["Default"];; cField["Collation"]
     hTable.Fields.Add(cField["Name"], cField["Type"], iLength, cField["Default"], cField["Collation"])
   Next
   
+  'Print "primary key: "; cTable["PrimaryKey"].Join(",")
   hTable.PrimaryKey = cTable["PrimaryKey"]
   hTable.Update
   
   For Each cIndex In cTable["Indexes"]
+    'Print "create index: "; cIndex["Name"];; cIndex["Fields"].Join(",");; cIndex["Unique"]
     hTable.Indexes.Add(cIndex["Name"], cIndex["Fields"], cIndex["Unique"])
   Next
   

@@ -1,0 +1,132 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Padding{Range:0;63},AutoResize,Link,Text"
+Public Const _DefaultSize As String = "24,4"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
+
+Property Text As String
+Property Link As String
+Property Visited As Boolean
+Property AutoResize As Boolean
+Property Padding As Integer
+
+Private $hDraw As DrawingArea
+Private $sText As String
+Private $bVisited As Boolean
+Private $bAutoResize As Boolean
+Private $iPadding As Integer
+Private $sLink As String
+
+Public Sub _new()
+  
+  $hDraw = New DrawingArea(Me) As "DrawingArea"
+  
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  $hDraw.Mouse = If($sText, Mouse.Pointing, Mouse.Default)
+  UpdateSize
+  $hDraw.Refresh
+
+End
+
+Private Function Visited_Read() As Boolean
+
+  Return $bVisited
+
+End
+
+Private Sub Visited_Write(Value As Boolean)
+
+  $bVisited = Value
+  $hDraw.Refresh
+
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Paint.Background = If($bVisited, Color.VisitedForeground, Color.LinkForeground)
+  Paint.Font.Underline = True
+  Paint.DrawText($sText, $iPadding, $iPadding, Paint.W - $iPadding * 2, Paint.H - $iPadding * 2, Align.Normal)
+  
+End
+
+Private Function AutoResize_Read() As Boolean
+
+  Return $bAutoResize 
+
+End
+
+Private Sub AutoResize_Write(Value As Boolean)
+
+  $bAutoResize = Value
+  If $bAutoResize Then UpdateSize
+
+End
+
+Private Sub UpdateSize()
+  
+  If Not $bAutoResize Then Return
+  Me.Resize($hDraw.Font.TextWidth($sText) + $iPadding * 2, $hDraw.Font.TextHeight($sText) + $iPadding * 2)
+  
+End
+
+Private Function Padding_Read() As Integer
+
+  Return $iPadding
+
+End
+
+Private Sub Padding_Write(Value As Integer)
+
+  $iPadding = Value
+  UpdateSize
+  $hDraw.Refresh
+
+End
+
+Public Sub DrawingArea_MouseDown()
+
+  Dim bStop As Boolean
+  Dim sLink As String
+  
+  bStop = Raise Click
+  If bStop Then Return
+  
+  $bVisited = True
+  $hDraw.Refresh
+  
+  sLink = $sLink
+  If Not sLink Then sLink = $sText
+  
+  If sLink Like "*://*" And If Component.IsLoaded("gb.desktop") Then
+    Desktop.Open(sLink)
+  Endif
+  
+End
+
+Private Function Link_Read() As String
+
+  Return $sLink
+
+End
+
+Private Sub Link_Write(Value As String)
+
+  $sLink = Value
+
+End

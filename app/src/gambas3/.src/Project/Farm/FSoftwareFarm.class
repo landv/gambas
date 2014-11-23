@@ -1,0 +1,160 @@
+' Gambas class file
+
+Private $bNoRefresh As Boolean
+
+'Static Private $hLogo As Image
+
+Public Sub Run()
+  
+  Me.ShowModal
+  
+End
+
+Public Sub Form_Open()
+
+  ' If Not $hLogo Then
+  '   $hLogo = New Image(256, 256, Color.Transparent)
+  '   Paint.Begin($hLogo)
+  '   Paint.Ellipse(16, 16, 224, 224)
+  '   Paint.LineWidth = 8
+  '   Paint.Background = &HD96800&
+  '   Paint.Stroke
+  '   Paint.End
+  '   $hLogo = $hLogo.Fuzzy(16)
+  '   
+  '   Paint.Begin($hLogo)
+  '   Paint.Ellipse(16, 16, 224, 224)
+  '   Paint.Save
+  '   Paint.Clip(True)
+  '   Paint.Background = Color.White
+  '   Paint.Fill(True)
+  '   Paint.ZoomImage(Image.Load("img/logo/logo-32-head.png"), 8, 16, 16, &HD96800&)
+  '   Paint.Restore
+  '   Paint.LineWidth = 8
+  '   Paint.Background = &HD96800&
+  '   Paint.Stroke
+  '   Paint.End
+  '   
+  ' Endif
+
+  cmbFarm.List = FarmRequest.GetFarms()
+  $bNoRefresh = True
+  cmbFarm.Index = 0
+  cmbSort.Index = 0
+  $bNoRefresh = False
+  LoadSoftware
+
+End
+
+' Public Sub Form_Arrange()
+' 
+'   dwgBackground.Move(svwFarm.X, svwFarm.Y, svwFarm.W, svwFarm.H)
+'   dwgBackground.Lower
+' 
+' End
+' 
+' Public Sub dwgBackground_Draw()
+' 
+'   Paint.DrawImage($hLogo, 16, 16, 256, 256)
+'   Paint.Font.Size = 40
+'   Paint.Font.Bold = True
+'   Paint.Background = Color.Gray
+'   Paint.DrawTextShadow("Gambas\nSoftware\nFarm", 292, 16, Me.W, 256, Align.Left)
+'   Paint.Text("Gambas\nSoftware\nFarm", 292, 16, Me.W, 256, Align.Left)
+'   Paint.Fill
+' 
+' End
+
+Public Sub cmbSort_Click()
+
+  LoadSoftware
+
+End
+
+Public Sub cmbFarm_Click()
+
+  LoadSoftware
+
+End
+
+Private Sub LoadSoftware()
+
+  Dim hReq As FarmRequest
+  
+  If $bNoRefresh Then Return
+  
+  timLoad.Stop
+  
+  If cmbSort.Index = 3 Then Return
+  
+  FarmRequestManager.Clear
+  svwFarm.Children.Clear
+  
+  hReq = New FarmRequest(cmbFarm.Text) As "Request"
+  hReq.SearchSoftware(["date", "download", "vote"][cmbSort.Index], txtFilter.Text, tagFarm.GetTags())
+  
+End
+
+Public Sub Request_Finished()
+  
+  Dim hReq As FarmRequest = Last
+  Dim sId As String
+  Dim hSoftwareBox As SoftwareBox
+  
+  If hReq.HasFailed() Then
+    Message.Error(hReq.ErrorText)
+    Return
+  Endif
+  
+  For Each sId In Split(hReq.Result["Result"])
+    hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm)
+    hSoftwareBox.ResizeScaled(48, 18)
+  Next
+  
+End
+
+
+Public Sub Form_Close()
+
+  FarmRequestManager.Clear
+
+End
+
+Public Sub txtFilter_Click()
+
+  txtFilter.Clear
+
+End
+
+Public Sub txtFilter_Change()
+
+  timLoad.Stop
+  timLoad.Start
+
+End
+
+Public Sub timLoad_Timer()
+
+  LoadSoftware
+
+End
+
+Public Sub tagFarm_Change()
+
+  timLoad.Stop
+  timLoad.Start
+
+End
+
+Public Sub dwgTitle_Draw()
+
+  Dim DS As Integer = Desktop.Scale
+  
+  Paint.Font.Grade = 8
+  Paint.Font.Bold = True
+  Paint.Background = Color.Black
+  Paint.DrawTextShadow(("Gambas Software Farm"), DS, 0, DS * 32, Paint.H, Align.Left, 8)
+  Paint.Background = Color.White
+  Paint.DrawText(("Gambas Software Farm"), DS, 0, DS * 32, Paint.H, Align.Left)
+  
+End

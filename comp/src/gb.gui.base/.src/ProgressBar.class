@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Label=True,Pulse"
+Public Const _Properties As String = "*,Action,Label=True,Border=True,Pulse"
 Public Const _Group As String = "Form"
 Public Const _DefaultEvent As String = "MouseDown"
 Public Const _DefaultSize As String = "24,4"
@@ -12,6 +12,7 @@ Public Const _DefaultSize As String = "24,4"
 Property Label As Boolean
 Property Value As Float
 Property Pulse As Boolean
+Property Border As Boolean
 
 Private $hDrawingArea As DrawingArea
 Private $fValue As Float
@@ -19,6 +20,7 @@ Private $bLabel As Boolean = True
 Private $bPulse As Boolean
 Private $iPulse As Integer
 Private $hTimerPulse As Timer
+Private $bBorder As Boolean = True
 
 Public Sub _new()
   
@@ -58,7 +60,7 @@ End
 
 Public Sub DrawingArea_Draw()
   
-  Dim F As Integer = Max(4, Style.FrameWidth + 2)
+  Dim F As Integer '= 2 'Max(4, Style.FrameWidth + 2)
   Dim iWP As Integer
   Dim W As Float
   Dim iCol As Integer
@@ -68,13 +70,24 @@ Public Sub DrawingArea_Draw()
   
   'Paint.FillRect(F, F, Paint.W - F * 2, Paint.H - F * 2, iCol)
   
+  If $bBorder Then
+    Paint.AntiAlias = False
+    Paint.Background = Color.LightForeground
+    Paint.Rectangle(0, 0, Paint.W - 1, Paint.H - 1)
+    Paint.Stroke
+    Paint.AntiAlias = True
+    F = 2
+  Else
+    F = 0
+  Endif
+  
   iCol = Color.SelectedBackground
   If Not Me.Enabled Then iCol = Color.Desaturate(iCol)
   
   'Draw.Foreground = Color.LightForeground
   'Draw.Rect(0, 0, Paint.W, Paint.H)
 
-  Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
+  'Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Sunken)
   
   Paint.Rectangle(F, F, Paint.W - F * 2, Paint.H - F * 2)
   Paint.Clip
@@ -159,4 +172,17 @@ Public Sub Pulse_Timer()
   
   $hDrawingArea.Refresh
   
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  $hDrawingArea.Refresh
+
 End

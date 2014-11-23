@@ -1,12 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,71,81)
+  MoveScaled(0,0,71,86)
   Text = ("Publish project")
   Icon = Picture["icon:/medium/internet"]
   Arrangement = Arrange.Vertical
   { Panel1 Panel
-    MoveScaled(2,2,59,41)
+    MoveScaled(2,2,59,49)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -43,28 +43,40 @@
         Expand = True
       }
     }
+    { HBox8 HBox
+      MoveScaled(0,10,58,4)
+      Spacing = True
+      { Label10 Label
+        MoveScaled(0,0,30,4)
+        Text = ("Web site")
+      }
+      { txtURL TextBox
+        MoveScaled(31,0,26,4)
+        Expand = True
+      }
+    }
     { Label6 Label
-      MoveScaled(0,10,14,4)
+      MoveScaled(0,18,14,4)
       Font = Font["Bold"]
       Text = ("Tags")
     }
     { tagEditor CTagEditor
-      MoveScaled(0,14,58,10)
+      MoveScaled(0,22,58,10)
       Expand = True
     }
     { Label7 Label
-      MoveScaled(0,25,19,4)
+      MoveScaled(0,33,19,4)
       Font = Font["Bold"]
       Text = ("Dependencies")
     }
     { lstRequire ListEditor
-      MoveScaled(1,29,57,11)
+      MoveScaled(1,37,57,11)
       Expand = True
       Moveable = False
     }
   }
   { Panel3 Panel
-    MoveScaled(2,46,62,24)
+    MoveScaled(2,53,62,24)
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
@@ -125,33 +137,23 @@
     }
   }
   { Separator1 Separator
-    MoveScaled(1,71,28,0)
+    MoveScaled(1,78,28,0)
   }
   { HBox4 HBox
-    MoveScaled(1,72,68,6)
+    MoveScaled(1,79,68,6)
     Spacing = True
     Margin = True
-    { spnPublish Spinner
-      MoveScaled(1,0,4,4)
-      Enabled = False
-    }
-    { lblMessage Label
-      MoveScaled(7,1,16,4)
+    { Panel4 Panel
+      MoveScaled(10,2,4,2)
       Expand = True
     }
     { btnPublish Button
-      MoveScaled(19,0,16,4)
+      MoveScaled(34,1,16,4)
       Text = ("Publish")
       Picture = Picture["icon:/small/internet"]
     }
-    { btnAbort Button
-      MoveScaled(35,0,16,4)
-      Visible = False
-      Text = ("Stop")
-      Picture = Picture["icon:/small/stop"]
-    }
     { btnCancel Button
-      MoveScaled(51,0,16,4)
+      MoveScaled(51,1,16,4)
       Text = ("Close")
     }
   }

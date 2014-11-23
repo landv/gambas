@@ -1,0 +1,224 @@
+' Gambas class file
+
+Inherits UserControl
+
+Event Ready
+Event Install
+Event Vote
+
+Static Private $hImageVote As Image
+Static Private $hImageVoteOff As Image
+Static Private $hImageInstall As Image
+Static Private $hImageInstallOff As Image
+
+Property Read Id As Integer
+
+Private $hDrawingArea As DrawingArea
+Private $hSoft As CSoftware
+Private $hSpinner As Spinner
+Private panAction As Panel
+Private btnVote As ToolButton
+Private btnInstall As ToolButton
+Private lblURL As URLLabel
+  
+
+Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
+  
+  Me.Foreground = Color.TextForeground
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  
+  $hSpinner = New Spinner($hDrawingArea)
+  $hSpinner.Start
+  
+  $hSoft = New CSoftware(iId, sFarm) As "Software"
+  
+  If Not $hImageVote Then
+    $hImageVote = Picture["icon:/22/bookmark"].Image
+    $hImageVoteOff = $hImageVote.Copy().Desaturate()
+    $hImageInstall = Picture["icon:/22/apply"].Image
+    $hImageInstallOff = $hImageInstall.Copy().Desaturate()
+  Endif
+  
+  panAction = New Panel(Me)
+  panAction.Spacing = True
+  panAction.Invert = True
+  panAction.Ignore = True
+  panAction.ResizeScaled(21, 5)
+  panAction.Arrangement = Arrange.Horizontal
+
+  btnVote = New ToolButton(panAction) As "btnVote"
+  btnVote.ResizeScaled(10, 5)
+  'btnVote.Font.Bold = True
+  btnVote.Font.Grade = 1
+  btnVote.AutoResize = True
+  
+  btnInstall = New ToolButton(panAction) As "btnInstall"
+  btnInstall.ResizeScaled(10, 5)
+  btnInstall.Font.Grade = 1
+  btnInstall.AutoResize = True
+  
+  $hSoft.Start
+  
+End
+
+Public Sub Software_Change()
+  
+  $hDrawingArea.Refresh
+  
+  If $hSoft.IsFinished() Then 
+    
+    $hSpinner.Hide
+    
+    If $hSoft.State = CSoftware.STATE_READY Then
+      
+      btnInstall.Picture = $hImageInstallOff.Picture
+      btnInstall.Text = CStr($hSoft.DownloadCount)
+      btnVote.Picture = $hImageVoteOff.Picture
+      btnVote.Text = CStr($hSoft.VoteCount)
+      
+      If $hSoft.URL Then
+        lblURL = New URLLabel($hDrawingArea)
+        lblURL.Ignore = True
+        lblURL.AutoResize = True
+        lblURL.Text = ("Project web site")
+        lblURL.Link = $hSoft.URL
+        lblURL.Raise
+      Endif
+      
+    Endif
+    
+    Raise Ready
+    
+  Endif
+  
+End
+
+Public Sub DrawingArea_Arrange()
+  
+  $hSpinner.Move($hDrawingArea.W \ 2 - 16, $hDrawingArea.H \ 2 - 16, 32, 32)
+  
+  panAction.Move($hDrawingArea.W - Desktop.Scale - panAction.W, Desktop.Scale)
+  If lblURL Then lblURL.Move(Desktop.Scale, $hDrawingArea.H - lblURL.H - Desktop.Scale)
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  Dim X, Y, W, H As Integer
+  Dim P As Integer
+  Dim iCol As Integer
+  Dim sText As String
+  
+  If $hSoft.State = CSoftware.STATE_WAIT Then Return
+  
+  W = Paint.W
+  H = Paint.H
+  P = Desktop.Scale
+  
+  'Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
+  'Paint.Rectangle(X, Y, W, H)
+  'Paint.Fill
+  
+  If $hSoft.Background Then
+    Paint.Brush = Paint.Image($hSoft.Background)
+  Else
+    Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
+  Endif
+  Paint.Rectangle(0, 0, W, H)
+  Paint.Fill
+  
+  Paint.AntiAlias = False
+  Paint.Rectangle(X, Y, W - 1, H - 1)
+  
+  If $hDrawingArea.HasFocus Then
+  
+    Paint.Background = Color.LightBackground
+    Paint.LineWidth = 2
+  
+  Else
+    
+    Paint.Background = Color.SetAlpha(Color.LightForeground, 160)
+    
+  Endif
+  
+  Paint.Stroke
+  Paint.AntiAlias = True
+  
+  X += P
+  Y += P
+  W -= P * 2
+  H -= P * 2
+  
+  If $hSoft.State = CSoftware.STATE_ERROR Then
+    Paint.Font.Italic = True
+    Paint.Background = Color.Gray
+    Paint.DrawText($hSoft.ErrorText, X, Y, W, H, Align.TopLeft)
+    Return
+  Endif
+
+  Paint.Save
+  
+  Paint.Rectangle(X, Y, W, H)
+  Paint.Clip
+  
+  With $hSoft
+  
+    If .Icon Then Paint.DrawImage(.Icon, X, Y)
+    
+    'iCol = If($bSelected, Color.SelectedForeground, Color.Foreground)
+    iCol = Color.Foreground
+    
+    X += CSoftware.ICON_SIZE + P
+  
+    'Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
+    Paint.Background = iCol
+    sText = .Name
+    Paint.Font = Font["+1"]
+    Paint.Background = iCol
+    Paint.DrawTextShadow(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
+    Paint.DrawText(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
+    
+    Paint.Font.Bold = False
+    sText = .Version
+    Paint.Background = Color.White
+    Paint.DrawTextShadow(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft, 1)
+    Paint.Background = iCol
+    Paint.DrawText(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft)
+    
+    X -= CSoftware.ICON_SIZE + P
+    
+    sText = .Description
+    Paint.Font = Font["-1"]
+    
+    W = Paint.W - X - P * 2
+    H = Paint.H - Y - CSoftware.ICON_SIZE - P * 2
+    If .URL Then H -= Desktop.Scale
+    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + CSoftware.ICON_SIZE + P, W, H)
+    
+  End With
+    
+  Paint.Restore
+  
+  'If $bHighlight Then Paint.FillRect(XS, YS, WS, HS, Color.SetAlpha(Color.LightBackground, 192))
+  
+End
+
+Private Function Id_Read() As Integer
+
+  Return $hSoft.Id
+
+End
+
+Public Sub btnInstall_Click()
+  
+  Raise Install
+  
+End
+
+Public Sub btnVote_Click()
+  
+  Raise Vote
+  
+End
+

@@ -2,7 +2,11 @@
 
 Export
 
+Event Change
+
 Inherits UserControl
+
+Private Const MARGIN As Integer = 5
 
 Private $hView As ScrollView
 Private $hEditor As TextBox
@@ -22,6 +26,7 @@ Public Sub _new()
   $hView.Arrangement = Arrange.Row
   $hView.Margin = True
   $hView.Spacing = True
+  $hView.Padding = MARGIN
   
   $hEditor = New TextBox($hView) As "Editor"
   $hEditor.Border = False
@@ -39,9 +44,9 @@ End
 
 Private Sub ResizeEditor()
 
-  $hEditor.Resize(Desktop.Scale * 2 + Max(Desktop.Scale * 12, $hEditor.Font.TextWidth($hEditor.Text) + 8), $hEditor.Font.Height + Desktop.Scale)
+  $hEditor.Resize(MARGIN * 2 + Max(Desktop.Scale * 12, $hEditor.Font.TextWidth($hEditor.Text) + 8), $hEditor.Font.Height + MARGIN)
   $hEditor.Raise
-  $hView.EnsureVisible($hEditor.X, $hEditor.Y - Desktop.Scale, $hEditor.W, $hEditor.H + Desktop.Scale * 2)
+  $hView.EnsureVisible($hEditor.X, $hEditor.Y - MARGIN, $hEditor.W, $hEditor.H + MARGIN * 2)
 
 End
 
@@ -72,6 +77,7 @@ Private Sub AddTag(sTag As String)
   $hEditor.Text = ""
   ResizeEditor
   
+  Raise Change
 
 End
 
@@ -94,6 +100,7 @@ Public Sub Editor_KeyPress()
       $hEditor.Text = sText
       $hEditor.Pos = $hEditor.Length
       ResizeEditor
+      Raise Change
       Stop Event
     Endif
   Endif
@@ -133,5 +140,11 @@ End
 Public Sub Completion_Activate()
   
   Editor_Activate
+  
+End
+
+Public Sub _RaiseChange()
+  
+  Raise Change
   
 End

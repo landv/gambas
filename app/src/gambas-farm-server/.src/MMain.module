@@ -33,13 +33,12 @@ Public Sub Main()
     InitDatabase
     Return
     
-  Else If Not Application.Host Then
+  Else If Args[1] = "-h" Or If Args[1] = "--help" Then
     
     Print Replace(File.Load("usage.txt"), "$(prog)", File.Name(Args[0]))
     Return
     
   Endif
-  
   
   Root = User.Home &/ "farm"
   
@@ -77,6 +76,10 @@ Public Sub Main()
       
       GetTags
       
+    Case "/ident"
+      
+      CheckIdent
+      
     ' Case "/test"
     '   
     '   Response.ContentType = "text/plain;charset=utf-8"
@@ -112,78 +115,9 @@ End
 
 Private Sub InitDatabase()
 
-  'Dim hConn As New Connection
-  'Dim hTable As Table
-  
   Print "Create 'gambas3_farm' database..."
   Connections.Create("gambas3_farm")
   Print "Database created."
-
-  ' OpenDatabase
-  ' 
-  ' If DB.Tables.Exist("name") Then 
-  '   Error "Database is apparently already initialized."
-  '   Quit 1
-  ' Endif
-  ' 
-  ' Print "Creating table 'name'..."
-  ' hTable = DB.Tables.Add("name")
-  ' hTable.Fields.Add("id", db.Serial)
-  ' hTable.Fields.Add("name", db.String, 64)
-  ' hTable.Fields.Add("cname", db.String, 64)
-  ' hTable.PrimaryKey = ["id"]
-  ' hTable.Update
-  ' hTable.Indexes.Add("name_index_cname", ["cname"], True)
-  ' 
-  ' Print "Creating table 'software'..."
-  ' hTable = DB.Tables.Add("software")
-  ' hTable.Fields.Add("id", db.Serial)
-  ' hTable.Fields.Add("owner", db.Integer)
-  ' hTable.Fields.Add("name", db.String, 64)
-  ' hTable.Fields.Add("version", db.Integer)
-  ' hTable.Fields.Add("release", db.Integer)
-  ' hTable.Fields.Add("date", db.Date)
-  ' hTable.Fields.Add("description", db.String)
-  ' hTable.Fields.Add("url", db.String)
-  ' hTable.Fields.Add("gambas", db.Integer)
-  ' hTable.Fields.Add("dependencies", db.String)
-  ' hTable.Fields.Add("checksum", db.String, 128)
-  ' hTable.Fields.Add("download", db.Integer,, 0)
-  ' hTable.Fields.Add("vote", db.Integer,, 0)
-  ' hTable.PrimaryKey = ["id"]
-  ' hTable.Update
-  ' hTable.Indexes.Add("software_index_date", ["date", "id"], True)
-  ' hTable.Indexes.Add("software_index_vote", ["vote", "id"], True)
-  ' hTable.Indexes.Add("software_index_download", ["download", "id"], True)
-  ' hTable.Indexes.Add("software_index_name", ["name", "version"], True)
-  ' hTable.Indexes.Add("software_index_checksum", ["checksum"], True)
-  ' 
-  ' Print "Creating table 'tag'..."
-  ' hTable = DB.Tables.Add("tag")
-  ' hTable.Fields.Add("software", db.Integer)
-  ' hTable.Fields.Add("tag", db.Integer)
-  ' hTable.PrimaryKey = ["software", "tag"]
-  ' hTable.Update
-  ' 
-  ' Print "Creating table 'user'..."
-  ' hTable = DB.Tables.Add("user")
-  ' hTable.Fields.Add("id", db.Serial)
-  ' hTable.Fields.Add("login", db.String, 16)
-  ' hTable.Fields.Add("password", db.String, 128)
-  ' hTable.Fields.Add("name", db.String, 64)
-  ' hTable.Fields.Add("confirm", db.String, 32)
-  ' hTable.PrimaryKey = ["id"]
-  ' hTable.Update
-  ' hTable.Indexes.Add("user_index_login", ["login"], True)
-  ' 
-  ' Print "Creating table 'vote'..."
-  ' hTable = DB.Tables.Add("vote")
-  ' hTable.Fields.Add("software", db.Integer)
-  ' hTable.Fields.Add("user", db.Integer)
-  ' hTable.PrimaryKey = ["software", "user"]
-  ' hTable.Update
-  
-  ' Print "Database initialized."
 
 Catch
   
@@ -341,11 +275,12 @@ FAILED:
   
 End
 
-Private Sub CopySoftwareFile($iId As Integer, sDest As String, sSource As String)
+Private Sub CopySoftwareFile(iId As Integer, sDest As String, sSource As String) As String
 
-  sDest = Root &/ CStr($iId) &/ sDest
+  sDest = Root &/ CStr(iId) &/ sDest
   Try Kill sDest
   Copy sSource To sDest
+  Return sDest
 
 End
 
@@ -384,6 +319,8 @@ Private Sub PublishSoftware()
   Dim iTag As Integer
   Dim sDep As String
   Dim sRelease As String
+  Dim sPath As String
+  Dim hImage As Image
   
   If CheckUser() Then Return
 
@@ -498,7 +435,12 @@ Private Sub PublishSoftware()
   CopySoftwareFile(rSoftware!id, "source.tar." & File.Ext(sSource), Request.Files["source"])
   CopySoftwareFile(rSoftware!id, "icon.png", Request.Files["icon"])
   If sScreenshot Then
-    CopySoftwareFile(rSoftware!id, "screenshot." & File.Ext(sScreenshot), Request.Files["screenshot"])
+    sPath = CopySoftwareFile(rSoftware!id, "screenshot." & File.Ext(sScreenshot), Request.Files["screenshot"])
+    hImage = Image.Load(sPath)
+    hImage = hImage.Copy(0, Max(0, hImage.H \ 2 - 128), hImage.Width, 256).Fuzzy(8).Opacity(0.3)
+    sPath = Root &/ CStr(rSoftware!id) &/ "background.jpg"
+    Try Kill sPath
+    hImage.Save(sPath, 20)
   Endif
   
   DB.Delete("tag", "software = &1", rSoftware!id)
@@ -577,6 +519,18 @@ Private Sub FindSoftware() As Result
 
 End
 
+Private Sub AddCacheHeaders(sPath As String)
+
+  Dim dDate As Date
+
+  dDate = Stat(sPath).LastModified
+  Response.AddHeader("Expires", CGI.FormatDate(DateAdd(Now, gb.Month, 1)))
+  Response.AddHeader("Cache-Control", "public")
+  'Response.AddHeader("Cache-Control", "max-age=5184000")
+  Response.AddHeader("Last-Modified", CGI.FormatDate(dDate))
+
+End
+
 Private Sub GetSoftware()
 
   Dim rSoftware As Result
@@ -584,6 +538,9 @@ Private Sub GetSoftware()
   Dim rUser As Result
   Dim sOwner As String
   Dim rVote As Result
+  Dim rTag As Result
+  Dim rName As Result
+  Dim aTag As String[]
   
   OpenDatabase
   
@@ -594,7 +551,9 @@ Private Sub GetSoftware()
 
   If Request.Exist("icon") Then
     
-    Response.SendFile(Root &/ CStr(rSoftware!id) &/ "icon.png")
+    sPath = Root &/ CStr(rSoftware!id) &/ "icon.png"
+    AddCacheHeaders(sPath)
+    Response.SendFile(sPath)
       
   Else If Request.Exist("screenshot") Then
       
@@ -602,7 +561,20 @@ Private Sub GetSoftware()
     If Error Then
       PrintError("27 No screenshot")
     Else
-      Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
+      sPath = Root &/ CStr(rSoftware!id) &/ sPath
+      AddCacheHeaders(sPath)
+      Response.SendFile(sPath)
+    Endif
+  
+  Else If Request.Exist("background") Then
+      
+    Try sPath = Dir(Root &/ CStr(rSoftware!id), "background.*")[0]
+    If Error Then
+      PrintError("27 No background")
+    Else
+      sPath = Root &/ CStr(rSoftware!id) &/ sPath
+      AddCacheHeaders(sPath)
+      Response.SendFile(sPath)
     Endif
   
   Else
@@ -637,6 +609,14 @@ Private Sub GetSoftware()
       Endif
     Endif
     
+    aTag = New String[]
+    rTag = DB.Find("tag", "software = &1", rSoftware!id)
+    For Each rTag
+      rName = DB.Find("name", "id = &1", rTag!tag)
+      If rName.Available Then aTag.Add(rName!name)
+    Next
+    Print "Tags="; aTag.Join()
+    
     Response.End
     
   Endif
@@ -658,12 +638,12 @@ Private Sub DownloadSoftware()
     PrintError("28 No source")
   Else
     
-    Response.AddHeader("Content-Disposition", "attachment; filename=\"" & Left(rSoftware!name, -2) & "-" & rSoftware!version & "." & File.Ext(sPath) & "\"")
-    Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
-    
     rSoftware = DB.Edit("software", "id = &1", rSoftware!id)
     Inc rSoftware!download
     rSoftware.Update
+    
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"" & Left(rSoftware!name, -2) & "-" & rSoftware!version & "." & File.Ext(sPath) & "\"")
+    Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
     
   Endif
       
@@ -696,7 +676,6 @@ End
 
 Private Sub SearchSoftware()
 
-  Dim sFilter As String
   Dim sSort As String
   Dim sFrom As String
   Dim aFrom As String[]
@@ -705,76 +684,107 @@ Private Sub SearchSoftware()
   Dim sReq As String
   Dim rSoftware As Result
   Dim aSoftware As String[]
+  Dim sDesc As String
+  Dim aTag As Integer[]
+  Dim sTag As String
+  Dim rTag As Result
+  Dim iTag As Integer
+  Dim sFilter As String
   
   OpenDatabase
   
-  sFilter = Request["filter"]
   sSort = Request["sort"]
   sFrom = Request["from"]
+  
+  aTag = New Integer[]
+  For Each sTag In Split(Request["tags"])
+    rTag = DB.Find("name", "cname = &1", Lower(sTag))    
+    If rTag.Available And If Not aTag.Exist(rTag!id) Then aTag.Add(rTag!id)
+  Next
+  
+  sFilter = String.LCase(Request["filter"])
+  'aFilter = Split(sFilter, " ", Chr$(34), True)
   
   If Not sSort Then
     PrintError("29 No sort criteria")
     Return
   Endif
   
-  If sFrom Then
-    aFrom = Split(sFrom)
-    If aFrom.Count = 2 Then 
-      sFrom = aFrom[0]
-      If Not IsDigit(sFrom) Then
+  aSoftware = New String[]
+  
+  Do
+  
+    If sFrom Then
+      aFrom = Split(sFrom)
+      If aFrom.Count = 2 Then 
+        sFrom = aFrom[0]
+        If Not IsDigit(sFrom) Then
+        Endif
+        iFromId = CInt(aFrom[1])
+      Else
+        sFrom = ""
       Endif
-      iFromId = CInt(aFrom[1])
-    Else
-      sFrom = ""
     Endif
-  Endif
-  
-  Select Case sSort
-    Case "date"
-      If sFrom Then
-        dDate = Date(CInt(Left$(sFrom, 4)), CInt(Mid$(sFrom, 5, 2)), CInt(Mid$(sFrom, 7, 2)), CInt(Mid$(sFrom, 9, 2)), CInt(Mid$(sFrom, 11, 2)), CInt(Mid$(sFrom, 13, 2)), CInt(Mid$(sFrom, 15, 3)))
-        sReq = DB.Subst("(date = &1 AND id > &2) OR (date > &1)", dDate, iFromId)
+    
+    Select Case sSort
+      Case "date"
+        If sFrom Then
+          dDate = Date(CInt(Left$(sFrom, 4)), CInt(Mid$(sFrom, 5, 2)), CInt(Mid$(sFrom, 7, 2)), CInt(Mid$(sFrom, 9, 2)), CInt(Mid$(sFrom, 11, 2)), CInt(Mid$(sFrom, 13, 2)), CInt(Mid$(sFrom, 15, 3)))
+          sReq = DB.Subst("(date = &1 AND id > &2) OR (date < &1)", dDate, iFromId)
+        Endif
+      Case "vote"
+        If sFrom Then sReq = DB.Subst("(vote = &1 AND id > &2) OR (vote < &1)", CInt(sFrom), iFromId)
+      Case "download"
+        If sFrom Then sReq = DB.Subst("(download = &1 AND id > &2) OR (download < &1)", CInt(sFrom), iFromId)
+      Case Else
+        PrintError("30 Unknown sort criteria")
+        Return
+    End Select
+    
+    If sReq Then sReq = " WHERE " & sReq
+    rSoftware = DB.Limit(50).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & " DESC,id")
+    
+    sFrom = ""
+    
+    If Not rSoftware.Available Then Break
+    
+    For Each rSoftware
+      
+      If sFilter Then
+        sDesc = String.LCase(rSoftware!description) & " " & String.LCase(rSoftware!name)
+        If InStr(sDesc, sFilter) = 0 Then Continue
       Endif
-    Case "vote"
-      If sFrom Then sReq = DB.Subst("(vote = &1 AND id > &2) OR (vote > &1)", CInt(sFrom), iFromId)
-    Case "download"
-      If sFrom Then sReq = DB.Subst("(download = &1 AND id > &2) OR (download > &1)", CInt(sFrom), iFromId)
-    Case Else
-      PrintError("30 Unknown sort criteria")
-      Return
-  End Select
-  
-  If sReq Then sReq = " WHERE " & sReq
-  rSoftware = DB.Limit(50).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & ",id")
+      
+      If aTag.Count Then
+        For Each iTag In aTag
+          rTag = DB.Find("tag", "software = &1 AND tag = &2", rSoftware!id, iTag)
+          If Not rTag.Available Then Break
+          iTag = 0
+        Next
+        If iTag Then Continue
+      Endif
+      aSoftware.Add(rSoftware!id)
+      If aSoftware.Count = 50 Then Break
+    Next
+    
+    rSoftware.MoveLast
+    If sSort = "date" Then
+      sFrom = Format(rSoftware!date, "yyyymmddhhnnssuuu")
+    Else
+      sFrom = rSoftware[sSort]
+    Endif
+    sFrom &= "," & rSoftware!id
+      
+  Loop
   
   Response.ContentType = "text/plain;charset=utf-8"
   Response.Begin
   Print "10 OK"
 
-  If rSoftware.Count Then
-    
-    aSoftware = New String[]
-    While rSoftware.Available
-      aSoftware.Add(rSoftware!id)
-      rSoftware.MoveNext
-    Wend
+  If aSoftware.Count Then
     
     Print "Result="; aSoftware.Join(",")
-    
-    rSoftware.MoveLast
-    
-    Print "From=";
-    If sSort = "date" Then
-      Print Format(rSoftware!date, "yyyymmddhhnnssuuu");
-    Else
-      Print rSoftware[sSort];
-    Endif
-    Print ","; rSoftware!id
-    
-  Else
-    
-    Print
-    Print
+    If sFrom Then Print "From="; sFrom
     
   Endif
   
@@ -804,4 +814,10 @@ Private Sub GetTags()
   Next
   Response.End
 
+End
+
+Sub CheckIdent()
+  
+  If Not CheckUser() Then PrintOK
+  
 End

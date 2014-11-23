@@ -134,7 +134,7 @@ Static Public Sub _get(Name As String) As Connection
   cData = ReadConnectionFile(Name)
   If Not cData Then Return
   
-  hConn = GetConnectionFrom(cData)
+  hConn = GetConnectionFrom(Name, cData)
   $cConn[Name] = hConn
   Return hConn
   

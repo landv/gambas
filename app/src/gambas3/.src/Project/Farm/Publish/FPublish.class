@@ -20,35 +20,12 @@ End
 
 Public Sub btnPublish_Click()
 
-  spnPublish.Enabled = True
-  btnPublish.Hide
-  btnCancel.Hide
-  btnAbort.Show
+  Dim hReq As FarmRequest
+
+  hReq = New FarmRequest(GetFarm(), txtLogin.Text, txtPassword.Text)
+  hReq.PublishSoftware(txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), lstRequire.List, txtURL.Text)
+  hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
   
-  Publish.PublishSoftware(Me, GetFarm(), txtScreenshot.Text, txtLogin.Text, txtPassword.Text, cmbGambasVersion.Text, tagEditor.GetTags(), lstRequire.List)
-  
-End
-
-Public Sub SetMessage(sMsg As String)
-  
-  lblMessage.Text = sMsg
-  
-End
-
-
-Public Sub OnPublishEnd()
-
-  btnPublish.Show
-  btnAbort.Hide
-  btnCancel.Show
-  spnPublish.Enabled = False
-
-End
-
-Public Sub btnAbort_Click()
-
-  Publish.Abort
-
 End
 
 Public Sub txtScreenshot_Click()
@@ -66,16 +43,11 @@ Public Sub Form_Open()
 
   Settings.Read(Me)
 
-  cmbFarm.List = Settings["/Publish/FarmList"]
+  cmbFarm.List = FarmRequest.GetFarms()
+  chkRememberPassword.Value = Settings["/Publish/RememberPassword", False]
   
   cmbFarm.Text = Settings["/Publish/Farm"]
   cmbFarm.Index = 0
-  
-  txtLogin.Text = Settings["/Publish/Login"]
-  chkRememberPassword.Value = Settings["/Publish/RememberPassword", False]
-  If chkRememberPassword.Value Then
-    Try txtPassword.Text = Desktop.Passwords["/Publish"]
-  Endif
   
   tagEditor.SetTags(Project.PublishTags)
   tagEditor.SetCompletion("CTagCompletion")
@@ -83,6 +55,7 @@ Public Sub Form_Open()
   lstRequire.List = Project.PublishDependencies
   
   cmbGambasVersion.Text = Project.PublishGambasVersion
+  txtURL.Text = Project.PublishWebSite
 
 End
 
@@ -91,15 +64,12 @@ Public Sub Form_Close()
   Settings.Write(Me)
   
   Settings["/Publish/Farm"] = cmbFarm.Text
-  Settings["/Publish/Login"] = txtLogin.Text
   Settings["/Publish/RememberPassword"] = CBool(chkRememberPassword.Value)
-  If chkRememberPassword.Value Then
-    Try Desktop.Passwords["/Publish"] = txtPassword.Text
-  Endif
 
   Project.PublishTags = tagEditor.GetTags()
   Project.PublishDependencies = lstRequire.List
   Project.PublishGambasVersion = cmbGambasVersion.Text
+  Project.PublishWebSite = txtURL.Text
   Project.WriteProject
 
 End
@@ -109,4 +79,28 @@ Public Sub GetFarm() As String
   
   Return cmbFarm.Text
   
+End
+
+Public Sub cmbFarm_Click()
+
+  txtLogin.Text = Settings["/Publish" &/ cmbFarm.Text &/ "Login"]
+  If chkRememberPassword.Value Then
+    Try txtPassword.Text = Desktop.Passwords["/Publish" &/ cmbFarm.Text]
+  Endif
+
+End
+
+Public Sub txtLogin_LostFocus()
+  
+  Settings["/Publish" &/ cmbFarm.Text &/ "Login"] = txtLogin.Text 
+  
+End
+
+
+Public Sub txtPassword_LostFocus()
+
+  If cmbFarm.Text And If chkRememberPassword.Value Then
+    Try Desktop.Passwords["/Publish" &/ cmbFarm.Text] = txtPassword.Text
+  Endif
+
 End

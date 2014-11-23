@@ -1297,20 +1297,13 @@ Public Sub lstFarm_Change()
   
 End
 
-Public Sub OnPublishEnd()
-  
-  Me.Enabled = True
-  spnRegister.Hide
-  
-End
-
-
 Public Sub btnRegister_Click()
 
   Dim sLogin As String
   Dim sPassword As String
   Dim sConfirmPassword As String
   Dim sEmail As String
+  Dim hReq As FarmRequest
 
   sLogin = Trim(txtLogin.Text)
   If Not sLogin Then
@@ -1338,10 +1331,10 @@ Public Sub btnRegister_Click()
     Return
   Endif
   
-  spnRegister.Show
-  Me.Enabled = False
-  Publish.RegisterUser(Me, lstFarm.Text, sLogin, sPassword, Trim(txtName.Text), sEmail)
-
+  hReq = New FarmRequest(lstFarm.Text)
+  hReq.RegisterUser(sLogin, sPassword, Trim(txtName.Text), sEmail)
+  hReq.WaitFor(("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."), ("Unable to register user."))
+  
 End
 
 Public Sub Form_Close()

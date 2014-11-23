@@ -64,6 +64,9 @@ End
 
 Public Sub Button_Click()
   
+  Dim hParent As CTagEditor = Me.Parent.Parent
+  
   Me.Delete
+  hParent._RaiseChange()
   
 End

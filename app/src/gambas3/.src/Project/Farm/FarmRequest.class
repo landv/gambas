@@ -1,0 +1,249 @@
+' Gambas class file
+
+Event Finished
+
+Public Farm As String
+Public Login As String
+Public Password As String
+Public ErrorText As String
+Public Result As Collection
+Public ResultFile As String
+
+Private $sTitle As String
+Private $hForm As HttpForm
+Private $bUseProgress As Boolean
+Private $bFile As Boolean
+
+Static Public Sub GetFarms() As String[]
+
+  Dim aFarm As String[]
+  
+  aFarm = Settings["/Publish/FarmList"]  
+  If Not aFarm.Exist("gambaswiki.org") Then
+    aFarm.Add("gambaswiki.org", 0)
+  Endif
+  Return aFarm
+  
+End
+
+
+Static Public Sub GetDate(sDate As String) As Date
+  
+  Dim dDate As Date
+
+  If Len(sDate) = 14 Then
+    Try dDate = Date(CInt(Mid(sDate, 1, 4)), CInt(Mid(sDate, 5, 2)), CInt(Mid(sDate, 7, 2)), CInt(Mid$(sDate, 9, 2)), CInt(Mid$(sDate, 11, 2)), CInt(Mid$(sDate, 13, 2)))
+  Else If Len(sDate) = 8 Then
+    Try dDate = Date(CInt(Mid(sDate, 1, 4)), CInt(Mid(sDate, 5, 2)), CInt(Mid(sDate, 7, 2)))
+  Endif
+
+  Return dDate
+  
+End
+
+Public Sub _new(sFarm As String, Optional sLogin As String, sPassword As String)
+  
+  Farm = sFarm
+  Login = sLogin
+  Password = sPassword
+  $hForm = New HttpForm As "Request"
+  
+End
+
+Public Sub _free()
+  
+  If ResultFile Then Try Kill ResultFile
+  
+End
+
+
+Public Sub Request_Error()
+
+  ErrorText = $hForm.ErrorText
+  Result = Null
+  ResultFile = ""
+  Raise Finished
+  
+End
+
+Public Sub Request_Cancel()
+  
+  ErrorText = ""
+  Result = Null
+  ResultFile = ""
+  Raise Finished
+  
+End
+
+Public Sub Request_Finished()
+  
+  Dim aResult As String[]
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sResult As String
+  
+  If $bFile Then
+    ResultFile = Temp$()
+    File.Save(ResultFile, $hForm.Peek())
+    Raise Finished
+    Return
+  Endif
+  
+  sResult = $hForm.Peek()
+  aResult = Split(sResult, "\r\n", "", True)
+  If aResult[0] <> "10 OK" Then
+    iPos = InStr(aResult[0], " ")
+    ErrorText = Replace(Mid$(sResult, iPos + 1), "\r", "")
+    Result = Null
+    Return
+  Endif
+  
+  ErrorText = ""
+  Result = New Collection
+  aResult.Remove(0)
+  For Each sLine In aResult
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    Result[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 1))
+  Next
+  Raise Finished
+  
+End
+
+
+
+Private Sub GetCheckSum(sPath As String) As String
+  
+  Dim sChecksum As String
+  Dim iPos As Integer
+  
+  Exec ["sha256sum", sPath] To sChecksum
+  iPos = InStr(sChecksum, " ")
+  sChecksum = Left(sChecksum, iPos - 1)
+  Return sChecksum
+  
+Catch
+  
+  Error.Raise("Unable to compute checksum")
+  
+End
+
+Public Sub RegisterUser(sLogin As String, sPassword As String, sFullName As String, sEmail As String)
+  
+  $sTitle = ("Register user")
+  $bUseProgress = False
+  
+  $hForm.URL = "http://" & Farm &/ "farm/register"
+  $hForm.Add("login", sLogin)
+  $hForm.Add("password", sPassword)
+  $hForm.Add("name", sFullName)
+  $hForm.Add("email", sEmail)
+  
+  FarmRequestManager.Add($hForm)
+  
+  '$sGoodMsg = ("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon.")
+  '$sBadMsg = ("Unable to register user.")
+
+End
+
+Public Sub HasFailed() As Boolean
+  
+  Return If($bFile, IsNull(ResultFile), IsNull(Result))
+  
+End
+
+
+Public Sub WaitFor(Optional sGood As String, sBad As String) As Boolean
+  
+  Dim bFail As Boolean
+  
+  FFarmRequest.Run($hForm, $sTitle, $bUseProgress)
+  
+  bFail = HasFailed()
+  
+  If bFail Then
+    If sBad And If ErrorText Then Message.Error(sBad & "\n\n" & ErrorText)
+  Else
+    If sGood Then Message(sGood)
+  Endif
+  Return bFail
+  
+End
+
+Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String)
+
+  Dim sSource As String
+  Dim sIcon As String
+  Dim sChecksum As String
+  Dim aGambasVersion As String[]
+  
+  $sTitle = ("Publish project")
+  $bUseProgress = True
+  
+  If sGambasVersion Then 
+    aGambasVersion = Split(sGambasVersion, ".")
+    sGambasVersion = CStr(CInt(aGambasVersion[0]) * 100 + CInt(aGambasVersion[1]))
+  Endif
+  
+  sSource = Temp$()
+  sSource = File.Dir(sSource) &/ File.BaseName(sSource) & ".tar.bz2" 'Project.GetDefaultArchiveBaseName() & ".tar.bz2"
+  Project.MakeSourcePackageTo(sSource)
+  
+  sChecksum = GetCheckSum(sSource)
+  
+  If Project.Icon Then sIcon = Project.Dir &/ Project.Icon
+  If Not sIcon Or If Not Exist(sIcon) Then
+    sIcon = "img/logo/project.png"
+  Endif
+  
+  If Not Exist(sIcon) Then sIcon = ""
+  
+  '$sGoodMsg = ("The project has been successfully published.")
+  '$sBadMsg = ("Unable to publish project.")
+
+  $hForm.URL = "http://" & Farm &/ "/farm/publish"
+  $hForm.Add("login", Login)
+  $hForm.Add("password", Password)
+  $hForm.Add("name", Project.Name)
+  $hForm.Add("version", Project.MajorVersion * 10000 + Project.MinorVersion)
+  $hForm.Add("release", Project.ReleaseVersion)
+  $hForm.Add("desc", Project.Description)
+  $hForm.Add("gambas", sGambasVersion)
+  $hForm.Add("checksum", sChecksum)
+  $hForm.AddFile("icon", sIcon, "icon.png")
+  $hForm.AddFile("source", sSource, Project.GetDefaultArchiveBaseName() & ".tar.bz2")
+  $hForm.Add("tags", aTag.Join(","))
+  $hForm.Add("dependencies", aRequire.Join(","))
+  $hForm.Add("url", sURL)
+  If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
+
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub GetSoftware(iId As Integer)
+  
+  $hForm.URL = "http://" & Farm &/ "farm/get"
+  $hForm.Add("id", CStr(iId))
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub GetSoftwareIcon(iId As Integer)
+
+  $hForm.URL = "http://" & Farm &/ "farm/get?icon"
+  $hForm.Add("id", CStr(iId))
+  $bFile = True
+  FarmRequestManager.Add($hForm)
+
+End
+
+Public Sub SearchSoftware(sSort As String, sFilter As String, aTag As String[])
+  
+  $hForm.URL = "http://" & Farm &/ "farm/search"
+  $hForm["sort"] = sSort
+  $hForm["filter"] = sFilter
+  $hForm["tags"] = aTag.Join()
+  FarmRequestManager.Add($hForm)
+  
+End

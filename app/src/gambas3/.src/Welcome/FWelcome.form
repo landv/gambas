@@ -49,11 +49,13 @@
     { Panel7 Panel
       MoveScaled(1,2,37,37)
       Arrangement = Arrange.Fill
-      { panButton Panel
+      { panButton ScrollView
         MoveScaled(1,1,33,35)
         Background = &HDF6B00&
         Foreground = Color.TextForeground
         Arrangement = Arrange.Vertical
+        Border = False
+        ScrollBar = Scroll.None
         { dwgFrame DrawingArea
           MoveScaled(16,23,14,10)
           Visible = False

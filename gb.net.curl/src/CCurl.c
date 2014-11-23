@@ -44,6 +44,7 @@ DECLARE_EVENT(EVENT_Error);
 DECLARE_EVENT(EVENT_Connect);
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Progress);
+DECLARE_EVENT(EVENT_Cancel);
 
 static CCURL *_async_list = NULL;
 
@@ -182,6 +183,11 @@ void CURL_raise_error(void *_object)
 	raise_event(THIS, EVENT_Error);
 }
 
+void CURL_raise_cancel(void *_object)
+{
+	raise_event(THIS, EVENT_Cancel);
+}
+
 void CURL_raise_connect(void *_object)
 {
 	raise_event(THIS, EVENT_Connect);
@@ -264,6 +270,9 @@ static int curl_progress(void *_object, double dltotal, double dlnow, double ult
 {
 	bool raise = FALSE;
 	
+	if (THIS->progresscb)
+		(*THIS->progresscb)(THIS, &dltotal, &dlnow, &ultotal, &ulnow);
+
 	CHECK_PROGRESS_VAL(dltotal);
 	CHECK_PROGRESS_VAL(dlnow);
 	CHECK_PROGRESS_VAL(ultotal);
@@ -389,7 +398,7 @@ bool CURL_check_active(void *_object)
 		return FALSE;
 }
 
-void CURL_set_progress(void *_object, bool progress)
+void CURL_set_progress(void *_object, bool progress, CURL_FIX_PROGRESS_CB cb)
 {
 	#ifdef DEBUG
 	fprintf(stderr, "CURL_set_progress: %p %d\n", _object, progress);
@@ -401,8 +410,41 @@ void CURL_set_progress(void *_object, bool progress)
 		curl_easy_setopt(THIS_CURL, CURLOPT_PROGRESSFUNCTION , curl_progress);
 		curl_easy_setopt(THIS_CURL, CURLOPT_PROGRESSDATA , _object);
 	}
+
+	THIS->progresscb = cb;
 }
 
+#define COPY_STRING(_field) \
+{ \
+	GB.FreeString(&dest->_field); \
+	dest->_field = src->_field; \
+	if (dest->_field) dest->_field = GB.NewString(dest->_field, GB.StringLength(dest->_field)); \
+}
+
+bool CURL_CopyFrom(CCURL *dest, CCURL *src)
+{
+	if (CURL_check_active(dest))
+		return TRUE;
+
+	dest->async = src->async;
+	dest->timeout = src->timeout;
+	dest->debug = src->debug;
+	COPY_STRING(url);
+
+	dest->user.auth = src->user.auth;
+	COPY_STRING(user.user);
+	COPY_STRING(user.userpwd);
+	COPY_STRING(user.pwd);
+
+	dest->proxy.proxy.type = src->proxy.proxy.type;
+	dest->proxy.proxy.auth = src->proxy.proxy.auth;
+	COPY_STRING(proxy.proxy.host);
+	COPY_STRING(proxy.proxy.user);
+	COPY_STRING(proxy.proxy.pwd);
+	COPY_STRING(proxy.proxy.userpwd);
+
+	return FALSE;
+}
 
 //---------------------------------------------------------------------------
 
@@ -717,6 +759,7 @@ GB_DESC CurlDesc[] =
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Error", NULL, NULL, &EVENT_Error),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_Progress),
+	GB_EVENT("Cancel", NULL, NULL, &EVENT_Cancel),
 
 	GB_END_DECLARE
 };

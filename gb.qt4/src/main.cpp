@@ -818,7 +818,7 @@ static void hook_quit()
 	CWINDOW_close_all(true);
 	CWINDOW_delete_all(true);
 
-	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+	qApp->sendPostedEvents(); //processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 }
 
 
@@ -826,7 +826,8 @@ static void hook_loop()
 {
 	//qDebug("**** ENTERING EVENT LOOP");
 	
-	qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+	qApp->sendPostedEvents();
+	//qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 
 	in_event_loop = true;
 

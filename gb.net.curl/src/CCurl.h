@@ -55,6 +55,9 @@ typedef
 	}
 	CPROXY;
 
+typedef
+	void (*CURL_FIX_PROGRESS_CB)(void *, double *, double *, double *, double *);
+
 typedef  
 	struct {
 		GB_BASE ob;
@@ -73,6 +76,7 @@ typedef
 		int64_t dlnow;
 		int64_t ultotal;
 		int64_t ulnow;
+		CURL_FIX_PROGRESS_CB progresscb;
 		unsigned async : 1;
 		unsigned in_list : 1;
 		unsigned debug : 1;
@@ -97,6 +101,7 @@ int CCURL_stream_handle(GB_STREAM *stream);
 
 void CURL_raise_finished(void *_object);
 void CURL_raise_error(void *_object);
+void CURL_raise_cancel(void *_object);
 void CURL_raise_connect(void *_object);
 void CURL_raise_read(void *_object);
 
@@ -110,6 +115,8 @@ void CURL_init_options(void *_object);
 
 bool CURL_check_active(void *_object);
 
-void CURL_set_progress(void *_object, bool progress);
+void CURL_set_progress(void *_object, bool progress, CURL_FIX_PROGRESS_CB cb);
+
+bool CURL_copy_from(CCURL *dest, CCURL *src);
 
 #endif

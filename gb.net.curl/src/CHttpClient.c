@@ -262,6 +262,11 @@ static bool check_request(void *_object, char *contentType, char *data, int len)
 	return FALSE;
 }
 
+static void http_fix_progress_cb(void *_object, double *dltotal, double *dlnow, double *ultotal, double *ulnow)
+{
+	*ultotal = THIS_HTTP->len_data;
+	*ulnow = THIS_HTTP->len_sent;
+}
 
 static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 {
@@ -298,7 +303,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 	}
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPHEADER, headers);
-	CURL_set_progress(THIS, TRUE);
+	CURL_set_progress(THIS, TRUE, NULL);
 
 	if (THIS->async)
 	{
@@ -375,9 +380,6 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	
 	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPHEADER, headers);
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION, http_read_curl);
-	curl_easy_setopt(THIS_CURL, CURLOPT_READDATA, _object);
-	
 	if (type == SEND_PUT)
 	{
 		curl_easy_setopt(THIS_CURL, CURLOPT_INFILESIZE_LARGE, (curl_off_t)lendata);
@@ -385,11 +387,14 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	}
 	else // SEND_POST
 	{
-		curl_easy_setopt(THIS_CURL, CURLOPT_POSTFIELDS, NULL);
 		curl_easy_setopt(THIS_CURL, CURLOPT_POSTFIELDSIZE, lendata);
+		curl_easy_setopt(THIS_CURL, CURLOPT_POSTFIELDS, NULL);
 	}
 
-	CURL_set_progress(THIS_CURL, TRUE);
+	curl_easy_setopt(THIS_CURL, CURLOPT_READFUNCTION, http_read_curl);
+	curl_easy_setopt(THIS_CURL, CURLOPT_READDATA, _object);
+
+	CURL_set_progress(THIS, TRUE, http_fix_progress_cb);
 
 	if (THIS->async)
 	{
@@ -397,9 +402,11 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 		return;
 	}
 	
-	CURL_manage_error(_object,curl_easy_perform(THIS_CURL));
+	CURL_manage_error(THIS, curl_easy_perform(THIS_CURL));
 }
 
+
+//-------------------------------------------------------------------------
 
 BEGIN_PROPERTY(HttpClient_UpdateCookies)
 
@@ -580,6 +587,34 @@ BEGIN_METHOD_VOID(HttpClient_Stop)
 	CURL_stop(THIS);
 	http_reset(_object);
 
+	GB.Ref(THIS);
+	CURL_raise_cancel(THIS);
+
+END_METHOD
+
+#define COPY_STRING(_field) \
+{ \
+	GB.FreeString(&THIS_HTTP->_field); \
+	THIS_HTTP->_field = from->_field; \
+	if (THIS_HTTP->_field) THIS_HTTP->_field = GB.NewString(THIS_HTTP->_field, GB.StringLength(THIS_HTTP->_field)); \
+}
+
+BEGIN_METHOD(HttpClient_CopyFrom, GB_OBJECT from)
+
+	CHTTPCLIENT *from = (CHTTPCLIENT *)VARG(from);
+
+	if (GB.CheckObject(from))
+		return;
+
+	if (CURL_copy_from((CCURL *)THIS, (CCURL *)from))
+		return;
+
+	THIS_HTTP->updatecookies = from->updatecookies;
+	THIS_HTTP->auth = from->auth;
+	COPY_STRING(sUserAgent);
+	COPY_STRING(encoding);
+	COPY_STRING(cookiesfile);
+
 END_METHOD
 
 
@@ -607,6 +642,8 @@ GB_DESC CHttpClientDesc[] =
 
   GB_PROPERTY_READ("Code", "i", HttpClient_ReturnCode),
   GB_PROPERTY_READ("Reason", "s", HttpClient_ReturnString),
+
+  GB_METHOD("CopyFrom", NULL, HttpClient_CopyFrom, "(HttpClient)Source"),
   
   GB_CONSTANT("_IsControl", "b", TRUE),
   GB_CONSTANT("_IsVirtual", "b", TRUE),

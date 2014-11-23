@@ -10,6 +10,7 @@ Private btnRecent As CCoolButton
 Private btnExample As CCoolButton
 Private btnQuit As CCoolButton
 Private btnAbout As CCoolButton
+Private btnFarm As CCoolButton
 
 Private $iRecent As Integer
 
@@ -63,11 +64,12 @@ Public Sub Form_Open()
   btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
   btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
   btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
-  btnOpenExtern = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
-  btnAbout = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 5, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
-  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 6, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
+  btnFarm = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
+  btnOpenExtern = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 5, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
+  btnAbout = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 6, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
+  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 7, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
 
-  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnOpenExtern, btnAbout, btnQuit]
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnFarm, btnExample, btnOpenExtern, btnAbout, btnQuit]
     hCtrl.Foreground = Color.White
     hCtrl.Highlight = &H61A7C3&
   Next
@@ -455,3 +457,8 @@ Public Sub panButton_BeforeArrange()
 
 End
 
+Public Sub btnFarm_Click()
+  
+  FSoftwareFarm.Run
+  
+End
