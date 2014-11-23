@@ -1,12 +1,76 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,71,86)
+  MoveScaled(0,0,88,86)
   Text = ("Publish project")
   Icon = Picture["icon:/medium/internet"]
   Arrangement = Arrange.Vertical
+  { Panel3 Panel
+    MoveScaled(1,1,62,24)
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Margin = True
+    { Label9 Label
+      MoveScaled(0,0,13,3)
+      Font = Font["Bold"]
+      Text = ("Identity")
+    }
+    { HBox1 HBox
+      MoveScaled(0,4,58,4)
+      Spacing = True
+      { Label5 Label
+        MoveScaled(0,0,30,4)
+        Text = ("Publishing server")
+      }
+      { cmbFarm ComboBox
+        MoveScaled(33,0,24,4)
+        Expand = True
+        ReadOnly = True
+      }
+    }
+    { HBox2 HBox
+      MoveScaled(0,9,58,4)
+      Spacing = True
+      { Label1 Label
+        MoveScaled(0,0,30,4)
+        Text = ("Login")
+      }
+      { txtLogin TextBox
+        MoveScaled(33,0,24,4)
+        Expand = True
+      }
+    }
+    { HBox3 HBox
+      MoveScaled(0,14,58,4)
+      Spacing = True
+      { Label2 Label
+        MoveScaled(0,0,30,4)
+        Text = ("Password")
+      }
+      { txtPassword TextBox
+        MoveScaled(33,0,24,4)
+        Expand = True
+        Password = True
+      }
+    }
+    { HBox6 HBox
+      MoveScaled(0,19,58,3)
+      Spacing = True
+      { Label4 Label
+        MoveScaled(0,0,30,3)
+      }
+      { chkRememberPassword CheckBox
+        MoveScaled(33,0,25,3)
+        Expand = True
+        Text = ("Remember password")
+      }
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(0,26,28,0)
+  }
   { Panel1 Panel
-    MoveScaled(2,2,59,49)
+    MoveScaled(2,27,59,49)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -73,67 +137,6 @@
       MoveScaled(1,37,57,11)
       Expand = True
       Moveable = False
-    }
-  }
-  { Panel3 Panel
-    MoveScaled(2,53,62,24)
-    Arrangement = Arrange.Vertical
-    Spacing = True
-    Margin = True
-    { Label9 Label
-      MoveScaled(0,0,13,3)
-      Font = Font["Bold"]
-      Text = ("Identity")
-    }
-    { HBox1 HBox
-      MoveScaled(0,4,58,4)
-      Spacing = True
-      { Label5 Label
-        MoveScaled(0,0,30,4)
-        Text = ("Publishing server")
-      }
-      { cmbFarm ComboBox
-        MoveScaled(33,0,24,4)
-        Expand = True
-        ReadOnly = True
-      }
-    }
-    { HBox2 HBox
-      MoveScaled(0,9,58,4)
-      Spacing = True
-      { Label1 Label
-        MoveScaled(0,0,30,4)
-        Text = ("Login")
-      }
-      { txtLogin TextBox
-        MoveScaled(33,0,24,4)
-        Expand = True
-      }
-    }
-    { HBox3 HBox
-      MoveScaled(0,14,58,4)
-      Spacing = True
-      { Label2 Label
-        MoveScaled(0,0,30,4)
-        Text = ("Password")
-      }
-      { txtPassword TextBox
-        MoveScaled(33,0,24,4)
-        Expand = True
-        Password = True
-      }
-    }
-    { HBox6 HBox
-      MoveScaled(0,19,58,3)
-      Spacing = True
-      { Label4 Label
-        MoveScaled(0,0,30,3)
-      }
-      { chkRememberPassword CheckBox
-        MoveScaled(33,0,25,3)
-        Expand = True
-        Text = ("Remember password")
-      }
     }
   }
   { Separator1 Separator

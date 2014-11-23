@@ -11,7 +11,7 @@ Private Const MARGIN As Integer = 5
 Private $hView As ScrollView
 Private $hEditor As TextBox
 Private $hBorder As Panel
-Private $hCompletion As Completion
+Private $hCompletion As CTagCompletion
 
 Public Sub _new()
 
@@ -33,14 +33,16 @@ Public Sub _new()
   $hEditor.MaxLength = 24
   ResizeEditor
   
+  $hCompletion = New CTagCompletion($hEditor) As "Completion"
+  
 End
 
-Public Sub SetCompletion(sClass As String)
+Public Sub SetFarm(sFarm As String)
   
-  $hCompletion = Object.New(sClass, [$hEditor])
-  Object.Attach($hCompletion, Me, "Completion")
+  $hCompletion.Farm = sFarm
   
 End
+
 
 Private Sub ResizeEditor()
 

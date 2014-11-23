@@ -19,6 +19,7 @@ Static Public Sub GetFarms() As String[]
   Dim aFarm As String[]
   
   aFarm = Settings["/Publish/FarmList"]  
+  If Not aFarm Then aFarm = New String[]
   If Not aFarm.Exist("gambaswiki.org") Then
     aFarm.Add("gambaswiki.org", 0)
   Endif

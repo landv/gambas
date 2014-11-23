@@ -50,7 +50,6 @@ Public Sub Form_Open()
   cmbFarm.Index = 0
   
   tagEditor.SetTags(Project.PublishTags)
-  tagEditor.SetCompletion("CTagCompletion")
   
   lstRequire.List = Project.PublishDependencies
   
@@ -87,6 +86,7 @@ Public Sub cmbFarm_Click()
   If chkRememberPassword.Value Then
     Try txtPassword.Text = Desktop.Passwords["/Publish" &/ cmbFarm.Text]
   Endif
+  tagEditor.SetFarm(cmbFarm.Text)
 
 End
 

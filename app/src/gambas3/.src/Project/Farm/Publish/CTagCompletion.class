@@ -4,6 +4,10 @@ Inherits Completion
 
 Static Private $aTag As String[]
 
+Public Farm As String
+
+Private $aCache As String[]
+
 Static Public Sub _init()
   
   Dim I As Integer
@@ -17,28 +21,29 @@ Static Public Sub _init()
   
 End
 
-Public Sub Get(Text As String) As String[]
+Public Sub Get(Text As String, Explicit As Boolean) As String[]
   
   Dim aTag As String[]
   Dim sTag As String
   Dim hHttpClient As HttpClient
   Dim sResult As String
   Dim aResult As String[]
-  Dim sFarm As String
   Dim I As Integer
   
-  If Len(Text) < 1 Then Return
+  If Not Text Then
+    If Not Explicit Then Return
+    If $aCache Then Return $aCache
+  Endif
   
   aTag = New String[]
   For Each sTag In $aTag
     If Left(sTag, Len(Text)) == Text Then aTag.Add(sTag)
   Next
   
-  sFarm = FPublish.GetFarm()
-  If sFarm Then
-
+  If Farm Then
+  
     hHttpClient = New HttpClient
-    hHttpClient.URL = sFarm &/ "/farm/tags?name=" & URL.Encode(Text)
+    hHttpClient.URL = Farm &/ "/farm/tags?name=" & URL.Encode(Text)
     hHttpClient.Async = False
     hHttpClient.Timeout = 3
     hHttpClient.Get()
@@ -54,6 +59,8 @@ Public Sub Get(Text As String) As String[]
     Endif
     
   Endif
+  
+  If Not Text Then $aCache = aTag
   
   Return aTag
   

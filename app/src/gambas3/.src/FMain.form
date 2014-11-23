@@ -36,6 +36,13 @@
     }
     { Menu5 Menu
     }
+    { mnuFarm Menu
+      Action = "software-farm"
+      Text = ("Software farm") & "..."
+      Picture = Picture["icon:/small/book"]
+    }
+    { Menu33 Menu
+    }
     { mnuSave Menu
       Action = "save-project"
       Text = Shortcut(("Save project"), "S")
@@ -1549,6 +1556,11 @@
     Text = "Shortcuts"
     Shortcut = ""
     Picture = "icon:/small/shortcut"
+  }
+  { Action software-farm
+    Text = "Software farm"
+    Shortcut = ""
+    Picture = "icon:/small/book"
   }
   { Action start
     Text = "Run"

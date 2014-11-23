@@ -19,12 +19,11 @@
       Arrangement = Arrange.Horizontal
       Spacing = True
       { Label2 Label
-        MoveScaled(1,0,7,4)
-        AutoResize = True
+        MoveScaled(0,0,11,4)
         Text = ("Farm")
       }
       { cmbFarm ComboBox
-        MoveScaled(10,0,29,4)
+        MoveScaled(11,0,29,4)
         ReadOnly = True
       }
       { Label1 Label
@@ -43,21 +42,40 @@
       }
       { btnLogin Button
         MoveScaled(77,0,15,4)
+        AutoResize = True
         Text = ("Connect") & "..."
       }
     }
-    { tagFarm CTagEditor
-      MoveScaled(1,6,95,4)
-      Expand = True
+    { Panel4 HPanel
+      MoveScaled(2,6,94,5)
+      Spacing = True
+      { Label3 Label
+        MoveScaled(0,0,11,4)
+        Text = ("Tags")
+      }
+      { tagFarm CTagEditor
+        MoveScaled(15,0,78,5)
+        Expand = True
+      }
     }
-    { Panel2 Panel
-      MoveScaled(1,11,95,4)
-      Arrangement = Arrange.Fill
-      Border = Border.Plain
-      { txtFilter ButtonBox
-        MoveScaled(0,0,31,4)
-        Picture = Picture["icon:/small/clear"]
-        Border = False
+    { Panel5 HPanel
+      MoveScaled(2,12,94,4)
+      Spacing = True
+      { Label4 Label
+        MoveScaled(0,0,11,4)
+        Text = ("Filter")
+      }
+      { Panel2 Panel
+        MoveScaled(54,0,34,4)
+        Expand = True
+        Arrangement = Arrange.Fill
+        Border = Border.Plain
+        { txtFilter ButtonBox
+          MoveScaled(1,0,31,4)
+          Expand = True
+          Picture = Picture["icon:/small/clear"]
+          Border = False
+        }
       }
     }
   }
@@ -66,7 +84,7 @@
   }
   { timLoad #Timer
     #MoveScaled(87,35)
-    Delay = 250
+    Delay = 500
   }
   { svwFarm ScrollView
     MoveScaled(3,45,90,37)

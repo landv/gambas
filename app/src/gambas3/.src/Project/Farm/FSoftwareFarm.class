@@ -1,7 +1,6 @@
 ' Gambas class file
 
 Private $bNoRefresh As Boolean
-
 'Static Private $hLogo As Image
 
 Public Sub Run()
@@ -11,6 +10,8 @@ Public Sub Run()
 End
 
 Public Sub Form_Open()
+
+  Settings.Read(Me)
 
   ' If Not $hLogo Then
   '   $hLogo = New Image(256, 256, Color.Transparent)
@@ -73,6 +74,7 @@ End
 
 Public Sub cmbFarm_Click()
 
+  tagFarm.SetFarm(cmbFarm.Text)
   LoadSoftware
 
 End
@@ -102,7 +104,7 @@ Public Sub Request_Finished()
   Dim hSoftwareBox As SoftwareBox
   
   If hReq.HasFailed() Then
-    Message.Error(hReq.ErrorText)
+    If hReq.ErrorText Then Message.Error(hReq.ErrorText)
     Return
   Endif
   
@@ -117,6 +119,7 @@ End
 Public Sub Form_Close()
 
   FarmRequestManager.Clear
+  Settings.Write(Me)
 
 End
 
