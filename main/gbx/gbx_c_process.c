@@ -330,6 +330,9 @@ static void stop_process_after(CPROCESS *_object)
 				if (STREAM_is_closed(stream))
 					break;
 				STREAM_lof(stream, &len2);
+				#ifdef DEBUG_ME
+				fprintf(stderr, "len: %ld -> %ld\n", len, len2);
+				#endif
 				if (len == len2)
 					break;
 			}

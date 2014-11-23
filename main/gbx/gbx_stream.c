@@ -166,6 +166,7 @@ static int default_eof(STREAM *stream)
 void STREAM_open(STREAM *stream, const char *path, int mode)
 {
 	STREAM_CLASS *sclass;
+	int fd;
 	
 	stream->type = NULL;
 	
@@ -231,6 +232,10 @@ _OPEN:
 		THROW_SYSTEM(errno, path);
 	
 	stream->type = sclass;
+
+	fd = STREAM_handle(stream);
+	if (fd >= 0)
+		fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | O_CLOEXEC);
 	
 	#if DEBUG_STREAM
 	_tag++;

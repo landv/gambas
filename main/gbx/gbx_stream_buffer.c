@@ -63,7 +63,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
     return TRUE;
 
 	fd = fileno(file);
-	
+
   if (fstat(fd, &info) < 0)
 	{
 		fclose(file);

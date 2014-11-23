@@ -318,7 +318,7 @@ int main(int argc, char *argv[])
 		}
 		else if (is_option_arg(argv, argc, &i, 't', &redirect_stderr))
 		{
-			int fd = open(redirect_stderr, O_WRONLY);
+			int fd = open(redirect_stderr, O_WRONLY | O_CLOEXEC);
 			if (fd < 0)
 				ERROR_fatal("cannot redirect stderr.");
 			dup2(fd, STDERR_FILENO);
