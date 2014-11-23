@@ -11,6 +11,7 @@ Private $hTimer As Timer
 Private $hPopup As Panel
 Private $hListBox As ListBox
 Private $hWatcher As Watcher
+Private $bExplicit As Boolean
 
 Private Sub FindTextBox(hCtrl As Control) As Control
   
@@ -43,10 +44,18 @@ Public Sub _new(hCtrl As Control)
   
 End
 
+Public Sub Open()
+  
+  HideList
+  $bExplicit = True
+  Timer_Timer
+  
+End
+
+
 Public Sub TextBox_Change()
   
   HideList
-  $hTimer.Stop
   $hTimer.Start
   
 End
@@ -74,10 +83,16 @@ Public Sub TextBox_KeyPress()
         ListBox_Click
         Stop Event
         Return
+      Case Key.Escape
+        HideList
     End Select
+  Else
+    If Key.Code = Key.Space And If Len(Last.Text) = 0 Then
+      Me.Open
+      Stop Event
+    Endif
   Endif
   
-  If Key.Code = Key.Escape Then HideList
   
 End
 
@@ -90,7 +105,8 @@ Public Sub Timer_Timer()
   
   $hTimer.Stop
   
-  aList = Me.Get(GetTextBox().Text)
+  aList = Me.Get(GetTextBox().Text, $bExplicit)
+  $bExplicit = False
   If Not aList Or If aList.Count = 0 Then Return
   
   If Not $hPopup Then
@@ -105,6 +121,8 @@ Public Sub Timer_Timer()
     $hPopup = New Panel(GetTextBox().Window)
     $hPopup.Ignore = True
     $hPopup.Border = Border.Plain
+    $hPopup.Background = Color.TextBackground
+    $hPopup.Foreground = Color.TextForeground
     $hPopup.Arrangement = Arrange.Fill
     
     $hListBox = New ListBox($hPopup) As "ListBox"
@@ -174,9 +192,9 @@ Public Sub ListBox_Click()
   
 End
 
-Public Sub Get(Text As String) As String[]
+Public Sub Get(Text As String, Explicit As Boolean) As String[]
   
-  If Len(Text) < 3 Then Return
+  If Len(Text) < 3 Or If Explicit Then Return
   Return ["Gambas", "Almost", "Means", "Basic!", Text]
   
 End
