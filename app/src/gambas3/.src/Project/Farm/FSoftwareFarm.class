@@ -38,12 +38,12 @@ Public Sub Form_Open()
   '   
   ' Endif
 
-  cmbFarm.List = FarmRequest.GetFarms()
   $bNoRefresh = True
-  cmbFarm.Index = 0
+  cmbFarm.List = FarmRequest.GetFarms()
+  cmbFarm.Text = FarmIdentity.LastFarm
   cmbSort.Index = 0
   $bNoRefresh = False
-  LoadSoftware
+  Reload
 
 End
 
@@ -68,18 +68,18 @@ End
 
 Public Sub cmbSort_Click()
 
-  LoadSoftware
+  Reload
 
 End
 
 Public Sub cmbFarm_Click()
 
   tagFarm.SetFarm(cmbFarm.Text)
-  LoadSoftware
+  ReloadFarm
 
 End
 
-Private Sub LoadSoftware()
+Public Sub Reload()
 
   Dim hReq As FarmRequest
   
@@ -109,7 +109,7 @@ Public Sub Request_Finished()
   Endif
   
   For Each sId In Split(hReq.Result["Result"])
-    hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm)
+    hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
     hSoftwareBox.ResizeScaled(48, 18)
   Next
   
@@ -119,6 +119,7 @@ End
 Public Sub Form_Close()
 
   FarmRequestManager.Clear
+  FarmIdentity.LastFarm = cmbFarm.Text
   Settings.Write(Me)
 
 End
@@ -138,7 +139,7 @@ End
 
 Public Sub timLoad_Timer()
 
-  LoadSoftware
+  Reload
 
 End
 
@@ -160,4 +161,26 @@ Public Sub dwgTitle_Draw()
   Paint.Background = Color.White
   Paint.DrawText(("Gambas Software Farm"), DS, 0, DS * 32, Paint.H, Align.Left)
   
+End
+
+Private Sub ReloadFarm()
+
+  Dim hIdentity As FarmIdentity
+
+  SoftwareBox.ClearCache(cmbFarm.Text)
+  hIdentity = New FarmIdentity(cmbFarm.Text)
+  hIdentity.Init(lblIdentity, picIdentity)
+  Reload
+
+End
+
+Public Sub btnLogin_Click()
+
+  FFarmConfig.Run(cmbFarm.text)
+
+  $bNoRefresh = True
+  cmbFarm.List = FarmRequest.GetFarms()
+  $bNoRefresh = False
+  ReloadFarm
+
 End

@@ -1,0 +1,116 @@
+' Gambas class file
+
+Static Property FarmList As String[]
+Static Property RememberPassword As Boolean
+Static Property LastFarm As String
+
+Property Login As String
+Property Password As String
+
+Static Private $hSettings As Settings
+Static Private $cPassword As New Collection
+
+Private $sFarm As String
+
+Static Public Sub _init()
+  
+  $hSettings = New Settings("gambas3-farm")
+  
+End
+
+
+Public Sub _new(sFarm As String)
+  
+  $sFarm = sFarm
+  
+End
+
+Private Function Login_Read() As String
+
+  Return $hSettings[$sFarm &/ "Login"]
+
+End
+
+Private Sub Login_Write(Value As String)
+
+  $hSettings[$sFarm &/ "Login"] = Value
+  $hSettings.Save
+  
+End
+
+Static Private Function RememberPassword_Read() As Boolean
+
+  Return $hSettings["/RememberPassword", False]
+
+End
+
+Static Private Sub RememberPassword_Write(Value As Boolean)
+
+  $hSettings["/RememberPassword"] = Value
+  $hSettings.Save
+
+End
+
+Private Function Password_Read() As String
+
+  If $hSettings["/RememberPassword", False] Then $cPassword[$sFarm] = Desktop.Passwords["/Farm" &/ $sFarm]
+  Return $cPassword[$sFarm]
+
+End
+
+Private Sub Password_Write(Value As String)
+
+  $cPassword[$sFarm] = Value
+  If $hSettings["/RememberPassword", False] Then Try Desktop.Passwords["/Farm" &/ $sFarm] = Value
+
+End
+
+Static Private Function FarmList_Read() As String[]
+
+  Dim aDefault As New String[]
+  
+  Return $hSettings["/FarmList", aDefault]
+
+End
+
+Static Private Sub FarmList_Write(Value As String[])
+
+  $hSettings["/FarmList"] = Value
+  $hSettings.Save
+
+End
+
+Static Public Sub SaveSettings()
+  
+  $hSettings.Save
+  
+End
+
+Static Private Function LastFarm_Read() As String
+
+  Return $hSettings["/LastFarm", "gambaswiki.org"]
+
+End
+
+Static Private Sub LastFarm_Write(Value As String)
+
+  $hSettings["/LastFarm"] = Value
+  $hSettings.Save
+
+End
+
+Public Sub Init(hLabel As Label, hPic As Control)
+  
+  If Me.Login And If Me.Password Then
+    hLabel.Text = Me.Login
+    hLabel.Font.Bold = True
+    hLabel.Font.Italic = False
+    hPic.Show
+  Else
+    hLabel.Text = ("Anonymous")
+    hLabel.Font.Bold = False
+    hLabel.Font.Italic = True
+    hPic.Hide
+  Endif
+  
+End

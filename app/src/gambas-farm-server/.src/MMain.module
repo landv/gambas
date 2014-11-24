@@ -80,6 +80,10 @@ Public Sub Main()
       
       CheckIdent
       
+    Case "/ping"
+      PrintOK
+      
+      
     ' Case "/test"
     '   
     '   Response.ContentType = "text/plain;charset=utf-8"
@@ -653,6 +657,7 @@ Private Sub VoteSoftware()
 
   Dim rSoftware As Result
   Dim rVote As Result
+  Dim iId As Integer
   
   OpenDatabase
   
@@ -660,16 +665,28 @@ Private Sub VoteSoftware()
 
   rSoftware = FindSoftware()
   If Not rSoftware Then Return
+  iId = rSoftware!id
 
-  If Request.Exist("clear") Then
-    Try DB.Delete("vote", "software = &1 AND user = &2", rSoftware!id, $iUser)
-  Else
-    rVote = DB.Create("vote")
-    rVote!software = rSoftware!id
-    rVote!user = $iUser
-    Try rVote.Update
-  Endif
+  DB.Begin
 
+  Select Case Request["vote"]
+    Case "0"
+      Try DB.Delete("vote", "software = &1 AND \"user\" = &2", iId, $iUser)
+    Case Else
+      rVote = DB.Create("vote")
+      rVote!software = rSoftware!id
+      rVote!user = $iUser
+      Try rVote.Update
+  End Select
+  
+  rVote = DB.Exec("SELECT COUNT(*) FROM vote WHERE software = &1", iId)
+  
+  rSoftware = DB.Edit("software", "id = &1", iId)
+  rSoftware!vote = rVote[0]
+  rSoftware.Update
+  
+  DB.Commit
+  
   PrintOK
 
 End
@@ -698,8 +715,13 @@ Private Sub SearchSoftware()
   
   aTag = New Integer[]
   For Each sTag In Split(Request["tags"])
-    rTag = DB.Find("name", "cname = &1", Lower(sTag))    
-    If rTag.Available And If Not aTag.Exist(rTag!id) Then aTag.Add(rTag!id)
+    rTag = DB.Find("name", "cname = &1", Lower(sTag))
+    If rTag.Available Then
+      iTag = rTag!id
+    Else
+      iTag = -1
+    Endif
+    If Not aTag.Exist(rTag!id) Then aTag.Add(rTag!id)
   Next
   
   sFilter = String.LCase(Request["filter"])

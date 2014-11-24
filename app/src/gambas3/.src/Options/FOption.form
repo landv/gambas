@@ -34,7 +34,7 @@
     Arrangement = Arrange.Vertical
     Spacing = True
     Margin = True
-    Count = 10
+    Count = 9
     Index = 0
     Text = ("Identity")
     Picture = Picture["icon:/large/identity"]
@@ -939,96 +939,6 @@
           Text = Shortcut(("Reset"), "s")
           Picture = Picture["icon:/small/undo"]
         }
-      }
-    }
-    Index = 9
-    Text = ("Publishing")
-    Picture = Picture["icon:/large/internet"]
-    { Label33 Label
-      MoveScaled(1,1,29,3)
-      Font = Font["Bold"]
-      Text = ("Publishing servers")
-    }
-    { lstFarm ListEditor
-      MoveScaled(1,5,62,21)
-      Expand = True
-    }
-    { panRegister Panel
-      MoveScaled(1,31,65,40)
-      Enabled = False
-      Arrangement = Arrange.Vertical
-      Spacing = True
-      Margin = True
-      Border = Border.Plain
-      { HBox52 HBox
-        MoveScaled(1,2,62,4)
-        Spacing = True
-        { Label35 Label
-          MoveScaled(0,0,27,4)
-          Text = ("Register on")
-        }
-        { txtFarm TextBox
-          MoveScaled(33,0,24,4)
-          Expand = True
-          ReadOnly = True
-        }
-      }
-      { HBox35 HBox
-        MoveScaled(1,7,62,4)
-        Spacing = True
-        { Label36 Label
-          MoveScaled(0,0,27,4)
-          Text = ("Login")
-        }
-        { txtLogin TextBox
-          MoveScaled(33,0,24,4)
-          Expand = True
-        }
-      }
-      { HBox36 HBox
-        MoveScaled(1,12,63,4)
-        Spacing = True
-        { Label62 Label
-          MoveScaled(0,0,27,4)
-          Text = ("Password")
-        }
-        { txtPassword TextBox
-          MoveScaled(33,0,24,4)
-          Expand = True
-          Password = True
-        }
-      }
-      { HBox38 HBox
-        MoveScaled(1,17,62,4)
-        Spacing = True
-        { Label64 Label
-          MoveScaled(0,0,27,4)
-          Text = ("Confirm password")
-        }
-        { txtConfirmPassword TextBox
-          MoveScaled(32,0,24,4)
-          Expand = True
-          Password = True
-        }
-      }
-      { HBox51 HBox
-        MoveScaled(1,22,62,4)
-        Spacing = True
-        { Label65 Label
-          MoveScaled(0,0,27,3)
-        }
-        { btnRegister Button
-          MoveScaled(33,0,23,4)
-          Text = ("Register") & "..."
-          Picture = Picture["icon:/small/identity"]
-        }
-      }
-      { TextLabel1 TextLabel
-        MoveScaled(1,27,63,12)
-        Font = Font["Italic"]
-        Expand = True
-        Text = ("A confirmation mail will be sent to the e-mail address specified in the <b>Identity</b> panel. Click on the link included in that mail to activate your account.\n<p>\n<b>Your e-mail will not be stored on the publishing server.</b>")
-        Alignment = Align.Normal
       }
     }
     Index = 0

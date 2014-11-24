@@ -1,7 +1,7 @@
 ' Gambas class file
 
-Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", "ruby", "sapphire", "visual", "obsidian", "quest", "quick"]
-Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick")]
+Static Private $aTheme As String[] = ["amethyst", "amber", "emerald", "gambas", "ruby", "sapphire", "visual", "obsidian", "quest", "quick", "blues"]
+Static Private $aThemeName As String[] = [("Amethyst"), ("Amber"), ("Emerald"), ("Gambas"), ("Ruby"), ("Sapphire"), ("Visual"), ("Obsidian"), ("Quest"), ("Quick"), ("Blues")]
 Static Private $aBrowser As String[] = ["konqueror", "rekonq", "firefox", "iceweasel", "epiphany", "seamonkey", "opera", "chromium"]
 Static Private $aTerminal As String[] = ["konsole", "gnome-terminal", "Terminal", "lxterminal", "xterm"]
 'Static Private $aImageEditor As String[] = ["gimp", "kolourpaint", "krita"]
@@ -138,7 +138,6 @@ Public Sub _new()
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
   panDownloadHelp.Visible = btnOfflineHelp.Value
-  lstFarm.List = Settings["/Publish/FarmList"]
   
   UpdateFont(txtGlobalFont.Value)
   
@@ -1276,65 +1275,6 @@ Private Sub UpdateDocumentationState()
       
   End Select
 
-End
-
-Public Sub lstFarm_Select()
-  
-  If lstFarm.Text Then
-    txtFarm.Text = lstFarm.Text
-    panRegister.Enabled = True
-  Else
-    txtFarm.Clear
-    panRegister.Enabled = False
-  Endif
-  
-End
-
-Public Sub lstFarm_Change()
-  
-  Settings["/Publish/FarmList"] = lstFarm.List
-  lstFarm_Select
-  
-End
-
-Public Sub btnRegister_Click()
-
-  Dim sLogin As String
-  Dim sPassword As String
-  Dim sConfirmPassword As String
-  Dim sEmail As String
-  Dim hReq As FarmRequest
-
-  sLogin = Trim(txtLogin.Text)
-  If Not sLogin Then
-    Balloon.Error(("Please enter your login."), txtLogin)
-    Return
-  Endif
-  
-  sPassword = Trim(txtPassword.Text)
-  If Not sPassword Then
-    Balloon.Error(("Please enter your password."), txtPassword)
-    Return
-  Endif
-  
-  sConfirmPassword = Trim(txtConfirmPassword.Text)
-  
-  If sPassword <> sConfirmPassword Then
-    Balloon.Error(("Confirm password does not match."), txtConfirmPassword)
-    Return
-  Endif
-  
-  sEmail = Trim$(txtMail.Text)
-  If Not sEmail Or If InStr(sEmail, "@") = 0 Then
-    ipnOption.Index = 0
-    Balloon.Error(("Please enter a valid e-mail address."), txtMail)
-    Return
-  Endif
-  
-  hReq = New FarmRequest(lstFarm.Text)
-  hReq.RegisterUser(sLogin, sPassword, Trim(txtName.Text), sEmail)
-  hReq.WaitFor(("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."), ("Unable to register user."))
-  
 End
 
 Public Sub Form_Close()

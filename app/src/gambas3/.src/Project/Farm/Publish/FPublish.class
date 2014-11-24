@@ -22,7 +22,7 @@ Public Sub btnPublish_Click()
 
   Dim hReq As FarmRequest
 
-  hReq = New FarmRequest(GetFarm(), txtLogin.Text, txtPassword.Text)
+  hReq = New FarmRequest(GetFarm())
   hReq.PublishSoftware(txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), lstRequire.List, txtURL.Text)
   hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
   
@@ -44,7 +44,6 @@ Public Sub Form_Open()
   Settings.Read(Me)
 
   cmbFarm.List = FarmRequest.GetFarms()
-  chkRememberPassword.Value = Settings["/Publish/RememberPassword", False]
   
   cmbFarm.Text = Settings["/Publish/Farm"]
   cmbFarm.Index = 0
@@ -63,7 +62,6 @@ Public Sub Form_Close()
   Settings.Write(Me)
   
   Settings["/Publish/Farm"] = cmbFarm.Text
-  Settings["/Publish/RememberPassword"] = CBool(chkRememberPassword.Value)
 
   Project.PublishTags = tagEditor.GetTags()
   Project.PublishDependencies = lstRequire.List
@@ -82,25 +80,19 @@ End
 
 Public Sub cmbFarm_Click()
 
-  txtLogin.Text = Settings["/Publish" &/ cmbFarm.Text &/ "Login"]
-  If chkRememberPassword.Value Then
-    Try txtPassword.Text = Desktop.Passwords["/Publish" &/ cmbFarm.Text]
-  Endif
+  Dim hIdentity As FarmIdentity
+  
   tagEditor.SetFarm(cmbFarm.Text)
+  
+  hIdentity = New FarmIdentity(cmbFarm.Text)
+  hIdentity.Init(lblIdentity, picIdentity)
 
 End
 
-Public Sub txtLogin_LostFocus()
-  
-  Settings["/Publish" &/ cmbFarm.Text &/ "Login"] = txtLogin.Text 
-  
-End
 
+Public Sub btnConfig_Click()
 
-Public Sub txtPassword_LostFocus()
-
-  If cmbFarm.Text And If chkRememberPassword.Value Then
-    Try Desktop.Passwords["/Publish" &/ cmbFarm.Text] = txtPassword.Text
-  Endif
+  FFarmConfig.Run(cmbFarm.Text)
+  cmbFarm_Click
 
 End

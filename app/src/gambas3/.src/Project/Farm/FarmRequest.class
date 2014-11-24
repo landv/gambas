@@ -3,8 +3,6 @@
 Event Finished
 
 Public Farm As String
-Public Login As String
-Public Password As String
 Public ErrorText As String
 Public Result As Collection
 Public ResultFile As String
@@ -13,12 +11,13 @@ Private $sTitle As String
 Private $hForm As HttpForm
 Private $bUseProgress As Boolean
 Private $bFile As Boolean
+Private $bFinished As Boolean
 
 Static Public Sub GetFarms() As String[]
 
   Dim aFarm As String[]
   
-  aFarm = Settings["/Publish/FarmList"]  
+  aFarm = FarmIdentity.FarmList
   If Not aFarm Then aFarm = New String[]
   If Not aFarm.Exist("gambaswiki.org") Then
     aFarm.Add("gambaswiki.org", 0)
@@ -42,12 +41,18 @@ Static Public Sub GetDate(sDate As String) As Date
   
 End
 
-Public Sub _new(sFarm As String, Optional sLogin As String, sPassword As String)
+
+Public Sub _new(sFarm As String)
+  
+  Dim hIdentity As FarmIdentity
   
   Farm = sFarm
-  Login = sLogin
-  Password = sPassword
+  
+  hIdentity = New FarmIdentity(sFarm)
   $hForm = New HttpForm As "Request"
+  $hForm["login"] = hIdentity.Login
+  $hForm["password"] = hIdentity.Password
+  
   
 End
 
@@ -63,6 +68,7 @@ Public Sub Request_Error()
   ErrorText = $hForm.ErrorText
   Result = Null
   ResultFile = ""
+  $bFinished = True
   Raise Finished
   
 End
@@ -72,6 +78,7 @@ Public Sub Request_Cancel()
   ErrorText = ""
   Result = Null
   ResultFile = ""
+  $bFinished = True
   Raise Finished
   
 End
@@ -82,6 +89,8 @@ Public Sub Request_Finished()
   Dim sLine As String
   Dim iPos As Integer
   Dim sResult As String
+  
+  $bFinished = True
   
   If $bFile Then
     ResultFile = Temp$()
@@ -107,6 +116,7 @@ Public Sub Request_Finished()
     If iPos = 0 Then Continue
     Result[Trim(Left(sLine, iPos - 1))] = Trim(Mid$(sLine, iPos + 1))
   Next
+  
   Raise Finished
   
 End
@@ -129,7 +139,7 @@ Catch
   
 End
 
-Public Sub RegisterUser(sLogin As String, sPassword As String, sFullName As String, sEmail As String)
+Public Sub RegisterUser(sLogin As String, sPassword As String, sEmail As String)
   
   $sTitle = ("Register user")
   $bUseProgress = False
@@ -137,7 +147,6 @@ Public Sub RegisterUser(sLogin As String, sPassword As String, sFullName As Stri
   $hForm.URL = "http://" & Farm &/ "farm/register"
   $hForm.Add("login", sLogin)
   $hForm.Add("password", sPassword)
-  $hForm.Add("name", sFullName)
   $hForm.Add("email", sEmail)
   
   FarmRequestManager.Add($hForm)
@@ -154,11 +163,21 @@ Public Sub HasFailed() As Boolean
 End
 
 
-Public Sub WaitFor(Optional sGood As String, sBad As String) As Boolean
+Public Sub WaitFor(Optional sGood As String, sBad As String, Optional bNoWindow As Boolean) As Boolean
   
   Dim bFail As Boolean
   
-  FFarmRequest.Run($hForm, $sTitle, $bUseProgress)
+  If bNoWindow Then
+    Inc Application.Busy
+    Do
+      Sleep 0.05
+      If $bFinished Then Break
+      Wait
+    Loop
+    Dec Application.Busy
+  Else
+    FFarmRequest.Run($hForm, $sTitle, $bUseProgress)
+  Endif
   
   bFail = HasFailed()
   
@@ -203,8 +222,8 @@ Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag
   '$sBadMsg = ("Unable to publish project.")
 
   $hForm.URL = "http://" & Farm &/ "/farm/publish"
-  $hForm.Add("login", Login)
-  $hForm.Add("password", Password)
+  '$hForm.Add("login", Login)
+  '$hForm.Add("password", Password)
   $hForm.Add("name", Project.Name)
   $hForm.Add("version", Project.MajorVersion * 10000 + Project.MinorVersion)
   $hForm.Add("release", Project.ReleaseVersion)
@@ -248,3 +267,28 @@ Public Sub SearchSoftware(sSort As String, sFilter As String, aTag As String[])
   FarmRequestManager.Add($hForm)
   
 End
+
+Public Sub CheckAuth(sLogin As String, sPassword As String)
+  
+  $hForm.URL = "http://" & Farm &/ "farm/ident"
+  $hForm["login"] = sLogin
+  $hForm["password"] = sPassword
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub VoteForSoftware(iId As Integer, iVote As Integer)
+  
+  $hForm.URL = "http://" & Farm &/ "farm/vote"
+  $hForm["id"] = CStr(iId)
+  $hForm["vote"] = CStr(iVote)
+  FarmRequestManager.Add($hForm)
+  
+End
+
+Public Sub Abort()
+  
+  FarmRequestManager.Remove($hForm)
+  
+End
+

@@ -11,6 +11,8 @@ Static Private $hImageVoteOff As Image
 Static Private $hImageInstall As Image
 Static Private $hImageInstallOff As Image
 
+Static Private $cCache As New Collection
+
 Property Read Id As Integer
 
 Private $hDrawingArea As DrawingArea
@@ -20,18 +22,17 @@ Private panAction As Panel
 Private btnVote As ToolButton
 Private btnInstall As ToolButton
 Private lblURL As URLLabel
+Private $sFarm As String
   
 
+Static Public Sub ClearCache(sFarm As String)
+  
+  $cCache[sFarm] = Null
+  
+End
+
+
 Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
-  
-  Me.Foreground = Color.TextForeground
-  
-  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
-  
-  $hSpinner = New Spinner($hDrawingArea)
-  $hSpinner.Start
-  
-  $hSoft = New CSoftware(iId, sFarm) As "Software"
   
   If Not $hImageVote Then
     $hImageVote = Picture["icon:/22/bookmark"].Image
@@ -39,6 +40,15 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
     $hImageInstall = Picture["icon:/22/apply"].Image
     $hImageInstallOff = $hImageInstall.Copy().Desaturate()
   Endif
+  
+  Me.Foreground = Color.TextForeground
+  
+  $sFarm = sFarm
+  
+  $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
+  
+  $hSpinner = New Spinner($hDrawingArea)
+  $hSpinner.Hide
   
   panAction = New Panel(Me)
   panAction.Spacing = True
@@ -58,7 +68,29 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
   btnInstall.Font.Grade = 1
   btnInstall.AutoResize = True
   
-  $hSoft.Start
+  If Not $cCache.Exist(sFarm) Then $cCache[sFarm] = New Collection
+  
+  $hSoft = $cCache[sFarm][iId]
+  If Not $hSoft Then
+    $hSoft = New CSoftware(iId, sFarm) As "Software"
+    $cCache[sFarm][iId] = $hSoft
+    Reload
+  Else
+    Object.Attach($hSoft, Me, "Software")
+    UpdateButtons
+    Raise Ready
+  Endif
+  
+  
+End
+
+Private Sub UpdateButtons()
+
+  btnInstall.Picture = $hImageInstallOff.Picture
+  btnInstall.Text = CStr($hSoft.DownloadCount)
+  btnVote.Picture = If($hSoft.YourVote = 1, $hImageVote.Picture, $hImageVoteOff.Picture)
+  btnVote.Text = CStr($hSoft.VoteCount)
+  btnVote.Enabled = $hSoft.YourVote >= 0
   
 End
 
@@ -72,10 +104,7 @@ Public Sub Software_Change()
     
     If $hSoft.State = CSoftware.STATE_READY Then
       
-      btnInstall.Picture = $hImageInstallOff.Picture
-      btnInstall.Text = CStr($hSoft.DownloadCount)
-      btnVote.Picture = $hImageVoteOff.Picture
-      btnVote.Text = CStr($hSoft.VoteCount)
+      UpdateButtons
       
       If $hSoft.URL Then
         lblURL = New URLLabel($hDrawingArea)
@@ -110,7 +139,7 @@ Public Sub DrawingArea_Draw()
   Dim iCol As Integer
   Dim sText As String
   
-  If $hSoft.State = CSoftware.STATE_WAIT Then Return
+  If $hSoft.State < CSoftware.STATE_READY Then Return
   
   W = Paint.W
   H = Paint.H
@@ -216,9 +245,24 @@ Public Sub btnInstall_Click()
   
 End
 
+Private Sub Reload()
+
+  $hSpinner.Show
+  $hSoft.Start
+  '$hDrawingArea.Refresh
+
+End
+
 Public Sub btnVote_Click()
+
+  Dim hReq As FarmRequest
   
-  Raise Vote
+  hReq = New FarmRequest($sFarm)
+  hReq.VoteForSoftware($hSoft.Id, If($hSoft.YourVote = 1, 0, 1))
+  If Not hReq.WaitFor(, ("Unable to vote"), True) Then
+    $cCache[$sFarm][$hSoft.Id] = Null
+    FSoftwareFarm.Reload
+  Endif
   
 End
 

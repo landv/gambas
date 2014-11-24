@@ -2,7 +2,7 @@
 
 Event Change
 
-Public Enum STATE_WAIT, STATE_WAIT_ICON, STATE_WAIT_BACKGROUND, STATE_READY, STATE_ERROR
+Public Enum STATE_WAIT_INFO, STATE_WAIT_ICON, STATE_WAIT_BACKGROUND, STATE_READY, STATE_ERROR
 Public Const ICON_SIZE As Integer = 32
 
 Public State As Integer
@@ -17,7 +17,7 @@ Public Checksum As String
 Public Owner As String
 Public DownloadCount As Integer
 Public VoteCount As Integer
-Public YourVote As Boolean
+Public YourVote As Integer
 Public Icon As Image
 Public Background As Image
 Public Tags As String[]
@@ -25,6 +25,8 @@ Public Tags As String[]
 Public ErrorText As String
 
 Private $sFarm As String
+Private $hRequest As FarmRequest
+Private $hRequestIcon As FarmRequest
 
 Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
   
@@ -34,14 +36,16 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
 End
 
 Public Sub Start()
-
-  Dim hRequest As FarmRequest
   
-  hRequest = New FarmRequest($sFarm) As "Request"
-  hRequest.GetSoftware(Id)
+  Try $hRequest.Abort
+  $hRequest = New FarmRequest($sFarm) As "Request"
+  $hRequest.GetSoftware(Id)
   
-  hRequest = New FarmRequest($sFarm) As "Request"
-  hRequest.GetSoftwareIcon(Id)
+  Try $hRequestIcon.Abort
+  $hRequestIcon = New FarmRequest($sFarm) As "Request"
+  $hRequestIcon.GetSoftwareIcon(Id)
+  
+  State = STATE_WAIT_INFO
   
 End
 
@@ -76,7 +80,11 @@ WAIT_INFO:
   Try DownloadCount = CInt(cResult["DownloadCount"])
   Try VoteCount = CInt(cResult["VoteCount"])
   Owner = UnQuote(cResult["Owner"])
-  YourVote = cResult["YourVote"] <> "0"
+  If cResult.Exist("YourVote") Then
+    YourVote = cResult["YourVote"]
+  Else
+    YourVote = -1
+  Endif
   Tags = Split(cResult["Tags"])
 
   State = STATE_WAIT_ICON

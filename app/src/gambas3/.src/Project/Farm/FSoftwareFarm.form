@@ -11,7 +11,7 @@
     Background = &H3398C3&
   }
   { Panel1 VBox
-    MoveScaled(1,11,97,17)
+    MoveScaled(1,11,97,23)
     Spacing = True
     Margin = True
     { panFilter Panel
@@ -23,31 +23,54 @@
         Text = ("Farm")
       }
       { cmbFarm ComboBox
-        MoveScaled(11,0,29,4)
+        MoveScaled(15,0,29,4)
         ReadOnly = True
-      }
-      { Label1 Label
-        MoveScaled(41,0,8,4)
-        AutoResize = True
-        Text = ("Show")
-      }
-      { cmbSort ComboBox
-        MoveScaled(48,0,25,4)
-        ReadOnly = True
-        List = [("Most recent"), ("Most downloaded"), ("Most popular"), ("Installed")]
       }
       { Panel3 Panel
-        MoveScaled(74,0,1,4)
+        MoveScaled(46,0,1,4)
         Expand = True
+      }
+      { panUser Panel
+        MoveScaled(48,0,22,4)
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        Spacing = True
+        Invert = True
+        { Panel6 Panel
+          MoveScaled(19,0,2,4)
+        }
+        { lblIdentity Label
+          MoveScaled(7,0,9,4)
+          Font = Font["Bold"]
+          AutoResize = True
+        }
+        { picIdentity PictureBox
+          MoveScaled(2,0,4,4)
+          Picture = Picture["icon:/medium/identity"]
+          Alignment = Align.Center
+        }
       }
       { btnLogin Button
         MoveScaled(77,0,15,4)
         AutoResize = True
-        Text = ("Connect") & "..."
+        Text = ("Configure") & "..."
+      }
+    }
+    { HBox1 HBox
+      MoveScaled(2,6,93,4)
+      Spacing = True
+      { Label1 Label
+        MoveScaled(0,0,11,4)
+        Text = ("Show")
+      }
+      { cmbSort ComboBox
+        MoveScaled(15,0,25,4)
+        ReadOnly = True
+        List = [("Most recent"), ("Most downloaded"), ("Most popular"), ("Installed")]
       }
     }
     { Panel4 HPanel
-      MoveScaled(2,6,94,5)
+      MoveScaled(2,11,94,5)
       Spacing = True
       { Label3 Label
         MoveScaled(0,0,11,4)
@@ -59,7 +82,7 @@
       }
     }
     { Panel5 HPanel
-      MoveScaled(2,12,94,4)
+      MoveScaled(2,17,94,4)
       Spacing = True
       { Label4 Label
         MoveScaled(0,0,11,4)
@@ -79,15 +102,14 @@
       }
     }
   }
-  { Separator1 Separator
-    MoveScaled(44,35,17,0)
-  }
   { timLoad #Timer
     #MoveScaled(87,35)
     Delay = 500
   }
   { svwFarm ScrollView
     MoveScaled(3,45,90,37)
+    Background = Color.TextBackground
+    Foreground = Color.TextForeground
     Expand = True
     Arrangement = Arrange.Row
     Spacing = True

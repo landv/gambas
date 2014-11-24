@@ -132,6 +132,7 @@ Public Sub Save()
   Dim sTemp As String
   Dim hLock As File
   Dim cModify As Collection
+  Dim sSlot As String
 
   If Not $bModify Then Return
 
@@ -155,14 +156,20 @@ Public Sub Save()
     cSave = $cSlot
     cModify = $cModify
     Load
-    For Each cSlot In cSave
-      For Each vVal In cSlot
-        sKey = cSave.Key &/ cSlot.Key
-        If cModify.Exist(cSave.Key) Or If cModify.Exist(sKey) Then 
-          Me[sKey] = vVal
-        Endif
-      Next
+    For Each cModify
+      sKey = cModify.Key
+      sSlot = GetSlot(sKey)
+      sKey = File.Name(sKey)
+      Me[sSlot &/ sKey] = cSave[sSlot][sKey]
     Next
+    ' For Each cSlot In cSave
+    '   For Each vVal In cSlot
+    '     sKey = cSave.Key &/ cSlot.Key
+    '     If cModify.Exist(cSave.Key) Or If cModify.Exist(sKey) Then 
+    '       Me[sKey] = vVal
+    '     Endif
+    '   Next
+    ' Next
     
   Endif
 

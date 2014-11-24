@@ -6,13 +6,15 @@ Public Sub Main()
   Dim sSlot As String
   Dim sKey As String
 
-  hSettings = New Settings("~/.config/gambas3/gambas3.conf")
+  hSettings = New Settings("~/.config/gambas3/gambas3-farm.conf")
+  
+  hSettings["localhost/Login"] = ""
   
   For Each sSlot In hSettings.Keys
     
     Print "["; sSlot; "]"
     For Each sKey In hSettings.Keys[sSlot]
-      Print sKey
+      Print sKey; "="; hSettings[sSlot &/ sKey]
     Next
     
   Next

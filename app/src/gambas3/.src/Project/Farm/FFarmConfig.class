@@ -1,0 +1,149 @@
+' Gambas class file
+
+Private $hIdentity As FarmIdentity
+Private $sFarm As String
+
+Public Sub Run(sFarm As String)
+  
+  $sFarm = sFarm
+  Me.ShowModal
+  
+End
+
+Public Sub Form_Open()
+
+  lstFarm.List = FarmIdentity.FarmList
+
+  cmbFarm.List = FarmRequest.GetFarms()
+  cmbFarm.Text = $sFarm
+  
+  chkRememberPassword.Value = FarmIdentity.RememberPassword
+
+End
+
+Public Sub lstFarm_Change()
+
+  FarmIdentity.FarmList = lstFarm.List
+  cmbFarm.List = FarmRequest.GetFarms()
+
+End
+
+Public Sub btnShowRegister_Click()
+
+  Dim sLogin As String
+  Dim sPassword As String
+
+  sLogin = Trim(txtLogin.Text)
+  If Not sLogin Then
+    btnCancel_Click
+    Balloon.Error(("Please enter your login."), txtLogin)
+    Return
+  Endif
+  
+  sPassword = Trim(txtPassword.Text)
+  If Not sPassword Then
+    btnCancel_Click
+    Balloon.Error(("Please enter your password."), txtPassword)
+    Return
+  Endif
+  
+  panIdentity.Hide
+  panRegister.Show
+
+End
+
+Public Sub btnCancel_Click()
+
+  panIdentity.Show
+  panRegister.Hide
+
+End
+
+Public Sub btnClose_Click()
+
+  Dim hReq As FarmRequest
+
+  If Trim(txtLogin.Text) Then
+    hReq = New FarmRequest(cmbFarm.Text)
+    hReq.CheckAuth(Trim(txtLogin.Text), txtPassword.Text)
+    If hReq.WaitFor("", "", True) Then
+      Message.Error(("Authentication failed."))
+      Return
+    Endif
+  Endif
+
+  Me.Close
+
+End
+
+Public Sub btnRegister_Click()
+
+  Dim sLogin As String
+  Dim sPassword As String
+  Dim sConfirmPassword As String
+  Dim sEmail As String
+  Dim hReq As FarmRequest
+
+  sLogin = Trim(txtLogin.Text)
+  sPassword = Trim(txtPassword.Text)
+  
+  sEmail = Trim$(txtMail.Text)
+  If Not sEmail Or If InStr(sEmail, "@") = 0 Then
+    Balloon.Error(("Please enter a valid e-mail address."), txtMail)
+    Return
+  Endif
+  
+  sConfirmPassword = Trim(txtConfirmPassword.Text)
+  If sPassword <> sConfirmPassword Then
+    Balloon.Error(("Confirm password does not match."), txtConfirmPassword)
+    Return
+  Endif
+  
+  hReq = New FarmRequest(lstFarm.Text)
+  hReq.RegisterUser(sLogin, sPassword, sEmail)
+  If Not hReq.WaitFor(("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."), ("Unable to register user.")) Then
+    btnCancel_Click
+  Endif
+  
+End
+
+Public Sub cmbFarm_Click()
+
+  $hIdentity = New FarmIdentity(cmbFarm.Text)
+  txtLogin.Text = $hIdentity.Login
+  txtPassword.Text = $hIdentity.Password
+
+End
+
+Public Sub txtLogin_LostFocus()
+  
+  $hIdentity.Login = Trim(txtLogin.Text)
+  
+End
+
+
+Public Sub txtPassword_LostFocus()
+
+  $hIdentity.Password = txtPassword.Text
+
+End
+
+Public Sub Form_Close()
+
+  Settings["/Farm"] = cmbFarm.Text
+  FarmIdentity.RememberPassword = CBool(chkRememberPassword.Value)
+  FarmIdentity.SaveSettings
+
+End
+
+Public Sub txtLogin_Activate()
+
+  txtPassword.SetFocus
+
+End
+
+Public Sub txtPassword_Activate()
+
+  btnClose.Value = True
+
+End
