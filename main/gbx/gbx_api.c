@@ -131,7 +131,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_Is,
 	(void *)GB_Ref,
 	(void *)GB_Unref,
-	(void *)GB_UnrefKeep,
+	//(void *)GB_UnrefKeep,
 	(void *)GB_Detach,
 	(void *)GB_Attach,
 	(void *)OBJECT_parent,
@@ -1385,7 +1385,7 @@ void GB_Unref(void **object)
 }
 
 
-void GB_UnrefKeep(void **object, int delete)
+/*void GB_UnrefKeep(void **object, int delete)
 {
 	#if TRACE_MEMORY
 	CLASS *save = CP;
@@ -1410,7 +1410,7 @@ void GB_UnrefKeep(void **object, int delete)
 	#if TRACE_MEMORY
 	CP = save;
 	#endif
-}
+}*/
 
 
 void GB_Detach(void *object)

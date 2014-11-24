@@ -531,7 +531,7 @@ BEGIN_METHOD_VOID(Array_free)
 
 	if (UNLIKELY(THIS->ref != NULL))
 	{
-		GB_Unref(&THIS->ref);
+		OBJECT_UNREF(THIS->ref);
 		return;
 	}
 	

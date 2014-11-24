@@ -969,7 +969,7 @@ typedef
 		bool (*Is)(void *, GB_CLASS);
 		void (*Ref)(void *);
 		void (*Unref)(void **);
-		void (*UnrefKeep)(void **, int);
+		//void (*UnrefKeep)(void **, int);
 		void (*Detach)(void *);
 		void (*Attach)(void *, void *, const char *);
 		void *(*Parent)(void *);

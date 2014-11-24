@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private $bNoRefresh As Boolean
+Private $SY As Integer
 'Static Private $hLogo As Image
 
 Public Sub Run()
@@ -82,6 +83,7 @@ End
 Public Sub Reload()
 
   Dim hReq As FarmRequest
+  Dim Y As Integer
   
   If $bNoRefresh Then Return
   
@@ -89,12 +91,14 @@ Public Sub Reload()
   
   If cmbSort.Index = 3 Then Return
   
+  $SY = svwFarm.ScrollY
+  
   FarmRequestManager.Clear
   svwFarm.Children.Clear
   
   hReq = New FarmRequest(cmbFarm.Text) As "Request"
   hReq.SearchSoftware(["date", "download", "vote"][cmbSort.Index], txtFilter.Text, tagFarm.GetTags())
- 
+  
 End
 
 Public Sub Request_Finished()
@@ -102,6 +106,7 @@ Public Sub Request_Finished()
   Dim hReq As FarmRequest = Last
   Dim sId As String
   Dim hSoftwareBox As SoftwareBox
+  Dim hGoto As SoftwareBox
   
   If hReq.HasFailed() Then
     If hReq.ErrorText Then Message.Error(hReq.ErrorText)
@@ -112,6 +117,11 @@ Public Sub Request_Finished()
     hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
     hSoftwareBox.ResizeScaled(48, 18)
   Next
+  
+  If $SY Then 
+    Wait
+    svwFarm.ScrollY = $SY
+  Endif
   
 End
 

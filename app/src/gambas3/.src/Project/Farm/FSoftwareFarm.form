@@ -106,15 +106,22 @@
     #MoveScaled(87,35)
     Delay = 500
   }
-  { svwFarm ScrollView
-    MoveScaled(3,45,90,37)
+  { Panel7 Panel
+    MoveScaled(1,43,98,38)
     Background = Color.TextBackground
     Foreground = Color.TextForeground
     Expand = True
-    Arrangement = Arrange.Row
-    Spacing = True
-    Margin = True
-    Border = False
-    ScrollBar = Scroll.Vertical
+    Arrangement = Arrange.Fill
+    { svwFarm ScrollView
+      MoveScaled(0,0,90,37)
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Expand = True
+      Arrangement = Arrange.Row
+      Spacing = True
+      Margin = True
+      Border = False
+      ScrollBar = Scroll.Vertical
+    }
   }
 }

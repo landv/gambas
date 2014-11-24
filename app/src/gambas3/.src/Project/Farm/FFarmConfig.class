@@ -61,17 +61,6 @@ End
 
 Public Sub btnClose_Click()
 
-  Dim hReq As FarmRequest
-
-  If Trim(txtLogin.Text) Then
-    hReq = New FarmRequest(cmbFarm.Text)
-    hReq.CheckAuth(Trim(txtLogin.Text), txtPassword.Text)
-    If hReq.WaitFor("", "", True) Then
-      Message.Error(("Authentication failed."))
-      Return
-    Endif
-  Endif
-
   Me.Close
 
 End
@@ -129,6 +118,18 @@ Public Sub txtPassword_LostFocus()
 End
 
 Public Sub Form_Close()
+
+  Dim hReq As FarmRequest
+
+  If Trim(txtLogin.Text) Then
+    hReq = New FarmRequest(cmbFarm.Text)
+    hReq.CheckAuth(Trim(txtLogin.Text), txtPassword.Text)
+    If hReq.WaitFor("", "", True) Then
+      Message.Error(("Authentication failed."))
+      Stop Event
+      Return
+    Endif
+  Endif
 
   Settings["/Farm"] = cmbFarm.Text
   FarmIdentity.RememberPassword = CBool(chkRememberPassword.Value)

@@ -259,7 +259,7 @@ Public Sub btnVote_Click()
   
   hReq = New FarmRequest($sFarm)
   hReq.VoteForSoftware($hSoft.Id, If($hSoft.YourVote = 1, 0, 1))
-  If Not hReq.WaitFor(, ("Unable to vote"), True) Then
+  If Not hReq.WaitFor(, ("Unable to modify the vote."), True) Then
     $cCache[$sFarm][$hSoft.Id] = Null
     FSoftwareFarm.Reload
   Endif
