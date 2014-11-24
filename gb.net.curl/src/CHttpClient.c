@@ -151,7 +151,9 @@ static void http_reset(void *_object)
 	GB.FreeString(&THIS->data);
 	
 	GB.Unref(&THIS_HTTP->headers);
+	THIS_HTTP->headers = NULL;
 	GB.Unref(&THIS_HTTP->sent_headers);
+	THIS_HTTP->sent_headers = NULL;
 	
 	if (THIS_HTTP->sContentType)
 	{
