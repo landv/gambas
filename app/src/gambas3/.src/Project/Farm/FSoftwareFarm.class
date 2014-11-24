@@ -94,7 +94,7 @@ Public Sub Reload()
   
   hReq = New FarmRequest(cmbFarm.Text) As "Request"
   hReq.SearchSoftware(["date", "download", "vote"][cmbSort.Index], txtFilter.Text, tagFarm.GetTags())
-  
+ 
 End
 
 Public Sub Request_Finished()

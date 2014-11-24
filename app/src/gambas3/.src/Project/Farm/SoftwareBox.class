@@ -23,7 +23,7 @@ Private btnVote As ToolButton
 Private btnInstall As ToolButton
 Private lblURL As URLLabel
 Private $sFarm As String
-  
+Private $iId As Integer
 
 Static Public Sub ClearCache(sFarm As String)
   
@@ -44,6 +44,7 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
   Me.Foreground = Color.TextForeground
   
   $sFarm = sFarm
+  $iId = iId
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   
@@ -70,17 +71,16 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
   
   If Not $cCache.Exist(sFarm) Then $cCache[sFarm] = New Collection
   
-  $hSoft = $cCache[sFarm][iId]
+  $hSoft = $cCache[$sFarm][$iId]
   If Not $hSoft Then
-    $hSoft = New CSoftware(iId, sFarm) As "Software"
-    $cCache[sFarm][iId] = $hSoft
+    $hSoft = New CSoftware($iId, $sFarm) As "Software"
+    $cCache[$sFarm][$iId] = $hSoft
     Reload
   Else
     Object.Attach($hSoft, Me, "Software")
     UpdateButtons
     Raise Ready
   Endif
-  
   
 End
 
@@ -139,7 +139,7 @@ Public Sub DrawingArea_Draw()
   Dim iCol As Integer
   Dim sText As String
   
-  If $hSoft.State < CSoftware.STATE_READY Then Return
+  If Not $hSoft Or If $hSoft.State < CSoftware.STATE_READY Then Return
   
   W = Paint.W
   H = Paint.H
