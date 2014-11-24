@@ -117,7 +117,7 @@ End
 Public Sub _free()
 
   Try Me.Save
-  If Error Then Error "gb.settings: warning: unable to save settings: "; $sPath
+  If Error Then Error "gb.settings: warning: unable to save settings: "; $sPath; ": "; Error.Where;; Error.Text
 
 End
 
@@ -160,7 +160,7 @@ Public Sub Save()
       sKey = cModify.Key
       sSlot = GetSlot(sKey)
       sKey = File.Name(sKey)
-      Me[sSlot &/ sKey] = cSave[sSlot][sKey]
+      If cSave.Exist(sSlot) Then Me[sSlot &/ sKey] = cSave[sSlot][sKey]
     Next
     ' For Each cSlot In cSave
     '   For Each vVal In cSlot
@@ -205,14 +205,14 @@ Public Sub Save()
 
 Finally
 
-  Try Kill $sPath & ".lock"
-  Try Kill sTemp
-  Try Kill $sPath & "~"
+  If Exist($sPath & ".lock") Then Try Kill $sPath & ".lock"
+  If Exist(sTemp) Then Try Kill sTemp
+  If Exist($sPath & "~") Then Try Kill $sPath & "~"
   Try Unlock #hLock
   
 Catch
   
-  Error.Raise("Unable to save settings: " & Error.Text)
+  Error.Raise("Unable to save settings: " & Error.Where & " " & Error.Text)
 
 End
 
