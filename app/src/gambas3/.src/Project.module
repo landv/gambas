@@ -2420,10 +2420,12 @@ Public Sub DeleteCompiledFiles()
 
   Dim sFile As String
 
-  For Each sFile In Dir(Project.Dir &/ ".gambas")
-    If sFile Begins "." Then Continue
-    Try Kill Project.Dir &/ sFile
-  Next
+  If Exist(Project.Dir &/ ".gambas") Then
+    For Each sFile In Dir(Project.Dir &/ ".gambas")
+      If sFile Begins "." Then Continue
+      Try Kill Project.Dir &/ sFile
+    Next
+  Endif
 
   If Exist(Project.Dir &/ ".lang") Then
     For Each sFile In Dir(Project.Dir &/ ".lang", "*.pot")
