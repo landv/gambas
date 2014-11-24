@@ -209,7 +209,10 @@ BEGIN_PROPERTY(MimePart_Data)
 		/* write the contents to the stream */
 		g_mime_data_wrapper_write_to_stream(content, stream);
 		
-		GB.ReturnNewString((char *)array->data, (int)array->len);
+		if (!array->data)
+			GB.ReturnVoidString();
+		else
+			GB.ReturnNewString((char *)array->data, (int)array->len);
 		
 		/* free the output stream */
 		g_object_unref (stream);
