@@ -10,118 +10,223 @@
     MoveScaled(1,1,66,8)
     Background = &H3398C3&
   }
-  { Panel1 VBox
-    MoveScaled(1,11,97,23)
-    Spacing = True
-    Margin = True
-    { panFilter Panel
-      MoveScaled(2,1,94,4)
-      Arrangement = Arrange.Horizontal
+  { panSoftware VBox
+    MoveScaled(71,7,95,73)
+    Visible = False
+    Background = &HDF6B00&
+    Expand = True
+    { HBox2 HBox
+      MoveScaled(2,2,50,6)
       Spacing = True
-      { Label2 Label
-        MoveScaled(0,0,11,4)
-        Text = ("Farm")
+      Margin = True
+      { btnGoBack Button
+        MoveScaled(2,1,17,4)
+        AutoResize = True
+        Picture = Picture["icon:/small/left"]
       }
-      { cmbFarm ComboBox
-        MoveScaled(15,0,29,4)
-        ReadOnly = True
+      { btnInstall Button
+        MoveScaled(21,0,21,5)
+        AutoResize = True
+        Text = ("Install")
+        Picture = Picture["icon:/small/apply"]
       }
-      { Panel3 Panel
-        MoveScaled(46,0,1,4)
-        Expand = True
-      }
-      { panUser Panel
-        MoveScaled(48,0,22,4)
-        Expand = True
-        Arrangement = Arrange.Horizontal
+    }
+    { dwgSoftware DrawingArea
+      MoveScaled(4,17,82,54)
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Spacing = True
+      Margin = True
+      { panTitle HBox
+        MoveScaled(3,3,71,8)
         Spacing = True
-        Invert = True
-        { Panel6 Panel
-          MoveScaled(19,0,2,4)
-        }
-        { lblIdentity Label
-          MoveScaled(7,0,9,4)
-          Font = Font["Bold"]
-          AutoResize = True
-        }
-        { picIdentity PictureBox
-          MoveScaled(2,0,4,4)
-          Picture = Picture["icon:/medium/identity"]
+        { picIcon PictureBox
+          MoveScaled(1,0,8,8)
+          Stretch = True
           Alignment = Align.Center
         }
-      }
-      { btnLogin Button
-        MoveScaled(77,0,15,4)
-        AutoResize = True
-        Text = ("Configure") & "..."
-      }
-    }
-    { HBox1 HBox
-      MoveScaled(2,6,93,4)
-      Spacing = True
-      { Label1 Label
-        MoveScaled(0,0,11,4)
-        Text = ("Show")
-      }
-      { cmbSort ComboBox
-        MoveScaled(15,0,25,4)
-        ReadOnly = True
-        List = [("Most recent"), ("Most downloaded"), ("Most popular"), ("Installed")]
-      }
-    }
-    { Panel4 HPanel
-      MoveScaled(2,11,94,5)
-      Spacing = True
-      { Label3 Label
-        MoveScaled(0,0,11,4)
-        Text = ("Tags")
-      }
-      { tagFarm CTagEditor
-        MoveScaled(15,0,78,5)
-        Expand = True
-      }
-    }
-    { Panel5 HPanel
-      MoveScaled(2,17,94,4)
-      Spacing = True
-      { Label4 Label
-        MoveScaled(0,0,11,4)
-        Text = ("Filter")
-      }
-      { Panel2 Panel
-        MoveScaled(54,0,34,4)
-        Expand = True
-        Arrangement = Arrange.Fill
-        Border = Border.Plain
-        { txtFilter ButtonBox
-          MoveScaled(1,0,31,4)
-          Expand = True
-          Picture = Picture["icon:/small/clear"]
-          Border = False
+        { Panel13 Panel
+          MoveScaled(13,0,1,7)
         }
+        { Panel8 VBox
+          MoveScaled(16,0,29,8)
+          Expand = True
+          { lblName Label
+            MoveScaled(0,0,27,5)
+            Font = Font["Bold,+6"]
+            Alignment = Align.TopNormal
+          }
+          { lblShortDesc Label
+            MoveScaled(0,5,12,3)
+            Alignment = Align.TopNormal
+          }
+        }
+      }
+      { Separator1 Separator
+        MoveScaled(25,12,24,0)
+      }
+      { panDesc HBox
+        MoveScaled(2,14,73,36)
+        Expand = True
+        Spacing = True
+        { Panel11 VBox
+          MoveScaled(1,1,52,33)
+          Spacing = True
+          { txtDescription TextLabel
+            MoveScaled(0,0,35,12)
+            AutoResize = True
+          }
+          { panURL HBox
+            MoveScaled(3,15,29,4)
+            { urlWebSite URLLabel
+              MoveScaled(0,0,18,3)
+              AutoResize = True
+              Text = ("Developer web site")
+            }
+          }
+          { lblTags Label
+            MoveScaled(4,21,14,3)
+            Font = Font["Bold"]
+            Text = ("Tags")
+          }
+          { panTags HPanel
+            MoveScaled(3,25,26,8)
+            Spacing = True
+          }
+        }
+        { Panel10 Panel
+          MoveScaled(54,6,1,8)
+        }
+        { imvScreenshot ImageView
+          MoveScaled(58,1,14,20)
+          Expand = True
+        }
+        { spnScreenshot Spinner
+          MoveScaled(56,23,8,6)
+          Ignore = True
+        }
+      }
+    }
+  }
+  { panFarm Panel
+    MoveScaled(1,11,100,71)
+    Expand = True
+    Arrangement = Arrange.Vertical
+    { Panel1 VBox
+      MoveScaled(0,0,97,23)
+      Spacing = True
+      Margin = True
+      { panFilter Panel
+        MoveScaled(2,1,94,4)
+        Arrangement = Arrange.Horizontal
+        Spacing = True
+        { Label2 Label
+          MoveScaled(0,0,11,4)
+          Text = ("Farm")
+        }
+        { cmbFarm ComboBox
+          MoveScaled(15,0,29,4)
+          ReadOnly = True
+        }
+        { Panel3 Panel
+          MoveScaled(46,0,1,4)
+          Expand = True
+        }
+        { panUser Panel
+          MoveScaled(48,0,22,4)
+          Expand = True
+          Arrangement = Arrange.Horizontal
+          Spacing = True
+          Invert = True
+          { Panel6 Panel
+            MoveScaled(19,0,2,4)
+          }
+          { lblIdentity Label
+            MoveScaled(7,0,9,4)
+            Font = Font["Bold"]
+            AutoResize = True
+          }
+          { picIdentity PictureBox
+            MoveScaled(2,0,4,4)
+            Picture = Picture["icon:/medium/identity"]
+            Alignment = Align.Center
+          }
+        }
+        { btnLogin Button
+          MoveScaled(77,0,15,4)
+          AutoResize = True
+          Text = ("Configure") & "..."
+        }
+      }
+      { HBox1 HBox
+        MoveScaled(2,6,93,4)
+        Spacing = True
+        { Label1 Label
+          MoveScaled(0,0,11,4)
+          Text = ("Show")
+        }
+        { cmbSort ComboBox
+          MoveScaled(15,0,25,4)
+          ReadOnly = True
+          List = [("Most recent"), ("Most downloaded"), ("Most popular"), ("Installed")]
+        }
+      }
+      { Panel4 HPanel
+        MoveScaled(2,11,94,5)
+        Spacing = True
+        { Label3 Label
+          MoveScaled(0,0,11,4)
+          Text = ("Tags")
+        }
+        { tagFarm CTagEditor
+          MoveScaled(15,0,78,5)
+          Expand = True
+        }
+      }
+      { Panel5 HPanel
+        MoveScaled(2,17,94,4)
+        Spacing = True
+        { Label4 Label
+          MoveScaled(0,0,11,4)
+          Text = ("Filter")
+        }
+        { Panel2 Panel
+          MoveScaled(54,0,34,4)
+          Expand = True
+          Arrangement = Arrange.Fill
+          Border = Border.Plain
+          { txtFilter ButtonBox
+            MoveScaled(1,0,31,4)
+            Expand = True
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
+        }
+      }
+    }
+    { Panel7 Panel
+      MoveScaled(0,32,98,38)
+      Background = Color.TextBackground
+      Foreground = Color.TextForeground
+      Expand = True
+      Arrangement = Arrange.Fill
+      { svwFarm ScrollView
+        MoveScaled(0,0,90,37)
+        Background = Color.TextBackground
+        Foreground = Color.TextForeground
+        Expand = True
+        Arrangement = Arrange.Row
+        Spacing = True
+        Margin = True
+        Border = False
+        ScrollBar = Scroll.Vertical
       }
     }
   }
   { timLoad #Timer
     #MoveScaled(87,35)
     Delay = 500
-  }
-  { Panel7 Panel
-    MoveScaled(1,43,98,38)
-    Background = Color.TextBackground
-    Foreground = Color.TextForeground
-    Expand = True
-    Arrangement = Arrange.Fill
-    { svwFarm ScrollView
-      MoveScaled(0,0,90,37)
-      Background = Color.TextBackground
-      Foreground = Color.TextForeground
-      Expand = True
-      Arrangement = Arrange.Row
-      Spacing = True
-      Margin = True
-      Border = False
-      ScrollBar = Scroll.Vertical
-    }
   }
 }

@@ -402,7 +402,7 @@ GB_DESC MimePartDesc[] =
 	GB_METHOD("_new", NULL, MimePart_new, "[(ContentType)s]"),
 	GB_METHOD("_free", NULL, MimePart_free, NULL),
 	
-	GB_PROPERTY_READ("ContentType", "s", MimePart_ContentType),
+	GB_PROPERTY("ContentType", "s", MimePart_ContentType),
 	GB_PROPERTY("Disposition", "s", MimePart_Disposition),
 	GB_PROPERTY("ContentDisposition", "s", MimePart_ContentDisposition),
 	GB_PROPERTY("ContentId", "s", MimePart_ContentId),

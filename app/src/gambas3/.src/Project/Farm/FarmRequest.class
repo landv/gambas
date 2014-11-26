@@ -2,6 +2,8 @@
 
 Event Finished
 
+Public Enum PROGRESS_NONE, PROGRESS_UPLOAD, PROGRESS_DOWNLOAD
+
 Public Farm As String
 Public ErrorText As String
 Public Result As Collection
@@ -9,7 +11,7 @@ Public ResultFile As String
 
 Private $sTitle As String
 Private $hForm As HttpForm
-Private $bUseProgress As Boolean
+Private $iProgress As Integer
 Private $bFile As Boolean
 Private $bFinished As Boolean
 
@@ -93,8 +95,7 @@ Public Sub Request_Finished()
   $bFinished = True
   
   If $bFile Then
-    ResultFile = Temp$()
-    File.Save(ResultFile, $hForm.Peek())
+    ResultFile = $hForm.TargetFile
     Raise Finished
     Return
   Endif
@@ -142,7 +143,7 @@ End
 Public Sub RegisterUser(sLogin As String, sPassword As String, sEmail As String)
   
   $sTitle = ("Register user")
-  $bUseProgress = False
+  $iProgress = PROGRESS_NONE
   
   $hForm.URL = "http://" & Farm &/ "farm/register"
   $hForm.Add("login", sLogin)
@@ -176,7 +177,8 @@ Public Sub WaitFor(Optional sGood As String, sBad As String, Optional bNoWindow 
     Loop
     Dec Application.Busy
   Else
-    FFarmRequest.Run($hForm, $sTitle, $bUseProgress)
+    FFarmRequest.Run($hForm, $sTitle, $iProgress)
+    $iProgress = PROGRESS_NONE
   Endif
   
   bFail = HasFailed()
@@ -198,7 +200,7 @@ Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag
   Dim aGambasVersion As String[]
   
   $sTitle = ("Publish project")
-  $bUseProgress = True
+  $iProgress = PROGRESS_UPLOAD
   
   If sGambasVersion Then 
     aGambasVersion = Split(sGambasVersion, ".")
@@ -253,6 +255,7 @@ Public Sub GetSoftwareIcon(iId As Integer)
 
   $hForm.URL = "http://" & Farm &/ "farm/get?icon"
   $hForm.Add("id", CStr(iId))
+  $hForm.TargetFile = Temp$()
   $bFile = True
   FarmRequestManager.Add($hForm)
 
@@ -290,5 +293,31 @@ Public Sub Abort()
   
   FarmRequestManager.Remove($hForm)
   
+End
+
+Public Sub DownloadSoftware(iId As Integer)
+
+  $sTitle = ("Download software")
+  $iProgress = PROGRESS_DOWNLOAD
+
+  $hForm.URL = "http://" & Farm &/ "farm/download"
+  $hForm.Add("id", CStr(iId))
+  $hForm.TargetFile = Temp$()
+  $bFile = True
+  FarmRequestManager.Add($hForm)
+
+End
+
+Public Sub DownloadScreenshot(iId As Integer)
+
+  '$sTitle = ("Download screenshot")
+  '$iProgress = PROGRESS_DOWNLOAD
+
+  $hForm.URL = "http://" & Farm &/ "farm/get?screenshot"
+  $hForm.Add("id", CStr(iId))
+  $hForm.TargetFile = Temp$()
+  $bFile = True
+  FarmRequestManager.Add($hForm)
+
 End
 

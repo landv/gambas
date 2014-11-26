@@ -2,7 +2,7 @@
 
 Private $bNoRefresh As Boolean
 Private $SY As Integer
-'Static Private $hLogo As Image
+Private $hSoft As CSoftware
 
 Public Sub Run()
   
@@ -83,7 +83,6 @@ End
 Public Sub Reload()
 
   Dim hReq As FarmRequest
-  Dim Y As Integer
   
   If $bNoRefresh Then Return
   
@@ -106,7 +105,6 @@ Public Sub Request_Finished()
   Dim hReq As FarmRequest = Last
   Dim sId As String
   Dim hSoftwareBox As SoftwareBox
-  Dim hGoto As SoftwareBox
   
   If hReq.HasFailed() Then
     If hReq.ErrorText Then Message.Error(hReq.ErrorText)
@@ -124,7 +122,6 @@ Public Sub Request_Finished()
   Endif
   
 End
-
 
 Public Sub Form_Close()
 
@@ -177,7 +174,7 @@ Private Sub ReloadFarm()
 
   Dim hIdentity As FarmIdentity
 
-  SoftwareBox.ClearCache(cmbFarm.Text)
+  CSoftware.ClearCache(cmbFarm.Text)
   hIdentity = New FarmIdentity(cmbFarm.Text)
   hIdentity.Init(lblIdentity, picIdentity)
   Reload
@@ -192,5 +189,247 @@ Public Sub btnLogin_Click()
   cmbFarm.List = FarmRequest.GetFarms()
   $bNoRefresh = False
   ReloadFarm
+
+End
+
+Public Sub OnVote(hSoftwareBox As SoftwareBox)
+  
+  If cmbSort.Text = ("Most popular") Then 
+    Reload
+  Else
+    hSoftwareBox.Reload
+  Endif
+  
+End
+
+Public Sub OnInstall(hSoftwareBox As SoftwareBox)
+  
+  If cmbSort.Text = ("Most downloaded") Then 
+    Reload
+  Else
+    hSoftwareBox.Reload
+  Endif
+  
+End
+
+Private Sub ToggleSoftwarePanel()
+
+  Dim sText As String
+  Dim sTag As String
+  Dim hTag As Label
+  Dim hObs As Observer
+  Dim aText As String[]
+  Dim fTime As Float
+  
+  If panSoftware.Visible Then
+    
+    panFarm.Ignore = True
+    panSoftware.Ignore = True
+    panFarm.Show
+    
+    fTime = Timer
+    While panSoftware.X < Me.ClientW
+      panSoftware.X = Min(Me.ClientW, Me.ClientW * (Timer - fTime) * 8)
+      panFarm.X = panSoftware.X - panFarm.W
+      Wait
+    Wend
+    
+    panSoftware.Hide
+    panFarm.Ignore = False
+    panSoftware.Ignore = False
+    
+    $hSoft = Null
+    imvScreenshot.Image = Null
+    FarmRequestManager.Clear
+    
+  Else
+    
+    panFarm.Ignore = True
+    panSoftware.Ignore = True
+    panSoftware.Move(panFarm.W, panFarm.Y, panFarm.W, panFarm.H)
+    panSoftware.Show
+    panSoftware.Raise
+    
+    fTime = Timer
+    While panSoftware.X > 0
+      panSoftware.X = Max(0, Me.ClientW * (1 - (Timer - fTime) * 8))
+      panFarm.X = panSoftware.X - panFarm.W
+      Wait
+    Wend
+    
+    panFarm.Hide
+    panFarm.Ignore = False
+    panSoftware.Ignore = False
+    
+    lblName.Text = $hSoft.Name & " " & $hSoft.Version
+    
+    panURL.Visible = Not IsNull($hSoft.URL)
+    urlWebSite.Link = $hSoft.URL
+    
+    ' sText = ""
+    ' If $hSoft.VoteCount = 0 Then
+    '   sText = ("No vote")
+    ' Else If $hSoft.VoteCount = 1 Then
+    '   sText = ("One vote")
+    ' Else
+    '   sText = Subst(("&1 votes"), $hSoft.VoteCount)
+    ' Endif
+    ' sText &= ", "
+    ' If $hSoft.DownloadCount = 0 Then
+    '   sText &= ("No installation")
+    ' Else If $hSoft.DownloadCount = 1 Then
+    '   sText &= ("One installation")
+    ' Else
+    '   sText &= Subst(("&1 installation"), $hSoft.DownloadCount)
+    ' Endif
+    ' lblShortDesc.Text = sText
+    
+    sText = Trim($hSoft.Description)
+    
+    If Not sText Then
+      
+      lblShortDesc.Text = ""
+      txtDescription.Hide
+      
+    Else
+    
+      aText = Split(sText, "\n")
+      
+      If aText.Count = 1 Or If Trim(aText[1]) = "" Then
+        lblShortDesc.Text = aText[0]
+        aText.Remove(0)
+        sText = Trim(aText.Join("\n"))
+      Endif
+      
+      txtDescription.Text = Replace(Html(sText), "\n", "<br>")
+      txtDescription.Visible = Not IsNull(sText)
+      
+    Endif
+    
+    picIcon.Picture = $hSoft.Icon.Picture
+    
+    panTags.Children.Clear
+    
+    For Each sTag In $hSoft.Tags
+      hTag = New Label(panTags)
+      hTag.Text = " " & sTag & " "
+      hTag.Padding = 4
+      hTag.Background = &H3398C3&
+      hTag.Foreground = Color.White
+      hTag.Font.Bold = True
+      hTag.AutoResize = True
+    Next
+    
+    lblTags.Visible = $hSoft.Tags.Count > 0
+    
+    imvScreenshot.Image = Null
+    If $hSoft.DownloadScreenshot() Then
+      Software_Screenshot
+    Else
+      spnScreenshot.Show
+      spnScreenshot.Raise
+      hObs = New Observer($hSoft) As "Software"
+    Endif
+    
+    
+    panFarm.Hide
+    panSoftware.Show
+    
+  Endif
+
+End
+
+Public Sub Software_Screenshot()
+  
+  spnScreenshot.Hide
+  Try imvScreenshot.Image = $hSoft.Screenshot
+  imvScreenshot.ZoomFit
+  
+End
+
+
+Public Sub SoftwareBox_Click()
+  
+  $hSoft = Last.Software
+  ToggleSoftwarePanel
+  
+End
+
+Public Sub btnGoBack_Click()
+
+  ToggleSoftwarePanel
+
+End
+
+Public Sub dwgSoftware_Arrange()
+
+  picIcon.Resize(picIcon.Parent.H, picIcon.Parent.H)
+  
+End
+
+' Public Sub dwgScreenshot_Draw()
+' 
+'   Dim fScale, W, H As Float
+'   
+'   If $hScreenshot Then 
+'     fScale = Max($hScreenshot.W / dwgScreenshot.W, $hScreenshot.H / dwgScreenshot.H)
+'     W = $hScreenshot.W / fScale
+'     H = $hScreenshot.H / fScale
+'     Paint.DrawImage($hScreenshot, (dwgScreenshot.W - W) / 2, (dwgScreenshot.H - H) / 2, W, H)
+'   Endif
+' 
+' End
+
+Public Sub panDesc_Arrange()
+
+  spnScreenshot.Move(imvScreenshot.X + imvScreenshot.W \ 2 - 16, imvScreenshot.Y + imvScreenshot.H \ 2 - 16, 32, 32)
+
+End
+
+Public Sub Form_Resize()
+
+  If panSoftware.Visible Then imvScreenshot.ZoomFit
+
+End
+
+Public Sub btnInstall_Click()
+
+  Dim sName As String = $hSoft.GetTitle()
+  Dim sErr As String
+  
+  If $hSoft.IsInstalled() Then
+    If $hSoft.CanUpgrade() Then
+      If Message.Question(Subst(("Do you really want to upgrade <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
+        $hSoft.Install
+      Endif
+    Else
+      If Message.Question(Subst(("Do you really want to uninstall <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
+        sErr = $hSoft.Uninstall() 
+        If sErr Then
+          Message.Error(Subst(("Unable to remove <b>&1<b>:\n\n"), sName) & sErr)
+        Else
+          Message(Subst("<b>&1</b> has been successfully removed.", sName))
+          Goto REFRESH
+        Endif
+      Endif
+    Endif
+  Else
+    If Message.Question(Subst(("Do you really want to install <b>&1</b>?"), sName), ("Install"), ("Cancel")) = 1 Then
+      sErr = $hSoft.Install() 
+      If sErr Then
+        Message.Error(Subst(("Unable to install <b>&1<b>:\n\n"), sName) & sErr)
+      Else
+        Message(Subst("<b>&1</b> has been successfully installed.", sName))
+        Goto REFRESH
+      Endif
+    Endif
+  Endif
+
+  Return
+  
+REFRESH:
+
+  $hSoft.MustReload
+  Reload
 
 End

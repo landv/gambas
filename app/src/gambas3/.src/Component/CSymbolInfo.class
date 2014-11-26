@@ -982,7 +982,7 @@ Public Function GetHelpHTML() As String
   
   sMarkup = GetHelpMarkup()
   If sMarkup Then 
-    Try sHelp = Markup.Convert(sMarkup)
+    Try sHelp = Markdown.ToHTML(sMarkup)
     If Error Then sHelp = "<b>" & Error.Text & "</b>"
   Endif
   

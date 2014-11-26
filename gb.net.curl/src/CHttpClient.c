@@ -281,6 +281,9 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 		return; 
 	}
 
+	if (!target)
+		target = THIS_HTTP->target;
+
 	if (target && *target)
 	{
 		target = GB.FileName(target, 0);
@@ -326,7 +329,10 @@ static void http_send(void *_object, int type, char *sContent, char *sData, int 
 	if (check_request(_object, sContent, sData, lendata))
 		return;
 
-	if (target)
+	if (!target)
+		target = THIS_HTTP->target;
+
+	if (target && *target)
 	{
 		target = GB.FileName(target, 0);
 		THIS_FILE = fopen(target, "w");
@@ -545,6 +551,7 @@ BEGIN_METHOD_VOID(HttpClient_free)
 	GB.FreeString(&THIS_HTTP->encoding);
 	GB.FreeString(&THIS_HTTP->cookiesfile);
 	GB.FreeString(&THIS_HTTP->return_string);
+	GB.FreeString(&THIS_HTTP->target);
 
 END_METHOD
 
@@ -620,6 +627,16 @@ BEGIN_METHOD(HttpClient_CopyFrom, GB_OBJECT from)
 END_METHOD
 
 
+BEGIN_PROPERTY(HttpClient_TargetFile)
+
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS_HTTP->target);
+	else
+		GB.StoreString(PROP(GB_STRING), &THIS_HTTP->target);
+
+END_PROPERTY
+
+
 GB_DESC CHttpClientDesc[] =
 {
   GB_DECLARE("HttpClient", sizeof(CHTTPCLIENT)),
@@ -641,6 +658,7 @@ GB_DESC CHttpClientDesc[] =
   GB_PROPERTY_READ("Headers", "String[]", HttpClient_Headers),
   GB_PROPERTY("UserAgent", "s", HttpClient_UserAgent),
   GB_PROPERTY("Encoding", "s", HttpClient_Encoding),
+  GB_PROPERTY("TargetFile", "s", HttpClient_TargetFile),
 
   GB_PROPERTY_READ("Code", "i", HttpClient_ReturnCode),
   GB_PROPERTY_READ("Reason", "s", HttpClient_ReturnString),

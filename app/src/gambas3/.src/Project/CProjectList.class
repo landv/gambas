@@ -31,6 +31,7 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hButton.Hide
   $hButton.Text = ("Open in another window") & "…"
   $hButton.ResizeScaled(3, 3)
+  $hButton.Padding = 8
   $hButton.AutoResize = True
   $hButton.Font.Grade = -2
   $hButton.Mouse = Mouse.Pointing
@@ -300,7 +301,7 @@ Public Sub ProjectItem_Enter()
   If Not $bOpenExtern Then Return
   hProject = Last  
   $hButton.Reparent(hProject.Children[0])
-  $hButton.Move(hProject.W - $hButton.W - Desktop.Scale, hProject.H - $hButton.H - Desktop.Scale)
+  $hButton.Move(hProject.W - $hButton.W, hProject.H - $hButton.H)
   $hButton.Show
   
 End

@@ -75,7 +75,10 @@ Public Sub View_Arrange()
   Dim iScrollBar As Integer
   Dim W, H As Integer
   
-  If Not $hZoom Then Return
+  If Not $hZoom Then 
+    $hView.ResizeContents(1, 1)
+    Return
+  Endif
   
   W = $hZoom.W
   H = $hZoom.H
@@ -243,22 +246,25 @@ End
 
 Private Sub UpdateZoom()
 
-  If Not $hImage Then Return
-  
   $bZoom = False
   $bFastZoom = False
   
-  $hZoom = $hImage
+  If Not $hImage Then 
+    $hZoom = Null
+  Else
   
-  If $fZoom <> 1 Then
-    $bZoom = True
-    If Int($fZoom) = $fZoom Then $bFastZoom = True
+    $hZoom = $hImage
+    
+    If $fZoom <> 1 Then
+      $bZoom = True
+      If Int($fZoom) = $fZoom Then $bFastZoom = True
+    Endif
+    
+    ' If $fContrast Or If $fBrightness Then
+    '   $hZoom = $hZoom.Copy()
+    '   $hZoom.BrightnessContrast($fBrightness, $fContrast)
+    ' Endif
   Endif
-  
-  ' If $fContrast Or If $fBrightness Then
-  '   $hZoom = $hZoom.Copy()
-  '   $hZoom.BrightnessContrast($fBrightness, $fContrast)
-  ' Endif
   
   View_Arrange
   $hView.Refresh

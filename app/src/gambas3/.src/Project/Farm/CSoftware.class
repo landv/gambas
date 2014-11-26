@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Event Change
+Event Screenshot
 
 Public Enum STATE_WAIT_INFO, STATE_WAIT_ICON, STATE_WAIT_BACKGROUND, STATE_READY, STATE_ERROR
 Public Const ICON_SIZE As Integer = 32
@@ -9,6 +10,7 @@ Public State As Integer
 Public Id As Integer
 Public Name As String
 Public Version As String
+Public InstalledVersion As String
 Public UploadDate As Date
 Public Description As String
 Public URL As String
@@ -21,12 +23,38 @@ Public YourVote As Integer
 Public Icon As Image
 Public Background As Image
 Public Tags As String[]
+Public Screenshot As Image
 
 Public ErrorText As String
+
+Static Private $cCache As New Collection
 
 Private $sFarm As String
 Private $hRequest As FarmRequest
 Private $hRequestIcon As FarmRequest
+Private $bGotScreenshot As Boolean
+
+Static Public Sub ClearCache(sFarm As String)
+  
+  $cCache[sFarm] = Null
+  
+End
+
+Static Public Sub Get(sFarm As String, iId As Integer) As CSoftware
+  
+  Dim hSoft As CSoftware
+  
+  If Not $cCache.Exist(sFarm) Then $cCache[sFarm] = New Collection
+  
+  hSoft = $cCache[sFarm][iId]
+  If Not hSoft Then
+    hSoft = New CSoftware(iId, sFarm)
+    $cCache[sFarm][iId] = hSoft
+  Endif
+  Return hSoft
+  
+End
+
 
 Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
   
@@ -71,6 +99,8 @@ WAIT_INFO:
   
   Name = UnQuote(cResult["Name"])
   Try Version = CStr(CInt(Left(cResult["Version"], -4))) & "." & CStr(CInt(Right$(cResult["Version"], 4))) & "." & cResult["Release"]
+  
+  GetInstalledVersion()
   
   UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
   Description = UnQuote(cResult["Description"])
@@ -127,13 +157,33 @@ Public Sub IsFinished() As Boolean
   
 End
 
-' Public Sub Abort()
-'   
-'   Try $hForm.Stop
-'   State = STATE_READY
-'   $hForm = Null
-'  
-' End
+Public Sub GetInstalledDir() As String
+  
+  Return Desktop.DataDir &/ "gambas3/farm" & $sFarm &/ Name
+  
+End
+
+
+Private Sub GetInstalledVersion()
+
+  Dim sPath As String
+  Dim sLine As String
+
+  sPath = GetInstalledDir() &/ ".project"
+  If Not Exist(sPath) Then 
+    InstalledVersion = ""
+    Return
+  Endif
+  
+  For Each sLine In Split(File.Load(sPath), "\n")
+    If sLine Begins "Version=" Then
+      InstalledVersion = Trim(Mid$(sLine, 9))
+      Break
+    Endif
+  Next
+
+End
+
 ' 
 ' Private Sub MakeBackground()
 ' 
@@ -170,3 +220,87 @@ End
 '   Background = Background.Opacity(0.3)
 ' 
 ' End
+
+Public Sub GetTitle() As String
+
+  Return Name & " " & Version
+
+End
+
+Public Sub IsInstalled() As Boolean
+  
+  Return InstalledVersion
+  
+End
+
+Public Sub CanUpgrade() As Boolean
+  
+  If Not InstalledVersion Then Return
+  Return Comp(Version, InstalledVersion, gb.Natural) > 0
+  
+End
+
+Public Sub Install() As String
+
+  Dim hReq As FarmRequest
+  
+  hReq = New FarmRequest($sFarm)
+  hReq.DownloadSoftware(Id)
+  If hReq.WaitFor() Then Error.Raise(hReq.ErrorText)
+  
+  
+Catch
+  
+  Return Error.Text
+  
+End
+
+Public Sub Uninstall() As String
+
+  If Not InstalledVersion Then Return
+  
+  Inc Application.Busy
+  Exec ["rm", "-rf", Shell(GetInstalledDir())] Wait
+  Try Kill Desktop.DataDir &/ "gambas3/bin" &/ Name & ".gambas"
+  Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & Name & ".desktop"
+  Dec Application.Busy
+  
+Catch
+  
+  Dec Application.Busy 
+  Return Error.Text
+
+End
+
+Public Sub DownloadScreenshot() As Boolean
+  
+  Dim hReq As FarmRequest
+  
+  If $bGotScreenshot Then Return True
+  
+  hReq = New FarmRequest($sFarm) As "ScreenshotRequest"
+  hReq.DownloadScreenshot(Id)
+  
+End
+
+Public Sub ScreenshotRequest_Finished()
+  
+  Dim hReq As FarmRequest = Last
+  
+  $bGotScreenshot = True
+  
+  If Not hReq.HasFailed() Then
+    Try Screenshot = Image.Load(hReq.ResultFile)
+  Endif
+  
+  Raise Screenshot
+  
+End
+
+
+Public Sub MustReload()
+
+  $cCache[$sFarm][Id] = Null
+
+End
+
