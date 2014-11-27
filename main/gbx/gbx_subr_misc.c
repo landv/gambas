@@ -80,28 +80,38 @@ void SUBR_sleep(ushort code)
 {
 	SUBR_ENTER_PARAM(1);
 
-	if ((code & 0x3F) == 0)
+	switch(code & 0x3F)
 	{
-		double wait;
-		struct timespec rem;
+		case 0: // Sleep
+		{
+			double wait;
+			struct timespec rem;
 
-		wait = SUBR_get_float(PARAM);
+			wait = SUBR_get_float(PARAM);
 
-		rem.tv_sec = (time_t)(int)wait;
-		rem.tv_nsec = (int)(frac(wait) * 1E9);
+			rem.tv_sec = (time_t)(int)wait;
+			rem.tv_nsec = (int)(frac(wait) * 1E9);
 
-		while (nanosleep(&rem, &rem) < 0);
+			while (nanosleep(&rem, &rem) < 0);
+			break;
+		}
+		case 1: // Use
+		{
+			char *name = SUBR_get_string(PARAM);
+			COMPONENT *comp = COMPONENT_find(name);
+			if (!comp)
+				comp = COMPONENT_create(name);
+
+			COMPONENT_load(comp);
+			break;
+		}
+		case 2: // CheckExec
+		{
+			CPROCESS_check(PARAM->_object.object);
+			break;
+		}
 	}
-	else
-	{
-		char *name = SUBR_get_string(PARAM);
-		COMPONENT *comp = COMPONENT_find(name);
-		if (!comp)
-			comp = COMPONENT_create(name);
-
-		COMPONENT_load(comp);
-	}
-
+	
 	SUBR_LEAVE();
 }
 

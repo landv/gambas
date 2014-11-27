@@ -158,7 +158,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "callback_write: %d %p\n", fd, process);
 	#endif
-	
+
 	if (process->to_string)
 	{
 		int n = read(fd, COMMON_buffer, 256);
@@ -391,7 +391,7 @@ static void abort_child(int error)
 	#ifdef DEBUG_ME
 	fprintf(stderr, "abort_child: %d %d\n", error, save_errno);
 	#endif
-	
+
 	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getppid(), (int)getpid());
 	
 	fd = open(path, O_CREAT | O_WRONLY, 0600);
@@ -723,10 +723,10 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			fd_slave = open(slave, O_RDWR);
 			if (fd_slave < 0)
 				abort_child(CHILD_CANNOT_OPEN_TTY);
-			
-			#ifdef DEBUG_ME
+
+			/*#ifdef DEBUG_ME
 			fprintf(stderr, "run_process (child): slave = %s isatty = %d\n", slave, isatty(fd_slave));
-			#endif
+			#endif*/
 
 			if (mode & PM_WRITE)
 			{
@@ -804,19 +804,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		abort_child(CHILD_CANNOT_EXEC);
 	}
 
-	#ifdef DEBUG_ME
-	fprintf(stderr, "run_process: check child state immediately\n");
-	#endif
-
-	usleep(1);
-	wait_child(process);
-	throw_last_child_error();
+	update_stream(process);
 
 	#ifdef DEBUG_ME
 	fprintf(stderr, "run_process: child is OK\n");
 	#endif
 
-	update_stream(process);
 	return;
 	
 __ABORT_ERRNO:
@@ -824,6 +817,17 @@ __ABORT_ERRNO:
 	save_errno = errno;
 	stop_process(process);
 	THROW_SYSTEM(save_errno, NULL);
+}
+
+void CPROCESS_check(void *_object)
+{
+	#ifdef DEBUG_ME
+	fprintf(stderr, "CPROCESS_check: %p\n", THIS);
+	#endif
+
+	usleep(100);
+	wait_child(THIS);
+	throw_last_child_error();
 }
 
 static void wait_child(CPROCESS *process)

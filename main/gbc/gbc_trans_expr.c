@@ -694,7 +694,8 @@ bool TRANS_affectation(bool dup)
 	int niv = 0;
 	bool equal = FALSE;
 	bool stat = FALSE;
-	int op;
+	int op = RS_NONE;
+	int id = RS_NONE;
 
 	for(;;)
 	{
@@ -745,6 +746,7 @@ bool TRANS_affectation(bool dup)
 			TRANS_in_affectation++;
 			TRANS_new();
 			TRANS_in_affectation--;
+			id = RS_NEW;
 			stat = TRUE;
 		}
 		else
@@ -753,10 +755,12 @@ bool TRANS_affectation(bool dup)
 			{
 				if (TRANS_is(st->id))
 				{
+					id = st->id;
 					TRANS_in_affectation++;
 					(*st->func)();
 					TRANS_in_affectation--;
 					stat = TRUE;
+					break;
 				}
 			}
 		}
@@ -787,6 +791,9 @@ bool TRANS_affectation(bool dup)
 	if (dup)
 		CODE_dup();
 
+	if (id == RS_EXEC || id == RS_SHELL)
+		CODE_dup();
+
 	JOB->current = left;
 	TRANS_reference();
 
@@ -794,6 +801,12 @@ bool TRANS_affectation(bool dup)
 		THROW(E_SYNTAX);
 
 	JOB->current = after;
+
+	if (id == RS_EXEC || id == RS_SHELL)
+	{
+		TRANS_subr(TS_SUBR_CHECK_EXEC, 1);
+		CODE_drop();
+	}
 
 	return TRUE;
 }

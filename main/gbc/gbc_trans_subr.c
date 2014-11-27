@@ -56,7 +56,7 @@ static void trans_subr(int subr, int nparam)
 		{ ".Copy" }, { ".Link" },  { ".Error" }, { ".Lock" }, { ".Unlock" }, 
 		{ ".LockWait" }, { ".InputFrom" }, { ".OutputTo" }, { ".Debug" }, { ".Sleep" },
 		{ ".Randomize" }, { ".ErrorTo" }, { "Left" }, { "Mid" }, { ".OpenMemory" },
-		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }, { ".Use" }
+		{ ".Chmod" }, { ".Chown" }, { ".Chgrp" }, { ".Use" }, { ".CheckExec" }
 	};
 
 	TRANS_SUBR_INFO *tsi = &subr_info[subr];
@@ -74,7 +74,6 @@ static void trans_subr(int subr, int nparam)
 		CODE_subr(tsi->info->opcode, MAX_PARAM_OP, CODE_CALL_VARIANT + MAX_PARAM_OP - 1, FALSE);
 	else
 		CODE_subr(tsi->info->opcode, nparam, tsi->info->optype, tsi->info->min_param == tsi->info->max_param);
-
 }
 
 
