@@ -165,7 +165,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 		if (n > 0)
 			process->result = STRING_add(process->result, COMMON_buffer, n);
 	}
-	else if (GB_CanRaise(process, EVENT_Read) && !STREAM_is_closed(CSTREAM_stream(process)) && !STREAM_eof(CSTREAM_stream(process))) //process->running &&
+	else if (GB_CanRaise(process, EVENT_Read) && !STREAM_is_closed(CSTREAM_stream(process))) // && !STREAM_eof(CSTREAM_stream(process))) //process->running &&
 		GB_Raise(process, EVENT_Read, 0);
 	else
 		close_fd(&process->out);
@@ -300,7 +300,7 @@ static void stop_process_after(CPROCESS *_object)
 	bool do_exit_process = FALSE;
 
 	#ifdef DEBUG_ME
-	fprintf(stderr, "stop_process_after: %p\n", _object);
+	fprintf(stderr, "stop_process_after: %p  out = %d err = %d\n", _object, THIS->out, THIS->err);
 	#endif
 
 	if (WIFEXITED(THIS->status) && WEXITSTATUS(THIS->status) == 255)
@@ -321,8 +321,10 @@ static void stop_process_after(CPROCESS *_object)
 	if (THIS->out >= 0)
 	{
 		stream = CSTREAM_stream(THIS);
+		//fprintf(stderr, "stream is closed? %p %d\n", THIS, STREAM_is_closed(stream));
 		if (!STREAM_is_closed(stream))
 		{
+			//fprintf(stderr, "flushing: %p\n", THIS);
 			while (!STREAM_eof(stream))
 			{
 				STREAM_lof(stream, &len);
@@ -828,6 +830,8 @@ void CPROCESS_check(void *_object)
 	usleep(100);
 	wait_child(THIS);
 	throw_last_child_error();
+
+	//fprintf(stderr, "CPROCESS_check: %p END\n", THIS);
 }
 
 static void wait_child(CPROCESS *process)
@@ -920,12 +924,8 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 {
 	CPROCESS *process;
 
-	/*printf("** CPROCESS_create <<<< \n");*/
-
-	//if (!name || !*name)
-	//	name = "Process";
-
 	_CPROCESS_create_process = process = OBJECT_new(CLASS_Process, name, OP  ? (OBJECT *)OP : (OBJECT *)CP);
+	//fprintf(stderr, "CPROCESS_create: %p\n", process);
 
 	ON_ERROR(error_CPROCESS_create)
 	{
@@ -939,8 +939,6 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 	if (!name || !*name)
 		STREAM_blocking(CSTREAM_stream(process), TRUE);
 	
-	/*printf("** CPROCESS_create >>>> \n");*/
-
 	return process;
 }
 
