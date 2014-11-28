@@ -2,7 +2,7 @@
 
 Public Sub Main()
 
-  Dim hClient As New SmtpClient
+  ' Dim hClient As New SmtpClient
   
   ' hClient.Host = "smtp.gmail.com"
   ' hClient.Encrypt = Net.SSL
@@ -19,25 +19,46 @@ Public Sub Main()
   ' hClient.Add(File.Load("~/balloon.png"), "image/png", "balloon.png")
   ' hClient.Send
 
-  ' Dim hMsg As New SmtpClient
-  ' 
-  ' hMsg.Debug = True
-  ' hMsg.To.Add("somebody@gmail.com")
-  ' hMsg.Subject = "Test"
-  ' hMsg.Add("Something" & "\n\n" & ("-- \nPowered by ") & Application.Name & "\n")
-  ' hMsg.From = "somebody@gmail.com"
-  ' hMsg.Host = "smtp.gmail.com"
+  Dim hMsg As New SmtpClient
+  
+  hMsg.Debug = True
+  hMsg.To.Add("somebody@gmail.com")
+  hMsg.Subject = "Test"
+  hMsg.Add("Something" & "\n\n" & ("-- \nPowered by ") & Application.Name & "\n")
+  hMsg.From = "somebody@gmail.com"
+  hMsg.Host = "smtp.gmail.com"
+  hMsg.Port = 465
+  hMsg.User = "unknown@gmail.com"
+  hMsg.Password = "donotknow"
+  hMsg.Encrypt = Net.SSL
+  
+  Try hMsg.Send()
+  If Not Error Then
+    Print "Send successfully"
+  Else
+    Print "Send Failed: "; Error.Text
+  Endif
+
+
+  ' hMsg.To.Add("unknown@unknown.com")
+  ' hMsg.Subject = "Subject"
+  ' hMsg.From = "unknown@unknown.nl"
+  ' hMsg.Host = "127.0.0.1"
   ' hMsg.Port = 465
-  ' 'hMsg.User = "unknown@gmail.com"
-  ' 'hMsg.Password = "donotknow"
-  ' 'hMsg.Encrypt = Net.SSL
+  ' 
+  ' hMsg.Add("Body Text")
+  ' 
+  ' hMsg.User = "username"
+  ' hMsg.Password = "password"
+  ' hMsg.Encrypt = Net.SSL
   ' 
   ' Try hMsg.Send()
   ' If Not Error Then
   '   Print "Send successfully"
   ' Else
-  '   Print "Send Failed: "; Error.Text
+  '   Print "Send failed: " & Error.Text
   ' Endif
 
-
 End
+
+
