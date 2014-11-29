@@ -58,10 +58,11 @@ typedef
 		unsigned standard : 1;
 		unsigned blocking : 1;
 		unsigned redirected : 1;
+		unsigned has_read : 1;
 		#if DEBUG_STREAM
-		unsigned tag : 6;
+		unsigned tag : 5;
 		#else
-		unsigned _reserved : 6;
+		unsigned _reserved : 5;
 		#endif
 		short buffer_pos;
 		short buffer_len;
@@ -213,7 +214,7 @@ int64_t STREAM_tell(STREAM *stream);
 void STREAM_seek(STREAM *stream, int64_t pos, int whence);
 void STREAM_read(STREAM *stream, void *addr, int len);
 int STREAM_read_max(STREAM *stream, void *addr, int len);
-char STREAM_getchar(STREAM *stream);
+//char STREAM_getchar(STREAM *stream);
 void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value);
 void STREAM_write(STREAM *stream, void *addr, int len);
 void STREAM_write_zeros(STREAM *stream, int len);

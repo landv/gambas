@@ -345,6 +345,7 @@ void STREAM_read(STREAM *stream, void *addr, int len)
 	}
 }
 
+#if 0
 char STREAM_getchar(STREAM *stream)
 {
 	char c = 0;
@@ -385,6 +386,7 @@ char STREAM_getchar(STREAM *stream)
 	
 	return c;
 }
+#endif
 
 
 int STREAM_read_max(STREAM *stream, void *addr, int len)

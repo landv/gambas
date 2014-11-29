@@ -299,7 +299,6 @@ static void throw_last_child_error()
 static void stop_process_after(CPROCESS *_object)
 {
 	STREAM *stream;
-	int64_t len, len2;
 	bool do_exit_process = FALSE;
 
 	#ifdef DEBUG_ME
@@ -330,15 +329,11 @@ static void stop_process_after(CPROCESS *_object)
 			//fprintf(stderr, "flushing: %p\n", THIS);
 			while (!STREAM_eof(stream))
 			{
-				STREAM_lof(stream, &len);
+				stream->common.has_read = FALSE;
 				callback_write(THIS->out, 0, THIS);
-				if (STREAM_is_closed(stream))
+				if (!stream->common.has_read)
 					break;
-				STREAM_lof(stream, &len2);
-				#ifdef DEBUG_ME
-				fprintf(stderr, "len: %ld -> %ld\n", len, len2);
-				#endif
-				if (len == len2)
+				if (STREAM_is_closed(stream))
 					break;
 			}
 		}

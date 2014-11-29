@@ -69,15 +69,13 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 {
 	bool ret = STREAM_read_direct(FDR, buffer, len);
 
-  return ret;
-}
-
-static int stream_getchar(STREAM *stream, char *buffer)
-{
-	bool ret = read(FDR, buffer, 1) <= 0;
+	if (STREAM_eff_read > 0)
+		stream->common.has_read = TRUE;
 
   return ret;
 }
+
+#define stream_getchar NULL
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
