@@ -61,13 +61,13 @@ static inline int __key_to_array_index(const struct trie *node, char c)
 
 	for (j = n = 0; i >= MASK_SIZE; j++, i -= MASK_SIZE)
 		n += popcnt(node->mask[j]);
-	n += popcnt(node->mask[j] & ((1UL << i) - 1));
+	n += popcnt(node->mask[j] & ((1ULL << i) - 1));
 	return n;
 }
 
 static inline void __set_bit(uint64_t mask[4], int i)
 {
-	mask[INDEX(i)] |= 1UL << (OFFSET(i));
+	mask[INDEX(i)] |= 1ULL << (OFFSET(i));
 }
 
 static inline void set_bit(struct trie *node, int i)
@@ -77,12 +77,12 @@ static inline void set_bit(struct trie *node, int i)
 
 static inline void clear_bit(struct trie *node, int i)
 {
-	node->mask[INDEX(i)] &= ~(1UL << (OFFSET(i)));
+	node->mask[INDEX(i)] &= ~(1ULL << (OFFSET(i)));
 }
 
 static inline int test_bit(const struct trie *node, int i)
 {
-	return !!(node->mask[INDEX(i)] & (1UL << (OFFSET(i))));
+	return !!(node->mask[INDEX(i)] & (1ULL << (OFFSET(i))));
 }
 
 /**

@@ -230,8 +230,6 @@ typedef struct CPREFIX {
 	uint64_t time;
 } CPREFIX;
 
-static int init_prefix(CPREFIX *p, CTRIE *trie, char *prefix, size_t len);
-
 /**G
  * Return a TriePrefix object to search part of a trie.
  *
@@ -240,17 +238,25 @@ static int init_prefix(CPREFIX *p, CTRIE *trie, char *prefix, size_t len);
 BEGIN_METHOD(Trie_GetPrefix, GB_STRING prefix)
 
 	static GB_CLASS TriePrefix;
+	struct trie_prefix p;
 	CPREFIX *obj;
+
+	trie_reset_prefix(&p);
+	trie_constrain2(THIS->root, &p, STRING(prefix), LENGTH(prefix));
+	if (!p.node) {
+		GB.ReturnNull();
+		return;
+	}
 
 	if (!TriePrefix)
 		TriePrefix = GB.FindClass("TriePrefix");
 	obj = GB.New(TriePrefix, NULL, NULL);
-	if (init_prefix(obj, THIS, STRING(prefix), LENGTH(prefix))) {
-		GB.Ref(obj);
-		GB.Unref((void **) &obj);
-		GB.ReturnNull();
-		return;
-	}
+	obj->trie = THIS;
+	GB.Ref(THIS);
+	obj->p = p;
+	obj->key = NULL;
+	obj->prefix = GB.NewString(STRING(prefix), LENGTH(prefix));
+	obj->time = THIS->time;
 	GB.ReturnObject(obj);
 
 END_METHOD
@@ -340,22 +346,6 @@ static int check_prefix(CPREFIX *p)
 {
 	//printf("p=%p, state=%d, time=%lu (%lu)\n", p, p->p.state, p->time, p->trie->time);
 	return !p || p->p.state == TRIE_UNSET || p->time != p->trie->time;
-}
-
-static int init_prefix(CPREFIX *p, CTRIE *trie, char *prefix, size_t len)
-{
-	p->trie = trie;
-	GB.Ref(trie);
-	trie_reset_prefix(&p->p);
-	trie_constrain2(trie->root, &p->p, prefix, len);
-	if (!p->p.node) {
-		GB.Unref((void **) &trie);
-		return -1;
-	}
-	p->key = NULL;
-	p->prefix = GB.NewString(prefix, len);
-	p->time = trie->time;
-	return 0;
 }
 
 BEGIN_METHOD_VOID(TriePrefix_free)
