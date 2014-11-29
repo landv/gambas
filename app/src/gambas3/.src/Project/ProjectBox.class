@@ -157,7 +157,7 @@ Public Sub DrawingArea_Draw()
     Paint.AntiAlias = False
     Paint.Rectangle(X, Y, W - 1, H - 1)
     
-    If $hDrawingArea.HasFocus Then
+    If $hDrawingArea.HasFocus Or If $bHighlight Then
     
       Paint.Background = Color.LightBackground
       Paint.LineWidth = 2
@@ -245,7 +245,7 @@ Public Sub DrawingArea_Draw()
   
   Paint.Restore
   
-  If $bHighlight Then Paint.FillRect(XS, YS, WS, HS, Color.SetAlpha(Color.LightBackground, 192))
+  'If $bHighlight Then Paint.FillRect(XS, YS, WS, HS, Color.SetAlpha(Color.LightBackground, 192))
   
 End
 

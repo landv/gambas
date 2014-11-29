@@ -891,6 +891,7 @@ End
 
 Public Sub Exit()
 
+  CSoftware.Exit
   CSampleCode.Exit
   CLibraryInfo.Exit
   CRecentProject.Exit
@@ -4476,6 +4477,7 @@ Public Sub MakeSourcePackageFromTo(sFrom As String, sPath As String, Optional bW
   sCmd &= " tar cfvh" & sOpt & " " & Shell$(sTemp)
   sCmd &= " --exclude=" & Shell$(".gambas/*")
   sCmd &= " --exclude=" & Shell$("*~")
+  sCmd &= " --exclude=" & Shell$("core")
   sCmd &= " --exclude=" & Shell$("core*.*")
   sCmd &= " --exclude=" & Shell$("vgcore*.*")
   sCmd &= " --exclude=" & Shell$(".lock")

@@ -559,13 +559,23 @@ Static Private Function RuntimeDir_Read() As String
 
 End
 
+Static Private Sub FindExec(sExec As String) As String
+  
+  If Exist("/sbin/" & sExec) Then Return "/sbin/" & sExec
+  If Exist("/usr/sbin/" & sExec) Then Return "/usr/sbin/" & sExec
+  Return sExec
+  
+End
+
+
+
 Static Private Function NetworkAvailable_Read() As Boolean
 
   Dim sOutput As String
   Dim sLine As String
 
-  Shell "LC_ALL=C ifconfig -a" To sOutput
-  If Not sOutput Then Shell "LC_ALL=C ip addr" To sOutput
+  Shell "LC_ALL=C " & FindExec("ifconfig") & " -a" To sOutput
+  If Not sOutput Then Shell "LC_ALL=C " & FindExec("ip") & " addr" To sOutput
   
   For Each sLine In Split(Trim(sOutput), "\n")
     sLine = Trim(sLine)

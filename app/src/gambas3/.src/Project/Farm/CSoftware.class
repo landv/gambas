@@ -3,7 +3,7 @@
 Event Change
 Event Screenshot
 
-Public Enum STATE_WAIT_INFO, STATE_WAIT_ICON, STATE_WAIT_BACKGROUND, STATE_READY, STATE_ERROR
+Public Enum STATE_WAIT = 0, STATE_INFO = 1, STATE_ICON = 2, STATE_READY = 3, STATE_ERROR = 4
 Public Const ICON_SIZE As Integer = 32
 
 Public State As Integer
@@ -24,7 +24,9 @@ Public Icon As Image
 Public Background As Image
 Public Tags As String[]
 Public Screenshot As Image
+Public Size As Long
 
+Public Observed As Boolean
 Public ErrorText As String
 
 Static Private $cCache As New Collection
@@ -32,13 +34,25 @@ Static Private $cCache As New Collection
 Private $sFarm As String
 Private $hRequest As FarmRequest
 Private $hRequestIcon As FarmRequest
+Private $hRequestScreenshot As FarmRequest
 Private $bGotScreenshot As Boolean
 
-Static Public Sub ClearCache(sFarm As String)
+Static Public Sub ClearCache(Optional sFarm As String)
   
-  $cCache[sFarm] = Null
+  If Not sFarm Then
+    $cCache.Clear
+  Else
+    $cCache[sFarm] = Null
+  Endif
   
 End
+
+Static Public Sub Exit()
+  
+  ClearCache
+  
+End
+
 
 Static Public Sub Get(sFarm As String, iId As Integer) As CSoftware
   
@@ -70,10 +84,10 @@ Public Sub Start()
   $hRequest.GetSoftware(Id)
   
   Try $hRequestIcon.Abort
-  $hRequestIcon = New FarmRequest($sFarm) As "Request"
+  $hRequestIcon = New FarmRequest($sFarm) As "IconRequest"
   $hRequestIcon.GetSoftwareIcon(Id)
   
-  State = STATE_WAIT_INFO
+  State = STATE_WAIT
   
 End
 
@@ -86,14 +100,10 @@ Public Sub Request_Finished()
   If hReq.HasFailed() Then
     ErrorText = hReq.ErrorText
     State = STATE_ERROR
+    $hRequestIcon.Abort
     Raise Change
     Return
   Endif
-  
-  On State Goto WAIT_INFO, WAIT_ICON
-  Return
-  
-WAIT_INFO:
   
   cResult = hReq.Result
   
@@ -116,38 +126,28 @@ WAIT_INFO:
     YourVote = -1
   Endif
   Tags = Split(cResult["Tags"])
+  Try Size = CLong(cResult["Size"])
 
-  State = STATE_WAIT_ICON
+  State = State Or STATE_INFO
   Raise Change
-  Return
 
-WAIT_ICON:
+End
 
+Public Sub IconRequest_Finished()
+
+  Dim hReq As FarmRequest = Last
+  
+  If hReq.HasFailed() Then
+    ErrorText = hReq.ErrorText
+    State = STATE_ERROR
+    $hRequest.Abort
+    Raise Change
+    Return
+  Endif
+  
   Try Icon = Image.Load(hReq.ResultFile).Stretch(-1, ICON_SIZE)
-  
-  'If Icon Then MakeBackground
-  
-'   $sResult = ""
-'   $hForm.URL = "http://" & $sFarm &/ "farm/get?background"
-'   $hForm.Submit
-'   State = STATE_WAIT_BACKGROUND
-'   Raise Change
-'   Return
-' 
-' WAIT_BACKGROUND:
-' 
-'   sTemp = Temp$()
-'   File.Save(sTemp, $sResult)
-'   Try Background = Image.Load(sTemp)
-'   Kill sTemp
-'   
-'   If Background Then
-'     Background = Background.Copy(0, Max(0, Background.H \ 2 - Desktop.Scale * 8), Background.Width, Desktop.Scale * 16).Fuzzy(8).Opacity(0.3)
-'   Endif
-
-  State = STATE_READY
+  State = State Or STATE_ICON
   Raise Change
-  Return
 
 End
 
@@ -159,7 +159,7 @@ End
 
 Public Sub GetInstalledDir() As String
   
-  Return Desktop.DataDir &/ "gambas3/farm" & $sFarm &/ Name
+  Return Desktop.DataDir &/ "gambas3/src" &/ Name
   
 End
 
@@ -243,15 +243,140 @@ End
 Public Sub Install() As String
 
   Dim hReq As FarmRequest
+  Dim sDir As String
+  Dim sPath As String
+  Dim sExec As String
+  Dim sOption As String
+  Dim sName As String
+  Dim hFile As File
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sKey As String
+  Dim aComponent As String[]
+  Dim bTranslate As Boolean
+  Dim sValue As String
+  Dim bControlPublic As Boolean
+  Dim bModulePublic As Boolean
+  Dim sResult As String
+  Dim sSrcDir As String
+  Dim sExecDir As String
+  Dim sErr As String
+  
+  ' Create directories
+  
+  sDir = Desktop.DataDir &/ "gambas3"
+  Try Mkdir sDir
+
+  sSrcDir = sDir &/ "src"
+  Try Mkdir sSrcDir
+
+  sExecDir = Desktop.DataDir &/ "gambas3/bin"
+  Try Mkdir sExecDir
+  
+  ' TODO: Check if another version is already installed
+  
+  ' Download source archive
   
   hReq = New FarmRequest($sFarm)
+  FarmRequestManager.Clear
   hReq.DownloadSoftware(Id)
-  If hReq.WaitFor() Then Error.Raise(hReq.ErrorText)
+  If hReq.WaitFor() Then Return hReq.ErrorText
   
+  ' TODO: Check the checksum
+  
+  sPath = hReq.ResultFile
+  
+  ' Uncompress the archive
+  
+  If sPath Ends ".tar.gz" Then
+    sOption = "z"
+  Else If sPath Ends ".tar.bz2" Then
+    sOption = "j"
+  Else
+    Error.Raise("Unknown archive format")
+  Endif
+  
+  Shell "cd " & Shell(File.Dir(sPath)) & " && tar x" & sOption & "f " & Shell(sPath) Wait
+  If Process.LastValue Then Error.Raise(("Unable to uncompress source archive."))
+  
+  ' Analyze the project file
+  
+  aComponent = New String[]
+  
+  sName = Name
+  sDir = File.SetName(sPath, sName)
+  hFile = Open sDir &/ ".project"
+  
+  For Each sLine In hFile.Lines
+    
+    sLine = Trim(sLine)
+    If Not sLine Then Continue
+    If Left(sLine) = "#" Then Continue
+    iPos = InStr(sLine, "=")
+    If iPos = 0 Then Continue
+    
+    sKey = Left$(sLine, iPos - 1)
+    sValue = Mid$(sLine, iPos + 1)
+    
+    Select Case LCase(sKey)
+      Case "component"
+        aComponent.Add(sValue)
+      Case "translate"
+        bTranslate = sValue = "1"
+      Case "controlpublic"
+        bControlPublic = sValue = "1"
+      Case "modulepublic"
+        bModulePublic = sValue = "1"
+    End Select
+    
+  Next
+  
+  Close #hFile
+  
+  ' TODO: Check the components
+  
+  ' TODO: Check the libraries
+  
+  ' Compile the project
+  ' TODO: Use translatable error messages?
+  
+  sExec = System.Path &/ "bin/gbc" & System.Version & " -a -g -x "
+  If bTranslate Then sExec &= "-t "
+  If bControlPublic Then sExec &= "-p "
+  If bModulePublic Then sExec &= "-m "
+  sExec &= Shell$(sDir)
+  sExec &= " 2>&1"
+  
+  Shell sExec To sResult
+  
+  If Process.LastValue Then
+    Error.Raise(("Unable to compile the project.") & "\n\n" & sResult)
+  Endif
+
+  ' Make executable
+  
+  sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(sDir &/ sName & ".gambas") & " " & Shell$(sDir) & " 2>&1"
+  Shell sExec To sResult
+  If Process.LastValue Then Error.Raise(("Unable to make executable.") & "\n\n" & Trim(sResult))
+  
+  ' Install executable
+  
+  Copy sDir &/ sName & ".gambas" To sExecDir &/ sName & ".gambas"
+  Try Kill sDir &/ sName & ".gambas"
+
+  ' Move the source directory to its final location
+  
+  Exec ["mv", sDir, sSrcDir &/ File.Name(sDir)] Wait
+  If Not IsDir(sSrcDir &/ File.Name(sDir)) Then Error.Raise(("Unable to install source directory"))
+  
+  Start
   
 Catch
   
-  Return Error.Text
+  sErr = Error.Text
+  ' Try to remove the partial installation
+  Try Kill sExecDir &/ sName & ".gambas"
+  Return sErr
   
 End
 
@@ -260,10 +385,12 @@ Public Sub Uninstall() As String
   If Not InstalledVersion Then Return
   
   Inc Application.Busy
-  Exec ["rm", "-rf", Shell(GetInstalledDir())] Wait
+  Exec ["rm", "-rf", GetInstalledDir()] Wait
   Try Kill Desktop.DataDir &/ "gambas3/bin" &/ Name & ".gambas"
   Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & Name & ".desktop"
   Dec Application.Busy
+  
+  Start
   
 Catch
   
@@ -274,12 +401,10 @@ End
 
 Public Sub DownloadScreenshot() As Boolean
   
-  Dim hReq As FarmRequest
-  
   If $bGotScreenshot Then Return True
   
-  hReq = New FarmRequest($sFarm) As "ScreenshotRequest"
-  hReq.DownloadScreenshot(Id)
+  $hRequestScreenshot = New FarmRequest($sFarm) As "ScreenshotRequest"
+  $hRequestScreenshot.DownloadScreenshot(Id)
   
 End
 
@@ -287,9 +412,8 @@ Public Sub ScreenshotRequest_Finished()
   
   Dim hReq As FarmRequest = Last
   
-  $bGotScreenshot = True
-  
   If Not hReq.HasFailed() Then
+    $bGotScreenshot = True  
     Try Screenshot = Image.Load(hReq.ResultFile)
   Endif
   
@@ -301,6 +425,27 @@ End
 Public Sub MustReload()
 
   $cCache[$sFarm][Id] = Null
+  $hRequest.Abort
+  $hRequestIcon.Abort
+  $hRequestScreenshot.Abort
 
 End
 
+
+Public Sub ToggleVote() As String
+  
+  Dim hReq As FarmRequest
+ 
+  hReq = New FarmRequest($sFarm)
+  hReq.VoteForSoftware(Id, If(YourVote = 1, 0, 1))
+  If hReq.WaitFor(,, True) Then
+    Return hReq.ErrorText
+  Endif
+  
+  Start
+  
+Catch
+  
+  Return Error.Text
+  
+End

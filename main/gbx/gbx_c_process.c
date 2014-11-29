@@ -496,7 +496,7 @@ const char *CPROCESS_search_program_in_path(char *name)
 
 static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 {
-	static const char *shell[] = { "/bin/sh", "-c", NULL, NULL };
+	static const char *shell[] = { NULL, "-c", NULL, NULL };
 
 	int fdin[2], fdout[2], fderr[2];
 	pid_t pid;
@@ -524,6 +524,8 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 		if (CPROCESS_shell)
 			argv[0] = CPROCESS_shell;
+		else
+			argv[0] = "/bin/sh";
 		
 		argv[2] = (char *)cmd;
 

@@ -3,6 +3,7 @@
 Private $bNoRefresh As Boolean
 Private $SY As Integer
 Private $hSoft As CSoftware
+Private $sShortDesc As String
 
 Public Sub Run()
   
@@ -192,34 +193,107 @@ Public Sub btnLogin_Click()
 
 End
 
-Public Sub OnVote(hSoftwareBox As SoftwareBox)
-  
-  If cmbSort.Text = ("Most popular") Then 
-    Reload
-  Else
-    hSoftwareBox.Reload
-  Endif
-  
-End
+Private Sub UpdateSoftware()
 
-Public Sub OnInstall(hSoftwareBox As SoftwareBox)
+  Dim sText As String
+  Dim aText As String[]
+  Dim sTag As String
+  Dim hTag As Label
   
-  If cmbSort.Text = ("Most downloaded") Then 
-    Reload
-  Else
-    hSoftwareBox.Reload
-  Endif
+  If Not $hSoft Then Return
+
+  If $hSoft.State = CSoftware.STATE_ERROR Then Return
+
+  With $hSoft
+  
+    lblName.Text = .Name & " " & .Version
+  
+    panURL.Visible = Not IsNull(.URL)
+    urlWebSite.Link = .URL
+  
+    If .YourVote < 0 Then
+      btnVote.Text = ("Vote")
+      btnVote.Enabled = False
+    Else
+      btnVote.Enabled = True
+      If .YourVote = 1 Then
+        btnVote.Text = ("Cancel my vote")
+      Else
+        btnVote.Text = ("Vote")
+      Endif
+    Endif
+  
+    If .IsInstalled() Then
+      btnInstall.Text = ("Uninstall")
+      btnInstall.Picture = Picture["icon:/large/delete"]
+    Else If .CanUpgrade() Then
+      btnInstall.Text = ("Upgrade")
+      btnInstall.Picture = Picture["icon:/large/up"]
+    Else
+      btnInstall.Text = ("Install")
+      btnInstall.Picture = Picture["icon:/large/apply"]
+    Endif
+  
+    sText = Trim(.Description)
+  
+    If Not sText Then
+      
+      $sShortDesc = ""
+      txtDescription.Hide
+      
+    Else
+    
+      aText = Split(sText, "\n")
+      
+      If aText.Count = 1 Or If Trim(aText[1]) = "" Then
+        $sShortDesc = aText[0]
+        aText.Remove(0)
+        sText = Trim(aText.Join("\n"))
+      Endif
+      
+      txtDescription.Text = Replace(Html(sText), "\n", "<br>")
+      txtDescription.Visible = Not IsNull(sText)
+      
+    Endif
+    
+    dwgShortDesc.Refresh
+    
+    Try picIcon.Picture = .Icon.Picture
+  
+    panTags.Children.Clear
+    
+    If .Tags Then
+      For Each sTag In .Tags
+        hTag = New Label(panTags)
+        hTag.Text = " " & sTag & " "
+        hTag.Padding = 4
+        hTag.Background = &H3398C3&
+        hTag.Foreground = Color.White
+        hTag.Font.Bold = True
+        hTag.AutoResize = True
+      Next
+      
+      lblTags.Visible = .Tags.Count > 0
+    Endif
+    
+    imvScreenshot.Image = Null
+    If .DownloadScreenshot() Then
+      Software_Screenshot
+    Else
+      spnScreenshot.Show
+      spnScreenshot.Raise
+    Endif
+  
+  End With
+  
+  dwgStat.Refresh
   
 End
 
 Private Sub ToggleSoftwarePanel()
 
-  Dim sText As String
-  Dim sTag As String
-  Dim hTag As Label
-  Dim hObs As Observer
-  Dim aText As String[]
   Dim fTime As Float
+  Dim hObs As Observer
   
   If panSoftware.Visible Then
     
@@ -261,78 +335,13 @@ Private Sub ToggleSoftwarePanel()
     panFarm.Ignore = False
     panSoftware.Ignore = False
     
-    lblName.Text = $hSoft.Name & " " & $hSoft.Version
-    
-    panURL.Visible = Not IsNull($hSoft.URL)
-    urlWebSite.Link = $hSoft.URL
-    
-    ' sText = ""
-    ' If $hSoft.VoteCount = 0 Then
-    '   sText = ("No vote")
-    ' Else If $hSoft.VoteCount = 1 Then
-    '   sText = ("One vote")
-    ' Else
-    '   sText = Subst(("&1 votes"), $hSoft.VoteCount)
-    ' Endif
-    ' sText &= ", "
-    ' If $hSoft.DownloadCount = 0 Then
-    '   sText &= ("No installation")
-    ' Else If $hSoft.DownloadCount = 1 Then
-    '   sText &= ("One installation")
-    ' Else
-    '   sText &= Subst(("&1 installation"), $hSoft.DownloadCount)
-    ' Endif
-    ' lblShortDesc.Text = sText
-    
-    sText = Trim($hSoft.Description)
-    
-    If Not sText Then
-      
-      lblShortDesc.Text = ""
-      txtDescription.Hide
-      
-    Else
-    
-      aText = Split(sText, "\n")
-      
-      If aText.Count = 1 Or If Trim(aText[1]) = "" Then
-        lblShortDesc.Text = aText[0]
-        aText.Remove(0)
-        sText = Trim(aText.Join("\n"))
-      Endif
-      
-      txtDescription.Text = Replace(Html(sText), "\n", "<br>")
-      txtDescription.Visible = Not IsNull(sText)
-      
-    Endif
-    
-    picIcon.Picture = $hSoft.Icon.Picture
-    
-    panTags.Children.Clear
-    
-    For Each sTag In $hSoft.Tags
-      hTag = New Label(panTags)
-      hTag.Text = " " & sTag & " "
-      hTag.Padding = 4
-      hTag.Background = &H3398C3&
-      hTag.Foreground = Color.White
-      hTag.Font.Bold = True
-      hTag.AutoResize = True
-    Next
-    
-    lblTags.Visible = $hSoft.Tags.Count > 0
-    
-    imvScreenshot.Image = Null
-    If $hSoft.DownloadScreenshot() Then
-      Software_Screenshot
-    Else
-      spnScreenshot.Show
-      spnScreenshot.Raise
+    If Not $hSoft.Observed Then 
       hObs = New Observer($hSoft) As "Software"
+      $hSoft.Observed = True
     Endif
     
+    UpdateSoftware
     
-    panFarm.Hide
     panSoftware.Show
     
   Endif
@@ -350,7 +359,10 @@ End
 
 Public Sub SoftwareBox_Click()
   
-  $hSoft = Last.Software
+  Dim hSoft As CSoftware = Last.Software
+  If hSoft.State <> CSoftware.STATE_READY Then Return
+  
+  $hSoft = hSoft
   ToggleSoftwarePanel
   
 End
@@ -361,9 +373,10 @@ Public Sub btnGoBack_Click()
 
 End
 
-Public Sub dwgSoftware_Arrange()
+Public Sub panTitle_Arrange()
 
   picIcon.Resize(picIcon.Parent.H, picIcon.Parent.H)
+  dwgStat.Move(dwgStat.Parent.W - dwgStat.W, 0)
   
 End
 
@@ -392,6 +405,13 @@ Public Sub Form_Resize()
 
 End
 
+Public Sub dwgStat_Draw()
+  
+  If Not $hSoft Then Return
+  SoftwareBox.PaintStat($hSoft, True)
+  
+End
+
 Public Sub btnInstall_Click()
 
   Dim sName As String = $hSoft.GetTitle()
@@ -400,13 +420,19 @@ Public Sub btnInstall_Click()
   If $hSoft.IsInstalled() Then
     If $hSoft.CanUpgrade() Then
       If Message.Question(Subst(("Do you really want to upgrade <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
-        $hSoft.Install
+        sErr = $hSoft.Install() 
+        If sErr Then
+          Message.Error(Subst(("Unable to upgrade <b>&1<b>:"), sName) & "\n\n" & sErr)
+        Else
+          Message(Subst("<b>&1</b> has been successfully upgraded.", sName))
+          Goto REFRESH
+        Endif
       Endif
     Else
-      If Message.Question(Subst(("Do you really want to uninstall <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
+      If Message.Question(Subst(("Do you really want to uninstall <b>&1</b>?"), sName), ("Uninstall"), ("Cancel")) = 1 Then
         sErr = $hSoft.Uninstall() 
         If sErr Then
-          Message.Error(Subst(("Unable to remove <b>&1<b>:\n\n"), sName) & sErr)
+          Message.Error(Subst(("Unable to remove <b>&1<b>:"), sName) & "\n\n" & sErr)
         Else
           Message(Subst("<b>&1</b> has been successfully removed.", sName))
           Goto REFRESH
@@ -417,7 +443,7 @@ Public Sub btnInstall_Click()
     If Message.Question(Subst(("Do you really want to install <b>&1</b>?"), sName), ("Install"), ("Cancel")) = 1 Then
       sErr = $hSoft.Install() 
       If sErr Then
-        Message.Error(Subst(("Unable to install <b>&1<b>:\n\n"), sName) & sErr)
+        Message.Error(Subst(("Unable to install <b>&1<b>:"), sName) & "\n\n" & sErr)
       Else
         Message(Subst("<b>&1</b> has been successfully installed.", sName))
         Goto REFRESH
@@ -429,7 +455,31 @@ Public Sub btnInstall_Click()
   
 REFRESH:
 
-  $hSoft.MustReload
   Reload
+
+End
+
+Public Sub btnVote_Click()
+
+  Dim sErr As String
+
+  sErr = $hSoft.ToggleVote() 
+  If sErr Then
+    Message.Error(("Unable to modify your vote.") & "\n\n" & sErr)
+  Else
+    Reload
+  Endif
+
+End
+
+Public Sub Software_Change()
+  
+  UpdateSoftware
+  
+End
+
+Public Sub dwgShortDesc_Draw()
+
+  Paint.DrawText(Paint.TrimText($sShortDesc, Paint.W), 0, 0, Paint.W, Paint.H, Align.Left)
 
 End

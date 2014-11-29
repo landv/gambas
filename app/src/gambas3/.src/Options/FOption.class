@@ -1198,6 +1198,7 @@ Public Sub btnDownloadHelp_Click()
   Dim sMsg As String
   Dim sFile As String
   Dim sDir As String
+  Dim sTimestamp As String
 
   Inc Application.Busy
   
@@ -1222,6 +1223,9 @@ Public Sub btnDownloadHelp_Click()
   Project.MakeDir(File.Dir(sDir))
   sFile = File.Dir(sDir) &/ "wiki.tar.bz2"
   Try Kill sFile
+  
+  Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
+  
   Exec ["wget", "-q", "-O", sFile, "http://gambaswiki.org/gambas-wiki.tar.bz2"] Wait
   If Not Exist(sFile) Then
     sMsg = ("Unable to download documentation.")
@@ -1234,6 +1238,8 @@ Public Sub btnDownloadHelp_Click()
     sMsg = ("Unable to uncompress documentation.")
     Goto FAIL
   Endif
+  
+  File.Save(sDir &/ "timestamp", sTimestamp)
   
   UpdateDocumentationState
   Dec Application.Busy

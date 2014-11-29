@@ -545,6 +545,7 @@ Private Sub GetSoftware()
   Dim rTag As Result
   Dim rName As Result
   Dim aTag As String[]
+  Dim sDir As String
   
   OpenDatabase
   
@@ -604,6 +605,10 @@ Private Sub GetSoftware()
     Print "VoteCount="; rSoftware!vote
     Print "Owner="; Quote(sOwner)
     
+    sDir = Root &/ CStr(rSoftware!id)
+    Try sPath = sDir &/ Dir(sDir, "source.*")[0]
+    If Not Error And If Exist(sPath) Then Print "Size="; Stat(sPath).Size
+    
     If $iUser Then
       rVote = DB.Find("vote", "software = &1 AND \"user\" = &2", rSoftware!id, $iUser)
       If rVote.Available Then
@@ -631,6 +636,7 @@ Private Sub DownloadSoftware()
 
   Dim rSoftware As Result
   Dim sPath As String
+  Dim sName As String
   
   OpenDatabase
 
@@ -646,7 +652,9 @@ Private Sub DownloadSoftware()
     Inc rSoftware!download
     rSoftware.Update
     
-    Response.AddHeader("Content-Disposition", "attachment; filename=\"" & Left(rSoftware!name, -2) & "-" & rSoftware!version & "." & File.Ext(sPath) & "\"")
+    sName = rSoftware!name & "-" & CStr(rSoftware!version \ 10000) & "." & CStr(rSoftware!version Mod 10000) & "." & CStr(rSoftware!release) & ".tar." & File.Ext(sPath)
+    
+    Response.AddHeader("Content-Disposition", "attachment; filename=\"" & sName & "\"")
     Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
     
   Endif
@@ -667,8 +675,6 @@ Private Sub VoteSoftware()
   If Not rSoftware Then Return
   iId = rSoftware!id
 
-  DB.Begin
-
   Select Case Request["vote"]
     Case "0"
       Try DB.Delete("vote", "software = &1 AND \"user\" = &2", iId, $iUser)
@@ -684,8 +690,6 @@ Private Sub VoteSoftware()
   rSoftware = DB.Edit("software", "id = &1", iId)
   rSoftware!vote = rVote[0]
   rSoftware.Update
-  
-  DB.Commit
   
   PrintOK
 

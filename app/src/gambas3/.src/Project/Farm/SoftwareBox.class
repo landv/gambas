@@ -7,11 +7,11 @@ Event Ready
 'Event Vote
 Event Click
 
-Static Private $hPicVote As Picture
-Static Private $hPicVoteOff As Picture
-Static Private $hPicInstall As Picture
-Static Private $hPicUpgrade As Picture
-Static Private $hPicInstallOff As Picture
+Static Private $hVote As Image
+Static Private $hVoteOff As Image
+Static Private $hInstall As Image
+Static Private $hInstallOff As Image
+Static Private $hUpgrade As Image
 
 Property Read Id As Integer
 Property Read Software As CSoftware
@@ -19,9 +19,9 @@ Property Read Software As CSoftware
 Private $hDrawingArea As DrawingArea
 Private $hSoft As CSoftware
 Private $hSpinner As Spinner
-Private panAction As Panel
-Private btnVote As ToolButton
-Private btnInstall As ToolButton
+' Private panAction As Panel
+' Private btnVote As ToolButton
+' Private btnInstall As ToolButton
 Private $sFarm As String
 Private $iId As Integer
 Private $bHighlight As Boolean
@@ -30,12 +30,12 @@ Private $bHighlight As Boolean
 
 Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
   
-  If Not $hPicVote Then
-    $hPicVote = Picture["icon:/22/bookmark"]
-    $hPicVoteOff = $hPicVote.Image.Desaturate().Picture
-    $hPicInstall = Picture["icon:/22/apply"]
-    $hPicInstallOff = $hPicInstall.Image.Desaturate().Picture
-    $hPicUpgrade = Picture["icon:/22/up"]
+  If Not $hVote Then
+    $hVote = Picture["icon:/16/bookmark"].Image
+    $hVoteOff = $hVote.Copy().Desaturate()
+    $hInstall = Picture["icon:/16/apply"].Image
+    $hInstallOff = $hInstall.Copy().Desaturate()
+    $hUpgrade = Picture["icon:/16/up"].Image
   Endif
   
   Me.Foreground = Color.TextForeground
@@ -45,55 +45,38 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
   
   $hDrawingArea = New DrawingArea(Me) As "DrawingArea"
   $hDrawingArea.Mouse = Mouse.Pointing
+  $hDrawingArea.Focus = True
+  $hDrawingArea.Tracking = True
   
   $hSpinner = New Spinner($hDrawingArea)
   $hSpinner.Hide
   
-  panAction = New Panel($hDrawingArea)
-  panAction.Spacing = True
-  panAction.Invert = True
-  panAction.Ignore = True
-  panAction.ResizeScaled(21, 5)
-  panAction.Arrangement = Arrange.Horizontal
-
-  btnInstall = New ToolButton(panAction) As "btnInstall"
-  btnInstall.ResizeScaled(10, 5)
-  btnInstall.Font.Grade = 1
-  btnInstall.AutoResize = True
-  
-  btnVote = New ToolButton(panAction) As "btnVote"
-  btnVote.ResizeScaled(10, 5)
-  'btnVote.Font.Bold = True
-  btnVote.Font.Grade = 1
-  btnVote.AutoResize = True
+  ' panAction = New Panel($hDrawingArea)
+  ' panAction.Spacing = True
+  ' panAction.Invert = True
+  ' panAction.Ignore = True
+  ' panAction.ResizeScaled(21, 5)
+  ' panAction.Arrangement = Arrange.Horizontal
+  ' 
+  ' btnInstall = New ToolButton(panAction) As "btnInstall"
+  ' btnInstall.ResizeScaled(10, 5)
+  ' btnInstall.Font.Grade = 1
+  ' btnInstall.AutoResize = True
+  ' 
+  ' btnVote = New ToolButton(panAction) As "btnVote"
+  ' btnVote.ResizeScaled(10, 5)
+  ' 'btnVote.Font.Bold = True
+  ' btnVote.Font.Grade = 1
+  ' btnVote.AutoResize = True
 
   $hSoft = CSoftware.Get($sFarm, $iId)
   Object.Attach($hSoft, Me, "Software")
   If $hSoft.State <> CSoftware.STATE_READY Then 
     Reload
   Else
-    UpdateButtons
+    'UpdateButtons
     Raise Ready
   Endif
-  
-End
-
-Private Sub UpdateButtons()
-
-  If $hSoft.IsInstalled() Then
-    If $hSoft.CanUpgrade() Then
-      btnInstall.Picture = $hPicUpgrade
-    Else
-      btnInstall.Picture = $hPicInstall
-    Endif
-  Else
-    btnInstall.Picture = $hPicInstallOff
-  Endif
-
-  btnInstall.Text = CStr($hSoft.DownloadCount)
-  btnVote.Picture = If($hSoft.YourVote = 1, $hPicVote, $hPicVoteOff)
-  btnVote.Text = CStr($hSoft.VoteCount)
-  btnVote.Enabled = $hSoft.YourVote >= 0
   
 End
 
@@ -105,11 +88,11 @@ Public Sub Software_Change()
     
     $hSpinner.Hide
     
-    If $hSoft.State = CSoftware.STATE_READY Then
-      
-      UpdateButtons
-      
-    Endif
+    ' If $hSoft.State = CSoftware.STATE_READY Then
+    '   
+    '   'UpdateButtons
+    '   
+    ' Endif
     
     Raise Ready
     
@@ -121,7 +104,7 @@ Public Sub DrawingArea_Arrange()
   
   $hSpinner.Move($hDrawingArea.W \ 2 - 16, $hDrawingArea.H \ 2 - 16, 32, 32)
   
-  panAction.Move($hDrawingArea.W - Desktop.Scale - panAction.W, Desktop.Scale)
+  'panAction.Move($hDrawingArea.W - Desktop.Scale - panAction.W, Desktop.Scale)
   
 End
 
@@ -151,15 +134,17 @@ Public Sub DrawingArea_Draw()
   H = Paint.H
   P = Desktop.Scale
   
-  'Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
-  'Paint.Rectangle(X, Y, W, H)
-  'Paint.Fill
-  
-  'If $hSoft.Background Then
-  'Paint.Brush = Paint.Image($hSoft.Background)
-  'Else
-    Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
-  'Endif
+  If $hSoft.IsInstalled() Then
+    If $hSoft.CanUpgrade() Then
+      iCol = &HDF6B00&
+    Else
+      iCol = &H3398C3&
+    Endif
+  Else
+    iCol = Color.LightForeground
+  Endif
+
+  Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(iCol, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
   Paint.Rectangle(0, 0, W, H)
   Paint.Fill
   
@@ -233,6 +218,8 @@ Public Sub DrawingArea_Draw()
     If .URL Then H -= Desktop.Scale
     Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + CSoftware.ICON_SIZE + P, W, H)
     
+    PaintStat($hSoft)
+    
   End With
     
   Paint.Restore
@@ -253,25 +240,6 @@ Public Sub Reload()
 
 End
 
-Public Sub btnVote_Click()
-
-  Dim hReq As FarmRequest
-  
-  hReq = New FarmRequest($sFarm)
-  hReq.VoteForSoftware($hSoft.Id, If($hSoft.YourVote = 1, 0, 1))
-  If Not hReq.WaitFor(, ("Unable to modify the vote."), True) Then
-    $hSoft.MustReload
-    FSoftwareFarm.OnVote(Me)
-  Endif
-  
-End
-
-Public Sub btnInstall_Click()
-  
-  DrawingArea_MouseDown
-  
-End
-
 Public Sub DrawingArea_MouseDown()
   
   Raise Click
@@ -282,4 +250,53 @@ Private Function Software_Read() As CSoftware
 
   Return $hSoft
 
+End
+
+Static Public Sub PaintStat(hSoft As CSoftware, Optional bWithSize As Boolean)
+
+  Dim sVote As String
+  Dim sDownload As String
+  Dim X, Y, W As Integer
+  Dim P As Integer
+  Dim hImage As Image
+  
+  P = Desktop.Scale
+  
+  With hSoft
+  
+    sVote = CStr(.VoteCount)
+    sDownload = CStr(.DownloadCount)
+    
+    Y = P
+    W = Paint.Font.TextWidth(sVote)
+    
+    X = Paint.W - P - 32 - W - Paint.Font.TextWidth(sDownload) - 20
+    Paint.DrawImage(If(.YourVote = 1, $hVote, $hVoteOff), X, Y)
+    
+    X += 20
+    Paint.DrawText(sVote, X, Y, Paint.W, 16, Align.Left)
+    
+    X += W + 8
+    
+    If .IsInstalled() Then
+      If .CanUpgrade() Then
+        hImage = $hUpgrade
+      Else
+        hImage = $hInstall
+      Endif
+    Else
+      hImage = $hInstallOff
+    Endif
+    Paint.DrawImage(hImage, X, Y)
+    
+    X += 20
+    Paint.DrawText(sDownload, X, Y, Paint.W, 16, Align.Left)
+    
+    If bWithSize Then
+      Y += 24
+      Paint.DrawText(Project.GetFileSize(.Size), P, Y, Paint.W - P * 2, 16, Align.Right)
+    Endif
+    
+  End With
+  
 End

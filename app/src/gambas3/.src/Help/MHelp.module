@@ -828,8 +828,8 @@ End
 Public Sub GetOfflineState() As Integer
 
   Dim sTimestamp As String
-  Dim dDate As Date
   Dim sDir As String
+  Dim sDate As String
 
   If Not Desktop.NetworkAvailable Then Return OFFLINE_NO_NETWORK
 
@@ -843,8 +843,13 @@ Public Sub GetOfflineState() As Integer
   If Not sTimestamp Then Return OFFLINE_NOT_AVAILABLE
   
   sDir = MHelp.GetOfflineDir()
-  Try dDate = Stat(File.SetName(sDir, "wiki.tar.bz2")).LastModified
-  If IsDir(sDir) And If dDate And If Format(dDate, "yyyymmdd") >= sTimestamp Then Return OFFLINE_UP_TO_DATE
+  
+  Try sDate = File.Load(sDir &/ "timestamp")
+  If Not sDate Then
+    Try sDate = Format(Stat(File.SetName(sDir, "wiki.tar.bz2")).LastModified, "yyyymmdd")
+  Endif
+  
+  If IsDir(sDir) And If sDate And If sDate >= sTimestamp Then Return OFFLINE_UP_TO_DATE
   
   Return OFFLINE_NEW_AVAILABLE
   

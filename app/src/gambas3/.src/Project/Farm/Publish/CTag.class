@@ -15,10 +15,12 @@ Public Sub _new()
   $hDraw.Mouse = Mouse.Pointing
   
   $hButton = New ToolButton($hDraw) As "Button"
-  $hButton.Picture = Picture["icon:/small/close"]
+  $hButton.Picture = Picture["img/16/white-close.png"]
   $hButton.Resize(Desktop.Scale * 3, Desktop.Scale * 3)
   $hButton.Border = False
   $hButton.Show
+  
+  Me.Font.Bold = True
   
 End
 
@@ -32,11 +34,13 @@ Public Sub DrawingArea_Draw()
   
   Dim X As Integer
   
-  Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1, 3)
-  Paint.Background = Color.LightForeground
-  Paint.Stroke
+  'Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1, 3)
+  'Paint.Background = Color.LightForeground
+  'Paint.Stroke
   
-  Paint.Background = Color.TextForeground
+  Paint.FillRect(0, 0, Paint.W, Paint.H, &H3398C3&)
+  
+  Paint.Background = Color.White
   X = Desktop.Scale * 3
   Paint.DrawText($sText, X, 0, Paint.W - X, Paint.H, Align.Left)
   
