@@ -58,7 +58,13 @@ GB_DESC CHMac[] = {
 	GB_DECLARE("HMac", 0),
 	GB_NOT_CREATABLE(),
 
+	/**G HMac Sha1
+	 * Use the SHA1 algorithm.
+	 **/
 	GB_CONSTANT("Sha1", "i", NID_sha1),
+	/**G HMac RipeMD160
+	 * Use the RIPEMD160 algorithm.
+	 **/
 	GB_CONSTANT("RipeMD160", "i", NID_ripemd160),
 
 	GB_STATIC_METHOD("_call", "s", HMac_call, "(Key)s(Data)s[(Method)i]"),

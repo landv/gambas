@@ -29,4 +29,6 @@
 extern GB_INTERFACE GB;
 #endif
 
+void sort_and_dedupe(GB_ARRAY list);
+
 #endif /* __MAIN_H */

@@ -1,7 +1,7 @@
 /*
  * c_cipher.c - Cipher, .Cipher.Method and CipherText classes
  *
- * Copyright (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2013,4 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,7 @@
  * Cipher
  */
 
-static int _clist_init = 0;
-static GB_ARRAY _clist;
+static GB_ARRAY _clist = NULL;
 
 static void clist_func(const EVP_CIPHER *ciph, const char *from,
 		       const char *to, void *arg)
@@ -44,8 +43,16 @@ static void clist_func(const EVP_CIPHER *ciph, const char *from,
 	if (!ciph)
 		return;
 	src = EVP_CIPHER_name(ciph);
-	src = GB.NewZeroString(src);
-	*((const char **) GB.Array.Add(_clist)) = src;
+	*((const char **) GB.Array.Add(_clist)) = GB.NewZeroString(src);
+}
+
+static void get_clist(void)
+{
+	GB.Array.New(&_clist, GB_T_STRING, 0);
+	/* XXX: There is EVP_CIPHER_do_all_sorted() but that still returns
+	 * entries twice (NOT next to each other), so we sort manually */
+	EVP_CIPHER_do_all(clist_func, NULL);
+	sort_and_dedupe(_clist);
 }
 
 /**G
@@ -53,18 +60,33 @@ static void clist_func(const EVP_CIPHER *ciph, const char *from,
  **/
 BEGIN_PROPERTY(Cipher_List)
 
-	if (!_clist_init) {
-		GB.Array.New(&_clist, GB_T_STRING, 0);
-		EVP_CIPHER_do_all(clist_func, NULL);
-		_clist_init = 1;
+	GB_FUNCTION copyfn;
+	GB_VALUE *copy;
+
+	if (!_clist)
+		get_clist();
+
+	if (GB.GetFunction(&copyfn, _clist, "Copy", NULL, NULL)) {
+		GB.Error("Can't copy array");
+		return;
 	}
-	GB.ReturnObject(_clist);
+	copy = GB.Call(&copyfn, 0, 0);
+	GB.ReturnObject(copy->_object.value);
 
 END_PROPERTY
 
 BEGIN_METHOD_VOID(Cipher_init)
 
 	OpenSSL_add_all_ciphers();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Cipher_exit)
+
+	if (!_clist)
+		return;
+	GB.Unref((void **) &_clist);
+	_clist = NULL;
 
 END_METHOD
 
@@ -102,6 +124,7 @@ GB_DESC CCipher[] = {
 	GB_STATIC_PROPERTY_READ("List", "String[]", Cipher_List),
 
 	GB_STATIC_METHOD("_init", NULL, Cipher_init, NULL),
+	GB_STATIC_METHOD("_exit", NULL, Cipher_exit, NULL),
 	GB_STATIC_METHOD("_get", ".Cipher.Method", Cipher_get, "(Method)s"),
 	GB_STATIC_METHOD("IsSupported", "b", Cipher_IsSupported, "(Method)s"),
 

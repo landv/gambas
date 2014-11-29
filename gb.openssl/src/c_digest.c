@@ -1,7 +1,7 @@
 /*
  * c_digest.c - Digest and .Digest.Method classes
  *
- * Copyright (C) 2013 Tobias Boege <tobias@gambas-buch.de>
+ * Copyright (C) 2013,4 Tobias Boege <tobias@gambas-buch.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,7 @@
  * Digest
  */
 
-static int _dlist_init = 0;
-static GB_ARRAY _dlist;
+static GB_ARRAY _dlist = NULL;
 
 static void dlist_func(const EVP_MD *dgst, const char *from,
 		       const char *to, void *arg)
@@ -41,8 +40,14 @@ static void dlist_func(const EVP_MD *dgst, const char *from,
 	if (!dgst)
 		return;
 	src = EVP_MD_name(dgst);
-	src = GB.NewZeroString(src);
-	*((const char **) GB.Array.Add(_dlist)) = src;
+	*((const char **) GB.Array.Add(_dlist)) = GB.NewZeroString(src);
+}
+
+static void get_dlist(void)
+{
+	GB.Array.New(&_dlist, GB_T_STRING, 0);
+	EVP_MD_do_all(dlist_func, NULL);
+	sort_and_dedupe(_dlist);
 }
 
 /**G
@@ -50,18 +55,33 @@ static void dlist_func(const EVP_MD *dgst, const char *from,
  **/
 BEGIN_PROPERTY(Digest_List)
 
-	if (!_dlist_init) {
-		GB.Array.New(&_dlist, GB_T_STRING, 0);
-		EVP_MD_do_all(dlist_func, NULL);
-		_dlist_init = 1;
+	GB_FUNCTION copyfn;
+	GB_VALUE *copy;
+
+	if (!_dlist)
+		get_dlist();
+
+	if (GB.GetFunction(&copyfn, _dlist, "Copy", NULL, NULL)) {
+		GB.Error("Can't copy array");
+		return;
 	}
-	GB.ReturnObject(_dlist);
+	copy = GB.Call(&copyfn, 0, 0);
+	GB.ReturnObject(copy->_object.value);
 
 END_PROPERTY
 
 BEGIN_METHOD_VOID(Digest_init)
 
 	OpenSSL_add_all_digests();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Digest_exit)
+
+	if (!_dlist)
+		return;
+	GB.Unref((void **) &_dlist);
+	_dlist = NULL;
 
 END_METHOD
 
@@ -99,6 +119,7 @@ GB_DESC CDigest[] = {
 	GB_STATIC_PROPERTY_READ("List", "String[]", Digest_List),
 
 	GB_STATIC_METHOD("_init", NULL, Digest_init, NULL),
+	GB_STATIC_METHOD("_exit", NULL, Digest_exit, NULL),
 	GB_STATIC_METHOD("_get", ".Digest.Method", Digest_get, "(Method)s"),
 	GB_STATIC_METHOD("IsSupported", "b", Digest_IsSupported, "(Method)s"),
 
@@ -129,8 +150,8 @@ GB_DESC CDigestMethod[] = {
 	GB_DECLARE(".Digest.Method", 0),
 	GB_VIRTUAL_CLASS(),
 
-	GB_STATIC_METHOD("_call", "s", DigestMethod_Hash, "(Data)s"),
 	GB_STATIC_METHOD("Hash", "s", DigestMethod_Hash, "(Data)s"),
+	GB_STATIC_METHOD("_call", "s", DigestMethod_Hash, "(Data)s"),
 
 	GB_END_DECLARE
 };
