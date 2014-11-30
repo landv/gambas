@@ -190,6 +190,7 @@ End
 
 Public Sub GetIconPath() As String
   
+  ReadProject
   If $sIcon Then
     Return $sPath &/ $sIcon
   Else
