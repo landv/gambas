@@ -400,6 +400,8 @@ Private Sub PublishSoftware()
     Return
   Endif
   
+  
+  
   DB.Begin
   
   rSoftware = DB.Edit("software", "name = &1", sName)

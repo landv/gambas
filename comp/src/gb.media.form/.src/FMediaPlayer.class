@@ -289,6 +289,7 @@ End
 
 Public Sub dwgVideo_Draw()
 
+  If Not $hPlayer Then Return
   If $hPlayer.State <> Media.Playing And If $hPlayer.State <> Media.Paused Then
     'Paint.DrawPicture(Picture["icon:/64/audio"], dwgVideo.W \ 2 - 32, dwgVideo.H \ 2 - 32)
     Paint.Background = Color.White

@@ -308,10 +308,11 @@ Public Sub tabInfo_Click()
       $hViewer = New MediaView(tabInfo)
       $hViewer.Expand = True
       $hViewer.Border = False
-      $hViewer.ShowVideo = False
       $hViewer.Lower
       $hViewer.URL = $sPath
       $hViewer.Play
+      
+      panMediaClose.Raise
       
     Endif
     

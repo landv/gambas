@@ -366,15 +366,19 @@ Public Sub Install() As String
   
   Exec ["rm", "-rf", sSrcDir &/ sName & "~"] Wait
   
-  ' Make a desktop file
+  ' Make a desktop file unless the project is a library or a component
   
-  hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & sName & ".desktop")
-  With hDesktopFile
-    .Name = sName
-    .Exec = sExecDir &/ sName & ".gambas"
-    If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
-  End With
-  hDesktopFile.Save
+  If hProjectInfo.Type = Project.TYPE_NORMAL Then
+  
+    hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & sName & ".desktop")
+    With hDesktopFile
+      .Name = sName
+      .Exec = sExecDir &/ sName & ".gambas"
+      If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
+    End With
+    hDesktopFile.Save
+    
+  Endif
 
   Start
   

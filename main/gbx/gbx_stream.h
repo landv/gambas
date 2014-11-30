@@ -214,6 +214,7 @@ int64_t STREAM_tell(STREAM *stream);
 void STREAM_seek(STREAM *stream, int64_t pos, int whence);
 void STREAM_read(STREAM *stream, void *addr, int len);
 int STREAM_read_max(STREAM *stream, void *addr, int len);
+bool STREAM_read_ahead(STREAM *stream);
 //char STREAM_getchar(STREAM *stream);
 void STREAM_read_type(STREAM *stream, TYPE type, VALUE *value);
 void STREAM_write(STREAM *stream, void *addr, int len);

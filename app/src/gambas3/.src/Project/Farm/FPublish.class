@@ -1,0 +1,204 @@
+' Gambas class file
+
+Private $aDep As String[]
+
+Public Sub Run() As Boolean
+
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub Form_Open()
+
+  Dim aTag As String[]
+  Dim sTag As String
+  
+  Settings.Read(Me)
+
+  cmbFarm.List = FarmRequest.GetFarms()
+  
+  cmbFarm.Text = Settings["/Publish/Farm"]
+  cmbFarm.Index = 0
+  
+  tagEditor.SetTags(Project.PublishTags)
+  
+  $aDep = Project.PublishDependencies
+  
+  cmbGambasVersion.Text = Project.PublishGambasVersion
+  txtURL.Text = Project.PublishWebSite
+  txtDesc.Text = Project.Description
+  
+  tbvDep.Columns.Count = 2
+  tbvDep.Columns[0].Text = ("Software")
+  tbvDep.Columns[0].Expand = True
+  tbvDep.Columns[1].Text = ("Version")
+  tbvDep.Columns[1].Width = Desktop.Scale * 12
+  tbvDep.Rows.Count = $aDep.Count
+
+  aTag = Split(RTrim(File.Load("install/categories")), "\n")
+  For Each sTag In Split(RTrim(File.Load("tags.txt")), "\n")
+    If Not aTag.Exist(sTag) Then aTag.Add(sTag)
+  Next
+  aTag.Sort(gb.IgnoreCase)
+  lstTags.List = aTag
+  
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+  
+  Settings["/Publish/Farm"] = cmbFarm.Text
+
+  Project.PublishTags = tagEditor.GetTags()
+  Project.PublishDependencies = $aDep
+  Project.PublishGambasVersion = cmbGambasVersion.Text
+  Project.PublishWebSite = txtURL.Text
+  Project.Description = txtDesc.Text
+  Project.WriteProject
+
+End
+
+Public Sub wizPublish_Cancel()
+
+  Me.Close
+
+End
+
+Public Sub txtScreenshot_Click()
+
+  Dialog.Title = ("Select a screenshot of your project")
+  Dialog.Filter = ["*.png;*.jpg;*.jpeg", ("Picture files")]
+  Dialog.Path = txtScreenshot.Text
+  If Dialog.OpenFile() Then Return
+  
+  txtScreenshot.Text = Dialog.Path
+
+End
+
+
+Public Sub lstTags_Activate()
+
+  tagEditor.Add(lstTags.Text)
+
+End
+
+Public Sub cmbFarm_Click()
+
+  Dim hIdentity As FarmIdentity
+  
+  tagEditor.SetFarm(cmbFarm.Text)
+  
+  hIdentity = New FarmIdentity(cmbFarm.Text)
+  hIdentity.Init(lblIdentity, picIdentity)
+
+End
+
+
+Public Sub btnConfig_Click()
+
+  FFarmConfig.Run(cmbFarm.Text)
+  cmbFarm_Click
+
+End
+
+Public Sub wizPublish_Close()
+  
+  Dim hReq As FarmRequest
+
+  hReq = New FarmRequest(cmbFarm.Text)
+  hReq.PublishSoftware(txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text)
+  hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
+  
+End
+
+Public Sub tbvDep_Data(Row As Integer, Column As Integer)
+
+  Dim aDep As String[] = Split($aDep[Row], " ")
+  Try tbvDep.Data.Text = aDep[Column]
+
+End
+
+Public Sub btnAddDep_Click()
+
+  tbvDep.Save
+  $aDep.Add("")
+  Inc tbvDep.Rows.Count
+  tbvDep.MoveTo($aDep.Max, 0)
+  tbvDep.Edit
+
+End
+
+Public Sub tbvDep_Insert()
+
+  btnAddDep.Value = True
+
+End
+
+Public Sub btnRemoveDep_Click()
+
+  If tbvDep.Row < 0 Then Return
+  tbvDep.Cancel
+  $aDep.Remove(tbvDep.Row)
+  'SaveExtraDependencies
+  Dec tbvDep.Rows.Count
+
+End
+
+Public Sub btnUpDep_Click()
+
+  If tbvDep.Row >= 1 Then
+    tbvDep.Save
+    Swap $aDep[tbvDep.Row], $aDep[tbvDep.Row - 1]
+    'SaveExtraDependencies
+    tbvDep.Refresh
+    Dec tbvDep.Row
+    tbvDep.Edit
+  Endif
+
+End
+
+Public Sub btnDownDep_Click()
+
+  If tbvDep.Row < $aDep.Max Then
+    tbvDep.Save
+    Swap $aDep[tbvDep.Row], $aDep[tbvDep.Row + 1]
+    'SaveExtraDependencies
+    tbvDep.Refresh
+    Inc tbvDep.Row
+    tbvDep.Edit
+  Endif
+
+End
+
+Public Sub tbvDep_Save(Row As Integer, Column As Integer, Value As String)
+
+  Dim aRow As String[]
+
+  If Column = 0 Then
+    If Value And If InStr(Value, " ") Then
+      Balloon.Warning(("Spaces are not allowed."), tbvDep.Editor)
+      Stop Event
+      Return
+    Endif
+  Else If Column = 1 Then
+    If Value And If Not IsDigit(Replace(Value, ".", "")) Then
+      Balloon.Warning(("Incorrect version number."), tbvDep.Editor)
+      Stop Event
+      Return
+    Endif
+  Endif
+ 
+  aRow = Split($aDep[Row], " ")
+  aRow.Resize(2)
+  aRow[Column] = Value
+  $aDep[Row] = Trim(aRow.Join(" "))
+
+End
+
+Public Sub tbvDep_Click()
+
+  tbvDep.Edit
+
+End

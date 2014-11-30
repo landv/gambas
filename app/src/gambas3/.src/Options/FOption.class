@@ -1269,6 +1269,11 @@ Private Sub UpdateDocumentationState()
       lblDocumentation.Foreground = Color.Foreground
       btnDownloadHelp.Enabled = False
     
+    Case MHelp.OFFLINE_NO_WGET
+      lblDocumentation.Text = ("'wget' is not found.")
+      lblDocumentation.Foreground = Color.Foreground
+      btnDownloadHelp.Enabled = False
+    
     Case MHelp.OFFLINE_NEW_AVAILABLE
       lblDocumentation.Text = ("A new documentation is available!")
       lblDocumentation.Foreground = Color.Red

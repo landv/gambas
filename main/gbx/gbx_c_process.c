@@ -62,6 +62,7 @@
 #include "gbx_c_process.h"
 
 //#define DEBUG_ME
+//#define DEBUG_CHILD
 
 char *CPROCESS_shell = NULL;
 
@@ -164,14 +165,19 @@ static void callback_write(int fd, int type, CPROCESS *process)
 		int n = read(fd, COMMON_buffer, 256);
 		if (n > 0)
 			process->result = STRING_add(process->result, COMMON_buffer, n);
+		return;
 	}
-	else if (GB_CanRaise(process, EVENT_Read) && !STREAM_is_closed(CSTREAM_stream(process)))
+
+	if (GB_CanRaise(process, EVENT_Read))
 	{
-		if (!STREAM_eof(CSTREAM_stream(process)))
+		if (!STREAM_read_ahead(CSTREAM_stream(process)))
+		{
 			GB_Raise(process, EVENT_Read, 0);
+			return;
+		}
 	}
-	else
-		close_fd(&process->out);
+
+	close_fd(&process->out);
 }
 
 
@@ -327,7 +333,7 @@ static void stop_process_after(CPROCESS *_object)
 		if (!STREAM_is_closed(stream))
 		{
 			//fprintf(stderr, "flushing: %p\n", THIS);
-			while (!STREAM_eof(stream))
+			for(;;)
 			{
 				stream->common.has_read = FALSE;
 				callback_write(THIS->out, 0, THIS);
@@ -344,33 +350,32 @@ static void stop_process_after(CPROCESS *_object)
 	if (do_exit_process)
 		exit_process(THIS);
 
+	/*printf("** stop_process_after\n");*/
+	//GB_Unref((void **)&_object); /* Ref du post */
+}
+
+
+static void stop_process(CPROCESS *_object)
+{
+	if (!THIS->running)
+		return;
+
+	#ifdef DEBUG_ME
+	fprintf(stderr, "stop_process: %p\n", THIS);
+	#endif
+
+	/* Remove from running process list */
+
+	stop_process_after(THIS);
+	remove_process_from_running_list(THIS);
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, "Raising Kill event for %p: parent = %p  can raise = %d\n", THIS, OBJECT_parent(THIS), GB_CanRaise(THIS, EVENT_Kill));
 	#endif
 	GB_Raise(THIS, EVENT_Kill, 0);
 
 	OBJECT_detach((OBJECT *)THIS);
-
-	/*printf("** stop_process_after\n");*/
-	//GB_Unref((void **)&_object); /* Ref du post */
-}
-
-
-static void stop_process(CPROCESS *process)
-{
-	if (!process->running)
-		return;
-
-	#ifdef DEBUG_ME
-	fprintf(stderr, "stop_process: %p\n", process);
-	#endif
-
-	/* Remove from running process list */
-
-	remove_process_from_running_list(process);
-	stop_process_after(process);
-
-	OBJECT_UNREF(process);
+	OBJECT_UNREF(_object);
 
 	//if (!_running_process_list)
 	if (_running_process <= _ignore_process)
@@ -422,13 +427,13 @@ static void init_child_tty(int fd)
 	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
 	terminal.c_lflag &= ~ECHO;
 	
-	#ifdef DEBUG_ME
+	#ifdef DEBUG_CHILD
 	fprintf(stderr, "init_child_tty: %s\n", isatty(fd) ? ttyname(fd) : "not a tty!");
 	#endif
 	
 	if (tcsetattr(fd, TCSANOW, &terminal))
 	{
-		#ifdef DEBUG_ME
+		#ifdef DEBUG_CHILD
 		int save_errno = errno;
 		fprintf(stderr, "init_child_tty: errno = %d\n", errno);
 		errno = save_errno;

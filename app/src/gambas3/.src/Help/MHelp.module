@@ -12,7 +12,7 @@ Public Const TYPE_SPECIAL As Integer = 6
 Public Const TYPE_COMPONENT As Integer = 7
 Public Const TYPE_FILE As Integer = 8
 
-Public Enum OFFLINE_NO_NETWORK, OFFLINE_NOT_AVAILABLE, OFFLINE_UP_TO_DATE, OFFLINE_NEW_AVAILABLE
+Public Enum OFFLINE_NO_NETWORK, OFFLINE_NOT_AVAILABLE, OFFLINE_UP_TO_DATE, OFFLINE_NEW_AVAILABLE, OFFLINE_NO_WGET
 
 Public $PopupHelpCache As Collection
 
@@ -833,6 +833,8 @@ Public Sub GetOfflineState() As Integer
 
   If Not Desktop.NetworkAvailable Then Return OFFLINE_NO_NETWORK
 
+  If Not System.Exist("wget") Then Return OFFLINE_NO_WGET
+  
   Inc Application.Busy
   
   Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp

@@ -594,6 +594,28 @@ static void fill_buffer(STREAM *stream, char *addr)
 	}
 }
 
+bool STREAM_read_ahead(STREAM *stream)
+{
+	if (stream->common.buffer && stream->common.buffer_pos < stream->common.buffer_len)
+		return FALSE;
+
+	if (!stream->common.buffer)
+		ALLOC(&stream->common.buffer, STREAM_BUFFER_SIZE);
+
+	fill_buffer(stream, stream->common.buffer);
+
+	stream->common.buffer_pos = 0;
+	stream->common.buffer_len = STREAM_eff_read;
+
+	if (STREAM_eff_read == 0)
+	{
+		stream->common.eof = TRUE;
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
 
 static char *input(STREAM *stream, bool line, char *escape)
 {

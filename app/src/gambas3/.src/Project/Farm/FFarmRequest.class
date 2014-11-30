@@ -12,6 +12,7 @@ Public Sub Run(hRequest As HttpForm, sTitle As String, Optional iProgress As Int
   
   hObs = New Observer(hRequest) As "Request"
   lblRequest.Text = sTitle & "..."
+  Me.Title = sTitle
   pgbRequest.Visible = $iProgress <> FarmRequest.PROGRESS_NONE
   Me.ShowModal
   $hRequest = Null

@@ -9,6 +9,7 @@ Property Read Authors As String[]
 Property Read Icon As String
 Property Read Startup As String
 Property Read Components As String[]
+Public Type As Integer
 Public Translate As Boolean
 Public ControlPublic As Boolean
 Public ModulePublic As Boolean
@@ -95,6 +96,14 @@ Private Sub ReadProject()
         
       Case "modulepublic"
         ModulePublic = sVal = "1"
+
+      Case "type"
+        Select LCase(sVal)
+          Case "library"
+            Type = Project.TYPE_LIBRARY
+          Case "component"
+            Type = Project.TYPE_COMPONENT
+        End Select
 
     End Select
   

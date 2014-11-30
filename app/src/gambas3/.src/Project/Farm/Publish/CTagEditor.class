@@ -65,6 +65,13 @@ Public Sub Editor_Change()
   
 End
 
+Public Sub Add(sTag As String)
+  
+  AddTag(sTag)
+  
+End
+
+
 Private Sub AddTag(sTag As String)
 
   Dim hTag As CTag

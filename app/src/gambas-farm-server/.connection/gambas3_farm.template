@@ -24,94 +24,6 @@
   }
 }
 { Table
-  Name="software"
-  PrimaryKey=["id"]
-  { Field
-    Name="id"
-    Type=db.Serial
-  }
-  { Field
-    Name="owner"
-    Type=db.Integer
-  }
-  { Field
-    Name="name"
-    Type=db.String
-    Length=64
-    Collation="default"
-  }
-  { Field
-    Name="version"
-    Type=db.Integer
-  }
-  { Field
-    Name="release"
-    Type=db.Integer
-  }
-  { Field
-    Name="date"
-    Type=db.Date
-  }
-  { Field
-    Name="description"
-    Type=db.String
-    Collation="default"
-  }
-  { Field
-    Name="url"
-    Type=db.String
-    Collation="default"
-  }
-  { Field
-    Name="gambas"
-    Type=db.Integer
-  }
-  { Field
-    Name="dependencies"
-    Type=db.String
-    Collation="default"
-  }
-  { Field
-    Name="checksum"
-    Type=db.String
-    Length=128
-    Collation="default"
-  }
-  { Field
-    Name="download"
-    Type=db.Integer
-  }
-  { Field
-    Name="vote"
-    Type=db.Integer
-  }
-  { Index 
-    Name="software_index_date"
-    Unique=True
-    Fields=["date","id"]
-  }
-  { Index 
-    Name="software_Index_vote"
-    Unique=True
-    Fields=["vote","id"]
-  }
-  { Index 
-    Name="software_Index_download"
-    Unique=True
-    Fields=["download","id"]
-  }
-  { Index 
-    Name="software_Index_name"
-    Unique=True
-    Fields=["name","version"]
-  }
-  { Index 
-    Name="software_Index_checksum"
-    Unique=True
-    Fields=["checksum"]
-  }
-}
-{ Table
   Name="name"
   PrimaryKey=["id"]
   { Field
@@ -194,5 +106,102 @@
     Name="user_Index_login"
     Unique=True
     Fields=["login"]
+  }
+}
+{ Table
+  Name="software"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Serial
+  }
+  { Field
+    Name="owner"
+    Type=db.Integer
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Field
+    Name="version"
+    Type=db.Integer
+  }
+  { Field
+    Name="release"
+    Type=db.Integer
+  }
+  { Field
+    Name="date"
+    Type=db.Date
+  }
+  { Field
+    Name="description"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="url"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="gambas"
+    Type=db.Integer
+  }
+  { Field
+    Name="size"
+    Type=db.Integer
+  }
+  { Field
+    Name="dependencies"
+    Type=db.String
+    Collation="default"
+  }
+  { Field
+    Name="checksum"
+    Type=db.String
+    Length=128
+    Collation="default"
+  }
+  { Field
+    Name="download"
+    Type=db.Integer
+  }
+  { Field
+    Name="vote"
+    Type=db.Integer
+  }
+  { Index 
+    Name="software_index_date"
+    Unique=True
+    Fields=["date","id"]
+  }
+  { Index 
+    Name="software_Index_vote"
+    Unique=True
+    Fields=["vote","id"]
+  }
+  { Index 
+    Name="software_Index_download"
+    Unique=True
+    Fields=["download","id"]
+  }
+  { Index 
+    Name="software_Index_name"
+    Unique=True
+    Fields=["name","version"]
+  }
+  { Index 
+    Name="software_Index_checksum"
+    Unique=True
+    Fields=["checksum"]
+  }
+  { Index 
+    Name="software_Index_size"
+    Unique=True
+    Fields=["size","id"]
   }
 }
