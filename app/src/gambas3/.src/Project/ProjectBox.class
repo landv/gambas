@@ -145,7 +145,7 @@ Public Sub DrawingArea_Draw()
   With $hProjectInfo
     
     If Not $hIcon Then
-      $hIcon = Project.StretchIcon(.Icon, ICON_SIZE)
+      $hIcon = Project.StretchIcon(.GetIconPath(), ICON_SIZE)
     Endif
     
     Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])

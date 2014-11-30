@@ -36,7 +36,7 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hButton.Font.Grade = -2
   $hButton.Mouse = Mouse.Pointing
   $hButton.Border = False
-  $hButton.Font.Underline = True
+  $hButton.Foreground = &HE0E0E0&
   
 End
 
@@ -284,7 +284,7 @@ End
 
 Public Sub Button_Leave()
   
-  $hButton.Foreground = Color.Default
+  $hButton.Foreground = &HE0E0E0&
   
 End
 

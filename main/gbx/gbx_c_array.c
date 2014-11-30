@@ -1107,9 +1107,9 @@ END_METHOD
 BEGIN_METHOD(Array_String_join, GB_STRING sep; GB_STRING esc)
 
 	char *sep = ",";
-	int lsep = 1;
+	uint lsep = 1;
 	char *esc = "";
-	int lesc = 0;
+	uint lesc = 0;
 	char escl, NO_WARNING(escr);
 	int i;
 	char **data = (char **)THIS->data;
@@ -1136,7 +1136,7 @@ BEGIN_METHOD(Array_String_join, GB_STRING sep; GB_STRING esc)
 		}
 	}
 
-	if (!lesc)
+	if (lesc == 0)
 	{
 		max = 0;
 		for (i = 0; i < THIS->count; i++)
@@ -1145,42 +1145,84 @@ BEGIN_METHOD(Array_String_join, GB_STRING sep; GB_STRING esc)
 			max -= lsep;
 		
 		STRING_start_len(max);
+
+		for (i = 0; i < THIS->count; i++)
+		{
+			p = data[i];
+			l = STRING_length(data[i]);
+
+			if (i)
+				STRING_make(sep, lsep);
+			if (l)
+				STRING_make(p, l);
+		}
+	}
+	else if (*sep && escr == *sep)
+	{
+		STRING_start();
+
+		for (i = 0; i < THIS->count; i++)
+		{
+			p = data[i];
+			l = STRING_length(data[i]);
+
+			if (i)
+				STRING_make(sep, lsep);
+
+			if (l == 0)
+				continue;
+
+			for(;;)
+			{
+				p2 = index(p, escr);
+				if (p2)
+				{
+					STRING_make(p, p2 - p);
+					STRING_make_char(escl);
+					STRING_make_char(escr);
+					p = p2 + 1;
+				}
+				else
+				{
+					STRING_make(p, l + data[i] - p);
+					break;
+				}
+			}
+		}
 	}
 	else
-		STRING_start();
-	
-	for (i = 0; i < THIS->count; i++)
 	{
-		p = data[i];
-		l = STRING_length(data[i]);
-		
-		if (i)
-			STRING_make(sep, lsep);
-		if (lesc)
+		STRING_start();
+
+		for (i = 0; i < THIS->count; i++)
 		{
-			STRING_make(&escl, 1);
-			if (l)
+			p = data[i];
+			l = STRING_length(data[i]);
+
+			if (i)
+				STRING_make(sep, lsep);
+
+			if (l == 0)
+				continue;
+
+			STRING_make_char(escl);
+			for(;;)
 			{
-				for(;;)
+				p2 = index(p, escr);
+				if (p2)
 				{
-					p2 = index(p, escr);
-					if (p2)
-					{
-						STRING_make(p, p2 - p + 1);
-						STRING_make_char(escr);
-						p = p2 + 1;
-					}
-					else
-					{
-						STRING_make(p, l + data[i] - p);
-						break;
-					}
+					STRING_make(p, p2 - p + 1);
+					STRING_make_char(escr);
+					p = p2 + 1;
+				}
+				else
+				{
+					STRING_make(p, l + data[i] - p);
+					break;
 				}
 			}
 			STRING_make_char(escr);
 		}
-		else if (l)
-			STRING_make(p, l);
 	}
 
 	GB_ReturnString(STRING_end_temp());

@@ -9,6 +9,9 @@ Property Read Authors As String[]
 Property Read Icon As String
 Property Read Startup As String
 Property Read Components As String[]
+Public Translate As Boolean
+Public ControlPublic As Boolean
+Public ModulePublic As Boolean
 
 Private $sName As String
 Private $sPath As String
@@ -36,7 +39,6 @@ End
 Private Sub ReadProject()
 
   Dim hFile As File
-  Dim sIcon As String
   Dim sLine As String
   Dim iPos As Integer
   Dim sKey As String
@@ -77,25 +79,28 @@ Private Sub ReadProject()
         $aAuthors = Split(UnQuote(sVal), "\n")
 
       Case "icon"
-        sIcon = sVal
+        $sIcon = sVal
         
       Case "startup"
         $sStartup = sVal
         
       Case "component"
         $aComponents.Add(sVal)
+        
+      Case "translate"
+        Translate = sVal = "1"
+        
+      Case "controlpublic"
+        ControlPublic = sVal = "1"
+        
+      Case "modulepublic"
+        ModulePublic = sVal = "1"
 
     End Select
   
   Next
   
   Close #hFile
-
-  If sIcon Then
-    $sIcon = $sPath &/ sIcon 'Project.StretchIcon(sPath &/ sIcon, 58)
-  Else
-    $sIcon = "img/logo/project.png"
-  Endif  
 
 End
 
@@ -181,4 +186,14 @@ Private Function Components_Read() As String[]
   ReadProject
   Return $aComponents
 
+End
+
+Public Sub GetIconPath() As String
+  
+  If $sIcon Then
+    Return $sPath &/ $sIcon
+  Else
+    Return "img/logo/project.png"
+  Endif  
+  
 End

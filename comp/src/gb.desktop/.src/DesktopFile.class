@@ -11,20 +11,22 @@ Static Private $cMimeCache As New Collection
 Static Private $cIconCache As New Collection
 
 Property Read Path As String
-Property Read Name As String
+Property Name As String
 Property Read ProgramName As String
-Property Read Exec As String
-Property Read Terminal As Boolean
-Property Read Hidden As Boolean
-Property Read Icon As String
+Property Exec As String
+Property Terminal As Boolean
+Property Hidden As Boolean
+Property Icon As String
+Property MimeTypes As String[]
 
 Private $sPath As String
 Private $sName As String
-Private $sProgramName As String
 Private $sExec As String
 Private $bTerminal As Boolean
 Private $bHidden As Boolean
 Private $sIcon As String
+Private $aMimeTypes As String[]
+Private $aRest As String[]
 
 Static Public Sub _init()
 
@@ -72,61 +74,85 @@ Public Sub _new(Path As String)
   Dim iNameLevel As Integer
   Dim iLevel As Integer
   Dim bInDesktopEntry As Boolean
+  Dim sKey As String
+  Dim sValue As String
+  Dim aLine As String[]
+  Dim I As Integer
   
   $sPath = Path
   
   iNameLevel = $aLang.Count
   
-  For Each sLine In Split(File.Load($sPath), "\n")
+  If Exist($sPath) Then
+  
+    $aRest = New String[]
+    aLine = Split(File.Load($sPath), "\n")
     
-    If Not bInDesktopEntry Then
-      If sLine = "[Desktop Entry]" Then
-        bInDesktopEntry = True
-      Endif
-      Continue
-    Endif
-    
-    If Left(sLine) = "[" Then Break
-    
-    sLine = Replace(sLine, "\\s", " ")
-    sLine = Replace(sLine, "\\n", "\n")
-    sLine = Replace(sLine, "\\t", "\t")
-    sLine = Replace(sLine, "\\r", "\r")
-    sLine = Replace(sLine, "\\\\", "\\")
-    
-    If sLine Begins "Name" Then
-      iPos = InStr(sLine, "=")
-      sLang = Mid$(sLine, 5, iPos - 5)
-      If Not sLang Then
-        If iNameLevel = $aLang.Count Then $sName = Trim(Mid$(sLine, iPos + 1))
-      Else If Left(sLang) = "[" And If Right(sLang) = "]" Then
-        iLevel = $aLang.Find(Mid$(sLang, 2, -1))
-        If iLevel >= 0 And If iLevel < iNameLevel Then
-          iNameLevel = iLevel
-          $sName = Trim(Mid$(sLine, iPos + 1))
+    For I = 0 To aLine.Max
+      
+      sLine = Trim(aLine[I])
+      
+      If Not bInDesktopEntry Then
+        If sLine = "[Desktop Entry]" Then
+          bInDesktopEntry = True
         Endif
+        Continue
       Endif
-    Else If sLine Begins "Exec=" Then
-      $sExec = Trim(Mid$(sLine, 6))
-    Else If sLine Begins "Terminal=" Then
-      $bTerminal = Trim(Mid$(sLine, 10)) == "true"
-    Else If sLine Begins "Hidden=" Then
-      $bHidden = Trim(Mid$(sLine, 8)) == "true"
-    Else If sLine Begins "Icon=" Then
-      $sIcon = Trim(Mid$(sLine, 6))
-    Endif
-  Next
-  
-  
-  
-  iPos = InStr($sExec, " ")
-  If iPos = 0 Then
-    sLine = $sExec
-  Else
-    sLine = Left$($sExec, iPos - 1)
+      
+      If Left(sLine) = "[" Then Break
+      
+      iPos = InStr(sLine, "=")
+      If iPos = 0 Then Break
+
+      sLine = Replace(sLine, "\\s", " ")
+      sLine = Replace(sLine, "\\n", "\n")
+      sLine = Replace(sLine, "\\t", "\t")
+      sLine = Replace(sLine, "\\r", "\r")
+      sLine = Replace(sLine, "\\\\", "\\")
+      
+      sKey = Left(sLine, iPos - 1)
+      sValue = Mid$(sLine, iPos + 1)
+      
+      Select Case sKey
+      
+        Case Like "Name*"
+          
+          sLang = Mid$(sKey, 5)
+          If Not sLang Then
+            If iNameLevel = $aLang.Count Then $sName = sValue
+          Else If Left(sLang) = "[" And If Right(sLang) = "]" Then
+            iLevel = $aLang.Find(Mid$(sLang, 2, -1))
+            If iLevel >= 0 And If iLevel < iNameLevel Then
+              iNameLevel = iLevel
+              $sName = sValue
+            Endif
+          Endif
+          
+        Case "Exec"
+          $sExec = sValue
+          
+        Case "Terminal"
+          $bTerminal = sValue == "true"
+          
+        Case "Hidden"
+          $bHidden = sValue == "true"
+          
+        Case "Icon"
+          $sIcon = sValue
+        
+        Case "MimeType"
+          $aMimeTypes = Split(sValue, ";", "\\;")
+          
+        Case Else
+          $aRest.Add(sLine)
+        
+      End Select
+      
+    Next
+    
+    If I < aLine.Count Then $aRest.Insert(aLine.Copy(I, -1))
+    
   Endif
-  
-  $sProgramName = sLine
   
 End
 
@@ -197,7 +223,14 @@ End
 
 Private Function ProgramName_Read() As String
 
-  Return $sProgramName
+  Dim iPos As Integer
+
+  iPos = InStr($sExec, " ")
+  If iPos = 0 Then
+    Return $sExec
+  Else
+    Return Left$($sExec, iPos - 1)
+  Endif
 
 End
 
@@ -351,7 +384,7 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   Dim hImage As Image
   Dim sKey As String
   
-  sKey = $sProgramName & ":" & CStr(Size)
+  sKey = Me.ProgramName & ":" & CStr(Size)
   
   hImage = $cIconCache[sKey]
   If Not hImage Then
@@ -369,4 +402,80 @@ Public Sub GetIcon(Optional Size As Integer = 16) As Image
   $cIconCache[sKey] = hImage
   Return hImage
   
+End
+
+Private Sub Name_Write(Value As String)
+
+  $sName = Value
+
+End
+
+Private Sub Exec_Write(Value As String)
+
+  $sExec = Value
+
+End
+
+Private Sub Terminal_Write(Value As Boolean)
+
+  $bTerminal = Value
+
+End
+
+Private Sub Hidden_Write(Value As Boolean)
+
+  $bHidden = Value
+
+End
+
+Private Sub Icon_Write(Value As String)
+
+  $sIcon = Value
+
+End
+
+Public Sub Save()
+
+  Dim hFile As File
+  Dim sMime As String
+  
+  hFile = Open $sPath For Create
+  
+  Print #hFile, "[Desktop Entry]"
+  
+  Print #hFile, "Type=Application"
+  Print #hFile, "Name="; $sName
+  Print #hFile, "Icon="; $sIcon
+  Print #hFile, "Exec="; $sExec
+  If $bTerminal Then Print #hFile, "Terminal=true"
+  If $bHidden Then Print #hFile, "Hidden=true"
+  If $aMimeTypes Then 
+    Print #hFile, "MimeType=";
+    For Each sMime In $aMimeTypes
+      sMime = Replace(sMime, ";", "\\;")
+      $aMimeTypes.Join(";", "\\;")
+    Next
+  Endif
+  
+  If $aRest Then Print #hFile, $aRest.Join("\n")
+  
+  Close #hFile
+  
+End
+
+
+Private Function MimeTypes_Read() As String[]
+
+  If $aMimeTypes Then Return $aMimeTypes.Copy()
+
+End
+
+Private Sub MimeTypes_Write(Value As String[])
+
+  If Not Value Then
+    $aMimeTypes = Null
+  Else
+    $aMimeTypes = Value.Copy()
+  Endif
+
 End

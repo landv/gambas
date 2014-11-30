@@ -552,7 +552,7 @@ Static Private Function RuntimeDir_Read() As String
   
   If Not sPath Then
     sPath = File.Dir(Temp$())
-    Error "gb.desktop: XDG_RUNTIME_DIR is not set. Default to "; sPath
+    Error "gb.desktop: warning: XDG_RUNTIME_DIR is not set. Default to "; sPath
   Endif
   
   Return sPath

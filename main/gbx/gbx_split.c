@@ -169,43 +169,69 @@ CARRAY *STRING_split(const char *str, int lstr, const char *sep, int lsep, const
 		else
 			escr = escl;
 
-		escape = FALSE;
-		
-		for (i = 0; i < lstr; i++)
+		if (escr == *sep)
 		{
-			c = *str;
-			
-			if (escape)
+			for (i = 0; i < lstr; i++)
 			{
-				if (c != escr)
-					add_char(str);
-				else if ((i < (lstr - 1)) && str[1] == escr)
+				c = *str;
+
+				if (c == escl)
 				{
-					add_char(str);
-					str++;
 					i++;
+					str++;
+					if (i < lstr)
+						add_char(str);
+				}
+				else if (c == *sep || (lsep > 1 && memchr(&sep[1], c, lsep - 1)))
+				{
+					add_entry();
 				}
 				else
+					add_char(str);
+
+				str++;
+			}
+		}
+		else
+		{
+			escape = FALSE;
+
+			for (i = 0; i < lstr; i++)
+			{
+				c = *str;
+
+				if (escape)
 				{
-					escape = FALSE;
+					if (c != escr)
+						add_char(str);
+					else if ((i < (lstr - 1)) && str[1] == escr)
+					{
+						add_char(str);
+						str++;
+						i++;
+					}
+					else
+					{
+						escape = FALSE;
+						if (keep_esc)
+							add_char(str);
+					}
+				}
+				else if (c == escl)
+				{
+					escape = TRUE;
 					if (keep_esc)
 						add_char(str);
 				}
-			}
-			else if (c == escl)
-			{
-				escape = TRUE;
-				if (keep_esc)
+				else if (c == *sep || (lsep > 1 && memchr(&sep[1], c, lsep - 1)))
+				{
+					add_entry();
+				}
+				else
 					add_char(str);
+
+				str++;
 			}
-			else if (c == *sep || (lsep > 1 && memchr(&sep[1], c, lsep - 1)))
-			{
-				add_entry();
-			}
-			else
-				add_char(str);
-				
-			str++;
 		}
 		
 		add_entry();

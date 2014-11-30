@@ -248,19 +248,14 @@ Public Sub Install() As String
   Dim sExec As String
   Dim sOption As String
   Dim sName As String
-  Dim hFile As File
-  Dim sLine As String
-  Dim iPos As Integer
-  Dim sKey As String
-  Dim aComponent As String[]
-  Dim bTranslate As Boolean
-  Dim sValue As String
-  Dim bControlPublic As Boolean
-  Dim bModulePublic As Boolean
+  Dim aMissing As String[]
   Dim sResult As String
   Dim sSrcDir As String
   Dim sExecDir As String
   Dim sErr As String
+  Dim hDesktopFile As DesktopFile
+  Dim hProjectInfo As CProjectInfo
+  Dim sComp As String
   
   ' Create directories
   
@@ -273,16 +268,24 @@ Public Sub Install() As String
   sExecDir = Desktop.DataDir &/ "gambas3/bin"
   Try Mkdir sExecDir
   
-  ' TODO: Check if another version is already installed
-  
   ' Download source archive
   
   hReq = New FarmRequest($sFarm)
-  FarmRequestManager.Clear
-  hReq.DownloadSoftware(Id)
-  If hReq.WaitFor() Then Return hReq.ErrorText
   
-  ' TODO: Check the checksum
+  hReq.DownloadSoftware(Id)
+  If hReq.WaitFor() Then 
+    If Not hReq.ErrorText Then
+      Return ("Download cancelled")
+    Else
+      Return hReq.ErrorText
+    Endif
+  Endif
+  
+  ' Check the checksum
+  
+  If FarmRequest.GetCheckSum(hReq.ResultFile) <> Checksum Then
+    Error.Raise(("The checksum of the downloaded package is invalid."))
+  Endif
   
   sPath = hReq.ResultFile
   
@@ -301,39 +304,23 @@ Public Sub Install() As String
   
   ' Analyze the project file
   
-  aComponent = New String[]
+  aMissing = New String[]
   
   sName = Name
-  sDir = File.SetName(sPath, sName)
-  hFile = Open sDir &/ ".project"
+  sDir = File.SetName(sPath, sName)  
+  hProjectInfo = New CProjectInfo(sDir)
+
+  ' Check the components
   
-  For Each sLine In hFile.Lines
-    
-    sLine = Trim(sLine)
-    If Not sLine Then Continue
-    If Left(sLine) = "#" Then Continue
-    iPos = InStr(sLine, "=")
-    If iPos = 0 Then Continue
-    
-    sKey = Left$(sLine, iPos - 1)
-    sValue = Mid$(sLine, iPos + 1)
-    
-    Select Case LCase(sKey)
-      Case "component"
-        aComponent.Add(sValue)
-      Case "translate"
-        bTranslate = sValue = "1"
-      Case "controlpublic"
-        bControlPublic = sValue = "1"
-      Case "modulepublic"
-        bModulePublic = sValue = "1"
-    End Select
-    
+  For Each sComp In hProjectInfo.Components
+    If Not Exist(Component.Path &/ sComp & ".component") Then
+      aMissing.Add(sComp)
+    Endif
   Next
   
-  Close #hFile
-  
-  ' TODO: Check the components
+  If aMissing.Count Then
+    Error.Raise(("The following components are required:") & "\n\n" & aMissing.Join(", "))
+  Endif
   
   ' TODO: Check the libraries
   
@@ -341,9 +328,9 @@ Public Sub Install() As String
   ' TODO: Use translatable error messages?
   
   sExec = System.Path &/ "bin/gbc" & System.Version & " -a -g -x "
-  If bTranslate Then sExec &= "-t "
-  If bControlPublic Then sExec &= "-p "
-  If bModulePublic Then sExec &= "-m "
+  If hProjectInfo.Translate Then sExec &= "-t "
+  If hProjectInfo.ControlPublic Then sExec &= "-p "
+  If hProjectInfo.ModulePublic Then sExec &= "-m "
   sExec &= Shell$(sDir)
   sExec &= " 2>&1"
   
@@ -362,19 +349,40 @@ Public Sub Install() As String
   ' Install executable
   
   Copy sDir &/ sName & ".gambas" To sExecDir &/ sName & ".gambas"
+  Chmod sExecDir &/ sName & ".gambas" To "..x..x..x"
   Try Kill sDir &/ sName & ".gambas"
+  
+  ' Make a backup of the possible old version
+
+  Exec ["rm", "-rf", sSrcDir &/ sName & "~"] Wait
+  Try Move sSrcDir &/ sName To sSrcDir &/ sName & "~"
 
   ' Move the source directory to its final location
   
-  Exec ["mv", sDir, sSrcDir &/ File.Name(sDir)] Wait
-  If Not IsDir(sSrcDir &/ File.Name(sDir)) Then Error.Raise(("Unable to install source directory"))
+  Exec ["mv", sDir, sSrcDir &/ sName] Wait
+  If Not IsDir(sSrcDir &/ sName) Then Error.Raise(("Unable to install source directory"))
   
+  ' Remove the possible old version
+  
+  Exec ["rm", "-rf", sSrcDir &/ sName & "~"] Wait
+  
+  ' Make a desktop file
+  
+  hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & sName & ".desktop")
+  With hDesktopFile
+    .Name = sName
+    .Exec = sExecDir &/ sName & ".gambas"
+    If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
+  End With
+  hDesktopFile.Save
+
   Start
   
 Catch
   
   sErr = Error.Text
   ' Try to remove the partial installation
+  Try Move sSrcDir &/ sName & "~" To sSrcDir &/ sName
   Try Kill sExecDir &/ sName & ".gambas"
   Return sErr
   

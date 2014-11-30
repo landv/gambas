@@ -137,7 +137,7 @@ End
 
 
 
-Private Sub GetCheckSum(sPath As String) As String
+Static Public Sub GetCheckSum(sPath As String) As String
   
   Dim sChecksum As String
   Dim iPos As Integer

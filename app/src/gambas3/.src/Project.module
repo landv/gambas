@@ -1035,7 +1035,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
         'If Left(sLink) <> "/" Then sLink = sPath &/ sLink
         sLink = File.Dir(sLink)
         hProject = New CProjectInfo(sLink)
-        sIcon = hProject.Icon
+        sIcon = hProject.GetIconPath()
         If iSize = 0 Then iSize = 16
       Else
         sIcon = sPrefix &/ "directory"
