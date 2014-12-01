@@ -28,12 +28,7 @@ Public Sub _new()
   $hView.Spacing = True
   $hView.Padding = MARGIN
   
-  $hEditor = New TextBox($hView) As "Editor"
-  $hEditor.Border = False
-  $hEditor.MaxLength = 24
-  ResizeEditor
-  
-  $hCompletion = New CTagCompletion($hEditor) As "Completion"
+  Clear()
   
 End
 
@@ -140,6 +135,8 @@ Public Sub SetTags(aTag As String[])
 
   Dim sTag As String
   
+  Clear()
+  
   For Each sTag In aTag
     AddTag(sTag)
   Next
@@ -155,5 +152,26 @@ End
 Public Sub _RaiseChange()
   
   Raise Change
+  
+End
+
+Public Sub Clear()
+
+  If $hView.Children.Count = 1 Then Return
+
+  $hView.Children.Clear
+  
+  $hEditor = New TextBox($hView) As "Editor"
+  $hEditor.Border = False
+  $hEditor.MaxLength = 24
+  ResizeEditor
+  
+  $hCompletion = New CTagCompletion($hEditor) As "Completion"
+  
+End
+
+Public Sub Sort()
+  
+  SetTags(GetTags().Sort(gb.IgnoreCase))
   
 End

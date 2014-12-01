@@ -46,11 +46,10 @@
       Foreground = Color.TextForeground
       Expand = True
       Arrangement = Arrange.Vertical
-      Spacing = True
-      Margin = True
       { panTitle HBox
-        MoveScaled(1,0,71,8)
+        MoveScaled(1,0,71,10)
         Spacing = True
+        Margin = True
         { picIcon PictureBox
           MoveScaled(1,0,8,8)
           Stretch = True
@@ -75,22 +74,28 @@
           MoveScaled(46,1,17,4)
         }
       }
+      { Separator1 Separator
+        MoveScaled(28,12,16,0)
+      }
       { panDesc HBox
-        MoveScaled(0,11,73,36)
+        MoveScaled(0,14,73,36)
         Expand = True
         Spacing = True
         { Panel11 VBox
           MoveScaled(1,1,52,33)
           Spacing = True
-          { Separator1 Separator
-            MoveScaled(1,1,24,0)
+          Margin = True
+          { lblDesc Label
+            MoveScaled(2,1,14,3)
+            Font = Font["Bold"]
+            Text = ("Description")
           }
           { txtDescription TextLabel
-            MoveScaled(2,2,35,5)
+            MoveScaled(2,4,35,5)
             AutoResize = True
           }
           { panURL HBox
-            MoveScaled(2,8,29,4)
+            MoveScaled(2,10,29,4)
             { urlWebSite URLLabel
               MoveScaled(0,0,18,3)
               AutoResize = True
@@ -98,22 +103,22 @@
             }
           }
           { lblTags Label
-            MoveScaled(2,14,14,3)
+            MoveScaled(2,16,14,3)
             Font = Font["Bold"]
             Text = ("Tags")
           }
           { panTags HPanel
-            MoveScaled(2,18,26,8)
+            MoveScaled(2,20,26,8)
             Spacing = True
           }
         }
-        { Panel10 Panel
-          MoveScaled(54,6,1,8)
-          Visible = False
+        { Separator2 Separator
+          MoveScaled(54,6,0,13)
         }
         { imvScreenshot ImageView
           MoveScaled(58,1,14,20)
           Expand = True
+          Border = False
         }
         { spnScreenshot Spinner
           MoveScaled(56,23,8,6)
@@ -219,13 +224,13 @@
       }
     }
     { Panel7 Panel
-      MoveScaled(0,32,98,38)
+      MoveScaled(1,31,98,38)
       Background = Color.TextBackground
       Foreground = Color.TextForeground
       Expand = True
       Arrangement = Arrange.Fill
       { svwFarm ScrollView
-        MoveScaled(0,0,90,37)
+        MoveScaled(0,0,69,23)
         Background = Color.TextBackground
         Foreground = Color.TextForeground
         Expand = True
@@ -234,6 +239,11 @@
         Margin = True
         Border = False
         ScrollBar = Scroll.Vertical
+      }
+      { spnFarm Spinner
+        MoveScaled(85,26,10,9)
+        Visible = False
+        Ignore = True
       }
     }
   }

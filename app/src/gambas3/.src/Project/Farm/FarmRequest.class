@@ -119,6 +119,7 @@ Public Sub Request_Finished()
     iPos = InStr(aResult[0], " ")
     ErrorText = Replace(Mid$(sResult, iPos + 1), "\r", "")
     Result = Null
+    Raise Finished
     Return
   Endif
   

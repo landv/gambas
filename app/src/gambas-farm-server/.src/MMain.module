@@ -727,7 +727,7 @@ Private Sub SearchSoftware()
     Else
       iTag = -1
     Endif
-    If Not aTag.Exist(rTag!id) Then aTag.Add(rTag!id)
+    If Not aTag.Exist(iTag) Then aTag.Add(iTag)
   Next
   
   sFilter = String.LCase(Request["filter"])
@@ -757,7 +757,11 @@ Private Sub SearchSoftware()
     Select Case sSort
       Case "date"
         If sFrom Then
-          dDate = Date(CInt(Left$(sFrom, 4)), CInt(Mid$(sFrom, 5, 2)), CInt(Mid$(sFrom, 7, 2)), CInt(Mid$(sFrom, 9, 2)), CInt(Mid$(sFrom, 11, 2)), CInt(Mid$(sFrom, 13, 2)), CInt(Mid$(sFrom, 15, 3)))
+          Try dDate = Date(CInt(Left$(sFrom, 4)), CInt(Mid$(sFrom, 5, 2)), CInt(Mid$(sFrom, 7, 2)), CInt(Mid$(sFrom, 9, 2)), CInt(Mid$(sFrom, 11, 2)), CInt(Mid$(sFrom, 13, 2)), CInt(Mid$(sFrom, 15, 3)))
+          If Error Then
+            PrintError("13 Bad request\nIncorrect date: " & sFrom)
+            Return
+          Endif
           sReq = DB.Subst("(date = &1 AND id > &2) OR (date < &1)", dDate, iFromId)
         Endif
       Case "vote"
@@ -797,7 +801,7 @@ Private Sub SearchSoftware()
     
     rSoftware.MoveLast
     If sSort = "date" Then
-      sFrom = Format(rSoftware!date, "yyyymmddhhnnssuuu")
+      sFrom = Format(rSoftware!date, "yyyymmddhhnnssuu")
     Else
       sFrom = rSoftware[sSort]
     Endif

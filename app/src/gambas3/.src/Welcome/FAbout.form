@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(3,6,67,65)
+  MoveScaled(3,6,67,66)
   Background = Color.TextBackground
   Text = ("About Gambas")
   Icon = Picture["img/logo/logo-32-head.png"]
@@ -9,10 +9,10 @@
   Transparent = True
   Arrangement = Arrange.Vertical
   { dwgWelcome DrawingArea
-    MoveScaled(0,0,67,21)
+    MoveScaled(0,0,67,22)
   }
   { svwAuthor ScrollView
-    MoveScaled(3,21,64,44)
+    MoveScaled(3,22,64,44)
     Expand = True
     Arrangement = Arrange.Vertical
     Spacing = True
@@ -59,11 +59,11 @@
     Delay = 25
   }
   { picGradientTop PictureBox
-    MoveScaled(0,21,80,7)
+    MoveScaled(0,22,80,7)
     Ignore = True
   }
   { picGradientBottom PictureBox
-    MoveScaled(0,58,80,7)
+    MoveScaled(0,59,80,7)
     Ignore = True
   }
 }

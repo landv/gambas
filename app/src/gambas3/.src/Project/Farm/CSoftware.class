@@ -256,6 +256,9 @@ Public Sub Install() As String
   Dim hDesktopFile As DesktopFile
   Dim hProjectInfo As CProjectInfo
   Dim sComp As String
+  Dim sTag As String
+  Dim aCat As String[]
+  Dim aExistCat As String[]
   
   ' Create directories
   
@@ -370,11 +373,20 @@ Public Sub Install() As String
   
   If hProjectInfo.Type = Project.TYPE_NORMAL Then
   
+    aExistCat = Split(File.Load("install/categories"), "\n", "", True)
+    aCat = New String[]
+    For Each sTag In Tags
+      If aExistCat.Exist(sTag, gb.IgnoreCase) Then
+        aCat.Add(sTag)
+      Endif
+    Next
+  
     hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & sName & ".desktop")
     With hDesktopFile
       .Name = sName
       .Exec = sExecDir &/ sName & ".gambas"
       If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
+      .Categories = aCat
     End With
     hDesktopFile.Save
     

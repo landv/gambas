@@ -82,6 +82,7 @@ Public PublishTags As String[]
 Public PublishDependencies As String[]
 Public PublishGambasVersion As String
 Public PublishWebSite As String
+Public PublishScreenshot As String
 
 Public TabSize As Integer
 Public Version As String
@@ -3199,6 +3200,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   PublishDependencies = New String[]
   PublishGambasVersion = ""
   PublishWebSite = ""
+  PublishScreenshot = ""
 
   For Each sLig In hFic.Lines
 
@@ -3460,6 +3462,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "website"
         PublishWebSite = sVal
 
+      Case "screenshot"
+        PublishScreenshot = sVal
+
     End Select
 
   Next
@@ -3628,6 +3633,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PublishDependencies And If PublishDependencies.Count Then Print #hFic, "Dependencies="; PublishDependencies.Join(",")
   If PublishGambasVersion Then Print #hFic, "GambasVersion="; PublishGambasVersion
   If PublishWebSite Then Print #hFic, "WebSite="; PublishWebSite
+  If PublishScreenshot Then Print #hFic, "Screenshot="; PublishScreenshot
 
   Close #hFic
 

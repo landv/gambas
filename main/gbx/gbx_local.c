@@ -1275,7 +1275,7 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 
 			if (date->msec || count == 2)
 			{
-				if (count == 2)
+				if (count >= 2)
 					add_number(date->msec, 3);
 				else
 				{

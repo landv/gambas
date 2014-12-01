@@ -10,10 +10,10 @@
     MoveScaled(1,1,72,61)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Margin = True
     Count = 4
     TextFont = Font["Bold,+3"]
     ShowIndex = True
+    Border = False
     Index = 0
     Text = ("Information")
     { HBox8 HBox
@@ -42,30 +42,48 @@
         ReadOnly = True
       }
     }
-    { HPanel2 HBox
-      MoveScaled(1,16,57,25)
+    { Label2 Label
+      MoveScaled(1,11,21,4)
+      Text = ("Description")
+    }
+    { txtDesc TextArea
+      MoveScaled(1,16,30,19)
       Expand = True
-      Spacing = True
-      { Panel1 VBox
-        MoveScaled(0,0,21,21)
-        { Label2 Label
-          MoveScaled(0,0,21,4)
-          Text = ("Description")
-        }
-      }
-      { txtDesc TextArea
-        MoveScaled(24,2,30,19)
-        Expand = True
-      }
+      Wrap = True
     }
     Index = 1
     Text = ("Tags")
     { tagEditor CTagEditor
       MoveScaled(1,1,67,14)
     }
-    { lstTags ListBox
-      MoveScaled(1,20,57,15)
+    { Panel3 HBox
+      MoveScaled(2,20,62,27)
       Expand = True
+      Spacing = True
+      { lstTags ListBox
+        MoveScaled(0,0,34,15)
+        Expand = True
+        Mode = Select.Multiple
+      }
+      { VBox1 VBox
+        MoveScaled(42,1,17,25)
+        Spacing = True
+        { btnAddTag Button
+          MoveScaled(0,0,16,4)
+          Text = ("Add")
+          Picture = Picture["icon:/small/add"]
+        }
+        { btnSortTags Button
+          MoveScaled(0,5,16,4)
+          Text = ("Sort")
+          Picture = Picture["icon:/small/sort-ascent"]
+        }
+        { btnClearTags Button
+          MoveScaled(1,10,16,4)
+          Text = ("Clear")
+          Picture = Picture["icon:/small/trash"]
+        }
+      }
     }
     Index = 2
     Text = ("Dependencies")

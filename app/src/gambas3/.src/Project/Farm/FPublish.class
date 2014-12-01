@@ -27,6 +27,7 @@ Public Sub Form_Open()
   cmbGambasVersion.Text = Project.PublishGambasVersion
   txtURL.Text = Project.PublishWebSite
   txtDesc.Text = Project.Description
+  txtScreenshot.Text = Project.PublishScreenshot
   
   tbvDep.Columns.Count = 2
   tbvDep.Columns[0].Text = ("Software")
@@ -55,6 +56,7 @@ Public Sub Form_Close()
   Project.PublishDependencies = $aDep
   Project.PublishGambasVersion = cmbGambasVersion.Text
   Project.PublishWebSite = txtURL.Text
+  Project.PublishScreenshot = txtScreenshot.Text
   Project.Description = txtDesc.Text
   Project.WriteProject
 
@@ -200,5 +202,29 @@ End
 Public Sub tbvDep_Click()
 
   tbvDep.Edit
+
+End
+
+Public Sub btnAddTag_Click()
+
+  Dim I As Integer
+
+  For I = 0 To lstTags.Count - 1
+    If lstTags[I].Selected Then tagEditor.Add(lstTags[I].Text)
+  Next
+  lstTags.UnselectAll
+
+End
+
+Public Sub btnClearTags_Click()
+
+  If Message.Delete(("Do you really want to remove all tags?"), ("Remove"), ("Cancel")) <> 1 Then Return
+  tagEditor.Clear
+
+End
+
+Public Sub btnSortTags_Click()
+
+  tagEditor.Sort
 
 End

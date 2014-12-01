@@ -18,6 +18,7 @@ Property Terminal As Boolean
 Property Hidden As Boolean
 Property Icon As String
 Property MimeTypes As String[]
+Property Categories As String[]
 
 Private $sPath As String
 Private $sName As String
@@ -27,6 +28,7 @@ Private $bHidden As Boolean
 Private $sIcon As String
 Private $aMimeTypes As String[]
 Private $aRest As String[]
+Private $aCategories As String[]
 
 Static Public Sub _init()
 
@@ -142,6 +144,9 @@ Public Sub _new(Path As String)
         
         Case "MimeType"
           $aMimeTypes = Split(sValue, ";", "\\;")
+          
+        Case "Categories"
+          $aCategories = Split(sValue, ";", "\\;")
           
         Case Else
           $aRest.Add(sLine)
@@ -437,7 +442,6 @@ End
 Public Sub Save()
 
   Dim hFile As File
-  Dim sMime As String
   
   hFile = Open $sPath For Create
   
@@ -449,13 +453,8 @@ Public Sub Save()
   Print #hFile, "Exec="; $sExec
   If $bTerminal Then Print #hFile, "Terminal=true"
   If $bHidden Then Print #hFile, "Hidden=true"
-  If $aMimeTypes Then 
-    Print #hFile, "MimeType=";
-    For Each sMime In $aMimeTypes
-      sMime = Replace(sMime, ";", "\\;")
-      $aMimeTypes.Join(";", "\\;")
-    Next
-  Endif
+  If $aMimeTypes Then Print #hFile, "MimeType="; $aMimeTypes.Join(";", "\\;")
+  If $aCategories Then Print #hFile, "Categories="; $aCategories.Join(";", "\\;")
   
   If $aRest Then Print #hFile, $aRest.Join("\n")
   
@@ -476,6 +475,22 @@ Private Sub MimeTypes_Write(Value As String[])
     $aMimeTypes = Null
   Else
     $aMimeTypes = Value.Copy()
+  Endif
+
+End
+
+Private Function Categories_Read() As String[]
+
+  If $aCategories Then Return $aCategories.Copy()
+
+End
+
+Private Sub Categories_Write(Value As String[])
+
+  If Not Value Then
+    $aCategories = Null
+  Else
+    $aCategories = Value.Copy()
   Endif
 
 End
