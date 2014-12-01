@@ -109,6 +109,17 @@ BEGIN_METHOD(Trie_put, GB_VARIANT value; GB_STRING key)
 
 END_METHOD
 
+/**G
+ * Remove the named element. This is equivalent to _put'ing Null into its
+ * key.
+ */
+BEGIN_METHOD(Trie_Remove, GB_STRING key)
+
+	trie_remove(THIS->root, STRING(key), LENGTH(key), value_dtor);
+	UPDATE_TIME();
+
+END_METHOD
+
 struct stack {
 	struct trie *node;
 	int idx, visited : 1;
@@ -324,6 +335,11 @@ GB_DESC CTrie[] = {
 	GB_METHOD("_put", NULL, Trie_put, "(Value)v(Key)s"),
 	GB_METHOD("_next", "v", Trie_next, NULL),
 
+	/**G Trie Add
+	 * Add an element to the trie. A synonym for _put.
+	 */
+	GB_METHOD("Add", NULL, Trie_put, "(Value)v(Key)s"),
+	GB_METHOD("Remove", NULL, Trie_Remove, "(Key)s"),
 	GB_METHOD("Clear", NULL, Trie_Clear, NULL),
 	GB_METHOD("Exist", "b", Trie_Exist, "(Key)s"),
 	GB_METHOD("GetPrefix", "TriePrefix", Trie_GetPrefix, "(Prefix)s"),
