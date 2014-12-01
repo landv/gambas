@@ -63,15 +63,17 @@ End
 
 Public Sub Clear()
 
+  Dim aClear As HttpForm[]
   Dim I As Integer
   
   If $aRequest.Count = 0 Then Return
-  
-  For I = 0 To Min($aRequest.Max, MAX_REQUEST)
-    $aRequest[I].Stop
-  Next
-  
+
+  aClear = $aRequest.Copy()
   $aRequest.Clear
+
+  For I = 0 To Min(aClear.Max, MAX_REQUEST)
+    aClear[I].Stop
+  Next
   
 End
 
