@@ -434,20 +434,25 @@ static void __trie_insert_child(struct __trie_find_res *res, const char *key,
  * You can use the empty string as `key' to save data in the trie's root
  * node. Note that the NULL pointer is an invalid `value' and is used to
  * detect value-less nodes, so don't use it!
+ *
+ * If a value was replaced, the old value is returned.
  */
-void trie_insert(struct trie *trie, const char *key, size_t len, void *value)
+void *trie_insert(struct trie *trie, const char *key, size_t len, void *value)
 {
 	struct __trie_find_res res = __trie_find(trie, key, len);
 
 	if (res.node) {
 		if (__is_exact(&res, len)) {
+			void *last = res.node->value;
+
 			res.node->value = value;
-			return;
+			return last;
 		}
 		__trie_insert_split(&res, key, len, value);
 	} else {
-		return __trie_insert_child(&res, key, len, value);
+		__trie_insert_child(&res, key, len, value);
 	}
+	return NULL;
 }
 
 /**

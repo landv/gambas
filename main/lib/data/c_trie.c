@@ -94,6 +94,7 @@ END_METHOD
 BEGIN_METHOD(Trie_put, GB_VARIANT value; GB_STRING key)
 
 	GB_VARIANT_VALUE *val;
+	void *oldval;
 
 	if (VARG(value).type == GB_T_NULL) {
 		trie_remove(THIS->root, STRING(key), LENGTH(key),
@@ -104,7 +105,9 @@ BEGIN_METHOD(Trie_put, GB_VARIANT value; GB_STRING key)
 	GB.Alloc((void **) &val, sizeof(*val));
 	val->type = GB_T_NULL;
 	GB.StoreVariant(ARG(value), val);
-	trie_insert(THIS->root, STRING(key), LENGTH(key), val);
+	oldval = trie_insert(THIS->root, STRING(key), LENGTH(key), val);
+	if (oldval)
+		value_dtor(oldval);
 	UPDATE_TIME();
 
 END_METHOD
