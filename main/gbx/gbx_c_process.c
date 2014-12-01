@@ -181,7 +181,7 @@ static void callback_write(int fd, int type, CPROCESS *process)
 }
 
 
-static bool callback_error(int fd, int type, CPROCESS *process)
+static void callback_error(int fd, int type, CPROCESS *process)
 {
 	char buffer[256];
 	int n;
@@ -190,24 +190,17 @@ static bool callback_error(int fd, int type, CPROCESS *process)
 	fprintf(stderr, "callback_error: %d %p\n", fd, process);
 	#endif
 
-	n = read(fd, buffer, sizeof(buffer));
-
-	if (n <= 0) /* || !process->running)*/
+	if (GB_CanRaise(process, EVENT_Error))
 	{
-		/*close(process->err);*/
-		return TRUE;
+		n = read(fd, buffer, sizeof(buffer));
+		if (n > 0)
+		{
+			GB_Raise(process, EVENT_Error, 1, GB_T_STRING, buffer, n);
+			return;
+		}
 	}
 
-	//fprintf(stderr, "callback_error: (%d) %.*s\n", n, n, buffer);
-
-	if (GB_CanRaise(process, EVENT_Error))
-		GB_Raise(process, EVENT_Error, 1, GB_T_STRING, buffer, n);
-	else
-		close_fd(&process->err);
-
-	return FALSE;
-
-	/*fprintf(stderr, "<< Write\n"); fflush(stderr);*/
+	close_fd(&process->err);
 }
 
 
@@ -319,9 +312,9 @@ static void stop_process_after(CPROCESS *_object)
 	}
 
 	/* Vidage du tampon d'erreur */
-	if (THIS->err >= 0)
+	while (THIS->err >= 0)
 	{
-		while (callback_error(THIS->err, 0, THIS) == 0);
+		callback_error(THIS->err, 0, THIS);
 		do_exit_process = TRUE;
 	}
 
