@@ -1,0 +1,85 @@
+' Gambas class file
+
+Export
+
+Private $hFile As File
+Private $aField As String[]
+Private $sSeparator As String
+Private $sEscape As String
+Private $iLine As Integer
+
+Property Read Eof As Boolean
+Property Read Fields As String[]
+Property Read Line As Integer
+
+Public Sub _new(sPath As String, Optional sSeparator As String = ",", Optional sEscape As String = "\"")
+  
+  Dim sLine As String
+  Dim iInd As Integer
+  Dim sField As String
+  
+  $hFile = Open sPath
+  
+  $sSeparator = sSeparator
+  $sEscape = sEscape
+  
+  sLine = $hFile.ReadLine($sEscape)
+  $aField = Split(sLine, $sSeparator, $sEscape)
+  
+  For iInd = 0 To $aField.Max
+    sField = Trim($aField[iInd])
+    sField = Replace(sField, String.Chr(160), " ")
+    sField = Replace(sField, "\n", " ")
+    sField = Replace(sField, "\t", " ")
+    While InStr(sField, "  ")
+      sField = Replace(sField, "  ", " ")
+    Wend
+    sField = String.LCase(sField)
+    If Not sField Then sField = "#" & CStr(iInd)
+    $aField[iInd] = sField
+  Next
+  
+  $iLine = 1
+  
+End
+
+Public Sub Read() As Collection
+  
+  Dim sLine As String
+  Dim aLine As String[]
+  Dim cCol As Collection
+  Dim iInd As Integer
+  
+  If Eof($hFile) Then Return 
+  
+  cCol = New Collection(gb.IgnoreCase)
+  
+  Inc $iLine
+  sLine = $hFile.ReadLine($sEscape)
+  aLine = Split(sLine, $sSeparator, $sEscape)
+  
+  For iInd = 0 To Min($aField.Max, aLine.Max)
+    cCol[$aField[iInd]] = Trim(Replace(aLine[iInd], String.Chr(160), " "))
+  Next
+  
+  Return cCol
+  
+End
+
+Private Function Eof_Read() As Boolean
+
+  Return Eof($hFile)
+
+End
+
+Private Function Fields_Read() As String[]
+
+  Return $aField.Copy()
+
+End
+
+Private Function Line_Read() As Integer
+
+  Return $iLine
+
+End

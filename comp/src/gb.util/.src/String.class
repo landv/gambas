@@ -1,0 +1,62 @@
+' Gambas class file
+
+Export
+
+Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅĀĂĄǍǞǠȀȂȦȺǺẠẢẬẶḀẮẰẲẴẪẤẦẨ[A]ÈÉÊËĒĖĘĚȄȨɆĔȆḘḜẸẺỆḚẼỄḔḖẾỀỂ[E]ÌÍÎÏĨĪĬĮİƗǏȈȊḬỈỊḮ[I]ŎÒÓÔÖŌŐƠǑǬȌȎȮỌỎỘỚỜỞỢỠȪȰȬÕṌṎṐṒỐỒỔỖ[O]ǗǙǛȖŬŨŮǕÙÚÛÜŪŰŲƯǓȔɄṲṴṶỤỦỨỪỬỮỰƲṺṸ[U]ÝŶŸƳȲɎẎỲỴỶỸỾ[Y]"
+  "ƁɃḂḄḆ[B]ÇĆĈĊČƇȻḈ[C]ĎÐĐƉḊḌḎḐḒ[D]ƑḞ[F]ĞĜĠĢƓǤǦǴɢʛḠ[G]ĤȞĦḢḤḦḪḨ[H]ĴɈɟʄʝ[J]ĶƘǨḰḲḴ[K]ĹĻĽĿʟŁȽḶḸḺḼ[L]ḾṀṂ[M]ƝÑŃŅŇŊǸṄṆṈṊ[N]ƤṔṖ[P]ŔŖŘȐȒɌṘṚṜṞ[R]ŚŜŞŠȘṠṢṨṤṦ[S]ŢŤŦƮȚȾṪṬṮṰ[T]ṼṾ[V]ŴẀẂẄẆẈ[W]ẊẌ[X]ŹŻŽƵȤẐẒẔ[Z]"
+  "ÆǢǼ[AE]Œɶ[OE]ßẞ[ss]æǣǽ[ae]œ[oe]"
+  "àáâãäåāăąǎǟǡǻȁȃȧắằẳẵḁẚạảấầẩậặẫ[a]èéêëēĕėęěȅȇȩɇḕḗḙḛḝẹẻẽếềểệễ[e]īĭìíïîĩįıǐȉȋɨỉḭḯị[i]òóôõöōŏőơǒǫǭȍȏȫȯȱȭṍṏṑṓọỏốồổỗộớờởỡợ[o]ùúûüũūŭůűųưǔǖǘǚǜȕȗṹṳṷṻụủứừửữựṵ[u]ýÿŷƴȳɏỵẏẙỳỷỹỿ[y]"
+  "ɓƀḃḅḇ[b]çćĉċčƈȼɕḉ[c]ďɖɗđḋḍḏḑḓ[d]ƒḟ[f]ĝğġģǥǧǵɠɡḡ[g]ĥȟɦɧħḣḥḧḫẖḩ[h]ĵǰȷɉ[j]ķƙǩḱḳḵ[k]ĺľŀłļḽḷḹḻ[l]ɱḿṁṃ[m]ñńņňŉŋǹṅṇṉṋ[n]ƥṕṗ[p]ʠɋ[q]ŕŗřȑȓṙṛṝṟ[r]śŝşšșʂȿṡṣṥṧṩ[s]ţťŧƫƭțṫṭṯṱẗ[t]ʋṽṿ[v]ŵẁẃẅẇẉẘ[w]ẋẍ[x]źżžƶȥɀʐʑẑẓẕ[z]"
+
+Static Public Sub RemoveDiacritics({String} As String) As String
+
+  If Not {String} Then Return
+  If IsAscii({String}) Then Return {String}
+
+  Return DoRemoveAccents({String})
+  
+End
+
+Static Private Sub DoRemoveAccents(sStr As String) As String
+
+  Dim iInd As Integer
+  Dim sCar As String
+  Dim iPos As Integer
+  Dim iPosL As Integer
+  Dim iPosR As Integer
+  Dim sNewStr As String
+
+  For iInd = 1 To String.Len(sStr)
+    sCar = String.Mid$(sStr, iInd, 1)
+    If Len(sCar) > 1 Then
+      iPos = InStr(REMOVE_ACC, sCar)
+      If iPos Then
+        iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+        iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+        If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then
+          sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
+        Endif
+      Endif
+    Endif
+    sNewStr &= sCar
+  Next
+
+  Return sNewStr
+
+End
+
+' Static Public Sub Main()
+' 
+'   Dim I As Integer
+'   Dim sCar As String
+'   
+'   For I = 1 To String.Len(REMOVE_ACC)
+'     sCar = String.Mid$(REMOVE_ACC, I, 1)
+'     If sCar <> "[" And If sCar <> "]" Then
+'       If String.InStr(REMOVE_ACC, sCar) < I Then Continue
+'     Endif
+'     Print sCar;
+'   Next
+'   Print
+'   
+' End
