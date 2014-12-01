@@ -88,10 +88,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 	return STREAM_read_direct(FD, buffer, len);
 }
 
-static int stream_getchar(STREAM *stream, char *buffer)
-{
-	return read(FD, buffer, 1) <= 0;
-}
+#define stream_getchar NULL
 
 
 static int stream_write(STREAM *stream, char *buffer, int len)
@@ -118,23 +115,8 @@ static int stream_flush(STREAM *stream)
 }
 
 
-/*static int stream_eof(STREAM *stream)
-{
-  int ilen;
-
-  if (STREAM_get_readable(FD, &ilen))
-    return TRUE;
-
-  return (ilen == 0);
-}*/
 #define stream_eof NULL
 
-
-/*static int stream_lof(STREAM *stream, int64_t *len)
-{
-  *len = 0;
-  return FALSE;
-}*/
 #define stream_lof NULL
 
 

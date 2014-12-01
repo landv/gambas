@@ -286,7 +286,7 @@ void WATCH_exit(void)
 static void watch_fd(int fd, int flag, bool watch)
 {
 	#if DEBUG_WATCH
-	fprintf(stderr, "watch_fd: %d for %s: %s\n", fd, flag == WATCH_READ ? "read" : "write", watch ? "set" : "clear");
+	fprintf(stderr, "watch_fd: %d for %s: %s\n", fd, flag == GB_WATCH_READ ? "read" : "write", watch ? "set" : "clear");
 	#endif
 
 	if (flag == GB_WATCH_READ)
@@ -394,9 +394,9 @@ static void watch_delete_callback(int fd)
 	pos = watch_find_callback(fd);
 	if (pos < 0)
 		return;
-	
+
 	//watch_index[fd] = -1;
-	
+
 	wcb = &watch_callback[pos];
 	wcb->fd = -1;
 	watch_fd(fd, GB_WATCH_READ, FALSE);
@@ -405,11 +405,18 @@ static void watch_delete_callback(int fd)
 	
 	if (_do_not_really_delete_callback)
 	{
+		#if DEBUG_WATCH
+		fprintf(stderr, "--> do not really delete\n");
+		#endif
 		_must_delete_callback = TRUE;
 		return;
 	}
 		
 	ARRAY_remove(&watch_callback, pos);
+
+	#if DEBUG_WATCH
+	fprintf(stderr, "--> deleted\n");
+	#endif
 }
 
 
@@ -508,6 +515,9 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 	
 	if (!_do_not_really_delete_callback && _must_delete_callback)
 	{
+		#if DEBUG_WATCH
+		fprintf(stderr, "do must delete callback\n");
+		#endif
 		i = 0;
 		while (i < ARRAY_count(watch_callback))
 		{

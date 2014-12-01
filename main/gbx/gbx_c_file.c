@@ -59,7 +59,6 @@ static char _buffer[16];
 
 static void callback_read(int fd, int type, CFILE *file)
 {
-	//fprintf(stderr, "callback_read\n");
 	GB_Raise(file, EVENT_Read, 0);
 }
 
@@ -146,9 +145,6 @@ void CFILE_init_watch(void)
 BEGIN_METHOD_VOID(File_free)
 
 	STREAM_close(&THIS->ob.stream);
-
-	if (THIS->watch_fd >= 0)
-		GB_Watch(THIS->watch_fd, GB_WATCH_NONE, NULL, 0);
 
 END_METHOD
 

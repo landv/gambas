@@ -140,10 +140,7 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 	return STREAM_read_direct(FD, buffer, len);
 }
 
-static int stream_getchar(STREAM *stream, char *buffer)
-{
-	return read(FD, buffer, 1) <= 0;
-}
+#define stream_getchar NULL
 
 
 static int stream_write(STREAM *stream, char *buffer, int len)
