@@ -75,6 +75,16 @@ void MyScrollView::doUpdateScrollbars()
 	qApp->sendEvent(this, &e);
 }
 
+int MyScrollView::getScrollbar()
+{
+	int scroll = 0;
+	if (horizontalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
+		scroll += 1;
+	if (verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
+		scroll += 2;
+	return scroll;
+}
+
 /***************************************************************************
 
 	class MyContents
@@ -291,7 +301,10 @@ void MyContents::autoResize(void)
 	qDebug("autoResize: (%s %p)", THIS->widget.name, THIS);
 	#endif
 
-	sbsize = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + QMAX(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing));
+	if (sw->getScrollbar())
+		sbsize = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + QMAX(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing));
+	else
+		sbsize = 0;
 
 	locked = THIS->arrangement.locked;
 	THIS->arrangement.locked = true;
@@ -665,15 +678,7 @@ BEGIN_PROPERTY(CSCROLLVIEW_scrollbar)
 	int scroll;
 
 	if (READ_PROPERTY)
-	{
-		scroll = 0;
-		if (WIDGET->horizontalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
-			scroll += 1;
-		if (WIDGET->verticalScrollBarPolicy() == Qt::ScrollBarAsNeeded)
-			scroll += 2;
-
-		GB.ReturnInteger(scroll);
-	}
+		GB.ReturnInteger(WIDGET->getScrollbar());
 	else
 	{
 		scroll = VPROP(GB_INTEGER) & 3;

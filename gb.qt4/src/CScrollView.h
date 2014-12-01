@@ -68,6 +68,7 @@ public:
 	bool _scroll_sent;
 
 	void doUpdateScrollbars();
+	int getScrollbar();
 
 protected:
 
