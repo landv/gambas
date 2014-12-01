@@ -2905,7 +2905,7 @@ C
 _Properties
 C
 s
-*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,Border=True
+*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,Border=True,ActionText,ActionPicture
 _DefaultEvent
 C
 s
@@ -2973,6 +2973,14 @@ b
 TextFont
 p
 Font
+
+ActionText
+p
+s
+
+ActionPicture
+p
+Picture
 
 _new
 m

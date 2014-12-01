@@ -73,9 +73,6 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
   Object.Attach($hSoft, Me, "Software")
   If $hSoft.State <> CSoftware.STATE_READY Then 
     Reload
-  Else
-    'UpdateButtons
-    Raise Ready
   Endif
   
 End

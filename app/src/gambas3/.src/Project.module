@@ -5235,7 +5235,8 @@ Public Sub OpenWebPage(sLink As String)
 
       Case Else
 
-        aTest = [Env["BROWSER"]]
+        aTest = New String[]
+        If Env["BROWSER"] Then aTest.Add(Env["BROWSER"])
 
         If Env["KDE_FULL_SESSION"] Then
           aTest.Add("konqueror")
@@ -5250,6 +5251,7 @@ Public Sub OpenWebPage(sLink As String)
     aTest.Insert(["mozilla-firefox", "firefox", "mozilla", "iceweasel", "konqueror", "seamonkey", "chromium-browser", "opera"])
     
     For Each sExec In aTest
+      If Not sExec Then Continue
       bCheck = Not CheckProgram(sExec)
       If bCheck Then Break
     Next

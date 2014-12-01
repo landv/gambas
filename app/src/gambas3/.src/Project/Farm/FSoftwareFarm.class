@@ -5,6 +5,8 @@ Private $SY As Integer
 Private $hSoft As CSoftware
 Private $sShortDesc As String
 
+Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_VOTE, SORT_INSTALLED
+
 Public Sub Run()
   
   Me.ShowModal
@@ -89,57 +91,21 @@ Public Sub Reload()
   
   timLoad.Stop
   
-  If cmbSort.Index = 3 Then Return
-  
   $SY = svwFarm.ScrollY
   
   FarmRequestManager.Clear
   svwFarm.Children.Clear
   
   hReq = New FarmRequest(cmbFarm.Text) As "Request"
-  hReq.SearchSoftware(["date", "download", "vote"][cmbSort.Index], txtFilter.Text, tagFarm.GetTags())
+  hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], txtFilter.Text, tagFarm.GetTags())
   spnFarm.Show
   
 End
 
-Public Sub Request_Finished()
-  
-  Dim hReq As FarmRequest = Last
-  Dim sId As String
-  Dim hSoftwareBox As SoftwareBox
-  Dim hLabel As Label
-  Dim aId As String[]
-  Dim sText As String
-  
-  spnFarm.Hide
-  
-  If hReq.HasFailed() Then
-    If hReq.ErrorText Then 
-      sText = hReq.ErrorText
-      Goto SHOW_MESSAGE
-    Endif
-  Endif
-  
-  aId = Split(hReq.Result["Result"])
-  For Each sId In aId
-    hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
-    hSoftwareBox.ResizeScaled(48, 18)
-  Next
-  
-  If aId.Count = 0 Then
-    sText = ("No software found.")
-    Goto SHOW_MESSAGE
-  Endif
-  
-  If $SY Then 
-    Wait
-    svwFarm.ScrollY = $SY
-  Endif
-  
-  Return
-  
-SHOW_MESSAGE:
+Private Sub ShowMessage(sText As String)
 
+  Dim hLabel As Label
+  
   hLabel = New Label(svwFarm)
   hLabel.Text = sText
   hLabel.Font.Italic = True
@@ -149,6 +115,72 @@ SHOW_MESSAGE:
   hLabel.AutoResize = True
   
 End
+
+
+Private Sub CheckSoftwareCount()
+  
+  If svwFarm.Children.Count Then Return
+  ShowMessage(("No software found."))
+  
+End
+
+
+Public Sub Request_Finished()
+  
+  Dim hReq As FarmRequest = Last
+  Dim sId As String
+  Dim hSoftwareBox As SoftwareBox
+  Dim hLabel As Label
+  Dim aId As String[]
+  Dim sText As String
+  Dim hSoft As CSoftware
+  
+  spnFarm.Hide
+  
+  If hReq.HasFailed() Then
+    If hReq.ErrorText Then 
+      sText = hReq.ErrorText
+    Else
+      sText = ("Request cancelled.")
+    Endif
+    ShowMessage(sText)
+    Return
+  Endif
+  
+  aId = Split(hReq.Result["Result"])
+  For Each sId In aId
+    
+    If cmbSort.Index = SORT_INSTALLED Then
+      hSoft = CSoftware.Get(hReq.Farm, CInt(sId))
+      If hSoft.IsFinished() And If Not hSoft.IsInstalled() Then Continue
+    Endif
+    
+    hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
+    hSoftwareBox.ResizeScaled(48, 18)
+    
+  Next
+  
+  CheckSoftwareCount()
+  
+  If $SY Then 
+    Wait
+    svwFarm.ScrollY = $SY
+  Endif
+
+End
+
+Public Sub SoftwareBox_Ready()
+  
+  Dim hSoftwareBox As SoftwareBox = Last
+  
+  If cmbSort.Index = SORT_INSTALLED Then
+    If Not hSoftwareBox.Software.IsInstalled() Then
+      hSoftwareBox.Delete
+    Endif
+  Endif
+  
+End
+
 
 Public Sub Form_Close()
 
@@ -251,13 +283,13 @@ Private Sub UpdateSoftware()
   
     If .IsInstalled() Then
       btnInstall.Text = ("Uninstall")
-      btnInstall.Picture = Picture["icon:/large/delete"]
+      btnInstall.Picture = Picture["icon:/medium/delete"]
     Else If .CanUpgrade() Then
       btnInstall.Text = ("Upgrade")
-      btnInstall.Picture = Picture["icon:/large/up"]
+      btnInstall.Picture = Picture["icon:/medium/up"]
     Else
       btnInstall.Text = ("Install")
-      btnInstall.Picture = Picture["icon:/large/apply"]
+      btnInstall.Picture = Picture["icon:/medium/package"]
     Endif
   
     sText = Trim(.Description)
@@ -518,5 +550,12 @@ End
 Public Sub svwFarm_Arrange()
 
   spnFarm.Move(svwFarm.W \ 2 - 32, svwFarm.H \ 2 - 32, 64, 64)
+
+End
+
+Public Sub urlWebSite_Click()
+
+  Project.OpenWebPage(urlWebSite.Link)
+  Stop Event
 
 End

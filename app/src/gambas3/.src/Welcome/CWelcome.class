@@ -41,6 +41,8 @@ Public Sub _new(hDrawingArea As DrawingArea)
     PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
     Paint.End
     
+    $hLogo.Brightness(-0.1)
+    
   Endif
 
   $hObs = New Observer(hDrawingArea) As "dwgWelcome"
@@ -84,8 +86,8 @@ End
 
 Public Sub dwgWelcome_Draw()
 
-  Paint.DrawImage($hLogo, Last.W - $hLogo.Width, -10)
-  Paint.DrawImage($hText, 0, 16)
+  Paint.DrawImage($hLogo, Last.W - $hLogo.Width, -10 - Desktop.Scale)
+  Paint.DrawImage($hText, Desktop.Scale, 16 + Desktop.Scale)
 
 End
 

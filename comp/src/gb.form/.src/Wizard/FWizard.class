@@ -62,14 +62,24 @@ End
 
 Public Sub SetPosition((iPos) As Integer, bPrevious As Boolean, bNext As Boolean)
 
+  Dim hWizard As Wizard = Me.Parent
+
   btnPrevious.Enabled = bPrevious
   If bNext Then
     btnNext.Text = ("&Next")
     btnNext.Picture = Picture["icon:/small/forward"]
     btnNext.Default = False
   Else
-    btnNext.Text = ("OK")
-    btnNext.Picture = Null
+    If hWizard.ActionText Then
+      btnNext.Text = hWizard.ActionText
+    Else
+      btnNext.Text = ("OK")
+    Endif
+    If hWizard.ActionPicture Then
+      btnNext.Picture = hWizard.ActionPicture
+    Else
+      btnNext.Picture = Null
+    Endif
     btnNext.Default = True
   Endif
 

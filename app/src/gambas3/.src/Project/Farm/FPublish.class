@@ -110,7 +110,7 @@ Public Sub wizPublish_Close()
   Dim hReq As FarmRequest
 
   hReq = New FarmRequest(cmbFarm.Text)
-  hReq.PublishSoftware(txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text)
+  hReq.PublishSoftware(txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)
   hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
   
 End

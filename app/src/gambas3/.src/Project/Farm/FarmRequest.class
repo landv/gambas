@@ -206,7 +206,7 @@ Public Sub WaitFor(Optional sGood As String, sBad As String, Optional bNoWindow 
   
 End
 
-Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String)
+Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String, sDesc As String)
 
   Dim sSource As String
   Dim sIcon As String
@@ -243,7 +243,7 @@ Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag
   $hForm.Add("name", Project.Name)
   $hForm.Add("version", Project.MajorVersion * 10000 + Project.MinorVersion)
   $hForm.Add("release", Project.ReleaseVersion)
-  $hForm.Add("desc", Project.Description)
+  $hForm.Add("desc", sDesc)
   $hForm.Add("gambas", sGambasVersion)
   $hForm.Add("checksum", sChecksum)
   $hForm.AddFile("icon", sIcon, "icon.png")

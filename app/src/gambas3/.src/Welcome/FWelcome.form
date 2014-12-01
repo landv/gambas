@@ -1,14 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,94,67)
+  MoveScaled(0,2,94,72)
   Background = Color.TextBackground
   Foreground = Color.TextForeground
   Text = ("Welcome to Gambas 3")
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Margin = True
   { mnuSort Menu
     { mnuSortByDate Menu mnuSort
       Name = "mnuSortByDate"
@@ -31,40 +29,20 @@
     }
   }
   { dwgWelcome DrawingArea
-    MoveScaled(4,1,42,22)
+    MoveScaled(4,1,42,24)
     Background = &H3398C3&
   }
-  { Panel1 Panel
-    MoveScaled(19,24,14,0)
-    Visible = False
-    Background = &H000000&
-  }
   { HBox1 Panel
-    MoveScaled(1,25,78,41)
+    MoveScaled(1,27,78,41)
     Expand = True
     Arrangement = Arrange.Horizontal
-    Spacing = True
-    { Panel7 Panel
-      MoveScaled(1,2,37,37)
-      Arrangement = Arrange.Fill
-      { panButton ScrollView
-        MoveScaled(1,1,33,35)
-        Background = &HDF6B00&
-        Foreground = Color.TextForeground
-        Arrangement = Arrange.Vertical
-        Border = False
-        ScrollBar = Scroll.None
-        { dwgFrame DrawingArea
-          MoveScaled(16,23,14,10)
-          Visible = False
-          Ignore = True
-        }
-      }
-    }
-    { Panel2 Panel
-      MoveScaled(46,10,0,16)
-      Visible = False
-      Background = &H000000&
+    { panButton ScrollView
+      MoveScaled(6,3,35,35)
+      Background = &HDF6B00&
+      Foreground = Color.TextForeground
+      Arrangement = Arrange.Vertical
+      Border = False
+      ScrollBar = Scroll.None
     }
     { panList Panel
       MoveScaled(48,5,28,30)
@@ -74,6 +52,7 @@
       Expand = True
       Arrangement = Arrange.Vertical
       Spacing = True
+      Margin = True
       { Panel3 HBox
         MoveScaled(0,0,27,4)
         { panFilter Panel

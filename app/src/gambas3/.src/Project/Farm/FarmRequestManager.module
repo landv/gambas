@@ -2,6 +2,8 @@
 
 Private $aRequest As New HttpForm[]
 
+Private Const MAX_REQUEST As Integer = 3
+
 Public Sub Add(hRequest As HttpForm)
   
   Dim hObs As Observer
@@ -9,7 +11,7 @@ Public Sub Add(hRequest As HttpForm)
   'hRequest.Debug = True
   hObs = New Observer(hRequest) As "Request"
   $aRequest.Add(hRequest)
-  If $aRequest.Count = 1 Then
+  If $aRequest.Count <= MAX_REQUEST Then
     hRequest.Submit
   Endif
   
@@ -33,11 +35,15 @@ End
 
 Public Sub Request_Finished()
   
+  Dim iPos As Integer
+  
   If $aRequest.Count = 0 Then Return
-  If $aRequest[0] = Last Then
-    $aRequest.Remove(0)
-    If $aRequest.Count Then
-      $aRequest[0].Submit
+  
+  iPos = $aRequest.FindByRef(Last)
+  If iPos >= 0 Then 
+    $aRequest.Remove(iPos)
+    If $aRequest.Count >= MAX_REQUEST Then
+      $aRequest[MAX_REQUEST - 1].Submit
     Endif
   Endif
   
@@ -55,13 +61,16 @@ Public Sub Request_Cancel()
   
 End
 
-
-
 Public Sub Clear()
 
+  Dim I As Integer
+  
   If $aRequest.Count = 0 Then Return
   
-  $aRequest[0].Stop
+  For I = 0 To Min($aRequest.Max, MAX_REQUEST)
+    $aRequest[I].Stop
+  Next
+  
   $aRequest.Clear
   
 End

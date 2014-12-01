@@ -51,11 +51,11 @@ Public Sub Panel_Draw()
     Paint.FillRect(0, 0, Paint.W, Paint.H, $iBackground)
   Endif
   
-  Paint.DrawPicture($hPict, 8, ($hPanel.H - $hPict.H) \ 2)
+  Paint.DrawPicture($hPict, 16, ($hPanel.H - $hPict.H) \ 2)
   'If $bInside Then Draw.Foreground = Color.Gradient($hPanel.Foreground, $iHighlight)
   Paint.Background = $hPanel.Foreground
-  Paint.DrawTextShadow($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
-  Paint.DrawText($sText, $hPict.W + 16, 0, $hPanel.W - $hPict.W - 24, $hPanel.H, Align.Normal)
+  Paint.DrawTextShadow($sText, $hPict.W + 24, 0, $hPanel.W - $hPict.W - 32, $hPanel.H, Align.Normal)
+  Paint.DrawText($sText, $hPict.W + 24, 0, $hPanel.W - $hPict.W - 32, $hPanel.H, Align.Normal)
   
   ' If $bArrow Then
   '   Draw.Picture(Picture["img/16/white-arrow.png"], Draw.W - 24, (Draw.H - 16) \ 2)
