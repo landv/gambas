@@ -162,10 +162,23 @@ static void callback_write(int fd, int type, CPROCESS *process)
 
 	if (process->to_string)
 	{
-		int n = read(fd, COMMON_buffer, 256);
+		int n;
+
+		CSTREAM_stream(process)->common.has_read = FALSE;
+
+		for(;;)
+		{
+			n = read(fd, COMMON_buffer, 256);
+			if (n >= 0 || errno != EINTR)
+				break;
+		}
+
 		if (n > 0)
+		{
 			process->result = STRING_add(process->result, COMMON_buffer, n);
-		return;
+			CSTREAM_stream(process)->common.has_read = TRUE;
+			return;
+		}
 	}
 
 	if (GB_CanRaise(process, EVENT_Read))
