@@ -16,6 +16,7 @@ End
 Public Sub Form_Open()
   
   $sLast = ""
+  dchProject.Bookmarks = [["Name": ("Installed softwares"), "Path": Desktop.DataDir &/ "gambas3/src", "Icon": "icon:/small/download"]]
   dchProject.ShowFile = True
   dchProject_Change
   'tabProject_Click

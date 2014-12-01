@@ -130,7 +130,6 @@ Public Sub Request_Finished()
   Dim hReq As FarmRequest = Last
   Dim sId As String
   Dim hSoftwareBox As SoftwareBox
-  Dim hLabel As Label
   Dim aId As String[]
   Dim sText As String
   Dim hSoft As CSoftware
@@ -234,7 +233,7 @@ Private Sub ReloadFarm()
   Dim hIdentity As FarmIdentity
 
   CSoftware.ClearCache(cmbFarm.Text)
-  hIdentity = New FarmIdentity(cmbFarm.Text)
+  hIdentity = FarmIdentity.Get(cmbFarm.Text)
   hIdentity.Init(lblIdentity, picIdentity)
   Reload
 
@@ -283,14 +282,16 @@ Private Sub UpdateSoftware()
   
     If .IsInstalled() Then
       btnInstall.Text = ("Uninstall")
-      btnInstall.Picture = Picture["icon:/medium/delete"]
+      btnInstall.Picture = Picture["icon:/medium/undo"]
     Else If .CanUpgrade() Then
       btnInstall.Text = ("Upgrade")
       btnInstall.Picture = Picture["icon:/medium/up"]
     Else
       btnInstall.Text = ("Install")
-      btnInstall.Picture = Picture["icon:/medium/package"]
+      btnInstall.Picture = Picture["icon:/medium/add"]
     Endif
+    
+    btnRemove.Visible = FarmIdentity.Get($hSoft.Farm).Login = $hSoft.Owner
   
     sText = Trim(.Description)
   
@@ -558,4 +559,23 @@ Public Sub urlWebSite_Click()
   Project.OpenWebPage(urlWebSite.Link)
   Stop Event
 
+End
+
+Public Sub btnRemove_Click()
+  
+  Dim sName As String = $hSoft.Name
+  Dim sErr As String
+  
+  If Message.Warning(Subst(("Do you really want to delete <b>&1</b> from the farm server?"), sName), ("Delete"), ("Cancel")) <> 1 Then Return
+  
+  sErr = $hSoft.Delete()   
+  If sErr Then
+    Message.Error(Subst(("Unable to remove <b>&1<b>:"), sName) & "\n\n" & sErr)
+  Else
+    Message(Subst("<b>&1</b> has been successfully removed.", sName))
+  Endif
+  
+  ReloadFarm
+  ToggleSoftwarePanel
+  
 End

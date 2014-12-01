@@ -93,7 +93,7 @@ End
 Public Sub GetInfo() 
   
   Exec [System.Path &/ "bin/gba" & System.Version, "-x", Path, ".info"] To Info
-  
+    
 End
 
 Public Sub GetHelp() As String

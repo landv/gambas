@@ -28,14 +28,24 @@
         Mouse = Mouse.Pointing
         AutoResize = True
         Text = ("Install")
-        Picture = Picture["icon:/medium/apply"]
       }
       { btnVote ToolButton
-        MoveScaled(28,0,15,5)
+        MoveScaled(24,0,15,5)
         Mouse = Mouse.Pointing
         AutoResize = True
         Text = ("Vote")
         Picture = Picture["icon:/large/bookmark"]
+      }
+      { Panel10 Panel
+        MoveScaled(42,0,2,5)
+        Expand = True
+      }
+      { btnRemove ToolButton
+        MoveScaled(46,0,15,5)
+        Mouse = Mouse.Pointing
+        AutoResize = True
+        Text = ("Remove")
+        Picture = Picture["icon:/medium/remove"]
       }
     }
     { Panel9 Panel

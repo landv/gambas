@@ -98,7 +98,7 @@ End
 
 Public Sub cmbFarm_Click()
 
-  $hIdentity = New FarmIdentity(cmbFarm.Text)
+  $hIdentity = FarmIdentity.Get(cmbFarm.Text)
   txtLogin.Text = $hIdentity.Login
   txtPassword.Text = $hIdentity.Password
 

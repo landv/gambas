@@ -6,6 +6,8 @@ Event Screenshot
 Public Enum STATE_WAIT = 0, STATE_INFO = 1, STATE_ICON = 2, STATE_READY = 3, STATE_ERROR = 4
 Public Const ICON_SIZE As Integer = 32
 
+Property Read Farm As String
+
 Public State As Integer
 Public Id As Integer
 Public Name As String
@@ -50,6 +52,7 @@ End
 Static Public Sub Exit()
   
   ClearCache
+  FarmIdentity.Exit
   
 End
 
@@ -473,3 +476,27 @@ Catch
   Return Error.Text
   
 End
+
+Private Function Farm_Read() As String
+
+  Return $sFarm
+
+End
+
+Public Sub Delete() As String
+  
+  Dim hReq As FarmRequest
+ 
+  hReq = New FarmRequest($sFarm)
+  hReq.DeleteSoftware(Id)
+  If hReq.WaitFor(,, True) Then
+    Return hReq.ErrorText
+  Endif
+  MustReload
+  
+Catch
+  
+  Return Error.Text
+  
+End
+

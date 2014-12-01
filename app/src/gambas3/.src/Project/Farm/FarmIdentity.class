@@ -9,12 +9,33 @@ Property Password As String
 
 Static Private $hSettings As Settings
 Static Private $cPassword As New Collection
+Static Private $cCache As New Collection
 
 Private $sFarm As String
 
 Static Public Sub _init()
   
   $hSettings = New Settings("gambas3-farm")
+  
+End
+
+Static Public Sub Get(sFarm As String) As FarmIdentity
+
+  Dim hIdentity As FarmIdentity
+  
+  hIdentity = $cCache[sFarm]
+  If Not hIdentity Then
+    hIdentity = New FarmIdentity(sFarm)
+    $cCache[sFarm] = hIdentity
+  Endif
+  
+  Return hIdentity
+  
+End
+
+Static Public Sub Exit()
+  
+  $cCache = Null
   
 End
 

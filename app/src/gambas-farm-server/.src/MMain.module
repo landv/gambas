@@ -80,7 +80,12 @@ Public Sub Main()
       
       CheckIdent
       
+    Case "/remove"
+      
+      RemoveSoftware
+      
     Case "/ping"
+      
       PrintOK
       
       
@@ -590,7 +595,7 @@ Private Sub GetSoftware()
     Response.Begin
     
     rUser = DB.Find("user", "id = &1", rSoftware!owner)
-    If rUser.Available Then sOwner = rUser!name
+    If rUser.Available Then sOwner = rUser!login
     If Not sOwner Then sOwner = "?"
     
     Print "10 OK"
@@ -853,3 +858,36 @@ Sub CheckIdent()
   If Not CheckUser() Then PrintOK
   
 End
+
+Private Sub RemoveSoftware()
+
+  Dim rSoftware As Result
+  Dim sDir As String
+  Dim iId As Integer
+  
+  OpenDatabase
+  
+  If CheckUser() Then Return
+
+  rSoftware = FindSoftware()
+  If Not rSoftware Then Return
+  iId = rSoftware!id
+  
+  If rSoftware!owner <> $iUser Then
+    PrintError("31 Not the owner")
+    Return
+  Endif
+
+  sDir = Root &/ CStr(rSoftware!id)
+  Exec ["rm", "-rf", sDir] Wait
+
+  DB.Begin
+  DB.Delete("software", "id = &1", iId)
+  DB.Delete("tag", "software = &1", iId)
+  DB.Delete("vote", "software = &1", iId)
+  DB.Commit
+
+  PrintOK
+  
+End
+

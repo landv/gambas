@@ -92,7 +92,7 @@ Public Sub cmbFarm_Click()
   
   tagEditor.SetFarm(cmbFarm.Text)
   
-  hIdentity = New FarmIdentity(cmbFarm.Text)
+  hIdentity = FarmIdentity.Get(cmbFarm.Text)
   hIdentity.Init(lblIdentity, picIdentity)
 
 End

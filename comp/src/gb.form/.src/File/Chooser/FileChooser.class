@@ -21,7 +21,7 @@ Property ShowDetailed As Boolean
 Property ShowBookmark As Boolean
 Property ShowFile As Boolean
 Property ShowPreview As Boolean
-Property Bookmarks As Array
+Property Bookmarks As Collection[]
 Property Settings As Variant[]
 Property Read DirView As DirView
 Property Read FileView As FileView
@@ -271,13 +271,13 @@ Private Sub ShowBookmark_Write(Value As Boolean)
 
 End
 
-Private Function Bookmarks_Read() As Array
+Private Function Bookmarks_Read() As Collection[]
 
   Return frmChooser.GetPrivateBookmarks()
 
 End
 
-Private Sub Bookmarks_Write(Value As Array)
+Private Sub Bookmarks_Write(Value As Collection[])
 
   frmChooser.SetPrivateBookmarks(Value)
 

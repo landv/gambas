@@ -50,7 +50,7 @@ Public Sub _new(sFarm As String)
   
   Farm = sFarm
   
-  hIdentity = New FarmIdentity(sFarm)
+  hIdentity = FarmIdentity.Get(sFarm)
   $hForm = New HttpForm As "Request"
   $hForm["login"] = hIdentity.Login
   $hForm["password"] = hIdentity.Password
@@ -115,7 +115,7 @@ Public Sub Request_Finished()
   
   sResult = $hForm.Peek()
   aResult = Split(sResult, "\r\n", "", True)
-  If aResult[0] <> "10 OK" Then
+  If aResult.Count = 0 Or If aResult[0] <> "10 OK" Then
     iPos = InStr(aResult[0], " ")
     ErrorText = Replace(Mid$(sResult, iPos + 1), "\r", "")
     Result = Null
@@ -331,6 +331,16 @@ Public Sub DownloadScreenshot(iId As Integer)
   $hForm.Add("id", CStr(iId))
   $hForm.TargetFile = Temp$()
   $bFile = True
+  FarmRequestManager.Add($hForm)
+
+End
+
+Public Sub DeleteSoftware(iId As Integer)
+
+  $sTitle = ("Delete software")
+
+  $hForm.URL = "http://" & Farm &/ "farm/remove"
+  $hForm.Add("id", CStr(iId))
   FarmRequestManager.Add($hForm)
 
 End
