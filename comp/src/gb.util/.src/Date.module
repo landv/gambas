@@ -1,0 +1,15 @@
+' Gambas module file
+
+Export
+
+Public Sub ToUnixTime({Date} As Date) As Long
+
+  Return DateDiff(Date(1970, 1, 1), {Date} - Frac(Date(Now)), gb.Second)
+
+End
+
+Public Sub FromUnixTime(UnixTime As Long) As Date
+
+  Return DateAdd(Date(1970, 1, 1), UnixTime, gb.Second)
+
+End

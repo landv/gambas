@@ -152,6 +152,7 @@ Public Sub Form_Open()
   $hRose = Image.Load("rose.jpg")
   For I = 0 To $aColor.Max
     $aColor[I] = Color.HSV(360 * I / $aColor.Max, 255, 255)
+    '$aColor[I] = Color.Merge(&H808080&, &H404040&, Frac(4 * I / $aColor.Count))
   Next
   
   Me.Center

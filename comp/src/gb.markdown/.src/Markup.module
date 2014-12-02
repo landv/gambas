@@ -46,7 +46,6 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   Dim iLine As Integer
   Dim aResult As String[]
   Dim sLine As String
-  Dim sText As String
   Dim I As Integer
   Dim bCode As Boolean
   Dim iBlockQuote As Integer
@@ -201,7 +200,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   
       If Left(sLine) = "-" And If Right(sLine) = "-" Then
         'sText = Replace(sLine, " ", "")
-        If Len(sText) >= 3 And If sText = String$(Len(sText), "-") Then
+        If Len(sLine) >= 3 And If sLine = String$(Len(sLine), "-") Then
           GoSub CLOSE_PARA
           aResult.Add("<hr />")
           Continue
@@ -395,7 +394,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       Continue
     Endif
     
-    If sLine Begins "--" And If sLine = String$(Len(sLine), "-") Then
+    If sLine Begins "--" And If sLine = String$(Len(sLine), "-") And If bInsidePar Then
       sLine = Trim(aResult[aResult.Max])
       If sLine Then
         If sLine Not Begins "<h" Then
