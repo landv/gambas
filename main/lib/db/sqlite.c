@@ -143,11 +143,7 @@ static char *FindDatabase(char *name, char *hostName)
 	return NULL;
 }
 
-/*****************************************************************************
-
-  open_database()
-
-*****************************************************************************/
+//-------------------------------------------------------------------------
 
 static int open_database(DB_DESC *desc, DB_DATABASE * db)
 {
@@ -193,6 +189,13 @@ __SQLITE3:
 }
 
 
+//-------------------------------------------------------------------------
+
+static int database_is_system(DB_DATABASE * db, const char *name)
+{
+	return FALSE;
+}
+
 /*****************************************************************************
 
   The driver interface
@@ -201,8 +204,8 @@ __SQLITE3:
 
 DB_DRIVER DB_sqlite_pseudo_driver =
 {
-	"sqlite",
-	open_database,
-	0
+	.name = "sqlite",
+	.Open = open_database,
+	.Database.IsSystem = database_is_system
 };
 
