@@ -769,11 +769,11 @@ READ_HELP:
       
   Return
   
-' Catch
-'   
-'   sErr = Error.Where & "\n\n" & Error.Text
-'   Dec Application.Busy
-'   FMain.ShowError(sErr)
+Catch
+  
+  sErr = Error.Where & "\n\n" & Error.Text
+  Dec Application.Busy
+  FMain.ShowError(sErr)
   
 End
 

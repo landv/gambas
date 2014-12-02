@@ -39,10 +39,11 @@ Public Sub DirButton_Draw()
   
   Paint.Background = Color.LightForeground
   
-  Paint.MoveTo(0, -1)
+  Paint.LineWidth = 1.5
+  Paint.MoveTo(Desktop.Scale / 2, Paint.H / 2 - Desktop.Scale / 2)
   Paint.LineTo(Desktop.Scale, Paint.H / 2)
-  Paint.LineTo(0, Paint.H + 1)
-  Paint.LineCap = Paint.LineCapSquare
+  Paint.LineTo(Desktop.Scale / 2, Paint.H / 2 + Desktop.Scale / 2)
+  Paint.LineCap = Paint.LineCapRound
   Paint.Stroke
   
   Paint.Background = Style.ForegroundOf(Me)

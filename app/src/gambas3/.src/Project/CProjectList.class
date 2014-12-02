@@ -47,6 +47,17 @@ Public Sub SetSort(iSort As Integer)
   
 End
 
+Public Sub SetArrangement(iArrange As Integer)
+  
+  If $iArrange = iArrange Then Return
+  
+  $iArrange = iArrange
+  Clear
+  Fill
+  
+End
+
+
 Private Sub FillWithExample()
 
   Dim sExample As String
@@ -97,6 +108,8 @@ Private Sub FillWithExample()
   
   Next
 
+  ApplyFilter($hFilter.Text)
+  
   'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
   $hList.Arrangement = $iArrange
   Dec Application.Busy

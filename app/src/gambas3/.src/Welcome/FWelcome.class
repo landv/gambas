@@ -40,8 +40,8 @@ End
 
 Public Sub _new()
   
-  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Vertical) As "ProjectItem"
-  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Vertical) As "ProjectItem"
+  $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Row) As "ProjectItem"
+  $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Row) As "ProjectItem"
   
 End
 
@@ -293,55 +293,6 @@ Public Sub lblWebSite_MouseUp()
   
 End
 
-Public Sub Form_Resize()
-
-  'panBackground.H = lblMessage.Y + lblMessage.H + Desktop.Scale * 2
-
-End
-
-
-' Public Sub timMadeIn_Timer()
-' 
-'   Dim hBrush As PaintBrush
-'   Dim hImage As Image
-' 
-'   $eAng += $eIncAng
-'   If $eAng >= 360 Then $eAng -= 360
-' 
-'   'If Me.Minimized Then Return
-'   
-'   hImage = $hLogo.Copy()
-'   If $eIncAng < 0 Then hImage = hImage.Mirror(True, False)
-' 
-'   Paint.Begin(hImage)
-'   Paint.Translate(Paint.W / 2, Paint.H / 2)
-'   Paint.Rotate(Rad($eAng))
-'   Paint.Translate(- Paint.W / 2, - Paint.H / 2)
-'   hBrush = Paint.Image($hMadeIn)
-'   hBrush.Scale(Paint.W / $hMadeIn.W, Paint.H / $hMadeIn.H)
-'   Paint.Brush = hBrush
-'   Paint.Rectangle(0, 0, Paint.W, Paint.H)
-'   Paint.Fill
-'   Paint.End
-'   
-'   $hDraw = hImage.Picture
-'   
-'   dwgLogo.Refresh
-'   
-' End
-' 
-' Public Sub dwgLogo_MouseUp()
-' 
-'   $eIncAng = - $eIncAng
-' 
-' End
-' 
-' Public Sub dwgLogo_Draw()
-' 
-'   If $hDraw Then Draw.Picture($hDraw, 0, 0, Draw.W, Draw.W)
-' 
-' End
-
 Public Sub lblWebSite_Enter()
 
   Last.Foreground = Color.LightBackground
@@ -461,4 +412,15 @@ Public Sub btnFarm_Click()
   
   FSoftwareFarm.Run
   
+End
+
+Public Sub panList_Arrange()
+
+  Dim iArr As Integer
+
+  iArr = If(panList.W > Desktop.Scale * 70, Arrange.Row, Arrange.Vertical)
+  'Debug iArr;; panList.W;; Desktop.Scale * 64
+  $hRecent.SetArrangement(iArr)
+  $hExample.SetArrangement(iArr)
+
 End
