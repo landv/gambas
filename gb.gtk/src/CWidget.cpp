@@ -200,7 +200,10 @@ bool gb_raise_MouseEvent(gControl *sender, int type)
 					gMainWindow *window = sender->window();
 					gMenu *menu = gMenu::findFromName(window, ob->popup);
 					if (menu)
+					{
 						menu->popup();
+						CMENU_check_popup_click();
+					}
 					return true;
 				}
 

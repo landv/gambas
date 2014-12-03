@@ -59,7 +59,10 @@ static void mnu_activate(GtkMenuItem *menuitem, gMenu *data)
 		data->setChecked(!data->checked());
 
 	if (data->onClick)
+	{
+		fprintf(stderr, "mnu_activate: %s\n", data->name());
 		data->onClick(data);
+	}
 }
 
 static gboolean cb_map(GtkWidget *menu, gMenu *data)
@@ -137,7 +140,7 @@ static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
 		gtk_style_context_add_class(style, GTK_STYLE_CLASS_CHECK);
 	}
 
-	gtk_widget_style_get(item, "indicator-size", &indicator_size, NULL);
+	gtk_widget_style_get(item, "indicator-size", &indicator_size, (char *)NULL);
 	indicator_size = MAX(16, indicator_size);
 
 	x += (w - indicator_size) / 2;

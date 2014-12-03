@@ -50,4 +50,6 @@ typedef
 	} 
 	CMENU;
 
+void CMENU_check_popup_click(void);
+
 #endif

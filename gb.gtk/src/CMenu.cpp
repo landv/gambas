@@ -135,13 +135,17 @@ static void cb_hide(gMenu *sender)
 	GB.Raise(THIS, EVENT_Hide, 0);
 }
 
-/*BEGIN_METHOD_VOID(CMENU_init)
+void CMENU_check_popup_click(void)
+{
+	if (_popup_menu_clicked)
+	{
+		CMENU *menu = _popup_menu_clicked;
+		_popup_menu_clicked = NULL;
+		send_click_event(menu);
+	}
+}
 
-	CLASS_Menu = GB.FindClass("Menu");
-	CLASS_Window = GB.FindClass("Window");
-
-END_METHOD*/
-
+//-------------------------------------------------------------------------
 
 BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
@@ -378,12 +382,7 @@ BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
 	else
 		MENU->popup();
 
-	if (_popup_menu_clicked)
-	{
-		CMENU *menu = _popup_menu_clicked;
-		_popup_menu_clicked = NULL;
-		send_click_event(menu);
-	}
+	CMENU_check_popup_click();
 
 END_METHOD
 
