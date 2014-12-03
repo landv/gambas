@@ -59,7 +59,8 @@ static char _buffer[16];
 
 static void callback_read(int fd, int type, CFILE *file)
 {
-	GB_Raise(file, EVENT_Read, 0);
+	if (!STREAM_read_ahead(CSTREAM_stream(file)))
+		GB_Raise(file, EVENT_Read, 0);
 }
 
 
