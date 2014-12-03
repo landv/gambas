@@ -148,14 +148,17 @@ Public Sub DrawingArea_Draw()
       $hIcon = Project.StretchIcon(.GetIconPath(), ICON_SIZE)
     Endif
     
-    Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
-    Paint.Rectangle(X, Y, W, H)
-    Paint.Fill
+    ' Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(Color.LightForeground, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
+    ' Paint.Rectangle(X, Y, W, H)
+    ' Paint.Fill
     'Paint.Brush = Null
     'Paint.DrawImage($hGradient, X, Y, W, W)
     
     Paint.AntiAlias = False
     Paint.Rectangle(X, Y, W - 1, H - 1)
+    
+    Paint.Background = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
+    Paint.Fill(True)
     
     If $hDrawingArea.HasFocus Or If $bHighlight Then
     
@@ -164,7 +167,7 @@ Public Sub DrawingArea_Draw()
     
     Else
       
-      Paint.Background = Color.SetAlpha(Color.LightForeground, 160)
+      Paint.Background = Color.LightForeground
       
     Endif
     
@@ -236,7 +239,7 @@ Public Sub DrawingArea_Draw()
       
       W = Paint.W - X - P * 2
       H = Paint.H - Y - ICON_SIZE - P * 2
-      If $bHighlight Then H -= Desktop.Scale * 2
+      If HasButton() Then H -= Desktop.Scale * 2
       Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + ICON_SIZE + P, W, H)
       
     Endif
@@ -419,4 +422,17 @@ Private Sub Selected_Write(Value As Boolean)
   $bSelected = Value
   $hDrawingArea.Refresh
 
+End
+
+Private Sub HasButton() As Boolean
+  
+  Dim hProjectList As CProjectList
+  
+  If Not $bHighlight Then Return
+  
+  Try hProjectList = Object.Parent(Me)
+  If Not hProjectList Then Return
+  
+  Return hProjectList.AllowOpenExtern
+  
 End

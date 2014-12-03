@@ -12,6 +12,8 @@ Static Private $cIconCache As New Collection
 
 Property Read Path As String
 Property Name As String
+Property GenericName As String
+Property Comment As String
 Property Read ProgramName As String
 Property Exec As String
 Property Terminal As Boolean
@@ -29,6 +31,8 @@ Private $sIcon As String
 Private $aMimeTypes As String[]
 Private $aRest As String[]
 Private $aCategories As String[]
+Private $sGenericName As String
+Private $sComment As String
 
 Static Public Sub _init()
 
@@ -147,6 +151,12 @@ Public Sub _new(Path As String)
           
         Case "Categories"
           $aCategories = Split(sValue, ";", "\\;")
+          
+        Case "GenericName"
+          $sGenericName = sValue
+        
+        Case "Comment"
+          $sComment = sValue
           
         Case Else
           $aRest.Add(sLine)
@@ -449,6 +459,8 @@ Public Sub Save()
   
   Print #hFile, "Type=Application"
   Print #hFile, "Name="; $sName
+  If $sGenericName Then Print #hFile, "GenericName="; $sGenericName
+  If $sComment Then Print #hFile, "Comment="; $sComment
   Print #hFile, "Icon="; $sIcon
   Print #hFile, "Exec="; $sExec
   If $bTerminal Then Print #hFile, "Terminal=true"
@@ -492,5 +504,29 @@ Private Sub Categories_Write(Value As String[])
   Else
     $aCategories = Value.Copy()
   Endif
+
+End
+
+Private Function GenericName_Read() As String
+
+  Return $sGenericName
+
+End
+
+Private Sub GenericName_Write(Value As String)
+
+  $sGenericName = Value
+
+End
+
+Private Function Comment_Read() As String
+
+  Return $sComment
+
+End
+
+Private Sub Comment_Write(Value As String)
+
+  $sComment = Value
 
 End

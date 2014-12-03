@@ -120,6 +120,12 @@
     Type=db.Integer
   }
   { Field
+    Name="vendor"
+    Type=db.String
+    Length=64
+    Collation="default"
+  }
+  { Field
     Name="name"
     Type=db.String
     Length=64
@@ -192,7 +198,7 @@
   { Index 
     Name="software_Index_name"
     Unique=True
-    Fields=["name","version"]
+    Fields=["vendor","name"]
   }
   { Index 
     Name="software_Index_checksum"

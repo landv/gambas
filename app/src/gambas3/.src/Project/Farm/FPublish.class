@@ -24,6 +24,8 @@ Public Sub Form_Open()
   
   $aDep = Project.PublishDependencies
   
+  lblProject.Text = Project.Name
+  txtVendor.Text = Project.Vendor
   cmbGambasVersion.Text = Project.PublishGambasVersion
   txtURL.Text = Project.PublishWebSite
   txtDesc.Text = Project.Description
@@ -52,6 +54,7 @@ Public Sub Form_Close()
   
   Settings["/Publish/Farm"] = cmbFarm.Text
 
+  Project.Vendor = Trim(txtVendor.Text)
   Project.PublishTags = tagEditor.GetTags()
   Project.PublishDependencies = $aDep
   Project.PublishGambasVersion = cmbGambasVersion.Text
@@ -110,7 +113,7 @@ Public Sub wizPublish_Close()
   Dim hReq As FarmRequest
 
   hReq = New FarmRequest(cmbFarm.Text)
-  hReq.PublishSoftware(txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)
+  hReq.PublishSoftware(Trim(txtVendor.Text), txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)
   hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
   
 End

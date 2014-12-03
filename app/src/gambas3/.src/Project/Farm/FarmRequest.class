@@ -206,7 +206,7 @@ Public Sub WaitFor(Optional sGood As String, sBad As String, Optional bNoWindow 
   
 End
 
-Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String, sDesc As String)
+Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String, sDesc As String)
 
   Dim sSource As String
   Dim sIcon As String
@@ -241,6 +241,7 @@ Public Sub PublishSoftware(sScreenshot As String, sGambasVersion As String, aTag
   '$hForm.Add("login", Login)
   '$hForm.Add("password", Password)
   $hForm.Add("name", Project.Name)
+  $hForm.Add("vendor", sVendor)
   $hForm.Add("version", Project.MajorVersion * 10000 + Project.MinorVersion)
   $hForm.Add("release", Project.ReleaseVersion)
   $hForm.Add("desc", sDesc)

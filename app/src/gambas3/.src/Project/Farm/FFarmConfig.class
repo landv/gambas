@@ -88,7 +88,7 @@ Public Sub btnRegister_Click()
     Return
   Endif
   
-  hReq = New FarmRequest(lstFarm.Text)
+  hReq = New FarmRequest(cmbFarm.Text)
   hReq.RegisterUser(sLogin, sPassword, sEmail)
   If Not hReq.WaitFor(("You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."), ("Unable to register user.")) Then
     btnCancel_Click

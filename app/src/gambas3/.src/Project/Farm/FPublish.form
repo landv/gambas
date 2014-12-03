@@ -18,8 +18,32 @@
     ActionPicture = Picture["icon:/small/internet"]
     Index = 0
     Text = ("Information")
-    { HBox8 HBox
+    { HBox9 HBox
       MoveScaled(1,1,58,4)
+      Spacing = True
+      { Label6 Label
+        MoveScaled(0,0,21,4)
+        Text = ("Project")
+      }
+      { lblProject Label
+        MoveScaled(32,0,18,4)
+        Expand = True
+      }
+    }
+    { HBox6 HBox
+      MoveScaled(1,6,58,4)
+      Spacing = True
+      { Label4 Label
+        MoveScaled(0,0,21,4)
+        Text = ("Vendor")
+      }
+      { txtVendor TextBox
+        MoveScaled(31,0,26,4)
+        Expand = True
+      }
+    }
+    { HBox8 HBox
+      MoveScaled(1,11,58,4)
       Spacing = True
       { Label10 Label
         MoveScaled(0,0,21,4)
@@ -31,7 +55,7 @@
       }
     }
     { HBox5 HBox
-      MoveScaled(1,6,58,4)
+      MoveScaled(1,16,58,4)
       Spacing = True
       { Label3 Label
         MoveScaled(0,0,21,4)
@@ -45,11 +69,11 @@
       }
     }
     { Label2 Label
-      MoveScaled(1,11,21,4)
+      MoveScaled(1,21,21,4)
       Text = ("Description")
     }
     { txtDesc TextArea
-      MoveScaled(1,16,30,19)
+      MoveScaled(1,26,30,19)
       Expand = True
       Wrap = True
     }

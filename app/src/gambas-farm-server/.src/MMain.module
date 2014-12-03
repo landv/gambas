@@ -330,10 +330,12 @@ Private Sub PublishSoftware()
   Dim sRelease As String
   Dim sPath As String
   Dim hImage As Image
+  Dim sVendor As String
   
   If CheckUser() Then Return
 
   sName = Request["name"]
+  sVendor = Request["vendor"]
   sVersion = Request["version"]
   sRelease = Request["release"]
   sDesc = Request["desc"]
@@ -348,6 +350,11 @@ Private Sub PublishSoftware()
   
   If Not sName Then
     PrintError("13 Bad request\nName missing")
+    Return
+  Endif
+  
+  If Not sVendor Then
+    PrintError("13 Bad request\nVendor missing")
     Return
   Endif
   
@@ -405,11 +412,9 @@ Private Sub PublishSoftware()
     Return
   Endif
   
-  
-  
   DB.Begin
   
-  rSoftware = DB.Edit("software", "name = &1", sName)
+  rSoftware = DB.Edit("software", "vendor = &1 AND name = &1", sVendor, sName)
   If rSoftware.Available Then
     If rSoftware!owner <> $iUser Then
       PrintError("25 Software already exists")
@@ -418,6 +423,7 @@ Private Sub PublishSoftware()
   Else
     rSoftware = DB.Create("software")
     rSoftware!name = sName
+    rSoftware!vendor = sVendor
     rSoftware!owner = $iUser
   Endif
   
@@ -436,6 +442,7 @@ Private Sub PublishSoftware()
   rSoftware!url = sURL
   rSoftware!date = Now
   rSoftware!dependencies = sDep
+  rSoftware!size = Stat(Request.Files["source"]).Size
   rSoftware.Update
   
   rSoftware = DB.Find("software", "name = &1", sName)
@@ -602,10 +609,12 @@ Private Sub GetSoftware()
     Print "Id="; rSoftware!id
     Print "Name="; Quote(rSoftware!name)
     Print "Version="; rSoftware!version
+    Print "Vendor="; Quote(rSoftware!vendor)
     Print "Release="; rSoftware!release
     Print "UploadDate="; Format(rSoftware!date, "yyyymmddhhnnss")
     Print "Description="; Quote(rSoftware!description)
     Print "URL="; Quote(rSoftware!url)
+    Print "Size="; rSoftware!size
     Print "RequiredGambasVersion="; rSoftware!gambas
     Print "Checksum="; Quote(rSoftware!checksum)
     Print "DownloadCount="; rSoftware!download
@@ -773,6 +782,8 @@ Private Sub SearchSoftware()
         If sFrom Then sReq = DB.Subst("(vote = &1 AND id > &2) OR (vote < &1)", CInt(sFrom), iFromId)
       Case "download"
         If sFrom Then sReq = DB.Subst("(download = &1 AND id > &2) OR (download < &1)", CInt(sFrom), iFromId)
+      Case "size"
+        If sFrom Then sReq = DB.Subst("(size = &1 AND id > &2) OR (size < &1)", CInt(sFrom), iFromId)
       Case Else
         PrintError("30 Unknown sort criteria")
         Return

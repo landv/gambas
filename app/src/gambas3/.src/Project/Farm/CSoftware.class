@@ -12,6 +12,7 @@ Public State As Integer
 Public Id As Integer
 Public Name As String
 Public Version As String
+Public Vendor As String
 Public InstalledVersion As String
 Public UploadDate As Date
 Public Description As String
@@ -112,6 +113,7 @@ Public Sub Request_Finished()
   
   Name = UnQuote(cResult["Name"])
   Try Version = CStr(CInt(Left(cResult["Version"], -4))) & "." & CStr(CInt(Right$(cResult["Version"], 4))) & "." & cResult["Release"]
+  Vendor = UnQuote$(cResult["Vendor"])
   
   GetInstalledVersion()
   
@@ -162,7 +164,7 @@ End
 
 Public Sub GetInstalledDir() As String
   
-  Return Desktop.DataDir &/ "gambas3/src" &/ Name
+  Return Desktop.DataDir &/ "gambas3/src" &/ Vendor &/ Name
   
 End
 
@@ -266,13 +268,11 @@ Public Sub Install() As String
   ' Create directories
   
   sDir = Desktop.DataDir &/ "gambas3"
-  Try Mkdir sDir
 
-  sSrcDir = sDir &/ "src"
-  Try Mkdir sSrcDir
-
-  sExecDir = Desktop.DataDir &/ "gambas3/bin"
-  Try Mkdir sExecDir
+  sSrcDir = sDir &/ "src" &/ Vendor
+  Project.MakeDir(sSrcDir)
+  sExecDir = Desktop.DataDir &/ "gambas3/bin" &/ Vendor
+  Project.MakeDir(sExecDir)
   
   ' Download source archive
   
@@ -384,9 +384,9 @@ Public Sub Install() As String
       Endif
     Next
   
-    hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & sName & ".desktop")
+    hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & Vendor & "-" & sName & ".desktop")
     With hDesktopFile
-      .Name = sName
+      .Name = hProjectInfo.GetTitle()
       .Exec = sExecDir &/ sName & ".gambas"
       If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
       .Categories = aCat

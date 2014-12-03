@@ -10,8 +10,6 @@ Event Click
 Static Private $hVote As Image
 Static Private $hVoteOff As Image
 Static Private $hInstall As Image
-Static Private $hInstallOff As Image
-Static Private $hUpgrade As Image
 
 Property Read Id As Integer
 Property Read Software As CSoftware
@@ -19,9 +17,6 @@ Property Read Software As CSoftware
 Private $hDrawingArea As DrawingArea
 Private $hSoft As CSoftware
 Private $hSpinner As Spinner
-' Private panAction As Panel
-' Private btnVote As ToolButton
-' Private btnInstall As ToolButton
 Private $sFarm As String
 Private $iId As Integer
 Private $bHighlight As Boolean
@@ -33,9 +28,7 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
   If Not $hVote Then
     $hVote = Picture["icon:/16/bookmark"].Image
     $hVoteOff = $hVote.Copy().Desaturate()
-    $hInstall = Picture["icon:/16/apply"].Image
-    $hInstallOff = $hInstall.Copy().Desaturate()
-    $hUpgrade = Picture["icon:/16/up"].Image
+    $hInstall = Picture["icon:/16/download"].Image
   Endif
   
   Me.Foreground = Color.TextForeground
@@ -131,38 +124,48 @@ Public Sub DrawingArea_Draw()
   H = Paint.H
   P = Desktop.Scale
   
-  If $hSoft.IsInstalled() Then
-    If $hSoft.CanUpgrade() Then
-      iCol = &HDF6B00&
-    Else
-      iCol = &H3398C3&
-    Endif
-  Else
-    iCol = Color.LightForeground
-  Endif
+  ' If $hSoft.IsInstalled() Then
+  '   If $hSoft.CanUpgrade() Then
+  '     iCol = &HDF6B00&
+  '   Else
+  '     iCol = &H3398C3&
+  '   Endif
+  ' Else
+  '   iCol = Color.LightForeground
+  ' Endif
 
-  Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(iCol, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
-  Paint.Rectangle(0, 0, W, H)
-  Paint.Fill
+  'Paint.Brush = Paint.RadialGradient(X, Y, Desktop.Scale * 24, X, Y, [Color.Merge(iCol, Color.TextBackground, 0.6), Color.TextBackground], [0.0, 1.0])
+  'Paint.Rectangle(0, 0, W, H)
+  'Paint.Fill
   
   Paint.AntiAlias = False
   Paint.Rectangle(X + 1, Y + 1, W - 3, H - 3)
   
-  If $hDrawingArea.HasFocus Or If $bHighlight Then
+  Paint.Background = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
+  Paint.Fill(True)
   
+  If $hDrawingArea.HasFocus Or If $bHighlight Then
     Paint.Background = Color.LightBackground
     Paint.LineWidth = 2
-  
   Else
-    
-    Paint.Background = Color.SetAlpha(Color.LightForeground, 160)
-    
+    Paint.Background = Color.LightForeground
   Endif
   
   Paint.Stroke
   Paint.AntiAlias = True
   
   If Not $hSoft Or If $hSoft.State < CSoftware.STATE_READY Then Return
+  
+  If $hSoft.IsInstalled() Then
+    If $hSoft.CanUpgrade() Then
+      iCol = &HDF6B00&
+    Else
+      iCol = &H3398C3&
+    Endif
+    Paint.Polygon([Paint.W - 2, Paint.H - P * 3 - 2, Paint.W - 2, Paint.H - 2, Paint.W - 2 - P * 3, Paint.H - 2])
+    Paint.Background = Color.SetAlpha(iCol, 128)
+    Paint.Fill
+  Endif
   
   X += P
   Y += P
@@ -193,6 +196,7 @@ Public Sub DrawingArea_Draw()
     'Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
     Paint.Background = iCol
     sText = .Name
+    If .Vendor Then sText &= " (" & .Vendor & ")"
     Paint.Font = Font["+1"]
     Paint.Background = iCol
     Paint.DrawTextShadow(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
@@ -218,7 +222,7 @@ Public Sub DrawingArea_Draw()
     PaintStat($hSoft)
     
   End With
-    
+  
   Paint.Restore
   
 End
@@ -255,7 +259,6 @@ Static Public Sub PaintStat(hSoft As CSoftware, Optional bWithSize As Boolean)
   Dim sDownload As String
   Dim X, Y, W As Integer
   Dim P As Integer
-  Dim hImage As Image
   
   P = Desktop.Scale
   
@@ -275,16 +278,7 @@ Static Public Sub PaintStat(hSoft As CSoftware, Optional bWithSize As Boolean)
     
     X += W + 8
     
-    If .IsInstalled() Then
-      If .CanUpgrade() Then
-        hImage = $hUpgrade
-      Else
-        hImage = $hInstall
-      Endif
-    Else
-      hImage = $hInstallOff
-    Endif
-    Paint.DrawImage(hImage, X, Y)
+    Paint.DrawImage($hInstall, X, Y)
     
     X += 20
     Paint.DrawText(sDownload, X, Y, Paint.W, 16, Align.Left)
