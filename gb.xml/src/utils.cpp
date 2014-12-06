@@ -287,18 +287,18 @@ void ThrowXMLParseException(const char* nerror, const char *text, const size_t l
     throw XMLParseException_New(nerror, text, lenText, posFailed);
 }
 
-XMLParseException* XMLParseException_New()//Void initializer
+XMLParseException XMLParseException_New()//Void initializer
 {
-    XMLParseException *exception = new XMLParseException;
-    memset(exception, 0, sizeof(XMLParseException));
-    exception->line = 1;
-    exception->column = 1;
+    XMLParseException exception;
+    memset(&exception, 0, sizeof(XMLParseException));
+    exception.line = 1;
+    exception.column = 1;
     return exception;
 }
 
-XMLParseException* XMLParseException_New(const char *nerror, size_t posFailed)
+XMLParseException XMLParseException_New(const char *nerror, size_t posFailed)
 {
-    XMLParseException *exception = XMLParseException_New();
+    XMLParseException exception = XMLParseException_New();
     size_t lenError;
     char *error;
 
@@ -306,60 +306,55 @@ XMLParseException* XMLParseException_New(const char *nerror, size_t posFailed)
     error = (char*) malloc(lenError);
     memcpy(error, nerror, lenError);
 
-    exception->errorWhat = (char*)malloc(37 + lenError);
-    sprintf(exception->errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
-    exception->errorWhat[36 + lenError] = 0;
+    exception.errorWhat = (char*)malloc(37 + lenError);
+    sprintf(exception.errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
+    exception.errorWhat[36 + lenError] = 0;
 
     free(error);
 
     return exception;
 }
 
-XMLParseException* XMLParseException_New(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw()
+XMLParseException XMLParseException_New(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw()
 {
-    XMLParseException *exception = XMLParseException_New();
+    XMLParseException exception = XMLParseException_New();
     size_t lenError;
-    char *error;
 
     lenError = strlen(nerror) + 1;
-    error = (char*) malloc(lenError);
-    memcpy(error, nerror, lenError);
     
     //Parse error : (errorText) !\n Line 123456789 , Column 123456789 : \n (near)
     
     if(posFailed == 0)
     {
-        exception->errorWhat = (char*)malloc(17 + lenError);
-        sprintf(exception->errorWhat, "Parse error : %s !", error);
-        exception->errorWhat[16 + lenError] = 0;
+        exception.errorWhat = (char*)malloc(17 + lenError);
+        sprintf(exception.errorWhat, "Parse error : %s !", nerror);
+        exception.errorWhat[16 + lenError] = 0;
         return exception;
     }
     else if(!data || !lenData)
     {
-        exception->errorWhat = (char*)malloc(37 + lenError);
-        sprintf(exception->errorWhat, "Parse error : %s !\n Position %zu", error, (size_t)posFailed);
-        exception->errorWhat[36 + lenError] = 0;
+        exception.errorWhat = (char*)malloc(37 + lenError);
+        sprintf(exception.errorWhat, "Parse error : %s !\n Position %zu", nerror, (size_t)posFailed);
+        exception.errorWhat[36 + lenError] = 0;
         return exception;
     }
 
     if(posFailed > data + lenData || posFailed < data) return exception;
-    XMLParseException_AnalyzeText(exception, data, lenData, posFailed);
+    XMLParseException_AnalyzeText(&exception, data, lenData, posFailed);
 
 
-    exception->errorWhat = (char*)malloc(61 + lenError + exception->lenNear);
-    memset(exception->errorWhat, 0, 61 + lenError + exception->lenNear);
-    sprintf(exception->errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", error, exception->line, exception->column, exception->near);
-    exception->errorWhat[60 + lenError + exception->lenNear] = 0;
+    exception.errorWhat = (char*)malloc(61 + lenError + exception.lenNear);
+    memset(exception.errorWhat, 0, 61 + lenError + exception.lenNear);
+    sprintf(exception.errorWhat, "Parse error : %s !\n Line %zu , Column %zu : \n %s", nerror, exception.line, exception.column, exception.near);
+    exception.errorWhat[60 + lenError + exception.lenNear] = 0;
 
     return exception;
 }
 
-
-void XMLParseException_Free(XMLParseException* &ex) throw()
+void XMLParseException_Cleanup(XMLParseException *ex)
 {
+    if(ex->errorWhat) free(ex->errorWhat);
     if(ex->near) free(ex->near);
-    free(ex);
-    ex = 0;
 }
 
 void XMLParseException_AnalyzeText(XMLParseException *ex, const char *text, const size_t lenText, const char *posFailed) throw()

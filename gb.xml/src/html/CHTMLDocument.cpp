@@ -184,33 +184,6 @@ HtmlDocument_AddScriptIfIE(THIS, STRING(path), LENGTH(path), STRINGOPT(cond, "IE
 
 END_METHOD
 
-/*BEGIN_METHOD(CDocument_forceSetContent, GB_STRING data)
-
-try
-{
-    THIS->setContent(STRING(data), true);
-}
-catch(HTMLParseException &e)
-{
-    GB.Error(e.what());
-}
-
-END_METHOD*/
-/*
-BEGIN_METHOD(CDocument_fromString, GB_STRING content)
-
-try
-{
-    (STRING(content), LENGTH(content));
-}
-catch(XMLParseException &e)
-{
-    GB.Error(e.what());
-}
-
-END_METHOD*/
-
-
 GB_DESC CDocumentStyleSheetsDesc[] =
 {
     GB_DECLARE(".HtmlDocumentStyleSheets", 0), GB_VIRTUAL_CLASS(),

@@ -140,6 +140,7 @@ try
 catch(XMLParseException &e)
 {
     GB.Error(e.errorWhat);
+    XMLParseException_Cleanup(&e);
 }
 END_METHOD
 
@@ -254,6 +255,7 @@ try
 catch(XMLParseException &e)
 {
     GB.Error(e.errorWhat);
+    XMLParseException_Cleanup(&e);
 }
 GB.ReturnObject(array);
 

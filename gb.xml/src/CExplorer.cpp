@@ -88,6 +88,7 @@ try
 catch(XMLParseException &e)
 {
     GB.Error(e.errorWhat);
+    XMLParseException_Cleanup(&e);
 }
 
 

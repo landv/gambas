@@ -76,6 +76,7 @@ catch(XMLParseException &e)
 {
     GB.Error(e.errorWhat);
     GB.ReturnNull();
+    XMLParseException_Cleanup(&e);
 }
 
 END_METHOD
@@ -95,6 +96,7 @@ try
 catch(XMLParseException &e)
 {
     GB.Error(e.errorWhat);
+    XMLParseException_Cleanup(&e);
 }
 
 END_METHOD
@@ -129,6 +131,7 @@ else
     catch(XMLParseException &e)
     {
         GB.Error(e.errorWhat);
+        XMLParseException_Cleanup(&e);
     }
 }
 
@@ -156,6 +159,7 @@ try
 catch(XMLParseException &e)
 {
     GB.Error(e.errorWhat);
+    XMLParseException_Cleanup(&e);
 }
 
 END_METHOD

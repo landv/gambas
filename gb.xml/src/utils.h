@@ -46,8 +46,9 @@ void insertString(char *&src, size_t &lenSrc, const char *insert, size_t lenInse
 
 bool GB_MatchString(const char *str, size_t lenStr, const char *pattern, size_t lenPattern, int mode = GB_STRCOMP_BINARY);
 
-XMLParseException* XMLParseException_New(const char *nerror, size_t posFailed);
-XMLParseException* XMLParseException_New(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw();
+XMLParseException XMLParseException_New(const char *nerror, size_t posFailed);
+XMLParseException XMLParseException_New(const char *nerror, const char *data, const size_t lenData, const char *posFailed) throw();
+void XMLParseException_Cleanup(XMLParseException *ex);
 void ThrowXMLParseException(const char* nerror, const char *text, const size_t lenText, const char *posFailed);
 
 
