@@ -1,0 +1,42 @@
+#!/usr/bin/gbs3
+
+Private $cHelp As New Collection
+Private $aCurrent As New String[]
+
+Public Sub Main()
+  Dim sLine As String
+  Dim cClass As Collection, aHelp, aSyn As String[]
+  Dim iInd As Integer
+
+  For Each sLine in File.In.Lines
+    If Not sLine Then Continue
+    If sLine Begins "'" Then
+      $aCurrent.Add(sLine)
+    Else
+      With Scan(sLine, "* *") ' <Class> <Symbol-and-Synonym-List>
+        .[0] = Trim$(.[0])
+	.[1] = Trim$(.[1])
+        If .Count <> 2 Then
+	  Error "Skipping malformed line:";; sLine
+	  Continue
+	Endif
+        If Not $cHelp[.[0]] Then $cHelp[.[0]] = New Collection
+        $cHelp[.[0]][.[1]] = $aCurrent
+        $aCurrent = New String[]
+      End With
+    Endif
+  Next
+
+  For Each cClass In $cHelp
+    Print "#"; $cHelp.Key
+    For Each aHelp In cClass
+      aSyn = Split(cClass.Key, " ")
+      Print aSyn[0]
+      If aHelp.Count Then Print aHelp.Join("\n")
+      For iInd = 1 To aSyn.Max
+        Print aSyn[iInd]
+	Print "' A synonym for";; aSyn[0]; "."
+      Next
+    Next
+  Next
+End
