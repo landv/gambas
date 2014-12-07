@@ -3,8 +3,12 @@
 { Form Form
   MoveScaled(0,0,131,68)
   Arrangement = Arrange.Horizontal
+  { DV2 DocumentView
+    MoveScaled(2,4,13,60)
+    Arrangement = Arrange.Vertical
+  }
   { DV DocumentView
-    MoveScaled(2,4,78,58)
+    MoveScaled(22,4,58,58)
     Expand = True
   }
   { Panel1 Panel
@@ -52,6 +56,10 @@
       ReadOnly = True
       List = [("None"), ("Horizontal"), ("Vertical"), ("Row"), ("Column"), ("Fill")]
       Text = ("ComboBox1")
+    }
+    { Button1 Button
+      MoveScaled(32,49,5,5)
+      Text = ("Button1")
     }
   }
 }

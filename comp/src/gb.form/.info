@@ -806,7 +806,7 @@ C
 _Properties
 C
 s
-*,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding,Spacing,ShowShadow
+*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding,Spacing,ShowShadow
 _Group
 C
 s
@@ -845,7 +845,7 @@ i
 
 Layout
 r
-_DocumentItem
+_DocumentLayout
 
 Zoom
 p
@@ -863,6 +863,10 @@ VisibleCount
 p
 i
 
+Mode
+p
+i
+
 Padding
 p
 i
@@ -874,6 +878,14 @@ i
 ShowShadow
 p
 b
+
+Item
+r
+_DocumentItem
+
+Current
+r
+_DocumentItem
 
 :Layout
 :
@@ -899,6 +911,10 @@ View_Draw
 m
 
 
+Find
+m
+i
+(X)i(Y)i
 RefreshLayoutNeeds
 m
 
@@ -927,6 +943,54 @@ View_MouseWheel
 m
 
 
+_GetItemWidth
+m
+i
+(Index)i
+_GetItemHeight
+m
+i
+(Index)i
+SetItemVisible
+m
+i
+(Index)i
+_Get
+m
+_DocumentItem
+(Index)i
+MoveTo
+m
+b
+(Index)i
+MoveFirst
+m
+b
+
+MoveNext
+m
+b
+
+MovePrevious
+m
+b
+
+View_MouseDown
+m
+
+
+_IsVisible
+m
+b
+(Index)i
+_GetX
+m
+i
+(Index)i
+_GetY
+m
+i
+(Index)i
 #Expander
 UserContainer
 C
@@ -3071,7 +3135,7 @@ _View
 v
 DateChooser
 
-#_DocumentItem
+#_DocumentLayout
 
 C
 Width

@@ -5,10 +5,9 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding,Spacing,ShowShadow"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding,Spacing,ShowShadow"
 Public Const _Group As String = "View"
 Public Const _Similar As String = "GridView"
-
 
 Public _ShowPageNumber As Boolean
 Public Enum Portrait, Paysage
@@ -17,17 +16,26 @@ Property DocWidth As Integer
 Property DocHeight As Integer
 Property Count As Integer
 Property Read Max As Integer
-Property Read Layout As _DocumentItem
+Property Read Layout As _DocumentLayout
 Property Zoom, Scale As Float
 Property Arrangement As Integer
 Property VisibleCount As Integer '> 0 set the number of page by line
 '= 0 standart mode the number of page to fit the visible area.
 
+Property Mode As Integer
+
+
 Property Padding As Integer 
-
 Property Spacing As Integer
-
 Property ShowShadow As Boolean
+Property Read Item As _DocumentItem
+Property Read Current As _DocumentItem
+
+
+
+
+
+Private $iMode As Integer = Select.None
 Private $bShowShadow As Boolean = True
 Private $iPadding As Integer = 10
 Private $fScaledPadding As Integer
@@ -37,7 +45,7 @@ Private $iVisibleCount As Integer
 Private $hView As ScrollArea
 Private $iDocWidth As Integer = 210
 Private $iDocHeight As Integer = 297
-Private $hLayout As New _DocumentItem
+Private $hLayout As New _DocumentLayout
 
 'Info du layout
 Private $iFirstVisibleColumn As Integer
@@ -48,7 +56,7 @@ Private $iLastVisibleDocument As Integer
 Private $iLastVisibleLine As Integer
 Private $colLayout As New Collection
 Private $colImage As New Collection
-Private $iCount As Integer = 1
+Private $iCount As Integer = 0
 
 Private $fScaledDocWidth As Float  ''Largeur reelle du doc a l'affichage (zoom)
 Private $fScaledDocHeight As Float ''Hauteur reelle du doc a l'affichage (zoom)
@@ -64,11 +72,16 @@ Private $tmrRefresh As New Timer As "tmrRefresh"
 Private $aImageToLoad As New Integer[]
 Private $aImageLoaded As New Integer[]
 Private $iNbreDocByLine As Integer
+Private $hDocItem As _DocumentItem
+Private $iIntern As Integer
+Private $iCurrent As Integer
 'Private $fZoom As Float
 Private $fZoom As Float = 1.0
+Private $aSelected As New Integer[]
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
+
 Event Zoom
 
 Public Sub _new()
@@ -76,6 +89,8 @@ Public Sub _new()
   $hView = New ScrollArea(Me) As "View"
   $hView.Background = Color.DarkGray
   $tmrLoad.Delay = 1
+  Me.Proxy = $hView
+  $hDocItem = New _DocumentItem As "Doc"
   '$fZoom = $fZoom
   
 End
@@ -195,12 +210,19 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
   Endif
+  If $aSelected.Find(page) > -1 Then
+    
+    Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 125))
+    Paint.Fill()
+  Endif
+  
   If _ShowPageNumber Then
     Paint.Font.Grade = 20 * $fZoom
     Paint.Text(Page, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight, Align.Center)
     Paint.Fill
   Endif
-
+  
 End
 
 Public Sub RefreshLayoutNeeds()
@@ -212,7 +234,7 @@ Public Sub RefreshLayoutNeeds()
     
     If $hLayout.Width <> 0 Or If $hLayout.Height <> 0 Or If $hLayout.Orientation <> 1 Then
       $colLayout[i] = $hLayout
-      $hLayout = New _DocumentItem
+      $hLayout = New _DocumentLayout
     Endif
   Next
   DoLayout
@@ -221,7 +243,7 @@ End
 
 Private Sub DoLayout()
   
-  Dim hLayout As _DocumentItem
+  Dim hLayout As _DocumentLayout
   Dim i As Integer
   Dim atmp As New Integer[]
   Dim fOldZoom As Float = $fZoom
@@ -254,6 +276,7 @@ Private Sub DoLayout()
       
       ''Debug "Premier doc visible : " & $iFirstVisibleDocument
       'Calculate how many doc are visibles
+      $iLastVisibleColumn = Floor(($hView.ScrollX + $hView.ClientWidth) / ($fMaxPageWidth + $fScaledSpace))
       $iLastVisibleLine = Ceil(($hView.ScrollY + $hView.ClientH) / ($fMaxPageHeight + $fScaledSpace)) 
       $iLastVisibleDocument = Min($iLastVisibleLine * $iNbreDocByLine, $iCount) - 1
       
@@ -287,7 +310,10 @@ Private Sub DoLayout()
       $iNbreDocByLine = $iCount
       $iFirstVisibleLine = 0
       $iLastVisibleLine = 0
+      
+      $iLastVisibleColumn = Floor(($hView.ScrollX + $hView.ClientWidth) / ($fMaxPageWidth + $fScaledSpace))
       $iFirstVisibleDocument = Floor($hView.ScrollX / ($fMaxPageWidth + $fScaledSpace))
+      $iFirstVisibleColumn = $iFirstVisibleDocument
       $iLastVisibleDocument = Floor(($hView.ScrollX + $hView.ClientWidth) / ($fMaxPageWidth + $fScaledSpace))
       
     Case Arrange.Vertical
@@ -329,10 +355,12 @@ Private Sub DoLayout()
   'Debug "Nombre de lignes : " & $iNbreLines
   'Debug "Première colonne : " & $iFirstVisibleColumn
   'Debug "Dernière colonne : " & $iLastVisibleColumn
-  'Debug "Premier Doc : " & $iFirstVisibleDocument
+  'Debug "Premier Doc : " & $iFirstVisibleDocument1
   'Debug "Dernier doc : " & $iLastVisibleDocument
+  Object.Lock($hView)
   $hView.ScrollX = $hView.ScrollX / fOldZoom * $fZoom
   $hView.ScrollY = $hView.ScrollY / fOldZoom * $fZoom
+  Object.Unlock($hView)
   'Setup the virtual space
   $hView.ResizeContents($fScaledPadding * 2 + ($fMaxPageWidth + $fScaledSpace) * $iNbreDocByLine - $fScaledSpace, $fScaledPadding * 2 + ($fMaxPageHeight + $fScaledSpace) * $iNbreLines - $fScaledSpace)
   
@@ -406,7 +434,7 @@ Private Function Max_Read() As Integer
   
 End
 
-Private Function Layout_Read() As _DocumentItem
+Private Function Layout_Read() As _DocumentLayout
   
   Return $hLayout
   
@@ -563,8 +591,9 @@ Private Sub Spacing_Write(Value As Integer)
 End
 
 Public Sub Goto(Page As Integer)
-
+  
   Dim iPageCol, iPageRow As Integer
+
   Select Case $iArrangement
     Case Arrange.None, Arrange.Row, Arrange.LeftRight
       iPageRow = Floor(Page / $iNbreDocByLine)
@@ -585,8 +614,229 @@ Public Sub Goto(Page As Integer)
 End
 
 Public Sub View_MouseWheel()
+
   If Mouse.Control Then
-  Me.Zoom = $fZoom - 0.1 * Mouse.Delta
+    Me.Zoom = $fZoom - 0.1 * Mouse.Delta
   Endif
+
 End
 
+Public Function Find(X As Integer, Y As Integer) As Integer
+  
+  Dim iRow, iCol As Integer
+  Dim iPage As Integer
+
+  iRow = GetPageRow(Y)
+  iCol = GetPageCol(X)
+  
+  If iRow = -1 Or If iCol = -1 Then Return -1
+  
+  Select Case $iArrangement
+    Case Arrange.None, Arrange.Row
+      iPage = iRow * $iNbreDocByLine + iCol
+      If iPage < $iCount - 1 Then 
+        Return iPage
+      Else 
+        Return -1
+      Endif
+      
+    Case Arrange.Column
+      iPage = iCol * $iNbreDocByLine + iRow
+      If iPage < $iCount - 1 Then 
+        Return iPage
+      Else 
+        Return -1
+      Endif
+      
+    Case Arrange.Horizontal
+      Return iCol
+      
+    Case Arrange.Vertical
+      Return iRow
+      
+  End Select
+  
+End
+
+Private Function GetPageRow(Y As Integer) As Integer
+  
+  Dim iStart, iMiddle As Integer
+  Dim iEnd As Integer = $iLastVisibleLine
+  Dim iRow As Integer = -1
+  Dim iDocPos As Integer
+  
+  Y += $hView.ScrollY
+  iStart = $iFirstVisibleLine
+  
+  Repeat
+    iMiddle = Int(iStart + (iEnd - iStart) / 2)
+    iDocPos = ($fScaledPadding + (iMiddle * ($fMaxPageHeight + $fScaledSpace)))
+    '     Print Y
+    ' Print "DocY : " & (iDocPos - 1)
+    ' Print "DocY + Width : " & (iDocPos + $fMaxPageHeight)
+    If Y > iDocPos - 1 And If Y < iDocPos + $fMaxPageHeight Then
+      'trouvé
+      iRow = iMiddle
+    Else
+      If Y < iDocPos Then
+        iEnd = iMiddle - 1
+      Else
+        iStart = iMiddle + 1
+      Endif
+      
+    Endif
+  Until iRow <> -1 Or iMiddle > iEnd + 1 Or iStart > iEnd
+  Print "iRow : " & iRow
+  Return iRow
+  
+End
+
+Private Function GetPageCol(X As Integer) As Integer
+  
+  Dim iStart, iMiddle As Integer
+  Dim iEnd As Integer = $iLastVisibleColumn - 1
+  Dim iCol As Integer = -1
+  Dim iDocPos As Integer
+  Print "X=" & X
+  X += $hView.ScrollX
+  iStart = $iFirstVisibleColumn
+  
+  Repeat
+    iMiddle = Int(iStart + (iEnd - iStart) / 2)
+    iDocPos = ($fScaledPadding + (iMiddle * ($fMaxPageWidth + $fScaledSpace)))
+    Print X
+    Print "DocX : " & (iDocPos - 1)
+    Print "DocX + Width : " & (iDocPos + $fMaxPageWidth)
+    If X > iDocPos - 1 And If X < iDocPos + $fMaxPageWidth Then
+      Print "trouvé"
+      iCol = iMiddle
+    Else
+      If X < iDocPos Then
+        iEnd = iMiddle - 1
+      Else
+        iStart = iMiddle + 1
+      Endif
+      
+    Endif
+  Until iCol <> -1 Or iMiddle > iEnd + 1 Or iStart > iEnd
+  Print "iCol : " & iCol
+  Return iCol
+  
+End
+
+Public Function _GetItemWidth(Index As Integer) As Integer
+  
+  If $colLayout.Exist(Index) Then Return $colLayout[Index].Width
+  Return $iDocWidth
+  
+End
+
+Public Function _GetItemHeight(Index As Integer) As Integer
+  
+  If $colLayout.Exist(Index) Then Return $colLayout[Index].Height
+  Return $iDocHeight
+  
+End
+
+Public Function SetItemVisible(Index As Integer) As Integer
+  
+  Me.Goto(Index)
+  
+End
+
+
+Public Sub _Get(Index As Integer) As _DocumentItem
+  
+  If Index > $iCount - 1 Then Return Null
+  $hDocItem._Index = Index
+  Return $hDocItem
+  
+End
+
+Public Function MoveTo(Index As Integer) As Boolean
+  
+  If Index < 0 Or index > $iCount + 1 Then Return True
+  $iIntern = Index
+  
+End
+
+Public Function MoveFirst() As Boolean
+  
+  If $iCount = 0 Then Return True
+  $iIntern = 0
+  
+End
+
+Public Function MoveNext() As Boolean
+  
+  If $iIntern + 1 >= $iCount Then Return True
+  Inc $iIntern
+  
+End
+
+Public Function MovePrevious() As Boolean
+  
+  If $iIntern = 0 Then Return True
+  Dec $iIntern
+  
+End
+
+
+
+Private Function Item_Read() As _DocumentItem
+
+  $hDocItem._Index = $iIntern
+  Return $hDocItem
+
+End
+
+
+Private Function Current_Read() As _DocumentItem
+
+  $hDocItem._Index = $iCurrent
+  Return $hDocItem
+
+End
+
+
+Public Sub View_MouseDown()
+
+  
+  Try $iCurrent = Find(Mouse.x, Mouse.Y)
+  $aSelected.Clear
+  $aSelected.Add($iCurrent)
+  $tmrRefresh.Trigger
+  
+End
+
+
+Private Function Mode_Read() As Integer
+
+  Return $iMode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  $iMode = Value
+
+End
+
+
+Public Function _IsVisible(Index As Integer) As Boolean
+  
+  Return (Index >= $iFirstVisibleDocument And index <= $iLastVisibleDocument)
+  
+End
+
+Public Function _GetX(Index As Integer) As Integer
+  
+  
+  
+End
+
+Public Function _GetY(Index As Integer) As Integer
+  
+  
+  
+End
