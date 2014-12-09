@@ -1087,7 +1087,7 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 
 	// Margin
-	if (margin && (margin > ur.left()))
+	if (!getFlag(HideMargin) && (margin > ur.left()))
 	{
 		//if (!l->flag)
 		//	p.fillRect(0, 0, margin, _cellh, color); //styles[GLine::Background].color);
