@@ -200,8 +200,16 @@ Public Sub _Draw()
 End
 
 Public Function _get(Key As String) As _ShapeItem
+  Dim iRet As Integer
   
-  Return $aShapes[$colKeyShape[Key]]
+  If $colKeyShape[Key] = Null Then
+    iRet = 0
+  Else
+    iRet = $colKeyShape[Key] 
+  Endif
+  
+  
+  Return $aShapes[iRet]
   
 End
 
@@ -404,3 +412,9 @@ Public Function Find(hMp As MapPoint) As _ShapeItem
   
 End
 
+Public Sub Clear()
+  
+  $aShapes.Clear
+  $colKeyShape.Clear
+  
+End

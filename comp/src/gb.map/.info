@@ -78,6 +78,10 @@ Bounds
 r
 MapBounds
 
+Count
+r
+i
+
 _ShowWithEffect
 v
 b
@@ -381,6 +385,33 @@ tmrOnMove_Timer
 m
 
 
+#Proj
+
+C
+_strProj
+r
+s
+
+_new
+m
+
+(sInit)s
+_call
+M
+Proj
+(sInit)s
+TransformPF
+m
+PointF
+(ProjTo)Proj;(PF)PointF;
+TransformMPoint
+m
+MapPoint
+(ProjTo)Proj;(MP)MapPoint;
+TransformMBounds
+m
+MapBounds
+(ProjTo)Proj;(MB)MapBounds;
 #_MapLayer
 
 C
@@ -475,6 +506,10 @@ Load
 m
 
 
+Clear
+m
+
+
 AddPoint
 m
 
@@ -558,7 +593,7 @@ TileBoundValue
 v
 MapBounds
 
-IsWebMapService
+UseWebMapService
 p
 b
 

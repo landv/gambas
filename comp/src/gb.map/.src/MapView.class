@@ -124,6 +124,7 @@ End
 
 Public Sub View_MouseWheel()
   
+  If $bLock Then Return
   Draw.Begin($hZoomBuffer)
   Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
   $hmap.Draw

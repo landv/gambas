@@ -17,7 +17,7 @@ Public Sub _new()
 
   hPicture = New Picture(200, 200)
   
-  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "134"]).SubDomains = ["0", "1", "2"]
+  MapView1.Map.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "145"]).SubDomains = ["0", "1", "2"]
   MapView1.Map["GoogleMap"].Visible = False
   
   With MapView1.Map.AddTile("OpenStreet", "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", Null)
@@ -28,7 +28,7 @@ Public Sub _new()
   'MapView1.Map.AddShape("test")
     MapView1.Map.AddTile("Virtual Earth", "http://ecn.dynamic.t{s}.tiles.virtualearth.net/comp/ch/{q}?mkt=fr-fr&it=G,VE,BX,L,LA&shading=hill&n=z&cb=1").SubDomains = ["0", "1", "2"]
   'Map for lens
-  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "121"]).SubDomains = ["0", "1", "2"]
+  hmap.AddTile("GoogleMap", "https://khms{s}.google.fr/kh/v={version}&src=app&x={x}&y={y}&z={z}&s=Galile", ["version": "141"]).SubDomains = ["0", "1", "2"]
   'hmap.Padding = 256
   hmap.Resize(200, 200)
   
@@ -37,6 +37,7 @@ Public Sub _new()
   'hmp = Proj("epsg:3946").TransformMPoint(Proj("epsg:4326"), MapPoint(-2.4500, 45.0000))
   MapView1.Map!NewShape.AddPoint("archiac", hmp)
   MapView1.Map!NewShape.AddPoint("archiac2", MapPoint(0, 0))
+  Print MapView1.Map!NewShape[0].Center.Lat
   'MapView1.Map["NewShape"].Points = LoadShapes()
 'MapView1.ShowControls = False
   

@@ -112,8 +112,12 @@ Public Function DecToSex(Value As Float, Type As Integer) As String
 End
 
 Public Function TileBounds(X As Integer, Y As Integer, Zoom As Integer) As MapBounds
+  Dim hPointTL, hPointBR As Point
   
-  Return MapBounds(PixelToMapPoint(Point(x * $tileSize, y * $tileSize), zoom), PixelToMapPoint(Point((x + 1) * $tileSize, (y + 1) * $tileSize), zoom))
+  hPointTL = Point(X * $tileSize, Y * $tileSize)
+  hPointBR = Point(hPointTL.X + $tileSize, hPointTL.Y + $tileSize)
+  
+  Return MapBounds(PixelToMapPoint(hPointTL, zoom), PixelToMapPoint(hPointBR, zoom))
   
 End
 

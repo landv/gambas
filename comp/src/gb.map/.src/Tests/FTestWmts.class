@@ -1,0 +1,24 @@
+' Gambas class file
+
+Public Sub Form_Open()
+  
+  With MapView1.Map.AddTile("geo", "http://gpp3-wxs.ign.fr/5wp1szpgg6loqy21tpi5wmv8/geoportail/wmts")
+
+    .WMSArgs["SERVICE"] = "WMTS"
+    .WMSArgs["REQUEST"] = "GetTile"
+    .WMSArgs["VERSION"] = "1.0.0" 
+    .WMSArgs["LAYER"] = "ORTHOIMAGERY.ORTHOPHOTOS"
+    .WMSArgs["STYLE"] = "normal"
+    .WMSArgs["TILEMATRIXSET"] = "PM"
+    .WMSArgs["TILEMATRIX"] = "{z}"
+    .WMSArgs["TILEROW"] = "{y}"
+    .WMSArgs["TILECOL"] = "{x}"
+    .WMSArgs["FORMAT"] = "image/jpeg"
+    
+  End With
+
+End
+
+Public Sub MapView1_MouseDown()
+  
+End

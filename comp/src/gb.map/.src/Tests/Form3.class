@@ -1,0 +1,42 @@
+' Gambas class file
+
+Public Sub Form_Open()
+  
+  Dim hLay As Object
+ Map._Debug = True
+  ' With MapView1.Map.AddTile("geo", "http://gpp3-wxs.ign.fr/{API}/geoportail/wmts", ["API": "tyujsdxmzox31ituc2uw0qwl"])
+  '   .UseWebMapService = True
+  '   .WMSArgs!service = "WMTS"
+  '   .WMSArgs!version = "1.0.0"
+  '   .WMSArgs!request = "GetTile"
+  '   .WMSArgs!layer = "ORTHOIMAGERY.ORTHOPHOTOS"
+  '   .WMSArgs!style = "normal"
+  '   .WMSArgs!format = "image/jpeg"
+  '   .WMSArgs!tilematrixset = "PM"
+  '   .WMSArgs!tilematrix = "{z}"
+  '   .WMSArgs!tilerow = "{x}"
+  '   .WMSArgs!tilecol = "{y}"  
+  '   
+  ' End With
+  With MapView1.Map.AddTile("geo", "http://v2.suite.opengeo.org/geoserver/gwc/service/wmts/", ["API": "tyujsdxmzox31ituc2uw0qwl"])
+    .UseWebMapService = True
+    .WMSArgs!service = "WMTS"
+    .WMSArgs!version = "1.0.0"
+    .WMSArgs!request = "GetTile"
+    .WMSArgs!layer = "medford:hydro"
+    '.WMSArgs!style = "normal"
+    .WMSArgs!format = "image/png"
+    .WMSArgs!tilematrixset = "EPSG:900913"
+    .WMSArgs!tilematrix = "{z}"
+    .WMSArgs!tilerow = "{x}"
+    .WMSArgs!tilecol = "{y}"  
+    
+  End With
+  
+End
+
+Public Sub MapView1_MouseDown()
+
+  
+
+End

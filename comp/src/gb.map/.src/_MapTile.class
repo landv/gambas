@@ -21,14 +21,17 @@ Private $bIsQuadKey As Boolean
 Property Read Loading As Boolean
 Private $bLoading As Boolean 
 Private $iCli As Integer
+Private $iTileSource As Integer
 Public TileBoundValue As MapBounds
-Property IsWebMapService As Boolean
-Private $bIsWMS As Boolean
+Property UseWebMapService As Boolean
+'Property TileSource As Integer
+
+Private $bUseWMS As Boolean
 Property WMSArgs As Collection
 Private $cWMSArgs As New Collection
 Property MaxBounds As MapBounds 
 Private $mbMaxBounds As New MapBounds
-Private $prjLembert As Proj
+Private $prjWMS As Proj
 Private $prjLatLon As Proj
 Private $WMSProj As String
 Property WMSProjection As String
@@ -82,6 +85,7 @@ Public Sub _Draw()
   Dim hBound As MapBounds
   Dim hPx As Point
   Dim hpx2 As Point
+  
   For Each s In $aTiles
     hTile = $coltiles[s]
     
@@ -89,7 +93,7 @@ Public Sub _Draw()
     
     hpx = Geo.MapPointToPixel(hBound.TopLeft, hmap.Zoom)
     hpx2 = Geo.MapPointToPixel(hBound.BottomRight, hmap.Zoom)
-       
+    
     Select Case hTile.Status
       Case _Tile.Normal
         If hmap._ShowWithEffect Then
@@ -136,7 +140,7 @@ Public Sub Load()
   Dim mpFirst As MapPoint
   Dim mpLast As MapPoint
   Dim sTileUrl As String
-
+  
   mpFirst = Geo.PixelToMapPoint(Point(hMap.PixelBox.x, hMap.PixelBox.y), hmap.Zoom)
   mpLast = Geo.PixelToMapPoint(Point(hMap.PixelBox.Right, hMap.PixelBox.Bottom), hmap.Zoom)
   ptTileCenter = Geo.MapPointToTile(hMap.Center, hMap.Zoom)
@@ -227,11 +231,11 @@ Public Sub Load()
   '     Next
   '   Next
   ' Endif
-  
+  $bLoading = $aStack.Count > 0
   $bPreloadMode = False
   $tmrGet.Trigger
   'tmrGet_Timer
-
+  
 End
 
 Private Sub ReLoadTile(hTile As _Tile)
@@ -315,6 +319,7 @@ Public Sub tmrGet_Timer()
     Endif
     
     hClient.Url = sUrl
+    'Print surl
     hClient.Tag = sFile
     hClient.Get(Null, $sCachePath &/ sFile)
     
@@ -335,7 +340,7 @@ End
 Public Sub Client_Finished()
   
   Dim hTile As _Tile 
-
+  
   Dec $iCli
   'If Not $bPreloadMode Then6752042.96,2525540.18,6751587.00,2525742.70
   hTile = $colTiles[Last.Tag]
@@ -359,12 +364,12 @@ End
 Public Sub Client_Error()
   
   Dim hTile As _Tile
-
+  
   Dec $iCli
   'If Not $bPreloadMode Then
   hTile = $coltiles[Last.Tag]
   If Not hTile Then Goto Skip
-  Debug "erreur : " & hTile.Name
+  'Debug "erreur : " & hTile.Name
   ReLoadTile(hTile)
   'Endif
 Skip:
@@ -393,49 +398,62 @@ Private Function GetTileUrl(hTile As _Tile) As String
   
 End
 
-Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
 
+Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
+  
   Dim hBound As MapBounds = Geo.TileBounds(X, Y, Z)
- ' Dim hbound2 As MapBounds = Geo.TileBounds(x + 1, y - 1, z)
+  ' Dim hbound2 As MapBounds = Geo.TileBounds(x + 1, y - 1, z)
   Dim hConv, hConv2 As MapBounds
   Dim sTemp As String
   Dim s As String
-If Not Me.MaxBounds.Collide(hbound) Then Return
-''hbound2 = MapBounds(MapPoint(hBound2.lon, hBound2.lat2), MapPoint(hBound2.Lon2, hBound2.lat))
-'Invertion de coordonée
-hbound = MapBounds(MapPoint(hBound.lon, hBound.lat2), MapPoint(hBound.Lon2, hBound.lat))
-
-   
- If $WMSProj Then 
-   hConv = $prjLatLon.TransformMBounds($prjLembert, hbound)
-  If Error Then 
-  Error "erreur de conversion"
-  Return
-  Endif
-  Endif
-  'Print hconv2.ToString()
-  'Print hConv.ToString()
-  'If Not $mbMaxBounds.Contain(hBound) Then 
-  'Error "ne contien pas"
-  'Return 
-  'Endif
   
-  sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
+  If Not Me.MaxBounds.Collide(hbound) Then Return
   
   For Each s In $cWMSArgs
     
     sTemp &= "&" & $cWMSArgs.Key & "=" & s 
     
   Next
-  'Print sTemp
-  Return sTemp
+  
+  If $cWMSArgs.Exist("bbox") Then 
+
+    'Invertion de coordonée
+    hbound = MapBounds(MapPoint(hBound.lon, hBound.lat2), MapPoint(hBound.Lon2, hBound.lat))
+    
+    If $prjWMS Then
+      hbound = $prjLatLon.TransformMBounds($prjWMS, hbound)
+    Endif
+    sTemp = Replace(sTemp, "{lat}", CStr(hBound.Lat))
+    sTemp = Replace(sTemp, "{lon}", CStr(hbound.Lon))
+    sTemp = Replace(sTemp, "{lat2}", CStr(hbound.lat2))
+    sTemp = Replace(sTemp, "{lon2}", CStr(hbound.lon2))
+    
+  Else
+    If $cWMSArgs.Exist("tilerow") Or If $cWMSArgs.Exist("TILEROW") Then
+      If InStr(sTemp, "{q}") Then
+        sTemp = Replace(sTemp, "{q}", TileToQuadKey(x, y, z))
+      Else
+        sTemp = Replace(sTemp, "{x}", CStr(X))
+        sTemp = Replace(sTemp, "{y}", CStr(Y))
+        sTemp = Replace(sTemp, "{z}", CStr(Z))
+        
+      Endif
+    Endif
+  Endif
+  
+  'sTemp = $sPattern & 
+  'sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
+  
+  Return $sPattern & "?" & sTemp
+  
 End
 
 Private Function GetTileUrlpt(X As Integer, Y As Integer, Z As Integer) As String
   
   Dim sTemp As String
-
-  If $bIsWMS Then
+  
+  If $bUseWMS Then
+    
     Return GetWMSTilept(X, Y, Z)
   Else
     If $bIsQuadKey Then
@@ -447,8 +465,9 @@ Private Function GetTileUrlpt(X As Integer, Y As Integer, Z As Integer) As Strin
     Endif
     sTemp = Replace(sTemp, "{s}", $aSubDomains[Round(Rnd(0, $aSubDomains.Max))])
     Return sTemp
+    
   Endif
-
+  
 End
 
 Public Sub SetPattern(sPattern As String, Optional cArgs As Collection)
@@ -508,7 +527,7 @@ Private Function TileToQuadKey(X As Integer, Y As Integer, Z As Integer) As Stri
     
   Next
   Return quadKey
-
+  
 End
 
 Private Function Opacity_Read() As Float
@@ -525,37 +544,29 @@ Private Sub Opacity_Write(Value As Float)
 End
 
 Public Sub _free()
-
+  
   Dim hClient As HttpClient
+  
   For Each hClient In $aClients
     hClient.Stop
     
   Next
   $aClients.Clear
-
+  
 End
 
 Private Function Loading_Read() As Boolean
-  ' Dim bLoad As Boolean
-  ' Dim i As Integer
-  ' 
-  ' For i = 0 To $aClients.Max
-  '   If $aClients[i].Status <> Net.Inactive Then bLoad = True
-  '  Print $aClients[i].Status 
-  ' 'Print bLoad
-  ' Next
-  ' 'Print bLoad
-  '   Return $tmrGet.Enabled Or bLoad
-  'Print $bLoading
 
-  Return $bLoading '$iCli > 0 And $aStack.Count > 0
-
+  
+  Return $bLoading '
+  
 End
 
 '''Define the cookie file
 Public Function SetCoockieFile(sFile As String) As Object
-
+  
   Dim hc As HttpClient
+  
   If Not sFile Then
     For Each hc In $aClients
       hc.UpdateCookies = False
@@ -573,12 +584,16 @@ Public Function SetCoockieFile(sFile As String) As Object
   
 End
 
-Private Function IsWebMapService_Read() As Boolean
-  Return $bIsWMS
+Private Function UseWebMapService_Read() As Boolean
+  
+  Return $bUseWMS
+  
 End
 
-Private Sub IsWebMapService_Write(Value As Boolean)
-  $bIsWMS = Value
+Private Sub UseWebMapService_Write(Value As Boolean)
+  
+  $bUseWMS = Value
+  
 End
 
 Private Function WMSArgs_Read() As Collection
@@ -588,32 +603,32 @@ Private Function WMSArgs_Read() As Collection
 End
 
 Private Sub WMSArgs_Write(Value As Collection)
-
+  
   $cWMSArgs = Value  
-
+  
 End
 
 Private Function MaxBounds_Read() As MapBounds
-
+  
   Return $mbMaxBounds
-
+  
 End
 
 Private Sub MaxBounds_Write(Value As MapBounds)
-
+  
   $mbMaxBounds = value
-
+  
 End
 
 Private Function WMSProjection_Read() As String
-
+  
   Return $WMSProj
-
+  
 End
 
 Private Sub WMSProjection_Write(Value As String)
-
+  
   $WMSProj = Value
-  $prjLembert = New Proj(Value)
-
+  $prjWMS = New Proj(Value)
+  
 End
