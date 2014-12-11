@@ -824,6 +824,7 @@ Private Sub DoStructControlCompletion(iLine As Integer, sLine As String, aSymbol
         sLine = Editor.Lines[iInd].Text
         If Not Trim(sLine) Then Continue
         If Right(RTrim(sLine)) = ":" Then Continue ' Ignore labels
+        If Left(LTrim(sLine)) = "'" Then Continue ' Ignore comments
         iPos = Editor.GetIndent(sLine)
         If iPos < iIndent Then Break
         If iPos > iIndent Then Continue
