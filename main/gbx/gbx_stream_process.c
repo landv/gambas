@@ -67,12 +67,7 @@ static int stream_close(STREAM *stream)
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-	bool ret = STREAM_read_direct(FDR, buffer, len);
-
-	if (STREAM_eff_read > 0)
-		stream->common.has_read = TRUE;
-
-  return ret;
+	return STREAM_read_direct(FDR, buffer, len);
 }
 
 #define stream_getchar NULL

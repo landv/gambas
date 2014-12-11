@@ -164,8 +164,6 @@ static void callback_write(int fd, int type, CPROCESS *process)
 	{
 		int n;
 
-		CSTREAM_stream(process)->common.has_read = FALSE;
-
 		for(;;)
 		{
 			n = read(fd, COMMON_buffer, 256);
@@ -176,7 +174,6 @@ static void callback_write(int fd, int type, CPROCESS *process)
 		if (n > 0)
 		{
 			process->result = STRING_add(process->result, COMMON_buffer, n);
-			CSTREAM_stream(process)->common.has_read = TRUE;
 			return;
 		}
 	}
@@ -335,20 +332,8 @@ static void stop_process_after(CPROCESS *_object)
 	if (THIS->out >= 0)
 	{
 		stream = CSTREAM_stream(THIS);
-		//fprintf(stderr, "stream is closed? %p %d\n", THIS, STREAM_is_closed(stream));
-		if (!STREAM_is_closed(stream))
-		{
-			//fprintf(stderr, "flushing: %p\n", THIS);
-			for(;;)
-			{
-				stream->common.has_read = FALSE;
-				callback_write(THIS->out, 0, THIS);
-				if (!stream->common.has_read)
-					break;
-				if (STREAM_is_closed(stream))
-					break;
-			}
-		}
+		while (THIS->out >= 0 && !STREAM_is_closed(stream))
+			callback_write(THIS->out, 0, THIS);
 
 		do_exit_process = TRUE;
 	}

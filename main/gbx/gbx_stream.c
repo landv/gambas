@@ -607,6 +607,8 @@ bool STREAM_read_ahead(STREAM *stream)
 	stream->common.buffer_pos = 0;
 	stream->common.buffer_len = STREAM_eff_read;
 
+	//fprintf(stderr, "STREAM_read_ahead: %d\n", STREAM_eff_read);
+
 	if (STREAM_eff_read == 0)
 	{
 		stream->common.eof = TRUE;
