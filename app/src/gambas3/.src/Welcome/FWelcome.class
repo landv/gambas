@@ -7,7 +7,6 @@ Private btnNew As CCoolButton
 Private btnOpen As CCoolButton
 Private btnOpenExtern As CCoolButton
 Private btnRecent As CCoolButton
-Private btnExample As CCoolButton
 Private btnQuit As CCoolButton
 Private btnAbout As CCoolButton
 Private btnFarm As CCoolButton
@@ -18,7 +17,6 @@ Private Const LIST_NONE As Integer = 0
 Private Const LIST_RECENT As Integer = 1
 Private Const LIST_EXAMPLE As Integer = 2
 
-Private Const POS_BUTTON As Integer = 0
 Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
 
 Private $hWelcome As CWelcome
@@ -60,16 +58,16 @@ Public Sub Form_Open()
   sFont = "Bold"
   W = panButton.ClientW
 
-  btnNew = New CCoolButton(panButton, 0, POS_BUTTON, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
-  btnOpen = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
-  btnRecent = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 2, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
-  btnExample = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 3, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
-  btnFarm = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 4, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
-  btnOpenExtern = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 5, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
-  btnAbout = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 6, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
-  btnQuit = New CCoolButton(panButton, 0, POS_BUTTON + HEIGHT_BUTTON * 7, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
+  btnNew = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
+  btnOpen = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
+  btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
+  'btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
+  btnFarm = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
+  btnOpenExtern = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
+  btnAbout = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
+  btnQuit = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
 
-  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnFarm, btnExample, btnOpenExtern, btnAbout, btnQuit]
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnFarm, btnOpenExtern, btnAbout, btnQuit]
     hCtrl.Foreground = Color.White
     hCtrl.Highlight = &H61A7C3&
   Next
@@ -194,8 +192,6 @@ Private Sub Toggle(iState As Integer)
     
   End Select
     
-  btnExample.Background = If($iRecent = LIST_EXAMPLE, Color.TextBackground, Color.Default)
-  btnExample.Foreground = If($iRecent = LIST_EXAMPLE, Color.TextForeground, Color.White)
   btnRecent.Background = If($iRecent = LIST_RECENT, Color.TextBackground, Color.Default)
   btnRecent.Foreground = If($iRecent = LIST_RECENT, Color.TextForeground, Color.White)
   

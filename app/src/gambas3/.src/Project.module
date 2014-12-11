@@ -6081,12 +6081,12 @@ Public Sub OnVendorKeyPress()
   If Key.Text Then
     If Len(Key.Text) = 1 Then 
       If Asc(Key.Text) < 32 Then Return
+      If Asc(Key.Text) = 127 Then Return
       If IsDigit(Key.Text) Then Return
       If IsLetter(Key.Text) Then Return
       If InStr("-_", Key.Text) Then Return
     Endif
+    Stop Event
   Endif
-
-  Stop Event
   
 End

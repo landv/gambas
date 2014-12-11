@@ -137,6 +137,7 @@ Public Sub Process_Read()
   Dim sLine As String
 
   sData = Read #Last, -256
+  Debug sData
   $sOutput &= sData
   If Not $bOutput Then Insert(sData)
   'Insert(sData)
@@ -547,7 +548,7 @@ Public Sub ControlProject()
   If CanControlProject() Then
     Project.CleanUp
     Try Kill Project.Dir &/ ".settings"
-    Run(["svn", "add", SvnPath$($sRealDir)])
+    Run(["svn", "add", "--parents", SvnPath$($sRealDir)])
     Project.Config.Save
     Refresh
     Project.Refresh

@@ -38,7 +38,6 @@ SUBDIRS = \
  @openal_dir@ \
  comp \
  app \
- examples \
  .
 
 EXTRA_DIST = component.am README README.*[^~] TODO TEMPLATE reconf reconf-all

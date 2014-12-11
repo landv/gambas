@@ -29,6 +29,8 @@ Public Sub _new()
   $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Row) As "ProjectItem"
   $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Row) As "ProjectItem"
   
+  tabProject[2].Visible = False
+  
 End
 
 
