@@ -3,7 +3,6 @@
 Private $bNoRefresh As Boolean
 Private $SY As Integer
 Private $hSoft As CSoftware
-Private $sShortDesc As String
 
 Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_VOTE, SORT_INSTALLED
 
@@ -97,7 +96,7 @@ Public Sub Reload()
   svwFarm.Children.Clear
   
   hReq = New FarmRequest(cmbFarm.Text) As "Request"
-  hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], txtFilter.Text, tagFarm.GetTags())
+  hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], txtVendor.Text, txtFilter.Text, tagFarm.GetTags())
   spnFarm.Show
   
 End
@@ -253,7 +252,6 @@ End
 Private Sub UpdateSoftware()
 
   Dim sText As String
-  Dim aText As String[]
   Dim sTag As String
   Dim hTag As Label
   
@@ -263,7 +261,8 @@ Private Sub UpdateSoftware()
 
   With $hSoft
   
-    lblName.Text = .Name & " " & .Version
+    lblName.Text = .Name & " (" & .Vendor & ") " 
+    lblVersion.Text = .Version
   
     panURL.Visible = Not IsNull(.URL)
     urlWebSite.Link = .URL
@@ -297,27 +296,15 @@ Private Sub UpdateSoftware()
   
     If Not sText Then
       
-      $sShortDesc = ""
       txtDescription.Hide
       
     Else
     
-      aText = Split(sText, "\n")
-      
-      If aText.Count = 1 Or If Trim(aText[1]) = "" Then
-        $sShortDesc = aText[0]
-        aText.Remove(0)
-        sText = Trim(aText.Join("\n"))
-      Endif
-      
       txtDescription.Text = Replace(Html(sText), "\n", "<br>")
-      txtDescription.Visible = Not IsNull(sText)
       
     Endif
     
     lblDesc.Visible = txtDescription.Visible
-    
-    dwgShortDesc.Refresh
     
     Try picIcon.Picture = .Icon.Picture
   
@@ -542,12 +529,6 @@ Public Sub Software_Change()
   
 End
 
-Public Sub dwgShortDesc_Draw()
-
-  Paint.DrawText(Paint.TrimText($sShortDesc, Paint.W), 0, 0, Paint.W, Paint.H, Align.Left)
-
-End
-
 Public Sub svwFarm_Arrange()
 
   spnFarm.Move(svwFarm.W \ 2 - 32, svwFarm.H \ 2 - 32, 64, 64)
@@ -577,5 +558,24 @@ Public Sub btnRemove_Click()
   
   ReloadFarm
   ToggleSoftwarePanel
+  
+End
+
+Public Sub txtVendor_Click()
+
+  txtVendor.Clear
+
+End
+
+Public Sub txtVendor_Change()
+
+  timLoad.Stop
+  timLoad.Start
+
+End
+
+Public Sub txtVendor_KeyPress()
+  
+  Project.OnVendorKeyPress()
   
 End

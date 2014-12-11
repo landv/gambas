@@ -1293,3 +1293,9 @@ Public Sub Form_Close()
   Settings.Save
 
 End
+
+Public Sub txtVendor_KeyPress()
+
+  Project.OnVendorKeyPress
+
+End

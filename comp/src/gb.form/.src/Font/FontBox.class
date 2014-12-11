@@ -17,7 +17,6 @@ Property Border As Boolean
 Property Default As String
 
 Private $hButtonBox As ButtonBox
-Private $hButton As ToolButton
 Private $bDefault As Boolean
 Private $sDefault As String
 
@@ -29,10 +28,7 @@ Public Sub _new()
   Me.Proxy = $hButtonBox
   $hButtonBox.Picture = Picture["icon:/small/font"]
   $hButtonBox.ReadOnly = True
-  
-  $hButton = New ToolButton(Me) As "ClearButton"
-  $hButton.Picture = Picture["icon:/small/clear"]
-  $hButtonBox._AddButton($hButton)
+  $hButtonBox.ClearButton = True
   
   UpdateFont("", True)
   
@@ -89,9 +85,9 @@ Public Sub ButtonBox_Click()
   
 End
 
-Public Sub ClearButton_Click()
+Public Sub ButtonBox_Clear()
   
-  UpdateFont("")
+  UpdateFont("", True)
   Raise Click
   
 End

@@ -1,0 +1,17 @@
+' Gambas class file
+
+Export
+
+Static Public Sub FormatSize(Size As Long) As String
+
+  If Size < 1000 Then
+    Return Subst("&1 B", CStr(Size))
+  Else If Size < 1000000 Then
+    Return Subst("&1 KiB", Format(Size / 1000, "#.#"))
+  Else If Size < 1000000000 Then
+    Return Subst("&1 MiB", Format(Size / 1000000, "#.#"))
+  Else
+    Return Subst("&1 GiB", Format(Size / 1000000000, "#.#"))
+  Endif
+
+End

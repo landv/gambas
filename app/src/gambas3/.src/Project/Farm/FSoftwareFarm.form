@@ -2,8 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,102,84)
-  Background = &HDF6B00&
-  Foreground = &HFFFFFF&
+  Background = Color.TextBackground
   Text = ("Gambas Software Farm")
   Arrangement = Arrange.Vertical
   { dwgTitle DrawingArea
@@ -11,7 +10,7 @@
     Background = &H3398C3&
   }
   { panSoftware VBox
-    MoveScaled(83,4,95,73)
+    MoveScaled(111,8,95,73)
     Visible = False
     Background = &HDF6B00&
     Expand = True
@@ -70,12 +69,13 @@
           MoveScaled(16,0,29,8)
           Expand = True
           { lblName Label
-            MoveScaled(0,0,27,5)
-            Font = Font["Bold,+6"]
+            MoveScaled(0,0,27,4)
+            Font = Font["Bold,+5"]
             Alignment = Align.TopNormal
           }
-          { dwgShortDesc DrawingArea
-            MoveScaled(1,5,14,3)
+          { lblVersion Label
+            MoveScaled(2,4,16,4)
+            Font = Font["+2"]
           }
         }
         { dwgStat DrawingArea
@@ -139,12 +139,13 @@
     MoveScaled(1,11,100,71)
     Expand = True
     Arrangement = Arrange.Vertical
-    { Panel1 VBox
-      MoveScaled(0,0,97,23)
-      Spacing = True
+    { VBox1 VBox
+      MoveScaled(1,1,96,6)
+      Background = &HDF6B00&
+      Foreground = &HFFFFFF&
       Margin = True
       { panFilter Panel
-        MoveScaled(2,1,94,4)
+        MoveScaled(1,1,94,4)
         Arrangement = Arrange.Horizontal
         Spacing = True
         { Label2 Label
@@ -185,8 +186,13 @@
           Text = ("Configure") & "..."
         }
       }
+    }
+    { Panel1 VBox
+      MoveScaled(1,8,97,17)
+      Spacing = True
+      Margin = True
       { HBox1 HBox
-        MoveScaled(2,6,93,4)
+        MoveScaled(2,1,93,4)
         Spacing = True
         { Label1 Label
           MoveScaled(0,0,11,4)
@@ -197,9 +203,25 @@
           ReadOnly = True
           List = [("Most recent"), ("Most downloaded"), ("Most popular"), ("Installed")]
         }
+        { Label5 Label
+          MoveScaled(41,0,11,4)
+          AutoResize = True
+          Text = ("Vendor")
+        }
+        { Panel12 Panel
+          MoveScaled(49,0,32,4)
+          Expand = True
+          Arrangement = Arrange.Fill
+          Border = Border.Plain
+          { txtVendor ButtonBox
+            MoveScaled(0,0,31,4)
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
+        }
       }
       { Panel4 HPanel
-        MoveScaled(2,11,94,5)
+        MoveScaled(2,6,94,5)
         Spacing = True
         { Label3 Label
           MoveScaled(0,0,11,4)
@@ -211,7 +233,7 @@
         }
       }
       { Panel5 HPanel
-        MoveScaled(2,17,94,4)
+        MoveScaled(2,12,94,4)
         Spacing = True
         { Label4 Label
           MoveScaled(0,0,11,4)
@@ -231,14 +253,17 @@
         }
       }
     }
+    { Separator3 Separator
+      MoveScaled(20,26,21,0)
+    }
     { Panel7 Panel
-      MoveScaled(1,31,98,38)
+      MoveScaled(1,28,98,38)
       Background = Color.TextBackground
       Foreground = Color.TextForeground
       Expand = True
       Arrangement = Arrange.Fill
       { svwFarm ScrollView
-        MoveScaled(0,0,69,23)
+        MoveScaled(2,3,69,23)
         Background = Color.TextBackground
         Foreground = Color.TextForeground
         Expand = True
@@ -256,7 +281,7 @@
     }
   }
   { timLoad #Timer
-    #MoveScaled(87,35)
+    #MoveScaled(86,44)
     Delay = 500
   }
 }

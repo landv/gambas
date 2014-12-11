@@ -231,3 +231,9 @@ Public Sub btnSortTags_Click()
   tagEditor.Sort
 
 End
+
+Public Sub txtVendor_KeyPress()
+
+  Project.OnVendorKeyPress()
+
+End

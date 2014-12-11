@@ -1186,3 +1186,9 @@ Public Sub ShowError(sMsg As String)
   
 End
 
+
+Public Sub txtVendor_KeyPress()
+
+  Project.OnVendorKeyPress
+
+End

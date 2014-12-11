@@ -51,7 +51,7 @@ C
 _Properties
 C
 s
-*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True
+*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True,ClearButton
 _DefaultEvent
 C
 s
@@ -73,6 +73,10 @@ TextBox
 
 
 :Activate
+:
+
+
+:Clear
 :
 
 
@@ -111,6 +115,10 @@ b
 Alignment
 p
 i
+
+ClearButton
+p
+b
 
 _new
 m
@@ -156,6 +164,10 @@ _AddButton
 m
 
 (hButton)ToolButton;
+ClearButton_Click
+m
+
+
 #ColorButton
 UserControl
 C
@@ -551,10 +563,6 @@ p
 b
 
 _new
-m
-
-
-ClearButton_Click
 m
 
 
@@ -1478,7 +1486,7 @@ ButtonBox_Click
 m
 
 
-ClearButton_Click
+ButtonBox_Clear
 m
 
 

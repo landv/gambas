@@ -331,6 +331,8 @@ Private Sub PublishSoftware()
   Dim sPath As String
   Dim hImage As Image
   Dim sVendor As String
+  Dim iGambas As Integer
+  Dim iVersion As Integer
   
   If CheckUser() Then Return
 
@@ -383,7 +385,8 @@ Private Sub PublishSoftware()
     Return
   Endif
   
-  If Not IsInteger(sVersion) Then
+  iVersion = FromVersion(sVersion)
+  If iVersion = 0 Then
     PrintError("19 Incorrect version")
   Endif
   
@@ -391,9 +394,12 @@ Private Sub PublishSoftware()
     PrintError("20 Incorrect release")
   Endif
   
-  If sGambas And If Not IsInteger(sGambas) Then
-    PrintError("21 Incorrect Gambas version")
-    Return
+  If sGambas Then
+    iGambas = FromVersion(sGambas)
+    If iGambas = 0 Then
+      PrintError("21 Incorrect Gambas version")
+      Return
+    Endif
   Endif
   
   If sSource Not Ends ".tar.gz" And If sSource Not Ends ".tar.bz2" Then
@@ -414,7 +420,7 @@ Private Sub PublishSoftware()
   
   DB.Begin
   
-  rSoftware = DB.Edit("software", "vendor = &1 AND name = &1", sVendor, sName)
+  rSoftware = DB.Edit("software", "vendor = &1 AND name = &2 AND version = &3", sVendor, sName, iVersion)
   If rSoftware.Available Then
     If rSoftware!owner <> $iUser Then
       PrintError("25 Software already exists")
@@ -430,11 +436,11 @@ Private Sub PublishSoftware()
   If IsNull(rSoftware!vote) Then rSoftware!vote = 0
   If IsNull(rSoftware!download) Then rSoftware!download = 0
   
-  rSoftware!version = CInt(sVersion)
+  rSoftware!version = iVersion
   rSoftware!release = CInt(sRelease)
   rSoftware!description = sDesc
   If sGambas Then
-    rSoftware!gambas = CInt(sGambas)
+    rSoftware!gambas = iGambas
   Else
     rSoftware!gambas = Null
   Endif
@@ -445,7 +451,7 @@ Private Sub PublishSoftware()
   rSoftware!size = Stat(Request.Files["source"]).Size
   rSoftware.Update
   
-  rSoftware = DB.Find("software", "name = &1", sName)
+  rSoftware = DB.Edit("software", "vendor = &1 AND name = &2 AND version = &3", sVendor, sName, iVersion)
   
   Try Mkdir Root
   Try Mkdir Root &/ CStr(rSoftware!id)
@@ -494,6 +500,7 @@ Private Sub FindSoftware() As Result
   Dim iId As Integer
   Dim rSoftware As Result
   Dim sVersion As String
+  Dim iVersion As Integer
 
   sId = Request["id"]
   sVersion = Request["version"]
@@ -503,9 +510,12 @@ Private Sub FindSoftware() As Result
     Return
   Endif
 
-  If sVersion And If Not IsInteger(sVersion) Then
-    PrintError("13 Bad request\nIncorrect version")
-    Return
+  If sVersion Then
+    iVersion = FromVersion(sVersion)
+    If iVersion = 0 Then
+      PrintError("13 Bad request\nIncorrect version")
+      Return
+    Endif
   Endif
 
   Try iId = CInt(sId)
@@ -513,9 +523,9 @@ Private Sub FindSoftware() As Result
   If sVersion Then
   
     If iId Then
-      rSoftware = DB.Find("software", "id = &1 AND version = &1", iId, CInt(sVersion))
+      rSoftware = DB.Find("software", "id = &1 AND version = &1", iId, iVersion)
     Else
-      rSoftware = DB.Find("software", "checksum = &1 AND version = &1", sId, CInt(sVersion))
+      rSoftware = DB.Find("software", "checksum = &1 AND version = &1", sId, iVersion)
     Endif
     
   Else
@@ -549,6 +559,77 @@ Private Sub AddCacheHeaders(sPath As String)
 
 End
 
+Private Sub FromVersion(sVersion As String) As Integer
+
+  Dim aVersion As String[] = Split(sVersion, ".")
+  
+  While aVersion.Count < 3
+    aVersion.Add("0")
+  Wend
+  
+  Try Return CInt(aVersion[0]) * 1000000 + CInt(aVersion[1]) * 1000 + CInt(aVersion[2])
+
+End
+
+Private Sub ToVersion(iVersion As Integer) As String
+  
+  Dim aVersion As New String[3]
+  Dim sVersion As String
+  
+  aVersion[0] = CStr(iVersion Div 1000000)
+  aVersion[1] = CStr((iVersion Div 1000) Mod 1000)
+  aVersion[2] = CStr(iVersion Mod 1000)
+  
+  sVersion = aVersion.Join(".")
+  While sVersion Ends ".0"
+    sVersion = Left(sVersion, -2)
+  Wend
+  
+  Return sVersion
+  
+End
+
+Private Sub GetDependencies(aDep As Integer[], sVendor As String, iId As Integer) 
+
+  Dim rSoftware As Result
+  Dim sDep As String
+  Dim iPos As Integer
+  Dim sName As String
+  Dim iVersion As Integer
+
+  rSoftware = DB.Find("software", "id = &1", iId)
+  If Not rSoftware Then Return
+  
+  For Each sDep In Split(rSoftware!dependencies)
+    
+    sDep = Trim(sDep)
+    iPos = InStr(sDep, " ")
+    
+    If iPos Then
+      sName = Left(sDep, iPos - 1)
+      iVersion = FromVersion(Mid$(sDep, iPos + 1))
+    Else
+      sName = sDep
+      iVersion = 0
+    Endif
+    
+    If iVersion = 0 Then
+      rSoftware = DB.Limit(1).Find("software", "vendor = &1 AND name = &2 ORDER BY version", sVendor, sName)
+    Else
+      rSoftware = DB.Find("software", "vendor = &1 AND name = &2 AND version = &3", sVendor, sName, iVersion)
+    Endif
+    
+    If rSoftware.Available Then
+      If Not aDep.Exist(rSoftware!id) Then
+        aDep.Add(rSoftware!id)
+        GetDependencies(aDep, sVendor, rSoftware!id)
+      Endif
+    Endif
+    
+  Next
+  
+End
+
 Private Sub GetSoftware()
 
   Dim rSoftware As Result
@@ -560,6 +641,8 @@ Private Sub GetSoftware()
   Dim rName As Result
   Dim aTag As String[]
   Dim sDir As String
+  Dim aDep As Integer[]
+  Dim I As Integer
   
   OpenDatabase
   
@@ -595,6 +678,18 @@ Private Sub GetSoftware()
       AddCacheHeaders(sPath)
       Response.SendFile(sPath)
     Endif
+    
+  Else If Request.Exist("dependencies") Then
+    
+    aDep = New Integer[]
+    GetDependencies(aDep, rSoftware!vendor, rSoftware!id)
+    aDep.Sort()
+    Print "10 OK"
+    For I = 0 To aDep.Max
+      If I Then Print ",";
+      Print aDep[I];
+    Next
+    Print
   
   Else
     
@@ -608,14 +703,14 @@ Private Sub GetSoftware()
     Print "10 OK"
     Print "Id="; rSoftware!id
     Print "Name="; Quote(rSoftware!name)
-    Print "Version="; rSoftware!version
+    Print "Version="; ToVersion(rSoftware!version)
     Print "Vendor="; Quote(rSoftware!vendor)
     Print "Release="; rSoftware!release
     Print "UploadDate="; Format(rSoftware!date, "yyyymmddhhnnss")
     Print "Description="; Quote(rSoftware!description)
     Print "URL="; Quote(rSoftware!url)
     Print "Size="; rSoftware!size
-    Print "RequiredGambasVersion="; rSoftware!gambas
+    Try Print "RequiredGambasVersion="; ToVersion(rSoftware!gambas)
     Print "Checksum="; Quote(rSoftware!checksum)
     Print "DownloadCount="; rSoftware!download
     Print "VoteCount="; rSoftware!vote
@@ -668,7 +763,7 @@ Private Sub DownloadSoftware()
     Inc rSoftware!download
     rSoftware.Update
     
-    sName = rSoftware!name & "-" & CStr(rSoftware!version \ 10000) & "." & CStr(rSoftware!version Mod 10000) & "." & CStr(rSoftware!release) & ".tar." & File.Ext(sPath)
+    sName = rSoftware!name & "-" & ToVersion(rSoftware!version) & "." & CStr(rSoftware!release) & ".tar." & File.Ext(sPath)
     
     Response.AddHeader("Content-Disposition", "attachment; filename=\"" & sName & "\"")
     Response.SendFile(Root &/ CStr(rSoftware!id) &/ sPath)
@@ -727,6 +822,7 @@ Private Sub SearchSoftware()
   Dim rTag As Result
   Dim iTag As Integer
   Dim sFilter As String
+  Dim sVendor As String
   
   OpenDatabase
   
@@ -745,6 +841,7 @@ Private Sub SearchSoftware()
   Next
   
   sFilter = String.LCase(Request["filter"])
+  sVendor = String.LCase(Request["vendor"])
   'aFilter = Split(sFilter, " ", Chr$(34), True)
   
   If Not sSort Then
@@ -802,6 +899,8 @@ Private Sub SearchSoftware()
         sDesc = String.LCase(rSoftware!description) & " " & String.LCase(rSoftware!name)
         If InStr(sDesc, sFilter) = 0 Then Continue
       Endif
+      
+      If sVendor And If InStr(String.LCase(rSoftware!vendor), sVendor) = 0 Then Continue
       
       If aTag.Count Then
         For Each iTag In aTag

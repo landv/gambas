@@ -782,10 +782,10 @@ Public Function GetHelpURL(Optional bShowFile As Boolean) As String
       sPath = MHelp.GetURL("comp")
       sComp = MHelp.ActualComponent(Component)
       sPath &/= LCase(sComp)
-      sPath &/= LCase(Left(Class) & Replace(Mid(Class, 2), "_", "."))
+      sPath &/= LCase(Class) 'Left(Class) & Replace(Mid(Class, 2), "_", "."))
       
       sName = LCase(Name)
-      sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
+      'sName = Left(sName) & Replace(Mid$(sName, 2), "_", ".")
       sName = Replace(sName, ":", ".")
       sPath &/= sName
       

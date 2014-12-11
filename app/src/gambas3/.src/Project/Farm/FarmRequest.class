@@ -211,15 +211,9 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Dim sSource As String
   Dim sIcon As String
   Dim sChecksum As String
-  Dim aGambasVersion As String[]
   
   $sTitle = ("Publish project")
   $iProgress = PROGRESS_UPLOAD
-  
-  If sGambasVersion Then 
-    aGambasVersion = Split(sGambasVersion, ".")
-    sGambasVersion = CStr(CInt(aGambasVersion[0]) * 100 + CInt(aGambasVersion[1]))
-  Endif
   
   sSource = Temp$()
   sSource = File.Dir(sSource) &/ File.BaseName(sSource) & ".tar.bz2" 'Project.GetDefaultArchiveBaseName() & ".tar.bz2"
@@ -242,7 +236,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   '$hForm.Add("password", Password)
   $hForm.Add("name", Project.Name)
   $hForm.Add("vendor", sVendor)
-  $hForm.Add("version", Project.MajorVersion * 10000 + Project.MinorVersion)
+  $hForm.Add("version", CStr(Project.MajorVersion) & "." & CStr(Project.MinorVersion))
   $hForm.Add("release", Project.ReleaseVersion)
   $hForm.Add("desc", sDesc)
   $hForm.Add("gambas", sGambasVersion)
@@ -276,10 +270,11 @@ Public Sub GetSoftwareIcon(iId As Integer)
 
 End
 
-Public Sub SearchSoftware(sSort As String, sFilter As String, aTag As String[])
+Public Sub SearchSoftware(sSort As String, sVendor As String, sFilter As String, aTag As String[])
   
   $hForm.URL = "http://" & Farm &/ "farm/search"
   $hForm["sort"] = sSort
+  $hForm["vendor"] = sVendor
   $hForm["filter"] = sFilter
   $hForm["tags"] = aTag.Join()
   FarmRequestManager.Add($hForm)

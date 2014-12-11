@@ -112,7 +112,7 @@ Public Sub Request_Finished()
   cResult = hReq.Result
   
   Name = UnQuote(cResult["Name"])
-  Try Version = CStr(CInt(Left(cResult["Version"], -4))) & "." & CStr(CInt(Right$(cResult["Version"], 4))) & "." & cResult["Release"]
+  Version = cResult["Version"] & "." & cResult["Release"]
   Vendor = UnQuote$(cResult["Vendor"])
   
   GetInstalledVersion()
@@ -120,7 +120,7 @@ Public Sub Request_Finished()
   UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
   Description = UnQuote(cResult["Description"])
   URL = UnQuote$(cResult["URL"])
-  Try RequiredGambasVersion = CStr(CInt(Left(cResult["RequiredGambasVersion"], -2))) & "." & CStr(CInt(Right(cResult["RequiredGambasVersion"], 2)))
+  RequiredGambasVersion = cResult["RequiredGambasVersion"]
   Checksum = UnQuote(cResult["Checksum"])
   Try DownloadCount = CInt(cResult["DownloadCount"])
   Try VoteCount = CInt(cResult["VoteCount"])

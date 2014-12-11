@@ -16,7 +16,6 @@ Property Value As String
 Property Border As Boolean
 
 Private $hButtonBox As ButtonBox
-Private $hButton As ToolButton
 
 Public Sub _new()
   
@@ -24,12 +23,7 @@ Public Sub _new()
   Me.Proxy = $hButtonBox
   $hButtonBox.Picture = Picture["icon:/small/directory"]
   $hButtonBox.ReadOnly = True
-  
-  $hButton = New ToolButton(Me) As "ClearButton"
-  $hButton.Picture = Picture["icon:/small/clear"]
-  $hButtonBox._AddButton($hButton)
-  
-  ClearButton_Click
+  $hButtonBox.ClearButton = True
   
 End
 
@@ -67,12 +61,5 @@ Public Sub Button_Click()
   
   Raise Click
   Raise Change
-  
-End
-
-Public Sub ClearButton_Click()
-  
-  $hButtonBox.Text = ""
-  '$hButtonBox.Foreground = Color.LightForeground
   
 End
