@@ -137,7 +137,6 @@ Public Sub Process_Read()
   Dim sLine As String
 
   sData = Read #Last, -256
-  Debug sData
   $sOutput &= sData
   If Not $bOutput Then Insert(sData)
   'Insert(sData)
