@@ -1172,7 +1172,7 @@ Private Function MakeRpmPackage(sSys As String)
   Print #hFile, "%define name " & $sPackageName
   Print #hFile, "%define version " & $sVersion
   Print #hFile, "%define release "; sRelease
-  
+
   Print #hFile
   Print #hFile, "Summary: " & IIf(Project.Title, Project.Title, Project.Name)
   Print #hFile, "Name: %{name}"
@@ -1256,7 +1256,7 @@ Private Function MakeRpmPackage(sSys As String)
     
       Select Case sSys
     
-        Case "mandriva", "mageia"
+        Case "mandriva"
     
           Print #hFile, "install -d %{buildroot}/%{_miconsdir}"
           Print #hFile, "install -d %{buildroot}/%{_iconsdir}"
@@ -1276,6 +1276,22 @@ Private Function MakeRpmPackage(sSys As String)
     
           Print #hFile, "\n%postun"
           Print #hFile, "%{clean_menus}"
+    
+        Case "mageia"
+    
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/icons"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/icons/mini"
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/icons/large"
+          Print #hFile, "install -p .icon/16.png %{buildroot}/%{_datadir}/icons/mini" &/ sIcon
+          Print #hFile, "install -p .icon/32.png %{buildroot}/%{_datadir}/icons" &/ sIcon
+          Print #hFile, "install -p .icon/48.png %{buildroot}/%{_datadir}/icons/large" &/ sIcon
+  
+          Print #hFile, "install -d %{buildroot}/%{_datadir}/applications"
+          Print #hFile, "cat << EOF > %{buildroot}/%{_datadir}/applications/%{name}.desktop"
+        
+          PrintDesktopFile(hFile, "%{_bindir}/" & Shell$($sName), sIcon, "X-MandrivaLinux-" & Replace(Replace(Project.Menus[sSys], " ", ""), "/", "-") & ";")
+        
+          Print #hFile, "EOF"
     
         Case "fedora"
     
