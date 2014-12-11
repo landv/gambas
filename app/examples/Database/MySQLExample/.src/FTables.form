@@ -1,0 +1,206 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,99,72)
+  Tag = "Catalogs"
+  Text = ("Tables")
+  Icon = Picture["icons/16/Table.png"]
+  Arrangement = Arrange.Fill
+  { mnuItem Menu
+    Text = ("Item")
+    Visible = False
+    { mnuNewItem Menu
+      Action = "NewItem"
+      Text = ("New Item")
+      Picture = Picture["icons/16/New.png"]
+      Shortcut = "F2"
+    }
+    { mnuEditItem Menu
+      Action = "EditItem"
+      Text = ("Edit Item")
+      Picture = Picture["icon:/16/edit"]
+      Shortcut = "Ctrl+E"
+    }
+    { mnuDeleteItem Menu
+      Action = "DeleteItem"
+      Text = ("Delete Item")
+      Picture = Picture["icon:/16/trash"]
+      Shortcut = "Ctrl+Del"
+    }
+    { mnuRefresh Menu
+      Action = "Refresh"
+      Text = ("Refresh")
+      Picture = Picture["icons/16/Refresh.png"]
+      Shortcut = "F5"
+    }
+  }
+  { vplMain VSplit
+    MoveScaled(0,0,98,71)
+    Expand = True
+    { vbxTables VBox
+      MoveScaled(1,1,97,37)
+      { tbrMain ToolBar
+        MoveScaled(0,1,84,4)
+        { tbtLock ToolButton
+          MoveScaled(0,0,4,4)
+          ToolTip = ("Lock")
+          Action = "Lock"
+          Picture = Picture["icons/16/Lock.png"]
+          Toggle = True
+        }
+        { Separator2 Separator
+          MoveScaled(5,0,1,4)
+        }
+        { tbtNew ToolButton
+          MoveScaled(7,0,4,4)
+          ToolTip = ("New Table")
+          Action = "NewItem"
+          Picture = Picture["icons/16/New.png"]
+        }
+        { tbtDelete ToolButton
+          MoveScaled(11,0,4,4)
+          ToolTip = ("Delete Table")
+          Action = "DeleteItem"
+          Picture = Picture["icon:/16/trash"]
+        }
+        { tbtRefresh ToolButton
+          MoveScaled(15,0,4,4)
+          ToolTip = ("Refresh")
+          Action = "Refresh"
+          Picture = Picture["icons/16/Refresh.png"]
+        }
+        { Separator1 Separator
+          MoveScaled(19,0,1,4)
+        }
+        { tbtNewDatabase ToolButton
+          MoveScaled(21,0,4,4)
+          ToolTip = ("New Database")
+          Action = "NewDatabase"
+          Picture = Picture["icons/16/Database.png"]
+        }
+        { tbtDeleteDatabase ToolButton
+          MoveScaled(27,0,4,4)
+          ToolTip = ("Delete Database")
+          Action = "DeleteDatabase"
+          Picture = Picture["icon:/16/remove"]
+        }
+        { Separator3 Separator
+          MoveScaled(32,0,1,4)
+        }
+        { cmbDatabases ComboBox
+          MoveScaled(35,0,24,4)
+          ReadOnly = True
+          Sorted = True
+        }
+      }
+      { tabData TabStrip
+        MoveScaled(1,8,95,26)
+        Expand = True
+        Arrangement = Arrange.Fill
+        Count = 7
+        Index = 0
+        Text = ("Tables")
+        Picture = Picture["icons/16/Table.png"]
+        { tvwTables TableView
+          MoveScaled(1,3,41,16)
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 1
+        Text = ("Views")
+        Picture = Picture["icons/16/View.png"]
+        { tvwViews TableView
+          MoveScaled(1,2,35,13)
+          Expand = True
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 2
+        Text = ("Indexes")
+        Picture = Picture["icons/16/Index.png"]
+        { tvwIndexes TableView
+          MoveScaled(1,3,40,15)
+          Expand = True
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 3
+        Text = ("Fields on:")
+        Picture = Picture["icons/16/Field.png"]
+        { tvwFields TableView
+          MoveScaled(2,3,39,16)
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 4
+        Text = ("Routines")
+        Picture = Picture["icons/16/Routine.png"]
+        { tvwProcedures TableView
+          MoveScaled(1,3,41,16)
+          Expand = True
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 5
+        Text = ("Triggers")
+        Picture = Picture["icons/16/Trigger.png"]
+        { tvwTriggers TableView
+          MoveScaled(1,2,41,16)
+          Expand = True
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 6
+        Text = ("Events")
+        Picture = Picture["icon:/16/clock"]
+        { tvwEvents TableView
+          MoveScaled(2,2,41,16)
+          Expand = True
+          Mode = Select.Single
+          Header = GridView.Both
+        }
+        Index = 0
+      }
+    }
+    { textResult TextArea
+      MoveScaled(1,39,96,32)
+    }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action DeleteDatabase
+    Text = "Delete Database"
+    Picture = "icon:/16/remove"
+  }
+  { Action DeleteItem
+    Text = "Delete Item"
+    Shortcut = "Ctrl+Del"
+    Picture = "icon:/16/trash"
+  }
+  { Action EditItem
+    Text = "Edit Item"
+    Shortcut = "Ctrl+E"
+    Picture = "icon:/16/edit"
+  }
+  { Action Lock
+    Text = "Lock"
+    Picture = "icons/16/Lock.png"
+  }
+  { Action NewDatabase
+    Text = "New Database"
+    Picture = "icons/16/Database.png"
+  }
+  { Action NewItem
+    Text = "New Item"
+    Shortcut = "F2"
+    Picture = "icons/16/New.png"
+  }
+  { Action Refresh
+    Text = "Refresh"
+    Shortcut = "F5"
+    Picture = "icons/16/Refresh.png"
+  }
+}

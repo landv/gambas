@@ -1,0 +1,38 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(27.7143,27.7143,61.5714,46.7143)
+  Text = ("FExplorer")
+  Icon = Picture["icon:/16/directory"]
+  Arrangement = Arrange.Vertical
+  { mnuFile Menu
+    Text = Shortcut(("File"), "F")
+    { mnuViewHidden Menu
+      Text = Shortcut(("View hidden files"), "V")
+    }
+    { mnuViewRefresh Menu
+      Text = Shortcut(("Refresh"), "R")
+      Picture = Picture["icon:/16/refresh"]
+      Shortcut = "F5"
+    }
+    { Menu1 Menu
+    }
+    { mnuAbout Menu
+      Text = Shortcut(("About"), "A") & "..."
+    }
+    { mnuQuit Menu
+      Text = Shortcut(("Quit"), "Q")
+      Picture = Picture["icon:/16/quit"]
+    }
+  }
+  { Separator1 Separator
+    MoveScaled(27,4,19,0)
+  }
+  { ivwExplorer IconView
+    MoveScaled(2,9,44,30)
+    Expand = True
+    Mode = Select.Multiple
+    Editable = True
+    Border = False
+  }
+}

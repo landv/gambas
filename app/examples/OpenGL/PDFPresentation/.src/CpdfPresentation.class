@@ -1,0 +1,464 @@
+' Gambas class file
+
+' no effect
+Public Const NoEffect As Integer = 0
+Public Const Rotate As Integer = 1
+Public Const FadingIn As Integer = 2
+Public Const FadingOut As Integer = 3
+
+' do we animate the page ?
+Private anim As Boolean
+Private aEffect As Integer
+Private nextEffect As Integer
+' do we move to previous page ?
+Private previous As Boolean
+' keep trace of zTrans for rotate
+Private azTrans As Float
+' fading
+Private aColor As Float = 0
+
+' texture
+Private textures As New Integer[]
+Private TextureSize As Integer
+Private textureShown As Integer
+' the size of the shown quad
+Private qHeight As Float = 1
+Private qWidth As Float
+' the size of the shown texture
+Private tHeight As Float
+Private tWidth As Float
+Private tX As Float = 0
+Private tY As Float = 0
+
+' document pdf
+Private hPdf As New PdfDocument
+Private currentPage As Integer
+Private quality As Integer = 1
+Private initialized As Boolean = False
+
+' camera position
+Private Ztrans As Float = -2.56
+Private Ytrans As Float = 0.0
+Private Xtrans As Float = 0.0
+Private Zrot As Float = 0.0
+Private Yrot As Float = 1.0
+Private Xrot As Float = 0.0
+Private Angle As Float = 0
+Private ZoomFactor As Float = 1.0
+Private GotoZoomFactor As Float = ZoomFactor
+
+' flag values
+Private points As New Float[45, 45, 3]
+Private hold As Float
+Private wiggle_count As Integer
+Private DrawFlag As Boolean = False
+
+' speed factor
+Private $eSpeed As Float
+
+' properties
+Property Effect As Integer
+Property Read Page As Integer
+
+' Image cache
+'PRIVATE $cImageCache AS NEW Collection
+
+Public Sub _new(file As String, FrameRate As Integer)
+
+  Dim width, height As Integer
+  Dim x, y As Integer
+  Dim i As Float
+
+  hPdf.Open(file)
+  aEffect = noEffect
+  currentPage = 1
+  textureShown = 1
+  hPdf.Zoom = quality
+  width = hPdf[currentPage].width
+  height = hPdf[currentPage].height
+  qWidth = Width / Height
+  textureSize = getTextureSize(Max(Width, Height))
+  tWidth = Width / textureSize
+  tHeight = Height / textureSize
+  azTrans = zTrans
+  
+  $eSpeed = 600 / FrameRate
+  
+  music.Load("music.xm")
+
+  For x = 0 To 44
+    For y = 0 To 44
+      Points[x, y, 0] = ((x / 5) - 4.5)
+      Points[x, y, 1] = ((y / 5) - 4.5)
+      Points[x, y, 2] = Sin((((x / 5) * 40) / 360) * Pi * 2) * 0.2
+    Next
+  Next
+
+End
+
+Public Sub _free()
+
+  Gl.DeleteTextures(textures)
+
+End
+
+Public Sub Draw()
+
+  If initialized = False Then
+    initialize()
+    initialized = True
+    anim = True
+    aEffect = fadingIn
+    nextEffect = rotate
+  Endif
+
+  If Anim Then animate()
+
+  Paint()
+
+End
+
+Public Sub Resize(W As Integer, H As Integer)
+
+  ' Width/Height Ratio
+  Dim ratio As Float
+  Dim Height As Integer
+
+  Height = H
+  ' Protect against a divide by zero
+
+  If Height = 0 Then Height = 1
+
+  ratio = W / Height
+  ' Setup our viewport
+  Gl.Viewport(0, 0, W, H)
+  ' change to the projection matrix AND set our viewing volume.
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()
+  ' Set our perspective
+  Glu.Perspective(45.0, ratio, 0.1, 100.0)
+  ' Make sure we're changing the model view and not the projection
+  Gl.MatrixMode(Gl.MODELVIEW)
+  GL.LoadIdentity()
+
+End
+
+Public Sub MoveNext()
+
+  ' we animate the page, no moves until end !
+  If anim Then Return
+
+  ' No more page
+  If currentPage + 1 > hPdf.Count Then Return
+
+  Inc (currentPage)
+  If currentPage = hPdf.Count Then
+    aEffect = fadingOut
+    music.Play(-1)
+  Endif
+  previous = False
+  anim = True
+
+End
+
+Public Sub MovePrev()
+
+  ' we animate the page, no moves until end !
+  If anim Then Return
+
+  ' No more page
+  If currentPage = 1 Then Return
+  If currentPage = hPdf.Count Then Return
+
+  Dec (currentPage)
+  previous = True
+  azTrans = zTrans
+  anim = True
+
+End
+
+Function Effect_Read() As Integer
+
+  Return aEffect
+
+End
+
+Sub Effect_Write(ceffect As Integer)
+
+  aEffect = ceffect
+
+End
+
+Function Page_Read() As Integer
+
+  Return currentPage
+
+End
+
+'************************ private functions**********************
+
+Private Sub initialize()
+
+  ' Enable texturing
+  Gl.Enable(Gl.TEXTURE_2D)
+  ' Enable smooth shading
+  Gl.ShadeModel(Gl.SMOOTH)
+  ' Set the background black
+  Gl.ClearColor(0.0, 0.0, 0.0, 1.0)
+  ' Depth buffer setup
+  Gl.ClearDepth(1.0)
+  ' Enables Depth Testing
+  Gl.Enable(Gl.DEPTH_TEST)
+  ' The Type OF Depth Test TO DO
+  Gl.DepthFunc(Gl.LESS)
+  ' Really Nice Perspective Calculations
+  Gl.Hint(Gl.PERSPECTIVE_CORRECTION_HINT, Gl.NICEST)
+  Gl.Disable(Gl.BLEND)
+
+  textures = Gl.GenTextures(3)
+  loadTexture(textures[textureshown], 1)
+
+  If hPdf.Count > 1 Then loadTexture(textures[textureshown + 1], 2)
+
+End
+
+Private Sub Paint()
+
+  Dim x As Integer
+  Dim y As Integer
+  Dim f_x As Float
+  Dim f_y As Float
+  Dim f_xb As Float
+  Dim f_yb As Float
+
+  If ZoomFactor < GotoZoomFactor Then
+    ZoomFactor = Min(GotoZoomFactor, ZoomFactor * (1.2 ^ (1 / 4)))
+  Else If ZoomFactor > GotoZoomFactor Then
+    ZoomFactor = Max(GotoZoomFactor, ZoomFactor / (1.2 ^ (1 / 4)))
+  Endif
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)
+  ' Reset The View
+  gl.LoadIdentity()
+
+  If DrawFlag Then
+    gl.Translatef(0.80, -1.9, -8.0)
+    gl.Rotatef(180, 1.0, 0, 0)
+    gl.BindTexture(gl.TEXTURE_2D, textures[textureShown])
+
+    gl.Begin(gl.QUADS)
+
+    For x = 0 To 43
+      For y = 0 To 43
+        f_x = x / 44.0
+        f_y = y / 44.0
+        f_xb = (x + 1) / 44.0
+        f_yb = (y + 1) / 44.0
+        Gl.TexCoordf(f_x, f_y)
+        gl.Vertexf(points[x, y, 0], points[x, y, 1], points[x, y, 2])
+        Gl.TexCoordf(f_x, f_yb)
+        gl.Vertexf(points[x, y + 1, 0], points[x, y + 1, 1], points[x, y + 1, 2])
+        Gl.TexCoordf(f_xb, f_yb)
+        gl.Vertexf(points[x + 1, y + 1, 0], points[x + 1, y + 1, 1], points[x + 1, y + 1, 2])
+        Gl.TexCoordf(f_xb, f_y)
+        gl.Vertexf(points[x + 1, y, 0], points[x + 1, y, 1], points[x + 1, y, 2])
+      Next
+    Next
+    gl.End()
+
+    If wiggle_count = 2 Then
+      For y = 0 To 44
+        hold = points[0, y, 2]
+        For x = 0 To 43
+          points[x, y, 2] = points[x + 1, y, 2]
+        Next
+        points[44, y, 2] = hold
+      Next
+      wiggle_count = 0
+    Endif
+    Inc wiggle_count
+
+  Else
+
+    gl.Translatef(0, 0, Ztrans * ZoomFactor)
+    gl.Rotatef(angle, 0, Yrot, 0)
+
+    Gl.BindTexture(Gl.TEXTURE_2D, textures[textureShown])
+
+    ' Draw A Quad
+    gl.Begin(gl.QUADS)
+      Gl.TexCoordf(tX, tY)
+      gl.Vertexf(- qWidth, qHeight, 0.0)
+      Gl.TexCoordf(twidth, tY)
+      gl.Vertexf(qWidth, qHeight, 0.0)
+      Gl.TexCoordf(twidth, theight)
+      gl.Vertexf(qWidth, - qHeight, 0.0)
+      Gl.TexCoordf(tX, theight)
+      gl.Vertexf(- qWidth, - qHeight, 0.0)
+    gl.End()
+
+  Endif
+
+End
+
+Private Function getTextureSize(size As Integer) As Integer
+
+  Dim iSize As Integer
+  Dim iCount As Integer
+
+  While (size > isize)
+    iSize = 2 ^ iCount
+    Inc (iCount)
+  Wend
+
+  Return iSize
+
+End
+
+Private Sub loadTexture(texture As Integer, page As Integer)
+
+  Dim imgPage As Image
+
+  ' imgPage = $cImageCache[page]
+  ' IF NOT imgPage THEN
+  Debug "loading pdf page "; page
+  imgPage = hPdf[page].Image
+  imgPage.Resize(textureSize, textureSize)
+  '$cImageCache[page] = imgPage
+  'ENDIF
+  Gl.BindTexture(Gl.TEXTURE_2D, texture)
+  Gl.TexImage2D(imgPage)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR)
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+
+End
+
+Private Sub updatePages()
+
+  Dim cpage As Integer
+
+  If previous = False Then
+    cpage = textures[0]
+    textures.Remove(0)
+    textures.Push(cpage)
+    If currentPage < hPdf.Count Then
+      loadTexture(textures[2], currentPage + 1)
+    Endif
+    Return
+  Endif
+
+  cpage = textures[2]
+  textures.pop()
+  textures.Add(cpage, 0)
+  If currentPage > 1 Then
+    loadTexture(textures[0], currentPage - 1)
+  Endif
+
+End
+
+Private Sub animate()
+
+  If aEffect = NoEffect Then animNoEffect()
+  If aEffect = Rotate Then animRotate()
+  If aEffect = FadingIn Then animFadingIn()
+  If aEffect = FadingOut Then animFadingOut()
+
+End
+
+Private Sub animNoEffect()
+
+  updatePages()
+  anim = False
+
+End
+
+Private Sub animRotate()
+
+  Dim eOldAngle As Float = angle
+
+  If previous = False Then
+    angle -= 0.5 * $eSpeed
+
+    If eOldAngle > -90 And If angle <= -90 Then
+      tX = tWidth
+      tWidth = 0
+      Inc (textureShown)
+    Endif
+
+    If angle < -180 Then
+      angle = 0
+      anim = False
+      tWidth = tX
+      tX = 0
+      zTrans = azTrans
+      updatePages()
+      textureShown = 1
+    Endif
+  Else
+    angle += 0.5 * $eSpeed
+
+    If eOldAngle < 90 And If angle >= 90 Then
+      tX = tWidth
+      tWidth = 0
+      Dec (textureShown)
+    Endif
+
+    If angle > 180 Then
+      angle = 0
+      anim = False
+      tWidth = tX
+      tX = 0
+      zTrans = azTrans
+      updatePages()
+      textureShown = 1
+    Endif
+  Endif
+
+  zTrans = azTrans - 2 * Sin(Abs(Rad(angle)))
+
+End
+
+Private Sub animFadingIn()
+
+  aColor += 0.02 * $eSpeed
+
+  If aColor > 1 Then
+    Gl.Colorf(1.0, 1.0, 1.0)
+    aColor = 1
+    aEffect = nextEffect
+    anim = False
+  Else
+    Gl.Colorf(aColor, aColor, aColor)
+  Endif
+
+End
+
+Private Sub animFadingOut()
+
+  aColor -= 0.01 * $eSpeed
+
+  If aColor < 0 Then
+    Gl.Colorf(0.0, 0.0, 0.0)
+    aColor = 0
+    aEffect = FadingIn
+    updatePages()
+    DrawFlag = True
+  Else
+    Gl.Colorf(aColor, aColor, aColor)
+  Endif
+
+End
+
+Public Sub ZoomIn()
+  
+  If GotoZoomFactor <= 0.04 Then Return
+  GotoZoomFactor /= 1.2
+  
+End
+
+Public Sub ZoomOut()
+  
+  If GotoZoomFactor > 20 Then Return
+  GotoZoomFactor *= 1.2
+  
+End

@@ -1,0 +1,151 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Action,Value,ReadOnly,Border=True"
+'Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "24,4"
+Public Const _Similar As String = "TextBox"
+
+Property Value As Date
+Property ReadOnly As Boolean
+Property Border As Boolean
+
+Private $hBorder As DrawingArea
+Private $hMinute As MaskBox
+Private $hSecond As MaskBox
+Private $hLabel As Label
+Private $bBorder As Boolean = True
+
+Public Sub _new()
+  
+  $hBorder = New DrawingArea(Me) As "Border"
+  $hBorder.Arrangement = Arrange.Horizontal
+  $hBorder.Padding = Style.FrameWidth
+  $hBorder.Margin = True
+  
+  $hMinute = New MaskBox($hBorder) As "MinuteBox"
+  $hMinute.Expand = True
+  $hMinute.Border = False
+  $hMinute.Mask = "00"
+  $hMinute.Alignment = Align.Center
+  $hMinute.ShowDefault = True
+  
+  $hLabel = New Label($hBorder)
+  $hLabel.Text = " : "
+  $hLabel.AutoResize = True
+  
+  $hSecond = New MaskBox($hBorder) As "SecondBox"
+  $hSecond.Expand = True
+  $hSecond.Border = False
+  $hSecond.Mask = "00"
+  $hSecond.Alignment = Align.Center
+  $hSecond.ShowDefault = True
+  
+End
+
+Private Function Value_Read() As Date
+
+  Try Return Time(0, CInt($hMinute.Text), CInt($hSecond.Text))
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  $hMinute.Text = Format(Minute(Value), "00")
+  $hSecond.Text = Format(Second(Value), "00")
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $hMinute.ReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $hMinute.ReadOnly = Value
+  $hSecond.ReadOnly = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
+  $hBorder.Padding = If($bBorder, Style.FrameWidth, 0)
+  $hBorder.Margin = $bBorder
+
+End
+
+Public Sub MinuteBox_GotFocus()
+  
+  $hBorder.Refresh
+  $hMinute.SelectAll
+  
+End
+
+Public Sub SecondBox_GotFocus()
+  
+  $hBorder.Refresh
+  $hSecond.SelectAll
+  
+End
+
+Public Sub MinuteBox_LostFocus()
+  
+  $hBorder.Refresh
+  
+End
+
+Public Sub SecondBox_LostFocus()
+  
+  $hBorder.Refresh
+  
+End
+
+Public Sub MinuteBox_MouseWheel()
+
+  $hMinute.Text = Format(Max(0, Min(59, CInt($hMinute.Text) + If(Mouse.Forward, -1, 1))), "00")
+  
+End
+
+Public Sub SecondBox_MouseWheel()
+
+  Dim dVal As Date
+
+  dVal = Value_Read()
+  Try dVal = DateAdd(dVal, gb.Second, If(Mouse.Forward, 10, -10))
+  If Not Error Then Value_Write(dVal)
+  
+End
+
+Public Sub MinuteBox_Change()
+  
+  If $hMinute.Pos = $hMinute.Length Then 
+    $hSecond.SetFocus
+  Endif
+  
+End
+
+Public Sub Border_Draw()
+  
+  Dim iBg As Integer = Color.TextBackground
+  
+  If Me.Background <> Color.Default Then iBg = Me.Background
+  
+  If $bBorder Then 
+    Style.PaintBox(0, 0, Me.W, Me.H, Style.StateOf($hMinute) Or Style.StateOf($hSecond), iBg)
+  Else
+    Paint.FillRect(0, 0, Me.W, Me.H, iBg)
+  Endif
+  
+End

@@ -1,0 +1,17 @@
+Public Sub Example20()
+  
+  Dim eWidth As Float
+  Dim Y As Float
+  
+  Y = 20.5
+  For eWidth = 0 To 5 Step 0.25
+    Paint.LineWidth = eWidth
+    Paint.MoveTo(50, Y)
+    Paint.RelLineTo(200, 0)
+    Paint.Stroke
+    Paint.Text(eWidth, 0, Y - 10, 40, 20, Align.Right)
+    Paint.Fill
+    Y += 20
+  Next
+  
+End

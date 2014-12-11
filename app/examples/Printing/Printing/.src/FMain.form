@@ -1,0 +1,88 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,79,66)
+  Icon = Picture["printer-laser.png"]
+  Arrangement = Arrange.Fill
+  Margin = True
+  { TabStrip1 TabStrip
+    MoveScaled(1,1,77,64)
+    Arrangement = Arrange.Vertical
+    Spacing = True
+    Margin = True
+    Count = 2
+    Index = 0
+    Text = ("Text")
+    { HBox1 HBox
+      MoveScaled(1,1,74,4)
+      Spacing = True
+      { btnOpenText Button
+        MoveScaled(0,0,19,4)
+        AutoResize = True
+        Text = ("Load text file...")
+        Picture = Picture["icon:/16/text"]
+      }
+      { btnRichText ToggleButton
+        MoveScaled(20,0,16,4)
+        AutoResize = True
+        Text = ("Rich text")
+        Picture = Picture["icon:/16/text-italic"]
+        Value = True
+      }
+      { txtFontText ButtonBox
+        MoveScaled(41,0,17,4)
+        Expand = True
+        Picture = Picture["icon:/16/font"]
+      }
+      { btnPrintText Button
+        MoveScaled(61,0,12,4)
+        AutoResize = True
+        Text = ("Print")
+        Picture = Picture["icon:/16/print"]
+      }
+    }
+    { txtText TextArea
+      MoveScaled(1,6,74,16)
+      Text = ("<h2>Hello!</h2>\nThis is a <b>text printing</b> <i>example</i>.")
+    }
+    { scrText ScrollArea
+      MoveScaled(1,23,46,26)
+      Background = Color.TextBackground
+      Expand = True
+      ScrollBar = Scroll.Vertical
+    }
+    { prtText #Printer
+      #MoveScaled(62,31)
+    }
+    Index = 1
+    Text = ("Image")
+    { HBox2 HBox
+      MoveScaled(1,1,74,4)
+      Spacing = True
+      { btnOpenImage Button
+        MoveScaled(0,0,21,4)
+        AutoResize = True
+        Text = ("Load image file...")
+        Picture = Picture["icon:/16/image"]
+      }
+      { Panel1 Panel
+        MoveScaled(35,0,3,4)
+        Expand = True
+      }
+      { btnPrintImage Button
+        MoveScaled(61,0,12,4)
+        AutoResize = True
+        Text = ("Print")
+        Picture = Picture["icon:/16/print"]
+      }
+    }
+    { scrImage ScrollArea
+      MoveScaled(1,7,46,26)
+      Expand = True
+    }
+    { prtImage #Printer
+      #MoveScaled(55,14)
+    }
+    Index = 0
+  }
+}

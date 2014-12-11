@@ -1,0 +1,74 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,88)
+  Padding = ReportPadding["Top:15mm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Tag = "\"toto\""
+  Spacing = "1cm"
+  Index = 0
+  Text = ("")
+  { ReportLabel5 ReportLabel
+    #MoveScaled(2,0,61,4)
+    Brush = ReportBrush["#9F9F9F"]
+    Fixed = True
+    AutoResize = True
+    Text = ("List of all my friends")
+    Alignment = Align.Right
+  }
+  { ReportLabel3 ReportLabel
+    #MoveScaled(2,3,60,18)
+    Font = Font["Bold,+10"]
+    Padding = ReportPadding["Top:2mm;Bottom:2mm;Left:2mm;Right:2mm"]
+    AutoResize = True
+    Border = ReportBorder["Top:1px #000000;Bottom:1px #000000;Left:1px #000000;Right:1px #000000;TopLeftCorner:5mm;TopRightCorner:5mm;BottomRightCorner:5mm;BottomLeftCorner:5mm"]
+    Background = ReportBrush["#1FFF8F"]
+    Text = ("List Of My Friends")
+    Alignment = Align.Center
+  }
+  { ReportPanel2 ReportVBox
+    #MoveScaled(0,23,65,54)
+    Expand = True
+    Tag = "Boite 1"
+    Spacing = "1cm"
+    { ReportPanel1 ReportVBox
+      #MoveScaled(1,3,64,45)
+      Width = "4cm"
+      Height = "5cm"
+      AutoResize = True
+      Tag = "Boite 2"
+      Spacing = "1mm"
+      { ReportLabel2 ReportLabel
+        #MoveScaled(2,1,54,8)
+        Fixed = True
+        Font = Font["Bold,+3"]
+        AutoResize = True
+        Background = ReportBrush["#1FFF8F"]
+      }
+      { ReportHBox1 ReportHBox
+        #MoveScaled(2,11,71,31)
+        Width = "5cm"
+        Height = "2cm"
+        Padding = ReportPadding["Left:5mm"]
+        AutoResize = True
+        Tag = "Boite 3"
+        { ReportLabel1 ReportLabel
+          #MoveScaled(5,5,47,17)
+          Font = Font["+1"]
+          Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+          Expand = True
+          AutoResize = True
+          Background = ReportBrush["#DFDF6F"]
+        }
+      }
+    }
+  }
+  { ReportLabel4 ReportLabel
+    #MoveScaled(0,79,62,4)
+    Fixed = True
+    AutoResize = True
+    Text = ("Page $PAGE / $NPAGE")
+    Alignment = Align.Right
+    UseField = True
+  }
+  Index = 0
+}

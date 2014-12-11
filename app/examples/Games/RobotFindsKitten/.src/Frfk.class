@@ -1,0 +1,186 @@
+' Gambas class file
+Public NKIs As Object[]
+Public Robot As Object
+Public OrigHeight As Integer
+Public OrigWidth As Integer
+Public OrigFontSize As Integer
+Public KittenIsFound As Boolean
+Public NumNKIs As Integer
+Public KittenIndex As Integer
+
+Public Sub Timer1_Timer()
+
+  Dim middle As Float
+  Dim kitten As Object
+
+  Try TextLabel1.setfocus()
+  If kittenisfound Then
+    kitten = nkis[kittenindex]
+    middle = CFloat(kitten.x + robot.x) / 2
+    robot.x = robot.x + Round(CFloat(middle - 8 - robot.x) / 2)
+    kitten.x = kitten.x + Round(CFloat(middle + 8 - kitten.x) / 2)
+  End If
+End
+
+Public Sub TextLabel1_KeyPress()
+
+  Dim i As Integer
+  
+  If Key.Code = Key.Escape Then Esc_Click
+  If kittenisfound Then Return
+  
+  Select Case Key.Code
+  Case Key.Up
+    For i = 0 To nkis.count - 1
+      If Abs(robot.y - (nkis[i].y + nkis[i].height)) < 4 And Abs(robot.x - nkis[i].x) < 4 Then
+        Textlabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.y - robot.height >= Textlabel1.height Then
+      robot.y = robot.y - robot.height
+    Endif
+  Case Key.Down
+    For i = 0 To nkis.count - 1
+      If Abs(robot.y + robot.height - nkis[i].y) < 4 And Abs(robot.x - nkis[i].x) < 4 Then
+        TextLabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.y + robot.height + robot.height < Me.clientheight Then
+      robot.y = robot.y + robot.height
+    Endif
+  Case Key.Left
+    For i = 0 To nkis.count - 1
+      If Abs(robot.x - (nkis[i].x + nkis[i].width)) < 4 And Abs(robot.y - nkis[i].y) < 4 Then
+        TextLabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.x - robot.width >= 0 Then
+      robot.x = robot.x - robot.width
+    Endif
+  Case Key.Right
+    For i = 0 To nkis.count - 1
+      If Abs(robot.x + robot.width - nkis[i].x) < 4 And Abs(robot.y - nkis[i].y) < 4 Then
+        TextLabel1.text = nkis[i].tag
+        If nkis[i].tag = "kitten" Then FoundKitten(i)
+        Return
+      Endif
+    Next
+    If robot.x + robot.width + robot.width < Me.clientwidth Then
+      robot.x = robot.x + robot.width
+    Endif
+  End Select
+
+End
+
+Public Sub Esc_Click()
+
+  Me.close
+
+End
+
+
+Public Sub Form_Open()
+
+  Dim tmp As Label
+  Dim i As Integer
+  Dim nkistring As String
+  Dim nkitext As String[]
+  NKIs = New Object[]
+  nkitext = New String[]
+  
+  Randomize
+  origheight = Me.height
+  origwidth = Me.width
+  origfontsize = 12
+  Try nkistring = File.load("nkis.txt")
+  nkitext = Split(nkistring, "\n")
+  KittenisFound = False
+  numnkis = 20
+  
+  For i = 1 To NumNKIs
+    tmp = New Label(Me)
+    tmp.x = Int(Rnd(0, Me.width / 16)) * 16
+    tmp.y = Int(Rnd(5, Me.height / 16)) * 16
+    tmp.AutoResize = False
+    tmp.width = 16
+    tmp.height = 16
+    tmp.font.size = 12
+    tmp.Foreground = Int(Rnd(32, 255)) * 65536 + Int(Rnd(32, 255)) * 256 + Int(Rnd(32, 255))
+    tmp.alignment = Align.center
+    tmp.text = "#"
+    Do While tmp.text = "#"
+      tmp.text = Chr(Rnd(33, 126))
+    Loop
+    tmp.tag = nkitext[Int(Rnd(0, nkitext.count))]
+    NKIs.add(tmp)
+  Next
+  nkis[nkis.count - 1].tag = "kitten"
+  robot = New Label(Me)
+  robot.x = 192
+  robot.y = 192
+  robot.AutoResize = False
+  robot.height = 16
+  robot.width = 16
+  robot.font.size = 12
+  robot.Background = Color.white
+  robot.Foreground = Color.black
+  robot.alignment = Align.center
+  robot.text = "#"
+  
+
+End
+
+Public Sub Form_Resize()
+
+  Dim scalex As Float
+  Dim scaley As Float
+  Dim i As Integer
+  
+  'STOP
+  scalex = CFloat(Me.width) / origwidth
+  scaley = CFloat(Me.height) / origheight
+  If nkis.count < NumNKIs Then Return
+  For i = 0 To nkis.count - 1
+    NKIs[i].x = NKIs[i].x * scalex
+    NKIs[i].y = NKIs[i].y * scaley
+    NKIs[i].width = Round(NKIs[i].width * scalex)
+    NKIs[i].height = Round(NKIs[i].height * scaley)
+    If nkis[i].y < TextLabel1.height Then nkis[i].y = Round(TextLabel1.height / nkis[i].height) * nkis[i].height
+    NKIs[i].font.size = Round(NKIs[i].font.size * scaley)
+  Next
+  robot.x = robot.x * scalex
+  robot.y = robot.y * scaley
+  robot.width = Round(robot.width * scalex)
+  robot.height = Round(robot.height * scaley)
+  robot.font.size = Round(robot.font.size * scaley)
+  origwidth = Me.width
+  origheight = Me.height
+
+End
+
+Sub FoundKitten(nki As Integer)
+  
+  Dim i As Integer
+  For i = 0 To nkis.count - 1
+    If i <> nki Then 
+      nkis[i].visible = False
+      nkis[i].x = Me.width + 100
+      nkis[i].y = Me.height + 100
+    Endif
+  Next
+  heart.visible = True
+  KittenIsFound = True
+  kittenindex = nki
+  TextLabel1.text = ("You found kitten! Way to go, robot!")
+  nkis[nki].y = heart.y + heart.height
+  robot.y = heart.y + heart.height
+  robot.x = heart.x - robot.width
+  nkis[nki].x = heart.x + heart.width
+  
+End

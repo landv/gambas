@@ -1,0 +1,86 @@
+' Gambas class file
+
+'PRIVATE UDPServer AS UdpSocket
+Public Sub Button1_Click()
+
+  Dim MyFrm As FrmClient
+  MyFrm = New FrmClient
+  MyFrm.Visible = True
+
+  
+
+End
+
+'//////////////////////////////////////////////////
+' Server Stuff
+'//////////////////////////////////////////////////
+Public Sub Button2_Click()
+
+  If UDPServer.Status <= Net.Inactive Then
+    UDPServer.Port = CInt(TextBox1.Text)
+    'UDPServer.Path = "/tmp/gambas-udp-server"
+    UDPServer.Bind
+    If UDPServer.Status = Net.Active Then
+      Button2.Text = ("Stop")
+      TextBox1.Enabled = False
+    End If
+  Else
+    Close #UDPServer
+    Button2.Text = ("Start !")
+    TextBox1.Enabled = True
+  End If    
+
+End
+
+'PUBLIC SUB Form_Open()
+'
+'  UDPServer = NEW UdpSocket AS "UDPServer"
+'
+'END
+
+Public Sub Form_Close()
+
+  If UDPServer.Status > 0 Then Close #UDPServer
+
+End
+
+Public Sub UDPServer_Error()
+  
+  Button2.Text = "Start !"
+  TextBox1.Enabled = True
+  Select Case UDPServer.Status
+    Case Net.CannotBindSocket
+      Message.Error(("Unable to Bind to that port"))
+    Case Net.CannotCreateSocket
+      Message.Error(("System does not allow to create a socket"))
+    Case Net.CannotRead
+      Message.Error(("Error Sending Data"))
+    Case Net.CannotWrite
+      Message.Error(("Error Receiving Data"))
+  End Select
+  
+End
+
+Public Sub UDPServer_Read()
+  
+  Dim sCadRet As String
+  Dim sCad As String
+  Dim MyLoop As Integer 
+
+  sCadRet = ""
+  Read #UDPServer, sCad, Lof(UDPserver)
+  TextArea1.Text = TextArea1.Text & ("Received data from : ") & UDPServer.SourceHost & ":" & UDPServer.SourcePort & Chr(13) & Chr(10)
+  TextArea1.Text = TextArea1.Text & ("Data --> ") & sCad & Chr(13) & Chr(10)
+  If Len(sCad) > 0 Then
+    For myloop = String.Len(sCad) To 1 Step -1
+      sCadRet = sCadRet & String.Mid(sCad, myloop, 1)
+    Next
+    UDPServer.TargetHost = UDPServer.SourceHost
+    UDPServer.TargetPort = UDPServer.SourcePort
+    'UDPServer.TargetPath = UDPServer.SourcePath
+    Write #UDPServer, sCadRet, Len(sCadRet)
+  End If
+  
+End
+
+

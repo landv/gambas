@@ -1,0 +1,161 @@
+' Gambas class file
+
+' Types in ascending difficulty
+Public Enum Normal = 1, Tough, Borg, BorgQueen
+' See looking strings below
+Public Const AverageWidth As Integer = 5
+
+Property X As Integer
+Property Y As Integer
+'' Shift distance from 0,0 (may *not* equal Y * Window.Width + X)
+Property Read Shifted As Integer
+Property Read Width As Integer
+Property Read Type As Integer
+
+Event Destroyed
+Event SuperDestroyed
+
+Private $iType As Integer
+Private $sLook As String
+Private $iWidth As Integer
+Private $iColor As Integer
+
+Private $hWnd As Window
+Private $iX As Integer
+Private $iY As Integer
+Private $iShifted As Integer
+
+Public Sub _new(Optional iType As Integer)
+  ' Calculate a fair share of enemies
+  If Not iType Then
+    Select Case CInt(Rnd(0, 100))
+      Case 0 To 69
+        iType = Normal
+      Case 70 To 94
+        iType = Tough
+      Case 95 To 98
+        iType = Borg
+      Case 99
+        iType = BorgQueen
+    End Select
+  Endif
+  Select Case iType
+    Case Normal
+      $sLook = " -o- "
+      $iColor = Color.Green
+    Case Tough
+      $sLook = " ,^, "
+      $iColor = Color.Cyan
+    Case Borg
+      $sLook = " [%] "
+      $iColor = Color.Magenta
+    Case BorgQueen
+      $sLook = " <Q> "
+      $iColor = Color.Red
+  End Select
+  $iWidth = Len($sLook)
+  $iType = iType
+End
+
+Public Sub Init(hWnd As Window, Optional iShift As Integer)
+  $hWnd = hWnd
+  $iX = 0
+  $iY = 0
+  $iShifted = 0
+  If iShift Then Shift(iShift)
+End
+
+Public Sub Draw()
+  $hWnd.Print($sLook, $iX, $iY,, Pair[$iColor, $hWnd.Background])
+End
+
+Public Sub Undraw()
+  $hWnd.Print(Space$($iWidth), $iX, $iY)
+End
+
+Public Sub Move(Optional iShift As Integer = 1)
+  Undraw()
+  Shift(iShift)
+  '' FIXME: Value is arbitrary but works kind of
+  If CInt(Rnd(0, 2000)) = 0 Then
+    ' Resistance is futile
+    Missiles.Shoot(Missile.Borg, $iX, $iY + 1)
+  Endif
+End
+
+'' Shift this ship some places in its row (probably into some other row).
+'' Even very huge values are supported.
+'' 
+'' The mathematics in this function should guarantee that no ship ever
+'' covers another (accidentally) and that they always stay togehter
+'' tightly.
+Public Sub Shift(iShift As Integer)
+  Dim iCur As Integer
+
+  $iShifted += iShift
+  While iShift <> 0
+    ' Handle one row at max at a time
+    If iShift > $hWnd.Width Then
+      iCur = $hWnd.Width
+    Else
+      iCur = iShift
+    Endif
+    iShift -= iCur
+    ' All even rows go to the right, all odd lines to the left
+    Select Case $iY % 2
+      Case 0
+        $iX += iCur
+        If $iX + $iWidth >= $hWnd.Width Then
+          ' Goes to an odd row, must start at the end of the row
+          While $iX + $iWidth >= $hWnd.Width
+            $iX = ($iX + $iWidth) % $hWnd.Width
+          Wend
+          $iX = $hWnd.Width - $iX - $iWidth
+          Inc $iY
+        Endif
+      Case 1
+        $iX -= iCur
+        If $iX < 0 Then
+          ' Goes to an even row, must start at the beginning
+          $iX = (- $iX) % $hWnd.Width
+          Inc $iY
+        Endif
+    End Select
+  Wend
+End
+
+Public Sub Destroy()
+  Raise Destroyed
+End
+
+Public Sub SuperDestroy()
+  Raise SuperDestroyed
+End
+
+Private Function X_Read() As Integer
+  Return $iX
+End
+
+Private Sub X_Write(Value As Integer)
+  $iX = Value
+End
+
+Private Function Y_Read() As Integer
+  Return $iY
+End
+
+Private Sub Y_Write(Value As Integer)
+  $iY = Value
+End
+
+Private Function Width_Read() As Integer
+  Return $iWidth
+End
+
+Private Function Type_Read() As Integer
+  Return $iType
+End
+
+Private Function Shifted_Read() As Integer
+  Return $iShifted
+End

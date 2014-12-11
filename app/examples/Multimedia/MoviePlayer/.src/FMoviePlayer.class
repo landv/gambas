@@ -1,0 +1,136 @@
+' Gambas class file
+
+Private $hProcess As Process
+Private $bQuit As Boolean
+Private $sPath As String
+Private $bShow As Boolean
+
+Public Sub Form_Resize()
+
+  embPlayer.Move(8, 8, Me.ClientW - 16, Me.ClientH - panButton.H - 8)
+  panButton.Move(0, Me.CLientH - panButton.H, Me.CLientW)
+  txtAbout.Move(16, 16, embPlayer.W - 16, embPlayer.H - 16)
+
+End
+
+Public Sub btnPlay_Click()
+
+  If $hProcess Then
+    Print #$hProcess, " ";
+    btnPlay.Enabled = False
+    btnPause.Enabled = True
+    'PRINT "CONTINUE"
+    Return
+  Endif
+
+  txtAbout.Visible = False
+
+  With embPlayer
+    Form_Resize
+    .Show
+    .Enabled = False
+  '  '.Mouse = Mouse.Default
+  '  Form_Resize
+  '  '.Enabled = FALSE
+  End With
+
+  $bShow = True
+
+  $hProcess = Exec ["mplayer", "-wid", CStr(embPlayer.Handle), Conv$($sPath, Desktop.Charset, System.Charset)] For Input Output As "Process"
+
+  btnStop.Enabled = True
+  btnPlay.Enabled = False
+  btnPause.Enabled = True
+
+  'embPlayer.Hide
+  'timShow.Enabled = True
+
+End
+
+Public Sub btnPause_Click()
+
+  If Not $hProcess Then Return
+  Print #$hProcess, " ";
+  '$hProcess.Send(" ") '("pause\n")
+  btnPlay.Enabled = True
+  btnPause.Enabled = False
+  'PRINT "PAUSE"
+
+End
+
+Public Sub btnStop_Click()
+
+  If Not $hProcess Then Return
+  If $bQuit Then
+    $hProcess.Kill
+  Else
+    Print #$hProcess, "q";
+    $bQuit = True
+  Endif
+
+End
+
+Public Sub Process_Read()
+  
+  Dim sData As String
+  
+  sData = Read #Last, -255
+  Print sData;
+  
+End
+
+
+Public Sub Process_Kill()
+
+  $hProcess = Null
+  timShow.Enabled = False
+  $bQuit = False
+  $bShow = False
+  btnPause.Enabled = False
+  btnPlay.Enabled = True
+  btnStop.Enabled = False
+  embPlayer.Hide
+  txtAbout.Show
+  'PRINT "STOP"
+
+End
+
+
+Private Sub StopMovie()
+
+  If Not $hProcess Then Return
+
+  $hProcess.Kill
+  'While $hProcess
+  '  Wait
+  'Wend
+
+End
+
+Public Sub Form_Close()
+  
+  StopMovie
+  
+End
+
+
+Public Sub btnOpen_Click()
+
+  Dialog.Path = $sPath
+  If Dialog.OpenFile() Then Return
+  $sPath = Dialog.Path
+  
+  StopMovie
+  btnPlay.Enabled = True
+  btnPlay_Click
+  
+End
+
+Public Sub timShow_Timer()
+
+  embPlayer.Resize(1, 1)
+  embPlayer.Show
+  Form_Resize
+  timShow.Enabled = False
+
+End

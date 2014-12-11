@@ -1,0 +1,145 @@
+' Gambas class file
+
+Static Private $bDoNotMove As Boolean
+Private $iLength As Integer
+
+Private Sub GetMusicLength(sPath As String) As Integer
+
+  Dim sOutput As String
+  Dim aScan As String[]
+
+  Select Case LCase(File.Ext(sPath))
+    
+    Case "mp3" 'mp3info -p "%S\n"
+      Exec ["mp3info", "-p", "%S", sPath] To sOutput
+      Return CInt(sOutput)
+      
+    Case "ogg", "flac"
+      Exec ["ogginfo", sPath] To sOutput
+      For Each sOutput In Split(sOutput, "\n")
+        sOutput = Trim(sOutput)
+        aScan = Scan(sOutput, "*: *m:*s")
+        If aScan.Count = 3 Then 
+          Return CInt(CInt(aScan[1]) * 60 + CFloat(Replace(aScan[2], ",", ".")) + 0.5)
+        Endif
+      Next
+    
+  End Select
+
+Catch
+
+End
+
+Public Sub btnOpen_Click()
+
+  If Dialog.OpenFile() Then Return
+
+  lblTitle.Text = File.Name(Dialog.Path)
+  ' Approximation...
+  $iLength = GetMusicLength(Dialog.Path)
+  If $iLength = 0 Then $iLength = 600
+  sldPos.MaxValue = $iLength
+
+  Music.Load(Dialog.Path)
+  btnPlay_Click
+
+Catch
+
+  Message.Error(Error.Text)
+
+End
+
+Public Sub btnPlay_Click()
+
+  timMusic.Enabled = True
+  Music.Play
+
+End
+
+Public Sub btnPause_Click()
+
+  Music.Pause
+
+End
+
+Public Sub btnStop_Click()
+
+  Music.Stop
+  timMusic.Enabled = False
+  lblPos.Text = ""
+  sldPos.Value = 0
+
+End
+
+Private Sub FormatTime(iPos As Integer) As String
+  
+  Dim iInd As Integer
+  Dim iVal As Integer
+  Dim sPos As String
+  
+  For iInd = 0 To 2
+
+    iVal = iPos Mod 60
+    iPos = iPos \ 60
+    If iInd Then
+      sPos = Format(iVal, "00") & ":" & sPos
+    Else
+      sPos = Format(iVal, "00")
+    Endif
+
+  Next
+  
+  Return sPos
+
+End
+
+
+Public Sub timMusic_Timer()
+
+  Dim iPos As Integer
+  Dim sPos As String
+
+  iPos = Music.Pos
+
+  If Not $bDoNotMove Then
+    Object.Lock(sldPos)
+    If iPos > sldPos.MaxValue Then
+      sldPos.MaxValue = sldPos.MaxValue * 2
+    Endif
+    sldPos.Value = iPos
+    Object.Unlock(sldPos)
+  Endif
+
+  lblPos.Text = FormatTime(iPos) & " / " & FormatTime($iLength)
+
+End
+
+Public Sub sldPos_Change()
+
+  Music.Pos = sldPos.Value
+
+End
+
+Public Sub sldPos_MouseDown()
+
+  $bDoNotMove = True
+
+End
+
+Public Sub sldPos_MouseUp()
+
+  $bDoNotMove = False
+
+End
+
+Public Sub sldVolume_Change()
+
+  Music.Volume = sldVolume.Value / sldVolume.MaxValue
+
+End
+
+Public Sub Form_Open()
+
+  Dialog.Path = User.Home
+
+End

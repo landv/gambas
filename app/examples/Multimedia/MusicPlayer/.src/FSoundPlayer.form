@@ -1,0 +1,62 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(41.5714,35.1429,66,16)
+  Text = ("Gambas Music Player")
+  Icon = Picture["sound.png"]
+  Resizable = False
+  { lblTitle TextLabel
+    MoveScaled(1,1,59,5)
+    Font = Font["+2"]
+    Padding = 4
+    Text = ("Choose a music file...")
+    Alignment = Align.Normal
+    Border = Border.Plain
+  }
+  { sldPos Slider
+    MoveScaled(1,7,59,4)
+    MaxValue = 3600
+    Step = 2
+  }
+  { timMusic #Timer
+    #MoveScaled(33,0)
+  }
+  { sldVolume Slider
+    MoveScaled(61,1,4,10)
+    MaxValue = 128
+    PageStep = 8
+    Value = 128
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(61,11,4,4)
+    Picture = Picture["icon:/small/volume"]
+    Alignment = Align.Center
+  }
+  { HBox1 HBox
+    MoveScaled(1,11,59,4)
+    { btnOpen ToolButton
+      MoveScaled(0,0,12,4)
+      AutoResize = True
+      Text = ("Open...")
+      Picture = Picture["icon:/16/open"]
+    }
+    { btnPlay ToolButton
+      MoveScaled(13,0,4,4)
+      Picture = Picture["icon:/16/play"]
+    }
+    { btnPause ToolButton
+      MoveScaled(17,0,4,4)
+      Picture = Picture["icon:/16/pause"]
+    }
+    { btnStop ToolButton
+      MoveScaled(21,0,4,4)
+      Picture = Picture["icon:/16/stop"]
+    }
+    { lblPos Label
+      MoveScaled(27,0,27,4)
+      Font = Font["14,Bold"]
+      Expand = True
+      Alignment = Align.Right
+    }
+  }
+}

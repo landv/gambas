@@ -1,0 +1,67 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,62,47)
+  Text = ("Picture Database")
+  Icon = Picture["Images/image-x-generic.png"]
+  Arrangement = Arrange.Vertical
+  { HSplit1 HSplit
+    MoveScaled(0,0,60,46)
+    Expand = True
+    { PanelButtons Panel
+      MoveScaled(0,0,21,42)
+      Arrangement = Arrange.Vertical
+      { HPanel1 HPanel
+        MoveScaled(0,0,21,5)
+        AutoResize = True
+        { ToolButtonAdd ToolButton
+          MoveScaled(0,0,5,5)
+          ToolTip = ("Add image to database")
+          Picture = Picture["Images/list-add.png"]
+        }
+        { ToolButtonRemove ToolButton
+          MoveScaled(5,0,5,5)
+          ToolTip = ("Remove Image from database")
+          Picture = Picture["Images/list-remove.png"]
+        }
+        { Separator1 Separator
+          MoveScaled(8,0,2,4)
+        }
+        { ToolButtonExport ToolButton
+          MoveScaled(10,0,5,5)
+          ToolTip = ("Export image from database")
+          Picture = Picture["Images/document-save-as.png"]
+        }
+        { Separator2 Separator
+          MoveScaled(14,0,2,4)
+        }
+        { ToolButtonUpdate ToolButton
+          MoveScaled(16,0,5,5)
+          ToolTip = ("Update image description")
+          Picture = Picture["Images/document-save.png"]
+        }
+      }
+      { GridViewImages GridView
+        MoveScaled(1,6,19,28)
+        Expand = True
+        Header = GridView.Both
+        Border = False
+      }
+    }
+    { VSplit1 VSplit
+      MoveScaled(23,1,34,44)
+      { TextAreaDescription TextArea
+        MoveScaled(0,0,23,7)
+        Wrap = True
+        Border = False
+      }
+      { ScrollView1 ScrollView
+        MoveScaled(0,7,24,35)
+        { PictureBoxImage PictureBox
+          MoveScaled(0,0,18,25)
+          Stretch = True
+        }
+      }
+    }
+  }
+}

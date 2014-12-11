@@ -1,0 +1,157 @@
+' Gambas module file
+
+'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
+'visit the page for more info on OpenGL
+'
+'This tutorial shows how to apply texture to the moving surface. 
+
+Const piover180 As Float = 0.0174532925
+Private screen As New Window(True) As "Screen"
+Private xrot As Float    'X Rotation
+Private yrot As Float    'Y Rotation
+Private zrot As Float    'Z Rotation
+Private points As New Float[46, 46, 3]
+Private wiggle_count As Integer = 0
+Private texture As New Integer[1]       'storage FOR one texture
+Private LightAmbient As Float[]
+Private LightDiffuse As Float[]
+Private LightPosition As Float[]
+Private light As Integer = 0
+
+Public Sub Main()
+
+  Randomize
+  With screen
+    .Width = 640
+    .Height = 400
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub Screen_Open()
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  init()
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+  gl.Enable(gl.BLEND)
+
+End
+
+Public Sub load_texture()
+
+  Dim starr As Image
+  Dim egs As Boolean
+
+  starr = Image.Load("glass.png")
+  texture = Gl.GenTextures(1)
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[0])   '2d texture (x and y size)
+
+  'scale linearly when image smalled than texture
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR)
+  'scale linearly when image bigger than texture
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+  Gl.TexImage2D(starr)
+
+End
+
+Public Sub init()
+
+  Dim lops As Integer
+  Dim float_x, float_y As Float                    'loop counters.
+
+  load_texture()
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.ClearColor(0.0, 0.0, 1.0, 0.0)               ' Black Background
+  gl.ClearDepth(1.0)
+  gl.DepthFunc(gl.LESS)                         ' Depth Buffer Setup
+  gl.enable(gl.DEPTH_TEST)
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
+
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+
+  For float_x = 0.0 To 9.0 Step 0.2
+    For float_y = 0.0 To 9.0 Step 0.2
+      points[Round(float_x * 5), Round(float_y * 5), 0] = float_x - 4.4
+      points[Round(float_x * 5), Round(float_y * 5), 1] = float_y - 4.4
+      points[Round(float_x * 5), Round(float_y * 5), 2] = Sin(((float_x * 5 * 8) / 360) * Pi * 2)
+    Next
+  Next
+
+End
+
+Public Sub Screen_draw()
+
+  Dim x, y As Integer
+  Dim float_x, float_y, float_xb, float_yb As Float
+
+  gl.clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)   'Clear The Screen And The Depth Buffer
+  gl.LoadIdentity()                                         'Reset The View
+  gl.Translatef(0.0, 0.0, -12.0)                            'MOVE 12 units into the screen.
+  gl.BindTexture(gl.TEXTURE_2D, texture[0])              'Choose the texture TO use.
+  gl.PolygonMode(gl.BACK, gl.FILL)                    'Back Face Is Filled In
+  gl.PolygonMode(gl.FRONT, gl.LINE)                   'Front Face Is Drawn With Lines
+  gl.Rotatef(180, 0, 0, 1)
+
+  gl.Begin(gl.QUADS)
+  For x = 0 To 43
+    For y = 0 To 43
+      float_x = x / 44
+      float_y = y / 44
+      float_xb = (x + 1) / 44
+      float_yb = (y + 1) / 44
+
+      gl.TexCoord2f(float_x, float_y)
+      gl.Vertex3f(points[x, y, 0], points[x, y, 1], points[x, y, 2])
+      gl.TexCoord2f(float_x, float_yb)
+      gl.Vertex3f(points[x, y + 1, 0], points[x, y + 1, 1], points[x, y + 1, 2])
+      gl.TexCoord2f(float_xb, float_yb)
+      gl.Vertex3f(points[x + 1, y + 1, 0], points[x + 1, y + 1, 1], points[x + 1, y + 1, 2])
+      gl.TexCoord2f(float_xb, float_y)
+      gl.Vertex3f(points[x + 1, y, 0], points[x + 1, y, 1], points[x + 1, y, 2])
+    Next
+  Next
+  gl.End()
+
+  If (wiggle_count = 4) Then              'cycle the sine values
+    For y = 0 To 44
+      points[44, y, 2] = points[0, y, 2]
+    Next
+    For x = 0 To 43
+      For y = 0 To 44
+        points[x, y, 2] = points[x + 1, y, 2]
+      Next
+    Next
+    wiggle_count = 0
+  Endif
+  wiggle_count += 1
+
+  xrot += 0.3
+  yrot += 0.02
+  zrot += 0.04
+
+End
+
+Public Sub Screen_keyPress()
+
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+
+End

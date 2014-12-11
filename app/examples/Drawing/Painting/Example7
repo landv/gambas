@@ -1,0 +1,17 @@
+Public Sub Example7()
+  
+  Dim Dashes As Float[] = [5.0,  'ink
+                           1.0,  'skip
+                           1.0,  'ink
+                           1.0]  'skip
+  
+  Paint.Dash = Dashes
+  Paint.DashOffset = -5
+  Paint.LineWidth = 10.0
+  Paint.MoveTo(128.0, 25.6)
+  Paint.LineTo(230.4, 230.4)
+  Paint.RelLineTo(-102.4, 0)
+  Paint.CurveTo(51.2, 230.4, 51.2, 128.0, 128.0, 128.0)
+  Paint.Stroke
+  
+End

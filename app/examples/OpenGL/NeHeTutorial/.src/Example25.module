@@ -1,0 +1,243 @@
+' Gambas module file
+
+' To set up opengl window in Gambas choose New Project -> SDL Application
+' mark OpenGL Programming IN Settings, give it a name AND that 's it.
+Const num_points As Integer = 486
+Private xrot As Float
+Private yrot As Float
+Private zrot As Float         'X, Y & Z Rotation
+Private xspeed As Float
+Private yspeed As Float
+Private zspeed As Float       'X, Y & Z Spin Speed
+Private cx As Float
+Private cy As Float
+Private cz As Float = -15     'X, Y & Z Position
+Private keey As Integer = 1    'Used TO Make Sure Same Morph Key IS Not Pressed
+Private stepp As Integer = 0
+Private steps As Integer = 200  'STEP Counter AND Maximum Number OF Steps
+Private morphing As Boolean = False  'DEFAULT morph TO FALSE(NOT Morphing)
+Private morph As New Float[6, 486, 3]
+Public read_line As String
+Public verts As String[]
+Public coords As String
+Public actual As Integer = 0
+Public post As Integer = 0
+Private screen As New Window(True) As "Screen"
+
+Public Sub Main()
+
+  Randomize
+  With screen
+    .Width = 640
+    .Height = 480
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub load_objects()
+
+  Dim shape_file As File
+  Dim i, p As Integer
+
+  shape_file = Open "Sphere.txt" For Input
+  For p = 0 To num_points - 1
+    i = 0
+    Line Input #shape_file, read_line
+    verts = Split(read_line, ",")
+    For Each coords In verts
+      morph[0, p, i] = coords
+      morph[4, p, i] = coords
+      i = i + 1
+    Next
+  Next
+  Close shape_file
+
+  shape_file = Open "Torus.txt" For Input
+  For p = 0 To num_points - 1
+    i = 0
+    Line Input #shape_file, read_line
+    verts = Split(read_line, ",")
+    For Each coords In verts
+      morph[1, p, i] = coords
+      i = i + 1
+    Next
+  Next
+  Close shape_file
+
+  shape_file = Open "Tube.txt" For Input
+  For p = 0 To num_points - 1
+    i = 0
+    Line Input #shape_file, read_line
+    verts = Split(read_line, ",")
+    For Each coords In verts
+      morph[2, p, i] = coords
+      i = i + 1
+    Next
+  Next
+  Close shape_file
+  For p = 0 To num_points - 1
+    For i = 0 To 2
+      morph[3, p, i] = Rnd(12) - 7
+    Next
+  Next
+
+End
+
+Public Sub calculate(i As Integer, sourc As Integer, desti As Integer)
+
+  morph[5, i, 0] = (morph[sourc, i, 0] - morph[desti, i, 0]) / steps
+  morph[5, i, 1] = (morph[sourc, i, 1] - morph[desti, i, 1]) / steps
+  morph[5, i, 2] = (morph[sourc, i, 2] - morph[desti, i, 2]) / steps
+
+End
+
+Public Sub Screen_Open()
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+  Init()
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+
+End
+
+Public Sub Init()     'All Setup FOR OpenGL Goes Here
+
+  gl.BlendFunc(gl.SRC_ALPHA, gl.ONE)    'Set The Blending FUNCTION For Translucency
+  gl.clearColor(0.0, 0.0, 0.0, 0.0)       'This Will Clear The Background Color TO Black
+  gl.clearDepth(1.0)                      'Enables Clearing OF The Depth Buffer
+  gl.DepthFunc(gl.LESS)                'The Type OF Depth Test TO DO
+  gl.Enable(gl.DEPTH_TEST)             'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)             'Enables Smooth Color Shading
+  gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST) 'Really Nice Perspective Calculations
+  load_objects()
+
+End
+
+Public Sub Screen_Draw()
+
+  Dim tx, ty, tz As Float             '/ / Temp X, Y & Z Variables
+  Dim i, j, k, p As Integer
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT) 'Clear The Screen And The Depth Buffer
+  gl.LoadIdentity()                                          'Reset The View
+  gl.Translatef(cx, cy, cz)             'Translate The The Current Position TO Start Drawing
+  gl.Rotatef(xrot, 1, 0, 0)             'Rotate On The X Axis By xrot
+  gl.Rotatef(yrot, 0, 1, 0)             'Rotate On The Y Axis By yrot
+  gl.Rotatef(zrot, 0, 0, 1)             'Rotate On The Z Axis By zrot
+
+  xrot += xspeed
+  yrot += yspeed
+  zrot += zspeed                        'Increase xrot, yrot & zrot by xspeed, yspeed & zspeed
+
+  'VERTEX q; / / Holds Returned Calculated Values FOR One Vertex
+
+  gl.begin(gl.POINTS)                'Begin Drawing Points
+
+  For i = 0 To num_points - 1           'Loop Through All The Verts Of morph
+
+    If (morphing) Then
+      calculate(i, actual, post)
+    Else
+      morph[5, i, 0] = 0
+      morph[5, i, 1] = 0
+      morph[5, i, 2] = 0
+    Endif
+    morph[4, i, 0] -= morph[5, i, 0]  'Subtract q.x Units FROM helper.points[i].x( MOVE On X Axis)
+    morph[4, i, 1] -= morph[5, i, 1]  'Subtract q.y Units FROM helper.points[i].y( MOVE On Y Axis)
+    morph[4, i, 2] -= morph[5, i, 2]  'Subtract q.z Units FROM helper.points[i].z( MOVE On Z Axis)
+    tx = morph[4, i, 0]               'Make Temp X Variable Equal TO Helper 's X Variable
+    ty = morph[4, i, 1]               'Make Temp Y Variable Equal TO Helper 's Y Variable
+    tz = morph[4, i, 2]               'Make Temp Z Variable Equal TO Helper 's Z Variable
+
+    gl.Color3f(0, 1, 1)               'Set Color TO A Bright Shade OF Off Blue
+    gl.Vertex3f(tx, ty, tz)           'Draw A Point At The Current Temp Values(Vertex)
+    gl.Color3f(0, 0.5, 1)             'Darken Color A Bit
+    tx -= 2 * morph[5, i, 0]
+    ty -= 2 * morph[5, i, 0]
+    ty -= 2 * morph[5, i, 0]          'Calculate Two Positions Ahead
+
+    gl.Vertex3f(tx, ty, tz)           'Draw A Second Point At The Newly Calculate Position
+    gl.Color3f(0, 0, 1)                'Set Color TO A Very Dark Blue
+    tx -= 2 * morph[5, i, 0]
+    ty -= 2 * morph[5, i, 0]
+    ty -= 2 * morph[5, i, 0]          'Calculate Two More Positions Ahead
+    gl.Vertex3f(tx, ty, tz)            'Draw A Third Point At The Second NEW Position
+  Next                                  'This Creates A Ghostly Tail AS Points MOVE
+  gl.End()                              'Done Drawing Points
+
+  If (morphing And (stepp <= steps)) Then
+    stepp += 1
+  Else
+    morphing = False
+    actual = post
+    stepp = 0
+  Endif
+
+End
+
+Public Sub Screen_KeyPress()
+
+  Debug Key.Code;; Key.Text
+
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+  If (key.code = key.PageUp) Then zspeed += 0.01     'MOVE the cube into the distance.
+  If (key.code = key.Pagedown) Then zspeed -= 0.01   'MOVE the cube closer.
+  If (key.code = key.UP) Then xspeed -= 0.01     'decrease x rotation speed;
+  If (key.code = key.DOWN) Then xspeed += 0.01    'increase x rotation speed;
+  If (key.code = key.LEFT) Then yspeed -= 0.01    'decrease y rotation speed;
+  If (key.code = key.RIGHT) Then yspeed += 0.01   'increase y rotation speed;
+  If (key.text = "q") Then cz -= 0.01           'Is Q Key Being Pressed? Move Object Away From Viewer
+  If (key.text = "z") Then cz += 0.01           'Is Z Key Being Pressed? MOVE Object Towards Viewer
+  If (key.text = "w") Then cy += 0.01           'Is W Key Being Pressed? MOVE Object Up
+  If (key.text = "s") Then cy -= 0.01           'Is S Key Being Pressed? MOVE Object Down
+  If (key.text = "d") Then cx += 0.01           'Is D Key Being Pressed? MOVE Object Right
+  If (key.text = "a") Then cx -= 0.01           'Is A Key Being Pressed? MOVE Object Left
+  If (key.text = "1") Then
+    If ((keey <> 1) And morphing = False) Then
+      keey = 1               'Sets key TO 1( TO Prevent Pressing 1 2 x IN A Row)
+      morphing = True          'Set morph TO TRUE(Starts Morphing Process)
+      post = 0                'Destination Object TO Morph TO Becomes morph1
+    Endif
+  Endif
+  If (key.text = "2") Then
+    If ((keey <> 2) And morphing = False) Then
+      keey = 2               'Sets key TO 1( TO Prevent Pressing 1 2 x IN A Row)
+      morphing = True          'Set morph TO TRUE(Starts Morphing Process)
+      post = 1                'Destination Object TO Morph TO Becomes morph1
+    Endif
+  Endif
+  If (key.text = "3") Then
+    If ((keey <> 3) And morphing = False) Then
+      keey = 3               'Sets key TO 1( TO Prevent Pressing 1 2 x IN A Row)
+      morphing = True          'Set morph TO TRUE(Starts Morphing Process)
+      post = 2                'Destination Object TO Morph TO Becomes morph1
+    Endif
+  Endif
+  If (key.text = "4") Then
+    If ((keey <> 4) And morphing = False) Then
+      keey = 4               'Sets key TO 1( TO Prevent Pressing 1 2 x IN A Row)
+      morphing = True          'Set morph TO TRUE(Starts Morphing Process)
+      post = 3                'Destination Object TO Morph TO Becomes morph1
+    Endif
+  Endif
+
+End

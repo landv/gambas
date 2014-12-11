@@ -1,0 +1,19 @@
+Public Sub Example18()
+  
+  Paint.Font.Size = 24
+  Paint.Save
+  Paint.Rectangle(10, 10, 285, 100)
+  Paint.Background = Color.RGB(255, 31, 31, 224)
+  Paint.Fill(True)
+  Paint.LineWidth = 3
+  Paint.Background = Color.Blue
+  Paint.Stroke(True)
+  Paint.Clip
+  Paint.Background = Color.Red
+  Paint.Text("TO BE, OR NOT TO BE: THAT IS THE QUESTION:", 20, 20, 30, 30)
+  Paint.Fill
+  Paint.Restore
+  Paint.Text("TO BE, OR NOT TO BE: THAT IS THE QUESTION:", 20, 60, 30, 30)
+  Paint.Fill
+  
+End

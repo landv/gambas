@@ -1,0 +1,18 @@
+Public Sub Example12()
+  
+  Dim hImg As Image
+  Dim hBrush As PaintBrush
+  
+  hImg = Image.Load(IMAGE_NAME)
+  
+  Paint.Translate(128, 128)
+  'Paint.Rotate(Pi / 4)
+  Paint.Scale(1 / Sqr(2), 1 / Sqr(2))
+  Paint.Translate(-128, -128)
+  hBrush = Paint.Image(himg, 0, 0)
+  hBrush.Matrix = hBrush.Matrix.Scale(1 / (himg.w / 256.0 * 5.0), 1 / (hImg.w / 256.0 * 5.0))
+  Paint.Brush = hBrush
+  Paint.Rectangle(0, 0, 256, 256)
+  Paint.Fill
+  
+End

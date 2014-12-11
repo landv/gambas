@@ -1,0 +1,145 @@
+' Gambas class file
+
+Property HDir As Integer
+Property VDir As Integer
+Property X As Integer
+Property Y As Integer
+Property Read HitPaddle As Boolean
+
+Private $hWindow As Window
+' Used in a simulation (of NPC)?
+Private $bSimulate As Boolean
+Private $iX As Integer
+Private $iY As Integer
+' Horizontal and vertical movement deltas on screen
+Private $iHD As Integer
+Private $iVD As Integer
+' Whether the last move hit a paddle
+Private $bHitPaddle As Boolean
+
+Public Sub _new(hWnd As Window, Optional bSim As Boolean = False)
+
+  $hWindow = hWnd
+  $bSimulate = bSim
+
+End
+
+Public Sub Reset()
+
+  Undraw()
+  $iX = $hWindow.Width / 2 + 1
+  $iY = Rnd(0, $hWindow.Height)
+  $iHD = IIf(CInt(Rnd(0, 2)), 1, -1)
+  $iVD = IIf(CInt(Rnd(0, 2)), 1, -1)
+
+End
+
+'' Returns the .Dir of the paddle that made the point
+Public Sub Move(hP1 As Paddle, hP2 As Paddle) As Integer
+
+  Undraw()
+  $bHitPaddle = False
+  $iX += $iHD
+  $iY += $iVD
+  Return EvaluateCollisions(hP1, hP2)
+
+End
+
+Private Function EvaluateCollisions(hP1 As Paddle, hP2 As Paddle) As Integer
+
+  ' On left/right paddle?
+  If $iX = hP1.X And If $iY >= hP1.Y And If $iY < hP1.Y + hP1.Height Then GoSub _OnPaddle
+  If hP2 And If $iX = hP2.X And If $iY >= hP2.Y And If $iY < hP2.Y + hP2.Height Then GoSub _OnPaddle
+  ' Flip at top/bottom border?
+  If $iY < 0 Or $iY >= $hWindow.Height Then
+    GoSub _UndoMovement
+    $iVD = - $iVD
+    Move(hP1, hP2)
+  Endif
+  ' Made a point (left/right border)?
+  If $iX < 0 Or $iX >= $hWindow.Width Then
+    GoSub _UndoMovement
+    Return $iHD
+  Endif
+  Return 0
+
+_UndoMovement:
+  $iX -= $iHD
+  $iY -= $iVD
+  Return
+
+_OnPaddle:
+  GoSub _UndoMovement
+  $iHD = - $iHD
+  Move(hP1, hP2)
+  $bHitPaddle = True
+
+End
+
+Public Sub Draw()
+
+  If $bSimulate Then Return
+  $hWindow.Print("o", $iX, $iY)
+
+End
+
+Public Sub Undraw()
+
+  If $bSimulate Then Return
+  $hWindow.Print(" ", $iX, $iY)
+
+End
+
+Private Sub HDir_Read() As Integer
+
+  Return $iHD
+
+End
+
+Private Sub HDir_Write(Value As Integer)
+
+  $iHD = Value
+
+End
+
+Private Sub VDir_Read() As Integer
+
+  Return $iVD
+
+End
+
+Private Sub VDir_Write(Value As Integer)
+
+  $iVD = Value
+
+End
+
+Private Function X_Read() As Integer
+
+  Return $iX
+
+End
+
+Private Sub X_Write(Value As Integer)
+
+  $iX = Value
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return $iY
+
+End
+
+Private Sub Y_Write(Value As Integer)
+
+  $iY = Value
+
+End
+
+Private Sub HitPaddle_Read() As Boolean
+
+  Return $bHitPaddle
+
+End

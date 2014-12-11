@@ -1,0 +1,190 @@
+' Gambas module file
+
+'tutorial based on tutorial from NeHe Productions site at http://nehe.gamedev.net/
+'visit the page for more info on OpenGL
+'
+'In this tutorial we show how to move bitmaps in 3D space. "t" key changes intensity of bitmaps.
+
+' Gambas module file
+Const num_star As Integer = 50
+Const r As Integer = 0
+Const g As Integer = 1
+Const b As Integer = 2
+Const dist As Integer = 3
+Const angle As Integer = 4
+Private screen As New Window(True) As "Screen"
+Private xrot As Float    'X Rotation
+Private yrot As Float    'Y Rotation
+Private xspeed As Float  'x rotation speed
+Private yspeed As Float  'y rotation speed
+Private texture As New Integer[1]       'storage FOR one texture
+Private LightAmbient As Float[]
+Private LightDiffuse As Float[]
+Private LightPosition As Float[]
+Private filter As Integer
+Private light As Integer = 0
+Private lp As Integer
+Private fp As Integer
+Private bp As Integer
+Private z As Float = -5.0
+Private col As Float[]
+Private twinkle As Integer = 0
+Private star As New Float[51, 5]    'r, g, b; dist; angle;
+Private zoom As Float = -15.0     'viewing distance FROM stars.
+Private tilt As Float = 90.0      'tilt the view
+Private spin As Float             'spin twinkling stars
+Private loops As Integer          'general LOOP variable
+
+Public Sub Main()
+
+  Randomize
+  With screen
+    .Width = 640
+    .Height = 480
+    .Title = MMain.Title
+    .Show()
+  End With
+
+End
+
+Public Sub Screen_Open()
+
+  Gl.ClearDepth(100.0)                'Enables Clearing Of The Depth Buffer
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)   'This Will Clear The Background Color To Black
+  gl.DepthFunc(gl.LESS)            'The Type Of Depth Test To Do
+  gl.Enable(gl.DEPTH_TEST)         'Enables Depth Testing
+  gl.ShadeModel(gl.SMOOTH)         'Enables Smooth Color Shading
+  init()
+
+End
+
+Public Sub Screen_resize()
+
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  Gl.MatrixMode(Gl.MODELVIEW)
+  gl.Enable(gl.BLEND)
+
+End
+
+Public Sub load_texture()
+
+  Dim starr As Image
+  Dim egs As Boolean
+
+  starr = Image.Load("Star.png")
+  texture = Gl.GenTextures(1)
+  Gl.BindTexture(Gl.TEXTURE_2D, texture[0])   '2d texture (x and y size)
+  Gl.TexImage2D(starr)
+  Glu.Build2DMipmaps(starr)
+  'scale linearly when image smalled than texture
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR)
+  'scale linearly when image bigger than texture
+  Gl.TexParameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+
+End
+
+Public Sub init()
+
+  Dim lops As Integer
+
+  load_texture()
+  gl.Enable(gl.TEXTURE_2D)                     ' Enable Texture Mapping
+  gl.ClearColor(0.0, 0.0, 0.0, 0.0)               ' Black Background
+  gl.ClearDepth(1.0)                              ' Depth Buffer Setup
+  gl.ShadeModel(gl.SMOOTH)                     ' Enable Smooth Shading
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()                     'Reset The Projection Matrix
+  glu.Perspective(45.0, screen.Width / screen.Height, 0.1, 100.0)   'Calculate The Aspect Ratio Of The Window
+  gl.MatrixMode(gl.MODELVIEW)
+  gl.blendfunc(gl.SRC_ALPHA, gl.ONE)      ' Set The Blending FUNCTION For Translucency
+  gl.Enable(gl.BLEND)        'Turn Blending On
+  gl.Disable(gl.DEPTH_TEST)  'Turn Depth Testing Off
+
+  For lops = 0 To num_star
+    star[lops, angle] = 0.0   ' initially no rotation.
+    star[lops, dist] = lops / num_star * 5  'calculate distance form the center
+    star[lops, r] = Rnd(1)           'random red intensity;
+    star[lops, g] = Rnd(1)           'random green intensity;
+    star[lops, b] = Rnd(1)           'random blue intensity;
+  Next
+
+End
+
+Public Sub Screen_draw()
+
+  Dim lops As Integer
+
+  gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)         ' Clear Screen AND Depth Buffer
+  gl.BindTexture(gl.TEXTURE_2D, texture[0])         ' SELECT Our Texture
+
+  For lops = 0 To num_star               'loop through all the stars.
+    gl.LoadIdentity()                     'reset the view before we draw EACH star.
+    gl.Translatef(0.0, 0.0, zoom)         'zoom into the screen.
+    gl.Rotatef(tilt, 1.0, 0.0, 0.0)       'tilt the view.
+
+    gl.rotatef(star[lops, angle], 0.0, 1.0, 0.0) 'rotate TO the current star 's angle.
+    gl.Translatef(star[lops, dist], 0.0, 0.0)   'MOVE forward on the X plane(the star 's x plane).
+
+    gl.Rotatef(- star[lops, angle], 0.0, 1.0, 0.0)  'cancel the current star 's angle.
+    gl.Rotatef(- tilt, 1.0, 0.0, 0.0)                'cancel the screen tilt.
+
+    If (twinkle = 1) Then                 'twinkling stars enabled ... draw an additional star.
+      'assign a color using bytes
+      gl.Color4f(star[num_star - lops, r], star[num_star - lops, g], star[num_star - lops, b], 255)
+
+      gl.Begin(gl.QUADS)                 'begin drawing the textured quad.
+      gl.TexCoord2f(0.0, 0.0)
+      gl.Vertex3f(-1.0, -1.0, 0.0)
+      gl.TexCoord2f(1.0, 0.0)
+      gl.Vertex3f(1.0, -1.0, 0.0)
+      gl.TexCoord2f(1.0, 1.0)
+      gl.Vertex3f(1.0, 1.0, 0.0)
+      gl.TexCoord2f(0.0, 1.0)
+      gl.Vertex3f(-1.0, 1.0, 0.0)
+      gl.End()                              'done drawing the textured quad.
+    Endif
+
+    'main star
+    gl.Rotatef(spin, 0.0, 0.0, 1.0)         'rotate the star on the z axis.
+
+    'Assign A Color Using Bytes
+    gl.Color4f(star[num_star - lops, r], star[num_star - lops, g], star[num_star - lops, b], 255)
+    gl.Begin(gl.QUADS)                      'Begin Drawing The Textured Quad
+    gl.TexCoord2f(0.0, 0.0)
+    gl.Vertex3f(-1.0, -1.0, 0.0)
+    gl.TexCoord2f(1.0, 0.0)
+    gl.Vertex3f(1.0, -1.0, 0.0)
+    gl.TexCoord2f(1.0, 1.0)
+    gl.Vertex3f(1.0, 1.0, 0.0)
+    gl.TexCoord2f(0.0, 1.0)
+    gl.Vertex3f(-1.0, 1.0, 0.0)
+    gl.End()                                'Done Drawing The Textured Quad
+
+    spin += 0.01                            'used TO spin the stars.
+    star[lops, angle] += lops / num_star  'change star angle.
+    star[lops, dist] -= 0.01                  'bring back TO center.
+
+    If (star[lops, dist] < 0) Then          'star hit the center
+      star[lops, dist] += 5.0             'MOVE 5 units FROM the center.
+      star[lops, r] = Rnd(1)          'new red intensity;
+      star[lops, g] = Rnd(1)            'new green intensity;
+      star[lops, b] = Rnd(1)            'new blue intensity;
+    Endif
+  Next
+
+End
+
+Public Sub Screen_keyPress()
+
+  If (key.code = key.F1) Then screen.Fullscreen = Not screen.Fullscreen
+  If (key.Code = key.Esc) Then Screen.Close()
+  If (key.text = "t" Or key.Text = "T") Then twinkle = 1 - twinkle
+  If (key.code = key.PageUp) Then zoom -= 0.2     'zoom out
+  If (key.code = key.Pagedown) Then zoom += 0.2   'zoom in
+  If (key.code = key.UP) Then tilt -= 5.0         'tilt up
+  If (key.code = key.DOWN) Then tilt += 5.0       'tilt down
+
+End

@@ -1,0 +1,28 @@
+Public Sub Example14()
+  
+  Paint.LineWidth = 30
+  Paint.LineCap = Paint.LineCapButt
+  Paint.MoveTo(64, 50)
+  Paint.LineTo(64, 200)
+  Paint.Stroke
+  Paint.LineCap = Paint.LineCapRound
+  Paint.MoveTo(128, 50)
+  Paint.LineTo(128, 200)
+  Paint.Stroke
+  Paint.LineCap = Paint.LineCapSquare
+  Paint.MoveTo(192, 50)
+  Paint.LineTo(192, 200)
+  Paint.Stroke
+  
+  'Draw helping lines
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31))
+  Paint.LineWidth = 6
+  Paint.MoveTo(64, 50)
+  Paint.LineTo(64, 200)
+  Paint.MoveTo(128, 50)
+  Paint.LineTo(128, 200)
+  Paint.MoveTo(192, 50)
+  Paint.LineTo(192, 200)
+  Paint.Stroke
+  
+End

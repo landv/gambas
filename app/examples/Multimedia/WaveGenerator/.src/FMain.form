@@ -1,0 +1,61 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,62,20)
+  Text = ("Wave generator")
+  Icon = Picture["audio-headphones.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Panel1 HBox
+    MoveScaled(2,2,59,4)
+    { Label1 Label
+      MoveScaled(0,0,11,4)
+      Text = ("Frequency")
+    }
+    { sldFrequency Slider
+      MoveScaled(14,0,44,4)
+      Expand = True
+      MaxValue = 1000
+    }
+  }
+  { Panel2 HBox
+    MoveScaled(2,7,59,4)
+    { Label2 Label
+      MoveScaled(0,0,11,4)
+      Text = ("Volume")
+    }
+    { sldVolume Slider
+      MoveScaled(14,0,44,4)
+      Expand = True
+      MaxValue = 1000
+      Value = 800
+    }
+  }
+  { Panel5 Panel
+    MoveScaled(31,12,13,1)
+    Expand = True
+  }
+  { Panel3 HBox
+    MoveScaled(2,14,58,4)
+    Spacing = True
+    { cmbType ComboBox
+      MoveScaled(0,0,27,4)
+      ReadOnly = True
+      List = [("Sine"), ("Square"), ("Saw"), ("Triangle"), ("Silence"), ("White uniform noise"), ("Pink noise"), ("Sine table"), ("Periodic ticks"), ("White gaussian noise"), ("Red brownian noise"), ("Blue noise"), ("Violet noise")]
+    }
+    { lblFrequency Label
+      MoveScaled(27,0,13,4)
+      Text = ("440 Hz")
+      Alignment = Align.Right
+    }
+    { Panel4 Panel
+      MoveScaled(28,0,3,4)
+      Expand = True
+    }
+    { btnPlay Button
+      MoveScaled(41,0,16,4)
+      Text = ("Play / Stop")
+    }
+  }
+}

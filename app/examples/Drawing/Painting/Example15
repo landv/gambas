@@ -1,0 +1,22 @@
+Public Sub Example15()
+  
+  Paint.LineWidth = 40.96
+  Paint.MoveTo(76.8, 84.48)
+  Paint.RelLineTo(51.2, -51.2)
+  Paint.RelLineTo(51.2, 51.2)
+  Paint.LineJoin = Paint.LineJoinMiter 'Default
+  Paint.Stroke
+  
+  Paint.MoveTo(76.8, 161.28)
+  Paint.RelLineTo(51.2, -51.2)
+  Paint.RelLineTo(51.2, 51.2)
+  Paint.LineJoin = Paint.LineJoinBevel
+  Paint.Stroke
+  
+  Paint.MoveTo(76.8, 238.08)
+  Paint.RelLineTo(51.2, -51.2)
+  Paint.RelLineTo(51.2, 51.2)
+  Paint.LineJoin = Paint.LineJoinRound
+  Paint.Stroke
+  
+End

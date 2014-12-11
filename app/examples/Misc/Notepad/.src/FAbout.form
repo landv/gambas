@@ -1,0 +1,22 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,29,17)
+  Text = ("About...")
+  Resizable = False
+  { Image1 PictureBox
+    MoveScaled(1,1,4,4)
+    Picture = Picture["notepad.png"]
+    Stretch = True
+  }
+  { btnOK Button
+    MoveScaled(7,12,15,4)
+    Text = ("OK")
+    Default = True
+    Cancel = True
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(7,1,21,9)
+    Text = ("This is a little notepad sample program.")
+  }
+}

@@ -1,0 +1,308 @@
+' Gambas class file
+'***********************************
+' We define 7 dns objects
+'***********************************
+Private A As DnsClient
+Private B As DnsClient
+Private C As DnsClient
+Private D As DnsClient
+Private E As DnsClient
+Private F As DnsClient
+Private G As DnsClient
+
+Private Working As Integer
+Private sNoResult As String = ("Not Found")
+
+Public Sub Button1_Click()
+  Label2.Text = ""
+  Label3.Text = ""
+  Label4.Text = ""
+  Label6.Text = ""
+  Label7.Text = ""
+  Label8.Text = ""
+  Label9.Text = ""
+  Working = 7
+  Button1.Enabled = False
+  Button1.Enabled = False
+  ComboBox1.Enabled = False
+  Button3.Enabled = False
+  CheckBox1.Enabled = False
+  Label5.Text = "|"
+  Timer1.Delay = 200
+  Timer1.Enabled = True
+  Select Case ComboBox1.Index
+    Case 0
+      A.HostName = TextBox1.Text
+      B.HostName = TextBox2.Text
+      C.HostName = TextBox3.Text
+      D.HostName = TextBox4.Text
+      E.HostName = TextBox5.Text
+      F.HostName = TextBox6.Text
+      G.HostName = TextBox7.Text
+      A.GetHostIP()
+      B.GetHostIP()
+      C.GetHostIP()
+      D.GetHostIP()
+      E.GetHostIP()
+      F.GetHostIP()
+      G.GetHostIP()
+    Case 1
+      A.HostIP = TextBox1.Text
+      B.HostIP = TextBox2.Text
+      C.HostIP = TextBox3.Text
+      D.HostIP = TextBox4.Text
+      E.HostIP = TextBox5.Text
+      F.HostIP = TextBox6.Text
+      G.HostIP = TextBox7.Text
+      A.GetHostName()
+      B.GetHostName()
+      C.GetHostName()
+      D.GetHostName()
+      E.GetHostName()
+      F.GetHostName()
+      G.GetHostName()
+  End Select
+
+End
+
+Public Sub A_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If A.HostIP = "" Then
+        Label2.Text = sNoResult
+      Else
+        Label2.Text = A.HostIP
+     End If
+    Case 1
+      If A.HostName = "" Then
+        Label2.Text = sNoResult
+      Else
+        Label2.Text = A.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+Public Sub B_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If B.HostIP = "" Then
+        Label3.Text = sNoResult
+      Else
+        Label3.Text = B.HostIP
+     End If
+    Case 1
+      If B.HostName = "" Then
+        Label3.Text = sNoResult
+      Else
+        Label3.Text = B.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+Public Sub C_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If C.HostIP = "" Then
+        Label4.Text = sNoResult
+      Else
+        Label4.Text = C.HostIP
+     End If
+    Case 1
+      If C.HostName = "" Then
+        Label4.Text = sNoResult
+      Else
+        Label4.Text = C.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+Public Sub D_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If D.HostIP = "" Then
+        Label6.Text = sNoResult
+      Else
+        Label6.Text = D.HostIP
+     End If
+    Case 1
+      If D.HostName = "" Then
+        Label6.Text = sNoResult
+      Else
+        Label6.Text = D.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+Public Sub E_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If E.HostIP = "" Then
+        Label7.Text = sNoResult
+      Else
+        Label7.Text = E.HostIP
+     End If
+    Case 1
+      If E.HostName = "" Then
+        Label7.Text = sNoResult
+      Else
+        Label7.Text = E.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+Public Sub F_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If F.HostIP = "" Then
+        Label8.Text = sNoResult
+      Else
+        Label8.Text = F.HostIP
+     End If
+    Case 1
+      If F.HostName = "" Then
+        Label8.Text = sNoResult
+      Else
+        Label8.Text = F.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+Public Sub G_Finished()
+
+  Select Case ComboBox1.index
+    Case 0
+      If G.HostIP = "" Then
+        Label9.Text = sNoResult
+      Else
+        Label9.Text = G.HostIP
+     End If
+    Case 1
+      If G.HostName = "" Then
+        Label9.Text = sNoResult
+      Else
+        Label9.Text = G.HostName
+     End If
+  End Select
+  Working = working - 1
+
+End
+
+
+
+
+
+
+Public Sub Timer1_Timer()
+
+  Timer1.Enabled = False
+  If Working = 0 Then
+    Label5.Text = ("Finished")
+    Button1.Enabled = True
+    Button3.Enabled = True
+    ComboBox1.Enabled = True
+    CheckBox1.Enabled = True
+  Else
+    Select Case Label5.Text
+      Case "|"
+        Label5.Text = "/"
+      Case "/"
+        Label5.Text = "-"
+      Case "-"
+        Label5.Text = "\\"
+      Case "\\"
+        Label5.Text = "|"
+    End Select
+    Timer1.Delay = 200
+    Timer1.Enabled = True
+
+  End If
+
+End
+
+Public Sub Button2_Click()
+
+  If Timer1.Enabled = True Then
+    Timer1.Enabled = False
+    A.Stop()
+    B.Stop()
+    C.Stop()
+    D.Stop()
+    E.Stop()
+    F.Stop()
+    G.Stop()
+    Label5.Text = ("Cancelled")
+    Working = 0
+    Button1.Enabled = True
+    ComboBox1.Enabled = True
+    Button3.Enabled = True
+    CheckBox1.Enabled = True
+  End If
+
+End
+
+Public Sub Form_Open()
+
+  A = New DnsClient As "A"
+  B = New DnsClient As "B"
+  C = New DnsClient As "C"
+  D = New DnsClient As "D"
+  E = New DnsClient As "E"
+  F = New DnsClient As "F"
+  G = New DnsClient As "G"
+  CheckBox1_Click
+  ComboBox1_Click
+  Working = 0
+End
+
+Public Sub ComboBox1_Click()
+
+  Select Case ComboBox1.Index
+    Case 0
+      Label1.Text = ("Write here 7 host names then press GO!")
+    Case 1
+      Label1.Text = ("Write here 7 IP addresses then press GO!")
+  End Select
+End
+
+Public Sub Button3_Click()
+
+  TextBox1.Text = Label2.Text
+  TextBox2.Text = Label3.Text
+  TextBox3.Text = Label4.Text
+  TextBox4.Text = Label6.Text
+  TextBox5.Text = Label7.Text
+  TextBox6.Text = Label8.Text
+  TextBox7.Text = Label9.Text
+
+
+End
+
+Public Sub CheckBox1_Click()
+
+  A.ASync = CheckBox1.Value
+  B.ASync = CheckBox1.Value
+  C.ASync = CheckBox1.Value
+  D.ASync = CheckBox1.Value
+  E.ASync = CheckBox1.Value
+  F.ASync = CheckBox1.Value
+  G.ASync = CheckBox1.Value
+
+End

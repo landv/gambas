@@ -1,0 +1,91 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,82,82)
+  Background = &H3F3F3F&
+  Resizable = False
+  Border = False
+  Utility = True
+  SkipTaskbar = True
+  Opacity = 0
+  Spacing = True
+  Margin = True
+  { panTags Panel
+    MoveScaled(2,3,75,78)
+    Background = &H000000&
+    Arrangement = Arrange.Vertical
+    { Panel2 VBox
+      MoveScaled(1,1,59,29)
+      Expand = True
+      Spacing = True
+      Margin = True
+      { Label1 Label
+        MoveScaled(0,0,47,5)
+        Font = Font["Bold,+5"]
+        Foreground = &HBFBFBF&
+        Text = ("Information")
+      }
+      { gvwTags GridView
+        MoveScaled(2,7,56,21)
+        Font = Font["+2"]
+        Background = &H000000&
+        Foreground = &HBFBFBF&
+        NoTabFocus = True
+        Expand = True
+        Border = False
+        Grid = False
+      }
+    }
+    { Panel1 Panel
+      MoveScaled(2,31,18,1)
+      Background = &H3F3F3F&
+    }
+    { VBox1 VBox
+      MoveScaled(3,33,59,7)
+      Spacing = True
+      Margin = True
+      { panLabel HBox
+        MoveScaled(0,0,57,5)
+        { lblBalance Label
+          MoveScaled(1,0,47,5)
+          Font = Font["Bold,+5"]
+          Foreground = &HBFBFBF&
+          Expand = True
+          Text = ("Balance")
+        }
+      }
+      { panBalance HPanel
+        MoveScaled(0,5,57,4)
+        Font = Font["+2"]
+        Expand = True
+        Spacing = True
+        Indent = True
+      }
+    }
+    { panVideo VBox
+      MoveScaled(3,59,68,8)
+      { Panel3 Panel
+        MoveScaled(0,0,18,1)
+        Background = &H3F3F3F&
+      }
+      { VBox3 HBox
+        MoveScaled(1,1,66,7)
+        Spacing = True
+        Margin = True
+        { lblBalance2 Label
+          MoveScaled(0,0,24,5)
+          Font = Font["Bold,+5"]
+          Foreground = &HBFBFBF&
+          AutoResize = True
+          Text = ("Video device")
+        }
+        { cmbVideoDevice ComboBox
+          MoveScaled(35,0,24,5)
+          Font = Font["+2"]
+          Expand = True
+          ReadOnly = True
+        }
+      }
+    }
+  }
+}

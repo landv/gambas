@@ -1,0 +1,66 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,48,52)
+  Text = ("Settings")
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
+  Spacing = True
+  Margin = True
+  { Frame1 Frame
+    MoveScaled(3,2,44,18)
+    Text = ("Login Details")
+    { Label1 Label
+      MoveScaled(1,5,12,4)
+      AutoResize = True
+      Text = ("Username")
+    }
+    { txtUsername TextBox
+      MoveScaled(17,5,24,4)
+      Expand = True
+    }
+    { Label2 Label
+      MoveScaled(1,11,12,4)
+      AutoResize = True
+      Text = ("Password")
+    }
+    { txtPassword TextBox
+      MoveScaled(17,10,24,4)
+      Expand = True
+      Password = True
+    }
+  }
+  { Frame2 Frame
+    MoveScaled(3,26,44,21)
+    Text = ("Server Details")
+    { Label3 Label
+      MoveScaled(1,5,12,4)
+      AutoResize = True
+      Text = ("Server")
+    }
+    { txtServer TextBox
+      MoveScaled(19,5,24,4)
+      Expand = True
+    }
+    { Label4 Label
+      MoveScaled(1,11,12,4)
+      AutoResize = True
+      Text = ("Port")
+    }
+    { vbPort SpinBox
+      MoveScaled(34,11,9,4)
+      MaxValue = 999999
+      Value = 110
+    }
+    { chbSSL CheckBox
+      MoveScaled(28,16,15,4)
+      AutoResize = True
+      Text = ("Use SSL")
+    }
+  }
+  { btnSave Button
+    MoveScaled(29,47,16,4)
+    Text = ("Save")
+  }
+}
