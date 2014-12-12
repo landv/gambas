@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,72,51)
+  Background = &HFFEFBF&
+  Text = ("Example to make a Bar Chart")
+  Resizable = False
+  { bg PictureBox
+    MoveScaled(1,1,70.1667,43.1667)
+    Background = &HFFFFFF&
+    Border = Border.Plain
+  }
+  { drwChart DrawingArea
+    MoveScaled(2,2,69,41)
+    Background = &HFFFFFF&
+    Cached = True
+  }
+  { btnClose Button
+    MoveScaled(56,45,15,5)
+    Text = ("&Close")
+  }
+  { btnAbout Button
+    MoveScaled(39.6667,45,15,5)
+    Text = ("&About")
+    Picture = Picture["graph.png"]
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(2,2,4,3.5)
+    Background = &HFFFFFF&
+    Text = ("(%)")
+  }
+}

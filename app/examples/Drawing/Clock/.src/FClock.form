@@ -1,0 +1,55 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(80.1429,67,43,43)
+  Mask = True
+  Border = False
+  SkipTaskbar = True
+  { mnuPopup Menu
+    Text = ("central")
+    Visible = False
+    { mnuClock1 Menu mnuClock
+      Name = "mnuClock1"
+      Text = ("Clock 1")
+      Tag = "1"
+    }
+    { mnuClock2 Menu mnuClock
+      Name = "mnuClock2"
+      Text = ("Clock 2")
+      Tag = "2"
+    }
+    { mnuClock3 Menu mnuClock
+      Name = "mnuClock3"
+      Text = ("Clock 3")
+      Checked = True
+      Tag = "3"
+    }
+    { mnuClock4 Menu mnuClock
+      Name = "mnuClock4"
+      Text = ("Clock 4")
+      Tag = "4"
+    }
+    { mn2 Menu
+    }
+    { mnuOntop Menu
+      Text = ("Always on top")
+      Toggle = True
+    }
+    { mnuShowWindow Menu
+      Text = ("Show Window")
+      Toggle = True
+    }
+    { mnu1 Menu
+    }
+    { mnuAbout Menu
+      Text = ("About")
+    }
+    { mn Menu
+    }
+    { mnuQuit Menu
+      Text = ("Quit")
+    }
+  }
+  { Timer1 #Timer
+  }
+}

@@ -1,0 +1,23 @@
+Public Sub Example9()
+
+  Paint.LineWidth = 6
+  Paint.Rectangle(12, 12, 232, 70)
+  Paint.Arc(64, 64, 40, 0, Pi(2))
+  Paint.Arc(192, 64, 40, 0, Pi(-2))
+  
+  Paint.FillRule = Paint.FillRuleEvenOdd
+  Paint.Brush = Paint.Color(Color.RGB(0, 179, 0))
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(0)
+  Paint.Stroke
+  Paint.Translate(0, 128)
+  Paint.Rectangle(12, 12, 232, 70)
+  Paint.Arc(64, 64, 40, 0, Pi(-2))
+  Paint.Arc(192, 64, 40, 0, Pi(2))
+  Paint.FillRule = Paint.FillRuleWinding
+  Paint.Brush = Paint.Color(Color.RGB(0, 0, 230))
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(0)
+  Paint.Stroke
+
+End

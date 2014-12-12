@@ -1,0 +1,40 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,55,24)
+  Background = &HFFFFFF&
+  Border = False
+  Utility = True
+  Stacking = Window.Above
+  SkipTaskbar = True
+  Opacity = 50
+  { panBrightness Panel
+    MoveScaled(1,1,53,22)
+    Background = &H000000&
+    { PictureBox1 PictureBox
+      MoveScaled(2,11,8,8)
+      Picture = Picture["resize.png"]
+      Stretch = True
+      Alignment = Align.Center
+    }
+    { sldResize Slider
+      MoveScaled(13,11,36,3)
+      MaxValue = 5
+      PageStep = 1
+      Value = 5
+    }
+    { lblTitle Label
+      MoveScaled(2,2,52,6)
+      Font = Font["Bold,+5"]
+      Foreground = Color.TextBackground
+      AutoResize = True
+      Text = ("Resize")
+    }
+    { lblSize Label
+      MoveScaled(14,14,34,5)
+      Font = Font["Bold,+5"]
+      Foreground = Color.TextBackground
+      AutoResize = True
+    }
+  }
+}

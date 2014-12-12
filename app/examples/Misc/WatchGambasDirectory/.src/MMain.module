@@ -1,0 +1,54 @@
+' Gambas module file
+
+Private $hWatch As Watch
+
+Public Sub Main()
+  ' The watched events are determined automatically by the event handlers defined
+  $hWatch = New Watch("/tmp/gambas." & Str$(User.Id), True) As "GambasDirectory"
+  $hWatch.Tag = New Collection ' Save descendants here
+
+  Print "I'm watching... You may now start Gambas projects."
+  Print "Return toggles Pause/Resume. Enter \"quit\" to quit."
+End
+
+Public Sub Application_Read()
+  Dim sBuf As String
+
+  Line Input sBuf
+  If sBuf = "quit" Then Quit
+  $hWatch.IsPaused = Not $hWatch.IsPaused
+  Print "Currently";; IIf($hWatch.IsPaused, "inactive", "active")
+End
+
+Public Sub GambasDirectory_Create()
+  If Not Watch.IsDir Then Return ' Skip files
+  Print "New Gambas process:";;
+  ' Watch.Name is the PID of the new Gambas process. Try to get its name
+  ' from the /proc filesystem.
+  With Split(File.Load("/proc" &/ Watch.Name &/ "cmdline"), "/")
+    Last.Tag[Watch.Name] = Left$(.[.Max], -1)
+    Print Last.Tag[Watch.Name]
+  End With
+
+  Catch
+    Print "(unknown)"
+    ' Opening the /proc file may fail because the directory may have been
+    ' deleted already (if the process was relatively short-lived and this
+    ' event took longer than that to get from the kernel to us).
+End
+
+Public Sub GambasDirectory_Delete()
+  Dim sName As String
+
+  If Not Watch.IsDir Then Return
+  sName = Last.Tag[Watch.Name]
+  ' Sadly, we can only provide a name for dying processes that we watched
+  ' being created -- the /proc file is already gone at this point.
+  '
+  ' Note that if the interpreter crashes (the process ends abnormally),
+  ' directories won't be removed so we won't notice that the process is
+  ' gone.
+  If Not sName Then sName = "(unknown)"
+  Print sName;; "terminated (normally)"
+  Last.Tag.Remove(Watch.Name)
+End

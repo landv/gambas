@@ -1,0 +1,27 @@
+Public Sub Example6()
+  
+  Dim X As Float = 25.6
+  Dim Y As Float = 128.0
+  Dim X1 As Float = 102.4
+  Dim Y1 As Float = 230.4
+  Dim X2 As Float = 153.6
+  Dim Y2 As Float = 25.6
+  Dim X3 As Float = 230.4
+  Dim Y3 As Float = 128.0
+
+  Paint.MoveTo(X, Y)
+  Paint.CurveTo(X1, Y1, X2, Y2, X3, Y3)
+
+  Paint.LineWidth = 10
+  Paint.Stroke
+
+  Paint.Brush = Paint.Color(Color.RGB(255, 255 * 0.2, 255 * 0.2, 255 * 0.6))
+  Paint.LineWidth = 6
+
+  Paint.MoveTo(X, Y)
+  Paint.LineTo(X1, Y1)
+  Paint.MoveTo(X2, Y2)
+  Paint.LineTo(X3, Y3)
+  Paint.Stroke
+  
+End

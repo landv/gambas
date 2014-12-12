@@ -1,0 +1,135 @@
+' Gambas class file
+
+Private iNr As Integer
+Private aRecentDirs As New String[]
+Private atxLabel As New TextLabel[]
+
+Public Sub Form_Open()
+
+  Dim i, j, pos, lastpos As Integer
+  Dim sShort, sPath As String
+  
+  aRecentDirs.Resize(10)
+  atxLabel.Resize(10)
+  
+  i = 0
+  For j = 0 To 9
+    aRecentDirs[i] = Settings["Recent/" & j]
+    If aRecentDirs[i] = "" Then Break
+    If Not Exist(aRecentDirs[i]) Then
+      i -= 1
+      Goto directory_does_not_exist
+    Endif
+    pos = -1
+    Do While pos <> 0
+      lastpos = pos
+      pos = InStr(aRecentDirs[i], "/", pos + 1)
+    Loop
+    sShort = Right$(aRecentDirs[i], Len(aRecentDirs[i]) - lastpos)
+    sPath = Left$(aRecentDirs[i], Len(aRecentDirs[i]) - Len(sShort))
+    
+    atxLabel[i] = New TextLabel(svwLast) As "lblRecent"
+    With atxLabel[i]
+      .Border = Border.Raised 
+      .Font.Grade = -1
+      .Padding = 1
+      .Tag = i
+      .Text = "<b>" & sShort & "</b><br>" & sPath
+      .AutoResize = True
+    End With
+    directory_does_not_exist:
+    i += 1
+  Next
+  Me.Center
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim i, j As Integer
+  Dim sDir As String
+  
+  sDir = DirChooser1.SelectedPath
+  If MMain.ReadDir(sDir) = False Then
+    Message.Error(Subst(("The folder &1 doesn't contain any jp(e)g files."), sDir))
+    Return
+  Endif
+  
+  For i = 0 To 8  ' write recent selections into settings
+    If aRecentDirs[i] = sDir Then
+      For j = i To 8
+        aRecentDirs[j] = aRecentDirs[j + 1]
+      Next
+      Break
+    Endif
+  Next
+  For i = 9 To 1 Step -1
+    aRecentDirs[i] = aRecentDirs[i - 1]
+  Next
+  aRecentDirs[0] = sDir
+  For i = 0 To 9
+    Settings["Recent/" & i] = aRecentDirs[i]
+  Next
+  
+  MMain.GoAhead(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  MMain.GoAhead(False)
+
+End
+
+Public Sub lblRecent_Enter()
+
+  iNr = Last.Tag
+  If atxLabel[iNr].Background = -1 Then
+    atxLabel[iNr].Background = Color.LightBackground
+  Endif
+
+End
+
+Public Sub lblRecent_Leave()
+
+  If atxLabel[iNr].Background = Color.LightBackground Then
+    atxLabel[iNr].Background = -1
+  Endif
+End
+
+Public Sub lblRecent_MouseDown()
+  
+  DirChooser1.SelectedPath = aRecentDirs[iNr]
+
+End
+
+Public Sub lblRecent_DblClick()
+
+  lblRecent_MouseDown
+  btnOK_Click
+
+End
+
+Public Sub DirChooser1_Change()
+
+  Dim i As Integer
+  
+  For i = 0 To 9
+    If Not Exist(aRecentDirs[i]) Then Break
+    If aRecentDirs[i] = "" Then Break
+    If aRecentDirs[i] = DirChooser1.SelectedPath Then
+      atxLabel[i].Background = Color.SelectedBackground
+      atxLabel[i].Foreground = Color.SelectedForeground
+    Else
+      atxLabel[i].Background = -1
+      atxLabel[i].Foreground = -1
+    Endif
+  Next
+
+End
+
+Public Sub DirChooser1_Activate()
+
+  btnOK_Click
+
+End

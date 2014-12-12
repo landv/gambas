@@ -1,0 +1,122 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(38,2.4286,76,90)
+  Resizable = False
+  { dwgVideo DrawingArea
+    MoveScaled(0,0,75,51)
+    Background = &H000000&
+    Cached = True
+  }
+  { Tmr #Timer
+    #MoveScaled(1.1429,20.5714)
+    Delay = 10
+  }
+  { Panel2 Panel
+    MoveScaled(0,52,75,37)
+    { Panel7 Panel
+      MoveScaled(1,0,74,15)
+      Border = Border.Raised
+      { Label1 Label
+        MoveScaled(2,1,10,3)
+        Text = ("Bright")
+      }
+      { Bright Slider
+        MoveScaled(13,1,25,3)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Label2 Label
+        MoveScaled(2,5,9,3)
+        Text = ("Contrast")
+      }
+      { Contrast Slider
+        MoveScaled(13,5,25,3)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Whiteness Slider
+        MoveScaled(13,9,25,3)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Label3 Label
+        MoveScaled(2,9,11,3)
+        Text = ("Whiteness")
+      }
+      { Label5 Label
+        MoveScaled(40,1,7,4)
+        Text = ("Hue")
+      }
+      { Hue Slider
+        MoveScaled(47,1,25,3)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { Label4 Label
+        MoveScaled(40,5,6,4)
+        Text = ("Color")
+      }
+      { Colour Slider
+        MoveScaled(47,5,25,3)
+        Enabled = False
+        MaxValue = 65535
+      }
+      { cmbSize ComboBox
+        MoveScaled(47,9,25,4)
+        ReadOnly = True
+        List = [("128x96"), ("160x120"), ("176x144"), ("320x240"), ("352x288"), ("640x480"), ("1024x768")]
+        Text = ("ComboBox1")
+      }
+      { Label7 Label
+        MoveScaled(40,9,6,4)
+        Text = ("Size")
+      }
+    }
+    { Panel3 Panel
+      MoveScaled(1,16,74,13)
+      Border = Border.Raised
+      { LblFreq Label
+        MoveScaled(1.1429,1.1429,36,4)
+        Text = ("Tuner frequency:")
+      }
+      { FreqUP Button
+        MoveScaled(1.1429,5.1429,6.4286,5.1429)
+        Enabled = False
+        Text = ("+")
+      }
+      { FreqDown Button
+        MoveScaled(9.1429,5.1429,6.4286,5.1429)
+        Enabled = False
+        Text = ("-")
+      }
+      { Button2 Button
+        MoveScaled(44,7,29.1429,5.1429)
+        Enabled = False
+        Text = ("Device Information")
+      }
+      { BtnTakeShot Button
+        MoveScaled(44,1,29.1429,5.1429)
+        Enabled = False
+        Text = ("Take a shot")
+      }
+    }
+    { Panel1 Panel
+      MoveScaled(1,30,74,7)
+      Border = Border.Raised
+      { Label6 Label
+        MoveScaled(1.1429,1.1429,10.4286,4)
+        Text = ("Device:")
+      }
+      { TxtDevice TextBox
+        MoveScaled(11,1,32,5)
+        Expand = True
+        Text = ("/dev/video")
+      }
+      { Button1 Button
+        MoveScaled(44,1,29,5)
+        Text = ("Capture")
+      }
+    }
+  }
+}

@@ -1,0 +1,162 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,116,65)
+  Background = Color.Background
+  Icon = Picture["LTicon.png"]
+  Arrangement = Arrange.Vertical
+  { mnuMain Menu
+    Text = ("Main menu")
+    Visible = False
+    { mnuSortA Menu
+      Text = ("Sorted &alphabetically")
+      Picture = Picture["icon:/16/sort-ascent"]
+      Checked = True
+      Shortcut = "Ctrl+A"
+    }
+    { mnuSortT Menu
+      Text = ("Sorted &chronologically")
+      Picture = Picture["icon:/16/clock"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuSlide Menu
+      Text = ("&Slideshow")
+      Picture = Picture["icon:/16/video"]
+      Shortcut = "Ctrl+S"
+    }
+    { mnu_StopLoad_RenameAll Menu
+      Text = ("Abort &Loading")
+      Picture = Picture["icon:/16/cancel"]
+      Shortcut = "End"
+    }
+    { mnuTimecorr Menu
+      Text = ("&Time correction...")
+      Picture = Picture["icon:/16/camera"]
+      Shortcut = "Ctrl+T"
+    }
+    { mnuOpen Menu
+      Text = ("&Open folder...")
+      Picture = Picture["icon:/16/open"]
+      Shortcut = "Ctrl+O"
+    }
+    { mnuHelp Menu
+      Text = ("&Help")
+      Picture = Picture["help-contents.png"]
+      Shortcut = "F1"
+    }
+    { mnuQuit Menu
+      Text = ("&Quit")
+      Picture = Picture["icon:/16/quit"]
+      Shortcut = "Ctrl+End"
+    }
+  }
+  { mnuFramegroup Menu
+    Text = ("Picture menu")
+    Visible = False
+    { mnuDrag Menu
+      Text = ("(Move picture: drag frame with mouse)")
+      Picture = Picture["move.png"]
+    }
+    { mnuView Menu
+      Text = ("&View picture (click on picture)")
+      Picture = Picture["icon:/16/zoom-in"]
+      Shortcut = "Enter"
+    }
+    { mnuFullscreen Menu
+      Text = ("&Full Screen View")
+      Picture = Picture["icon:/16/fullscreen"]
+      Shortcut = "Alt+Enter"
+    }
+    { mnuESC Menu
+      Text = ("&Close view")
+      Picture = Picture["icon:/16/close"]
+      Shortcut = "Esc"
+    }
+    { mnuNext Menu
+      Text = ("&Next picture")
+      Picture = Picture["icon:/16/next"]
+      Shortcut = "Right"
+    }
+    { mnuPrevious Menu
+      Text = ("&Previous picture")
+      Picture = Picture["icon:/16/previous"]
+      Shortcut = "Left"
+    }
+    { mnuInfo Menu
+      Text = ("Picture &informations")
+      Picture = Picture["icon:/16/info"]
+      Shortcut = "I"
+    }
+    { mnuRename Menu
+      Text = ("&Rename picture")
+      Picture = Picture["icon:/16/save-as"]
+      Shortcut = "N"
+    }
+    { mnuDelete Menu
+      Text = ("&Delete picture")
+      Picture = Picture["icon:/16/delete"]
+      Shortcut = "Del"
+    }
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(27,13,41,32)
+    Background = Color.TextBackground
+    Expand = True
+    Border = False
+    { panEmpty Panel
+      MoveScaled(4,10,16,16)
+    }
+  }
+  { Timer1 #Timer
+    #MoveScaled(105,22)
+    Delay = 10
+  }
+  { Timer2 #Timer
+    #MoveScaled(105,30)
+    Delay = 100
+  }
+  { Separator1 Separator
+    MoveScaled(27,56,14,0)
+  }
+  { StatusBar Panel
+    MoveScaled(2,60,99,4)
+    Arrangement = Arrange.Horizontal
+    { lblCount Label
+      MoveScaled(1,0.5714,13,3)
+      Font = Font["-1"]
+      Alignment = Align.Center
+      Border = Border.Sunken
+    }
+    { lblSort Label
+      MoveScaled(15,0.5714,29,3)
+      Font = Font["-1"]
+      Alignment = Align.Center
+      Border = Border.Sunken
+    }
+    { Panel1 Panel
+      MoveScaled(45,0,1,4)
+    }
+    { lblStatus Label
+      MoveScaled(47,0,27,4)
+      Font = Font["-1"]
+      Expand = True
+      Alignment = Align.Center
+    }
+    { Panel2 Panel
+      MoveScaled(75,0,22,4)
+      Arrangement = Arrange.Fill
+      Margin = True
+      Padding = 4
+      { ProgressBar1 ProgressBar
+        MoveScaled(0,0,20,3)
+      }
+    }
+  }
+  { PicBox PictureBox
+    MoveScaled(7,37,9,9)
+    Visible = False
+    Ignore = True
+    Stretch = True
+    Border = Border.Etched
+  }
+}

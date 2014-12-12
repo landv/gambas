@@ -1,0 +1,84 @@
+' Gambas class file
+
+Public Enum Normal, {Super}, Borg
+
+Property Read Type As Integer
+
+Event Destroyed
+
+Private $iType As Integer
+Private $sLook As String
+Private $iColor As Integer
+Private $iDir As Integer
+
+Private $hWnd As Window
+Private $iX As Integer
+Private $iY As Integer
+
+Public Sub _new(iType As Integer, iX As Integer, iY As Integer)
+  Select Case iType
+    Case Normal
+      $sLook = "|"
+      $iColor = Color.Yellow
+      $iDir = -1
+    Case {Super}
+      $sLook = "*"
+      $iColor = Color.Red
+      $iDir = -1
+    Case Borg
+      $sLook = "*"
+      $iColor = Color.Green
+      $iDir = 1
+  End Select
+  $iType = iType
+  $iX = iX
+  $iY = iY
+End
+
+Public Sub Init(hWnd As Window)
+  $hWnd = hWnd
+End
+
+Public Function Move() As Boolean
+  Dim hEnemy As Enemy
+
+  Undraw()
+  $iY += $iDir
+  If $iType <> Borg Then
+    hEnemy = Enemies.Hit($iX, $iY)
+    If hEnemy Then
+      If $iType = Normal Then
+        hEnemy.Destroy()
+      Else
+        hEnemy.SuperDestroy()
+        Draw()
+      Endif
+      Raise Destroyed
+      Return True
+    Endif
+  Else
+    If $iY >= MMain.Y And If $iY < MMain.Y + MMain.Height And If
+       $iX >= MMain.X And If $iX < MMain.X + MMain.Width Then
+      Enemies.PlayerDestroyed()
+      Draw()
+    Endif
+  Endif
+  If $iY = -1 Or $iY = $hWnd.Height Then
+    Raise Destroyed
+    Return True
+  Endif
+  Draw()
+  Return False
+End
+
+Public Sub Draw()
+  Window.Print($sLook, $iX, $iY,, Pair[$iColor, $hWnd.Background])
+End
+
+Public Sub Undraw()
+  Window.Print(" ", $iX, $iY)
+End
+
+Private Function Type_Read() As Integer
+  Return $iType
+End

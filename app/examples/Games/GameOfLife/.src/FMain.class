@@ -1,0 +1,95 @@
+' Gambas class file
+
+Private Game As New CGameField
+
+Private Sub DrawGame()
+  
+  Game.DrawGame(chkBorder.Value)
+  
+End
+
+
+Public Sub Form_Open()
+
+  'System.Profile = False
+  'Randomize 1972
+  Button1_Click
+  Slider1_Change
+  'togEvolution.Value = True
+  
+End
+
+Public Sub Button1_Click()
+
+  Game.SetDrawArea(dwgGame)
+  Game.Init(chkSmall.Value, Slider2.Value, chkSymetryH.Value, chkSymetryV.Value)
+  DrawGame
+
+End
+
+Public Sub Button2_Click()
+
+  tmrEvolution_Timer
+  'Game.SpawnNextGeneration
+  'DrawGame
+
+End
+
+Public Sub tmrEvolution_Timer()
+
+  Dim Live As New Boolean[9]
+  Dim Keep As New Boolean[9]
+
+  If Not togEvolution.Value Then Return
+  
+  live[0] = chkZero.Value = CheckBox.False
+  live[1] = chkOne.Value = CheckBox.False
+  live[2] = chkTwo.Value = CheckBox.False
+  live[3] = chkThree.Value = CheckBox.False
+  live[4] = chkFour.Value = CheckBox.False
+  live[5] = chkFive.Value = CheckBox.False
+  live[6] = chkSix.Value = CheckBox.False
+  live[7] = chkSeven.Value = CheckBox.False
+  live[8] = chkEight.Value = CheckBox.False
+  
+  keep[0] = chkZero.Value = CheckBox.None
+  keep[1] = chkOne.Value = CheckBox.None
+  keep[2] = chkTwo.Value = CheckBox.None
+  keep[3] = chkThree.Value = CheckBox.None
+  keep[4] = chkFour.Value = CheckBox.None
+  keep[5] = chkFive.Value = CheckBox.None
+  keep[6] = chkSix.Value = CheckBox.None
+  keep[7] = chkSeven.Value = CheckBox.None
+  keep[8] = chkEight.Value = CheckBox.None
+  
+  Game.SpawnNextGeneration(Live, Keep)
+  DrawGame
+  
+End
+
+Public Sub Slider1_Change()
+
+  lblDelay.Caption = ("Evolution Delay: ") & Str(slider1.Value) & "ms"
+  tmrEvolution.Delay = slider1.Value    
+
+End
+
+Public Sub chkBorder_Click()
+
+  If Not togEvolution.Value Then 
+    DrawGame
+  Endif
+
+End
+
+Public Sub togEvolution_Click()
+
+  tmrEvolution.Enabled = togEvolution.Value
+
+End
+
+' PUBLIC SUB dW_Draw()
+' 
+'   Game.DrawGame(chkBorder.Value)
+' 
+' END

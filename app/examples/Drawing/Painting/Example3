@@ -1,0 +1,15 @@
+Public Sub Example3()
+  
+  Paint.Arc(128.0, 128.0, 76.8)
+  Paint.Clip
+  Paint.Rectangle(0, 0, 256, 256)
+  Paint.Fill
+  Paint.Brush = Paint.Color(Color.RGB(0, 255, 0))
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(256, 256)
+  Paint.MoveTo(256, 0)
+  Paint.LineTo(0, 256)
+  Paint.LineWidth = 10.0
+  Paint.Stroke
+  
+End

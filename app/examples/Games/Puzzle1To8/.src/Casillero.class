@@ -1,0 +1,66 @@
+' Gambas class file
+
+'    Copyright(C)2010. Autor: Pablo Mileti  
+
+'This program Is free software: you can redistribute it And / Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option)any later version.
+
+'This program Is distributed In the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty Of MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the GNU General Public License For more details.
+
+'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
+
+
+'****English documentation*****
+'This class represents each box of the game (8) 
+
+' Public Var:
+' Value ---> Contains the number that was put in a box
+' isEmpty ---> Return true if value is 0, else return false
+' isInvalid ---> Return true if Value there are a conflict with the value of another box
+
+' Public Methods:
+'setValue(nValue As Integer) ---> Put a value in a box
+'validateWith(nBox As Casillero) ---> Return true if there are a conflict with a neighbor box
+
+
+
+'* * * * Documentación en español*******
+' Esta clase corresponde a representar cada uno de los 8 casilleros del juego
+
+' Variables públicas:
+' Value ---> Contiene el numero que se ingreso en el casillero
+' isEmpty ---> True si no hay valor, False si lo tiene
+' isInvalid ---> True si hay un numero que esta en conflicto con otro casillero
+
+' Metodos públicos:
+'setValue(nValue As Integer) - - > Se encarga de almacenar el nro de un casillero
+'validateWith(nBox As Casillero) ---> Devuelve true si hay conflicto con otro casillero
+
+Public Value As Integer
+Public isEmpty As Boolean
+Public isInvalid As Boolean
+
+Public Sub _new()
+  Value = 0
+  isEmpty = True
+  isInvalid = True
+End
+
+Public Sub setValue(nValue As Integer)
+  Value = nvalue
+  If nvalue = 0 Then
+    isEmpty = True
+  Else
+    isEmpty = False
+  End If
+End
+
+Public Function validateWith(nBox As Casillero) As Boolean
+  If isEmpty Or nBox.isEmpty Then Return False
+  If value + 1 = nBox.Value Then Return True
+  If value - 1 = nBox.Value And Value > 1 Then Return True
+End
+
+
+
+
+

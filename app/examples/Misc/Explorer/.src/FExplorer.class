@@ -1,0 +1,175 @@
+' Gambas class file
+
+Private $sPath As String
+Private $bHidden As Boolean
+Private $bCtrl As Boolean
+
+Static Public Sub Main()
+
+  Dim hForm As Form
+
+  hForm = New FExplorer(System.User.Home)
+  Application.MainWindow = hForm
+  hForm.Show
+
+End
+
+Public Sub _new(sPath As String)
+
+  $sPath = sPath
+  RefreshExplorer
+
+End
+
+Private Sub RefreshExplorer()
+
+  Dim sFile As String
+  Dim hPictDir As Picture
+  Dim hPictFile As Picture
+  Dim cDir As New String[]
+  Dim sName As String
+
+  Inc Application.Busy
+
+  Me.Title = Conv($sPath, System.Charset, Desktop.Charset)
+
+  ivwExplorer.Clear
+  'ivwExplorer.Arrangement = IconView.Row
+
+  hPictDir = Picture["icon:/48/directory"]
+  hPictFile = Picture["icon:/48/file"]
+
+  If $sPath <> "/" Then ivwExplorer.Add("D..", "..", hPictDir)
+
+  For Each sFile In Dir($sPath)
+
+    If Not $bHidden Then
+      If Stat($sPath &/ sFile).Hidden Then
+        Continue
+      Endif
+    Endif
+
+    If IsDir($sPath &/ sFile) Then
+      cDir.Add("D" & sFile)
+    Else
+      cDir.Add("F" & sFile)
+    Endif
+
+  Next
+
+  cDir.Sort
+
+  For Each sFile In cDir
+
+    sName = Mid$(sFile, 2)
+
+    If Left$(sFile) = "D" Then
+      ivwExplorer.Add(sFile, sName, hPictDir)
+    Else
+      ivwExplorer.Add(sFile, sName, hPictFile)
+    Endif
+
+    'ivwExplorer.Item.Editable = TRUE
+
+  Next
+
+  'ivwExplorer.Sorted = FALSE
+  'ivwExplorer.Ascending = TRUE
+  'ivwExplorer.Sorted = TRUE
+
+Finally
+
+  Dec Application.busy
+
+Catch
+
+  Message.Error(Error.Text)
+
+End
+
+
+Public Sub mnuQuit_Click()
+
+  Me.Close
+
+End
+
+Public Sub mnuViewRefresh_Click()
+
+  RefreshExplorer
+
+End
+
+Public Sub ivwExplorer_Activate()
+
+  Dim sNewPath As String
+  Dim hForm As Form
+
+  Debug Last.Current.Key
+
+  If Last.Current.Key = "D.." Then
+    If $sPath = "/" Then Return
+    sNewPath = File.Dir($sPath)
+  Else
+    sNewPath = $sPath &/ Mid$(Last.Current.Key, 2)
+  Endif
+
+  If IsDir(sNewPath) Then
+
+    If $bCtrl Then
+      $bCtrl = False
+      hForm = New FExplorer(sNewPath)
+      hForm.Move(Me.X + 16, Me.Y + 16, Me.W, Me.H)
+      hForm.Show
+    Else
+      $sPath = sNewPath
+      RefreshExplorer
+    Endif
+
+  Endif
+
+End
+
+
+Private Sub ToggleViewHidden()
+
+  $bHidden = Not mnuViewHidden.Checked
+
+  mnuViewHidden.Checked = $bHidden
+
+  RefreshExplorer
+
+End
+
+
+Public Sub mnuViewHidden_Click()
+
+  ToggleViewHidden
+
+End
+
+Public Sub mnuAbout_Click()
+
+  Message(("IconView example written by\nBenoît Minisini"))
+
+End
+
+Public Sub ivwExplorer_Rename()
+
+  Message("'" & Mid$(Last.Item.Key, 2) & ("' has been renamed to '") & Last.Item.Text & "'")
+
+End
+
+Public Sub ivwExplorer_KeyPress()
+
+  If Key.Control Then $bCtrl = True
+
+End
+
+Public Sub ivwExplorer_KeyRelease()
+
+  If Key.Control Then $bCtrl = False
+
+End
+
+

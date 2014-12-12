@@ -1,0 +1,45 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,93,60)
+  Text = ("Gnu Scientific Library Example")
+  Icon = Picture["spline.png"]
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { dwgGraph DrawingArea
+    MoveScaled(2,2,61,36)
+    Background = &HFFFFFF&
+    Expand = True
+    Border = Border.Sunken
+  }
+  { HBox1 HBox
+    MoveScaled(2,41,87,6)
+    Spacing = True
+    { btnCubicSpline Button
+      MoveScaled(0,0,19,6)
+      Text = ("Cubic &spline")
+      Picture = Picture["icon:/medium/pen"]
+    }
+    { btnClear Button
+      MoveScaled(20,0,18,6)
+      Text = ("&Clear")
+      Picture = Picture["icon:/medium/erase"]
+    }
+    { Panel1 Panel
+      MoveScaled(44,1,1,5)
+      Expand = True
+    }
+    { btnAbout Button
+      MoveScaled(50,0,15,6)
+      Text = ("About...")
+      Picture = Picture["icon:/medium/info"]
+    }
+    { btnClose Button
+      MoveScaled(66,0,15,6)
+      Text = ("Close")
+      Picture = Picture["icon:/medium/close"]
+      Cancel = True
+    }
+  }
+}

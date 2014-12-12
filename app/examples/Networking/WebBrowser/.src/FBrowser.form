@@ -1,0 +1,339 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,117,85)
+  Text = ("Gambas WebKit")
+  Icon = Picture["icon:/small/gambas"]
+  Maximized = True
+  Arrangement = Arrange.Vertical
+  { mnuFont Menu
+    { mnuSelectFont Menu mnuSelectFont
+      Name = "mnuSelectFont"
+    }
+  }
+  { mnuSize Menu
+    { mnuSizeM2 Menu mnuSelectSize
+      Name = "mnuSizeM2"
+      Text = ("-2")
+    }
+    { mnuSizeM1 Menu mnuSelectSize
+      Name = "mnuSizeM1"
+      Text = ("-1")
+    }
+    { mnuSize0 Menu mnuSelectSize
+      Name = "mnuSize0"
+      Text = ("0")
+    }
+    { mnuSizeP1 Menu mnuSelectSize
+      Name = "mnuSizeP1"
+      Text = ("+1")
+    }
+    { mnuSizeP2 Menu mnuSelectSize
+      Name = "mnuSizeP2"
+      Text = ("+2")
+    }
+    { mnuSizeP3 Menu mnuSelectSize
+      Name = "mnuSizeP3"
+      Text = ("+3")
+    }
+    { mnuSizeP4 Menu mnuSelectSize
+      Name = "mnuSizeP4"
+      Text = ("+4")
+    }
+  }
+  { HBox2 HBox
+    MoveScaled(1,1,99,4)
+    { btnBack ToolButton
+      MoveScaled(0,0,4,4)
+      Picture = Picture["icon:/small/left"]
+    }
+    { btnForward ToolButton
+      MoveScaled(4,0,4,4)
+      Picture = Picture["icon:/small/right"]
+    }
+    { btnStop ToolButton
+      MoveScaled(8,0,4,4)
+      Picture = Picture["icon:/small/delete"]
+    }
+    { btnReload ToolButton
+      MoveScaled(12,0,4,4)
+      ToolTip = ("Refresh")
+      Picture = Picture["icon:/small/refresh"]
+    }
+    { btnClear ToolButton
+      MoveScaled(16,0,4,4)
+      Picture = Picture["icon:/small/clear"]
+    }
+    { txtURL TextBox
+      MoveScaled(20,0,32,4)
+      Expand = True
+    }
+    { btnGo ToolButton
+      MoveScaled(52,0,4,4)
+      Picture = Picture["icon:/small/apply"]
+    }
+    { btnEdit ToolButton
+      MoveScaled(60,0,4,4)
+      ToolTip = ("Toggle edit mode")
+      Picture = Picture["icon:/small/edit"]
+      Toggle = True
+    }
+    { Separator1 Separator
+      MoveScaled(67,0,1,4)
+    }
+    { btnZoomIn ToolButton
+      MoveScaled(69,0,4,4)
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { btnZoomOut ToolButton
+      MoveScaled(73,0,4,4)
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { btnZoomNormal ToolButton
+      MoveScaled(77,0,4,4)
+      Picture = Picture["icon:/small/zoom-normal"]
+    }
+    { Separator2 Separator
+      MoveScaled(81,0,1,4)
+    }
+    { btnFind ToolButton
+      MoveScaled(83,0,4,4)
+      Picture = Picture["icon:/small/find"]
+      Toggle = True
+    }
+    { btnDownloadList ToolButton
+      MoveScaled(87,0,4,4)
+      Picture = Picture["icon:/small/archive"]
+    }
+    { btnConfig ToolButton
+      MoveScaled(91,0,4,4)
+      Picture = Picture["icon:/small/options"]
+    }
+  }
+  { panEdit HBox
+    MoveScaled(1,6,97,4)
+    Visible = False
+    { btnCopy ToolButton btnAction
+      Name = "btnCopy"
+      MoveScaled(0,0,4,4)
+      Tag = "Copy"
+      ToolTip = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+    }
+    { btnCut ToolButton btnAction
+      Name = "btnCut"
+      MoveScaled(4,0,4,4)
+      Tag = "Cut"
+      ToolTip = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+    }
+    { btnPaste ToolButton btnAction
+      Name = "btnPaste"
+      MoveScaled(8,0,4,4)
+      Tag = "Paste"
+      ToolTip = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+    }
+    { btnUndo ToolButton btnAction
+      Name = "btnUndo"
+      MoveScaled(12,0,4,4)
+      Tag = "Undo"
+      ToolTip = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+    }
+    { btnRedo ToolButton btnAction
+      Name = "btnRedo"
+      MoveScaled(16,0,4,4)
+      Tag = "Redo"
+      ToolTip = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+    }
+    { Separator7 Separator
+      MoveScaled(20,0,1,4)
+    }
+    { btnBold ToolButton btnAction
+      Name = "btnBold"
+      MoveScaled(21,0,4,4)
+      Tag = "bold"
+      ToolTip = ("Bold")
+      Picture = Picture["icon:/small/text-bold"]
+    }
+    { btnItalic ToolButton btnAction
+      Name = "btnItalic"
+      MoveScaled(25,0,4,4)
+      Tag = "italic"
+      ToolTip = ("Italic")
+      Picture = Picture["icon:/small/text-italic"]
+    }
+    { btnUnderline ToolButton btnAction
+      Name = "btnUnderline"
+      MoveScaled(29,0,4,4)
+      Tag = "underline"
+      ToolTip = ("Underline")
+      Picture = Picture["icon:/small/text-underline"]
+    }
+    { btnStrike ToolButton btnAction
+      Name = "btnStrike"
+      MoveScaled(33,0,4,4)
+      Tag = "strikethrough"
+      ToolTip = ("Strikethrough")
+      Picture = Picture["icon:/small/text-strike"]
+    }
+    { Separator3 Separator
+      MoveScaled(37,0,1,4)
+    }
+    { btnLeft ToolButton btnAction
+      Name = "btnLeft"
+      MoveScaled(39,0,4,4)
+      Tag = "justifyleft"
+      ToolTip = ("Left aligned")
+      Picture = Picture["icon:/small/text-left"]
+    }
+    { btnCenter ToolButton btnAction
+      Name = "btnCenter"
+      MoveScaled(43,0,4,4)
+      Tag = "justifycenter"
+      ToolTip = ("Centered")
+      Picture = Picture["icon:/small/text-center"]
+    }
+    { btnRight ToolButton btnAction
+      Name = "btnRight"
+      MoveScaled(47,0,4,4)
+      Tag = "justifyright"
+      ToolTip = ("Right aligned")
+      Picture = Picture["icon:/small/text-right"]
+    }
+    { btnFill ToolButton btnAction
+      Name = "btnFill"
+      MoveScaled(51,0,4,4)
+      Tag = "justifyfull"
+      ToolTip = ("Justified")
+      Picture = Picture["icon:/small/text-fill"]
+    }
+    { Separator5 Separator
+      MoveScaled(55,0,1,4)
+    }
+    { btnIndent ToolButton btnAction
+      Name = "btnIndent"
+      MoveScaled(56,0,4,4)
+      Tag = "indent"
+      ToolTip = ("Indent")
+      Picture = Picture["icon:/small/indent"]
+    }
+    { btnUnindent ToolButton btnAction
+      Name = "btnUnindent"
+      MoveScaled(60,0,4,4)
+      Tag = "outdent"
+      ToolTip = ("Unindent")
+      Picture = Picture["icon:/small/unindent"]
+    }
+    { Separator6 Separator
+      MoveScaled(64,0,1,4)
+    }
+    { btnOrdered ToolButton btnAction
+      Name = "btnOrdered"
+      MoveScaled(65,0,4,4)
+      Tag = "insertOrderedList"
+      ToolTip = ("Ordered list")
+      Picture = Picture["list-ordered.png"]
+    }
+    { btnUnordered ToolButton btnAction
+      Name = "btnUnordered"
+      MoveScaled(69,0,4,4)
+      Tag = "insertUnorderedList"
+      ToolTip = ("Unordered list")
+      Picture = Picture["list-unordered.png"]
+    }
+    { Separator4 Separator
+      MoveScaled(73,0,1,4)
+    }
+    { btnColor ToolButton
+      MoveScaled(74,0,4,4)
+      ToolTip = ("Text color")
+      Picture = Picture["icon:/small/color"]
+    }
+    { btnBackground ToolButton
+      MoveScaled(78,0,4,4)
+      ToolTip = ("Text background")
+      Picture = Picture["icon:/small/fill"]
+    }
+    { btnFont MenuButton
+      MoveScaled(82,0,6,4)
+      ToolTip = ("Font family")
+      Picture = Picture["icon:/small/font"]
+      Border = False
+      Menu = "mnuFont"
+      MenuOnly = True
+    }
+    { btnFont2 MenuButton
+      MoveScaled(88,0,6,4)
+      Font = Font["Bold,-1"]
+      ToolTip = ("Font size")
+      Text = ("+1")
+      Border = False
+      Menu = "mnuSize"
+      MenuOnly = True
+    }
+  }
+  { tabBrowser TabStrip
+    MoveScaled(1,11,76,43)
+    Expand = True
+    Arrangement = Arrange.Fill
+    Closable = True
+    Index = 0
+    Text = ("")
+    Index = 0
+  }
+  { panFind HBox
+    MoveScaled(1,54,101,4)
+    Visible = False
+    { btnClearFind ToolButton
+      MoveScaled(4,0,4,4)
+      Picture = Picture["icon:/small/clear"]
+    }
+    { txtFind TextBox
+      MoveScaled(8,0,32,4)
+      Expand = True
+    }
+    { btnNext ToolButton
+      MoveScaled(41,0,4,4)
+      Picture = Picture["icon:/small/down"]
+    }
+    { btnPrevious ToolButton
+      MoveScaled(45,0,4,4)
+      Picture = Picture["icon:/small/up"]
+    }
+    { chkCaseSensitive CheckBox
+      MoveScaled(54,0,17,4)
+      AutoResize = True
+      Text = ("Case sensitive")
+    }
+    { chkHighlight CheckBox
+      MoveScaled(70,0,20,4)
+      Visible = False
+      AutoResize = True
+      Text = ("Highlight")
+    }
+    { Panel1 Panel
+      MoveScaled(91,1,1,2)
+    }
+  }
+  { HBox1 HBox
+    MoveScaled(1,61,66,2)
+    { lblStatus Label
+      MoveScaled(5,0,21,2)
+      Font = Font["-2"]
+      Expand = True
+    }
+    { panLoad Panel
+      MoveScaled(46,0,19,2)
+      Visible = False
+      Arrangement = Arrange.Fill
+      Padding = 4
+      { pgbLoad ProgressBar
+        MoveScaled(1,0,17,2)
+        Label = False
+      }
+    }
+  }
+}

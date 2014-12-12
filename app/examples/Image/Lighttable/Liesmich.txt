@@ -1,0 +1,33 @@
+Leuchttisch
+
+Dieses Tool wurde geschrieben, um Fotos anzusehen, zu sortieren und umzubenennen.
+Zum Sortieren können die Bilder wie Dias beliebig auf dem "Tisch" herumgeschoben werden - daher der Name.
+
+Voraussetzungen:
+
+exiftool, convert und md5sum müssen installiert sein (sind sie wohl normalerweise).
+
+Einschränkungen:
+
+Das Programm ist momentan nur für .jp(e)g-Dateien geschrieben.
+Das Programm wurde unter KDE geschrieben. Keine Ahnung, ob es sich unter GTK nutzen lässt.
+
+Empfehlungen:
+
+1. Vor dem Start sollte man mit Gwenview, Konqueror, Dolphin, Nautilus, Digikam oder einem ähnlichen Programm Vorschaubilder des Bilderordners
+   erzeugen lassen. Die können das 10x schneller als ich. Wenn dieses Programm erst Thumbnails erstellen muss, dauert es fast 1 Sekunde/Bild.
+
+2. Zum Testen sollte man keinen Bilderordner nehmen, der hunderte Bilder enthält. Das Laden dauert (lässt sich aber auch abbrechen).
+
+3. Während die Bilder geladen werden, kann man aber schon arbeiten: rechte Maustaste auf Hintergrund oder Bilderrahmen zeigt die Kontextmenüs.
+
+Fragen:
+
+1. Wie lässt sich der Thumbnail-Generator von KDE (oder ein ähnlich schnelles Programm) über einen SHELL-Befehl benutzen?
+
+2. Wenn eine Datei umbenannt wird, benennt das Programm auch das Thumbnail um (im Verzeichnis /home/user/.thumbnails/normal). 
+   Korrekterweise müsste ich auch noch die Meta-Info im Thumbnail ändern. Keine Ahnung, wie das geht.
+
+Viel Spaß (hoffentlich)!
+Matti
+math.eber@t-online.de

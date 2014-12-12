@@ -1,0 +1,16 @@
+
+
+HOWTO make objects float around the screen
+
+    set the Torque property of a CObject which will determine its
+    spin.  and then set its motion path, which is defined by its
+    MX and MY properties.
+    
+HOWTO make objects fire
+
+    this is useful only if you plan to write bot ai.
+    you can use the Attack property to tell an object to release a
+    bullet.  One bullet will be released every cycle of the mainloop
+    so make sure you set Attack to false or you will get auto fire
+    like the ship has.
+    

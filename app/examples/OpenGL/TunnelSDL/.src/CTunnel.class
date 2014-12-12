@@ -1,0 +1,132 @@
+' Gambas class file
+
+Static Const TUNNEL_AFFICHAGE_WIREFRAME As Integer = 0
+Static Const TUNNEL_VITESSE As Float = 0.2
+Static Const TUNNEL_TEXTURE_VITESSE As Float = 0.0035
+Static Const TUNNEL_CERCLE_POINTS_NOMBRE As Integer = 32
+Static Const TUNNEL_CERCLE_NOMBRE As Integer = 24
+Static Const TUNNEL_CERCLE_DISTANCE As Float = -1.3
+Static Const TUNNEL_DEPLACEMENT_RATIO As Float = 0.2
+Static Const TUNNEL_PROFONDEUR_VITESSE As Float = 20.0
+Static Const TUNNEL_DEPLACEMENT_X_VITESSE_1 As Float = 1.0
+Static Const TUNNEL_DEPLACEMENT_X_VITESSE_2 As Float = 0.69
+Static Const TUNNEL_DEPLACEMENT_Y_VITESSE_1 As Float = 0.81
+Static Const TUNNEL_DEPLACEMENT_Y_VITESSE_2 As Float = 1.3
+Static Const TUNNEL_TEXTURE_WRAPPING As Float = 1
+Static Const FRUSTRUM_RATIO As Float = 0.5
+Static Const BROUILLARD_COMPOSANTE_R As Float = 0.7
+Static Const BROUILLARD_COMPOSANTE_G As Float = 0.7
+Static Const BROUILLARD_COMPOSANTE_B As Float = 0.8
+Static Const BROUILLARD_DENSITE As Float = 0.13
+Static Private textureOpenGL As Integer[]
+Static Private timerTextureDeplacement As Float
+
+Static Public Sub tunnelBrouillardActiver()
+
+  Dim fogColor As Float[] = [BROUILLARD_COMPOSANTE_R, BROUILLARD_COMPOSANTE_G, BROUILLARD_COMPOSANTE_B, 1.0]
+
+  gl.Fogfv(gl.FOG_COLOR, fogColor)
+  gl.Fogi(gl.FOG_MODE, gl.EXP2)
+  gl.Fogf(gl.FOG_DENSITY, BROUILLARD_DENSITE)
+  gl.Fogf(gl.FOG_START, 0.0)
+  gl.Fogf(gl.FOG_END, 1.0)
+
+  gl.Enable(gl.FOG)
+
+End
+
+Static Public Sub tunnelInitialiser(texture As Image)
+
+  textureOpenGL = gl.GenTextures(1)
+  gl.BindTexture(gl.TEXTURE_2D, textureOpenGL[0])
+  gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT)
+  gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT)
+  gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.TexImage2D(texture)
+
+End
+
+Static Public Sub tunnelAfficher(iTime As Integer)
+
+  Dim x1, x2, y1, y2, x3, y3, x4, y4 As Float
+  Dim v1, v2, u1, u2 As Float
+  Dim c As Integer
+  Dim p As Float
+  Dim tunnelDeplacement As Float
+  Dim incCercle As Float
+  Dim depX As Float = 0.0
+  Dim depY As Float = 0.0
+  Dim timerTunnelDeplacement As Float = iTime * TUNNEL_VITESSE
+
+  timerTextureDeplacement += TUNNEL_TEXTURE_VITESSE
+  gl.ClearDepth(1.0)
+  gl.ClearColor(BROUILLARD_COMPOSANTE_R, BROUILLARD_COMPOSANTE_G, BROUILLARD_COMPOSANTE_B, 1.0)
+  gl.Clear(gl.DEPTH_BUFFER_BIT Or gl.COLOR_BUFFER_BIT)
+
+  gl.Enable(gl.DEPTH_TEST)
+  gl.DepthFunc(gl.LESS)
+
+  tunnelBrouillardActiver()
+
+  gl.BindTexture(gl.TEXTURE_2D, textureOpenGL[0])
+  gl.Enable(gl.TEXTURE_2D)
+
+  If TUNNEL_AFFICHAGE_WIREFRAME = 1 Then gl.PolygonMode(gl.FRONT_AND_BACK, gl.LINE)
+
+  gl.MatrixMode(gl.PROJECTION)
+  gl.LoadIdentity()
+
+  gl.Frustum(- FRUSTRUM_RATIO, FRUSTRUM_RATIO, - FRUSTRUM_RATIO, FRUSTRUM_RATIO, 1.0, 600)
+  gl.MatrixMode(gl.MODELVIEW)
+  gl.LoadIdentity
+
+  incCercle = 360.0 / TUNNEL_CERCLE_POINTS_NOMBRE
+
+  For c = 0 To TUNNEL_CERCLE_NOMBRE - 1
+    gl.Translatef(depX, depy, TUNNEL_CERCLE_DISTANCE)
+    depX = Sin(Rad(timerTunnelDeplacement * TUNNEL_DEPLACEMENT_X_VITESSE_1)) * TUNNEL_DEPLACEMENT_RATIO
+    depY = Cos(Rad(timerTunnelDeplacement * TUNNEL_DEPLACEMENT_Y_VITESSE_1)) * TUNNEL_DEPLACEMENT_RATIO
+    depX -= Cos(Rad(timerTunnelDeplacement * TUNNEL_DEPLACEMENT_X_VITESSE_2)) * TUNNEL_DEPLACEMENT_RATIO
+    depY -= Sin(Rad(timerTunnelDeplacement * TUNNEL_DEPLACEMENT_X_VITESSE_2)) * TUNNEL_DEPLACEMENT_RATIO
+
+    gl.Begin(gl.QUADS)
+      For p = 0 To 360 Step incCercle
+        x1 = Sin(Rad(p))
+        y1 = Cos(Rad(p))
+        x2 = x1 + depX
+        y2 = y1 + depY
+        x3 = Sin(Rad(p + incCercle))
+        y3 = Cos(Rad(p + incCercle))
+        x4 = x3 + depX
+        y4 = y3 + depY
+        u1 = (p * TUNNEL_TEXTURE_WRAPPING) / 360
+        u2 = (p + incCercle) * TUNNEL_TEXTURE_WRAPPING / 360
+        v1 = (c * TUNNEL_TEXTURE_WRAPPING) / TUNNEL_CERCLE_NOMBRE
+        v2 = (C + 1) * TUNNEL_TEXTURE_WRAPPING / TUNNEL_CERCLE_NOMBRE
+        V1 += timerTextureDeplacement
+        V2 += timerTextureDeplacement
+        u1 += timerTextureDeplacement
+        u2 += timerTextureDeplacement
+        
+        gl.TexCoordf(u1, v1)
+        gl.Vertexf(x1, Y1, 0.0)
+        gl.TexCoordf(u1, v2)
+        gl.Vertexf(x2, y2, TUNNEL_CERCLE_DISTANCE)
+        gl.TexCoordf(u2, v2)
+        gl.Vertexf(x4, y4, TUNNEL_CERCLE_DISTANCE)
+        gl.TexCoordf(u2, v1)
+        gl.Vertexf(x3, Y3, 0.0)
+      Next
+    gl.end()
+
+  Next
+
+End
+
+Static Public Sub tunnelDetruire()
+
+  gl.DeleteTextures(textureOpenGL)
+
+End
+

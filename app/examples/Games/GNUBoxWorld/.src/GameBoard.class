@@ -1,0 +1,595 @@
+' Gambas class file
+
+'    Copyright(C)2010. Autor: Pablo Mileti  
+
+'This program Is free software: you can redistribute it And / Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option)any later version.
+
+'This program Is distributed In the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty Of MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the GNU General Public License For more details.
+
+'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
+
+Public Const NUM_LEVELS As Integer = 16
+
+Public RowPlayer As Integer
+Public ColPlayer As Integer
+Public Cells As New Cell[10, 11]
+
+'See below constructor
+
+'This Function return true if player can move or false if exist obstacle
+Public Function ValidateMover(Direction As Integer) As Boolean
+  Select Case Me.GetCell(Direction, 1).Type
+    Case Cell.gbMovableOnTarget
+      If Me.GetCell(Direction, 2).Busy Then
+        Return False
+      Else
+        Return True
+      End If
+    Case Cell.gbMovable
+      If Me.GetCell(Direction, 2).Busy Then
+        Return False
+      Else
+        Return True
+      End If
+    Case Cell.gbFloor
+      Return True
+    Case Cell.gbObstacle 
+      Return False
+    Case Cell.gbTarget
+      Return True
+  End Select
+End
+
+'This function return an object Cell if distance = 1 then Cell by side, distance = 2 Cell away 2 cells 
+Public Function GetCell(Where As Integer, distance As Integer) As Cell
+Select Case Where
+  Case Key.up
+    Return Cells[Me.rowplayer - distance, Me.colplayer]
+  Case Key.down
+    Return Cells[Me.rowplayer + distance, Me.colplayer]
+  Case Key.left
+    Return Cells[Me.rowplayer, Me.colplayer - distance]
+  Case Key.right
+    Return Cells[Me.rowplayer, Me.colplayer + distance]
+End Select
+End
+
+'This function return true if all target are busy (Winner!)
+Public Function isDone() As Boolean
+  Dim obj As Object
+  For Each obj In Me.cells
+    If obj.type = Cell.gbTarget Then Return False
+  Next
+  Return True
+End
+
+
+Public Sub _new(level As Integer)
+  Dim row As Integer
+  Dim col As Integer
+  'All cells type Floor
+  For row = 0 To 9
+    For col = 0 To 10
+      Me.Cells[row, col] = New Cell(Cell.gbFloor)
+    Next
+  Next
+  'Construct levels
+  Select Case level
+  'LEVEL 1
+  Case 1
+    For col = 2 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 5
+      Me.Cells[row, 2] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 2 To 8
+      Me.Cells[5, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 5
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 5] = New Cell(Cell.gbMovable)
+    RowPlayer = 3
+    ColPlayer = 5
+  'LEVEL 2
+  Case 2
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 5
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[5, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 5
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 3] = New Cell(Cell.gbMovable)
+    RowPlayer = 3
+    ColPlayer = 5
+  'LEVEL 3
+  Case 3
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 5] = New Cell(Cell.gbMovable)
+    RowPlayer = 5
+    ColPlayer = 2
+  'LEVEL 4
+  Case 4
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 8
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[8, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 8
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[7, 5] = New Cell(Cell.gbObstacle)
+    Me.Cells[7, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[7, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[6, 2] = New Cell(Cell.gbTarget)
+    Me.Cells[7, 2] = New Cell(Cell.gbTarget)
+    RowPlayer = 7
+    ColPlayer = 4
+  'LEVEL 5
+  Case 5
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 6
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[6, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 6
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[2, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 3] = New Cell(Cell.gbTarget)
+    For row = 2 To 5
+       Me.Cells[row, 6] = New Cell(Cell.gbMovable)
+    Next
+    For row = 2 To 5
+       Me.Cells[row, 7] = New Cell(Cell.gbTarget)
+    Next
+    RowPlayer = 3
+    ColPlayer = 2
+  'LEVEL 6
+  Case 6
+    For col = 1 To 9
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 9
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 9] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[3, 5] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 5] = New Cell(Cell.gbMovableOnTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 7] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 8] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 8] = New Cell(Cell.gbObstacle)
+    RowPlayer = 6
+    ColPlayer = 5
+
+  'LEVEL 7
+  Case 7
+    For col = 2 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 2] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 2 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 7] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 7] = New Cell(Cell.gbTarget)
+    RowPlayer = 3
+    ColPlayer = 3
+
+  'LEVEL 8
+  Case 8
+    For col = 1 To 9
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 9
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 9] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 8] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 8] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 7] = New Cell(Cell.gbMovable)
+    RowPlayer = 2
+    ColPlayer = 6
+
+  'LEVEL 9
+  Case 9
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 8
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[8, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 8
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 4 To 8
+      Me.Cells[row, 2] = New Cell(Cell.gbObstacle)
+      Me.Cells[row, 7] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 6 To 8
+      Me.Cells[row, 3] = New Cell(Cell.gbObstacle)
+      Me.Cells[row, 6] = New Cell(Cell.gbObstacle)
+      Me.Cells[row, 7] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[3, 5] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[6, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[7, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[7, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 4] = New Cell(Cell.gbMovable)
+    RowPlayer = 2
+    ColPlayer = 5
+
+ 'LEVEL 10
+  Case 10
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 8
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[8, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 8
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 4
+      Me.Cells[row, 2] = New Cell(Cell.gbObstacle)
+      Me.Cells[row, 7] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[4, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 5] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[6, 4] = New Cell(Cell.gbMovable)
+    RowPlayer = 7
+    ColPlayer = 5
+
+ 'LEVEL 11
+  Case 11
+    For col = 2 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 2] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 2 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[6, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 5] = New Cell(Cell.gbMovableOnTarget)
+    RowPlayer = 2
+    ColPlayer = 7
+
+ 'LEVEL 12
+  Case 12
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 6] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    RowPlayer = 5
+    ColPlayer = 2
+
+'LEVEL 13
+  Case 13
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 4] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 5] = New Cell(Cell.gbMovableOnTarget)
+    RowPlayer = 4
+    ColPlayer = 2
+
+'LEVEL 14
+  Case 14
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 4] = New Cell(Cell.gbObstacle)
+    Me.Cells[4, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[5, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[3, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[5, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[6, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 4] = New Cell(Cell.gbMovable)
+    RowPlayer = 3
+    ColPlayer = 5
+
+'LEVEL 15
+  Case 15
+    For col = 2 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 2] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 2 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[3, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[4, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[2, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[2, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[4, 7] = New Cell(Cell.gbTarget)
+    Me.Cells[6, 3] = New Cell(Cell.gbTarget)
+    Me.Cells[6, 5] = New Cell(Cell.gbTarget)
+    Me.Cells[6, 7] = New Cell(Cell.gbTarget)
+    RowPlayer = 4
+    ColPlayer = 5
+
+'LEVEL 16
+  Case 16
+    For col = 1 To 8
+      Me.Cells[1, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 1] = New Cell(Cell.gbObstacle)
+    Next
+    For col = 1 To 8
+      Me.Cells[7, col] = New Cell(Cell.gbObstacle)
+    Next
+    For row = 2 To 7
+      Me.Cells[row, 8] = New Cell(Cell.gbObstacle)
+    Next
+    Me.Cells[2, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 2] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 3] = New Cell(Cell.gbObstacle)
+    Me.Cells[2, 7] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 6] = New Cell(Cell.gbObstacle)
+    Me.Cells[6, 7] = New Cell(Cell.gbObstacle)
+    For col = 2 To 7
+      Me.Cells[4, col] = New Cell(Cell.gbTarget)
+    Next
+    Me.Cells[3, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 5] = New Cell(Cell.gbMovable)
+    Me.Cells[3, 6] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 3] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 4] = New Cell(Cell.gbMovable)
+    Me.Cells[5, 6] = New Cell(Cell.gbMovable)
+    RowPlayer = 6
+    ColPlayer = 5
+
+
+  End Select
+  
+  For row = 0 To 9
+    Cells[row, 0].FixObstaculo(Null, Cells[row, 1])
+    For col = 1 To 9
+      Cells[row, col].FixObstaculo(Cells[row, col - 1], Cells[row, col + 1])
+    Next
+    Cells[row, 10].FixObstaculo(Cells[row, 9], Null)
+  Next
+  
+End

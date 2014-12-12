@@ -1,0 +1,13 @@
+Public Sub Example4()
+  
+  Dim hImg As Image
+    
+  Paint.Arc(128.0, 128.0, 76.8)
+  Paint.Clip
+  hImg = Image.Load(IMAGE_NAME)
+  Paint.Scale(256 / hImg.Width, 256 / hImg.Height)
+  Paint.Brush = Paint.Image(hImg, 0, 0)
+  Paint.Rectangle(0, 0, 512, 512)
+  Paint.Fill()
+  
+End

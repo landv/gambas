@@ -1,0 +1,29 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,68,54)
+  Text = ("File Conflicts")
+  Resizable = False
+  { btnCancel Button
+    MoveScaled(51,48,15,4)
+    Text = ("&Cancel")
+    Default = True
+    Cancel = True
+  }
+  { btnContinue Button
+    MoveScaled(28,48,21,4)
+    Text = ("Continue &anyway")
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(11,2,54,14)
+    Text = ("The following files can't be renamed, because the target filenames already exist in the directory.<br>If you continue, only the files without conflicts will be renamed.<br>If you cancel, you can choose new filename options.")
+  }
+  { txaList TextArea
+    MoveScaled(2,18,64,28)
+    ReadOnly = True
+  }
+  { PictureBox1 PictureBox
+    MoveScaled(2,3,7,7)
+    Picture = Picture["icon:/48/warning"]
+  }
+}

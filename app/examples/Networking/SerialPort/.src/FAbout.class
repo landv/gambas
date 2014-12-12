@@ -1,0 +1,16 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  FAbout.text = Application.name & " About"
+  Label1.width = FAbout.width
+  Label1.text = Application.name & " Version " & Application.Version
+
+End
+
+Public Sub Button1_Click()
+
+  Me.close
+
+End

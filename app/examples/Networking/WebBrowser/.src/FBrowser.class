@@ -1,0 +1,576 @@
+' Gambas class file
+
+'Static Private $aZoom As Float[]
+
+'Private $sStatus As String
+'Private $iZoom As Integer
+'Private $iHidden As Integer
+Private $sLastLink As String
+
+' Static Public Sub _init()
+'   
+'   Dim iInd As Integer
+'   
+'   $aZoom = New Float[17]
+'   
+'   For iInd = 0 To $aZoom.Max
+'     $aZoom[iInd] = 2 ^ (- (iInd - $aZoom.Max / 2) / 4)
+'   Next
+'   
+' End
+
+Public Sub Form_Open()
+
+  WebSettings.IconDatabase.Path = File.Dir(File.Dir(Temp$()))
+  WebSettings.Fonts.FixedFont = "Monospace"
+  WebSettings[WebSettings.PluginsEnabled] = True
+  WebSettings[WebSettings.JavascriptEnabled] = True
+  WebSettings[WebSettings.JavaEnabled] = True
+  WebSettings.Fonts.DefaultFontSize = 12
+  WebSettings.Fonts.DefaultFixedFontSize = 12
+
+  CreateView()
+  btnZoomNormal_Click
+  txtURL.SetFocus
+  tabBrowser_Click
+  
+  txtURL.Text = "http://gambas.sourceforge.net"
+  txtURL_Activate
+  
+End
+
+Private Sub GetView() As WebView
+  
+  Return tabBrowser[tabBrowser.Index].Children[0]
+  
+End
+
+Private Sub IsLastCurrentView() As Boolean
+  
+  Dim hView As WebView = GetView()
+  Return hView = Last
+  
+End
+
+Public Sub WebView_Link(Url As String)
+
+  If Not IsLastCurrentView() Then Return
+  $sLastLink = Url
+  lblStatus.Text = Url
+
+End
+
+Public Sub WebView_Status()
+
+  If Not IsLastCurrentView() Then Return
+  lblStatus.Text = GetView().Status
+
+End
+
+Public Sub WebView_Progress()
+
+  GetView().Status = "Loading..."
+  If Not IsLastCurrentView() Then Return
+
+  lblStatus.Text = GetView().Status
+  pgbLoad.Value = GetView().Progress
+  panLoad.Show
+
+End
+
+Public Sub WebView_Error()
+
+  Dim hView As WebView = GetView()
+  Dim sUrl As String
+  
+  sUrl = $sLastLink
+  If Not sUrl Then sUrl = txtURL.Text
+
+  ' If Not (sUrl Begins "www.") Then 
+  '   txtURL.Text = "www." & sUrl
+  '   btnGo.Value = True
+  '   Return
+  ' Endif
+
+  hView.Status = "Unable to load: " & sUrl
+  hView.HTML = "<h3>Unable to find the following URL:</h3>" & sUrl
+  If Not IsLastCurrentView() Then Return
+
+  lblStatus.Text = GetView().Status
+  pgbLoad.Hide
+
+End
+
+Public Sub WebView_Load()
+
+  'Dim iInd As Integer
+  Dim hView As WebView = GetView()
+  Dim hIcon As Picture
+
+  hView.Status = ""
+  hIcon = hView.Icon 'WebSettings.IconDatabase[hView.Url]
+  tabBrowser[hView.Tag].Picture = hIcon
+  
+  If Not IsLastCurrentView() Then Return
+
+  lblStatus.Text = ""
+  txtURL.Text = hView.Url
+  pgbLoad.Hide
+  
+  UpdateIcon
+  
+  ' Debug GetView().Frame
+  ' For iInd = 0 To GetView().Frame.Children.Count - 1
+  '   Debug "["; iInd; "] "; GetView().Frame.Children[iInd]
+  ' Next
+
+End
+
+Public Sub btnGo_Click()
+
+  Dim sText As String = txtURL.Text
+  
+  If InStr(sText, "://") = 0 Then sText = "http://" & sText
+  
+  $sLastLink = sText
+  GetView().Url = sText
+
+End
+
+Public Sub txtURL_Activate()
+
+  btnGo.Value = True
+
+End
+
+Public Sub btnBack_Click()
+
+  GetView().Back
+
+End
+
+Public Sub btnForward_Click()
+
+  GetView().Forward
+
+End
+
+Public Sub btnStop_Click()
+
+  GetView().Stop
+
+End
+
+Public Sub btnReload_Click()
+
+  Dim hView As WebView = GetView()
+
+  hView.Reload
+
+End
+
+Public Sub btnZoomIn_Click()
+
+  GetView().Zoom = Round(GetView().Zoom * 1.25, -2)
+
+End
+
+Public Sub btnZoomOut_Click()
+
+  GetView().Zoom = Round(GetView().Zoom / 1.25, -2)
+
+End
+
+Public Sub btnZoomNormal_Click()
+
+  GetView().Zoom = 1
+
+End
+
+Public Sub WebView_Title()
+
+  Dim hView As WebView = Last
+  tabBrowser[hView.Tag].Text = hView.Title
+  If Not IsLastCurrentView() Then Return
+  Me.Title = hView.Title & " - Gambas WebKit"
+
+End
+
+Public Sub WebView_Icon()
+
+  Dim hView As WebView = Last
+  'hView.Icon.Save("~/icon.png")
+  tabBrowser[hView.Tag].Picture = hView.Icon
+  UpdateIcon
+
+End
+
+Public Sub btnClear_Click()
+
+  txtURL.Clear
+  txtURL.SetFocus
+
+End
+
+Public Sub WebView_NewWindow((Modal) As Boolean)
+
+  CreateView()
+
+  Last.NewView = GetView()
+  
+End
+
+Private Sub CreateView()
+  
+  Dim iLast As Integer = tabBrowser.Count - 1
+  Dim hView As WebView
+
+  Object.Lock(tabBrowser)
+  Inc tabBrowser.Count
+  tabBrowser[iLast + 1].Picture = tabBrowser[iLast].Picture
+  tabBrowser[iLast + 1].Text = tabBrowser[iLast].Text
+  tabBrowser[iLast].Text = ""
+  tabBrowser[iLast].Picture = Null
+  tabBrowser.Index = iLast
+  hView = New WebView(tabBrowser) As "WebView"
+  hView.Tag = tabBrowser.Index
+  hView.Editable = btnEdit.Value
+  'Print WebSettings.Fonts.FixedFont
+  Object.Unlock(tabBrowser)
+  tabBrowser_Click
+  
+End
+
+
+Public Sub tabBrowser_Click()
+
+  Dim iLast As Integer = tabBrowser.Count - 1
+  Dim hView As WebView
+
+  If tabBrowser.Index = iLast Then 
+    CreateView()
+  Else
+    hView = GetView()
+    If hView.Title Then
+      Me.Title = hView.Title & " - Gambas WebKit"
+    Else
+      Me.Title = "Gambas WebKit"
+    Endif
+    tabBrowser.Text = hView.Title
+    UpdateIcon
+    tabBrowser.Picture = hView.Icon
+    txtURL.Text = hView.Url
+    lblStatus.Text = hView.Status
+    pgbLoad.Value = hView.Progress
+    If hView.Progress > 0 And If hView.Progress < 1 Then
+      panLoad.Show
+    Else
+      panLoad.Hide
+    Endif
+  Endif
+  
+End
+
+Public Sub btnDownloadList_Click()
+
+  FDownloadList.Show
+
+End
+
+Public Sub WebView_Auth()
+  
+  Dim hView As WebView = Last
+  
+  If Not FAuth.Run(hView.Auth.Url, hView.Auth.Realm) Then
+ 
+    hView.Auth.User = FAuth.User
+    hView.Auth.Password = FAuth.Password
+    'Debug hView.Auth.Url;; hView.Auth.User;; hView.Auth.Password
+    
+  Endif 
+  
+End
+
+Public Sub WebView_Click(Frame As WebFrame)
+  
+  Dim sName As String = Frame.Name
+  If sName Then sName &= ": "
+  Debug sName; Frame.Url
+  
+End
+
+Public Sub WebView_NewFrame(Frame As WebFrame)
+  
+  Debug Frame.Name
+  
+End
+
+Public Sub WebView_Download(Download As WebDownload)
+  
+  Dialog.Path = System.User.Home &/ File.Name(Download.Url)
+  If Not Dialog.SaveFile() Then 
+    Download.Path = Dialog.Path
+    FDownloadList.AddDownload(Download)
+    FDownloadList.Show
+  Endif
+  
+End
+
+Public Sub WebView_MouseDown()
+  
+  Dim hView As WebView = Last
+  Dim hTest As WebHitTest = hView.HitTest(Mouse.X, Mouse.Y)
+  Dim sMsg As String
+  
+  If hTest.Document Then sMsg &= "DOCUMENT "
+  If hTest.Link Then sMsg &= "LINK "
+  If hTest.Image Then sMsg &= "IMAGE "
+  If hTest.Selected Then sMsg &= "SELECTED "
+  If hTest.Editable Then sMsg &= "EDITABLE "
+  Debug sMsg; hTest.Url
+  
+End
+
+Public Sub tabBrowser_Close(Index As Integer)
+
+  Dim hView As WebView
+  
+  Try hView = tabBrowser[Index].Children[0]
+  If Not hView Then Return
+  
+  hView.Delete
+  
+  Object.Lock(tabBrowser)
+  tabBrowser[Index].Delete
+  Object.UnLock(tabBrowser)
+  If Index = tabBrowser.Index Then
+    If tabBrowser.Index = (tabBrowser.Count - 1) And If tabBrowser.Index > 0 Then
+      tabBrowser.Index = tabBrowser.Index - 1
+    Else
+      tabBrowser_Click
+    Endif
+  Endif  
+
+End
+
+Public Sub btnFind_Click()
+
+  Dim hView As WebView = GetView()
+  
+  panFind.Visible = btnFind.Value
+  If btnFind.Value Then 
+    DoFind
+    txtFind.SetFocus
+  Else
+    hView.FindText("")
+  Endif
+
+End
+
+Private Sub DoFind(Optional bBackward As Boolean)
+  
+  Dim hView As WebView = GetView()
+  Dim sText As String
+  
+  sText = Trim(txtFind.Text)
+  
+  If sText And If hView.FindText(sText, bBackward, chkCaseSensitive.Value, True, chkHighlight.Value) Then
+    panFind.Background = &HFFDFDF
+  Else
+    panFind.Background = Color.Default
+    If Not sText Then hView.FindText("")
+  Endif
+  
+End
+
+
+Public Sub txtFind_Change()
+
+  DoFind
+
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.Control And If Key.Code = Key["F"] Then 
+    btnFind.Value = True
+  Else If Key.Code = Key.Escape Then
+    btnFind.Value = False
+  Else If Key.Code = Key.F3 Then
+    DoFind(Key.Shift)
+  Endif
+
+End
+
+Public Sub chkCaseSensitive_Click()
+
+  DoFind
+
+End
+
+Public Sub chkHighlight_Click()
+
+  Dim hView As WebView 
+  
+  If Not chkHighlight.Value Then 
+    hView = GetView()
+    hView.FindText("",,,, True)
+  Else
+    DoFind
+  Endif
+
+End
+
+Public Sub btnNext_Click()
+
+  DoFind
+
+End
+
+Public Sub btnPrevious_Click()
+
+  DoFind(True)
+
+End
+
+Public Sub btnClearFind_Click()
+
+  txtFind.Text = ""
+
+End
+
+Public Sub txtFind_Activate()
+
+  DoFind
+
+End
+
+Private Sub UpdateIcon()
+
+  Dim hView As WebView = GetView()
+  Dim hIcon As Picture
+  
+  hIcon = hView.Icon 'WebSettings.IconDatabase[hView.Url]
+  
+  If hIcon Then
+    Me.Icon = hIcon
+  Else
+    Me.Icon = Picture["icon:/16/internet"]
+  Endif
+
+End
+
+Public Sub btnConfig_Click()
+
+  With WebSettings.Proxy
+    
+    FOption.Type = .Type
+    FOption.Host = .Host
+    FOption.Port = .Port
+    FOption.User = .User
+    FOption.Password = .Password
+    
+    If FOption.Run() Then Return
+    
+    .Type = FOption.Type
+    .Host = FOption.Host
+    .Port = FOption.Port
+    .User = FOption.User
+    .Password = FOption.Password 
+    
+  End With
+
+End
+
+Public Sub btnEdit_Click()
+
+  Dim hWebView As WebView
+  
+  For Each hWebView In tabBrowser.Children
+    hWebView.Editable = btnEdit.Value
+  Next
+  
+  WebSettings[WebSettings.JavascriptCanAccessClipboard] = btnEdit.Value
+  panEdit.Visible = btnEdit.Value
+
+End
+
+Public Sub btnAction_Click()
+
+  Dim hWebView As WebView = GetView()
+  
+  Debug "Action " & Last.Tag & ": "; hWebView.Eval(Subst("document.execCommand('&1', false, false)", Last.Tag))
+
+End
+
+Public Sub btnColor_Click()
+
+  Dim hWebView As WebView = GetView()
+
+  If Dialog.SelectColor() Then Return
+  hWebView.Eval(Subst("document.execCommand('forecolor', false, '&1')", "#" & Hex$(Dialog.Color, 6)))
+
+End
+
+Public Sub mnuFont_Show()
+  
+  Dim sFont As String
+  Dim hMenu As Menu
+  
+  If mnuFont.Children.Count > 1 Then Return
+  
+  mnuFont.Children.Clear
+  
+  For Each sFont In Fonts
+    
+    hMenu = New Menu(mnuFont) As "mnuSelectFont"
+    hMenu.Text = sFont
+    
+  Next
+  
+End
+
+
+Public Sub mnuSelectFont_Click()
+
+  Dim hWebView As WebView = GetView()
+  Dim sFont As String = Last.Text
+
+  hWebView.Eval(Subst("document.execCommand('fontname', false, '&1')", sFont))
+
+End
+
+
+Public Sub btnBackground_Click()
+
+  Dim hWebView As WebView = GetView()
+
+  Dialog.Title = "Select a color"
+  If Dialog.SelectColor() Then Return
+  hWebView.Eval(Subst("document.execCommand('backcolor', false, '&1')", "#" & Hex$(Dialog.Color, 6)))
+
+End
+
+Public Sub mnuSelectSize_Click()
+
+  Dim hWebView As WebView = GetView()
+  Dim sSize As String = Last.Text
+
+  hWebView.Eval(Subst("document.execCommand('fontsize', false, '&1')", sSize))
+
+End
+
+
+
+Public Sub btnInsertImage_Click()
+
+  Dim hWebView As WebView = GetView()
+  
+  Dialog.Title = "Select an image"
+  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.gif;*.xpm;*.bmp", "Image files"]
+  If Dialog.OpenFile() Then Return
+
+  Print Dialog.Path
+  hWebView.Eval(Subst("document.execCommand('insertImage', false, '&1')", "file://" & Replace(Dialog.Path, "'", "\\'")))
+  
+End

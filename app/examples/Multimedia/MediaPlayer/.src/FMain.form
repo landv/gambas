@@ -1,0 +1,17 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,110,85)
+  Icon = Picture["icon.png"]
+  Maximized = True
+  Arrangement = Arrange.Vertical
+  { dwgVideo DrawingArea
+    MoveScaled(12,27,24,24)
+    Background = &H000000&
+    Expand = True
+  }
+  { timTime #Timer
+    #MoveScaled(85,47)
+    Delay = 200
+  }
+}

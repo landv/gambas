@@ -1,0 +1,38 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,64,23)
+  Background = &H000000&
+  Resizable = False
+  Border = False
+  Utility = True
+  SkipTaskbar = True
+  Opacity = 70
+  Spacing = True
+  { Panel3 Panel
+    MoveScaled(25,0,12,1)
+    Background = &H3F3F3F&
+  }
+  { Panel1 HBox
+    MoveScaled(1,3,61,6)
+    AutoResize = True
+    { Panel2 Panel
+      MoveScaled(2,0,2,4)
+    }
+    { lblTitle Label
+      MoveScaled(13,1,43,2)
+      Font = Font["Bold,+5"]
+      Foreground = &HBFBFBF&
+      Expand = True
+      Text = ("MediaPlayer, a media player example based on GStreamer made by Benoît Minisini")
+    }
+  }
+  { panToolbar Panel
+    MoveScaled(1,10,57,9)
+    Margin = True
+  }
+  { timError #Timer
+    #MoveScaled(54,13)
+    Delay = 5000
+  }
+}

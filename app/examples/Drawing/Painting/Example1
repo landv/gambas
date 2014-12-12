@@ -1,0 +1,29 @@
+Public Sub Example1()
+
+  Dim XC As Float = 128
+  Dim YC As Float = 128
+  Dim Radius As Float = 100
+  Dim Angle1 As Float = Rad(-45)
+  Dim Angle2 As Float = Rad(-180)
+  Dim X, Y As Float
+  
+  Paint.LineWidth = 10
+  Paint.Arc(XC, YC, Radius, Angle1, Angle2 - Angle1)
+  Paint.Stroke
+  
+  'Draw helping Lines
+  Paint.LineWidth = 6.0
+  Paint.Brush = Paint.Color(Color.RGB(255, 0.2 * 255, 0.2 * 255, 0.6 * 255))
+  
+  Paint.Arc(XC, YC, 10.0)
+  Paint.Fill
+  
+  Paint.Arc(XC, YC, Radius, Angle1, 0)
+  X = Paint.X
+  Y = Paint.Y
+  Paint.Arc(XC, YC, Radius, Angle2, 0)
+  Paint.LineTo(XC, YC)
+  Paint.LineTo(X, Y)
+  Paint.Stroke
+
+End

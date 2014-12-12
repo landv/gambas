@@ -1,0 +1,106 @@
+' Gambas class file
+
+Public Sub mnuOpen_Click()
+
+  Dim hImage As Image
+
+  Dialog.Path = "/usr/share/wallpapers"
+  If Not Exist(Dialog.Path) Then
+    Dialog.Path = User.Home
+  Endif
+  
+  'Dialog.Path = Application.Path
+
+  Dialog.Filter = ["*.jpg;*.jpeg;*.png;*.bmp", "Picture files"]
+
+  If Dialog.OpenFile() Then Return
+
+  hImage = Image.Load(Dialog.Path)
+
+  dwgImage.Clear()
+  dwgImage.Resize(hImage.Width, hImage.Height)
+
+  Draw.Begin(dwgImage)
+  Draw.FillRect(0, 0, hImage.Width, hImage.Height, Color.Gray)
+  Draw.Image(hImage, 0, 0)
+  Draw.End
+
+  dwgImage.Visible = True
+  
+Catch
+
+  Message.Warning(Error.Text & " !")
+
+End
+
+Public Sub mnuQuit_Click()
+
+  Me.Close
+
+End
+
+'PUBLIC SUB dwgImage_Draw()
+'
+'  IF hPict THEN Draw.Picture(0, 0, hPict)
+'
+'END
+
+Public Sub mnuStart_Click()
+
+  timDraw.Enabled = Not timDraw.Enabled
+
+  If timDraw.Enabled Then
+    mnuStart.Text = ("&Stop")
+  Else
+    mnuStart.Text = ("&Start")
+  Endif
+
+End
+
+Public Sub timDraw_Timer()
+
+  Dim iInd As Integer
+  Dim X1 As Float
+  Dim Y1 As Float
+  Dim X2 As Float
+  Dim Y2 As Float
+  Dim W As Float
+  Dim H As Float
+  Dim eTime As Float
+
+  Paint.Begin(dwgImage)
+  
+  Paint.LineWidth = 1
+
+  For iInd = 1 To 16
+
+    Paint.Brush = Paint.Color(Color.RGB(Int(Rnd(256)), Int(Rnd(256)), Int(Rnd(256)), 128))
+
+    X1 = Rnd(dwgImage.Width)
+    Y1 = Rnd(dwgImage.Height)
+    W = Rnd(16, 32)
+    H = Rnd(16, 32)
+    
+    Paint.Rectangle(X1, Y1, W, H)
+    Paint.Fill()
+    
+    Paint.Rotate(Pi(0.125))
+
+    'Paint.Brush = Paint.Color(Color.Black)
+    'Paint.Stroke
+
+  Next
+
+  Paint.End
+
+  'dwgImage.Refresh
+
+End
+
+
+Public Sub mnuAbout_Click()
+
+  Message.Info(("A simple image viewer example by\nBenoit Minisini (gambas@users.sourceforge.net)"))
+
+End
+

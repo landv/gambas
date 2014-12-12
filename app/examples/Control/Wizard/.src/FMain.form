@@ -1,0 +1,118 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,83,59)
+  Resizable = False
+  { Wizard1 Wizard
+    MoveScaled(1,1,81,57)
+    Count = 6
+    TextFont = Font["Bold,Italic,+3"]
+    ShowIndex = True
+    Index = 0
+    Text = ("Introduction")
+    { TextLabel1 TextLabel
+      MoveScaled(2,2,76,43)
+      Font = Font["+1"]
+      Text = ("Most of the properties of this wizard are selected in the properties window, not by code. This is because for designing the wizard you need the properties window anyway. \n<p>\n<blockquote><i>To see the properties window, you have to do save the project in yout home directory so that it is not write protected anymore.</i></blockquote>\n<p>\nTo design the pages of the wizard (or to see the properties), just click in the IDE on the \"Next\" button.\n<p>\nThe essential property of the wizard container is <i>Count</i>. This defines the number of steps the user will have to click through. On the last page the button \"Next\" changes automatically to \"OK\" to finish the task.\n<p>\nIn some situations you might want to skip steps of the wizard. You find this in the code of the CheckBoxes in step 2.\n<p>\n")
+    }
+    Index = 1
+    Text = ("Your order")
+    { TextLabel5 TextLabel
+      MoveScaled(2,2,75,4)
+      Font = Font["Bold,+1"]
+      Text = ("I order, according to the terms & conditions, the following items:")
+    }
+    { Label1 Label
+      MoveScaled(2,8,11,4)
+      Font = Font["+1"]
+      Text = ("Amount")
+    }
+    { vbCode ValueBox
+      MoveScaled(2,13,8,4)
+    }
+    { Label2 Label
+      MoveScaled(13,8,11,4)
+      Font = Font["+1"]
+      Text = ("Article")
+    }
+    { lblCode Label
+      MoveScaled(13,13,63,4)
+      Text = ("lines of code from gambas 3")
+    }
+    { vbFrozen ValueBox
+      MoveScaled(2,18,8,4)
+    }
+    { lblFrozen Label
+      MoveScaled(13,18,63,4)
+      Text = ("kg of frozen shrimps")
+    }
+    { vbImg ValueBox
+      MoveScaled(2,23,8,4)
+    }
+    { lblImg Label
+      MoveScaled(13,23,63,4)
+      Text = ("image files of the Gambas logo")
+    }
+    { chbTerms CheckBox
+      MoveScaled(2,31,75,5)
+      Text = ("I want to read the terms and conditions")
+      Value = CheckBox.True
+    }
+    { chbSave CheckBox
+      MoveScaled(2,37,40,4)
+      Text = ("I want to save my order")
+      Value = CheckBox.True
+    }
+    Index = 2
+    Text = ("Terms and Conditions")
+    { TextLabel6 TextLabel
+      MoveScaled(2,2,76,41)
+      Font = Font["Serif,Bold,Italic,+1"]
+      Background = Color.TextBackground
+      Padding = 8
+      Text = ("As this is only an example,<br>nothing will be ordered,<br>nothing will be saved,<br>and nothing will be sent.")
+      Border = Border.Plain
+    }
+    Index = 3
+    Text = ("Your address")
+    { Label3 Label
+      MoveScaled(2,2,41,3)
+      Text = ("Please enter your address here:")
+    }
+    { txaAddress TextArea
+      MoveScaled(2,6,76,15)
+    }
+    Index = 4
+    Text = ("Save your order")
+    { Label4 Label
+      MoveScaled(2,1,66,4)
+      Font = Font["Bold"]
+      Text = ("Where do you want to save your order?")
+    }
+    { DirChooser1 DirChooser
+      MoveScaled(2,5,76,38)
+    }
+    Index = 5
+    Text = ("Send your order")
+    { txlOrder TextLabel
+      MoveScaled(4,13,70,8)
+    }
+    { Label6 Label
+      MoveScaled(2,9,22,3)
+      Text = ("The following items:")
+    }
+    { Label7 Label
+      MoveScaled(2,23,25,3)
+      Text = ("will be delivered to:")
+    }
+    { txlAddress TextLabel
+      MoveScaled(4,27,72,15)
+    }
+    { TextLabel2 TextLabel
+      MoveScaled(2,1,75,7)
+      Font = Font["Bold,+1"]
+      Text = ("Your order is now ready to be sent. Please check if everything is correct.")
+    }
+    Index = 0
+  }
+}

@@ -1,0 +1,230 @@
+' Gambas class file
+
+Private $aModel As Md2Model[]
+Private $aObject As Md2Object[]
+Private $iFrames As Integer
+Private $fTime As Single
+Private $fFramerate As Float
+Private $iEndWidth As Integer
+Private $iEndZ As Integer
+
+Private $iDisk As Integer
+Private $hQuadric As GluQuadric
+
+' Private $fRotX As Float
+' Private $fRotY As Float
+' Private $fStartX As Float
+' Private $fStartY As Float
+
+Public Sub glaScreen_Open()
+ 
+  Init()
+  Gl.ClearDepth(100.0)       ' Enables clearing of the depth buffer
+  Glu.ClearColor(&H3398C3)   ' This will clear the background color to blue
+  Gl.DepthFunc(Gl.LESS)      ' The type of depth test to do
+  Gl.Enable(Gl.DEPTH_TEST)   ' Enables depth testing
+  Gl.ShadeModel(Gl.SMOOTH)   ' Enables smooth color shading
+
+  $fTime = Timer
+  timAnim.Enabled = True
+ 
+End
+
+Public Sub glaScreen_Resize()
+
+  Gl.Viewport(0, 0, glaScreen.Width, glaScreen.Height)
+  Gl.MatrixMode(Gl.PROJECTION)
+  Gl.LoadIdentity()                     'Reset The Projection Matrix
+  Glu.Perspective(45.0, glaScreen.Width / glaScreen.Height, 0.1, 3000.0)   'Calculate The Aspect Ratio Of The Window
+  Glu.LookAt(0, 100, 120, 0, 0, -300, 0, 100, 0)
+  Gl.MatrixMode(Gl.MODELVIEW)
+  
+End
+
+Public Sub Init()
+
+  Dim X, D, Z As Float
+  Dim sModel As String
+  Dim hModel As Md2Model
+  Dim I As Integer
+  Dim aModel As String[] = ["bauul", "goblin", "knight", "ogro", "rat", "rhino"]
+  Dim hObject As Md2Object
+  
+  $aModel = New Md2Model[]
+  $aObject = New Md2Object[]
+  
+  For Each sModel In aModel
+    $aModel.Add(Md2Model.Load(sModel & ".md2"))
+    $aModel[$aModel.Max].Texture = LoadTexture(sModel & ".jpg")
+  Next
+  
+  D = 100
+  
+  X = - D
+  Z = -100
+  
+  Do
+  
+    hModel = $aModel[Int(Rnd(0, aModel.Count))]
+    hObject = New Md2Object(hModel)
+    $aObject.Add(hObject)
+    $aObject[$aObject.Max].Move(X, -10, Z)
+    X += 50
+    If X > D Then
+      D += 100
+      X = - D
+      Z -= 100
+      Inc I
+      If I = 10 Then Break
+    Endif
+    
+  Loop
+
+  Print $aObject.Count; " objects"
+
+  $iEndWidth = D
+  $iEndZ = Z
+  
+  sldFrame.MinValue = 0
+  sldFrame.MaxValue = $aModel[0].Count
+  
+  $iDisk = Gl.GenLists(1)
+  $hQuadric = Glu.NewQuadric()
+
+  Gl.NewList($iDisk, Gl.COMPILE)
+  Gl.Rotatef(90, 1, 0, 0)
+  Glu.Disk($hQuadric, 0, 20, 30, 1)
+  Gl.EndList
+  
+End
+ 
+ 
+Public Sub glaScreen_Draw()
+
+  Dim fTime As Float = Timer
+  Dim I, N As Integer
+
+  Gl.Clear(Gl.COLOR_BUFFER_BIT Or Gl.DEPTH_BUFFER_BIT)    ' Clear The Screen And The Depth Buffer
+  
+  Gl.PushMatrix
+  
+  Gl.Disable(Gl.TEXTURE_2D)
+  
+  Glu.Color(&HD96800&)
+  Gl.Begin(Gl.QUADS)
+  Gl.Vertex3f(-100, -34.2, -100)
+  Gl.Vertex3f(100, -34.2, -100)
+  Gl.Vertex3f($iEndWidth, -34.2, $iEndZ)
+  Gl.Vertex3f(- $iEndWidth, -34.2, $iEndZ)
+  Gl.End
+  
+  Glu.Color(Color.Lighter(&HD96800&))
+  For I = 0 To $aObject.Max
+    
+    Gl.PushMatrix()
+    Gl.Translatef($aObject[I].X, -34, $aObject[I].Z)
+    Gl.CallList($iDisk)
+    Gl.PopMatrix()
+    
+  Next
+  
+  Gl.Enable(Gl.TEXTURE_2D)
+  Gl.Color3f(1, 1, 1)
+  For I = 0 To $aObject.Max
+    N += $aObject[I].Draw()
+  Next
+    
+  ' You can use this code to get FPS printed in terminal 
+  
+  Inc $iFrames
+  If Timer >= ($fTime + 1) Then
+    $fFrameRate = $iFrames / (Timer - $fTime)
+    $iFrames = 0
+    Inc $fTime
+  Endif
+
+  lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " FPS )"
+
+  Gl.PopMatrix
+   
+  Print N; " vertices in "; Format(Timer - fTime, "0.000000"); " seconds\r";
+   
+End
+
+Public Sub Form_KeyPress()
+
+  If Key.code = Key.F1 Then 
+    Me.FullScreen = Not Me.FullScreen
+    sldFrame.Visible = Not Me.FullScreen
+  Else If Key.Code = Key.Esc Then 
+    Me.Close
+  Else If Key.code = Key.Space Then 
+    timAnim.Enabled = Not timAnim.Enabled
+  Else If LCase(Key.Text) = "w" Then 
+    Gl.PolygonMode(Gl.FRONT_AND_BACK, Gl.LINE)
+  Else If LCase(Key.Text) = "f" Then 
+    Gl.PolygonMode(Gl.FRONT_AND_BACK, Gl.FILL)
+  Endif
+ 
+End
+
+Public Sub timAnim_Timer()
+
+  ' At every timer call we increase interpolation. It makes Frame number increase every 10 calls.
+  ' You can control frame flow any way you want. The smaller incrementation, the smoother movement.
+  
+  Dim I As Integer
+   
+   For I = 0 To $aObject.Max
+     With $aObject[I]
+      .Frame += 0.1
+      If .Frame >= .Count Then .Frame = 0
+     End With
+   Next
+   
+   Object.Lock(sldFrame)
+   sldFrame.Value = CInt($aObject[0].Frame)
+   Object.Unlock(sldFrame)
+   
+   glaScreen.Refresh
+   
+End
+
+' Just the subroutine to load textures for our models
+Private Sub LoadTexture(sPath As String) As Integer
+
+  Dim iTex As Integer
+  Dim hImage As Image
+
+  iTex = Gl.GenTextures(1)[0]
+  hImage = Image.Load(sPath)
+  Gl.BindTexture(Gl.TEXTURE_2D, iTex)
+  Gl.TexImage2D(hImage)
+  Glu.Build2DMipmaps(hImage)
+  Gl.Texparameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MIN_FILTER, Gl.LINEAR_MIPMAP_LINEAR)
+  Gl.Texparameteri(Gl.TEXTURE_2D, Gl.TEXTURE_MAG_FILTER, Gl.LINEAR)
+  Return iTex
+
+End
+
+
+Public Sub sldFrame_Change()
+
+  $aModel[0].Pos = sldFrame.Value
+
+End
+
+' Public Sub glaScreen_MouseMove()
+' 
+'   $fRotX = $fStartX + 180 * (Mouse.X - Mouse.StartX) / glaScreen.Width
+'   $fRotY = $fStartY + 180 * (Mouse.Y - Mouse.StartY) / glaScreen.Height
+'   glaScreen.Refresh
+' 
+' End
+' 
+' Public Sub glaScreen_MouseDown()
+' 
+'   $fStartX = $fRotX
+'   $fStartY = $fRotY
+' 
+' End

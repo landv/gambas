@@ -1,0 +1,390 @@
+' Gambas class file
+
+' Gambas class 
+Public boton As Button 'object variable for charge buttons on ejecution time
+Public sonido As Sound 'objeto que permite lanzar los sonidos(Play the Sounds)
+Public aplauso As Sound 'Sonido de aplauso cuando se acierta en un par de caritas (Applause Sound at each movement)
+Public botones As Object[] 'Arreglo de botones del tablero de juego (Buttons array for game board)
+Public botones_foticos As Object[] 'Arreglo de botones con las figuritas (Buttons array with images loaded)
+                                   'en el form fotos
+'variables del juego
+Public tam_tablero As Integer 'para conocer en todo momento cual es el tamaño del tablero (filas y columnas)
+                              'It is for know in all moment the boad size(row and columns)
+
+Public habilitar As Boolean 'para establecer si el jugador puede empezar a descubrir los botoncitos
+                            'Stablish if player can move 
+
+
+Private anterior_boton_jugado As Integer 'se utiliza para recordar el numero del ultimo boton pulsado, a fin de poder
+                                       'restaurarlo, en el caso del primer movimiento de una jugada, cuando no hay coincidencia
+                                       'de las imagenes destapadas  (remember last pushed button)
+                                       
+'Las siguientes dos variables fueron necesarias a fin de preservar la informacion contenida en la variable anterior_boton_jugado 
+'y en LAST.tag durante la ejecucion del evento click sobre los botones, esto debido a que la ejecucion de codigo no se 
+'interrumpe con la activacion del timer, de esta forma se permite un retardo en la visualizacion de pares de botones descubiertos
+'para que el jugador pueda reconocer la figura oculta en caso de que ambos dibujos no coincidan
+'...............................................................................................
+'Next variables would be needed for save information in variable anterior_boton_jugado and LAST.tag (for grupo_botones group)
+'for click event, it is for permit a delay in each movement, so the player can visualize every faces.
+
+Private boton_actual_paratimer As Integer
+Private boton_ultimo_paratimer As Integer
+
+'FUNCIONALIDAD AÑADIDA DE ACCESO A BASE DE DATOS PARA ALMACENAR LOS DATOS DEL
+'JUEGO, MEJORES PUNTAJES POR CATEGORIA
+'PRIVATE myarchivo AS File
+'PRIVATE mylinea AS String
+
+'Variable para almacenar el idioma en uso
+'........................................
+'Capture and almacenate the language in use
+Public language As String
+
+Public initialPicture As Picture
+
+Public Sub _new()
+
+Dim i As Integer
+
+Randomize 
+
+sonido = New Sound("Wallhit.wav") 'Instancia del objeto sonido  - Sound object instance
+aplauso = New Sound("applause.wav") 
+
+initialPicture = Picture["imagenes/inter.jpg"]
+
+  'IF NOT Access(system.Home &/"myarchivo.ini") THEN 
+   '   message ("no existe")
+   '   OPEN system.Home &/"myarchivo.ini" FOR CREATE AS myarchivo
+   '     'WHILE NOT Eof(myarchivo)
+   '        'LINE INPUT #myarchivo, mylinea
+   '        'message (mylinea)
+   '     'WEND
+   '   myarchivo.Save("hola")     
+   '     
+   '   CLOSE myarchivo
+  'END IF
+
+
+  'Se crea el array de objetos botones, esto con el fin de facilitar la manipulacion
+  'de eventos comunes a un grupo de botones.
+  '..................................................................................
+  'Create the buttons to be used for next game
+  botones = New Object[] 'Array of buttons
+  
+  For i = 1 To 64
+    boton = New Button(Me) As "grupobotones"
+    boton.tag = i - 1
+    'The button object array is created, it is for manipulate the common events to group buttons
+    botones.Add(boton) '
+  Next  
+
+  'Se crea este arreglo para tomar referencia de las foticos de los botones
+  'en el form fotos
+  '..........................................................................
+  'This array contain a reference for images to visualice in the game
+  botones_foticos = New Object[]
+  For i = 1 To 40
+    boton = New Button(Me)
+    boton.Visible = False
+    boton.Picture = Picture["imagenes/an" & CStr(i) & ".gif"]
+    botones_foticos.Add(boton)
+  Next
+  ' botones_foticos.Add(fotos.Button1)
+  ' botones_foticos.Add(fotos.Button2)
+  ' botones_foticos.Add(fotos.Button3)
+  ' botones_foticos.Add(fotos.Button4)
+  ' botones_foticos.Add(fotos.Button5)
+  ' botones_foticos.Add(fotos.Button6)
+  ' botones_foticos.Add(fotos.Button7)
+  ' botones_foticos.Add(fotos.Button8)
+  ' botones_foticos.Add(fotos.Button9)
+  ' botones_foticos.Add(fotos.Button10)
+  ' botones_foticos.Add(fotos.Button11)
+  ' botones_foticos.Add(fotos.Button12)
+  ' botones_foticos.Add(fotos.Button13)
+  ' botones_foticos.Add(fotos.Button14)
+  ' botones_foticos.Add(fotos.Button15)
+  ' botones_foticos.Add(fotos.Button16)
+  ' botones_foticos.Add(fotos.Button17)
+  ' botones_foticos.Add(fotos.Button18)
+  ' botones_foticos.Add(fotos.Button19)
+  ' botones_foticos.Add(fotos.Button20)
+  ' botones_foticos.Add(fotos.Button21)
+  ' botones_foticos.Add(fotos.Button22)
+  ' botones_foticos.Add(fotos.Button23)
+  ' botones_foticos.Add(fotos.Button24)
+  ' botones_foticos.Add(fotos.Button25)
+  ' botones_foticos.Add(fotos.Button26)
+  ' botones_foticos.Add(fotos.Button27)
+  ' botones_foticos.Add(fotos.Button28)
+  ' botones_foticos.Add(fotos.Button29)
+  ' botones_foticos.Add(fotos.Button30)
+  ' botones_foticos.Add(fotos.Button31)
+  ' botones_foticos.Add(fotos.Button32)
+  ' botones_foticos.Add(fotos.Button33)
+  ' botones_foticos.Add(fotos.Button34)
+  ' botones_foticos.Add(fotos.Button35)
+  ' botones_foticos.Add(fotos.Button36)
+  ' botones_foticos.Add(fotos.Button37)
+  ' botones_foticos.Add(fotos.Button38)
+  ' botones_foticos.Add(fotos.Button39)
+  ' botones_foticos.Add(fotos.Button40)
+'Pensaba permitir al usuario normal el cambio de las imagenes de los
+'botoncitos pero, parece mejor que el usuario que quiera modificar estos
+'dibujos, lo haga en el proyecto fuente
+'.......................................................................
+'Maybe is possible permit to user manipulate the images, but for now it is
+'done only by code
+tam_tablero = 4
+funciones.distrib(tam_tablero, 45)
+
+End
+
+Public Sub grupobotones_Click()
+   
+   Dim jugada_valida As Boolean
+   Dim continuar As Boolean
+   
+   'message(LAST.tag)
+   
+   continuar = True
+   'Se verifica si el tablero acepta jugadas, es decir si el juego esta en curso
+   '............................................................................
+   'Verify if board is active for game
+   If habilitar = True Then
+     'Antes que nada se comprueba que el boton pulsado no se haya jugado antes
+     'utilizo el atributo btnInicial.picture porque resulta sencillo comparar de esta forma si el cuadrito ya no tiene 
+     'el dibujo del signo de interrogacion
+     '............................................................................
+     'Comprobe is current pushed button haven't been discovered.
+     If (Last.picture <> initialPicture) Then
+       'Ojo, si el boton pulsado ya habia sido descubierto durante el primer movimiento de esta jugada
+       '...............................................................................................
+       'Inhabilite the movement for a button when it have been discovered.
+       continuar = False
+       message(("Jugada Errada"))
+     End If     
+     
+         If continuar Then        
+            sonar(1)
+                 
+            Last.picture = botones_foticos[funciones.devolver_indice_defotico(Last.tag)].picture
+              If funciones.num_movimiento_actual = 1 Then 'Se esta haciendo el segundo movimiento de una jugada
+              
+              'Se debe comparar la imagen, para saber si hubo coincidencia
+              '............................................................
+              'Compare the imagen for stablish if movement is correct
+              jugada_valida = funciones.comparar_botones_jugados(anterior_boton_jugado, Last.tag)
+              
+              'Se aumenta el contador de jugadas (cada jugada corresponde a 2 movimientos), se actualiza el label
+              '..................................................................................................
+              'Increase the play counter (each turne have two movements), label is refresh
+              funciones.jugadas = funciones.jugadas + 1 
+              lblJugadas.Caption = funciones.jugadas
+               
+               If jugada_valida Then
+                 sonar(2)
+                 'depuracion
+                 'ME.botones[LAST.tag].enabled=FALSE
+                 'ME.botones[anterior_boton_jugado].enabled=FALSE
+                 
+                 funciones.aciertos = funciones.aciertos + 1 'El jugador tuvo un acierto mas (player have acerted)
+                 'se verifica si el numero de aciertos indica el fin del juego, en todo caso el numero de aciertos para
+                 'finalizar el juego debe ser igual a pow(tam_tablero,2)/2, por ejemplo si el jugador escogio el nivel
+                 'experto, el tamaño del tablero sera de 8*8, entonces los aciertos necesarios para finalizar el juego son:
+                 '64/2=32
+                 '...................................................................................................
+                 'Verify numbers of acerts, for stablish the game end, for end the game acerts maybe be equal to
+                 'pow(tam_tablero,2)/2
+                 If funciones.aciertos = tam_tablero * tam_tablero / 2 Then
+                   timer2.Enabled = False 'se termina el conteo de tiempo                   
+                   message.Info(("Felicitaciones, has cumplido la mision"))
+                 End If
+               Else                 
+                 habilitar = False  
+                 boton_actual_paratimer = Last.tag
+                 boton_ultimo_paratimer = anterior_boton_jugado                 
+                 timer1.enabled = True                                                   
+               End If            
+              End If              
+            funciones.num_movimiento_actual = funciones.num_movimiento_actual + 1 'Se ha hecho un movimiento
+            'message(ultimo_boton_jugado) 
+            anterior_boton_jugado = Last.tag    
+            If funciones.num_movimiento_actual = 2 Then
+              funciones.num_movimiento_actual = 0 'Si se hizo el segundo movimiento, se reinicia el turno
+            End If
+         End If   
+   End If  
+   
+End
+
+
+Public Sub mnuConfiguracionSalir_Click()
+  Me.Close
+End
+
+
+Public Sub mnuConfiguracionNuevoJuego_Click()
+  Dim tam_botones As Integer 'para seleccionar el tamaño adecuado del boton de acuerdo al nivel de juego escogido
+                             'Choose the board size
+   
+  If tam_tablero = 8 Then
+    tam_botones = 40
+  Else
+    tam_botones = 45
+  End If    
+  funciones.distrib(tam_tablero, tam_botones)
+
+End
+
+
+Public Sub grupobotones_KeyPress()
+  
+  If key.code = key.f4 Then
+    habilitar = True
+    timer2.Enabled = True     
+    label5.caption = ("PULSE F2 PARA REPARTIR DE NUEVO")
+  End If
+  
+  
+
+End
+
+Public Sub Timer1_Timer()
+ 
+ 
+ timer1.Enabled = False
+ botones[boton_ultimo_paratimer].picture = initialPicture
+ botones[boton_actual_paratimer].picture = initialPicture
+ 'ME.Label5.Caption="anterior: " & anterior_boton_jugado & "    ultimo: " & ultimo_boton_jugado 
+ 'message("hola")
+ habilitar = True
+ 
+End
+
+'Habilita o deshabilita el menu sonido, esto permite posteriormente en el procedimiento sonar, escoger si se emiten o no
+'los sonidos
+'................................................................................................
+'Activate or desactivate the sound in menu Configuration.
+Public Sub mnuConfiguracionSonido_Click()
+  mnuConfiguracionSonido.Checked = Not mnuConfiguracionSonido.Checked
+End
+
+'Para emitir los sonidos, si el menu Sonido no esta checkeado, se omite el sonidito
+'..................................................................................
+'Play sound only if Sound configuration menu is checked
+Public Sub sonar(evento As Integer)
+  
+  If mnuConfiguracionSonido.Checked Then
+     If evento = 1 Then
+       sonido.Play()
+     End If
+     
+     If evento = 2 Then
+       aplauso.Play()
+     End If
+  End If 
+  
+End
+
+
+Public Sub Timer2_Timer()
+  'Este timer sirve para llevar la cuenta del tiempo de juego  
+  '..........................................................
+  'This timer count the game time
+  funciones.tiempo = funciones.tiempo + 1
+  lblTiempo.Caption = funciones.tiempo
+End
+
+Public Sub nivel_Click()
+
+  Last.checked = Not Last.checked
+  If Last.tag = "p" Then  
+    'message ("Has escogido el nivel Principiante")
+    mnuConfigNivelExp.Checked = False 
+    mnuConfigNivelMedio.Checked = False       
+    tam_tablero = 4
+    funciones.distrib(tam_tablero, 45)
+  End If
+
+  If Last.tag = "m" Then
+    mnuConfigNivelExp.Checked = False 
+    mnuConfigNivelPrinci.Checked = False       
+    'message ("Has escogido el nivel Medio")    
+    tam_tablero = 6
+    funciones.distrib(tam_tablero, 45)
+  End If  
+
+  If Last.tag = "e" Then
+    mnuConfigNivelPrinci.Checked = False 
+    mnuConfigNivelMedio.Checked = False       
+    'message ("Has escogido el nivel Experto, suerte jugadorazo!") 
+    tam_tablero = 8
+    funciones.distrib(tam_tablero, 40)
+  End If  
+
+  
+
+End
+
+Public Sub mnuAyudaAcerca_Click()
+  frmAcerca.ShowModal
+   
+End
+
+Public Sub mnuAyudaInstr_Click()
+
+  frmInstrucciones.ShowModal
+
+End
+
+
+
+' PUBLIC SUB mnuConfigIdiomaEspanol_Click()
+'   'Cambiar el idioma
+'   '..................
+'   'Set the language
+'   language = "espanol"
+'   mnuConfigIdiomaEnglish.Checked = FALSE
+'   mnuConfigIdiomaEspanol.Checked = NOT mnuConfigIdiomaEspanol.Checked
+'   'File.Save("language.txt","espanol")
+' 
+'   set_enviroment_language
+'   
+' END
+' 
+' PUBLIC SUB mnuConfigIdiomaEnglish_Click()
+'   'Cambiar el idioma
+'   '..................
+'   'Set the language
+'   language = "english"
+'   mnuConfigIdiomaEspanol.Checked = FALSE
+'   mnuConfigIdiomaEnglish.Checked = NOT mnuConfigIdiomaEnglish.Checked
+'   'File.Save("language.txt","espanol")
+'   set_enviroment_language 
+'   
+' END
+
+Public Sub Initialize()
+  
+  'El timer del contador de segundos ha de estar en ceros
+  '......................................................
+  'Restore the time game timer
+  Timer2.Enabled = False
+  
+  'Se inicializan los labels de conteo del juego
+  '.............................................
+  'Initialize labels
+  lblJugadas.Caption = 0
+  lblTiempo.Caption = 0
+  'Se actualiza el mensaje en la barra de estado
+  '..............................................
+  'Change message in status bar
+  Label5.caption = ("PULSE F4 PARA COMENZAR LA MISION")
+        
+  habilitar = False 'El jugador no puede descubrir las fichas hasta que pulse F4 
+                    '.........................................................
+                    'Enable game only when player press F4     
+  
+End

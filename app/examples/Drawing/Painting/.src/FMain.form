@@ -1,0 +1,195 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,118,89)
+  Arrangement = Arrange.Fill
+  { HSplit1 HSplit
+    MoveScaled(1,1,96,87)
+    { VBox1 VBox
+      MoveScaled(1,1,35,85)
+      Spacing = True
+      Margin = True
+      { Label3 Label
+        MoveScaled(1,1,19,3)
+        Font = Font["Bold"]
+        Text = ("Example")
+      }
+      { VBox2 VBox
+        MoveScaled(2,4,32,64)
+        AutoResize = True
+        { Exemple1 RadioButton optExample
+          Name = "Exemple1"
+          MoveScaled(0,0,31,3)
+          Tag = "1"
+          Text = ("Arc")
+          Value = True
+        }
+        { Exemple2 RadioButton optExample
+          Name = "Exemple2"
+          MoveScaled(0,3,31,3)
+          Tag = "2"
+          Text = ("Arc negative")
+        }
+        { Exemple3 RadioButton optExample
+          Name = "Exemple3"
+          MoveScaled(0,6,31,3)
+          Tag = "3"
+          Text = ("Clip")
+        }
+        { Exemple4 RadioButton optExample
+          Name = "Exemple4"
+          MoveScaled(0,9,31,3)
+          Tag = "4"
+          Text = ("Clip image")
+        }
+        { Exemple5 RadioButton optExample
+          Name = "Exemple5"
+          MoveScaled(0,12,31,3)
+          Tag = "5"
+          Text = ("Curve rectangle")
+        }
+        { Exemple6 RadioButton optExample
+          Name = "Exemple6"
+          MoveScaled(0,15,31,3)
+          Tag = "6"
+          Text = ("Curve to")
+        }
+        { Exemple7 RadioButton optExample
+          Name = "Exemple7"
+          MoveScaled(0,18,31,3)
+          Tag = "7"
+          Text = ("Dash")
+        }
+        { Exemple8 RadioButton optExample
+          Name = "Exemple8"
+          MoveScaled(0,21,31,3)
+          Tag = "8"
+          Text = ("Fill and stroke")
+        }
+        { Exemple9 RadioButton optExample
+          Name = "Exemple9"
+          MoveScaled(0,24,31,3)
+          Tag = "9"
+          Text = ("Fill style")
+        }
+        { Exemple10 RadioButton optExample
+          Name = "Exemple10"
+          MoveScaled(0,27,31,3)
+          Tag = "10"
+          Text = ("Gradient")
+        }
+        { Exemple11 RadioButton optExample
+          Name = "Exemple11"
+          MoveScaled(0,30,31,3)
+          Tag = "11"
+          Text = ("Image")
+        }
+        { Exemple12 RadioButton optExample
+          Name = "Exemple12"
+          MoveScaled(0,33,31,3)
+          Tag = "12"
+          Text = ("Image pattern")
+        }
+        { Exemple20 RadioButton optExample
+          Name = "Exemple20"
+          MoveScaled(0,36,31,3)
+          Tag = "20"
+          Text = ("Line widths")
+        }
+        { Exemple13 RadioButton optExample
+          Name = "Exemple13"
+          MoveScaled(0,39,31,3)
+          Tag = "13"
+          Text = ("Multi segment caps")
+        }
+        { Exemple19 RadioButton optExample
+          Name = "Exemple19"
+          MoveScaled(0,42,31,3)
+          Tag = "22"
+          Text = ("Rounded rectangle")
+        }
+        { Exemple14 RadioButton optExample
+          Name = "Exemple14"
+          MoveScaled(0,45,31,3)
+          Tag = "14"
+          Text = ("Set line cap")
+        }
+        { Exemple15 RadioButton optExample
+          Name = "Exemple15"
+          MoveScaled(0,48,31,3)
+          Tag = "15"
+          Text = ("Set line join")
+        }
+        { Exemple21 RadioButton optExample
+          Name = "Exemple21"
+          MoveScaled(0,51,31,3)
+          Tag = "21"
+          Text = ("SVG image")
+        }
+        { Exemple16 RadioButton optExample
+          Name = "Exemple16"
+          MoveScaled(0,54,31,3)
+          Tag = "16"
+          Text = ("Text")
+        }
+        { Exemple18 RadioButton optExample
+          Name = "Exemple18"
+          MoveScaled(0,57,31,3)
+          Tag = "18"
+          Text = ("Text clipping")
+        }
+        { Exemple17 RadioButton optExample
+          Name = "Exemple17"
+          MoveScaled(0,60,31,3)
+          Tag = "17"
+          Text = ("Text extents")
+        }
+      }
+      { Label1 Label
+        MoveScaled(2,69,19,3)
+        Font = Font["Bold"]
+        Text = ("Rotate")
+      }
+      { sldRotate Slider
+        MoveScaled(2,73,31,4)
+        MaxValue = 360
+      }
+      { Label2 Label
+        MoveScaled(2,77,19,3)
+        Font = Font["Bold"]
+        Text = ("Scale")
+      }
+      { sldScale Slider
+        MoveScaled(2,81,31,4)
+        MinValue = 100
+        MaxValue = 400
+      }
+    }
+    { Panel1 HBox
+      MoveScaled(40,2,56,73)
+      { TabStrip1 TabPanel
+        MoveScaled(6,0,49,72)
+        Expand = True
+        Arrangement = Arrange.Fill
+        Border = False
+        Count = 2
+        Index = 0
+        Text = ("Preview")
+        { DrawingArea1 DrawingArea
+          MoveScaled(3,1,38,45)
+          Background = &HFFFFFF&
+        }
+        Index = 1
+        Text = ("Source")
+        { Editor1 TextArea
+          MoveScaled(8,2,32,37)
+          Font = Font["Monospace,-1"]
+          Text = ("TextArea1")
+          ReadOnly = True
+          Border = False
+        }
+        Index = 0
+      }
+    }
+  }
+}

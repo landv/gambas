@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,84,50)
+  Text = ("Picture Informations")
+  Resizable = False
+  Utility = True
+  { btnClose Button
+    MoveScaled(66,44,15,4)
+    Text = ("&Close")
+    Default = True
+    Cancel = True
+  }
+  { btnDetails Button
+    MoveScaled(50,44,15,4)
+    Text = ("&More")
+  }
+  { ScrollView1 ScrollView
+    MoveScaled(1,2,82,41)
+    { txlExif TextLabel
+      MoveScaled(0,0,81,37)
+      Background = &HFFFCCC&
+    }
+  }
+}

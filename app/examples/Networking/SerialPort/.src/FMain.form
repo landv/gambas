@@ -1,0 +1,189 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,102,80)
+  Text = ("RS232 Serial port example")
+  Icon = Picture["serialport.png"]
+  Arrangement = Arrange.Vertical
+  { MenuFile Menu
+    Text = ("File")
+    { MenuExit Menu
+      Text = ("Exit")
+    }
+  }
+  { MenuHelp Menu
+    Text = ("Help")
+    { MenuAbout Menu
+      Text = ("About")
+    }
+  }
+  { !TextArea1 TextArea
+    MoveScaled(1,1,98,30)
+    #Public = True
+    Font = Font["Monospace,+2"]
+    Expand = True
+    Text = ("TextArea1")
+    Alignment = Align.Left
+    ReadOnly = True
+    Border = False
+  }
+  { !SerialPort1 #SerialPort
+    #MoveScaled(75,4)
+    #Public = True
+    Parity = SerialPort.Even
+    Speed = 75
+    DataBits = SerialPort.Bits5
+  }
+  { Separator1 Separator
+    MoveScaled(42,32,16,0)
+  }
+  { panSend HBox
+    MoveScaled(2,34,98,12)
+    { TextArea2 TextArea
+      MoveScaled(0,0,77,12)
+      Font = Font["Monospace,+2"]
+      Expand = True
+      Text = ("TextArea2")
+      Alignment = Align.Left
+      Border = False
+    }
+    { Panel1 VBox
+      MoveScaled(78,1,17,10)
+      Background = Color.TextBackground
+      Margin = True
+      { Panel4 Panel
+        MoveScaled(5,1,6,2)
+        Expand = True
+      }
+      { btnSend Button
+        MoveScaled(0,4,15,5)
+        Text = ("Send")
+        Picture = Picture["icon:/medium/redo"]
+      }
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(16,48,16,0)
+  }
+  { Panel3 HBox
+    MoveScaled(3,50,98,26)
+    Spacing = True
+    { Panel2 Panel
+      MoveScaled(0,0,48,26)
+      { Label5 Label
+        MoveScaled(1,17,10,4)
+        Text = ("Parity")
+      }
+      { Label4 Label
+        MoveScaled(1,13,10,4)
+        Text = ("Stopbits")
+      }
+      { Label3 Label
+        MoveScaled(1,9,10,4)
+        Text = ("Bits")
+      }
+      { Label2 Label
+        MoveScaled(1,5,10,4)
+        Text = ("Baud")
+      }
+      { Label1 Label
+        MoveScaled(1,1,10,4)
+        Text = ("Device")
+      }
+      { !ComboPortDeviceName ComboBox
+        MoveScaled(12,1,17,4)
+        #Public = True
+      }
+      { !ComboSpeed ComboBox
+        MoveScaled(12,5,17,4)
+        #Public = True
+        ReadOnly = True
+        List = [("50"), ("75"), ("100"), ("150"), ("200"), ("300"), ("600"), ("1200"), ("2400"), ("4800"), ("9600"), ("19200"), ("38400")]
+        Text = ("9600")
+      }
+      { !ComboDataBits ComboBox
+        MoveScaled(12,9,17,4)
+        #Public = True
+        ReadOnly = True
+        List = [("5"), ("6"), ("7"), ("8")]
+        Text = ("8")
+      }
+      { !ComboStopBits ComboBox
+        MoveScaled(12,13,17,4)
+        #Public = True
+        ReadOnly = True
+        List = [("1"), ("2")]
+        Text = ("1")
+      }
+      { !ComboParity ComboBox
+        MoveScaled(12,17,17,4)
+        #Public = True
+        ReadOnly = True
+        List = [("None"), ("Even"), ("Odd")]
+        Text = ("N")
+      }
+      { !ComboHandShake ComboBox
+        MoveScaled(12,21,17,4)
+        #Public = True
+        ReadOnly = True
+        List = [("NONE"), ("CRTSCTS"), ("XON/XOFF"), ("CRTSCTS + XON/XOFF")]
+      }
+      { !CheckDCD CheckBox
+        MoveScaled(31,14,9,3)
+        #Public = True
+        Text = ("DCD")
+      }
+      { !CheckDSR CheckBox
+        MoveScaled(31,11,9,3)
+        #Public = True
+        Text = ("DSR")
+      }
+      { !CheckCTS CheckBox
+        MoveScaled(31,8,9,3)
+        #Public = True
+        Text = ("CTS")
+      }
+      { !CheckDTR CheckBox
+        MoveScaled(31,5,9,3)
+        #Public = True
+        Text = ("DTR")
+      }
+      { !CheckRTS CheckBox
+        MoveScaled(31,2,9,3)
+        #Public = True
+        Text = ("RTS")
+      }
+      { !ButtonChange Button
+        MoveScaled(31,21,15,4)
+        #Public = True
+        Text = ("Change")
+      }
+      { !CheckRNG CheckBox
+        MoveScaled(31,17,9,3)
+        #Public = True
+        Text = ("RNG")
+      }
+      { Label6 Label
+        MoveScaled(1,21,10,4)
+        Text = ("Handshake")
+      }
+    }
+    { Separator3 Separator
+      MoveScaled(53,7,0,14)
+    }
+    { Panel5 VBox
+      MoveScaled(60,1,36,24)
+      Expand = True
+      Margin = True
+      { Label7 Label
+        MoveScaled(2,1,16,3)
+        Font = Font["Bold"]
+        Text = ("Message")
+      }
+      { txtMessage TextLabel
+        MoveScaled(0,10,35,13)
+        Expand = True
+      }
+    }
+  }
+}

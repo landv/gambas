@@ -1,0 +1,176 @@
+' Gambas class file
+
+Private Waiting As Boolean
+Private $iId As Integer
+
+Public Sub btnListen_Click()
+  
+  If cmbType.Index = 0 Then
+    'TCP
+    MyServerSocket.Type = Net.Internet
+    ' The port to listen to
+    MyServerSocket.Port = Val(txtPort.Text)
+    ' we start listening
+    MyServerSocket.Listen(cmbMaxClient.Index)
+  Else
+    ' UNIX
+    MyServerSocket.Type = Net.Local ' You could also use Net.Unix
+    MyServerSocket.Path = txtPath.Text
+    MyServerSocket.Listen(cmbMaxClient.Index)
+  End If
+  If MyServerSocket.Status = Net.Active Then 
+    ' listening
+    btnListen.Enabled = False
+    btnClose.Enabled = True
+    cmbMaxClient.Enabled = False
+    cmbType.Enabled = False
+    txtPath.Enabled = False
+  End If
+  
+End
+
+Public Sub MyServerSocket_Error()
+  
+  Message.Error("Unable to bind socket")
+  
+End
+
+Public Sub MyServerSocket_Connection(sHost As String)
+  '*******************************
+  ' A client has arrived!
+  ' let's accept it
+
+  Dim Obj As Socket
+
+  If MyServerSocket.Status <= Net.Inactive Then Return
+  If cmbType.Index = 0 Then
+    txtLog.Text = txtLog.Text & "Connection request from : " & sHost & Chr(13) & Chr(10)
+  Else
+    txtLog.Text = txtLog.Text & "Connection request accepted" & Chr(13) & Chr(10)
+  End If
+  
+  Obj = MyServerSocket.Accept()
+  Obj.Blocking = False
+  Inc $iId
+  Obj.Tag = [$iId, 0, ""]
+  
+  If Obj.Status = Net.Connected And cmbType.Index = 0 Then
+    txtLog.Text = txtLog.Text & "Connection from " & Obj.RemoteHost & ":" & Obj.RemotePort & " accepted (local port " & Obj.LocalPort & ")" & Chr(13) & Chr(10) 
+  End If
+  
+End
+
+Public Sub Socket_Write()
+  
+  Dim hSocket As Socket = Last
+  Dim iInd As Integer
+  
+  'Debug hSocket;; hSocket.Tag
+  iInd = hSocket.Tag[1]
+  If iInd < 0 Then Return
+  
+  Do
+    Inc iInd
+    If iInd > 10 Then
+      hSocket.Tag[1] = -1
+      Return
+    Endif
+    
+    'Debug iInd
+    Try Print #hSocket, iInd & ":" & hSocket.Tag[2] & Space$(512) & "\n";
+    If Error Then 
+      Debug Error.Text
+      Break
+    Endif
+  Loop
+  
+  hSocket.Tag[1] = iInd
+  
+Catch
+  
+End
+
+Public Sub Socket_Read()
+
+  Dim sBuf As String
+  Dim iInd As Integer
+  
+  '******************************
+  ' When some data arrives to
+  ' our server, we respond with
+  ' an echo
+  '*****************************
+  
+  If Last.Status <> Net.Connected Then Return
+  Read #Last, sBuf, Lof(Last)
+  txtLog.Text &= "Socket #" & Last.Tag[0] & " --> " & sBuf & "\n"
+  
+  Last.Tag[1] = 0
+  Last.Tag[2] = sBuf
+  
+  Socket_Write
+  
+End
+
+Public Sub Socket_Ready()
+  
+  txtLog.Text &= "-- Client working --\n"
+  
+End
+
+Public Sub Socket_Closed()
+  
+  txtLog.Text &= "Client #" & Last.Tag[0] & " Closed\n"
+
+End
+
+Public Sub Form_Open()
+  
+  txtPath.Text = Application.Path & "/" & "gambas"
+  txtPath.Enabled = False
+  TextLabel3.Text = "Path"
+  
+End
+
+Public Sub btnClose_Click()
+  
+  MyServerSocket.Close()
+  btnClose.Enabled = False
+  btnListen.Enabled = True
+  cmbMaxClient.Enabled = True
+  cmbType.Enabled = True
+  cmbType_Click()
+  
+End
+
+Public Sub Form_Close()
+  
+  ' We have to be sure of closing the server before exiting
+  MyServerSocket.Close()
+  
+End
+
+Public Sub btnPause_Click()
+  
+  If Waiting Then
+    MyServerSocket.Resume()
+    btnPause.Text = "Pause"
+  Else
+    MyServerSocket.Pause()
+    btnPause.Text = "Resume"
+  End If
+  Waiting = Not Waiting
+  
+End
+
+Public Sub cmbType_Click()
+  
+  If cmbType.Index = 0 Then
+    txtPort.Enabled = True
+    txtPath.Enabled = False
+  Else
+    txtPort.Enabled = False
+    txtPath.Enabled = True
+  End If
+  
+End

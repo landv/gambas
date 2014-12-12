@@ -1,0 +1,133 @@
+' Gambas class file
+
+Private sldTime As DrawingArea
+Private lblTime As DrawingArea
+
+Private $sInfo As String
+Private $iMinOpacity As Integer = 70
+Private $sTitle As String
+
+Public Sub SetMinOpacity(iOpacity As Integer)
+  
+  $iMinOpacity = iOpacity
+  If Me.Opacity < $iMinOpacity Then
+    CAnimation.Start(Me, "Opacity", $iMinOpacity, 250)
+  Endif
+  
+End
+
+
+Public Sub _new()
+
+  panToolbar.H = 48 + Desktop.Scale * 2
+
+  FMain.CreateButtons(["eject", "video", "config", "play", "pause", "stop", "screenshot", "fullscreen", "subtitle", "visualisation", "-"], panToolbar)
+  
+  sldTime = New DrawingArea(panToolbar) As "sldTime"
+  sldTime.Resize(8, 8)
+  sldTime.Expand = True
+  sldTime.Tracking = True
+  sldTime.Mouse = Mouse.Pointing
+  
+  lblTime = New DrawingArea(panToolbar) As "lblTime"
+  lblTime.Resize(8, 8)
+  lblTime.Font = Font["Bold,+5"]
+  lblTime.W = lblTime.Font.TextWidth("99:99:99 / 99:99:99") + 16
+  
+  FMain.CreateButtons(["-", "volume", "quit"], panToolbar)
+  
+  Me.H = 48 + Desktop.Scale * 6 + lblTitle.Font.Height
+  Me.Arrangement = Arrange.Vertical
+  panToolbar.Arrangement = Arrange.Horizontal
+  
+  FMain.GetButton("visualisation").Font = Font["-2"]
+  
+End
+
+Public Sub lblTime_Draw()
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  Paint.Font = lblTime.Font
+  Paint.DrawText($sInfo, 0, 0, Paint.W, Paint.H, Align.Center)
+  
+End
+
+Public Sub sldTime_Draw()
+  
+  Dim fLength As Float = FMain.GetLength()
+  If fLength = 0 Then Return
+  
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
+  Paint.Rectangle(0, (Paint.H - 16) / 2, Paint.W, 16)
+  Paint.Fill
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 128))
+  Paint.Rectangle(0, (Paint.H - 16) / 2, Paint.W * FMain.GetPos() / fLength, 16)
+  Paint.Fill
+  
+End
+
+Public Sub sldTime_MouseDown()
+  
+  If Mouse.Left Then FMain.SetPos(Mouse.X / sldTime.W)
+  
+End
+
+Public Sub sldTime_MouseMove()
+  
+  If Mouse.Left Then FMain.SetPos(Mouse.X / sldTime.W)
+  
+End
+
+Public Sub SetInfo(sInfo As String)
+  
+  $sInfo = sInfo
+  lblTime.Refresh
+  sldTime.Refresh
+  
+End
+
+Public Sub Form_KeyPress()
+
+  FMain.Form_KeyPress
+
+End
+
+Public Sub SetTitle(sTitle As String)
+  
+  $sTitle = sTitle
+  lblTitle.Text = sTitle
+  lblTitle.Foreground = &HBFBFBF&
+  
+End
+
+Public Sub SetError(sError As String)
+  
+  If lblTitle.Foreground = Color.Red Then
+    sError = Trim(lblTitle.Text & " " & sError)
+  Endif
+  
+  lblTitle.Text = sError
+  lblTitle.Foreground = Color.Red
+  timError.Start
+  
+End
+
+Public Sub timError_Timer()
+  
+  SetTitle($sTitle)
+  timError.Stop
+  
+End
+
+
+' Public Sub Form_Move()
+' 
+'   Debug Me.X;; Me.Y;; Me.W;; Me.H;; "->";; Me.Y + Me.H
+' 
+' End
+' 
+' Public Sub Form_Resize()
+' 
+'   Debug Me.X;; Me.Y;; Me.W;; Me.H;; "->";; Me.Y + Me.H
+' 
+' End

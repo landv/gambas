@@ -1,0 +1,80 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,113,87)
+  Icon = Picture[".hidden/mapviewer.png"]
+  Arrangement = Arrange.Vertical
+  { Panel1 HBox
+    MoveScaled(1,9,97,55)
+    Expand = True
+    { MapView1 MapView
+      MoveScaled(8,9,16,16)
+      Expand = True
+      AllowEffect = False
+    }
+    { Separator1 Separator
+      MoveScaled(64,9,0,18)
+    }
+    { VBox1 VBox
+      MoveScaled(67,6,29,45)
+      { Panel3 VBox
+        MoveScaled(1,1,26,29)
+        Expand = True
+        { Label2 Label
+          MoveScaled(0,0,23,4)
+          Font = Font["Underline"]
+          Background = Color.TextBackground
+          Foreground = Color.TextForeground
+          Padding = 4
+          Text = ("Layers")
+        }
+        { GridView1 GridView
+          MoveScaled(0,7,25,21)
+          Expand = True
+          Border = False
+          Mode = Select.Single
+          Grid = False
+        }
+      }
+      { Separator2 Separator
+        MoveScaled(3,32,11,0)
+      }
+      { hbLens Panel
+        MoveScaled(0,36,31,5)
+        Visible = False
+        Background = &H007FFF&
+        Foreground = &HFFFFFF&
+        Arrangement = Arrange.Horizontal
+        AutoResize = True
+        Margin = True
+        Padding = 5
+        Border = Border.Plain
+        { Label1 Label
+          MoveScaled(0,1,12,3)
+          Font = Font["Bold"]
+          Text = ("Lens zoom")
+        }
+        { SpinBox1 SpinBox
+          MoveScaled(14,0,12,5)
+          Expand = True
+          MaxValue = 3
+          Value = 1
+        }
+      }
+      { btnAbout Button
+        MoveScaled(1,40,27,5)
+        Text = ("&About...")
+        Border = False
+      }
+    }
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,65,111,12)
+    Font = Font["Bold"]
+    Background = &HFF7F00&
+    Foreground = &HFFFFFF&
+    Padding = 8
+    AutoResize = True
+    Text = ("Welcome to this Gambas Map component demo.<br>\n<br>\nUse your mouse to drag the map with the left button and zoom with the wheel button.<br>\nA little extra is here to: use CTRL + mouse left button on the map and see what happens ;-) .")
+  }
+}

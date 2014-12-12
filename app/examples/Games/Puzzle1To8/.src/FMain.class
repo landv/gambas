@@ -1,0 +1,111 @@
+' Gambas class file
+
+'    Copyright(C)2010. Autor: Pablo Mileti  
+
+'This program Is free software: you can redistribute it And / Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option)any later version.
+
+'This program Is distributed In the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty Of MERCHANTABILITY Or FITNESS For A PARTICULAR PURPOSE.See the GNU General Public License For more details.
+
+'You should have received a Copy Of the GNU General Public License along With this program.IfNot, see < http: / / www.gnu.org / licenses / > .
+
+
+
+'****English documentation*****
+'Public sub
+'Winner() ---> Procedure to Finish the game and write a congratulation message!
+'updateBoxes()---> Rewrite the values in each box to compare with the last value wrote. If it presents conflict, mark it with red color.
+
+
+'* * * * * Documentación en español ******
+'Public sub
+'Winner() ---> Ha ganado el juego, finalizarlo y felicitar!
+'updateBoxes()---> Volver a escribir los valores en cada casillero para que se compare con el ultimo valor ingresado y se coloree si ha conflicto
+
+
+Public Game As Esquema
+
+Public Sub Form_Open()
+  Game = New Esquema
+  Me.Window.Center
+End
+
+Public Sub TXT_Change()
+  Dim value As Integer
+  If Last.text = "" Then
+    value = 0
+  Else
+    value = Val(Last.text)
+  End If
+  Game.Set(Last.tag, value)
+  updateBoxes()
+  If Game.isWin() Then Winner()
+End
+
+Public Sub TXT_KeyPress()
+  If Not (Key.code = Key.BackSpace Or Key.code = Key.Delete Or Key.Code = Key.F10) Then 
+    If InStr("12345678", Key.Text) = 0 Then Stop Event
+  End If
+End
+
+Public Sub MnuReiniciar_Click()
+  Dim control As Object
+  Game = New Esquema
+  For Each control In Me.Children
+    If Object.Type(control) = "TextBox" Then
+      control.text = ""
+      control.foreground = &H000000& 
+      control.background = &HFFFFFF&
+      control.enabled = True
+    End If
+  Next
+  Me.Title = ("Puzzle 1 to 8 - Locate the numbers!")
+End
+
+Public Sub MnuSalir_Click()
+  Me.Close
+End
+
+Public Sub Form_Close()
+  If Message.Question(("Are you sure?"), ("Yes"), ("No")) = 2 Then
+    Stop Event
+  End If
+End
+
+Public Sub MnuAutor_Click()
+  FrmAbout.Showmodal()
+End
+
+Public Sub MnuComoJugar_Click()
+  FrmAyuda.Show()
+End
+
+Public Sub Winner()
+  Dim control As Object
+  For Each control In Me.Children
+    If Object.Type(control) = "TextBox" Then
+      control.background = &FFFF9F&
+      control.enabled = False
+    End If
+  Next
+  Me.Title = ("Congratulations! You did it!")
+End
+
+Private Sub updateBoxes()
+  Dim control As Object
+  Dim value As Integer
+  For Each control In Me.Children
+    If Object.Type(control) = "TextBox" Then
+      If control.text = "" Then
+        value = 0
+      Else
+        value = Val(control.text)
+      End If
+      If Game.Set(control.tag, value) Then 
+          control.foreground = &HFF0000& 
+      Else
+          control.foreground = &000000&
+      End If
+   End If
+  Next
+End
+

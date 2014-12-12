@@ -1,0 +1,256 @@
+' Gambas module file
+
+Private hWebCam As VideoDevice
+Private Const ScrWidth As Integer = 640
+Private Const ScrHeight As Integer = 480
+
+' Needed for frame count
+Private Frames As Integer
+Private CTime As Float
+
+' Rotations
+Private xrot As Float
+Private yrot As Float
+Private zrot As Float
+
+' texture
+Private textures As New Integer[]
+Private Screen As New Window(True) As "Screen"
+
+Private logo As Image
+Private tmpLogo As Image
+Private hTimer As New Timer As "Timer1"
+Private count As Integer
+Private UpdateLogo As Boolean
+
+Public Sub Main()
+
+   Try hWebCam = New VideoDevice("/dev/video0")
+    If Error Then
+    Print ("Unable to open video device")
+    Return
+
+  End If
+  hWebCam.Hue = 10
+  hWebCam.Color = 10
+  hWebcam.Resize(320, 240)
+  
+  logo = hWebCam.Image
+  logo.Resize(256, 256)
+  
+  screen.Width = ScrWidth
+  screen.Height = ScrHeight
+  Screen.show()
+  Screen.Resizable = True
+  InitGL()
+  textures = Gl.GenTextures(1)
+  LoadTextures()
+  Screen_resize()
+  CTime = Timer()
+  hTimer.Delay = 200
+  hTimer.Enabled = True
+
+End
+
+Public Sub LoadTextures()
+
+  Gl.BindTexture(gl.TEXTURE_2D, textures[0])
+  Gl.TexImage2D(logo)
+  Gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  Gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+
+End
+
+Public Sub InitGL()
+
+  ' Enable smooth shading
+  Gl.ShadeModel(gl.SMOOTH)
+  ' Set the background black
+  Gl.ClearColor(0.0, 0.0, 0.0, 0.5)
+  ' Depth buffer setup
+  Gl.ClearDepth(1.0)
+  ' Enables Depth Testing
+  Gl.Enable(gl.DEPTH_TEST)
+  ' Enable texturing
+  Gl.Enable(gl.TEXTURE_2D)
+  ' The Type OF Depth Test TO DO
+  Gl.DepthFunc(gl.LESS)
+  ' Really Nice Perspective Calculations
+  Gl.Hint(gl.PERSPECTIVE_CORRECTION_HINT, gl.NICEST)
+
+End
+
+Public Sub Screen_close()
+
+  ' Delete textures if needed
+  If (textures.count > 0) Then Gl.DeleteTextures(textures)
+
+End
+
+Public Sub Screen_resize()
+
+  ' Width/Height Ratio
+  Dim ratio As Float
+  Dim Height As Integer
+
+  Height = Screen.Height
+  ' Protect against a divide by zero
+  If Height = 0 Then Height = 1
+
+  ratio = Screen.Width / Height
+
+  ' Setup our viewport
+  Gl.Viewport(0, 0, Screen.Width, Screen.Height)
+  ' change to the projection matrix AND set our viewing volume.
+  Gl.MatrixMode(gl.PROJECTION)
+  Gl.LoadIdentity()
+
+  ' Set our perspective
+  Glu.Perspective(45.0, ratio, 0.1, 100.0)
+
+  ' Make sure we're changing the model view and not the projection
+  Gl.MatrixMode(gl.MODELVIEW)
+  GL.LoadIdentity()
+
+End
+
+Public Sub Screen_Draw()
+
+  Dim calc As Float
+  Inc count
+  If UpdateLogo Then 
+    'count = 0
+    'logo = tmpLogo
+    logo.Resize(256, 256)
+    LoadTextures()
+    UpdateLogo = False
+  Endif
+  
+  Gl.Clear(gl.COLOR_BUFFER_BIT Or gl.DEPTH_BUFFER_BIT)
+
+  Gl.LoadIdentity()
+  Gl.Translatef(0.0, 0.0, -5.0)
+
+  Gl.Rotatef(xrot, 1.0, 0.0, 0.0) ' Rotate On The X Axis
+  Gl.Rotatef(yrot, 0.0, 1.0, 0.0) ' Rotate On The Y Axis
+  Gl.Rotatef(zrot, 0.0, 0.0, 1.0) ' Rotate On The Z Axis
+
+  ' Select our texture
+  Gl.BindTexture(gl.TEXTURE_2D, textures[0])
+
+  Gl.Begin(gl.QUADS)
+    ' front face
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 1.0)
+    Gl.Vertex3f(-1.0, -1.0, 1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 1.0)
+    Gl.Vertex3f(1.0, -1.0, 1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 0.0)
+    Gl.Vertex3f(1.0, 1.0, 1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 0.0)
+    Gl.Vertex3f(-1.0, 1.0, 1.0)
+
+    ' Back face
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 0.0)
+    Gl.Vertex3f(-1.0, -1.0, -1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 1.0)
+    Gl.Vertex3f(-1.0, 1.0, -1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 1.0)
+    Gl.Vertex3f(1.0, 1.0, -1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 0.0)
+    Gl.Vertex3f(1.0, -1.0, -1.0)
+
+    ' Top face
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 1.0)
+    Gl.Vertex3f(-1.0, 1.0, -1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 0.0)
+    Gl.Vertex3f(-1.0, 1.0, 1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 0.0)
+    Gl.Vertex3f(1.0, 1.0, 1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 1.0)
+    Gl.Vertex3f(1.0, 1.0, -1.0)
+
+    ' Bottom ace
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 1.0)
+    Gl.Vertex3f(-1.0, -1.0, -1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 1.0)
+    Gl.Vertex3f(1.0, -1.0, -1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 0.0)
+    Gl.Vertex3f(1.0, -1.0, 1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 0.0)
+    Gl.Vertex3f(-1.0, -1.0, 1.0)
+
+    ' Right face
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 0.0)
+    Gl.Vertex3f(1.0, -1.0, -1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 1.0)
+    Gl.Vertex3f(1.0, 1.0, -1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 1.0)
+    Gl.Vertex3f(1.0, 1.0, 1.0)
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 0.0)
+    Gl.Vertex3f(1.0, -1.0, 1.0)
+
+    ' Left face
+    ' Bottom Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 0.0)
+    Gl.Vertex3f(-1.0, -1.0, -1.0)
+    ' Bottom Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 0.0)
+    Gl.Vertex3f(-1.0, -1.0, 1.0)
+    ' Top Right OF The Texture AND Quad
+    Gl.TexCoord2f(0.0, 1.0)
+    Gl.Vertex3f(-1.0, 1.0, 1.0)
+    ' Top Left OF The Texture AND Quad
+    Gl.TexCoord2f(1.0, 1.0)
+    Gl.Vertex3f(-1.0, 1.0, -1.0)
+
+  Gl.End()
+
+  Inc (Frames)
+  If (Timer() > CTime + 5) Then
+    calc = Timer() - CTime
+    Print CStr(Frames) & " frames in " & Format$(calc, "#.0") & " seconds = " & Format$((Frames / calc), "######.000") & " FPS"
+    Frames = 0
+    CTime = Timer()
+  Endif
+
+  xrot += 0.3 ' X Axis Rotation
+  yrot += 0.2 ' Y Axis Rotation
+  zrot += 0.4 ' Z Axis Rotation
+  Sleep 0.05
+
+End
+
+Public Sub Screen_keyPress()
+
+  If key.Code = key.F1 Then Screen.Fullscreen = Not Screen.Fullscreen
+  If key.Code = key.Esc Then Screen.Close()
+
+End
+
+Public Sub Timer1_Timer()
+  
+ logo = hWebCam.Image
+ 
+  UpdateLogo = True
+
+End

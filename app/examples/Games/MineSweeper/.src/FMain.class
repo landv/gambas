@@ -1,0 +1,249 @@
+' Gambas class file
+
+Private img_cover As Picture = Picture.Load("image/cover.png")
+Private img_cover_hovered As Picture = Picture.Load("image/coveron.png")
+Private img_false As Picture = Picture.Load("image/false.png")
+Private img_flag As Picture = Picture.Load("image/flag.png")
+Private img_face_normal As Picture = Picture.Load("image/expr_normal.png")
+Private img_face_win As Picture = Picture.Load("image/expr_win.png")
+Private img_face_lose As Picture = Picture.Load("image/expr_lose.png")
+Private img_face_o As Picture = Picture.Load("image/expr_o.png")
+Private img_mine As Picture
+Private img_num[10] As Picture
+
+Private dlgSettings As FSettings = New FSettings
+
+Private game_width As Integer = 20
+Private game_height As Integer = 15
+Private game_mines As Integer = game_width * game_height / 10
+
+Private game As MineSweeperGame
+Private blocks As PictureBox[]
+
+Private play_time As Integer = 0
+
+Public Sub _new()
+   ' img_num[0] is none, img_num[9] is mine
+   ' img_num[1~8] is the number of adjacent mines
+   ' load number images
+   Dim i As Integer
+   Dim a As Integer[]
+   img_num[0] = Picture.Load("image/empty.png")
+   img_num[9] = Picture.Load("image/mine.png")
+   For i = 1 To 8
+      img_num[i] = Picture.Load("image/number_" & Str(i) & ".png")
+   Next
+   img_mine = img_num[9]
+   
+   btnStatus.Resize(img_face_normal.Width + 10, img_face_normal.Height + 10)
+   btnStatus.Picture = img_face_normal
+   
+   Timer1.Enabled = False
+End
+
+' ----- Window Events -----
+
+Public Sub Form_Open()
+   ReDimGame(game_width, game_height, game_mines)
+   'Me.Maximized = True
+End
+
+' Public Sub Form_Resize()
+'    adjust_components()
+' End
+
+Public Sub Block_MouseDown()
+   Dim index As Integer = Last.Tag
+   Dim x As Integer = index Mod game_width
+   Dim y As Integer = index / game_width
+   
+   If Mouse.Left Then
+      If game.Status = game.GAME_STARTED And game.GetBlockStatus(x, y) = game.BLOCK_COVERED Then
+         btnStatus.Picture = img_face_o
+      Endif
+   Endif
+End
+
+
+Public Sub Block_MouseUp()
+   Dim index As Integer = Last.Tag
+   Dim x As Integer = index Mod game_width
+   Dim y As Integer = index / game_width
+   'Message("Clicked (" & x & "," & y & ")")
+   
+   If game.Status = game.GAME_STARTED Then
+      btnStatus.Picture = img_face_normal
+   Endif
+   
+   ' Skip the event if the mouse button is released outside the block it is pressed
+   If Mouse.X > blocks[0, 0].Width Or Mouse.y > blocks[0, 0].Height Then Return
+   If Mouse.X < 0 Or Mouse.y < 0 Then Return
+
+   If Mouse.Right Then
+      game.ToggleFlag(x, y)
+   Else If Mouse.Left Then
+      game.OpenBlock(x, y)
+   Endif
+End
+
+' highlight the block under cursor
+Public Sub Block_Enter()
+   Dim index As Integer = Last.Tag
+   Dim x As Integer = index Mod game_width
+   Dim y As Integer = index / game_width
+   
+   If game.Status = game.GAME_WIN Or game.Status = game.GAME_LOSE Then Return
+   
+   If game.GetBlockStatus(x, y) = game.BLOCK_COVERED Then
+      blocks[x, y].Picture = img_cover_hovered
+   Endif
+End
+
+' un-highlight the block under cursor
+Public Sub Block_Leave()
+   Dim index As Integer = Last.Tag
+   Dim x As Integer = index Mod game_width
+   Dim y As Integer = index / game_width
+   
+   If game.Status = game.GAME_WIN Or game.Status = game.GAME_LOSE Then Return
+   
+   If game.GetBlockStatus(x, y) = game.BLOCK_COVERED Then
+      blocks[x, y].Picture = img_cover
+   Endif
+End
+
+Public Sub btnStatus_Click()
+   game.Reset()
+End
+
+Public Sub Game_OnStart()
+   Timer1.Enabled = True
+End
+
+Public Sub Game_OnEnd()
+   Timer1.Enabled = False
+End
+
+Public Sub Game_OnRefresh()
+   Dim x, y As Integer
+   Dim s As Integer
+   For x = 0 To game.Width - 1
+      For y = 0 To game.Height - 1
+         Select Case game.Status
+            Case game.GAME_READY
+               blocks[x, y].Picture = img_cover
+               btnStatus.Picture = img_face_normal
+               play_time = 0          ' reset the timer
+               Timer1.Enabled = False
+               refresh_timebox()
+            Case game.GAME_STARTED
+               s = game.GetBlockStatus(x, y)
+               If s = game.BLOCK_COVERED Then
+                  blocks[x, y].Picture = img_cover
+               Else If s = game.BLOCK_FLAGGED Then
+                  blocks[x, y].Picture = img_flag
+               Else
+                  blocks[x, y].picture = img_num[game.GetBlockNumber(x, y)]
+               Endif
+            Case game.GAME_WIN, game.GAME_LOSE
+               If game.GetBlockStatus(x, y) = game.BLOCK_FLAGGED Then
+                  If game.GetBlockNumber(x, y) = game.NUM_MINE Then
+                     blocks[x, y].Picture = img_flag
+                  Else
+                     blocks[x, y].Picture = img_false
+                  Endif
+               Else  ' the block has been uncovered
+                  blocks[x, y].Picture = img_num[game.GetBlockNumber(x, y)]
+               Endif
+               btnStatus.Picture = IIf(game.Status = game.GAME_WIN, img_face_win, img_face_lose)
+         End Select
+      Next
+   Next
+   refresh_flagbox()
+End
+
+Public Sub Timer1_Timer()
+   play_time += 1
+   refresh_timebox()
+End
+
+Public Sub menuQuit_Click()
+   Me.Close()
+End
+
+Public Sub menuReDim_Click()
+   dlgSettings.FieldWidth = game_width
+   dlgSettings.FieldHeight = game_height
+   dlgSettings.MineCount = game_mines
+   If dlgSettings.ShowModal() Then
+      game_width = dlgSettings.FieldWidth
+      game_height = dlgSettings.FieldHeight
+      game_mines = dlgSettings.MineCount
+      ReDimGame(game_width, game_height, game_mines)
+   Endif
+End
+
+
+
+' ----- Private Functions -----
+
+
+' Generate the a width x height board and adjust control positions
+Private Sub ReDimGame(width As Integer, height As Integer, mines As Integer) 
+   Dim x, y As Integer
+   Dim blk As PictureBox
+   
+   blocks = New PictureBox[width, height]
+   
+   For x = 0 To width - 1
+      For y = 0 To height - 1
+         blk = New PictureBox(panelBoard)
+         With blk
+            .Picture = img_cover
+            .Resize(img_cover.Width, img_cover.Height)
+            .Move(x * .Width, y * .Height)
+            .Tag = x + y * width
+            Object.Attach(blk, Me, "Block")
+         End With
+         blocks[x, y] = blk
+      Next
+   Next
+   
+   game = New MineSweeperGame(width, height, mines)
+   Object.Attach(game, Me, "Game")
+   game.Reset()
+   
+   panelBoard.Resize(width * img_cover.Width, height * img_cover.Height)
+   'adjust_components()
+End
+
+' Private Sub adjust_components()
+'    center_control(panelBoard)
+'    center_control_horizontal(btnStatus)
+'    btnStatus.top = panelBoard.top - btnStatus.Height
+'    TimeBox.Left = 0
+'    TimeBox.Top = panelBoard.Top - TimeBox.Height
+'    FlagBox.Left = Me.Width - FlagBox.Width
+'    FlagBox.Top = panelBoard.Top - FlagBox.Height
+' End
+
+Private Sub refresh_timebox()
+   lblTime.Text = Str(play_time)
+End
+
+Private Sub refresh_flagbox()
+   lblFlags.Text = Str(game.FlagCount)
+End
+
+
+
+' Center the control in the main window
+' Private Sub center_control(c As Control)
+'    c.Move((Me.Width - c.Width) / 2, (Me.Height - c.Height) / 2)   
+' End
+' 
+' ' Center the control horizontally in the main window
+' Private Sub center_control_horizontal(c As Control)
+'    c.left = (Me.Width - c.Width) / 2
+' End
+

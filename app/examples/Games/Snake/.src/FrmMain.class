@@ -1,0 +1,430 @@
+' Gambas class file
+
+'***********Snake Example Game*********************************
+'***********By: Ahmad Kamal <eng_ak@Link.net>******************
+'***********Written for Gambas: gambas.sourceforge.net*********
+'***********V1.0: 02-Aug-2003**********************************
+'***********V1.1: 16-Apr-2004**********************************
+'***********Added SDL sound support****************************
+
+Public Head_Direction As String
+
+Public Xpos As New Integer[] 'Snake's Xpositions, Xpos[0] = head
+Public Ypos As New Integer[] 'Snake's Ypositions, Ypos[0] = head
+Public Tailpos As New Integer[] 'Array holding the index of the square to be moved. Xpos[ TailPos[0] ] is Xposition of the tail. TailPos keeps rotating
+Public AppleXpos As New Integer[] 'Apples Xpos
+Public AppleYpos As New Integer[] 'Apples Ypos
+
+Public Score As Integer
+Public Speed As String
+
+Public hPictHead As Picture
+Public hPictBody As Picture
+Public hPictApple As Picture
+
+Public StartSound As Sound
+Public EatSound As Sound 
+Public DeadSound As Sound 
+
+Private $eLast As Float
+
+Public Sub Form_Open()
+
+   Dim i As Integer
+   
+   Randomize
+   
+   StartSound = New Sound("start.wav") 'Pre-load all sounds FOR speed issues
+   EatSound = New Sound("eat.wav") 'Although, one SDL component could handle
+   DeadSound = New Sound("dead.wav") 'All of them!
+   
+   MenuGrandMa_Click()
+   InitSnake
+   UpdateScoreBoard
+   Play("start.wav")
+   
+   Me.Text = "Snake v1.0"
+   hPictHead = Picture.Load("head.png")
+   ' ME.Icon = hPictHead 'The same as head icon but in a standard size
+
+   Dwg.background = Color.Black 'BM: ?????????? Doesn't work
+
+   Draw.Begin(dwg)
+   Draw.Foreground = &HAA0000& 'Faded red
+   Draw.Font.Name = "Serif"
+   Draw.Font.Size = 120 'Give me real big font
+   For i = 1 To 10 'Trick to draw 3D text
+   If i = 10 Then Draw.Foreground = &HFF0000& 'This is the last layer, so make it pure red
+   Draw.text(("Snake"), (dwg.clientW - Draw.TextWidth("Snake")) / 2 - i, (dwg.Height + Draw.TextHeight("Snake")) / 2 - i - 50)
+   Next 
+   Draw.Font.Size = 18
+   Draw.Text("ver 1.0 by: Ahmad Kamal", (dwg.clientW - Draw.TextWidth("ver 1.0 by: Ahmad Kamal")) / 2, 100)
+   Draw.End
+   
+   hPictHead = Picture.Load("head.png") 'Load images
+   'hPictHead.Mask(Color.white)
+   hPictBody = Picture.Load("body.png")
+   hPictApple = Picture.Load("apple.png")
+   
+   TimerApple_Timer() 'Init apples location array
+
+End
+
+
+Public Sub Form_KeyPress()
+'This function stores the snake direction taken from the keyboard in head_direction
+  
+  Dim tmp As Integer
+  
+  Select Key.Code
+    Case Key.Left
+      If (Head_Direction <> "right") Then Head_Direction = "left" 'Snake isn't supposed to go backwards!
+    Case Key.Right
+      If (Head_Direction <> "left") Then Head_Direction = "right"
+    Case Key.Up
+      If (Head_Direction <> "down") Then Head_Direction = "up"
+    Case Key.Down
+      If (Head_Direction <> "up") Then Head_Direction = "down"
+  End Select
+
+End
+
+Public Sub TmrEngine_Timer()
+'This is the main game engine. With every tick, the game status get updated.
+
+  Dim i As Integer
+  Dim hPictHeadRotated As New Picture
+
+  'Here we will move the snake. Instead of moving each & every square of the snake
+  'We will use an optimized method. Only the head moves one step forward & the
+  'Tail moves to where the head previously was. That way, all the snake seems to be moving!
+
+'   If $eLast Then Debug TmrEngine.Delay;; Format(Timer - $eLast, "0.###")
+  $eLast = Timer
+  
+  Xpos[TailPos[0]] = Xpos[0] 'Tail goes to head
+  Ypos[TailPos[0]] = Ypos[0]
+  TailPos.add(TailPos.pop(), 0) 'Array is rotated => Last element is put as first element, i.e. new tail is calculated
+  
+  Select Head_Direction 'See the current head direction and start moving
+    Case "left"
+      Xpos[0] = Xpos[0] - 20
+      hPictHeadRotated = hPictHead.Image.Rotate(Pi).Picture 'Snake looks to where it's going :)
+    Case "right"
+      Xpos[0] = Xpos[0] + 20
+      hPictHeadRotated = hPictHead
+    Case "up"
+      Ypos[0] = Ypos[0] - 20
+      hPictHeadRotated = hPictHead.Image.Rotate(Pi / 2).Picture
+    Case "down"
+      Ypos[0] = Ypos[0] + 20
+      hPictHeadRotated = hPictHead.Image.Rotate(- Pi / 2).Picture
+  End Select
+  
+  
+  'Begin drawing
+  Dwg.Clear 'Clear old game drawings
+  Draw.Begin(Dwg)
+
+    For i = 1 To Xpos.count - 1 'Draw snake
+      Draw.Picture(hPictBody, Xpos[i], Ypos[i])
+    Next
+    
+    For i = 0 To 2 'Draw apples
+      Draw.Picture(hPictApple, AppleXpos[i], AppleYpos[i])
+    Next
+  
+  Draw.Picture(hPictHeadRotated, Xpos[0], Ypos[0]) 'BM: Why doesn't the head appear on top? put hPictHead, and it will !!!
+  
+  Draw.End
+  
+    If (SnakeHasEatenApple()) Then 
+      Play("eat")
+      MakeSnakeLonger '4th Generation programming :)
+      Inc Score
+    End If
+    
+    UpdateSpeed 'Should snake go faster?
+    UpdateScoreBoard 'Write score & speed on screen
+  
+    If (SnakeHitTheWall()) Then SnakeDies 'G4 again ;)
+    
+    If (SnakeBitHimself()) Then SnakeDies 'So cool
+    
+    If (SnakeAteAllApples()) Then 'If you've eaten the 3 apples, throw some more apples
+     TimerApple_Timer() 'Call the timer manually
+     TimerApple.Enabled = False 'Timer is disabled and re-enabled to reset it's internal timer
+     TimerApple.Enabled = True
+   End If
+
+End
+
+Public Sub TimerApple_Timer()
+
+  Dim I, J As Integer 'Throw 3 random apples all over the screen
+  Dim X, Y As Integer
+  
+  AppleXpos.Clear
+  AppleYpos.Clear
+  
+  For I = 0 To 2
+  
+    ' Do not add an apple on the snake
+    Do  
+      X = Int(Rnd(1, 30)) * 20
+      Y = Int(Rnd(1, 20)) * 20
+    
+      For J = 0 To Xpos.Max
+        If X = Xpos[J] And Y = Ypos[J] Then Break
+      Next
+    
+      If J = Xpos.Count Then Break 
+    Loop
+    
+    AppleXpos.Add(X)
+    AppleYpos.Add(Y)
+    
+  Next
+
+End
+
+Public Sub MakeSnakeLonger()
+
+    Xpos.add(Xpos[Tailpos[0]]) 'Add a new square to where the tail square is, to make the snake longer
+    Ypos.add(Ypos[Tailpos[0]])
+
+    TailPos.add(TailPos[0]) 'Remember when we said, tailpos keeps rotating. Now we have put an extra
+    TailPos.remove(0) 'Square, to make it move instead of the real tail, we make a back rotation (in
+    TailPos.add(Xpos.Length - 1, 0) 'opposite direction). First element => Last position, then index of new tail
+                                                                  'gets added at location 0. Remember, TailPos[0] is the index of the tail!!!
+
+End
+
+Public Function SnakeHasEatenApple() As Boolean
+
+  Dim RetVal As Boolean
+  Dim TmpAppleX As Integer
+  Dim TmpAppleY As Integer
+  Dim i As Integer
+  
+  RetVal = False
+  
+    For i = 0 To 2
+    
+      TmpAppleX = AppleXpos[i]
+      TmpAppleY = AppleYpos[i]
+      If (Xpos[0] = (TmpAppleX) And Ypos[0] = (TmpAppleY)) Then 'Snake head on an apple?
+        AppleXpos[i] = -100 'Hide eaten apples
+        AppleYpos[i] = -100
+        RetVal = True
+      End If
+    
+    Next
+      
+    
+  Return RetVal
+
+End
+
+
+Public Function SnakeHitTheWall() As Boolean
+
+  If (Xpos[0] < 0 Or Ypos[0] < 0 Or Xpos[0] >= 600 Or Ypos[0] >= 400) Then 'Duh
+    Return True
+  Else
+    Return False
+  End If
+
+End
+
+Public Sub SnakeDies()
+
+  TmrEngine.Enabled = False
+  TimerApple.Enabled = False
+  Play("dead")
+  Message(("The snake's soul will always be remembered.\nGame Over!!\nYou scored: ") & score & ("\nPress Game -> New to play again."))
+  
+End
+
+
+Public Sub MenuNew_Click()
+  
+  Dim i As Integer
+  
+  Head_Direction = "" 'Reset everything
+  Score = 0
+  MenuGrandMa_Click() 'Reset speed
+    
+  InitSnake
+  TimerApple_Timer
+
+  TmrEngine.Enabled = True
+  TimerApple.Enabled = True
+
+End
+
+Public Sub MenuPause_Click()
+
+  If (MenuPause.Caption = "&Pause" And (TmrEngine.Enabled = True)) Then
+    TmrEngine.Enabled = False
+    TimerApple.Enabled = False
+    MenuPause.Caption = "Un&Pause"
+  Else If (MenuPause.Caption = "Un&Pause" And (TmrEngine.Enabled = False)) Then
+    TmrEngine.Enabled = True
+    TimerApple.Enabled = True
+    MenuPause.Caption = "&Pause"
+  End If
+
+End
+
+Public Sub MenuQuit_Click()
+
+  FrmMain.Close
+  
+End
+
+Public Sub MenuGrandMa_Click()
+
+  TmrEngine.delay = 200
+  TimerApple.delay = 8000
+  Speed = "GrandMa"
+
+End
+
+
+Public Sub MenuCool_Click()
+
+    TmrEngine.delay = 150
+    TimerApple.delay = 5000
+    Speed = "Cool"
+
+End
+
+
+Public Sub MenuSpeedFreak_Click()
+
+  TmrEngine.delay = 100
+  TimerApple.delay = 2500
+  Speed = "Speed Freak"
+
+End
+
+Public Sub MenuHowToPlay_Click()
+
+  Dim Help As String
+  
+  Help = ("The Rules are simple:\n")
+  Help = Help & ("Eat as many apples as you can\n")
+  Help = Help & ("Do not Hit the walls, or bite yourself!\n\n")
+  Help = Help & ("Use the arrow keys to move the snake")
+  
+  Message(Help)
+  
+End
+
+
+Public Sub InitSnake()
+
+  Dim i As Integer
+  
+  Xpos.Clear()
+  Ypos.Clear()
+  TailPos.Clear()
+
+   For i = 0 To 3
+    Xpos.add(0, i)
+    Ypos.add(0, i)
+  Next 'BM: Here i exists with value 4, shouldn't it be 3?!
+
+   TailPos.add(3, 0)
+   TailPos.add(2, 1)
+   TailPos.add(1, 2)
+   
+End
+
+Public Function SnakeAteAllApples() As Boolean
+  
+  'IF ( AppleXpos[0] = AppleXpos[1] = AppleXpos[2] = -100) THEN                 'BM: Doesn't work
+  If ((AppleXpos[0] = -100) And (AppleXpos[1] = -100) And (AppleXpos[2] = -100)) Then
+  Return True
+  Else
+  Return False
+  End If
+  
+End
+
+Public Sub UpdateScoreBoard()
+  
+   LblScore.Text = ("Score: ") & Score
+   LblSpeed.Text = ("Speed: ") & Speed
+  
+End
+
+Public Sub UpdateSpeed()
+  
+  If MenuAutoAdvanceSpeed.checked Then
+    If (Score > 19 And Speed = "GrandMa") Then MenuCool_Click
+    If (Score > 79 And Speed = "Cool") Then MenuSpeedFreak_Click 'Let's kill ur snake :)
+  End If
+   
+End
+
+Public Sub MenuAutoAdvanceSpeed_Click()
+
+  MenuAutoAdvanceSpeed.Checked = Not MenuAutoAdvanceSpeed.Checked 'Toggle menu checking
+  
+End
+
+Public Function SnakeBitHimself() As Boolean
+  
+  Dim RetVal As Boolean
+  Dim TmpAppleX As Integer
+  Dim TmpAppleY As Integer
+  Dim i As Integer
+  
+  RetVal = False
+  
+    For i = 1 To (Xpos.Length - 1)
+    
+      TmpAppleX = Xpos[i]
+      TmpAppleY = Ypos[i]
+      If (Xpos[0] = (TmpAppleX) And Ypos[0] = (TmpAppleY) And Xpos[0] <> 0) Then 'Snake head on part of its body?
+        RetVal = True
+      End If
+    
+    Next
+      
+  Return RetVal
+    
+End
+
+Public Sub MenuAbout_Click()
+
+  Dim About As String
+  
+  About = "Snake v1.0\nBy: Ahmad Kamal <eng_ak@Link.Net>\nWritten for Gambas http://gambas.sf.net"
+  Message(About)
+
+End
+
+Public Sub Play(sound As String)
+'I know it's slow, but I had to give it sound!!!
+'Now I can safely move on to writing Quake17 ;)
+  
+'  EXEC [ "playwave", "/tmp/" & sound & ".wav" ]
+  Select Case sound
+    Case "start"
+      startsound.Play()
+    Case "eat"
+      eatsound.Play()
+    Case "dead"
+      deadsound.Play()
+  End Select
+End
+
+
+Public Sub dwg_KeyPress()
+
+  Form_KeyPress
+
+End

@@ -1,0 +1,73 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,44,33)
+  Text = ("MySQL GUI")
+  Icon = Picture["icons/16/Admin.png"]
+  Resizable = False
+  { lblTitle Label
+    MoveScaled(1,1,42,5)
+    Font = Font["+4"]
+    Background = Color.LightBackground
+    Text = ("MySQL Example")
+    Alignment = Align.Center
+    Border = Border.Sunken
+  }
+  { frmMain Frame
+    MoveScaled(1,8,42,19)
+    Text = ("Connect to a MySQL Server")
+    { lblServer Label
+      MoveScaled(1,3,19,3)
+      Text = ("Server:")
+      Alignment = Align.Right
+    }
+    { txtServer TextBox Texts
+      Name = "txtServer"
+      MoveScaled(21,3,20,3)
+    }
+    { lblPort Label
+      MoveScaled(1,7,19,3)
+      Text = ("Port:")
+      Alignment = Align.Right
+    }
+    { txtPort TextBox Texts
+      Name = "txtPort"
+      MoveScaled(21,7,20,3)
+    }
+    { lblUser Label
+      MoveScaled(1,11,19,3)
+      Text = ("User:")
+      Alignment = Align.Right
+    }
+    { txtUser TextBox Texts
+      Name = "txtUser"
+      MoveScaled(21,11,20,3)
+    }
+    { lblPassword Label
+      MoveScaled(1,15,19,3)
+      Text = ("Password:")
+      Alignment = Align.Right
+    }
+    { txtPassword TextBox
+      MoveScaled(21,15,20,3)
+      Password = True
+    }
+  }
+  { btnConnect Button
+    MoveScaled(1,28,13,4)
+    Text = ("&Connect")
+    Picture = Picture["icon:/16/connect"]
+    Default = True
+  }
+  { btnClear Button
+    MoveScaled(16,28,12,4)
+    Text = ("&Clear")
+    Picture = Picture["icon:/16/clear"]
+  }
+  { btnCancel Button
+    MoveScaled(30,28,13,4)
+    Text = ("&Cancel")
+    Picture = Picture["icon:/16/cancel"]
+    Cancel = True
+  }
+}

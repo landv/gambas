@@ -1,0 +1,11 @@
+Public Sub Example10()
+  
+  Paint.Brush = Paint.LinearGradient(0, 0, 0, 256, [Color.Black, Color.White], [1.0, 0.0])
+  Paint.Rectangle(0, 0, 256, 256)
+  Paint.Fill
+  
+  Paint.Brush = Paint.RadialGradient(102.4, 102.4, 128.0, 115.2, 102.4, [Color.Black, Color.White], [1.0, 0.1])
+  Paint.Arc(128, 128, 76.8)
+  Paint.Fill
+  
+End

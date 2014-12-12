@@ -1,0 +1,112 @@
+' Gambas class file
+
+' ======================================
+' This example is to make a bar chart
+' using DrawingArea
+' may be it can help you to make a chart
+' if you have any question you can send to
+'   yudi@kecoak.or.id
+' Thank You
+
+
+Public total As Integer
+Public value As Float[]
+
+Public Sub btnClose_Click()
+
+  Me.Close
+
+End
+
+Public Sub _new()
+  
+  Me.Center
+  
+End
+
+
+Public Sub Form_Open()
+
+  Draw_Chart
+
+End
+
+Public Sub Draw_Chart()
+
+  Dim i As Integer
+
+  Dim skala_1 As Integer
+  Dim skala_2 As Integer
+
+  Dim distance_x As Float
+  Dim distance_y As Float
+
+  Dim width_draw As Integer
+  Dim tot As Integer
+  Dim colors As Integer[]
+  Dim bottom As Integer
+  Dim sumdata As Integer
+
+  colors = New Integer[]
+  colors.Resize(total + 1)
+
+  For i = 1 To total
+    sumdata = sumdata + value[i]
+  Next
+
+  If sumdata = 0 Then sumdata = 1
+
+  For i = 1 To total
+    value[i] = (value[i] / sumdata) * 10
+  Next
+
+  drwchart.Clear
+
+  draw.Begin(drwchart)
+
+  skala_1 = drwchart.ClientH / 11
+  distance_y = drwchart.ClientH - skala_1
+  bottom = distance_y + 8
+
+  For i = 0 To 100 Step 10
+    draw.Foreground = color.black
+    draw.Text(i, 0, distance_y)
+    draw.Line(25, distance_y + 8, drwchart.clientw, distance_y + 8)
+    distance_y = distance_y - skala_1
+  Next
+
+  draw.Line(30, 0, 30, drwchart.ClientH)
+
+  skala_2 = (drwchart.ClientW - 30) \ 10
+  distance_x = skala_2 + 30
+  width_draw = skala_2 / 2
+
+  For i = 1 To Total
+       draw.LineWidth = 1
+       draw.Foreground = color.Black
+       draw.Text(i, distance_x - (width_draw / 2) - 16, drwchart.ClientH - drwChart.Font.Height, 32, drwChart.Font.Height, Align.Center)
+       draw.Line(distance_x - (width_draw / 2), 0, distance_x - (width_draw / 2), drwchart.ClientH - skala_1 + 8)
+       draw.LineWidth = width_draw
+       draw.Foreground = color.RGB(i * 100, i * 10, i * 50)
+       colors[i] = draw.Foreground
+       tot = skala_1 * value[i] + skala_1 - 8
+       draw.Line(distance_x - (width_draw / 2), bottom, distance_x - (width_draw / 2), drwchart.ClientH - tot)
+       distance_x = distance_x + skala_2
+  Next
+
+  Draw.End
+
+End
+
+Public Sub btnAbout_Click()
+
+  Dim i As String
+  i = "<h2>Example to make bar chart</h2>\n"
+  i = i & "This example has made by : " & Chr(10)
+  i = i & "   Yudi Astira" & Chr(10)
+  i = i & "   yudi@kecoak.or.id" & Chr(10)
+  i = i & "   necrose #hdteam on Dal.Net" & Chr(10)
+  i = i & "Thank You"
+  message.Info(i, "&Close")
+  
+End

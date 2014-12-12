@@ -1,0 +1,126 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,106,99)
+  Text = ("Simple PDF document viewer")
+  Arrangement = Arrange.Vertical
+  { HBox1 HBox
+    MoveScaled(1,2,95,4)
+    { BtOpen ToolButton
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Open file...")
+      Picture = Picture["icon:/small/open"]
+    }
+    { Button1 ToolButton
+      MoveScaled(4,0,4,4)
+      ToolTip = ("About...")
+      Picture = Picture["icon:/small/question"]
+    }
+    { btRotate ToolButton
+      MoveScaled(8,0,4,4)
+      Enabled = False
+      ToolTip = ("Rotate")
+      Picture = Picture["icon:/small/rotate-right"]
+    }
+    { btZoomOut ToolButton
+      MoveScaled(12,0,4,4)
+      Enabled = False
+      ToolTip = ("Zoom out")
+      Picture = Picture["icon:/small/zoom-out"]
+    }
+    { btZoomIn ToolButton
+      MoveScaled(16,0,4,4)
+      Enabled = False
+      ToolTip = ("Zoom in")
+      Picture = Picture["icon:/small/zoom-in"]
+    }
+    { Separator3 Separator
+      MoveScaled(22,0,0,4)
+    }
+    { txtFind ButtonBox
+      MoveScaled(24,0,15,4)
+      Enabled = False
+      ToolTip = ("Find text")
+      Expand = True
+      Picture = Picture["icon:/small/find"]
+      Border = False
+    }
+    { Panel1 Panel
+      MoveScaled(40,0,8,4)
+      Visible = False
+      Background = Color.TextBackground
+      { BtSearchPrev Button
+        MoveScaled(0,0,4,4)
+        Enabled = False
+        ToolTip = ("Previous page")
+        Picture = Picture["icon:/small/left"]
+        Border = False
+      }
+      { BtSearchNext Button
+        MoveScaled(4,0,4,4)
+        Enabled = False
+        Background = Color.TextBackground
+        ToolTip = ("Next Found")
+        Picture = Picture["icon:/small/right"]
+        Border = False
+      }
+    }
+    { Separator1 Separator
+      MoveScaled(51,0,0,4)
+    }
+    { BtPrev ToolButton
+      MoveScaled(54,0,4,4)
+      Enabled = False
+      ToolTip = ("Previous page")
+      Picture = Picture["icon:/small/left"]
+    }
+    { Page Label
+      MoveScaled(59,0,4,4)
+      AutoResize = True
+      Text = ("Page")
+      Alignment = Align.Right
+    }
+    { Panel2 Panel
+      MoveScaled(64,0,1,4)
+    }
+    { txtGotoPage TextBox
+      MoveScaled(66,0,9,4)
+      Enabled = False
+      ToolTip = ("Go to this page")
+      Alignment = Align.Center
+      Border = False
+    }
+    { lblInfo Label
+      MoveScaled(75,0,7,4)
+      AutoResize = True
+    }
+    { BtNext ToolButton
+      MoveScaled(84,0,4,4)
+      Enabled = False
+      ToolTip = ("Next page")
+      Picture = Picture["icon:/small/right"]
+    }
+  }
+  { Separator2 Separator
+    MoveScaled(36,8,27,0)
+  }
+  { splIndex HSplit
+    MoveScaled(9,11,81,60)
+    Expand = True
+    { tvIndex TreeView
+      MoveScaled(0,0,19,25)
+      Visible = False
+      Border = False
+    }
+    { ViewPort ScrollView
+      MoveScaled(36,5,30,32)
+      Background = Color.TextBackground
+      Expand = True
+      Border = False
+      { PBox PictureBox
+        MoveScaled(3,3,24,21)
+        Visible = False
+      }
+    }
+  }
+}

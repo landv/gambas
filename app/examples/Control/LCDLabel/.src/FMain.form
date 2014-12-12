@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,44,26)
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { Panel1 HBox
+    MoveScaled(2,1,41,4)
+    Spacing = True
+    { timTime TimeBox
+      MoveScaled(0,0,9,4)
+    }
+    { btnStart Button
+      MoveScaled(24,0,16,4)
+      Text = ("Start / Stop")
+    }
+  }
+  { timClock #Timer
+    #MoveScaled(25,9)
+    Delay = 50
+  }
+  { lblAlarm LCDLabel
+    MoveScaled(6,9,34,14)
+    Background = &H000000&
+    Foreground = &H00FF00&
+    Expand = True
+    Text = ("00:00:00")
+    Alignment = Align.Center
+    HighlightColor = &HFFFF00&
+  }
+}

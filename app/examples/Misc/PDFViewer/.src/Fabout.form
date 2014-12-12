@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,48,22)
+  Resizable = False
+  Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
+  { TextLabel1 TextLabel
+    MoveScaled(2,2,45,13)
+    Expand = True
+    Text = ("<h2>Simple PDF document viewer</h2><p>Gambas example by Daniel Campos Fernández  and Bernd Brinkmann")
+    Alignment = Align.Center
+  }
+  { Panel1 HBox
+    MoveScaled(13,16,32,4)
+    { Panel2 Panel
+      MoveScaled(4,0,2,4)
+      Expand = True
+    }
+    { btOK Button
+      MoveScaled(10,0,15,4)
+      Text = ("OK")
+      Default = True
+      Cancel = True
+    }
+    { Panel3 Panel
+      MoveScaled(26,0,2,4)
+      Expand = True
+    }
+  }
+}

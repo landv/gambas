@@ -1,0 +1,324 @@
+' Gambas class file
+
+Inherits Task
+
+Public Width As Integer
+Public Height As Integer
+Public Index As Integer
+
+Private $XO As Float
+Private $YO As Float
+Private $SF As Float
+Private $bFast As Boolean
+Private $iIterMax As Integer 
+Private $bRect As Boolean
+Private $aColor As Integer[]
+
+Static Private ITER_MAX As Integer
+Static Private DRAW_RECT As Boolean
+Static Private COLORS As Integer[]
+
+Public Sub _new(XO As Float, YO As Float, SF As Float, W As Integer, H As Integer, iIterMax As Integer, aColor As Integer[], bFast As Boolean, bRect As Boolean)
+  
+  $XO = XO
+  $YO = YO
+  $SF = SF
+  Width = W
+  Height = H
+  $aColor = aColor
+  $bFast = bFast
+  $bRect = bRect
+  $iIterMax = iIterMax
+  
+End
+
+Public Sub Main() As Variant
+  
+  Dim hImage As New Image(Width, Height, Color.Transparent)
+  
+  ITER_MAX = $iIterMax
+  DRAW_RECT = $bRect
+  COLORS = $aColor
+  
+  If $bFast Then
+    FastDrawFractalRect(hImage, $XO, $YO, $SF, 0, 0, Width, Height)
+  Else
+    DrawFractalRect(hImage, $XO, $YO, $SF, 0, 0, Width, Height)
+  Endif
+  Return hImage.Pixels
+  
+End
+
+Static Private Sub DrawFractalRect(hImage As Image, XO As Float, YO As Float, SF As Float, X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  Dim I, J, K, C, CC As Integer
+  Dim XF, YF, XF0, YF0, XF1, YF1 As Float
+  Dim ZX, ZY, T As Float
+  Dim bSame As Boolean
+  Dim bRect As Boolean = DRAW_RECT
+  
+  XF0 = XO + X * SF
+  YF0 = YO + Y * SF
+  
+  If W <= 4 And If H <= 4 Then Goto CALC_ALL
+  
+  XF1 = XF0 + (W - 1) * SF
+  YF1 = YF0 + (H - 1) * SF
+  
+  If Sgn(XF0) + Sgn(XF1) Or If Sgn(YF0) + Sgn(YF1) Then
+  
+    C = 0
+    
+    XF = XF0
+    YF = YF0
+    I = X
+    J = Y
+    GoSub CALC_POINT
+    CC = C
+    bSame = True
+    
+    XF += SF
+    For I = X To X + W - 1
+      YF = YF0
+      J = Y
+      GoSub CALC_POINT
+      YF = YF1
+      J = Y + H - 1
+      GoSub CALC_POINT
+      XF += SF
+    Next
+  
+    YF = YF0 + SF
+    For J = Y + 1 To Y + H - 2
+      XF = XF0
+      I = X
+      GoSub CALC_POINT
+      XF = XF1
+      I = X + W - 1
+      GoSub CALC_POINT
+      YF += SF
+    Next
+    
+    If bSame Then
+      If CC Then hImage.FillRect(X + 1, Y + 1, W - 2, H - 2, CC) 
+      If bRect Then
+        hImage.PaintRect(X + 1, Y + 1, W - 2, H - 2, &HC0FFFFFF&)
+      Endif
+      Return
+    Endif
+    
+    Inc X
+    Inc Y
+    W -= 2
+    H -= 2
+  
+  Endif
+  
+  If W >= H Then
+    DrawFractalRect(hImage, XO, YO, SF, X, Y, W \ 2, H)
+    DrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y, W - (W \ 2), H)
+  Else
+    DrawFractalRect(hImage, XO, YO, SF, X, Y, W, H \ 2)
+    DrawFractalRect(hImage, XO, YO, SF, X, Y + (H \ 2), W, H - (H \ 2))
+  Endif
+  
+  Return
+
+CALC_ALL:
+
+  XF = XF0
+  For I = X To X + W - 1
+    YF = YF0
+    For J = Y To Y + H - 1
+      
+      ZX = 0
+      ZY = 0
+      
+      For K = 0 To ITER_MAX - 1
+        
+        T = ZX * ZX - ZY * ZY + XF
+        ZY = 2 * ZX * ZY + YF
+        
+        If ((T * T) + (ZY * ZY)) > 4 Then Break
+        
+        ZX = T
+        
+      Next
+      
+      If K < ITER_MAX Then hImage[I, J] = COLORS[K And 63]
+      
+      YF += SF
+    Next
+    XF += SF
+  Next
+  Return
+
+CALC_POINT:
+  
+  ZX = 0
+  ZY = 0
+  
+  For K = 0 To ITER_MAX - 1
+    
+    T = ZX * ZX - ZY * ZY + XF
+    ZY = 2 * ZX * ZY + YF
+    
+    If ((T * T) + (ZY * ZY)) > 4 Then Break
+    
+    ZX = T
+    
+  Next
+  
+  If K < ITER_MAX Then
+    K = K And 63
+    C = COLORS[K]
+    If C <> CC Then bSame = False
+    hImage[I, J] = C
+  Else
+    C = 0
+    If C <> CC Then bSame = False
+  Endif
+  
+  Return
+
+End
+
+Fast Static Public Sub FastDrawFractalRect(hImage As Image, XO As Float, YO As Float, SF As Float, X As Integer, Y As Integer, W As Integer, H As Integer)
+  
+  Dim I, J, K, C, CC As Integer
+  Dim XF, YF, XF0, YF0, XF1, YF1 As Float
+  Dim ZX, ZY, T As Float
+  Dim bSame As Boolean
+  Dim bRect As Boolean = DRAW_RECT
+  
+  If Not hImage Then Return
+  
+  XF0 = XO + X * SF
+  YF0 = YO + Y * SF
+  
+  If W <= 4 And If H <= 4 Then Goto CALC_ALL
+  
+  XF1 = XF0 + (W - 1) * SF
+  YF1 = YF0 + (H - 1) * SF
+  
+  If Sgn(XF0) + Sgn(XF1) Or If Sgn(YF0) + Sgn(YF1) Then
+  
+    C = 0
+    
+    XF = XF0
+    YF = YF0
+    I = X
+    J = Y
+    GoSub CALC_POINT
+    CC = C
+    bSame = True
+    
+    'XF += SF
+    For I = X To X + W - 1
+      YF = YF0
+      J = Y
+      GoSub CALC_POINT
+      YF = YF1
+      J = Y + H - 1
+      GoSub CALC_POINT
+      XF += SF
+    Next
+  
+    YF = YF0 + SF
+    For J = Y + 1 To Y + H - 2
+      XF = XF0
+      I = X
+      GoSub CALC_POINT
+      XF = XF1
+      I = X + W - 1
+      GoSub CALC_POINT
+      YF += SF
+    Next
+    
+    If bSame Then
+      If CC Then hImage.FillRect(X + 1, Y + 1, W - 2, H - 2, CC) 
+      If bRect Then
+        hImage.PaintRect(X + 1, Y + 1, W - 2, H - 2, &HC0FFFFFF&)
+      Endif
+      Return
+    Endif
+    
+    Inc X
+    Inc Y
+    W -= 2
+    H -= 2
+  
+  Endif
+  
+  If W >= H Then
+    FastDrawFractalRect(hImage, XO, YO, SF, X, Y, W \ 2, H)
+    FastDrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y, W - (W \ 2), H)
+  Else
+    FastDrawFractalRect(hImage, XO, YO, SF, X, Y, W, H \ 2)
+    FastDrawFractalRect(hImage, XO, YO, SF, X, Y + (H \ 2), W, H - (H \ 2))
+  Endif
+  
+  ' FastDrawFractalRect(hImage, XO, YO, SF, X, Y, W \ 2, H \ 2)
+  ' FastDrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y, W - (W \ 2), H \ 2)
+  ' FastDrawFractalRect(hImage, XO, YO, SF, X, Y + (H \ 2), W \ 2, H - (H \ 2))
+  ' FastDrawFractalRect(hImage, XO, YO, SF, X + (W \ 2), Y + (H \ 2), W - (W \ 2), H - (H \ 2))
+  Return
+
+CALC_ALL:
+
+  XF = XF0
+  For I = X To X + W - 1
+    YF = YF0
+    For J = Y To Y + H - 1
+      
+      ZX = 0
+      ZY = 0
+      
+      For K = 0 To ITER_MAX - 1
+        
+        T = ZX * ZX - ZY * ZY + XF
+        ZY = 2 * ZX * ZY + YF
+        
+        If ((T * T) + (ZY * ZY)) > 4 Then Break
+        
+        ZX = T
+        
+      Next
+      
+      If K < ITER_MAX Then hImage[I, J] = COLORS[K And 63]
+      
+      YF += SF
+    Next
+    XF += SF
+  Next
+  Return
+
+CALC_POINT:
+  
+  ZX = 0
+  ZY = 0
+  
+  For K = 0 To ITER_MAX - 1
+    
+    T = ZX * ZX - ZY * ZY + XF
+    ZY = 2 * ZX * ZY + YF
+    
+    If ((T * T) + (ZY * ZY)) > 4 Then Break
+    
+    ZX = T
+    
+  Next
+  
+  If K < ITER_MAX Then
+    K = K And 63
+    C = COLORS[K]
+    If C <> CC Then bSame = False
+    hImage[I, J] = C
+  Else
+    C = 0
+    If C <> CC Then bSame = False
+  Endif
+  
+  Return
+
+End

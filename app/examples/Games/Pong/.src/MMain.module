@@ -1,0 +1,191 @@
+' Gambas module file
+
+Private $hConfig As Window
+Private $hTimer As Timer
+' Scores
+Private $iS1 As Integer
+Private $iS2 As Integer
+' Players' paddles
+Private $hP1 As Paddle
+Private $hP2 As Paddle
+' If Paddle2 shall be controlled by an NPC object
+Private $bNPC As Boolean
+Private $hNPC As NPC
+' The ball
+Private $hBall As Ball
+
+Public Sub Main()
+
+  ' Make our Window raise events
+  Object.Attach(Window, Me, "Window")
+  Window.SetFocus()
+
+  Screen.Cursor = Cursor.Hidden
+  Screen.Echo = False
+  Screen.Input = Input.CBreak
+
+  Window.Border = Border.Ascii
+  Window.Caption = Subst$(("Pong v&1 - gb.ncurses Example"), Application.Version)
+  Window.Clear()
+
+  $hConfig = New Window(True, 0, 0, 30, 5)
+  $hConfig.Border = Border.Ascii
+  $hConfig.Center()
+
+  $hTimer = New Timer As "Timer"
+
+  $iS1 = 0
+  $iS2 = 0
+
+  $bNPC = True
+  GameInit()
+
+End
+
+Private Sub Configure()
+
+  $hConfig.Show()
+  $hConfig.Clear()
+  $hConfig.PrintCenter(("What to do?\nPlay again: [P]\nChange opponent: [o]\n\nQuit [q]"))
+  Select Case Window.Ask(("Poq"))
+    Case ("o")
+      Configure_Opponent()
+    Case ("q")
+      Quit
+  End Select
+  $hConfig.Hide()
+
+End
+
+Private Sub Configure_Opponent()
+
+  $hConfig.Clear()
+  $hConfig.PrintCenter(("Play against whom?\n[h]uman, [N]ormal, [m]aster"))
+  $bNPC = True
+  Select Case Window.Ask(("hNm"))
+    Case ("h")
+      $bNPC = False
+    Case ("n")
+      $hNPC.Mode = NPC.Normal
+    Case ("m")
+      $hNPC.Mode = NPC.Master
+  End Select
+
+End
+
+Private Sub GameInit()
+
+  ' If both as 'master' NPCs we could make a screensaver out of it :-)
+  $hP1 = New Paddle(Window, 1)
+  $hP2 = New Paddle(Window, -1)
+  $hBall = New Ball(Window)
+  $hNPC = New NPC(Window, $hBall, $hP2)
+  GameStart()
+
+End
+
+Private Sub GameStart()
+
+  Window.Buffered = False
+  Configure()
+  $hP1.Reset()
+  $hP2.Reset()
+  $hBall.Reset()
+  $hNPC.Init()
+  Window.Buffered = True
+  Redraw()
+  ' See SPEED. The width means actually the intra-paddle width:
+  $hTimer.Delay = 4000 / Sqr(2 * (Window.Width - 4) ^ 2)
+  $hTimer.Start()
+
+End
+
+Public Sub Timer_Timer()
+
+  If $bNPC Then $hNPC.Move()
+  Select Case $hBall.Move($hP1, $hP2)
+    Case -1
+      Inc $iS2
+      Goto _NewGame
+    Case 1
+      Inc $iS1
+      Goto _NewGame
+  End Select
+  ' I suppose that this does not go down to zero
+  If $hBall.HitPaddle Then Dec $hTimer.Delay
+  Redraw()
+  Return
+
+_NewGame:
+  ' We want to see it
+  Redraw()
+  $hTimer.Stop()
+  ' FIXME: Makes stack overflow eventually
+  GameStart()
+
+End
+
+Public Sub Window_Read()
+
+  Dim iKey As Integer
+
+  iKey = Window.Read()
+  Window.Drain()
+  ' Go two steps per keystroke
+  ' FIXME: Can't reach some coordinate with odd Window.Height
+  Select Case iKey
+    ' Player 1
+    Case Key.Up
+      If $hP1.Y > 0 Then $hP1.Y -= 2
+    Case Key.Down
+      If $hP1.Y + $hP1.Height < Window.Height Then $hP1.Y += 2
+    ' Human player 2
+    Case Asc("j")
+      If Not $bNPC And $hP2.Y > 0 Then $hP2.Y -= 2
+    Case Asc("k")
+      If Not $bNPC And $hP2.Y + $hP2.Height < Window.Height Then $hP2.Y += 2
+    ' Change ball speed :-)
+    Case Asc("+")
+      If $hTimer.Delay > 10 Then $hTimer.Delay -= 10
+    Case Asc("-")
+      $hTimer.Delay += 10
+    ' Pause
+    Case Asc(("p"))
+      Pause()
+    ' Quit
+    Case Asc(("q"))
+      Quit
+    Case Else
+      Return
+  End Select
+  Redraw()
+
+End
+
+Private Sub Redraw()
+
+  Dim iX As Integer = Window.Width / 4
+
+  ' Scores and net
+  Window.Print(" " & Str$($iS1) & " ", iX, 1, Attr.Reverse)
+  Window.Print(" " & Str$($iS2) & " ", iX * 3, 1, Attr.Reverse)
+  Window.DrawVLine(Window.Width / 2 + 1, 0, Window.Height, ".")
+  ' Players and ball may overwrite the unimportant stuff above
+  $hP1.Draw()
+  $hP2.Draw()
+  $hBall.Draw()
+  Screen.Refresh()
+
+End
+
+Private Sub Pause()
+
+  $hTimer.Stop()
+  Window.PrintCenter(("PAUSE"))
+  Screen.Refresh()
+  Window.Ask(("p"))
+  Window.Clear()
+  Redraw()
+  $hTimer.Start()
+
+End

@@ -1,0 +1,102 @@
+' Gambas class file
+
+Private $bPlay As Boolean
+Private $hAudio As MediaControl
+Private $hConv As MediaControl
+Private $hPlayer As MediaPipeline
+Private $hOutput As MediaControl
+Private $hFilter As MediaControl
+Private $hEncoder As MediaControl
+
+Public Sub Form_Open()
+
+  ' audiotestsrc is-live=1 !
+  ' audio / x - raw, channels = 2, rate = 48000!flacenc!filesink
+  ' location = generated.flac
+
+  $hPlayer = New MediaPipeline As "Pipeline"
+
+  $hAudio = New MediaControl($hPlayer, "audiotestsrc")
+  $hAudio["is-live"] = True
+  
+  $hFilter = New MediaControl($hPlayer, "audio/x-raw,channels=2,rate=48000")
+  'Print $hFilter["caps"]
+  
+  '$hEncoder = New MediaControl($hPlayer, "flacenc")
+  
+  
+  $hConv = New MediaControl($hPlayer, "audioconvert")
+  $hOutput = New MediaControl($hPlayer, "autoaudiosink")
+  '
+  
+  '$hOutput = New MediaControl($hPlayer, "filesink")
+  '$hOutput["location"] = User.Home &/ "output.flac"
+  
+  '$hAudio.LinkTo($hConv)
+  '$hConv.LinkTo($hOutput)
+  
+  Media.Link($hAudio, $hFilter, $hConv, $hOutput)
+  
+  SetFreq(440)
+
+End
+
+Public Sub Form_Close()
+  
+  $hPlayer.Stop
+  
+End
+
+
+Public Sub btnPlay_Click()
+
+  $bPlay = Not $bPlay
+
+  If $bPlay Then
+    $hPlayer.Play
+  Else
+    $hPlayer.Pause
+  Endif
+
+End
+
+Private Sub SetFreq(fFreq As Float)
+
+  $hAudio["freq"] = fFreq
+  Object.Lock(sldFrequency)
+  sldFrequency.Value = (Log(fFreq) - Log(20)) / (Log(20000) - Log(20)) * 1000
+  Object.Unlock(sldFrequency)
+  lblFrequency.Text = Format(fFreq, "0.000") & " Hz"
+
+End
+
+Public Sub sldFrequency_Change()
+
+  SetFreq(Exp(Log(20) + (Log(20000) - Log(20)) * sldFrequency.Value / 1000))
+
+End
+
+Public Sub sldVolume_Change()
+
+  $hAudio["volume"] = sldVolume.Value / 1000
+
+End
+
+Public Sub cmbType_Click()
+
+  $hAudio["wave"] = cmbType.Index
+
+End
+
+Public Sub Pipeline_State()
+  
+  Debug Last.State
+  
+End
+
+
+Public Sub Pipeline_End()
+  
+  Debug
+  
+End

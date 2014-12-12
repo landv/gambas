@@ -1,0 +1,215 @@
+' Gambas class file
+
+Export
+
+Inherits DrawingArea
+
+Event Click
+
+Property Image As Image
+Property Opacity As Float
+Property Highlight As Boolean
+Property Shortcut As String
+Property Text As String
+Property Font As Font
+
+Public Const MIN_OPACITY As Float = 0.2
+Public Const MAX_OPACITY As Float = 0.8
+
+Private $hObs As Observer
+Private $hImage As Image
+Private $hDraw As Image
+'Private $bInside As Boolean
+'Private $hTimer As Timer
+Private $fOpacity As Float = MIN_OPACITY
+Private $bHighlight As Boolean
+'Private $hTimer As Timer
+Private $sShortcut As String
+Private $sText As String
+Private $hFont As Font
+
+Public Sub _new()
+  
+  $hObs = New Observer(Me) As "DrawingArea"
+  '$hTimer = New Timer As "Timer"
+  '$hTimer.Delay = 50
+  Me.Mouse = Mouse.Pointing
+  '$hTimer = New Timer As "Timer"
+  
+End
+
+Public Sub DrawingArea_Enter()
+  
+  If Not Me.Enabled Then Return
+  CAnimation.Start(Me, "Opacity", MAX_OPACITY, 250)
+  
+End
+
+Public Sub DrawingArea_Leave()
+  
+  If Not Me.Enabled Then Return
+  CAnimation.Start(Me, "Opacity", MIN_OPACITY, 250)
+  
+End
+
+Public Sub DrawingArea_MouseUp()
+  
+  If Not Me.Enabled Then Return
+  Raise Click
+  Stop Event
+  
+End
+
+Public Sub DrawingArea_Draw()
+  
+  If $hDraw Then 
+    Draw.Image($hDraw, 2, 2)
+  Endif
+  
+  If $bHighlight Then 
+    Paint.Begin(Me)
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 192))
+    Paint.Rectangle(0, 0, Me.W, Me.H)
+    Paint.Fill
+    Paint.End
+  Endif
+  
+End
+
+Private Function Image_Read() As Image
+
+  Return $hImage
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hImage = Value '.Stretch(Me.W - 4, Me.H - 4)
+  SetOpacity
+
+End
+
+Private Sub SetOpacity()
+
+  Dim W, H As Integer
+  Dim hFont As Font
+  
+  If Not $hImage Then Return
+
+  $hDraw = $hImage.Stretch(Me.W - 4, Me.H - 4)
+  Paint.Begin($hDraw)
+   
+  If $sShortcut Then
+    
+    Paint.Font = Font["Bold,+2"]
+    
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 64))
+    'For X = -2 To 2
+    '  For Y = -2 To 2
+    '    Paint.DrawText($sShortcut, $hDraw.W - 16 + X, $hDraw.H - 16 + Y, 16, 16, Align.Center)
+    '  Next
+    'Next
+    Paint.Arc($hDraw.W - 12, $hDraw.H - 12, 12)
+    Paint.Fill
+    
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
+    Paint.DrawText($sShortcut, $hDraw.W - 24, $hDraw.H - 24, 24, 24, Align.Center)
+    
+  Endif
+  
+  If $sText Then
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.White, 64))
+    If $hFont Then
+      hFont = $hFont
+    Else
+      hFont = Font["Bold,+1"]
+    Endif
+    Paint.Font = hFont
+    W = hFont.TextWidth($sText) + 4
+    H = hFont.TextHeight($sText) + 2
+    Paint.Rectangle(($hDraw.W - W) / 2, $hDraw.H - H, W, H)
+    Paint.Fill
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 64))
+    Paint.DrawText($sText, ($hDraw.W - W) / 2, $hDraw.H - H, W, H, Align.Center)
+  Endif
+  
+  Paint.End
+    
+  $hDraw.Opacity($fOpacity)
+  Me.Refresh
+
+End
+
+Private Function Opacity_Read() As Float
+
+  Return $fOpacity
+
+End
+
+Private Sub Opacity_Write(Value As Float)
+
+  $fOpacity = Max(0, Min(1, Value))
+  SetOpacity
+
+End
+
+Private Function Highlight_Read() As Boolean
+
+  Return $bHighlight
+
+End
+
+Private Sub Highlight_Write(Value As Boolean)
+
+  $bHighlight = Value
+  Me.Refresh
+
+End
+
+
+Private Function Shortcut_Read() As String
+
+  Return $sShortcut
+
+End
+
+Private Sub Shortcut_Write(Value As String)
+
+  $sShortcut = Value
+  SetOpacity
+  Me.Refresh
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  SetOpacity
+  Me.Refresh
+
+End
+
+Private Function Font_Read() As Font
+
+  Return $hFont
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $hFont = Value.Copy()
+
+End
+
+Public Sub DrawingArea_Arrange()
+  
+  SetOpacity
+  
+End
+

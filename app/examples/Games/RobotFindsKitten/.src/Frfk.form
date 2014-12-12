@@ -1,0 +1,32 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(25.1429,22.5714,110,79)
+  Background = &H000000&
+  Foreground = &HFFFFFF&
+  Text = ("robotfindskitten")
+  Resizable = False
+  { Esc Button
+    MoveScaled(102,1,7,5)
+    Visible = False
+    Background = &H000000&
+    Foreground = &HFFFFFF&
+    Text = ("Esc")
+    Border = False
+    Cancel = True
+  }
+  { Timer1 #Timer
+    Enabled = True
+    Delay = 200
+  }
+  { Heart PictureBox
+    MoveScaled(40,20,29.1429,24)
+    Visible = False
+    Foreground = &HFFFFFF&
+    Picture = Picture["heart.png"]
+  }
+  { TextLabel1 TextLabel
+    MoveScaled(1,1,100,10)
+    Text = ("In this game, you are robot (#). Your job is to find kitten. This task is complicated by the existence of various things which are not kitten. Robot must touch items to determine if they are kitten or not. The game ends when robot finds kitten. Alternatively, you may end the game by hitting the Esc key.\n")
+  }
+}

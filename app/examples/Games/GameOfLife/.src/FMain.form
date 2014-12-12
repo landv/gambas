@@ -1,0 +1,162 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,125,95)
+  Text = ("The Game of Life")
+  Icon = Picture["glob2-icon-48x48.png"]
+  Resizable = False
+  { Panel1 Panel
+    MoveScaled(1,1,29,23)
+    Border = Border.Plain
+    { Label3 Label
+      MoveScaled(1,1,16,4)
+      Font = Font["Bold,+2"]
+      Text = ("GameOfLife")
+    }
+    { Label7 Label
+      MoveScaled(1,4,18,4)
+      Text = ("The Game of Life")
+      Alignment = Align.Left
+    }
+    { PictureBox1 PictureBox
+      MoveScaled(20,1,8,8)
+      Picture = Picture["glob2-icon-48x48.png"]
+    }
+    { Label4 TextLabel
+      MoveScaled(1,10,26,12)
+      Font = Font["-1"]
+      Text = ("Written in Gambas<br>\nby <b>Iman Karim</b><br>\nand <b>Benoît Minisini</b>\n<p>\n<i>Thanks to the Gambas team!</i>")
+    }
+  }
+  { dwgGame DrawingArea
+    MoveScaled(31,1,93,93)
+    Background = &HFFFFFF&
+    Border = Border.Plain
+    Cached = True
+  }
+  { Button1 Button
+    MoveScaled(1,26,29,6)
+    Text = ("Spawn First Generation")
+  }
+  { Slider1 Slider
+    MoveScaled(1,44,29,4)
+    MinValue = 20
+    MaxValue = 1000
+    Step = 10
+    PageStep = 50
+    Value = 20
+  }
+  { tmrEvolution #Timer
+    #MoveScaled(39,20)
+    Delay = 300
+  }
+  { togEvolution ToggleButton
+    MoveScaled(1,33,29,6)
+    Text = ("Start Evolution")
+  }
+  { lblDelay TextLabel
+    MoveScaled(1,40,25,4)
+    Text = ("Evolution Delay: 20ms")
+  }
+  { TabStrip1 TabStrip
+    MoveScaled(1,49,29,45)
+    Count = 2
+    Index = 0
+    Text = ("Survival")
+    { chkEight CheckBox
+      MoveScaled(2,36,20,3)
+      Text = ("8 Neighbours")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { chkSeven CheckBox
+      MoveScaled(2,33,20,3)
+      Text = ("7 Neighbours")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { chkSix CheckBox
+      MoveScaled(2,30,20,3)
+      Text = ("6 Neighbours")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { chkFive CheckBox
+      MoveScaled(2,27,20,3)
+      Text = ("5 Neighbours")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { chkFour CheckBox
+      MoveScaled(2,24,20,3)
+      Text = ("4 Neighbours")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { chkThree CheckBox
+      MoveScaled(2,21,20,3)
+      Text = ("3 Neighbours")
+      Tristate = True
+    }
+    { chkTwo CheckBox
+      MoveScaled(2,18,20,3)
+      Text = ("2 Neighbours")
+      Tristate = True
+      Value = CheckBox.None
+    }
+    { chkOne CheckBox
+      MoveScaled(2,15,20,3)
+      Text = ("1 Neighbour")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { chkZero CheckBox
+      MoveScaled(2,12,20,3)
+      Text = ("0 Neighbour")
+      Tristate = True
+      Value = CheckBox.True
+    }
+    { TextLabel1 TextLabel
+      MoveScaled(1,1,25,10)
+      Text = ("Select the Count of Neighbours where a cell will die or keep its state.")
+      Alignment = Align.Top
+    }
+    Index = 1
+    Text = ("Options")
+    { TextLabel3 TextLabel
+      MoveScaled(1,1,26,12)
+      Text = ("Set here the probability that a Cell will be born or not when you spawn the first Generation.")
+      Alignment = Align.Top
+    }
+    { Slider2 Slider
+      MoveScaled(1,14,25,4)
+      Value = 50
+    }
+    { Label1 Label
+      MoveScaled(1,18,7,3)
+      Text = ("Alive")
+    }
+    { Label2 Label
+      MoveScaled(19,18,7,3)
+      Text = ("Dead")
+      Alignment = Align.Right
+    }
+    { chkBorder CheckBox
+      MoveScaled(1,36,24,4)
+      Text = ("Draw cell borders")
+    }
+    { chkSmall CheckBox
+      MoveScaled(1,24,24,4)
+      Text = ("Small generation")
+    }
+    { chkSymetryV CheckBox
+      MoveScaled(1,32,24,4)
+      Text = ("Vertical symetry")
+    }
+    { chkSymetryH CheckBox
+      MoveScaled(1,28,24,4)
+      Text = ("Horizontal symmetry")
+    }
+    Index = 0
+  }
+}

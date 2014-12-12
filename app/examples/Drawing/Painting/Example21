@@ -1,0 +1,14 @@
+Public Sub Example21()
+  
+  If Not $hSvgImage Then 
+    $hSvgImage = SvgImage.Load("gambas.svg")
+    Paint.Begin($hSvgImage)
+    Paint.Brush = Paint.RadialGradient(200, 140, 40, 215, 115, [Color.RGB(255, 0, 0, 64), Color.White], [1.0, 0.1])
+    Paint.Arc(200, 140, 40)
+    Paint.Fill
+    Paint.End
+  Endif
+  
+  $hSvgImage.Paint
+  
+End

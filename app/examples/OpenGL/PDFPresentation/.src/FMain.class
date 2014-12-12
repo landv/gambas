@@ -1,0 +1,111 @@
+' Gambas class file
+
+Private currentDoc As CpdfPresentation
+'PUBLIC Screen AS NEW Window(TRUE) AS "Screen"
+Private currentLogo As Clogo
+
+Public Sub glaPresentation_Draw()
+
+  If Not currentDoc Then Return
+
+  If Not MMain.ShowLogo Then
+    currentDoc.Draw()
+  Else
+    currentLogo.Draw()
+    If currentLogo.Finished = True Then MMain.ShowLogo = False
+  Endif
+
+End
+
+Public Sub glaPresentation_KeyPress()
+
+  If Key.code = Key.Escape Then Me.Close()
+  
+  If Key.Code = key["f"] Then 
+    Me.FullScreen = Not Me.Fullscreen
+    panSelect.Visible = Not Me.FullScreen
+  Endif
+
+  If Not MMain.ShowLogo Then
+    ' right arrow
+    If Key.Code = Key.Right Then currentDoc.MoveNext()
+    ' left arrow
+    If Key.code = Key.Left Then currentDoc.MovePrev()
+  Else
+    If Key.Code = Key.Space Then currentLogo.Quit()
+  Endif
+
+End
+
+Public Sub glaPresentation_Resize()
+
+  If Not currentDoc Then Return
+
+  If MMain.ShowLogo Then
+    currentLogo.Resize(glaPresentation.Width, glaPresentation.Height)
+  Else
+    currentDoc.Resize(glaPresentation.Width, glaPresentation.Height)
+  Endif  
+
+End
+
+Public Sub Form_Open()
+
+  glaPresentation.SetFocus
+
+End
+
+Public Sub timUpdate_Timer()
+
+  glaPresentation.Refresh
+
+End
+
+Public Sub btnPath_Click()
+
+  Dim sPath As String
+
+  Dialog.Title = ("Select a PDF file")
+  Dialog.Filter = ["*.pdf", ("PDF files")]
+  If Dialog.OpenFile() Then Return
+  sPath = Dialog.Path
+  txtPath.Text = sPath
+
+  timUpdate.Stop
+
+  CurrentDoc = New CpdfPresentation(sPath, MMain.FrameRate)
+  currentDoc.Effect = currentDoc.Rotate
+  
+  currentLogo = New Clogo(MMain.FrameRate)
+  
+  glaPresentation_Resize
+  
+  timUpdate.Delay = 1000 / MMain.FrameRate
+  Print "Frame rate is "; Format(1000 / timUpdate.Delay, "#.##"); " images by second"
+  timUpdate.Start
+  
+  glaPresentation.SetFocus
+
+End
+
+Public Sub glaPresentation_MouseWheel()
+
+  If Not currentDoc Then Return
+  If MMain.ShowLogo Then Return
+
+  If Mouse.Delta < 0 Then 
+    currentDoc.ZoomIn
+  Else
+    currentDoc.ZoomOut
+  Endif
+    
+
+End
+
+Public Sub btnHelp_Click()
+
+  Message("<h2>PDFPresentation example</h2><i>Made by Laurent Carlier & Benoît Minisini.</i><p>"
+    "Select a PDF file, then press SPACE. Use the left and right arrows to flick through the document.")
+  glaPresentation.SetFocus
+
+End

@@ -1,0 +1,25 @@
+Public Sub Example16()
+  
+  Paint.Font.Name = "Sans"
+  Paint.Font.Size = 90
+  Paint.Font.Bold = True
+  Paint.MoveTo(10, 135)
+  Paint.Text("Hello")
+  Paint.Fill
+  
+  Paint.MoveTo(70, 165)
+  Paint.text("void")
+  Paint.Brush = Paint.Color(Color.RGB(128, 128, 255))
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(0)
+  Paint.LineWidth = 2.56
+  Paint.Stroke
+  
+  'Draw helping lines
+  Paint.Brush = Paint.Color(Color.RGB(255, 31, 31, 93))
+  Paint.Arc(10, 135, 5.12)
+  Paint.ClosePath
+  Paint.Arc(70, 165, 5.12)
+  Paint.Fill
+  
+End

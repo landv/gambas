@@ -1,0 +1,130 @@
+' Gambas class file
+
+Library "libgsl:0"
+
+Private Extern gsl_spline_alloc(pInterpType As Pointer, iSize As Integer) As Pointer
+Private Extern gsl_spline_init(pSpline As Pointer, ax As Pointer, ay As Pointer, iSize As Integer) As Integer
+Private Extern gsl_spline_eval(pSpline As Pointer, x As Float, pAcc As Pointer) As Float
+Private Extern gsl_interp_accel_alloc() As Pointer
+Private Extern gsl_spline_free(pSpline As Pointer)
+Private Extern gsl_interp_accel_free(pAcc As Pointer)
+
+Public pointsArr_x As New Float[]
+Public pointsArr_y As New Float[]
+Public splineArr_x As New Integer[]
+Public splineArr_y As New Integer[]
+
+Public Sub btnCubicSpline_Click()
+
+   Dim xi As Integer
+   Dim acc As Pointer
+   Dim spline As Pointer
+   Dim gsl_interp_cspline As Pointer
+
+   If pointsArr_x.Length < 3 Then Return
+
+   gsl_interp_cspline = Pointer@(System.GetExternSymbol("libgsl:0", "gsl_interp_cspline"))
+   acc = gsl_interp_accel_alloc()
+   spline = gsl_spline_alloc(gsl_interp_cspline, pointsArr_x.Count)
+   gsl_spline_init(spline, pointsArr_x.Data, pointsArr_y.Data, pointsArr_x.Count)
+
+   xi = pointsArr_x[0]
+   While xi < pointsArr_x[pointsArr_x.Max]
+      splineArr_x.Add(xi)
+      splineArr_y.Add(gsl_spline_eval(spline, xi, acc))
+      xi += 1
+   Wend
+   dwgGraph.Refresh
+
+   gsl_spline_free(spline)
+   gsl_interp_accel_free(acc)
+
+End
+
+Public Sub dwgGraph_MouseDown()
+
+   splineArr_x.Clear
+   splineArr_y.Clear
+   If (pointsArr_x.Length = 0) Or If (Mouse.X > pointsArr_x[pointsArr_x.Max]) Then
+      pointsArr_x.Add(Mouse.X)
+      pointsArr_y.Add(Mouse.Y)
+   Else
+      dwgGraph.Background = &HFF8080
+   Endif
+   dwgGraph.Refresh
+
+End
+
+Public Sub dwgGraph_MouseUp()
+
+   If dwgGraph.Background <> Color.White Then dwgGraph.Background = Color.White
+
+End
+
+Public Sub dwgGraph_Draw()
+
+   Dim i As Integer
+
+   'lines
+   paint.Brush = paint.Color(Color.DarkGray)
+   Paint.LineWidth = 0.5
+   paint.Font.Size = 10
+   For i = 0 To pointsArr_x.Max
+      If i = 0 Then
+         Paint.MoveTo(pointsArr_x[i], pointsArr_y[i])
+      Else
+         Paint.LineTo(pointsArr_x[i], pointsArr_y[i])
+      Endif
+   Next
+   paint.Stroke
+
+   'numbers
+   For i = 0 To pointsArr_x.Max
+      paint.Text(i + 1, pointsArr_x[i], pointsArr_y[i] - 8)
+   Next
+   paint.Fill
+
+   'points
+   paint.Brush = paint.Color(Color.red)
+   For i = 0 To pointsArr_x.Max
+      Paint.Arc(pointsArr_x[i], pointsArr_y[i], 3)
+      Paint.Fill
+   Next
+
+   'spline
+   If splineArr_x.Count Then
+      paint.Brush = paint.Color(Color.DarkMagenta)
+      Paint.LineWidth = 1.0
+      For i = 0 To splineArr_x.Max
+         If i = 0 Then
+            Paint.MoveTo(splineArr_x[i], splineArr_y[i])
+         Else
+            Paint.LineTo(splineArr_x[i], splineArr_y[i])
+         Endif
+      Next
+      paint.Stroke
+   Endif
+
+End
+
+Public Sub btnClear_Click()
+
+   pointsArr_x.Clear
+   pointsArr_y.Clear
+   splineArr_x.Clear
+   splineArr_y.Clear
+   dwgGraph.Refresh
+
+End
+
+Public Sub btnAbout_Click()
+
+   Message.Info("<h2>Gnu Scientific Library example</h2>Made by <b>Juergen Zdero</b> (juergen@zdero.eu) and <b>Benoît Minisini</b> (gambas@users.sourceforge.net)")
+
+End
+
+Public Sub btnClose_Click()
+
+   Me.Close
+
+End

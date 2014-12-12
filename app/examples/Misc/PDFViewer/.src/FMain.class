@@ -1,0 +1,472 @@
+' Gambas class file
+
+'***************************************************************************
+'
+'  FMain.class
+'
+'  PdfViewer gb.pdf component example
+'
+'            (C) 2007 Daniel Campos Fernández <dcamposf@gmail.com>
+'                2012 Bernd Brinkmann (modifications on the search and zoom function) <brinkmann_bernd@gmx.de> 
+'  
+'  This program is free software; you can redistribute it and/or modify
+'  it under the terms of the GNU General Public License as published by
+'  the Free Software Foundation; either version 1, or (at your option)
+'  any later version.
+'
+'  This program is free software; you can redistribute it and/or modify
+'  it under the terms of the GNU General Public License as published by
+'  the Free Software Foundation; either version 1, or (at your option)
+'  any later version.
+'
+'  This program is distributed in the hope that it will be useful,
+'  but WITHOUT ANY WARRANTY; without even the implied warranty of
+'  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'  GNU General Public License for more details.
+'
+'  You should have received a copy of the GNU General Public License
+'  along with this program; if not, write to the Free Software
+'  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+'
+'***************************************************************************
+
+Public hPdf As New PdfDocument
+Public cIndex As Integer 
+Public CurrentPage As Integer 
+Public CurrentZoom As Float = 1.0
+Private bExit As Boolean
+Private currentSearchResult As Short = 0 'Contains the information which of the search results on this page is marked
+Private NumberOfSearchResults As Integer
+Private currentSearchResultSynonyms As Short = 0
+Private ScrollXPositionBeforeZoom As Float
+Private ScrollYPositionBeforeZoom As Float
+
+
+Public Sub BtOpen_Click()
+  
+  Dialog.Filter = ["*.pdf", ("Pdf documents")]
+  If Dialog.OpenFile(False) Then Return 
+  
+  hPdf.Close()
+  Try hPdf.Open(Dialog.Path)
+  If Error Then 
+    Message.Error(Error.Text)
+    Return 
+  End If
+
+  CurrentZoom = 1
+  CurrentPage = 1
+  RenderPage()
+  BtPrev.Enabled = False 
+  If hPdf.Count > 1 Then 
+    BtNext.Enabled = True 
+  Else 
+    BtNext.Enabled = False 
+  End If
+  txtGotoPage.Enabled = True
+  btZoomIn.Enabled = True 
+  btZoomOut.Enabled = True 
+  btRotate.Enabled = True 
+  pBox.Visible = True 
+  txtFind.Enabled = True 
+
+  tvIndex.Clear()
+  If hPdf.HasIndex Then 
+    tvIndex.Visible = True 
+    AddIndex(0, "")
+    splIndex.Layout = [1, 3]
+  Else 
+    tvIndex.Visible = False 
+  End If
+  
+End
+
+Public Function AddIndex(nItem As Integer, pItem As String) As Integer 
+  
+  Dim pR As String  
+  Dim iPage As Integer
+  
+  Do
+    iPage = 1
+    Try iPage = hPdf.Index.Data.Page
+    If Error Then Print Error.Text
+    pR = nItem & "-" & iPage
+    tvIndex.Add(nItem & "-" & iPage, hPdf.Index.Title, Null, pItem)
+    Inc nItem
+    If hPdf.Index.HasChildren Then 
+     hPdf.Index.MoveChild()
+     nItem = AddIndex(nItem + 1, pR)
+     hPdf.Index.MoveParent()
+    End If
+  Loop Until hPdf.Index.MoveNext()
+  
+  Return nItem
+  
+End
+
+Public Sub tvIndex_Click()
+
+  CurrentPage = Mid(tvIndex.Current.Key, InStr(tvIndex.Current.Key, "-") + 1)
+  BtPrev.Enabled = True 
+  BtNext.Enabled = True 
+  If CurrentPage = 1 Then BtPrev.Enabled = False 
+  If CurrentPage = hPdf.Count Then BtNext.Enabled = False 
+  RenderPage() 
+
+End
+
+Public Sub RenderPage(Optional FoundText As String, Optional Casesensetivity As Boolean)
+ '---------------------------------------------------------------------------
+   'This function is called everytime something changed for example a new search result has to be displayed or the page 
+   'has canged the parameters FoundText and Casesensetivity are only of interrest if the funktion is called from a search frunction
+   '--------------------------------------------------------------------------
+   Dim hPic As Picture 
+   
+   ScrollXPositionBeforeZoom = ViewPort.ScrollX / ViewPort.ScrollWidth
+   ScrollYPositionBeforeZoom = ViewPort.ScrollY / ViewPort.ScrollHeight
+
+   If CurrentZoom > 0.0 Then 
+      hPdf.Zoom = CurrentZoom
+   Else
+      Message.Error("Can't set zoom to " & CurrentZoom, "OK")
+   Endif
+   
+   lblInfo.Text = " of" & " " & hPdf.Count  
+   If txtGotoPage.text <> CurrentPage Then txtGotoPage.text = CurrentPage  'if the parameter currentPage is different from the current page the current page gets changed
+   If currentSearchResult = 0 Then     'if a search result is highlighted the focus will not be changed to the top
+      ViewPort.Scroll(0, 0)
+   Endif
+   
+   hPic = hPdf[CurrentPage].Image.Picture
+   
+   'the search result gets highlighted here and the focus is set to the right position again if something has changed for example the zoomfactor 
+   If currentSearchResult > 0 And FoundText <> "" Then        ' resets the mark on the current search result
+      hPdf[CurrentPage].Find(FoundText, Casesensetivity)
+      Paint.Begin(hPic)
+      Paint.Brush = Paint.Color(Color.RGB(0, 0, 255, 192))
+      Paint.Rectangle(hPdf[CurrentPage].Result[currentSearchResult - 1].Left, hPdf[CurrentPage].Result[currentSearchResult - 1].Top, hPdf[CurrentPage].Result[currentSearchResult - 1].Width, hPdf[CurrentPage].Result[currentSearchResult - 1].Height)
+      ViewPort.ScrollY = ViewPort.ScrollHeight * (hPdf[CurrentPage].Result[currentSearchResult - 1].Top / Paint.Height) 
+      Paint.Fill
+      Paint.End
+      PBox.Picture = hPic 
+   Endif
+   
+   PBox.Picture = hPic 
+   PBox.Resize(hPdf[CurrentPage].Width, hPdf[CurrentPage].Height)
+   Form_Resize()
+   
+Catch
+   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.")
+   
+End
+
+
+Public Sub Form_Resize()
+
+  If CurrentPage = 0 Then Return 
+   ViewPort.ScrollX = ScrollXPositionBeforeZoom * ViewPort.ScrollWidth
+   ViewPort.Scrolly = ScrollYPositionBeforeZoom * ViewPort.ScrollHeight
+
+End
+
+
+Public Sub splIndex_Resize()
+
+  Form_Resize()  
+
+End
+
+Public Sub BtNext_Click()
+   
+   Inc CurrentPage
+   currentSearchResult = 0
+   currentSearchResultSynonyms = 0
+   If CurrentPage = hPdf.Count Then
+      BtNext.Enabled = False
+   End If    
+   BtPrev.Enabled = True 
+   BtPrev.SetFocus 
+   txtGotoPage.text = CurrentPage   'this automatically calls the function txtGotoPage_Change and changes the page to the new "currentPage"
+   
+End
+
+Public Sub BtPrev_Click()
+   
+   Dec CurrentPage   
+   currentSearchResult = 0
+   currentSearchResultSynonyms = 0
+   If CurrentPage = 1 Then
+      BtPrev.Enabled = False
+   End If  
+   BtNext.Enabled = True 
+   BtNext.SetFocus 
+   txtGotoPage.text = CurrentPage     'this automatically calls the function txtGotoPage_Change and changes the page to the new "currentPage"
+   
+End
+Public Sub btZoomIn_Click()
+
+  If CurrentZoom < 3 Then CurrentZoom += 0.1
+  If CurrentZoom = 3 Then btZoomIn.Enabled = False 
+  btZoomOut.Enabled = True 
+  RenderPage()
+
+End
+
+Public Sub btZoomOut_Click()
+
+  If CurrentZoom > 0.5 Then CurrentZoom -= 0.1
+  If CurrentZoom = 0.5 Then btZoomOut.Enabled = False 
+  btZoomIn.Enabled = True 
+  RenderPage()
+
+End
+
+Public Sub Form_Close()
+
+  hPdf.Close()
+
+End
+
+Public Sub Button1_Click()
+
+  Fabout.ShowDialog()
+
+End
+
+Public Sub btRotate_Click()
+
+  Select Case hPdf.Orientation
+    Case PdfDocument.Normal
+      hPdf.Orientation = PdfDocument.Sideways
+    Case PdfDocument.Sideways
+      hPdf.Orientation = PdfDocument.Inverted 
+    Case PdfDocument.Inverted
+      hPdf.Orientation = PdfDocument.SidewaysInverted
+    Case PdfDocument.SidewaysInverted
+      hPdf.Orientation = PdfDocument.Normal 
+  End Select 
+  
+  RenderPage()
+  
+End
+
+Public Sub txtGotoPage_Change()
+ 
+   '---------------------------------------------------------------------------
+   'This function changes the page to the page number written in the textbox "txtGotoPage"
+   'the text in this textbox can be changed by the user for example by klicking on the next button or other funktions such as 
+   'a search funktion
+   '--------------------------------------------------------------------------
+   '
+   If Bexit Or Last.text = "" Then Return
+   'the last search results get removed by the next four lines
+   BtSearchNext.Enabled = False                 
+   BtSearchPrev.Enabled = False
+   currentSearchResult = 0
+   If Val(Last.text) > hPdf.Count Or Val(Last.text) = hPdf.Count Then   'hPdf.count contains the length of the pdf document
+      bExit = True   
+      txtGotoPage.text = hPdf.Count
+      BtNext.Enabled = False        'because the last page is now displayed the next page button gets disabled
+      BtPrev.Enabled = True
+      bExit = False
+   Else
+      BtNext.Enabled = True 
+      If Val(Last.text) = 1 Or Val(Last.text) < 1 Then
+         bExit = True
+         txtGotoPage.text = 1  
+         bExit = False
+         BtPrev.Enabled = False  
+      Else  
+         BtPrev.Enabled = True   
+      End If 
+   End If   
+   currentPage = Val(Last.text)
+   Bexit = False  
+   RenderPage()
+   
+End
+
+Public Sub txtGotoPage_KeyPress()
+   
+   ' If modUtil.AllowKeys(const.AllowKeys_NumbersOnly, Key.code) = False Then
+   '    Stop Event
+   '    Return
+   ' End If
+   
+End
+
+Public Sub txtFind_Activate()
+   
+   '---------------------------------------------------------------------------
+   'This function is called if the user wants fo find the string inside the textbox "TxtFind" by hitting the enter key
+   '--------------------------------------------------------------------------
+
+   If Bexit Then Return 
+   If txtFind.Text <> "" Then 
+      If currentSearchResult > 0 Then
+         If currentSearchResult = NumberOfSearchResults Then      
+            If currentpage = hPdf.Count Then
+               CurrentPage = 1
+            Else
+               CurrentPage = CurrentPage + 1
+            Endif
+            FindNext()
+         Else
+            currentSearchResult = currentSearchResult + 1
+            RenderPage(txtFind.Text)
+         Endif
+      Else
+         FindNext()
+      Endif
+   End If
+   
+End
+
+Public Sub txtFind_Click()
+  
+  txtFind_Activate
+  
+End
+
+
+Private Sub FindNext()
+   '---------------------------------------------------------------------------
+   '    This function finds the next string in the pdf matching the search string located after the current search result
+   '---------------------------------------------------------------------------   
+   Dim hPic As Picture 
+   Dim currentSearchPage As Short = CurrentPage ' contains the information on which page the search funktion searched the last time
+   Dim LastPageToSearch As Short                ' contains the information which page is the last page for the find function
+   
+   If CurrentPage = 1 Then
+      LastPageToSearch = 1
+   Else
+      LastPageToSearch = CurrentPage 
+      
+   Endif
+   currentSearchResultSynonyms = 0
+   currentSearchResult = 0
+   BtSearchNext.Enabled = False
+   BtSearchPrev.Enabled = False
+   Repeat 
+      hPic = hPdf[currentSearchPage].Image.Picture
+      hPdf[currentSearchPage].Find(txtFind.Text, False)
+      
+      If hPdf[currentSearchPage].Result.Count > 0 Then
+         CurrentPage = currentsearchPage 
+         currentSearchResult = 1
+      Else
+         If currentSearchPage = hPdf.Count Then 
+            currentSearchPage = 1
+         Else
+            currentSearchPage = currentSearchPage + 1
+         Endif
+      Endif
+   Until currentSearchResult <> 0 Or currentSearchPage = LastPageToSearch 
+   If hPdf[currentSearchPage].Result.Count > 0 Then
+      CurrentPage = currentSearchPage
+      
+      txtGotoPage.text = CurrentPage
+      currentSearchResult = 1
+      NumberOfSearchResults = hPdf[currentSearchPage].Result.Count
+      BtSearchNext.Enabled = True
+      BtSearchPrev.Enabled = True
+   
+      
+      RenderPage(txtFind.Text)
+      
+   Else
+      txtFind.Background = Color.Lighter(16711680)   '16711680 = Red
+      RenderPage()  
+      
+   Endif
+   
+Catch
+   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.\n\n" & Error.Where & ": " & Error.Text)
+   
+End
+
+Private Sub FindPrevious()
+   '---------------------------------------------------------------------------
+   '    This function finds the next string in the pdf matching the search string located before the current search result
+   '---------------------------------------------------------------------------
+   Dim hPic As Picture 
+   Dim currentSearchPage As Short = CurrentPage ' contains the information on which page the search funktion searched the last time
+   Dim LastPageToSearch As Short                ' contains the information which page is the last page for the find function
+   
+   If CurrentPage = hPdf.Count Then
+      LastPageToSearch = 0
+   Else
+      LastPageToSearch = CurrentPage 
+   Endif
+   currentSearchResultSynonyms = 0
+   currentSearchResult = 0
+   BtSearchNext.Enabled = False
+   BtSearchPrev.Enabled = False
+   
+   Repeat 
+      hPic = hPdf[currentSearchPage].Image.Picture
+      hPdf[currentSearchPage].Find(txtFind.Text, False)
+      If hPdf[currentSearchPage].Result.Count > 0 Then
+         CurrentPage = currentsearchPage 
+         currentSearchResult = 1
+      Else
+         If currentSearchPage = 1 Then 
+            currentSearchPage = hPdf.Count
+         Else
+            currentSearchPage = currentSearchPage - 1
+         Endif
+      Endif
+   Until currentSearchResult <> 0 Or currentSearchPage = LastPageToSearch 
+   
+   If hPdf[currentSearchPage].Result.Count > 0 Then
+      CurrentPage = currentSearchPage
+      
+      txtGotoPage.text = CurrentPage
+      currentSearchResult = hPdf[currentSearchPage].Result.Count
+      NumberOfSearchResults = hPdf[currentSearchPage].Result.Count
+      BtSearchNext.Enabled = True
+      BtSearchPrev.Enabled = True
+      RenderPage(txtFind.Text)
+   Endif
+   
+Catch
+   Message.Info("An error occurred whilst trying to view the document.\n\nIf this persists please report this problem.")
+   
+End
+
+Public Sub BtSearchNext_Click()
+   '---------------------------------------------------------------------------
+     'This funktion is highlighting the next seach string located after the current search string
+   '---------------------------------------------------------------------------
+   If currentSearchResult = NumberOfSearchResults Then      
+      If currentpage = hPdf.Count Then
+         CurrentPage = 1
+      Else
+         CurrentPage = CurrentPage + 1
+      Endif
+      FindNext()
+   Else
+      currentSearchResult = currentSearchResult + 1
+      RenderPage(txtFind.Text)
+   Endif
+   
+End
+
+Public Sub BtSearchPrev_Click()
+   '---------------------------------------------------------------------------
+    'This funktion is highlighting the next seach string located before the current search string
+   '---------------------------------------------------------------------------
+   If currentSearchResult > 0 Then
+      If currentpage = 1 Then
+         currentpage = hPdf.Count
+      Else
+         CurrentPage = CurrentPage - 1
+      Endif
+      FindPrevious()
+   Else
+      currentSearchResult = currentSearchResult - 1
+      RenderPage(txtFind.Text)
+   Endif
+   
+End
+
