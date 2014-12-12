@@ -154,7 +154,7 @@ Public Sub DrawingArea_Draw()
   Paint.Stroke
   Paint.AntiAlias = True
   
-  If Not $hSoft Or If $hSoft.State < CSoftware.STATE_READY Then Return
+  If Not $hSoft Then Return
   
   If $hSoft.IsInstalled() Then
     If $hSoft.CanUpgrade() Then

@@ -180,7 +180,7 @@ Private Function WhoMove(direction As Integer) As Picture
 End
 
 Public Sub ShowGameBoard()
-  Dim control As Object
+
   Dim row As Integer
   Dim col As Integer
   For row = 0 To 9
@@ -188,6 +188,7 @@ Public Sub ShowGameBoard()
       PicturesBoxes[row, col].Picture = Game.Cells[row, col].Pic
     Next
   Next
+  
 End
 
 Public Sub MakePictureBoxes()

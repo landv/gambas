@@ -98,9 +98,12 @@
             Font = Font["Bold"]
             Text = ("Description")
           }
-          { txtDescription TextLabel
-            MoveScaled(2,4,35,5)
-            AutoResize = True
+          { txtDescription TextArea
+            MoveScaled(2,5,29,4)
+            ReadOnly = True
+            Wrap = True
+            Border = False
+            ScrollBar = Scroll.None
           }
           { panURL HBox
             MoveScaled(2,10,29,4)

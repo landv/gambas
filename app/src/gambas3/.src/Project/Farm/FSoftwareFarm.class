@@ -300,7 +300,8 @@ Private Sub UpdateSoftware()
       
     Else
     
-      txtDescription.Text = Replace(Html(sText), "\n", "<br>")
+      txtDescription.Text = sText
+      txtDescription.H = txtDescription.Font.RichTextHeight(Replace(Html(sText), "\n", "<br>"), txtDescription.W)
       
     Endif
     

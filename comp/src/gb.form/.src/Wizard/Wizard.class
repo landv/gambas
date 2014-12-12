@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,Border=True,ActionText,ActionPicture"
+Public Const _Properties As String = "*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,Border=True,ActionText,ActionPicture,Animated"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TabStrip"
 Public Const _IsMultiContainer As Boolean = True
@@ -25,6 +25,7 @@ Property Border As Boolean
 Property TextFont As Font
 Property ActionText As String
 Property ActionPicture As Picture
+Property Animated As Boolean
 
 Private $hWizard As FWizard
 Private $aStep As New _WizardContainer[]
@@ -33,6 +34,8 @@ Private $iLast As Integer = -1
 Private $bShowIndex As Boolean
 Private $sActionText As String
 Private $hActionPicture As Picture
+Private $iAllowAnimation As Integer
+Private $bAnimated As Boolean
 
 Public Sub _new()
 
@@ -114,6 +117,52 @@ Private Function Index_Read() As Integer
 
 End
 
+Private Sub DoAnimate(iSrc As Integer, iDest As Integer)
+
+  Dim fTime As Float
+  Dim hCont As Container
+  Dim hSrc As _WizardContainer
+  Dim hDest As _WizardContainer
+  
+  hCont = $hWizard.GetContainer()
+  hSrc = $aStep[iSrc]
+  hDest = $aStep[iDest]
+  
+  hSrc.Show
+  hDest.Show
+  hSrc.Ignore = True
+  hDest.Ignore = True
+  
+  If iDest > iSrc Then
+    
+    hDest.Move(hCont.W, 0)
+    
+    fTime = Timer
+    While hDest.X > 0
+      hDest.X = Max(0, hCont.W * (1 - (Timer - fTime) * 8))
+      hSrc.X = hDest.X - hCont.W
+      Wait
+    Wend
+    
+  Else
+    
+    hDest.Move(- hCont.W, 0)
+    
+    fTime = Timer
+    While hDest.X < 0
+      hDest.X = Min(0, - hCont.W * (1 - (Timer - fTime) * 8))
+      hSrc.X = hDest.X + hCont.W
+      Wait
+    Wend
+    
+  Endif
+
+  hDest.Raise
+  hSrc.Ignore = False
+  hDest.Ignore = False
+    
+End
+
 Private Sub Index_Write(iIndex As Integer)
 
   Dim bCancel As Boolean
@@ -138,6 +187,8 @@ Private Sub Index_Write(iIndex As Integer)
     Endif
   
   Endif
+
+  If $bAnimated And If $iAllowAnimation Then DoAnimate($iCurrent, iIndex)
 
   Me._Container = $aStep[iIndex]
 
@@ -239,7 +290,11 @@ End
 Public Sub Wizard_Previous()
 
   Dim iInd As Integer = GetPrevious($iCurrent)
-  If iInd >= 0 Then Index_Write(iInd)
+  If iInd >= 0 Then 
+    Inc $iAllowAnimation
+    Index_Write(iInd)
+    Dec $iAllowAnimation
+  Endif
 
 End
 
@@ -247,7 +302,9 @@ Public Sub Wizard_Next()
 
   Dim iInd As Integer = GetNext($iCurrent)
   If iInd >= 0 Then
+    Inc $iAllowAnimation
     Index_Write(iInd)
+    Dec $iAllowAnimation
   Else
     Raise BeforeChange
     Raise {Close}
@@ -337,5 +394,17 @@ End
 Private Sub ActionPicture_Write(Value As Picture)
 
   $hActionPicture = Value
+
+End
+
+Private Function Animated_Read() As Boolean
+
+  Return $bAnimated
+
+End
+
+Private Sub Animated_Write(Value As Boolean)
+
+  $bAnimated = Value
 
 End
