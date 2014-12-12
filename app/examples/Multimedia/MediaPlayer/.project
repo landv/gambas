@@ -1,9 +1,9 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.5.90
+# Compiled with Gambas 3.6.90
 Title=Media player based on GStreamer
 Startup=FMain
 Icon=icon.png
-Version=3.6.2
+Version=3.6.90
 VersionFile=1
 Component=gb.image
 Component=gb.gui
@@ -12,11 +12,12 @@ Component=gb.desktop
 Component=gb.form.dialog
 Component=gb.settings
 Component=gb.media
-Description="This example is a demonstration of how to use GStreamer with Gambas to play any sound or video file."
+Description="Media player example.\n\nThis example is a demonstration of how to use GStreamer with Gambas to play any sound or video file."
 TabSize=2
 Translate=1
 Language=en
 Maintainer=benoit
+Vendor=Example
 Address=benoit@black-tower
 Url=www.endoftheinternet.com
 License=General Public License
@@ -49,3 +50,5 @@ Groups=suse:"Productivity/Multimedia/Video/Players"
 Menus=ubuntu:"Applications/Video"
 Categories=ubuntu:"Video"
 Groups=ubuntu:"video"
+Tags=Audio,AudioVideo,Video,Multimedia
+Screenshot=/home/benoit/mediaplayer.jpg

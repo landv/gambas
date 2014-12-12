@@ -164,7 +164,7 @@ End
 
 Public Sub GetInstalledDir() As String
   
-  Return Desktop.DataDir &/ "gambas3/src" &/ Vendor &/ Name
+  Return Desktop.DataDir &/ "gambas3/src" &/ LCase(Vendor) &/ Name
   
 End
 
@@ -269,9 +269,9 @@ Public Sub Install() As String
   
   sDir = Desktop.DataDir &/ "gambas3"
 
-  sSrcDir = sDir &/ "src" &/ Vendor
+  sSrcDir = sDir &/ "src" &/ LCase(Vendor)
   Project.MakeDir(sSrcDir)
-  sExecDir = Desktop.DataDir &/ "gambas3/bin" &/ Vendor
+  sExecDir = Desktop.DataDir &/ "gambas3/bin" &/ LCase(Vendor)
   Project.MakeDir(sExecDir)
   
   ' Download source archive
@@ -384,7 +384,8 @@ Public Sub Install() As String
       Endif
     Next
   
-    hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & Vendor & "-" & sName & ".desktop")
+    Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop"
+    hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop")
     With hDesktopFile
       .Name = hProjectInfo.GetTitle()
       .Exec = sExecDir &/ sName & ".gambas"
@@ -413,8 +414,8 @@ Public Sub Uninstall() As String
   
   Inc Application.Busy
   Exec ["rm", "-rf", GetInstalledDir()] Wait
-  Try Kill Desktop.DataDir &/ "gambas3/bin" &/ Name & ".gambas"
-  Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & Name & ".desktop"
+  Try Kill Desktop.DataDir &/ "gambas3/bin" &/ LCase(Vendor) &/ Name & ".gambas"
+  Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & Name & ".desktop"
   Dec Application.Busy
   
   Start

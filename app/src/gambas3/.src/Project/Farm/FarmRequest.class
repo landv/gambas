@@ -116,8 +116,12 @@ Public Sub Request_Finished()
   sResult = $hForm.Peek()
   aResult = Split(sResult, "\r\n", "", True)
   If aResult.Count = 0 Or If aResult[0] <> "10 OK" Then
-    iPos = InStr(aResult[0], " ")
-    ErrorText = Replace(Mid$(sResult, iPos + 1), "\r", "")
+    If aResult.Count Then
+      iPos = InStr(aResult[0], " ")
+      ErrorText = Replace(Mid$(sResult, iPos + 1), "\r", "")
+    Else
+      ErrorText = ("No answer.")
+    Endif
     Result = Null
     Raise Finished
     Return

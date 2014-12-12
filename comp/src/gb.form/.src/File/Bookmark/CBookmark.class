@@ -22,6 +22,7 @@ Private Function Path_Read() As String
   Dim sLink As String = {Link}
 
   If Left(sLink) <> "/" Then sLink = Mid$(sLink, 2)
+  If Len(sLink) > 1 And If Right(sLink) = "/" Then sLink = Left(sLink, -1)
   Return sLink  
 
 End
