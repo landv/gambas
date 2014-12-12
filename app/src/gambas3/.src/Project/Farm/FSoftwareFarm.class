@@ -561,21 +561,21 @@ Public Sub btnRemove_Click()
   
 End
 
-Public Sub txtVendor_Click()
-
-  txtVendor.Clear
-
-End
-
-Public Sub txtVendor_Change()
-
-  timLoad.Stop
-  timLoad.Start
-
-End
-
-Public Sub txtVendor_KeyPress()
-  
-  Project.OnVendorKeyPress()
-  
-End
+' Public Sub txtVendor_Click()
+' 
+'   txtVendor.Clear
+' 
+' End
+' 
+' Public Sub txtVendor_Change()
+' 
+'   timLoad.Stop
+'   timLoad.Start
+' 
+' End
+' 
+' Public Sub txtVendor_KeyPress()
+'   
+'   Project.OnVendorKeyPress()
+'   
+' End

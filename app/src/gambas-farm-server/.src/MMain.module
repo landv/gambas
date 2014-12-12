@@ -469,6 +469,8 @@ Private Sub PublishSoftware()
   
   DB.Delete("tag", "software = &1", rSoftware!id)
   
+  If Not aTag.Exist(sVendor) Then aTag.Add(sVendor)
+  
   For Each sTag In aTag
     
     rTag = DB.Find("name", "cname = &1", Lower(sTag))

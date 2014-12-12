@@ -204,17 +204,19 @@
           List = [("Most recent"), ("Most downloaded"), ("Most popular"), ("Installed")]
         }
         { Label5 Label
-          MoveScaled(41,0,11,4)
+          MoveScaled(41,0,12,4)
+          Visible = False
           AutoResize = True
-          Text = ("Vendor")
+          Text = ("Vendor name")
         }
         { Panel12 Panel
-          MoveScaled(49,0,32,4)
+          MoveScaled(59,0,32,4)
+          Visible = False
           Expand = True
           Arrangement = Arrange.Fill
           Border = Border.Plain
           { txtVendor ButtonBox
-            MoveScaled(0,0,31,4)
+            MoveScaled(1,0,31,4)
             Picture = Picture["icon:/small/clear"]
             Border = False
           }
