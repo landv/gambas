@@ -476,6 +476,7 @@ GB_DESC CGraphEdge[] = {
 
 	GB_PROPERTY_READ("Source", "s", GraphEdge_Src),
 	GB_PROPERTY_READ("Destination", "s", GraphEdge_Dst),
+	GB_PROPERTY("Weight", "f", Graph_NoProperty),
 
 	GB_METHOD("_property", "b", GraphEdge_property, "."),
 	GB_METHOD("_unknown", "v", GraphEdge_unknown, "."),
