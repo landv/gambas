@@ -49,10 +49,10 @@ Public Function TransformMPoint(ProjTo As Proj, MP As MapPoint) As MapPoint
   Endif
   
   sCom = Subst("cs2cs -f \"%f\" +init=&1 +to +init=&2<<EOF\n", $strProj, ProjTo._strProj)
-  sCom &= mp.Lat & " " & mp.Lon & "\nEOF"
+  sCom &= mp.lon & " " & mp.lat & "\nEOF"
   Shell sCom To sRes
   a = Split(Left(sRes, InStr(sRes, " ") - 1), Chr(9))
-  Return MapPoint(a[0], a[1])
+  Return MapPoint(a[1], a[0])
   
 End
 

@@ -399,6 +399,61 @@ Private Function GetTileUrl(hTile As _Tile) As String
 End
 
 
+' Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
+'   
+'   Dim hBound As MapBounds = Geo.TileBounds(X, Y, Z)
+'   Dim hbound2 As MapBounds
+'   ' Dim hbound2 As MapBounds = Geo.TileBounds(x + 1, y - 1, z)
+'   Dim hConv, hConv2 As MapBounds
+'   Dim sTemp As String
+'   Dim s As String
+'   
+'   If Not Me.MaxBounds.Collide(hbound) Then Return
+'   
+'   For Each s In $cWMSArgs
+'     
+'     sTemp &= "&" & $cWMSArgs.Key & "=" & s 
+'     
+'   Next
+'   
+'   If $cWMSArgs.Exist("bbox") Then 
+' 
+'     'Invertion de coordonée
+'     ' Print "de ->            ", hbound.lat2, hbound.Lon, hbound.Lat, hbound.Lon2
+'     ' hbound2 = $prjLatLon.TransformMBounds($prjWMS, hbound)
+'     ' Print "de lamb ->       ", hbound2.lat2, hbound2.Lon, hbound.Lat, hbound.Lon2
+'      hbound = MapBounds(MapPoint(hBound.lat2, hBound.lon), MapPoint(hBound.lat, hBound.lon2))
+'     ' Print "converti ->      ", hbound.lat, hbound.Lon, hbound.Lat2, hbound.Lon2
+'     ' hbound2 = $prjLatLon.TransformMBounds($prjWMS, hbound)
+'     ' Print "converti lamb -> ", hbound2.lat, hbound2.Lon, hbound.Lat2, hbound.Lon2
+'     ' Print
+'     If $prjWMS Then
+'       hbound = $prjLatLon.TransformMBounds($prjWMS, hbound)
+'     Endif
+'     sTemp = Replace(sTemp, "{lat}", CStr(hBound.Lat))
+'     sTemp = Replace(sTemp, "{lon}", CStr(hbound.Lon))
+'     sTemp = Replace(sTemp, "{lat2}", CStr(hbound.lat2))
+'     sTemp = Replace(sTemp, "{lon2}", CStr(hbound.lon2))
+'     
+'   Else
+'     If $cWMSArgs.Exist("tilerow") Or If $cWMSArgs.Exist("TILEROW") Then
+'       If InStr(sTemp, "{q}") Then
+'         sTemp = Replace(sTemp, "{q}", TileToQuadKey(x, y, z))
+'       Else
+'         sTemp = Replace(sTemp, "{x}", CStr(X))
+'         sTemp = Replace(sTemp, "{y}", CStr(Y))
+'         sTemp = Replace(sTemp, "{z}", CStr(Z))
+'         
+'       Endif
+'     Endif
+'   Endif
+'   
+'   'sTemp = $sPattern & 
+'   'sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
+'   Print sTemp
+'   Return $sPattern & "?" & sTemp
+'   
+' End
 Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
   
   Dim hBound As MapBounds = Geo.TileBounds(X, Y, Z)
@@ -406,9 +461,10 @@ Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As Strin
   Dim hConv, hConv2 As MapBounds
   Dim sTemp As String
   Dim s As String
+
   
   If Not Me.MaxBounds.Collide(hbound) Then Return
-  
+
   For Each s In $cWMSArgs
     
     sTemp &= "&" & $cWMSArgs.Key & "=" & s 
@@ -416,13 +472,15 @@ Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As Strin
   Next
   
   If $cWMSArgs.Exist("bbox") Then 
-
+'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
     'Invertion de coordonée
-    hbound = MapBounds(MapPoint(hBound.lon, hBound.lat2), MapPoint(hBound.Lon2, hBound.lat))
-    
+    'hbound = MapBounds(MapPoint(hBound.lat2, hBound.lon), MapPoint(hBound.lat, hBound.Lon2))
+    'Swap hbound.Lat, hbound.Lat2
+    'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
     If $prjWMS Then
       hbound = $prjLatLon.TransformMBounds($prjWMS, hbound)
     Endif
+    'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
     sTemp = Replace(sTemp, "{lat}", CStr(hBound.Lat))
     sTemp = Replace(sTemp, "{lon}", CStr(hbound.Lon))
     sTemp = Replace(sTemp, "{lat2}", CStr(hbound.lat2))
@@ -443,7 +501,12 @@ Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As Strin
   
   'sTemp = $sPattern & 
   'sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
-  
+ 
+   'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+   'Print X, Y, Z, Mid(sTemp, InStr(sTemp, "bbox"))
+  ' Print 
+  ' Print
+
   Return $sPattern & "?" & sTemp
   
 End
