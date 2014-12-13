@@ -10,7 +10,7 @@
     Background = &H3398C3&
   }
   { panSoftware VBox
-    MoveScaled(111,8,95,73)
+    MoveScaled(103,8,95,73)
     Visible = False
     Background = &HDF6B00&
     Expand = True
@@ -85,8 +85,8 @@
       { Separator1 Separator
         MoveScaled(28,12,16,0)
       }
-      { panDesc HBox
-        MoveScaled(0,14,73,36)
+      { panDesc HSplit
+        MoveScaled(2,14,73,36)
         Expand = True
         Spacing = True
         { Panel11 VBox
@@ -120,21 +120,19 @@
           }
           { panTags HPanel
             MoveScaled(2,20,26,8)
+            AutoResize = True
             Spacing = True
           }
-        }
-        { Separator2 Separator
-          MoveScaled(54,6,0,13)
         }
         { imvScreenshot ImageView
           MoveScaled(58,1,14,20)
           Expand = True
           Border = False
         }
-        { spnScreenshot Spinner
-          MoveScaled(56,23,8,6)
-          Ignore = True
-        }
+      }
+      { spnScreenshot Spinner
+        MoveScaled(63,47,8,6)
+        Ignore = True
       }
     }
   }

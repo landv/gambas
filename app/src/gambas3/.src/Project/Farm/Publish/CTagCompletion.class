@@ -52,7 +52,7 @@ Public Sub Get(Text As String, Explicit As Boolean) As String[]
       aResult = Split(sResult, "\r\n", "", True)
       For I = 1 To aResult.Max
         sTag = aResult[I]
-        sTag = UCase(Left(sTag)) & Mid$(sTag, 2)
+        'sTag = UCase(Left(sTag)) & Mid$(sTag, 2)
         If Not aTag.Exist(sTag) Then aTag.Add(sTag)
       Next
       aTag.Sort()

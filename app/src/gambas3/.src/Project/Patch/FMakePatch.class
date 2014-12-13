@@ -143,7 +143,7 @@ Public Sub wizMakePatch_Change()
       If $sOldName Not Begins sName & "-" Then
         sName &= Project.Name & "-"
       Endif
-      sName &= Subst("&1.&2.&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+      sName &= Project.FormatVersion()
       fchPatch.SelectedPath = fchPatch.Dir &/ sName & ".patch"
     Else
       fchPatch.SelectedPath = Project.Config["/FMakePatch/PatchName"]

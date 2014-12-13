@@ -14,28 +14,22 @@
     TextFont = Font["Bold,+3"]
     ShowIndex = True
     Border = False
-    ActionText = "Publish"
+    ActionText = ("Publish")
     ActionPicture = Picture["icon:/small/internet"]
     Animated = True
     Index = 0
-    Text = ("Information")
-    { HBox9 HBox
-      MoveScaled(1,1,58,4)
-      Spacing = True
-      { Label6 Label
-        MoveScaled(0,0,21,4)
-        Text = ("Project")
-      }
-      { lblProject Label
-        MoveScaled(32,0,18,4)
-        Expand = True
-      }
+    Text = ("Software description")
+    { lblProject Label
+      MoveScaled(0,0,18,4)
+      Font = Font["Bold,+2"]
+      Background = Color.LightBackground
+      Padding = 4
     }
     { HBox6 HBox
       MoveScaled(1,6,58,4)
       Spacing = True
       { Label4 Label
-        MoveScaled(0,0,21,4)
+        MoveScaled(0,0,26,4)
         Text = ("Vendor name")
       }
       { txtVendor TextBox
@@ -47,7 +41,7 @@
       MoveScaled(1,11,58,4)
       Spacing = True
       { Label10 Label
-        MoveScaled(0,0,21,4)
+        MoveScaled(0,0,26,4)
         Text = ("Web site")
       }
       { txtURL TextBox
@@ -59,7 +53,7 @@
       MoveScaled(1,16,58,4)
       Spacing = True
       { Label3 Label
-        MoveScaled(0,0,21,4)
+        MoveScaled(0,0,26,4)
         Text = ("Screenshot")
       }
       { txtScreenshot ButtonBox
@@ -70,12 +64,25 @@
         ClearButton = True
       }
     }
+    { HBox10 HBox
+      MoveScaled(1,21,58,4)
+      Spacing = True
+      { Label7 Label
+        MoveScaled(0,0,26,4)
+        Text = ("Create menu entry")
+      }
+      { btnCreateMenu SwitchButton
+        MoveScaled(32,0,15,4)
+        Animated = True
+      }
+    }
     { Label2 Label
-      MoveScaled(1,21,21,4)
+      MoveScaled(1,26,21,4)
+      Font = Font["Bold"]
       Text = ("Description")
     }
     { txtDesc TextArea
-      MoveScaled(1,26,30,19)
+      MoveScaled(1,30,30,19)
       Expand = True
       Wrap = True
     }

@@ -130,7 +130,7 @@ Public Sub Request_Finished()
   Else
     YourVote = -1
   Endif
-  Tags = Split(cResult["Tags"])
+  Tags = Split(cResult["Tags"]).Sort()
   Try Size = CLong(cResult["Size"])
 
   State = State Or STATE_INFO
@@ -385,14 +385,16 @@ Public Sub Install() As String
     Next
   
     Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop"
-    hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop")
-    With hDesktopFile
-      .Name = hProjectInfo.GetTitle()
-      .Exec = sExecDir &/ sName & ".gambas"
-      If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
-      .Categories = aCat
-    End With
-    hDesktopFile.Save
+    If hProjectInfo.CreateMenu Then
+      hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop")
+      With hDesktopFile
+        .Name = hProjectInfo.GetTitle()
+        .Exec = sExecDir &/ sName & ".gambas"
+        If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
+        .Categories = aCat
+      End With
+      hDesktopFile.Save
+    Endif
     
   Endif
 

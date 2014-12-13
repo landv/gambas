@@ -24,12 +24,20 @@ Public Sub Form_Open()
   
   $aDep = Project.PublishDependencies
   
-  lblProject.Text = Project.Name
+  lblProject.Text = Project.Name & " " & Project.FormatVersion()
   txtVendor.Text = Project.Vendor
   cmbGambasVersion.Text = Project.PublishGambasVersion
   txtURL.Text = Project.PublishWebSite
   txtDesc.Text = Project.Description
   txtScreenshot.Text = Project.PublishScreenshot
+  
+  If Project.HasModule("form") Or If Project.Components.Exist("gb.sdl") Then
+    btnCreateMenu.Value = Project.PublishCreateMenu
+    btnCreateMenu.Enabled = True
+  Else
+    btnCreateMenu.Value = False
+    btnCreateMenu.Enabled = False
+  Endif
   
   tbvDep.Columns.Count = 2
   tbvDep.Columns[0].Text = ("Software")
@@ -48,20 +56,28 @@ Public Sub Form_Open()
 
 End
 
-Public Sub Form_Close()
-
-  Settings.Write(Me)
+Private Sub SaveProject()
   
-  Settings["/Publish/Farm"] = cmbFarm.Text
-
   Project.Vendor = Trim(txtVendor.Text)
   Project.PublishTags = tagEditor.GetTags()
   Project.PublishDependencies = $aDep
   Project.PublishGambasVersion = cmbGambasVersion.Text
   Project.PublishWebSite = txtURL.Text
   Project.PublishScreenshot = txtScreenshot.Text
+  If Project.HasModule("form") Then Project.PublishCreateMenu = btnCreateMenu.Value
   Project.Description = txtDesc.Text
   Project.WriteProject
+  
+End
+
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
+  
+  Settings["/Publish/Farm"] = cmbFarm.Text
+  
+  SaveProject
 
 End
 
@@ -111,6 +127,8 @@ End
 Public Sub wizPublish_Close()
   
   Dim hReq As FarmRequest
+
+  SaveProject
 
   hReq = New FarmRequest(cmbFarm.Text)
   hReq.PublishSoftware(Trim(txtVendor.Text), txtScreenshot.Text, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)

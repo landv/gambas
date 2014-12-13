@@ -166,7 +166,7 @@ Private Sub UpdatePackageName()
     
   Endif
   
-  sText &= Subst("-&1.&2.&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
+  sText &= "-" & Project.FormatVersion()
   
   txtPackage.Text = sText
   

@@ -104,7 +104,7 @@ End
 
 Private Sub GetVersion() As String
 
-  Return Project.MajorVersion & "." & Project.MinorVersion & "." & Project.ReleaseVersion
+  Return Project.FormatVersion()
         
 End  
 
@@ -209,7 +209,6 @@ Public Function GetChangeDate() As String
   System.Language = "C"
   sDate = Format$(Now, "ddd mmm dd yyyy") & " " & Project.Maintainer & " "
   If Project.Address Then sDate = sDate & "<" & Project.Address & "> "
-  'sDate = sDate & Subst("&1.&2-&3", Project.MajorVersion, Project.MinorVersion, Project.ReleaseVersion)
   sDate &= GetVersion()
   System.Language = sLang
   Return sDate

@@ -316,7 +316,11 @@ Private Sub UpdateSoftware()
         hTag = New Label(panTags)
         hTag.Text = " " & sTag & " "
         hTag.Padding = 4
-        hTag.Background = &H3398C3&
+        If sTag Begins "gb." Then
+          hTag.Background = &HDF6B00&
+        Else
+          hTag.Background = &H3398C3&
+        Endif
         hTag.Foreground = Color.White
         hTag.Font.Bold = True
         hTag.AutoResize = True
@@ -447,12 +451,7 @@ End
 
 Public Sub panDesc_Arrange()
 
-  spnScreenshot.Move(imvScreenshot.X + imvScreenshot.W \ 2 - 16, imvScreenshot.Y + imvScreenshot.H \ 2 - 16, 32, 32)
-
-End
-
-Public Sub Form_Resize()
-
+  spnScreenshot.Move(imvScreenshot.ScreenX - spnScreenshot.Parent.ScreenX + imvScreenshot.W \ 2 - 16, imvScreenshot.ScreenY - spnScreenshot.Parent.ScreenY + imvScreenshot.H \ 2 - 16, 32, 32)
   If panSoftware.Visible Then imvScreenshot.ZoomFit
 
 End

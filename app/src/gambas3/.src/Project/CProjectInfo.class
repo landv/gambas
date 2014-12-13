@@ -9,10 +9,12 @@ Property Read Authors As String[]
 Property Read Icon As String
 Property Read Startup As String
 Property Read Components As String[]
+
 Public Type As Integer
 Public Translate As Boolean
 Public ControlPublic As Boolean
 Public ModulePublic As Boolean
+Public CreateMenu As Boolean
 
 Private $sName As String
 Private $sPath As String
@@ -89,13 +91,16 @@ Private Sub ReadProject()
         $aComponents.Add(sVal)
         
       Case "translate"
-        Translate = sVal = "1"
+        Translate = CInt(sVal)
         
       Case "controlpublic"
-        ControlPublic = sVal = "1"
+        ControlPublic = CInt(sVal)
         
       Case "modulepublic"
-        ModulePublic = sVal = "1"
+        ModulePublic = CInt(sVal)
+        
+      Case "createmenu"
+        CreateMenu = CInt(sVal)
 
       Case "type"
         Select LCase(sVal)

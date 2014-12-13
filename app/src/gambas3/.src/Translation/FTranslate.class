@@ -664,7 +664,7 @@ End
 Private Sub ExportTranslation(iMode As Integer)
 
   Dialog.Title = ("Export a translation")
-  Dialog.Path = Settings["/FTranslate/ExportPath", System.User.Home] &/ Project.Name & "-" & $sLang & "-" & Project.MajorVersion & "." & Project.MinorVersion & "." & Project.ReleaseVersion & ".po"
+  Dialog.Path = Settings["/FTranslate/ExportPath", System.User.Home] &/ Project.Name & "-" & $sLang & "-" & Project.FormatVersion() & ".po"
   Dialog.Filter = ["*.po", ("Translation files")]
   Dialog.AutoExt = True
   If Dialog.SaveFile() Then Return

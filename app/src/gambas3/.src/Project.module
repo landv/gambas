@@ -83,6 +83,7 @@ Public PublishDependencies As String[]
 Public PublishGambasVersion As String
 Public PublishWebSite As String
 Public PublishScreenshot As String
+Public PublishCreateMenu As Boolean
 
 Public TabSize As Integer
 Public Version As String
@@ -1650,6 +1651,17 @@ Private Sub RefreshSourceCache()
 
 End
 
+Public Sub FormatVersion(Optional bStripReleaseIfNull As Boolean) As String
+  
+  Dim sVer As String
+  
+  sVer = CStr(MajorVersion) & "." & CStr(MinorVersion)
+  If Not bStripReleaseIfNull Or If ReleaseVersion > 0 Then sVer &= "." & ReleaseVersion
+  Return sVer
+  
+End
+
+
 Public Sub UpdateTitle()
 
   Dim sTitle As String
@@ -1671,7 +1683,7 @@ Public Sub UpdateTitle()
     
     If Not IsFake() Then
       If sTitle Then sTitle &= " - "
-      sTitle &= Name & " " & MajorVersion & "." & MinorVersion & "." & ReleaseVersion
+      sTitle &= Name & " " & FormatVersion()
       If ReadOnly Then sTitle &= " [" & ("read-only") & "]"
     Endif
     
@@ -2955,7 +2967,7 @@ Private Sub GetVersion(Optional bWriteProject As Boolean) As Boolean
 
   If Not VersionFile Then Return True
 
-  If bWriteProject Then sOldVer = CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
+  If bWriteProject Then sOldVer = FormatVersion()
 
   sDir = Project.Dir
   Do
@@ -2978,7 +2990,7 @@ Private Sub GetVersion(Optional bWriteProject As Boolean) As Boolean
   If Not Error Then ReleaseVersion = iRelease
   
   If bWriteProject Then
-    sVer = CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
+    sVer = FormatVersion()
     If sVer <> sOldVer Then WriteProject
   Endif
 
@@ -3201,6 +3213,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   PublishGambasVersion = ""
   PublishWebSite = ""
   PublishScreenshot = ""
+  PublishCreateMenu = False
 
   For Each sLig In hFic.Lines
 
@@ -3421,28 +3434,28 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         SourcePath = sVal
 
       Case "useterminal"
-        UseTerminal = Val(sVal) <> 0
+        UseTerminal = CInt(sVal) <> 0
 
       Case "redirectstderr"
-        RedirectStderr = Val(sVal) <> 0
+        RedirectStderr = CInt(sVal) <> 0
 
       Case "usehttpserver"
-        UseHttpServer = Val(sVal) <> 0
+        UseHttpServer = CInt(sVal) <> 0
 
       Case "profiling"
-        Profiling = Val(sVal) <> 0
+        Profiling = CInt(sVal) <> 0
 
       Case "breakonerror"
-        BreakOnError = Val(sVal) <> 0
+        BreakOnError = CInt(sVal) <> 0
 
       Case "createeachdirectory"
-        CreateEachDirectory = Val(sVal) <> 0
+        CreateEachDirectory = CInt(sVal) <> 0
 
       Case "samedependencies"
-        SameDependencies = Val(sVal) <> 0
+        SameDependencies = CInt(sVal) <> 0
 
       Case "samefiles"
-        SameFiles = Val(sVal) <> 0
+        SameFiles = CInt(sVal) <> 0
 
       Case "mimetypes"
         MimeTypes = Split(sVal, ",", Chr$(34), True)
@@ -3464,6 +3477,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
       Case "screenshot"
         PublishScreenshot = sVal
+
+      Case "createmenu"
+        PublishCreateMenu = CInt(sVal) <> 0
 
     End Select
 
@@ -3567,7 +3583,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Icon Then Print #hFic, "Icon="; Icon
 
   GetVersion()
-  Print #hFic, "Version="; CStr(MajorVersion) & "." & CStr(MinorVersion) & "." & CStr(ReleaseVersion)
+  Print #hFic, "Version="; FormatVersion()
   If VersionFile Then Print #hFic, "VersionFile=1"
 
   For Each hComp In CComponent.All
@@ -3634,6 +3650,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If PublishGambasVersion Then Print #hFic, "GambasVersion="; PublishGambasVersion
   If PublishWebSite Then Print #hFic, "WebSite="; PublishWebSite
   If PublishScreenshot Then Print #hFic, "Screenshot="; PublishScreenshot
+  If PublishCreateMenu Then Print #hFic, "CreateMenu=1"
 
   Close #hFic
 
@@ -4528,9 +4545,11 @@ Public Sub MakeSourcePackageTo(sPath As String, Optional bWait As Boolean)
 
 End
 
+
+
 Public Sub GetDefaultArchiveBaseName() As String
 
-  Return Name & "-" & Subst("&1.&2", MajorVersion, MinorVersion) & IIf(ReleaseVersion > 0, "." & ReleaseVersion, "")
+  Return Name & "-" & FormatVersion(True)
 
 End
 
@@ -5942,7 +5961,7 @@ Private Sub CreateComponentFile()
   hFile = Open Project.Dir &/ ".component" For Create 
   Print #hFile, "[Component]"
   Print #hFile, "Key="; Project.Name
-  Print #hFile, "Version="; Project.MajorVersion; "."; Project.MinorVersion; "."; Project.ReleaseVersion
+  Print #hFile, "Version="; FormatVersion()
   Close #hFile    
   
 End
@@ -6035,7 +6054,7 @@ Public Sub WriteComponentFile(cComp As Collection) As Boolean
   
   Print #hFile, "[Component]"
   Print #hFile, "Key="; Name
-  Print #hFile, "Version="; MajorVersion; "."; MinorVersion; "."; ReleaseVersion
+  Print #hFile, "Version="; FormatVersion()
 
   If cComp["State"] Then Print #hFile, "State="; cComp["State"]
 

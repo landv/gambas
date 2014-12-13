@@ -38,7 +38,7 @@ Public Sub DrawingArea_Draw()
   'Paint.Background = Color.LightForeground
   'Paint.Stroke
   
-  Paint.FillRect(0, 0, Paint.W, Paint.H, &H3398C3&)
+  Paint.FillRect(0, 0, Paint.W, Paint.H, If($sText Begins "gb.", &HDF6B00&, &H3398C3&))
   
   Paint.Background = Color.White
   X = Desktop.Scale * 3

@@ -215,6 +215,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Dim sSource As String
   Dim sIcon As String
   Dim sChecksum As String
+  Dim sComp As String
   
   $sTitle = ("Publish project")
   $iProgress = PROGRESS_UPLOAD
@@ -234,6 +235,10 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   
   '$sGoodMsg = ("The project has been successfully published.")
   '$sBadMsg = ("Unable to publish project.")
+
+  For Each sComp In Project.Components
+    If Not aTag.Exist(sComp) Then aTag.Add(sComp)
+  Next
 
   $hForm.URL = "http://" & Farm &/ "/farm/publish"
   '$hForm.Add("login", Login)
