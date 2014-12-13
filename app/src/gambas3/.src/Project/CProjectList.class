@@ -15,6 +15,7 @@ Private $iArrange As Integer
 Private $hObsList As Observer
 Private $hButton As Label
 Private $bOpenExtern As Boolean
+Private $dRecent As Date
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -137,7 +138,7 @@ Private Sub FillWithRecent(bClear As Boolean)
   Dim hPanel As Panel
   
   If Not bClear Then
-    If $hList.Children.Count And If Not CRecentProject.OutOfDate Then Return
+    If $hList.Children.Count And If Not CRecentProject.IsOutOfDate($dRecent) Then Return
   Endif
 
   Inc Application.Busy
@@ -190,6 +191,8 @@ Private Sub FillWithRecent(bClear As Boolean)
   ' Workaround a scrollview bug that does not show the scrollbars.
   'lstRecent.Unlock 
   'panRecent.Show
+  
+  $dRecent = CRecentProject.LastLoad
   
   $hList.Arrangement = $iArrange
   $hList.ScrollY = 0

@@ -486,7 +486,7 @@ Public Sub btnInstall_Click()
         If sErr Then
           Message.Error(Subst(("Unable to remove <b>&1<b>:"), sName) & "\n\n" & sErr)
         Else
-          Message(Subst("<b>&1</b> has been successfully removed.", sName))
+          Message(Subst(("<b>&1</b> has been successfully removed."), sName))
           Goto REFRESH
         Endif
       Endif
@@ -497,7 +497,7 @@ Public Sub btnInstall_Click()
       If sErr Then
         Message.Error(Subst(("Unable to install <b>&1<b>:"), sName) & "\n\n" & sErr)
       Else
-        Message(Subst("<b>&1</b> has been successfully installed.", sName))
+        Message(Subst(("<b>&1</b> has been successfully installed."), sName))
         Goto REFRESH
       Endif
     Endif
@@ -557,8 +557,8 @@ Public Sub btnRemove_Click()
     Message(Subst("<b>&1</b> has been successfully removed.", sName))
   Endif
   
-  ReloadFarm
   ToggleSoftwarePanel
+  ReloadFarm
   
 End
 

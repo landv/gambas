@@ -62,7 +62,6 @@ Public Sub Form_Open()
   ' dchProject.ShowFile = True
   ' 'dchProject.Value = Settings["/FOpenProject/Path"]
   ' dchProject_Change
-  tabProject_Click
 
   InAnotherWindow = False
   $hRecent.AllowOpenExtern = $bAnother
@@ -77,6 +76,7 @@ Public Sub Form_Open()
   pchProject.ShowAnother = $bAnother
   
   If $bAnother Then tabProject.Index = 1
+  tabProject_Click
   
   Dec Application.Busy
 

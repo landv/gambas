@@ -9,6 +9,7 @@ Private $sDeleteKey As String
 Private $bNeedProperty As Boolean
 
 Private $bUpdateRecentMenu As Boolean
+Private $dRecentMenu As Date
 Private $bInTreeView As Boolean
 Private $bInRename As Boolean
 Private $bHasJustCollapsed As Boolean
@@ -691,6 +692,8 @@ Public Sub UpdateRecentMenu()
     hMenu.Picture = Picture["icon:/small/trash"]
     
   Endif
+  
+  $dRecentMenu = CRecentProject.LastLoad
   
   Dec Application.Busy
   
@@ -1779,7 +1782,7 @@ End
 
 Public Sub mnuOpenRecent_Show()
   
-  If $bUpdateRecentMenu And If Not CRecentProject.OutOfDate Then Return  
+  If $bUpdateRecentMenu And If Not CRecentProject.IsOutOfDate($dRecentMenu) Then Return  
   UpdateRecentMenu
   $bUpdateRecentMenu = True
   

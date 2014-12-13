@@ -4,11 +4,9 @@ Public Enum SORT_BY_DATE, SORT_BY_NAME, SORT_BY_PATH
 
 Static Public All As New CRecentProject[]
 Static Public Sort As Integer
+Static Public LastLoad As Date
 
 Static Private $hSettings As Settings
-Static Private $dLastLoad As Date
-
-Static Property Read OutOfDate As Boolean
 
 Public Const MAX_RECENT As Integer = 100
 
@@ -102,7 +100,7 @@ Static Public Sub Load()
     $hSettings = New Settings("gambas3.recent")
   Endif
 
-  If Not OutOfDate_Read() Then Return
+  If Not IsOutOfDate(LastLoad) Then Return
   
   $hSettings.Reload
   nRecent = $hSettings["/Recent/Count", 0]
@@ -131,7 +129,7 @@ Static Public Sub Load()
     Endif
   Next
   
-  Try $dLastLoad = Stat($hSettings.Path).LastModified
+  Try LastLoad = Stat($hSettings.Path).LastModified
   
 End
 
@@ -153,7 +151,7 @@ Static Private Sub Save()
 
   $hSettings.Save
 
-  $dLastLoad = Stat($hSettings.Path).LastModified
+  LastLoad = Stat($hSettings.Path).LastModified
 
 End
 
@@ -211,9 +209,9 @@ Static Public Sub Exit()
   
 End
 
-Static Private Function OutOfDate_Read() As Boolean
+Static Public Sub IsOutOfDate(dDate As Date) As Boolean
 
-  If $dLastLoad And If Stat($hSettings.Path).LastModified <= $dLastLoad Then Return
+  If dDate And If Stat($hSettings.Path).LastModified <= dDate Then Return
   Return True  
   
 Catch
