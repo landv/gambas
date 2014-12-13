@@ -7,9 +7,13 @@ AC_CONFIG_MACRO_DIR([m4])
 GB_INIT(gb.pdf)
 AC_PROG_LIBTOOL
 
-GB_COMPONENT_PKG_CONFIG(
+GB_COMPONENT_SEARCH(
   poppler, POPPLER, gb.pdf, [src],
-  'poppler >= 0.5'
+  'poppler >= 0.5',
+  [GB_FIND(PDFDoc.h, `pkg-config --variable=includedir poppler`, poppler)],
+  [],
+  [],
+  []
 )
 
 if test "$have_poppler" = "yes"; then
