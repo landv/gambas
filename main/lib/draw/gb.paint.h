@@ -128,6 +128,7 @@ typedef
 		void *extra;                       // driver-specific state
 		unsigned opened : 1;               // if the painting has been opened
 		unsigned other : 1;                // if painting are imbricated on that device
+		unsigned has_path : 1;             // if there is a current path
 		void *tag;                         // needed to support the old Draw class
 	}
 	GB_PAINT;

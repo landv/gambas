@@ -40,6 +40,7 @@ static GB_PAINT *_current = NULL;
 #define BPAINT (BTHIS->desc)
 
 #define CHECK_DEVICE() if (check_device()) return
+#define CHECK_PATH() if (check_path()) return
 
 #define RAD(_deg) ((_deg) * M_PI / 180)
 
@@ -63,6 +64,17 @@ static bool check_device()
 	if (!_current || !_current->extra)
 	{
 		GB.Error("No current device");
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
+static bool check_path()
+{
+	if (THIS->has_path)
+	{
+		GB.Error("Pending path");
 		return TRUE;
 	}
 	else
@@ -149,6 +161,7 @@ bool PAINT_begin(void *device)
 	paint->brush = NULL;
 	paint->opened = FALSE;
 	paint->other = FALSE;
+	paint->has_path = FALSE;
 	paint->tag = NULL;
 	
 	paint->previous = _current;
@@ -566,8 +579,11 @@ END_METHOD
 
 #define IMPLEMENT_METHOD_PRESERVE(_method, _api) \
 BEGIN_METHOD(_method, GB_BOOLEAN preserve) \
+  bool preserve = VARGOPT(preserve, FALSE); \
 	CHECK_DEVICE(); \
-	PAINT->_api(THIS, VARGOPT(preserve, FALSE)); \
+	PAINT->_api(THIS, preserve); \
+	if (!preserve) \
+		THIS->has_path = FALSE; \
 END_METHOD
 
 #define IMPLEMENT_PROPERTY_EXTENTS(_property, _api) \
@@ -827,7 +843,16 @@ END_PROPERTY
 
 
 IMPLEMENT_PROPERTY_FLOAT(Paint_DashOffset, DashOffset)
-IMPLEMENT_METHOD(Paint_NewPath, NewPath)
+
+BEGIN_METHOD_VOID(Paint_NewPath)
+
+	CHECK_DEVICE();
+
+	PAINT->NewPath(THIS);
+	THIS->has_path = FALSE;
+
+END_METHOD
+
 IMPLEMENT_METHOD(Paint_ClosePath, ClosePath)
 
 
@@ -863,6 +888,7 @@ BEGIN_METHOD(Paint_Arc, GB_FLOAT xc; GB_FLOAT yc; GB_FLOAT radius; GB_FLOAT angl
 		pie = FALSE;
 	
 	PAINT->Arc(THIS, VARG(xc), VARG(yc), VARG(radius), angle, length, pie);
+	THIS->has_path = TRUE;
 
 END_METHOD
 
@@ -879,6 +905,7 @@ BEGIN_METHOD(Paint_Ellipse, GB_FLOAT x; GB_FLOAT y; GB_FLOAT width; GB_FLOAT hei
 		pie = FALSE;
 	
 	PAINT->Ellipse(THIS, VARG(x), VARG(y), VARG(width), VARG(height), angle, length, pie);
+	THIS->has_path = TRUE;
 
 END_METHOD
 
@@ -906,7 +933,8 @@ BEGIN_METHOD(Paint_Polygon, GB_OBJECT points)
 	for (i = 2; i < n; i+= 2)
 		PAINT->LineTo(THIS, p[i], p[i + 1]);
 	PAINT->LineTo(THIS, p[0], p[1]);
-	
+	THIS->has_path = TRUE;
+
 END_METHOD
 
 
@@ -914,6 +942,7 @@ BEGIN_METHOD(Paint_CurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y2; 
 
 	CHECK_DEVICE();
 	PAINT->CurveTo(THIS, VARG(x1), VARG(y1), VARG(x2), VARG(y2), VARG(x3), VARG(y3));
+	THIS->has_path = TRUE;
 
 END_METHOD
 
@@ -924,6 +953,7 @@ BEGIN_METHOD(Paint_RelCurveTo, GB_FLOAT x1; GB_FLOAT y1; GB_FLOAT x2; GB_FLOAT y
 	CHECK_DEVICE();
 	PAINT->GetCurrentPoint(THIS, &x, &y);
 	PAINT->CurveTo(THIS, x + VARG(x1), y + VARG(y1), x + VARG(x2), y + VARG(y2), x + VARG(x3), y + VARG(y3));
+	THIS->has_path = TRUE;
 
 END_METHOD
 
@@ -932,6 +962,7 @@ BEGIN_METHOD(Paint_LineTo, GB_FLOAT x; GB_FLOAT y)
 
 	CHECK_DEVICE();
 	PAINT->LineTo(THIS, VARG(x), VARG(y));
+	THIS->has_path = TRUE;
 
 END_METHOD
 
@@ -942,6 +973,7 @@ BEGIN_METHOD(Paint_RelLineTo, GB_FLOAT x; GB_FLOAT y)
 	CHECK_DEVICE();
 	PAINT->GetCurrentPoint(THIS, &fx, &fy);
 	PAINT->LineTo(THIS, fx + VARG(x), fy + VARG(y));
+	THIS->has_path = TRUE;
 
 END_METHOD
 
@@ -994,6 +1026,8 @@ BEGIN_METHOD(Paint_Rectangle, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB
 		PAINT->CurveTo(THIS, x, y + r2, x + r2, y, x + r, y);
 	}
 
+	THIS->has_path = TRUE;
+
 END_METHOD
 
 
@@ -1008,7 +1042,8 @@ BEGIN_METHOD(Paint_Text, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
 	
 	PAINT->Text(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), FALSE);
-	
+	THIS->has_path = TRUE;
+
 END_METHOD
 
 
@@ -1020,14 +1055,16 @@ BEGIN_METHOD(Paint_RichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w;
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
 	
 	PAINT->RichText(THIS, STRING(text), LENGTH(text), VARGOPT(w, -1), VARGOPT(h, -1), VARGOPT(align, GB_DRAW_ALIGN_DEFAULT), FALSE);
-	
+	THIS->has_path = TRUE;
+
 END_METHOD
 
 
 BEGIN_METHOD(Paint_DrawText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
 	CHECK_DEVICE();
-	
+	CHECK_PATH();
+
 	if (!MISSING(x) && !MISSING(y))
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
 	
@@ -1039,7 +1076,8 @@ END_METHOD
 BEGIN_METHOD(Paint_DrawRichText, GB_STRING text; GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER align)
 
 	CHECK_DEVICE();
-	
+	CHECK_PATH();
+
 	if (!MISSING(x) && !MISSING(y))
 		PAINT->MoveTo(THIS, (float)VARG(x), (float)VARG(y));
 	
@@ -1296,7 +1334,8 @@ BEGIN_METHOD(Paint_DrawImage, GB_OBJECT image; GB_FLOAT x; GB_FLOAT y; GB_FLOAT 
 	GEOM_RECT *source = (GEOM_RECT *)VARGOPT(source, NULL);
 
 	CHECK_DEVICE();
-	
+	CHECK_PATH();
+
 	image = (GB_IMG *)VARG(image);
 	
 	if (GB.CheckObject(image))
@@ -1332,6 +1371,7 @@ BEGIN_METHOD(Paint_DrawPicture, GB_OBJECT picture; GB_FLOAT x; GB_FLOAT y; GB_FL
 	float x, y, w, h;
 
 	CHECK_DEVICE();
+	CHECK_PATH();
 
 	if (GB.CheckObject(picture))
 		return;
@@ -1369,6 +1409,7 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	float opacity = 1.0; //VARGOPT(opacity, 1.0);
 
 	CHECK_DEVICE();
+	CHECK_PATH();
 
 	if (GB.CheckObject(image))
 		return;
@@ -1486,6 +1527,7 @@ END_PROPERTY
 BEGIN_METHOD(Paint_FillRect, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h; GB_INTEGER color)
 
 	CHECK_DEVICE();
+	CHECK_PATH();
 	PAINT->FillRect(THIS, VARG(x), VARG(y), VARG(w), VARG(h), VARG(color));
 	
 END_METHOD
