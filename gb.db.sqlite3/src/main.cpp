@@ -331,7 +331,7 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	else
 		max_retry = 0;
 	
-	select = (strncasecmp("select ", query, 7) == 0);
+	select = (strncasecmp("select ", query, 7) == 0 || strncasecmp("with ", query, 5) == 0);
 	
 	for(;;)
 	{
@@ -688,17 +688,31 @@ static int open_database(DB_DESC *desc, DB_DATABASE * db)
 	if (conn->connect() != DB_CONNECTION_OK)
 	{
 		GB.Error("Cannot open database: &1", conn->getErrorMsg());
-		conn->disconnect();
-		delete conn;
-		return TRUE;
+		goto CANNOT_OPEN;
 	}
+
+	db->handle = conn;
+	/* set dbversion */
+	db->version = db_version();
+
+	if (do_query(db, "Unable to initialize connection: &1", NULL, "PRAGMA empty_result_callbacks = ON", 0))
+		goto CANNOT_OPEN;
+
+	if (db->version < 30803)
+	{
+		/* NG 29/12/2005 - 3.2.1 introduced a problem with columns names
+		* which is resolved by setting short columns off first */
+
+		if (do_query(db, "Unable to initialize connection: &1", NULL, "PRAGMA short_column_names = OFF", 0))
+			goto CANNOT_OPEN;
+	}
+
+	if (do_query(db, "Unable to initialize connection: &1", NULL, "PRAGMA full_column_names = ON", 0))
+		goto CANNOT_OPEN;
 
 	/* Character set cannot be set for sqlite. A sqlite re-compile
 	 * is required.                                             */
 	db->charset = GB.NewZeroString("UTF-8");
-
-	/* set dbversion */
-	db->version = db_version();
 
 	/* flags */
 	db->flags.no_table_type = TRUE;
@@ -706,8 +720,13 @@ static int open_database(DB_DESC *desc, DB_DATABASE * db)
 
 	db->db_name_char = ".";
 
-	db->handle = conn;
 	return FALSE;
+
+CANNOT_OPEN:
+
+	conn->disconnect();
+	delete conn;
+	return TRUE;
 }
 
 

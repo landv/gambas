@@ -221,8 +221,10 @@ static int my_sqlite3_exec(
 		char **azVals = 0;
 
 		pStmt = 0;
+		//fprintf(stderr, "my_sqlite3_exec: sqlite3_prepare_v2 ?\n");
 		rc = sqlite3_prepare_v2(db, zSql, -1, &pStmt, &zLeftover);
 		if( rc!=SQLITE_OK ){
+			//fprintf(stderr, "my_sqlite3_exec: sqlite3_prepare_v2 failed: %s\n", sqlite3_errmsg(db));
 			if( pStmt ) sqlite3_finalize(pStmt);
 			continue;
 		}
@@ -470,7 +472,7 @@ int SqliteDatabase::setErr(int err_code)
 			error = "Successful result";
 			break;
 		case SQLITE_ERROR:
-			error = "SQL error or missing database";
+			error = sqlite3_errmsg(getHandle());
 			break;
 		case SQLITE_INTERNAL:
 			error = "Internal logic error - Report this error on the mailing-list at sqlite.org";
@@ -544,39 +546,12 @@ int SqliteDatabase::connect()
 {
 	disconnect();
 
-	if (sqlite3_open(db.c_str(), &conn) == SQLITE_OK)
-	{
-		//cout << "Connected!\n";
-		//char *err = NULL;
+	if (sqlite3_open(db.c_str(), &conn) != SQLITE_OK)
+		return DB_CONNECTION_NONE;
 
-		if (setErr
-				(sqlite3_exec
-				(getHandle(), "PRAGMA empty_result_callbacks=ON", NULL, NULL,
-					NULL)) != SQLITE_OK)
-		{
-			GB.Error(getErrorMsg());
-		}
-		active = true;
-		/* NG 29/12/2005 - 3.2.1 introduced a problem with columns names
-		* which is resolved by setting short columns off first */
-		if (setErr
-				(sqlite3_exec
-				(getHandle(), "PRAGMA short_column_names=OFF", NULL, NULL,
-					NULL)) != SQLITE_OK)
-		{														//NG
-			GB.Error(getErrorMsg());	//NG
-		}
-		if (setErr
-				(sqlite3_exec
-				(getHandle(), "PRAGMA full_column_names=ON", NULL, NULL,
-					NULL)) != SQLITE_OK)
-		{														//NG
-			GB.Error(getErrorMsg());	//NG
-		}
-		return DB_CONNECTION_OK;
-		sqlite3_close(conn);
-	}
-	return DB_CONNECTION_NONE;
+	active = true;
+
+	return DB_CONNECTION_OK;
 };
 
 void SqliteDatabase::disconnect(void)
@@ -865,20 +840,6 @@ bool SqliteDataset::query(const char *query)
 	int res;
 	int retry;
 
-	//try{
-	if (db == NULL)
-		GB.Error("Database is not defined");
-	if (dynamic_cast < SqliteDatabase * >(db)->getHandle() == NULL)
-		GB.Error("No database connection");
-	if ((strncasecmp("select", query, 6) != 0)	/*&&
-																								(strncasecmp("PRAGMA table",query,12) !=0) &&
-																								(strncasecmp("PRAGMA index",query,12) !=0) */
-		)
-		GB.Error("Syntax error in request: SELECT expected.");
-
-	//close();
-
-	//cout <<  "Curr size "<<num_rows()<<"\n\n";
 	result.conn = handle();				//NG
 
 	for (retry = 1; retry <= 2; retry++)
