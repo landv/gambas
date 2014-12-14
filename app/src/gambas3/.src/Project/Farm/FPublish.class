@@ -135,7 +135,7 @@ Public Sub wizPublish_Close()
   SaveProject
 
   hReq = New FarmRequest(cmbFarm.Text)
-  hReq.PublishSoftware(Trim(txtVendor.Text), Project.Dir &/ Project.PublishScreenshot, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)
+  hReq.PublishSoftware(Trim(txtVendor.Text), Project.Dir &/ ".hidden/screenshots" &/ Project.PublishScreenshot, cmbGambasVersion.Text, tagEditor.GetTags(), $aDep, txtURL.Text, txtDesc.Text)
   hReq.WaitFor(("The project has been successfully published."), ("Unable to publish project."))
   
 End

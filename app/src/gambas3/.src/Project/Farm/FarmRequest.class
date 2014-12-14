@@ -261,6 +261,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
     If File.Ext(sScreenshot) = "png" Then
       sTemp = File.SetExt(Temp$(), "jpg")
       Try Image.Load(sScreenshot).Save(sTemp, 75)
+      If Error Then Error "gambas3: warning: unable to convert screenshot to JPEG: "; Error.Text
       If Not Error Then sScreenshot = sTemp
     Endif
     $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
