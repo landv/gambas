@@ -320,7 +320,7 @@
     Visible = False
     { mnuViewProject Menu
       Action = "project"
-      Text = Shortcut(("Project"), "j")
+      Text = ("Project")
       Picture = Picture["img/16/gambas.png"]
       Toggle = True
       Checked = True
@@ -328,7 +328,7 @@
     }
     { mnuViewProperty Menu
       Action = "property"
-      Text = Shortcut(("Properties"), "P")
+      Text = ("Properties")
       Picture = Picture["icon:/small/edit"]
       Toggle = True
       Checked = True
@@ -336,7 +336,7 @@
     }
     { mnuViewConsole Menu
       Action = "console"
-      Text = Shortcut(("Console"), "C")
+      Text = ("Console")
       Picture = Picture["icon:/small/terminal"]
       Toggle = True
       Shortcut = "F11"
@@ -370,7 +370,7 @@
     }
     { mnuCloseAll Menu
       Action = "close-all-window"
-      Text = Shortcut(("Close all windows"), "a")
+      Text = ("Close all windows")
       Shortcut = "Ctrl+Alt+W"
     }
   }
@@ -378,12 +378,12 @@
     Text = Shortcut(("Tools"), "T")
     Visible = False
     { mnuFind Menu
-      Text = Shortcut(("Find"), "F") & "..."
+      Text = ("Find") & "..."
       Picture = Picture["icon:/small/find"]
       Shortcut = "Ctrl+F"
     }
     { mnuReplace Menu
-      Text = Shortcut(("Replace"), "R") & "..."
+      Text = ("Replace") & "..."
       Picture = Picture["icon:/small/replace"]
       Shortcut = "Ctrl+R"
     }
@@ -391,13 +391,13 @@
     }
     { mnuBrowse Menu
       Action = "browse-project"
-      Text = Shortcut(("Browse project"), "B") & "..."
+      Text = ("Browse project") & "..."
       Picture = Picture["icon:/small/file-manager"]
       Shortcut = "Ctrl+Alt+O"
     }
     { mnuTerminal Menu
       Action = "open-terminal"
-      Text = Shortcut(("Open a terminal"), "O") & "..."
+      Text = ("Open a terminal") & "..."
       Picture = Picture["icon:/16/terminal"]
       Shortcut = "Ctrl+Alt+T"
     }
@@ -405,6 +405,11 @@
       Action = "send-mail"
       Text = Shortcut(("Send project by mail"), "m") & "..."
       Picture = Picture["icon:/small/mail"]
+    }
+    { mnuScreenshot Menu
+      Action = "take-screenshot"
+      Text = ("Take screenshot") & "..."
+      Picture = Picture["icon:/small/camera"]
     }
     { mnuUpdateAllForms Menu
       Action = "update-all-forms"
@@ -422,7 +427,7 @@
     }
     { mnuShortcut Menu
       Action = "shortcut"
-      Text = Shortcut(("Shortcuts"), "S") & "..."
+      Text = ("Shortcuts") & "..."
       Picture = Picture["icon:/small/shortcut"]
     }
     { mnuPreferences Menu
@@ -1582,6 +1587,11 @@
     Text = "Stop"
     Shortcut = "Alt+Pause"
     Picture = "icon:/small/stop"
+  }
+  { Action take-screenshot
+    Text = "Take screenshot"
+    Shortcut = ""
+    Picture = "icon:/small/camera"
   }
   { Action terminal
     Text = "Use terminal emulator"

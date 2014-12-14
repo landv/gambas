@@ -60,6 +60,8 @@ End
 
 Private Sub Text_Write(Value As String)
 
+  If InStr(Value, ".") = 0 Then Value = UCase(Left(Value)) & Mid$(Value, 2)
+
   $sText = Value
   $hDraw.Refresh
   UpdateSize

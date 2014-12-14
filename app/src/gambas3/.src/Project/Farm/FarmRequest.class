@@ -216,6 +216,7 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Dim sIcon As String
   Dim sChecksum As String
   Dim sComp As String
+  Dim sTemp As String
   
   $sTitle = ("Publish project")
   $iProgress = PROGRESS_UPLOAD
@@ -255,7 +256,15 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   $hForm.Add("tags", aTag.Join(","))
   $hForm.Add("dependencies", aRequire.Join(","))
   $hForm.Add("url", sURL)
-  If sScreenshot Then $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
+  
+  If sScreenshot Then 
+    If File.Ext(sScreenshot) = "png" Then
+      sTemp = File.SetExt(Temp$(), "jpg")
+      Try Image.Load(sScreenshot).Save(sTemp, 75)
+      If Not Error Then sScreenshot = sTemp
+    Endif
+    $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
+  Endif
 
   FarmRequestManager.Add($hForm)
   

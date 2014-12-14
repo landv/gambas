@@ -1492,6 +1492,9 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "browse-project"
       Desktop.Open(Project.Dir)
       
+    Case "take-screenshot"
+      FScreenshot.Show
+      
   End Select 
   
   If Left(Key) = "_" And If Project.ActiveForm Then 
