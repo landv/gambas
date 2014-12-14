@@ -423,10 +423,10 @@ static int callback(void *res_ptr, int ncol, char **reslt, char **cols, sqlite3_
 	return 0;
 }
 
-static int old_callback(void *res_ptr, int ncol, char **reslt, char **cols)
+/*static int old_callback(void *res_ptr, int ncol, char **reslt, char **cols)
 {
 	return callback(res_ptr, ncol, reslt, cols, NULL);
-}
+}*/
 
 
 //************* SqliteDatabase implementation ***************
