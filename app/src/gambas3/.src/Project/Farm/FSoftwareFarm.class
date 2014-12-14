@@ -302,6 +302,7 @@ Private Sub UpdateSoftware()
     
       txtDescription.Text = sText
       txtDescription.H = txtDescription.Font.RichTextHeight(Replace(Html(sText), "\n", "<br>"), txtDescription.W)
+      txtDescription.Show
       
     Endif
     
@@ -453,6 +454,7 @@ Public Sub panDesc_Arrange()
 
   spnScreenshot.Move(imvScreenshot.ScreenX - spnScreenshot.Parent.ScreenX + imvScreenshot.W \ 2 - 16, imvScreenshot.ScreenY - spnScreenshot.Parent.ScreenY + imvScreenshot.H \ 2 - 16, 32, 32)
   If panSoftware.Visible Then imvScreenshot.ZoomFit
+  If txtDescription.Visible Then txtDescription.H = txtDescription.Font.RichTextHeight(Replace(Html(txtDescription.Text), "\n", "<br>"), txtDescription.W)
 
 End
 

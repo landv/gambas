@@ -39,7 +39,7 @@ Public Sub Form_Open()
     Next
   Endif
   
-  cmbScreenshot.Text = Project.PublishScreenshot
+  cmbScreenshot.Text = File.Name(Project.PublishScreenshot)
   If cmbScreenshot.Index < 0 Then cmbScreenshot.Index = 0
   
   If Project.HasModule("form") Or If Project.Components.Exist("gb.sdl") Then
@@ -77,7 +77,7 @@ Private Sub SaveProject()
   If cmbScreenshot.Index <= 0 Then
     Project.PublishScreenshot = ""
   Else
-    Project.PublishScreenshot = ".hidden/screenshots" &/ cmbScreenshot.Text
+    Project.PublishScreenshot = cmbScreenshot.Text
   Endif
   
   If Project.HasModule("form") Then Project.PublishCreateMenu = btnCreateMenu.Value
