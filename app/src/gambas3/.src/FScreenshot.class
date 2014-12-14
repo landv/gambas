@@ -19,26 +19,22 @@ Public Sub btnTakeScreenshot_Click()
   Me.Hide
   Wait 0.1
   
-  hWindow = Desktop.Windows.FromHandle(Desktop.ActiveWindow)
-  If hWindow Then 
-  
-    hPict = hWindow.GetScreenshot()
-  
-    sDir = Project.Dir &/ ".hidden/screenshots"
-    For I = 1 To 999
-      sPath = sDir &/ Format(Now, "yyyy-mm-dd")
-      If I > 1 Then sPath &= "-" & CStr(I)
-      sPath &= ".png"
-      If Not Exist(sPath) Then
-        If Not IsDir(sDir) Then Project.InsertDirectory(sDir)
-        hPict.Save(sPath)
-        Project.InsertFile(File.Name(sPath), File.Dir(sPath))
-        Break
-      Endif
-    Next
+  hWindow = New DesktopWindow(Desktop.ActiveWindow)
+  hPict = hWindow.GetScreenshot()
+
+  sDir = Project.Dir &/ ".hidden/screenshots"
+  For I = 1 To 999
+    sPath = sDir &/ Format(Now, "yyyy-mm-dd")
+    If I > 1 Then sPath &= "-" & CStr(I)
+    sPath &= ".png"
+    If Not Exist(sPath) Then
+      If Not IsDir(sDir) Then Project.InsertDirectory(sDir)
+      hPict.Save(sPath)
+      Project.InsertFile(File.Name(sPath), File.Dir(sPath))
+      Break
+    Endif
+  Next
     
-  Endif
-  
   Me.Show
   
 End
