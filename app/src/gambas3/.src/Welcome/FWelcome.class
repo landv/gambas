@@ -7,6 +7,7 @@ Private btnNew As CCoolButton
 Private btnOpen As CCoolButton
 Private btnOpenExtern As CCoolButton
 Private btnRecent As CCoolButton
+Private btnExample As CCoolButton
 Private btnQuit As CCoolButton
 Private btnAbout As CCoolButton
 Private btnFarm As CCoolButton
@@ -61,13 +62,13 @@ Public Sub Form_Open()
   btnNew = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
   btnOpen = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
   btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
-  'btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
+  btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
   btnFarm = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
   btnOpenExtern = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
   btnAbout = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
   btnQuit = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
 
-  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnFarm, btnOpenExtern, btnAbout, btnQuit]
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnFarm, btnOpenExtern, btnAbout, btnQuit]
     hCtrl.Foreground = Color.White
     hCtrl.Highlight = &H61A7C3&
   Next
@@ -194,6 +195,8 @@ Private Sub Toggle(iState As Integer)
     
   btnRecent.Background = If($iRecent = LIST_RECENT, Color.TextBackground, Color.Default)
   btnRecent.Foreground = If($iRecent = LIST_RECENT, Color.TextForeground, Color.White)
+  btnExample.Background = If($iRecent = LIST_EXAMPLE, Color.TextBackground, Color.Default)
+  btnExample.Foreground = If($iRecent = LIST_EXAMPLE, Color.TextForeground, Color.White)
   
 End
 
@@ -407,6 +410,7 @@ End
 Public Sub btnFarm_Click()
   
   FSoftwareFarm.Run
+  If $iRecent = LIST_EXAMPLE Then $hExample.Fill
   
 End
 

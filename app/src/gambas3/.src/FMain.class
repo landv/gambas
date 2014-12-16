@@ -8,7 +8,7 @@ Private $sKeyDrag As String
 Private $sDeleteKey As String
 Private $bNeedProperty As Boolean
 
-Private $bUpdateRecentMenu As Boolean
+'Private $bUpdateRecentMenu As Boolean
 Private $dRecentMenu As Date
 Private $bInTreeView As Boolean
 Private $bInRename As Boolean
@@ -743,73 +743,73 @@ End
 '   
 ' END
 
-Private Sub UpdateExampleMenu(Optional hParent As Menu)
-  
-  Dim hMenu As Menu
-  Dim aList As String[]
-  Dim sPath As String
-  
-  If Not hParent Then hParent = mnuOpenExample
-  
-  If Not hParent.Tag Then Return
-  
-  Inc Application.Busy 
-  
-  hParent.Children.Clear
-  
-  aList = Project.GetExamples(hParent.Tag)
-  hParent.Tag = ""
-  
-  If aList Then 
-    
-    For Each sPath In aList
-      
-      ' IF InStr(sPath, "/") THEN
-      '   sDir = File.Dir(sPath)
-      '   IF sDir <> sParent THEN
-      '     sParent = sDir
-      '     hParent = NEW Menu(mnuOpenExample)
-      '     hParent.Text = Project.ExampleTitle[sParent]
-      '     IF NOT hParent.Text THEN hParent.Text = sParent
-      '   ENDIF
-      ' ELSE
-      '   hParent = mnuOpenExample
-      '   sParent = ""
-      ' ENDIF
-      
-      If Exist(Project.EXAMPLES_DIR &/ sPath &/ ".project") Then
-        hMenu = New Menu(hParent) As "mnuOpenRecentProject"
-        hMenu.Tag = Project.EXAMPLES_DIR &/ sPath
-        hMenu.Text = File.Name(sPath) 'FormatFile(sPath)
-        hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
-      Else 
-        hMenu = New Menu(hParent) As "mnuOpenExample"
-        hMenu.Tag = sPath
-        hMenu.Text = Project.ExampleTitle[File.Name(sPath)]
-        hMenu = New Menu(hMenu)
-      Endif
-      
-    Next
-    
-  Endif
-  
-  Dec Application.Busy
-  
-End
-
-Public Sub mnuOpenRecentProject_Click()
-  
-  Project.Open(Last.Tag)
-  UpdateRecentMenu
-  
-End
-
-Public Sub mnuClearRecent_Click()
-  
-  CRecentProject.Clear
-  UpdateRecentMenu
-  
-End
+' Private Sub UpdateExampleMenu(Optional hParent As Menu)
+'   
+'   Dim hMenu As Menu
+'   Dim aList As String[]
+'   Dim sPath As String
+'   
+'   If Not hParent Then hParent = mnuOpenExample
+'   
+'   If Not hParent.Tag Then Return
+'   
+'   Inc Application.Busy 
+'   
+'   hParent.Children.Clear
+'   
+'   aList = Project.GetExamples(hParent.Tag)
+'   hParent.Tag = ""
+'   
+'   If aList Then 
+'     
+'     For Each sPath In aList
+'       
+'       ' IF InStr(sPath, "/") THEN
+'       '   sDir = File.Dir(sPath)
+'       '   IF sDir <> sParent THEN
+'       '     sParent = sDir
+'       '     hParent = NEW Menu(mnuOpenExample)
+'       '     hParent.Text = Project.ExampleTitle[sParent]
+'       '     IF NOT hParent.Text THEN hParent.Text = sParent
+'       '   ENDIF
+'       ' ELSE
+'       '   hParent = mnuOpenExample
+'       '   sParent = ""
+'       ' ENDIF
+'       
+'       If Exist(Project.EXAMPLES_DIR &/ sPath &/ ".project") Then
+'         hMenu = New Menu(hParent) As "mnuOpenRecentProject"
+'         hMenu.Tag = Project.EXAMPLES_DIR &/ sPath
+'         hMenu.Text = File.Name(sPath) 'FormatFile(sPath)
+'         hMenu.Picture = Project.GetIcon(hMenu.Tag, 16)
+'       Else 
+'         hMenu = New Menu(hParent) As "mnuOpenExample"
+'         hMenu.Tag = sPath
+'         hMenu.Text = Project.ExampleTitle[File.Name(sPath)]
+'         hMenu = New Menu(hMenu)
+'       Endif
+'       
+'     Next
+'     
+'   Endif
+'   
+'   Dec Application.Busy
+'   
+' End
+' 
+' Public Sub mnuOpenRecentProject_Click()
+'   
+'   Project.Open(Last.Tag)
+'   UpdateRecentMenu
+'   
+' End
+' 
+' Public Sub mnuClearRecent_Click()
+'   
+'   CRecentProject.Clear
+'   UpdateRecentMenu
+'   
+' End
 
 Private Sub NewProject()
   
@@ -1492,8 +1492,14 @@ Public Sub Action_Activate(Key As String) As Boolean
     Case "browse-project"
       Desktop.Open(Project.Dir)
       
-    Case "take-screenshot"
-      FScreenshot.Show
+    Case "screenshot"
+      FScreenshot.Visible = Action["screenshot"].Value
+      
+    Case "publish"
+      FPublish.Run
+      
+    Case "farm"
+      FSoftwareFarm.Run
       
   End Select 
   
@@ -1783,19 +1789,19 @@ Public Sub panInfo_Show()
   
 End
 
-Public Sub mnuOpenRecent_Show()
-  
-  If $bUpdateRecentMenu And If Not CRecentProject.IsOutOfDate($dRecentMenu) Then Return  
-  UpdateRecentMenu
-  $bUpdateRecentMenu = True
-  
-End
-
-Public Sub mnuOpenExample_Show()
-  
-  UpdateExampleMenu(Last)
-  
-End
+' Public Sub mnuOpenRecent_Show()
+'   
+'   If $bUpdateRecentMenu And If Not CRecentProject.IsOutOfDate($dRecentMenu) Then Return  
+'   UpdateRecentMenu
+'   $bUpdateRecentMenu = True
+'   
+' End
+' 
+' Public Sub mnuOpenExample_Show()
+'   
+'   UpdateExampleMenu(Last)
+'   
+' End
 
 ' Public Sub tabProperty_Click()
 ' 
@@ -2614,15 +2620,3 @@ End
 '   Endif
 ' 
 ' End
-
-Public Sub mnuPublish_Click()
-  
-  FPublish.Run
-  
-End
-
-Public Sub mnuFarm_Click()
-
-  FSoftwareFarm.Run
-
-End

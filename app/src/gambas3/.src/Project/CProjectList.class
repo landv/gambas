@@ -16,6 +16,7 @@ Private $hObsList As Observer
 Private $hButton As Label
 Private $bOpenExtern As Boolean
 Private $dRecent As Date
+Private $sLastURL As String
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -58,61 +59,101 @@ Public Sub SetArrangement(iArrange As Integer)
   
 End
 
+Private Sub GetExamples() As String[]
+
+  Dim sFile As String
+  Dim aList As New String[]
+  Dim sDir As String
+
+  sDir = Desktop.DataDir &/ "gambas3/src/example"
+  If Not IsDir(sDir) Then Return aList
+
+  For Each sFile In Dir(sDir)
+    If Left(sFile) = "." Then Continue
+    'IF Exist(EXAMPLES_DIR &/ sParent &/ sFile &/ ".project") THEN
+    aList.Add(sDir &/ sFile)
+    'ENDIF
+  Next
+
+  aList.Sort(gb.Natural)
+
+  Return aList
+
+End
+
 
 Private Sub FillWithExample()
 
   Dim sExample As String
-  Dim sDir As String
-  Dim sLastDir As String
-  Dim hDrawingArea As DrawingArea
+  ' Dim sDir As String
+  ' Dim sLastDir As String
+  ' Dim hDrawingArea As DrawingArea
   Dim hProjectItem As ProjectBox
   Dim sGroup As String
-  Dim hPanel As Panel
-  'Dim bHighlight As Boolean
+  Dim aExamples As String[]
+  Dim hHelp As WebView
   
-  If $hList.Children.Count Then Return
+  ' Dim hPanel As Panel
+  ' Dim bHighlight As Boolean
+  
+  'If $hList.Children.Count Then Return
+  Clear
 
   Inc Application.Busy
   $hList.Arrangement = Arrange.None
-
-  For Each sExample In Project.GetExamples()
   
-    sDir = File.Dir(sExample)
-    If sDir <> sLastDir Then
-      If $iArrange = Arrange.Row And If $hList.Children.Count Then
-        hPanel = New Panel($hList)
-        hPanel.Resize(1, 1)
-        hPanel.Expand = True
-      Endif
-      hDrawingArea = New DrawingArea($hList) As "dwgTitle"
-      With hDrawingArea
-        .Enabled = False
-        .Tag = Project.ExampleTitle[sDir]
-        sGroup = .Tag
-        '.Font = Font["Bold"]
-        .H = .Font.Height
-        If $iArrange = Arrange.Row Then .Expand = True
-      End With
-      'bHighlight = False
-      sLastDir = sDir
-    Endif
+  aExamples = GetExamples()
+  If aExamples.Count = 0 Then
     
-    hProjectItem = New ProjectBox($hList) As "ProjectItem"
-    If $iArrange = Arrange.Row Then
-      hProjectItem.ResizeScaled(32, 16)
-    Else
-      hProjectItem.ResizeScaled(1, 9)
-    Endif
-    hProjectItem.ShowAuthors = True
-    hProjectItem.Path = Project.EXAMPLES_DIR &/ sExample
-    hProjectItem.Group = sGroup
+    hHelp = New WebView($hList) As "ExampleWebView"
+    hHelp.Foreground = Color.LightForeground
+    hHelp.HTML = "<html><body><style type=\"text/css\">BODY { font-family:sans-serif;font-style:italic;color:#" & Hex$(Color.LightForeground) & "; }</style>" & 
+      Subst(("Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."), "<a href=\"farm://\">" & ("there") & "</a>") &
+      "</body></html>"
+    $hList.Arrangement = Arrange.Fill
+    
+  Else
   
-  Next
-
-  ApplyFilter($hFilter.Text)
+    For Each sExample In aExamples
+    
+      ' sDir = File.Dir(sExample)
+      ' If sDir <> sLastDir Then
+      '   If $iArrange = Arrange.Row And If $hList.Children.Count Then
+      '     hPanel = New Panel($hList)
+      '     hPanel.Resize(1, 1)
+      '     hPanel.Expand = True
+      '   Endif
+      '   hDrawingArea = New DrawingArea($hList) As "dwgTitle"
+      '   With hDrawingArea
+      '     .Enabled = False
+      '     .Tag = Project.ExampleTitle[sDir]
+      '     sGroup = .Tag
+      '     '.Font = Font["Bold"]
+      '     .H = .Font.Height
+      '     If $iArrange = Arrange.Row Then .Expand = True
+      '   End With
+      '   'bHighlight = False
+      '   sLastDir = sDir
+      ' Endif
+      
+      hProjectItem = New ProjectBox($hList) As "ProjectItem"
+      If $iArrange = Arrange.Row Then
+        hProjectItem.ResizeScaled(32, 16)
+      Else
+        hProjectItem.ResizeScaled(1, 9)
+      Endif
+      hProjectItem.ShowAuthors = True
+      hProjectItem.Path = sExample
+      hProjectItem.Group = sGroup
+    
+    Next
+  
+    ApplyFilter($hFilter.Text)
+    $hList.Arrangement = $iArrange
+  
+  Endif
   
   'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
-  $hList.Arrangement = $iArrange
   Dec Application.Busy
 
 End
@@ -382,3 +423,19 @@ Private Sub AllowOpenExtern_Write(Value As Boolean)
   If Not Value Then $hButton.Hide
 
 End
+
+Public Sub ExampleWebView_Link(sURL As String)
+  
+  $sLastURL = sURL
+  
+End
+
+Public Sub ExampleWebView_Error()
+  
+  If $sLastURL = "farm://" Then 
+    FSoftwareFarm.Run
+    Fill
+  Endif
+  
+End
+

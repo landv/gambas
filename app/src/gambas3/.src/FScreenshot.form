@@ -2,6 +2,7 @@
 
 { Form Form
   MoveScaled(0,0,31,7)
+  Action = "screenshot"
   Text = ("Take screenshot")
   Icon = Picture["icon:/small/camera"]
   Border = False
@@ -27,5 +28,14 @@
         Picture = Picture["icon:/small/close"]
       }
     }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action screenshot
+    Text = "Take screenshot"
+    Picture = "icon:/small/camera"
   }
 }

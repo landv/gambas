@@ -163,6 +163,7 @@
       }
     }
     { mnuPublish Menu
+      Action = "publish"
       Text = ("Publish") & "..."
       Picture = Picture["icon:/medium/internet"]
     }
@@ -407,9 +408,10 @@
       Picture = Picture["icon:/small/mail"]
     }
     { mnuScreenshot Menu
-      Action = "take-screenshot"
+      Action = "screenshot"
       Text = ("Take screenshot") & "..."
       Picture = Picture["icon:/small/camera"]
+      Toggle = True
     }
     { mnuUpdateAllForms Menu
       Action = "update-all-forms"
@@ -419,7 +421,7 @@
     { Menu20 Menu
     }
     { mnuFarm Menu
-      Action = "software-farm"
+      Action = "farm"
       Text = ("Software farm") & "..."
       Picture = Picture["icon:/small/book"]
     }
@@ -1066,6 +1068,28 @@
       Border = False
       Menu = "mnuHelp"
     }
+    { ToolButton16 ToolButton
+      MoveScaled(0,4,4,4)
+      Visible = False
+      ToolTip = ("Publish software")
+      Action = "publish"
+      Picture = Picture["icon:/small/internet"]
+    }
+    { ToolButton17 ToolButton
+      MoveScaled(3,4,4,4)
+      Visible = False
+      ToolTip = ("Software farm")
+      Action = "farm"
+      Picture = Picture["icon:/small/book"]
+    }
+    { ToolButton18 ToolButton
+      MoveScaled(6,4,4,4)
+      Visible = False
+      ToolTip = ("Take screenshot")
+      Action = "screenshot"
+      Picture = Picture["icon:/small/camera"]
+      Toggle = True
+    }
     { btnGUI MenuButton
       MoveScaled(13,4,11,4)
       Visible = False
@@ -1364,6 +1388,11 @@
     Shortcut = "Ctrl+Alt+X"
     Picture = "icon:/small/exec"
   }
+  { Action farm
+    Text = "Software farm"
+    Shortcut = ""
+    Picture = "icon:/small/book"
+  }
   { Action find
     Text = "Search"
     Picture = "icon:/small/find"
@@ -1514,6 +1543,11 @@
     Shortcut = "F4"
     Picture = "icon:/small/edit"
   }
+  { Action publish
+    Text = "Publish"
+    Shortcut = ""
+    Picture = "icon:/small/internet"
+  }
   { Action quit
     Text = "Quit"
     Shortcut = "Ctrl+Q"
@@ -1553,6 +1587,11 @@
     Shortcut = "Ctrl+Shift+Alt+S"
     Picture = "icon:/small/save-as"
   }
+  { Action screenshot
+    Text = "Take screenshot"
+    Shortcut = ""
+    Picture = "icon:/small/camera"
+  }
   { Action send-mail
     Text = "Send project by mail"
     Shortcut = ""
@@ -1562,11 +1601,6 @@
     Text = "Shortcuts"
     Shortcut = ""
     Picture = "icon:/small/shortcut"
-  }
-  { Action software-farm
-    Text = "Software farm"
-    Shortcut = ""
-    Picture = "icon:/small/book"
   }
   { Action start
     Text = "Run"
@@ -1587,11 +1621,6 @@
     Text = "Stop"
     Shortcut = "Alt+Pause"
     Picture = "icon:/small/stop"
-  }
-  { Action take-screenshot
-    Text = "Take screenshot"
-    Shortcut = ""
-    Picture = "icon:/small/camera"
   }
   { Action terminal
     Text = "Use terminal emulator"
@@ -1631,7 +1660,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,gui"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,screenshot,gui"
     Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
   }
 }
