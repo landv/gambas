@@ -14,6 +14,12 @@ Public Sub _new()
   'ReportHBox1.Border.RoundCorner.TopRight = "5mm 5mm"
   'ReportHBox1.Border.RoundCorner.BottomRight = "5mm/5mm"
 'Report.Debug = True
+ReportLabel3.BoxShadow.XOffset = "1mm"
+ReportLabel3.BoxShadow.YOffset = "1mm"
+ReportLabel3.BoxShadow.Blur = "1mm"
+
+
+
 End
 
 Public Sub ReportLabel1_Data(Index As Integer)
@@ -40,5 +46,11 @@ Public Sub ReportLabel2_Data(Index As Integer)
   Last.data = hResult1!firstname
   
   'Print hResult1!firstname, Index
+
+End
+
+Public Sub Report_Open()
+
+  
 
 End

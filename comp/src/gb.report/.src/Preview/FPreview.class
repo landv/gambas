@@ -224,7 +224,7 @@ Public Sub ButtonBox1_Click()
   
   Dialog.Path = User.Home
   Dialog.Filter = ["*.pdf", "Pdf", "*.ps", "Postscript"]
-  If Not Dialog.OpenFile() Then
+  If Not Dialog.saveFile() Then
     ButtonBox1.Text = Dialog.Path
     $hPrinter.OutputFile = Dialog.Path
   Endif

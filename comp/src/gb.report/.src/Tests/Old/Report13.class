@@ -1,0 +1,38 @@
+' Gambas class file
+
+Private hResut As Result
+Private hResut2 As Result
+Private ColResult As New Collection
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  hResut.MoveTo(Index)
+  Last.Data = hResut!firstname
+  
+
+End
+
+Public Sub Report_Open()
+Connections["Connection1"].Open
+hResut = db.Exec("select distinct firstname from test")
+
+  ReportVBox1.DataCount = hResut.Count
+  'ReportVBox2.DataCount = 10
+End
+
+Public Sub ReportLabel2_Data(Index As Integer)
+hResut2 = ColResult[ReportVBox1.DataIndex]
+hResut2.MoveTo(Index)
+Last.Data = hResut2!birth
+Print index
+Catch
+End
+
+Public Sub ReportVBox1_BeforeData()
+  If Not ColResult.Exist(Last.DataIndex) Then
+    hResut.MoveTo(Last.DataIndex)
+   hResut2 = db.Exec("select * FROM test where firstname=&1", hResut!firstname)
+    ColResult[Last.DataIndex] = hResut2
+    ReportVBox2.DataCount = hResut2.Count
+  Endif
+Catch
+End
