@@ -153,7 +153,13 @@ End
 
 Public Sub Main()
 
-  Desktop.Open("~/toto.txt", True)
+  Dim hWindow As DesktopWindow
+  Dim hFrame As Rect
+
+  For Each hWindow In Desktop.Windows
+    hFrame = hWindow.Frame
+    Print hWindow.Id;; hWindow.Name;; hFrame.X;; hFrame.Y;; hFrame.W;; hFrame.H    
+  Next
   
 End
 

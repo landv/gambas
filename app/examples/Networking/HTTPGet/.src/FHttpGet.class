@@ -1,6 +1,5 @@
 ' Gambas class file
 
-
 '///////////////////////////////////////
 ' Here we define a HttpClient object
 '///////////////////////////////////////
@@ -12,7 +11,7 @@
 Private CurHost As String
 
 Public Sub Form_Open()
-
+  
   '///////////////////////////////////
   ' We set Default configuration values
   '///////////////////////////////////
@@ -25,8 +24,7 @@ Public Sub Form_Open()
   ' Now we create the HttpClient object
   '////////////////////////////////////
   'MyHTTP=NEW HttpClient AS "MyHTTP"
- 
-
+  
 End
 
 Public Sub Button1_Click()
@@ -34,7 +32,6 @@ Public Sub Button1_Click()
   ' When we press 'Get' button we start 'getting'
   ' proccess
   '/////////////////////////////////////////////////
-
   
   '/////////////////////////////////////////////
   ' If user has configured a proxy, we set
@@ -67,7 +64,7 @@ Public Sub Button1_Click()
     MyHTTP.Proxy.Host = ""
     ' todo authnone
   End If
-    
+  
   '/////////////////////////////////////////////////
   ' User and Password settings to access to that
   ' document (this is a HTTP server authorization,
@@ -92,7 +89,6 @@ Public Sub Button1_Click()
     MyHTTP.User = ""
     MyHTTP.Auth = Net.AuthNone
   End If
-  
   
   '//////////////////////////////////
   ' A bit of feedback for user...
@@ -129,7 +125,7 @@ Public Sub Button1_Click()
   ' memory, we could do that:
   ' MyHTTP.Get( "FilePath" )
   '///////////////////////////////////////////
-
+  
 End
 
 Public Sub MyHTTP_Connect()
@@ -149,6 +145,7 @@ Public Sub MyHTTP_Read()
   ' arrives to us from server, so we read that
   ' part of the document
   '///////////////////////////////////////////
+
   Dim sBuf As String
   Dim sText As String
   
@@ -171,7 +168,6 @@ Public Sub MyHTTP_Read()
     TextArea1.Text = MyHTTP.Headers.Join("\n")
   End If
   
- 
   '/////////////////////////////////
   ' If really there's data to read,
   ' we read it and place it in our
@@ -185,7 +181,7 @@ Public Sub MyHTTP_Read()
 End
 
 Public Sub MyHTTP_Error()
-
+  
   '////////////////////////////
   ' If something fails, this
   ' event raises and connection
@@ -197,13 +193,12 @@ Public Sub MyHTTP_Error()
 End
 
 Public Sub MyHTTP_Finished()
-
+  
   '/////////////////////////////////////
   ' When all document has been received,
   ' this event raises
   '/////////////////////////////////////
   Dim sBuf As String
-  Dim MyLoop As Integer
   '//////////////////////////////
   ' feeback...
   '//////////////////////////////
@@ -227,12 +222,13 @@ Public Sub mnuOptions_Click()
   '////////////////////////////////////
   ' If user wants to modify parameters
   '////////////////////////////////////
+
   FConfig.ShowModal
   
 End
 
 Public Sub Form_Close()
-
+  
   '//////////////////////////////////////
   ' When program finishes, we must ensure
   ' that we close HttpClient object
@@ -242,7 +238,7 @@ Public Sub Form_Close()
 End
 
 Public Sub BtnStop_Click()
-
+  
   '///////////////////////////////////////
   ' If user wants to close the
   ' connection...
@@ -250,12 +246,9 @@ Public Sub BtnStop_Click()
   If MyHttp.Status > 0 Then txtInfo.Text = ("Cancelled by user")
   MyHTTP.Stop()
   
-  
 End
 
 Public Function Correct_Url(sCad As String) As String
-  
-  Dim MyLoop As Integer
   
   If InStr(sCad, "://") Then Return sCad
   
@@ -266,21 +259,19 @@ Public Function Correct_Url(sCad As String) As String
     If Right(CurHost, 1) = "/" Then Return CurHost & sCad
     Return CurHost & "/" & sCad
   End If
-   
+  
 End
 
-
 Public Sub Navigator_Link(Path As String)
- 
+  
   If MyHTTP.Status > 0 Then MyHTTP.Stop()
   TxtHost.Text = Correct_Url(Path)
   Button1_Click()
   
 End
 
-
 Public Sub ChkPassword_Click()
-
+  
   If ChkPassword.Value Then
     TxtUser.Enabled = True
     TxtPassword.Enabled = True
@@ -290,5 +281,5 @@ Public Sub ChkPassword_Click()
     TxtPassword.Enabled = False
     CmbAuth.Enabled = False
   End If
-
+  
 End

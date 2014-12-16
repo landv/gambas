@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Private Const MAX_LINE_WIDTH As Float = 10
+Private Const MAX_LINE_WIDTH As Float = 20
 
 Private $hBuffer As Picture
 Private $X As Float
@@ -8,6 +8,7 @@ Private $Y As Float
 Private $aCoord As Float[]
 Private $iColor As Integer
 Private $hBound As Rect
+Private $fPressure As Float
 
 Public Sub _new()
 
@@ -111,6 +112,7 @@ Public Sub dwgDraw_MouseDown()
 
   $X = dwgDraw.ScrollX + Pointer.X
   $Y = dwgDraw.ScrollY + Pointer.Y
+  $fPressure = 0.1
   
   UpdateInfo
   timScroll.Start
@@ -119,7 +121,7 @@ Public Sub dwgDraw_MouseDown()
   
   $hBound = New Rect($X - MAX_LINE_WIDTH, $Y - MAX_LINE_WIDTH, MAX_LINE_WIDTH * 2, MAX_LINE_WIDTH * 2)
   
-  $aCoord = [$X, $Y, If(Pointer.Type = Pointer.Mouse, 0.5, Pointer.Pressure)]
+  $aCoord = [$X, $Y, If(Pointer.Type = Pointer.Mouse, $fPressure, Pointer.Pressure)]
 
 End
 
@@ -132,9 +134,11 @@ Public Sub dwgDraw_MouseMove()
   
   If Not Mouse.Left Then Return
   
+  $fPressure = Min($fPressure + 0.01, 1)
+  
   $aCoord.Add($X)
   $aCoord.Add($Y)
-  $aCoord.Add(If(Pointer.Type = Pointer.Mouse, 0.5, Pointer.Pressure))
+  $aCoord.Add(If(Pointer.Type = Pointer.Mouse, $fPressure, Pointer.Pressure))
   
   $hBound = $hBound.Union(Rect($X - MAX_LINE_WIDTH, $Y - MAX_LINE_WIDTH, MAX_LINE_WIDTH * 2, MAX_LINE_WIDTH * 2))
   

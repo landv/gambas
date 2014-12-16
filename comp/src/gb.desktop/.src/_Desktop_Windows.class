@@ -45,6 +45,7 @@ Public Sub FromHandle(Window As Integer) As DesktopWindow
     $cWin[Window] = hWin
   Endif
   
+  hWin.Refresh
   Return hWin
   
 End

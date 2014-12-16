@@ -27,7 +27,7 @@ Public Sub Main()
   ' Ouverture de notre fenêtre, on limite
   ' a 60 images par secondes maximum
   With screen
-    .Framerate = 60
+    .Framerate = 100
     .Resizable = False
     .Show()
   End With
@@ -45,7 +45,7 @@ Public Sub Main()
 
 End
 
-Public Sub screen_draw()
+Public Sub Screen_Draw()
   
   Dim Stars As Star
 
@@ -69,11 +69,12 @@ Public Sub screen_draw()
   ' Attention la couleur affecte aussi les images !
   Draw.ForeColor = &hFFFFFF&
 
+  Draw.Font.Size = Font.DefaultFontSize * 2
   Draw.Text(Screen.Framerate, 10, Screen.Height - 40)
   
   ' on applique la rotation et on affiche le logo
   Draw.Rotate(rotation)
-  Draw.Image(img, Screen.Width - 128, Screen.Height - 128)
+  Draw.Image(img, Screen.Width \ 2 - 64, Screen.Height \ 2 - 64)
   
   ' rotation de 0 a 360 :-)
   rotation = (rotation + 1) Mod 360

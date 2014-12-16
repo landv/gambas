@@ -1287,17 +1287,10 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	cairo_pattern_t *save;
 	cairo_matrix_t matrix;
 	
-	//gt_cairo_draw_pixbuf(CONTEXT(d), picture->getPixbuf(), x, y, w, h, opacity, source);
-	//return;
-
-	cairo_save(cr);
-	
 	save = cairo_get_source(cr);
 	cairo_pattern_reference(save);
-	
-	//if (source)
-	//	pixbuf = gdk_pixbuf_new_subpixbuf(pixbuf, source->x, source->y, source->w, source->h);
-	
+	cairo_save(cr);
+
 	surface = check_image(image); //picture->getSurface();
 
 	pattern = cairo_pattern_create_for_surface(surface);
@@ -1306,8 +1299,6 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 		
 	if (source && w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
 		cairo_pattern_set_filter(pattern, CAIRO_FILTER_NEAREST);
-		
-		//gdk_cairo_set_source_pixbuf(cr, picture->getPixbuf(), x, y);
 		
 	cairo_matrix_init_identity(&matrix);
 	cairo_matrix_translate(&matrix, x, y);
@@ -1335,10 +1326,9 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 		cairo_paint_with_alpha(cr, opacity);
 	}
 	
+	cairo_restore(cr);
 	cairo_set_source(cr, save);
 	cairo_pattern_destroy(save);
-	
-	cairo_restore(cr);
 	
 	cairo_pattern_destroy(pattern);
 }

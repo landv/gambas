@@ -31,6 +31,7 @@
 #include "gb.gtk.h"
 #include "watcher.h"
 #include "gglarea.h"
+#include "gkey.h"
 
 #include "x11.h"
 #include "CScreen.h"
@@ -490,6 +491,12 @@ static int my_loop()
 
 static void my_wait(int duration)
 {
+	if (gKey::valid())
+	{
+		GB.Error("Cannot use WAIT inside a keyboard event handler");
+		return;
+	}
+
 	MAIN_do_iteration(true, true);
 }
 

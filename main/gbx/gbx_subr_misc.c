@@ -67,10 +67,18 @@ void SUBR_wait(ushort code)
 {
 	SUBR_ENTER();
 
+	EXEC_set_native_error(FALSE);
+
 	if (NPARAM == 0)
 		GB_Wait(0);
 	else
 		GB_Wait((int)(SUBR_get_float(PARAM) * 1000 + 0.5));
+
+	if (EXEC_has_native_error())
+	{
+		EXEC_set_native_error(FALSE);
+		PROPAGATE();
+	}
 	
 	SUBR_LEAVE_VOID();
 }

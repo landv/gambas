@@ -12,6 +12,8 @@ Property Desktop As Integer
 'Property Read State As Integer[]
 Property Read Id As Integer
 Property Read Icon As Image
+Property Read Geometry As Rect
+Property Read Frame As Rect
 
 Property Minimized As Boolean
 Property Maximized As Boolean
@@ -20,8 +22,8 @@ Property SkipTaskbar As Boolean
 Property Sticky As Boolean
 
 Private $iId As Integer
-Private $aDim As Integer[]
-'Private $sName As String
+Private $hGeom As Rect
+Private $hFrame As Rect
 
 Public Sub _new(Window As Integer)
   
@@ -31,19 +33,22 @@ End
 
 Public Sub Refresh()
   
-  $aDim = Null
+  $hGeom = Null
+  $hFrame = Null
   
 End
 
 Private Sub GetDimensions()
   
+  Dim aDim As Integer[]
   Dim aExt As Integer[]
   
-  If Not $aDim Then 
-    $aDim = X11.GetWindowGeometry($iId)
+  If Not $hGeom Then 
+    aDim = X11.GetWindowGeometry($iId)
     aExt = X11.GetWindowProperty($iId, Atom["_NET_FRAME_EXTENTS"])
-    $aDim[0] -= aExt[0]
-    $aDim[1] -= aExt[2]
+    $hGeom = Rect(aDim[0], aDim[1], aDim[2], aDim[3])
+    $hFrame = $hGeom.Copy()
+    If aExt Then $hFrame.Adjust(- aExt[0], - aExt[2], - aExt[1], - aExt[3])
   Endif
   
 End
@@ -52,28 +57,28 @@ End
 Private Function X_Read() As Integer
 
   GetDimensions
-  Return $aDim[0]
+  Return $hGeom.X
 
 End
 
 Private Function Y_Read() As Integer
 
   GetDimensions
-  Return $aDim[1]  
+  Return $hGeom.Y
 
 End
 
 Private Function Width_Read() As Integer
 
   GetDimensions
-  Return $aDim[2]
+  Return $hGeom.W
 
 End
 
 Private Function Height_Read() As Integer
 
   GetDimensions
-  Return $aDim[3]  
+  Return $hGeom.H
 
 End
 
@@ -280,5 +285,32 @@ End
 Public Sub Activate()
   
   Desktop.ActiveWindow = $iId
+  
+End
+
+Private Function Frame_Read() As Rect
+
+  GetDimensions
+  Return $hFrame.Copy()
+
+End
+
+Private Function Geometry_Read() As Rect
+
+  GetDimensions
+  Return $hGeom.Copy()
+
+End
+
+Public Sub GetScreenshot(Optional WithoutFrame As Boolean) As Picture
+
+  Dim hRect As Rect
+  
+  hRect = If(WithoutFrame, Geometry_Read(), Frame_Read())
+  
+  hRect = hRect.Intersection(Rect(Desktop.X, Desktop.Y, Desktop.W, Desktop.H))
+  If Not hRect Then Return
+  
+  Return Desktop.Screenshot(hRect.X, hRect.Y, hRect.W, hRect.H)
   
 End

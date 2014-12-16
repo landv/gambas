@@ -842,6 +842,11 @@ static void hook_loop()
 
 static void hook_wait(int duration)
 {
+	if (CKEY_is_valid())
+	{
+		GB.Error("Cannot use WAIT inside a keyboard event handler");
+		return;
+	}
 	MAIN_in_wait++;
 	if (duration > 0)
 		qApp->processEvents(QEventLoop::AllEvents, duration);

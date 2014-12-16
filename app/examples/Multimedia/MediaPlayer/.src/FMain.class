@@ -261,14 +261,21 @@ Private Sub Action(sAction As String)
       SuspendScreenSaver
       $hImage.SetWindow(dwgVideo) ', panLeft.X + panLeft.W + 8, panLeft.Y + 8, Me.W - panLeft.X - panLeft.W - 16, Me.H - panLeft.Y - 16)
       EnableVideoFilter
+      Sleep 0.1
       Try $hPlayer.Play
-      dwgVideo.Mouse = Mouse.Blank
-      timTime.Start
-      Dump($hPlayer)
+      If Not Error Then
+        dwgVideo.Mouse = Mouse.Blank
+        timTime.Start
+        Dump($hPlayer)
+      Else
+        ResumeScreenSaver
+        Try $hPlayer.Stop
+        $fLength = 0
+      Endif
       
     Case "stop"
       ResumeScreenSaver
-      $hPlayer.Stop
+      Try $hPlayer.Stop
       $fLength = 0
       timTime.Stop
       dwgVideo.Mouse = Mouse.Default
@@ -390,8 +397,8 @@ Public Sub Form_Resize()
 
   'Debug Me.X;; Me.Y;; Me.W;; Me.H;; FControl.H;; Me.Y + Me.H - FControl.H
   'Debug "FControl.Move:";; Me.X;; Me.Y + Me.H - FControl.H;; Me.W;; FControl.H
-  FControl.Move(Me.X, Me.Y + Me.H - FControl.H, Me.W, FControl.H)
-  FTags.Move(Me.X, Me.Y, FTags.W, Me.H - FControl.H)
+  FControl.Move(dwgVideo.ScreenX, dwgVideo.ScreenY + dwgVideo.H - FControl.H, dwgVideo.W, FControl.H)
+  FTags.Move(dwgVideo.ScreenX, dwgVideo.ScreenY, FTags.W, dwgVideo.H - FControl.H)
 
 End
 

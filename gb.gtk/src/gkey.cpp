@@ -51,7 +51,7 @@ static gControl *_im_control = NULL;
 static bool _im_no_commit = false;
 static bool _no_input_method = false;
 static GdkWindow *_im_window = NULL;
-static signed char _im_state_required = 0;
+static signed char _im_state_required = -1;
 
 //#define MAX_CODE 16
 //static uint _key_code[MAX_CODE] = { 0 };
@@ -185,12 +185,12 @@ bool gKey::enable(gControl *control, GdkEventKey *event)
 		if (!_no_input_method && control == _im_control)
 		{
 			#if DEBUG_IM
-			fprintf(stderr, "gKey::enable: %p event->string = '%s' %d\n", event, event->string, (event->state & (1 << 25)) != 0);
+			fprintf(stderr, "gKey::enable: %p flag = %d event->string = %d\n", event, (event->state & (1 << 25)) != 0, *event->string);
 			#endif
 
 			f = gtk_im_context_filter_keypress(_im_context, &_event);
 			#if DEBUG_IM
-			fprintf(stderr, "gKey::enable: %p filter -> %d event->string = '%s'\n", event, f, event->string);
+			fprintf(stderr, "gKey::enable: %p filter -> %d\n", event, f);
 			#endif
 		}
 	}
@@ -292,8 +292,14 @@ void gKey::setActiveControl(gControl *control)
 			gtk_im_context_reset(_im_context);
 			#if DEBUG_IM
 			fprintf(stderr, "gtk_im_context_focus_in: %s\n", gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context)));
+			if (control->getClass() == Type_gTextBox)
+			{
+				char *method;
+				g_object_get(GTK_ENTRY(control->widget), "im-module", &method, (char *)NULL);
+				fprintf(stderr, "GtkEntry im-module: %s\n", method);
+			}
 			#endif
-			_im_state_required = -1;
+			//_im_state_required = -1;
 		}
 
 		//memset(_key_code, 0, sizeof(uint) * MAX_CODE);
