@@ -1,0 +1,269 @@
+' Gambas class file
+
+Export
+Create Private
+
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
+Public Const _Family As String = "Report"
+
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+Static Public _ObjectFromId As New Collection
+
+
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+Property Read Id As Integer
+Property Read _ReportId As Integer
+Property Read Parent As ReportControl
+
+Property Left, X As String
+Property Top, Y As String
+Property Width As String
+Property Height As String
+Property Read _Top As Float
+Property Read _Left As Float
+Property Read _Width As Float
+Property Read _Height As Float
+Property Read _RelativeTop As Boolean
+Property Read _RelativeLeft As Boolean
+Property Read _RelativeWidth As Boolean
+Property Read _RelativeHeight As Boolean
+Property Tag As Variant
+Property Read Padding As ReportPadding
+
+'Private Variables
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+Private $iId As Integer
+Private $iLastId As Integer
+Private $iParentId As Integer
+Private $iReportId As Integer
+
+Private $sLeft As String
+Private $sTop As String
+Private $sWidth As String
+Private $sHeight As String
+
+
+Private $fTop As Float
+Private $fLeft As Float
+Private $fWidth As Float
+Private $fHeight As Float
+Private $bRelativeTop As Boolean
+Private $bRelativeLeft As Boolean
+Private $bRelativeHeight As Boolean
+Private $bRelativeWidth As Boolean
+Private $vTag As Variant
+Private $hPadding As New ReportPadding
+
+'#####################  PUBLIC PROCEDURES  #########################
+
+Public Sub _New(Optional Parent As ReportControl = Null)
+  
+  Dim hRep As Report
+  
+  $iId = $iLastId
+  Inc $iLastId
+  If IsNull(Parent) Then
+    $iParentId = -1
+    $iReportId = $iId
+    
+  Else
+    If Parent Is Report Then
+      hRep = Parent
+      $iParentId = hRep._Container.id
+      hRep._Container._Add(Me)
+      $iReportId = hRep.id
+    Else
+      $iParentId = Parent.Id
+      Parent._Add(Me)
+      $iReportId = Parent._ReportId
+    Endif
+  Endif
+  
+  
+End
+
+Public Sub _NormalizeUnits()
+  
+  Dim hSizeParse As TSizeParse
+  
+  hSizeParse = New TSizeParse($sLeft, True)
+  $fLeft = hSizeParse.Value
+  $bRelativeLeft = hSizeParse.IsRelative()
+  
+  hSizeParse = New TSizeParse($sTop, True)
+  $fTop = hSizeParse.Value
+  $bRelativeTop = hSizeParse.IsRelative()
+  
+  
+  hSizeParse = New TSizeParse($sWidth, True)
+  $fWidth = hSizeParse.Value
+  $bRelativeWidth = hSizeParse.IsRelative()
+  
+  hSizeParse = New TSizeParse($sHeight, True)
+  $fHeight = hSizeParse.Value
+  $bRelativeHeight = hSizeParse.IsRelative()
+  
+  $hPadding._NormalizeUnits()
+End
+
+
+
+Public Sub _GetSizeHints(ContainerWidth As Float, ContainerHeight As Float) As TSizeHint
+  
+  Dim hSI As New TSizeHint
+  
+  hSI.Width = ContainerWidth - $hPadding._Width
+  hSI.Height = ContainerHeight - $hPadding._Height
+  
+  Return hSI
+End
+
+
+
+'#####################  PRIVATE PROCEDURES  ########################
+
+
+
+
+
+
+
+
+
+
+'########################  PROPERTIES  #############################
+Private Function Id_Read() As Integer
+
+  Return $iId
+
+End
+
+Private Function Left_Read() As String
+
+  Return $sLeft
+
+End
+
+Private Sub Left_Write(Value As String)
+
+  $sLeft = Value
+
+End
+
+
+Private Function Top_Read() As String
+
+  Return $sTop
+
+End
+
+Private Sub Top_Write(Value As String)
+
+  $sTop = Value
+
+End
+
+Private Function WIdth_Read() As String
+
+  Return $sWidth
+
+End
+
+Private Sub WIdth_Write(Value As String)
+
+  $sWidth = Value
+
+End
+
+Private Function Height_Read() As String
+
+  Return $sHeight
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  $sHeight = Value
+
+End
+
+
+Private Function _ReportId_Read() As Integer
+
+  Return $iReportId
+
+End
+
+Private Function Parent_Read() As ReportControl
+
+  Return ReportControl._ObjectFromId[$iParentId]
+
+End
+
+Private Function _Top_Read() As Float
+
+  Return $fTop
+
+End
+
+Private Function _Left_Read() As Float
+
+  Return $fLeft
+
+End
+
+Private Function _Width_Read() As Float
+
+  Return $fWidth
+
+End
+
+Private Function _Height_Read() As Float
+
+  Return $fHeight
+
+End
+
+Private Function _RelativeTop_Read() As Boolean
+
+  Return $bRelativeTop
+
+End
+
+Private Function _RelativeLeft_Read() As Boolean
+
+  Return $bRelativeLeft
+
+End
+
+Private Function _RelativeWidth_Read() As Boolean
+
+  Return $bRelativeWidth
+
+End
+
+Private Function _RelativeHeight_Read() As Boolean
+
+  Return $bRelativeHeight
+
+End
+
+Private Function Padding_Read() As ReportPadding
+
+  Return $hPadding
+
+End
+
+Private Function Tag_Read() As Variant
+
+  Return $vTag
+
+End
+
+Private Sub Tag_Write(Value As Variant)
+
+  $vTag = Value
+
+End

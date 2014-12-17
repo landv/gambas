@@ -1,0 +1,142 @@
+' Gambas class file
+
+Export
+Create Private
+Inherits ReportControl
+'Inherits ReportFrame
+
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+Public Const _IsContainer As Boolean = True
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*,Spacing{ReportCoord},OnePiece,ForceNewPage"
+
+
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+Property Read Children As ReportControl
+Property Spacing As String
+Property Read _Spacing As String
+Property Read _RelativeSpacing As Boolean
+
+
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+Private $aChild As New ReportControl[]
+Private $sSpacing As String
+Private $fSpacing As Float
+Private $bRelativeSpacing As Boolean
+
+'#####################  PUBLIC PROCEDURES  #########################
+Public Sub _NormalizeUnits()
+  Dim hctrl As ReportControl
+  Dim hSizeParse As TSizeParse
+  
+  'Call the ReportControl Normalize function
+  Super._NormalizeUnits
+  
+  hSizeParse = New TSizeParse($sSpacing)
+  $fSpacing = hSizeParse.ToCm()
+  $bRelativeSpacing = hSizeParse.IsRelative()
+  
+  'Call All the children Normalize function
+  For Each hctrl In $aChild
+    hctrl._NormalizeUnits
+  Next
+  
+  
+End
+
+Public Sub _Add(ctrl As ReportControl)
+  
+  $aChild.Add(ctrl)
+  ReportControl._ObjectFromId[ctrl.Id] = ctrl
+End
+
+Public Sub _Remove(Id As Integer)
+  
+  $aChild.Remove($aChild.Find(ReportControl._ObjectFromId[Id]))
+  
+End
+
+
+Public Sub _Free()
+  
+  $aChild.Clear
+  
+End
+
+Public Sub _GetSizeHints(AvailableWidth As Float, AvailableHeight As Float, FullWidth, FullHeight) As TSizeHint
+  
+  Dim hSI As New TSizeHint
+  Dim hChildHints As TSizeHint
+  Dim hctrl As ReportControl
+  Dim fHeight As Float
+  Dim fSpacing As Float
+  Dim i As Integer
+  
+  hSI = Super._GetSizeHints(AvailableWidth, AvailableHeight, FullWidth, FullHeight)
+  
+  If $bRelativeSpacing Then
+    fSpacing = 
+  Else
+    fSpacing = $fSpacing
+  Endif
+  
+  fHeight = AvailableHeight
+  
+  For i = 0 To $aChild.Max
+    hctrl = $aChild[i]
+    hChildHints = hctrl._GetSizeHints(AvailableWidth, fHeight)
+    
+    'On récupère la taille de l'enfant le plus large
+    hSI.Width = Max(hSI.Width, hChildHints.Width)
+    fHeight -= hChildHints.Height
+    
+    If fHeight <= 0 Then Break
+    
+    hSI.Height += hChildHints.Height + fSpacing
+    fHeight -= fSpacing
+    
+  Next
+  
+  If i < $aChild.Max Then hSI.NotFinished = True
+  
+  hSI.Height -= fSpacing
+  
+  
+
+  Return hSI
+End
+
+'#####################  PRIVATE PROCEDURES  ########################
+
+'########################  PROPERTIES  #############################
+Private Function Children_Read() As ReportControl
+
+  Return $aChild
+
+End
+
+
+
+Private Function Spacing_Read() As String
+
+  Return $sSpacing
+
+End
+
+Private Sub Spacing_Write(Value As String)
+
+  $sSpacing = Value
+
+End
+
+Private Function _Spacing_Read() As String
+
+  Return $fSpacing
+
+End
+
+Private Function _RelativeSpacing_Read() As Boolean
+
+  Return $bRelativeSpacing
+
+End
