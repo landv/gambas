@@ -210,6 +210,16 @@ Public Sub WaitFor(Optional sGood As String, sBad As String, Optional bNoWindow 
   
 End
 
+Private Sub AddLanguageTag(aTag As String[], sLang As String)
+
+  Dim iPos As Integer
+  
+  sLang = Language.ToEnglishName(sLang)
+  If Not sLang Then Return
+  If Not aTag.Exist(sLang) Then aTag.Add(sLang)
+
+End
+
 Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVersion As String, aTag As String[], aRequire As String[], sURL As String, sDesc As String)
 
   Dim sSource As String
@@ -217,6 +227,8 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Dim sChecksum As String
   Dim sComp As String
   Dim sTemp As String
+  Dim sLang As String
+  Dim sSave As String
   
   $sTitle = ("Publish project")
   $iProgress = PROGRESS_UPLOAD
@@ -240,6 +252,19 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   For Each sComp In Project.Components
     If Not aTag.Exist(sComp) Then aTag.Add(sComp)
   Next
+
+  sSave = System.Language
+  System.Language = "C"
+
+  If Project.Localize Then  
+    For Each sLang In Language.GetAll()
+      If Project.HasTranslation(sLang) Then AddLanguageTag(aTag, sLang)
+    Next
+  Endif
+  
+  If Project.Language Then AddLanguageTag(aTag, Project.Language)
+  
+  System.Language = sSave
 
   $hForm.URL = "http://" & Farm &/ "/farm/publish"
   '$hForm.Add("login", Login)

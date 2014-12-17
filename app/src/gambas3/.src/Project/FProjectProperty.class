@@ -47,6 +47,11 @@ Public Sub Form_Open()
 
   txtName.Text = "<font size=\"+2\"><b>" & Project.Name & "</b></font><br>" & File.Dir(Project.Dir)
 
+  cmbDefaultLanguage.Clear
+  For Each sLang In Language.GetAll()
+    cmbDefaultLanguage.Add(Language.ToName(sLang))
+  Next
+  
   With Project
 
     txtTitle.Text = .Title
@@ -60,6 +65,8 @@ Public Sub Form_Open()
     txtRelease.Value = .ReleaseVersion
     cmbTranslate.Index = If(.Localize, 0, 1)
     cmbType.Index = .Type
+    cmbDefaultLanguage.Text = Language.ToName(System.Language)
+    Try cmbDefaultLanguage.Text = Language.ToName(Project.Language)
     ' Select Case .Type
     '   Case .TYPE_NORMAL
     '     radTypeNormal.Value = True
@@ -108,14 +115,6 @@ Public Sub Form_Open()
 
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
 
-  cmbDefaultLanguage.Clear
-  cmbDefaultLanguage.Add(("Not translatable"))
-  For Each sLang In Language.GetAll()
-    cmbDefaultLanguage.Add(Language.ToName(sLang))
-  Next
-  
-  cmbTranslate_Click
-  
   If $bShowLibraries Then 
     $bShowLibraries = False
     tabProject.Index = LIBRARY_TAB
@@ -224,11 +223,7 @@ Private Function DoApply() As Boolean
       Project.DeleteCompiledFiles()
     Endif
     .Localize = cmbTranslate.Index = 0
-    If .Localize Then
-      .Language = Language.FromName(cmbDefaultLanguage.Text)
-    Else 
-      .Language = ""
-    Endif
+    .Language = Language.FromName(cmbDefaultLanguage.Text)
     
     .Type = cmbType.Index
     ' If radTypeNormal.Value Then
@@ -1082,18 +1077,18 @@ Public Sub gvwComponent_Activate()
     
 End
 
-Public Sub cmbTranslate_Click()
-
-  If cmbTranslate.Index = 0 Then 
-    cmbDefaultLanguage.Enabled = True
-    cmbDefaultLanguage.Text = Language.ToName(System.Language)
-    Try cmbDefaultLanguage.Text = Language.ToName(Project.Language)
-  Else 
-    cmbDefaultLanguage.Index = 0
-    cmbDefaultLanguage.Enabled = False
-  Endif
-
-End
+' Public Sub cmbTranslate_Click()
+' 
+'   If cmbTranslate.Index = 0 Then 
+'     cmbDefaultLanguage.Enabled = True
+'     cmbDefaultLanguage.Text = Language.ToName(System.Language)
+'     Try cmbDefaultLanguage.Text = Language.ToName(Project.Language)
+'   Else 
+'     cmbDefaultLanguage.Index = 0
+'     cmbDefaultLanguage.Enabled = False
+'   Endif
+' 
+' End
 
 Private Sub UpdateIcon()
   

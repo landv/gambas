@@ -8,7 +8,7 @@ Private $sKeyDrag As String
 Private $sDeleteKey As String
 Private $bNeedProperty As Boolean
 
-'Private $bUpdateRecentMenu As Boolean
+Private $bUpdateRecentMenu As Boolean
 Private $dRecentMenu As Date
 Private $bInTreeView As Boolean
 Private $bInRename As Boolean
@@ -797,19 +797,19 @@ End
 '   
 ' End
 ' 
-' Public Sub mnuOpenRecentProject_Click()
-'   
-'   Project.Open(Last.Tag)
-'   UpdateRecentMenu
-'   
-' End
-' 
-' Public Sub mnuClearRecent_Click()
-'   
-'   CRecentProject.Clear
-'   UpdateRecentMenu
-'   
-' End
+Public Sub mnuOpenRecentProject_Click()
+  
+  Project.Open(Last.Tag)
+  UpdateRecentMenu
+  
+End
+
+Public Sub mnuClearRecent_Click()
+  
+  CRecentProject.Clear
+  UpdateRecentMenu
+  
+End
 
 Private Sub NewProject()
   
@@ -1789,13 +1789,14 @@ Public Sub panInfo_Show()
   
 End
 
-' Public Sub mnuOpenRecent_Show()
-'   
-'   If $bUpdateRecentMenu And If Not CRecentProject.IsOutOfDate($dRecentMenu) Then Return  
-'   UpdateRecentMenu
-'   $bUpdateRecentMenu = True
-'   
-' End
+Public Sub mnuOpenRecent_Show()
+  
+  If $bUpdateRecentMenu And If Not CRecentProject.IsOutOfDate($dRecentMenu) Then Return  
+  UpdateRecentMenu
+  $bUpdateRecentMenu = True
+  
+End
+
 ' 
 ' Public Sub mnuOpenExample_Show()
 '   
