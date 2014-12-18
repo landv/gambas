@@ -10,7 +10,8 @@ Property Center As MapPoint
 Property Read PixelBox As Rect
 Property Read Bounds As MapBounds
 Property Read Count As Integer
-
+Property MaxZoom As Integer
+Private $iMaxZoom As Integer = 18
 Private $iZoom As Integer = 1
 Private $mpCenter As New MapPoint
 Private $iTop As Integer
@@ -29,6 +30,7 @@ Public _ShowWithEffect As Boolean
 Static Public _Debug As Boolean
 Event Refresh
 Event Draw
+
 Private Function Top_Read() As Integer
   
   Return $iTop
@@ -82,7 +84,7 @@ End
 Private Sub SetBoxes()
   
   Dim ptCenter As Point
-  
+  Dim iMaxSize As Integer
   If Not $PrevBox Then 
     $PrevBox = $PixelBox.Copy()
     tmrLoad.Trigger
@@ -90,11 +92,14 @@ Private Sub SetBoxes()
   
   'Create the pixBox
   ptCenter = Geo.MapPointToPixel($mpCenter, $iZoom)
+  'Set a square surface on max size
+  iMaxSize = Max($iWidth, $iHeight)
   
-  $PixelBox.X = ptCenter.X - ($iWidth / 2)
-  $PixelBox.Y = ptCenter.Y - ($iHeight / 2)
-  $PixelBox.Right = ptCenter.x + ($iWidth / 2)
-  $PixelBox.Bottom = ptCenter.Y + ($iHeight / 2)
+    $PixelBox.X = ptCenter.X - (iMaxSize / 2)
+    $PixelBox.Y = ptCenter.Y - (iMaxSize / 2)
+    $PixelBox.Right = ptCenter.x + (iMaxSize / 2)
+    $PixelBox.Bottom = ptCenter.Y + (iMaxSize / 2)
+
   
   $Bounds.TopLeft = Geo.PixelToMapPoint(Point($PixelBox.x, $PixelBox.y), $iZoom)
   $Bounds.BottomRight = Geo.PixelToMapPoint(Point($PixelBox.Right, $PixelBox.Bottom), $iZoom)
@@ -135,7 +140,7 @@ Private Sub Zoom_Write(Value As Integer)
   
   Dim i As Integer
   
-  $iZoom = Min(Max(Value, 1), 18)
+  $iZoom = Min(Max(Value, 1), $iMaxZoom)
   For i = 0 To $aLayers.Max
     $aLayers[i].Refresh
   Next
@@ -245,6 +250,7 @@ Public Sub Draw()
     Draw.Text(sCopyright, Draw.Width - iTextWidth, Draw.Height - iTextHeight)
   Endif 
   Raise Draw
+
 End
 
 Public Sub Layer_Refresh()
@@ -281,7 +287,7 @@ Private Function Bounds_Read() As MapBounds
 End
 
 Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer, Optional Padding As Integer, Optional Zoom As Integer) As Image
-
+  
   Dim i As Integer
   Dim hBndCenter As MapPoint = MapPoint((Bounds.Lat + Bounds.Lat2) / 2, (Bounds.Lon + Bounds.Lon2) / 2)
   Dim hPix, hPix2 As Point
@@ -292,21 +298,21 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
   'On centre la carte sur le bound
   Me.Center = hBndCenter
   Me.Resize(iwidth, iHeight)
-
+  
   If Zoom Then 
     
     Me.Zoom = Zoom
     
   Else
     
-    For i = 18 To 1 Step -1
+    For i = $iMaxZoom To 1 Step -1
       hpix = Geo.MapPointToPixel(hBndCenter, i)
       hPix2 = Geo.MapPointToPixel(Bounds.BottomRight, i)
       If (hPix2.X - hpix.X) <= (iWidth / 2 - Padding) And If (hpix.Y - hPix2.Y) <= (iHeight / 2 - Padding) Then
         Break
       Endif
     Next
-
+    
     Me.Zoom = i 
   Endif
   
@@ -325,27 +331,44 @@ Public Function Grab(Bounds As MapBounds, iWidth As Integer, iHeight As Integer,
   Draw.End
   
   Return hImg
-
+  
 End
 ''Return a Point relative to the view from a MapPoint
+
 Public Function MapPointToPixelRel(hMapPoint As MapPoint) As Point
+
   Dim hPoint As Point
   hPoint = Geo.MapPointToPixel(hMapPoint, $iZoom)
   hPoint.X -= $PixelBox.X
   hPoint.Y -= $PixelBox.Y
   Return hPoint
+
 End
 
 ''Return a MapPoint from a point relative to the view
 Public Function PixelToMapPointRel(hPoint As Point) As MapPoint
+
   Dim pt As Point = hPoint.Copy()
   pt.X += $PixelBox.X
   pt.Y += $PixelBox.Y
   Return Geo.PixelToMapPoint(pt, $iZoom)
+
 End
 
 Private Function Count_Read() As Integer
-
+  
   Return $aLayers.Count
+  
+End
+
+Private Function MaxZoom_Read() As Integer
+  
+  Return $iMaxZoom
+  
+End
+
+Private Sub MaxZoom_Write(Value As Integer)
+
+  $iMaxZoom = Value
 
 End

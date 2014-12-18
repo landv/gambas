@@ -1,11 +1,23 @@
 ' Gambas module file
 
 Public Sub Main()
- Dim hProjSt As New Proj("epsg:4326")
- Dim hProjED As New Proj("epsg:2154")
- Dim MB As MapBounds
- MB = hProjSt.TransformMBounds(hProjED, MapBounds(MapPoint(10, 10), MapPoint(11, 11)))
-Print mb.Lat
 
+  Dim ars As String[]
+  Dim sPath As String = User.Home &/ ".cache/gb.map/GMapCache"
+  Dim s As String
+  Dim fSince As Float = 5
+ars = Dir(sPath, "*.png", gb.File)
+
+
+'Print CFloat(Date(-4801, 1, 1))
+Print CFloat(Time(Now))
+For Each s In ars
+Print Now, Stat(sPath &/ s).LastModified
+Print Int(CFloat(Now)), Int(CFloat(Stat(sPath &/ s).LastModified))
+Print DateDiff(Now(), Stat(sPath &/ s).LastModified, gb.Day)
+Print Int(CFloat(Now)) - Int(CFloat(Stat(sPath &/ s).LastModified))
+'Print sPath &/ s, Stat(sPath &/ s).LastChange, Stat(sPath &/ s).LastModified
+
+Next
 End
 

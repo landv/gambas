@@ -17,7 +17,7 @@ Public Sub Form_Open()
   hClient.Get()
   hClient.URL = "http://www.cadastre.gouv.fr/scpc/listerCommune.do?codeDepartement=017&keepVolatileSession=&listeCommuneNatValeurVueFilterField=&listeCommuneNatValeurVueFilterValue=&offset=500"
   hClient.Get()
-  hClient.URL = "http://www.cadastre.gouv.fr/scpc/afficherCarteCommune.do?c=9B020&keepVolatileSession"
+  hClient.URL = "http://www.cadastre.gouv.fr/scpc/afficherCarteCommune.do?c=9B016&keepVolatileSession"
   hClient.Get()
   'récupération de la zone 
   '

@@ -82,6 +82,10 @@ Count
 r
 i
 
+MaxZoom
+p
+i
+
 _ShowWithEffect
 v
 b
@@ -333,6 +337,10 @@ _new
 m
 
 
+_GetMaxZoom
+m
+i
+
 SetCenter
 m
 
@@ -573,10 +581,6 @@ _ShapeItem
 #_MapTile
 _MapLayer
 C
-$aStack
-v
-String[]
-
 SubDomains
 p
 String[]
@@ -588,10 +592,6 @@ f
 Loading
 r
 b
-
-TileBoundValue
-v
-MapBounds
 
 UseWebMapService
 p
@@ -605,9 +605,21 @@ MaxBounds
 p
 MapBounds
 
+CacheRefreshDelay
+p
+i
+
 WMSProjection
 p
 s
+
+$aStack
+v
+String[]
+
+TileBoundValue
+v
+MapBounds
 
 :Refresh
 :
@@ -617,10 +629,6 @@ _new
 m
 
 [(CacheName)s]
-ClearCache
-m
-
-
 _Draw
 m
 
@@ -661,6 +669,10 @@ SetCoockieFile
 m
 o
 (sFile)s
+ClearCache
+m
+
+[(iLastUse)i]
 #_ShapeItem
 
 C

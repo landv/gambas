@@ -6,6 +6,7 @@ Inherits UserControl
 Public Const _Properties As String = "*,Border{Border.*},AllowEffect=true,ShowControls=true"
 Public Const _Group As String = "View"
 
+
 Property Lock As Boolean
 Property Border As Integer
 Property Read {Map} As Map
@@ -14,6 +15,7 @@ Property ShowControls As Boolean
 Property Mode As Integer
 Private $iMode As Integer
 Private $bShowControls As Boolean = True
+
 
 Private $hCenter As MapPoint
 Private $hMap As New Map As "Map"
@@ -58,6 +60,14 @@ Public Sub _new()
   '$hmap.Padding = 256
   
 End
+
+Public Sub _GetMaxZoom() As Integer
+  
+  Return $hmap.MaxZoom
+  
+End
+
+
 
 Public Sub SetCenter(hMapPoint As MapPoint)
   
@@ -150,7 +160,7 @@ Public Sub _ZoomUp(X As Integer, Y As Integer)
     Draw.FillRect(0, 0, Draw.Width, Draw.Height, Color.Transparent)
     $hmap.Draw
     Draw.End
-    If $hmap.Zoom <= 18 Then 
+    If $hmap.Zoom <= $hmap.MaxZoom Then 
       $iZoomWay = 1
       $bZoomEffect = True
       $tmrZoom.Start

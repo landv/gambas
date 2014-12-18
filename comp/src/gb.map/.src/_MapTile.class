@@ -2,40 +2,53 @@
 
 Export
 Inherits _MapLayer
+
+Property SubDomains As String[]
+Property Opacity As Float
+Property Read Loading As Boolean
+Property UseWebMapService As Boolean
+Property WMSArgs As Collection
+Property MaxBounds As MapBounds 
+''Delay before refreshing an image in the cache. (By default 30 day)
+Property CacheRefreshDelay As Integer  
+''Set the projection used by the WMS server.
+Property WMSProjection As String
+
+Public $aStack As New String[]
+Public TileBoundValue As MapBounds
+
 Private $aClients As New HttpClient[]
 Private $iClientCount As Integer = 4
 Private $sCachePath As String = User.Home &/ ".cache/gb.map"
 Private $tmrGet As New Timer As "tmrGet"
 Private $aTiles As New String[]
 Private $colTiles As New Collection
-Public $aStack As New String[]
 Private $sPattern As String
 Private $aSubDomains As String[] = ["a", "b", "c"]
-Property SubDomains As String[]
-Property Opacity As Float
 Private $fOpacity As Float = 1
 Private $aPreload As New String[]
 Private $bPreloadMode As Boolean
 Private $fGradStep As Float = 0.1
 Private $bIsQuadKey As Boolean
-Property Read Loading As Boolean
 Private $bLoading As Boolean 
 Private $iCli As Integer
 Private $iTileSource As Integer
-Public TileBoundValue As MapBounds
-Property UseWebMapService As Boolean
 'Property TileSource As Integer
 
 Private $bUseWMS As Boolean
-Property WMSArgs As Collection
 Private $cWMSArgs As New Collection
-Property MaxBounds As MapBounds 
 Private $mbMaxBounds As New MapBounds
 Private $prjWMS As Proj
 Private $prjLatLon As Proj
 Private $WMSProj As String
-Property WMSProjection As String
+Private $iVersion As Integer = 1
+Private $iCacheRefreshDelay As Integer = 30
+Private $bCacheRefresh As Boolean = True
 
+
+' Private $aUsedTiles As New String[]
+' Private $aNewTiles As New String[]
+' Private $bHaveCache As Boolean
 Event Refresh
 
 Public Sub _new(Optional CacheName As String)
@@ -43,12 +56,13 @@ Public Sub _new(Optional CacheName As String)
   Dim sTempPath As String
   Dim hClient As HttpClient
   Dim i As Integer
-  'If $bIsWMS Then 
+  'Dim hTable As Table
+  
+  'db.Debug = True
   $prjLatLon = New Proj("epsg:4326")
-  '$prjLembert = New Proj("IGNF:RGF93CC46")
-  'Endif
   If CacheName Then
     sTempPath = $sCachePath &/ CacheName 
+    
   Else
     sTempPath = Temp() 
   Endif
@@ -56,6 +70,7 @@ Public Sub _new(Optional CacheName As String)
   If Not Exist(sTempPath) Then
     If MakeDir(sTempPath) Then Error.Raise("Cannot create Cache Path: \n" & sTempPath)
   Endif
+  
   $sCachePath = sTempPath
   
   $aClients.Resize($iClientCount)
@@ -69,13 +84,7 @@ Public Sub _new(Optional CacheName As String)
 End
 ' svn checkout --username=gambix svn+ssh://gambas@svn.code.sf.net/p/gambas/code/gambas/trunk
 ' 
-' 
 
-Public Sub ClearCache()
-  
-  Try Exec ["rm", $sCachePath &/ "*.png"]
-  
-End
 
 Public Sub _Draw()
   
@@ -85,7 +94,10 @@ Public Sub _Draw()
   Dim hBound As MapBounds
   Dim hPx As Point
   Dim hpx2 As Point
+  'Paint.Reset()
+  'Paint.Rotate(Rad(90))
   
+  'Paint.Translate(hmap.Width / 2, hmap.Height / 2)
   For Each s In $aTiles
     hTile = $coltiles[s]
     
@@ -140,6 +152,14 @@ Public Sub Load()
   Dim mpFirst As MapPoint
   Dim mpLast As MapPoint
   Dim sTileUrl As String
+  'Dim hresult As Result
+  Dim hStat As Stat
+  Dim s As String
+  Dim sExec As String
+  Dim bFirst As Boolean
+
+
+  '***********************************
   
   mpFirst = Geo.PixelToMapPoint(Point(hMap.PixelBox.x, hMap.PixelBox.y), hmap.Zoom)
   mpLast = Geo.PixelToMapPoint(Point(hMap.PixelBox.Right, hMap.PixelBox.Bottom), hmap.Zoom)
@@ -165,7 +185,7 @@ Public Sub Load()
     ars = Split(sTileName, "/") 
     iY = CInt(ars[1])
     iX = CInt(ars[2])
-    sTileName = Subst("&1-&2-&3.png", hMap.Zoom, iY, iX)
+    sTileName = Subst("&1-&2-&3-&4.png", hMap.Zoom, iY, iX, $iVersion)
     If Not $coltiles.Exist(sTileName) Then
       hTile = New _Tile
       hTile.X = iX
@@ -173,14 +193,31 @@ Public Sub Load()
       hTile.Z = hMap.Zoom
       hTile.Name = sTileName
       If Exist($sCachePath &/ hTile.Name) Then 
+        'Print $db.Tables["tiles"]
+        ' hresult = $db.Exec("Select * from tiles where name=&1", "toto")
+        ' 'hresult = $DB.Find("tiles", "name=&1", hTile.Name)
+        ' 
+        ' If hresult.Available And If $bCacheRefresh And If DateDiff(Now(), hresult!lastmodified, gb.Day) > $iCacheRefreshDelay Then
+        '   ReLoadTile(hTile)
+        ' Else
+        ' hStat = Stat($sCachePath &/ hTile.Name)
+        '   Print DateDiff(Now(), hStat.LastModified, gb.Day)
+        ' If $bCacheRefresh And If DateDiff(Now(), hStat.LastChange, gb.Day) > $iCacheRefreshDelay Then
+        '   ReLoadTile(hTile)
+        ' Else
         hTile.Status = _Tile.Normal
         Try hTile.Image = Image.Load($sCachePath &/ hTile.Name)
         If Error Then 
           'Error "Image illisible  -> " & hTile.Name
           ReLoadTile(hTile)
         Else
+          'On valide la Date de dernier acces
+          'If $bHaveCache Then $aUsedTiles.Add(hTile.Name)
+          'Exec ["touch", $sCachePath &/ hTile.Name]
           hTile.Opacity = $fOpacity
         Endif
+        '       Endif
+        '         Endif
       Else
         hTile.Status = _Tile.Loading
         'Debug "loading of : " & hTile.Name
@@ -239,6 +276,9 @@ Public Sub Load()
 End
 
 Private Sub ReLoadTile(hTile As _Tile)
+  ' if more than 3 try then stop try
+  
+  'Dim hresult As Result
   
   If hTile.TryCount > 3 Then 
     hTile.Status = _Tile.Error
@@ -246,8 +286,11 @@ Private Sub ReLoadTile(hTile As _Tile)
     Raise Refresh
     Return
   Endif
-  
-  If Exist($sCachePath &/ hTile.Name) Then Kill $sCachePath &/ hTile.Name
+  'If the tile exist then remove it
+  If Exist($sCachePath &/ hTile.Name) Then 
+    Kill $sCachePath &/ hTile.Name
+
+  Endif
   If Not $aStack.Exist(hTile.Name) Then
     hTile.Status = _Tile.Loading
     Inc hTile.TryCount
@@ -340,6 +383,7 @@ End
 Public Sub Client_Finished()
   
   Dim hTile As _Tile 
+  'Dim hresult As Result
   
   Dec $iCli
   'If Not $bPreloadMode Then6752042.96,2525540.18,6751587.00,2525742.70
@@ -353,6 +397,15 @@ Public Sub Client_Finished()
   Endif
   'Print hTile.Name
   hTile.Status = _Tile.Normal
+  'If $bHaveCache Then $aNewTiles.Add(hTile.Name)
+  ' 'The tile have been loaded and the file is created so now 
+  ' 'we add an entry to the database
+  ' hresult = $DB.Create("tiles")
+  ' hresult!name = hTile.Name
+  ' hresult!lastmodified = Now()
+  ' hresult!version = hTile.Version
+  ' hresult!lastaccess = Now()
+  ' hresult.Update
   Raise Refresh
   'Endif
 Skip:
@@ -397,7 +450,6 @@ Private Function GetTileUrl(hTile As _Tile) As String
   Return GetTileUrlpt(hTile.X, hTile.Y, hTile.Z)
   
 End
-
 
 ' Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As String
 '   
@@ -461,10 +513,9 @@ Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As Strin
   Dim hConv, hConv2 As MapBounds
   Dim sTemp As String
   Dim s As String
-
   
   If Not Me.MaxBounds.Collide(hbound) Then Return
-
+  
   For Each s In $cWMSArgs
     
     sTemp &= "&" & $cWMSArgs.Key & "=" & s 
@@ -472,7 +523,7 @@ Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As Strin
   Next
   
   If $cWMSArgs.Exist("bbox") Then 
-'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+    'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
     'Invertion de coordonée
     'hbound = MapBounds(MapPoint(hBound.lat2, hBound.lon), MapPoint(hBound.lat, hBound.Lon2))
     'Swap hbound.Lat, hbound.Lat2
@@ -501,12 +552,12 @@ Private Function GetWMSTilept(X As Integer, Y As Integer, Z As Integer) As Strin
   
   'sTemp = $sPattern & 
   'sTemp = $sPattern & "?bbox=" & hConv.Lat & "," & hConv.Lon & "," & hConv.Lat2 & "," & hConv.Lon2 
- 
-   'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
-   'Print X, Y, Z, Mid(sTemp, InStr(sTemp, "bbox"))
+  
+  'Print X, Y, Z, hbound.Lat, hbound.Lon, hbound.lat2, hbound.lon2
+  'Print X, Y, Z, Mid(sTemp, InStr(sTemp, "bbox"))
   ' Print 
   ' Print
-
+  
   Return $sPattern & "?" & sTemp
   
 End
@@ -615,11 +666,11 @@ Public Sub _free()
     
   Next
   $aClients.Clear
+  '   $DB.Close
   
 End
 
 Private Function Loading_Read() As Boolean
-
   
   Return $bLoading '
   
@@ -695,3 +746,23 @@ Private Sub WMSProjection_Write(Value As String)
   $prjWMS = New Proj(Value)
   
 End
+
+Private Function CacheRefreshDelay_Read() As Integer
+  Return $iCacheRefreshDelay
+End
+
+Private Sub CacheRefreshDelay_Write(Value As Integer)
+  $iCacheRefreshDelay = Value
+End
+
+Public Sub ClearCache(Optional iLastUse As Integer)
+  If $sCachePath = Null Or len($sCachePath) < 5 Then Return
+  If iLastUse Then
+    Exec ["find", ".", "-mtime", "+" & Str(iLastUse), "-delete"] With ["PWD", $sCachePath]
+  Else
+    Exec ["rm", $sCachePath &/ "*"]
+  Endif
+  
+  
+End
+
