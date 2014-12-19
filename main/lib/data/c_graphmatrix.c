@@ -380,20 +380,24 @@ static void update_gsl_matrix(CMATRIX *mat, unsigned i, unsigned j)
 
 BEGIN_METHOD(Matrix_Add, GB_STRING name)
 
-	unsigned int count = GB.Count(THIS->matrix), i;
+	unsigned int vert = get_vertex(THIS, STRING(name), LENGTH(name)), i;
 	VERT *new;
 
+	if (vert != -1)
+		goto end;
+
+	vert = GB.Count(THIS->matrix);
 	new = GB.Add(&THIS->matrix);
 	/* Add edge buffers to all other vertices */
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < vert; i++) {
 		EDGE *e = GB.Add(&THIS->matrix[i].edges);
 
 		e->set = 0;
 		e->weight = 0;
 	}
-	GB.NewArray(&new->edges, sizeof(*new->edges), count + 1);
+	GB.NewArray(&new->edges, sizeof(*new->edges), vert + 1);
 	/* No outgoing edges */
-	memset(new->edges, 0, (count + 1) * sizeof(*new->edges));
+	memset(new->edges, 0, (vert + 1) * sizeof(*new->edges));
 
 	new->val.type = GB_T_NULL;
 	GB.StoreVariant(NULL, &new->val);
@@ -401,11 +405,12 @@ BEGIN_METHOD(Matrix_Add, GB_STRING name)
 	new->name = GB.NewString(STRING(name), LENGTH(name));
 
 	GB.HashTable.Add(THIS->names, STRING(name), LENGTH(name),
-			 (void *) (intptr_t) count);
-	THIS->v.vertex = count;
+			 (void *) (intptr_t) vert);
 
 	invalidate_gsl_matrix(THIS);
 
+end:
+	THIS->v.vertex = vert;
 	GB.ReturnSelf(THIS);
 
 END_METHOD
