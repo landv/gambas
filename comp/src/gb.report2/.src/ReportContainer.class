@@ -62,48 +62,30 @@ Public Sub _Free()
   $aChild.Clear
   
 End
-
-Public Sub _GetSizeHints(AvailableWidth As Float, AvailableHeight As Float, FullWidth, FullHeight) As TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As TSizeHint
   
   Dim hSI As New TSizeHint
   Dim hChildHints As TSizeHint
   Dim hctrl As ReportControl
-  Dim fHeight As Float
-  Dim fSpacing As Float
+  Dim fHeight As Float ''Sum Height
+  Dim fSpacing As Float = 
   Dim i As Integer
   
   hSI = Super._GetSizeHints(AvailableWidth, AvailableHeight, FullWidth, FullHeight)
   
-  If $bRelativeSpacing Then
-    fSpacing = 
-  Else
-    fSpacing = $fSpacing
-  Endif
-  
-  fHeight = AvailableHeight
-  
-  For i = 0 To $aChild.Max
-    hctrl = $aChild[i]
-    hChildHints = hctrl._GetSizeHints(AvailableWidth, fHeight)
-    
-    'On récupère la taille de l'enfant le plus large
-    hSI.Width = Max(hSI.Width, hChildHints.Width)
-    fHeight -= hChildHints.Height
-    
-    If fHeight <= 0 Then Break
-    
-    hSI.Height += hChildHints.Height + fSpacing
-    fHeight -= fSpacing
+  fSpacing = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
+  fHeight = hSI.Height
+  'Pour chaque enfants
+  For Each hctrl In Me.Children
+    hChildHints = hctrl._GetSizeHints(hSI.Width, hSI.Height - fHeight)
+    fHeight = hChildHints.Height + fSpacing
     
   Next
-  
-  If i < $aChild.Max Then hSI.NotFinished = True
-  
-  hSI.Height -= fSpacing
+  'Retrait de l'espace superflut
+  hctrl.Height -= fSpacing
   
   
 
-  Return hSI
 End
 
 '#####################  PRIVATE PROCEDURES  ########################

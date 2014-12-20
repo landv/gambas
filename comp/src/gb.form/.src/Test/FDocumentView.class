@@ -13,8 +13,8 @@ End
 Public Sub Form_Open()
   
   hpdf.Open("/home/fabien/Downloads/Tuto, doc et RFC/IntroProgBash.pdf")
-  DV.Count = hpdf.Count
-  DV2.Count = hpdf.count
+  DV.Count = 0
+  DV2.Count = 0
   DV2.DocHeight = hpdf[1].Height / 0.72
   DV2.DocWidth = hpdf[1].Width / 0.72
   'DocumentView31.Arrangement = Arrange.Horizontal

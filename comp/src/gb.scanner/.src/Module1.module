@@ -1,6 +1,6 @@
 ' Gambas module file
 
-  Private hscan As New Scanner("hpaio:/net/HP_LaserJet_M1536dnf_MFP?ip=192.168.1.25") As "Scan"
+Private hscan As New Scanner("hpaio:/net/HP_LaserJet_M1536dnf_MFP?ip=192.168.1.25") As "Scan"
 Public Sub Main()
 Print Object.Parent(hscan)
   hScan.ASync = True

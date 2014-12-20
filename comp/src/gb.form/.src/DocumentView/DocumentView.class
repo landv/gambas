@@ -132,7 +132,7 @@ End
 Public Sub View_Draw()
   
   Dim i, j, k As Integer
-  
+  If $iCount = 0 Then Return 
   Select Case $iArrangement
     Case Arrange.Horizontal
       k = $iFirstVisibleDocument
@@ -247,6 +247,7 @@ Private Sub DoLayout()
   Dim i As Integer
   Dim atmp As New Integer[]
   Dim fOldZoom As Float = $fZoom
+  If $iCount = 0 Then Return
   'TODO: go
   $tmrLoad.Stop
   'Found the maxPage Size

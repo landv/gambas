@@ -110,14 +110,14 @@ End
 
 
 
-Public Sub _GetSizeHints(ContainerWidth As Float, ContainerHeight As Float) As TSizeHint
+Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As TSizeHint
   
-  Dim hSI As New TSizeHint
+  Dim hSizeHint As New TSizeHint
   
-  hSI.Width = ContainerWidth - $hPadding._Width
-  hSI.Height = ContainerHeight - $hPadding._Height
+  hSizeHint.Width = ContainerWidth - $hPadding._Width
+  hSizeHint.Height = ContainerHeight - $hPadding._Height
   
-  Return hSI
+  Return hSizeHint
 End
 
 

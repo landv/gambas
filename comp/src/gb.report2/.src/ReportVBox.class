@@ -1,0 +1,18 @@
+' Gambas class file
+
+Export
+Inherits ReportContainer
+Public Const _Properties As String = "*,ForceNewPage"
+Public Const _Similar As String = "ReportVBox"
+Public Const _DefaultArrangement As String = "V"
+
+Public Sub _new()
+
+  Super._Arrangement = Arrange.Vertical
+
+End
+
+Public Sub _Free()
+
+
+End

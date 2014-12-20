@@ -1,0 +1,24 @@
+' Gambas class file
+
+Export
+Inherits ReportVBox
+Public Const _Properties As String = "*,Text"
+Property Text As String
+Private $sText As String
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Public Sub _Free()
+  
+End
