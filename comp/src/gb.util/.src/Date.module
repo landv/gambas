@@ -13,3 +13,23 @@ Public Sub FromUnixTime(UnixTime As Long) As Date
   Return DateAdd(Date(1970, 1, 1), UnixTime, gb.Second)
 
 End
+
+' Gregorian algorithm by Aloysius Lilius And Christophorus Clavius.
+' Valid For any year since 1583. 
+
+Public Sub EasterDay(Year As Integer) As Date
+
+  Dim A, B, C, D, E, F, G As Integer
+  
+  A = Year Mod 19 + 1
+  B = Year Div 100 + 1
+  C = (3 * B) Div 4 - 12
+  D = (8 * B + 5) Div 25 - 5
+  E = (Year * 5) Div 4 - 10 - C
+  F = ((11 * A + 20 + D - C) Mod 30 + 30) Mod 30
+  If F = 24 Or (F = 25 And A > 11) Then F = F + 1
+  G = 44 - F
+  If G < 21 Then G = G + 30
+  Return DateAdd(Date(Year, 3, 1), gb.Day, G + 7 - (E + G) Mod 7 - 1)
+  
+End

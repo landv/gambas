@@ -87,8 +87,6 @@ Public Sub Form_Open()
 
   $hWelcome = New CWelcome(dwgWelcome)
   
-  txtFilter.SetFocus
-  
 End
 
 
@@ -422,5 +420,15 @@ Public Sub panList_Arrange()
   'Debug iArr;; panList.W;; Desktop.Scale * 64
   $hRecent.SetArrangement(iArr)
   $hExample.SetArrangement(iArr)
+
+End
+
+Public Sub Form_Activate()
+
+  If $iRecent = LIST_EXAMPLE Then
+    txtFilterExample.SetFocus
+  Else
+    txtFilter.SetFocus
+  Endif
 
 End

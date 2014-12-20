@@ -126,12 +126,12 @@ static void main_exit(bool silent)
 		EXTERN_release();
 		STREAM_exit();
 		OBJECT_exit();
+		CFILE_exit();
 
 		CLASS_clean_up(silent);
 
 		SUBR_exit();
 		DEBUG_exit();
-		CFILE_exit();
 		WATCH_exit();
 		#if USE_PROFILE
 		PROFILE_exit();

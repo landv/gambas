@@ -348,8 +348,9 @@ Public Sub Main()
 
   FHelpBrowser.Load
   FHelpShortcut.Load
-  FMain.Show
   RefreshActivate
+  FMain.Show
+  FWelcome.SetFocus
 
   Dec Application.Busy
 

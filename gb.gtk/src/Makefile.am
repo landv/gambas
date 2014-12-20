@@ -5,9 +5,9 @@ SUBDIRS = . @GTKOPENGL_DIR@
 
 gblib_LTLIBRARIES = gb.gtk.la
 
-gb_gtk_la_LIBADD = @GTK_LIB@
+gb_gtk_la_LIBADD = @THREAD_LIB@ @GTK_LIB@
 gb_gtk_la_LDFLAGS = -module @LD_FLAGS@ @GTK_LDFLAGS@
-gb_gtk_la_CPPFLAGS = @GTK_INC@ -I$(top_srcdir)/share
+gb_gtk_la_CPPFLAGS = @THREAD_INC@ @GTK_INC@ -I$(top_srcdir)/share
 
 gb_gtk_la_SOURCES = \
 	gmemory.h gmemory.cpp gtag.h ggambastag.h gshare.h \

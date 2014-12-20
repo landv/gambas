@@ -493,7 +493,11 @@ static void my_wait(int duration)
 {
 	if (gKey::valid())
 	{
-		GB.Error("Cannot use WAIT inside a keyboard event handler");
+#ifdef GTK3
+		fprintf(stderr, "gb.gtk3: WAIT inside a keyboard event handler is ignored\n");
+#else
+		fprintf(stderr, "gb.gtk: WAIT inside a keyboard event handler is ignored\n");
+#endif
 		return;
 	}
 

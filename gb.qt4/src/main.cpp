@@ -844,7 +844,7 @@ static void hook_wait(int duration)
 {
 	if (CKEY_is_valid())
 	{
-		GB.Error("Cannot use WAIT inside a keyboard event handler");
+		fprintf(stderr, "gb.qt4: warning: WAIT inside a keyboard event handler is ignored\n");
 		return;
 	}
 	MAIN_in_wait++;

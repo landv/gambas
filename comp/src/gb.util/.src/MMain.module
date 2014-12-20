@@ -2,6 +2,10 @@
 
 Public Sub Main()
 
-  Print String.RemoveDiacritics("bébé")
-  
+  Dim I As Integer
+
+  For I = 2014 To 2030
+    Print I;; Date.Eastern(I)
+  Next
+
 End

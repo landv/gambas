@@ -307,13 +307,10 @@ static void CCURL_post_curl(intptr_t data)
 	int post=1;
 	void *_object;
 	char *tmp;
-	struct timespec mywait;
 
 	do
 	{
-		mywait.tv_sec=0;
-		mywait.tv_nsec=1000000;
-		nanosleep(&mywait,NULL);	
+		usleep(1000);
 	}
 	while(CURLM_CALL_MULTI_PERFORM == curl_multi_perform(CCURL_multicurl,&nread));
 	

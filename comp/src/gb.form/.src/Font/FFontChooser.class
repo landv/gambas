@@ -38,7 +38,7 @@ Public Sub Form_Open()
 
   $bNoRefresh = False
   RefreshFamily
-  btnRelative_Click
+  UpdateRelative
   txtSize_Change
 
 End
@@ -290,7 +290,7 @@ Public Sub lstFamily_DblClick()
 
 End
 
-Public Sub btnRelative_Click()
+Private Sub UpdateRelative()
 
   Object.Lock(txtSize)
   Object.Lock(sldSize)
@@ -311,8 +311,13 @@ Public Sub btnRelative_Click()
 
   Object.Unlock(txtSize)
   Object.Unlock(sldSize)
-  
   txtSize_Change
+
+End
+
+Public Sub btnRelative_Click()
+
+  UpdateRelative
   txtSize.SetFocus
   
 End
