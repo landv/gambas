@@ -2,18 +2,8 @@ About c2help
 ------------
 
 c2help is used to extract Gambas documentation from C/C++ source files and
-create .help files for a component from them.
-
-Project compass
----------------
-
-./extract.awk -- Extract help comments
-./xlate.sh    -- Translate C/C++ function names to Gambas symbol names
-./prefix.awk  -- Prefix symbol names with the classes they belong to
-./mkhelp.gbs3 -- Create a .help file from the (properly formatted) input
-
-./c2help.sh   -- Executes the above programs in the correct order to create
-                 the .help in a number of C/C++ sources.
+create .help files for a component from them. It consits of a single Gambas
+script and depends on gb.pcre.
 
 ... and why?
 ------------
@@ -36,7 +26,7 @@ development branch.
 Great! How do I prepare my component?
 -------------------------------------
 
-The No 0 rule is to BE CAREFUL! There are quite some rules to remember:
+The No. 0 rule is to BE CAREFUL! There are quite some rules to remember:
 
 1. Documentation syntax.
 
@@ -57,6 +47,12 @@ or alternatively
 
 Instead of the **/ at the end, you may also write */. Cool, huh?
 
+The second syntax can also be used to document the class per se:
+
+  /**G Class
+   * Class documentation here
+   **/
+
 The difference between both notations is that the first must immediately
 precede a BEGIN_{PROPERTY,METHOD,METHOD_VOID) line that defines the symbol
 to which the documentation refers. The second syntax documents the indicated
@@ -67,20 +63,21 @@ have a BEGIN_* line. It can neverthelss be used for any other symbol but
 NEVER intermix both syntaxes on a single symbol.
 
 The ClassName_MethodName part I call "(implementation) function name". The
-particular format shown is not mandatory. The scripts take the function name
-and look up the corresponding symbol in your GB_DESC[].
+particular function naming convention shown is not mandatory. The scripts
+take the function name and look up the corresponding symbol in your
+GB_DESC[].
 
-2. Strict regular expressions.
+2. Regular expressions.
 
 The regular expressions used to filter these comments are somewhat strict.
-You have to pass the spaces exactly as indicated in the line where you
+You have to pass the spaces exactly as indicated in the line where your
 comment text starts, i.e. <space>*<space>text. Also note that Class and
 Symbol in the second syntax are case sensitive!
 
-3. Strict structure.
+OTOH, I can't guarantee that the expressions will not consume junk that you
+left behind where I didn't expect junk to be.
 
-Really. The next empty-or-not line after a syntax-1 help block is taken as
-the symbol definition line. If it's not, you get a wrong symbol name.
+3. Strict structure.
 
 DON'T try to confuse the parsers by not giving information it needs where
 it expects it.
@@ -100,6 +97,8 @@ As the implementation function name is searched in the GB_DESC[]s in your
 source file, you may not put the same function into different classes -- or
 the parser may get confused.
 
+Also, keep the GB_DESC[] in the same source file as the help comment.
+
 Umm... I need an example
 ------------------------
 
@@ -110,4 +109,4 @@ _call a synonym.
 
 To see a sample .help file (on stdout), you can do at the source tree root:
 
-  $ c2help/c2help.sh gb.openssl
+  $ app/src/c2help/c2help.gbs3 gb.openssl
