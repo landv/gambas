@@ -279,15 +279,18 @@ Private Sub UpdateSoftware()
       Endif
     Endif
   
-    If .IsInstalled() Then
-      btnInstall.Text = ("Uninstall")
-      btnInstall.Picture = Picture["icon:/medium/undo"]
-    Else If .CanUpgrade() Then
+    If .CanUpgrade() Then
       btnInstall.Text = ("Upgrade")
       btnInstall.Picture = Picture["icon:/medium/up"]
+      btnDownload.Hide
+    Else If .IsInstalled() Then
+      btnInstall.Text = ("Uninstall")
+      btnInstall.Picture = Picture["icon:/medium/undo"]
+      btnDownload.Hide
     Else
       btnInstall.Text = ("Install")
       btnInstall.Picture = Picture["icon:/medium/add"]
+      btnDownload.Show
     Endif
     
     btnRemove.Visible = FarmIdentity.Get($hSoft.Farm).Login = $hSoft.Owner
@@ -465,6 +468,24 @@ Public Sub dwgStat_Draw()
   
 End
 
+Public Sub btnDownload_Click()
+  
+  Dim sName As String = $hSoft.GetTitle()
+  Dim sErr As String
+
+  If Message.Question(Subst(("Do you really want to download <b>&1</b>?"), sName), ("Download"), ("Cancel")) = 1 Then
+    sErr = $hSoft.Install(True) 
+    If sErr Then
+      Message.Error(Subst(("Unable to download <b>&1</b>:"), sName) & "\n\n" & sErr)
+    Else
+      Message(Subst(("<b>&1</b> has been successfully downloaded."), sName))
+      Reload
+    Endif
+  Endif
+  
+End
+
+
 Public Sub btnInstall_Click()
 
   Dim sName As String = $hSoft.GetTitle()
@@ -475,7 +496,7 @@ Public Sub btnInstall_Click()
       If Message.Question(Subst(("Do you really want to upgrade <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
         sErr = $hSoft.Install() 
         If sErr Then
-          Message.Error(Subst(("Unable to upgrade <b>&1<b>:"), sName) & "\n\n" & sErr)
+          Message.Error(Subst(("Unable to upgrade <b>&1</b>:"), sName) & "\n\n" & sErr)
         Else
           Message(Subst("<b>&1</b> has been successfully upgraded.", sName))
           Goto REFRESH
@@ -485,7 +506,7 @@ Public Sub btnInstall_Click()
       If Message.Question(Subst(("Do you really want to uninstall <b>&1</b>?"), sName), ("Uninstall"), ("Cancel")) = 1 Then
         sErr = $hSoft.Uninstall() 
         If sErr Then
-          Message.Error(Subst(("Unable to remove <b>&1<b>:"), sName) & "\n\n" & sErr)
+          Message.Error(Subst(("Unable to remove <b>&1</b>:"), sName) & "\n\n" & sErr)
         Else
           Message(Subst(("<b>&1</b> has been successfully removed."), sName))
           Goto REFRESH
@@ -496,7 +517,7 @@ Public Sub btnInstall_Click()
     If Message.Question(Subst(("Do you really want to install <b>&1</b>?"), sName), ("Install"), ("Cancel")) = 1 Then
       sErr = $hSoft.Install() 
       If sErr Then
-        Message.Error(Subst(("Unable to install <b>&1<b>:"), sName) & "\n\n" & sErr)
+        Message.Error(Subst(("Unable to install <b>&1</b>:"), sName) & "\n\n" & sErr)
       Else
         Message(Subst(("<b>&1</b> has been successfully installed."), sName))
         Goto REFRESH

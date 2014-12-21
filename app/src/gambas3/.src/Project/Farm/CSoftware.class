@@ -245,7 +245,7 @@ Public Sub CanUpgrade() As Boolean
   
 End
 
-Public Sub Install() As String
+Public Sub Install(Optional bJustDownload As Boolean) As String
 
   Dim hReq As FarmRequest
   Dim sDir As String
@@ -315,7 +315,7 @@ Public Sub Install() As String
   sName = Name
   sDir = File.SetName(sPath, sName)  
   hProjectInfo = New CProjectInfo(sDir)
-
+  
   ' Check the components
   
   For Each sComp In hProjectInfo.Components
@@ -329,35 +329,76 @@ Public Sub Install() As String
   Endif
   
   ' TODO: Check the libraries
+    
+  If bJustDownload Then
+    
+    GoSub INSTALL_SOURCE
+    
+  Else
   
-  ' Compile the project
-  ' TODO: Use translatable error messages?
+    ' Compile the project
+    ' TODO: Use translatable error messages?
+    
+    sExec = System.Path &/ "bin/gbc" & System.Version & " -a -g -x "
+    If hProjectInfo.Translate Then sExec &= "-t "
+    If hProjectInfo.ControlPublic Then sExec &= "-p "
+    If hProjectInfo.ModulePublic Then sExec &= "-m "
+    sExec &= Shell$(sDir)
+    sExec &= " 2>&1"
+    
+    Shell sExec To sResult
+    
+    If Process.LastValue Then
+      Error.Raise(("Unable to compile the project.") & "\n\n" & sResult)
+    Endif
   
-  sExec = System.Path &/ "bin/gbc" & System.Version & " -a -g -x "
-  If hProjectInfo.Translate Then sExec &= "-t "
-  If hProjectInfo.ControlPublic Then sExec &= "-p "
-  If hProjectInfo.ModulePublic Then sExec &= "-m "
-  sExec &= Shell$(sDir)
-  sExec &= " 2>&1"
-  
-  Shell sExec To sResult
-  
-  If Process.LastValue Then
-    Error.Raise(("Unable to compile the project.") & "\n\n" & sResult)
+    ' Make executable
+    
+    sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(sDir &/ sName & ".gambas") & " " & Shell$(sDir) & " 2>&1"
+    Shell sExec To sResult
+    If Process.LastValue Then Error.Raise(("Unable to make executable.") & "\n\n" & Trim(sResult))
+    
+    ' Install executable
+    
+    Copy sDir &/ sName & ".gambas" To sExecDir &/ sName & ".gambas"
+    Chmod sExecDir &/ sName & ".gambas" To "..x..x..x"
+    Try Kill sDir &/ sName & ".gambas"
+    
+    GoSub INSTALL_SOURCE
+    
+    ' Make a desktop file unless the project is a library or a component
+    
+    If hProjectInfo.Type = Project.TYPE_NORMAL Then
+    
+      aExistCat = Split(File.Load("install/categories"), "\n", "", True)
+      aCat = New String[]
+      For Each sTag In Tags
+        If aExistCat.Exist(sTag, gb.IgnoreCase) Then
+          aCat.Add(sTag)
+        Endif
+      Next
+    
+      Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop"
+      If hProjectInfo.CreateMenu Then
+        hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop")
+        With hDesktopFile
+          .Name = hProjectInfo.GetTitle()
+          .Exec = sExecDir &/ sName & ".gambas"
+          If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
+          .Categories = aCat
+        End With
+        hDesktopFile.Save
+      Endif
+      
+    Endif
+    
   Endif
 
-  ' Make executable
+  Start
+  Return
   
-  sExec = System.Path &/ "bin/gba" & System.Version & " -o " & Shell$(sDir &/ sName & ".gambas") & " " & Shell$(sDir) & " 2>&1"
-  Shell sExec To sResult
-  If Process.LastValue Then Error.Raise(("Unable to make executable.") & "\n\n" & Trim(sResult))
-  
-  ' Install executable
-  
-  Copy sDir &/ sName & ".gambas" To sExecDir &/ sName & ".gambas"
-  Chmod sExecDir &/ sName & ".gambas" To "..x..x..x"
-  Try Kill sDir &/ sName & ".gambas"
-  
+INSTALL_SOURCE:
+
   ' Make a backup of the possible old version
 
   Exec ["rm", "-rf", sSrcDir &/ sName & "~"] Wait
@@ -372,33 +413,7 @@ Public Sub Install() As String
   
   Exec ["rm", "-rf", sSrcDir &/ sName & "~"] Wait
   
-  ' Make a desktop file unless the project is a library or a component
-  
-  If hProjectInfo.Type = Project.TYPE_NORMAL Then
-  
-    aExistCat = Split(File.Load("install/categories"), "\n", "", True)
-    aCat = New String[]
-    For Each sTag In Tags
-      If aExistCat.Exist(sTag, gb.IgnoreCase) Then
-        aCat.Add(sTag)
-      Endif
-    Next
-  
-    Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop"
-    If hProjectInfo.CreateMenu Then
-      hDesktopFile = New DesktopFile(Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & sName & ".desktop")
-      With hDesktopFile
-        .Name = hProjectInfo.GetTitle()
-        .Exec = sExecDir &/ sName & ".gambas"
-        If hProjectInfo.Icon Then .Icon = sSrcDir &/ sName &/ hProjectInfo.Icon
-        .Categories = aCat
-      End With
-      hDesktopFile.Save
-    Endif
-    
-  Endif
-
-  Start
+  Return
   
 Catch
   
