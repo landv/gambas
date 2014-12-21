@@ -60,8 +60,23 @@ Private Function Value_Read() As Variant
 End
 
 Private Sub Value_Write(Value As Variant)
-  
+  Dim iFind As Integer
   _Value = Value
+  If Me.IsRange Then 
+    If TypeOf(Value) <> gb.Integer And If TypeOf(Value) <> gb.Float Then Error.Raise("This option require a number value")
+    _Value = Max(Min(Me.MaxValue, _Value), Me.MinValue)
+    If _Value <> Value Then Error "Warning: Option: '" & Me.Name & "' -> Value out of range... change to : " & _Value
+  Else
+    If Not _List.Exist(Value) Then 
+      
+      Error "Warning: Option '" & Me.Name & "' -> Value not in the list..."
+      iFind = _List.Find(Value & "*", gb.Like)
+      If iFind > 0 Then 
+        _Value = _List[iFind]
+        Error "Warning: Option '" & Me.Name & "' -> Near value found: Set to '" & _Value & "'"
+      Endif
+    Endif
+  Endif
   $bModified = True
   
 End

@@ -235,7 +235,11 @@ Public Function Scan() As Image
   If Not $bASync Then 
     Shell sCommand To ss 'Wait
     'Print ss
-    hImage = Image.Load($sCurImagePath)
+    Try hImage = Image.Load($sCurImagePath)
+    If Error Then 
+      Error.Raise("Can't get the image, something goes wrong")
+      Return
+    Endif
     Return hImage
   Else
     Shell sCommand For Read As "Process"
