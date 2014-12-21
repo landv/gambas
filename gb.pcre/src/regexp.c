@@ -393,18 +393,14 @@ BEGIN_METHOD(RegExp_Replace, GB_STRING subject; GB_STRING pattern; GB_STRING rep
 			exec(&r, GB.StringLength(subject) - offset);
 
 			if (r.ovector[0] < 0)
-			{
-				result = GB.AddString(result, &subject[offset], GB.StringLength(subject) - offset);
-				//fprintf(stderr, "result = %s\n", result);
 				break;
-			}
 
 			_subst_regexp = &r;
 
 			if (r.ovector[0] > 0)
 			{
 			#if DEBUG_REPLACE
-				fprintf(stderr, "add: (%d) %.*s\n", lp, r.ovector[i * 2] - lp, &r.subject[lp]);
+				fprintf(stderr, "add: (%d) %.*s\n", r.ovector[0], r.ovector[0], r.subject);
 			#endif
 				result = GB.AddString(result, r.subject, r.ovector[0]);
 			#if DEBUG_REPLACE
@@ -422,7 +418,13 @@ BEGIN_METHOD(RegExp_Replace, GB_STRING subject; GB_STRING pattern; GB_STRING rep
 			#endif
 
 			offset += r.ovector[1];
+
+			if (*r.pattern == '^')
+				break;
 		}
+
+		if (offset < LENGTH(subject))
+			result = GB.AddString(result, &subject[offset], LENGTH(subject) - offset);
 
 		_subst_regexp = NULL;
 
