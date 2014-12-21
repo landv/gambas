@@ -1,16 +1,16 @@
-About c2help
-------------
+About gbh3
+----------
 
-c2help is used to extract Gambas documentation from C/C++ source files and
-create .help files for a component from them. It consits of a single Gambas
-script and depends on gb.pcre.
+gbh3 is used to extract Gambas documentation from C/C++ source files and
+create .help files for a component from them. It is a single Gambas project
+depending only on gb.pcre.
 
 ... and why?
 ------------
 
 Components written in Gambas can already be documented in-code. This docu-
 mentation is then stored inside their .info files. With a similar result
-provided by c2help for C/C++ components, we can document all[*] Gambas in
+provided by gbh3 for C/C++ components, we can document all[*] Gambas in
 its source files (at least my components will be) which makes it, IMHO,
 easier to keep the documentation up-to-date. Also the help could be
 displayed locally by the IDE or remotely once these .help files are imported
@@ -109,4 +109,4 @@ _call a synonym.
 
 To see a sample .help file (on stdout), you can do at the source tree root:
 
-  $ app/src/c2help/c2help.gbs3 gb.openssl
+  $ gbx3 app/src/gbh3 -- gb.openssl

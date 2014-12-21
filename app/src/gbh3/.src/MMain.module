@@ -1,15 +1,22 @@
-#!/usr/bin/gbs3
-
-' (C) 2014 Tobias Boege <tobias@gambas-buch.de>, GPLv2+
-
-Use "gb.pcre"
+' Gambas module file
 
 Public Sub Main()
-  Dim sArg, sRec As String
-  Dim aRec As String[]
+  Dim iInd As Integer, aSources As New String[]
+  Dim sArg, sRec As String, aRec As String[]
 
-  If Args.Count < 1 Then Usage()
-  For Each sArg In Args.All.Extract(1, -1)
+  If Args.Count < 2 Then Usage()
+  For iInd = 1 To Args.Max
+    Select Case Args[iInd]
+      Case "-h", "--help"
+        Usage()
+      Case "-V", "--version"
+        Version()
+      Default
+        aSources.Add(Args[iInd])
+    End Select
+  Next
+
+  For Each sArg In aSources
     sArg = Application.Dir &/ sArg
     If IsDir(sArg) Then
       aRec = RDir(sArg, "*.{c,cpp}")
@@ -22,6 +29,24 @@ Public Sub Main()
   Next
 End
 
+Private Sub Usage()
+  Print "Usage:";; Args[0];; "SOURCES..."
+  Print
+  Print "Extract Gambas help comments from all SOURCES and output a .help file."
+  Print "If SOURCES contains directories, they are searched recursively for .c"
+  Print "and .cpp files."
+  Print
+  Print "Options:"
+  Print "\t-h, --help\t\tDisplay this help text"
+  Print "\t-V, --version\t\tDisplay project version"
+  Quit
+End
+
+Private Sub Version()
+  Print Application.Version
+  Quit
+End
+
 Private Sub OneFile(sPath As String)
   Dim hFile As File
 
@@ -29,17 +54,6 @@ Private Sub OneFile(sPath As String)
   hFile = Open sPath For Input
   MakeHelp(Translate(Extract(hFile), sPath), File.Out)
   Close #hFile
-End
-
-Private Sub Usage()
-  Print
-  Print "Usage:";; Args[0];; "SOURCES..."
-  Print
-  Print "Extract Gambas help comments from all SOURCES and output a .help file."
-  Print "If SOURCES contains directories, they are searched recursively for .c"
-  Print "and .cpp files."
-  Print
-  Quit
 End
 
 Private Function Extract(hFile As File) As String[]
@@ -66,17 +80,7 @@ Private Function Extract(hFile As File) As String[]
       bRecord = False
     Endif
 
-    ' XXX: I'd like to
-    '
-    '  RegExp.Replace(sLine, "^[\\t ]*\\*", "'")
-    '
-    ' but gb.pcre returns for " * *" -> "''" which I can't use.
-    If bRecord Then
-      If sLine Match "^[\\t ]*\\*" Then
-        sLine = "'" & Right$(Trim$(sLine), -1)
-      Endif
-      aRes.Add(sLine)
-    Endif
+    If bRecord Then aRes.Add(RegExp.Replace(sLine, "^[\\t ]*\\*", "'"))
 
     If sLine Match "^/\\*\\*G$" Then
       If bRecord Then aRes.Add("ERROR")
