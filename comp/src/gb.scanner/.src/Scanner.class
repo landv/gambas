@@ -38,7 +38,7 @@ Event Progress
 
 Public Sub _New(sDevice As String)
   
-  $sDeviceName = "--device-name=" & sDevice
+  $sDeviceName = "--device-name='" & sDevice & "'"
   $sName = sDevice
   If Not IsAvailable() Then
     Error.Raise("Unknown Device")
@@ -96,7 +96,7 @@ Private Sub GetOptions()
   '$Options = New _Options
   $aOptionsNames = New String[]
   $aOptions = New _Option[]
-  Exec ["scanimage", $sDeviceName, "-A"] To sRet
+  Shell "scanimage " & $sDeviceName & " -A" To sRet
   'Return
   For Each s In Split(sRet, "\n")
     s = Trim(s)
@@ -222,9 +222,9 @@ Public Function Scan() As Image
     If hOption.Modified Then
       
       If hOption._Command Begins "--" Then 
-        sOptions &= hOption._Command & "=" & hOption.Value & " "
+        sOptions &= hOption._Command & "=" & IIf(hOption.IsRange, hOption.Value, "'" & hOption.Value & "'") & " "
       Else
-        sOptions &= hOption._Command & " " & hOption.Value & " "
+        sOptions &= hOption._Command & " " & IIf(hOption.IsRange, hOption.Value, "'" & hOption.Value & "'") & " "
       Endif
       
     Endif
