@@ -40,9 +40,9 @@ Public Sub _New(sDevice As String)
   
   $sDeviceName = "--device-name='" & sDevice & "'"
   $sName = sDevice
-  If Not IsAvailable() Then
-    Error.Raise("Unknown Device")
-  Endif
+  'If Not IsAvailable() Then
+   ' Error.Raise("Unknown Device")
+  'Endif
   
 End
 
@@ -98,6 +98,8 @@ Private Sub GetOptions()
   Dim sDefault As String
   Dim iStartOptions As Integer
   Dim iEndOptions As Integer
+  
+  If Not IsAvailable() Then Error.Raise("Unknown device or device not available")
   
   $aOptionsNames = New String[]
   $aOptions = New _Option[]

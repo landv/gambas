@@ -1,7 +1,12 @@
 ' Gambas module file
 
 Public Sub Main()
+
+  Dim s As String
   
-  Print Split("preview[=(yes|no)] [no]", " ", "()").join()
+  For Each s In Scanners
+    Print s
+    Print Scanners[s].IsAvailable()
+  Next
   
 End
