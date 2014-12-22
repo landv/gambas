@@ -52,7 +52,7 @@ Private Sub GetInfo()
   
   hInfo = Scanners._GetInfo($sName)
   $sVendor = hInfo.Vendor
-  $sModel = hInfo.Type
+  $sModel = hInfo.Model
   $sType = hInfo.Type
   bHaveInfo = True
   
@@ -292,6 +292,7 @@ End
 Public Sub Process_Kill()
   
   $sImageStack.Push($sCurImagePath)
+  $fProgress = 1
   Raise Finished
   
 End

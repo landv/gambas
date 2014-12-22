@@ -2,11 +2,9 @@
 
 Public Sub Main()
 
-  Dim s As String
-  
-  For Each s In Scanners
-    Print s
-    Print Scanners[s].IsAvailable()
-  Next
+ Dim s As String
+ For Each s In Scanners
+   Print Scanners[s].model
+ Next
   
 End
