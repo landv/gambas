@@ -7,11 +7,20 @@ Count=0
 [DebugWindow/$aOptionsNames]
 Geometry=[-7,-10,210,210]
 
+[DebugWindow/Split(sValues, " ", "()")]
+Geometry=[-7,-10,210,210]
+
+[DebugWindow/Split(sValues, "|")]
+Geometry=[-7,-10,210,210]
+
 [DebugWindow/_List]
 Geometry=[-7,-10,210,210]
 
+[DebugWindow/hOption._List]
+Geometry=[-7,-10,210,210]
+
 [FCommit]
-LastCommit="[GB.SCANNER]\n* BUG: All parameters sended to scanimage are quoted now, if they are text.\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .src/MTest.module\nM       .src/Scanner.class"
+LastCommit="[GB.SCANNER]\n* BUG: The parsing of options now work as expected.\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .project\nM       .settings\nA       .src/Module2.module\nM       .src/Scanner.class\nM       .startup"
 
 [OpenFile]
 File[1]=".src/Scanner.class:192.16"
