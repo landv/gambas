@@ -779,8 +779,8 @@ void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
 	#endif
 
 	tree_length = 0;
-
 	current = JOB->current;
+	level = 0;
 
 	TRY
 	{

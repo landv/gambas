@@ -44,7 +44,7 @@ static void inc_level()
 {
 	level++;
 	if (level > MAX_EXPR_LEVEL)
-	THROW("Expression too complex");
+		THROW("Expression too complex");
 }
 
 
@@ -636,6 +636,7 @@ PUBLIC void TRANS_tree()
 	/*ARRAY_add(&tree);*/
 
 	current = EVAL->current; //EVAL->pattern;
+	level = 0;
 
 	if (PATTERN_is_newline(*current) || PATTERN_is_end(*current))
 		THROW(E_SYNTAX);
