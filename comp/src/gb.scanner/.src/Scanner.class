@@ -93,7 +93,12 @@ Private Sub GetOptions()
   Dim hOption As _Option
   Dim a As String[]
   Dim iTiret As Integer
-  '$Options = New _Options
+  Dim sName As String
+  Dim sValues As String
+  Dim sDefault As String
+  Dim iStartOptions As Integer
+  Dim iEndOptions As Integer
+  
   $aOptionsNames = New String[]
   $aOptions = New _Option[]
   Shell "scanimage " & $sDeviceName & " -A" To sRet
@@ -106,16 +111,26 @@ Private Sub GetOptions()
     Endif
     
     If s Begins "-" Then
-      aLine = Split(s, " ", "()")
+      'Correction of some specific mode name
+      s = Replace(s, "[=(", " ")
+      s = Replace(s, ")]", "")
+      iStartOptions = InStr(s, " ")
+      iEndOptions = RInStr(s, " ")
+      If iEndOptions = -1 Then iEndOptions = Len(s)
+      
+      sName = Left(s, iStartOptions - 1)
+      sValues = Mid(s, iStartOptions + 1, iEndOptions - iStartOptions - 1)
+      sDefault = Mid(s, iEndOptions + 1)
+      'aLine = Split(Mid(s, iStartOptions), " ", "()")
       hOption = New _Option
       'Store the option group
       hOption._Group = sCurGroup
       'Manage the option cutting
-      iTiret = IIf(aLine[0] Begins "--", -2, -1)
+      iTiret = IIf(sName Begins "--", -2, -1)
       
       'SOme option are standardised so we can manage them with our
       'own way.
-      Select Case Right(aLine[0], iTiret)
+      Select Case Right(sName, iTiret)
         Case "l"
           hOption._Name = "Left"
         Case "t"
@@ -125,28 +140,35 @@ Private Sub GetOptions()
         Case "y"
           hOption._Name = "Height"
         Case Else
-          hOption._Name = Right(aLine[0], iTiret)
+          hOption._Name = Right(sName, iTiret)
           hOption._Name = UCase(Left(hOption._Name)) & Right(hOption._Name, - 1)
       End Select
       'Remember the real option command line
-      hOption._Command = aLine[0]
+      hOption._Command = sName
+      'sOptions = Mid(s, iStartOptions, iEndOptions - iStartOptions)
       'Define the option style (Range/List)
-      hOption._IsRange = InStr(aLine[1], "..")
+      hOption._IsRange = InStr(sValues, "..")
       'Manage the range style option
       If hOption._IsRange Then
-        a = Scan(aLine[1], "*..*")
+        aLine = Split(sValues, " ", "()")
+        sValues = aLine[0]
+        a = Scan(sValues, "*..*")
         hOption._MinValue = a[0]
         s = GetUnit(a[1])
-        If s Then 
+        If s Then
           hOption._MaxValue = Left(a[1], - Len(s))
           hOption._Unit = s
         Else
           hOption._MaxValue = a[1]
         Endif
+        If aLine.Count = 2 Then 
+          hOption._Steps = CInt(Mid(aLine[1], RInStr(aLine[1], " ")))
+        Endif
+        
       Else
         'If hOption.Name = "Mode" Then Stop
         'Manage the list style option
-        hOption._List = Split(aLine[1], "|")
+        hOption._List = Split(sValues, "|")
         'If the option list have a unit then use it and remove it from the list
         s = GetUnit(hOption._List[hOption._List.Max])
         If s Then
@@ -154,15 +176,16 @@ Private Sub GetOptions()
           hOption._Unit = s
         Endif
       Endif
+      
       'Manage the default values and the not activate fag
-      If aLine[aLine.Max] Begins "[" Then
-        If InStr(aLine[aLine.Max], "inactive") Then
+      If sDefault Begins "[" Then
+        If InStr(sDefault, "inactive") Then
           hOption._IsActive = False
         Else
           If hOption._IsRange Then
-            hOption._Value = CFloat(Mid(aLine[aLine.Max], 2, -1))
+            hOption._Value = CFloat(Mid(sDefault, 2, -1))
           Else
-            hOption._Value = Mid(aLine[aLine.Max], 2, -1)
+            hOption._Value = Mid(sDefault, 2, -1)
           Endif
         Endif
       Endif
