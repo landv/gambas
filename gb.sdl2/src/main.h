@@ -27,15 +27,20 @@
 #include "gambas.h"
 #include "gb_common.h"
 #include "gb_list.h"
+#include "gb.geom.h"
 #include "gb.image.h"
 
 #include "SDL.h"
+#include "SDL_image.h"
 #include "SDL_opengl.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 extern IMAGE_INTERFACE IMAGE;
+extern GEOM_INTERFACE GEOM;
+
 extern GB_CLASS CLASS_Window;
+extern GB_CLASS CLASS_Image;
 #endif
 
 #define RAISE_ERROR(_msg) GB.Error(_msg ": &1", SDL_GetError());

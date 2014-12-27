@@ -24,6 +24,7 @@
 #define __C_DRAW_C
 
 #include "c_window.h"
+#include "c_image.h"
 #include "c_draw.h"
 
 #define DRAW_STACK_MAX 8
@@ -275,6 +276,44 @@ BEGIN_METHOD(Draw_FillRects, GB_OBJECT rects; GB_INTEGER col)
 	
 END_METHOD
 
+BEGIN_METHOD(Draw_Image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; GB_OBJECT src; GB_FLOAT opacity; GB_FLOAT angle)
+
+	CIMAGE *image;
+	SDL_Texture *texture;
+	GEOM_RECT *src;
+	SDL_Rect *rect;
+	SDL_Rect dest;
+
+	CHECK_DEVICE();
+
+	image = VARG(image);
+	if (GB.CheckObject(image))
+		return;
+	
+	texture = IMAGE_get_texture(image, (CWINDOW *)THIS->device);
+	
+	dest.x = VARG(x);
+	dest.y = VARG(y);
+	dest.w = VARGOPT(w, image->img.width);
+	dest.h = VARGOPT(h, image->img.height);
+	
+	src = VARGOPT(src, NULL);
+	if (src)
+		rect = (SDL_Rect *)&src->x;
+	else
+		rect = NULL;
+	
+	if (MISSING(opacity) && MISSING(angle))
+		SDL_RenderCopy(RENDERER, texture, rect, &dest);
+	else
+	{
+		SDL_SetTextureAlphaMod(texture, 255 - VARGOPT(opacity, 1.0) * 255);
+		SDL_RenderCopyEx(RENDERER, texture, rect, &dest, VARGOPT(angle, 0.0), NULL, SDL_FLIP_NONE);
+		SDL_SetTextureAlphaMod(texture, 255);
+	}
+
+END_METHOD
+
 
 //-------------------------------------------------------------------------
 
@@ -295,6 +334,8 @@ GB_DESC DrawDesc[] =
 	GB_STATIC_METHOD("Lines", NULL, Draw_Lines, "(Lines)Integer[];(Color)i"),
 	GB_STATIC_METHOD("Point", NULL, Draw_Point, "(X)i(Y)i(Color)i"),
 	GB_STATIC_METHOD("Points", NULL, Draw_Points, "(Points)Integer[];(Color)i"),
+	
+	GB_STATIC_METHOD("Image", NULL, Draw_Image, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(Source)Rect;(Opacity)f(Angle)f"),
 	
 	GB_STATIC_PROPERTY("Background", "i", Draw_Background),
 	

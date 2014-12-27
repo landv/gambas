@@ -32,6 +32,7 @@ typedef
 		LIST list;
 		SDL_Window *window;
 		SDL_Renderer *renderer;
+		int id;
 		int x;
 		int y;
 		int width;

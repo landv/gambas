@@ -42,6 +42,7 @@ DECLARE_EVENT(EVENT_LostFocus);
 DECLARE_EVENT(EVENT_Draw);
 
 CWINDOW *WINDOW_list = NULL;
+static int _id = 0;
 
 static void update_geometry(void *_object)
 {
@@ -220,6 +221,9 @@ void WINDOW_update(void)
 //-------------------------------------------------------------------------
 
 BEGIN_METHOD(Window_new, GB_BOOLEAN opengl)
+
+	_id++;
+	THIS->id = _id;
 
 	THIS->opengl = VARGOPT(opengl, FALSE);
 	THIS->fullscreen = FALSE;

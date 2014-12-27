@@ -27,6 +27,7 @@
 
 #include "gambas.h"
 #include "main.h"
+#include "c_image.h"
 #include "c_draw.h"
 #include "c_window.h"
 
@@ -34,8 +35,10 @@
 
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
+GEOM_INTERFACE GEOM EXPORT;
 
 GB_CLASS CLASS_Window;
+GB_CLASS CLASS_Image;
 
 static void event_loop()
 {
@@ -57,6 +60,7 @@ static void event_loop()
 static void my_main(int *argc, char **argv)
 {
 	CLASS_Window = GB.FindClass("Window");
+	CLASS_Image = GB.FindClass("Image");
 }
 
 static int my_loop()
@@ -77,6 +81,7 @@ static void my_wait(int duration)
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	ImageDesc,
 	DrawDesc,
 	WindowDesc,
 	NULL
@@ -84,7 +89,10 @@ GB_DESC *GB_CLASSES[] EXPORT =
 
 int EXPORT GB_INIT(void)
 {
-	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	GB.Component.Load("gb.geom");
+  GB.GetInterface("gb.geom", GEOM_INTERFACE_VERSION, &GEOM);
+	GB.Component.Load("gb.image");
+  GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 	IMAGE.SetDefaultFormat(GB_IMAGE_BGRA);
 
 	GB.Hook(GB_HOOK_MAIN, (void *)my_main);
@@ -100,12 +108,15 @@ int EXPORT GB_INIT(void)
 		fprintf(stderr, "gb.sdl2: error: unable to initialize the library: %s\n", SDL_GetError());
 		abort();
 	}
+	
+	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	return -1;
 }
 
 void EXPORT GB_EXIT()
 {
+	IMG_Quit();
 	SDL_Quit();
 }
 
