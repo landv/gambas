@@ -23,6 +23,7 @@
 
 #define __C_WINDOW_C
 
+#include "c_draw.h"
 #include "c_window.h"
 
 #define THIS ((CWINDOW *)_object)
@@ -38,8 +39,61 @@ DECLARE_EVENT(EVENT_Enter);
 DECLARE_EVENT(EVENT_Leave);
 DECLARE_EVENT(EVENT_GotFocus);
 DECLARE_EVENT(EVENT_LostFocus);
+DECLARE_EVENT(EVENT_Draw);
 
 CWINDOW *WINDOW_list = NULL;
+
+static void update_geometry(void *_object)
+{
+	if (!THIS->opened)
+		return;
+	
+	if (THIS->fullscreen)
+	{
+		SDL_SetWindowFullscreen(WINDOW, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		SDL_RenderSetLogicalSize(THIS->renderer, THIS->width, THIS->height);
+	}
+	else
+	{
+		SDL_SetWindowFullscreen(WINDOW, 0);
+		SDL_SetWindowPosition(WINDOW, THIS->x, THIS->y);
+		SDL_SetWindowSize(WINDOW, THIS->width, THIS->height);
+	}
+}
+
+static void open_window(void *_object)
+{
+	if (THIS->opened)
+		return;
+	
+	if (GB.Raise(THIS, EVENT_Open, 0))
+		return;
+	
+	THIS->opened = TRUE;
+	GB.Ref(THIS);
+	LIST_insert(&WINDOW_list, THIS, &THIS->list);
+	
+	SDL_ShowWindow(WINDOW);
+	update_geometry(THIS);
+	
+	/*if (!THIS->opengl)
+	{
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glViewport(0, 0, this->GetWidth(), this->GetHeight());
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0.0f, GLdouble(this->GetWidth()), GLdouble(this->GetHeight()), 0.0f, -1, 1);
+		glMatrixMode(GL_MODELVIEW);
+	}*/
+
+	/*if (THIS->opengl)
+	{
+		if (GB.CanRaise(hWindow, EVENT_Resize))
+			GB.Raise(hWindow, EVENT_Resize,0);
+	}*/
+}
+
 
 static void close_window(void *_object)
 {
@@ -75,9 +129,13 @@ void WINDOW_handle_event(SDL_WindowEvent *event)
 			break;
 		/*case SDL_WINDOWEVENT_EXPOSED:*/
 		case SDL_WINDOWEVENT_MOVED:
+			THIS->x = event->data1;
+			THIS->y = event->data2;
 			GB.Raise(THIS, EVENT_Move, 0);
-    			break;
+ 			break;
 		case SDL_WINDOWEVENT_RESIZED:
+			THIS->width = event->data1;
+			THIS->height = event->data2;
 			GB.Raise(THIS, EVENT_Resize, 0);
 			break;
 		/*case SDL_WINDOWEVENT_MINIMIZED:
@@ -107,13 +165,68 @@ void WINDOW_handle_event(SDL_WindowEvent *event)
 	}
 }
 
+void WINDOW_update(void)
+{
+	CWINDOW *_object;
+	uint current_time;
+	uint diff;
+	bool at_least_one = FALSE;
+	
+	current_time = SDL_GetTicks();
+	
+	LIST_for_each(_object, WINDOW_list)
+	{
+		if (!GB.CanRaise(THIS, EVENT_Draw))
+			continue;
+		
+		if (THIS->frame_time > 0)
+		{
+			double d = THIS->last_time + THIS->frame_time;
+			if (d > current_time)
+				continue;
+			THIS->last_time = d;
+		}
+		
+		DRAW_begin(THIS);
+		GB.Raise(THIS, EVENT_Draw, 0);
+		DRAW_end();
+		//if (!cancel)
+		//SDL_RenderPresent(THIS->renderer);
+		//SDL_UpdateWindowSurface(WINDOW);
+
+		THIS->frame_count++;
+		THIS->total_frame_count++;
+		
+		if (THIS->start_time == 0)
+			THIS->start_time = current_time;
+		else
+		{
+			diff = current_time - THIS->start_time;
+			if (diff > 1000)
+			{
+				THIS->frame_rate = THIS->frame_count;
+				THIS->frame_count = 0;
+				THIS->start_time += 1000;
+			}
+		}
+		
+		at_least_one = TRUE;
+	}
+	
+	if (!at_least_one)
+		SDL_Delay(1);
+}
+
 //-------------------------------------------------------------------------
 
 BEGIN_METHOD(Window_new, GB_BOOLEAN opengl)
 
 	THIS->opengl = VARGOPT(opengl, FALSE);
+	THIS->fullscreen = FALSE;
+	THIS->width = 640;
+	THIS->height = 400;
 	
-	if (SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_HIDDEN, &THIS->window, &THIS->renderer))
+	if (SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_HIDDEN, &THIS->window, &THIS->renderer))
 	{
 		RAISE_ERROR("Unable to create window");
 		return;
@@ -132,16 +245,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Window_Show)
 
-	if (!THIS->opened)
-	{
-		if (GB.Raise(THIS, EVENT_Open, 0))
-			return;
-		THIS->opened = TRUE;
-		GB.Ref(THIS);
-		LIST_insert(&WINDOW_list, THIS, &THIS->list);
-	}
-	
-	SDL_ShowWindow(WINDOW);
+	open_window(THIS);
 
 END_METHOD
 
@@ -164,36 +268,106 @@ BEGIN_PROPERTY(Window_Visible)
 	else
 	{
 		if (VPROP(GB_BOOLEAN))
-			SDL_ShowWindow(WINDOW);
+			open_window(THIS);
 		else
 			SDL_HideWindow(WINDOW);
 	}
 
 END_PROPERTY
 
-void set_geometry(void *_object, int x, int y, int w, int h)
-{
-	if (x > 0 && y > 0)
-		SDL_SetWindowPosition(WINDOW, x, y);
-	
-	if (w >= 0 && h >= 0)
-	{
-		SDL_SetWindowFullscreen(WINDOW, (w > 0 && h > 0) ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-		SDL_SetWindowSize(WINDOW, w, h);
-	}
-}
-
 BEGIN_METHOD(Window_Move, GB_INTEGER x; GB_INTEGER y; GB_INTEGER width; GB_INTEGER height)
 
-	set_geometry(THIS, VARG(x), VARG(y), VARGOPT(width, -1), VARGOPT(height, -1));
+	int w = VARGOPT(width, -1);
+	int h = VARGOPT(height, -1);
+	
+	THIS->x = VARG(x);
+	THIS->y = VARG(y);
+	if (w > 0) THIS->width = w;
+	if (h > 0) THIS->height = h;
+	
+	update_geometry(THIS);
 
 END_METHOD
 
 BEGIN_METHOD(Window_Resize, GB_INTEGER width; GB_INTEGER height)
 
-	set_geometry(THIS, -1, -1, VARG(width), VARG(height));
+	int w = VARG(width);
+	int h = VARG(height);
+	
+	if (w > 0) THIS->width = w;
+	if (h > 0) THIS->height = h;
+	
+	update_geometry(THIS);
 
 END_METHOD
+
+BEGIN_PROPERTY(Window_X)
+
+	GB.ReturnInteger(THIS->x);
+	
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_Y)
+
+	GB.ReturnInteger(THIS->y);
+	
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_Width)
+
+	GB.ReturnInteger(THIS->width);
+	
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_Height)
+
+	GB.ReturnInteger(THIS->height);
+	
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_FullScreen)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->fullscreen);
+	else
+	{
+		THIS->fullscreen = VPROP(GB_BOOLEAN);
+		update_geometry(THIS);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_FrameRate)
+
+	if (READ_PROPERTY)
+		GB.ReturnFloat(THIS->frame_rate);
+	else
+	{
+		double val = VPROP(GB_FLOAT);
+
+		if (val < 0)
+			return;
+
+		THIS->frame_time = val ? 1000.0 / val : 0;
+		THIS->last_time = SDL_GetTicks();
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_FrameCount)
+
+	GB.ReturnInteger(THIS->total_frame_count);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Window_Text)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(SDL_GetWindowTitle(WINDOW));
+	else
+		SDL_SetWindowTitle(WINDOW, GB.ToZeroString(PROP(GB_STRING)));
+
+END_PROPERTY
 
 //-------------------------------------------------------------------------
 
@@ -211,6 +385,20 @@ GB_DESC WindowDesc[] =
 	GB_METHOD("Resize", NULL, Window_Resize, "(Width)i(Height)i"),
 	
 	GB_PROPERTY("Visible", "b", Window_Visible),
+	GB_PROPERTY("FullScreen", "b", Window_FullScreen),
+	
+	GB_PROPERTY_READ("X", "i", Window_X),
+	GB_PROPERTY_READ("Y", "i", Window_Y),
+	GB_PROPERTY_READ("W", "i", Window_Width),
+	GB_PROPERTY_READ("H", "i", Window_Height),
+	GB_PROPERTY_READ("Width", "i", Window_Width),
+	GB_PROPERTY_READ("Height", "i", Window_Height),
+	
+	GB_PROPERTY("FrameRate", "f", Window_FrameRate),
+	GB_PROPERTY_READ("FrameCount", "i", Window_FrameCount),
+	
+	GB_PROPERTY("Text", "s", Window_Text),
+	GB_PROPERTY("Title", "s", Window_Text),
 	
 	GB_EVENT("Open", NULL, NULL, &EVENT_Open),
 	GB_EVENT("Close", NULL, NULL, &EVENT_Close),
@@ -222,6 +410,7 @@ GB_DESC WindowDesc[] =
 	GB_EVENT("Leave", NULL, NULL, &EVENT_Leave),
 	GB_EVENT("GotFocus", NULL, NULL, &EVENT_GotFocus),
 	GB_EVENT("LostFocus", NULL, NULL, &EVENT_LostFocus),
+	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
 	
 /*	GB_METHOD("_new", NULL, CWINDOW_new, "[(OpenGL)b]"),
 	GB_METHOD("_free", NULL, CWINDOW_free, NULL),

@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_window.h
+  c_draw.h
 
   (c) 2014 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,43 +21,26 @@
 
 ***************************************************************************/
 
-#ifndef __C_WINDOW_H
-#define __C_WINDOW_H
+#ifndef __C_DRAW_H
+#define __C_DRAW_H
 
 #include "main.h"
 
 typedef
-	struct CWINDOW {
-		GB_BASE ob;
-		LIST list;
-		SDL_Window *window;
+  struct {
+		void *device;
 		SDL_Renderer *renderer;
-		int x;
-		int y;
-		int width;
-		int height;
-		uint start_time;
-		uint frame_count;
-		uint total_frame_count;
-		double last_time;
-		double frame_time;
-		double frame_rate;
-		unsigned opengl : 1;
-		unsigned opened : 1;
-		unsigned fullscreen : 1;
 	}
-	CWINDOW;
+	CDRAW;
 
-#ifndef __C_WINDOW_C
+#ifndef __C_DRAW_C
 
-extern GB_DESC WindowDesc[];
+extern GB_DESC DrawDesc[];
 
-extern CWINDOW *WINDOW_list;
-
-void WINDOW_handle_event(SDL_WindowEvent *event);
-void WINDOW_update();
+void DRAW_begin(void *device);
+void DRAW_end();
 
 #endif
 	
-#endif /* __C_WINDOW_H */
+#endif /* __C_DRAW_H */
 

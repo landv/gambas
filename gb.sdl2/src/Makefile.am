@@ -10,4 +10,5 @@ gb_sdl2_la_CPPFLAGS = @SDL2_INC@
 
 gb_sdl2_la_SOURCES = \
  c_window.h c_window.c \
+ c_draw.h c_draw.c \
  main.h main.c

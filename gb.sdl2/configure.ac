@@ -9,7 +9,7 @@ AC_PROG_LIBTOOL
 
 GB_COMPONENT_SEARCH(
    sdl2, SDL2, gb.sdl2, [src],
-   sdl2 ">= 2.0.2" SDL2_ttf ">= 2.0.12"
+   sdl2 ">= 2.0.2" SDL2_image ">= 2.0.0" SDL2_ttf ">= 2.0.12"
 )
 
 AC_OUTPUT( \

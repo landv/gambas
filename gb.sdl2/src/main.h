@@ -30,10 +30,12 @@
 #include "gb.image.h"
 
 #include "SDL.h"
+#include "SDL_opengl.h"
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
 extern IMAGE_INTERFACE IMAGE;
+extern GB_CLASS CLASS_Window;
 #endif
 
 #define RAISE_ERROR(_msg) GB.Error(_msg ": &1", SDL_GetError());

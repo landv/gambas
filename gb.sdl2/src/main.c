@@ -23,14 +23,19 @@
 
 #define __MAIN_C
 
+// Lazyfoo!
+
 #include "gambas.h"
 #include "main.h"
+#include "c_draw.h"
 #include "c_window.h"
 
 #include "gb_list_temp.h"
 
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
+
+GB_CLASS CLASS_Window;
 
 static void event_loop()
 {
@@ -51,12 +56,16 @@ static void event_loop()
 
 static void my_main(int *argc, char **argv)
 {
+	CLASS_Window = GB.FindClass("Window");
 }
 
 static int my_loop()
 {
 	while (WINDOW_list != NULL)
+	{
 		event_loop();
+		WINDOW_update();
+	}
 
 	return 1;
 }
@@ -68,6 +77,7 @@ static void my_wait(int duration)
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
+	DrawDesc,
 	WindowDesc,
 	NULL
 };
