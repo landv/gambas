@@ -2,22 +2,30 @@
 
 Public Sub Main()
 
-  Dim aHandler, bHandler As LogHandler
+  ' Dim aHandler, bHandler As LogHandler
+  '
+  ' Dim bLogger As Logger
+  '
+  ' aHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
+  ' bHandler = New FileHandler("~/Desktop")
+  '
+  ' bLogger = New Logger(Null, aHandler)
+  '
+  ' bLogger.Begin()
+  '
+  ' bLogger.Log("hola")
+  '
+  ' bLogger.addHandler(bHandler)
+  ' bHandler.Open
+  '
+  ' bLogger.Log("chau")
 
-  Dim bLogger As Logger
+  ' Dim bLogger As Logger
+  '
+  ' bLogger = New Logger
+  '
+  ' bLogger.Log("hola")
 
-  aHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
-  bHandler = New FileHandler("~/Desktop")
-
-  bLogger = New Logger(Null, aHandler)
-
-  bLogger.Begin()
-
-  bLogger.Log("hola")
-
-  bLogger.addHandler(bHandler)
-  bHandler.Open
-
-  bLogger.Log("chau")
+  Logger.Log("Hola")
 
 End

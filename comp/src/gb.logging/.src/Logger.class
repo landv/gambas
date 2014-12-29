@@ -20,10 +20,18 @@ Private $aHandlers As LogHandler[] = New LogHandler[]
 
 Public Sub _new(Optional sFormat As String, Optional sDefaultOutput As LogHandler)
 
+  Dim tmpLogHandler As LogHandler
+
   If sFormat Then $sFormat = sFormat Else $sFormat = Logger.DefaultFormat
 
   If sDefaultOutput Then
     $aHandlers.Add(sDefaultOutput)
+  Else
+
+    tmpLogHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
+
+    $aHandlers.Add(tmpLogHandler)
+    Begin()
   Endif
 
 End
