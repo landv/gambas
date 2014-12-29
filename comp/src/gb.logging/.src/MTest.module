@@ -2,14 +2,22 @@
 
 Public Sub Main()
 
-  Dim a As Logger
+  Dim aHandler, bHandler As LogHandler
 
-  a = New Logger
+  Dim bLogger As Logger
 
-  a.Begin()
+  aHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
+  bHandler = New FileHandler("~/Desktop")
 
-  a.Log("stdout")
+  bLogger = New Logger(Null, aHandler)
 
-  a.Log("stdout")
+  bLogger.Begin()
+
+  bLogger.Log("hola")
+
+  bLogger.addHandler(bHandler)
+  bHandler.Open
+
+  bLogger.Log("chau")
 
 End

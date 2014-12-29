@@ -87,19 +87,19 @@ Public Function _call(sMessage As String, sFormat As String, iLevel As Integer) 
   If String.InStr(sFormat, "$(levelname)") > 0 Then
     Select Case iLevel
 
-      Case Logger.Critical
+      Case LogLevel.Critical
         sName = "CRITICAL"
 
-      Case Logger.Error
+      Case LogLevel.Error
         sName = "ERROR"
 
-      Case Logger.Warning
+      Case LogLevel.Warning
         sName = "WARNING"
 
-      Case Logger.Info
+      Case LogLevel.Info
         sName = "INFO"
 
-      Case Logger.Debug
+      Case LogLevel.Debug
         sName = "DEBUG"
 
       Case Else

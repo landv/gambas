@@ -3,23 +3,12 @@
 Export
 Create Static
 
-Property Level As Integer
 Property Format As String
 Property Enabled As Boolean
-Property Output As String
 
 Static Public Const DefaultFormat As String = "[$(now)] [$(levelname)] [$(callLocation)] $(message)"
 
 Private $sFormat As String = ""
-
-'' Holds the minimum level the Logger will write
-Private $iLevel As Integer
-
-'' Holds the path of the file or the name of the std{out,err}
-Private $sOutput As String
-
-'' Holds a stram to the log file
-Private $sLogFile As Stream
 
 '' Enables or disables the logger programatically
 Private $bEnabled As Boolean = True
@@ -27,98 +16,57 @@ Private $bEnabled As Boolean = True
 '' True if Begin() was called
 Private $bStarted As Boolean = False
 
-Static Public Const Critical As Integer = 0
-Static Public Const Error As Integer = 1
-Static Public Const Warning As Integer = 2
-Static Public Const Info As Integer = 3
-Static Public Const Debug As Integer = 4
+Private $aHandlers As LogHandler[] = New LogHandler[]
 
-Static Public Const Stdout As String = ":stdout"
-Static Public Const Stderr As String = ":stderr"
-
-Public Sub _new(Optional iMinLevel As Integer, Optional sFormat As String, Optional sOutput As String)
-
-  If iMinLevel Then $iLevel = iMinLevel Else $iLevel = Info
+Public Sub _new(Optional sFormat As String, Optional sDefaultOutput As LogHandler)
 
   If sFormat Then $sFormat = sFormat Else $sFormat = Logger.DefaultFormat
 
-  If sOutput Then $sOutput = sOutput Else $sOutput = Stdout
+  If sDefaultOutput Then
+    $aHandlers.Add(sDefaultOutput)
+  Endif
 
 End
 
 Public Function Begin() As Boolean
 
+  Dim tmpLogHandler As LogHandler
+
   If $bStarted Then Error.Raise("Begin can't be called twice.")
 
-  If $sOutput <> Stdout And $sOutput <> Stderr Then _OpenLog()
+  For Each tmpLogHandler In $aHandlers
+    tmpLogHandler.Open()
+  Next
 
   $bStarted = True
 
 End
 
-Private Sub _OpenLog()
+Public Sub Log(sMessage As String, Optional iLevel As Integer = LogLevel.Info)
 
-  If IsDir($sOutput) Then
-    $sOutput = $sOutput &/ Application.Name & ".log"
-  Endif
-
-  If Not Access(File.Dir($sOutput), gb.Write) Then Error.Raise("Log file not writable.")
-
-  If Exist($sOutput) Then
-    $sLogFile = Open $sOutput For Write Append
-  Else
-    $sLogFile = Open $sOutput For Write Create
-  Endif
-
-End
-
-Public Function isEnabledFor(iLevel As Integer) As Boolean
-
-  Return (iLevel <= $iLevel)
-
-End
-
-Public Sub Log(sMessage As String, Optional iLevel As Integer = Info)
+  Dim tmpLogHandler As LogHandler
 
   If Not $bStarted Then Error.Raise("Logger is not ready. Please call Begin() to start it.")
 
-  If Not $bEnabled Or Not isEnabledFor(iLevel) Then Return
+  If Not $bEnabled Then Return
 
   sMessage = Formatter(sMessage, $sFormat, iLevel)
 
-  _Write(sMessage)
+  For Each tmpLogHandler In $aHandlers
+    tmpLogHandler.Write(sMessage, iLevel)
+  Next
 
 End
 
-Public Sub _call(sMessage As String, Optional iLevel As Integer = Info)
+Public Sub _call(sMessage As String, Optional iLevel As Integer = LogLevel.Info)
 
   Me.Log(sMessage, iLevel)
 
 End
 
-Private Sub _Write(sLine As String)
+Public Sub addHandler(hLogHandler As LogHandler)
 
-  If $sOutput = Stdout Then
-
-    Print sLine
-
-  Else If $sOutput = Stderr Then
-
-    Print #File.Err, sLine
-
-  Else
-
-    Print #$sLogFile, sLine
-
-  Endif
-
-End
-
-Public Sub _free()
-
-  If $sOutput <> Stdout And $sOutput <> Stderr Then
-    Close $sLogFile
-  Endif
+  $aHandlers.Add(hLogHandler)
 
 End
 
@@ -134,20 +82,6 @@ Private Sub Enabled_Write(Value As Boolean)
 
 End
 
-Private Function Level_Read() As Integer
-
-  Return $iLevel
-
-End
-
-Private Sub Level_Write(Value As Integer)
-
-  If Value < 0 Then Error.Raise("Invalid logging level.")
-
-  $iLevel = Value
-
-End
-
 Private Function Format_Read() As String
 
   Return $sFormat
@@ -157,19 +91,5 @@ End
 Private Sub Format_Write(Value As String)
 
   $sFormat = Value
-
-End
-
-Private Function Output_Read() As String
-
-  Return $sOutput
-
-End
-
-Private Sub Output_Write(Value As String)
-
-  If $bStarted Then Error.Raise("The logger has already started.")
-
-  $sOutput = Value
 
 End

@@ -1,3 +1,41 @@
+#ConsoleHandler
+LogHandler
+C
+STDOUT
+C
+i
+0
+STDERR
+C
+i
+1
+_new
+m
+
+(iOutput)i
+Write
+m
+
+(sMessage)s[(iLevel)i]
+#FileHandler
+LogHandler
+C
+_new
+m
+
+(sPath)s
+Open
+m
+
+
+Write
+m
+
+(sMessage)s[(iLevel)i]
+Close
+m
+
+
 #Formatter
 
 C
@@ -6,29 +44,9 @@ _call
 M
 s
 (sMessage)s(sFormat)s(iLevel)i
-#Logger
+#LogLevel
 
-CA
-Level
-p
-i
-
-Format
-p
-s
-
-Enabled
-p
-b
-
-Output
-p
-s
-
-DefaultFormat
 C
-s
-[$(now)] [$(levelname)] [$(callLocation)] $(message)
 Critical
 C
 i
@@ -49,26 +67,29 @@ Debug
 C
 i
 4
-Stdout
+#Logger
+
+CA
+Format
+p
+s
+
+Enabled
+p
+b
+
+DefaultFormat
 C
 s
-:stdout
-Stderr
-C
-s
-:stderr
+[$(now)] [$(levelname)] [$(callLocation)] $(message)
 _new
 m
 
-[(iMinLevel)i(sFormat)s(sOutput)s]
+[(sFormat)s(sDefaultOutput)LogHandler;]
 Begin
 m
 b
 
-isEnabledFor
-m
-b
-(iLevel)i
 Log
 m
 
@@ -77,7 +98,7 @@ _call
 m
 
 (sMessage)s[(iLevel)i]
-_free
+addHandler
 m
 
-
+(hLogHandler)LogHandler;
