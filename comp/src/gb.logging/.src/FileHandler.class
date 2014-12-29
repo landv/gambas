@@ -10,9 +10,11 @@ Private $sPath As String
 '' Holds a stram to the log file
 Private $sLogFile As Stream
 
-Public Sub _new(sPath As String)
+Public Sub _new(sPath As String, Optional iMinLevel As Integer = LogLevel.Info)
 
   $sPath = sPath
+
+  Me.Level = iMinLevel
 
 End
 
@@ -53,5 +55,11 @@ Public Sub Close()
   Inc Me.Step
 
   Close $sLogFile
+
+End
+
+Public Function GetOutput() As String
+
+  Return $sPath
 
 End

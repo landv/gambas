@@ -1,3 +1,42 @@
+#ComplexLogger
+
+CA
+Format
+p
+s
+
+Enabled
+p
+b
+
+Handlers
+r
+LogHandler[]
+
+_new
+m
+
+[(sFormat)s(sDefaultOutput)LogHandler;]
+Begin
+m
+b
+
+Log
+m
+
+(sMessage)s[(iLevel)i]
+Close
+m
+
+
+_call
+m
+
+(sMessage)s[(iLevel)i]
+addHandler
+m
+
+(hLogHandler)LogHandler;
 #ConsoleHandler
 LogHandler
 C
@@ -12,18 +51,22 @@ i
 _new
 m
 
-(iOutput)i
+(iOutput)i[(iMinLevel)i]
 Write
 m
 
 (sMessage)s[(iLevel)i]
+GetOutput
+m
+s
+
 #FileHandler
 LogHandler
 C
 _new
 m
 
-(sPath)s
+(sPath)s[(iMinLevel)i]
 Open
 m
 
@@ -35,6 +78,10 @@ m
 Close
 m
 
+
+GetOutput
+m
+s
 
 #Formatter
 
@@ -67,9 +114,17 @@ Debug
 C
 i
 4
+isEnabledFor
+M
+b
+(iHandlerLevel)i(iLevel)i
 #Logger
 
 CA
+Level
+p
+i
+
 Format
 p
 s
@@ -78,18 +133,59 @@ Enabled
 p
 b
 
+Output
+r
+s
+
 DefaultFormat
 C
 s
 [$(now)] [$(levelname)] [$(callLocation)] $(message)
+Critical
+C
+i
+0
+'This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Error
+C
+i
+1
+'This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Warning
+C
+i
+2
+'This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Info
+C
+i
+3
+'This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Debug
+C
+i
+4
+'This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Stdout
+C
+s
+:stdout
+Stderr
+C
+s
+:stderr
 _new
 m
 
-[(sFormat)s(sDefaultOutput)LogHandler;]
+[(iMinLevel)i(sFormat)s(sOutput)s]
 Begin
 m
-b
 
+
+isEnabledFor
+m
+b
+(iLevel)i
 Log
 m
 
@@ -98,7 +194,7 @@ _call
 m
 
 (sMessage)s[(iLevel)i]
-addHandler
+_free
 m
 
-(hLogHandler)LogHandler;
+

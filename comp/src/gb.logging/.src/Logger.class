@@ -1,68 +1,55 @@
 ' Gambas class file
 
 Export
+
 Create Static
 
+Property Level As Integer
 Property Format As String
 Property Enabled As Boolean
+Property Read Output As String
 
 Static Public Const DefaultFormat As String = "[$(now)] [$(levelname)] [$(callLocation)] $(message)"
 
-Private $sFormat As String = ""
+Private $cLogger As ComplexLogger
 
-'' Enables or disables the logger programatically
-Private $bEnabled As Boolean = True
+'' This is only here for compatibility and is now deprecated, please use LogLevel instead.
+Public Enum Critical, {Error}, Warning, Info, {Debug}
 
-'' True if Begin() was called
-Private $bStarted As Boolean = False
+Static Public Const Stdout As String = ":stdout"
+Static Public Const Stderr As String = ":stderr"
 
-Private $aHandlers As LogHandler[] = New LogHandler[]
+Public Sub _new(Optional iMinLevel As Integer = LogLevel.Info, Optional sFormat As String = DefaultFormat, Optional sOutput As String)
 
-Public Sub _new(Optional sFormat As String, Optional sDefaultOutput As LogHandler)
+  Dim tmpHandler As LogHandler
 
-  Dim tmpLogHandler As LogHandler
-
-  If sFormat Then $sFormat = sFormat Else $sFormat = Logger.DefaultFormat
-
-  If sDefaultOutput Then
-    $aHandlers.Add(sDefaultOutput)
+  If sOutput = Stdout Then
+    tmpHandler = New ConsoleHandler(ConsoleHandler.STDOUT, iMinLevel)
+  Else If sOutput = Stderr Then
+    tmpHandler = New ConsoleHandler(ConsoleHandler.STDERR, iMinLevel)
   Else
-
-    tmpLogHandler = New ConsoleHandler(ConsoleHandler.STDOUT)
-
-    $aHandlers.Add(tmpLogHandler)
-    Begin()
+    tmpHandler = New FileHandler(sOutput, iMinLevel)
   Endif
+
+  $cLogger = New ComplexLogger(sFormat, tmpHandler)
 
 End
 
-Public Function Begin() As Boolean
+Public Sub Begin()
 
-  Dim tmpLogHandler As LogHandler
+  $cLogger.Begin()
 
-  If $bStarted Then Error.Raise("Begin can't be called twice.")
+End
 
-  For Each tmpLogHandler In $aHandlers
-    tmpLogHandler.Open()
-  Next
+Public Function isEnabledFor(iLevel As Integer) As Boolean
 
-  $bStarted = True
+  Return $cLogger.Handlers[0].isEnabledFor(iLevel)
 
 End
 
 Public Sub Log(sMessage As String, Optional iLevel As Integer = LogLevel.Info)
 
-  Dim tmpLogHandler As LogHandler
-
-  If Not $bStarted Then Error.Raise("Logger is not ready. Please call Begin() to start it.")
-
-  If Not $bEnabled Then Return
-
-  sMessage = Formatter(sMessage, $sFormat, iLevel)
-
-  For Each tmpLogHandler In $aHandlers
-    tmpLogHandler.Write(sMessage, iLevel)
-  Next
+  $cLogger.Log(sMessage, iLevel)
 
 End
 
@@ -72,32 +59,50 @@ Public Sub _call(sMessage As String, Optional iLevel As Integer = LogLevel.Info)
 
 End
 
-Public Sub addHandler(hLogHandler As LogHandler)
+Public Sub _free()
 
-  $aHandlers.Add(hLogHandler)
-
-End
-
-Private Function Enabled_Read() As Boolean
-
-  Return $bEnabled
+  If $cLogger Then $cLogger.Close()
 
 End
 
-Private Sub Enabled_Write(Value As Boolean)
+Private Function Level_Read() As Integer
 
-  $bEnabled = Value
+  Return $cLogger.Handlers[0].Level
+
+End
+
+Private Sub Level_Write(Value As Integer)
+
+  $cLogger.Handlers[0].Level = Value
 
 End
 
 Private Function Format_Read() As String
 
-  Return $sFormat
+  Return $cLogger.Format
 
 End
 
 Private Sub Format_Write(Value As String)
 
-  $sFormat = Value
+  $cLogger.Format = Value
+
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return $cLogger.Enabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $cLogger.Enabled = Value
+
+End
+
+Private Function Output_Read() As String
+
+  Return $cLogger.Handlers[0].GetOutput()
 
 End
