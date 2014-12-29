@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_window.h
+  c_font.h
 
   (c) 2014 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,50 +21,30 @@
 
 ***************************************************************************/
 
-#ifndef __C_WINDOW_H
-#define __C_WINDOW_H
+#ifndef __C_FONT_H
+#define __C_FONT_H
 
 #include "main.h"
-#include "c_mouse.h"
-#include "c_key.h"
-
 typedef
-	struct CWINDOW {
+	struct {
 		GB_BASE ob;
-		LIST list;
-		SDL_Window *window;
-		SDL_Renderer *renderer;
-		int id;
-		int x;
-		int y;
-		int width;
-		int height;
-		int save_x, save_y, save_width, save_height;
-		uint start_time;
-		uint frame_count;
-		uint total_frame_count;
-		double last_time;
-		double frame_time;
-		double frame_rate;
-		MOUSE_INFO mouse;
-		unsigned opengl : 1;
-		unsigned opened : 1;
-		unsigned fullscreen : 1;
-		unsigned clear : 1;
+		TTF_Font *font;
+		char *name;
+		int size;
+		unsigned bold : 1;
+		unsigned italic : 1;
+		unsigned dirty : 1;
+		SDL_Surface *surface;
+		char *text;
+		SDL_Color color;
 	}
-	CWINDOW;
+	CFONT;
 
-#ifndef __C_WINDOW_C
-
-extern GB_DESC WindowDesc[];
-
-extern CWINDOW *WINDOW_list;
-
-CWINDOW *WINDOW_get_from_event(SDL_Event *event);
-void WINDOW_handle_event(SDL_Event *event);
-void WINDOW_update();
-
+#ifndef __C_FONT_C
+extern GB_DESC FontDesc[];
 #endif
-	
-#endif /* __C_WINDOW_H */
+
+SDL_Surface *FONT_render_text(CFONT *_object, char *text, SDL_Color color);
+
+#endif /* __C_FONT_H */
 

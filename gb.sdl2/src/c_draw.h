@@ -25,11 +25,13 @@
 #define __C_DRAW_H
 
 #include "main.h"
+#include "c_font.h"
 
 typedef
   struct {
 		void *device;
 		SDL_Renderer *renderer;
+		CFONT *font;
 	}
 	CDRAW;
 

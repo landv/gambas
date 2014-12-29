@@ -30,6 +30,8 @@
 #include "c_image.h"
 #include "c_draw.h"
 #include "c_window.h"
+#include "c_mouse.h"
+#include "c_font.h"
 
 #include "gb_list_temp.h"
 
@@ -39,6 +41,7 @@ GEOM_INTERFACE GEOM EXPORT;
 
 GB_CLASS CLASS_Window;
 GB_CLASS CLASS_Image;
+GB_CLASS CLASS_Font;
 
 static void event_loop()
 {
@@ -51,7 +54,14 @@ static void event_loop()
 			case SDL_QUIT:
 				break;
 			case SDL_WINDOWEVENT:
-				WINDOW_handle_event(&event.window);
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEMOTION:
+			case SDL_MOUSEWHEEL:
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+			case SDL_TEXTINPUT:
+				WINDOW_handle_event(&event);
 				break;
 		}
 	}
@@ -61,6 +71,7 @@ static void my_main(int *argc, char **argv)
 {
 	CLASS_Window = GB.FindClass("Window");
 	CLASS_Image = GB.FindClass("Image");
+	CLASS_Font = GB.FindClass("Font");
 }
 
 static int my_loop()
@@ -84,6 +95,9 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	ImageDesc,
 	DrawDesc,
 	WindowDesc,
+	KeyDesc,
+	MouseDesc,
+	FontDesc,
 	NULL
 };
 
@@ -116,6 +130,8 @@ int EXPORT GB_INIT(void)
 
 void EXPORT GB_EXIT()
 {
+	if (TTF_WasInit())
+		TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 }

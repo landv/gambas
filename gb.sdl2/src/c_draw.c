@@ -25,11 +25,13 @@
 
 #include "c_window.h"
 #include "c_image.h"
+#include "c_font.h"
 #include "c_draw.h"
 
 #define DRAW_STACK_MAX 8
 static CDRAW _draw_stack[DRAW_STACK_MAX];
 static CDRAW *_draw_current = NULL;
+static CFONT *_default_font = NULL;
 
 #define THIS _draw_current
 #define RENDERER _draw_current->renderer
@@ -47,6 +49,16 @@ static bool check_device(void)
 
 #define CHECK_DEVICE() if (check_device()) return
 
+static CFONT *get_default_font()
+{
+	if (!_default_font)
+	{
+		_default_font = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
+		GB.Ref(_default_font);
+	}
+
+	return _default_font;
+}
 
 void DRAW_begin(void *device)
 {
@@ -63,6 +75,9 @@ void DRAW_begin(void *device)
 		THIS = _draw_stack;
 	else
 		THIS++;
+
+	THIS->font = get_default_font();
+	GB.Ref(THIS->font);
 
 	if (GB.Is(device, CLASS_Window)) 
 	{
@@ -84,7 +99,9 @@ void DRAW_end(void)
 	
 	GB.Unref(POINTER(&THIS->device));
 	THIS->device = NULL;
-	
+	GB.Unref(POINTER(&THIS->font));
+	THIS->font = NULL;
+
 	if (THIS == _draw_stack)
 		THIS = NULL;
 	else
@@ -92,6 +109,13 @@ void DRAW_end(void)
 }
 
 //-------------------------------------------------------------------------
+
+BEGIN_METHOD_VOID(Draw_exit)
+
+	if (_default_font)
+		GB.Unref(POINTER(&_default_font));
+
+END_METHOD
 
 BEGIN_METHOD(Draw_Begin, GB_OBJECT device)
 
@@ -157,7 +181,7 @@ BEGIN_METHOD(Draw_Rect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; 
 	rect.w = VARG(w);
 	rect.h = VARG(h);
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderDrawRect(RENDERER, &rect);
 	
 END_METHOD
@@ -173,7 +197,7 @@ BEGIN_METHOD(Draw_FillRect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 	rect.w = VARG(w);
 	rect.h = VARG(h);
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderFillRect(RENDERER, &rect);
 	
 END_METHOD
@@ -182,7 +206,7 @@ BEGIN_METHOD(Draw_Line, GB_INTEGER x1; GB_INTEGER y1; GB_INTEGER x2; GB_INTEGER 
 
 	CHECK_DEVICE();
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderDrawLine(RENDERER, VARG(x1), VARG(y1), VARG(x2), VARG(y2));
 	
 END_METHOD
@@ -191,7 +215,7 @@ BEGIN_METHOD(Draw_Point, GB_INTEGER x; GB_INTEGER y; GB_INTEGER col)
 
 	CHECK_DEVICE();
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderDrawPoint(RENDERER, VARG(x), VARG(y));
 	
 END_METHOD
@@ -211,7 +235,7 @@ BEGIN_METHOD(Draw_Points, GB_OBJECT points; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderDrawPoints(RENDERER, (SDL_Point *)GB.Array.Get(points, 0), n);
 	
 END_METHOD
@@ -231,7 +255,7 @@ BEGIN_METHOD(Draw_Lines, GB_OBJECT points; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderDrawLines(RENDERER, (SDL_Point *)GB.Array.Get(points, 0), n);
 	
 END_METHOD
@@ -251,7 +275,7 @@ BEGIN_METHOD(Draw_Rects, GB_OBJECT rects; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderDrawRects(RENDERER, (SDL_Rect *)GB.Array.Get(rects, 0), n);
 	
 END_METHOD
@@ -271,7 +295,7 @@ BEGIN_METHOD(Draw_FillRects, GB_OBJECT rects; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	set_background(VARG(col));
+	if (!MISSING(col)) set_background(VARG(col));
 	SDL_RenderFillRects(RENDERER, (SDL_Rect *)GB.Array.Get(rects, 0), n);
 	
 END_METHOD
@@ -314,6 +338,52 @@ BEGIN_METHOD(Draw_Image, GB_OBJECT image; GB_INTEGER x; GB_INTEGER y; GB_INTEGER
 
 END_METHOD
 
+BEGIN_PROPERTY(Draw_Font)
+
+	CHECK_DEVICE();
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->font);
+	else
+	{
+		GB.StoreObject(PROP(GB_OBJECT), POINTER(&THIS->font));
+		if (!THIS->font)
+		{
+			THIS->font = get_default_font();
+			GB.Ref(THIS->font);
+		}
+	}
+
+END_PROPERTY
+
+BEGIN_METHOD(Draw_Text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
+
+	SDL_Surface *surface;
+	SDL_Texture *texture;
+	SDL_Color color;
+	SDL_Rect dest;
+
+	CHECK_DEVICE();
+
+	SDL_GetRenderDrawColor(RENDERER, &color.r, &color.g, &color.b, &color.a);
+
+	surface = FONT_render_text(THIS->font, GB.ToZeroString(ARG(text)), color);
+	if (!surface)
+		return;
+
+	texture = SDL_CreateTextureFromSurface(RENDERER, surface);
+
+	dest.x = VARG(x);
+	dest.y = VARG(y);
+	dest.w = surface->w;
+	dest.h = surface->h;
+
+	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	SDL_RenderCopy(RENDERER, texture, NULL, &dest);
+
+	SDL_DestroyTexture(texture);
+
+END_METHOD
 
 //-------------------------------------------------------------------------
 
@@ -321,23 +391,26 @@ END_METHOD
 GB_DESC DrawDesc[] =
 {
 	GB_DECLARE_STATIC("Draw"),
+
+	GB_STATIC_METHOD("_exit", NULL, Draw_exit, NULL),
 	
 	GB_STATIC_METHOD("Begin", NULL, Draw_Begin, "(Device)o"),
 	GB_STATIC_METHOD("End", NULL, Draw_End, NULL),
 	
 	GB_STATIC_METHOD("Clear", NULL, Draw_Clear, "[(Color)i]"),
-	GB_STATIC_METHOD("Rect", NULL, Draw_Rect, "(X)i(Y)i(Width)i(Height)i(Color)i"),
-	GB_STATIC_METHOD("Rects", NULL, Draw_Rects, "(Rectangles)Integer[];(Color)i"),
-	GB_STATIC_METHOD("FillRect", NULL, Draw_FillRect, "(X)i(Y)i(Width)i(Height)i(Color)i"),
-	GB_STATIC_METHOD("FillRects", NULL, Draw_FillRects, "(Rectangles)Integer[];(Color)i"),
-	GB_STATIC_METHOD("Line", NULL, Draw_Line, "(X1)i(Y1)i(X2)i(Y2)i(Color)i"),
-	GB_STATIC_METHOD("Lines", NULL, Draw_Lines, "(Lines)Integer[];(Color)i"),
-	GB_STATIC_METHOD("Point", NULL, Draw_Point, "(X)i(Y)i(Color)i"),
-	GB_STATIC_METHOD("Points", NULL, Draw_Points, "(Points)Integer[];(Color)i"),
-	
+	GB_STATIC_METHOD("Rect", NULL, Draw_Rect, "(X)i(Y)i(Width)i(Height)i[(Color)i]"),
+	GB_STATIC_METHOD("Rects", NULL, Draw_Rects, "(Rectangles)Integer[];[(Color)i]"),
+	GB_STATIC_METHOD("FillRect", NULL, Draw_FillRect, "(X)i(Y)i(Width)i(Height)i[(Color)i]"),
+	GB_STATIC_METHOD("FillRects", NULL, Draw_FillRects, "(Rectangles)Integer[];[(Color)i]"),
+	GB_STATIC_METHOD("Line", NULL, Draw_Line, "(X1)i(Y1)i(X2)i(Y2)i[(Color)i]"),
+	GB_STATIC_METHOD("Lines", NULL, Draw_Lines, "(Lines)Integer[];[(Color)i]"),
+	GB_STATIC_METHOD("Point", NULL, Draw_Point, "(X)i(Y)i[(Color)i]"),
+	GB_STATIC_METHOD("Points", NULL, Draw_Points, "(Points)Integer[];[(Color)i]"),
 	GB_STATIC_METHOD("Image", NULL, Draw_Image, "(Image)Image;(X)i(Y)i[(Width)i(Height)i(Source)Rect;(Opacity)f(Angle)f"),
-	
+	GB_STATIC_METHOD("Text", NULL, Draw_Text, "(Text)s(X)i(Y)i"),
+
 	GB_STATIC_PROPERTY("Background", "i", Draw_Background),
-	
+	GB_STATIC_PROPERTY("Font", "Font", Draw_Font),
+
 	GB_END_DECLARE
 };

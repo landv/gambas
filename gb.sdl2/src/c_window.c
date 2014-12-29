@@ -24,6 +24,7 @@
 #define __C_WINDOW_C
 
 #include "c_draw.h"
+#include "c_image.h"
 #include "c_window.h"
 
 #define THIS ((CWINDOW *)_object)
@@ -40,6 +41,13 @@ DECLARE_EVENT(EVENT_Leave);
 DECLARE_EVENT(EVENT_GotFocus);
 DECLARE_EVENT(EVENT_LostFocus);
 DECLARE_EVENT(EVENT_Draw);
+DECLARE_EVENT(EVENT_KeyPress);
+DECLARE_EVENT(EVENT_KeyRelease);
+DECLARE_EVENT(EVENT_Text);
+DECLARE_EVENT(EVENT_MouseMove);
+DECLARE_EVENT(EVENT_MouseDown);
+DECLARE_EVENT(EVENT_MouseUp);
+DECLARE_EVENT(EVENT_MouseWheel);
 
 CWINDOW *WINDOW_list = NULL;
 static int _id = 0;
@@ -53,6 +61,7 @@ static void update_geometry(void *_object)
 	{
 		SDL_SetWindowFullscreen(WINDOW, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		SDL_RenderSetLogicalSize(THIS->renderer, THIS->width, THIS->height);
+		THIS->clear = TRUE;
 	}
 	else
 	{
@@ -110,58 +119,113 @@ static void close_window(void *_object)
 	GB.Unref(POINTER(&_object));
 }
 
-void WINDOW_handle_event(SDL_WindowEvent *event)
+static void raise_mouse_event(CWINDOW *_object, SDL_Event *event, int type)
 {
-	SDL_Window *window;
+	SDL_Event *old;
+
+	if (!GB.CanRaise(THIS, type))
+		return;
+
+	old = MOUSE_enter_event(event);
+	GB.Raise(THIS, type, 0);
+	MOUSE_leave_event(old);
+}
+
+static void raise_keyboard_event(CWINDOW *_object, SDL_Event *event, int type)
+{
+	SDL_Event *old;
+
+	if (!GB.CanRaise(THIS, type))
+		return;
+
+	old = KEY_enter_event(event);
+	GB.Raise(THIS, type, 0);
+	KEY_leave_event(old);
+}
+
+CWINDOW *WINDOW_get_from_event(SDL_Event *event)
+{
+	SDL_Window *window = SDL_GetWindowFromID(event->window.windowID);
+	return SDL_GetWindowData(window, "gambas-object");
+}
+
+void WINDOW_handle_event(SDL_Event *event)
+{
 	CWINDOW *_object;
 	
-	window = SDL_GetWindowFromID(event->windowID);
-	_object = SDL_GetWindowData(window, "gambas-object");
+	_object = WINDOW_get_from_event(event);
 	if (!THIS)
 		return;
 	
-	switch(event->event)
+	switch(event->type)
 	{
-		case SDL_WINDOWEVENT_SHOWN:
-			GB.Raise(THIS, EVENT_Show, 0);
+		case SDL_WINDOWEVENT:
+			switch(event->window.event)
+			{
+				case SDL_WINDOWEVENT_SHOWN:
+					GB.Raise(THIS, EVENT_Show, 0);
+					break;
+				case SDL_WINDOWEVENT_HIDDEN:
+					GB.Raise(THIS, EVENT_Hide, 0);
+					break;
+				/*case SDL_WINDOWEVENT_EXPOSED:*/
+				case SDL_WINDOWEVENT_MOVED:
+					THIS->x = event->window.data1;
+					THIS->y = event->window.data2;
+					GB.Raise(THIS, EVENT_Move, 0);
+					break;
+				case SDL_WINDOWEVENT_RESIZED:
+					THIS->width = event->window.data1;
+					THIS->height = event->window.data2;
+					GB.Raise(THIS, EVENT_Resize, 0);
+					break;
+				/*case SDL_WINDOWEVENT_MINIMIZED:
+						SDL_Log("Window %d minimized", event->window.windowID);
+						break;
+				case SDL_WINDOWEVENT_MAXIMIZED:
+						SDL_Log("Window %d maximized", event->window.windowID);
+						break;
+				case SDL_WINDOWEVENT_RESTORED:
+						SDL_Log("Window %d restored", event->window.windowID);
+						break;*/
+				case SDL_WINDOWEVENT_ENTER:
+					GB.Raise(THIS, EVENT_Enter, 0);
+					break;
+				case SDL_WINDOWEVENT_LEAVE:
+					GB.Raise(THIS, EVENT_Leave, 0);
+					break;
+				case SDL_WINDOWEVENT_FOCUS_GAINED:
+					GB.Raise(THIS, EVENT_GotFocus, 0);
+					break;
+				case SDL_WINDOWEVENT_FOCUS_LOST:
+					GB.Raise(THIS, EVENT_LostFocus, 0);
+					break;
+				case SDL_WINDOWEVENT_CLOSE:
+					close_window(THIS);
+					break;
+			}
 			break;
-		case SDL_WINDOWEVENT_HIDDEN:
-			GB.Raise(THIS, EVENT_Hide, 0);
+
+		case SDL_MOUSEBUTTONDOWN:
+			raise_mouse_event(THIS, event, EVENT_MouseDown);
 			break;
-		/*case SDL_WINDOWEVENT_EXPOSED:*/
-		case SDL_WINDOWEVENT_MOVED:
-			THIS->x = event->data1;
-			THIS->y = event->data2;
-			GB.Raise(THIS, EVENT_Move, 0);
- 			break;
-		case SDL_WINDOWEVENT_RESIZED:
-			THIS->width = event->data1;
-			THIS->height = event->data2;
-			GB.Raise(THIS, EVENT_Resize, 0);
+		case SDL_MOUSEBUTTONUP:
+			raise_mouse_event(THIS, event, EVENT_MouseUp);
 			break;
-		/*case SDL_WINDOWEVENT_MINIMIZED:
-				SDL_Log("Window %d minimized", event->window.windowID);
-				break;
-		case SDL_WINDOWEVENT_MAXIMIZED:
-				SDL_Log("Window %d maximized", event->window.windowID);
-				break;
-		case SDL_WINDOWEVENT_RESTORED:
-				SDL_Log("Window %d restored", event->window.windowID);
-				break;*/
-		case SDL_WINDOWEVENT_ENTER:
-			GB.Raise(THIS, EVENT_Enter, 0);
+		case SDL_MOUSEMOTION:
+			raise_mouse_event(THIS, event, EVENT_MouseMove);
 			break;
-		case SDL_WINDOWEVENT_LEAVE:
-			GB.Raise(THIS, EVENT_Leave, 0);
+		case SDL_MOUSEWHEEL:
+			raise_mouse_event(THIS, event, EVENT_MouseWheel);
 			break;
-		case SDL_WINDOWEVENT_FOCUS_GAINED:
-			GB.Raise(THIS, EVENT_GotFocus, 0);
+		case SDL_KEYDOWN:
+			raise_keyboard_event(THIS, event, EVENT_KeyPress);
 			break;
-		case SDL_WINDOWEVENT_FOCUS_LOST:
-			GB.Raise(THIS, EVENT_LostFocus, 0);
+		case SDL_KEYUP:
+			raise_keyboard_event(THIS, event, EVENT_KeyRelease);
 			break;
-		case SDL_WINDOWEVENT_CLOSE:
-			close_window(THIS);
+		case SDL_TEXTINPUT:
+			raise_keyboard_event(THIS, event, EVENT_Text);
 			break;
 	}
 }
@@ -188,6 +252,16 @@ void WINDOW_update(void)
 			THIS->last_time = d;
 		}
 		
+		if (THIS->clear)
+		{
+			uchar r, g, b, a;
+			SDL_GetRenderDrawColor(THIS->renderer, &r, &g, &b, &a);
+			SDL_SetRenderDrawColor(THIS->renderer, 0, 0, 0, 255);
+			SDL_RenderClear(THIS->renderer);
+			SDL_SetRenderDrawColor(THIS->renderer, r, g, b, a);
+			THIS->clear = FALSE;
+		}
+
 		DRAW_begin(THIS);
 		GB.Raise(THIS, EVENT_Draw, 0);
 		DRAW_end();
@@ -229,7 +303,7 @@ BEGIN_METHOD(Window_new, GB_BOOLEAN opengl)
 	THIS->fullscreen = FALSE;
 	THIS->width = 640;
 	THIS->height = 400;
-	
+
 	if (SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_HIDDEN, &THIS->window, &THIS->renderer))
 	{
 		RAISE_ERROR("Unable to create window");
@@ -335,8 +409,27 @@ BEGIN_PROPERTY(Window_FullScreen)
 		GB.ReturnBoolean(THIS->fullscreen);
 	else
 	{
-		THIS->fullscreen = VPROP(GB_BOOLEAN);
-		update_geometry(THIS);
+		bool f = VPROP(GB_BOOLEAN);
+
+		if (THIS->fullscreen != f)
+		{
+			THIS->fullscreen = f;
+			if (f)
+			{
+				THIS->save_x = THIS->x;
+				THIS->save_y = THIS->y;
+				THIS->save_width = THIS->width;
+				THIS->save_height = THIS->height;
+			}
+			else
+			{
+				THIS->x = THIS->save_x;
+				THIS->y = THIS->save_y;
+				THIS->width = THIS->save_width;
+				THIS->height = THIS->save_height;
+			}
+			update_geometry(THIS);
+		}
 	}
 
 END_PROPERTY
@@ -373,6 +466,12 @@ BEGIN_PROPERTY(Window_Text)
 
 END_PROPERTY
 
+BEGIN_METHOD(Window_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
+
+	GB.ReturnObject(IMAGE_create_from_window(THIS, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, THIS->width), VARGOPT(h, THIS->height)));
+
+END_METHOD
+
 //-------------------------------------------------------------------------
 
 GB_DESC WindowDesc[] =
@@ -387,7 +486,8 @@ GB_DESC WindowDesc[] =
 	GB_METHOD("Close", NULL, Window_Close, NULL),
 	GB_METHOD("Move", NULL, Window_Move, "(X)i(Y)i[(Width)i(Height)i]"),
 	GB_METHOD("Resize", NULL, Window_Resize, "(Width)i(Height)i"),
-	
+	GB_METHOD("Screenshot", "Image", Window_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
+
 	GB_PROPERTY("Visible", "b", Window_Visible),
 	GB_PROPERTY("FullScreen", "b", Window_FullScreen),
 	
@@ -415,54 +515,35 @@ GB_DESC WindowDesc[] =
 	GB_EVENT("GotFocus", NULL, NULL, &EVENT_GotFocus),
 	GB_EVENT("LostFocus", NULL, NULL, &EVENT_LostFocus),
 	GB_EVENT("Draw", NULL, NULL, &EVENT_Draw),
-	
-/*	GB_METHOD("_new", NULL, CWINDOW_new, "[(OpenGL)b]"),
-	GB_METHOD("_free", NULL, CWINDOW_free, NULL),
+	GB_EVENT("KeyPress", NULL, NULL, &EVENT_KeyPress),
+	GB_EVENT("KeyRelease", NULL, NULL, &EVENT_KeyRelease),
+	GB_EVENT("Text", NULL, NULL, &EVENT_Text),
+	GB_EVENT("MouseMove", NULL, NULL, &EVENT_MouseMove),
+	GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
+	GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
+	GB_EVENT("MouseWheel", NULL, NULL, &EVENT_MouseWheel),
 
-	GB_METHOD("Show", NULL, CWINDOW_show, NULL),
-	GB_METHOD("Close", NULL, CWINDOW_close, NULL),
+/*
 	GB_METHOD("Clear", NULL, CWINDOW_clear, NULL),
 	GB_METHOD("Fill", NULL, CWINDOW_fill, "(Color)i"),
 	GB_METHOD("Refresh", NULL, CWINDOW_refresh, NULL),
 	GB_METHOD("Update", NULL, CWINDOW_refresh, NULL),
 
-	GB_PROPERTY("Caption", "s", CWINDOW_text),
-//  GB_PROPERTY("Cursor", "Cursor;", CWINDOW_cursor),
-	GB_PROPERTY("Framerate", "f", CWINDOW_framerate),
-	GB_PROPERTY("FullScreen", "b", CWINDOW_fullscreen),
-	GB_PROPERTY("Height", "i", CWINDOW_height),
-	GB_PROPERTY("Mouse", "i", CWINDOW_mouse),
-	GB_PROPERTY("Text", "s", CWINDOW_text),
-	GB_PROPERTY("Title", "s", CWINDOW_text),
 	GB_PROPERTY("Tracking", "b", CWINDOW_tracking),
 	GB_PROPERTY("Resizable", "b", CWINDOW_resizable),
-	GB_PROPERTY("Width", "i", CWINDOW_width),
 
 	GB_PROPERTY_READ("Handle", "i", CWINDOW_id),
 	GB_PROPERTY_READ("Id", "i", CWINDOW_id),
-	GB_PROPERTY_READ("Shown", "b", CWINDOW_shown),
 	GB_PROPERTY("Grabbed", "b", Window_Grabbed),
 
-	GB_METHOD("Screenshot", "Image", Window_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
-
-	GB_EVENT("Close", "b", NULL, &EVENT_Close),
-	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 	GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
 	GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
-	GB_EVENT("Enter", NULL, NULL, &EVENT_Enter),
 	GB_EVENT("JoyAxisMove", NULL, NULL, &EVENT_JoyAxisMotion),
 	GB_EVENT("JoyBallMove", NULL, NULL, &EVENT_JoyBallMotion),
 	GB_EVENT("JoyButtonPress", NULL, NULL, &EVENT_JoyButtonPressed),
 	GB_EVENT("JoyButtonRelease", NULL, NULL, &EVENT_JoyButtonReleased),
 	GB_EVENT("JoyHatMove", NULL, NULL, &EVENT_JoyHatMotion),
-	GB_EVENT("Leave", NULL, NULL, &EVENT_Leave),
-	GB_EVENT("Draw", "b", NULL, &EVENT_Refresh),
-	GB_EVENT("KeyPress", NULL, NULL, &EVENT_KeyPressed),
-	GB_EVENT("KeyRelease", NULL, NULL, &EVENT_KeyReleased),
-	GB_EVENT("MouseMove", NULL, NULL, &EVENT_MouseMove),
-	GB_EVENT("MouseDown", NULL, NULL, &EVENT_MouseDown),
-	GB_EVENT("MouseUp", NULL, NULL, &EVENT_MouseUp),
-	GB_EVENT("Open", NULL, NULL, &EVENT_Open),*/
+*/
 
 	GB_END_DECLARE
 };

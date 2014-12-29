@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  c_window.h
+  c_mouse.h
 
   (c) 2014 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,50 +21,30 @@
 
 ***************************************************************************/
 
-#ifndef __C_WINDOW_H
-#define __C_WINDOW_H
+#ifndef __C_MOUSE_H
+#define __C_MOUSE_H
 
 #include "main.h"
-#include "c_mouse.h"
-#include "c_key.h"
+
+#ifndef __C_MOUSE_C
+extern GB_DESC MouseDesc[];
+#endif
 
 typedef
-	struct CWINDOW {
-		GB_BASE ob;
-		LIST list;
-		SDL_Window *window;
-		SDL_Renderer *renderer;
-		int id;
+	struct {
 		int x;
 		int y;
-		int width;
-		int height;
-		int save_x, save_y, save_width, save_height;
-		uint start_time;
-		uint frame_count;
-		uint total_frame_count;
-		double last_time;
-		double frame_time;
-		double frame_rate;
-		MOUSE_INFO mouse;
-		unsigned opengl : 1;
-		unsigned opened : 1;
-		unsigned fullscreen : 1;
-		unsigned clear : 1;
+		int wheel_x;
+		int wheel_y;
+		int state;
+		int button;
+		int start_x;
+		int start_y;
 	}
-	CWINDOW;
+	MOUSE_INFO;
 
-#ifndef __C_WINDOW_C
+SDL_Event *MOUSE_enter_event(SDL_Event *event);
+void MOUSE_leave_event(SDL_Event *event);
 
-extern GB_DESC WindowDesc[];
-
-extern CWINDOW *WINDOW_list;
-
-CWINDOW *WINDOW_get_from_event(SDL_Event *event);
-void WINDOW_handle_event(SDL_Event *event);
-void WINDOW_update();
-
-#endif
-	
-#endif /* __C_WINDOW_H */
+#endif /* __C_MOUSE_H */
 

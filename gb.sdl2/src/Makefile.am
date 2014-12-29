@@ -12,4 +12,8 @@ gb_sdl2_la_SOURCES = \
  c_image.h c_image.c \
  c_window.h c_window.c \
  c_draw.h c_draw.c \
+ c_mouse.h c_mouse.c \
+ c_key.h c_key.c \
+ c_font.h c_font.c \
+ default_font.h \
  main.h main.c

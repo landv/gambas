@@ -30,6 +30,8 @@
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 
 #define DEFAULT_IMAGE_FORMAT GB_IMAGE_ARGB
+#define DEFAULT_SDL_IMAGE_FORMAT SDL_PIXELFORMAT_RGBA8888
+
 #define RMASK 0xFF000000
 #define GMASK 0x00FF0000
 #define BMASK 0x0000FF00
@@ -38,6 +40,8 @@
 #else
 
 #define DEFAULT_IMAGE_FORMAT GB_IMAGE_BGRA
+#define DEFAULT_SDL_IMAGE_FORMAT SDL_PIXELFORMAT_ABGR8888
+
 #define RMASK 0x000000FF
 #define GMASK 0x0000FF00
 #define BMASK 0x00FF0000
@@ -64,6 +68,7 @@ extern GB_DESC ImageDesc[];
 #endif
 
 SDL_Texture *IMAGE_get_texture(CIMAGE *_object, CWINDOW *window);
+CIMAGE *IMAGE_create_from_window(CWINDOW *window, int x, int y, int w, int h);
 
 #endif /* __C_IMAGE_H */
 

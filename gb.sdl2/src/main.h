@@ -27,11 +27,13 @@
 #include "gambas.h"
 #include "gb_common.h"
 #include "gb_list.h"
+
 #include "gb.geom.h"
 #include "gb.image.h"
 
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_ttf.h"
 #include "SDL_opengl.h"
 
 #ifndef __MAIN_C
@@ -41,9 +43,12 @@ extern GEOM_INTERFACE GEOM;
 
 extern GB_CLASS CLASS_Window;
 extern GB_CLASS CLASS_Image;
+extern GB_CLASS CLASS_Font;
 #endif
 
 #define RAISE_ERROR(_msg) GB.Error(_msg ": &1", SDL_GetError());
+
+#define SAME_COLORS(_col1, _col2) ((_col1)->r == (_col2)->r && (_col1)->g== (_col2)->g && (_col1)->b == (_col2)->b && (_col1)->a == (_col2)->a)
 
 #endif /* __MAIN_H */
 

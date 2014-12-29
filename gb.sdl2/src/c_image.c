@@ -126,42 +126,15 @@ SDL_Texture *IMAGE_get_texture(CIMAGE *_object, CWINDOW *window)
 	return image->texture;
 }
 
-/*CIMAGE *CIMAGE_create_from_window(SDLwindow *window, int x, int y, int w, int h)
+CIMAGE *IMAGE_create_from_window(CWINDOW *window, int x, int y, int w, int h)
 {
-	GB_IMG *img;
-	uchar *line, *top, *bottom;
-	uint size;
+	SDL_Surface *surface;
+	SDL_Rect rect = { x, y, w, h };
 
-	if (w < 0)
-		w = window->GetWidth();
-
-	if (h < 0)
-		h = window->GetHeight();
-
-	if (w <= 0 || h <= 0)
-		return NULL;
-
-	img = IMAGE.Create(w, h, GB_IMAGE_RGBA, NULL);
-	glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, img->data);
-
-	size = img->width * sizeof(uint);
-	GB.Alloc(POINTER(&line), size);
-	top = img->data;
-	bottom = img->data + img->height * size;
-
-	for (y = 0; y < img->height / 2; y++)
-	{
-		bottom -= size;
-		memcpy(line, top, size);
-		memcpy(top, bottom, size);
-		memcpy(bottom, line, size);
-		top += size;
-	}
-
-	GB.Free(POINTER(&line));
-
-	return (CIMAGE *)img;
-}*/
+	surface = SDL_CreateRGBSurface(0, w, h, 32, RMASK, GMASK, BMASK, AMASK);
+	SDL_RenderReadPixels(window->renderer, &rect, DEFAULT_SDL_IMAGE_FORMAT, surface->pixels, surface->pitch);
+	return IMAGE_create(SDL_CreateImage(surface));
+}
 
 //-------------------------------------------------------------------------
 
@@ -175,6 +148,8 @@ BEGIN_METHOD(Image_Load, GB_STRING path)
 		return;
 	
 	surface = IMG_Load_RW(SDL_RWFromConstMem(addr, len), TRUE);
+	GB.ReleaseFile(addr, len);
+	
 	if (!surface)
 	{
 		GB.Error("Unable to load image: &1", IMG_GetError());
@@ -185,6 +160,15 @@ BEGIN_METHOD(Image_Load, GB_STRING path)
 
 END_METHOD
 
+BEGIN_METHOD(Image_Save, GB_STRING path)
+
+	char *path = GB.FileName(STRING(path), LENGTH(path));
+
+	if (SDL_SaveBMP(IMAGE_get(THIS)->surface, path))
+		RAISE_ERROR("Unable to save image: &1");
+
+END_METHOD
+
 //-------------------------------------------------------------------------
 
 GB_DESC ImageDesc[] =
@@ -192,6 +176,7 @@ GB_DESC ImageDesc[] =
 	GB_DECLARE("Image", sizeof(CIMAGE)),
 	
 	GB_STATIC_METHOD("Load", "Image", Image_Load, "(Path)s"),
-	
+	GB_METHOD("Save", NULL, Image_Save, "(Path)s"),
+
 	GB_END_DECLARE
 };
