@@ -27,33 +27,11 @@
 #include "main.h"
 #include "c_window.h"
 
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-
-#define DEFAULT_IMAGE_FORMAT GB_IMAGE_ARGB
-#define DEFAULT_SDL_IMAGE_FORMAT SDL_PIXELFORMAT_RGBA8888
-
-#define RMASK 0xFF000000
-#define GMASK 0x00FF0000
-#define BMASK 0x0000FF00
-#define AMASK 0x000000FF
-
-#else
-
-#define DEFAULT_IMAGE_FORMAT GB_IMAGE_BGRA
-#define DEFAULT_SDL_IMAGE_FORMAT SDL_PIXELFORMAT_ABGR8888
-
-#define RMASK 0x000000FF
-#define GMASK 0x0000FF00
-#define BMASK 0x00FF0000
-#define AMASK 0xFF000000
-
-#endif
-
 typedef
 	struct {
 		SDL_Surface *surface;
 		SDL_Texture *texture;
-		int window_id;
+		CWINDOW *window;
 	}
 	SDL_Image;
 
@@ -67,8 +45,13 @@ typedef
 extern GB_DESC ImageDesc[];
 #endif
 
+CIMAGE *IMAGE_create(SDL_Image *image);
 SDL_Texture *IMAGE_get_texture(CIMAGE *_object, CWINDOW *window);
 CIMAGE *IMAGE_create_from_window(CWINDOW *window, int x, int y, int w, int h);
+
+SDL_Image *SDL_CreateImage(SDL_Surface *surface);
+void SDL_FreeImage(SDL_Image *image);
+SDL_Texture *SDL_GetTextureFromImage(SDL_Image *image, CWINDOW *window);
 
 #endif /* __C_IMAGE_H */
 

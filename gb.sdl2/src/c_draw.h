@@ -32,6 +32,7 @@ typedef
 		void *device;
 		SDL_Renderer *renderer;
 		CFONT *font;
+		GB_COLOR color;
 	}
 	CDRAW;
 

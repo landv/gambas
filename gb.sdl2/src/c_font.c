@@ -23,8 +23,8 @@
 
 #define __C_FONT_C
 
+#include "default_font.h"
 #include "c_font.h"
-//#include "default_font.h"
 
 typedef
 	struct {
@@ -37,6 +37,19 @@ typedef
 static FONT_LOAD *_font_list = NULL;
 
 #define THIS ((CFONT *)_object)
+
+static void create_cache(CFONT *_object)
+{
+	if (!THIS->cache)
+		GB.HashTable.New(&THIS->cache, GB_COMP_BINARY);
+}
+
+CFONT *FONT_create()
+{
+	CFONT *font = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
+	create_cache(font);
+	return font;
+}
 
 static FONT_LOAD *find_font(const char *name)
 {
@@ -86,24 +99,24 @@ static bool load_font(char *path, char *name)
 	load->name = GB.NewZeroString(name);
 	LIST_insert(&_font_list, load, &load->list);
 
-	fprintf(stderr, "font list:\n");
-	LIST_for_each(load, _font_list)
-	{
-		fprintf(stderr, "%s: %s\n", load->name, load->path);
-	}
-
 	return FALSE;
 }
 
 static void release_cache(CFONT *_object)
 {
-	if (THIS->surface)
+	GB.HashTable.Enum(THIS->cache, (GB_HASHTABLE_ENUM_FUNC)SDL_FreeImage);
+	GB.HashTable.Free(&THIS->cache);
+}
+
+static bool init_font()
+{
+	if (!TTF_WasInit() && TTF_Init())
 	{
-		GB.FreeString(&THIS->text);
-		THIS->text = NULL;
-		SDL_FreeSurface(THIS->surface);
-		THIS->surface = NULL;
+		GB.Error("Unable to initialize TTF library: &1", TTF_GetError());
+		return TRUE;
 	}
+	else
+		return FALSE;
 }
 
 static bool check_font(CFONT *_object)
@@ -117,7 +130,21 @@ static bool check_font(CFONT *_object)
 		return FALSE;
 
 	if (THIS->font)
+	{
+		if (init_font())
+			return TRUE;
 		TTF_CloseFont(THIS->font);
+		THIS->font = NULL;
+	}
+
+	release_cache(THIS);
+	create_cache(THIS);
+
+	if (!THIS->name)
+	{
+		THIS->dirty = FALSE;
+		return FALSE;
+	}
 
 	font = find_font(THIS->name);
 	if (!font)
@@ -129,11 +156,8 @@ static bool check_font(CFONT *_object)
 	if (GB.LoadFile(font->path, strlen(font->path), &addr, &len))
 		return TRUE;
 
-	if (!TTF_WasInit() && TTF_Init())
-	{
-		GB.Error("Unable to initialize TTF library: &1", TTF_GetError());
+	if (init_font())
 		return TRUE;
-	}
 
 	THIS->font = TTF_OpenFontRW(SDL_RWFromConstMem(addr, len), TRUE, THIS->size);
 	if (!THIS->font)
@@ -147,30 +171,114 @@ static bool check_font(CFONT *_object)
 	if (THIS->italic) style |= TTF_STYLE_ITALIC;
 	TTF_SetFontStyle(THIS->font, style);
 
-	release_cache(THIS);
 	THIS->dirty = FALSE;
 
 	return FALSE;
 }
 
-SDL_Surface *FONT_render_text(CFONT *_object, char *text, SDL_Color color)
+static int get_font_ascent(void *_object)
+{
+	if (THIS->font)
+		return TTF_FontAscent(THIS->font);
+	else
+		return DEFAULT_FONT_ASCENT * THIS->size / DEFAULT_FONT_HEIGHT;
+}
+
+static int get_font_descent(void *_object)
+{
+	if (THIS->font)
+		return TTF_FontDescent(THIS->font);
+	else
+		return DEFAULT_FONT_DESCENT * THIS->size / DEFAULT_FONT_HEIGHT;
+}
+
+static void get_text_size(void *_object, const char *text, int *width, int *height)
+{
+	if (!text || !*text)
+	{
+		*width = 0;
+		*height = get_font_ascent(THIS) + get_font_descent(THIS);
+		return;
+	}
+
+	if (THIS->font)
+	{
+		TTF_SizeUTF8(THIS->font, text, width, height);
+		return;
+	}
+
+	*width = UTF8_get_length(text, strlen(text)) * DEFAULT_FONT_WIDTH * THIS->size / DEFAULT_FONT_HEIGHT;
+	*height = THIS->size;
+}
+
+
+SDL_Image *FONT_render_text(CFONT *_object, CWINDOW *window, char *text, int len, int *w, int *h)
 {
 	SDL_Surface *surface;
+	SDL_Image *image;
+	bool exist;
 
 	if (check_font(THIS))
 		return NULL;
 
-	if (THIS->surface && SAME_COLORS(&THIS->color, &color) && strcmp(text, THIS->text) == 0)
-		return THIS->surface;
+	exist = !GB.HashTable.Get(THIS->cache, text, len, POINTER(&image));
 
-	surface = TTF_RenderUTF8_Blended(THIS->font, text, color);
+	if (exist)
+	{
+		if (image->window == window)
+		{
+			SDL_QueryTexture(image->texture, NULL, NULL, w, h);
+			if (!THIS->name)
+			{
+				*w = *w * THIS->size / DEFAULT_FONT_HEIGHT;
+				*h = *h * THIS->size / DEFAULT_FONT_HEIGHT;
+			}
 
-	release_cache(THIS);
-	THIS->surface = surface;
-	THIS->text = GB.NewZeroString(text);
-	THIS->color = color;
+			return image;
+		}
 
-	return surface;
+		SDL_FreeImage(image);
+		GB.HashTable.Remove(THIS->cache, text, len);
+	}
+
+	if (THIS->name)
+	{
+		SDL_Color color = { 0xFF, 0xFF, 0xFF, 0xFF };
+		char c = text[len];
+		text[len] = 0;
+		surface = TTF_RenderUTF8_Blended(THIS->font, text, color);
+		text[len] = c;
+		*w = surface->w;
+		*h = surface->h;
+	}
+	else
+	{
+		int size = UTF8_get_length(text, len);
+
+		surface = SDL_CreateRGBSurface(0, size * DEFAULT_FONT_WIDTH, DEFAULT_FONT_HEIGHT, 32, RMASK, GMASK, BMASK, AMASK);
+
+		if (SDL_MUSTLOCK(surface))
+			SDL_LockSurface(surface);
+
+		FONT_render_default((uint *)surface->pixels, size, text, len);
+
+		if (SDL_MUSTLOCK(surface))
+			SDL_UnlockSurface(surface);
+
+		*w = surface->w * THIS->size / DEFAULT_FONT_HEIGHT;
+		*h = surface->h * THIS->size / DEFAULT_FONT_HEIGHT;
+	}
+
+	image = SDL_CreateImage(surface);
+
+	if (GB.HashTable.Count(THIS->cache) >= 128)
+	{
+		release_cache(THIS);
+		create_cache(THIS);
+	}
+
+	GB.HashTable.Add(THIS->cache, text, len, image);
+	return image;
 }
 
 //-------------------------------------------------------------------------
@@ -217,8 +325,6 @@ BEGIN_METHOD(Font_get, GB_STRING font)
 
 	for (elt = strtok(desc, ","); elt; elt = strtok(NULL, ","))
 	{
-		fprintf(stderr, "elt = %s\n", elt);
-
 		if (strcasecmp(elt, "bold") == 0)
 		{
 			bold = TRUE;
@@ -253,7 +359,7 @@ BEGIN_METHOD(Font_get, GB_STRING font)
 		goto ERROR;
 	}
 
-	font = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
+	font = FONT_create();
 	font->name = name;
 	font->bold = bold;
 	font->italic = italic;
@@ -293,7 +399,8 @@ BEGIN_PROPERTY(Font_Size)
 		else if (THIS->size != size)
 		{
 			THIS->size = size;
-			THIS->dirty = TRUE;
+			if (THIS->name)
+				THIS->dirty = TRUE;
 		}
 	}
 
@@ -364,6 +471,30 @@ BEGIN_PROPERTY(Font_Fixed)
 
 END_PROPERTY
 
+BEGIN_METHOD(Font_TextWidth, GB_STRING text)
+
+	int w, h;
+
+	if (check_font(THIS))
+		return;
+
+	get_text_size(THIS, GB.ToZeroString(ARG(text)), &w, &h);
+	GB.ReturnInteger(w);
+
+END_METHOD
+
+BEGIN_METHOD(Font_TextHeight, GB_STRING text)
+
+	int w, h;
+
+	if (check_font(THIS))
+		return;
+
+	get_text_size(THIS, GB.ToZeroString(ARG(text)), &w, &h);
+	GB.ReturnInteger(h);
+
+END_METHOD
+
 //-------------------------------------------------------------------------
 
 GB_DESC FontDesc[] =
@@ -386,9 +517,9 @@ GB_DESC FontDesc[] =
 	GB_PROPERTY_READ("Descent", "i", Font_Descent),
 	GB_PROPERTY_READ("Fixed", "b", Font_Fixed),
 
-	/*GB_METHOD("TextWidth", "i", Font_TextWidth, "(Text)s"),
+	GB_METHOD("TextWidth", "i", Font_TextWidth, "(Text)s"),
 	GB_METHOD("TextHeight", "i", Font_TextHeight, "(Text)s"),
-	GB_METHOD("GetImage", "Image", Font_GetImage, "(Text)s"),*/
+	/*GB_METHOD("GetImage", "Image", Font_GetImage, "(Text)s"),*/
 
 	GB_END_DECLARE
 };

@@ -28,25 +28,34 @@
 #define THIS ((CIMAGE *)_object)
 #define THIS_IMAGE (&THIS->img)
 
-static SDL_Image *SDL_CreateImage(SDL_Surface *surface)
+SDL_Image *SDL_CreateImage(SDL_Surface *surface)
 {
 	SDL_Image *image;
 	
 	GB.Alloc(POINTER(&image), sizeof(SDL_Image));
 	
 	image->texture = NULL;
-	image->window_id = 0;
+	image->window = NULL;
 	image->surface = surface;
 	
 	return image;
 }
 
-static void SDL_FreeImage(SDL_Image *image)
+void SDL_FreeImage(SDL_Image *image)
 {
 	if (image->texture)
+	{
 		SDL_DestroyTexture(image->texture);
+		image->texture = NULL;
+		GB.Unref(POINTER(&image->window));
+	}
+
 	if (image->surface)
+	{
 		SDL_FreeSurface(image->surface);
+		image->surface = NULL;
+	}
+
 	GB.Free(POINTER(&image));
 }
 
@@ -106,24 +115,29 @@ CIMAGE *IMAGE_create(SDL_Image *image)
 	return img;
 }
 
-SDL_Texture *IMAGE_get_texture(CIMAGE *_object, CWINDOW *window)
+SDL_Texture *SDL_GetTextureFromImage(SDL_Image *image, CWINDOW *window)
 {
-	SDL_Image *image = IMAGE_get(THIS);
-	
-	if (image->texture && image->window_id != window->id)
+	if (image->texture && image->window != window)
 	{
 		SDL_DestroyTexture(image->texture);
+		GB.Unref(POINTER(&image->window));
 		image->texture = NULL;
 	}
-	
+
 	if (!image->texture)
 	{
 		image->texture = SDL_CreateTextureFromSurface(window->renderer, image->surface);
-		SDL_SetTextureBlendMode(image->texture, SDL_BLENDMODE_BLEND);		
-		image->window_id = window->id;
+		SDL_SetTextureBlendMode(image->texture, SDL_BLENDMODE_BLEND);
+		image->window = window;
+		GB.Ref(window);
 	}
-	
+
 	return image->texture;
+}
+
+SDL_Texture *IMAGE_get_texture(CIMAGE *_object, CWINDOW *window)
+{
+	return SDL_GetTextureFromImage(IMAGE_get(THIS), window);
 }
 
 CIMAGE *IMAGE_create_from_window(CWINDOW *window, int x, int y, int w, int h)

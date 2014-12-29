@@ -50,5 +50,29 @@ extern GB_CLASS CLASS_Font;
 
 #define SAME_COLORS(_col1, _col2) ((_col1)->r == (_col2)->r && (_col1)->g== (_col2)->g && (_col1)->b == (_col2)->b && (_col1)->a == (_col2)->a)
 
+#define SDL_COLOR_TO_UINT(_color) ((_color)->b | ((_color)->g << 8) | ((_color)->r << 16) | ((_color)->a << 24))
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+
+#define DEFAULT_IMAGE_FORMAT GB_IMAGE_ARGB
+#define DEFAULT_SDL_IMAGE_FORMAT SDL_PIXELFORMAT_BGRA8888
+
+#define BMASK 0xFF000000
+#define GMASK 0x00FF0000
+#define RMASK 0x0000FF00
+#define AMASK 0x000000FF
+
+#else
+
+#define DEFAULT_IMAGE_FORMAT GB_IMAGE_BGRA
+#define DEFAULT_SDL_IMAGE_FORMAT SDL_PIXELFORMAT_ARGB8888
+
+#define BMASK 0x000000FF
+#define GMASK 0x0000FF00
+#define RMASK 0x00FF0000
+#define AMASK 0xFF000000
+
+#endif
+
 #endif /* __MAIN_H */
 

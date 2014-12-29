@@ -254,11 +254,8 @@ void WINDOW_update(void)
 		
 		if (THIS->clear)
 		{
-			uchar r, g, b, a;
-			SDL_GetRenderDrawColor(THIS->renderer, &r, &g, &b, &a);
 			SDL_SetRenderDrawColor(THIS->renderer, 0, 0, 0, 255);
 			SDL_RenderClear(THIS->renderer);
-			SDL_SetRenderDrawColor(THIS->renderer, r, g, b, a);
 			THIS->clear = FALSE;
 		}
 
@@ -304,12 +301,20 @@ BEGIN_METHOD(Window_new, GB_BOOLEAN opengl)
 	THIS->width = 640;
 	THIS->height = 400;
 
-	if (SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_HIDDEN, &THIS->window, &THIS->renderer))
+	THIS->window = SDL_CreateWindow(GB.Application.Title(), 0, 0, THIS->width, THIS->height, SDL_WINDOW_HIDDEN);
+	if (!THIS->window)
 	{
 		RAISE_ERROR("Unable to create window");
 		return;
 	}
-	
+
+	THIS->renderer = SDL_CreateRenderer(THIS->window, -1, SDL_RENDERER_ACCELERATED);
+	if (!THIS->renderer)
+	{
+		RAISE_ERROR("Unable to create renderer");
+		return;
+	}
+
 	SDL_SetWindowData(THIS->window, "gambas-object", THIS);
 	
 END_METHOD

@@ -53,11 +53,31 @@ static CFONT *get_default_font()
 {
 	if (!_default_font)
 	{
-		_default_font = (CFONT *)GB.New(CLASS_Font, NULL, NULL);
+		_default_font = FONT_create();
 		GB.Ref(_default_font);
 	}
 
 	return _default_font;
+}
+
+/*static GB_COLOR get_background()
+{
+	uchar r, g, b, a;
+	SDL_GetRenderDrawColor(RENDERER, &r, &g, &b, &a);
+	return GB_COLOR_MAKE(r, g, b, a);
+}*/
+
+static void set_background(GB_COLOR col)
+{
+	uchar r, g, b, a;
+
+	GB_COLOR_SPLIT(col, r, g, b, a);
+	SDL_SetRenderDrawColor(RENDERER, r, g, b, a);
+
+	if (a != 255)
+		SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_BLEND);
+	else
+		SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_NONE);
 }
 
 void DRAW_begin(void *device)
@@ -84,6 +104,7 @@ void DRAW_begin(void *device)
 		THIS->device = device;
 		THIS->renderer = ((CWINDOW *)device)->renderer;
 		GB.Ref(THIS->device);
+		THIS->color = (GB_COLOR)0xFFFFFF;
 		return;
 	}
 	
@@ -126,34 +147,15 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Draw_End)
 
+	CHECK_DEVICE();
 	DRAW_end();
 
 END_METHOD
 
-static GB_COLOR get_background()
-{
-	uchar r, g, b, a;
-	SDL_GetRenderDrawColor(RENDERER, &r, &g, &b, &a);
-	return GB_COLOR_MAKE(r, g, b, a);
-}
-
-static void set_background(GB_COLOR col)
-{
-	uchar r, g, b, a;
-	
-	GB_COLOR_SPLIT(col, r, g, b, a);
-	SDL_SetRenderDrawColor(RENDERER, r, g, b, a);
-	
-	if (a != 255)
-		SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_BLEND);
-	else
-		SDL_SetRenderDrawBlendMode(RENDERER, SDL_BLENDMODE_NONE);
-}
-
 BEGIN_METHOD(Draw_Clear, GB_INTEGER col)
 
 	CHECK_DEVICE();
-	
+
 	set_background(VARGOPT(col, 0));
 	SDL_RenderClear(RENDERER);
 
@@ -164,9 +166,9 @@ BEGIN_PROPERTY(Draw_Background)
 	CHECK_DEVICE();
 	
 	if (READ_PROPERTY)
-		GB.ReturnInteger(get_background());
+		GB.ReturnInteger(THIS->color);
 	else
-		set_background(VPROP(GB_INTEGER));
+		THIS->color = VPROP(GB_INTEGER);
 
 END_PROPERTY
 
@@ -181,7 +183,7 @@ BEGIN_METHOD(Draw_Rect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h; 
 	rect.w = VARG(w);
 	rect.h = VARG(h);
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderDrawRect(RENDERER, &rect);
 	
 END_METHOD
@@ -197,7 +199,7 @@ BEGIN_METHOD(Draw_FillRect, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER
 	rect.w = VARG(w);
 	rect.h = VARG(h);
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderFillRect(RENDERER, &rect);
 	
 END_METHOD
@@ -206,7 +208,7 @@ BEGIN_METHOD(Draw_Line, GB_INTEGER x1; GB_INTEGER y1; GB_INTEGER x2; GB_INTEGER 
 
 	CHECK_DEVICE();
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderDrawLine(RENDERER, VARG(x1), VARG(y1), VARG(x2), VARG(y2));
 	
 END_METHOD
@@ -215,7 +217,7 @@ BEGIN_METHOD(Draw_Point, GB_INTEGER x; GB_INTEGER y; GB_INTEGER col)
 
 	CHECK_DEVICE();
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderDrawPoint(RENDERER, VARG(x), VARG(y));
 	
 END_METHOD
@@ -235,7 +237,7 @@ BEGIN_METHOD(Draw_Points, GB_OBJECT points; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderDrawPoints(RENDERER, (SDL_Point *)GB.Array.Get(points, 0), n);
 	
 END_METHOD
@@ -255,7 +257,7 @@ BEGIN_METHOD(Draw_Lines, GB_OBJECT points; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderDrawLines(RENDERER, (SDL_Point *)GB.Array.Get(points, 0), n);
 	
 END_METHOD
@@ -275,7 +277,7 @@ BEGIN_METHOD(Draw_Rects, GB_OBJECT rects; GB_INTEGER col)
 	if (n == 0)
 		return;
 	
-	if (!MISSING(col)) set_background(VARG(col));
+	set_background(VARGOPT(col, THIS->color));
 	SDL_RenderDrawRects(RENDERER, (SDL_Rect *)GB.Array.Get(rects, 0), n);
 	
 END_METHOD
@@ -358,30 +360,35 @@ END_PROPERTY
 
 BEGIN_METHOD(Draw_Text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 
-	SDL_Surface *surface;
+	SDL_Image *image;
 	SDL_Texture *texture;
-	SDL_Color color;
 	SDL_Rect dest;
+	uint r, g, b, a;
 
 	CHECK_DEVICE();
 
-	SDL_GetRenderDrawColor(RENDERER, &color.r, &color.g, &color.b, &color.a);
-
-	surface = FONT_render_text(THIS->font, GB.ToZeroString(ARG(text)), color);
-	if (!surface)
+	if (!LENGTH(text))
 		return;
-
-	texture = SDL_CreateTextureFromSurface(RENDERER, surface);
 
 	dest.x = VARG(x);
 	dest.y = VARG(y);
-	dest.w = surface->w;
-	dest.h = surface->h;
 
-	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	image = FONT_render_text(THIS->font, (CWINDOW *)THIS->device, STRING(text), LENGTH(text), &dest.w, &dest.h);
+	if (!image)
+		return;
+
+	texture = SDL_GetTextureFromImage(image, (CWINDOW *)THIS->device);
+	if (image->surface)
+	{
+		SDL_FreeSurface(image->surface);
+		image->surface = NULL;
+	}
+
+	GB_COLOR_SPLIT(THIS->color, r, g, b, a);
+	SDL_SetTextureColorMod(texture, r, g, b);
+	SDL_SetTextureAlphaMod(texture, a);
+
 	SDL_RenderCopy(RENDERER, texture, NULL, &dest);
-
-	SDL_DestroyTexture(texture);
 
 END_METHOD
 

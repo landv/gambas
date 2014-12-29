@@ -25,18 +25,19 @@
 #define __C_FONT_H
 
 #include "main.h"
+#include "c_window.h"
+#include "c_image.h"
+
 typedef
 	struct {
 		GB_BASE ob;
 		TTF_Font *font;
 		char *name;
 		int size;
+		GB_HASHTABLE cache;
 		unsigned bold : 1;
 		unsigned italic : 1;
 		unsigned dirty : 1;
-		SDL_Surface *surface;
-		char *text;
-		SDL_Color color;
 	}
 	CFONT;
 
@@ -44,7 +45,8 @@ typedef
 extern GB_DESC FontDesc[];
 #endif
 
-SDL_Surface *FONT_render_text(CFONT *_object, char *text, SDL_Color color);
+CFONT *FONT_create();
+SDL_Image *FONT_render_text(CFONT *_object, CWINDOW *window, char *text, int len, int *w, int *h);
 
 #endif /* __C_FONT_H */
 
