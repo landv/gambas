@@ -43,7 +43,7 @@ static void free_channel(CCHANNEL *ch)
 
 	GB.Unref(POINTER(&ch->sound));
 	ch->sound = NULL;
-	ch->free = 0;
+	ch->free = FALSE;
 
 	_pipe_usage--;
 	if (_pipe_usage == 0)
@@ -79,7 +79,7 @@ static void channel_finished_cb(int channel)
 	if (!ch)
 		return;
 
-	ch->free = write(_pipe[1], &buf, 1) == 1;
+	ch->free = (write(_pipe[1], &buf, 1) == 1);
 }
 
 static void return_channel(int channel, CSOUND *sound)
@@ -164,6 +164,12 @@ void CHANNEL_exit()
 
 	close(_pipe[0]);
 	close(_pipe[1]);
+}
+
+static void update_channel_effect(CCHANNEL *_object)
+{
+	if (Mix_SetPosition(THIS->channel, THIS->angle, THIS->distance) == 0)
+		GB.Error("Unable to set effect: &1", Mix_GetError());
 }
 
 //-------------------------------------------------------------------------
@@ -261,6 +267,53 @@ BEGIN_PROPERTY(Channel_Volume)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Channel_Distance)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->distance);
+	else
+	{
+		int d = VPROP(GB_INTEGER);
+
+		if (d < 0 || d > 255)
+		{
+			GB.Error(GB_ERR_ARG);
+			return;
+		}
+
+		THIS->distance = d;
+		update_channel_effect(THIS);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Channel_Angle)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(THIS->angle);
+	else
+	{
+		THIS->angle = VPROP(GB_INTEGER);
+		update_channel_effect(THIS);
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Channel_Reverse)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->reverse);
+	else
+	{
+		bool v = VPROP(GB_BOOLEAN);
+		if (Mix_SetReverseStereo(THIS->channel, v))
+			THIS->reverse = v;
+		else
+			GB.Error(Mix_GetError());
+	}
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 GB_DESC ChannelsDesc[] =
@@ -286,6 +339,9 @@ GB_DESC ChannelDesc[] =
 	GB_METHOD("Stop", NULL, Channel_Stop, "[(FadeOut)f]"),
 
 	GB_PROPERTY("Volume", "i", Channel_Volume),
+	GB_PROPERTY("Distance", "i", Channel_Distance),
+	GB_PROPERTY("Angle", "i", Channel_Angle),
+	GB_PROPERTY("Reverse", "b", Channel_Reverse),
 
 	GB_END_DECLARE
 };

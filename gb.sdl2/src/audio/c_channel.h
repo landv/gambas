@@ -32,7 +32,10 @@ typedef
 		GB_BASE ob;
 		int channel;
 		CSOUND *sound;
-		int free;
+		uchar distance;
+		ushort angle;
+		unsigned reverse : 1;
+		unsigned free : 1;
 		}
 	CCHANNEL;
 

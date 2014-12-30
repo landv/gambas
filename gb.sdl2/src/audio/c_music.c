@@ -140,7 +140,18 @@ BEGIN_PROPERTY(Music_Pos)
 		GB.ReturnFloat(get_music_pos());
 	else
 	{
-		double pos = VPROP(GB_FLOAT);
+		double pos;
+
+		if (!_music)
+			return;
+
+		if (Mix_GetMusicType(_music) == MUS_MOD)
+		{
+			GB.Error("Seeking is not supported on MOD files");
+			return;
+		}
+
+		pos = VPROP(GB_FLOAT);
 		Mix_RewindMusic();
 		if (Mix_SetMusicPosition(pos) == 0)
 			_ref_pos = pos;
@@ -178,11 +189,22 @@ BEGIN_PROPERTY(Music_State)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Music_SoundFontPath)
+
+	if (READ_PROPERTY)
+		GB.ReturnNewZeroString(Mix_GetSoundFonts());
+	else
+		Mix_SetSoundFonts(GB.ToZeroString(PROP(GB_STRING)));
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 GB_DESC MusicDesc[] =
 {
 	GB_DECLARE_STATIC("Music"),
+
+	GB_STATIC_PROPERTY("SoundFontPath", "s", Music_SoundFontPath),
 
 	GB_STATIC_METHOD("Load", NULL, Music_Load, "(File)s"),
 	GB_STATIC_METHOD("Play", NULL, Music_Play, "[(Loops)i(FadeIn)f]"),
