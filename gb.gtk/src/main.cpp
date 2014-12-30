@@ -491,12 +491,12 @@ static int my_loop()
 
 static void my_wait(int duration)
 {
-	if (gKey::valid())
+	if (duration > 0 && gKey::valid())
 	{
 #ifdef GTK3
-		fprintf(stderr, "gb.gtk3: WAIT inside a keyboard event handler is ignored\n");
+		fprintf(stderr, "gb.gtk3: warning: calling the event loop during a keyboard event handler is ignored\n");
 #else
-		fprintf(stderr, "gb.gtk: WAIT inside a keyboard event handler is ignored\n");
+		fprintf(stderr, "gb.gtk: warning: calling the event loop during a keyboard event handler is ignored\n");
 #endif
 		return;
 	}

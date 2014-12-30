@@ -127,7 +127,7 @@ SDL_Texture *SDL_GetTextureFromImage(SDL_Image *image, CWINDOW *window)
 	if (!image->texture)
 	{
 		image->texture = SDL_CreateTextureFromSurface(window->renderer, image->surface);
-		SDL_SetTextureBlendMode(image->texture, SDL_BLENDMODE_BLEND);
+		//SDL_SetTextureBlendMode(image->texture, SDL_BLENDMODE_BLEND);
 		image->window = window;
 		GB.Ref(window);
 	}

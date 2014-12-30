@@ -842,14 +842,14 @@ static void hook_loop()
 
 static void hook_wait(int duration)
 {
-	if (CKEY_is_valid())
-	{
-		fprintf(stderr, "gb.qt4: warning: WAIT inside a keyboard event handler is ignored\n");
-		return;
-	}
 	MAIN_in_wait++;
 	if (duration > 0)
-		qApp->processEvents(QEventLoop::AllEvents, duration);
+	{
+		if (CKEY_is_valid())
+			fprintf(stderr, "gb.qt4: warning: calling the event loop during a keyboard event handler is ignored\n");
+		else
+			qApp->processEvents(QEventLoop::AllEvents, duration);
+	}
 	else
 		qApp->processEvents(QEventLoop::ExcludeUserInputEvents, duration);
 	MAIN_in_wait--;

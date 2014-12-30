@@ -60,14 +60,23 @@ static void update_geometry(void *_object)
 	if (THIS->fullscreen)
 	{
 		SDL_SetWindowFullscreen(WINDOW, SDL_WINDOW_FULLSCREEN_DESKTOP);
-		SDL_RenderSetLogicalSize(THIS->renderer, THIS->width, THIS->height);
+		if (!THIS->opengl)
+			SDL_RenderSetLogicalSize(THIS->renderer, THIS->width, THIS->height);
 		THIS->clear = TRUE;
 	}
 	else
 	{
 		SDL_SetWindowFullscreen(WINDOW, 0);
 		SDL_SetWindowPosition(WINDOW, THIS->x, THIS->y);
+
+		if (!THIS->resizable)
+		{
+			SDL_SetWindowMinimumSize(WINDOW, THIS->width, THIS->height);
+			SDL_SetWindowMaximumSize(WINDOW, THIS->width, THIS->height);
+		}
 		SDL_SetWindowSize(WINDOW, THIS->width, THIS->height);
+
+		GB.Raise(THIS, EVENT_Resize, 0);
 	}
 }
 
@@ -254,17 +263,22 @@ void WINDOW_update(void)
 		
 		if (THIS->clear)
 		{
-			SDL_SetRenderDrawColor(THIS->renderer, 0, 0, 0, 255);
-			SDL_RenderClear(THIS->renderer);
+			if (!THIS->opengl)
+			{
+				SDL_SetRenderDrawColor(THIS->renderer, 0, 0, 0, 255);
+				SDL_RenderClear(THIS->renderer);
+			}
 			THIS->clear = FALSE;
 		}
 
 		DRAW_begin(THIS);
 		GB.Raise(THIS, EVENT_Draw, 0);
 		DRAW_end();
-		//if (!cancel)
-		//SDL_RenderPresent(THIS->renderer);
-		//SDL_UpdateWindowSurface(WINDOW);
+
+		if (THIS->opengl)
+			SDL_GL_SwapWindow(WINDOW);
+		else
+			SDL_RenderPresent(THIS->renderer);
 
 		THIS->frame_count++;
 		THIS->total_frame_count++;
@@ -289,9 +303,25 @@ void WINDOW_update(void)
 		SDL_Delay(1);
 }
 
+static void init_opengl(void)
+{
+	static bool _init = FALSE;
+
+	if (_init)
+		return;
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	_init = TRUE;
+}
+
 //-------------------------------------------------------------------------
 
 BEGIN_METHOD(Window_new, GB_BOOLEAN opengl)
+
+	int flag;
 
 	_id++;
 	THIS->id = _id;
@@ -301,27 +331,53 @@ BEGIN_METHOD(Window_new, GB_BOOLEAN opengl)
 	THIS->width = 640;
 	THIS->height = 400;
 
-	THIS->window = SDL_CreateWindow(GB.Application.Title(), 0, 0, THIS->width, THIS->height, SDL_WINDOW_HIDDEN);
-	if (!THIS->window)
+	flag = SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE;
+
+	if (THIS->opengl)
+	{
+		init_opengl();
+		flag |= SDL_WINDOW_OPENGL;
+	}
+
+	THIS->window = SDL_CreateWindow(GB.Application.Title(), 0, 0, THIS->width, THIS->height, flag);
+	if (!WINDOW)
 	{
 		RAISE_ERROR("Unable to create window");
 		return;
 	}
 
-	THIS->renderer = SDL_CreateRenderer(THIS->window, -1, SDL_RENDERER_ACCELERATED);
-	if (!THIS->renderer)
+	if (THIS->opengl)
 	{
-		RAISE_ERROR("Unable to create renderer");
-		return;
+		THIS->context = SDL_GL_CreateContext(WINDOW);
+		if (!THIS->context)
+		{
+			RAISE_ERROR("Unable to create OpenGL context");
+			return;
+		}
+	}
+	else
+	{
+		THIS->renderer = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
+		if (!THIS->renderer)
+		{
+			RAISE_ERROR("Unable to create renderer");
+			return;
+		}
 	}
 
-	SDL_SetWindowData(THIS->window, "gambas-object", THIS);
-	
+	SDL_SetWindowData(WINDOW, "gambas-object", THIS);
+
+	SDL_SetWindowMinimumSize(WINDOW, THIS->width, THIS->height);
+	SDL_SetWindowMaximumSize(WINDOW, THIS->width, THIS->height);
+
 END_METHOD
 
 BEGIN_METHOD_VOID(Window_free)
 
-	SDL_DestroyRenderer(THIS->renderer);
+	if (THIS->context)
+		SDL_GL_DeleteContext(THIS->context);
+	if (THIS->renderer)
+		SDL_DestroyRenderer(THIS->renderer);
 	SDL_DestroyWindow(WINDOW);
 
 END_METHOD
@@ -477,6 +533,46 @@ BEGIN_METHOD(Window_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INT
 
 END_METHOD
 
+BEGIN_PROPERTY(Window_Resizable)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->resizable);
+	else
+	{
+		bool v = VPROP(GB_BOOLEAN);
+		if (v == THIS->resizable)
+			return;
+		THIS->resizable = v;
+
+		if (v)
+		{
+			SDL_SetWindowMinimumSize(WINDOW, 1, 1);
+			SDL_SetWindowMaximumSize(WINDOW, 2048, 2048);
+		}
+		else
+		{
+			SDL_SetWindowMinimumSize(WINDOW, THIS->width, THIS->height);
+			SDL_SetWindowMaximumSize(WINDOW, THIS->width, THIS->height);
+		}
+	}
+
+END_PROPERTY
+
+// Does not work
+#if 0
+BEGIN_PROPERTY(Window_Border)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean((SDL_GetWindowFlags(WINDOW) & SDL_WINDOW_BORDERLESS) == 0);
+	else
+	{
+		SDL_SetWindowBordered(WINDOW, VPROP(GB_BOOLEAN));
+		SDL_ShowWindow(WINDOW);
+	}
+
+END_PROPERTY
+#endif
+
 //-------------------------------------------------------------------------
 
 GB_DESC WindowDesc[] =
@@ -495,7 +591,9 @@ GB_DESC WindowDesc[] =
 
 	GB_PROPERTY("Visible", "b", Window_Visible),
 	GB_PROPERTY("FullScreen", "b", Window_FullScreen),
-	
+	//GB_PROPERTY("Border", "b", Window_Border),
+	GB_PROPERTY("Resizable", "b", Window_Resizable),
+
 	GB_PROPERTY_READ("X", "i", Window_X),
 	GB_PROPERTY_READ("Y", "i", Window_Y),
 	GB_PROPERTY_READ("W", "i", Window_Width),

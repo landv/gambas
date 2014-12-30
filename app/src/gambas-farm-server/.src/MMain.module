@@ -565,30 +565,24 @@ Private Sub FromVersion(sVersion As String) As Integer
 
   Dim aVersion As String[] = Split(sVersion, ".")
   
-  While aVersion.Count < 3
+  While aVersion.Count < 2
     aVersion.Add("0")
   Wend
   
-  Try Return CInt(aVersion[0]) * 1000000 + CInt(aVersion[1]) * 1000 + CInt(aVersion[2])
+  Try Return CInt(aVersion[0]) * 1000000 + CInt(aVersion[1]) * 1000 '+ CInt(aVersion[2])
 
 End
 
 Private Sub ToVersion(iVersion As Integer) As String
   
-  Dim aVersion As New String[3]
-  Dim sVersion As String
+  Dim aVersion As New String[2]
   
   aVersion[0] = CStr(iVersion Div 1000000)
   aVersion[1] = CStr((iVersion Div 1000) Mod 1000)
-  aVersion[2] = CStr(iVersion Mod 1000)
+  'aVersion[2] = CStr(iVersion Mod 1000)
   
-  sVersion = aVersion.Join(".")
-  While sVersion Ends ".0"
-    sVersion = Left(sVersion, -2)
-  Wend
-  
-  Return sVersion
-  
+  Return aVersion.Join(".")
+
 End
 
 Private Sub GetDependencies(aDep As Integer[], sVendor As String, iId As Integer) 

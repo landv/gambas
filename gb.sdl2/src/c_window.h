@@ -34,6 +34,7 @@ typedef
 		LIST list;
 		SDL_Window *window;
 		SDL_Renderer *renderer;
+		SDL_GLContext context;
 		int id;
 		int x;
 		int y;
@@ -51,6 +52,7 @@ typedef
 		unsigned opened : 1;
 		unsigned fullscreen : 1;
 		unsigned clear : 1;
+		unsigned resizable : 1;
 	}
 	CWINDOW;
 

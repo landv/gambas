@@ -116,8 +116,6 @@ void DRAW_end(void)
 	if (!THIS)
 		return;
 
-	SDL_RenderPresent(RENDERER);
-	
 	GB.Unref(POINTER(&THIS->device));
 	THIS->device = NULL;
 	GB.Unref(POINTER(&THIS->font));

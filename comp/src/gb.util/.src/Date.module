@@ -21,6 +21,8 @@ Public Sub EasterDay(Year As Integer) As Date
 
   Dim A, B, C, D, E, F, G As Integer
   
+  If Year < 1583 Then Error.Raise("Year must be greater or equal than 1583")
+  
   A = Year Mod 19 + 1
   B = Year Div 100 + 1
   C = (3 * B) Div 4 - 12

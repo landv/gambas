@@ -18,9 +18,8 @@ Private fTime As Float
 Public Sub Main()
 
   With screen
-    .Resizable = True
-    .Width = 480
-    .Height = 480
+    '.Resizable = True
+    .Resize(480, 480)
     .Show()
   End With
 
@@ -66,7 +65,7 @@ Public Sub Screen_Open()
 
 End
 
-Public Sub Screen_resize()
+Public Sub Screen_Resize()
 
   Gl.Viewport(0, 0, Screen.Width, Screen.Height)
   Gl.MatrixMode(Gl.PROJECTION)
@@ -82,7 +81,7 @@ Public Sub Screen_Draw()
 
   Dim calc As Float
 
-  angle += 0.1
+  angle += 0.05
 
   Gl.Clear(Gl.COLOR_BUFFER_BIT Or Gl.DEPTH_BUFFER_BIT)
 
@@ -134,6 +133,8 @@ End
 
 Public Sub Screen_MouseMove()
 
+  If Mouse.Button = 0 Then Return
+  
   Gl.Rotatef(Mouse.StartY - Mouse.Y, 0, 0, 1)
   Gl.Rotatef(Mouse.StartX - Mouse.X, 1, 0, 0)
 
