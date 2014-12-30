@@ -43,6 +43,63 @@ GB_CLASS CLASS_Window;
 GB_CLASS CLASS_Image;
 GB_CLASS CLASS_Font;
 
+//-------------------------------------------------------------------------
+
+static void init_sdl()
+{
+	uint init = SDL_WasInit(SDL_INIT_EVERYTHING);
+	const char *error;
+
+	// if audio is defined, sdl was init by gb.sdl2.audio component !
+	if (init & SDL_INIT_AUDIO)
+	{
+		if (SDL_InitSubSystem(SDL_INIT_VIDEO)) // | SDL_INIT_JOYSTICK))
+		{
+			error = SDL_GetError();
+			goto __ERROR;
+		}
+	}
+	else
+	{
+ 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER)) // | SDL_INIT_JOYSTICK))
+		{
+			error = SDL_GetError();
+			goto __ERROR;
+		}
+	}
+
+	if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) != (IMG_INIT_JPG | IMG_INIT_PNG))
+	{
+		error = IMG_GetError();
+		goto __ERROR;
+	}
+
+	return;
+
+__ERROR:
+
+	fprintf(stderr, "gb.sdl2: unable to initialize SDL2: %s\n", error);
+	abort();
+}
+
+static void exit_sdl()
+{
+	uint init;
+
+	if (TTF_WasInit())
+		TTF_Quit();
+
+	IMG_Quit();
+
+	init = SDL_WasInit(SDL_INIT_EVERYTHING);
+
+	// if audio is defined, gb.sdl2.audio component still not closed !
+	if (init & SDL_INIT_AUDIO)
+		SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+	else
+		SDL_Quit();
+}
+
 static void event_loop()
 {
 	SDL_Event event;
@@ -69,6 +126,8 @@ static void event_loop()
 
 static void my_main(int *argc, char **argv)
 {
+	init_sdl();
+
 	CLASS_Window = GB.FindClass("Window");
 	CLASS_Image = GB.FindClass("Image");
 	CLASS_Font = GB.FindClass("Font");
@@ -89,6 +148,8 @@ static void my_wait(int duration)
 {
 	event_loop();
 }
+
+//-------------------------------------------------------------------------
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
@@ -113,27 +174,12 @@ int EXPORT GB_INIT(void)
 	GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
 	GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
 
-	/*CLASS_Window = GB.FindClass("Window");
-	CLASS_Image = GB.FindClass("Image");
-	CLASS_Font = GB.FindClass("Font");*/
-	
-	if (SDL_Init(SDL_INIT_EVERYTHING))
-	{
-		fprintf(stderr, "gb.sdl2: error: unable to initialize the library: %s\n", SDL_GetError());
-		abort();
-	}
-	
-	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
-
 	return -1;
 }
 
 void EXPORT GB_EXIT()
 {
-	if (TTF_WasInit())
-		TTF_Quit();
-	IMG_Quit();
-	SDL_Quit();
+	exit_sdl();
 }
 
 void EXPORT GB_SIGNAL(int signal, void *param)

@@ -1,6 +1,8 @@
 COMPONENT = gb.sdl2
 include $(top_srcdir)/component.am
 
+SUBDIRS = . @SDL2AUDIO_DIR@
+
 gblib_LTLIBRARIES = gb.sdl2.la
 
 gb_sdl2_la_LIBADD = @SDL2_LIB@ libfont.la
