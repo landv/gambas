@@ -64,11 +64,20 @@ Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword 
 
   $hSoft = CSoftware.Get($sFarm, $iId)
   Object.Attach($hSoft, Me, "Software")
-  If $hSoft.State <> CSoftware.STATE_READY Then 
-    Reload
-  Endif
   
 End
+
+Public Sub Load()
+  
+  If $hSoft.State <> CSoftware.STATE_READY Then 
+    Reload
+  Else
+    Raise Ready
+  Endif
+  
+  
+End
+
 
 Public Sub Software_Change()
   

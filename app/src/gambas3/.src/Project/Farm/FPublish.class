@@ -8,6 +8,33 @@ Public Sub Run() As Boolean
 
 End
 
+Private Sub FillGambasVersion()
+
+  Dim aVersion As String[]
+  Dim iMajor As Integer
+  Dim iMajorMax As Integer
+  Dim iMinorMax As Integer
+  Dim iMinor As Integer
+  
+  aVersion = Split(System.FullVersion, ".")
+  
+  iMajorMax = CInt(aVersion[0])
+  iMinorMax = CInt(aVersion[1])
+  If CInt(aVersion[2]) >= 90 Then Inc iMinorMax
+  
+  iMajor = 3
+  iMinor = 3
+  
+  Do
+    
+    If iMajor > iMajorMax Or If iMinor > iMinorMax Then Break
+    cmbGambasVersion.Add(CStr(iMajor) & "." & CStr(iMinor))
+    Inc iMinor
+    
+  Loop
+
+End
+
 Public Sub Form_Open()
 
   Dim aTag As String[]
@@ -27,6 +54,8 @@ Public Sub Form_Open()
   
   lblProject.Text = Project.Name & " " & Project.FormatVersion()
   txtVendor.Text = Project.Vendor
+  
+  FillGambasVersion
   cmbGambasVersion.Text = Project.PublishGambasVersion
   txtURL.Text = Project.PublishWebSite
   txtDesc.Text = Project.Description

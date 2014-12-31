@@ -131,7 +131,6 @@ Public Sub Request_Finished()
   Dim hSoftwareBox As SoftwareBox
   Dim aId As String[]
   Dim sText As String
-  Dim hSoft As CSoftware
   
   spnFarm.Hide
   
@@ -148,13 +147,9 @@ Public Sub Request_Finished()
   aId = Split(hReq.Result["Result"])
   For Each sId In aId
     
-    If cmbSort.Index = SORT_INSTALLED Then
-      hSoft = CSoftware.Get(hReq.Farm, CInt(sId))
-      If hSoft.IsFinished() And If Not hSoft.IsInstalled() Then Continue
-    Endif
-    
     hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
     hSoftwareBox.ResizeScaled(48, 18)
+    hSoftwareBox.Load
     
   Next
   
@@ -170,13 +165,18 @@ End
 Public Sub SoftwareBox_Ready()
   
   Dim hSoftwareBox As SoftwareBox = Last
+  Dim hSoft As CSoftware
   
-  If cmbSort.Index = SORT_INSTALLED Then
-    If Not hSoftwareBox.Software.IsInstalled() Then
-      hSoftwareBox.Delete
-    Endif
-  Endif
+  hSoft = hSoftwareBox.Software
   
+  If cmbSort.Index = SORT_INSTALLED And If Not hSoft.IsInstalled() Then Goto DELETE
+  If hSoft.IsInstalled() And If Comp(hSoft.Version, hSoft.GetInstallVersion(), gb.Natural) < 0 Then Goto DELETE
+  Return
+  
+DELETE:
+
+  hSoftwareBox.Delete
+    
 End
 
 
@@ -493,10 +493,10 @@ Public Sub btnInstall_Click()
   
   If $hSoft.IsInstalled() Then
     If $hSoft.CanUpgrade() Then
-      If Message.Question(Subst(("Do you really want to upgrade <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
+      If Message.Question(Subst(("Do you really want to upgrade to <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
         sErr = $hSoft.Install() 
         If sErr Then
-          Message.Error(Subst(("Unable to upgrade <b>&1</b>:"), sName) & "\n\n" & sErr)
+          Message.Error(Subst(("Unable to upgrade to <b>&1</b>:"), sName) & "\n\n" & sErr)
         Else
           Message(Subst("<b>&1</b> has been successfully upgraded.", sName))
           Goto REFRESH

@@ -3,6 +3,8 @@
 Event Change
 Event Screenshot
 
+Static Public InstallAge As Integer = 1
+
 Public Enum STATE_WAIT = 0, STATE_INFO = 1, STATE_ICON = 2, STATE_READY = 3, STATE_ERROR = 4
 Public Const ICON_SIZE As Integer = 32
 
@@ -13,7 +15,6 @@ Public Id As Integer
 Public Name As String
 Public Version As String
 Public Vendor As String
-Public InstalledVersion As String
 Public UploadDate As Date
 Public Description As String
 Public URL As String
@@ -39,6 +40,9 @@ Private $hRequest As FarmRequest
 Private $hRequestIcon As FarmRequest
 Private $hRequestScreenshot As FarmRequest
 Private $bGotScreenshot As Boolean
+
+Private $sInstallVersion As String
+Private $iInstallVersionAge As Integer
 
 Static Public Sub ClearCache(Optional sFarm As String)
   
@@ -115,8 +119,6 @@ Public Sub Request_Finished()
   Version = cResult["Version"] & "." & cResult["Release"]
   Vendor = UnQuote$(cResult["Vendor"])
   
-  GetInstalledVersion()
-  
   UploadDate = FarmRequest.GetDate(cResult["UploadDate"])
   Description = UnQuote(cResult["Description"])
   URL = UnQuote$(cResult["URL"])
@@ -169,23 +171,27 @@ Public Sub GetInstalledDir() As String
 End
 
 
-Private Sub GetInstalledVersion()
+Public Sub GetInstallVersion() As String
 
   Dim sPath As String
   Dim sLine As String
 
+  If Not IsFinished() Then Return
+  If $iInstallVersionAge >= InstallAge Then Return $sInstallVersion
+
+  $sInstallVersion = ""
   sPath = GetInstalledDir() &/ ".project"
-  If Not Exist(sPath) Then 
-    InstalledVersion = ""
-    Return
+  If Exist(sPath) Then 
+    For Each sLine In Split(File.Load(sPath), "\n")
+      If sLine Begins "Version=" Then
+        $sInstallVersion = Trim(Mid$(sLine, 9))
+        Break
+      Endif
+    Next
   Endif
   
-  For Each sLine In Split(File.Load(sPath), "\n")
-    If sLine Begins "Version=" Then
-      InstalledVersion = Trim(Mid$(sLine, 9))
-      Break
-    Endif
-  Next
+  $iInstallVersionAge = InstallAge
+  Return $sInstallVersion
 
 End
 
@@ -234,14 +240,17 @@ End
 
 Public Sub IsInstalled() As Boolean
   
-  Return InstalledVersion
+  Return GetInstallVersion()
   
 End
 
 Public Sub CanUpgrade() As Boolean
+
+  Dim sVersion As String
   
-  If Not InstalledVersion Then Return
-  Return Comp(Version, InstalledVersion, gb.Natural) > 0
+  sVersion = GetInstallVersion()
+  If Not sVersion Then Return
+  Return Comp(Version, sVersion, gb.Natural) > 0
   
 End
 
@@ -394,6 +403,7 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
     
   Endif
 
+  Inc InstallAge
   Start
   Return
   
@@ -427,7 +437,7 @@ End
 
 Public Sub Uninstall() As String
 
-  If Not InstalledVersion Then Return
+  If Not Me.IsInstalled() Then Return
   
   Inc Application.Busy
   Exec ["rm", "-rf", GetInstalledDir()] Wait
@@ -435,6 +445,7 @@ Public Sub Uninstall() As String
   Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & Name & ".desktop"
   Dec Application.Busy
   
+  Inc InstallAge
   Start
   
 Catch
@@ -517,4 +528,3 @@ Catch
   Return Error.Text
   
 End
-
