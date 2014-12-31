@@ -211,7 +211,7 @@ GB_DESC MusicDesc[] =
 	GB_STATIC_METHOD("Pause", NULL, Music_Pause, NULL),
 	GB_STATIC_METHOD("Stop", NULL, Music_Stop, "[(FadeOut)f]"),
 
-	GB_STATIC_PROPERTY("Volume", "f", Music_Volume),
+	GB_STATIC_PROPERTY("Volume", "i", Music_Volume),
 	GB_STATIC_PROPERTY("Pos", "f", Music_Pos),
 
 	GB_STATIC_PROPERTY_READ("State", "i", Music_State),
