@@ -144,13 +144,6 @@ Public Sub Save()
   
   sTemp = $sPath & "#"
 
-  ' For iInd = 1 To 10
-  '   Try hLock = Lock $sPath & ".lock"
-  '   If Error And If iInd = 10 Then Error.Propagate
-  '   If Not Error Then Break
-  '   Sleep 0.2
-  ' Next
-
   If Not $bModifyAll Then
 
     cSave = $cSlot
@@ -160,16 +153,12 @@ Public Sub Save()
       sKey = cModify.Key
       sSlot = GetSlot(sKey)
       sKey = File.Name(sKey)
-      If cSave.Exist(sSlot) Then Me[sSlot &/ sKey] = cSave[sSlot][sKey]
+      If cSave.Exist(sSlot) Then 
+        Me[sSlot &/ sKey] = cSave[sSlot][sKey]
+      Else
+        Me[sSlot &/ sKey] = Null
+      Endif
     Next
-    ' For Each cSlot In cSave
-    '   For Each vVal In cSlot
-    '     sKey = cSave.Key &/ cSlot.Key
-    '     If cModify.Exist(cSave.Key) Or If cModify.Exist(sKey) Then 
-    '       Me[sKey] = vVal
-    '     Endif
-    '   Next
-    ' Next
     
   Endif
 
@@ -302,6 +291,8 @@ End
 Public Sub Clear(Optional ParentKey As String)
 
   Dim sSlot As String
+  Dim hSlot As Collection
+  Dim vVal As Variant
 
   If Not ParentKey Then
     If $cSlot.Count Then
@@ -311,9 +302,12 @@ Public Sub Clear(Optional ParentKey As String)
     Endif
   Else
     sSlot = GetSlot(ParentKey &/ "g")
-    If $cSlot.Exist(sSlot) Then 
+    hSlot = $cSlot[sSlot]
+    If hSlot Then 
+      For Each vVal In hSlot
+        $cModify[sSlot &/ hSlot.Key] = True
+      Next
       $cSlot.Remove(sSlot)
-      $cModify[sSlot] = True
       $bModify = True
     Endif
   Endif
