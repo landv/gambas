@@ -501,6 +501,8 @@ GB_DESC FontDesc[] =
 {
 	GB_DECLARE("Font", sizeof(CFONT)), GB_NOT_CREATABLE(),
 
+	GB_CONSTANT("DefaultHeight", "i", DEFAULT_FONT_HEIGHT),
+
 	GB_STATIC_METHOD("Load", NULL, Font_Load, "(Path)s[(Name)s]"),
 	GB_STATIC_METHOD("_get", "Font", Font_get, "(Font)s"),
 	GB_STATIC_METHOD("_exit", NULL, Font_exit, NULL),

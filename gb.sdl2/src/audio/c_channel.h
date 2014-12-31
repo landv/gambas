@@ -48,6 +48,8 @@ extern GB_DESC ChannelsDesc[];
 
 bool CHANNEL_init(void);
 void CHANNEL_exit(void);
+int CHANNEL_play_sound(int channel, CSOUND *sound, int loops, int fadein);
+void CHANNEL_return(int channel, CSOUND *sound);
 
 #endif /* __C_CHANNEL_H */
 

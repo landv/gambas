@@ -23,6 +23,7 @@
 
 #define __C_SOUND_C
 
+#include "c_channel.h"
 #include "c_sound.h"
 
 #define THIS ((CSOUND *)_object)
@@ -106,18 +107,16 @@ BEGIN_PROPERTY(Sound_Volume)
 
 END_PROPERTY
 
-#if 0
 BEGIN_METHOD(Sound_Play, GB_INTEGER loops; GB_FLOAT fadein)
 
 	int loops = VARGOPT(loops, 0);
 	int channel;
 
 	GB.Ref(THIS);
-	channel = play_channel(-1, THIS, loops, MISSING(fadein) ? 0 : (int)(VARG(fadein) * 1000));
-	return_channel(channel, THIS);
+	channel = CHANNEL_play_sound(-1, THIS, loops, MISSING(fadein) ? 0 : (int)(VARG(fadein) * 1000));
+	CHANNEL_return(channel, THIS);
 
 END_METHOD
-#endif
 
 //-------------------------------------------------------------------------
 
@@ -136,7 +135,7 @@ GB_DESC SoundDesc[] =
 
 	GB_PROPERTY("Volume", "i", Sound_Volume),
 
-	//GB_METHOD("Play", "Channel", CSOUND_play, "[(Loops)i(FadeIn)f]"),
+	GB_METHOD("Play", "Channel", Sound_Play, "[(Loops)i(FadeIn)f]"),
 
 	GB_END_DECLARE
 };

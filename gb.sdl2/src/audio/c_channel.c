@@ -82,7 +82,7 @@ static void channel_finished_cb(int channel)
 	ch->free = (write(_pipe[1], &buf, 1) == 1);
 }
 
-static void return_channel(int channel, CSOUND *sound)
+void CHANNEL_return(int channel, CSOUND *sound)
 {
 	CCHANNEL *ch = NULL;
 
@@ -176,7 +176,7 @@ static void update_channel_effect(CCHANNEL *_object)
 
 BEGIN_METHOD(Channels_get, GB_INTEGER index)
 
-	return_channel(VARG(index), NULL);
+	CHANNEL_return(VARG(index), NULL);
 
 END_METHOD
 
