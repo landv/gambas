@@ -1,20 +1,20 @@
 ' Gambas class file
 
-' (C) 2013, 2014 Tobias Boege <tobias@gambas-buch.de>
+' (C) 2013, 2014, almost-2015 Tobias Boege <tobias@gambas-buch.de>
 
 '' Get the edited patch back
 Property Read {Patch} As Patch
 
 Private $hPatch As New Patch
 Private $hObs As Observer
-  ' Whether we behave like a window or just an embedded control (see FMakePatch, Step #4)
+' Whether we behave like a window or just an embedded control (see FMakePatch, Step #4)
 Private $bWindowed As Boolean
 
-Public Sub _new(Optional Windowed As Boolean = True)
+Public Sub _new()
 
-  $bWindowed = Windowed
-  Panel3.Visible = Windowed
-  HBox2.Visible = Windowed
+  $bWindowed = Not Me.Parent
+  Panel3.Visible = $bWindowed
+  HBox2.Visible = $bWindowed
 
 End
 
@@ -29,7 +29,7 @@ Public Sub Form_Open()
   gvwHunks.Columns[2].Expand = False
   gvwHunks.Columns[3].Expand = False
 
-  $hObs = New Observer(gvwHunks.Proxy) As "Observer"
+  $hObs = New Observer(gvwHunks.Proxy, True) As "Observer"
 
   edtPatch.ReadConfig
   edtPatch.Flags[Editor.ShowLineNumbers] = True
@@ -40,6 +40,7 @@ Private Sub Check(iRow As Integer, bActive As Boolean)
 
   $hPatch[iRow].Active = bActive
   gvwHunks[iRow, 0].Picture = If(bActive, Picture["img/16/checked.png"], Picture["img/16/unchecked.png"])
+  edtPatch.Highlight = IIf($hPatch[gvwHunks.Row].Active, Highlight.Diff, Highlight.Custom)
 
 End
 
@@ -52,7 +53,7 @@ Public Sub Observer_MouseDown()
 
     If .ColumnAt(Mouse.X) = 0 Then
       iRow = .RowAt(Mouse.Y)
-      If iRow >= 0 And .Row >= 0 Then
+      If iRow >= 0 Then
         bSelect = Not $hPatch[.Row].Active
         For Each iRow In .Rows.Selection
           Check(iRow, bSelect)
@@ -84,14 +85,13 @@ Public Sub gvwHunks_Select()
 
 End
 
-Public Sub gvwHunks_Activate()
-
-  Dim iRow As Integer = gvwHunks.Row
-
-  If iRow >= 0 Then Check(iRow, Not $hPatch[iRow].Active)
-
-End
-
+' Public Sub gvwHunks_Activate()
+' 
+'   Dim iRow As Integer = gvwHunks.Row
+' 
+'   If iRow >= 0 Then Check(iRow, Not $hPatch[iRow].Active)
+' 
+' End
 
 Public Sub edtPatch_Highlight()
 
@@ -103,17 +103,16 @@ Private Sub RefreshHunks()
 
   Dim iInd As Integer
   Dim sToFile As String
-  'Dim sLineInfo As String
-  'Dim iAltColor As Integer
+  ' Dim sLineInfo As String
+  ' Dim iAltColor, iJ As Integer
   Dim aScan As String[]
 
-  'iAltColor = Color.Merge(Color.TextBackground, Color.LightBackground)
+  ' iAltColor = Color.Merge(Color.TextBackground, Color.LightBackground)
 
   gvwHunks.Rows.Height = Max(gvwHunks.Font.Height, 20)
-
-  For iInd = gvwHunks.Rows.Count To $hPatch.Count - 1
+  gvwHunks.Rows.Count = $hPatch.Count
+  For iInd = 0 To $hPatch.Count - 1
     With $hPatch[iInd]
-      Inc gvwHunks.Rows.Count
       gvwHunks[iInd, 0].Picture = Picture["img/16/" & IIf(.Active, "checked.png", "unchecked.png")]
       gvwHunks[iInd, 0].Padding = 2
       If .ToFile Then
@@ -193,6 +192,13 @@ Public Sub txtPath_Click()
   Inc Application.Busy
     Parse(File.Load(Dialog.Path))
   Dec Application.Busy
+
+End
+
+Public Sub Clear()
+
+  $hPatch = New Patch
+  RefreshHunks()
 
 End
 

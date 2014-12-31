@@ -11,13 +11,8 @@ Public Sub wizMakePatch_BeforeChange()
 
   Select Case wizMakePatch.Index
     Case 0
-      If radArchive.Value Then
-        wizMakePatch[1].Enabled = True
-        wizMakePatch[2].Enabled = False
-      Else
-        wizMakePatch[1].Enabled = False
-        wizMakePatch[2].Enabled = True
-      Endif
+      wizMakePatch[1].Enabled = radArchive.Value
+      wizMakePatch[2].Enabled = Not radArchive.Value
 
     Case 1
       If Not Exist(fchOld.SelectedPath) Or If IsDir(fchOld.SelectedPath) Then
@@ -116,7 +111,7 @@ Public Sub Form_Open()
   fchOld.SelectedPath = Project.Config["/FMakePatch/LastArchive", User.Home]
   pchOld.Path = Project.Config["/FMakePatch/LastProject", User.Home]
 
-  $hViewer = New FPatch(panViewer, False)
+  $hViewer = New FPatch(panViewer)
 
 End
 
@@ -132,6 +127,7 @@ Public Sub wizMakePatch_Change()
   Dim sName As String
 
   If wizMakePatch.Index = 3 Then
+    $hViewer.Clear()
     Try $hViewer.Parse(GetDiff())
     If Error Then
       Message.Error(("Unable to generate the patch.") & "\n\n" & Error.Text)
