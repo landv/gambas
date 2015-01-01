@@ -407,12 +407,6 @@
       Text = Shortcut(("Send project by mail"), "m") & "..."
       Picture = Picture["icon:/small/mail"]
     }
-    { mnuScreenshot Menu
-      Action = "screenshot"
-      Text = ("Take screenshot") & "..."
-      Picture = Picture["icon:/small/camera"]
-      Toggle = True
-    }
     { mnuUpdateAllForms Menu
       Action = "update-all-forms"
       Text = ("Update all forms")
@@ -1082,14 +1076,6 @@
       Action = "farm"
       Picture = Picture["icon:/small/book"]
     }
-    { ToolButton18 ToolButton
-      MoveScaled(6,4,4,4)
-      Visible = False
-      ToolTip = ("Take screenshot")
-      Action = "screenshot"
-      Picture = Picture["icon:/small/camera"]
-      Toggle = True
-    }
     { btnGUI MenuButton
       MoveScaled(13,4,11,4)
       Visible = False
@@ -1587,11 +1573,6 @@
     Shortcut = "Ctrl+Shift+Alt+S"
     Picture = "icon:/small/save-as"
   }
-  { Action screenshot
-    Text = "Take screenshot"
-    Shortcut = ""
-    Picture = "icon:/small/camera"
-  }
   { Action send-mail
     Text = "Send project by mail"
     Shortcut = ""
@@ -1660,7 +1641,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,screenshot,gui"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,gui"
     Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
   }
 }

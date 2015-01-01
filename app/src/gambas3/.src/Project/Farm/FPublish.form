@@ -10,7 +10,7 @@
     MoveScaled(1,1,72,61)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Count = 4
+    Count = 5
     TextFont = Font["Bold,+3"]
     ShowIndex = True
     Border = False
@@ -47,19 +47,6 @@
       { txtURL TextBox
         MoveScaled(31,0,26,4)
         Expand = True
-      }
-    }
-    { HBox5 HBox
-      MoveScaled(1,16,58,4)
-      Spacing = True
-      { Label3 Label
-        MoveScaled(0,0,26,4)
-        Text = ("Screenshot")
-      }
-      { cmbScreenshot ComboBox
-        MoveScaled(32,0,22,4)
-        Expand = True
-        ReadOnly = True
       }
     }
     { HBox10 HBox
@@ -119,6 +106,45 @@
       }
     }
     Index = 2
+    Text = ("Screenshot")
+    { radKeepScreenshot RadioButton radScreenshot
+      Name = "radKeepScreenshot"
+      MoveScaled(0,0,33,3)
+      Text = ("Keep screenshot")
+      Value = True
+    }
+    { radDeleteScreenshot RadioButton radScreenshot
+      Name = "radDeleteScreenshot"
+      MoveScaled(0,4,33,3)
+      Text = ("Delete screenshot")
+    }
+    { radPasteScreenshot RadioButton radScreenshot
+      Name = "radPasteScreenshot"
+      MoveScaled(0,8,33,3)
+      Text = ("Take screenshot from clipboard")
+    }
+    { radLoadScreenshot RadioButton radScreenshot
+      Name = "radLoadScreenshot"
+      MoveScaled(0,12,33,3)
+      Text = ("Take screenshot from file")
+    }
+    { Panel1 HBox
+      MoveScaled(0,16,64,4)
+      { txtScreenshot ButtonBox
+        MoveScaled(15,0,48,4)
+        Enabled = False
+        Expand = True
+        Picture = Picture["icon:/small/image"]
+        ReadOnly = True
+      }
+    }
+    { imvScreenshot ImageView
+      MoveScaled(2,23,64,26)
+      Visible = False
+      Expand = True
+      Border = False
+    }
+    Index = 3
     Text = ("Dependencies")
     { HBox7 HBox
       MoveScaled(1,1,58,4)
@@ -131,7 +157,6 @@
         MoveScaled(31,0,11,4)
         #Translate = False
         ReadOnly = True
-        List = Null
       }
       { Panel2 Panel
         MoveScaled(44,1,5,2)
@@ -173,7 +198,7 @@
         }
       }
     }
-    Index = 3
+    Index = 4
     Text = ("Publish")
     { HBox1 HBox
       MoveScaled(1,2,56,4)

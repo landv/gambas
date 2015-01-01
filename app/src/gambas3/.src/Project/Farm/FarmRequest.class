@@ -212,8 +212,6 @@ End
 
 Private Sub AddLanguageTag(aTag As String[], sLang As String)
 
-  Dim iPos As Integer
-  
   sLang = Language.ToEnglishName(sLang)
   If Not sLang Then Return
   If Not aTag.Exist(sLang) Then aTag.Add(sLang)
@@ -226,7 +224,6 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   Dim sIcon As String
   Dim sChecksum As String
   Dim sComp As String
-  Dim sTemp As String
   Dim sLang As String
   Dim sSave As String
   
@@ -283,13 +280,11 @@ Public Sub PublishSoftware(sVendor As String, sScreenshot As String, sGambasVers
   $hForm.Add("url", sURL)
   
   If sScreenshot Then 
-    If File.Ext(sScreenshot) = "png" Then
-      sTemp = File.SetExt(Temp$(), "jpg")
-      Try Image.Load(sScreenshot).Save(sTemp, 75)
-      If Error Then Error "gambas3: warning: unable to convert screenshot to JPEG: "; Error.Text
-      If Not Error Then sScreenshot = sTemp
+    If sScreenshot = "*" Then
+      $hForm.Add("screenshot", sScreenshot)
+    Else
+      $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
     Endif
-    $hForm.AddFile("screenshot", sScreenshot, "screenshot." & File.Ext(sScreenshot))
   Endif
 
   FarmRequestManager.Add($hForm)
