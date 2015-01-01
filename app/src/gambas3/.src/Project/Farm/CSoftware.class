@@ -369,6 +369,7 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
     
     ' Install executable
     
+    Try Kill sExecDir &/ sName & ".gambas"
     Copy sDir &/ sName & ".gambas" To sExecDir &/ sName & ".gambas"
     Chmod sExecDir &/ sName & ".gambas" To "..x..x..x"
     Try Kill sDir &/ sName & ".gambas"

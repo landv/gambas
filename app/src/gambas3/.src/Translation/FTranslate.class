@@ -715,7 +715,7 @@ Private Sub FindIndex(sMsgId As String) As Integer
   
 End
 
-Private Sub ImportMessage(sPath As String) As Integer
+Private Sub ImportMessage(sPath As String, bReplace As Boolean) As Integer
 
   Dim hFic As File
   Dim sLine As String
@@ -806,18 +806,21 @@ Private Sub ImportMessage(sPath As String) As Integer
         iIndex = FindIndex(sMsgId)
       Endif
 
-      If iIndex > 0 And If cvwTranslate[iIndex][1] = "" Then
+      If iIndex > 0 Then
+        If bReplace Or If cvwTranslate[iIndex][1] = "" Then
 
-        If sMsgStr = "-\\n" Then sMsgStr = "-"
-
-        If bFuzzy Then
-          bFuzzy = False
-        Else
-          cvwTranslate[iIndex][1] = sMsgStr
-          If sMsgStr Then
-            Inc $nTrans
-            Inc nTrans
+          If sMsgStr = "-\\n" Then sMsgStr = "-"
+  
+          If bFuzzy Then
+            bFuzzy = False
+          Else
+            cvwTranslate[iIndex][1] = sMsgStr
+            If sMsgStr Then
+              Inc $nTrans
+              Inc nTrans
+            Endif
           Endif
+          
         Endif
 
       Endif
@@ -874,10 +877,10 @@ Public Sub btnImport_Click()
   'MergeMessage(sPath, "-o " & Quote.Shell(sPath & ".new") & " " & Quote.Shell(Dialog.Path) & " " & Quote.Shell(sPath))
   If chkBrowse.Value Then
     For Each sTrans In RDir(sTransDir, "*.po")
-      nTrans += ImportMessage(sTransDir &/ sTrans)
+      nTrans += ImportMessage(sTransDir &/ sTrans, chkReplace.Value)
     Next
   Else
-    nTrans = ImportMessage(sTransDir &/ sTrans)
+    nTrans = ImportMessage(sTransDir &/ sTrans, chkReplace.Value)
   Endif
 
   DisplayTrans
@@ -1126,7 +1129,7 @@ End
 Public Sub Form_Close()
 
   Inc Application.Busy
-  ShiftToSort
+  If cmbFileChoice.Index <> 0 Then ShiftToSort
   SaveTranslate
   Settings.Write(Me)
   Dec Application.Busy

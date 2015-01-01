@@ -237,20 +237,38 @@
       MoveScaled(19,51,16,0)
     }
     { HBox4 HBox
-      MoveScaled(2,54,100,6)
+      MoveScaled(1,55,100,10)
       Spacing = True
       Margin = True
-      { chkBrowse CheckBox
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Import all translations  recursively")
-      }
-      { btnImport Button
-        MoveScaled(79,0,18,4)
-        ToolTip = ("Import a translation file")
+      { Panel4 VBox
+        MoveScaled(1,1,53,8)
         AutoResize = True
-        Text = Shortcut(("Import"), "I")
-        Picture = Picture["icon:/small/open"]
+        { chkBrowse CheckBox
+          MoveScaled(0,0,33,4)
+          AutoResize = True
+          Text = ("Import all translations  recursively")
+        }
+        { chkReplace CheckBox
+          MoveScaled(0,4,33,4)
+          AutoResize = True
+          Text = ("Replace existing translations")
+        }
+      }
+      { Panel5 Panel
+        MoveScaled(60,3,1,4)
+        Expand = True
+      }
+      { Panel3 VBox
+        MoveScaled(68,2,28,6)
+        AutoResize = True
+        Invert = True
+        { btnImport Button
+          MoveScaled(0,0,18,4)
+          ToolTip = ("Import a translation file")
+          AutoResize = True
+          Text = Shortcut(("Import"), "I")
+          Picture = Picture["icon:/small/open"]
+        }
       }
     }
     Index = 0

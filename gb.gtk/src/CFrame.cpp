@@ -162,6 +162,7 @@ GB_DESC CVBoxDesc[] =
   GB_PROPERTY("Padding", "i", Container_Padding),
   GB_PROPERTY("AutoResize", "b", Container_AutoResize),
   GB_PROPERTY("Indent", "b", Container_Indent),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 
   VBOX_DESCRIPTION,
 
@@ -199,6 +200,7 @@ GB_DESC CVPanelDesc[] =
   GB_PROPERTY("Padding", "i", Container_Padding),
   GB_PROPERTY("AutoResize", "b", Container_AutoResize),
   GB_PROPERTY("Indent", "b", Container_Indent),
+  GB_PROPERTY("Invert", "b", Container_Invert),
 
   VPANEL_DESCRIPTION,
 
