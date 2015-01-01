@@ -32,12 +32,12 @@
 
 #ifndef __CWEBSETTINGS_CPP
 
-extern GB_DESC CWebViewSettingsDesc[];
-extern GB_DESC CWebSettingsFontsDesc[];
-extern GB_DESC CWebSettingsIconDatabaseDesc[];
-extern GB_DESC CWebSettingsCacheDesc[];
-extern GB_DESC CWebSettingsProxyDesc[];
-extern GB_DESC CWebSettingsDesc[];
+extern GB_DESC WebViewSettingsDesc[];
+extern GB_DESC WebSettingsFontsDesc[];
+extern GB_DESC WebSettingsIconDatabaseDesc[];
+extern GB_DESC WebSettingsCacheDesc[];
+extern GB_DESC WebSettingsProxyDesc[];
+extern GB_DESC WebSettingsDesc[];
 
 #else
 

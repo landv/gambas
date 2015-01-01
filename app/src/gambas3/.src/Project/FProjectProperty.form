@@ -1,11 +1,12 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,93,78)
+  MoveScaled(0,2,110,77)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
   Resizable = False
+  Arrangement = Arrange.Vertical
   { mnuInsertEnv Menu
     { Menu1 Menu mnuInsertEnv
       Name = "Menu1"
@@ -72,10 +73,21 @@
       Tag = "LIBOVERLAY_SCROLLBAR=0"
     }
   }
-  { tabProject TabPanel
-    MoveScaled(1,1,91,71)
+  { mnuComponent Menu
+    { mnuShowUsed Menu
+      Text = ("Show only components used in project")
+      Toggle = True
+    }
+    { mnuShowDeprecated Menu
+      Text = ("Show deprecated components")
+      Toggle = True
+    }
+  }
+  { ipnProject IconPanel
+    MoveScaled(0,0,108,70)
+    Expand = True
     Arrangement = Arrange.Vertical
-    Count = 6
+    Count = 7
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -94,7 +106,7 @@
       MoveScaled(53,11,29,0)
     }
     { HPanel1 HPanel
-      MoveScaled(1,11,84,55)
+      MoveScaled(1,11,84,58)
       Expand = True
       AutoResize = True
       Spacing = True
@@ -157,32 +169,29 @@
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,37,16,4)
+        MoveScaled(0,38,16,4)
         Font = Font["Bold"]
         Text = ("Author(s)")
       }
       { txtAuthor TextArea
-        MoveScaled(18,37,57,17)
+        MoveScaled(18,38,57,20)
         Expand = True
         Wrap = True
       }
     }
     Index = 1
     Text = ("Components")
-    { Panel7 HBox
-      MoveScaled(1,1,88,6)
-      Spacing = True
-      Margin = True
+    { panComponent VBox
+      MoveScaled(2,2,82,35)
+      Expand = True
       { panSearchProject Panel
-        MoveScaled(1,1,29,3)
+        MoveScaled(0,0,29,3)
         Background = Color.TextBackground
-        Expand = True
         Arrangement = Arrange.Horizontal
-        Border = Border.Plain
         { picFilter PictureBox
           MoveScaled(0,0,3,3)
           Mouse = Mouse.Pointing
-          Picture = Picture["img/32/filter.png"]
+          Picture = Picture["img/32/filter-menu.png"]
           Stretch = True
           AutoResize = True
         }
@@ -198,59 +207,54 @@
           Picture = Picture["icon:/small/clear"]
         }
       }
-      { chkShowUsed CheckBox
-        MoveScaled(51,0,35,4)
-        AutoResize = True
-        Text = ("Show only components used in project")
+      { Separator4 Separator
+        MoveScaled(32,6,21,0)
       }
+      { gvwComponent GridView
+        MoveScaled(3,9,78,25)
+        Expand = True
+        Border = False
+        Mode = Select.Single
+        Grid = False
+        Padding = 4
+      }
+    }
+    { webAboutComponent HelpView
+      MoveScaled(6,38,46,7)
+      Visible = False
+      Expand = True
     }
     { timFilterComponent #Timer
-      #MoveScaled(34,1)
+      #MoveScaled(76,41)
       Delay = 500
     }
-    { Separator4 Separator
-      MoveScaled(34,8,21,0)
-    }
-    { gvwComponent GridView
-      MoveScaled(5,11,78,25)
-      Expand = True
-      Border = False
-      Mode = Select.Single
-      Grid = False
-      Padding = 4
-    }
     { Separator2 Separator
-      MoveScaled(1,38,24,0)
+      MoveScaled(2,50,24,0)
     }
     { HBox14 HBox
-      MoveScaled(1,39,84,6)
+      MoveScaled(2,61,79,6)
+      Spacing = True
       Margin = True
       { btnHelp Button
-        MoveScaled(0,0,35,4)
-        Text = Shortcut(("About component"), "c") & "..."
-        Picture = Picture["icon:/small/up"]
+        MoveScaled(0,0,23,4)
+        AutoResize = True
+        Text = Shortcut(("About component"), "A") & "..."
+        Picture = Picture["icon:/small/next"]
+      }
+      { btnForward Button
+        MoveScaled(24,0,4,4)
+        Visible = False
+        AutoResize = True
+        Picture = Picture["icon:/small/next"]
       }
       { Panel3 Panel
-        MoveScaled(39,0,7,4)
+        MoveScaled(51,0,7,4)
         Expand = True
       }
       { btnUndo Button
-        MoveScaled(62,0,17,4)
+        MoveScaled(60,0,17,4)
         Text = Shortcut(("Reset"), "R")
         Picture = Picture["icon:/small/undo"]
-      }
-    }
-    { panAboutComponent Panel
-      MoveScaled(1,46,84,13)
-      Visible = False
-      Expand = True
-      Arrangement = Arrange.Vertical
-      { Separator5 Separator
-        MoveScaled(24,1,24,0)
-      }
-      { webAboutComponent HelpView
-        MoveScaled(8,4,46,7)
-        Expand = True
       }
     }
     Index = 2
@@ -282,6 +286,9 @@
       Expand = True
       Border = False
       Mode = Select.Single
+    }
+    { Separator7 Separator
+      MoveScaled(25,51,23,0)
     }
     { HBox18 HBox
       MoveScaled(1,53,84,6)
@@ -317,85 +324,68 @@
     }
     Index = 3
     Text = ("Environment")
-    { VBox1 VBox
-      MoveScaled(1,1,84,29)
+    { tvwEnv TableView
+      MoveScaled(3,6,68,20)
       Expand = True
-      Margin = True
-      { Label17 Label
-        MoveScaled(1,1,24,3)
-        Font = Font["Bold"]
-        Text = ("Arguments")
-      }
-      { tvwArg TableView
-        MoveScaled(1,5,50,16)
-        Expand = True
-        Padding = 4
-        Header = GridView.Vertical
-      }
-      { Panel8 Panel
-        MoveScaled(21,22,5,1)
-      }
-      { HBox2 HBox
-        MoveScaled(2,24,53,4)
-        Spacing = True
-        { btnInsertArg Button
-          MoveScaled(0,0,17,4)
-          Text = Shortcut(("Insert"), "I")
-          Picture = Picture["icon:/small/add"]
-        }
-        { btnRemoveArg Button
-          MoveScaled(18,0,17,4)
-          Text = Shortcut(("Remove"), "R")
-          Picture = Picture["icon:/small/remove"]
-        }
-        { btnMoveUpArg Button
-          MoveScaled(36,0,6,4)
-          Picture = Picture["icon:/small/up"]
-        }
-        { btnMoveDownArg Button
-          MoveScaled(42,0,6,4)
-          Picture = Picture["icon:/small/down"]
-        }
-      }
+      Border = False
+      Padding = 4
+      Header = GridView.Horizontal
     }
-    { Separator1 Separator
-      MoveScaled(6,31,42,0)
+    { Separator8 Separator
+      MoveScaled(30,31,24,0)
     }
-    { Panel5 VBox
-      MoveScaled(1,33,85,26)
-      Expand = True
+    { HBox3 HBox
+      MoveScaled(1,36,40,6)
+      Spacing = True
       Margin = True
-      { Label18 Label
-        MoveScaled(0,0,24,3)
-        Font = Font["Bold"]
-        Text = ("Environment variables")
+      { btnInsertEnv MenuButton
+        MoveScaled(0,0,19,4)
+        Text = ("&Insert")
+        Picture = Picture["icon:/small/add"]
+        Menu = "mnuInsertEnv"
       }
-      { tvwEnv TableView
-        MoveScaled(0,4,68,13)
-        Expand = True
-        Padding = 4
-        Header = GridView.Horizontal
-      }
-      { Panel9 Panel
-        MoveScaled(20,18,7,1)
-      }
-      { HBox3 HBox
-        MoveScaled(0,21,40,4)
-        Spacing = True
-        { btnInsertEnv MenuButton
-          MoveScaled(0,0,19,4)
-          Text = ("&Insert")
-          Picture = Picture["icon:/small/add"]
-          Menu = "mnuInsertEnv"
-        }
-        { btnRemoveEnv Button
-          MoveScaled(20,0,17,4)
-          Text = Shortcut(("Remove"), "R")
-          Picture = Picture["icon:/small/remove"]
-        }
+      { btnRemoveEnv Button
+        MoveScaled(20,0,17,4)
+        Text = Shortcut(("Remove"), "R")
+        Picture = Picture["icon:/small/remove"]
       }
     }
     Index = 4
+    Text = ("Arguments")
+    { tvwArg TableView
+      MoveScaled(6,4,58,19)
+      Expand = True
+      Border = False
+      Padding = 4
+      Header = GridView.Vertical
+    }
+    { Separator9 Separator
+      MoveScaled(26,27,34,0)
+    }
+    { HBox2 HBox
+      MoveScaled(9,45,53,6)
+      Spacing = True
+      Margin = True
+      { btnInsertArg Button
+        MoveScaled(0,0,17,4)
+        Text = Shortcut(("Insert"), "I")
+        Picture = Picture["icon:/small/add"]
+      }
+      { btnRemoveArg Button
+        MoveScaled(18,0,17,4)
+        Text = Shortcut(("Remove"), "R")
+        Picture = Picture["icon:/small/remove"]
+      }
+      { btnMoveUpArg Button
+        MoveScaled(36,0,6,4)
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnMoveDownArg Button
+        MoveScaled(42,0,6,4)
+        Picture = Picture["icon:/small/down"]
+      }
+    }
+    Index = 5
     Text = ("Options")
     { Panel6 VBox
       MoveScaled(0,0,89,66)
@@ -576,7 +566,7 @@
         }
       }
     }
-    Index = 5
+    Index = 6
     Text = ("Statistics")
     { gvwStat GridView
       MoveScaled(10,7,62,25)
@@ -586,14 +576,26 @@
     }
     Index = 0
   }
-  { btnOK Button
-    MoveScaled(59,73,16,4)
-    Text = ("OK")
-    Default = True
+  { Separator1 Separator
+    MoveScaled(54,70,23,0)
   }
-  { btnCancel Button
-    MoveScaled(76,73,16,4)
-    Text = ("Cancel")
-    Cancel = True
+  { Panel10 HBox
+    MoveScaled(29,71,63,6)
+    Spacing = True
+    Margin = True
+    { Panel11 Panel
+      MoveScaled(5,1,8,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(22,1,17,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(40,1,18,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
   }
 }

@@ -665,7 +665,7 @@ Public Sub ScrollArea_Draw()
     
     'Paint.Begin(Draw.Device)
     Paint.ClipRect = hClip
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.LightForeground, 224))
+    Paint.Brush = Paint.Color(Color.SetAlpha(Style.ForegroundOf(Me), 252))
     
     With $hColumns[iSort]
     

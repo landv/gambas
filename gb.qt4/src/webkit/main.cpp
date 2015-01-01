@@ -48,22 +48,23 @@ QT_INTERFACE QT;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
-	CWebDownloadDesc,
-	CWebDownloadsDesc,
-	CWebHitTestDesc,
-	CCookieDesc,
-	CWebSettingsIconDatabaseDesc,
-	CWebSettingsCacheDesc,
-	CWebSettingsFontsDesc,
-	CWebSettingsProxyDesc,
-	CWebSettingsDesc,
+	WebDownloadDesc,
+	WebDownloadsDesc,
+	WebHitTestDesc,
+	CookieDesc,
+	WebSettingsIconDatabaseDesc,
+	WebSettingsCacheDesc,
+	WebSettingsFontsDesc,
+	WebSettingsProxyDesc,
+	WebSettingsDesc,
 	WebElementStyleDesc,
 	WebElementDesc,
-	CWebFrameChildrenDesc,
-	CWebFrameDesc,
-	CWebViewSettingsDesc,
-  CWebViewAuthDesc,
-	CWebViewDesc,
+	WebFrameChildrenDesc,
+	WebFrameDesc,
+	WebViewSettingsDesc,
+  WebViewAuthDesc,
+	WebViewHistoryDesc,
+	WebViewDesc,
   NULL
 };
 

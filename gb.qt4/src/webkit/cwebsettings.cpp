@@ -380,7 +380,7 @@ END_PROPERTY
 
 /***************************************************************************/
 
-GB_DESC CWebViewSettingsDesc[] =
+GB_DESC WebViewSettingsDesc[] =
 {
   GB_DECLARE(".WebView.Settings", 0),
 	
@@ -391,7 +391,7 @@ GB_DESC CWebViewSettingsDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebSettingsFontsDesc[] =
+GB_DESC WebSettingsFontsDesc[] =
 {
 	GB_DECLARE(".WebSettings.Fonts", 0), GB_VIRTUAL_CLASS(),
 
@@ -410,7 +410,7 @@ GB_DESC CWebSettingsFontsDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebSettingsIconDatabaseDesc[] =
+GB_DESC WebSettingsIconDatabaseDesc[] =
 {
   GB_DECLARE(".WebSettings.IconDatabase", 0), GB_VIRTUAL_CLASS(),
 	
@@ -421,7 +421,7 @@ GB_DESC CWebSettingsIconDatabaseDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebSettingsCacheDesc[] =
+GB_DESC WebSettingsCacheDesc[] =
 {
   GB_DECLARE(".WebSettings.Cache", 0), GB_VIRTUAL_CLASS(),
 	
@@ -432,7 +432,7 @@ GB_DESC CWebSettingsCacheDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebSettingsProxyDesc[] =
+GB_DESC WebSettingsProxyDesc[] =
 {
   GB_DECLARE(".WebSettings.Proxy", 0), GB_VIRTUAL_CLASS(),
 	
@@ -445,7 +445,7 @@ GB_DESC CWebSettingsProxyDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebSettingsDesc[] =
+GB_DESC WebSettingsDesc[] =
 {
   GB_DECLARE("WebSettings", 0),
 	

@@ -58,6 +58,9 @@ DECLARE_EVENT(EVENT_NEW_FRAME);
 DECLARE_EVENT(EVENT_AUTH);
 DECLARE_EVENT(EVENT_DOWNLOAD);
 
+#define HISTORY (WIDGET->history())
+
+
 static QNetworkAccessManager *_network_access_manager = 0;
 static CWEBVIEW *_network_access_manager_view = 0;
 static QT_COLOR_FUNC _old_after_set_color;
@@ -187,6 +190,8 @@ static void after_set_color(void *_object)
 		WIDGET->setAttribute(Qt::WA_OpaquePaintEvent, false);
 	}
 }
+
+//-------------------------------------------------------------------------
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
 
@@ -579,11 +584,59 @@ BEGIN_PROPERTY(WebView_Document)
 
 END_PROPERTY
 
-/***************************************************************************/
+//-------------------------------------------------------------------------
 
-GB_DESC CWebViewAuthDesc[] =
+BEGIN_PROPERTY(WebViewHistory_Count)
+
+	GB.ReturnInteger(HISTORY->count());
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewHistory_Max)
+
+	GB.ReturnInteger(HISTORY->count() - 1);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewHistory_Index)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(HISTORY->currentItemIndex());
+	else
+	{
+		int index = VPROP(GB_INTEGER);
+		if (index < 0 || index >= HISTORY->count())
+		{
+			GB.Error(GB_ERR_ARG);
+			return;
+		}
+		HISTORY->goToItem(HISTORY->itemAt(index));
+	}
+
+END_PROPERTY
+
+BEGIN_PROPERTY(WebViewHistory_MaxSize)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(HISTORY->maximumItemCount());
+	else
+		HISTORY->setMaximumItemCount(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(WebViewHistory_Clear)
+
+	int max = HISTORY->maximumItemCount();
+	HISTORY->setMaximumItemCount(0);
+	HISTORY->setMaximumItemCount(max);
+
+END_METHOD
+
+//-------------------------------------------------------------------------
+
+GB_DESC WebViewAuthDesc[] =
 {
-  GB_DECLARE(".WebView.Auth", sizeof(CWEBVIEW)), GB_VIRTUAL_CLASS(),
+  GB_DECLARE_VIRTUAL(".WebView.Auth"),
 	
 	GB_PROPERTY_READ("Url", "s", WebViewAuth_Url),
 	GB_PROPERTY_READ("Realm", "s", WebViewAuth_Realm),
@@ -593,7 +646,20 @@ GB_DESC CWebViewAuthDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebViewDesc[] =
+GB_DESC WebViewHistoryDesc[] =
+{
+	GB_DECLARE_VIRTUAL(".WebView.History"),
+
+	GB_PROPERTY_READ("Count", "i", WebViewHistory_Count),
+	GB_PROPERTY_READ("Max", "i", WebViewHistory_Max),
+	GB_PROPERTY("Index", "i", WebViewHistory_Index),
+	GB_PROPERTY("MaxSize", "i", WebViewHistory_MaxSize),
+	GB_METHOD("Clear", NULL, WebViewHistory_Clear, NULL),
+
+	GB_END_DECLARE
+};
+
+GB_DESC WebViewDesc[] =
 {
   GB_DECLARE("WebView", sizeof(CWEBVIEW)), GB_INHERITS("Control"),
 	
@@ -624,12 +690,13 @@ GB_DESC CWebViewDesc[] =
 	
 	GB_PROPERTY_SELF("Settings", ".WebView.Settings"),
 	GB_PROPERTY_SELF("Auth", ".WebView.Auth"),
+	GB_PROPERTY_SELF("History", ".WebView.History"),
 
 	GB_METHOD("Back", NULL, WebView_Back, NULL),
 	GB_METHOD("Forward", NULL, WebView_Forward, NULL),
 	GB_METHOD("Reload", NULL, WebView_Reload, "[(BypassCache)b]"),
 	GB_METHOD("Stop", NULL, WebView_Stop, NULL),
-	
+
 	GB_PROPERTY("NewView", "WebView", WebView_NewView),
 
 	GB_PROPERTY("Cookies", "Cookie[]", WebView_Cookies),

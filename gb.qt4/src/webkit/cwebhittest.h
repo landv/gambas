@@ -32,8 +32,7 @@
 
 #ifndef __CWEBHITTEST_CPP
 
-extern GB_DESC CWebHitTestDesc[];
-//extern GB_DESC CCookieJarDesc[];
+extern GB_DESC WebHitTestDesc[];
 
 #else
 

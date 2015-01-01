@@ -32,7 +32,7 @@
 
 #ifndef __CCOOKIEJAR_CPP
 
-extern GB_DESC CCookieDesc[];
+extern GB_DESC CookieDesc[];
 //extern GB_DESC CCookieJarDesc[];
 
 #else

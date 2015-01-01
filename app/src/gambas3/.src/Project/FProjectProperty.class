@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Static Private $bShowUsed As Boolean
+Static Private $bShowDeprecated As Boolean
 Static Private $bShowLibraries As Boolean
 
 Private $hCheck As Picture
@@ -103,11 +104,15 @@ Public Sub Form_Open()
   gvwComponent.Columns[3].Width = 24
   gvwComponent.Columns[3].Expand = False
 
-  chkShowUsed.Value = $bShowUsed
+  mnuShowUsed.Value = $bShowUsed
+  mnuShowDeprecated.Value = $bShowDeprecated
   'chkShowBeta.Value = $bShowBeta
   $bCanInitComponents = True
 
-  tabProject.Index = 0
+  ipnProject.Index = 0
+
+  panSearchProject.H = Desktop.Scale * 3.5
+  btnClearFilter.W = panSearchProject.H
 
   RefreshComponents
   RefreshLibraries
@@ -117,7 +122,7 @@ Public Sub Form_Open()
 
   If $bShowLibraries Then 
     $bShowLibraries = False
-    tabProject.Index = LIBRARY_TAB
+    ipnProject.Index = LIBRARY_TAB
   Endif
   
 End
@@ -408,10 +413,12 @@ Private Sub RefreshComponents(Optional bKeep As Boolean)
   For Each sLib In aComp
     hComp = CComponent.All[sLib]
     If hComp.Hidden Then Continue
-    If Not $bShowUsed Or If $cComp[hComp.Key].Value Then
-      If $sFilter And If Not hComp.Match($sFilter) Then Continue
-      $aComp.Add(hComp.Key)
+    If Not $cComp[hComp.Key].Value Then
+      If $bShowUsed Then Continue
+      If Not $bShowDeprecated And If hComp.State = CComponent.DEPRECATED Then Continue
     Endif
+    If $sFilter And If Not hComp.Match($sFilter) Then Continue
+    $aComp.Add(hComp.Key)
   Next
   
   If aNotFound.Count Then
@@ -421,7 +428,7 @@ Private Sub RefreshComponents(Optional bKeep As Boolean)
   gvwComponent.Rows.Count = $aComp.Count
   gvwComponent.Rows.Height = -1
   
-  tabProject_Arrange
+  gvwComponent_Arrange
   
 End
 
@@ -595,7 +602,7 @@ Public Sub gvwComponent_Click()
   Dim hCompItem As ComponentItem
   Dim sDep As String
   
-  If panAboutComponent.Visible Then AboutComponent
+  If webAboutComponent.Visible Then AboutComponent
   
   If gvwComponent.Column <> 0 Then Return
   
@@ -698,9 +705,16 @@ End
 ' END
 
 
-Public Sub chkShowUsed_Click()
+Public Sub mnuShowUsed_Click()
 
-  $bShowUsed = chkShowUsed.Value
+  $bShowUsed = mnuShowUsed.Value
+  RefreshComponents(True)
+
+End
+
+Public Sub mnuShowDeprecated_Click()
+
+  $bShowDeprecated = mnuShowDeprecated.Value
   RefreshComponents(True)
 
 End
@@ -764,35 +778,45 @@ End
 ' 
 ' End
 
-Private Sub AboutComponent()
+Private Sub AboutComponent() As Boolean
   
   Dim hCompItem As ComponentItem
   Dim sKey As String
   
   Try hCompItem = $cComp[$aComp[gvwComponent.Row]]
-  If Not hCompItem Then Return
+  If Not hCompItem Then Return True
   Try sKey = hCompItem.Key
-  If Not sKey Then Return 
+  If Not sKey Then Return True
   'MHelp.GotoComponent(sKey)
   webAboutComponent.Zoom = 0.75
-  MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey)
+  MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey,, "v&nh&l=" & MHelp.GetLanguage())
   
 End
 
 
 Public Sub btnHelp_Click()
 
-  If panAboutComponent.Visible Then
+  If webAboutComponent.Visible Then
     
-    panAboutComponent.Hide
-    btnHelp.Picture = Picture["icon:/small/up"]
+    If webAboutComponent.History.Index Then
+      webAboutComponent.Back
+    Else
+      webAboutComponent.Hide
+      btnForward.Hide
+      panComponent.Show
+      btnHelp.Picture = Picture["icon:/small/next"]
+      btnHelp.Text = Shortcut(("About component"), "A") & "..."
+    Endif
   
   Else
   
-    AboutComponent
-    panAboutComponent.Show
-    Try gvwComponent.Current.EnsureVisible
-    btnHelp.Picture = Picture["icon:/small/down"]
+    If AboutComponent() Then Return
+    webAboutComponent.Show
+    btnForward.Show
+    panComponent.Hide
+    'Try gvwComponent.Current.EnsureVisible
+    btnHelp.Text = ""
+    btnHelp.Picture = Picture["icon:/small/previous"]
     
   Endif
 
@@ -1097,12 +1121,6 @@ Private Sub UpdateIcon()
   
 End
 
-Public Sub lstComponent_Click()
-
-  If panAboutComponent.Visible Then AboutComponent
-
-End
-
 Public Sub btnInsertLib_Click()
 
   Dim hLib As CLibraryInfo
@@ -1171,7 +1189,7 @@ Private Sub RefreshLibraries()
     
   Next
   
-  tabProject_Arrange
+  gvwComponent_Arrange
   
 End
 
@@ -1247,7 +1265,7 @@ Public Sub UncheckComponents(aComp As String[])
   
 End
 
-Public Sub tabProject_Arrange()
+Public Sub gvwComponent_Arrange()
 
   Dim I As Integer
 
@@ -1343,13 +1361,13 @@ Public Sub timFilterComponent_Timer()
 
 End
 
-Public Sub tabProject_Click()
+Public Sub ipnProject_Click()
 
-  If tabProject.Text = ("Components") Then
+  If ipnProject.Text = ("Components") Then
     txtFilterComponent.SetFocus
-  Else If tabProject.Text = ("Options") Then
+  Else If ipnProject.Text = ("Options") Then
     panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
-  Else If tabProject.Text = ("Statistics") Then
+  Else If ipnProject.Text = ("Statistics") Then
     UpdateStat
   Endif
 
@@ -1392,4 +1410,22 @@ Private Sub UpdateStat()
   gvwStat.Columns[0].Width = -1
   gvwStat.Columns[0].Width += 16
   
+End
+
+Public Sub btnForward_Click()
+
+  webAboutComponent.Forward
+
+End
+
+Public Sub webAboutComponent_Click((Frame) As WebFrame)
+
+  btnForward.Enabled = webAboutComponent.History.Index < webAboutComponent.History.Max
+
+End
+
+Public Sub picFilter_MouseDown()
+
+  mnuComponent.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
+
 End

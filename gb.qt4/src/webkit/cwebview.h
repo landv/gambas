@@ -37,9 +37,10 @@
 
 #ifndef __CWEBVIEW_CPP
 
-extern GB_DESC CWebViewAuthDesc[];
-extern GB_DESC CWebViewDesc[];
-extern GB_DESC CWebViewDownloadsDesc[];
+extern GB_DESC WebViewAuthDesc[];
+extern GB_DESC WebViewHistoryDesc[];
+extern GB_DESC WebViewDownloadsDesc[];
+extern GB_DESC WebViewDesc[];
 
 #else
 

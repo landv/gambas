@@ -163,7 +163,7 @@ BEGIN_METHOD_VOID(WebDownload_free)
 
 END_METHOD
 
-GB_DESC CWebDownloadDesc[] =
+GB_DESC WebDownloadDesc[] =
 {
   GB_DECLARE("WebDownload", sizeof(CWEBDOWNLOAD)),
   
@@ -241,7 +241,7 @@ BEGIN_METHOD_VOID(WebDownloads_exit)
 
 END_METHOD
 
-GB_DESC CWebDownloadsDesc[] =
+GB_DESC WebDownloadsDesc[] =
 {
   GB_DECLARE("WebDownloads", 0), GB_VIRTUAL_CLASS(),
 	

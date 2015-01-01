@@ -32,8 +32,8 @@
 
 #ifndef __CWEBFRAME_CPP
 
-extern GB_DESC CWebFrameChildrenDesc[];
-extern GB_DESC CWebFrameDesc[];
+extern GB_DESC WebFrameChildrenDesc[];
+extern GB_DESC WebFrameDesc[];
 
 #else
 

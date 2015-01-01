@@ -89,7 +89,7 @@ BEGIN_PROPERTY(WebHitTest_Element)
 
 END_PROPERTY
 
-GB_DESC CWebHitTestDesc[] =
+GB_DESC WebHitTestDesc[] =
 {
   GB_DECLARE("WebHitTest", sizeof(CWEBHITTEST)), GB_NOT_CREATABLE(),
   

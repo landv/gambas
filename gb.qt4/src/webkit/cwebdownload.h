@@ -31,8 +31,8 @@
 
 #ifndef __CWEBDOWNLOAD_CPP
 
-extern GB_DESC CWebDownloadDesc[];
-extern GB_DESC CWebDownloadsDesc[];
+extern GB_DESC WebDownloadDesc[];
+extern GB_DESC WebDownloadsDesc[];
 
 #else
 

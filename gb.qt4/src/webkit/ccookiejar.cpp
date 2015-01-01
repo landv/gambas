@@ -151,7 +151,7 @@ BEGIN_METHOD_VOID(Cookie_free)
 
 END_METHOD
 
-GB_DESC CCookieDesc[] =
+GB_DESC CookieDesc[] =
 {
   GB_DECLARE("Cookie", sizeof(CCOOKIE)),
   

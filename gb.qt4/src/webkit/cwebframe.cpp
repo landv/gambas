@@ -144,7 +144,7 @@ END_PROPERTY
 
 //---------------------------------------------------------------------------
 
-GB_DESC CWebFrameChildrenDesc[] =
+GB_DESC WebFrameChildrenDesc[] =
 {
   GB_DECLARE(".WebFrame.Children", sizeof(CWEBFRAME)), GB_VIRTUAL_CLASS(),
 	
@@ -154,7 +154,7 @@ GB_DESC CWebFrameChildrenDesc[] =
 	GB_END_DECLARE
 };
 
-GB_DESC CWebFrameDesc[] =
+GB_DESC WebFrameDesc[] =
 {
   GB_DECLARE("WebFrame", sizeof(CWEBFRAME)),
 	
