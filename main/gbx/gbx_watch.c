@@ -53,6 +53,8 @@ static WATCH_TIMER *_timers = NULL;
 static int _do_not_really_delete_callback = 0;
 static bool _must_delete_callback = FALSE;
 
+static struct timeval _last_time = { 0 };
+
 #ifdef DEBUG_TIMER
 double _debug_time;
 static double time_to_double(const struct timeval *t)
@@ -98,7 +100,7 @@ static struct timeval *time_now(void)
 
 	gettimeofday(&current, NULL);
 	if (current.tv_usec < 0 || current.tv_usec >= 1000000)
-		fprintf(stderr, "gettimeofday: tv_usec = %ld!\n", current.tv_usec);
+		fprintf(stderr, "gbx3: warning: gettimeofday: tv_usec = %ld!\n", current.tv_usec);
 	return &current;
 }
 
@@ -560,6 +562,7 @@ static bool do_loop(struct timeval *wait)
 	struct timeval tv;
 	fd_set rfd, wfd;
 	bool something_done = FALSE;
+	struct timeval *now;
 
 	if (EVENT_check_post())
 		something_done = TRUE;
@@ -567,6 +570,14 @@ static bool do_loop(struct timeval *wait)
 	#ifdef DEBUG_TIMER
 	fprintf(stderr, "\ndo_loop: now = %.7g: select (%d)\n", time_to_double(time_now()), something_done);
 	#endif
+
+	// Prevent select() to run repeatedly and eat all the CPU.
+	now = time_now();
+	tv = *now;
+	time_sub(&tv, &_last_time);
+	if (tv.tv_sec == 0 && tv.tv_usec < 10000)
+		usleep(10000 - tv.tv_usec);
+	_last_time = *now;
 
 	if (get_timeout(wait, &tv))
 		ret = do_select(&rfd, &wfd, NULL);
