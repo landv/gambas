@@ -109,24 +109,24 @@
     Text = ("Screenshot")
     { radKeepScreenshot RadioButton radScreenshot
       Name = "radKeepScreenshot"
-      MoveScaled(0,0,33,3)
-      Text = ("Keep screenshot")
+      MoveScaled(0,0,53,3)
+      Text = ("Keep the screenshot stored on the server")
       Value = True
     }
     { radDeleteScreenshot RadioButton radScreenshot
       Name = "radDeleteScreenshot"
-      MoveScaled(0,4,33,3)
-      Text = ("Delete screenshot")
+      MoveScaled(0,4,54,3)
+      Text = ("Delete the screenshot stored on the server")
     }
     { radPasteScreenshot RadioButton radScreenshot
       Name = "radPasteScreenshot"
-      MoveScaled(0,8,33,3)
-      Text = ("Take screenshot from clipboard")
+      MoveScaled(0,8,50,3)
+      Text = ("Upload a new screenshot taken from the clipboard")
     }
     { radLoadScreenshot RadioButton radScreenshot
       Name = "radLoadScreenshot"
-      MoveScaled(0,12,33,3)
-      Text = ("Take screenshot from file")
+      MoveScaled(0,12,55,3)
+      Text = ("Upload a new screenshot taken from the following file:")
     }
     { Panel1 HBox
       MoveScaled(0,16,64,4)
