@@ -27,12 +27,13 @@
 
 #define THIS ((CCHANNEL *)_object)
 
+DECLARE_EVENT(EVENT_Finish);
+
 static CCHANNEL *_cache[MAX_CHANNEL] = { 0 };
 static int _count = 0;
 
 static int _pipe[2];
 static int _pipe_usage = 0;
-
 
 //-------------------------------------------------------------------------
 
@@ -47,7 +48,10 @@ static void free_channel(CCHANNEL *ch)
 
 	_pipe_usage--;
 	if (_pipe_usage == 0)
+	{
+		//fprintf(stderr, "stop watch\n");
 		GB.Watch(_pipe[0], GB_WATCH_NONE, NULL, 0);
+	}
 }
 
 static void free_finished_channel(void)
@@ -60,10 +64,15 @@ static void free_finished_channel(void)
 		return;
 
 	ch = _cache[(int)channel];
-	if (ch && ch->free)
-		free_channel(ch);
+	if (ch)
+	{
+		if (ch->free)
+			free_channel(ch);
+		//fprintf(stderr, "raise finish %d\n", (int)channel);
+		GB.Raise(ch, EVENT_Finish, 0);
+	}
 
-		/*for (i = 0; i < MAX_CHANNEL; i++)
+	/*for (i = 0; i < MAX_CHANNEL; i++)
 	{
 		ch = channel_cache[i];
 		if (ch && ch->free)
@@ -80,6 +89,20 @@ static void channel_finished_cb(int channel)
 		return;
 
 	ch->free = (write(_pipe[1], &buf, 1) == 1);
+	//fprintf(stderr, "finish %d (%d)\n", channel, ch->free);
+}
+
+static int find_free_channel(void)
+{
+	int i;
+
+	for (i = 0; i < MAX_CHANNEL; i++)
+	{
+		if (!_cache[i])
+			return i;
+	}
+
+	return -1;
 }
 
 void CHANNEL_return(int channel, CSOUND *sound)
@@ -106,9 +129,12 @@ void CHANNEL_return(int channel, CSOUND *sound)
 		GB.Ref(ch);
 	}
 
-	free_channel(ch);
+	//free_channel(ch);
 	if (sound)
+	{
+		GB.Unref(POINTER(&ch->sound));
 		ch->sound = sound;
+	}
 
 	GB.ReturnObject(ch);
 }
@@ -131,7 +157,10 @@ int CHANNEL_play_sound(int channel, CSOUND *sound, int loops, int fadein)
 {
 	_pipe_usage++;
 	if (_pipe_usage == 1)
-		GB.Watch(_pipe[0], GB_WATCH_READ , (void *)free_finished_channel,0);
+	{
+		//fprintf(stderr, "watch pipe\n");
+		GB.Watch(_pipe[0], GB_WATCH_READ, (void *)free_finished_channel, 0);
+	}
 
 	if (fadein > 0)
 		return Mix_FadeInChannel(channel, sound->chunk, loops, fadein);
@@ -158,7 +187,7 @@ void CHANNEL_exit()
 
 	if (_pipe_usage)
 	{
-		GB.Watch(_pipe[0], GB_WATCH_NONE, (void *)0, 0);
+		GB.Watch(_pipe[0], GB_WATCH_NONE, NULL, 0);
 		_pipe_usage = 0;
 	}
 
@@ -215,6 +244,22 @@ BEGIN_PROPERTY(Channels_Volume)
 END_PROPERTY
 
 //-------------------------------------------------------------------------
+
+BEGIN_METHOD_VOID(Channel_new)
+
+	int channel = find_free_channel();
+
+	if (channel < 0)
+	{
+		GB.Error("No more channel available");
+		return;
+	}
+
+	THIS->channel = channel;
+	_cache[channel] = THIS;
+	GB.Ref(THIS);
+
+END_METHOD
 
 BEGIN_METHOD(Channel_Play, GB_OBJECT sound; GB_INTEGER loops; GB_FLOAT fadein)
 
@@ -314,6 +359,12 @@ BEGIN_PROPERTY(Channel_Reverse)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Channel_Index)
+
+	GB.ReturnInteger(THIS->channel);
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 GB_DESC ChannelsDesc[] =
@@ -331,17 +382,22 @@ GB_DESC ChannelsDesc[] =
 
 GB_DESC ChannelDesc[] =
 {
-	GB_DECLARE("Channel", sizeof(CCHANNEL)), GB_NOT_CREATABLE(),
+	GB_DECLARE("Channel", sizeof(CCHANNEL)),
+
+	GB_METHOD("_new", NULL, Channel_new, NULL),
 
 	//GB_STATIC_METHOD("_exit", NULL, Channel_exit, NULL),
 	GB_METHOD("Play", NULL, Channel_Play, "[(Sound)Sound;(Loops)i(FadeIn)f]"),
 	GB_METHOD("Pause", NULL, Channel_Pause, NULL),
 	GB_METHOD("Stop", NULL, Channel_Stop, "[(FadeOut)f]"),
 
+	GB_PROPERTY_READ("Index", "i", Channel_Index),
 	GB_PROPERTY("Volume", "i", Channel_Volume),
 	GB_PROPERTY("Distance", "i", Channel_Distance),
 	GB_PROPERTY("Angle", "i", Channel_Angle),
 	GB_PROPERTY("Reverse", "b", Channel_Reverse),
+
+	GB_EVENT("Finish", NULL, NULL, &EVENT_Finish),
 
 	GB_END_DECLARE
 };
