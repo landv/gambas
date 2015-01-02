@@ -40,6 +40,12 @@ bool AUDIO_initialized = FALSE;
 
 //-------------------------------------------------------------------------
 
+static void init_mixer(int flag, const char *name)
+{
+	if ((Mix_Init(flag) & flag) != flag)
+		fprintf(stderr, "gb.sdl2.audio: warning: %s\n", Mix_GetError());
+}
+
 bool AUDIO_init()
 {
 	Uint16 format;
@@ -48,13 +54,20 @@ bool AUDIO_init()
 	if (AUDIO_initialized)
 		return FALSE;
 
-	if(Mix_OpenAudio(AUDIO_frequency, MIX_DEFAULT_FORMAT, 2, AUDIO_buffer_size))
+	init_mixer(MIX_INIT_MP3, "MP3");
+	init_mixer(MIX_INIT_OGG, "OGG");
+	init_mixer(MIX_INIT_MOD, "MOD");
+	init_mixer(MIX_INIT_FLAC, "FLAC");
+	init_mixer(MIX_INIT_FLUIDSYNTH, "FLUIDSYNTH");
+
+	if (Mix_OpenAudio(AUDIO_frequency, MIX_DEFAULT_FORMAT, 2, AUDIO_buffer_size))
 	{
 		GB.Error("Unable to initialize mixer");
 		return TRUE;
 	}
 
   Mix_QuerySpec(&AUDIO_frequency, &format, &channels);
+	//fprintf(stderr, "AUDIO_init: %d %d %d\n", AUDIO_frequency, format, channels);
 
 	if (CHANNEL_init())
 		return TRUE;
@@ -71,6 +84,9 @@ static void AUDIO_exit()
 	CHANNEL_exit();
   MUSIC_exit();
   Mix_CloseAudio();
+
+	while (Mix_Init(0))
+		Mix_Quit();
 }
 
 static void init_sdl()

@@ -144,6 +144,7 @@ static bool start_sound_engine()
 	}
 	
   Mix_QuerySpec(&info.rate, &info.format, &info.channels);
+	//fprintf(stderr, "Mix_QuerySpec: %d %d %d\n", info.rate, info.format, info.channels);
 
   channel_count = Mix_AllocateChannels(-1);
 
