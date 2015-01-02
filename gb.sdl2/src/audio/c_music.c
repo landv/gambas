@@ -28,6 +28,7 @@
 static Mix_Music *_music = NULL;
 static double _ref_time = 0;
 static double _ref_pos = 0;
+static int _volume = MIX_MAX_VOLUME;
 
 //-------------------------------------------------------------------------
 
@@ -60,6 +61,13 @@ void MUSIC_exit(void)
   _music = NULL;
 }
 
+static void update_volume(void)
+{
+	if (!Mix_PlayingMusic())
+		return;
+
+	Mix_VolumeMusic(_volume);
+}
 
 //-------------------------------------------------------------------------
 
@@ -107,6 +115,7 @@ BEGIN_METHOD(Music_Play, GB_INTEGER loops; GB_FLOAT fadein)
 		fadevalue = 0;
 
 	Mix_FadeInMusic(_music, VARGOPT(loops, 1), fadevalue);
+	update_volume();
 
 END_METHOD
 
@@ -167,9 +176,17 @@ BEGIN_PROPERTY(Music_Volume)
 	CHECK_AUDIO();
 
 	if (READ_PROPERTY)
-		GB.ReturnFloat(Mix_VolumeMusic(-1));
+		GB.ReturnInteger(_volume);
 	else
-		Mix_VolumeMusic(VPROP(GB_INTEGER));
+	{
+		_volume = VPROP(GB_INTEGER);
+		if (_volume < 0)
+			_volume = 0;
+		else if (_volume > MIX_MAX_VOLUME)
+			_volume = MIX_MAX_VOLUME;
+
+		update_volume();
+	}
 
 END_PROPERTY
 
