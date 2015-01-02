@@ -135,8 +135,10 @@ static void my_main(int *argc, char **argv)
 
 static int my_loop()
 {
-	while (WINDOW_list != NULL)
+	for(;;)
 	{
+		if (!GB.Loop(10) && !WINDOW_list)
+			break;
 		event_loop();
 		WINDOW_update();
 	}
@@ -146,7 +148,10 @@ static int my_loop()
 
 static void my_wait(int duration)
 {
-	event_loop();
+	GB.Loop(10);
+	if (duration > 0)
+		event_loop();
+	WINDOW_update();
 }
 
 //-------------------------------------------------------------------------

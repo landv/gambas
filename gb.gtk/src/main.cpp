@@ -551,20 +551,12 @@ void MAIN_do_iteration_just_events()
 
 void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 {
-	struct timespec mywait;
-
 	gApplication::_loopLevel++;
 
 	if (do_not_block)
 	{
 		if (gtk_events_pending ())
 			gtk_main_iteration_do (false);
-		else if (!do_not_sleep)
-		{
-			mywait.tv_sec=0;
-			mywait.tv_nsec=100000;
-			nanosleep(&mywait,NULL);
-		}
 	}
 	else	
 		gtk_main_iteration_do(true);

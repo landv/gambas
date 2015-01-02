@@ -562,7 +562,6 @@ static bool do_loop(struct timeval *wait)
 	struct timeval tv;
 	fd_set rfd, wfd;
 	bool something_done = FALSE;
-	struct timeval *now;
 
 	if (EVENT_check_post())
 		something_done = TRUE;
@@ -571,20 +570,12 @@ static bool do_loop(struct timeval *wait)
 	fprintf(stderr, "\ndo_loop: now = %.7g: select (%d)\n", time_to_double(time_now()), something_done);
 	#endif
 
-	// Prevent select() to run repeatedly and eat all the CPU.
-	now = time_now();
-	tv = *now;
-	time_sub(&tv, &_last_time);
-	if (tv.tv_sec == 0 && tv.tv_usec < 10000)
-		usleep(10000 - tv.tv_usec);
-	_last_time = *now;
-
 	if (get_timeout(wait, &tv))
 		ret = do_select(&rfd, &wfd, NULL);
 	else
 	{
 		ret = do_select(&rfd, &wfd, &tv);
-		something_done = TRUE;
+		something_done = ARRAY_count(_timers) > 0;
 	}
 
 	if (ret < 0 && errno != EINTR)
@@ -722,5 +713,18 @@ void WATCH_timer(void *t, int on)
 		remove_timer(timer);
 		timer->id = 0;
 	}
+}
+
+void WATCH_little_sleep(void)
+{
+	struct timeval tv;
+	struct timeval *now;
+
+	now = time_now();
+	tv = *now;
+	time_sub(&tv, &_last_time);
+	if (tv.tv_sec == 0 && tv.tv_usec < 10000)
+		usleep(10000 - tv.tv_usec);
+	_last_time = *now;
 }
 

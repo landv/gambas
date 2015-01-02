@@ -56,7 +56,6 @@ typedef
 	}
 	WATCH_TIMER;
 
-
 void WATCH_init(void);
 void WATCH_exit(void);
 
@@ -68,5 +67,6 @@ int WATCH_loop_signal(const sigset_t *sig);
 int WATCH_process(int fd_end, int fd_output, int timeout);
 void WATCH_timer(void *t, int on);
 double WATCH_get_timeout(GB_TIMER *timer);
+void WATCH_little_sleep(void);
 
 #endif /* */

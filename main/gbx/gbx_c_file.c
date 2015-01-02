@@ -44,6 +44,7 @@
 #include "gbx_project.h"
 #include "gbx_string.h"
 #include "gbx_date.h"
+#include "gbx_watch.h"
 
 #include "gbx_c_file.h"
 
@@ -61,6 +62,8 @@ static void callback_read(int fd, int type, CFILE *file)
 {
 	if (!STREAM_read_ahead(CSTREAM_stream(file)))
 		GB_Raise(file, EVENT_Read, 0);
+	else
+		WATCH_little_sleep();
 }
 
 

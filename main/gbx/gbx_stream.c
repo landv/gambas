@@ -577,8 +577,8 @@ static void fill_buffer(STREAM *stream, char *addr)
 		if (errno == EINTR)
 			continue;
 
-		//if (STREAM_eff_read == 0)
-		//	stop_watching(stream, GB_WATCH_READ);
+		//if (STREAM_eff_read == 0 && stream->common.available_now)
+		//	WATCH_need_little_sleep = TRUE;
 
 		switch(errno)
 		{

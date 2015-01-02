@@ -459,12 +459,16 @@ Private Sub PublishSoftware()
   CopySoftwareFile(rSoftware!id, "source.tar." & File.Ext(sSource), Request.Files["source"])
   CopySoftwareFile(rSoftware!id, "icon.png", Request.Files["icon"])
   If sScreenshot Then
-    sPath = CopySoftwareFile(rSoftware!id, "screenshot." & File.Ext(sScreenshot), Request.Files["screenshot"])
-    hImage = Image.Load(sPath)
-    hImage = hImage.Copy(0, Max(0, hImage.H \ 2 - 128), hImage.Width, 256).Fuzzy(8).Opacity(0.3)
-    sPath = Root &/ CStr(rSoftware!id) &/ "background.jpg"
-    Try Kill sPath
-    hImage.Save(sPath, 20)
+    If sScreenshot = "*" Then
+      Try Kill Root &/ CStr(rSoftware!id) &/ "screenshot.*"
+    Else
+      sPath = CopySoftwareFile(rSoftware!id, "screenshot." & File.Ext(sScreenshot), Request.Files["screenshot"])
+      hImage = Image.Load(sPath)
+      hImage = hImage.Copy(0, Max(0, hImage.H \ 2 - 128), hImage.Width, 256).Fuzzy(8).Opacity(0.3)
+      sPath = Root &/ CStr(rSoftware!id) &/ "background.jpg"
+      Try Kill sPath
+      hImage.Save(sPath, 20)
+    Endif
   Endif
   
   DB.Delete("tag", "software = &1", rSoftware!id)
