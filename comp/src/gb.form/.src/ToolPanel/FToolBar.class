@@ -10,7 +10,7 @@ End
 Public Sub SetTitle(sTitle As String)
 
   btnTitle.Text = sTitle
-  btnTitle.Height = Me.Font.Height + 4
+  btnTitle.Height = Me.Font.Height + 4 + Style.FrameWidth * 2
   'IF ME.Parent.Parent.Parent.Design THEN panToolBar.Move(0, btnTitle.H, panToolBar.W, ME.CLientH - btnTitle.H)
 
 End

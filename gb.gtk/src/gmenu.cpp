@@ -60,7 +60,7 @@ static void mnu_activate(GtkMenuItem *menuitem, gMenu *data)
 
 	if (data->onClick)
 	{
-		fprintf(stderr, "mnu_activate: %s\n", data->name());
+		//fprintf(stderr, "mnu_activate: %s\n", data->name());
 		data->onClick(data);
 	}
 }

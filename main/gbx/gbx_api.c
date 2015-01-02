@@ -1336,8 +1336,10 @@ static void print_stack_backtrace()
 	trace_size = backtrace(trace, 16);
 	messages = backtrace_symbols(trace, trace_size);
 	//printf("[bt] Execution path:\n");
+	fprintf(stderr, "[ ");
 	for (i=0; i<trace_size; ++i)
-		fprintf(stderr, "[bt] %s\n", messages[i]);
+		fprintf(stderr, "%s ", messages[i]);
+	fprintf(stderr, "] ");
 }
 
 #endif
@@ -1353,7 +1355,7 @@ void GB_Ref(void *object)
 	if (object)
 	{
 		#if DEBUG_REF
-		//print_stack_backtrace();
+		print_stack_backtrace();
 		#endif
 		OBJECT_REF(object);
 	}
@@ -1374,7 +1376,7 @@ void GB_Unref(void **object)
 	if (*object)
 	{
 		#if DEBUG_REF
-		//print_stack_backtrace();
+		print_stack_backtrace();
 		#endif
 		OBJECT_UNREF(*object);
 	}

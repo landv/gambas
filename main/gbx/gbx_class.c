@@ -318,7 +318,12 @@ void CLASS_clean_up(bool silent)
 	for (class = _classes; class; class = class->next)
 	{
 		if (class->instance)
+		{
+			#if DEBUG_LOAD
+			fprintf(stderr, "Freeing instance of %p %s\n", class, class->name);
+			#endif
 			OBJECT_UNREF(class->instance);
+		}
 	}
 
 	// Count how many classes should be freed
@@ -330,7 +335,7 @@ void CLASS_clean_up(bool silent)
 		if (!CLASS_is_native(class) && CLASS_is_loaded(class))
 		{
 			#if DEBUG_LOAD
-			fprintf(stderr, "Must free: %s\n", class->name);
+			fprintf(stderr, "Must free: %p (%s) %s [%d]\n", class, class->component ? class->component->name : "-", class->name, class->count);
 			#endif
 			nc++;
 		}

@@ -2224,11 +2224,17 @@ void CWINDOW_delete_all(bool main)
 	{
 		win = CWindow::list.at(i);
 		if (win != CWINDOW_Main)
-			CWIDGET_destroy((CWIDGET *)win);
+		{
+			//qDebug("destroy window %s", GB.GetClassName(win));
+			CWIDGET_destroy((CWIDGET *)win, main);
+		}
 	}
 
 	if (main && CWINDOW_Main)
-		CWIDGET_destroy((CWIDGET *)CWINDOW_Main);
+	{
+		//qDebug("destroy main window %s", GB.GetClassName(CWINDOW_Main));
+		CWIDGET_destroy((CWIDGET *)CWINDOW_Main, main);
+	}
 
 	#if DEBUG_WINDOW
 	qDebug("DELETE ALL >>>");
