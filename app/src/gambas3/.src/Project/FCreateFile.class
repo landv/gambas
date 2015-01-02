@@ -319,7 +319,9 @@ Private Sub CreateFile() As Boolean
     Case "text"
     
       File.Save($sDir &/ sName, "")
+      Inc FMain.NoMessage
       Project.InsertFile(sName, $sDir)
+      Dec FMain.NoMessage
   
     Case "html"
     
@@ -456,9 +458,12 @@ Private Sub ImportFile() As Boolean
         Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
         Project.InsertSource(sName, "webpage", $sDir, sTemp, False, False, chkLink.Value)
     
-      Default
+      Case Else
+        
+        Inc FMain.NoMessage
         sName = Project.GetUniqueName($sDir, sName)
         Project.InsertFile(sName, $sDir, sTemp,, chkLink.Value)
+        Dec FMain.NoMessage
     
     End Select
     
@@ -480,6 +485,7 @@ Public Sub btnOK_Click()
 
 Catch 
 
+  FMain.NoMessage = 0
   FMain.ShowError(("Cannot add file.") & "\n\n" & Error.Text & "\n" & Error.Where)
   
 End

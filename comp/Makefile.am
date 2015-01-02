@@ -19,6 +19,7 @@ install-exec-local:
 	    $(DESTDIR)$(bindir)/gba$(GAMBAS_VERSION); \
 	    rm -rf .gambas; \
 	    echo "Installing $$p..."; \
+	    rm -f $(DESTDIR)$(gblibdir)/$$p.so $(DESTDIR)$(gblibdir)/$$p.so.* $(DESTDIR)$(gblibdir)/$$p.la \
 	    $(INSTALL) $$p.gambas $(DESTDIR)$(gblibdir); \
 	    $(INSTALL) .component $(DESTDIR)$(gblibdir)/$$p.component; \
 	    chmod a-x $(DESTDIR)$(gblibdir)/$$p.component; \
