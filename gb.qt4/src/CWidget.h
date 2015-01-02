@@ -187,7 +187,7 @@ void CWIDGET_init_name(CWIDGET *_object);
 void CWIDGET_set_name(CWIDGET *_object, const char *name);
 int CWIDGET_check(void *object);
 QString CWIDGET_Utf8ToQString(GB_STRING *str);
-void CWIDGET_destroy(CWIDGET *_object, bool now = false);
+void CWIDGET_destroy(CWIDGET *_object);
 void CWIDGET_update_design(CWIDGET *_object);
 void CWIDGET_iconset(QIcon &icon, const QPixmap &p, int size = 0);
 void CWIDGET_set_color(CWIDGET *_object, int bg, int fg, bool handle_proxy = false);

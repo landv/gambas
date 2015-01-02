@@ -819,6 +819,7 @@ static void hook_quit()
 	CWINDOW_delete_all(true);
 
 	qApp->sendPostedEvents(); //processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
+	qApp->sendPostedEvents(0, QEvent::DeferredDelete);
 }
 
 

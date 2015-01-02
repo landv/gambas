@@ -2226,14 +2226,14 @@ void CWINDOW_delete_all(bool main)
 		if (win != CWINDOW_Main)
 		{
 			//qDebug("destroy window %s", GB.GetClassName(win));
-			CWIDGET_destroy((CWIDGET *)win, main);
+			CWIDGET_destroy((CWIDGET *)win);
 		}
 	}
 
 	if (main && CWINDOW_Main)
 	{
 		//qDebug("destroy main window %s", GB.GetClassName(CWINDOW_Main));
-		CWIDGET_destroy((CWIDGET *)CWINDOW_Main, main);
+		CWIDGET_destroy((CWIDGET *)CWINDOW_Main);
 	}
 
 	#if DEBUG_WINDOW

@@ -483,7 +483,7 @@ static void post_check_hovered(intptr_t)
 	_post_check_hovered = false;
 }
 
-void CWIDGET_destroy(CWIDGET *_object, bool now)
+void CWIDGET_destroy(CWIDGET *_object)
 {
 	if (!THIS || !WIDGET)
 		return;
@@ -502,10 +502,7 @@ void CWIDGET_destroy(CWIDGET *_object, bool now)
 	CWIDGET_set_visible(THIS, false);
 	CWIDGET_set_flag(THIS, WF_DELETED);
 
-	if (now)
-		delete WIDGET;
-	else
-		WIDGET->deleteLater();
+	WIDGET->deleteLater();
 }
 
 
