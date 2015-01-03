@@ -25,7 +25,13 @@ Private $iTooltipLastRow As Integer
 
 Private $sFilter As String
 
-Private Const LIBRARY_TAB As Integer = 2
+Private Const COMPONENT_PROPERTIES_TAB As Integer = 1
+Private Const LIBRARY_TAB As Integer = 3
+
+Private $bInitInfo As Boolean
+Private $aNeed As String[]
+Private $aRequire As String[]
+Private $aImplement As String[]
 
 Static Public Function Run() As Boolean
 
@@ -119,6 +125,8 @@ Public Sub Form_Open()
   InitEnvironment
 
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
+
+  $bInitInfo = False
 
   If $bShowLibraries Then 
     $bShowLibraries = False
@@ -251,6 +259,8 @@ Private Function DoApply() As Boolean
 
   SaveComponents
   SaveEnvironment
+
+  If Project.Type <> Project.TYPE_NORMAL Then WriteComponent()
 
   Project.WriteProject
   Project.MakeDirectoryIcon
@@ -1369,6 +1379,8 @@ Public Sub ipnProject_Click()
     panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
   Else If ipnProject.Text = ("Statistics") Then
     UpdateStat
+  Else If ipnProject.Text = ("Information") Then
+    UpdateInfo
   Endif
 
 End
@@ -1427,5 +1439,193 @@ End
 Public Sub picFilter_MouseDown()
 
   mnuComponent.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
+
+End
+
+Public Sub cmbType_Click()
+
+  Select cmbType.Index
+    
+    Case Project.TYPE_NORMAL
+      ipnProject[COMPONENT_PROPERTIES_TAB].Visible = False
+        
+    Case Project.TYPE_COMPONENT
+      ipnProject[COMPONENT_PROPERTIES_TAB].Visible = True
+      'ipnProject[COMPONENT_PROPERTIES_TAB].Text = ("Component properties")
+      lblInfo.Text = ("Information about component")
+      panCompatible.Hide
+      
+    Case Project.TYPE_LIBRARY
+      ipnProject[COMPONENT_PROPERTIES_TAB].Visible = True
+      'ipnProject[COMPONENT_PROPERTIES_TAB].Text = ("Library properties")
+      lblInfo.Text = ("Information about library")
+      panCompatible.Show
+    
+  End Select
+
+End
+
+'--------------------------------------------------------------------------
+
+Private Sub ReadComponentFile()
+
+  Dim cComp As Collection
+  Dim aVer As String[]
+  
+  $aNeed = New String[]
+  $aRequire = New String[]
+  $aImplement = New String[]
+  
+  cComp = Project.ReadComponentFile()
+  If Not cComp Then Return
+  
+  If cComp.Exist("Need") Then $aNeed = cComp["Need"]
+  If cComp.Exist("Require") Then $aRequire = cComp["Require"]
+  If cComp.Exist("Implement") Then $aRequire = cComp["Implement"]
+  cmbComponentState.Index = cComp["State"]
+  cmbHidden.Index = If(cComp["Hidden"], 0, 1)
+
+  Try aVer = Split(cComp["CompatibleUntil"], ".")
+  If aVer And If aVer.Count = 3 Then
+    chkCompat.Value = True
+    Try txtMajor.Value = CInt(aVer[0])
+    Try txtMinor.Value = CInt(aVer[1])
+    Try txtRelease.Value = CInt(aVer[2])
+  Else
+    chkCompat.Value = False
+  Endif
+  
+End
+
+Private Sub WriteFeatures(hCont As Container, aFeature As String[])
+  
+  Dim hCtrl As CheckBox
+  
+  For Each hCtrl In hCont.Children
+    If hCtrl.Value Then aFeature.Add(hCtrl.Tag)
+  Next
+  
+End
+
+Private Sub WriteComponent() As Boolean
+
+  Dim cComp As New Collection
+
+  cComp["State"] = cmbComponentState.Index
+
+  $aNeed.Clear
+  WriteFeatures(panNeed, $aNeed)
+  WriteFeatures(panNeed2, $aNeed)
+
+  cComp["Hidden"] = cmbHidden.Index = 0
+  cComp["Implement"] = $aImplement
+  cComp["Need"] = $aNeed
+  cComp["Require"] = $aRequire
+  If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
+  
+  Project.WriteComponentFile(cComp)
+
+End
+
+Private Sub ReadComponent()
+
+  Dim aComp As String[]
+  Dim hComp As CComponent
+  Dim sComp As String
+  Dim hMenu As Menu
+  
+  ReadComponentFile
+  
+  aComp = New String[]
+  For Each hComp In CComponent.All
+    If hComp.Hidden Then Continue
+    If hComp.Key = CComponent.PROJECT_NAME Then Continue
+    If hComp.Key = Project.Name Then Continue 
+    If hComp.Key = "gb" Then Continue
+    If $aRequire.Exist(hComp.Key) Then Continue
+    aComp.Add(hComp.Key)
+  Next
+  aComp.Sort
+  
+  mnuAdd.Children.Clear
+  For Each sComp In aComp
+    hMenu = New Menu(mnuAdd) As "mnuAddRequire"
+    hMenu.Text = sComp
+  Next
+
+  lstRequire.List = $aRequire
+  
+  ReadFeatures(panNeed, $aNeed)
+  ReadFeatures(panNeed2, $aNeed)
+  
+End
+
+Private Sub ReadFeatures(hCont As Container, aFeature As String[])
+  
+  Dim hCtrl As CheckBox
+  
+  For Each hCtrl In hCont.Children
+    hCtrl.Value = aFeature.Find(hCtrl.Tag, gb.IgnoreCase) >= 0
+  Next
+  
+End
+
+Private Sub AddRequire(sComp As String)
+
+  If sComp = Project.Name Then Return  
+  If $aRequire.Find(sComp) >= 0 Then Return 
+  $aRequire.Add(sComp)
+  lstRequire.Add(sComp)
+  
+End
+
+
+Public Sub btnRemove_Click()
+
+  If lstRequire.Index < 0 Then Return 
+  $aRequire.Remove($aRequire.Find(lstRequire.Text))
+  lstRequire.Remove(lstRequire.Index)
+
+End
+
+Public Sub btnRemoveAll_Click()
+
+  lstRequire.Clear
+  $aRequire.Clear
+
+End
+
+Public Sub chkCompat_Click()
+
+  txtMajor.Enabled = chkCompat.Value
+  txtMinor.Enabled = chkCompat.Value
+  txtRelease.Enabled = chkCompat.Value
+
+End
+
+Public Sub mnuAddRequire_Click()
+
+  AddRequire(Last.Text)
+
+End
+
+Private Sub UpdateInfo()
+
+  If $bInitInfo Then Return
+
+  ReadComponent
+
+  'Me.Title = 
+  'lblTitle.Text = Project.Name
+  
+  ' Try aClass = Split(File.Load(Project.Dir &/ ".list"), "\n", "", True)
+  ' If Not Error Then
+  '   For iInd = 0 To aClass.Max
+  '     If Left(aClass[iInd]) = "?" Then aClass[iInd] = Mid$(aClass[iInd], 2)
+  '   Next
+  ' Endif
+  ' lstExport.List = aClass
+  
+  $bInitInfo = True
 
 End

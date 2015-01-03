@@ -193,13 +193,6 @@
       Picture = Picture["icon:/small/edit"]
       Shortcut = "Ctrl+P"
     }
-    { mnuPropertyComp Menu
-      Action = "component-property"
-      Text = ("Component properties")
-      Picture = Picture["icon:/small/component"]
-      Visible = False
-      Shortcut = "Ctrl+Shift+P"
-    }
     { mnuVersion Menu
       Action = "project-version"
       Text = Shortcut(("Version control"), "V") & "..."
@@ -780,11 +773,6 @@
       Action = "project-version"
       Picture = Picture["icon:/small/calendar"]
     }
-    { btnComponent ToolButton
-      MoveScaled(20,0,4,4)
-      Action = "component-property"
-      Picture = Picture["icon:/small/component"]
-    }
     { ToolButton7 ToolButton
       MoveScaled(22,0,4,4)
       Visible = False
@@ -1331,11 +1319,6 @@
     Shortcut = "Alt+F7"
     Picture = "icon:/small/make-all"
   }
-  { Action component-property
-    Text = "Component properties"
-    Shortcut = "Ctrl+Shift+P"
-    Picture = "icon:/small/component"
-  }
   { Action compress-all
     Text = "Compress all"
     Shortcut = ""
@@ -1641,7 +1624,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,gui"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,component-property,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,gui"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
   }
 }

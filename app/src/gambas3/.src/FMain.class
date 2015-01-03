@@ -1175,21 +1175,6 @@ Public Sub UpdateMenu()
   
   mnuClearDebugWindows.Enabled = Project.Running
   
-  With Action["component-property"]
-    Select Case Project.Type
-      Case Project.TYPE_NORMAL
-        .Visible = False
-      Case Project.TYPE_LIBRARY
-        .Visible = True
-        mnuPropertyComp.Text = ("Library properties") & "..."
-        btnComponent.Tooltip = ("Library properties")
-      Case Project.TYPE_COMPONENT
-        .Visible = True
-        mnuPropertyComp.Text = ("Component properties") & "..."
-        btnComponent.Tooltip = ("Component properties")
-    End Select
-  End With
-  
   mnuUseHttpServer.Visible = Project.CanUseHttpServer()
   
   If Project.Components Then
@@ -1225,15 +1210,18 @@ Private Sub UpdateGlobalLayout()
 
   For Each hMenu In [mnuProject, mnuDebug, mnuView]
     hMenu.Visible = Not bWelcome And Not bFake
+    hMenu.Enabled = hMenu.Visible
   Next
   
   mnuTool.Visible = Not bWelcome
   For Each hMenu In [mnuBrowse, mnuTerminal, mnuSendMail, mnuUpdateAllForms]
     hMenu.Visible = Not bFake
+    hMenu.Enabled = hMenu.Visible
   Next
 
   For Each hCtrl In [panDebug, panProject, tlbMain]
     hCtrl.Visible = Not bWelcome And Not bFake
+    hMenu.Enabled = hMenu.Visible
   Next
   
   sepMenu.Visible = bWelcome Or Not bFake
@@ -1382,8 +1370,6 @@ Public Sub Action_Activate(Key As String) As Boolean
       Project.RefreshAll
     Case "project-property"
       If Not FProjectProperty.Run() Then Project.Refresh
-    Case "component-property"
-      If Not Project.Compile() Then FPropertyComponent.Run
     Case "translate"
       Translate
     Case "compile"
