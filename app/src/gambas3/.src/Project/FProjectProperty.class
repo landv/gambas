@@ -110,8 +110,8 @@ Public Sub Form_Open()
   gvwComponent.Columns[3].Width = 24
   gvwComponent.Columns[3].Expand = False
 
-  mnuShowUsed.Value = $bShowUsed
-  mnuShowDeprecated.Value = $bShowDeprecated
+  chkShowUsed.Value = $bShowUsed
+  chkShowDeprecated.Value = $bShowDeprecated
   'chkShowBeta.Value = $bShowBeta
   $bCanInitComponents = True
 
@@ -612,7 +612,7 @@ Public Sub gvwComponent_Click()
   Dim hCompItem As ComponentItem
   Dim sDep As String
   
-  If webAboutComponent.Visible Then AboutComponent
+  'If webAboutComponent.Visible Then AboutComponent
   
   If gvwComponent.Column <> 0 Then Return
   
@@ -715,16 +715,16 @@ End
 ' END
 
 
-Public Sub mnuShowUsed_Click()
+Public Sub chkShowUsed_Click()
 
-  $bShowUsed = mnuShowUsed.Value
+  $bShowUsed = chkShowUsed.Value
   RefreshComponents(True)
 
 End
 
-Public Sub mnuShowDeprecated_Click()
+Public Sub chkShowDeprecated_Click()
 
-  $bShowDeprecated = mnuShowDeprecated.Value
+  $bShowDeprecated = chkShowDeprecated.Value
   RefreshComponents(True)
 
 End
@@ -798,7 +798,7 @@ Private Sub AboutComponent() As Boolean
   Try sKey = hCompItem.Key
   If Not sKey Then Return True
   'MHelp.GotoComponent(sKey)
-  webAboutComponent.Zoom = 0.75
+  'webAboutComponent.Zoom = 0.75
   MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey,, "v&nh&l=" & MHelp.GetLanguage())
   
 End
@@ -806,27 +806,27 @@ End
 
 Public Sub btnHelp_Click()
 
-  If webAboutComponent.Visible Then
+  If panHelp.Visible Then
     
     If webAboutComponent.History.Index Then
       webAboutComponent.Back
     Else
-      webAboutComponent.Hide
-      btnForward.Hide
+      panHelp.Hide
+      'btnForward.Hide
       panComponent.Show
-      btnHelp.Picture = Picture["icon:/small/next"]
-      btnHelp.Text = Shortcut(("About component"), "A") & "..."
+      'btnHelp.Picture = Picture["icon:/small/next"]
+      'btnHelp.Text = Shortcut(("About component"), "A") & "..."
     Endif
   
   Else
   
     If AboutComponent() Then Return
-    webAboutComponent.Show
-    btnForward.Show
+    panHelp.Show
+    'btnForward.Show
     panComponent.Hide
     'Try gvwComponent.Current.EnsureVisible
-    btnHelp.Text = ""
-    btnHelp.Picture = Picture["icon:/small/previous"]
+    'btnHelp.Text = ""
+    'btnHelp.Picture = Picture["icon:/small/previous"]
     
   Endif
 
@@ -1101,13 +1101,15 @@ End
 
 Public Sub gvwComponent_Activate()
 
-  Dim hCurrent As ComponentItem = $cComp[$aComp[gvwComponent.Row]]
+  ' Dim hCurrent As ComponentItem = $cComp[$aComp[gvwComponent.Row]]
+  ' 
+  ' If gvwComponent.Column = 0 Then Return
+  ' 
+  ' hCurrent.Expanded = Not hCurrent.Expanded
+  ' gvwComponent.Rows[gvwComponent.Row].Height = -1
+  ' gvwComponent.Current.EnsureVisible
   
-  If gvwComponent.Column = 0 Then Return
-  
-  hCurrent.Expanded = Not hCurrent.Expanded
-  gvwComponent.Rows[gvwComponent.Row].Height = -1
-  gvwComponent.Current.EnsureVisible
+  btnHelp.Value = True
     
 End
 
@@ -1436,12 +1438,6 @@ Public Sub webAboutComponent_Click((Frame) As WebFrame)
 
 End
 
-Public Sub picFilter_MouseDown()
-
-  mnuComponent.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
-
-End
-
 Public Sub cmbType_Click()
 
   Select cmbType.Index
@@ -1628,4 +1624,40 @@ Private Sub UpdateInfo()
   
   $bInitInfo = True
 
+End
+
+Public Sub panComponent_Arrange()
+
+  btnUndo.Move(btnUndo.Parent.W - btnUndo.W - Desktop.Scale, Desktop.Scale)
+
+End
+
+Public Sub btnStop_Click()
+  
+  webAboutComponent.Stop
+  
+End
+
+Public Sub btnReload_Click()
+  
+  webAboutComponent.Reload
+  
+End
+
+Public Sub btnZoomIn_Click()
+  
+  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom * 1.25, -2)
+  
+End
+
+Public Sub btnZoomOut_Click()
+  
+  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom / 1.25, -2)
+  
+End
+
+Public Sub btnZoomNormal_Click()
+  
+  webAboutComponent.TextZoom = 0.8
+  
 End

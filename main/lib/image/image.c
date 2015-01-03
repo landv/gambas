@@ -2050,11 +2050,13 @@ static inline int between0And255 (int val)
 
 static inline int get_brightness(int base, int strength)
 {
+	if (strength == 0) return base;
 	return between0And255(base + strength);
 }
 
 static inline int get_contrast(int base, int strength)
 {
+	if (strength == 0) return base;
 	return between0And255 ((base - 127) * (strength + 255) / 255 + 127);
 }
 
@@ -2065,6 +2067,7 @@ static inline int myRound(double d)
 
 static inline int get_gamma(int base, int strength)
 {
+	if (strength == 0) return base;
 	return between0And255(myRound(255.0 * pow(base / 255.0, 1.0 / pow(10, strength / 255.0))));
 }
 

@@ -31,7 +31,7 @@ TABLE.desc>TBODY>TR>TH{text-align:left;border:none;padding:6px 12px;}
 .page{padding:4px 8px;max-width:800px;margin:0 auto;position:relative;top:2.5em;}
 .page-edit{position:absolute;top:2.5em;bottom:0;left:0;right:0;}
 .unknown{color:red;margin-top:8px;}
-DIV.error{color:black;padding:2px 6px;background:url('<%/%>/error-bg.png');}
+DIV.error{color:red;padding:2px 6px;background:url('<%/%>/error-bg.png');}
 DIV.message{color:red;font-style:italic;}
 .command{display:inline-block;margin-left:8px;}
 #lang{float:right;font-size:80%;margin-right:4px;}
@@ -67,15 +67,11 @@ P:first-child,UL:first-child,OL:first-child,TABLE:first-child{margin-top:0;}
 H1:first-child{margin-top:0;}
 DIV.table:first-child{margin-top:0;}
 DIV.syntax>P:first-child{margin-top:-0.75em;}
-.login{position:static;background:white;color:gray;border:#DF6B00 solid 8px;border-radius:32px;padding:16px;box-shadow:0 0 8px gray;width:20em;margin:16px;}
+.login{position:static;background:white;color:gray;border:#DF6B00 solid 4px;border-radius:32px;padding:16px;box-shadow:0 0 8px gray;width:24em;margin:16px;}
 .label-login{display:inline-block;margin-left:0.5em;width:8em;height:1.5em;}
 #user{width:12em;}
 #ok{margin-top:8px;width:8em;}
 #register{width:8em;}
 .hide-if-compact{display:none;}
 .show-if-compact{display:inherit;}
-@media(min-width:120em){.login{position:fixed;top:32px;left:32px;margin:0px;}
-.hide-if-compact{display:inherit;}
-.show-if-compact{display:none;}
-}
 .inherit{color:#C0C0C0;}

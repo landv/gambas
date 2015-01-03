@@ -208,7 +208,8 @@ TABLE.desc > TBODY > TR > TH {
 }
 
 DIV.error {
-  color: black;
+  color: red;
+  /*text-shadow: red 0 0 1px;*/
   padding: 2px 6px;
   background: url('<%/%>/error-bg.png');
 }
@@ -445,11 +446,11 @@ DIV.syntax > P:first-child {
   position: static;
   background: white; /*#DFC1A7;*/
   color: gray;
-  border: #DF6B00 solid 8px;
+  border: #DF6B00 solid 4px;
   border-radius: 32px;
   padding: 16px;
   box-shadow: 0 0 8px gray;
-  width: 20em;
+  width: 24em;
   margin: 16px;
 }
 
@@ -480,7 +481,7 @@ DIV.syntax > P:first-child {
   display: inherit;
 }
 
-@media (min-width: 120em) {
+/*@media (min-width: 120em) {
   .login {
     position: fixed;
     top: 32px;
@@ -493,7 +494,7 @@ DIV.syntax > P:first-child {
   .show-if-compact {
     display: none;
   }
-}
+}*/
 
 .inherit {
   color: #C0C0C0;

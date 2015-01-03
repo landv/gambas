@@ -1400,6 +1400,17 @@ Public Sub imvImage_Draw(hZoom As Image)
   
   hOffset = imvImage.ImageToView(Point(0, 0))
   
+  If bBalance Then
+    If Not $hSelect Or If $hSelect.IsVoid() Then
+    
+      hImage = hZoom.Copy()
+      FImageProperty.ApplyBalance(hImage)
+      'imvImage._Paint(hImage, hOffset.X, hOffset.Y)
+      hZoom = hImage
+      
+    Endif
+  Endif
+  
   If $hStrokeImage Then
     Paint.Save
     If $sTool = "erase" Then
@@ -1422,18 +1433,6 @@ Public Sub imvImage_Draw(hZoom As Image)
     Paint.Restore
   Else
     imvImage._Paint(hZoom, hOffset.X, hOffset.Y)
-  Endif
-  
-  If bBalance Then
-    
-    If Not $hSelect Or If $hSelect.IsVoid() Then
-    
-      hImage = hZoom.Copy()
-      FImageProperty.ApplyBalance(hImage)
-      imvImage._Paint(hImage, hOffset.X, hOffset.Y)
-      
-    Endif
-    
   Endif
   
   ' If $hMagic Then 

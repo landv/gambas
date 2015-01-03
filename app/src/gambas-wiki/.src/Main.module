@@ -942,6 +942,8 @@ Public Sub GetToDo() As String[]
     
     hComp = CComponent.Get(sComp)
     hComp.Load
+    If hComp.State = CComponent.DEPRECATED Then Continue
+    
     bPrintComponent = True
 
     For Each sClass In hComp.ClassList

@@ -1,5 +1,10 @@
 ' Gambas class file
 
+Public Const STABLE As Integer = 0
+Public Const STABLE_NOT_FINISHED As Integer = 1
+Public Const UNSTABLE As Integer = 2
+Public Const DEPRECATED As Integer = 3
+
 Static Public All As New Collection
 Static Public Classes As Collection
 
@@ -13,7 +18,7 @@ Public MultiContainers As New String[]
 Public Virtuals As New String[]
 Public Loaded As Boolean
 Public ClassList As New String[]
-Public Alpha As Boolean
+Public State As Integer
 Public SortKey As Integer
 Public Groups As New Collection
 Public Type As String
@@ -283,8 +288,21 @@ Public Sub _new(sName As String)
         Require = Split(sLine)
       Case "Exclude", "Excludes"
         Exclude = Split(sLine)
-      Case "Alpha"
-        Alpha = sLine <> "0"
+      Case "Alpha" 
+        State = UNSTABLE
+      Case "State" 
+        Select Case LCase(sLine)
+          Case "stable", "finished"
+            State = STABLE
+          Case "notfinished", "unfinished"
+            State = STABLE_NOT_FINISHED
+          Case "experimental", "unstable"
+            State = UNSTABLE
+          Case "deprecated"
+            State = DEPRECATED
+          Default
+            If IsInteger(sLine) Then State = CInt(sLine)
+        End Select
       Case "DoNotWrite"
         InsertList(DoNotWrite, sLine)
       Case "AlwaysRead"

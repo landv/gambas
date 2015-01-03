@@ -423,6 +423,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
   Endif
   
   hWebView.Stop
+  hWebView.History.Clear
   
   If sHtml Then
     
@@ -444,7 +445,6 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       'Debug sUrl
       hWebView.Url = sUrl
     Endif
-    hWebView.History.Clear
     
   Else
     
