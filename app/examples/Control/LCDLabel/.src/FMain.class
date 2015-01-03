@@ -47,6 +47,7 @@ End
 
 Public Sub Form_Open()
 
+  ' SDL cannot resample its music track...
   Sound.Frequency = 48000
   Music.Load("alarm.ogg")
 

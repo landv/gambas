@@ -7,6 +7,7 @@ Inherits UserControl
 Property Text As String
 Property Picture As Picture
 Property Read Container As Container
+Property Visible As Boolean
 
 Private Sub GetIconPanel() As IconPanel
   
@@ -61,5 +62,17 @@ End
 Private Function Container_Read() As Container
 
   Return Me
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return GetView().Rows[GetIndex()].H > 0
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  GetIconPanel()._SetVisible(Me, Value)
 
 End
