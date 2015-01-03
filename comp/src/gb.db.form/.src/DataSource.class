@@ -358,9 +358,13 @@ Public Sub _EditCurrent() As Result
 
 End
 
-Public Sub _UpdateCurrent(rData As Result)
+Public Sub _UpdateCurrent(rData As Result) As Boolean
+
+  Dim bCancel As Boolean
   
-  Raise BeforeSave(rData)
+  bCancel = Raise BeforeSave(rData)
+  If bCancel Then Return True
+  
   rData.Update
   $hTable.Refresh
 
@@ -395,6 +399,7 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
   Dim sKey As String
   Dim iInd As Integer
   Dim aVal As Variant[]
+  Dim bCancel As Boolean
 
   Inc Application.Busy
   
@@ -436,8 +441,8 @@ Public Function Save(Optional bMessage As Boolean = True) As Boolean
       aVal[iInd] = rData[aKey[iInd]]
     Next
     
-    Raise BeforeSave(rData)
-    rData.Update
+    bCancel = Raise BeforeSave(rData)
+    If Not bCancel Then rData.Update
   
     Redraw(True)
     If Not $bCheckModified Then Create(True)
