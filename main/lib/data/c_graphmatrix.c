@@ -266,16 +266,16 @@ static int next_edge_vertical(CMATRIX *mat, unsigned int *srcp,
 BEGIN_METHOD_VOID(Matrix_nextInEdge)
 
 	struct enum_state *state = GB.GetEnum();
-	unsigned int src = state->v.src, dst = THIS->v.vertex;
+	unsigned int src = state->v.src, dst = state->v.dst;
 
 	if (!state->e) {
-		dst = THIS->v.vertex = get_cur_vertex(THIS);
+		dst = state->v.dst = get_cur_vertex(THIS);
 		GB.Array.New(&state->e, GB_T_STRING, 2);
 		GB.Ref(state->e);
 		if (THIS->matrix[src].edges[dst].set)
 			goto found;
 	}
-	if (next_edge_vertical(THIS, &src, &dst) || dst != THIS->v.vertex) {
+	if (next_edge_vertical(THIS, &src, &dst) || dst != state->v.dst) {
 		GB.StopEnum();
 		GB.Unref(&state->e);
 		return;
@@ -301,16 +301,16 @@ END_METHOD
 BEGIN_METHOD_VOID(Matrix_nextOutEdge)
 
 	struct enum_state *state = GB.GetEnum();
-	unsigned int src = THIS->v.vertex, dst = state->v.dst;
+	unsigned int src = state->v.src, dst = state->v.dst;
 
 	if (!state->e) {
-		src = THIS->v.vertex = get_cur_vertex(THIS);
+		src = state->v.src = get_cur_vertex(THIS);
 		GB.Array.New(&state->e, GB_T_STRING, 2);
 		GB.Ref(state->e);
 		if (THIS->matrix[src].edges[dst].set)
 			goto found;
 	}
-	if (next_edge(THIS, &src, &dst) || src != THIS->v.vertex) {
+	if (next_edge(THIS, &src, &dst) || src != state->v.src) {
 		GB.StopEnum();
 		GB.Unref(&state->e);
 		return;
@@ -336,15 +336,15 @@ END_METHOD
 BEGIN_METHOD_VOID(Matrix_nextAdjacent)
 
 	struct enum_state *state = GB.GetEnum();
-	unsigned int src = THIS->v.vertex, dst = state->v.dst;
+	unsigned int src = state->v.src, dst = state->v.dst;
 
 	if (!state->e) {
-		src = THIS->v.vertex = get_cur_vertex(THIS);
+		src = state->v.src = get_cur_vertex(THIS);
 		state->e = (void *) 1;
 		if (THIS->matrix[src].edges[dst].set)
 			goto found;
 	}
-	if (next_edge(THIS, &src, &dst) || src != THIS->v.vertex) {
+	if (next_edge(THIS, &src, &dst) || src != state->v.src) {
 		GB.StopEnum();
 		return;
 	}
