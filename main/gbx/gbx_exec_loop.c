@@ -1188,7 +1188,12 @@ _CALL:
 			}
 			
 			if (EXEC.desc && !CLASS_DESC_is_static_method(EXEC.desc) && !EXEC.object)
-				THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), $("_call"));
+			{
+				if (!EXEC.class->auto_create)
+					THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), $("_call"));
+
+				EXEC.object = EXEC_auto_create(EXEC.class, FALSE);
+			}
 			
 			goto __CALL_SPEC;
 
