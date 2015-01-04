@@ -209,7 +209,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
   Dim bCancel As Boolean
   Dim iPadding As Integer
 
-  Draw.Save
+  Paint.Save
   
   With hData
 
@@ -224,8 +224,10 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       Endif
     Endif
     
-    Draw.FillRect(X, Y, W, H, iColor)
+    Paint.FillRect(X, Y, W, H, iColor)
     
+    If .Border Then .Border.Paint(X, Y, W, H)
+      
     iPadding = Max($iPadding, .Padding)
     
     If iPadding Then
@@ -235,15 +237,24 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       H -= iPadding * 2
     Endif
     
+    If .Border Then
+      With hData.Border
+        X += .LeftPadding + .LeftWidth + .LeftMargin
+        Y += .TopPadding + .TopWidth + .TopMargin
+        W -= .LeftPadding + .LeftWidth + .RightPadding + .RightWidth + .LeftMargin + .RightMargin
+        H -= .TopPadding + .TopWidth + .BottomPadding + .BottomWidth + .TopMargin + .BottomMargin
+      End With
+    Endif
+    
     If W > 0 And If H > 0 Then
       
       If .Foreground = Color.Default Then
-        Draw.Foreground = Me.Foreground
+        Paint.Background = Style.ForegroundOf(Me)
       Else
-        Draw.Foreground = .Foreground
+        Paint.Background = .Foreground
       Endif
       
-      If .Font Then Draw.Font = .Font
+      If .Font Then Paint.Font = .Font
 
       If $bHasDrawEvent Then
         bCancel = Raise Draw(X, Y, W, H, iRow, iCol)
@@ -285,21 +296,21 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       
       If .Text Then
         If .WordWrap Then
-          Draw.RichText(Html(.Text), X, Y, W, H, .Alignment)
+          Paint.DrawRichText(Html(.Text), X, Y, W, H, .Alignment)
         Else
-          Draw.Text(.Text, X, Y, W, H, .Alignment)
+          Paint.DrawText(.Text, X, Y, W, H, .Alignment)
         Endif
       Else If .RichText Then
         If .WordWrap Then
-          Draw.RichText(.RichText, X, Y, W, H, .Alignment)
+          Paint.DrawRichText(.RichText, X, Y, W, H, .Alignment)
         Else
           A = .Alignment
           If Align.IsLeft(A) Then
-            Draw.RichText(.RichText, X, Y, 4096, H, .Alignment)
+            Paint.DrawRichText(.RichText, X, Y, 4096, H, .Alignment)
           Else If Align.IsRight(A) Then
-            Draw.RichText(.RichText, X + W - 4096, Y, 4096, H, .Alignment)
+            Paint.DrawRichText(.RichText, X + W - 4096, Y, 4096, H, .Alignment)
           Else
-            Draw.RichText(.RichText, X + W \ 2 - 4096, Y, 4096, H, .Alignment)
+            Paint.DrawRichText(.RichText, X + W \ 2 - 4096, Y, 4096, H, .Alignment)
           Endif
         Endif
       Endif
@@ -311,16 +322,16 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
 DRAW_GRID:
 
   If $bGrid Then
-    Draw.Foreground = Color.Merge(Color.LightForeground, $hView.Background)
+    iColor = Color.Merge(Color.LightForeground, $hView.Background)
     If System.RightToLeft Then
-      Draw.Line(hRect.X, hRect.Y, hRect.X, hRect.Y + hRect.H - 1)
+      Paint.FillRect(hRect.X, hRect.Y, 1, hRect.H, iColor)
     Else
-      Draw.Line(hRect.X + hRect.W - 1, hRect.Y, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
+      Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
     Endif
-    Draw.Line(hRect.X, hRect.Y + hRect.H - 1, hRect.X + hRect.W - 1, hRect.Y + hRect.H - 1)
+    Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
   Endif
   
-  Draw.Restore
+  Paint.Restore
 
 End
 
@@ -546,7 +557,7 @@ Public Sub ScrollArea_Draw()
   Else
     hRect.Adjust($hRows.Width, $hColumns.Height, 0, 0)
   Endif
-  hClip = hRect.Intersection(Draw.ClipRect)
+  hClip = hRect.Intersection(Paint.ClipRect)
   If Not hClip Then Return
   
   Paint.Save
@@ -617,11 +628,24 @@ Public Sub ScrollArea_Draw()
       Endif
       
       If hClip.Intersection(hSpan) Then
-        Paint.Save
-        Paint.Rectangle(hSpan.X, hSpan.Y, hSpan.W, hSpan.H)
-        Paint.Clip
+        
         hData = _GetCellData(R, C)
+        
+        Paint.Save
+        If hData.Border Then
+          If hData.Border.Clip(hSpan.X, hSpan.Y, hSpan.W, hSpan.H) Then Goto NEXT_CELL
+        Else
+          Paint.Rectangle(hSpan.X, hSpan.Y, hSpan.W, hSpan.H)
+          Paint.Clip
+        Endif
         DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
+        
+        If $iMode And If Not _DoNotDrawSelection Then
+          If _IsRowSelected(I) Then
+            Paint.FillRect(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, Color.SetAlpha(Color.SelectedBackground, 192))
+          Endif
+        Endif
+        
         Paint.Restore
       Endif
       
@@ -651,9 +675,13 @@ Public Sub ScrollArea_Draw()
   
   If hCursor Then
     If $bShowCursor Then
+      'Paint.FillRect(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, Color.SetAlpha(Color.SelectedBackground, 192))
       'Draw.ClipRect = hClip
-      Draw.Foreground = iGrid 'Color.LightForeground
-      Draw.Rect(hCursor.X, hCursor.Y, hCursor.W, hCursor.H)
+      Paint.Background = Color.LightBackground 'iGrid 'Color.LightForeground
+      Paint.AntiAlias = False
+      Paint.Rectangle(hCursor.X, hCursor.Y, hCursor.W, hCursor.H)
+      Paint.Stroke
+      Paint.AntiAlias = True
     Endif
   Endif
   
@@ -665,13 +693,8 @@ Public Sub ScrollArea_Draw()
     
     'Paint.Begin(Draw.Device)
     Paint.ClipRect = hClip
-    Paint.Brush = Paint.Color(Color.SetAlpha(Style.ForegroundOf(Me), 252))
-    
     With $hColumns[iSort]
-    
-      Paint.Rectangle(XO + .X, $hColumns.H + F, .W, $hView.ClientH - $hColumns.H - F * 2)
-      Paint.Fill
-    
+      Paint.FillRect(XO + .X, $hColumns.H + F, .W, $hView.ClientH - $hColumns.H - F * 2, Color.SetAlpha(Style.ForegroundOf(Me), 252))
     End With
 
     'Paint.End
@@ -680,32 +703,32 @@ Public Sub ScrollArea_Draw()
 
   ' Row selection
 
-  If $iMode And If Not _DoNotDrawSelection Then
-
-    Y = YY
-    X = XX
-    
-    'Paint.Begin(Draw.Device)
-    'Paint.ClipRect = hSaveClip
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
-    
-    For I = iRow To iRow2
-  
-      H = $aRowY[I - iRow + 1] + F - Y
-      
-      If _IsRowSelected(I) Then
-        'Paint.Rectangle(X, Y, $hColumns._GetWidth(), H)
-        Paint.Rectangle(F, Y, $hView.ClientW - F * 2, H - If($bGrid, 1, 0))
-        Paint.Fill
-      Endif
-      
-      Y += H
-      
-    Next
-    
-    'Paint.End
-    
-  Endif
+  ' If $iMode And If Not _DoNotDrawSelection Then
+  ' 
+  '   Y = YY
+  '   X = XX
+  '   
+  '   'Paint.Begin(Draw.Device)
+  '   'Paint.ClipRect = hSaveClip
+  '   Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
+  '   
+  '   For I = iRow To iRow2
+  ' 
+  '     H = $aRowY[I - iRow + 1] + F - Y
+  '     
+  '     If _IsRowSelected(I) Then
+  '       'Paint.Rectangle(X, Y, $hColumns._GetWidth(), H)
+  '       Paint.Rectangle(F, Y, $hView.ClientW - F * 2, H - If($bGrid, 1, 0))
+  '       Paint.Fill
+  '     Endif
+  '     
+  '     Y += H
+  '     
+  '   Next
+  '   
+  '   'Paint.End
+  '   
+  ' Endif
   
   Paint.Restore
 
@@ -1944,6 +1967,12 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
         If .Text Or If .RichText Then W += iPadding
       Endif
       
+      If .Border Then
+        With hData.Border
+          W += .LeftPadding + .LeftWidth + .RightPadding + .RightWidth
+        End With
+      Endif
+      
       PW = Max(PW, (W + D - 1) \ D)
       
     End With
@@ -1967,6 +1996,8 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
   Dim iRowSpan, iColSpan As Integer
   Dim iCol As Integer
   Dim D As Integer
+  Dim iPadding As Integer
+  Dim WT As Float
   
   PH = $hRows.Height
   
@@ -1999,26 +2030,36 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
     
     With hData
       
-      H = Max(4, .Padding * 2)
+      iPadding = Max($iPadding, .Padding)
+      H = iPadding * 2
       hFont = .Font
       If Not hFont Then hFont = Me.Font
       
+      WT = WC - iPadding * 2 - 2
+      If .Border Then WT -= .Border.LeftPadding + .Border.RightPadding + .Border.LeftMargin + .Border.RightMargin + .Border.LeftWidth + .Border.RightWidth
+      
       If .RichText Then
         If .WordWrap Then
-          H += hFont.RichTextHeight(.RichText, WC - .Padding * 2)
+          H += hFont.RichTextHeight(.RichText, WT)
         Else
           H += hFont.RichTextHeight(.RichText)
         Endif
       Else If .Text Then
         If .WordWrap Then
-          H += hFont.RichTextHeight(Html(.Text), WC - .Padding * 2)
+          H += hFont.RichTextHeight(Html(.Text), WT)
         Else
           H += hFont.TextHeight(.Text)
         Endif
       Endif
       
       If .Picture Then
-        H = Max(.Picture.H + .Padding * 2, H)
+        H = Max(.Picture.H + iPadding * 2, H)
+      Endif
+      
+      If .Border Then
+        With hData.Border
+          H += .TopPadding + .TopWidth + .BottomPadding + .BottomWidth + .TopMargin + .BottomMargin
+        End With
       Endif
       
       PH = Max(PH, (H + D - 1) \ D)
@@ -2128,3 +2169,4 @@ Private Sub Padding_Write(Value As Integer)
   $hView.Refresh
 
 End
+

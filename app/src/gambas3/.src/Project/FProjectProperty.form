@@ -374,7 +374,7 @@
         Border = False
         Mode = Select.Single
         Grid = False
-        Padding = 4
+        Padding = 6
       }
       { btnUndo Button
         MoveScaled(58,7,17,4)
@@ -477,12 +477,14 @@
     }
     { Separator6 Separator
       MoveScaled(35,11,21,0)
+      Visible = False
     }
     { gvwLibrary GridView
       MoveScaled(6,20,59,29)
       Expand = True
       Border = False
       Mode = Select.Single
+      Grid = False
     }
     { Separator7 Separator
       MoveScaled(25,51,23,0)

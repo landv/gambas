@@ -33,6 +33,9 @@ Private $aNeed As String[]
 Private $aRequire As String[]
 Private $aImplement As String[]
 
+Private $hBorderLibrary As Border
+Private $aBorderComponent As Border[]
+
 Static Public Function Run() As Boolean
 
   Return Not FProjectProperty.ShowModal()
@@ -49,6 +52,7 @@ End
 Public Sub Form_Open()
 
   Dim sLang As String
+  Dim I As Integer
 
   Me.Title = ("Project properties") & " - " & Project.Name
 
@@ -99,15 +103,31 @@ Public Sub Form_Open()
 
   End With
   
+  $hBorderLibrary = New Border("color:light-foreground;margin:" & CInt(Desktop.Scale) & ";top-margin:0")
+  ' $hBorderLibrary.Color = Color.LightForeground
+  ' $hBorderLibrary.LeftPadding = Desktop.Scale
+  ' $hBorderLibrary.RightPadding = Desktop.Scale
+  ' $hBorderLibrary.BottomPadding = Desktop.Scale
+  
+  $aBorderComponent = New Border[8]
+  $aBorderComponent[0] = New Border("right-style:none;color:lightforeground;padding:0;margin:8 0 0 8")
+  $aBorderComponent[1] = New Border("style:solid none;color:lightforeground;padding:0;margin:8 0 0 0")
+  $aBorderComponent[2] = $aBorderComponent[1]
+  $aBorderComponent[3] = New Border("left-style:none;color:lightforeground;padding:0;margin:8 8 0 0")
+  For I = 0 To 3
+    $aBorderComponent[I + 4] = $aBorderComponent[I].Copy()
+    $aBorderComponent[I + 4].BottomMargin = 8
+  Next
+  
   $hCheck = Picture["img/16/checked.png"]
   $hUncheck = Picture["img/16/unchecked.png"]
 
   gvwComponent.Columns.Count = 4
-  gvwComponent.Columns[0].Width = 24
+  gvwComponent.Columns[0].Width = 32
   gvwComponent.Columns[0].Expand = False
   gvwComponent.Columns[1].Expand = False
   gvwComponent.Columns[2].Expand = True
-  gvwComponent.Columns[3].Width = 24
+  gvwComponent.Columns[3].Width = 40
   gvwComponent.Columns[3].Expand = False
 
   chkShowUsed.Value = $bShowUsed
@@ -435,9 +455,7 @@ Private Sub RefreshComponents(Optional bKeep As Boolean)
   Endif
 
   gvwComponent.Rows.Count = $aComp.Count
-  gvwComponent.Rows.Height = -1
-  
-  'gvwComponent_Arrange
+  gvwComponent_Arrange
   
 End
 
@@ -488,9 +506,14 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
       
     End Select
     
-    '.Padding = 4
     .Alignment = Align.TopNormal
     .Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
+    
+    If Row = $aComp.Max Then
+      .Border = $aBorderComponent[Column + 4]
+    Else
+      .Border = $aBorderComponent[Column]
+    Endif
     
   End With
   
@@ -1174,13 +1197,13 @@ Private Sub RefreshLibraries()
       '.Picture = Picture["icon:/large/exec"]
       .Alignment = Align.TopNormal
       .RichText = CLibraryInfo[$aLibraries[Y]].GetDescription()
-      .Padding = 8
+      .Padding = Desktop.Scale * 2
       .WordWrap = True
+      .Border = $hBorderLibrary
       
     End With
     
     gvwLibrary.Rows[Y].Height = -1
-    Debug gvwLibrary.Rows[Y].Height
     
   Next
   
@@ -1261,12 +1284,14 @@ End
 Public Sub gvwComponent_Arrange()
 
   Dim I As Integer
+  
+  gvwComponent.Columns[1].Width = -1
 
   For I = 0 To $aComp.Max
     gvwComponent.Rows[I].H = -1
+    'Debug I;; gvwComponent.Rows[I].H
   Next
   
-  gvwComponent.Columns[1].Width = -1
 
 End
 

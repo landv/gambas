@@ -100,6 +100,10 @@ Padding
 p
 f
 
+Margin
+p
+f
+
 LeftStyle
 v
 i
@@ -180,10 +184,38 @@ BottomPadding
 v
 f
 
+LeftMargin
+v
+f
+
+RightMargin
+v
+f
+
+TopMargin
+v
+f
+
+BottomMargin
+v
+f
+
 Paint
 m
 
 (X)f(Y)f(Width)f(Height)f
+Clip
+m
+b
+(X)f(Y)f(Width)f(Height)f
+_new
+m
+
+[(Style)s]
+Copy
+m
+Border
+
 #ColumnView
 _TreeView
 C
@@ -1917,6 +1949,10 @@ ColumnSpan
 p
 i
 
+Border
+p
+Border
+
 X
 r
 i
@@ -2137,6 +2173,10 @@ i
 WordWrap
 v
 b
+
+Border
+v
+Border
 
 Font
 p

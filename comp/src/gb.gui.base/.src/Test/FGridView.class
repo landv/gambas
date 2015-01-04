@@ -5,12 +5,29 @@ Public Sub Form_Open()
 
   Dim I As Integer
   Dim hCtrl As GridView
+  Dim J As Integer
+  Dim hBorder As Border
+  Dim hBorderLeft As Border
+  Dim hBorderRight As Border
   
   Print gvwInfo.W;; gvwInfo.H;; "/";; Me.W;; Me.H
+  
+  hBorderLeft = New Border("margin:4;width:1;right-style:none;right-margin:0;right-width:0")
+  hBorder = New Border("margin:4;width:1;left-margin:0;right-margin:0;left-style:none;right-style:none;left-width:0;right-width:0")
+  hBorderRight = New Border("margin:4;width:1;left-style:none;left-margin:0;left-width:0")
   
   'gvwinfo.Clear
   gvwinfo.Columns.Count = 3
   gvwinfo.Rows.Count = 10
+  
+  For I = 0 To gvwInfo.Rows.Max
+    gvwInfo[I, 0].Border = hBorderLeft
+    gvwInfo[I, gvwInfo.Columns.Max].Border = hBorderRight
+    For J = 1 To gvwInfo.Columns.Max - 1
+      gvwInfo[I, J].Border = hBorder
+    Next
+  Next
+  
   'gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Bleu"
   gvwinfo[0, 1].Text = "Blanc"
@@ -51,7 +68,7 @@ Public Sub Form_Open()
   
   ScrollArea(gvwInfo.Proxy).Shadow = True
   
-  'gvwInfo[0, 0].ColumnSpan = gvwInfo.Columns.Count
+  gvwInfo[0, 0].ColumnSpan = gvwInfo.Columns.Count
   
   gvwinfo.Columns.Width = -1
   gvwinfo.Rows[6].Height = -1

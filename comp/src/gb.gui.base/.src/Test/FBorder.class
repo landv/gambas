@@ -11,23 +11,13 @@ End
 
 Public Sub Form_Open()
 
-  $hBorder = New Border
-  $hBorder.Color = Color.Blue
-  $hBorder.Width = 60
-  $hBorder.Radius = 0
-  $hBorder.Style = Border.Solid '+ Border.Double
-  
-  '$hBorder.LeftStyle = Border.Solid
-  $hBorder.LeftColor = Color.Red
-  
-  ' $hBorder.RightWidth = 8
-  ' $hBorder.RightColor = Color.Red
-  ' $hBorder.BottomLeftRadius = 0
-  ' $hBorder.BottomStyle = Border.Double
-  ' ' 
-  ' $hBorder.LeftWidth = 12
-  ' $hBorder.LeftColor = Color.DarkGreen
-  ' 
-  ' '$hBorder.Style = Border.Dotted
+  $hBorder = New Border("margin:8;width:16;left-width:0;right-width:4;top-left-radius:40")
+
+End
+
+Public Sub Slider1_Change()
+
+  $hBorder.Radius = Slider1.Value
+  DrawingArea1.Refresh
 
 End

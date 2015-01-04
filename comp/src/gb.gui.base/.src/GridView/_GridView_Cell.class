@@ -15,6 +15,7 @@ Property Foreground As Integer
 Property Padding As Integer
 Property RowSpan As Integer
 Property ColumnSpan As Integer
+Property Border As Border
 
 Property Read X, {Left} As Integer
 Property Read Y, {Top} As Integer
@@ -227,5 +228,17 @@ Private Sub ColumnSpan_Write(Value As Integer)
   
   _View._SetSpan(_Row, _Column, S, Value - 1)
   _View.Refresh
+
+End
+
+Private Function Border_Read() As Border
+
+  Return GetData(False).Border
+
+End
+
+Private Sub Border_Write(Value As Border)
+
+  GetData(True).Border = Value
 
 End

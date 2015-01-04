@@ -9,6 +9,7 @@ Property Radius As Float
 Property Style As Integer
 Property Color As Integer
 Property Padding As Float
+Property Margin As Float
 
 Public LeftStyle As Byte = Solid
 Public RightStyle As Byte = Solid
@@ -34,6 +35,13 @@ Public LeftPadding As Float
 Public RightPadding As Float
 Public TopPadding As Float
 Public BottomPadding As Float
+
+Public LeftMargin As Float
+Public RightMargin As Float
+Public TopMargin As Float
+Public BottomMargin As Float
+
+Static Private $aProp As String[] = ["width", "color", "radius", "style", "padding", "margin"]
 
 Private Const CURVE_MUL As Float = 0.44771525
 
@@ -97,7 +105,6 @@ Private Sub Color_Write(Value As Integer)
 
 End
 
-
 Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
   
   Dim fWidth As Float
@@ -105,17 +112,26 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
   Dim iColor As Integer
   Dim F As Float
   Dim F2 As Float
+  Dim bTop As Boolean
+  Dim bRight As Boolean
+  Dim bLeft As Boolean
+  Dim bBottom As Boolean
   
-  X += LeftPadding
-  Y += TopPadding
-  Width -= LeftPadding + RightPadding
-  Height -= TopPadding + BottomPadding
+  X += LeftMargin
+  Y += TopMargin
+  Width -= LeftMargin + RightMargin
+  Height -= TopMargin + BottomMargin
   If Width <= 0 Or If Height <= 0 Then Return
   
   Paint.Save
   Paint.LineCap = Paint.LineCapSquare
   
-  If TopStyle And If TopWidth Then
+  If TopStyle And If TopWidth Then bTop = True
+  If BottomStyle And If BottomWidth Then bBottom = True
+  If RightStyle And If RightWidth Then bRight = True
+  If LeftStyle And If LeftWidth Then bLeft = True
+  
+  If bTop Then
     
     If TopStyle = LeftStyle And If TopStyle = RightStyle And If TopStyle = BottomStyle Then
       If TopColor = LeftColor And If TopColor = RightColor And If TopColor = BottomColor Then
@@ -136,9 +152,22 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
   
     Paint.Save
     
-    Paint.MoveTo(X + Width / 2, Y + Width / 2)
-    Paint.LineTo(X, Y)
-    Paint.LineTo(X + Width, Y)
+    If bLeft And If TopLeftRadius > TopWidth Then
+      Paint.MoveTo(X + Width / 2, Y + Width / 2)
+      Paint.LineTo(X, Y)
+      Paint.LineTo(X + Width / 2, Y)
+    Else
+      Paint.Rectangle(X, Y, Width / 2, TopWidth)
+    Endif
+    
+    If bRight And If TopRightRadius > TopWidth Then
+      Paint.MoveTo(X + Width / 2, Y + Width / 2)
+      Paint.LineTo(X + Width, Y)
+      Paint.LineTo(X + Width / 2, Y)
+    Else
+      Paint.Rectangle(X + Width / 2, Y, Width / 2, TopWidth)
+    Endif
+    
     Paint.Clip
     
     Paint.Rectangle(X, Y, Width, Height - TopWidth)
@@ -156,13 +185,26 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
     
   Endif
   
-  If RightStyle And If RightWidth Then
+  If bRight Then
     
     Paint.Save
     
-    Paint.MoveTo(X + Width - Height / 2, Y + Height / 2)
-    Paint.LineTo(X + Width, Y)
-    Paint.LineTo(X + Width, Y + Height)
+    If bTop And If TopRightRadius > RightWidth Then
+      Paint.MoveTo(X + Width - Height / 2, Y + Height / 2)
+      Paint.LineTo(X + Width, Y)
+      Paint.LineTo(X + Width, Y + Height / 2)
+    Else
+      Paint.Rectangle(X + Width - RightWidth, Y, RightWidth, Height / 2)
+    Endif
+    
+    If bBottom And If BottomRightRadius > RightWidth Then
+      Paint.MoveTo(X + Width - Height / 2, Y + Height / 2)
+      Paint.LineTo(X + Width, Y + Height)
+      Paint.LineTo(X + Width, Y + Height / 2)
+    Else
+      Paint.Rectangle(X + Width - RightWidth, Y + Height / 2, RightWidth, Height / 2)
+    Endif
+    
     Paint.Clip
     
     Paint.Rectangle(X + RightWidth, Y, Width - RightWidth, Height)
@@ -180,18 +222,31 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
     
   Endif
   
-  If BottomStyle And If BottomWidth Then
+  If bBottom Then
     
     Paint.Save
     
-    Paint.MoveTo(X + Width / 2, Y + Height - Width / 2)
-    Paint.LineTo(X + Width, Y + Height)
-    Paint.LineTo(X, Y + Height)
-    Paint.Clip
+    If bLeft And If BottomLeftRadius > BottomWidth Then
+      Paint.MoveTo(X + Width / 2, Y + Height - Width / 2)
+      Paint.LineTo(X + Width / 2, Y + Height)
+      Paint.LineTo(X, Y + Height)
+    Else
+      Paint.Rectangle(X, Y + Height - BottomWidth, Width / 2, BottomWidth)
+    Endif
     
+    If bRight And If BottomRightRadius > BottomWidth Then
+      Paint.MoveTo(X + Width / 2, Y + Height - Width / 2)
+      Paint.LineTo(X + Width / 2, Y + Height)
+      Paint.LineTo(X + Width, Y + Height)
+    Else
+      Paint.Rectangle(X + Width / 2, Y + Height - BottomWidth, Width / 2, BottomWidth)
+    Endif
+    
+    Paint.Clip
+      
     Paint.Rectangle(X, Y + BottomWidth, Width, Height - BottomWidth)
     Paint.Clip
-    
+      
     GoSub CLIP_BORDER
   
     iStyle = BottomStyle
@@ -204,13 +259,26 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
     
   Endif
   
-  If LeftStyle And If LeftWidth Then
+  If bLeft Then
     
     Paint.Save
     
-    Paint.MoveTo(X + Height / 2, Y + Height / 2)
-    Paint.LineTo(X, Y + Height)
-    Paint.LineTo(X, Y)
+    If bTop And If TopLeftRadius > LeftWidth Then
+      Paint.MoveTo(X + Height / 2, Y + Height / 2)
+      Paint.LineTo(X, Y)
+      Paint.LineTo(X, Y + Height / 2)
+    Else
+      Paint.Rectangle(X, Y, LeftWidth, Height / 2)
+    Endif
+    
+    If bBottom And If BottomLeftRadius > LeftWidth Then
+      Paint.MoveTo(X + Height / 2, Y + Height / 2)
+      Paint.LineTo(X, Y)
+      Paint.LineTo(X, Y + Height / 2)
+    Else
+      Paint.Rectangle(X, Y + Height / 2, LeftWidth, Height / 2)
+    Endif
+    
     Paint.Clip
     
     Paint.Rectangle(X, Y, Width - LeftWidth, Height)
@@ -234,6 +302,7 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
 CLIP_BORDER:
 
   PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+  Paint.Clip
 
   Return
   
@@ -277,7 +346,28 @@ DRAW_BORDER:
   
 End
 
+Public Sub Clip(X As Float, Y As Float, Width As Float, Height As Float) As Boolean
+  
+  X += LeftMargin '+ LeftWidth
+  Y += TopMargin '+ TopWidth
+  Width -= LeftMargin + RightMargin '+ LeftWidth + RightWidth
+  Height -= TopMargin + BottomMargin '+ TopWidth + BottomWidth
+  If Width <= 0 Or If Height <= 0 Then Return True
+  
+  PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+  Paint.Clip
+  
+End
+
+
 Private Sub PaintRoundRectangle(X As Float, Y As Float, W As Float, H As Float, TL As Float, TR As Float, BL As Float, BR As Float, Optional bClip As Boolean)
+
+  If W <= 0 Or If H <= 0 Then Return
+
+  TL = Min(TL, Min(W, H) / 2)
+  TR = Min(TR, Min(W, H) / 2)
+  BL = Min(BL, Min(W, H) / 2)
+  BR = Min(BR, Min(W, H) / 2)
 
   If TL <= 0 And If TR <= 0 And If BL <= 0 And If BR <= 0 Then
     If bClip Then
@@ -320,4 +410,144 @@ Private Sub Padding_Write(Value As Float)
   TopPadding = Value
   BottomPadding = Value
 
+End
+
+Private Sub SetProperty(sProp As String, sValue As String)
+  
+  Dim vValue As Variant
+  Dim aValue As String[]
+
+  aValue = Split(sValue, " ")
+  If aValue.Count >= 2 Then
+    If Not $aProp.Exist(sProp) Then Return 
+    If aValue.Count < 3 Then aValue.Add(aValue[0])
+    If aValue.Count < 4 Then aValue.Add(aValue[1])
+    SetProperty("top" & sProp, aValue[0])
+    SetProperty("right" & sProp, aValue[1])
+    SetProperty("bottom" & sProp, aValue[2])
+    SetProperty("left" & sProp, aValue[3])
+    Return
+  Endif
+
+  If sProp Ends "style" Then
+    Try vValue = Classes["Border"][Replace(sValue, "-", "")].Value
+  Else If sProp Ends "color" Then
+    Try vValue = Object.GetProperty(Classes["Color"], Replace(sValue, "-", ""))
+    If Error Then Try vValue = Val(sValue)
+  Else
+    Try vValue = Val(sValue)
+  Endif
+  If Error Then Return
+  
+  Try Object.SetProperty(Me, sProp, vValue)
+  
+End
+
+Private Sub NormalizeStyle()
+
+  If LeftStyle Then
+    If LeftWidth = 0 Then LeftWidth = 1
+  Else
+    LeftWidth = 0
+  Endif
+
+  If RightStyle Then
+    If RightWidth = 0 Then RightWidth = 1
+  Else
+    RightWidth = 0
+  Endif
+
+  If TopStyle Then
+    If TopWidth = 0 Then TopWidth = 1
+  Else
+    TopWidth = 0
+  Endif
+
+  If BottomStyle Then
+    If BottomWidth = 0 Then BottomWidth = 1
+  Else
+    BottomWidth = 0
+  Endif
+
+End
+
+Public Sub _new(Optional Style As String)
+  
+  Dim aStyle As String[]
+  Dim sStyle As String
+  Dim iPos As Integer
+  Dim sProp As String
+  Dim sValue As String
+  
+  If Style Then
+    
+    aStyle = Split(Style, ";", "", True)
+    
+    For Each sStyle In aStyle
+      
+      iPos = InStr(sStyle, ":")
+      If iPos = 0 Then Continue
+      sProp = Replace(LCase(Trim(Left(sStyle, iPos - 1))), "-", "")
+      sValue = Trim(Mid$(sStyle, iPos + 1))
+      If Not sProp Then Continue
+      If Not sValue Then Continue
+      
+      SetProperty(sProp, sValue)
+      
+    Next
+    
+    NormalizeStyle
+    
+  Endif
+  
+End
+
+Private Function Margin_Read() As Float
+
+  Return LeftMargin
+
+End
+
+Private Sub Margin_Write(Value As Float)
+
+  LeftMargin = Value
+  RightMargin = Value
+  TopMargin = Value
+  BottomMargin = Value
+
+End
+
+Public Sub Copy() As Border
+  
+  Dim hBorder As New Border
+  
+  With hBorder
+    .BottomColor = BottomColor
+    .BottomLeftRadius = BottomLeftRadius
+    .BottomMargin = BottomMargin
+    .BottomPadding = BottomPadding
+    .BottomRightRadius = BottomRightRadius
+    .BottomStyle = BottomStyle
+    .BottomWidth = BottomWidth
+    .LeftColor = LeftColor
+    .LeftMargin = LeftMargin
+    .LeftPadding = LeftPadding
+    .LeftStyle = LeftStyle
+    .LeftWidth = LeftWidth
+    .RightColor = RightColor
+    .RightMargin = RightMargin
+    .RightPadding = RightPadding
+    .RightStyle = RightStyle
+    .RightWidth = RightWidth
+    .TopColor = TopColor
+    .TopLeftRadius = TopLeftRadius
+    .TopMargin = TopMargin
+    .TopPadding = TopPadding
+    .TopRightRadius = TopRightRadius
+    .TopStyle = TopStyle
+    .TopWidth = TopWidth
+  End With
+  
+  Return hBorder
+  
 End
