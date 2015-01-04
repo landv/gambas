@@ -554,6 +554,8 @@ static void PathOutline(GB_PAINT *d, GB_PAINT_OUTLINE_CB cb)
 	}
 }
 
+#define DASH_ZERO 0.0009765625
+
 static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 {
 	QPen pen = PAINTER(d)->pen();
@@ -565,8 +567,15 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 		else
 		{
 			QVector<qreal> dv;
+			qreal d;
+
 			for (int i = 0; i < *count; i++)
-				dv << (qreal)(*dashes)[i];
+			{
+				d = (*dashes)[i];
+				if (d == 0.0)
+					d = DASH_ZERO;
+				dv << (qreal)d;
+			}
 			pen.setStyle(Qt::CustomDashLine);
 			pen.setDashPattern(dv);
 		}
@@ -577,10 +586,16 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 		if (pen.style() == Qt::CustomDashLine)
 		{
 			QVector<qreal> dv = pen.dashPattern();
+			float d;
 			*count = dv.count();
 			GB.Alloc(POINTER(dashes), sizeof(float) * *count);
 			for (int i = 0; i < *count; i++)
-				(*dashes)[i] = (float)dv[i];
+			{
+				d = (float)dv[i];
+				if (d <= DASH_ZERO)
+					d = 0.0;
+				(*dashes)[i] = d;
+			}
 		}
 		else
 		{

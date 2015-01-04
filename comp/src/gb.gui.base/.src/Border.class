@@ -1,0 +1,323 @@
+' Gambas class file
+
+Export
+
+Public Enum Solid = 1, Dotted = 2, Dashed = 3, Double = 16
+
+Property Width As Float
+Property Radius As Float
+Property Style As Integer
+Property Color As Integer
+Property Padding As Float
+
+Public LeftStyle As Byte = Solid
+Public RightStyle As Byte = Solid
+Public TopStyle As Byte = Solid
+Public BottomStyle As Byte = Solid
+
+Public LeftWidth As Float = 1
+Public RightWidth As Float = 1
+Public TopWidth As Float = 1
+Public BottomWidth As Float = 1
+
+Public LeftColor As Integer
+Public RightColor As Integer
+Public TopColor As Integer
+Public BottomColor As Integer
+
+Public TopLeftRadius As Float
+Public TopRightRadius As Float
+Public BottomLeftRadius As Float
+Public BottomRightRadius As Float
+
+Public LeftPadding As Float
+Public RightPadding As Float
+Public TopPadding As Float
+Public BottomPadding As Float
+
+Private Const CURVE_MUL As Float = 0.44771525
+
+Private Function Width_Read() As Float
+
+  Return LeftWidth
+
+End
+
+Private Sub Width_Write(Value As Float)
+
+  LeftWidth = Value
+  RightWidth = Value
+  TopWidth = Value
+  BottomWidth = Value
+  
+End
+
+Private Function Radius_Read() As Float
+
+  Return TopLeftRadius
+
+End
+
+Private Sub Radius_Write(Value As Float)
+
+  TopLeftRadius = Value
+  TopRightRadius = Value
+  BottomLeftRadius = Value
+  BottomRightRadius = Value
+
+End
+
+Private Function Style_Read() As Integer
+
+  Return LeftStyle
+
+End
+
+Private Sub Style_Write(Value As Integer)
+
+  LeftStyle = Value
+  RightStyle = Value
+  TopStyle = Value
+  BottomStyle = value
+
+End
+
+Private Function Color_Read() As Integer
+
+  Return LeftColor
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  LeftColor = Value
+  RightColor = value
+  TopColor = Value
+  BottomColor = value
+
+End
+
+
+Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
+  
+  Dim fWidth As Float
+  Dim iStyle As Integer
+  Dim iColor As Integer
+  Dim F As Float
+  Dim F2 As Float
+  
+  X += LeftPadding
+  Y += TopPadding
+  Width -= LeftPadding + RightPadding
+  Height -= TopPadding + BottomPadding
+  If Width <= 0 Or If Height <= 0 Then Return
+  
+  Paint.Save
+  Paint.LineCap = Paint.LineCapSquare
+  
+  If TopStyle And If TopWidth Then
+    
+    If TopStyle = LeftStyle And If TopStyle = RightStyle And If TopStyle = BottomStyle Then
+      If TopColor = LeftColor And If TopColor = RightColor And If TopColor = BottomColor Then
+        If TopWidth = LeftWidth And If TopWidth = RightWidth And If TopWidth = BottomWidth Then
+          
+          iStyle = TopStyle
+          fWidth = TopWidth
+          iColor = TopColor
+          
+          GoSub DRAW_BORDER
+          
+          Paint.Restore
+          Return
+
+        Endif
+      Endif
+    Endif
+  
+    Paint.Save
+    
+    Paint.MoveTo(X + Width / 2, Y + Width / 2)
+    Paint.LineTo(X, Y)
+    Paint.LineTo(X + Width, Y)
+    Paint.Clip
+    
+    Paint.Rectangle(X, Y, Width, Height - TopWidth)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = TopStyle
+    fWidth = TopWidth
+    iColor = TopColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If RightStyle And If RightWidth Then
+    
+    Paint.Save
+    
+    Paint.MoveTo(X + Width - Height / 2, Y + Height / 2)
+    Paint.LineTo(X + Width, Y)
+    Paint.LineTo(X + Width, Y + Height)
+    Paint.Clip
+    
+    Paint.Rectangle(X + RightWidth, Y, Width - RightWidth, Height)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = RightStyle
+    fWidth = RightWidth
+    iColor = RightColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If BottomStyle And If BottomWidth Then
+    
+    Paint.Save
+    
+    Paint.MoveTo(X + Width / 2, Y + Height - Width / 2)
+    Paint.LineTo(X + Width, Y + Height)
+    Paint.LineTo(X, Y + Height)
+    Paint.Clip
+    
+    Paint.Rectangle(X, Y + BottomWidth, Width, Height - BottomWidth)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = BottomStyle
+    fWidth = BottomWidth
+    iColor = BottomColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  If LeftStyle And If LeftWidth Then
+    
+    Paint.Save
+    
+    Paint.MoveTo(X + Height / 2, Y + Height / 2)
+    Paint.LineTo(X, Y + Height)
+    Paint.LineTo(X, Y)
+    Paint.Clip
+    
+    Paint.Rectangle(X, Y, Width - LeftWidth, Height)
+    Paint.Clip
+    
+    GoSub CLIP_BORDER
+  
+    iStyle = LeftStyle
+    fWidth = LeftWidth
+    iColor = LeftColor
+    
+    GoSub DRAW_BORDER
+    
+    Paint.Restore
+    
+  Endif
+  
+  Paint.Restore
+  Return
+
+CLIP_BORDER:
+
+  PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+
+  Return
+  
+DRAW_BORDER:
+
+  Paint.Background = iColor
+  
+  Select Case iStyle And 15
+    Case Dotted
+      Paint.Dash = [0, 2]
+    Case Dashed
+      Paint.Dash = [3, 2]
+    Case Else
+      Paint.Dash = Null
+  End Select
+  
+  If iStyle And Double Then
+  
+    F = fWidth / 3
+    F2 = F / 2
+  
+    Paint.LineWidth = F
+    PaintRoundRectangle(X + F2, Y + F2, Width - F, Height - F, TopLeftRadius - F2, TopRightRadius - F2, BottomLeftRadius - F2, BottomRightRadius - F2)
+    Paint.Stroke
+
+    PaintRoundRectangle(X + F * 2 + F2, Y + F * 2 + F2, Width - F * 5, Height - F * 5, TopLeftRadius - F2 - F * 2, TopRightRadius - F2 - F * 2, BottomLeftRadius - F2 - F * 2, BottomRightRadius - F2 - F * 2)
+    Paint.Stroke
+  
+  Else
+  
+    F = fWidth
+    F2 = F / 2
+
+    Paint.LineWidth = F
+    PaintRoundRectangle(X + F2, Y + F2, Width - F, Height - F, TopLeftRadius - F2, TopRightRadius - F2, BottomLeftRadius - F2, BottomRightRadius - F2)
+    Paint.Stroke
+    
+  Endif
+  
+  Return
+  
+End
+
+Private Sub PaintRoundRectangle(X As Float, Y As Float, W As Float, H As Float, TL As Float, TR As Float, BL As Float, BR As Float, Optional bClip As Boolean)
+
+  If TL <= 0 And If TR <= 0 And If BL <= 0 And If BR <= 0 Then
+    If bClip Then
+      Paint.Rectangle(X, Y, W, H)
+    Else
+      Paint.MoveTo(X, Y)
+      Paint.LineTo(X + W, Y)
+      Paint.MoveTo(X, Y)
+      Paint.LineTo(X, Y + H)
+      Paint.MoveTo(X + W, Y)
+      Paint.LineTo(X + W, Y + H)
+      Paint.MoveTo(X, Y + H)
+      Paint.LineTo(X + W, Y + H)
+    Endif
+    Return
+  Endif
+
+  Paint.MoveTo(X + TL, Y)
+  Paint.LineTo(X + W - TR, Y)
+  Paint.CurveTo(X + W - TR * CURVE_MUL, Y, X + W, Y + TR * CURVE_MUL, X + W, Y + TR)
+  Paint.LineTo(X + W, Y + H - BR)
+  Paint.CurveTo(X + W, Y + H - BR * CURVE_MUL, X + W - BR * CURVE_MUL, Y + H, X + W - BR, Y + H)
+  Paint.LineTo(X + BL, Y + H)
+  Paint.CurveTo(X + BL * CURVE_MUL, Y + H, X, Y + H - BL * CURVE_MUL, X, Y + H - BL)
+  Paint.LineTo(X, Y + TL)
+  Paint.CurveTo(X, Y + TL * CURVE_MUL, X + TL * CURVE_MUL, Y, X + TL, Y)
+
+End
+
+Private Function Padding_Read() As Float
+
+  Return LeftPadding
+
+End
+
+Private Sub Padding_Write(Value As Float)
+
+  LeftPadding = Value
+  RightPadding = Value
+  TopPadding = Value
+  BottomPadding = Value
+
+End

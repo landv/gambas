@@ -1,0 +1,33 @@
+' Gambas class file
+
+Private $hBorder As Border
+
+
+Public Sub DrawingArea1_Draw()
+
+  $hBorder.Paint(0, 0, Paint.W, Paint.H)
+
+End
+
+Public Sub Form_Open()
+
+  $hBorder = New Border
+  $hBorder.Color = Color.Blue
+  $hBorder.Width = 60
+  $hBorder.Radius = 0
+  $hBorder.Style = Border.Solid '+ Border.Double
+  
+  '$hBorder.LeftStyle = Border.Solid
+  $hBorder.LeftColor = Color.Red
+  
+  ' $hBorder.RightWidth = 8
+  ' $hBorder.RightColor = Color.Red
+  ' $hBorder.BottomLeftRadius = 0
+  ' $hBorder.BottomStyle = Border.Double
+  ' ' 
+  ' $hBorder.LeftWidth = 12
+  ' $hBorder.LeftColor = Color.DarkGreen
+  ' 
+  ' '$hBorder.Style = Border.Dotted
+
+End

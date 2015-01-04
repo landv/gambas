@@ -1906,11 +1906,12 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim iColSpan As Integer
   Dim D As Integer
   Dim iPadding As Integer
+  Dim fTime As Float
   
   PW = Me.Font.TextWidth($hColumns[iCol].Text) + $iPadding * 2 + If($bSorted, 16, 0)
   
-  I = Max(0, $hRows._FindRowFromPos($hView.ScrollY))
-  For I = I To Min(1000 + I, $hRows.Max)
+  fTime = Timer
+  For I = 0 To $hRows.Max
     
     hData = _GetCellData(I, iCol)
     
@@ -1946,6 +1947,10 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
       PW = Max(PW, (W + D - 1) \ D)
       
     End With
+    
+    If I And 1023 = 0 Then
+      If (Timer - fTime) > 1 Then Break
+    Endif
     
   Next
   
