@@ -121,7 +121,6 @@ Public Sub Form_Open()
   btnClearFilter.W = panSearchProject.H
 
   RefreshComponents
-  RefreshLibraries
   InitEnvironment
 
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
@@ -438,7 +437,7 @@ Private Sub RefreshComponents(Optional bKeep As Boolean)
   gvwComponent.Rows.Count = $aComp.Count
   gvwComponent.Rows.Height = -1
   
-  gvwComponent_Arrange
+  'gvwComponent_Arrange
   
 End
 
@@ -1080,25 +1079,6 @@ Public Sub btnRemoveEnv_Click()
 End
 
 
-Public Sub cvwComponent_Collapse()
-
-  Last.Item.Expanded = True
-
-End
-
-
-' Public Sub lstComponent_Click()
-' 
-'   Dim hCurrent As CComponentBox = lstComponent.Current
-'   If $hLastComp Then $hLastComp.Expanded = False
-'   $hLastComp = hCurrent
-'   
-'   If $hLastComp.Find(Mouse.ScreenX - $hLastComp.ScreenX, Mouse.ScreenY - $hLastComp.ScreenY) Is PictureBox Then Return
-'   
-'   $hLastComp.Expanded = True
-'     
-' End
-
 Public Sub gvwComponent_Activate()
 
   ' Dim hCurrent As ComponentItem = $cComp[$aComp[gvwComponent.Row]]
@@ -1191,7 +1171,7 @@ Private Sub RefreshLibraries()
     
     With gvwLibrary[Y, 0]
       
-      .Picture = Picture["icon:/large/exec"]
+      '.Picture = Picture["icon:/large/exec"]
       .Alignment = Align.TopNormal
       .RichText = CLibraryInfo[$aLibraries[Y]].GetDescription()
       .Padding = 8
@@ -1199,9 +1179,10 @@ Private Sub RefreshLibraries()
       
     End With
     
+    gvwLibrary.Rows[Y].Height = -1
+    Debug gvwLibrary.Rows[Y].Height
+    
   Next
-  
-  gvwComponent_Arrange
   
 End
 
@@ -1285,10 +1266,6 @@ Public Sub gvwComponent_Arrange()
     gvwComponent.Rows[I].H = -1
   Next
   
-  For I = 0 To $aLibraries.Max
-    gvwLibrary.Rows[I].H = -1
-  Next
-
   gvwComponent.Columns[1].Width = -1
 
 End
@@ -1375,15 +1352,18 @@ End
 
 Public Sub ipnProject_Click()
 
-  If ipnProject.Text = ("Components") Then
-    txtFilterComponent.SetFocus
-  Else If ipnProject.Text = ("Options") Then
-    panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
-  Else If ipnProject.Text = ("Statistics") Then
-    UpdateStat
-  Else If ipnProject.Text = ("Information") Then
-    UpdateInfo
-  Endif
+  Select Case ipnProject.Text
+    Case ("Components") 
+      txtFilterComponent.SetFocus
+    Case ("Libraries") 
+      RefreshLibraries
+    Case ("Options") 
+      panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
+    Case ("Statistics") 
+      UpdateStat
+    Case ("Information") 
+      UpdateInfo
+  End Select
 
 End
 
@@ -1506,6 +1486,8 @@ End
 Private Sub WriteComponent() As Boolean
 
   Dim cComp As New Collection
+
+  If Not $bInitInfo Then Return
 
   cComp["State"] = cmbComponentState.Index
 

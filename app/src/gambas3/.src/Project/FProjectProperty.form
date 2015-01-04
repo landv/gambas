@@ -330,7 +330,6 @@
         AutoResize = True
         Spacing = True
         Margin = True
-        Padding = 4
         { chkShowUsed CheckBox
           MoveScaled(0,0,46,3)
           AutoResize = True
@@ -350,7 +349,6 @@
         Arrangement = Arrange.Horizontal
         { picFilter PictureBox
           MoveScaled(0,0,3,3)
-          Mouse = Mouse.Pointing
           Picture = Picture["img/32/filter.png"]
           Stretch = True
           AutoResize = True
@@ -451,23 +449,30 @@
     }
     Index = 3
     Text = ("Libraries")
-    { Panel4 Panel
-      MoveScaled(2,1,80,7)
-      Arrangement = Arrange.Horizontal
-      Spacing = True
+    { Panel9 Panel
+      MoveScaled(2,1,82,9)
+      Background = Color.TextBackground
+      Arrangement = Arrange.Fill
       Margin = True
-      { PictureBox1 PictureBox
-        MoveScaled(1,1,6,6)
-        Picture = Picture["icon:/32/warning"]
-        AutoResize = True
-        Alignment = Align.Left
-      }
-      { TextLabel1 TextLabel
-        MoveScaled(7,1,66,5)
-        Font = Font["-1"]
-        Expand = True
-        Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
-        Alignment = Align.Left
+      { Panel4 Panel
+        MoveScaled(1,1,80,7)
+        Arrangement = Arrange.Horizontal
+        Spacing = True
+        Margin = True
+        Border = Border.Plain
+        { PictureBox1 PictureBox
+          MoveScaled(1,1,6,6)
+          Picture = Picture["icon:/32/warning"]
+          AutoResize = True
+          Alignment = Align.Left
+        }
+        { TextLabel1 TextLabel
+          MoveScaled(7,1,66,5)
+          Font = Font["-1"]
+          Expand = True
+          Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
+          Alignment = Align.Left
+        }
       }
     }
     { Separator6 Separator
