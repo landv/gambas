@@ -359,7 +359,7 @@ BEGIN_PROPERTY(SerialPort_DTR)
 		else
 		{
 			THIS->signals = get_signals(THIS);
-			GB.ReturnBoolean(THIS->signals.DSR);
+			GB.ReturnBoolean(THIS->signals.DTR);
 		}
 	}
 	else
