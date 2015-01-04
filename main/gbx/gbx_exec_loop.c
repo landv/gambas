@@ -1179,7 +1179,22 @@ _CALL:
 		__CALL_CALL:
 
 			EXEC.desc = CLASS_get_special_desc(EXEC.class, SPEC_CALL);
-			if ((!EXEC.desc || !CLASS_DESC_is_static_method(EXEC.desc)) && !EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual)
+
+			if (EXEC.desc)
+			{
+				if (!CLASS_DESC_is_static_method(EXEC.desc) && !EXEC.object)
+				{
+					if (!EXEC.class->auto_create)
+						THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), $("_call"));
+
+					EXEC.object = EXEC_auto_create(EXEC.class, FALSE);
+					EXEC.nparam = ind;
+				}
+
+				goto __CALL_SPEC;
+			}
+
+			if (!EXEC.object && EXEC.nparam == 1 && !EXEC.class->is_virtual)
 			{
 				SP[-2] = SP[-1];
 				SP--;
@@ -1187,16 +1202,6 @@ _CALL:
 				goto _NEXT;
 			}
 			
-			if (EXEC.desc && !CLASS_DESC_is_static_method(EXEC.desc) && !EXEC.object)
-			{
-				if (!EXEC.class->auto_create)
-					THROW(E_DYNAMIC, CLASS_get_name(EXEC.class), $("_call"));
-
-				EXEC.object = EXEC_auto_create(EXEC.class, FALSE);
-			}
-			
-			goto __CALL_SPEC;
-
 		__CALL_SPEC:
 
 			if (!EXEC.desc)
