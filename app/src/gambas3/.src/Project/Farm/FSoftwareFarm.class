@@ -4,6 +4,8 @@ Private $bNoRefresh As Boolean
 Private $SY As Integer
 Private $hSoft As CSoftware
 
+Private Enum WIZ_INDEX, WIZ_FARM, WIZ_SOFTWARE
+
 Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_VOTE, SORT_INSTALLED
 
 Public Sub Run()
@@ -14,41 +16,59 @@ End
 
 Public Sub Form_Open()
 
-  Settings.Read(Me)
+  Dim aGroup As New CSoftwareGroup[]
+  Dim aInit As String[]
+  Dim I As Integer
+  Dim hButton As ToolButton
+  Dim hGroup As CSoftwareGroup
+  Dim sIcon As String
 
-  ' If Not $hLogo Then
-  '   $hLogo = New Image(256, 256, Color.Transparent)
-  '   Paint.Begin($hLogo)
-  '   Paint.Ellipse(16, 16, 224, 224)
-  '   Paint.LineWidth = 8
-  '   Paint.Background = &HD96800&
-  '   Paint.Stroke
-  '   Paint.End
-  '   $hLogo = $hLogo.Fuzzy(16)
-  '   
-  '   Paint.Begin($hLogo)
-  '   Paint.Ellipse(16, 16, 224, 224)
-  '   Paint.Save
-  '   Paint.Clip(True)
-  '   Paint.Background = Color.White
-  '   Paint.Fill(True)
-  '   Paint.ZoomImage(Image.Load("img/logo/logo-32-head.png"), 8, 16, 16, &HD96800&)
-  '   Paint.Restore
-  '   Paint.LineWidth = 8
-  '   Paint.Background = &HD96800&
-  '   Paint.Stroke
-  '   Paint.End
-  '   
-  ' Endif
+  Settings.Read(Me)
 
   $bNoRefresh = True
   cmbFarm.List = FarmRequest.GetFarms()
   cmbFarm.Text = FarmIdentity.LastFarm
   cmbSort.Index = 0
   $bNoRefresh = False
-  Reload
+  
+  aGroup.Add(CSoftwareGroup("Game", ("Games"), "game"))
+  aGroup.Add(CSoftwareGroup("Development", ("Development"), "development"))
+  aGroup.Add(CSoftwareGroup("Example", ("Examples"), "help"))
+  aGroup.Add(CSoftwareGroup("Education", ("Education"), "book"))
+  aGroup.Add(CSoftwareGroup("Graphics", ("Graphics"), "color"))
+  aGroup.Add(CSoftwareGroup("Audio", ("Audio"), "audio"))
+  aGroup.Add(CSoftwareGroup("Video", ("Video"), "video"))
+  aGroup.Add(CSoftwareGroup("Office", ("Office"), "office"))
 
+  aGroup.Sort
+
+  aGroup.Add(CSoftwareGroup("", ("All softwares"), "img/48/all.png"))
+  
+  
+  For Each hGroup In aGroup
+    
+    hButton = New ToolButton(panGroup) As "ButtonGroup"
+    hButton.Text = hGroup.Name
+    hButton.Tag = hGroup.Key
+    sIcon = hGroup.Icon
+    If InStr(sIcon, "/") = 0 Then sIcon = "icon:/48" &/ sIcon
+    hButton.Picture = Picture[sIcon]
+    hButton.ResizeScaled(32, 10)
+    hButton.Mouse = Mouse.Pointing
+    
+  Next
+  
 End
+
+Public Sub ButtonGroup_Click()
+  
+  wizFarm.MoveNext
+  tagFarm.Clear
+  If Last.Tag Then tagFarm.Add(Last.Tag)
+  Reload
+  
+End
+
 
 ' Public Sub Form_Arrange()
 ' 
@@ -86,6 +106,7 @@ Public Sub Reload()
 
   Dim hReq As FarmRequest
   
+  If wizFarm.Index <> WIZ_FARM Then Return
   If $bNoRefresh Then Return
   
   timLoad.Stop
@@ -96,7 +117,7 @@ Public Sub Reload()
   svwFarm.Children.Clear
   
   hReq = New FarmRequest(cmbFarm.Text) As "Request"
-  hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], txtVendor.Text, txtFilter.Text, tagFarm.GetTags())
+  hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], "", txtFilter.Text, tagFarm.GetTags())
   spnFarm.Show
   
 End
@@ -347,64 +368,6 @@ Private Sub UpdateSoftware()
   
 End
 
-Private Sub ToggleSoftwarePanel()
-
-  Dim fTime As Float
-  Dim hObs As Observer
-  
-  If panSoftware.Visible Then
-    
-    panFarm.Ignore = True
-    panSoftware.Ignore = True
-    panFarm.Show
-    
-    fTime = Timer
-    While panSoftware.X < Me.ClientW
-      panSoftware.X = Min(Me.ClientW, Me.ClientW * (Timer - fTime) * 8)
-      panFarm.X = panSoftware.X - panFarm.W
-      Wait
-    Wend
-    
-    panSoftware.Hide
-    panFarm.Ignore = False
-    panSoftware.Ignore = False
-    
-    $hSoft = Null
-    imvScreenshot.Image = Null
-    FarmRequestManager.Clear
-    
-  Else
-    
-    panFarm.Ignore = True
-    panSoftware.Ignore = True
-    panSoftware.Move(panFarm.W, panFarm.Y, panFarm.W, panFarm.H)
-    panSoftware.Show
-    panSoftware.Raise
-    
-    fTime = Timer
-    While panSoftware.X > 0
-      panSoftware.X = Max(0, Me.ClientW * (1 - (Timer - fTime) * 8))
-      panFarm.X = panSoftware.X - panFarm.W
-      Wait
-    Wend
-    
-    panFarm.Hide
-    panFarm.Ignore = False
-    panSoftware.Ignore = False
-    
-    If Not $hSoft.Observed Then 
-      hObs = New Observer($hSoft) As "Software"
-      $hSoft.Observed = True
-    Endif
-    
-    UpdateSoftware
-    
-    panSoftware.Show
-    
-  Endif
-
-End
-
 Public Sub Software_Screenshot()
   
   spnScreenshot.Hide
@@ -420,13 +383,13 @@ Public Sub SoftwareBox_Click()
   If hSoft.State <> CSoftware.STATE_READY Then Return
   
   $hSoft = hSoft
-  ToggleSoftwarePanel
+  wizFarm.MoveNext
   
 End
 
 Public Sub btnGoBack_Click()
 
-  ToggleSoftwarePanel
+  wizFarm.MovePrevious
 
 End
 
@@ -456,7 +419,7 @@ End
 Public Sub panDesc_Arrange()
 
   spnScreenshot.Move(imvScreenshot.ScreenX - spnScreenshot.Parent.ScreenX + imvScreenshot.W \ 2 - 16, imvScreenshot.ScreenY - spnScreenshot.Parent.ScreenY + imvScreenshot.H \ 2 - 16, 32, 32)
-  If panSoftware.Visible Then imvScreenshot.ZoomFit
+  If wizFarm.Index = WIZ_SOFTWARE Then imvScreenshot.ZoomFit
   If txtDescription.Visible Then txtDescription.H = txtDescription.Font.RichTextHeight(Replace(Html(txtDescription.Text), "\n", "<br>"), txtDescription.W)
 
 End
@@ -579,7 +542,7 @@ Public Sub btnRemove_Click()
     Message(Subst("<b>&1</b> has been successfully removed.", sName))
   Endif
   
-  ToggleSoftwarePanel
+  wizFarm.MovePrevious
   ReloadFarm
   
 End
@@ -602,3 +565,34 @@ End
 '   Project.OnVendorKeyPress()
 '   
 ' End
+
+Public Sub wizFarm_Change()
+
+  Dim hObs As Observer
+  
+  btnGoBack.Enabled = wizFarm.Index > 0
+  
+  If wizFarm.Index = WIZ_FARM Then
+    
+    $hSoft = Null
+    imvScreenshot.Image = Null
+    FarmRequestManager.Clear
+    
+  Else If wizFarm.Index = WIZ_SOFTWARE Then
+    
+    If Not $hSoft.Observed Then 
+      hObs = New Observer($hSoft) As "Software"
+      $hSoft.Observed = True
+    Endif
+    
+    UpdateSoftware
+    
+  Endif
+
+End
+
+Public Sub chkShowFilter_Click()
+
+  panFilter.Visible = chkShowFilter.Value
+
+End

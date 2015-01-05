@@ -123,3 +123,15 @@ Public Sub SetTextFont(hFont As Font)
   
 End
 
+Public Sub SetShowButton(bShow As Boolean)
+  
+  panButton.Visible = bShow
+  
+End
+
+Public Sub GetShowButton() As Boolean
+  
+  Return panButton.Visible
+  
+End
+

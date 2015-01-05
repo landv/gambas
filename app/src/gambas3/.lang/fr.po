@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"PO-Revision-Date: 2015-01-05 20:42 UTC\n"
+"PO-Revision-Date: 2015-01-05 23:31 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1149,7 +1149,7 @@ msgstr "Unique"
 msgid "Field"
 msgstr "Champ"
 
-#: FPublish.form:128 FSoftwareFarm.form:187
+#: FPublish.form:128 FSoftwareFarm.form:330
 msgid "Description"
 msgstr "Description"
 
@@ -1289,7 +1289,7 @@ msgstr "Nouvelle table"
 msgid "Delete table"
 msgstr "Supprimer la table"
 
-#: FSoftwareFarm.form:122
+#: FSoftwareFarm.form:414
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -1377,7 +1377,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
-#: FSoftwareFarm.class:573 FTranslate.form:81
+#: FSoftwareFarm.class:536 FTranslate.form:81
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -3165,7 +3165,7 @@ msgstr "Classe de démarrage"
 msgid "Add to repository"
 msgstr "Ajouter au référentiel"
 
-#: FMain.form:971 FSoftwareFarm.form:361
+#: FMain.form:971 FSoftwareFarm.form:202
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -3429,7 +3429,7 @@ msgstr "Version du paquet"
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FSoftwareFarm.form:322
+#: FMakeInstall.form:218 FOption.form:294 FPublish.form:86
 msgid "Vendor name"
 msgstr "Nom du fournisseur"
 
@@ -3733,7 +3733,7 @@ msgstr "Nouvelle traduction"
 msgid "Select a project"
 msgstr "Sélectionnez un projet"
 
-#: FOpenProject.form:109 FWelcome.class:65
+#: FOpenProject.form:109 FSoftwareFarm.class:36 FWelcome.class:65
 msgid "Examples"
 msgstr "Exemples"
 
@@ -3833,7 +3833,7 @@ msgstr "Voulez-vous vraiment réinitialiser la liste à sa valeur par défaut ?"
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr "Voulez-vous vraiment installer la police Gambas dans votre répertoire personnel de polices ?"
 
-#: FOption.class:1123 FSoftwareFarm.form:94
+#: FOption.class:1123 FSoftwareFarm.form:386
 msgid "Install"
 msgstr "Installer"
 
@@ -4367,7 +4367,7 @@ msgstr "Compatible jusqu'à la version"
 
 #: FProjectProperty.form:450
 msgid "Include information from"
-msgstr ""
+msgstr "Inclure les informations de"
 
 #: FProjectProperty.form:462
 msgid "Required features"
@@ -4633,7 +4633,7 @@ msgstr "Site web"
 msgid "Create menu entry"
 msgstr "Créer une entrée de menu"
 
-#: FPublish.form:137 FSoftwareFarm.form:211
+#: FPublish.form:137 FSoftwareFarm.form:226
 msgid "Tags"
 msgstr "Étiquettes"
 
@@ -4669,7 +4669,7 @@ msgstr "Dépendences"
 msgid "Require Gambas version"
 msgstr "Version de Gambas nécessaire"
 
-#: FPublish.form:335 FSoftwareFarm.form:293
+#: FPublish.form:335 FSoftwareFarm.form:139
 msgid "Configure"
 msgstr "Configurer"
 
@@ -4853,121 +4853,157 @@ msgstr "Nouveau fragment de code"
 msgid "Trigger string"
 msgstr "Chaîne de déclenchement"
 
-#: FSoftwareFarm.class:122
+#: FSoftwareFarm.class:34 Project.module:217
+msgid "Games"
+msgstr "Jeux"
+
+#: FSoftwareFarm.class:35
+msgid "Development"
+msgstr "Développement"
+
+#: FSoftwareFarm.class:37
+msgid "Education"
+msgstr "Éducation"
+
+#: FSoftwareFarm.class:38
+msgid "Graphics"
+msgstr "Graphique"
+
+#: FSoftwareFarm.class:39
+msgid "Audio"
+msgstr "Son"
+
+#: FSoftwareFarm.class:40 Project.module:224
+msgid "Video"
+msgstr "Vidéo"
+
+#: FSoftwareFarm.class:41
+msgid "Office"
+msgstr "Bureautique"
+
+#: FSoftwareFarm.class:45
+msgid "All softwares"
+msgstr "Tous les logiciels"
+
+#: FSoftwareFarm.class:143
 msgid "No software found."
 msgstr "Aucun logiciel n'a été trouvé."
 
-#: FSoftwareFarm.class:141
+#: FSoftwareFarm.class:162
 msgid "Request cancelled."
 msgstr "Requête annulée."
 
-#: FSoftwareFarm.class:276
+#: FSoftwareFarm.class:297
 msgid "Cancel my vote"
 msgstr "Annuler mon vote"
 
-#: FSoftwareFarm.class:283
+#: FSoftwareFarm.class:304
 msgid "Upgrade"
 msgstr "Mettre à-jour"
 
-#: FSoftwareFarm.class:287
+#: FSoftwareFarm.class:308
 msgid "Uninstall"
 msgstr "Désinstaller"
 
-#: FSoftwareFarm.class:476
+#: FSoftwareFarm.class:439
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "Voulez-vous vraiment télécharger <b>&1</b> ?"
 
-#: FSoftwareFarm.class:479
+#: FSoftwareFarm.class:442
 msgid "Unable to download <b>&1</b>:"
 msgstr "Impossible de télécharger <b>&1</b> :"
 
-#: FSoftwareFarm.class:481
+#: FSoftwareFarm.class:444
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "<b>&1</b> a été téléchargé avec succès."
 
-#: FSoftwareFarm.class:496
+#: FSoftwareFarm.class:459
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "Voulez-vous vraiment mettre à-jour vers <b>&1</b> ?"
 
-#: FSoftwareFarm.class:499
+#: FSoftwareFarm.class:462
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "Impossible de mettre à-jour vers <b>&1</b> :"
 
-#: FSoftwareFarm.class:506
+#: FSoftwareFarm.class:469
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "Voulez-vous vraiment désinstaller <b>&1</b> ?"
 
-#: FSoftwareFarm.class:509
+#: FSoftwareFarm.class:472
 msgid "Unable to remove <b>&1</b>:"
 msgstr "Impossible de supprimer <b>&1</b> :"
 
-#: FSoftwareFarm.class:511
+#: FSoftwareFarm.class:474
 msgid "<b>&1</b> has been successfully removed."
 msgstr "<b>&1</b> a été supprimé avec succès."
 
-#: FSoftwareFarm.class:517
+#: FSoftwareFarm.class:480
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "Voulez-vous vraiment installer <b>&1</b> ?"
 
-#: FSoftwareFarm.class:520
+#: FSoftwareFarm.class:483
 msgid "Unable to install <b>&1</b>:"
 msgstr "Impossible d'installer <b>&1</b> :"
 
-#: FSoftwareFarm.class:522
+#: FSoftwareFarm.class:485
 msgid "<b>&1</b> has been successfully installed."
 msgstr "<b>&1</b> a été installé avec succès."
 
-#: FSoftwareFarm.class:542
+#: FSoftwareFarm.class:505
 msgid "Unable to modify your vote."
 msgstr "Impossible de modifier votre vote."
 
-#: FSoftwareFarm.class:573
+#: FSoftwareFarm.class:536
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "Désirez-vous vraiment supprimer <b>&1</b> du serveur de publication ?"
 
-#: FSoftwareFarm.class:577
+#: FSoftwareFarm.class:540
 msgid "Unable to remove <b>&1<b>:"
 msgstr "Impossible de désinstaller <b>&1</b> :"
 
-#: FSoftwareFarm.form:66
+#: FSoftwareFarm.form:65
 msgid "Gambas Software Farm"
 msgstr "Logithèque Gambas"
 
-#: FSoftwareFarm.form:101
-msgid "Download"
-msgstr "Télécharger"
-
-#: FSoftwareFarm.form:109
-msgid "Vote"
-msgstr "Voter"
-
-#: FSoftwareFarm.form:204
-msgid "Developer web site"
-msgstr "Site web du développeur"
-
-#: FSoftwareFarm.form:253
+#: FSoftwareFarm.form:99
 msgid "Farm"
 msgstr "Serveur"
 
-#: FSoftwareFarm.form:309
+#: FSoftwareFarm.form:177
 msgid "Show"
 msgstr "Afficher"
 
-#: FSoftwareFarm.form:315
+#: FSoftwareFarm.form:183
 msgid "Installed"
 msgstr "Installés"
 
-#: FSoftwareFarm.form:315
+#: FSoftwareFarm.form:183
 msgid "Most downloaded"
 msgstr "Les plus téléchargés"
 
-#: FSoftwareFarm.form:315
+#: FSoftwareFarm.form:183
 msgid "Most popular"
 msgstr "Les plus populaires"
 
-#: FSoftwareFarm.form:315
+#: FSoftwareFarm.form:183
 msgid "Most recent"
 msgstr "Les plus récents"
+
+#: FSoftwareFarm.form:188
+msgid "Show filters"
+msgstr "Afficher les filtres"
+
+#: FSoftwareFarm.form:347
+msgid "Developer web site"
+msgstr "Site web du développeur"
+
+#: FSoftwareFarm.form:393
+msgid "Download"
+msgstr "Télécharger"
+
+#: FSoftwareFarm.form:401
+msgid "Vote"
+msgstr "Voter"
 
 #: FSystemInfo.form:17
 msgid "System information"
@@ -6685,10 +6721,6 @@ msgstr "Exemples de base"
 msgid "Drawing"
 msgstr "Dessin"
 
-#: Project.module:217
-msgid "Games"
-msgstr "Jeux"
-
 #: Project.module:220
 msgid "Networking"
 msgstr "Programmation réseau"
@@ -6704,10 +6736,6 @@ msgstr "Impression"
 #: Project.module:223
 msgid "Sound"
 msgstr "Son"
-
-#: Project.module:224
-msgid "Video"
-msgstr "Vidéo"
 
 #: Project.module:225
 msgid "Controls"

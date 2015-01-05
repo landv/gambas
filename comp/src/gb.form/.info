@@ -2981,7 +2981,7 @@ C
 _Properties
 C
 s
-*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,Border=True,ActionText,ActionPicture,Animated
+*,Count{Range:1;256}=1,Index,Text,TextFont,Picture,ShowTitle=True,ShowIndex=False,ShowButton=True,Border=True,ActionText,ActionPicture,Animated
 _DefaultEvent
 C
 s
@@ -3062,6 +3062,10 @@ Animated
 p
 b
 
+ShowButton
+p
+b
+
 _new
 m
 
@@ -3078,7 +3082,15 @@ Wizard_Previous
 m
 
 
+MovePrevious
+m
+
+
 Wizard_Next
+m
+
+
+MoveNext
 m
 
 
@@ -3199,6 +3211,80 @@ b
 _new
 m
 
+
+#_MultiContainer
+UserContainer
+
+:Click
+:
+
+
+Count
+p
+i
+
+Index
+p
+i
+
+Text
+p
+s
+
+Picture
+p
+Picture
+
+Current
+r
+_MultiContainerTab
+
+_SetCount
+m
+
+(iCount)i
+_SetIndex
+m
+
+(iIndex)i
+_UpdateContainer
+m
+
+(hCont)Container;
+_get
+m
+Container
+(Index)i
+_Remove
+m
+
+(iIndex)i
+Remove
+m
+
+(Index)i
+#_MultiContainerTab
+UserControl
+
+Text
+p
+s
+
+RichText
+p
+s
+
+Picture
+p
+Picture
+
+Visible
+p
+b
+
+Container
+r
+Container
 
 #_TabPanelContainer
 UserControl
