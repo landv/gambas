@@ -16,32 +16,39 @@ Public RightStyle As Byte = Solid
 Public TopStyle As Byte = Solid
 Public BottomStyle As Byte = Solid
 
-Public LeftWidth As Float = 1
-Public RightWidth As Float = 1
-Public TopWidth As Float = 1
-Public BottomWidth As Float = 1
+Public LeftWidth As Single = 1
+Public RightWidth As Single = 1
+Public TopWidth As Single = 1
+Public BottomWidth As Single = 1
 
 Public LeftColor As Integer
 Public RightColor As Integer
 Public TopColor As Integer
 Public BottomColor As Integer
 
-Public TopLeftRadius As Float
-Public TopRightRadius As Float
-Public BottomLeftRadius As Float
-Public BottomRightRadius As Float
+Public TopLeftRadius As Single
+Public TopRightRadius As Single
+Public BottomLeftRadius As Single
+Public BottomRightRadius As Single
 
-Public LeftPadding As Float
-Public RightPadding As Float
-Public TopPadding As Float
-Public BottomPadding As Float
+Public LeftPadding As Single
+Public RightPadding As Single
+Public TopPadding As Single
+Public BottomPadding As Single
 
-Public LeftMargin As Float
-Public RightMargin As Float
-Public TopMargin As Float
-Public BottomMargin As Float
+Public LeftMargin As Single
+Public RightMargin As Single
+Public TopMargin As Single
+Public BottomMargin As Single
 
-Static Private $aProp As String[] = ["width", "color", "radius", "style", "padding", "margin"]
+Public SlashStyle As Byte
+Public BackslashStyle As Byte
+Public SlashColor As Integer
+Public BackslashColor As Integer
+Public SlashWidth As Single
+Public BackslashWidth As Single
+
+Static Private $aProp As String[] = ["width", "color", "radius", "style", "padding", "margin", "slash"]
 
 Private Const CURVE_MUL As Float = 0.44771525
 
@@ -116,6 +123,12 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
   Dim bRight As Boolean
   Dim bLeft As Boolean
   Dim bBottom As Boolean
+  Dim bSlash As Boolean
+  Dim bBackslash As Boolean
+  Dim X1 As Float
+  Dim Y1 As Float
+  Dim X2 As Float
+  Dim Y2 As Float
   
   X += LeftMargin
   Y += TopMargin
@@ -130,6 +143,8 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
   If BottomStyle And If BottomWidth Then bBottom = True
   If RightStyle And If RightWidth Then bRight = True
   If LeftStyle And If LeftWidth Then bLeft = True
+  If SlashStyle And If SlashWidth Then bSlash = True
+  If BackslashStyle And If BackslashWidth Then bBackslash = True
   
   If bTop Then
     
@@ -273,7 +288,7 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
     
     If bBottom And If BottomLeftRadius > LeftWidth Then
       Paint.MoveTo(X + Height / 2, Y + Height / 2)
-      Paint.LineTo(X, Y)
+      Paint.LineTo(X, Y + Height)
       Paint.LineTo(X, Y + Height / 2)
     Else
       Paint.Rectangle(X, Y + Height / 2, LeftWidth, Height / 2)
@@ -296,6 +311,47 @@ Public Sub Paint(X As Float, Y As Float, Width As Float, Height As Float)
     
   Endif
   
+  If bSlash Or If bBackslash Then
+    
+    Paint.Save
+    
+    PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+    Paint.Clip
+    
+    If bSlash Then
+      
+      X1 = X
+      Y1 = Y + Height
+      X2 = X + Width
+      Y2 = Y
+      
+      iStyle = SlashStyle
+      fWidth = SlashWidth
+      iColor = SlashColor
+      
+      GoSub DRAW_LINE
+      
+    Endif
+    
+    If bBackslash Then
+      
+      X1 = X
+      Y1 = Y
+      X2 = X + Width
+      Y2 = Y + Height
+
+      iStyle = BackslashStyle
+      fWidth = BackslashWidth
+      iColor = BackslashColor
+      
+      GoSub DRAW_LINE
+      
+    Endif
+    
+    Paint.Restore
+    
+  Endif
+  
   Paint.Restore
   Return
 
@@ -306,8 +362,8 @@ CLIP_BORDER:
 
   Return
   
-DRAW_BORDER:
-
+INIT_STYLE:
+  
   Paint.Background = iColor
   
   Select Case iStyle And 15
@@ -324,7 +380,23 @@ DRAW_BORDER:
     F = fWidth / 3
     F2 = F / 2
   
-    Paint.LineWidth = F
+  Else
+  
+    F = fWidth
+    F2 = F / 2
+    
+  Endif
+  
+  Paint.LineWidth = F
+
+  Return
+  
+DRAW_BORDER:
+
+  GoSub INIT_STYLE
+
+  If iStyle And Double Then
+  
     PaintRoundRectangle(X + F2, Y + F2, Width - F, Height - F, TopLeftRadius - F2, TopRightRadius - F2, BottomLeftRadius - F2, BottomRightRadius - F2)
     Paint.Stroke
 
@@ -333,11 +405,31 @@ DRAW_BORDER:
   
   Else
   
-    F = fWidth
-    F2 = F / 2
-
-    Paint.LineWidth = F
     PaintRoundRectangle(X + F2, Y + F2, Width - F, Height - F, TopLeftRadius - F2, TopRightRadius - F2, BottomLeftRadius - F2, BottomRightRadius - F2)
+    Paint.Stroke
+    
+  Endif
+  
+  Return
+  
+DRAW_LINE:
+
+  GoSub INIT_STYLE
+
+  If iStyle And Double Then
+    
+    Paint.MoveTo(X1 - F, Y1)
+    Paint.LineTo(X2 - F, Y2)
+    Paint.Stroke
+    
+    Paint.MoveTo(X1 + F, Y1)
+    Paint.LineTo(X2 + F, Y2)
+    Paint.Stroke
+    
+  Else
+    
+    Paint.MoveTo(X1, Y1)
+    Paint.LineTo(X2, Y2)
     Paint.Stroke
     
   Endif
@@ -433,9 +525,11 @@ Private Sub SetProperty(sProp As String, sValue As String)
     Try vValue = Classes["Border"][Replace(sValue, "-", "")].Value
   Else If sProp Ends "color" Then
     Try vValue = Object.GetProperty(Classes["Color"], Replace(sValue, "-", ""))
-    If Error Then Try vValue = Val(sValue)
+    If Left(sValue) = "#" Then
+      Try vValue = Val("&H" & Mid$(sValue, 2) & "&")
+    Endif
   Else
-    Try vValue = Val(sValue)
+    Try vValue = CFloat(sValue)
   Endif
   If Error Then Return
   
@@ -443,31 +537,25 @@ Private Sub SetProperty(sProp As String, sValue As String)
   
 End
 
+Private Sub NormalyzeOneStyle(ByRef iStyle As Byte, ByRef fWidth As Single)
+  
+  If iStyle Then
+    If fWidth = 0 Then fWidth = 1
+  Else
+    fWidth = 0
+  Endif
+  
+End
+
+
 Private Sub NormalizeStyle()
 
-  If LeftStyle Then
-    If LeftWidth = 0 Then LeftWidth = 1
-  Else
-    LeftWidth = 0
-  Endif
-
-  If RightStyle Then
-    If RightWidth = 0 Then RightWidth = 1
-  Else
-    RightWidth = 0
-  Endif
-
-  If TopStyle Then
-    If TopWidth = 0 Then TopWidth = 1
-  Else
-    TopWidth = 0
-  Endif
-
-  If BottomStyle Then
-    If BottomWidth = 0 Then BottomWidth = 1
-  Else
-    BottomWidth = 0
-  Endif
+  NormalyzeOneStyle(ByRef LeftStyle, ByRef LeftWidth)
+  NormalyzeOneStyle(ByRef RightStyle, ByRef RightWidth)
+  NormalyzeOneStyle(ByRef TopStyle, ByRef TopWidth)
+  NormalyzeOneStyle(ByRef BottomStyle, ByRef BottomWidth)
+  NormalyzeOneStyle(ByRef SlashStyle, ByRef SlashWidth)
+  NormalyzeOneStyle(ByRef BackslashStyle, ByRef BackslashWidth)
 
 End
 

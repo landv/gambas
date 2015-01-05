@@ -75,14 +75,4 @@ End
 
 Public Sub Main()
 
-  Dim vVal As Variant
-  Dim vObject As Variant
-  
-  vObject = JSON.Decode("{\"a\":123,\"b\":\"toto\",\"c\":null,\"d\":true,\"e\":\"\"}", True)
-  
-  For Each vVal In vObject
-    Print vObject.Key; ": "; vVal;; TypeOf(vVal)
-  Next
-  
-
 End

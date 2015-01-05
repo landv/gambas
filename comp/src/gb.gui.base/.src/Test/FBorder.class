@@ -11,7 +11,12 @@ End
 
 Public Sub Form_Open()
 
-  $hBorder = New Border("margin:8;width:16;left-width:0;right-width:4;top-left-radius:40")
+  $hBorder = New Border("margin:8;width:16;left-width:0;right-width:8;top-left-radius:40;slash-style:solid;backslash-style:solid;backslash-color:green;backslash-width:4;slash-color:red;slash-width:16")
+  '$hBorder.SlashStyle = Border.Solid
+  '$hBorder.SlashWidth = 32
+  '$hBorder.SlashColor = Color.SetAlpha(Color.Red, 128)
+  
+  Slider1.Value = 160
 
 End
 

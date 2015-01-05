@@ -480,17 +480,34 @@ static bool analyze_gambas_component(const char *path)
 	ARCH *arch;
 	ARCH_FIND find;
 	bool ret = TRUE;
-	char *list;
-	char *name;
+	char *buffer;
+	char *line;
 
 	if (_verbose)
 		fprintf(stderr, "Loading gambas component: %s\n", path);
 
 	arch = ARCH_open(path);
 
+	if (!ARCH_find(arch, ".component", 0, &find))
+	{
+		ALLOC(&buffer, find.len + 1);
+		memcpy(buffer, &arch->addr[find.pos], find.len);
+		buffer[find.len] = 0;
+
+		for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n"))
+		{
+			if (strncmp(line, "Include=", 8))
+				continue;
+			analyze_include(&line[8]);
+			break;
+		}
+
+		FREE(&buffer);
+	}
+
 	if (ARCH_find(arch, ".info", 0, &find))
 	{
-		warning(".info file not found in component archive.");
+		warning("'.info' file not found in component archive.");
 		goto __RETURN;
 	}
 
@@ -498,22 +515,18 @@ static bool analyze_gambas_component(const char *path)
 
 	if (ARCH_find(arch, ".list", 0, &find))
 	{
-		warning(".list file not found in component archive.");
+		warning("'.list' file not found in component archive.");
 		goto __RETURN;
 	}
 
-	ALLOC(&list, find.len + 1);
-	memcpy(list, &arch->addr[find.pos], find.len);
-	list[find.len] = 0;
+	ALLOC(&buffer, find.len + 1);
+	memcpy(buffer, &arch->addr[find.pos], find.len);
+	buffer[find.len] = 0;
 
-	name = strtok(list, "\n");
-	while (name)
-	{
-		add_class(name);
-		name = strtok(NULL, "\n");
-	}
+	for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n"))
+		add_class(line);
 
-	FREE(&list);
+	FREE(&buffer);
 
 	//fwrite(&arch->addr[find.pos], 1, find.len, out_list);
 	ret = FALSE;
@@ -631,8 +644,8 @@ static void analyze(const char *comp, bool include)
 		}
 		else if (_verbose)
 		{
-			fprintf(stderr, "wrote %s\n", path_info);
-			fprintf(stderr, "wrote %s\n", path_list);
+			fprintf(stderr, "Wrote %s\n", path_info);
+			fprintf(stderr, "Wrote %s\n", path_list);
 		}
 
 		STR_free(path_info);
@@ -812,7 +825,11 @@ int main(int argc, char **argv)
 	if (_analyze)
 	{
 		if (_verbose)
-			fprintf(stderr, "LD_PRELOAD=%s\n", getenv("LD_PRELOAD"));
+		{
+			char *env = getenv("LD_PRELOAD");
+			if (env)
+				fprintf(stderr, "LD_PRELOAD=%s\n", env);
+		}
 
 		analyze(argv[optind], FALSE);
 		/*if (strcmp(argv[optind], "gb.qt4") == 0)

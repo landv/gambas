@@ -103,17 +103,17 @@ Public Sub Form_Open()
 
   End With
   
-  $hBorderLibrary = New Border("color:light-foreground;margin:" & CInt(Desktop.Scale) & ";top-margin:0")
+  $hBorderLibrary = New Border("color:light-foreground;margin:" & CInt(Desktop.Scale) & ";top-margin:0;radius:8")
   ' $hBorderLibrary.Color = Color.LightForeground
   ' $hBorderLibrary.LeftPadding = Desktop.Scale
   ' $hBorderLibrary.RightPadding = Desktop.Scale
   ' $hBorderLibrary.BottomPadding = Desktop.Scale
   
   $aBorderComponent = New Border[8]
-  $aBorderComponent[0] = New Border("right-style:none;color:lightforeground;padding:0;margin:8 0 0 8")
+  $aBorderComponent[0] = New Border("right-style:none;color:lightforeground;padding:0;margin:8 0 0 8;top-left-radius:4;bottom-left-radius:4")
   $aBorderComponent[1] = New Border("style:solid none;color:lightforeground;padding:0;margin:8 0 0 0")
   $aBorderComponent[2] = $aBorderComponent[1]
-  $aBorderComponent[3] = New Border("left-style:none;color:lightforeground;padding:0;margin:8 8 0 0")
+  $aBorderComponent[3] = New Border("left-style:none;color:lightforeground;padding:0;margin:8 8 0 0;top-right-radius:4;bottom-right-radius:4")
   For I = 0 To 3
     $aBorderComponent[I + 4] = $aBorderComponent[I].Copy()
     $aBorderComponent[I + 4].BottomMargin = 8
@@ -507,7 +507,8 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
     End Select
     
     .Alignment = Align.TopNormal
-    .Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
+    '.Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
+    .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.95)
     
     If Row = $aComp.Max Then
       .Border = $aBorderComponent[Column + 4]
@@ -1485,6 +1486,7 @@ Private Sub ReadComponentFile()
   If cComp.Exist("Implement") Then $aRequire = cComp["Implement"]
   cmbComponentState.Index = cComp["State"]
   cmbHidden.Index = If(cComp["Hidden"], 0, 1)
+  If cComp.Exist("Include") Then txtIncludeInfo.Text = cComp["Include"].Join(",")
 
   Try aVer = Split(cComp["CompatibleUntil"], ".")
   If aVer And If aVer.Count = 3 Then
@@ -1525,6 +1527,7 @@ Private Sub WriteComponent() As Boolean
   cComp["Need"] = $aNeed
   cComp["Require"] = $aRequire
   If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
+  cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
   
   Project.WriteComponentFile(cComp)
 

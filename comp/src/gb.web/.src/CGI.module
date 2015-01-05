@@ -63,6 +63,10 @@ Public Sub _init()
   'IF System.Charset = "UTF-8" THEN sLang &= ".UTF-8"
   'System.Language = sLang
   
+  ' Compatibility with Gambas <= 3.6
+  Class.Load("URL")
+  Component.Load("gb.util.web")
+  
   File.In.EndOfLine = gb.Windows
   File.Out.EndOfLine = gb.Windows
   

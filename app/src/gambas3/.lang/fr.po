@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"PO-Revision-Date: 2015-01-03 14:37 UTC\n"
+"PO-Revision-Date: 2015-01-05 20:42 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -545,7 +545,7 @@ msgstr "Composant de filtrage d'images"
 msgid "Image routines from the Imlib2 library"
 msgstr "Gestion des images basée sur la bibliothèque Imlib2"
 
-#: CComponent.class:123 FProjectProperty.form:474
+#: CComponent.class:123 FProjectProperty.form:489
 msgid "Image loading and saving"
 msgstr "Chargement et sauvegarde d'images"
 
@@ -694,58 +694,62 @@ msgid "Utility component"
 msgstr "Routines utilitaires"
 
 #: CComponent.class:160
+msgid "Web applications utility component"
+msgstr "Routines utilitaires pour les applications Web"
+
+#: CComponent.class:161
 msgid "Video capture"
 msgstr "Capture vidéo"
 
-#: CComponent.class:161
+#: CComponent.class:162
 msgid "Visual Basic compatibility"
 msgstr "Compatibilité avec Visual Basic"
 
-#: CComponent.class:162
+#: CComponent.class:163
 msgid "XML tools"
 msgstr "Outils XML"
 
-#: CComponent.class:163
+#: CComponent.class:164
 msgid "HTML generator"
 msgstr "Générateur HTML"
 
-#: CComponent.class:164
+#: CComponent.class:165
 msgid "XML-RPC protocol"
 msgstr "Protocole XML-RPC"
 
-#: CComponent.class:165
+#: CComponent.class:166
 msgid "XSLT tools based on libxslt and libxml"
 msgstr "Outils XSLT basés sur libxslt et libxml"
 
-#: CComponent.class:166
+#: CComponent.class:167
 msgid "Web applications tools"
 msgstr "Outils pour les applications Web"
 
-#: CComponent.class:172 FProjectProperty.form:462
+#: CComponent.class:173 FProjectProperty.form:477
 msgid "Graphical form management"
 msgstr "Gestion de formulaires graphiques"
 
-#: CComponent.class:173 FProjectProperty.form:468
+#: CComponent.class:174 FProjectProperty.form:483
 msgid "Event loop management"
 msgstr "Gestion de la boucle d'évènements"
 
-#: CComponent.class:175 FProjectProperty.form:485
+#: CComponent.class:176 FProjectProperty.form:500
 msgid "OpenGL display"
 msgstr "Affichage OpenGL"
 
-#: CComponent.class:176
+#: CComponent.class:177
 msgid "Complex numbers"
 msgstr "Nombres complexes"
 
-#: CComponent.class:177 FProjectProperty.form:491
+#: CComponent.class:178 FProjectProperty.form:506
 msgid "XML management"
 msgstr "Gestion du XML"
 
-#: CComponent.class:475
+#: CComponent.class:476
 msgid "Loading information on component &1..."
 msgstr "Chargement des informations sur le composant &1..."
 
-#: CComponent.class:1586 FFileProperty.class:165 FProjectProperty.class:1410
+#: CComponent.class:1587 FFileProperty.class:165 FProjectProperty.class:1418
 msgid "Classes"
 msgstr "Classes"
 
@@ -909,15 +913,15 @@ msgstr "La police Gambas est publiée sous licence « SIL Open Font License »."
 msgid "This program is published under the GNU General Public License."
 msgstr "Ce programme est publié sous la « Licence Publique Générale GNU »."
 
-#: ComponentItem.class:139 FProjectProperty.form:394
+#: ComponentItem.class:139 FProjectProperty.form:393
 msgid "Experimental"
 msgstr "Expérimental"
 
-#: ComponentItem.class:141 FProjectProperty.form:394
+#: ComponentItem.class:141 FProjectProperty.form:393
 msgid "Not finished but stable"
 msgstr "Non terminé mais stable"
 
-#: ComponentItem.class:143 FProjectProperty.class:1314
+#: ComponentItem.class:143 FProjectProperty.class:1319
 msgid "Deprecated"
 msgstr "Déprécié"
 
@@ -1269,7 +1273,7 @@ msgstr "Voulez-vous vraiment supprimer cette requête ?"
 msgid "Connection editor"
 msgstr "Editeur de connexion"
 
-#: FTextEditor.form:260 FTranslate.form:76
+#: FProjectProperty.form:661 FTextEditor.form:260 FTranslate.form:76
 msgid "Reload"
 msgstr "Recharger"
 
@@ -1321,7 +1325,7 @@ msgstr "Requêtes SQL"
 msgid "Fields"
 msgstr "Champs"
 
-#: FOption.form:1304 FProjectProperty.form:520 FPublish.form:160
+#: FOption.form:1304 FProjectProperty.form:535 FPublish.form:160
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1469,7 +1473,7 @@ msgstr "Impossible d'ajouter le fichier."
 msgid "New file"
 msgstr "Nouveau fichier"
 
-#: FMakePatch.form:66 FProjectProperty.form:786 FSearch.form:100
+#: FMakePatch.form:66 FProjectProperty.form:872 FSearch.form:100
 msgid "Options"
 msgstr "Options"
 
@@ -1525,7 +1529,7 @@ msgstr "Le projet a été créé avec succès."
 msgid "New project"
 msgstr "Nouveau projet"
 
-#: FCreateProject.form:82 FProjectProperty.form:284
+#: FCreateProject.form:82 FProjectProperty.form:283
 msgid "Project type"
 msgstr "Type de projet"
 
@@ -1633,7 +1637,7 @@ msgstr "Le référentiel du projet est directement envoyé à la commande 'svn c
 msgid "not available"
 msgstr "non disponible"
 
-#: FDebugExpr.class:472 FDebugInfo.class:39 FProjectProperty.class:155
+#: FDebugExpr.class:472 FDebugInfo.class:39 FProjectProperty.class:174
 msgid "Value"
 msgstr "Valeur"
 
@@ -2073,7 +2077,7 @@ msgstr "Propriétés de &1"
 msgid "Versioning"
 msgstr "Suivi"
 
-#: FFileProperty.class:92 FProjectProperty.form:1003 FTranslate.form:314
+#: FFileProperty.class:92 FProjectProperty.form:1089 FTranslate.form:314
 msgid "Statistics"
 msgstr "Statistiques"
 
@@ -2097,11 +2101,11 @@ msgstr "Continuer"
 msgid "You are going to cancel your changes!"
 msgstr "Tous les changements vont être annulés !"
 
-#: FFileProperty.class:164 FProjectProperty.class:1409
+#: FFileProperty.class:164 FProjectProperty.class:1417
 msgid "Modules"
 msgstr "Modules"
 
-#: FFileProperty.class:169 FProjectProperty.class:1417
+#: FFileProperty.class:169 FProjectProperty.class:1425
 msgid "Lines of code"
 msgstr "Lignes de code"
 
@@ -2345,7 +2349,7 @@ msgstr "Déplacer vers le bas"
 msgid "Move bottom"
 msgstr "Déplacer tout en bas"
 
-#: FHelpBrowser.class:23 FProjectProperty.form:914
+#: FHelpBrowser.class:23 FProjectProperty.form:1000
 msgid "Default language"
 msgstr "Langage par défaut"
 
@@ -2365,15 +2369,15 @@ msgstr "Aller en avant"
 msgid "Show help tree"
 msgstr "Afficher l'arborescence de l'aide"
 
-#: FHelpBrowser.form:84 FImageEditor.form:300
+#: FHelpBrowser.form:84 FImageEditor.form:300 FProjectProperty.form:672
 msgid "Zoom in"
 msgstr "Zoom avant"
 
-#: FHelpBrowser.form:90 FImageEditor.form:308
+#: FHelpBrowser.form:90 FImageEditor.form:308 FProjectProperty.form:678
 msgid "Zoom out"
 msgstr "Zoom arrière"
 
-#: FHelpBrowser.form:96
+#: FHelpBrowser.form:96 FProjectProperty.form:684
 msgid "No zoom"
 msgstr "Taille normale"
 
@@ -2389,7 +2393,7 @@ msgstr "Raccourcis claviers de l'EDI"
 msgid "Debugger"
 msgstr "Débogueur"
 
-#: FHelpShortcut.form:28 FProjectProperty.form:886 FTranslate.form:112
+#: FHelpShortcut.form:28 FProjectProperty.form:972 FTranslate.form:112
 msgid "Translation"
 msgstr "Traduction"
 
@@ -2653,7 +2657,7 @@ msgstr "Flou"
 msgid "Preview"
 msgstr "Aperçu"
 
-#: FImageProperty.form:571 FOption.form:1318 FProjectProperty.form:628
+#: FImageProperty.form:571 FOption.form:1318 FProjectProperty.form:627
 msgid "Reset"
 msgstr "Réinitialiser"
 
@@ -2825,7 +2829,7 @@ msgstr "Voulez-vous vraiment vider la liste ?"
 msgid "Edit list property"
 msgstr "Éditer la liste des propriétés"
 
-#: FList.form:58 FMenu.form:85 FProjectProperty.form:765
+#: FList.form:58 FMenu.form:85 FProjectProperty.form:851
 msgid "Insert"
 msgstr "Insérer"
 
@@ -3009,15 +3013,15 @@ msgstr "Démarrer"
 msgid "Use terminal emulator"
 msgstr "Utiliser un émulateur de terminal"
 
-#: FMain.form:512 FProjectProperty.form:974
+#: FMain.form:512 FProjectProperty.form:1060
 msgid "Redirect standard error output"
 msgstr "Rediriger la sortie erreur standard"
 
-#: FMain.form:518 FProjectProperty.form:992
+#: FMain.form:518 FProjectProperty.form:1078
 msgid "Use embedded HTTP server"
 msgstr "Utiliser le serveur HTTP embarqué"
 
-#: FMain.form:524 FProjectProperty.form:940
+#: FMain.form:524 FProjectProperty.form:1026
 msgid "Activate profiling"
 msgstr "Activer le profilage"
 
@@ -3205,7 +3209,7 @@ msgstr "Raccourcis claviers"
 msgid "System informations"
 msgstr "Informations système"
 
-#: FMain.form:1181 FProjectProperty.form:156
+#: FMain.form:1181 FProjectProperty.form:168
 msgid "Project properties"
 msgstr "Propriétés du projet"
 
@@ -3285,11 +3289,11 @@ msgstr "&?"
 msgid "Publish software"
 msgstr "Publier un logiciel"
 
-#: FMain.form:1578 FProjectProperty.form:569
+#: FMain.form:1578 FProjectProperty.form:606
 msgid "Reset filter"
 msgstr "Réinitialiser le filtre"
 
-#: FMakeExecutable.class:18 FProjectProperty.class:1141
+#: FMakeExecutable.class:18 FProjectProperty.class:1147
 msgid "Gambas applications"
 msgstr "Applications Gambas"
 
@@ -3877,11 +3881,11 @@ msgstr "Mainteneur du paquet"
 msgid "Default license"
 msgstr "License par défaut"
 
-#: FOption.form:350 FProjectProperty.form:411
+#: FOption.form:350 FProjectProperty.form:410
 msgid "No"
 msgstr "Non"
 
-#: FOption.form:350 FProjectProperty.form:411
+#: FOption.form:350 FProjectProperty.form:410
 msgid "Yes"
 msgstr "Oui"
 
@@ -3925,7 +3929,7 @@ msgstr "Utiliser des fenêtres utilitaires"
 msgid "Toolbox size"
 msgstr "Taille de la boîte à outils"
 
-#: FOption.form:538 FProjectProperty.form:294
+#: FOption.form:538 FProjectProperty.form:293
 msgid "Normal"
 msgstr "Normal"
 
@@ -3949,7 +3953,7 @@ msgstr "Afficher le nom de fichier dans le titre de la fenêtre"
 msgid "Default tab size"
 msgstr "Tabulation par défaut"
 
-#: FOption.form:628 FProjectProperty.form:819
+#: FOption.form:628 FProjectProperty.form:905
 msgid "space(s)"
 msgstr "espace(s)"
 
@@ -4257,191 +4261,191 @@ msgstr "Fonctions appelantes"
 msgid "Installed softwares"
 msgstr "Logiciels installés"
 
-#: FProjectProperty.class:152
+#: FProjectProperty.class:171
 msgid "Variable"
 msgstr "Variable"
 
-#: FProjectProperty.class:279
+#: FProjectProperty.class:298
 msgid "Snapping value is incorrect."
 msgstr "Le pas de la grille est incorrecte."
 
-#: FProjectProperty.class:435 Project.module:3490
+#: FProjectProperty.class:454 Project.module:3490
 msgid "Some components are missing: &1"
 msgstr "Certains composants ne sont pas installés : &1"
 
-#: FProjectProperty.class:561
+#: FProjectProperty.class:584
 msgid "These components are incompatible:<br>&1."
 msgstr "Ces composants sont incompatibles entre eux:<br>&1."
 
-#: FProjectProperty.class:574
+#: FProjectProperty.class:597
 msgid "The &1 component needs one of the following components:<br>&2."
 msgstr "Le composant &1 nécessite un des composants suivants:<br>&2."
 
-#: FProjectProperty.class:581
+#: FProjectProperty.class:604
 msgid "The &1 component needs the &2 component."
 msgstr "Le composant &1 nécessite le composant &2."
 
-#: FProjectProperty.class:1140
+#: FProjectProperty.class:1146
 msgid "Select a Gambas application"
 msgstr "Choisissez une application Gambas"
 
-#: FProjectProperty.class:1152
+#: FProjectProperty.class:1158
 msgid "<b>&1</b> does not export any class."
 msgstr "<b>&1</b> ne contient aucune classe exportée."
 
-#: FProjectProperty.class:1160
+#: FProjectProperty.class:1166
 msgid "<b>&1</b> is already used as a library."
 msgstr "<b>&1</b> est déjà utilisé comme bibliothèque."
 
-#: FProjectProperty.class:1312
+#: FProjectProperty.class:1317
 msgid "Stable"
 msgstr "Stable"
 
-#: FProjectProperty.class:1420
+#: FProjectProperty.class:1428
 msgid "Executable size"
 msgstr "Taille de l'exécutable"
 
-#: FProjectProperty.class:1420
+#: FProjectProperty.class:1428
 msgid "bytes"
 msgstr "octets"
 
-#: FProjectProperty.class:1613
-msgid "Information about library"
-msgstr "Information sur la bibliothèque"
-
-#: FProjectProperty.class:1616
+#: FProjectProperty.class:1457
 msgid "Information about component"
 msgstr "Information sur le composant"
 
-#: FProjectProperty.form:234
-msgid "Show only components used in project"
-msgstr "Afficher uniquement les composants utilisés dans le projet"
+#: FProjectProperty.class:1463
+msgid "Information about library"
+msgstr "Information sur la bibliothèque"
 
-#: FProjectProperty.form:239
-msgid "Show deprecated components"
-msgstr "Afficher les composants dépréciés"
-
-#: FProjectProperty.form:253
+#: FProjectProperty.form:252
 msgid "General"
 msgstr "Général"
 
-#: FProjectProperty.form:294
+#: FProjectProperty.form:293
 msgid "Component"
 msgstr "Composant"
 
-#: FProjectProperty.form:294
+#: FProjectProperty.form:293
 msgid "Library"
 msgstr "Bibliothèque"
 
-#: FProjectProperty.form:301 FPublish.class:85
+#: FProjectProperty.form:300 FPublish.class:85
 msgid "Version"
 msgstr "Version"
 
-#: FProjectProperty.form:327
+#: FProjectProperty.form:326
 msgid "Get from 'VERSION' file"
 msgstr "Obtenir depuis un fichier 'VERSION'"
 
-#: FProjectProperty.form:334
+#: FProjectProperty.form:333
 msgid "Title"
 msgstr "Titre"
 
-#: FProjectProperty.form:357
+#: FProjectProperty.form:356
 msgid "Author(s)"
 msgstr "Auteur(s)"
 
-#: FProjectProperty.form:367
+#: FProjectProperty.form:366
 msgid "Information"
 msgstr "Information"
 
-#: FProjectProperty.form:388
+#: FProjectProperty.form:387
 msgid "Progress"
 msgstr "Avancement"
 
-#: FProjectProperty.form:394
+#: FProjectProperty.form:393
 msgid "Finished and stable"
 msgstr "Terminé et stable"
 
-#: FProjectProperty.form:405
+#: FProjectProperty.form:404
 msgid "This component is hidden"
 msgstr "Ce composant est caché"
 
-#: FProjectProperty.form:422
+#: FProjectProperty.form:421
 msgid "Compatible until version"
 msgstr "Compatible jusqu'à la version"
 
-#: FProjectProperty.form:447
+#: FProjectProperty.form:450
+msgid "Include information from"
+msgstr ""
+
+#: FProjectProperty.form:462
 msgid "Required features"
 msgstr "Fonctionnalités nécessaires"
 
-#: FProjectProperty.form:499
+#: FProjectProperty.form:514
 msgid "Required components"
 msgstr "Composants nécessaires"
 
-#: FProjectProperty.form:534
+#: FProjectProperty.form:549
 msgid "Remove All"
 msgstr "Tout supprimer"
 
-#: FProjectProperty.form:541
+#: FProjectProperty.form:556
 msgid "Components"
 msgstr "Composants"
 
-#: FProjectProperty.form:610
-msgid "About component"
-msgstr "À propos du composant"
+#: FProjectProperty.form:572
+msgid "Show only components used in project"
+msgstr "Afficher uniquement les composants utilisés dans le projet"
 
-#: FProjectProperty.form:633
+#: FProjectProperty.form:578
+msgid "Show deprecated components"
+msgstr "Afficher les composants dépréciés"
+
+#: FProjectProperty.form:709
 msgid "Libraries"
 msgstr "Bibliothèques"
 
-#: FProjectProperty.form:652
+#: FProjectProperty.form:735
 msgid "<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found."
 msgstr "<b>ATTENTION !</b> L'exécutable du projet et les bibliothèques dont il dépend doivent être stockés dans le même répertoire. Autrement les bibliothèques seront introuvables."
 
-#: FProjectProperty.form:711
+#: FProjectProperty.form:797
 msgid "Environment"
 msgstr "Environnement"
 
-#: FProjectProperty.form:732
+#: FProjectProperty.form:818
 msgid "&Insert"
 msgstr "&Insérer"
 
-#: FProjectProperty.form:744
+#: FProjectProperty.form:830
 msgid "Arguments"
 msgstr "Arguments"
 
-#: FProjectProperty.form:796
+#: FProjectProperty.form:882
 msgid "Edition"
 msgstr "Édition"
 
-#: FProjectProperty.form:807
+#: FProjectProperty.form:893
 msgid "Tab size"
 msgstr "Tabulations"
 
-#: FProjectProperty.form:827
+#: FProjectProperty.form:913
 msgid "Compilation"
 msgstr "Compilation"
 
-#: FProjectProperty.form:838
+#: FProjectProperty.form:924
 msgid "Module symbols are public by default"
 msgstr "Les modules sont publics par défaut"
 
-#: FProjectProperty.form:855
+#: FProjectProperty.form:941
 msgid "Form controls are public"
 msgstr "Les contrôles des formulaires sont publics"
 
-#: FProjectProperty.form:872
+#: FProjectProperty.form:958
 msgid "Activate warnings"
 msgstr "Activer les avertissements"
 
-#: FProjectProperty.form:897
+#: FProjectProperty.form:983
 msgid "Project is translatable"
 msgstr "Le projet est traduisible"
 
-#: FProjectProperty.form:929
+#: FProjectProperty.form:1015
 msgid "Debugging"
 msgstr "Débogage"
 
-#: FProjectProperty.form:957
+#: FProjectProperty.form:1043
 msgid "Use a terminal emulator"
 msgstr "Utiliser un émulateur de terminal"
 
@@ -6985,11 +6989,11 @@ msgstr "Le programme &1 n'est pas installé sur votre système."
 msgid "The following programs are not installed on your system: &1."
 msgstr "Les programmes suivants ne sont pas installés sur votre système : &1."
 
-#: Project.module:5987
+#: Project.module:5989
 msgid "Unable to read component description file."
 msgstr "Impossible de lire le fichier de description du composant."
 
-#: Project.module:6036
+#: Project.module:6041
 msgid "Cannot write component description file."
 msgstr "Impossible d'écrire le fichier de description du composant."
 
