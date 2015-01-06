@@ -25,6 +25,13 @@ H1 { display: none; }
 
 <form name="form" method="post" enctype="multipart/form-data">
 
+<%If Not Main.Edit And If Request["ident"] Then%>
+  <%If Not Session.Id Then%>
+    <input type="submit" name="ok" value="<%=("OK")%>" style="position:absolute;width:0px;height:0px;margin:0px;padding:0px;outline:none;border:none;">
+  <%Endif%>
+<%Endif%>
+  
+
 <%If Request.Exist("v") Then%>
 
   <%If Not Request.Exist("nh") Then%>
@@ -55,19 +62,22 @@ H1 { display: none; }
 <%Else%>
 
 <div class="header">
+
   <div class="header-inside">
     
     <div class="header-bar">
       <div class="up">
-        <%If Main.Edit%>
+        <%If Main.Edit Then%>
           <img src="<%/%>/edit.png">
         <%Else%>
           <a href="<%_PrintParent()%>"><img src="<%/%>/up.png"></a>
         <%Endif%>
       </div>
+      <%If Main.Path Then%>
       <div class="title">
         <%_PrintLink%>
       </div>
+      <%Endif%>
       <%If Main.Edit Then%>
         <div class="command">
           <input type="submit" id="preview" name="preview" value="<%=("Preview")%>">
@@ -108,10 +118,40 @@ H1 { display: none; }
           <%Endif%>
         </div>
       <%Endif%>
+      <div style="float:right;">
+      <%If Session.Id Then%>
+        <div class="command"><input type="submit" name="logout" value="<%= ("Logout")%>"></div>
+      <%Else%>
+        <div class="command"><input type="submit" name="ident" value="<%=("Login")%>"></div>
+        <div class="command"><input type="submit" name="register" value="<%=("Register")%>"></div>
+      <%Endif%>
       <%_PrintLang%>
+      </div>
     </div>
   </div>
+
+  <%If Not Main.Edit And If Request["ident"] Then%>
+    <div align="center" style="max-width: 24em;margin: 0 auto;">
+      <!--<div class="login-glue"></div>-->
+      <div class="login"><div>
+        <%If Session.Id Then%>
+          <div id="user" class="label-login" align="left"><%=Main.UserName%></div>
+          <div class="command"><input type="submit" name="logout" value="<%=("Logout")%>"></div>
+        <%Else%>
+          <div class="label-login" align="left"><%=("Login")%>&nbsp;</div>
+          <input type="text" name="login" id="login" maxlength="16">
+          <div class="label-login" align="left"><%=("Password")%>&nbsp;</div>
+          <input type="password" name="password" id="password" maxlength="16">
+          <div class="command"><input type="submit" name="ok" id="ok" value="<%=("OK")%>"></div>
+          <div class="command"><input type="submit" id="cancel" value="<%=("Cancel")%>"></div>
+        <%Endif%>
+      </div></div>
+    </div>
+  <%Endif%>
+
 </div>
+
+
 
 <%If Main.Edit Then%>
 <div class="page-edit">
@@ -155,24 +195,6 @@ H1 { display: none; }
         document.getElementById('login').focus();
       </script>
     <%Endif%>
-  <%Endif%>
-
-  <%If Not Main.Path And If Not Main.Edit Then%>
-  <div align="center">
-    <div class="login"><div>
-      <%If Session.Id Then%>
-        <div id="user" class="label-login" align="left"><%= Main.UserName%></div>
-        <div class="command"><input type="submit" name="logout" value="<%= ("Logout")%>"></div>
-      <%Else%>
-        <div class="label-login" align="left"><%=("Login")%>&nbsp;</div>
-        <input type="text" name="login" id="login" maxlength="16">
-        <div class="label-login" align="left"><%=("Password")%>&nbsp;</div>
-        <input type="password" name="password" id="password" maxlength="16">
-        <div class="command"><input type="submit" id="ok" value="OK"></div>
-        <div class="command"><input type="submit" id="register" name="register" value="<%= ("Register")%>"></div>
-      <%Endif%>
-    </div></div>
-  </div>
   <%Endif%>
 
 </div>

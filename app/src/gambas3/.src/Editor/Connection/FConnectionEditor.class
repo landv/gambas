@@ -318,7 +318,7 @@ Catch
   
   Application.Busy = 0
   Me.Enabled = False
-  Message.Error(("Unable to connect to database.") & "\n\n" & Error.Text)
+  Message.Error(("Unable to connect to database.") & "\n\n" & Error.Text & "\n\n" & Error.Backtrace.Join("\n"))
   Return True
   
 End
@@ -610,6 +610,7 @@ Public Sub btnRunQuery_Click()
   
   Dim sReq As String = Trim(edtRequest.Text)
   Dim iPos As Integer
+  Dim sStart As String
   
   While Left(sReq, 2) = "/*"
     iPos = InStr(sReq, "*/")
@@ -621,7 +622,10 @@ Public Sub btnRunQuery_Click()
   
   Inc Application.Busy
   
-  If sReq Like "SELECT *" Then
+  iPos = InStr(sReq, " ")
+  If iPos Then sStart = UCase(Left$(sReq, iPos - 1))
+  
+  If ["SELECT", "WITH", "PRAGMA"].Exist(sStart) Then
     Try datRequest.Table = sReq
   Else
     Try $hConn.Exec(sReq)

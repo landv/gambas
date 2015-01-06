@@ -17,8 +17,6 @@ End
 Public Sub Form_Open()
 
   Dim aGroup As New CSoftwareGroup[]
-  Dim aInit As String[]
-  Dim I As Integer
   Dim hButton As ToolButton
   Dim hGroup As CSoftwareGroup
   Dim sIcon As String
@@ -593,6 +591,12 @@ End
 
 Public Sub chkShowFilter_Click()
 
+  Dim hPanel As VBox
+
   panFilter.Visible = chkShowFilter.Value
+  
+  hPanel = panFilter.Parent
+  HPanel.AutoResize = True
+  HPanel.AutoResize = False
 
 End

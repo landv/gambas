@@ -110,11 +110,13 @@ Public Sub Form_Open()
   ' $hBorderLibrary.BottomPadding = Desktop.Scale
   
   $aBorderComponent = New Border[8]
-  $aBorderComponent[0] = New Border("right-style:none;color:lightforeground;padding:0;margin:8 0 0 8;top-left-radius:4;bottom-left-radius:4")
-  $aBorderComponent[1] = New Border("style:solid none;color:lightforeground;padding:0;margin:8 0 0 0")
+  $aBorderComponent[0] = New Border("right-style:none;padding:6;margin:8 0 0 8;top-left-radius:5;bottom-left-radius:5;width:4;")
+  $aBorderComponent[1] = New Border("style:solid none;padding:6;margin:8 0 0 0;width:4")
   $aBorderComponent[2] = $aBorderComponent[1]
-  $aBorderComponent[3] = New Border("left-style:none;color:lightforeground;padding:0;margin:8 8 0 0;top-right-radius:4;bottom-right-radius:4")
+  $aBorderComponent[3] = New Border("left-style:none;padding:6;margin:8 8 0 0;top-right-radius:5;bottom-right-radius:5;width:4")
+  
   For I = 0 To 3
+    $aBorderComponent[I].Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
     $aBorderComponent[I + 4] = $aBorderComponent[I].Copy()
     $aBorderComponent[I + 4].BottomMargin = 8
   Next
@@ -123,7 +125,7 @@ Public Sub Form_Open()
   $hUncheck = Picture["img/16/unchecked.png"]
 
   gvwComponent.Columns.Count = 4
-  gvwComponent.Columns[0].Width = 32
+  gvwComponent.Columns[0].Width = 40
   gvwComponent.Columns[0].Expand = False
   gvwComponent.Columns[1].Expand = False
   gvwComponent.Columns[2].Expand = True
@@ -1354,11 +1356,11 @@ Public Sub txtFilterComponent_Change()
   
 End
 
-Public Sub txtFilterComponent_KeyPress()
-
-  If Key.Code = Key.Esc Then btnClearFilter_Click
-
-End
+' Public Sub txtFilterComponent_KeyPress()
+' 
+'   If Key.Code = Key.Esc Then btnClearFilter_Click
+' 
+' End
 
 Public Sub btnClearFilter_Click()
   
@@ -1537,8 +1539,6 @@ Private Sub ReadComponent()
 
   Dim aComp As String[]
   Dim hComp As CComponent
-  Dim sComp As String
-  Dim hMenu As Menu
   
   ReadComponentFile
   
@@ -1553,12 +1553,6 @@ Private Sub ReadComponent()
   Next
   aComp.Sort
   
-  mnuAdd.Children.Clear
-  For Each sComp In aComp
-    hMenu = New Menu(mnuAdd) As "mnuAddRequire"
-    hMenu.Text = sComp
-  Next
-
   lstRequire.List = $aRequire
   
   ReadFeatures(panNeed, $aNeed)
@@ -1606,12 +1600,6 @@ Public Sub chkCompat_Click()
   txtMajor.Enabled = chkCompat.Value
   txtMinor.Enabled = chkCompat.Value
   txtRelease.Enabled = chkCompat.Value
-
-End
-
-Public Sub mnuAddRequire_Click()
-
-  AddRequire(Last.Text)
 
 End
 
@@ -1670,4 +1658,11 @@ Public Sub btnZoomNormal_Click()
   
   webAboutComponent.TextZoom = 0.8
   
+End
+
+Public Sub btnAdd_Click()
+
+  If FSelectComponent.Run($aRequire) Then Return
+  AddRequire(FSelectComponent.Component)
+
 End

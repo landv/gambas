@@ -384,16 +384,13 @@ public:
 	virtual void open(const string & sql) = 0;
 	virtual void open() = 0;
 
-/* func. executes a query without results to return */
-	virtual int exec(const string & sql) = 0;
-	virtual int exec() = 0;
-	virtual const void *getExecRes() = 0;
-
 /* as open, but with our query exept Sql */
 	virtual bool query(const char *sql) = 0;
 
 /* Close SQL Query*/
 	virtual void close();
+
+	virtual result_set *getResult() = 0;
 
 /* This function looks for field Field_name with value equal Field_value
    Returns true if found (position of dataset is set to founded position)

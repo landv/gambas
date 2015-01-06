@@ -456,7 +456,7 @@ Public Sub Main()
     Response.Redirect(Application.Root &/ "~register")
     Return
    
-  Else If Request["login"] And If Request["password"] Then
+  Else If Request["login"] And If Request["password"] And If Request["ok"] Then
     
     Session.Abandon
     

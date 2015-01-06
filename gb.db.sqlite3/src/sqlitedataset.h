@@ -156,7 +156,6 @@ class SqliteDataset:public Dataset
 protected:
 /* query results*/
 	result_set result;
-	result_set exec_res;
 
 	sqlite3 *handle();
 
@@ -183,13 +182,8 @@ public:
 /* opens a query  & then sets a query results */
 	virtual void open();
 	virtual void open(const string & sql);
-/* func. executes a query without results to return */
-	virtual int exec();
-	virtual int exec(const string & sql);
-	virtual const void *getExecRes();
 /* as open, but with our query exept Sql */
 	virtual bool query(const char *query);
-	virtual bool query(const string & query);
 /* func. closes a query */
 	virtual void close(void);
 /* Cancel changes, made in insert or edit states of dataset */
@@ -207,6 +201,8 @@ public:
 	virtual void next();
 /* Go to record No (starting with 0) */
 	virtual bool seek(int pos = 0);
+
+	virtual result_set *getResult();
 
 	void setNeedFieldType(bool need);
 };

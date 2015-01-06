@@ -1,0 +1,142 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,84,67)
+  Text = ("Select a component")
+  Arrangement = Arrange.Vertical
+  { wizComponent Wizard
+    MoveScaled(1,1,82,56)
+    Background = Color.TextBackground
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Count = 2
+    ShowTitle = False
+    ShowButton = False
+    Border = False
+    Animated = True
+    Index = 0
+    Text = ("")
+    { panSearchProject Panel
+      MoveScaled(1,1,65,3)
+      Arrangement = Arrange.Horizontal
+      { picFilter PictureBox
+        MoveScaled(0,0,3,3)
+        Picture = Picture["img/32/filter.png"]
+        Stretch = True
+        AutoResize = True
+      }
+      { txtFilterComponent TextBox
+        MoveScaled(5,0,18,3)
+        Foreground = Color.LightForeground
+        Expand = True
+        Border = False
+      }
+      { btnClearFilter ToolButton
+        MoveScaled(25,0,3,3)
+        ToolTip = ("Reset filter")
+        Picture = Picture["icon:/small/clear"]
+      }
+    }
+    { timFilterComponent #Timer
+      #MoveScaled(69,4)
+      Delay = 500
+    }
+    { Separator4 Separator
+      MoveScaled(29,6,21,0)
+    }
+    { choComponent ComponentChooser
+      MoveScaled(2,11,71,39)
+      Expand = True
+      Border = False
+    }
+    Index = 1
+    Text = ("")
+    { panHelp VBox
+      MoveScaled(0,0,81,18)
+      Background = Color.TextBackground
+      Expand = True
+      { Panel8 HBox
+        MoveScaled(1,0,79,4)
+        { btnBack Button
+          MoveScaled(0,0,4,4)
+          Picture = Picture["icon:/small/previous"]
+          Border = False
+        }
+        { btnForward Button
+          MoveScaled(4,0,4,4)
+          Picture = Picture["icon:/small/next"]
+          Border = False
+        }
+        { btnStop ToolButton
+          MoveScaled(8,0,4,4)
+          ToolTip = ("Cancel")
+          Picture = Picture["icon:/small/delete"]
+        }
+        { btnReload ToolButton
+          MoveScaled(12,0,4,4)
+          ToolTip = ("Reload")
+          Picture = Picture["icon:/small/refresh"]
+        }
+        { Separator10 Separator
+          MoveScaled(17,0,0,4)
+          Visible = False
+        }
+        { btnZoomIn ToolButton
+          MoveScaled(18,0,4,4)
+          ToolTip = ("Zoom in")
+          Picture = Picture["icon:/small/zoom-in"]
+        }
+        { btnZoomOut ToolButton
+          MoveScaled(22,0,4,4)
+          ToolTip = ("Zoom out")
+          Picture = Picture["icon:/small/zoom-out"]
+        }
+        { btnZoomNormal ToolButton
+          MoveScaled(26,0,4,4)
+          ToolTip = ("No zoom")
+          Picture = Picture["icon:/small/zoom-normal"]
+        }
+        { Panel3 Panel
+          MoveScaled(51,0,7,4)
+          Expand = True
+        }
+      }
+      { Separator2 Separator
+        MoveScaled(0,9,24,0)
+        Visible = False
+      }
+      { webAboutComponent HelpView
+        MoveScaled(4,10,46,7)
+        Expand = True
+      }
+    }
+    Index = 0
+  }
+  { Separator1 Separator
+    MoveScaled(29,58,21,0)
+  }
+  { Panel10 HBox
+    MoveScaled(1,60,77,6)
+    Spacing = True
+    Margin = True
+    { chkShowDeprecated CheckBox
+      MoveScaled(0,0,32,3)
+      AutoResize = True
+      Text = ("Show deprecated components")
+    }
+    { Panel11 Panel
+      MoveScaled(36,0,1,3)
+      Expand = True
+    }
+    { btnOK Button
+      MoveScaled(39,0,17,4)
+      Text = ("OK")
+      Default = True
+    }
+    { btnCancel Button
+      MoveScaled(57,0,18,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+  }
+}

@@ -332,7 +332,7 @@ DRAW_GRID:
   Endif
   
   Paint.Restore
-
+  
 End
 
 Private Sub DrawText(sText As String, X As Integer, Y As Integer, W As Integer, H As Integer, iAlign As Integer, iPadding As Integer)
@@ -561,6 +561,7 @@ Public Sub ScrollArea_Draw()
   If Not hClip Then Return
   
   Paint.Save
+  Paint.ResetClip
   Paint.Rectangle(hClip.X, hClip.Y, hClip.W, hClip.H)
   Paint.Clip
   
@@ -633,6 +634,8 @@ Public Sub ScrollArea_Draw()
         
         Paint.Save
         If hData.Border Then
+          Paint.Save
+          Paint.Restore
           If hData.Border.Clip(hSpan.X, hSpan.Y, hSpan.W, hSpan.H) Then Goto NEXT_CELL
         Else
           Paint.Rectangle(hSpan.X, hSpan.Y, hSpan.W, hSpan.H)

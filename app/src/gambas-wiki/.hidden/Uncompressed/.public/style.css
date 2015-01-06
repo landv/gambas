@@ -222,12 +222,13 @@ DIV.message {
 .command {
   display: inline-block;
   margin-left: 8px;
+  margin-top: 2px;
 }
 
 #lang {
-  float: right;
   font-size: 80%;
   margin-right: 4px;
+  margin-left: 4px;
 }
 
 .up {
@@ -443,15 +444,27 @@ DIV.syntax > P:first-child {
 }
 
 .login {
-  position: static;
-  background: white; /*#DFC1A7;*/
+  position: absolute;
+  background: #E8E8E8;
   color: gray;
-  border: #DF6B00 solid 4px;
-  border-radius: 32px;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
   padding: 16px;
   box-shadow: 0 0 8px gray;
+  margin-top: -4px;
   width: 24em;
-  margin: 16px;
+  z-index: -1;
+}
+
+.login-glue {
+  position: absolute;
+  margin: 0 auto;
+  width: 24em;
+  padding: 1px 22px;
+  background: #E8E8E8;
+  z-index: 10;
+  margin-top: -24px;
+  margin-left: -6px;
 }
 
 .label-login {
@@ -465,7 +478,7 @@ DIV.syntax > P:first-child {
   width: 12em;
 }
 
-#ok {
+#ok,#cancel {
   margin-top: 8px;
   width: 8em;
   }

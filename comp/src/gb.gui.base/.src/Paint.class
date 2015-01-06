@@ -198,3 +198,71 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
   Paint.DrawImage(hShadow, X + DX - Radius, Y + DY - Radius,,, Opacity)
   
 End
+
+' Static Public Debug As Boolean
+' 
+' Static Public Sub MoveTo(X As Float, Y As Float)
+'   
+'   Super.MoveTo(X, Y)
+'   If {Debug} Then Print "MoveTo("; CStr(X); ","; CStr(Y); ")"
+'   
+' End
+' 
+' Static Public Sub LineTo(X As Float, Y As Float)
+'   
+'   Super.LineTo(X, Y)
+'   If {Debug} Then Print "LineTo("; CStr(X); ","; CStr(Y); ")"
+'   
+' End
+' 
+' Static Public Sub CurveTo(X1 As Float, X2 As Float, Y1 As Float, Y2 As Float, X3 As Float, Y3 As Float)
+'   
+'   Super.CurveTo(X1, X2, Y1, Y2, X3, Y3)
+'   If {Debug} Then Print "CurveTo("; CStr(X1); ","; CStr(Y1); ","; CStr(X2); ","; CStr(Y2); ","; CStr(X3); ","; CStr(Y3); ")"
+'   
+' End
+' 
+' 
+' Static Public Sub Clip(Optional Preserve As Boolean)
+'   
+'   If {Debug} Then 
+'     With Paint.ClipExtents
+'       Print "Clip() ["; CStr(.X); ","; CStr(.Y); ","; CStr(.Width); ","; CStr(.Height); "] -> ";
+'     End With
+'   Endif
+'   Super.Clip(Preserve)
+'   If {Debug} Then 
+'     With Paint.ClipExtents
+'       Print "["; CStr(.X); ","; CStr(.Y); ","; CStr(.Width); ","; CStr(.Height); "]"
+'     End With
+'   Endif
+'   
+' End
+' 
+' Static Public Sub Restore()
+'   
+'   If {Debug} Then 
+'     With Paint.ClipExtents
+'       Print "Restore() ["; CStr(.X); ","; CStr(.Y); ","; CStr(.Width); ","; CStr(.Height); "] -> ";
+'     End With
+'   Endif
+'   Super.Restore
+'   If {Debug} Then 
+'     With Paint.ClipExtents
+'       Print "["; CStr(.X); ","; CStr(.Y); ","; CStr(.Width); ","; CStr(.Height); "]"
+'     End With
+'   Endif
+'   
+' End
+' 
+' Static Public Sub Rectangle(X As Float, Y As Float, W As Float, H As Float, Optional R As Float)
+'   
+'   Super.Rectangle(X, Y, W, H, R)
+'   If {Debug} Then
+'     Print "Rectangle("; CStr(X); ","; CStr(Y); ","; CStr(W); ","; CStr(H);
+'     If R Then Print ","; CStr(R);
+'     Print ")"
+'   Endif
+'   
+' End
+' 

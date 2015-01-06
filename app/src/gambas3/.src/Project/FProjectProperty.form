@@ -73,8 +73,6 @@
       Tag = "LIBOVERLAY_SCROLLBAR=0"
     }
   }
-  { mnuAdd Menu
-  }
   { ipnProject IconPanel
     MoveScaled(0,0,108,70)
     Expand = True
@@ -312,12 +310,10 @@
         { VBox5 VBox
           MoveScaled(38,1,21,17)
           Spacing = True
-          { btnAdd MenuButton
+          { btnAdd Button
             MoveScaled(0,0,16,4)
-            Text = ("Add")
+            Text = ("Add") & "..."
             Picture = Picture["icon:/small/add"]
-            Menu = "mnuAdd"
-            MenuOnly = True
           }
           { btnRemove Button
             MoveScaled(0,5,17,4)
@@ -387,7 +383,7 @@
         Border = False
         Mode = Select.Single
         Grid = False
-        Padding = 6
+        Padding = 0
       }
       { btnUndo Button
         MoveScaled(58,7,17,4)

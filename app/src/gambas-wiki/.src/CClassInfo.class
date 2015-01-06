@@ -360,7 +360,7 @@ Public Function GetSymbols() As String[]
 
   sCreatable = ""
   
-  If Creatable And If Not IsVirtual() Then
+  If Creatable And If Not IsVirtual() And If bDynamic Then
     If Symbols.Exist("_new") Then
       'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
       sCreatable = Subst(("This class is &1."), Main.GetSymbolLink(Me, "_new", ("creatable"))) & "\\"

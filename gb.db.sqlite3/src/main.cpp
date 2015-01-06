@@ -300,7 +300,6 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	int err;
 	int retry = 0;
 	int max_retry;
-	bool select;
 	bool success;
 
 	if (nsubst)
@@ -331,18 +330,13 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	else
 		max_retry = 0;
 	
-	select = (strncasecmp("select ", query, 7) == 0 || strncasecmp("with ", query, 5) == 0);
-	
 	for(;;)
 	{
 		err = 0;
 
 		res->setNeedFieldType(_need_field_type);
 
-		if (select)
-			success = res->query(query);
-		else
-			success = res->exec(query);
+		success = res->query(query);
 		
 		if (success)
 		{
@@ -953,7 +947,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	fType type;
 
 	if (!next)
-		res->seek(pos);							/* move to record */
+		res->seek(pos);
 	else
 		res->next();
 
@@ -1196,7 +1190,7 @@ static int table_init(DB_DATABASE * db, const char *table, DB_INFO * info)
 	if (do_query(db, "Unable to get table fields: &1", &res, qfield, 1, table))
 		return TRUE;
 
-	result_set *r = (result_set *) res->getExecRes();
+	result_set *r = (result_set *) res->getResult();
 
 	info->nfield = n = r->records.size();
 	if (n == 0)
@@ -1268,7 +1262,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 	if (do_query(db, "Unable to get primary index: &1", &res, qindex1, 1, table))
 		return TRUE;
 
-	result_set *r = (result_set *) res->getExecRes();
+	result_set *r = (result_set *) res->getResult();
 	n = r->records.size();
 
 	for (int i = 0; i < n; i++)
@@ -1288,7 +1282,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 			}
 			GB.FreeString(&sql);
 
-			r = (result_set *) res->getExecRes();
+			r = (result_set *) res->getResult();
 			info->nindex = r->records.size();
 			GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
 
@@ -1312,7 +1306,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 				 "PRAGMA table_info('&1')", 1, table))
 			return TRUE;
 
-		r = (result_set *) res->getExecRes();
+		r = (result_set *) res->getResult();
 
 		info->nindex = 1;
 		GB.Alloc(POINTER(&info->index), sizeof(int));
@@ -1478,7 +1472,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 
 	GB.NewArray(primary, sizeof(char *), 0);
 
-	r = (result_set *) res->getExecRes();
+	r = (result_set *) res->getResult();
 	n = r->records.size();
 	for (i = 0; i < n; i++)
 	{
@@ -1496,7 +1490,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 			}
 			GB.FreeString(&sql);
 
-			r = (result_set *) res->getExecRes();
+			r = (result_set *) res->getResult();
 			if ((n = r->records.size()) < 1)
 			{
 				// No information returned for key
@@ -1524,7 +1518,7 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 				 "PRAGMA table_info('&1')", 1, table))
 			return TRUE;
 
-		r = (result_set *) res->getExecRes();
+		r = (result_set *) res->getResult();
 
 		for (i = 0; i < (int) r->records.size(); i++)
 		{
@@ -1759,7 +1753,7 @@ static int field_exist(DB_DATABASE * db, const char *table, const char *field)
 		return FALSE;
 	}
 
-	result_set *r = (result_set *) res->getExecRes();
+	result_set *r = (result_set *) res->getResult();
 
 	n = r->records.size();
 
@@ -1802,7 +1796,7 @@ static int field_list(DB_DATABASE * db, const char *table, char ***fields)
 		return -1;
 	}
 
-	result_set *r = (result_set *) res->getExecRes();
+	result_set *r = (result_set *) res->getResult();
 
 	n = r->records.size();
 
@@ -1860,7 +1854,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		return TRUE;
 	}
 
-	r = (result_set *) res->getExecRes();
+	r = (result_set *) res->getResult();
 
 	if ((n = r->records.size()) == 0)
 	{
@@ -2118,7 +2112,7 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 			 table))
 		return TRUE;
 
-	result_set *r = (result_set *) res->getExecRes();
+	result_set *r = (result_set *) res->getResult();
 
 	if ((n = r->records.size()) == 0)
 	{
@@ -2160,7 +2154,7 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 		return TRUE;
 	}
 
-	r = (result_set *) res->getExecRes();
+	r = (result_set *) res->getResult();
 	n = r->records.size();
 	i = 0;
 	/* (BM) row can be null if we are seeking the last index */

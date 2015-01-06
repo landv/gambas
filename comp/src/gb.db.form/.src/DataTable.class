@@ -31,16 +31,21 @@ Private $aCol As String[]
 
 Public Sub _new(hConn As DataConnection, Table As String, Filter As String)
   
+  Dim iPos As Integer
+  Dim sStart As String
+  
   $hConn = hConn
   $DB = hConn.Connection
   $sTable = Trim(Table)
   $sFilter = Filter
   
-  If $sTable Like "SELECT *" Then 
-    $bRequest = True
-  Else
-    $hConn.CheckTable(Table)
+  iPos = InStr($sTable, " ")
+  If iPos Then
+    sStart = UCase(Left($sTable, iPos - 1))
+    $bRequest = ["SELECT", "WITH", "PRAGMA"].Exist(sStart)
   Endif
+  
+  If Not $bRequest Then $hConn.CheckTable(Table)
   
   RefreshKey
 

@@ -1,0 +1,180 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border=True"
+Public Const _DefaultEvent As String = "Activate"
+Public Const _DefaultSize As String = "36,36"
+Public Const _Group As String = "Chooser"
+
+Event Select
+Event Activate
+
+Property Border As Boolean
+Property Components As String[]
+Property Current As String
+
+Static Private $aBorder As Border[]
+
+Private $hGridView As GridView
+Private $aComp As New String[]
+
+Public Sub _new()
+  
+  Dim I As Integer
+  
+  $hGridView = New GridView(Me) As "GridView"
+  $hGridView.Mode = Select.Single
+  $hGridView.Grid = False
+  
+  If Not $aBorder Then
+  
+    $aBorder = New Border[6]
+    $aBorder[0] = New Border("right-style:none;padding:6;margin:8 0 0 8;top-left-radius:5;bottom-left-radius:5;width:4;")
+    $aBorder[1] = New Border("style:solid none;padding:6;margin:8 0 0 0;width:4")
+    $aBorder[2] = New Border("left-style:none;padding:6;margin:8 8 0 0;top-right-radius:5;bottom-right-radius:5;width:4")
+    
+    For I = 0 To 2
+      $aBorder[I].Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
+      $aBorder[I + 3] = $aBorder[I].Copy()
+      $aBorder[I + 3].BottomMargin = 8
+    Next
+    
+  Endif
+
+  $hGridView.Columns.Count = 3
+  $hGridView.Columns[0].Expand = False
+  $hGridView.Columns[1].Expand = True
+  $hGridView.Columns[2].Width = 40
+  $hGridView.Columns[2].Expand = False
+
+End
+
+
+Private Function Components_Read() As String[]
+
+  Return $aComp
+
+End
+
+Private Sub Components_Write(Value As String[])
+
+  If Not Value Then Value = New String[]
+  $aComp = Value
+  
+  $hGridView.UnSelectAll
+  $hGridView.Rows.Count = $aComp.Count
+  $hGridView.Columns[0].W = -1
+  GridView_Arrange
+
+End
+
+Public Sub GridView_Data(Row As Integer, Column As Integer)
+  
+  'Dim hCompItem As ComponentItem = $cComp[$aComp[Row]]
+  Dim hComp As CComponent = CComponent.All[$aComp[Row]]
+  
+  With $hGridView.Data
+  
+    Select Case Column
+      
+      Case 0
+        .Text = hComp.Key
+        .Font.Bold = True
+        If hComp.State = CComponent.UNSTABLE Then 
+          .Font.Italic = True
+        Else If hComp.State = CComponent.DEPRECATED Then
+          .Foreground = Color.LightForeground
+          '.Font.Strikeout = True
+        Endif
+        
+      Case 1
+        .WordWrap = True
+        .RichText = hComp.Name
+        If hComp.State = CComponent.UNSTABLE Then 
+          .Font.Italic = True
+        Else If hComp.State = CComponent.DEPRECATED Then
+          .Foreground = Color.LightForeground
+          '.Font.Strikeout = True
+        Endif
+        
+      Case 2
+        Select Case hComp.State
+          Case CComponent.STABLE_NOT_FINISHED
+            .Picture = Picture["img/16/unfinished.png"]
+          Case CComponent.UNSTABLE
+            .Picture = Picture["img/16/experimental.png"]
+          Case CComponent.STABLE
+            .Picture = Picture["img/16/finished.png"]
+          Case CComponent.DEPRECATED
+            .Picture = Picture["img/16/deprecated.png"]
+        End Select
+      
+    End Select
+    
+    .Alignment = Align.TopNormal
+    '.Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
+    .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.95)
+    
+    If Row = $aComp.Max Then
+      .Border = $aBorder[Column + 3]
+    Else
+      .Border = $aBorder[Column]
+    Endif
+    
+  End With
+  
+End
+
+Private Function Current_Read() As String
+
+  Try Return $aComp[$hGridView.Row]
+
+End
+
+Private Sub Current_Write(Value As String)
+
+  $hGridView.Row = $aComp.Find(Value)
+
+End
+
+Public Sub GridView_Arrange()
+
+  Dim I As Integer
+  
+  $hGridView.Columns[1].Width = -1
+
+  For I = 0 To $aComp.Max
+    $hGridView.Rows[I].H = -1
+    'Debug I;; gvwComponent.Rows[I].H
+  Next
+
+End
+
+
+Private Function Border_Read() As Boolean
+
+  Return $hGridView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hGridView.Border = Value
+
+End
+
+Public Sub GridView_Select()
+  
+  Raise Select
+  
+End
+
+Public Sub GridView_Activate()
+  
+  Raise Activate
+  
+End
+

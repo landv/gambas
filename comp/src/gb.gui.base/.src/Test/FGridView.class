@@ -12,9 +12,9 @@ Public Sub Form_Open()
   
   Print gvwInfo.W;; gvwInfo.H;; "/";; Me.W;; Me.H
   
-  hBorderLeft = New Border("margin:4;width:1.5;right-style:none;right-margin:0;right-width:0;top-left-radius:16;bottom-left-radius:16")
-  hBorder = New Border("margin:4;width:1.5;left-margin:0;right-margin:0;left-style:none;right-style:none;left-width:0;right-width:0;")
-  hBorderRight = New Border("margin:4;width:1.5;left-style:none;left-margin:0;left-width:0")
+  hBorderLeft = New Border("margin:4;width:4;right-style:none;right-margin:0;right-width:0;top-left-radius:16;bottom-left-radius:16;color:#80000000")
+  hBorder = New Border("margin:4;width:4;left-margin:0;right-margin:0;left-style:none;right-style:none;left-width:0;right-width:0;")
+  hBorderRight = New Border("margin:4;width:4;left-style:none;left-margin:0;left-width:0;top-right-radius:24;right-color:green")
   
   'gvwinfo.Clear
   gvwinfo.Columns.Count = 3
@@ -27,6 +27,7 @@ Public Sub Form_Open()
       gvwInfo[I, J].Border = hBorder
     Next
   Next
+  'gvwInfo[8, 0].Border = hBorderLeft
   
   'gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Bleu"
@@ -64,11 +65,14 @@ Public Sub Form_Open()
   
   gvwInfo[1, 1].Background = Color.Yellow
   
-  gvwInfo[6, 1].Border = gvwInfo[6, 1].Border.Copy()
+  gvwInfo[6, 1].Border = hBorderLeft.Copy()
   With gvwInfo[6, 1].Border
     .SlashStyle = Border.Dotted
     .SlashColor = Color.Red
     .SlashWidth = 4
+    .BackSlashStyle = Border.Double + Border.Dashed
+    .BackSlashColor = Color.Red
+    .BackSlashWidth = 4
   End With
   
   
@@ -79,9 +83,12 @@ Public Sub Form_Open()
   gvwInfo[0, 0].ColumnSpan = gvwInfo.Columns.Count
   
   gvwinfo.Columns.Width = -1
-  'gvwinfo.Rows[6].Height = -1
+  gvwInfo.Columns[0].W = 110
+  gvwinfo.Rows[6].Height = -1
   
   txtPadding.Value = gvwInfo.Padding
+  
+  Me.Height += 2
 
 End
 

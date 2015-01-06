@@ -796,45 +796,6 @@ void SqliteDataset::fill_fields()
 
 // BM: should retry if error = SQLITE_SCHEMA
 
-int SqliteDataset::exec(const string & sql)
-{
-	int res;
-	int retry;
-
-
-	if (!handle())
-		GB.Error("No database connection");
-
-	exec_res.record_header.clear();
-	exec_res.records.clear();
-	exec_res.conn = handle();			//NG
-	//if ((strncmp("select",sql.c_str(),6) == 0) || (strncmp("SELECT",sql.c_str(),6) == 0))
-
-	for (retry = 1; retry <= 2; retry++)
-	{
-		res = my_sqlite3_exec(handle(), sql.c_str(), &callback, &exec_res, NULL);
-		if (res != SQLITE_SCHEMA)
-			break;
-	}
-
-	db->setErr(res);
-	//if (res != SQLITE_OK)
-	//  GB.Error(db->getErrorMsg());
-
-	return (res == SQLITE_OK);
-}
-
-int SqliteDataset::exec()
-{
-	return exec(sql);
-}
-
-const void *SqliteDataset::getExecRes()
-{
-	return &exec_res;
-}
-
-
 bool SqliteDataset::query(const char *query)
 {
 	int res;
@@ -862,11 +823,6 @@ bool SqliteDataset::query(const char *query)
 	}
 
 	return (res == SQLITE_OK);
-}
-
-bool SqliteDataset::query(const string & q)
-{
-	return query(q.c_str());
 }
 
 void SqliteDataset::open(const string & sql)
@@ -934,7 +890,7 @@ bool SqliteDataset::bof()
 void SqliteDataset::first()
 {
 	Dataset::first();
-	this->fill_fields();
+	fill_fields();
 	//cout << "In first "<< fields_object->size()<<"\n";
 }
 
@@ -1161,4 +1117,9 @@ fType GetFieldType(const char *Type, unsigned int *length)
 	GB.FreeString(&upper);
 
 	return rType;
+}
+
+result_set *SqliteDataset::getResult()
+{
+	return &result;
 }

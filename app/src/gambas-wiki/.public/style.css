@@ -33,8 +33,8 @@ TABLE.desc>TBODY>TR>TH{text-align:left;border:none;padding:6px 12px;}
 .unknown{color:red;margin-top:8px;}
 DIV.error{color:red;padding:2px 6px;background:url('<%/%>/error-bg.png');}
 DIV.message{color:red;font-style:italic;}
-.command{display:inline-block;margin-left:8px;}
-#lang{float:right;font-size:80%;margin-right:4px;}
+.command{display:inline-block;margin-left:8px;margin-top:2px;}
+#lang{font-size:80%;margin-right:4px;margin-left:4px;}
 .up{display:inline-block;vertical-align:middle;padding:2px;}
 .edit-frame{position:absolute;left:0;right:0;top:0;bottom:0;padding:4px;border-top:solid 2px #D8D8D8;}
 .edit{border:none;background:none;width:100%;height:100%;}
@@ -67,10 +67,11 @@ P:first-child,UL:first-child,OL:first-child,TABLE:first-child{margin-top:0;}
 H1:first-child{margin-top:0;}
 DIV.table:first-child{margin-top:0;}
 DIV.syntax>P:first-child{margin-top:-0.75em;}
-.login{position:static;background:white;color:gray;border:#DF6B00 solid 4px;border-radius:32px;padding:16px;box-shadow:0 0 8px gray;width:24em;margin:16px;}
+.login{position:absolute;background:#E8E8E8;color:gray;border-bottom-left-radius:32px;border-bottom-right-radius:32px;padding:16px;box-shadow:0 0 8px gray;margin-top:-4px;width:24em;z-index:-1;}
+.login-glue{position:absolute;margin:0 auto;width:24em;padding:1px 22px;background:#E8E8E8;z-index:10;margin-top:-24px;margin-left:-6px;}
 .label-login{display:inline-block;margin-left:0.5em;width:8em;height:1.5em;}
 #user{width:12em;}
-#ok{margin-top:8px;width:8em;}
+#ok,#cancel{margin-top:8px;width:8em;}
 #register{width:8em;}
 .hide-if-compact{display:none;}
 .show-if-compact{display:inherit;}
