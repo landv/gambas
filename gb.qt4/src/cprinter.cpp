@@ -364,6 +364,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Printer_NumCopies)
 
+#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
 	if (PRINTER->supportsMultipleCopies())
 	{
 		if (READ_PROPERTY)
@@ -372,6 +373,7 @@ BEGIN_PROPERTY(Printer_NumCopies)
 			PRINTER->setCopyCount(VPROP(GB_INTEGER));
 	}
 	else
+#endif
 	{
 		if (READ_PROPERTY)
 			GB.ReturnInteger(PRINTER->numCopies());
