@@ -3,15 +3,17 @@
 Public Sub Main()
   
   Dim hrc As New Report
-  Dim vb As New ReportVBox
-  
+  Dim vb As ReportVBox
+  Dim himg As New Image(1, 1)
+
   hrc.tag = 
-  hrc.Width = "21cm"
+    hrc.Width = "21cm"
   hrc.Height = "29.7cm"
-  
-  Dim vb As New ReportVBox(hrc)
-  
-  
-  Print hrc._Top
+  vb = New ReportVBox(hrc)
+  Paint.Begin(himg)
+  hrc.Layout
+  Paint.End
+  Print hrc._Height
+  Print hrc._Width
   
 End

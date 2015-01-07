@@ -1,0 +1,400 @@
+' Gambas class file
+
+Private $aModeButtons As New ToolButton[]
+Private bFlag As Boolean
+Private $hPrinter As New Printer As "Printer"
+Private $iCurPrinterResolution As Integer
+
+Static Public Function Run(hReport As Report)
+  
+  Dim hFPreview As FPreview
+  
+  hFpreview = New FPreview
+  
+  hFPreview.SetReport(hReport)
+  hFpreview.ShowModal()
+  
+End
+
+Public Sub _new()
+  
+  Dim s As String
+  Dim hButton As ToolButton
+  
+  $aModeButtons = [ToolButton1, ToolButton2, ToolButton4, ToolButton3]
+  If Component.IsLoaded("gb.settings") Then 
+    'Settings.Read(Me, "FPreview")
+    Settings.Read(View, "View")
+    
+    If View.ScaleMode = View.Custom Then
+      Slider1.Value = View.Scale
+    Else
+      For Each hButton In $aModeButtons
+        hButton.Value = False
+      Next
+      $aModeButtons[View.ScaleMode - 1].Value = True
+      
+    Endif
+    
+    ButtonBox1.Text = Settings["FPreview/OutputFile"] 
+    $hPrinter.Name = Settings["FPreview/Printer"] 
+    If Settings["FPreview/PrintToFile"] = True Then TabPanel1.Index = 1
+    
+    Try $hPrinter.Duplex = Settings["FPreview/Duplex"]
+    Try $hPrinter.GrayScale = Settings["FPreview/GrayScale"] 
+    Try $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
+    Try $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
+    
+  Endif
+  
+  For Each s In Printer.List
+    cmbPrinter.Add(s)
+  Next
+  
+  SelectPrinter($hPrinter.Name)
+  Button1.Tag = False
+  
+End
+
+Private Sub SelectPrinter(Optional sName As String)
+  
+  If sName Then
+    $hPrinter.Name = sName
+    Object.Lock(cmbPrinter)
+    Try cmbPrinter.Index = cmbPrinter.List.Find(sName)
+    Object.Unlock(cmbPrinter)
+  Else
+    $hPrinter.Name = Printer.Default
+    Object.Lock(cmbPrinter)
+    cmbPrinter.Index = cmbPrinter.List.Find(Printer.Default)
+    Object.Unlock(cmbPrinter)
+  Endif
+  
+  'NOTE: force the printer fullpage mode because it make error on report placement
+  $hPrinter.FullPage = True
+  
+  tgbGrayScale.Value = $hPrinter.GrayScale
+  tgbFullPage.Value = $hPrinter.FullPage
+  tgbReverseCopies.Value = $hPrinter.ReverseOrder
+  tgbCollateCopies.Value = $hPrinter.CollateCopies
+  
+End
+
+Public Sub SetReport(hReport As Report)
+  
+  View.Report = hReport
+  GetValuesFromReport()
+  
+End
+
+Private Sub GetValuesFromReport()
+  
+  cmbPaper.Index = View.Report.Paper
+  $hPrinter.Orientation = View.Report.Orientation
+  
+  If View.Report.Paper = Printer.Custom Then
+    pnlCustom.Enabled = True
+    $hPrinter.PaperWidth = TSizeParse[View.Report.Width].ToCm() * 10
+    $hPrinter.PaperHeight = TSizeParse[View.Report.Height].ToCm() * 10
+  Else
+    $hPrinter.Paper = View.Report.Paper
+  Endif 
+  
+  cmbOrientation.Index = $hPrinter.Orientation
+  cmbDuplex.Index = $hPrinter.Duplex
+  cmbPaper.Index = $hPrinter.Paper
+  Object.Lock(spWidth)
+  spWidth.Value = $hPrinter.PaperWidth
+  Object.Unlock(spWidth)
+  Object.Lock(spHeight)
+  spHeight.Value = $hPrinter.PaperHeight
+  Object.Unlock(spHeight)
+  
+End
+
+Public Sub Slider1_Change()
+  
+  Dim hButton As ToolButton
+  
+  View.Scale = Slider1.Value / 100
+  lblZoom.Text = Str(Slider1.Value) & " %"
+  bFlag = True
+  For Each hButton In $aModeButtons
+    hButton.Value = False
+  Next
+  
+  bFlag = False  
+  
+End
+
+Public Sub View_Change()
+  
+  Object.Lock(Slider1)
+  Slider1.Value = View.Scale * 100
+  Object.Unlock(Slider1)
+  lblZoom.Text = Str(Slider1.Value) & " %"
+  
+End
+
+Public Sub Mode_Click()
+  
+  Dim hButton As ToolButton
+  Dim hCurButton As ToolButton
+  
+  If bFlag Then Return
+  bFlag = True
+  hCurButton = Last
+  
+  For Each hButton In $aModeButtons
+    If hButton = hCurButton Then 
+      hButton.Value = True
+    Else
+      hButton.Value = False
+    Endif
+  Next
+  
+  bFlag = False
+  
+  View.ScaleMode = hCurButton.Tag
+  
+End
+
+Public Sub tgbGrayScale_Click()
+  
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.GrayScale = Last.Value
+  View._GrayScale = Last.Value
+  
+End
+
+Public Sub tgbFullPage_Click()
+  
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.FullPage = Last.Value
+  
+End
+
+Public Sub tgbReverseCopies_Click()
+  
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.ReverseOrder = Last.value
+  
+End
+
+Public Sub tgbCollateCopies_Click()
+  
+  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  $hPrinter.CollateCopies = Last.Value
+  
+End
+
+Public Sub cmbOrientation_Click()
+  
+  If View.Report.Orientation = Last.Index Then Return
+  View.Report.Orientation = Last.Index
+  'View.Report.Refresh
+  View.Refresh
+  GetValuesFromReport
+  
+End
+
+Public Sub cmbPaper_Click()
+  
+  Dim i As Integer = Last.Index
+  'Print "id "; View.Report.paper
+  If View.Report.Paper = i Then Return 
+  View.Report.Paper = i
+  If i = 0 Then
+    pnlCustom.Enabled = True
+  Else
+    pnlCustom.Enabled = False
+    View.Refresh
+    GetValuesFromReport
+  Endif
+  
+End
+
+Public Sub cmbDuplex_Click()
+  
+  $hPrinter.Duplex = Last.index
+  
+End
+
+Public Sub ButtonBox1_Click()
+  
+  Dialog.Path = User.Home
+  Dialog.Filter = ["*.pdf", "Pdf", "*.ps", "Postscript"]
+  If Not Dialog.saveFile() Then
+    ButtonBox1.Text = Dialog.Path
+    $hPrinter.OutputFile = Dialog.Path
+  Endif
+  
+End
+
+Public Sub TabPanel1_Click()
+  
+  If TabPanel1.Index = 0 Then
+    $hPrinter.OutputFile = ""
+    $hPrinter.Name = cmbPrinter.Text
+    $iCurPrinterResolution = $hPrinter.Resolution
+  Else
+    $hPrinter.OutputFile = ButtonBox1.Text
+    $hPrinter.Resolution = 600
+  Endif
+  
+End
+
+Public Sub TextBox1_Change()
+  
+  View.Range = Last.Text
+  
+End
+
+Public Sub TextBox1_Click()
+  
+  Last.Text = ""
+  
+End
+
+Public Sub spWidth_Change()
+  
+  View.Report.Width = Str(Last.Value) & "mm"
+  View.Refresh
+  
+End
+
+Public Sub spHeight_Change()
+  
+  View.Report.Height = Str(Last.Value) & "mm"
+  View.Refresh
+  
+End
+
+Public Sub Button2_Click()
+  
+  View._ForceLayout
+  
+End
+
+Public Sub cmbPrinter_Click()
+  
+  SelectPrinter(Last.Text)
+  
+End
+
+Public Sub Button1_Click()
+  
+  Dim iReturn As Integer
+  
+  If Button1.Tag Then
+    $hPrinter.Cancel
+    Button1.Tag = False
+    
+  Else
+    If Not View.Report Then Return
+    If TabPanel1.Index = 1 Then
+      If $hPrinter.OutputFile Then
+        If Exist($hPrinter.OutputFile) Then
+          iReturn = Message.Warning("This file already exist.\nDo you want to replace it ?", "Yes", "No")
+          If iReturn = 2 Then 
+            ButtonBox1.SetFocus
+            
+            Return 
+          Endif
+        Endif
+      Else
+        ButtonBox1_Click
+        Return
+      Endif
+      
+    Endif
+    Button1.Tag = True
+    Button1.Picture = Picture["icon:/22/cancel"]
+    Button1.Text = ("Cancel")
+    
+    $hPrinter.Print
+  Endif
+  
+End
+
+Public Sub Printer_Begin()
+  
+  hbZoom.Hide
+  hbPrinting.Show
+  Inc Application.Busy
+  ProgressBar1.Value = 0
+  ProgressBar1.Pulse = True
+  lblPrint.Text = ("Layout...")
+  
+End
+
+Public Sub Printer_Paginate()
+  
+  If View.Report._LayoutNotFinished Then
+    View.LockLayout
+    View.Report._Layout(View.Report.PageCount)
+  Else
+    $hPrinter.Count = View.PageCount
+    ProgressBar1.Pulse = False
+    lblPrint.Text = ("Printing...")
+    View.UnlockLayout
+  Endif
+  
+End
+
+Public Sub Printer_Draw()
+  
+  If View._RangePages.Count = 0 Then 
+    View.Report.Paint($hPrinter.Page)
+  Else
+    View.Report.Paint(View._RangePages[$hPrinter.Page - 1])
+  Endif
+  ProgressBar1.Value = $hPrinter.Page / View.PageCount
+  
+End
+
+Public Sub Printer_End()
+  
+  'View.UnlockLayout
+  hbPrinting.Hide
+  hbZoom.Show
+  Dec Application.Busy
+  Button1.Picture = Picture["icon:/22/print"]
+  Button1.Text = ("Print")
+  Button1.Tag = False
+  
+End
+
+Public Sub Panel12_MouseDown()
+  
+End
+
+Public Sub ButtonBox1_Change()
+  
+  $hPrinter.OutputFile = Last.Text
+  
+End
+
+Public Sub TextBox2_Change()
+  
+  $hPrinter.NumCopies = Last.Value
+  
+End
+
+Public Sub Form_Close()
+  
+  If Component.IsLoaded("gb.settings") Then 
+    'Settings.Write(Me, "FPreview")
+    Settings.Write(View, "View")
+    Settings["FPreview/OutputFile"] = ButtonBox1.Text
+    Settings["FPreview/Printer"] = $hPrinter.Name
+    Settings["FPreview/PrintToFile"] = TabPanel1.Index = 1
+    Settings["FPreview/Duplex"] = cmbDuplex.Index
+    Settings["FPreview/GrayScale"] = tgbGrayScale.Value
+    Settings["FPreview/ReverseOrder"] = tgbReverseCopies.Value
+    Settings["FPreview/CollateCopies"] = tgbCollateCopies.Value
+    
+    Settings.Save()
+  Endif
+  
+End

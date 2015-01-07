@@ -1,0 +1,12 @@
+' Gambas class file
+
+
+Public Sub Report_Open()
+
+  'Report.Debug = True
+  ReportHBox1.BoxShadow.Blur = "2mm"
+  'ReportHBox1.BoxShadow.XOffset = "1mm"
+  'ReportHBox1.BoxShadow.YOffset = "1mm"
+  ReportHBox1.BoxShadow.Spread = "1mm"
+  ReportHBox1.BoxShadow.Color = Color.Gray
+End
