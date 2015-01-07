@@ -8,6 +8,7 @@ Property Read Y, {Top} As Integer
 Property Height, H As Integer
 Property Selected As Boolean
 Property Text, Title As String
+Property Border As Border
 
 Public _Row As Integer
 
@@ -80,4 +81,16 @@ Public Sub Refresh()
   
   GetView().Refresh
   
+End
+
+Private Function Border_Read() As Border
+
+  Return GetRows()._GetBorder(_Row)
+
+End
+
+Private Sub Border_Write(Value As Border)
+
+  GetRows()._SetBorder(_Row, Value)
+
 End

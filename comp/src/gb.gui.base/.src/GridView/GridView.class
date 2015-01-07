@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,Padding{Range:0;63}=2,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted"
+Public Const _Properties As String = "*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,Padding{Range:0;63}=2,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted,Collapse"
 Public Const _Group As String = "View"
 Public Const _DefaultEvent As String = "Click"
 
@@ -28,6 +28,7 @@ Property Read Current As _GridView_Cell
 Property Font As Font
 Property Sorted As Boolean
 Property Padding As Integer
+Property Collapse As Boolean
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -114,6 +115,7 @@ Private $bHasDrawEvent As Boolean
 
 Private $hObsClick As Observer
 Private $iPadding As Integer = 2
+Private $bCollapse As Boolean
 
 Public Sub _new()
   
@@ -200,7 +202,7 @@ Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W A
 End
 
 
-Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iRow) As Integer, iCol As Integer, hData As _GridView_Data)
+Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iRow) As Integer, iCol As Integer, hData As _GridView_Data, hBorderRect As RectF)
 
   Dim hRect As Rect = Rect(X, Y, W, H)
   Dim hPict As Picture
@@ -224,10 +226,25 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       Endif
     Endif
     
+    If .Border Then
+      With hBorderRect
+        X = .X
+        Y = .Y
+        W = .W
+        H = .H
+      End With
+      With hData.Border
+        X += .LeftWidth + .LeftPadding
+        Y += .TopWidth + .TopPadding
+        W -= .LeftWidth + .LeftPadding + .RightWidth + .RightPadding
+        H -= .TopWidth + .TopPadding + .BottomWidth + .BottomPadding
+      End With
+    Endif
+    
+    If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
+    
     Paint.FillRect(X, Y, W, H, iColor)
     
-    If .Border Then .Border.Paint(X, Y, W, H)
-      
     iPadding = Max($iPadding, .Padding)
     
     If iPadding Then
@@ -237,86 +254,75 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       H -= iPadding * 2
     Endif
     
-    If .Border Then
-      With hData.Border
-        X += .LeftPadding + .LeftWidth + .LeftMargin
-        Y += .TopPadding + .TopWidth + .TopMargin
-        W -= .LeftPadding + .LeftWidth + .RightPadding + .RightWidth + .LeftMargin + .RightMargin
-        H -= .TopPadding + .TopWidth + .BottomPadding + .BottomWidth + .TopMargin + .BottomMargin
-      End With
+    If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
+      
+    If .Foreground = Color.Default Then
+      Paint.Background = Style.ForegroundOf(Me)
+    Else
+      Paint.Background = .Foreground
     Endif
     
-    If W > 0 And If H > 0 Then
-      
-      If .Foreground = Color.Default Then
-        Paint.Background = Style.ForegroundOf(Me)
-      Else
-        Paint.Background = .Foreground
-      Endif
-      
-      If .Font Then Paint.Font = .Font
+    If .Font Then Paint.Font = .Font
 
-      If $bHasDrawEvent Then
-        bCancel = Raise Draw(X, Y, W, H, iRow, iCol)
-        If bCancel Then Goto DRAW_GRID
-      Endif
-      
-      hPict = .Picture
-  
-      If hPict Then
-      
-        If Not .Text And If Not .RichText Then
-          
-          DrawAlignedPicture(hPict, X, Y, W, H, .Alignment)
-          
-        Else
-          
-          A = .Alignment
-          If Align.IsMiddle(A) Then
-            A = Align.Normal
-          Else If Align.IsTop(A) Then
-            A = Align.TopNormal
-          Else If Align.IsBottom(A) Then
-            A = Align.BottomNormal
-          End If
+    If $bHasDrawEvent Then
+      bCancel = Raise Draw(X, Y, W, H, iRow, iCol)
+      If bCancel Then Goto DRAW_GRID
+    Endif
+    
+    hPict = .Picture
+
+    If hPict Then
+    
+      If Not .Text And If Not .RichText Then
         
-          DrawAlignedPicture(hPict, X, Y, W, H, A)
-          
-          W -= hPict.W + iPadding
-          If Not System.RightToLeft Then X += hPict.W + iPadding
-          
-        Endif
+        DrawAlignedPicture(hPict, X, Y, W, H, .Alignment)
         
-        If W <= 0 Then Goto DRAW_GRID
+      Else
+        
+        A = .Alignment
+        If Align.IsMiddle(A) Then
+          A = Align.Normal
+        Else If Align.IsTop(A) Then
+          A = Align.TopNormal
+        Else If Align.IsBottom(A) Then
+          A = Align.BottomNormal
+        End If
+      
+        DrawAlignedPicture(hPict, X, Y, W, H, A)
+        
+        W -= hPict.W + iPadding
+        If Not System.RightToLeft Then X += hPict.W + iPadding
         
       Endif
       
-      Inc X
-      W -= 2
-      
-      If .Text Then
-        If .WordWrap Then
-          Paint.DrawRichText(Html(.Text), X, Y, W, H, .Alignment)
-        Else
-          Paint.DrawText(.Text, X, Y, W, H, .Alignment)
-        Endif
-      Else If .RichText Then
-        If .WordWrap Then
-          Paint.DrawRichText(.RichText, X, Y, W, H, .Alignment)
-        Else
-          A = .Alignment
-          If Align.IsLeft(A) Then
-            Paint.DrawRichText(.RichText, X, Y, 4096, H, .Alignment)
-          Else If Align.IsRight(A) Then
-            Paint.DrawRichText(.RichText, X + W - 4096, Y, 4096, H, .Alignment)
-          Else
-            Paint.DrawRichText(.RichText, X + W \ 2 - 4096, Y, 4096, H, .Alignment)
-          Endif
-        Endif
-      Endif
+      If W <= 0 Then Goto DRAW_GRID
       
     Endif
     
+    Inc X
+    W -= 2
+    
+    If .Text Then
+      If .WordWrap Then
+        Paint.DrawRichText(Html(.Text), X, Y, W, H, .Alignment)
+      Else
+        Paint.DrawText(.Text, X, Y, W, H, .Alignment)
+      Endif
+    Else If .RichText Then
+      If .WordWrap Then
+        Paint.DrawRichText(.RichText, X, Y, W, H, .Alignment)
+      Else
+        A = .Alignment
+        If Align.IsLeft(A) Then
+          Paint.DrawRichText(.RichText, X, Y, 4096, H, .Alignment)
+        Else If Align.IsRight(A) Then
+          Paint.DrawRichText(.RichText, X + W - 4096, Y, 4096, H, .Alignment)
+        Else
+          Paint.DrawRichText(.RichText, X + W \ 2 - 4096, Y, 4096, H, .Alignment)
+        Endif
+      Endif
+    Endif
+      
   End With
   
 DRAW_GRID:
@@ -366,6 +372,15 @@ Public Sub ScrollArea_Draw()
   Dim bAscent As Boolean
   Dim iStepCol As Integer
   Dim iBg As Integer
+  Dim hTopBorder As Border
+  Dim hBottomBorder As Border
+  Dim hBottom As Border
+  Dim hLeftBorder As Border
+  Dim hRowBorder As Border
+  Dim hTopRowBorder As Border
+  Dim hBottomRowBorder As Border
+  Dim hRightBorder As Border
+  Dim hBorderRect As RectF
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
@@ -576,6 +591,29 @@ Public Sub ScrollArea_Draw()
 
     H = $aRowY[I - iRow + 1] + F - Y
     X = XX
+
+    ' Row border
+    
+    hTopRowBorder = Null
+    hBottomRowBorder = Null
+    hRowBorder = $hRows._GetRowBorder(I)
+    
+    If hRowBorder Then
+      
+      If $bCollapse Then
+        If I > 0 Then hTopRowBorder = $hRows._GetRowBorder(I - 1)
+        If I < $hRows.Max Then hBottomRowBorder = $hRows._GetRowBorder(I + 1)
+      Endif
+    
+      Paint.Save
+      hBorderRect = hRowBorder.Clip(XO + $hColumns[0].X, Y, $hColumns[$hColumns.Max].X + $hColumns[$hColumns.Max].W - $hColumns[0].X, H, hTopRowBorder, hBottomRowBorder)
+      
+      If Not hBorderRect Or If hBorderRect.H < hRowBorder.TopWidth + hRowBorder.BottomWidth Then 
+        Paint.Restore
+        Goto NEXT_ROW
+      Endif
+      
+    Endif
     
     For J = iCol To iCol2 Step iStepCol
       
@@ -633,15 +671,37 @@ Public Sub ScrollArea_Draw()
         hData = _GetCellData(R, C)
         
         Paint.Save
+        
         If hData.Border Then
-          Paint.Save
-          Paint.Restore
-          If hData.Border.Clip(hSpan.X, hSpan.Y, hSpan.W, hSpan.H) Then Goto NEXT_CELL
+          
+          hTopBorder = Null
+          hBottomBorder = Null
+          hLeftBorder = Null
+          hRightBorder = Null
+          
+          If $bCollapse Then
+            If I > 0 Then hTopBorder = _GetCellData(R - 1, C).Border
+            If I < $hRows.Max Then hBottom = _GetCellData(R + 1, C).Border
+            If J > 0 Then hLeftBorder = _GetCellData(R, C - 1).Border
+            If J < $hColumns.Max Then hRightBorder = _GetCellData(R, C + 1).Border
+          Endif
+          
+          hBorderRect = hData.Border.Clip(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, hTopBorder, hBottomBorder, hLeftBorder, hRightBorder) 
+          If Not hBorderRect Then Goto NEXT_CELL
+          
         Else
+          
           Paint.Rectangle(hSpan.X, hSpan.Y, hSpan.W, hSpan.H)
           Paint.Clip
+          hBorderRect = Null
+          
         Endif
-        DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData)
+        
+        DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData, hBorderRect)
+        
+        If hData.Border Then 
+          hData.Border.Paint(X, Y, W, H, hTopBorder, hBottom, hLeftBorder, hRightBorder)
+        Endif
         
         If $iMode And If Not _DoNotDrawSelection Then
           If _IsRowSelected(I) Then
@@ -671,6 +731,13 @@ Public Sub ScrollArea_Draw()
       X += W
       
     Next
+    
+    If hRowBorder Then
+      Paint.Restore
+      hRowBorder.Paint(XO + $hColumns[0].X, Y, $hColumns[$hColumns.Max].X + $hColumns[$hColumns.Max].W - $hColumns[0].X, H, hTopRowBorder, hBottomRowBorder)
+    Endif
+    
+  NEXT_ROW:
     
     Y += H
     
@@ -2148,6 +2215,7 @@ End
 
 Private Sub Background_Write(Value As Integer)
 
+  If $iBg = Value Then Return
   $iBg = Value
   $hView.Refresh
 
@@ -2167,9 +2235,24 @@ End
 
 Private Sub Padding_Write(Value As Integer)
 
+  If $iPadding = Value Then Return
   $iPadding = Value
   ScrollArea_Arrange
   $hView.Refresh
 
 End
 
+
+Private Function Collapse_Read() As Boolean
+
+  Return $bCollapse
+
+End
+
+Private Sub Collapse_Write(Value As Boolean)
+
+  If $bCollapse = Value Then Return
+  $bCollapse = Value
+  $hView.Refresh
+
+End

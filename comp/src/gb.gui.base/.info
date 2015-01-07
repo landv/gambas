@@ -227,11 +227,11 @@ g
 Paint
 m
 
-(X)g(Y)g(Width)g(Height)g
+(X)g(Y)g(Width)g(Height)g[(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
 Clip
 m
-b
-(X)g(Y)g(Width)g(Height)g
+RectF
+(X)g(Y)g(Width)g(Height)g[(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
 _new
 m
 
@@ -567,7 +567,7 @@ C
 _Properties
 C
 s
-*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,Padding{Range:0;63}=2,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted
+*,Border=True,Mode{Select.None;Single;Multiple}=None,Grid=True,Padding{Range:0;63}=2,ShowCursor=False,Header{GridView.None;Horizontal;Vertical;Both}=None,ScrollBar{Scroll.*}=Both,AutoResize=True,Resizable=True,Sorted,Collapse
 _Group
 C
 s
@@ -663,6 +663,10 @@ b
 Padding
 p
 i
+
+Collapse
+p
+b
 
 ScrollX
 p
@@ -2241,6 +2245,10 @@ Title
 p
 s
 
+Border
+p
+Border
+
 _Row
 v
 i
@@ -2283,6 +2291,10 @@ i
 Selection
 p
 Integer[]
+
+Border
+p
+Border
 
 :_Refresh
 :
@@ -2372,6 +2384,14 @@ _Clear
 m
 
 
+_SetRowBorder
+m
+
+(iRow)i(hBorder)Border;
+_GetRowBorder
+m
+Border
+(iRow)i
 #_Gui
 
 C

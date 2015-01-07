@@ -19,6 +19,7 @@ Property Width, W As Integer
 Property Resizable As Boolean
 Property Height, H As Integer
 Property Selection As Integer[]
+Property Border As Border
 
 Event _Refresh
 
@@ -30,6 +31,9 @@ Private $bResizable As Boolean = True
 Private $cText As Collection
 Private $iDefaultHeight As Integer 
 Private $iWidth As Integer
+
+Private $hBorder As Border
+Private $cBorder As Collection
 
 Private $hSel As New GridViewSelection
 
@@ -75,6 +79,14 @@ Private Sub Count_Write(Value As Integer)
       If CInt($cText.Key) >= Value Then
         'Debug "Remove text from " & $cText.Key
         $cText.Remove($cText.Key)
+      Endif
+    Next
+  Endif
+  
+  If $cBorder Then
+    For Each $cBorder
+      If CInt($cBorder.Key) >= Value Then
+        $cBorder.Remove($cBorder.Key)
       Endif
     Next
   Endif
@@ -474,3 +486,35 @@ Private Sub Selection_Write(Value As Integer[])
   Endif
 
 End
+
+Private Function Border_Read() As Border
+
+  Return $hBorder
+
+End
+
+Private Sub Border_Write(Value As Border)
+
+  $hBorder = Value
+
+End
+
+Public Sub _SetRowBorder(iRow As Integer, hBorder As Border)
+  
+  If Not $cBorder Then $cBorder = New Collection
+  $cBorder[iRow] = hBorder
+  
+End
+
+Public Sub _GetRowBorder(iRow As Integer) As Border
+
+  Dim hBorder As Border
+  
+  If $cBorder Then hBorder = $cBorder[iRow]
+  If Not hBorder Then hBorder = $hBorder
+  
+  Return hBorder
+  
+  
+End
+

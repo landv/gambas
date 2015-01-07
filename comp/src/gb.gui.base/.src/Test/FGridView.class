@@ -20,14 +20,16 @@ Public Sub Form_Open()
   gvwinfo.Columns.Count = 3
   gvwinfo.Rows.Count = 10
   
-  For I = 0 To gvwInfo.Rows.Max
-    gvwInfo[I, 0].Border = hBorderLeft
-    gvwInfo[I, gvwInfo.Columns.Max].Border = hBorderRight
-    For J = 1 To gvwInfo.Columns.Max - 1
-      gvwInfo[I, J].Border = hBorder
-    Next
-  Next
+  ' For I = 0 To gvwInfo.Rows.Max
+  '   gvwInfo[I, 0].Border = hBorderLeft
+  '   gvwInfo[I, gvwInfo.Columns.Max].Border = hBorderRight
+  '   For J = 1 To gvwInfo.Columns.Max - 1
+  '     gvwInfo[I, J].Border = hBorder
+  '   Next
+  ' Next
   'gvwInfo[8, 0].Border = hBorderLeft
+  
+  gvwInfo.Rows.Border = New Border("margin:4;radius:8;padding:4;width:4.5;style:double")
   
   'gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Bleu"
@@ -65,8 +67,9 @@ Public Sub Form_Open()
   
   gvwInfo[1, 1].Background = Color.Yellow
   
-  gvwInfo[6, 1].Border = hBorderLeft.Copy()
+  gvwInfo[6, 1].Border = New Border '.Copy() 'New Border 'hBorderLeft.Copy()
   With gvwInfo[6, 1].Border
+    .Style = Border.None
     .SlashStyle = Border.Dotted
     .SlashColor = Color.Red
     .SlashWidth = 4
@@ -85,6 +88,8 @@ Public Sub Form_Open()
   gvwinfo.Columns.Width = -1
   gvwInfo.Columns[0].W = 110
   gvwinfo.Rows[6].Height = -1
+  
+  gvwInfo.Collapse = True
   
   txtPadding.Value = gvwInfo.Padding
   
