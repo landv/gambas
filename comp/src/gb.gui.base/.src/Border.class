@@ -112,9 +112,7 @@ Private Sub Color_Write(Value As Integer)
 
 End
 
-Private $iHue As Integer
-
-Private Sub CalcMargin(hRect As RectF, TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border)
+Private Sub GetRectF(hRect As RectF, bPadding As Boolean, TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As RectF
   
   Dim LM, RM, TM, BM As Single
   
@@ -127,15 +125,16 @@ Private Sub CalcMargin(hRect As RectF, TopBorder As Border, BottomBorder As Bord
   BM = BottomMargin
   If BottomBorder Then BM = Max(BM, BottomBorder.TopMargin) / 2
   
-  hRect.X += LM
-  hRect.Y += TM
-  hRect.W = Max(0, hRect.W - LM - RM)
-  hRect.H = Max(0, hRect.H - TM - BM)
+  hRect = hRect.Copy()
+  hRect.Adjust(LM, TM, RM, BM)
+  If bPadding Then hRect.Adjust(LeftPadding + LeftWidth, TopPadding + TopWidth, RightPadding + RightWidth, BottomPadding + BottomWidth)
+  
+  Return hRect
   
 End
 
 
-Public Sub Paint(X As Single, Y As Single, Width As Single, Height As Single, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border)
+Public Sub Paint(Rect As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border)
   
   Dim fWidth As Single
   Dim iStyle As Integer
@@ -148,17 +147,17 @@ Public Sub Paint(X As Single, Y As Single, Width As Single, Height As Single, Op
   Dim bBottom As Boolean
   Dim bSlash As Boolean
   Dim bBackslash As Boolean
+  Dim X, Y, Width, Height As Single
   Dim X1, Y1, X2, Y2 As Single
   Dim iClip As Integer
-  Dim hRect As RectF
   
-  hRect = RectF(X, Y, Width, Height)
-  CalcMargin(hRect, TopBorder, BottomBorder, LeftBorder, RightBorder)
-  X = hRect.X
-  Y = hRect.Y
-  Width = hRect.W
-  Height = hRect.H
-  If Width <= 0 Or If Height <= 0 Then Return
+  Rect = GetRectF(Rect, False, TopBorder, BottomBorder, LeftBorder, RightBorder)
+  If Rect.IsVoid() Then Return
+  
+  X = Rect.X
+  Y = Rect.Y
+  Width = Rect.W
+  Height = Rect.H
   
   Paint.Save
   Paint.LineCap = Paint.LineCapSquare
@@ -504,7 +503,6 @@ Public Sub Paint(X As Single, Y As Single, Width As Single, Height As Single, Op
   Endif
   
   Paint.Restore
-  $iHue = 0
   Return
 
 CLIP_BORDER:
@@ -588,22 +586,40 @@ DRAW_LINE:
   
 End
 
-Public Sub Clip(X As Single, Y As Single, Width As Single, Height As Single, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As RectF
+Private Sub ConvertToRect(hRect As RectF) As Rect
+
+  Dim X, Y, W, H As Integer
   
-  Dim hRect As RectF
+  X = CInt(Ceil(hRect.X))
+  Y = CInt(Ceil(hRect.Y))
+  W = CInt(Floor(hRect.Right)) - X
+  H = CInt(Floor(hRect.Bottom)) - Y
   
-  If Width <= 0 Or If Height <= 0 Then Return Null
-  hRect = RectF(X, Y, Width, Height)
-  CalcMargin(hRect, TopBorder, BottomBorder, LeftBorder, RightBorder)
-  X = hRect.X
-  Y = hRect.Y
-  Width = hRect.W
-  Height = hRect.H
-  If Width <= 0 Or If Height <= 0 Then Return Null
+  If W <= 0 Or If H <= 0 Then Return
   
-  PaintRoundRectangle(X, Y, Width, Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+  Return Rect(X, Y, W, H)
   
-  Return hRect
+End
+
+
+Public Sub GetRect(Rect As RectF, Optional WithPadding As Boolean, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
+  
+  Rect = GetRectF({Rect}, WithPadding, TopBorder, BottomBorder, LeftBorder, RightBorder)
+  If Rect.IsVoid() Then Return
+  
+  Return ConvertToRect(Rect)
+  
+End
+
+
+Public Sub Clip(Rect As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
+  
+  Rect = GetRectF(Rect, False, TopBorder, BottomBorder, LeftBorder, RightBorder)
+  If Rect.IsVoid() Then Return Null
+  
+  PaintRoundRectangle(Rect.X, Rect.Y, Rect.Width, Rect.Height, TopLeftRadius, TopRightRadius, BottomLeftRadius, BottomRightRadius, True)
+  
+  Return ConvertToRect(Rect)
   
 End
 
@@ -739,6 +755,13 @@ Private Sub NormalizeStyle()
 
 End
 
+Static Public Sub _call(Optional Style As String) As Border
+  
+  Return New Border(Style)
+  
+End
+
+
 Public Sub _new(Optional Style As String)
   
   Dim aStyle As String[]
@@ -823,5 +846,16 @@ Public Sub Copy() As Border
   End With
   
   Return hBorder
+  
+End
+
+Public Sub IsVoid() As Boolean
+  
+  If TopStyle And If TopWidth Then Return
+  If BottomStyle And If BottomWidth Then Return
+  If LeftStyle And If LeftWidth Then Return
+  If RightStyle And If RightWidth Then Return
+  
+  Return True
   
 End

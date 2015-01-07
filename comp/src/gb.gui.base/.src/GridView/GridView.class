@@ -28,7 +28,6 @@ Property Read Current As _GridView_Cell
 Property Font As Font
 Property Sorted As Boolean
 Property Padding As Integer
-Property Collapse As Boolean
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -115,7 +114,7 @@ Private $bHasDrawEvent As Boolean
 
 Private $hObsClick As Observer
 Private $iPadding As Integer = 2
-Private $bCollapse As Boolean
+Private $iTextHeight As Integer
 
 Public Sub _new()
   
@@ -202,7 +201,7 @@ Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W A
 End
 
 
-Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iRow) As Integer, iCol As Integer, hData As _GridView_Data, hBorderRect As RectF)
+Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iRow) As Integer, iCol As Integer, hData As _GridView_Data, hRowBorder As Border)
 
   Dim hRect As Rect = Rect(X, Y, W, H)
   Dim hPict As Picture
@@ -226,25 +225,32 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       Endif
     Endif
     
-    If .Border Then
-      With hBorderRect
-        X = .X
-        Y = .Y
-        W = .W
-        H = .H
-      End With
-      With hData.Border
-        X += .LeftWidth + .LeftPadding
-        Y += .TopWidth + .TopPadding
-        W -= .LeftWidth + .LeftPadding + .RightWidth + .RightPadding
-        H -= .TopWidth + .TopPadding + .BottomWidth + .BottomPadding
-      End With
-    Endif
-    
     If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
     
     Paint.FillRect(X, Y, W, H, iColor)
     
+    If .Border
+      hRect = .Border.GetRect(RectF(X, Y, W, H), True)
+      X = hRect.X
+      Y = hRect.Y
+      W = hRect.W
+      H = hRect.H
+    Endif
+    
+    If hRowBorder Then
+      With hRowBorder
+        Y += .TopPadding + .TopWidth
+        H -= .TopPadding + .TopWidth + .BottomPadding + .BottomWidth
+        If iCol = 0 Then 
+          X += .LeftPadding + .LeftWidth
+          W -= .LeftPadding + .LeftWidth
+        Endif
+        If iCol = $hColumns.Max Then
+          W -= .RightPadding + .RightWidth
+        Endif
+      End With
+    Endif
+
     iPadding = Max($iPadding, .Padding)
     
     If iPadding Then
@@ -255,6 +261,8 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
     Endif
     
     If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
+    
+    'Paint.FillRect(X, Y, W, H, Color.SetAlpha(Color.Red, 240))
       
     If .Foreground = Color.Default Then
       Paint.Background = Style.ForegroundOf(Me)
@@ -372,15 +380,11 @@ Public Sub ScrollArea_Draw()
   Dim bAscent As Boolean
   Dim iStepCol As Integer
   Dim iBg As Integer
-  Dim hTopBorder As Border
-  Dim hBottomBorder As Border
-  Dim hBottom As Border
-  Dim hLeftBorder As Border
   Dim hRowBorder As Border
   Dim hTopRowBorder As Border
   Dim hBottomRowBorder As Border
-  Dim hRightBorder As Border
-  Dim hBorderRect As RectF
+  Dim hRowBorderRect As Rect
+  Dim hRectF As RectF
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
@@ -594,24 +598,35 @@ Public Sub ScrollArea_Draw()
 
     ' Row border
     
-    hTopRowBorder = Null
-    hBottomRowBorder = Null
     hRowBorder = $hRows._GetRowBorder(I)
     
     If hRowBorder Then
       
-      If $bCollapse Then
-        If I > 0 Then hTopRowBorder = $hRows._GetRowBorder(I - 1)
-        If I < $hRows.Max Then hBottomRowBorder = $hRows._GetRowBorder(I + 1)
+      If I > 0 Then 
+        hTopRowBorder = $hRows._GetRowBorder(I - 1)
+      Else
+        hTopRowBorder = Null
+      Endif
+      
+      If I < $hRows.Max Then 
+        hBottomRowBorder = $hRows._GetRowBorder(I + 1)
+      Else
+        hBottomRowBorder = Null
       Endif
     
       Paint.Save
-      hBorderRect = hRowBorder.Clip(XO + $hColumns[0].X, Y, $hColumns[$hColumns.Max].X + $hColumns[$hColumns.Max].W - $hColumns[0].X, H, hTopRowBorder, hBottomRowBorder)
+      hRectF = RectF(XO + $hColumns[0].X, Y, $hColumns[$hColumns.Max].X + $hColumns[$hColumns.Max].W - $hColumns[0].X, H) 
+      hRowBorder.Clip(hRectF, hTopRowBorder, hBottomRowBorder)
+      hRowBorderRect = hRowBorder.GetRect(hRectF, False, hTopRowBorder, hBottomRowBorder)
       
-      If Not hBorderRect Or If hBorderRect.H < hRowBorder.TopWidth + hRowBorder.BottomWidth Then 
+      If Not hRowBorderRect Then 
         Paint.Restore
         Goto NEXT_ROW
       Endif
+      
+    Else
+      
+      hRowBorderRect = Null
       
     Endif
     
@@ -666,51 +681,39 @@ Public Sub ScrollArea_Draw()
         
       Endif
       
-      If hClip.Intersection(hSpan) Then
+      If hRowBorderRect Then 
+        hSpan = hSpan.Intersection(hRowBorderRect)
+        If Not hSpan Then Goto NEXT_CELL
+      Endif
+      
+      If Not hClip.Intersection(hSpan) Then Goto NEXT_CELL
         
-        hData = _GetCellData(R, C)
+      hData = _GetCellData(R, C)
+      
+      Paint.Save
+      
+      If hData.Border Then 'hSpan = hData.Border.GetRect(RectF(hSpan.X, hSpan.Y, hSpan.W, hSpan.H), True)
+        hData.Border.Clip(RectF(hSpan.X, hSpan.Y, hSpan.W, hSpan.H))
+      Endif
         
-        Paint.Save
-        
-        If hData.Border Then
-          
-          hTopBorder = Null
-          hBottomBorder = Null
-          hLeftBorder = Null
-          hRightBorder = Null
-          
-          If $bCollapse Then
-            If I > 0 Then hTopBorder = _GetCellData(R - 1, C).Border
-            If I < $hRows.Max Then hBottom = _GetCellData(R + 1, C).Border
-            If J > 0 Then hLeftBorder = _GetCellData(R, C - 1).Border
-            If J < $hColumns.Max Then hRightBorder = _GetCellData(R, C + 1).Border
-          Endif
-          
-          hBorderRect = hData.Border.Clip(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, hTopBorder, hBottomBorder, hLeftBorder, hRightBorder) 
-          If Not hBorderRect Then Goto NEXT_CELL
-          
-        Else
-          
-          Paint.Rectangle(hSpan.X, hSpan.Y, hSpan.W, hSpan.H)
-          Paint.Clip
-          hBorderRect = Null
-          
-        Endif
-        
-        DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData, hBorderRect)
-        
-        If hData.Border Then 
-          hData.Border.Paint(X, Y, W, H, hTopBorder, hBottom, hLeftBorder, hRightBorder)
-        Endif
-        
+      Paint.Rectangle(hSpan.X, hSpan.Y, hSpan.W, hSpan.H)
+      Paint.Clip
+      
+      DrawCell(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, R, C, hData, hRowBorder)
+      
+      If hData.Border Then 
+        hData.Border.Paint(RectF(hSpan.X, hSpan.Y, hSpan.W, hSpan.H))
+      Endif
+      
+      If Not hRowBorder Then
         If $iMode And If Not _DoNotDrawSelection Then
           If _IsRowSelected(I) Then
-            Paint.FillRect(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, Color.SetAlpha(Color.SelectedBackground, 192))
+            Paint.FillRect(0, Y, Paint.W, H, Color.SetAlpha(Color.SelectedBackground, 192))
           Endif
         Endif
-        
-        Paint.Restore
       Endif
+      
+      Paint.Restore
       
     NEXT_CELL:
       
@@ -733,8 +736,15 @@ Public Sub ScrollArea_Draw()
     Next
     
     If hRowBorder Then
+      
+      If $iMode And If Not _DoNotDrawSelection Then
+        If _IsRowSelected(I) Then
+          Paint.FillRect(0, Y, Paint.W, H, Color.SetAlpha(Color.SelectedBackground, 192))
+        Endif
+      Endif
+      
       Paint.Restore
-      hRowBorder.Paint(XO + $hColumns[0].X, Y, $hColumns[$hColumns.Max].X + $hColumns[$hColumns.Max].W - $hColumns[0].X, H, hTopRowBorder, hBottomRowBorder)
+      hRowBorder.Paint(RectF(XO + $hColumns[0].X, Y, $hColumns[$hColumns.Max].X + $hColumns[$hColumns.Max].W - $hColumns[0].X, H), hTopRowBorder, hBottomRowBorder)
     Endif
     
   NEXT_ROW:
@@ -1974,9 +1984,18 @@ End
 Private Sub Font_Write(Value As Font)
 
   Super.Font = Value
+  $iTextHeight = 0
   _ResizeContents
 
 End
+
+Public Sub _GetTextHeight() As Integer
+  
+  If $iTextHeight = 0 Then $iTextHeight = Me.Font.TextHeight(" ")
+  Return $iTextHeight
+  
+End
+
 
 ' Private Function Mouse_Read() As Integer
 ' 
@@ -2000,6 +2019,7 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim D As Integer
   Dim iPadding As Integer
   Dim fTime As Float
+  Dim hBorder As Border
   
   PW = Me.Font.TextWidth($hColumns[iCol].Text) + $iPadding * 2 + If($bSorted, 16, 0)
   
@@ -2037,10 +2057,22 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
         If .Text Or If .RichText Then W += iPadding
       Endif
       
-      If .Border Then
-        With hData.Border
-          W += .LeftPadding + .LeftWidth + .RightPadding + .RightWidth
+      hBorder = .Border
+      
+      If hBorder Then
+        With hBorder
+          W += .LeftPadding + .LeftWidth + .RightPadding + .RightWidth + .LeftMargin + .RightMargin
         End With
+      Endif
+      
+      If iCol = 0 Or If iCol = $hColumns.Max Then
+        hBorder = $hRows._GetRowBorder(I)
+        If hBorder Then
+          With hBorder
+            If iCol = 0 Then W += .LeftPadding + .LeftMargin + .LeftWidth
+            If iCol = $hColumns.Max Then W += .RightPadding + .RightMargin + .RightWidth
+          End With
+        Endif
       Endif
       
       PW = Max(PW, (W + D - 1) \ D)
@@ -2068,6 +2100,9 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
   Dim D As Integer
   Dim iPadding As Integer
   Dim WT As Float
+  Dim hBorder As Border
+  Dim hTopBorder As Border
+  Dim hBottomBorder As Border
   
   PH = $hRows.Height
   
@@ -2106,7 +2141,9 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
       If Not hFont Then hFont = Me.Font
       
       WT = WC - iPadding * 2 - 2
-      If .Border Then WT -= .Border.LeftPadding + .Border.RightPadding + .Border.LeftMargin + .Border.RightMargin + .Border.LeftWidth + .Border.RightWidth
+      If .Border Then 
+        WT -= .Border.LeftPadding + .Border.RightPadding + .Border.LeftMargin + .Border.RightMargin + .Border.LeftWidth + .Border.RightWidth
+      Endif
       
       If .RichText Then
         If .WordWrap Then
@@ -2126,8 +2163,22 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
         H = Max(.Picture.H + iPadding * 2, H)
       Endif
       
-      If .Border Then
-        With hData.Border
+      hBorder = $hRows._GetRowBorder(iRow)
+      If iRow > 0 Then hTopBorder = $hRows._GetRowBorder(iRow - 1)
+      If iRow < $hRows.Max Then hBottomBorder = $hRows._GetRowBorder(iRow + 1)
+      
+      If hBorder Then
+        With hBorder
+          H += .TopPadding + .TopWidth + .BottomPadding + .BottomWidth + .TopMargin + .BottomMargin
+          If hTopBorder Then H = H - .TopMargin + Max(.TopMargin, hTopBorder.BottomMargin) / 2
+          If hBottomBorder Then H = H - .BottomMargin + Max(.BottomMargin, hBottomBorder.TopMargin) / 2
+        End With
+      Endif
+      
+      hBorder = .Border
+      
+      If hBorder Then
+        With hBorder
           H += .TopPadding + .TopWidth + .BottomPadding + .BottomWidth + .TopMargin + .BottomMargin
         End With
       Endif
@@ -2238,21 +2289,6 @@ Private Sub Padding_Write(Value As Integer)
   If $iPadding = Value Then Return
   $iPadding = Value
   ScrollArea_Arrange
-  $hView.Refresh
-
-End
-
-
-Private Function Collapse_Read() As Boolean
-
-  Return $bCollapse
-
-End
-
-Private Sub Collapse_Write(Value As Boolean)
-
-  If $bCollapse = Value Then Return
-  $bCollapse = Value
   $hView.Refresh
 
 End

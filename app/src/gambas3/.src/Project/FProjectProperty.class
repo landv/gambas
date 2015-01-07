@@ -34,7 +34,6 @@ Private $aRequire As String[]
 Private $aImplement As String[]
 
 Private $hBorderLibrary As Border
-Private $aBorderComponent As Border[]
 
 Static Public Function Run() As Boolean
 
@@ -52,7 +51,7 @@ End
 Public Sub Form_Open()
 
   Dim sLang As String
-  Dim I As Integer
+  Dim hBorder As Border
 
   Me.Title = ("Project properties") & " - " & Project.Name
 
@@ -109,18 +108,6 @@ Public Sub Form_Open()
   ' $hBorderLibrary.RightPadding = Desktop.Scale
   ' $hBorderLibrary.BottomPadding = Desktop.Scale
   
-  $aBorderComponent = New Border[8]
-  $aBorderComponent[0] = New Border("right-style:none;padding:6;margin:8 0 0 8;top-left-radius:5;bottom-left-radius:5;width:4;")
-  $aBorderComponent[1] = New Border("style:solid none;padding:6;margin:8 0 0 0;width:4")
-  $aBorderComponent[2] = $aBorderComponent[1]
-  $aBorderComponent[3] = New Border("left-style:none;padding:6;margin:8 8 0 0;top-right-radius:5;bottom-right-radius:5;width:4")
-  
-  For I = 0 To 3
-    $aBorderComponent[I].Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
-    $aBorderComponent[I + 4] = $aBorderComponent[I].Copy()
-    $aBorderComponent[I + 4].BottomMargin = 8
-  Next
-  
   $hCheck = Picture["img/16/checked.png"]
   $hUncheck = Picture["img/16/unchecked.png"]
 
@@ -132,6 +119,10 @@ Public Sub Form_Open()
   gvwComponent.Columns[3].Width = 40
   gvwComponent.Columns[3].Expand = False
 
+  hBorder = Border("radius:5;width:4;margin:8;padding:6")
+  hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
+  gvwComponent.Rows.Border = hBorder
+  
   chkShowUsed.Value = $bShowUsed
   chkShowDeprecated.Value = $bShowDeprecated
   'chkShowBeta.Value = $bShowBeta
@@ -472,7 +463,6 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
       
       Case 0
         .Picture = hCompItem.Picture
-        .Alignment = Align.Top
         
       Case 1
         .Text = hCompItem.Key
@@ -511,12 +501,6 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
     .Alignment = Align.TopNormal
     '.Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
     .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.95)
-    
-    If Row = $aComp.Max Then
-      .Border = $aBorderComponent[Column + 4]
-    Else
-      .Border = $aBorderComponent[Column]
-    Endif
     
   End With
   

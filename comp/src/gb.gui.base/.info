@@ -224,22 +224,34 @@ BackslashWidth
 v
 g
 
-Paint
-m
-
-(X)g(Y)g(Width)g(Height)g[(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
-Clip
-m
-RectF
-(X)g(Y)g(Width)g(Height)g[(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
-_new
-m
-
-[(Style)s]
 Copy
 m
 Border
 
+Paint
+m
+
+(Rect)RectF;[(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
+IsVoid
+m
+b
+
+Clip
+m
+Rect
+(Rect)RectF;[(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
+GetRect
+m
+Rect
+(Rect)RectF;[(WithPadding)b(TopBorder)Border;(BottomBorder)Border;(LeftBorder)Border;(RightBorder)Border;]
+_call
+M
+Border
+[(Style)s]
+_new
+m
+
+[(Style)s]
 #ColumnView
 _TreeView
 C
@@ -664,10 +676,6 @@ Padding
 p
 i
 
-Collapse
-p
-b
-
 ScrollX
 p
 i
@@ -948,6 +956,10 @@ _InsertRows
 m
 
 (Start)i(Length)i
+_GetTextHeight
+m
+i
+
 _GetPreferredWidth
 m
 i

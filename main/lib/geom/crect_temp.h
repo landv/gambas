@@ -119,7 +119,7 @@ BEGIN_PROPERTY(__name##_Left)                                                   
     __return(__this->x);                                                                                                      \
   else                                                                                                                        \
   {                                                                                                                           \
-    int dx = VPROP(__gtype) - __this->x;                                                                                      \
+    __ctype dx = VPROP(__gtype) - __this->x;                                                                                      \
     if (dx > __this->w)                                                                                                       \
       dx = __this->w;                                                                                                         \
                                                                                                                               \
@@ -135,7 +135,7 @@ BEGIN_PROPERTY(__name##_Top)                                                    
     __return(__this->y);                                                                                                      \
   else                                                                                                                        \
   {                                                                                                                           \
-    int dy = VPROP(__gtype) - __this->y;                                                                                      \
+    __ctype dy = VPROP(__gtype) - __this->y;                                                                                      \
     if (dy > __this->h)                                                                                                       \
       dy = __this->h;                                                                                                         \
                                                                                                                               \
@@ -151,7 +151,7 @@ BEGIN_PROPERTY(__name##_Right)                                                  
     __return(__this->x + __this->w);                                                                                          \
   else                                                                                                                        \
   {                                                                                                                           \
-    int x2 = VPROP(__gtype);                                                                                                  \
+    __ctype x2 = VPROP(__gtype);                                                                                                  \
     if (x2 < __this->x)                                                                                                       \
       x2 = __this->x;                                                                                                         \
                                                                                                                               \
@@ -166,7 +166,7 @@ BEGIN_PROPERTY(__name##_Bottom)                                                 
     __return(__this->y + __this->h);                                                                                          \
   else                                                                                                                        \
   {                                                                                                                           \
-    int y2 = VPROP(__gtype);                                                                                                  \
+    __ctype y2 = VPROP(__gtype);                                                                                                  \
     if (y2 < __this->y)                                                                                                       \
       y2 = __this->y;                                                                                                         \
                                                                                                                               \
@@ -287,19 +287,19 @@ END_METHOD                                                                      
                                                                                                                               \
 BEGIN_METHOD(__name##_Contains, __gtype x; __gtype y)                                                                         \
                                                                                                                               \
-  int x = VARG(x);                                                                                                            \
-  int y = VARG(y);                                                                                                            \
+  __ctype x = VARG(x);                                                                                                            \
+  __ctype y = VARG(y);                                                                                                            \
                                                                                                                               \
   GB.ReturnBoolean((x >= __this->x) && (x < (__this->x + __this->w)) && (y >= __this->y) && (y < (__this->y + __this->h)));   \
                                                                                                                               \
 END_METHOD                                                                                                                    \
                                                                                                                               \
-BEGIN_METHOD(__name##_Adjust, GB_INTEGER left; GB_INTEGER top; GB_INTEGER right; GB_INTEGER bottom)                           \
+BEGIN_METHOD(__name##_Adjust, __gtype left; __gtype top; __gtype right; __gtype bottom)                                       \
                                                                                                                               \
-  int left = VARG(left);                                                                                                      \
-  int top = VARGOPT(top, left);                                                                                               \
-  int right = VARGOPT(right, left);                                                                                           \
-  int bottom = VARGOPT(bottom, top);                                                                                          \
+  __ctype left = VARG(left);                                                                                                      \
+  __ctype top = VARGOPT(top, left);                                                                                               \
+  __ctype right = VARGOPT(right, left);                                                                                           \
+  __ctype bottom = VARGOPT(bottom, top);                                                                                          \
                                                                                                                               \
   __this->x += left;                                                                                                          \
   __this->w -= (left + right);                                                                                                \
@@ -344,8 +344,8 @@ GB_DESC __name##Desc[] =                                                        
   GB_METHOD("Move", NULL, __name##_Move, "(X)" __sign "(Y)" __sign "[(Width)" __sign "(Height)" __sign "]"),                  \
   GB_METHOD("Resize", NULL, __name##_Resize, "(Width)" __sign "(Height)" __sign ""),                                          \
   GB_METHOD("Translate", NULL, __name##_Translate, "(DX)" __sign "(DY)" __sign ""),                                           \
-  GB_METHOD("Union", #__name, __name##_Union, "(Rect)" #__name ";"),                                                                 \
-  GB_METHOD("Intersection", #__name, __name##_Intersection, "(Rect)" #__name ";"),                                                   \
+  GB_METHOD("Union", #__name, __name##_Union, "(Rect)" #__name ";"),                                                          \
+  GB_METHOD("Intersection", #__name, __name##_Intersection, "(Rect)" #__name ";"),                                            \
   GB_METHOD("Contains", "b", __name##_Contains, "(X)" __sign "(Y)" __sign ""),                                                \
   GB_METHOD("Adjust", NULL, __name##_Adjust, "(Left)" __sign "[(Top)" __sign "(Right)" __sign "(Bottom)" __sign "]"),         \
   GB_METHOD("Center", #__pname, __name##_Center, NULL),                                                                       \

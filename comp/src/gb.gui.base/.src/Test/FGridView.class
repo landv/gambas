@@ -29,10 +29,11 @@ Public Sub Form_Open()
   ' Next
   'gvwInfo[8, 0].Border = hBorderLeft
   
-  gvwInfo.Rows.Border = New Border("margin:4;radius:8;padding:4;width:4.5;style:double")
+  gvwInfo.Rows.Border = New Border("margin:4;radius:8;padding:6;width:4.5;style:double")
   
   'gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Bleu"
+  gvwinfo[0, 0].Alignment = Align.TopLeft
   gvwinfo[0, 1].Text = "Blanc"
   gvwinfo[1, 0].Text = "Version"
   gvwinfo[1, 1].Text = "0.0.7"
@@ -47,7 +48,7 @@ Public Sub Form_Open()
   gvwinfo[6, 0].Text = "Description"
   gvwinfo[6, 0].Alignment = Align.TopLeft
   gvwinfo[6, 1].WordWrap = True
-  gvwinfo[6, 1].RichText = "This program is a utility to find gambas source projects that use a named component or library.  It is intended for internal use only to help resolve which client programs need to be re-issued if the component/library is changed."
+  gvwinfo[6, 1].Text = "This program is a utility to find gambas source projects that use a named component or library.  It is intended for internal use only to help resolve which client programs need to be re-issued if the component/library is changed."
   gvwinfo[6, 1].Alignment = Align.TopLeft
   gvwinfo[7, 0].Text = "State"
   gvwinfo[7, 1].Text = "Stable"
@@ -67,15 +68,24 @@ Public Sub Form_Open()
   
   gvwInfo[1, 1].Background = Color.Yellow
   
+  gvwInfo.Rows[6].Border = New Border
+  With gvwInfo.Rows[6].Border 
+    .Style = Border.None
+  End With
+  
+  
+  gvwInfo[6, 1].Background = Color.Yellow
   gvwInfo[6, 1].Border = New Border '.Copy() 'New Border 'hBorderLeft.Copy()
   With gvwInfo[6, 1].Border
-    .Style = Border.None
     .SlashStyle = Border.Dotted
     .SlashColor = Color.Red
     .SlashWidth = 4
     .BackSlashStyle = Border.Double + Border.Dashed
     .BackSlashColor = Color.Red
     .BackSlashWidth = 4
+    .Color = Color.Green
+    .Margin = 8
+    .Padding = 8
   End With
   
   
@@ -88,8 +98,6 @@ Public Sub Form_Open()
   gvwinfo.Columns.Width = -1
   gvwInfo.Columns[0].W = 110
   gvwinfo.Rows[6].Height = -1
-  
-  gvwInfo.Collapse = True
   
   txtPadding.Value = gvwInfo.Padding
   

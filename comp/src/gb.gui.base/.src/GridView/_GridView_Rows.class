@@ -114,10 +114,19 @@ End
 Public Sub _GetDefaultRowHeight() As Integer
   
   Dim hView As GridView
+  Dim H As Integer
   
   If $iDefaultHeight > 0 Then Return $iDefaultHeight
   hView = GetView()
-  Return hView.Font.Height + hView.Padding * 2 + 2
+
+  H = hView._GetTextHeight() + hView.Padding * 2 + 2
+  If $hBorder Then
+    With $hBorder
+      H += .TopPadding + .BottomPadding + .TopWidth + .BottomWidth + .TopMargin + .BottomMargin
+      H -= (.TopMargin + .BottomMargin) / 2
+    End With
+  Endif
+  Return H
   
 End
 
@@ -513,8 +522,7 @@ Public Sub _GetRowBorder(iRow As Integer) As Border
   If $cBorder Then hBorder = $cBorder[iRow]
   If Not hBorder Then hBorder = $hBorder
   
-  Return hBorder
-  
+  If hBorder And If Not hBorder.IsVoid() Then Return hBorder
   
 End
 
