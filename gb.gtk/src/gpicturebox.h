@@ -35,12 +35,14 @@ public:
 	bool stretch();
 	gPicture* picture() { return _picture; }
 	bool isAutoResize() { return _autoresize; }
+	int padding() const { return getFramePadding(); }
 
 	void setAlignment(int vl);
 	void setBorder(int vl) { setFrameBorder(vl); }
 	void setStretch(bool vl);
 	void setPicture(gPicture *pic);
 	void setAutoResize(bool);
+	void setPadding(int vl) { setFramePadding(vl); }
 
 //"Methods"
 	void resize(int w, int h);

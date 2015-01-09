@@ -191,6 +191,19 @@ BEGIN_PROPERTY(PictureBox_Border)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(PictureBox_Padding)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(WIDGET->margin());
+	else
+	{
+		WIDGET->setMargin(VPROP(GB_INTEGER));
+		WIDGET->update();
+	}
+
+END_PROPERTY
+
+//-------------------------------------------------------------------------
 
 GB_DESC CPictureBoxDesc[] =
 {
@@ -201,10 +214,10 @@ GB_DESC CPictureBoxDesc[] =
 
 	GB_PROPERTY("Picture", "Picture", CPICTUREBOX_picture),
 	GB_PROPERTY("Stretch", "b", CPICTUREBOX_stretch),
-	//GB_PROPERTY("Transparent", "b", CPICTUREBOX_transparent),
 	GB_PROPERTY("Border", "i", PictureBox_Border),
 	GB_PROPERTY("Alignment", "i", CPICTUREBOX_alignment),
 	GB_PROPERTY("AutoResize", "b", CPICTUREBOX_auto_resize),
+	GB_PROPERTY("Padding", "i", PictureBox_Padding),
 
 	PICTUREBOX_DESCRIPTION,
 

@@ -1,0 +1,100 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,84,61)
+  Text = ("Select a component")
+  Arrangement = Arrange.Fill
+  { wizComponent Wizard
+    MoveScaled(1,1,82,56)
+    Background = Color.TextBackground
+    Expand = True
+    Arrangement = Arrange.Vertical
+    Count = 2
+    ShowTitle = False
+    ShowButton = False
+    Border = False
+    Animated = True
+    Index = 0
+    Text = ("")
+    { txtFilter ButtonBox
+      MoveScaled(3,3,41,3)
+      Foreground = Color.LightForeground
+      Border = False
+      Button = False
+      ClearButton = True
+      Filter = True
+    }
+    { Separator4 Separator
+      MoveScaled(29,9,21,0)
+    }
+    { gvwComponent GridView
+      MoveScaled(4,12,67,38)
+      Expand = True
+      Border = False
+      Mode = Select.Single
+      Grid = False
+    }
+    Index = 1
+    Text = ("")
+    { panHelp VBox
+      MoveScaled(0,0,81,18)
+      Background = Color.TextBackground
+      Expand = True
+      { Panel8 HBox
+        MoveScaled(1,0,79,4)
+        { btnBack Button
+          MoveScaled(0,0,4,4)
+          Picture = Picture["icon:/small/previous"]
+          Border = False
+        }
+        { btnForward Button
+          MoveScaled(4,0,4,4)
+          Picture = Picture["icon:/small/next"]
+          Border = False
+        }
+        { btnStop ToolButton
+          MoveScaled(8,0,4,4)
+          ToolTip = ("Cancel")
+          Picture = Picture["icon:/small/delete"]
+        }
+        { btnReload ToolButton
+          MoveScaled(12,0,4,4)
+          ToolTip = ("Reload")
+          Picture = Picture["icon:/small/refresh"]
+        }
+        { Separator10 Separator
+          MoveScaled(17,0,0,4)
+          Visible = False
+        }
+        { btnZoomIn ToolButton
+          MoveScaled(18,0,4,4)
+          ToolTip = ("Zoom in")
+          Picture = Picture["icon:/small/zoom-in"]
+        }
+        { btnZoomOut ToolButton
+          MoveScaled(22,0,4,4)
+          ToolTip = ("Zoom out")
+          Picture = Picture["icon:/small/zoom-out"]
+        }
+        { btnZoomNormal ToolButton
+          MoveScaled(26,0,4,4)
+          ToolTip = ("No zoom")
+          Picture = Picture["icon:/small/zoom-normal"]
+        }
+        { Panel3 Panel
+          MoveScaled(51,0,7,4)
+          Expand = True
+        }
+      }
+      { Separator2 Separator
+        MoveScaled(0,9,24,0)
+        Visible = False
+      }
+      { webAboutComponent HelpView
+        MoveScaled(4,10,46,7)
+        Expand = True
+      }
+    }
+    Index = 0
+  }
+}

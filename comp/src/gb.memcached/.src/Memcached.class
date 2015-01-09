@@ -6,7 +6,7 @@ Private Const ERROR_GEN As String = "ERROR"
 Private Const ERROR_CLIENT As String = "CLIENT_ERROR"
 Private Const ERROR_SERVER As String = "SERVER_ERROR"
 
-Public Enum Stored, NotSotred, Exists, NotFound, Deleted, Touched
+Public Enum Stored, NotStored, Exists, NotFound, Deleted, Touched
 
 Property Host As String
 Property Port As Integer

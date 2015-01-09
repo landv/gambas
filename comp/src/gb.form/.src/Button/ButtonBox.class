@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True,ClearButton"
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True,ClearButton,Filter,FilterMenu{Menu}"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -13,6 +13,7 @@ Event Click
 Event Change
 Event Activate
 Event Clear
+Event Filter
 
 Property Picture As Picture
 Property Text As String
@@ -24,6 +25,8 @@ Property Read Editor As MaskBox
 Property Button As Boolean
 Property Alignment As Integer
 Property ClearButton As Boolean
+Property Filter As Boolean
+Property FilterMenu As String
 
 'Private $hPanel As Panel
 Private $hBackground As DrawingArea
@@ -31,6 +34,10 @@ Private $bBorder As Boolean
 Private $hTextBox As MaskBox
 Private $hButton As ToolButton
 Private $hClearButton As ToolButton
+Private $sMenu As String
+Private $bFilter As Boolean
+Private $hFilter As PictureBox
+Private $hTimer As Timer
 'Private $hObserver As Observer
 
 Public Sub _new()
@@ -199,6 +206,7 @@ End
 
 Public Sub TextBox_Change()
   
+  If $bFilter Then $hTimer.Start
   Raise Change
   
 End
@@ -208,31 +216,43 @@ Public Sub Background_Arrange()
   Dim FW, FH As Integer
   Dim hCtrl As Control
   Dim aCtrl As New Control[]
-  Dim X As Integer
+  Dim X, H As Integer
   
   FW = If($bBorder, Style.FrameWidth, 0)
   FH = If($bBorder, Style.FrameWidth, 0)
   
   For Each hCtrl In $hBackground.Children
-    If hCtrl Is ToolButton Then aCtrl.Add(hCtrl)
+    If hCtrl Is ToolButton And If hCtrl.Visible Then aCtrl.Add(hCtrl)
   Next
+  
+  H = Me.H - FH * 2
   
   If System.RightToLeft Then
     X = FW
     For Each hCtrl In aCtrl
       hCtrl.W = 24
-      hCtrl.Move(X, FH, hCtrl.W, Me.H - FH * 2)
+      hCtrl.Move(X, FH, hCtrl.W, H)
       X += hCtrl.W
     Next
-    $hTextBox.Move(X, FH, Me.W - FW - X, Me.H - FH * 2)
+    If $hFilter Then
+      $hTextBox.Move(X, FH, Me.W - FW - X - H, H)
+      $hFilter.Move(Me.W - H - FW, FH, H, H)
+    Else
+      $hTextBox.Move(X, FH, Me.W - FW - X, H)
+    Endif
   Else
     X = Me.W - FW
     For Each hCtrl In aCtrl
       hCtrl.W = 24
       X -= hCtrl.W
-      hCtrl.Move(X, FH, hCtrl.W, Me.H - FH * 2)
+      hCtrl.Move(X, FH, hCtrl.W, H)
     Next
-    $hTextBox.Move(FW, FH, X - FW, Me.H - FH * 2)
+    If $hFilter Then 
+      $hFilter.Move(FW, FH, H, H)
+      $hTextBox.Move(FW + H, FH, X - FW - H, H)
+    Else
+      $hTextBox.Move(FW, FH, X - FW, H)
+    Endif
   Endif
   
 End
@@ -279,5 +299,78 @@ Public Sub ClearButton_Click()
   
   $hTextBox.Clear
   Raise Clear
+  
+End
+
+Private Function Filter_Read() As Boolean
+
+  Return $bFilter
+
+End
+
+Private Sub UpdateFilterPicture()
+
+  $hFilter.Picture = Picture[If($sMenu, "img/32/filter-menu.png", "img/32/filter.png")]
+  $hFilter.Mouse = If($sMenu, Mouse.Pointing, Mouse.Default)
+
+End
+
+Private Sub Filter_Write(Value As Boolean)
+
+  If $bFilter = Value Then Return
+  
+  $bFilter = Value
+  
+  If $bFilter Then
+    $hFilter = New PictureBox($hBackground) As "FilterPictureBox"
+    $hFilter.Stretch = True
+    $hFilter.Padding = 2
+    UpdateFilterPicture
+    $hTimer = New Timer As "FilterTimer"
+    $hTimer.Delay = 500
+  Else
+    $hFilter.Delete
+  Endif
+  
+  Background_Arrange
+
+End
+
+Private Function FilterMenu_Read() As String
+
+  Return $sMenu
+
+End
+
+Private Sub FilterMenu_Write(Value As String)
+  
+  $sMenu = Value
+  UpdateFilterPicture
+
+End
+
+Public Sub FilterTimer_Timer()
+  
+  $hTimer.Stop
+  Raise Filter
+  
+End
+
+Public Sub FilterPictureBox_MouseDown()
+
+  Dim hMenu As Menu
+  
+  If Not $sMenu Then Return
+
+  hMenu = Main.FindMenu(Me, $sMenu)
+  If hMenu Then hMenu.Popup($hFilter.ScreenX, $hFilter.ScreenY + $hFilter.H)
+
+End
+
+Public Sub FilterNow()
+  
+  If Not $bFilter Then Return
+  If Not $hTimer.Enabled Then Return
+  FilterTimer_Timer
   
 End

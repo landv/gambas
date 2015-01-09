@@ -51,7 +51,7 @@ C
 _Properties
 C
 s
-*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True,ClearButton
+*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,Picture,ReadOnly,Border=True,Button=True,ClearButton,Filter,FilterMenu{Menu}
 _DefaultEvent
 C
 s
@@ -77,6 +77,10 @@ TextBox
 
 
 :Clear
+:
+
+
+:Filter
 :
 
 
@@ -119,6 +123,14 @@ i
 ClearButton
 p
 b
+
+Filter
+p
+b
+
+FilterMenu
+p
+s
 
 _new
 m
@@ -165,6 +177,18 @@ m
 
 (hButton)ToolButton;
 ClearButton_Click
+m
+
+
+FilterTimer_Timer
+m
+
+
+FilterPictureBox_MouseDown
+m
+
+
+FilterNow
 m
 
 

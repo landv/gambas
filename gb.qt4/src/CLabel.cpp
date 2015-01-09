@@ -102,7 +102,7 @@ BEGIN_PROPERTY(Label_AutoResize)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(Label_Margin)
+BEGIN_PROPERTY(Label_Padding)
 
 	if (READ_PROPERTY)
 		GB.ReturnInteger(WIDGET->margin());
@@ -175,7 +175,7 @@ GB_DESC CLabelDesc[] =
   GB_PROPERTY("Alignment", "i", Label_Alignment),
   GB_PROPERTY("Border", "i", Label_Border),
   GB_PROPERTY("AutoResize", "b", Label_AutoResize),
-  GB_PROPERTY("Padding", "i", Label_Margin),
+  GB_PROPERTY("Padding", "i", Label_Padding),
   GB_PROPERTY("Transparent", "b", Label_Transparent),
   GB_METHOD("Adjust", NULL, Label_Adjust, NULL),
 
@@ -196,7 +196,7 @@ GB_DESC CTextLabelDesc[] =
   GB_PROPERTY("Alignment", "i", TextLabel_Alignment),
   GB_PROPERTY("Border", "i", Label_Border),
   GB_PROPERTY("AutoResize", "b", Label_AutoResize),
-  GB_PROPERTY("Padding", "i", Label_Margin),
+  GB_PROPERTY("Padding", "i", Label_Padding),
   GB_PROPERTY("Transparent", "b", Label_Transparent),
   GB_PROPERTY("Wrap", "b", Label_Wrap),
   GB_METHOD("Adjust", NULL, Label_Adjust, NULL),

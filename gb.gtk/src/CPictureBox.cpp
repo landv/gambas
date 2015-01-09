@@ -118,6 +118,15 @@ BEGIN_PROPERTY(CPICTUREBOX_border)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(PictureBox_Padding)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(PBOX->padding());
+	else
+		PBOX->setPadding(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 /**********************************************************************************
 
 
@@ -215,6 +224,7 @@ GB_DESC CPictureBoxDesc[] =
   GB_PROPERTY("Picture", "Picture", CPICTUREBOX_picture),
   GB_PROPERTY("Stretch", "b", CPICTUREBOX_stretch),
   GB_PROPERTY("AutoResize", "b", CPICTUREBOX_auto_resize),
+  GB_PROPERTY("Padding", "i", PictureBox_Padding),
 
   GB_PROPERTY("Border", "i", CPICTUREBOX_border),
   GB_PROPERTY("Alignment", "i", CPICTUREBOX_alignment),

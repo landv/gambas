@@ -1,66 +1,14 @@
 ' Gambas class file
 
-Static Public Component As String
+Private $sCurrent As String
 
-Static Private $aRemove As String[]
-
-Public Sub Run(Optional aRemove As String[]) As Boolean
+Public Sub Run(aHide As String[]) As String
   
-  $aRemove = aRemove
-  Return Not FSelectComponent.ShowDialog()
+  choComponent.HiddenComponents = aHide
+  If Me.ShowDialog() Then Return $sCurrent
   
 End
 
-
-Public Sub Form_Open()
-
-  panSearchProject.H = Desktop.Scale * 3.5
-  btnClearFilter.W = panSearchProject.H
-
-  RefreshList
-
-End
-
-Private Sub RefreshList()
-  
-  Dim aComp As New String[]
-  Dim hComp As CComponent
-  Dim sComp As String
-  Dim sFilter As String
-  
-  sFilter = txtFilterComponent.Text
-  
-  For Each hComp In CComponent.All
-    sComp = hComp.Key
-    If hComp.Hidden Then Continue
-    If hComp.Key = CComponent.PROJECT_NAME Then Continue
-    If hComp.Key = Project.Name Then Continue 
-    If hComp.Key = "gb" Then Continue
-    If $aRemove And If $aRemove.Exist(sComp) Then Continue
-    If hComp.State = CComponent.DEPRECATED And If Not chkShowDeprecated.Value Then Continue
-    If sFilter And If Not hComp.Match(sFilter) Then Continue
-    aComp.Add(sComp)
-  Next
-  
-  aComp.Sort
-  
-  choComponent.Components = aComp
-  
-End
-
-
-Public Sub chkShowDeprecated_Click()
-
-  RefreshList
-
-End
-
-Public Sub btnOK_Click()
-
-  Component = choComponent.Current
-  If Component Then Me.Close(True)
-
-End
 
 Public Sub btnCancel_Click()
 
@@ -68,89 +16,15 @@ Public Sub btnCancel_Click()
 
 End
 
-Public Sub Form_Close()
+Public Sub btnOK_Click()
 
-  $aRemove = Null
-
-End
-
-Public Sub panSearchProject_Arrange()
-
-  picFilter.W = picFilter.H
+  $sCurrent = choComponent.Current  
+  Me.Close(True)
 
 End
 
-Public Sub timFilterComponent_Timer()
+Public Sub chkShowDeprecated_Click()
 
-  RefreshList
-  timFilterComponent.Stop
+  choComponent.ShowDeprecated = chkShowDeprecated.Value
 
-End
-
-Public Sub txtFilterComponent_Change()
-  
-  timFilterComponent.Start
-  
-End
-
-
-Public Sub choComponent_Activate()
-
-  MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, choComponent.Current,, "v&nh&l=" & MHelp.GetLanguage())
-  wizComponent.MoveNext
-  
-End
-
-Public Sub btnForward_Click()
-
-  webAboutComponent.Forward
-
-End
-
-Public Sub webAboutComponent_Click((Frame) As WebFrame)
-
-  btnForward.Enabled = webAboutComponent.History.Index < webAboutComponent.History.Max
-
-End
-
-Public Sub btnStop_Click()
-  
-  webAboutComponent.Stop
-  
-End
-
-Public Sub btnReload_Click()
-  
-  webAboutComponent.Reload
-  
-End
-
-Public Sub btnZoomIn_Click()
-  
-  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom * 1.25, -2)
-  
-End
-
-Public Sub btnZoomOut_Click()
-  
-  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom / 1.25, -2)
-  
-End
-
-Public Sub btnZoomNormal_Click()
-  
-  webAboutComponent.TextZoom = 0.8
-  
-End
-
-
-Public Sub btnBack_Click()
-
-  If webAboutComponent.History.Index Then
-    webAboutComponent.Back
-  Else
-    webAboutComponent.Stop
-    wizComponent.MovePrevious
-  Endif
-  
 End

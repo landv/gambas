@@ -2109,11 +2109,9 @@ Public Sub mnuReplace_Click()
   
 End
 
-Public Sub btnSearchClear_Click()
+Public Sub txtSearchProject_Clear()
   
-  txtSearchProject.Clear
-  Project.ProjectFilter = ""
-  timSearchProject_Timer
+  txtSearchProject.FilterNow
   txtSearchProject.SetFocus
   
 End
@@ -2121,7 +2119,6 @@ End
 Public Sub txtSearchProject_Change()
   
   Project.ProjectFilter = Trim(txtSearchProject.Text)
-  timSearchProject.Start
   
 End
 
@@ -2130,16 +2127,15 @@ Public Sub txtSearchProject_GotFocus()
   If txtSearchProject.Font.Italic Then
     txtSearchProject.Clear
     txtSearchProject.Font.Italic = False
-    timSearchProject_Timer    
+    txtSearchProject.FilterNow
   Endif
   
 End
 
 
-Public Sub timSearchProject_Timer()
+Public Sub txtSearchProject_Filter()
   
   Project.Refresh
-  timSearchProject.Stop
   
 End
 
@@ -2166,7 +2162,7 @@ Private Sub DoFilter(sFilter As String)
   txtSearchProject.Text = Last.Text
   Project.ProjectFilter = sFilter
   tvwProject.SetFocus
-  timSearchProject_Timer
+  txtSearchProject.FilterNow
   
 End
 
@@ -2188,6 +2184,14 @@ Public Sub mnuFilterConflict_Click()
   DoFilter(Project.FILTER_CONFLICT)
 
 End
+
+Public Sub mnuFilterAll_Click()
+  
+  txtSearchProject.Clear
+  txtSearchProject.FilterNow
+  
+End
+
 
 Public Sub mnuBackward_Show()
   
@@ -2221,9 +2225,7 @@ End
 
 Public Sub txtSearchProject_Activate()
 
-  If timSearchProject.Enabled Then
-    timSearchProject_Timer
-  Endif
+  txtSearchProject.FilterNow
 
   tvwProject.MoveFirst
   tvwProject.MoveCurrent
@@ -2257,7 +2259,7 @@ Public Sub txtSearchProject_KeyPress()
   Select Case Key.Code
     
     Case Key.Esc
-      If txtSearch.Text Then btnSearchClear_Click
+      If txtSearch.Text Then txtSearchProject.Clear
       Return
     
     Case Key.Up
@@ -2332,11 +2334,11 @@ Public Sub UpdatePosition((bStart) As Boolean, bEnd As Boolean)
   
 End
 
-Public Sub picFilter_MouseDown()
-
-  mnuFilter.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
-
-End
+' Public Sub picFilter_MouseDown()
+' 
+'   mnuFilter.Popup(picFilter.ScreenX, picFilter.ScreenY + picFilter.H)
+' 
+' End
 
 Public Sub tlbMain_Configure()
 
@@ -2607,3 +2609,9 @@ End
 '   Endif
 ' 
 ' End
+
+Public Sub txtSearchProject_Click()
+
+  mnuCloseAll_Click
+
+End

@@ -4,8 +4,6 @@ Static Private $bShowUsed As Boolean
 Static Private $bShowDeprecated As Boolean
 Static Private $bShowLibraries As Boolean
 
-Private $hCheck As Picture
-Private $hUncheck As Picture
 
 Private $sIcon As String
 
@@ -14,16 +12,10 @@ Private $bCanInitComponents As Boolean
 Private $aArg As String[]
 Private $aEnv As String[]
 
-Private $aComp As String[]
-Private $cComp As New Collection
-
 Private $aComponents As String[]
 Private $aLibraries As String[]
 
 Private $iDoNotRefreshComponent As Integer
-Private $iTooltipLastRow As Integer
-
-Private $sFilter As String
 
 Private Const COMPONENT_PROPERTIES_TAB As Integer = 1
 Private Const LIBRARY_TAB As Integer = 3
@@ -32,8 +24,6 @@ Private $bInitInfo As Boolean
 Private $aNeed As String[]
 Private $aRequire As String[]
 Private $aImplement As String[]
-
-Private $hBorderLibrary As Border
 
 Static Public Function Run() As Boolean
 
@@ -102,38 +92,20 @@ Public Sub Form_Open()
 
   End With
   
-  $hBorderLibrary = New Border("color:light-foreground;margin:" & CInt(Desktop.Scale) & ";top-margin:0;radius:8")
-  ' $hBorderLibrary.Color = Color.LightForeground
-  ' $hBorderLibrary.LeftPadding = Desktop.Scale
-  ' $hBorderLibrary.RightPadding = Desktop.Scale
-  ' $hBorderLibrary.BottomPadding = Desktop.Scale
-  
-  $hCheck = Picture["img/16/checked.png"]
-  $hUncheck = Picture["img/16/unchecked.png"]
-
-  gvwComponent.Columns.Count = 4
-  gvwComponent.Columns[0].Width = 40
-  gvwComponent.Columns[0].Expand = False
-  gvwComponent.Columns[1].Expand = False
-  gvwComponent.Columns[2].Expand = True
-  gvwComponent.Columns[3].Width = 40
-  gvwComponent.Columns[3].Expand = False
-
-  hBorder = Border("radius:5;width:4;margin:8;padding:6")
+  hBorder = New Border("radius:5;width:4;margin:8;padding:6")
   hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
-  gvwComponent.Rows.Border = hBorder
+  gvwLibrary.Rows.Border = hBorder
+  
+  choComponent.Checkable = True
+  choComponent.CheckedComponents = Project.Components
+  choComponent.Libraries = $aLibraries
   
   chkShowUsed.Value = $bShowUsed
   chkShowDeprecated.Value = $bShowDeprecated
-  'chkShowBeta.Value = $bShowBeta
   $bCanInitComponents = True
 
   ipnProject.Index = 0
 
-  panSearchProject.H = Desktop.Scale * 3.5
-  btnClearFilter.W = panSearchProject.H
-
-  RefreshComponents
   InitEnvironment
 
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
@@ -211,7 +183,7 @@ Private Function DoApply() As Boolean
 '
 '   ENDIF
 
-  If CheckComponentConfig() Then Return True
+  If choComponent.CheckSelection() Then Return True
 
   With Project
 
@@ -251,13 +223,6 @@ Private Function DoApply() As Boolean
     .Language = Language.FromName(cmbDefaultLanguage.Text)
     
     .Type = cmbType.Index
-    ' If radTypeNormal.Value Then
-    '   .Type = .TYPE_NORMAL
-    ' Else If radTypeLibrary.Value Then
-    '   .Type = .TYPE_LIBRARY
-    ' Else If radTypeComponent.Value Then
-    '   .Type = .TYPE_COMPONENT
-    ' Endif
 
     If .TabSize <> txtTabSize.Value Then
       bRefreshEditor = True
@@ -305,296 +270,158 @@ End
 
 Private Sub SaveComponents()
 
-  Dim sLib As String
-  Dim bCheck As Boolean
-  Dim hComp As CComponent
-
-  Project.Components.Clear
-
-  For Each hComp In CComponent.All
-
-    sLib = CComponent.All.Key
-    bCheck = False
-
-    Try bCheck = $cComp[sLib].Value
-
-    If bCheck Then
-      If sLib <> "gb" Then Project.Components.Add(sLib)
-    Endif
-
-  Next
-
-  Project.Components.Sort
-
+  Project.Components = choComponent.CheckedComponents
   Project.RefreshComponents
 
 End
 
 
-' PRIVATE FUNCTION CountChr(sStr AS String, sChr AS String) AS Integer
-'
-'   DIM iPos AS Integer
-'   DIM iCpt AS Integer
-'
-'   DO
-'
-'     iPos = Instr(sStr, sChr, iPos + 1)
-'     IF iPos = 0 THEN RETURN iCpt
-'
-'     iCpt = iCpt + 1
-'
-'   LOOP
-'
-' END
+Private Sub RefreshComponents()
 
-Private Sub GetRequire(sComp As String) As String[]
-  
-  Dim hComp As CComponent = CComponent.All[sComp]
-  
-  Return hComp.Require
+  choComponent.CheckedComponents = Project.Components
+  choComponent.Libraries = $aLibraries
+
+
+  ' Dim sLib As String
+  ' Dim sDep As String
+  ' Dim hComp As CComponent
+  ' Dim hCompItem As ComponentItem
+  ' Dim aComp As New String[]
+  ' Dim hLibInfo As CLibraryInfo
+  ' Dim aNotFound As New String[]
+  ' Dim aComponent As String[]
+  ' Dim bCheck As Boolean
+  ' 
+  ' If $iDoNotRefreshComponent Then Return
+  ' 
+  ' 'If Not $bCanInitLibrary Then Return
+  ' 
+  ' If bKeep Then
+  '   aComponent = New String[]
+  ' Else
+  '   aComponent = Project.Components
+  ' Endif
+  ' 
+  ' For Each hComp In CComponent.All
+  '   If hComp.Library Then Continue
+  '   sLib = hComp.Key
+  '   If sLib = CComponent.PROJECT_NAME Then Continue
+  '   aComp.Add(sLib)
+  '   If bKeep Then
+  '     bCheck = False
+  '     Try bCheck = $cComp[sLib].Value
+  '     If bCheck And If sLib <> "gb" Then aComponent.Add(sLib)
+  '   Endif
+  ' Next 
+  ' aComp.Sort
+  ' 
+  ' $cComp.Clear
+  ' $aComp = New String[]
+  ' 
+  ' For Each sLib In aComp
+  '   hComp = CComponent.All[sLib]
+  '   If hComp.Hidden Then Continue
+  '   'If $bShowUsed Then
+  '   '  If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
+  '   'Endif
+  '   hCompItem = New ComponentItem(hComp) As "Component"
+  '   'bDark = Not bDark
+  '   $cComp[hComp.Key] = hCompItem
+  '   hCompItem.Locked = sLib = "gb" 'Or $bShowUsed
+  '   
+  ' Next
+  ' 
+  ' For Each sLib In aComponent
+  '   $cComp[sLib].Check("")
+  '   For Each sDep In GetRequire(sLib)
+  '     If Not $cComp.Exist(sDep) Then
+  '       aNotFound.Add(sDep)
+  '     Else
+  '       $cComp[sDep].Check(sLib)
+  '     Endif
+  '   Next
+  ' Next
+  ' 
+  ' For Each sLib In $aLibraries
+  '   hLibInfo = CLibraryInfo[sLib]
+  '   For Each sDep In hLibInfo.Require
+  '     If Not $cComp.Exist(sDep) Then
+  '       aNotFound.Add(sDep)
+  '     Else
+  '       $cComp[sDep].Check(sLib)
+  '     Endif
+  '   Next
+  ' Next
+  ' 
+  ' $cComp["gb"].Check("") 
+  ' 
+  ' choComponent.UncheckAll
+  ' For Each hCompItem In $cComp
+  '   choComponent.SetChecked(hCompItem.Key, hCompItem.Value)
+  ' Next
+  ' 
+  ' If aNotFound.Count Then
+  '   Message.Warning(Subst(("Some components are missing: &1"), aNotFound.Join(", ")))
+  ' Endif
   
 End
 
-Private Sub RefreshComponents(Optional bKeep As Boolean)
-
-  Dim sLib As String
-  Dim sDep As String
-  Dim hComp As CComponent
-  Dim hCompItem As ComponentItem
-  Dim aComp As New String[]
-  Dim hLibInfo As CLibraryInfo
-  Dim aNotFound As New String[]
-  Dim aComponent As String[]
-  Dim bCheck As Boolean
-
-  If $iDoNotRefreshComponent Then Return
-
-  'If Not $bCanInitLibrary Then Return
-
-  gvwComponent.Clear
-  
-  If bKeep Then
-    aComponent = New String[]
-  Else
-    aComponent = Project.Components
-  Endif
-  
-  For Each hComp In CComponent.All
-    If hComp.Library Then Continue
-    sLib = hComp.Key
-    If sLib = CComponent.PROJECT_NAME Then Continue
-    aComp.Add(sLib)
-    If bKeep Then
-      bCheck = False
-      Try bCheck = $cComp[sLib].Value
-      If bCheck And If sLib <> "gb" Then aComponent.Add(sLib)
-    Endif
-  Next 
-  aComp.Sort
-  
-  $cComp.Clear
-  $aComp = New String[]
-  
-  For Each sLib In aComp
-    hComp = CComponent.All[sLib]
-    If hComp.Hidden Then Continue
-    'If $bShowUsed Then
-    '  If sLib <> "gb" And If Not Project.Components.Exist(hComp.Key) Then Continue
-    'Endif
-    hCompItem = New ComponentItem(hComp) As "Component"
-    'bDark = Not bDark
-    $cComp[hComp.Key] = hCompItem
-    hCompItem.Locked = sLib = "gb" 'Or $bShowUsed
-    
-  Next
-  
-  For Each sLib In aComponent
-    $cComp[sLib].Check("")
-    For Each sDep In GetRequire(sLib)
-      If Not $cComp.Exist(sDep) Then
-        aNotFound.Add(sDep)
-      Else
-        $cComp[sDep].Check(sLib)
-      Endif
-    Next
-  Next
-  
-  For Each sLib In $aLibraries
-    hLibInfo = CLibraryInfo[sLib]
-    For Each sDep In hLibInfo.Require
-      If Not $cComp.Exist(sDep) Then
-        aNotFound.Add(sDep)
-      Else
-        $cComp[sDep].Check(sLib)
-      Endif
-    Next
-  Next
-  
-  $cComp["gb"].Check("") 
-  
-  For Each sLib In aComp
-    hComp = CComponent.All[sLib]
-    If hComp.Hidden Then Continue
-    If Not $cComp[hComp.Key].Value Then
-      If $bShowUsed Then Continue
-      If Not $bShowDeprecated And If hComp.State = CComponent.DEPRECATED Then Continue
-    Endif
-    If $sFilter And If Not hComp.Match($sFilter) Then Continue
-    $aComp.Add(hComp.Key)
-  Next
-  
-  If aNotFound.Count Then
-    Message.Warning(Subst(("Some components are missing: &1"), aNotFound.Join(", ")))
-  Endif
-
-  gvwComponent.Rows.Count = $aComp.Count
-  gvwComponent_Arrange
-  
-End
-
-Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
-  
-  Dim hCompItem As ComponentItem = $cComp[$aComp[Row]]
-  Dim hComp As CComponent = CComponent.All[$aComp[Row]]
-  
-  With gvwComponent.Data
-  
-    Select Case Column
-      
-      Case 0
-        .Picture = hCompItem.Picture
-        
-      Case 1
-        .Text = hCompItem.Key
-        .Font.Bold = True
-        If hComp.State = CComponent.UNSTABLE Then 
-          .Font.Italic = True
-        Else If hComp.State = CComponent.DEPRECATED Then
-          .Foreground = Color.LightForeground
-          '.Font.Strikeout = True
-        Endif
-        
-      Case 2
-        .WordWrap = True
-        .RichText = hCompItem.GetDescription()
-        If hComp.State = CComponent.UNSTABLE Then 
-          .Font.Italic = True
-        Else If hComp.State = CComponent.DEPRECATED Then
-          .Foreground = Color.LightForeground
-          '.Font.Strikeout = True
-        Endif
-        
-      Case 3
-        Select Case hComp.State
-          Case CComponent.STABLE_NOT_FINISHED
-            .Picture = Picture["img/16/unfinished.png"]
-          Case CComponent.UNSTABLE
-            .Picture = Picture["img/16/experimental.png"]
-          Case CComponent.STABLE
-            .Picture = Picture["img/16/finished.png"]
-          Case CComponent.DEPRECATED
-            .Picture = Picture["img/16/deprecated.png"]
-        End Select
-      
-    End Select
-    
-    .Alignment = Align.TopNormal
-    '.Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
-    .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.95)
-    
-  End With
-  
-End
+' Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
+'   
+'   Dim hCompItem As ComponentItem = $cComp[$aComp[Row]]
+'   Dim hComp As CComponent = CComponent.All[$aComp[Row]]
+'   
+'   With gvwComponent.Data
+'   
+'     Select Case Column
+'       
+'       Case 0
+'         .Picture = hCompItem.Picture
+'         
+'       Case 1
+'         .Text = hCompItem.Key
+'         .Font.Bold = True
+'         If hComp.State = CComponent.UNSTABLE Then 
+'           .Font.Italic = True
+'         Else If hComp.State = CComponent.DEPRECATED Then
+'           .Foreground = Color.LightForeground
+'           '.Font.Strikeout = True
+'         Endif
+'         
+'       Case 2
+'         .WordWrap = True
+'         .RichText = hCompItem.GetDescription()
+'         If hComp.State = CComponent.UNSTABLE Then 
+'           .Font.Italic = True
+'         Else If hComp.State = CComponent.DEPRECATED Then
+'           .Foreground = Color.LightForeground
+'           '.Font.Strikeout = True
+'         Endif
+'         
+'       Case 3
+'         Select Case hComp.State
+'           Case CComponent.STABLE_NOT_FINISHED
+'             .Picture = Picture["img/16/unfinished.png"]
+'           Case CComponent.UNSTABLE
+'             .Picture = Picture["img/16/experimental.png"]
+'           Case CComponent.STABLE
+'             .Picture = Picture["img/16/finished.png"]
+'           Case CComponent.DEPRECATED
+'             .Picture = Picture["img/16/deprecated.png"]
+'         End Select
+'       
+'     End Select
+'     
+'     .Alignment = Align.TopNormal
+'     '.Background = If(Even(Row), Color.Gradient(Color.LightForeground, Color.TextBackground, 0.9), Color.TextBackground)
+'     .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.95)
+'     
+'   End With
+'   
+' End
 
 
 
-Private Function IsChecked(sKey As String) As Boolean
-  
-  Try Return $cComp[sKey].Value
-  
-End
-
-Private Sub CheckComponentConfig() As Boolean
-  
-  Dim aComp As New String[]
-  Dim hComp As CComponent
-  Dim sComp As String
-  Dim aExclude As String[]
-  Dim aNeed As String[]
-  Dim sImpl As String
-  Dim sExcl As String
-  Dim sNeed As String
-  Dim bFound As Boolean
-
-  If $bShowUsed Then Return
-  
-  ' Makes the list of all checked components
-  
-  For Each hComp In CComponent.All
-    If IsChecked(hComp.Key) Then aComp.Add(hComp.Key)
-  Next
-  
-  For Each sComp In aComp
-  
-    aNeed = New String[]
-    aExclude = New String[]
-
-    For Each sImpl In CComponent.All[sComp].Implement
-    
-      For Each hComp In CComponent.All
-      
-        If hComp.Key = sComp Then Continue
-        If hComp.Implement.Find(sImpl) >= 0 Then
-          If Not aComp.Exist(hComp.Key) Then Continue
-          If aExclude.Find(hComp.Key) < 0 Then aExclude.Add(hComp.Key)
-        Endif
-      
-      Next
-    
-    Next
-
-    For Each sExcl In CComponent.All[sComp].Exclude
-      If Not aComp.Find(sExcl) Then Continue
-      If Not aExclude.Exist(sExcl) Then aExclude.Add(sExcl)
-    Next
-    
-    ' IF aExclude.Count = 1 THEN
-    '   Message.Warning(Subst(("The &2 component is incompatible with the &1 component."), "<b>" & sComp & "</b>", "<b>" & aExclude[0] & "</b>"))
-    '   RETURN TRUE
-    ' ELSE IF aExclude.Count > 1 THEN
-    '   Message.Warning(Subst(("These components are incompatible with the &1 component:\n&2"), "<b>" & sComp & "</b>", "<b>" & aExclude.Join("</b>, <b>") & "</b>"))
-    '   RETURN TRUE
-    ' ENDIF
-
-    If aExclude.Count Then
-      Message.Warning(Subst(("These components are incompatible:<br>&1."), "<b>" & sComp & "</b>, <b>" & aExclude.Join("</b>, <b>") & "</b>"))
-      Return True
-    Endif
-
-    For Each sNeed In CComponent.All[sComp].Need
-      bFound = False
-      For Each hComp In CComponent.All
-        If hComp.Implement.Exist(sNeed) Then
-          If Not aNeed.Exist(hComp.Key) Then aNeed.Add(hComp.Key)
-          If aComp.Exist(hComp.Key) Then bFound = True
-        Endif
-      Next
-      If Not bFound Then
-        Message.Warning(Subst(("The &1 component needs one of the following components:<br>&2."), "<b>" & sComp & "</b>", "<b>" & aNeed.Join("</b>, <b>") & "</b>"))
-        Return True
-      Endif 
-    Next
-      
-    For Each sNeed In CComponent.All[sComp].Require
-      If Not aComp.Exist(sNeed) Then 
-        Message.Warning(Subst(("The &1 component needs the &2 component."), "<b>" & sComp & "</b>", "<b>" & sNeed & "</b>"))
-        Return True
-      Endif
-    Next
-  
-  Next  
-  
-End
 
 
 ' Private Function CheckComponent(sKey As String, bCheck As Boolean) As Boolean
@@ -615,31 +442,6 @@ End
 '   Endif
 '   
 ' End
-
-Public Sub gvwComponent_Click()
-  
-  Dim hCompItem As ComponentItem
-  Dim sDep As String
-  
-  'If webAboutComponent.Visible Then AboutComponent
-  
-  If gvwComponent.Column <> 0 Then Return
-  
-  hCompItem = $cComp[$aComp[gvwComponent.Row]]
-  hCompItem.Click
-  
-  For Each sDep In GetRequire(hCompItem.Key)
-    If hCompItem.Value Then
-      $cComp[sDep].Check(hCompItem.Key)
-    Else
-      $cComp[sDep].Uncheck(hCompItem.Key)
-    Endif
-  Next
-  
-  gvwComponent.Refresh
-  
-End
-
 
 ' PRIVATE FUNCTION CheckComponent(sKey AS String, bCheck AS Boolean) AS Boolean
 ' 
@@ -726,15 +528,13 @@ End
 
 Public Sub chkShowUsed_Click()
 
-  $bShowUsed = chkShowUsed.Value
-  RefreshComponents(True)
+  choComponent.ShowCheckedOnly = chkShowUsed.Value
 
 End
 
 Public Sub chkShowDeprecated_Click()
 
-  $bShowDeprecated = chkShowDeprecated.Value
-  RefreshComponents(True)
+  choComponent.ShowDeprecated = chkShowDeprecated.Value
 
 End
 
@@ -797,49 +597,6 @@ End
 ' 
 ' End
 
-Private Sub AboutComponent() As Boolean
-  
-  Dim hCompItem As ComponentItem
-  Dim sKey As String
-  
-  Try hCompItem = $cComp[$aComp[gvwComponent.Row]]
-  If Not hCompItem Then Return True
-  Try sKey = hCompItem.Key
-  If Not sKey Then Return True
-  'MHelp.GotoComponent(sKey)
-  'webAboutComponent.Zoom = 0.75
-  MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, sKey,, "v&nh&l=" & MHelp.GetLanguage())
-  
-End
-
-
-Public Sub btnHelp_Click()
-
-  If panHelp.Visible Then
-    
-    If webAboutComponent.History.Index Then
-      webAboutComponent.Back
-    Else
-      panHelp.Hide
-      'btnForward.Hide
-      panComponent.Show
-      'btnHelp.Picture = Picture["icon:/small/next"]
-      'btnHelp.Text = Shortcut(("About component"), "A") & "..."
-    Endif
-  
-  Else
-  
-    If AboutComponent() Then Return
-    panHelp.Show
-    'btnForward.Show
-    panComponent.Hide
-    'Try gvwComponent.Current.EnsureVisible
-    'btnHelp.Text = ""
-    'btnHelp.Picture = Picture["icon:/small/previous"]
-    
-  Endif
-
-End
 
 
 ' Public Sub cmbComponent_Click()
@@ -920,8 +677,8 @@ End
 
 Public Sub btnUndo_Click()
 
-  $aComponents = Project.Components.Copy()
-  RefreshComponents
+  choComponent.CheckedComponents = Project.Components
+  choComponent.Libraries = $aLibraries
 
 End
 
@@ -1089,20 +846,6 @@ Public Sub btnRemoveEnv_Click()
 End
 
 
-Public Sub gvwComponent_Activate()
-
-  ' Dim hCurrent As ComponentItem = $cComp[$aComp[gvwComponent.Row]]
-  ' 
-  ' If gvwComponent.Column = 0 Then Return
-  ' 
-  ' hCurrent.Expanded = Not hCurrent.Expanded
-  ' gvwComponent.Rows[gvwComponent.Row].Height = -1
-  ' gvwComponent.Current.EnsureVisible
-  
-  btnHelp.Value = True
-    
-End
-
 ' Public Sub cmbTranslate_Click()
 ' 
 '   If cmbTranslate.Index = 0 Then 
@@ -1164,7 +907,6 @@ Public Sub btnInsertLib_Click()
   
   Project.UpdateLibraries($aLibraries)
   RefreshLibraries
-  RefreshComponents(True)
 
 End
 
@@ -1184,15 +926,16 @@ Private Sub RefreshLibraries()
       '.Picture = Picture["icon:/large/exec"]
       .Alignment = Align.TopNormal
       .RichText = CLibraryInfo[$aLibraries[Y]].GetDescription()
-      .Padding = Desktop.Scale * 2
       .WordWrap = True
-      .Border = $hBorderLibrary
+      .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.96)
       
     End With
     
     gvwLibrary.Rows[Y].Height = -1
     
   Next
+  
+  choComponent.Libraries = $aLibraries
   
 End
 
@@ -1205,7 +948,6 @@ Private Sub RemoveLibrary(sPath As String)
     $aLibraries.Remove(iPos)
     Project.UpdateLibraries($aLibraries)
     RefreshLibraries
-    RefreshComponents(True)
   Endif
   
 End
@@ -1246,7 +988,6 @@ Public Sub btnUndoLib_Click()
 
   $aLibraries = Project.Libraries.Copy()
   RefreshLibraries
-  RefreshComponents(True)
 
 End
 
@@ -1258,119 +999,26 @@ Public Sub chkGetVersionFromFile_Click()
 
 End
 
-Public Sub UncheckComponents(aComp As String[])
-  
-  Dim sComp As String
-  
-  For Each sComp In aComp
-    If Left(sComp) <> "/" Then $cComp[sComp].Uncheck("")
-  Next
-  
-End
-
-Public Sub gvwComponent_Arrange()
-
-  Dim I As Integer
-  
-  gvwComponent.Columns[1].Width = -1
-
-  For I = 0 To $aComp.Max
-    gvwComponent.Rows[I].H = -1
-    'Debug I;; gvwComponent.Rows[I].H
-  Next
-  
-
-End
-
-Public Sub gvwComponent_MouseMove()
-
-  Dim iRow As Integer
-  Dim hComp As CComponent
-  Dim sText As String
-  
-  If gvwComponent.ColumnAt(Mouse.X) = 3 Then
-    
-    iRow = gvwComponent.RowAt(Mouse.Y)
-    
-    Try hComp = CComponent.All[$aComp[iRow]]
-    If hComp Then
-      Select Case hComp.State
-        Case CComponent.STABLE_NOT_FINISHED
-          sText = ("Not finished but stable")
-        Case CComponent.UNSTABLE
-          sText = ("Experimental")
-        Case CComponent.STABLE
-          sText = ("Stable")
-        Case CComponent.DEPRECATED
-          sText = ("Deprecated")
-      End Select
-    Endif
-    
-    If $iTooltipLastRow <> iRow Then
-      gvwComponent.Tooltip = sText
-      $iTooltipLastRow = iRow
-    Endif
-    
-  Endif
-
-End
-
-Public Sub gvwComponent_Leave()
-
-  gvwComponent.Tooltip = ""
-
-End
-
-Public Sub gvwComponent_Enter()
-
-  $iTooltipLastRow = -1
-
-End
-
-Public Sub panSearchProject_Arrange()
-
-  picFilter.W = picFilter.H
-
-End
-
-Public Sub txtFilterComponent_Change()
-  
-  $sFilter = Trim(txtFilterComponent.Text)
-  timFilterComponent.Start
-  
-End
-
-' Public Sub txtFilterComponent_KeyPress()
-' 
-'   If Key.Code = Key.Esc Then btnClearFilter_Click
-' 
+' Public Sub UncheckComponents(aComp As String[])
+'   
+'   Dim sComp As String
+'   
+'   For Each sComp In aComp
+'     If Left(sComp) <> "/" Then $cComp[sComp].Uncheck("")
+'   Next
+'   
 ' End
-
-Public Sub btnClearFilter_Click()
-  
-  txtFilterComponent.Clear
-  $sFilter = ""
-  timFilterComponent_Timer
-  txtFilterComponent.SetFocus
-  
-End
-
-Public Sub timFilterComponent_Timer()
-
-  RefreshComponents(True)
-  timFilterComponent.Stop
-
-End
 
 Public Sub ipnProject_Click()
 
   Select Case ipnProject.Text
     Case ("Components") 
-      txtFilterComponent.SetFocus
+      choComponent.SetFocus
+      choComponent.HideBrowser
     Case ("Libraries") 
       RefreshLibraries
     Case ("Options") 
-      panHttpServer.Enabled = IsChecked("gb.web") 'Project.Components.Exist("gb.web")
+      panHttpServer.Enabled = choComponent.IsChecked("gb.web") 'Project.Components.Exist("gb.web")
     Case ("Statistics") 
       UpdateStat
     Case ("Information") 
@@ -1416,18 +1064,6 @@ Private Sub UpdateStat()
   gvwStat.Columns[0].Width = -1
   gvwStat.Columns[0].Width += 16
   
-End
-
-Public Sub btnForward_Click()
-
-  webAboutComponent.Forward
-
-End
-
-Public Sub webAboutComponent_Click((Frame) As WebFrame)
-
-  btnForward.Enabled = webAboutComponent.History.Index < webAboutComponent.History.Max
-
 End
 
 Public Sub cmbType_Click()
@@ -1608,45 +1244,19 @@ Private Sub UpdateInfo()
 
 End
 
-Public Sub panComponent_Arrange()
+Public Sub Form_Arrange()
 
   btnUndo.Move(btnUndo.Parent.W - btnUndo.W - Desktop.Scale, Desktop.Scale)
 
 End
 
-Public Sub btnStop_Click()
-  
-  webAboutComponent.Stop
-  
-End
-
-Public Sub btnReload_Click()
-  
-  webAboutComponent.Reload
-  
-End
-
-Public Sub btnZoomIn_Click()
-  
-  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom * 1.25, -2)
-  
-End
-
-Public Sub btnZoomOut_Click()
-  
-  webAboutComponent.TextZoom = Round(webAboutComponent.TextZoom / 1.25, -2)
-  
-End
-
-Public Sub btnZoomNormal_Click()
-  
-  webAboutComponent.TextZoom = 0.8
-  
-End
 
 Public Sub btnAdd_Click()
 
-  If FSelectComponent.Run($aRequire) Then Return
-  AddRequire(FSelectComponent.Component)
+  Dim sComp As String
+
+  sComp = FSelectComponent.Run($aRequire) 
+  If Not sComp Then Return
+  AddRequire(sComp)
 
 End

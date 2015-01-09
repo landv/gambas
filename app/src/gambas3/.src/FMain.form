@@ -610,8 +610,7 @@
       }
       { Menu13 Menu
       }
-      { mnuFilterAll Menu btnSearchClear
-        Name = "mnuFilterAll"
+      { mnuFilterAll Menu
         Text = ("Show all")
         Picture = Picture["icon:/small/refresh"]
       }
@@ -1092,33 +1091,14 @@
       Orientation = Align.Left
       Separator = True
       Transparent = True
-      { panSearchProject HBox
-        MoveScaled(0,0,29,3)
-        Background = Color.TextBackground
-        { picFilter PictureBox
-          MoveScaled(0,0,3,3)
-          Mouse = Mouse.Pointing
-          Picture = Picture["img/32/filter-menu.png"]
-          Stretch = True
-          AutoResize = True
-        }
-        { txtSearchProject TextBox
-          MoveScaled(5,0,12,3)
-          Foreground = Color.LightForeground
-          Expand = True
-          Border = False
-        }
-        { btnSearchClear ToolButton
-          MoveScaled(21,0,3,3)
-          ToolTip = ("Reset filter")
-          Picture = Picture["icon:/small/clear"]
-        }
-        { btnCloseAll ToolButton mnuCloseAll
-          Name = "btnCloseAll"
-          MoveScaled(24,0,3,3)
-          ToolTip = ("Close all windows")
-          Picture = Picture["icon:/small/close"]
-        }
+      { txtSearchProject ButtonBox
+        MoveScaled(1,1,25,3)
+        Foreground = Color.LightForeground
+        Picture = Picture["icon:/small/close"]
+        Border = False
+        ClearButton = True
+        Filter = True
+        FilterMenu = "mnuFilter"
       }
       { Separator4 Separator
         MoveScaled(0,6,9,0)

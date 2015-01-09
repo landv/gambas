@@ -74,7 +74,7 @@
     }
   }
   { ipnProject IconPanel
-    MoveScaled(0,0,108,70)
+    MoveScaled(1,0,108,70)
     Expand = True
     Arrangement = Arrange.Vertical
     Count = 8
@@ -330,131 +330,42 @@
     }
     Index = 2
     Text = ("Components")
-    { panComponent VBox
-      MoveScaled(2,2,82,37)
-      Background = Color.TextBackground
-      Expand = True
+    { Panel3 HBox
+      MoveScaled(3,2,77,9)
+      Spacing = True
       { VBox1 VBox
-        MoveScaled(1,1,40,8)
-        AutoResize = True
+        MoveScaled(0,0,49,9)
+        Expand = True
         Spacing = True
         Margin = True
         { chkShowUsed CheckBox
-          MoveScaled(0,0,46,3)
+          MoveScaled(1,1,46,3)
           AutoResize = True
           Text = ("Show only components used in project")
         }
         { chkShowDeprecated CheckBox
-          MoveScaled(0,3,36,3)
+          MoveScaled(1,5,36,3)
           AutoResize = True
           Text = ("Show deprecated components")
         }
       }
-      { Separator5 Separator
-        MoveScaled(1,10,21,0)
-      }
-      { panSearchProject Panel
-        MoveScaled(1,12,29,3)
-        Arrangement = Arrange.Horizontal
-        { picFilter PictureBox
-          MoveScaled(0,0,3,3)
-          Picture = Picture["img/32/filter.png"]
-          Stretch = True
-          AutoResize = True
+      { Panel8 HPanel
+        MoveScaled(51,0,22,8)
+        Invert = True
+        { btnUndo Button
+          MoveScaled(0,0,17,4)
+          Ignore = True
+          Text = Shortcut(("Reset"), "R")
+          Picture = Picture["icon:/small/undo"]
         }
-        { txtFilterComponent TextBox
-          MoveScaled(5,0,18,3)
-          Foreground = Color.LightForeground
-          Expand = True
-          Border = False
-        }
-        { btnClearFilter ToolButton
-          MoveScaled(25,0,3,3)
-          ToolTip = ("Reset filter")
-          Picture = Picture["icon:/small/clear"]
-        }
-      }
-      { Separator4 Separator
-        MoveScaled(32,16,21,0)
-      }
-      { gvwComponent GridView
-        MoveScaled(3,18,78,16)
-        Expand = True
-        Border = False
-        Mode = Select.Single
-        Grid = False
-        Padding = 0
-      }
-      { btnUndo Button
-        MoveScaled(58,7,17,4)
-        Ignore = True
-        Text = Shortcut(("Reset"), "R")
-        Picture = Picture["icon:/small/undo"]
       }
     }
-    { panHelp VBox
-      MoveScaled(2,41,81,18)
-      Visible = False
-      Background = Color.TextBackground
+    { Separator5 Separator
+      MoveScaled(2,13,21,0)
+    }
+    { choComponent ComponentChooser
+      MoveScaled(8,27,67,37)
       Expand = True
-      { Panel8 HBox
-        MoveScaled(1,0,79,4)
-        { btnHelp Button
-          MoveScaled(0,0,4,4)
-          Picture = Picture["icon:/small/previous"]
-          Border = False
-        }
-        { btnForward Button
-          MoveScaled(4,0,4,4)
-          Picture = Picture["icon:/small/next"]
-          Border = False
-        }
-        { btnStop ToolButton
-          MoveScaled(8,0,4,4)
-          ToolTip = ("Cancel")
-          Picture = Picture["icon:/small/delete"]
-        }
-        { btnReload ToolButton
-          MoveScaled(12,0,4,4)
-          ToolTip = ("Reload")
-          Picture = Picture["icon:/small/refresh"]
-        }
-        { Separator10 Separator
-          MoveScaled(17,0,0,4)
-          Visible = False
-        }
-        { btnZoomIn ToolButton
-          MoveScaled(18,0,4,4)
-          ToolTip = ("Zoom in")
-          Picture = Picture["icon:/small/zoom-in"]
-        }
-        { btnZoomOut ToolButton
-          MoveScaled(22,0,4,4)
-          ToolTip = ("Zoom out")
-          Picture = Picture["icon:/small/zoom-out"]
-        }
-        { btnZoomNormal ToolButton
-          MoveScaled(26,0,4,4)
-          ToolTip = ("No zoom")
-          Picture = Picture["icon:/small/zoom-normal"]
-        }
-        { Panel3 Panel
-          MoveScaled(51,0,7,4)
-          Expand = True
-        }
-      }
-      { Separator2 Separator
-        MoveScaled(0,9,24,0)
-        Visible = False
-      }
-      { webAboutComponent HelpView
-        MoveScaled(4,10,46,7)
-        Expand = True
-      }
-    }
-    { timFilterComponent #Timer
-      #MoveScaled(77,51)
-      Delay = 500
     }
     Index = 3
     Text = ("Libraries")

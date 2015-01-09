@@ -158,6 +158,6 @@ Public Sub GetDescription() As String
     If Require.Count Then AddInfo(("Requires"), Require.Join(", "))
   Endif
   
-  Return "<font size=\"+1\"><b>" & Name & "</b> " & Version & "</font><br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
+  Return "<font size=\"+1\"><b>" & Name & "</b> " & Version & "</font><br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & "<br>" & $sInfo & "</font>"
   
 End
