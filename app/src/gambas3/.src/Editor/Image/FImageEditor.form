@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,160,90)
+  MoveScaled(0,0,175,90)
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
@@ -249,7 +249,7 @@
     }
   }
   { tlbMain ToolBar
-    MoveScaled(0,0,156,4)
+    MoveScaled(0,0,168,4)
     Key = "image"
     Text = ("Image editor")
     { btnSave MenuButton
@@ -459,79 +459,58 @@
       MoveScaled(107,0,1,4)
     }
     { btnHide ToolButton
-      MoveScaled(109,0,4,4)
+      MoveScaled(108,0,4,4)
       ToolTip = ("Hide selection")
       Action = ".hide"
       Picture = Picture["img/draw/hide.png"]
     }
     { btnInvert ToolButton
-      MoveScaled(112,0,4,4)
+      MoveScaled(111,0,4,4)
       ToolTip = ("Invert selection")
       Action = ".invert"
       Picture = Picture["img/draw/invert.png"]
     }
     { btnDuplicate ToolButton
-      MoveScaled(115,0,4,4)
+      MoveScaled(114,0,4,4)
       ToolTip = ("Duplicate selection")
       Action = ".duplicate"
       Picture = Picture["img/draw/duplicate.png"]
     }
     { btnOffset ToolButton
-      MoveScaled(119,0,4,4)
+      MoveScaled(118,0,4,4)
       ToolTip = ("Offset selection")
       Action = ".offset"
       Picture = Picture["img/draw/offset.png"]
     }
     { Separator5 Separator
-      MoveScaled(124,0,1,4)
-    }
-    { btnStroke ToolButton
-      MoveScaled(125,0,4,4)
-      ToolTip = ("Stroke")
-      Action = ".stroke"
-      Picture = Picture["img/draw/draw-brush.png"]
-    }
-    { btnFill ToolButton
-      MoveScaled(129,0,4,4)
-      ToolTip = ("Fill")
-      Action = ".fill"
-      Picture = Picture["icon:/small/fill"]
-    }
-    { btnClear ToolButton
-      MoveScaled(133,0,4,4)
-      ToolTip = ("Clear")
-      Action = ".clear"
-      Picture = Picture["img/draw/draw-eraser.png"]
-    }
-    { Separator7 Separator
-      MoveScaled(137,0,1.1429,4)
+      MoveScaled(122,0,1,4)
     }
     { btnCrop ToolButton
-      MoveScaled(138,0,4,4)
+      MoveScaled(123,0,4,4)
       ToolTip = ("Crop")
       Action = ".crop"
       Picture = Picture["img/draw/crop.png"]
     }
     { btnFlipH ToolButton
-      MoveScaled(141,0,4,4)
+      MoveScaled(126,0,4,4)
       ToolTip = ("Horizontal flip")
       Action = ".flip-h"
       Picture = Picture["img/draw/hflip.png"]
     }
     { btnFlipV ToolButton
-      MoveScaled(144,0,4,4)
+      MoveScaled(129,0,4,4)
       ToolTip = ("Vertical flip")
       Action = ".flip-v"
       Picture = Picture["img/draw/vflip.png"]
     }
     { btnRotateR ToolButton
-      MoveScaled(147,0,4,4)
+      MoveScaled(132,0,4,4)
       ToolTip = ("Rotate clockwise")
       Action = ".rotate-r"
       Picture = Picture["img/draw/rotate-right.png"]
     }
     { btnRotateL ToolButton
-      MoveScaled(150,0,4,4)
+      MoveScaled(135,0,4,4)
       ToolTip = ("Rotate counter-clockwise")
       Action = ".rotate-l"
       Picture = Picture["img/draw/rotate-left.png"]
@@ -568,10 +547,6 @@
 # Gambas Action File 3.0
 
 { Actions
-  { Action clear
-    Text = "Clear"
-    Picture = "img/draw/draw-eraser.png"
-  }
   { Action close
     Text = "Close"
     Shortcut = "Ctrl+W"
@@ -596,10 +571,6 @@
     Text = "Duplicate selection"
     Shortcut = "Ctrl+D"
     Picture = "img/draw/duplicate.png"
-  }
-  { Action fill
-    Text = "Fill"
-    Picture = "icon:/small/fill"
   }
   { Action flip-h
     Text = "Horizontal flip"
@@ -687,10 +658,6 @@
     Text = "Select All"
     Shortcut = "Ctrl+A"
   }
-  { Action stroke
-    Text = "Stroke"
-    Picture = "img/draw/draw-brush.png"
-  }
   { Action tiff
     Text = "Save as TIFF"
     Shortcut = ""
@@ -769,7 +736,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,hide,invert,duplicate,offset,stroke,fill,clear,crop,flip-h,flip-v,rotate-r,rotate-l"
-    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,|,hide,invert,duplicate,offset,|,stroke,fill,clear,|,crop,flip-h,flip-v,rotate-r,rotate-l"
+    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,hide,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
+    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,|,hide,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
   }
 }

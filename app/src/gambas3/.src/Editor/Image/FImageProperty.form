@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,158)
+  MoveScaled(0,0,68,160)
   Persistent = True
   Arrangement = Arrange.Fill
   { Panel10 ScrollView
-    MoveScaled(2,1,65,156)
+    MoveScaled(1,1,65,158)
     Arrangement = Arrange.Vertical
     Border = False
     ScrollBar = Scroll.Vertical
@@ -15,10 +15,10 @@
       Padding = 4
     }
     { Separator5 Separator
-      MoveScaled(11,5,23,0)
+      MoveScaled(11,4,23,0)
     }
     { tabBrush TabPanel
-      MoveScaled(1,6,61,53)
+      MoveScaled(1,5,61,53)
       Arrangement = Arrange.Vertical
       Border = False
       Count = 4
@@ -199,11 +199,59 @@
       }
       Index = 0
     }
+    { Separator4 Separator
+      MoveScaled(22,58,15,0)
+    }
+    { HBox4 HBox
+      MoveScaled(0,61,56,4)
+      { btnStroke ToolButton btnAction
+        Name = "btnStroke"
+        MoveScaled(0,0,4,4)
+        Tag = "stroke"
+        ToolTip = ("Stroke")
+        Picture = Picture["img/draw/stroke.png"]
+      }
+      { btnFill ToolButton btnAction
+        Name = "btnFill"
+        MoveScaled(4,0,4,4)
+        Tag = "fill"
+        ToolTip = ("Fill")
+        Picture = Picture["img/draw/fill.png"]
+      }
+      { btnClear ToolButton btnAction
+        Name = "btnClear"
+        MoveScaled(8,0,4,4)
+        Tag = "clear"
+        ToolTip = ("Clear")
+        Picture = Picture["img/draw/clear.png"]
+      }
+      { btnColorize ToolButton btnAction
+        Name = "btnColorize"
+        MoveScaled(12,0,4,4)
+        Tag = "colorize"
+        ToolTip = ("Colorize")
+        Picture = Picture["img/draw/colorize.png"]
+      }
+      { btnDesaturate ToolButton btnAction
+        Name = "btnDesaturate"
+        MoveScaled(16,0,4,4)
+        Tag = "desaturate"
+        ToolTip = ("Desaturate")
+        Picture = Picture["img/draw/desaturate.png"]
+      }
+      { btnTransparent ToolButton btnAction
+        Name = "btnTransparent"
+        MoveScaled(20,0,4,4)
+        Tag = "transparent"
+        ToolTip = ("Make transparent")
+        Picture = Picture["img/draw/transparent.png"]
+      }
+    }
     { Separator6 Separator
-      MoveScaled(18,59,15,0)
+      MoveScaled(18,66,15,0)
     }
     { Panel1 VBox
-      MoveScaled(1,60,63,14)
+      MoveScaled(1,67,63,14)
       Margin = True
       { HPanel1 HBox
         MoveScaled(0,0,62,4)
@@ -253,10 +301,10 @@
       }
     }
     { Separator3 Separator
-      MoveScaled(19,75,26,0)
+      MoveScaled(19,82,26,0)
     }
     { Panel13 Panel
-      MoveScaled(1,76,64,42)
+      MoveScaled(1,83,64,42)
       Arrangement = Arrange.Vertical
       Margin = True
       { panEffect Expander
@@ -402,10 +450,10 @@
       }
     }
     { sepText Separator
-      MoveScaled(21,119,15,0)
+      MoveScaled(21,126,15,0)
     }
     { panText VBox
-      MoveScaled(3,120,60,23)
+      MoveScaled(3,127,60,23)
       Visible = False
       Margin = True
       { Panel11 HBox
@@ -486,10 +534,10 @@
       }
     }
     { sepGrid Separator
-      MoveScaled(19,145,15,0)
+      MoveScaled(19,151,15,0)
     }
     { panGrid HBox
-      MoveScaled(2,147,62,6)
+      MoveScaled(2,152,62,6)
       Visible = False
       Spacing = True
       Margin = True

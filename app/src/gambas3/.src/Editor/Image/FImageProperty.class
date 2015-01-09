@@ -1374,3 +1374,9 @@ Public Sub slbOpacity_Change()
   UpdateBalance
 
 End
+
+Public Sub btnAction_Click()
+
+  GetCurrent().ExecAction(Last.Tag)
+
+End

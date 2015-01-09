@@ -3,6 +3,8 @@
 Public Path As String
 Public RichText As String
 
+Public Enum EFFECT_BALANCE, EFFECT_COLORIZE, EFFECT_DESATURATE, EFFECT_TRANSPARENT
+
 Property Read ReadOnly As Boolean
 
 Private $bReadOnly As Boolean
@@ -1756,42 +1758,6 @@ Public Sub timSelect_Timer()
 
 End
 
-Public Sub btnStroke_Click()
-
-  Dim hImage As Image
-
-  If $hSelect Then
-    
-    hImage = $hImage.Copy()
-    Paint.Begin(hImage)
-    FImageProperty.PaintForStroke($hSelect.GetExtents(True))
-    $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE)
-    Paint.End
-    SetImage(hImage)
-    
-  Endif
-
-End
-
-Public Sub btnFill_Click()
-
-  Dim hImage As Image
-
-  hImage = $hImage.Copy()
-  Paint.Begin(hImage)
-  If $hSelect Then
-    FImageProperty.PaintForFill($hSelect.GetExtents(True))
-    $hSelect.Paint($hImage, CImageSelection.ACTION_FILL)
-  Else
-    FImageProperty.PaintForFill()
-    Paint.Rectangle(0, 0, hImage.W, hImage.H)
-    Paint.Fill
-  Endif
-  Paint.End
-  SetImage(hImage)
-
-End
-
 Public Sub btnInvert_Click()
 
   CreateSelection
@@ -1833,29 +1799,6 @@ Public Sub mnuSelectAll_Click()
   
   $hSelect = New CImageSelection
   btnInvert_Click
-
-End
-
-Public Sub btnClear_Click()
-
-  Dim hImage As Image
-
-  If $hSelect Then
-    
-    hImage = $hImage.Copy()
-    Paint.Begin(hImage)
-    FImageProperty.PaintForFill
-    $hSelect.Paint($hImage, CImageSelection.ACTION_CLEAR)
-    Paint.End
-    SetImage(hImage)
-    
-  Else
-    
-    hImage = New Image($hImage.W, $hImage.H, Color.Transparent) '$hImage.Copy()
-    'hImage.Transparent(FImageProperty.GetColor(True))
-    SetImage(hImage)
-    
-  Endif
 
 End
 
@@ -2283,48 +2226,70 @@ Public Sub imvImage_Leave()
 
 End
 
-Public Sub ApplyBalance()
+Public Sub ApplyEffect(iEffect As Integer)
   
   Dim hImage As Image
-  Dim hBalance As Image
+  Dim hEffect As Image
+  
+  Select Case iEffect
+    
+    Case EFFECT_BALANCE
+      
+      hEffect = $hImage.Copy()
+      FImageProperty.ApplyBalance(hEffect)
+    
+    Case EFFECT_COLORIZE
+    
+      hEffect = $hImage.Copy().Colorize(FImageProperty.GetColor(True))
+      
+    Case EFFECT_DESATURATE
+    
+      hEffect = $hImage.Copy().Desaturate()
+      
+    Case EFFECT_TRANSPARENT
+    
+      hEffect = $hImage.Copy().Erase()
+      
+  End Select
   
   If $hSelect Then
 
     If $hSelect.IsInverted() Then
       
-      hImage = $hImage.Copy()
-      FImageProperty.ApplyBalance(hImage)
-      
-      Paint.Begin(hImage)
-      $hSelect.Paint(hImage, CImageSelection.ACTION_CLIP)
+      Paint.Begin(hEffect)
+      $hSelect.Paint(hEffect, CImageSelection.ACTION_CLIP)
       Paint.DrawImage($hImage, 0, 0)
       Paint.End
+      
+      hImage = hEffect
       
     Else
     
       hImage = $hImage.Copy()
       
-      hBalance = $hImage.Copy()
-      FImageProperty.ApplyBalance(hBalance)
-    
       Paint.Begin(hImage)
       $hSelect.Paint(hImage, CImageSelection.ACTION_CLIP)
-      Paint.DrawImage(hBalance, 0, 0)
+      Paint.DrawImage(hEffect, 0, 0)
       Paint.End
 
     Endif
 
-    SetImage(hImage)
-    
   Else
     
-    hImage = $hImage.Copy()
-    FImageProperty.ApplyBalance(hImage)
-    SetImage(hImage)
+    hImage = hEffect
     
   Endif
   
+  SetImage(hImage)
+    
 End
+
+Public Sub ApplyBalance()
+  
+  ApplyEffect(EFFECT_BALANCE)
+  
+End
+
 
 Public Sub OnProjectDebug()
 
@@ -2773,4 +2738,70 @@ Public Sub Form_Close()
 
   Project.AddRecentFile(Me)
 
+End
+
+Public Sub ExecAction(sAction As String)
+  
+  Dim hImage As Image
+
+  Select Case sAction
+    
+    Case "stroke"
+    
+      If $hSelect Then
+        
+        hImage = $hImage.Copy()
+        Paint.Begin(hImage)
+        FImageProperty.PaintForStroke($hSelect.GetExtents(True))
+        $hSelect.Paint($hImage, CImageSelection.ACTION_STROKE)
+        Paint.End
+        SetImage(hImage)
+        
+      Endif
+    
+    Case "fill"
+    
+      hImage = $hImage.Copy()
+      Paint.Begin(hImage)
+      If $hSelect Then
+        FImageProperty.PaintForFill($hSelect.GetExtents(True))
+        $hSelect.Paint($hImage, CImageSelection.ACTION_FILL)
+      Else
+        FImageProperty.PaintForFill()
+        Paint.Rectangle(0, 0, hImage.W, hImage.H)
+        Paint.Fill
+      Endif
+      Paint.End
+      SetImage(hImage)
+      
+    Case "clear"
+      
+      If $hSelect Then
+        
+        hImage = $hImage.Copy()
+        Paint.Begin(hImage)
+        FImageProperty.PaintForFill
+        $hSelect.Paint($hImage, CImageSelection.ACTION_CLEAR)
+        Paint.End
+        SetImage(hImage)
+        
+      Else
+        
+        hImage = New Image($hImage.W, $hImage.H, Color.Transparent) '$hImage.Copy()
+        'hImage.Transparent(FImageProperty.GetColor(True))
+        SetImage(hImage)
+        
+      Endif
+    
+    Case "colorize"
+      ApplyEffect(EFFECT_COLORIZE)
+    
+    Case "desaturate"
+      ApplyEffect(EFFECT_DESATURATE)
+    
+    Case "transparent"
+      ApplyEffect(EFFECT_TRANSPARENT)
+    
+  End Select
+  
 End
