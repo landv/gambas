@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Picture,Border=True"
+Public Const _Properties As String = "*,Orientation{Align.Top;Bottom}=Top,Image,Border=True"
 Public Const _DefaultEvent As String = "Activate"
 Public Const _Group As String = "Special"
 
@@ -20,9 +20,13 @@ Property Font As Font
 Property Background As Integer
 Property Orientation As Integer
 Property Border As Boolean
+Property Image As Image
 Property Picture As Picture
 
+Static Private $bPictureWarning As Boolean
+
 Private $hWorkspace As FWorkspace
+Private $hPicture As Picture
 
 Public Sub _new()
   
@@ -192,18 +196,40 @@ End
 
 Private Function Picture_Read() As Picture
 
-  Return $hWorkspace.GetPicture()
+  Return $hPicture
 
 End
 
 Private Sub Picture_Write(Value As Picture)
 
-  $hWorkspace.SetPicture(Value)
+  If Not $bPictureWarning Then
+    $bPictureWarning = True
+    Error "gb.form.mdi: warning: Workspace.Picture property is deprecated. Use Workspace.Image instead"
+  Endif
+  
+  $hPicture = Value
+  If Value Then
+    $hWorkspace.SetImage($hPicture.Image)
+  Else
+    $hWorkspace.SetImage(Null)
+  Endif
 
 End
 
 Private Function Count_Read() As Integer
 
   Return $hWorkspace.GetCountWindows()
+
+End
+
+Private Function Image_Read() As Image
+
+  Return $hWorkspace.GetImage()
+
+End
+
+Private Sub Image_Write(Value As Image)
+
+  $hWorkspace.SetImage(Value)
 
 End

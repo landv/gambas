@@ -565,12 +565,15 @@
       Text = ("Background")
     }
     { svwBackground ScrollView
-      MoveScaled(1,5,63,61)
+      MoveScaled(2,5,63,55)
       Expand = True
       Arrangement = Arrange.Row
       Spacing = True
       Border = False
       ScrollBar = Scroll.Vertical
+    }
+    { choBackgroundColor ColorPalette
+      MoveScaled(1,66,65,5)
     }
     Index = 5
     Text = ("Help & applications")

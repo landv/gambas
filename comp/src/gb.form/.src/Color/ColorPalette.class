@@ -1,0 +1,255 @@
+' Gambas class file
+
+Export
+
+Inherits UserControl
+
+Public Const _Properties As String = "*,Border=True"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "36,4"
+Public Const _Group As String = "Chooser"
+
+Event Click(Color As Integer)
+Event Activate
+
+Property Border As Boolean
+Property Colors As Integer[]
+
+Private $aColors As Integer[] = [Color.Blue, Color.Green, Color.Red, &H808080&, Color.Black, Color.White]
+
+Private $hView As ScrollArea
+Private Const CUSTOM_D As Integer = 6
+Private CUSTOM_W As Integer
+Private $iIndex As Integer
+
+Public Sub _new()
+  
+  $hView = New ScrollArea(Me) As "View"
+  $hView.ScrollBar = Scroll.None
+  $hView.Tracking = True
+  $hView.Mouse = Mouse.Pointing
+  $hView.Background = Color.TextBackground
+  
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $hView.Border
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $hView.Border = If(Value, Border.Plain, Border.None)
+
+End
+
+Private Sub UpdateColors()
+
+  $hView.ResizeContents($aColors.Count * (CUSTOM_W + CUSTOM_D) + CUSTOM_D, $hView.H)
+  $hView.Refresh
+
+End
+
+Private Function Colors_Read() As Integer[]
+
+  Return $aColors.Copy()
+
+End
+
+Private Sub Colors_Write(Value As Integer[])
+
+  If Not Value Then
+    $aColors.Clear
+  Else
+    $aColors = Value.Copy()
+  Endif
+  UpdateColors
+
+End
+
+Public Sub Clear()
+  
+  $aColors.Clear
+  UpdateColors
+  
+End
+
+
+
+Public Sub Add(Color As Integer)
+
+  Dim iPos As Integer
+  
+  Do
+    iPos = $aColors.Find(Color)
+    If iPos < 0 Then Break
+    $aColors.Remove(iPos)
+  Loop
+  
+  $aColors.Add(Color)
+  If $aColors.Count > 32 Then $aColors.Remove(0, $aColors.Count - 32)
+  
+  UpdateColors
+  
+End
+
+Public Sub View_Draw()
+
+  Dim X, Y, W, H As Integer
+  Dim I As Integer
+  Dim iColor As Integer
+  
+  If $aColors.Count = 0 Then
+    Paint.Background = Color.SetAlpha(Color.TextForeground, 192)
+    Paint.Font.Grade = 5
+    Paint.DrawText(("Last colors"), Desktop.Scale, 0, Paint.W, Paint.H, Align.Left)
+    Return
+  Endif
+  
+  Paint.LineWidth = 0.5
+  Paint.LineJoin = Paint.LineJoinMiter
+  
+  X = CUSTOM_D
+  Y = CUSTOM_D
+  W = CUSTOM_W
+  H = W
+  
+  Paint.Rectangle(X - 1, Y - 3, Paint.W - X * 2 + 2, Paint.H - Y * 2 + 5)
+  Paint.Clip
+  
+  X -= $hView.ScrollX
+  
+  For I = 0 To $aColors.Max 
+    iColor = $aColors[I]
+    
+    Main.PaintColor(X, Y, W, H, iColor)
+    
+    Paint.Rectangle(X + 0.5, Y + 0.5, W - 1, H - 1)
+    Paint.Background = Color.Black
+    If I = $iIndex Then 
+      Paint.LineWidth = 1.75
+    Else
+      Paint.LineWidth = 0.5
+    Endif
+    Paint.Stroke
+    
+    X += W + CUSTOM_D
+    If X >= Paint.W Then Break
+    
+  Next
+
+End
+
+Public Sub View_MouseDown()
+
+  If Not Mouse.Left Or If $iIndex < 0 Then Return
+  Raise Click($aColors[$iIndex])
+
+End
+
+Public Sub View_MouseMove()
+
+  Dim I As Integer
+  Dim sColor As String
+
+  I = ((Mouse.ScreenX - $hView.ScreenX + $hView.ScrollX - (CUSTOM_D \ 2)) \ (CUSTOM_W + CUSTOM_D))
+  If I < 0 Or If I > $aColors.Max Then I = -1
+  
+  If I = $iIndex Then Return
+  
+  $iIndex = I
+  If I >= 0 Then
+    sColor = Hex$($aColors[I], 8)
+    If sColor Begins "00" Then sColor = Mid$(sColor, 3)
+    $hView.Tooltip = "#" & sColor
+  Else
+    $hView.Tooltip = ""
+  Endif
+  
+  $hView.Refresh
+
+End
+
+Public Sub View_DblClick()
+
+  Raise Activate
+
+End
+
+Public Sub View_Leave()
+
+  If $iIndex >= 0 Then
+    $iIndex = -1
+    $hView.Refresh
+  Endif
+
+End
+
+Public Sub View_Scroll()
+
+  View_MouseMove
+
+End
+
+' Private Sub ModifyCustomColors()
+'   
+'   SaveCustomColors
+'   UpdateCustomColors
+'   $hView.Refresh
+'   $hView_MouseMove
+'   
+' End
+' 
+' 
+' Public Sub mnuRemove_Click()
+'   
+'   If $iLastCustom >= 0 Then
+'     $aCustomColors.Remove($iLastCustom)
+'     ModifyCustomColors
+'   Endif
+'   
+' End
+' 
+' Public Sub mnuRemoveAll_Click()
+'   
+'   $aCustomColors.Clear
+'   ModifyCustomColors
+'   
+' End
+' 
+' Private Sub SortCustomColors()
+' 
+'   Dim aSort As New String[]
+'   Dim iColor As Integer
+'   Dim sColor As String
+'   
+'   If $aCustomColors.Count <= 1 Then Return
+'   
+'   For Each iColor In $aCustomColors
+'     With Color[iColor]
+'       aSort.Add(Format(.Alpha, "000") & Format(.Hue, "000") & Format(.Saturation, "000") & Format(.Value, "000") & ":" & CStr(iColor))
+'     End With
+'   Next
+'   
+'   aSort.Sort(gb.Descent)
+'   $aCustomColors.Clear
+'   For Each sColor In aSort
+'     $aCustomColors.Add(CInt(Mid$(sColor, InStr(sColor, ":") + 1)))
+'   Next
+' 
+' End
+' 
+' Public Sub mnuSort_Click()
+'   
+'   SortCustomColors
+'   ModifyCustomColors
+'   
+' End
+
+Public Sub View_Arrange()
+
+  CUSTOM_W = $hView.H - CUSTOM_D * 2
+  UpdateColors
+
+End

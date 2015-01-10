@@ -93,6 +93,41 @@ Public Sub FindMenu(hCtrl As Control, sMenu As String) As Menu
   
 End
 
+Public Sub PaintColor(X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer)
+  
+  Dim I, J, C As Integer
+  
+  If iColor And &HFF000000 Then 
+  
+    Paint.Save
+    Paint.Rectangle(X, Y, W, H)
+    Paint.Clip
+    
+    For J = 0 To W Step 8
+      For I = 0 To H Step 8
+      
+        If ((I + J) \ 8) And 1 Then 
+          C = Color.Blend(iColor, &H808080)
+        Else 
+          C = Color.Blend(iColor, &HC0C0C0)
+        Endif
+      
+        Paint.FillRect(X + I, Y + J, 8, 8, C)
+        
+      Next 
+    Next
+    
+    Paint.Restore
+  
+  Else 
+    
+    Paint.FillRect(X, Y, W, H, iColor)
+    
+  Endif
+  
+  
+End
+
 
 
 #If False
@@ -149,11 +184,11 @@ End
 
 Public Sub Main()
 
-  Dim hPict As Picture
-  Dim hImage As Image
-
-  hPict = Picture["icon:/small/left"]
-  hPict.Image.Desaturate
-  hPict.Save("~/left.png")
+  ' Dim hPict As Picture
+  ' Dim hImage As Image
+  ' 
+  ' hPict = Picture["icon:/small/left"]
+  ' hPict.Image.Desaturate
+  ' hPict.Save("~/left.png")
   
 End

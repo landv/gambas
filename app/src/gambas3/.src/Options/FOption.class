@@ -76,6 +76,7 @@ Public Sub _new()
   Dim hHBox As HBox
   Dim hColor As DrawingArea
   Dim hButton As Button
+  Dim aColors As Integer[]
 
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
   cmbTheme.Add(("Select a theme"), 0)
@@ -165,6 +166,12 @@ Public Sub _new()
   
   tvwIgnore.Columns.Count = 1
   LoadIgnoreFiles
+  
+  aColors = [Color.White, &H808080]
+  For iInd = 0 To 359 Step 30
+    aColors.Add(Color.HSV(iInd, 255, 255))
+  Next
+  choBackgroundColor.Colors = aColors
   
   Me.Utility = Settings["/UseUtilityWindows", 1]
   
@@ -907,13 +914,22 @@ Private Sub InitBackground()
 
   Dim hBg As CBackground
   Dim sBackground As String
+  Dim hImage As Image
+  Dim iColor As Integer
+  
+  iColor = FColorChooser.FromString(Settings["/BackgroundColor", "#FFFFFF"])
+  
+  
+  svwBackground.Children.Clear
   
   hBg = New CBackground(svwBackground) As "Background"
   hBg.Tag = "void"
+  hImage = New Image(16, 16, Color.LightForeground)
+  hBg.Image = hImage.Colorize(iColor)
   
   For Each sBackground In Split(File.Load("img/background/list"), "\n", "", True)
     hBg = New CBackground(svwBackground) As "Background"
-    hBg.Image = Image.Load("img/background" &/ sBackground & ".png")
+    hBg.Image = Image.Load("img/background" &/ sBackground & ".png").Colorize(iColor)
     hBg.Tag = sBackground
   Next
   
@@ -924,6 +940,7 @@ Private Sub InitBackground()
       svwBackground.EnsureVisible(hBg.X, hBg.Y, hBg.W, hBg.H)
     Endif
   Next
+  
 
 End
 
@@ -1297,5 +1314,12 @@ End
 Public Sub txtVendor_KeyPress()
 
   Project.OnVendorKeyPress
+
+End
+
+Public Sub choBackgroundColor_Click(Color As Integer)
+
+  Project.SetBackgroundColor("#" & Hex$(Color, 6))
+  InitBackground
 
 End

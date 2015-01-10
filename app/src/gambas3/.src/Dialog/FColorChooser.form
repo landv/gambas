@@ -1,23 +1,22 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2.1429,56,65)
+  MoveScaled(0,2.1429,55,65)
   Text = ("Select a color")
   Persistent = True
   Arrangement = Arrange.Vertical
-  Spacing = True
-  Margin = True
   { tabColor TabPanel
-    MoveScaled(1,1,53,57)
+    MoveScaled(0,0,53,57)
     Expand = True
     Arrangement = Arrange.Fill
     Margin = True
+    Border = False
     Count = 2
     Index = 0
     Text = ("System")
-    { lstSystem ListContainer
-      MoveScaled(1,2,43,37)
-      Border = False
+    { gvwColor GridView
+      MoveScaled(2,2,43,44)
+      Grid = False
     }
     Index = 1
     Text = ("Free")
@@ -30,9 +29,10 @@
     Index = 0
   }
   { Panel2 Panel
-    MoveScaled(1,59,53,4)
+    MoveScaled(1,58,53,6)
     Arrangement = Arrange.Horizontal
     Spacing = True
+    Margin = True
     { cmbPrefix ComboBox
       MoveScaled(2,0,15,4)
       ReadOnly = True

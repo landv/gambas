@@ -7,12 +7,26 @@ Static Public Prefix As String
 Static Private $sColor As String
 Static Private $bAlpha As Boolean
 Static Private $aSystem As String[] = ["Background", "Foreground", "SelectedBackground", "SelectedForeground", "LightBackground", "LightForeground", "TextBackground", "TextForeground", "ButtonBackground", "ButtonForeground", "TooltipBackground", "TooltipForeground", "LinkForeground", "VisitedForeground"]
+Static Private $aPict As Picture[]
 Static Private $sTitle As String
 Static Private $aPrefix As String[]
 
 Private Const DEFAULT_COLOR As String = "-"
 
-Private $cColor As New Collection
+Static Public Sub FromString(sColor As String) As Integer
+  
+  If sColor == "Default" Then Return -1
+  If IsLetter(Left(sColor)) Then Return Object.GetProperty(Classes["Color"], sColor)
+  If Left(sColor) = "#" Then Return Val("&H" & Mid$(sColor, 2))
+  If Left(sColor) = "&" Then Return Val(sColor)
+  
+Catch
+  
+  Return -1
+  
+End
+
+
 
 Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean, Optional sTitle As String, Optional aPrefix As String[]) As Boolean
 
@@ -26,75 +40,6 @@ Static Public Function Run(Optional sColor As String, Optional bAlpha As Boolean
 End
 
 
-Private Sub AddColor(sText As String, sTag As String, sColor As String)
-
-  Dim hBox As HBox
-  Dim hLabel As Label
-  Dim hColor As Label
-  Dim hPict As PictureBox
-
-  hBox = New HBox(lstSystem)
-  hBox.Padding = 4
-  hBox.Spacing = True
-  hBox.Margin = True
-  hBox.Height = 24
-  hBox.Tag = sTag
-
-  If sColor = DEFAULT_COLOR Then
-    hPict = New PictureBox(hBox)
-    'hPict.Border = Border.Plain
-    hPict.Picture = Picture["img/16/tile.png"]
-    hPict.Resize(16, 16)
-    hPict.Design = True
-  Else
-    hColor = New Label(hBox)
-    hColor.Background = Object.GetProperty(Classes["Color"], sColor)
-    hColor.Border = Border.Plain
-    hColor.Resize(16, 16)
-    hColor.Design = True
-  Endif
-
-  hLabel = New Label(hBox)
-  hLabel.Expand = True
-  hLabel.Text = sText
-  hLabel.Design = True
-
-  $cColor[sColor] = hBox
-
-End
-
-' Private Sub GetCurrentColor() As String
-'   
-'   If tabColor.Index = 1 Then
-'     Return dlgColor.SelectedColor
-'   Else
-'     Try Return lstSystem.Current.Tag
-'   Endif
-'   
-' End
-' 
-' Private Sub GetCurrentColorValue() As Integer
-' 
-'   Dim sColor As String
-' 
-'   sColor = GetCurrentColor()
-'   If sColor Then
-'     Try Value = Val(sColor)
-'     If Error Then 
-'       Value = Object.GetProperty(Classes["Color"], sColor)
-'     Else 
-'       If $bAlpha Then
-'         Color = "&H" & Hex$(Value, 8) & "&"
-'       Else
-'         Color = "&H" & Hex$(Value, 6) & "&"
-'       Endif
-'     Endif
-'   Else
-'     Value = -1
-'   Endif
-' 
-' End
-' 
 
 Public Sub btnOK_Click()
 
@@ -116,15 +61,16 @@ End
 
 Public Sub Form_Open()
 
-  Dim sSystem As String
-
   Settings.Read(Me)
 
-  lstSystem.Clear
-  AddColor("Default", "", DEFAULT_COLOR)
-  For Each sSystem In $aSystem
-    AddColor(sSystem, sSystem, sSystem)
-  Next
+  $aPict = New Picture[$aSystem.Count]
+
+  gvwColor.Columns.Count = 2
+  gvwColor.Padding = 3
+  gvwColor.Mode = Select.Single
+  gvwColor.Columns[0].W = 24
+  gvwColor.Columns[0].Alignment = Align.Center
+  gvwColor.Rows.Count = $aSystem.Count + 1
 
   cmbPrefix.List = $aPrefix
   If $aPrefix Then
@@ -134,14 +80,14 @@ Public Sub Form_Open()
   Endif
 
   If Not IsNull(Val($sColor)) Then
-    lstSystem.Select($cColor[DEFAULT_COLOR])
+    gvwColor.Row = 0
     dlgColor.SelectedColor = Val($sColor)
     tabColor.Index = 1
   Else
     If $sColor Then
-      lstSystem.Select($cColor[$sColor])
+      gvwColor.Row = $aSystem.Find($sColor) + 1
     Else
-      lstSystem.Select($cColor[DEFAULT_COLOR])
+      gvwColor.Row = 0
     Endif
     tabColor.Index = 0
   Endif
@@ -158,14 +104,8 @@ Public Sub Form_Open()
 
 End
 
+
 Public Sub dlgColor_Activate()
-
-  btnOK.Value = True
-
-End
-
-
-Public Sub lstSystem_Activate()
 
   btnOK.Value = True
 
@@ -185,7 +125,11 @@ Private Sub UpdateColor()
   Dim I As Integer
 
   If tabColor.Index = 0 Then
-    sColor = lstSystem.Current.Tag
+    If gvwColor.Row = 0 Then
+      sColor = ""
+    Else
+      sColor = $aSystem[gvwColor.Row - 1]
+    Endif
   Else
     sColor = CStr(dlgColor.Value)
   Endif
@@ -218,7 +162,7 @@ Private Sub UpdateColor()
 
 End
 
-Public Sub lstSystem_Click()
+Public Sub gvwColor_Select()
 
   UpdateColor
 
@@ -233,5 +177,49 @@ End
 Public Sub tabColor_Click()
 
   UpdateColor
+
+End
+
+Public Sub gvwColor_Data(Row As Integer, Column As Integer)
+
+  Dim hPict As Picture
+  Dim hImage As Image
+  
+  With gvwColor.Data
+
+    Select Case Column
+      
+      Case 0
+        If Row = 0 Then
+          hPict = Picture["img/16/tile.png"]
+        Else
+          hPict = $aPict[Row - 1]
+        Endif
+        If Not hPict Then
+          hImage = New Image(16, 16, 0)
+          Paint.Begin(hImage)
+          Paint.FillRect(1, 1, 14, 14, Object.GetProperty(Classes["Color"], $aSystem[Row - 1]))
+          Paint.End
+          hPict = hImage.Picture
+          $aPict[Row - 1] = hPict
+        Endif
+        .Picture = hPict
+      
+      Case 1
+        If Row = 0 Then
+          .Text = "Default"
+        Else
+          .Text = $aSystem[Row - 1]
+        Endif
+        
+    End Select
+    
+  End With
+
+End
+
+Public Sub gvwColor_Activate()
+
+  btnOK.Value = True
 
 End

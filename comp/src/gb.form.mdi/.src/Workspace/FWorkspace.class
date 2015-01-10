@@ -13,10 +13,10 @@ Private $iBackground As Integer = Color.Default
 Private $bNoClose As Boolean
 Private $iLock As Integer
 Private $bBorder As Boolean = True
-Private $hPicture As Picture
 Private $nDetach As Integer
 
 Private Enum CLOSE_ALL, CLOSE_OTHER, CLOSE_RIGHT
+Private $hImage As Image
 
 ' Public Sub _new()
 '   
@@ -787,6 +787,7 @@ Public Sub SetBackground(iColor As Integer)
   
   $iBackground = iColor
   UpdateSize
+  panWorkspace.Refresh
   
 End
 
@@ -934,20 +935,23 @@ End
 
 Public Sub imgBackground_Draw()
 
-  If Not $hPicture Then Return
-  Draw.Tile($hPicture, 0, 0, imgBackground.W, imgBackground.H)
-
-End
-
-Public Sub GetPicture() As Picture
+  If Not $hImage Then Return
   
-  Return $hPicture
+  Paint.Brush = Paint.Image($hImage)
+  Paint.Rectangle(0, 0, Paint.W, Paint.H)
+  Paint.Fill
   
 End
 
-Public Sub SetPicture(hPicture As Picture)
+Public Sub GetImage() As Image
   
-  $hPicture = hPicture
+  Return $hImage
+  
+End
+
+Public Sub SetImage(hImage As Image)
+  
+  $hImage = hImage
   panWorkspace.Refresh
   
 End

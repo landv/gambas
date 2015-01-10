@@ -205,7 +205,7 @@ Private $bTesting As Boolean
 Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "mageia", "mandriva", "slackware", "suse", "ubuntu"]
 
 ' Pretty background
-Private $hBackground As Picture
+Private $hBackground As Image
 Private $bBackgroundValid As Boolean
 
 Public Sub _init()
@@ -5724,16 +5724,25 @@ Public Sub SendMail()
 
 End
 
-Public Sub GetBackground() As Picture
+Public Sub GetBackgroundColor() As Integer
+  
+  Return FColorChooser.FromString(Settings["/BackgroundColor", "LightForeground"])
+  
+End
+
+Public Sub GetBackground() As Image
 
   Dim sBackground As String
 
   If Not $bBackgroundValid Then
     $hBackground = Null
     sBackground = Settings["/Background", "tawhid"]
-    If sBackground <> "void" Then
-      Try $hBackground = Picture.Load("img/background" &/ sBackground & ".png")
+    If sBackground = "void" Then
+      $hBackground = New Image(32, 32, Color.LightForeground)
+    Else
+      Try $hBackground = Image.Load("img/background" &/ sBackground & ".png")
     Endif
+    $hBackground.Colorize(GetBackgroundColor())
     $bBackgroundValid = True
   Endif
 
@@ -5743,8 +5752,25 @@ End
 
 Public Sub DrawBackground()
 
+  Dim hBrush As PaintBrush
+
   GetBackground()
-  If $hBackground Then Draw.Tile($hBackground, 0, 0, Draw.W, Draw.H)
+  If $hBackground Then 
+    hBrush = Paint.Brush
+    Paint.Brush = Paint.Image($hBackground)
+    Paint.Rectangle(0, 0, Paint.W, Paint.H)
+    Paint.Fill
+    Paint.Brush = hBrush
+  Endif
+
+End
+
+Private Sub ChangeBackground()
+
+  $bBackgroundValid = False
+  GetBackground()
+  Try ActiveForm.OnBackgroundChange
+  FMain.OnBackgroundChange
 
 End
 
@@ -5752,12 +5778,17 @@ Public Sub SetBackground(sBackground As String)
 
   If sBackground = "tawhid" Then sBackground = ""
   Settings["/Background"] = sBackground
-  $bBackgroundValid = False
-  GetBackground()
-  Try ActiveForm.OnBackgroundChange
-  FMain.OnBackgroundChange
+  ChangeBackground
 
 End
+
+Public Sub SetBackgroundColor(sColor As String)
+  
+  Settings["/BackgroundColor"] = sColor
+  ChangeBackground
+  
+End
+
 
 ' Try to save all files if there is an unexpected error
 

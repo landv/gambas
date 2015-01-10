@@ -334,40 +334,6 @@ Public Sub panColor_DblClick()
 
 End
 
-Private Sub PaintColor(X As Integer, Y As Integer, W As Integer, H As Integer, iColor As Integer)
-  
-  Dim I, J, C As Integer
-  
-  If iColor And &HFF000000 Then 
-  
-    Paint.Save
-    Paint.Rectangle(X, Y, W, H)
-    Paint.Clip
-    
-    For J = 0 To W Step 8
-      For I = 0 To H Step 8
-      
-        If ((I + J) \ 8) And 1 Then 
-          C = Color.Blend(iColor, &H808080)
-        Else 
-          C = Color.Blend(iColor, &HC0C0C0)
-        Endif
-      
-        Paint.FillRect(X + I, Y + J, 8, 8, C)
-        
-      Next 
-    Next
-    
-    Paint.Restore
-  
-  Else 
-    
-    Paint.FillRect(X, Y, W, H, iColor)
-    
-  Endif
-  
-  
-End
 
 
 Public Sub panColor_Draw()
@@ -394,7 +360,7 @@ Public Sub panColor_Draw()
   
   Endif
   
-  PaintColor(0, 0, Paint.W, Paint.H, $iColor)
+  Main.PaintColor(0, 0, Paint.W, Paint.H, $iColor)
 
 End
 
@@ -638,7 +604,7 @@ Public Sub dwgCustomColors_Draw()
   For I = $aCustomColors.Max DownTo 0
     iColor = $aCustomColors[I]
     
-    PaintColor(X, Y, W, H, iColor)
+    Main.PaintColor(X, Y, W, H, iColor)
     
     Paint.Rectangle(X + 0.5, Y + 0.5, W - 1, H - 1)
     Paint.Background = Color.Black
