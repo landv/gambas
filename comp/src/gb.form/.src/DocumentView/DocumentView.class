@@ -81,7 +81,7 @@ Private $aSelected As New Integer[]
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
-
+Event Finished
 Event Zoom
 
 Public Sub _new()
@@ -103,6 +103,7 @@ Public Sub tmrLoad_Timer()
   
   If $aImageToLoad.Count = 0 Then
     $tmrLoad.Stop
+    Raise Finished
     Return
   Endif
   
@@ -687,7 +688,7 @@ Private Function GetPageRow(Y As Integer) As Integer
       
     Endif
   Until iRow <> -1 Or iMiddle > iEnd + 1 Or iStart > iEnd
-  Print "iRow : " & iRow
+  'Print "iRow : " & iRow
   Return iRow
   
 End
@@ -698,18 +699,18 @@ Private Function GetPageCol(X As Integer) As Integer
   Dim iEnd As Integer = $iLastVisibleColumn - 1
   Dim iCol As Integer = -1
   Dim iDocPos As Integer
-  Print "X=" & X
+ ' Print "X=" & X
   X += $hView.ScrollX
   iStart = $iFirstVisibleColumn
   
   Repeat
     iMiddle = Int(iStart + (iEnd - iStart) / 2)
     iDocPos = ($fScaledPadding + (iMiddle * ($fMaxPageWidth + $fScaledSpace)))
-    Print X
-    Print "DocX : " & (iDocPos - 1)
-    Print "DocX + Width : " & (iDocPos + $fMaxPageWidth)
+    'Print X
+    'Print "DocX : " & (iDocPos - 1)
+   ' Print "DocX + Width : " & (iDocPos + $fMaxPageWidth)
     If X > iDocPos - 1 And If X < iDocPos + $fMaxPageWidth Then
-      Print "trouvé"
+      'Print "trouvé"
       iCol = iMiddle
     Else
       If X < iDocPos Then
@@ -720,7 +721,7 @@ Private Function GetPageCol(X As Integer) As Integer
       
     Endif
   Until iCol <> -1 Or iMiddle > iEnd + 1 Or iStart > iEnd
-  Print "iCol : " & iCol
+  'Print "iCol : " & iCol
   Return iCol
   
 End
@@ -803,10 +804,10 @@ End
 Public Sub View_MouseDown()
 
   
-  Try $iCurrent = Find(Mouse.x, Mouse.Y)
-  $aSelected.Clear
-  $aSelected.Add($iCurrent)
-  $tmrRefresh.Trigger
+  'Try $iCurrent = Find(Mouse.x, Mouse.Y)
+  '$aSelected.Clear
+  '$aSelected.Add($iCurrent)
+  '$tmrRefresh.Trigger
   
 End
 
