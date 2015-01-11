@@ -1,11 +1,28 @@
 ' Gambas class file
 
 Export
-
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
 Static Public Const None As Integer = 0
 Static Public Const Solid As Integer = 1
+
+Public _Left As Float
+Public _Right As Float
+Public _Top As Float
+Public _Bottom As Float
+Public Style As Integer
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+Property Read Top As _ReportBorderSide
+Property Read {Left} As _ReportBorderSide
+Property Read bottom As _ReportBorderSide
+Property Read {Right} As _ReportBorderSide
+Property Read RoundCorner As _ReportRoundCorner
+Property Width As String
+Property Brush As ReportBrush
+
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
 Static Private $aShadowStyle As String[] = ["none", "solid", "gradiant"]
 Static Private $aAlign As String[] = Classes["Align"].Symbols
+
 Private hTop As New _ReportBorderSide
 Private hBottom As New _ReportBorderSide
 Private hLeft As New _ReportBorderSide
@@ -13,39 +30,7 @@ Private hRight As New _ReportBorderSide
 Private hRCorner As New _ReportRoundCorner
 
 
-Public _Left As Float
-Public _Right As Float
-Public _Top As Float
-Public _Bottom As Float
-
-Property Read Top As _ReportBorderSide
-
-Property Read {Left} As _ReportBorderSide
-
-Property Read bottom As _ReportBorderSide
-
-Property Read {Right} As _ReportBorderSide
-
-Property Read RoundCorner As _ReportRoundCorner
-
-Property Width As String
-Property Brush As ReportBrush
-
-Public Style As Integer
-
-
-' Static Private Sub ResetBorder(hReportBorder As ReportBorder) As Boolean
-' 
-'   With hReportBorder
-'     .Bottom = False
-'     .Top = False
-'     .Left = False
-'     .Right = False
-'   End With
-' 
-'   Return True
-' 
-' End
+'#####################  PUBLIC PROCEDURES  #########################
 
 Static Public Function _get(sValue As String) As ReportBorder
   
@@ -79,8 +64,6 @@ Static Public Function _get(sValue As String) As ReportBorder
         hReportBorder.RoundCorner.BottomLeft = aScan[1]
       Case "bottomrightcorner"
         hReportBorder.RoundCorner.BottomRight = aScan[1]
-
-        
         
     End Select
     
@@ -90,6 +73,41 @@ Finally
   Return hReportBorder
   
 End
+
+Public Function ToString() As String
+  
+  Dim aValue As New String[]
+  
+  If Me.Style = ReportBorder.None Then Return 'aValue.Add("None")
+  'If Me.Style = ReportBorder.Solid Then aValue.Add("Solid")
+  aValue.Add(Me.Width)
+  If Me.Top Then aValue.Add("Top")
+  If Me.Bottom Then aValue.Add("Bottom")
+  If Me.Left Then aValue.Add("Left")
+  If Me.Right Then aValue.Add("Right")
+  aValue.Add("#" & Hex(Me.Color, 6))
+  Return aValue.Join()
+  
+End
+
+Public Sub _NormalizeUnits()
+  
+  Dim hSizeParse As TSizeParse
+  
+  hSizeParse = New TSizeParse(hLeft.Width)
+  _Left = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse(hRight.Width)
+  _Right = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse(hTop.Width)
+  _Top = hSizeParse.GetValue()
+  hSizeParse = New TSizeParse(hBottom.Width)
+  _Bottom = hSizeParse.GetValue()
+  
+  hRCorner._NormalizeUnits()
+  
+End
+
+'#####################  PRIVATE PROCEDURES  ########################
 
 Static Private Sub FillObject(hObj As Object, sValue As String)
   
@@ -107,23 +125,7 @@ Static Private Sub FillObject(hObj As Object, sValue As String)
   
 End
 
-
-
-Public Function ToString() As String
-  
-  Dim aValue As New String[]
-  
-  If Me.Style = ReportBorder.None Then Return 'aValue.Add("None")
-  'If Me.Style = ReportBorder.Solid Then aValue.Add("Solid")
-  aValue.Add(Me.Width)
-  If Me.Top Then aValue.Add("Top")
-  If Me.Bottom Then aValue.Add("Bottom")
-  If Me.Left Then aValue.Add("Left")
-  If Me.Right Then aValue.Add("Right")
-  aValue.Add("#" & Hex(Me.Color, 6))
-  Return aValue.Join()
-  
-End
+'########################  PROPERTIES  #############################
 
 Private Function Top_Read() As _ReportBorderSide
   
@@ -182,27 +184,6 @@ End
 Private Function RoundCorner_Read() As _ReportRoundCorner
   
   Return hRCorner
-  
-End
-
-
-
-Public Sub _NormalizeUnits()
-  
-  Dim hSizeParse As TSizeParse
-  
-  hSizeParse = New TSizeParse(hLeft.Width)
-  _Left = hSizeParse.GetValue()
-  hSizeParse = New TSizeParse(hRight.Width)
-  _Right = hSizeParse.GetValue()
-  hSizeParse = New TSizeParse(hTop.Width)
-  _Top = hSizeParse.GetValue()
-  hSizeParse = New TSizeParse(hBottom.Width)
-  _Bottom = hSizeParse.GetValue()
-  
-  hRCorner._NormalizeUnits()
-  
-
   
 End
 

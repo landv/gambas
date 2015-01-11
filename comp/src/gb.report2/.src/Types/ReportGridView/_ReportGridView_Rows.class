@@ -1,0 +1,54 @@
+' Gambas class file
+
+Export
+Property Count As Integer
+Property Height As String
+
+Private $cText As Collection
+Private $cHeight As Collection
+
+
+
+Private $iCount As Integer
+
+
+Public Sub _get(Index As Integer) As _ReportGridView_Row
+  
+  Dim hRow As New _ReportGridView_Row(Index)
+  Return hRow
+  
+End
+
+
+Public Sub _SetRowHeight(iRow As Integer, H As String)
+  
+  
+  
+End
+
+
+
+Private Function Count_Read() As Integer
+
+  Return $iCount
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  $iCount = Value
+
+End
+
+Private Function Height_Read() As String
+
+  
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  
+
+End
+

@@ -281,10 +281,6 @@ m
 Layout
 m
 
-
-_Layout
-m
-
 [(iPage)i]
 _Reset
 m
@@ -345,6 +341,10 @@ _Bottom
 v
 f
 
+Style
+v
+i
+
 Top
 r
 _ReportBorderSide
@@ -372,10 +372,6 @@ s
 Brush
 p
 ReportBrush
-
-Style
-v
-i
 
 _get
 M
@@ -543,10 +539,6 @@ _NormalizeUnits
 m
 
 
-_GenerateClones
-m
-
-
 _GetSizeHints
 m
 TSizeHint
@@ -577,7 +569,7 @@ b
 _Properties
 C
 s
-Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range
+Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Margin,Ignore,Expand,AutoResize,Tag,Range
 _Family
 C
 s
@@ -594,10 +586,6 @@ _Finished
 v
 b
 
-_DataIndex
-p
-i
-
 Name
 v
 s
@@ -609,10 +597,6 @@ Collection
 _iCurPagePos
 V
 i
-
-Font
-p
-Font
 
 Id
 r
@@ -629,6 +613,10 @@ v
 Padding
 p
 ReportPadding
+
+Margin
+p
+ReportMargin
 
 Brush
 p
@@ -650,11 +638,6 @@ _Left
 r
 f
 
-_Padding
-r
-f
-
-'Padding of the control in cm
 _RelativeLeft
 r
 b
@@ -668,10 +651,6 @@ r
 b
 
 _RelativeHeight
-r
-b
-
-_RelativePadding
 r
 b
 
@@ -711,6 +690,10 @@ Visible
 p
 b
 
+Font
+p
+Font
+
 Expand
 p
 b
@@ -742,6 +725,10 @@ i
 ForceNewPage
 p
 b
+
+_DataIndex
+p
+i
 
 _New
 m
@@ -838,6 +825,49 @@ _Free
 m
 
 
+#ReportGridView
+ReportFrame
+C
+_IsControl
+C
+b
+T
+_IsContainer
+C
+b
+
+_Properties
+C
+s
+*
+Columns
+r
+_ReportGridView_Columns
+
+Rows
+r
+_ReportGridView_Rows
+
+_GetSizeHints
+m
+TSizeHint
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
+_SetChildGeometry
+m
+
+(X)f(Y)f(W)f(H)f(ContPage)i(TCont)TControl;(bInFixed)b
+_PaintBeFore
+m
+
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
+_Paint
+m
+
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
+_PaintAfter
+m
+
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportHBox
 ReportContainer
 C
@@ -861,6 +891,9 @@ _Free
 m
 
 
+#ReportMargin
+ReportPadding
+C
 #ReportPadding
 
 C
@@ -903,6 +936,10 @@ f
 _Height
 r
 f
+
+IsActive
+m
+b
 
 _Get
 M
@@ -957,7 +994,7 @@ GetFactorUnitToInch
 M
 f
 (Unit)s[(Resolution)i]
-ReportUnitsConverter
+Convert
 M
 f
 (Value)f(Unit1)s(Unit2)s
@@ -1151,6 +1188,53 @@ View_MouseMove
 m
 
 
+#ReportView2
+UserControl
+C
+_GrayScale
+p
+b
+
+_IsControl
+C
+b
+T
+_IsContainer
+C
+b
+
+_new
+m
+
+
+SetReport
+m
+
+(hReport)Report;
+View_Draw
+m
+
+(Page)i(Width)i(Height)i
+View_Zoom
+m
+
+
+View_Finished
+m
+
+
+Area_Scroll
+m
+
+
+Area_Draw
+m
+
+
+tmrLayout_Timer
+m
+
+
 #_ReportBorderSide
 
 C
@@ -1178,3 +1262,83 @@ _NormalizeUnits
 m
 
 
+#_ReportGridView_Column
+
+C
+_Column
+v
+i
+
+Text
+p
+s
+
+Width
+p
+s
+
+_Width
+v
+f
+
+Expand
+p
+b
+
+Alignment
+p
+i
+
+Background
+p
+ReportBrush
+
+#_ReportGridView_Columns
+
+C
+Count
+p
+i
+
+#_ReportGridView_Row
+
+C
+_Height
+v
+f
+
+Height
+p
+s
+
+Text
+p
+s
+
+Title
+p
+s
+
+:_Foo
+:
+
+
+#_ReportGridView_Rows
+
+C
+Count
+p
+i
+
+Height
+p
+s
+
+_get
+m
+_ReportGridView_Row
+(Index)i
+_SetRowHeight
+m
+
+(iRow)i(H)s

@@ -143,7 +143,7 @@ Public Sub Timer_Timer()
       Raise Layout(True)
       Paint.Begin(htmpImage)
       'Print "Layout : "; $hReport.PageCount
-      $hReport._layout($hReport.PageCount)
+      $hReport.layout($hReport.PageCount)
       Paint.End
       $iTotNbrePage = $hReport.PageCount
       $bLayoutInProgress = $hReport._LayoutNotFinished
@@ -457,7 +457,7 @@ Private Sub Report_Write(Value As Report)
   $hReport = Value
   '$hReport.Orientation = Printer.Landscape
   Paint.Begin(htmpImage)
-  $hReport._Layout(0)
+  $hReport.Layout(0)
   Paint.End
   
   $iTotNbrePage = $hReport.PageCount

@@ -1,0 +1,63 @@
+' Gambas class file
+
+Export
+Inherits ReportFrame
+
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+
+Public Const _IsControl As Boolean = True
+Public Const _IsContainer As Boolean = False
+Public Const _Properties As String = "*"
+'Public Const _Family As String = "Report"
+
+
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Property Read Columns As _ReportGridView_Columns
+Property Read Rows As _ReportGridView_Rows
+
+
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+Private $hColumns As New _ReportGridView_Columns
+Private $hRows As New _ReportGridView_Rows
+'#####################  PUBLIC PROCEDURES  #########################
+
+
+
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As TSizeHint
+  
+  
+  
+End
+
+Public Function _SetChildGeometry((X) As Float, (Y) As Float, (W) As Float, (H) As Float, (ContPage) As Integer, (TCont) As TControl, (bInFixed) As Boolean)
+  
+End
+
+Public Sub _PaintBeFore((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+  
+End
+
+Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
+  
+End
+
+
+Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl) As TControl, (DataIndex) As Integer)
+  
+End
+
+'#####################  PRIVATE PROCEDURES  ########################
+'########################  PROPERTIES  #############################
+
+Private Function Columns_Read() As _ReportGridView_Columns
+
+  Return $hColumns
+
+End
+
+Private Function Rows_Read() As _ReportGridView_Rows
+
+  Return $hRows
+
+End

@@ -1,0 +1,34 @@
+' Gambas class file
+
+Export
+
+Property Count As Integer
+
+Private $aColumns As New _ReportGridView_Columns[]
+
+Private Function Count_Read() As Integer
+  
+  Return $aColumns.Count
+  
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+  Dim iOldCount As Integer = $aColumns.Count
+  Dim I As Integer
+  
+  If Value = iOldCount Then Return
+  
+  Try $aColumns.Resize(Value)
+  If Error Then Error.Raise("Bad argument")
+  
+  If Value > iOldCount Then
+    'If GetView().AutoResize And 
+    If iOldCount Then $aColumns[iOldCount - 1]._W = 0
+    For I = iOldCount To Value - 1
+      $aColumns[I] = New _ReportGridView_Column As "Column"
+      $aColumns[I]._Column = I
+    Next
+  Endif
+  
+End

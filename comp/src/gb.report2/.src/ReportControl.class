@@ -5,13 +5,12 @@ Create Private
 
 Public Const _IsControl As Boolean = True
 Public Const _IsContainer As Boolean = False
-Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Ignore,Expand,AutoResize,Tag,Range"
+Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Margin,Ignore,Expand,AutoResize,Tag,Range"
 Public Const _Family As String = "Report"
 Public _SizeInt As TSizeHint
 Public _Count As Integer = 1
 Public _Finished As Boolean
 Private $iDataindex As Integer
-Property _DataIndex As Integer
 
 Private $iIndex As Integer
 
@@ -21,16 +20,49 @@ Static Public _ObjectFromId As New Collection
 Static Public _iCurPagePos As Integer
 Static Private $iLastId As Integer
 
+Property Read Id As Integer
+Property Read Parent As ReportContainer
+Property Tag As Variant
+Property Padding As ReportPadding
+Property Margin As ReportMargin
+Property Brush As ReportBrush
+'Property {Color} As Integer
+
+Property Read _Top As Float               ''Top of the control in cm
+Property Read _Height As Float            ''Height of the control in cm
+Property Read _Width As Float             ''Width of the control in cm
+Property Read _Left As Float              ''Left of the control in cm
+Property Read _RelativeLeft As Boolean    ''Use percentage for Left pos?
+Property Read _RelativeTop As Boolean     ''Use percentage for Top Pos?
+Property Read _RelativeWidth As Boolean   ''Use percentage for width?
+Property Read _RelativeHeight As Boolean  ''Use percentage for height ?
+Property _Index As Integer
+Property Range As String
+Property Left As String
+Property Top As String
+Property X As String
+Property Y As String
+Property Width As String
+Property Height As String
+Property Visible As Boolean
+Property {Font} As Font
+Property Expand As Boolean
+Property Ignore As Boolean
+Property Fixed As Boolean
+Property Autoresize As Boolean
+Property Read {Report} As Report
+Property _ReportId As Integer
+Property Read DataIndex As Integer
+Property ForceNewPage As Boolean
+Property _DataIndex As Integer
+
+Private $bForceNewPage As Boolean
 Private $iMyId As Integer
 Private $iParentId As Integer
-
 Private $vTag As Variant
-Private $fPadding As Float
 Private $iReportId As Integer
-
 Private $hBrush As ReportBrush
 Private $iColor As Integer
-
 Private $fLeft As Float = 0.0
 Private $fTop As Float = 0.0
 Private $fWidth As Float = 0.0
@@ -40,8 +72,7 @@ Private $sLeft As String = "0cm"
 Private $sWidth As String = "0cm"
 Private $sTop As String = "0cm"
 Private $hPadding As New ReportPadding
-'Private $sPadding As String = "0cm"
-
+Private $hMargin As New ReportMargin
 Private $iVisible As Boolean = True
 Private $hFont As New Font
 Private $bExpand As Boolean
@@ -51,49 +82,8 @@ Private $bRelativeLeft As Boolean
 Private $bRelativeTop As Boolean
 Private $bRelativeWidth As Boolean
 Private $bRelativeHeight As Boolean
-Private $bRelativePadding As Boolean
 Private $bIgnore As Boolean = False
 Private $sRange As String
-Property Read Id As Integer
-Property Read Parent As ReportContainer
-Property Tag As Variant
-Property Padding As ReportPadding
-
-Property Brush As ReportBrush
-'Property {Color} As Integer
-
-Property Read _Top As Float               ''Top of the control in cm
-Property Read _Height As Float            ''Height of the control in cm
-Property Read _Width As Float             ''Width of the control in cm
-Property Read _Left As Float              ''Left of the control in cm
-Property Read _Padding As Float           '' Padding of the control in cm
-Property Read _RelativeLeft As Boolean    ''Use percentage for Left pos?
-Property Read _RelativeTop As Boolean     ''Use percentage for Top Pos?
-Property Read _RelativeWidth As Boolean   ''Use percentage for width?
-Property Read _RelativeHeight As Boolean  ''Use percentage for height ?
-Property Read _RelativePadding As Boolean ''Use percentage for padding ?
-Property _Index As Integer
-Property Range As String
-Property Left As String
-Property Top As String
-Property X As String
-Property Y As String
-
-Property Width As String
-Property Height As String
-
-Property Visible As Boolean
-Property {Font} As Font
-Property Expand As Boolean
-Property Ignore As Boolean
-Property Fixed As Boolean
-
-Property Autoresize As Boolean
-Property Read {Report} As Report
-Property _ReportId As Integer
-Property Read DataIndex As Integer
-Property ForceNewPage As Boolean
-Private $bForceNewPage As Boolean
 
 Public Sub _New(Optional Parent As ReportContainer = Null)
   
@@ -314,12 +304,6 @@ Private Function _Left_Read() As Float
   
 End
 
-Private Function _Padding_Read() As Float
-  
-  Return $fPadding
-  
-End
-
 Public Function _SetChildGeometry((X) As Float, (Y) As Float, (W) As Float, (H) As Float, (ContPage) As Integer, (TCont) As TControl, (bInFixed) As Boolean)
   
 End
@@ -348,11 +332,6 @@ Private Function _RelativeHeight_Read() As Boolean
   
 End
 
-Private Function _RelativePadding_Read() As Boolean
-  
-  Return $bRelativePadding
-  
-End
 
 ''Convert recursively string values to unified values in cm
 Public Sub _NormalizeUnits()
@@ -395,6 +374,19 @@ Public Sub _NormalizeUnits()
   
   hSizeParse = New TSizeParse($hPadding.Bottom, True)
   $hPadding._Bottom = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hMargin.Left, True)
+  $hMargin._Left = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hMargin.Right, True)
+  $hMargin._Right = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hMargin.Top, True)
+  $hMargin._Top = hSizeParse.GetValue()
+  
+  hSizeParse = New TSizeParse($hMargin.Bottom, True)
+  $hMargin._Bottom = hSizeParse.GetValue()
+  
   
   '
   
@@ -593,4 +585,16 @@ End
 
 Public Sub _Free()
   
+End
+
+Private Function Margin_Read() As ReportMargin
+
+  Return $hMargin
+
+End
+
+Private Sub Margin_Write(Value As ReportMargin)
+
+  $hMargin = Value
+
 End

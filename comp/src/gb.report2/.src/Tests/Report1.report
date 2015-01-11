@@ -3,28 +3,32 @@
 { Report Report
   #MoveScaled(0,0,64,64)
   Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
-  Spacing = "1cm"
+  Spacing = "5mm"
   Index = 0
   Text = ("")
   { ReportHBox1 ReportHBox
     #MoveScaled(1,3,54,14)
     Height = "2cm"
     Brush = ReportBrush["#FF0000"]
-    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:1cm;BottomRightCorner:1cm;BottomLeftCorner:1cm"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:3mm;TopRightCorner:3mm;BottomRightCorner:3mm;BottomLeftCorner:3mm"]
     Background = ReportBrush["#7FFF00"]
   }
-  { ReportHBox2 ReportVBox
-    #MoveScaled(3,19,54,14)
+  { ReportVBox1 ReportVBox
+    #MoveScaled(1,18,60,10)
+    Tag = "**"
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000;TopLeftCorner:10mm;BottomRightCorner:10mm"]
+  }
+  { ReportHBox2 ReportHBox
+    #MoveScaled(4,30,54,16)
     Height = "20mm"
     Brush = ReportBrush["#FF0000"]
-    Padding = ReportPadding["Top:3mm;Bottom:3mm;Left:3mm;Right:3mm"]
     Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-    { ReportHBox3 ReportHBox
-      #MoveScaled(-1,4,54,6)
-      Height = "10mm"
-      Brush = ReportBrush["#FF0000"]
-      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
-    }
+  }
+  { ReportHBox3 ReportHBox
+    #MoveScaled(10,46,43,6)
+    Height = "10mm"
+    Brush = ReportBrush["#FF0000"]
+    Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
   }
   Index = 0
 }

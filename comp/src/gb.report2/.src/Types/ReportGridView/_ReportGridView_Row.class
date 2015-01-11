@@ -1,0 +1,43 @@
+' Gambas class file
+
+Export
+
+Public _Height As Float
+
+Property Height As String
+Property Text, Title As String
+Private $sHeight As String
+Private $sText As String
+
+Event _Foo
+
+Private Function GetRows() As _ReportGridView_Rows
+  
+  Return Object.Parent(Me)
+  
+End
+
+
+Private Function Height_Read() As String
+
+  Return $sHeight
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  $sHeight = Value
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End

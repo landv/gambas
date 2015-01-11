@@ -16,6 +16,11 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
   Dim I As Integer
   Dim sCar As String
   
+  If Not size Then 
+   Unit = "cm"
+   Value = 0
+  Endif
+  
   Size = Trim(Size)
   
   If Not Size Then

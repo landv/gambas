@@ -2,8 +2,9 @@
 Count=0
 
 [DebugWindow]
-Count=1
-DebugWindow[1]="$aSections[0].Ctrl"
+Count=2
+DebugWindow[1]="hchild.Margin"
+DebugWindow[2]="hReport"
 
 [DebugWindow/$aSections]
 Geometry=[-55,269,210,210]
@@ -19,9 +20,13 @@ ShowHidden=True
 Geometry=[0,0,210,210]
 
 [DebugWindow/Me]
-Geometry=[-7,-10,210,210]
+Geometry=[-7,-10,294,210]
 
 [DebugWindow/Parent]
+Geometry=[-7,-10,210,210]
+
+[DebugWindow/Report1]
+ShowHidden=True
 Geometry=[-7,-10,210,210]
 
 [DebugWindow/_ObjectFromId]
@@ -36,24 +41,34 @@ Geometry=[-7,-10,342,210]
 [DebugWindow/hRep]
 Geometry=[-7,247,210,210]
 
+[DebugWindow/hReport]
+Geometry=[-7,-10,210,210]
+
+[DebugWindow/hchild.Margin]
+Geometry=[1236,625,210,210]
+
 [DebugWindow/hrc]
 Geometry=[1133,212,210,210]
 
 [FCommit]
-LastCommit="[GB.REPORT2]\n* OPT: Set the name to gb.report2. Continue rewritting.\n---- Cette ligne et les suivantes seront ignorées ----\n\nA  +    .\n        > déplacé de ../Reports2\nM  +    .info\nM  +    .list\nM  +    .settings\nM  +    .src/Report.class\nM  +    .src/ReportContainer.class\nM  +    .src/ReportControl.class\nA       .src/ReportHBox.class\nM  +    .src/ReportSection.class\nM  +    .src/ReportVBox.class\nM  +    .src/Tests/Module1.module"
+LastCommit="[GB.REPORT2]\n* OPT: Continue Report component reconstruction\n---- Cette ligne et les suivantes seront ignorées ----\n\nA       .hidden/control\nA       .hidden/control/reporthbox.png\nA       .hidden/control/reportlabel.png\nA       .hidden/control/reportpagebreak.png\nA       .hidden/control/reportvbox.png\nM       .info\nM       .list\nM       .project\nM       .settings\nM       .src/Report.class\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nA       .src/ReportFrame.class\nA       .src/ReportPageBreak.class\nR       .src/Tests/FMain.class\nR       .src/Tests/FMain.form\nM       .src/Tests/Module1.module\nA       .src/Tests/Report1.class\nA       .src/Tests/Report1.report\nA       .src/Tools/CPrint.class\nA       .src/Types/Base\nA       .src/Types/Base/ReportBrush.class\nA       .src/Types/Base/ReportPadding.class\nA       .src/Types/Border\nA       .src/Types/Border/ReportBorder.class\nA       .src/Types/Border/_ReportBorderSide.class\nA       .src/Types/Border/_ReportRoundCorner.class\nA       .src/Types/BoxShadow\nA       .src/Types/BoxShadow/ReportBoxShadow.class\nA       .src/Types/BoxShadow/_ReportBoxShadow.class\nD       .src/Types/ReportPadding.class\nA       .src/Viewer\nA       .src/Viewer/FPreview.class\nA       .src/Viewer/FPreview.form\nA       .src/Viewer/ReportView.class\nA       .src/Viewer/ReportViewTask.class\nM       .startup"
 
 [OpenFile]
 Active=3
-File[1]=".src/Viewer/FPreview.class:26.11"
-Count=9
-File[2]=".src/Tests/Report1.report"
-File[3]=".src/Tests/Report1.class:9.35"
-File[4]=".src/ReportFrame.class:236.26"
-File[5]=".src/Types/TControl.class:74.0"
-File[6]=".src/Types/Border/ReportBorder.class:183.0"
-File[7]=".src/Viewer/FPreview.form"
-File[8]=".src/Viewer/ReportView.class:0.0"
-File[9]=".src/ReportControl.class:357.26"
+File[1]=".src/Viewer/ReportView2.class:30.2"
+Count=13
+File[2]=".src/Viewer/ReportView.class:147.21"
+File[3]=".src/Report.class:163.0"
+File[4]=".src/Viewer/FPreview2.form"
+File[5]=".src/Viewer/FPreview2.class:3.0"
+File[6]=".src/Viewer/FPreview.form"
+File[7]=".src/Viewer/ReportViewTask.class:26.2"
+File[8]=".src/Tests/Report1.report"
+File[9]=".src/Tests/Report1.class:17.19"
+File[10]=".src/ReportContainer.class:287.0"
+File[11]=".src/ReportControl.class:110.0"
+File[12]=".src/Types/BoxShadow/ReportBoxShadow.class:23.0"
+File[13]=".src/ReportVBox.class:12.0"
 
 [VersionControl]
 User="gambix"

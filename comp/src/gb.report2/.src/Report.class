@@ -111,15 +111,8 @@ Public Sub _New()
   'Me.Orientation = Printer.Landscape
 End
 
-Public Sub Layout()
+Public Sub Layout(Optional iPage As Integer = -1)
   
-  _Layout()
-  
-End
-
-
-
-Public Sub _Layout(Optional iPage As Integer = -1)
   
   'Dim iCurPage As Integer
   Dim TSection As TControl
@@ -208,7 +201,7 @@ Public Sub Paint(Page As Integer)
   Endif
   ReportUnits._ReportWidth = $aSections[0].Ctrl._Width
   'ReportUnits.Resolution = If($iResolution < 0, Paint.ResolutionX, $iResolution)
-  If $bLayoutIsDirty And $iPageCount = -1 Then Layout()
+  If $bLayoutIsDirty And $iPageCount = -1 Then Layout(Page)
   Paint.Save
   'Set execution Flag to true
   _bInExec = True
@@ -254,7 +247,7 @@ End
 
 Private Function PageCount_Read() As Integer
   
-  If $bLayoutIsDirty And Not _LayoutNotFinished Then Layout() '$iCount = -1
+  If $bLayoutIsDirty And Not _LayoutNotFinished Then Layout(1) '$iCount = -1
   
   Return $iPageCount
   
