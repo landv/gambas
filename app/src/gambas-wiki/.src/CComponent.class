@@ -11,7 +11,7 @@ Static Public Classes As Collection
 Public Name As String
 Public Key As String
 Public Description As String
-Public Authors As String[]
+Public Authors As New String[]
 Public Controls As New String[]
 Public Containers As New String[]
 Public MultiContainers As New String[]
@@ -39,6 +39,7 @@ Private $bLoaded As Boolean
 
 Static Private $cImplement As New Collection
 Static Private $cRescue As New Collection
+Static Private $cFeatures As New Collection
 
 Static Public Sub Init()
   
@@ -53,6 +54,13 @@ Static Public Sub Init()
   $cRescue["3.0:ImageIO"] = "gb.image.io"
   $cRescue["3.0:EventLoop"] = "gb.qt4"
   $cRescue["3.0:XML"] = "gb.xml"
+  
+  $cFeatures["form"] = ("Graphical form management")
+  $cFeatures["eventloop"] = ("Event loop management")
+  $cFeatures["imageio"] = ("Image loading and saving")
+  $cFeatures["openglviewer"] = ("OpenGL display")
+  $cFeatures["complex"] = ("Complex numbers")
+  $cFeatures["xml"] = ("XML management")
   
   ' sPath = Main.InfoFilePath
   ' IF NOT sPath THEN sPath = System.Path &/ "share/gambas" & System.Version & "/info"
@@ -770,7 +778,7 @@ Public Sub Load()
   '   Classes[Key &/ sClass].InitControl()
   ' Next
   
-  ClassList.Sort
+  ClassList.Sort(gb.IgnoreCase)
   
 HAS_BEEN_LOADED:
   
@@ -808,18 +816,97 @@ Public Function GetClasses() As String[]
   Dim sClass As String
 
   aResult.Add("[[ desc")
-  aResult.Add(("Classes"))
-  aResult.Add("==")
+  aResult.Add(("Class"))
+  aResult.Add("--")
+  aResult.Add(("Description"))
 
   For Each sClass In ClassList
     If Left(sClass) = "." Or If Left(sClass) = "_" Or If InStr(sClass, "*") Then Continue
     'aClass.Add(sClass)
-    aResult.Add("[/comp" &/ Key &/ LCase(sClass) & "]&nbsp;&nbsp;")
+    aResult.Add("==")
+    aResult.Add("[/comp" &/ Key &/ LCase(sClass) & "]")
+    aResult.Add("--")
+    aResult.Add(Me[sClass].GetDescription())
   Next
   
   aResult.Add("]]")
   Return aResult
 
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
+End
+
+Public Sub GetDescription() As String[]
+  
+  Dim aResult As New String[]
+  Dim sInfo As String
+  
+  Select Case State
+    Case UNSTABLE
+      aResult.Add(("This component is not stable yet."))
+    Case DEPRECATED
+      aResult.Add("*" & ("This component is deprecated.") & "*")
+  End Select
+  
+  aResult.Add("[[ desc")
+  
+  If Authors.Count Then
+  
+    aResult.Add("==")
+    If Authors.Count = 1 Then
+      aResult.Add("**" & ("Author") & "**")
+    Else
+      aResult.Add("**" & ("Authors") & "**")
+    Endif
+    aResult.Add("--")
+    aResult.Add(Authors.Join(", ") & ".")
+    
+  Endif
+
+  If Implement.Count Then
+
+    aResult.Add("==")
+    aResult.Add("**" & ("Implements") & "**")
+    aResult.Add("--")
+    
+    For Each sInfo In Implement
+      aResult.Add($cFeatures[LCase(sInfo)] & "\\")
+    Next
+    
+  Endif
+  
+  If Need.Count Or If Require.Count Then
+  
+    aResult.Add("==")
+    aResult.Add("**" & ("Requires") & "**")
+    aResult.Add("--")
+    
+    For Each sInfo In Need
+      aResult.Add($cFeatures[LCase(sInfo)] & "\\")
+    Next
+    For Each sInfo In Require
+      aResult.Add("[/comp/" & LCase(sInfo) & "]\\")
+    Next
+    
+  Endif
+  
+  If Exclude.Count Then
+  
+    aResult.Add("==")
+    aResult.Add("**" & ("Excludes") & "**")
+    aResult.Add("--")
+    
+    For Each sInfo In Exclude
+      aResult.Add("[/comp/" & LCase(sInfo) & "]\\")
+    Next
+    
+  Endif
+  
+  aResult.Add("]]")
+  Return aResult
+  
 Catch
 
   Return ["`" & Error.Where & ": " & Error.Text & "`"]

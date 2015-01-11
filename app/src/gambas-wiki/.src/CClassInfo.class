@@ -480,3 +480,33 @@ Public Sub HasEvents() As Boolean
   Next
 
 End
+
+Public Sub GetDescription() As String
+  
+  Dim sPath As String
+  Dim aData As String[]
+  Dim iPos As Integer
+  Dim sData As String
+  Dim sDesc As String
+  
+  sPath = Main.GetPagePathFrom("/comp" &/ LCase(Component &/ Name))
+  If Not Exist(sPath) Then Return 
+  
+  aData = Split(File.Load(sPath), "\n")
+  While iPos < aData.Count
+    sData = aData[iPos]
+    If sData Then
+      If IsLetter(Left(sData)) Then
+        sData = Replace(sData, "[../", "[./")
+        sData = Replace(sData, "[./../", "[../")
+        sDesc &= sData & "\n"
+      Endif
+    Else If sDesc Then
+      Break
+    Endif
+    Inc iPos
+  Wend
+  
+  Return sDesc
+  
+End
