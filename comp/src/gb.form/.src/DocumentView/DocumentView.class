@@ -5,7 +5,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding,Spacing,ShowShadow"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,ShowShadow"
 Public Const _Group As String = "View"
 Public Const _Similar As String = "GridView"
 
@@ -65,7 +65,7 @@ Private $fMaxPageHeight As Float ''Hauteur du plus grand doc
 Private $fMaxPageWidth As Float  ''Largeur du plus grand doc
 Private $iMaxPageHeight As Integer
 Private $iMaxPageWidth As Integer
-Private $iSpace As Integer = 30    ''Taille de l'espacement
+Private $iSpace As Integer = 10    ''Taille de l'espacement
 Private $iNbreLines As Integer     ''Nombre de ligne totale
 Private $tmrLoad As New Timer As "tmrLoad"
 Private $tmrRefresh As New Timer As "tmrRefresh"
@@ -179,7 +179,7 @@ End
 Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   
   Dim iDocX, iDocY As Integer
-  Dim fShad As Float = 5 * $fZoom
+  Dim fShad As Float = $fZoom * ($iSpace / 4)
   
   If $colLayout.Exist(Page) Then
     $fScaledDocWidth = $colLayout[Page].Width * $fZoom
