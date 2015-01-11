@@ -1131,12 +1131,12 @@ Public Sub ReadConfig()
   spnProperty.Font = grdProperty.Font
   panProperty.Font = grdProperty.Font
   crdProperty.Font = grdProperty.Font
-  MTheme.InitControl(grdProperty)
-  MTheme.InitControl(cmbProperty)
-  MTheme.InitControl(crdProperty)
-  MTheme.InitControl(spnProperty)
-  MTheme.InitControl(txtProperty)
-  MTheme.InitControl(btnProperty)
+  ' MTheme.InitControl(grdProperty)
+  ' MTheme.InitControl(cmbProperty)
+  ' MTheme.InitControl(crdProperty)
+  ' MTheme.InitControl(spnProperty)
+  ' MTheme.InitControl(txtProperty)
+  ' MTheme.InitControl(btnProperty)
   $iHighlightColor = MTheme.GetColor("Selection")
   MoveProperty
   RefreshAll
