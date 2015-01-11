@@ -426,11 +426,11 @@ End
 Private Sub Count_Write(Value As Integer)
   
   $iCount = Value
+   '$aImageLoaded.Clear
+  ' $aImageToLoad.Clear
+  '$colImage.Clear
   RefreshLayoutNeeds
-  $aImageLoaded.Clear
-  $aImageToLoad.Clear
-  $colImage.Clear
-  
+  '$tmrRefresh.Trigger
 End
 
 Private Function Max_Read() As Integer
