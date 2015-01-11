@@ -30,6 +30,8 @@ Property Spacing As Integer
 Property ShowShadow As Boolean
 Property Read Item As _DocumentItem
 Property Read Current As _DocumentItem
+Property Read FirstVisibleDocument As Integer
+Property Read LastVisibleDocument As Integer
 
 
 
@@ -226,7 +228,7 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   
 End
 
-Public Sub RefreshLayoutNeeds()
+Private Sub RefreshLayoutNeeds()
   
   Dim i As Integer
   
@@ -386,7 +388,8 @@ Private Sub DoLayout()
   Next
   $aImageToLoad.Sort
   $aImageToLoad = $aImageToLoad.Reverse()
-  If $aImageToLoad.Count > 0 Then $tmrLoad.Start
+  'If $aImageToLoad.Count > 0 Then 
+  $tmrLoad.Start
   
 End
 
@@ -740,11 +743,11 @@ Public Function _GetItemHeight(Index As Integer) As Integer
   
 End
 
-Public Function SetItemVisible(Index As Integer) As Integer
-  
-  Me.Goto(Index)
-  
-End
+' Public Function _SetItemVisible(Index As Integer) As Integer
+'   
+'   Me.Goto(Index)
+'   
+' End
 
 
 Public Sub _Get(Index As Integer) As _DocumentItem
@@ -841,4 +844,16 @@ Public Function _GetY(Index As Integer) As Integer
   
   
   
+End
+
+Private Function FirstVisibleDocument_Read() As Integer
+
+  Return $iFirstVisibleDocument
+
+End
+
+Private Function LastVisibleDocument_Read() As Integer
+
+  Return $iLastVisibleDocument
+
 End
