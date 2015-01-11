@@ -38,6 +38,9 @@ install-data-hook:
 		$(INSTALL) $(COMPONENT)/.hidden/control/*.png $(DESTDIR)$(gbdatadir)/control/$(COMPONENT); \
 	fi
 	@echo "Creating the information files for $(COMPONENT) component..."
+	@if test "$(EXTRACT_HELP)" = "1"; then \
+		$(DESTDIR)$(bindir)/gbh$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) -c $(COMPONENT); \
+	fi
 	@$(DESTDIR)$(bindir)/gbi$(GAMBAS_VERSION) -r $(DESTDIR)$(prefix) > /dev/null
 	@echo
 

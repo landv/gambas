@@ -1,58 +1,116 @@
 ' Gambas module file
 
+Private $sRoot As String
+Private $sComponent As String
+Private $bVerbose As Boolean
+
+Private Sub PrintError(sErr As String)
+
+  Error File.Name(Args[0]); ": error: "; sErr
+  Quit 1
+
+End
+
+Private Sub PrintMessage(sMsg As String)
+
+  If Not $bVerbose Then Return
+  Error sMsg
+
+End
+
 Public Sub Main()
   Dim iInd As Integer, aSources As New String[]
   Dim sArg, sRec As String, aRec As String[]
+  Dim sPath As String
+  Dim hOut As File
+  Dim bOnlySources As Boolean
+  Dim sMsg As String
 
-  If Args.Count < 2 Then Usage()
+  $sRoot = System.Path
+  
   For iInd = 1 To Args.Max
     Select Case Args[iInd]
       Case "-h", "--help"
-        Usage()
+        Print File.Load("usage")
+        Quit
       Case "-V", "--version"
-        Version()
+        Print Application.Version
+        Quit
+      Case "-L", "--license"
+        Print File.Load("license")
+        Quit
+      Case "-v", "--verbose"
+        $bVerbose = True
+      Case "-r", "--root"
+        $sRoot = Args[iInd + 1]
+        If Not $sRoot Then PrintError(Args[iInd] & " requires an argument")
+        Inc iInd
+      Case "-c", "--component"
+        $sComponent = Args[iInd + 1]
+        If Not $sComponent Then PrintError(Args[iInd] & " requires an argument")
+        Inc iInd
+      Case "--"
+        bOnlySources = True
       Default
+        If Not bOnlySources Then
+          If Args[iInd] Begins "-" Then
+            PrintError("unknown option: " & Args[iInd])
+          Endif
+        Endif
         aSources.Add(Args[iInd])
     End Select
   Next
+  
+  If aSources.Count = 0 Then aSources.Add(".")
+
+  If $sComponent Then
+    sPath = $sRoot &/ "share/gambas" & System.Version &/ "info" &/ $sComponent & ".help"
+    PrintMessage("Output to " & sPath)
+    hOut = Open sPath For Create
+  Else
+    hOut = File.Out
+  Endif
 
   For Each sArg In aSources
-    sArg = Application.Dir &/ sArg
+    If Left(sArg) <> "/" Then
+      If sArg = "." Then 
+        sArg = Application.Dir
+      Else
+        sArg = Application.Dir &/ sArg
+      Endif
+    Endif
     If IsDir(sArg) Then
-      aRec = RDir(sArg, "*.{c,cpp}")
+      aRec = RDir(sArg, "*.{c,cc,cpp}")
       For Each sRec In aRec
-        OneFile(sArg &/ sRec)
+        OneFile(sArg &/ sRec, hOut)
       Next
     Else
-      OneFile(sArg)
+      OneFile(sArg, hOut)
     Endif
   Next
+  
+  If $sComponent Then
+    Close #hOut
+    If Stat(sPath).Size = 0 Then 
+      PrintMessage("Removing void data file")
+      Try Kill sPath
+    Endif
+  Endif
+  
+Catch
+  
+  sMsg = Error.Text & ": " & Error.Backtrace.Join(" ")
+  Output To Default
+  PrintError(sMsg)
+  
 End
 
-Private Sub Usage()
-  Print "Usage:";; Args[0];; "SOURCES..."
-  Print
-  Print "Extract Gambas help comments from all SOURCES and output a .help file."
-  Print "If SOURCES contains directories, they are searched recursively for .c"
-  Print "and .cpp files."
-  Print
-  Print "Options:"
-  Print "\t-h, --help\t\tDisplay this help text"
-  Print "\t-V, --version\t\tDisplay project version"
-  Quit
-End
-
-Private Sub Version()
-  Print Application.Version
-  Quit
-End
-
-Private Sub OneFile(sPath As String)
+Private Sub OneFile(sPath As String, hOut As File)
   Dim hFile As File
 
-  Error "Processing";; sPath; "..."
+  PrintMessage("Processing " & sPath & "...")
   hFile = Open sPath For Input
-  MakeHelp(Translate(Extract(hFile), sPath), File.Out)
+  MakeHelp(Translate(Extract(hFile), sPath), hOut)
   Close #hFile
 End
 

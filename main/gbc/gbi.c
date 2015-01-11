@@ -793,7 +793,7 @@ int main(int argc, char **argv)
 				printf(
 					"\nGenerate component description files.\n"
 					"\nUsage: gbi" GAMBAS_VERSION_STRING " [options] [components]\n"
-					"Options:"
+					"\nOptions:"
 					#if HAVE_GETOPT_LONG
 					"\n"
 					#if DO_PRELOADING
