@@ -293,7 +293,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
         Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
       Else
         Paint.Translate(X + W / 2, Y + H / 2)    
-        Paint.Rotate(Rad(hCtrl["Rotate"]))
+        Try Paint.Rotate(Rad(hCtrl["Rotate"]))
         Paint.Translate(- (X + W / 2), - (Y + H / 2))
         Paint.Text(hCtrl["Text"], X, Y, W, H, Classes["Align"][hCtrl["Alignment"]].Value)
         'Paint.Text(hCtrl["Text"], X, Y, W, H, Align.Center)

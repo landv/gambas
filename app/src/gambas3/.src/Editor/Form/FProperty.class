@@ -26,7 +26,7 @@ Private $hWebView As WebView
 Private $iHighlightColor As Integer
 
 Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]",
-  "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Table"]
+  "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBrush", "Table"]
 
 Private Const PADDING As Integer = 6
 
@@ -408,7 +408,7 @@ Public Function SaveProperty() As Boolean
         vVal = sVal
       Endif
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
       
       vVal = sVal
 
@@ -687,7 +687,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "s"
       bButton = True
 
-    Case "String[]", "Fields", "Field[]", "ReportPadding", "ReportBorder", "ReportBrush"
+    Case "String[]", "Fields", "Field[]", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBrush"
 
       bButton = True
       txtProperty.ReadOnly = True
@@ -720,7 +720,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       hEditor = cmbProperty
       InitComboWith(["False", "True"])
 
-    Case "Font", "Picture", "Path", "Color", "Image", "SvgImage", "ReportPadding", "ReportBorder", "ReportBrush"
+    Case "Font", "Picture", "Path", "Color", "Image", "SvgImage", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBrush"
 
       bButton = True
       txtProperty.ReadOnly = True
@@ -1023,7 +1023,12 @@ Public Sub btnProperty_Click()
       
       If FReportPaddingChooser.Run($sOldVal) Then Goto _EXIT
       $hEditor.Text = FReportPaddingChooser.Value
-
+      
+    Case "ReportMargin"
+      
+      If FReportPaddingChooser.Run($sOldVal) Then Goto _EXIT
+      $hEditor.Text = FReportPaddingChooser.Value
+      
     Case "ReportBorder"
 
       If FReportBorderChooser.Run($sOldVal) Then Goto _EXIT

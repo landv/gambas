@@ -121,7 +121,7 @@ Private Sub RefreshHunks()
         If iInd Then sToFile = gvwHunks[iInd - 1, 1].Text
       Endif
       gvwHunks[iInd, 1].Text = sToFile
-      aScan = Scan(.LineInfo, "@@ -* +* @@")
+      aScan = Scan(RTrim(.LineInfo), "@@ -* +* @@")
       'sLineInfo = aScan[0] & "\t--> " & aScan[1]
       gvwHunks[iInd, 2].Text = aScan[0]
       gvwHunks[iInd, 3].Text = "--> " & aScan[1]
@@ -208,8 +208,8 @@ Public Sub Parse(sFile As String)
   $hPatch.Parse(sFile)
   RefreshHunks()
 
-  Finally
-    Dec Application.Busy
+  'Finally
+    'Dec Application.Busy
 
 End
 
