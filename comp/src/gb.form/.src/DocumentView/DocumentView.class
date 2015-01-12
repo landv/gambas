@@ -621,7 +621,7 @@ End
 Public Sub View_MouseWheel()
 
   If Mouse.Control Then
-    Me.Zoom = $fZoom - 0.1 * Mouse.Delta
+    Me.Zoom = $fZoom + 0.1 * Mouse.Delta
   Endif
 
 End
