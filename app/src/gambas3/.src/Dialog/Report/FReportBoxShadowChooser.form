@@ -21,20 +21,16 @@
       MoveScaled(1,1,28,26)
       { crdBlur CoordBox crdBrush
         Name = "crdBlur"
-        MoveScaled(9,15,18,4)
+        MoveScaled(9,10,18,4)
       }
       { Label4 Label
-        MoveScaled(0,15,9,4)
+        MoveScaled(0,10,9,4)
         #Translate = False
         Text = "Blur"
       }
       { crdX CoordBox crdBrush
         Name = "crdX"
         MoveScaled(9,0,18,4)
-      }
-      { crdSpread CoordBox crdBrush
-        Name = "crdSpread"
-        MoveScaled(9,10,18,4)
       }
       { Label3 Label
         MoveScaled(0,0,9,4)
@@ -45,11 +41,6 @@
         MoveScaled(0,5,9,4)
         #Translate = False
         Text = "Y offset"
-      }
-      { Label6 Label
-        MoveScaled(0,10,9,4)
-        #Translate = False
-        Text = "Spread"
       }
       { crdY CoordBox crdBrush
         Name = "crdY"
@@ -63,6 +54,15 @@
       { btnColor ColorButton crdBrush
         Name = "btnColor"
         MoveScaled(9,20,18,5)
+      }
+      { Label6 Label
+        MoveScaled(0,15,9,4)
+        #Translate = False
+        Text = "Spread"
+      }
+      { crdSpread CoordBox crdBrush
+        Name = "crdSpread"
+        MoveScaled(9,15,18,4)
       }
     }
     Index = 0

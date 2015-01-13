@@ -90,13 +90,14 @@ Private Sub GetValue() As String
   If Not sVal Then sVal = "0px"
   sRet &= " " & sVal
   
+  sVal = crdBlur.Value
+  If Not sVal Then sVal = "0px"
+  sRet &= " " & sVal
+
   sVal = crdSpread.Value
   If Not sVal Then sVal = "0px"
   sRet &= " " & sVal
   
-  sVal = crdBlur.Value
-  If Not sVal Then sVal = "0px"
-  sRet &= " " & sVal
   
   sRet &= " " & CReportBrush.ColorToString(btnColor.Value)
   
@@ -114,7 +115,7 @@ End
 
 Public Sub Form_Open()
   Dim a As String[]
-  Dim aCont As CoordBox[] = [crdX, crdY, crdSpread, crdBlur]
+  Dim aCont As CoordBox[] = [crdX, crdY, crdBlur, crdSpread]
   Dim i As Integer
   'Value = "1px -2cm 3mm 1px #FF5641"
   If Not Value Then
