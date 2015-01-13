@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Border=True,AllowRelative,AutoConvert"
+Public Const _Properties As String = "*,Action,Text,Alignment{Align.Normal;Left;Center;Right}=Normal,ReadOnly,Border=True,AllowRelative,AutoConvert,AllowNegative"
 Public Const _DefaultEvent As String = "Change"
 Public Const _DefaultSize As String = "24,4"
 'Public Const _Similar As String = "TextBox"
@@ -21,6 +21,7 @@ Property Read Editor As MaskBox
 Property Alignment As Integer
 Property AllowRelative As Boolean
 Property AutoConvert As Boolean
+Property AllowNegative As Boolean
 
 'Private $hPanel As Panel
 Private $hBackground As DrawingArea
@@ -33,7 +34,7 @@ Private $aUnits As String[] = ["cm", "mm", "in", "ft", "px", "pt"]
 Private $bAllowRelative As Boolean
 Private $bAutoConvert As Boolean
 Private $fCurVal As Float
-
+Private $bAllowNegative As Boolean
 Private Const DEFAULT_UNIT As String = "mm"
 
 Public Sub _new()
@@ -63,8 +64,10 @@ End
 
 Private Function Value_Read() As String
   
-  If IsNumber($hTextBox.Text) And If Val($hTextBox.Text) > 0 Then Return Replace($hTextBox.Text, ",", ".") & $hButton.Text
-  
+  If IsNumber($hTextBox.Text) Then
+   If Not $bAllowNegative And If Val($hTextBox.Text) <= 0 Then Return
+     Return Replace($hTextBox.Text, ",", ".") & $hButton.Text
+  Endif
 End
 
 Private Sub Value_Write(Value As String)
@@ -84,7 +87,7 @@ Private Sub Value_Write(Value As String)
   
   For I = 1 To Len(Value)
     sCar = Mid$(Value, I, 1)
-    If Not IsDigit(sCar) And If sCar <> "." Then Break
+    If Not IsDigit(sCar) And If sCar <> "." And If ($bAllowNegative And sCar <> "-") Then Break
   Next
   
   Try $hTextBox.Text = Str(Left$(Value, I - 1))
@@ -231,7 +234,11 @@ Public Sub TextBox_MouseWheel()
 
   Try f = Val($hTextBox.Text)
   f += Mouse.Delta
-  $fCurVal = Max(0, f)
+  If Not $bAllowNegative Then 
+    $fCurVal = Max(0, f)
+  Else
+    $fCurVal = f
+  Endif
   $hTextBox.Text = $fCurVal
   'Raise Change
 
@@ -329,4 +336,16 @@ Public Sub ClearButton_Click()
   $hTextBox.Text = ""
   $hButton.Text = DEFAULT_UNIT
   
+End
+
+Private Function AllowNegative_Read() As Boolean
+
+  Return $bAllowNegative
+
+End
+
+Private Sub AllowNegative_Write(Value As Boolean)
+
+  $bAllowNegative = Value
+
 End

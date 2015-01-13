@@ -46,7 +46,7 @@ Static Public Function ToPixel(sSize As String) As Float
 
   For I = 1 To Len(sSize)
     sCar = Mid$(sSize, I, 1)
-    If Not IsDigit(sCar) And If sCar <> "." Then Break
+    If Not IsDigit(sCar) And If (sCar <> "." And sCar <> "-") Then Break
   Next
 
   Try fValue = CFloat(Left$(sSize, I - 1))
@@ -72,6 +72,9 @@ End
 '   Return Not bBorder
 ' 
 ' End
+
+
+
 
 Static Public Sub PaintBorder(sBorder As String) As Float
 
