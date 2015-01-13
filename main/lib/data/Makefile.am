@@ -1,5 +1,4 @@
 COMPONENT = gb.data
-EXTRACT_HELP = 1
 include $(top_srcdir)/component.am
 
 gblib_LTLIBRARIES = gb.data.la

@@ -1111,6 +1111,8 @@ Public Sub GetDefaultPage() As String
   Try hSymbol = CComponent.Get(Main.Component)[Main.Class].Symbols[Main.Symbol]
   If Not hSymbol Then Return
   
+  If hSymbol.Help Then Return hSymbol.Help
+  
   sResult = "\n"
   sSign = hSymbol.Signature
   Do
@@ -1125,7 +1127,7 @@ Public Sub GetDefaultPage() As String
     
   Loop
   
-  If hSymbol.Help Then sResult = Trim(sResult) & "\n" & hSymbol.Help
+  'If hSymbol.Help Then sResult = Trim(sResult) & "\n" & hSymbol.Help
   
   Return sResult
   

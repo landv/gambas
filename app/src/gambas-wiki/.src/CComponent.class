@@ -612,6 +612,7 @@ Public Sub Load()
     
     aLine = Split(File.Load(sPath), "\n")
     If aLine.Count And If aLine[aLine.Max] = "" Then aLine.Remove(aLine.Max)
+    
     iLine = 0
     
     While iLine < aLine.Count
@@ -724,6 +725,34 @@ Public Sub Load()
     Wend
     
   Until Not bAgain
+  
+  sPath = File.SetExt(sPath, "help")
+  If Exist(sPath) Then
+    
+    sClass = ""
+    sSymbol = ""
+    
+    For Each sLig In Split(File.Load(sPath), "\n")
+      
+      If Left(sLig) = "#" Then
+        sClass = Mid$(sLig, 2)
+        Continue
+      Endif
+      
+      If Left(sLig) <> "'" Then
+        sSymbol = sLig
+        hSym = Null
+        Try hSym = Classes[Key &/ sClass].Symbols[sSymbol]
+        Continue
+      Endif
+      
+      If hSym Then 
+        hSym.Help &= Mid$(sLig, 2) & "\n"
+      Endif
+      
+    Next
+    
+  Endif
   
   'PRINT "Initializing controls..."
   
