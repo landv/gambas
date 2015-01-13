@@ -1,19 +1,20 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,59,38)
+  MoveScaled(0,0,60,39)
+  Text = ("Configure Box Shadow")
   { btnCancel Button
-    MoveScaled(42,33,16,4)
+    MoveScaled(43,34,16,4)
     Text = ("Cancel")
     Cancel = True
   }
   { btnOK Button
-    MoveScaled(25,33,16,4)
+    MoveScaled(26,34,16,4)
     Text = ("OK")
     Default = True
   }
   { TabStrip1 TabStrip
-    MoveScaled(0,0,32,32)
+    MoveScaled(1,1,32,32)
     Index = 0
     Text = ("Shadow")
     { panBorder Panel
@@ -67,7 +68,7 @@
     Index = 0
   }
   { Panel1 Panel
-    MoveScaled(33,4,25,27)
+    MoveScaled(34,5,25,27)
     Arrangement = Arrange.Fill
     Border = Border.Plain
     { dwgBorder DrawingArea

@@ -65,9 +65,10 @@ End
 Private Function Value_Read() As String
   
   If IsNumber($hTextBox.Text) Then
-   If Not $bAllowNegative And If Val($hTextBox.Text) <= 0 Then Return
-     Return Replace($hTextBox.Text, ",", ".") & $hButton.Text
+    If Not $bAllowNegative And If Val($hTextBox.Text) <= 0 Then Return
+    Return Replace($hTextBox.Text, ",", ".") & $hButton.Text
   Endif
+
 End
 
 Private Sub Value_Write(Value As String)
@@ -75,7 +76,7 @@ Private Sub Value_Write(Value As String)
   Dim I As Integer
   Dim sCar As String
   Dim Unit As String
-
+  
   Balloon.Hide
   Value = Trim(Value)
   
@@ -87,7 +88,12 @@ Private Sub Value_Write(Value As String)
   
   For I = 1 To Len(Value)
     sCar = Mid$(Value, I, 1)
-    If Not IsDigit(sCar) And If sCar <> "." And If ($bAllowNegative And sCar <> "-") Then Break
+    If Not IsDigit(sCar) Then
+      If sCar <> "." Then 
+        If $bAllowNegative And If sCar = "-" Then Continue
+        Break
+      Endif
+    Endif
   Next
   
   Try $hTextBox.Text = Str(Left$(Value, I - 1))
@@ -103,7 +109,7 @@ Private Sub Value_Write(Value As String)
     Endif
   Endif
   $hButton.Text = Unit
-
+  
 End
 
 Public Sub Button_Click()
@@ -175,7 +181,7 @@ Public Sub Background_Draw()
   Else
     Paint.FillRect(0, 0, Me.W, Me.H, iBg)
   Endif
-
+  
 End
 
 Private Function Editor_Read() As MaskBox
@@ -193,7 +199,7 @@ Public Sub Button_MouseWheel()
   Endif
   $hButton.Text = $aUnits[$hButton.Tag]
   Raise Change
-
+  
 End
 
 Private Function Alignment_Read() As Integer
@@ -231,7 +237,7 @@ End
 Public Sub TextBox_MouseWheel()
   
   Dim f As Float
-
+  
   Try f = Val($hTextBox.Text)
   f += Mouse.Delta
   If Not $bAllowNegative Then 
@@ -241,14 +247,14 @@ Public Sub TextBox_MouseWheel()
   Endif
   $hTextBox.Text = $fCurVal
   'Raise Change
-
+  
 End
 
 Private Sub RefreshMenu()
-
+  
   Dim hMenu As Menu
   Dim s As String
-
+  
   Try $hMenu.Delete
   $hMenu = New Menu(Me.Window)
   
@@ -283,7 +289,7 @@ Private Sub AllowRelative_Write(Value As Boolean)
   If Value And $aUnits[$aUnits.Max] <> "%" Then $aUnits.Add("%")
   RefreshMenu
   $bAllowRelative = Value
-
+  
 End
 
 Private Function AutoConvert_Read() As Boolean
@@ -339,13 +345,13 @@ Public Sub ClearButton_Click()
 End
 
 Private Function AllowNegative_Read() As Boolean
-
+  
   Return $bAllowNegative
-
+  
 End
 
 Private Sub AllowNegative_Write(Value As Boolean)
-
+  
   $bAllowNegative = Value
-
+  
 End

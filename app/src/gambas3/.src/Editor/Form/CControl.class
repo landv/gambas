@@ -8,7 +8,7 @@ Static Public WasDefaultValue As Boolean
 
 Static Public LastError As String
 
-Static Public COMPLEX_STRING_PROPERTIES As String[] = ["Font[", "Picture[", "Image.Load(", "SvgImage.Load(", "Connections[", "ReportPadding[", "ReportMargin[", "ReportBorder[", "ReportBrush["]
+Static Public COMPLEX_STRING_PROPERTIES As String[] = ["Font[", "Picture[", "Image.Load(", "SvgImage.Load(", "Connections[", "ReportPadding[", "ReportMargin[", "ReportBoxShadow[", "ReportBorder[", "ReportBrush["]
 
 Public Name As String
 Public Parent As CControl
@@ -717,7 +717,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBrush", "Field"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field"
 
       Return CStr(vVal)
       
@@ -1639,6 +1639,9 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
       
       Case "ReportMargin"
         sLine &= "ReportMargin[" & Quote$(vVal) & "]"
+      
+      Case "ReportBoxShadow"
+        sLine &= "ReportBoxShadow[" & Quote$(vVal) & "]"
         
       Case "ReportBorder"
         sLine &= "ReportBorder[" & Quote$(vVal) & "]"
