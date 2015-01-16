@@ -522,7 +522,8 @@ Private Sub Border_Write(bBorder As Boolean)
 
   $bBorder = bBorder
   
-  Panel_Arrange
+  'Panel_Arrange
+  UpdateCurrentContainer
   
   $hPanel.Refresh
   

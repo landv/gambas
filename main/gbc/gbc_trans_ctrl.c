@@ -1162,7 +1162,7 @@ void TRANS_label(void)
 	sym_index = PATTERN_index(*JOB->current);
 	JOB->current++;
 
-	sym = CLASS_declare(JOB->class, sym_index, FALSE);
+	sym = CLASS_declare(JOB->class, sym_index, TK_LABEL, FALSE);
 
 	if (label_info == NULL)
 		ARRAY_create(&label_info);

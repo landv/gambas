@@ -459,7 +459,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   
 End
 
-Static Public Function _get(Key As String, Optional {Default} As String) As Picture
+Static Public Function _get((Key) As String, Optional {Default} As String) As Picture
   
   Dim sPath As String
   Dim hPict As Picture

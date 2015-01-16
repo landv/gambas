@@ -297,7 +297,7 @@ Public Sub EditProperty(sProp As String)
 
   grdProperty.Row = $cIndex[sProp]
   ShowProperty
-  If btnProperty.Visible Then btnProperty.Value = True
+  If $bButton Then txtProperty_Click
   
 End
 
@@ -550,19 +550,22 @@ End
 
 Private Sub InitComboWith(aList As String[], Optional sVoid As String)
 
-  Dim hMenu As Menu
-  Dim sVal As String
+  If Not IsMissing(sVoid) Then aList.Add(sVoid, 0)
+  cmbProperty.List = aList
 
-  mnuProperty.Children.Clear
-
-  If sVoid Then
-    hMenu = New Menu(mnuProperty) As "mnuProperty"
-    hMenu.Text = sVoid
-  Endif
-  For Each sVal In aList
-    hMenu = New Menu(mnuProperty) As "mnuProperty"
-    hMenu.Text = sVal
-  Next
+  ' Dim hMenu As Menu
+  ' Dim sVal As String
+  ' 
+  ' mnuProperty.Children.Clear
+  ' 
+  ' If sVoid Then
+  '   hMenu = New Menu(mnuProperty) As "mnuProperty"
+  '   hMenu.Text = sVoid
+  ' Endif
+  ' For Each sVal In aList
+  '   hMenu = New Menu(mnuProperty) As "mnuProperty"
+  '   hMenu.Text = sVal
+  ' Next
 
 End
 
@@ -759,12 +762,12 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "Connection"
 
       hEditor = cmbProperty
-      InitComboWith(MConnection.GetConnections(), " ")
+      InitComboWith(MConnection.GetConnections(), "")
 
     Case "Menu"
 
       hEditor = cmbProperty
-      InitComboWith($hForm.GetMenus(), " ")
+      InitComboWith($hForm.GetMenus(), "")
 
     Case "ReportCoord"
       hEditor = crdProperty
@@ -790,14 +793,15 @@ Private Sub ShowProperty(Optional sFocus As String)
 
   $hEditor.Show
   panEditor.Show
-  btnProperty.Visible = bButton
+  
+  txtProperty.Button = bButton
   'btnProperty.Raise
 
   $hEditor.SetFocus
 
   If $hEditor = txtProperty Then
     'IF NOT txtProperty.ReadOnly THEN
-    txtProperty.SelectAll
+    txtProperty.Editor.SelectAll
     'ENDIF
   Else If $hEditor = spnProperty Then
     spnProperty.SelectAll
@@ -811,9 +815,9 @@ End
 ' 
 ' End
 
-Public Sub mnuProperty_Click()
+Public Sub cmbProperty_Click()
 
-  cmbProperty.Text = Trim(Last.Text)
+  'cmbProperty2.Text = Trim(Last.Text)
   SaveProperty
 
 End
@@ -823,6 +827,13 @@ Public Sub txtProperty_Activate()
   SaveProperty
 
 End
+
+Public Sub txtProperty_Clear()
+  
+  SaveProperty
+  
+End
+
 
 Public Sub txtProperty_Change()
 
@@ -916,7 +927,7 @@ Private Sub GetTable(Optional sField As String) As String
 
 End
 
-Public Sub btnProperty_Click()
+Public Sub txtProperty_Click()
 
   Dim sDest As String
   Dim sFont As String
@@ -1048,21 +1059,27 @@ _EXIT:
 
 End
 
-Private Sub NextComboProperty(bPrevious As Boolean)
+Private Sub NextComboProperty((bPrevious) As Boolean)
 
-  Dim iInd As Integer
+  ' Dim iInd As Integer
+  ' 
+  ' For iInd = 0 To mnuProperty.Children.Count - 1
+  '   If Trim(mnuProperty.Children[iInd].Text) = cmbProperty2.Text Then Break
+  ' Next
+  ' If bPrevious Then
+  '   Dec iInd
+  '   If iInd < 0 Then iInd = mnuProperty.Children.Count - 1
+  ' Else
+  '   Inc iInd
+  '   If iInd >= mnuProperty.Children.Count Then iInd = 0
+  ' Endif
+  ' mnuProperty.Children[iInd].Value = True
 
-  For iInd = 0 To mnuProperty.Children.Count - 1
-    If Trim(mnuProperty.Children[iInd].Text) = cmbProperty.Text Then Break
-  Next
-  If bPrevious Then
-    Dec iInd
-    If iInd < 0 Then iInd = mnuProperty.Children.Count - 1
+  If cmbProperty.Index = cmbProperty.Count - 1
+    cmbProperty.Index = 0
   Else
-    Inc iInd
-    If iInd >= mnuProperty.Children.Count Then iInd = 0
+    Inc cmbProperty.Index
   Endif
-  mnuProperty.Children[iInd].Value = True
 
 End
 
@@ -1070,8 +1087,8 @@ Public Sub grdProperty_DblClick()
 
   If cmbProperty.Visible Then
     NextComboProperty(False)
-  Else If btnProperty.Visible Then
-    btnProperty_Click
+  Else If $bButton Then
+    txtProperty_Click
   Endif
 
 End
@@ -1244,24 +1261,24 @@ Public Sub btnLock_Click()
 
 End
 
-Public Sub cmbProperty_KeyPress()
+' Public Sub cmbProperty_KeyPress()
+' 
+'   If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
+' 
+'     If mnuProperty.Children[0].Text = " " Then
+'       mnuProperty.Children[0].Value = True
+'       SaveProperty
+'     Endif
+' 
+'   Endif
+' 
+' End
 
-  If Key.Code = Key.Delete Or Key.Code = Key.Backspace Then
-
-    If mnuProperty.Children[0].Text = " " Then
-      mnuProperty.Children[0].Value = True
-      SaveProperty
-    Endif
-
-  Endif
-
-End
-
-Public Sub cmbProperty_MouseWheel()
-
-  NextComboProperty(Mouse.Delta > 0)
-
-End
+' Public Sub cmbProperty2_MouseWheel()
+' 
+'   NextComboProperty(Mouse.Delta > 0)
+' 
+' End
 
 Public Sub Form_Activate()
 

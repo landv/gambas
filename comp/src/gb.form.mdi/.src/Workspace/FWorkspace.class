@@ -488,7 +488,12 @@ Public Sub UpdateSize()
 
   If tabWorkspace.Visible Then
 
-    imgBackground.Hide
+    If imgBackground.Visible Then
+      Me.Background = Color.Default
+      imgBackground.Hide
+      panWorkspace.Background = Color.Background
+      panWorkspace.Border = If($bBorder, Border.Plain, Border.None)
+    Endif
     'If $bLogo Then picLogo.Hide
     
     With tabWorkspace
@@ -506,19 +511,19 @@ Public Sub UpdateSize()
       
     End With
       
-    panWorkspace.Background = Color.Background
-    panWorkspace.Border = If($bBorder, Border.Plain, Border.None)
 
   Else
 
     svwWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     panWorkspace.Move(0, 0, Me.ClientW, Me.ClientH)
     
-    imgBackground.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground) 
-    imgBackground.Show
-    panWorkspace.Border = Border.None
-
-    panWorkspace.Raise
+    Me.Background = If($iBackground = Color.Default, Color.Merge(Color.Background, Color.Foreground), $iBackground) 
+    imgBackground.Background = Me.Background
+    If Not imgBackground.Visible Then
+      imgBackground.Show
+      panWorkspace.Border = Border.None
+      panWorkspace.Raise
+    Endif
 
   Endif
   
@@ -787,7 +792,7 @@ Public Sub SetBackground(iColor As Integer)
   
   $iBackground = iColor
   UpdateSize
-  panWorkspace.Refresh
+  'panWorkspace.Refresh
   
 End
 

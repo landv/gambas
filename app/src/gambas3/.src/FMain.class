@@ -1334,7 +1334,7 @@ End
 '   
 ' END
 
-Public Sub Action_Activate(Key As String) As Boolean
+Public Sub Action_Activate((Key) As String) As Boolean
   
   Dim hEditor As FEditor
   Dim hCtrl As Object
@@ -2564,7 +2564,7 @@ Public Sub ActivateCurrentWindow()
   
 End
 
-Public Sub wrkProject_Close(Window As Window)
+Public Sub wrkProject_Close((Window) As Window)
 
   Dim hForm As Object = Window
   Dim iResp As Integer

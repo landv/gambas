@@ -2,7 +2,7 @@
 
 Static Public All As New Collection
 Static Public Libraries As New String[]
-Static Public Classes As Collection
+Static Public (Classes) As Collection
 Static Private $iKey As Integer
 
 Public Const PROJECT_NAME As String = "$"
@@ -12,7 +12,7 @@ Public Const STABLE_NOT_FINISHED As Integer = 1
 Public Const UNSTABLE As Integer = 2
 Public Const DEPRECATED As Integer = 3
 
-Public Key As String
+Public (Key) As String
 Public Name As String
 Public Authors As New String[]
 'Public Type As String
@@ -549,6 +549,8 @@ Public Sub Load()
   Endif
   
   For Each sClass In aList
+    If Right(sClass) = "!" Then sClass = Left$(sClass, -1)
+    If Right(sClass) = "?" Then sClass = Left$(sClass, -1)
     If sClass Then cClass[sClass] = True
   Next
   
@@ -927,6 +929,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   Dim iPos As Integer
   Dim sSign As String
   Dim bExport As Boolean
+  Dim bBrace As Boolean
   
   'Debug "ScanClass "; hModule.Name
   
@@ -1085,11 +1088,24 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     'ANOTHER_SYMBOL:
     
     sName = aSym[iInd]
-    If Left(sName) = "{" Then
+    
+    If sName = "(" Then
+      bBrace = True
+      Inc iInd
+      sName = aSym[iInd]
+    Else
+      bBrace = False
+    Endif
+    
+    If sName = "{" Then
       If iInd + 2 > aSym.Max Then Continue
       Inc iInd
       sName = aSym[iInd]
       If aSym[iInd + 1] = "}" Then Inc iInd
+    Endif
+    
+    If bBrace Then
+      If aSym[iInd + 1] = ")" Then Inc iInd
     Endif
     
     aName = Null

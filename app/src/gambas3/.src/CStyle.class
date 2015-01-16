@@ -7,7 +7,7 @@ Public Bold As Boolean
 Public Italic As Boolean
 Public Underline As Boolean
 
-Static Public Sub _get(Style As String) As CStyle
+Static Public Sub _get((Style) As String) As CStyle
   
   Dim hStyle As New CStyle(Style)
   Return hStyle
@@ -15,7 +15,7 @@ Static Public Sub _get(Style As String) As CStyle
 End
 
 
-Public Sub _new(Optional Style As String)
+Public Sub _new(Optional (Style) As String)
   
   Reset
   Foreground = Color.Black

@@ -1317,7 +1317,7 @@ Public Sub txtVendor_KeyPress()
 
 End
 
-Public Sub choBackgroundColor_Click(Color As Integer)
+Public Sub choBackgroundColor_Click((Color) As Integer)
 
   Project.SetBackgroundColor("#" & Hex$(Color, 6))
   InitBackground

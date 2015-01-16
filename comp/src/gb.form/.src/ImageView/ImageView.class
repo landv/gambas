@@ -271,7 +271,7 @@ Private Sub UpdateZoom()
 
 End
 
-Public Sub Update(Optional Image As Image)
+Public Sub Update(Optional (Image) As Image)
   
   If {Image} Then $hImage = Image
   UpdateZoom

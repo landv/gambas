@@ -8,8 +8,8 @@ Public Type As String
 Public Kind As String
 Public Signature As String
 Public Value As String
-Public Class As String
-Public Component As String
+Public (Class) As String
+Public (Component) As String
 Public NotPublic As Boolean
 Public LineNumber As Integer
 Public Help As String
@@ -453,7 +453,7 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
         sRes &= sKeywordByRef & " "
       Endif
       
-      sRes &= sSym & " " & sKeywordAs & " "
+      sRes &= sSym
 
       iInd = iPos
       bName = True
@@ -524,7 +524,7 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
 
       GoSub ADD_COMMA
 
-      sRes &= $sArgBefore & "? " & sKeywordAs & " " 
+      sRes &= $sArgBefore & "?"
       bName = False
 
     Endif
@@ -541,7 +541,7 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
 
     Endif
 
-    sRes &= GetType(sCar)
+    If sCar <> "?" Then sRes &= " " & sKeywordAs & " " & GetType(sCar)
 
   Loop
   

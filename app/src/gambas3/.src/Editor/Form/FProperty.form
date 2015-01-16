@@ -44,28 +44,7 @@
       Visible = False
       Background = Color.TextBackground
       Ignore = True
-      { txtProperty TextBox
-        MoveScaled(0,9,11,3)
-        Visible = False
-        Expand = True
-        Border = False
-      }
-      { spnProperty SpinBox
-        MoveScaled(0,5,14,3)
-        Visible = False
-        Expand = True
-        Border = False
-      }
-      { crdProperty CoordBox txtProperty
-        Name = "crdProperty"
-        MoveScaled(0,14,17,3)
-        Visible = False
-        Expand = True
-        Border = False
-        AllowRelative = True
-        AutoConvert = True
-      }
-      { cmbProperty MenuButton
+      { cmbProperty2 MenuButton
         MoveScaled(1,0,16,4)
         Visible = False
         Expand = True
@@ -73,17 +52,38 @@
         Menu = "mnuProperty"
         MenuOnly = True
       }
+      { crdProperty CoordBox txtProperty
+        Name = "crdProperty"
+        MoveScaled(1,14,17,3)
+        Visible = False
+        Expand = True
+        Border = False
+        AllowRelative = True
+        AutoConvert = True
+      }
+      { spnProperty SpinBox
+        MoveScaled(2,5,14,3)
+        Visible = False
+        Expand = True
+        Border = False
+      }
       { txtAngle AngleBox
         MoveScaled(2,19,21,3)
         Visible = False
         Expand = True
       }
-      { btnProperty ToolButton
-        MoveScaled(12,9,3,3)
-        #Translate = False
+      { txtProperty ButtonBox
+        MoveScaled(3,9,18,3)
         Visible = False
-        Font = Font["Bold,-2"]
-        Text = "..."
+        Expand = True
+        Border = False
+        ClearButton = True
+      }
+      { cmbProperty ComboBox
+        MoveScaled(4,25,18,4)
+        Expand = True
+        ReadOnly = True
+        Border = False
       }
     }
   }

@@ -2,7 +2,7 @@
 
 Public Name As String
 Public Caption As String
-Public Shortcut As String
+Public (Shortcut) As String
 Public Group As String
 Public Ctrl As Boolean
 Public Shift As Boolean
@@ -13,9 +13,9 @@ Public Checked As Boolean
 Public Toggle As Boolean
 Public Radio As Boolean
 Public Level As Integer
-Public Picture As String
+Public (Picture) As String
 Public Tag As String
-Public Action As String
+Public (Action) As String
 Public Translate As Boolean
 
 Public Sub _new()

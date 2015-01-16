@@ -2,7 +2,7 @@
 
 Export
 
-Public Sub Optional(Message As String, Button As String, Key As String, Optional Icon As String, Optional Force As Boolean) As Integer
+Public Sub Optional((Message) As String, (Button) As String, (Key) As String, Optional Icon As String, Optional Force As Boolean) As Integer
   
   Return FMessage.Run(Icon, Message, [Button], Key, Force)
   

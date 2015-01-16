@@ -2,7 +2,7 @@
 
 Export
 
-Static Public Sub Quote(Path As String) As String
+Static Public Sub Encode(Path As String) As String
   
   Dim iInd As Integer
   Dim sRes As String
@@ -23,14 +23,7 @@ Static Public Sub Quote(Path As String) As String
   
 End
 
-Static Public Sub Encode(Path As String) As String
-  
-  Return Quote(Path)
-  
-End
-
-
-Static Public Sub UnQuote(Path As String) As String
+Static Public Sub Decode(Path As String) As String
   
   Dim iInd As Integer
   Dim sRes As String
@@ -51,8 +44,14 @@ Static Public Sub UnQuote(Path As String) As String
   
 End
 
-Static Public Sub Decode(Path As String) As String
+Static Public Sub Quote(Path As String) As String
   
-  Return UnQuote(Path)
+  Return Encode(Path)
+  
+End
+
+Static Public Sub UnQuote(Path As String) As String
+  
+  Return Decode(Path)
   
 End

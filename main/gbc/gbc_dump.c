@@ -418,6 +418,7 @@ static void class_update_exported(CLASS *class)
 	int len;
 	bool inserted = FALSE;
 	bool optional;
+	bool has_static;
 	int cmp;
 	
 	if (load_file(".list") && !class->exported)
@@ -430,6 +431,7 @@ static void class_update_exported(CLASS *class)
 	{
 		read_line(&name, &len);
 		optional = FALSE;
+		has_static = FALSE;
 
 		if (!name)
 			cmp = 1;
@@ -438,6 +440,11 @@ static void class_update_exported(CLASS *class)
 			if (name[len - 1] == '?')
 			{
 				optional = TRUE;
+				name[len - 1] = 0;
+			}
+			if (name[len - 1] == '!')
+			{
+				has_static = TRUE;
 				name[len - 1] = 0;
 			}
 			cmp = strcmp(name, class->name);
@@ -455,6 +462,8 @@ static void class_update_exported(CLASS *class)
 			if (JOB->verbose)
 				printf("Insert '%s%s' into .list file\n", class->name, class->optional ? "?" : "");
 			fputs(class->name, fw);
+			if (class->has_static && COMPILE_version >= 0x03060090)
+				fputc('!', fw);
 			if (class->optional)
 				fputc('?', fw);
 			fputc('\n', fw);
@@ -471,6 +480,8 @@ static void class_update_exported(CLASS *class)
 		
 			create_file(&fw, ".list#");		
 			fputs(name, fw);
+			if (has_static && COMPILE_version >= 0x03060090)
+				fputc('!', fw);
 			if (optional)
 				fputc('?', fw);
 			fputc('\n', fw);

@@ -1406,7 +1406,7 @@ Public Sub SetCompilation(Optional sOutput As String)
   
 End
 
-Public Sub gvwCompilation_Activate()
+Public Sub gvwCompilation_Select()
 
   Dim I As Integer = gvwCompilation.Row
   
@@ -1420,7 +1420,7 @@ Public Sub GotoFirstWarning()
   
   If gvwCompilation.Rows.Count = 0 Then Return
   gvwCompilation.Row = 0
-  gvwCompilation_Activate
+  'gvwCompilation_Activate
   
 End
 

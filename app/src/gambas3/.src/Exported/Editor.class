@@ -249,3 +249,56 @@ Public Sub HideMessageLabel()
   
 End
 
+Private Sub ToggleAroundCurrentWord(sIdentCar As String, sBraces As String)
+
+  Dim sLine As String
+  Dim X1, X2 As Integer
+  Dim iLen As Integer
+  
+  sLine = Me.Lines[Me.Line].Text
+  iLen = Me.Lines[Me.Line].Length
+  
+  X1 = Me.Column
+  While X1 > 0
+    If InStr(sIdentCar, String.Mid$(sLine, X1, 1)) = 0 Then Break
+    Dec X1
+  Wend
+  
+  X2 = Me.Column
+  While X2 < iLen
+    If InStr(sIdentCar, String.Mid$(sLine, X2 + 1, 1)) = 0 Then Break
+    Inc X2
+  Wend
+  
+  If X1 = X2 Then Return
+  
+  If X1 >= 1 And If String.Mid$(sLine, X1, 1) = Left(sBraces) And If X2 < iLen And If String.Mid$(sLine, X2 + 1, 1) = Right(sBraces) Then
+    sLine = String.Left(sLine, X1 - 1) & String.Mid$(sLine, X1 + 1, X2 - X1) & String.Mid$(sLine, X2 + 2)
+    X1 = Me.Column - 1
+  Else
+    sLine = String.Left(sLine, X1) & Left(sBraces) & String.Mid$(sLine, X1 + 1, X2 - X1) & Right$(sBraces) & String.Mid$(sLine, X2 + 1)
+    X1 = Me.Column + 1
+  Endif
+  
+  Me.Lines[Me.Line].Text = sLine
+  Me.Goto(Me.Line, X1)
+  
+End
+
+Public Sub Editor_KeyPress()
+  
+  Dim sBraces As String
+  
+  If Key.Alt Then
+  
+    For Each sBraces In ["()", "{}", "[]", "<>"]
+      If InStr(sBraces, Key.Text) Then
+        ToggleAroundCurrentWord(FEditor.IDENT_CAR, sBraces)
+        Stop Event
+        Return
+      Endif
+    Next
+    
+  Endif
+  
+End

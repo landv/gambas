@@ -24,7 +24,7 @@
 Public ProjectTree As TreeView
 Public ProjectFilter As String
 Public ProjectMessage As Label
-Public Workspace As Workspace
+Public (Workspace) As Workspace
 
 Public ActiveForm As Object
 
@@ -36,7 +36,7 @@ Public ReadOnly As Boolean
 
 Public Title As String
 Public Startup As String
-Public Components As String[]
+Public (Components) As String[]
 Public Libraries As String[]
 Public Arguments As String[]
 Public Environment As String[]

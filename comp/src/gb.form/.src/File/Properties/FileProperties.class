@@ -41,9 +41,9 @@ Private Sub Path_Write(Value As String)
 
 End
 
-Public Sub Add({Panel} As Control, Title As String)
+Public Sub Add((Panel) As Control, Title As String)
   
-  frmDialog.Add({Panel}, Title)
+  frmDialog.Add(Panel, Title)
   
 End
 

@@ -55,13 +55,12 @@
 /*#define DEBUG*/
 
 char *COMP_root = NULL;
-
 char *COMP_project;
 char *COMP_project_name;
 char *COMP_info_path;
 static char *COMP_classes = NULL;
-
 COMPILE COMP_current;
+uint COMPILE_version = GAMBAS_PCODE_VERSION;
 
 const FORM_FAMILY COMP_form_families[] =
 {
@@ -115,8 +114,8 @@ static void add_memory_list(char *p, int size)
 			break;
 		
 		len = p2 - p;
-		if (len > 2 && p[len - 1] == '?')
-			len--;
+		/*if (len > 2 && p[len - 1] == '?')
+			len--;*/
 
 		COMPILE_add_class(p, len);
 		
@@ -135,8 +134,8 @@ static void add_file_list(FILE *fi)
 			break;
 
 		len = strlen(line);
-		if (len > 2 && line[len - 1] == '?')
-			len--;
+		/*if (len > 2 && line[len - 1] == '?')
+			len--;*/
 
 		COMPILE_add_class(line, len);
 	}
@@ -212,15 +211,76 @@ static void startup_print(FILE *fs, const char *key, const char *def)
 		fprintf(fs, "%s\n", def);
 }
 
+#undef isdigit
+
+static int read_version_digits(const char **pstr)
+{
+	const char *p = *pstr;
+	int n;
+	int i;
+
+	if (!isdigit(*p))
+		return -1;
+
+	n = 0;
+
+	for (i = 0; i < 4; i++)
+	{
+		n = (n << 4) + *p++ - '0';
+		if (!isdigit(*p))
+			break;
+	}
+
+	*pstr = p;
+	return n;
+}
+
+static void init_version(void)
+{
+	const char *ver;
+	int n, v;
+
+	ver = getenv("GB_PCODE_VERSION");
+	if (ver && *ver)
+	{
+		v = 0;
+		n = read_version_digits(&ver);
+		if (n <= 0 || n > GAMBAS_VERSION)
+			return;
+
+		v = n << 24;
+
+		if (*ver++ != '.')
+			return;
+
+		n = read_version_digits(&ver);
+		if (n < 0 || n > 0x99)
+			return;
+
+		v |= n << 16;
+
+		if (*ver++ == '.')
+		{
+			n = read_version_digits(&ver);
+			if (n > 0)
+			{
+				if (n > 0x9999)
+					return;
+
+				v |= n;
+			}
+		}
+
+		COMPILE_version = v;
+	}
+}
+
 void COMPILE_init(void)
 {
 	const char *root;
 	FILE *fp;
 	char line[256];
-	//DIR *dir;
-	//struct dirent *dirent;
 	const char *name;
-	//struct passwd *info;
 	FILE *fs;
 
 	RESERVED_init();
@@ -238,6 +298,11 @@ void COMPILE_init(void)
 	
 	COMP_project_name = STR_copy(FILE_get_name(FILE_get_dir(COMP_project)));
 	
+	// Bytecode version
+
+	init_version();
+	fprintf(stderr, "version = %08X\n", COMPILE_version);
+
 	// Project classes
 
 	BUFFER_create(&COMP_classes);

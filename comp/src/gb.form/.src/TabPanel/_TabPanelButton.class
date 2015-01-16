@@ -9,6 +9,7 @@ Property RichText As String
 Property Selected As Boolean
 Property Orientation As Integer
 Property Picture As Picture
+Property Closable As Boolean
 'Property Visible As Boolean
 
 Private $sText As String
@@ -28,6 +29,7 @@ Private $hDragWindow As Window
 Private $DX As Integer
 Private $SX As Integer
 Private $hTimerDrag As Timer
+Private $bClosable As Boolean
 
 Public Sub _new()
   
@@ -329,7 +331,7 @@ Public Sub DrawingArea_Enter()
   
   'Debug ">";; Me.Text
   $hDrawingArea.Tracking = True
-  $bShowClose = GetParent().Closable
+  $bShowClose = GetParent().Closable Or $bClosable
   $hDrawingArea.Refresh
   
 End
@@ -499,5 +501,17 @@ Private Sub StopDrag()
   $hDrawingArea.Tracking = False
   $bDrag = False
   $bDragging = False
+
+End
+
+Private Function Closable_Read() As Boolean
+
+  Return $bClosable
+
+End
+
+Private Sub Closable_Write(Value As Boolean)
+
+  $bClosable = Value
 
 End

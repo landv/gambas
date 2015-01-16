@@ -13,15 +13,15 @@ Static Private Sub HandleQuery(sURL As String, bClear As Boolean, Field As Strin
     If bClear Then
       Return sURL
     Else
-      Return sURL & "?" & URL.Quote(Field) & "=" & URL.Quote(Value)
+      Return sURL & "?" & URL.Encode(Field) & "=" & URL.Encode(Value)
     Endif
   Endif
   
   aQuery = Split(Mid$(sURL, iPos + 1), "&")
   sURL = Left$(sURL, iPos - 1)
   
-  Field = URL.Quote(Field)
-  Value = URL.Quote(Value)
+  Field = URL.Encode(Field)
+  Value = URL.Encode(Value)
   
   For I = 0 To aQuery.Max
     sElt = aQuery[I]

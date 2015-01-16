@@ -83,6 +83,8 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 	CLASS *class;
 	int i;
 	COMPONENT *current;
+	bool optional;
+	char c;
 
 	if (arch->exported_classes_loaded)
 		return;
@@ -123,6 +125,25 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 				fprintf(stderr, "Check %s global\n", name);
 			#endif
 
+			len = strlen(name);
+			optional = FALSE;
+
+			for(;;)
+			{
+				c = name[len - 1];
+				if (c == '?')
+				{
+					optional = TRUE;
+					len--;
+				}
+				else if (c == '!')
+					len--;
+				else
+					break;
+			}
+
+			name[len] = 0;
+
 			/*
 			class = CLASS_look_global(name, strlen(name));
 
@@ -140,11 +161,9 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 			class = CLASS_find_global(name);
 			CLASS_check_global(class);
 
-			len = strlen(name);
-			if (len > 2 && name[len - 1] == '?')
+			if (optional)
 			{
-				name[len - 1] = 0;
-				if (CLASS_look_global(name, strlen(name)))
+				if (CLASS_look_global(name, len))
 					class = NULL;
 			}
 

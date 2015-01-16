@@ -182,7 +182,8 @@ typedef
 		unsigned used : 1;
 		unsigned exported : 1;
 		unsigned structure : 1;
-		unsigned _reserved : 29;
+		unsigned has_static : 1;
+		unsigned _reserved : 28;
 		}
 	CLASS_REF;
 
@@ -197,7 +198,8 @@ typedef
 		unsigned optional : 1;         // class is optional
 		unsigned nocreate : 1;         // class cannot be instantiated
 		unsigned all_fast : 1;         // all methods have the Fast option (JIT)
-		unsigned _reserved : 11;
+		unsigned has_static : 1;       // has static methods, properties or variables
+		unsigned _reserved : 10;
 		VARIABLE *stat;                // static variables
 		VARIABLE *dyn;                 // dynamic variables
 		CONSTANT *constant;            // constants
@@ -225,7 +227,7 @@ typedef
 void CLASS_create(CLASS **result);
 void CLASS_delete(CLASS **class);
 
-CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global);
+CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, int type, bool global);
 void CLASS_check_unused_global(CLASS *class);
 void CLASS_begin_init_function(CLASS *class, int type);
 

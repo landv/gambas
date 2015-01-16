@@ -130,6 +130,8 @@ static void READ_exit(void)
 	int len;
 	int index;
 	bool local;
+	bool has_static;
+	char c;
 
 	local = FALSE;
 	
@@ -145,12 +147,30 @@ static void READ_exit(void)
 		}
 		else if (*name != '.')
 		{
+			has_static = FALSE;
+
+			for(;;)
+			{
+				c = name[len - 1];
+				if (c == '!')
+				{
+					has_static = TRUE;
+					len--;
+				}
+				else if (c == '?')
+					len--;
+				else
+					break;
+			}
+
 			if (TABLE_find_symbol(JOB->class->table, name, len, &index))
 			{
 				if (local)
-					CLASS_add_class_unused(JOB->class, index);
+					index = CLASS_add_class_unused(JOB->class, index);
 				else
-					CLASS_add_class_exported_unused(JOB->class, index);
+					index = CLASS_add_class_exported_unused(JOB->class, index);
+
+				JOB->class->class[index].has_static = has_static;
 			}
 		}
 	}
@@ -755,7 +775,7 @@ static void add_identifier()
 			break;
 			
 		__OTHERS:
-			if (last_type || last_identifier)
+			if (last_type || last_identifier || (PATTERN_is(last_pattern, RS_LBRA) && car == ')' && PATTERN_is_reserved(get_last_last_pattern())))
 				can_be_reserved = FALSE;
 			else
 				can_be_reserved = canres_car[car];

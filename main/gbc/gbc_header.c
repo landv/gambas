@@ -461,7 +461,7 @@ static bool header_declaration(TRANS_DECL *decl)
 	bool is_static = FALSE;
 	bool is_public = FALSE;
 	bool is_const = FALSE;
-	//bool has_static = FALSE;
+	bool no_warning = FALSE;
 
 	/* static ! */
 
@@ -491,6 +491,12 @@ static bool header_declaration(TRANS_DECL *decl)
 		look++;
 	}
 
+	if (PATTERN_is(*look, RS_LBRA))
+	{
+		no_warning = TRUE;
+		look++;
+	}
+
 	if (!PATTERN_is_identifier(*look))
 		return FALSE;
 
@@ -498,6 +504,14 @@ static bool header_declaration(TRANS_DECL *decl)
 
 	decl->index = PATTERN_index(*look);
 	look++;
+
+	if (no_warning)
+	{
+		if (!PATTERN_is(*look, RS_RBRA))
+			return FALSE;
+		look++;
+		decl->no_warning = TRUE;
+	}
 
 	save = JOB->current;
 	JOB->current = look;

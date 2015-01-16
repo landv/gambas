@@ -759,7 +759,7 @@ static void add_identifier()
 			break;
 			
 		__OTHERS:
-			if (last_type || last_identifier)
+			if (last_type || last_identifier || (PATTERN_is(last_pattern, RS_LBRA) && car == ')' && PATTERN_is_reserved(get_last_last_pattern())))
 				can_be_reserved = FALSE;
 			else
 				can_be_reserved = canres_car[car];

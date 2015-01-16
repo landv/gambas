@@ -57,15 +57,16 @@ typedef
 
 typedef
 	struct {
-		int index;                /* index in symbol table */
-		TYPE type;                /* data type */
-		int value;                /* value */
-		TRANS_ARRAY array;        /* array dimensions */
-		PATTERN *init;            /* initialization code */
-		int64_t lvalue;           /* The value of a LONG constant */
-		unsigned is_new : 1;      /* if something must be instanciated */
-		unsigned is_integer : 1;  /* if the constant is an integer */
-		unsigned is_embedded : 1; /* if it is an embedded array */
+		int index;                  // index in symbol table
+		TYPE type;                  // data type
+		int value;                  // value
+		TRANS_ARRAY array;          // array dimensions
+		PATTERN *init;              // initialization code
+		int64_t lvalue;             // The value of a LONG constant
+		unsigned is_new : 1;        // if something must be instanciated
+		unsigned is_integer : 1;    // if the constant is an integer
+		unsigned is_embedded : 1;   // if it is an embedded array
+		unsigned no_warning : 1;    // The symbol name is between braces
 		}
 	PACKED
 	TRANS_DECL;

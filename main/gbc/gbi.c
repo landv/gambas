@@ -287,14 +287,19 @@ static int sort_symbol(const int *a, const int *b)
 	return strcmp(_sort_symbol[*a].name, _sort_symbol[*b].name);
 }
 
-static void add_class(const char *name)
+static void add_class(const char *name, bool has_static)
 {
 	int index;
 
 	if (out_list)
 	{
 		if (!TABLE_add_symbol(_classes, name, strlen(name), &index))
-			fprintf(out_list, "%s\n", name);
+		{
+			fputs(name, out_list);
+			if (has_static)
+				fputc('!', out_list);
+			fputc('\n', out_list);
+		}
 	}
 }
 
@@ -309,8 +314,7 @@ static void analyze_class(GB_DESC *desc)
 	int *sort;
 	GB_DESC *p;
 	int i;
-
-	add_class(name);
+	bool has_static = FALSE;
 
 	desc++;
 
@@ -366,12 +370,19 @@ static void analyze_class(GB_DESC *desc)
 	qsort(sort, nsymbol, sizeof(int), (int (*)(const void *, const void *))sort_symbol);
 
 	for (i = 0; i < nsymbol; i++)
-		dump_symbol(&desc[sort[i]]);
+	{
+		p = &desc[sort[i]];
+		if (strchr("PCMR", *p->name) && p->name[1] != '_')
+			has_static = TRUE;
+		dump_symbol(p);
+	}
 
 	FREE(&sort);
 	
 	if (_format)
 		newline();
+
+	add_class(name, has_static);
 }
 
 
@@ -524,7 +535,7 @@ static bool analyze_gambas_component(const char *path)
 	buffer[find.len] = 0;
 
 	for (line = strtok(buffer, "\n"); line; line = strtok(NULL, "\n"))
-		add_class(line);
+		add_class(line, FALSE);
 
 	FREE(&buffer);
 

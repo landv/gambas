@@ -15,7 +15,7 @@ Private $bIdent As Boolean
 Private $sSvnVersion As String
 Private $bSvn17 As Boolean
 
-Public User As String
+Public (User) As String
 Public Password As String
 Public UseTerminal As Boolean
 
@@ -123,7 +123,7 @@ Private Sub Run(aCmd As String[], Optional bIdent As Boolean, Optional bOutput A
 
 End
 
-Public Sub Process_Error({Error} As String)
+Public Sub Process_Error(({Error}) As String)
   
   Insert({Error})
   

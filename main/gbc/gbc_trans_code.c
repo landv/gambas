@@ -54,7 +54,7 @@ static void add_local(int sym_index, TYPE type, int value, bool used)
 
 	if (used)
 		JOB->warnings = FALSE;
-	sym = CLASS_declare(JOB->class, sym_index, FALSE);
+	sym = CLASS_declare(JOB->class, sym_index, TK_VARIABLE, FALSE);
 	if (used)
 		JOB->warnings = warnings;
 
@@ -105,12 +105,12 @@ static void remove_local()
 
 static bool TRANS_local(void)
 {
-	//PATTERN *save = JOB->current;
 	int sym_index;
 	TRANS_DECL decl;
 	PATTERN *sym;
-	//bool many;
 	int f;
+	bool no_warning;
+	bool save_warnings;
 
 	if (!TRANS_is(RS_DIM))
 		return FALSE;
@@ -125,9 +125,19 @@ static bool TRANS_local(void)
 
 		for(;;)
 		{
+			no_warning = TRANS_is(RS_LBRA);
+
 			if (!PATTERN_is_identifier(*JOB->current))
 				THROW(E_SYNTAX);
 			JOB->current++;
+
+			if (no_warning)
+			{
+				if (!PATTERN_is(*JOB->current, RS_RBRA))
+					THROW("Missing right brace");
+				JOB->current++;
+			}
+
 			if (!TRANS_is(RS_COMMA))
 				break;
 			//many = TRUE;
@@ -142,9 +152,25 @@ static bool TRANS_local(void)
 
 		for(;;)
 		{
+			if (PATTERN_is(*sym, RS_LBRA))
+			{
+				sym++;
+				no_warning = TRUE;
+				save_warnings = JOB->warnings;
+				JOB->warnings = FALSE;
+			}
+			else
+				no_warning = FALSE;
+
 			sym_index = PATTERN_index(*sym);
 			add_local(sym_index, decl.type, func->nlocal, FALSE);
 			sym++;
+
+			if (no_warning)
+			{
+				sym++;
+				JOB->warnings = save_warnings;
+			}
 
 			func->nlocal++;
 

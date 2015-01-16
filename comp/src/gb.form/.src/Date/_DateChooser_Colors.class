@@ -11,7 +11,7 @@ Public Sub Clear()
   
 End
 
-Public Sub _put(Color As Integer, {Date} As Date)
+Public Sub _put((Color) As Integer, {Date} As Date)
   
   _Calendar.SetColor({Date}, Color)
   

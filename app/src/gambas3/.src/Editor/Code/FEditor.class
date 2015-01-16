@@ -926,38 +926,6 @@ Public Sub Editors_KeyPress()
 
   Else If Key.Control Then
 
-    ' If Key.Code = Key["A"] Then
-    ' 
-    '   mnuSelectAll_Click
-    '   Stop Event
-
-    ' Else If Key.Code = Key.Up Then
-    '
-    '   GotoPreviousProc
-    '   Stop Event
-    '
-    ' Else If Key.Code = Key.Down Then
-    '
-    '   GotoNextProc
-    '   Stop Event
-
-    ' Else If Key.Code = Key.Return Then
-    ' 
-    '   If Key.Shift Then
-    '     If Editor.Lines[Editor.Line].Expanded Then
-    '       Editor.CollapseAll
-    '     Else
-    '       Editor.ExpandAll
-    '     Endif
-    '   Else
-    '     Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
-    '   Endif
-    '   Stop Event
-    '   
-    ' Else If Key.Code = Key["L"] Then
-    '   
-    '   FMain.SearchProject
-    '   
     If Key.Code = Key.F12 Then
       
       For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
@@ -987,7 +955,7 @@ Public Sub Editors_KeyPress()
       '     $cLastClassCount[sClass] = .Count
       '   End With
       ' Next
-      
+    
     Endif
 
     Return
@@ -1069,7 +1037,7 @@ Public Sub Editors_KeyPress()
   Else If Key.Code = Key.Space Then
 
     $bCheckSignature = True
-
+    
   Else If InStr("(),[]", Key.Text) Then
 
     $bCheckSignature = True
@@ -2701,7 +2669,7 @@ Public Sub ShowWatchResult(sStr As String, X As Integer, Y As Integer)
 
 End
 
-Public Sub Editors_Margin({Line} As Integer)
+Public Sub Editors_Margin((Line) As Integer)
 
   Design.SetBreakpoint(Me.Name, {Line}, Not HasBreakpoint({Line}))
 
@@ -3792,7 +3760,7 @@ Public Sub IsWordChar(sCar As String) As Boolean
   
 End
 
-Public Sub Action_Activate(Key As String) As Boolean
+Public Sub Action_Activate((Key) As String) As Boolean
   
   Select Case Key
     Case ".locked"

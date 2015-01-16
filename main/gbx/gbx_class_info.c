@@ -179,6 +179,8 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("IsLetter", "b", NULL, "(String)s"),
 	GB_METHOD("IsLower", "b", NULL, "(String)s"),
 	GB_METHOD("IsUpper", "b", NULL, "(String)s"),
+	GB_METHOD("IsLCase", "b", NULL, "(String)s"),
+	GB_METHOD("IsUCase", "b", NULL, "(String)s"),
 	GB_METHOD("IsDigit", "b", NULL, "(String)s"),
 	GB_METHOD("IsHexa", "b", NULL, "(String)s"),
 	GB_METHOD("IsSpace", "b", NULL, "(String)s"),
@@ -290,6 +292,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("Swap$", "s", NULL, "(String)s[(Endianness)i]"),
 
 	GB_METHOD("Bool@", "b", NULL, "(Pointer)p"),
+	GB_METHOD("Boolean@", "b", NULL, "(Pointer)p"),
 	GB_METHOD("Byte@", "c", NULL, "(Pointer)p"),
 	GB_METHOD("Short@", "h", NULL, "(Pointer)p"),
 	GB_METHOD("Int@", "i", NULL, "(Pointer)p"),
@@ -335,7 +338,9 @@ static GB_DESC NATIVE_GambasLanguage[] =
 
 	GB_METHOD("IsNan", "b", NULL, "(Value)f"),
 	GB_METHOD("IsInf", "i", NULL, "(Value)f"),
-	
+
+	GB_METHOD("IsMissing", "b", NULL, "(Argument)?"),
+
 	GB_END_DECLARE
 };
 

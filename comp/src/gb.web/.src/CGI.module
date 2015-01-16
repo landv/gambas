@@ -43,13 +43,13 @@ End
 
 Public Sub Encode(Path As String) As String
   
-  Return URL.Quote(Path)
+  Return URL.Encode(Path)
   
 End
 
 Public Sub Decode(Path As String) As String
   
-  Return URL.UnQuote(Path)
+  Return URL.Decode(Path)
   
 End
 

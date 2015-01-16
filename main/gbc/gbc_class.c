@@ -159,9 +159,12 @@ void CLASS_delete(CLASS **class)
 }
 
 
-CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global)
+CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, int type, bool global)
 {
-	CLASS_SYMBOL *sym = CLASS_get_symbol(class, index);
+	const char *name;
+	CLASS_SYMBOL *sym;
+
+	sym = CLASS_get_symbol(class, index);
 
 	if ((global && !TYPE_is_null(sym->global.type))
 			|| (!global && !TYPE_is_null(sym->local.type))) // || !TYPE_is_null(sym->global.type))))
@@ -172,24 +175,35 @@ CLASS_SYMBOL *CLASS_declare(CLASS *class, int index, bool global)
 		THROW("'&1' already declared", name);
 	}
 	
+	if (type == TK_VARIABLE && sym->class && JOB->class->class[sym->class - 1].has_static)
+	{
+		name = SYMBOL_get_name(&sym->symbol);
+		if (global)
+			COMPILE_print(MSG_WARNING, -1, "class name hidden by global declaration: &1", name);
+		else
+			COMPILE_print(MSG_WARNING, -1, "class name hidden by local declaration: &1", name);
+	}
+
 	if (!global && !TYPE_is_null(sym->global.type))
 	{
+		name = SYMBOL_get_name(&sym->symbol);
+
 		switch (TYPE_get_kind(sym->global.type))
 		{
 			case TK_VARIABLE:
-				COMPILE_print(MSG_WARNING, -1, "global variable hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				COMPILE_print(MSG_WARNING, -1, "global variable hidden by local declaration: &1", name);
 				break;
 				
 			case TK_FUNCTION:
-				COMPILE_print(MSG_WARNING, -1, "function hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				COMPILE_print(MSG_WARNING, -1, "function hidden by local declaration: &1", name);
 				break;
 			
 			case TK_EXTERN:
-				COMPILE_print(MSG_WARNING, -1, "extern function hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				COMPILE_print(MSG_WARNING, -1, "extern function hidden by local declaration: &1", name);
 				break;
 
 			case TK_CONST:
-				COMPILE_print(MSG_WARNING, -1, "constant hidden by local declaration: &1", SYMBOL_get_name(&sym->symbol));
+				COMPILE_print(MSG_WARNING, -1, "constant hidden by local declaration: &1", name);
 				break;
 		}
 	}
@@ -258,11 +272,14 @@ void CLASS_add_function(CLASS *class, TRANS_FUNC *decl)
 
 	if (!decl) return;
 
-	sym = CLASS_declare(class, decl->index, TRUE);
+	sym = CLASS_declare(class, decl->index, TK_FUNCTION, TRUE);
 	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
 
 	sym->global.type = decl->type;
 	sym->global.value = ARRAY_count(class->function) - 1;
+
+	if (TYPE_is_static(decl->type))
+		class->has_static = TRUE;
 
 	func->nparam = decl->nparam;
 
@@ -335,7 +352,7 @@ void CLASS_add_event(CLASS *class, TRANS_EVENT *decl)
 
 	if (!decl) return;
 
-	sym = CLASS_declare(class, decl->index, TRUE);
+	sym = CLASS_declare(class, decl->index, TK_EVENT, TRUE);
 	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
 
 	sym->global.type = decl->type;
@@ -374,11 +391,14 @@ void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 	prop->write = decl->read == 0;
 	prop->synonymous = -1;
 
-	sym = CLASS_declare(class, decl->index, TRUE);
+	sym = CLASS_declare(class, decl->index, TK_PROPERTY, TRUE);
 	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
 
 	sym->global.type = decl->type;
 	sym->global.value = ARRAY_count(class->prop) - 1;
+
+	if (TYPE_is_static(decl->type))
+		class->has_static = TRUE;
 
 	prop->type = decl->type;
 	prop->name = decl->index;
@@ -394,7 +414,7 @@ void CLASS_add_property(CLASS *class, TRANS_PROPERTY *decl)
 		prop->write = decl->read == 0;
 		prop->synonymous = index;
 
-		sym = CLASS_declare(class, decl->synonymous[i], TRUE);
+		sym = CLASS_declare(class, decl->synonymous[i], TK_PROPERTY, TRUE);
 		/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
 
 		sym->global.type = decl->type;
@@ -428,7 +448,7 @@ void CLASS_add_extern(CLASS *class, TRANS_EXTERN *decl)
 
 	if (!decl) return;
 
-	sym = CLASS_declare(class, decl->index, TRUE);
+	sym = CLASS_declare(class, decl->index, TK_EXTERN, TRUE);
 	/*CLASS_add_symbol(class, JOB->table, decl->index, &sym, NULL);*/
 
 	sym->global.type = decl->type;
@@ -653,15 +673,30 @@ void CLASS_begin_init_function(CLASS *class, int type)
 
 void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 {
-	CLASS_SYMBOL *sym = CLASS_declare(class, decl->index, TRUE);
+	CLASS_SYMBOL *sym;
 	VARIABLE *var;
 	int count;
+	bool save_warnings = FALSE;
+
+	if (decl->no_warning)
+	{
+		save_warnings = JOB->warnings;
+		JOB->warnings = FALSE;
+	}
+
+	sym = CLASS_declare(class, decl->index, TYPE_get_kind(decl->type), TRUE);
+
+	if (decl->no_warning)
+	{
+		JOB->warnings = save_warnings;
+	}
 
 	sym->global.type = decl->type;
 
 	if (TYPE_get_kind(decl->type) == TK_CONST)
 	{
 		sym->global.value = CLASS_add_constant(class, decl);
+		class->has_static = TRUE;
 	}
 	else if (TYPE_is_static(decl->type))
 	{
@@ -687,6 +722,7 @@ void CLASS_add_declaration(CLASS *class, TRANS_DECL *decl)
 			TRANS_init_var(decl);
 			CODE_pop_global(sym->global.value, TRUE);
 		}
+		class->has_static = TRUE;
 	}
 	else
 	{
