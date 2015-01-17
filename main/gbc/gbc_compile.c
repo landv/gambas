@@ -301,7 +301,6 @@ void COMPILE_init(void)
 	// Bytecode version
 
 	init_version();
-	fprintf(stderr, "version = %08X\n", COMPILE_version);
 
 	// Project classes
 
