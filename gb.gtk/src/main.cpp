@@ -368,10 +368,15 @@ static bool global_key_event_handler(int type)
 static void my_main(int *argc, char ***argv)
 {
 	static bool init = false;
+	char *env;
 	
 	if (init)
 		return;
 	
+	env = getenv("GB_X11_INIT_THREADS");
+		if (env && atoi(env))
+	XInitThreads();
+
 	gApplication::init(argc, argv);
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();

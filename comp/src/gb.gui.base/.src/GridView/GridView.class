@@ -2020,70 +2020,86 @@ Public Sub _GetPreferredWidth(iCol As Integer) As Integer
   Dim iPadding As Integer
   Dim fTime As Float
   Dim hBorder As Border
+  Dim fDiff As Float
+  Dim bBusy As Boolean
+  Dim J As Integer
   
   PW = Me.Font.TextWidth($hColumns[iCol].Text) + $iPadding * 2 + If($bSorted, 16, 0)
   
   fTime = Timer
-  For I = 0 To $hRows.Max
+  
+  For J = 0 To $hRows.Max Step 10000
     
-    hData = _GetCellData(I, iCol)
+    For I = J To Min($hRows.Max, J + 9999)
     
-    If HasSpan(I, iCol) Then
-      iColSpan = _GetSpan(I, iCol)[1]
-      If iColSpan < 0 Then
-        hData = _GetCellData(I, iCol + iColSpan)
-        iColSpan = _GetSpan(I, iCol + iColSpan)[1]
-      Endif
-      D = iColSpan + 1
-    Else
-      D = 1
-    Endif
-    
-    With hData
+      hData = _GetCellData(I, iCol)
       
-      iPadding = Max($iPadding, .Padding)
-      W = iPadding * 2
-      hFont = .Font
-      If Not hFont Then hFont = Me.Font
-      
-      If .RichText Then
-        If Not .WordWrap Then W += hFont.RichTextWidth(.RichText)
-      Else If .Text Then
-        If Not .WordWrap Then W += hFont.TextWidth(.Text)
+      If HasSpan(I, iCol) Then
+        iColSpan = _GetSpan(I, iCol)[1]
+        If iColSpan < 0 Then
+          hData = _GetCellData(I, iCol + iColSpan)
+          iColSpan = _GetSpan(I, iCol + iColSpan)[1]
+        Endif
+        D = iColSpan + 1
+      Else
+        D = 1
       Endif
       
-      If .Picture Then
-        W += .Picture.Width
-        If .Text Or If .RichText Then W += iPadding
-      Endif
-      
-      hBorder = .Border
-      
-      If hBorder Then
-        With hBorder
-          W += .LeftPadding + .LeftWidth + .RightPadding + .RightWidth + .LeftMargin + .RightMargin
-        End With
-      Endif
-      
-      If iCol = 0 Or If iCol = $hColumns.Max Then
-        hBorder = $hRows._GetRowBorder(I)
+      With hData
+        
+        iPadding = Max($iPadding, .Padding)
+        W = iPadding * 2
+        hFont = .Font
+        If Not hFont Then hFont = Me.Font
+        
+        If .RichText Then
+          If Not .WordWrap Then W += hFont.RichTextWidth(.RichText)
+        Else If .Text Then
+          If Not .WordWrap Then W += hFont.TextWidth(.Text)
+        Endif
+        
+        If .Picture Then
+          W += .Picture.Width
+          If .Text Or If .RichText Then W += iPadding
+        Endif
+        
+        hBorder = .Border
+        
         If hBorder Then
           With hBorder
-            If iCol = 0 Then W += .LeftPadding + .LeftMargin + .LeftWidth
-            If iCol = $hColumns.Max Then W += .RightPadding + .RightMargin + .RightWidth
+            W += .LeftPadding + .LeftWidth + .RightPadding + .RightWidth + .LeftMargin + .RightMargin
           End With
         Endif
-      Endif
+        
+        If iCol = 0 Or If iCol = $hColumns.Max Then
+          hBorder = $hRows._GetRowBorder(I)
+          If hBorder Then
+            With hBorder
+              If iCol = 0 Then W += .LeftPadding + .LeftMargin + .LeftWidth
+              If iCol = $hColumns.Max Then W += .RightPadding + .RightMargin + .RightWidth
+            End With
+          Endif
+        Endif
+        
+        PW = Max(PW, (W + D - 1) \ D)
+        
+      End With
       
-      PW = Max(PW, (W + D - 1) \ D)
-      
-    End With
+    Next
     
-    If I And 1023 = 0 Then
-      If (Timer - fTime) > 1 Then Break
+    fDiff = Timer - fTime
+    'Debug fDiff
+    If fDiff > 1 Then
+      If Not bBusy Then
+        Inc Application.Busy
+        bBusy = True
+      Endif
+      If fDiff > 5 Then Break
     Endif
     
   Next
+  
+  If bBusy Then Dec Application.Busy
   
   Return PW + 2
   

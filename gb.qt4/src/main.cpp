@@ -802,6 +802,12 @@ static void *_old_hook_main;
 
 static void hook_main(int *argc, char ***argv)
 {
+	char *env;
+
+	env = getenv("GB_X11_INIT_THREADS");
+	if (env && atoi(env))
+		XInitThreads();
+
 	new MyApplication(*argc, *argv);
 	
 	QT_Init();

@@ -51,6 +51,13 @@ Private Sub GetIndex() As Integer
   
 End
 
+Private Sub IsClosable() As Boolean
+
+  If $bClosable Then Return True
+  If GetParent().Closable Then Return True
+
+End
+
 Public Sub DrawingArea_Draw()
   
   Dim iFg As Integer
@@ -89,7 +96,7 @@ Public Sub DrawingArea_Draw()
   
   iIndex = GetIndex()
   bHighlight = hTabPanel.Highlight And Not $bSelected
-  bClosable = hTabPanel.Closable
+  bClosable = IsClosable()
   
   If bHighlight Then
     Paint.FillRect(0, 0, Me.W, Me.H, hTabPanel._GetBackground())
@@ -213,7 +220,7 @@ End
 Public Sub UpdateLayout()
 
   Dim S As Integer
-  Dim bClosable As Boolean = GetParent().Closable
+  Dim bClosable As Boolean = IsClosable()
   
   If $bRichText Then
     S = Me.Parent.Font.RichTextWidth($sText) + 16
@@ -278,7 +285,7 @@ Public Sub DrawingArea_MouseDown()
   Dim hTabPanel As TabPanel
   If Mouse.Left Then 
     hTabPanel = GetParent()
-    If $bInClose And If hTabPanel.Closable Then
+    If $bInClose And If IsClosable() Then
       hTabPanel._Close(GetIndex())
     Else
       If $bSelected Then Return
@@ -331,7 +338,7 @@ Public Sub DrawingArea_Enter()
   
   'Debug ">";; Me.Text
   $hDrawingArea.Tracking = True
-  $bShowClose = GetParent().Closable Or $bClosable
+  $bShowClose = IsClosable()
   $hDrawingArea.Refresh
   
 End
@@ -365,7 +372,7 @@ Public Sub DrawingArea_MouseMove()
   X = Mouse.ScreenX - Me.ScreenX
   
   If X >= 0 And If X < Me.W Then
-    bShowClose = GetParent().Closable
+    bShowClose = IsClosable()
   
     If bShowClose Then
       If System.RightToLeft Then
@@ -513,5 +520,7 @@ End
 Private Sub Closable_Write(Value As Boolean)
 
   $bClosable = Value
+  UpdateLayout
+  $hDrawingArea.Refresh
 
 End

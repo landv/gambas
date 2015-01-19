@@ -93,6 +93,7 @@ Public Sub _new()
   End With
   
   tabDebug[TAB_COMPILATION].Visible = False
+  tabDebug[TAB_SEARCH].Closable = True
   
   ReadConfig
   UpdateLocal
@@ -1195,13 +1196,13 @@ Private Sub GotoConsole()
 End
 
 
-Public Sub btnClearSearch_Click()
-
-  FSearch.ResetBrowse
-  GotoConsole
-  tabDebug[TAB_SEARCH].Visible = False
-
-End
+' Public Sub btnClearSearch_Click()
+' 
+'   FSearch.ResetBrowse
+'   GotoConsole
+'   tabDebug[TAB_SEARCH].Visible = False
+' 
+' End
 
 Public Sub OnVisibilityChange()
   
@@ -1349,7 +1350,7 @@ Public Sub OnProjectChange()
   $aTask = Null
   UpdateTask
   SetCompilation
-  btnClearSearch_Click  
+  tabDebug_Close(TAB_SEARCH)
   
 End
 
@@ -1484,5 +1485,15 @@ End
 Public Sub tabDebug_Arrange()
 
   If tabDebug.Index = TAB_LOCAL Then UpdateLocal
+
+End
+
+Public Sub tabDebug_Close(Index As Integer)
+
+  If Index = TAB_SEARCH Then
+    FSearch.ResetBrowse
+    GotoConsole
+    tabDebug[TAB_SEARCH].Visible = False
+  Endif
 
 End

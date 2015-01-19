@@ -33,6 +33,8 @@ Public Sub Form_Open()
     hLabel.Border = Border.Plain
   Next
   
+  TabPanel2[1].Closable = True
+  
 End
 
 Public Sub Form_DblClick()
@@ -54,5 +56,11 @@ Public Sub Timer1_Timer()
       Print "Active: NULL"
     Endif
   Endif
+
+End
+
+Public Sub TabPanel2_Close(Index As Integer)
+
+  Debug Index
 
 End
