@@ -85,8 +85,6 @@ Private Sub Spacing_Write(Value As String)
   
 End
 
-
-
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, (DataIndex) As Integer)
   
   Dim hChild As TControl
@@ -389,8 +387,6 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   
 End
 
-
-
 Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   
   Dim aPageItems As New TControl[] ''Éléments contenu par cette page
@@ -411,6 +407,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   'Dim iPrevIndex As Integer
   Dim bForceNewPage As Boolean ''Flag d'anticipation de sortie 1 par page
   Dim iPreIndex As Integer
+  Dim bFirst As Boolean
   'Détermination de la taille d'un espace
   'et prise en compte de la taille relative
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing)
@@ -502,14 +499,18 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         'on provoque la sortie en fin de boucle
         If (fTH - hChildHints.Height) < 0 Or If fTH <= 0 Or bForceNewPage Then
           '  If hchild.Tag = "*" Then Stop
-          bForceNewPage = False
-          hchild._DataIndex = j
-          
-          'If Not bForceNewPage Then 
-          bExitLoop = True
-          Break
+          If Not bFirst Then
+            hChildHints.Height = fTH
+          Else
+            bForceNewPage = False
+            hchild._DataIndex = j
+            
+            'If Not bForceNewPage Then 
+            bExitLoop = True
+            Break
+          Endif
         Endif
-        
+        bFirst = True
         'On déduit la taille de l'objet courant (et l'espace suivant)
         fTH = fTH - hChildHints.Height - fspc
         
@@ -941,7 +942,4 @@ End
 
 Public Sub _SetCChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   
-  
-  
 End
-
