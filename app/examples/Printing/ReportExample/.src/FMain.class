@@ -16,7 +16,7 @@ End
 
 Public Sub btnReport_Click()
 
-  $hReport = New Report1(LCase(cmbServer.Text))
+  $hReport = New Report1(Null, LCase(cmbServer.Text))
   $hReport.Preview()
 
 End

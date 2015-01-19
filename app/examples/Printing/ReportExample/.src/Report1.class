@@ -2,7 +2,7 @@
 
 'Static Public Type As String
 
-Public Sub _new(sType As String)
+Public Sub _new(Optional sType As String = "mysql")
 
   Dim hResult As Result
   Dim Rlbl As ReportLabel
@@ -17,7 +17,7 @@ Public Sub _new(sType As String)
     Return
   Endif
 
-  hResult = db.Limit(300).Find("test")
+  hResult = db.Limit(200).Find("test")
   If Not hResult.Available Then Return
 
   For Each hResult

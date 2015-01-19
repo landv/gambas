@@ -36,14 +36,15 @@
         MoveScaled(0,0,31,7)
         Expand = True
         AutoResize = True
-        Text = ("See Report Example 1...")
+        Text = ("See Report Example 1") & "..."
         Picture = Picture["icon:/32/print"]
       }
       { btnReport2 Button
         MoveScaled(0,6,31,7)
+        Visible = False
         Expand = True
         AutoResize = True
-        Text = ("See Report Example 2...")
+        Text = ("See Report Example 2") & "..."
         Picture = Picture["icon:/32/print"]
       }
     }
@@ -58,7 +59,7 @@
     { btnAbout Button
       MoveScaled(31,0,15,6)
       AutoResize = True
-      Text = ("About...")
+      Text = ("About") & "..."
       Picture = Picture["icon:/32/info"]
     }
     { btnClose Button

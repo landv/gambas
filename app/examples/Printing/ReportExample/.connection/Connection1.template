@@ -1,0 +1,65 @@
+# Gambas Database Template File 3.0
+{ Table
+  Name="color"
+  Type="InnoDB"
+  PrimaryKey=["color"]
+  { Field
+    Name="color"
+    Type=db.Serial
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=32
+    Collation="utf8_general_ci"
+  }
+  { Field
+    Name="french"
+    Type=db.String
+    Length=32
+    Collation="utf8_general_ci"
+  }
+}
+{ Table
+  Name="test"
+  Type="InnoDB"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Long
+  }
+  { Field
+    Name="color"
+    Type=db.Integer
+    Default=1
+  }
+  { Field
+    Name="firstname"
+    Type=db.String
+    Length=16
+    Collation="utf8_general_ci"
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=32
+    Collation="utf8_general_ci"
+  }
+  { Field
+    Name="birth"
+    Type=db.Date
+  }
+  { Field
+    Name="active"
+    Type=db.Boolean
+  }
+  { Field
+    Name="salary"
+    Type=db.Float
+  }
+  { Field
+    Name="comment"
+    Type=db.String
+    Collation="utf8_general_ci"
+  }
+}
