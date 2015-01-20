@@ -913,7 +913,7 @@ C
 _Properties
 C
 s
-*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,ShowShadow
+*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,Column,AutoCenter,ShowShadow
 _Group
 C
 s
@@ -962,6 +962,14 @@ Scale
 p
 f
 
+Column
+p
+i
+
+Row
+p
+i
+
 Arrangement
 p
 i
@@ -1001,6 +1009,10 @@ i
 LastVisibleDocument
 r
 i
+
+AutoCenter
+p
+b
 
 :Layout
 :

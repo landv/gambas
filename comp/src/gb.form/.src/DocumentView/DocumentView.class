@@ -5,7 +5,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,ShowShadow"
+Public Const _Properties As String = "*,Mode{Select.None;Single;Multiple}=None,Arrangement{Arrange.Row;Column;Vertical;Horizontal;Fill}=Row,Padding=10,Spacing=10,Column,AutoCenter,ShowShadow"
 Public Const _Group As String = "View"
 Public Const _Similar As String = "GridView"
 
@@ -18,12 +18,12 @@ Property Count As Integer
 Property Read Max As Integer
 Property Read Layout As _DocumentLayout
 Property Zoom, Scale As Float
+Property Column, Row As Integer
 Property Arrangement As Integer
 Property VisibleCount As Integer '> 0 set the number of page by line
 '= 0 standart mode the number of page to fit the visible area.
 
 Property Mode As Integer
-
 
 Property Padding As Integer 
 Property Spacing As Integer
@@ -32,11 +32,10 @@ Property Read Item As _DocumentItem
 Property Read Current As _DocumentItem
 Property Read FirstVisibleDocument As Integer
 Property Read LastVisibleDocument As Integer
+Property AutoCenter As Boolean
 
-
-
-
-
+Private $bAutoCenter As Boolean
+Private $iColumn As Integer 
 Private $iMode As Integer = Select.None
 Private $bShowShadow As Boolean = True
 Private $iPadding As Integer = 10
@@ -80,6 +79,8 @@ Private $iCurrent As Integer
 'Private $fZoom As Float
 Private $fZoom As Float = 1.0
 Private $aSelected As New Integer[]
+Private $fCenter As Float
+
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
@@ -93,6 +94,7 @@ Public Sub _new()
   $tmrLoad.Delay = 1
   Me.Proxy = $hView
   $hDocItem = New _DocumentItem As "Doc"
+  'OBS = New Observer($hView, False) As "OBS"
   '$fZoom = $fZoom
   
 End
@@ -135,6 +137,7 @@ End
 Public Sub View_Draw()
   
   Dim i, j, k As Integer
+  
   If $iCount = 0 Then Return 
   Select Case $iArrangement
     Case Arrange.Horizontal
@@ -174,6 +177,14 @@ Public Sub View_Draw()
       For i = $iFirstVisibleDocument To $iLastVisibleDocument
         DrawDoc(i, i, j)
       Next
+    Case Arrange.Fill
+      'DrawDoc($iFirstVisibleDocument, 0, 0)
+      i = 0
+      For j = $iFirstVisibleDocument To $iLastVisibleDocument
+        DrawDoc(j, 0, i)
+        Inc i 
+        
+      Next
   End Select
   
 End
@@ -193,6 +204,13 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   'Define the doc position
   iDocX = $fScaledPadding + iCol * ($fMaxPageWidth + $fScaledSpace) + ($fMaxPageWidth - $fScaledDocWidth) / 2 - $hView.ScrollX
   iDocY = $fScaledPadding + iRow * ($fMaxPageHeight + $fScaledSpace) + ($fMaxPageHeight - $fScaledDocHeight) / 2 - $hView.ScrollY
+  If $bAutoCenter Then
+    If $iArrangement = Arrange.Column Then
+      iDocY -= $fCenter
+    Else
+      iDocX += $fCenter
+    Endif
+  Endif
   
   'Draw the doc
   If $bShowShadow Then 
@@ -250,7 +268,9 @@ Private Sub DoLayout()
   Dim i As Integer
   Dim atmp As New Integer[]
   Dim fOldZoom As Float = $fZoom
+  
   If $iCount = 0 Then Return
+  $fCenter = 0
   'TODO: go
   $tmrLoad.Stop
   'Found the maxPage Size
@@ -268,11 +288,14 @@ Private Sub DoLayout()
   Select Case $iArrangement
     Case Arrange.Row, Arrange.None, Arrange.LeftRight
       
+      If $iColumn Then 
+        $fZoom = $hView.ClientW / (($iMaxPageWidth + $iSpace) * $iColumn - $iSpace + $iPadding * 2)
+      Endif
+      
       $fMaxPageWidth = $iMaxPageWidth * $fZoom
       $fMaxPageHeight = $iMaxPageHeight * $fZoom
       $fScaledSpace = $iSpace * $fZoom
       $fScaledPadding = $iPadding * $fZoom
-      
       $iNbreDocByLine = Max(($hView.ClientW - $fScaledPadding) / ($fMaxPageWidth + $fScaledSpace), 1)
       'Calculate the first visible line
       $iFirstVisibleLine = Floor($hView.ScrollY / ($fMaxPageHeight + $fScaledSpace))
@@ -284,7 +307,14 @@ Private Sub DoLayout()
       $iLastVisibleLine = Ceil(($hView.ScrollY + $hView.ClientH) / ($fMaxPageHeight + $fScaledSpace)) 
       $iLastVisibleDocument = Min($iLastVisibleLine * $iNbreDocByLine, $iCount) - 1
       
+      'If $bAutoCenter Then $fCenter = (($hView.ClientW - (($iMaxPageWidth + $iSpace) * $iNbreDocByLine - $iSpace + $iPadding * 2)) / 2) * $fZoom
+      
+      
     Case Arrange.Column, Arrange.TopBottom
+      
+      If $iColumn Then 
+        $fZoom = $hView.ClientH / (($iMaxPageHeight + $iSpace) * $iColumn - $iSpace + $iPadding * 2)
+      Endif
       
       $fMaxPageWidth = $iMaxPageWidth * $fZoom
       $fMaxPageHeight = $iMaxPageHeight * $fZoom
@@ -298,6 +328,8 @@ Private Sub DoLayout()
       $iFirstVisibleDocument = $iFirstVisibleColumn * $iNbreLines
       $iLastVisibleColumn = Floor(($hView.ScrollX + $hView.ClientWidth) / ($fMaxPageWidth + $fScaledSpace))
       $iLastVisibleDocument = Min($iLastVisibleColumn * $iNbreLines + 1, $iCount - 1) 
+      
+      'If $bAutoCenter Then $fCenter = Max((($hView.ClientH - (($iMaxPageHeight + $iSpace) * $iNbreLines - $iSpace + $iPadding * 2)) / 2), 0) * $fZoom
       
     Case Arrange.Horizontal
       $fZoom = $hView.ClientH / ($iMaxPageHeight + 2 * $iPadding) 
@@ -343,7 +375,27 @@ Private Sub DoLayout()
       $iLastVisibleDocument = Min($iLastVisibleLine * $iNbreDocByLine, $iCount) - 1
       
     Case Arrange.Fill
+      '$hView.ScrollBar = Scroll.None
       
+      If $iDocHeight > $iDocWidth * $iColumn Then
+        $fZoom = $hView.ClientH / ($iDocHeight + $iPadding * 2)
+      Else
+        $fZoom = $hView.ClientW / ($iDocWidth + (($iDocWidth + $iSpace) * ($iColumn - 1)) + $iPadding * 2)
+        If ($iDocHeight + 2 * $iPadding) * $fZoom > $hView.ClientH Then 
+          $fZoom = $hView.ClientH / ($iDocHeight + $iPadding * 2)
+        Endif
+      Endif
+      $fMaxPageWidth = $iMaxPageWidth * $fZoom
+      $fMaxPageHeight = $iMaxPageHeight * $fZoom
+      $fScaledSpace = $iSpace * $fZoom
+      $fScaledPadding = $iPadding * $fZoom
+      $iFirstVisibleDocument = $iCurrent
+      $iNbreDocByLine = Max($iColumn, 1)
+      $iLastVisibleDocument = Min($iCurrent + $iNbreDocByLine - 1, $iCount - 1)
+      If $bAutoCenter Then 
+        $fCenter = Max(($hView.ClientW - (($fMaxPageWidth + $fScaledSpace) * $iNbreDocByLine - $fScaledSpace + $fScaledPadding * 2)) / 2, 0)
+        'Print $fCenter
+      Endif
   End Select
   
   'Calculate the Max doc per line (mini 1 doc)
@@ -426,11 +478,12 @@ End
 Private Sub Count_Write(Value As Integer)
   
   $iCount = Value
-   '$aImageLoaded.Clear
+  '$aImageLoaded.Clear
   ' $aImageToLoad.Clear
   '$colImage.Clear
   RefreshLayoutNeeds
   '$tmrRefresh.Trigger
+  
 End
 
 Private Function Max_Read() As Integer
@@ -446,11 +499,9 @@ Private Function Layout_Read() As _DocumentLayout
 End
 
 Public Sub View_Arrange()
-  'RefreshAll
-  
-  SetAutoScale
+
   DoLayout
-  
+  $tmrRefresh.Trigger
 End
 
 Public Sub View_Scroll()
@@ -503,28 +554,6 @@ Public Sub tmrRefresh_Timer()
   
 End
 
-Private Sub SetAutoScale()
-  
-  ' Dim $fOldZoom As Float = $fZoom
-  ' 
-  ' Select Case $iArrangement
-  '   'Case None
-  '     
-  '   Case PagesWidth
-  '     
-  '     $fZoom = $hView.ClientW / (($iMaxPageWidth + $iSpace) * $iNbreDocByLine - $iSpace + 2 * $iPadding) 
-  '     
-  '   Case PageHeight
-  '     $fZoom = $hView.ClientHeight / ($iMaxPageHeight + 2 * $iPadding)
-  '     
-  ' End Select
-  ' If $fOldZoom <> $fZoom Then
-  '   $aImageLoaded.Clear
-  '   $aImageToLoad.Clear
-  '   Raise Zoom
-  ' Endif
-  
-End
 
 Private Function Arrangement_Read() As Integer
   
@@ -533,6 +562,12 @@ Private Function Arrangement_Read() As Integer
 End
 
 Private Sub Arrangement_Write(Value As Integer)
+  
+  If Value = Arrange.Fill Then
+    $hView.ScrollBar = Scroll.None
+  Else
+    $hView.ScrollBar = Scroll.Both
+  Endif
   
   $iArrangement = Value
   'SetAutoScale
@@ -598,7 +633,7 @@ End
 Public Sub Goto(Page As Integer)
   
   Dim iPageCol, iPageRow As Integer
-
+  
   Select Case $iArrangement
     Case Arrange.None, Arrange.Row, Arrange.LeftRight
       iPageRow = Floor(Page / $iNbreDocByLine)
@@ -619,18 +654,26 @@ Public Sub Goto(Page As Integer)
 End
 
 Public Sub View_MouseWheel()
-
-  If Mouse.Control Then
-    Me.Zoom = $fZoom + 0.1 * Mouse.Delta
+  
+  If $iArrangement = Arrange.Fill Then
+    $iCurrent = Max(0, Min($iCurrent - (Mouse.Delta * Max($iColumn, 1)), $iCount - 1))
+    $hView.Scroll(0, 0)
+    View_Scroll
+     Stop Event
+  Else
+    If Mouse.Control Then
+      Me.Zoom = $fZoom + 0.1 * Mouse.Delta
+    Endif
+    Stop Event
   Endif
-
+  
 End
 
 Public Function Find(X As Integer, Y As Integer) As Integer
   
   Dim iRow, iCol As Integer
   Dim iPage As Integer
-
+  
   iRow = GetPageRow(Y)
   iCol = GetPageCol(X)
   
@@ -702,7 +745,7 @@ Private Function GetPageCol(X As Integer) As Integer
   Dim iEnd As Integer = $iLastVisibleColumn - 1
   Dim iCol As Integer = -1
   Dim iDocPos As Integer
- ' Print "X=" & X
+  ' Print "X=" & X
   X += $hView.ScrollX
   iStart = $iFirstVisibleColumn
   
@@ -711,7 +754,7 @@ Private Function GetPageCol(X As Integer) As Integer
     iDocPos = ($fScaledPadding + (iMiddle * ($fMaxPageWidth + $fScaledSpace)))
     'Print X
     'Print "DocX : " & (iDocPos - 1)
-   ' Print "DocX + Width : " & (iDocPos + $fMaxPageWidth)
+    ' Print "DocX + Width : " & (iDocPos + $fMaxPageWidth)
     If X > iDocPos - 1 And If X < iDocPos + $fMaxPageWidth Then
       'Print "trouvé"
       iCol = iMiddle
@@ -749,7 +792,6 @@ End
 '   
 ' End
 
-
 Public Sub _Get(Index As Integer) As _DocumentItem
   
   If Index > $iCount - 1 Then Return Null
@@ -786,26 +828,21 @@ Public Function MovePrevious() As Boolean
   
 End
 
-
-
 Private Function Item_Read() As _DocumentItem
-
+  
   $hDocItem._Index = $iIntern
   Return $hDocItem
-
+  
 End
-
 
 Private Function Current_Read() As _DocumentItem
-
+  
   $hDocItem._Index = $iCurrent
   Return $hDocItem
-
+  
 End
 
-
 Public Sub View_MouseDown()
-
   
   'Try $iCurrent = Find(Mouse.x, Mouse.Y)
   '$aSelected.Clear
@@ -814,19 +851,17 @@ Public Sub View_MouseDown()
   
 End
 
-
 Private Function Mode_Read() As Integer
-
+  
   Return $iMode
-
+  
 End
 
 Private Sub Mode_Write(Value As Integer)
-
+  
   $iMode = Value
-
+  
 End
-
 
 Public Function _IsVisible(Index As Integer) As Boolean
   
@@ -836,24 +871,45 @@ End
 
 Public Function _GetX(Index As Integer) As Integer
   
-  
-  
 End
 
 Public Function _GetY(Index As Integer) As Integer
   
-  
-  
 End
 
 Private Function FirstVisibleDocument_Read() As Integer
-
+  
   Return $iFirstVisibleDocument
-
+  
 End
 
 Private Function LastVisibleDocument_Read() As Integer
-
+  
   Return $iLastVisibleDocument
+  
+End
 
+Private Function Column_Read() As Integer
+  
+  Return $iColumn
+  
+End
+
+Private Sub Column_Write(Value As Integer)
+  
+  $iColumn = Min(Value, $iCount - 1)
+  
+End
+
+Private Function AutoCenter_Read() As Boolean
+
+  Return $bAutoCenter 
+
+End
+
+Private Sub AutoCenter_Write(Value As Boolean)
+
+  $bAutoCenter = Value
+  $tmrRefresh.Trigger
+  
 End
