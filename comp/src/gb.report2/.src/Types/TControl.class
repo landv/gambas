@@ -54,24 +54,24 @@ End
 
 Private Function RealLeft_Read() As Float
 
-  Return ReportUnits._ReportUnitsToPixels(fX)
+  Return ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fX) 'ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fX)
 
 End
 
 Private Function RealTop_Read() As Float
 
-  Return ReportUnits._ReportUnitsToPixels(fY)
+  Return ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fY)
 
 End
 
 Private Function RealWidth_Read() As Float
 
-  Return ReportUnits._ReportUnitsToPixels(fX + fW) - ReportUnits._ReportUnitsToPixels(fX)
+  Return ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fX + fW) - ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fX)
 
 End
 
 Private Function RealHeight_Read() As Float
 
-  Return ReportUnits._ReportUnitsToPixels(fY + fH) - ReportUnits._ReportUnitsToPixels(fY)
+  Return ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fY + fH) - ReportControl._ObjectFromId[$iCtrl].Report._ToPixels(fY)
 
 End

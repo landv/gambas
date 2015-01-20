@@ -1,0 +1,21 @@
+' Gambas class file
+
+
+
+
+Public Sub ReportGridView1_Data(Row As Integer, Column As Integer)
+
+  
+
+End
+
+Public Sub Report_Open()
+
+  ReportGridView1.Columns.Count = 6
+   ReportGridView1.Rows.Count = 8
+  ReportGridView1.Columns[2].Width = "6cm"
+  ReportGridView1.Rows[2].Height = "2cm"
+  ReportGridView1.Rows[4].Height = "8px"
+  ReportGridView1.Rows[4].Text = "totolkjdhdolhldhdhl"
+  ReportGridView1.Header = ReportGridView.Both
+End

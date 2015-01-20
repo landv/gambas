@@ -1,10 +1,10 @@
 [Breakpoints]
-Count=0
+Count=1
+Breakpoint[1]="ReportFrame.78"
 
 [DebugWindow]
-Count=2
+Count=1
 DebugWindow[1]="hchild.Margin"
-DebugWindow[2]="hReport"
 
 [DebugWindow/$aSections]
 Geometry=[-55,269,210,210]
@@ -22,11 +22,23 @@ Geometry=[0,0,210,210]
 [DebugWindow/Me]
 Geometry=[-7,-10,294,210]
 
+[DebugWindow/Me.BackGround._PaintBrush(X1, Y1, X2, Y2)]
+Geometry=[-7,-10,210,210]
+
+[DebugWindow/Me.BackGround._PaintBrush(X1, Y1, X2, Y2).Matrix]
+Geometry=[7,4,210,210]
+
+[DebugWindow/Object.Parent(Me)]
+Geometry=[-7,-10,210,210]
+
 [DebugWindow/Parent]
 Geometry=[-7,-10,210,210]
 
 [DebugWindow/Report1]
 ShowHidden=True
+Geometry=[-7,-10,210,210]
+
+[DebugWindow/TSizeParse[s]]
 Geometry=[-7,-10,210,210]
 
 [DebugWindow/_ObjectFromId]
@@ -51,29 +63,20 @@ Geometry=[1236,625,210,210]
 Geometry=[1133,212,210,210]
 
 [FCommit]
-LastCommit="[GB.REPORT2]\n* OPT: Continue Report component reconstruction\n---- Cette ligne et les suivantes seront ignorées ----\n\nA       .hidden/control\nA       .hidden/control/reporthbox.png\nA       .hidden/control/reportlabel.png\nA       .hidden/control/reportpagebreak.png\nA       .hidden/control/reportvbox.png\nM       .info\nM       .list\nM       .project\nM       .settings\nM       .src/Report.class\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nA       .src/ReportFrame.class\nA       .src/ReportPageBreak.class\nR       .src/Tests/FMain.class\nR       .src/Tests/FMain.form\nM       .src/Tests/Module1.module\nA       .src/Tests/Report1.class\nA       .src/Tests/Report1.report\nA       .src/Tools/CPrint.class\nA       .src/Types/Base\nA       .src/Types/Base/ReportBrush.class\nA       .src/Types/Base/ReportPadding.class\nA       .src/Types/Border\nA       .src/Types/Border/ReportBorder.class\nA       .src/Types/Border/_ReportBorderSide.class\nA       .src/Types/Border/_ReportRoundCorner.class\nA       .src/Types/BoxShadow\nA       .src/Types/BoxShadow/ReportBoxShadow.class\nA       .src/Types/BoxShadow/_ReportBoxShadow.class\nD       .src/Types/ReportPadding.class\nA       .src/Viewer\nA       .src/Viewer/FPreview.class\nA       .src/Viewer/FPreview.form\nA       .src/Viewer/ReportView.class\nA       .src/Viewer/ReportViewTask.class\nM       .startup"
+LastCommit="[GB.REPORT2]\n* NEW: A new class ReportMargin that inherit ReportPadding\n* BUG: Size parsing now support null value (set it internally to \"0cm\")\n* OPT: Many code cleaning an reorganisation.\n* NEW: ReportView is based on DocumentView now.\n* NEW: ReportMargin and Spacing work together.\n* OPT: A value without unit is a pixel value.\n* NEW: Better support for shadows (css like)\n\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .list\nM       .project\nM       .settings\nM       .src/Report.class\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nA       .src/ReportGridView.class\nM       .src/Tests/Report1.class\nM       .src/Tests/Report1.report\nM       .src/Tools/ReportUnits.module\nA       .src/Types/Base/ReportMargin.class\nM       .src/Types/Base/ReportPadding.class\nM       .src/Types/Border/ReportBorder.class\nA       .src/Types/ReportGridView\nA       .src/Types/ReportGridView/_ReportGridView_Column.class\nA       .src/Types/ReportGridView/_ReportGridView_Columns.class\nA       .src/Types/ReportGridView/_ReportGridView_Row.class\nA       .src/Types/ReportGridView/_ReportGridView_Rows.class\nM       .src/Types/TSizeParse.class\nA       .src/Viewer/FPreview2.class\nA       .src/Viewer/FPreview2.form\nM       .src/Viewer/ReportView.class\nA       .src/Viewer/ReportView2.class\nM       .startup\nA       Synoptique\nA       tmpJournal"
 
 [OpenFile]
 Active=3
-File[1]=".src/Viewer/ReportView2.class:30.2"
-Count=13
-File[2]=".src/Viewer/ReportView.class:147.21"
-File[3]=".src/Report.class:163.0"
-File[4]=".src/Viewer/FPreview2.form"
-File[5]=".src/Viewer/FPreview2.class:3.0"
-File[6]=".src/Viewer/FPreview.form"
-File[7]=".src/Viewer/ReportViewTask.class:26.2"
-File[8]=".src/Tests/Report1.report"
-File[9]=".src/Tests/Report1.class:17.19"
-File[10]=".src/ReportContainer.class:287.0"
-File[11]=".src/ReportControl.class:110.0"
-File[12]=".src/Types/BoxShadow/ReportBoxShadow.class:23.0"
-File[13]=".src/ReportVBox.class:12.0"
+File[1]=".src/Tests/Module1.module:0.0"
+Count=3
+File[2]=".src/ReportSection.class:2.6"
+File[3]=".src/Viewer/ReportView.class:118.6"
 
 [VersionControl]
 User="gambix"
 RememberPassword=1
 
 [Watches]
-Count=0
+Count=1
+Watch[1]="AvailableW"
 

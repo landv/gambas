@@ -4,18 +4,18 @@
 Public Sub Report_Open()
 Dim hBox As ReportHBox
 Dim i As Integer
-
+'Report.Debug = True
 'Me.Spacing = "1cm"
    ReportHBox1.Margin.Bottom = "2cm"
   'Report.Debug = True
   'ReportHBox2.Margin.Top = "2cm"
-  ReportHBox1.BoxShadow.Blur = "0.5mm"
-  ReportHBox1.BoxShadow.XOffset = "1mm"
-  ReportHBox1.BoxShadow.YOffset = "1mm"
-  'ReportHBox1.BoxShadow.Spread = "0.5mm"
-  ReportHBox1.BoxShadow.Color = Color.Gray
+  ' ReportHBox1.BoxShadow.Blur = "0.5mm"
+  ' ReportHBox1.BoxShadow.XOffset = "1mm"
+  ' ReportHBox1.BoxShadow.YOffset = "1mm"
+  ' 'ReportHBox1.BoxShadow.Spread = "0.5mm"
+  ' ReportHBox1.BoxShadow.Color = Color.Gray
   
-  For i = 0 To 1101
+  For i = 0 To 14
     hbox = New Reporthbox(ReportVBox1)
     HBox.Height = "1cm"
     HBox.Border.Width = "2px"

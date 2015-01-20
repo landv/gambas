@@ -5,5 +5,7 @@ Public Sub _new()
 End
 
 Public Sub Form_Open()
-
+GridView1.Columns.Count = 6
+GridView1.Columns[0].Text = "titi"
+GridView1.Rows.Count = 6
 End

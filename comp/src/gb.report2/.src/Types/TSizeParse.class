@@ -36,9 +36,9 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
   Value = CFloat(Left$(Size, I - 1))
   Unit = Trim(Mid$(Size, I))
   
-  If Not Unit Then Unit = "%"
+  If Not Unit Then Unit = "px"
   
-  If Not ReportUnits.AllowedUnits.Exist(Unit) Then 
+  If Not Report.AllowedUnits.Exist(Unit) Then 
     If Not bAllowRelative Or Unit <> "%" Then
       Error.Raise("Unknown unit")
     Endif
@@ -47,8 +47,11 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
 End
 
 Public Sub ToCm() As Float
-  
-  Return ReportUnits.UnitToCm(Value, Unit)
+  If Paint.Device Then 
+    Return Report.UnitToCm(Value, Unit, Paint.ResolutionX)
+    Else  
+    Return Report.UnitToCm(Value, Unit)
+  Endif
   
 End
 

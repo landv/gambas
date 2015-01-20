@@ -93,9 +93,9 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Dim i As Integer
   X += hControl.RealLeft
   Y += hControl.RealTop
-      Paint.Text(DataIndex, X + 20, Y + 20)
-  Paint.Brush = Paint.Color(Color.Black)
-  Paint.Fill
+  '     Paint.Text(DataIndex, X + 20, Y + 20)
+  ' Paint.Brush = Paint.Color(Color.Black)
+  ' Paint.Fill
   
   If Not hControl._PageChildren.Exist(Page) Then Return
   'For Each hChild In hControl._PageChildren[Page]
@@ -226,9 +226,11 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   Dim i, j As Integer
   Dim bExitLoop As Boolean
   Dim fMaxSpc As Float
-  'If Me.Tag = "Boite 2" Then Stop
+  'If Me.Tag = "**" Then Stop
   'D'abord utiliser la méthode du controle pour définir la taille
   hSizeInt = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+  'Circuit court
+  If Me.Children.Count = 0 Then Return hSizeInt
   
   fSpc = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
   
@@ -237,24 +239,31 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   If Not $fFixedSize Then
     'On ajoute la marge superieur du premier objet7
     'If Me.tag = "**" Then Stop
-    If Me.Children.Max > 0 Then $fFixedSize = Me.Children[0].Margin._Top 
     For i = 0 To Me.Children.Max
       hChild = Me.Children[i]
       If hchild.Fixed Then 
+        'On ajoute la marge supérieur du premier objet fixe
+        If $fFixedSize = 0 Then $fFixedSize = hchild.Margin._Top 
         htmpInts = hChild._GetSizeHints(AvailableW, AvailableH, AvailableW, AvailableH, DataIndex)
         fMaxSpc = Max(hchild.Margin._Bottom, fspc)
         If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
         $fFixedSize += htmpInts.Height + fMaxSpc
       Endif
     Next
-    
+    'If $fFixedSize Then $fFixedSize = Me.Children[0].Margin._Top 
   Endif
   
   'La taille ne peut être inférieur a celle de tout les éléments fixes
   hSizeInt.Height = Max(hSizeInt.Height, $fFixedSize)
   
   'On ajoute la taille des objets fixes précédents
-  fHeight = $fFixedSize
+  If $fFixedSize > 0 Then
+    fHeight = $fFixedSize
+  Else
+    'On ajoute la marge supérieur du premier objet listé si aucun objet fixe n'est a l'Horizon
+    fHeight = Me.Children[Me._CurItem].Margin._Top
+  Endif
+  
   'If Me.Tag = "**" Then Stop
   If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     'On définit la taille au besoins des enfants
@@ -402,6 +411,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim fMaxSpc As Float   ''Résultat de la comparaison ds espaces (marges/spacing)
   Dim fChildX, fChildW As Float
   Dim iIndex As Integer
+  'Dim HHorsFixe As Float
+  Dim bFirst As Boolean
   'Détermination de la taille d'un espace
   'et prise en compte de la taille relative
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing)
@@ -468,7 +479,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       Endif
     Endif
   Next
-  
+  'HHorsFixe = ftH
   '*********************************************************************************
   'On parcour a présent le reste des éléments
   For i = Me._CurItem To Me.Children.Max
@@ -501,7 +512,13 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         'Si l'élément ne loge pas dans la place restante ou
         'si la place restante est insuffisante
         'on provoque la sortie en fin de boucle
+
+
         If fTH - (hChildHints.Height + hchild.Margin._Bottom) < 0 Or If fTH <= 0 Or bForceNewPage Then
+          If Not bFirst Then
+            
+            hChildHints.Height = fTH - hchild.Margin._bottom
+            Else
           '  If hchild.Tag = "*" Then Stop
           bForceNewPage = False
           hchild._DataIndex = j
@@ -509,7 +526,9 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
           'If Not bForceNewPage Then 
           bExitLoop = True
           Break
+          Endif
         Endif
+        bFirst = True
         
         'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
         'le spacing, et la marge haute de l'objet suivant.)

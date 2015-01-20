@@ -1,0 +1,23 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  AutoResize = True
+  Index = 0
+  Text = ("")
+  { ReportLabel1 ReportLabel
+    #MoveScaled(6,0,52,7)
+    Fixed = True
+    Font = Font["+14"]
+    BoxShadow = ReportBoxShadow["1mm 1mm 1mm 0mm #FF8000"]
+    Text = ("PARCELLAIRE")
+    Alignment = Align.Center
+  }
+  { ReportImage1 ReportImage
+    #MoveScaled(11,8,41,28)
+    Stretch = Report.None
+    Image = Image.Load("capture12.png")
+  }
+  Index = 0
+}

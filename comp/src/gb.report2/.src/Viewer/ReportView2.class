@@ -3,6 +3,8 @@
 Export
 Inherits UserControl
 Property _GrayScale As Boolean
+Property Report As Report
+
 Private $bGrayScale As Boolean
 Private $hReport As Report
 Private $hView As New DocumentView(Me) As "View"
@@ -12,59 +14,59 @@ Public Const _IsContainer As Boolean = False
 Private tmrLayout As New Timer As "TmrLayout"
 
 Public Sub _new()
+
   hOBS = New Observer($hView.Children[0], True) As "Area"
   tmrLayout.Delay = 5
-  SetReport(Report1)
+  Me.Report = report2
   'Report.Debug = True
+
 End
 
-
 Public Sub SetReport(hReport As Report)
-  
-  $hReport = hReport
-  $hView.Padding = ReportUnits.Convert(1, "cm", "px")
-  $hView.Spacing = $hView.Padding
-  $hView.DocWidth = ReportUnits.Convert(21.0, "cm", "px")
-  $hView.DocHeight = ReportUnits.Convert(29.7, "cm", "px")
-  $hView.Count = hReport.PageCount
-  $hView.Zoom = 0.5
   
 End
 
 Private Function _GrayScale_Read() As Boolean
-
+  
   Return $bGrayScale
-
+  
 End
 
 Private Sub _GrayScale_Write(Value As Boolean)
-
+  
   $bGrayScale = Value
-
+  
 End
-
 
 Public Sub View_Draw(Page As Integer, Width As Integer, Height As Integer)
   '$hReport.Layout()
-  Print page
+  'Print page
+
+  Dim hImg As Image
   Paint.AntiAlias = True
-   ReportUnits._Scale = $hView.Zoom
-  Paint.Scale($hView.Zoom, $hView.Zoom)
+  If $bGrayScale Then
+    hImg = New Image(Width, Height)
+    Paint.Begin(hImg)
+  Endif
   
-  '$hReport.Layout
+  'ReportUnits._Scale = $hView.Zoom
+  'Paint.Scale($hView.Zoom, $hView.Zoom)
+  $hReport.Scale = $hView.Zoom
   $hReport.Paint(page + 1)
-  ReportUnits._Scale = 1.0
+  'ReportUnits._Scale = 1.0
   
-  
+  If $bGrayScale Then
+    Paint.End
+    Paint.DrawImage(hImg.Gray, 0, 0)
+  Endif
   
 End
 
 Public Sub View_Zoom()
-   
-   tmrLayout.Stop
+  
+  tmrLayout.Stop
   
 End
-
 
 Public Sub View_Finished()
   
@@ -78,30 +80,29 @@ Public Sub Area_Scroll()
   
 End
 
-
 Public Sub Area_Draw()
   
   Dim sText As String
   Dim iTextWidth As Integer
   'Paint.Reset
-
+  
   sText = Str($hView.FirstVisibleDocument + 1) & "/" & Str($hReport.PageCount)
   iTextWidth = Paint.TextSize(sText).Width + 10
-   Paint.Rectangle(Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, 5)
-   Paint.Brush = Paint.Color(Color.SetAlpha(Color.black, 125))
-    Paint.Fill(True)
-   Paint.Brush = Paint.Color(Color.black)
-   Paint.Stroke
-   
-   Paint.Brush = Paint.Color(Color.White)
-   Paint.Font.Bold = True
-   Paint.Text(sText, Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, Align.Center)
-   Paint.fill
+  Paint.Rectangle(Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, 5)
+  Paint.Brush = Paint.Color(Color.SetAlpha(Color.black, 125))
+  Paint.Fill(True)
+  Paint.Brush = Paint.Color(Color.black)
+  Paint.Stroke
+  
+  Paint.Brush = Paint.Color(Color.White)
+  Paint.Font.Bold = True
+  Paint.Text(sText, Paint.Width - iTextWidth - 10, 10, iTextWidth, 25, Align.Center)
+  Paint.fill
   
 End
 
 Public Sub tmrLayout_Timer()
-
+  
   If Not $hReport._LayoutNotFinished Then 
     tmrLayout.Stop
     Return
@@ -110,4 +111,24 @@ Public Sub tmrLayout_Timer()
   $hReport.Layout($hReport.PageCount)
   $hView.Count = $hReport.PageCount
   '  $hView.Refresh
+
+End
+
+Private Function Report_Read() As Report
+  
+  Return $hReport
+  
+End
+
+Private Sub Report_Write(Value As Report)
+  
+  $hReport = Value
+  $hView.Padding = Report.UnitTo(1, "cm", "px")
+  $hView.Spacing = $hView.Padding
+  $hView.DocWidth = Report.UnitTo(21, "cm", "px")
+  $hView.DocHeight = Report.UnitTo(29.7, "cm", "px")
+  $hView.Count = $hReport.PageCount
+  $hView.Zoom = 0.5
+  
+
 End

@@ -8,7 +8,7 @@ Property Height As String
 Property Text, Title As String
 Private $sHeight As String
 Private $sText As String
-
+Public _Row As Integer
 Event _Foo
 
 Private Function GetRows() As _ReportGridView_Rows
@@ -20,24 +20,24 @@ End
 
 Private Function Height_Read() As String
 
-  Return $sHeight
+  Return GetRows()._GetRowHeight(_Row)
 
 End
 
 Private Sub Height_Write(Value As String)
 
-  $sHeight = Value
+   GetRows()._SetRowHeight(_Row, Value)
 
 End
 
 Private Function Text_Read() As String
 
-  Return $sText
+  Return GetRows()._GetRowText(_Row)
 
 End
 
 Private Sub Text_Write(Value As String)
 
-  $sText = Value
+  GetRows()._SetRowText(_Row, Value)
 
 End

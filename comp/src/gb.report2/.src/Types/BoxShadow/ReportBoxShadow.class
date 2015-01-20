@@ -32,7 +32,7 @@ Static Public Function _get(sValue As String) As ReportBoxShadow
   Dim s As String
   Dim i As Integer
   For Each s In Split(sValue, " ")
-    If IsDigit(Left(s)) Then
+    If IsDigit(Left(s)) Or If Left(s) = "-" Then
       
       Select Case i
         Case 0
@@ -51,7 +51,7 @@ Static Public Function _get(sValue As String) As ReportBoxShadow
       hBoxShadow.Inset = True
       Continue
     Endif
-    Try hBoxShadow.Color = Val(s)
+    Try hBoxShadow.Color = Val(Replace(s, "#", "&H"))
     
   Next
   Return hBoxShadow
@@ -65,6 +65,8 @@ End
 '   Return $aBoxShadow[Index]
 '   
 ' End
+
+
 
 Public Sub Add(Optional XOffset As String, YOffset As String, iColor As Integer, Spread As String, Blur As String, Inset As Boolean)
   
@@ -220,3 +222,5 @@ Private Function _Active_Read() As Boolean
   Return Not ($aBoxShadow[0]._XOffset = 0 And $aBoxShadow[0]._YOffset = 0 And $aBoxShadow[0]._Blur = 0 And $aBoxShadow[0]._Spread = 0)
 
 End
+
+
