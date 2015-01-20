@@ -29,10 +29,11 @@ Property Padding As Integer
 Property Spacing As Integer
 Property ShowShadow As Boolean
 Property Read Item As _DocumentItem
-Property Read Current As _DocumentItem
+'Property Read Current As _DocumentItem
 Property Read FirstVisibleDocument As Integer
 Property Read LastVisibleDocument As Integer
 Property AutoCenter As Boolean
+
 
 Private $bAutoCenter As Boolean
 Private $iColumn As Integer 
@@ -80,12 +81,14 @@ Private $iCurrent As Integer
 Private $fZoom As Float = 1.0
 Private $aSelected As New Integer[]
 Private $fCenter As Float
-
+Private $iSX As Integer
+Private $iSY As Integer
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
 Event Finished
 Event Zoom
+
 
 Public Sub _new()
   
@@ -505,7 +508,8 @@ Public Sub View_Arrange()
 End
 
 Public Sub View_Scroll()
-  
+  $iSX = $hView.ScrollX
+  $iSY = $hView.ScrollY
   $tmrLoad.Stop
   $aImageToLoad.Clear
   DoLayout
@@ -630,9 +634,11 @@ Private Sub Spacing_Write(Value As Integer)
   
 End
 
-Public Sub Goto(Page As Integer)
+Public Sub _Goto(Page As Integer)
   
   Dim iPageCol, iPageRow As Integer
+  
+  Page = Max(Min(Page, $iCount - 1), 0)
   
   Select Case $iArrangement
     Case Arrange.None, Arrange.Row, Arrange.LeftRight
@@ -648,7 +654,11 @@ Public Sub Goto(Page As Integer)
       
     Case Arrange.Horizontal
       $hView.ScrollX = Page * ($fMaxPageWidth + $fScaledSpace)
-      
+    
+    Case Arrange.Fill
+      $iCurrent = Page
+      DoLayout
+      $tmrRefresh.Trigger
   End Select
   
 End
@@ -663,10 +673,12 @@ Public Sub View_MouseWheel()
   Else
     If Mouse.Control Then
       Me.Zoom = $fZoom + 0.1 * Mouse.Delta
+      $hView.Scroll($iSX, $iSY)
     Endif
     Stop Event
   Endif
-  
+  $iSX = $hView.ScrollX
+  $iSY = $hView.ScrollY
 End
 
 Public Function Find(X As Integer, Y As Integer) As Integer
@@ -913,3 +925,35 @@ Private Sub AutoCenter_Write(Value As Boolean)
   $tmrRefresh.Trigger
   
 End
+
+' Public Sub MoveFirst()
+'   
+'   $iCurrent = 0
+'   DoLayout
+'   $tmrRefresh.Trigger
+'   
+' End
+' 
+' Public Sub MoveNext()
+'   
+'   $iCurrent = Min($iCurrent + 1, $iCount - 1)
+'   DoLayout
+'   $tmrRefresh.Trigger
+'   
+' End
+' 
+' Public Sub MovePrevious()
+'   
+'   $iCurrent = Max(0, $iCurrent - 1)
+'   DoLayout
+'   $tmrRefresh.Trigger
+'   
+' End
+' 
+' Public Sub MoveLast()
+'   
+'   $iCurrent = $iCount - 1
+'   DoLayout
+'   $tmrRefresh.Trigger
+'   
+' End
