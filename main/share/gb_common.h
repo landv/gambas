@@ -53,10 +53,6 @@
 #include <sys/param.h>
 #include <limits.h>
 
-#ifdef OS_MACOSX
-#define OS_FREEBSD
-#endif
-
 #if defined(__GNU_LIBRARY__) || defined(OS_FREEBSD)
 
 #include <getopt.h>
@@ -145,6 +141,14 @@ typedef
 
 #ifndef LLONG_MAX
 #define LLONG_MAX 9223372036854775807LL
+#endif
+
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 4096
 #endif
 
 #define CLEAR(s) (memset(s, 0, sizeof(*s)))

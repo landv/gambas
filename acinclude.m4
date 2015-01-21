@@ -495,6 +495,7 @@ AC_DEFUN([GB_SYSTEM],
     *-*-darwin* | *-*-rhapsody* )
       SYSTEM=MACOSX
       AC_DEFINE(OS_BSD, 1, [Target system is of BSD family])
+      AC_DEFINE(OS_FREEBSD, 1, [Target system is FreeBSD])
       AC_DEFINE(OS_MACOSX, 1, [Target system is MacOS X])
       AC_DEFINE(SYSTEM, "MacOSX", [Operating system])
       ;;
@@ -509,6 +510,12 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(OS_GNU, 1, [Target system is of GNU family])
       AC_DEFINE(OS_KFREEBSD, 1, [Target system is kFREEBSD])
       AC_DEFINE(SYSTEM, "kFreeBSD", [Operating system])
+      ;;
+    *-gnu* )
+      SYSTEM=HURD
+      AC_DEFINE(OS_GNU, 1, [Target system is of GNU family])
+      AC_DEFINE(OS_HURD, 1, [Target system is Hurd])
+      AC_DEFINE(SYSTEM, "Hurd", [Operating system])
       ;;
     * )
       SYSTEM=UNKNOWN

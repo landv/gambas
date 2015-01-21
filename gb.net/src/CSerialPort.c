@@ -38,6 +38,10 @@
 #define TIOCOUTQ ((unsigned int) -1)
 #endif /* __CYGWIN__ */
 
+#ifndef TIOCINQ
+#define TIOCINQ FIONREAD
+#endif
+
 #include "main.h"
 #include "tools.h"
 
