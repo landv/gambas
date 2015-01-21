@@ -195,9 +195,12 @@ bool DB_Open(DB_DESC *desc, DB_DRIVER **driver, DB_DATABASE *db)
 {
 	DB_DRIVER *d;
 	int res;
+	int timeout;
 	const char *type = desc->type;
 
+	timeout = db->timeout;
 	CLEAR(db);
+	db->timeout = timeout;
 
 	for(;;)
 	{

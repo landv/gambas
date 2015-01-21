@@ -90,8 +90,8 @@ static bool check_opened(CCONNECTION *_object)
 {
 	DB_CurrentDatabase = &THIS->db;
 
-	if (!THIS->db.handle)
-		open_connection(THIS);
+	/*if (!THIS->db.handle)
+		open_connection(THIS);*/
 
 	if (!THIS->db.handle)
 	{
@@ -350,6 +350,7 @@ BEGIN_PROPERTY(Connection_Collations)
 	GB_ARRAY array;
 
 	CHECK_DB();
+	CHECK_OPEN();
 
 	array = THIS->driver->GetCollations(&THIS->db);
 	if (array)
@@ -467,7 +468,6 @@ BEGIN_METHOD(CCONNECTION_exec, GB_STRING query; GB_VALUE param[0])
 	CRESULT *result;
 
 	CHECK_DB();
-
 	CHECK_OPEN();
 
 	query = make_query(THIS, STRING(query), LENGTH(query), GB.NParam(), ARG(param[0]));
@@ -488,7 +488,6 @@ BEGIN_METHOD(CCONNECTION_create, GB_STRING table)
 	char *table = GB.ToZeroString(ARG(table));
 
 	CHECK_DB();
-
 	CHECK_OPEN();
 
 	if (!table || !*table)
@@ -588,7 +587,6 @@ BEGIN_METHOD(CCONNECTION_edit, GB_STRING table; GB_STRING query; GB_VALUE param[
 	/*char *table = GB.ToZeroString(ARG(table));*/
 
 	CHECK_DB();
-
 	CHECK_OPEN();
 
 	/*if (check_table(THIS, table, TRUE))
@@ -655,7 +653,6 @@ BEGIN_METHOD(CCONNECTION_subst, GB_STRING query; GB_VALUE param[0])
 	char *query;
 
 	CHECK_DB();
-
 	CHECK_OPEN();
 
 	query = make_query(THIS, STRING(query), LENGTH(query), GB.NParam(), ARG(param[0]));
@@ -682,6 +679,7 @@ BEGIN_PROPERTY(CCONNECTION_charset)
 
 	CHECK_DB();
 	CHECK_OPEN();
+
 	if (THIS->db.charset)
 		GB.ReturnString(THIS->db.charset);
 	else
@@ -747,7 +745,6 @@ END_PROPERTY
 BEGIN_PROPERTY(Connection_Handle)
 
 	CHECK_DB();
-	CHECK_OPEN();
 	GB.ReturnPointer(THIS->db.handle);
 
 END_PROPERTY
