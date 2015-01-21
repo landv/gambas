@@ -938,7 +938,15 @@ DocWidth
 p
 i
 
+PageWidth
+p
+i
+
 DocHeight
+p
+i
+
+PageHeight
 p
 i
 
@@ -974,14 +982,6 @@ Arrangement
 p
 i
 
-VisibleCount
-p
-i
-
-Mode
-p
-i
-
 Padding
 p
 i
@@ -995,10 +995,6 @@ p
 b
 
 Item
-r
-_DocumentItem
-
-Current
 r
 _DocumentItem
 
@@ -1058,6 +1054,10 @@ Refresh
 m
 
 
+Reset
+m
+
+
 tmrRefresh_Timer
 m
 
@@ -1105,14 +1105,6 @@ m
 _IsVisible
 m
 b
-(Index)i
-_GetX
-m
-i
-(Index)i
-_GetY
-m
-i
 (Index)i
 #Expander
 UserContainer
@@ -3277,6 +3269,33 @@ d
 _View
 v
 DateChooser
+
+#_DocumentItem
+
+C
+Height
+r
+i
+
+Width
+r
+i
+
+_Index
+v
+i
+
+:Foo
+:
+
+
+EnsureVisible
+m
+
+
+IsVisible
+m
+b
 
 #_DocumentLayout
 
