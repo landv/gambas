@@ -2109,7 +2109,8 @@ Public Function LoadFile(sPath As String) As Object
 
 Catch
 
-  sErr = Error.Text & "\n" & Error.Where
+  sErr = Error.Text '& "\n" & Error.Where
+  If hForm Then Try hForm.Delete
   Dec Application.Busy
   Try Files[sPath] = Null
   FMain.ShowError(("Cannot open file.") & "\n\n" & sErr, sPath)

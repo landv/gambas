@@ -131,6 +131,7 @@ End
 Public Sub Reload() As Boolean
 
   Dim sData As String
+  Dim sErr As String
 
   sData = File.Load(Path)
 
@@ -162,7 +163,8 @@ Public Sub Reload() As Boolean
   $bAfterLock = False
 
   sData = Mid$(sData, Len(Project.FORM_MAGIC) + 1)
-  FromString(sData)
+  sErr = FromString(sData)
+  If sErr Then Error.Raise(sErr)
 
   $bConvert = False
   $bModify = False
@@ -229,7 +231,7 @@ Public Sub UpdateSnap()
 
 End
 
-Private Sub FromString(sData As String, Optional hParent As CControl)
+Private Sub FromString(sData As String, Optional hParent As CControl) As String
 
   Dim hCtrl As CControl
   Dim sName As String
@@ -250,25 +252,28 @@ Private Sub FromString(sData As String, Optional hParent As CControl)
   Dim bPublic As Boolean
   Dim sProp As String
   Dim aScan As String[]
+  Dim aData As String[]
+
+  aData = Split(sData, "\n")
+  
+  ' Check that controls exist first
+  
+  For Each sLine In aData
+    sLine = Trim(sLine)
+    If Left(sLine) = "{" Then
+      sClass = Split(Trim(Mid$(sLine, 2)), " ")[1]
+      If Left$(sClass) = "#" Then sClass = Mid$(sClass, 2)
+      If Not CComponent.Classes.Exist(sClass) Then Return Subst(("Unknown control: &1"), sClass)
+    Endif
+  Next
 
   hCtrl = hParent
   bFirst = True
   $hUndo.Begin
 
-  For Each sLine In Split(sData, "\n")
+  For Each sLine In aData
 
     sLine = Trim(sLine)
-
-    'iPos = InStr(sData, gb.newLine)
-    'If iPos = 0 Then
-    '  sLine = Trim(sData)
-    '  sData = ""
-    'Else
-    '  sLine = Trim(Left$(sData, iPos - 1))
-    '  sData = Mid$(sData, iPos + 1)
-    'Endif
-
-    'PRINT "> "; sLine
 
     If Len(sLine) = 0 Then Continue
     If Left$(sLine, 1) = "#" Then
@@ -1784,6 +1789,8 @@ End
 
 Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As Integer = -1)
 
+  Dim sErr As String
+  
   If Not sData Then Return
 
   'PRINT Clipboard.Text
@@ -1792,14 +1799,19 @@ Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As I
   $hUndo.Begin
   'UnSelectAll
   If iIndex >= 0 Then Try Control[sParent].Control.Index = iIndex
-  FromString(sData, Control[sParent])
+  sErr = FromString(sData, Control[sParent])
   $hUndo.End
   $bSelectNew = False
+  
+  If sErr Then
+    Message.Error(("Cannot paste data.") & "\n\n" & sErr)
+    Return
+  Endif
 
   SelectionChange
   RefreshProperty
   FFormStack.RefreshAll
-
+  
 End
 
 Private Sub PasteSelection()
