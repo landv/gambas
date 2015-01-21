@@ -114,7 +114,7 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
           Draw.Image(himgShadow, X1 + fbx - fSpread - fBlur, Y1 + fby - fSpread - fBlur)
         Else
         Paint.Brush = Paint.Color($hBoxShadow.Color)
-        Paint.Rectangle(X1 + fbx - fSpread, Y1 + fby - fSpread, H + fSpread * 2, W + fSpread * 2)
+        Paint.Rectangle(X1 + fbx - fSpread, Y1 + fby - fSpread, W + fSpread * 2, H + fSpread * 2)
         Paint.Fill
         Endif
       Endif

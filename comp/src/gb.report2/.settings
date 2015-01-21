@@ -1,10 +1,10 @@
 [Breakpoints]
-Count=1
-Breakpoint[1]="ReportFrame.78"
+Count=0
 
 [DebugWindow]
-Count=1
+Count=2
 DebugWindow[1]="hchild.Margin"
+DebugWindow[2]="$hReport"
 
 [DebugWindow/$aSections]
 Geometry=[-55,269,210,210]
@@ -14,6 +14,9 @@ Geometry=[354,0,210,210]
 
 [DebugWindow/$aSections[0].Ctrl]
 Geometry=[872,411,274,210]
+
+[DebugWindow/$hReport]
+Geometry=[-7,-10,210,210]
 
 [DebugWindow/Control]
 ShowHidden=True
@@ -57,26 +60,35 @@ Geometry=[-7,247,210,210]
 Geometry=[-7,-10,210,210]
 
 [DebugWindow/hchild.Margin]
-Geometry=[1236,625,210,210]
+Geometry=[502,541,210,210]
 
 [DebugWindow/hrc]
 Geometry=[1133,212,210,210]
 
 [FCommit]
-LastCommit="[GB.REPORT2]\n* NEW: A new class ReportMargin that inherit ReportPadding\n* BUG: Size parsing now support null value (set it internally to \"0cm\")\n* OPT: Many code cleaning an reorganisation.\n* NEW: ReportView is based on DocumentView now.\n* NEW: ReportMargin and Spacing work together.\n* OPT: A value without unit is a pixel value.\n* NEW: Better support for shadows (css like)\n\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .list\nM       .project\nM       .settings\nM       .src/Report.class\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nA       .src/ReportGridView.class\nM       .src/Tests/Report1.class\nM       .src/Tests/Report1.report\nM       .src/Tools/ReportUnits.module\nA       .src/Types/Base/ReportMargin.class\nM       .src/Types/Base/ReportPadding.class\nM       .src/Types/Border/ReportBorder.class\nA       .src/Types/ReportGridView\nA       .src/Types/ReportGridView/_ReportGridView_Column.class\nA       .src/Types/ReportGridView/_ReportGridView_Columns.class\nA       .src/Types/ReportGridView/_ReportGridView_Row.class\nA       .src/Types/ReportGridView/_ReportGridView_Rows.class\nM       .src/Types/TSizeParse.class\nA       .src/Viewer/FPreview2.class\nA       .src/Viewer/FPreview2.form\nM       .src/Viewer/ReportView.class\nA       .src/Viewer/ReportView2.class\nM       .startup\nA       Synoptique\nA       tmpJournal"
+LastCommit="[GB.REPORT2]\n* BUG: The ReportControl font property now make a copy of the font given in argument.\n* BUG: Now a too big children element is clipped if it is the first one listed\n  after the fixed ones (no more infinite loop)\n* NEW: ReportUnit module is merged with Report class. All functions for convertion\n  are now available as static functions in Report. The two internal functions scale and\n  internal width are now public function of report instance.\n* NEW: Return of the ReportImage and ReportSvgImage with no change for now.\n* NEW: Continue to improve the ReportGridView widget ... really not ready for use.\n* NEW: Restore the UseField property in ReportLabel so for now the component is\n  backward compatible.\n  \n---- Cette ligne et les suivantes seront ignorées ----\n\nA       .connection\nA       .connection/Connection1.connection\nA       .hidden/control/reportdrawingarea.png\nA       .hidden/control/reportgridview.png\nA       .hidden/control/reportimage.png\nA       .hidden/control/reportline.png\nA       .hidden/control/reportpanel.png\nA       .hidden/control/reportsvgimage.png\nA       .hidden/control/reporttextlabel.png\nA       .hidden/control/reportview.png\nA       .hidden/control/reportvpanel.png\nM       .info\nM       .list\nM       .project\nM       .settings\nM       .src/Report.class\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nM       .src/ReportFrame.class\nM       .src/ReportGridView.class\nA       .src/ReportImage.class\nA       .src/ReportLabel.class\nA       .src/ReportSvgImage.class\nM       .src/Tests/FMain.class\nM       .src/Tests/FMain.form\nM       .src/Tests/Report1.class\nM       .src/Tests/Report1.report\nA       .src/Tests/Report11.class\nA       .src/Tests/Report11.report\nA       .src/Tests/Report2.class\nA       .src/Tests/Report2.report\nA       .src/Tests/Report3.class\nA       .src/Tests/Report3.report\nD       .src/Tools/ReportUnits.module\nM       .src/Types/Base/ReportMargin.class\nA       .src/Types/BoxShadow/FBoxShadow.class\nA       .src/Types/BoxShadow/FBoxShadow.form\nM       .src/Types/BoxShadow/ReportBoxShadow.class\nM       .src/Types/ReportGridView/_ReportGridView_Column.class\nM       .src/Types/ReportGridView/_ReportGridView_Columns.class\nA       .src/Types/ReportGridView/_ReportGridView_Data.class\nM       .src/Types/ReportGridView/_ReportGridView_Row.class\nM       .src/Types/ReportGridView/_ReportGridView_Rows.class\nM       .src/Types/TControl.class\nM       .src/Types/TSizeParse.class\nM       .src/Viewer/FPreview2.class\nM       .src/Viewer/FPreview2.form\nM       .src/Viewer/ReportView.class\nM       .src/Viewer/ReportView2.class\nM       .startup\nA       capture12.png\nA       gambas.svg\nM       tmpJournal"
 
 [OpenFile]
-Active=3
-File[1]=".src/Tests/Module1.module:0.0"
-Count=3
-File[2]=".src/ReportSection.class:2.6"
-File[3]=".src/Viewer/ReportView.class:118.6"
+Active=7
+File[1]=".src/Report.class:768.16"
+Count=11
+File[2]=".src/Viewer/FPreview.form"
+File[3]=".src/Viewer/ReportView.class:382.0"
+File[4]=".src/Optional/Arrange.class:2.0"
+File[5]=".src/Types/Border/ReportBorder.class:0.0"
+File[6]=".src/Viewer/ReportView3.class:624.29"
+File[7]=".src/Viewer/FPreview.class:305.30"
+File[8]=".src/Viewer/ReportViewTask.class:0.0"
+File[9]=".src/Tests/Report3.report"
+File[10]=".src/Tests/Report3.class:8.22"
+File[11]=".src/Tests/Report1.report"
 
 [VersionControl]
 User="gambix"
 RememberPassword=1
 
 [Watches]
-Count=1
+Count=2
 Watch[1]="AvailableW"
+Watch[2]="Left(s)"
 

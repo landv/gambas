@@ -4,6 +4,7 @@ Private $aModeButtons As New ToolButton[]
 Private bFlag As Boolean
 Private $hPrinter As New Printer As "Printer"
 Private $iCurPrinterResolution As Integer
+Private $bVerif As Boolean
 
 Static Public Function Run(hReport As Report)
   
@@ -27,7 +28,7 @@ Public Sub _new()
     Settings.Read(View, "View")
     
     If View.ScaleMode = View.Custom Then
-      Slider1.Value = View.Scale
+      Slider1.Value = View.Zoom
     Else
       For Each hButton In $aModeButtons
         hButton.Value = False
@@ -37,6 +38,7 @@ Public Sub _new()
     Endif
     
     ButtonBox1.Text = Settings["FPreview/OutputFile"] 
+    ButtonBox1_Change
     $hPrinter.Name = Settings["FPreview/Printer"] 
     If Settings["FPreview/PrintToFile"] = True Then TabPanel1.Index = 1
     
@@ -116,7 +118,8 @@ Public Sub Slider1_Change()
   
   Dim hButton As ToolButton
   
-  View.Scale = Slider1.Value / 100
+  View.ScaleMode = View.Custom
+  View.Zoom = Slider1.Value / 100
   lblZoom.Text = Str(Slider1.Value) & " %"
   bFlag = True
   For Each hButton In $aModeButtons
@@ -127,10 +130,10 @@ Public Sub Slider1_Change()
   
 End
 
-Public Sub View_Change()
-  
+Public Sub View_Zoom()
+  Print View.Zoom
   Object.Lock(Slider1)
-  Slider1.Value = View.Scale * 100
+  Slider1.Value = View.Zoom * 100
   Object.Unlock(Slider1)
   lblZoom.Text = Str(Slider1.Value) & " %"
   
@@ -155,8 +158,10 @@ Public Sub Mode_Click()
   
   bFlag = False
   
+  'View.ScaleMode = hCurButton.Tag
   View.ScaleMode = hCurButton.Tag
-  
+  'View.Refresh
+  'View.Refresh
 End
 
 Public Sub tgbGrayScale_Click()
@@ -224,8 +229,10 @@ Public Sub ButtonBox1_Click()
   
   Dialog.Path = User.Home
   Dialog.Filter = ["*.pdf", "Pdf", "*.ps", "Postscript"]
+  
   If Not Dialog.saveFile() Then
     ButtonBox1.Text = Dialog.Path
+    $bVerif = True
     $hPrinter.OutputFile = Dialog.Path
   Endif
   
@@ -239,7 +246,7 @@ Public Sub TabPanel1_Click()
     $iCurPrinterResolution = $hPrinter.Resolution
   Else
     $hPrinter.OutputFile = ButtonBox1.Text
-    $hPrinter.Resolution = 600
+    $hPrinter.Resolution = 300
   Endif
   
 End
@@ -294,11 +301,11 @@ Public Sub Button1_Click()
     If Not View.Report Then Return
     If TabPanel1.Index = 1 Then
       If $hPrinter.OutputFile Then
-        If Exist($hPrinter.OutputFile) Then
+        If Exist($hPrinter.OutputFile) And Not $bVerif Then
           iReturn = Message.Warning("This file already exist.\nDo you want to replace it ?", "Yes", "No")
           If iReturn = 2 Then 
             ButtonBox1.SetFocus
-            
+            Try Kill $hPrinter.OutputFile
             Return 
           Endif
         Endif
@@ -332,7 +339,7 @@ Public Sub Printer_Paginate()
   
   If View.Report._LayoutNotFinished Then
     View.LockLayout
-    View.Report._Layout(View.Report.PageCount)
+    View.Report.Layout(View.Report.PageCount)
   Else
     $hPrinter.Count = View.PageCount
     ProgressBar1.Pulse = False
@@ -344,10 +351,10 @@ End
 
 Public Sub Printer_Draw()
   
-  If View._RangePages.Count = 0 Then 
+  If View.RangePages.Count = 0 Then 
     View.Report.Paint($hPrinter.Page)
   Else
-    View.Report.Paint(View._RangePages[$hPrinter.Page - 1])
+    View.Report.Paint(View.RangePages[$hPrinter.Page - 1])
   Endif
   ProgressBar1.Value = $hPrinter.Page / View.PageCount
   
@@ -371,7 +378,7 @@ End
 
 Public Sub ButtonBox1_Change()
   
-  $hPrinter.OutputFile = Last.Text
+  $hPrinter.OutputFile = ButtonBox1.Text
   
 End
 

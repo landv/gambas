@@ -79,7 +79,8 @@ Property Text As String
 
 Property Paper As Integer
 Property Orientation As Integer
-
+Property Read _Width As Float
+Property Read _Height As Float
 
 Event Open
 
@@ -89,7 +90,7 @@ Static Public Sub Main()
   
   hObject = Application.Startup.AutoCreate()
   If Not hObject Is Report Then Return
-  FPreview2.Run(hObject)
+  FPreview.Run(hObject)
   
 End
 
@@ -312,7 +313,7 @@ End
 
 Public Function Preview()
   
-  FPreview2.Run(Me)
+  FPreview.Run(Me)
   
 End
 
@@ -772,4 +773,16 @@ Static Public Function UnitToCm(Value As Float, Unit As String, Optional Resolut
   f = 0.3937
   Return finch / f
   
+End
+
+Private Function _Width_Read() As Float
+
+  Return $aSections[0].Ctrl._Width
+
+End
+
+Private Function _Height_Read() As Float
+
+  Return $aSections[0].Ctrl._Height
+
 End

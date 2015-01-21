@@ -20,7 +20,7 @@
         MoveScaled(1,70,71,4)
         Visible = False
         { Panel18 Panel
-          MoveScaled(-1,0,19,3)
+          MoveScaled(1,0,20,4)
           Expand = True
           Arrangement = Arrange.Horizontal
         }
@@ -43,7 +43,7 @@
             MoveScaled(0,0,4,4)
             Tag = "1"
             ToolTip = ("One page")
-            Picture = Picture["img/22/OnePage.png"]
+            Picture = Picture["22/OnePage.png"]
             Toggle = True
             Value = True
           }
@@ -52,7 +52,7 @@
             MoveScaled(4,0,4,4)
             Tag = "2"
             ToolTip = ("Two pages")
-            Picture = Picture["img/22/TwoPage.png"]
+            Picture = Picture["22/TwoPage.png"]
             Toggle = True
           }
           { ToolButton4 ToolButton Mode
@@ -60,7 +60,7 @@
             MoveScaled(8,0,4,4)
             Tag = "3"
             ToolTip = ("Full width")
-            Picture = Picture["img/22/FullWidth.png"]
+            Picture = Picture["22/FullWidth.png"]
             Toggle = True
           }
           { ToolButton3 ToolButton Mode
@@ -68,7 +68,7 @@
             MoveScaled(12,0,4,4)
             Tag = "4"
             ToolTip = ("Real size")
-            Picture = Picture["img/22/RealSize.png"]
+            Picture = Picture["22/RealSize.png"]
             Toggle = True
           }
         }
@@ -200,23 +200,23 @@
           { tgbGrayScale ToggleButton
             MoveScaled(5,0,6,6)
             ToolTip = ("Gray Scale")
-            Picture = Picture["img/32/grayscale.png"]
+            Picture = Picture["32/grayscale.png"]
           }
           { tgbFullPage ToggleButton
             MoveScaled(11,0,6,6)
             Visible = False
             ToolTip = ("Full Page")
-            Picture = Picture["img/32/Empty.png"]
+            Picture = Picture["32/Empty.png"]
           }
           { tgbReverseCopies ToggleButton
             MoveScaled(17,0,6,6)
             ToolTip = ("Reverse order")
-            Picture = Picture["img/32/reverse.png"]
+            Picture = Picture["32/reverse.png"]
           }
           { tgbCollateCopies ToggleButton
             MoveScaled(24,0,6,6)
             ToolTip = ("Collate copie")
-            Picture = Picture["img/32/Collatecopie.png"]
+            Picture = Picture["32/Collatecopie.png"]
           }
           { Panel15 Panel
             MoveScaled(32,2,3,3)
