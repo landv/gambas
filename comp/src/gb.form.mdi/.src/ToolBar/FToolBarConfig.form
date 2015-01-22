@@ -7,7 +7,7 @@
   Arrangement = Arrange.Vertical
   { mnuToolbar Menu
     { mnuConfigure Menu
-      Text = ("Configure...")
+      Text = ("Configure") & "..."
       Picture = Picture["icon:/small/options"]
     }
     { Menu2 Menu
@@ -22,6 +22,10 @@
       }
       { mnuLargeSize Menu
         Text = ("Large")
+        Toggle = True
+      }
+      { mnuHugeSize Menu
+        Text = ("Huge")
         Toggle = True
       }
     }
@@ -50,7 +54,7 @@
     { cmbSize ComboBox
       MoveScaled(17,0,24,4)
       ReadOnly = True
-      List = [("Small"), ("Medium"), ("Large")]
+      List = [("Small"), ("Medium"), ("Large"), ("Huge")]
     }
   }
   { Separator1 Separator
@@ -83,18 +87,18 @@
     }
     { btnReset Button
       MoveScaled(3,0,16,4)
-      Text = ("&Reset")
+      Text = Shortcut(("Reset"), "R")
       Picture = Picture["icon:/small/refresh"]
     }
     { btnUndo Button
       MoveScaled(20,0,16,4)
       Visible = False
-      Text = ("&Undo")
+      Text = Shortcut(("Undo"), "U")
       Picture = Picture["icon:/small/undo"]
     }
     { btnClose Button
       MoveScaled(37,0,16,4)
-      Text = ("&Close")
+      Text = Shortcut(("Close"), "C")
       Default = True
       Cancel = True
     }
