@@ -235,6 +235,9 @@ static void trans_identifier(int index, bool point, PATTERN next)
 			is_static = TYPE_is_static(sym->global.type);
 			is_func = type == TK_FUNCTION;
 
+			if (is_func && PATTERN_is_point(next))
+				goto __CLASS;
+
 			if (!is_static && TYPE_is_static(JOB->func->type))
 				THROW("Dynamic symbols cannot be used in static function");
 
