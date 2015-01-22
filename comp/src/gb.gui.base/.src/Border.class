@@ -755,14 +755,14 @@ Private Sub NormalizeStyle()
 
 End
 
-Static Public Sub _call(Optional Style As String) As Border
+Static Public Sub _call(Optional (Style) As String) As Border
   
   Return New Border(Style)
   
 End
 
 
-Public Sub _new(Optional Style As String)
+Public Sub _new(Optional (Style) As String)
   
   Dim aStyle As String[]
   Dim sStyle As String

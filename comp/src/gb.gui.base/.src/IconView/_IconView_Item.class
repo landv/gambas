@@ -599,7 +599,7 @@ Private Function Height_Read() As Integer
 
 End
 
-Public Sub MoveAfter(Optional Key As String)
+Public Sub MoveAfter(Optional (Key) As String)
   
   Dim hParent As IconView = GetIconView()
   Dim iPos As Integer 
@@ -616,7 +616,7 @@ Public Sub MoveAfter(Optional Key As String)
   
 End
 
-Public Sub MoveBefore(Optional Key As String)
+Public Sub MoveBefore(Optional (Key) As String)
   
   Dim hParent As IconView = GetIconView()
   Dim iPos As Integer 

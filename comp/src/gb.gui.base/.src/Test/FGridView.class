@@ -4,8 +4,8 @@
 Public Sub Form_Open()
 
   Dim I As Integer
-  Dim hCtrl As GridView
-  Dim J As Integer
+  'Dim hCtrl As GridView
+  'Dim J As Integer
   Dim hBorder As Border
   Dim hBorderLeft As Border
   Dim hBorderRight As Border
@@ -131,7 +131,7 @@ End
 
 Public Sub txtPadding_Change()
 
-  Dim C As Integer
+  'Dim C As Integer
   
   gvwinfo.Padding = txtPadding.Value
   ' For C = 0 To gvwInfo.Columns.Max

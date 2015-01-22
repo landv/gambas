@@ -343,14 +343,14 @@ Public Sub EnsureVisible()
   
 End
 
-Public Sub MoveBefore(Optional Key As String)
+Public Sub MoveBefore(Optional (Key) As String)
   
   Dim hTree As _TreeView = GetTree()
   hTree._MoveItem(Me, Key, True)
   
 End
 
-Public Sub MoveAfter(Optional Key As String)
+Public Sub MoveAfter(Optional (Key) As String)
   
   Dim hTree As _TreeView = GetTree()
   hTree._MoveItem(Me, Key, False)

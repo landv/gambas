@@ -27,6 +27,7 @@ Property Background As Integer
 Property Tablet As Boolean
 Property Shadow As Boolean
 Property Read View As DrawingArea
+Property UseMouse As Boolean
 
 Event Scroll
 Event Draw
@@ -38,6 +39,7 @@ Static Private $hFadeW As Picture
 Static Private $hFadeE As Picture
 Static Private $iFadeColor As Integer = -1
 
+Private $bUseMouse As Boolean = True
 Private $bNoArrange As Boolean
 Private $hDrawingArea As DrawingArea
 Private $hHBar As ScrollBar
@@ -594,6 +596,7 @@ End
 Public Sub DrawingArea_MouseWheel()
   
   If Not Me.Enabled Or If Me.Design Then Return
+  If Not $bUseMouse Then Return
   
   If Mouse.Orientation = Mouse.Horizontal Or If $H <= $hDrawingArea.H Then
     $hHBar.Value -= Mouse.Delta * $hHBar.PageStep / 4
@@ -800,4 +803,16 @@ Public Sub ScrollArea_MouseMove()
   Mouse.Translate(- $hDrawingArea.X, 0)
   'Error "->";; Mouse.X
   
+End
+
+Private Function UseMouse_Read() As Boolean
+
+  Return $bUseMouse
+
+End
+
+Private Sub UseMouse_Write(Value As Boolean)
+
+  $bUseMouse = Value
+
 End

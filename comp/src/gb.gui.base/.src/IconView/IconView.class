@@ -115,7 +115,7 @@ Public Sub _new()
   
 End
 
-Public Sub _get(Key As String) As _IconView_Item
+Public Sub _get((Key) As String) As _IconView_Item
   
   Return $cItems[Key]
   
@@ -137,7 +137,7 @@ Public Sub Clear()
   
 End
 
-Public Sub Exist(Key As String) As Boolean
+Public Sub Exist((Key) As String) As Boolean
   
   Return $cItems.Exist(Key)
   
@@ -162,7 +162,7 @@ Private Sub SetIntern(iIntern As Integer)
 End
 
 
-Public Function MoveTo(Key As String) As Boolean
+Public Function MoveTo((Key) As String) As Boolean
   
   If Not $cItems.Exist(Key) Then 
     SetIntern(-1)
@@ -212,7 +212,7 @@ Public Sub _FindItem(hItem As _IconView_Item) As Integer
   
 End
 
-Public Sub _UpdateIconSize({Picture} As Picture)
+Public Sub _UpdateIconSize((Picture) As Picture)
   
   If {Picture} And If Picture.Height > $iIconSize Then
     $iIconSize = Picture.Height
@@ -221,7 +221,7 @@ Public Sub _UpdateIconSize({Picture} As Picture)
   
 End
 
-Public Function Add(Key As String, Text As String, Optional {Picture} As Picture, Optional After As String) As _IconView_Item
+Public Function Add((Key) As String, Text As String, Optional (Picture) As Picture, Optional After As String) As _IconView_Item
   
   Dim hItem As _IconView_Item = New _IconView_Item As "IconViewItem"
   Dim hAfter As _IconView_Item
@@ -261,7 +261,7 @@ Public Function Add(Key As String, Text As String, Optional {Picture} As Picture
   
 End
 
-Public Sub Remove(Key As String)
+Public Sub Remove((Key) As String)
   
   Dim hItem As _IconView_Item
   Dim iPos As Integer

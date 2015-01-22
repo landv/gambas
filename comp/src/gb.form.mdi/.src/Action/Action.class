@@ -38,7 +38,7 @@ Static Private Function List_Read() As String[]
 
 End
 
-Static Public Sub _Register(Control As Object, Old As String, Key As String)
+Static Public Sub _Register(Control As Object, Old As String, (Key) As String)
   
   Dim hObs As Observer
   Dim hWin As Window

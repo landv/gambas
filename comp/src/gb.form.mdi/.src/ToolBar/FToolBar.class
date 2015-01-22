@@ -1269,6 +1269,8 @@ Private Sub CalcIconSize(iIconSize As Integer) As Integer
       Return Stock.GetSize("medium")
     Case ICON_LARGE
       Return Stock.GetSize("large")
+    Case ICON_HUGE
+      Return Stock.GetSize("huge")
     Default
       Return Stock.GetSize("small")
   End Select
@@ -1394,6 +1396,9 @@ Public Sub LoadConfig(Optional bInit As Boolean)
       iDim = 12
     Case "Large"
       $iIconSize = ICON_LARGE
+      iDim = 12
+    Case "Huge"
+      $iIconSize = ICON_HUGE
       iDim = 12
     Case Else
       $iIconSize = ICON_SMALL

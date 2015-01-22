@@ -73,7 +73,7 @@ Public Sub _new()
   
 End
 
-Public Sub _get(Key As String) As _TreeView_Item
+Public Sub _get((Key) As String) As _TreeView_Item
   
   If Not Key Then Error.Raise("Null key")
   If Not $cItem.Exist(Key) Then Error.Raise("Unknown item: " & Key)
@@ -119,7 +119,7 @@ Public Sub _SortParent(sKey As String)
 End
 
 
-Public Sub _Add(Key As String, Text As String, Optional Picture As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
+Public Sub _Add((Key) As String, Text As String, Optional (Picture) As Picture, Optional Parent As String, Optional After As String) As _TreeView_Item
   
   Dim hItem, hParent As _TreeView_Item
   
@@ -177,7 +177,7 @@ Public Sub _GetParentItem(hItem As _TreeView_Item) As _TreeView_Item
   
 End
 
-Private Sub RemoveRec(Key As String, Optional bDoNotDestroy As Boolean)
+Private Sub RemoveRec((Key) As String, Optional bDoNotDestroy As Boolean)
   
   Dim hItem As _TreeView_Item
   Dim hParent As _TreeView_Item
@@ -206,7 +206,7 @@ Private Sub RemoveRec(Key As String, Optional bDoNotDestroy As Boolean)
 End
 
 
-Public Sub Remove(Key As String)
+Public Sub Remove((Key) As String)
   
   Dim sCurrent As String
   Dim iRow As Integer
@@ -854,7 +854,7 @@ End
 '   
 ' End
 
-Public Sub Exist(Key As String) As Boolean
+Public Sub Exist((Key) As String) As Boolean
   
   Return $cItem.Exist(Key)
   
@@ -953,7 +953,7 @@ Public Sub MoveCurrent() As Boolean
   
 End
 
-Public Sub MoveTo(Key As String) As Boolean
+Public Sub MoveTo((Key) As String) As Boolean
   
   If Not $cItem.Exist(Key) Then Key = ""
   Return SetCursor(Key)

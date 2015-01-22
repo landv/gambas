@@ -405,7 +405,7 @@ Public Sub Rect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
   
 End
 
-Public Sub FillRect(X As Integer, Y As Integer, Width As Integer, Height As Integer, Color As Integer)
+Public Sub FillRect(X As Integer, Y As Integer, Width As Integer, Height As Integer, (Color) As Integer)
   
   Dim hBrush As PaintBrush = Paint.Brush
   Paint.Background = Color

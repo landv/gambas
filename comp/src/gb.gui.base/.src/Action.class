@@ -102,7 +102,7 @@ Static Private Sub GetActiveWindow(hCtrl As Object) As Window
   
 End
 
-Static Public Sub _Register(Control As Object, Old As String, Key As String)
+Static Public Sub _Register(Control As Object, Old As String, (Key) As String)
   
   Dim aCtrl As Object[]
   
@@ -221,7 +221,7 @@ Static Public Sub Raise(Control As Object)
   
 End
 
-Static Public Sub _get(Key As String, Optional Parent As Control) As Action ', OPTIONAL Window AS Window) AS Action
+Static Public Sub _get((Key) As String, Optional Parent As Control) As Action ', OPTIONAL Window AS Window) AS Action
 
   Dim hAction As Action
   
@@ -327,7 +327,7 @@ Private Function GetControls() As Object[]
 End
 
 
-Public Sub _new(Key As String, Parent As Control)
+Public Sub _new((Key) As String, Parent As Control)
   
   Dim sKey As String
   

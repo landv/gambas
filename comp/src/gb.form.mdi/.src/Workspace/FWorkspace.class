@@ -258,7 +258,7 @@ Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
   
 End
 
-Public Sub Remove(Window As Window)
+Public Sub Remove((Window) As Window)
   
   RemoveWindow(Window)
   
