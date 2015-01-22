@@ -261,9 +261,13 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
   For Each sLine In aData
     sLine = Trim(sLine)
     If Left(sLine) = "{" Then
+      Inc iLevel
       sClass = Split(Trim(Mid$(sLine, 2)), " ")[1]
       If Left$(sClass) = "#" Then sClass = Mid$(sClass, 2)
       If Not CComponent.Classes.Exist(sClass) Then Return Subst(("Unknown control: &1"), sClass)
+    Else If sLine = "}" Then
+      Dec iLevel
+      If iLevel = 0 Then Break
     Endif
   Next
 
