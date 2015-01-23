@@ -418,7 +418,7 @@ void CURL_set_progress(void *_object, bool progress, CURL_FIX_PROGRESS_CB cb)
 	if (dest->_field) dest->_field = GB.NewString(dest->_field, GB.StringLength(dest->_field)); \
 }
 
-bool CURL_CopyFrom(CCURL *dest, CCURL *src)
+bool CURL_copy_from(CCURL *dest, CCURL *src)
 {
 	if (CURL_check_active(dest))
 		return TRUE;
