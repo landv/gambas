@@ -39,12 +39,14 @@ typedef
 	struct {
 		GB_BASE ob;
 		LIST list;
+		GB_VARIANT_VALUE ret;
 		pid_t pid;
 		int fd_out;
 		int fd_err;
 		int status;
 		volatile sig_atomic_t stopped;
 		unsigned child : 1;
+		unsigned got_value : 1;
 	}
 	CTASK;
 

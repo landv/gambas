@@ -477,6 +477,8 @@ BEGIN_METHOD_VOID(Task_new)
 
 	GB_FUNCTION func;
 	
+	THIS->ret.type = GB_T_NULL;
+
 	if (EXEC_task)
 	{
 		GB_Error("A task cannot create other tasks");
@@ -502,6 +504,11 @@ BEGIN_METHOD_VOID(Task_new)
 	
 END_METHOD
 
+BEGIN_METHOD_VOID(Task_free)
+
+	GB_StoreVariant(NULL, &THIS->ret);
+
+END_METHOD
 
 BEGIN_PROPERTY(Task_Handle)
 
@@ -569,17 +576,19 @@ BEGIN_PROPERTY(Task_Value)
 			switch (WEXITSTATUS(THIS->status))
 			{
 				case CHILD_OK:
-					
-					if (!GB_UnSerialize(path, &ret))
+
+					if (!THIS->got_value)
 					{
+						bool fail = GB_UnSerialize(path, &ret);
+						if (!fail)
+							GB_StoreVariant(&ret._variant, &THIS->ret);
 						unlink(path);
-						GB_ReturnVariant(&ret._variant.value);
-						return;
+						THIS->got_value = TRUE;
+						if (fail)
+							break;
 					}
-					else
-						unlink(path);
-					
-					break;
+					GB_ReturnVariant(&THIS->ret);
+					return;
 					
 				case CHILD_STDOUT:
 					
@@ -641,7 +650,7 @@ GB_DESC TaskDesc[] =
 	GB_DECLARE("Task", sizeof(CTASK)), GB_NOT_CREATABLE(),
 	
 	GB_METHOD("_new", NULL, Task_new, NULL),
-	//GB_METHOD("_free", NULL, Task_free, NULL),
+	GB_METHOD("_free", NULL, Task_free, NULL),
 
 	GB_PROPERTY_READ("Handle", "i", Task_Handle),
 	GB_PROPERTY_READ("Value", "v", Task_Value),
