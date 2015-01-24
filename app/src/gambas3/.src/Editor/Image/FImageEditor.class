@@ -4,6 +4,7 @@ Public Path As String
 Public RichText As String
 
 Public Enum EFFECT_BALANCE, EFFECT_COLORIZE, EFFECT_DESATURATE, EFFECT_TRANSPARENT
+Private Enum TRANS_FLIP_H, TRANS_FLIP_V, TRANS_ROTATE_L, TRANS_ROTATE_R
 
 Property Read ReadOnly As Boolean
 
@@ -241,80 +242,109 @@ Private Sub AddUndo(hObject As Object)
   
 End
 
+Private Sub ApplyTransformation(iTrans As Integer)
+  
+  Dim hImage As Image
+  
+  If $hChangeRect Then
+  
+    If $hSelect Then
+
+      AddUndo($hSelect.Copy())
+      
+      Select Case iTrans
+        Case TRANS_FLIP_H
+          $hSelect.HFlip()
+        Case TRANS_FLIP_V
+          $hSelect.VFlip()
+        Case TRANS_ROTATE_L
+          $hSelect.Rotate(Rad(90))
+        Case TRANS_ROTATE_R
+          $hSelect.Rotate(Rad(-90))
+      End Select
+      
+      RefreshSelection
+    
+    Endif
+      
+    If $hPaste Then
+      
+      Select Case iTrans
+        Case TRANS_FLIP_H
+          $hPaste.Mirror(True, False)
+          '$hPasteCurrent.HFlip
+          '$hPasteSelect.HFlip
+        Case TRANS_FLIP_V
+          $hPaste.Mirror(False, True)
+          '$hPasteCurrent.VFlip
+          '$hPasteSelect.VFlip
+        Case TRANS_ROTATE_L
+          '$hPaste.RotateLeft()
+          'Swap $hChangeRect.W, $hChangeRect.H
+          $hPasteCurrent.Rotate(Rad(90))
+          '$hPasteSelect.Rotate(Rad(90))
+        Case TRANS_ROTATE_R
+          '$hPaste.RotateRight()
+          'Swap $hChangeRect.W, $hChangeRect.H
+          $hPasteCurrent.Rotate(Rad(-90))
+          '$hPasteSelect.Rotate(Rad(-90))
+      End Select
+      
+    Endif
+    
+    $hChangeRect = $hPasteCurrent.GetExtents()
+    $hPasteSelect = $hPasteCurrent.Copy()
+     
+    imvImage.Refresh
+      
+    Return
+    
+  Endif
+
+  BeginUndo
+  ClearSelection
+  
+  hImage = $hImage.Copy()
+  
+  Select Case iTrans
+    Case TRANS_FLIP_H
+      hImage.Mirror(True, False)
+    Case TRANS_FLIP_V
+      hImage.Mirror(False, True)
+    Case TRANS_ROTATE_L
+      hImage.RotateLeft()
+    Case TRANS_ROTATE_R
+      hImage.RotateRight()
+  End Select
+  
+  SetImage(hImage)
+  EndUndo
+  
+End
+
+
 Public Sub btnRotateL_Click()
 
-  If $hChangeRect Then
-    
-    AddUndo($hSelect.Copy())
-    $hSelect.Rotate(Rad(90))
-    RefreshSelection
-
-  Else
-    
-    BeginUndo
-    ClearSelection
-    SetImage($hImage.Copy().RotateLeft())
-    EndUndo
-
-  Endif
+  ApplyTransformation(TRANS_ROTATE_L)
 
 End
 
 Public Sub btnRotateR_Click()
 
-  If $hChangeRect Then
-    
-    AddUndo($hSelect.Copy())
-    $hSelect.Rotate(Rad(-90))
-    RefreshSelection
+  ApplyTransformation(TRANS_ROTATE_R)
 
-  Else
-    
-    BeginUndo
-    ClearSelection
-    SetImage($hImage.Copy().RotateRight())
-    EndUndo
-    
-  Endif
-  
 End
 
 Public Sub btnFlipH_Click()
 
-  If $hChangeRect Then
+  ApplyTransformation(TRANS_FLIP_H)
 
-    AddUndo($hSelect.Copy())
-    $hSelect.HFlip()
-    RefreshSelection
-
-  Else
-    
-    BeginUndo
-    ClearSelection
-    SetImage($hImage.Copy().Mirror(True, False))
-    EndUndo
-    
-  Endif
-  
 End
 
 Public Sub btnFlipV_Click()
 
-  If $hChangeRect Then
+  ApplyTransformation(TRANS_FLIP_V)
 
-    AddUndo($hSelect.Copy())
-    $hSelect.VFlip()
-    RefreshSelection
-
-  Else
-    
-    BeginUndo
-    ClearSelection
-    SetImage($hImage.Copy().Mirror(False, True))
-    EndUndo
-    
-  Endif
-  
 End
 
 
@@ -1650,17 +1680,17 @@ Public Sub imvImage_Draw(hZoom As Image)
     
     With $hPasteSelect.GetExtents()
       If .Width > 0 And If .Height > 0 Then
-        hImage = New Image(.Width, .Height, Color.Transparent)
+        hImage = New Image(Ceil(.Width) + 1, Ceil(.Height) + 1, Color.Transparent)
         
         Paint.Begin(hImage)
         Paint.Brush = Paint.Image($hPaste)
-        $hPasteSelect.Translate(- .X, - .Y)
+        $hPasteSelect.Translate(- Floor(.X), - Floor(.Y))
         Paint.Brush.Matrix = $hPasteSelect._BrushMatrix.Copy()
         $hPasteSelect.Paint(hImage, CImageSelection.ACTION_FILL)
-        $hPasteSelect.Translate(.X, .Y)
+        $hPasteSelect.Translate(Floor(.X), Floor(.Y))
         Paint.End
       
-        imvImage._Paint(hImage, hOffset.X + .X * imvImage.Zoom, hOffset.Y + .Y * imvImage.Zoom)
+        imvImage._Paint(hImage, hOffset.X + Floor(.X) * imvImage.Zoom, hOffset.Y + Floor(.Y) * imvImage.Zoom)
       Endif
     
     End With

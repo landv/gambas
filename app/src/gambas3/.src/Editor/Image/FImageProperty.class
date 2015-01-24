@@ -1183,6 +1183,7 @@ Public Sub tabBrush_Click()
   If tabBrush.Text = ("Shapes") Then
     If Not $aShape Then InitShapes
   Else If tabBrush.Text = ("Clipboard") Then
+    RefreshClipboard
     UpdateClipboard
   Endif
 
