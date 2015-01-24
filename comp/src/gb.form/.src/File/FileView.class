@@ -52,6 +52,7 @@ Private $iIconSize As Integer = 32
 Private $bDesktopIsLoaded As Boolean
 
 Private $hPreview As CTaskPreview
+Private $hEnsureVisible As Timer
 'Private $cPreview As New Collection
 
 Static Public Sub _init()
@@ -125,6 +126,7 @@ Public Sub _new()
   Me.Proxy = GetView()
   
   $hRefresh = New Timer As "Refresh"
+  $hEnsureVisible = New Timer As "EnsureVisible"
   
   RefreshViewLater
   
@@ -508,6 +510,16 @@ Private Sub EnsureRefresh()
 
 End
 
+Public Sub EnsureVisible_Timer()
+
+  With GetView().Current
+    If Not .Selected Then Return
+    .EnsureVisible
+  End With
+  
+End
+
+
 Private Sub Current_Write(sFile As String)
   
   Dim sKey As String
@@ -522,7 +534,7 @@ Private Sub Current_Write(sFile As String)
   If Not GetView().Exist(sKey) Then Return
   
   GetView()[sKey].Selected = True
-  GetView()[sKey].EnsureVisible
+  $hEnsureVisible.Trigger
   
 End
 

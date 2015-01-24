@@ -29,6 +29,12 @@
       Picture = Picture["img/16/form.png"]
       Shortcut = "F12"
     }
+    { mnuRun Menu
+      Action = ".run-me"
+      Text = ("Run that class")
+      Picture = Picture["icon:/small/play"]
+      Shortcut = "Shift+F5"
+    }
     { mnuSepGoto Menu
     }
     { Menu5 Menu
@@ -260,9 +266,16 @@
       Picture = Picture["icon:/small/lock"]
       Toggle = True
     }
+    { ToolButton39 ToolButton
+      MoveScaled(14,0,4,4)
+      Visible = False
+      ToolTip = ("Run that class")
+      Action = ".run-me"
+      Picture = Picture["icon:/small/play"]
+    }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(14,0,4,4)
+      MoveScaled(20,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -270,7 +283,7 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(17,0,4,4)
+      MoveScaled(23,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -278,7 +291,7 @@
     }
     { btnPaste MenuButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(20,0,6,4)
+      MoveScaled(26,0,6,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
@@ -287,7 +300,7 @@
     }
     { btnPasteSpecial ToolButton mnuPasteSpecial
       Name = "btnPasteSpecial"
-      MoveScaled(25,0,14,4)
+      MoveScaled(31,0,14,4)
       Visible = False
       ToolTip = ("Paste special")
       Action = ".paste-special"
@@ -296,14 +309,14 @@
       Picture = Picture["icon:/small/paste"]
     }
     { btnInsertColor MenuButton
-      MoveScaled(39,0,6,4)
+      MoveScaled(45,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
       Border = False
     }
     { btnBookmark MenuButton
-      MoveScaled(45,0,6,4)
+      MoveScaled(51,0,6,4)
       ToolTip = ("Bookmarks")
       Action = ".bookmark"
       Picture = Picture["icon:/small/bookmark"]
@@ -312,27 +325,27 @@
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(51,0,4,4)
+      MoveScaled(57,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(54,0,4,4)
+      MoveScaled(60,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(57,0,4,4)
+      MoveScaled(63,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(60,0,4,4)
+      MoveScaled(66,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
@@ -340,21 +353,21 @@
     }
     { btnComment ToolButton mnuComment
       Name = "btnComment"
-      MoveScaled(63,0,4,4)
+      MoveScaled(69,0,4,4)
       ToolTip = ("Comment")
       Action = ".comment"
       Picture = Picture["img/16/comment.png"]
     }
     { btnUncomment ToolButton mnuUncomment
       Name = "btnUncomment"
-      MoveScaled(66,0,4,4)
+      MoveScaled(72,0,4,4)
       ToolTip = ("Uncomment")
       Action = ".uncomment"
       Picture = Picture["img/16/uncomment.png"]
     }
     { btnPretty ToolButton mnuPretty
       Name = "btnPretty"
-      MoveScaled(69,0,4,4)
+      MoveScaled(75,0,4,4)
       Visible = False
       ToolTip = ("Make code pretty")
       Action = ".pretty"
@@ -362,21 +375,21 @@
     }
     { btnBreakpoint ToolButton mnuBreakpoint
       Name = "btnBreakpoint"
-      MoveScaled(72,0,4,4)
+      MoveScaled(78,0,4,4)
       ToolTip = ("Toggle breakpoint")
       Action = ".break"
       Picture = Picture["icon:/small/halt"]
     }
     { btnWatch ToolButton mnuWatch
       Name = "btnWatch"
-      MoveScaled(75,0,4,4)
+      MoveScaled(81,0,4,4)
       ToolTip = ("Watch expression")
       Action = ".watch"
       Picture = Picture["icon:/small/watch"]
     }
     { btnDefinition ToolButton mnuDefinition
       Name = "btnDefinition"
-      MoveScaled(78,0,4,4)
+      MoveScaled(84,0,4,4)
       Visible = False
       ToolTip = ("Find definition")
       Action = ".find-definition"
@@ -384,7 +397,7 @@
     }
     { btnNoSplit ToolButton mnuNoSplit
       Name = "btnNoSplit"
-      MoveScaled(83,0,4,4)
+      MoveScaled(89,0,4,4)
       Visible = False
       ToolTip = ("No split")
       Action = ".view-nosplit"
@@ -392,7 +405,7 @@
     }
     { btnHorizontalSplit ToolButton mnuHorizontalSplit
       Name = "btnHorizontalSplit"
-      MoveScaled(86,0,4,4)
+      MoveScaled(92,0,4,4)
       Visible = False
       ToolTip = ("Horizontal split")
       Action = ".view-hsplit"
@@ -400,17 +413,17 @@
     }
     { btnVerticalSplit ToolButton mnuVerticalSplit
       Name = "btnVerticalSplit"
-      MoveScaled(89,0,4,4)
+      MoveScaled(95,0,4,4)
       Visible = False
       ToolTip = ("Vertical split")
       Action = ".view-vsplit"
       Picture = Picture["icon:/small/view-split-v"]
     }
     { Separator2 Separator
-      MoveScaled(93,0,1,4)
+      MoveScaled(99,0,1,4)
     }
     { btnProc ToolButton
-      MoveScaled(95,0,32,4)
+      MoveScaled(101,0,32,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
@@ -566,6 +579,11 @@
     Shortcut = ""
     Picture = "icon:/small/revert"
   }
+  { Action run-me
+    Text = "Run that class"
+    Shortcut = "Shift+F5"
+    Picture = "icon:/small/play"
+  }
   { Action save
     Text = "Save"
     Shortcut = "Ctrl+S"
@@ -624,7 +642,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,locked,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
+    List = "save,reload,show-form,locked,run-me,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
     Default = "save,reload,show-form,locked,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
   }
 }

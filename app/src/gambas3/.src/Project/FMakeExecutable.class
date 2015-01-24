@@ -30,7 +30,7 @@ Public Sub Form_Open()
   txtCommand.Text = Project.RunAfterMakingExec
   
   panExtension.Reparent(fchExec.Extension)
-
+  
 End
 
 Public Sub Form_Close()
@@ -56,3 +56,4 @@ Public Sub fchExec_Cancel()
   Me.Close
   
 End
+

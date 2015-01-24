@@ -378,6 +378,8 @@ Public Sub mnuPopup_Show()
       mnuStartup.Checked = (Project.Startup = File.BaseName(sCurrent))
       mnuStartup.Enabled = Not Project.Running
     Endif
+    mnuRunThat.Visible = mnuStartup.Visible
+    mnuRunThat.Enabled = mnuStartup.Enabled
     
     If mnuCut.Visible Then
       
@@ -446,6 +448,7 @@ Public Sub mnuPopup_Show()
     mnuEditClass.Visible = False
     
     mnuStartup.Visible = False
+    mnuRunThat.Visible = False
     
     If $sKey = Project.KEY_MISC Or If $sKey = Project.KEY_PROJECT Or If $sKey = Project.KEY_PUBLIC Then
       bCanStoreFile = True '$sKey = Project.KEY_MISC Or $sKey = Project.KEY_PROJECT
@@ -965,6 +968,13 @@ Public Sub mnuStartup_Click()
   Project.DefineStartup(GetCurrent())
   
 End
+
+Public Sub mnuRunThat_Click()
+  
+  Project.Run(False, 0, File.BaseName(GetCurrent()))
+
+End
+
 
 Private Function IsProject(sKey As String) As Boolean
   

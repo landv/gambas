@@ -152,6 +152,14 @@ Public Sub txtFilter_KeyPress()
     If Key.Code = Key.Enter Or If Key.Code = Key.Return Then
       btnOpen_Click
     Endif
+  Else If Key.Normal Then
+    If Key.Code = Key.Esc Then
+      If txtFilter.Length Then
+        txtFilter.Clear
+      Else
+        Me.Close
+      Endif
+    Endif
   Endif
 
 End

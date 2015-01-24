@@ -44,14 +44,6 @@
       Visible = False
       Background = Color.TextBackground
       Ignore = True
-      { cmbProperty2 MenuButton
-        MoveScaled(1,0,16,4)
-        Visible = False
-        Expand = True
-        Border = False
-        Menu = "mnuProperty"
-        MenuOnly = True
-      }
       { crdProperty CoordBox txtProperty
         Name = "crdProperty"
         MoveScaled(1,14,17,3)
@@ -81,6 +73,7 @@
       }
       { cmbProperty ComboBox
         MoveScaled(4,25,18,4)
+        Visible = False
         Expand = True
         ReadOnly = True
         Border = False

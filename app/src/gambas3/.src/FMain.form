@@ -585,8 +585,13 @@
     { mnuStartup Menu
       Action = "startup-class"
       Text = Shortcut(("Startup class"), "S")
-      Picture = Picture["icon:/small/play"]
+      Picture = Picture["img/16/startup-class.png"]
       Shortcut = "Alt+S"
+    }
+    { mnuRunThat Menu
+      Action = "run-that"
+      Text = ("Run that class")
+      Picture = Picture["icon:/small/play"]
     }
     { Menu24 Menu
     }
@@ -1521,6 +1526,11 @@
     Shortcut = ""
     Picture = "icon:/small/eject"
   }
+  { Action run-that
+    Text = "Run that class"
+    Shortcut = ""
+    Picture = "icon:/small/play"
+  }
   { Action save-as
     Text = "Save as"
     Shortcut = "Ctrl+Alt+S"
@@ -1554,7 +1564,7 @@
   { Action startup-class
     Text = "Startup class"
     Shortcut = "Alt+S"
-    Picture = "icon:/small/play"
+    Picture = "img/16/startup-class.png"
   }
   { Action step
     Text = "Step"
