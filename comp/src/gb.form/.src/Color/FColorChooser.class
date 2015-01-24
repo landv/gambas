@@ -565,9 +565,9 @@ Public Sub SetCustom(bCustom As Boolean)
 End
 
 
-Public Sub palColor_Click((Color) As Integer)
+Public Sub palColor_Click()
 
-  SetColor(Color)
+  SetColor(palColor.Current)
 
 End
 

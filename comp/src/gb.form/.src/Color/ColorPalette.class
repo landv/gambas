@@ -9,7 +9,7 @@ Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "36,4"
 Public Const _Group As String = "Chooser"
 
-Event Click(Color As Integer)
+Event Click
 Event Activate
 
 Property Border As Boolean
@@ -181,7 +181,7 @@ Public Sub View_MouseDown()
   $iCurrent = $iIndex
   $hView.Refresh
   
-  Raise Click($aColors[$iIndex])
+  Raise Click
 
 End
 

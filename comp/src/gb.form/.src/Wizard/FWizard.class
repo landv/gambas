@@ -60,9 +60,28 @@ Public Sub SetTitle(sText As String, hPict As Picture)
 
 End
 
-Public Sub SetPosition((iPos) As Integer, bPrevious As Boolean, bNext As Boolean)
-
+Public Sub UpdateActionButton()
+  
   Dim hWizard As Wizard = Me.Parent
+
+  If hWizard.ActionPicture Then
+    btnNext.Picture = hWizard.ActionPicture
+  Else
+    btnNext.Picture = Null
+  Endif
+  
+  If hWizard.ActionText Then
+    btnNext.Text = hWizard.ActionText
+  Else
+    btnNext.Text = ("OK")
+  Endif
+
+  btnNext.Default = True
+  
+End
+
+
+Public Sub SetPosition((iPos) As Integer, bPrevious As Boolean, bNext As Boolean)
 
   btnPrevious.Enabled = bPrevious
   If bNext Then
@@ -70,18 +89,12 @@ Public Sub SetPosition((iPos) As Integer, bPrevious As Boolean, bNext As Boolean
     btnNext.Picture = Picture["icon:/small/forward"]
     btnNext.Default = False
   Else
-    If hWizard.ActionText Then
-      btnNext.Text = hWizard.ActionText
-    Else
-      btnNext.Text = ("OK")
-    Endif
-    If hWizard.ActionPicture Then
-      btnNext.Picture = hWizard.ActionPicture
-    Else
-      btnNext.Picture = Null
-    Endif
-    btnNext.Default = True
+    UpdateActionButton
   Endif
+
+  btnNext.AutoResize = True
+  btnNext.AutoResize = False
+  btnNext.W = Max(btnNext.W, btnCancel.W)
 
 End
 

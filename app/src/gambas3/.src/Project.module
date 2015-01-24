@@ -71,6 +71,7 @@ Public ExtraDesktop As String
 Public Prefix As Boolean
 Public PackageName As String
 Public PackageVersion As Integer
+Public PackageSignature As Boolean
 Public Maintainer As String
 Public Address As String
 Public Vendor As String
@@ -3189,6 +3190,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   Prefix = False
   PackageName = ""
   PackageVersion = 1
+  PackageSignature = False
   SourcePath = ""
   Type = TYPE_NORMAL
   CreateShortcut = False
@@ -3415,6 +3417,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "packageversion"
         Try PackageVersion = CInt(sVal)
 
+      Case "packagesignature"
+        PackageSignature = CInt(sVal)
+
       Case "maintainer"
         Maintainer = sVal
 
@@ -3624,6 +3629,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Prefix Then Print #hFic, "Prefix=1"
   If PackageName Then Print #hFic, "PackageName="; PackageName
   If PackageVersion > 1 Then Print #hFic, "PackageVersion="; PackageVersion
+  If PackageSignature Then Print #hFic, "PackageSignature=1"
   If CreateEachDirectory Then Print #hFic, "CreateEachDirectory=1"
   If MimeTypes.Count Then Print #hFic, "MimeTypes="; MimeTypes.Join(",", Chr$(34))
   If ExtraDesktop Then Print #hFic, "ExtraDesktop=" & Quote(ExtraDesktop)
@@ -6030,7 +6036,10 @@ Public Sub WriteComponentFile(cComp As Collection) As Boolean
   Dim aData As String[]
   Dim sData As String
 
-  If Type = TYPE_NORMAL Then Return
+  If Type = TYPE_NORMAL Then 
+    Try Kill sPath
+    Return
+  Endif
 
   If Not cComp Then cComp = New Collection
 

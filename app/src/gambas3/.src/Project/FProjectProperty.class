@@ -172,17 +172,6 @@ Private Function DoApply() As Boolean
   Dim bRefreshForm As Boolean
   Dim bRefreshEditor As Boolean
 
-'   IF chkSnap.Value THEN
-'
-'     vVal = Val(txtGrid.Text)
-'     IF NOT IsInteger(vVal) THEN vVal = 0
-'     IF vVal < 2 OR vVal > 64 THEN
-'       txtGrid.SetFocus
-'       GOTO BAD_GRID
-'     ENDIF
-'
-'   ENDIF
-
   If choComponent.CheckSelection() Then Return True
 
   With Project
@@ -236,8 +225,7 @@ Private Function DoApply() As Boolean
 
   SaveComponents
   SaveEnvironment
-
-  If Project.Type <> Project.TYPE_NORMAL Then WriteComponent()
+  WriteComponent
 
   Project.WriteProject
   Project.MakeDirectoryIcon
@@ -1042,24 +1030,30 @@ Private Sub WriteFeatures(hCont As Container, aFeature As String[])
   
 End
 
-Private Sub WriteComponent() As Boolean
+Private Sub WriteComponent()
 
   Dim cComp As New Collection
 
-  If Not $bInitInfo Then Return
+  If Project.Type <> Project.TYPE_NORMAL Then
 
-  cComp["State"] = cmbComponentState.Index
+    If $bInitInfo Then 
 
-  $aNeed.Clear
-  WriteFeatures(panNeed, $aNeed)
-  WriteFeatures(panNeed2, $aNeed)
-
-  cComp["Hidden"] = cmbHidden.Index = 0
-  cComp["Implement"] = $aImplement
-  cComp["Need"] = $aNeed
-  cComp["Require"] = $aRequire
-  If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
-  cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
+      cComp["State"] = cmbComponentState.Index
+    
+      $aNeed.Clear
+      WriteFeatures(panNeed, $aNeed)
+      WriteFeatures(panNeed2, $aNeed)
+    
+      cComp["Hidden"] = cmbHidden.Index = 0
+      cComp["Implement"] = $aImplement
+      cComp["Need"] = $aNeed
+      cComp["Require"] = $aRequire
+      If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
+      cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
+      
+    Endif
+    
+  Endif
   
   Project.WriteComponentFile(cComp)
 

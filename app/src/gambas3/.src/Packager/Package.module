@@ -615,6 +615,16 @@ Catch
 
 End
 
+Private Sub GetDebianBuildPackageCommand() As String
+
+  Dim sCmd As String
+
+  sCmd = "dpkg-buildpackage -d -rfakeroot"
+  If Not Project.PackageSignature Then sCmd &= " -uc -us"
+  Return sCmd
+
+End
+
 Private Function MakeDebPackage(sSys As String)
 
   Dim hFile As File
@@ -858,9 +868,8 @@ Private Function MakeDebPackage(sSys As String)
   AddLog(("Creating package..."))
   'sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
   'sCmd = "fakeroot dpkg-buildpackage -d"
-  sCmd = "dpkg-buildpackage -d -rfakeroot"
-  'Shell sCmd Wait
-  RunCommand(sCmd, sPackagePath)
+  
+  RunCommand(GetDebianBuildPackageCommand(), sPackagePath)
   
   Dec Application.Busy
 
@@ -874,7 +883,6 @@ End
 Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp As String[])
 
   Dim hFile As File
-  Dim sCmd As String
   Dim sPackageName As String
   Dim sPackagePath As String
       
@@ -977,11 +985,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   ' Step 4. Build package
 
   AddLog(("Creating package..."))
-  'sCmd = "cd " & Shell$(sPackagePath) & "; fakeroot dpkg-buildpackage -d"
-  'sCmd = "fakeroot dpkg-buildpackage -d"
-  sCmd = "dpkg-buildpackage -d -rfakeroot"
-  'Shell sCmd Wait
-  RunCommand(sCmd, sPackagePath)
+  RunCommand(GetDebianBuildPackageCommand(), sPackagePath)
   
   Dec Application.Busy
 

@@ -396,6 +396,7 @@ End
 Private Sub ActionText_Write(Value As String)
 
   $sActionText = Value
+  If GetNext($iCurrent) < 0 Then $hWizard.UpdateActionButton
 
 End
 
@@ -408,6 +409,7 @@ End
 Private Sub ActionPicture_Write(Value As Picture)
 
   $hActionPicture = Value
+  If GetNext($iCurrent) < 0 Then $hWizard.UpdateActionButton
 
 End
 

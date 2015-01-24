@@ -88,6 +88,8 @@ Public Sub Form_Open()
 
   txtPackageVersion.Value = Max(1, Project.PackageVersion)
 
+  chkSignature.Value = Project.PackageSignature
+
   'InitSystemControls
   InitSystems
 
@@ -122,7 +124,7 @@ Public Sub Form_Open()
   chkDep.Value = Project.SameDependencies
   chkFile.Value = Project.SameFiles
   
-  txtMime.Text = Project.MimeTypes.Join("\n")
+  lstMime.List = Project.MimeTypes
   txtDesktop.Text = Project.ExtraDesktop
 
   edtLog.ReadConfig
@@ -354,6 +356,7 @@ Public Sub wizInstall_BeforeChange()
       Project.Prefix = chkPrefix.Value
       Project.PackageName = txtPackage.Text
       Project.PackageVersion = txtPackageVersion.Value
+      Project.PackageSignature = chkSignature.Value
 
     Case 1
       
@@ -436,7 +439,7 @@ Public Sub wizInstall_BeforeChange()
       
     Case TAB_MIME
       
-      Project.MimeTypes = Split(Trim(txtMime.Text), "\n")
+      Project.MimeTypes = lstMime.List
       Project.ExtraDesktop = Trim(txtDesktop.Text)
       
     Case TAB_DEP
@@ -516,7 +519,7 @@ Public Sub wizInstall_Change()
       cmbMenu.Visible = cmbMenu.Count > 1
       
     Case TAB_MIME
-      txtMime.SetFocus
+      lstMime.SetFocus
     
     Case TAB_DEP
       FillComboWithSystems(cmbDep)
