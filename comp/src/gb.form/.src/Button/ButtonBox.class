@@ -370,7 +370,7 @@ End
 Public Sub FilterNow()
   
   If Not $bFilter Then Return
-  If Not $hTimer.Enabled Then Return
+  'If Not $hTimer.Enabled Then Return
   FilterTimer_Timer
   
 End
