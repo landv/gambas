@@ -105,6 +105,8 @@ Private Sub GetValuesFromReport()
   cmbOrientation.Index = $hPrinter.Orientation
   cmbDuplex.Index = $hPrinter.Duplex
   cmbPaper.Index = $hPrinter.Paper
+  View.Refresh
+  
   Object.Lock(spWidth)
   spWidth.Value = $hPrinter.PaperWidth
   Object.Unlock(spWidth)

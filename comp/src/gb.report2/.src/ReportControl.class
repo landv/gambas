@@ -131,6 +131,7 @@ End
 Private Sub Left_Write(Value As String)
   
   $sLeft = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -143,6 +144,7 @@ End
 Private Sub Top_Write(Value As String)
   
   $sTop = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -155,6 +157,7 @@ End
 Private Sub Width_Write(Value As String)
   
   $sWidth = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -167,6 +170,7 @@ End
 Private Sub Height_Write(Value As String)
   
   $sHeight = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -179,6 +183,7 @@ End
 Private Sub Expand_Write(Value As Boolean)
   
   $bExpand = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -232,6 +237,7 @@ End
 Private Sub Visible_Write(Value As Boolean)
   
   $iVisible = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -241,6 +247,7 @@ Public Sub Move(X As Float, Y As Float, W As Float, H As Float)
   $fTop = Y
   $fWidth = W
   $fHeight = H
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -265,6 +272,7 @@ End
 Private Sub Font_Write(Value As Font)
   
   $hFont = Value '.Copy()
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -277,6 +285,7 @@ End
 Private Sub Padding_Write(Value As ReportPadding)
   
   $hPadding = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -317,6 +326,7 @@ End
 Private Sub Autoresize_Write(Value As Boolean)
   
   $bAutoresize = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -401,6 +411,7 @@ End
 Private Sub Ignore_Write(Value As Boolean)
   
   $bIgnore = Value
+  Me.Report._LayoutIsDirty = True
   
 End
 
@@ -601,3 +612,5 @@ Private Sub Margin_Write(Value As ReportMargin)
   $hMargin = Value
 
 End
+
+

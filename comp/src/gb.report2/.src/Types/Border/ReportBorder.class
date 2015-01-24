@@ -18,6 +18,9 @@ Property Read {Right} As _ReportBorderSide
 Property Read RoundCorner As _ReportRoundCorner
 Property Width As String
 Property Brush As ReportBrush
+Property Read _Height As Float
+Property Read _Width As Float
+
 
 '>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
 Static Private $aShadowStyle As String[] = ["none", "solid", "gradiant"]
@@ -188,3 +191,15 @@ Private Function RoundCorner_Read() As _ReportRoundCorner
 End
 
 
+
+Private Function _Height_Read() As Float
+
+  Return _Top + _Bottom
+
+End
+
+Private Function _Width_Read() As Float
+
+  Return _Left + _Right
+
+End

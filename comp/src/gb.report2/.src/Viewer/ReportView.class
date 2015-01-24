@@ -34,7 +34,7 @@ Public Sub _new()
 
   hOBS = New Observer($hView.Children[0], True) As "Area"
   tmrLayout.Delay = 5
-  Me.Report = report2
+  'Me.Report = report2
   'Report.Debug = True
   
 End
@@ -95,7 +95,7 @@ Public Sub View_Zoom()
 End
 
 Public Sub View_Finished()
-  
+  'If $hView.Count <> $hReport.PageCount Then $hView.Count = $hReport.PageCount
   If $hReport._LayoutNotFinished Then tmrLayout.start
   
 End
@@ -149,17 +149,21 @@ End
 
 Private Sub Report_Write(Value As Report)
   
-  If $hReport = Value Then Return
+  'If $hReport = Value Then Return
   If Not Value Then Return
   
   $hReport = Value
   $hReport.Layout(0)
+  $hView.Count = $hReport.PageCount + 1
   $hView.Padding = Report.UnitTo(1, "cm", "px")
   $hView.Spacing = $hView.Padding
-  $hView.DocWidth = Report.UnitTo(Value._Width, "cm", "px")
-  $hView.DocHeight = Report.UnitTo(Value._Height, "cm", "px")
-  $hView.Count = $hReport.PageCount
-  $hView.Zoom = 1
+  $hView.DocWidth = Report.UnitTo(TSizeParse[Value.Width].ToCm(), "cm", "px")
+  'Print "ReportWidth: " & Value._Width
+  
+  $hView.DocHeight = Report.UnitTo(TSizeParse[Value.Height].ToCm(), "cm", "px")
+  'Print "ReportHeight: " & Value._Height
+  '$hView.Zoom = 1
+  $hView.Reset
   '$hView.Arrangement = Arrange.fill
   '$hView.Column = 2
   '$hView.AutoCenter = True
@@ -364,7 +368,7 @@ End
 Public Sub Refresh()
   
   Me.Report = Me.Report
-  
+  $hView.Refresh
 End
 
 

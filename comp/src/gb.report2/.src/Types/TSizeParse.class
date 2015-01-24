@@ -47,11 +47,8 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
 End
 
 Public Sub ToCm() As Float
-  If Paint.Device Then 
-    Return Report.UnitToCm(Value, Unit, Paint.ResolutionX)
-    Else  
+  
     Return Report.UnitToCm(Value, Unit)
-  Endif
   
 End
 

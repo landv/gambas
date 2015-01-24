@@ -162,6 +162,10 @@ _bInExec
 v
 b
 
+_LayoutIsDirty
+v
+b
+
 Resolution
 p
 i
@@ -333,11 +337,11 @@ f
 UnitTo
 M
 f
-(Value)f(Unit1)s(Unit2)s[(Resolution)i]
+(Value)f(Unit1)s(Unit2)s
 UnitToCm
 M
 f
-(Value)f(Unit)s[(Resolution)i]
+(Value)f(Unit)s
 #ReportBorder
 
 C
@@ -396,6 +400,14 @@ s
 Brush
 p
 ReportBrush
+
+_Height
+r
+f
+
+_Width
+r
+f
 
 _get
 M

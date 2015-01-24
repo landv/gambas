@@ -29,7 +29,7 @@ Public _bInExec As Boolean
 Private $aSections As New TControl[]
 Private iCurPage As Integer = 0
 Private $iPageCount As Integer = -1
-Private $bLayoutIsDirty As Boolean = True
+Public _LayoutIsDirty As Boolean = True
 Private $fScale As Float = 1.0
 Private $iIndex As Integer
 Private $iResolution As Integer = -1
@@ -137,7 +137,7 @@ Public Sub Layout(Optional iPage As Integer = -1)
   Endif
   
 
-  If Not $bLayoutIsDirty Then Return
+  If Not _LayoutIsDirty Then Return
   If _bInExec Then Return
   If iPage > -1 Then
     'La page a déja été calculée
@@ -188,7 +188,7 @@ Public Sub Layout(Optional iPage As Integer = -1)
   $iPageCount = $iCurPage + 1
   _LayoutNotFinished = False
   $iCurSection = 0
-  $bLayoutIsDirty = False
+  _LayoutIsDirty = False
   
   'End of execution
   _bInExec = False
@@ -206,7 +206,7 @@ Public Sub Paint(Page As Integer)
   Endif
   $fCurReportWidth = $aSections[0].Ctrl._Width
 
-  If $bLayoutIsDirty And $iPageCount = -1 Then Layout(Page)
+  If _LayoutIsDirty Or $iPageCount = -1 Then Layout(Page)
   Paint.Save
   Paint.Scale($fScale, $fScale)
   'Set execution Flag to true
@@ -228,7 +228,7 @@ End
 
 Private Function PageCount_Read() As Integer
   
-  If $bLayoutIsDirty And Not _LayoutNotFinished Then Layout(1) 
+  If _LayoutIsDirty And Not _LayoutNotFinished Then Layout(1) 
   
   Return $iPageCount
   
@@ -256,7 +256,8 @@ Private Sub SetHeight(Value As String)
     For Each TSection In $aSections
       TSection.Ctrl.Height = Value
     Next
-    $bLayoutIsDirty = True
+    _LayoutIsDirty = True
+    Me._reset
   Endif
   
 End
@@ -282,7 +283,8 @@ Private Sub SetWidth(Value As String)
     For Each TSection In $aSections
       Tsection.Ctrl.Width = Value
     Next
-    $bLayoutIsDirty = True
+    _LayoutIsDirty = True
+    Me._Reset
   Endif
   
 End
@@ -305,7 +307,7 @@ Public Sub Clear()
   iCurPage = 0
   $iPageCount = -1
 
-  $bLayoutIsDirty = True
+  _LayoutIsDirty = True
   $fScale = 1.0
 
 End
@@ -321,7 +323,7 @@ End
 
 Public Sub Refresh()
   
-  $bLayoutIsDirty = True
+  _LayoutIsDirty = True
   Me._Reset
   
 End
@@ -405,7 +407,7 @@ End
 
 Private Sub Resolution_Write(Value As Integer)
   
-  $bLayoutIsDirty = True
+  _LayoutIsDirty = True
   $iResolution = Max(0, Value)
   
 End
@@ -720,7 +722,7 @@ Public Function _FromPixels(Value As Float) As Float
   
 End
 
-Static Private Function GetFactorToInch(Unit As String, Optional Resolution As Integer) As Float
+Static Private Function GetFactorToInch(Unit As String) As Float
   
   Select Case Unit
     Case "cm"
@@ -734,13 +736,13 @@ Static Private Function GetFactorToInch(Unit As String, Optional Resolution As I
     Case "mm"
       Return 0.03937
     Case "px"
-      If Resolution Then
-        Return 1 / Resolution
+      If Paint.ResolutionX Then
+        Return 1 / Paint.ResolutionX
       Else
         Return 1 / Desktop.Resolution
       Endif
     Case "pt"
-      Return 1 / 72
+      Return 1 / 72  'http://en.wikipedia.org/wiki/Point_(typography)#Current_DTP_point_system
     Case Else
       Error.Raise("Unknown unit")
   End Select
@@ -750,25 +752,25 @@ End
 ''Convert any value from any report allowed Unit to another one.
 ''For Pixel convertions, be carefull to give the Device
 ''Resolution in parameter.
-Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As String, Optional Resolution As Integer) As Float
+Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As String) As Float
   
   Dim fInch As Float
   Dim f As Float
   
-  f = GetFactorToInch(Unit1, Resolution)
+  f = GetFactorToInch(Unit1)
   finch = value * f
-  f = GetFactorToInch(Unit2, Resolution)
+  f = GetFactorToInch(Unit2)
   Return finch / f
   
 End
 
 ''Shortcut to convert any report allowed unit to cm.
-Static Public Function UnitToCm(Value As Float, Unit As String, Optional Resolution As Integer) As Float
+Static Public Function UnitToCm(Value As Float, Unit As String) As Float
   
   Dim fInch As Float
   Dim f As Float
   
-  f = GetFactorToInch(Unit, Resolution)
+  f = GetFactorToInch(Unit)
   finch = value * f
   f = 0.3937
   Return finch / f
