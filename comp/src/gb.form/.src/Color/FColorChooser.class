@@ -31,11 +31,6 @@ Private $bSnap As Boolean
 
 Private $bNormal As Boolean
 
-Private $aCustomColors As Integer[]
-Private $iCustom As Integer = -1
-Private $iLastCustom As Integer
-Private Const CUSTOM_D As Integer = 6
-Private CUSTOM_W As Integer
 Private $iNoCustomColor As Integer
 
 Public Sub _new()
@@ -111,6 +106,8 @@ Private Sub RefreshColor(Optional bRGB As Boolean = True, Optional bHSV As Boole
   'panColor.Background = $iColor
   panColor.Refresh
   dwgValue.Refresh
+
+  palColor.Current = $iColor
 
   $bLock = False
 
@@ -261,43 +258,23 @@ Public Sub dwgColorMap_MouseDown()
 
 End
 
-Private Sub UpdateCustomColors()
-
-  dwgCustomColors.ResizeContents($aCustomColors.Count * (CUSTOM_W + CUSTOM_D) + CUSTOM_D, dwgCustomColors.H)
-
-End
-
 Private Sub LoadCustomColors()
 
-  $aCustomColors = Settings["gb.form/CustomColors"]
-  If Not $aCustomColors Then $aCustomColors = New Integer[]
-  UpdateCustomColors
+  palColor.Colors = Settings["gb.form/CustomColors"]
 
 End
 
 Private Sub SaveCustomColors()
 
-  Settings["gb.form/CustomColors"] = $aCustomColors
+  Settings["gb.form/CustomColors"] = palColor.Colors
   Settings.Save
 
 End
 
 Private Sub AddCustomColor(iColor As Integer)
 
-  Dim iPos As Integer
-  
-  Do
-    iPos = $aCustomColors.Find(iColor)
-    If iPos < 0 Then Break
-    $aCustomColors.Remove(iPos)
-  Loop
-  
-  $aCustomColors.Add(iColor)
-  If $aCustomColors.Count > 32 Then $aCustomColors.Remove(0, $aCustomColors.Count - 32)
-  
+  palColor.AddFirst(iColor)
   SaveCustomColors
-  UpdateCustomColors
-  dwgCustomColors.Refresh
   
 End
 
@@ -574,183 +551,28 @@ Public Sub SetBorder(bBorder As Boolean)
   
 End
 
-
-Public Sub dwgCustomColors_Draw()
-
-  Dim X, Y, W, H As Integer
-  Dim I As Integer
-  Dim iColor As Integer
-  
-  If $aCustomColors.Count = 0 Then
-    Paint.Background = Color.SetAlpha(Color.TextForeground, 192)
-    Paint.Font.Grade = 5
-    Paint.DrawText(("Last colors"), Desktop.Scale, 0, Paint.W, Paint.H, Align.Left)
-    Return
-  Endif
-  
-  Paint.LineWidth = 0.5
-  Paint.LineJoin = Paint.LineJoinMiter
-  
-  X = CUSTOM_D
-  Y = CUSTOM_D
-  W = CUSTOM_W
-  H = W
-  
-  Paint.Rectangle(X - 1, Y - 3, Paint.W - X * 2 + 2, Paint.H - Y * 2 + 5)
-  Paint.Clip
-  
-  X -= dwgCustomColors.ScrollX
-  
-  For I = $aCustomColors.Max DownTo 0
-    iColor = $aCustomColors[I]
-    
-    Main.PaintColor(X, Y, W, H, iColor)
-    
-    Paint.Rectangle(X + 0.5, Y + 0.5, W - 1, H - 1)
-    Paint.Background = Color.Black
-    If I = $iCustom Then 
-      Paint.LineWidth = 1.75
-    Else
-      Paint.LineWidth = 0.5
-    Endif
-    Paint.Stroke
-    
-    X += W + CUSTOM_D
-    If X >= Paint.W Then Break
-    
-  Next
-
-End
-
 Public Sub GetCustom() As Boolean
   
-  Return panCustomColors.Visible
+  Return palColor.Visible
   
 End
 
 Public Sub SetCustom(bCustom As Boolean)
   
   If bCustom Then LoadCustomColors
-  panCustomColors.Visible = bCustom
+  palColor.Visible = bCustom
   
 End
 
 
-Public Sub dwgCustomColors_MouseDown()
+Public Sub palColor_Click((Color) As Integer)
 
-  $iLastCustom = $iCustom
-  If Not Mouse.Left Or If $iCustom < 0 Then Return
-
-  SetColor($aCustomColors[$iCustom])
+  SetColor(Color)
 
 End
 
-Public Sub dwgCustomColors_MouseMove()
-
-  Dim I As Integer
-
-  I = $aCustomColors.Max - ((Mouse.ScreenX - dwgCustomColors.ScreenX + dwgCustomColors.ScrollX - (CUSTOM_D \ 2)) \ (CUSTOM_W + CUSTOM_D))
-  If I < 0 Or If I > $aCustomColors.Max Then I = -1
-  
-  If I = $iCustom Then Return
-  
-  $iCustom = I
-  If I >= 0 Then
-    dwgCustomColors.Tooltip = "#" & Hex$($aCustomColors[I], If(panAlpha.Visible, 8, 6))
-  Else
-    dwgCustomColors.Tooltip = ""
-  Endif
-  
-  dwgCustomColors.Refresh
-
-End
-
-
-Public Sub dwgCustomColors_DblClick()
+Public Sub palColor_Activate()
 
   GetParent()._RaiseActivate()
-
-End
-
-Public Sub dwgCustomColors_Leave()
-
-  If $iCustom >= 0 Then
-    $iCustom = -1
-    dwgCustomColors.Refresh
-  Endif
-
-End
-
-Public Sub dwgCustomColors_Scroll()
-
-  dwgCustomColors_MouseMove
-
-End
-
-Private Sub ModifyCustomColors()
-  
-  SaveCustomColors
-  UpdateCustomColors
-  dwgCustomColors.Refresh
-  dwgCustomColors_MouseMove
-  
-End
-
-
-Public Sub mnuRemove_Click()
-  
-  If $iLastCustom >= 0 Then
-    $aCustomColors.Remove($iLastCustom)
-    ModifyCustomColors
-  Endif
-  
-End
-
-Public Sub mnuRemoveAll_Click()
-  
-  $aCustomColors.Clear
-  ModifyCustomColors
-  
-End
-
-Private Sub SortCustomColors()
-
-  Dim aSort As New String[]
-  Dim iColor As Integer
-  Dim sColor As String
-  
-  If $aCustomColors.Count <= 1 Then Return
-  
-  For Each iColor In $aCustomColors
-    With Color[iColor]
-      aSort.Add(Format(.Alpha, "000") & Format(.Hue, "000") & Format(.Saturation, "000") & Format(.Value, "000") & ":" & CStr(iColor))
-    End With
-  Next
-  
-  aSort.Sort(gb.Descent)
-  $aCustomColors.Clear
-  For Each sColor In aSort
-    $aCustomColors.Add(CInt(Mid$(sColor, InStr(sColor, ":") + 1)))
-  Next
-
-End
-
-Public Sub mnuSort_Click()
-  
-  SortCustomColors
-  ModifyCustomColors
-  
-End
-
-Public Sub dwgCustomColors_Arrange()
-
-  CUSTOM_W = dwgCustomColors.H - CUSTOM_D * 2
-  UpdateCustomColors
-
-End
-
-Public Sub dwgValue_DblClick()
-
-  GetParent()._RaiseActivate
 
 End

@@ -5743,7 +5743,7 @@ Public Sub GetBackground() As Image
     Else
       Try $hBackground = Image.Load("img/background" &/ sBackground & ".png")
     Endif
-    $hBackground.Colorize(GetBackgroundColor())
+    If $hBackground Then $hBackground.Colorize(GetBackgroundColor())
     $bBackgroundValid = True
   Endif
 

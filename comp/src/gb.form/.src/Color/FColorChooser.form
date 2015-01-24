@@ -168,20 +168,8 @@
         }
       }
     }
-    { panCustomColors Panel
-      MoveScaled(1,56,63,7)
-      Visible = False
-      Arrangement = Arrange.Fill
-      Border = Border.Plain
-      { dwgCustomColors ScrollArea
-        MoveScaled(0,0,62,6)
-        Background = Color.TextBackground
-        Tracking = True
-        Mouse = Mouse.Pointing
-        PopupMenu = "mnuCustom"
-        Border = False
-        ScrollBar = Scroll.None
-      }
+    { palColor ColorPalette
+      MoveScaled(2,56,61,6)
     }
   }
 }

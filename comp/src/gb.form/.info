@@ -300,7 +300,7 @@ C
 _Properties
 C
 s
-*,Border=True
+*,Border=True,ReadOnly
 _DefaultEvent
 C
 s
@@ -329,6 +329,18 @@ Colors
 p
 Integer[]
 
+Index
+p
+i
+
+Current
+p
+i
+
+ReadOnly
+p
+b
+
 _new
 m
 
@@ -341,6 +353,10 @@ Add
 m
 
 (Color)i
+AddFirst
+m
+
+(Color)i
 View_Draw
 m
 
@@ -350,6 +366,10 @@ m
 
 
 View_MouseMove
+m
+
+
+View_Menu
 m
 
 
@@ -366,6 +386,18 @@ m
 
 
 View_Arrange
+m
+
+
+mnuRemove_Click
+m
+
+
+mnuRemoveAll_Click
+m
+
+
+mnuSort_Click
 m
 
 
