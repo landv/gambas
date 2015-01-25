@@ -1,3 +1,6 @@
+[Bookmarks]
+ReportContainer=[516,1121]
+
 [Breakpoints]
 Count=0
 
@@ -14,7 +17,16 @@ Geometry=[354,0,210,210]
 Geometry=[872,411,274,210]
 
 [DebugWindow/$hReport]
-Geometry=[-7,-10,210,210]
+Geometry=[554,335,758,561]
+
+[DebugWindow/CSection.Children]
+Geometry=[1313,366,210,210]
+
+[DebugWindow/CSection.Children[16]]
+Geometry=[1116,173,210,210]
+
+[DebugWindow/CSection.Children[22]]
+Geometry=[1326,206,210,210]
 
 [DebugWindow/Control]
 ShowHidden=True
@@ -39,6 +51,9 @@ Geometry=[-7,-10,210,210]
 ShowHidden=True
 Geometry=[-7,-10,210,210]
 
+[DebugWindow/TCont]
+Geometry=[-7,-10,210,210]
+
 [DebugWindow/TSizeParse[s]]
 Geometry=[-7,-10,210,210]
 
@@ -47,6 +62,21 @@ Geometry=[-7,420,256,282]
 
 [DebugWindow/_ObjectFromId["0"]]
 Geometry=[7,4,210,210]
+
+[DebugWindow/aPageItems]
+Geometry=[-7,-10,210,210]
+
+[DebugWindow/aPageItems[0]]
+Geometry=[7,4,210,210]
+
+[DebugWindow/aPageItems[1]]
+Geometry=[7,4,210,210]
+
+[DebugWindow/aPageItems[9]]
+Geometry=[7,4,210,210]
+
+[DebugWindow/aPageItems[9].Ctrl]
+Geometry=[21,18,210,210]
 
 [DebugWindow/ctrl]
 Geometry=[-7,-10,342,210]
@@ -57,35 +87,50 @@ Geometry=[-7,247,210,210]
 [DebugWindow/hReport]
 Geometry=[-7,-10,210,210]
 
+[DebugWindow/hchild]
+Geometry=[-7,-10,210,210]
+
 [DebugWindow/hchild.Margin]
 Geometry=[502,541,210,210]
 
 [DebugWindow/hrc]
 Geometry=[1133,212,210,210]
 
+[DebugWindow/ochild]
+Geometry=[-7,-10,210,210]
+
 [FCommit]
-LastCommit="[GB.REPORT2]\n* NEW: Now Preview use DocumentView\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .list\nM       .project\nM       .settings\nR       .src/Optional/Arrange.class\nM       .src/Report.class\nM       .src/ReportFrame.class\nM       .src/Tests/Report3.class\nM       .src/Tests/Report3.report\nM       .src/Viewer/FPreview.class\nM       .src/Viewer/FPreview.form\nD       .src/Viewer/FPreview2.class\nD       .src/Viewer/FPreview2.form\nR       .src/Viewer/ReportView.class\nD       .src/Viewer/ReportView2.class\nA       .src/Viewer/ReportView3.class\nM       .startup\nA       16\nA       16/red-arrow-h.png\nA       16/red-arrow-v.png\nA       22\nA       22/FullWidth.png\nA       22/OnePage.png\nA       22/RealSize.png\nA       22/TwoPage.png\nA       32\nA       32/Collatecopie.png\nA       32/Empty.png\nA       32/grayscale.png\nA       32/reverse.png\nD       Synoptique"
+LastCommit="[GB.REPORT]\n* BUG: The reportImage take now care of strech mode\n  for computing the needed size\n* NEW: The default autoresize size of an image is based on a standart\n  resolution of 96 dpi.\n* BUG: The ReporView now show all the report pages.\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .settings\nM       .src/Report.class\nM       .src/ReportControl.class\nM       .src/ReportImage.class\nM       .src/Tests/Report3.class\nM       .src/Tests/Report3.report\nM       .src/Types/Border/ReportBorder.class\nM       .src/Types/TSizeParse.class\nM       .src/Viewer/FPreview.class\nM       .src/Viewer/ReportView.class"
 
 [OpenFile]
-Active=11
-File[1]=".src/Report.class:251.2"
-Count=17
+Active=22
+File[1]=".src/Report.class:169.26"
+Count=26
 File[2]=".src/Viewer/FPreview.form"
-File[3]=".src/Viewer/ReportView.class:160.2"
+File[3]=".src/Viewer/ReportView.class:156.36"
 File[4]=".src/Optional/Arrange.class:2.0"
-File[5]=".src/Types/Border/ReportBorder.class:0.0"
-File[6]=".src/Viewer/ReportView3.class:292.6"
-File[7]=".src/Viewer/FPreview.class:277.12"
-File[8]=".src/Viewer/ReportViewTask.class:0.0"
-File[9]=".src/Tests/Report3.class:25.0"
-File[10]=".src/Tests/Report1.report"
-File[11]=".src/Tests/Report3.report"
-File[12]=".src/Types/TSizeParse.class:41.45"
-File[13]=".src/Types/TControl.class:43.0"
-File[14]=".src/ReportControl.class:170.0"
-File[15]=".src/ReportImage.class:42.80"
-File[16]=".src/ReportLabel.class:0.0"
-File[17]=".src/ReportContainer.class:436.25"
+File[5]=".src/Types/Border/ReportBorder.class:197.0"
+File[6]=".src/Tests/Report3.class:9.25"
+File[7]=".src/Tests/Report1.report"
+File[8]=".src/Tests/Report3.report"
+File[9]=".src/Types/TSizeParse.class:11.25"
+File[10]=".src/Types/TControl.class:52.0"
+File[11]=".src/ReportControl.class:51.10"
+File[12]=".src/ReportImage.class:48.10"
+File[13]=".src/ReportLabel.class:0.0"
+File[14]=".src/ReportContainer.class:1211.0"
+File[15]=".src/ReportGridView.class:0.0"
+File[16]=".src/Types/Base/ReportPadding.class:88.2"
+File[17]=".src/ReportSection.class:0.0"
+File[18]=".src/Tests/Report1.class:3.0"
+File[19]=".src/Tests/Report11.class:0.0"
+File[20]=".src/Viewer/FPreview.class:131.2"
+File[21]=".src/Tests/Report4.report"
+File[22]=".src/Tests/Report4.class:3.0"
+File[23]=".src/ReportFrame.class:287.14"
+File[24]=".src/Tests/Report11.report"
+File[25]=".src/ReportVBox.class:0.0"
+File[26]=".src/Tests/Report5.report"
 
 [VersionControl]
 User="gambix"

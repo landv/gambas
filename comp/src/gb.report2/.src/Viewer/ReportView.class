@@ -153,8 +153,9 @@ Private Sub Report_Write(Value As Report)
   If Not Value Then Return
   
   $hReport = Value
-  $hReport.Layout(0)
-  $hView.Count = $hReport.PageCount + 1
+  $hReport.Layout(1)
+  'Print "View Pages: " & $hReport.PageCount
+  $hView.Count = $hReport.PageCount 
   $hView.Padding = Report.UnitTo(1, "cm", "px")
   $hView.Spacing = $hView.Padding
   $hView.DocWidth = Report.UnitTo(TSizeParse[Value.Width].ToCm(), "cm", "px")

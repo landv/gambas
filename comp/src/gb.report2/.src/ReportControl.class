@@ -578,7 +578,7 @@ End
 Private Sub _DataIndex_Write(Value As Integer)
   'If Me.Tag = "Boite 2" And Value = 0 Then Stop
   'If Me.Report.$iCurPage = 0 Then Print "DataIndex: " & value
-  
+  'If Value = 0 Then Stop
   $iDataindex = Value
   'Stop
   'Print "_DataIndex " & Me.Tag & "  = " & $iDataindex
@@ -613,4 +613,15 @@ Private Sub Margin_Write(Value As ReportMargin)
 
 End
 
+Public Sub Raise()
+  
+   _ObjectFromId[$iParentId]._Raise(Me)
+  
+End
+
+Public Sub Lower()
+  
+   _ObjectFromId[$iParentId]._Lower(Me)
+  
+End
 

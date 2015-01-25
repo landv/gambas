@@ -192,7 +192,7 @@ Public Sub Layout(Optional iPage As Integer = -1)
   
   'End of execution
   _bInExec = False
-  
+  'Print "Pages: " & $ipageCount
 End
 
 Public Sub Paint(Page As Integer)
@@ -223,6 +223,7 @@ Public Sub Paint(Page As Integer)
   'End of execution
   _bInExec = False
   Paint.Restore
+  
   
 End
 
@@ -705,7 +706,7 @@ End
 
 ''Convert Internal units to scaled pixels.
 
-Public Function _ToPixels(Value As Float) As Float
+Fast Public Function _ToPixels(Value As Float) As Float
   
   Dim f As Float
   
@@ -716,13 +717,13 @@ Public Function _ToPixels(Value As Float) As Float
 End
 
 ''Shortcut to Convert a Pixel Value to Internal unit (Need a paint device).
-Public Function _FromPixels(Value As Float) As Float
+Fast Public Function _FromPixels(Value As Float) As Float
 
   Return (value / Paint.ResolutionX * 2.54) 
   
 End
 
-Static Private Function GetFactorToInch(Unit As String) As Float
+Fast Static Private Function GetFactorToInch(Unit As String) As Float
   
   Select Case Unit
     Case "cm"
@@ -752,7 +753,7 @@ End
 ''Convert any value from any report allowed Unit to another one.
 ''For Pixel convertions, be carefull to give the Device
 ''Resolution in parameter.
-Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As String) As Float
+Fast Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As String) As Float
   
   Dim fInch As Float
   Dim f As Float
@@ -765,7 +766,7 @@ Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As String) 
 End
 
 ''Shortcut to convert any report allowed unit to cm.
-Static Public Function UnitToCm(Value As Float, Unit As String) As Float
+Fast Static Public Function UnitToCm(Value As Float, Unit As String) As Float
   
   Dim fInch As Float
   Dim f As Float

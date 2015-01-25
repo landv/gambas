@@ -133,7 +133,7 @@ Public Sub Slider1_Change()
 End
 
 Public Sub View_Zoom()
-  Print View.Zoom
+
   Object.Lock(Slider1)
   Slider1.Value = View.Zoom * 100
   Object.Unlock(Slider1)
