@@ -90,6 +90,13 @@ Public Sub CheckSystem(sSys As String) As String
   
 End
 
+Private Sub ClearLog()
+  
+  FMakeInstall.ClearLog
+  
+End
+
+
 Private Sub AddLog(sText As String)
 
   FMakeInstall.AddLog(sText)
@@ -110,16 +117,6 @@ End
 
 Private Sub InitMake(sSys As String)
   
-  If Project.Prefix Then 
-    If Project.Vendor Then 
-      $sPrefix = Replace(String.LCase(Project.Vendor), " ", "_") & "-"
-    Else 
-      $sPrefix = "gambas" & System.Version & "-"
-    Endif
-  Else 
-    $sPrefix = "" 
-  Endif
-
   If Project.CreateEachDirectory Then
     Path = $sSavePath &/ sSys
     Try Mkdir $sSavePath
@@ -131,9 +128,8 @@ Private Sub InitMake(sSys As String)
 
   $sName = Project.Name
 
-  $sPackageName = $sPrefix & String.LCase($sName)
-  $sPackageName = Replace$($sPackageName, "_", "-")
-  $sPackageName = Replace$($sPackageName, ".", "-")
+  $sPrefix = GetPackagePrefix(Project.Vendor, Project.Prefix)
+  $sPackageName = GetPackageFullName(Project.Vendor, Project.Prefix, False)
 
   $sHome = System.User.Home
   
@@ -168,7 +164,7 @@ Public Function Make() As Boolean
   Try Move sMacro To sMacro & ".save"
   Try Kill sMacro
 
-  AddLog("\n" & String(40, "=") & "\n")
+  ClearLog
   AddLog(("Saving CHANGELOG file."))
   sPath = Project.Dir &/ ".hidden" &/ "CHANGELOG"
   bAdd = Not Exist(sPath)
@@ -2302,3 +2298,55 @@ Public Sub Process_Error(sData As String)
 
 End
 
+Private Sub GetPackageName() As String
+
+  Dim sName As String
+  
+  sName = Replace(LCase(Project.Name), ".", "-")
+  sName = Replace(sName, "_", "-")
+   
+  Return sName
+  
+End
+
+Private Sub GetPackagePrefix(sVendor As String, bPrefix As Boolean) As String
+
+  Dim sText As String
+  
+  sVendor = String.LCase(Trim(sVendor))
+  sVendor = Replace(sVendor, "-", "_")
+  
+  If Project.Type = Project.TYPE_COMPONENT Then
+
+    If Not sVendor Then sVendor = "gb"
+    If GetPackageName() Begins sVendor & "." Then 
+      sVendor = ""
+    Else 
+      sVendor &= "-"
+    Endif
+    sText = "gambas" & System.Version & "-" & sVendor
+  
+  Else
+
+    If bPrefix Then
+      If Not sVendor Then sVendor = "gambas"
+      sText = sVendor & "-"
+    Endif
+    
+  Endif
+  
+  Return sText
+  
+End
+
+Public Sub GetPackageFullName(sVendor As String, bPrefix As Boolean, bWithVersion As Boolean) As String
+  
+  Dim sText As String
+  
+  sText = GetPackagePrefix(sVendor, bPrefix) & GetPackageName()
+  
+  If bWithVersion Then sText &= "-" & Project.FormatVersion()
+  
+  Return sText
+  
+End

@@ -142,35 +142,7 @@ End
 
 Private Sub UpdatePackageName()
   
-  Dim sVendor As String
-  Dim sText As String
-
-  If Project.Type = Project.TYPE_COMPONENT Then
-
-    sVendor = String.LCase(Trim(txtVendor.Text))
-    If Not sVendor Then sVendor = "gb"
-    If LCase(Project.Name) Begins sVendor & "." Then 
-      sVendor = ""
-    Else 
-      sVendor &= "-"
-    Endif
-    sText = "gambas" & System.Version & "-" & sVendor & Replace(LCase(Project.Name), ".", "-")
-  
-  Else
-
-    If chkPrefix.Value Then
-      sVendor = String.LCase(Trim(txtVendor.Text))
-      If Not sVendor Then sVendor = "gambas"
-      sText = sVendor & "-" & LCase(Project.Name)
-    Else
-      sText = LCase(Project.Name)
-    Endif
-    
-  Endif
-  
-  sText &= "-" & Project.FormatVersion()
-  
-  txtPackage.Text = sText
+  txtPackage.Text = Package.GetPackageFullName(txtVendor.Text, chkPrefix.Value, True)
   
 End
 
@@ -588,6 +560,14 @@ Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
   Wait
 
 End
+
+Public Sub ClearLog()
+  
+  edtLog.Clear
+  Wait
+  
+End
+
 
 Private Sub FillComboWithSystems(hCombo As ComboBox)
 
@@ -1193,5 +1173,11 @@ End
 Public Sub txtVendor_KeyPress()
 
   Project.OnVendorKeyPress
+
+End
+
+Public Sub btnCopy_Click()
+
+  Clipboard.Copy(edtLog.Text, "text/plain;charset=utf-8")
 
 End
