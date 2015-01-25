@@ -76,7 +76,9 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Else
     hPic = $hpic
   Endif
-  
+  Paint.Save
+  Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
+  Paint.Clip
   '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
   
   'hBrush = Paint.Image(hpic)
@@ -158,7 +160,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     'Paint.Brush = hBrush
     'Paint.Rectangle(ix, iy, w, h - 1)
   Endif
-  
+  Paint.Restore
 End
 
 Private Function Image_Read() As SvgImage

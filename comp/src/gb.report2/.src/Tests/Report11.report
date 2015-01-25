@@ -3,7 +3,6 @@
 { Report Report
   #MoveScaled(0,0,100,77)
   Padding = ReportPadding["Top:1cm;Bottom:15mm;Left:2cm;Right:2cm"]
-  Paper = Printer.A3
   Index = 0
   Text = ("Section 1")
   { ReportHBox2 ReportHBox
@@ -60,7 +59,7 @@
         Tag = "*"
         Spacing = "1mm"
         { ReportLabel1 ReportLabel
-          #MoveScaled(0,0,44,9)
+          #MoveScaled(0,1,44,9)
           Fixed = True
           Font = Font["Bitstream Charter,Bold,Italic,+2"]
           Margin = ReportMargin["Bottom:1cm"]
@@ -94,6 +93,7 @@
         Background = ReportBrush["#3398C3"]
         Text = ("Page $PAGE on $NPAGE  ")
         Alignment = Align.Right
+        UseField = True
       }
     }
   }

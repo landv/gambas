@@ -1,11 +1,12 @@
 [Bookmarks]
-ReportContainer=[516,1121]
+ReportContainer=[560,1185]
 
 [Breakpoints]
 Count=0
 
 [DebugWindow]
-Count=0
+Count=1
+DebugWindow[1]="hChild"
 
 [DebugWindow/$aSections]
 Geometry=[-55,269,210,210]
@@ -81,6 +82,12 @@ Geometry=[21,18,210,210]
 [DebugWindow/ctrl]
 Geometry=[-7,-10,342,210]
 
+[DebugWindow/hChild]
+Geometry=[1120,176,473,436]
+
+[DebugWindow/hChildHints]
+Geometry=[0,0,210,210]
+
 [DebugWindow/hRep]
 Geometry=[-7,247,210,210]
 
@@ -100,37 +107,24 @@ Geometry=[1133,212,210,210]
 Geometry=[-7,-10,210,210]
 
 [FCommit]
-LastCommit="[GB.REPORT]\n* BUG: The reportImage take now care of strech mode\n  for computing the needed size\n* NEW: The default autoresize size of an image is based on a standart\n  resolution of 96 dpi.\n* BUG: The ReporView now show all the report pages.\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .settings\nM       .src/Report.class\nM       .src/ReportControl.class\nM       .src/ReportImage.class\nM       .src/Tests/Report3.class\nM       .src/Tests/Report3.report\nM       .src/Types/Border/ReportBorder.class\nM       .src/Types/TSizeParse.class\nM       .src/Viewer/FPreview.class\nM       .src/Viewer/ReportView.class"
+LastCommit="[GB.REPORT2]\n* BUG: Full rewriting of the VBox layout procedure to really take care of\n  margins\n* BUG: Now Indexs are accurate\n* BUG: ReportImage autoresize are based on a 96 dpi resolution for internal \n  conversion.\n* BUG: ReportImage tale care of the proportional mode for autoresizing.\n\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .list\nM       .project\nM       .settings\nM       .src/Report.class\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nM       .src/ReportFrame.class\nM       .src/ReportGridView.class\nM       .src/ReportImage.class\nM       .src/ReportSvgImage.class\nA       .src/Tests/Report4.class\nA       .src/Tests/Report4.report\nA       .src/Tests/Report5.class\nA       .src/Tests/Report5.report\nM       .src/Types/TSizeParse.class\nM       .src/Viewer/FPreview.class\nM       .src/Viewer/ReportView.class\nD       .src/Viewer/ReportView3.class\nD       .src/Viewer/ReportViewTask.class\nM       .startup"
 
 [OpenFile]
-Active=22
-File[1]=".src/Report.class:169.26"
-Count=26
-File[2]=".src/Viewer/FPreview.form"
-File[3]=".src/Viewer/ReportView.class:156.36"
-File[4]=".src/Optional/Arrange.class:2.0"
-File[5]=".src/Types/Border/ReportBorder.class:197.0"
-File[6]=".src/Tests/Report3.class:9.25"
+Active=4
+File[1]=".src/ReportSvgImage.class:37.33"
+Count=13
+File[2]=".src/ReportImage.class:56.9"
+File[3]=".src/ReportGridView.class:8.11"
+File[4]=".src/Tests/Report11.report"
+File[5]=".src/Tests/Report4.report"
+File[6]=".src/Tests/Report3.report"
 File[7]=".src/Tests/Report1.report"
-File[8]=".src/Tests/Report3.report"
-File[9]=".src/Types/TSizeParse.class:11.25"
-File[10]=".src/Types/TControl.class:52.0"
-File[11]=".src/ReportControl.class:51.10"
-File[12]=".src/ReportImage.class:48.10"
-File[13]=".src/ReportLabel.class:0.0"
-File[14]=".src/ReportContainer.class:1211.0"
-File[15]=".src/ReportGridView.class:0.0"
-File[16]=".src/Types/Base/ReportPadding.class:88.2"
-File[17]=".src/ReportSection.class:0.0"
-File[18]=".src/Tests/Report1.class:3.0"
-File[19]=".src/Tests/Report11.class:0.0"
-File[20]=".src/Viewer/FPreview.class:131.2"
-File[21]=".src/Tests/Report4.report"
-File[22]=".src/Tests/Report4.class:3.0"
-File[23]=".src/ReportFrame.class:287.14"
-File[24]=".src/Tests/Report11.report"
-File[25]=".src/ReportVBox.class:0.0"
-File[26]=".src/Tests/Report5.report"
+File[8]=".src/Tests/FMain.form"
+File[9]=".src/Tests/Module1.module:0.0"
+File[10]=".src/Tests/Report5.report"
+File[11]=".src/Report.class:721.42"
+File[12]=".src/ReportLabel.class:200.2"
+File[13]=".src/Tests/Report11.class:2.0"
 
 [VersionControl]
 User="gambix"
