@@ -79,7 +79,9 @@ static SUBCOLLECTION_DESC _tables_desc =
 
 static void open_connection(CCONNECTION *_object)
 {
-	DB_Open(&THIS->desc, &THIS->driver, &THIS->db);
+	if (DB_Open(&THIS->desc, &THIS->driver, &THIS->db))
+		return;
+
 	THIS->limit = 0;
 	THIS->trans = 0;
 
