@@ -41,9 +41,9 @@ static char *get_password(const char *name)
 {
 	GnomeKeyringAttributeList * attributes;
 	GnomeKeyringResult result;
-	GList * found_list;
-	GList * i;
-	GnomeKeyringFound * found;
+	GList *found_list;
+	GList *i;
+	GnomeKeyringFound *found;
 	char * password = NULL;
 
 	attributes = g_array_new(FALSE, FALSE, sizeof (GnomeKeyringAttribute));
@@ -53,9 +53,12 @@ static char *get_password(const char *name)
 	result = gnome_keyring_find_items_sync(GNOME_KEYRING_ITEM_GENERIC_SECRET, attributes, &found_list);
 	gnome_keyring_attribute_list_free(attributes);
 
+	if (result == GNOME_KEYRING_RESULT_NO_MATCH)
+		return NULL;
+
 	if (result != GNOME_KEYRING_RESULT_OK)
 	{
-		GB.Error("Unable to get password: &1", gnome_keyring_result_to_message(result));
+		GB.Error("Unable to retrieve password: &1", gnome_keyring_result_to_message(result));
 		return NULL;
 	}
 
@@ -77,28 +80,51 @@ static bool set_password(const char *name, const char *password)
 	GnomeKeyringAttributeList *attributes;
 	GnomeKeyringResult result;
 	guint item_id;
+	GList *found_list;
+	GList *i;
 
 	attributes = g_array_new(FALSE, FALSE, sizeof (GnomeKeyringAttribute));
 	gnome_keyring_attribute_list_append_string(attributes, "name", name);
 	gnome_keyring_attribute_list_append_string(attributes, "magic", GB.Application.Name());
 
-	result = gnome_keyring_item_create_sync(NULL,
-		GNOME_KEYRING_ITEM_GENERIC_SECRET,
-		name,
-		attributes,
-		password,
-		TRUE,
-		&item_id);
-
-	gnome_keyring_attribute_list_free(attributes);
-
-	if (result != GNOME_KEYRING_RESULT_OK)
+	if (password && *password)
 	{
+		result = gnome_keyring_item_create_sync(NULL,
+			GNOME_KEYRING_ITEM_GENERIC_SECRET,
+			name,
+			attributes,
+			password,
+			TRUE,
+			&item_id);
+
+		gnome_keyring_attribute_list_free(attributes);
+
+		if (result == GNOME_KEYRING_RESULT_OK)
+			return FALSE;
+
 		GB.Error("Unable to store password: &1", gnome_keyring_result_to_message(result));
 		return TRUE;
 	}
 	else
-		return FALSE;
+	{
+		result = gnome_keyring_find_items_sync(GNOME_KEYRING_ITEM_GENERIC_SECRET, attributes, &found_list);
+		gnome_keyring_attribute_list_free(attributes);
+
+		if (result == GNOME_KEYRING_RESULT_NO_MATCH)
+			return FALSE;
+
+		if (result == GNOME_KEYRING_RESULT_OK)
+		{
+			for (i = found_list; i != NULL; i = i->next)
+				gnome_keyring_item_delete_sync(NULL, ((GnomeKeyringFound *)(i->data))->item_id);
+
+			gnome_keyring_found_list_free(found_list);
+			return FALSE;
+		}
+
+		GB.Error("Unable to remove password: &1", gnome_keyring_result_to_message(result));
+		return TRUE;
+	}
 }
 
 BEGIN_METHOD(KeyRing_get_password, GB_STRING key)
