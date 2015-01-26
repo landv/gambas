@@ -176,14 +176,12 @@ End
 Private Sub InitSystemControls()
   
   Dim hCtrl As Control
-  Dim hCont As Container
+  Dim hCont As HBox
+  Dim aMsg As New String[]
   Dim sMsg As String
-  Dim hPanel, hPanel2 As Panel
-  Dim hPict As PictureBox
-  Dim hLabel As TextLabel
-  Dim hTool As ToolButton
+  Dim hPanel As Panel
   Dim hCheckBox As CheckBox
-  Dim hSpace As Panel
+  Dim hPictureBox As PictureBox
 
   Inc Application.Busy
   
@@ -194,13 +192,14 @@ Private Sub InitSystemControls()
     If Not hCtrl Is Container Then Continue
     hCont = hCtrl
   
-    hCont.H = Desktop.Scale * 6
+    'hCont.H = Desktop.Scale * 6
     sMsg = Package.CheckSystem(hCont.Tag)
+    If sMsg And If Not aMsg.Exist(sMsg) Then aMsg.Add(sMsg)
     
     hPanel = Null
     For Each hCtrl In hCont.Children
-      If hCtrl Is ToolButton Then
-        hTool = hCtrl
+      If hCtrl Is PictureBox Then
+        hPictureBox = hCtrl
       Else If hCtrl Is CheckBox Then 
         hCheckBox = hCtrl
       Else If hCtrl Is Panel And If Panel(hCtrl).Tag Then 
@@ -208,54 +207,22 @@ Private Sub InitSystemControls()
       Endif 
     Next
     
-    If Not hPanel Then 
-    
-      hPanel = New Panel(hCont)
-      hPanel.Arrangement = Arrange.Vertical
-      hPanel.Width = Desktop.Scale * 48
-      hPanel.Tag = True
-      
-      hSpace = New Panel(hPanel)
-      hSpace.Resize(4, 4)
-      
-      hPanel2 = New Panel(hPanel)
-      hPanel2.Arrangement = Arrange.Horizontal
-      hPanel2.Expand = True
-      hPanel2.Border = Border.Plain
-      hPanel2.Spacing = True
-      hPanel2.Margin = True
-      
-        hPict = New PictureBox(hPanel2)
-        hPict.Picture = Picture["icon:/16/warning"]
-        hPict.Width = 16
-        hPict.Alignment = Align.Center
-        
-        hLabel = New TextLabel(hPanel2)
-        hLabel.Text = sMsg
-        hLabel.Alignment = Align.Normal
-        hLabel.Font.Italic = True
-        hLabel.Expand = True
-      
-      hSpace = New Panel(hPanel)
-      hSpace.Resize(4, 4)
-      
-      hSpace = New Panel(hCont)
-      hSpace.Resize(16, 4)
-      hSpace.Previous = hTool
-      
-    Endif
-
     hCheckBox.Enabled = Not sMsg
     If Not hCheckBox.Enabled Then hCheckBox.Value = False
 
-    hTool.Design = True
-    hTool.Enabled = hCheckBox.Value
-    hTool.Width = hTool.Height
-    hTool.Picture = hTool.Picture.Image.Stretch(hTool.Width - 16, hTool.Height - 16).Picture
+    With hPictureBox
+      .Enabled = hCheckBox.Value
+      .Width = hCont.H - hCont.Padding * 2
+    End With
     
-    hPanel.Visible = sMsg
-
   Next
+  
+  If aMsg.Count Then
+    txtMessage.Text = aMsg.Join("<p>")
+    txtMessage.Show
+  Else
+    txtMessage.Hide
+  Endif
   
   Dec Application.Busy
   
@@ -863,9 +830,9 @@ End
 Public Sub chkDistro_Click()
 
   Dim hCheckBox As CheckBox = Last
-  Dim hButton As ToolButton = hCheckBox.Parent.Children[0]
+  Dim hPictureBox As PictureBox = hCheckBox.Parent.Children[0]
   
-  hButton.Enabled = hCheckBox.Value
+  hPictureBox.Enabled = hCheckBox.Value
   
 End
 
@@ -1111,14 +1078,6 @@ Public Sub tvwFile_Save(Row As Integer, Column As Integer, Value As String)
   aRow[Column] = Value
   $aFile[Row] = aRow.Join("\t")
   SaveExtraFiles
-
-End
-
-Public Sub panDistro_Arrange()
-
-  With Last.Children[0]
-    .Width = .Height
-  End With
 
 End
 
