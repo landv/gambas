@@ -717,11 +717,11 @@ void MyContainer::showEvent(QShowEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::showEvent(e);
 	THIS->widget.flag.shown = TRUE;
-	// 	if (!qstrcmp(GB.GetClassName(THIS), "TabStrip"))
-	// 	{
-	// 		qDebug("MyContainer::showEvent: %s %p: SHOWN = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
-	// 		BREAKPOINT();
-	// 	}
+	/*if (!qstrcmp(GB.GetClassName(THIS), "HBox"))
+	{
+		qDebug("MyContainer::showEvent: %s %p: shown = 1 (%d %d)", THIS->widget.name, THIS, THIS->widget.widget->isVisible() , !THIS->widget.widget->isHidden());
+		//BREAKPOINT();
+	}*/
 	CCONTAINER_arrange(THIS);
 }
 
@@ -730,9 +730,9 @@ void MyContainer::hideEvent(QHideEvent *e)
 	void *_object = CWidget::get(this);
 	QWidget::hideEvent(e);
 	THIS->widget.flag.shown = FALSE;
-	/*if (!qstrcmp(GB.GetClassName(THIS), "ListContainer"))
+	/*if (!qstrcmp(GB.GetClassName(THIS), "HBox"))
 	{
-		qDebug("MyContainer::hideEvent: %s %p: SHOWN = 0", THIS->widget.name, THIS);
+		qDebug("MyContainer::hideEvent: %s %p: shown = 0", THIS->widget.name, THIS);
 		//BREAKPOINT();
 	}*/
 }

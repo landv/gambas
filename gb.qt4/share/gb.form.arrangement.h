@@ -194,6 +194,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		
 		INIT_CHECK_CHILDREN_LIST(cont);
 		
+		//fprintf(stderr, "CCONTAINER_arrange: %s: children: %d\n", GET_OBJECT_NAME(_object), list.count());
+
 		if (!HAS_CHILDREN())
 			goto __RETURN;
 		

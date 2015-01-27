@@ -107,7 +107,7 @@ End
 
 '  GB_STATIC_METHOD("Find", "Integer[]", CDESKTOP_find, "[(Title)s(Application)s(Role)s]"),
 
-Static Public Sub FindWindow(Optional Title As String, Application As String, Role As String) As Integer[]
+Static Public Sub FindWindow(Optional Title As String, (Application) As String, Role As String) As Integer[]
 
   Return X11.FindWindow(Title, Application, Role)
 

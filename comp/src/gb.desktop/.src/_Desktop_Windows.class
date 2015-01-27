@@ -32,7 +32,7 @@ Public Sub _get(Index As Integer) As DesktopWindow
 End
 
 
-Public Sub FromHandle(Window As Integer) As DesktopWindow
+Public Sub FromHandle((Window) As Integer) As DesktopWindow
   
   Dim hWin As DesktopWindow
   

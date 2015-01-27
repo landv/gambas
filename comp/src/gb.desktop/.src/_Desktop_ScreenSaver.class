@@ -5,13 +5,13 @@ Create Static
 
 Static Property Read Enabled As Boolean
 
-Static Public Sub Suspend(Window As Window)
+Static Public Sub Suspend((Window) As Window)
   
   Main.RunXdgUtil("xdg-screensaver", ["suspend", CStr(Window.Id)])
   
 End
 
-Static Public Sub Resume(Window As Window)
+Static Public Sub Resume((Window) As Window)
   
   Main.RunXdgUtil("xdg-screensaver", ["resume", CStr(Window.Id)])
   
