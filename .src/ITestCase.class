@@ -1,0 +1,24 @@
+' Gambas class file
+
+' This interface is implemented by the TestCase class.  It represents an
+' individual test case by holding a reference to the name of the test case
+' (ie. the method containing the test code) and to the test container
+' that contains the test method to execute.
+
+' Name of the test case
+Property Read Name As String
+
+' Test container that the test case uses
+Property Read TestContainer As ITestContainer
+
+Private Function TestContainer_Read() As ITestContainer
+
+    Message("Blah")
+
+End
+
+Private Function Name_Read() As String
+
+    Message("Blah")
+
+End

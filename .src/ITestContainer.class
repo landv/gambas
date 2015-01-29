@@ -1,0 +1,22 @@
+' Gambas class file
+
+' This interface identifies TestContainer classes.  TestContainers are a
+' COM class that hold different test case methods.
+
+' Return the name of the different test case methods in this test container
+'Property Read TestCaseNames As Variant
+
+' Run the specified test case methods in this test container
+Public Sub RunTestCase(oTestCase As ITestCase, oTestResult As TestResult)
+
+End Sub
+
+'Initialize the test fixture
+Public Sub Setup()
+
+End Sub
+
+'Destroy the test fixture
+Public Sub TearDown()
+
+End Sub

@@ -1,0 +1,20 @@
+' Gambas class file
+
+' Unit Test for Gambas
+'
+' Fork from http://comunit.sourceforge.net/
+
+' This interface identifies all classes that can be used by the UnitRunner
+' in order to execute test cases.
+
+' Runs the test and collects the results in the TestResult parameter
+Public Sub Run(ByRef oTestResult As TestResult)
+
+    'Attribute Run.VB_Description = "Runs a test and collects its result in a TestResult instance."
+
+End Sub
+
+' Number of test cases contained in this test
+Public Function CountTestCases() As Integer
+
+End Function

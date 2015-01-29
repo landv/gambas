@@ -1,0 +1,76 @@
+' Gambas class file
+
+' The TestError class holds the information regarding a single error or failure
+' that has occured during the executing of the test cases.  For errors, the
+' class holds the error number, source and description as well as a reference to
+' the test case that generated the error.  For failures, the class holds a
+' description of the failure as well as a reference to the test case which
+' generated the failure.
+
+Private $oTestCase As ITestCase
+Private $lErrNumber As Long
+Private $sSource As String
+Private $sErrDescription As String
+
+' Sets a reference to the test case where the error/failure was generated
+Property TestCase As ITestCase
+
+Sub TestCase_write(oTestCase As ITestCase)
+
+    $oTestCase = oTestCase
+
+End
+
+Function TestCase_Read() As ITestCase
+
+    Return $oTestCase
+
+End
+
+' Set the error number (used by test errors, not failures)
+Property ErrNumber As Long
+
+Function ErrNumber_Write(lErrNumber As Long)
+
+    $lErrNumber = lErrNumber
+
+End
+
+'Return the error number (used by test errors, not failures)
+Function ErrNumber_Read() As Long
+
+    Return $lErrNumber
+
+End
+
+'Set the source of the error (used by test errors, not failures)
+Property Source As String
+
+Sub Source_Write(sSource As String)
+
+    $sSource = sSource
+
+End
+
+'Return the source of the error (used by test errors, not failures)
+Function Source_Read() As String
+
+    Return $sSource
+
+End
+
+'Set the description of the error / failure
+Property Description As String
+
+Sub Description_write(sSource As String)
+
+    $sErrDescription = sSource
+
+End
+
+' Return the description of the error
+Function Description_Read() As String
+
+    Return $sErrDescription
+
+End
