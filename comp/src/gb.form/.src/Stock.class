@@ -28,6 +28,8 @@ Static Private Sub GetDesktop() As String
   If Env["KDE_FULL_SESSION"] Then
     If Env["KDE_SESSION_VERSION"] = "4" Then
       Return "KDE4"
+    Else If Env["KDE_SESSION_VERSION"] = "5" Then
+      Return "KDE5"
     Else
       Return "KDE"
     Endif
@@ -232,7 +234,7 @@ Static Private Sub SearchTheme(sDesktop As String)
         
       Endif
       
-    Case "kde4"
+    Case "kde4", "kde5"
       
       Try Exec ["kde4-config", "--path", "icon"] To sIconPath
       If sIconPath Then 
