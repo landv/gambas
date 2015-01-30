@@ -7,6 +7,7 @@ Static Private $aLang As String[] = ["en", "fr", "de", "es", "it", "nl", "pl", "
 Private $bError As Boolean
 Private $bPrint As Boolean
 Private mnuLang As Menu
+Private $bFirstTime As Boolean
 
 Public Sub _new()
   
@@ -62,7 +63,6 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
   Settings.Read(splHelp)
-  webHelp.Show
   btnShowPanel.Value = Settings["/FHelpBrowser/ShowPanel", False]
   btnShowPanel_Click
   
@@ -82,7 +82,10 @@ Public Sub Form_Open()
   
   MHelp.LoadProxyConfig
   
-  OnProjectChange
+  If Not $bFirstTime Then
+    $bFirstTime = True
+    OnProjectChange
+  Endif
   
 End
 

@@ -1,9 +1,18 @@
 ' Gambas class file
 
+Private $hCompletion As FileCompletion
+
 Public Sub Form_Open()
 
-  Dim hCompletion As Completion
+  TableView1.Rows.Count = 10
+  TableView1.Columns.Count = 1
 
-  hCompletion = New Completion(TextBox1)
+End
+
+Public Sub TableView1_Click()
+
+  TableView1.Edit
+  
+  If Not $hCompletion Then $hCompletion = New FileCompletion(TableView1.Editor)
 
 End

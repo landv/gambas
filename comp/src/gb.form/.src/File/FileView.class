@@ -512,7 +512,12 @@ End
 
 Public Sub EnsureVisible_Timer()
 
-  With GetView().Current
+  Dim hItem As Object
+
+  hItem = GetView().Current
+  If Not hItem Then Return
+
+  With hItem
     If Not .Selected Then Return
     .EnsureVisible
   End With

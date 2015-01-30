@@ -24,6 +24,7 @@ Private $bInitInfo As Boolean
 Private $aNeed As String[]
 Private $aRequire As String[]
 Private $aImplement As String[]
+Private $hComp As FileCompletion
 
 Static Public Function Run() As Boolean
 
@@ -592,7 +593,7 @@ Public Sub btnInsertArg_Click()
   $aArg.Add("")
   Inc tvwArg.Rows.Count
   tvwArg.MoveTo($aArg.Max, 0)
-  tvwArg.Edit  
+  EditArg
 
 End
 
@@ -604,7 +605,6 @@ Public Sub btnRemoveArg_Click()
   $aArg.Remove(tvwArg.Row)
   Dec tvwArg.Rows.Count
   tvwArg.Refresh
-  tvwArg.Edit
   
 End
 
@@ -621,10 +621,17 @@ Public Sub tvwArg_Insert()
   
 End
 
+Private Sub EditArg()
+
+  tvwArg.Edit
+  If $hComp And If $hComp.Editor <> tvwArg.Editor Then $hComp = Null
+  If Not $hComp Then $hComp = New FileCompletion(tvwArg.Editor)
+
+End
 
 Public Sub tvwArg_Click()
 
-  tvwArg.Edit  
+  EditArg
 
 End
 
@@ -635,7 +642,7 @@ Public Sub btnMoveUpArg_Click()
   Swap $aArg[tvwArg.Row], $aArg[tvwArg.Row - 1]
   tvwArg.Refresh
   Dec tvwArg.Row
-  tvwArg.Edit  
+  EditArg  
 
 End
 
@@ -646,7 +653,7 @@ Public Sub btnMoveDownArg_Click()
   Swap $aArg[tvwArg.Row], $aArg[tvwArg.Row + 1]
   tvwArg.Refresh
   Inc tvwArg.Row
-  tvwArg.Edit
+  EditArg
 
 End
 

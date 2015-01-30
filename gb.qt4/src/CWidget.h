@@ -75,7 +75,8 @@ typedef
 			unsigned tablet_pressed : 1;
 			unsigned has_action : 1;
 			unsigned drop : 1;
-			unsigned _reserved : 5;
+			unsigned resized : 1;
+			unsigned _reserved : 4;
 			} flag;
 		int level;
 		char *name;
@@ -221,6 +222,7 @@ void CACTION_raise(void *control);
 bool CWIDGET_get_allow_focus(void *_object);
 void CWIDGET_set_allow_focus(void *_object, bool f);
 bool CWIDGET_is_design(CWIDGET *_object);
+void CWIDGET_check_visibility(CWIDGET *_object);
 
 
 #ifndef DO_NOT_DECLARE_EVENTS

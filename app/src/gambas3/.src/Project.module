@@ -401,8 +401,8 @@ Private Sub LastOpenedFiles()
 
   Inc Application.Busy
   RestoringFiles = True
-  Workspace.Lock
   CPosition.Disable
+  Workspace.Lock
 
   nOpen = Config["/OpenFile/Count", 0]
   iActive = Config["/OpenFile/Active", 0]
@@ -430,10 +430,10 @@ Private Sub LastOpenedFiles()
     Activate(hActive)
     Workspace.ActiveWindow = hActive
   Endif
-  CPosition.Enable
 
 Finally
 
+  CPosition.Enable
   Dec Application.Busy
 
 End
@@ -2213,7 +2213,6 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   Endif
 
   CPosition.Enable
-
   CPosition.SaveCurrent(Me)
 
   Return hForm

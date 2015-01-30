@@ -408,9 +408,21 @@ C
 :
 
 
+List
+v
+String[]
+
+Start
+v
+i
+
 Delay
 p
 i
+
+Editor
+r
+TextBox
 
 _new
 m
@@ -432,13 +444,13 @@ TextBox_KeyPress
 m
 
 
-ListBox_Click
+GridView_Click
 m
 
 
-Get
+Fill
 m
-String[]
+
 (Text)s(Explicit)b
 Popup_Activate
 m
@@ -456,6 +468,14 @@ TextBox_Resize
 m
 
 
+TextBox_LostFocus
+m
+
+
+GridView_Data
+m
+
+(Row)i(Column)i
 #DateBox
 UserControl
 C
@@ -1360,6 +1380,17 @@ SetFocus
 m
 
 
+#FileCompletion
+Completion
+C
+_new
+m
+
+
+Fill
+m
+
+(Text)s(Explicit)b
 #FileProperties
 UserControl
 C

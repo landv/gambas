@@ -1635,6 +1635,12 @@ Static Public Sub Get(sComp As String) As CComponent
 End
 
 
+Public Sub _get(sClass As String) As CClassInfo
+  
+  Return Classes[Key &/ sClass]
+  
+End
+
 Public Function WikiGetClasses() As String[]
 
   Dim aResult As New String[]
@@ -1643,13 +1649,17 @@ Public Function WikiGetClasses() As String[]
   Load()
 
   aResult.Add("[[ desc")
-  aResult.Add(("Classes"))
-  aResult.Add("==")
+  aResult.Add(("Class"))
+  aResult.Add("--")
+  aResult.Add(("Description"))
 
   For Each sClass In ClassList
     If Left(sClass) = "." Or If Left(sClass) = "_" Or If InStr(sClass, "*") Then Continue
     'aClass.Add(sClass)
-    aResult.Add("[/comp" &/ Key &/ LCase(sClass) & "]&nbsp;&nbsp;")
+    aResult.Add("==")
+    aResult.Add("[/comp" &/ Key &/ LCase(sClass) & "]")
+    aResult.Add("--")
+    aResult.Add(Me[sClass].WikiGetDescription())
   Next
   
   aResult.Add("]]")
@@ -1661,8 +1671,77 @@ Catch
 
 End
 
-Public Sub _get(sClass As String) As CClassInfo
+Public Sub WikiGetDescription() As String[]
   
-  Return Classes[Key &/ sClass]
+  Dim aResult As New String[]
+  Dim sInfo As String
   
+  Select Case State
+    Case UNSTABLE
+      aResult.Add(("This component is not stable yet."))
+    Case DEPRECATED
+      aResult.Add("*" & ("This component is deprecated.") & "*")
+  End Select
+  
+  aResult.Add("[[ desc")
+  
+  If Authors.Count Then
+  
+    aResult.Add("==")
+    If Authors.Count = 1 Then
+      aResult.Add("**" & ("Author") & "**")
+    Else
+      aResult.Add("**" & ("Authors") & "**")
+    Endif
+    aResult.Add("--")
+    aResult.Add(Authors.Join(", ") & ".")
+    
+  Endif
+
+  If Implement.Count Then
+
+    aResult.Add("==")
+    aResult.Add("**" & ("Implements") & "**")
+    aResult.Add("--")
+    
+    For Each sInfo In Implement
+      aResult.Add(Features[LCase(sInfo)] & "\\")
+    Next
+    
+  Endif
+  
+  If Need.Count Or If Require.Count Then
+  
+    aResult.Add("==")
+    aResult.Add("**" & ("Requires") & "**")
+    aResult.Add("--")
+    
+    For Each sInfo In Need
+      aResult.Add(Features[LCase(sInfo)] & "\\")
+    Next
+    For Each sInfo In Require
+      aResult.Add("[/comp/" & LCase(sInfo) & "]\\")
+    Next
+    
+  Endif
+  
+  If Exclude.Count Then
+  
+    aResult.Add("==")
+    aResult.Add("**" & ("Excludes") & "**")
+    aResult.Add("--")
+    
+    For Each sInfo In Exclude
+      aResult.Add("[/comp/" & LCase(sInfo) & "]\\")
+    Next
+    
+  Endif
+  
+  aResult.Add("]]")
+  Return aResult
+  
+Catch
+
+  Return ["`" & Error.Where & ": " & Error.Text & "`"]
+
 End

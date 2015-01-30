@@ -1,0 +1,32 @@
+' Gambas class file
+
+Export
+Inherits Completion
+
+Public Sub _new()
+  
+  Me.Delay = 50
+  
+End
+
+
+Public Sub Fill(Text As String, (Explicit) As Boolean)
+
+  Dim sDir As String
+  Dim iPos As Integer
+  Dim sStart As String
+  
+  sDir = Text
+  
+  If sDir And If Left(sDir) <> "/" And If sDir Not Begins "~/" Then Return
+  
+  iPos = RInStr(sDir, "/")
+  sStart = Mid$(sDir, iPos + 1)
+  sDir = Left(sDir, iPos)
+  If Not IsDir(sDir) Then Return
+  
+  Me.List = Dir(sDir, sStart & "*").Sort(gb.IgnoreCase + gb.Natural)
+  Me.Start = String.Len(sDir)
+
+End
+

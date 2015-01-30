@@ -4,12 +4,16 @@ Export
 
 Event Activate
 
+Public List As String[]
+Public Start As Integer
+
 Property Delay As Integer
+Property Read Editor As TextBox
 
 Private $hObserver As Observer
 Private $hTimer As Timer
 Private $hPopup As Panel
-Private $hListBox As ListBox
+Private $hList As GridView
 Private $hWatcher As Watcher
 Private $bExplicit As Boolean
 
@@ -36,7 +40,7 @@ Public Sub _new(hCtrl As Control)
   
   hCtrl = FindTextBox(hCtrl)
   
-  $hObserver = New Observer(hCtrl, True) As "TextBox"
+  $hObserver = New Observer(hCtrl) As "TextBox"
   $hWatcher = New Watcher(hCtrl) As "TextBox"
   
   $hTimer = New Timer As "Timer"
@@ -69,30 +73,54 @@ End
 
 Public Sub TextBox_KeyPress()
   
+  Dim iRow As Integer
+  
   If $hPopup And If $hPopup.Visible Then
+    
     Select Case Key.Code
-      Case Key.Down
-        Try Inc $hListBox.Index
+      
+      Case Key.Down, Key.PageDown
+        iRow = $hList.Row + If(Key.Code = Key.Down, 1, $hList.ClientH \ $hList.Rows.H)
+        If iRow < $hList.Rows.Count Then $hList.Row = iRow
         Stop Event
         Return
-      Case Key.Up
-        If $hListBox.Index > 0 Then Dec $hListBox.Index
+        
+      Case Key.Up, Key.PageUp
+        iRow = $hList.Row - If(Key.Code = Key.Up, 1, $hList.ClientH \ $hList.Rows.H)
+        If iRow >= 0 Then $hList.Row = iRow
         Stop Event
         Return
+        
+      Case Key.Home
+        $hList.Row = 0
+        Stop Event
+        Return
+        
+      Case Key.End
+        $hList.Row = $hList.Rows.Count - 1
+        Stop Event
+        Return
+        
       Case Key.Enter, Key.Return
-        ListBox_Click
+        GridView_Click
         Stop Event
         Return
+        
       Case Key.Escape
         HideList
+        Stop Event
+        Return
+        
     End Select
+    
   Else
+    
     If Key.Code = Key.Space And If Len(Last.Text) = 0 Then
       Me.Open
       Stop Event
     Endif
+    
   Endif
-  
   
 End
 
@@ -102,12 +130,19 @@ Public Sub Timer_Timer()
   Dim aList As String[]
   Dim hCtrl As TextBox
   Dim H, Y As Integer
+  Dim X As Integer
   
   $hTimer.Stop
   
-  aList = Me.Get(GetTextBox().Text, $bExplicit)
+  List = Null
+  Me.Fill(GetTextBox().Text, $bExplicit)
+  aList = List
+  
   $bExplicit = False
   If Not aList Or If aList.Count = 0 Then Return
+  
+  hCtrl = GetTextBox()
+  Object.Lock(hCtrl)
   
   If Not $hPopup Then
     
@@ -125,22 +160,28 @@ Public Sub Timer_Timer()
     $hPopup.Foreground = Color.TextForeground
     $hPopup.Arrangement = Arrange.Fill
     
-    $hListBox = New ListBox($hPopup) As "ListBox"
-    $hListBox.Border = False
+    $hList = New GridView($hPopup) As "GridView"
+    $hList.Border = False
+    $hList.Grid = False
+    $hList.Mode = Select.Single
+    $hList.ScrollBar = Scroll.Vertical
+    $hList.Columns.Count = 1
     
   Endif
   
-  $hListBox.List = aList
-  $hListBox.Index = 0 'Me.GetIndex()
+  $hList.Rows.Count = aList.Count
+  $hList.Row = 0 'Me.GetIndex()
   
-  hCtrl = GetTextBox()
+  X = hCtrl.Font.TextWidth(String.Left(hCtrl.Text, Start))
   Y = hCtrl.ScreenY - hCtrl.Window.ScreenY + hCtrl.H
   H = ($hPopup.Font.Height + 6) * Min(8, aList.Count) + 2
   H = Min(H, hCtrl.Window.H - Y)
-  $hPopup.Move(hCtrl.ScreenX - hCtrl.Window.ScreenX, Y, Max(hCtrl.W, Desktop.Scale * 24), H)
+  
+  $hPopup.Move(hCtrl.ScreenX - hCtrl.Window.ScreenX + X, Y, Max(hCtrl.W, Desktop.Scale * 24) - X, H)
   $hPopup.Raise
   $hPopup.Show
-  'hCtrl.Window.Show
+  
+  Object.Unlock(hCtrl)
   
 End
 
@@ -152,7 +193,6 @@ Public Sub Popup_Activate()
   End With
   
 End
-
 
 Public Sub TextBox_Hide()
   
@@ -172,6 +212,12 @@ Public Sub TextBox_Resize()
   
 End
 
+Public Sub TextBox_LostFocus()
+  
+  HideList
+  
+End
+
 Private Function Delay_Read() As Integer
 
   Return $hTimer.Delay
@@ -184,17 +230,35 @@ Private Sub Delay_Write(Value As Integer)
 
 End
 
-Public Sub ListBox_Click()
+Public Sub GridView_Click()
+
+  Dim hCtrl As TextBox
   
-  GetTextBox().Text = $hListBox.Text
+  hCtrl = GetTextBox()
+  
+  hCtrl.Text = String.Left(hCtrl.Text, Start) & List[$hList.Row]
   HideList
+  hCtrl.SetFocus
   Raise Activate
   
 End
 
-Public Sub Get(Text As String, Explicit As Boolean) As String[]
+Public Sub GridView_Data(Row As Integer, (Column) As Integer)
+  
+  Try $hList.Data.Text = List[Row]
+  
+End
+
+
+Public Sub Fill(Text As String, Explicit As Boolean)
   
   If Len(Text) < 3 Or If Explicit Then Return
-  Return ["Gambas", "Almost", "Means", "Basic!", Text]
+  List = ["Gambas", "Almost", "Means", "Basic!", Text]
   
+End
+
+Private Function Editor_Read() As TextBox
+
+  Return $hObserver.Object
+
 End

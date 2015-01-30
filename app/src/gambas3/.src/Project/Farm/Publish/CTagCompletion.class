@@ -21,7 +21,7 @@ Static Public Sub _init()
   
 End
 
-Public Sub Get(Text As String, Explicit As Boolean) As String[]
+Public Sub Fill(Text As String, Explicit As Boolean) 
   
   Dim aTag As String[]
   Dim sTag As String
@@ -32,7 +32,10 @@ Public Sub Get(Text As String, Explicit As Boolean) As String[]
   
   If Not Text Then
     If Not Explicit Then Return
-    If $aCache Then Return $aCache
+    If $aCache Then 
+      Me.List = $aCache
+      Return
+    Endif
   Endif
   
   aTag = New String[]
@@ -62,7 +65,7 @@ Public Sub Get(Text As String, Explicit As Boolean) As String[]
   
   If Not Text Then $aCache = aTag
   
-  Return aTag
+  Me.List = aTag
   
 End
 

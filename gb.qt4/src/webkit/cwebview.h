@@ -86,6 +86,7 @@ typedef
 		QNetworkReply *reply;
 		QAuthenticator *authenticator;
 		char *userAgent;
+		unsigned stopping : 1;
 	}
 	CWEBVIEW;
 

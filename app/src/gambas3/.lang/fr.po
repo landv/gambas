@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"POT-Creation-Date: 2015-01-24 21:57 UTC\n"
+"POT-Creation-Date: 2015-01-27 01:08 UTC\n"
 "PO-Revision-Date: 2015-01-24 21:57 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
@@ -911,14 +911,14 @@ msgstr "Impossible d'installer le répertoire source"
 #: FForm.class:3203 FGotoLine.form:23 FHelpBrowser.form:60
 #: FImageEditor.class:386 FImageOffsetSelection.form:33 FImageQuality.form:30
 #: FImageResize.form:49 FImageRotate.form:32 FList.form:121 FMain.class:214
-#: FMakeInstall.class:364 FMenu.form:402 FNewConnection.form:284
+#: FMakeInstall.class:303 FMenu.form:402 FNewConnection.form:284
 #: FNewTable.form:86 FNewTranslation.form:21 FOption.class:721
 #: FPasteSpecial.form:77 FPasteTable.form:107 FProjectChooser.form:62
 #: FProjectProperty.form:992 FProjectVersion.class:209 FProxy.form:57
 #: FPublish.class:286 FReportBorderChooser.form:48
 #: FReportBoxShadowChooser.form:27 FReportBrushChooser.form:36
 #: FReportCoordChooser.form:26 FReportPaddingChooser.form:75 FSave.form:28
-#: FSaveProjectAs.form:76 FSearch.class:887 FSelectComponent.form:50
+#: FSaveProjectAs.form:76 FSearch.class:887 FSelectComponent.form:51
 #: FSelectExtraFile.form:43 FSelectIcon.form:87 FSnippet.form:57
 #: FSoftwareFarm.class:437 FTableChooser.form:68 FText.form:41
 #: FTextEditor.class:656 FTranslate.class:556 Project.module:489
@@ -961,12 +961,12 @@ msgstr ""
 #: FCrash.form:90 FCreateFile.form:233 FFieldChooser.form:132
 #: FFontChooser.form:34 FGotoLine.form:17 FImageOffsetSelection.form:27
 #: FImageQuality.form:24 FImageResize.form:103 FImageRotate.form:26
-#: FList.form:115 FMakeInstall.class:309 FMenu.form:397
+#: FList.form:115 FMakeInstall.class:248 FMenu.form:397
 #: FNewConnection.form:278 FNewTable.form:80 FNewTranslation.form:15
 #: FPasteSpecial.form:71 FProjectProperty.form:986 FProxy.form:63
 #: FReportBorderChooser.form:54 FReportBoxShadowChooser.form:33
 #: FReportBrushChooser.form:42 FReportCoordChooser.form:32
-#: FReportPaddingChooser.form:69 FSelectComponent.form:45
+#: FReportPaddingChooser.form:69 FSelectComponent.form:46
 #: FSelectExtraFile.form:37 FSelectIcon.form:82 FSnippet.form:51
 #: FTableChooser.form:62 FText.form:35
 msgid "OK"
@@ -1073,7 +1073,7 @@ msgstr "Le composant &1 nécessite un des composants suivants:<br>&2."
 msgid "The &1 component needs the &2 component."
 msgstr "Le composant &1 nécessite le composant &2."
 
-#: FComponentChooser.form:24
+#: FComponentChooser.form:24 FSelectComponent.form:14
 msgid "Select a component"
 msgstr "Choisissez un composant"
 
@@ -1160,8 +1160,8 @@ msgstr "Couper"
 
 #: FConflict.form:77 FConnectionEditor.form:149 FEditor.form:165
 #: FForm.form:192 FImageEditor.form:136 FList.form:92 FMain.form:914
-#: FMenu.form:117 FOutput.form:70 FProjectVersion.form:240 FSystemInfo.form:74
-#: FTextEditor.form:128
+#: FMakeInstall.form:876 FMenu.form:117 FOutput.form:70
+#: FProjectVersion.form:240 FSystemInfo.form:62 FTextEditor.form:128
 msgid "Copy"
 msgstr "Copier"
 
@@ -1217,13 +1217,13 @@ msgstr "Résoudre"
 #: FConflict.form:174 FDebugInfo.form:277 FEditor.form:329
 #: FFarmConfig.form:143 FFileProperty.form:76 FForm.form:420
 #: FImageEditor.form:352 FImportTable.form:222 FMain.form:361 FPatch.form:105
-#: FProjectVersion.form:323 FSystemInfo.form:80 FTextEditor.form:273
+#: FProjectVersion.form:323 FSystemInfo.form:68 FTextEditor.form:273
 #: FTips.form:83 FTranslate.form:308
 msgid "Close"
 msgstr "Fermer"
 
 #: FConnectionEditor.class:45 FCreateFile.form:78 FDebugInfo.class:38
-#: FMakeInstall.form:192 FNewConnection.form:65 FNewTable.form:33
+#: FMakeInstall.form:204 FNewConnection.form:65 FNewTable.form:33
 #: FOption.form:257
 msgid "Name"
 msgstr "Nom"
@@ -1257,7 +1257,7 @@ msgstr "Unique"
 msgid "Field"
 msgstr "Champ"
 
-#: FConnectionEditor.class:290 FMakeInstall.form:275 FProjectProperty.form:322
+#: FConnectionEditor.class:290 FMakeInstall.form:287 FProjectProperty.form:322
 #: FPublish.form:128 FSoftwareFarm.form:337
 msgid "Description"
 msgstr "Description"
@@ -1395,7 +1395,7 @@ msgstr "Nouvelle table"
 msgid "Delete table"
 msgstr "Supprimer la table"
 
-#: FConnectionEditor.form:133 FMain.form:1039 FMakeInstall.form:659
+#: FConnectionEditor.form:133 FMain.form:1039 FMakeInstall.form:736
 #: FOption.form:1262 FProjectProperty.form:519 FPublish.form:270
 #: FSoftwareFarm.form:421
 msgid "Remove"
@@ -1434,17 +1434,17 @@ msgstr "Requêtes SQL"
 msgid "Fields"
 msgstr "Champs"
 
-#: FConnectionEditor.form:233 FMain.class:2080 FMakeInstall.form:653
+#: FConnectionEditor.form:233 FMain.class:2080 FMakeInstall.form:730
 #: FOption.form:1310 FProjectProperty.form:513 FPublish.form:160
 msgid "Add"
 msgstr "Ajouter"
 
-#: FConnectionEditor.form:247 FList.form:76 FMakeInstall.form:671
+#: FConnectionEditor.form:247 FList.form:76 FMakeInstall.form:748
 #: FPublish.form:282
 msgid "Down"
 msgstr "Descendre"
 
-#: FConnectionEditor.form:254 FList.form:70 FMakeInstall.form:665
+#: FConnectionEditor.form:254 FList.form:70 FMakeInstall.form:742
 #: FPublish.form:276
 msgid "Up"
 msgstr "Monter"
@@ -1812,7 +1812,7 @@ msgid "native code"
 msgstr "code natif"
 
 #: FDebugInfo.class:560 FImageProperty.form:377 FList.form:86
-#: FMakeInstall.form:677 FOption.class:721 FOutput.form:84 FPublish.form:172
+#: FMakeInstall.form:754 FOption.class:721 FOutput.form:84 FPublish.form:172
 msgid "Clear"
 msgstr "Effacer"
 
@@ -2164,7 +2164,7 @@ msgstr "Se souvenir du mot de passe"
 msgid "Register >>"
 msgstr "S'enregistrer >>"
 
-#: FFarmConfig.form:160 FMakeInstall.form:208 FOption.form:273
+#: FFarmConfig.form:160 FMakeInstall.form:220 FOption.form:273
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -2250,7 +2250,7 @@ msgstr "Le fichier n'est pas versionné, et doit être ajouté au référentiel.
 msgid "This file has not been modified since the last commit."
 msgstr "Ce fichier est inchangé depuis le dernier envoi vers le réferentiel."
 
-#: FFileProperty.class:141 FMakeInstall.class:364 FProjectVersion.class:209
+#: FFileProperty.class:141 FMakeInstall.class:303 FProjectVersion.class:209
 #: FSave.form:21 Project.module:3497
 msgid "Continue"
 msgstr "Continuer"
@@ -3119,7 +3119,7 @@ msgstr "Enregistrer le projet"
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
-#: FMain.form:315 FMakeInstall.class:309 FSave.class:28 FWelcome.class:69
+#: FMain.form:315 FMakeInstall.class:248 FSave.class:28 FWelcome.class:69
 msgid "Quit"
 msgstr "Quitter"
 
@@ -3407,7 +3407,7 @@ msgstr "Générer l'exécutable"
 msgid "Make source archive"
 msgstr "Générer une archive des sources"
 
-#: FMain.form:1248 FMakeInstall.form:115
+#: FMain.form:1248 FMakeInstall.form:127
 msgid "Make installation package"
 msgstr "Créer un paquet d'installation"
 
@@ -3503,159 +3503,159 @@ msgstr "Version max."
 msgid "File or directory"
 msgstr "Fichier ou répertoire"
 
-#: FMakeInstall.class:309 Package.module:199
+#: FMakeInstall.class:248 Package.module:195
 msgid "The packages have been successfully created."
 msgstr "Les paquets ont été créés avec succès."
 
-#: FMakeInstall.class:345
+#: FMakeInstall.class:284
 msgid "Please enter your name."
 msgstr "Veuillez saisir votre nom."
 
-#: FMakeInstall.class:350
+#: FMakeInstall.class:289
 msgid "Please enter your e-mail address."
 msgstr "Veuillez saisir votre adresse e-mail."
 
-#: FMakeInstall.class:364
+#: FMakeInstall.class:303
 msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
-#: FMakeInstall.class:371
+#: FMakeInstall.class:310
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Veuillez saisir la première entrée du CHANGELOG."
 
-#: FMakeInstall.class:382
+#: FMakeInstall.class:321
 msgid "Please choose at least one target distribution."
 msgstr "Veuillez sélectionner au moins une distribution cible."
 
-#: FMakeInstall.class:420
+#: FMakeInstall.class:359
 msgid "Please choose the package group for each target distribution."
 msgstr "Veuillez sélectionner un groupe de paquet pour chaque distribution cible."
 
-#: FMakeInstall.class:422
+#: FMakeInstall.class:361
 msgid "Please choose a package group."
 msgstr "Veuillez sélectionner un groupe de paquet."
 
-#: FMakeInstall.class:432
+#: FMakeInstall.class:371
 msgid "Please choose the menu location for each target distribution."
 msgstr "Veuillez sélectionner un emplacement de menu pour chaque distribution cible."
 
-#: FMakeInstall.class:434
+#: FMakeInstall.class:373
 msgid "Please choose a menu location."
 msgstr "Veuillez sélectionner un emplacement de menu."
 
-#: FMakeInstall.class:453
+#: FMakeInstall.class:392
 msgid "Cannot found extra file: &1"
 msgstr "Impossible de trouver le fichier supplémentaire : &1"
 
-#: FMakeInstall.class:458
+#: FMakeInstall.class:397
 msgid "Please choose a target directory for each extra file."
 msgstr "Veuillez choisir un répertoire de destination pour chaque fichier supplémentaire."
 
-#: FMakeInstall.class:472
+#: FMakeInstall.class:411
 msgid "The package cannot be stored inside the project directory."
 msgstr "Le paquet ne peut être créé à l'intérieur du répertoire du projet."
 
-#: FMakeInstall.class:510
+#: FMakeInstall.class:449
 msgid "Initial release"
 msgstr "Version initiale"
 
-#: FMakeInstall.class:756
+#: FMakeInstall.class:703
 msgid "Menus"
 msgstr "Menus"
 
-#: FMakeInstall.class:824
+#: FMakeInstall.class:771
 msgid "Groups"
 msgstr "Groupes"
 
-#: FMakeInstall.class:942
+#: FMakeInstall.class:889
 msgid "Incorrect characters"
 msgstr "Caractères incorrects"
 
-#: FMakeInstall.class:1015
+#: FMakeInstall.class:962
 msgid "Do you really want to remove all extra dependencies?"
 msgstr "Voulez-vous vraiment retirer toutes les dépendances supplémentaires ?"
 
-#: FMakeInstall.class:1114
+#: FMakeInstall.class:1061
 msgid "Do you really want to remove all extra files?"
 msgstr "Voulez-vous vraiment retirer tous les fichiers supplémentaires ?"
 
-#: FMakeInstall.class:1170
+#: FMakeInstall.class:1109
 msgid "Select the destination directory"
 msgstr "Sélectionnez le répertoire destination"
 
-#: FMakeInstall.form:128
+#: FMakeInstall.form:140
 msgid "Create package"
 msgstr "Création du paquet"
 
-#: FMakeInstall.form:132
+#: FMakeInstall.form:144
 msgid "Package information"
 msgstr "Information sur le paquet"
 
-#: FMakeInstall.form:138
+#: FMakeInstall.form:150
 msgid "Package name"
 msgstr "Nom du paquet"
 
-#: FMakeInstall.form:159 FOption.form:345
+#: FMakeInstall.form:171 FOption.form:345
 msgid "Prefix package name with the vendor name"
 msgstr "Préfixer le nom du paquet avec le nom du fournisseur"
 
-#: FMakeInstall.form:166
+#: FMakeInstall.form:178
 msgid "Package version"
 msgstr "Version du paquet"
 
-#: FMakeInstall.form:181
+#: FMakeInstall.form:193
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FMakeInstall.form:224 FOption.form:295 FPublish.form:86
+#: FMakeInstall.form:236 FOption.form:295 FPublish.form:86
 msgid "Vendor name"
 msgstr "Nom du fournisseur"
 
-#: FMakeInstall.form:240 FOption.form:329
+#: FMakeInstall.form:252 FOption.form:329
 msgid "URL"
 msgstr "URL"
 
-#: FMakeInstall.form:261
+#: FMakeInstall.form:273
 msgid "Sign package"
 msgstr "Signer le paquet"
 
-#: FMakeInstall.form:293
+#: FMakeInstall.form:305
 msgid "License"
 msgstr "Licence"
 
-#: FMakeInstall.form:304
+#: FMakeInstall.form:316
 msgid "Changelog"
 msgstr "Liste des changements"
 
-#: FMakeInstall.form:324
+#: FMakeInstall.form:336
 msgid "Target distribution"
 msgstr "Distribution cible"
 
-#: FMakeInstall.form:525
+#: FMakeInstall.form:602
 msgid "Self-extractible"
 msgstr "Auto-extractible"
 
-#: FMakeInstall.form:530
+#: FMakeInstall.form:607
 msgid "Package group"
 msgstr "Groupe de paquet"
 
-#: FMakeInstall.form:550
+#: FMakeInstall.form:627
 msgid "Menu entry"
 msgstr "Entrée de menu"
 
-#: FMakeInstall.form:572
+#: FMakeInstall.form:649
 msgid "Categories"
 msgstr "Catégories"
 
-#: FMakeInstall.form:581
+#: FMakeInstall.form:658
 msgid "Desktop configuration file"
 msgstr "Fichier de configuration du bureau"
 
-#: FMakeInstall.form:587
+#: FMakeInstall.form:664
 msgid "Mimetypes"
 msgstr "Types MIME"
 
-#: FMakeInstall.form:595
+#: FMakeInstall.form:672
 msgid ""
 "Enter the mimetypes handled by your application there.\n"
 "Please enter one mimetype by line.\n"
@@ -3663,53 +3663,53 @@ msgstr ""
 "Saisissez les types MIME gérés par votre application.\n"
 "Veuillez saisir un type MIME par ligne.\n"
 
-#: FMakeInstall.form:607
+#: FMakeInstall.form:684
 msgid "Additional configuration"
 msgstr "Configuration additionnelle"
 
-#: FMakeInstall.form:615
+#: FMakeInstall.form:692
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Le texte suivant sera ajouté à la fin du fichier de configuration du bureau."
 
-#: FMakeInstall.form:623
+#: FMakeInstall.form:700
 msgid "Extra dependencies"
 msgstr "Dépendances supplémentaires"
 
-#: FMakeInstall.form:627
+#: FMakeInstall.form:704
 msgid "Same dependencies for all targets"
 msgstr "Mêmes dépendances pour toutes les cibles"
 
-#: FMakeInstall.form:683
+#: FMakeInstall.form:760
 msgid "Extra files"
 msgstr "Fichiers supplémentaires"
 
-#: FMakeInstall.form:687
+#: FMakeInstall.form:764
 msgid "Same files for all targets"
 msgstr "Mêmes fichiers pour toutes les cibles"
 
-#: FMakeInstall.form:700
+#: FMakeInstall.form:777
 msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr "Les fichiers supplémentaires doivent être situés dans le dossier <b>Projet</b> du projet en cours, correspondant au répertoire <tt>.hidden</tt> du projet sur le disque."
 
-#: FMakeInstall.form:758
+#: FMakeInstall.form:835
 msgid "Extra autoconf tests"
 msgstr "Tests autoconf supplémentaires"
 
-#: FMakeInstall.form:764
+#: FMakeInstall.form:841
 msgid ""
 "Add extra tests for the configuration process.\n"
 "<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
 msgstr "Ajout de tests supplémentaires au processus de configuration.<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
 
-#: FMakeInstall.form:772
+#: FMakeInstall.form:849
 msgid "Destination directory"
 msgstr "Répertoire de destination"
 
-#: FMakeInstall.form:781
+#: FMakeInstall.form:858
 msgid "Create directories for each distribution"
 msgstr "Créer des répertoires pour chaque distribution"
 
-#: FMakeInstall.form:789
+#: FMakeInstall.form:870
 msgid "Commands output"
 msgstr "Sortie des commandes"
 
@@ -4549,7 +4549,7 @@ msgstr "Composants"
 msgid "Show only components used in project"
 msgstr "Afficher uniquement les composants utilisés dans le projet"
 
-#: FProjectProperty.form:553 FSelectComponent.form:35
+#: FProjectProperty.form:553 FSelectComponent.form:36
 msgid "Show deprecated components"
 msgstr "Afficher les composants dépréciés"
 
@@ -5173,11 +5173,11 @@ msgstr "Télécharger"
 msgid "Vote"
 msgstr "Voter"
 
-#: FSystemInfo.form:17
+#: FSystemInfo.form:15
 msgid "System information"
 msgstr "Informations système"
 
-#: FSystemInfo.form:41
+#: FSystemInfo.form:36
 msgid "Please copy these informations in all your bug reports."
 msgstr "Veuillez recopier ces informations dans tous vos rapports de bugs."
 
@@ -6809,59 +6809,59 @@ msgstr "'&1' est introuvable."
 msgid "'&1' and '&2' are missing."
 msgstr "'&1' et '&2' sont introuvables."
 
-#: Package.module:172
+#: Package.module:168
 msgid "Saving CHANGELOG file."
 msgstr "Sauvegarde du fichier CHANGELOG."
 
-#: Package.module:542
+#: Package.module:538
 msgid "Making &1 support package..."
 msgstr "Création du paquet de support &1..."
 
-#: Package.module:580
+#: Package.module:576
 msgid "Creating package for &1."
 msgstr "Création du paquet pour &1."
 
-#: Package.module:611
+#: Package.module:607
 msgid "The package build has failed."
 msgstr "La construction des paquets a échoué."
 
-#: Package.module:653
+#: Package.module:649
 msgid "Making build directory."
 msgstr "Fabrication du répertoire de construction."
 
-#: Package.module:681
+#: Package.module:677
 msgid "Creating desktop file..."
 msgstr "Création du fichier *.desktop..."
 
-#: Package.module:689
+#: Package.module:685
 msgid "Sources are being debianizated."
 msgstr "\"Debianisation\" des sources..."
 
-#: Package.module:868
+#: Package.module:864
 msgid "Creating package..."
 msgstr "Création du paquet..."
 
-#: Package.module:876
+#: Package.module:872
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' a échoué."
 
-#: Package.module:1127
+#: Package.module:1123
 msgid "Initializing ~/RPM directory."
 msgstr "Initialisation du répertoire ~/RPM."
 
-#: Package.module:1147
+#: Package.module:1143
 msgid "Creating source package."
 msgstr "Création du paquet des sources."
 
-#: Package.module:1171
+#: Package.module:1167
 msgid "Creating .spec file."
 msgstr "Creation du fichier .spec."
 
-#: Package.module:1421
+#: Package.module:1417
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' a retourné le code d'erreur suivant :"
 
-#: Package.module:1817
+#: Package.module:1813
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' a retourné le code d'erreur suivant:"
 

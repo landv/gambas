@@ -555,6 +555,15 @@ static void arrange_parent(CWIDGET *_object)
 	CCONTAINER_arrange(parent);
 }
 
+void CWIDGET_check_visibility(CWIDGET *_object)
+{
+	if (!THIS->flag.resized)
+	{
+		THIS->flag.resized = TRUE;
+		CWIDGET_set_visible(THIS, THIS->flag.visible);
+	}
+}
+
 static void CWIDGET_after_geometry_change(void *_object, bool arrange)
 {
 	if (arrange)
@@ -565,10 +574,8 @@ static void CWIDGET_after_geometry_change(void *_object, bool arrange)
 			((MyDrawingArea *)((CWIDGET *)_object)->widget)->updateBackground();
 	}
 	
-	if (THIS->flag.ignore)
-		return;
-	
-  arrange_parent(THIS);
+	if (!THIS->flag.ignore)
+		arrange_parent(THIS);
 }
 
 void CWIDGET_move(void *_object, int x, int y)
@@ -621,6 +628,8 @@ void CWIDGET_resize(void *_object, int w, int h)
 	
 	if (w < 0 && h < 0)
 		return;
+
+	CWIDGET_check_visibility(THIS);
 
 	CCONTAINER_decide(THIS, &decide_w, &decide_h);
 
@@ -689,6 +698,8 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
     win->h = h;
 		win->mustCenter = false;
   }
+
+	CWIDGET_check_visibility(THIS);
 
 	if (wid)
 	{
@@ -1030,6 +1041,10 @@ void CWIDGET_set_visible(CWIDGET *_object, bool v)
 	bool arrange = false;
 	
 	THIS->flag.visible = v;
+
+	if (!THIS->flag.resized)
+		return;
+
 	if (THIS->flag.visible)
 	{
 		arrange = !WIDGET->isVisible();

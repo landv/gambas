@@ -324,6 +324,7 @@ static void show_later(CWINDOW *_object)
 	/* If the user has explicitely hidden the window since the posting of this routines
 		then do nothing
 	*/
+
 	//qDebug("show_later %s %p: hidden = %d", GB.GetClassName(THIS), THIS, THIS->hidden);
 	if (!THIS->hidden && WIDGET)
 	{
@@ -397,8 +398,9 @@ BEGIN_METHOD(Window_new, GB_OBJECT parent)
 	}*/
 
 	THIS->container = container;
-	CWIDGET_new(win, (void *)_object, true);
-	
+	CWIDGET_new(win, (CWIDGET *)THIS, true);
+	THIS->widget.flag.resized = TRUE;
+
 	if (win)
 	{
 		win->_object = THIS;

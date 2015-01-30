@@ -10,41 +10,8 @@ Private $hObs As Observer
 
 Public Sub _new(hDrawingArea As DrawingArea)
   
-  Dim hSvgLogo As SvgImage
-  Dim X, Y As Integer
-  
   hDrawingArea.Background = BACKGROUND_COLOR
   
-  If Not $hLogo Then 
-    
-    hSvgLogo = SvgImage.Load("img/logo/gambas.svg")
-    $hLogo = New Image(hSvgLogo.Width, 256, Color.Transparent)
-    Paint.Begin($hLogo)
-    Paint.Scale(1.1, 1.1)
-    hSvgLogo.Paint
-    Paint.End
-    
-    $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
-    Paint.Begin($hText)
-    Paint.Font = Font["+12,Bold"]
-    Y = Paint.Font.Ascent
-    X = PaintText("Gambas", 8, Y, Color.White) 'TEXT_COLOR)
-    Paint.Font = Font["+8,Bold"]
-    PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
-    
-    Paint.Font = Font["+4,Bold"]
-    Y += Paint.Font.Height
-    PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
-    
-    Paint.Font = Font["Italic,Bold"]
-    Y += Paint.Font.Height + 16
-    PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
-    Paint.End
-    
-    $hLogo.Brightness(-0.1)
-    
-  Endif
-
   $hObs = New Observer(hDrawingArea) As "dwgWelcome"
   
 End
@@ -86,7 +53,43 @@ End
 
 Public Sub dwgWelcome_Draw()
 
-  Paint.DrawImage($hLogo, Last.W - $hLogo.Width, -10 - Desktop.Scale)
+  Dim hSvgLogo As SvgImage
+  Dim X, Y As Integer
+  Dim hDrawingArea As DrawingArea
+  
+  hDrawingArea = $hObs.Object
+   
+  If Not $hLogo Then 
+    
+    hSvgLogo = SvgImage.Load("img/logo/gambas.svg")
+    $hLogo = New Image(hSvgLogo.Width, 256, Color.Transparent)
+    Paint.Begin($hLogo)
+    Paint.Scale(1.1, 1.1)
+    hSvgLogo.Paint
+    Paint.End
+    
+    $hText = New Image(hDrawingArea.Width, hDrawingArea.Height, Color.Transparent)
+    Paint.Begin($hText)
+    Paint.Font = Font["+12,Bold"]
+    Y = Paint.Font.Ascent
+    X = PaintText("Gambas", 8, Y, Color.White) 'TEXT_COLOR)
+    Paint.Font = Font["+8,Bold"]
+    PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
+    
+    Paint.Font = Font["+4,Bold"]
+    Y += Paint.Font.Height
+    PaintText("http://gambas.sourceforge.net", 12, Y, TEXT_COLOR) 'Color.LightForeground)
+    
+    Paint.Font = Font["Italic,Bold"]
+    Y += Paint.Font.Height + 16
+    PaintText(("This program is published under the GNU General Public License.") & "\n" & ("The Gambas font is published under the SIL Open Font License."), 12, Y, Color.SelectedForeground)
+    Paint.End
+    
+    $hLogo.Brightness(-0.1)
+    
+  Endif
+
+  Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
   Paint.DrawImage($hText, Desktop.Scale, 16 + Desktop.Scale)
 
 End

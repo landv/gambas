@@ -191,6 +191,14 @@ static void after_set_color(void *_object)
 	}
 }
 
+static void stop_view(void *_object)
+{
+	//fprintf(stderr, "stop_view\n");
+	THIS->stopping = TRUE;
+	WIDGET->stop();
+	THIS->stopping = FALSE;
+}
+
 //-------------------------------------------------------------------------
 
 BEGIN_METHOD(WebView_new, GB_OBJECT parent)
@@ -254,8 +262,10 @@ BEGIN_PROPERTY(WebView_Url)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->url().toString()));
 	else
 	{
-		QString url = QSTRING_PROP();
-		WIDGET->setUrl(QUrl(url));
+		QUrl url(QSTRING_PROP());
+		stop_view(THIS);
+		//fprintf(stderr, "setUrl: %s\n", GB.ToZeroString(PROP(GB_STRING)));
+		WIDGET->setUrl(url);
 	}
 
 END_PROPERTY
@@ -342,7 +352,7 @@ END_METHOD
 BEGIN_METHOD(WebView_Reload, GB_BOOLEAN bypass)
 
 	bool bypass = VARGOPT(bypass, false);
-	WIDGET->stop();
+	stop_view(THIS);
 	if (bypass)
 		WIDGET->page()->triggerAction(QWebPage::ReloadAndBypassCache);
 	else
@@ -352,7 +362,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(WebView_Stop)
 
-	WIDGET->stop();
+	stop_view(THIS);
 
 END_METHOD
 
@@ -786,10 +796,14 @@ CWebView CWebView::manager;
 void CWebView::loadFinished(bool ok)
 {
 	GET_SENDER();
+
+	//fprintf(stderr, "loadFinished %d (%d)\n", ok, THIS->stopping);
+
 	THIS->progress = 1;
+
 	if (ok)
 		GB.Raise(THIS, EVENT_LOAD, 0);
-	else
+	else if (!THIS->stopping)
 		GB.RaiseLater(THIS, EVENT_ERROR);
 }
 
@@ -808,6 +822,9 @@ void CWebView::loadProgress(int progress)
 void CWebView::loadStarted()
 {
 	GET_SENDER();
+
+	//fprintf(stderr, "loadStarted\n");
+
 	THIS->progress = 0;
 	_network_access_manager_view = THIS;
 	GB.Raise(THIS, EVENT_PROGRESS, 0);
