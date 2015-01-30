@@ -9,4 +9,10 @@ End
 
 Public Sub Form_Open()
 
+    Dim f As New TestResult
+    Dim test As New Test1
+
+    f.AssertEqualsFloat(1.23, 1, 0)
+    test.Run(f)
+
 End

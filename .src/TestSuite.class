@@ -10,17 +10,17 @@
 'Implements ITest
 
 ' Member variables
-Private m_colTests As Collection
+Private $colTests As Collection
 
 Private Sub Class_Initialize()
 
-    m_colTests = New Collection
+    $colTests = New Collection
 
 End Sub
 
 Private Sub Class_Terminate()
 
-    m_colTests = Null
+    $colTests = Null
 
 End Sub
 
@@ -29,7 +29,7 @@ Public Sub Run(oTestResult As TestResult)
 
     Dim oTest As ITest
 
-    For Each oTest In m_colTests
+    For Each oTest In $colTests
         oTest.Run(oTestResult)
     Next
 
@@ -43,7 +43,7 @@ Public Function CountTestCases() As Integer
 
     iCount = 0
 
-    For Each oTest In m_colTests
+    For Each oTest In $colTests
         iCount = iCount + oTest.CountTestCases
     Next
     Return iCount
@@ -65,14 +65,14 @@ End Function
 ' Add a object implementing ITest (either a TestCase or TestSuite) to the suite.
 Public Sub AddTest(oTest As ITest)
 
-    m_colTests.Add(oTest)
+    $colTests.Add(oTest)
 
 End Sub
 
 ' Add a TestCase to the suite.
 Public Sub AddTestCase(oTestCase As ITestCase)
 
-    m_colTests.Add(oTestCase)
+    $colTests.Add(oTestCase)
 
 End Sub
 

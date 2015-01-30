@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: ITestContainer</title>
+</head>
+<body>
+
+<h1>Interface ITestContainer</h1>
+
+<h2>Description:</h2>
+<p>
+This interface identifies TestContainer classes.  TestContainers are a
+COM class that hold different test case methods.</p>
+
+<h2>Known Subclasses:</h2>
+<ul>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#RunTestCase">RunTestCase</a></td>
+	<td>Public Sub RunTestCase(oTestCase As ITestCase, oTestResult As TestResult)</td>
+</tr>
+<tr>
+	<td><a href="#Setup">Setup</a></td>
+	<td>Public Sub Setup()</td>
+</tr>
+<tr>
+	<td><a href="#TestCaseNames">TestCaseNames</a></td>
+	<td>Public Property Get TestCaseNames() As Variant()</td>
+</tr>
+<tr>
+	<td><a href="#TearDown">TearDown</a></td>
+	<td>Public Sub TearDown()</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="TestCaseNames">TestCaseNames</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Property Get TestCaseNames() As Variant()</dd>
+	<dt>Description:</dt><dd>Return the name of the different test case methods in this test container</dd>
+</dl>
+
+<hr />
+
+<h3><a name="RunTestCase">RunTestCase</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub RunTestCase(oTestCase As ITestCase, oTestResult As TestResult)</dd>
+	<dt>Description:</dt><dd>Run the specified test case methods in this test container</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Setup">Setup</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub Setup()</dd>
+	<dt>Description:</dt><dd>Initialize the test fixture</dd>
+</dl>
+
+<hr />
+
+<h3><a name="TearDown">TearDown</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub TearDown()</dd>
+	<dt>Description:</dt><dd>Destroy the test fixture</dd>
+</dl>
+
+</body>
+</html>

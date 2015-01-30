@@ -1,0 +1,52 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: ITestCase</title>
+</head>
+<body>
+
+<h1>Interface ITestCase</h1>
+
+<h2>Description:</h2>
+<p>
+This interface is implemented by the TestCase class.  It represents an
+individual test case by holding a reference to the name of the test case
+(ie. the method containing the test code) and to the test container
+that contains the test method to execute.</p>
+
+<h2>Known Subclasses:</h2>
+<ul>
+	<li><a href="testcase.html">TestCase</a></li>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#Name">Name</a></td>
+	<td>Public Property Get Name() As String</td>
+</tr>
+<tr>
+	<td><a href="#TestContainer">TestContainer</a></td>
+	<td>Public Property Get TestContainer() As ITestContainer</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="Name">Name</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Property Get Name() As String</dd>
+	<dt>Description:</dt><dd>Name of the test case</dd>
+</dl>
+
+<hr />
+
+<h3><a name="TestContainer">TestContainer</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Property Get TestContainer() As ITestContainer</dd>
+	<dt>Description:</dt><dd>Reference to the test container containing the test method to be executed.</dd>
+</dl>
+
+<hr />
+</body>
+</html>

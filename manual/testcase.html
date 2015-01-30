@@ -1,0 +1,97 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: TestCase</title>
+</head>
+<body>
+
+<h1>Class TestCase</h1>
+
+<h2>Description:</h2>
+<p>
+The TestCase class is responsible for executing a specific test case.
+The test case to be executed is specified through the Name and TestContainer
+properties in the class.  The Run method will call the appropriate Setup
+and TearDown methods for the test case as well as executing the test case
+method itself.</p>
+<p>Note: this class has an instancing property of PublicNotCreatable.  It can
+only be instantiated by classes in the test framework.</p>
+
+<h2>Interface Implementation:</h2>
+<ul>
+	<li><a href="itest.html">ITest</a></li>
+	<li><a href="itestcase.html">ITestCase</a></li>
+</ul>
+
+<h2>Known Subclasses:</h2>
+<ul>
+	<li><a href="testcase.html">TestCase</a></li>
+	<li><a href="testsuite.html">TestSuite</a></li>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#CountTestCases">CountTestCases</a></td>
+	<td>Public Function CountTestCases() As Integer</td>
+</tr>
+<tr>
+	<td><a href="#Initialize">Initialize</a></td>
+	<td>Public Sub Initialize(sName As String, oTestContainer As ITestContainer)</td>
+</tr>
+<tr>
+	<td><a href="#Name">Name</a></td>
+	<td>Public Property Get Name() As String</td>
+</tr>
+<tr>
+	<td><a href="#Run">Run</a></td>
+	<td>Public Sub Run(ByRef oTestResult As TestResult)</td>
+</tr>
+<tr>
+	<td><a href="#TestContainer">TestContainer</a></td>
+	<td>Public Property Get TestContainer() As ITestContainer</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="Initialize">Initialize</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub Initialize(sName As String, oTestContainer As ITestContainer)</dd>
+	<dt>Description:</dt><dd>Initializes the TestCase.  Used in lieu of a constructor.</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Name">Name</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Property Get Name() As String</dd>
+	<dt>Description:</dt><dd>Name of the test case</dd>
+</dl>
+
+<hr />
+
+<h3><a name="TestContainer">TestContainer</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Property Get TestContainer() As ITestContainer</dd>
+	<dt>Description:</dt><dd>Reference to the test container containing the test method to be executed.</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Run">Run</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub Run(ByRef oTestResult As TestResult)</dd>
+	<dt>Description:</dt><dd>Runs the test and collects the results in the TestResult parameter</dd>
+</dl>
+
+<hr />
+
+<h3><a name="CountTestCases">CountTestCases</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Function CountTestCases() As Integer</dd>
+	<dt>Description:</dt><dd>Number of test cases contained in this test</dd>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+' Gambas module file
+
+' ' Gambas module file
+'
+' Private Const gblSource As String = "COMUnitParameters"
+' Private Const gblErrBase As Integer = 20000
+'
+' Public Enum comupErrors
+' comupOpenXMLFileError = gblErrBase + 1
+' comupMissingRootNode = gblErrBase + 2
+' comupMissingParameterAttribute = gblErrBase + 3
+' End Enum
+'
+' Private Declare Function FormatMessage Lib "kernel32" _
+' Alias "FormatMessageA" _
+' (ByVal dwFlags As Long, _
+' lpSource As Any, _
+' ByVal dwMessageId As Long, _
+' ByVal dwLanguageId As Long, _
+' ByVal lpBuffer As String, _
+' ByVal nSize As Long, _
+' Arguments As Long) As Long
+'
+' Private Const FORMAT_MESSAGE_FROM_SYSTEM As Long = &H1000
+'
+' Public Sub RaiseError(lngError As Long, strMessage As String, Optional lngAPIError As Long)
+'
+'     If (Err) Then
+'         Err.Raise lngError, gblSource, strMessage & vbNewLine & "Error (" & Err.Number & "): " & Err.Description
+'         ElseIf(lngAPIError <> 0) Then
+'         Err.Raise lngError, gblSource, strMessage & vbNewLine & ApiErrorText(lngAPIError)
+'     Else
+'         Err.Raise lngError, gblSource, strMessage
+'     End If
+'
+' End Sub
+'
+' Private Function ApiErrorText(ByVal ErrNum As Long) As String
+'
+'     Dim strMessage As String
+'     Dim lngReturn As Long
+'
+'     strMessage = Space$(1024)
+'
+'     lngReturn = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, ByVal 0 &, ErrNum, 0 &, strMessage, Len(strMessage), ByVal 0 & )
+'     If (lngReturn = 0) Then
+'         ApiErrorText = "Error (" & ErrNum & ")"
+'     Else
+'         ApiErrorText = Left$(strMessage, lngReturn)
+'     End If
+'
+' End Function

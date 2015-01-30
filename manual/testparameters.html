@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: TestParameters</title>
+</head>
+<body>
+
+<h1>Class TestParameters</h1>
+
+<h2>Description:</h2>
+<p>
+The TestParameters class is the collection class for <a href="testparameter.html">TestParameter</a> objects.  
+
+<h2>Interface Implementation:</h2>
+<ul>
+	<li>None</li>
+</ul>
+
+<h2>Known Subclasses:</h2>
+<ul>
+	<li>None</li>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#Add">Add</a></td>
+	<td>Public Function Add(sName As String, vValue As Variant) As TestParameter</td>
+</tr>
+<tr>
+	<td><a href="#AddParameter">AddParameter</a></td>
+	<td>Public Sub AddParameter(oParameter As TestParameter)</td>
+</tr>
+<tr>
+	<td><a href="#Count">Count</a></td>
+	<td>Public Property Get Count() As Long</td>
+</tr>
+<tr>
+	<td><a href="#Item">Item</a></td>
+	<td>Public Property Get Item(iIndex As Integer) As TestParameter</td>
+</tr>
+<tr>
+	<td><a href="#NewEnum">NewEnum</a></td>
+	<td>Public Property Get NewEnum() As IUnknown</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="Add">Add</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Function Add(sName As String, vValue As Variant) As TestParameter</dd>
+	<dt>Description:</dt><dd>Creates a new TestParameter object and adds it to the collection.</dd>
+</dl>
+
+<hr />
+
+<h3><a name="AddParameter">AddParameter</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Sub AddParameter(oParameter As TestParameter)</dd>
+	<dt>Adds an instance of a TestParameter object to the collection</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Item">Item</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Function Item(sName As String) As TestParameter</dd>
+	<dt>Description:</dt><dd>Return a TestParameter object from the collection by name</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Count">Count</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Property Get Count() As Long</dd>
+	<dt>Description:</dt><dd>Return number of TestParameter objects in the collection.</dd>
+</dl>
+
+<hr />
+
+<h3><a name="NewEnum">NewEnum</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Property Get NewEnum() As IUnknown</dd>
+	<dt>Description:</dt><dd>Allows enumeration of the collection using For...Each</dd>
+</dl>
+</body>
+</html>

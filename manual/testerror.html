@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: TestError</title>
+</head>
+<body>
+
+<h1>Class TestError</h1>
+
+<h2>Description:</h2>
+<p>
+The TestError class holds the information regarding a single error or failure
+that has occured during the executing of the test cases.  For errors, the
+class holds the error number, source and description as well as a reference to
+the test case that generated the error.  For failures, the class holds a
+description of the failure as well as a reference to the test case which
+generated the failure.</p>
+<p>Note: this class has an instancing property of PublicNotCreatable.  It can
+only be instantiated by classes in the test framework.</p>
+
+<h2>Interface Implementation:</h2>
+<ul>
+	<li>None</li>
+</ul>
+
+<h2>Known Subclasses:</h2>
+<ul>
+	<li>None</li>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#TestCase">TestCase</a></td>
+	<td>Public Property Get TestCase() As ITestCase<br />
+		Public Property Set TestCase(oTestCase As ITestCase)</td>
+</tr>
+<tr>
+	<td><a href="#Description">Description</a></td>
+	<td>Public Property Get Description() As String<br />
+		Public Property Let Description(ByVal sSource As String)</td>
+</tr>
+<tr>
+	<td><a href="#ErrNumber">ErrNumber</a></td>
+	<td>Public Property Get ErrNumber() As Long<br />
+		Public Property Let ErrNumber(ByVal lErrNumber As Long)</td>
+</tr>
+<tr>
+	<td><a href="#Source">Source</a></td>
+	<td>Public Property Get Source() As String<br />
+		Public Property Let Source(ByVal sSource As String)</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="TestCase">TestCase</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Property Get TestCase() As ITestCase</dd>
+		<dd>Public Property Set TestCase(oTestCase As ITestCase)</dd>
+	<dt>Description:</dt><dd>Get/Set a reference to the test case where the error/failure was generated</dd>
+</dl>
+
+<hr />
+
+<h3><a name="ErrNumber">ErrNumber</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Property Get ErrNumber() As Long</dd>
+		<dd>Public Property Let ErrNumber(ByVal lErrNumber As Long)</dd>
+	<dt>Description:</dt><dd>Get/Set the error number (used by test errors, not failures)</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Source">Source</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Property Get Source() As String</dd>
+		<dd>Public Property Let Source(ByVal sSource As String)</dd>
+	<dt>Description:</dt><dd>Get/Set the source of the error (used by test errors, not failures)</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Description">Description</a></h3>
+<dl>
+	<dt>Definition:</dt>
+		<dd>Public Property Get Description() As String</dd>
+		<dd>Public Property Let Description(ByVal sSource As String)</dd>
+	<dt>Description:</dt><dd>Get/Set the description of the error / failure</dd>
+</dl>
+</body>
+</html>

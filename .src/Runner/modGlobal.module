@@ -1,0 +1,50 @@
+' Gambas module file
+
+' ' Gambas module file
+'
+' ' Attribute VB_Name = "modGlobal"
+' ' Option Explicit
+'
+' Public Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" _
+' (ByVal hwnd As Long, _
+' ByVal wMsg As Long, _
+' ByVal wParam As Long, _
+' ByVal lParam As Long) As Long
+'
+' Public Const CLR_DEFAULT = &HFF000000
+' Public Const WM_USER = &H400
+' Public Const PBM_SETBARCOLOR & = WM_USER + 9
+' Public Const COMMAND_SEPARATOR = "/"
+' Public Const COMMAND_VALUE_SEPARATOR = ":"
+'
+' Public gstrCommand As String
+'
+' Public Function PosInt(iValue) As Integer
+'
+'     PosInt = IIf(iValue > 0, iValue, 0)
+'
+' End Function
+'
+' Public Function ParseCommand(sKey As String) As String
+'
+'     Dim lPos As Long
+'
+'     lPos = InStr(1, gstrCommand, COMMAND_SEPARATOR & sKey)
+'     If (lPos > 0) Then
+'         lPos = lPos + Len(sKey) + 1
+'         If (InStr(1, gstrCommand, COMMAND_SEPARATOR & sKey & COMMAND_VALUE_SEPARATOR) > 0) Then
+'             lPos = lPos + 1
+'             Dim lEnd As Long
+'
+'     lEnd = InStr(lPos, gstrCommand, COMMAND_SEPARATOR)
+'     If (lEnd > 0) Then
+'         ParseCommand = RTrim(Mid(gstrCommand, lPos, lEnd - lPos))
+'     Else
+'         ParseCommand = RTrim(Mid(gstrCommand, lPos))
+'     End If
+' Else
+'     ParseCommand = sKey
+' End If
+' End If
+'
+' End Function

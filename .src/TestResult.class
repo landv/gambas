@@ -12,13 +12,13 @@
 ' the checking of test assertions.
 
 ' Member Variables
-Private m_colErrors As TestErrors
-Private m_colFailures As TestErrors
-Private m_colParameters As TestParameters
-Private m_iRunTests As Integer
-Private m_oCurrentTestCase As ITestCase
+Private $colErrors As TestErrors
+Private $colFailures As TestErrors
+Private $colParameters As TestParameters
+Private $iRunTests As Integer
+Private $oCurrentTestCase As ITestCase
 
-' Fixme: Events
+' Events
 Event AfterStartTest(oTestCase As ITestCase)
 Event AfterEndTest()
 Event AfterAddError(oError As TestError)
@@ -26,21 +26,21 @@ Event AfterAddFailure(oError As TestError)
 Event AfterAddTrace(sMessage As String)
 
 ' Initialize Variables
-Private Sub Class_Initialize()
+Public Sub _new()
 
-    m_colErrors = New TestErrors
-    m_colFailures = New TestErrors
-    m_iRunTests = 0
-
-End Sub
-
-' Cleanup references
-Private Sub Class_Terminate()
-
-    m_colErrors = Null
-    m_colFailures = Null
+    $colErrors = New TestErrors
+    $colFailures = New TestErrors
+    $iRunTests = 0
 
 End Sub
+
+' ' Cleanup references
+' Private Sub Class_Terminate()
+'
+'     $colErrors = Null
+'     $colFailures = Null
+'
+' End Sub
 
 ' Returns whether the entire test was successful or not.
 Property Read WasSuccessful As Boolean
@@ -48,7 +48,7 @@ Property Read WasSuccessful As Boolean
 ' Informs the result that a test will be started.
 Public Sub StartTest(oTestCase As ITestCase)
 
-    m_oCurrentTestCase = oTestCase
+    $oCurrentTestCase = oTestCase
     Raise AfterStartTest(oTestCase)
 
 End Sub
@@ -56,8 +56,8 @@ End Sub
 ' Informs the result that a test is completed.
 Public Sub EndTest()
 
-    m_oCurrentTestCase = Null
-    m_iRunTests = m_iRunTests + 1
+    $oCurrentTestCase = Null
+    $iRunTests = $iRunTests + 1
     Raise AfterEndTest
 
 End Sub
@@ -68,7 +68,7 @@ Public Sub AddFailure(sDescription As String)
     Dim oNewError As TestError
 
     'Failures use Error number 0
-    oNewError = m_colFailures.Add(m_oCurrentTestCase, 0, "", sDescription)
+    oNewError = $colFailures.Add($oCurrentTestCase, 0, "", sDescription)
     Raise AfterAddFailure(oNewError)
     oNewError = Null
 
@@ -79,7 +79,7 @@ Public Sub AddError(lNumber As Long, sSource As String, sDescription As String)
 
     Dim oNewError As TestError
 
-    oNewError = m_colErrors.Add(m_oCurrentTestCase, lNumber, sSource, sDescription)
+    oNewError = $colErrors.Add($oCurrentTestCase, lNumber, sSource, sDescription)
     Raise AfterAddError(oNewError)
     oNewError = Null
 
@@ -233,38 +233,38 @@ End Function
 
 Private Function WasSuccessful_Read() As Boolean
 
-    Return ((m_colErrors.Count = 0) And (m_colFailures.Count = 0))
+    Return (($colErrors.Count = 0) And ($colFailures.Count = 0))
 
 End
 
 Private Function RunTests_Read() As Integer
 
-    Return m_iRunTests
+    Return $iRunTests
 
 End
 
 Private Function Failures_Read() As TestErrors
 
-    Return m_colFailures
+    Return $colFailures
 
 End
 
 Private Function Errors_Read() As TestErrors
 
-    'Errors = m_colErrors
-    Return m_colErrors
+    'Errors = $colErrors
+    Return $colErrors
 
 End
 
 Private Function Parameters_Read() As TestParameters
 
-    'Parameters = m_colParameters
-    Return m_colParameters
+    'Parameters = $colParameters
+    Return $colParameters
 
 End
 
 Private Sub Parameters_Write(Value As TestParameters)
 
-    m_colParameters = Value
+    $colParameters = Value
 
 End

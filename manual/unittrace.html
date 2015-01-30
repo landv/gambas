@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: UnitTrace</title>
+</head>
+<body>
+
+<h1>Class UnitTrace</h1>
+
+<h2>Description:</h2>
+<p>
+The UnitTrace control is used to trace the progress and status of the executing test cases.
+The control displays all trace messages associated with each executing test case and groups
+them in a tree.  Test cases that execute successfully are identified with a green ball.
+Test cases that contain failures receive a yellow ball, and test cases with errors receive
+a red ball.  The UnitTrace control is useful if detailed information on the running tests is
+required.
+
+<h2>Interface Implementation:</h2>
+<ul>
+	<li>None</li>
+</ul>
+
+<h2>Known Subclasses:</h2>
+<ul>
+	<li>None</li>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#Reset">Reset</a></td>
+	<td>Public Sub Reset()</td>
+</tr>
+<tr>
+	<td><a href="#TestResult">TestResult</a></td>
+	<td>Public Property Set TestResult(oTestResult As TestResult)</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="Reset">Reset</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub Reset()</dd>
+	<dt>Description:</dt><dd>Resets the UnitTrace control clearing the results of the last test run.</dd>
+</dl>
+
+<hr />
+
+<h3><a name="TestResult">TestResult</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Property Set TestResult(oTestResult As TestResult)</dd>
+	<dt>Description:</dt><dd>Set the TestResult to be used for capturing the results of running the tests.</dd>
+</dl>
+
+</body>
+</html>

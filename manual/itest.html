@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>COMUnit Reference Manual: ITest</title>
+</head>
+<body>
+
+<h1>Interface ITest</h1>
+
+<h2>Description:</h2>
+<p>
+This interface identifies all classes that can be used by the UnitRunner
+in order to execute test cases.
+</p>
+
+<h2>Known Subclasses:</h2>
+<ul>
+	<li><a href="testcase.html">TestCase</a></li>
+	<li><a href="testsuite.html">TestSuite</a></li>
+</ul>
+
+<h2>Method Summary:</h2>
+<table border="1" cellpadding="2" cellspacing="2">
+<tr><th>Method:</th><th>Definition:</th></tr>
+<tr>
+	<td><a href="#CountTestCases">CountTestCases</a></td>
+	<td>Public Function CountTestCases() As Integer</td>
+</tr>
+<tr>
+	<td><a href="#Run">Run</a></td>
+	<td>Public Sub Run(ByRef oTestResult As TestResult)</td>
+</tr>
+</table>
+
+<h2>Methods:</h2>
+
+<h3><a name="CountTestCases">CountTestCases</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Function CountTestCases() As Integer</dd>
+	<dt>Description:</dt><dd>Number of test cases contained in this test</dd>
+</dl>
+
+<hr />
+
+<h3><a name="Run">Run</a></h3>
+<dl>
+	<dt>Definition:</dt><dd>Public Sub Run(ByRef oTestResult As TestResult)</dd>
+	<dt>Description:</dt><dd>Runs the test and collects the results in the TestResult parameter</dd>
+</dl>
+
+</body>
+</html>
