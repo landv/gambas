@@ -401,7 +401,7 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
     aFile = Split(sFile, "\t")
     aFile.Resize(2)
     
-    sRes &= Subst(sFormat, Shell$(aFile[1]))
+    sRes &= Subst(sFormat, Shell$(aFile[1])) & "\n"
     
   Next
   
@@ -717,12 +717,15 @@ Private Function MakeDebPackage(sSys As String)
   'debian/dirs
   hFile = Open sPackagePath &/ "debian/dirs" For Create
   If Project.Type <> Project.TYPE_NORMAL Then
-    Print #hFile, "usr/share/gambas"; System.Version; "/info\nusr/lib/gambas"; System.Version 
-    If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "usr/share/gambas"; System.Version; "/control/"; Shell$($sName)
+    Print #hFile, "usr/share/gambas"; System.Version; "/info"
+    Print #hFile, "usr/lib/gambas"; System.Version 
+    If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "usr/share/gambas" & System.Version & "/control/" & $sName
   Else 
-    Print #hFile, "usr/bin\nusr/share/applications\nusr/share/pixmaps"  
+    Print #hFile, "usr/bin"
+    Print #hFile, "usr/share/applications"
+    Print #hFile, "usr/share/pixmaps"
   Endif 
-  Print #hFile, GetExtraFilesDir(sSys, "\n&1")
+  Print #hFile, GetExtraFilesDir(sSys, "&1")
   Close #hFile
   
   'debian/install
@@ -733,7 +736,7 @@ Private Function MakeDebPackage(sSys As String)
     Case Project.TYPE_COMPONENT
       
       Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/lib/gambas" & System.Version
-      If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "src/"; $sName; "/.hidden/control/*.png usr/share/gambas" & System.Version &/ "control" &/ Shell$($sName)    
+      If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "src/"; $sName; "/.hidden/control/*.png usr/share/gambas" & System.Version &/ "control" &/ $sName
       
     Case Project.TYPE_LIBRARY
       
@@ -2104,7 +2107,7 @@ Private Function MakeArchPackage(sSys As String)
 
     End Select
 
-    Print #hFile, GetExtraFilesDir(sSys, "  install -d ${pkgdir}&1\n");
+    Print #hFile, GetExtraFilesDir(sSys, "  install -d ${pkgdir}&1");
     Print #hFile, GetExtraFiles(sSys, "  install -p ${srcdir}/${_realname}/.hidden/&1 ${pkgdir}&2/&1", "  cp -R --preserve=timestamp ${srcdir}/${_realname}/.hidden/&1 ${pkgdir}&2/&1");
     Print #hFile, "  install -Dm644 ${srcdir}/license.txt ${pkgdir}/usr/share/licenses" &/ $sPackageName &/ "license.txt"
     Print #hFile, "}"
