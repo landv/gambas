@@ -17,6 +17,12 @@ Private Const TAB_FILE As Integer = 7
 Private Const TAB_TEST As Integer = 8
 Private Const TAB_DIR As Integer = 9
 
+Private Sub HasDebianTarget() As Boolean
+  
+  If Project.Systems.Exist("debian") Or If Project.Systems.Exist("ubuntu") Then Return True
+  
+End
+
 
 Private Sub MakeChangeLog() As String
 
@@ -393,10 +399,27 @@ Public Sub wizInstall_BeforeChange()
           Stop Event
           Return
         Endif
+        
         If aFile[1] = "" Then
           Message.Warning(("Please choose a target directory for each extra file."))
           Stop Event
           Return
+        Endif
+        
+        If HasDebianTarget() Then
+        
+          If InStr(aFile[0], " ") Then
+            Message.Warning(("Debian packaging system cannot handle spaces in file names."))
+            Stop Event
+            Return
+          Endif
+          
+          If InStr(aFile[1], " ") Then
+            Message.Warning(("Debian packaging system cannot handle spaces in directories."))
+            Stop Event
+            Return
+          Endif
+          
         Endif
       Next
     
