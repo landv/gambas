@@ -341,6 +341,8 @@ gMainWindow::gMainWindow(int plug) : gContainer(NULL)
 	gtk_widget_realize(border);
 	gtk_widget_show(widget);
 	gtk_widget_set_size_request(border, 1, 1);
+
+	setCanFocus(false);
 }
 
 gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
@@ -352,9 +354,9 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 	widget = gtk_fixed_new();
 	
 	realize(false);
-	
-	setCanFocus(true);
 	initWindow();
+
+	setCanFocus(false);
 }
 
 gMainWindow::~gMainWindow()

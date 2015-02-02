@@ -796,7 +796,7 @@ __FOUND_WIDGET:
 						goto __RETURN;
 					}
 				}
-				
+
 				if (control->_grab)
 					goto __RETURN;
 			}

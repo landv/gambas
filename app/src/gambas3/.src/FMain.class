@@ -1250,6 +1250,7 @@ Public Sub OnProjectChange()
   mnuUseHttpServer.Value = Project.UseHttpServer
   mnuProfile.Value = Project.Profiling
   Action["breakerr"].Value = Project.BreakOnError
+  OnRefreshComponents
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -1950,12 +1951,6 @@ Public Sub mnuClearDebugWindows_Click()
   
 End
 
-Public Sub btnClose_Click()
-  
-  panError.Hide
-  
-End
-
 Public Sub mnuHideMenu_Click()
   
   If Me.Menus.Visible Then
@@ -2008,30 +2003,51 @@ Public Sub mnuEditConnection_Click()
   
 End
 
+Private Sub GetKeyTitle(sKey As String) As String
+
+  Dim sTitle As String
+  
+  While sKey
+    If sTitle Then sTitle = " > " & sTitle
+    sTitle = tvwProject[sKey].Text & sTitle
+    sKey = tvwProject[sKey].ParentKey
+  Wend
+  
+  Return sTitle
+
+End
+
 Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
-  Dim X, Y As Integer
+  'Dim X, Y As Integer
   
   If NoMessage Then Return
   
-  If Not sKey Then sKey = Project.Dir
+  ' If Not sKey Then sKey = Project.Dir
+  ' 
+  ' 'Try tvwProject[sKey].Selected = True
+  ' 'Wait
+  ' Try tvwProject[sKey].EnsureVisible
+  ' Y = 8
+  ' Try Y = tvwProject[sKey].Y + tvwProject[sKey].H \ 2
+  ' 
+  ' X = tvwProject.W \ 2
   
-  'Try tvwProject[sKey].Selected = True
-  'Wait
-  Try tvwProject[sKey].EnsureVisible
-  Y = 8
-  Try Y = tvwProject[sKey].Y + tvwProject[sKey].H \ 2
-  
-  X = tvwProject.W \ 2
+  If sKey Then sMsg = "<b>" & GetKeyTitle(sKey) & "</b><p>" & sMsg
   
   If FMain.Visible And If panProject.Visible And If Not panProject.Hidden Then
-    Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
+    
+    msgError.Open(sMsg, Picture["icon:/32/" & sIcon])
+    
+    'Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
     ' lblError.Text = Replace$(sMsg, "\n", "<br>")
     ' imgIcon.Picture = Picture["icon:/32/" & sIcon]
     ' panError.Height = lblError.Height
     ' panError.Show
   Else
+    
     sMsg = Replace(sMsg, "\n", "<br>")
+    
     If sIcon = "error" Then
       Message.Error(sMsg)
     Else If sIcon = "warning" Then
@@ -2039,6 +2055,7 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
     Else
       Message(sMsg)
     Endif
+    
   Endif
   
 End
@@ -2088,24 +2105,6 @@ Public Sub mnuAddVersionAll_Click()
   Project.Refresh
   
 End
-
-Public Sub panErrorFrame_Arrange()
-  
-  btnClose.Move(panErrorFrame.Width - btnClose.Width, 0)
-  
-End
-
-' Public Sub cmbFind_Change()
-' 
-'   FSearch.UpdateSearchString(cmbFind.Text)
-' 
-' End
-' 
-' Public Sub UpdateSearchString(sText As String)
-'   
-'   If sText <> cmbFind.Text Then cmbFind.Text = sText
-'   
-' End
 
 Public Sub mnuFind_Click()
   

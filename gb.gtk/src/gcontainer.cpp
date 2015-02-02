@@ -472,6 +472,8 @@ int gContainer::clientHeight()
 
 void gContainer::insert(gControl *child, bool realize)
 {
+	//fprintf(stderr, "insert %s into %s\n", child->name(), name());
+
 	if (!gtk_widget_get_parent(child->border))
 	{
 		//gtk_layout_put(GTK_LAYOUT(getContainer()), child->border, 0, 0);
@@ -485,7 +487,6 @@ void gContainer::insert(gControl *child, bool realize)
 		child->visible = true;
     
 	//g_debug("gContainer::insert: visible = %d", isReallyVisible());
-	//fprintf(stderr, "insert %s into %s\n", child->name(), name());
 	performArrange();
 	//fprintf(stderr, "--> %d %d %d %d\n", child->x(), child->y(), child->width(), child->height());
 	updateFocusChain();
@@ -652,15 +653,14 @@ void gContainer::updateFocusChain()
 	int i;
 	gControl *ch;
 	
-	//fprintf(stderr, "updateFocusChain()\n");
-	
 	for (i = 0; i < childCount(); i++)
 	{
 		ch = child(i);
-		if (!ch->isNoTabFocus())
-			chain = g_list_prepend(chain, ch->border);
+		if (ch->isNoTabFocus())
+			continue;
+		chain = g_list_prepend(chain, ch->border);
 	}
-	
+
 	chain = g_list_reverse(chain);
 	
 	gtk_container_set_focus_chain(GTK_CONTAINER(widget), chain);

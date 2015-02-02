@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,177,93)
+  MoveScaled(0,0,177,99)
   Icon = Picture["img/logo/logo-ide.png"]
   Arrangement = Arrange.Vertical
   { mnuFile Menu
@@ -1081,10 +1081,15 @@
     }
   }
   { Separator7 Separator
-    MoveScaled(60,12,38,0)
+    MoveScaled(60,7,38,0)
+  }
+  { msgError MessageView
+    MoveScaled(27,10,57,6)
+    Separator = True
+    Animated = True
   }
   { Panel1 Panel
-    MoveScaled(1,13,94,68)
+    MoveScaled(1,18,105,77)
     Expand = True
     Arrangement = Arrange.Horizontal
     { panProject SidePanel
@@ -1119,119 +1124,98 @@
         Border = False
       }
     }
-    { panCentral Panel
-      MoveScaled(33,1,26,64)
+    { Panel4 VBox
+      MoveScaled(33,2,68,74)
       Expand = True
-      Arrangement = Arrange.Vertical
-      { Panel2 HBox
-        MoveScaled(1,2,24,32)
+      { Panel5 HBox
+        MoveScaled(0,7,66,66)
         Expand = True
-        { Separator5 Separator
-          MoveScaled(1,7,0,10)
-          Visible = False
-        }
-        { wrkProject Workspace
-          MoveScaled(2,0,19,31)
-          Background = Color.LightForeground
+        { panCentral Panel
+          MoveScaled(0,0,26,64)
           Expand = True
-          Border = False
+          Arrangement = Arrange.Vertical
+          { Panel2 HBox
+            MoveScaled(1,2,24,32)
+            Expand = True
+            { Separator5 Separator
+              MoveScaled(1,7,0,10)
+              Visible = False
+            }
+            { wrkProject Workspace
+              MoveScaled(2,0,19,31)
+              Background = Color.LightForeground
+              Expand = True
+              Border = False
+            }
+            { Separator8 Separator
+              MoveScaled(23,7,0,9)
+              Visible = False
+            }
+          }
+          { Separator9 Separator
+            MoveScaled(3,35,19,0)
+            Visible = False
+          }
+          { panDebug SidePanel
+            MoveScaled(2,38,19,27)
+            Visible = False
+            ToolTip = ("Debug")
+            Arrangement = Arrange.Fill
+            Orientation = Align.Bottom
+            Separator = True
+            Transparent = True
+            Hidden = True
+          }
         }
-        { Separator8 Separator
-          MoveScaled(23,7,0,9)
-          Visible = False
+        { panProperty SidePanel
+          MoveScaled(27,0,32,65)
+          ToolTip = ("Properties")
+          Arrangement = Arrange.Vertical
+          Action = "property"
+          Orientation = Align.Right
+          Separator = True
+          Transparent = True
+          { panImageProperty Panel
+            MoveScaled(9,3,16,14)
+            Expand = True
+            Arrangement = Arrange.Fill
+          }
+          { panTabProperty Panel
+            MoveScaled(1,5,28,42)
+            Expand = True
+            Arrangement = Arrange.Vertical
+            { tabProperty TabPanel
+              MoveScaled(1,3,26,37)
+              Expand = True
+              Arrangement = Arrange.Fill
+              Border = False
+              Count = 2
+              Index = 0
+              Text = ("Properties")
+              Index = 1
+              Text = ("Hierarchy")
+              Index = 0
+            }
+          }
+          { panTool SidePanel
+            MoveScaled(5,49,21,37)
+            ToolTip = ("Toolbox")
+            Arrangement = Arrange.Fill
+            Spacing = True
+            Action = "control"
+            Orientation = Align.Bottom
+            Separator = True
+            Transparent = True
+          }
         }
-      }
-      { Separator9 Separator
-        MoveScaled(3,35,19,0)
-        Visible = False
-      }
-      { panDebug SidePanel
-        MoveScaled(2,38,19,27)
-        Visible = False
-        ToolTip = ("Debug")
-        Arrangement = Arrange.Fill
-        Orientation = Align.Bottom
-        Separator = True
-        Transparent = True
-        Hidden = True
-      }
-    }
-    { panProperty SidePanel
-      MoveScaled(60,3,32,65)
-      ToolTip = ("Properties")
-      Arrangement = Arrange.Vertical
-      Action = "property"
-      Orientation = Align.Right
-      Separator = True
-      Transparent = True
-      { panImageProperty Panel
-        MoveScaled(9,3,16,14)
-        Expand = True
-        Arrangement = Arrange.Fill
-      }
-      { panTabProperty Panel
-        MoveScaled(1,5,28,42)
-        Expand = True
-        Arrangement = Arrange.Vertical
-        { tabProperty TabPanel
-          MoveScaled(1,3,26,37)
-          Expand = True
-          Arrangement = Arrange.Fill
-          Border = False
-          Count = 2
-          Index = 0
-          Text = ("Properties")
-          Index = 1
-          Text = ("Hierarchy")
-          Index = 0
-        }
-      }
-      { panTool SidePanel
-        MoveScaled(5,49,21,37)
-        ToolTip = ("Toolbox")
-        Arrangement = Arrange.Fill
-        Spacing = True
-        Action = "control"
-        Orientation = Align.Bottom
-        Separator = True
-        Transparent = True
       }
     }
   }
   { timOpen #Timer
-    #MoveScaled(98,17)
-  }
-  { panError VBox
-    MoveScaled(1,81,64,8)
-    Visible = False
-    { panErrorFrame Panel
-      MoveScaled(0,0,62,6)
-      Background = Color.LightBackground
-      Expand = True
-      Arrangement = Arrange.Horizontal
-      Spacing = True
-      Padding = 4
-      { imgIcon PictureBox
-        MoveScaled(3,0,5,5)
-        Alignment = Align.Center
-      }
-      { lblError TextLabel
-        MoveScaled(12,0,24,5)
-        Expand = True
-        Alignment = Align.Normal
-      }
-      { btnClose ToolButton
-        MoveScaled(49,1,4,4)
-        Ignore = True
-        Picture = Picture["icon:/small/close"]
-      }
-    }
-    { Separator1 Separator
-      MoveScaled(1,7,55,0)
-    }
+    #MoveScaled(113,20)
   }
   { dwgWelcome DrawingArea
-    MoveScaled(101,38,15,18)
+    MoveScaled(110,34,15,18)
     Ignore = True
     Arrangement = Arrange.Fill
     Margin = True

@@ -2339,7 +2339,12 @@ bool gControl::canFocus() const
 
 void gControl::setCanFocus(bool vl)
 {
+	if (vl == canFocus())
+		return;
+	
 	gtk_widget_set_can_focus(widget, vl);
+	if (pr)
+		pr->updateFocusChain();
 }
 
 #ifdef GTK3
