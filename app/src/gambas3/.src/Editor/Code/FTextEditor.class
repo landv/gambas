@@ -23,7 +23,7 @@ Static Public CompressMessage As String
 
 Public Path As String
 Public RichText As String
-Public Editor As Editor
+Private Editor As Editor
 Public Age As Integer
 
 Property Read ReadOnly As Boolean
@@ -73,6 +73,13 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
   'edtEditor.Flags[Editor.ShowCursorPosition] = True
   
 End
+
+Public Sub GetEditor() As Editor
+  
+  Return Editor
+  
+End
+
 
 Public Sub LoadFile() As Boolean
   

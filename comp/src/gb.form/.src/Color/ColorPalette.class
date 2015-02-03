@@ -39,7 +39,7 @@ Public Sub _new()
   $hView.ScrollBar = Scroll.None
   $hView.Tracking = True
   $hView.Mouse = Mouse.Pointing
-  $hView.Background = Color.TextBackground
+  Me.Background = Color.TextBackground
   
 End
 
@@ -122,12 +122,21 @@ Public Sub AddFirst((Color) As Integer)
   
 End
 
+Public Sub Exist((Color) As Integer) As Boolean
+  
+  Return $aColors.Exist(Color)
+  
+End
+
+
 Public Sub View_Draw()
 
   Dim X, Y, W, H As Integer
   Dim I As Integer
   Dim iColor As Integer
   Dim iCurrent As Integer
+  
+  'If Me.Background <> Color.Default Then Paint.FillRect(0, 0, Paint.W, Paint.H, Me.Background)
   
   If $aColors.Count = 0 Then
     Paint.Background = Color.SetAlpha(Color.TextForeground, 192)
@@ -145,8 +154,8 @@ Public Sub View_Draw()
   W = CUSTOM_W
   H = W
   
-  Paint.Rectangle(X - 1, Y - 3, Paint.W - X * 2 + 2, Paint.H - Y * 2 + 5)
-  Paint.Clip
+  'Paint.Rectangle(X - 1, Y - 3, Paint.W - X * 2 + 2, Paint.H - Y * 2 + 5)
+  'Paint.Clip
   
   X -= $hView.ScrollX
   

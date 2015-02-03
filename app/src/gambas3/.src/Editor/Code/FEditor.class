@@ -2,7 +2,7 @@
 
 Public Path As String '' Source file absolute path.
 Public RichText As String
-Public Editor As Editor '' The current Editor control.
+Private Editor As Editor '' The current Editor control.
 Public Scan As Collection '' The result of the class symbol analyze.
 Public ParentClass As String '' The parent class.
 Public ParentComponent As String '' The component of the parent class.
@@ -127,6 +127,13 @@ Public Sub _new(sPath As String)
   $bDoNotSavePosition = True
 
 End
+
+Public Sub GetEditor() As Editor
+  
+  Return Editor
+  
+End
+
 
 Public Sub Refresh()
 

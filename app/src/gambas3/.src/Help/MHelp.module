@@ -513,7 +513,7 @@ End
 '   If Not sMarkup Then
 '   
 '     hForm = Project.LoadFile(Project.FindPath(sClass))
-'     Try hEdit = hForm.Editor
+'     Try hEdit = hForm.GetEditor()
 '     
 '     If Not hEdit Then Return  
 '   

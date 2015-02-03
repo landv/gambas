@@ -1,6 +1,7 @@
 ' Gambas class file
 
-Private $aColor As Integer[] = [Color.Black, Color.White, Color.DarkGray, Color.Gray, Color.LightGray, Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Orange, Color.Red, Color.Magenta]
+Private $aDefaultColor As Integer[] = [Color.Black, Color.White, Color.DarkGray, Color.Gray, Color.LightGray, Color.Blue, Color.Cyan, Color.Green, Color.Yellow, Color.Orange, Color.Red, Color.Magenta]
+
 Private $aGradient As New CReportBrush[]
 Private $aShape As CImageSelection[]
 
@@ -64,6 +65,8 @@ Public Sub _new()
   $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFF],[0,1])"])
   $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFFFF],[0,1])"])
   
+  palColor.Colors = $aDefaultColor
+  
 End
 
 Public Sub Form_Open()
@@ -103,12 +106,7 @@ End
 
 Private Sub RememberColor(iColor As Integer)
   
-  If $aColor.Exist(iColor) Then Return
-  
-  $aColor.Add(iColor, 0)
-  If $aColor.Count > 24 Then $aColor.Remove($aColor.Max)
-  dwgColorStack.Refresh
-  
+  If Not palColor.Exist(iColor) Then palColor.AddFirst(iColor)
   
 End
 
@@ -238,37 +236,9 @@ Public Sub HasGradient() As Boolean
   
 End
 
-Public Sub dwgColorStack_Draw()
+Public Sub palColor_Click()
 
-  Dim I As Integer
-  Dim X, W As Integer
-  
-  X = 0
-  W = dwgColorStack.H - 1
-
-  Paint.AntiAlias = False
-  
-  For I = 0 To $aColor.Max
-    
-    Paint.Rectangle(X, 0, W, W)
-    Paint.Background = $aColor[I]
-    Paint.Fill(True)
-    Paint.LineWidth = 1
-    Paint.Background = Color.LightForeground
-    Paint.Stroke
-    
-    X += W + 4
-    
-  Next
-
-End
-
-Public Sub dwgColorStack_MouseDown()
-
-  Dim I As Integer = Mouse.X / (dwgColorStack.H + 3)
-
-  If I < 0 Or If I > $aColor.Max Then Return
-  cchColor.Value = $aColor[I]
+  cchColor.Value = palColor.Current
 
 End
 
@@ -1103,7 +1073,7 @@ Public Sub dwgGradientStack_Draw()
   Dim X, W As Integer
   
   X = 0
-  W = dwgColorStack.H - 1
+  W = dwgGradientStack.H - 1
 
   Paint.LineWidth = 1
   
@@ -1130,7 +1100,7 @@ End
 
 Public Sub dwgGradientStack_MouseDown()
 
-  Dim I As Integer = Mouse.X / (dwgColorStack.H + 3)
+  Dim I As Integer = Mouse.X / (dwgGradientStack.H + 3)
 
   If I < 0 Or If I > $aGradient.Max Then Return
   FromBrush($aGradient[I])

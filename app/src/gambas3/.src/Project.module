@@ -2203,7 +2203,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   'hForm.Show
 
   'IF Object.Type(hForm) = "FEditor" THEN
-  '  hForm.Editor.SetFocus
+  '  hForm.GetEditor().SetFocus
   'ENDIF
 
   If iLine Then
@@ -2340,7 +2340,7 @@ Private Sub CompileError(sMsg As String)
 
     sErr = TranslateMessage(sMsg)
 
-    Try hEditor = hForm.Editor
+    Try hEditor = hForm.GetEditor()
 
     If hEditor And If iLine > hEditor.Lines.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))

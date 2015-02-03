@@ -950,7 +950,7 @@ Public Sub GetHelpMarkup() As String
   If Not sPath Then Return
   
   hForm = Project.LoadFile(sPath)
-  Try hEdit = hForm.Editor
+  Try hEdit = hForm.GetEditor()
   If Not hEdit Then Return  
   iLine = Me.LineNumber - 1
   If iLine < 0 Then Return

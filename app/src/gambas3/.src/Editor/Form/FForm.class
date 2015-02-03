@@ -1338,7 +1338,7 @@ End
 
 Private Sub ResetClassScan()
 
-  Try GetEditor().Scan = Null
+  Try GetClassEditor().Scan = Null
 
 End
 
@@ -1865,7 +1865,7 @@ Public Sub Modify(Optional bReset As Boolean)
   DrawTitle
 
   If $bModify Then
-    hEditor = GetEditor()
+    hEditor = GetClassEditor()
     If hEditor Then hEditor.Scan = Null
     Inc Project.TimeStamp
   Endif
@@ -2165,7 +2165,7 @@ Private Sub ResetSave()
 
 End
 
-Public Function GetEditor(Optional bLoad As Boolean) As FEditor
+Public Function GetClassEditor(Optional bLoad As Boolean) As FEditor
 
   Dim sPath As String
 
@@ -2189,7 +2189,7 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
     sGroup = hCtrl.GetGroup()
   Endif
 
-  hEditor = GetEditor(True)
+  hEditor = GetClassEditor(True)
   If Not hEditor Then Return
 
   '' TODO: Undo should remove the possibly created event handler

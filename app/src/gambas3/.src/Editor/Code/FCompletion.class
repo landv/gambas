@@ -60,11 +60,11 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   Dim sText As String
   Dim W, H As Integer
 
-  If hForm.Editor <> $hEditor Then HideFrom($hEditor)
+  If hForm.GetEditor() <> $hEditor Then HideFrom($hEditor)
   $bHideLater = False
 
   $hForm = hForm
-  $hEditor = hForm.Editor
+  $hEditor = hForm.GetEditor()
   Me.Font = $hEditor.font
   $bGambas = hForm Is FEditor
 

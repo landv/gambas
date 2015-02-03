@@ -448,7 +448,7 @@ Public Sub GetHelpMarkup() As String
   If Structure Then
     
     hForm = Project.LoadFile(Project.FindPath(DeclareIn))
-    Try hEdit = hForm.Editor
+    Try hEdit = hForm.GetEditor()
     
     If Not hEdit Then Return  
   
@@ -457,7 +457,7 @@ Public Sub GetHelpMarkup() As String
   Else
   
     hForm = Project.LoadFile(Project.FindPath(Name))
-    Try hEdit = hForm.Editor
+    Try hEdit = hForm.GetEditor()
     
     If Not hEdit Then Return  
   

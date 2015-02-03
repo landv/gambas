@@ -861,7 +861,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   Dim cSymbol As New Collection
   Dim hClass As CClassInfo
   
-  hEditor = hModule.Editor
+  hEditor = hModule.GetEditor()
   
   aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
   
@@ -933,7 +933,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   
   'Debug "ScanClass "; hModule.Name
   
-  hEditor = hModule.Editor
+  hEditor = hModule.GetEditor()
   hModule.AutoCreatable = False
   hModule.NotCreatable = False
   'DEBUG hModule.Name; " := "; hModule.AutoCreatable

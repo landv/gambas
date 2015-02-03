@@ -642,7 +642,7 @@ Private Sub ConvertClass(sPath As String)
   $aLine = New String[]
   
   $hForm = Project.LoadFile(sPath)
-  hEditor = $hForm.Editor
+  hEditor = $hForm.GetEditor()
   
   For iLine = 0 To hEditor.Lines.Count - 1
     

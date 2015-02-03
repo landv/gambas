@@ -39,7 +39,7 @@ Static Public Sub SaveCurrent(hForm As Object)
   hPos = New CPosition
   With hForm
     hPos.Path = .Path
-    Try hEditor = hForm.Editor
+    Try hEditor = hForm.GetEditor()
     If hEditor Then
       hPos.Line = hEditor.Line
       hPos.Column = hEditor.Column

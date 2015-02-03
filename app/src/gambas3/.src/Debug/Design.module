@@ -66,9 +66,9 @@ Public Sub CheckErrorMessage(hEditor As FEditor)
   
   If Not $sError Then Return
   If hEditor Then
-    If hEditor.Name == $sPosClass And If hEditor.Editor.Line = ($iPosLine - 1) Then
+    If hEditor.Name == $sPosClass And If hEditor.GetEditor().Line = ($iPosLine - 1) Then
       hEditor.ShowErrorMessage($sError, "error")
-    Else If $iPosLine > hEditor.Editor.Lines.Count Then
+    Else If $iPosLine > hEditor.GetEditor().Lines.Count Then
       sPath = Project.FindForm(hEditor.Name)
       FMain.ShowError($sError, sPath)
     Endif
@@ -556,8 +556,8 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     sPath = Project.FindPath($sPosClass)
 
     With Project.Files[sPath]
-      .Editor.CurrentLine = -1
-      'Try .Editor.Lines[$iPosLine - 1].Current = False
+      .GetEditor().CurrentLine = -1
+      'Try .GetEditor().Lines[$iPosLine - 1].Current = False
     End With
 
   Endif
@@ -573,8 +573,8 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
 '     'PRINT $sPosClass; " / "; sPath; " -> "; IsNull(Project.Files[sPath])
 '
 '     WITH Project.Files[sPath]
-'       IF $iPosLine <= .Editor.Lines.Count THEN
-'         .Editor.Lines.SetFlag($iPosLine - 1, Editor.Current, TRUE)
+'       IF $iPosLine <= .GetEditor().Lines.Count THEN
+'         .GetEditor().Lines.SetFlag($iPosLine - 1, Editor.Current, TRUE)
 '         .Show()
 '         .Goto($iPosLine)
 '         RETURN
@@ -584,9 +584,9 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     Project.LoadFile(sPath)
 
     With Project.Files[sPath]
-      If $iPosLine <= .Editor.Lines.Count Then
+      If $iPosLine <= .GetEditor().Lines.Count Then
         Project.OpenFile(sPath, $iPosLine)
-        .Editor.CurrentLine = $iPosLine - 1
+        .GetEditor().CurrentLine = $iPosLine - 1
         Return
       Endif
     End With
@@ -621,7 +621,7 @@ Public Sub RunUntil(hForm As FEditor, iLine As Integer)
 
   sClass = hForm.Name
 
-  With hForm.Editor
+  With hForm.GetEditor()
     bOn = Not .Lines[iLine].Breakpoint
   End With
 

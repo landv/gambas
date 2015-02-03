@@ -125,7 +125,7 @@ Public Sub Update(Optional bForce As Boolean)
     $hCurrent = Project.ActiveForm
     If $hCurrent Then
       If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
-        bCode = $hCurrent.Editor.Highlight <> Highlight.None
+        bCode = $hCurrent.GetEditor().Highlight <> Highlight.None
       Endif
       radCurrentProcedure.Enabled = bCode
       radCurrentFile.Enabled = True
@@ -414,25 +414,25 @@ Private Sub Run(iAction As Integer)
   If CurrentProcedure Then
     If $hCurrent Is FEditor Then
       hEditor = $hCurrent
-      CurrentProcedureName = hEditor.GetProcAt(hEditor.Editor.Line)
+      CurrentProcedureName = hEditor.GetProcAt(hEditor.GetEditor().Line)
     Endif
   Endif
   
-  Try hTextEditor = $hCurrent.Editor
+  Try hTextEditor = $hCurrent.GetEditor()
   If Error Then Return
   
   aResult = GrepFile($hCurrent)
   
   If iAction And DO_REPLACE And If iAction And DO_ALL Then
     
-    Try $hCurrent.Editor.Begin
+    Try hTextEditor.Begin
     While aResult.Count
       If $hCurrent.SetPosition(aResult[0], False) Then Break
       Inc nReplace
       $hCurrent.Replace(ReplaceString)
       DoReplace(aResult, 0, ReplaceString)
     Wend
-    Try $hCurrent.Editor.End
+    Try hTextEditor.End
     
   Else
 

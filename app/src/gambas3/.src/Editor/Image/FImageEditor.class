@@ -667,6 +667,7 @@ Private Sub AddStroke(hPoint As PointF)
   Endif
   
   $hStrokeExtents = $hStrokeExtents.Intersection(Rect(0, 0, $hImage.W, $hImage.H))
+  If Not $hStrokeExtents Then $hStrokeExtents = New Rect
 
   If hPoint = $hLastPoint Then Return
   
