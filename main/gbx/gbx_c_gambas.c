@@ -260,9 +260,9 @@ GB_DESC NATIVE_Gambas[] =
 	GB_CONSTANT("LittleEndian", "i", GB_LITTLE_ENDIAN),
 	GB_CONSTANT("BigEndian", "i", GB_BIG_ENDIAN),
 
-	GB_CONSTANT("Unix", "i", 0),
-	GB_CONSTANT("Windows", "i", 1),
-	GB_CONSTANT("Mac", "i", 2),
+	GB_CONSTANT("Unix", "i", GB_EOL_UNIX),
+	GB_CONSTANT("Windows", "i", GB_EOL_WINDOWS),
+	GB_CONSTANT("Mac", "i", GB_EOL_MAC),
 
 	GB_END_DECLARE
 };

@@ -202,8 +202,6 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		arr->locked = true;
 
 		//fprintf(stderr, "CCONTAINER_arrange: %s: mode %d: autoresize: %d\n", THIS->widget.name, arr->mode, arr->autoresize);
-		//if (!strcmp(GET_OBJECT_NAME(_object), "HBox1"))
-		//	fprintf(stderr, "HBox1: child count: %d\n", gtk_count);
 
 		invert = arr->invert;
 		rtl = IS_RIGHT_TO_LEFT() ^ invert;

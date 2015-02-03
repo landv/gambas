@@ -64,14 +64,15 @@ public:
   bool isNewLine(uint pos) const;
   bool isSpace(uint pos) const;
   bool isWordChar(uint pos) const;
-	int find(char c, int index = 0) const;
-	int find(const GString &str, int index = 0, bool cs = true) const;
+	int indexOf(char c, int index = 0) const;
+	int indexOf(const GString &str, int index = 0, bool cs = true) const;
 	char at(uint pos) const;
 	GString lower() const;
 	GString upper() const;
 	bool hasUnicode() const;
-	bool hasTab() const { return find('\t') >= 0; }
+	bool hasTab() const { return indexOf('\t') >= 0; }
 	void clear() { s.clear(); }
+	int findNextLine(int index, int &len) const;
 	
 	static bool isStandardChar(ushort c);
 };
@@ -196,14 +197,14 @@ inline GString &GString::prepend(char c)
 	return *this;
 }
 
-inline int GString::find(char c, int index) const
+inline int GString::indexOf(char c, int index) const
 {
-	return s.find(c, index);
+	return s.indexOf(c, index);
 }
 
-inline int GString::find(const GString &str, int index, bool cs) const
+inline int GString::indexOf(const GString &str, int index, bool cs) const
 {
-	return s.find(str.getString(), index, cs);
+	return s.indexOf(str.getString(), index, cs ? Qt::CaseSensitive : Qt::CaseInsensitive);
 }
 
 inline bool GString::isSpace(uint pos) const

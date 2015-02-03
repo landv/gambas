@@ -619,7 +619,7 @@ void GEditor::drawTextWithTab(QPainter &p, int sx, int x, int y, const QString &
 	
 	for(;;) //while (pos < s.length())
 	{
-		tnp = s.find('\t', tp);
+		tnp = s.indexOf('\t', tp);
 		if (tnp < 0)
 		{
 			p.drawText(x, y, s.mid(tp));
@@ -827,7 +827,7 @@ void GEditor::paintShowString(QPainter &p, GLine *l, int x, int y, int xmin, int
 		{
 			if (pos >= (int)l->s.length())
 				break;
-			pos = l->s.find(_showString, pos, !_showStringIgnoreCase);
+			pos = l->s.indexOf(_showString, pos, !_showStringIgnoreCase);
 			if (pos < 0)
 				break;
 			ps = lineWidth(row, pos);
@@ -1285,14 +1285,14 @@ void GEditor::checkMatching()
 	if (x > 0)
 	{
 		c = str.at(x - 1);
-		pos = look.find(c);
+		pos = look.indexOf(c);
 		x1m = x - 1;
 	}
 	
 	if (pos < 0 && x < len)
 	{
 		c = str.at(x);
-		pos = look.find(c);
+		pos = look.indexOf(c);
 		x1m = x;
 	}
 	
@@ -2035,8 +2035,9 @@ void GEditor::cut()
 void GEditor::paste(bool mouse)
 {
 	QString text;
+	GString gtext;
 	QString subType("plain");
-	int i, i2, xs;
+	int i, i2, xs, len;
 	QString tab;
 
 	text = QApplication::clipboard()->text(subType, mouse ? QClipboard::Selection : QClipboard::Clipboard);
@@ -2049,26 +2050,25 @@ void GEditor::paste(bool mouse)
 
 	for (i = 0; i < text.length(); i++)
 	{
-		if ((text[i] < ' ' || text[i].isSpace()) && text[i] != '\n')
+		if ((text[i] < ' ' || text[i].isSpace()) && text[i] != '\n' && text[i] != '\r')
 			text[i] = ' ';
 	}
 
 	if (_insertMode)
 	{
+		gtext = text;
 		doc->begin();
 		i = 0;
 		while (i < (int)text.length())
 		{
-			i2 = text.find('\n', i);
-			if (i2 < 0) 
-				i2 = text.length();
+			i2 = gtext.findNextLine(i, len);
 			xs = x;
-			insert(text.mid(i, i2 - i));
+			insert(text.mid(i, len));
 			x = xs;
 			y++;
 			if (y >= doc->numLines())
 				insert("\n");
-			i = i2 + 1; 
+			i = i2;
 		}
 		doc->end();
 	}

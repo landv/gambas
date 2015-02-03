@@ -552,6 +552,7 @@ static void arrange_parent(CWIDGET *_object)
 		return;
 	if (CWIDGET_check(parent))
 		return;
+	CWIDGET_check_visibility(THIS);
 	CCONTAINER_arrange(parent);
 }
 
@@ -560,6 +561,7 @@ void CWIDGET_check_visibility(CWIDGET *_object)
 	if (!THIS->flag.resized)
 	{
 		THIS->flag.resized = TRUE;
+		//qDebug("CWIDGET_check_visibility: %s %s %d", GB.GetClassName(THIS), THIS->name, THIS->flag.visible);
 		CWIDGET_set_visible(THIS, THIS->flag.visible);
 	}
 }

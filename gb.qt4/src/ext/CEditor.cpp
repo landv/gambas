@@ -237,6 +237,15 @@ BEGIN_PROPERTY(Editor_Length)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Editor_EndOfLine)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(DOC->getEndOfLine());
+	else
+		DOC->setEndOfLine(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 BEGIN_METHOD_VOID(Editor_HighlightAll)
 
 	DOC->colorizeAll();
@@ -1556,6 +1565,7 @@ GB_DESC CEditorDesc[] =
 	GB_METHOD("HighlightAll", NULL, Editor_HighlightAll, NULL),
 	GB_PROPERTY("Text", "s", Editor_Text),
 	GB_PROPERTY_READ("Length", "i", Editor_Length),
+	GB_PROPERTY("EndOfLine", "i", Editor_EndOfLine),
 
 	GB_PROPERTY("Highlight", "i", CEDITOR_highlight),
 	GB_PROPERTY("KeywordsUseUpperCase", "b", CEDITOR_keywords_ucase),

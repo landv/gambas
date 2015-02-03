@@ -725,6 +725,13 @@ typedef
 	void (*GB_HASHTABLE_ENUM_FUNC)(void *);
 
 
+/* Constants for end-of-line format */
+
+#define GB_EOL_UNIX      0
+#define GB_EOL_WINDOWS   1
+#define GB_EOL_MAC       2
+
+
 /* opaque type for a Stream object */
 
 struct GB_STREAM;

@@ -37,3 +37,34 @@ bool GString::hasUnicode() const
 	
 	return false;
 }
+
+int GString::findNextLine(int index, int &len) const
+{
+	uint l = s.length();
+
+	for (uint i = index; i < l; i++)
+	{
+		int c = s[i].unicode();
+		if (c == '\n')
+		{
+			len = i - index;
+			return i + 1;
+		}
+		if (c == '\r')
+		{
+			if ((i < (l - 1)) && s[i + 1].unicode() == '\n')
+			{
+				len = i - index;
+				return i + 2;
+			}
+			else
+			{
+				len = i - index;
+				return i + 1;
+			}
+		}
+	}
+
+	len = l - index;
+	return 0;
+}

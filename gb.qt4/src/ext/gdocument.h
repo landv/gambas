@@ -96,21 +96,23 @@ private:
 	GArray<GCommand> undoList;
 	GArray<GCommand> redoList;
 	int undoLevel;
-	bool textHasChanged;
 	int highlightMode;
-	bool keywordsUseUpperCase;
 	GHighlightCallback highlightCallback;
 	uint oldCount;
-	bool readOnly;
-	bool blockUndo;
 	GEditor *selector;
 	GEditor *_currentView;
+	GString _eol;
 	int xs, ys, xs2, ys2;
 	int tabWidth;
 	int colorizeFrom;
 	int _disableColorize;
 	int _disableColorizeStart;
 	int _currentLine;
+	unsigned _eol_mode : 2;
+	unsigned readOnly : 1;
+	unsigned blockUndo : 1;
+	unsigned keywordsUseUpperCase : 1;
+	unsigned textHasChanged : 1;
 
 	void init();
 	void clearUndo();
@@ -147,6 +149,10 @@ public:
 	GString getText();
 	void setText(const GString & text);
 	int getLength() const;
+
+	int getEndOfLine() const { return _eol_mode; }
+	void setEndOfLine(int mode);
+	GString getEndOfLineText() const { return _eol; }
 
 	void subscribe(GEditor *view);
 	void unsubscribe(GEditor *view);

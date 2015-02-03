@@ -294,6 +294,7 @@ GDocument::GDocument()
 	highlightMode = None;
 	keywordsUseUpperCase = false;
 	_currentView = NULL;
+	setEndOfLine(GB_EOL_UNIX);
 
 	//lines = new GArray<GLine>;
 	lines.setAutoDelete(true);
@@ -353,7 +354,7 @@ GString GDocument::getText()
 		for (uint i = 0; i < (lines.count() - 1); i++)
 		{
 			tmp += lines.at(i)->s;
-			tmp += '\n';
+			tmp += _eol;
 		}
 
 		tmp += lines.at(lines.count() - 1)->s;
@@ -383,7 +384,7 @@ GString GDocument::getSelectedText(bool insertMode)
 				
 				tmp += line;
 				if (i < y2)
-					tmp += '\n';
+					tmp += _eol;
 			}
 		}
 		else
@@ -393,11 +394,11 @@ GString GDocument::getSelectedText(bool insertMode)
 			else
 			{
 				tmp = lines.at(y1)->s.mid(x1);
-				tmp += '\n';
+				tmp += _eol;
 				for (i = y1 + 1; i < y2; i++)
 				{
 					tmp += lines.at(i)->s;
-					tmp += '\n';
+					tmp += _eol;
 				}
 
 				tmp += lines.at(y2)->s.left(x2);
@@ -455,7 +456,8 @@ void GDocument::insertLine(int y)
 
 void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 {
-	int pos = 0;
+	int pos;
+	int len;
 	int pos2;
 	int xs, ys;
 	GLine *l;
@@ -466,7 +468,7 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 	int i, ns;
 	GCommandDocument info(this);
 
-	if (readOnly)
+	if (readOnly || text.length() == 0)
 	{
 		xAfter = x;
 		yAfter = y;
@@ -503,18 +505,17 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 
 	xs = x;
 	ys = y;
+	pos = 0;
 
 	for(;;)
 	{
-		pos2 = text.find('\n', pos);
-		if (pos2 < 0)
-			pos2 = text.length();
+		pos2 = text.findNextLine(pos, len);
 
 		l = lines.at(y);
 
-		if (pos2 > pos)
+		if (len > 0)
 		{
-			l->insert(x, text.mid(pos, pos2 - pos));
+			l->insert(x, text.mid(pos, len));
 			modifyLine(l, y);
 
 			//maxLength = GMAX(maxLength, (int)l->s.length());
@@ -523,15 +524,15 @@ void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
 			FOR_EACH_VIEW(v)
 			{
 				if (v->ny == y && v->nx >= x)
-					v->nx += pos2 - pos;
+					v->nx += len;
 			}
 
-			x += pos2 - pos;
+			x += len;
 		}
 
-		pos = pos2 + 1;
+		pos = pos2;
 
-		if (pos > (int)text.length())
+		if (pos == 0)
 			break;
 
 		if (x < (int)l->s.length())
@@ -647,7 +648,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 	else
 	{
 		l2 = lines.at(y2);
-		text = l->s.mid(x1) + '\n';
+		text = l->s.mid(x1) + _eol;
 		rest = l2->s.left(x2);
 
 		if (x1 < (int)l->s.length() || x2 < (int)l2->s.length())
@@ -660,7 +661,7 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 			updateLineWidth(y1);
 
 		for (y = y1 + 1; y < y2; y++)
-			text += lines.at(y)->s + '\n';
+			text += lines.at(y)->s + _eol;
 		text += rest;
 
 		for (y = y1 + 1; y <= y2; y++)
@@ -1741,4 +1742,16 @@ void GDocument::setCurrentLine(int y)
 {
 	_currentLine = y;
 	updateContents();
+}
+
+void GDocument::setEndOfLine(int mode)
+{
+	_eol_mode = mode;
+
+	switch (mode)
+	{
+		case GB_EOL_WINDOWS: _eol = GString("\r\n"); break;
+		case GB_EOL_MAC: _eol = GString("\r"); break;
+		default: _eol = GString("\n"); break;
+	}
 }
