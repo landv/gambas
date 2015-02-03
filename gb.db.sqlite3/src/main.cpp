@@ -468,7 +468,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 
 #if 0
 	/* Now check for database in current working directory */
-	if (getcwd(cwd, MAX_PATH) == NULL)
+	if (getcwd(cwd, PATH_MAX) == NULL)
 	{
 		GB.Error("Unable to get databases: &1", "Can't find current directory");
 		return NULL;
@@ -496,7 +496,7 @@ static char *GetDatabaseHome()
 	char *env = NULL;
 	char *dbhome = NULL;
 
-	GB.Alloc(POINTER(&dbhome), MAX_PATH);
+	GB.Alloc(POINTER(&dbhome), PATH_MAX);
 
 	/* Check for Environment variable */
 
@@ -506,7 +506,7 @@ static char *GetDatabaseHome()
 	if (env == NULL)
 	{
 		/*
-		   if (getcwd(dbhome, MAX_PATH) == NULL){
+		   if (getcwd(dbhome, PATH_MAX) == NULL){
 		   GB.Error("Unable to get databases: &1", "Can't find current directory");
 		   GB.Free((void **)&dbhome);
 		   return NULL;
@@ -532,12 +532,12 @@ static int WalkDirectory(const char *dir, char ***databases)
 	DIR *dp;
 	struct dirent *entry;
 	struct stat statbuf;
-	char cwd[MAX_PATH];
+	char cwd[PATH_MAX];
 
 	if ((dp = opendir(dir)) == NULL)
 		return -1;
 
-	if (getcwd(cwd, MAX_PATH) == NULL)
+	if (getcwd(cwd, PATH_MAX) == NULL)
 	{
 		fprintf(stderr, "gb.db.sqlite3: warning: getcwd: %s\n", strerror(errno));
 		return -1;
@@ -2309,7 +2309,7 @@ static int database_list(DB_DATABASE * db, char ***databases)
 		GB.Free(POINTER(&dbhome));
 	}
 
-	/*if (getcwd(cwd, MAX_PATH) != NULL){
+	/*if (getcwd(cwd, PATH_MAX) != NULL){
 	   if (strcmp(cwd, dbhome) != 0){
 	   WalkDirectory( cwd, databases );
 	   }

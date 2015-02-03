@@ -1964,7 +1964,7 @@ Public Sub IsTextFile(sPath As String) As Boolean
       iCode = Asc(sCar)
       If iCode = &HFE Then Return False
       If iCode = &HFF Then Return False
-      If iCode < 32 And If iCode <> 10 And If iCode <> 9 Then Return False
+      If iCode < 32 And If iCode <> 10 And If iCode <> 13 And If iCode <> 9 Then Return False
     Else If sStr Then
       Try sTest = Conv(sCar, "UTF-8", "UCS-4LE")
       If Error Then Return False

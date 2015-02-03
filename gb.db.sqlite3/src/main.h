@@ -36,9 +36,8 @@ extern "C"
 #endif
 }
 
-#define QUOTE_STRING "'"
+#define QUOTE_STRING "\""
 
-#define MAX_PATH 132						/* MAX LENGTH OF FILNAME PATH */
 #define TRUE 1
 #define FALSE 0
 
