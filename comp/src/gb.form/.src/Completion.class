@@ -5,6 +5,7 @@ Export
 Event Activate
 
 Public List As String[]
+Public Icons As String[]
 Public Start As Integer
 
 Property Delay As Integer
@@ -59,14 +60,16 @@ End
 
 Public Sub TextBox_Change()
   
-  HideList
+  If Last.Length = 0 Then HideList
   $hTimer.Start
   
 End
 
 Private Sub HideList()
 
-  If $hPopup Then $hPopup.Hide
+  If $hPopup Then 
+    $hPopup.Hide
+  Endif
   $hTimer.Stop
 
 End
@@ -115,7 +118,7 @@ Public Sub TextBox_KeyPress()
     
   Else
     
-    If Key.Code = Key.Space And If Len(Last.Text) = 0 Then
+    If Key.Code = Key.Space And If Key.Control Then
       Me.Open
       Stop Event
     Endif
@@ -166,6 +169,7 @@ Public Sub Timer_Timer()
     $hList.Mode = Select.Single
     $hList.ScrollBar = Scroll.Vertical
     $hList.Columns.Count = 1
+    $hList.Padding = 0
     
   Endif
   
@@ -174,7 +178,7 @@ Public Sub Timer_Timer()
   
   X = hCtrl.Font.TextWidth(String.Left(hCtrl.Text, Start))
   Y = hCtrl.ScreenY - hCtrl.Window.ScreenY + hCtrl.H
-  H = ($hPopup.Font.Height + 6) * Min(8, aList.Count) + 2
+  H = $hList.Rows.Height * Min(8, aList.Count) + 2
   H = Min(H, hCtrl.Window.H - Y)
   
   $hPopup.Move(hCtrl.ScreenX - hCtrl.Window.ScreenX + X, Y, Max(hCtrl.W, Desktop.Scale * 24) - X, H)
@@ -246,6 +250,7 @@ End
 Public Sub GridView_Data(Row As Integer, (Column) As Integer)
   
   Try $hList.Data.Text = List[Row]
+  If Icons Then Try $hList.Data.Picture = Picture[Icons[Row]]
   
 End
 

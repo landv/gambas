@@ -185,8 +185,8 @@ Static Private Sub LoadMimeDatabase()
   
 Catch
   
+  Error "gb.desktop: unable to read mime database: " & Error.Text & ": " & Error.Where
   Refresh
-  Error "gb.desktop: unable to read mime database"
   
 End
 

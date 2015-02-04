@@ -15,6 +15,8 @@ Public Sub Fill(Text As String, (Explicit) As Boolean)
   Dim sDir As String
   Dim iPos As Integer
   Dim sStart As String
+  Dim sFile As String
+  Dim I As Integer
   
   sDir = Text
   
@@ -27,6 +29,15 @@ Public Sub Fill(Text As String, (Explicit) As Boolean)
   
   Me.List = Dir(sDir, sStart & "*").Sort(gb.IgnoreCase + gb.Natural)
   Me.Start = String.Len(sDir)
+  
+  Me.Icons = New String[Me.List.Count]
+  For I = 0 To Me.List.Max
+    If IsDir(sDir &/ Me.List[I]) Then
+      Me.Icons[I] = "icon:/16/directory"
+    Else
+      Me.Icons[I] = "icon:/16/file"
+    Endif
+  Next
 
 End
 

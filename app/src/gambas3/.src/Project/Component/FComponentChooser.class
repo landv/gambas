@@ -16,7 +16,7 @@ Private $bShowDeprecated As Boolean
 Private $aHidden As String[]
 Private $iTooltipLastRow As Integer
 Private $bShowCheckedOnly As Boolean
-Private $aLibraries As String[]
+Private $aLibraries As New String[]
 
 ' Private Sub GetParent() As ComponentChooser
 ' 
@@ -480,7 +480,7 @@ Private Sub GetDependencies(hComp As ComponentChooserItem, Optional bLib As Bool
   
 End
 
-Public Sub UncheckComponent(sComp As String) As Boolean
+Public Sub UncheckComponent(sComp As String, Optional sParent As String) As Boolean
   
   Dim hComp As ComponentChooserItem
   Dim sMsg As String
@@ -491,6 +491,13 @@ Public Sub UncheckComponent(sComp As String) As Boolean
   
   hComp = $cComp[sComp]
   If Not hComp Then Return
+  
+  If sParent Then
+    If hComp.Dependencies.Exist(sParent) Then
+      hComp.Dependencies.Remove(hComp.Dependencies.Find(sParent))
+      Return
+    Endif
+  Endif
   
   aDep = GetDependencies(hComp, True)
   
@@ -542,7 +549,7 @@ Public Sub SetCheckedComponents(aComp As String[])
   Dim sComp As String
   
   $cComp.Clear
-  $aLibraries = Null
+  $aLibraries.Clear
 
   CheckComponent("gb")  
   For Each sComp In aComp
@@ -666,27 +673,24 @@ Public Sub SetLibraries(Value As String[])
   Dim hLibInfo As CLibraryInfo
   Dim sDep As String
   
-  If Value = $aLibraries Then Return
+  If Not Value Then Value = New String[]
+  If Value.Join("\n") = $aLibraries.Join("\n") Then Return
   
-  If $aLibraries Then
-    For Each sLib In $aLibraries
-      hLibInfo = CLibraryInfo[sLib]
-      For Each sDep In hLibInfo.Require
-        UncheckComponent(sDep)
-      Next
+  For Each sLib In $aLibraries
+    hLibInfo = CLibraryInfo[sLib]
+    For Each sDep In hLibInfo.Require
+      UncheckComponent(sDep, sLib)
     Next
-  Endif
+  Next
 
-  $aLibraries = Value
+  $aLibraries = Value.Copy()
   
-  If $aLibraries Then
-    For Each sLib In $aLibraries
-      hLibInfo = CLibraryInfo[sLib]
-      For Each sDep In hLibInfo.Require
-        CheckComponent(sDep, sLib)
-      Next
+  For Each sLib In $aLibraries
+    hLibInfo = CLibraryInfo[sLib]
+    For Each sDep In hLibInfo.Require
+      CheckComponent(sDep, sLib)
     Next
-  Endif
+  Next
 
 End
 

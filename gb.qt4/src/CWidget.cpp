@@ -552,7 +552,6 @@ static void arrange_parent(CWIDGET *_object)
 		return;
 	if (CWIDGET_check(parent))
 		return;
-	CWIDGET_check_visibility(THIS);
 	CCONTAINER_arrange(parent);
 }
 
@@ -958,11 +957,11 @@ BEGIN_PROPERTY(Control_Expand)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->flag.expand);
-	else
+	else if (THIS->flag.expand != VPROP(GB_BOOLEAN))
 	{
 		THIS->flag.expand = VPROP(GB_BOOLEAN);
+		CWIDGET_check_visibility(THIS);
 		arrange_parent(THIS);
-		//qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
 	}
 
 END_PROPERTY
@@ -972,11 +971,10 @@ BEGIN_PROPERTY(Control_Ignore)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->flag.ignore);
-	else
+	else if (THIS->flag.ignore != VPROP(GB_BOOLEAN))
 	{
 		THIS->flag.ignore = VPROP(GB_BOOLEAN);
 		arrange_parent(THIS);
-		//qApp->postEvent(WIDGET, new QEvent(EVENT_EXPAND));
 	}
 
 END_PROPERTY

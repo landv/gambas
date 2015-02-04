@@ -1217,8 +1217,9 @@ Private Sub UpdateMenu()
 
   bVisible = Not edtEditor.ReadOnly
 
-  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent", Me].Visible = bVisible
+  Action[".save,.undo,.redo,.cut,.paste,.color,.indent,.unindent,.lcase,.ucase,.sort-ascent,.sort-descent,.eol", Me].Visible = bVisible
   mnuAdvanced.Visible = bVisible
+  mnuEndOfLine.Visible = bVisible
 
   Action[".compress,.uncompress", Me].Visible = $bShowCompress And bVisible
   Action[".proc", Me].Visible = Not $bNoHighlight
