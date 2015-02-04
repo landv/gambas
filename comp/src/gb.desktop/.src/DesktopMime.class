@@ -82,21 +82,38 @@ End
 '****************** Static Functions ****************
 Static Private Sub LoadMimeDatabase()
   
-  Dim s, ss As String  ''Temp String Vars
   Dim sPath As String
-  Dim hFile As File    ''File handle
-  Dim hMInfo As DesktopMime   
-  Dim ars As String[]
-  Dim i As Integer
+  Dim bIsOk As Boolean = True
   
   'Empty all entry before filling
   If $aMimesPrefix.Count > 0 Then Refresh
   
   For Each sPath In Main.GetDataDir()
     
-    If Not Exist(sPath &/ "mime/globs2") Then Continue
+    bIsOk = bIsOk And ReadMimeFile(sPath &/ "mime/globs2")
     
-    hfile = Open sPath &/ "mime/globs2" For Read
+  Next
+  If bIsOk Then 
+    If $aMimesSuffix.Count = 0 Then
+      Error "gb.desktop: unable to find mime database"
+    Else
+      Error "gb.desktop: unable to read mime database: " & Error.Text & ": " & Error.Where
+      Refresh
+    Endif
+  Endif
+End
+
+
+Static Private Function ReadMimeFile(sPath As String) As Boolean
+  Dim s, ss As String  ''Temp String Vars
+  Dim hFile As File    ''File handle
+  Dim hMInfo As DesktopMime   
+  Dim ars As String[]
+  Dim i As Integer
+  
+  If Not Exist(sPath) Then Return True
+  
+  hfile = Open sPath For Read
     
     'Load the file into Class tables
     While Not Eof(hfile)
@@ -177,18 +194,13 @@ Static Private Sub LoadMimeDatabase()
       Wend
       Close #hfile
     Endif
-  Next
   
-  If $aMimesSuffix.Count = 0 Then
-    Error "gb.desktop: unable to find mime database"
-  Endif
-  
-Catch
-  
-  Error "gb.desktop: unable to read mime database: " & Error.Text & ": " & Error.Where
-  Refresh
+  Catch
+    Return True
   
 End
+
+
 
 Static Private Function FindByExt(sFile As String) As DesktopMime[]
   
