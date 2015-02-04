@@ -637,6 +637,22 @@ Private Function ReadOnly_Read() As Boolean
 
 End
 
+Private Sub UpdateEndOfLine()
+
+  Select Case edtEditor.EndOfLine
+    Case gb.Windows
+      mnuEolWindows.Checked = True
+      btnEndOfLine.Text = mnuEolWindows.Text
+    Case gb.Mac
+      mnuEolMac.Checked = True
+      btnEndOfLine.Text = mnuEolMac.Text
+    Default
+      mnuEolUnix.Checked = True
+      btnEndOfLine.Text = mnuEolUnix.Text
+  End Select
+
+End
+  
 Public Sub Reload()
 
   Dim sText As String
@@ -651,6 +667,9 @@ Public Sub Reload()
   Endif
   
   edtEditor.Text = sText
+  
+  UpdateEndOfLine
+  
   Editor.SetFocus
   Editors_Cursor
   Modify(True)
@@ -1453,4 +1472,28 @@ Public Sub Form_Close()
 
   Project.AddRecentFile(Me)
 
+End
+
+Public Sub mnuEolUnix_Click()
+  
+  edtEditor.EndOfLine = gb.Unix
+  UpdateEndOfLine
+  Modify
+  
+End
+
+Public Sub mnuEolWindows_Click()
+  
+  edtEditor.EndOfLine = gb.Windows
+  UpdateEndOfLine
+  Modify
+  
+End
+
+Public Sub mnuEolMac_Click()
+  
+  edtEditor.EndOfLine = gb.Mac
+  UpdateEndOfLine
+  Modify
+  
 End

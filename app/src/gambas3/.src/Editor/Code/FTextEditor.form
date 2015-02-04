@@ -23,7 +23,7 @@
     }
     { Menu3 Menu
     }
-    { Menu7 Menu
+    { mnuEdit Menu
       Text = ("Edit")
       { mnuUndo Menu
         Action = ".undo"
@@ -123,6 +123,21 @@
         Action = ".uncompress"
         Text = ("Uncompress file")
         Picture = Picture["icon:/small/undo"]
+      }
+    }
+    { mnuEndOfLine Menu
+      Text = ("End of line")
+      { mnuEolUnix Menu
+        Text = ("Unix")
+        Radio = True
+      }
+      { mnuEolWindows Menu
+        Text = ("Windows")
+        Radio = True
+      }
+      { mnuEolMac Menu
+        Text = ("MAC")
+        Radio = True
       }
     }
     { mnuEditorView Menu
@@ -326,8 +341,19 @@
       Text = ("Procedure list")
       Picture = Picture["icon:/small/bottom"]
     }
+    { btnEndOfLine MenuButton
+      MoveScaled(100,0,11,4)
+      Visible = False
+      ToolTip = ("End of line")
+      Action = ".eol"
+      AutoResize = True
+      Picture = Picture["img/16/eol.png"]
+      Border = False
+      Menu = "mnuEndOfLine"
+      MenuOnly = True
+    }
     { lblInfo Label
-      MoveScaled(118,0,9,4)
+      MoveScaled(121,0,9,4)
       Font = Font["+2"]
       Expand = True
       Padding = 4
@@ -389,6 +415,10 @@
     Text = "Cut"
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
+  }
+  { Action eol
+    Text = "End of line"
+    Picture = "img/16/eol.png"
   }
   { Action find-next
     Text = "Find next"
@@ -504,7 +534,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "save,reload,show-class,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc"
+    List = "save,reload,show-class,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
     Default = "save,reload,show-class,locked,undo,redo,bookmark,color,|,compress,uncompress,|,|,proc,$lblInfo"
   }
 }

@@ -698,15 +698,40 @@ void GDocument::remove(int y1, int x1, int y2, int x2)
 	emitTextChanged();
 }
 
-void GDocument::setText(const GString & text)
+void GDocument::setText(const GString &text)
 {
 	bool oldReadOnly = readOnly;
+	int mode;
+	uint l;
 
 	readOnly = false;
 	blockUndo = true;
 	
 	clear();
 	clearUndo();
+
+	mode = GB_EOL_UNIX;
+
+	l = text.length();
+	for (uint i = 0; i < l; i++)
+	{
+		char c = text.at(i);
+		if (c == '\n')
+		{
+			break;
+		}
+		if (c == '\r')
+		{
+			if ((i < (l - 1)) && text.at(i + 1) == '\n')
+				mode = GB_EOL_WINDOWS;
+			else
+				mode = GB_EOL_MAC;
+			break;
+		}
+	}
+
+	setEndOfLine(mode);
+
 	undoLevel++; // Prevent textChanged emission
 	insert(0, 0, text, true);
 	reset(false);

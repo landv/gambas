@@ -940,7 +940,7 @@ Public Function Rename(sNewName As String) As Boolean
 
   ' Don't look in the class when renaming the form!
   If Parent Then
-    hForm.GetEditor(True).RenameControl(Name, sNewName)
+    hForm.GetClassEditor(True).RenameControl(Name, sNewName)
   Endif
   
   If Name Then hForm.Control[Name] = Null
