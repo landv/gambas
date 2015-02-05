@@ -13,7 +13,7 @@ Public _Finished As Boolean
 Private $iDataindex As Integer
 
 Private $iIndex As Integer
-
+Public _PageDataIndex As Integer
 Public Name As String
 'Object Management
 Static Public _ObjectFromId As New Collection
@@ -55,7 +55,7 @@ Property _ReportId As Integer
 Property Read DataIndex As Integer
 Property ForceNewPage As Boolean
 Property _DataIndex As Integer
-
+'Public _DataIndex As New Collection
 Private $bForceNewPage As Boolean
 Private $iMyId As Integer
 Private $iParentId As Integer
@@ -441,7 +441,7 @@ End
 
 Public Sub _Reset()
   
-  Me._DataIndex = 0
+  Me._DataIndex.Clear
   
 End
 
@@ -624,4 +624,6 @@ Public Sub Lower()
    _ObjectFromId[$iParentId]._Lower(Me)
   
 End
+
+
 

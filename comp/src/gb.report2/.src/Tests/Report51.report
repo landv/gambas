@@ -1,0 +1,165 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,95,80)
+  Padding = ReportPadding["Top:1cm;Bottom:1cm;Left:1.5cm;Right:1cm"]
+  Spacing = "1cm"
+  Count = 2
+  Index = 0
+  Text = ("Recto")
+  { ReportPanel1 ReportHBox
+    #MoveScaled(5,9,92,6)
+    Spacing = "2cm"
+    { ReportLabel4 ReportLabel
+      #MoveScaled(1,0,20,3)
+      Font = Font["+2"]
+      Expand = True
+      Border = ReportBorder["Bottom:0.1mm #000000"]
+      Text = ("Activité : ")
+    }
+    { ReportLabel1 ReportLabel
+      #MoveScaled(23,1,25,5)
+      Font = Font["Bold,+4"]
+      Alignment = Align.Center
+    }
+    { ReportLabel3 ReportLabel
+      #MoveScaled(69,2,19,3)
+      Font = Font["+2"]
+      Expand = True
+      Border = ReportBorder["Bottom:0.1mm #000000"]
+      Text = ("Date : ")
+    }
+  }
+  { ReportHBox1 ReportHBox
+    #MoveScaled(3,15,91,52)
+    Height = "10cm"
+    Expand = True
+    Spacing = "8mm"
+  }
+  { ReportHBox4 ReportHBox
+    #MoveScaled(3,70,90,4)
+    { ReportLabel2 ReportLabel
+      #MoveScaled(1,1,21,2)
+      Text = ("Surface Totale réelle: ")
+    }
+    { ReportLabel21 ReportLabel
+      #MoveScaled(23,1,16,2)
+    }
+  }
+  Index = 1
+  Text = ("Verso")
+  { ReportVBox1 ReportVBox
+    #MoveScaled(2,1,89,71)
+    Padding = ReportPadding["Top:2cm;Bottom:1cm;Right:1cm"]
+    Expand = True
+    { ReportHBox2 ReportHBox
+      #MoveScaled(0,0,90,6)
+      { ReportLabel6 ReportLabel
+        #MoveScaled(1,1,7,4)
+        Width = "1cm"
+        Font = Font["+2"]
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        AutoResize = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+        Text = ("N°")
+        Alignment = Align.Center
+      }
+      { ReportLabel5 ReportLabel
+        #MoveScaled(9,1,13,4)
+        Width = "3cm"
+        Font = Font["+2"]
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        AutoResize = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+        Text = ("Date")
+        Alignment = Align.Center
+      }
+      { ReportLabel7 ReportLabel
+        #MoveScaled(23,0,8,5)
+        Font = Font["+2"]
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel8 ReportLabel
+        #MoveScaled(33,1,5,5)
+        Font = Font["+2"]
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel9 ReportLabel
+        #MoveScaled(40,0,4,5)
+        Font = Font["+2"]
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel11 ReportLabel
+        #MoveScaled(47,0,4,5)
+        Font = Font["+2"]
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel12 ReportLabel
+        #MoveScaled(55,0,4,5)
+        Font = Font["+2"]
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel10 ReportLabel
+        #MoveScaled(68,0,14,5)
+        Width = "5cm"
+        Font = Font["+2"]
+        Padding = ReportPadding["Top:1mm;Bottom:1mm;Left:1mm;Right:1mm"]
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+        Text = ("Observations")
+        Alignment = Align.Center
+      }
+    }
+    { ReportHBox3 ReportHBox
+      #MoveScaled(0,8,89,14)
+      Expand = True
+      { ReportLabel13 ReportLabel
+        #MoveScaled(0,1,7,4)
+        Width = "1cm"
+        AutoResize = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel14 ReportLabel
+        #MoveScaled(8,1,13,4)
+        Width = "3cm"
+        AutoResize = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel15 ReportLabel
+        #MoveScaled(22,0,8,5)
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel16 ReportLabel
+        #MoveScaled(32,1,5,5)
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel17 ReportLabel
+        #MoveScaled(39,0,4,5)
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel18 ReportLabel
+        #MoveScaled(46,0,4,5)
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel19 ReportLabel
+        #MoveScaled(54,0,4,5)
+        Expand = True
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+      { ReportLabel20 ReportLabel
+        #MoveScaled(67,0,14,5)
+        Width = "5cm"
+        Border = ReportBorder["Top:0.1mm #000000;Bottom:0.1mm #000000;Left:0.1mm #000000;Right:0.1mm #000000"]
+      }
+    }
+  }
+  Index = 0
+}

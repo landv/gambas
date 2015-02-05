@@ -18,7 +18,7 @@ Private $sFormat As String
 Private $iAlignment As Integer
 Private $fAngle As Integer
 Private $bUseField As Boolean
-Event Data(Index As String)
+Event Data(Index As Integer)
 
 Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
   

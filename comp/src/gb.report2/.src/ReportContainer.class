@@ -246,6 +246,7 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   Dim i, j As Integer
   Dim bExitLoop As Boolean
   Dim fMaxSpc As Float
+  'Dim IndexKey As String = Str(Me.Id) &/ Str(DataIndex)
   'If Me.Tag = "**" Then Stop
   'D'abord utiliser la méthode du controle pour définir la taille
   hSizeInt = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
@@ -318,8 +319,9 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
         If fHeight - fMaxSpc > AvailableH Then
           'Les enfants ne loge pas ... on ne peut pas finir
           hSizeInt.NotFinished = True
-          Break
           bExitLoop = True
+          'Print "Avec Parent : " & DataIndex & "         Je loge : " & j  
+          Break
         Endif
         'On récupère la largeur de l'enfant le plus large
         If fWidth < htmpInts.Width Then fWidth = htmpInts.Width
@@ -379,7 +381,8 @@ End
 Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   'If Me.Tag = "*" Then Stop
   'Print "Geometry " & Object.Type(Me)
-  
+  'If ContPage > 0 Then Return
+
   Me._Index = TCont.Index
   
   If Me._CurItem > Me.Children.max Then
@@ -408,8 +411,6 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   Raise AfterData
   
 End
-
-
 
 Private Function SetFChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   
@@ -464,14 +465,17 @@ Private Function SetNChildGeometry(X As Float, Y As Float, W As Float, H As Floa
   Dim iX, iY As Integer
   Dim J As Integer
   
+  If Me.Children.Count = 0 Then Return
+
   X = Me.Padding._Left + Me.Border._Left
   Y = Me.Padding._Top + Me.Border._Top
   W = W - Me.Padding._Left - Me.Padding._Right - Me.Border._Left - Me.Border._Right
   H = H - Me.Padding._Top - Me.Padding._Bottom - Me.Border._Top - Me.Border._Bottom
   
+  
   For Each hChild In Me.Children
     
-    hChildHints = hchild._GetSizeHints(W, H, W, H)
+    hChildHints = hchild._GetSizeHints(W, H, W, H, TCont.Index)
     hTItem = New TControl
     hTItem.Ctrl = hchild
     hTItem.SizeHint = hChildHints
@@ -725,6 +729,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim fPrevTH As Float
   Dim cChildFixe As New Collection
   Dim iVal As Integer
+  'Dim IndexKey As String = Str(Me.Id) &/ Str(TCont.Index)
   
   'Détermination de la taille d'un espace
   'et prise en compte de la taille relative
@@ -756,6 +761,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   
   For i = 0 To Me.Children.Max
     hchild = Me.Children[i]
+    'If Not hchild._DataIndex.Exist(IndexKey) Then hchild._DataIndex[IndexKey] = 0
     If hchild.Fixed Then
       
       If Not bTop And If i < Me._CurItem Then
@@ -777,9 +783,9 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
       'le spacing, et la marge haute de l'objet suivant.)
       
-      hChildHints = hchild._GetSizeHints(W, fTH - fMaxSpc, W, H, TCont.Index)
+      hChildHints = hchild._GetSizeHints(W, fTH, W, H, TCont.Index)
       
-      If Not hchild.Ignore Then fTH -= hChildHints.Height + fMaxspc
+      If Not hchild.Ignore Then fTH -= hChildHints.Height + fMaxSpc
       If i < Me._CurItem Then
         'Génération de l'objet virtuel
         hTItem = New TControl
@@ -805,7 +811,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       
     Endif
   Next
-  
+  'If ContPage = 2 And Me.Tag = "**" Then Stop
   'On parcour les élément de l'index a la fin
   For i = Me._CurItem To Me.Children.Max
     
@@ -818,6 +824,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     'On définit le point de départ
     'If ContPage = 1 And hchild.Tag = "**" Then Stop
     j = hChild._DataIndex
+    'hchild._PageDataIndex = hchild._DataIndex
     Do
       'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
       'le spacing, et la marge haute de l'objet suivant.)
@@ -828,9 +835,11 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       Else
         If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
       Endif
-      
-      hChildHints = hchild._GetSizeHints(W, fTH - fMaxSpc, W, H, TCont.Index)
-      
+      'If Me.Tag = "**" And j = 3 Then Stop
+      'If TCont.Index = 2 Then Stop
+      'If ContPage = 2 And Me.Tag = "**" Then Stop
+      hChildHints = hchild._GetSizeHints(W, fTH, W, H, TCont.Index)
+      'If ContPage = 2 And Me.Tag = "**" Then Print fTH, hChildHints.Height
       'Les éléments fixes ont déja été traités on ne tient donc pas compte de leur hauteur
       'car elle a déja été déduite de l'espace restant. De meme on ignore les objets flottants (ignore=true)
       If Not hchild.Fixed And If Not hchild.Ignore Then
@@ -838,12 +847,18 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
         'si la place restante est insuffisante
         'on provoque la sortie en fin de boucle
         If fTH - hChildHints.Height <= 0 Or If bForceNewPage Then 
-           If Not bFirst Then
-            
+          ' Debug "Lélément index : " & j & " Ne loge pas dans le conteneur"
+          ' Debug "fTH : " & fTH
+          ' Debug "fTH - hChildHints.Height : " & (fTH - hChildHints.Height)
+          ' Print
+          If Not bFirst Then
+            'SI il est le premier de la série alors il doit loger dans la page coute que coute
             hChildHints.Height = fTH - hchild.Margin._bottom
           Else
+            
             bForceNewPage = False
             hchild._DataIndex = j
+            
             bExitLoop = True
             Break
           Endif
@@ -880,146 +895,152 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       If j >= Max(hchild._Count - 1, 0) Then 
         'Remise a 0 si le contenu de l 'enfant est entièrement affiché
         If Not hChildHints.NotFinished Then 
-        hChild._DataIndex = 0 
+          hChild._DataIndex = 0 
         Endif
         Break
       Endif
-       'sinon on incrémente le compte a condition que le dernier enfant aie finit d'afficher ses enfants
+      'sinon on incrémente le compte a condition que le dernier enfant aie finit d'afficher ses enfants
       If Not hChildHints.NotFinished Then Inc j
       
-       'On prévoie un sortie de boucle si l'enfant demande un affichage 1 par page
+      'On prévoie un sortie de boucle si l'enfant demande un affichage 1 par page
       If hchild.ForceNewPage Then bForceNewPage = True
       
-      Loop
-      'Si la sortie anticipé est demandée alors on sort de la boucle
-      'If bExitLoop Then Stop
-      If bExitLoop Then Break
+      ' If fTH = 0 Then 
+      '   hchild._DataIndex = j
+      '   Break
+      '   bExitLoop = True
+      ' Endif
       
-      'Si l'objet suivant est un objet spécial de rupture de page alors
-      'On force la rupture de page
-      If i < Me.Children.Max And If Me.Children[i + 1] Is ReportPageBreak Then
-        Inc Me._CurItem
-        bForceNewPage = True
-        Inc i  'on saute l'objet.
-      Endif
-      
-      'Enfin on incrémente la variable de saugarde de l'objet en cour.
-      If Me.Tag = "**" Then Debug "Inc"
+    Loop
+    'Si la sortie anticipé est demandée alors on sort de la boucle
+    'If bExitLoop Then Stop
+    If bExitLoop Then Break
+    
+    'Si l'objet suivant est un objet spécial de rupture de page alors
+    'On force la rupture de page
+    If i < Me.Children.Max And If Me.Children[i + 1] Is ReportPageBreak Then
       Inc Me._CurItem
-      
-    Next
-    '***************************************************************************
-    'Pour tous les éléments fixes jusqu'à la fin du document
-    For i = Max(Me._CurItem, 0) To Me.Children.Max
-      hchild = Me.Children[i]
-      If hchild.Fixed Then
-        fMaxSpc = Max(hchild.Margin._Bottom, fspc)
-        If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
-        hChildHints = hchild._GetSizeHints(W, fPrevTH, W, H, iPreIndex)
-        'on génère l'objet virtuel
-        hTItem = New TControl
-        'On associe le controle
-        hTItem.Ctrl = hchild
-        'On associe sa taille
-        hTItem.SizeHint = hChildHints
-        'NOTE: Restorer
-        hTItem.Index = iIndex
-        Inc iIndex
-        'On l'ajoute a la page
-        aPageItems.Add(hTItem)
-        
-        'Si l'objet est étendu alors on tien compte de sa taille
-        'pour le calcul de l'espace réparti
-        If hchild.Expand Then
-          fExp += hChildHints.Height
-          Inc iNExp
-        Endif
-        fPrevTH = fPrevTH - fMaxSpc
-      Endif
-    Next
-    
-    'Si on est en mode spacing alors le dernier expace doit être enlevé
-    If fspc > 0 And If fMaxSpc = fspc Then
-      fTH += fSpc
+      bForceNewPage = True
+      Inc i  'on saute l'objet.
     Endif
     
-    '******************************************************************************
-    'A présent tous les éléments pouvant être placé sur la page ont été marqué.
-    'On peut donc procéder a la mise en forme de ceux-ci
+    'Enfin on incrémente la variable de saugarde de l'objet en cour.
+    'If Me.Tag = "**" Then Debug "Inc"
+    Inc Me._CurItem
     
-    ftmpY = Y  'On définit la position de départ
-    If aPageItems.Count > 0 Then 
-      fTmpY += aPageItems[0].Ctrl.Margin._Top
-      'fExp = fExp - aPageItems[0].Ctrl.Margin._Top '- aPageItems[aPageItems.Max].Ctrl.Margin._Right
-    Endif 
-    If iNExp Then
-      fExp = (fExp + fTH) / iNExp
+  Next
+  '***************************************************************************
+  'Pour tous les éléments fixes jusqu'à la fin du document
+  For i = Max(Me._CurItem, 0) To Me.Children.Max
+    hchild = Me.Children[i]
+    If hchild.Fixed Then
+      fMaxSpc = Max(hchild.Margin._Bottom, fspc)
+      If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
+      hChildHints = hchild._GetSizeHints(W, fPrevTH, W, H, iPreIndex)
+      'on génère l'objet virtuel
+      hTItem = New TControl
+      'On associe le controle
+      hTItem.Ctrl = hchild
+      'On associe sa taille
+      hTItem.SizeHint = hChildHints
+      'NOTE: Restorer
+      hTItem.Index = iIndex
+      Inc iIndex
+      'On l'ajoute a la page
+      aPageItems.Add(hTItem)
+      
+      'Si l'objet est étendu alors on tien compte de sa taille
+      'pour le calcul de l'espace réparti
+      If hchild.Expand Then
+        fExp += hChildHints.Height
+        Inc iNExp
+      Endif
+      fPrevTH = fPrevTH - fMaxSpc
+    Endif
+  Next
+  
+  'Si on est en mode spacing alors le dernier expace doit être enlevé
+  If fspc > 0 And If fMaxSpc = fspc Then
+    fTH += fSpc
+  Endif
+  
+  '******************************************************************************
+  'A présent tous les éléments pouvant être placé sur la page ont été marqué.
+  'On peut donc procéder a la mise en forme de ceux-ci
+  
+  ftmpY = Y  'On définit la position de départ
+  If aPageItems.Count > 0 Then 
+    fTmpY += aPageItems[0].Ctrl.Margin._Top
+    'fExp = fExp - aPageItems[0].Ctrl.Margin._Top '- aPageItems[aPageItems.Max].Ctrl.Margin._Right
+  Endif 
+  If iNExp Then
+    fExp = (fExp + fTH) / iNExp
+  Endif
+  
+  For i = 0 To aPageItems.Max
+    'on récupère l'objet virtuel
+    hTItem = aPageItems[i]
+    'on récupère l'instance de l'objet réel
+    ochild = hTItem.Ctrl
+    
+    'Si l'objet est étendu alors on calcul sa hauteur
+    'Un objet flottant ne peut pas être étendu
+    If Not oChild.Ignore And If ochild.Expand Then
+      'Calcul de la taille répartie
+      ftmpHeight = fExp
+    Else
+      'Si l'objet n'est pas étendu alors sa taille est celle demandée par celui-ci
+      ftmpHeight = hTItem.SizeHint.Height
+    Endif
+    'oChild._Index = hTItem.Index
+    'Traitement des objets ignoré
+    'Les propriété de taille sont celle fournie par l'objet
+    If oChild.Ignore Then
+      'Calcul de la position de l'objet
+      'si sa position est relative (%) alors on fait le ratio a partir de la largeur ou de la hauteur
+      'sinon on utilise la position fournie par l'objet
+      fX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
+      fY = Y + IIf(oChild._RelativeTop, H * oChild._Top / 100, oChild._Top)
+      'Fixer la position de l'objet
+      hTItem._SetGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight)
+      'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
+      oChild._SetChildGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
+      
+    Else
+      fChildX = X + oChild.Margin._Left
+      fChildW = W - oChild.Margin._Left - oChild.Margin._Right
+      'Fixer la position de l'objet
+      hTItem._SetGeometry(fChildX, fTmpY, fChildW, ftmpHeight)
+      'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
+      oChild._SetChildGeometry(fChildX, fTmpY, fChildW, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
+      'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
+      'le spacing, et la marge haute de l'objet suivant.)
+      fMaxSpc = Max(ochild.Margin._Bottom, fspc)
+      If i < aPageItems.Max Then fMaxSpc = Max(fMaxSpc, aPageItems[i + 1].Ctrl.Margin._Top)
+      'on incrémente la position verticale de l'objet
+      'pour définir sa place sur la page relativement aux autres éléments
+      fTmpY += ftmpHeight + fMaxSpc
+      
     Endif
     
-    For i = 0 To aPageItems.Max
-      'on récupère l'objet virtuel
-      hTItem = aPageItems[i]
-      'on récupère l'instance de l'objet réel
-      ochild = hTItem.Ctrl
-      
-      'Si l'objet est étendu alors on calcul sa hauteur
-      'Un objet flottant ne peut pas être étendu
-      If Not oChild.Ignore And If ochild.Expand Then
-        'Calcul de la taille répartie
-        ftmpHeight = fExp
-      Else
-        'Si l'objet n'est pas étendu alors sa taille est celle demandée par celui-ci
-        ftmpHeight = hTItem.SizeHint.Height
-      Endif
-      'oChild._Index = hTItem.Index
-      'Traitement des objets ignoré
-      'Les propriété de taille sont celle fournie par l'objet
-      If oChild.Ignore Then
-        'Calcul de la position de l'objet
-        'si sa position est relative (%) alors on fait le ratio a partir de la largeur ou de la hauteur
-        'sinon on utilise la position fournie par l'objet
-        fX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
-        fY = Y + IIf(oChild._RelativeTop, H * oChild._Top / 100, oChild._Top)
-        'Fixer la position de l'objet
-        hTItem._SetGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight)
-        'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
-        oChild._SetChildGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
-        
-      Else
-        fChildX = X + oChild.Margin._Left
-        fChildW = W - oChild.Margin._Left - oChild.Margin._Right
-        'Fixer la position de l'objet
-        hTItem._SetGeometry(fChildX, fTmpY, fChildW, ftmpHeight)
-        'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
-        oChild._SetChildGeometry(fChildX, fTmpY, fChildW, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
-        'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
-        'le spacing, et la marge haute de l'objet suivant.)
-        fMaxSpc = Max(ochild.Margin._Bottom, fspc)
-        If i < aPageItems.Max Then fMaxSpc = Max(fMaxSpc, aPageItems[i + 1].Ctrl.Margin._Top)
-        'on incrémente la position verticale de l'objet
-        'pour définir sa place sur la page relativement aux autres éléments
-        fTmpY += ftmpHeight + fMaxSpc
-        
-      Endif
-      
-      'Si l'objet est un conteneur alors il faut vérifier si il a finit d'être traité
-      
-      If oChild Is ReportContainer Then
-        'If oChild._NotFinished Then Me.NotFinished = True
-        'Si son traitement n'est pas terminé alors on trouve
-        'sa position dans la liste des enfant et on l'assigne a l'index de traitement
-        'si sa position est > a l'index courant
-        'If oChild.Tag = "VB1" Then Stop
-        If ochild._CurItem <= oChild.Children.Max Then
-          j = Me.Children.Find(oChild)
-          Me._CurItem = Min(Me._CurItem, j)
-        Endif
-        'Si on est dans la lignée d'un conteneur fixe on incrémente pas la lecture des enfants
-        'En clair ce sont toujours les mêmes éléments qui apparaitrons
-        If bInFixed Then ochild._CurItem = 0
-      Endif
-    Next
-    'On ajoute cette page au dossier du conteneur
-    TCont._PageChildren[ContPage] = aPageItems
+    'Si l'objet est un conteneur alors il faut vérifier si il a finit d'être traité
     
+    If oChild Is ReportContainer Then
+      'If oChild._NotFinished Then Me.NotFinished = True
+      'Si son traitement n'est pas terminé alors on trouve
+      'sa position dans la liste des enfant et on l'assigne a l'index de traitement
+      'si sa position est > a l'index courant
+      'If oChild.Tag = "VB1" Then Stop
+      If ochild._CurItem <= oChild.Children.Max Then
+        j = Me.Children.Find(oChild)
+        Me._CurItem = Min(Me._CurItem, j)
+      Endif
+      'Si on est dans la lignée d'un conteneur fixe on incrémente pas la lecture des enfants
+      'En clair ce sont toujours les mêmes éléments qui apparaitrons
+      If bInFixed Then ochild._CurItem = 0
+    Endif
+  Next
+  'On ajoute cette page au dossier du conteneur
+  TCont._PageChildren[ContPage] = aPageItems
+  
 End

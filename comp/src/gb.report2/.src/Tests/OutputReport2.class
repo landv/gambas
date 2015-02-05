@@ -1,0 +1,166 @@
+' Gambas class file
+
+Public nnoderows As Integer
+Public nanchorrows As Integer
+
+Public Sub _new()
+'Report.Debug = True
+  'enter current date on the header
+  ReportLabel2.Text = Date
+
+  'enter the project information in the header on the print out page
+  'With FMain.Project
+     ReportLabel3.Text = "Project Title:  " ' & .JobTitle
+     ReportLabel4.Text = "Project No.:  '" '& .Number
+     ReportLabel5.Text = "Company:  " '& .Company
+     ReportLabel6.Text = "Designer:  " '& .Designer
+     ReportLabel7.Text = "Base Plate ID:  " ' & .BasePlateID
+  'End With
+
+  'set count to four to display the results for qmax. Tmax, L, and phi
+  ReportHBox9.DataCount = 4
+
+  'set the number of plate nodes to display in print out tables
+ ' nnoderows = Module1.RoundUpInt(FMain.ConcreteSection.cNodes.Count / 2)
+  ReportHBox5.DataCount = 11 'nnoderows
+
+  'set the number of anchor rods to display in print out tables
+  'nanchorrows = Module1.RoundUpInt(FMain.cAnchorRods.Count / 2)
+  ReportHBox7.DataCount = 13 'nanchorrows
+
+  'set the number of report panels - one for each load combination result
+  ReportPanel1.DataCount = 6 'FMain.AnalysisResults.Count
+
+End
+
+
+Public Sub ReportImage2_Data(Index As Integer)
+  'Dim current_results As Results
+  Dim pSection As Picture
+
+  'create a new picture object for drawing the base plate
+  pSection = New Picture(300, 300, False)
+
+  'get the results for first load case
+  'current_results = FMain.AnalysisResults[Str$(ReportHBox3.DataIndex)]
+
+  'refresh base plate drawing with results
+  'Module1.DrawBasePlate(pSection, 1, current_results)
+
+  'add the picture of the base plate to the page
+  ReportImage2.Image = pSection.Image
+
+End
+
+
+Public Sub ReportLabel9_Data(Index As Integer)
+
+   Last.Data = "Load Case:  " '& FMain.cLoads[Str$(ReportHBox3.DataIndex)].label
+
+End
+
+
+Public Sub ReportLabel14_Data(Index As Integer)
+  Dim $value As String
+
+  Select Case Index
+    Case 0
+      '$value = Module1.AdvFormat(FMain.AnalysisResults[Str$(ReportHBox3.DataIndex)].Tmax, 2)
+      Last.Data = "T(max) = " & 3 & " lbs"
+    Case 1
+      '$value = Module1.AdvFormat(FMain.AnalysisResults[Str$(ReportHBox3.DataIndex)].maxstress, 2)
+      Last.Data = "q(max) = " & 3 & " psi"
+    Case 2
+      '$value = Module1.AdvFormat(FMain.AnalysisResults[Str$(ReportHBox3.DataIndex)].L, 2)
+      Last.Data = "L = " & 3 & " in"
+    Case 3
+      '$value = Module1.AdvFormat(FMain.AnalysisResults[Str$(ReportHBox3.DataIndex)].phi, 2)
+      Last.Data = "phi = " & 3 & " degrees"
+    Case Else
+  End Select
+
+End
+
+
+Public Sub ReportLabel25_Data(Index As Integer)
+
+  Last.Data = Index + 1
+
+End
+
+Public Sub ReportLabel29_Data(Index As Integer)
+ ' Dim current_results As Results
+
+  'current_results = FMain.AnalysisResults[Str$(ReportPanel1.DataIndex)]
+
+  'If nnoderows + Index < current_results.stress.Count Then
+    Last.Data = nnoderows + Index + 1
+  'Else
+   ' Last.Data = Null
+ ' Endif
+
+End
+
+Public Sub ReportLabel26_Data(Index As Integer)
+  Dim value As Float
+
+  'value = FMain.AnalysisResults[Str$(ReportPanel1.DataIndex)].stress[Index]
+  Last.Data = "tt" 'Module1.AdvFormat(value, 2)
+
+End
+
+Public Sub ReportLabel30_Data(Index As Integer)
+  Dim value As Float
+  'Dim current_results As Results
+
+  'current_results = FMain.AnalysisResults[Str$(ReportPanel1.DataIndex)]
+ ' If nnoderows + Index < current_results.stress.Count Then
+     'value = current_results.stress[nnoderows + Index]
+     Last.Data = "mm" 'Module1.AdvFormat(value, 2)
+ ' Else
+    Last.Data = Null
+  'Endif
+
+End
+
+Public Sub ReportLabel49_Data(Index As Integer)
+
+  Last.Data = Index + 1
+
+End
+
+Public Sub ReportLabel52_Data(Index As Integer)
+  'Dim current_results As Results
+
+  'current_results = FMain.AnalysisResults[Str$(ReportPanel1.DataIndex)]
+
+  'If nanchorrows + Index < current_results.T.Count Then
+    Last.Data = nanchorrows + Index + 1
+  'Else
+ '   Last.Data = Null
+ ' Endif
+
+End
+
+Public Sub ReportLabel50_Data(Index As Integer)
+  Dim value As Float
+
+  'value = FMain.AnalysisResults[Str$(ReportPanel1.DataIndex)].T[Index]
+  Last.Data = "kkkk" 'Module1.AdvFormat(value, 2)
+
+End
+
+Public Sub ReportLabel53_Data(Index As Integer)
+  Dim value As Float
+  'Dim current_results As Results
+
+ ' current_results = FMain.AnalysisResults[Str$(ReportPanel1.DataIndex)]
+ ' If nanchorrows + Index < current_results.T.Count Then
+  '   value = current_results.T[nanchorrows + Index]
+     Last.Data = "qqqqqq" 'Module1.AdvFormat(value, 2)
+ ' Else
+  '  Last.Data = Null
+  'Endif
+
+End
+

@@ -278,7 +278,7 @@ Private Sub Range_Write(Value As String)
   $sRange = Value
   $aRangePage.Clear
   
-  If Not $sRange Then Return
+  If Not $sRange Then Goto Fin
   ars = Split($sRange, ";")
   
   For Each s In ars

@@ -255,13 +255,14 @@ End
 
 Public Sub TextBox1_Change()
   
-  View.Range = Last.Text
+  View.Range = TextBox1.Text
   
 End
 
 Public Sub TextBox1_Click()
   
   Last.Text = ""
+  'TextBox1_Change
   
 End
 

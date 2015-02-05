@@ -73,10 +73,6 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   ix = x + hControl.RealLeft '+ Me.Report._ToPixels(Me.Padding._Left)
   iy = y + hControl.RealTop '+ Me.Report._ToPixels(Me.Padding._Top)
   
-  Paint.Save
-  Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
-  Paint.Clip
-  
   If Not $hpic Then
     Raise Data(DataIndex)
     hpic = Data
@@ -84,6 +80,10 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Else
     hPic = $hpic
   Endif
+  
+  Paint.Save
+  Paint.Rectangle(ix, iy, hControl.RealWidth, hControl.RealHeight)
+  Paint.Clip
   
   '$hPic = $hPic.Stretch(hControl.RealWidth, hControl.RealHeight)
   
