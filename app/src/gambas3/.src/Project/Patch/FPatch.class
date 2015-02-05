@@ -208,8 +208,8 @@ Public Sub Parse(sFile As String)
   $hPatch.Parse(sFile)
   RefreshHunks()
 
-  'Finally
-    'Dec Application.Busy
+  Finally
+    Dec Application.Busy
 
 End
 
