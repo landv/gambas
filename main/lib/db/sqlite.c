@@ -156,7 +156,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE * db)
 	db_fullpath = FindDatabase(desc->name, desc->host);
 	if (!db_fullpath)
 	{
-		GB.Error("Unable to locate database: &1", desc->name);
+		GB.Error("Unable to locate database `&1` in `&2`", desc->name, desc->host);
 		return TRUE;
 	}
 					 	

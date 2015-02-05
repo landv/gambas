@@ -2035,6 +2035,8 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
   If sKey Then sMsg = "<b>" & GetKeyTitle(sKey) & "</b><p>" & sMsg
   
+  sMsg = Replace(sMsg, "\n", "<br>")
+    
   If FMain.Visible And If panProject.Visible And If Not panProject.Hidden Then
     
     msgError.Open(sMsg, Picture["icon:/32/" & sIcon])
@@ -2045,8 +2047,6 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
     ' panError.Height = lblError.Height
     ' panError.Show
   Else
-    
-    sMsg = Replace(sMsg, "\n", "<br>")
     
     If sIcon = "error" Then
       Message.Error(sMsg)

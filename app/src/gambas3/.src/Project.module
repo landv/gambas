@@ -6003,6 +6003,8 @@ Public Sub ReadComponentFile() As Collection
         cComp["Need"] = Split(sLine)
       Case "require", "requires"
         cComp["Require"] = Split(sLine)
+      Case "exclude", "excludes"
+        cComp["Exclude"] = Split(sLine)
       Case "implement", "implements"
         cComp["Implement"] = Split(sLine)
       Case "state"
@@ -6062,6 +6064,9 @@ Public Sub WriteComponentFile(cComp As Collection) As Boolean
 
   aData = cComp["Require"]
   If aData And If aData.Count Then Print #hFile, "Requires="; aData.Join(",")
+
+  aData = cComp["Exclude"]
+  If aData And If aData.Count Then Print #hFile, "Excludes="; aData.Join(",")
 
   sData = cComp["CompatibleUntil"]
   If sData And If sData <> "0.0.0" Then Print #hFile, "CompatibleUntil="; sData

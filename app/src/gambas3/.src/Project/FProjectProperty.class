@@ -23,6 +23,7 @@ Private Const LIBRARY_TAB As Integer = 3
 Private $bInitInfo As Boolean
 Private $aNeed As String[]
 Private $aRequire As String[]
+Private $aExclude As String[]
 Private $aImplement As String[]
 Private $hComp As FileCompletion
 
@@ -1003,6 +1004,7 @@ Private Sub ReadComponentFile()
   
   $aNeed = New String[]
   $aRequire = New String[]
+  $aExclude = New String[]
   $aImplement = New String[]
   
   cComp = Project.ReadComponentFile()
@@ -1010,7 +1012,8 @@ Private Sub ReadComponentFile()
   
   If cComp.Exist("Need") Then $aNeed = cComp["Need"]
   If cComp.Exist("Require") Then $aRequire = cComp["Require"]
-  If cComp.Exist("Implement") Then $aRequire = cComp["Implement"]
+  If cComp.Exist("Exclude") Then $aExclude = cComp["Exclude"]
+  If cComp.Exist("Implement") Then $aImplement = cComp["Implement"]
   cmbComponentState.Index = cComp["State"]
   cmbHidden.Index = If(cComp["Hidden"], 0, 1)
   If cComp.Exist("Include") Then txtIncludeInfo.Text = cComp["Include"].Join(",")
@@ -1055,6 +1058,7 @@ Private Sub WriteComponent()
       cComp["Implement"] = $aImplement
       cComp["Need"] = $aNeed
       cComp["Require"] = $aRequire
+      cComp["Exclude"] = $aExclude
       If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
       cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
       
@@ -1068,23 +1072,23 @@ End
 
 Private Sub ReadComponent()
 
-  Dim aComp As String[]
-  Dim hComp As CComponent
+  'Dim hComp As CComponent
   
   ReadComponentFile
   
-  aComp = New String[]
-  For Each hComp In CComponent.All
-    If hComp.Hidden Then Continue
-    If hComp.Key = CComponent.PROJECT_NAME Then Continue
-    If hComp.Key = Project.Name Then Continue 
-    If hComp.Key = "gb" Then Continue
-    If $aRequire.Exist(hComp.Key) Then Continue
-    aComp.Add(hComp.Key)
-  Next
-  aComp.Sort
+  ' aComp = New String[]
+  ' For Each hComp In CComponent.All
+  '   If hComp.Hidden Then Continue
+  '   If hComp.Key = CComponent.PROJECT_NAME Then Continue
+  '   If hComp.Key = Project.Name Then Continue 
+  '   If hComp.Key = "gb" Then Continue
+  '   If $aRequire.Exist(hComp.Key) Then Continue
+  '   aComp.Add(hComp.Key)
+  ' Next
+  ' aComp.Sort
   
   lstRequire.List = $aRequire
+  lstExclude.List = $aExclude
   
   ReadFeatures(panNeed, $aNeed)
   ReadFeatures(panNeed2, $aNeed)
@@ -1101,17 +1105,17 @@ Private Sub ReadFeatures(hCont As Container, aFeature As String[])
   
 End
 
-Private Sub AddRequire(sComp As String)
+Private Sub AddRequireExclude(sComp As String, aComp As String[], hList As ListBox)
 
   If sComp = Project.Name Then Return  
-  If $aRequire.Find(sComp) >= 0 Then Return 
-  $aRequire.Add(sComp)
-  lstRequire.Add(sComp)
+  If aComp.Find(sComp) >= 0 Then Return 
+  aComp.Add(sComp)
+  hList.Add(sComp)
   
 End
 
 
-Public Sub btnRemove_Click()
+Public Sub btnRemoveRequire_Click()
 
   If lstRequire.Index < 0 Then Return 
   $aRequire.Remove($aRequire.Find(lstRequire.Text))
@@ -1119,7 +1123,7 @@ Public Sub btnRemove_Click()
 
 End
 
-Public Sub btnRemoveAll_Click()
+Public Sub btnRemoveAllRequire_Click()
 
   lstRequire.Clear
   $aRequire.Clear
@@ -1162,12 +1166,38 @@ Public Sub Form_Arrange()
 End
 
 
-Public Sub btnAdd_Click()
+Public Sub btnAddRequire_Click()
 
   Dim sComp As String
 
   sComp = FSelectComponent.Run($aRequire) 
   If Not sComp Then Return
-  AddRequire(sComp)
+  AddRequireExclude(sComp, $aRequire, lstRequire)
 
 End
+
+Public Sub btnAddExclude_Click()
+
+  Dim sComp As String
+
+  sComp = FSelectComponent.Run($aExclude) 
+  If Not sComp Then Return
+  AddRequireExclude(sComp, $aExclude, lstExclude)
+
+End
+
+Public Sub btnRemoveExclude_Click()
+
+  If lstExclude.Index < 0 Then Return 
+  $aExclude.Remove($aExclude.Find(lstExclude.Text))
+  lstExclude.Remove(lstExclude.Index)
+
+End
+
+Public Sub btnRemoveAllExclude_Click()
+
+  lstExclude.Clear
+  $aExclude.Clear
+
+End
+

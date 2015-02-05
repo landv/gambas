@@ -606,7 +606,7 @@ Public Sub CheckSelection() As Boolean
     Next
 
     For Each sExcl In CComponent.All[sComp].Exclude
-      If Not aComp.Find(sExcl) Then Continue
+      If Not aComp.Exist(sExcl) Then Continue
       If Not aExclude.Exist(sExcl) Then aExclude.Add(sExcl)
     Next
     

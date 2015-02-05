@@ -72,7 +72,7 @@ Public Sub Open(Text As String, Optional Icon As Picture)
   Me.H = 1
   Me.Show
   
-  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight(Text, Me.Parent.ClientW - Desktop.Scale * 3 - $hIcon.W) + Desktop.Scale * 4)
+  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight(Text, Me.Parent.ClientW - Desktop.Scale * 4 - $hIcon.W) + Desktop.Scale * 4)
   
   If $bAnimate Then
   
@@ -143,14 +143,17 @@ End
 
 Public Sub View_Draw()
   
-  Dim X As Integer
+  Dim X, W As Integer
+  
+  W = Me.W - Desktop.Scale * 2
   
   If $hIcon Then
     Paint.DrawPicture($hIcon, Desktop.Scale, Desktop.Scale)
-    X += $hIcon.W + Desktop.Scale * 2
+    X += $hIcon.W + Desktop.Scale * 3
+    W -= $hIcon.W - Desktop.Scale * 2
   Endif
   
-  Paint.DrawRichText($sText, X, Desktop.Scale * 2, Me.W - Desktop.Scale * 2, Me.H - Desktop.Scale * 2, Align.TopLeft)
+  Paint.DrawRichText($sText, X, Desktop.Scale * 2, W, Me.H - Desktop.Scale * 2, Align.TopLeft)
   
   If $bSeparator Then
     If Me.Y > 0 Then 

@@ -216,6 +216,9 @@ Public Sub Reload() As Boolean
   
   Dim hConfig As Settings
   Dim sTitle As String
+  Dim iBusy As Integer
+  
+  iBusy = Application.Busy
   
   hConfig = New Settings(Path)
   
@@ -316,9 +319,9 @@ Public Sub Reload() As Boolean
   
 Catch
   
-  Application.Busy = 0
+  Application.Busy = iBusy
   Me.Enabled = False
-  Message.Error(("Unable to connect to database.") & "\n\n" & Error.Text & "\n\n" & Error.Backtrace.Join("\n"))
+  FMain.ShowError(("Unable to connect to database.") & "<p>" & Error.Text)
   Return True
   
 End
