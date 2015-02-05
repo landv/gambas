@@ -60,7 +60,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Dim iX, iY, W, H, W2, H2 As Integer
 
   If Me.LineStyle = Line.None Then Return
-  If Me.LineStyle <> Line.Solid Then Paint.Dash = ReportUnits.GetBorder(Me.LineStyle)
+  If Me.LineStyle <> Line.Solid Then Paint.Dash = MUtil.GetBorder(Me.LineStyle)
   Paint.LineWidth = ReportUnits._ReportUnitsToPixels($fLineWidth)
 
   iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left))
