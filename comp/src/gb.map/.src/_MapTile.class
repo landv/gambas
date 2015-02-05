@@ -567,8 +567,9 @@ Private Function GetTileUrlpt(X As Integer, Y As Integer, Z As Integer) As Strin
   Dim sTemp As String
   
   If $bUseWMS Then
-    
-    Return GetWMSTilept(X, Y, Z)
+    sTemp = GetWMSTilept(X, Y, Z) 
+    If Map.Debug Then Debug sTemp
+    Return sTemp
   Else
     If $bIsQuadKey Then
       sTemp = Replace($sPattern, "{q}", TileToQuadKey(X, Y, Z))
@@ -578,6 +579,7 @@ Private Function GetTileUrlpt(X As Integer, Y As Integer, Z As Integer) As Strin
       sTemp = Replace(sTemp, "{z}", CStr(Z))
     Endif
     sTemp = Replace(sTemp, "{s}", $aSubDomains[Round(Rnd(0, $aSubDomains.Max))])
+    If Map.Debug Then Debug sTemp
     Return sTemp
     
   Endif
@@ -756,7 +758,7 @@ Private Sub CacheRefreshDelay_Write(Value As Integer)
 End
 
 Public Sub ClearCache(Optional iLastUse As Integer)
-  If $sCachePath = Null Or len($sCachePath) < 5 Then Return
+  If $sCachePath = Null Or Len($sCachePath) < 5 Then Return
   If iLastUse Then
     Exec ["find", ".", "-mtime", "+" & Str(iLastUse), "-delete"] With ["PWD", $sCachePath]
   Else

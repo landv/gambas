@@ -153,6 +153,7 @@ End
 Public Sub Button1_Click()
   
   MapView1.Map.Center = MapPoint(Geo.SexToDec("45°31'33,33''N"), Geo.SexToDec("0°18'43,50''W"))
+  Print Geo.SexToDec("45°31'33,33''N")
   MapView1.Map.Zoom = 17
   MapView1.Refresh
 
