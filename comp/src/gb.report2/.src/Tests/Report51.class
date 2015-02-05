@@ -11,7 +11,7 @@ Public Sub Report_Open()
   Dim hLine As ReportLine
   Dim hLblIlot As ReportLabel
   Dim i As Integer
-    
+    Return
     ReportHBox3.DataCount = 8
     
   hVBox = New ReportVBox(ReportHBox1)

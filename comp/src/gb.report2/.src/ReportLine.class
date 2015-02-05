@@ -61,13 +61,13 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
 
   If Me.LineStyle = Line.None Then Return
   If Me.LineStyle <> Line.Solid Then Paint.Dash = MUtil.GetBorder(Me.LineStyle)
-  Paint.LineWidth = ReportUnits._ReportUnitsToPixels($fLineWidth)
+  Paint.LineWidth = Me.Report._ToPixels($fLineWidth)
 
-  iX = (x + hControl.RealLeft + ReportUnits._ReportUnitsToPixels(Me.Padding._Left))
-  iY = (y + hControl.RealTop + ReportUnits._ReportUnitsToPixels(Me.Padding._Top))
+  iX = (x + hControl.RealLeft + Me.Report._ToPixels(Me.Padding._Left))
+  iY = (y + hControl.RealTop + Me.Report._ToPixels(Me.Padding._Top))
 
-  W = iX + hControl.RealWidth - ReportUnits._ReportUnitsToPixels(Me.Padding._Right)
-  H = iY + hControl.RealHeight - ReportUnits._ReportUnitsToPixels(Me.Padding._Bottom)
+  W = iX + hControl.RealWidth - Me.Report._ToPixels(Me.Padding._Right)
+  H = iY + hControl.RealHeight - Me.Report._ToPixels(Me.Padding._Bottom)
   Paint.Brush = Me._GetActualBrush(iX, iY, W, H)
   W2 = (iX + W) / 2
   H2 = (iY + H) / 2
