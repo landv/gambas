@@ -127,6 +127,9 @@ static int make_message(int type, int nbmax, void *_param)
 	int i, n;
 	QMessageBox *mb;
 	
+	if (MAIN_CHECK_INIT())
+		return 0;
+
 	if (MAIN_in_message_box)
 	{
 		GB.Error("Message box already displayed");

@@ -120,8 +120,8 @@ int MAIN_scale = 6;
 #ifndef NO_X_WINDOW
 int MAIN_x11_last_key_code = 0;
 #endif
-
 bool MAIN_debug_busy = false;
+bool MAIN_init = false;
 
 GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Container;
@@ -317,6 +317,11 @@ void MAIN_process_events(void)
 	_no_destroy++;
 	qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
 	_no_destroy--;
+}
+
+void MAIN_init_error()
+{
+	GB.Error("GUI is not initialized");
 }
 
 /** MyApplication **********************************************************/
@@ -809,12 +814,14 @@ static void hook_main(int *argc, char ***argv)
 		XInitThreads();
 
 	new MyApplication(*argc, *argv);
-	
+
 	QT_Init();
 	init_lang(GB.System.Language(), GB.System.IsRightToLeft());
-	
+
+	MAIN_init = true;
+
 	//_old_handler = XSetErrorHandler(X11_error_handler);
-	
+
 	CALL_HOOK_MAIN(_old_hook_main, argc, argv);
 }
 

@@ -164,6 +164,9 @@ static void update_duplex(CPRINTER *_object)
 
 BEGIN_METHOD_VOID(Printer_new)
 
+	if (MAIN_CHECK_INIT())
+		return;
+
 	THIS->printer = new QPrinter(QPrinter::HighResolution);
 	THIS->page_count = 1;
 

@@ -803,6 +803,12 @@ bool CWIDGET_is_design(CWIDGET *_object)
 
 //---------------------------------------------------------------------------
 
+BEGIN_METHOD_VOID(Control_new)
+
+	MAIN_CHECK_INIT();
+
+END_METHOD
+
 BEGIN_PROPERTY(Control_X)
 
 	if (READ_PROPERTY)
@@ -3159,6 +3165,7 @@ GB_DESC CControlDesc[] =
 
 	GB_HOOK_CHECK(CWIDGET_check),
 
+	GB_METHOD("_new", NULL, Control_new, NULL),
 	GB_METHOD("_free", NULL, Control_Delete, NULL),
 
 	GB_METHOD("Move", NULL, Control_Move, "(X)i(Y)i[(Width)i(Height)i]"),

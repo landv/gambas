@@ -44,6 +44,7 @@ extern int MAIN_in_message_box;
 extern int MAIN_loop_level;
 extern int MAIN_scale;
 extern bool MAIN_debug_busy;
+extern bool MAIN_init;
 #ifndef NO_X_WINDOW
 extern int MAIN_x11_last_key_code;
 #endif
@@ -140,6 +141,9 @@ private:
 void MAIN_check_quit(void);
 void MAIN_update_scale(void);
 void MAIN_process_events(void);
+void MAIN_init_error(void);
+
+#define MAIN_CHECK_INIT() (MAIN_init ? 0 : (MAIN_init_error(), 1))
 
 const char *QT_ToUTF8(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);
