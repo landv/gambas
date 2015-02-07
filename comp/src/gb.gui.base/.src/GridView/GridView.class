@@ -25,7 +25,6 @@ Property AutoResize As Boolean
 Property Header As Integer
 Property ShowCursor As Boolean
 Property Read Current As _GridView_Cell
-Property Font As Font
 Property Sorted As Boolean
 Property Padding As Integer
 
@@ -1974,21 +1973,6 @@ Public Sub _InsertRows(Start As Integer, Length As Integer)
   
 End
 ' 
-
-Private Function Font_Read() As Font
-
-  Return Super.Font
-
-End
-
-Private Sub Font_Write(Value As Font)
-
-  Super.Font = Value
-  $iTextHeight = 0
-  _ResizeContents
-
-End
-
 Public Sub _GetTextHeight() As Integer
   
   If $iTextHeight = 0 Then $iTextHeight = Me.Font.TextHeight(" ")
@@ -2307,4 +2291,12 @@ Private Sub Padding_Write(Value As Integer)
   ScrollArea_Arrange
   $hView.Refresh
 
+End
+
+Public Sub ScrollArea_Font()
+  
+  $iTextHeight = 0
+  $hColumns._Layout
+  _ResizeContents
+  
 End

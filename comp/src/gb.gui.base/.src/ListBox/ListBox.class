@@ -18,6 +18,7 @@ Property Read Current As _ListBox_Item
 Property Index As Integer
 Property Read Text As String
 Property List As String[]
+Property Font As Font
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -43,6 +44,7 @@ Public Sub _new()
   $hView.Grid = False
   $hView.AutoResize = True
   $hView._DoNotDrawSelection = True
+  $hView.ScrollBar = Scroll.Vertical
   
   Me.Proxy = $hView
   
@@ -400,7 +402,7 @@ Public Sub _SetText(iIndex As Integer, sText As String)
   
 End
 
-Public Sub GridView_ColumnSize(Column As Integer)
+Private Sub ResizeColumn()
   
   Dim W As Integer
   Dim sText As String
@@ -409,6 +411,26 @@ Public Sub GridView_ColumnSize(Column As Integer)
     W = Max(W, Me.Font.TextWidth(sText))
   Next
   
-  $hView.Columns[Column].W = W + 8
+  $hView.Columns[0].W = W + 8
   
+End
+
+Public Sub GridView_ColumnSize(Column As Integer)
+  
+  ResizeColumn
+  
+End
+
+
+Private Function Font_Read() As Font
+
+  Return $hView.Font
+
+End
+
+Private Sub Font_Write(Value As Font)
+
+  $hView.Font = Value
+  ResizeColumn
+
 End

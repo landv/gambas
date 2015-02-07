@@ -32,6 +32,7 @@ Property UseMouse As Boolean
 Event Scroll
 Event Draw
 Event Resize
+Event Font
 
 Static Private $hFadeN As Picture
 Static Private $hFadeS As Picture
@@ -815,4 +816,10 @@ Private Sub UseMouse_Write(Value As Boolean)
 
   $bUseMouse = Value
 
+End
+
+Public Sub DrawingArea_Font()
+  
+  Raise Font
+  
 End
