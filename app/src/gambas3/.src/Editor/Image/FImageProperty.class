@@ -183,7 +183,8 @@ Public Sub GetBrush(hRect As RectF, Optional bIgnoreOpacity As Boolean, Optional
         hImage = $aClipboard[gvwClipboard.Row].Image
       Endif
       
-      If Not hImage Then Return Paint.Color(GetColor())
+      If Not hImage Or If hImage.W <= 0 Or If hImage.H <= 0 Then Return Paint.Color(GetColor())
+      
       If Not bIgnoreOpacity Then hImage = hImage.Copy().Opacity(slbOpacity.Value / 255)
       hPaintBrush = Paint.Image(hImage)
       

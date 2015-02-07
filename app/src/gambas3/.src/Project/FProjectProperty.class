@@ -94,7 +94,7 @@ Public Sub Form_Open()
 
   End With
   
-  hBorder = New Border("radius:5;width:4;margin:8;padding:6")
+  hBorder = Border("radius:5;width:2.5;margin:8;padding:6")
   hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
   gvwLibrary.Rows.Border = hBorder
   
@@ -1074,6 +1074,8 @@ Private Sub ReadComponent()
 
   'Dim hComp As CComponent
   
+  Dim sComp As String
+  
   ReadComponentFile
   
   ' aComp = New String[]
@@ -1087,11 +1089,16 @@ Private Sub ReadComponent()
   ' Next
   ' aComp.Sort
   
-  lstRequire.List = $aRequire
-  lstExclude.List = $aExclude
-  
   ReadFeatures(panNeed, $aNeed)
   ReadFeatures(panNeed2, $aNeed)
+  
+  lvwRequire.Clear
+  For Each sComp In $aRequire
+    lvwRequire.Add(sComp, sComp, Picture["icon:/small/play"])
+  Next
+  For Each sComp In $aExclude
+    lvwRequire.Add(sComp, sComp, Picture["icon:/small/stop"])
+  Next
   
 End
 
@@ -1105,28 +1112,47 @@ Private Sub ReadFeatures(hCont As Container, aFeature As String[])
   
 End
 
-Private Sub AddRequireExclude(sComp As String, aComp As String[], hList As ListBox)
+Private Sub AddRequireExclude(sComp As String, aComp As String[])
 
+  Dim sIcon As String
+  
   If sComp = Project.Name Then Return  
-  If aComp.Find(sComp) >= 0 Then Return 
+  If lvwRequire.Exist(sComp) Then Return
+  
+  If aComp = $aRequire Then
+    sIcon = "play"
+  Else
+    sIcon = "stop"
+  Endif
+
   aComp.Add(sComp)
-  hList.Add(sComp)
+  lvwRequire.Add(sComp, sComp, Picture["icon:/small/" & sIcon])
   
 End
 
 
-Public Sub btnRemoveRequire_Click()
+Public Sub btnRemove_Click()
 
-  If lstRequire.Index < 0 Then Return 
-  $aRequire.Remove($aRequire.Find(lstRequire.Text))
-  lstRequire.Remove(lstRequire.Index)
+  Dim sKey As String
+  Dim iFind As Integer
 
+  sKey = lvwRequire.Key
+  If Not sKey Then Return
+  lvwRequire.Remove(sKey)
+  
+  iFind = $aRequire.Find(sKey)
+  If iFind >= 0 Then $aRequire.Remove(iFind)
+  
+  iFind = $aExclude.Find(sKey)
+  If iFind >= 0 Then $aExclude.Remove(iFind)
+  
 End
 
-Public Sub btnRemoveAllRequire_Click()
+Public Sub btnRemoveAll_Click()
 
-  lstRequire.Clear
+  lvwRequire.Clear
   $aRequire.Clear
+  $aExclude.Clear
 
 End
 
@@ -1170,9 +1196,9 @@ Public Sub btnAddRequire_Click()
 
   Dim sComp As String
 
-  sComp = FSelectComponent.Run($aRequire) 
+  sComp = FSelectComponent.Run($aRequire.Copy().Insert($aExclude)) 
   If Not sComp Then Return
-  AddRequireExclude(sComp, $aRequire, lstRequire)
+  AddRequireExclude(sComp, $aRequire)
 
 End
 
@@ -1180,24 +1206,9 @@ Public Sub btnAddExclude_Click()
 
   Dim sComp As String
 
-  sComp = FSelectComponent.Run($aExclude) 
+  sComp = FSelectComponent.Run($aExclude.Copy().Insert($aRequire)) 
   If Not sComp Then Return
-  AddRequireExclude(sComp, $aExclude, lstExclude)
-
-End
-
-Public Sub btnRemoveExclude_Click()
-
-  If lstExclude.Index < 0 Then Return 
-  $aExclude.Remove($aExclude.Find(lstExclude.Text))
-  lstExclude.Remove(lstExclude.Index)
-
-End
-
-Public Sub btnRemoveAllExclude_Click()
-
-  lstExclude.Clear
-  $aExclude.Clear
+  AddRequireExclude(sComp, $aExclude)
 
 End
 

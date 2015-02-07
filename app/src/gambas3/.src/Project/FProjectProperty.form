@@ -293,68 +293,43 @@
         }
       }
       { Panel12 HBox
-        MoveScaled(0,43,80,3)
+        MoveScaled(0,41,80,3)
         { Label14 Label
           MoveScaled(0,0,35,3)
           Font = Font["Bold"]
           Expand = True
-          Text = ("Required components")
-        }
-        { Label17 Label
-          MoveScaled(39,0,35,3)
-          Font = Font["Bold"]
-          Expand = True
-          Text = ("Excluded components")
+          Text = ("Required and excluded components")
         }
       }
       { HBox10 HBox
-        MoveScaled(0,48,81,19)
+        MoveScaled(0,45,81,22)
         Expand = True
         Spacing = True
-        { lstRequire ListBox
-          MoveScaled(1,1,20,16)
+        { lvwRequire ListView
+          MoveScaled(3,3,47,16)
           Expand = True
           Sorted = True
         }
         { VBox5 VBox
-          MoveScaled(22,1,18,16)
+          MoveScaled(59,1,20,20)
           Spacing = True
           { btnAddRequire Button
-            MoveScaled(0,0,16,4)
-            Text = ("Add") & "..."
-            Picture = Picture["icon:/small/add"]
+            MoveScaled(0,1,16,4)
+            Text = ("Require") & "..."
+            Picture = Picture["icon:/small/play"]
           }
-          { btnRemoveRequire Button
-            MoveScaled(0,5,17,4)
-            Text = Shortcut(("Remove"), "R")
-            Picture = Picture["icon:/small/remove"]
-          }
-          { btnRemoveAllRequire Button
-            MoveScaled(0,10,17,4)
-            Text = ("Remove All")
-            Picture = Picture["icon:/small/trash"]
-          }
-        }
-        { lstExclude ListBox
-          MoveScaled(41,1,20,16)
-          Expand = True
-          Sorted = True
-        }
-        { VBox2 VBox
-          MoveScaled(62,1,18,16)
-          Spacing = True
           { btnAddExclude Button
-            MoveScaled(0,0,16,4)
-            Text = ("Add") & "..."
-            Picture = Picture["icon:/small/add"]
+            MoveScaled(0,5,16,4)
+            Text = ("Exclude") & "..."
+            Picture = Picture["icon:/small/stop"]
           }
-          { btnRemoveExclude Button
-            MoveScaled(0,5,17,4)
+          { btnRemove Button
+            MoveScaled(1,9,17,4)
             Text = Shortcut(("Remove"), "R")
             Picture = Picture["icon:/small/remove"]
           }
-          { btnRemoveAllExlude Button
-            MoveScaled(0,10,17,4)
+          { btnRemoveAll Button
+            MoveScaled(0,15,17,4)
             Text = ("Remove All")
             Picture = Picture["icon:/small/trash"]
           }
