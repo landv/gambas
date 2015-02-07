@@ -12,6 +12,10 @@ Property Read Count As Integer
 Property Read Max As Integer
 
 
+Property Read _TopMargin As Float
+Property Read _BottomMargin As Float
+Property Read _LeftMargin As Float
+Property Read _RightMargin As Float
 Property Read _XOffset As Float
 Property Read _YOffset As Float
 Property Read _Blur As Float
@@ -224,3 +228,27 @@ Private Function _Active_Read() As Boolean
 End
 
 
+
+Private Function _TopMargin_Read() As Float
+
+  Return Max($aBoxShadow[0]._Blur / 2 + $aBoxShadow[0]._Spread - $aBoxShadow[0]._YOffset, 0)
+
+End
+
+Private Function _BottomMargin_Read() As Float
+
+  Return Max($aBoxShadow[0]._Blur / 2 + $aBoxShadow[0]._Spread + $aBoxShadow[0]._YOffset, 0)
+
+End
+
+Private Function _LeftMargin_Read() As Float
+
+  Return Max($aBoxShadow[0]._Blur / 2 + $aBoxShadow[0]._Spread - $aBoxShadow[0]._XOffset, 0)
+
+End
+
+Private Function _RightMargin_Read() As Float
+
+   Return Max($aBoxShadow[0]._Blur / 2 + $aBoxShadow[0]._Spread + $aBoxShadow[0]._XOffset, 0)
+
+End

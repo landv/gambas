@@ -13,6 +13,8 @@ Property BoxShadow As ReportBoxShadow
 
 Private $hBoxShadow As New ReportBoxShadow
 Property BackGround As ReportBrush
+Property Read _BoxShadow As ReportBoxShadow
+
 'Property Read _BorderWidth As Float
 
 Private Function Border_Read() As ReportBorder
@@ -366,4 +368,10 @@ End
 
 Public Sub _Free()
   
+End
+
+Private Function _BoxShadow_Read() As ReportBoxShadow
+
+  Return Me.BoxShadow
+
 End

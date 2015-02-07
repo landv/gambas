@@ -7,7 +7,7 @@ Public Const _Properties As String = "*,Direction{Align.TopLeft;Top;TopRight;Lef
 Public Const _Similar As String = "ReportTextLabel"
 Property Direction As Integer
 
-Private $fLineWidth As Float = 1.0
+Private $fLineWidth As Float = 0.1
 
 Private $iLineStyle As Integer = Line.solid
 Private $iDirection As Integer = Align.BottomRight
@@ -34,11 +34,11 @@ Private Sub LineWidth_Write(Value As String)
 
 End
 
-Public Sub _SetUnifiedValues()
+Public Sub _NormalizeUnits()
 
   Dim hSizeParse As TSizeParse
 
-  Super._SetUnifiedValues()
+  Super._NormalizeUnits()
 
   hSizeParse = New TSizeParse($sLineWidth)
   $fLineWidth = hSizeParse.GetValue()

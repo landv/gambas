@@ -10,13 +10,14 @@
   { ReportLabel1 ReportLabel
     #MoveScaled(6,0,52,7)
     Font = Font["+14"]
-    BoxShadow = ReportBoxShadow["1mm 1mm 1mm 0mm #FF8000"]
+    BoxShadow = ReportBoxShadow["0mm 7mm 7mm 0mm #FF8000"]
     Text = ("PARCELLAIRE")
     Alignment = Align.Center
   }
   { ReportImage1 ReportImage
-    #MoveScaled(11,8,41,28)
+    #MoveScaled(8,10,41,28)
     Height = "14cm"
+    BoxShadow = ReportBoxShadow["-18px -6mm 23px 21px #000000"]
     Stretch = Report.None
     Image = Image.Load("capture12.png")
   }

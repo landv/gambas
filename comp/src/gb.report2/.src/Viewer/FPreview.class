@@ -62,6 +62,7 @@ Private Sub SelectPrinter(Optional sName As String)
   
   If sName Then
     $hPrinter.Name = sName
+    $hPrinter.FullPage = True
     Object.Lock(cmbPrinter)
     Try cmbPrinter.Index = cmbPrinter.List.Find(sName)
     Object.Unlock(cmbPrinter)

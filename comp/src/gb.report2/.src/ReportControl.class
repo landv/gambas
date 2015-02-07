@@ -19,7 +19,7 @@ Public Name As String
 Static Public _ObjectFromId As New Collection
 Static Public _iCurPagePos As Integer
 Static Private $iLastId As Integer
-
+Property Read _BoxShadow As ReportBoxShadow
 Property Read Id As Integer
 Property Read Parent As ReportContainer
 Property Tag As Variant
@@ -626,4 +626,8 @@ Public Sub Lower()
 End
 
 
+Private Function _BoxShadow_Read() As ReportBoxShadow
 
+   Return Me._BoxShadow
+
+End
