@@ -209,8 +209,6 @@ Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   Dim fSpc As Float
   Dim fMaxSpc As Float
   Dim i As Integer
-  Dim fSL, fSR As Float ''Shadow margins
-  
   'D'abord utiliser la méthode du controle pour définir la taille
   hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
   
@@ -218,18 +216,12 @@ Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     fSpc = IIf(Me._RelativeSpacing, TotalWidth * Me._Spacing / 100, Me._Spacing)
     'on ajoute la marge supérieur du premier objet
-    If Me.Children.Max > 0 Then fWidth += Me.Children[0].Margin._Left + fSL
+    If Me.Children.Max > 0 Then fWidth += Me.Children[0].Margin._Top
     For i = 0 To Me.Children.Max
       hChild = Me.Children[i]
       hChildHints = hchild._GetSizeHints(AvailableW - fWidth, AvailableH, AvailableW, AvailableH, DataIndex)
-      
-      Try fSR = hchild._BoxShadow._RightMargin
-      fMaxSpc = Max(Max(fspc, hchild.Margin._Right), fSR)
-      If i < Me.Children.Max Then 
-        Try fSL = Me.Children[i + 1]._BoxShadow._LeftMargin
-        fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Left), fSL)
-      Endif
-      
+      fMaxSpc = Max(fspc, hchild.Margin._Right)
+      If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Left)
       fWidth += hChildHints.Width + fMaxSpc
       If fHeight < hChildHints.Height Then fHeight = hChildHints.Height
       'Si l'enfant n'est pas finit alors moi non plus (:-P)
@@ -254,7 +246,6 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   Dim i, j As Integer
   Dim bExitLoop As Boolean
   Dim fMaxSpc As Float
-  Dim fST, fSB As Float
   'Dim IndexKey As String = Str(Me.Id) &/ Str(DataIndex)
   'If Me.Tag = "**" Then Stop
   'D'abord utiliser la méthode du controle pour définir la taille
@@ -275,14 +266,8 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
         'On ajoute la marge supérieur du premier objet fixe
         If $fFixedSize = 0 Then $fFixedSize = hchild.Margin._Top 
         htmpInts = hChild._GetSizeHints(AvailableW, AvailableH, AvailableW, AvailableH, DataIndex)
-        
-        Try fSB = hchild._BoxShadow._BottomMargin
-        fMaxSpc = Max(Max(hchild.Margin._Bottom, fspc), fSB)
-        If i < Me.Children.Max Then 
-          Try fST = Me.Children[i + 1]._BoxShadow._TopMargin
-          fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Top), fST)
-        Endif
-        
+        fMaxSpc = Max(hchild.Margin._Bottom, fspc)
+        If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
         $fFixedSize += htmpInts.Height + fMaxSpc
       Endif
     Next
@@ -314,16 +299,13 @@ Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
         htmpInts = hChild._GetSizeHints(AvailableW, AvailableH - fHeight, AvailableW, AvailableH, j)
         'Si l'enfant n'est pas terminé alors moi non plus
         If htmpInts.NotFinished Then hSizeInt.NotFinished = True
-        Try fSB = hchild._BoxShadow._BottomMargin
-        fMaxSpc = Max(Max(fspc, hchild.Margin._Bottom), fSB)
+        fMaxSpc = Max(fspc, hchild.Margin._Bottom)
         If hchild._Count <= 0 Or If j = hchild._Count - 1 Then
           If i < Me.Children.Max Then 
-            Try fST = Me.Children[i + 1]._BoxShadow._TopMargin
-            fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Top), fST)
+            fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
           Endif
         Else
-          Try fST = hChild._BoxShadow._TopMargin
-          fMaxSpc = Max(Max(fMaxSpc, hchild.Margin._Top), fST)
+          fMaxSpc = Max(fMaxSpc, hchild.Margin._Top)
         Endif
         
         'on ajoute la hauteur aux besoins
@@ -400,7 +382,7 @@ Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, Con
   'If Me.Tag = "*" Then Stop
   'Print "Geometry " & Object.Type(Me)
   'If ContPage > 0 Then Return
-  
+
   Me._Index = TCont.Index
   
   If Me._CurItem > Me.Children.max Then
@@ -484,11 +466,12 @@ Private Function SetNChildGeometry(X As Float, Y As Float, W As Float, H As Floa
   Dim J As Integer
   
   If Me.Children.Count = 0 Then Return
-  
+
   X = Me.Padding._Left + Me.Border._Left
   Y = Me.Padding._Top + Me.Border._Top
   W = W - Me.Padding._Left - Me.Padding._Right - Me.Border._Left - Me.Border._Right
   H = H - Me.Padding._Top - Me.Padding._Bottom - Me.Border._Top - Me.Border._Bottom
+  
   
   For Each hChild In Me.Children
     
@@ -539,7 +522,6 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim hTItem As TControl
   Dim fMaxSpc As Float
   Dim fChildX, fChildY, fChildW, fChildH As Float
-  Dim fSL, fSR, fST, fSB As Float
   'Initialisation des variables
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
@@ -568,12 +550,8 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     
     'Si l'élément n'est pas ignoré
     If Not hChild.Ignore Then
-      Try fSR = hChild._BoxShadow._RightMargin
-      fMaxSpc = Max(Max(fspc, hchild.Margin._Right), fSR)
-      If i < Me.Children.Max Then 
-        Try fSL = Me.Children[i + 1]._BoxShadow._LeftMargin
-        fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Left), fSL)
-      Endif
+      fMaxSpc = Max(fspc, hchild.Margin._Right)
+      If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Left)
       
       TW = TW - hChildHints.Width - fMaxSpc
       'Si il est étendu on en tient compte
@@ -625,19 +603,12 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     Endif
     'oChild._Index = hTItem.Index
     If Not oChild.Ignore Then
-      Try fST = ochild._BoxShadow._TopMargin
-      Try fSB = ochild._BoxShadow?_BottomMargin
-      fChildH = H - ochild.Margin._Top - oChild.Margin._Bottom - fST - fSB
-      fChildY = Y + oChild.Margin._Top + fST
+      fChildH = H - ochild.Margin._Top - oChild.Margin._Bottom
+      fChildY = Y + oChild.Margin._Top
       hTItem._SetGeometry(fTmpX, fChildY, fWidth, fChildH)
       oChild._SetChildGeometry(fTmpX, fChildY, fWidth, fChildH, ContPage, hTItem, bInFixed Or Me.Fixed)
-      
-      Try fSR = oChild._BoxShadow._RightMargin
-      fMaxSpc = Max(Max(fspc, ochild.Margin._Right), fSR)
-      If i < aPageItems.Max Then 
-        Try fSL = aPageItems[i + 1]._BoxShadow._LeftMargin
-        fMaxSpc = Max(Max(fMaxSpc, aPageItems[i + 1].Ctrl.Margin._Left), fSL)
-      Endif
+      fMaxSpc = Max(fspc, ochild.Margin._Right)
+      If i < aPageItems.Max Then fMaxSpc = Max(fMaxSpc, aPageItems[i + 1].Ctrl.Margin._Left)
       fTmpX += fWidth + fMaxspc
     Else
       fX = X + IIf(oChild._RelativeLeft, W * oChild._Left / 100, oChild._Left)
@@ -758,7 +729,6 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim fPrevTH As Float
   Dim cChildFixe As New Collection
   Dim iVal As Integer
-  Dim fST, fSB, fSL, fSR As Float
   'Dim IndexKey As String = Str(Me.Id) &/ Str(TCont.Index)
   
   'Détermination de la taille d'un espace
@@ -808,12 +778,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       'Si le fixe suivant n'est pas définit alors on utlise l'objet suivant
       If Not iVal Then iVal = i + 1
       
-      Try fSB = hchild._BoxShadow._BottomMargin
-      fMaxSpc = Max(Max(hchild.Margin._Bottom, fspc), fSB)
-      If i < Me.Children.Max Then 
-        Try fST = Me.Children[i + 1]._BoxShadow._TopMargin
-        fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Top), fST)
-      Endif
+      fMaxSpc = Max(hchild.Margin._Bottom, fspc)
+      If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
       'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
       'le spacing, et la marge haute de l'objet suivant.)
       
@@ -862,11 +828,12 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
     Do
       'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
       'le spacing, et la marge haute de l'objet suivant.)
-      Try fSB = hchild._BoxShadow._BottomMargin
-      fMaxSpc = Max(Max(hchild.Margin._Bottom, fspc), fSB)
-      If i < Me.Children.Max Then 
-        Try fST = Me.Children[i + 1]._BoxShadow._TopMargin
-        fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Top), fST)
+      fMaxSpc = Max(hchild.Margin._Bottom, fspc)
+      'Définit l'espace en fonction du contexte
+      If hchild._Count > 0 And If j <= hchild._count - 1 Then
+        fMaxSpc = Max(fMaxSpc, Me.Children[i].Margin._Top)
+      Else
+        If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
       Endif
       'If Me.Tag = "**" And j = 3 Then Stop
       'If TCont.Index = 2 Then Stop
@@ -967,12 +934,8 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   For i = Max(Me._CurItem, 0) To Me.Children.Max
     hchild = Me.Children[i]
     If hchild.Fixed Then
-      Try fSB = hchild._BoxShadow._BottomMargin
-      fMaxSpc = Max(Max(hchild.Margin._Bottom, fspc), fSB)
-      If i < Me.Children.Max Then 
-        Try fST = Me.Children[i + 1]._BoxShadow._TopMargin
-        fMaxSpc = Max(Max(fMaxSpc, Me.Children[i + 1].Margin._Top), fST)
-      Endif
+      fMaxSpc = Max(hchild.Margin._Bottom, fspc)
+      If i < Me.Children.Max Then fMaxSpc = Max(fMaxSpc, Me.Children[i + 1].Margin._Top)
       hChildHints = hchild._GetSizeHints(W, fPrevTH, W, H, iPreIndex)
       'on génère l'objet virtuel
       hTItem = New TControl
@@ -1044,22 +1007,16 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       oChild._SetChildGeometry(fX, fY, hTItem.SizeHint.Width, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
       
     Else
-      Try fSL = ochild._BoxShadow._LeftMargin
-      Try fSR = oChild._BoxShadow._RightMargin
-      fChildX = X + oChild.Margin._Left + fSL
-      fChildW = W - oChild.Margin._Left - oChild.Margin._Right - fSL - fSR
+      fChildX = X + oChild.Margin._Left
+      fChildW = W - oChild.Margin._Left - oChild.Margin._Right
       'Fixer la position de l'objet
       hTItem._SetGeometry(fChildX, fTmpY, fChildW, ftmpHeight)
       'L'objet flottant peut être un conteneur il faut donc demander aussi a ses enfants de s 'organiser
       oChild._SetChildGeometry(fChildX, fTmpY, fChildW, ftmpHeight, ContPage, hTItem, bInFixed Or Me.Fixed)
       'Calcul de l'espace interobjet (c'est a dire la plus grande valeur entre la marge basse de l'objet,
       'le spacing, et la marge haute de l'objet suivant.)
-      Try fSB = oChild._BoxShadow._BottomMargin
-      fMaxSpc = Max(Max(ochild.Margin._Bottom, fspc), fSB)
-      If i < aPageItems.Max Then 
-        Try fST = aPageItems[i + 1].Ctrl._BoxShadow._TopMargin
-        fMaxSpc = Max(Max(fMaxSpc, aPageItems[i + 1].Ctrl.Margin._Top), fST)
-      Endif
+      fMaxSpc = Max(ochild.Margin._Bottom, fspc)
+      If i < aPageItems.Max Then fMaxSpc = Max(fMaxSpc, aPageItems[i + 1].Ctrl.Margin._Top)
       'on incrémente la position verticale de l'objet
       'pour définir sa place sur la page relativement aux autres éléments
       fTmpY += ftmpHeight + fMaxSpc
