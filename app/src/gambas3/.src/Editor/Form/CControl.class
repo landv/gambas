@@ -177,7 +177,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
     Case "picturebox"
       hCtrl = New PictureBox(hParent)
-      hCtrl.Picture = Picture["img/logo/logo-32.png"]
+      hCtrl.Picture = Picture["img/control/picturebox.png"]
 
     Case "treeview"
       hCtrl = New TreeView(hParent)
@@ -914,7 +914,11 @@ Public Sub UpdateName()
 
       If Unknown Then 
         If Not IsMultiContainer() Then
-          If Not HasText() Then Try Control.Text = Name
+          If Not HasText() Then 
+            Try Control.Text = Name
+          Else
+            Try Control.Text = $cValue["Text"]
+          Endif
         Endif
         Control.Refresh
       Endif

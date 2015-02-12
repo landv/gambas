@@ -547,6 +547,7 @@ Public Sub Load()
   Dim sHelp As String
   Dim sElt As String
   Dim cCycle As Collection
+  Dim I As Integer
   
   If $bLoaded Then Return
 
@@ -600,6 +601,11 @@ Public Sub Load()
     Print "<pre>Cannot load list file: " & File.SetExt(sPath, "list") & "\n</pre>"
     Return
   Endif
+  
+  For I = 0 To aList.Max
+    sClass = aList[I]
+    If Right(sClass) = "!" Then aList[I] = Left(sClass, -1)
+  Next
     
   For Each sClass In aList
     If sClass Then cClass[sClass] = True
