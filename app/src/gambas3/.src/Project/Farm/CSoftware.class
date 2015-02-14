@@ -404,6 +404,10 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
     
   Endif
 
+  If LCase(Vendor) <> "example" And If Tags.Exist("example", gb.IgnoreCase) Then
+    Link ".." &/ File.Name(sSrcDir) &/ sName To File.SetName(sSrcDir, "example") &/ sName
+  Endif
+
   Inc InstallAge
   Start
   Return
@@ -438,12 +442,23 @@ End
 
 Public Sub Uninstall() As String
 
+  Dim sDir As String
+  
   If Not Me.IsInstalled() Then Return
   
   Inc Application.Busy
-  Exec ["rm", "-rf", GetInstalledDir()] Wait
+  
+  sDir = GetInstalledDir()
+  Exec ["rm", "-rf", sDir] Wait
+  
   Try Kill Desktop.DataDir &/ "gambas3/bin" &/ LCase(Vendor) &/ Name & ".gambas"
+  
   Try Kill Desktop.DataDir &/ "applications" &/ "gambas-" & LCase(Vendor) & "-" & Name & ".desktop"
+  
+  If LCase(Vendor) <> "example" Then
+    Try Kill File.SetName(File.Dir(sDir), "example") &/ Name
+  Endif
+
   Dec Application.Busy
   
   Inc InstallAge

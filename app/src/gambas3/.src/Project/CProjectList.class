@@ -64,15 +64,19 @@ Private Sub GetExamples() As String[]
   Dim sFile As String
   Dim aList As New String[]
   Dim sDir As String
+  Dim hStat As Stat
 
   sDir = Desktop.DataDir &/ "gambas3/src/example"
   If Not IsDir(sDir) Then Return aList
 
   For Each sFile In Dir(sDir)
     If Left(sFile) = "." Then Continue
-    'IF Exist(EXAMPLES_DIR &/ sParent &/ sFile &/ ".project") THEN
-    aList.Add(sDir &/ sFile)
-    'ENDIF
+    hStat = Stat(sDir &/ sFile)
+    If hStat.Link Then
+      aList.Add(Project.GetAbsoluteLink(sDir &/ sFile, hStat.Link))
+    Else
+      aList.Add(sDir &/ sFile)
+    Endif
   Next
 
   aList.Sort(gb.Natural)

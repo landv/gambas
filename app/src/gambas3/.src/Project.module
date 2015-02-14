@@ -2693,7 +2693,7 @@ Public Sub SaveAs()
 
 End
 
-Private Sub GetAbsoluteLink(sPath As String, sLink As String) As String
+Public Sub GetAbsoluteLink(sPath As String, sLink As String) As String
 
   Dim aPath As String[]
   Dim iInd As Integer
