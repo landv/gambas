@@ -159,7 +159,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
     sSym = $aSym[Row]
     
     If Right(sSym) = ":" Then 
-      gvwExpr.Data.Background = Color.ButtonBackground
+      gvwExpr.Data.Background = Color.LightForeground
       Return 
     Endif
     
@@ -196,12 +196,6 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
       gvwExpr.Data.Text = Mid$(gvwExpr.Data.Text, 2)
       gvwExpr.Data.Background = Color.Lighter(Color.Red)
     Endif 
-
-  ' ELSE  
-  '   
-  '   IF NOT $cOldVal.Exist(Row) AND $cOldVal.count > 0 THEN 
-  '     gvwExpr.Data.Background = Color.Yellow
-  '   ENDIF 
 
   Endif 
   
@@ -257,12 +251,41 @@ Private Sub OpenExpr(sExpr As String, Optional sRealExpr As String)
   
 End
 
+Private Sub GetCurrentExpr() As String
+
+  Dim sSym As String
+  Dim sText As String
+  
+  If gvwExpr.Row < 0 Then Return
+  
+  If Not $bArray And If Not $bCollection Then
+    sSym = $aSym[gvwExpr.Row]
+    If Left(sSym) = ":" Then Return
+  Endif
+
+  sText = gvwExpr[gvwExpr.Row, 0].Text
+  If Not sText Then Return
+  
+  If $bArray Or $bCollection
+    sText = $sExpr & "[" & sText & "]"
+  Else 
+    If Left($sClass) = "." Or If Not $sRealClass Then
+      sText = $sExpr & "." & sText
+    Else 
+      'sText = $sExpr & "." & sText
+      sText = $sRealClass & "(" & $sExpr & ")." & sText
+    Endif
+  Endif 
+  
+  Return sText
+
+End
 
 Public Sub gvwExpr_Activate()
 
   Dim sText As String
-  Dim sVal As String
   Dim sSym As String
+  Dim sVal As String
 
   If gvwExpr.Row >= 0 Then
   
@@ -271,22 +294,12 @@ Public Sub gvwExpr_Activate()
       If Left(sSym) = ":" Then Return
     Endif
 
-    sText = gvwExpr[gvwExpr.Row, 0].Text    
+    sText = GetCurrentExpr()
     If Not sText Then Return
+
     sVal = gvwExpr[gvwExpr.Row, 1].Text
     
     If Left(sVal) = "(" Then
-
-      If $bArray Or $bCollection
-        sText = $sExpr & "[" & sText & "]"
-      Else 
-        If Left($sClass) = "." Or If Not $sRealClass Then
-          sText = $sExpr & "." & sText
-        Else 
-          'sText = $sExpr & "." & sText
-          sText = $sRealClass & "(" & $sExpr & ")." & sText
-        Endif
-      Endif 
       
       With gvwExpr[gvwExpr.Row, 1]
         Design.SetBalloon(gvwExpr, .X + .W / 2, .Y + .H / 2)
@@ -735,16 +748,21 @@ Static Public Sub ReadConfig()
   
 End
 
-
-Public Sub gvwExpr_Select()
+Private Sub UpdateView()
 
   Balloon.Hide(gvwExpr)
 
 End
 
+Public Sub gvwExpr_Select()
+
+  UpdateView
+
+End
+
 Public Sub gvwExpr_Scroll()
 
-  Balloon.Hide(gvwExpr)
+  UpdateView
 
 End
 
@@ -782,5 +800,40 @@ Public Sub gvwExpr_Save(Row As Integer, (Column) As Integer, Value As String)
   Endif
   
   gvwExpr.Cancel
+  
+End
+
+' Public Sub gvwExpr_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+' 
+'   If Column = 1 And If Row = gvwExpr.Row Then
+'     
+'     Paint.DrawPicture(Picture["img/16/watch.png"], X + Width - 16, Y + (Height - 16) / 2)
+'     
+'   Endif
+' 
+' End
+
+Public Sub gvwExpr_Menu()
+
+  If gvwExpr.Row < 0 Then Return
+  If Not GetCurrentExpr() Then Return
+  
+  mnuPopup.Popup
+
+End
+
+Public Sub mnuEdit_Click()
+  
+  gvwExpr_Activate
+  
+End
+
+Public Sub mnuWatch_Click()
+
+  Dim sExpr As String
+  
+  sExpr = GetCurrentExpr()
+  If Not sExpr Then Return
+  FDebugInfo.AddWatch(sExpr)
   
 End

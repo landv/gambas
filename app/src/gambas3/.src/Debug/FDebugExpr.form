@@ -1,11 +1,28 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,30,30)
+  MoveScaled(0,0,32,40)
   Foreground = &H000000&
   Icon = Picture["icon:/small/watch"]
   Utility = True
   Arrangement = Arrange.Vertical
+  { mnuPopup Menu
+    Visible = False
+    { mnuEdit Menu
+      Text = ("Edit")
+      Picture = Picture["icon:/small/edit"]
+    }
+    { mnuWatch Menu
+      Text = ("Watch")
+      Picture = Picture["img/16/watch.png"]
+    }
+    { Menu1 Menu
+    }
+    { mnuClose Menu
+      Text = ("Cancel")
+      Picture = Picture["icon:/small/cancel"]
+    }
+  }
   { HBox1 HBox
     MoveScaled(1,1,27,4)
     Background = Color.TextBackground
