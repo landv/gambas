@@ -40,7 +40,7 @@ Public Sub _PaintBefore((Page) As Integer, (X) As Float, (Y) As Float, (hControl
   Dim TL1, TL2, TR1, TR2, BR1, BR2, BL1, BL2 As Float
   ' If Me.Tag = "**" Then Stop
   'If Me.tag = "*" Then Stop
-  
+  'Return
   X1 = (x + hControl.RealLeft)
   Y1 = (y + hControl.RealTop)
   W = hControl.RealWidth
@@ -176,7 +176,7 @@ Public Sub _PaintAfter((Page) As Integer, (X) As Float, (Y) As Float, (hControl)
   'Dim fWidth As Float
   
   Dim fTopWidth, fBottomWidth, fLeftWidth, fRighWidth As Float
-  
+  'Return
   'Fin du clipping
   paint.Restore
   

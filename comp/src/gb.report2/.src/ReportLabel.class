@@ -47,7 +47,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
       Try $sText = Format($sText, $sFormat)
     Endif
     
-    If Not IsNull(Me.Font) Then Paint.Font = Me.Font
+    Paint.Font = Me.Font
     'If sText = "Gambas" Then Stop
     If $fAngle = 0 Then
       hRect = Paint.TextSize(sText)
@@ -109,10 +109,8 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Endif
   
   'Set the Font if it is initialized
-  If Not IsNull(Me.Font) Then
+  
     Paint.Font = Me.Font
-    
-  Endif
   
   If $fAngle = 0.0 Then
     

@@ -19,6 +19,7 @@ Public Name As String
 Static Public _ObjectFromId As New Collection
 Static Public _iCurPagePos As Integer
 Static Private $iLastId As Integer
+Static Private $aFont As String[] = ["DejaVu Serif", "Liberation Serif", "Bitstream Vera Serif", "Serif", "Arial"]
 
 Property Read Id As Integer
 Property Read Parent As ReportContainer
@@ -265,7 +266,32 @@ End
 
 Private Function Font_Read() As Font
   
-  Return $hFont
+  Dim hFont As Font 
+  Dim sFont As String
+  Dim s As String
+  
+  If Not $hFont Then
+    If $iParentId = -1 Then 
+      For Each s In $aFont
+        If Fonts.Exist(s) Then
+          hFont = New Font
+          hFont.Name = s
+          Break
+        Endif
+      Next
+      If hFont Then
+        hFont.Size = 12
+      Else
+        hFont = Paint.Font.Copy
+      Endif
+      
+    Else
+      hFont = _ObjectFromId[$iParentId].font
+    Endif
+    Return hFont
+  Else
+    Return $hFont
+  Endif
   
 End
 
@@ -342,7 +368,6 @@ Private Function _RelativeHeight_Read() As Boolean
   
 End
 
-
 ''Convert recursively string values to unified values in cm
 Public Sub _NormalizeUnits()
   
@@ -397,7 +422,6 @@ Public Sub _NormalizeUnits()
   hSizeParse = New TSizeParse($hMargin.Bottom, True)
   $hMargin._Bottom = hSizeParse.GetValue()
   
-  
   '
   
 End
@@ -441,7 +465,7 @@ End
 
 Public Sub _Reset()
   
-  Me._DataIndex.Clear
+  Me._DataIndex = 0
   
 End
 
@@ -511,9 +535,6 @@ Public Function _GetActualBrush(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 
   
 End
 
-
-
-
 Private Sub _ReportId_Write(Value As Integer)
   
   $iReportId = Value
@@ -579,6 +600,7 @@ Private Sub _DataIndex_Write(Value As Integer)
   'If Me.Tag = "Boite 2" And Value = 0 Then Stop
   'If Me.Report.$iCurPage = 0 Then Print "DataIndex: " & value
   'If Value = 0 Then Stop
+  
   $iDataindex = Value
   'Stop
   'Print "_DataIndex " & Me.Tag & "  = " & $iDataindex
@@ -602,25 +624,25 @@ Public Sub _Free()
 End
 
 Private Function Margin_Read() As ReportMargin
-
+  
   Return $hMargin
-
+  
 End
 
 Private Sub Margin_Write(Value As ReportMargin)
-
+  
   $hMargin = Value
-
+  
 End
 
 Public Sub Raise()
   
-   _ObjectFromId[$iParentId]._Raise(Me)
+  _ObjectFromId[$iParentId]._Raise(Me)
   
 End
 
 Public Sub Lower()
   
-   _ObjectFromId[$iParentId]._Lower(Me)
+  _ObjectFromId[$iParentId]._Lower(Me)
   
 End

@@ -5,9 +5,8 @@ ReportContainer=[560,822]
 Count=0
 
 [DebugWindow]
-Count=2
+Count=1
 DebugWindow[1]="Me.Children[i + 1]"
-DebugWindow[2]="Me.BoxShadow"
 
 [DebugWindow/$aSections]
 Geometry=[-55,269,210,210]
@@ -17,6 +16,9 @@ Geometry=[354,0,210,210]
 
 [DebugWindow/$aSections[0].Ctrl]
 Geometry=[872,411,274,210]
+
+[DebugWindow/$hFont]
+Geometry=[0,0,210,210]
 
 [DebugWindow/$hReport]
 Geometry=[554,335,758,561]
@@ -141,12 +143,12 @@ Geometry=[28,264,210,210]
 Geometry=[-7,-10,210,210]
 
 [FCommit]
-LastCommit="[GB.REPORT2]\n* BUG: Again\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .list\nM       .src/ReportLine.class\nM       .src/Tests/Report51.class"
+LastCommit="[GB.REPORT2]\n* OPT: Layout does not take account of BoxShadows margins.\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .src/ReportContainer.class\nM       .src/ReportControl.class\nM       .src/ReportFrame.class\nM       .src/Types/BoxShadow/ReportBoxShadow.class"
 
 [OpenFile]
-Active=26
+Active=33
 File[1]=".src/ReportSvgImage.class:62.2"
-Count=27
+Count=34
 File[2]=".src/ReportImage.class:86.0"
 File[3]=".src/ReportGridView.class:8.11"
 File[4]=".src/Tests/FMain.form"
@@ -156,7 +158,7 @@ File[7]=".src/ReportLabel.class:9.0"
 File[8]=".src/ReportPanel.class:14.34"
 File[9]=".src/Viewer/FPreview.class:63.26"
 File[10]=".src/Viewer/ReportView.class:29.2"
-File[11]=".src/ReportContainer.class:1046.0"
+File[11]=".src/ReportContainer.class:1045.3"
 File[12]=".src/Types/TSizeParse.class:49.2"
 File[13]=".src/Optional/Align.class:0.0"
 File[14]=".src/Optional/Line.class:0.0"
@@ -165,14 +167,21 @@ File[16]=".src/Types/TControl.class:14.17"
 File[17]=".src/ReportLine.class:44.0"
 File[18]=".src/Tools/MUtil.module:12.18"
 File[19]=".src/Types/ReportGridView/_ReportGridView_Rows.class:109.0"
-File[20]=".src/ReportFrame.class:374.0"
+File[20]=".src/ReportFrame.class:368.3"
 File[21]=".src/Viewer/FPreview.form"
-File[22]=".src/Types/BoxShadow/ReportBoxShadow.class:245.36"
+File[22]=".src/Types/BoxShadow/ReportBoxShadow.class:204.0"
 File[23]=".src/Types/BoxShadow/_ReportBoxShadow.class:11.0"
-File[24]=".src/ReportControl.class:21.28"
+File[24]=".src/ReportControl.class:438.2"
 File[25]=".src/ReportVBox.class:0.0"
 File[26]=".src/Tests/Report3.report"
 File[27]=".src/Tests/Report3.class:17.28"
+File[28]="capture12.png"
+File[29]=".src/Tests/Report1.report"
+File[30]=".src/Tests/Report5.report"
+File[31]=".connection/Connection2.connection"
+File[32]=".src/Tests/Report5.class:2.0"
+File[33]=".src/Tests/Report51.class:173.6"
+File[34]=".src/Tests/Report51.report"
 
 [VersionControl]
 User="gambix"

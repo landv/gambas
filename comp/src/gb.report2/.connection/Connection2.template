@@ -1,0 +1,398 @@
+# Gambas Database Template File 3.0
+{ Table
+  Name="CadParc"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_cadastre"
+    Type=db.String
+    Length=12
+  }
+  { Field
+    Name="id_parcelle"
+    Type=db.Integer
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+  { Index 
+    Name="UX_cp"
+    Unique=True
+    Fields=["id_cadastre","id_parcelle"]
+  }
+}
+{ Table
+  Name="__gb_metadata_v2"
+  PrimaryKey=["sTableName","iType","sKey"]
+  { Field
+    Name="sTableName"
+    Type=db.String
+  }
+  { Field
+    Name="iType"
+    Type=db.Integer
+  }
+  { Field
+    Name="sKey"
+    Type=db.String
+  }
+  { Field
+    Name="sValue"
+    Type=db.String
+  }
+}
+{ Table
+  Name="cadastre"
+  PrimaryKey=["id_cadastre"]
+  { Field
+    Name="id_cadastre"
+    Type=db.String
+    Length=12
+  }
+  { Field
+    Name="prefixe"
+    Type=db.String
+    Length=3
+  }
+  { Field
+    Name="reference"
+    Type=db.String
+    Length=8
+  }
+  { Field
+    Name="lieudit"
+    Type=db.String
+    Length=64
+  }
+  { Field
+    Name="id_commune"
+    Type=db.String
+    Length=5
+  }
+  { Field
+    Name="id_individu"
+    Type=db.String
+    Length=10
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+  { Field
+    Name="fairevaloir"
+    Type=db.String
+    Length=1
+  }
+  { Field
+    Name="droit1"
+    Type=db.Integer
+  }
+  { Field
+    Name="droit2"
+    Type=db.Integer
+  }
+  { Field
+    Name="droit3"
+    Type=db.Integer
+  }
+  { Field
+    Name="modifie"
+    Type=db.Date
+  }
+  { Field
+    Name="ajoute"
+    Type=db.Date
+  }
+}
+{ Table
+  Name="cadastre3"
+  PrimaryKey=["id_cadastre"]
+  { Field
+    Name="id_cadastre"
+    Type=db.Serial
+  }
+  { Field
+    Name="prefixe"
+    Type=db.Integer
+  }
+  { Field
+    Name="reference"
+    Type=db.String
+    Length=8
+  }
+  { Field
+    Name="lieudit"
+    Type=db.String
+  }
+  { Field
+    Name="id_commune"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_individu"
+    Type=db.Integer
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+  { Field
+    Name="fairevaloir"
+    Type=db.String
+    Length=1
+  }
+  { Field
+    Name="modifie"
+    Type=db.Date
+  }
+  { Field
+    Name="ajoute"
+    Type=db.Date
+  }
+}
+{ Table
+  Name="cadastre_old"
+  PrimaryKey=["id_cadastre"]
+  { Field
+    Name="id_cadastre"
+    Type=db.String
+    Length=12
+  }
+  { Field
+    Name="prefixe"
+    Type=db.String
+    Length=3
+  }
+  { Field
+    Name="reference"
+    Type=db.String
+    Length=8
+  }
+  { Field
+    Name="lieudit"
+    Type=db.String
+    Length=64
+  }
+  { Field
+    Name="id_commune"
+    Type=db.String
+    Length=5
+  }
+  { Field
+    Name="id_individu"
+    Type=db.String
+    Length=10
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+  { Field
+    Name="fairevaloir"
+    Type=db.String
+    Length=1
+  }
+  { Field
+    Name="droit1"
+    Type=db.Integer
+  }
+  { Field
+    Name="droit2"
+    Type=db.Integer
+  }
+  { Field
+    Name="droit3"
+    Type=db.Integer
+  }
+  { Field
+    Name="modifie"
+    Type=db.Date
+  }
+  { Field
+    Name="ajoute"
+    Type=db.Date
+  }
+}
+{ Table
+  Name="caddroit"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_cadastre"
+    Type=db.Integer
+  }
+  { Field
+    Name="typedroit"
+    Type=db.String
+    Length=5
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="commune"
+  PrimaryKey=["id_commune"]
+  { Field
+    Name="id_commune"
+    Type=db.Integer
+  }
+  { Field
+    Name="nom"
+    Type=db.String
+  }
+}
+{ Table
+  Name="culture"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.Serial
+  }
+  { Field
+    Name="id_parcelle"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_cadastre"
+    Type=db.String
+    Length=12
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+  { Field
+    Name="campagne"
+    Type=db.String
+    Length=8
+  }
+  { Field
+    Name="typeculture"
+    Type=db.String
+    Length=4
+  }
+  { Field
+    Name="informations"
+    Type=db.String
+  }
+  { Field
+    Name="creation"
+    Type=db.Date
+  }
+  { Field
+    Name="modification"
+    Type=db.Date
+  }
+}
+{ Table
+  Name="individu"
+  PrimaryKey=["id_individu"]
+  { Field
+    Name="id_individu"
+    Type=db.Serial
+  }
+  { Field
+    Name="etat"
+    Type=db.Integer
+  }
+  { Field
+    Name="nom"
+    Type=db.String
+  }
+  { Field
+    Name="prenom"
+    Type=db.String
+  }
+  { Field
+    Name="prenomsup"
+    Type=db.String
+  }
+  { Field
+    Name="id_adresse"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="parcelles"
+  PrimaryKey=["id_parcelle"]
+  { Field
+    Name="id_parcelle"
+    Type=db.Integer
+  }
+  { Field
+    Name="maj"
+    Type=db.Date
+  }
+  { Field
+    Name="idshape"
+    Type=db.Integer
+  }
+  { Field
+    Name="ecartement"
+    Type=db.Integer
+    Default=300
+  }
+  { Field
+    Name="entrepied"
+    Type=db.Integer
+    Default=110
+  }
+  { Field
+    Name="nom"
+    Type=db.String
+    Length=64
+  }
+  { Field
+    Name="surface"
+    Type=db.Integer
+  }
+  { Field
+    Name="fairevaloir"
+    Type=db.String
+    Length=2
+  }
+  { Field
+    Name="culture"
+    Type=db.Integer
+  }
+  { Field
+    Name="id_secteur"
+    Type=db.String
+    Length=5
+  }
+  { Field
+    Name="ordre"
+    Type=db.Integer
+  }
+  { Field
+    Name="idcultinfo"
+    Type=db.Integer
+  }
+}
+{ Table
+  Name="secteurs"
+  PrimaryKey=["id_secteur"]
+  { Field
+    Name="id_secteur"
+    Type=db.String
+    Length=5
+  }
+  { Field
+    Name="ordre"
+    Type=db.Integer
+  }
+  { Field
+    Name="nom"
+    Type=db.String
+    Length=32
+  }
+}
