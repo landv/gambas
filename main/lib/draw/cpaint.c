@@ -252,6 +252,8 @@ BEGIN_METHOD(PaintExtents_Merge, GB_OBJECT extents)
 	if (extents->ext.x2 > XTHIS->ext.x2) XTHIS->ext.x2 = extents->ext.x2;
 	if (extents->ext.y2 > XTHIS->ext.y2) XTHIS->ext.y2 = extents->ext.y2;
 
+	GB.ReturnObject(XTHIS);
+
 END_METHOD
 
 GB_DESC PaintExtentsDesc[] = 

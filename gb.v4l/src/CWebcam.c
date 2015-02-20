@@ -1415,7 +1415,7 @@ BEGIN_METHOD(VideoDevice_Save,GB_STRING File; GB_INTEGER Quality;)
 
 	if (!File)
 	{
-		GB.Error("Unable to open file for writting");
+		GB.Error("Unable to open file for writing");
 		return;
 	}
 
@@ -1448,7 +1448,7 @@ BEGIN_METHOD(VideoDevice_Save,GB_STRING File; GB_INTEGER Quality;)
 	fd=fopen(File, "w");
 	if (!fd)
 	{
-		GB.Error("Unable to open file for writting");
+		GB.Error("Unable to open file for writing");
 		return;
 	}
 
