@@ -25,9 +25,135 @@
 #include "gapplication.h"
 #include "gclipboard.h"
 #include "gdesktop.h"
+#include "gkey.h"
 #include "gtextarea.h"
 
 #ifdef GTK3
+
+struct _GtkTextViewPrivate
+{
+  void *layout;
+  GtkTextBuffer *buffer;
+
+  guint blink_time;  /* time in msec the cursor has blinked since last user event */
+  guint im_spot_idle;
+  gchar *im_module;
+  GdkDevice *grab_device;
+  GdkDevice *dnd_device;
+
+  gulong selection_drag_handler;
+  void *text_handle;
+  GtkWidget *selection_bubble;
+  guint selection_bubble_timeout_id;
+
+  GtkWidget *magnifier_popover;
+  GtkWidget *magnifier;
+
+  void *text_window;
+  void *left_window;
+  void *right_window;
+  void *top_window;
+  void *bottom_window;
+
+  GtkAdjustment *hadjustment;
+  GtkAdjustment *vadjustment;
+
+  gint xoffset;         /* Offsets between widget coordinates and buffer coordinates */
+  gint yoffset;
+  gint width;           /* Width and height of the buffer */
+  gint height;
+
+  /* This is used to monitor the overall size request
+   * and decide whether we need to queue resizes when
+   * the buffer content changes.
+   *
+   * FIXME: This could be done in a simpler way by
+   * consulting the above width/height of the buffer + some
+   * padding values, however all of this request code needs
+   * to be changed to use GtkWidget     Iface and deserves
+   * more attention.
+   */
+  GtkRequisition cached_size_request;
+
+  /* The virtual cursor position is normally the same as the
+   * actual (strong) cursor position, except in two circumstances:
+   *
+   * a) When the cursor is moved vertically with the keyboard
+   * b) When the text view is scrolled with the keyboard
+   *
+   * In case a), virtual_cursor_x is preserved, but not virtual_cursor_y
+   * In case b), both virtual_cursor_x and virtual_cursor_y are preserved.
+   */
+  gint virtual_cursor_x;   /* -1 means use actual cursor position */
+  gint virtual_cursor_y;   /* -1 means use actual cursor position */
+
+  GtkTextMark *first_para_mark; /* Mark at the beginning of the first onscreen paragraph */
+  gint first_para_pixels;       /* Offset of top of screen in the first onscreen paragraph */
+
+  guint blink_timeout;
+  guint scroll_timeout;
+
+  guint first_validate_idle;        /* Idle to revalidate onscreen portion, runs before resize */
+  guint incremental_validate_idle;  /* Idle to revalidate offscreen portions, runs after redraw */
+
+  gint pending_place_cursor_button;
+
+  GtkTextMark *dnd_mark;
+
+  GtkIMContext *im_context;
+  GtkWidget *popup_menu;
+
+  gint drag_start_x;
+  gint drag_start_y;
+
+  GSList *children;
+
+  void *pending_scroll;
+
+  void *pixel_cache;
+
+  /* Default style settings */
+  gint pixels_above_lines;
+  gint pixels_below_lines;
+  gint pixels_inside_wrap;
+  GtkWrapMode wrap_mode;
+  GtkJustification justify;
+  gint left_margin;
+  gint right_margin;
+  gint indent;
+  PangoTabArray *tabs;
+  guint editable : 1;
+
+  guint overwrite_mode : 1;
+  guint cursor_visible : 1;
+
+  /* if we have reset the IM since the last character entered */
+  guint need_im_reset : 1;
+
+  guint accepts_tab : 1;
+
+  guint width_changed : 1;
+
+  /* debug flag - means that we've validated onscreen since the
+   * last "invalidate" signal from the layout
+   */
+  guint onscreen_validated : 1;
+
+  guint mouse_cursor_obscured : 1;
+
+  guint scroll_after_paste : 1;
+
+  /* GtkScrollablePolicy needs to be checked when
+   * driving the scrollable adjustment values */
+  guint hscroll_policy : 1;
+  guint vscroll_policy : 1;
+  guint cursor_handle_dragged : 1;
+  guint selection_handle_dragged : 1;
+  guint populate_all   : 1;
+
+  guint in_scroll : 1;
+};
+
 #else
 
 // Private structure took from GTK+ 2.10 code. Used for setting the text area cursor.
@@ -197,6 +323,13 @@ static void cb_insert_text(GtkTextBuffer *buf, GtkTextIter *location, gchar *tex
 {
 	gTextAreaAction *action, *prev;
 	
+	gcb_im_commit(NULL, text, NULL);
+	if (gKey::canceled())
+	{
+		g_signal_stop_emission_by_name(G_OBJECT(buf), "insert-text");
+		return;
+	}
+
 	if (!ctrl->_undo_in_progress)
 		ctrl->clearRedoStack();
 	
@@ -319,6 +452,7 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 	_redo_stack = NULL;
 	_not_undoable_action = 0;
 	_undo_in_progress = false;
+	_has_input_method = true;
 	
 	onChange = 0;
 	onCursor = 0;
@@ -869,4 +1003,3 @@ void gTextArea::updateColor()
 	gt_widget_set_color(textview, FALSE, background(), _bg_name, &_bg_default);
 }
 #endif
-

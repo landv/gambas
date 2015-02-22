@@ -247,7 +247,7 @@ public:
 	unsigned _dirty_pos : 1;               // If the position of the widget has changed
 	unsigned _dirty_size : 1;              // If the size of the widget has changed
 	unsigned _no_delete : 1;               // Do not delete on destroy signal
-	unsigned no_input_method : 1;          // No input method management
+	unsigned _has_input_method : 1;        // Has its own input method management
 	unsigned _no_default_mouse_event : 1;  // No default mouse events
 	unsigned _grab : 1;                    // control is currently grabbing mouse and keyboard
 	unsigned _has_border : 1;              // if the control has a border
@@ -269,7 +269,7 @@ public:
 	void updateGeometry();
 	bool mustUpdateCursor() { return mouse() != -1 || have_cursor; }
 	
-	bool noInputMethod() { return no_input_method; }
+	bool hasInputMethod() { return _has_input_method; }
 	
 	GdkCursor *getGdkCursor();
 	virtual void updateBorder();
@@ -291,7 +291,7 @@ public:
 	
 	virtual int minimumHeight();
 	void resolveFont();
-	
+
 	void emitEnterEvent(bool no_leave = false);
 	void emitLeaveEvent();
 	

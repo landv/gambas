@@ -52,11 +52,6 @@ static bool _debug_keypress = false;
 
 static bool _focus_change = false;
 
-static bool check_button(gControl *w)
-{
-	return w && w->isVisible() && w->isEnabled();
-}
-
 static GtkWindowGroup *get_window_group(GtkWidget *widget)
 {
   GtkWidget *toplevel = NULL;
@@ -241,8 +236,8 @@ static void gambas_handle_event(GdkEvent *event)
 
 	if (_debug_keypress && (event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE))
 	{
-		fprintf(stderr, "%s: keyval = %d state = %08X (%08X) is_modifier = %d\n", event->type == GDK_KEY_PRESS ? "GDK_KEY_PRESS" : "GDK_KEY_RELEASE",
-						event->key.keyval, event->key.state, event->key.state & ~GDK_MODIFIER_MASK, event->key.is_modifier);
+		fprintf(stderr, "[%p] %s: keyval = %d state = %08X (%08X) is_modifier = %d hardware = %d send_event = %d for %p\n", event, event->type == GDK_KEY_PRESS ? "GDK_KEY_PRESS" : "GDK_KEY_RELEASE",
+						event->key.keyval, event->key.state, event->key.state & ~GDK_MODIFIER_MASK, event->key.is_modifier, event->key.hardware_keycode, event->key.send_event, widget);
 	}
 
 	/*if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE))
@@ -722,87 +717,13 @@ __FOUND_WIDGET:
 			break;
 
 		case GDK_KEY_PRESS:
+
+			gKey::_last_keypress = event->key.keyval;
+			goto __HANDLE_EVENT;
+
 		case GDK_KEY_RELEASE:
-		{
-			gMainWindow *win;
-			
-			if (!control->_grab && gApplication::activeControl())
-				control = gApplication::activeControl();
 
-			//if (event->type == GDK_KEY_PRESS)
-			//	fprintf(stderr, "GDK_KEY_PRESS: control = %p %s %p %08X\n", control, control ? control->name() : "", event, event->key.state);
-
-			type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
-			
-			if (control)
-			{
-				if (gKey::enable(control, &event->key))
-				{
-					gKey::disable();
-					if (gKey::canceled())
-					{
-						//if (type == gEvent_KeyPress) fprintf(stderr, "canceled\n");
-						goto __RETURN;
-					}
-					else
-					{
-						//if (type == gEvent_KeyPress) fprintf(stderr, "handle\n");
-						goto __HANDLE_EVENT;
-					}
-				}
-
-				if (gKey::mustIgnoreEvent(&event->key))
-				{
-					gKey::disable();
-					goto __HANDLE_EVENT;
-				}
-
-				cancel = gKey::raiseEvent(type, control, NULL);
-				gKey::disable();
-				
-				if (cancel)
-				{
-					//if (type == gEvent_KeyPress) fprintf(stderr, "canceled #2\n");
-					goto __RETURN;
-				}
-				else
-				{
-					//if (type == gEvent_KeyPress) fprintf(stderr, "handle #2\n");
-				}
-
-				win = control->window();
-
-				if (event->key.keyval == GDK_Escape)
-				{
-					if (control->_grab)
-					{
-						gApplication::exitLoop(control);
-						goto __RETURN;
-					}
-
-					if (check_button(win->_cancel))
-					{
-						win->_cancel->setFocus();
-						win->_cancel->animateClick(type == gEvent_KeyRelease);
-						goto __RETURN;
-					}
-				}
-				else if (event->key.keyval == GDK_Return || event->key.keyval == GDK_KP_Enter)
-				{
-					if (check_button(win->_default))
-					{
-						win->_default->setFocus();
-						win->_default->animateClick(type == gEvent_KeyRelease);
-						goto __RETURN;
-					}
-				}
-
-				if (control->_grab)
-					goto __RETURN;
-			}
-
-			break;
-		}
+			goto __HANDLE_EVENT;
 	}
 	
 __HANDLE_EVENT:
@@ -1484,3 +1405,6 @@ void gApplication::quit()
 {
 	_must_quit = true;
 }
+
+
+

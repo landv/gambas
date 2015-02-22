@@ -55,9 +55,13 @@ public:
 
 	static bool _canceled;
 	static GdkEventKey _event;
+	static int _last_keypress;
 
 private:
 	static bool _valid;
 };
+
+void gcb_im_commit(GtkIMContext *context, const char *str, gpointer pointer);
+gboolean gcb_key_event(GtkWidget *widget, GdkEvent *event, gControl *data);
 
 #endif

@@ -23,6 +23,7 @@
 
 #include "widgets.h"
 #include "gapplication.h"
+#include "gkey.h"
 #include "gtextbox.h"
 
 #ifdef GTK3
@@ -133,6 +134,13 @@ static gboolean raise_change(gTextBox *data)
 	return FALSE;
 }
 
+static void cb_before_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
+{
+	gcb_im_commit(NULL, new_text, NULL);
+	if (gKey::canceled())
+		g_signal_stop_emission_by_name (G_OBJECT(editable), "insert-text");
+}
+
 static void cb_change_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
 {
 	data->_changed = false;
@@ -203,13 +211,17 @@ gTextBox::~gTextBox()
 
 void gTextBox::initEntry()
 {
+	_has_input_method = entry != NULL;
+
 	if (!entry)
 		return;
 	
 	// This imitates the QT behaviour, where change signal is raised after the cursor has been moved.
+	g_signal_connect(G_OBJECT(entry), "insert-text", G_CALLBACK(cb_before_insert), (gpointer)this);
 	g_signal_connect_after(G_OBJECT(entry), "insert-text", G_CALLBACK(cb_change_insert), (gpointer)this);
 	g_signal_connect_after(G_OBJECT(entry), "delete-text", G_CALLBACK(cb_change_delete), (gpointer)this);
 	g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(cb_activate), (gpointer)this);
+	//g_signal_connect(getInputMethod(), "commit", G_CALLBACK(gcb_im_commit), (gpointer)this);
 }
 
 char* gTextBox::text()

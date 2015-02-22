@@ -293,7 +293,7 @@ void gControl::initAll(gContainer *parent)
 	_action = false;
 	_dirty_pos = _dirty_size = false;
 	_tracking = false;
-	no_input_method = false;
+	_has_input_method = false;
 	_no_default_mouse_event = false;
 	_proxy = _proxy_for = NULL;
 	_no_tab_focus = false;

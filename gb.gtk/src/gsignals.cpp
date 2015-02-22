@@ -75,6 +75,7 @@ gboolean gcb_focus_out(GtkWidget *widget,GdkEventFocus *event,gControl *data)
 }
 
 
+
 /****************************************************
  Drag 
 *****************************************************/
@@ -336,10 +337,10 @@ void gControl::widgetSignals()
 		g_signal_connect(G_OBJECT(widget),"popup-menu",G_CALLBACK(sg_menu),(gpointer)this);
 	}	
 	
-	//g_signal_connect(G_OBJECT(widget),"key-press-event",G_CALLBACK(gcb_keypress),(gpointer)this);
-	//g_signal_connect(G_OBJECT(widget),"key-release-event",G_CALLBACK(gcb_keyrelease),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"focus-in-event",G_CALLBACK(gcb_focus_in),(gpointer)this);
-	g_signal_connect(G_OBJECT(widget),"focus-out-event",G_CALLBACK(gcb_focus_out),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "key-press-event", G_CALLBACK(gcb_key_event), (gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "key-release-event", G_CALLBACK(gcb_key_event), (gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "focus-in-event", G_CALLBACK(gcb_focus_in),(gpointer)this);
+	g_signal_connect(G_OBJECT(widget), "focus-out-event", G_CALLBACK(gcb_focus_out),(gpointer)this);
 	//g_signal_connect(G_OBJECT(widget),"event",G_CALLBACK(sg_event),(gpointer)this);
 	if (widget != border)
 	{
