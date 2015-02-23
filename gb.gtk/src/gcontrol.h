@@ -270,6 +270,7 @@ public:
 	bool mustUpdateCursor() { return mouse() != -1 || have_cursor; }
 	
 	bool hasInputMethod() { return _has_input_method; }
+	virtual GtkIMContext *getInputMethod();
 	
 	GdkCursor *getGdkCursor();
 	virtual void updateBorder();

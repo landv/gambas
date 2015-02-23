@@ -718,11 +718,14 @@ __FOUND_WIDGET:
 
 		case GDK_KEY_PRESS:
 
-			gKey::_last_keypress = event->key.keyval;
+			if (event->key.keyval)
+				gKey::_last_key_press = event->key.keyval;
 			goto __HANDLE_EVENT;
 
 		case GDK_KEY_RELEASE:
 
+			if (event->key.keyval)
+				gKey::_last_key_release = event->key.keyval;
 			goto __HANDLE_EVENT;
 	}
 	

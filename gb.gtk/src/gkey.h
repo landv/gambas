@@ -53,9 +53,12 @@ public:
 
 	static bool mustIgnoreEvent(GdkEventKey *e);
 
+	static bool gotCommit();
+
 	static bool _canceled;
 	static GdkEventKey _event;
-	static int _last_keypress;
+	static int _last_key_press;
+	static int _last_key_release;
 
 private:
 	static bool _valid;

@@ -136,9 +136,12 @@ static gboolean raise_change(gTextBox *data)
 
 static void cb_before_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
 {
-	gcb_im_commit(NULL, new_text, NULL);
-	if (gKey::canceled())
-		g_signal_stop_emission_by_name (G_OBJECT(editable), "insert-text");
+	if (gKey::gotCommit())
+	{
+		gcb_im_commit(NULL, new_text, NULL);
+		if (gKey::canceled())
+			g_signal_stop_emission_by_name (G_OBJECT(editable), "insert-text");
+	}
 }
 
 static void cb_change_insert(GtkEditable *editable, gchar *new_text, gint new_text_length, gint *position, gTextBox *data)
@@ -209,6 +212,11 @@ gTextBox::~gTextBox()
 #endif
 }
 
+/*static void cb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
+{
+	fprintf(stderr, "cb_im_commit: %s\n", str);
+}*/
+
 void gTextBox::initEntry()
 {
 	_has_input_method = entry != NULL;
@@ -221,7 +229,7 @@ void gTextBox::initEntry()
 	g_signal_connect_after(G_OBJECT(entry), "insert-text", G_CALLBACK(cb_change_insert), (gpointer)this);
 	g_signal_connect_after(G_OBJECT(entry), "delete-text", G_CALLBACK(cb_change_delete), (gpointer)this);
 	g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(cb_activate), (gpointer)this);
-	//g_signal_connect(getInputMethod(), "commit", G_CALLBACK(gcb_im_commit), (gpointer)this);
+	//g_signal_connect(getInputMethod(), "commit", G_CALLBACK(cb_im_commit), (gpointer)this);
 }
 
 char* gTextBox::text()
@@ -517,4 +525,13 @@ int gTextBox::minimumHeight()
 	gtk_widget_size_request(widget, &req);
 	return req.height - 4;*/
 	return font()->height() + hasBorder() ? 4 : 2;
+}
+
+GtkIMContext *gTextBox::getInputMethod()
+{
+#ifdef GTK3
+	return entry ? GTK_ENTRY(entry)->priv->im_context : NULL;
+#else
+	return entry ? GTK_ENTRY(entry)->im_context : NULL;
+#endif
 }

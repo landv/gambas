@@ -323,11 +323,14 @@ static void cb_insert_text(GtkTextBuffer *buf, GtkTextIter *location, gchar *tex
 {
 	gTextAreaAction *action, *prev;
 	
-	gcb_im_commit(NULL, text, NULL);
-	if (gKey::canceled())
+	if (gKey::gotCommit())
 	{
-		g_signal_stop_emission_by_name(G_OBJECT(buf), "insert-text");
-		return;
+		gcb_im_commit(NULL, text, NULL);
+		if (gKey::canceled())
+		{
+			g_signal_stop_emission_by_name(G_OBJECT(buf), "insert-text");
+			return;
+		}
 	}
 
 	if (!ctrl->_undo_in_progress)
@@ -1003,3 +1006,12 @@ void gTextArea::updateColor()
 	gt_widget_set_color(textview, FALSE, background(), _bg_name, &_bg_default);
 }
 #endif
+
+GtkIMContext *gTextArea::getInputMethod()
+{
+#ifdef GTK3
+	return GTK_TEXT_VIEW(widget)->priv->im_context;
+#else
+	return GTK_TEXT_VIEW(widget)->im_context;
+#endif
+}

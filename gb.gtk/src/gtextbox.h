@@ -70,6 +70,7 @@ public:
   void initEntry();
   GtkWidget *entry;
 	virtual int minimumHeight();
+	virtual GtkIMContext *getInputMethod();
 
 	unsigned _changed : 1;
 

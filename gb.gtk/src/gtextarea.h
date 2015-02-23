@@ -94,6 +94,7 @@ public:
 #ifdef GTK3
 	virtual void updateColor();
 #endif
+	virtual GtkIMContext *getInputMethod();
   //void waitForLayout(int *tw, int *th);
 	void clearUndoStack();
 	void clearRedoStack();

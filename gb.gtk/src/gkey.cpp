@@ -45,7 +45,8 @@ gKey
 bool gKey::_valid = false;
 bool gKey::_canceled = false;
 GdkEventKey gKey::_event;
-int gKey::_last_keypress = 0;
+int gKey::_last_key_press = 0;
+int gKey::_last_key_release = 0;
 
 static GtkIMContext *_im_context = NULL;
 static char *_im_default_slave = NULL;
@@ -53,7 +54,9 @@ static bool _im_has_input_method = FALSE;
 static gControl *_im_control = NULL;
 static bool _im_no_commit = false;
 static GdkWindow *_im_window = NULL;
-static signed char _im_state_required = -1;
+static bool _im_is_xim = FALSE;
+static bool _im_ignore_event = FALSE;
+static bool _im_got_commit = FALSE;
 
 //#define MAX_CODE 16
 //static uint _key_code[MAX_CODE] = { 0 };
@@ -234,23 +237,6 @@ bool gKey::mustIgnoreEvent(GdkEventKey *event)
 		return false;
 	else
 		return (event->type == GDK_KEY_PRESS) && ((uchar)*event->string >= 32 || event->keyval == 0);
-
-	if (_im_state_required < 0)
-	{
-		_im_state_required = (event->state & (1 << 25)) != 0;
-#if DEBUG_IM
-		fprintf(stderr, "_im_state_required = %d\n", _im_state_required);
-#endif
-		return false;
-	}
-
-	if (((event->state & (1 << 25)) != 0) == _im_state_required)
-		return false;
-
-#if DEBUG_IM
-	fprintf(stderr, "--> ignore event  state = %d / %d\n", ((event->state & (1 << 25)) != 0), _im_state_required);
-#endif
-	return true;
 }
 
 void gcb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
@@ -268,7 +254,7 @@ void gcb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
 	if (!gKey::valid())
 	{
 		gKey::enable(_im_control, NULL);
-		gKey::_event.keyval = gKey::_last_keypress;
+		gKey::_event.keyval = gKey::_last_key_press;
 		disable = true;
 	}
 
@@ -281,6 +267,12 @@ void gcb_im_commit(GtkIMContext *context, const char *str, gpointer pointer)
 		gKey::disable();
 
 	_im_no_commit = true;
+}
+
+static gboolean hook_commit(GSignalInvocationHint *ihint, guint n_param_values, const GValue *param_values, gpointer data)
+{
+	_im_got_commit = TRUE;
+	return true;
 }
 
 void gKey::init()
@@ -300,6 +292,8 @@ void gKey::init()
 	_im_default_slave = g_strdup(gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context)));
 
   g_signal_connect(_im_context, "commit", G_CALLBACK(gcb_im_commit), NULL);
+
+	g_signal_add_emission_hook(g_signal_lookup("commit", GTK_TYPE_IM_CONTEXT), (GQuark)0, hook_commit, (gpointer)0, NULL);
 }
 
 void gKey::exit()
@@ -311,6 +305,8 @@ void gKey::exit()
 
 void gKey::setActiveControl(gControl *control)
 {
+	const char *slave;
+
 	if (_im_control)
 	{
 #if DEBUG_IM
@@ -331,21 +327,24 @@ void gKey::setActiveControl(gControl *control)
 		
 		if (!control->hasInputMethod())
 		{
-			//slave = _im_default_slave;
 			_im_has_input_method = FALSE;
-			//gtk_im_multicontext_set_context_id(GTK_IM_MULTICONTEXT(_im_context), slave);
 			gtk_im_context_set_client_window (_im_context, _im_window);
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
+			slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context));
 		}
 		else
 		{
 			_im_has_input_method = TRUE;
+			slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(control->getInputMethod()));
 		}
+
+		_im_is_xim = strcmp(slave, "xim") == 0;
+		_im_ignore_event = FALSE;
 
 #if DEBUG_IM
 		fprintf(stderr,"\n------------------------\n");
-		fprintf(stderr, "gtk_im_context_focus_in: %s\n", gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context)));
+		fprintf(stderr, "gtk_im_context_focus_in\n");
 #endif
 	}
 }
@@ -463,7 +462,9 @@ gboolean gcb_key_event(GtkWidget *widget, GdkEvent *event, gControl *control)
 	int type;
 	bool cancel;
 
-	//fprintf(stderr, "gcb_key_event %s for %p %s\n", event->type == GDK_KEY_PRESS ? "GDK_KEY_PRESS" : "GDK_KEY_RELEASE", control, control->name());
+#if DEBUG_IM
+	fprintf(stderr, "gcb_key_event %s for %p %s\n", event->type == GDK_KEY_PRESS ? "GDK_KEY_PRESS" : "GDK_KEY_RELEASE", control, control->name());
+#endif
 
 	/*if (!control->_grab && gApplication::activeControl())
 		control = gApplication::activeControl();*/
@@ -472,6 +473,13 @@ gboolean gcb_key_event(GtkWidget *widget, GdkEvent *event, gControl *control)
 
 	//if (event->type == GDK_KEY_PRESS)
 	//	fprintf(stderr, "GDK_KEY_PRESS: control = %p %s %p %08X\n", control, control ? control->name() : "", event, event->key.state);
+
+	if (_im_is_xim)
+	{
+		_im_ignore_event = !_im_ignore_event;
+		if (_im_ignore_event)
+			return false;
+	}
 
 	type =  (event->type == GDK_KEY_PRESS) ? gEvent_KeyPress : gEvent_KeyRelease;
 
@@ -524,4 +532,11 @@ gboolean gcb_key_event(GtkWidget *widget, GdkEvent *event, gControl *control)
 		return true;
 
 	return false;
+}
+
+bool gKey::gotCommit()
+{
+	bool ret = _im_got_commit;
+	_im_got_commit = FALSE;
+	return ret;
 }

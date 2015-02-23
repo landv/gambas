@@ -2385,3 +2385,8 @@ void gControl::setColorButton()
 	use_base = FALSE;
 }
 #endif
+
+GtkIMContext *gControl::getInputMethod()
+{
+	return NULL;
+}
