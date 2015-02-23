@@ -960,14 +960,16 @@ char *gt_html_to_pango_string(const char *html, int len_html, bool newline_are_b
 
 			if (p[-1] == '/')
 			{
-				len--;
+				if (len > 0)
+					len--;
 				end_token = true;
 			}
 
 			if (len <= 0)
 			{
+				g_string_append(pango, "&lt;");
 				if (end_token) g_string_append(pango, "/");
-				g_string_append(pango, "&lt;&gt;");
+				g_string_append(pango, "&gt;");
 				p_markup = NULL;
 				continue;
 			}
