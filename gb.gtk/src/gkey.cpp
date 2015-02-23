@@ -331,15 +331,16 @@ void gKey::setActiveControl(gControl *control)
 			gtk_im_context_set_client_window (_im_context, _im_window);
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
-			slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context));
+			//slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context));
+			_im_is_xim = FALSE;
 		}
 		else
 		{
 			_im_has_input_method = TRUE;
 			slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(control->getInputMethod()));
+			_im_is_xim = strcmp(slave, "xim") == 0;
 		}
 
-		_im_is_xim = strcmp(slave, "xim") == 0;
 		_im_ignore_event = FALSE;
 
 #if DEBUG_IM

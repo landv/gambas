@@ -1369,9 +1369,9 @@ void gControl::drawBorder(GdkEventExpose *e)
 	gdk_region_get_clipbox(e->region, &clip);
 	GtkStyle *st = gtk_widget_get_style(widget);
 	if (use_base)
-		gtk_paint_box(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, "entry", x, y, w, h);
+		gtk_paint_box(st, win, GTK_STATE_NORMAL, shadow, &clip, widget, "entry", x, y, w, h);
 	else
-		gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, NULL, NULL, x, y, w, h);
+		gtk_paint_shadow(st, win, GTK_STATE_NORMAL, shadow, &clip, widget, NULL, x, y, w, h);
 }
 #endif
 
