@@ -13,8 +13,8 @@ End
 
 Public Sub Form_Open()
   
-  'hpdf.Open("/home/fabien/Downloads/Tuto, doc et RFC/IntroProgBash.pdf")
-  hpdf.Open("~/René Guénon - 1945 - Caïn et Abel (Le Règne de la Quantité et les Signes des Temps).pdf")
+  hpdf.Open("/home/fabien/Downloads/Tuto, doc et RFC/IntroProgBash.pdf")
+  'hpdf.Open("~/René Guénon - 1945 - Caïn et Abel (Le Règne de la Quantité et les Signes des Temps).pdf")
   DV.Count = hpdf.Count
   DV2.Count = 0
   DV2.DocHeight = hpdf[1].Height / 0.72

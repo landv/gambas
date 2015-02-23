@@ -71,11 +71,15 @@ Private $aSelected As New Integer[]
 Private $fCenter As Float
 Private $iSX As Integer
 Private $iSY As Integer
+Private $MX As Integer
+Private $MY As Integer
+
 
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
 Event Finished
 Event Zoom
+Private $iX As Integer
 
 Public Sub _new()
   
@@ -864,12 +868,36 @@ End
 
 Public Sub View_MouseDown()
   
+  
+  $MX = Mouse.X
+  $MY = Mouse.Y
   'Try $iCurrent = Find(Mouse.x, Mouse.Y)
   '$aSelected.Clear
   '$aSelected.Add($iCurrent)
   '$tmrRefresh.Trigger
   
 End
+
+Public Sub View_MouseMove()
+  
+If Mouse.Left Then
+  
+    If Me.Arrangement = Arrange.Fill Or If Me.Arrangement = Arrange.None Then Return
+    'Print $MX - Mouse.X
+    $hView.ScrollX += $MX - Mouse.X
+    $MX = Mouse.X
+    
+    $hView.ScrollY += $MY - Mouse.Y
+    $MY = Mouse.Y
+    
+    $tmrRefresh.Trigger
+    
+  Endif
+  
+End
+
+
+
 
 Public Function _IsVisible(Index As Integer) As Boolean
   
