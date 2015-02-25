@@ -144,8 +144,9 @@ public:
 	void setScrollY(int vl);
 	//virtual int scrollWidth();
 	//virtual int scrollHeight();
-	int scrollBar();
+	int scrollBar() const { return _scrollbar; }
 	void setScrollBar(int vl);
+	virtual void updateScrollBar();
 
 // "Methods"
 	void dragText(char *txt, char *format = NULL) { gDrag::dragText(this, txt, format); }
@@ -240,10 +241,9 @@ public:
 	
 	unsigned _locked : 4;                  // For locking events
 	unsigned frame_border : 4;
-
 	unsigned frame_padding : 8;
-	
-	unsigned _scrolled_window : 1;
+
+	unsigned _scrollbar : 2;
 	unsigned _dirty_pos : 1;               // If the position of the widget has changed
 	unsigned _dirty_size : 1;              // If the size of the widget has changed
 	unsigned _no_delete : 1;               // Do not delete on destroy signal

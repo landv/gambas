@@ -54,10 +54,10 @@ Public Sub Form_Open()
 
   Print Style.Name
   ButtonBox1._AddButton(ToolButton1)
-  FileProperties1.Path = "~/prière.png"
+  FileProperties1.Path = "/home/benoit"
   MenuButton1.SetFocus
   DateChooser1.MinValue = Date(Now) + 5
-  DateChooser1.MaxValue = Date(Now) + 51
+  DateChooser1.MaxValue = Date(Now) + 200
 
 End
 

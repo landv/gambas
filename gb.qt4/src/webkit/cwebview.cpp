@@ -262,10 +262,8 @@ BEGIN_PROPERTY(WebView_Url)
 		GB.ReturnNewZeroString(TO_UTF8(WIDGET->url().toString()));
 	else
 	{
-		QUrl url(QSTRING_PROP());
 		stop_view(THIS);
-		//fprintf(stderr, "setUrl: %s\n", GB.ToZeroString(PROP(GB_STRING)));
-		WIDGET->setUrl(url);
+		WIDGET->setUrl(QSTRING_PROP());
 	}
 
 END_PROPERTY

@@ -85,6 +85,7 @@ public:
 	void setFullArrangement(gContainerArrangement *arr);
 	
 	virtual void performArrange();
+	void getMaxSize(int xc, int yc, int wc, int hc, int *w, int *h);
 
 #ifndef GTK3
 	virtual void setBackground(gColor color = COLOR_DEFAULT);

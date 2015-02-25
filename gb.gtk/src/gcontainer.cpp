@@ -131,7 +131,6 @@ static void resize_container(gControl *cont, int w, int h)
 
 #include "gb.form.arrangement.h"
 
-
 int gContainer::_arrangement_level = 0;
 
 void gContainer::performArrange()
@@ -141,19 +140,93 @@ void gContainer::performArrange()
 		_did_arrangement = true;
 		return;
 	}
-	
+
 	if (!gApplication::allEvents()) return;
 
 	_did_arrangement = false;
-	//if (!CAN_ARRANGE(this))
-	//	return;
-	
-	//if (name() && !strcmp(name(), "panToolbar")) fprintf(stderr, ">>> gContainer::performArrange: %s %d\n", name(), arrangement.locked);
-	//_arrangement_level++;	
+
 	arrangeContainer((void*)this);
-	//_arrangement_level--;
-	//if (name() && !strcmp(name(), "panToolbar")) fprintf(stderr, "<<< gContainer::performArrange: %s %d\n", name(), arrangement.locked);
 }
+
+
+static int _max_w, _max_h;
+static int _gms_x, _gms_y, _gms_w, _gms_h;
+
+static void gms_move_widget(gControl *wid, int x, int y)
+{
+	int w = x + wid->width();
+	int h = y + wid->height();
+
+	if (w > _max_w) _max_w = w;
+	if (h > _max_h) _max_h = h;
+}
+
+static void gms_move_resize_widget(gControl *wid, int x, int y, int w, int h)
+{
+	w += x;
+	h += y;
+
+	if (w > _max_w) _max_w = w;
+	if (h > _max_h) _max_h = h;
+}
+
+#undef MOVE_WIDGET
+#define MOVE_WIDGET(_object, _widget, _x, _y) gms_move_widget(_widget, _x, _y)
+#undef RESIZE_WIDGET
+#define RESIZE_WIDGET(_object, _widget, _w, _h) (0)
+#undef MOVE_RESIZE_WIDGET
+#define MOVE_RESIZE_WIDGET(_object, _widget, _x, _y, _w, _h) gms_move_resize_widget(_widget, _x, _y, _w, _h)
+#undef RAISE_BEFORE_ARRANGE_EVENT
+#define RAISE_BEFORE_ARRANGE_EVENT(_object) (0)
+#undef RAISE_ARRANGE_EVENT
+#define RAISE_ARRANGE_EVENT(_object) (0)
+#undef FUNCTION_NAME
+#define FUNCTION_NAME get_max_size
+#undef RESIZE_CONTAINER
+#define RESIZE_CONTAINER(_object, _cont, _w, _h) (0)
+#undef GET_WIDGET_CONTENTS
+#define GET_WIDGET_CONTENTS(_widget, _x, _y, _w, _h) \
+	_x = _gms_x; \
+	_y = _gms_y; \
+	_w = _gms_w; \
+	_h = _gms_h;
+
+//#undef IS_WIDGET_VISIBLE
+//#define IS_WIDGET_VISIBLE(_cont) (1)
+#define GET_MAX_SIZE
+
+#include "gb.form.arrangement.h"
+
+void gContainer::getMaxSize(int xc, int yc, int wc, int hc, int *w, int *h)
+{
+	int add;
+	gContainerArrangement *arr = getArrangement();
+	bool locked;
+
+	locked = arr->locked;
+	arr->locked = false;
+
+	_max_w = 0;
+	_max_h = 0;
+	_gms_x = xc;
+	_gms_y = yc;
+	_gms_w = wc;
+	_gms_h = hc;
+	get_max_size((void *)this);
+
+	if (arr->margin)
+		add = arr->padding ? arr->padding : gDesktop::scale();
+	else if (!arr->spacing)
+		add = arr->padding;
+	else
+		add = 0;
+
+	*w = _max_w + add;
+	*h = _max_h + add;
+
+	arr->locked = locked;
+}
+
 
 void gContainer::initialize()
 {
@@ -244,6 +317,7 @@ void gContainer::setArrange(int vl)
 			if (vl != arrangement.mode)
 			{
 				arrangement.mode = vl;
+				updateScrollBar();
 				performArrange();
 			}
 		default: 
@@ -324,7 +398,8 @@ int gContainer::clientX()
 	if (_client_x >= 0)
 		return _client_x;
 	
-	if (gtk_widget_get_window(cont) && gtk_widget_get_window(border))
+
+	if (!_scroll && gtk_widget_get_window(cont) && gtk_widget_get_window(border))
 	{
 		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
 		xc += containerX();
@@ -353,7 +428,7 @@ int gContainer::clientY()
 	if (_client_y >= 0)
 		return _client_y;
 	
-	if (gtk_widget_get_window(cont) && gtk_widget_get_window(border))
+	if (!_scroll && gtk_widget_get_window(cont) && gtk_widget_get_window(border))
 	{
 		gtk_widget_translate_coordinates(cont, border, 0, 0, &xc, &yc);
 		yc += containerY();

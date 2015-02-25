@@ -36,6 +36,9 @@ public:
 //"Methods"
 	virtual void resize(int w,int h);
 	void ensureVisible(int x, int y, int w, int h);
+	void setBorder(bool b);
+	bool hasBorder() const;
+
 
 //"Signals"
 	void (*onScroll)(gScrollView *sender);
@@ -43,6 +46,8 @@ public:
 //"Private"
 	virtual void updateCursor(GdkCursor *cursor);
 	virtual void performArrange();
+	virtual void updateScrollBar();
+	virtual int getFrameWidth();
   void updateSize();
   guint _timer;
 	

@@ -1272,6 +1272,8 @@ int gApplication::getScrollbarSize()
 		"focus-padding", &focus_padding,*/
 		(char *)NULL);
 	
+	//fprintf(stderr, "getScrollbarSize: slider_width = %d  trough_border = %d\n", slider_width, trough_border);
+
 	return (trough_border) * 2 + slider_width;
 }
 

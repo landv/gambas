@@ -201,7 +201,7 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		
 		arr->locked = true;
 
-		//fprintf(stderr, "CCONTAINER_arrange: %s: mode %d: autoresize: %d\n", THIS->widget.name, arr->mode, arr->autoresize);
+		//fprintf(stderr, "arrange: %s %d (%d %d) (%d %d)\n", ((gControl *)_object)->name(), arr->mode, ((gContainer *)_object)->width(), ((gContainer *)_object)->height(), ((gContainer *)_object)->clientWidth(), ((gContainer *)_object)->clientHeight());
 
 		invert = arr->invert;
 		rtl = IS_RIGHT_TO_LEFT() ^ invert;

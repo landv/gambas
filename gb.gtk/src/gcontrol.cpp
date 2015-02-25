@@ -300,6 +300,7 @@ void gControl::initAll(gContainer *parent)
 	_inside = false;
 	_no_auto_grab = false;
 	_no_background = false;
+	_scrollbar = SCROLL_NONE;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -2032,38 +2033,29 @@ int gControl::scrollHeight()
 	return widget->requisition.height;
 }*/
 
-int gControl::scrollBar()
-{
-	GtkPolicyType h, v;
-	int ret = 3;
-
-	if (!_scroll)
-		return 0;
-
-	gtk_scrolled_window_get_policy(_scroll, &h, &v);
-	if (h == GTK_POLICY_NEVER) ret--;
-	if (v == GTK_POLICY_NEVER) ret -= 2;
-
-	return ret;
-}
-
 void gControl::setScrollBar(int vl)
 {
 	if (!_scroll)
 		return;
 
-	switch(vl)
+	_scrollbar = vl & 3;
+	updateScrollBar();
+}
+
+void gControl::updateScrollBar()
+{
+	switch(_scrollbar)
 	{
-		case 0:
+		case SCROLL_NONE:
 			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER);
 			break;
-		case 1:
+		case SCROLL_HORIZONTAL:
 			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER);
 			break;
-		case 2:
+		case SCROLL_VERTICAL:
 			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
 			break;
-		case 3:
+		case SCROLL_BOTH:
 			gtk_scrolled_window_set_policy(_scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 			break;
 	}
