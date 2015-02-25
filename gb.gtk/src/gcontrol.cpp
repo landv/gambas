@@ -2044,6 +2044,9 @@ void gControl::setScrollBar(int vl)
 
 void gControl::updateScrollBar()
 {
+	if (!_scroll)
+		return;
+	
 	switch(_scrollbar)
 	{
 		case SCROLL_NONE:
