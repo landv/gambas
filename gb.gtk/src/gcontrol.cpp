@@ -573,8 +573,8 @@ void gControl::move(int x, int y)
 
 void gControl::resize(int w, int h)
 {
-	if (w < 1)
-		w = 0;
+	if (w < minimumWidth())
+		w = minimumWidth();
 
 	if (h < minimumHeight())
 		h = minimumHeight();
@@ -2064,7 +2064,12 @@ void gControl::updateScrollBar()
 	}
 }
 
-int gControl::minimumHeight()
+int gControl::minimumHeight() const
+{
+	return 0;
+}
+
+int gControl::minimumWidth() const
 {
 	return 0;
 }

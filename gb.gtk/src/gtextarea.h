@@ -93,6 +93,8 @@ public:
   virtual void updateCursor(GdkCursor *cursor);
 #ifdef GTK3
 	virtual void updateColor();
+	virtual int minimumWidth() const;
+	virtual int minimumHeight() const;
 #endif
 	virtual GtkIMContext *getInputMethod();
   //void waitForLayout(int *tw, int *th);

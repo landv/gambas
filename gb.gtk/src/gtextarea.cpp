@@ -1015,3 +1015,15 @@ GtkIMContext *gTextArea::getInputMethod()
 	return GTK_TEXT_VIEW(widget)->im_context;
 #endif
 }
+
+#ifdef GTK3
+int gTextArea::minimumWidth() const
+{
+	return gDesktop::scale() * 4;
+}
+
+int gTextArea::minimumHeight() const
+{
+	return gDesktop::scale() * 8;
+}
+#endif

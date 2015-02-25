@@ -201,14 +201,11 @@ void gSpinBox::setBorder(bool vl)
 }
 
 #ifdef GTK3
-void gSpinBox::resize(int w, int h)
+int gSpinBox::minimumWidth() const
 {
 	int mw;
 
 	gtk_widget_get_preferred_width(widget, NULL, &mw);
-	if (w < mw)
-		w = mw;
-
-	gControl::resize(w, h);
+	return mw;
 }
 #endif

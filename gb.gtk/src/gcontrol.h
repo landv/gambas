@@ -290,7 +290,8 @@ public:
 	void drawBackground(GdkEventExpose *e);
 #endif
 	
-	virtual int minimumHeight();
+	virtual int minimumHeight() const;
+	virtual int minimumWidth() const;
 	void resolveFont();
 
 	void emitEnterEvent(bool no_leave = false);
