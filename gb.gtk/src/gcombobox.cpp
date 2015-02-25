@@ -213,7 +213,10 @@ void gComboBox::create(bool readOnly)
 		g_signal_connect(G_OBJECT(entry), "focus-out-event", G_CALLBACK(gcb_focus_out), (gpointer)this);
 	}
 	else
+	{
+		_has_input_method = FALSE;
 		setColorButton();
+	}
 	
 	updateFocusHandler();
 
