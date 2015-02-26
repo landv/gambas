@@ -493,3 +493,10 @@ Public Sub edtOutput_Scroll()
   edtOutput_MouseMove
 
 End
+
+Public Sub PrintExpr(sExpr As String)
+  
+  txtEnter.Text = sExpr
+  txtEnter_Activate
+  
+End

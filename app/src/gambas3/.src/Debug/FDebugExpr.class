@@ -837,3 +837,14 @@ Public Sub mnuWatch_Click()
   FDebugInfo.AddWatch(sExpr)
   
 End
+
+Public Sub mnuPrint_Click()
+  
+  Dim sExpr As String
+  
+  sExpr = GetCurrentExpr()
+  If Not sExpr Then Return
+  
+  FOutput.PrintExpr(sExpr)
+  
+End

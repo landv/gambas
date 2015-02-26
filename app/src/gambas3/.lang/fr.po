@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"PO-Revision-Date: 2015-02-06 03:37 UTC\n"
+"PO-Revision-Date: 2015-02-26 00:02 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -861,11 +861,11 @@ msgstr "Boucle d'évènements"
 msgid "Open in another window"
 msgstr "Ouvrir dans une nouvelle fenêtre"
 
-#: CProjectList.class:112
+#: CProjectList.class:116
 msgid "Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."
 msgstr "Les exemples sont stockés sur le serveur de la logithèque de Gambas. Cliquez &1 pour accéder à la logithèque et les télécharger..."
 
-#: CProjectList.class:112
+#: CProjectList.class:116
 msgid "there"
 msgstr "ici"
 
@@ -933,11 +933,11 @@ msgstr "Impossible de compiler le projet."
 msgid "Unable to make executable."
 msgstr "Impossible de générer l'exécutable."
 
-#: CSoftware.class:421
+#: CSoftware.class:425
 msgid "Unable to install source directory"
 msgstr "Impossible d'installer le répertoire source"
 
-#: FTextEditor.class:682 FTranslate.class:556 Project.module:489
+#: FTranslate.class:556 Project.module:489
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1197,7 +1197,7 @@ msgstr "Valeur par défaut"
 msgid "Collation"
 msgstr "Collation"
 
-#: FConnectionEditor.class:76 FDebugExpr.class:470 FHelpBrowser.form:52
+#: FConnectionEditor.class:76 FDebugExpr.class:483 FHelpBrowser.form:52
 msgid "Index"
 msgstr "Index"
 
@@ -1417,7 +1417,7 @@ msgstr "Nouveau"
 msgid "Remove query"
 msgstr "Supprimer la requête"
 
-#: FImageEditor.form:104 FOption.form:1255 FTextEditor.form:105
+#: FForm.form:164 FImageEditor.form:104 FOption.form:1255 FTextEditor.form:105
 msgid "Edit"
 msgstr "Éditer"
 
@@ -1685,23 +1685,31 @@ msgstr "Le référentiel du projet est directement envoyé à la commande 'svn c
 msgid "not available"
 msgstr "non disponible"
 
-#: FDebugExpr.class:472 FDebugInfo.class:39 FProjectProperty.class:141
+#: FDebugExpr.class:485 FDebugInfo.class:39 FProjectProperty.class:141
 msgid "Value"
 msgstr "Valeur"
 
-#: FDebugExpr.class:476
+#: FDebugExpr.class:489
 msgid "Key"
 msgstr "Clef"
 
-#: FDebugExpr.class:482
+#: FDebugExpr.class:495
 msgid "Symbol"
 msgstr "Symbole"
 
-#: FDebugExpr.form:31
+#: FDebugExpr.form:33 FDebugInfo.form:123
+msgid "Watch"
+msgstr "Surveiller"
+
+#: FDebugExpr.form:38
+msgid "Print to console"
+msgstr "Imprimer dans la console"
+
+#: FDebugExpr.form:64
 msgid "Show all symbols"
 msgstr "Afficher tous les symboles"
 
-#: FDebugExpr.form:48
+#: FDebugExpr.form:81
 msgid "No element"
 msgstr "Aucun élément"
 
@@ -1780,10 +1788,6 @@ msgstr "Copier les variables locales"
 #: FDebugInfo.form:106
 msgid "Current object"
 msgstr "Objet courant"
-
-#: FDebugInfo.form:123
-msgid "Watch"
-msgstr "Surveiller"
 
 #: FDebugInfo.form:141
 msgid "Add expression"
@@ -2581,31 +2585,31 @@ msgstr "px"
 msgid "Duplicate"
 msgstr "Dupliquer"
 
-#: FImageProperty.class:767
+#: FImageProperty.class:768
 msgid "System clipboard"
 msgstr "Presse-papier système"
 
-#: FImageProperty.class:1225
+#: FImageProperty.class:1226
 msgid "Arrow"
 msgstr "Flèche"
 
-#: FImageProperty.class:1226
+#: FImageProperty.class:1227
 msgid "Arrow #2"
 msgstr "Flèche n°2"
 
-#: FImageProperty.class:1227
+#: FImageProperty.class:1228
 msgid "Triangle"
 msgstr "Triangle"
 
-#: FImageProperty.class:1228
+#: FImageProperty.class:1229
 msgid "Square triangle"
 msgstr "Triangle rectangle"
 
-#: FImageProperty.class:1229
+#: FImageProperty.class:1230
 msgid "Pentagon"
 msgstr "Pentagone"
 
-#: FImageProperty.class:1230
+#: FImageProperty.class:1231
 msgid "Hexagon"
 msgstr "Hexagone"
 
