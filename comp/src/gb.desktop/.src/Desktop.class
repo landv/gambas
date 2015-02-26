@@ -587,3 +587,9 @@ Static Private Function NetworkAvailable_Read() As Boolean
   Next
 
 End
+
+Static Public Sub GetDesktopDirectory(Type As String) As String
+  
+  Return Main.GetDesktopPath(Type)
+  
+End

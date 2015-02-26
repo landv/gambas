@@ -118,7 +118,7 @@ Private Function SearchPathVariable(sFileConfig As String, sDirectory As String)
 
 End
 
-Public Sub GetDesktopPath() As String
+Public Sub GetDesktopPath(Optional sType As String = "DESKTOP") As String
 
   Dim sDir, sXdgConfigHome, sXdgConfigDirs, sFileConfig As String
   
@@ -130,7 +130,7 @@ Public Sub GetDesktopPath() As String
   
   sFileConfig = SearchPathConfig(sXdgConfigHome, sXdgConfigDirs)
   If sFileConfig Then
-    sDir = SearchPathVariable(sFileConfig, "XDG_DESKTOP_DIR") 
+    sDir = SearchPathVariable(sFileConfig, "XDG_" & UCase(sType) & "_DIR") 
   Else 
     sDir = System.User.Home &/ "Desktop"
   Endif
