@@ -361,18 +361,21 @@ AC_DEFUN([GB_THREAD],
       THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LIB=""
       GBX_THREAD_INC="-pthread -D_REENTRANT"
+      GBX_THREAD_LDFLAGS=""
       ;;
     *-*-netbsd* )
       THREAD_LIB=""
       THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LIB=""
       GBX_THREAD_INC="-pthread -D_REENTRANT"
+      GBX_THREAD_LDFLAGS=""
       ;;
     *)
       THREAD_LIB="-lpthread"
       THREAD_INC="-D_REENTRANT"
       GBX_THREAD_LIB="-lpthread"
       GBX_THREAD_INC="-D_REENTRANT"
+      GBX_THREAD_LDFLAGS="-Wl,--no-as-needed"
       ;;
   esac
 
@@ -385,6 +388,7 @@ AC_DEFUN([GB_THREAD],
   AC_SUBST(THREAD_INC)
   AC_SUBST(GBX_THREAD_LIB)
   AC_SUBST(GBX_THREAD_INC)
+  AC_SUBST(GBX_THREAD_LDFLAGS)
 ])
 
 
