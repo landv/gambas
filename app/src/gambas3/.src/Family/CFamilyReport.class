@@ -381,7 +381,10 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
       If Not sPath Then Return True
       If hCtrl["#Image"] <> sPath Then
         hCtrl["#Image"] = sPath
-        hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
+        Try hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
+        If Error Then 
+          FMain.ShowMessage(Error.Text, "warning")
+        Endif
       Endif
       
       hRect = New Rect(X, Y, W, H)
