@@ -358,7 +358,7 @@ Public Sub Printer_Draw()
   If View.RangePages.Count = 0 Then 
     View.Report.Paint($hPrinter.Page)
   Else
-    View.Report.Paint(View.RangePages[$hPrinter.Page - 1])
+    View.Report.Paint(View.RangePages[$hPrinter.Page - 1] + 1)
   Endif
   ProgressBar1.Value = $hPrinter.Page / View.PageCount
   

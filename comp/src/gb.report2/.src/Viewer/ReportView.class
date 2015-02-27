@@ -310,6 +310,7 @@ Else
   Me.MoveFirst
   $hView.Count = $hReport.PageCount
 Endif
+$hView.Refresh
 '_$aRangePage.Clear
 Catch
   
