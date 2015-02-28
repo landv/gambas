@@ -692,7 +692,7 @@ BEGIN_PROPERTY(ScrollView_Border)
 
 	CWIDGET_border_simple(_object, _param);
 	if (!READ_PROPERTY)
-		THIS->container->autoResize();
+		THIS->container->checkAutoResizeLater();
 
 END_PROPERTY
 

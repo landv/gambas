@@ -8,6 +8,8 @@ Private Enum WIZ_INDEX, WIZ_FARM, WIZ_SOFTWARE
 
 Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_VOTE, SORT_INSTALLED
 
+Private $hIdentity As FarmIdentity
+
 Public Sub Run()
   
   Me.ShowModal
@@ -23,9 +25,12 @@ Public Sub Form_Open()
 
   Settings.Read(Me)
 
+  $hIdentity = FarmIdentity.Get(FarmIdentity.LastFarm)
+  ReloadFarm
+
   $bNoRefresh = True
-  cmbFarm.List = FarmRequest.GetFarms()
-  cmbFarm.Text = FarmIdentity.LastFarm
+  'cmbFarm.List = FarmRequest.GetFarms()
+  'cmbFarm.Text = FarmIdentity.LastFarm
   cmbSort.Index = 0
   $bNoRefresh = False
   
@@ -41,7 +46,6 @@ Public Sub Form_Open()
   aGroup.Sort
 
   aGroup.Add(CSoftwareGroup("", ("All softwares"), "img/48/all.png"))
-  
   
   For Each hGroup In aGroup
     
@@ -93,12 +97,12 @@ Public Sub cmbSort_Click()
 
 End
 
-Public Sub cmbFarm_Click()
-
-  tagFarm.SetFarm(cmbFarm.Text)
-  ReloadFarm
-
-End
+' Public Sub cmbFarm_Click()
+' 
+'   tagFarm.SetFarm(cmbFarm.Text)
+'   ReloadFarm
+' 
+' End
 
 Public Sub Reload()
 
@@ -114,7 +118,7 @@ Public Sub Reload()
   FarmRequestManager.Clear
   svwFarm.Children.Clear
   
-  hReq = New FarmRequest(cmbFarm.Text) As "Request"
+  hReq = New FarmRequest($hIdentity.Farm) As "Request"
   hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], "", txtFilter.Text, tagFarm.GetTags())
   spnFarm.Show
   
@@ -202,7 +206,7 @@ End
 Public Sub Form_Close()
 
   FarmRequestManager.Clear
-  FarmIdentity.LastFarm = cmbFarm.Text
+  FarmIdentity.LastFarm = $hIdentity.Farm
   Settings.Write(Me)
 
 End
@@ -250,20 +254,18 @@ Private Sub ReloadFarm()
 
   Dim hIdentity As FarmIdentity
 
-  CSoftware.ClearCache(cmbFarm.Text)
-  hIdentity = FarmIdentity.Get(cmbFarm.Text)
-  hIdentity.Init(lblIdentity, picIdentity)
+  CSoftware.ClearCache($hIdentity.Farm)
+  hIdentity = FarmIdentity.Get($hIdentity.Farm)
+  hIdentity.Init(lblIdentity)
   Reload
 
 End
 
 Public Sub btnLogin_Click()
 
-  FFarmConfig.Run(cmbFarm.text)
-
-  $bNoRefresh = True
-  cmbFarm.List = FarmRequest.GetFarms()
-  $bNoRefresh = False
+  If FFarmLogin.Run($hIdentity.Farm) Then Return
+  
+  $hIdentity = FFarmLogin.Identity
   ReloadFarm
 
 End
@@ -598,5 +600,11 @@ Public Sub chkShowFilter_Click()
   hPanel = panFilter.Parent
   hPanel.AutoResize = True
   hPanel.AutoResize = False
+
+End
+
+Public Sub btnRegister_Click()
+
+  FFarmRegister.Run
 
 End

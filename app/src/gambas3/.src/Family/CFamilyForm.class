@@ -35,7 +35,7 @@ Private Sub GetArrangement(hCCtrl As CControl) As String
     Case "VSplit"
       sImage = "vsplit"
       
-    Case "Panel"
+    Case Else
       sImage = LCase(hCCtrl["Arrangement"])
       If sImage = "none" Then sImage = ""
       
@@ -64,6 +64,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
     
       If Not hCCtrl.HasChildren() And If hCCtrl.GetProperty("Expand") Then
         hParent = hCCtrl.Parent
+        If hParent = hCCtrl.GetForm().RootControl Then Stop
         If hParent Then
           If Not $hExpand Then $hExpand = Picture["img/family/expand.png"]
           Select Case GetArrangement(hParent)

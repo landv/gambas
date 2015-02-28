@@ -760,7 +760,7 @@ Public Sub LoadProxyConfig()
     .Host = Settings["/Proxy/Host"]
     .Port = Settings["/Proxy/Port", 0]
     .User = Settings["/Proxy/User"]
-    If .User Then .Password = Desktop.Passwords["/Proxy" &/ .User]
+    If .User Then Try .Password = Desktop.Passwords["/Proxy" &/ .User]
     
   End With
   

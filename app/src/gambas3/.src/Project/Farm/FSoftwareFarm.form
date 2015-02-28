@@ -30,46 +30,25 @@
       Arrangement = Arrange.Horizontal
       Spacing = True
       Margin = True
-      { Label2 Label
-        MoveScaled(0,0,8,4)
+      { lblIdentity TextLabel
+        MoveScaled(30,1,16,4)
+        Font = Font["Bold"]
+        Expand = True
         AutoResize = True
-        Text = ("Farm")
+        Alignment = Align.Right
       }
       { Panel14 Panel
-        MoveScaled(11,0,1,4)
-      }
-      { cmbFarm ComboBox
-        MoveScaled(15,0,29,4)
-        ReadOnly = True
-      }
-      { Panel3 Panel
-        MoveScaled(46,0,1,4)
-        Expand = True
-      }
-      { panUser Panel
-        MoveScaled(48,0,22,4)
-        Expand = True
-        Arrangement = Arrange.Horizontal
-        Spacing = True
-        Invert = True
-        { Panel6 Panel
-          MoveScaled(19,0,2,4)
-        }
-        { lblIdentity Label
-          MoveScaled(7,0,9,4)
-          Font = Font["Bold"]
-          AutoResize = True
-        }
-        { picIdentity PictureBox
-          MoveScaled(2,0,4,4)
-          Picture = Picture["icon:/medium/identity"]
-          Alignment = Align.Center
-        }
+        MoveScaled(49,1,1,4)
       }
       { btnLogin Button
-        MoveScaled(73,0,15,4)
+        MoveScaled(56,1,15,4)
         AutoResize = True
-        Text = ("Configure") & "..."
+        Text = ("Login") & "..."
+      }
+      { btnRegister Button
+        MoveScaled(72,1,15,4)
+        AutoResize = True
+        Text = ("Register") & "..."
       }
     }
   }
@@ -224,43 +203,52 @@
         MoveScaled(2,15,73,36)
         Expand = True
         Border = False
-        { Panel11 VBox
-          MoveScaled(1,1,52,33)
-          Spacing = True
-          { lblDesc Label
-            MoveScaled(2,1,14,3)
-            Font = Font["Bold"]
-            Text = ("Description")
-          }
-          { txtDescription TextArea
-            MoveScaled(2,5,29,4)
-            ReadOnly = True
-            Wrap = True
+        { Panel3 HBox
+          MoveScaled(1,1,55,34)
+          { Panel11 ScrollView
+            MoveScaled(1,1,51,32)
+            Expand = True
+            Arrangement = Arrange.Vertical
+            Spacing = True
             Border = False
-            ScrollBar = Scroll.None
-          }
-          { panURL HBox
-            MoveScaled(2,10,29,4)
-            { urlWebSite URLLabel
-              MoveScaled(0,0,18,3)
+            ScrollBar = Scroll.Vertical
+            { lblDesc Label
+              MoveScaled(2,1,14,3)
+              Font = Font["Bold"]
+              Text = ("Description")
+            }
+            { txtDescription TextArea
+              MoveScaled(2,5,29,4)
+              ReadOnly = True
+              Wrap = True
+              Border = False
+              ScrollBar = Scroll.None
+            }
+            { panURL HBox
+              MoveScaled(2,10,29,4)
+              { urlWebSite URLLabel
+                MoveScaled(0,0,18,3)
+                AutoResize = True
+                Text = ("Developer web site")
+              }
+            }
+            { lblTags Label
+              MoveScaled(2,16,14,3)
+              Font = Font["Bold"]
+              Text = ("Tags")
+            }
+            { panTags HPanel
+              MoveScaled(2,20,26,8)
               AutoResize = True
-              Text = ("Developer web site")
+              Spacing = True
             }
           }
-          { lblTags Label
-            MoveScaled(2,16,14,3)
-            Font = Font["Bold"]
-            Text = ("Tags")
-          }
-          { panTags HPanel
-            MoveScaled(2,20,26,8)
-            AutoResize = True
-            Spacing = True
+          { Panel6 Panel
+            MoveScaled(53,13,1,7)
           }
         }
         { imvScreenshot ImageView
           MoveScaled(58,1,14,20)
-          Expand = True
         }
       }
       { spnScreenshot Spinner

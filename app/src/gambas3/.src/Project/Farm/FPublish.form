@@ -200,44 +200,34 @@
     }
     Index = 4
     Text = ("Publish")
-    { HBox1 HBox
-      MoveScaled(1,2,56,4)
-      Spacing = True
-      { Label5 Label
-        MoveScaled(0,0,19,4)
-        Text = ("Server")
-      }
-      { cmbFarm ComboBox
-        MoveScaled(22,0,24,4)
-        Expand = True
-        ReadOnly = True
-      }
-    }
     { HBox2 HBox
-      MoveScaled(1,7,56,4)
+      MoveScaled(1,2,56,4)
       Spacing = True
       { Label1 Label
         MoveScaled(0,0,19,4)
         Text = ("Identity")
       }
-      { HBox3 HBox
-        MoveScaled(22,0,16,4)
+      { lblIdentity TextLabel
+        MoveScaled(33,0,18,4)
         Expand = True
-        Spacing = True
-        { picIdentity PictureBox
-          MoveScaled(1,0,4,4)
-          Picture = Picture["icon:/medium/identity"]
-          Alignment = Align.Center
-        }
-        { lblIdentity Label
-          MoveScaled(6,0,8,4)
-          Expand = True
-        }
+        Alignment = Align.Normal
       }
-      { btnConfig Button
-        MoveScaled(39,0,16,4)
+    }
+    { Panel4 HBox
+      MoveScaled(1,7,56,4)
+      Spacing = True
+      { Label3 Label
+        MoveScaled(0,0,19,4)
+      }
+      { btnLogin Button
+        MoveScaled(21,0,15,4)
         AutoResize = True
-        Text = ("Configure") & "..."
+        Text = ("Login") & "..."
+      }
+      { btnRegister Button
+        MoveScaled(37,0,15,4)
+        AutoResize = True
+        Text = ("Register") & "..."
       }
     }
     Index = 0

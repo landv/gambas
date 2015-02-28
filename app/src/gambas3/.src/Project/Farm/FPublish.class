@@ -2,6 +2,7 @@
 
 Private $aDep As String[]
 Private $sScreenshot As String
+Private $hIdentity As FarmIdentity
 
 Public Sub Run() As Boolean
 
@@ -43,11 +44,10 @@ Public Sub Form_Open()
   
   Settings.Read(Me)
 
-  cmbFarm.List = FarmRequest.GetFarms()
+  $hIdentity = FarmIdentity.Get(Settings["/Publish/Farm"])
+  $hIdentity.Init(lblIdentity)
   
-  cmbFarm.Text = Settings["/Publish/Farm"]
-  cmbFarm.Index = 0
-  
+  tagEditor.SetFarm($hIdentity.Farm)
   tagEditor.SetTags(Project.PublishTags)
   
   $aDep = Project.PublishDependencies
@@ -120,7 +120,7 @@ Public Sub Form_Close()
 
   Settings.Write(Me)
   
-  Settings["/Publish/Farm"] = cmbFarm.Text
+  Settings["/Publish/Farm"] = $hIdentity.Farm
   
   SaveProject
 
@@ -138,25 +138,6 @@ Public Sub lstTags_Activate()
 
 End
 
-Public Sub cmbFarm_Click()
-
-  Dim hIdentity As FarmIdentity
-  
-  tagEditor.SetFarm(cmbFarm.Text)
-  
-  hIdentity = FarmIdentity.Get(cmbFarm.Text)
-  hIdentity.Init(lblIdentity, picIdentity)
-
-End
-
-
-Public Sub btnConfig_Click()
-
-  FFarmConfig.Run(cmbFarm.Text)
-  cmbFarm_Click
-
-End
-
 Public Sub wizPublish_Close()
   
   Dim hReq As FarmRequest
@@ -164,7 +145,7 @@ Public Sub wizPublish_Close()
 
   SaveProject
 
-  hReq = New FarmRequest(cmbFarm.Text)
+  hReq = New FarmRequest($hIdentity.Farm)
   
   If radKeepScreenshot.Value Then
   Else If radDeleteScreenshot.Value Then
@@ -349,5 +330,20 @@ End
 Public Sub wizPublish_Arrange()
 
   imvScreenshot.ZoomFit
+
+End
+
+Public Sub btnRegister_Click()
+
+  FFarmRegister.Run
+
+End
+
+Public Sub btnLogin_Click()
+
+  If FFarmLogin.Run($hIdentity.Farm) Then Return
+  
+  $hIdentity = FFarmLogin.Identity
+  $hIdentity.Init(lblIdentity)
 
 End

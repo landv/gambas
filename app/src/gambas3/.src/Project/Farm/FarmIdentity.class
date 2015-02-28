@@ -6,6 +6,7 @@ Static Property LastFarm As String
 
 Property Login As String
 Property Password As String
+Property Read Farm As String
 
 Static Private $hSettings As Settings
 Static Private $cPassword As New Collection
@@ -75,7 +76,7 @@ End
 Private Function Password_Read() As String
 
   If Not $cPassword[$sFarm] Then
-    If $hSettings["/RememberPassword", False] Then $cPassword[$sFarm] = Desktop.Passwords["/Farm" &/ $sFarm]
+    If $hSettings["/RememberPassword", False] Then Try $cPassword[$sFarm] = Desktop.Passwords["/Farm" &/ $sFarm]
   Endif
   Return $cPassword[$sFarm]
 
@@ -122,18 +123,18 @@ Static Private Sub LastFarm_Write(Value As String)
 
 End
 
-Public Sub Init(hLabel As Label, hPic As Control)
+Public Sub Init(hLabel As TextLabel)
   
   If Me.Login And If Me.Password Then
-    hLabel.Text = Me.Login
-    hLabel.Font.Bold = True
-    hLabel.Font.Italic = False
-    hPic.Show
+    hLabel.Text = "<b>" & Me.Login & "@" & Me.Farm & "</b>"
   Else
-    hLabel.Text = ("Anonymous")
-    hLabel.Font.Bold = False
-    hLabel.Font.Italic = True
-    hPic.Hide
+    hLabel.Text = "<i>" & ("Anonymous") & "</i>@<b>" & Me.Farm & "</b>"
   Endif
   
+End
+
+Private Function Farm_Read() As String
+
+  Return $sFarm
+
 End

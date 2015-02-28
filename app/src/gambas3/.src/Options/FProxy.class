@@ -19,7 +19,7 @@ Public Sub btnOK_Click()
   Port = txtPort.Value
   User = Trim(txtUser.Text)
   
-  If User Then Desktop.Passwords["/Proxy" &/ User] = txtPassword.Text
+  If User Then Try Desktop.Passwords["/Proxy" &/ User] = txtPassword.Text
 
   Me.Close(True)
 

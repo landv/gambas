@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"PO-Revision-Date: 2015-02-26 00:02 UTC\n"
+"PO-Revision-Date: 2015-02-28 16:53 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -761,7 +761,7 @@ msgstr "Classes"
 msgid "Class"
 msgstr "Classe"
 
-#: FProjectProperty.form:324 FPublish.form:128 FSoftwareFarm.form:337
+#: FProjectProperty.form:324 FPublish.form:128 FSoftwareFarm.form:321
 msgid "Description"
 msgstr "Description"
 
@@ -937,7 +937,7 @@ msgstr "Impossible de générer l'exécutable."
 msgid "Unable to install source directory"
 msgstr "Impossible d'installer le répertoire source"
 
-#: FTranslate.class:556 Project.module:489
+#: FTextEditor.class:682 FTranslate.class:556 Project.module:489
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1173,7 +1173,7 @@ msgstr "Enregistrer"
 msgid "Solve"
 msgstr "Résoudre"
 
-#: FTips.form:83 FTranslate.form:308
+#: FTips.form:83 FTranslate.form:309
 msgid "Close"
 msgstr "Fermer"
 
@@ -1341,7 +1341,7 @@ msgstr "Nouvelle table"
 msgid "Delete table"
 msgstr "Supprimer la table"
 
-#: FSoftwareFarm.form:421
+#: FSoftwareFarm.form:405
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -1365,7 +1365,7 @@ msgstr "Copier la table"
 msgid "Import text file"
 msgstr "Importer un fichier texte"
 
-#: FTranslate.form:328
+#: FTranslate.form:329
 msgid "Import"
 msgstr "Importer"
 
@@ -1429,7 +1429,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
-#: FSoftwareFarm.class:534 FTranslate.form:81
+#: FSoftwareFarm.class:535 FTranslate.form:81
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2025,23 +2025,23 @@ msgstr "Veuillez saisir votre identifiant."
 msgid "Please enter your password."
 msgstr "Veuillez saisir votre mot de passe."
 
-#: FFarmConfig.class:81
+#: FFarmConfig.class:81 FFarmRegister.class:28
 msgid "Please enter a valid e-mail address."
 msgstr "Veuillez saisir une adresse e-mail valide."
 
-#: FFarmConfig.class:87
+#: FFarmConfig.class:87 FFarmRegister.class:34
 msgid "Confirm password does not match."
 msgstr "Le mot de passe de confirmation ne correspond pas."
 
-#: FFarmConfig.class:93
+#: FFarmConfig.class:93 FFarmRegister.class:40
 msgid "Unable to register user."
 msgstr "Impossible d'enregistrer l'utilisateur."
 
-#: FFarmConfig.class:93
+#: FFarmConfig.class:93 FFarmRegister.class:40
 msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
 msgstr "Vous avez été enregistré avec succès.\n\nVous recevrez un courriel de confirmation bientôt."
 
-#: FFarmConfig.class:128
+#: FFarmConfig.class:128 FFarmLogin.class:23
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
 
@@ -2053,19 +2053,19 @@ msgstr "Configuration"
 msgid "Identity"
 msgstr "Identité"
 
-#: FFarmConfig.form:64 FPublish.form:296
+#: FPublish.form:296
 msgid "Server"
 msgstr "Serveur"
 
-#: FFarmConfig.form:80
-msgid "Login"
-msgstr "Identifiant"
+#: FNewConnection.form:138 FProjectVersion.form:127 FProxy.form:42
+msgid "User"
+msgstr "Utilisateur"
 
-#: FProxy.form:47
+#: FNewConnection.form:152 FProjectVersion.form:142 FProxy.form:47
 msgid "Password"
 msgstr "Mot de passe"
 
-#: FFarmConfig.form:116 FNewConnection.form:172 FProjectVersion.form:155
+#: FProjectVersion.form:155
 msgid "Remember password"
 msgstr "Se souvenir du mot de passe"
 
@@ -2073,25 +2073,29 @@ msgstr "Se souvenir du mot de passe"
 msgid "Register >>"
 msgstr "S'enregistrer >>"
 
-#: FFarmConfig.form:160 FMakeInstall.form:220 FOption.form:273
+#: FOption.form:273
 msgid "E-mail"
 msgstr "E-mail"
 
-#: FFarmConfig.form:175
+#: FFarmConfig.form:175 FFarmRegister.form:92
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
-#: FFarmConfig.form:189
+#: FFarmConfig.form:189 FFarmRegister.form:121
 msgid "A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n<p>\n<b>Your e-mail will not be stored on the publishing server.</b>"
 msgstr "Un mail de confirmation sera envoyé à l'adresse spécifiée. Cliquez sur le lien contenu dans ce mail pour activer votre compte.\n<p>\n<b>Votre e-mail ne sera pas stocké sur le serveur de publication.</b>"
 
-#: FFarmConfig.form:204
+#: FFarmConfig.form:204 FFarmRegister.form:28 FSoftwareFarm.form:129
 msgid "Register"
 msgstr "S'enregistrer"
 
 #: FFarmConfig.form:215
 msgid "Servers"
 msgstr "Serveurs"
+
+#: FFarmLogin.form:25 FSoftwareFarm.form:123
+msgid "Login"
+msgstr "S'identifier"
 
 #: FFieldChooser.class:54 FTableChooser.class:66
 msgid "Unable to open connection."
@@ -2137,7 +2141,7 @@ msgstr "Propriétés de &1"
 msgid "Versioning"
 msgstr "Suivi"
 
-#: FFileProperty.class:92 FProjectProperty.form:971 FTranslate.form:314
+#: FFileProperty.class:92 FProjectProperty.form:971 FTranslate.form:315
 msgid "Statistics"
 msgstr "Statistiques"
 
@@ -2189,11 +2193,11 @@ msgstr "Contrôle inconnu : &1"
 msgid "Component missing for control &1"
 msgstr "Composant introuvable pour le contrôle &1"
 
-#: FForm.class:1811
+#: FForm.class:1817
 msgid "Cannot paste data."
 msgstr "Impossible de coller les données."
 
-#: FForm.class:3203
+#: FForm.class:3210
 msgid "The form has been modified.\n\nAll your changes will be lost."
 msgstr "Le formulaire a été modifié.\n\nTous vos changements seront perdus."
 
@@ -3233,7 +3237,7 @@ msgstr "Classe de démarrage"
 msgid "Add to repository"
 msgstr "Ajouter au référentiel"
 
-#: FMain.form:971 FSoftwareFarm.form:224
+#: FMain.form:971 FSoftwareFarm.form:208
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -3769,10 +3773,6 @@ msgstr "Hôte"
 msgid "Path"
 msgstr "Emplacement"
 
-#: FNewConnection.form:138 FProjectVersion.form:127 FProxy.form:42
-msgid "User"
-msgstr "Utilisateur"
-
 #: FNewConnection.form:187 Project.module:216
 msgid "Database"
 msgstr "Bases de données"
@@ -3805,7 +3805,7 @@ msgstr "Nouvelle traduction"
 msgid "Select a project"
 msgstr "Sélectionnez un projet"
 
-#: FOpenProject.form:109 FSoftwareFarm.class:34 FWelcome.class:65
+#: FOpenProject.form:109 FSoftwareFarm.class:38 FWelcome.class:65
 msgid "Examples"
 msgstr "Exemples"
 
@@ -3905,7 +3905,7 @@ msgstr "Voulez-vous vraiment réinitialiser la liste à sa valeur par défaut ?"
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr "Voulez-vous vraiment installer la police Gambas dans votre répertoire personnel de polices ?"
 
-#: FOption.class:1140 FSoftwareFarm.form:393
+#: FOption.class:1140 FSoftwareFarm.form:377
 msgid "Install"
 msgstr "Installer"
 
@@ -4685,7 +4685,7 @@ msgstr "Site web"
 msgid "Create menu entry"
 msgstr "Créer une entrée de menu"
 
-#: FPublish.form:137 FSoftwareFarm.form:209
+#: FPublish.form:137 FSoftwareFarm.form:193
 msgid "Tags"
 msgstr "Étiquettes"
 
@@ -4721,7 +4721,7 @@ msgstr "Dépendences"
 msgid "Require Gambas version"
 msgstr "Version de Gambas nécessaire"
 
-#: FPublish.form:335 FSoftwareFarm.form:145
+#: FPublish.form:335
 msgid "Configure"
 msgstr "Configurer"
 
@@ -4913,155 +4913,151 @@ msgstr "Nouveau fragment de code"
 msgid "Trigger string"
 msgstr "Chaîne de déclenchement"
 
-#: FSoftwareFarm.class:32 Project.module:218
+#: FSoftwareFarm.class:36 Project.module:218
 msgid "Games"
 msgstr "Jeux"
 
-#: FSoftwareFarm.class:33
+#: FSoftwareFarm.class:37
 msgid "Development"
 msgstr "Développement"
 
-#: FSoftwareFarm.class:35
+#: FSoftwareFarm.class:39
 msgid "Education"
 msgstr "Éducation"
 
-#: FSoftwareFarm.class:36
+#: FSoftwareFarm.class:40
 msgid "Graphics"
 msgstr "Graphique"
 
-#: FSoftwareFarm.class:37
+#: FSoftwareFarm.class:41
 msgid "Audio"
 msgstr "Son"
 
-#: FSoftwareFarm.class:38 Project.module:225
+#: FSoftwareFarm.class:42 Project.module:225
 msgid "Video"
 msgstr "Vidéo"
 
-#: FSoftwareFarm.class:39
+#: FSoftwareFarm.class:43
 msgid "Office"
 msgstr "Bureautique"
 
-#: FSoftwareFarm.class:43
+#: FSoftwareFarm.class:47
 msgid "All softwares"
 msgstr "Tous les logiciels"
 
-#: FSoftwareFarm.class:141
+#: FSoftwareFarm.class:144
 msgid "No software found."
 msgstr "Aucun logiciel n'a été trouvé."
 
-#: FSoftwareFarm.class:160
+#: FSoftwareFarm.class:163
 msgid "Request cancelled."
 msgstr "Requête annulée."
 
-#: FSoftwareFarm.class:295
+#: FSoftwareFarm.class:296
 msgid "Cancel my vote"
 msgstr "Annuler mon vote"
 
-#: FSoftwareFarm.class:302
+#: FSoftwareFarm.class:303
 msgid "Upgrade"
 msgstr "Mettre à-jour"
 
-#: FSoftwareFarm.class:306
+#: FSoftwareFarm.class:307
 msgid "Uninstall"
 msgstr "Désinstaller"
 
-#: FSoftwareFarm.class:437
+#: FSoftwareFarm.class:438
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "Voulez-vous vraiment télécharger <b>&1</b> ?"
 
-#: FSoftwareFarm.class:440
+#: FSoftwareFarm.class:441
 msgid "Unable to download <b>&1</b>:"
 msgstr "Impossible de télécharger <b>&1</b> :"
 
-#: FSoftwareFarm.class:442
+#: FSoftwareFarm.class:443
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "<b>&1</b> a été téléchargé avec succès."
 
-#: FSoftwareFarm.class:457
+#: FSoftwareFarm.class:458
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "Voulez-vous vraiment mettre à-jour vers <b>&1</b> ?"
 
-#: FSoftwareFarm.class:460
+#: FSoftwareFarm.class:461
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "Impossible de mettre à-jour vers <b>&1</b> :"
 
-#: FSoftwareFarm.class:467
+#: FSoftwareFarm.class:468
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "Voulez-vous vraiment désinstaller <b>&1</b> ?"
 
-#: FSoftwareFarm.class:470
+#: FSoftwareFarm.class:471
 msgid "Unable to remove <b>&1</b>:"
 msgstr "Impossible de supprimer <b>&1</b> :"
 
-#: FSoftwareFarm.class:472
+#: FSoftwareFarm.class:473
 msgid "<b>&1</b> has been successfully removed."
 msgstr "<b>&1</b> a été supprimé avec succès."
 
-#: FSoftwareFarm.class:478
+#: FSoftwareFarm.class:479
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "Voulez-vous vraiment installer <b>&1</b> ?"
 
-#: FSoftwareFarm.class:481
+#: FSoftwareFarm.class:482
 msgid "Unable to install <b>&1</b>:"
 msgstr "Impossible d'installer <b>&1</b> :"
 
-#: FSoftwareFarm.class:483
+#: FSoftwareFarm.class:484
 msgid "<b>&1</b> has been successfully installed."
 msgstr "<b>&1</b> a été installé avec succès."
 
-#: FSoftwareFarm.class:503
+#: FSoftwareFarm.class:504
 msgid "Unable to modify your vote."
 msgstr "Impossible de modifier votre vote."
 
-#: FSoftwareFarm.class:534
+#: FSoftwareFarm.class:535
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "Désirez-vous vraiment supprimer <b>&1</b> du serveur de publication ?"
 
-#: FSoftwareFarm.class:538
+#: FSoftwareFarm.class:539
 msgid "Unable to remove <b>&1<b>:"
 msgstr "Impossible de désinstaller <b>&1</b> :"
 
-#: FSoftwareFarm.form:66
+#: FSoftwareFarm.form:63
 msgid "Gambas Software Farm"
 msgstr "Logithèque Gambas"
 
-#: FSoftwareFarm.form:101
-msgid "Farm"
-msgstr "Serveur"
-
-#: FSoftwareFarm.form:183
+#: FSoftwareFarm.form:167
 msgid "Show"
 msgstr "Afficher"
 
-#: FSoftwareFarm.form:189
+#: FSoftwareFarm.form:173
 msgid "Installed"
 msgstr "Installés"
 
-#: FSoftwareFarm.form:189
+#: FSoftwareFarm.form:173
 msgid "Most downloaded"
 msgstr "Les plus téléchargés"
 
-#: FSoftwareFarm.form:189
+#: FSoftwareFarm.form:173
 msgid "Most popular"
 msgstr "Les plus populaires"
 
-#: FSoftwareFarm.form:189
+#: FSoftwareFarm.form:173
 msgid "Most recent"
 msgstr "Les plus récents"
 
-#: FSoftwareFarm.form:194
+#: FSoftwareFarm.form:178
 msgid "Show filters"
 msgstr "Afficher les filtres"
 
-#: FSoftwareFarm.form:354
+#: FSoftwareFarm.form:338
 msgid "Developer web site"
 msgstr "Site web du développeur"
 
-#: FSoftwareFarm.form:400
+#: FSoftwareFarm.form:384
 msgid "Download"
 msgstr "Télécharger"
 
-#: FSoftwareFarm.form:408
+#: FSoftwareFarm.form:392
 msgid "Vote"
 msgstr "Voter"
 
@@ -5257,15 +5253,15 @@ msgstr "Rechercher la chaîne non traduite suivante"
 msgid "Find previous untranslated string"
 msgstr "Rechercher la chaîne non traduite précédente"
 
-#: FTranslate.form:355
+#: FTranslate.form:356
 msgid "Import all translations  recursively"
 msgstr "Importer toutes les traductions récursivement"
 
-#: FTranslate.form:361
+#: FTranslate.form:362
 msgid "Replace existing translations"
 msgstr "Remplacer les traductions existantes"
 
-#: FTranslate.form:377
+#: FTranslate.form:378
 msgid "Import a translation file"
 msgstr "Importer un fichier de traduction"
 

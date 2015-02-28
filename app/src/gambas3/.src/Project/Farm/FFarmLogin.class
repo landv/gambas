@@ -1,0 +1,106 @@
+' Gambas class file
+
+Static Private $sFarm As String
+Static Private $hIdentity As FarmIdentity
+
+Static Property Read Identity As FarmIdentity
+
+Static Private Function Identity_Read() As FarmIdentity
+
+  Return $hIdentity
+
+End
+
+Public Sub Run(sFarm As String) As Boolean
+
+  $sFarm = sFarm
+  Return Not Me.ShowModal()
+
+End
+
+Public Sub btnOK_Click()
+
+  Dim hReq As FarmRequest
+
+  If Trim(txtLogin.Text) Then
+    hReq = New FarmRequest(cmbFarm.Text)
+    hReq.CheckAuth(Trim(txtLogin.Text), txtPassword.Text)
+    If hReq.WaitFor("", "", True) Then
+      Message.Error(("Authentication failed."))
+      txtPassword.Clear
+      txtPassword.SetFocus
+      Stop Event
+      Return
+    Endif
+  Endif
+
+  $hIdentity.Password = txtPassword.Text
+  'Settings["/Farm"] = cmbFarm.Text
+  FarmIdentity.RememberPassword = CBool(chkRememberPassword.Value)
+  FarmIdentity.SaveSettings
+
+  Me.Close(True)
+
+End
+
+Public Sub btnCancel_Click()
+
+  Me.Close
+
+End
+
+Private Sub InitFarms()
+
+  cmbFarm.List = FarmRequest.GetFarms()
+  cmbFarm.Text = FarmIdentity.LastFarm
+
+End
+
+Public Sub Form_Open()
+
+  InitFarms
+
+  chkRememberPassword.Value = FarmIdentity.RememberPassword
+
+End
+
+Public Sub cmbFarm_Click()
+
+  $hIdentity = FarmIdentity.Get(cmbFarm.Text)
+  txtLogin.Text = $hIdentity.Login
+  txtPassword.Text = $hIdentity.Password
+
+End
+
+Public Sub txtLogin_Change()
+  
+  $hIdentity.Login = Trim(txtLogin.Text)
+  
+End
+
+Public Sub txtLogin_Activate()
+
+  txtPassword.SetFocus
+
+End
+
+Public Sub txtPassword_Activate()
+
+  btnOK.Value = True
+
+End
+
+Public Sub btnFarmConfig_Click()
+
+  If FFarmConfig.Run() Then Return
+  InitFarms
+
+End
+
+Public Sub btnAnoymous_Click()
+
+  txtLogin.Clear
+  txtPassword.Clear
+  btnOK.Value = True
+
+End
