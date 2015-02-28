@@ -75,9 +75,9 @@ Private Sub LoadFades()
   
   If iColor = $iFadeColor Then Return
   
-  hImage = New Image(32, 8, Color.Transparent)
-  For Y = 0 To 7
-    hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(iColor, 160 + Y * 12))
+  hImage = New Image(32, 4, Color.Transparent)
+  For Y = 0 To 3
+    hImage.FillRect(0, Y, hImage.W, 1, Color.SetAlpha(iColor, 160 + Y * 24))
   Next
   
   $hFadeN = hImage.Picture

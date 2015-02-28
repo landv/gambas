@@ -796,6 +796,16 @@ Public Function IsMultiContainer() As Boolean
 
 End
 
+Public Sub HasChildren() As Boolean
+  
+  Dim hCont As Container
+  
+  Try hCont = Control
+  If Not hCont Then Return
+  Return hCont.Children.Count > 0
+  
+End
+
 
 Public Sub Delete()
 
@@ -803,7 +813,7 @@ Public Sub Delete()
   Dim hChild As CControl
   Dim hForm As FForm
 
-  hForm = Object.Parent(Control)
+  hForm = GetForm()
   aChildren = hForm.GetChildren(Name)
   If aChildren Then
 
@@ -1079,11 +1089,11 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
   $aPanel[iIndex] = hPanel
   
   If bMaster Then
-    hPanel.Background = Color.LightBackground
-    hPanel.Foreground = Color.Black
+    hPanel.Background = Color.TextBackground
+    'hPanel.Foreground = Color.Black
   Else
-    hPanel.Background = Color.SelectedBackground
-    hPanel.Foreground = Color.White
+    hPanel.Background = Color.LightForeground
+    'hPanel.Foreground = Color.White
   Endif
   
   MovePanel(iIndex)
@@ -1110,7 +1120,7 @@ Private Sub MovePanel(iPanel As Integer)
   Select Case Mid$(hPanel.Tag, 2)
 
     Case "NW", "N", "NE"
-      Y = hCtrl.Y - PAN_H \ 2 + 1
+      Y = hCtrl.Y - PAN_H \ 2
       'hPanel.Y = hCtrl.Y
 
     Case "SW", "S", "SE"
@@ -1125,7 +1135,7 @@ Private Sub MovePanel(iPanel As Integer)
   Select Case Mid$(hPanel.Tag, 2)
 
     Case "NW", "W", "SW"
-      X = hCtrl.X - PAN_W \ 2 + 1
+      X = hCtrl.X - PAN_W \ 2
       'hPanel.X = hCtrl.X
 
     Case "NE", "E", "SE"
@@ -1399,6 +1409,8 @@ Public Procedure Panel_MouseUp()
   $bMove = False
   If hUndo.IsDisabled() Then hUndo.Enable
   hUndo.End
+  
+  GetForm().CheckHovered(Control.Parent)
 
 End
 
@@ -1408,6 +1420,19 @@ Public Sub Panel_Menu()
   GetForm().Control_Menu
 
 End
+
+Public Sub Panel_Enter()
+  
+  GetForm().CheckHovered(Control.Parent)
+  
+End
+
+Public Sub Panel_Leave()
+  
+  GetForm().CheckHovered(Control.Parent)
+  
+End
+
 
 ' Public Sub Panel_Draw()
 '   

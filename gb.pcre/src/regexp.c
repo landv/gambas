@@ -170,6 +170,9 @@ bool REGEXP_match(const char *subject, int lsubject, const char *pattern, int lp
 	CREGEXP tmp;
 	bool ret = FALSE;
 
+	if (lsubject <= 0)
+		return (lpattern <= 0);
+
 	CLEAR(&tmp);
 	tmp.ovecsize = OVECSIZE_INC;
 	GB.Alloc(POINTER(&tmp.ovector), sizeof(int) * tmp.ovecsize);

@@ -9,10 +9,48 @@ Public Const AllowScaledProperty As Boolean = True
 Public Const HasMenuEditor As Boolean = True
 Public Const EmbedContainer As String = "Panel"
 
+Static Private $hExpand As Picture
+
+Private Sub GetArrangement(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    Case "HBox"
+      sImage = "horizontal"
+    
+    Case "VBox"
+      sImage = "vertical"
+      
+    Case "HPanel"
+      sImage = "row"
+      
+    Case "VPanel"
+      sImage = "column"
+      
+    Case "HSplit"
+      sImage = "hsplit"
+      
+    Case "VSplit"
+      sImage = "vsplit"
+      
+    Case "Panel"
+      sImage = LCase(hCCtrl["Arrangement"])
+      If sImage = "none" Then sImage = ""
+      
+  End Select
+  
+  Return sImage
+  
+End
+
+
 Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
   Dim iBorder As Integer
   Dim hCtrl As Control = hCCtrl.Control
+  Dim hParent As CControl
   
   'Debug hCCtrl.Name
   
@@ -20,9 +58,24 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
     Case "HBox", "VBox", "HPanel", "VPanel"
     
-      Draw.Foreground = &HFFB0B0&
+      Paint.Background = &HFFB0B0
     
     Case "Panel"
+    
+      If Not hCCtrl.HasChildren() And If hCCtrl.GetProperty("Expand") Then
+        hParent = hCCtrl.Parent
+        If hParent Then
+          If Not $hExpand Then $hExpand = Picture["img/family/expand.png"]
+          Select Case GetArrangement(hParent)
+            Case "horizontal", "row"
+              Draw.Tile($hExpand, 0, (hCtrl.H - $hExpand.H) \ 2, hCtrl.W, $hExpand.H)
+              Return
+            Case "vertical", "column"
+              Draw.Tile($hExpand, (hCtrl.W - $hExpand.W) \ 2, 0, $hExpand.W, hCtrl.H)
+              Return
+          End Select
+        Endif
+      Endif
     
       Select Case hCCtrl.GetProperty("Border")
         Case "Raised"
@@ -42,7 +95,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         Return
       Endif
       'If hCCtrl.GetProperty("Background") Then Return
-      Draw.Foreground = &HFFB0B0&
+      Paint.Background = &HFFB0B0
       'Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
     
     Case Else
@@ -51,9 +104,11 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
 
   End Select
 
-  Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-  'Draw.LineStyle = Line.Dash
-  'Draw.LineStyle = Line.None
+  Paint.LineWidth = 1
+  Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
+  'Paint.AntiAlias = False
+  Paint.Stroke
+  'Paint.AntiAlias = True
   
 End
 
