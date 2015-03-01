@@ -1249,7 +1249,7 @@ Public Sub OnProjectChange()
   mnuRedirectStderr.Value = Project.RedirectStderr
   mnuUseHttpServer.Value = Project.UseHttpServer
   mnuProfile.Value = Project.Profiling
-  Action["breakerr"].Value = Project.BreakOnError
+  'Action["breakerr"].Value = Project.BreakOnError
   OnRefreshComponents
   'UpdateTranslate
   'RefreshInfo
@@ -1446,10 +1446,10 @@ Public Sub Action_Activate((Key) As String) As Boolean
       Project.Profiling = Action["profile"].Value
       Project.WriteProject(True)
       
-    Case "breakerr"
-      Project.BreakOnError = Action["breakerr"].Value
-      Project.WriteProject(True)
-      Design.UpdateBreakOnError
+    ' Case "breakerr"
+    '   Project.BreakOnError = Action["breakerr"].Value
+    '   Project.WriteProject(True)
+    '   Design.UpdateBreakOnError
     
     Case "open-profile"
       OpenProfile

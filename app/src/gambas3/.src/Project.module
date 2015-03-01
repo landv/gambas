@@ -101,7 +101,7 @@ Public RedirectStderr As Boolean
 Public UseHttpServer As Boolean
 Public Profiling As Boolean
 Public ProfileIndex As Integer
-Public BreakOnError As Boolean
+'Public BreakOnError As Boolean
 
 Public Running As Boolean
 'Public JustUpdateVersion As Boolean
@@ -3203,7 +3203,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   UseHttpServer = False
   Profiling = False
   ProfileIndex = 0
-  BreakOnError = False
+  'BreakOnError = False
   Maintainer = ""
   Vendor = ""
   Address = ""
@@ -3449,9 +3449,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "profiling"
         Profiling = CInt(sVal) <> 0
 
-      Case "breakonerror"
-        BreakOnError = CInt(sVal) <> 0
-
+      ' Case "breakonerror"
+      '   BreakOnError = CInt(sVal) <> 0
+      ' 
       Case "createeachdirectory"
         CreateEachDirectory = CInt(sVal) <> 0
 
@@ -3580,7 +3580,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If RedirectStderr Then Print #hFic, "RedirectStderr=1"
   If UseHttpServer Then Print #hFic, "UseHttpServer=1"
   If Profiling Then Print #hFic, "Profiling=1"
-  If BreakOnError Then Print #hFic, "BreakOnError=1"
+  'If BreakOnError Then Print #hFic, "BreakOnError=1"
   If Icon Then Print #hFic, "Icon="; Icon
 
   GetVersion()

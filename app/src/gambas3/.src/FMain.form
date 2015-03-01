@@ -287,12 +287,6 @@
       Text = Shortcut(("Finish"), "h")
       Picture = Picture["icon:/small/eject"]
     }
-    { mnuBreakOnError Menu
-      Action = "breakerr"
-      Text = ("Break on each error")
-      Picture = Picture["icon:/small/error"]
-      Toggle = True
-    }
     { Menu9 Menu
     }
     { mnuOpenProfile Menu
@@ -934,14 +928,6 @@
       Action = "until"
       Picture = Picture["icon:/small/jump"]
     }
-    { btnBreakOnError ToolButton mnuBreakOnError
-      Name = "btnBreakOnError"
-      MoveScaled(90,0,4,4)
-      ToolTip = ("Break on each error")
-      Action = "breakerr"
-      Picture = Picture["icon:/small/error"]
-      Toggle = True
-    }
     { btnShowMenu ToolButton
       MoveScaled(94,0,4,4)
       Visible = False
@@ -1085,8 +1071,8 @@
   }
   { msgError MessageView
     MoveScaled(27,10,57,6)
-    Separator = True
     Animated = True
+    Separator = True
   }
   { Panel1 Panel
     MoveScaled(1,18,105,77)
@@ -1250,11 +1236,6 @@
     Text = "Source archive"
     Shortcut = "Ctrl+Alt+A"
     Picture = "icon:/small/archive"
-  }
-  { Action breakerr
-    Text = "Break on each error"
-    Shortcut = ""
-    Picture = "icon:/small/error"
   }
   { Action browse-project
     Text = "Browse project"
@@ -1598,7 +1579,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,gui"
-    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,breakerr,-,find-project,go-back,go-forward"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,gui"
+    Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
   }
 }
