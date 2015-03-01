@@ -6,6 +6,10 @@ Private $hIdentity As FarmIdentity
 
 Public Sub Run() As Boolean
 
+  If Project.MajorVersion = 0 And If Project.MinorVersion = 0 Then
+    FMain.ShowError(("You cannot publish a software whose version is \"0.0\"."))
+    Return
+  Endif
   Return Not Me.ShowModal()
 
 End

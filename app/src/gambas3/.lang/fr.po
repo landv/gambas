@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"PO-Revision-Date: 2015-02-28 23:33 UTC\n"
+"PO-Revision-Date: 2015-03-01 01:20 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -761,7 +761,7 @@ msgstr "Classes"
 msgid "Class"
 msgstr "Classe"
 
-#: FProjectProperty.form:324 FPublish.form:125 FSoftwareFarm.form:317
+#: FProjectProperty.form:324 FPublish.form:125 FSoftwareFarm.form:304
 msgid "Description"
 msgstr "Description"
 
@@ -1341,7 +1341,7 @@ msgstr "Nouvelle table"
 msgid "Delete table"
 msgstr "Supprimer la table"
 
-#: FSoftwareFarm.form:405
+#: FSoftwareFarm.form:394
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -1429,7 +1429,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
-#: FSoftwareFarm.class:536 FTranslate.form:81
+#: FSoftwareFarm.class:538 FTranslate.form:81
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -2025,7 +2025,7 @@ msgstr "Logithèques"
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
 
-#: FFarmLogin.form:26 FPublish.form:312 FSoftwareFarm.form:110
+#: FFarmLogin.form:26 FPublish.form:312 FSoftwareFarm.form:108
 msgid "Login"
 msgstr "S'identifier"
 
@@ -2065,7 +2065,7 @@ msgstr "Impossible d'enregistrer l'utilisateur."
 msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
 msgstr "Vous avez été enregistré avec succès.\n\nVous recevrez un courriel de confirmation bientôt."
 
-#: FFarmRegister.form:28 FPublish.form:319 FSoftwareFarm.form:117
+#: FFarmRegister.form:28 FPublish.form:319 FSoftwareFarm.form:115
 msgid "Register"
 msgstr "S'enregistrer"
 
@@ -3221,7 +3221,7 @@ msgstr "Classe de démarrage"
 msgid "Add to repository"
 msgstr "Ajouter au référentiel"
 
-#: FMain.form:971 FSoftwareFarm.form:197
+#: FMain.form:971 FSoftwareFarm.form:195
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -3889,7 +3889,7 @@ msgstr "Voulez-vous vraiment réinitialiser la liste à sa valeur par défaut ?"
 msgid "Do you really want to install the Gambas font to your personal font directory?"
 msgstr "Voulez-vous vraiment installer la police Gambas dans votre répertoire personnel de polices ?"
 
-#: FOption.class:1140 FSoftwareFarm.form:377
+#: FOption.class:1140 FSoftwareFarm.form:366
 msgid "Install"
 msgstr "Installer"
 
@@ -4369,7 +4369,7 @@ msgstr "Composant"
 msgid "Library"
 msgstr "Bibliothèque"
 
-#: FProjectProperty.form:280 FPublish.class:85
+#: FProjectProperty.form:280 FPublish.class:89
 msgid "Version"
 msgstr "Version"
 
@@ -4629,35 +4629,39 @@ msgstr "Aucun proxy"
 msgid "SOCKS5 proxy"
 msgstr "Proxy SOCKS5"
 
-#: FPublish.class:83
+#: FPublish.class:10
+msgid "You cannot publish a software whose version is \"0.0\"."
+msgstr "Vous ne pouvez publier un logiciel dont la version est \"0.0\"."
+
+#: FPublish.class:87
 msgid "Software"
 msgstr "Logiciel"
 
-#: FPublish.class:158
+#: FPublish.class:162
 msgid "The project has been successfully published."
 msgstr "Le projet a été publié avec succès."
 
-#: FPublish.class:158
+#: FPublish.class:162
 msgid "Unable to publish project."
 msgstr "Impossible de publier le projet."
 
-#: FPublish.class:229
+#: FPublish.class:233
 msgid "Spaces are not allowed."
 msgstr "Les espaces ne sont pas autorisés."
 
-#: FPublish.class:235
+#: FPublish.class:239
 msgid "Incorrect version number."
 msgstr "Numéro de version incorrect."
 
-#: FPublish.class:267
+#: FPublish.class:271
 msgid "Do you really want to remove all tags?"
 msgstr "Voulez-vous vraiment retirer toutes les étiquettes ?"
 
-#: FPublish.class:322
+#: FPublish.class:326
 msgid "Select a screenshot file"
 msgstr "Choisissez un fichier de capture d'écran"
 
-#: FPublish.class:323
+#: FPublish.class:327
 msgid "Screenshot files"
 msgstr "Fichiers de capture d'écran"
 
@@ -4673,7 +4677,7 @@ msgstr "Site web"
 msgid "Create menu entry"
 msgstr "Créer une entrée de menu"
 
-#: FPublish.form:134 FSoftwareFarm.form:182
+#: FPublish.form:134 FSoftwareFarm.form:180
 msgid "Tags"
 msgstr "Étiquettes"
 
@@ -4953,99 +4957,99 @@ msgstr "Mettre à-jour"
 msgid "Uninstall"
 msgstr "Désinstaller"
 
-#: FSoftwareFarm.class:439
+#: FSoftwareFarm.class:441
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "Voulez-vous vraiment télécharger <b>&1</b> ?"
 
-#: FSoftwareFarm.class:442
+#: FSoftwareFarm.class:444
 msgid "Unable to download <b>&1</b>:"
 msgstr "Impossible de télécharger <b>&1</b> :"
 
-#: FSoftwareFarm.class:444
+#: FSoftwareFarm.class:446
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "<b>&1</b> a été téléchargé avec succès."
 
-#: FSoftwareFarm.class:459
+#: FSoftwareFarm.class:461
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "Voulez-vous vraiment mettre à-jour vers <b>&1</b> ?"
 
-#: FSoftwareFarm.class:462
+#: FSoftwareFarm.class:464
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "Impossible de mettre à-jour vers <b>&1</b> :"
 
-#: FSoftwareFarm.class:469
+#: FSoftwareFarm.class:471
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "Voulez-vous vraiment désinstaller <b>&1</b> ?"
 
-#: FSoftwareFarm.class:472
+#: FSoftwareFarm.class:474
 msgid "Unable to remove <b>&1</b>:"
 msgstr "Impossible de supprimer <b>&1</b> :"
 
-#: FSoftwareFarm.class:474
+#: FSoftwareFarm.class:476
 msgid "<b>&1</b> has been successfully removed."
 msgstr "<b>&1</b> a été supprimé avec succès."
 
-#: FSoftwareFarm.class:480
+#: FSoftwareFarm.class:482
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "Voulez-vous vraiment installer <b>&1</b> ?"
 
-#: FSoftwareFarm.class:483
+#: FSoftwareFarm.class:485
 msgid "Unable to install <b>&1</b>:"
 msgstr "Impossible d'installer <b>&1</b> :"
 
-#: FSoftwareFarm.class:485
+#: FSoftwareFarm.class:487
 msgid "<b>&1</b> has been successfully installed."
 msgstr "<b>&1</b> a été installé avec succès."
 
-#: FSoftwareFarm.class:505
+#: FSoftwareFarm.class:507
 msgid "Unable to modify your vote."
 msgstr "Impossible de modifier votre vote."
 
-#: FSoftwareFarm.class:536
+#: FSoftwareFarm.class:538
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "Désirez-vous vraiment supprimer <b>&1</b> du serveur de publication ?"
 
-#: FSoftwareFarm.class:540
+#: FSoftwareFarm.class:542
 msgid "Unable to remove <b>&1<b>:"
 msgstr "Impossible de désinstaller <b>&1</b> :"
 
-#: FSoftwareFarm.form:63
+#: FSoftwareFarm.form:61
 msgid "Gambas Software Farm"
 msgstr "Logithèque Gambas"
 
-#: FSoftwareFarm.form:156
+#: FSoftwareFarm.form:154
 msgid "Show"
 msgstr "Afficher"
 
-#: FSoftwareFarm.form:162
+#: FSoftwareFarm.form:160
 msgid "Installed"
 msgstr "Installés"
 
-#: FSoftwareFarm.form:162
+#: FSoftwareFarm.form:160
 msgid "Most downloaded"
 msgstr "Les plus téléchargés"
 
-#: FSoftwareFarm.form:162
+#: FSoftwareFarm.form:160
 msgid "Most popular"
 msgstr "Les plus populaires"
 
-#: FSoftwareFarm.form:162
+#: FSoftwareFarm.form:160
 msgid "Most recent"
 msgstr "Les plus récents"
 
-#: FSoftwareFarm.form:167
+#: FSoftwareFarm.form:165
 msgid "Show filters"
 msgstr "Afficher les filtres"
 
-#: FSoftwareFarm.form:334
+#: FSoftwareFarm.form:321
 msgid "Developer web site"
 msgstr "Site web du développeur"
 
-#: FSoftwareFarm.form:384
+#: FSoftwareFarm.form:373
 msgid "Download"
 msgstr "Télécharger"
 
-#: FSoftwareFarm.form:392
+#: FSoftwareFarm.form:381
 msgid "Vote"
 msgstr "Voter"
 
