@@ -1,31 +1,28 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,57,27)
+  MoveScaled(0,0,57,23)
   Text = ("Farm servers")
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
   { lstFarm ListEditor
     MoveScaled(1,1,54,16)
     Expand = True
-    Border = False
-  }
-  { Separator1 Separator
-    MoveScaled(20,18,16,0)
   }
   { HBox1 HBox
-    MoveScaled(0,20,55,6)
+    MoveScaled(1,18,54,4)
     Spacing = True
-    Margin = True
     { Panel1 Panel
       MoveScaled(4,0,13,4)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(21,0,16,4)
+      MoveScaled(20,0,16,4)
       Text = ("OK")
     }
     { btnCancel Button
-      MoveScaled(38,0,16,4)
+      MoveScaled(37,0,16,4)
       Text = ("Cancel")
       Cancel = True
     }

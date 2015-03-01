@@ -44,11 +44,13 @@
         MoveScaled(56,1,15,4)
         AutoResize = True
         Text = ("Login") & "..."
+        Picture = Picture["icon:/small/identity"]
       }
       { btnRegister Button
         MoveScaled(72,1,15,4)
         AutoResize = True
         Text = ("Register") & "..."
+        Picture = Picture["icon:/small/new"]
       }
     }
   }
@@ -160,53 +162,44 @@
     Index = 2
     Text = ("")
     { Panel9 Panel
-      MoveScaled(5,0,77,53)
+      MoveScaled(6,0,77,55)
       Background = Color.TextBackground
       Foreground = Color.TextForeground
       Expand = True
       Arrangement = Arrange.Vertical
-      Margin = True
       { panTitle HBox
         MoveScaled(2,1,71,10)
+        Background = &HF8F8F8&
         Spacing = True
         Margin = True
         { picIcon PictureBox
-          MoveScaled(1,0,8,8)
+          MoveScaled(1,1,8,8)
           Stretch = True
           Alignment = Align.Center
         }
         { Panel13 Panel
           MoveScaled(13,0,1,7)
         }
-        { Panel8 VBox
-          MoveScaled(16,0,29,8)
+        { dwgName DrawingArea
+          MoveScaled(16,2,28,5)
           Expand = True
-          { lblName Label
-            MoveScaled(0,0,27,4)
-            Font = Font["Bold,+5"]
-            Alignment = Align.TopNormal
-          }
-          { lblVersion Label
-            MoveScaled(2,4,16,4)
-            Font = Font["+2"]
-          }
         }
         { dwgStat DrawingArea
           MoveScaled(46,1,17,4)
         }
       }
       { Separator1 Separator
-        MoveScaled(28,13,16,0)
-        Visible = False
+        MoveScaled(28,17,16,0)
       }
       { panDesc HSplit
-        MoveScaled(2,15,73,36)
+        MoveScaled(2,18,73,36)
         Expand = True
         Border = False
         { Panel3 HBox
-          MoveScaled(1,1,55,34)
+          MoveScaled(1,1,52,34)
+          Margin = True
           { Panel11 ScrollView
-            MoveScaled(1,1,51,32)
+            MoveScaled(1,1,48,32)
             Expand = True
             Arrangement = Arrange.Vertical
             Spacing = True
@@ -243,12 +236,14 @@
               Spacing = True
             }
           }
-          { Panel6 Panel
-            MoveScaled(53,13,1,7)
-          }
         }
-        { imvScreenshot ImageView
-          MoveScaled(58,1,14,20)
+        { Panel6 Panel
+          MoveScaled(55,8,15,19)
+          Arrangement = Arrange.Fill
+          Margin = True
+          { imvScreenshot ImageView
+            MoveScaled(1,1,13,15)
+          }
         }
       }
       { spnScreenshot Spinner
@@ -257,7 +252,7 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(2,54,86,7)
+      MoveScaled(2,56,86,7)
       Background = &HFFFFFF&
       Spacing = True
       Margin = True

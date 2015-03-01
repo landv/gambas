@@ -5,6 +5,8 @@ Private Root As String
 Private $hConn As Connection
 Private $iUser As Integer
 
+Private Const LIMIT_SOFTWARE As Integer = 200
+
 Private Sub PrintError(sErr As String)
 
   Response.ContentType = "text/plain;charset=utf-8"
@@ -457,7 +459,18 @@ Private Sub PublishSoftware()
   Try Mkdir Root &/ CStr(rSoftware!id)
   
   CopySoftwareFile(rSoftware!id, "source.tar." & File.Ext(sSource), Request.Files["source"])
-  CopySoftwareFile(rSoftware!id, "icon.png", Request.Files["icon"])
+  
+  sPath = CopySoftwareFile(rSoftware!id, "icon.png", Request.Files["icon"])
+  hImage = Image.Load(sPath)
+  
+  If hImage.W > hImage.H Then
+    hImage = hImage.Stretch(64, -1)
+  Else
+    hImage = hImage.Stretch(-1, 64)
+  Endif
+  
+  hImage.Save(sPath)
+  
   If sScreenshot Then
     If sScreenshot = "*" Then
       Try Kill Root &/ CStr(rSoftware!id) &/ "screenshot.*"
@@ -887,7 +900,7 @@ Private Sub SearchSoftware()
     End Select
     
     If sReq Then sReq = " WHERE " & sReq
-    rSoftware = DB.Limit(50).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & " DESC,id")
+    rSoftware = DB.Limit(LIMIT_SOFTWARE).Exec("SELECT * FROM software" & sReq & " ORDER BY " & sSort & " DESC,id")
     
     sFrom = ""
     
@@ -911,7 +924,7 @@ Private Sub SearchSoftware()
         If iTag Then Continue
       Endif
       aSoftware.Add(rSoftware!id)
-      If aSoftware.Count = 50 Then Break
+      If aSoftware.Count = LIMIT_SOFTWARE Then Break
     Next
     
     rSoftware.MoveLast

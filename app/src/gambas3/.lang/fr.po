@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.6.90\n"
-"PO-Revision-Date: 2015-02-28 16:53 UTC\n"
+"PO-Revision-Date: 2015-02-28 23:33 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -761,7 +761,7 @@ msgstr "Classes"
 msgid "Class"
 msgstr "Classe"
 
-#: FProjectProperty.form:324 FPublish.form:128 FSoftwareFarm.form:321
+#: FProjectProperty.form:324 FPublish.form:125 FSoftwareFarm.form:317
 msgid "Description"
 msgstr "Description"
 
@@ -1377,15 +1377,15 @@ msgstr "Requêtes SQL"
 msgid "Fields"
 msgstr "Champs"
 
-#: FOption.form:1310 FProjectProperty.form:647 FPublish.form:160
+#: FOption.form:1310 FProjectProperty.form:647 FPublish.form:158
 msgid "Add"
 msgstr "Ajouter"
 
-#: FPublish.form:282
+#: FPublish.form:280
 msgid "Down"
 msgstr "Descendre"
 
-#: FPublish.form:276
+#: FPublish.form:274
 msgid "Up"
 msgstr "Monter"
 
@@ -1429,7 +1429,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
-#: FSoftwareFarm.class:535 FTranslate.form:81
+#: FSoftwareFarm.class:536 FTranslate.form:81
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1745,7 +1745,7 @@ msgstr "Message"
 msgid "native code"
 msgstr "code natif"
 
-#: FMakeInstall.form:754 FOption.class:721 FOutput.form:84 FPublish.form:172
+#: FMakeInstall.form:754 FOption.class:721 FOutput.form:84 FPublish.form:170
 msgid "Clear"
 msgstr "Effacer"
 
@@ -2017,85 +2017,69 @@ msgstr "Exporter les noms des champs"
 msgid "Export selected records only"
 msgstr "Exporter les enregistrements sélectionnés uniquement"
 
-#: FFarmConfig.class:39
-msgid "Please enter your login."
-msgstr "Veuillez saisir votre identifiant."
+#: FFarmConfig.form:12
+msgid "Farm servers"
+msgstr "Logithèques"
 
-#: FFarmConfig.class:46
-msgid "Please enter your password."
-msgstr "Veuillez saisir votre mot de passe."
-
-#: FFarmConfig.class:81 FFarmRegister.class:28
-msgid "Please enter a valid e-mail address."
-msgstr "Veuillez saisir une adresse e-mail valide."
-
-#: FFarmConfig.class:87 FFarmRegister.class:34
-msgid "Confirm password does not match."
-msgstr "Le mot de passe de confirmation ne correspond pas."
-
-#: FFarmConfig.class:93 FFarmRegister.class:40
-msgid "Unable to register user."
-msgstr "Impossible d'enregistrer l'utilisateur."
-
-#: FFarmConfig.class:93 FFarmRegister.class:40
-msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
-msgstr "Vous avez été enregistré avec succès.\n\nVous recevrez un courriel de confirmation bientôt."
-
-#: FFarmConfig.class:128 FFarmLogin.class:23
+#: FFarmLogin.class:29
 msgid "Authentication failed."
 msgstr "L'authentification a échoué."
 
-#: FFarmConfig.form:39
-msgid "Configuration"
-msgstr "Configuration"
+#: FFarmLogin.form:26 FPublish.form:312 FSoftwareFarm.form:110
+msgid "Login"
+msgstr "S'identifier"
 
-#: FFarmConfig.form:51 FOption.form:240 FPublish.form:312
-msgid "Identity"
-msgstr "Identité"
-
-#: FPublish.form:296
+#: FFarmLogin.form:38 FFarmRegister.form:40
 msgid "Server"
 msgstr "Serveur"
 
-#: FNewConnection.form:138 FProjectVersion.form:127 FProxy.form:42
+#: FProjectVersion.form:127 FProxy.form:42
 msgid "User"
 msgstr "Utilisateur"
 
-#: FNewConnection.form:152 FProjectVersion.form:142 FProxy.form:47
+#: FProjectVersion.form:142 FProxy.form:47
 msgid "Password"
 msgstr "Mot de passe"
 
-#: FProjectVersion.form:155
+#: FFarmLogin.form:95 FNewConnection.form:172 FProjectVersion.form:155
 msgid "Remember password"
 msgstr "Se souvenir du mot de passe"
 
-#: FFarmConfig.form:137
-msgid "Register >>"
-msgstr "S'enregistrer >>"
+#: FFarmLogin.form:111
+msgid "Be anonymous"
+msgstr "Être anonyme"
 
-#: FOption.form:273
-msgid "E-mail"
-msgstr "E-mail"
+#: FFarmRegister.class:28
+msgid "Please enter a valid e-mail address."
+msgstr "Veuillez saisir une adresse e-mail valide."
 
-#: FFarmConfig.form:175 FFarmRegister.form:92
-msgid "Confirm password"
-msgstr "Confirmer le mot de passe"
+#: FFarmRegister.class:34
+msgid "Confirm password does not match."
+msgstr "Le mot de passe de confirmation ne correspond pas."
 
-#: FFarmConfig.form:189 FFarmRegister.form:121
-msgid "A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n<p>\n<b>Your e-mail will not be stored on the publishing server.</b>"
-msgstr "Un mail de confirmation sera envoyé à l'adresse spécifiée. Cliquez sur le lien contenu dans ce mail pour activer votre compte.\n<p>\n<b>Votre e-mail ne sera pas stocké sur le serveur de publication.</b>"
+#: FFarmRegister.class:40
+msgid "Unable to register user."
+msgstr "Impossible d'enregistrer l'utilisateur."
 
-#: FFarmConfig.form:204 FFarmRegister.form:28 FSoftwareFarm.form:129
+#: FFarmRegister.class:40
+msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
+msgstr "Vous avez été enregistré avec succès.\n\nVous recevrez un courriel de confirmation bientôt."
+
+#: FFarmRegister.form:28 FPublish.form:319 FSoftwareFarm.form:117
 msgid "Register"
 msgstr "S'enregistrer"
 
-#: FFarmConfig.form:215
-msgid "Servers"
-msgstr "Serveurs"
+#: FFarmRegister.form:92
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
 
-#: FFarmLogin.form:25 FSoftwareFarm.form:123
-msgid "Login"
-msgstr "S'identifier"
+#: FFarmRegister.form:108 FMakeInstall.form:220 FOption.form:273
+msgid "E-mail"
+msgstr "E-mail"
+
+#: FFarmRegister.form:121
+msgid "A confirmation mail will be sent to the specified e-mail address. Click on the link included in that mail to activate your account.\n<p>\n<b>Your e-mail will not be stored on the publishing server.</b>"
+msgstr "Un mail de confirmation sera envoyé à l'adresse spécifiée. Cliquez sur le lien contenu dans ce mail pour activer votre compte.\n<p>\n<b>Votre e-mail ne sera pas stocké sur le serveur de publication.</b>"
 
 #: FFieldChooser.class:54 FTableChooser.class:66
 msgid "Unable to open connection."
@@ -3057,7 +3041,7 @@ msgstr "Patch"
 msgid "Create"
 msgstr "Créer"
 
-#: FMain.form:444 FPublish.form:67
+#: FMain.form:444 FPublish.form:64
 msgid "Publish"
 msgstr "Publier"
 
@@ -3237,7 +3221,7 @@ msgstr "Classe de démarrage"
 msgid "Add to repository"
 msgstr "Ajouter au référentiel"
 
-#: FMain.form:971 FSoftwareFarm.form:208
+#: FMain.form:971 FSoftwareFarm.form:197
 msgid "Filter"
 msgstr "Filtrer"
 
@@ -3357,7 +3341,7 @@ msgstr "&Outils"
 msgid "&?"
 msgstr "&?"
 
-#: FMain.form:1511 FPublish.form:54
+#: FMain.form:1511 FPublish.form:51
 msgid "Publish software"
 msgstr "Publier un logiciel"
 
@@ -3509,7 +3493,7 @@ msgstr "Version du paquet"
 msgid "Maintainer information"
 msgstr "Informations sur le mainteneur"
 
-#: FMakeInstall.form:236 FOption.form:295 FPublish.form:86
+#: FMakeInstall.form:236 FOption.form:295 FPublish.form:83
 msgid "Vendor name"
 msgstr "Nom du fournisseur"
 
@@ -3805,7 +3789,7 @@ msgstr "Nouvelle traduction"
 msgid "Select a project"
 msgstr "Sélectionnez un projet"
 
-#: FOpenProject.form:109 FSoftwareFarm.class:38 FWelcome.class:65
+#: FOpenProject.form:109 FSoftwareFarm.class:39 FWelcome.class:65
 msgid "Examples"
 msgstr "Exemples"
 
@@ -3944,6 +3928,10 @@ msgstr "Avant-plan"
 #: FOption.form:214
 msgid "Background color"
 msgstr "Arrière-plan"
+
+#: FOption.form:240
+msgid "Identity"
+msgstr "Identité"
 
 #: FOption.form:284
 msgid "Package maintainer"
@@ -4645,85 +4633,85 @@ msgstr "Proxy SOCKS5"
 msgid "Software"
 msgstr "Logiciel"
 
-#: FPublish.class:177
+#: FPublish.class:158
 msgid "The project has been successfully published."
 msgstr "Le projet a été publié avec succès."
 
-#: FPublish.class:177
+#: FPublish.class:158
 msgid "Unable to publish project."
 msgstr "Impossible de publier le projet."
 
-#: FPublish.class:248
+#: FPublish.class:229
 msgid "Spaces are not allowed."
 msgstr "Les espaces ne sont pas autorisés."
 
-#: FPublish.class:254
+#: FPublish.class:235
 msgid "Incorrect version number."
 msgstr "Numéro de version incorrect."
 
-#: FPublish.class:286
+#: FPublish.class:267
 msgid "Do you really want to remove all tags?"
 msgstr "Voulez-vous vraiment retirer toutes les étiquettes ?"
 
-#: FPublish.class:341
+#: FPublish.class:322
 msgid "Select a screenshot file"
 msgstr "Choisissez un fichier de capture d'écran"
 
-#: FPublish.class:342
+#: FPublish.class:323
 msgid "Screenshot files"
 msgstr "Fichiers de capture d'écran"
 
-#: FPublish.form:71
+#: FPublish.form:68
 msgid "Software description"
 msgstr "Description du logiciel"
 
-#: FPublish.form:101
+#: FPublish.form:98
 msgid "Web site"
 msgstr "Site web"
 
-#: FPublish.form:116
+#: FPublish.form:113
 msgid "Create menu entry"
 msgstr "Créer une entrée de menu"
 
-#: FPublish.form:137 FSoftwareFarm.form:193
+#: FPublish.form:134 FSoftwareFarm.form:182
 msgid "Tags"
 msgstr "Étiquettes"
 
-#: FPublish.form:166
+#: FPublish.form:164
 msgid "Sort"
 msgstr "Trier"
 
-#: FPublish.form:178
+#: FPublish.form:176
 msgid "Screenshot"
 msgstr "Capture d'écran"
 
-#: FPublish.form:183
+#: FPublish.form:181
 msgid "Keep the screenshot stored on the server"
 msgstr "Conserver la capture d'écran stockée sur le serveur"
 
-#: FPublish.form:190
+#: FPublish.form:188
 msgid "Delete the screenshot stored on the server"
 msgstr "Supprimer la capture d'écran stockée sur le serveur"
 
-#: FPublish.form:196
+#: FPublish.form:194
 msgid "Upload a new screenshot taken from the clipboard"
 msgstr "Envoyer une nouvelle capture d'écran récupérée depuis le presse-papiers"
 
-#: FPublish.form:202
+#: FPublish.form:200
 msgid "Upload a new screenshot taken from the following file:"
 msgstr "Envoyer une nouvelle capture d'écran récupérée depuis le fichier suivant :"
 
-#: FPublish.form:224
+#: FPublish.form:222
 msgid "Dependencies"
 msgstr "Dépendences"
 
-#: FPublish.form:232
+#: FPublish.form:230
 msgid "Require Gambas version"
 msgstr "Version de Gambas nécessaire"
 
-#: FPublish.form:335
-msgid "Configure"
-msgstr "Configurer"
+#: FPublish.form:295
+msgid "Publish as"
+msgstr "Publier en tant que"
 
 #: FReportBorderChooser.form:43
 msgid "Configure border"
@@ -4913,111 +4901,111 @@ msgstr "Nouveau fragment de code"
 msgid "Trigger string"
 msgstr "Chaîne de déclenchement"
 
-#: FSoftwareFarm.class:36 Project.module:218
+#: FSoftwareFarm.class:37 Project.module:218
 msgid "Games"
 msgstr "Jeux"
 
-#: FSoftwareFarm.class:37
+#: FSoftwareFarm.class:38
 msgid "Development"
 msgstr "Développement"
 
-#: FSoftwareFarm.class:39
+#: FSoftwareFarm.class:40
 msgid "Education"
 msgstr "Éducation"
 
-#: FSoftwareFarm.class:40
+#: FSoftwareFarm.class:41
 msgid "Graphics"
 msgstr "Graphique"
 
-#: FSoftwareFarm.class:41
+#: FSoftwareFarm.class:42
 msgid "Audio"
 msgstr "Son"
 
-#: FSoftwareFarm.class:42 Project.module:225
+#: FSoftwareFarm.class:43 Project.module:225
 msgid "Video"
 msgstr "Vidéo"
 
-#: FSoftwareFarm.class:43
+#: FSoftwareFarm.class:44
 msgid "Office"
 msgstr "Bureautique"
 
-#: FSoftwareFarm.class:47
+#: FSoftwareFarm.class:48
 msgid "All softwares"
 msgstr "Tous les logiciels"
 
-#: FSoftwareFarm.class:144
+#: FSoftwareFarm.class:145
 msgid "No software found."
 msgstr "Aucun logiciel n'a été trouvé."
 
-#: FSoftwareFarm.class:163
+#: FSoftwareFarm.class:164
 msgid "Request cancelled."
 msgstr "Requête annulée."
 
-#: FSoftwareFarm.class:296
+#: FSoftwareFarm.class:297
 msgid "Cancel my vote"
 msgstr "Annuler mon vote"
 
-#: FSoftwareFarm.class:303
+#: FSoftwareFarm.class:304
 msgid "Upgrade"
 msgstr "Mettre à-jour"
 
-#: FSoftwareFarm.class:307
+#: FSoftwareFarm.class:308
 msgid "Uninstall"
 msgstr "Désinstaller"
 
-#: FSoftwareFarm.class:438
+#: FSoftwareFarm.class:439
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "Voulez-vous vraiment télécharger <b>&1</b> ?"
 
-#: FSoftwareFarm.class:441
+#: FSoftwareFarm.class:442
 msgid "Unable to download <b>&1</b>:"
 msgstr "Impossible de télécharger <b>&1</b> :"
 
-#: FSoftwareFarm.class:443
+#: FSoftwareFarm.class:444
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "<b>&1</b> a été téléchargé avec succès."
 
-#: FSoftwareFarm.class:458
+#: FSoftwareFarm.class:459
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "Voulez-vous vraiment mettre à-jour vers <b>&1</b> ?"
 
-#: FSoftwareFarm.class:461
+#: FSoftwareFarm.class:462
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "Impossible de mettre à-jour vers <b>&1</b> :"
 
-#: FSoftwareFarm.class:468
+#: FSoftwareFarm.class:469
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "Voulez-vous vraiment désinstaller <b>&1</b> ?"
 
-#: FSoftwareFarm.class:471
+#: FSoftwareFarm.class:472
 msgid "Unable to remove <b>&1</b>:"
 msgstr "Impossible de supprimer <b>&1</b> :"
 
-#: FSoftwareFarm.class:473
+#: FSoftwareFarm.class:474
 msgid "<b>&1</b> has been successfully removed."
 msgstr "<b>&1</b> a été supprimé avec succès."
 
-#: FSoftwareFarm.class:479
+#: FSoftwareFarm.class:480
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "Voulez-vous vraiment installer <b>&1</b> ?"
 
-#: FSoftwareFarm.class:482
+#: FSoftwareFarm.class:483
 msgid "Unable to install <b>&1</b>:"
 msgstr "Impossible d'installer <b>&1</b> :"
 
-#: FSoftwareFarm.class:484
+#: FSoftwareFarm.class:485
 msgid "<b>&1</b> has been successfully installed."
 msgstr "<b>&1</b> a été installé avec succès."
 
-#: FSoftwareFarm.class:504
+#: FSoftwareFarm.class:505
 msgid "Unable to modify your vote."
 msgstr "Impossible de modifier votre vote."
 
-#: FSoftwareFarm.class:535
+#: FSoftwareFarm.class:536
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "Désirez-vous vraiment supprimer <b>&1</b> du serveur de publication ?"
 
-#: FSoftwareFarm.class:539
+#: FSoftwareFarm.class:540
 msgid "Unable to remove <b>&1<b>:"
 msgstr "Impossible de désinstaller <b>&1</b> :"
 
@@ -5025,31 +5013,31 @@ msgstr "Impossible de désinstaller <b>&1</b> :"
 msgid "Gambas Software Farm"
 msgstr "Logithèque Gambas"
 
-#: FSoftwareFarm.form:167
+#: FSoftwareFarm.form:156
 msgid "Show"
 msgstr "Afficher"
 
-#: FSoftwareFarm.form:173
+#: FSoftwareFarm.form:162
 msgid "Installed"
 msgstr "Installés"
 
-#: FSoftwareFarm.form:173
+#: FSoftwareFarm.form:162
 msgid "Most downloaded"
 msgstr "Les plus téléchargés"
 
-#: FSoftwareFarm.form:173
+#: FSoftwareFarm.form:162
 msgid "Most popular"
 msgstr "Les plus populaires"
 
-#: FSoftwareFarm.form:173
+#: FSoftwareFarm.form:162
 msgid "Most recent"
 msgstr "Les plus récents"
 
-#: FSoftwareFarm.form:178
+#: FSoftwareFarm.form:167
 msgid "Show filters"
 msgstr "Afficher les filtres"
 
-#: FSoftwareFarm.form:338
+#: FSoftwareFarm.form:334
 msgid "Developer web site"
 msgstr "Site web du développeur"
 
@@ -5277,7 +5265,7 @@ msgstr "Projets récents"
 msgid "Welcome to Gambas 3"
 msgstr "Bienvenue dans Gambas 3"
 
-#: FarmIdentity.class:133
+#: FarmIdentity.class:131
 msgid "Anonymous"
 msgstr "Anonyme"
 

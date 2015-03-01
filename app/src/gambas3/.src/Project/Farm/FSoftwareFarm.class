@@ -282,8 +282,8 @@ Private Sub UpdateSoftware()
 
   With $hSoft
   
-    lblName.Text = .Name & " (" & .Vendor & ") " 
-    lblVersion.Text = .Version
+    'lblName.Text = .Name & " " & .Version & " (" & .Vendor & ") " 
+    dwgName.Tooltip = "#" & $hSoft.Id
   
     panURL.Visible = Not IsNull(.URL)
     urlWebSite.Link = .URL
@@ -364,6 +364,7 @@ Private Sub UpdateSoftware()
   
   End With
   
+  dwgName.Refresh
   dwgStat.Refresh
   
 End
@@ -427,6 +428,7 @@ End
 Public Sub dwgStat_Draw()
   
   If Not $hSoft Then Return
+  Paint.Font.Grade = 2
   SoftwareBox.PaintStat($hSoft, True)
   
 End
@@ -572,22 +574,27 @@ Public Sub wizFarm_Change()
   
   btnGoBack.Enabled = wizFarm.Index > 0
   
-  If wizFarm.Index = WIZ_FARM Then
+  Select Case wizFarm.Index
     
-    $hSoft = Null
-    imvScreenshot.Image = Null
-    FarmRequestManager.Clear
+    Case WIZ_INDEX
+      
+      FarmRequestManager.Clear
+  
+    Case WIZ_FARM 
     
-  Else If wizFarm.Index = WIZ_SOFTWARE Then
+      $hSoft = Null
+      imvScreenshot.Image = Null
     
-    If Not $hSoft.Observed Then 
-      hObs = New Observer($hSoft) As "Software"
-      $hSoft.Observed = True
-    Endif
+    Case WIZ_SOFTWARE 
     
-    UpdateSoftware
+      If Not $hSoft.Observed Then 
+        hObs = New Observer($hSoft) As "Software"
+        $hSoft.Observed = True
+      Endif
     
-  Endif
+      UpdateSoftware
+    
+  End Select
 
 End
 
@@ -606,5 +613,22 @@ End
 Public Sub btnRegister_Click()
 
   FFarmRegister.Run
+
+End
+
+Public Sub dwgName_Draw()
+
+  Dim sText As String
+
+  If Not $hSoft Then Return
+  
+  Paint.Font.Grade = 7
+
+  With $hSoft
+    'Paint.Background = Color.Foreground
+    sText = .Name & " " & .Version & " (" & .Vendor & ")"
+    Paint.DrawTextShadow(sText, 0, 0, Paint.W, Paint.H, Align.Left)
+    Paint.DrawText(sText, 0, 0, Paint.W, Paint.H, Align.Left)
+  End With
 
 End

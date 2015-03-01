@@ -19,14 +19,16 @@ Public Sub _new()
   $hBorder.Border = Border.Plain
   $hBorder.Arrangement = Arrange.Fill
   $hBorder.Mouse = Mouse.Text
+  $hBorder.Background = Color.TextBackground
   
   $hView = New ScrollView($hBorder) As "View"
   $hView.Border = False
-  $hView.Background = Color.TextBackground
   $hView.Arrangement = Arrange.Row
   $hView.Margin = True
   $hView.Spacing = True
   $hView.Padding = MARGIN
+  
+  Me.Proxy = $hView
   
   Clear()
   

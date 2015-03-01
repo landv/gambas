@@ -195,28 +195,31 @@ Public Sub DrawingArea_Draw()
   
   With $hSoft
   
-    If .Icon Then Paint.DrawImage(.Icon, X, Y)
+    If .Icon Then 
+      Paint.DrawImage(.Icon, X, Y)
+      X += .Icon.W + P
+    Else
+      X += CSoftware.ICON_SIZE + P
+    Endif
     
     'iCol = If($bSelected, Color.SelectedForeground, Color.Foreground)
     iCol = Color.Foreground
     
-    X += CSoftware.ICON_SIZE + P
-  
     'Paint.Background = If($bSelected, Color.SelectedForeground, Color.Foreground)
     Paint.Background = iCol
-    sText = .Name
+    sText = .Name & " " & .Version
     If .Vendor Then sText &= " (" & .Vendor & ")"
-    Paint.Font = Font["+1"]
+    Paint.Font = Font["+3"]
     Paint.Background = iCol
     Paint.DrawTextShadow(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
     Paint.DrawText(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
     
-    Paint.Font.Bold = False
-    sText = .Version
-    Paint.Background = Color.White
-    Paint.DrawTextShadow(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft, 1)
-    Paint.Background = iCol
-    Paint.DrawText(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft)
+    ' Paint.Font.Bold = False
+    ' sText = .Version
+    ' Paint.Background = Color.White
+    ' Paint.DrawTextShadow(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft, 1)
+    ' Paint.Background = iCol
+    ' Paint.DrawText(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft)
     
     X -= CSoftware.ICON_SIZE + P
     

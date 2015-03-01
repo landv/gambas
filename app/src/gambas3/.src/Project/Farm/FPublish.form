@@ -7,7 +7,7 @@
   Arrangement = Arrange.Fill
   Margin = True
   { wizPublish Wizard
-    MoveScaled(1,1,72,61)
+    MoveScaled(0,2,72,61)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 5
@@ -74,10 +74,11 @@
     Index = 1
     Text = ("Tags")
     { tagEditor CTagEditor
-      MoveScaled(1,1,67,14)
+      MoveScaled(3,1,67,17)
+      Expand = True
     }
     { Panel3 HBox
-      MoveScaled(2,20,62,27)
+      MoveScaled(2,22,62,27)
       Expand = True
       Spacing = True
       { lstTags ListBox
@@ -200,34 +201,34 @@
     }
     Index = 4
     Text = ("Publish")
-    { HBox2 HBox
-      MoveScaled(1,2,56,4)
+    { Panel5 HBox
+      MoveScaled(1,1,39,4)
       Spacing = True
       { Label1 Label
-        MoveScaled(0,0,19,4)
-        Text = ("Identity")
+        MoveScaled(1,0,11,4)
+        AutoResize = True
+        Text = ("Publish as")
       }
       { lblIdentity TextLabel
-        MoveScaled(33,0,18,4)
+        MoveScaled(19,0,18,4)
         Expand = True
         Alignment = Align.Normal
       }
     }
     { Panel4 HBox
-      MoveScaled(1,7,56,4)
+      MoveScaled(1,6,37,4)
       Spacing = True
-      { Label3 Label
-        MoveScaled(0,0,19,4)
-      }
       { btnLogin Button
-        MoveScaled(21,0,15,4)
+        MoveScaled(0,0,15,4)
         AutoResize = True
         Text = ("Login") & "..."
+        Picture = Picture["icon:/small/identity"]
       }
       { btnRegister Button
-        MoveScaled(37,0,15,4)
+        MoveScaled(16,0,15,4)
         AutoResize = True
         Text = ("Register") & "..."
+        Picture = Picture["icon:/small/new"]
       }
     }
     Index = 0
