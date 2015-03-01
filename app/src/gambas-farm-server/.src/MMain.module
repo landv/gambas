@@ -390,10 +390,12 @@ Private Sub PublishSoftware()
   iVersion = FromVersion(sVersion)
   If iVersion = 0 Then
     PrintError("19 Incorrect version")
+    Return
   Endif
   
   If Not IsInteger(sRelease) Then
     PrintError("20 Incorrect release")
+    Return
   Endif
   
   If sGambas Then
