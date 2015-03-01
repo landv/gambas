@@ -17,6 +17,7 @@ Private $hButton As Label
 Private $bOpenExtern As Boolean
 Private $dRecent As Date
 Private $sLastURL As String
+Private $hHelp As WebView
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -97,27 +98,27 @@ Private Sub FillWithExample()
   Dim aExamples As String[]
   Dim hHelp As WebView
   
-  ' Dim hPanel As Panel
-  ' Dim bHighlight As Boolean
-  
-  'If $hList.Children.Count Then Return
-  Clear
-
   Inc Application.Busy
   $hList.Arrangement = Arrange.None
   
   aExamples = GetExamples()
   If aExamples.Count = 0 Then
     
-    hHelp = New WebView($hList) As "ExampleWebView"
-    hHelp.Foreground = Color.LightForeground
-    hHelp.HTML = "<html><body><style type=\"text/css\">BODY { font-family:sans-serif;font-style:italic;color:#" & Hex$(Color.LightForeground) & "; }</style>" & 
-      Subst(("Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."), "<a href=\"farm://\">" & ("there") & "</a>") &
-      "</body></html>"
+    If Not $hHelp Then
+      Clear
+      $hHelp = New WebView($hList) As "ExampleWebView"
+      $hHelp.Foreground = Color.LightForeground
+      $hHelp.HTML = "<html><body><style type=\"text/css\">BODY { font-family:sans-serif;font-style:italic;color:#" & Hex$(Color.LightForeground) & "; }</style>" & 
+        Subst(("Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."), "<a href=\"farm://\">" & ("there") & "</a>") &
+        "</body></html>"
+      $hHelp.MoveScaled(0, 0, 8, 8)
+    Endif
     $hList.Arrangement = Arrange.Fill
     
   Else
   
+    Clear
+
     For Each sExample In aExamples
     
       ' sDir = File.Dir(sExample)
@@ -157,7 +158,6 @@ Private Sub FillWithExample()
   
   Endif
   
-  'lstExample.Show ' Workaround a scrollview bug that does not show the scrollbars.
   Dec Application.Busy
 
 End
@@ -166,6 +166,7 @@ Public Sub Clear()
   
   HideButton
   $hList.Children.Clear
+  $hHelp = Null
   
 End
 
@@ -443,3 +444,8 @@ Public Sub ExampleWebView_Error()
   
 End
 
+Public Sub ExampleWebView_Menu()
+  
+  Stop Event
+  
+End
