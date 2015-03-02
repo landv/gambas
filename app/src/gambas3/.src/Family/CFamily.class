@@ -152,6 +152,17 @@ Private Sub IsInside(hCtrl As Control) As Boolean
   
 End
 
+Public Sub GetIcon(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
+  sImage = LCase(hCCtrl["Arrangement"])
+  If sImage = "none" Then Return
+  Return sImage
+    
+End
+
+
 
 Private Sub CheckIcons()
   
@@ -172,9 +183,10 @@ Private Sub CheckIcons()
   
 End
 
-Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage As String)
+Public Sub EnterControl(hCont As Container, hCCtrl As CControl)
   
-  DrawIcon(hCont, hCCtrl, sImage)  
+  If hCCtrl.Parent Then EnterControl(hCont, hCCtrl.Parent)
+  DrawIcon(hCont, hCCtrl)
   
   If $bTrigger Then Return
   $bTrigger = True
@@ -201,7 +213,7 @@ Public Sub LeaveControl((hCont) As Container, hCCtrl As CControl)
   
 End
 
-Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
+Public Sub DrawIcon(hCont As Container, hCCtrl As CControl)
   
   Dim hCtrl As Control = hCCtrl.Control
   Dim hPict As Picture
@@ -210,19 +222,13 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
   Dim hComp As Control
   Dim X, Y As Integer
   Dim XI, YI, XC, YC As Integer
+  Dim sImage As String
 
-  If Not sImage Then
-  
-    sImage = LCase(hCCtrl["Arrangement"])
-    If sImage = "none" Then sImage = ""
-    
-  Endif
-  
+  sImage = Me.GetIcon(hCCtrl)
+
   If Not sImage Then Return
   
   'Debug hCCtrl.Name;; sImage
-  
-  If hCCtrl.GetProperty("Invert") And If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
   
   hIcon = hCCtrl["#icon"]
   
@@ -263,7 +269,7 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl, sImage As String)
         hTemp = New Image(16, 16, Color.Transparent)
       Endif
 
-      hImage = New Image(ICON_SIZE, ICON_SIZE, Color.RGB(0, 0, 0, 96))
+      hImage = New Image(ICON_SIZE, ICON_SIZE, Color.RGB(0, 0, 0, 128))
       hImage.PaintImage(hTemp, 0, 0)
       hPict = hImage.Picture
       Picture["$arr-" & sImage] = hPict

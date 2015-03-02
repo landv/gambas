@@ -11,7 +11,7 @@ Public Const EmbedContainer As String = "Panel"
 
 Static Private $hExpand As Picture
 
-Private Sub GetArrangement(hCCtrl As CControl) As String
+Public Sub GetIcon(hCCtrl As CControl) As String
   
   Dim sImage As String
   
@@ -36,10 +36,13 @@ Private Sub GetArrangement(hCCtrl As CControl) As String
       sImage = "vsplit"
       
     Case Else
-      sImage = LCase(hCCtrl["Arrangement"])
-      If sImage = "none" Then sImage = ""
+      sImage = Super.GetIcon(hCCtrl)
       
   End Select
+  
+  If hCCtrl.GetProperty("Invert") Then
+    If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
+  Endif
   
   Return sImage
   
@@ -67,11 +70,11 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         If hParent = hCCtrl.GetForm().RootControl Then Stop
         If hParent Then
           If Not $hExpand Then $hExpand = Picture["img/family/expand.png"]
-          Select Case GetArrangement(hParent)
-            Case "horizontal", "row"
+          Select Case GetIcon(hParent)
+            Case Like "horizontal*", "row*"
               Draw.Tile($hExpand, 0, (hCtrl.H - $hExpand.H) \ 2, hCtrl.W, $hExpand.H)
               Return
-            Case "vertical", "column"
+            Case Like "vertical*", "column*"
               Draw.Tile($hExpand, (hCtrl.W - $hExpand.W) \ 2, 0, $hExpand.W, hCtrl.H)
               Return
           End Select
@@ -110,36 +113,6 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   'Paint.AntiAlias = False
   Paint.Stroke
   'Paint.AntiAlias = True
-  
-End
-
-Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage As String)
-  
-  'Debug hCCtrl.Name
-
-  Select hCCtrl.Kind
-  
-    Case "HBox"
-      sImage = "horizontal"
-    
-    Case "VBox"
-      sImage = "vertical"
-      
-    Case "HPanel"
-      sImage = "row"
-      
-    Case "VPanel"
-      sImage = "column"
-      
-    Case "HSplit"
-      sImage = "hsplit"
-      
-    Case "VSplit"
-      sImage = "vsplit"
-      
-  End Select
-  
-  Super.EnterControl(hCont, hCCtrl, sImage)
   
 End
 

@@ -37,8 +37,8 @@ Public Sub _new()
       
     Endif
     
-    ButtonBox1.Text = Settings["FPreview/OutputFile"] 
-    ButtonBox1_Change
+    txtFile.Text = Settings["FPreview/OutputFile", User.Home &/ "report.pdf"]
+    $hPrinter.OutputFile = txtFile.Text
     $hPrinter.Name = Settings["FPreview/Printer"] 
     If Settings["FPreview/PrintToFile"] = True Then TabPanel1.Index = 1
     
@@ -54,7 +54,7 @@ Public Sub _new()
   Next
   
   SelectPrinter($hPrinter.Name)
-  Button1.Tag = False
+  btnPrint.Tag = False
   
 End
 
@@ -169,7 +169,7 @@ End
 
 Public Sub tgbGrayScale_Click()
   
-  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
   $hPrinter.GrayScale = Last.Value
   View._GrayScale = Last.Value
   
@@ -177,21 +177,21 @@ End
 
 Public Sub tgbFullPage_Click()
   
-  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
   $hPrinter.FullPage = Last.Value
   
 End
 
 Public Sub tgbReverseCopies_Click()
   
-  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
   $hPrinter.ReverseOrder = Last.value
   
 End
 
 Public Sub tgbCollateCopies_Click()
   
-  Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
+  'Last.Background = IIf(Last.Value, Color.Gray, Color.Default)
   $hPrinter.CollateCopies = Last.Value
   
 End
@@ -228,16 +228,16 @@ Public Sub cmbDuplex_Click()
   
 End
 
-Public Sub ButtonBox1_Click()
+Public Sub txtFile_Click()
   
-  Dialog.Path = User.Home
-  Dialog.Filter = ["*.pdf", "Pdf", "*.ps", "Postscript"]
+  Dialog.Path = txtFile.Text
+  Dialog.Filter = ["*.pdf", ("PDF files"), "*.ps", ("Postscript files")]
   
-  If Not Dialog.saveFile() Then
-    ButtonBox1.Text = Dialog.Path
-    $bVerif = True
-    $hPrinter.OutputFile = Dialog.Path
-  Endif
+  If Dialog.SaveFile() Then Return
+
+  txtFile.Text = Dialog.Path
+  $bVerif = True
+  $hPrinter.OutputFile = Dialog.Path
   
 End
 
@@ -248,7 +248,7 @@ Public Sub TabPanel1_Click()
     $hPrinter.Name = cmbPrinter.Text
     $iCurPrinterResolution = $hPrinter.Resolution
   Else
-    $hPrinter.OutputFile = ButtonBox1.Text
+    $hPrinter.OutputFile = txtFile.Text
     $hPrinter.Resolution = 300
   Endif
   
@@ -293,35 +293,34 @@ Public Sub cmbPrinter_Click()
   
 End
 
-Public Sub Button1_Click()
+Public Sub btnPrint_Click()
   
   Dim iReturn As Integer
   
-  If Button1.Tag Then
+  If btnPrint.Tag Then
     $hPrinter.Cancel
-    Button1.Tag = False
+    btnPrint.Tag = False
     
   Else
     If Not View.Report Then Return
+    
     If TabPanel1.Index = 1 Then
-      If $hPrinter.OutputFile Then
-        If Exist($hPrinter.OutputFile) And Not $bVerif Then
-          iReturn = Message.Warning("This file already exist.\nDo you want to replace it ?", "Yes", "No")
-          If iReturn = 2 Then 
-            ButtonBox1.SetFocus
-            Try Kill $hPrinter.OutputFile
-            Return 
-          Endif
-        Endif
-      Else
-        ButtonBox1_Click
-        Return
+      
+      If Not $hPrinter.OutputFile Then txtFile_Click
+      If Not $hPrinter.OutputFile Then Return
+      
+      If Exist($hPrinter.OutputFile) And Not $bVerif Then
+        iReturn = Message.Warning(("This file already exists.\nDo you want to replace it ?"), ("Replace"), ("Cancel"))
+        If iReturn = 2 Then Return
+        Try Kill $hPrinter.OutputFile
+        $bVerif = False
       Endif
       
     Endif
-    Button1.Tag = True
-    Button1.Picture = Picture["icon:/22/cancel"]
-    Button1.Text = ("Cancel")
+    
+    btnPrint.Tag = True
+    btnPrint.Picture = Picture["icon:/22/cancel"]
+    btnPrint.Text = ("Cancel")
     
     $hPrinter.Print
   Endif
@@ -370,19 +369,13 @@ Public Sub Printer_End()
   hbPrinting.Hide
   hbZoom.Show
   Dec Application.Busy
-  Button1.Picture = Picture["icon:/22/print"]
-  Button1.Text = ("Print")
-  Button1.Tag = False
+  btnPrint.Picture = Picture["icon:/22/print"]
+  btnPrint.Text = ("Print")
+  btnPrint.Tag = False
   
 End
 
 Public Sub Panel12_MouseDown()
-  
-End
-
-Public Sub ButtonBox1_Change()
-  
-  $hPrinter.OutputFile = ButtonBox1.Text
   
 End
 
@@ -397,7 +390,7 @@ Public Sub Form_Close()
   If Component.IsLoaded("gb.settings") Then 
     'Settings.Write(Me, "FPreview")
     Settings.Write(View, "View")
-    Settings["FPreview/OutputFile"] = ButtonBox1.Text
+    Settings["FPreview/OutputFile"] = txtFile.Text
     Settings["FPreview/Printer"] = $hPrinter.Name
     Settings["FPreview/PrintToFile"] = TabPanel1.Index = 1
     Settings["FPreview/Duplex"] = cmbDuplex.Index
@@ -408,4 +401,10 @@ Public Sub Form_Close()
     Settings.Save()
   Endif
   
+End
+
+Public Sub Form_Open()
+
+  ToolButton1.Value = True
+
 End

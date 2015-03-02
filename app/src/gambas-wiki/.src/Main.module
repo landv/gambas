@@ -336,6 +336,11 @@ Public Sub Main()
   Dim sPath As String
   Dim sText As String
   
+  ' If Application.Host = "gambasfarm.org" Then
+  '   Response.Redirect("http://gambasfarm.org/farm")
+  '   Return
+  ' Endif
+  
   CGI["SCRIPT_NAME"] = "/wiki" ' Fix web server bug
   Root = User.Home &/ "wiki/gambas"
   InfoDir = User.Home &/ "wiki/info"

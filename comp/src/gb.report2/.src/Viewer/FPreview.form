@@ -19,23 +19,30 @@
       { hbPrinting HBox
         MoveScaled(1,70,71,4)
         Visible = False
-        { Panel18 Panel
-          MoveScaled(1,0,20,4)
-          Expand = True
-          Arrangement = Arrange.Horizontal
-        }
+        Spacing = True
+        Indent = True
         { lblPrint Label
-          MoveScaled(23,0,11,3)
+          MoveScaled(11,0,14,4)
+          AutoResize = True
           Text = ("Printing...")
         }
-        { ProgressBar1 ProgressBar
-          MoveScaled(34,0,37,4)
+        { Panel11 Panel
+          MoveScaled(27,0,42,4)
+          Expand = True
+          Arrangement = Arrange.Fill
+          Margin = True
+          Padding = 4
+          { ProgressBar1 ProgressBar
+            MoveScaled(0,0,37,3)
+            Expand = True
+            Border = False
+          }
         }
       }
       { hbZoom HBox
         MoveScaled(1,80,73,4)
         { Panel2 Panel
-          MoveScaled(-1,0,19,3)
+          MoveScaled(0,0,19,4)
           Expand = True
           Arrangement = Arrange.Horizontal
           { ToolButton1 ToolButton Mode
@@ -43,16 +50,15 @@
             MoveScaled(0,0,4,4)
             Tag = "1"
             ToolTip = ("One page")
-            Picture = Picture["22/OnePage.png"]
+            Picture = Picture["16/one-page.png"]
             Toggle = True
-            Value = True
           }
           { ToolButton2 ToolButton Mode
             Name = "ToolButton2"
             MoveScaled(4,0,4,4)
             Tag = "2"
             ToolTip = ("Two pages")
-            Picture = Picture["22/TwoPage.png"]
+            Picture = Picture["16/two-pages.png"]
             Toggle = True
           }
           { ToolButton4 ToolButton Mode
@@ -60,7 +66,7 @@
             MoveScaled(8,0,4,4)
             Tag = "3"
             ToolTip = ("Full width")
-            Picture = Picture["22/FullWidth.png"]
+            Picture = Picture["16/full-width.png"]
             Toggle = True
           }
           { ToolButton3 ToolButton Mode
@@ -68,17 +74,19 @@
             MoveScaled(12,0,4,4)
             Tag = "4"
             ToolTip = ("Real size")
-            Picture = Picture["22/RealSize.png"]
+            Picture = Picture["16/real-size.png"]
             Toggle = True
           }
         }
         { Slider1 Slider
           MoveScaled(36,0,26,4)
           MinValue = 12
-          MaxValue = 200
+          MaxValue = 400
+          Value = 100
         }
         { lblZoom Label
-          MoveScaled(63,1,8,2)
+          MoveScaled(63,0,8,4)
+          Text = ("100 %")
           Alignment = Align.Center
         }
       }
@@ -91,7 +99,7 @@
       Spacing = True
       Margin = True
       { TabPanel1 TabPanel
-        MoveScaled(0,-1,36,19)
+        MoveScaled(1,1,36,18)
         Count = 2
         Index = 0
         Text = ("Printer")
@@ -109,159 +117,148 @@
           MoveScaled(1,1,7,7)
           Picture = Picture["icon:/48/pdf"]
         }
-        { ButtonBox1 ButtonBox
+        { txtFile ButtonBox
           MoveScaled(1,9,34,4)
           Picture = Picture["icon:/16/open"]
+          ReadOnly = True
         }
         Index = 0
       }
       { Panel14 HBox
         MoveScaled(1,20,36,4)
+        Spacing = True
         { Label10 Label
           MoveScaled(0,0,12,4)
           Text = ("Orientation")
         }
         { cmbOrientation ComboBox
           MoveScaled(14,0,21,4)
+          Expand = True
           ReadOnly = True
           List = [("Portrait"), ("Landscape")]
         }
       }
       { Panel8 HBox
         MoveScaled(1,24,36,4)
+        Spacing = True
         { Label3 Label
           MoveScaled(0,0,12,4)
           Text = ("Paper")
         }
         { cmbPaper ComboBox
           MoveScaled(13,0,21,4)
+          Expand = True
           ReadOnly = True
           List = [("Custom"), ("A3"), ("A4"), ("A5"), ("B5"), ("Letter"), ("Executive"), ("Legal")]
         }
       }
-      { pnlCust Panel
-        MoveScaled(2,30,35,16)
-        { pnlCustom Panel
-          MoveScaled(2,0,31,15)
-          Enabled = False
-          Border = Border.Etched
+      { pnlCustom VBox
+        MoveScaled(1,29,36,9)
+        Enabled = False
+        Spacing = True
+        { Panel3 HBox
+          MoveScaled(1,0,32,4)
+          Spacing = True
           { Label5 Label
-            MoveScaled(3,2,7,4)
+            MoveScaled(0,0,12,4)
             Text = ("Width")
           }
           { spWidth SpinBox
-            MoveScaled(11,2,13,4)
+            MoveScaled(14,0,13,4)
+            Expand = True
             MaxValue = 1000
           }
           { Label7 Label
-            MoveScaled(24,2,4,4)
+            MoveScaled(27,0,4,4)
             Text = ("mm")
           }
+        }
+        { Panel17 HBox
+          MoveScaled(1,4,31,4)
+          Spacing = True
           { Label6 Label
-            MoveScaled(3,9,8,4)
+            MoveScaled(0,0,12,4)
             Text = ("Height")
           }
           { spHeight SpinBox
-            MoveScaled(11,9,13,4)
+            MoveScaled(13,0,13,4)
+            Expand = True
             MaxValue = 1000
           }
           { Label8 Label
-            MoveScaled(24,9,4,4)
+            MoveScaled(26,0,4,4)
             Text = ("mm")
           }
         }
       }
-      { Panel11 Panel
-        MoveScaled(2,46,35,3)
-        Expand = True
-      }
-      { Panel16 VBox
-        MoveScaled(2,48,37,12)
+      { Panel7 HBox
+        MoveScaled(1,39,36,4)
         Spacing = True
-        { Panel7 HBox
-          MoveScaled(0,1,36,4)
-          { Label2 Label
-            MoveScaled(0,0,12,4)
-            Text = ("Recto Verso")
-          }
-          { cmbDuplex ComboBox
-            MoveScaled(15,0,21,4)
-            ReadOnly = True
-            List = [("None"), ("Short side"), ("Long side")]
-          }
+        { Label2 Label
+          MoveScaled(0,0,12,4)
+          Text = ("Recto Verso")
         }
-        { HBox3 HBox
-          MoveScaled(-1,6,35,6)
-          Spacing = True
-          { Panel13 Panel
-            MoveScaled(1,1,3,4)
-            Expand = True
-          }
-          { tgbGrayScale ToggleButton
-            MoveScaled(5,0,6,6)
-            ToolTip = ("Gray Scale")
-            Picture = Picture["32/grayscale.png"]
-          }
-          { tgbFullPage ToggleButton
-            MoveScaled(11,0,6,6)
-            Visible = False
-            Enabled = False
-            ToolTip = ("Full Page")
-            Picture = Picture["32/Empty.png"]
-            Value = True
-          }
-          { tgbReverseCopies ToggleButton
-            MoveScaled(17,0,6,6)
-            ToolTip = ("Reverse order")
-            Picture = Picture["32/reverse.png"]
-          }
-          { tgbCollateCopies ToggleButton
-            MoveScaled(24,0,6,6)
-            ToolTip = ("Collate copie")
-            Picture = Picture["32/Collatecopie.png"]
-          }
-          { Panel15 Panel
-            MoveScaled(32,2,3,3)
-            Expand = True
-          }
+        { cmbDuplex ComboBox
+          MoveScaled(15,0,21,4)
+          Expand = True
+          ReadOnly = True
+          List = [("None"), ("Short side"), ("Long side")]
         }
       }
-      { Panel12 Panel
-        MoveScaled(2,57,35,5)
-        Expand = True
+      { tgbGrayScale CheckBox
+        MoveScaled(1,44,34,4)
+        Text = ("Grayscale")
+      }
+      { tgbFullPage CheckBox
+        MoveScaled(1,48,24,4)
+        Visible = False
+        Text = ("Full page")
       }
       { Panel6 HBox
-        MoveScaled(2,61,36,4)
+        MoveScaled(2,53,34,4)
+        Spacing = True
         { Label1 Label
-          MoveScaled(0,0,15,4)
+          MoveScaled(0,0,12,4)
           Text = ("Range")
         }
         { TextBox1 ButtonBox
-          MoveScaled(17,0,18,4)
+          MoveScaled(15,0,18,4)
+          Expand = True
           Picture = Picture["icon:/16/clear"]
         }
       }
       { HBox1 HBox
-        MoveScaled(2,66,34,4)
+        MoveScaled(2,58,34,4)
+        Spacing = True
         { Label4 Label
-          MoveScaled(0,0,15,4)
+          MoveScaled(0,0,12,4)
           Text = ("Copies")
         }
         { TextBox2 SpinBox
           MoveScaled(15,0,12,4)
+          Expand = True
           MinValue = 1
         }
       }
+      { tgbCollateCopies CheckBox
+        MoveScaled(1,63,35,3)
+        Text = ("Collate copies")
+      }
+      { tgbReverseCopies CheckBox
+        MoveScaled(1,66,36,4)
+        Text = ("Reverse order")
+      }
       { Panel5 Panel
-        MoveScaled(2,71,33,2)
+        MoveScaled(2,71,33,3)
+        Expand = True
       }
       { HBox2 HBox
-        MoveScaled(2,75,33,6)
+        MoveScaled(2,76,33,6)
         { Panel10 Panel
           MoveScaled(2,1,10,3)
           Expand = True
         }
-        { Button1 Button
+        { btnPrint Button
           MoveScaled(7,0,22,6)
           Text = ("Print")
           Picture = Picture["icon:/22/print"]

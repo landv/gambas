@@ -416,8 +416,10 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
 
 End
 
-Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage As String)
-
+Public Sub GetIcon(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
   Select hCCtrl.Kind
 
     Case "ReportHBox"
@@ -428,8 +430,8 @@ Public Sub EnterControl(hCont As Container, hCCtrl As CControl, Optional sImage 
 
   End Select
 
-  Super.EnterControl(hCont, hCCtrl, sImage)
-
+  Return sImage
+  
 End
 
 Static Private Sub RoundRect(x As Float, y As Float, w As Float, h As Float, Radius_X As Float[], radius_y As Float[])
