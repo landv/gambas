@@ -163,6 +163,7 @@ bool PAINT_begin(void *device)
 	paint->other = FALSE;
 	paint->has_path = FALSE;
 	paint->tag = NULL;
+	paint->area.x = paint->area.y = 0;
 	
 	paint->previous = _current;
 	_current = paint;
@@ -176,8 +177,7 @@ bool PAINT_begin(void *device)
 		paint->extra = other->extra;
 		paint->opened = TRUE;
 		paint->other = TRUE;
-		paint->width = other->width;
-		paint->height = other->height;
+		paint->area = other->area;
 		paint->resolutionX = other->resolutionX;
 		paint->resolutionY = other->resolutionY;
 		paint->brush = other->brush;
@@ -219,6 +219,9 @@ void PAINT_translate(double tx, double ty)
 {
 	GB_TRANSFORM transform;
 
+	if (tx == 0.0 && ty == 0.0)
+		return;
+
 	MPAINT->Create(&transform);
 	PAINT->Matrix(THIS, FALSE, transform);
 	MPAINT->Translate(transform, (float)tx, (float)ty);
@@ -228,9 +231,11 @@ void PAINT_translate(double tx, double ty)
 
 void PAINT_set_area(GEOM_RECTF *area)
 {
+	THIS->area.x = area->x;
+	THIS->area.y = area->y;
+	THIS->area.width = area->w;
+	THIS->area.height = area->h;
 	PAINT_translate(area->x, area->y);
-	THIS->width = area->w;
-	THIS->height = area->h;
 }
 
 //---- PaintExtents ---------------------------------------------------------
@@ -564,7 +569,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Paint_Width)
 
 	CHECK_DEVICE();
-	GB.ReturnFloat(THIS->width);
+	GB.ReturnFloat(THIS->area.width);
 
 END_PROPERTY
 
@@ -572,7 +577,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Paint_Height)
 
 	CHECK_DEVICE();
-	GB.ReturnFloat(THIS->height);
+	GB.ReturnFloat(THIS->area.height);
 
 END_PROPERTY
 
@@ -1302,6 +1307,7 @@ BEGIN_METHOD_VOID(Paint_Reset)
 
 	CHECK_DEVICE();
 	PAINT->Matrix(THIS, TRUE, NULL);
+	PAINT_translate(THIS->area.x, THIS->area.y);
 
 END_METHOD
 

@@ -97,8 +97,8 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 {
 	QPen pen;
 	
-	d->width = device->width();
-	d->height = device->height();
+	d->area.width = device->width();
+	d->area.height = device->height();
 	d->resolutionX = device->physicalDpiX();
 	d->resolutionY = device->physicalDpiY();
 	
@@ -236,8 +236,8 @@ static int Begin(GB_PAINT *d)
 		if (wid->isCached())
 			PAINTER(d)->initFrom(wid);
 		
-		d->width = wid->width();
-		d->height = wid->height();
+		d->area.width = wid->width();
+		d->area.height = wid->height();
 		return FALSE;
 	}
 	else if (GB.Is(device, CLASS_Printer))

@@ -120,8 +120,12 @@ typedef
 		struct GB_PAINT_DESC *desc;        // drawing driver
 		struct GB_PAINT *previous;         // previous drawing context
 		void *device;                      // drawing object
-		double width;                      // device width in device coordinates
-		double height;                     // device height in device coordinates
+		struct {
+			double x;
+			double y;
+			double width;
+			double height;
+		} area;                            // drawing area
 		int resolutionX;                   // device horizontal resolution in DPI
 		int resolutionY;                   // device vertical resolution in DPI
 		PAINT_BRUSH *brush;                // current brush

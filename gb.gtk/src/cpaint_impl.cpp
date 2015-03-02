@@ -116,8 +116,8 @@ static bool init_painting(GB_PAINT *d, cairo_surface_t *target, double w, double
 {
 	GB_PAINT_EXTRA *dx = EXTRA(d);
 	
-	d->width = w;
-	d->height = h;
+	d->area.width = w;
+	d->area.height = h;
 	d->resolutionX = rx; //device->physicalDpiX();
 	d->resolutionY = ry; //device->physicalDpiY();
 	
