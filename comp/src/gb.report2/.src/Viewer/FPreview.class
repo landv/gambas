@@ -28,7 +28,7 @@ Public Sub _new()
     Settings.Read(View, "View")
     
     If View.ScaleMode = View.Custom Then
-      Slider1.Value = View.Zoom
+      sldZoom.Value = View.Zoom
     Else
       For Each hButton In $aModeButtons
         hButton.Value = False
@@ -117,12 +117,12 @@ Private Sub GetValuesFromReport()
   
 End
 
-Public Sub Slider1_Change()
+Public Sub sldZoom_Change()
   
   Dim hButton As ToolButton
 
   View.ScaleMode = View.Custom
-  View.Zoom = Slider1.Value / 100
+  View.Zoom = sldZoom.Value / 100
   'lblZoom.Text = Str(Slider1.Value) & " %"
   bFlag = True
   For Each hButton In $aModeButtons
@@ -135,11 +135,11 @@ End
 
 Public Sub View_Zoom()
 
-  Object.Lock(Slider1)
-  Slider1.Value = View.Zoom * 100
-  Object.Unlock(Slider1)
+  Object.Lock(sldZoom)
+  sldZoom.Value = View.Zoom * 100
+  Object.Unlock(sldZoom)
 
-  lblZoom.Text = Str(Slider1.Value) & " %"
+  lblZoom.Text = Str(sldZoom.Value) & " %"
   
 End
 
@@ -407,5 +407,17 @@ End
 Public Sub Form_Open()
 
   ToolButton1.Value = True
+
+End
+
+Public Sub btnZoomIn_Click()
+
+  sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100) + 0.5) * 2 + 0.5) / 2) + 0.5
+
+End
+
+Public Sub btnZoomOut_Click()
+
+  sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100)) * 2 - 0.5) / 2) + 0.5
 
 End

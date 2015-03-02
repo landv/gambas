@@ -14,6 +14,7 @@
         MoveScaled(2,2,70,65)
         Background = Color.LightForeground
         Tag = "3"
+        Mouse = Mouse.SizeAll
         Expand = True
       }
       { hbPrinting HBox
@@ -78,16 +79,26 @@
             Toggle = True
           }
         }
-        { Slider1 Slider
-          MoveScaled(36,0,26,4)
-          MinValue = 12
+        { btnZoomOut ToolButton
+          MoveScaled(23,0,4,4)
+          ToolTip = ("Zoom out")
+          Picture = Picture["icon:/small/zoom-out"]
+        }
+        { sldZoom Slider
+          MoveScaled(30,0,26,4)
+          MinValue = 13
           MaxValue = 400
           Value = 100
         }
         { lblZoom Label
-          MoveScaled(62,0,8,4)
+          MoveScaled(56,0,8,4)
           Text = ("100 %")
           Alignment = Align.Center
+        }
+        { btnZoomIn ToolButton
+          MoveScaled(65,0,4,4)
+          ToolTip = ("Zoom in")
+          Picture = Picture["icon:/small/zoom-in"]
         }
       }
     }
