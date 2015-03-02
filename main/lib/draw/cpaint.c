@@ -126,13 +126,19 @@ bool PAINT_open(GB_PAINT *paint)
 
 void PAINT_close(GB_PAINT *paint)
 {
-	if (paint->opened && !paint->other)
+	if (!paint->opened)
+		return;
+
+	if (!paint->other)
 	{
 		//fprintf(stderr, "PAINT_close: %p\n", paint);
 		paint->desc->End(paint);
 		GB.Free(POINTER(&paint->extra));
-		paint->opened = FALSE;
 	}
+	else
+		PAINT->Restore(THIS);
+	
+	paint->opened = FALSE;
 }
 
 bool PAINT_begin(void *device)
@@ -183,6 +189,7 @@ bool PAINT_begin(void *device)
 		paint->brush = other->brush;
 		if (paint->brush)
 			GB.Ref(paint->brush);
+		PAINT->Save(THIS);
 	}
 	else
 	{
