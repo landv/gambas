@@ -49,6 +49,7 @@ public:
 	static gControl* activeControl() { return _active_control; }
 	static gControl* previousControl() { return _previous_control; }
 	static void setActiveControl(gControl *control, bool on);
+	static void handleFocusNow();
 	
 	static void suspendEvents(bool vl);
 	static void enableEvents();

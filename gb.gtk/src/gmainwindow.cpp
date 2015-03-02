@@ -74,7 +74,7 @@ static gboolean cb_hide(GtkWidget *widget, gMainWindow *data)
 	//	gMainWindow::setActiveWindow(NULL);
 }
 
-static gboolean cb_close(GtkWidget *widget,GdkEvent  *event,gMainWindow *data)
+static gboolean cb_close(GtkWidget *widget,GdkEvent *event, gMainWindow *data)
 {
 	if (!gMainWindow::_current || data == gMainWindow::_current)
 		data->doClose();
@@ -233,6 +233,7 @@ void gMainWindow::initialize()
 	_min_w = _min_h = 0;
 	_transparent = false;
 	_utility = false;
+	_no_take_focus = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -254,7 +255,7 @@ void gMainWindow::initWindow()
 	{
 		g_signal_connect(G_OBJECT(border), "configure-event", G_CALLBACK(cb_configure), (gpointer)this);
 		g_signal_connect_after(G_OBJECT(border), "map", G_CALLBACK(cb_show), (gpointer)this);
-		g_signal_connect(G_OBJECT(border),"unmap",G_CALLBACK(cb_hide),(gpointer)this);
+		g_signal_connect(G_OBJECT(border),"unmap", G_CALLBACK(cb_hide),(gpointer)this);
 		//g_signal_connect_after(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_configure), (gpointer)this);
 		ON_DRAW_BEFORE(widget, this, cb_expose, cb_draw);
 		gtk_widget_add_events(border, GDK_STRUCTURE_MASK);
@@ -262,11 +263,11 @@ void gMainWindow::initWindow()
 	else
 	{
 		//g_signal_connect(G_OBJECT(border),"size-request",G_CALLBACK(cb_realize),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "show",G_CALLBACK(cb_show),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "hide",G_CALLBACK(cb_hide),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "configure-event",G_CALLBACK(cb_configure),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "delete-event",G_CALLBACK(cb_close),(gpointer)this);
-		g_signal_connect(G_OBJECT(border), "window-state-event",G_CALLBACK(cb_frame),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "show", G_CALLBACK(cb_show),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "hide", G_CALLBACK(cb_hide),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "configure-event", G_CALLBACK(cb_configure),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "delete-event", G_CALLBACK(cb_close),(gpointer)this);
+		g_signal_connect(G_OBJECT(border), "window-state-event", G_CALLBACK(cb_frame),(gpointer)this);
 		
 		gtk_widget_add_events(widget,GDK_BUTTON_MOTION_MASK);
 		ON_DRAW_BEFORE(border, this, cb_expose, cb_draw);
@@ -362,7 +363,9 @@ gMainWindow::gMainWindow(gContainer *par) : gContainer(par)
 gMainWindow::~gMainWindow()
 {
 	//fprintf(stderr, "delete window %p %s\n", this, name());
-	
+
+	gApplication::handleFocusNow();
+
 	if (opened)
 	{
 		emit(SIGNAL(onClose));
@@ -605,14 +608,14 @@ void gMainWindow::setVisible(bool vl)
 				g_object_set(G_OBJECT(border), "has-resize-grip", false, (char *)NULL);
 			#endif
 
-			gtk_window_set_focus_on_map(GTK_WINDOW(border), !_no_take_focus);
-
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			if (isPopup())
 			{
 				gtk_widget_show_now(border);
 				gtk_widget_grab_focus(border);
 			}
+			else if (_no_take_focus)
+				gtk_widget_show(border);
 			else
 				gtk_window_present(GTK_WINDOW(border));
 
@@ -827,7 +830,7 @@ void gMainWindow::showPopup(int x, int y)
 
 void gMainWindow::showActivate()
 {
-	bool v = isTopLevel() && isVisible();
+	bool v = isTopLevel() && isVisible() && !_no_take_focus;
 
 	show();
 	if (v)
@@ -1641,4 +1644,6 @@ bool gMainWindow::closeAll()
 void gMainWindow::setNoTakeFocus(bool v)
 {
 	_no_take_focus = v;
+	if (isTopLevel())
+		gtk_window_set_focus_on_map(GTK_WINDOW(border), !_no_take_focus);
 }

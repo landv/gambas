@@ -1,7 +1,5 @@
 ' Gambas class file
 
-' Gambas class file
-
 Export
 Inherits UserControl
 
@@ -79,7 +77,6 @@ Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
 Event Finished
 Event Zoom
-Private $iX As Integer
 
 Public Sub _new()
   
@@ -859,12 +856,12 @@ Private Function Item_Read() As _DocumentItem
   
 End
 
-Private Function Current_Read() As _DocumentItem
-  
-  $hDocItem._Index = $iCurrent
-  Return $hDocItem
-  
-End
+' Private Function Current_Read() As _DocumentItem
+'   
+'   $hDocItem._Index = $iCurrent
+'   Return $hDocItem
+'   
+' End
 
 Public Sub View_MouseDown()
   

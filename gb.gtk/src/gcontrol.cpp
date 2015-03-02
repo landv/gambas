@@ -365,6 +365,8 @@ gControl::~gControl()
 		gFont::assign(&_resolved_font);
 	}
 
+	//fprintf(stderr, "~gControl: %s\n", name());
+
 	setName(NULL);
 
 	controls = g_list_remove(controls, this);

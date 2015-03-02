@@ -297,8 +297,8 @@ static void gambas_handle_event(GdkEvent *event)
 	{
 		control = NULL;
 		//if (GTK_IS_WINDOW(widget))
-		//	control = gt_get_control(widget);
-		//fprintf(stderr, "GDK_FOCUS_CHANGE: widget = %p %d : %s  grab = %p\n", widget, GTK_IS_WINDOW(widget), control ? control->name() : NULL, grab);
+		control = gt_get_control(widget);
+		//fprintf(stderr, "GDK_FOCUS_CHANGE: widget = %p %d : %s %d\n", widget, GTK_IS_WINDOW(widget), control ? control->name() : NULL, event->focus_change.in);
 		
 		//if (GTK_IS_WINDOW(widget))
 		{
@@ -1188,11 +1188,15 @@ static void post_focus_change(void *)
 {
 	gControl *current, *control, *next;
 	
+	if (!_focus_change)
+		return;
+
 	//fprintf(stderr, "post_focus_change\n");
-	
+
 	for(;;)
 	{
 		current = gApplication::activeControl();
+		//fprintf(stderr, "activeControl = %s\n", current ? current->name() : NULL);
 		if (current == gApplication::_old_active_control)
 			break;
 
@@ -1210,7 +1214,7 @@ static void post_focus_change(void *)
 			break;
 		
 		gApplication::_old_active_control = current;
-		//fprintf(stderr, "post_focus_change: setActiveWindow\n");
+		//fprintf(stderr, "_old_active_control = %s\n", current ? current->name() : NULL);
 		gMainWindow::setActiveWindow(current);
 		
 		control = gApplication::activeControl();
@@ -1226,6 +1230,11 @@ static void post_focus_change(void *)
 	_focus_change = FALSE;
 }
 
+void gApplication::handleFocusNow()
+{
+	post_focus_change(NULL);
+}
+
 static void handle_focus_change()
 {
 	if (_focus_change)
@@ -1239,7 +1248,7 @@ void gApplication::setActiveControl(gControl *control, bool on)
 {
 	if (on == (_active_control == control))
 		return;
-	
+
 	//fprintf(stderr, "setActiveControl: %s %d\n", control->name(), on);
 
 	if (_active_control)
