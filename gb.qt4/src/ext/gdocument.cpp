@@ -1576,16 +1576,9 @@ void GDocument::baptizeUntil(int y)
 }
 #endif
 
-void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
+void GDocument::invalidateHighlight()
 {
 	int i;
-
-	highlightMode = mode;
-
-	if (mode == Gambas)
-		highlightCallback = GDocument::highlightGambas;
-	else
-		highlightCallback = cb;
 
 	for (i = 0; i < numLines(); i++)
 		lines.at(i)->modified = true;
@@ -1596,13 +1589,25 @@ void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
 	updateViews();
 }
 
+void GDocument::setHighlightMode(int mode, GHighlightCallback cb)
+{
+	highlightMode = mode;
+
+	if (mode == Gambas)
+		highlightCallback = GDocument::highlightGambas;
+	else
+		highlightCallback = cb;
+
+	invalidateHighlight();
+}
+
 void GDocument::setKeywordsUseUpperCase(bool v)
 { 
 	if (v == keywordsUseUpperCase)
 		return;
 		
 	keywordsUseUpperCase = v; 
-	setHighlightMode(getHighlightMode());
+	invalidateHighlight();
 }
 
 void GDocument::emitTextChanged()

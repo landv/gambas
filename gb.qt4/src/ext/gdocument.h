@@ -231,6 +231,7 @@ private:
 	void modifyLine(GLine *l, int y);
 	void disableColorize();
 	void enableColorize();
+	void invalidateHighlight();
 };
 
 #endif
