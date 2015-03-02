@@ -527,7 +527,7 @@ Private Sub Zoom_Write(Value As Float)
   Select Case $iArrangement
     Case Arrange.None, Arrange.Row, Arrange.Column, Arrange.LeftRight, Arrange.TopBottom
       
-      SetZoom(Min(Max(Value, 0.1), 2))
+      SetZoom(Min(Max(Value, 0.1), 4))
       '$iArrangement = None
       '$fZoom = $fZoom
       'just refresh image in the cache don't clear them

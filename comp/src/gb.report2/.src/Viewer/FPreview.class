@@ -5,7 +5,7 @@ Private bFlag As Boolean
 Private $hPrinter As New Printer As "Printer"
 Private $iCurPrinterResolution As Integer
 Private $bVerif As Boolean
-Private $bZoomChange As Boolean
+
 Static Public Function Run(hReport As Report)
   
   Dim hFPreview As FPreview
@@ -120,25 +120,25 @@ End
 Public Sub Slider1_Change()
   
   Dim hButton As ToolButton
-  $bZoomChange = True
+
   View.ScaleMode = View.Custom
   View.Zoom = Slider1.Value / 100
-  lblZoom.Text = Str(Slider1.Value) & " %"
+  'lblZoom.Text = Str(Slider1.Value) & " %"
   bFlag = True
   For Each hButton In $aModeButtons
     hButton.Value = False
   Next
   
   bFlag = False  
-  $bZoomChange = False
+
 End
 
 Public Sub View_Zoom()
-  If Not $bZoomChange Then
+
   Object.Lock(Slider1)
   Slider1.Value = View.Zoom * 100
   Object.Unlock(Slider1)
-  Endif
+
   lblZoom.Text = Str(Slider1.Value) & " %"
   
 End

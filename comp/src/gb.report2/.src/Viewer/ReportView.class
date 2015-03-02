@@ -53,7 +53,7 @@ Private Sub _GrayScale_Write(Value As Boolean)
   
 End
 
-Public Sub View_Draw(Page As Integer, Width As Integer, Height As Integer)
+Public Sub View_Draw((Page) As Integer, Width As Integer, Height As Integer)
   '$hReport.Layout()
   'Print page
 
@@ -200,7 +200,7 @@ Public Sub MoveLast()
   
 End
 
-Public Sub MoveTo(Page As Integer)
+Public Sub MoveTo((Page) As Integer)
   
   $hView.MoveTo(Page)
   $hView.Item.EnsureVisible
@@ -224,7 +224,9 @@ End
 Private Sub ScaleMode_Write(Value As Integer)
 
   $iScaleMode = Value
-$hView.AutoCenter = False
+  
+  $hView.AutoCenter = False
+  
   Select Case Value
     Case Me.Custom
       $hView.Column = 0
@@ -246,9 +248,7 @@ $hView.AutoCenter = False
       $hView.Zoom = 1
   End Select
   
-  Raise Zoom ' Force the preview zoom slider to update in all cases
-  
-$hView.Refresh
+  $hView.Refresh
 
 End
 
