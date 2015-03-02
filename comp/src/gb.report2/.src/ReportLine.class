@@ -45,9 +45,9 @@ Public Sub _NormalizeUnits()
 
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
 
-  Dim hMyHints As New TSizeHint
+  Dim hMyHints As New ReportSizeHints
 
   hMyHints.Height = Me._Height
   hMyHints.Width = Me._Width

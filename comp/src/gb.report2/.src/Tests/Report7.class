@@ -1,0 +1,28 @@
+' Gambas class file
+
+
+Public Sub ReportDrawingArea_Layout()
+  
+  
+  
+End
+
+
+Public Sub ReportDrawingArea1_Layout(Width As Integer, Height As Integer, Index As Integer)
+
+  Last.SizeHints = ReportSizeHints(3, 3, False)
+  
+End
+
+
+Public Sub ReportDrawingArea1_Draw(Width As Integer, Height As Integer, Index As Integer)
+
+  Draw.line(0, 0, Width, Height)
+  
+End
+
+Public Sub Report_Open()
+
+  
+
+End

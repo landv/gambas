@@ -7,7 +7,7 @@ Public Const _IsControl As Boolean = True
 Public Const _IsContainer As Boolean = False
 Public Const _Properties As String = "Left{ReportCoord},Top{ReportCoord},Width{ReportCoord},Height{ReportCoord},Brush{ReportBrush},Visible=True,Fixed,Font,Padding,Margin,Ignore,Expand,AutoResize,Tag,Range"
 Public Const _Family As String = "Report"
-Public _SizeInt As TSizeHint
+Public _SizeInt As ReportSizeHints
 Public _Count As Integer = 1
 Public _Finished As Boolean
 Private $iDataindex As Integer
@@ -188,13 +188,13 @@ Private Sub Expand_Write(Value As Boolean)
   
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As ReportSizeHints
   
   'Error.Raise("Something goes wrong the _GetSizeHints is not correctly implemented")
   'Implementaion standart du sizeInt hors autoresize et hbox
   '
   
-  Dim hMyHints As New TSizeHint
+  Dim hMyHints As New ReportSizeHints
   
   If Me._RelativeHeight Then
     hMyHints.Height = TotalHeight * Me._Height / 100

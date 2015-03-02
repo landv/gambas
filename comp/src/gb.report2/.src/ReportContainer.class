@@ -163,9 +163,9 @@ Public Sub _NormalizeUnits()
   
 End
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
   
-  Dim hMyHints As New TSizeHint
+  Dim hMyHints As New ReportSizeHints
   
   'If Me._SizeInt.StoreSize Then Return Me._SizeInt
   'If Me.tag = "*" Then Stop
@@ -200,12 +200,12 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
   
 End
 
-Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
   
   Dim hChild As ReportControl
   Dim fHeight, fWidth As Float
-  Dim hChildHints As TSizeHint
-  Dim hMyHints As New TSizeHint
+  Dim hChildHints As ReportSizeHints
+  Dim hMyHints As New ReportSizeHints
   Dim fSpc As Float
   Dim fMaxSpc As Float
   Dim i As Integer
@@ -237,10 +237,10 @@ Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   
 End
 
-Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
   
-  Dim hSizeInt As New TSizeHint
-  Dim htmpInts As TSizeHint
+  Dim hSizeInt As New ReportSizeHints
+  Dim htmpInts As ReportSizeHints
   Dim hChild As ReportControl         ''Enfants
   Dim fHeight, fSpc, fWidth As Float
   Dim i, j As Integer
@@ -416,7 +416,7 @@ Private Function SetFChildGeometry(X As Float, Y As Float, W As Float, H As Floa
   
   Dim hChild As ReportControl
   Dim hTItem As TControl
-  Dim hChildHints As TSizeHint
+  Dim hChildHints As ReportSizeHints
   Dim aPageItems As New TControl[]
   Dim oChild As Object
   Dim j As Integer
@@ -460,7 +460,7 @@ Private Function SetNChildGeometry(X As Float, Y As Float, W As Float, H As Floa
   Dim hChild As ReportControl
   Dim ochild As Object
   Dim hTItem As TControl
-  Dim hChildHints As TSizeHint
+  Dim hChildHints As ReportSizeHints
   Dim aPageItems As New TControl[]
   Dim iX, iY As Integer
   Dim J As Integer
@@ -510,7 +510,7 @@ End
 Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   
   Dim aPageItems As New TControl[] ''Éléments contenu par cette page
-  Dim hChildHints As TSizeHint ''Besoins en hauteur/largeur de l'enfant
+  Dim hChildHints As ReportSizeHints ''Besoins en hauteur/largeur de l'enfant
   Dim hChild As ReportControl  ''Un enfant reportcontrol
   Dim oChild As Object
   Dim TW, fWidth, fSpc As Float
@@ -705,7 +705,7 @@ End
 Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   
   Dim aPageItems As New TControl[] ''Éléments contenu par cette page
-  Dim hChildHints As TSizeHint ''Besoins en hauteur/largeur de l'enfant
+  Dim hChildHints As ReportSizeHints ''Besoins en hauteur/largeur de l'enfant
   Dim hChild As ReportControl  ''Un enfant reportcontrol
   Dim fTH As Float ''Hauteur restante
   Dim fSpc As Float ''Taille d'un espace

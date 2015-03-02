@@ -20,9 +20,9 @@ Private $fAngle As Integer
 Private $bUseField As Boolean
 Event Data(Index As Integer)
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
   
-  Dim hSizeHint As TSizeHint
+  Dim hSizeHint As ReportSizeHints
   Dim hRect As RectF
   Dim fWidth, fHeight As Float
   Dim sText As String
@@ -51,7 +51,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
     'If sText = "Gambas" Then Stop
     If $fAngle = 0 Then
       hRect = Paint.TextSize(sText)
-      hSizeHint = New TSizeHint
+      hSizeHint = New ReportSizeHints
       fWidth = Me.Border._Left + Me.Padding._Left + Me.Report._FromPixels(hRect.Width) + Me.Padding._Right + Me.Border._Right 
       fHeight = Me.Border._Top + Me.Padding._Top + Me.Report._FromPixels(hRect.Height) + Me.Padding._Bottom + Me.Border._Bottom
     Else

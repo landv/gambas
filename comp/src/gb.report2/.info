@@ -585,7 +585,7 @@ m
 
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Reset
 m
@@ -620,7 +620,7 @@ s
 Report
 _SizeInt
 v
-TSizeHint
+ReportSizeHints
 
 _Count
 v
@@ -784,7 +784,7 @@ m
 [(Parent)ReportContainer;]
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _PaintBeFore
 m
@@ -838,6 +838,45 @@ Lower
 m
 
 
+#ReportDrawingArea
+ReportFrame
+C
+_Properties
+C
+s
+*,Cached
+_Similar
+C
+s
+ReportImage
+_DefaultEvent
+C
+s
+Draw
+SizeHints
+v
+ReportSizeHints
+
+Cached
+p
+b
+
+:Layout
+:
+
+(Width)i(Height)i(Index)i
+:Draw
+:
+
+(Width)i(Height)i(Index)i
+_GetSizeHints
+m
+ReportSizeHints
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
+_Paint
+m
+
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportFrame
 ReportControl
 
@@ -879,7 +918,7 @@ m
 
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Free
 m
@@ -945,7 +984,7 @@ Image
 (Index)i
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
@@ -996,7 +1035,7 @@ b
 (Index)i
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
@@ -1035,7 +1074,7 @@ m
 
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
@@ -1140,6 +1179,25 @@ _Free
 m
 
 
+#ReportSizeHints
+
+C
+Width
+v
+f
+
+Height
+v
+f
+
+NotFinished
+v
+b
+
+_call
+M
+ReportSizeHints
+(Width)f(Height)f[(NotFinished)f]
 #ReportSvgImage
 ReportFrame
 C
@@ -1173,7 +1231,7 @@ i
 (Index)i
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m
@@ -1212,7 +1270,7 @@ i
 (Index)i
 _GetSizeHints
 m
-TSizeHint
+ReportSizeHints
 (AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
 _Paint
 m

@@ -19,9 +19,9 @@ Public Data As Image
 
 Event Data(Index As Integer)
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
   
-  Dim hMyHints As New TSizeHint
+  Dim hMyHints As New ReportSizeHints
   
   Dim hPic As Image
   Dim fRatio As Float

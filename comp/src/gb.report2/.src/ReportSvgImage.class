@@ -15,9 +15,9 @@ Property Stretch As Integer
 Property Alignment As Integer
 Event Data(Index As Integer)
 
-Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As TSizeHint
+Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
   
-  Dim hMyHints As New TSizeHint
+  Dim hMyHints As New ReportSizeHints
   Dim fRatio As Float
   'Dim h As Float = IIf(Me._Height > AvailableH, AvailableH, Me._Height)
   'Dim w As Float = IIf(Me._Width > AvailableW, AvailableW, Me._Width)

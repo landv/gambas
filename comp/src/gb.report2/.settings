@@ -5,7 +5,9 @@ ReportContainer=[560,822]
 Count=0
 
 [DebugWindow]
-Count=0
+Count=2
+DebugWindow[1]="ReportSizeHint"
+DebugWindow[2]="Me"
 
 [DebugWindow/$aSections]
 Geometry=[-55,269,210,210]
@@ -36,7 +38,7 @@ ShowHidden=True
 Geometry=[0,0,210,210]
 
 [DebugWindow/Me]
-Geometry=[19,13,294,210]
+Geometry=[19,13,294,280]
 
 [DebugWindow/Me.BackGround._PaintBrush(X1, Y1, X2, Y2)]
 Geometry=[-7,-10,210,210]
@@ -66,6 +68,9 @@ Geometry=[-7,-10,210,210]
 ShowHidden=True
 Geometry=[-7,-10,210,210]
 
+[DebugWindow/ReportSizeHint]
+Geometry=[0,0,224,280]
+
 [DebugWindow/ReportVBox(Me).Children]
 Geometry=[7,4,294,210]
 
@@ -83,6 +88,9 @@ Geometry=[-7,-10,210,210]
 
 [DebugWindow/TSizeParse[s]]
 Geometry=[-7,-10,210,210]
+
+[DebugWindow/View.RangePages]
+Geometry=[0,0,224,280]
 
 [DebugWindow/_ObjectFromId]
 Geometry=[-7,420,256,282]
@@ -145,46 +153,17 @@ Geometry=[28,264,210,210]
 Geometry=[-7,-10,210,210]
 
 [FCommit]
-LastCommit="[GB.REPORT2]\n* NEW: Add the ReportTextLabel widget. It use the draw class drawing method\n  so we are able to use all drawing feature allowed from qt/gtk in theire\n  html4 interpretor.\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .info\nM       .list\nM       .project\nA  +    .settings\nA       .src/ReportTextLabel.class\nA       .src/Tests/Report6.class\nA       .src/Tests/Report6.report\nM       .startup"
+LastCommit="[GB.REPORT2]\n* BUG: Some Range errors\n---- Cette ligne et les suivantes seront ignorées ----\n\nM       .project\nA  +    .settings\nA       .src/Tests/Report51.class\nA       .src/Tests/Report51.report\nM       .src/Viewer/FPreview.class\nM       .src/Viewer/ReportView.class\nM       .startup"
 
 [OpenFile]
-Active=33
-File[1]=".src/ReportSvgImage.class:62.2"
-Count=35
-File[2]=".src/ReportImage.class:31.64"
-File[3]=".src/ReportGridView.class:8.11"
-File[4]=".src/Tests/FMain.form"
-File[5]=".src/Tests/Module1.module:0.0"
-File[6]=".src/Report.class:708.2"
-File[7]=".src/ReportLabel.class:35.64"
-File[8]=".src/ReportPanel.class:14.34"
-File[9]=".src/Viewer/FPreview.class:63.26"
-File[10]=".src/Viewer/ReportView.class:29.2"
-File[11]=".src/ReportContainer.class:1045.3"
-File[12]=".src/Types/TSizeParse.class:49.2"
-File[13]=".src/Optional/Align.class:0.0"
-File[14]=".src/Optional/Line.class:0.0"
-File[15]=".src/Tools/CPrint.class:0.0"
-File[16]=".src/Types/TControl.class:14.17"
-File[17]=".src/ReportLine.class:44.0"
-File[18]=".src/Tools/MUtil.module:12.18"
-File[19]=".src/Types/ReportGridView/_ReportGridView_Rows.class:109.0"
-File[20]=".src/ReportFrame.class:172.25"
-File[21]=".src/Viewer/FPreview.form"
-File[22]=".src/Types/BoxShadow/ReportBoxShadow.class:204.0"
-File[23]=".src/Types/BoxShadow/_ReportBoxShadow.class:11.0"
-File[24]=".src/ReportControl.class:648.0"
-File[25]=".src/ReportVBox.class:0.0"
-File[26]=".src/Tests/Report3.report"
-File[27]=".src/Tests/Report3.class:17.28"
-File[28]="capture12.png"
-File[29]=".src/Tests/Report1.report"
-File[30]=".src/Tests/Report5.report"
-File[31]=".src/Tests/Report5.class:5.2"
-File[32]=".src/Tests/Report4.report"
-File[33]=".src/ReportTextLabel.class:96.8"
-File[34]=".src/Tests/Report6.report"
-File[35]=".src/Tests/Report6.class:2.0"
+Active=5
+File[1]=".src/ReportDrawingArea.class:34.2"
+Count=6
+File[2]=".src/Report.class:710.2"
+File[3]=".src/Types/TSizeParse.class:63.2"
+File[4]=".src/Tests/Report7.report"
+File[5]=".src/Tests/Report7.class:7.3"
+File[6]=".src/ReportControl.class:198.28"
 
 [VersionControl]
 User="gambix"

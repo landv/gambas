@@ -10,10 +10,13 @@
     Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
     Tag = "**"
     { rhh ReportHBox
-      #MoveScaled(15,0,84,7)
+      #MoveScaled(12,6,84,7)
       Height = "1cm"
       Margin = ReportMargin["Top:3mm;Bottom:1mm"]
       Background = ReportBrush["#00FF00"]
+    }
+    { ReportDrawingArea1 ReportDrawingArea
+      #MoveScaled(10,16,85,27)
     }
   }
   Index = 0
