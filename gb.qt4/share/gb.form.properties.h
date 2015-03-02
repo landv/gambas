@@ -68,7 +68,7 @@
 #define CTOOLBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
 #define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture"
 #define CVBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES ",Invert"
-#define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Utility,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100,Transparent," CWINDOW_ARRANGEMENT_PROPERTIES
+#define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Utility,TakeFocus=True,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100,Transparent," CWINDOW_ARRANGEMENT_PROPERTIES
 
 #define DESCRIBE_CONTROL(_prop, _event, _size) \
 	GB_CONSTANT("_Properties", "s", _prop), \

@@ -86,6 +86,7 @@ typedef
 		unsigned showMenuBar : 1;
 		unsigned sticky : 1;
 		unsigned mustCenter : 1;
+		unsigned noTakeFocus : 1;
 		}
 	CWINDOW;
 

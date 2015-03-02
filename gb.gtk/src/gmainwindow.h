@@ -56,6 +56,7 @@ public:
 	bool isHidden() const { return _hidden; }
 	bool isPopup() const { return _popup; }
 	bool isTransparent() const { return _transparent; }
+	bool isNoTakeFocus() const { return _no_take_focus; }
 	int screen();
 	
 	int controlCount();
@@ -78,6 +79,7 @@ public:
 	void setStacking(int vl);
   void setPersistent(bool vl);
 	void setTransparent(bool vl);
+	void setNoTakeFocus(bool vl);
 	
 	virtual void setVisible(bool vl);
 	virtual void setBackground(gColor vl);
@@ -192,6 +194,7 @@ public:
 	unsigned _fullscreen : 1;
 	unsigned _utility : 1;
 	unsigned _transparent : 1;
+	unsigned _no_take_focus : 1;
 };
 
 #endif

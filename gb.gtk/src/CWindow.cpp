@@ -711,6 +711,15 @@ BEGIN_PROPERTY(Window_Transparent)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_TakeFocus)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(!WINDOW->isNoTakeFocus());
+	else
+		WINDOW->setNoTakeFocus(!VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 //-------------------------------------------------------------------------
 
 BEGIN_METHOD_VOID(CFORM_new)
@@ -839,6 +848,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("SkipTaskbar", "b", CWINDOW_skip_taskbar),
 	GB_PROPERTY("Opacity", "i", Window_Opacity),
 	GB_PROPERTY("Transparent", "b", Window_Transparent),
+	GB_PROPERTY("TakeFocus", "b", Window_TakeFocus),
 
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("AutoResize", "b", Container_AutoResize),

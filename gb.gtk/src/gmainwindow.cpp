@@ -604,7 +604,9 @@ void gMainWindow::setVisible(bool vl)
 			if (g_object_class_find_property(G_OBJECT_GET_CLASS(border), "has-resize-grip"))
 				g_object_set(G_OBJECT(border), "has-resize-grip", false, (char *)NULL);
 			#endif
-				
+
+			gtk_window_set_focus_on_map(GTK_WINDOW(border), !_no_take_focus);
+
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
 			if (isPopup())
 			{
@@ -1634,4 +1636,9 @@ bool gMainWindow::closeAll()
 	}
 
 	return false;
+}
+
+void gMainWindow::setNoTakeFocus(bool v)
+{
+	_no_take_focus = v;
 }

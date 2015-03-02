@@ -1359,6 +1359,14 @@ BEGIN_PROPERTY(Window_Transparent)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_TakeFocus)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(!THIS->noTakeFocus);
+	else
+		THIS->noTakeFocus = !VPROP(GB_BOOLEAN);
+
+END_PROPERTY
 
 
 /***************************************************************************/
@@ -1457,6 +1465,7 @@ GB_DESC CWindowDesc[] =
 	GB_PROPERTY("Visible", "b", Window_Visible),
 	GB_PROPERTY("Opacity", "i", Window_Opacity),
 	GB_PROPERTY("Transparent", "b", Window_Transparent),
+	GB_PROPERTY("TakeFocus", "b", Window_TakeFocus),
 
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("Padding", "i", Container_Padding),
@@ -1678,6 +1687,8 @@ void MyMainWindow::present()
 		if (isUtility() && _resizable)
 			setMinimumSize(THIS->minw, THIS->minh);
 		
+		setAttribute(Qt::WA_ShowWithoutActivating, THIS->noTakeFocus);
+
 		if (getState() & Qt::WindowMinimized)
 			showMinimized();
 		else if (getState() & Qt::WindowFullScreen)
@@ -1692,7 +1703,7 @@ void MyMainWindow::present()
 		else
 			setSizeGrip(false);
 		
-		if (hasBorder())
+		if (hasBorder() && !THIS->noTakeFocus)
 		{
 			//MAIN_process_events();
 			//usleep(50000);
@@ -1721,7 +1732,6 @@ void MyMainWindow::present()
 
 void MyMainWindow::showActivate(QWidget *transient)
 {
-	CWIDGET *_object = CWidget::get(this);
 	QWidget *newParentWidget = 0;
 
 	//qDebug("showActivate: %s %d", THIS->widget.name, isToolbar());
@@ -1752,6 +1762,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 	//::sleep(1);
 
 	present();
+
 	afterShow();
 
 	#ifndef NO_X_WINDOW
