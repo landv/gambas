@@ -19,8 +19,8 @@ Public Sub Form_Open()
   DV2.Count = 0
   DV2.DocHeight = hpdf[1].Height / 0.72
   DV2.DocWidth = hpdf[1].Width / 0.72
-   DV.DocHeight = hpdf[1].Height / 0.72
-  DV.DocWidth = hpdf[1].Width / 0.72
+   DV.DocHeight = hpdf[1].Width / 0.72
+  DV.DocWidth = hpdf[1].Height / 0.72
   'DocumentView31.Arrangement = Arrange.Horizontal
   ComboBox1.Index = 5
 End

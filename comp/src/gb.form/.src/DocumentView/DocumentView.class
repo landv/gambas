@@ -360,10 +360,10 @@ Private Sub DoLayout()
     Case Arrange.Fill
       '$hView.ScrollBar = Scroll.None
       
-      If $iDocHeight > $iDocWidth * $iColumn Then
+      If $iDocHeight > $iDocWidth * Max($iColumn, 1) Then
         SetZoom($hView.ClientH / ($iDocHeight + $iPadding * 2))
       Else
-        SetZoom($hView.ClientW / ($iDocWidth + (($iDocWidth + $iSpacing) * ($iColumn - 1)) + $iPadding * 2))
+        SetZoom($hView.ClientW / (($iDocWidth + $iPadding * 2) + ($iDocWidth + $iSpacing) * $iColumn))
         If ($iDocHeight + 2 * $iPadding) * $fZoom > $hView.ClientH Then 
           SetZoom($hView.ClientH / ($iDocHeight + $iPadding * 2))
         Endif
