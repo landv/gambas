@@ -215,6 +215,23 @@ void PAINT_end()
 	GB.Free(POINTER(&paint));
 }
 
+void PAINT_translate(double tx, double ty)
+{
+	GB_TRANSFORM transform;
+
+	MPAINT->Create(&transform);
+	PAINT->Matrix(THIS, FALSE, transform);
+	MPAINT->Translate(transform, (float)tx, (float)ty);
+	PAINT->Matrix(THIS, TRUE, transform);
+	MPAINT->Delete(&transform);
+}
+
+void PAINT_set_area(GEOM_RECTF *area)
+{
+	PAINT_translate(area->x, area->y);
+	THIS->width = area->w;
+	THIS->height = area->h;
+}
 
 //---- PaintExtents ---------------------------------------------------------
 
@@ -504,14 +521,17 @@ GB_DESC PaintBrushDesc[] =
 //---- Paint ----------------------------------------------------------------
 
 
-BEGIN_METHOD(Paint_Begin, GB_OBJECT device)
+BEGIN_METHOD(Paint_Begin, GB_OBJECT device; GB_OBJECT area)
 
 	void *device = VARG(device);
+	GEOM_RECTF *area = VARGOPT(area, NULL);
 
 	if (GB.CheckObject(device))
 		return;
 
 	PAINT_begin(device);
+	if (area)
+		PAINT_set_area(area);
 
 END_METHOD
 
@@ -1288,14 +1308,8 @@ END_METHOD
 
 BEGIN_METHOD(Paint_Translate, GB_FLOAT tx; GB_FLOAT ty)
 
-	GB_TRANSFORM transform;
-
 	CHECK_DEVICE();
-	MPAINT->Create(&transform);
-	PAINT->Matrix(THIS, FALSE, transform);
-	MPAINT->Translate(transform, (float)VARG(tx), (float)VARG(ty));
-	PAINT->Matrix(THIS, TRUE, transform);
-	MPAINT->Delete(&transform);
+	PAINT_translate(VARG(tx), VARG(ty));
 
 END_METHOD
 
@@ -1637,7 +1651,7 @@ GB_DESC PaintDesc[] =
 	GB_CONSTANT("OperatorAdd", "i",      GB_PAINT_OPERATOR_ADD),
 	GB_CONSTANT("OperatorSaturate", "i", GB_PAINT_OPERATOR_SATURATE),
 
-	GB_STATIC_METHOD("Begin", NULL, Paint_Begin, "(Device)o"),
+	GB_STATIC_METHOD("Begin", NULL, Paint_Begin, "(Device)o[(Area)RectF]"),
 	GB_STATIC_METHOD("End", NULL, Paint_End, NULL),
 	
 	GB_STATIC_PROPERTY_READ("Device", "o", Paint_Device),
