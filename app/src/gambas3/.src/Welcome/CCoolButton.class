@@ -65,8 +65,8 @@ Public Sub Panel_Draw()
   If $hPanel.HasFocus Then
     Paint.AntiAlias = False
     Paint.LineWidth = 2
-    Paint.Background = $iHighlight
-    Paint.Rectangle(1, 1, Paint.W - 2, Paint.H - 2)
+    Paint.Background = Color.SetAlpha($iHighlight, 128)
+    Paint.Rectangle(2, 2, Paint.W - 4, Paint.H - 4)
     Paint.Stroke
     Paint.AntiAlias = True
   Endif

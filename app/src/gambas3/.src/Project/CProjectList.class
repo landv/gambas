@@ -106,13 +106,14 @@ Private Sub FillWithExample()
     If Not $hHelp Then
       Clear
       $hHelp = New WebView($hList) As "ExampleWebView"
+      $hHelp.MoveScaled(0, 0, 4, 4)
       $hHelp.Foreground = Color.LightForeground
       $hHelp.HTML = "<html><body><style type=\"text/css\">BODY { font-family:sans-serif;font-style:italic;color:#" & Hex$(Color.LightForeground) & "; }</style>" & 
         Subst(("Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."), "<a href=\"farm://\">" & ("there") & "</a>") &
         "</body></html>"
-      $hHelp.MoveScaled(0, 0, 8, 8)
     Endif
     $hList.Arrangement = Arrange.Fill
+    $hFilter.Enabled = False
     
   Else
   
@@ -154,6 +155,7 @@ Private Sub FillWithExample()
   
     ApplyFilter($hFilter.Text)
     $hList.Arrangement = $iArrange
+    $hFilter.Enabled = True
   
   Endif
   
@@ -241,6 +243,9 @@ Private Sub FillWithRecent(bClear As Boolean)
   
   $hList.Arrangement = $iArrange
   $hList.ScrollY = 0
+  
+  $hFilter.Enabled = aRecent.Count
+  
   Dec Application.Busy
   
 End
@@ -414,6 +419,17 @@ Public Sub ScrollView_GotFocus()
   $hFilter.SetFocus
   
 End
+
+' Public Sub ScrollView_Arrange()
+'   
+'   Debug $hList.Name;; $hList.Children.Count;; 
+'   If $hList.Children.Count Then
+'     Error Str($hList.Children[0].Visible);;
+'   Endif
+'   Error
+'   
+' End
+
 
 Private Function AllowOpenExtern_Read() As Boolean
 

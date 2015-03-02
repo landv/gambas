@@ -171,6 +171,7 @@ Public Sub Request_Finished()
   For Each sId In aId
     
     hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
+    If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Hide
     hSoftwareBox.ResizeScaled(48, 15)
     hSoftwareBox.Load
     
@@ -194,6 +195,7 @@ Public Sub SoftwareBox_Ready()
   
   If cmbSort.Index = SORT_INSTALLED And If Not hSoft.IsInstalled() Then Goto DELETE
   If hSoft.IsInstalled() And If Comp(hSoft.Version, hSoft.GetInstallVersion(), gb.Natural) < 0 Then Goto DELETE
+  hSoftwareBox.Show
   Return
   
 DELETE:

@@ -1,7 +1,8 @@
 ' Gambas module file
 
-Private $aRequest As New HttpForm[]
+Property Read Count As Integer
 
+Private $aRequest As New HttpForm[]
 Private Const MAX_REQUEST As Integer = 3
 
 Public Sub Add(hRequest As HttpForm)
@@ -78,3 +79,9 @@ Public Sub Clear()
 End
 
 
+
+Private Function Count_Read() As Integer
+
+  Return $aRequest.Count
+
+End
