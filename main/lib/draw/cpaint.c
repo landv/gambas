@@ -137,7 +137,7 @@ void PAINT_close(GB_PAINT *paint)
 	}
 	else
 		PAINT->Restore(THIS);
-	
+
 	paint->opened = FALSE;
 }
 
@@ -1669,7 +1669,7 @@ GB_DESC PaintDesc[] =
 	GB_CONSTANT("OperatorAdd", "i",      GB_PAINT_OPERATOR_ADD),
 	GB_CONSTANT("OperatorSaturate", "i", GB_PAINT_OPERATOR_SATURATE),
 
-	GB_STATIC_METHOD("Begin", NULL, Paint_Begin, "(Device)o[(Area)RectF]"),
+	GB_STATIC_METHOD("Begin", NULL, Paint_Begin, "(Device)o[(Area)RectF;]"),
 	GB_STATIC_METHOD("End", NULL, Paint_End, NULL),
 	
 	GB_STATIC_PROPERTY_READ("Device", "o", Paint_Device),
