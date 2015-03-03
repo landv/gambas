@@ -638,7 +638,6 @@ _INIT_AGAIN:
     If Not Exist(Project.Dir &/ ".hidden") Then InsertDirectory(Project.Dir &/ ".hidden")
     
     CreateGitIgnore
-    CreateComponentFile
     
   Endif
   
@@ -5938,20 +5937,20 @@ Public Sub RequireProgram(aProg As String[]) As String
   
 End
 
-Private Sub CreateComponentFile()
-  
-  Dim hFile As File
-  
-  If Type = TYPE_NORMAL Then Return
-  If Exist(Project.Dir &/ ".component") Then Return
-  
-  hFile = Open Project.Dir &/ ".component" For Create 
-  Print #hFile, "[Component]"
-  Print #hFile, "Key="; Project.Name
-  Print #hFile, "Version="; FormatVersion()
-  Close #hFile    
-  
-End
+' Private Sub CreateComponentFile()
+'   
+'   Dim hFile As File
+'   
+'   If Type = TYPE_NORMAL Then Return
+'   If Exist(Project.Dir &/ ".component") Then Return
+'   
+'   hFile = Open Project.Dir &/ ".component" For Create 
+'   Print #hFile, "[Component]"
+'   Print #hFile, "Key="; Project.Name
+'   Print #hFile, "Version="; FormatVersion()
+'   Close #hFile    
+'   
+' End
 
 Public Sub ReadComponentFile() As Collection
   
@@ -6038,7 +6037,10 @@ Public Sub WriteComponentFile(cComp As Collection) As Boolean
   Dim sData As String
 
   If Type = TYPE_NORMAL Then 
-    Try Kill sPath
+    If Exist(sPath) Then
+      VersionControl.RemoveFile(sPath)
+      Try Kill sPath
+    Endif
     Return
   Endif
 
