@@ -723,7 +723,7 @@ Fast Public Function _FromPixels(Value As Float) As Float
   
 End
 
-Fast Static Private Function GetFactorToInch(Unit As String) As Float
+Fast Static Private Function GetFactorToCm(Unit As String) As Float
   
   Select Case Unit
     Case "cm"
@@ -758,9 +758,9 @@ Fast Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As Str
   Dim fInch As Float
   Dim f As Float
   
-  f = GetFactorToInch(Unit1)
+  f = GetFactorToCm(Unit1)
   finch = value * f
-  f = GetFactorToInch(Unit2)
+  f = GetFactorToCm(Unit2)
   Return finch / f
   
 End
@@ -771,7 +771,7 @@ Fast Static Public Function UnitToCm(Value As Float, Unit As String) As Float
   Dim fInch As Float
   Dim f As Float
   
-  f = GetFactorToInch(Unit)
+  f = GetFactorToCm(Unit)
   finch = value * f
   f = 0.3937
   Return finch / f

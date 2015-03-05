@@ -107,6 +107,16 @@ Public Sub Area_Scroll()
   
 End
 
+
+Public Sub Area_MouseWheel()
+Print "wheel"
+  If Not $hView.Arrangement = Arrange.Row Then
+  $hView.Arrangement = Arrange.Row
+  $hView.Column = 0
+  Endif
+  
+End
+
 Public Sub Area_Draw()
   
   Dim sText As String

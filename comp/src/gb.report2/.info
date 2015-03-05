@@ -864,11 +864,11 @@ b
 :Layout
 :
 
-(Width)i(Height)i(Index)i
+(Width)f(Height)f(Index)i
 :Draw
 :
 
-(Width)i(Height)i(Index)i
+(Width)f(Height)f(Index)i
 _GetSizeHints
 m
 ReportSizeHints
@@ -1198,6 +1198,10 @@ _call
 M
 ReportSizeHints
 (Width)f(Height)f[(NotFinished)f]
+FromString
+M
+ReportSizeHints
+(Width)s(Height)s[(NotFinished)b]
 #ReportSvgImage
 ReportFrame
 C
@@ -1391,6 +1395,10 @@ m
 
 
 Area_Scroll
+m
+
+
+Area_MouseWheel
 m
 
 
