@@ -97,8 +97,8 @@ Private Sub GetValuesFromReport()
   
   If View.Report.Paper = Printer.Custom Then
     pnlCustom.Enabled = True
-    $hPrinter.PaperWidth = TSizeParse[View.Report.Width].ToCm() * 10
-    $hPrinter.PaperHeight = TSizeParse[View.Report.Height].ToCm() * 10
+    $hPrinter.PaperWidth = TSizeParse[View.Report.Width].ToInch() * 10
+    $hPrinter.PaperHeight = TSizeParse[View.Report.Height].ToInch() * 10
   Else
     $hPrinter.Paper = View.Report.Paper
   Endif 

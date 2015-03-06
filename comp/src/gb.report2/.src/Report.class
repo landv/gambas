@@ -719,11 +719,11 @@ End
 ''Shortcut to Convert a Pixel Value to Internal unit (Need a paint device).
 Fast Public Function _FromPixels(Value As Float) As Float
 
-  Return (value / Paint.ResolutionX * 2.54) 
+  Return (value / Paint.ResolutionX) '* 2.54) 
   
 End
 
-Fast Static Private Function GetFactorToCm(Unit As String) As Float
+Fast Static Private Function GetFactorToInch(Unit As String) As Float
   
   Select Case Unit
     Case "cm"
@@ -758,23 +758,24 @@ Fast Static Public Function UnitTo(Value As Float, Unit1 As String, Unit2 As Str
   Dim fInch As Float
   Dim f As Float
   
-  f = GetFactorToCm(Unit1)
+  f = GetFactorToInch(Unit1)
   finch = value * f
-  f = GetFactorToCm(Unit2)
+  f = GetFactorToInch(Unit2)
   Return finch / f
   
 End
 
-''Shortcut to convert any report allowed unit to cm.
-Fast Static Public Function UnitToCm(Value As Float, Unit As String) As Float
+''Shortcut to convert any report allowed unit to Inch.
+Fast Static Public Function UnitToInch(Value As Float, Unit As String) As Float
   
   Dim fInch As Float
   Dim f As Float
   
-  f = GetFactorToCm(Unit)
+  f = GetFactorToInch(Unit)
   finch = value * f
-  f = 0.3937
-  Return finch / f
+  Return finch
+  'f = 0.3937
+  'Return finch / f
   
 End
 

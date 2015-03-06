@@ -47,9 +47,9 @@ Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
   
 End
 
-Public Sub ToCm() As Float
+Public Sub ToInch() As Float
   
-    Return Report.UnitToCm(Value, Unit)
+    Return Report.UnitToInch(Value, Unit)
   
 End
 
@@ -64,7 +64,7 @@ Public Sub GetValue() As Float
   If IsRelative() Then 
     Return Value
   Else 
-    Return ToCm()
+    Return ToInch()
   Endif
   
 End

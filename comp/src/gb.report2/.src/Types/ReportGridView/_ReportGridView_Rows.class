@@ -65,10 +65,10 @@ Public Sub _NormalizeUnits()
   Dim s As String
   If $cHeight Then
     For Each s In $cHeight
-      _cHeight[$cHeight.Key] = TSizeParse[s].ToCm()
+      _cHeight[$cHeight.Key] = TSizeParse[s].ToInch()
     Next
   Endif
-  _Height = TSizeParse[$sBaseHeight].ToCm()
+  _Height = TSizeParse[$sBaseHeight].ToInch()
 End
 
 Private Function Count_Read() As Integer
@@ -148,7 +148,7 @@ Public Sub _SetRowText(iRow As Integer, sText As String)
   If Not $cText Then $cText = New Collection
   $cText[iRow] = sText
   If sText Then
-    W = TSizeParse[Str(Paint.TextSize(sText).Width) & "px"].ToCm()
+    W = TSizeParse[Str(Paint.TextSize(sText).Width) & "px"].ToInch()
     If W > Me._Width Then $fWidth = W
   Endif
   
