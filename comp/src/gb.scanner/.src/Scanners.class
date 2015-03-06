@@ -1,7 +1,7 @@
 ' Gambas class file
 
 Export
-Create Static
+'Create Static
 
 Public Struct ScannerInfo
   Vendor As String
@@ -19,29 +19,23 @@ Static Private $aScannerNames As New String[]
 
 Static hProcess As Process
 Static Private $ret As String
+Static Private $IsInit As Boolean
 
-Static Public Sub _Init()
+Static Private Sub Init()
   
-  If Not IsScanner() Then 
+  If Not System.Exist("scanimage") Then 
     Error.Raise("Scanner CLI tool is not detected.\nPlease Install the Sane package")
-    GetList(True)
   Endif
-  
+    GetList(True)
+  $IsInit = True
 End
 
-Static Private Function IsScanner() As Boolean
-  
-  Dim sRet As String
-
-  Exec ["which", "scanimage"] To sRet
-  Return sRet
-  
-End
 
 
 Static Private Sub GetList(Optional BackGround As Boolean) As String
   
   Dim sRet As String
+  
   
   If hProcess Then Return 
   If BackGround Then
@@ -54,7 +48,9 @@ Static Private Sub GetList(Optional BackGround As Boolean) As String
   
 End
 
-Public Function _GetInfo(sDeviceName As String) As ScannerInfo
+Static Public Function _GetInfo(sDeviceName As String) As ScannerInfo
+  
+  If Not $IsInit Then Init
   
   If $colScannerList.Exist(sDeviceName) Then
     Return $colScannerList[sDeviceName]
@@ -72,6 +68,8 @@ Static Private Sub FillList(sRet As String)
   Dim s As String
   Dim ars As New String[]
   Dim hScanner As ScannerInfo
+
+
 
   $colScannerList.Clear
   $aScannerNames.Clear
@@ -93,6 +91,8 @@ End
 ''Refresh the scanners list
 Static Public Sub Refresh()
   
+  If Not $IsInit Then Init
+  
   $colScannerList.Clear
   $aScannerNames.Clear
   GetList(True)
@@ -102,6 +102,8 @@ End
 Static Public Function _next() As String
   
   Dim s As String
+
+  If Not $IsInit Then Init
 
   If $aScannerNames.Count = 0 Then 
     
@@ -128,6 +130,8 @@ Static Public Function _get(sDeviceName As String) As Scanner
   
   Dim hScan As Scanner
   
+  If Not $IsInit Then Init
+  
   If Not colCache.Exist(sDeviceName) Then
     
     hScan = New Scanner(sDeviceName)
@@ -147,6 +151,7 @@ Static Public Sub Process_Read()
 End
 
 Static Public Sub Process_kill()
+  
   
   If hProcess.State <> hProcess.Crashed Then
     FillList($ret)
