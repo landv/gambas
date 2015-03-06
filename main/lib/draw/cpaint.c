@@ -241,8 +241,8 @@ void PAINT_set_area(GEOM_RECTF *area)
 	THIS->area.x += area->x;
 	THIS->area.y += area->y;
 
-	THIS->area.width = MIN(area->w, THIS->area.width - THIS->area.x);
-	THIS->area.height = MIN(area->h, THIS->area.height - THIS->area.y);
+	THIS->area.width = area->w; //MIN(area->w, THIS->area.width - THIS->area.x);
+	THIS->area.height = area->h; //MIN(area->h, THIS->area.height - THIS->area.y);
 
 	if (THIS->area.width <= 0 || THIS->area.height <= 0)
 		THIS->area.width = THIS->area.height = 0;
