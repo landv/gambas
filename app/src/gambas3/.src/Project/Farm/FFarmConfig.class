@@ -9,7 +9,7 @@ End
 
 Public Sub Form_Open()
 
-  lstFarm.List = FarmIdentity.FarmList
+  lstFarm.List = FarmRequest.GetFarms()
 
 End
 
