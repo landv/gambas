@@ -33,6 +33,7 @@
 #include <QShowEvent>
 #include <QEvent>
 #include <QDesktopWidget>
+#include <QTextDocument>
 #include <QMessageBox>
 
 #include "gb.qt.h"
@@ -57,69 +58,12 @@ typedef
 	
 static char *_title = 0;
 
-/*static MSG_BUTTON_ROLE _button_role[] =
-{
-	{ "Apply", QMessageBox::Apply },
-	{ "Abort", QMessageBox::Abort },
-	{ "Cancel", QMessageBox::Cancel },
-	{ "Close", QMessageBox::Close },
-	{ "Discard", QMessageBox::Discard },
-	{ "Don't save", QMessageBox::Discard },
-	{ "Do not save", QMessageBox::Discard },
-	{ "Help", QMessageBox::Help },
-	{ "Ignore", QMessageBox::Ignore },
-	{ "No", QMessageBox::No },
-	{ "OK", QMessageBox::Ok },
-	{ "Open", QMessageBox::Open },
-	{ "Reset", QMessageBox::Reset },
-	{ "Restore defaults", QMessageBox::RestoreDefaults },
-	{ "Retry", QMessageBox::Retry },
-	{ "Save", QMessageBox::Save },
-	{ "Save all", QMessageBox::SaveAll },
-	{ "Yes", QMessageBox::Yes },
-	{ NULL }
-};
-
-static bool compare_text(char *text, char *button)
-{
-	int it, ib;
-	
-	it = ib = 0;
-	for(;;)
-	{
-		if (button[ib] == '&')
-			ib++;
-		
-		if (text[it] != button[ib])
-			return false;
-		if (!text[it])
-			return true;
-		it++;
-		ib++;
-	}
-}
-
-static QMessageBox::StandardButton get_standard_button(char *text)
-{
-	MSG_BUTTON_ROLE *pb;
-	
-	for (pb = _button_role; pb->text; pb++)
-	{
-		if (compare_text(text, GB.Translate(pb->text)))
-			return pb->button;
-	}
-	
-	return QMessageBox::NoButton;
-}*/
-
 static int make_message(int type, int nbmax, void *_param)
 {
 	MSG_PARAM *_p = (MSG_PARAM *)_param;
 	QString msg = QSTRING_ARG(msg);
 	QPushButton *button[3];
 	int ret, nbutton;
-	//QMessageBox::ButtonRole role;
-	//QMessageBox::StandardButton std;
 	QMessageBox::Icon icon;
 	const char *stock;
 	QString title;
@@ -247,6 +191,9 @@ static int make_message(int type, int nbmax, void *_param)
 	
 	// Message
 	
+	if (Qt::mightBeRichText(msg))
+		msg = msg.replace("\n","<br>");
+
 	mb->setText(msg);
 	
 	// Run the message box
