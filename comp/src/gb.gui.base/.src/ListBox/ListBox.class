@@ -79,6 +79,7 @@ Public Sub Add(Text As String, Optional Index As Integer = -1)
     $aText.Add(Text)
   Else
     $aText.Add(Text, Index)
+    $hView.Rows.Insert(Index)
   Endif
   
   $hView.Rows.Count = $aText.Count
@@ -86,11 +87,12 @@ Public Sub Add(Text As String, Optional Index As Integer = -1)
   
 End
 
-Public Sub Remove(Index As Integer)
+Public Sub Remove(Index As Integer, Optional Length As Integer = 1)
   
-  If Index < 0 Or If Index > $aText.Max Then Error.Raise("Out of bounds")
+  If Length <= 0 Or If Index < 0 Or If (Index + Length) > $aText.Count Then Error.Raise("Out of bounds")
   
-  $aText.Remove(Index)
+  $aText.Remove(Index, Length)
+  $hView.Rows.Remove(Index, Length)
   $hView.Rows.Count = $aText.Count
   
 End
@@ -415,7 +417,7 @@ Private Sub ResizeColumn()
   
 End
 
-Public Sub GridView_ColumnSize(Column As Integer)
+Public Sub GridView_ColumnSize((Column) As Integer)
   
   ResizeColumn
   

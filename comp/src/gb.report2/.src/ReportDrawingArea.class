@@ -64,7 +64,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Else
     
     'Paint.Translate(iX, iY)
-    Print "Largeur passée avant event = " & iw
+    'Print "Paint.Begin: "; iX;; iY;; iW;; iH;; "(";; Paint.W;; Paint.H; ")"
     Paint.Begin(Paint.Device, RectF(iX, iY, iW, iH))
       Raise Draw(iW, iH, DataIndex)
     Paint.End

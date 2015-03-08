@@ -1953,6 +1953,7 @@ Public Sub _RemoveRows(Start As Integer, Length As Integer)
     Inc D
   Next
   
+  $hRows._GetSel().RemoveRows(Start, Length)
   $hRows.Count -= Length
   
 End
@@ -1969,6 +1970,7 @@ Public Sub _InsertRows(Start As Integer, Length As Integer)
     Next
   Next
   
+  $hRows._GetSel().InsertRows(Start, Length)
   $hRows.Count += Length
   
 End

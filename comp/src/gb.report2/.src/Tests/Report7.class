@@ -16,8 +16,9 @@ End
 
 
 Public Sub ReportDrawingArea1_Draw(Width As Float, Height As Float, Index As Integer)
-Print "Largeur passée = " & Width
-Print "Paint.Width = " & Paint.Width
+
+'Print "Largeur passée = " & Width
+'Print "Paint.Width = " & Paint.Width
   Draw.line(0, 0, Paint.Width, Paint.Height)
   
 End
