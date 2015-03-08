@@ -2,20 +2,20 @@
 
 Private $aSel As New Integer[]
 
-Private Sub Dump()
-  
-   Dim I As Integer
-  ' 
-  ' Print System.Backtrace.Join(" ")
-  ' 
-  Print "Selection = ";
-  For I = 0 To $aSel.Max Step 2
-    Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
-  Next
-  Print
-  
-End
-
+' Private Sub Dump()
+'   
+'    Dim I As Integer
+'   ' 
+'   ' Print System.Backtrace.Join(" ")
+'   ' 
+'   Print "Selection = ";
+'   For I = 0 To $aSel.Max Step 2
+'     Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
+'   Next
+'   Print
+'   
+' End
+' 
 Public Sub SetSelection(aSel As Integer[])
   
   $aSel = aSel
@@ -154,7 +154,7 @@ Public Sub InsertRows(iStart As Integer, iLength As Integer)
     
   Next
   
-  Dump
+  'Dump
 
 End
 
@@ -187,6 +187,6 @@ Public Sub RemoveRows(iStart As Integer, iLength As Integer)
     
   Wend
   
-  Dump
+  'Dump
   
 End
