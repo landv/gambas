@@ -435,7 +435,7 @@ End
 Public Sub panSide_Arrange()
 
   With btnCloseSide
-    .Move(.Parent.W - .W, 0)
+    .Move(.Parent.W - .W, 0, Desktop.Scale * 4, Desktop.Scale * 4)
   End With
 
 End
@@ -475,6 +475,7 @@ End
 Public Sub mnuPrintPDF_Click()
   
   tabPrint.Index = 1
+  txtFile_Click
   
 End
 
