@@ -83,32 +83,36 @@ Image
 
 #Scanners
 
-C
-_GetInfo
+CA
+:Found
+:
+
+
+_init
 M
+
+
+Search
+m
+
+[(bWait)b]
+_GetInfo
+m
 ScannerInfo
 (sDeviceName)s
-Refresh
-M
-
-
 _next
-M
+m
 s
 
 _get
-M
+m
 Scanner
 (sDeviceName)s
 Process_Read
-M
+m
 
 
 Process_kill
-M
-
-
-InitDeviceList
-M
+m
 
 
