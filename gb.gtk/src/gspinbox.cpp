@@ -22,6 +22,7 @@
 ***************************************************************************/
 
 #include "widgets.h"
+#include "gdesktop.h"
 #include "gspinbox.h"
 
 static void cb_change(GtkSpinButton *spinbutton, gSpinBox *data)
@@ -87,32 +88,6 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 	
 	g_signal_connect(G_OBJECT(widget), "value-changed", G_CALLBACK(cb_change), (gpointer)this);
 }
-
-/*
-int gSpinBox::background()
-{
-	return get_gdk_base_color(widget);
-}
-
-void gSpinBox::setBackground(int color)
-{
-	set_gdk_base_color(widget,color);	
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-
-int gSpinBox::foreground()
-{
-	return get_gdk_text_color(widget);
-}
-
-void gSpinBox::setForeground(int color)
-{	
-	set_gdk_text_color(widget,color);
-	if (!border->window) gtk_widget_realize(border);
-	gdk_window_process_updates(border->window,true);
-}
-*/
 
 int gSpinBox::step()
 {
@@ -203,9 +178,6 @@ void gSpinBox::setBorder(bool vl)
 #ifdef GTK3
 int gSpinBox::minimumWidth() const
 {
-	int mw;
-
-	gtk_widget_get_preferred_width(widget, NULL, &mw);
-	return mw;
+	return gDesktop::scale() * 8;
 }
 #endif

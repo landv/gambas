@@ -52,6 +52,14 @@
 static GList *controls = NULL;
 static GList *controls_destroyed = NULL;
 
+typedef
+	struct {
+		void (*get_preferred_height)(GtkWidget *widget, gint *minimum_height, gint *natural_height);
+		void (*get_preferred_width_for_height)(GtkWidget *widget, gint height, gint *minimum_width, gint *natural_width);
+		void (*get_preferred_width)(GtkWidget *widget, gint *minimum_width, gint *natural_width);
+		void (*get_preferred_height_for_width)(GtkWidget *widget, gint width, gint *minimum_height, gint *natural_height);
+	}
+	PATCH_FUNCS;
 
 static const char *_cursor_fdiag[] =
 {
@@ -1489,25 +1497,61 @@ static gboolean cb_clip_by_parent(GtkWidget *wid, GdkEventExpose *e, gControl *d
 //fprintf(stderr, "get_preferred_width [%p %s] %p\n", klass, G_OBJECT_TYPE_NAME(widget), klass->_gtk_reserved2);
 //fprintf(stderr, "get_preferred_height [%p %s] %p\n", klass, G_OBJECT_TYPE_NAME(widget), klass->_gtk_reserved3);
 
+//#define must_patch(_widget) (gt_get_control(_widget) != NULL)
+
+static bool must_patch(GtkWidget *widget)
+{
+	GtkWidget *parent;
+	gControl *parent_control;
+
+	if (gt_get_control(widget))
+		return true;
+
+	parent = gtk_widget_get_parent(widget);
+	if (!parent)
+		return false;
+
+	parent_control = gt_get_control(parent);
+	if (!parent_control)
+		return false;
+
+	return (parent_control->widget == widget);
+}
+
+//fprintf(stderr, #type "_get_preferred_height: %d %d\n", minimum_size ? *minimum_size : -1, natural_size ? *natural_size : -1);
+//fprintf(stderr, #type "_get_preferred_width: %d %d\n", minimum_size ? *minimum_size : -1, natural_size ? *natural_size : -1);
+
+#define OLD_FUNC ((PATCH_FUNCS *)(klass->_gtk_reserved6))
+
 #define PATCH_DECLARE(type) \
 static void type##_get_preferred_width(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
 { \
 	GtkWidgetClass *klass = (GtkWidgetClass*)g_type_class_peek(type); \
-	\
-	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved6)(widget, minimum_size, natural_size); \
-	if (minimum_size && gt_get_control(widget)) \
+	(*OLD_FUNC->get_preferred_width)(widget, minimum_size, natural_size); \
+	if (minimum_size && must_patch(widget)) \
 		*minimum_size = 0; \
 } \
 static void type##_get_preferred_height(GtkWidget *widget, gint *minimum_size, gint *natural_size) \
 { \
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
-	\
-	(*(void (*)(GtkWidget *, gint *, gint *))klass->_gtk_reserved7)(widget, minimum_size, natural_size); \
-	if (minimum_size && gt_get_control(widget)) \
+	(*OLD_FUNC->get_preferred_height)(widget, minimum_size, natural_size); \
+	if (minimum_size && must_patch(widget)) \
 		*minimum_size = 0; \
+} \
+static void type##_get_preferred_height_for_width(GtkWidget *widget, gint width, gint *minimum_size, gint *natural_size) \
+{ \
+	if (minimum_size && must_patch(widget)) \
+	{ \
+		*minimum_size = 0; \
+		*natural_size = 0; \
+		return; \
+	} \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	(*OLD_FUNC->get_preferred_height_for_width)(widget, width, minimum_size, natural_size); \
 }
 
-//fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(border), klass->get_preferred_width, klass->get_preferred_height);
+
+//fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(widget), klass->get_preferred_width, klass->get_preferred_height);
 
 #define PATCH_CLASS(widget, type) \
 if (G_OBJECT_TYPE(widget) == type) \
@@ -1515,15 +1559,21 @@ if (G_OBJECT_TYPE(widget) == type) \
 	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
 	if (klass->get_preferred_width != type##_get_preferred_width) \
 	{ \
-		klass->_gtk_reserved6 = (void (*)())klass->get_preferred_width; \
+		PATCH_FUNCS *funcs = g_new0(PATCH_FUNCS, 1); \
+		funcs->get_preferred_width = klass->get_preferred_width; \
+		funcs->get_preferred_height = klass->get_preferred_height; \
+		funcs->get_preferred_height_for_width = klass->get_preferred_height_for_width; \
+		funcs->get_preferred_width_for_height = klass->get_preferred_width_for_height; \
+		klass->_gtk_reserved6 = (void(*)())funcs; \
 		klass->get_preferred_width = type##_get_preferred_width; \
-		klass->_gtk_reserved7 = (void (*)())klass->get_preferred_height; \
 		klass->get_preferred_height = type##_get_preferred_height; \
+		klass->get_preferred_height_for_width = type##_get_preferred_height_for_width; \
 	} \
 }
 
 PATCH_DECLARE(GTK_TYPE_WINDOW)
 PATCH_DECLARE(GTK_TYPE_ENTRY)
+PATCH_DECLARE(GTK_TYPE_COMBO_BOX)
 PATCH_DECLARE(GTK_TYPE_SPIN_BUTTON)
 PATCH_DECLARE(GTK_TYPE_BUTTON)
 PATCH_DECLARE(GTK_TYPE_FIXED)
@@ -1598,6 +1648,7 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS(border, GTK_TYPE_SOCKET)
 	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
 
+	PATCH_CLASS(widget, GTK_TYPE_COMBO_BOX)
 #endif
 
 	connectParent();

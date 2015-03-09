@@ -131,7 +131,8 @@ void gComboBox::create(bool readOnly)
 	bool first = !border;
 	char *save = NULL;
 	GB_COLOR bg, fg;
-	
+	GList *cells;
+
 	//fprintf(stderr, "create: %d hasFocus = %d\n", readOnly, focus );
 	
 	lock();
@@ -161,13 +162,14 @@ void gComboBox::create(bool readOnly)
 		cell = gtk_cell_renderer_text_new ();
 		g_object_ref_sink(cell);
 		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), cell, true);
+
 		//gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), cell, "text", 0, (void *)NULL);
-		//g_object_set(cell, "ypad", 0, (void *)NULL);
+		g_object_set(cell, "ypad", 0, (void *)NULL);
+
 		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
 	}
 	else
 	{
-		GList *cells;
 		
 #if GTK_CHECK_VERSION(2, 24, 0)
 		widget = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(tree->store));
@@ -189,6 +191,10 @@ void gComboBox::create(bool readOnly)
 		//g_object_set(cell, "ypad", 0, (void *)NULL);
 		gtk_cell_layout_set_cell_data_func(GTK_CELL_LAYOUT(widget), cell, (GtkCellLayoutDataFunc)combo_cell_text, (gpointer)tree, NULL);
 	}
+
+#ifdef GTK3
+	gtk_combo_box_set_popup_fixed_width(GTK_COMBO_BOX(widget), true);
+#endif
 
 	if (first)
 	{
@@ -552,7 +558,11 @@ void gComboBox::updateFont()
 	if (cell)
 		g_object_set(G_OBJECT(cell), "font-desc", font()->desc(), (void *)NULL);
 	if (entry)
+#ifdef GTK3
+		gtk_widget_override_font(entry, font()->desc());
+#else
 		gtk_widget_modify_font(entry, font()->desc());
+#endif
 }
 
 void gComboBox::setFocus()
