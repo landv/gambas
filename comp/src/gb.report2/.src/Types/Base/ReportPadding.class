@@ -71,13 +71,13 @@ Public Sub _NormalizeUnits()
   Dim hSizeParse As TSizeParse
   
   hSizeParse = TSizeParse[{Left}]
-  _Left = hSizeParse.ToCm()
+  _Left = hSizeParse.ToInch()
   hSizeParse = TSizeParse[Top]
-  _Top = hSizeParse.ToCm()
+  _Top = hSizeParse.ToInch()
   hSizeParse = TSizeParse[Right]
-  _Right = hSizeParse.ToCm()
+  _Right = hSizeParse.ToInch()
   hSizeParse = TSizeParse[Bottom]
-  _Bottom = hSizeParse.ToCm()
+  _Bottom = hSizeParse.ToInch()
   
 End
 

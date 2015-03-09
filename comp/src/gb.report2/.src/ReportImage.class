@@ -50,8 +50,8 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
           hMyHints.Width = ((AvailableH - (Me.Border._Height + Me.Padding._Height)) * fRatio) + (Me.Border._Width + Me.Padding._Width)
         Endif
       Else
-        hMyHints.Width = Max(hMyHints.Width, Me.Padding._Left + (hpic.Width / 96 * 2.54) + Me.Padding._Right) 'Report.UnitToCm(hpic.Width, "px") + Me.Padding._Right)
-        hMyHints.Height = Max(hMyHints.Height, Me.Padding._Top + (hpic.Height / 96 * 2.54) + Me.Padding._Bottom) 'Report.UnitToCm(hpic.Height, "px") + Me.Padding._Bottom)
+        hMyHints.Width = Max(hMyHints.Width, Me.Padding._Left + (hpic.Width / 96 * 2.54) + Me.Padding._Right) 'Report.UnitToInch(hpic.Width, "px") + Me.Padding._Right)
+        hMyHints.Height = Max(hMyHints.Height, Me.Padding._Top + (hpic.Height / 96 * 2.54) + Me.Padding._Bottom) 'Report.UnitToInch(hpic.Height, "px") + Me.Padding._Bottom)
       Endif
       
     Endif

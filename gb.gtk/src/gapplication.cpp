@@ -183,6 +183,10 @@ static void gambas_handle_event(GdkEvent *event)
   GtkWidget *widget;
 	GtkWidget *current_grab;
   GtkWidget *grab;
+	GtkWindowGroup *group;
+#ifdef GTK3
+	GdkDevice *device;
+#endif
 	gControl *control, *save_control;
 	gControl *button_grab;
 	int x, y, xs, ys, xc, yc;
@@ -250,7 +254,16 @@ static void gambas_handle_event(GdkEvent *event)
 		}
 	}*/
 
-	current_grab = gtk_window_group_get_current_grab(get_window_group(widget)); //gtk_grab_get_current();
+#ifdef GTK3
+	device = gdk_event_get_device (event);
+	group = get_window_group(widget);
+	current_grab = gtk_window_group_get_current_device_grab(group, device);
+	if (!current_grab)
+		current_grab = gtk_window_group_get_current_grab(group); //gtk_grab_get_current();
+#else
+	group = get_window_group(widget);
+	current_grab = gtk_window_group_get_current_grab(group); //gtk_grab_get_current();
+#endif
 
 	button_grab = gApplication::_button_grab;
 	if (event->type == GDK_BUTTON_RELEASE)
@@ -287,8 +300,14 @@ static void gambas_handle_event(GdkEvent *event)
 	}
 		//gdk_window_get_user_data(gApplication::_popup_grab_window, (gpointer *)&grab);
 	
-	//if (grab && !gApplication::_popup_grab && !gApplication::_button_grab)
-	//	goto __HANDLE_EVENT;
+	if (grab)
+	{
+		control = gt_get_control(grab);
+		//fprintf(stderr, "grab = %p -> %p %s\n", grab, control, control ? control->name() : "");
+
+		if (!control)
+			goto __HANDLE_EVENT;
+	}
 		
 	//if (event->type == GDK_BUTTON_RELEASE)
 	//	fprintf(stderr, "GDK_BUTTON_RELEASE #2\n");
@@ -348,10 +367,10 @@ static void gambas_handle_event(GdkEvent *event)
 		//				grab, grab ? g_object_get_data(G_OBJECT(grab), "gambas-control") : 0);
 	}*/
 
-	/*if (event->type == GDK_KEY_PRESS)
+	/*if (event->type == GDK_BUTTON_PRESS || event->type == GDK_KEY_PRESS)
 	{
-		fprintf(stderr, "[GDK_KEY_PRESS] widget = %p grab = %p _popup_grab = %p _button_grab = %p\n",
-						widget, grab, gApplication::_popup_grab, gApplication::_button_grab);
+		fprintf(stderr, "[GDK_BUTTON_PRESS] widget = %p control = %p grab = %p _popup_grab = %p _button_grab = %p\n",
+						widget, control, grab, gApplication::_popup_grab, gApplication::_button_grab);
 	}*/
 
 	if (!widget || !control)

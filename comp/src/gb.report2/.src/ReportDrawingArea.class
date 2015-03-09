@@ -10,8 +10,8 @@ Property Cached As Boolean
 
 Private $bCached As Boolean
 Private $iOldResolution As Integer
-Event Layout(Width As Integer, Height As Integer, Index As Integer)
-Event Draw(Width As Integer, Height As Integer, Index As Integer)
+Event Layout(Width As Float, Height As Float, Index As Integer)
+Event Draw(Width As Float, Height As Float, Index As Integer)
 
 
 Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
@@ -57,15 +57,18 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
       Paint.End 
       hControl.Cache = himg
     Else
-      If hControl.cache = Null Then Stop
-      hImg = hControl.Cache
+      'If hControl.cache = Null Then Stop
+      Try hImg = hControl.Cache
     Endif
     Draw.Image(hImg, iX, iy)
   Else
     
-    Paint.Translate(iX, iY)
-    Raise Draw(iW, iH, DataIndex)
-    Paint.Translate(- iX, - iY)
+    'Paint.Translate(iX, iY)
+    'Print "Paint.Begin: "; iX;; iY;; iW;; iH;; "(";; Paint.W;; Paint.H; ")"
+    Paint.Begin(Paint.Device, RectF(iX, iY, iW, iH))
+      Raise Draw(iW, iH, DataIndex)
+    Paint.End
+    'Paint.Translate(- iX, - iY)
   Endif
   Paint.Restore
   

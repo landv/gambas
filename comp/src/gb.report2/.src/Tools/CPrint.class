@@ -20,9 +20,9 @@ Public Sub PrintReport(hReport As Report, Optional MyPrinter As Printer)
   hPrinter.Orientation = $hPrint.Orientation
   If $hPrint.Paper = Printer.Custom Then
     hSizeParse = New TSizeParse($hPrint.Width)
-    hPrinter.PaperWidth = hSizeParse.ToCm() * 10
+    hPrinter.PaperWidth = Report.UnitTo(hSizeParse.ToInch(), "in", "mm") ' * 10
     hSizeParse = New TSizeParse($hPrint.Height)
-    hPrinter.PaperHeight = hSizeParse.ToCm() * 10
+    hPrinter.PaperHeight = Report.UnitTo(hSizeParse.ToInch(), "in", "mm") ' * 10
   Endif
   If Not MyPrinter Then
     If Not hPrinter.Configure() Then

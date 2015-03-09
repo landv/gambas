@@ -107,6 +107,16 @@ Public Sub Area_Scroll()
   
 End
 
+
+Public Sub Area_MouseWheel()
+Print "wheel"
+  If Not $hView.Arrangement = Arrange.Row Then
+  $hView.Arrangement = Arrange.Row
+  $hView.Column = 0
+  Endif
+  
+End
+
 Public Sub Area_Draw()
   
   Dim sText As String
@@ -159,10 +169,10 @@ Private Sub Report_Write(Value As Report)
   $hView.Count = $hReport.PageCount 
   $hView.Padding = Report.UnitTo(1, "cm", "px")
   $hView.Spacing = $hView.Padding
-  $hView.DocWidth = Report.UnitTo(TSizeParse[Value.Width].ToCm(), "cm", "px")
+  $hView.DocWidth = Report.UnitTo(TSizeParse[Value.Width].ToInch(), "in", "px")
   'Print "ReportWidth: " & Value._Width
   
-  $hView.DocHeight = Report.UnitTo(TSizeParse[Value.Height].ToCm(), "cm", "px")
+  $hView.DocHeight = Report.UnitTo(TSizeParse[Value.Height].ToInch(), "in", "px")
   'Print "ReportHeight: " & Value._Height
   '$hView.Zoom = 1
   $hView.Reset

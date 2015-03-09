@@ -12,69 +12,69 @@ End Struct
 Static Private colCache As New Collection
 
 Static Private $colScannerList As New Collection
-Static Private $aScannerNames As New String[]
+Static Private $aScannerNames As String[]
 ' Static _Vendors As New String[]
 ' Static _Models As New String[]
 ' Static _Types As New String[]
 
 Static hProcess As Process
 Static Private $ret As String
-
-Static Public Sub _Init()
+Static Private $IsInit As Boolean
+Event Found
+Static Public Sub _init()
   
-  If Not IsScanner() Then 
+  If Not System.Exist("scanimage") Then 
     Error.Raise("Scanner CLI tool is not detected.\nPlease Install the Sane package")
-    GetList(True)
   Endif
-  
-End
-
-Static Private Function IsScanner() As Boolean
-  
-  Dim sRet As String
-
-  Exec ["which", "scanimage"] To sRet
-  Return sRet
-  
+   '  GetList(True)
+   '$IsInit = True
 End
 
 
-Static Private Sub GetList(Optional BackGround As Boolean) As String
+
+Public Sub Search(Optional bWait As Boolean)
   
   Dim sRet As String
   
   If hProcess Then Return 
-  If BackGround Then
+  $colScannerList.Clear
+  $aScannerNames = Null
+  If Not bWait Then
     $ret = ""
     hProcess = Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"]
   Else
     Exec ["scanimage", "--formatted-device-list", "%d|%v|%m|%t%n"] To sRet
-    Return sRet
+    FillList(sRet)
   Endif
   
 End
 
 Public Function _GetInfo(sDeviceName As String) As ScannerInfo
   
+  If Not $aScannerNames Then Search(True)
+  
   If $colScannerList.Exist(sDeviceName) Then
     Return $colScannerList[sDeviceName]
   Else
     'If Not hProcess Then
-    FillList(GetList(False))
+    'FillList(GetList(False))
+    Search(True)
     Return $colScannerList[sDeviceName]
     'Endif
   Endif
   
 End
 
-Static Private Sub FillList(sRet As String)
+Private Sub FillList(sRet As String)
 
   Dim s As String
   Dim ars As New String[]
   Dim hScanner As ScannerInfo
 
+
+
   $colScannerList.Clear
-  $aScannerNames.Clear
+  $aScannerNames = New String[]
   For Each s In Split(sRet, "\n")
     If Not s Then Break
     ars = Split(s, "|")
@@ -90,23 +90,14 @@ Static Private Sub FillList(sRet As String)
   
 End
 
-''Refresh the scanners list
-Static Public Sub Refresh()
-  
-  $colScannerList.Clear
-  $aScannerNames.Clear
-  GetList(True)
-End
 
 ''List all the existing devices
-Static Public Function _next() As String
+Public Function _next() As String
   
   Dim s As String
 
-  If $aScannerNames.Count = 0 Then 
-    
-    FillList(GetList())
-  Endif
+
+ If Not $aScannerNames Then Search(True)
   If IsNull(Enum.Index) Then 
     Enum.Index = 0
   Else
@@ -124,9 +115,11 @@ End
 
 
 ''Return the given device if exist or fail.
-Static Public Function _get(sDeviceName As String) As Scanner
+Public Function _get(sDeviceName As String) As Scanner
   
   Dim hScan As Scanner
+  
+  If Not $aScannerNames Then Search(True)
   
   If Not colCache.Exist(sDeviceName) Then
     
@@ -140,19 +133,22 @@ Static Public Function _get(sDeviceName As String) As Scanner
   
 End
 
-Static Public Sub Process_Read()
+ Public Sub Process_Read()
   
   $ret &= Read #hProcess, Lof(hProcess)
   
 End
 
-Static Public Sub Process_kill()
+Public Sub Process_kill()
+  
   
   If hProcess.State <> hProcess.Crashed Then
     FillList($ret)
+    Raise Found
   Endif
   
 End
+
 
 
 

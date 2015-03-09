@@ -447,14 +447,14 @@ void gMainWindow::setRealForeground(gColor color)
 
 void gMainWindow::move(int x, int y)
 {
-	gint ox, oy;
+	//gint ox, oy;
 	
 	if (isTopLevel())
 	{
 		if (x == bufX && y == bufY) 
 			return;
 	
-		#ifdef GDK_WINDOWING_X11
+		/*#ifdef GDK_WINDOWING_X11
 		gdk_window_get_origin(gtk_widget_get_window(border), &ox, &oy);
 		ox = x + ox - bufX;
 		oy = y + oy - bufY;
@@ -465,10 +465,10 @@ void gMainWindow::move(int x, int y)
 			if (!X11_send_move_resize_event(GDK_WINDOW_XID(gtk_widget_get_window(border)), ox, oy, width(), height()))
 				return;
 		}
-		#else
+		#else*/
 		bufX = x;
 		bufY = y;
-		#endif
+		//#endif
 		
 		gtk_window_move(GTK_WINDOW(border), x, y);
 	}
@@ -923,7 +923,7 @@ void gMainWindow::setSkipTaskBar(bool b)
 {
 	_skip_taskbar = b;
 	if (!isTopLevel()) return;
-	gtk_window_set_skip_taskbar_hint (GTK_WINDOW(border), b);
+	gtk_window_set_skip_taskbar_hint(GTK_WINDOW(border), b);
 }
 
 
@@ -1139,7 +1139,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 	
 	if (_xembed)
 		return;
-	
+
 	bg = background();
 	fg = foreground();
 	
@@ -1552,17 +1552,23 @@ void gMainWindow::emitResize()
 
 void gMainWindow::setGeometryHints()
 {
+	GdkGeometry geometry;
+
 	if (isTopLevel() && isResizable())
 	{
 		if (isModal())
 		{
-			GdkGeometry geometry;
-
 			geometry.min_width = _min_w;
 			geometry.min_height = _min_h;
-
-			gdk_window_set_geometry_hints(gtk_widget_get_window(border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
 		}
+		else
+		{
+			geometry.min_width = 0;
+			geometry.min_height = 0;
+		}
+
+		gtk_window_set_geometry_hints(GTK_WINDOW(border), NULL, &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
+		//gdk_window_set_geometry_hints(gtk_widget_get_window(border), &geometry, (GdkWindowHints)(GDK_HINT_MIN_SIZE | GDK_HINT_POS));
 	}
 }
 

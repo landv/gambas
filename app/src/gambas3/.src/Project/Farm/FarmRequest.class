@@ -21,8 +21,8 @@ Static Public Sub GetFarms() As String[]
   
   aFarm = FarmIdentity.FarmList
   If Not aFarm Then aFarm = New String[]
-  If Not aFarm.Exist("gambasfarm.org") Then
-    aFarm.Add("gambasfarm.org", 0)
+  If Not aFarm.Exist(FarmIdentity.DEFAULT_FARM) Then
+    aFarm.Add(FarmIdentity.DEFAULT_FARM, 0)
   Endif
   Return aFarm
   

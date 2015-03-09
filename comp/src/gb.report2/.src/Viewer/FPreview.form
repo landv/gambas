@@ -1,284 +1,337 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,114.2857,85.7143)
+  MoveScaled(0,0,107,74)
   Text = ("Report preview")
-  Arrangement = Arrange.Vertical
-  { Panel4 HBox
-    MoveScaled(1,1,138,86)
+  Arrangement = Arrange.Horizontal
+  { mnuPrint Menu
+    Visible = False
+    { mnuPrintPDF Menu
+      Text = ("Print to file") & "..."
+    }
+    { Menu1 Menu
+    }
+  }
+  { Panel1 VBox
+    MoveScaled(1,1,63,72)
     Expand = True
-    { Panel1 VBox
-      MoveScaled(0,0,73,84)
+    Invert = True
+    { View ReportView
+      MoveScaled(1,1,50,48)
+      Background = Color.LightForeground
+      Tag = "3"
+      Mouse = Mouse.SizeAll
       Expand = True
-      { View ReportView
-        MoveScaled(2,2,70,65)
-        Background = Color.LightForeground
-        Tag = "3"
-        Mouse = Mouse.SizeAll
-        Expand = True
-      }
-      { hbPrinting HBox
-        MoveScaled(1,70,71,4)
-        Visible = False
-        Spacing = True
-        Indent = True
-        { lblPrint Label
-          MoveScaled(11,0,14,4)
-          AutoResize = True
-          Text = ("Printing...")
-        }
-        { Panel11 Panel
-          MoveScaled(27,0,42,4)
-          Expand = True
-          Arrangement = Arrange.Fill
-          Margin = True
-          Padding = 4
-          { ProgressBar1 ProgressBar
-            MoveScaled(0,0,37,3)
-            Expand = True
-            Border = False
-          }
-        }
-      }
-      { hbZoom HBox
-        MoveScaled(1,80,71,4)
-        { Panel2 Panel
-          MoveScaled(0,0,19,4)
-          Expand = True
-          Arrangement = Arrange.Horizontal
-          { ToolButton1 ToolButton Mode
-            Name = "ToolButton1"
-            MoveScaled(0,0,4,4)
-            Tag = "1"
-            ToolTip = ("One page")
-            Picture = Picture["16/one-page.png"]
-            Toggle = True
-          }
-          { ToolButton2 ToolButton Mode
-            Name = "ToolButton2"
-            MoveScaled(4,0,4,4)
-            Tag = "2"
-            ToolTip = ("Two pages")
-            Picture = Picture["16/two-pages.png"]
-            Toggle = True
-          }
-          { ToolButton4 ToolButton Mode
-            Name = "ToolButton4"
-            MoveScaled(8,0,4,4)
-            Tag = "3"
-            ToolTip = ("Full width")
-            Picture = Picture["16/full-width.png"]
-            Toggle = True
-          }
-          { ToolButton3 ToolButton Mode
-            Name = "ToolButton3"
-            MoveScaled(12,0,4,4)
-            Tag = "4"
-            ToolTip = ("Real size")
-            Picture = Picture["16/real-size.png"]
-            Toggle = True
-          }
-        }
-        { btnZoomOut ToolButton
-          MoveScaled(23,0,4,4)
-          ToolTip = ("Zoom out")
-          Picture = Picture["icon:/small/zoom-out"]
-        }
-        { sldZoom Slider
-          MoveScaled(30,0,26,4)
-          MinValue = 13
-          MaxValue = 400
-          Value = 100
-        }
-        { lblZoom Label
-          MoveScaled(56,0,8,4)
-          Text = ("100 %")
-          Alignment = Align.Center
-        }
-        { btnZoomIn ToolButton
-          MoveScaled(65,0,4,4)
-          ToolTip = ("Zoom in")
-          Picture = Picture["icon:/small/zoom-in"]
-        }
-      }
     }
-    { Separator1 Separator
-      MoveScaled(74,23,0,15)
-    }
-    { VBox1 VBox
-      MoveScaled(75,2,38,83)
+    { hbPrinting HBox
+      MoveScaled(1,57,55,4)
+      Visible = False
       Spacing = True
-      Margin = True
-      { TabPanel1 TabPanel
-        MoveScaled(1,1,36,18)
+      Indent = True
+      { lblPrint Label
+        MoveScaled(11,0,14,4)
+        AutoResize = True
+        Text = ("Printing...")
+      }
+      { Panel11 Panel
+        MoveScaled(26,0,25,4)
+        Expand = True
+        Arrangement = Arrange.Fill
+        Margin = True
+        Padding = 4
+        { ProgressBar1 ProgressBar
+          MoveScaled(0,0,37,3)
+          Expand = True
+          Border = False
+        }
+      }
+    }
+    { hbZoom HBox
+      MoveScaled(1,62,62,4)
+      { Panel2 Panel
+        MoveScaled(0,0,17,4)
+        Expand = True
+        Arrangement = Arrange.Horizontal
+        { btnOnePage ToolButton Mode
+          Name = "btnOnePage"
+          MoveScaled(0,0,4,4)
+          Tag = "1"
+          ToolTip = ("One page")
+          Picture = Picture["16/one-page.png"]
+          Toggle = True
+        }
+        { btnTwoPages ToolButton Mode
+          Name = "btnTwoPages"
+          MoveScaled(4,0,4,4)
+          Tag = "2"
+          ToolTip = ("Two pages")
+          Picture = Picture["16/two-pages.png"]
+          Toggle = True
+        }
+        { btnFullWidth ToolButton Mode
+          Name = "btnFullWidth"
+          MoveScaled(8,0,4,4)
+          Tag = "3"
+          ToolTip = ("Full width")
+          Picture = Picture["16/full-width.png"]
+          Toggle = True
+        }
+        { btnRealSize ToolButton Mode
+          Name = "btnRealSize"
+          MoveScaled(12,0,4,4)
+          Tag = "4"
+          ToolTip = ("Real size")
+          Picture = Picture["16/real-size.png"]
+          Toggle = True
+        }
+      }
+      { btnZoomOut ToolButton
+        MoveScaled(18,0,4,4)
+        ToolTip = ("Zoom out")
+        Picture = Picture["icon:/small/zoom-out"]
+      }
+      { sldZoom Slider
+        MoveScaled(22,0,19,4)
+        MinValue = 13
+        MaxValue = 400
+        Value = 100
+      }
+      { lblZoom Label
+        MoveScaled(41,0,8,4)
+        Text = ("100 %")
+        Alignment = Align.Center
+      }
+      { btnZoomIn ToolButton
+        MoveScaled(48,0,4,4)
+        ToolTip = ("Zoom in")
+        Picture = Picture["icon:/small/zoom-in"]
+      }
+      { btnPrint2 MenuButton btnPrint
+        Name = "btnPrint2"
+        MoveScaled(51,0,8,4)
+        Visible = False
+        AutoResize = True
+        Text = ("Print")
+        Border = False
+        Menu = "mnuPrint"
+      }
+      { btnShowSide ToolButton
+        MoveScaled(58,0,4,4)
+        Visible = False
+        ToolTip = ("Show options")
+        Picture = Picture["icon:/small/view-split-h"]
+      }
+    }
+  }
+  { panSide HBox
+    MoveScaled(65,1,41,72)
+    { Separator1 Separator
+      MoveScaled(1,22,0,15)
+    }
+    { Panel4 VBox
+      MoveScaled(1,1,39,70)
+      Expand = True
+      { tabPrint TabPanel
+        MoveScaled(0,0,37,11)
+        Arrangement = Arrange.Vertical
+        Spacing = True
+        Margin = True
+        Border = False
         Count = 2
         Index = 0
         Text = ("Printer")
-        { PictureBox1 PictureBox
-          MoveScaled(1,1,7,7)
-          Picture = Picture["icon:/48/printer"]
-        }
-        { cmbPrinter ComboBox
-          MoveScaled(1,9,34,4)
-          ReadOnly = True
+        { Panel13 HBox
+          MoveScaled(1,1,37,4)
+          Spacing = True
+          { PictureBox1 PictureBox
+            MoveScaled(0,0,4,4)
+            Picture = Picture["icon:/32/printer"]
+            Stretch = True
+          }
+          { cmbPrinter ComboBox
+            MoveScaled(5,0,31,4)
+            Expand = True
+            ReadOnly = True
+          }
         }
         Index = 1
         Text = ("File")
-        { PictureBox2 PictureBox
-          MoveScaled(1,1,7,7)
-          Picture = Picture["icon:/48/pdf"]
-        }
-        { txtFile ButtonBox
-          MoveScaled(1,9,34,4)
-          Picture = Picture["icon:/16/open"]
-          ReadOnly = True
+        { Panel12 HBox
+          MoveScaled(1,1,35,4)
+          Spacing = True
+          { PictureBox2 PictureBox
+            MoveScaled(0,0,4,4)
+            Picture = Picture["icon:/48/pdf"]
+            Stretch = True
+          }
+          { txtFile ButtonBox
+            MoveScaled(5,0,29,4)
+            Expand = True
+            Picture = Picture["icon:/16/open"]
+            ReadOnly = True
+          }
         }
         Index = 0
       }
-      { Panel14 HBox
-        MoveScaled(1,20,36,4)
-        Spacing = True
-        { Label10 Label
-          MoveScaled(0,0,12,4)
-          Text = ("Orientation")
-        }
-        { cmbOrientation ComboBox
-          MoveScaled(14,0,21,4)
-          Expand = True
-          ReadOnly = True
-          List = [("Portrait"), ("Landscape")]
-        }
+      { Separator2 Separator
+        MoveScaled(3,12,32,0)
       }
-      { Panel8 HBox
-        MoveScaled(1,24,36,4)
-        Spacing = True
-        { Label3 Label
-          MoveScaled(0,0,12,4)
-          Text = ("Paper")
-        }
-        { cmbPaper ComboBox
-          MoveScaled(13,0,21,4)
-          Expand = True
-          ReadOnly = True
-          List = [("Custom"), ("A3"), ("A4"), ("A5"), ("B5"), ("Letter"), ("Executive"), ("Legal")]
-        }
-      }
-      { pnlCustom VBox
-        MoveScaled(1,29,36,9)
-        Enabled = False
-        Spacing = True
-        { Panel3 HBox
-          MoveScaled(1,0,32,4)
-          Spacing = True
-          { Label5 Label
-            MoveScaled(0,0,12,4)
-            Text = ("Width")
-          }
-          { spWidth SpinBox
-            MoveScaled(14,0,13,4)
-            Expand = True
-            MaxValue = 1000
-          }
-          { Label7 Label
-            MoveScaled(27,0,4,4)
-            Text = ("mm")
-          }
-        }
-        { Panel17 HBox
-          MoveScaled(1,4,31,4)
-          Spacing = True
-          { Label6 Label
-            MoveScaled(0,0,12,4)
-            Text = ("Height")
-          }
-          { spHeight SpinBox
-            MoveScaled(13,0,13,4)
-            Expand = True
-            MaxValue = 1000
-          }
-          { Label8 Label
-            MoveScaled(26,0,4,4)
-            Text = ("mm")
-          }
-        }
-      }
-      { Panel7 HBox
-        MoveScaled(1,39,36,4)
-        Spacing = True
-        { Label2 Label
-          MoveScaled(0,0,12,4)
-          Text = ("Recto Verso")
-        }
-        { cmbDuplex ComboBox
-          MoveScaled(15,0,21,4)
-          Expand = True
-          ReadOnly = True
-          List = [("None"), ("Short side"), ("Long side")]
-        }
-      }
-      { tgbGrayScale CheckBox
-        MoveScaled(1,44,34,4)
-        Text = ("Grayscale")
-      }
-      { tgbFullPage CheckBox
-        MoveScaled(1,48,24,4)
-        Visible = False
-        Text = ("Full page")
-      }
-      { Panel6 HBox
-        MoveScaled(2,53,34,4)
-        Spacing = True
-        { Label1 Label
-          MoveScaled(0,0,12,4)
-          Text = ("Range")
-        }
-        { TextBox1 ButtonBox
-          MoveScaled(15,0,18,4)
-          Expand = True
-          Picture = Picture["icon:/16/clear"]
-        }
-      }
-      { HBox1 HBox
-        MoveScaled(2,58,34,4)
-        Spacing = True
-        { Label4 Label
-          MoveScaled(0,0,12,4)
-          Text = ("Copies")
-        }
-        { TextBox2 SpinBox
-          MoveScaled(15,0,12,4)
-          Expand = True
-          MinValue = 1
-        }
-      }
-      { tgbCollateCopies CheckBox
-        MoveScaled(1,63,35,3)
-        Text = ("Collate copies")
-      }
-      { tgbReverseCopies CheckBox
-        MoveScaled(1,66,36,4)
-        Text = ("Reverse order")
-      }
-      { Panel5 Panel
-        MoveScaled(2,71,33,3)
+      { VBox1 VBox
+        MoveScaled(0,13,38,56)
         Expand = True
-      }
-      { HBox2 HBox
-        MoveScaled(2,76,33,6)
-        { Panel10 Panel
-          MoveScaled(2,1,10,3)
+        Spacing = True
+        Margin = True
+        { Panel14 HBox
+          MoveScaled(1,1,36,4)
+          Spacing = True
+          { Label10 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Orientation")
+          }
+          { cmbOrientation ComboBox
+            MoveScaled(14,0,21,4)
+            Expand = True
+            ReadOnly = True
+            List = [("Portrait"), ("Landscape")]
+          }
+        }
+        { Panel8 HBox
+          MoveScaled(1,5,36,4)
+          Spacing = True
+          { Label3 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Paper")
+          }
+          { cmbPaper ComboBox
+            MoveScaled(13,0,21,4)
+            Expand = True
+            ReadOnly = True
+            List = [("Custom"), ("A3"), ("A4"), ("A5"), ("B5"), ("Letter"), ("Executive"), ("Legal")]
+          }
+        }
+        { pnlCustom VBox
+          MoveScaled(1,10,36,9)
+          Enabled = False
+          Spacing = True
+          { Panel3 HBox
+            MoveScaled(1,0,32,4)
+            Spacing = True
+            { Label5 Label
+              MoveScaled(0,0,12,4)
+              Text = ("Width")
+            }
+            { spWidth SpinBox
+              MoveScaled(14,0,6,4)
+              Expand = True
+              MaxValue = 1000
+            }
+            { Label7 Label
+              MoveScaled(27,0,4,4)
+              Text = ("mm")
+            }
+          }
+          { Panel17 HBox
+            MoveScaled(1,4,31,4)
+            Spacing = True
+            { Label6 Label
+              MoveScaled(0,0,12,4)
+              Text = ("Height")
+            }
+            { spHeight SpinBox
+              MoveScaled(13,0,6,4)
+              Expand = True
+              MaxValue = 1000
+            }
+            { Label8 Label
+              MoveScaled(26,0,4,4)
+              Text = ("mm")
+            }
+          }
+        }
+        { Panel7 HBox
+          MoveScaled(1,20,36,4)
+          Spacing = True
+          { Label2 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Recto Verso")
+          }
+          { cmbDuplex ComboBox
+            MoveScaled(15,0,21,4)
+            Expand = True
+            ReadOnly = True
+            List = [("None"), ("Short side"), ("Long side")]
+          }
+        }
+        { tgbGrayScale CheckBox
+          MoveScaled(1,25,34,4)
+          Text = ("Grayscale")
+        }
+        { tgbFullPage CheckBox
+          MoveScaled(1,29,24,4)
+          Visible = False
+          Text = ("Full page")
+        }
+        { Panel6 HBox
+          MoveScaled(2,33,34,4)
+          Spacing = True
+          { Label1 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Range")
+          }
+          { TextBox1 ButtonBox
+            MoveScaled(15,0,18,4)
+            Expand = True
+            Picture = Picture["icon:/16/clear"]
+          }
+        }
+        { HBox1 HBox
+          MoveScaled(2,38,34,4)
+          Spacing = True
+          { Label4 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Copies")
+          }
+          { TextBox2 SpinBox
+            MoveScaled(15,0,12,4)
+            Expand = True
+            MinValue = 1
+          }
+        }
+        { tgbCollateCopies CheckBox
+          MoveScaled(1,43,35,3)
+          Text = ("Collate copies")
+        }
+        { tgbReverseCopies CheckBox
+          MoveScaled(1,46,36,4)
+          Text = ("Reverse order")
+        }
+        { Panel5 Panel
+          MoveScaled(2,49,33,2)
           Expand = True
         }
-        { btnPrint Button
-          MoveScaled(7,0,22,6)
-          Text = ("Print")
-          Picture = Picture["icon:/22/print"]
-        }
-        { Panel9 Panel
-          MoveScaled(24,4,10,3)
-          Expand = True
+        { HBox2 HBox
+          MoveScaled(2,51,33,4)
+          { Panel10 Panel
+            MoveScaled(2,1,10,3)
+            Expand = True
+          }
+          { btnPrint Button
+            MoveScaled(7,0,14,4)
+            AutoResize = True
+            Text = ("Print")
+            Picture = Picture["icon:/small/print"]
+          }
+          { Panel9 Panel
+            MoveScaled(21,1,10,3)
+            Expand = True
+          }
         }
       }
+    }
+    { btnCloseSide ToolButton
+      MoveScaled(35,0,3,3)
+      Ignore = True
+      Picture = Picture["icon:/small/close"]
     }
   }
 }

@@ -4,6 +4,7 @@ Export
 
 Class Desktop
 
+Static Property Read Count As Integer
 Static Property Read Key As String
 
 Static Private $cConn As New Collection
@@ -200,3 +201,10 @@ Static Public Sub Create(Name As String) As Connection
   
 End
 
+
+Static Private Function Count_Read() As Integer
+
+  Init()
+  Return $aConn.Count
+
+End

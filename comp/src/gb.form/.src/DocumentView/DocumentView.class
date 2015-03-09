@@ -203,13 +203,17 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   
   'Draw the doc
   If $bShowShadow Then 
-    Paint.Rectangle(iDocX + fShad, iDocY + fShad, $fScaledDocWidth, $fScaledDocHeight)
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 125))
+    Paint.Save
+    Paint.Translate(fShad, fShad)
+    Paint.Rectangle(iDocX + $fScaledDocWidth - fShad, iDocY, fShad, $fScaledDocHeight)
+    Paint.Rectangle(iDocX, iDocY + $fScaledDocHeight - fShad, $fScaledDocWidth, fShad)
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 192))
     Paint.Fill
+    Paint.Restore
   Endif
   
   If $colImage.Exist(Page) Then
-    Draw.Image($colImage[Page].Stretch($fScaledDocWidth, $fScaledDocHeight), iDocX, iDocY)
+    Paint.DrawImage($colImage[Page], iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
@@ -220,17 +224,16 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
     Paint.Brush = Paint.Color(Color.Black)
     Paint.Stroke
   Endif
+  
   If $aSelected.Find(page) > -1 Then
-    
     Paint.Rectangle(iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight)
-    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 125))
+    Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
     Paint.Fill()
   Endif
   
   If _ShowPageNumber Then
     Paint.Font.Grade = 20 * $fZoom
-    Paint.Text(Page, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight, Align.Center)
-    Paint.Fill
+    Paint.DrawText(Page, iDocX, iDocY, $fScaledDocWidth, $fScaledDocHeight, Align.Center)
   Endif
   
 End

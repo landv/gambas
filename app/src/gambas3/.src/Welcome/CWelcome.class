@@ -72,9 +72,9 @@ Public Sub dwgWelcome_Draw()
     Paint.Begin($hText)
     Paint.Font = Font["+12,Bold"]
     Y = Paint.Font.Ascent
-    X = PaintText("Gambas", 8, Y, Color.White) 'TEXT_COLOR)
-    Paint.Font = Font["+8,Bold"]
-    PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
+    X = PaintText("Gambas " & Project.FullVersionWithRevision, 8, Y, Color.White) 'TEXT_COLOR)
+    'Paint.Font = Font["+12,Bold"]
+    'PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
     
     Paint.Font = Font["+4,Bold"]
     Y += Paint.Font.Height
@@ -90,7 +90,7 @@ Public Sub dwgWelcome_Draw()
   Endif
 
   Paint.DrawImage($hLogo, hDrawingArea.W - $hLogo.Width, -10 - Desktop.Scale)
-  Paint.DrawImage($hText, Desktop.Scale, 16 + Desktop.Scale)
+  Paint.DrawImage($hText, Desktop.Scale, Desktop.Scale * 2)
 
 End
 

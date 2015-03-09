@@ -40,7 +40,7 @@ Public Sub _NormalizeUnits()
   
   Dim i As Integer
   For i = 0 To $aColumns.Max
-    $aColumns[i]._Width = TSizeParse[$aColumns[i].Width].ToCm()
+    $aColumns[i]._Width = TSizeParse[$aColumns[i].Width].ToInch()
   Next
   
 End

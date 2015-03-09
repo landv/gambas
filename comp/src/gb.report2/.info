@@ -338,7 +338,7 @@ UnitTo
 M
 f
 (Value)f(Unit1)s(Unit2)s
-UnitToCm
+UnitToInch
 M
 f
 (Value)f(Unit)s
@@ -864,11 +864,11 @@ b
 :Layout
 :
 
-(Width)i(Height)i(Index)i
+(Width)f(Height)f(Index)i
 :Draw
 :
 
-(Width)i(Height)i(Index)i
+(Width)f(Height)f(Index)i
 _GetSizeHints
 m
 ReportSizeHints
@@ -1198,6 +1198,10 @@ _call
 M
 ReportSizeHints
 (Width)f(Height)f[(NotFinished)f]
+FromString
+M
+ReportSizeHints
+(Width)s(Height)s[(NotFinished)b]
 #ReportSvgImage
 ReportFrame
 C
@@ -1394,6 +1398,10 @@ Area_Scroll
 m
 
 
+Area_MouseWheel
+m
+
+
 Area_Draw
 m
 
@@ -1455,7 +1463,7 @@ m
 (Size)s[(bAllowRelative)b]
 'Create a new size object from its description.
 '#bAllowRelative# can be TRUE to allow the use of "%" as unit.
-ToCm
+ToInch
 m
 f
 

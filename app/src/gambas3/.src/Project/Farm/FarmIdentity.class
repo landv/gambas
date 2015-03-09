@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Public Const DEFAULT_FARM As String = "gambasfarm.org"
+
 Static Property FarmList As String[]
 Static Property RememberPassword As Boolean
 Static Property LastFarm As String
@@ -23,6 +25,8 @@ End
 Static Public Sub Get(sFarm As String) As FarmIdentity
 
   Dim hIdentity As FarmIdentity
+  
+  If Not sFarm Then sFarm = DEFAULT_FARM
   
   hIdentity = $cCache[sFarm]
   If Not hIdentity Then
@@ -112,7 +116,7 @@ End
 
 Static Private Function LastFarm_Read() As String
 
-  Return $hSettings["/LastFarm", "gambasfarm.org"]
+  Return $hSettings["/LastFarm", DEFAULT_FARM]
 
 End
 

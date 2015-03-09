@@ -4,18 +4,18 @@ Private $aSel As New Integer[]
 
 ' Private Sub Dump()
 '   
-'   '  Dim I As Integer
-'   ' ' 
-'   ' ' Print System.Backtrace.Join(" ")
-'   ' ' 
-'   ' Print "Selection = ";
-'   ' For I = 0 To $aSel.Max Step 2
-'   '   Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
-'   ' Next
-'   ' Print
+'    Dim I As Integer
+'   ' 
+'   ' Print System.Backtrace.Join(" ")
+'   ' 
+'   Print "Selection = ";
+'   For I = 0 To $aSel.Max Step 2
+'     Print "["; $aSel[I]; ","; $aSel[I + 1]; "] ";
+'   Next
+'   Print
 '   
 ' End
-
+' 
 Public Sub SetSelection(aSel As Integer[])
   
   $aSel = aSel
@@ -133,4 +133,60 @@ Public Function _GetSelectedRows() As Integer[]
   
   Return aRet
 
+End
+
+Public Sub InsertRows(iStart As Integer, iLength As Integer)
+
+  Dim I, S, L As Integer
+  
+  For I = 0 To $aSel.Max Step 2
+    
+    S = $aSel[i]    
+    L = $aSel[I + 1]
+    
+    If iStart <= S Then
+      $aSel[I] += iLength
+    Else If iStart <= (S + L) Then
+      $aSel[I + 1] = iStart - S
+      $aSel.Add(iStart + iLength)
+      $aSel.Add(L - (iStart - S))
+    Endif
+    
+  Next
+  
+  'Dump
+
+End
+
+Public Sub RemoveRows(iStart As Integer, iLength As Integer)
+  
+  Dim I, S, L As Integer
+  
+  I = 0
+  While I < $aSel.Count
+    
+    S = $aSel[I]
+    L = $aSel[I + 1]
+    
+    If (iStart + iLength) <= S Then
+      $aSel[I] -= iLength
+    Else If iStart >= (S + L) Then
+    Else 
+      If iStart < S Then 
+        iLength -= (S - iStart)
+        $aSel[I] = iStart
+      Endif
+      $aSel[I + 1] -= iLength - (iStart - S)
+    Endif
+    
+    If $aSel[I + 1] <= 0 Then
+      $aSel.Remove(I, 2)
+    Else
+      I += 2
+    Endif
+    
+  Wend
+  
+  'Dump
+  
 End
