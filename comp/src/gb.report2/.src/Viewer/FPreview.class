@@ -13,7 +13,7 @@ Static Public Function Run(hReport As Report)
   hFpreview = New FPreview
   
   hFPreview.SetReport(hReport)
-  hFpreview.ShowModal()
+  hFPreview.ShowModal()
   
 End
 
@@ -350,10 +350,6 @@ Public Sub Printer_End()
   btnPrint.Picture = Picture["icon:/22/print"]
   btnPrint.Text = ("Print")
   btnPrint.Tag = False
-  
-End
-
-Public Sub Panel12_MouseDown()
   
 End
 

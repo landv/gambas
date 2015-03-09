@@ -178,6 +178,6 @@ void gSpinBox::setBorder(bool vl)
 #ifdef GTK3
 int gSpinBox::minimumWidth() const
 {
-	return gDesktop::scale() * 8;
+	return gDesktop::scale() * 14;
 }
 #endif
