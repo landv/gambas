@@ -109,7 +109,7 @@ Private Sub FillWithExample()
       $hHelp.MoveScaled(0, 0, 4, 4)
       $hHelp.Foreground = Color.LightForeground
       $hHelp.HTML = "<html><body><style type=\"text/css\">BODY { font-family:sans-serif;font-style:italic;color:#" & Hex$(Color.LightForeground) & "; }</style>" & 
-        Subst(("Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."), "<a href=\"farm://\">" & ("there") & "</a>") &
+        Subst(("Examples are stored on the Gambas farm server. Click &1 to access the farm server and download them..."), "<a href=\"farm://\">" & ("here") & "</a>") &
         "</body></html>"
     Endif
     $hList.Arrangement = Arrange.Fill
