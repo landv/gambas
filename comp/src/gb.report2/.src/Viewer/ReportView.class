@@ -167,7 +167,7 @@ Private Sub Report_Write(Value As Report)
   $hReport.Layout(1)
   'Print "View Pages: " & $hReport.PageCount
   $hView.Count = $hReport.PageCount 
-  $hView.Padding = Report.UnitTo(1, "cm", "px")
+  $hView.Padding = Report.UnitTo(5, "mm", "px")
   $hView.Spacing = $hView.Padding
   $hView.DocWidth = Report.UnitTo(TSizeParse[Value.Width].ToInch(), "in", "px")
   'Print "ReportWidth: " & Value._Width
@@ -176,7 +176,7 @@ Private Sub Report_Write(Value As Report)
   'Print "ReportHeight: " & Value._Height
   '$hView.Zoom = 1
   $hView.Reset
-  '$hView.Arrangement = Arrange.fill
+  '$hView.Arrangement = Arrange.f297ill
   '$hView.Column = 2
   '$hView.AutoCenter = True
   
