@@ -240,6 +240,8 @@ Public Sub GridView_Click()
 
   Dim hCtrl As TextBox
   
+  If $hList.Row < 0 Then Return
+  
   hCtrl = GetTextBox()
   
   hCtrl.Text = String.Left(hCtrl.Text, Start) & List[$hList.Row]
