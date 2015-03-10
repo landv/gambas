@@ -91,6 +91,40 @@ _call
 M
 s
 (sMessage)s(sFormat)s(iLevel)i
+#LogHandler
+
+C
+Level
+p
+i
+
+Step
+p
+i
+
+Open
+m
+
+
+'Opens the log handler and prepares it for writing
+Write
+m
+
+(sMessage)s[(iLevel)i]
+'Write the sMessage with optional level iLevel to the log handler
+Close
+m
+
+
+'Closes the log handler. No further writing is allowed
+isEnabledFor
+m
+b
+(iLevel)i
+GetOutput
+m
+s
+
 #LogLevel
 
 C
