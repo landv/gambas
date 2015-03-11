@@ -178,7 +178,6 @@ Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
     
   Endif
   
-  
   If Row = $iCurrent Then Paint.FillRect(X, Y, Width, Height, Color.Merge(Color.LightBackground, Color.TextBackground))
   
   Paint.Background = Color.TextForeground
@@ -206,5 +205,11 @@ Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
   
   If Row = $iInit Then Paint.DrawTextShadow(sName, X + 2, Y, Width - 4, Height, Align.Left)
   Paint.DrawText(sName, X + 2, Y, Width - 4, Height, Align.Left)
+  
+  If Row = $iInit Then
+    Paint.Rectangle(X + 0.5, Y + 0.5, Width - 1, Height - 1)
+    Paint.Background = Color.SelectedBackground
+    Paint.Stroke
+  Endif
 
 End
