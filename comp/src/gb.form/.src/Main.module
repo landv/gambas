@@ -184,21 +184,17 @@ End
 
 Public Sub Main()
 
-  Dim hTask As Task
-  
-  hTask = New CTaskDirSize("~") As "Task"
-  
-  While hTask.Running
-    Wait 0.1
-  Wend
-  
-  Print hTask.Value
-
-  ' Dim hPict As Picture
-  ' Dim hImage As Image
+  ' Dim hTask As Task
   ' 
-  ' hPict = Picture["icon:/small/left"]
-  ' hPict.Image.Desaturate
-  ' hPict.Save("~/left.png")
+  ' hTask = New CTaskDirSize("~") As "Task"
+  ' 
+  ' While hTask.Running
+  '   Wait 0.1
+  ' Wend
+  ' 
+  ' Print hTask.Value
+  Dim hPict As Picture
+
+  hPict = Picture["icon:/48/development"]
   
 End

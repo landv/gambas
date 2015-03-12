@@ -879,22 +879,6 @@ Public Sub UpdateName()
   
   Select Case Object.Type(Control)
 
-    Case "TextBox", "TextArea", "TextEdit", "Editor", "Label", "TextLabel", "CheckBox", "RadioButton"
-      If Not HasText() Then Control.Text = Name
-
-    Case "Button"
-      If Not HasText() And If Not $cValue.Exist("Picture") Then 
-        Control.Text = Name
-      Else
-        Control.Text = $cValue["Text"]
-      Endif
-
-    Case "TreeView", "ListView", "ColumnView", "IconView"
-      Control["A"].Text = Name
-      
-    Case "GridView", "TableView"
-      Control[0, 0].Text = Name
-
     Case "ListBox"
       Control[0].Text = Name
 
@@ -907,6 +891,28 @@ Public Sub UpdateName()
         If Not HasText() Then Control.Text = Name
       Endif
 
+    Case Like "*Box"
+      If Not HasText() Then Try Control.Text = Name
+
+    Case Like "*Button"
+      If Not HasText() And If Not $cValue.Exist("Picture") Then 
+        Try Control.Text = Name
+      Else
+        Try Control.Text = $cValue["Text"]
+      Endif
+
+    Case Like "*Label"
+      If Not HasText() Then Try Control.Text = Name
+
+    Case "TextArea", "TextEdit", "Editor"
+      If Not HasText() Then Control.Text = Name
+      
+    Case "TreeView", "ListView", "ColumnView", "IconView"
+      Control["A"].Text = Name
+      
+    Case "GridView", "TableView"
+      Control[0, 0].Text = Name
+
     Case "DrawingArea", "ScrollArea"
       Control.Refresh
       
@@ -915,7 +921,7 @@ Public Sub UpdateName()
 
     Case "WebView"
       Control.Text = "<html><body><h2>" & Name & "</h2></body></html>"
-    
+      
     ' Case "ListContainer"
     '   hLabel = Control.Children[0]
     '   hLabel.Text = Name

@@ -909,8 +909,8 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
 
   hEmblem = Picture[sEmblem].Image
 
-  iSize = hEmblem.W * hSource.W / 64 * 1.25
-  hEmblem = hEmblem.Stretch(iSize, iSize * hEmblem.H / hEmblem.W)
+  iSize = Min(hEmblem.H, hSource.H / 2)
+  hEmblem = hEmblem.Stretch(-1, iSize) ', iSize * hEmblem.H / hEmblem.W)
 
   iSize -= hSource.W \ 4
 
@@ -979,8 +979,9 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
     'If bExported Then MakeExportedIcon(hImage)
 
     If bStartup Then
-      hImageStartup = Image.Load("img/16/startup.png").Stretch(iSize \ 2, iSize \ 2)
-      hImage.PaintImage(hImageStartup, 0, (hImage.H - hImageStartup.H) \ 2)
+      hImage = AddEmblem(hImage, "img/32/startup.png")
+      'hImageStartup = Image.Load("img/16/startup.png").Stretch((iSize * 2) \ 3, (iSize * 2) \ 3)
+      'hImage.PaintImage(hImageStartup, 0, (hImage.H - hImageStartup.H) \ 2)
     Endif
 
     $cImageCache[sKey] = hImage
@@ -1446,9 +1447,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
           bDir = False
         Endif
       Endif
-
-      hForm = Files[sKey]
-      If hForm Then hForm.Icon = GetFileIcon(sKey, 16)
+      
+      RefreshIcon(sKey)
 
     Endif
 
@@ -6110,4 +6110,25 @@ Public Sub OnVendorKeyPress()
     Stop Event
   Endif
   
+End
+
+Private Sub RefreshIcon(sPath As String)
+
+  Dim hForm As Object
+
+  hForm = Files[sPath]
+  If hForm Then hForm.Icon = GetFileIcon(sPath, 16)
+  
+  If IsSourcePath(sPath) Then
+    If File.Ext(sPath) = "class" Then
+      sPath = FindForm(File.BaseName(sPath))
+    Else
+      sPath = File.SetExt(sPath, "class")
+    Endif
+    
+    hForm = Files[sPath]
+    If hForm Then hForm.Icon = GetFileIcon(sPath, 16)
+    
+  Endif
+
 End
