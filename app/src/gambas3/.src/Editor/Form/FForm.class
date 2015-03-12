@@ -1248,6 +1248,11 @@ Public Sub Control_Menu()
 
   CreateMenu
   mnuForm.Popup
+  
+  ' Must simulate the MouseUp event that is captured by the popup!
+  If $hUndo.IsDisabled() Then $hUndo.Enable
+  $hUndo.End
+  CheckHovered
 
 End
 
@@ -1320,7 +1325,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   $hUndo.Add("RemoveControl", [sName])
 
   Control[sName] = hCtrl
-  If bSetText Then Try hCtrl.SetProperty("Text", sName)
+  'If bSetText Then Try hCtrl.SetProperty("Text", sName)
 
   If sClass = "Menu" Then
     If hParent = RootControl Then
@@ -1590,7 +1595,7 @@ Private Sub DrawDropFrame()
     H = .DefaultHeight
   End With
   
-  DrawFrame(hParent, X, Y, W, H)
+  DrawFrame(hParent, X - W \ 2, Y - H \ 2, W, H)
   
 End
 
@@ -3268,7 +3273,10 @@ Public Sub Control_Drop()
   Dim hCtrl As CControl
   Dim hParent As CControl
   Dim hImage As Image
-  Dim X, Y As Integer
+  Dim X, Y, W, H As Integer
+  Dim sClass As String
+
+  Debug
 
   hParent = Control[Last.Tag]
   X = Drag.X
@@ -3321,13 +3329,24 @@ Public Sub Control_Drop()
     '   Y += hParent.Control.Y
     '   hParent = hParent.Parent
     ' ENDIF
-
-    FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
+    
     hParent = $hContainer
     X = $iContX
     Y = $iContY
 
-    $hCurrent = AddControl(Drag.Data, hParent, X, Y)
+    FindContainer(hParent, X, Y, COORD_INSIDE_TO_CONTROL)
+
+    sClass = Drag.Data
+    
+    With CComponent.Classes[sClass]
+      W = .DefaultWidth
+      H = .DefaultHeight
+    End With
+
+    X -= W \ 2
+    Y -= H \ 2
+
+    $hCurrent = AddControl(sClass, hParent, X, Y)
     FToolBox.SetTool()
     HideFrame
 

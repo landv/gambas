@@ -12,6 +12,7 @@ Public Const _DrawWith As String = "TextBox"
 
 Property Mask As String
 Property ShowDefault As Boolean
+'Property Text As String
 
 Private $hObserver As Observer
 
@@ -567,6 +568,7 @@ Public Sub TextBox_Change()
   If Not $sMaskOrg Then Return
   
   Object.Lock(Me)
+  Debug Me.Text
   If Me.HasFocus Or If $bShowDefault Then
     If Me.Text = "" Then Me.Text = MakeDefault()
   Else
@@ -588,3 +590,15 @@ Private Sub ShowDefault_Write(Value As Boolean)
   TextBox_Change
 
 End
+
+' Private Function Text_Read() As String
+' 
+'   Return Super.Text
+' 
+' End
+' 
+' Private Sub Text_Write(Value As String)
+' 
+'   Super.Text = Value
+' 
+' End
