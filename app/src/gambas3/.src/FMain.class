@@ -31,7 +31,7 @@ Static Private $sCompressMessage As String
 
 Public Sub _new()
   
-  Me.Resize(800, 600)
+  Me.ResizeScaled(86, 97)
   
   Project.ProjectTree = tvwProject
   Project.Workspace = wrkProject
@@ -1823,12 +1823,6 @@ End
 '   
 ' End
 
-Public Sub panProperty_Arrange()
-  
-  'tabProperty_Click  
-  
-End
-
 Public Sub tvwProject_Leave()
   
   $bInTreeView = False
@@ -2362,7 +2356,7 @@ Public Sub Form_Resize()
   If dwgWelcome.Visible Then
     W = Desktop.Scale * 106 + 64
     If W > Me.ClientW Then W = Max(Me.ClientW, Desktop.Scale * 80 + 64)
-    H = Max(Desktop.Scale * 80 + 64, Me.ClientH - 64)
+    H = Max(Desktop.Scale * 90 + 64, Me.ClientH - 64)
     dwgWelcome.Move((Me.ClientW - W) \ 2, (Me.ClientH - H) \ 2, W, H)
     
   Endif
@@ -2624,3 +2618,4 @@ Public Sub txtSearchProject_Click()
   mnuCloseAll_Click
 
 End
+
