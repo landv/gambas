@@ -17,6 +17,8 @@ Private $hPopup As Window
 Private $hList As GridView
 Private $hWatcher As Watcher
 Private $bExplicit As Boolean
+Private $hObsWindow As Observer
+Private $iHeight As Integer
 
 Private Sub FindTextBox(hCtrl As Control) As Control
   
@@ -69,6 +71,7 @@ Private Sub HideList()
 
   If $hPopup Then 
     $hPopup.Hide
+    $hObsWindow = Null
   Endif
   $hTimer.Stop
 
@@ -83,14 +86,14 @@ Public Sub TextBox_KeyPress()
     Select Case Key.Code
       
       Case Key.Down, Key.PageDown
-        iRow = $hList.Row + If(Key.Code = Key.Down, 1, $hList.ClientH \ $hList.Rows.H)
-        If iRow < $hList.Rows.Count Then $hList.Row = iRow
+        iRow = Min($hList.Rows.Max, $hList.Row + If(Key.Code = Key.Down, 1, $hList.ClientH \ $hList.Rows.H))
+        $hList.Row = iRow
         Stop Event
         Return
         
       Case Key.Up, Key.PageUp
-        iRow = $hList.Row - If(Key.Code = Key.Up, 1, $hList.ClientH \ $hList.Rows.H)
-        If iRow >= 0 Then $hList.Row = iRow
+        iRow = Max(0, $hList.Row - If(Key.Code = Key.Up, 1, $hList.ClientH \ $hList.Rows.H))
+        $hList.Row = iRow
         Stop Event
         Return
         
@@ -127,6 +130,21 @@ Public Sub TextBox_KeyPress()
   
 End
 
+Private Sub MovePopup()
+
+  Dim hCtrl As TextBox
+  Dim X As Integer
+  Dim Y As Integer
+  
+  If Not $hPopup Then Return
+
+  hCtrl = GetTextBox()
+  X = hCtrl.Font.TextWidth(String.Left(hCtrl.Text, Start))
+  Y = hCtrl.ScreenY + hCtrl.H
+  
+  $hPopup.Move(hCtrl.ScreenX + X, Y, Desktop.Scale * 48, $iHeight)
+
+End
 
 Public Sub Timer_Timer()
 
@@ -176,12 +194,11 @@ Public Sub Timer_Timer()
   $hList.Rows.Count = aList.Count
   $hList.Row = 0 'Me.GetIndex()
   
-  X = hCtrl.Font.TextWidth(String.Left(hCtrl.Text, Start))
-  Y = hCtrl.ScreenY + hCtrl.H
-  H = $hList.Rows.Height * Min(8, aList.Count) + 2
+  $iHeight = $hList.Rows.Height * Min(8, aList.Count) + 2
   
-  $hPopup.Move(hCtrl.ScreenX + X, Y, Desktop.Scale * 48, H)
+  MovePopup
   $hPopup.Show
+  $hObsWindow = New Observer(hCtrl.Window) As "Window"
   
   Object.Unlock(hCtrl)
   
@@ -270,4 +287,10 @@ Private Function Editor_Read() As TextBox
 
   Return $hObserver.Object
 
+End
+
+Public Sub Window_Move()
+  
+  MovePopup
+  
 End

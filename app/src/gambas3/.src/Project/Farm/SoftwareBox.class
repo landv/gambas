@@ -20,7 +20,7 @@ Private $hSpinner As Spinner
 Private $sFarm As String
 Private $iId As Integer
 Private $bHighlight As Boolean
-
+Private $bInit As Boolean
 
 
 Public Sub _new(iId As Integer, sFarm As String) ', sLogin As String, sPassword As String)
@@ -69,12 +69,12 @@ End
 
 Public Sub Load()
   
+  $bInit = True
   If $hSoft.State <> CSoftware.STATE_READY Then 
     Reload
   Else
     Raise Ready
   Endif
-  
   
 End
 
@@ -128,6 +128,8 @@ Public Sub DrawingArea_Draw()
   Dim P As Integer
   Dim iCol As Integer
   Dim sText As String
+  
+  If Not $bInit Then Load
   
   W = Paint.W
   H = Paint.H

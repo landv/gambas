@@ -173,7 +173,7 @@ Public Sub Request_Finished()
     hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
     If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Hide
     hSoftwareBox.ResizeScaled(48, 15)
-    hSoftwareBox.Load
+    If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Load
     
   Next
   
@@ -259,6 +259,7 @@ Private Sub ReloadFarm()
   CSoftware.ClearCache($hIdentity.Farm)
   hIdentity = FarmIdentity.Get($hIdentity.Farm)
   hIdentity.Init(lblIdentity)
+  tagFarm.SetFarm($hIdentity.Farm)
   Reload
 
 End
