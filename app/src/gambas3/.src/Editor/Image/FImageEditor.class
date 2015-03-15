@@ -496,7 +496,8 @@ Private Sub SetTool(sAction As String)
   
   $sTool = sAction
   
-  If $sTool <> "text" Then FImageProperty.ShowTextOption(False)
+  FImageProperty.OnToolChange($sTool)
+  
 
 End
 
@@ -845,7 +846,7 @@ Private Sub GetRectLimits(hRect As RectF) As PointF[]
 End
 
 
-Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnoreLast As Boolean) As PointF
+Private Sub FindBestMagnetFor(hPoint As PointF, Optional iIgnoreFrom As Integer) As PointF
 
   Dim hMagnet As PointF
 
@@ -854,7 +855,7 @@ Private Sub FindBestMagnetFor(hPoint As PointF, Optional bIgnoreLast As Boolean)
       If $iChangeAction = CHANGE_MOVE And If $hSelect.Current < 0 Then Goto NO_SELECT
       If $iChangeAction = CHANGE_RESIZE Or If $iChangeAction = CHANGE_ROTATE Then Goto NO_SELECT
     Endif
-    hMagnet = $hSelect.FindMagnet(hPoint, 8 / imvImage.Zoom, bIgnoreLast)
+    hMagnet = $hSelect.FindMagnet(hPoint, 8 / imvImage.Zoom, iIgnoreFrom)
     If hMagnet Then Return hMagnet
   Endif
 
@@ -897,18 +898,22 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
   Dim hMagnet As PointF
   Dim bCurrent As Boolean
   Dim hPoint As PointF
-  Dim bIgnoreLast As Boolean
+  Dim iIgnoreFrom As Integer
   
   If $sTool = "move" Then Return hCurrent
   If $sTool = "change" Or $sTool = "paste" And If Not $bPress Then Return hCurrent
   
   If $bPress Then
-    bIgnoreLast = $sTool = "rectangle" Or $sTool = "ellipse" Or $sTool = "line" Or $sTool = "text"
+    If $sTool = "rectangle" Or If $sTool = "ellipse" Or If $sTool = "line" Then
+      iIgnoreFrom = -1
+    Else If $sTool = "text" Then
+      iIgnoreFrom = $hTextSelect.Shapes.Count
+    Endif
   Endif
   
   If $hMagnet And If hCurrent = $hMagnet Then Return hCurrent
   
-  hMagnet = FindBestMagnetFor(hCurrent, bIgnoreLast)
+  hMagnet = FindBestMagnetFor(hCurrent, iIgnoreFrom)
   If hMagnet Then
     bCurrent = True
     Goto FIND_MAGNET
@@ -926,19 +931,19 @@ Private Sub FindBestMagnet(hCurrent As PointF) As PointF
           If $hSelect.Current >= 0 Then
             For Each hPoint In $hSelect.Shapes[$hSelect.Current].GetMagnets()
               hPoint += hCurrent - $hCurrentPoint
-              hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
+              hMagnet = FindBestMagnetFor(hPoint, iIgnoreFrom)
               If hMagnet Then Goto FIND_MAGNET
             Next
           Endif
           For Each hPoint In GetRectLimits($hSelect.GetExtents())
             hPoint += hCurrent - $hCurrentPoint
-            hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
+            hMagnet = FindBestMagnetFor(hPoint, iIgnoreFrom)
             If hMagnet Then Goto FIND_MAGNET
           Next
         Else If $hPasteSelect Then
           For Each hPoint In GetRectLimits($hPasteSelect.GetExtents())
             hPoint += hCurrent - $hCurrentPoint
-            hMagnet = FindBestMagnetFor(hPoint, bIgnoreLast)
+            hMagnet = FindBestMagnetFor(hPoint, iIgnoreFrom)
             If hMagnet Then Goto FIND_MAGNET
           Next
         Endif
@@ -1039,9 +1044,9 @@ Public Sub imvImage_MouseMove()
           WW = $hCurrentPoint.X - $hLastPoint.X + Sgn($hCurrentPoint.X - $hLastPoint.X)
           HH = $hCurrentPoint.Y - $hLastPoint.Y + Sgn($hCurrentPoint.Y - $hLastPoint.Y)
           If $bShift Then
-            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
+            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2, FImageProperty.GetRoundness())
           Else
-            $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, WW, HH)
+            $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, WW, HH, FImageProperty.GetRoundness())
           Endif
           imvImage.Refresh
         Endif

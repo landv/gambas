@@ -751,6 +751,13 @@ Public Sub GetTolerance() As Integer
   
 End
 
+Public Sub GetRoundness() As Integer
+  
+  Return slbRoundness.Value
+  
+End
+
+
 Public Sub ReadConfig()
   
   tabBrush.TextFont = Project.GetSmallFont()
@@ -1350,5 +1357,25 @@ End
 Public Sub btnAction_Click()
 
   GetCurrent().ExecAction(Last.Tag)
+
+End
+
+Public Sub OnToolChange(sTool As String)
+  
+  If sTool <> "text" Then ShowTextOption(False)
+  panRoundness.Visible = sTool = "rectangle"
+  panTolerance.Visible = sTool = "magic"
+  
+End
+
+Public Sub panSlider_Arrange()
+
+  Dim hChild As Control
+  Dim H As Integer
+
+  For Each hChild In panSlider.Children
+    If hChild.Visible Then H += hChild.H
+  Next
+  panSlider.H = H + Desktop.Scale * 2
 
 End

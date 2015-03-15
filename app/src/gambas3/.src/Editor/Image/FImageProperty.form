@@ -1,11 +1,11 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,160)
+  MoveScaled(0,0,68,166)
   Persistent = True
   Arrangement = Arrange.Fill
   { Panel10 ScrollView
-    MoveScaled(1,1,65,158)
+    MoveScaled(1,1,65,164)
     Arrangement = Arrange.Vertical
     Border = False
     ScrollBar = Scroll.Vertical
@@ -249,8 +249,8 @@
     { Separator6 Separator
       MoveScaled(18,66,15,0)
     }
-    { Panel1 VBox
-      MoveScaled(1,67,63,14)
+    { panSlider VBox
+      MoveScaled(1,67,63,17)
       Margin = True
       { HPanel1 HBox
         MoveScaled(0,0,62,4)
@@ -278,11 +278,11 @@
         { slbSize SliderBox
           MoveScaled(18,0,38,4)
           Expand = True
-          MaxValue = 128
+          MaxValue = 256
           Step = 2
         }
       }
-      { HPanel3 HBox
+      { panTolerance HBox
         MoveScaled(0,8,62,4)
         Spacing = True
         { Label4 Label
@@ -298,12 +298,27 @@
           Value = 32
         }
       }
+      { panRoundness HBox
+        MoveScaled(0,12,62,4)
+        Spacing = True
+        { Label14 Label
+          MoveScaled(0,0,15,4)
+          Text = ("Roundness")
+        }
+        { slbRoundness SliderBox
+          MoveScaled(18,0,38,4)
+          Expand = True
+          MaxValue = 256
+          Step = 2
+          DefaultValue = 32
+        }
+      }
     }
     { Separator3 Separator
-      MoveScaled(19,82,26,0)
+      MoveScaled(19,87,26,0)
     }
     { Panel13 Panel
-      MoveScaled(1,83,64,42)
+      MoveScaled(1,88,64,42)
       Arrangement = Arrange.Vertical
       Margin = True
       { panEffect Expander
@@ -449,10 +464,10 @@
       }
     }
     { sepText Separator
-      MoveScaled(21,126,15,0)
+      MoveScaled(21,131,15,0)
     }
     { panText VBox
-      MoveScaled(3,127,60,23)
+      MoveScaled(3,132,60,23)
       Visible = False
       Margin = True
       { Panel11 HBox
@@ -533,10 +548,10 @@
       }
     }
     { sepGrid Separator
-      MoveScaled(19,151,15,0)
+      MoveScaled(19,156,15,0)
     }
     { panGrid HBox
-      MoveScaled(2,152,62,6)
+      MoveScaled(2,157,62,6)
       Visible = False
       Spacing = True
       Margin = True

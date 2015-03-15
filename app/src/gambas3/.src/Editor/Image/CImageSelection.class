@@ -244,7 +244,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     Paint.Stroke(True)
     
     Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
-    Paint.Dash = [4.0, 4.0]
+    Paint.Dash = [2, 2]
     Paint.DashOffset = fDashOffset
     ' 
     ' If _Invert Then
@@ -373,19 +373,68 @@ End
 ' End
 
 
-Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer)
+Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer, Optional R As Integer)
+
+  Dim A As Integer
+  Dim XC, YC As Float
 
   If W = 0 Or If H = 0 Then Return  
   
-  MoveTo(X, Y)
-  LineTo(X + W, Y)
-  LineTo(X + W, Y + H)
-  LineTo(X, Y + H)
-  LineTo(X, Y)
+  R = Min(R, Min(W, H) \ 2)
+  
+  If R <= 0 Then
+  
+    MoveTo(X, Y)
+    LineTo(X + W, Y)
+    LineTo(X + W, Y + H)
+    LineTo(X, Y + H)
+    LineTo(X, Y)
+    
+  Else
+  
+    MoveTo(X, Y + R)
+
+    XC = X + R
+    YC = Y + R
+    For A = -175 To -95 Step 5
+      LineTo(XC + Cos(Rad(A)) * R, YC + Sin(Rad(A)) * R)
+    Next
+    LineTo(X + R, Y)
+    
+    LineTo(X + W - R, Y)
+    
+    XC = X + W - R
+    YC = Y + R
+    For A = -85 To -5 Step 5
+      LineTo(XC + Cos(Rad(A)) * R, YC + Sin(Rad(A)) * R)
+    Next
+    LineTo(X + W, Y + R)
+    
+    LineTo(X + W, Y + H - R)
+    
+    XC = X + W - R
+    YC = Y + H - R
+    For A = 5 To 85 Step 5
+      LineTo(XC + Cos(Rad(A)) * R, YC + Sin(Rad(A)) * R)
+    Next
+    LineTo(X + W - R, Y + H)
+    
+    LineTo(X + R, Y + H)
+    
+    XC = X + R
+    YC = Y + H - R
+    For A = 95 To 175 Step 5
+      LineTo(XC + Cos(Rad(A)) * R, YC + Sin(Rad(A)) * R)
+    Next
+    LineTo(X, Y + H - R)
+    
+    LineTo(X, Y + R)
+    
+  Endif
   
 End
 
-Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iAlign As Integer, bAlignBase As Boolean)
+Public Sub Text(X As Float, Y As Float, sText As String, sFont As String, iAlign As Integer, bAlignBase As Boolean)
 
   Dim hImage As Image
   Dim hOutline As PointF[][]
@@ -393,6 +442,7 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   Dim hShape As CImageShape
   Dim hPoint As PointF
   Dim hExtents As PaintExtents
+  Dim iTextAlign As Integer
 
   'If W = 0 Or If H = 0 Then Return
   
@@ -407,23 +457,30 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
   
   If Align.IsLeft(iAlign) Then
     'X = X
+    iTextAlign = Align.Left
   Else If Align.IsRight(iAlign) Then
     X -= hExtents.Width
+    iTextAlign = Align.Right
   Else If Align.IsCenter(iAlign) Then
     X -= hExtents.Width / 2
+    iTextAlign = Align.Center
   Endif
   
+  Y -= Paint.Font.Ascent
   If bAlignBase Then
-    'Y = Y
+    iTextAlign += Align.TopNormal
   Else If Align.IsTop(iAlign) Then
-    Y -= hExtents.Y
+    Y = Y - hExtents.Y
+    iTextAlign += Align.TopNormal
   Else If Align.IsBottom(iAlign) Then
     Y = Y - hExtents.Y - hExtents.Height
+    iTextAlign += Align.TopNormal
   Else If Align.IsMiddle(iAlign) Then
     Y = Y - hExtents.Y - hExtents.Height / 2
+    iTextAlign += Align.TopNormal
   Endif
   
-  Paint.Text(sText, X - hExtents.X, Y)
+  Paint.Text(sText, X - hExtents.X, Y, hExtents.Width, hExtents.Height, iTextAlign)
   hOutline = Paint.PathOutline
   
   For Each hPoly In hOutline
@@ -434,6 +491,8 @@ Public Sub Text(X As Integer, Y As Integer, sText As String, sFont As String, iA
       hShape.Add(hPoint)
     Next
   Next
+  
+  Paint.End
   
 End
 
@@ -491,13 +550,19 @@ Static Public Sub FindMagnetFrom(aPoint As PointF[], hSearch As PointF, D As Flo
 End
 
 
-Public Sub FindMagnet(hSearch As PointF, D As Float, Optional bIgnoreLast As Boolean) As PointF
+Public Sub FindMagnet(hSearch As PointF, D As Float, Optional iIgnoreAfter As Integer) As PointF
 
   Dim hPoint As PointF
   Dim I, N As Integer
   
   N = Shapes.Max
-  If bIgnoreLast Then Dec N
+
+  If iIgnoreAfter > 0 Then
+    N = iIgnoreAfter - 1
+  Else If iIgnoreAfter < 0 Then
+    N += iIgnoreAfter
+  Endif
+  
   For I = 0 To N
     If I = Current Then Continue
     hPoint = Shapes[I].FindMagnet(hSearch, D)
