@@ -541,7 +541,7 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 	}
 }
 
-static void fill_buffer(STREAM *stream, char *addr)
+static void fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
 {
 	bool err;
 	int flags, fd;
@@ -555,7 +555,8 @@ static void fill_buffer(STREAM *stream, char *addr)
 			err = (*(stream->type->read))(stream, addr, STREAM_BUFFER_SIZE);
 		else
 		{
-			wait_for_fd_ready_to_read(fd);
+			if (!do_not_wait_ready)
+				wait_for_fd_ready_to_read(fd);
 
 			flags = fcntl(fd, F_GETFL);
 			if ((flags & O_NONBLOCK) == 0)
@@ -602,7 +603,7 @@ bool STREAM_read_ahead(STREAM *stream)
 	if (!stream->common.buffer)
 		ALLOC(&stream->common.buffer, STREAM_BUFFER_SIZE);
 
-	fill_buffer(stream, stream->common.buffer);
+	fill_buffer(stream, stream->common.buffer, TRUE);
 
 	stream->common.buffer_pos = 0;
 	stream->common.buffer_len = STREAM_eff_read;
@@ -692,7 +693,7 @@ static char *input(STREAM *stream, bool line, char *escape)
 			stream->common.buffer_pos = buffer_pos;
 			stream->common.buffer_len = buffer_len;
 			
-			fill_buffer(stream, buffer);
+			fill_buffer(stream, buffer, FALSE);
 			
 			buffer_pos = 0;
 			buffer_len = STREAM_eff_read;
