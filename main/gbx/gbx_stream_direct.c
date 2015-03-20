@@ -86,6 +86,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 			THROW(E_ACCESS);
 		
 		stream->direct.watch = TRUE;
+		stream->common.no_read_ahead = TRUE;
 	}
 	else
 	{
