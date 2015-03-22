@@ -997,7 +997,9 @@ __SHELL:
 	{
 		c = str[i];
 		if (c == '\'')
-			STRING_make_char(c);
+		{
+			STRING_make("'\\'", 3);
+		}
 		STRING_make_char(c);
 		/*
 		if (c == '\n')
