@@ -405,6 +405,7 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
   Endif
 
   If LCase(Vendor) <> "example" And If Tags.Exist("example", gb.IgnoreCase) Then
+    Try Mkdir File.SetName(sSrcDir, "example")
     Link ".." &/ File.Name(sSrcDir) &/ sName To File.SetName(sSrcDir, "example") &/ sName
   Endif
 
