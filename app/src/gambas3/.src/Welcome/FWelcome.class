@@ -11,20 +11,23 @@ Private btnExample As CCoolButton
 Private btnQuit As CCoolButton
 Private btnAbout As CCoolButton
 Private btnFarm As CCoolButton
+Private btnSoft As CCoolButton
 
 Private $iRecent As Integer
 
 Private Const LIST_NONE As Integer = 0
 Private Const LIST_RECENT As Integer = 1
 Private Const LIST_EXAMPLE As Integer = 2
+Private Const LIST_SOFTWARE As Integer = 3
 
-Private HEIGHT_BUTTON As Integer = Desktop.Scale * 8
+Private HEIGHT_BUTTON As Integer = Desktop.Scale * 7
 
 Private $hWelcome As CWelcome
 Private $iSort As Integer = CRecentProject.SORT_BY_DATE
 
 Private $hRecent As CProjectList
 Private $hExample As CProjectList
+Private $hSoft As CProjectList
 
 Static Public Function Run() As String
 
@@ -41,6 +44,7 @@ Public Sub _new()
   
   $hRecent = New CProjectList(lstRecent, txtFilter, CProjectList.TYPE_RECENT, Arrange.Row) As "ProjectItem"
   $hExample = New CProjectList(lstExample, txtFilterExample, CProjectList.TYPE_EXAMPLE, Arrange.Row) As "ProjectItem"
+  $hSoft = New CProjectList(lstSoft, txtFilterSoft, CProjectList.TYPE_SOFTWARE, Arrange.Row) As "ProjectItem"
   
 End
 
@@ -61,14 +65,19 @@ Public Sub Form_Open()
 
   btnNew = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
   btnOpen = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
-  btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnRecent"
-  btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnExample"
+  btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnList"
+  btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnList"
+  btnSoft = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Installed softwares"), "icon:/large/download", sFont) As "btnList"
   btnFarm = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
   btnOpenExtern = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
   btnAbout = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
   btnQuit = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
+  
+  btnRecent.Tag = LIST_RECENT
+  btnExample.Tag = LIST_EXAMPLE
+  btnSoft.Tag = LIST_SOFTWARE
 
-  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnFarm, btnOpenExtern, btnAbout, btnQuit]
+  For Each hCtrl In [btnNew, btnOpen, btnRecent, btnExample, btnSoft, btnFarm, btnOpenExtern, btnAbout, btnQuit]
     hCtrl.Foreground = Color.White
     hCtrl.Highlight = &H61A7C3&
   Next
@@ -138,21 +147,11 @@ Public Sub btnOpenExtern_Click()
 
 End
 
+Public Sub btnList_Click()
 
-Public Sub btnRecent_Click()
-
-  Toggle(LIST_RECENT)
-
-End
-
-
-Public Sub btnExample_Click()
-
-  Toggle(LIST_EXAMPLE)
+  Toggle(Last.Tag)
 
 End
-
-
 
 Public Sub btnQuit_Click()
 
@@ -163,7 +162,18 @@ End
 
 Private Sub Toggle(iState As Integer)
 
+  Dim hCtrl As CCoolButton
+  
+  If $iRecent = iState Then Return
+  
   $iRecent = iState
+
+  lstRecent.Hide
+  txtFilter.Hide
+  lstExample.Hide
+  txtFilterExample.Hide
+  lstSoft.Hide
+  txtFilterSoft.Hide
 
   Select Case $iRecent
     
@@ -174,27 +184,31 @@ Private Sub Toggle(iState As Integer)
       panList.Raise
       lstRecent.Show
       txtFilter.Show
-      lstExample.Hide
-      txtFilterExample.Hide
       panList.Show
       txtFilter.SetFocus
       
     Case LIST_EXAMPLE
       $hExample.Fill
       panList.Raise
-      lstRecent.Hide
-      txtFilter.Hide
       lstExample.Show
       txtFilterExample.Show
       panList.Show
       txtFilterExample.SetFocus
     
-  End Select
+    Case LIST_SOFTWARE
+      $hSoft.Fill
+      panList.Raise
+      lstSoft.Show
+      txtFilterSoft.Show
+      panList.Show
+      txtFilterSoft.SetFocus
     
-  btnRecent.Background = If($iRecent = LIST_RECENT, Color.TextBackground, Color.Default)
-  btnRecent.Foreground = If($iRecent = LIST_RECENT, Color.TextForeground, Color.White)
-  btnExample.Background = If($iRecent = LIST_EXAMPLE, Color.TextBackground, Color.Default)
-  btnExample.Foreground = If($iRecent = LIST_EXAMPLE, Color.TextForeground, Color.White)
+  End Select
+  
+  For Each hCtrl In [btnRecent, btnExample, btnSoft]
+    hCtrl.Background = If($iRecent = hCtrl.Tag, Color.TextBackground, Color.Default)
+    hCtrl.Foreground = If($iRecent = hCtrl.Tag, Color.TextForeground, Color.White)
+  Next
   
 End
 

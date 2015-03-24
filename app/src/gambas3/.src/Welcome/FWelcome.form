@@ -62,13 +62,20 @@
           Padding = 1
           Border = Border.Plain
           { txtFilter ButtonBox
-            MoveScaled(1,0,9,4)
+            MoveScaled(1,0,5,4)
             Foreground = Color.LightForeground
             Picture = Picture["icon:/small/clear"]
             Border = False
           }
           { txtFilterExample ButtonBox
-            MoveScaled(10,0,9,4)
+            MoveScaled(7,0,5,4)
+            Visible = False
+            Foreground = Color.LightForeground
+            Picture = Picture["icon:/small/clear"]
+            Border = False
+          }
+          { txtFilterSoft ButtonBox
+            MoveScaled(13,0,6,4)
             Visible = False
             Foreground = Color.LightForeground
             Picture = Picture["icon:/small/clear"]
@@ -76,15 +83,22 @@
           }
         }
       }
-      { lstRecent ScrollView
-        MoveScaled(2,7,11,18)
+      { lstExample ScrollView
+        MoveScaled(14,6,8,10)
         Expand = True
         Spacing = True
         Border = False
         ScrollBar = Scroll.Vertical
       }
-      { lstExample ScrollView
-        MoveScaled(14,9,11,18)
+      { lstRecent ScrollView
+        MoveScaled(2,7,9,9)
+        Expand = True
+        Spacing = True
+        Border = False
+        ScrollBar = Scroll.Vertical
+      }
+      { lstSoft ScrollView
+        MoveScaled(10,16,8,10)
         Expand = True
         Spacing = True
         Border = False
