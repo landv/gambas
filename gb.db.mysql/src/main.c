@@ -637,7 +637,7 @@ static void remove_cache_entry(DB_DATABASE *db, char *key)
 
 	mysql_free_result(entry->res);
 	GB.Free(POINTER(&entry));
-	GB.HashTable.Remove((GB_HASHTABLE *)&db->data, key, -1);
+	GB.HashTable.Remove(CACHE(db), key, -1);
 }
 
 static void clear_table_cache(DB_DATABASE *db, const char *table)
