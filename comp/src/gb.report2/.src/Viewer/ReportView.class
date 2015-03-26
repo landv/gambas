@@ -86,7 +86,7 @@ Public Sub View_Draw((Page) As Integer, Width As Integer, Height As Integer)
     Paint.End
     Paint.DrawImage(hImg.Gray(), 0, 0)
   Endif
-  
+  $hReport.Scale = 1.0
 End
 
 Public Sub View_Zoom()

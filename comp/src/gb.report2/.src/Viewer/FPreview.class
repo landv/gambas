@@ -220,7 +220,6 @@ Public Sub tabPrint_Click()
   If tabPrint.Index = 0 Then
     $hPrinter.OutputFile = ""
     $hPrinter.Name = cmbPrinter.Text
-    $iCurPrinterResolution = $hPrinter.Resolution
     btnPrint.Picture = Picture["icon:/small/printer"]
   Else
     $hPrinter.OutputFile = txtFile.Text
