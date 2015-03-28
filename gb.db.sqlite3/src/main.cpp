@@ -44,7 +44,7 @@ extern "C"
 {
 	GB_INTERFACE GB EXPORT;
 	DB_INTERFACE DB EXPORT;
-}																//end extern "C"
+}
 
 static char _buffer[32];
 
@@ -1265,32 +1265,35 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 	result_set *r = (result_set *) res->getResult();
 	n = r->records.size();
 
-	for (int i = 0; i < n; i++)
+	for (i = 0; i < n; i++)
 	{
 		if (strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL)
 		{
-			sql = GB.NewZeroString(r->records[i][1].get_asString().data());
-			res->close();
-
-			if (do_query
-					(db, "Unable to get information on primary index: &1", &res,
-					 qindex2, 1, sql))
+			if (strncmp("1", r->records[i][2].get_asString().data(), 1) == 0)
 			{
+				sql = GB.NewZeroString(r->records[i][1].get_asString().data());
 				res->close();
+
+				if (do_query
+						(db, "Unable to get information on primary index: &1", &res,
+						qindex2, 1, sql))
+				{
+					res->close();
+					GB.FreeString(&sql);
+					return TRUE;
+				}
 				GB.FreeString(&sql);
-				return TRUE;
-			}
-			GB.FreeString(&sql);
 
-			r = (result_set *) res->getResult();
-			info->nindex = r->records.size();
-			GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
+				r = (result_set *) res->getResult();
+				info->nindex = r->records.size();
+				GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
 
-			for (i = 0; i < info->nindex; i++)
-			{
-				info->index[i] = r->records[i][1].get_asInteger();
+				for (i = 0; i < info->nindex; i++)
+				{
+					info->index[i] = r->records[i][1].get_asInteger();
+				}
+				break;
 			}
-			break;
 		}
 	}
 
@@ -1456,7 +1459,8 @@ static int table_list(DB_DATABASE * db, char ***tables)
 
 *****************************************************************************/
 
-static int table_primary_key(DB_DATABASE * db, const char *table, char ***primary)
+#if 0
+static int old_table_primary_key(DB_DATABASE * db, const char *table, char ***primary)
 {
 	const char *qindex1 = "PRAGMA index_list('&1')";
 	const char *qindex2 = "PRAGMA index_info('&1')";
@@ -1474,35 +1478,38 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 
 	r = (result_set *) res->getResult();
 	n = r->records.size();
+
 	for (i = 0; i < n; i++)
 	{
 		if (strstr(r->records[i][1].get_asString().data(), "autoindex"))
 		{
-			sql = GB.NewZeroString(r->records[i][1].get_asString().data());
-			res->close();
-
-			if (do_query
-					(db, "Unable to get primary key: &1", &res, qindex2, 1, sql))
+			if (strncmp("1", r->records[i][2].get_asString().data(), 1) == 0)
 			{
+				sql = GB.NewZeroString(r->records[i][1].get_asString().data());
 				res->close();
+
+				if (do_query(db, "Unable to get primary key: &1", &res, qindex2, 1, sql))
+				{
+					res->close();
+					GB.FreeString(&sql);
+					return TRUE;
+				}
 				GB.FreeString(&sql);
-				return TRUE;
-			}
-			GB.FreeString(&sql);
 
-			r = (result_set *) res->getResult();
-			if ((n = r->records.size()) < 1)
-			{
-				// No information returned for key
-				res->close();
-				return TRUE;
-			}
+				r = (result_set *) res->getResult();
+				if ((n = r->records.size()) < 1)
+				{
+					// No information returned for key
+					res->close();
+					return TRUE;
+				}
 
-			for (i = 0; i < n; i++)
-			{
-				*(char **)GB.Add(primary) = GB.NewZeroString(r->records[i][2].get_asString().data());
+				for (i = 0; i < n; i++)
+				{
+					*(char **)GB.Add(primary) = GB.NewZeroString(r->records[i][2].get_asString().data());
+				}
+				break;
 			}
-			break;
 		}
 	}
 
@@ -1522,13 +1529,46 @@ static int table_primary_key(DB_DATABASE * db, const char *table, char ***primar
 
 		for (i = 0; i < (int) r->records.size(); i++)
 		{
-			if (strcasecmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
+			if (strcasecmp(r->records[i][5].get_asString().data(), "0") != 0)
 			{
 				*(char **)GB.Add(primary) = GB.NewZeroString(r->records[i][1].get_asString().data());
 				break;
 			}
 		}
 	}
+
+	return FALSE;
+}
+#endif
+
+static int table_primary_key(DB_DATABASE * db, const char *table, char ***primary)
+{
+	Dataset *res;
+	int i, j, n;
+	result_set *r;
+
+	if (do_query(db, "Unable to get primary key: &1", &res, "PRAGMA table_info('&1')", 1, table))
+		return TRUE;
+
+	r = (result_set *) res->getResult();
+
+	n = 0;
+	for (i = 0; i < (int) r->records.size(); i++)
+	{
+		j = r->records[i][5].get_asInteger();
+		if (j > n) n = j;
+	}
+
+	GB.NewArray(primary, sizeof(char *), n);
+
+	for (i = 0; i < (int) r->records.size(); i++)
+	{
+		j = r->records[i][5].get_asInteger();
+		if (j > 0)
+			(*primary)[j - 1] = GB.NewZeroString(r->records[i][1].get_asString().data());
+	}
+
+	res->close();
 
 	return FALSE;
 }
@@ -2138,12 +2178,8 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 	}
 
 	info->name = NULL;
-	info->unique =
-		strncmp("1", r->records[i][2].get_asString().data(),
-						1) == 0 ? TRUE : FALSE;
-	info->primary =
-		strstr(r->records[i][1].get_asString().data(),
-					 "autoindex") != NULL ? TRUE : FALSE;
+	info->unique = strncmp("1", r->records[i][2].get_asString().data(), 1) == 0 ? TRUE : FALSE;
+	info->primary = strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL ? TRUE : FALSE;
 
 	DB.Query.Init();
 
