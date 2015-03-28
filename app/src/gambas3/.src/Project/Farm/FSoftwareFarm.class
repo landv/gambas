@@ -24,6 +24,7 @@ Public Sub Form_Open()
   Dim sIcon As String
 
   Settings.Read(Me)
+  Me.Center
 
   $hIdentity = FarmIdentity.Get(FarmIdentity.LastFarm)
   ReloadFarm
