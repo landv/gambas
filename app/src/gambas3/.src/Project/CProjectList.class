@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public Enum TYPE_RECENT, TYPE_EXAMPLE
+Public Enum TYPE_RECENT, TYPE_EXAMPLE, TYPE_SOFTWARE
 
 Event Click(Path As String, Another As Boolean)
 
@@ -163,6 +163,97 @@ Private Sub FillWithExample()
 
 End
 
+Private Sub GetSoftwares() As String[]
+
+  Dim sFile As String
+  Dim aList As New String[]
+  Dim sDir As String
+  Dim hStat As Stat
+  Dim sVendor As String
+
+  sDir = Desktop.DataDir &/ "gambas3/src/"
+  If Not IsDir(sDir) Then Return aList
+
+  For Each sVendor In Dir(sDir)
+    For Each sFile In Dir(sDir &/ sVendor)
+      If Left(sFile) = "." Then Continue
+      hStat = Stat(sDir &/ sVendor &/ sFile)
+      If hStat.Link Then Continue
+      aList.Add(sDir &/ sVendor &/ sFile)
+    Next
+  Next
+
+  aList.Sort(gb.Natural)
+
+  Return aList
+
+End
+
+Private Sub FillWithSoftware()
+
+  Dim hProjectItem As ProjectBox
+  Dim sGroup As String
+  Dim aSoft As String[]
+  Dim sSoft As String
+  Dim sDir As String
+  Dim sLastDir As String
+  Dim hPanel As Panel
+  Dim hDrawingArea As DrawingArea
+  
+  Inc Application.Busy
+  $hList.Arrangement = Arrange.None
+  
+  aSoft = GetSoftwares()
+  If aSoft.Count = 0 Then
+    
+  Else
+  
+    Clear
+
+    For Each sSoft In aSoft
+    
+      sDir = File.Dir(sSoft)
+      If sDir <> sLastDir Then
+        If $iArrange = Arrange.Row And If $hList.Children.Count Then
+          hPanel = New Panel($hList)
+          hPanel.Resize(1, 1)
+          hPanel.Expand = True
+        Endif
+        hDrawingArea = New DrawingArea($hList) As "dwgTitle"
+        With hDrawingArea
+          .Enabled = False
+          .Tag = String.UCaseFirst(File.Name(sDir))
+          sGroup = .Tag
+          '.Font = Font["Bold"]
+          .H = .Font.Height
+          If $iArrange = Arrange.Row Then .Expand = True
+        End With
+        'bHighlight = False
+        sLastDir = sDir
+      Endif
+      
+      hProjectItem = New ProjectBox($hList) As "ProjectItem"
+      If $iArrange = Arrange.Row Then
+        hProjectItem.ResizeScaled(32, 16)
+      Else
+        hProjectItem.ResizeScaled(1, 9)
+      Endif
+      hProjectItem.ShowAuthors = True
+      hProjectItem.Path = sSoft
+      hProjectItem.Group = sGroup
+    
+    Next
+  
+    ApplyFilter($hFilter.Text)
+    $hList.Arrangement = $iArrange
+    $hFilter.Enabled = True
+  
+  Endif
+  
+  Dec Application.Busy
+
+End
+
 Public Sub Clear()
   
   HideButton
@@ -257,6 +348,8 @@ Public Sub Fill(Optional bClear As Boolean)
       FillWithRecent(bClear)
     Case TYPE_EXAMPLE
       FillWithExample
+    Case TYPE_SOFTWARE
+      FillWithSoftware
   End Select
   
 End

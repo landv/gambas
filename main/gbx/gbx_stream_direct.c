@@ -86,6 +86,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 			THROW(E_ACCESS);
 		
 		stream->direct.watch = TRUE;
+		stream->common.no_read_ahead = TRUE;
 	}
 	else
 	{
@@ -111,6 +112,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
 		if (!S_ISREG(info.st_mode))
 		{
 			stream->common.available_now = FALSE;
+			stream->common.no_read_ahead = TRUE;
 			fcntl(fd, F_SETFL, O_NONBLOCK);
 		}
 		else

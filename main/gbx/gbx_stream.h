@@ -58,10 +58,11 @@ typedef
 		unsigned standard : 1;
 		unsigned blocking : 1;
 		unsigned redirected : 1;
+		unsigned no_read_ahead : 1;
 		#if DEBUG_STREAM
-		unsigned tag : 6;
+		unsigned tag : 5;
 		#else
-		unsigned _reserved : 6;
+		unsigned _reserved : 5;
 		#endif
 		short buffer_pos;
 		short buffer_len;
