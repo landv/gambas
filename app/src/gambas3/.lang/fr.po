@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.7.90\n"
-"PO-Revision-Date: 2015-03-15 15:14 UTC\n"
+"PO-Revision-Date: 2015-03-29 14:16 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -933,7 +933,7 @@ msgstr "Impossible de compiler le projet."
 msgid "Unable to make executable."
 msgstr "Impossible de générer l'exécutable."
 
-#: CSoftware.class:425
+#: CSoftware.class:426
 msgid "Unable to install source directory"
 msgstr "Impossible d'installer le répertoire source"
 
@@ -989,7 +989,7 @@ msgstr "Aide financière"
 msgid "Thanks to"
 msgstr "Merci à"
 
-#: FAbout.form:20 FMain.form:1119 FWelcome.class:68
+#: FAbout.form:20 FMain.form:1119 FWelcome.class:73
 msgid "About Gambas"
 msgstr "À propos de Gambas"
 
@@ -1429,7 +1429,7 @@ msgstr "Exporter vers un fichier CSV"
 msgid "Export"
 msgstr "Exporter"
 
-#: FSoftwareFarm.class:541 FTranslate.form:81
+#: FSoftwareFarm.class:542 FTranslate.form:81
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1437,7 +1437,7 @@ msgstr "Supprimer"
 msgid "Gambas 3 project conversion"
 msgstr "Conversion en projet Gambas 3"
 
-#: FCrash.class:73 FTranslate.class:1124 Project.module:4525
+#: FCrash.class:73 FTranslate.class:1124 Project.module:4539
 msgid "The '&1' command has failed."
 msgstr "La commande '&1' a échoué."
 
@@ -2917,15 +2917,15 @@ msgstr "Le fichier ou le répertoire n'existe plus."
 msgid "Sort history"
 msgstr "Trier l'historique"
 
-#: FMain.class:682 FOpenProject.form:77 FWelcome.form:31
+#: FMain.class:682 FOpenProject.form:77 FWelcome.form:33
 msgid "Sort by date"
 msgstr "Trier par date"
 
-#: FMain.class:682 FOpenProject.form:86 FWelcome.form:39
+#: FMain.class:682 FOpenProject.form:86 FWelcome.form:41
 msgid "Sort by name"
 msgstr "Trier par nom"
 
-#: FMain.class:682 FOpenProject.form:94 FWelcome.form:46
+#: FMain.class:682 FOpenProject.form:94 FWelcome.form:48
 msgid "Sort by path"
 msgstr "Trier dans l'ordre des chemins"
 
@@ -2977,7 +2977,7 @@ msgstr "Le fichier est situé à l'intérieur du projet."
 msgid "Ignore"
 msgstr "Ignorer"
 
-#: FMain.form:259 FWelcome.class:63
+#: FMain.form:259 FWelcome.class:67
 msgid "Open project"
 msgstr "Ouvrir un projet"
 
@@ -2989,7 +2989,7 @@ msgstr "Ouvrir un projet récent"
 msgid "Open example"
 msgstr "Ouvrir un exemple"
 
-#: FMain.form:282 FWelcome.class:67
+#: FMain.form:282 FWelcome.class:72
 msgid "Open file"
 msgstr "Ouvrir un fichier"
 
@@ -3001,7 +3001,7 @@ msgstr "Enregistrer le projet"
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
-#: FMain.form:310 FMakeInstall.class:254 FSave.class:28 FWelcome.class:69
+#: FMain.form:310 FMakeInstall.class:254 FSave.class:28 FWelcome.class:74
 msgid "Quit"
 msgstr "Quitter"
 
@@ -3165,7 +3165,7 @@ msgstr "Envoyer le projet par courriel"
 msgid "Update all forms"
 msgstr "Mettre à-jour tous les formulaires"
 
-#: FMain.form:728 FWelcome.class:66
+#: FMain.form:728 FWelcome.class:71
 msgid "Software farm"
 msgstr "Logithèque"
 
@@ -3649,7 +3649,7 @@ msgstr "Selectionnez l'archive source"
 msgid "*.gz;*.bz2;*.xz"
 msgstr "-"
 
-#: FMakePatch.form:98 Project.module:4564
+#: FMakePatch.form:98 Project.module:4578
 msgid "Source packages"
 msgstr "Paquets sources"
 
@@ -3689,7 +3689,7 @@ msgstr "Nom de groupe incorrect !"
 msgid "This menu is too deep !"
 msgstr "Ce menu est trop profond !"
 
-#: FMenu.class:1001 Project.module:5388
+#: FMenu.class:1001 Project.module:5402
 msgid "modified"
 msgstr "modifié"
 
@@ -3789,7 +3789,7 @@ msgstr "Nouvelle traduction"
 msgid "Select a project"
 msgstr "Sélectionnez un projet"
 
-#: FOpenProject.form:109 FSoftwareFarm.class:39 FWelcome.class:65
+#: FOpenProject.form:109 FSoftwareFarm.class:40 FWelcome.class:69
 msgid "Examples"
 msgstr "Exemples"
 
@@ -4317,8 +4317,8 @@ msgstr "Fonctions appelées"
 msgid "Callers"
 msgstr "Fonctions appelantes"
 
-#: FProjectChooser.class:19
-msgid "Installed softwares"
+#: FProjectChooser.class:19 FWelcome.class:70
+msgid "Installed software"
 msgstr "Logiciels installés"
 
 #: FProjectProperty.class:138
@@ -4905,111 +4905,111 @@ msgstr "Nouveau fragment de code"
 msgid "Trigger string"
 msgstr "Chaîne de déclenchement"
 
-#: FSoftwareFarm.class:37 Project.module:218
+#: FSoftwareFarm.class:38 Project.module:218
 msgid "Games"
 msgstr "Jeux"
 
-#: FSoftwareFarm.class:38
+#: FSoftwareFarm.class:39
 msgid "Development"
 msgstr "Développement"
 
-#: FSoftwareFarm.class:40
+#: FSoftwareFarm.class:41
 msgid "Education"
 msgstr "Éducation"
 
-#: FSoftwareFarm.class:41
+#: FSoftwareFarm.class:42
 msgid "Graphics"
 msgstr "Graphique"
 
-#: FSoftwareFarm.class:42
+#: FSoftwareFarm.class:43
 msgid "Audio"
 msgstr "Son"
 
-#: FSoftwareFarm.class:43 Project.module:225
+#: FSoftwareFarm.class:44 Project.module:225
 msgid "Video"
 msgstr "Vidéo"
 
-#: FSoftwareFarm.class:44
+#: FSoftwareFarm.class:45
 msgid "Office"
 msgstr "Bureautique"
 
-#: FSoftwareFarm.class:48
-msgid "All softwares"
+#: FSoftwareFarm.class:49
+msgid "Every software"
 msgstr "Tous les logiciels"
 
-#: FSoftwareFarm.class:145
+#: FSoftwareFarm.class:146
 msgid "No software found."
 msgstr "Aucun logiciel n'a été trouvé."
 
-#: FSoftwareFarm.class:164
+#: FSoftwareFarm.class:165
 msgid "Request cancelled."
 msgstr "Requête annulée."
 
-#: FSoftwareFarm.class:300
+#: FSoftwareFarm.class:301
 msgid "Cancel my vote"
 msgstr "Annuler mon vote"
 
-#: FSoftwareFarm.class:307
+#: FSoftwareFarm.class:308
 msgid "Upgrade"
 msgstr "Mettre à-jour"
 
-#: FSoftwareFarm.class:311
+#: FSoftwareFarm.class:312
 msgid "Uninstall"
 msgstr "Désinstaller"
 
-#: FSoftwareFarm.class:444
+#: FSoftwareFarm.class:445
 msgid "Do you really want to download <b>&1</b>?"
 msgstr "Voulez-vous vraiment télécharger <b>&1</b> ?"
 
-#: FSoftwareFarm.class:447
+#: FSoftwareFarm.class:448
 msgid "Unable to download <b>&1</b>:"
 msgstr "Impossible de télécharger <b>&1</b> :"
 
-#: FSoftwareFarm.class:449
+#: FSoftwareFarm.class:450
 msgid "<b>&1</b> has been successfully downloaded."
 msgstr "<b>&1</b> a été téléchargé avec succès."
 
-#: FSoftwareFarm.class:464
+#: FSoftwareFarm.class:465
 msgid "Do you really want to upgrade to <b>&1</b>?"
 msgstr "Voulez-vous vraiment mettre à-jour vers <b>&1</b> ?"
 
-#: FSoftwareFarm.class:467
+#: FSoftwareFarm.class:468
 msgid "Unable to upgrade to <b>&1</b>:"
 msgstr "Impossible de mettre à-jour vers <b>&1</b> :"
 
-#: FSoftwareFarm.class:474
+#: FSoftwareFarm.class:475
 msgid "Do you really want to uninstall <b>&1</b>?"
 msgstr "Voulez-vous vraiment désinstaller <b>&1</b> ?"
 
-#: FSoftwareFarm.class:477
+#: FSoftwareFarm.class:478
 msgid "Unable to remove <b>&1</b>:"
 msgstr "Impossible de supprimer <b>&1</b> :"
 
-#: FSoftwareFarm.class:479
+#: FSoftwareFarm.class:480
 msgid "<b>&1</b> has been successfully removed."
 msgstr "<b>&1</b> a été supprimé avec succès."
 
-#: FSoftwareFarm.class:485
+#: FSoftwareFarm.class:486
 msgid "Do you really want to install <b>&1</b>?"
 msgstr "Voulez-vous vraiment installer <b>&1</b> ?"
 
-#: FSoftwareFarm.class:488
+#: FSoftwareFarm.class:489
 msgid "Unable to install <b>&1</b>:"
 msgstr "Impossible d'installer <b>&1</b> :"
 
-#: FSoftwareFarm.class:490
+#: FSoftwareFarm.class:491
 msgid "<b>&1</b> has been successfully installed."
 msgstr "<b>&1</b> a été installé avec succès."
 
-#: FSoftwareFarm.class:510
+#: FSoftwareFarm.class:511
 msgid "Unable to modify your vote."
 msgstr "Impossible de modifier votre vote."
 
-#: FSoftwareFarm.class:541
+#: FSoftwareFarm.class:542
 msgid "Do you really want to delete <b>&1</b> from the farm server?"
 msgstr "Désirez-vous vraiment supprimer <b>&1</b> du serveur de publication ?"
 
-#: FSoftwareFarm.class:545
+#: FSoftwareFarm.class:546
 msgid "Unable to remove <b>&1<b>:"
 msgstr "Impossible de désinstaller <b>&1</b> :"
 
@@ -5257,15 +5257,15 @@ msgstr "Remplacer les traductions existantes"
 msgid "Import a translation file"
 msgstr "Importer un fichier de traduction"
 
-#: FWelcome.class:62
+#: FWelcome.class:66
 msgid "New project..."
 msgstr "Nouveau projet..."
 
-#: FWelcome.class:64
+#: FWelcome.class:68
 msgid "Recent projects"
 msgstr "Projets récents"
 
-#: FWelcome.form:23
+#: FWelcome.form:25
 msgid "Welcome to Gambas 3"
 msgstr "Bienvenue dans Gambas 3"
 
@@ -6969,123 +6969,123 @@ msgstr "Impossible d'écrire le fichier projet."
 msgid "Unable to create desktop shortcut."
 msgstr "Imposible de créer le raccourci sur le bureau."
 
-#: Project.module:3976
+#: Project.module:3990
 msgid "The directory will be removed at the next commit."
 msgstr "Le répertoire sera supprimé au prochain 'commit'."
 
-#: Project.module:3993
+#: Project.module:4007
 msgid "You must define a startup class or form!"
 msgstr "Vous devez définir une classe ou un formulaire de démarrage !"
 
-#: Project.module:4024
+#: Project.module:4038
 msgid "Please type a name."
 msgstr "Veuillez saisir un nom."
 
-#: Project.module:4028
+#: Project.module:4042
 msgid "This name contains a forbidden character:"
 msgstr "Ce nom contient un caractère interdit:"
 
-#: Project.module:4032
+#: Project.module:4046
 msgid "The name cannot begins with a dot."
 msgstr "Le nom ne peut pas commencer par un point."
 
-#: Project.module:4036
+#: Project.module:4050
 msgid "This name is already used. Choose another one."
 msgstr "Ce nom est déjà utilisé. Choisissez-en un autre."
 
-#: Project.module:4072
+#: Project.module:4086
 msgid "A class name must begin with a letter or an underscore, followed by any letter or digit."
 msgstr "Un nom de classe doit commencer par une lettre ou un caractère '_', et être suivi par des lettres ou des chiffres. "
 
-#: Project.module:4120
+#: Project.module:4134
 msgid "Destination already exists."
 msgstr "La destination existe déjà."
 
-#: Project.module:4332
+#: Project.module:4346
 msgid "Unable to rename '&1'"
 msgstr "Impossible de renommer « &1 »"
 
-#: Project.module:4448
+#: Project.module:4462
 msgid "Please type a project name."
 msgstr "Veuillez saisir un nom de projet."
 
-#: Project.module:4456
+#: Project.module:4470
 msgid "The project name cannot begin with a dot."
 msgstr "Un nom de projet ne peut commencer par un point."
 
-#: Project.module:4459
+#: Project.module:4473
 msgid "Non-ASCII characters are forbidden in a project name."
 msgstr "Un nom de projet ne peut contenir que des caractères ASCII."
 
-#: Project.module:4460
+#: Project.module:4474
 msgid "The following characters are forbidden in a project name: ? * / \\ SPACE"
 msgstr "Les caractères suivants sont interdits dans un nom de projet : ? * / \\ ESPACE"
 
-#: Project.module:4467
+#: Project.module:4481
 msgid "This project already exists."
 msgstr "Ce projet existe déjà."
 
-#: Project.module:4470
+#: Project.module:4484
 msgid "The project directory already exists."
 msgstr "Le répertoire du projet existe déjà."
 
-#: Project.module:4472
+#: Project.module:4486
 msgid "The project directory cannot be created because a file with the same name already exists."
 msgstr "Le répertoire du projet ne peut être créé car un fichier avec le même nom existe déjà."
 
-#: Project.module:4536
+#: Project.module:4550
 msgid "Unable to create source archive."
 msgstr "Impossible de créer l'archive source."
 
-#: Project.module:4563
+#: Project.module:4577
 msgid "Create source package"
 msgstr "Générer une archive des sources du projet"
 
-#: Project.module:4820
+#: Project.module:4834
 msgid "Cannot copy file &1."
 msgstr "Impossible de copier le fichier &1."
 
-#: Project.module:4868
+#: Project.module:4882
 msgid "Cannot create link &1."
 msgstr "Impossible de créer le lien &1."
 
-#: Project.module:4883
+#: Project.module:4897
 msgid "Cannot move a directory inside itself."
 msgstr "Impossible de déplacer un répertoire à l'intérieur de lui-même."
 
-#: Project.module:4951
+#: Project.module:4965
 msgid "Cannot move file &1."
 msgstr "Impossible de déplacer le fichier &1."
 
-#: Project.module:5163
+#: Project.module:5177
 msgid "The following files couldn't be removed:"
 msgstr "Les fichiers suivants n'ont pu être supprimés :"
 
-#: Project.module:5602
+#: Project.module:5616
 msgid "Project cleanup..."
 msgstr "Nettoyage du projet..."
 
-#: Project.module:5608
+#: Project.module:5622
 msgid "Project files conversion..."
 msgstr "Conversion des fichiers du projet..."
 
-#: Project.module:5638
+#: Project.module:5652
 msgid "Unable to convert &1"
 msgstr "Impossible de convertir &1"
 
-#: Project.module:5933
+#: Project.module:5947
 msgid "The &1 program is not installed on your system."
 msgstr "Le programme &1 n'est pas installé sur votre système."
 
-#: Project.module:5935
+#: Project.module:5949
 msgid "The following programs are not installed on your system: &1."
 msgstr "Les programmes suivants ne sont pas installés sur votre système : &1."
 
-#: Project.module:6027
+#: Project.module:6041
 msgid "Unable to read component description file."
 msgstr "Impossible de lire le fichier de description du composant."
 
-#: Project.module:6088
+#: Project.module:6102
 msgid "Cannot write component description file."
 msgstr "Impossible d'écrire le fichier de description du composant."
 
