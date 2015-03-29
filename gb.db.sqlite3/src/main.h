@@ -24,24 +24,16 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
-extern "C"
-{
 #include "gambas.h"
 #include "gb_common.h"
 #include "../gb.db.h"
+#include "sqlite3.h"
 
 #ifndef __MAIN_C
 	extern GB_INTERFACE GB;
 	extern DB_INTERFACE DB;
 #endif
-}
 
 #define QUOTE_STRING "\""
-
-#define TRUE 1
-#define FALSE 0
-
-/* Prototypes Required to allow cpp compilation */
-#include "gb.db.proto.h"
 
 #endif /* __MAIN_H */

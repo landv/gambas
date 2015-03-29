@@ -12,7 +12,7 @@ GB_COMPONENT_SEARCH(
   sqlite3 ">= 3.0",
   [GB_FIND(sqlite3.h, /usr/local/lib /usr/local /opt /usr/lib /usr, include sqlite*/include)],
   [GB_FIND(libsqlite3.$SHLIBEXT, /usr/local /opt /usr, lib sqlite*/lib)],
-  [$C_LIB $CXX_LIB -lsqlite3])
+  [$C_LIB -lsqlite3])
  
 AC_OUTPUT( \
 Makefile \

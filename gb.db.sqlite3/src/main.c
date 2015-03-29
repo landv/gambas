@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  main.cpp
+  main.c
 
   (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -36,15 +36,14 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "sqlitedataset.h"
-
+#include "gb.db.proto.h"
+#include "helper.h"
 #include "main.h"
 
-extern "C"
-{
-	GB_INTERFACE GB EXPORT;
-	DB_INTERFACE DB EXPORT;
-}
+GB_INTERFACE GB EXPORT;
+DB_INTERFACE DB EXPORT;
+
+static DB_DRIVER _driver;
 
 static char _buffer[32];
 
@@ -52,57 +51,12 @@ static int _print_query = FALSE;
 static bool _need_field_type = FALSE;
 static char *_table_schema = NULL;
 
-/*****************************************************************************
 
-  The driver interface
-
-*****************************************************************************/
-
-DECLARE_DRIVER(_driver, "sqlite3");
-
-/* Internal function to convert a database type into a Gambas type */
-
-static GB_TYPE conv_type(int type)
-{
-	switch (type)
-	{
-		case ft_Boolean:
-			return GB_T_BOOLEAN;
-		case ft_Short:
-		case ft_UShort:
-		case ft_Long:
-		case ft_ULong:
-			return GB_T_INTEGER;
-
-		case ft_Float:
-		case ft_Double:
-			return GB_T_FLOAT;
-
-		case ft_LongDouble:
-			return GB_T_LONG;
-
-		case ft_Date:
-			return GB_T_DATE;
-
-		case ft_String:
-		case ft_WideString:
-		case ft_Char:
-		case ft_WChar:
-			return GB_T_STRING;
-
-		case ft_Blob:
-			return DB_T_BLOB;
-
-		default:
-			return GB_T_STRING;
-
-	}
-}
-
+//--------------------------------------------------------------------------
 
 /* Internal function to convert a database value into a Gambas variant value */
 
-static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
+static void conv_data(const char *data, GB_VARIANT_VALUE * val, int type)
 {
 	GB_VALUE conv;
 	GB_DATE_SERIAL date;
@@ -110,7 +64,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 	switch (type)
 	{
-		case ft_Boolean:
+		case GB_T_BOOLEAN:
 
 			val->type = GB_T_BOOLEAN;
 			if (data[0] == 't' || data[0] == 'T')
@@ -119,10 +73,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 				val->value._boolean = atoi(data) ? -1 : 0;
 			break;
 
-		case ft_Short:
-		case ft_UShort:
-		case ft_Long:
-		case ft_ULong:
+		case GB_T_INTEGER:
 
 			GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);
 
@@ -131,8 +82,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			break;
 
-		case ft_Float:
-		case ft_Double:
+		case GB_T_FLOAT:
 
 			GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv);
 
@@ -141,7 +91,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			break;
 
-		case ft_LongDouble:
+		case GB_T_LONG:
 
 			GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv);
 
@@ -150,7 +100,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			break;
 
-		case ft_Date:
+		case GB_T_DATE:
 
 			memset(&date, 0, sizeof(date));
 
@@ -224,15 +174,11 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, fType type)
 
 			break;
 
-		case ft_Blob:
+		case (int)DB_T_BLOB:
 			// Blob fields are read by blob_read()
 			val->type = GB_T_NULL;
 			break;
 
-		case ft_String:
-		case ft_WideString:
-		case ft_Char:
-		case ft_WChar:
 		default:
 			
 			val->type = GB_T_CSTRING;
@@ -290,17 +236,16 @@ static void query_get_param(int index, char **str, int *len, char quote)
 
 /* Internal function to run a query */
 
-static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const char *qtemp, int nsubst, ...)
+static int do_query(DB_DATABASE *db, const char *error, SQLITE_RESULT **pres, const char *qtemp, int nsubst, ...)
 {
-	SqliteDatabase *conn = (SqliteDatabase *)db->handle;
+	SQLITE_DATABASE *conn = (SQLITE_DATABASE *)db->handle;
+	SQLITE_RESULT *res;
 	va_list args;
 	int i;
 	const char *query;
-	SqliteDataset *res = (SqliteDataset *)conn->CreateDataset();
 	int err;
 	int retry = 0;
 	int max_retry;
-	bool success;
 
 	if (nsubst)
 	{
@@ -334,22 +279,22 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 	{
 		err = 0;
 
-		res->setNeedFieldType(_need_field_type);
-
-		success = res->query(query);
+		res = sqlite_query_exec(conn, query, _need_field_type);
 		
-		if (success)
+		if (res)
 		{
 			if (pres)
 				*pres = res;
+			else
+				sqlite_query_free(res);
 			break;
 		}
 		
-		err = conn->lastError();
+		err = conn->error;
 		
 		if (err != SQLITE_BUSY || retry >= max_retry)
 		{
-			GB.Error(error, conn->getErrorMsg());
+			GB.Error(error, sqlite_get_error_message(conn));
 			break;
 		}
 		
@@ -357,9 +302,6 @@ static int do_query(DB_DATABASE *db, const char *error, Dataset **pres, const ch
 		usleep(200000);
 	}
 	
-	if (!pres)
-		res->close();
-
  	db->error = err;
 	_need_field_type = FALSE;
 	return err != 0;
@@ -378,20 +320,20 @@ static bool is_sqlite2_database(const char *filename)
 
   fp = fopen(filename, "r");
   if (!fp)
-    return false;
+    return FALSE;
 
   res = fread(magic_text, 1, 47, fp) == 47;
   fclose(fp);
 
   if (!res)
-    return false;
+    return FALSE;
 
   magic_text[47] = '\0';
 
   if (strcmp(magic_text, "** This file contains an SQLite 2.1 database **"))
-    return false;
+    return FALSE;
 
-  return true;
+  return TRUE;
 }
 
 static bool is_sqlite3_database(const char *filename)
@@ -402,23 +344,23 @@ static bool is_sqlite3_database(const char *filename)
 
 	fp = fopen(filename, "r");
 	if (!fp)
-		return false;
+		return FALSE;
 
 	res = fread(magic_text, 1, 15, fp) == 15;
 	fclose(fp);
 
 	if (!res)
-		return false;
+		return FALSE;
 
 	magic_text[15] = '\0';
 
 	if (strcmp(magic_text, "SQLite format 3"))
-		return false;
+		return FALSE;
 
-	return true;
+	return TRUE;
 }
 
-static bool IsDatabaseFile(const char *filename)
+static bool is_database_file(const char *filename)
 {
 	return is_sqlite3_database(filename) || is_sqlite2_database(filename);
 }
@@ -426,7 +368,7 @@ static bool IsDatabaseFile(const char *filename)
 
 /* Internal function to locate database and return full qualified */
 /* path. */
-static char *FindDatabase(const char *name, const char *hostName)
+static char *find_database(const char *name, const char *hostName)
 {
 	char *dbhome = NULL;
 	char *fullpath = NULL;
@@ -434,7 +376,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 	/* Does Name includes fullpath */
 	if (*name == '/')
 	{
-		if (IsDatabaseFile(name))
+		if (is_database_file(name))
 			fullpath = GB.NewZeroString(name);
 
 		return fullpath;
@@ -444,7 +386,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 	fullpath = GB.NewZeroString(hostName);
 	fullpath = GB.AddChar(fullpath, '/');
 	fullpath = GB.AddString(fullpath, name, 0);
-	if (IsDatabaseFile(fullpath))
+	if (is_database_file(fullpath))
 	{
 		return fullpath;
 	}
@@ -459,30 +401,18 @@ static char *FindDatabase(const char *name, const char *hostName)
 		fullpath = GB.AddChar(fullpath, '/');
 		fullpath = GB.AddString(fullpath, name, 0);
 
-		if (IsDatabaseFile(fullpath))
-		{
+		if (is_database_file(fullpath))
 			return fullpath;
-		}
+
 		GB.FreeString(&fullpath);
 	}
-
-#if 0
-	/* Now check for database in current working directory */
-	if (getcwd(cwd, PATH_MAX) == NULL)
-	{
-		GB.Error("Unable to get databases: &1", "Can't find current directory");
-		return NULL;
-	}
-#endif
 
 	fullpath = GB.NewZeroString(GB.TempDir());
 	fullpath = GB.AddString(fullpath, "/sqlite/", 0);
 	fullpath = GB.AddString(fullpath, name, 0);
 
-	if (IsDatabaseFile(fullpath))
-	{
+	if (is_database_file(fullpath))
 		return fullpath;
-	}
 
 	GB.FreeString(&fullpath);
 	return NULL;
@@ -491,7 +421,7 @@ static char *FindDatabase(const char *name, const char *hostName)
 /* Internal function to return database home directory */
 /* - GAMBAS_SQLITE_HOMEDB if set or temporary directory /tmp/gambas.%pid%/ */
 
-static char *GetDatabaseHome()
+static char *get_database_home()
 {
 	char *env = NULL;
 	char *dbhome = NULL;
@@ -527,7 +457,7 @@ static char *GetDatabaseHome()
 // Internal function to walk a directory and list files
 // Used by database_list
 
-static int WalkDirectory(const char *dir, char ***databases)
+static int walk_directory(const char *dir, char ***databases)
 {
 	DIR *dp;
 	struct dirent *entry;
@@ -555,7 +485,7 @@ static int WalkDirectory(const char *dir, char ***databases)
 
 		if (S_ISREG(statbuf.st_mode)) 
 		{
-			if (IsDatabaseFile(entry->d_name))
+			if (is_database_file(entry->d_name))
 				*(char **)GB.Add(databases) = GB.NewZeroString(entry->d_name);
 		}
 	}
@@ -586,12 +516,12 @@ static int db_version()
 static char *get_table_schema(DB_DATABASE *db, const char *table)
 {
 	char *schema = NULL;
-	Dataset *res;
+	SQLITE_RESULT *res;
 
 	if (!do_query(db, "Unable to get table schema: &1", &res, "select sql from sqlite_master where type = 'table' and tbl_name = '&1'", 1, table))
 	{
-		schema = GB.NewZeroString((char *)res->fv(0).get_asString().data());
-		res->close();
+		schema = GB.NewZeroString(sqlite_query_get_string(res, 0, 0));
+		sqlite_query_free(res);
 	}
 
 	return schema;
@@ -626,63 +556,45 @@ static const char *get_quote(void)
 
 *****************************************************************************/
 
-static int open_database(DB_DESC *desc, DB_DATABASE * db)
+static int open_database(DB_DESC *desc, DB_DATABASE *db)
 {
-	SqliteDatabase *conn = new SqliteDatabase();
-	char *name = NULL;
-	char *db_fullpath = NULL;
-	bool memory = FALSE;
-	bool ver2 = FALSE;
+	SQLITE_DATABASE *conn;
+	char *path;
+	char *host;
 
-	/* connect by default to memory database */
+	host = desc->host;
+	if (!host)
+		host = "";
 
 	if (desc->name)
 	{
-		name = GB.NewZeroString(desc->name);
+		path = find_database(desc->name, host);
+		if (!path)
+		{
+			GB.Error("Unable to locate database `&1` in `&2`", desc->name, host);
+			return TRUE;
+		}
 	}
 	else
+		path = NULL;
+
+	if (path)
 	{
-		name = GB.NewZeroString(":memory:");
-		memory = true;
+		if (is_sqlite2_database(path))
+		{
+			DB.TryAnother("sqlite2");
+			GB.FreeString(&path);
+			return TRUE;
+		}
 	}
 
-	if (desc->host)
-		conn->setHostName(desc->host);
+	conn = sqlite_open_database(path, host);
+	GB.FreeString(&path);
 
-	if (memory)
+	if (!conn)
 	{
-		conn->setDatabase(name);
-	}
-	else if ((db_fullpath = FindDatabase(name, conn->getHostName())) !=
-					 NULL)
-	{
-		conn->setDatabase(db_fullpath);
-	}
-	else
-	{
-		GB.Error("Unable to locate database `&1` in `&2`", name, desc->host);
-		GB.FreeString(&name);
-		delete conn;
+		GB.Error("Cannot open database: &1", sqlite_get_error_message(NULL));
 		return TRUE;
-	}
-
-	if (!memory)
-		ver2 = is_sqlite2_database(db_fullpath);
-
-	GB.FreeString(&name);
-	GB.FreeString(&db_fullpath);
-
-	if (ver2)
-	{
-		DB.TryAnother("sqlite2");
-		delete conn;
-		return TRUE;
-	}
-
-	if (conn->connect() != DB_CONNECTION_OK)
-	{
-		GB.Error("Cannot open database: &1", conn->getErrorMsg());
-		goto CANNOT_OPEN;
 	}
 
 	db->handle = conn;
@@ -718,8 +630,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE * db)
 
 CANNOT_OPEN:
 
-	conn->disconnect();
-	delete conn;
+	sqlite_close_database(conn);
 	return TRUE;
 }
 
@@ -736,13 +647,7 @@ CANNOT_OPEN:
 
 static void close_database(DB_DATABASE * db)
 {
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
-
-	if (conn)
-	{
-		conn->disconnect();
-		delete conn;
-	}
+	sqlite_close_database((SQLITE_DATABASE *)db->handle);
 }
 
 
@@ -864,10 +769,10 @@ static void format_blob(DB_BLOB * blob, DB_FORMAT_CALLBACK add)
 
 *****************************************************************************/
 
-static int exec_query(DB_DATABASE * db, const char *query, DB_RESULT * result, const char *err)
+static int exec_query(DB_DATABASE *db, const char *query, DB_RESULT *result, const char *err)
 {
 	_need_field_type = TRUE;
-	return do_query(db, err, (Dataset **) result, query, 0);
+	return do_query(db, err, (SQLITE_RESULT **)result, query, 0);
 }
 
 
@@ -888,12 +793,12 @@ static int exec_query(DB_DATABASE * db, const char *query, DB_RESULT * result, c
 
 static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 {
-	Dataset *res = (Dataset *) result;
+	SQLITE_RESULT *res = (SQLITE_RESULT *)result;
 
 	if (res)
 	{
-		*count = res->num_rows();
-		info->nfield = res->fieldCount();
+		*count = res->nrow;
+		info->nfield = res->ncol;
 	}
 	else
 	{
@@ -916,7 +821,7 @@ static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 
 static void query_release(DB_RESULT result, DB_INFO * info)
 {
-	((Dataset *) result)->close();
+	sqlite_query_free((SQLITE_RESULT *)result);
 }
 
 
@@ -940,32 +845,29 @@ static void query_release(DB_RESULT result, DB_INFO * info)
 
 static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VALUE * buffer, int next)
 {
-	Dataset *res = (Dataset *) result;
+	SQLITE_RESULT *res = (SQLITE_RESULT *)result;
 	int i;
-	const char *data;
+	char *data;
+	int len;
 	GB_VARIANT value;
-	fType type;
+	int type;
 
-	if (!next)
-		res->seek(pos);
-	else
-		res->next();
-
-	for (i = 0; i < res->fieldCount(); i++)
+	for (i = 0; i < res->ncol; i++)
 	{
-		type = (fType) res->fieldType(i);
+		type = res->types[i];
 		
-		if (type == ft_Blob || res->fv(i).get_isNull())
+		if (type == DB_T_BLOB)
 			data = NULL;
 		else
-			data = res->fv(i).get_asString().data();
-			
-		//fprintf(stderr, "query_fill: %d.%d %s\n", pos, i, data);
+		{
+			sqlite_query_get(res, pos, i, &data, &len);
+			if (len == 0)
+				data = NULL;
+		}
 
 		value.type = GB_T_VARIANT;
 		value.value.type = GB_T_NULL;
 
-		//if (field->type != FIELD_TYPE_NULL)
 		if (data)
 			conv_data(data, &value.value, type);
 
@@ -992,12 +894,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 
 static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB * blob)
 {
-	Dataset *res = (Dataset *) result;
-
-	res->seek(pos);
-
-	blob->data = res->fv(field).get_asBlob();
-	blob->length = res->fv(field).get_len();
+	sqlite_query_get((SQLITE_RESULT *)result, pos, field, &blob->data, &blob->length);
 	blob->constant = TRUE;
 }
 
@@ -1015,7 +912,7 @@ static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB * blob)
 
 static char *field_name(DB_RESULT result, int field)
 {
-	return (char *)(((Dataset *) result)->fieldName(field));
+	return (char *)((SQLITE_RESULT *)result)->names[field];
 }
 
 
@@ -1031,16 +928,9 @@ static char *field_name(DB_RESULT result, int field)
 
 *****************************************************************************/
 
-static int field_index(DB_RESULT result, const char *name, DB_DATABASE * db)
+static int field_index(DB_RESULT result, const char *name, DB_DATABASE *db)
 {
-	char *fld;
-
-	fld = strchr((char *) name, (int) FLD_SEP);
-	if (fld)
-	{															//Includes table identity
-		fld[0] = '.';
-	}
-	return (((Dataset *) result)->fieldIndex(name));
+	return sqlite_query_find_field((SQLITE_RESULT *)result, name);
 }
 
 
@@ -1057,8 +947,7 @@ static int field_index(DB_RESULT result, const char *name, DB_DATABASE * db)
 
 static GB_TYPE field_type(DB_RESULT result, int field)
 {
-	//fprintf(stderr, "field_type: field = %d type = %d -> %d\n", field, ((Dataset *)result)->fieldType(field), conv_type(((Dataset *)result)->fieldType(field)));
-	return conv_type(((Dataset *) result)->fieldType(field));
+	return (GB_TYPE)((SQLITE_RESULT *)result)->types[field];
 }
 
 
@@ -1075,17 +964,7 @@ static GB_TYPE field_type(DB_RESULT result, int field)
 
 static int field_length(DB_RESULT result, int field)
 {
-	int len;
-
-	len = ((Dataset *) result)->fieldSize(field);
-	GB_TYPE type = conv_type(((Dataset *) result)->fieldType(field));
-
-	//fprintf(stderr, "field_length: field = %d len = %d\n", field, len);
-
-	if (type != GB_T_STRING)
-		return 0;
-	else
-		return len;
+	return ((SQLITE_RESULT *)result)->lengths[field];
 }
 
 
@@ -1176,10 +1055,10 @@ static int table_init(DB_DATABASE * db, const char *table, DB_INFO * info)
 {
 	const char *qfield = "PRAGMA table_info('&1')";
 
-	Dataset *res;
+	SQLITE_RESULT *res;
 	int i, n;
 	DB_FIELD *f;
-	const char *field;
+	char *field;
 
 	/* Nom de la table */
 
@@ -1190,12 +1069,10 @@ static int table_init(DB_DATABASE * db, const char *table, DB_INFO * info)
 	if (do_query(db, "Unable to get table fields: &1", &res, qfield, 1, table))
 		return TRUE;
 
-	result_set *r = (result_set *) res->getResult();
-
-	info->nfield = n = r->records.size();
+	info->nfield = n = res->nrow;
 	if (n == 0)
 	{
-		res->close();
+		sqlite_query_free(res);
 		return TRUE;
 	}
 
@@ -1203,22 +1080,19 @@ static int table_init(DB_DATABASE * db, const char *table, DB_INFO * info)
 
 	for (i = 0; i < n; i++)
 	{
+		sqlite_query_get(res, i, 1, &field, NULL);
 		f = &info->field[i];
-		field = r->records[i][1].get_asString().data();
 
 		if (field_info(db, table, field, f))
 		{
-			res->close();
+			sqlite_query_free(res);
 			return TRUE;
 		}
 
 		f->name = GB.NewZeroString(field);
-		/*f->length = 0;
-		   f->type = conv_type(GetFieldType((char *) r->records[i][2].get_asString().data(), (unsigned int *) &f->length)); */
 	}
 
-	res->close();
-
+	sqlite_query_free(res);
 	return FALSE;
 }
 
@@ -1250,10 +1124,11 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 	const char *qindex1 = "PRAGMA index_list('&1')";
 	const char *qindex2 = "PRAGMA index_info('&1')";
 
-	Dataset *res;
-	char *sql = NULL;
+	SQLITE_RESULT *res;
 	int n = 0;
 	int i;
+	char *sql;
+	char *data;
 
 	/* Index primaire */
 
@@ -1262,81 +1137,71 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 	if (do_query(db, "Unable to get primary index: &1", &res, qindex1, 1, table))
 		return TRUE;
 
-	result_set *r = (result_set *) res->getResult();
-	n = r->records.size();
+	n = res->nrow;
 
 	for (i = 0; i < n; i++)
 	{
-		if (strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL)
+		data = sqlite_query_get_string(res, i, 2);
+		if (*data != '1')
+			continue;
+
+		data = sqlite_query_get_string(res, i, 1);
+		if (strstr(data, "autoindex") == NULL)
+			continue;
+
+		sql = GB.NewZeroString(data);
+
+		sqlite_query_free(res);
+
+		if (do_query(db, "Unable to get information on primary index: &1", &res, qindex2, 1, sql))
 		{
-			if (strncmp("1", r->records[i][2].get_asString().data(), 1) == 0)
-			{
-				sql = GB.NewZeroString(r->records[i][1].get_asString().data());
-				res->close();
-
-				if (do_query
-						(db, "Unable to get information on primary index: &1", &res,
-						qindex2, 1, sql))
-				{
-					res->close();
-					GB.FreeString(&sql);
-					return TRUE;
-				}
-				GB.FreeString(&sql);
-
-				r = (result_set *) res->getResult();
-				info->nindex = r->records.size();
-				GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
-
-				for (i = 0; i < info->nindex; i++)
-				{
-					info->index[i] = r->records[i][1].get_asInteger();
-				}
-				break;
-			}
+			GB.FreeString(&sql);
+			return TRUE;
 		}
+		GB.FreeString(&sql);
+
+		info->nindex = res->nrow;
+		GB.Alloc(POINTER(&info->index), sizeof(int) * info->nindex);
+
+		for (i = 0; i < info->nindex; i++)
+			info->index[i] = sqlite_query_get_int(res, i, 1);
+		break;
 	}
+
+	sqlite_query_free(res);
 
 	if (info->nindex == 0)
 	{
 		// [BM] If there is no primary key, we suppose that the first field of INTEGER datatype is the primary key.
 		// Because we use INTEGER only when creating the AUTOINCREMENT field.
 
-		res->close();
-
-		if (do_query
-				(db, "Unable to get primary index: &1", &res,
-				 "PRAGMA table_info('&1')", 1, table))
+		if (do_query(db, "Unable to get primary index: &1", &res, "PRAGMA table_info('&1')", 1, table))
 			return TRUE;
-
-		r = (result_set *) res->getResult();
 
 		info->nindex = 1;
 		GB.Alloc(POINTER(&info->index), sizeof(int));
 
-		for (i = 0; i < (int) r->records.size(); i++)
+		for (i = 0; i < res->nrow; i++)
 		{
-			if (strcasecmp(r->records[i][2].get_asString().data(), "INTEGER") == 0)
+			if (strcasecmp(sqlite_query_get_string(res, i, 2), "INTEGER") == 0)
 			{
 				info->index[0] = i;
 				break;
 			}
 		}
 
-		if (i >= (int)r->records.size())
+		sqlite_query_free(res);
+
+		if (i >= res->nrow)
 		{
 			GB.Free(POINTER(&info->index));
-			res->close();	
 			return TRUE;
 		}
 		else
 		{
-			res->close();
 			return FALSE;
 		}
 	}
-
-	res->close();
 
 	return FALSE;
 }
@@ -1384,14 +1249,14 @@ static int table_exist(DB_DATABASE * db, const char *table)
 		return TRUE;
 	}
 
-	Dataset *res;
+	SQLITE_RESULT *res;
 	int exist;
 
 	if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
 		return FALSE;
 
-	exist = res->num_rows();
-	res->close();
+	exist = res->nrow > 0;
+	sqlite_query_free(res);
 	return exist;
 }
 
@@ -1418,30 +1283,31 @@ static int table_list(DB_DATABASE * db, char ***tables)
 		"( select tbl_name from sqlite_master where type = 'table' union "
 		"   select tbl_name from sqlite_temp_master where type = 'table')";
 
-	Dataset *res;
-	int rows;
-	int i = 0;
+	SQLITE_RESULT *res;
+	int nrow;
+	char *data;
+	int len;
+	int i;
 
 	if (do_query(db, "Unable to get tables: &1", &res, query, 0))
 		return -1;
 
-	rows = res->num_rows();
-	GB.NewArray(tables, sizeof(char *), rows + 2);	//sqlite_master and sqlite_temp_master need to be
-	//added to the list
+	nrow = res->nrow;
 
-	while (!res->eof())
+	// sqlite_master and sqlite_temp_master need to be added to the list
+	GB.NewArray(tables, sizeof(char *), nrow + 2);
+
+	for (i = 0; i < nrow; i++)
 	{
-		(*tables)[i] = GB.NewZeroString(res->fv("tbl_name").get_asString().data());
-		res->next();
-		i++;
+		sqlite_query_get(res, i, 0, &data, &len);
+		(*tables)[i] = GB.NewString(data, len);
 	}
 
+	sqlite_query_free(res);
 
-	res->close();
-
-	(*tables)[i] = GB.NewZeroString("sqlite_master");
-	(*tables)[++i] = GB.NewZeroString("sqlite_temp_master");
-	return rows;
+	(*tables)[nrow] = GB.NewZeroString("sqlite_master");
+	(*tables)[nrow + 1] = GB.NewZeroString("sqlite_temp_master");
+	return nrow + 2;
 }
 
 /*****************************************************************************
@@ -1543,33 +1409,35 @@ static int old_table_primary_key(DB_DATABASE * db, const char *table, char ***pr
 
 static int table_primary_key(DB_DATABASE * db, const char *table, char ***primary)
 {
-	Dataset *res;
+	SQLITE_RESULT *res;
 	int i, j, n;
-	result_set *r;
+	char *data;
+	int len;
 
 	if (do_query(db, "Unable to get primary key: &1", &res, "PRAGMA table_info('&1')", 1, table))
 		return TRUE;
 
-	r = (result_set *) res->getResult();
-
 	n = 0;
-	for (i = 0; i < (int) r->records.size(); i++)
+	for (i = 0; i < res->nrow; i++)
 	{
-		j = r->records[i][5].get_asInteger();
-		if (j > n) n = j;
+		j = sqlite_query_get_int(res, i, 5);
+		if (j > n)
+			n = j;
 	}
 
 	GB.NewArray(primary, sizeof(char *), n);
 
-	for (i = 0; i < (int) r->records.size(); i++)
+	for (i = 0; i < res->nrow; i++)
 	{
-		j = r->records[i][5].get_asInteger();
+		j = sqlite_query_get_int(res, i, 5);
 		if (j > 0)
-			(*primary)[j - 1] = GB.NewZeroString(r->records[i][1].get_asString().data());
+		{
+			sqlite_query_get(res, i, 1, &data, &len);
+			(*primary)[j - 1] = GB.NewString(data, len);
+		}
 	}
 
-	res->close();
-
+	sqlite_query_free(res);
 	return FALSE;
 }
 
@@ -1629,9 +1497,7 @@ static char *table_type(DB_DATABASE * db, const char *table, const char *type)
 
 static int table_delete(DB_DATABASE * db, const char *table)
 {
-	return
-		do_query(db, "Unable to delete table: &1",
-						 NULL, "drop table '&1'", 1, table);
+	return do_query(db, "Unable to delete table: &1", NULL, "drop table '&1'", 1, table);
 }
 
 /*****************************************************************************
@@ -1784,26 +1650,24 @@ static int field_exist(DB_DATABASE * db, const char *table, const char *field)
 {
 	const char *query = "PRAGMA table_info('&1')";
 
-	int i, n;
-	Dataset *res;
+	int i;
+	SQLITE_RESULT *res;
 	int exist = 0;
 
 	if (do_query(db, "Unable to find field: &1.&2", &res, query, 2, table, field))
-	{
 		return FALSE;
-	}
 
-	result_set *r = (result_set *) res->getResult();
-
-	n = r->records.size();
-
-	for (i = 0; i < n; i++)
+	for (i = 0; i < res->nrow; i++)
 	{
-		if (strcmp(field, r->records[i][1].get_asString().data()) == 0)
+
+		if (strcmp(field, sqlite_query_get_string(res, i, 1)) == 0)
+		{
 			exist++;
+			break;
+		}
 	}
 
-	res->close();
+	sqlite_query_free(res);
 	return exist;
 }
 
@@ -1829,28 +1693,22 @@ static int field_list(DB_DATABASE * db, const char *table, char ***fields)
 	const char *query = "PRAGMA table_info('&1')";
 
 	int i, n;
-	Dataset *res;
+	SQLITE_RESULT *res;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
-	{
 		return -1;
-	}
 
-	result_set *r = (result_set *) res->getResult();
+	n = res->nrow;
 
-	n = r->records.size();
-
-	if (fields)										/* (BM) see the function commentary */
+	if (fields) /* (BM) see the function commentary */
 	{
 		GB.NewArray(fields, sizeof(char *), n);
 
 		for (i = 0; i < n; i++)
-		{
-			(*fields)[i] = GB.NewZeroString(r->records[i][1].get_asString().data());
-		}
+			(*fields)[i] = GB.NewZeroString(sqlite_query_get_string(res, i, 1));
 	}
 
-	res->close();
+	sqlite_query_free(res);
 	return n;
 }
 
@@ -1871,11 +1729,11 @@ static int field_list(DB_DATABASE * db, const char *table, char ***fields)
 
 *****************************************************************************/
 
-static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD * info)
+static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_FIELD *info)
 {
 	const char *query = "PRAGMA table_info('&1')";
 
-	Dataset *res;
+	SQLITE_RESULT *res;
 	GB_VARIANT def;
 	char *val;
 	char *_fieldName = NULL;
@@ -1883,36 +1741,26 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	char *_defaultValue = NULL;
 	bool _fieldNotNull = FALSE;
 	int i, n;
-	//sqlite3 *db_handle = ((SqliteDatabase *)db->handle)->getHandle();
-	fType type;
-	result_set *r;
 	bool autoinc;
 	char *schema;
+	int type;
 
 	if (do_query(db, "Unable to get fields: &1", &res, query, 1, table))
-	{
 		return TRUE;
-	}
 
-	r = (result_set *) res->getResult();
-
-	if ((n = r->records.size()) == 0)
-	{
-		GB.Error("Unable to find field &1.&2", table, field);
-		return TRUE;
-	}
+	n = res->nrow;
 
 	//fprintf(stderr, "field_info: %s.%s\n", table, field);
 
 	for (i = 0; i < n; i++)
 	{
-		_fieldName = (char *) r->records[i][1].get_asString().data();
+		_fieldName = sqlite_query_get_string(res, i, 1);
 
 		if (strcmp(_fieldName, field) == 0)
 		{
-			_fieldType = (char *) r->records[i][2].get_asString().data();
-			_fieldNotNull = (char *) r->records[i][3].get_asBool();
-			_defaultValue = (char *) r->records[i][4].get_asString().data();
+			_fieldType = sqlite_query_get_string(res, i, 2);
+			_fieldNotNull = sqlite_query_get_int(res, i, 3) != 0;
+			_defaultValue = sqlite_query_get_string(res, i, 4);
 			break;
 		}
 	}
@@ -1920,6 +1768,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	if (i >= n)
 	{
 		GB.Error("Unable to find field &1.&2", table, field);
+		sqlite_query_free(res);
 		return TRUE;
 	}
 
@@ -1936,7 +1785,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		autoinc = strstr(_fieldType, "INTEGER") && strstr(_fieldType, "AUTOINCREMENT");
 	}*/
 	
-	autoinc = false;
+	autoinc = FALSE;
 	info->collation = NULL;
 
 	if (_table_schema)
@@ -1986,7 +1835,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 				if (strstr(_fieldType, "INTEGER"))
 				{
 					if (strstr(field_desc, "AUTOINCREMENT"))
-						autoinc = true;
+						autoinc = TRUE;
 				}
 
 				p = strstr(field_desc, "COLLATE");
@@ -2012,12 +1861,12 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	if (!_table_schema)
 		GB.FreeString(&schema);
 
-	type = GetFieldType(_fieldType, (unsigned int *) &info->length);
+	type = sqlite_get_type(_fieldType, &info->length);
 
 	if (autoinc)
 		info->type = DB_T_SERIAL;
 	else
-		info->type = conv_type(type);
+		info->type = type;
 
 	//fprintf(stderr, "field_info: type = %d  length = %d\n", info->type, info->length);
 
@@ -2037,7 +1886,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		}
 	}
 
-	res->close();
+	sqlite_query_free(res);
 	return FALSE;
 }
 
@@ -2063,14 +1912,14 @@ static int index_exist(DB_DATABASE * db, const char *table, const char *index)
 		"select tbl_name from sqlite_temp_master where type = 'index' and "
 		" name = '&2' ) " "where tbl_name = '&1'";
 
-	Dataset *res;
+	SQLITE_RESULT *res;
 	int exist;
 
 	if (do_query(db, "Unable to check table: &1", &res, query, 2, table, index))
 		return FALSE;
 
-	exist = res->num_rows();
-	res->close();
+	exist = res->nrow > 0;
+	sqlite_query_free(res);
 	return exist;
 }
 
@@ -2099,26 +1948,20 @@ static int index_list(DB_DATABASE * db, const char *table, char ***indexes)
 		" union select name from sqlite_temp_master where type = 'index' and "
 		" tbl_name = '&1')";
 
-	Dataset *res;
-	int no_indexes, i = 0;
+	SQLITE_RESULT *res;
+	int nindex, i;
 
 	if (do_query(db, "Unable to get tables: &1", &res, query, 1, table))
 		return -1;
 
-	no_indexes = res->num_rows();
-	GB.NewArray(indexes, sizeof(char *), no_indexes);
+	nindex = res->nrow;
+	GB.NewArray(indexes, sizeof(char *), nindex);
 
-	while (!res->eof())
-	{
-		//(res->fv("tbl_name").get_asString().data());
-		(*indexes)[i] = GB.NewZeroString(res->fv(res->fieldName(0)).get_asString().data());
-		res->next();
-		i++;
-	}
+	for (i = 0; i < nindex; i++)
+		(*indexes)[i] = GB.NewZeroString(sqlite_query_get_string(res, i, 0));
 
-	res->close();
-
-	return no_indexes;
+	sqlite_query_free(res);
+	return nindex;
 }
 
 /*****************************************************************************
@@ -2144,27 +1987,23 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 	const char *qindex1 = "PRAGMA index_list('&1')";
 	const char *qindex2 = "PRAGMA index_info('&1')";
 
-	Dataset *res;
+	SQLITE_RESULT *res;
 	int i, j, n;
 
-	if (do_query
-			(db, "Unable to get index info for table: &1", &res, qindex1, 1,
-			 table))
+	if (do_query(db, "Unable to get index info for table: &1", &res, qindex1, 1, table))
 		return TRUE;
 
-	result_set *r = (result_set *) res->getResult();
-
-	if ((n = r->records.size()) == 0)
+	if ((n = res->nrow) == 0)
 	{
 		/* no indexes found */
-		res->close();
+		sqlite_query_free(res);
 		GB.Error("Unable to find index &1.&2", table, index);
 		return TRUE;
 	}
 
 	for (i = 0, j = 0; i < n; i++)
 	{															/* Find the required index */
-		if (strcmp(index, r->records[i][1].get_asString().data()) == 0)
+		if (strcmp(index, sqlite_query_get_string(res, i, 1)) == 0)
 		{
 			j++;
 			break;
@@ -2174,24 +2013,22 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 	if (j == 0)
 	{
 		GB.Error("Unable to find index &1.&2", table, index);
+		sqlite_query_free(res);
 		return TRUE;
 	}
 
 	info->name = NULL;
-	info->unique = strncmp("1", r->records[i][2].get_asString().data(), 1) == 0 ? TRUE : FALSE;
-	info->primary = strstr(r->records[i][1].get_asString().data(), "autoindex") != NULL ? TRUE : FALSE;
+	info->unique = sqlite_query_get_int(res, i, 2) != 0;
+	info->primary = strstr(sqlite_query_get_string(res, i, 1), "autoindex") != NULL;
+
+	sqlite_query_free(res);
 
 	DB.Query.Init();
 
-	if (do_query
-			(db, "Unable to get index info for : &1", &res, qindex2, 1, index))
-	{
-		res->close();
+	if (do_query(db, "Unable to get index info for : &1", &res, qindex2, 1, index))
 		return TRUE;
-	}
 
-	r = (result_set *) res->getResult();
-	n = r->records.size();
+	n = res->nrow;
 	i = 0;
 	/* (BM) row can be null if we are seeking the last index */
 	while (i < n)
@@ -2200,11 +2037,11 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 			DB.Query.Add(",");
 
 		/* Get fields in key */
-		DB.Query.Add(r->records[i][2].get_asString().data());
+		DB.Query.Add(sqlite_query_get_string(res, i, 2));
 		i++;
 	}
 
-	res->close();
+	sqlite_query_free(res);
 	info->fields = DB.Query.GetNew();
 
 	return FALSE;
@@ -2227,9 +2064,7 @@ static int index_info(DB_DATABASE * db, const char *table, const char *index, DB
 
 static int index_delete(DB_DATABASE * db, const char *table, const char *index)
 {
-	return
-		do_query(db, "Unable to delete index: &1",
-						 NULL, "drop index &1", 1, index);
+	return do_query(db, "Unable to delete index: &1", NULL, "drop index &1", 1, index);
 }
 
 /*****************************************************************************
@@ -2267,8 +2102,7 @@ static int index_create(DB_DATABASE * db, const char *table, const char *index, 
 	DB.Query.Add(info->fields);
 	DB.Query.Add(" )");
 
-	return do_query(db, "Cannot create index: &1",
-									NULL, DB.Query.Get(), 0);
+	return do_query(db, "Cannot create index: &1", NULL, DB.Query.Get(), 0);
 }
 
 /*****************************************************************************
@@ -2286,22 +2120,19 @@ static int index_create(DB_DATABASE * db, const char *table, const char *index, 
 
 ******************************************************************************/
 
-static int database_exist(DB_DATABASE * db, const char *name)
+static int database_exist(DB_DATABASE *db, const char *name)
 {
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
-	char *fullpath = NULL;
+	SQLITE_DATABASE *conn = (SQLITE_DATABASE *)db->handle;
+	char *fullpath;
+	bool exist;
 
-	if (strcmp(name, ":memory:") == 0)
+	if (!name || !*name || strcmp(name, ":memory:") == 0)
 		return TRUE;								//Database is loaded in memory only
 
-	if ((fullpath = FindDatabase(name, conn->getHostName())) != NULL)
-	{
-		GB.FreeString(&fullpath);
-		return TRUE;
-	}
-
+	fullpath = find_database(name, conn->host);
+	exist = fullpath != NULL;
 	GB.FreeString(&fullpath);
-	return FALSE;
+	return exist;
 }
 
 /*****************************************************************************
@@ -2324,32 +2155,26 @@ static int database_exist(DB_DATABASE * db, const char *name)
 
  ******************************************************************************/
 
-static int database_list(DB_DATABASE * db, char ***databases)
+static int database_list(DB_DATABASE *db, char ***databases)
 {
+	SQLITE_DATABASE *conn = (SQLITE_DATABASE *)db->handle;
 	const char *dbhome;
 
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
 	GB.NewArray(databases, sizeof(char *), 0);
 
 	/* Hostname contains home area */
-	dbhome = conn->getHostName();
-	WalkDirectory(dbhome, databases);
+	dbhome = conn->host;
+	walk_directory(dbhome, databases);
 
 	/* Checks GAMBAS_SQLITE_DBHOME if set, or Current Working Directory */
 	/* Might have to come back and seperate */
-	dbhome = GetDatabaseHome();
+	dbhome = get_database_home();
 	if (dbhome)
 	{
 		//GB.Error("Unable to get databases: &1", "Can't find current directory");
-		WalkDirectory(dbhome, databases);
+		walk_directory(dbhome, databases);
 		GB.Free(POINTER(&dbhome));
 	}
-
-	/*if (getcwd(cwd, PATH_MAX) != NULL){
-	   if (strcmp(cwd, dbhome) != 0){
-	   WalkDirectory( cwd, databases );
-	   }
-	   } */
 
 	return GB.Count(databases);
 }
@@ -2390,25 +2215,27 @@ static int database_is_system(DB_DATABASE * db, const char *name)
 
 static int database_delete(DB_DATABASE * db, const char *name)
 {
+	SQLITE_DATABASE *conn = (SQLITE_DATABASE *)db->handle;
 	char *fullpath = NULL;
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
+	bool err;
 
-	if ((fullpath = FindDatabase(name, conn->getHostName())) == NULL)
+	fullpath = find_database(name, conn->host);
+
+	if (!fullpath)
 	{
-		GB.FreeString(&fullpath);
-		GB.Error("Cannot Find  database: &1", name);
-		return TRUE;
+		GB.Error("Cannot find database: &1", name);
+		err = TRUE;
 	}
-
-	if (remove(fullpath) != 0)
+	else if (remove(fullpath) != 0)
 	{
 		GB.Error("Unable to delete database  &1", fullpath);
-		GB.FreeString(&fullpath);
-		return TRUE;
+		err = TRUE;
 	}
+	else
+		err = FALSE;
 
 	GB.FreeString(&fullpath);
-	return FALSE;
+	return err;
 }
 
 /*****************************************************************************
@@ -2427,19 +2254,16 @@ static int database_delete(DB_DATABASE * db, const char *name)
  *   does not exist.
  ******************************************************************************/
 
-static int database_create(DB_DATABASE * db, const char *name)
+static int database_create(DB_DATABASE *db, const char *name)
 {
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
-	SqliteDatabase conn2;
+	SQLITE_DATABASE *conn, *save;
 	char *fullpath = NULL;
-
-	//char *homepath = NULL;
-	//DIR *dp;
+	const char *host = NULL;
 	char *dir;
-	const char *host;
 
-	/* Does Name includes fullpath */
-	/* BM: do not use basename(), it can modify its argument */
+	save = (SQLITE_DATABASE *)db->handle;
+
+	/* Does name include fullpath? */
 	if (name && name[0] == '/')
 	{
 		fullpath = GB.NewZeroString(name);
@@ -2447,16 +2271,14 @@ static int database_create(DB_DATABASE * db, const char *name)
 	}
 
 	/* Hostname contains home area */
-	//if ((dp = opendir(conn->getHostName())))
-	/* BM: Why use opendir(), and why forget to call closedir() ? */
-	host = conn->getHostName();
+	host = save->host;
 	if (host && host[0])
 	{
 		fullpath = GB.NewZeroString(host);
 	}
 	else
 	{
-		dir = GetDatabaseHome();
+		dir = get_database_home();
 		mkdir(dir, S_IRWXU);
 		fullpath = GB.NewZeroString(dir);
 		GB.Free(POINTER(&dir));
@@ -2469,27 +2291,25 @@ static int database_create(DB_DATABASE * db, const char *name)
 
 _CREATE_DATABASE:
 
-	conn2.setDatabase(fullpath);
-
 	if (DB.IsDebug())
 		fprintf(stderr, "sqlite3: create database: %s\n", fullpath);
 
+	conn = sqlite_open_database(fullpath, host);
 	GB.FreeString(&fullpath);
 
-	if (conn2.connect() != DB_CONNECTION_OK)
+	if (!conn)
 	{
-		GB.Error("Cannot create database: &1", conn2.getErrorMsg());
-		conn2.disconnect();
+		GB.Error("Cannot create database: &1", sqlite_get_error_message(NULL));
 		return TRUE;
 	}
 
 	//Create and remove a table to initialize database
-	db->handle = &conn2;
+	db->handle = conn;
 	if (!do_query(db, "Unable to initialise database", NULL, "CREATE TABLE GAMBAS (FIELD1 TEXT)", 0))
 		do_query(db, NULL, NULL, "DROP TABLE GAMBAS", 0);
 
-	conn2.disconnect();
-	db->handle = conn;
+	sqlite_close_database(conn);
+	db->handle = save;
 	
 	return FALSE;
 }
@@ -2514,101 +2334,9 @@ _CREATE_DATABASE:
  *
  ******************************************************************************/
 
-static int user_exist(DB_DATABASE * db, const char *name)
+static int user_exist(DB_DATABASE *db, const char *name)
 {
-	struct stat dbbuf;
-	struct passwd *fileowner, *user;	// /etc/passwd structure
-	struct group *Group;					// /etc/group structure
-	char **Member;
-	const char *Databasefile;
-	bool in_memory;
-
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
-
-	if ((Databasefile = conn->getDatabase()) == NULL)
-	{
-		GB.Error("User_exist:&1", "Unable to get databasename");
-		return FALSE;
-	}
-
-	in_memory = strcmp(Databasefile, ":memory:") == 0;
-
-	/* Is username in passwd file */
-	if ((user = getpwnam(name)) == NULL)
-	{
-		return FALSE;
-	}
-
-	if (in_memory)
-		return (user->pw_uid == getuid());
-
-	if (stat(Databasefile, &dbbuf) != 0)
-	{
-		GB.Error("User_exist: Unable to get status of &1", Databasefile);
-		return FALSE;
-	}
-
-	/* Now what are the database file permissions */
-	/* The order of tests is important */
-
-	if ((fileowner = getpwuid(dbbuf.st_uid)) != NULL)
-	{
-		if (fileowner->pw_uid == user->pw_uid)
-		{
-			/* User is owner */
-			if ((dbbuf.st_mode & S_IRUSR) || (dbbuf.st_mode & S_IWUSR))
-			{
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
-		if (fileowner->pw_gid == user->pw_gid)
-		{
-			if ((dbbuf.st_mode & S_IRGRP) || (dbbuf.st_mode & S_IWGRP))
-			{
-				/* User has access to the file via primary group access. */
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
-
-	}
-
-	/* Check whether user is in the same group */
-
-	Group = getgrgid(dbbuf.st_gid);
-	Member = Group->gr_mem;
-	while (Member && *Member)
-	{
-		if (strcmp(*Member, name) == 0)
-		{
-			//User is a member of the group
-			if ((dbbuf.st_mode & S_IRGRP) || (dbbuf.st_mode & S_IWGRP))
-			{
-				return TRUE;
-			}
-			else
-			{
-				return FALSE;
-			}
-		}
-		Member++;
-	}
-
-	if ((dbbuf.st_mode & S_IROTH) || (dbbuf.st_mode & S_IWOTH))
-	{
-		/* Any user can access this file */
-		return TRUE;
-	}
-
 	return FALSE;
-
 }
 
 /*****************************************************************************
@@ -2631,118 +2359,9 @@ static int user_exist(DB_DATABASE * db, const char *name)
 
 static int user_list(DB_DATABASE * db, char ***users)
 {
-	//Should we use GB.HashTable.New etc. to ensure
-	//duplicates are not reported back, then transfer
-	//the valid elements to the Array.
-	//Need to check order of rights. e.g. User overides
-	//group and other, group overides other.
-	//That is if the user is a member of a group that
-	//is given no rights, but other has all rights,
-	//they should not be able to access
-	const char *Databasefile;
-	struct stat buf;
-	struct passwd *user;					// /etc/passwd structure
-	struct group *Group;					// /etc/group structure
-	char **Member;
-	int Count = 0;
-	bool in_memory;
-
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
-
-	if ((Databasefile = conn->getDatabase()) == NULL)
-	{
-		GB.Error("Unable to get databasename");
-		return -1;
-	}
-
-	in_memory = strcmp(Databasefile, ":memory:") == 0;
-
-	if (in_memory)
-	{
-		buf.st_mode = S_IWUSR | S_IRUSR;
-		buf.st_uid = getuid();
-	}
-	else if (stat(Databasefile, &buf) != 0)
-	{
-		GB.Error("Unable to get status of &1", Databasefile);
-		return -1;
-	}
-
 	if (users)
 		GB.NewArray(users, sizeof(char *), 0);
-
-	if (!in_memory)
-	{
-
-		/* If file has other access then any user could use it */
-		if ((buf.st_mode & S_IROTH) || (buf.st_mode & S_IWOTH))
-		{
-			/* Any user can access this file */
-
-			while ((user = getpwent()) != NULL)
-			{
-				if (users)
-				{
-					*(char **)GB.Add(users) = GB.NewZeroString(user->pw_name);
-				}
-				else
-				{
-					Count++;
-				}
-			}
-
-			if (users)
-			{
-				return GB.Count(users);
-			}
-			else
-			{
-				return Count;
-			}
-		}
-
-		/* If group access then add all users in the group */
-		if ((buf.st_mode & S_IRGRP) || (buf.st_mode & S_IWGRP))
-		{
-
-			Group = getgrgid(buf.st_gid);
-			Member = Group->gr_mem;
-			while (Member && *Member)
-			{
-				if (users)
-				{
-					*(char **)GB.Add(users) = GB.NewZeroString(*Member);
-				}
-				else
-				{
-					Count++;
-				}
-				Member++;
-			}
-		}
-
-	}
-
-	/* Don't forget the owner if that has not already been added */
-	if ((buf.st_mode & S_IRUSR) || (buf.st_mode & S_IWUSR))
-	{
-		if ((user = getpwuid(buf.st_uid)) != NULL)
-		{
-			if (users)
-			{
-				*(char **)GB.Add(users) = GB.NewZeroString(user->pw_name);
-			}
-			else
-			{
-				Count++;
-			}
-		}
-	}
-
-	if (users)
-		return GB.Count(users);
-	else
-		return Count;
+	return 0;
 }
 
 /*****************************************************************************
@@ -2764,46 +2383,8 @@ static int user_list(DB_DATABASE * db, char ***users)
 
 static int user_info(DB_DATABASE * db, const char *name, DB_USER * info)
 {
-	const char *Databasefile;
-
-	//struct stat buf;
-	struct passwd *user;					// /etc/passwd structure
-	bool in_memory;
-
-	//struct group *Group;   // /etc/group structure
-	//char **Member;
-	//int Count;
-
-	SqliteDatabase *conn = (SqliteDatabase *) db->handle;
-
-	/* Is username in passwd file */
-	if ((user = getpwnam(name)) == NULL)
-	{
-		GB.Error("User_info: Invalid user &1", name);
-		return TRUE;
-	}
-
-	if ((Databasefile = conn->getDatabase()) == NULL)
-	{
-		GB.Error("User_info: &1", "Unable to get databasename");
-		return TRUE;
-	}
-
-	in_memory = strcmp(Databasefile, ":memory:") == 0;
-
-	if (in_memory)
-		info->admin = true;
-	else
-		info->admin = access(Databasefile, W_OK);
-
-	/* If file has other access then any user could use it */
-	//Need to look at order of checks
-	info->name = NULL;
-
-// if (row[3]) //password does not exist for sqlite
-//     GB.NewString(&info->password, row[3], 0); //password is encrypted in mysql
-
-	return FALSE;
+	GB.Error("Invalid user &1", name);
+	return TRUE;
 }
 
 /*****************************************************************************
@@ -2824,7 +2405,7 @@ static int user_info(DB_DATABASE * db, const char *name, DB_USER * info)
 
 static int user_delete(DB_DATABASE * db, const char *name)
 {
-	GB.Error("SQLite users do not exist.");
+	GB.Error("Invalid user: &1", name);
 	return TRUE;
 }
 
@@ -2847,7 +2428,7 @@ static int user_delete(DB_DATABASE * db, const char *name)
 
 static int user_create(DB_DATABASE * db, const char *name, DB_USER * info)
 {
-	GB.Error("SQLite users do not exist.");
+	GB.Error("SQLite has no users");
 	return TRUE;
 }
 
@@ -2869,10 +2450,18 @@ static int user_create(DB_DATABASE * db, const char *name, DB_USER * info)
 
 static int user_set_password(DB_DATABASE * db, const char *name, const char *password)
 {
-	GB.Error("SQLite users do not exist.");
+	GB.Error("SQLite has no users");
 	return TRUE;
 }
 
+
+/*****************************************************************************
+
+  The driver interface
+
+*****************************************************************************/
+
+DECLARE_DRIVER(_driver, "sqlite3");
 
 /*****************************************************************************
 
@@ -2880,18 +2469,14 @@ static int user_set_password(DB_DATABASE * db, const char *name, const char *pas
 
 *****************************************************************************/
 
-extern "C"
+int EXPORT GB_INIT(void)
 {
-	int EXPORT GB_INIT(void)
-	{
-		GB.GetInterface("gb.db", DB_INTERFACE_VERSION, &DB);
-		DB.Register(&_driver);
+	GB.GetInterface("gb.db", DB_INTERFACE_VERSION, &DB);
+	DB.Register(&_driver);
 
-		return 0;
-	}
+	return 0;
+}
 
-	void EXPORT GB_EXIT()
-	{
-	}
-
-}																//extern "C"
+void EXPORT GB_EXIT()
+{
+}
