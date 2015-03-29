@@ -141,6 +141,7 @@ static void cb_before_insert(GtkEditable *editable, gchar *new_text, gint new_te
 		gcb_im_commit(NULL, new_text, NULL);
 		if (gKey::canceled())
 			g_signal_stop_emission_by_name (G_OBJECT(editable), "insert-text");
+		*position = gtk_editable_get_position(editable);
 	}
 }
 
@@ -298,9 +299,9 @@ void gTextBox::setPosition(int pos)
 		
 	if (pos < 0) 
 		pos = 0;
-	else if (pos >= len)
+	else if (pos > len)
 		pos = -1;
-		
+
 	gtk_editable_set_position(GTK_EDITABLE(entry), pos);
 }
 
@@ -329,7 +330,7 @@ void gTextBox::setBorder(bool vl)
 	else
 		gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(_style_provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
-	gtk_style_context_invalidate(style);
+	//gtk_style_context_invalidate(style);
 #else
 	if (vl)
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), NULL);

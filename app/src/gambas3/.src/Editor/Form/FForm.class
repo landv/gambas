@@ -1301,7 +1301,7 @@ End
 '
 ' END
 
-Public Function CreateControl(sClass As String, hParent As CControl, Optional sName As String, Optional bSetText As Boolean) As CControl
+Public Function CreateControl(sClass As String, hParent As CControl, Optional sName As String, Optional (bSetText) As Boolean) As CControl
 
   Dim hCtrl As CControl
 
@@ -3275,8 +3275,6 @@ Public Sub Control_Drop()
   Dim hImage As Image
   Dim X, Y, W, H As Integer
   Dim sClass As String
-
-  Debug
 
   hParent = Control[Last.Tag]
   X = Drag.X

@@ -5,6 +5,7 @@ Private bFlag As Boolean
 Private $hPrinter As New Printer As "Printer"
 Private $iCurPrinterResolution As Integer
 Private $bVerif As Boolean
+Private $bPrinting As Boolean
 
 Static Public Function Run(hReport As Report)
   
@@ -215,19 +216,36 @@ Public Sub txtFile_Click()
   
 End
 
+Private Sub RefreshPrintButton()
+
+  If $bPrinting Then
+
+    btnPrint.Picture = Picture["icon:/small/cancel"]
+    btnPrint.Text = ("Cancel")
+    
+  Else
+
+    btnPrint.Picture = Picture[If(tabPrint.Index = 0, "icon:/small/printer", "icon:/small/pdf")]
+    btnPrint.Text = ("Print")
+    
+  Endif
+  
+  btnPrint2.Picture = btnPrint.Picture
+  btnPrint2.Text = btnPrint.Text
+
+End
+
 Public Sub tabPrint_Click()
   
   If tabPrint.Index = 0 Then
     $hPrinter.OutputFile = ""
     $hPrinter.Name = cmbPrinter.Text
-    btnPrint.Picture = Picture["icon:/small/printer"]
   Else
     $hPrinter.OutputFile = txtFile.Text
     $hPrinter.Resolution = 300
-    btnPrint.Picture = Picture["icon:/small/pdf"]
   Endif
   
-  btnPrint2.Picture = btnPrint.Picture
+  RefreshPrintButton
   
 End
 
@@ -275,6 +293,7 @@ Public Sub btnPrint_Click()
   Dim iReturn As Integer
   
   If btnPrint.Tag Then
+    
     $hPrinter.Cancel
     btnPrint.Tag = False
     
@@ -295,11 +314,12 @@ Public Sub btnPrint_Click()
       
     Endif
     
+    $bPrinting = True
     btnPrint.Tag = True
-    btnPrint.Picture = Picture["icon:/22/cancel"]
-    btnPrint.Text = ("Cancel")
+    RefreshPrintButton
     
     $hPrinter.Print
+    
   Endif
   
 End
@@ -346,9 +366,9 @@ Public Sub Printer_End()
   hbPrinting.Hide
   hbZoom.Show
   Dec Application.Busy
-  btnPrint.Picture = Picture["icon:/22/print"]
-  btnPrint.Text = ("Print")
   btnPrint.Tag = False
+  $bPrinting = False
+  RefreshPrintButton
   
 End
 
@@ -410,6 +430,7 @@ Public Sub Form_Open()
   
   SelectPrinter($hPrinter.Name)
   btnPrint.Tag = False
+  $bPrinting = False
   
   btnOnePage.Value = True
 
