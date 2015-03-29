@@ -961,7 +961,7 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
 
   Dim hImage As Image
   Dim hImageModule As Image
-  Dim hImageStartup As Image
+  'Dim hImageStartup As Image
   Dim sKey As String
 
   If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
@@ -1263,7 +1263,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim bChecked As Boolean
   Dim bDir As Boolean
   Dim sAfter As String
-  Dim hForm As Object
+  'Dim hForm As Object
   Dim hModule As CModule
   Dim bSource As Boolean
   Dim bExtern As Boolean
@@ -3908,11 +3908,15 @@ Public Sub DeleteFile(sPath As String)
   Dim hModule As CModule
   Dim sPathPot As String
   Dim bReloadComponent As Boolean
+  Dim bConnection As Boolean
 
   If Not Exist(sPath) Then Return
 
   bLink = Stat(sPath).Type = gb.Link
+  
   bProject = IsSourcePath(sPath)
+  bConnection = IsConnectionPath(sPath)
+  
   If bProject Then bReloadComponent = IsExported(sPath)
 
   UnloadFile(sPath)
@@ -3951,6 +3955,16 @@ Public Sub DeleteFile(sPath As String)
 
     If bReloadComponent Then Compile(True,, True)
 
+  Endif
+  
+  If bConnection And If File.Ext(sPath) = "connection" Then
+    
+    sPath = File.SetExt(sPath, "template")
+    If Exist(sPath) Then 
+      Try Kill sPath
+      VersionControl.RemoveFile(sPath)
+    Endif
+    
   Endif
 
   'CATCH

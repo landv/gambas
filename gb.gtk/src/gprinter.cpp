@@ -138,6 +138,8 @@ static gboolean find_file_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 	return FALSE;
 }
 
+//extern void _gtk_printer_option_widget_get_type(void);
+
 gPrinter *gPrinter::_current = NULL;
 
 gPrinter::gPrinter()
@@ -148,6 +150,7 @@ gPrinter::gPrinter()
 	_page_count = 1;
 	_page_count_set = false;
 	
+	//_gtk_printer_option_widget_get_type();
 	gtk_enumerate_printers((GtkPrinterFunc)find_default_printer, this, NULL, TRUE);
 
 	setPaperModel(GB_PRINT_A4);
