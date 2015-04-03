@@ -59,6 +59,42 @@ typedef
 	}
 	CACHE_ENTRY;
 
+// mySQL datatypes
+
+static CONV_STRING_TYPE _types[] =
+	{
+		{ "tinyint", FIELD_TYPE_TINY },
+		{ "smallint", FIELD_TYPE_SHORT },
+		{ "mediumint", FIELD_TYPE_INT24 },
+		{ "int", FIELD_TYPE_LONG },
+		{ "bigint", FIELD_TYPE_LONGLONG },
+		{ "decimal", FIELD_TYPE_DECIMAL },
+		{ "numeric", FIELD_TYPE_DECIMAL },
+		{ "float", FIELD_TYPE_FLOAT },
+		{ "double", FIELD_TYPE_DOUBLE },
+		{ "real", FIELD_TYPE_DOUBLE },
+		{ "timestamp", FIELD_TYPE_TIMESTAMP },
+		{ "date", FIELD_TYPE_DATE },
+		{ "time", FIELD_TYPE_TIME },
+		{ "datetime", FIELD_TYPE_DATETIME },
+		{ "year", FIELD_TYPE_YEAR },
+		{ "char", FIELD_TYPE_STRING },
+		{ "varchar", FIELD_TYPE_VAR_STRING },
+		{ "blob", FIELD_TYPE_BLOB },
+		{ "tinyblob", FIELD_TYPE_TINY_BLOB },
+		{ "mediumblob", FIELD_TYPE_MEDIUM_BLOB },
+		{ "longblob", FIELD_TYPE_LONG_BLOB },
+		{ "text", FIELD_TYPE_BLOB },
+		{ "tinytext", FIELD_TYPE_TINY_BLOB },
+		{ "mediumtext", FIELD_TYPE_MEDIUM_BLOB },
+		{ "longtext", FIELD_TYPE_LONG_BLOB },
+		{ "set", FIELD_TYPE_SET },
+		{ "enum", FIELD_TYPE_ENUM },
+		{ "bit", FIELD_TYPE_BIT },
+		{ "null", FIELD_TYPE_NULL },
+		{ NULL, 0 },
+	};
+
 /* internal function to quote a value stored as a string */
 
 static void quote_string(const char *data, long len, DB_FORMAT_CALLBACK add)
@@ -193,47 +229,13 @@ static GB_TYPE conv_type(int type, int len)
 
 static int conv_string_type(const char *type, long *len)
 {
-	static CONV_STRING_TYPE types[] =
-	{
-		{ "tinyint", FIELD_TYPE_TINY },
-		{ "smallint", FIELD_TYPE_SHORT },
-		{ "mediumint", FIELD_TYPE_INT24 },
-		{ "int", FIELD_TYPE_LONG },
-		{ "bigint", FIELD_TYPE_LONGLONG },
-		{ "decimal", FIELD_TYPE_DECIMAL },
-		{ "numeric", FIELD_TYPE_DECIMAL },
-		{ "float", FIELD_TYPE_FLOAT },
-		{ "double", FIELD_TYPE_DOUBLE },
-		{ "real", FIELD_TYPE_DOUBLE },
-		{ "timestamp", FIELD_TYPE_TIMESTAMP },
-		{ "date", FIELD_TYPE_DATE },
-		{ "time", FIELD_TYPE_TIME },
-		{ "datetime", FIELD_TYPE_DATETIME },
-		{ "year", FIELD_TYPE_YEAR },
-		{ "char", FIELD_TYPE_STRING },
-		{ "varchar", FIELD_TYPE_VAR_STRING },
-		{ "blob", FIELD_TYPE_BLOB },
-		{ "tinyblob", FIELD_TYPE_TINY_BLOB },
-		{ "mediumblob", FIELD_TYPE_MEDIUM_BLOB },
-		{ "longblob", FIELD_TYPE_LONG_BLOB },
-		{ "text", FIELD_TYPE_BLOB },
-		{ "tinytext", FIELD_TYPE_TINY_BLOB },
-		{ "mediumtext", FIELD_TYPE_MEDIUM_BLOB },
-		{ "longtext", FIELD_TYPE_LONG_BLOB },
-		{ "set", FIELD_TYPE_SET },
-		{ "enum", FIELD_TYPE_ENUM },
-		{ "bit", FIELD_TYPE_BIT },
-		{ "null", FIELD_TYPE_NULL },
-		{ NULL, 0 },
-	};
-
 	CONV_STRING_TYPE *cst;
 	long l;
 
 	if (strncmp(type, "national ", 9) == 0)
 		type += 9;
 
-	for (cst = types; cst->pattern; cst++)
+	for (cst = _types; cst->pattern; cst++)
 	{
 		if (strncmp(type, cst->pattern, strlen(cst->pattern)) == 0)
 			break;
@@ -258,6 +260,20 @@ static int conv_string_type(const char *type, long *len)
 	return cst->type;
 }
 
+#if 0
+static const char *get_type_name(int type)
+{
+	CONV_STRING_TYPE *cst;
+
+	for (cst = _types; cst->pattern; cst++)
+	{
+		if (cst->type == type)
+			return cst->pattern;
+	}
+
+	return "?";
+}
+#endif
 
 /* Internal function to convert a database value into a Gambas variant value */
 
@@ -402,7 +418,7 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 
 		// query_fill() only gets this constant, whatever the blob is
 		case FIELD_TYPE_BLOB:
-			if (len == 16777215 || len <= 0) // LONG BLOB
+			if (len >= 0x1000000 || len <= 0) // LONG BLOB
 			{
 				val->type = GB_T_NULL;
 				break;
@@ -1019,7 +1035,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		value.value.type = GB_T_NULL;
 
 		if (data)
-			conv_data(db->version, data, mysql_fetch_lengths(res)[i], &value.value, field->type, field->length);
+			conv_data(db->version, data, mysql_fetch_lengths(res)[i], &value.value, field->type, field->max_length);
 
 		GB.StoreVariant(&value, &buffer[i]);
 	
@@ -1179,7 +1195,11 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 static GB_TYPE field_type(DB_RESULT result, int field)
 {
 	MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
-	return conv_type(f->type, f->length);
+	GB_TYPE type = conv_type(f->type, f->max_length);
+
+	//fprintf(stderr, "field_type: %s %lu -> %ld\n", get_type_name(f->type), f->max_length, type);
+
+	return type;
 }
 
 
@@ -1197,12 +1217,12 @@ static GB_TYPE field_type(DB_RESULT result, int field)
 static int field_length(DB_RESULT result, int field)
 {
 	MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
-	GB_TYPE type = conv_type(f->type, f->length);
+	GB_TYPE type = conv_type(f->type, f->max_length);
 
 	if (type != GB_T_STRING)
 		return 0;
 	else
-		return f->length;
+		return f->max_length;
 }
 
 
@@ -1908,6 +1928,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	type = conv_string_type(row[1], &len);
 
 	info->type = conv_type(type, len);
+
 	if (info->type == GB_T_STRING)
 	{
 		info->length = len;
