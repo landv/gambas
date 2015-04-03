@@ -72,7 +72,6 @@ Private $iSY As Integer
 Private $MX As Integer
 Private $MY As Integer
 
-
 Event Layout(Page As Integer)
 Event Draw(Page As Integer, Width As Integer, Height As Integer)
 Event Finished
@@ -182,7 +181,8 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   
   Dim iDocX, iDocY As Integer
   Dim fShad As Float = $fZoom * ($iSpacing / 4)
-  
+  Dim fFullContentWidth As Float
+
   If $colLayout.Exist(Page) Then
     $fScaledDocWidth = $colLayout[Page].Width * $fZoom
     $fScaledDocHeight = $colLayout[Page].Height * $fZoom
@@ -190,14 +190,24 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
     $fScaledDocWidth = $iDocWidth * $fZoom
     $fScaledDocHeight = $iDocHeight * $fZoom
   Endif
+  
   'Define the doc position
-  iDocX = $fScaledPadding + iCol * ($fMaxPageWidth + $fScaledSpace) + ($fMaxPageWidth - $fScaledDocWidth) / 2 - $hView.ScrollX
+  If System.RightToLeft Then 
+    iDocX = $hView.ClientW - $fScaledPadding - (iCol * ($fMaxPageWidth + $fScaledSpace)) - $fMaxPageWidth + $hView.ScrollX
+  Else
+    iDocX = $fScaledPadding + iCol * ($fMaxPageWidth + $fScaledSpace) + ($fMaxPageWidth - $fScaledDocWidth) / 2 - $hView.ScrollX
+  Endif
   iDocY = $fScaledPadding + iRow * ($fMaxPageHeight + $fScaledSpace) + ($fMaxPageHeight - $fScaledDocHeight) / 2 - $hView.ScrollY
+  
   If $bAutoCenter Then
     If $iArrangement = Arrange.Column Then
       iDocY -= $fCenter
     Else
-      iDocX += $fCenter
+      If System.RightToLeft Then 
+        iDocX -= $fCenter
+      Else
+        iDocX += $fCenter
+      Endif
     Endif
   Endif
   
@@ -512,7 +522,7 @@ Private Function Zoom_Read() As Float
 End
 
 Private Sub SetZoom(fValue As Float)
-
+  
   If fValue = $fZoom Then Return
   $fZoom = fValue
   $aImageLoaded.Clear
@@ -868,9 +878,10 @@ End
 
 Public Sub View_MouseDown()
   
-  
   $MX = Mouse.X
   $MY = Mouse.Y
+  If Me.Arrangement = Arrange.Fill Or If Me.Arrangement = Arrange.None Then Return
+  $hView.Mouse = Mouse.Pointing
   'Try $iCurrent = Find(Mouse.x, Mouse.Y)
   '$aSelected.Clear
   '$aSelected.Add($iCurrent)
@@ -880,8 +891,8 @@ End
 
 Public Sub View_MouseMove()
   
-If Mouse.Left Then
-  
+  If Mouse.Left Then
+    
     If Me.Arrangement = Arrange.Fill Or If Me.Arrangement = Arrange.None Then Return
     'Print $MX - Mouse.X
     $hView.ScrollX += $MX - Mouse.X
@@ -896,7 +907,11 @@ If Mouse.Left Then
   
 End
 
-
+Public Sub View_MouseUp()
+  
+  $hView.Mouse = Mouse.Normal
+  
+End
 
 
 Public Function _IsVisible(Index As Integer) As Boolean
@@ -932,11 +947,11 @@ Private Function Column_Read() As Integer
 End
 
 Private Sub Column_Write(Value As Integer)
-
+  
   If Value = $iColumn Then Return
   $iColumn = Value
   DoLayout
-
+  
 End
 
 Private Function AutoCenter_Read() As Boolean
@@ -946,10 +961,9 @@ Private Function AutoCenter_Read() As Boolean
 End
 
 Private Sub AutoCenter_Write(Value As Boolean)
-
+  
   If value = $bAutoCenter Then Return
   $bAutoCenter = Value
   $tmrRefresh.Trigger
   
 End
-
