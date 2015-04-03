@@ -518,7 +518,9 @@ Public Sub _DeleteCurrent() As Boolean
     Next
   Endif
 
-  _GetDB().Exec(Request.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal)).Get(_GetDB()))
+  With _GetDB()
+    .Exec(.SQL.Delete().From($sTable).Where(Common.MakeWhere(aKey, aVal))())
+  End With
   
 End
 
@@ -540,7 +542,7 @@ Public Function Remove() As Boolean
 End
 
 
-Public Function _get(Key As String) As Variant
+Public Function _get((Key) As String) As Variant
   
   If $iIndex < 0 Then
     Return $hConn.GetDefaultValue($sTable, Key)
@@ -550,7 +552,7 @@ Public Function _get(Key As String) As Variant
   
 End
 
-Public Function _GetInfo(Key As String) As DataField
+Public Function _GetInfo((Key) As String) As DataField
   
   If _Check() Then Return
   Return $hConn[$sTable, Key, $bCreate]

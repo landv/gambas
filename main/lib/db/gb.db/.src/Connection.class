@@ -6,6 +6,8 @@ Inherits _Connection
 
 Private Const TEMPLATE_MAGIC As String = "# Gambas Database Template File 3.0"
 
+Property Read SQL As SQLRequest
+
 Public Sub ApplyTemplate(Template As String)
   
   Dim hFile As File
@@ -222,4 +224,10 @@ Public Sub GetTemplate() As String
   sTemplate = Close #hFile
   Return sTemplate
   
+End
+
+Private Function SQL_Read() As SQLRequest
+
+  Return New SQLRequest(Me)
+
 End

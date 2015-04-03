@@ -78,6 +78,9 @@ Public Sub Run()
         Else If sCar = "'" Or If sCar = "\"" Then
           iState = Highlight.String
           Highlight.Add(iState)
+        Else If sCar = "`" Then
+          iState = Highlight.Symbol
+          Highlight.Add(iState)
           sWait = sCar
         Else
           iLen = Helper.ReadNumber(sText, iPos)
@@ -113,6 +116,13 @@ Public Sub Run()
           
           Highlight.Add(Highlight.Error)
             
+        Endif
+        
+      Case Highlight.Symbol
+        
+        Highlight.Add(iState)
+        If sCar = sWait Then
+          iState = Highlight.Normal
         Endif
         
       Case Highlight.Comment

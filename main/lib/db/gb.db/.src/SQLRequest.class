@@ -1,0 +1,173 @@
+' Gambas class file
+
+Export
+
+Private $sTable As String
+Private $sWhere As String
+Private $sType As String
+Private $aField As String[]
+Private $aOrderBy As String[]
+Private $hConn As Connection
+Private $sOp As String
+
+Public Sub _new(Connection As Connection)
+  
+  $hConn = Connection
+
+End
+
+Public Sub Select(Optional Fields As Variant, ...) As SQLRequest
+  
+  Dim aField As String[]
+  
+  $sType = "SELECT"
+  
+  If Fields Then
+    Try aField = Fields
+    If Error Then 
+      aField = [CStr(Fields)]
+      aField.Insert(Param.All)
+    Else
+      aField = aField.Copy()
+    Endif
+  Endif
+  
+  $aField = aField
+  Return Me
+  
+End
+
+Public Sub Delete() As SQLRequest
+  
+  $sType = "DELETE"
+  Return Me
+  
+End
+
+
+Public Function From(Table As String) As SQLRequest
+  
+  $sTable = Table
+  Return Me
+  
+End
+
+
+Public Function Where((Where) As String, ...) As SQLRequest
+
+  Dim aArg As New Variant[]
+
+  Where = Trim(Where)
+  If Not Where Then Return Me
+
+  If $sOp Then
+    If $sWhere Then
+      $sWhere &= " " & $sOp
+    Endif
+    $sOp = ""
+  Endif
+  
+  aArg.Add(Where)
+  aArg.Insert(Param.All)
+  $sWhere &= " (" & Object.Call($hConn, "Subst", aArg) & ")"
+  Return Me
+  
+End
+
+Public Function OrderBy((OrderBy) As Variant, ...) As SQLRequest
+  
+  Dim aOrderBy As String[]
+  
+  If IsNull(OrderBy) Then Return Me
+  
+  Try aOrderBy = OrderBy
+  If Error Then 
+    aOrderBy = [CStr(OrderBy)]
+    aOrderBy.Insert(Param.All)
+  Endif
+  
+  $aOrderBy = aOrderBy
+  
+  Return Me
+  
+End
+
+Public Function Or() As SQLRequest
+  
+  $sOp = "OR"
+  Return Me
+  
+End
+
+Public Function And() As SQLRequest
+  
+  $sOp = "AND"
+  Return Me
+  
+End
+
+Public Sub Get() As String
+  
+  Return _call()
+  
+End
+
+
+Public Function _call() As String
+  
+  Dim sReq As String
+  Dim I As Integer
+  Dim aScan As String[]
+  Dim sField As String
+  Dim bDesc As Boolean
+  
+  If Not $sTable Then Error.Raise("No table specified")
+
+  sReq = $sType
+
+  If $aField Then
+    
+    sReq &= " "
+    
+    For I = 0 To $aField.Max
+      If I Then sReq &= ","
+      aScan = Scan($aField[i], "* AS *")
+      If aScan.Count = 2 And If InStr(aScan[1], " ") = 0 Then
+        sReq &= $aField[I]
+      Else
+        sReq &= $hConn.Quote($aField[I])
+      Endif
+    Next
+    
+  Else If $sType = "SELECT" Then
+    
+    sReq &= " *"
+    
+  Endif
+    
+  sReq &= " FROM " & $hConn.Quote($sTable, True)
+    
+  If $sWhere Then sReq &= " WHERE" & $sWhere
+    
+  If $aOrderBy Then 
+    
+    sReq &= " ORDER BY "
+    
+    For I = 0 To $aOrderBy.Max
+      If I Then sReq &= ","
+      sField = $aOrderBy[I]
+      If sField Ends " DESC" Then
+        sField = Left(sField, -5)
+        bDesc = True
+      Else
+        bDesc = False
+      Endif
+      sReq &= $hConn.Quote(sField)
+      If bDesc Then sReq &= " DESC"
+    Next
+    
+  Endif
+  
+  Return sReq
+    
+End

@@ -8,7 +8,7 @@ Component=gb.image
 Component=gb.gui
 Component=gb.settings
 Authors="Benoît Minisini"
-Environment="GB_GUI=gb.qt4"
+Environment="GB_GUI=gb.gtk3"
 TabSize=2
 Translate=1
 Language=en
@@ -18,10 +18,10 @@ Vendor=vendor
 Address=benoit@minisini.fr
 License=General Public Licence
 Prefix=1
-PackageName=gambas3-vendor-gb-form-3.6.90
+PackageName=gambas3-vendor-gb-form-3.7.90
 CreateEachDirectory=1
 Packager=1
-Systems=slackware
+Systems=autotools
 Groups=debian:"embedded"
 Groups=slackware:"Applications/Emulators"
 ExtraFiles=slackware:"control/colorpalette.png\t"

@@ -1,0 +1,113 @@
+# Gambas Database Template File 3.0
+{ Table
+  Name="can_read"
+  PrimaryKey=["grp","id"]
+  { Field
+    Name="id"
+    Type=db.String
+    Length=255
+  }
+  { Field
+    Name="grp"
+    Type=db.Integer
+  }
+  { Index 
+    Name="can_read_index"
+    Unique=False
+    Fields=["id"]
+  }
+}
+{ Table
+  Name="cannot_read"
+  PrimaryKey=["grp","id"]
+  { Field
+    Name="id"
+    Type=db.String
+    Length=255
+  }
+  { Field
+    Name="grp"
+    Type=db.Integer
+  }
+  { Index 
+    Name="cannot_read_index"
+    Unique=False
+    Fields=["id"]
+  }
+}
+{ Table
+  Name="data"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.String
+    Length=255
+  }
+  { Field
+    Name="f1"
+    Type=db.String
+    Length=255
+  }
+  { Field
+    Name="f2"
+    Type=db.String
+    Length=255
+  }
+  { Index 
+    Name="data_index_1"
+    Unique=False
+    Fields=["f1"]
+  }
+  { Index 
+    Name="data_index_2"
+    Unique=False
+    Fields=["f2"]
+  }
+}
+{ Table
+  Name="desc"
+  PrimaryKey=["id"]
+  { Field
+    Name="id"
+    Type=db.String
+    Length=255
+  }
+  { Field
+    Name="style"
+    Type=db.String
+  }
+  { Field
+    Name="icon"
+    Type=db.String
+  }
+  { Field
+    Name="desc"
+    Type=db.String
+  }
+  { Field
+    Name="tdesc"
+    Type=db.String
+  }
+  { Field
+    Name="auth"
+    Type=db.String
+  }
+}
+{ Table
+  Name="group"
+  PrimaryKey=["grp"]
+  { Field
+    Name="grp"
+    Type=db.Serial
+  }
+  { Field
+    Name="name"
+    Type=db.String
+    Length=64
+  }
+  { Index 
+    Name="group_index"
+    Unique=True
+    Fields=["name"]
+  }
+}

@@ -147,16 +147,21 @@ static char *FindDatabase(char *name, char *hostName)
 
 static int open_database(DB_DESC *desc, DB_DATABASE * db)
 {
+	char *host;
 	char *db_fullpath = NULL;
 	bool ver2 = FALSE;
 
 	if (!desc->name) // memory database
 		goto __SQLITE;
 
-	db_fullpath = FindDatabase(desc->name, desc->host);
+	host = desc->host;
+	if (!host)
+		host = "";
+
+	db_fullpath = FindDatabase(desc->name, host);
 	if (!db_fullpath)
 	{
-		GB.Error("Unable to locate database `&1` in `&2`", desc->name, desc->host);
+		GB.Error("Unable to locate database `&1` in `&2`", desc->name, host);
 		return TRUE;
 	}
 					 	

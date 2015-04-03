@@ -48,6 +48,7 @@ Private Sub Reload()
   Dim sDisp As String
   Dim sName As String
   Dim hSrc As DataSource
+  Dim hConn As Connection
   
   hSrc = Common.GetSource(Me)
   If hSrc Then 
@@ -82,7 +83,9 @@ Private Sub Reload()
   
   If Not sDisp Then Return
   
-  rData = hSrc._GetDB().Exec(Request.Select([$sKey, sDisp]).From($sTable).Where($sFilter).Get(hSrc._GetDB()))
+  'rData = hSrc._GetDB().Exec(Request.Select([$sKey, sDisp]).From($sTable).Where($sFilter).Get(hSrc._GetDB()))
+  hConn = hSrc._GetDB()
+  rData = hConn.Exec(hConn.SQL.Select([$sKey, sDisp]).From($sTable).Where($sFilter)())
 
   $cKey.Clear
   $hCtrl.Clear

@@ -132,7 +132,7 @@ Public Sub NumberBox_KeyPress()
       Return
     
     Case ".", ","
-      iSep = InStr($hTextBox.Text, $sDecimalSep)
+      iSep = String.InStr($hTextBox.Text, $sDecimalSep)
       If iSep = 0 Then
         $hTextBox.Text = $hTextBox.Text & $sDecimalSep
         $hTextBox.Pos = $hTextBox.Length
@@ -373,4 +373,3 @@ Public Sub IpAddressBox_Change()
   Raise Change
   
 End
-

@@ -1295,7 +1295,10 @@ End
 
 Public Sub gvwTask_Data(Row As Integer, Column As Integer)
 
-  Dim hTask As CTask = $aTask[Row]
+  Dim hTask As CTask
+  
+  If Not $aTask Then Return
+  hTask = $aTask[Row]
 
   With gvwTask.Data
 

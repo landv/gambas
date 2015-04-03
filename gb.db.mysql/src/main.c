@@ -1026,7 +1026,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 
 	row = mysql_fetch_row(res);
 	mysql_field_seek(res, 0);
-	for ( i=0; i < mysql_num_fields(res); i++)
+	for (i = 0; i < mysql_num_fields(res); i++)
 	{
 		field = mysql_fetch_field(res);
 		data = row[i];

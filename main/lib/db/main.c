@@ -676,6 +676,11 @@ void *GB_DB_1[] EXPORT = {
 
 int EXPORT GB_INIT(void)
 {
+	char *env = getenv("GB_DB_DEBUG");
+
+	if (env && strcmp(env, "0"))
+		DB_SetDebug(TRUE);
+
 	DB_Register(&DB_sqlite_pseudo_driver);
 	return 0;
 }

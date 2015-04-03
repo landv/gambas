@@ -2,26 +2,15 @@
 
 { Form Form
   MoveScaled(0,0,64,64)
-  { Menu1 Menu
-    Text = ("Menu1")
-    { Menu3 Menu
-      Text = ("Menu3")
-    }
-  }
-  { Menu2 Menu
-    Text = ("Menu2")
-  }
   { ValueBox1 ValueBox
-    MoveScaled(14,23,24,4)
+    MoveScaled(9,11,24,4)
     Text = ("ValueBox1")
   }
   { TextBox1 TextBox
-    MoveScaled(5,32,24,4)
+    MoveScaled(11,26,24,4)
+    Text = ("Hello world!")
   }
-  { ButtonBox1 ButtonBox
-    MoveScaled(10,6,35,5)
-    Text = ("ButtonBox1")
-    Filter = True
-    FilterMenu = "Menu1"
+  { Button1 Button
+    MoveScaled(26,42,16,4)
   }
 }
