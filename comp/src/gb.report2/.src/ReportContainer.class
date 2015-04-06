@@ -462,7 +462,7 @@ Private Function SetNChildGeometry(X As Float, Y As Float, W As Float, H As Floa
   Dim hTItem As TControl
   Dim hChildHints As ReportSizeHints
   Dim aPageItems As New TControl[]
-  Dim iX, iY As Integer
+  Dim iX, iY As Float
   Dim J As Integer
   
   If Me.Children.Count = 0 Then Return
