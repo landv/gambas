@@ -78,7 +78,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   $sClass = ""
   $sEventClass = ""
   
-  $bShowHelp = Settings["/ShowHelpInPopup", 1] 
+  $bShowHelp = Settings["/ShowHelpInPopup", 1] And hForm Is FEditor
   
   Select $sMode
     Case "."
