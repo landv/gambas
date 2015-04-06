@@ -26,6 +26,7 @@ Private $cFieldInfo As New Collection
 Private $aCollations As String[]
 
 Private $bMetadata As Boolean
+Private $bTemplate As Variant
 
 Public Sub _new(sPath As String)
   
@@ -283,6 +284,7 @@ Public Sub Reload() As Boolean
   lblTitle.Text = "  " & $sTitle & "  "
     
   $bMetadata = hConfig["Connection/DisplayMetadata"]
+  $bTemplate = hConfig["Connection/RememberTemplate"]
   
   If $bMetadata Then
     
@@ -1906,10 +1908,22 @@ Private Sub UpdateDefinition()
   Dim bCreate As Boolean
 
   sPath = File.SetExt(Path, ".template")
-  If Not Exist(sPath) Then bCreate = True
   
-  File.Save(sPath, $hConn.GetTemplate())
-  
-  If bCreate Then VersionControl.AddFile(sPath)
+  If $bTemplate Then
+
+    If Not Exist(sPath) Then bCreate = True
+    
+    File.Save(sPath, $hConn.GetTemplate())
+    
+    If bCreate Then VersionControl.AddFile(sPath)
+    
+  Else
+    
+    If Exist(sPath) Then
+      VersionControl.RemoveFile(sPath)
+      Try Kill sPath
+    Endif
+    
+  Endif
   
 End

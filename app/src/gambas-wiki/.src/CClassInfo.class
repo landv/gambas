@@ -5,7 +5,7 @@ Public Parent As String
 Public Symbols As Collection
 Public Creatable As Boolean
 Public AutoCreatable As Boolean
-Public Component As String
+Public (Component) As String
 Public ParentComponent As String
 
 Public DefaultEvent As String
@@ -239,19 +239,33 @@ Private Function GetSymbolType(aSym As String[]) As String
   Dim sRes As String
   Dim hSym As CSymbolInfo
   Dim sName As String
+  Dim sDesc As String
 
   If aSym.Count = 0 Then Return
 
   For Each sName In aSym
     hSym = Symbols[sName]
+    
     sName = Replace(sName, ":", ".")
-    If hSym.Class <> Name Or If hSym.Component <> Component Then
-      sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;\n"
-    Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
-      sRes &= "<span class=\"inherit\">~[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]~</span>&nbsp;&nbsp;\n"
-    Else
-      sRes &= "<span class=\"inherit\">~[./" & LCase(sName) & "]~</span>&nbsp;&nbsp;\n"
+    
+    sDesc = hSym.GetDescription()
+    
+    If sDesc Then sRes &= "<div class=\"tooltip-activator\">"
+
+    If sDesc Then 
+      sRes &= "<div class=\"tooltip\"><div class=\"tooltip-contents\">" & sDesc & "</div></div>"
     Endif
+    
+    If hSym.Class <> Name Or If hSym.Component <> Component Then
+      sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;"
+    Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
+      sRes &= "<span class=\"inherit\">~[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]~</span>&nbsp;&nbsp;"
+    Else
+      sRes &= "<span class=\"inherit\">~[./" & LCase(sName) & "]~</span>&nbsp;&nbsp;"
+    Endif
+    
+    If sDesc Then sRes &= "</div>\n"
+    
   Next
 
   Return sRes

@@ -192,7 +192,7 @@ H1 { display: none; }
     <p></p>
     <%If Not Session.Id Then%>
       <script type="text/javascript">
-        document.getElementById('login').focus();
+        try { document.getElementById('login').focus(); } catch(e) {}
       </script>
     <%Endif%>
   <%Endif%>

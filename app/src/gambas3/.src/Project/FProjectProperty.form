@@ -26,7 +26,20 @@
       Text = "GB_GUI=gb.gtk3"
       Tag = "GB_GUI=gb.gtk3"
     }
+    { Menu12 Menu mnuInsertEnv
+      Name = "Menu12"
+      #Translate = False
+      Text = "LIBOVERLAY_SCROLLBAR=0"
+      Tag = "LIBOVERLAY_SCROLLBAR=0"
+    }
     { Menu10 Menu
+    }
+    { Menu16 Menu mnuInsertEnv
+      Name = "Menu16"
+      Text = ("GB_DB_DEBUG=1")
+      Tag = "GB_DB_DEBUG=1"
+    }
+    { Menu13 Menu
     }
     { Menu8 Menu mnuInsertEnv
       Name = "Menu8"
@@ -48,11 +61,15 @@
       Text = "GB_STOCK_DEBUG=1"
       Tag = "GB_STOCK_DEBUG=1"
     }
+    { Menu15 Menu
+    }
     { Menu4 Menu mnuInsertEnv
       Name = "Menu4"
       #Translate = False
       Text = "GB_JIT_DEBUG=1"
       Tag = "GB_JIT_DEBUG=1"
+    }
+    { Menu14 Menu
     }
     { Menu7 Menu mnuInsertEnv
       Name = "Menu7"
@@ -65,12 +82,6 @@
       #Translate = False
       Text = "GB_HTTPD_PORT=8080"
       Tag = "GB_HTTPD_PORT=8080"
-    }
-    { Menu12 Menu mnuInsertEnv
-      Name = "Menu12"
-      #Translate = False
-      Text = "LIBOVERLAY_SCROLLBAR=0"
-      Tag = "LIBOVERLAY_SCROLLBAR=0"
     }
   }
   { ipnProject IconPanel

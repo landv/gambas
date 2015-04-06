@@ -292,6 +292,8 @@ Private Sub ClearButton_Write(Value As Boolean)
     $hClearButton = New ToolButton($hBackground) As "ClearButton"
     $hClearButton.Picture = Picture["icon:/small/clear"]
   Endif
+  
+  Background_Arrange
 
 End
 

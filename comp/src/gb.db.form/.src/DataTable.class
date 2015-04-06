@@ -332,7 +332,6 @@ Private Function Count_Read() As Integer
       $iCount = Me[0].Count
     Else
       '$iCount = $DB.Exec(Request.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter).Get($DB))[0]
-      Print $DB.SQL.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter)()
       $iCount = $DB.Exec($DB.SQL.Select("COUNT(*) AS nRecord").From($sTable).Where($sFilter)())[0]
     Endif
   Endif

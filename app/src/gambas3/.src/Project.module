@@ -3961,8 +3961,8 @@ Public Sub DeleteFile(sPath As String)
     
     sPath = File.SetExt(sPath, "template")
     If Exist(sPath) Then 
-      Try Kill sPath
       VersionControl.RemoveFile(sPath)
+      Try Kill sPath
     Endif
     
   Endif

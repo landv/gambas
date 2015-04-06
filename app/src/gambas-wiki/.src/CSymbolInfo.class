@@ -7,8 +7,8 @@ Public Type As String
 Public Kind As String
 Public Signature As String
 Public Value As String
-Public Class As String
-Public Component As String
+Public (Class) As String
+Public (Component) As String
 Public NotPublic As Boolean
 Public LineNumber As Integer
 Public Help As String
@@ -604,4 +604,35 @@ Public Sub GetSyntax() As String[]
   aResult.Add("]]")
   Return aResult  
 
+End
+
+
+Public Sub GetDescription() As String
+  
+  Dim sPath As String
+  Dim aData As String[]
+  Dim iPos As Integer
+  Dim sData As String
+  Dim sDesc As String
+  
+  sPath = Main.GetPagePathFrom(Main.SolvePath("/comp" &/ LCase(Component &/ Class &/ Replace(Name, ":", "."))))
+  If Not Exist(sPath) Then Return
+  
+  aData = Split(File.Load(sPath), "\n")
+  While iPos < aData.Count
+    sData = aData[iPos]
+    If sData Then
+      If IsLetter(Left(sData)) Then
+        sData = Replace(sData, "[../", "[./")
+        sData = Replace(sData, "[./../", "[../")
+        sDesc &= sData & "\n"
+      Endif
+    Else If sDesc Then
+      Break
+    Endif
+    Inc iPos
+  Wend
+  
+  Return sDesc
+  
 End

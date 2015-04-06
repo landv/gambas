@@ -497,6 +497,7 @@ Public Sub CreateSQLite(sPath As String) As String
   hConfig["Connection/RememberPassword"] = False
   hConfig["Connection/IgnoreCharset"] = False
   hConfig["Connection/DisplayMetadata"] = False
+  hConfig["Connection/RememberTemplate"] = False
   hConfig["Connection/Database"] = File.Name(sPath)
   hConfig.Save
   
