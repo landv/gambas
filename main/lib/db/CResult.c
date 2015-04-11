@@ -265,7 +265,7 @@ CRESULT *DB_MakeResult(CCONNECTION *conn, int mode, char *table_temp, char *quer
 
 		case RESULT_DELETE:
 
-			conn->driver->Exec(&conn->db, query, &res, "Query failed: &1");
+			conn->driver->Exec(&conn->db, query, NULL, "Query failed: &1");
 			return NULL;
 	}
 
