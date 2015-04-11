@@ -23,6 +23,10 @@ Public Sub _new(sName As String, sComponent As String, sParent As String)
 
   Dim hSym As CSymbolInfo
 
+  If Not sParent And If CComponent.Classes.Exist(sName) Then
+    sParent = sName
+  Endif
+
   Name = sName
   {Parent} = sParent
   Component = sComponent
@@ -233,39 +237,62 @@ Public Function GetProperties() As Collection
 
 End
 
+Private Sub GetSymbolLink(sName As String, Optional sTitle As String, Optional sStaticTitle As String) As String
+  
+  Dim hSym As CSymbolInfo
+  Dim sDesc As String
+  Dim bInherit As Boolean
+  Dim sRes As String
+  Dim sLink As String
+
+  hSym = Symbols[sName]
+  sName = Replace(sName, ":", ".")
+  sDesc = hSym.GetDescription()
+  
+  If sDesc Then sRes &= "<div class=\"tooltip-activator\">"
+
+  If sDesc Then 
+    sRes &= "<div class=\"tooltip\"><div class=\"tooltip-contents\">" & sDesc & "</div></div>"
+  Endif
+  
+  sLink = "/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName)
+
+  If hSym.Class <> Name Or If hSym.Component <> Component Then
+  Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
+    bInherit = True
+  Else
+    bInherit = True
+    sLink = "./" & LCase(sName)
+  Endif
+  
+  If sTitle Then
+    If sStaticTitle And If hSym.IsStatic() Then sTitle = sStaticTitle
+    sLink = "[" & sTitle & "](" & sLink & ")"
+  Else
+    sLink = "[" & sLink & "]"
+  Endif
+  
+  If bInherit Then sLink = "<span class=\"inherit\">~" & sLink & "~</span>"
+  
+  sRes &= sLink
+  
+  If Not sTitle Then sRes &= "&nbsp;&nbsp;"
+  If sDesc Then sRes &= "</div>"
+  
+  Return sRes
+  
+End
+
 
 Private Function GetSymbolType(aSym As String[]) As String
 
   Dim sRes As String
-  Dim hSym As CSymbolInfo
   Dim sName As String
-  Dim sDesc As String
 
   If aSym.Count = 0 Then Return
 
   For Each sName In aSym
-    hSym = Symbols[sName]
-    
-    sName = Replace(sName, ":", ".")
-    
-    sDesc = hSym.GetDescription()
-    
-    If sDesc Then sRes &= "<div class=\"tooltip-activator\">"
-
-    If sDesc Then 
-      sRes &= "<div class=\"tooltip\"><div class=\"tooltip-contents\">" & sDesc & "</div></div>"
-    Endif
-    
-    If hSym.Class <> Name Or If hSym.Component <> Component Then
-      sRes &= "[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]&nbsp;&nbsp;"
-    Else If hSym.Class <> Main.Class Or If hSym.Component <> Main.Component Then
-      sRes &= "<span class=\"inherit\">~[/comp" &/ LCase(hSym.Component &/ hSym.Class &/ sName) & "]~</span>&nbsp;&nbsp;"
-    Else
-      sRes &= "<span class=\"inherit\">~[./" & LCase(sName) & "]~</span>&nbsp;&nbsp;"
-    Endif
-    
-    If sDesc Then sRes &= "</div>\n"
-    
+    sRes &= GetSymbolLink(sName) & "\n"
   Next
 
   Return sRes
@@ -377,7 +404,7 @@ Public Function GetSymbols() As String[]
   If Creatable And If Not IsVirtual() And If bDynamic Then
     If Symbols.Exist("_new") Then
       'GetSymbolLink($hClass.Symbols["_new"], $hClass, ("creatable"))) & sBreak
-      sCreatable = Subst(("This class is &1."), Main.GetSymbolLink(Me, "_new", ("creatable"))) & "\\"
+      sCreatable = Subst(("This class is &1."), GetSymbolLink("_new", ("creatable"))) & "\\"
     Else 
       sCreatable = Subst(("This class is &1."), ("creatable")) & "\\"
     Endif
@@ -394,28 +421,28 @@ Public Function GetSymbols() As String[]
   aResult.Add(sCreatable)
 
   If Symbols.Exist("_call") Then
-    aResult.Add(Subst(("This class can be used as a &1."), Main.GetSymbolLink(Me, "_call", ("function"), ("static function"))) & "\\")
+    aResult.Add(Subst(("This class can be used as a &1."), GetSymbolLink("_call", ("function"), ("static function"))) & "\\")
   Endif
 
   hSym = Symbols["_get"]
   If hSym Then
     If hSym.IsStatic() Then
       If Symbols.Exist("_put") Then
-        aResult.Add(Subst(("This class acts like a &1 / &2 static array."), Main.GetSymbolLink(Me, "_get", ("read")), Main.GetSymbolLink(Me, "_put", ("write"))) & "\\")
+        aResult.Add(Subst(("This class acts like a &1 / &2 static array."), GetSymbolLink("_get", ("read")), GetSymbolLink("_put", ("write"))) & "\\")
       Else
-        aResult.Add(Subst(("This class acts like a &1 static array."), Main.GetSymbolLink(Me, "_get", ("read-only"))) & "\\")
+        aResult.Add(Subst(("This class acts like a &1 static array."), GetSymbolLink("_get", ("read-only"))) & "\\")
       Endif
     Else
       If Symbols.Exist("_put") Then
-        aResult.Add(Subst(("This class acts like a &1 / &2 array."), Main.GetSymbolLink(Me, "_get", ("read")), Main.GetSymbolLink(Me, "_put", ("write"))) & "\\")
+        aResult.Add(Subst(("This class acts like a &1 / &2 array."), GetSymbolLink("_get", ("read")), GetSymbolLink("_put", ("write"))) & "\\")
       Else
-        aResult.Add(Subst(("This class acts like a &1 array."), Main.GetSymbolLink(Me, "_get", ("read-only"))) & "\\")
+        aResult.Add(Subst(("This class acts like a &1 array."), GetSymbolLink("_get", ("read-only"))) & "\\")
       Endif
     Endif
   Endif
 
   If Symbols.Exist("_next") Then
-    aResult.Add(Subst(("This class is &1 with the &2 keyword."), Main.GetSymbolLink(Me, "_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
+    aResult.Add(Subst(("This class is &1 with the &2 keyword."), GetSymbolLink("_next", ("enumerable"), ("statically enumerable")), "[/lang/foreach]") & "\\")
   Endif
 
   'If aResult[aResult.Max] <> "==" And If bHasSymbols Then aResult.Add("==")

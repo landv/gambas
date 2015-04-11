@@ -143,16 +143,18 @@ TABLE.desc > TBODY > TR > TH {
   width: 100%;
   position: fixed;
   z-index: 10;
+  background: #DF6B00;
+  border-bottom: solid 1px gray;
 }
 
 .header-inside {
   max-width: 800px;
   margin: 0 auto;
-  background: #E8E8E8;
+  padding: 2px 16px 4px;
+  /*background: #E8E8E8;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
-  padding: 2px 16px 4px;
-  box-shadow: 0 0 8px gray;
+  box-shadow: 0 0 8px gray;*/
 }
 
 .header-inside-v {
@@ -171,11 +173,15 @@ TABLE.desc > TBODY > TR > TH {
 
 .title {
   display: inline-block;
-  color: gray;
+  color: white;
 }
 
-.title A:hover {
-  color: black;
+.title A:link {
+  color: white;
+}
+
+.title A:visited {
+  color: white;
 }
 
 .title-v {
@@ -445,13 +451,15 @@ DIV.syntax > P:first-child {
 
 .login {
   position: absolute;
-  background: #E8E8E8;
-  color: gray;
-  border-bottom-left-radius: 32px;
+  background: #DF6B00;
+  color: white;
+  border-bottom: solid 1px gray;
+  border-left: solid 1px gray;
+  border-right: solid 1px gray;
+  /*border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
-  padding: 16px;
-  box-shadow: 0 0 8px gray;
-  margin-top: -4px;
+  box-shadow: 0 0 8px gray;*/
+  padding: 0 16px 16px 16px;
   width: 24em;
   z-index: -1;
 }
@@ -518,9 +526,8 @@ DIV.syntax > P:first-child {
   position: absolute;
   margin-top: 2em;
   margin-left: 0em;
-  width: 20em;
-  height: 20em;
   pointer-events: none;
+  width: 20em;
 }
 
 .tooltip-activator {
@@ -533,9 +540,9 @@ DIV.syntax > P:first-child {
 }
 
 .tooltip-contents {
-  display: inline-table;
+  display: inline-block;
   border: solid 1px gray;
-  padding: 0.1em 0.4em;
+  padding: 0.2em 0.5em;
   background: #FFFFDF;
   box-shadow: 0 0 4px gray;
 }

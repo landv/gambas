@@ -100,7 +100,6 @@ Private Function GetType(sType As String, bBalise As Boolean) As String
 
 End
 
-
 Public Function GetSignature(Optional bBalise As Boolean) As String
 
   Dim iInd As Integer
@@ -313,7 +312,25 @@ Private Function GetSyntaxSignature() As String
   Dim bName As Boolean
   Dim bFirst As Boolean
   Dim iLen As Integer
+  Dim hClass As CClassInfo
+  Dim hSym As CSymbolInfo
 
+  If Name = "_new" Then
+    hClass = CComponent.Get(Component)[Class]
+    Do
+      If Not hClass.Parent Then Break
+      hClass = CComponent.Get(hClass.ParentComponent)[hClass.Parent]
+      hSym = hClass.Symbols["_new"]
+      If hSym Then 
+        'sRes &= "<tt>MergeSignature: \"" & sSign & "\" \"" & hClass.Symbols["_new"].Signature & "\"</tt><br>"
+        sSign = MergeSignature(sSign, hClass.Symbols["_new"].Signature)
+      Endif
+    Loop
+    
+    'sRes &= "<tt>\"" & sSign & "\"</tt><br>"
+    
+  Endif
+  
   bFirst = True
 
   Do
@@ -634,5 +651,34 @@ Public Sub GetDescription() As String
   Wend
   
   Return sDesc
+  
+End
+
+Private Sub SplitSignature(sSign As String) As String[]
+  
+  Dim iPos As Integer
+  Dim aSign As New String[2]
+  
+  iPos = InStr(sSign, "[")
+  If iPos Then
+    aSign[0] = Left(sSign, iPos - 1)
+    aSign[1] = Mid$(sSign, iPos + 1, -1)
+  Else
+    aSign[0] = sSign
+  Endif
+  Return aSign
+  
+End
+
+Private Sub MergeSignature(sSign As String, sParentSign As String) As String
+  
+  Dim aParentSign As String[]
+  Dim aSign As String[]
+
+  aSign = SplitSignature(sSign)
+  aParentSign = SplitSignature(sParentSign)
+  sSign = aParentSign[0] & aSign[0] & "[" & aParentSign[1] & aSign[1] & "]"
+  If sSign Ends "[]" Then sSign = Left(sSign, -2)
+  Return sSign
   
 End
