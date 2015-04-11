@@ -200,7 +200,8 @@ public:
 		ChangeBackgroundAtLimit = 11,
 		HideMargin = 12,
 		BlinkCursor = 13,
-		NoFolding = 14
+		NoFolding = 14,
+		AlwaysShowCursor = 15
 	};
 
 	static void setBreakpointPixmap(QPixmap *p);
@@ -216,8 +217,10 @@ public:
 	GDocument *getDocument() const { return doc; }
 
 	void getCursor(int *yc, int *xc) const { *yc = y; *xc = x; }
+	int getLine() const { return y; }
 	void insert(QString text);
 	bool cursorGoto(int ny, int nx, bool mark);
+	bool cursorRelGoto(int dy, int dx, bool mark) { return cursorGoto(y + dy, x + dx, mark); }
 	void cursorCenter() { center = true; }
 	void cursorLeft(bool shift, bool ctrl);
 	void cursorRight(bool shift, bool ctrl);
@@ -244,6 +247,7 @@ public:
 	void expand(bool shift);
 	void selectCurrentLine();
 	void deleteCurrentLine();
+	void clearLine(bool before, bool after);
 
 	bool getInsertMode() const { return _insertMode; }
 	void setInsertMode(bool mode);

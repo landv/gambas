@@ -1188,16 +1188,20 @@ void GEditor::paintCell(QPainter &p, int row, int)
 	}
 
 	// Text cursor
-	if (_cursor && realRow == y)
+	if (realRow == y && (_cursor || getFlag(AlwaysShowCursor)))
 	{
 		QColor color = styles[GLine::Normal].color;
 		int xc = lineWidth(realRow, x);
 		int wc = 2;
 		//p.fillRect(QMIN((int)l->s.length(), x) * charWidth + margin, 0, 1, _cellh, styles[GLine::Normal].color);
 		if (_insertMode)
+		{
 			wc = lineWidth(realRow, x + 1) - xc;
-		
-		color.setAlpha(160);
+			color.setAlpha(80);
+		}
+		else
+			color.setAlpha(160);
+
 		p.fillRect(xc, 0, wc, _cellh, color);
 	}
 
@@ -1929,6 +1933,30 @@ void GEditor::deleteCurrentLine()
 	del(FALSE);
 	doc->end();
 	_insertMode = im;
+}
+
+void GEditor::clearLine(bool before, bool after)
+{
+	int ox = x;
+
+	doc->begin();
+
+	if (before)
+	{
+		QString ins;
+
+		doc->remove(y, 0, y, x);
+		ins.fill(' ', ox);
+		doc->insert(y, 0, ins);
+		x = ox;
+	}
+
+	if (after)
+	{
+		doc->remove(y, x, y, doc->lineLength(y) -1);
+	}
+
+	doc->end();
 }
 
 void GEditor::tab(bool back)

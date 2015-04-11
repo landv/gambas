@@ -276,6 +276,15 @@ BEGIN_PROPERTY(CEDITOR_read_only)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(CEDITOR_overwrite)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(WIDGET->getInsertMode());
+	else
+		WIDGET->setInsertMode(VPROP(GB_BOOLEAN));
+
+END_PROPERTY
+
 BEGIN_METHOD_VOID(CEDITOR_clear)
 
 	DOC->clear();
@@ -291,6 +300,19 @@ BEGIN_METHOD(CEDITOR_insert, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
 END_METHOD
 
+static void print_newline(void *_object)
+{
+	int line = WIDGET->getLine();
+
+	if (line < (DOC->numLines() - 1))
+		WIDGET->cursorGoto(line + 1, 0, false);
+	else
+	{
+		WIDGET->cursorGoto(line, DOC->lineLength(line), false);
+		WIDGET->insert("\n");
+	}
+}
+
 static void print_text(void *_object, const char *str, int lstr, bool esc = false)
 {
 	QString s = QString::fromUtf8(str, lstr);
@@ -298,12 +320,12 @@ static void print_text(void *_object, const char *str, int lstr, bool esc = fals
 	uint i, len;
 	
 	WIDGET->getCursor(&line, &col);
-	if (col == 0)
+	/*if (col == 0)
 	{
-		//qDebug("remove: %p: %d, %d, %d, %d", THIS, line, 0, line, DOC->lineLength(line));
 		DOC->remove(line, 0, line, DOC->lineLength(line));
 		WIDGET->cursorGoto(line, 0, false);
-	}
+	}*/
+
 // 	if (col < DOC->lineLength(line))
 // 	{
 // 		end = col + s.length();
@@ -319,12 +341,13 @@ static void print_text(void *_object, const char *str, int lstr, bool esc = fals
 		{
 			if (col == MAX_CONSOLE_WIDTH)
 			{
-				WIDGET->insert("\n");
+				print_newline(THIS);
 				col = 0;
 			}
 			len = s.length() - i;
 			if ((col + len) >= MAX_CONSOLE_WIDTH)
 				len = MAX_CONSOLE_WIDTH - col;
+			DOC->remove(WIDGET->getLine(), col, WIDGET->getLine(), col + len);
 			WIDGET->insert(s.mid(i, len));
 			i += len;	
 			if (i >= (uint)s.length())
@@ -335,9 +358,116 @@ static void print_text(void *_object, const char *str, int lstr, bool esc = fals
 	else
 	{
 		if (col >= MAX_CONSOLE_WIDTH)
-			WIDGET->insert("\n");
+			print_newline(THIS);
+		DOC->remove(WIDGET->getLine(), col, WIDGET->getLine(), col + s.length());
 		WIDGET->insert(s);
 	}
+}
+
+static int ansi_read_integer(const char *str, int len, int def, int *pos)
+{
+	int value = 0;
+	int n = 0;
+	uchar c;
+
+	str += *pos;
+	len -= *pos;
+
+	while (len > 0)
+	{
+		c = str[n];
+		if (c < '0' || c > '9')
+			break;
+		value = value * 10 + c - '0';
+		len--;
+		n++;
+		if (n > 6)
+		{
+			value = -1;
+			break;
+		}
+	}
+
+	if (n == 0)
+		value = def;
+
+	while (len > 0)
+	{
+		c = str[n];
+		len--;
+		n++;
+		if (c == ';' || c < '0' || c > '9')
+			break;
+	}
+
+	*pos += n;
+	return value;
+}
+
+static int handle_ansi(void *_object, const char *str, int len)
+{
+	int n, m, l, pos;
+
+	if (len == 0)
+		return 0;
+
+	for (l = 0; l < len; l++)
+	{
+		if (str[l] >= 'A' && str[l] <= 'Z')
+			break;
+		if (str[l] >= 'a' && str[l] <= 'z')
+			break;
+	}
+
+	if (l >= len)
+		return 0;
+
+	pos = 0;
+
+	switch(str[l])
+	{
+		case 'A':
+			n = ansi_read_integer(str, l, 1, &pos);
+			if (n > 0) WIDGET->cursorRelGoto(-n, 0, false);
+			break;
+
+		case 'B':
+			n = ansi_read_integer(str, l, 1, &pos);
+			if (n > 0) WIDGET->cursorRelGoto(n, 0, false);
+			break;
+
+		case 'C':
+			n = ansi_read_integer(str, l, 1, &pos);
+			if (n > 0) WIDGET->cursorRelGoto(0, n, false);
+			break;
+
+		case 'D':
+			n = ansi_read_integer(str, l, 1, &pos);
+			if (n > 0) WIDGET->cursorRelGoto(0, -n, false);
+			break;
+
+		case 'H':
+			n = ansi_read_integer(str, l, 1, &pos);
+			m = ansi_read_integer(str, l, 1, &pos);
+
+			while (DOC->numLines() < n)
+				DOC->insertLine(DOC->numLines());
+
+			WIDGET->cursorGoto(n - 1, m - 1, false);
+			break;
+
+		case 'K':
+			n = ansi_read_integer(str, l, 0, &pos);
+			switch (n)
+			{
+				case 0: WIDGET->clearLine(false, true); break;
+				case 1: WIDGET->clearLine(true, false); break;
+				case 2: WIDGET->clearLine(true, true); break;
+			}
+			break;
+	}
+
+	return l;
 }
 
 BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
@@ -347,6 +477,8 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 	int i, j;
 	int line, col;
 	unsigned char c;
+
+	DOC->begin();
 
 	if (!MISSING(y) && !MISSING(x))
 		WIDGET->cursorGoto(VARG(y), VARG(x), false);
@@ -379,8 +511,7 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 			}
 			else if (c == '\n')
 			{
-				WIDGET->cursorGoto(line, DOC->lineLength(line), false);
-				WIDGET->insert("\n");
+				print_newline(THIS);
 			}
 			else if (c == '\f') // CTRL+L
 			{
@@ -389,6 +520,13 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 			else if (c == '\a')
 			{
 				WIDGET->flash();
+			}
+			else if (c == 27 && str[i + 1] == '[')
+			{
+				i += 2;
+				i += handle_ansi(THIS, &str[i], len - i);
+				j = i + 1;
+				i--;
 			}
 			else
 			{
@@ -401,6 +539,8 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 
 	if (i > j)
 		print_text(THIS, &str[j], i - j);
+
+	DOC->end();
 		
 END_METHOD
 
@@ -1501,6 +1641,7 @@ GB_DESC CEditorDesc[] =
 	GB_CONSTANT("ShowDots", "i", GEditor::ShowDots),
 	GB_CONSTANT("HideMargin", "i", GEditor::HideMargin),
 	GB_CONSTANT("NoFolding", "i", GEditor::NoFolding),
+	GB_CONSTANT("AlwaysShowCursor", "i", GEditor::AlwaysShowCursor),
 
 	GB_METHOD("_new", NULL, CEDITOR_new, "(Parent)Container;"),
 	GB_METHOD("_free", NULL, CEDITOR_free, NULL),
@@ -1577,6 +1718,7 @@ GB_DESC CEditorDesc[] =
 	GB_METHOD("Reset", NULL, CEDITOR_reset, NULL),
 
 	GB_PROPERTY("ReadOnly", "b", CEDITOR_read_only),
+	GB_PROPERTY("Overwrite", "b", CEDITOR_overwrite),
 
 	GB_METHOD("Clear", NULL, CEDITOR_clear, NULL),
 

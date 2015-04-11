@@ -222,12 +222,13 @@ public:
 
 	void emitTextChanged();
 
+	void insertLine(int y);
+	void removeLine(int y);
+	
 private:
 
 	void checkSelection();
 	void updateLineWidth(int y);
-	void insertLine(int y);
-	void removeLine(int y);
 	void modifyLine(GLine *l, int y);
 	void disableColorize();
 	void enableColorize();
