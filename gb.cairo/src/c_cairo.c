@@ -543,8 +543,8 @@ static void end_current()
 	_current = draw->previous;
 	
 	GB.FreeString(&draw->font_family);
-	GB.Unref(POINTER(&draw->pattern));
 	cairo_destroy(draw->context);
+	GB.Unref(POINTER(&draw->pattern));
 	GB.Unref(POINTER(&draw->device));
 	GB.Free(POINTER(&draw));
 }
