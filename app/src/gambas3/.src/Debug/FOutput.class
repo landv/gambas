@@ -27,6 +27,8 @@ Public Sub _new()
   edtOutput.Styles[Highlight.Keyword].Underline = True
   edtOutput.Styles[Highlight.Keyword].Bold = False
   edtOutput.Styles[Highlight.Keyword].Foreground = Color.Blue
+  edtOutput.Overwrite = True
+  edtOutput.Flags[Editor.AlwaysShowCursor] = True
 
 End
 
