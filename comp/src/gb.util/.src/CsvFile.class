@@ -12,16 +12,16 @@ Property Read Eof As Boolean
 Property Read Fields As String[]
 Property Read Line As Integer
 
-Public Sub _new(sPath As String, Optional sSeparator As String = ",", Optional sEscape As String = "\"")
+Public Sub _new(Path As String, Optional Separator As String = ",", Optional Escape As String = "\"")
   
   Dim sLine As String
   Dim iInd As Integer
   Dim sField As String
   
-  $hFile = Open sPath
+  $hFile = Open Path
   
-  $sSeparator = sSeparator
-  $sEscape = sEscape
+  $sSeparator = Separator
+  $sEscape = Escape
   
   sLine = $hFile.ReadLine($sEscape)
   $aField = Split(sLine, $sSeparator, $sEscape)
