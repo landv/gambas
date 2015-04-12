@@ -25,8 +25,10 @@
 
 #include "main.h"
 
-#include <qobject.h>
-#include <qpalette.h>
+#include <QObject>
+#include <QPalette>
+#include <QApplication>
+
 #include "gdocument.h"
 
 #include "CEditor.h"
@@ -302,15 +304,22 @@ END_METHOD
 
 static void print_newline(void *_object)
 {
-	int line = WIDGET->getLine();
+	int line, col;
+
+	WIDGET->getCursor(&line, &col);
 
 	if (line < (DOC->numLines() - 1))
-		WIDGET->cursorGoto(line + 1, 0, false);
+		WIDGET->cursorGoto(line + 1, WIDGET->getColumn(), false);
 	else
 	{
 		WIDGET->cursorGoto(line, DOC->lineLength(line), false);
 		WIDGET->insert("\n");
 	}
+
+	if (THIS->terminal)
+		WIDGET->cursorGoto(WIDGET->getLine(), col, false);
+
+	//qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
 }
 
 static void print_text(void *_object, const char *str, int lstr, bool esc = false)
@@ -319,6 +328,8 @@ static void print_text(void *_object, const char *str, int lstr, bool esc = fals
 	int line, col;
 	uint i, len;
 	
+	//fprintf(stderr, "-> %.*s\n", lstr, str);
+
 	WIDGET->getCursor(&line, &col);
 	/*if (col == 0)
 	{
@@ -362,6 +373,9 @@ static void print_text(void *_object, const char *str, int lstr, bool esc = fals
 		DOC->remove(WIDGET->getLine(), col, WIDGET->getLine(), col + s.length());
 		WIDGET->insert(s);
 	}
+
+	//qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+	//BREAKPOINT();
 }
 
 static int ansi_read_integer(const char *str, int len, int def, int *pos)
@@ -404,67 +418,134 @@ static int ansi_read_integer(const char *str, int len, int def, int *pos)
 	return value;
 }
 
-static int handle_ansi(void *_object, const char *str, int len)
+static int ansi_process(void *_object, const char *str, int len)
 {
+	uchar c;
 	int n, m, l, pos;
+	bool print;
 
 	if (len == 0)
 		return 0;
 
-	for (l = 0; l < len; l++)
+	c = *str;
+	if (c == '[' || c == ']' || c == '(' || c == ')')
 	{
-		if (str[l] >= 'A' && str[l] <= 'Z')
-			break;
-		if (str[l] >= 'a' && str[l] <= 'z')
-			break;
+		for (l = 0; l < len; l++)
+		{
+			c = str[l];
+			if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+				break;
+		}
 	}
+	else
+		l = 0;
 
 	if (l >= len)
 		return 0;
 
-	pos = 0;
+	print = false;
 
-	switch(str[l])
+	if (*str == '[')
 	{
-		case 'A':
-			n = ansi_read_integer(str, l, 1, &pos);
-			if (n > 0) WIDGET->cursorRelGoto(-n, 0, false);
-			break;
+		pos = 1;
 
-		case 'B':
-			n = ansi_read_integer(str, l, 1, &pos);
-			if (n > 0) WIDGET->cursorRelGoto(n, 0, false);
-			break;
+		switch(str[l])
+		{
+			case 'A':
+				n = ansi_read_integer(str, l, 1, &pos);
+				if (n > 0) WIDGET->cursorRelGoto(-n, 0, false);
+				break;
 
-		case 'C':
-			n = ansi_read_integer(str, l, 1, &pos);
-			if (n > 0) WIDGET->cursorRelGoto(0, n, false);
-			break;
+			case 'B':
+				n = ansi_read_integer(str, l, 1, &pos);
+				if (n > 0) WIDGET->cursorRelGoto(n, 0, false);
+				break;
 
-		case 'D':
-			n = ansi_read_integer(str, l, 1, &pos);
-			if (n > 0) WIDGET->cursorRelGoto(0, -n, false);
-			break;
+			case 'C':
+				n = ansi_read_integer(str, l, 1, &pos);
+				if (n > 0) WIDGET->cursorRelGoto(0, n, false);
+				break;
 
-		case 'H':
-			n = ansi_read_integer(str, l, 1, &pos);
-			m = ansi_read_integer(str, l, 1, &pos);
+			case 'D':
+				n = ansi_read_integer(str, l, 1, &pos);
+				if (n > 0) WIDGET->cursorRelGoto(0, -n, false);
+				break;
 
-			while (DOC->numLines() < n)
-				DOC->insertLine(DOC->numLines());
+			case 'G':
+				n = ansi_read_integer(str, l, 1, &pos);
+				if (n > 0) WIDGET->cursorGoto(WIDGET->getLine(), n - 1, false);
+				break;
 
-			WIDGET->cursorGoto(n - 1, m - 1, false);
-			break;
+			case 'd':
+				n = ansi_read_integer(str, l, 1, &pos);
+				if (n > 0) WIDGET->cursorGoto(n - 1, WIDGET->getColumn(), false);
+				break;
 
-		case 'K':
-			n = ansi_read_integer(str, l, 0, &pos);
-			switch (n)
-			{
-				case 0: WIDGET->clearLine(false, true); break;
-				case 1: WIDGET->clearLine(true, false); break;
-				case 2: WIDGET->clearLine(true, true); break;
-			}
-			break;
+			case 'H': case 'f':
+				n = ansi_read_integer(str, l, 1, &pos);
+				m = ansi_read_integer(str, l, 1, &pos);
+
+				while (DOC->numLines() < n)
+					DOC->insertLine(DOC->numLines());
+
+				WIDGET->cursorGoto(n - 1, m - 1, false);
+				THIS->terminal = TRUE;
+				//qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+				break;
+
+			case 'J':
+				n = ansi_read_integer(str, l, 1, &pos);
+				switch(n)
+				{
+					case 0: WIDGET->clearDocument(false, true); break;
+					case 1: WIDGET->clearDocument(true, false); break;
+					case 2: WIDGET->clearDocument(true, true); break;
+				}
+
+			case 'K':
+				n = ansi_read_integer(str, l, 0, &pos);
+				switch (n)
+				{
+					case 0: WIDGET->clearLine(false, true); break;
+					case 1: WIDGET->clearLine(true, false); break;
+					case 2: WIDGET->clearLine(true, true); break;
+				}
+				break;
+
+			case 's':
+				WIDGET->saveCursor();
+				break;
+
+			case 'u':
+				WIDGET->restoreCursor();
+				break;
+
+			case 'X':
+				n = ansi_read_integer(str, l, 1, &pos);
+				WIDGET->clearAfter(n);
+				break;
+
+			default:
+				print = FALSE;
+		}
+	}
+
+	if (print)
+	{
+		fprintf(stderr, "ESC ");
+		for (n = 0; n <= l; n++)
+		{
+			uchar c = str[n];
+
+			if (c < 32)
+				fprintf(stderr, "\\x%02X", c);
+			else
+				fputc(c, stderr);
+		}
+		fputc('\n', stderr);
+
+		//qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+		//BREAKPOINT();
 	}
 
 	return l;
@@ -475,7 +556,6 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 	char *str = STRING(str);
 	int len = LENGTH(str);
 	int i, j;
-	int line, col;
 	unsigned char c;
 
 	DOC->begin();
@@ -496,18 +576,17 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 				print_text(THIS, &str[j], i - j);
 				
 			j = i + 1;
-			
-			WIDGET->getCursor(&line, &col);		
+
+			/*if (c != 27)
+				fprintf(stderr, "\\x%02X\n", c);*/
 			
 			if (c == '\t')
 			{
-				//int l = 8 - col % 8;
-				//print_text(THIS, "        ", l);
 				WIDGET->insert("\t");
 			}
 			else if (c == '\r')
 			{
-				WIDGET->cursorGoto(line, 0, false);
+				WIDGET->cursorGoto(WIDGET->getLine(), 0, false);
 			}
 			else if (c == '\n')
 			{
@@ -521,10 +600,14 @@ BEGIN_METHOD(CEDITOR_print, GB_STRING str; GB_INTEGER y; GB_INTEGER x)
 			{
 				WIDGET->flash();
 			}
-			else if (c == 27 && str[i + 1] == '[')
+			else if (c == '\b')
 			{
-				i += 2;
-				i += handle_ansi(THIS, &str[i], len - i);
+				WIDGET->cursorRelGoto(0, -1, false); //WIDGET->getLine(), WIDGET->getColumn() - 1, false);
+			}
+			else if (c == 27)
+			{
+				i++;
+				i += ansi_process(THIS, &str[i], len - i);
 				j = i + 1;
 				i--;
 			}
@@ -1405,7 +1488,7 @@ BEGIN_PROPERTY(Editor_Mouse)
 	QT.MouseProperty(_object, _param);
 
 	if (!READ_PROPERTY)
-		WIDGET->saveCursor();
+		WIDGET->saveMouseCursor();
 
 END_PROPERTY
 

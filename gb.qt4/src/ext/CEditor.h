@@ -56,6 +56,7 @@ typedef
     void *view;
     int line;
 		GB_FUNCTION highlight;
+		bool terminal;
     }
   CEDITOR;
 

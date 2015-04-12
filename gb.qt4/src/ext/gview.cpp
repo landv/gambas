@@ -121,6 +121,7 @@ void GEditor::reset()
 	_posOutside = false;
 	_checkCache = true;
 	_ensureCursorVisibleLater = false;
+	_save_x = _save_y = 0;
 	
 	foldClear();
 }
@@ -1945,8 +1946,8 @@ void GEditor::clearLine(bool before, bool after)
 	{
 		QString ins;
 
-		doc->remove(y, 0, y, x);
-		ins.fill(' ', ox);
+		doc->remove(y, 0, y, x + 1);
+		ins.fill(' ', ox + 1);
 		doc->insert(y, 0, ins);
 		x = ox;
 	}
@@ -1956,6 +1957,55 @@ void GEditor::clearLine(bool before, bool after)
 		doc->remove(y, x, y, doc->lineLength(y) -1);
 	}
 
+	doc->end();
+}
+
+void GEditor::clearAfter(int n)
+{
+	int ox = x;
+	QString ins;
+
+	doc->begin();
+	doc->remove(y, x, y, x + n);
+	ins.fill(' ', n);
+	doc->insert(y, ox, ins);
+	x = ox;
+	doc->end();
+}
+
+void GEditor::clearDocument(bool before, bool after)
+{
+	int i;
+	int ox = x;
+
+	doc->begin();
+
+	if (before && after)
+	{
+		for (i = 0; i < doc->numLines(); i++)
+			doc->remove(i, 0, i, doc->lineLength(i));
+	}
+	else if (before)
+	{
+		QString ins;
+
+		for (i = 0; i < y; i++)
+			doc->remove(i, 0, i, doc->lineLength(i));
+
+		doc->remove(y, 0, y, x);
+		ins.fill(' ', ox);
+		doc->insert(y, 0, ins);
+		x = ox;
+	}
+	else if (after)
+	{
+		doc->remove(y, x, y, doc->lineLength(y) -1);
+
+		for (i = y + 1; i < doc->numLines(); i++)
+			doc->remove(i, 0, i, doc->lineLength(i));
+	}
+
+	x = ox;
 	doc->end();
 }
 
@@ -3375,7 +3425,23 @@ void GEditor::expand(bool shift)
 	}
 }
 
-void GEditor::saveCursor()
+void GEditor::saveMouseCursor()
 {
 	_saveCursor = viewport()->cursor();
+}
+
+void GEditor::saveCursor()
+{
+	_save_x = x;
+	_save_y = y;
+}
+
+void GEditor::restoreCursor()
+{
+	cursorGoto(_save_x, _save_y, false);
+}
+
+bool GEditor::cursorRelGoto(int dy, int dx, bool mark)
+{
+	return cursorGoto(QMAX(0, y + dy), QMAX(0, x + dx), mark);
 }

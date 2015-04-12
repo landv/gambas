@@ -106,6 +106,7 @@ private:
 	int _firstLineNumber;
 	QCursor _saveCursor;
 	GString _cutBuffer;
+	int _save_x, _save_y;
 	
 	int lastx;
 	bool left;
@@ -218,9 +219,10 @@ public:
 
 	void getCursor(int *yc, int *xc) const { *yc = y; *xc = x; }
 	int getLine() const { return y; }
+	int getColumn() const { return x; }
 	void insert(QString text);
 	bool cursorGoto(int ny, int nx, bool mark);
-	bool cursorRelGoto(int dy, int dx, bool mark) { return cursorGoto(y + dy, x + dx, mark); }
+	bool cursorRelGoto(int dy, int dx, bool mark);
 	void cursorCenter() { center = true; }
 	void cursorLeft(bool shift, bool ctrl);
 	void cursorRight(bool shift, bool ctrl);
@@ -247,7 +249,12 @@ public:
 	void expand(bool shift);
 	void selectCurrentLine();
 	void deleteCurrentLine();
+
 	void clearLine(bool before, bool after);
+	void clearAfter(int nchar);
+	void clearDocument(bool before, bool after);
+	void saveCursor();
+	void restoreCursor();
 
 	bool getInsertMode() const { return _insertMode; }
 	void setInsertMode(bool mode);
@@ -298,7 +305,7 @@ public:
 	GString getSelectedText() { return doc->getSelectedText(_insertMode); }
 	void hideSelection() { doc->hideSelection(); }
 
-	void saveCursor();
+	void saveMouseCursor();
 
 signals:
 
