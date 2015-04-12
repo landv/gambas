@@ -1411,18 +1411,20 @@ void CWIDGET_reset_color(CWIDGET *_object)
 
 			if (bg != COLOR_DEFAULT)
 			{
-				if (cb->isEditable())
-					palette.setColor(QPalette::Base, TO_QCOLOR(bg));
-				else
-					palette.setColor(QPalette::Button, TO_QCOLOR(bg));
+				palette.setColor(QPalette::Base, TO_QCOLOR(bg));
+				palette.setColor(QPalette::Window, TO_QCOLOR(bg));
+				palette.setColor(QPalette::Button, TO_QCOLOR(bg));
+				w->setAutoFillBackground(true);
 			}
+			else
+				w->setAutoFillBackground(false);
+
 
 			if (fg != COLOR_DEFAULT)
 			{
-				if (cb->isEditable())
-					palette.setColor(QPalette::Text, TO_QCOLOR(fg));
-				else
-					palette.setColor(QPalette::ButtonText, TO_QCOLOR(fg));
+				palette.setColor(QPalette::Text, TO_QCOLOR(fg));
+				palette.setColor(QPalette::WindowText, TO_QCOLOR(fg));
+				palette.setColor(QPalette::ButtonText, TO_QCOLOR(fg));
 			}
 
 			w->setPalette(palette);
