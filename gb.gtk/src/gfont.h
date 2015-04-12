@@ -97,6 +97,7 @@ private:
 	
 	bool uline;
 	bool strike;
+	void create();
 	void realize();
 	void initFlags();
 	int _height;

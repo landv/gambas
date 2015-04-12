@@ -64,9 +64,12 @@ gSpinBox::gSpinBox(gContainer *parent) : gControl(parent)
 	g_typ=Type_gSpinBox;
 	have_cursor = true;
 	_no_background = TRUE;
-	
+
 	_min = 0;
 	_max = 100;
+#ifdef GTK3
+	_first_width = 0;
+#endif
 	
 	border = gtk_spin_button_new_with_range(_min, _max, 1);
 	widget = border;
@@ -176,8 +179,16 @@ void gSpinBox::setBorder(bool vl)
 }
 
 #ifdef GTK3
+void gSpinBox::resize(int w, int h)
+{
+	if (_first_width == 0)
+		_first_width = w;
+
+	gControl::resize(w, h);
+}
+
 int gSpinBox::minimumWidth() const
 {
-	return gDesktop::scale() * 14;
+	return _first_width + gDesktop::scale() * 6;
 }
 #endif

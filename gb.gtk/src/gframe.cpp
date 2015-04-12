@@ -210,7 +210,13 @@ void gFrame::updateFont()
 	GtkWidget *label = gtk_frame_get_label_widget(GTK_FRAME(fr));
 	gContainer::updateFont();
 	if (label)
+	{
+#ifdef GTK3
+		gtk_widget_override_font(label, font()->desc());
+#else
 		gtk_widget_modify_font(label, font()->desc());
+#endif
+	}
 	performArrange();
 }
 

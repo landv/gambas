@@ -342,8 +342,11 @@ gPicture* gDesktop::screenshot(int x, int y, int w, int h)
 
 int gDesktop::count()
 {
-	//return gdk_screen_get_n_monitors(gdk_screen_get_default());
+#ifdef GTK3
+	return gdk_screen_get_n_monitors(gdk_screen_get_default());
+#else
 	return gdk_display_get_n_screens(gdk_display_get_default());
+#endif
 }
 
 void gDesktop::geometry(int screen, GdkRectangle *rect)
@@ -352,9 +355,12 @@ void gDesktop::geometry(int screen, GdkRectangle *rect)
 	if (screen < 0 || screen >= count())
 		return;
 
+#ifdef GTK3
+	gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
+#else
 	rect->width = gdk_screen_get_width(gdk_display_get_screen(gdk_display_get_default(), screen));
 	rect->height = gdk_screen_get_height(gdk_display_get_screen(gdk_display_get_default(), screen));
-	//gdk_screen_get_monitor_geometry(gdk_screen_get_default(), screen, rect);
+#endif
 }
 
 void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
@@ -363,7 +369,11 @@ void gDesktop::availableGeometry(int screen, GdkRectangle *rect)
 	if (screen < 0 || screen >= count())
 		return;
 
+#ifdef GTK3
+	gdk_screen_get_monitor_workarea(gdk_screen_get_default(), screen, rect);
+#else
 	if (X11_get_available_geometry(screen, &rect->x, &rect->y, &rect->width, &rect->height))
 		geometry(screen, rect);
+#endif
 }
 

@@ -254,7 +254,7 @@ void gFont::initFlags()
 	_underline_set = comp->underline() != underline();
 }
 
-gFont::gFont() : gShare()
+void gFont::create()
 {
 #ifdef GTK3
 	char *font;
@@ -269,6 +269,11 @@ gFont::gFont() : gShare()
 	ct = gdk_pango_context_get();
 	pango_context_set_font_description(ct, sty->font_desc);
 #endif
+}
+
+gFont::gFont() : gShare()
+{
+	create();
 }
 
 gFont::gFont(GtkWidget *wid) : gShare()
@@ -305,12 +310,7 @@ gFont::gFont(PangoFontDescription *fd) : gShare()
 
 gFont::gFont(const char *name) : gShare()
 {
-	GtkStyle *sty = gtk_widget_get_default_style();
-	
-	realize();
-	ct = gdk_pango_context_get();
-	pango_context_set_font_description(ct,sty->font_desc);
-
+	create();
 	set_font_from_string(this, name);
 }
 

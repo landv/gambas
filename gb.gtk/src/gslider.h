@@ -59,7 +59,6 @@ public:
 	void (*onChange)(gSlider *sender);
 
 //"Private"
-	virtual void orientation(int w,int h);
 	void updateMark();
 	void init();
 	void checkInverted();

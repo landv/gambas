@@ -50,16 +50,20 @@ public:
 //"Signals"
 	void (*onChange)  (gSpinBox *sender);
 
-#ifndef GTK3
-	virtual void updateCursor(GdkCursor *cursor);
-#else
+#ifdef GTK3
 	virtual int minimumWidth() const;
+	virtual void resize(int w, int h);
+#else
+	virtual void updateCursor(GdkCursor *cursor);
 #endif
 
 //"Private"
 private:
 	int _min;
 	int _max;
+#ifdef GTK3
+	int _first_width;
+#endif
 };
 
 #endif

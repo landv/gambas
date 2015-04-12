@@ -190,11 +190,11 @@ void gt_draw_border(cairo_t *cr, GtkStyleContext *st, GtkStateFlags state, int b
 
 #ifdef GTK3
 GtkStyleContext *gt_get_style(GType type);
-GtkStyle *gt_get_old_style(GType type);
 #else
 GtkStyle *gt_get_style(GType type);
-#define gt_get_old_style gt_get_style
 #endif
+
+void gt_get_style_property(GType type, const char *name, void *pvalue);
 
 void gMnemonic_correctText(char *st,char **buf);
 guint gMnemonic_correctMarkup(char *st,char **buf);
@@ -206,5 +206,8 @@ int gt_get_preferred_width(GtkWidget *widget);
 
 #define gt_get_control(_widget) ((gControl *)g_object_get_data(G_OBJECT(_widget), "gambas-control"))
 #define gt_register_control(_widget, _control) g_object_set_data(G_OBJECT(_widget), "gambas-control", _control)
+
+bool gt_grab(GtkWidget *widget, bool owner_event, guint32 time);
+void gt_ungrab();
 
 #endif

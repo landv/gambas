@@ -97,6 +97,32 @@ static GnomeClient *master_client= NULL;
 
 static gboolean master_client_restored= FALSE;
 
+// BM: device grab management
+
+static gboolean gt_pointer_is_grabbed()
+{
+#ifdef GTK3
+	GdkDevice *pointer = gdk_device_manager_get_client_pointer(gdk_display_get_device_manager(gdk_display_get_default()));
+	return gdk_display_device_is_grabbed(gdk_display_get_default(), pointer);
+#else
+	return gdk_pointer_is_grabbed();
+#endif
+}
+
+static void gt_ungrab(void)
+{
+#ifdef GTK3
+	GdkDevice *pointer = gdk_device_manager_get_client_pointer(gdk_display_get_device_manager(gdk_display_get_default()));
+	GdkDevice *keyboard = gdk_device_get_associated_device(pointer);
+
+	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
+	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
+#else
+	gdk_pointer_ungrab(GDK_CURRENT_TIME);
+	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+#endif
+}
+
 void gnome_type_init()
 {
 	(void) gnome_interact_style_get_type ();
@@ -725,12 +751,12 @@ client_save_yourself_callback (SmcConn   smc_conn,
 
   GDK_THREADS_ENTER();
 
-  if (gdk_pointer_is_grabbed())
+  if (gt_pointer_is_grabbed())
     {
       gboolean waiting = TRUE;
       gint id = g_timeout_add (4000, end_wait, &waiting);
 
-      while (gdk_pointer_is_grabbed() && waiting)
+      while (gt_pointer_is_grabbed() && waiting)
 	gtk_main_iteration();
       g_source_remove (id);
     }
@@ -743,8 +769,7 @@ client_save_yourself_callback (SmcConn   smc_conn,
       return;
     }
 
-  gdk_pointer_ungrab (GDK_CURRENT_TIME);
-  gdk_keyboard_ungrab (GDK_CURRENT_TIME);
+  gt_ungrab();
   gtk_grab_add (client_grab_widget);
 
   GDK_THREADS_LEAVE();

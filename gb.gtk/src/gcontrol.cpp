@@ -2175,32 +2175,14 @@ void gControl::setTracking(bool v)
 
 bool gControl::grab()
 {
-	GdkWindow *win;
 	gControl *old_control_grab;
 	bool save_tracking;
 
 	if (_grab)
 		return false;
 
-	win = gtk_widget_get_window(border);
-
-	if (gdk_pointer_grab(win, FALSE, (GdkEventMask)(GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK), NULL,
-	#if GTK_CHECK_VERSION(2, 18, 0)
-			gdk_window_get_cursor(win),
-	#else
-			NULL,
-	#endif
-			gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
-	{
-		fprintf(stderr, "gb.gtk: warning: cannot grab pointer\n");
+	if (gt_grab(border, FALSE, gApplication::lastEventTime()))
 		return true;
-	}
-	if (gdk_keyboard_grab(win, FALSE, gApplication::lastEventTime()) != GDK_GRAB_SUCCESS)
-	{
-		gdk_pointer_ungrab(GDK_CURRENT_TIME);
-		fprintf(stderr, "gb.gtk: warning: cannot grab keyboard\n");
-		return true;
-	}
 
 	_grab = true;
 	save_tracking = _tracking;
@@ -2213,8 +2195,7 @@ bool gControl::grab()
 
 	gApplication::_control_grab = old_control_grab;
 
-	gdk_pointer_ungrab(GDK_CURRENT_TIME);
-	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	gt_ungrab();
 
 	_tracking = save_tracking;
 	_grab = false;

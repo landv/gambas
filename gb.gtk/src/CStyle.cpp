@@ -636,10 +636,16 @@ static void style_box(int x, int y, int w, int h, int state, GB_COLOR color)
 		GtkCssProvider *provider = gtk_css_provider_new();
 		gtk_css_provider_load_from_data(provider, buffer, strlen(buffer), NULL);
 		gtk_style_context_add_provider(style, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+#if GTK_CHECK_VERSION(3, 12, 0)
+#else
 		gtk_style_context_invalidate(style);
+#endif
 		gtk_render_background(style, _cr, x, y, w, h);
 		gtk_style_context_remove_provider(style, GTK_STYLE_PROVIDER(provider));
+#if GTK_CHECK_VERSION(3, 12, 0)
+#else
 		gtk_style_context_invalidate(style);
+#endif
 		g_object_unref(G_OBJECT(provider));
 	}
 

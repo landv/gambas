@@ -13,7 +13,7 @@ gb_gtk3_la_SOURCES = \
 	gmemory.h gmemory.cpp gtag.h ggambastag.h gshare.h \
 	gb.gtk.h widgets.h font-parser.h font-parser.cpp \
 	gtools.cpp gcolor.h \
-	gstock.cpp gfont.cpp gpicture.cpp \
+	gfont.cpp gpicture.cpp \
 	gdesktop.cpp gmessage.cpp \
 	gcontrol.cpp gcontainer.cpp gseparator.cpp \
 	gbutton.cpp gslider.cpp glabel.cpp gsignals.cpp \
@@ -58,7 +58,6 @@ gb_gtk3_la_SOURCES = \
 	gcursor.h gcursor.cpp \
 	gmouse.h gmouse.cpp \
 	gdesktop.h \
-	gstock.h \
 	gpicture.h \
 	gfont.h \
 	gmessage.h \

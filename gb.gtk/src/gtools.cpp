@@ -155,6 +155,7 @@ static void set_color(GtkWidget *wid, gColor color, void (*func)(GtkWidget *, Gt
 
 #endif
 
+#ifndef GTK3
 gColor get_gdk_fg_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
@@ -162,6 +163,7 @@ gColor get_gdk_fg_color(GtkWidget *wid, bool enabled)
 	st=gtk_widget_get_style(wid);
 	return get_gdk_color(&st->fg[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
+#endif
 
 void set_gdk_fg_color(GtkWidget *wid, gColor color)
 {
@@ -172,6 +174,7 @@ void set_gdk_fg_color(GtkWidget *wid, gColor color)
 #endif
 }
 
+#ifndef GTK3
 gColor get_gdk_bg_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
@@ -179,6 +182,7 @@ gColor get_gdk_bg_color(GtkWidget *wid, bool enabled)
 	st=gtk_widget_get_style(wid);	
 	return get_gdk_color(&st->bg[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
+#endif
 
 void set_gdk_bg_color(GtkWidget *wid,gColor color)
 {
@@ -189,6 +193,7 @@ void set_gdk_bg_color(GtkWidget *wid,gColor color)
 #endif
 }
 
+#ifndef GTK3
 gColor get_gdk_text_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
@@ -196,6 +201,7 @@ gColor get_gdk_text_color(GtkWidget *wid, bool enabled)
 	st=gtk_widget_get_style(wid);	
 	return get_gdk_color(&st->text[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
+#endif
 
 void set_gdk_text_color(GtkWidget *wid,gColor color)
 {
@@ -206,6 +212,7 @@ void set_gdk_text_color(GtkWidget *wid,gColor color)
 #endif
 }
 
+#ifndef GTK3
 gColor get_gdk_base_color(GtkWidget *wid, bool enabled)
 {
 	GtkStyle* st;
@@ -213,6 +220,7 @@ gColor get_gdk_base_color(GtkWidget *wid, bool enabled)
 	st=gtk_widget_get_style(wid);
 	return get_gdk_color(&st->base[enabled ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE]);
 }
+#endif
 
 void set_gdk_base_color(GtkWidget *wid,gColor color)
 {
@@ -1984,9 +1992,10 @@ void gt_cairo_draw_pixbuf(cairo_t *cr, GdkPixbuf *pixbuf, float x, float y, floa
 #ifdef GTK3
 static int _style_context_loaded = 0;
 static GtkStyleContext *_style_context[NUM_STYLES];
-#endif
+#else
 static int _style_loaded = 0;
 static GtkStyle *_style[NUM_STYLES];
+#endif
 
 static int type_to_index(GType type)
 {
@@ -2059,7 +2068,7 @@ GtkStyleContext *gt_get_style(GType type)
 	return _style_context[index];
 }
 
-#endif
+#else
 
 static GtkStyle *get_style(const char *name, GType type)
 {
@@ -2077,11 +2086,7 @@ static GtkStyle *get_widget_style(const char *name)
 	return st;
 }
 
-#ifdef GTK3
-GtkStyle *gt_get_old_style(GType type)
-#else
 GtkStyle *gt_get_style(GType type)
-#endif
 {
 	int index = type_to_index(type);
 	if (index < 0)
@@ -2098,6 +2103,17 @@ GtkStyle *gt_get_style(GType type)
 	}
 
 	return _style[index];
+}
+
+#endif
+
+void gt_get_style_property(GType type, const char *name, void *pvalue)
+{
+#ifdef GTK3
+	gtk_style_context_get_style(gt_get_style(type), name, pvalue, NULL);
+#else
+	gtk_style_get(gt_get_style(type), type, name, pvalue, (char *)NULL);
+#endif
 }
 
 
@@ -2208,3 +2224,72 @@ bool gt_style_lookup_color(GtkStyleContext *style, const char **names, const cha
 }
 
 #endif
+
+bool gt_grab(GtkWidget *widget, bool owner_event, guint32 time)
+{
+	GdkWindow *win = gtk_widget_get_window(widget);
+	int ret;
+
+#ifdef GTK3
+
+	GdkDevice *pointer = gdk_device_manager_get_client_pointer(gdk_display_get_device_manager(gdk_display_get_default()));
+	GdkDevice *keyboard = gdk_device_get_associated_device(pointer);
+
+	ret = gdk_device_grab(pointer, win, GDK_OWNERSHIP_APPLICATION, owner_event,
+		(GdkEventMask)(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK),
+		gdk_window_get_cursor(win),
+		time);
+
+	if (ret == GDK_GRAB_SUCCESS)
+	{
+		ret = gdk_device_grab(keyboard, win, GDK_OWNERSHIP_APPLICATION, owner_event,
+			(GdkEventMask)(GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK),
+			NULL, time);
+
+		if (ret == GDK_GRAB_SUCCESS)
+			return FALSE;
+
+		gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
+	}
+
+#else
+
+	ret = gdk_pointer_grab(win, owner_event,
+		(GdkEventMask)(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK),
+		NULL,
+#if GTK_CHECK_VERSION(2, 18, 0)
+		gdk_window_get_cursor(win),
+#else
+		NULL,
+#endif
+		time);
+
+	if (ret == GDK_GRAB_SUCCESS)
+	{
+		ret = gdk_keyboard_grab(win, owner_event, time);
+
+		if (ret == GDK_GRAB_SUCCESS)
+			return FALSE;
+
+		gdk_pointer_ungrab(GDK_CURRENT_TIME);
+	}
+
+#endif
+
+	fprintf(stderr, "gb.gtk: warning: grab failed: %d\n", ret);
+	return TRUE;
+}
+
+void gt_ungrab(void)
+{
+#ifdef GTK3
+	GdkDevice *pointer = gdk_device_manager_get_client_pointer(gdk_display_get_device_manager(gdk_display_get_default()));
+	GdkDevice *keyboard = gdk_device_get_associated_device(pointer);
+
+	gdk_device_ungrab(pointer, GDK_CURRENT_TIME);
+	gdk_device_ungrab(keyboard, GDK_CURRENT_TIME);
+#else
+	gdk_pointer_ungrab(GDK_CURRENT_TIME);
+	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+#endif
+}

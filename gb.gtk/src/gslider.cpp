@@ -86,7 +86,11 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 	if (scrollbar)
 		return;
 	
+#ifdef GTK3
+	widget = gtk_scale_new(GTK_ORIENTATION_VERTICAL, NULL);
+#else
 	widget = gtk_vscale_new(NULL);
+#endif
 	gtk_scale_set_draw_value(GTK_SCALE(widget), false);
 		
 	init();
@@ -102,7 +106,11 @@ gSlider::gSlider(gContainer *par, bool scrollbar) : gControl(par)
 gScrollBar::gScrollBar(gContainer *par) : gSlider(par, true)
 {
 	g_typ = Type_gScrollBar;
+#ifdef GTK3
+	widget = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL, NULL);
+#else
 	widget = gtk_hscrollbar_new(NULL);
+#endif
 	realize(false);
 	
 	init();
@@ -237,21 +245,22 @@ void gSlider::setValue(int vl)
 	emit(SIGNAL(onChange));
 }
 
-
+#if 0
 void gSlider::orientation(int w,int h)
 {
-	GtkAdjustment *adj;
-	GType type;
+	//GtkAdjustment *adj;
+	//GtkOrientation orient;
 	
-	type = (w < h) ? GTK_TYPE_VSCALE : GTK_TYPE_HSCALE;
-	
-	if (type != G_OBJECT_TYPE(widget))
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(widget),  (w < h) ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
+
+	/*if (orient != gtk_orientable_get_orientation(GTK_ORIENTABLE(widget)))
 	{
 		adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 		g_object_ref(adj);
 		
 		gtk_widget_destroy(widget);
 		
+		widget = gtk_scale_new(
 		if (type == GTK_TYPE_VSCALE)
 			widget = gtk_vscale_new(adj);
 		else
@@ -267,23 +276,25 @@ void gSlider::orientation(int w,int h)
 		g_object_unref(adj);
 		
 		init();
-	}
+	}*/
 }
+#endif
 
 void gSlider::resize(int w, int h)
 {
 	gControl::resize(w, h);
-	orientation(width(), height());
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(widget),  (w < h) ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
 }
 
 void gScrollBar::resize(int w, int h)
 {
-	GtkAdjustment* adj;
-	GType type;
+	//GtkAdjustment* adj;
+	//GType type;
 	
 	gControl::resize(w, h);
-	
-	type = (w < h) ? GTK_TYPE_VSCROLLBAR : GTK_TYPE_HSCROLLBAR;
+	gtk_orientable_set_orientation(GTK_ORIENTABLE(widget),  (w < h) ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL);
+
+	/*type = (w < h) ? GTK_TYPE_VSCROLLBAR : GTK_TYPE_HSCROLLBAR;
 	
 	if (type != G_OBJECT_TYPE(widget))
 	{
@@ -308,7 +319,7 @@ void gScrollBar::resize(int w, int h)
 		g_object_unref(adj);	
 		
 		init();
-	}
+	}*/
 }
 
 int gSlider::getDefaultSize()
@@ -329,7 +340,7 @@ int gSlider::getDefaultSize()
 
 bool gSlider::isVertical() const
 {
-	return (G_OBJECT_TYPE(widget) == GTK_TYPE_VSCALE || G_OBJECT_TYPE(widget) == GTK_TYPE_VSCROLLBAR);
+	return gtk_orientable_get_orientation(GTK_ORIENTABLE(widget)) == GTK_ORIENTATION_VERTICAL;
 }
 
 void gSlider::checkInverted()

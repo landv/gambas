@@ -25,7 +25,6 @@
 
 #include "main.h"
 #include "widgets.h"
-#include "gstock.h"
 #include "CPicture.h"
 #include "CStock.h"
 
@@ -35,41 +34,19 @@
 
 *******************************************************************************/
 
-BEGIN_METHOD(CSTOCK_get, GB_STRING path; GB_STRING def)
+BEGIN_METHOD_VOID(CSTOCK_get)
 
-	CPICTURE *Pic;
-	gPicture *pic;
-	
-	pic=gStock::get(GB.ToZeroString(ARG(path)));
-	
-	if (!pic)
-	{
-		if (!MISSING(def))
-			pic = gStock::get(GB.ToZeroString(ARG(def)));
-		if (!pic)
-		{
-			GB.ReturnNull();
-			return;
-		}
-	}
-	
-	Pic = (CPICTURE *)GB.New(GB.FindClass("Picture"), 0, 0);
-	if (Pic->picture) Pic->picture->unref();
-	Pic->picture = pic;
-	GB.ReturnObject(Pic);
+	GB.Deprecated("gb.gtk", "Stock class", NULL);
+	GB.ReturnNull();
 
 END_METHOD
-
-
 
 
 GB_DESC CStockDesc[] =
 {
   GB_DECLARE("Stock", 0), GB_NOT_CREATABLE(),
-
  
   GB_STATIC_METHOD("_get", "Picture", CSTOCK_get, "(Key)s[(Default)s]"),
-  
 
   GB_END_DECLARE
 };

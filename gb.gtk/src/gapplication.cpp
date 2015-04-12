@@ -799,36 +799,16 @@ void gApplication::grabPopup()
 	if (!_popup_grab)
 		return;
 	
-	//gtk_grab_add(_popup_grab);
-	//return;
-	
-	GdkWindow *win = gtk_widget_get_window(_popup_grab);
-		
-  int ret = gdk_pointer_grab(win, TRUE,
-			 (GdkEventMask)(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
-			 GDK_POINTER_MOTION_MASK),
-			 NULL, NULL, GDK_CURRENT_TIME);
-	
-	if (ret == GDK_GRAB_SUCCESS)
-	{
-		ret = gdk_keyboard_grab(win, TRUE, GDK_CURRENT_TIME);
-		
-		if (ret == GDK_GRAB_SUCCESS)
-			return;
-		
-		gdk_pointer_ungrab(GDK_CURRENT_TIME);
-	}
-
-	fprintf(stderr, "gb.gtk: warning: grab failed: %d\n", ret);
+	gt_grab(_popup_grab, TRUE, GDK_CURRENT_TIME);
 }
 
 void gApplication::ungrabPopup()
 {
 	//fprintf(stderr, "ungrabPopup: %p\n", _popup_grab);
 	//gtk_grab_remove(_popup_grab);
+
 	_popup_grab = NULL;
-	gdk_pointer_ungrab(GDK_CURRENT_TIME);
-	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	gt_ungrab();
 }
 
 bool gApplication::areTooltipsEnabled()
@@ -1293,14 +1273,8 @@ int gApplication::getScrollbarSize()
 			return 1;
 	}
 	
-  gtk_style_get(gt_get_old_style(GTK_TYPE_SCROLLBAR), GTK_TYPE_SCROLLBAR,
-		"slider-width", &slider_width,
-		"trough-border", &trough_border,
-		/*"focus-line-width", &focus_line_width,
-		"focus-padding", &focus_padding,*/
-		(char *)NULL);
-	
-	//fprintf(stderr, "getScrollbarSize: slider_width = %d  trough_border = %d\n", slider_width, trough_border);
+	gt_get_style_property(GTK_TYPE_SCROLLBAR, "slider-width", &slider_width);
+	gt_get_style_property(GTK_TYPE_SCROLLBAR, "trough-border", &trough_border);
 
 	return (trough_border) * 2 + slider_width;
 }
@@ -1309,9 +1283,7 @@ int gApplication::getScrollbarSpacing()
 {
 	gint v;
 	
-	gtk_style_get(gt_get_old_style(GTK_TYPE_SCROLLED_WINDOW), GTK_TYPE_SCROLLED_WINDOW,
-		"scrollbar-spacing", &v, 
-		(char *)NULL);
+	gt_get_style_property(GTK_TYPE_SCROLLED_WINDOW, "scrollbar-spacing", &v);
 	
 	return v;
 }
@@ -1330,15 +1302,8 @@ int gApplication::getFrameWidth()
 #ifdef GTK3
   GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
   GtkBorder tmp;
-  //GtkBorder border;
 
 	gtk_style_context_get_padding(context, (GtkStateFlags)0, &tmp);
-	/*gtk_style_context_get_border(context, (GtkStateFlags)0, &border);
-
-	tmp.top += border.top;
-	tmp.right += border.right;
-	tmp.bottom += border.bottom;
-	tmp.left += border.left;*/
 
 	w = MIN(tmp.top, tmp.left);
 	w = MIN(w, tmp.bottom);
@@ -1351,12 +1316,10 @@ int gApplication::getFrameWidth()
 	gboolean interior_focus;
 	//int inner;
 
-	style = gt_get_old_style(GTK_TYPE_ENTRY);
+	style = gt_get_style(GTK_TYPE_ENTRY);
 
-	gtk_style_get(style, GTK_TYPE_ENTRY,
-		"focus-line-width", &focus_width,
-		"interior-focus", &interior_focus,
-		(char *)NULL);
+	gt_get_style_property(GTK_TYPE_ENTRY, "focus-line-width", &focus_width);
+	gt_get_style_property(GTK_TYPE_ENTRY, "interior-focus", &interior_focus);
 
 	w = MIN(style->xthickness, style->ythickness);
 
@@ -1369,32 +1332,48 @@ int gApplication::getFrameWidth()
 	return w;
 }
 
-void gApplication::getBoxFrame(int *w, int *h)
+void gApplication::getBoxFrame(int *pw, int *ph)
 {
+	int w, h;
+
+#ifdef GTK3
+  GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
+  GtkBorder tmp;
+
+	gtk_style_context_get_padding(context, (GtkStateFlags)0, &tmp);
+
+	w = MIN(tmp.left, tmp.right);
+	h = MIN(tmp.top, tmp.bottom);
+	w = MAX(0, w - 1);
+	h = MAX(0, h - 1);
+
+#else
 	GtkStyle *style;
 	gint focus_width;
 	gboolean interior_focus;
 	int inner;
 
-	style = gt_get_old_style(GTK_TYPE_ENTRY);
-	
-	gtk_style_get(style, GTK_TYPE_ENTRY,
-		"focus-line-width", &focus_width,
-		"interior-focus", &interior_focus,
-		(char *)NULL);
-	
-	*w = style->xthickness;
-	*h = style->ythickness;
-	
+	style = gt_get_style(GTK_TYPE_ENTRY);
+
+	gt_get_style_property(GTK_TYPE_ENTRY, "focus-line-width", &focus_width);
+	gt_get_style_property(GTK_TYPE_ENTRY, "interior-focus", &interior_focus);
+
+	w = style->xthickness;
+	h = style->ythickness;
+
 	if (!interior_focus)
 	{
-		*w += focus_width;
-		*h += focus_width;
+		w += focus_width;
+		h += focus_width;
 	}
-	
+
 	inner = getInnerWidth();
-	*w += inner;
-	*h += inner;
+	w += inner;
+	h += inner;
+#endif
+
+	*pw = w;
+	*ph = h;
 }
 
 char *gApplication::getStyleName()
