@@ -13,6 +13,7 @@
       Expand = True
       { panToolbar HBox
         MoveScaled(0,0,55,4)
+        Background = Color.TextBackground
         { btnReload ToolButton
           MoveScaled(0,0,4,4)
           ToolTip = ("Today")
@@ -23,33 +24,26 @@
           ToolTip = ("Previous month")
           Picture = Picture["icon:/small/left"]
         }
-        { panSepMonth Panel
-          MoveScaled(8,0,1,4)
-          Visible = False
-        }
-        { btnMonth MenuButton
-          MoveScaled(11,0,17,4)
-          Expand = True
-          Border = False
-          MenuOnly = True
-        }
-        { Panel2 Panel
-          MoveScaled(30,0,1,4)
-          Visible = False
-        }
-        { txtYear SpinBox
-          MoveScaled(31,0,10,4)
-          MinValue = 1600
-          MaxValue = 9999
-        }
-        { panSepMonth2 Panel
-          MoveScaled(42,0,1,4)
-          Visible = False
-        }
         { btnNextMonth ToolButton
-          MoveScaled(51,0,4,4)
+          MoveScaled(8,0,4,4)
           ToolTip = ("Next month")
           Picture = Picture["icon:/small/right"]
+        }
+        { panSepMonth Panel
+          MoveScaled(14,0,1,4)
+          Visible = False
+        }
+        { cmbMonth ComboBox
+          MoveScaled(18,0,18,4)
+          Expand = True
+          ReadOnly = True
+          Border = False
+        }
+        { txtYear SpinBox
+          MoveScaled(39,0,9,4)
+          MinValue = 1600
+          MaxValue = 9999
+          Border = False
         }
       }
       { Panel1 Panel
@@ -77,6 +71,7 @@
       Visible = False
       { HBox1 HBox
         MoveScaled(0,0,17,4)
+        Background = Color.TextBackground
         { PictureBox1 PictureBox
           MoveScaled(0,0,4,4)
           Visible = False
