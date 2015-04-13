@@ -181,7 +181,7 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 			continue;
 		}
 
-		if (cp == '{' && len_pattern > 0)
+		if (cp == '{')
 		{
 			const char *save_string;
 			int save_len_string;
@@ -196,6 +196,8 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 
 			for(;;)
 			{
+				if (len_pattern == 0)
+					goto MISSING_BRACE;
 				_next_pattern();
 				if (cp == ',' || cp == '}')
 					break;
@@ -212,7 +214,7 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 				while (cp != '}')
 				{
 					if (len_pattern == 0)
-						THROW(E_REGEXP, "Missing '}'");
+						goto MISSING_BRACE;
 					_next_pattern();
 				}
 
@@ -229,6 +231,8 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 				if (cp == '}')
 					return FALSE;
 
+				if (len_pattern == 0)
+					goto MISSING_BRACE;
 				_next_pattern();
 			}
 
@@ -248,6 +252,10 @@ bool REGEXP_match(const char *pattern, int len_pattern, const char *string, int 
 		if (tolower(cp) != tolower(cs))
 			return FALSE;
 	}
+
+MISSING_BRACE:
+
+	THROW(E_REGEXP, "Missing '}'");
 }
 
 
