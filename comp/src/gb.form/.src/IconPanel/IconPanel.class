@@ -146,6 +146,7 @@ Private Sub Count_Write(iCount As Integer)
 
     For iInd = $aCont.Count To iCount - 1
       hToolbar = New _IconPanelContainer($hPanel) As "_IconPanelContainer"
+      hToolbar.Resize(1, 1)
       'hToolbar.Text = "Toolbar " & CInt(iInd)
       $aCont.Add(hToolbar)
       '$hView.Add(iInd, "Item " & CStr(iInd))

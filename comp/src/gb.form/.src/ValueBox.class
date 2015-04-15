@@ -25,6 +25,7 @@ Private $hDateBox As DateBox
 Private $hMaskBox As MaskBox
 
 Private $sDecimalSep As String
+Private $sLastText As String
 
 Public Sub _new()
   
@@ -196,12 +197,14 @@ Public Sub NumberBox_Change()
   Object.Lock($hTextBox)
   If sText <> $hTextBox.Text Then
     $hTextBox.Text = sText
-    bRaiseChange = True
   Endif
   $hTextBox.Pos = Max(If(bNeg, 1, 0), iPos)
   Object.Unlock($hTextBox)
   
-  If bRaiseChange Then Raise Change
+  If $hTextBox.Text <> $sLastText Then
+    $sLastText = $hTextBox.Text
+    Raise Change
+  Endif
   
 End
 

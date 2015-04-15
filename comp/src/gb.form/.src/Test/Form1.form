@@ -5,6 +5,32 @@
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
+  { Menu1 Menu
+    Text = ("Menu1")
+    { Menu2 Menu
+      Text = ("Menu2")
+      Picture = Picture["img/16/cross.png"]
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+      Picture = Picture["stock/16/gambas.png"]
+    }
+    { Menu7 Menu
+      Text = ("Menu7")
+      Shortcut = "Ctrl+B"
+    }
+    { Menu6 Menu
+    }
+    { Menu4 Menu
+      Text = ("Menu4")
+      Picture = Picture["stock/16/gnu.png"]
+    }
+    { Menu5 Menu
+      Text = ("Menu5")
+      Picture = Picture["stock/16/linux.png"]
+      Shortcut = "Ctrl+Shift+Alt+Backspace"
+    }
+  }
   { HBox1 HBox
     MoveScaled(8,2,95,5)
     #Translate = False
