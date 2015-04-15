@@ -129,6 +129,12 @@ static void handle_signal(int num, char state)
 	}
 	else if (state == SH_CATCH)
 	{
+		if (num == SIGKILL || num == SIGSTOP)
+		{
+			GB.Error("SIGKILL and SIGSTOP cannot be catched");
+			return;
+		}
+
 		if (!_init_signal)
 			init_signal();
 		
