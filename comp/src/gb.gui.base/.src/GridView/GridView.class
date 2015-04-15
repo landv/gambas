@@ -2135,6 +2135,8 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
       WC += $hColumns[iCol + J].Width
     Next
     
+    If Not hData Then Continue
+    
     With hData
       
       iPadding = Max($iPadding, .Padding)

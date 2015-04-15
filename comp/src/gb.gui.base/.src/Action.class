@@ -29,6 +29,7 @@ Static Private Sub IsToggle(hCtrl As Object) As Boolean
   If hCtrl Is ToggleButton Then Return True
   If hCtrl Is ToolButton And If hCtrl.Toggle Then Return True
   If hCtrl Is Window Then Return True
+  If hCtrl Is CheckBox Then Return True
   If Object.Type(hCtrl) = "SidePanel" Then Return True
   If Object.Type(hCtrl) = "ToolBar" Then Return True
   
@@ -40,6 +41,7 @@ Static Private Sub GetToggle(hCtrl As Object) As Boolean
   If hCtrl Is ToggleButton Then Return hCtrl.Value
   If hCtrl Is ToolButton And If hCtrl.Toggle Then Return hCtrl.Value
   If hCtrl Is Window Then Return hCtrl.Visible
+  If hCtrl Is CheckBox Then Return hCtrl.Value = CheckBox.True
   If Object.Type(hCtrl) = "SidePanel" Then Return Not hCtrl.Hidden
   If Object.Type(hCtrl) = "ToolBar" Then Return Not hCtrl.Hidden
   
@@ -51,6 +53,7 @@ Static Private Sub SetToggle(hCtrl As Object, bVal As Boolean)
   If hCtrl Is ToggleButton Then hCtrl.Value = bVal
   If hCtrl Is ToolButton And If hCtrl.Toggle Then hCtrl.Value = bVal
   If hCtrl Is Window Then hCtrl.Visible = bVal
+  If hCtrl Is CheckBox Then hCtrl.Value = bVal
   If Object.Type(hCtrl) = "SidePanel" Then hCtrl.Hidden = Not bVal
   If Object.Type(hCtrl) = "ToolBar" Then hCtrl.Hidden = Not bVal
   
