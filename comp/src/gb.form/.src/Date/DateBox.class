@@ -117,7 +117,13 @@ End
 
 Private Function Value_Read() As Date
 
-  Dim vVal As Variant = Val($hButtonBox.Text)
+  Dim vVal As Variant
+  
+  If Not $bShowDate Then
+    vVal = Time(Val(Format(Date(1, 1, 1), "dd/mm/yyyy") & " " & $hButtonBox.Text))
+  Else
+    vVal = Val($hButtonBox.Text)
+  Endif
   
   If vVal And If TypeOf(vVal) = gb.Date Then Return vVal
   
