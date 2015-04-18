@@ -78,6 +78,7 @@ Public Sub Run()
         Else If sCar = "'" Or If sCar = "\"" Then
           iState = Highlight.String
           Highlight.Add(iState)
+          sWait = sCar
         Else If sCar = "`" Then
           iState = Highlight.Symbol
           Highlight.Add(iState)
