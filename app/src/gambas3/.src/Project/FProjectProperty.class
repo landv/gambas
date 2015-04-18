@@ -1045,24 +1045,23 @@ Private Sub WriteComponent()
   Dim cComp As New Collection
 
   If Project.Type <> Project.TYPE_NORMAL Then
-
-    If $bInitInfo Then 
-
-      cComp["State"] = cmbComponentState.Index
     
-      $aNeed.Clear
-      WriteFeatures(panNeed, $aNeed)
-      WriteFeatures(panNeed2, $aNeed)
-    
-      cComp["Hidden"] = cmbHidden.Index = 0
-      cComp["Implement"] = $aImplement
-      cComp["Need"] = $aNeed
-      cComp["Require"] = $aRequire
-      cComp["Exclude"] = $aExclude
-      If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
-      cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
-      
-    Endif
+    ' If the component information has not been initialized, do nothing, don't erase the component file!
+    If Not $bInitInfo Then Return
+
+    cComp["State"] = cmbComponentState.Index
+  
+    $aNeed.Clear
+    WriteFeatures(panNeed, $aNeed)
+    WriteFeatures(panNeed2, $aNeed)
+  
+    cComp["Hidden"] = cmbHidden.Index = 0
+    cComp["Implement"] = $aImplement
+    cComp["Need"] = $aNeed
+    cComp["Require"] = $aRequire
+    cComp["Exclude"] = $aExclude
+    If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
+    cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
     
   Endif
   

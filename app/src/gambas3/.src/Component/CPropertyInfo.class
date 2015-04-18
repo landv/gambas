@@ -346,7 +346,8 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
 
 Catch
 
-  Debug sComponent; ": "; sClass; "."; sName; ": "; Error.Text
+  Error "gambas3: "; sComponent; ": "; sClass; "."; sName; ": "; Error.Text
+  'Error Error.Backtrace.Join(" ")
   'hSym = CComponent.Classes["System"].Symbols["Language"]
 
   Type = "s"

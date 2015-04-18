@@ -1321,11 +1321,9 @@ Public Sub CheckCompletion(sMode As String)
   '   
   If sMode = "A" Then
     
-    If GetRightString(sLine) Then Return
-    
     If Not FCompletion.VisibleFrom(Editor) Then
       sWord = $hCompletion.GetWord(sLine & Key.Text, Editor.Column + 1)
-      If String.Len(sWord) >= 3 Then FCompletion.Open(Me, sMode, sWord)
+      If String.Len(sWord) >= 3 Then FCompletion.Open(Me, "I", sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
     

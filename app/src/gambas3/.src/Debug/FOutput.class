@@ -29,6 +29,7 @@ Public Sub _new()
   edtOutput.Styles[Highlight.Keyword].Foreground = Color.Blue
   edtOutput.Overwrite = True
   edtOutput.Flags[Editor.AlwaysShowCursor] = True
+  edtOutput.Flags[Editor.ShowDots] = False
 
 End
 

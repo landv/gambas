@@ -33,13 +33,13 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   $hButton.Ignore = True
   $hButton.Hide
   $hButton.Text = ("Open in another window") & "…"
-  $hButton.ResizeScaled(3, 3)
-  $hButton.Padding = 8
+  $hButton.ResizeScaled(1, 1)
+  $hButton.Padding = 4
   $hButton.AutoResize = True
-  $hButton.Font.Grade = -2
+  $hButton.Font.Grade = -1
   $hButton.Mouse = Mouse.Pointing
   $hButton.Border = False
-  $hButton.Foreground = &HE0E0E0&
+  $hButton.Foreground = Color.LightBackground
   
 End
 
@@ -437,13 +437,13 @@ End
 
 Public Sub Button_Enter()
   
-  $hButton.Foreground = Color.LinkForeground
+  $hButton.Foreground = Color.SelectedBackground
   
 End
 
 Public Sub Button_Leave()
   
-  $hButton.Foreground = &HE0E0E0&
+  $hButton.Foreground = Color.LightBackground
   
 End
 
@@ -460,7 +460,7 @@ Public Sub ProjectItem_Enter()
   If Not $bOpenExtern Then Return
   hProject = Last  
   $hButton.Reparent(hProject.Children[0])
-  $hButton.Move(hProject.W - $hButton.W, hProject.H - $hButton.H)
+  $hButton.Move(3, hProject.H - $hButton.H - 3, hProject.W - 6, $hButton.H)
   $hButton.Show
   
 End

@@ -66,12 +66,11 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   $hForm = hForm
   $hEditor = hForm.GetEditor()
   Me.Font = $hEditor.font
-  $bGambas = hForm Is FEditor
 
   Inc Application.Busy
 
   $bUserChoice = False
-  $sMode = sMode
+  $sMode = Left(sMode)
   $iLen = 0
   $iMaxLen = 16
   $iCol = $hEditor.Column + 1
@@ -82,6 +81,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   
   Select $sMode
     Case "."
+      $bGambas = True
       $sText = ""
       If String.Len(sClass) = 1 Then 
         Dec Application.Busy
@@ -90,19 +90,23 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
       $sClass = sClass
       FillWithSymbol(sClass, bStatic, bPrivate)
     Case " "
+      $bGambas = True
       $sText = ""
       FillWithClasses
-    Case "A"
+    Case "A", "I"
+      $bGambas = $sMode = "A"
       $sText = sClass
       $iLen = String.Len(sClass)
       $iCol -= String.Len(sClass)
       FillWithIdent(sClass)
     Case "_"
+      $bGambas = True
       $sText = "_"
       $iLen = 1
       Dec $iCol
       FillWithSpecial()
     Case "<"
+      $bGambas = $hEditor Is FEditor
       $sText = sClass
       iPos = String.InStr(sClass, "_")
       If iPos Then 
@@ -113,6 +117,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
       $iCol -= String.Len(sClass) + 2
       FillWithIdent(String.Left$(sClass, $iLen))
     Case "/"
+      $bGambas = False
       iPos = String.RInStr(sClass, "/")
       $sText = String.Mid$(sClass, iPos + 1)
       $iLen = String.Len($sText)

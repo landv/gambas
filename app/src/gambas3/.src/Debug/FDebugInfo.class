@@ -628,6 +628,8 @@ Public Sub ReadConfig()
   ' Next
   btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
   
+  Form_Arrange
+  
 End
 
 Public Sub AddBreakpoint(sName As String, sProc As String, iLine As Integer, bOn As Boolean)
@@ -1498,5 +1500,21 @@ Public Sub tabDebug_Close(Index As Integer)
     GotoConsole
     tabDebug[TAB_SEARCH].Visible = False
   Endif
+
+End
+
+Public Sub Form_Arrange()
+
+  Dim H As Integer
+
+  H = tabDebug.H - tabDebug.ClientHeight - 1
+  btnClose.Move(Me.W - H, 0, H, H)
+  btnClose.Raise
+
+End
+
+Public Sub btnClose_Click()
+
+  FMain.ShowDebug(False)
 
 End
