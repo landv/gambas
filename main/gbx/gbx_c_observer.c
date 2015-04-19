@@ -34,6 +34,14 @@
 
 //#define DEBUG_ME 1
 
+void COBSERVER_lock(COBSERVER *this, bool lock)
+{
+	if (lock)
+		this->locked++;
+	else
+		this->locked--;
+}
+
 void COBSERVER_attach(COBSERVER *this, void *parent, const char *name)
 {
 	#if DEBUG_ME

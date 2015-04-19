@@ -41,7 +41,7 @@ const char *OBJECT_ref_where = 0;
 
 void **OBJECT_set_pointer = NULL;
 
-static OBJECT *EventObject = NULL;
+static OBJECT *_event_object_list = NULL;
 
 #if DEBUG_REF
 char *OBJECT_where_am_i(const char *file, int line, const char *func)
@@ -81,7 +81,7 @@ static void dump_attach(char *title)
 	void *ob;
 
 	fprintf(stderr, ">>>> %s: ", title);
-	for (ob = EventObject; ob; ob = OBJECT_event(ob)->next)
+	for (ob = _event_object_list; ob; ob = OBJECT_event(ob)->next)
 		fprintf(stderr, "%p -> ", ob);
 	fprintf(stderr, "(nil)\n");
 
@@ -112,12 +112,37 @@ static void call_attach_special_method(CLASS *class, void *ob, void *parent, con
 	EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
 }
 
+static void insert_object(OBJECT *ob, OBJECT_EVENT *ev)
+{
+	ev->next = _event_object_list;
+	ev->prev = NULL;
+
+	if (_event_object_list)
+		OBJECT_event(_event_object_list)->prev = ob;
+
+	_event_object_list = ob;
+}
+
+static void remove_object(OBJECT *ob, OBJECT_EVENT *ev)
+{
+	if (ev->prev)
+		OBJECT_event(ev->prev)->next = ev->next;
+
+	if (ev->next)
+		OBJECT_event(ev->next)->prev = ev->prev;
+
+	if (ob == _event_object_list)
+		_event_object_list = ev->next;
+
+	ev->prev = NULL;
+	ev->next = NULL;
+}
+
 void OBJECT_detach(OBJECT *ob)
 {
 	CLASS *class = OBJECT_class(ob);
 	OBJECT *parent;
 	OBJECT_EVENT *ev;
-	bool lock;
 
 	if (!class->is_observer && class->n_event == 0)
 		return;
@@ -129,17 +154,7 @@ void OBJECT_detach(OBJECT *ob)
 
 	// Do not free the observers there
 	
-	if (ev->prev)
-		OBJECT_event(ev->prev)->next = ev->next;
-
-	if (ev->next)
-		OBJECT_event(ev->next)->prev = ev->prev;
-
-	if (ob == EventObject)
-		EventObject = ev->next;
-
-	ev->prev = NULL;
-	ev->next = NULL;
+	remove_object(ob, ev);
 
 	//dump_attach("OBJECT_detach");
 
@@ -151,9 +166,7 @@ void OBJECT_detach(OBJECT *ob)
 		if (class->special[SPEC_ATTACH] != NO_SYMBOL)
 			call_attach_special_method(class, ob, parent, NULL);
 		
-		lock = OBJECT_is_locked(ob);
 		ev->parent = NULL;
-		OBJECT_lock(ob, lock);
 		#if DEBUG_EVENT || DEBUG_REF
 			fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
 				ob->class->name, ob, parent->class->name, parent);
@@ -194,7 +207,6 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 {
 	CLASS *class = OBJECT_class(ob);
 	OBJECT_EVENT *ev;
-	bool lock;
 	
 	if (!name)
 		return;
@@ -202,31 +214,21 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 	if (!class->is_observer && class->n_event == 0)
 		return;
 		
-	lock = OBJECT_is_locked(ob);
-
 	OBJECT_detach(ob);
 
 	ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
-
 	ev->parent = parent;
-
-	OBJECT_lock(ob, lock);
 
 	#if DEBUG_EVENT || DEBUG_REF
 		fprintf(stderr, "OBJECT_attach : Attach (%s %p) to (%s %p) as %s\n",
 			ob->class->name, ob, parent->class->name, parent, name);
 	#endif
+
 	OBJECT_REF(parent);
 
 	EVENT_search(class, ev->event, name, parent);
 
-	ev->next = EventObject;
-	ev->prev = NULL;
-
-	if (EventObject)
-		OBJECT_event(EventObject)->prev = ob;
-
-	EventObject = ob;
+	insert_object(ob, ev);
 
 	if (class->special[SPEC_ATTACH] != NO_SYMBOL)
 		call_attach_special_method(class, ob, parent, name);
@@ -370,8 +372,8 @@ void OBJECT_exit(void)
 	#if DEBUG_LOAD
 	fprintf(stderr, "------------ OBJECT_exit - BEGIN---------\n");
 	#endif
-	while (EventObject)
-		OBJECT_detach(EventObject);
+	while (_event_object_list)
+		OBJECT_detach(_event_object_list);
 	#if DEBUG_LOAD
 	fprintf(stderr, "------------ OBJECT_exit - END ----------\n");
 	#endif
@@ -452,9 +454,10 @@ void *OBJECT_create_native(CLASS *class, VALUE *param)
 	return object;
 }
 
-void OBJECT_lock(OBJECT *object, bool block)
+void OBJECT_lock(OBJECT *object, bool lock)
 {
 	CLASS *class;
+	OBJECT_EVENT *ev;
 
 	if (!object)
 		return;
@@ -463,19 +466,19 @@ void OBJECT_lock(OBJECT *object, bool block)
 	
 	if (class->is_observer)
 	{
-		COBSERVER_lock((COBSERVER *)object, block);
+		COBSERVER_lock((COBSERVER *)object, lock);
 		return;
 	}
 	
 	if (class->n_event == 0)
 		return;
 
-	// fprintf(stderr, "OBJECT_lock: (%s %p) %s\n", class->name, object, block ? "lock" : "unlock");
+	ev = (OBJECT_EVENT *)((char *)object + class->off_event);
 
-	if (block)
-		OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent | 1);
+	if (lock)
+		ev->locked++;
 	else
-		OBJECT_event(object)->parent = (OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1);
+		ev->locked--;
 }
 
 
@@ -494,7 +497,7 @@ bool OBJECT_is_locked(OBJECT *object)
 	if (class->n_event == 0)
 		return FALSE;
 
-	return (((intptr_t)OBJECT_event(object)->parent & 1) != 0);
+	return OBJECT_event(object)->locked > 0;
 }
 
 
@@ -505,7 +508,8 @@ OBJECT *OBJECT_parent(void *object)
 	if (!class->is_observer && class->n_event == 0)
 		return NULL;
 	
-	return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
+	//return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
+	return OBJECT_event(object)->parent;
 }
 
 

@@ -45,8 +45,10 @@ typedef
 		OBJECT *next;
 		OBJECT *prev;
 		void *observer;
+		short locked;
 		ushort event[0];
 		}
+	PACKED
 	OBJECT_EVENT;
 
 #define OBJECT_event(_object) ((OBJECT_EVENT *)((intptr_t *)_object + ((OBJECT *)(_object))->class->off_event / sizeof(intptr_t)))
@@ -84,6 +86,7 @@ void *OBJECT_create_native(CLASS *class, VALUE *param);
 
 OBJECT *OBJECT_parent(void *object);
 OBJECT *OBJECT_active_parent(void *object);
+
 
 /*
 static INLINE CLASS *OBJECT_class(void *object)

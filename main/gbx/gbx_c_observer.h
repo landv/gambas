@@ -44,15 +44,15 @@ typedef
 		ushort *event;
 		void *object;
 		GB_VARIANT_VALUE tag;
+		short locked;
 		unsigned after : 1;
-		unsigned locked : 1;
 	}
 	COBSERVER;
 
 void COBSERVER_attach(COBSERVER *this, void *parent, const char *name);
 void COBSERVER_detach(COBSERVER *this);
+void COBSERVER_lock(COBSERVER *this, bool lock);
 
-#define COBSERVER_lock(_this, _lock) (((COBSERVER *)_this)->locked = (_lock))
-#define COBSERVER_is_locked(_this) (((COBSERVER *)_this)->locked)
+#define COBSERVER_is_locked(_this) (((COBSERVER *)_this)->locked > 0)
 
 #endif
