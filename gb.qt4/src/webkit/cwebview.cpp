@@ -919,6 +919,6 @@ void CWebView::handleUnsupportedContent(QNetworkReply *reply)
 		if (GB.Raise(THIS, EVENT_DOWNLOAD, 1, GB_T_OBJECT, download) || !download->path || !*download->path)
 			WEB_remove_download(download);
 	}
-
-	delete reply;
+	else
+		delete reply;
 }
