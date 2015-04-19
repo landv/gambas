@@ -355,13 +355,15 @@ Private Sub Count_Write(iCount As Integer)
   Dim hTab As _TabPanelContainer
   Dim hButton As _TabPanelButton
   Dim iCurrent As Integer
+  Dim bLocked As Boolean
 
   If iCount < 1 Then Error.Raise("Bad argument")
   If iCount = $aCont.Count Then Return
 
   iCurrent = $iCurrent
-    
-  Object.Lock(Me)
+  
+  bLocked = Object.IsLocked(Me)  
+  If Not bLocked Then Object.Lock(Me)
   
   If iCount < $aCont.Count Then
 
@@ -397,7 +399,7 @@ Private Sub Count_Write(iCount As Integer)
   $iCurrent = -1
   If iCurrent < 0 Then iCurrent = $aCont.Max
   
-  Object.Unlock(Me)
+  If Not bLocked Then Object.Unlock(Me)
   
   Try Index_Write(iCurrent)
 
@@ -831,10 +833,12 @@ Public Sub _MoveTab(hSrc As _TabPanelButton, hDst As _TabPanelButton, bAfter As 
   
   Dim S, T As Integer
   Dim hSrcPanel As Control
+  Dim bLocked As Boolean
   
   If hSrc = hDst Then Return
 
-  Object.Lock(Me)
+  bLocked = Object.IsLocked(Me)
+  If Not bLocked Then Object.Lock(Me)
   
   S = _GetIndex(hSrc)
   $aButton.Remove(S)
@@ -848,7 +852,7 @@ Public Sub _MoveTab(hSrc As _TabPanelButton, hDst As _TabPanelButton, bAfter As 
   
   UpdateLayout
   
-  Object.Unlock(Me)
+  If Not bLocked Then Object.Unlock(Me)
   
   Raise Move(S, T)
   

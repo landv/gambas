@@ -171,7 +171,6 @@ Public Sub NumberBox_Change()
   Dim iPos As Integer = $hTextBox.Pos
   Dim sText As String = $hTextBox.Text
   Dim bNeg As Boolean
-  Dim bRaiseChange As Boolean
   
   If Left(sText) = "-" Then 
     bNeg = True
