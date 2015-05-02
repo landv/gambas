@@ -150,6 +150,9 @@ Public Sub Form_Open()
   '   fvwImport.Current = File.Name(sPath)
   ' Endif
   dchImport.FileView.Filter = ["*.po", ("Translation files")]
+  
+  Project.SetEditorFont(txtOrig)
+  Project.SetEditorFont(txtTranslate)
 
   Dec Application.Busy
 
@@ -358,8 +361,8 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
       Endif
 
       Print #hFic, "#: "; .Item[2]
-      Print #hFic, "msgid "; QuoteTranslation(.Item[3])
-      Print #hFic, "msgstr "; QuoteTranslation(sStr)
+      Print #hFic, "msgid "; Chr$(34); .Item[3]; Chr$(34)
+      Print #hFic, "msgstr "; Quote(UnQuote(sStr))
       Print #hFic
 
       If sStr Then bTrans = True
@@ -447,19 +450,19 @@ Catch
 
 End
 
-Private Function QuoteTranslation(sStr As String) As String
-
-  ' sStr = Replace(sStr, "\n", "")
-  ' sStr = Replace(sStr, "\\" & Chr$(34), "\n")
-  ' sStr = Replace(sStr, Chr$(34), "\\" & Chr$(34))
-  ' sStr = Replace(sStr, "\n", "\\" & Chr$(34))
-  ' sStr = Replace(sStr, "\\", "\\\\")
-  ' 
-  ' Return Chr$(34) & sStr & Chr$(34)
-
-  Return Quote(sStr)
-
-End
+' Private Function QuoteTranslation(sStr As String) As String
+' 
+'   ' sStr = Replace(sStr, "\n", "")
+'   ' sStr = Replace(sStr, "\\" & Chr$(34), "\n")
+'   ' sStr = Replace(sStr, Chr$(34), "\\" & Chr$(34))
+'   ' sStr = Replace(sStr, "\n", "\\" & Chr$(34))
+'   ' sStr = Replace(sStr, "\\", "\\\\")
+'   ' 
+'   ' Return Chr$(34) & sStr & Chr$(34)
+' 
+'   Return Quote(sStr)
+' 
+' End
 
 ' Private Function QuoteTranslation(sStr As String) As String
 '

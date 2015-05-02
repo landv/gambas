@@ -222,8 +222,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.7.90\n"
-"POT-Creation-Date: 2015-04-25 20:40 UTC\n"
-"PO-Revision-Date: 2015-04-06 18:31 UTC\n"
+"POT-Creation-Date: 2015-05-02 15:16 UTC\n"
+"PO-Revision-Date: 2015-05-02 15:15 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -948,7 +948,7 @@ msgstr "Impossible d'installer le répertoire source"
 #: FFarmLogin.form:126 FFarmRegister.form:141 FFarmRequest.form:43
 #: FFieldChooser.form:138 FFileProperty.class:141 FFontChooser.form:40
 #: FForm.class:3215 FGotoLine.form:23 FHelpBrowser.form:60
-#: FImageEditor.class:386 FImageOffsetSelection.form:33 FImageQuality.form:30
+#: FImageEditor.class:388 FImageOffsetSelection.form:33 FImageQuality.form:30
 #: FImageResize.form:49 FImageRotate.form:32 FList.form:121 FMain.class:214
 #: FMakeInstall.class:309 FMenu.form:404 FNewConnection.form:301
 #: FNewTable.form:86 FNewTranslation.form:21 FOption.class:721
@@ -960,7 +960,7 @@ msgstr "Impossible d'installer le répertoire source"
 #: FSaveProjectAs.form:76 FSearch.class:887 FSelectComponent.form:51
 #: FSelectExtraFile.form:43 FSelectIcon.form:87 FSnippet.form:57
 #: FSoftwareFarm.class:445 FTableChooser.form:68 FText.form:41
-#: FTextEditor.class:682 FTranslate.class:557 Project.module:489
+#: FTextEditor.class:682 FTranslate.class:562 Project.module:489
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -1397,7 +1397,7 @@ msgstr "Impossible de supprimer la table « &1 »."
 msgid "Select the CSV file to import"
 msgstr "Choisissez le fichier CSV à importer"
 
-#: FConnectionEditor.class:1691 FSearch.form:172 FTranslate.class:1210
+#: FConnectionEditor.class:1691 FSearch.form:172 FTranslate.class:1215
 msgid "All files"
 msgstr "Tous les fichiers"
 
@@ -1535,7 +1535,7 @@ msgstr "Supprimer"
 msgid "Gambas 3 project conversion"
 msgstr "Conversion en projet Gambas 3"
 
-#: FCrash.class:73 FTranslate.class:1125 Project.module:4539
+#: FCrash.class:73 FTranslate.class:1130 Project.module:4539
 msgid "The '&1' command has failed."
 msgstr "La commande '&1' a échoué."
 
@@ -1950,7 +1950,7 @@ msgstr "Rechercher de nouveau"
 msgid "Show search window"
 msgstr "Afficher la fenêtre de recherche"
 
-#: FDebugInfo.form:332 FSearch.class:502 FTranslate.class:519
+#: FDebugInfo.form:332 FSearch.class:502 FTranslate.class:524
 msgid "Search string cannot be found."
 msgstr "La chaîne recherchée est introuvable."
 
@@ -1958,7 +1958,7 @@ msgstr "La chaîne recherchée est introuvable."
 msgid "Stack backtrace"
 msgstr "Pile des appels"
 
-#: FEditor.class:2298 FImageEditor.class:386 FMain.class:2577
+#: FEditor.class:2298 FImageEditor.class:388 FMain.class:2577
 #: FTextEditor.class:682
 msgid ""
 "The file has been modified.\n"
@@ -3730,7 +3730,9 @@ msgstr "Tests autoconf supplémentaires"
 msgid ""
 "Add extra tests for the configuration process.\n"
 "<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
-msgstr "Ajout de tests supplémentaires au processus de configuration.<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
+msgstr ""
+"Ajout de tests supplémentaires au processus de configuration.\n"
+"<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
 
 #: FMakeInstall.form:849
 msgid "Destination directory"
@@ -5300,63 +5302,63 @@ msgstr "Langage"
 msgid "Translation files"
 msgstr "Fichiers de traduction"
 
-#: FTranslate.class:284
+#: FTranslate.class:287
 msgid "Cannot read translation file for language '&1'"
 msgstr "Impossible de lire le fichier de traduction pour la langue « &1 »"
 
-#: FTranslate.class:446
+#: FTranslate.class:449
 msgid "Cannot save translation."
 msgstr "Impossible de sauvegarder la traduction."
 
-#: FTranslate.class:557
+#: FTranslate.class:562
 msgid "Do you really want to delete this translation ?"
 msgstr "Voulez-vous vraiment supprimer cette traduction ?"
 
-#: FTranslate.class:653
+#: FTranslate.class:658
 msgid "Do you really want to reload this translation ?"
 msgstr "Voulez-vous vraiment recharger cette traduction ?"
 
-#: FTranslate.class:667
+#: FTranslate.class:672
 msgid "Export a translation"
 msgstr "Exporter une traduction"
 
-#: FTranslate.class:856
+#: FTranslate.class:861
 msgid "Please select the translation file to import."
 msgstr "Veuillez sélectionner le fichier de traduction à importer."
 
-#: FTranslate.class:894
+#: FTranslate.class:899
 msgid "No translation were picked up."
 msgstr "Aucune traduction n'a été récupérée."
 
-#: FTranslate.class:896
+#: FTranslate.class:901
 msgid "One translation was picked up."
 msgstr "Une traduction a été récupérée."
 
-#: FTranslate.class:898
+#: FTranslate.class:903
 msgid "&1 translations were picked up."
 msgstr "&1 traductions ont été récupérées."
 
-#: FTranslate.class:906
+#: FTranslate.class:911
 msgid "Cannot import translation file."
 msgstr "Impossible d'importer le fichier de traduction."
 
-#: FTranslate.class:955
+#: FTranslate.class:960
 msgid "Translated string symbols do not match untranslated string ones."
 msgstr "Les symboles de la chaîne traduite ne correspondent pas à ceux de la chaîne non traduite."
 
-#: FTranslate.class:968
+#: FTranslate.class:973
 msgid "Everything seems to be correct."
 msgstr "Tout semble correct."
 
-#: FTranslate.class:991
+#: FTranslate.class:996
 msgid "&1 strings. Everything is translated!"
 msgstr "&1 chaînes de caractères. Tout est traduit !"
 
-#: FTranslate.class:993
+#: FTranslate.class:998
 msgid "&1 strings. One is not translated. &3% done."
 msgstr "&1 chaînes de caractères. Une n'est pas traduite. &3% effectué."
 
-#: FTranslate.class:995
+#: FTranslate.class:1000
 msgid "&1 strings. &2 are not translated. &3% done."
 msgstr "&1 chaînes de caractères. &2 ne sont pas traduites. &3% effectué."
 
