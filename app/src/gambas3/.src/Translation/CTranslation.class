@@ -122,7 +122,7 @@ Private Sub LoadTranslation(sLang As String)
       If bFuzzy Then
         bFuzzy = False
       Else
-        Translations[sMsgId] = sMsgStr
+        Translations[sMsgId] = UnQuote(sMsgStr)
       Endif
       Comments[sMsgId] = sMsgComment
       sMsgId = ""

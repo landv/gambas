@@ -449,12 +449,15 @@ End
 
 Private Function QuoteTranslation(sStr As String) As String
 
-  sStr = Replace(sStr, "\n", "")
-  sStr = Replace(sStr, "\\" & Chr$(34), "\n")
-  sStr = Replace(sStr, Chr$(34), "\\" & Chr$(34))
-  sStr = Replace(sStr, "\n", "\\" & Chr$(34))
+  ' sStr = Replace(sStr, "\n", "")
+  ' sStr = Replace(sStr, "\\" & Chr$(34), "\n")
+  ' sStr = Replace(sStr, Chr$(34), "\\" & Chr$(34))
+  ' sStr = Replace(sStr, "\n", "\\" & Chr$(34))
+  ' sStr = Replace(sStr, "\\", "\\\\")
+  ' 
+  ' Return Chr$(34) & sStr & Chr$(34)
 
-  Return Chr$(34) & sStr & Chr$(34)
+  Return Quote(sStr)
 
 End
 

@@ -244,7 +244,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     Paint.Stroke(True)
     
     Paint.Background = Color.Black 'Color.SetAlpha(Color.Black, 128)
-    Paint.Dash = [2, 2]
+    Paint.Dash = [4, 4]
     Paint.DashOffset = fDashOffset
     ' 
     ' If _Invert Then
@@ -481,6 +481,7 @@ Public Sub Text(X As Float, Y As Float, sText As String, sFont As String, iAlign
   Endif
   
   Paint.Text(sText, X - hExtents.X, Y, hExtents.Width, hExtents.Height, iTextAlign)
+
   hOutline = Paint.PathOutline
   
   For Each hPoly In hOutline

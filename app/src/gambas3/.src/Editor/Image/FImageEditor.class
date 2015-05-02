@@ -42,6 +42,8 @@ Private $hStrokeExtents As Rect
 'Private $hStrokeOrigin As Point
 
 Private $hSelect As CImageSelection
+Private $iLastSelectW As Integer
+Private $iLastSelectH As Integer
 
 Private $hLastMagnet As PointF
 Private $hMagnet As PointF
@@ -820,12 +822,8 @@ Private Sub UpdateInfo()
   If $hCurrentPoint.InRect(RectF(0, 0, $hImage.W, $hImage.H)) Or If $bPress Then
     sInfo = CStr(CInt($hCurrentPoint.X)) & " , " & CStr(CInt($hCurrentPoint.Y))
     If $bPress Then
-      If $sTool = "rectangle" Or If $sTool = "ellipse" Or If $sTool = "text" Then
-        If $bShift Then
-          sInfo &= " ( " & (Abs(CInt($hCurrentPoint.X) - CInt($hLastPoint.X)) * 2) & " x " & (Abs(CInt($hCurrentPoint.Y) - CInt($hLastPoint.Y)) * 2) & " )"
-        Else
-          sInfo &= " ( " & Abs(CInt($hCurrentPoint.X) - CInt($hLastPoint.X)) & " x " & Abs(CInt($hCurrentPoint.Y) - CInt($hLastPoint.Y)) & " )"
-        Endif
+      If $sTool = "rectangle" Or If $sTool = "ellipse" Or If $sTool = "line" Then
+        sInfo &= " ( " & $iLastSelectW & " x " & $iLastSelectH & " )"
       Endif
     Endif
     
@@ -1025,6 +1023,9 @@ Public Sub imvImage_MouseMove()
       
       Case "line"
         
+        $iLastSelectW = $hCurrentPoint.X - $hLastPoint.X
+        $iLastSelectH = $hCurrentPoint.Y - $hLastPoint.Y
+
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect.LineTo($hCurrentPoint.X, $hCurrentPoint.Y)
           imvImage.Refresh
@@ -1044,11 +1045,15 @@ Public Sub imvImage_MouseMove()
           WW = $hCurrentPoint.X - $hLastPoint.X + Sgn($hCurrentPoint.X - $hLastPoint.X)
           HH = $hCurrentPoint.Y - $hLastPoint.Y + Sgn($hCurrentPoint.Y - $hLastPoint.Y)
           If $bShift Then
-            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2, FImageProperty.GetRoundness())
+            WW *= 2
+            HH *= 2
+            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW, HH, FImageProperty.GetRoundness())
           Else
             $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, WW, HH, FImageProperty.GetRoundness())
           Endif
           imvImage.Refresh
+          $iLastSelectW = WW
+          $iLastSelectH = HH
         Endif
       
       Case "text"
@@ -1071,6 +1076,8 @@ Public Sub imvImage_MouseMove()
             $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), WW, HH)
           Endif
           imvImage.Refresh
+          $iLastSelectW = WW
+          $iLastSelectH = HH
         Endif
         
       Case "change", "paste"
