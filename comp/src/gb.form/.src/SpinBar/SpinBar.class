@@ -1,0 +1,346 @@
+' Gambas class file
+
+Export
+Inherits UserControl
+Public Const _Properties As String = "*,Value,MaxValue=1.0,MinValue,Text,Step=0.1"
+Public Const _DefaultEvent As String = "Change"
+Public Const _DefaultSize As String = "32,4"
+Public Const _Similar As String = "Slider"
+'Properties Var
+Private $hView As DrawingArea
+Private $fValue As Float 
+Private $fMaxValue As Float = 1
+Private $fMinValue As Float = 0
+Private $sText As String 
+Private $fStep As Float = 0.1
+'Internal Var
+Private $fInternalPos As Float
+Private $bInButDown As Boolean
+Private $bInButUp As Boolean
+Private $bInText As Boolean
+Private $hRectButUp As Rect    ''Define the zone of the top arrow utton
+Private $hRectButDown As Rect  ''Define the zone of the Bottom arrow button
+Private $hRectText As New Rect     ''Define the zone of the spin text
+Private $iLoop As Integer
+Private $byDecimal As Integer
+Private $sFormatPattern As String
+Private $hText As TextBox
+Private $iMX As Integer
+Private $iMY As Integer
+Private $byMode As Byte
+
+'Properties
+Property Value As Float
+Property MaxValue As Float
+Property MinValue As Float
+Property Text As String
+Property Step As Float
+
+Private $hTimer As New Timer As "Timer"
+
+Event Change
+
+Public Sub _New()
+  
+  $hView = New DrawingArea(Me) As "View"
+  $hView.Border = Border.Plain
+  $hView.Tracking = True
+  $hView.Background = Color.TextBackground
+  $hView.Focus = True
+  $hText = New TextBox($hView) As "Text"
+  $hText.Visible = False
+  $hText.Border = False
+  $hText.Alignment = Align.Right
+  
+  $hTimer.Delay = 200
+  SetValue(Me.Value)
+  'Me.MaxValue = 3
+  GetDecimals
+  
+End
+
+Public Sub View_MouseMove()
+  
+  Dim $bPrev As Boolean
+  Dim $bChange As Boolean
+  Dim iWidth As Integer = $hView.Width - 4 - $hRectButDown.Width - 1
+  Dim iMov As Integer
+  
+  If Mouse.y <= $hView.ClientH / 2 Then 
+    If Not ($byMode = 2) Then $hView.Mouse = Mouse.Pointing
+  Else
+    If Not ($byMode = 1) Then $hView.Mouse = Mouse.SizeH
+  Endif
+  $bPrev = $bInButUp
+  $bInButUp = False
+  If $hRectButUp.Contains(Mouse.x, Mouse.y) Then 
+    $hView.Mouse = Mouse.Arrow
+    $bInButUp = True
+    $bChange = $bChange Or ($bPrev <> $bInButUp)
+  Endif
+  
+  $bPrev = $bInButDown 
+  $bInButDown = False
+  If $hRectButDown.Contains(Mouse.x, Mouse.Y) Then  
+    $hView.Mouse = Mouse.Arrow
+    $bInButDown = True
+    $bChange = $bChange Or ($bPrev <> $bInButUp)
+  Endif
+  
+  $bPrev = $bInText
+  $bInText = False
+  If $hRectText.Contains(Mouse.x, Mouse.Y) Then  
+    $bInText = True
+    $bChange = $bChange Or ($bPrev <> $bInText)
+  Endif
+  
+  If Mouse.Left And If $hView.Mouse = Mouse.Pointing And If Not ($byMode = 2) Then
+    $byMode = 1
+    SetValue((Mouse.x / iWidth) * ($fMaxValue - $fMinValue) + $fMinValue)
+  Endif
+  
+  If Mouse.Left And If $hView.Mouse = Mouse.SizeH And If Not ($byMode = 1) Then 
+    $byMode = 2
+    iMov = Mouse.x - $iMX
+    SetValue($fValue + (1 * 10 ^ (-1 * $byDecimal)) * iMov)
+    $iMX = Mouse.X
+  Endif
+  
+Fin:
+  If $bChange Then $hView.Refresh
+  
+End
+
+Public Sub View_MouseDown()
+  
+  Dim iWidth As Integer = $hView.Width - 4 - $hRectButDown.Width - 1
+
+  If $bInButUp Then 
+    Me.Value += $fStep
+    $hTimer.Start
+    Return
+  Endif
+  If $bInButDown Then
+    Me.Value -= $fStep
+    $hTimer.Start
+    Return
+  Endif
+  
+  If Mouse.Y <= $hView.ClientH / 2 Then 
+    SetValue((Mouse.x / iWidth) * ($fMaxValue - $fMinValue) + $fMinValue)
+  Endif
+  
+  If Mouse.Y > $hView.ClientH / 2 Then  
+    $iMX = Mouse.X
+    $iMY = Mouse.Y
+  Endif
+  
+End
+
+Public Sub View_MouseUp()
+  
+  $hTimer.Stop
+  $iLoop = 0
+  $hTimer.Delay = 200
+  $byMode = 0
+  
+End
+
+Public Sub Timer_Timer()
+  
+  If $iLoop <= 5 Then
+    Inc $iLoop
+  Else
+    $hTimer.Delay = 50
+  Endif
+  
+  If $bInButUp Then Me.Value += $fStep
+  If $bInButDown Then Me.Value -= $fStep
+  
+End
+
+Public Sub View_MouseWheel()
+  
+  Me.Value += $fStep * Mouse.Delta
+  
+End
+
+Public Sub View_DblClick()
+  
+  If Not $bInText Then Return
+  $hText.Move($hRectText.X, $hRectText.Y, $hRectText.Width, $hRectText.Height)
+  $hText.Show
+  $hText.Text = $fValue
+  $hText.SetFocus
+  $hText.Select
+  
+End
+
+Public Sub View_Draw()
+  
+  Dim iWidth As Integer = Paint.Width - 4 - $hRectButDown.Width - 1
+  Dim iHeight As Integer = Paint.Height - 4
+  Dim iButH As Integer
+  
+  Draw.FillRect(2, 2, iWidth * $fInternalPos, iHeight, Color.SelectedBackground)
+  Draw.Text(Paint.TrimText($sText, iWidth / 2), 8, 2, iWidth / 2, iHeight, Align.Left)
+  iButH = (Paint.H) 
+  Draw.Foreground = Color.ButtonBackground
+  Draw.FillRect(Paint.w - 16, 2, 16 - 2, iButH - 4, Color.Background)
+  
+  'Draw.rect(Paint.w - iPadding - 16, iPadding + iButH + 2, 16, iButH)
+  iButH = (Paint.H) / 2
+  Style.PaintArrow(Paint.w - 16, 0, 16, iButH, Align.Top, IIf($bInButUp, Style.Hovered, Style.Normal))
+  Style.PaintArrow(Paint.w - 16, iButH, 16, iButH, Align.Bottom, IIf($bInButDown, Style.Hovered, Style.Normal))
+  Draw.Foreground = Color.Foreground
+  Draw.Text(Format($fValue, $sFormatPattern), 2, 2, iWidth - 4, iHeight, Align.Right)
+  Draw.Foreground = Color.ButtonBackground
+  If $bInText Then Draw.Rect($hRectText.x, $hRectText.Y, $hRectText.Width, $hRectText.Height)
+  
+End
+
+Private Sub SetValue(fValue As Float)
+  
+  Dim iWidth As Integer
+  
+  fValue = Round(Max(Min(fValue, $fMaxValue), $fMinValue), $byDecimal * -1)
+  If fValue <> $fValue Then
+    $fValue = fValue
+    Raise Change
+  Endif
+  $fInternalPos = ($fValue - $fMinValue) / ($fMaxValue - $fMinValue)
+  iWidth = $hView.Font.TextWidth(Format($fValue, $sFormatPattern) & "000") + 4
+  Try $hRectText.Move($hView.ClientW - iWidth - 5 + 2 - $hRectButDown.Width, ($hView.ClientH - ($hView.Font.Height + 4)) / 2 + 2, iWidth, $hView.Font.Height + 4)
+  $hView.Refresh
+  
+End
+
+Private Function Value_Read() As Float
+  
+  Return $fValue
+  
+End
+
+Private Sub Value_Write(Value As Float)
+  
+  SetValue(Value)
+  
+End
+
+Private Function MaxValue_Read() As Float
+  
+  Return $fMaxValue
+  
+End
+
+Private Sub MaxValue_Write(Value As Float)
+  
+  $fMaxValue = Max($fMinValue, Value)
+  GetDecimals
+  SetValue(Me.Value)
+  
+End
+
+Private Function MinValue_Read() As Float
+  
+  Return $fMinValue
+  
+End
+
+Private Sub MinValue_Write(Value As Float)
+  
+  $fMinValue = Min(Value, $fMaxValue)
+  GetDecimals
+  SetValue(Me.Value)
+  
+End
+
+Public Sub View_Arrange()
+  
+  $hRectButUp = New Rect($hView.ClientW - 16, 2, 16 - 2, ($hView.ClientH - 4) / 2)
+  $hRectButDown = New Rect($hView.ClientW - 16, 2 + $hRectButUp.Height, 16 - 2, $hRectButUp.Height)
+  SetValue(Me.Value)
+  
+End
+
+Public Sub View_Leave()
+  
+  $byMode = 0
+  $bInButDown = False
+  $bInButUp = False
+  $bInText = False
+  $hTimer.Stop
+  $hTimer.Delay = 200
+  $iLoop = 0
+  $hView.Refresh
+  
+End
+
+Private Function Text_Read() As String
+  
+  Return $sText
+  
+End
+
+Private Sub Text_Write(Value As String)
+  
+  $sText = Value
+  $hView.Refresh
+  
+End
+
+Private Sub GetDecimals()
+  
+  $byDecimal = Max(Max(Len(Right(Str(Frac($fMaxValue)), -2)), Len(Right(Str(Frac($fMinValue)), -2))), Len(Right(Str(Frac($fStep)), -2)))
+  $sFormatPattern = "0." & String($byDecimal, "0")
+  
+End
+
+Private Function Step_Read() As Float
+  
+  Return $fStep
+  
+End
+
+Private Sub Step_Write(Value As Float)
+  
+  $fStep = Min($fMaxValue / 2, Value)
+  GetDecimals
+  
+End
+
+Public Sub Text_LostFocus()
+  
+  $hText.Hide
+  
+End
+
+Public Sub Text_GotFocus()
+  
+  $hText.Select()
+  
+End
+
+Public Sub Text_KeyPress()
+  
+  If Key.Code = Key.Esc Then $hView.SetFocus
+  If key.Code = Key.Enter Or If Key.code = Key.Return Then
+    If Not IsFloat(Last.Text) Then 
+      $hText.Text = $fValue
+      $hView.SetFocus
+      Return
+    Endif
+    SetValue(CFloat($hText.Text))
+    $hView.SetFocus
+  Endif
+
+End
+
+Public Sub Text_MouseWheel()
+  
+  View_MouseWheel
+  Last.Text = $fValue
+  
+End
+
+
