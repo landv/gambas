@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.7.90\n"
-"PO-Revision-Date: 2015-05-05 13:08 UTC\n"
+"PO-Revision-Date: 2015-05-05 22:06 UTC\n"
 "Last-Translator: Willy Raets <willy@develop.earthshipeurope.org>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -327,7 +327,7 @@ msgstr "Beeldfilterbewerking component"
 msgid "Image routines from the Imlib2 library"
 msgstr "Afbeeldingsroutines van de lmlib2 bibliotheek"
 
-#: CComponent.class:123 FProjectProperty.form:488 FPropertyComponent.form:176
+#: CComponent.class:123 FProjectProperty.form:488
 msgid "Image loading and saving"
 msgstr "Afbeeldingen laden en opslaan"
 
@@ -511,15 +511,15 @@ msgstr "XSLT gereedschappen gebaseerd op libxslt en libxml"
 msgid "Web applications tools"
 msgstr "Web applicatie gereedschappen"
 
-#: CComponent.class:175 FProjectProperty.form:476 FPropertyComponent.form:164
+#: CComponent.class:175 FProjectProperty.form:476
 msgid "Graphical form management"
 msgstr "Grafisch formulier beheer"
 
-#: CComponent.class:176 FProjectProperty.form:482 FPropertyComponent.form:170
+#: CComponent.class:176 FProjectProperty.form:482
 msgid "Event loop management"
 msgstr "Gebeurtenis lussen beheer"
 
-#: CComponent.class:178 FProjectProperty.form:499 FPropertyComponent.form:186
+#: CComponent.class:178 FProjectProperty.form:499
 msgid "OpenGL display"
 msgstr "OpenGL weergave"
 
@@ -527,7 +527,7 @@ msgstr "OpenGL weergave"
 msgid "Complex numbers"
 msgstr "Complexe nummers"
 
-#: CComponent.class:180 FProjectProperty.form:505 FPropertyComponent.form:192
+#: CComponent.class:180 FProjectProperty.form:505
 msgid "XML management"
 msgstr "XML beheer"
 
@@ -559,19 +559,19 @@ msgstr "Dit component is vervallen."
 msgid "Author"
 msgstr "Auteur"
 
-#: CComponent.class:1696 ComponentItem.class:146 FProjectProperty.form:355
+#: CComponent.class:1696 FProjectProperty.form:355
 msgid "Authors"
 msgstr "Auteurs"
 
-#: CComponent.class:1706 ComponentItem.class:161
+#: CComponent.class:1706
 msgid "Implements"
 msgstr "Werktuigen"
 
-#: FPropertyComponent.form:144 LibraryItem.class:60
+#: CComponent.class:1718 CLibraryInfo.class:158 LibraryItem.class:60
 msgid "Requires"
 msgstr "Vereist"
 
-#: CComponent.class:1733 ComponentItem.class:155
+#: CComponent.class:1733
 msgid "Excludes"
 msgstr "Uitzonderingen"
 
@@ -591,7 +591,7 @@ msgstr "Locatie"
 msgid "WARNING! Library not found."
 msgstr "WAARSCHUWING! Biblioteek niet gevonden"
 
-#: CLibraryInfo.class:157 ComponentItem.class:174 LibraryItem.class:58
+#: CLibraryInfo.class:157 LibraryItem.class:58
 msgid "Provides"
 msgstr "Voorziet in"
 
@@ -671,23 +671,23 @@ msgstr "-"
 msgid "Data"
 msgstr "Gegevens"
 
-#: CRecentFile.class:70 CRecentProject.class:68 FMain.class:657
+#: CRecentProject.class:68 FMain.class:657
 msgid "Today"
 msgstr "Vandaag"
 
-#: CRecentFile.class:72 CRecentProject.class:70
+#: CRecentProject.class:70
 msgid "Yesterday"
 msgstr "Gisteren"
 
-#: CRecentFile.class:74 CRecentProject.class:72
+#: CRecentProject.class:72
 msgid "Two days ago"
 msgstr "Twee dagen geleden"
 
-#: CRecentFile.class:76 CRecentProject.class:74
+#: CRecentProject.class:74
 msgid "This week"
 msgstr "Deze week"
 
-#: CRecentFile.class:78 CRecentProject.class:76
+#: CRecentProject.class:76
 msgid "This month"
 msgstr "Deze maand"
 
@@ -719,7 +719,7 @@ msgstr "Niet in staat om een uitvoeringsbestand te maken."
 msgid "Unable to install source directory"
 msgstr "Niet in staat on de bron folder te installeren"
 
-#: FTranslate.class:562 Project.module:489
+#: FTextEditor.class:682 FTranslate.class:562 Project.module:489
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -730,38 +730,6 @@ msgstr "Het Gambas lettertype is gepubliceerd onder de SIL Open Font License."
 #: CWelcome.class:85
 msgid "This program is published under the GNU General Public License."
 msgstr "Dit programma is gepubliceert onder de GNU General Public License."
-
-#: FProjectProperty.form:392 FPropertyComponent.form:82
-msgid "Experimental"
-msgstr "Experimenteel"
-
-#: FProjectProperty.form:392 FPropertyComponent.form:82
-msgid "Not finished but stable"
-msgstr "Nog niet klaar maar stabiel"
-
-#: FProjectProperty.form:392
-msgid "Deprecated"
-msgstr "Verouderd"
-
-#: ComponentItem.class:242 FComponentChooser.class:506
-msgid "This component is required by the following library:<p>&1"
-msgstr "Dit component is vereist door volgende bibiotheek:<p>&1"
-
-#: ComponentItem.class:244 FComponentChooser.class:508
-msgid "This component is required by the following libraries:<p>&1"
-msgstr "Dit component is vereist door volgende bibiotheken:<p>&1"
-
-#: ComponentItem.class:253 FComponentChooser.class:517
-msgid "This component is required by:<p>&1"
-msgstr "Dit component is vereist door:<p>&1"
-
-#: ComponentItem.class:254 FComponentChooser.class:518
-msgid "Keep"
-msgstr "Houden"
-
-#: ComponentItem.class:254 FComponentChooser.class:518 FDebugInfo.form:164
-msgid "Remove all"
-msgstr "Alles verwijderen"
 
 #: Design.module:187 Project.module:2286
 msgid "first"
@@ -783,7 +751,7 @@ msgstr "-"
 msgid "The program has returned\nthe value: &1"
 msgstr "Het programma geeft terug\nde waarde: &1 "
 
-#: FSnippet.form:51 FTableChooser.form:62 FText.form:35
+#: FTableChooser.form:62 FText.form:35
 msgid "OK"
 msgstr "OK"
 
@@ -831,9 +799,41 @@ msgstr "Systeem"
 msgid "Free"
 msgstr "Vrij"
 
+#: FComponentChooser.class:304 FProjectProperty.form:392
+msgid "Not finished but stable"
+msgstr "Nog niet klaar maar stabiel"
+
+#: FComponentChooser.class:306 FProjectProperty.form:392
+msgid "Experimental"
+msgstr "Experimenteel"
+
 #: FComponentChooser.class:308
 msgid "Stable"
 msgstr "Stabiel"
+
+#: FComponentChooser.class:310 FProjectProperty.form:392
+msgid "Deprecated"
+msgstr "Verouderd"
+
+#: FComponentChooser.class:506
+msgid "This component is required by the following library:<p>&1"
+msgstr "Dit component is vereist door volgende bibiotheek:<p>&1"
+
+#: FComponentChooser.class:508
+msgid "This component is required by the following libraries:<p>&1"
+msgstr "Dit component is vereist door volgende bibiotheken:<p>&1"
+
+#: FComponentChooser.class:517
+msgid "This component is required by:<p>&1"
+msgstr "Dit component is vereist door:<p>&1"
+
+#: FComponentChooser.class:518
+msgid "Keep"
+msgstr "Houden"
+
+#: FComponentChooser.class:518 FDebugInfo.form:164
+msgid "Remove all"
+msgstr "Alles verwijderen"
 
 #: FComponentChooser.class:622
 msgid "These components are incompatible:<br>&1."
@@ -869,7 +869,7 @@ msgstr "Geen zoom"
 
 #: FConflict.class:23
 msgid "&Edit"
-msgstr "Be&werken"
+msgstr "&Bewerken"
 
 #: FConflict.class:23
 msgid "This file is in conflict with the revision #&1.\nYou must resolve the conflict in order to use the file."
@@ -1123,7 +1123,7 @@ msgstr "Nieuwe tabel"
 msgid "Delete table"
 msgstr "Verwijder tabel"
 
-#: FPublish.form:268 FSoftwareFarm.form:394
+#: FSoftwareFarm.form:394
 msgid "Remove"
 msgstr "Verwijderen"
 
@@ -1159,7 +1159,7 @@ msgstr "-"
 msgid "Fields"
 msgstr "Velden"
 
-#: FPublish.form:158
+#: FOption.form:1310 FProjectProperty.form:666 FPublish.form:158
 msgid "Add"
 msgstr "Toevoegen"
 
@@ -1303,7 +1303,7 @@ msgstr "Kan bestand niet toevoegen."
 msgid "New file"
 msgstr "Nieuw bestand"
 
-#: FSearch.form:100
+#: FMakePatch.form:66 FProjectProperty.form:773 FSearch.form:100
 msgid "Options"
 msgstr "Opties"
 
@@ -1725,7 +1725,7 @@ msgstr "Sorteer procedures"
 
 #: FEditor.form:294 FImageEditor.form:291 FMain.form:609 FTextEditor.form:249
 msgid "View"
-msgstr "Beeld"
+msgstr "Weergeven"
 
 #: FEditor.form:298 FTextEditor.form:253
 msgid "No split"
@@ -2713,7 +2713,7 @@ msgstr "Sorteren per pad"
 
 #: FMain.class:694
 msgid "&Clear history"
-msgstr "Ges&chiedenis wissen"
+msgstr "&Geschiedenis wissen"
 
 #: FMain.class:878
 msgid "New folder"
@@ -2921,7 +2921,7 @@ msgstr "Sluiten alle vensters"
 
 #: FMain.form:679
 msgid "Tools"
-msgstr "Gereedschappen"
+msgstr "Gereedschap"
 
 #: FMain.form:683
 msgid "Find"
@@ -3109,11 +3109,11 @@ msgstr "&Project"
 
 #: FMain.form:1451
 msgid "&Debug"
-msgstr "&Debug"
+msgstr "&Fouten opsporen"
 
 #: FMain.form:1462
 msgid "&View"
-msgstr "Beel&d"
+msgstr "&Weergeven"
 
 #: FMain.form:1473
 msgid "&Tools"
@@ -3727,11 +3727,11 @@ msgstr "Pakket onderhouder"
 msgid "Default license"
 msgstr "Standaard licentie"
 
-#: FOption.form:351 FProjectProperty.form:409 FPropertyComponent.form:99
+#: FOption.form:351 FProjectProperty.form:409
 msgid "No"
 msgstr "Nee"
 
-#: FOption.form:351 FProjectProperty.form:409 FPropertyComponent.form:99
+#: FOption.form:351 FProjectProperty.form:409
 msgid "Yes"
 msgstr "Ja"
 
@@ -4147,7 +4147,7 @@ msgstr "Informatie over bibliotheek"
 msgid "GB_DB_DEBUG=1"
 msgstr "-"
 
-#: FProjectProperty.form:251 FPropertyComponent.form:60
+#: FProjectProperty.form:251
 msgid "General"
 msgstr "Algemeen"
 
@@ -4179,15 +4179,15 @@ msgstr "Informatie"
 msgid "Progress"
 msgstr "Voortgang"
 
-#: FProjectProperty.form:392 FPropertyComponent.form:82
+#: FProjectProperty.form:392
 msgid "Finished and stable"
 msgstr "Beëindigd en stabiel"
 
-#: FProjectProperty.form:403 FPropertyComponent.form:93
+#: FProjectProperty.form:403
 msgid "This component is hidden"
 msgstr "Dit component is verborgen"
 
-#: FProjectProperty.form:420 FPropertyComponent.form:110
+#: FProjectProperty.form:420
 msgid "Compatible until version"
 msgstr "Compatibel tot versie"
 
@@ -4211,11 +4211,11 @@ msgstr "Eis"
 msgid "Exclude"
 msgstr "Uitsluiten"
 
-#: FProjectProperty.form:556 FPropertyComponent.form:235
+#: FProjectProperty.form:556
 msgid "Remove All"
 msgstr "Alles verwijderen"
 
-#: FProjectProperty.form:563 FPropertyComponent.form:200
+#: FProjectProperty.form:563
 msgid "Components"
 msgstr "Componenten"
 
@@ -4398,26 +4398,6 @@ msgstr "Deze eigenschap is virtueel: het is enkel in de IDE geïmplementeerd en 
 #: FProperty.form:47
 msgid "Lock property"
 msgstr "Vergrendel eigenschap"
-
-#: FPropertyComponent.class:163
-msgid "Library properties"
-msgstr "Bibliotheek eigenschappen"
-
-#: FPropertyComponent.form:43
-msgid "Component properties"
-msgstr "Component eigenschappen"
-
-#: FPropertyComponent.form:75
-msgid "Component advancement"
-msgstr "Vooruitgang component"
-
-#: FPropertyComponent.form:135
-msgid "Exported classes"
-msgstr "Exporteer klassen"
-
-#: FPropertyComponent.form:149
-msgid "Features"
-msgstr "Eigenschappen"
 
 #: FProxy.form:37
 msgid "Port"
