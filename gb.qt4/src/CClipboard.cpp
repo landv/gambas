@@ -30,6 +30,7 @@
 #include <QImage>
 #include <QEvent>
 #include <QColor>
+#include <QDrag>
 #include <QDragMoveEvent>
 #include <QDropEvent>
 #include <QDragEnterEvent>
@@ -37,6 +38,7 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QSpinBox>
+#include <QWidget>
 
 #include "CWidget.h"
 #include "CImage.h"

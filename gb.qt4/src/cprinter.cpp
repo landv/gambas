@@ -218,7 +218,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Printer_Name)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(PRINTER->printerName());
+		RETURN_NEW_STRING(PRINTER->printerName());
 	else
 		PRINTER->setPrinterName(QSTRING_PROP());
 
@@ -425,7 +425,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Printer_OutputFile)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(PRINTER->outputFileName());
+		RETURN_NEW_STRING(PRINTER->outputFileName());
 	else
 		PRINTER->setOutputFileName(TO_QSTRING(GB.FileName(PSTRING(), PLENGTH())));
 
@@ -438,7 +438,7 @@ BEGIN_PROPERTY(Printer_Default)
 	if (info.isNull())
 		GB.ReturnNull();
 	else
-		GB.ReturnNewZeroString(info.printerName());
+		RETURN_NEW_STRING(info.printerName());
 
 END_PROPERTY
 
@@ -449,7 +449,7 @@ BEGIN_PROPERTY(Printer_List)
 
 	GB.Array.New(&array, GB_T_STRING, list.length());
 	for (int i = 0; i < list.length(); i++)
-		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(list.at(i).printerName());
+		*((char **)GB.Array.Get(array, i)) = NEW_STRING(list.at(i).printerName());
 
 	GB.ReturnObject(array);
 

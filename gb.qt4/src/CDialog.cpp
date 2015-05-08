@@ -162,7 +162,7 @@ static QString my_getOpenFileName()
 {
 	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
 	
-	dialog.setMode(QFileDialog::ExistingFile);
+	dialog.setFileMode(QFileDialog::ExistingFile);
 	dialog.setOption(QFileDialog::DontUseNativeDialog);
 	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
 	
@@ -176,7 +176,7 @@ static QStringList my_getOpenFileNames()
 {
 	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path, get_filter());
 	
-	dialog.setMode(QFileDialog::ExistingFiles);
+	dialog.setFileMode(QFileDialog::ExistingFiles);
 	dialog.setOption(QFileDialog::DontUseNativeDialog);
 	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
 	
@@ -205,7 +205,7 @@ static QString my_getSaveFileName()
 	dialog.selectFile(file);
 	
   dialog.setAcceptMode(QFileDialog::AcceptSave);
-	dialog.setMode(QFileDialog::AnyFile);
+	dialog.setFileMode(QFileDialog::AnyFile);
 	dialog.setOption(QFileDialog::DontUseNativeDialog);
 	dialog.setFilter(dialog_show_hidden ? (dialog.filter() | QDir::Hidden | QDir::System) : (dialog.filter() & ~(QDir::Hidden | QDir::System)));
 
@@ -219,7 +219,7 @@ static QString my_getExistingDirectory()
 {
 	QFileDialog dialog(qApp->activeWindow(), dialog_title, dialog_path);
 	
-	dialog.setMode(QFileDialog::Directory);
+	dialog.setFileMode(QFileDialog::Directory);
 	dialog.setOption(QFileDialog::DontUseNativeDialog);
 
 	if (dialog.exec() == QDialog::Accepted) 

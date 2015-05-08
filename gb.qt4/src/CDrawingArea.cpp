@@ -37,6 +37,7 @@
 #include "CColor.h"
 #include "CDrawingArea.h"
 
+#ifndef QT5
 #ifndef NO_X_WINDOW
 #include <QX11Info>
 #include <X11/Xlib.h>
@@ -44,6 +45,7 @@
 
 #ifdef FontChange
 #undef FontChange
+#endif
 #endif
 
 DECLARE_EVENT(EVENT_Draw);
@@ -60,7 +62,9 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 {
 	drawn = 0;
 	cache = 0;
+#ifndef QT5
 	_background = (Qt::HANDLE)0;
+#endif
 	_frozen = false;
 	_event_mask = 0;
 	_set_background = true;
@@ -86,6 +90,7 @@ MyDrawingArea::~MyDrawingArea()
 void MyDrawingArea::setVisible(bool visible)
 {
 	MyContainer::setVisible(visible);
+#ifndef QT5
 	if (_cached)
 	{
 		if (visible)
@@ -93,6 +98,7 @@ void MyDrawingArea::setVisible(bool visible)
 		else
 			parentWidget()->update();
 	}
+#endif
 }
 
 void MyDrawingArea::setAllowFocus(bool f)
@@ -114,7 +120,8 @@ void MyDrawingArea::setFrozen(bool f)
 	if (f == _frozen)
 		return;
 
-	#ifndef NO_X_WINDOW
+#ifndef QT5
+#ifndef NO_X_WINDOW
 	XWindowAttributes attr;
 
 	if (f)
@@ -133,17 +140,15 @@ void MyDrawingArea::setFrozen(bool f)
 		//qDebug("unfrozen");
 	}
 	XFlush(QX11Info::display());
-	#endif
+#endif
+#endif
 	
 	_frozen = f;
 }
 
 static void cleanup_drawing(intptr_t _object)
 {
-	//if (WIDGET->isPaint())
-		PAINT_end();
-	//else
-	//	DRAW_end();
+	PAINT_end();
 }
 
 void MyDrawingArea::redraw(QRect &r, bool frame)
@@ -210,13 +215,18 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 void MyDrawingArea::createBackground(int w, int h)
 {
 	void *_object = CWidget::get(this);
-	QX11Info xinfo = x11Info();
 	QPixmap p;
+#ifndef QT5
+	QX11Info xinfo = x11Info();
 	Qt::HANDLE old = _background;
-	//GC gc;
-	
+#endif
+
+#ifndef QT5
 	_background = (Qt::HANDLE)XCreatePixmap(QX11Info::display(), RootWindow(QX11Info::display(), xinfo.screen()), w, h, xinfo.depth());
 	_background_pixmap = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
+#else
+	_background_pixmap = QPixmap(w, h);
+#endif
 	_background_w = w;
 	_background_h = h;
 	
@@ -235,33 +245,42 @@ void MyDrawingArea::createBackground(int w, int h)
 	_background_pixmap.fill(CCOLOR_make(CWIDGET_get_real_background((CWIDGET *)THIS)));
 	
 	//qDebug("XSetWindowBackgroundPixmap: %08X %08X", (int)winId(), (int)_background);
+#ifndef QT5
 	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
 	XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
-	
-	_cached = true;
 	
 	if (old)
 		XFreePixmap(QX11Info::display(), (Pixmap)old);
 
 	XFlush(QX11Info::display());
+#else
+	update();
+#endif
+
+	_cached = true;
 }
 
 void MyDrawingArea::deleteBackground()
 {
-	if (_cached && _background)
+	if (hasCacheBackground())
 	{
+#ifndef QT5
 		//qDebug("XSetWindowBackgroundPixmap: %08X None", (int)winId());
 		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), None);
 		XFreePixmap(QX11Info::display(), (Pixmap)_background);
 		XFlush(QX11Info::display());
-		_cached = false;
 		_background = 0;
+#else
+		_background_pixmap = QPixmap();
+#endif
+		_cached = false;
+		_background_w = _background_h = 0;
 	}
 }
 
 QPixmap *MyDrawingArea::getBackgroundPixmap()
 {
-	if (!_cached || !_background)
+	if (!hasCacheBackground())
 		return NULL;
 	else
 		return &_background_pixmap;
@@ -271,7 +290,8 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 {
 	if (_cached)
 	{
-		#ifndef NO_X_WINDOW
+#ifndef QT5
+#ifndef NO_X_WINDOW
 		if (_set_background)
 		{
 			//qDebug("XSetWindowBackgroundPixmap: %08X %08X (paint)", (int)winId(), (int)_background);
@@ -279,9 +299,14 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			XFlush(QX11Info::display());
 			_set_background = false;
 		}
-		#endif
+#endif
+#endif
 		
 		QPainter p(this);
+
+#ifdef QT5
+		p.drawPixmap(0, 0, _background_pixmap);
+#endif
 		
 		if (frameWidth())
 		{
@@ -299,7 +324,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		//QPainter paint( this );
 		QRect r;
 
-		r = event->rect().intersect(contentsRect());
+		r = event->rect().intersected(contentsRect());
 		if (r.isValid())
 		{
 			/*if (!isTransparent())
@@ -322,33 +347,27 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 
 void MyDrawingArea::setBackground()
 {
+#ifndef QT5
 	if (_cached)
 	{
-		#ifdef NO_X_WINDOW
-		setErasePixmap(*_background);
-		#else
-		//if (isVisible())
-		//	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background->handle());
-		//else
-		//_set_background = true;
 		XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
 		XFlush(QX11Info::display());
 		refreshBackground();
-		#endif
 	}
+#endif
 }
 
 void MyDrawingArea::refreshBackground()
 {
 	if (_cached)
 	{
-		#ifdef NO_X_WINDOW
-		update();
-		#else
+#ifndef QT5
 		int fw = frameWidth();
 		XClearArea(QX11Info::display(), winId(), fw, fw, width() - fw * 2, height() - fw * 2, False);
 		XFlush(QX11Info::display());
-		#endif
+#else
+		update();
+#endif
 	}
 }
 
@@ -367,8 +386,12 @@ void MyDrawingArea::clearBackground()
 	}
 	else
 	{
+#ifndef QT5
 		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
 		XFlush(QX11Info::display());
+#else
+		update();
+#endif
 	}
 }
 
@@ -380,7 +403,10 @@ void MyDrawingArea::resizeEvent(QResizeEvent *e)
 
 void MyDrawingArea::updateBackground()
 {
-	int wb, hb, w, h;
+	int w, h;
+#ifndef QT5
+	int wb, hb;
+#endif
 
 	if (drawn)
 	{
@@ -390,15 +416,16 @@ void MyDrawingArea::updateBackground()
 
 	if (_cached)
 	{
-		w = QMAX(width(), 1);
-		h = QMAX(height(), 1);
+		w = qMax(width(), 1);
+		h = qMax(height(), 1);
 		
 		if (w != _background_w || h != _background_h)
 		{
+#ifndef QT5
 			Qt::HANDLE old = _background;
 			
-			wb = QMIN(w, _background_w);
-			hb = QMIN(h, _background_h);
+			wb = qMin(w, _background_w);
+			hb = qMin(h, _background_h);
 
 			_background = 0;
 			createBackground(w, h);
@@ -408,6 +435,13 @@ void MyDrawingArea::updateBackground()
 			XFreeGC(QX11Info::display(), gc);
 
 			XFreePixmap(QX11Info::display(), old);
+#else
+			QPixmap old = _background_pixmap;
+			createBackground(w, h);
+			QPainter p(&_background_pixmap);
+			p.drawPixmap(0, 0, old);
+			p.end();
+#endif
 
 			setBackground();
 		}
@@ -444,7 +478,8 @@ void MyDrawingArea::updateCache()
 		setBackgroundMode(Qt::NoBackground);
 		#else
 		//XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
-		repaint();
+		//repaint();
+		update();
 		#endif
 	}
 	
@@ -465,7 +500,7 @@ void MyDrawingArea::setPalette(const QPalette &pal)
 	if (_cached)
 		return;
 	MyContainer::setPalette(pal);
-	repaint();
+	update();
 }
 
 void MyDrawingArea::updateNoBackground()

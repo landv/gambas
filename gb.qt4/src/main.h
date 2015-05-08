@@ -1,29 +1,30 @@
 /***************************************************************************
 
-  main.h
+	main.h
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "gb_common.h"
 #include "gambas.h"
 
 #include <QEvent>
@@ -72,62 +73,61 @@ extern GB_CLASS CLASS_TextArea;
 
 class MyPostCheck: public QObject
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  static bool in_check;
+	static bool in_check;
 
 public slots:
 
-  void check(void);
+	void check(void);
 };
 
 class MyApplication: public QApplication
 {
-  Q_OBJECT
+	Q_OBJECT
 
 public:
 
-  MyApplication(int &argc, char **argv);
-  #ifndef NO_X_WINDOW
-  virtual bool x11EventFilter(XEvent *e);
- 	#endif
-  virtual bool eventFilter(QObject *o, QEvent *e);
-  //virtual bool notify(QObject *o, QEvent *e);
-  
-  static void setEventFilter(bool set);
-  
-  static bool isTooltipEnabled() { return !_tooltip_disable; }
-  static void setTooltipEnabled(bool b);
-	
+	MyApplication(int &argc, char **argv);
+#ifndef QT5
+	virtual bool x11EventFilter(XEvent *e);
+#endif
+	virtual bool eventFilter(QObject *o, QEvent *e);
+	//virtual bool notify(QObject *o, QEvent *e);
+
+	static void setEventFilter(bool set);
+
+	static bool isTooltipEnabled() { return !_tooltip_disable; }
+	static void setTooltipEnabled(bool b);
+
 	static void initClipboard();
-  
-  static QEventLoop *eventLoop;
-	
+
+	static QEventLoop *eventLoop;
 
 public slots:
-	
+
 	void linkDestroyed(QObject *);
 	void clipboardHasChanged();
 	void commitDataRequested(QSessionManager &);
-  
+
 private:
-  static bool _tooltip_disable;
-  static int _event_filter;
+	static bool _tooltip_disable;
+	static int _event_filter;
 };
 
 class MyTimer : public QObject
 {
 public:
 
-  MyTimer(GB_TIMER *timer);
-  ~MyTimer();
+	MyTimer(GB_TIMER *timer);
+	~MyTimer();
 	void clearTimer() { timer = 0; }
 
 protected:
 
-  void timerEvent(QTimerEvent *);
+	void timerEvent(QTimerEvent *);
 
 private:
 

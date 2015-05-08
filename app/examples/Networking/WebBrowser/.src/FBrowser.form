@@ -1,10 +1,9 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,117,85)
+  MoveScaled(0,0,169,98)
   Text = ("Gambas WebKit")
   Icon = Picture["icon:/small/gambas"]
-  Maximized = True
   Arrangement = Arrange.Vertical
   { mnuFont Menu
     { mnuSelectFont Menu mnuSelectFont
@@ -51,35 +50,45 @@
       MoveScaled(4,0,4,4)
       Picture = Picture["icon:/small/right"]
     }
-    { btnStop ToolButton
-      MoveScaled(8,0,4,4)
-      Picture = Picture["icon:/small/delete"]
+    { Separator9 Separator
+      MoveScaled(9,0,0,4)
     }
-    { btnReload ToolButton
-      MoveScaled(12,0,4,4)
-      ToolTip = ("Refresh")
-      Picture = Picture["icon:/small/refresh"]
-    }
-    { btnClear ToolButton
-      MoveScaled(16,0,4,4)
-      Picture = Picture["icon:/small/clear"]
-    }
-    { txtURL TextBox
-      MoveScaled(20,0,32,4)
+    { Panel2 HBox
+      MoveScaled(12,0,44,4)
+      Background = Color.TextBackground
       Expand = True
+      { txtURL TextBox
+        MoveScaled(0,0,28,4)
+        Expand = True
+        Border = False
+      }
+      { btnClear ToolButton
+        MoveScaled(28,0,4,4)
+        Picture = Picture["icon:/small/clear"]
+      }
+      { btnStop ToolButton
+        MoveScaled(33,0,4,4)
+        Picture = Picture["icon:/small/delete"]
+      }
+      { btnReload ToolButton
+        MoveScaled(38,0,4,4)
+        ToolTip = ("Refresh")
+        Picture = Picture["icon:/small/refresh"]
+      }
     }
     { btnGo ToolButton
-      MoveScaled(52,0,4,4)
+      MoveScaled(57,0,4,4)
+      Visible = False
       Picture = Picture["icon:/small/apply"]
     }
+    { Separator1 Separator
+      MoveScaled(62,0,0,4)
+    }
     { btnEdit ToolButton
-      MoveScaled(60,0,4,4)
+      MoveScaled(64,0,4,4)
       ToolTip = ("Toggle edit mode")
       Picture = Picture["icon:/small/edit"]
       Toggle = True
-    }
-    { Separator1 Separator
-      MoveScaled(67,0,1,4)
     }
     { btnZoomIn ToolButton
       MoveScaled(69,0,4,4)
@@ -94,7 +103,7 @@
       Picture = Picture["icon:/small/zoom-normal"]
     }
     { Separator2 Separator
-      MoveScaled(81,0,1,4)
+      MoveScaled(81,0,0,4)
     }
     { btnFind ToolButton
       MoveScaled(83,0,4,4)
@@ -275,13 +284,17 @@
       MenuOnly = True
     }
   }
-  { tabBrowser TabStrip
-    MoveScaled(1,11,76,43)
+  { Separator8 Separator
+    MoveScaled(8,12,17,0)
+  }
+  { tabBrowser TabPanel
+    MoveScaled(1,14,76,40)
     Expand = True
     Arrangement = Arrange.Fill
-    Closable = True
+    Border = False
     Index = 0
     Text = ("")
+    Picture = Picture["icon:/small/add"]
     Index = 0
   }
   { panFind HBox

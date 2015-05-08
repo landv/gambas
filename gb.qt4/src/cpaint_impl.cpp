@@ -113,8 +113,10 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 		EXTRA(d)->painter = new QPainter(device);
 	}
 	
+#ifndef QT5
 	MyPaintEngine *engine = (MyPaintEngine *)device->paintEngine();
 	engine->patchFeatures();
+#endif
 	
 	//EXTRA(d)->path = NULL;
 	//EXTRA(d)->clip = NULL;

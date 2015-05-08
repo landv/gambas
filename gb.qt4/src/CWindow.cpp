@@ -51,8 +51,10 @@
 #include "main.h"
 
 #ifndef NO_X_WINDOW
+#ifndef QT5
 #include <QX11EmbedWidget>
 #include <QX11EmbedContainer>
+#endif
 #endif
 
 #include "gambas.h"
@@ -107,9 +109,11 @@ CWINDOW *CWINDOW_Current = 0;
 CWINDOW *CWINDOW_LastActive = 0;
 CWINDOW *CWINDOW_Active = 0;
 
+#ifndef QT5
 int CWINDOW_Embedder = 0;
 bool CWINDOW_Embedded = false;
 static int CWINDOW_EmbedState = 0;
+#endif
 
 #ifndef NO_X_WINDOW
 void CWINDOW_change_property(QWidget *w, Atom property, bool set)
@@ -338,16 +342,19 @@ BEGIN_METHOD(Window_new, GB_OBJECT parent)
 
 	MyMainWindow *win = 0;
 	MyContainer *container;
-	#ifndef NO_X_WINDOW
+#ifndef NO_X_WINDOW
+#ifndef QT5
 	QX11EmbedWidget *client = 0;
-	#endif
+#endif
+#endif
 	const char *name = GB.GetClassName(THIS);
 
 	//THIS->widget.flag.fillBackground = true;
 
 	if (MISSING(parent) || !VARG(parent))
 	{
-		#ifndef NO_X_WINDOW
+#ifndef NO_X_WINDOW
+#ifndef QT5
 		if (CWINDOW_Embedder && !CWINDOW_Embedded)
 		{
 			client = new QX11EmbedWidget;
@@ -360,7 +367,8 @@ BEGIN_METHOD(Window_new, GB_OBJECT parent)
 			THIS->xembed = true;
 		}
 		else
-		#endif
+#endif
+#endif
 		{
 			//win = new MyMainWindow(CWINDOW_Main ? (MyMainWindow *)QWIDGET(CWINDOW_Main) : 0, name);
 			win = new MyMainWindow(0, name);
@@ -420,7 +428,8 @@ BEGIN_METHOD(Window_new, GB_OBJECT parent)
 		}*/
 	}
 
-	#ifndef NO_X_WINDOW
+#ifndef NO_X_WINDOW
+#ifndef QT5
 	if (THIS->xembed)
 	{
 		CWINDOW_Embedded = true;
@@ -452,7 +461,8 @@ BEGIN_METHOD(Window_new, GB_OBJECT parent)
 			GB.Error("Embedding has failed");
 		}
 	}
-	#endif
+#endif
+#endif
 
 	#if 1
 	if (THIS->embedded && !THIS->xembed)
@@ -674,10 +684,12 @@ BEGIN_METHOD_VOID(Window_Show)
 	{
 		CWIDGET_set_visible((CWIDGET *)THIS, true);
 		CWIDGET_check_visibility((CWIDGET *)THIS);
-    #ifndef NO_X_WINDOW
-    if (THIS->xembed)
-    	XEMBED->show();
-    #endif
+#ifndef NO_X_WINDOW
+#ifndef QT5
+		if (THIS->xembed)
+			XEMBED->show();
+#endif
+#endif
 		post_show_event(THIS);
 	}
 	else
@@ -2117,10 +2129,12 @@ void MyMainWindow::resizeEvent(QResizeEvent *e)
 			CCONTAINER_arrange(THIS);
 	}
 
-  #ifndef NO_X_WINDOW
-  if (THIS->xembed)
-  	XEMBED->resize(THIS->w, THIS->h);
-  #endif
+#ifndef NO_X_WINDOW
+#ifndef QT5
+	if (THIS->xembed)
+		XEMBED->resize(THIS->w, THIS->h);
+#endif
+#endif
   	
   	//qDebug("resizeEvent %ld %ld isHidden:%s shown:%s ", THIS->w, THIS->h, isHidden() ? "1" : "0", shown ? "1" : "0");
 	//qDebug("THIS->h = %ld  THIS->container->height() = %ld  height() = %ld", THIS->h, THIS->container->height(), height());
@@ -2738,7 +2752,19 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 	return QObject::eventFilter(o, e);    // standard event processing
 }
 
+#ifdef QT5
+void CWindow::error(void)
+{
+}
 
+void CWindow::embedded(void)
+{
+}
+
+void CWindow::closed(void)
+{
+}
+#else
 void CWindow::error(void)
 {
 	//CWINDOW *_object = (CWINDOW *)CWidget::getReal((QObject *)sender());
@@ -2760,6 +2786,7 @@ void CWindow::closed(void)
 	//CWIDGET_destroy(CWidget::getReal((QObject *)sender()));
 	delete sender();
 }
+#endif
 
 void CWindow::destroy(void)
 {
@@ -2772,9 +2799,11 @@ void CWindow::destroy(void)
 		CWindow::removeTopLevel(THIS);
 	}
 
+#ifndef QT5
 	CWINDOW_EmbedState = EMBED_WAIT;
 	CWINDOW_Embedded = false;
 	CWINDOW_Embedder = 0;
+#endif
 }
 
 void CWindow::insertTopLevel(CWINDOW *_object)

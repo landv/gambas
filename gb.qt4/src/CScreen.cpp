@@ -244,6 +244,12 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Application_Embedder)
 
+#ifdef QT5
+	if (READ_PROPERTY)
+		GB.ReturnInteger(0);
+	else
+		GB.Deprecated("gb.qt5", "Application.Embedder", NULL);
+#else
 	if (READ_PROPERTY)
 		GB.ReturnInteger(CWINDOW_Embedder);
 	else
@@ -257,8 +263,9 @@ BEGIN_PROPERTY(Application_Embedder)
 		CWINDOW_Embedder = VPROP(GB_INTEGER);
 	}
 
-END_PROPERTY
+#endif
 
+END_PROPERTY
 
 BEGIN_PROPERTY(Application_Theme)
 

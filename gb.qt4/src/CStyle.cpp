@@ -275,7 +275,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Style_ScrollbarSpacing)
 
-	GB.ReturnInteger(QMAX(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing)));
+	GB.ReturnInteger(qMax(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing)));
 
 END_PROPERTY
 
@@ -305,6 +305,11 @@ BEGIN_PROPERTY(Style_Name)
 		len -= 5;
 	if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)
 		len -= 2;
+	if (name[0] == 'Q' && isupper(name[1]))
+	{
+		len--;
+		name++;
+	}
 
 	GB.ReturnNewString(name, len);
 

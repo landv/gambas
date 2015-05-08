@@ -126,7 +126,7 @@ void MyContents::autoResize(void)
 	#endif
 
 	if (sw->getScrollbar())
-		sbsize = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + QMAX(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing));
+		sbsize = qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent) + qMax(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing));
 	else
 		sbsize = 0;
 

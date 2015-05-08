@@ -794,8 +794,11 @@ bool TRANS_affectation(bool dup)
 	if (dup)
 		CODE_dup();
 
-	if (id == RS_EXEC || id == RS_SHELL)
-		CODE_dup();
+	if (COMPILE_version >= 0x03070000)
+	{
+		if (id == RS_EXEC || id == RS_SHELL)
+			CODE_dup();
+	}
 
 	JOB->current = left;
 	TRANS_reference();
@@ -805,10 +808,13 @@ bool TRANS_affectation(bool dup)
 
 	JOB->current = after;
 
-	if (id == RS_EXEC || id == RS_SHELL)
+	if (COMPILE_version >= 0x03070000)
 	{
-		TRANS_subr(TS_SUBR_CHECK_EXEC, 1);
-		CODE_drop();
+		if (id == RS_EXEC || id == RS_SHELL)
+		{
+			TRANS_subr(TS_SUBR_CHECK_EXEC, 1);
+			CODE_drop();
+		}
 	}
 
 	return TRUE;

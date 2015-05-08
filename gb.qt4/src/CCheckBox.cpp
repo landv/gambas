@@ -56,7 +56,7 @@ void MyCheckBox::adjust(bool force)
 	a = _autoResize;
 	_autoResize = false;
 	hint = sizeHint();
-	CWIDGET_resize(THIS, hint.width(), QMAX(hint.height(), height()));
+	CWIDGET_resize(THIS, hint.width(), qMax(hint.height(), height()));
 	_autoResize = a;
 }
 

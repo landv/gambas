@@ -227,17 +227,25 @@ Private Sub CreateView()
 
   Object.Lock(tabBrowser)
   Inc tabBrowser.Count
+  Object.Lock(tabBrowser)
   tabBrowser[iLast + 1].Picture = tabBrowser[iLast].Picture
   tabBrowser[iLast + 1].Text = tabBrowser[iLast].Text
   tabBrowser[iLast].Text = ""
   tabBrowser[iLast].Picture = Null
+  tabBrowser[iLast].Closable = True
+  Object.Lock(tabBrowser)
   tabBrowser.Index = iLast
   hView = New WebView(tabBrowser) As "WebView"
   hView.Tag = tabBrowser.Index
   hView.Editable = btnEdit.Value
+  hView.Resize(1, 1)
+  'hView.Show
   'Print WebSettings.Fonts.FixedFont
   Object.Unlock(tabBrowser)
+  Object.Unlock(tabBrowser)
+  Object.Unlock(tabBrowser)
   tabBrowser_Click
+  txtURL.SetFocus
   
 End
 

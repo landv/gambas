@@ -39,8 +39,8 @@ void LIST_insert(void *p_first, void *node, LIST *list)
   if (*first == NULL)
   {
     *first = node;
-    TO_LIST(node)->prev = node;
-    TO_LIST(node)->next = NULL;
+    list->prev = node;
+    list->next = NULL;
     return;
   }
 
@@ -48,8 +48,8 @@ void LIST_insert(void *p_first, void *node, LIST *list)
 
   TO_LIST(last)->next = node;
 
-  TO_LIST(node)->prev = last;
-  TO_LIST(node)->next = NULL;
+  list->prev = last;
+  list->next = NULL;
 
   TO_LIST(*first)->prev = node;
 }
@@ -60,8 +60,8 @@ void LIST_remove(void *p_first, void *node, LIST *list)
   void **first = (void **)p_first;
   void *next, *prev, *last;
 
-  next = TO_LIST(node)->next;
-  prev = TO_LIST(node)->prev;
+  next = list->next;
+  prev = list->prev;
 
   if (*first == node)
   {
@@ -84,7 +84,7 @@ void LIST_remove(void *p_first, void *node, LIST *list)
       TO_LIST(next)->prev = prev;
   }
 
-  TO_LIST(node)->prev = NULL;
-  TO_LIST(node)->next = NULL;
+  list->prev = NULL;
+  list->next = NULL;
 }
 

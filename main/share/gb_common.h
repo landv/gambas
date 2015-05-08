@@ -108,15 +108,15 @@
 
 #endif
 
-#if !defined(__cplusplus)
+#ifndef FALSE
+	enum
+	{
+		FALSE = 0,
+		TRUE = 1
+	};
+#endif
 
-	#ifndef FALSE
-		enum
-		{
-			FALSE = 0,
-			TRUE = 1
-		};
-	#endif
+#if !defined(__cplusplus)
 
 	#define bool char
 

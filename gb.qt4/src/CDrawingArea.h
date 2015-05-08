@@ -73,11 +73,11 @@ public:
 	void updateCache();
 	void setCached(bool);
 	bool isCached() const { return _cached; }
-	//QPixmap *getCache(void) { return cache; }
-	//void refreshCache(void) { if (cache) setBackgroundPixmap(*cache); }
 
 	void clearBackground();
+#ifndef QT5
 	Qt::HANDLE background() const { return _background; }
+#endif
 	void refreshBackground();
 	void updateBackground();
 
@@ -97,6 +97,11 @@ public:
 	bool inDrawEvent() const { return _in_draw_event; }
 	
 	void createBackground(int w, int h);
+#ifndef QT5
+	bool hasCacheBackground() const { return _cached && _background; }
+#else
+	bool hasCacheBackground() const { return _cached && !_background_pixmap.isNull(); }
+#endif
 	void deleteBackground();
 	
 	QPixmap *getBackgroundPixmap();
@@ -121,7 +126,9 @@ protected:
 private:
 
 	QPixmap _background_pixmap;
+#ifndef QT5
 	Qt::HANDLE _background;
+#endif
 	int _background_w, _background_h;
 	bool _frozen;
 	bool _merge;

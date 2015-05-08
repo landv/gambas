@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Public LIMIT_INC As Integer = 128
+Public LIMIT_INC As Integer = 256
 
 Event CacheResize()
 
@@ -113,12 +113,15 @@ Private Sub LoadUntil(iIndex As Integer)
   
   If iIndex < $aVal.Count Then Return
   
+  Inc Application.Busy
+  
   iLimit = (((iIndex - $aVal.Count) \ LIMIT_INC) + 1) * LIMIT_INC
   
   aSort = GetSortKeys()
   
   'sReq = "SELECT " & $aKey.Join(",") & " FROM " & $sTable
   'hReq = Request.Select($aKey).From($sTable).Where($sFilter).OrderBy(aSort)
+
   hReq = $DB.SQL.Select($aKey).From($sTable).Where($sFilter).OrderBy(aSort)
   
   If $aVal.Count = 0 Then
@@ -146,6 +149,8 @@ Private Sub LoadUntil(iIndex As Integer)
     Inc iPos
     rData.MoveNext
   Wend
+
+  Dec Application.Busy
   
   Raise CacheResize
   
@@ -191,6 +196,8 @@ Public Function _get(Index As Integer) As Result
   
     If Not $rData Then
       
+      Inc Application.Busy
+  
       If $bRequest Then
         If $sSort Then
           '$rData = $DB.Exec($sTable & " ORDER BY " & $sSort & If($bAscent, "", " DESC"))
@@ -208,44 +215,50 @@ Public Function _get(Index As Integer) As Result
         $rData = $DB.Exec(hReq())
       Endif
       
+      Dec Application.Busy
+  
       Raise CacheResize
       
     Endif
     
     $rData.MoveTo(Index)
-    Return $rData
   
-  Endif
-  
-  LoadUntil(Index)
-
-  If Index >= $aVal.Count Then Return
-    
-  If $rData Then
-    $rData.MoveTo(Index - $iDataIndex)
-    If $rData.Available Then Return $rData
-  Endif
-
-  ' 154,32 e + 10
-  '$iDataIndex = Max(0, ((Index - (LIMIT_INC \ 2)) \ LIMIT_INC) * LIMIT_INC)
-  $iDataIndex = Max(0, Index - (LIMIT_INC \ 2))
-
-  aSort = GetSortKeys()
-
-  If $iDataIndex = 0 Then
-    hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).OrderBy(aSort)
   Else
-    hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
-  Endif
-  $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get())
   
-  'hReq = Request().Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex]))
-  '$rData = DB.Limit(LIMIT_INC).Edit($sTable, hReq.Get(DB))
-
-  $rData.MoveTo(Index - $iDataIndex)
+    LoadUntil(Index)
+  
+    If Index >= $aVal.Count Then Return
+      
+    If $rData Then
+      $rData.MoveTo(Index - $iDataIndex)
+      If $rData.Available Then Return $rData
+    Endif
+  
+    Inc Application.Busy
+  
+    '$iDataIndex = Max(0, ((Index - (LIMIT_INC \ 2)) \ LIMIT_INC) * LIMIT_INC)
+    $iDataIndex = Max(0, Index - (LIMIT_INC \ 2))
+  
+    aSort = GetSortKeys()
+  
+    If $iDataIndex = 0 Then
+      hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).OrderBy(aSort)
+    Else
+      hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
+    Endif
+    $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get())
+    
+    'hReq = Request().Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex]))
+    '$rData = DB.Limit(LIMIT_INC).Edit($sTable, hReq.Get(DB))
+  
+    $rData.MoveTo(Index - $iDataIndex)
+    
+    Dec Application.Busy
+    
+  Endif
   
   Return $rData
-    
+  
 End
 
 Private Function Keys_Read() As String[]

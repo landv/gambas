@@ -111,15 +111,20 @@ extern int CWINDOW_MainDesktop;
 extern CWINDOW *CWINDOW_Current;
 extern CWINDOW *CWINDOW_Active;
 extern CWINDOW *CWINDOW_LastActive;
+#ifndef QT5
 extern int CWINDOW_Embedder;
 extern bool CWINDOW_Embedded;
+#endif
 
 #else
 
 #define THIS ((CWINDOW *)_object)
 #define WIDGET ((QWidget *)(((CWIDGET *)_object)->widget))
 #define WINDOW ((MyMainWindow *)WIDGET)
+
+#ifndef QT5
 #define XEMBED ((QX11EmbedWidget *)(WIDGET->parent()))
+#endif
 
 #endif
 

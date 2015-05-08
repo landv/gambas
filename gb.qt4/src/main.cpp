@@ -97,8 +97,10 @@
 
 #ifndef NO_X_WINDOW
 #include <QX11Info>
+#ifndef QT5
 #include "CEmbedder.h"
 #include "CTrayIcon.h"
+#endif
 #include "x11.h"
 #endif
 
@@ -553,6 +555,7 @@ static void x11_set_event_filter(void (*filter)(XEvent *))
 	_x11_event_filter = filter;
 }
 
+#ifndef QT5
 bool MyApplication::x11EventFilter(XEvent *e)
 {
 	// Workaround for input methods that void the key code of KeyRelease eventFilter
@@ -566,6 +569,8 @@ bool MyApplication::x11EventFilter(XEvent *e)
 	
 	return false;
 }
+#endif
+
 #endif
 
 /** MyTimer ****************************************************************/
@@ -637,7 +642,11 @@ static bool must_quit(void)
 	#if DEBUG_WINDOW
 	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
 	#endif
+#ifdef QT5
+	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0;
+#else
 	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0 && TRAYICON_count == 0;
+#endif
 }
 
 static void check_quit_now(intptr_t param)
@@ -648,10 +657,12 @@ static void check_quit_now(intptr_t param)
 	{
 		if (QApplication::instance())
 		{
-			#ifndef NO_X_WINDOW
+#ifndef NO_X_WINDOW
+#ifndef QT5
 				CTRAYICON_close_all();
 				qApp->syncX();
-			#endif
+#endif
+#endif
 			qApp->exit();
 			exit_called = true;
 		}
@@ -1053,9 +1064,12 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
 	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
 	CDialogDesc,
-	#ifndef NO_X_WINDOW
-	CEmbedderDesc, CTrayIconDesc, CTrayIconsDesc,
-	#endif
+#ifndef NO_X_WINDOW
+#ifndef QT5
+	CEmbedderDesc,
+	CTrayIconDesc, CTrayIconsDesc,
+#endif
+#endif
 	CWatcherDesc,
 	PrinterDesc,
 	SvgImageDesc,
@@ -1256,7 +1270,9 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 		case GB_SIGNAL_DEBUG_FORWARD:
 			//while (qApp->activePopupWidget())
 			//	delete qApp->activePopupWidget();
+#ifndef QT5
 			qApp->syncX();
+#endif
 			break;
 			
 		case GB_SIGNAL_DEBUG_CONTINUE:

@@ -340,7 +340,7 @@ static void raise_click_event(void *_object)
 static int combo_get_current_item(void *_object)
 {
 	COMBOBOX->sort();
-	return COMBOBOX->count() == 0 ? -1 : COMBOBOX->currentItem();
+	return COMBOBOX->count() == 0 ? -1 : COMBOBOX->currentIndex();
 }
 
 static void combo_set_current_item(void *_object, int item)
@@ -350,7 +350,7 @@ static void combo_set_current_item(void *_object, int item)
 	if (item != combo_get_current_item(THIS))
 	{
 		if (item < COMBOBOX->count())
-			COMBOBOX->setCurrentItem(item);
+			COMBOBOX->setCurrentIndex(item);
 	}
 	
 	if (item >= 0 && !COMBOBOX->signalsBlocked())
@@ -362,7 +362,7 @@ static int combo_find_item(void *_object, const QString& s)
 	COMBOBOX->sort();
 	for (int i = 0; i < (int)COMBOBOX->count(); i++)
 	{
-		if (COMBOBOX->text(i) == s)
+		if (COMBOBOX->itemText(i) == s)
 			return i;
 	}
 
@@ -435,7 +435,7 @@ static void combo_get_list(void *_object, GB_ARRAY array)
 	COMBOBOX->sort();
 	for (i = 0; i < COMBOBOX->count(); i++)
 	{
-		*((char **)GB.Array.Get(array, i)) = NEW_STRING(COMBOBOX->text(i));
+		*((char **)GB.Array.Get(array, i)) = NEW_STRING(COMBOBOX->itemText(i));
 	}
 }
 
@@ -452,7 +452,7 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 	{
 		for (i = 0; i < GB.Array.Count(array); i++)
 		{
-			COMBOBOX->insertItem(TO_QSTRING(*((char **)GB.Array.Get(array, i))));
+			COMBOBOX->insertItem(i, TO_QSTRING(*((char **)GB.Array.Get(array, i))));
 		}
 	}
 

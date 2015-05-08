@@ -80,7 +80,7 @@
 // We mean it.
 //
 
-#include "systemtrayicon.h"
+//#include "systemtrayicon.h"
 //#include "private/qobject_p.h"
 
 #include <QPixmap>
