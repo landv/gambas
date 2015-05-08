@@ -351,7 +351,7 @@ BEGIN_METHOD_VOID(Font_ToString)
 	if (f->strikeOut())
 		add(str, "StrikeOut");
 
-	GB.ReturnNewZeroString(TO_UTF8(str));
+	RETURN_NEW_STRING(str);
 
 END_METHOD
 
@@ -507,7 +507,7 @@ BEGIN_METHOD_VOID(Fonts_next)
 	else
 	{
 		s = _families[*index];
-		GB.ReturnNewZeroString(TO_UTF8(s));
+		RETURN_NEW_STRING(s);
 		(*index)++;
 	}
 
@@ -570,7 +570,7 @@ BEGIN_PROPERTY(Font_Styles)
 
 	GB.Array.New(&array, GB_T_STRING, styles.count());
 	for (i = 0; i < styles.count(); i++)
-		*(char **)GB.Array.Get(array, i) = GB.NewZeroString(TO_UTF8(styles[i]));
+		*(char **)GB.Array.Get(array, i) = NEW_STRING(styles[i]);
 
 	GB.ReturnObject(array);
 

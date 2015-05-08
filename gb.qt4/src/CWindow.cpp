@@ -673,6 +673,7 @@ BEGIN_METHOD_VOID(Window_Show)
 	if (!THIS->toplevel)
 	{
 		CWIDGET_set_visible((CWIDGET *)THIS, true);
+		CWIDGET_check_visibility((CWIDGET *)THIS);
     #ifndef NO_X_WINDOW
     if (THIS->xembed)
     	XEMBED->show();
@@ -806,7 +807,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Window_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->windowTitle()));
+		RETURN_NEW_STRING(WIDGET->windowTitle());
 	else
 	{
 		QString s = QSTRING_PROP();
@@ -2138,23 +2139,6 @@ void MyMainWindow::keyPressEvent(QKeyEvent *e)
 	e->ignore();
 
 	//qDebug("MyMainWindow::keyPressEvent: (%p '%s' %s)", this, this ? this->caption().latin1() : 0, GB.GetClassName(CWidget::get(this)));
-	
-	/*if (GB.CanRaise(THIS, EVENT_KeyPress))
-	{
-		CKEY_clear(true);
-
-		GB.FreeString(&CKEY_info.text);
-		CKEY_info.text = GB.NewZeroString(TO_UTF8(e->text()));
-		CKEY_info.state = e->modifiers();
-		CKEY_info.code = e->key();
-
-		cancel = GB.Raise(THIS, EVENT_KeyPress, 0);
-
-		CKEY_clear(false);
-
-		if (cancel)
-			return;
-	}*/
 	
 	if ((e->modifiers() == Qt::NoModifier || (e->modifiers() & Qt::KeypadModifier && e->key() == Qt::Key_Enter )))
 	{

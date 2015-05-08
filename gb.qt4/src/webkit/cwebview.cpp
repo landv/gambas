@@ -259,7 +259,7 @@ END_METHOD
 BEGIN_PROPERTY(WebView_Url)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->url().toString()));
+		RETURN_NEW_STRING(WIDGET->url().toString());
 	else
 	{
 		stop_view(THIS);
@@ -271,7 +271,7 @@ END_PROPERTY
 BEGIN_PROPERTY(WebView_HTML)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->page()->mainFrame()->toHtml()));
+		RETURN_NEW_STRING(WIDGET->page()->mainFrame()->toHtml());
 	else
 		WIDGET->setHtml(QSTRING_PROP());
 
@@ -279,7 +279,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(WebView_Text)
 
-	GB.ReturnNewZeroString(TO_UTF8(WIDGET->page()->mainFrame()->toPlainText()));
+	RETURN_NEW_STRING(WIDGET->page()->mainFrame()->toPlainText());
 
 END_PROPERTY
 
@@ -305,7 +305,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(WebView_SelectedText)
 
-	GB.ReturnNewZeroString(TO_UTF8(WIDGET->selectedText()));
+	RETURN_NEW_STRING(WIDGET->selectedText());
 
 END_PROPERTY
 
@@ -331,7 +331,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(WebView_Title)
 
-	GB.ReturnNewZeroString(TO_UTF8(WIDGET->title()));
+	RETURN_NEW_STRING(WIDGET->title());
 
 END_PROPERTY
 
@@ -404,7 +404,7 @@ END_PROPERTY
 BEGIN_PROPERTY(WebViewAuth_Url)
 
 	if (THIS->reply)
-		GB.ReturnNewZeroString(TO_UTF8(THIS->reply->url().toString()));
+		RETURN_NEW_STRING(THIS->reply->url().toString());
 	else
 		GB.ReturnVoidString();
 
@@ -413,7 +413,7 @@ END_PROPERTY
 BEGIN_PROPERTY(WebViewAuth_Realm)
 
 	if (THIS->authenticator)
-		GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->realm()));
+		RETURN_NEW_STRING(THIS->authenticator->realm());
 	else
 		GB.ReturnVoidString();
 
@@ -424,7 +424,7 @@ BEGIN_PROPERTY(WebViewAuth_User)
 	if (READ_PROPERTY)
 	{
 		if (THIS->authenticator)
-			GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->user()));
+			RETURN_NEW_STRING(THIS->authenticator->user());
 		else
 			GB.ReturnVoidString();
 	}
@@ -443,7 +443,7 @@ BEGIN_PROPERTY(WebViewAuth_Password)
 	if (READ_PROPERTY)
 	{
 		if (THIS->authenticator)
-			GB.ReturnNewZeroString(TO_UTF8(THIS->authenticator->password()));
+			RETURN_NEW_STRING(THIS->authenticator->password());
 		else
 			GB.ReturnVoidString();
 	}
@@ -838,7 +838,7 @@ void CWebView::statusBarMessage(const QString &text)
 {
 	GET_SENDER();
 	GB.FreeString(&THIS->status);
-	THIS->status = GB.NewZeroString(TO_UTF8(text));
+	THIS->status = NEW_STRING(text);
 	GB.Raise(THIS, EVENT_STATUS, 0);
 }
 	
@@ -852,7 +852,7 @@ void CWebView::linkHovered(const QString &link, const QString &title, const QStr
 {
 	void *_object = QT.GetObject(((QWebPage*)sender())->view());
 	const char *str = TO_UTF8(link);
-	GB.Raise(THIS, EVENT_LINK, 1, GB_T_STRING, str, strlen(str));
+	GB.Raise(THIS, EVENT_LINK, 1, GB_T_STRING, str, LAST_UTF8_LENGTH());
 }
 
 void CWebView::frameCreated(QWebFrame *frame)

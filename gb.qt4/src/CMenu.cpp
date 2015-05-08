@@ -440,7 +440,7 @@ BEGIN_PROPERTY(Menu_Text)
 		if (THIS->save_text)
 			GB.ReturnString(THIS->save_text);
 		else
-			GB.ReturnNewZeroString(TO_UTF8(ACTION->text()));
+			RETURN_NEW_STRING(ACTION->text());
 	}
 	else
 	{

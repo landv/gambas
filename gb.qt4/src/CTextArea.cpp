@@ -180,7 +180,7 @@ END_METHOD
 BEGIN_PROPERTY(CTEXTAREA_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->toPlainText()));
+		RETURN_NEW_STRING(WIDGET->toPlainText());
 	else
 	{
 		WIDGET->document()->setPlainText(QSTRING_PROP());
@@ -385,7 +385,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_sel_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->textCursor().selection().toPlainText()));
+		RETURN_NEW_STRING(WIDGET->textCursor().selection().toPlainText());
 	else
 		WIDGET->textCursor().insertText(QSTRING_PROP());
 
@@ -678,5 +678,6 @@ void CTextArea::cursor(void)
 void CTextArea::link(const QString &path)
 {
 	GET_SENDER();
-	GB.Raise(THIS, EVENT_Link, 1, GB_T_STRING, TO_UTF8(path), 0);
+	const char *str = TO_UTF8(path);
+	GB.Raise(THIS, EVENT_Link, 1, GB_T_STRING, str, LAST_UTF8_LENGTH());
 }

@@ -64,7 +64,7 @@ BEGIN_PROPERTY(WebHitTest_Url)
 	if (url.isEmpty())
 		url = RESULT->imageUrl();
 
-	GB.ReturnNewZeroString(TO_UTF8(url.toString()));
+	RETURN_NEW_STRING(url.toString());
 
 END_PROPERTY
 
@@ -73,7 +73,7 @@ BEGIN_PROPERTY(WebHitTest_Html)
 	QWebElement element;
 	element = RESULT->element();
 
-	GB.ReturnNewZeroString(TO_UTF8(element.toOuterXml()));
+	RETURN_NEW_STRING(element.toOuterXml());
 	
 END_PROPERTY
 

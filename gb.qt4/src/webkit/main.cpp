@@ -122,7 +122,7 @@ void MAIN_return_qvariant(const QVariant &result)
 			break;
 			
 		case QVariant::String:
-			GB.ReturnNewZeroString(TO_UTF8(result.toString()));
+			RETURN_NEW_STRING(result.toString());
 			break;
 		
 		// TODO: Handle these three datatypes

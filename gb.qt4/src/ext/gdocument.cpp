@@ -199,7 +199,7 @@ public:
 	}
 	
 	Type type() const { return Delete; }
-	void print() const { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); info.print(); }
+	void print() const { qDebug("Delete: (%d %d)-(%d %d): '%s'", x, y, x2, y2, TO_UTF8(str.getString())); info.print(); }
 
 	bool merge(GCommand *c) const
 	{
@@ -238,7 +238,7 @@ public:
 	GInsertCommand(GCommandDocument *info, int y, int x, int y2, int x2, const GString &str): 
 		GDeleteCommand(info, y, x, y2, x2, str) {}
 	Type type() const { return Insert; }
-	void print() const { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, str.utf8()); info.print(); }
+	void print() const { qDebug("Insert: (%d %d)-(%d %d): '%s'", x, y, x2, y2, TO_UTF8(str.getString())); info.print(); }
 
 	bool merge(GCommand *c) const
 	{
@@ -1289,9 +1289,8 @@ void GDocument::highlightGambas(GEditor *editor, int line, uint &state, bool &al
 	EVAL_ANALYZE result;
 	int i;
 
-	src = (const char *)s.utf8();
-
-	EVAL.Analyze(src, strlen(src), state == GLine::Comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END, &result, TRUE);
+	src = TO_UTF8(s.getString());
+	EVAL.Analyze(src, LAST_UTF8_LENGTH(), state == GLine::Comment ? EVAL_TYPE_COMMENT : EVAL_TYPE_END, &result, TRUE);
 
 	GB.NewArray(data, sizeof(GHighlight), result.len);
 

@@ -90,7 +90,7 @@ END_METHOD
 BEGIN_PROPERTY(RadioButton_Text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->text()));
+    RETURN_NEW_STRING(WIDGET->text());
   else
 	{
     WIDGET->setText(QSTRING_PROP());

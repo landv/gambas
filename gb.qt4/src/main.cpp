@@ -155,6 +155,10 @@ static QHash<void *, void *> _link_map;
 static QPointer<QWidget> MAIN_mouseGrabber = 0;
 static QPointer<QWidget> MAIN_keyboardGrabber = 0;
 
+static QByteArray _utf8_buffer[UTF8_NBUF];
+static int _utf8_count = 0;
+static int _utf8_length = 0;
+
 
 //static MyApplication *myApp;
 
@@ -377,7 +381,7 @@ static bool QT_EventFilter(QEvent *e)
 		CKEY_clear(true);
 
 		GB.FreeString(&CKEY_info.text);
-		CKEY_info.text = GB.NewZeroString(QT_ToUTF8(kevent->text()));
+		CKEY_info.text = GB.NewZeroString(QT_ToUtf8(kevent->text()));
 		CKEY_info.state = kevent->modifiers();
 		CKEY_info.code = kevent->key();
 
@@ -392,7 +396,7 @@ static bool QT_EventFilter(QEvent *e)
 
 			GB.FreeString(&CKEY_info.text);
 			//qDebug("IMEnd: %s", imevent->text().latin1());
-			CKEY_info.text = GB.NewZeroString(QT_ToUTF8(imevent->commitString()));
+			CKEY_info.text = GB.NewZeroString(QT_ToUtf8(imevent->commitString()));
 			CKEY_info.state = 0;
 			CKEY_info.code = 0;
 		}
@@ -965,20 +969,35 @@ static QPixmap *QT_GetPixmap(CPICTURE *pict)
 	return pict->pixmap;
 }
 
-const char *QT_ToUTF8(const QString &str)
+const char *QT_ToUtf8(const QString &str)
 {
-	static QByteArray buf[UTF8_NBUF];
-	static int cpt = 0;
-
 	const char *res;
 
-	buf[cpt] = str.toUtf8();
-	res = buf[cpt].data();
-	cpt++;
-	if (cpt >= UTF8_NBUF)
-		cpt = 0;
+	_utf8_buffer[_utf8_count] = str.toUtf8();
+	res = _utf8_buffer[_utf8_count].data();
+	_utf8_length = _utf8_buffer[_utf8_count].length();
+	_utf8_count++;
+	if (_utf8_count >= UTF8_NBUF)
+		_utf8_count = 0;
 
 	return res;
+}
+
+int QT_GetLastUtf8Length()
+{
+	return _utf8_length;
+}
+
+char *QT_NewString(const QString &str)
+{
+	const char *res = QT_ToUtf8(str);
+	return GB.NewString(res, _utf8_length);
+}
+
+void QT_ReturnNewString(const QString &str)
+{
+	const char *res = QT_ToUtf8(str);
+	GB.ReturnNewString(res, _utf8_length);
 }
 
 static void *QT_CreatePicture(const QPixmap &p)
@@ -1061,7 +1080,10 @@ void *GB_QT4_1[] EXPORT = {
 	(void *)QT_CreatePicture,
 	//(void *)QT_MimeSourceFactory,
 	(void *)QT_GetPixmap,
-	(void *)QT_ToUTF8,
+	(void *)QT_ToUtf8,
+	(void *)QT_GetLastUtf8Length,
+	(void *)QT_NewString,
+	(void *)QT_ReturnNewString,
 	(void *)QT_EventFilter,
 	(void *)QT_Notify,
 	(void *)CCONST_alignment,

@@ -85,7 +85,7 @@ END_METHOD
 BEGIN_PROPERTY(Dialog_Title)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(dialog_title));
+    RETURN_NEW_STRING(dialog_title);
   else
     dialog_title = QSTRING_PROP();
 
@@ -115,7 +115,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Dialog_Path)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(dialog_path));
+    RETURN_NEW_STRING(dialog_path);
   else
     dialog_path = QSTRING_PROP();
 
@@ -266,7 +266,7 @@ BEGIN_METHOD(Dialog_OpenFile, GB_BOOLEAN multi)
       GB.StoreObject(&ob, POINTER(&dialog_paths));
       
       for (i = 0; i < files.count(); i++)
-        *(char **)GB.Array.Get(list, i) = GB.NewZeroString(TO_UTF8(files[i]));
+        *(char **)GB.Array.Get(list, i) = NEW_STRING(files[i]);
       
       GB.ReturnBoolean(false);
     }

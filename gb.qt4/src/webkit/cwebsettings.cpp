@@ -69,7 +69,7 @@ static QWebSettings *get_settings(void *_object)
 static void handle_font_family(QWebSettings::FontFamily font, void *_object, void *_param)
 {
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(get_settings(_object)->fontFamily(font)));
+		RETURN_NEW_STRING(get_settings(_object)->fontFamily(font));
 	else
 		get_settings(_object)->setFontFamily(font, QSTRING_PROP());
 }
@@ -154,7 +154,7 @@ END_METHOD
 BEGIN_PROPERTY(WebSettingsIconDatabase_Path)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(QWebSettings::iconDatabasePath()));
+		RETURN_NEW_STRING(QWebSettings::iconDatabasePath());
 	else
 		QWebSettings::setIconDatabasePath(QSTRING_PROP());
 
@@ -305,7 +305,7 @@ BEGIN_PROPERTY(WebSettingsProxy_Host)
 	QNetworkProxy proxy = nam->proxy();
 	
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(proxy.hostName()));
+		RETURN_NEW_STRING(proxy.hostName());
 	else
 	{
 		proxy.setHostName(QSTRING_PROP());
@@ -320,7 +320,7 @@ BEGIN_PROPERTY(WebSettingsProxy_User)
 	QNetworkProxy proxy = nam->proxy();
 	
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(proxy.user()));
+		RETURN_NEW_STRING(proxy.user());
 	else
 	{
 		proxy.setUser(QSTRING_PROP());
@@ -335,7 +335,7 @@ BEGIN_PROPERTY(WebSettingsProxy_Password)
 	QNetworkProxy proxy = nam->proxy();
 	
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(proxy.password()));
+		RETURN_NEW_STRING(proxy.password());
 	else
 	{
 		proxy.setPassword(QSTRING_PROP());

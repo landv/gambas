@@ -740,7 +740,7 @@ BEGIN_PROPERTY(CDRAG_format)
 
 	CHECK_VALID();
 
-	GB.ReturnNewZeroString(TO_UTF8(get_format(CDRAG_info.event->mimeData())));
+	RETURN_NEW_STRING(get_format(CDRAG_info.event->mimeData()));
 
 END_PROPERTY
 

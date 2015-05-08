@@ -104,7 +104,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(WebDownload_Url)
 
-	GB.ReturnNewZeroString(TO_UTF8(REPLY->url().toString()));
+	RETURN_NEW_STRING(REPLY->url().toString());
 
 END_PROPERTY
 

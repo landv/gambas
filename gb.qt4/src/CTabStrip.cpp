@@ -556,7 +556,7 @@ BEGIN_PROPERTY(CTAB_text)
 		index = get_real_index(THIS);
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->stack.at(index)->text));
+		RETURN_NEW_STRING(WIDGET->stack.at(index)->text);
 	else
 	{
 		WIDGET->stack.at(index)->text = QSTRING_PROP();
@@ -746,11 +746,6 @@ BEGIN_PROPERTY(TabStrip_Text)
 
 	THIS->index = -1;
 	CTAB_text(_object, _param);
-
-	/*if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->tabLabel(WIDGET->currentPage())));
-	else
-		WIDGET->changeTab(WIDGET->currentPage(), QSTRING_PROP());*/
 
 END_PROPERTY
 

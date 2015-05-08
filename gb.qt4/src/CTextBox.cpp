@@ -111,7 +111,7 @@ END_METHOD
 BEGIN_PROPERTY(TextBox_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(TEXTBOX->text()));
+		RETURN_NEW_STRING(TEXTBOX->text());
 	else
 		TEXTBOX->setText(QSTRING_PROP());
 
@@ -215,7 +215,7 @@ BEGIN_PROPERTY(TextBox_Selection_Text)
 	GET_TEXT_BOX();
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(textbox->selectedText()));
+		RETURN_NEW_STRING(textbox->selectedText());
 	else
 		textbox->insert(QSTRING_PROP());
 
@@ -435,7 +435,7 @@ static void combo_get_list(void *_object, GB_ARRAY array)
 	COMBOBOX->sort();
 	for (i = 0; i < COMBOBOX->count(); i++)
 	{
-		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(TO_UTF8(COMBOBOX->text(i)));
+		*((char **)GB.Array.Get(array, i)) = NEW_STRING(COMBOBOX->text(i));
 	}
 }
 
@@ -502,7 +502,7 @@ END_METHOD
 BEGIN_PROPERTY(ComboBox_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(COMBOBOX->currentText()));
+		RETURN_NEW_STRING(COMBOBOX->currentText());
 	else
 	{
 		QString text = QSTRING_PROP();
@@ -550,7 +550,7 @@ END_METHOD
 BEGIN_PROPERTY(CCOMBOBOX_item_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(COMBOBOX->itemText(THIS->index)));
+		RETURN_NEW_STRING(COMBOBOX->itemText(THIS->index));
 	else
 	{
 		COMBOBOX->blockSignals(true);

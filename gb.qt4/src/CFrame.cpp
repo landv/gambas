@@ -82,7 +82,7 @@ END_METHOD
 BEGIN_PROPERTY(Frame_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->title()));
+		RETURN_NEW_STRING(WIDGET->title());
 	else
 	{
 		WIDGET->setTitle(QSTRING_PROP());

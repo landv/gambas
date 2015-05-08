@@ -66,7 +66,7 @@ END_METHOD
 
 BEGIN_PROPERTY(WebFrame_Name)
 
-	GB.ReturnNewZeroString(TO_UTF8(FRAME->frameName()));
+	RETURN_NEW_STRING(FRAME->frameName());
 
 END_PROPERTY
 
@@ -79,7 +79,7 @@ END_PROPERTY
 BEGIN_PROPERTY(WebFrame_Url)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(FRAME->url().toString()));
+		RETURN_NEW_STRING(FRAME->url().toString());
 	else
 		FRAME->setUrl(QUrl(QSTRING_PROP()));
 
@@ -120,13 +120,13 @@ END_METHOD
 
 BEGIN_PROPERTY(WebFrame_HTML)
 
-	GB.ReturnNewZeroString(TO_UTF8(FRAME->toHtml()));
+	RETURN_NEW_STRING(FRAME->toHtml());
 
 END_PROPERTY
 
 BEGIN_PROPERTY(WebFrame_Text)
 
-	GB.ReturnNewZeroString(TO_UTF8(FRAME->toPlainText()));
+	RETURN_NEW_STRING(FRAME->toPlainText());
 
 END_PROPERTY
 

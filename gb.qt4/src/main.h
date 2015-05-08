@@ -145,7 +145,10 @@ void MAIN_init_error(void);
 
 #define MAIN_CHECK_INIT() (MAIN_init ? 0 : (MAIN_init_error(), 1))
 
-const char *QT_ToUTF8(const QString &str);
+const char *QT_ToUtf8(const QString &str);
+int QT_GetLastUtf8Length();
+char *QT_NewString(const QString &str);
+void QT_ReturnNewString(const QString &str);
 void QT_RegisterAction(void *object, const char *key, int on);
 void QT_RaiseAction(const char *key);
 void *QT_GetObject(QWidget *);

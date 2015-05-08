@@ -177,7 +177,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Highlight_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(_highlight_text));
+		RETURN_NEW_STRING(_highlight_text);
 	else
 		_highlight_text = QSTRING_PROP();
 
@@ -227,7 +227,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Editor_Text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(DOC->getText().utf8());
+		RETURN_NEW_STRING(DOC->getText().getString());
 	else
 		DOC->setText(QSTRING_PROP());
 
@@ -855,7 +855,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(CEDITOR_sel_text)
 
-	GB.ReturnNewZeroString(WIDGET->getSelectedText().utf8());
+	RETURN_NEW_STRING(WIDGET->getSelectedText().getString());
 
 END_PROPERTY
 
@@ -938,7 +938,7 @@ END_METHOD
 BEGIN_PROPERTY(CEDITOR_line_text)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(DOC->getLine(THIS->line).utf8());
+		RETURN_NEW_STRING(DOC->getLine(THIS->line).getString());
 	else
 	{
 		GString s = GString(QSTRING_PROP());
@@ -1034,12 +1034,6 @@ BEGIN_METHOD(CEDITOR_line_purge, GB_BOOLEAN comment; GB_BOOLEAN string; GB_STRIN
 	
 	line = DOC->getLine(THIS->line);
 	
-	/*if (comment && string)	
-	{
-		GB.ReturnNewZeroString(line.utf8());
-		return;
-	}*/
-	
 	for (i = 0; i < line.length(); i++)
 	{
 		state = DOC->getCharState(THIS->line, i);
@@ -1049,7 +1043,7 @@ BEGIN_METHOD(CEDITOR_line_purge, GB_BOOLEAN comment; GB_BOOLEAN string; GB_STRIN
 			result += line.at(i);
 	}
 	
-	GB.ReturnNewZeroString(result.utf8());
+	RETURN_NEW_STRING(result.getString());
 
 END_METHOD
 

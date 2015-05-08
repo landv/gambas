@@ -30,7 +30,7 @@
 BEGIN_PROPERTY(Cookie_Domain)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(COOKIE->domain()));
+		RETURN_NEW_STRING(COOKIE->domain());
 	else
 		COOKIE->setDomain(QSTRING_PROP());
 
@@ -119,7 +119,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Cookie_Path)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(COOKIE->path()));
+		RETURN_NEW_STRING(COOKIE->path());
 	else
 		COOKIE->setPath(QSTRING_PROP());
 

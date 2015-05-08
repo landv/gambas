@@ -50,12 +50,18 @@
 
 #ifdef DO_NOT_USE_QT_INTERFACE
 
-	#define TO_UTF8(_str) QT_ToUTF8(_str)
+	#define TO_UTF8(_str) QT_ToUtf8(_str)
+	#define LAST_UTF8_LENGTH() QT_GetLastUtf8Length()
+	#define NEW_STRING(_str) QT_NewString(_str)
+	#define RETURN_NEW_STRING(_str) QT_ReturnNewString(_str)
 	#define GET_SENDER() void *_object = QT_GetObject((QWidget*)sender())
 
 #else
 
-	#define TO_UTF8(_str) QT.ToUTF8(_str)
+	#define TO_UTF8(_str) QT.ToUtf8(_str)
+	#define LAST_UTF8_LENGTH() QT.GetLastUtf8Length()
+	#define NEW_STRING(_str) QT.NewString(_str)
+	#define RETURN_NEW_STRING(_str) QT.ReturnNewString(_str)
 	#define GET_SENDER() void *_object = QT.GetObject((QWidget*)sender())
 
 #endif
@@ -131,7 +137,10 @@ typedef
 		QT_PICTURE (*CreatePicture)(const QPixmap &);
 		//QMimeSourceFactory *(*MimeSourceFactory)(void);
 		QPixmap *(*GetPixmap)(QT_PICTURE);
-		const char *(*ToUTF8)(const QString &);
+		const char *(*ToUtf8)(const QString &);
+		int (*GetLastUtf8Length)();
+		char *(*NewString)(const QString &);
+		void (*ReturnNewString)(const QString &);
 		bool (*EventFilter)(QEvent *);
 		bool (*Notify)(void *, bool);
 		int (*Alignment)(int, int, bool);

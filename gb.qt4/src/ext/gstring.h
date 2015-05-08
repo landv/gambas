@@ -43,7 +43,6 @@ public:
 	~GString() {}
   GString(const QString &str);
   GString(const GString &str);
-	const char *utf8() const { return TO_UTF8(s); }
 	QString getString() const { return s; }
 	uint length() const { return s.length(); }
 	GString &operator=(const GString &str);

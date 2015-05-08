@@ -69,7 +69,7 @@ END_METHOD
 BEGIN_PROPERTY(WebElement_HTML)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(ELT->toOuterXml()));
+		RETURN_NEW_STRING(ELT->toOuterXml());
 	else
 		ELT->setOuterXml(QSTRING_PROP());
 
@@ -78,7 +78,7 @@ END_PROPERTY
 BEGIN_PROPERTY(WebElement_InnerHTML)
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(ELT->toInnerXml()));
+		RETURN_NEW_STRING(ELT->toInnerXml());
 	else
 		ELT->setInnerXml(QSTRING_PROP());
 
@@ -173,7 +173,7 @@ END_METHOD
 
 BEGIN_PROPERTY(WebElement_Tag)
 
-	GB.ReturnNewZeroString(TO_UTF8(ELT->tagName()));
+	RETURN_NEW_STRING(ELT->tagName());
 
 END_PROPERTY
 
@@ -185,7 +185,7 @@ BEGIN_PROPERTY(WebElement_Classes)
 	
 	GB.Array.New(&array, GB_T_STRING, classes.count());
 	for (i = 0; i < classes.count(); i++)
-		*((const char **)GB.Array.Get(array, i)) = TO_UTF8(classes.at(i));
+		*((const char **)GB.Array.Get(array, i)) = NEW_STRING(classes.at(i));
 	
 	GB.ReturnObject(array);
 
@@ -205,7 +205,7 @@ END_METHOD
 
 BEGIN_METHOD(WebElement_get, GB_STRING attr)
 
-	GB.ReturnNewZeroString(TO_UTF8(ELT->attribute(QSTRING_ARG(attr))));
+	RETURN_NEW_STRING(ELT->attribute(QSTRING_ARG(attr)));
 
 END_METHOD
 
@@ -315,7 +315,7 @@ END_METHOD
 
 BEGIN_METHOD(WebElementStyle_get, GB_STRING property)
 
-	GB.ReturnNewZeroString(TO_UTF8(ELT->styleProperty(QSTRING_ARG(property), QWebElement::InlineStyle)));
+	RETURN_NEW_STRING(ELT->styleProperty(QSTRING_ARG(property), QWebElement::InlineStyle));
 
 END_METHOD
 

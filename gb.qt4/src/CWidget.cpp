@@ -1075,7 +1075,10 @@ BEGIN_PROPERTY(Control_Visible)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(CWIDGET_is_visible(THIS));
 	else
+	{
 		CWIDGET_set_visible(THIS, VPROP(GB_BOOLEAN));
+		CWIDGET_check_visibility(THIS);
+	}
 
 END_PROPERTY
 
@@ -1083,6 +1086,7 @@ END_PROPERTY
 BEGIN_METHOD_VOID(Control_Show)
 
 	CWIDGET_set_visible(THIS, true);
+	CWIDGET_check_visibility(THIS);
 
 END_METHOD
 
@@ -1090,6 +1094,7 @@ END_METHOD
 BEGIN_METHOD_VOID(Control_Hide)
 
 	CWIDGET_set_visible(THIS, false);
+	CWIDGET_check_visibility(THIS);
 
 END_METHOD
 
@@ -1406,7 +1411,7 @@ void CWIDGET_reset_color(CWIDGET *_object)
 		
 		if (qobject_cast<QComboBox *>(w))
 		{
-			QComboBox *cb = (QComboBox *)w;
+			//QComboBox *cb = (QComboBox *)w;
 			palette = QPalette();
 
 			if (bg != COLOR_DEFAULT)
@@ -1644,7 +1649,7 @@ BEGIN_PROPERTY(Control_Tooltip)
 	//QWidget *w;
 
 	if (READ_PROPERTY)
-		GB.ReturnNewZeroString(TO_UTF8(WIDGET->toolTip()));
+		RETURN_NEW_STRING(WIDGET->toolTip());
 	else
 	{
 		QString tip = QSTRING_PROP();
@@ -2845,7 +2850,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		CKEY_clear(true);
 
 		GB.FreeString(&CKEY_info.text);
-		CKEY_info.text = GB.NewZeroString(TO_UTF8(kevent->text()));
+		CKEY_info.text = NEW_STRING(kevent->text());
 		CKEY_info.state = kevent->modifiers();
 		CKEY_info.code = kevent->key();
 		CKEY_info.release = type == QEvent::KeyRelease;
@@ -2921,7 +2926,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 	
 				GB.FreeString(&CKEY_info.text);
 				//qDebug("IMEnd: %s", imevent->text().latin1());
-				CKEY_info.text = GB.NewZeroString(TO_UTF8(imevent->commitString()));
+				CKEY_info.text = NEW_STRING(imevent->commitString());
 				CKEY_info.state = 0;
 				CKEY_info.code = 0;
 	

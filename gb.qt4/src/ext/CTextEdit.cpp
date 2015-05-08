@@ -207,7 +207,7 @@ void MyTextEdit::emitLinkClicked(const QString &s)
 BEGIN_PROPERTY(CTEXTAREA_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->document()->toPlainText()));
+    RETURN_NEW_STRING(WIDGET->document()->toPlainText());
   else
 	{
     WIDGET->document()->setPlainText(QSTRING_PROP());
@@ -219,7 +219,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_rich_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->document()->toHtml("utf-8")));
+    RETURN_NEW_STRING(WIDGET->document()->toHtml("utf-8"));
   else
     WIDGET->document()->setHtml(QSTRING_PROP());
 
@@ -343,7 +343,7 @@ END_METHOD
 BEGIN_PROPERTY(CTEXTAREA_sel_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->textCursor().selection().toPlainText()));
+    RETURN_NEW_STRING(WIDGET->textCursor().selection().toPlainText());
   else
     WIDGET->textCursor().insertText(QSTRING_PROP());
 
@@ -352,7 +352,7 @@ END_PROPERTY
 BEGIN_PROPERTY(CTEXTAREA_sel_rich_text)
 
   if (READ_PROPERTY)
-    GB.ReturnNewZeroString(TO_UTF8(WIDGET->textCursor().selection().toHtml()));
+    RETURN_NEW_STRING(WIDGET->textCursor().selection().toHtml());
   else
     WIDGET->textCursor().insertFragment(QTextDocumentFragment::fromHtml(QSTRING_PROP()));
 
