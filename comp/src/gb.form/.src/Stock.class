@@ -109,13 +109,18 @@ Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As
   If Not Exist(sPath) Then Return
   
   If Not sPattern Then
-    aDir = Dir(sPath, "[1-9]*", gb.Directory) 
-    If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
-      sPattern = "&1x&1!&2"
-    Else If Exist(sPath &/ "scalable") Then
-      sPattern = "&1x&1!&2"
+    
+    If File.Name(sPath) Begins "breeze" Then
+      sPattern = "*"
     Else
-      sPattern = "&2!&1"
+      aDir = Dir(sPath, "[1-9]*", gb.Directory) 
+      If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
+        sPattern = "&1x&1!&2"
+      Else If Exist(sPath &/ "scalable") Then
+        sPattern = "&1x&1!&2"
+      Else
+        sPattern = "&2!&1"
+      Endif
     Endif
   Endif
   
@@ -366,31 +371,81 @@ Static Private Sub GetScalablePath(sPath As String) As String
   
 End
 
+Static Private Sub DoLoadIcon(sPath As String, iSize As Integer, iRealSize As Integer) As Picture
+
+  Dim sName As String
+  Dim sDir As String
+  Dim hPict As Picture
+  Dim hImage As Image
+  
+  sName = File.Name(sPath)
+  sDir = File.Dir(sPath)
+  
+  'If $bDebugLoad Then Error "-> "; sDir &/ sName
+  
+  If iRealSize Then
+    
+    sName = sName & ".svg" 'File.SetExt(sName, "svg")  'Warning this change is for files than have a point in the name
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
+    If Not Error Then Return hPict
+    
+    sName = File.SetExt(sName, "svgz")
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
+    If Not Error Then Return hPict
+    
+    sName = File.SetExt(sName, "png")
+    Try hImage = Image.Load(sDir &/ sName)
+    If Not Error Then Return hImage.Stretch(iRealSize, iRealSize).Picture
+    
+  Else
+    
+    sName = sName & ".png" 'File.SetExt(sName, "png")  'Warning this change is for files than have a point in the name
+    Try hImage = Image.Load(sDir &/ sName)
+    If Not Error Then Return hImage.Picture
+    
+    sName = File.SetExt(sName, "svg")
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
+    If Not Error Then Return hPict
+    
+    sName = File.SetExt(sName, "svgz")
+    Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
+    If Not Error Then Return hPict
+    
+  Endif
+  
+End
+
+
 Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integer, Optional iRealSize As Integer) As Picture
   
-  Dim hImage As Image
   Dim hPict As Picture
-  Dim sDir As String
-  Dim sName As String
   Dim sPath As String
   Dim sTest As String
   Dim bFound As Boolean
   Dim iPos As Integer
   Dim sTheme As String
+  Dim sDir As String
+  Dim sSubDir As String
   
   If sFile Begins "$(mime)/" Then
     
     'Debug sTemplate;; sFile;; iSize;; iRealSize
     
-    For Each sTest In ["mimetypes", "mimes"]
-      sPath = Subst(sTemplate, CStr(iSize), sTest)
-      If Exist(sPath) Then
-        sFile = Replace(sFile, "$(mime)", sTest)
-        'Debug "FOUND "; sFile
-        bFound = True
-        Break
-      Endif
-    Next
+    If sTemplate Ends "/*" Then
+      sPath = File.Dir(sTemplate) &/ "mimetypes/file-types-small"
+      sFile = Replace(sFile, "$(mime)", "mimetypes/file-types-small")
+      bFound = IsDir(sPath)
+    Else
+      For Each sTest In ["mimetypes", "mimes"]
+        sPath = Subst(sTemplate, CStr(iSize), sTest)
+        If Exist(sPath) Then
+          sFile = Replace(sFile, "$(mime)", sTest)
+          'Debug "FOUND "; sFile
+          bFound = True
+          Break
+        Endif
+      Next
+    Endif
     
     If Not bFound Then 
       'Debug "NOT FOUND"
@@ -404,8 +459,8 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
     If Left(sFile) = "[" Then
       iPos = InStr(sFile, "]")
       If iPos Then
-        sTheme = Mid$(sFile, 2, iPos - 2)
-        If LCase(sTheme) <> LCase(Application.Theme) Then Continue
+        sTheme = LCase(Mid$(sFile, 2, iPos - 2))
+        If File.Name(File.Dir(sTemplate)) Not Like sTheme Then Continue
         sFile = Mid$(sFile, iPos + 1)
       Endif
     Endif
@@ -417,42 +472,23 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
         sFile = Left(sFile, -4) & "-ltr"
       Endif
     Endif
-      
-    sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
     
-    sName = File.Name(sPath)
-    sDir = File.Dir(sPath)
-    
-    'If $bDebugLoad Then Error "-> "; sDir &/ sName
-    
-    If iRealSize Then
-      
-      sName = sName & ".svg" 'File.SetExt(sName, "svg")  'Warning this change is for files than have a point in the name
-      Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
-      If Not Error Then Return hPict
-      
-      sName = File.SetExt(sName, "svgz")
-      Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iRealSize)
-      If Not Error Then Return hPict
-      
-      sName = File.SetExt(sName, "png")
-      Try hImage = Image.Load(sDir &/ sName)
-      If Not Error Then Return hImage.Stretch(iRealSize, iRealSize).Picture
-      
+    If sTemplate Ends "/*" Then
+      sDir = File.Dir(sTemplate) &/ File.Dir(sFile)
+      If IsDir(sDir) Then
+        For Each sSubDir In Dir(sDir, "*", gb.Directory)
+          sPath = sDir &/ sSubDir &/ File.Name(sFile)
+          hPict = DoLoadIcon(sPath, iSize, iRealSize)
+          If hPict Then Return hPict
+        Next
+        sPath = sDir &/ File.Name(sFile)
+        hPict = DoLoadIcon(sPath, iSize, iRealSize)
+        If hPict Then Return hPict
+      Endif
     Else
-      
-      sName = sName & ".png" 'File.SetExt(sName, "png")  'Warning this change is for files than have a point in the name
-      Try hImage = Image.Load(sDir &/ sName)
-      If Not Error Then Return hImage.Picture
-      
-      sName = File.SetExt(sName, "svg")
-      Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
-      If Not Error Then Return hPict
-      
-      sName = File.SetExt(sName, "svgz")
-      Try hPict = PictureFromSvg(SvgImage.Load(sDir &/ sName), iSize)
-      If Not Error Then Return hPict
-      
+      sPath = Subst(sTemplate, CStr(iSize), File.Dir(sFile)) &/ File.Name(sFile)
+      hPict = DoLoadIcon(sPath, iSize, iRealSize)
+      If hPict Then Return hPict
     Endif
     
   Next
