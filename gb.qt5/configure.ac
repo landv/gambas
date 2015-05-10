@@ -20,10 +20,10 @@ GB_COMPONENT_PKG_CONFIG(
 ##   'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets
 ## )
 
-## GB_COMPONENT_PKG_CONFIG(
-##   qt5webkit, QT5WEBKIT, gb.qt5.webkit, [webkit],
-##   'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Network Qt5Xml Qt5WebKit Qt5WebKitWidgets Qt5PrintSupport
-## )
+GB_COMPONENT_PKG_CONFIG(
+  qt5webkit, QT5WEBKIT, gb.qt5.webkit, [webkit],
+  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Network Qt5Xml Qt5WebKit Qt5WebKitWidgets Qt5PrintSupport
+)
 
 ## GB_COMPONENT_PKG_CONFIG(
 ##   qtopengl, QTOPENGL, gb.qt5.opengl, [opengl],
@@ -36,10 +36,10 @@ AC_SUBST(MOC)
 AC_OUTPUT( \
 Makefile \
 src/Makefile \
+src/webkit/Makefile \
 )
 
 ## src/ext/Makefile \
-## src/webkit/Makefile \
 ## src/opengl/Makefile \
 
 GB_PRINT_MESSAGES
