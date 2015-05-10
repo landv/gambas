@@ -27,7 +27,6 @@
 #include <QString>
 #include <QColor>
 #include <QPixmap>
-#include <Q3ScrollView>
 #include <QTimer>
 #include <QResizeEvent>
 #include <QFocusEvent>
@@ -36,7 +35,7 @@
 #include <QEvent>
 #include <QHash>
 #include <QStyle>
-
+#include <Q3ScrollView>
 #include "gdocument.h"
 #include "../gb.qt.h"
 

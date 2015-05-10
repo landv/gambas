@@ -160,20 +160,6 @@ BEGIN_METHOD(CTOOLBUTTON_new, GB_OBJECT parent)
 
 END_METHOD
 
-/*
-BEGIN_METHOD(CTOOLBUTTON_new, void *parent)
-
-	QToolButton *wid = new QToolButton(CONTAINER(PARAM(parent)));
-
-	QObject::connect(wid, SIGNAL(clicked()), &CButton::manager, SLOT(clickedTool()));
-
-	CWIDGET_new(wid, (void *)_object, "ToolButton");
-	OBJECT(CBUTTON)->picture = NULL;
-
-	wid->show();
-
-END_METHOD
-*/
 
 BEGIN_METHOD_VOID(CBUTTON_free)
 

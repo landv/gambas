@@ -23,7 +23,7 @@ AM_CONDITIONAL(XWINDOW, test x"$have_x" = xyes)
 
 GB_COMPONENT_PKG_CONFIG(
   qt, QT, gb.qt4, [src],
-  'QtCore >= 4.5.0' QtGui Qt3Support QtSvg
+  'QtCore >= 4.5.0' QtGui QtSvg
 )
 
 GB_COMPONENT_PKG_CONFIG(

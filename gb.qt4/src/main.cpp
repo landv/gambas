@@ -94,12 +94,12 @@
 #include "cprinter.h"
 #include "csvgimage.h"
 #include "cpaint_impl.h"
+#include "CTrayIcon.h"
 
 #ifndef NO_X_WINDOW
 #include <QX11Info>
 #ifndef QT5
 #include "CEmbedder.h"
-#include "CTrayIcon.h"
 #endif
 #include "x11.h"
 #endif
@@ -642,11 +642,7 @@ static bool must_quit(void)
 	#if DEBUG_WINDOW
 	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
 	#endif
-#ifdef QT5
-	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0;
-#else
 	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0 && TRAYICON_count == 0;
-#endif
 }
 
 static void check_quit_now(intptr_t param)
@@ -657,11 +653,9 @@ static void check_quit_now(intptr_t param)
 	{
 		if (QApplication::instance())
 		{
-#ifndef NO_X_WINDOW
+			TRAYICON_close_all();
 #ifndef QT5
-				CTRAYICON_close_all();
-				qApp->syncX();
-#endif
+			qApp->syncX();
 #endif
 			qApp->exit();
 			exit_called = true;
@@ -1064,12 +1058,10 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CSliderDesc, CSpinBoxDesc, CMovieBoxDesc, CScrollBarDesc,
 	CWindowMenusDesc, CWindowControlsDesc, CWindowDesc, CWindowsDesc, CFormDesc,
 	CDialogDesc,
-#ifndef NO_X_WINDOW
 #ifndef QT5
 	CEmbedderDesc,
-	CTrayIconDesc, CTrayIconsDesc,
 #endif
-#endif
+	TrayIconDesc, TrayIconsDesc,
 	CWatcherDesc,
 	PrinterDesc,
 	SvgImageDesc,

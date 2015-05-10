@@ -275,7 +275,10 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Style_ScrollbarSpacing)
 
-	GB.ReturnInteger(qMax(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing)));
+	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
+		GB.ReturnInteger(0);
+	else
+		GB.ReturnInteger(qMax(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing)));
 
 END_PROPERTY
 
@@ -300,6 +303,8 @@ BEGIN_PROPERTY(Style_Name)
 
 	const char *name = qApp->style()->metaObject()->className();
 	int len = strlen(name);
+	
+	fprintf(stderr, "Style_Name: %s\n", name);
 	
 	if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
 		len -= 5;

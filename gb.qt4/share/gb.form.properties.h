@@ -66,7 +66,7 @@
 #define CTEXTLABEL_PROPERTIES "*,Padding{Range:0;63},AutoResize,Text,Alignment{Align.*}=TopNormal,Wrap=True,Border{Border.None;Plain;Sunken;Raised;Etched},Transparent"
 #define CTOGGLEBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border=True,Radio,Value"
 #define CTOOLBUTTON_PROPERTIES "*,Action,AutoResize,Text,Picture,Border,Radio,Toggle,Value"
-#define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture"
+#define CTRAYICON_PROPERTIES "Visible=False,Tag,Tooltip,Picture,PopupMenu{Menu}"
 #define CVBOX_PROPERTIES "*,AutoResize," CPADDING_PROPERTIES ",Invert"
 #define CWINDOW_PROPERTIES "*,Action,Text,Icon,Picture,Mask,Persistent,Resizable=True,Border=True,Utility,TakeFocus=True,Stacking{Window.Normal;Above;Below}=Normal,Minimized,Maximized,FullScreen,Sticky,SkipTaskbar,Opacity{Range:0;100}=100,Transparent," CWINDOW_ARRANGEMENT_PROPERTIES
 
@@ -122,7 +122,7 @@
 #define DIAL_DESCRIPTION DESCRIBE_CONTROL(CDIAL_PROPERTIES, "Change", "6,6"), SIMILAR("Slider")
 #define DRAWINGAREA_DESCRIPTION DESCRIBE_CONTAINER(CDRAWINGAREA_PROPERTIES, "Draw")
 #define EDITOR_DESCRIPTION DESCRIBE_CONTROL(CEDITOR_PROPERTIES, "KeyPress", "16,16"), SIMILAR("TextArea")
-#define EMBEDDER_DESCRIPTION DESCRIBE_CONTROL("*", "Embed", "24,24"), GB_CONSTANT("_Group", "s", "Special")
+#define EMBEDDER_DESCRIPTION DESCRIBE_CONTROL("*", "Embed", "24,24"), GB_CONSTANT("_Group", "s", "Deprecated")
 #define FRAME_DESCRIPTION DESCRIBE_CONTAINER(CFRAME_PROPERTIES, "MouseDown"), SIMILAR("Panel")
 #define HBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "H"), SIMILAR("Panel")
 #define HPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CHBOX_PROPERTIES, "MouseDown", "R"), SIMILAR("Panel")
@@ -145,7 +145,6 @@
 #define TEXTLABEL_DESCRIPTION DESCRIBE_CONTROL(CTEXTLABEL_PROPERTIES, "MouseDown", "24,4"), SIMILAR("Label")
 #define TOGGLEBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOGGLEBUTTON_PROPERTIES, "Click", "16,4"), SIMILAR("Button")
 #define TOOLBUTTON_DESCRIPTION DESCRIBE_CONTROL(CTOOLBUTTON_PROPERTIES, "Click", "4,4"), SIMILAR("Button")
-#define TRAYICON_DESCRIPTION DESCRIBE_SPECIAL_CONTROL(CTRAYICON_PROPERTIES, "Menu", "4,4")
 #define USERCONTAINER_DESCRIPTION DESCRIBE_CONTAINER_ARR(CUSERCONTAINER_PROPERTIES, "MouseDown", "F")
 #define VBOX_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "V"), SIMILAR("Panel")
 #define VPANEL_DESCRIPTION DESCRIBE_CONTAINER_ARR(CVBOX_PROPERTIES, "MouseDown", "C"), SIMILAR("Panel")
@@ -161,6 +160,14 @@
 #define FORM_DESCRIPTION \
 	GB_CONSTANT("_IsForm", "b", TRUE), \
 	GB_CONSTANT("_HiddenControls", "s", "Form,Control,Menu,Container,UserControl,UserContainer,Window")
+
+#define TRAYICON_DESCRIPTION \
+	GB_CONSTANT("_IsControl", "b", TRUE), \
+	GB_CONSTANT("_Family", "s", "*"), \
+	GB_CONSTANT("_IsVirtual", "b", TRUE), \
+	GB_CONSTANT("_Group", "s", "Special"), \
+	GB_CONSTANT("_DefaultEvent", "s", "Click"), \
+	GB_CONSTANT("_Properties", "s", CTRAYICON_PROPERTIES)
 
 #define PRINTER_DESCRIPTION \
 	GB_CONSTANT("_IsControl", "b", TRUE), \
