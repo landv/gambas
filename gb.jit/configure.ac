@@ -30,7 +30,7 @@ else
     AC_MSG_RESULT([yes ($LLVM_VERSION)])
   else
     AC_MSG_RESULT(no)
-    touch DISABLED DISABLED.gb.jit]
+    touch DISABLED DISABLED.gb.jit
   fi
 fi
 
