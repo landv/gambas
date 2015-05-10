@@ -150,6 +150,7 @@ Public Sub ReadConfig()
   Form_Arrange
 
   edtEditor.ReadConfig
+  edtEditor.Parent.Background = edtEditor.Styles[Highlight.Background].Color
   If $hEditor1 Then $hEditor1.ReadConfig
   If $hEditor2 Then $hEditor2.ReadConfig
 

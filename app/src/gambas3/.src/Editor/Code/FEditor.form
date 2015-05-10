@@ -422,12 +422,14 @@
     { Separator2 Separator
       MoveScaled(99,0,1,4)
     }
-    { btnProc ToolButton
-      MoveScaled(101,0,32,4)
+    { btnProc MenuButton
+      MoveScaled(101,0,38,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["icon:/small/bottom"]
+      Arrow = False
+      Border = False
     }
     { lblInfo Label
       MoveScaled(143,0,11,4)
@@ -439,7 +441,7 @@
   }
   { Panel1 Panel
     MoveScaled(6,7,38,63)
-    Background = Color.Background
+    Background = Color.TextBackground
     Expand = True
     Arrangement = Arrange.Fill
     { edtEditor Editor Editors

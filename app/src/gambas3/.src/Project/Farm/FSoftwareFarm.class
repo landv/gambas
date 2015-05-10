@@ -19,7 +19,7 @@ End
 Public Sub Form_Open()
 
   Dim aGroup As New CSoftwareGroup[]
-  Dim hButton As ToolButton
+  Dim hButton As MenuButton
   Dim hGroup As CSoftwareGroup
   Dim sIcon As String
 
@@ -50,8 +50,10 @@ Public Sub Form_Open()
   
   For Each hGroup In aGroup
     
-    hButton = New ToolButton(panGroup) As "ButtonGroup"
+    hButton = New MenuButton(panGroup) As "ButtonGroup"
     hButton.Text = hGroup.Name
+    hButton.Arrow = False
+    hButton.Border = False
     hButton.Tag = hGroup.Key
     sIcon = hGroup.Icon
     If InStr(sIcon, "/") = 0 Then sIcon = "icon:/48" &/ sIcon

@@ -1081,6 +1081,7 @@
     { panProject SidePanel
       MoveScaled(2,3,29,66)
       Visible = False
+      Background = Color.TextBackground
       ToolTip = ("Project")
       Arrangement = Arrange.Vertical
       Action = "project"
@@ -1104,7 +1105,7 @@
         Delay = 500
       }
       { tvwProject TreeView
-        MoveScaled(0,16,20,47)
+        MoveScaled(1,16,20,47)
         Drop = True
         Expand = True
         Border = False
