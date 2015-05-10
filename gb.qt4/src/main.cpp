@@ -1068,8 +1068,12 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NULL
 };
 
-void *GB_QT4_1[] EXPORT = {
-
+#ifdef QT5
+void *GB_QT5_1[] EXPORT = 
+#else
+void *GB_QT4_1[] EXPORT = 
+#endif
+{
 	(void *)1,
 
 	(void *)QT_InitEventLoop,
