@@ -193,6 +193,8 @@ Static Private Sub GetDesktop() As String
     If Application.Env["KDE_FULL_SESSION"] Then
       If Application.Env["KDE_SESSION_VERSION"] = "4" Then
         $sDesktop = "KDE4"
+      Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
+        $sDesktop = "KDE5"
       Else
         $sDesktop = "KDE"
       Endif
@@ -235,7 +237,7 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
 
     Case "KDE"
       sExec = "konsole"
-    Case "KDE4"
+    Case "KDE4", "KDE5"
       If {Dir} Then
         sExec = "konsole --workdir " & Shell$({Dir})
         bNoDir = True
