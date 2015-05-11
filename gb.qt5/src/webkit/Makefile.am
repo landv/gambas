@@ -6,7 +6,7 @@ gblib_LTLIBRARIES = gb.qt5.webkit.la
 
 gb_qt5_webkit_la_LIBADD = @QT5WEBKIT_LIB@
 gb_qt5_webkit_la_LDFLAGS = -module @LD_FLAGS@ @QT5WEBKIT_LDFLAGS@
-gb_qt5_webkit_la_CPPFLAGS = @QT5WEBKIT_INC@-I$(top_srcdir)/share -I$(top_srcdir)/src/share
+gb_qt5_webkit_la_CPPFLAGS = @QT5WEBKIT_INC@ -I$(top_srcdir)/share -I$(top_srcdir)/src/share
 
 gb_qt5_webkit_la_SOURCES = \
  main.h main.cpp \

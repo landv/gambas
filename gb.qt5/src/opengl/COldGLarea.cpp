@@ -2,7 +2,7 @@
 
 	CGLarea.cpp
 
-	(c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2006 Laurent Carlier <lordheavy@users.sourceforge.net>
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -24,34 +24,76 @@
 #define __CGLAREA_CPP
 
 #include "gb.image.h"
+#include "COldGLarea.h"
 
-#include "CGLarea.h"
+//#include "gl.h"
+
+
+//#include <iostream>
+
+
+static int glWidgetCount = 0;
+static QGLWidget *sharedWidget = 0;
 
 DECLARE_EVENT(EVENT_Open);
 DECLARE_EVENT(EVENT_Draw);
 DECLARE_EVENT(EVENT_Resize);
 
+static void makeSharing()
+{
+	if (sharedWidget)
+		return;
+
+	sharedWidget = new QGLWidget();
+	//qDebug("make_sharing: %p", sharedWidget);
+}
+
+BEGIN_METHOD_VOID(CGLAREA_exit)
+
+	//qDebug("CGLAREA_exit: %p", sharedWidget);
+	delete sharedWidget;
+	sharedWidget = 0;
+
+END_METHOD
+
 BEGIN_METHOD(CGLAREA_new, GB_OBJECT parent)
 
-	/*if (!QGLFormat::hasOpenGL())
+	if (!QGLFormat::hasOpenGL())
 	{
 		GB.Error( "This system has no OpenGL support");
 		return;
-	}*/
+	}
 
-	GLarea *area = new GLarea(QT.GetContainer(VARG(parent)), THIS);
+	makeSharing();
+	GLarea *area = new GLarea(QT.GetContainer(VARG(parent)), THIS, sharedWidget);
+	glWidgetCount++;
+
 	QT.InitWidget(area, _object, false);
 	area->show();
 
 END_METHOD
 
-#if 0
+BEGIN_METHOD_VOID(CGLAREA_free)
+
+	glWidgetCount--;
+
+	// clean up the shared datas between GLwidgets if there is no more CGLarea
+	if (glWidgetCount <= 0)
+	{
+		delete sharedWidget;
+		sharedWidget = 0;
+		makeSharing();
+		glWidgetCount = 0;
+	}
+
+
+END_METHOD
+
 BEGIN_METHOD_VOID(CGLAREA_update)
 
 	WIDGET->updateGL();
 
 END_METHOD
-#endif
 
 #if 0
 BEGIN_METHOD_VOID(CGLAREA_select)
@@ -63,7 +105,6 @@ BEGIN_METHOD_VOID(CGLAREA_select)
 END_METHOD
 #endif
 
-#if 0
 BEGIN_METHOD(CGLAREA_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 
 	QString text;
@@ -94,7 +135,6 @@ BEGIN_METHOD(CGLAREA_text, GB_STRING text; GB_INTEGER x; GB_INTEGER y)
 		glEnable(GL_TEXTURE_2D);
 
 END_METHOD
-#endif
 
 /**************************************************************************/
 
@@ -102,7 +142,14 @@ GB_DESC CGlareaDesc[] =
 {
 	GB_DECLARE("GLArea", sizeof(CGLAREA)), GB_INHERITS("Control"),
 
+	GB_STATIC_METHOD("_exit", NULL, CGLAREA_exit, NULL),
+
 	GB_METHOD("_new", NULL, CGLAREA_new, "(Parent)Container;"),
+	GB_METHOD("_free", NULL, CGLAREA_free, NULL),
+	//GB_METHOD("Update", NULL, CGLAREA_update, NULL),
+	GB_METHOD("Refresh", NULL, CGLAREA_update, NULL),
+	//GB_METHOD("Select", NULL, CGLAREA_select, NULL),
+	//GB_METHOD("Text", NULL, CGLAREA_text, "(Text)s(X)i(Y)i"),
 
 	GB_CONSTANT("_Group", "s", "Special"),
 
@@ -115,11 +162,11 @@ GB_DESC CGlareaDesc[] =
 
 /* class GLarea */
 
-GLarea::GLarea(QWidget *parent, CGLAREA *object): QOpenGLWidget(parent)
+GLarea::GLarea(QWidget *parent, CGLAREA *object, QGLWidget *sharing): QGLWidget(parent, sharing)
 {
 	setFocusPolicy(Qt::WheelFocus);
 	setAttribute(Qt::WA_InputMethodEnabled, true);
-	_area = object;
+_area = object; 
 };
 
 
@@ -134,7 +181,6 @@ void GLarea::paintGL()
 	/*static bool CleanupOnFirstShow = 0;
 	
 	uint color;
-	
 	if (!CleanupOnFirstShow)
 	{
 		// clear to avoid garbage
