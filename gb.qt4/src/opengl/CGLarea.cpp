@@ -27,8 +27,6 @@
 #include "CGLarea.h"
 
 //#include "gl.h"
-
-
 //#include <iostream>
 
 
@@ -162,10 +160,10 @@ GB_DESC CGlareaDesc[] =
 
 /* class GLarea */
 
-GLarea::GLarea(QWidget *parent,CGLAREA *object, QGLWidget *sharing): QGLWidget(parent, 0, sharing)
+GLarea::GLarea(QWidget *parent,CGLAREA *object, QGLWidget *sharing): QGLWidget(parent, sharing)
 {
   setFocusPolicy(Qt::WheelFocus);
-  setInputMethodEnabled(true);
+	setAttribute(Qt::WA_InputMethodEnabled, true);
  _area = object; 
 };
 

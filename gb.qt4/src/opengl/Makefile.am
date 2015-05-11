@@ -4,9 +4,9 @@ include $(top_srcdir)/gb.qt.am
 
 gblib_LTLIBRARIES = gb.qt4.opengl.la
 
-gb_qt4_opengl_la_LIBADD = @QT_LIB@ @QTOPENGL_LIB@
-gb_qt4_opengl_la_LDFLAGS = -module @LD_FLAGS@ @QT_LDFLAGS@ @QTOPENGL_LDFLAGS@
-gb_qt4_opengl_la_CPPFLAGS = -DQT3_SUPPORT @QT_INC@ @QTOPENGL_INC@
+gb_qt4_opengl_la_LIBADD = @QTOPENGL_LIB@
+gb_qt4_opengl_la_LDFLAGS = -module @LD_FLAGS@ @QTOPENGL_LDFLAGS@
+gb_qt4_opengl_la_CPPFLAGS = @QTOPENGL_INC@
 
 gb_qt4_opengl_la_SOURCES = \
  main.h main.cpp \

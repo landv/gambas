@@ -24,7 +24,6 @@
 #define __MAIN_CPP
 
 #include "main.h"
-
 #include "CGLarea.h"
 
 extern "C" {
