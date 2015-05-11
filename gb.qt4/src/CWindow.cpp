@@ -1095,20 +1095,6 @@ BEGIN_PROPERTY(Window_Sticky)
 
 END_PROPERTY
 
-#if 0
-BEGIN_PROPERTY(CWINDOW_type)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(WINDOW->getType());
-	else
-	{
-		qDebug("gb.qt4: warning: Window.Type is deprecated");
-		WINDOW->setType(VPROP(GB_INTEGER));
-	}
-
-END_PROPERTY
-#endif
-
 BEGIN_PROPERTY(Window_Utility)
 
 	if (READ_PROPERTY)

@@ -2272,6 +2272,7 @@ Private Sub Background_Write(Value As Integer)
 
   If $iBg = Value Then Return
   $iBg = Value
+  $hView.Background = Value
   $hView.Refresh
 
 End

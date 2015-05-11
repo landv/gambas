@@ -318,7 +318,7 @@ BEGIN_METHOD_VOID(TrayIcon_unknown)
 	if (strcasecmp(name, "ScreenX") == 0 || strcasecmp(name, "ScreenY") == 0)
 	{
 		sprintf(prop, "TrayIcon.%s", name);
-		GB.Deprecated("gb.qt4", prop, NULL);
+		GB.Deprecated(QT_NAME, prop, NULL);
 		
 		if (READ_PROPERTY)
 		{
@@ -332,7 +332,7 @@ BEGIN_METHOD_VOID(TrayIcon_unknown)
 	else if (strcasecmp(name, "W") == 0 || strcasecmp(name, "Width") == 0 || strcasecmp(name, "H") == 0 || strcasecmp(name, "Height") == 0)
 	{
 		sprintf(prop, "TrayIcon.%s", name);
-		GB.Deprecated("gb.qt4", prop, NULL);
+		GB.Deprecated(QT_NAME, prop, NULL);
 		
 		if (READ_PROPERTY)
 		{
@@ -386,9 +386,10 @@ GB_DESC TrayIconDesc[] =
 {
 	GB_DECLARE("TrayIcon", sizeof(CTRAYICON)),
 
+	GB_STATIC_METHOD("_exit", NULL, TrayIcon_exit, NULL),
+
 	GB_METHOD("_new", NULL, TrayIcon_new, NULL),
 	GB_METHOD("_free", NULL, TrayIcon_free, NULL),
-	GB_METHOD("_exit", NULL, TrayIcon_exit, NULL),
 
 	GB_METHOD("Show", NULL, TrayIcon_Show, NULL),
 	GB_METHOD("Hide", NULL, TrayIcon_Hide, NULL),

@@ -638,7 +638,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 	if (!deprecated)
 	{
 		deprecated = true;
-		GB.Deprecated("gb.qt4", "DrawingArea.Painted", NULL);
+		GB.Deprecated(QT_NAME, "DrawingArea.Painted", NULL);
 	}
 	
 	if (READ_PROPERTY)

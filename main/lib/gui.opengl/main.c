@@ -42,16 +42,21 @@ int EXPORT GB_INIT(void)
 	env = getenv("GB_GUI");
 	if (env)
 	{
-		if (!strcmp(env, "gb.qt4"))
+		if (strcmp(env, "gb.qt4") == 0)
 			comp = "gb.qt4.opengl";
-		else if (!strcmp(env, "gb.gtk"))
+		else if (strcmp(env, "gb.qt5") == 0)
+			comp = "gb.qt5.opengl";
+		else if (strcmp(env, "gb.gtk") == 0)
 			comp = "gb.gtk.opengl";
 	}
 	
 	if (!comp)
 	{
 		// GB_GUI should be set by gb.gui
-		fprintf(stderr, "gb.gui.opengl: error: no component specified in GB_GUI environment variable");
+		if (!env)
+			fprintf(stderr, "gb.gui.opengl: error: no component specified in GB_GUI environment variable");
+		else
+			fprintf(stderr, "gb.gui.opengl: error: unsupported component specified in GB_GUI environment variable");
 		exit(1);
 	}
 		

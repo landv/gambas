@@ -2,8 +2,7 @@ COMPONENT = gb.qt5
 include $(top_srcdir)/component.am
 include $(top_srcdir)/gb.qt.am
 
-SUBDIRS = . @QT5WEBKIT_DIR@
-## SUBDIRS = . @QT5EXT_DIR@ @QT5WEBKIT_DIR@ @QT5OPENGL_DIR@
+SUBDIRS = . @QT5WEBKIT_DIR@ @QT5OPENGL_DIR@
 
 gblib_LTLIBRARIES = gb.qt5.la
 

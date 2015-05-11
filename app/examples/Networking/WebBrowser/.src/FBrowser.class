@@ -41,7 +41,7 @@ End
 
 Private Sub GetView() As WebView
   
-  Return tabBrowser[tabBrowser.Index].Children[0]
+  Try Return tabBrowser[tabBrowser.Index].Children[0]
   
 End
 

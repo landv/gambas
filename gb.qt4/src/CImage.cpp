@@ -97,7 +97,7 @@ static void *temp_image(GB_IMG *img)
 }
 
 static GB_IMG_OWNER _image_owner = {
-	"gb.qt4",
+	QT_NAME,
 	GB_IMAGE_BGRP,
 	free_image,
 	free_image,

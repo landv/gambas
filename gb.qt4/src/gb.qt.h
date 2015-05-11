@@ -48,6 +48,9 @@
 
 #if QT_VERSION >= 0x050000
 #define QT5 1
+#define QT_NAME "gb.qt5"
+#else
+#define QT_NAME "gb.qt4"
 #endif
 
 #define TO_QSTRING(_str) (QString::fromUtf8((const char *)(_str)))

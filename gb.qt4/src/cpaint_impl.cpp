@@ -1090,7 +1090,7 @@ static void Invert(GB_PAINT *d, int set, int *invert)
 		#if QT_VERSION >= QT_VERSION_CHECK(4, 5, 0)
 		PAINTER(d)->setCompositionMode(*invert ? QPainter::RasterOp_SourceXorDestination : QPainter::CompositionMode_SourceOver);
 		#else
-		fprintf(stderr, "gb.qt4: warning: Draw.Invert needs Qt 4.5\n");
+		fprintf(stderr, "gb.qt4: warning: Draw.Invert needs at least Qt 4.5\n");
 		#endif
 	}
 	else

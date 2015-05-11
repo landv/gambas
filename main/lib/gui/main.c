@@ -25,10 +25,7 @@
 
 #include "main.h"
 
-#define USE_NOTHING  0
-#define USE_GB_QT4   1
-#define USE_GB_GTK   2
-#define USE_GB_GTK3  3
+enum { USE_NOTHING, USE_GB_QT4, USE_GB_QT5, USE_GB_GTK, USE_GB_GTK3 };
 
 GB_INTERFACE GB EXPORT;
 
@@ -53,6 +50,8 @@ int EXPORT GB_INIT(void)
 	{
 		if (strcmp(env, "gb.qt4") == 0)
 			use = USE_GB_QT4;
+		else if (strcmp(env, "gb.qt5") == 0)
+			use = USE_GB_QT5;
 		else if (strcmp(env, "gb.gtk") == 0)
 			use = USE_GB_GTK;
 		else if (strcmp(env, "gb.gtk3") == 0)
@@ -68,20 +67,31 @@ int EXPORT GB_INIT(void)
 		if (env && !strcmp(env, "true"))
 		{
 			env = getenv("KDE_SESSION_VERSION");
-			if (env && !strcmp(env, "4"))
-				use = USE_GB_QT4;
+			if (env)
+			{
+				if (strcmp(env, "4") == 0)
+					use = USE_GB_QT4;
+				else if (strcmp(env, "5") == 0)
+					use = USE_GB_QT5;
+			}
 		}
 	}
 
-	comp = use == USE_GB_QT4 ? "gb.qt4" : (use == USE_GB_GTK3 ? "gb.gtk3" : "gb.gtk");
+	switch (use)
+	{
+		case USE_GB_QT4: comp = "gb.qt4"; break;
+		case USE_GB_QT5: comp = "gb.qt5"; break;
+		case USE_GB_GTK3: comp = "gb.gtk3"; break;
+		default: comp = "gb.gtk"; break;
+	}
 
 	if (GB.Component.Load(comp))
 	{
-		comp2 = use == USE_GB_QT4 ? "gb.gtk" : "gb.qt4";
+		comp2 = (use == USE_GB_QT4 || use == USE_GB_QT5) ? "gb.gtk" : "gb.qt4";
 
 		if (GB.Component.Load(comp2))
 		{
-			fprintf(stderr, "gb.gui: error: unable to find any GUI component. Please install the 'gb.qt4' or 'gb.gtk' component\n");
+			fprintf(stderr, "gb.gui: error: unable to find any GUI component\n");
 			exit(1);
 		}
 

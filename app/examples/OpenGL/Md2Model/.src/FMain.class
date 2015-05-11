@@ -10,6 +10,7 @@ Private $iEndZ As Integer
 
 Private $iDisk As Integer
 Private $hQuadric As GluQuadric
+Private $nDraw As Integer
 
 ' Private $fRotX As Float
 ' Private $fRotY As Float
@@ -50,6 +51,7 @@ Public Sub Init()
   Dim aModel As String[] = ["bauul", "goblin", "knight", "ogro", "rat", "rhino"]
   Dim hObject As Md2Object
   
+  'Randomize 1972
   $aModel = New Md2Model[]
   $aObject = New Md2Object[]
   
@@ -146,9 +148,10 @@ Public Sub glaScreen_Draw()
   lblInfo.Text = Format($aObject[0].Frame, "0.00") & " / " & $aObject[0].Model.Count & " ( " & CInt($fFramerate) & " FPS )"
 
   Gl.PopMatrix
-   
-  Print N; " vertices in "; Format(Timer - fTime, "0.000000"); " seconds\r";
-   
+  
+  Inc $nDraw
+  Print "\r"; Format($nDraw, "#####0"); ": "; N; " vertices in "; Format(Timer - fTime, "0.000000"); " seconds";
+  
 End
 
 Public Sub Form_KeyPress()
@@ -210,7 +213,7 @@ End
 
 Public Sub sldFrame_Change()
 
-  $aModel[0].Pos = sldFrame.Value
+  $aObject[0].Frame = sldFrame.Value
 
 End
 
@@ -226,5 +229,15 @@ End
 ' 
 '   $fStartX = $fRotX
 '   $fStartY = $fRotY
+' 
+' End
+
+' Public Sub Form_Activate()
+' 
+'   While $nDraw < 10
+'     glaScreen.Refresh
+'     Wait 1
+'   Wend
+'   Me.Close
 ' 
 ' End

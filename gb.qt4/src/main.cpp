@@ -738,9 +738,15 @@ static void QT_Init(void)
 
 static bool try_to_load_translation(QString &locale)
 {
+#ifdef QT5
+	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
+		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt5/translations"))
+		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt5/translations")));
+#else
 	return (!_translator->load(QString("qt_") + locale, QString(getenv("QTDIR")) + "/translations")
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/lib/qt4/translations"))
 		  && !_translator->load(QString("qt_") + locale, QString("/usr/share/qt4/translations")));
+#endif
 }
 
 static void init_lang(char *lang, bool rtl)
@@ -869,7 +875,7 @@ static void hook_wait(int duration)
 	if (duration > 0)
 	{
 		if (CKEY_is_valid())
-			fprintf(stderr, "gb.qt4: warning: calling the event loop during a keyboard event handler is ignored\n");
+			fprintf(stderr, QT_NAME ": warning: calling the event loop during a keyboard event handler is ignored\n");
 		else
 			qApp->processEvents(QEventLoop::AllEvents, duration);
 	}

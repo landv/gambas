@@ -1377,7 +1377,7 @@ BEGIN_METHOD(Container_unknown, GB_VALUE x; GB_VALUE y)
 		return;
 	}
 	
-	GB.Deprecated("gb.qt4", "Container.Find", "Container.FindChild");
+	GB.Deprecated(QT_NAME, "Container.Find", "Container.FindChild");
 	
 	if (GB.Conv(ARG(x), GB_T_INTEGER) || GB.Conv(ARG(y), GB_T_INTEGER))
 		return;
