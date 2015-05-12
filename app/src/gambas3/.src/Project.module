@@ -5369,7 +5369,8 @@ Public Sub RefreshBreakpointPicture()
 
   iSize = Font[Settings["/Editor/Font"]].Height
 
-  hImage = Picture["icon:/small/halt"].Image
+  'hImage = Picture["icon:/small/halt"].Image
+  hImage = Picture["img/16/breakpoint.png"].Image
   'hImage.Opacity(0.75)
   If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
   Try Editor.BreakpointPicture = hImage.Picture

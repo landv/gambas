@@ -1,0 +1,8 @@
+' Gambas class file
+
+
+Public Sub Form_Open()
+
+  TextEditor1.Text = File.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+
+End

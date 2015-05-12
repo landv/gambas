@@ -1,0 +1,33 @@
+' Gambas class file
+
+Property Modified As Boolean
+
+Private Enum FLAG_MODIFIED
+
+Private $iFlag As Short
+
+Static Public Sub _call() As CLineInfo
+
+  Dim hInfo As CLineInfo
+  
+  hInfo = New CLineInfo
+  hInfo.Modified = True
+  Return hInfo
+  
+End
+
+Private Function Modified_Read() As Boolean
+
+  Return BTst($iFlag, FLAG_MODIFIED)
+
+End
+
+Private Sub Modified_Write(Value As Boolean)
+
+  If Value Then
+    $iFlag = BSet($iFlag, FLAG_MODIFIED)
+  Else
+    $iFlag = BClr($iFlag, FLAG_MODIFIED)
+  Endif
+
+End

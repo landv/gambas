@@ -792,6 +792,12 @@ End
 Public Sub ScrollArea_MouseDown()
   
   'Debug Mouse.X;;
+  
+  If Not $hDrawingArea.Hovered Then
+    Stop Event
+    Return
+  Endif
+  
   Mouse.Translate(- $hDrawingArea.X, 0)
   'Error "->";; Mouse.X
   
@@ -820,5 +826,11 @@ End
 Public Sub DrawingArea_Font()
   
   Raise Font
+  
+End
+
+Public Sub RefreshRect(X As Integer, Y As Integer, Width As Integer, Height As Integer)
+  
+  $hDrawingArea.Refresh(X - Me.ScrollX, Y - Me.ScrollY, Width, Height)
   
 End

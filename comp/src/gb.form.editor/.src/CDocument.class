@@ -1,0 +1,581 @@
+' Gambas class file
+
+Event Fake
+
+Property Text As String
+Property Read Count As Integer
+Property Read Max As Integer
+Property Read Current As TextEditor
+
+Public Lines As String[]
+Public LinesInfo As CLineInfo[]
+
+Public XAfter As Integer
+Public YAfter As Integer
+
+Private $aUndo As New CCommand[]
+Private $aRedo As New CCommand[]
+Private $bNoUndo As Boolean
+
+Private $hDefaultInfo As New CLineInfo
+
+Public Sub _new()
+  
+  Clear
+  
+End
+
+Public Sub Clear()
+  
+  Lines = New String[1]
+  LinesInfo = New CLineInfo[1]
+  $aUndo.Clear
+  $aRedo.Clear
+  
+End
+
+Private Function Text_Read() As String
+
+  Return Lines.Join("\n")
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  Clear
+
+  If Value Then
+    Lines = Split(Value, "\n")
+    LinesInfo = New CLineInfo[Lines.Count]
+  Endif
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return Lines.Count
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return Lines.Max
+
+End
+
+Private Sub AddUndo(hCmd As CCommand)
+
+  $aUndo.Add(hCmd)
+  $aRedo.Clear
+
+End
+
+Public Sub Begin()
+
+  If $bNoUndo Then Return
+  AddUndo(CCommand(Me, CCommand.BEGIN))
+  
+End
+
+Public Sub End()
+  
+  If $bNoUndo Then Return
+  AddUndo(CCommand(Me, CCommand.END))
+  
+End
+
+Private Function Current_Read() As TextEditor
+
+  Return Object.Parent(Me)
+
+End
+
+Private Sub InsertLine(Y As Integer)
+  
+  Lines.Add("", Y)
+  LinesInfo.Add(CLineInfo(), Y)
+  
+End
+
+' void GDocument::insertLine(int y)
+' {
+'   lines.insert(y, new GLine());
+'   modifyLine(lines.at(y), y);
+'   FOR_EACH_VIEW(v) { v->lineInserted(y); }
+' }
+
+Private Sub SetLine(Y As Integer, sLine As String)
+
+  If sLine = Lines[Y] Then Return
+  Lines[Y] = sLine
+  SetInfo(Y).Modified = True
+
+End
+
+Public Sub Insert(sText As String, X As Integer, Y As Integer)
+  
+  Dim iLen As Integer
+  Dim sRest As String
+  Dim aText As String[]
+  Dim I As Integer
+  Dim sLine As String
+  Dim aArg As Variant[]
+  
+  aArg = [sText, X, Y]
+  
+  While Y > Lines.Count
+    InsertLine(Lines.Count)
+  Wend
+  
+  iLen = String.Len(Lines[Y])
+  If X > iLen Then 
+    Lines[Y] &= Space$(X - iLen)
+    SetInfo(Y).Modified = True
+  Endif
+  
+  sRest = String.Mid$(Lines[Y], X + 1)
+  aText = Split(sText, "\n")
+  
+  For I = 0 To aText.Max - 1
+    
+    SetLine(Y, String.Left(Lines[Y], X) & aText[I])
+    X = 0
+    Inc Y
+    InsertLine(Y)
+    
+  Next
+  
+  sLine = String.Left(Lines[Y], X) & aText[aText.Max]
+  YAfter = Y
+  XAfter = String.Len(sLine)
+  SetLine(Y, sLine & sRest)
+  
+  If Not $bNoUndo Then 
+    AddUndo(CCommand(Me, CCommand.INSERT, sText))
+  Endif
+  
+End
+
+' 
+' void GDocument::insert(int y, int x, const GString &text, bool doNotMove)
+' {
+'   int pos;
+'   int len;
+'   int pos2;
+'   int xs, ys;
+'   GLine *l;
+'   int n = 1;
+'   int nl = 0;
+'   GString rest;
+'   int yy;
+'   int i, ns;
+'   GCommandDocument info(this);
+' 
+'   if (readOnly || text.length() == 0)
+'   {
+'     xAfter = x;
+'     yAfter = y;
+'     return;
+'   }
+' 
+'   FOR_EACH_VIEW(v)
+'   {
+'     v->nx = v->x;
+'     v->ny = v->y;
+'   }
+' 
+'   disableColorize();
+'   
+'   while (y >= (int)lines.count())
+'   {
+'     yy = (int)lines.count();
+'     insertLine(yy);
+'     nl++;
+'   }
+' 
+'   l = lines.at(y);
+'   
+'   ns = x - (int)l->s.length();
+'   if (ns > 0)
+'   {
+'     GString str;
+'     
+'     for (i = 0; i < ns; i++)
+'       str.append(' ');
+'     
+'     insert(y, x - ns, str, doNotMove);
+'   }
+' 
+'   xs = x;
+'   ys = y;
+'   pos = 0;
+' 
+'   for(;;)
+'   {
+'     pos2 = text.findNextLine(pos, len);
+' 
+'     l = lines.at(y);
+' 
+'     if (len > 0)
+'     {
+'       l->insert(x, text.mid(pos, len));
+'       modifyLine(l, y);
+' 
+'       //maxLength = GMAX(maxLength, (int)l->s.length());
+'       //updateLineWidth(y);
+' 
+'       FOR_EACH_VIEW(v)
+'       {
+'         if (v->ny == y && v->nx >= x)
+'           v->nx += len;
+'       }
+' 
+'       x += len;
+'     }
+' 
+'     pos = pos2;
+' 
+'     if (pos == 0)
+'       break;
+' 
+'     if (x < (int)l->s.length())
+'     {
+'       rest = l->s.mid(x);
+' 
+'       l->s.remove(x, rest.length());
+'       modifyLine(l, y);
+'     }
+' 
+'     FOR_EACH_VIEW(v)
+'     {
+'       if (v->ny >= y)
+'         v->ny++;
+'     }
+' 
+'     y++;
+' 
+'     insertLine(y);
+'     nl++;
+' 
+'     n = -1;
+'     x = 0;
+' 
+'   }
+' 
+'   if (n < 0 && rest.length())
+'   {
+'     l->insert(x, rest);
+'     modifyLine(l, y);
+'     //maxLength = GMAX(maxLength, (int)l->s.length());
+'     //updateLineWidth(y);
+'   }
+' 
+'   FOR_EACH_VIEW(v)
+'   {
+'     v->foldInsert(ys, nl);
+'   }
+'   
+'   begin();
+'   addUndo(new GInsertCommand(&info, ys, xs, y, x, text));
+'   enableColorize();
+'   end();
+' 
+'   updateViews(ys, n);
+' 
+'   yAfter = y;
+'   xAfter = x;
+' 
+'   emitTextChanged();
+' 
+'   if (!doNotMove)
+'   {
+'     FOR_EACH_VIEW(v)
+'     {
+'       v->cursorGoto(v->ny, v->nx, FALSE);
+'     }
+'   }
+' }
+' 
+
+' Private Sub RemoveLine(Y As Integer)
+'   
+'   Lines.Remove(Y)
+'   LinesInfo.Remove(Y)
+'   
+' End
+
+
+' void GDocument::removeLine(int y)
+' {
+'   lines.remove(y);
+'   COLORIZE_FROM(y);
+'   FOR_EACH_VIEW(v) { v->lineRemoved(y); }
+' }
+' 
+
+Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
+
+  Dim sText As String
+  
+  sText = GetText(X1, Y1, X2, Y2)
+  
+  If Y1 > Y2 Then
+    Swap X1, X2
+    Swap Y1, Y2
+  Endif
+  
+  If Y1 = Y2 Then
+    
+    If X1 > X2 Then
+      Swap X1, X2
+    Endif
+  
+    If X2 > X1 And If X1 < String.Len(Lines[Y1]) Then
+      
+      Lines[Y1] = String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y1], X2 + 1)
+      SetInfo(Y1).Modified = True
+      
+    Endif
+  
+  Else If Y1 < Y2 Then
+    
+    Lines[Y1] = String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1)
+    SetInfo(Y1).Modified = True
+    
+    Lines.Remove(Y1 + 1, Y2 - Y1)
+    LinesInfo.Remove(Y1 + 1, Y2 - Y1)
+  
+  Endif
+  
+  XAfter = X1
+  YAfter = Y1
+  
+  If Not $bNoUndo Then 
+    AddUndo(CCommand(Me, CCommand.DELETE, sText))
+  Endif
+
+End
+
+
+' void GDocument::remove(int y1, int x1, int y2, int x2)
+' {
+'   GLine *l, *l2;
+'   GString text, rest;
+'   int y;
+'   GCommandDocument info(this);
+' 
+'   yAfter = y1;
+'   xAfter = x1;
+' 
+'   if (readOnly)
+'     return;
+'   
+'   FOR_EACH_VIEW(v)
+'   {
+'     v->nx = v->x;
+'     v->ny = v->y;
+'   }
+'   
+'   disableColorize();
+'   
+'   l = lines.at(y1);
+' 
+'   if (y1 == y2)
+'   {
+'     if (x2 >= x1 && x1 < lineLength(y1))
+'     {
+'       text = l->s.mid(x1, x2 - x1);
+' 
+'       l->s.remove(x1, x2 - x1);
+'       if (text.hasUnicode())
+'         l->unicode = l->s.hasUnicode();
+' 
+'       modifyLine(l, y1);
+' 
+'       FOR_EACH_VIEW(v)
+'       {
+'         v->foldRemove(y1);
+'         if (v->ny == y1 && v->nx > x1)
+'           v->nx = GMAX(x1, v->nx - (x2 - x1));
+'       }
+' 
+'       updateViews(y1);
+'     }
+'   }
+'   else
+'   {
+'     l2 = lines.at(y2);
+'     text = l->s.mid(x1) + _eol;
+'     rest = l2->s.left(x2);
+' 
+'     if (x1 < (int)l->s.length() || x2 < (int)l2->s.length())
+'     {
+'       l->s = l->s.left(x1) + lines.at(y2)->s.mid(x2);
+'       l->state = 0; // force highlighting of next line.
+'       modifyLine(l, y1);
+'     }
+'     else
+'       updateLineWidth(y1);
+' 
+'     for (y = y1 + 1; y < y2; y++)
+'       text += lines.at(y)->s + _eol;
+'     text += rest;
+' 
+'     for (y = y1 + 1; y <= y2; y++)
+'     {
+'       removeLine(y1 + 1);
+'     }
+' 
+'     FOR_EACH_VIEW(v)
+'     {
+'       v->foldRemove(y1 + 1, y2);
+'       if (v->ny > y1)
+'       {
+'         v->ny = GMAX(y1, v->ny - (y2 - y1));
+'         if (v->ny == y1)
+'           v->nx = x1;
+'       }
+'       else if (v->ny == y1 && v->nx > x1)
+'         v->nx = x1;
+'     }
+' 
+'     updateViews(y1, -1);
+'   }
+' 
+'   begin();
+'   addUndo(new GDeleteCommand(&info, y1, x1, y2, x2, text));
+'   enableColorize();
+'   end();
+' 
+'   FOR_EACH_VIEW(v)
+'   {
+'     v->cursorGoto(v->ny, v->nx, false);
+'   }
+'   
+'   emitTextChanged();
+' }
+
+Public Sub Info(Y As Integer) As CLineInfo
+
+  Dim hInfo As CLineInfo
+
+  hInfo = LinesInfo[Y]
+  If Not hInfo Then hInfo = $hDefaultInfo
+  Return hInfo
+
+End
+
+Private Sub SetInfo(Y As Integer) As CLineInfo
+  
+  Dim hInfo As CLineInfo
+
+  hInfo = LinesInfo[Y]
+  If Not hInfo Then 
+    hInfo = CLineInfo()
+    LinesInfo[Y] = hInfo
+  Endif
+  
+  Return hInfo
+  
+End
+
+Public Sub GetText(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As String
+  
+  Dim sText As String
+  If Y1 > Y2 Or If Y1 = Y2 And X1 > X2 Then
+    Swap X1, X2
+    Swap Y1, Y2
+  Endif
+  
+  If Y1 = Y2 Then Return String.Mid$(Lines[Y1], X1 + 1, X2 - X1)
+  
+  sText = String.Mid$(Lines[Y1], X1 + 1) & "\n"
+  sText &= Lines.Copy(Y1 + 1, Y2 - Y1 - 1).Join("\n") & "\n"
+  sText &= String.Left(Lines[Y2], X2)
+
+  Return sText
+  
+End
+
+
+Public Sub Undo()
+  
+  Dim hCmd As CCommand
+  
+  If $aUndo.Count = 0 Then Return
+  
+  $bNoUndo = True
+  
+  hCmd = $aUndo.Pop()
+  With hCmd
+    
+    Select Case .Type
+      
+      Case CCommand.INSERT
+        Me.Current.Remove(.X, .Y, .XA, .YA)
+        If .SX <> .X Or If .SY <> .Y Then 
+          Me.Current.Goto(.SX, .SY)
+          Me.Current.Goto(.X, .Y, True)
+        Endif
+        
+      Case CCommand.DELETE
+        Me.Current.Goto(.XA, .YA)
+        Me.Current.Insert(.Text)
+        If .SX <> .X Or If .SY <> .Y Then 
+          Me.Current.Goto(.SX, .SY)
+          Me.Current.Goto(.X, .Y, True)
+        Endif
+      
+    End Select
+
+  End With
+  
+  $aRedo.Add(hCmd)
+  
+  $bNoUndo = False
+  
+End
+
+Public Sub Redo()
+  
+  Dim hCmd As CCommand
+  
+  If $aRedo.Count = 0 Then Return
+  
+  $bNoUndo = True
+  
+  hCmd = $aRedo.Pop()
+  With hCmd
+    
+    Select Case .Type
+      
+      Case CCommand.DELETE
+        If .SX <> .X Or If .SY <> .Y Then 
+          Me.Current.Goto(.SX, .SY)
+          Me.Current.Goto(.X, .Y, True)
+        Else
+          Me.Current.Goto(.X, .Y)
+        Endif
+        Me.Current.Remove(.XA, .YA, .X, .Y)
+        
+      Case CCommand.INSERT
+        If .SX <> .X Or If .SY <> .Y Then 
+          Me.Current.Goto(.SX, .SY)
+          Me.Current.Goto(.X, .Y, True)
+        Else
+          Me.Current.Goto(.X, .Y)
+        Endif
+        Me.Current.Insert(.Text)
+      
+    End Select
+
+  End With
+  
+  $aUndo.Add(hCmd)
+  
+  $bNoUndo = False
+  
+End
+
+

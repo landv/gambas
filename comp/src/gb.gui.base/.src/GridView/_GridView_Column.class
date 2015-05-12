@@ -60,7 +60,7 @@ Private Sub Width_Write(Value As Integer)
     'bSetLayout = True
   Endif
   
-  If Value < 0 Or If Value > 1024 Or If Value = $W Then Return
+  If Value < 0 Or If Value = $W Then Return
   $W = Max(0, Value)
   'If bSetLayout Then _W = $W
   _W = $W

@@ -72,14 +72,14 @@ END_METHOD
     return; \
   }
 
-BEGIN_PROPERTY(CKEY_text)
+BEGIN_PROPERTY(Key_Text)
 
   CHECK_VALID();
   GB.ReturnString(CKEY_info.text);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_code)
+BEGIN_PROPERTY(Key_Code)
 
   CHECK_VALID();
 	
@@ -98,42 +98,42 @@ BEGIN_PROPERTY(CKEY_code)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_state)
+BEGIN_PROPERTY(Key_State)
 
   CHECK_VALID();
   GB.ReturnInteger(CKEY_info.state);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_shift)
+BEGIN_PROPERTY(Key_Shift)
 
   CHECK_VALID();
   GB.ReturnBoolean(CKEY_info.state & Qt::ShiftModifier); // || (CKEY_info.code == Qt::Key_Shift));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_control)
+BEGIN_PROPERTY(Key_Control)
 
   CHECK_VALID();
   GB.ReturnBoolean(CKEY_info.state & Qt::ControlModifier); // || (CKEY_info.code == Qt::Key_Control));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_alt)
+BEGIN_PROPERTY(Key_Alt)
 
   CHECK_VALID();
   GB.ReturnBoolean(CKEY_info.state & Qt::AltModifier); // || (CKEY_info.code == Qt::Key_Alt));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_meta)
+BEGIN_PROPERTY(Key_Meta)
 
   CHECK_VALID();
   GB.ReturnBoolean(CKEY_info.state & Qt::MetaModifier); // || (CKEY_info.code == Qt::Key_Meta));
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CKEY_normal)
+BEGIN_PROPERTY(Key_Normal)
 
   CHECK_VALID();
   GB.ReturnBoolean((CKEY_info.state & (Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier)) == 0);
@@ -208,14 +208,14 @@ GB_DESC CKeyDesc[] =
   GB_CONSTANT("Help", "i", Qt::Key_Help),
   GB_CONSTANT("Space", "i", Qt::Key_Space),
 
-  GB_STATIC_PROPERTY_READ("Text", "s", CKEY_text),
-  GB_STATIC_PROPERTY_READ("Code", "i", CKEY_code),
-  GB_STATIC_PROPERTY_READ("State", "i", CKEY_state),
-  GB_STATIC_PROPERTY_READ("Shift", "b", CKEY_shift),
-  GB_STATIC_PROPERTY_READ("Control", "b", CKEY_control),
-  GB_STATIC_PROPERTY_READ("Alt", "b", CKEY_alt),
-  GB_STATIC_PROPERTY_READ("Meta", "b", CKEY_meta),
-  GB_STATIC_PROPERTY_READ("Normal", "b", CKEY_normal),
+  GB_STATIC_PROPERTY_READ("Text", "s", Key_Text),
+  GB_STATIC_PROPERTY_READ("Code", "i", Key_Code),
+  GB_STATIC_PROPERTY_READ("State", "i", Key_State),
+  GB_STATIC_PROPERTY_READ("Shift", "b", Key_Shift),
+  GB_STATIC_PROPERTY_READ("Control", "b", Key_Control),
+  GB_STATIC_PROPERTY_READ("Alt", "b", Key_Alt),
+  GB_STATIC_PROPERTY_READ("Meta", "b", Key_Meta),
+  GB_STATIC_PROPERTY_READ("Normal", "b", Key_Normal),
 
   GB_END_DECLARE
 };

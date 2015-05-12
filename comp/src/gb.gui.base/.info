@@ -780,6 +780,10 @@ _DoNotDrawSelection
 v
 b
 
+_NoMouse
+v
+b
+
 _new
 m
 
@@ -992,6 +996,10 @@ ScrollArea_Font
 m
 
 
+_RefreshRow
+m
+
+(iRow)i
 #HSplit
 _Split
 C
@@ -1800,6 +1808,10 @@ DrawingArea_Font
 m
 
 
+RefreshRect
+m
+
+(X)i(Y)i(Width)i(Height)i
 #Shortcut
 
 C
@@ -1807,6 +1819,10 @@ _call
 M
 s
 (Text)s(Shortcut)s
+FromKey
+M
+s
+
 #TreeView
 _TreeView
 C

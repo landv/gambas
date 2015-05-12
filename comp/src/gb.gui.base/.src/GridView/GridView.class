@@ -58,6 +58,7 @@ Event Sort
 Event Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
 
 Public _DoNotDrawSelection As Boolean
+Public _NoMouse As Boolean
 
 Private $hView As ScrollArea
 Private $bGrid As Boolean = True
@@ -920,6 +921,7 @@ Public Sub ScrollArea_MouseMove()
 
   If Not Me.Enabled Then Return
   If $bIgnoreMove Then Return
+  If _NoMouse Then Return
 
   If $hRows.Count = 0 And If $hColumns.Count = 0 Then Return
   
@@ -1125,6 +1127,7 @@ End
 Public Sub ScrollArea_MouseDrag()
   
   If Not Me.Enabled Then Return
+  If _NoMouse Then Return
   
   $bIgnoreMove = False
   If $bResize Or If $bMoveSelect Then 
@@ -1150,6 +1153,7 @@ Public Sub ScrollArea_MouseDown()
   $MY = Mouse.Y - F
   
   If Not Me.Enabled Then Return
+  If _NoMouse Then Return
   
   Me.SetFocus
   
@@ -1242,6 +1246,8 @@ End
 
 Private Sub AfterMouseUp()
   
+  If _NoMouse Then Return
+  
   $bResize = False
   $bMoveSelect = False
   $bMoveUnSelect = False
@@ -1280,6 +1286,8 @@ End
 Public Sub ScrollArea_DblClick()
   
   'Debug $bInCell
+  
+  If _NoMouse Then Return
   
   If $bInCell Then 
     Raise Activate
@@ -2303,5 +2311,11 @@ Public Sub ScrollArea_Font()
   $iTextHeight = 0
   $hColumns._Layout
   _ResizeContents
+  
+End
+
+Public Sub _RefreshRow(iRow As Integer)
+  
+  $hView.RefreshRect(0, $hRows._GetRowY(iRow), $hView.ScrollW, $hRows._GetRowHeight(iRow))
   
 End
