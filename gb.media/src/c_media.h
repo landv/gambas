@@ -32,6 +32,7 @@
 
 //extern GB_DESC MediaSignalArgumentsDesc[];
 extern GB_DESC MediaTagListDesc[];
+extern GB_DESC MediaMessageDesc[];
 extern GB_DESC MediaLinkDesc[];
 extern GB_DESC MediaControlDesc[];
 extern GB_DESC MediaFilterDesc[];
@@ -48,6 +49,7 @@ extern GB_DESC MediaDesc[];
 #define PIPELINE ((GstPipeline *)THIS->elt)
 
 #define THIS_TAGLIST ((CMEDIATAGLIST *)_object)
+#define THIS_MESSAGE ((CMEDIAMESSAGE *)_object)
 #define THIS_PIPELINE ((CMEDIAPIPELINE *)_object)
 
 #define THIS_LINK ((CMEDIALINK *)_object)
@@ -92,6 +94,14 @@ typedef
 		GstTagList *tags;
 	}
 	CMEDIATAGLIST;
+	
+typedef
+	struct {
+		GB_BASE ob;
+		GstMessage *message;
+                const char *lastKey;
+	}
+	CMEDIAMESSAGE;
 	
 #if 0
 typedef

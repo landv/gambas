@@ -267,6 +267,11 @@ static GParamSpec *get_property(GstElement *element, const char *property)
 
 static void return_value(const GValue *value)
 {
+	if(value == NULL)
+	{
+	  GB.ReturnNull();
+	  return;
+	}
 	GType type = G_VALUE_TYPE(value);
 	
 	switch (type)
@@ -278,7 +283,6 @@ static void return_value(const GValue *value)
 		case G_TYPE_STRING: GB.ReturnNewZeroString(g_value_get_string(value)); break;
 		case G_TYPE_FLOAT: GB.ReturnFloat(g_value_get_float(value)); break;
 		case G_TYPE_DOUBLE: GB.ReturnFloat(g_value_get_double(value)); break;
-		
 		default: 
 			if (G_VALUE_HOLDS(value, G_TYPE_DATE) || GST_VALUE_HOLDS_DATE_TIME(value))
 			{
@@ -306,6 +310,31 @@ static void return_value(const GValue *value)
 				caps = gst_caps_to_string((GstCaps *)g_value_get_boxed(value));
 				GB.ReturnNewZeroString(caps);
 				g_free(caps);
+			}
+			else if(GST_VALUE_HOLDS_LIST(value))
+			{
+				guint listSize = gst_value_list_get_size(value);
+				GB_ARRAY array;
+				
+				if(listSize <= 0)
+				{
+					GB.Array.New(&array, GB_T_VARIANT, 0);
+				}
+				else
+				{
+					GB.Array.New(&array, GB_T_VARIANT, listSize);
+					
+					GB_VALUE val;
+					int i;
+					for (i = 0; i < listSize; i++)
+					{
+						to_gambas_value(gst_value_list_get_value(value, i), &val);
+						GB.Store(GB_T_VARIANT, &val, GB.Array.Get(array, i));
+						GB.ReleaseValue(&val);
+					}
+				}
+				
+				GB.ReturnObject(array);
 			}
 			else
 			{
@@ -677,6 +706,98 @@ BEGIN_PROPERTY(MediaTagList_Tags)
 	
 	GB.ReturnObject(array);
 
+END_PROPERTY
+
+//---- MediaMessage -------------------------------------------------------
+
+#define MESSAGE_DATA (gst_message_get_structure(THIS_MESSAGE->message))
+
+static int MediaMessage_check(void *_object)
+{
+	return THIS_MESSAGE->message == NULL;
+}
+
+static CMEDIAMESSAGE *create_message(GstMessage *message)
+{
+	CMEDIAMESSAGE *ob;
+	
+	ob = GB.New(GB.FindClass("MediaMessage"), NULL, NULL);
+	ob->message = message;
+        ob->lastKey = NULL;
+	return ob;
+}
+
+BEGIN_METHOD(MediaMessage_get, GB_STRING name)
+
+	char *name = GB.ToZeroString(ARG(name));
+	const GValue *value;
+
+	value = gst_structure_get_value(MESSAGE_DATA, name);
+	return_value(value);
+	
+	GB.ReturnConvVariant();
+	
+END_METHOD
+
+BEGIN_PROPERTY(MediaMessage_Keys)
+
+	GB_ARRAY array;
+	const GstStructure *data = MESSAGE_DATA;
+	int nfields, i;
+	
+	nfields = gst_structure_n_fields(data);
+	
+	GB.Array.New(&array, GB_T_STRING, nfields);
+	
+	for (i = 0; i < nfields; i++)
+		*((char **)GB.Array.Get(array, i)) = GB.NewZeroString(gst_structure_nth_field_name(data, i));
+	
+	GB.ReturnObject(array);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaMessage_Type)
+    
+    GB.ReturnInteger(GST_MESSAGE_TYPE(THIS_MESSAGE->message));
+    
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaMessage_Name)
+    
+    GB.ReturnNewZeroString(gst_structure_get_name(MESSAGE_DATA));
+    
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaMessage_Count)
+    
+    GB.ReturnInteger(gst_structure_n_fields(MESSAGE_DATA));
+    
+END_PROPERTY
+
+BEGIN_PROPERTY(MediaMessage_Key)
+    
+    GB.ReturnNewZeroString(THIS_MESSAGE->lastKey);
+    
+END_PROPERTY
+
+BEGIN_METHOD_VOID(MediaMessage_next)
+    
+    const GstStructure *data = MESSAGE_DATA;
+    int count = gst_structure_n_fields(data);
+    int *index = (int *)GB.GetEnum();
+
+    if (*index < 0 || *index >= count)
+            GB.StopEnum();
+    else
+    {
+            THIS_MESSAGE->lastKey = gst_structure_nth_field_name(data, *index);
+            const GValue *value = gst_structure_get_value(data, THIS_MESSAGE->lastKey);
+            return_value(value);
+            
+            GB.ReturnConvVariant();
+            (*index)++;
+    }
+    
 END_PROPERTY
 
 //---- MediaLink ----------------------------------------------------------
@@ -1399,6 +1520,7 @@ END_METHOD
 DECLARE_EVENT(EVENT_End);
 DECLARE_EVENT(EVENT_Message);
 DECLARE_EVENT(EVENT_Tag);
+DECLARE_EVENT(EVENT_Event);
 DECLARE_EVENT(EVENT_Buffering);
 DECLARE_EVENT(EVENT_Duration);
 DECLARE_EVENT(EVENT_Progress);
@@ -1436,6 +1558,17 @@ static int cb_message(CMEDIAPIPELINE *_object)
 		}
 		else //if (GST_MESSAGE_SRC(msg) == GST_OBJECT(PIPELINE))
 		{
+                        if(GB.CanRaise(THIS, EVENT_Event))
+                        {
+                                CMEDIAMESSAGE *ob = create_message(msg);
+                                GB.Ref(ob);
+                                
+                                GB.Raise(THIS, EVENT_Event, 1, 
+                                        GB_T_OBJECT, ob);
+                                
+                                ob->message = NULL;
+                                GB.Unref(POINTER(&ob));
+                        }
 			switch (type)
 			{
 				case GST_MESSAGE_EOS:
@@ -1504,7 +1637,6 @@ static int cb_message(CMEDIAPIPELINE *_object)
 					
 					break;
 				}
-				
 				case GST_MESSAGE_BUFFERING: GB.Raise(THIS, EVENT_Buffering, 0); break;
 				case GST_MESSAGE_DURATION: GB.Raise(THIS, EVENT_Duration, 0); break;
 				case GST_MESSAGE_PROGRESS: GB.Raise(THIS, EVENT_Progress, 0); break;
@@ -1696,6 +1828,51 @@ GB_DESC MediaTagListDesc[] =
 	GB_END_DECLARE
 };
 
+GB_DESC MediaMessageDesc[] = 
+{
+	GB_DECLARE("MediaMessage", sizeof(CMEDIAMESSAGE)),
+	GB_NOT_CREATABLE(),
+	
+	GB_HOOK_CHECK(MediaMessage_check),
+	
+	GB_PROPERTY_READ("Type", "i", MediaMessage_Type),
+	GB_PROPERTY_READ("Name", "s", MediaMessage_Name),
+	
+	
+	GB_METHOD("_get", "v", MediaMessage_get, "(Name)s"),
+	GB_METHOD("_next", "v", MediaMessage_next, NULL),
+	GB_PROPERTY_READ("Key", "s", MediaMessage_Key),
+	GB_PROPERTY_READ("Keys", "String[]", MediaMessage_Keys),
+	GB_PROPERTY_READ("Count", "i", MediaMessage_Count),
+	
+	
+	//Constants
+	GB_CONSTANT("Eos", "i", GST_MESSAGE_EOS),
+	GB_CONSTANT("Error", "i", GST_MESSAGE_ERROR),
+	GB_CONSTANT("Warning", "i", GST_MESSAGE_WARNING),
+	GB_CONSTANT("Info", "i", GST_MESSAGE_INFO),
+	GB_CONSTANT("Tag", "i", GST_MESSAGE_TAG),
+	GB_CONSTANT("Buffering", "i", GST_MESSAGE_BUFFERING),
+	GB_CONSTANT("StateChanged", "i", GST_MESSAGE_STATE_CHANGED),
+	GB_CONSTANT("StepStart", "i", GST_MESSAGE_STEP_START),
+	GB_CONSTANT("StepDone", "i", GST_MESSAGE_STEP_DONE),
+	GB_CONSTANT("ClockLost", "i", GST_MESSAGE_CLOCK_LOST),
+	GB_CONSTANT("NewClock", "i", GST_MESSAGE_NEW_CLOCK),
+	GB_CONSTANT("Status", "i", GST_MESSAGE_STREAM_STATUS),
+	GB_CONSTANT("Element", "i", GST_MESSAGE_ELEMENT),
+	GB_CONSTANT("SegmentDone", "i", GST_MESSAGE_SEGMENT_DONE),
+	GB_CONSTANT("DurationChanged", "i", GST_MESSAGE_DURATION_CHANGED),
+	GB_CONSTANT("Latency", "i", GST_MESSAGE_LATENCY),
+	GB_CONSTANT("StateAsync", "i", GST_MESSAGE_ASYNC_DONE),
+	GB_CONSTANT("RequestState", "i", GST_MESSAGE_REQUEST_STATE),
+	GB_CONSTANT("Qos", "i", GST_MESSAGE_QOS),
+	GB_CONSTANT("Progress", "i", GST_MESSAGE_PROGRESS),
+	GB_CONSTANT("Toc", "i", GST_MESSAGE_TOC),
+	GB_CONSTANT("Start", "i", GST_MESSAGE_STREAM_START),
+	
+	GB_END_DECLARE
+};
+
 
 GB_DESC MediaLinkDesc[] =
 {
@@ -1815,6 +1992,7 @@ GB_DESC MediaPipelineDesc[] =
 	GB_EVENT("End", NULL, NULL, &EVENT_End),
 	GB_EVENT("Message", NULL, "(Source)MediaControl;(Type)i(Message)s", &EVENT_Message),
 	GB_EVENT("Tag", NULL, "(TagList)MediaTagList;", &EVENT_Tag),
+	GB_EVENT("Event", NULL, "(Message)MediaMessage;", &EVENT_Event),
 	GB_EVENT("Buffering", NULL, NULL, &EVENT_Buffering),
 	GB_EVENT("Duration", NULL, NULL, &EVENT_Duration),
 	GB_EVENT("Progress", NULL, NULL, &EVENT_Progress),
