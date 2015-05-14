@@ -1,0 +1,232 @@
+' Gambas class file
+
+'   GB_PROPERTY("Height", "i", CGRIDROWS_height),
+'   GB_PROPERTY("H", "i", CGRIDROWS_height),
+'   GB_PROPERTY("Resizable", "b", CGRIDROWS_resizable),
+'   //GB_PROPERTY("Moveable", "b", CGRIDROWS_moveable),
+'   GB_METHOD("Select", NULL, CGRIDROWS_select, "[(Start)i(Length)i]"),
+'   GB_METHOD("SelectAll", NULL, GridViewRows_SelectAll, NULL),
+'   GB_METHOD("UnselectAll", NULL, GridViewRows_UnselectAll, NULL),
+'   GB_METHOD("Remove", NULL, CGRIDROWS_remove, "(Start)i[(Length)i]"),
+'   GB_METHOD("Insert", NULL, CGRIDROWS_insert, "(Start)i[(Length)i]"),
+' 
+
+Property Count As Integer
+Property Read Max As Integer
+Property Height, H As Integer
+
+Event _Refresh
+
+'Private $aRows As New _GridView_Row[]
+Private $nRows As Integer
+Private $cHeight As Collection
+Private $aHeight As Integer[]
+Private $iHeight As Integer 
+
+Private Sub GetView() As TextEditor
+  
+  Return Object.Parent(Me)
+  
+End
+
+Private Function Count_Read() As Integer
+  
+  Return $nRows
+  
+End
+
+Private Sub Count_Write(Value As Integer)
+  
+  Dim hView As TextEditor = GetView()
+  Dim iRow As Integer
+  
+  If Value = $nRows Then Return
+  
+  $nRows = Value
+  
+  If $aHeight Then
+    While $aHeight.Count
+      If $aHeight[$aHeight.Max] < $nRows Then Break
+      iRow = $aHeight[$aHeight.Max]
+      $cHeight.Remove(iRow)
+      $aHeight.Remove($aHeight.Max)
+    Wend
+  Endif
+  
+  hView._ResizeContents
+  
+End
+
+Public Sub _GetRowY(iRow As Integer) As Integer
+  
+  Dim Y As Integer
+  Dim DH As Integer = $iHeight
+  Dim I As Integer
+  
+  Y = iRow * DH
+  
+  If $cHeight Then
+    
+    For Each I In $aHeight
+      If I < iRow Then Y += $cHeight[I] - DH
+    Next
+  Endif
+  
+  Return Y
+  
+End
+
+Public Sub _GetRowHeight(iRow As Integer) As Integer
+  
+  'Debug iRow;; System.Backtrace.Join("|")
+  Try Return $cHeight[iRow]
+  Return $iHeight
+  
+End
+
+Private Sub AddSorted(iRow As Integer)
+  
+  Dim I, J As Integer
+  
+  I = 0
+  J = $aHeight.Max
+  
+  If J < 0 Or If iRow > $aHeight[J] Then
+    $aHeight.Add(iRow)
+    Return
+  Endif
+  
+  '' TODO: Binary search
+  $aHeight.Add(iRow)
+  $aHeight.Sort
+  
+End
+
+Public Sub _ResetRowHeight(iRow As Integer)
+  
+  Dim hView As GridView = GetView()
+  
+  If $cHeight.Exist(iRow) Then
+    $cHeight.Remove(iRow)
+    $aHeight.Remove($aHeight.Find(iRow))
+    hView._ResizeContents()
+    hView._RaiseRowResize(iRow)
+  Endif
+  
+End
+
+Public Sub _SetRowHeight(iRow As Integer, H As Integer)
+  
+  Dim hView As GridView = GetView()
+  Dim DH As Integer = $iHeight
+  Dim OH As Integer
+  Dim bCancel As Boolean
+  
+  H = Min(1024, H)
+  
+  If Not $cHeight Then 
+    $cHeight = New Collection
+    $aHeight = New Integer[]
+  Endif
+  
+  If H < 0 Then
+    bCancel = hView._RaiseRowSize(iRow)
+    If Not bCancel Then Return
+    H = hView._GetPreferredHeight(iRow)
+  Endif
+  
+  If H = DH Then
+    _ResetRowHeight(iRow)
+    Return
+  Endif
+  
+  If H >= 0 Then
+    OH = -1
+    Try OH = $cHeight[iRow]
+    If H <> OH Then
+      If OH < 0 Then AddSorted(iRow)
+      $cHeight[iRow] = H
+      hView._ResizeContents()
+      hView._RaiseRowResize(iRow)
+    Endif
+  Endif
+  
+End
+
+Public Sub _GetHeight() As Integer
+  
+  Dim H, DH, HR As Integer
+  
+  DH = $iHeight
+  H = DH * $nRows
+  If $cHeight Then
+    H -= DH * $cHeight.Count
+    For Each HR In $cHeight
+      H += HR
+    Next 
+  Endif
+  
+  Return H
+  
+End
+
+Public Sub _FindRowFromPos(Y As Integer) As Integer
+  
+  Dim iRow, YY, H As Integer
+  Dim DH As Integer = $iHeight
+  
+  If $cHeight Then
+    For Each iRow In $aHeight
+      YY = iRow * DH
+      If Y < YY Then Break
+      H = $cHeight[iRow]
+      If Y < (YY + H) Then Return iRow
+      Y -= H - DH
+    Next
+  Endif
+  
+  iRow = Y / DH
+  If iRow < 0 Or If iRow >= $nRows Then iRow = -1
+  Return iRow
+  
+End
+
+Private Sub Height_Read() As Integer
+  
+  Return $iHeight
+  
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  $iHeight = Value
+  
+End
+
+Private Function Max_Read() As Integer
+  
+  Return $nRows - 1
+  
+End
+
+Public Sub Remove(Start As Integer, Optional Length As Integer = 1)
+  
+  GetView()._RemoveRows(Start, Length)
+  
+End
+
+Public Sub Insert(Start As Integer, Optional Length As Integer = 1)
+  
+  GetView()._InsertRows(Start, Length)
+  
+End
+
+Public Sub _Clear()
+  
+  If $cHeight Then
+    $cHeight.Clear
+    $aHeight.Clear
+  Endif
+  
+End
+

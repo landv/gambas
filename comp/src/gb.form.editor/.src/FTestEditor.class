@@ -3,6 +3,27 @@
 
 Public Sub Form_Open()
 
-  TextEditor1.Text = File.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+  'TextEditor1.LineNumberOffset = 10000
+  'TextEditor1.Highlight = "gambas"
+  'TextEditor1.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+  'TextEditor1.Load("~/cosme/style.css")
+  'TextEditor1.Text = File.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+  TextEditor1.Highlight = "C"
+  TextEditor1.Load("~/gambas/3.0/trunk/gb.qt4/src/CWidget.cpp")
+  'TextEditor1.Load("~/gambas/3.0/trunk/main/share/gb_reserved_temp.h")
+
+  ' For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
+  '   If InStr(sLine, "[heap]") Then
+  '     aScan = Scan(sLine, "*-* *")
+  '     Print "------------ Heap size is " & Format(Val("&H" & aScan[1] & "&") - Val("&H" & aScan[0] & "&"), "#,##0") & " bytes."
+  '     Break
+  '   Endif
+  ' Next
+
+End
+
+Public Sub TextEditor1_Margin()
+
+  TextEditor1[TextEditor1.Line].Breakpoint = Not TextEditor1[TextEditor1.Line].Breakpoint
 
 End

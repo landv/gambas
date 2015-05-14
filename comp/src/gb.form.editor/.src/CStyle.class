@@ -1,0 +1,21 @@
+' Gambas class file
+
+Public (Color) As Integer
+Public Bold As Boolean
+Public Italic As Boolean
+Public Underline As Boolean
+
+Static Public Sub _call((Color) As Integer, Optional (Bold) As Boolean, (Italic) As Boolean, (Underline) As Boolean) As CStyle
+
+  Dim hStyle As CStyle
+  
+  hStyle = New CStyle
+  
+  hStyle.Color = Color
+  hStyle.Bold = Bold
+  hStyle.Italic = Italic
+  hStyle.Underline = Underline
+  
+  Return hStyle
+  
+End

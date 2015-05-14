@@ -1,0 +1,47 @@
+' Gambas class file
+
+Create Private
+Create Static
+
+Static Public _Highlight As Byte[]
+
+Public State As Integer
+Public Tag As Integer
+Public Alternate As Boolean
+Public TextAfter As String
+Public Limit As Boolean
+
+Public Sub Run((Text) As String)
+  
+  
+End
+
+Public Sub Add(Optional Count As Integer = 1)
+
+  Dim iState As Integer
+  
+  iState = State
+  If Alternate Then iState += 128
+  
+  If _Highlight.Count = 0 Or If _Highlight[_Highlight.Max - 1] <> iState Or If _Highlight[_Highlight.Max] > (255 - Count) Then
+    _Highlight.Add(iState)
+    _Highlight.Add(Count)
+  Else
+    _Highlight[_Highlight.Max] += Count
+  Endif
+  
+End
+
+Public Sub AddState(iState As Integer, Optional Count As Integer = 1)
+  
+  State = iState
+  Add(Count)
+  
+End
+
+
+Public Sub GetKeywords() As String[]
+  
+  
+  
+End

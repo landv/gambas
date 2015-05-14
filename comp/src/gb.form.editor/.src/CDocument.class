@@ -6,6 +6,12 @@ Property Text As String
 Property Read Count As Integer
 Property Read Max As Integer
 Property Read Current As TextEditor
+Property Highlight As String
+Property Read Length As Integer
+Property Read Keywords As String[]
+Property Breakpoints As Integer[]
+Property Bookmarks As Integer[]
+Property EndOfLine As Integer
 
 Public Lines As String[]
 Public LinesInfo As CLineInfo[]
@@ -18,6 +24,13 @@ Private $aRedo As New CCommand[]
 Private $bNoUndo As Boolean
 
 Private $hDefaultInfo As New CLineInfo
+
+Private $sHighlight As String
+Private $hHighlight As Highlighter
+Private $bHighlighting As Boolean
+
+Private $iEndOfLine As Integer
+Private $sEndOfLine As String
 
 Public Sub _new()
   
@@ -36,7 +49,7 @@ End
 
 Private Function Text_Read() As String
 
-  Return Lines.Join("\n")
+  Return Lines.Join($sEndOfLine)
 
 End
 
@@ -47,7 +60,42 @@ Private Sub Text_Write(Value As String)
   If Value Then
     Lines = Split(Value, "\n")
     LinesInfo = New CLineInfo[Lines.Count]
+    HighlightFrom(0)
   Endif
+  
+End
+
+Public Sub Load(sPath As String)
+
+  Dim hFile As File
+  Dim sLine As String
+  
+  hFile = Open sPath
+  
+  Clear
+  Lines.Clear
+  
+  For Each sLine In hFile.Lines
+    Lines.Add(sLine)
+  Next
+  
+  LinesInfo = New CLineInfo[Lines.Count]
+  HighlightFrom(0)
+  
+End
+
+Public Sub Save(sPath As String)
+
+  Dim hFile As File
+  Dim I As Integer
+  
+  hFile = Open sPath For Create
+  hFile.EndOfLine = $iEndOfLine
+  For I = 0 To Lines.Max - 1
+    Print #hFile, Lines[I]
+  Next
+  Print #hFile, Lines[Lines.Max];
+  Close #hFile
   
 End
 
@@ -66,7 +114,11 @@ End
 
 Private Sub AddUndo(hCmd As CCommand)
 
-  $aUndo.Add(hCmd)
+  If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.Begin Then
+    $aUndo.Pop
+  Else
+    $aUndo.Add(hCmd)
+  Endif
   $aRedo.Clear
 
 End
@@ -95,6 +147,8 @@ Private Sub InsertLine(Y As Integer)
   
   Lines.Add("", Y)
   LinesInfo.Add(CLineInfo(), Y)
+  LinesInfo[Y].Modified = True
+  Me.Current._RaiseChange
   
 End
 
@@ -105,11 +159,16 @@ End
 '   FOR_EACH_VIEW(v) { v->lineInserted(y); }
 ' }
 
-Private Sub SetLine(Y As Integer, sLine As String)
+Public Sub SetLine(Y As Integer, sLine As String)
 
   If sLine = Lines[Y] Then Return
   Lines[Y] = sLine
-  SetInfo(Y).Modified = True
+  With SetInfo(Y)
+    .Modified = True
+    .ClearHighlight()
+  End With
+  Me.Current._ClearCacheWidth(Y)
+  Me.Current._RaiseChange
 
 End
 
@@ -120,9 +179,6 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Dim aText As String[]
   Dim I As Integer
   Dim sLine As String
-  Dim aArg As Variant[]
-  
-  aArg = [sText, X, Y]
   
   While Y > Lines.Count
     InsertLine(Lines.Count)
@@ -130,8 +186,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   
   iLen = String.Len(Lines[Y])
   If X > iLen Then 
-    Lines[Y] &= Space$(X - iLen)
-    SetInfo(Y).Modified = True
+    SetLine(Y, Lines[Y] & Space$(X - iLen))
   Endif
   
   sRest = String.Mid$(Lines[Y], X + 1)
@@ -333,15 +388,13 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
     If X2 > X1 And If X1 < String.Len(Lines[Y1]) Then
       
-      Lines[Y1] = String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y1], X2 + 1)
-      SetInfo(Y1).Modified = True
+      SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y1], X2 + 1))
       
     Endif
   
   Else If Y1 < Y2 Then
     
-    Lines[Y1] = String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1)
-    SetInfo(Y1).Modified = True
+    SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1))
     
     Lines.Remove(Y1 + 1, Y2 - Y1)
     LinesInfo.Remove(Y1 + 1, Y2 - Y1)
@@ -466,7 +519,7 @@ Public Sub Info(Y As Integer) As CLineInfo
 
 End
 
-Private Sub SetInfo(Y As Integer) As CLineInfo
+Public Sub SetInfo(Y As Integer) As CLineInfo
   
   Dim hInfo As CLineInfo
 
@@ -491,7 +544,7 @@ Public Sub GetText(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) A
   If Y1 = Y2 Then Return String.Mid$(Lines[Y1], X1 + 1, X2 - X1)
   
   sText = String.Mid$(Lines[Y1], X1 + 1) & "\n"
-  sText &= Lines.Copy(Y1 + 1, Y2 - Y1 - 1).Join("\n") & "\n"
+  If (Y2 - Y1 - 1) > 0 Then sText &= Lines.Copy(Y1 + 1, Y2 - Y1 - 1).Join("\n") & "\n"
   sText &= String.Left(Lines[Y2], X2)
 
   Return sText
@@ -502,36 +555,47 @@ End
 Public Sub Undo()
   
   Dim hCmd As CCommand
+  Dim L As Integer
   
   If $aUndo.Count = 0 Then Return
   
   $bNoUndo = True
   
-  hCmd = $aUndo.Pop()
-  With hCmd
-    
-    Select Case .Type
-      
-      Case CCommand.INSERT
-        Me.Current.Remove(.X, .Y, .XA, .YA)
-        If .SX <> .X Or If .SY <> .Y Then 
-          Me.Current.Goto(.SX, .SY)
-          Me.Current.Goto(.X, .Y, True)
-        Endif
-        
-      Case CCommand.DELETE
-        Me.Current.Goto(.XA, .YA)
-        Me.Current.Insert(.Text)
-        If .SX <> .X Or If .SY <> .Y Then 
-          Me.Current.Goto(.SX, .SY)
-          Me.Current.Goto(.X, .Y, True)
-        Endif
-      
-    End Select
-
-  End With
+  Repeat
   
-  $aRedo.Add(hCmd)
+    hCmd = $aUndo.Pop()
+    With hCmd
+      
+      Select Case .Type
+        
+        Case CCommand.BEGIN
+          Dec L
+        
+        Case CCommand.END
+          Inc L
+        
+        Case CCommand.INSERT
+          Me.Current.Remove(.X, .Y, .XA, .YA)
+          If .SX <> .X Or If .SY <> .Y Then 
+            Me.Current.Goto(.SX, .SY)
+            Me.Current.Goto(.X, .Y, True)
+          Endif
+          
+        Case CCommand.DELETE
+          Me.Current.Goto(.XA, .YA)
+          Me.Current.Insert(.Text)
+          If .SX <> .X Or If .SY <> .Y Then 
+            Me.Current.Goto(.SX, .SY)
+            Me.Current.Goto(.X, .Y, True)
+          Endif
+        
+      End Select
+  
+    End With
+    
+    $aRedo.Add(hCmd)
+    
+  Until L = 0
   
   $bNoUndo = False
   
@@ -540,42 +604,248 @@ End
 Public Sub Redo()
   
   Dim hCmd As CCommand
+  Dim L As Integer
   
   If $aRedo.Count = 0 Then Return
   
   $bNoUndo = True
   
-  hCmd = $aRedo.Pop()
-  With hCmd
-    
-    Select Case .Type
-      
-      Case CCommand.DELETE
-        If .SX <> .X Or If .SY <> .Y Then 
-          Me.Current.Goto(.SX, .SY)
-          Me.Current.Goto(.X, .Y, True)
-        Else
-          Me.Current.Goto(.X, .Y)
-        Endif
-        Me.Current.Remove(.XA, .YA, .X, .Y)
-        
-      Case CCommand.INSERT
-        If .SX <> .X Or If .SY <> .Y Then 
-          Me.Current.Goto(.SX, .SY)
-          Me.Current.Goto(.X, .Y, True)
-        Else
-          Me.Current.Goto(.X, .Y)
-        Endif
-        Me.Current.Insert(.Text)
-      
-    End Select
-
-  End With
+  Repeat
   
-  $aUndo.Add(hCmd)
+    hCmd = $aRedo.Pop()
+    With hCmd
+      
+      Select Case .Type
+        
+        Case CCommand.BEGIN
+          Inc L
+          
+        Case CCommand.END
+          Dec L
+        
+        Case CCommand.DELETE
+          If .SX <> .X Or If .SY <> .Y Then 
+            Me.Current.Goto(.SX, .SY)
+            Me.Current.Goto(.X, .Y, True)
+          Else
+            Me.Current.Goto(.X, .Y)
+          Endif
+          Me.Current.Remove(.XA, .YA, .X, .Y)
+          
+        Case CCommand.INSERT
+          If .SX <> .X Or If .SY <> .Y Then 
+            Me.Current.Goto(.SX, .SY)
+            Me.Current.Goto(.X, .Y, True)
+          Else
+            Me.Current.Goto(.X, .Y)
+          Endif
+          Me.Current.Insert(.Text)
+        
+      End Select
+  
+    End With
+    
+    $aUndo.Add(hCmd)
+    
+  Until L = 0
   
   $bNoUndo = False
   
 End
 
+Private Function Highlight_Read() As String
 
+  Return $sHighlight
+
+End
+
+Private Sub Highlight_Write(Value As String)
+
+  Dim Y As Integer
+  
+  $sHighlight = Value
+  If Not Value Then
+    $hHighlight = Null
+  Else
+    If LCase(Value) = "c++" Then Value = "CPlusPlus"
+    Try $hHighlight = Class.Load("Highlighter" & Value).AutoCreate()
+    If Error Then Error.Raise("Unknown highlighter:" & Error.Text)
+    For Y = 0 To LinesInfo.Max
+      If LinesInfo[Y] Then LinesInfo[Y].ClearHighlight()
+    Next
+  Endif
+
+End
+
+Public Sub HighlightFrom(Y As Integer)
+
+  Dim aHighlight As Byte[]
+  
+  If Not $hHighlight Then Return
+  
+  If $bHighlighting Then Return
+  $bHighlighting = True
+
+  Begin()
+
+  Do
+
+    If Y < 0 Or If Y > Lines.Max Then Break
+    If Info(Y).Colors Then Break
+  
+    If Y = 0 Then
+      $hHighlight.State = Highlight.Normal
+      $hHighlight.Tag = 0
+      $hHighlight.Alternate = False
+    Else
+      With Info(Y - 1)
+        $hHighlight.State = .State
+        $hHighlight.Tag = .Tag
+        $hHighlight.Alternate = .Alternate
+      End With
+    Endif
+    
+    With SetInfo(Y)
+  
+      aHighlight = New Byte[]
+      .Colors = aHighlight
+      Highlighter._Highlight = aHighlight
+      Highlighter.TextAfter = ""
+      
+      $hHighlight.Run(Lines[Y])
+      
+      If $hHighlight.TextAfter And If Lines[Y] <> $hHighlight.TextAfter Then
+        Me.Current.Goto(0, Y)
+        Me.Current.Remove(0, Y, String.Len(Lines[Y]), Y)
+        Me.Current.Insert($hHighlight.TextAfter)
+        .Highlight = aHighlight
+      Endif
+  
+      If .Alternate <> $hHighlight.Alternate Or If .State <> $hHighlight.State Or If .Tag <> $hHighlight.Tag Or If .Limit <> $hHighlight.Limit Then
+        .Alternate = $hHighlight.Alternate
+        .State = $hHighlight.State
+        .Tag = $hHighlight.Tag
+        .Limit = $hHighlight.Limit
+        If Y < Lines.Max Then SetInfo(Y + 1).ClearHighlight()
+      Endif
+      
+      Inc Y
+      
+    End With
+    
+  Loop
+
+  End()
+
+  Me.Current.Refresh
+  
+  $bHighlighting = False
+    
+End
+
+Private Function Length_Read() As Integer
+
+  Dim Y As Integer
+  Dim L As Integer
+
+  For Y = 0 To Lines.Max
+    L += String.Len(Lines[Y])
+  Next
+  
+  L += Lines.Max * Len($sEndOfLine)
+  Return L
+
+End
+
+Private Function Keywords_Read() As String[]
+
+  If $hHighlight Then Return $hHighlight.GetKeywords()
+
+End
+
+Private Function Breakpoints_Read() As Integer[]
+
+  Dim Y As Integer
+  Dim aRes As Integer[]
+
+  aRes = New Integer[]
+  For Y = 0 To Lines.Max
+    If Info(Y).Breakpoint Then
+      aRes.Add(Y)
+    Endif
+  Next
+  
+  Return aRes
+
+End
+
+Private Sub Breakpoints_Write(Value As Integer[])
+
+  Dim Y As Integer
+
+  For Y = 0 To Lines.Max
+    If Info(Y).Breakpoint Then SetInfo(Y).Breakpoint = False
+  Next
+  
+  If Value Then
+    For Each Y In Value
+      SetInfo(Y).Breakpoint = True
+    Next
+  Endif
+
+End
+
+Private Function Bookmarks_Read() As Integer[]
+
+  Dim Y As Integer
+  Dim aRes As Integer[]
+
+  aRes = New Integer[]
+  For Y = 0 To Lines.Max
+    If Info(Y).Bookmark Then
+      aRes.Add(Y)
+    Endif
+  Next
+  
+  Return aRes
+
+End
+
+Private Sub Bookmarks_Write(Value As Integer[])
+
+  Dim Y As Integer
+
+  For Y = 0 To Lines.Max
+    If Info(Y).Bookmark Then SetInfo(Y).Bookmark = False
+  Next
+  
+  If Value Then
+    For Each Y In Value
+      SetInfo(Y).Bookmark = True
+    Next
+  Endif
+
+End
+
+Private Function EndOfLine_Read() As Integer
+
+  Return $iEndOfLine
+
+End
+
+Private Sub EndOfLine_Write(Value As Integer)
+
+  Select Case Value
+    Case gb.Unix
+      $sEndOfLine = "\n"
+    Case gb.Windows
+      $sEndOfLine = "\r"
+    Case gb.Mac
+      $sEndOfLine = "\r\n"
+    Case Else
+      Return
+  End Select
+  
+  $iEndOfLine = Value  
+
+End

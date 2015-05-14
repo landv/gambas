@@ -1,0 +1,76 @@
+' Gambas class file
+
+Event _Fake
+
+Public _Line As Integer
+
+Property Text As String
+Property Read Length As Integer
+Property Read Limit As Boolean
+
+Property Breakpoint As Boolean
+Property Bookmark As Boolean
+
+Private Sub GetDoc() As CDocument
+
+  Return Object.Parent(Me)
+
+End
+
+Private Function Text_Read() As String
+
+  Return GetDoc().Lines[_Line]
+
+End
+
+Private Function Length_Read() As Integer
+
+  Return String.Len(GetDoc().Lines[_Line])
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  GetDoc().SetLine(_Line, Value)
+  Refresh
+
+End
+
+Public Sub Refresh()
+  
+  GetDoc().Current._RefreshLine(_Line)
+  
+End
+
+
+Private Function Limit_Read() As Boolean
+
+  Return GetDoc().Info(_Line).Limit
+
+End
+
+Private Function Breakpoint_Read() As Boolean
+
+  Return GetDoc().Info(_Line).Breakpoint
+
+End
+
+Private Sub Breakpoint_Write(Value As Boolean)
+
+  GetDoc().SetInfo(_Line).Breakpoint = Value
+  Refresh
+
+End
+
+Private Function Bookmark_Read() As Boolean
+
+  Return GetDoc().Info(_Line).Bookmark
+
+End
+
+Private Sub Bookmark_Write(Value As Boolean)
+
+  GetDoc().SetInfo(_Line).Bookmark = Value
+  Refresh
+
+End

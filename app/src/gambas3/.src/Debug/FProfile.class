@@ -409,9 +409,6 @@ Public Sub Init(sPath As String)
   Object.Lock(gvwProfile)
   gvwProfile.Columns.Sort = 2
   gvwProfile.Columns.Ascending = True
-  For I = 0 To gvwProfile.Columns.Max
-    gvwProfile.Columns[I].Width = -1
-  Next
   Object.Unlock(gvwProfile)
   gvwProfile_Sort
   
@@ -633,10 +630,13 @@ Public Sub Form_Open()
     .Columns[0].Width = -1
     .Columns[1].Text = ("Calls")
     .Columns[1].Alignment = Align.Right
+    .Columns[1].Width = -1
     .Columns[2].Text = ("Duration")
     .Columns[2].Alignment = Align.Right
+    .Columns[2].Width = -1
     .Columns[3].Text = ("Self")
     .Columns[3].Alignment = Align.Right
+    .Columns[3].Width = -1
     .Columns[4].Text = ("Average")
     .Columns[4].Alignment = Align.Right
     .Columns[4].Width = 0
@@ -645,7 +645,6 @@ Public Sub Form_Open()
   With gvwCalled
     .Columns.Count = 4
     .Columns[0].Text = ("Function")
-    .Columns[0].Width = -1
     .Columns[1].Text = ("Calls")
     .Columns[1].Alignment = Align.Right
     .Columns[2].Text = ("Duration")

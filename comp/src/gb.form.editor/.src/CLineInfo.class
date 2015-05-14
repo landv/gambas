@@ -1,19 +1,36 @@
 ' Gambas class file
 
 Property Modified As Boolean
+Property Alternate As Boolean
+Property Limit As Boolean
+Property Breakpoint As Boolean
+Property Bookmark As Boolean
 
-Private Enum FLAG_MODIFIED
+Private Enum FLAG_MODIFIED, FLAG_ALTERNATE, FLAG_LIMIT, FLAG_BREAKPOINT, FLAG_BOOKMARK
 
-Private $iFlag As Short
+Public Colors As Byte[]
+Public Tag As Short
+Public State As Byte = Highlight.Normal
+Private $iFlag As Byte
+
 
 Static Public Sub _call() As CLineInfo
 
   Dim hInfo As CLineInfo
   
   hInfo = New CLineInfo
-  hInfo.Modified = True
   Return hInfo
   
+End
+
+Private Sub SetFlag(iFlag As Integer, Value As Boolean)
+
+  If Value Then
+    $iFlag = BSet($iFlag, iFlag)
+  Else
+    $iFlag = BClr($iFlag, iFlag)
+  Endif
+
 End
 
 Private Function Modified_Read() As Boolean
@@ -24,10 +41,64 @@ End
 
 Private Sub Modified_Write(Value As Boolean)
 
-  If Value Then
-    $iFlag = BSet($iFlag, FLAG_MODIFIED)
-  Else
-    $iFlag = BClr($iFlag, FLAG_MODIFIED)
-  Endif
+  SetFlag(FLAG_MODIFIED, Value)
+
+End
+
+Private Function Alternate_Read() As Boolean
+
+  Return BTst($iFlag, FLAG_ALTERNATE)
+
+End
+
+Private Sub Alternate_Write(Value As Boolean)
+
+  SetFlag(FLAG_ALTERNATE, Value)
+
+End
+
+Public Sub ClearHighlight()
+  
+  Colors = Null
+  Tag = 0
+  State = Highlight.Normal
+  SetFlag(FLAG_ALTERNATE, False)
+  SetFlag(FLAG_LIMIT, False)
+  
+End
+
+Private Function Limit_Read() As Boolean
+
+  Return BTst($iFlag, FLAG_LIMIT)
+
+End
+
+Private Sub Limit_Write(Value As Boolean)
+
+  SetFlag(FLAG_LIMIT, Value)
+
+End
+
+Private Function Breakpoint_Read() As Boolean
+
+  Return BTst($iFlag, FLAG_BREAKPOINT)  
+
+End
+
+Private Sub Breakpoint_Write(Value As Boolean)
+
+  SetFlag(FLAG_BREAKPOINT, Value)
+
+End
+
+Private Function Bookmark_Read() As Boolean
+
+  Return BTst($iFlag, FLAG_BOOKMARK)
+
+End
+
+Private Sub Bookmark_Write(Value As Boolean)
+
+  SetFlag(FLAG_BOOKMARK, Value)
 
 End

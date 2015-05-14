@@ -4,10 +4,30 @@ C
 _Properties
 C
 s
-*,ReadOnly
+*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowIcon
+:Cursor
+:
+
+
+:Scroll
+:
+
+
+:Change
+:
+
+
+:Margin
+:
+
+
 Text
 p
 s
+
+Count
+r
+i
 
 Line
 r
@@ -37,22 +57,130 @@ ReadOnly
 p
 b
 
+Highlight
+p
+s
+
+LineNumberOffset
+p
+i
+
+TabSize
+p
+i
+
+Length
+r
+i
+
+Border
+p
+b
+
+ScrollBar
+p
+i
+
+Overwrite
+p
+b
+
+LineHeight
+r
+i
+
+Current
+r
+_TextEditor_Line
+
+Font
+p
+Font
+
+StopLine
+p
+i
+
+EndOfLine
+p
+i
+
+Breakpoints
+p
+Integer[]
+
+Bookmarks
+p
+Integer[]
+
+ShowLimit
+p
+b
+
+ShowCurrent
+p
+b
+
+ShowLineNumber
+p
+b
+
+ShowModified
+p
+b
+
+ShowPosition
+p
+b
+
+ShowIcon
+p
+b
+
 _new
 m
 
 
-ScrollArea_Font
+Load
+m
+
+(Path)s
+Save
+m
+
+(Path)s
+Clear
 m
 
 
-View_Draw
+View_Font
 m
 
-(X)i(Y)i(Width)i(Height)i(Row)i(Column)i
+
+Begin
+m
+
+
+End
+m
+
+
+Remove
+m
+
+(X1)i(Y1)i(X2)i(Y2)i
+_ResizeContents
+m
+
+
 TimerCursor_Timer
 m
 
 
+_RefreshLine
+m
+
+(Y)i
 View_KeyPress
 m
 
@@ -77,19 +205,23 @@ Insert
 m
 
 (Text)s
-ScrollArea_MouseDown
+View_MouseDown
 m
 
 
-ScrollArea_MouseDrag
+View_DblClick
 m
 
 
-ScrollArea_MouseMove
+View_MouseDrag
 m
 
 
-ScrollArea_MouseUp
+View_MouseMove
+m
+
+
+View_MouseUp
 m
 
 
@@ -97,7 +229,35 @@ TimerScroll_Timer
 m
 
 
-Remove
+_ClearCacheWidth
 m
 
-(X1)i(Y1)i(X2)i(Y2)i
+[(Y)i]
+View_Draw
+m
+
+
+View_Resize
+m
+
+
+_get
+m
+_TextEditor_Line
+(Line)i
+View_Scroll
+m
+
+
+_RaiseChange
+m
+
+
+TimerChange_Timer
+m
+
+
+View_Arrange
+m
+
+
