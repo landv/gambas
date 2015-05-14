@@ -96,6 +96,8 @@ typedef
 		GtkPrintContext *print_context;
 		CFONT *font;
 		CFONT **font_stack;
+		PangoLayout *layout;
+		float ascent;
 		cairo_matrix_t init;
 		double dx;
 		double dy;
@@ -368,8 +370,12 @@ static void End(GB_PAINT *d)
 	void *device = d->device;
 	GB_PAINT_EXTRA *dx = EXTRA(d);
 
+	if (dx->layout)
+		g_object_unref(dx->layout);	
+
 	if (dx->font_stack)
 		GB.FreeArray(POINTER(&dx->font_stack));
+	
 	GB.Unref(POINTER(&dx->font));
 	
 	if (GB.Is(device, CLASS_Picture))
@@ -431,6 +437,21 @@ static void Antialias(GB_PAINT *d, int set, int *antialias)
 		*antialias = (cairo_get_antialias(CONTEXT(d)) == CAIRO_ANTIALIAS_NONE) ? 0 : 1;
 }
 
+static void _Font(GB_PAINT *d, int set, GB_FONT *font);
+
+static void update_layout(GB_PAINT *d)
+{
+	CFONT *font;
+	GB_PAINT_EXTRA *dx = EXTRA(d);
+	
+	if (dx->layout)
+	{
+		_Font(d, FALSE, (GB_FONT *)&font);
+		gt_add_layout_from_font(dx->layout, font->font, d->resolutionY);
+		dx->ascent = font->font->ascentF();
+	}
+}
+
 // Font is used by X11!
 static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
@@ -444,6 +465,8 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 		}
 		else
 			EXTRA(d)->font = NULL;
+		
+		update_layout(d);
 	}
 	else
 	{
@@ -926,14 +949,20 @@ static PangoLayout *create_pango_layout(GB_PAINT *d)
 	/*if (dx->print_context)
 		return gtk_print_context_create_pango_layout(dx->print_context);
 	else*/
-		return pango_cairo_create_layout(dx->context);
+
+	if (!dx->layout)
+	{
+		dx->layout = pango_cairo_create_layout(dx->context);
+		update_layout(d);
+	}
+		
+	return dx->layout;
 }
 
 static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align, bool draw)
 {
 	char *html = NULL;
 	PangoLayout *layout;
-	CFONT *font;
 	float tw, th, offx, offy;
 
 	layout = create_pango_layout(d);
@@ -949,9 +978,6 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	else
 		pango_layout_set_text(layout, text, len);
 	
-	_Font(d, FALSE, (GB_FONT *)&font);
-	gt_add_layout_from_font(layout, font->font, d->resolutionY);
-	
 	if (align == GB_DRAW_ALIGN_DEFAULT)
 		align = ALIGN_TOP_NORMAL;
 	
@@ -964,7 +990,7 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	else
 	{
 		offx = 0;
-		offy = -(font->font->ascentF());
+		offy = -(EXTRA(d)->ascent);
 	}
 	
 	cairo_rel_move_to(CONTEXT(d), offx + DX(d), offy + DY(d));
@@ -973,8 +999,6 @@ static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w
 	else
 		pango_cairo_layout_path(CONTEXT(d), layout);
 
-	g_object_unref(layout);	
-	
 	if (html) g_free(html);
 }
 
@@ -1019,11 +1043,10 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	GetCurrentPoint(d, &x, &y);
 	
 	ext->x1 = (float)rect.x / PANGO_SCALE + x;
-	ext->y1 = (float)rect.y / PANGO_SCALE + y - font->font->ascentF();
+	ext->y1 = (float)rect.y / PANGO_SCALE + y - EXTRA(d)->ascent;
 	ext->x2 = ext->x1 + (float)rect.width / PANGO_SCALE;
 	ext->y2 = ext->y1 + (float)rect.height / PANGO_SCALE;
 	
-	g_object_unref(layout);
 	if (html) g_free(html);
 }
 
@@ -1044,9 +1067,11 @@ static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
 	_Font(d, FALSE, (GB_FONT *)&font);
 	
 	scale = (float)d->resolutionY / gDesktop::resolution();
+	
+	font->font->textSize(text, len, w, h);
 
-	*w = font->font->width(text, len) * scale;
-	*h = font->font->height(text, len) * scale;
+	*w *= scale;
+	*h *= scale;
 }
 
 static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)

@@ -74,6 +74,7 @@ public:
 	int width(const char *text, int len = -1);
 	int height(const char *text, int len = -1);
 	int height();
+	void textSize(const char *text, int len, float *w, float *h);
 	void richTextSize(const char *txt, int len, float sw, float *w, float *h);
 
 //"Private"

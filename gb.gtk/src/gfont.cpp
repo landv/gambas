@@ -486,6 +486,7 @@ const char *gFont::toString()
 
 	ret = g_string_free(desc, false);
 	gt_free_later(ret);
+	
 	return ret;
 }
 
@@ -518,34 +519,34 @@ const char *gFont::toFullString()
 	return ret;
 }
 
-int gFont::width(const char *text, int len)
+void gFont::textSize(const char *text, int len, float *w, float *h)
 {
 	PangoLayout *ly;
-	int w;
+	int tw = 0, th = 0;
 	
-	if (!text || !*text) return 0;
+	if (text && len)
+	{
+		ly = pango_layout_new(ct);
+		pango_layout_set_text(ly, text, len);	
+		pango_layout_get_size(ly, &tw, &th);
+	}
 	
-	ly=pango_layout_new(ct);
-	pango_layout_set_text(ly,text,len);
-	pango_layout_get_size(ly,&w,NULL);
-	g_object_unref(G_OBJECT(ly));
-	
-	return gt_pango_to_pixel(w);
+	if (w) *w = (float)tw / PANGO_SCALE;
+	if (h) *h = (float)th / PANGO_SCALE;
+}
+
+int gFont::width(const char *text, int len)
+{
+	float fw;
+	textSize(text, len, &fw, NULL);
+	return gt_pango_to_pixel(fw * PANGO_SCALE);
 }
 
 int gFont::height(const char *text, int len)
 {
-	PangoLayout *ly;
-	int h;
-	
-	if (len == 0 || !text || !*text) text = " ";
-
-	ly=pango_layout_new(ct);
-	pango_layout_set_text(ly,text,len);
-	pango_layout_get_size(ly,NULL,&h);
-	g_object_unref(G_OBJECT(ly));
-
-	return gt_pango_to_pixel(h);
+	float fh;
+	textSize(text, len, NULL, &fh);
+	return gt_pango_to_pixel(fh * PANGO_SCALE);
 }
 
 int gFont::height()

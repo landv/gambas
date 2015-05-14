@@ -743,10 +743,7 @@ gFont* gControl::font()
 
 void gControl::actualFontTo(gFont *ft)
 {
-	//fprintf(stderr, "actualFontTo: %s: %s / %s (_font = %s)\n", name(), ft->toString(), ft->toFullString(), _font ? _font->toFullString() : NULL);
 	font()->copyTo(ft);
-	ft->setAllFrom(_font);
-	//fprintf(stderr, "==> %s: %s / %s (_font = %s)\n", name(), ft->toString(), ft->toFullString(), _font ? _font->toFullString() : NULL);
 }
 
 void gControl::resolveFont()
