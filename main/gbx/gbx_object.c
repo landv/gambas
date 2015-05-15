@@ -159,14 +159,15 @@ void OBJECT_detach(OBJECT *ob)
 	//dump_attach("OBJECT_detach");
 
 	/* Avoids an infinite recursion, if freeing the parent implies freeing the object */
-	parent = OBJECT_parent(ob);
+	parent = ev->parent;
 
 	if (parent)
 	{
+		ev->parent = NULL;
+		
 		if (class->special[SPEC_ATTACH] != NO_SYMBOL)
 			call_attach_special_method(class, ob, parent, NULL);
 		
-		ev->parent = NULL;
 		#if DEBUG_EVENT || DEBUG_REF
 			fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
 				ob->class->name, ob, parent->class->name, parent);
@@ -234,21 +235,6 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 		call_attach_special_method(class, ob, parent, name);
 	
 	//dump_attach("OBJECT_attach");
-}
-
-
-void OBJECT_free(CLASS *class, OBJECT *ob)
-{
-	OBJECT_detach(ob);
-	remove_observers(ob);
-
-	class->count--;
-
-	#if DEBUG_REF
-	ob->class = FREE_MARK;
-	#endif
-
-	FREE(&ob);
 }
 
 
@@ -356,10 +342,26 @@ void OBJECT_release(CLASS *class, OBJECT *ob)
 	printf("> OBJECT_release %s %p\n", class->name, ob);
 #endif
 
+	if (ob)
+	{
+		ob->ref = 1; // Prevents anybody from freeing the object!
+		OBJECT_detach(ob);
+		remove_observers(ob);
+		ob->ref = 0;
+	}
+	
 	release(class, ob);
 
 	if (ob)
-		OBJECT_free(class, ob);
+	{
+		class->count--;
+
+		#if DEBUG_REF
+		ob->class = FREE_MARK;
+		#endif
+
+		IFREE(ob);
+	}
 
 #if TRACE_MEMORY
 	printf("< OBJECT_release %s %p\n", class->name, ob);

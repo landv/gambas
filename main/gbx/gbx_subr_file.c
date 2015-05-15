@@ -112,6 +112,9 @@ static STREAM *get_default(intptr_t val)
 			stream = NULL;
 	}
 
+	if (!stream)
+		THROW(E_CLOSED);
+	
 	return stream;
 }
 
