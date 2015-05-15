@@ -65,7 +65,7 @@ Public Sub Form_Open()
 
   btnNew = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("New project..."), "icon:/large/new", sFont) As "btnNew"
   btnOpen = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open project") & "...", "icon:/large/open", sFont) As "btnOpen"
-  btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/open-recent", sFont) As "btnList"
+  btnRecent = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Recent projects"), "icon:/large/recent", sFont) As "btnList"
   btnExample = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Examples"), "icon:/large/help", sFont) As "btnList"
   btnSoft = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Installed software"), "icon:/large/download", sFont) As "btnList"
   btnFarm = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"

@@ -4,7 +4,9 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowIcon"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon"
+Public Const _DrawWith As String = "-"
+Public Const _DefaultEvent As String = "Change"
 
 Event Cursor
 Event Scroll
@@ -34,6 +36,9 @@ Property StopLine As Integer
 Property EndOfLine As Integer
 Property Breakpoints As Integer[]
 Property Bookmarks As Integer[]
+Property Read Styles As _TextEditor_Styles
+Property Read CursorPos As Point
+Property View As TextEditor
 
 Property ShowLimit As Boolean
 Property ShowCurrent As Boolean
@@ -41,6 +46,7 @@ Property ShowLineNumber As Boolean
 Property ShowModified As Boolean
 Property ShowPosition As Boolean
 Property ShowIcon As Boolean
+Property ShowBraces As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
@@ -52,6 +58,8 @@ Private $hLabel As Label
 
 Private $hDoc As CDocument
 Private $hRows As _TextEditor_Rows
+Private $hStyles As _TextEditor_Styles
+
 Private $aRowY As New Integer[]
 
 Private $iLargestLine As Integer
@@ -87,7 +95,6 @@ Private $YMO As Integer
 Private $bReadOnly As Boolean
 Private $bInsertMode As Boolean
 
-Private $aStyle As CStyle[]
 Private $iBackground As Integer
 Private $iForeground As Integer
 Private $iSelectedBackground As Integer
@@ -108,6 +115,9 @@ Private $bShowLineNumber As Boolean
 Private $bShowModified As Boolean
 Private $bShowPosition As Boolean
 Private $bShowIcon As Boolean
+Private $bShowBraces As Boolean
+
+Public _Views As TextEditor[]
 
 Public Sub _new()
   
@@ -121,29 +131,26 @@ Public Sub _new()
       "CTRL+Z": "Undo"]
   Endif
   
-  InitStyle
-  
   $hPanel = New Panel(Me)
   $hPanel.Arrangement = Arrange.Fill
   $hPanel.Border = Border.Plain
-  $hPanel.Background = $aStyle[Highlight.Background].Color
-  
+
   $hView = New ScrollArea($hPanel) As "View"
   $hView.Border = False
   $hView.Focus = True
   
   Me.Proxy = $hView
   
-  $hDoc = New CDocument
-  Object.Attach($hDoc, Me, "Document")
-  
   $hTimerCursor = New Timer As "TimerCursor"
   $hTimerCursor.Delay = 500
   $hTimerCursor.Start
   
   $hRows = New _TextEditor_Rows As "Rows"
+  $hStyles = New _TextEditor_Styles As "Styles"
   
-  Init
+  $hPanel.Background = $hStyles[Highlight.Background].Color
+
+  _SetDocument(Null)
   
 End
 
@@ -314,14 +321,14 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
   'Paint.DrawTextShadow(sCar, X, Y, $hView.Font.TextWidth(sCar), H, Align.TopLeft,, 1)
   'Paint.DrawText(sCar, X + 1, Y + $hView.Font.Ascent)
   'Paint.Restore
-  Paint.FillRect(X1, Y, X2 - X1, H, $aStyle[Highlight.Highlight].Color)
+  Paint.FillRect(X1, Y, X2 - X1, H, $hStyles[Highlight.Highlight].Color)
 
 End
 
 Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, Y As Integer, H As Integer)
 
   Dim I As Integer
-  Dim hStyle As CStyle
+  Dim hStyle As TextEditorStyle
   Dim bAlt As Boolean
   Dim iLen As Byte
   Dim P As Integer
@@ -339,7 +346,7 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     If (X - SX) > ($hView.ScrollX + $hView.ClientW) Then Break
     
     iState = aColor[I] And 31
-    hStyle = $aStyle[iState]
+    hStyle = $hStyles[iState]
     bAlt = aColor[I] >= 128
     iLen = aColor[I + 1]
     
@@ -349,7 +356,7 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
       
       sStr = String.Mid$(sText, P + 1, iLen)
       
-      If iState = 1 And If InStr(sStr, "\t") Then
+      If InStr(sStr, "\t") Then
         If hStyle.Bold Then
           Paint.Background = Color.Merge(hStyle.Color, $iBackground)
           DrawText(sStr, SX, X + 1, Y)
@@ -406,9 +413,9 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   ' Current line or stop line
   
   If Row = $iStopLine Then
-    Paint.FillRect(X, Y, Width, Height, $aStyle[Highlight.Current].Color)
+    Paint.FillRect(X, Y, Width, Height, $hStyles[Highlight.Current].Color)
   Else If $bShowCurrent And If Row = $Y Then
-    Paint.FillRect(X, Y, Width, Height, $aStyle[Highlight.CurrentLine].Color)
+    Paint.FillRect(X, Y, Width, Height, $hStyles[Highlight.CurrentLine].Color)
   Endif
 
   ' Selection
@@ -431,7 +438,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     
     If Row >= Y1 And If Row <= Y2 Then
     
-      iCol = Color.SetAlpha($iSelectedBackground, 64)
+      iCol = Color.SetAlpha($iSelectedBackground, 32)
     
       If Y1 = Y2 Then
         Paint.FillRect(X + X1X, Y, X2X - X1X, Height, iCol)
@@ -501,7 +508,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   If $MW Then
     
-    Paint.FillRect(X, Y, $MW, Height, Color.TextBackground)
+    Paint.FillRect(X, Y, $MW, Height, $iBackground)
     
     If $bShowModified Then
       If hInfo.Modified Then Paint.FillRect(X + $MW - 4, Y, 4, Height, Color.Merge($iBackground, Color.Red, 0.2))
@@ -521,7 +528,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     If $bShowIcon Then
       If hInfo.Breakpoint Then
         Paint.Ellipse(X + $iPosIcon + 1, Y + 1, $hRows.H - 2, $hRows.H - 2)
-        Paint.Background = $aStyle[Highlight.Breakpoint].Color
+        Paint.Background = $hStyles[Highlight.Breakpoint].Color
         Paint.Fill
       Endif
     Endif
@@ -691,10 +698,28 @@ Public Sub View_KeyPress()
       Endif
       
     Case Key.Up
-      Goto($X, $Y - 1, Key.Shift)
+      If Key.Control Then
+        Y = FindPreviousLimit($Y)
+        If Y >= 0 Then 
+          Goto($X, Y, Key.Shift)
+        Else
+          Goto(0, 0, Key.Shift)
+        Endif
+      Else
+        Goto($X, $Y - 1, Key.Shift)
+      Endif
       
     Case Key.Down
-      Goto($X, $Y + 1, Key.Shift)
+      If Key.Control Then
+        Y = FindNextLimit($Y)
+        If Y >= 0 Then 
+          Goto($X, Y, Key.Shift)
+        Else
+          Goto(-1, $hDoc.Max, Key.Shift)
+        Endif
+      Else
+        Goto($X, $Y + 1, Key.Shift)
+      Endif
       
     Case Key.Home
       If Key.Control Then
@@ -1002,8 +1027,6 @@ End
 
 Public Sub Insert(Text As String)
   
-  Dim Y As Integer
-
   DeleteSelection
 
   If Not Text Then Return
@@ -1013,16 +1036,23 @@ Public Sub Insert(Text As String)
   $hDoc.Begin
   $hDoc.Insert(Text, $X, $Y)
 
-  For Y = Min($Y, $hDoc.YAfter) To Max($Y, $hDoc.YAfter)
+  Goto($hDoc.XAfter, $hDoc.YAfter)
+  $hDoc.End
+  
+End
+
+Public Sub _AfterInsert(Y1 As Integer, Y2 As Integer)
+
+  Dim Y As Integer
+  
+  For Y = Y1 To Y2
     UpdateWidth(Y)
   Next
   UpdateMargin
   $hRows.Count = $hDoc.Count
   
-  Goto($hDoc.XAfter, $hDoc.YAfter)
-  $hDoc.End
-  
 End
+
 
 Private Function SelectedText_Read() As String
 
@@ -1059,17 +1089,24 @@ End
 
 Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
+  'Goto(X1, Y1)
+  
   $hDoc.Begin
   $hDoc.Remove(X1, Y1, X2, Y2)
-  
-  If $iLargestLine >= Min(Y1, Y2) And If $iLargestLine <= Max(Y1, Y2) Then UpdateWidth
-  UpdateMargin
-  $hRows.Count = $hDoc.Count
   
   Goto($hDoc.XAfter, $hDoc.YAfter)
   $hDoc.End
   
 End
+
+Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
+  
+  If $iLargestLine >= Min(Y1, Y2) And If $iLargestLine <= Max(Y1, Y2) Then UpdateWidth
+  UpdateMargin
+  $hRows.Count = $hDoc.Count
+  
+End
+
 
 Private Sub DeleteLeft()
 
@@ -1157,6 +1194,8 @@ Private Sub CheckMatch()
   $XM = 0
   $YM = -1
 
+  If Not $bShowBraces Then Return
+  
   Y = $Y
   X = Min(String.Len($hDoc.Lines[Y]), $X)
   
@@ -1275,37 +1314,6 @@ End
 Private Sub Highlight_Write(Value As String)
 
   $hDoc.Highlight = Value
-
-End
-
-Private Sub InitStyle()
-
-  If $aStyle Then Return
-  
-  $aStyle = New CStyle[32]
-  
-  $aStyle[Highlight.Background] = CStyle(Color.White)
-  $aStyle[Highlight.Normal] = CStyle(Color.Black)
-  $aStyle[Highlight.Keyword] = CStyle(Color.Black, True)
-  $aStyle[Highlight.Datatype] = CStyle(&HDF6B00&, True)
-  $aStyle[Highlight.Function] = CStyle(&H3398C3&, True)
-  $aStyle[Highlight.Operator] = CStyle(Color.Black, True)
-  $aStyle[Highlight.Symbol] = CStyle(Color.Black)
-  $aStyle[Highlight.Number] = CStyle(&HFF0000&, True)
-  $aStyle[Highlight.String] = CStyle(&H7F0000&)
-  $aStyle[Highlight.Comment] = CStyle(&H888888&, False, True)
-  $aStyle[Highlight.Help] = CStyle(&H888888&, True, True)
-  $aStyle[Highlight.Preprocessor] = CStyle(&H006E28&, True)
-  $aStyle[Highlight.Breakpoint] = CStyle(&HFF5F5F&)
-  $aStyle[Highlight.Current] = CStyle(&H42C9FF&)
-  $aStyle[Highlight.Selection] = CStyle(&HC3EDFF&)
-  $aStyle[Highlight.Highlight] = CStyle(&H7FFF00&)
-  $aStyle[Highlight.CurrentLine] = CStyle(&HE7F3FF&)
-  $aStyle[Highlight.Error] = CStyle(&HBF0303&, False, False, True)
-  
-  $iBackground = $aStyle[Highlight.Background].Color
-  $iForeground = $aStyle[Highlight.Normal].Color
-  $iSelectedBackground = $aStyle[Highlight.Selection].Color
 
 End
 
@@ -1481,6 +1489,10 @@ Public Sub View_Draw()
   Dim hClip As Rect
   Dim hRect As Rect
   
+  $iBackground = $hStyles[Highlight.Background].Color
+  $iForeground = $hStyles[Highlight.Normal].Color
+  $iSelectedBackground = $hStyles[Highlight.Selection].Color
+
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
   Paint.FillRect(0, 0, Paint.W, Paint.H, $iBackground)
@@ -1671,9 +1683,9 @@ Private Sub UpdatePosition()
   Dim sText As String
   
   If Not $hLabel Or If Not $hLabel.Visible Then Return
-  sText = CStr($X + 1) & ":" & CStr($Y + 1) & If($bInsertMode, "  " & ("Overwrite"), "")
+  sText = " " & CStr($X + 1) & ":" & CStr($Y + 1) & If($bInsertMode, "  " & ("Overwrite"), "") & " "
   $hLabel.Text = sText
-  $hLabel.Move($hView.ClientW - $hLabel.W - 4, 4)
+  $hLabel.Move($hView.ClientW - $hLabel.W - 4, 5)
 
 End
 
@@ -1687,7 +1699,7 @@ Private Sub ShowPosition_Write(Value As Boolean)
       $hLabel.Background = Color.Background
       $hLabel.AutoResize = True
       $hLabel.Ignore = True
-      $hLabel.Padding = 4
+      '$hLabel.Padding = 0
       $hLabel.Font = Me.Parent.Font
       $hLabel.Show
     Endif
@@ -1804,4 +1816,124 @@ Private Sub Bookmarks_Write(Value As Integer[])
 
   $hDoc.Bookmarks = Value
 
+End
+
+Public Sub Select(Column As Integer, ({Line}) As Integer, Column2 As Integer, Line2 As Integer)
+  
+  Goto(Column, {Line})
+  Goto(Column2, {Line2}, True)
+  
+End
+
+Private Function ShowBraces_Read() As Boolean
+
+  Return $bShowBraces
+
+End
+
+Private Sub ShowBraces_Write(Value As Boolean)
+
+  $bShowBraces = Value
+  CheckMatch
+  $hView.Refresh
+
+End
+
+Private Function Styles_Read() As _TextEditor_Styles
+
+  Return $hStyles
+
+End
+
+Public Sub FindPreviousLimit(Y As Integer) As Integer
+  
+  Do
+    Dec Y
+    If Y < 0 Then Return -1
+    If $hDoc.Info(Y).Limit Then Return Y
+  Loop
+  
+End
+
+Public Sub FindNextLimit(Y As Integer) As Integer
+  
+  Do
+    Inc Y
+    If Y > $hDoc.Max Then Return -1
+    If $hDoc.Info(Y).Limit Then Return Y
+  Loop
+  
+End
+
+Private Function CursorPos_Read() As Point
+
+  Return Point(LineWidth($Y, $X) - $hView.ScrollX, $hRows._GetRowY($Y) - $hView.ScrollY)
+
+End
+
+Private Function View_Read() As TextEditor
+
+  Return Object.Parent($hDoc)
+
+End
+
+Private Sub View_Write(Value As TextEditor)
+
+  Me.View._RemoveView(Me)
+  Value._AddView(Me)
+
+End
+
+Public Sub _SetDocument(hDoc As CDocument)
+
+  If hDoc Then
+    $hDoc = hDoc
+  Else
+    $hDoc = New CDocument
+    Object.Attach($hDoc, Me, "Document")
+  Endif
+  Init
+  
+End
+
+Public Sub _AddView(hOther As TextEditor)
+  
+  If hOther = Me Then Return
+  
+  If Not _Views Then _Views = New TextEditor[]
+  _Views.Add(hOther)
+  
+  hOther._SetDocument($hDoc)
+  
+End
+
+Public Sub _RemoveView(hOther As TextEditor)
+  
+  If Not _Views Then Return
+  Try _Views.Remove(_Views.FindByRef(hOther))
+  If _Views.Count = 0 Then _Views = Null
+  
+End
+
+
+Public Sub View_GotFocus()
+  
+  If Object.Parent($hDoc) = Me Then Return
+  
+  _Views = Me.View._Views
+  _RemoveView(Me)
+  _AddView(Me.View)
+  Me.View._Views = Null
+  Object.Attach($hDoc, Me, "Document")
+  
+End
+
+Public Sub _GetViews() As TextEditor[]
+  
+  Dim aView As New TextEditor[]
+  
+  aView.Add(Me)
+  If _Views Then aView.Insert(_Views)
+  Return aView
+  
 End

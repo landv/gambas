@@ -1,0 +1,37 @@
+' Gambas class file
+
+Event _Fake
+
+Private $aStyle As TextEditorStyle[]
+
+Public Sub _new()
+  
+  $aStyle = New TextEditorStyle[32]
+  
+  $aStyle[Highlight.Background] = TextEditorStyle(Color.White)
+  $aStyle[Highlight.Normal] = TextEditorStyle(Color.Black)
+  $aStyle[Highlight.Keyword] = TextEditorStyle(Color.Black, True)
+  $aStyle[Highlight.Datatype] = TextEditorStyle(&HDF6B00&, True)
+  $aStyle[Highlight.Function] = TextEditorStyle(&H3398C3&, True)
+  $aStyle[Highlight.Operator] = TextEditorStyle(Color.Black, True)
+  $aStyle[Highlight.Symbol] = TextEditorStyle(Color.Black)
+  $aStyle[Highlight.Number] = TextEditorStyle(&HFF0000&, True)
+  $aStyle[Highlight.String] = TextEditorStyle(&H7F0000&)
+  $aStyle[Highlight.Comment] = TextEditorStyle(&H888888&, False)
+  $aStyle[Highlight.Help] = TextEditorStyle(&H888888&, True)
+  $aStyle[Highlight.Preprocessor] = TextEditorStyle(&H006E28&, True)
+  $aStyle[Highlight.Breakpoint] = TextEditorStyle(&HFF5F5F&)
+  $aStyle[Highlight.Current] = TextEditorStyle(&H42C9FF&)
+  $aStyle[Highlight.Selection] = TextEditorStyle(&HC3EDFF&)
+  $aStyle[Highlight.Highlight] = TextEditorStyle(&H7FFF00&)
+  $aStyle[Highlight.CurrentLine] = TextEditorStyle(&HE7F3FF&)
+  $aStyle[Highlight.Error] = TextEditorStyle(&HBF0303&, False, True)
+  
+End
+
+
+Public Sub _get((Style) As Integer) As TextEditorStyle
+  
+  Try Return $aStyle[Style]
+  
+End

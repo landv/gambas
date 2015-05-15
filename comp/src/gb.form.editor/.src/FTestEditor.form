@@ -3,15 +3,31 @@
 { Form Form
   MoveScaled(0,0,125,103)
   Arrangement = Arrange.Fill
-  { TextEditor1 TextEditor
-    MoveScaled(10,10,85,55)
-    Font = Font["Gambas"]
-    TabSize = 8
-    ShowPosition = True
-    ShowLimit = True
-    ShowCurrent = True
-    ShowLineNumber = True
-    ShowModified = True
-    ShowIcon = True
+  { Panel1 VSplit
+    MoveScaled(10,10,86,79)
+    { TextEditor1 TextEditor
+      MoveScaled(5,5,70,33)
+      Font = Font["Gambas"]
+      Border = False
+      TabSize = 8
+      ShowPosition = True
+      ShowLimit = True
+      ShowCurrent = True
+      ShowModified = True
+      ShowBraces = True
+      ShowIcon = True
+    }
+    { TextEditor2 TextEditor
+      MoveScaled(3,43,70,33)
+      Font = Font["Gambas"]
+      Border = False
+      TabSize = 8
+      ShowPosition = True
+      ShowLimit = True
+      ShowCurrent = True
+      ShowModified = True
+      ShowBraces = True
+      ShowIcon = True
+    }
   }
 }

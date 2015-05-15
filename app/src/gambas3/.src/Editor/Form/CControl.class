@@ -904,7 +904,7 @@ Public Sub UpdateName()
     Case Like "*Label"
       If Not HasText() Then Try Control.Text = Name
 
-    Case "TextArea", "TextEdit", "Editor"
+    Case "TextArea", "TextEdit", "Editor", "TextEditor"
       If Not HasText() Then Control.Text = Name
       
     Case "TreeView", "ListView", "ColumnView", "IconView"

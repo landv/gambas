@@ -143,12 +143,41 @@ Private Function Current_Read() As TextEditor
 
 End
 
+Private Sub GetAllViews() As TextEditor[]
+
+  Return Me.Current._GetViews()  
+  
+End
+
+Public Sub Refresh(Optional Y As Integer = -1)
+  
+  Dim hView As TextEditor
+  
+  If Y < 0 Then
+    For Each hView In GetAllViews()
+      hView.Refresh
+    Next
+  Else
+    For Each hView In GetAllViews()
+      hView._RefreshLine(Y)
+    Next
+  Endif
+  
+End
+
 Private Sub InsertLine(Y As Integer)
+  
+  Dim hView As TextEditor
   
   Lines.Add("", Y)
   LinesInfo.Add(CLineInfo(), Y)
   LinesInfo[Y].Modified = True
-  Me.Current._RaiseChange
+  
+  For Each hView In GetAllViews()
+    hView._RaiseChange
+  Next
+  
+  Refresh
   
 End
 
@@ -161,15 +190,22 @@ End
 
 Public Sub SetLine(Y As Integer, sLine As String)
 
+  Dim hView As TextEditor
+  
   If sLine = Lines[Y] Then Return
   Lines[Y] = sLine
   With SetInfo(Y)
     .Modified = True
     .ClearHighlight()
   End With
-  Me.Current._ClearCacheWidth(Y)
-  Me.Current._RaiseChange
-
+  
+  For Each hView In GetAllViews()
+    hView._ClearCacheWidth(Y)
+    hView._RaiseChange
+  Next
+  
+  Refresh(Y)
+  
 End
 
 Public Sub Insert(sText As String, X As Integer, Y As Integer)
@@ -179,6 +215,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Dim aText As String[]
   Dim I As Integer
   Dim sLine As String
+  Dim hView As TextEditor
   
   While Y > Lines.Count
     InsertLine(Lines.Count)
@@ -209,6 +246,12 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   If Not $bNoUndo Then 
     AddUndo(CCommand(Me, CCommand.INSERT, sText))
   Endif
+  
+  For Each hView In GetAllViews()
+    hView._AfterInsert(Y, YAfter)
+  Next
+  
+  
   
 End
 
@@ -372,6 +415,7 @@ End
 Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
 
   Dim sText As String
+  Dim hView As TextEditor
   
   sText = GetText(X1, Y1, X2, Y2)
   
@@ -398,6 +442,8 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
     
     Lines.Remove(Y1 + 1, Y2 - Y1)
     LinesInfo.Remove(Y1 + 1, Y2 - Y1)
+    
+    Refresh
   
   Endif
   
@@ -407,6 +453,10 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   If Not $bNoUndo Then 
     AddUndo(CCommand(Me, CCommand.DELETE, sText))
   Endif
+  
+  For Each hView In GetAllViews()
+    hView._AfterRemove(Y1, Y2)
+  Next
 
 End
 
@@ -704,6 +754,7 @@ Public Sub HighlightFrom(Y As Integer)
         $hHighlight.Alternate = .Alternate
       End With
     Endif
+    $hHighlight.Limit = False
     
     With SetInfo(Y)
   
@@ -711,6 +762,8 @@ Public Sub HighlightFrom(Y As Integer)
       .Colors = aHighlight
       Highlighter._Highlight = aHighlight
       Highlighter.TextAfter = ""
+      
+      'Debug "Before: State = "; .State;; "Tag = "; .Tag;; "Alternate = "; .Alternate;; "Limit = "; .Limit
       
       $hHighlight.Run(Lines[Y])
       
@@ -726,6 +779,7 @@ Public Sub HighlightFrom(Y As Integer)
         .State = $hHighlight.State
         .Tag = $hHighlight.Tag
         .Limit = $hHighlight.Limit
+        'Debug "Update: State = "; .State;; "Tag = "; .Tag;; "Alternate = "; .Alternate;; "Limit = "; .Limit
         If Y < Lines.Max Then SetInfo(Y + 1).ClearHighlight()
       Endif
       
@@ -737,7 +791,7 @@ Public Sub HighlightFrom(Y As Integer)
 
   End()
 
-  Me.Current.Refresh
+  Refresh
   
   $bHighlighting = False
     

@@ -4,7 +4,15 @@ C
 _Properties
 C
 s
-*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowIcon
+*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon
+_DrawWith
+C
+s
+-
+_DefaultEvent
+C
+s
+Change
 :Cursor
 :
 
@@ -113,6 +121,18 @@ Bookmarks
 p
 Integer[]
 
+Styles
+r
+_TextEditor_Styles
+
+CursorPos
+r
+Point
+
+View
+p
+TextEditor
+
 ShowLimit
 p
 b
@@ -137,10 +157,22 @@ ShowIcon
 p
 b
 
+ShowBraces
+p
+b
+
+_Views
+v
+TextEditor[]
+
 _new
 m
 
 
+_SetDocument
+m
+
+(hDoc)CDocument;
 Load
 m
 
@@ -205,6 +237,14 @@ Insert
 m
 
 (Text)s
+FindPreviousLimit
+m
+i
+(Y)i
+FindNextLimit
+m
+i
+(Y)i
 View_MouseDown
 m
 
@@ -229,6 +269,14 @@ TimerScroll_Timer
 m
 
 
+_AfterInsert
+m
+
+(Y1)i(Y2)i
+_AfterRemove
+m
+
+(Y1)i(Y2)i
 _ClearCacheWidth
 m
 
@@ -260,4 +308,24 @@ m
 View_Arrange
 m
 
+
+Select
+m
+
+(Column)i(Line)i(Column2)i(Line2)i
+_RemoveView
+m
+
+(hOther)TextEditor;
+_AddView
+m
+
+(hOther)TextEditor;
+View_GotFocus
+m
+
+
+_GetViews
+m
+TextEditor[]
 

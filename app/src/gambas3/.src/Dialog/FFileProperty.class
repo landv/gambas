@@ -115,6 +115,7 @@ Public Sub panVersion_Arrange()
   Endif
   sDiff = Trim(sDiff)
   If sDiff Then
+    edtChange.Highlight = "Diff"
     edtChange.Text = sDiff
     edtChange.Show
     lblVersioning.Hide

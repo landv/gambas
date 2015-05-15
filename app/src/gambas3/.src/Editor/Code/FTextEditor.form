@@ -334,12 +334,14 @@
     { Separator3 Separator
       MoveScaled(67,0,1,4)
     }
-    { btnProc ToolButton
+    { btnProc MenuButton
       MoveScaled(69,0,32,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
       Picture = Picture["icon:/small/bottom"]
+      Arrow = False
+      Border = False
     }
     { btnEndOfLine MenuButton
       MoveScaled(100,0,11,4)

@@ -1,0 +1,21 @@
+' Gambas class file
+
+Export
+
+Public Sub ReadConfig()
+
+  Project.SetEditorFont(Me)
+
+  'MTheme.InitEditor(Me)
+
+  Me.ShowLimit = Settings["/Editor/ProcedureLimit", True]
+  Me.ShowModified = Settings["/Editor/ShowChange", True]
+  Me.ShowLineNumber = Settings["/Editor/ShowLineNumbers", False]
+  Me.ShowCurrent = Settings["/Editor/ShowCurrent", True]
+  'Me.Flags[Editor.ShowDots] = Settings["/Editor/ShowDots", True]
+  'Me.Flags[Editor.NoFolding] = Not Settings["/Editor/ShowFolding", True]
+  Me.ShowBraces = True
+  
+  'Me.KeywordsUseUpperCase = Settings["/Editor/KeywordsUseUpperCase"]
+  
+End
