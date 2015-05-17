@@ -4,14 +4,16 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowCursor=True"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
+Public Const _Similar As String = "TextArea"
 
 Event Cursor
 Event Scroll
 Event Change
 Event Margin
+Event KeyPress
 
 Property Text As String
 Property Read Count As Integer
@@ -37,8 +39,13 @@ Property EndOfLine As Integer
 Property Breakpoints As Integer[]
 Property Bookmarks As Integer[]
 Property Read Styles As _TextEditor_Styles
-Property Read CursorPos As Point
 Property View As TextEditor
+Property Read Keywords As String[]
+
+Property ScrollX As Integer
+Property ScrollY As Integer
+Property Read ScrollWidth, ScrollW As Integer
+Property Read ScrollHeight, ScrollH As Integer
 
 Property ShowLimit As Boolean
 Property ShowCurrent As Boolean
@@ -47,6 +54,7 @@ Property ShowModified As Boolean
 Property ShowPosition As Boolean
 Property ShowIcon As Boolean
 Property ShowBraces As Boolean
+Property ShowCursor As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
@@ -54,6 +62,7 @@ Static Private $cShortcut As Collection
 
 Private $hPanel As Panel
 Private $hView As ScrollArea
+Private $hLabelFrame As Panel
 Private $hLabel As Label
 
 Private $hDoc As CDocument
@@ -77,6 +86,7 @@ Private $X As Integer
 Private $Y As Integer
 Private $XX As Integer
 Private $bShowCursor As Boolean
+Private $bHideCursor As Boolean
 Private $hTimerCursor As Timer
 Private $hTimerChange As Timer
 
@@ -93,7 +103,8 @@ Private $XMO As Integer
 Private $YMO As Integer
 
 Private $bReadOnly As Boolean
-Private $bInsertMode As Boolean
+Private $bOverwrite As Boolean
+Private $bTerminal As Boolean
 
 Private $iBackground As Integer
 Private $iForeground As Integer
@@ -125,8 +136,11 @@ Public Sub _new()
     $cShortcut = [
       "CTRL+A": "SelectAll",
       "CTRL+C": "Copy",
+      "CTRL+Ins": "Copy",
       "CTRL+V": "Paste",
+      "SHIFT+Ins": "Paste",
       "CTRL+X": "Cut",
+      "SHIFT+Del": "Cut",
       "CTRL+Y": "Redo",
       "CTRL+Z": "Undo"]
   Endif
@@ -138,6 +152,8 @@ Public Sub _new()
   $hView = New ScrollArea($hPanel) As "View"
   $hView.Border = False
   $hView.Focus = True
+  $hView.Tracking = True
+  $hView.Mouse = Mouse.Text
   
   Me.Proxy = $hView
   
@@ -354,6 +370,8 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     
     If (X2 - SX) > $hView.ScrollX Then
       
+      If bAlt Then Paint.FillRect(X, Y, X2 - X, H, &HE0E0E0&)
+      
       sStr = String.Mid$(sText, P + 1, iLen)
       
       If InStr(sStr, "\t") Then
@@ -472,8 +490,8 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   ' Cursor
   
-  If Row = $Y And If $bShowCursor And If Me.HasFocus Then
-    If $bInsertMode Then
+  If Row = $Y And If $bShowCursor And If Me.HasFocus And If Not $bHideCursor Then
+    If $bOverwrite Then
       sCar = String.Mid$($hDoc.Lines[$Y], $X + 1, 1)
       If sCar = "\t" Then
         WC = $iTabWidth
@@ -511,7 +529,14 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     Paint.FillRect(X, Y, $MW, Height, $iBackground)
     
     If $bShowModified Then
-      If hInfo.Modified Then Paint.FillRect(X + $MW - 4, Y, 4, Height, Color.Merge($iBackground, Color.Red, 0.2))
+      If hInfo.Modified Or If hInfo.Saved Then
+        If hInfo.Modified Then
+          iCol = Color.Merge($iBackground, Color.Red, 0.2)
+        Else If hInfo.Saved Then
+          iCol = Color.Merge($iBackground, Color.Green, 0.2)
+        Endif
+        Paint.FillRect(X + $MW - 4, Y, 4, Height, iCol)
+      Endif
     Endif
     
     If YL < 0 Then
@@ -638,6 +663,10 @@ Public Sub View_KeyPress()
   Dim Y As Integer
   Dim sAction As String
   Dim sTab As String
+  Dim bCancel As Boolean
+
+  bCancel = Raise KeyPress
+  If bCancel Then Goto STOP_EVENT
 
   Try sAction = $cShortcut[Shortcut.FromKey()]
   If sAction Then
@@ -649,10 +678,10 @@ Public Sub View_KeyPress()
         Paste()
       Case "Undo"
         If $bReadOnly Then Goto STOP_EVENT
-        $hDoc.Undo()
+        Undo()
       Case "Redo"
         If $bReadOnly Then Goto STOP_EVENT
-        $hDoc.Redo()
+        Redo()
       Case "Cut"
         If $bReadOnly Then Goto STOP_EVENT
         If Not HasSelection() Then
@@ -754,7 +783,7 @@ Public Sub View_KeyPress()
       
     Case Key.Enter, Key.Return
       If $bReadOnly Then Goto STOP_EVENT
-      sTab = GetIndentText($Y)
+      If Not $bOverwrite Then sTab = GetIndentText($Y)
       Insert("\n" & sTab)
       
     Case Key.BackSpace
@@ -774,24 +803,24 @@ Public Sub View_KeyPress()
         If $bReadOnly Then Goto STOP_EVENT
         Insert("\t")
       Else
-        Indent(Key.Shift)
+        DoIndent(Key.Shift)
       Endif
       
     Case Key.BackTab
-      Indent(True)
+      DoIndent(True)
       
     Case Key.Insert
-      Me.Overwrite = Not $bInsertMode
+      Me.Overwrite = Not $bOverwrite
     
   End Select
   
 STOP_EVENT:
-  
+
   Stop Event
   
 End
 
-Private Sub HideSelection()
+Public Sub HideSelection()
 
   If HasSelection() Then $hView.Refresh
   $SX = $X
@@ -847,6 +876,14 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   Endif
   
 End
+
+Public Sub GotoCenter(NX As Integer, NY As Integer)
+
+  Goto(NX, NY)
+  $hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y) + $hView.ClientW \ 2)
+  
+End
+
 
 Private Sub PosToColumn(Y As Integer, PX As Integer) As Integer
 
@@ -909,9 +946,13 @@ Public Sub View_MouseDown()
   Dim Y As Integer
   Dim X As Integer
   
+  If Not Mouse.Left Then Return
+  
   Y = PosToLine(Mouse.Y)
-  X = PosToColumn(Y, Mouse.X)
-  Goto(X, Y)
+  If Y >= 0 Then
+    X = PosToColumn(Y, Mouse.X)
+    Goto(X, Y)
+  Endif
   
   $bMouseDown = True
 
@@ -947,6 +988,12 @@ Public Sub View_MouseMove()
   
   Dim Y As Integer
   Dim X As Integer
+
+  If (Mouse.ScreenX - $hView.ScreenX) < $MW Then
+    $hView.Mouse = Mouse.Default
+  Else
+    $hView.Mouse = Mouse.Text
+  Endif
 
   If $bMouseDown Then
   
@@ -1027,14 +1074,38 @@ End
 
 Public Sub Insert(Text As String)
   
+  Dim aText As String[]
+  Dim I As Integer
+  
   DeleteSelection
-
   If Not Text Then Return
 
   NormalizeColumn
   
   $hDoc.Begin
-  $hDoc.Insert(Text, $X, $Y)
+  
+  If $bOverwrite Then
+    
+    aText = Split(Text, "\n")
+    
+    For I = 0 To aText.Max - 1
+      Remove($X, $Y, $X + String.Len(aText[I]), $Y)
+      If $Y = $hDoc.Max Then 
+        $hDoc.Insert(aText[I] & "\n", $X, $Y)
+      Else
+        $hDoc.Insert(aText[I], $X, $Y)
+      Endif
+      Goto(0, $Y + 1)
+    Next
+    
+    Remove($X, $Y, $X + String.Len(aText[aText.Max]), $Y)
+    $hDoc.Insert(aText[aText.Max], $X, $Y)
+    
+  Else
+    
+    $hDoc.Insert(Text, $X, $Y)
+    
+  Endif
 
   Goto($hDoc.XAfter, $hDoc.YAfter)
   $hDoc.End
@@ -1301,6 +1372,7 @@ Private Sub ReadOnly_Write(Value As Boolean)
 
   $bReadOnly = Value
   $hTimerCursor.Enabled = Not Value
+  $hView.Mouse = If($bReadOnly, Mouse.Default, Mouse.Text)
 
 End
 
@@ -1362,7 +1434,7 @@ Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As I
 
 End
 
-Private Sub Indent(bBack As Boolean)
+Private Sub DoIndent(bBack As Boolean)
 
   Dim X1, Y1, X2, Y2 As Integer
   Dim Y As Integer
@@ -1638,7 +1710,7 @@ Public Sub _get(({Line}) As Integer) As _TextEditor_Line
   Dim hLine As _TextEditor_Line 
   
   hLine = New _TextEditor_Line
-  Object.Attach(hLine, $hDoc, "Line")
+  Object.Attach(hLine, Me, "Line")
   hLine._Line = {Line}
   Return hLine
   
@@ -1683,9 +1755,10 @@ Private Sub UpdatePosition()
   Dim sText As String
   
   If Not $hLabel Or If Not $hLabel.Visible Then Return
-  sText = " " & CStr($X + 1) & ":" & CStr($Y + 1) & If($bInsertMode, "  " & ("Overwrite"), "") & " "
+  sText = " " & CStr($X + 1) & ":" & CStr($Y + 1) & If($bOverwrite, "  " & ("Overwrite"), "") & " "
   $hLabel.Text = sText
-  $hLabel.Move($hView.ClientW - $hLabel.W - 4, 5)
+  $hLabelFrame.Move($hView.ClientW - $hLabel.W - 6, 5, $hLabel.W + 2, $hLabel.H + 2)
+  $hLabel.Move(0, 0, $hLabelFrame.ClientW, $hLabelFrame.ClientH)
 
 End
 
@@ -1694,11 +1767,12 @@ Private Sub ShowPosition_Write(Value As Boolean)
   $bShowPosition = Value
   If $bShowPosition Then
     If Not $hLabel Then
-      $hLabel = New Label(Me)
-      $hLabel.Border = Border.Plain
-      $hLabel.Background = Color.Background
+      $hLabelFrame = New Panel(Me)
+      $hLabelFrame.Border = Border.Plain
+      $hLabelFrame.Background = Color.Background
+      $hLabelFrame.Ignore = True
+      $hLabel = New Label($hLabelFrame) ' TODO: NULL + gb.gtk => crash!
       $hLabel.AutoResize = True
-      $hLabel.Ignore = True
       '$hLabel.Padding = 0
       $hLabel.Font = Me.Parent.Font
       $hLabel.Show
@@ -1718,13 +1792,13 @@ End
 
 Private Function Overwrite_Read() As Boolean
 
-  Return $bInsertMode
+  Return $bOverwrite
 
 End
 
 Private Sub Overwrite_Write(Value As Boolean)
 
-  $bInsertMode = Value
+  $bOverwrite = Value
   UpdatePosition
   _RefreshLine($Y)
 
@@ -1865,12 +1939,6 @@ Public Sub FindNextLimit(Y As Integer) As Integer
   
 End
 
-Private Function CursorPos_Read() As Point
-
-  Return Point(LineWidth($Y, $X) - $hView.ScrollX, $hRows._GetRowY($Y) - $hView.ScrollY)
-
-End
-
 Private Function View_Read() As TextEditor
 
   Return Object.Parent($hDoc)
@@ -1881,8 +1949,16 @@ Private Sub View_Write(Value As TextEditor)
 
   Me.View._RemoveView(Me)
   Value._AddView(Me)
+  GotoCenter(Value.Column, Value.Line)
 
 End
+
+Public Sub _GetDocument() As CDocument
+  
+  Return $hDoc
+  
+End
+
 
 Public Sub _SetDocument(hDoc As CDocument)
 
@@ -1936,4 +2012,491 @@ Public Sub _GetViews() As TextEditor[]
   If _Views Then aView.Insert(_Views)
   Return aView
   
+End
+
+Public Sub ToPosX(Optional Column As Integer = $X, ({Line}) As Integer = $Y) As Integer
+  
+  Return LineWidth({Line}, Column) - $hView.ScrollX + $MW
+  
+End
+
+Public Sub ToPosY(Optional ({Line}) As Integer = $Y) As Integer
+  
+  Return $hRows._GetRowY({Line}) - $hView.ScrollY
+  
+End
+
+
+Public Sub ToColumn(X As Integer, Y As Integer) As Integer
+
+  Dim L As Integer
+  
+  L = PosToLine(Y)
+  If L < 0 Then Return L
+  Return PosToColumn(L, X)
+  
+End
+
+Public Sub ToLine(Y As Integer) As Integer
+  
+  Return PosToLine(Y)
+  
+End
+
+Public Sub Indent()
+  
+  DoIndent(False)
+  
+End
+
+Public Sub Unindent()
+  
+  DoIndent(True)
+  
+End
+
+Private Function Keywords_Read() As String[]
+
+  Return $hDoc.Keywords
+
+End
+
+Public Sub Undo()
+  
+  $hDoc.Undo
+  
+End
+
+Public Sub Redo()
+  
+  $hDoc.Redo
+  
+End
+
+Public Sub UpperCase()
+  
+  Dim X As Integer
+  Dim Y As Integer
+  
+  If Not HasSelection() Then Return
+  
+  X = $SX
+  Y = $SY
+  Insert(String.UCase($hDoc.GetText($X, $Y, $SX, $SY)))
+  Goto($SX, $SY)
+  Goto(X, Y, True)
+  
+End
+
+Public Sub LowerCase()
+  
+  Dim X As Integer
+  Dim Y As Integer
+  
+  If Not HasSelection() Then Return
+  
+  X = $SX
+  Y = $SY
+  Insert(String.LCase($hDoc.GetText($X, $Y, $SX, $SY)))
+  Goto($SX, $SY)
+  Goto(X, Y, True)
+  
+End
+
+Private Sub PrintNewLine()
+
+  Dim X As Integer
+
+  X = $X
+  Insert("\n")
+  If $bTerminal Then Goto(X, $Y)
+
+End
+
+' static void print_text(void *_object, const char *str, int lstr, bool esc = false)
+' {
+'   QString s = QString::fromUtf8(str, lstr);
+'   int line, col;
+'   uint i, len;
+'   
+'   //fprintf(stderr, "-> %.*s\n", lstr, str);
+' 
+'   WIDGET->getCursor(&line, &col);
+'   /*if (col == 0)
+'   {
+'     DOC->remove(line, 0, line, DOC->lineLength(line));
+'     WIDGET->cursorGoto(line, 0, false);
+'   }*/
+' 
+' //   if (col < DOC->lineLength(line))
+' //   {
+' //     end = col + s.length();
+' //     if (end > DOC->lineLength(line))
+' //       end = DOC->lineLength(line);
+' //     DOC->remove(line, col, line, end);
+' //   }
+'   
+'   if (!esc)
+'   {
+'     i = 0;
+'     for (;;)
+'     {
+'       if (col == MAX_CONSOLE_WIDTH)
+'       {
+'         print_newline(THIS);
+'         col = 0;
+'       }
+'       len = s.length() - i;
+'       if ((col + len) >= MAX_CONSOLE_WIDTH)
+'         len = MAX_CONSOLE_WIDTH - col;
+'       DOC->remove(WIDGET->getLine(), col, WIDGET->getLine(), col + len);
+'       WIDGET->insert(s.mid(i, len));
+'       i += len;  
+'       if (i >= (uint)s.length())
+'         break;
+'       col += len;
+'     }
+'   }
+'   else
+'   {
+'     if (col >= MAX_CONSOLE_WIDTH)
+'       print_newline(THIS);
+'     DOC->remove(WIDGET->getLine(), col, WIDGET->getLine(), col + s.length());
+'     WIDGET->insert(s);
+'   }
+' 
+'   //qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+'   //BREAKPOINT();
+' }
+' 
+' static int ansi_read_integer(const char *str, int len, int def, int *pos)
+' {
+'   int value = 0;
+'   int n = 0;
+'   uchar c;
+' 
+'   str += *pos;
+'   len -= *pos;
+' 
+'   while (len > 0)
+'   {
+'     c = str[n];
+'     if (c < '0' || c > '9')
+'       break;
+'     value = value * 10 + c - '0';
+'     len--;
+'     n++;
+'     if (n > 6)
+'     {
+'       value = -1;
+'       break;
+'     }
+'   }
+' 
+'   if (n == 0)
+'     value = def;
+' 
+'   while (len > 0)
+'   {
+'     c = str[n];
+'     len--;
+'     n++;
+'     if (c == ';' || c < '0' || c > '9')
+'       break;
+'   }
+' 
+'   *pos += n;
+'   return value;
+' }
+' 
+
+Private Sub PrintAnsi(Text As String, I As Integer) As Integer
+
+  Dim C As String
+  Dim L As Integer
+  
+  If I > Len(Text) Then Return 0
+  
+  C = Mid$(Text, I, 1)
+  If InStr("[]()", C) Then
+    For L = I + 1 To Len(Text)
+      If IsLetter(Mid$(Text, L, 1)) Then Break
+    Next
+    L -= I
+  Endif
+
+End
+
+' static int ansi_process(void *_object, const char *str, int len)
+' {
+'   uchar c;
+'   int n, m, l, pos;
+'   bool print;
+' 
+'   if (len == 0)
+'     return 0;
+' 
+'   c = *str;
+'   if (c == '[' || c == ']' || c == '(' || c == ')')
+'   {
+'     for (l = 0; l < len; l++)
+'     {
+'       c = str[l];
+'       if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+'         break;
+'     }
+'   }
+'   else
+'     l = 0;
+' 
+'   if (l >= len)
+'     return 0;
+' 
+'   print = false;
+' 
+'   if (*str == '[')
+'   {
+'     pos = 1;
+' 
+'     switch(str[l])
+'     {
+'       case 'A':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         if (n > 0) WIDGET->cursorRelGoto(-n, 0, false);
+'         break;
+' 
+'       case 'B':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         if (n > 0) WIDGET->cursorRelGoto(n, 0, false);
+'         break;
+' 
+'       case 'C':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         if (n > 0) WIDGET->cursorRelGoto(0, n, false);
+'         break;
+' 
+'       case 'D':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         if (n > 0) WIDGET->cursorRelGoto(0, -n, false);
+'         break;
+' 
+'       case 'G':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         if (n > 0) WIDGET->cursorGoto(WIDGET->getLine(), n - 1, false);
+'         break;
+' 
+'       case 'd':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         if (n > 0) WIDGET->cursorGoto(n - 1, WIDGET->getColumn(), false);
+'         break;
+' 
+'       case 'H': case 'f':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         m = ansi_read_integer(str, l, 1, &pos);
+' 
+'         while (DOC->numLines() < n)
+'           DOC->insertLine(DOC->numLines());
+' 
+'         WIDGET->cursorGoto(n - 1, m - 1, false);
+'         THIS->terminal = TRUE;
+'         //qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+'         break;
+' 
+'       case 'J':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         switch(n)
+'         {
+'           case 0: WIDGET->clearDocument(false, true); break;
+'           case 1: WIDGET->clearDocument(true, false); break;
+'           case 2: WIDGET->clearDocument(true, true); break;
+'         }
+' 
+'       case 'K':
+'         n = ansi_read_integer(str, l, 0, &pos);
+'         switch (n)
+'         {
+'           case 0: WIDGET->clearLine(false, true); break;
+'           case 1: WIDGET->clearLine(true, false); break;
+'           case 2: WIDGET->clearLine(true, true); break;
+'         }
+'         break;
+' 
+'       case 's':
+'         WIDGET->saveCursor();
+'         break;
+' 
+'       case 'u':
+'         WIDGET->restoreCursor();
+'         break;
+' 
+'       case 'X':
+'         n = ansi_read_integer(str, l, 1, &pos);
+'         WIDGET->clearAfter(n);
+'         break;
+' 
+'       default:
+'         print = FALSE;
+'     }
+'   }
+' 
+'   if (print)
+'   {
+'     fprintf(stderr, "ESC ");
+'     for (n = 0; n <= l; n++)
+'     {
+'       uchar c = str[n];
+' 
+'       if (c < 32)
+'         fprintf(stderr, "\\x%02X", c);
+'       else
+'         fputc(c, stderr);
+'     }
+'     fputc('\n', stderr);
+' 
+'     //qApp->processEvents(QEventLoop::ExcludeUserInputEvents, 0);
+'     //BREAKPOINT();
+'   }
+' 
+'   return l;
+' }
+' 
+
+Public Sub Print(Text As String)
+  
+  Dim I, J, C As Integer
+  Dim bSaveOverwrite As Boolean
+  
+  $hDoc.Begin
+  bSaveOverwrite = $bOverwrite
+  $bOverwrite = True
+  
+  J = 1
+  For I = 1 To Len(Text)
+    
+    C = Asc(Text, I)
+    
+    If C < 32 Then
+      
+      If I > J Then Insert(Mid$(Text, J, I - J))
+      
+      J = I + 1
+      
+      If C = 7 Then
+        Insert("\t")
+      Else If C = 13 Then
+        Goto(0, $Y)
+      Else If C = 10 Then
+        PrintNewLine 
+      Else If C = 12 Then
+        Clear
+      Else If C = 7 Then
+        ' Flash
+      Else If C = 8 Then
+        If $X > 0 Then Goto($X - 1, $Y)
+      ' Else If C = 27 Then
+      '   Inc I
+      '   I += PrintAnsi(Text, I)
+      '   Dec I
+      '   J = I
+      Else
+        Insert("^" & Chr$(64 + C))
+      Endif
+      
+    Endif
+    
+  Next
+
+  $bOverwrite = bSaveOverwrite  
+  $hDoc.End
+  
+End
+
+
+'       else if (c == 27)
+'       {
+'         i++;
+'         i += ansi_process(THIS, &str[i], len - i);
+'         j = i + 1;
+'         i--;
+'       }
+'       else
+'       {
+'         QString tmp;
+'         tmp.sprintf("^%c", c + 64);
+'         print_text(THIS, tmp, 2, true);
+'       }
+'     }
+'   }
+' 
+'   if (i > j)
+'     print_text(THIS, &str[j], i - j);
+' 
+'   DOC->end();
+'     
+' END_METHOD
+' 
+
+Public Sub FindNextString((String) As String, Start As Integer) As Integer
+  
+  Do
+    If Start >= $hDoc.Count Then Return -1
+    If InStr($hDoc.Lines[Start], String) Then Return Start
+    Inc Start
+  Loop
+  
+End
+
+Private Function ScrollX_Read() As Integer
+
+  Return $hView.ScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $hView.ScrollX = Value
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $hView.ScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $hView.ScrollY = Value
+
+End
+
+Private Function ScrollWidth_Read() As Integer
+
+  Return $hView.ScrollWidth
+
+End
+
+Private Function ScrollHeight_Read() As Integer
+
+  Return $hView.ScrollHeight
+
+End
+
+Public Sub Scroll(X As Integer, Y As Integer)
+  
+  $hView.Scroll(X, Y)
+  
+End
+
+Private Function ShowCursor_Read() As Boolean
+
+  Return Not $bHideCursor
+
+End
+
+Private Sub ShowCursor_Write(Value As Boolean)
+
+  $bHideCursor = Not Value
+  $hView.Refresh
+
 End

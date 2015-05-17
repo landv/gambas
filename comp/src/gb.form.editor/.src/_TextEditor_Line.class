@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Export
+
 Event _Fake
 
 Public _Line As Integer
@@ -7,13 +9,21 @@ Public _Line As Integer
 Property Text As String
 Property Read Length As Integer
 Property Read Limit As Boolean
+Property Read InitialState As _TextEditor_State
 
 Property Breakpoint As Boolean
 Property Bookmark As Boolean
 
+Private Sub GetView() As TextEditor
+  
+  Return Object.Parent(Me)
+  
+End
+
+
 Private Sub GetDoc() As CDocument
 
-  Return Object.Parent(Me)
+  Return GetView()._GetDocument()
 
 End
 
@@ -31,8 +41,12 @@ End
 
 Private Sub Text_Write(Value As String)
 
-  GetDoc().SetLine(_Line, Value)
-  Refresh
+  With GetView()
+    .Begin
+    .Remove(0, _Line, String.Len(._GetDocument().Lines[_Line]), _Line)
+    .Insert(Value)
+    .End
+  End With
 
 End
 
@@ -73,4 +87,52 @@ Private Sub Bookmark_Write(Value As Boolean)
   GetDoc().SetInfo(_Line).Bookmark = Value
   Refresh
 
+End
+
+Private Function InitialState_Read() As _TextEditor_State
+
+  Dim hState As _TextEditor_State
+
+  hState = New _TextEditor_State
+  If _Line > 0 Then hState._State = GetDoc().Info(_Line - 1)
+  Return hState
+
+End
+
+Public Sub Purge(Optional Comment As Boolean, (String) As Boolean, Replace As String = " ") As String
+
+  Dim hDoc As CDocument = GetDoc()
+  Dim aColor As Byte[]
+  Dim sPurge As String
+  Dim I As Integer
+  Dim iState As Byte
+  Dim sText As String
+  Dim X As Integer
+  Dim bReplace As Boolean
+  
+  sText = hDoc.Lines[_Line]
+  aColor = GetDoc().Info(_Line).Colors
+  If Not aColor Then Return sText
+  
+  X = 1
+  For I = 0 To aColor.Max Step 2
+    iState = aColor[I]
+    bReplace = False
+    If Not Comment Then
+      If iState = Highlight.Comment Or If iState = Highlight.Help Then
+        bReplace = True
+      Endif
+    Else If Not String And If iState = Highlight.String Then
+      bReplace = True
+    Endif
+    If bReplace Then
+      sPurge &= String$(aColor[I + 1], Replace)
+    Else
+      sPurge &= String.Mid$(sText, X, aColor[I + 1])
+    Endif
+    X += aColor[I + 1]
+  Next
+  
+  Return sPurge
+  
 End

@@ -11,6 +11,7 @@ Public SY As Integer
 Public XA As Integer
 Public YA As Integer
 Public Text As String
+Public Overwrite As Boolean
 
 ' /**---- GCommand -----------------------------------------------------------*/
 ' 
@@ -33,7 +34,7 @@ Public Text As String
 ' };
 ' 
 
-Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String)
+Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, bOverwrite As Boolean)
   
   With hDoc.Current
     Type = iType
@@ -44,16 +45,21 @@ Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String)
     XA = hDoc.XAfter
     YA = hDoc.YAfter
     Text = sText
+    Overwrite = bOverwrite
   End With
-  
-  'Print "Command: "; ["BEGIN", "END", "INSERT", "DELETE"][iType];;
-  'Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
   
 End
 
-Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String) As CCommand
+Public Sub Print()
   
-  Return New CCommand(hDoc, iType, sText)
+  Print ["BEGIN", "END", "INSERT", "DELETE"][Type];;
+  Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
+  
+End
+
+Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, bOverwrite As Boolean) As CCommand
+  
+  Return New CCommand(hDoc, iType, sText, bOverwrite)
 
 End
 

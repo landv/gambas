@@ -281,7 +281,7 @@ Public Sub Run(sText As String)
     Me.Limit = LTrim(sText) Begins "function "
   Endif
   
-  Highlight.State = iState
-  Highlight.Tag = iTag
+  Me.State = iState
+  Me.Tag = iTag
   
 End

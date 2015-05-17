@@ -93,9 +93,16 @@ Public Sub Save(sPath As String)
   hFile.EndOfLine = $iEndOfLine
   For I = 0 To Lines.Max - 1
     Print #hFile, Lines[I]
+    If Info(I).Modified Then 
+      With SetInfo(I)
+        .Modified = False
+        .Saved = True
+      End With
+    Endif
   Next
   Print #hFile, Lines[Lines.Max];
   Close #hFile
+  Refresh
   
 End
 
@@ -114,11 +121,14 @@ End
 
 Private Sub AddUndo(hCmd As CCommand)
 
+  If $bNoUndo Then Return
+  
   If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.Begin Then
     $aUndo.Pop
   Else
     $aUndo.Add(hCmd)
   Endif
+  
   $aRedo.Clear
 
 End
@@ -217,6 +227,8 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Dim sLine As String
   Dim hView As TextEditor
   
+  If Not sText Then Return
+  
   While Y > Lines.Count
     InsertLine(Lines.Count)
   Wend
@@ -243,15 +255,11 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   XAfter = String.Len(sLine)
   SetLine(Y, sLine & sRest)
   
-  If Not $bNoUndo Then 
-    AddUndo(CCommand(Me, CCommand.INSERT, sText))
-  Endif
+  If Not $bNoUndo Then AddUndo(CCommand(Me, CCommand.INSERT, sText))
   
   For Each hView In GetAllViews()
     hView._AfterInsert(Y, YAfter)
   Next
-  
-  
   
 End
 
@@ -586,6 +594,7 @@ End
 Public Sub GetText(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As String
   
   Dim sText As String
+  
   If Y1 > Y2 Or If Y1 = Y2 And X1 > X2 Then
     Swap X1, X2
     Swap Y1, Y2
@@ -606,10 +615,14 @@ Public Sub Undo()
   
   Dim hCmd As CCommand
   Dim L As Integer
+  Dim bOverwrite As Boolean
   
   If $aUndo.Count = 0 Then Return
   
   $bNoUndo = True
+  
+  bOverwrite = Me.Current.Overwrite
+  Me.Current.Overwrite = False
   
   Repeat
   
@@ -647,6 +660,8 @@ Public Sub Undo()
     
   Until L = 0
   
+  Me.Current.Overwrite = bOverwrite
+  
   $bNoUndo = False
   
 End
@@ -655,10 +670,14 @@ Public Sub Redo()
   
   Dim hCmd As CCommand
   Dim L As Integer
+  Dim bOverwrite As Boolean
   
   If $aRedo.Count = 0 Then Return
   
   $bNoUndo = True
+  
+  bOverwrite = Me.Current.Overwrite
+  Me.Current.Overwrite = False
   
   Repeat
   
@@ -699,6 +718,8 @@ Public Sub Redo()
     
   Until L = 0
   
+  Me.Current.Overwrite = bOverwrite
+  
   $bNoUndo = False
   
 End
@@ -723,6 +744,7 @@ Private Sub Highlight_Write(Value As String)
     For Y = 0 To LinesInfo.Max
       If LinesInfo[Y] Then LinesInfo[Y].ClearHighlight()
     Next
+    HighlightFrom(0)
   Endif
 
 End
@@ -771,7 +793,7 @@ Public Sub HighlightFrom(Y As Integer)
         Me.Current.Goto(0, Y)
         Me.Current.Remove(0, Y, String.Len(Lines[Y]), Y)
         Me.Current.Insert($hHighlight.TextAfter)
-        .Highlight = aHighlight
+        .Colors = aHighlight
       Endif
   
       If .Alternate <> $hHighlight.Alternate Or If .State <> $hHighlight.State Or If .Tag <> $hHighlight.Tag Or If .Limit <> $hHighlight.Limit Then

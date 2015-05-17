@@ -29,15 +29,15 @@ Private Sub PushHighlightState()
   
   If Not $aStateStack Then $aStateStack = New Integer[]
   
-  $aStateStack.Push(Highlight.State)
-  $aStateStack.Push(Highlight.Tag)
+  $aStateStack.Push(Me.State)
+  $aStateStack.Push(Me.Tag)
   
 End
 
 Private Sub PopHighlightState()
 
-  Highlight.Tag = $aStateStack.Pop()
-  Highlight.State = $aStateStack.Pop()
+  Me.Tag = $aStateStack.Pop()
+  Me.State = $aStateStack.Pop()
 
 End
 
@@ -53,8 +53,8 @@ Private Sub AnalyzeCode(sText As String) As String
   
   If Not sText Then Return
   
-  iState = Highlight.State
-  iTag = Highlight.Tag
+  iState = Me.State
+  iTag = Me.Tag
   
   Highlight.Analyze(sText, True)
   
@@ -76,10 +76,10 @@ Private Sub AnalyzeCode(sText As String) As String
     Me.AddState(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
   Endif
   
-  Highlight.State = iState
-  Highlight.Tag = iTag
+  Me.State = iState
+  Me.Tag = iTag
   
-  Return Highlight.TextAfter
+  Return Me.TextAfter
 
 End
 
@@ -117,17 +117,18 @@ Public Sub RunWith(sText As String, iStyle As Integer)
   Dim bClose As Boolean
   Dim iStart As Integer
   Dim bMarkup As Boolean
+  Dim sTextScript As String
 
   'Print "    "; Bin$(Highlight.Tag, 16);; Highlight.Text
 
   AllowCode = iStyle = STYLE_WEB
 
-  iState = Highlight.State
+  iState = Me.State
   
-  iTag = Highlight.Tag And &HF
-  iTagCode = Highlight.Tag And &H30
-  bLimit = Highlight.Tag And TAG_NEXT_LIMIT
-  iTagMode = Shr(Highlight.Tag, 8)
+  iTag = Me.Tag And &HF
+  iTagCode = Me.Tag And &H30
+  bLimit = Me.Tag And TAG_NEXT_LIMIT
+  iTagMode = Shr(Me.Tag, 8)
   
   iLenText = String.Len(sText)
   sOrgText = sText
@@ -142,7 +143,7 @@ Public Sub RunWith(sText As String, iStyle As Integer)
   Else
     iTagMode = 0
     iTagCode = 0
-    Highlight.AlternateState = False
+    Me.Alternate = False
     On iTag Goto STATE_HTML, STATE_COMMENT, STATE_SCRIPT, STATE_STYLE
   Endif
   
@@ -150,7 +151,7 @@ STATE_HTML:
 
   iTagMode = 0
   iTagCode = 0
-  Highlight.AlternateState = False
+  Me.Alternate = False
   
   Do
     GoSub NEXT_CHAR
@@ -239,13 +240,13 @@ STATE_MARKUP:
     If sMarkup = "script" Then
       iTag = TAG_SCRIPT
       iTagMode = 0
-      Highlight.State = Highlight.Normal
+      Me.State = Highlight.Normal
       bLimit = True
       Goto STATE_SCRIPT
     Else If sMarkup = "style" Then
       iTag = TAG_STYLE
       iTagMode = 0
-      Highlight.State = Highlight.Normal
+      Me.State = Highlight.Normal
       bLimit = True
       Goto STATE_STYLE
     ' Else If sMarkup = "html" Or If sMarkup = "body" Or If sMarkup = "head" Then
@@ -294,39 +295,37 @@ STATE_DOUBLE_MARKUP:
 
 READ_SCRIPT:
 
-  sText = Highlight.Text
-  While sText
+  While sTextScript
     MeetCodeAt = 0
-    HighlighterJavascript.Run()
+    HighlighterJavascript.Run(sTextScript)
     If MeetCodeAt = 0 Then 
-      $sBufferAfter &= sText
+      $sBufferAfter &= sTextScript
       Break
     Endif
-    $sBufferAfter &= String.Left(sText, MeetCodeAt - 1)
-    Highlight.AlternateState = True
+    $sBufferAfter &= String.Left(sTextScript, MeetCodeAt - 1)
+    Me.Alternate = True
     Add("<%", Highlight.Keyword)
     I = MeetCodeAt + 2
     GoSub READ_CODE
-    sText = String.Mid$(sText, I)
-    Highlight.Text = sText
+    sTextScript = String.Mid$(sTextScript, I)
   Wend
   
   Return
 
 STATE_SCRIPT:
 
-  Highlight.Tag = iTagMode
+  Me.Tag = iTagMode
 
   iPos = String.InStr(sText, "</script>", I)
   If iPos = 0 Then
-    Highlight.Text = String.Mid$(sText, I)
+    sTextScript = String.Mid$(sText, I)
     GoSub READ_SCRIPT
-    iNextState = Highlight.State
-    iTagMode = Highlight.Tag
+    iNextState = Me.State
+    iTagMode = Me.Tag
     Goto END_TEXT
   Else
     If iPos > I Then
-      Highlight.Text = String.Mid$(sText, I, iPos - I)
+      sTextScript = String.Mid$(sText, I, iPos - I)
       GoSub READ_SCRIPT
     Endif
     Add("</script>", Highlight.Keyword)
@@ -347,30 +346,30 @@ READ_STYLE:
       Break
     Endif
     $sBufferAfter &= String.Left(sText, MeetCodeAt - 1)
-    Highlight.AlternateState = True
+    Me.Alternate = True
     Add("<%", Highlight.Keyword)
     I = MeetCodeAt + 2
     GoSub READ_CODE
     sText = String.Mid$(sText, I)
-    Highlight.Text = sText
+    Me.TextAfter = sText
   Wend
   
   Return
 
 STATE_STYLE:
   
-  Highlight.Tag = iTagMode
+  Me.Tag = iTagMode
 
   iPos = String.InStr(sText, "</style>", I)
   If iPos = 0 Then
-    Highlight.Text = String.Mid$(sText, I)
+    Me.Text = String.Mid$(sText, I)
     GoSub READ_STYLE
     iNextState = Highlight.State
     iTagMode = Highlight.Tag
     Goto END_TEXT
   Else
     If iPos > I Then
-      Highlight.Text = String.Mid$(sText, I, iPos - I)
+      Me.TextAfter = String.Mid$(sText, I, iPos - I)
       GoSub READ_STYLE
     Endif
     Add("</style>", Highlight.Keyword)
@@ -433,9 +432,9 @@ READ_CODE:
 
   PushHighlightState
 
-  Highlight.AlternateState = True
-  Highlight.State = Highlight.Normal
-  Highlight.Tag = 0
+  Me.Alternate = True
+  Me.State = Highlight.Normal
+  Me.Tag = 0
   bClose = False
   iStart = I
 
@@ -458,7 +457,7 @@ READ_CODE:
   If bClose Then
     $sBufferAfter &= AnalyzeCode(String.Mid$(sText, iStart, I - iStart - 1))
     Add("%>", Highlight.Keyword)
-    Highlight.AlternateState = False
+    Me.Alternate = False
     iTagCode = 0
     Inc I
     PopHighlightState
@@ -501,7 +500,7 @@ NEXT_CHAR:
       GoSub READ_CODE_COMMENT
       Goto NEXT_CHAR
     Else
-      Highlight.AlternateState = True
+      Me.Alternate = True
       sCar = String.Mid$(sText, I + 1, 1)
       If sCar = "=" Then
         Add("<%=", Highlight.Keyword)
@@ -511,7 +510,7 @@ NEXT_CHAR:
         If iPos = 0 Then iPos = iLenText + 1
         Add("<" & String.Mid$(sText, I, iPos - I + 2), Highlight.DataType)
         I = iPos + 2
-        Highlight.AlternateState = False
+        Me.Alternate = True
         Goto NEXT_CHAR
       Else
         Add("<%", Highlight.Keyword)
@@ -527,9 +526,9 @@ NEXT_CHAR:
   
 END_TEXT:
 
-  Highlight.Text = $sTextAfter & $sBufferAfter
-  Highlight.State = iNextState
-  Highlight.Tag = iTag + iTagCode + Shl(iTagMode, 8) + If(bNextLimit, TAG_NEXT_LIMIT, 0)
+  Me.TextAfter = $sTextAfter & $sBufferAfter
+  Me.State = iNextState
+  Me.Tag = iTag + iTagCode + Shl(iTagMode, 8) + If(bNextLimit, TAG_NEXT_LIMIT, 0)
   Me.Limit = bLimit
   'Print "--> "; Bin$(Highlight.Tag, 16);; Highlight.Text
   
