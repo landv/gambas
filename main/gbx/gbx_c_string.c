@@ -223,7 +223,7 @@ static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 		CLEAR(&_utf8);
 	}
 	
-	 str = (const uchar *)start;
+	str = (const uchar *)start;
 
 	if (index < UTF8_MAX_COUNT)
 	{
@@ -232,7 +232,10 @@ static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 #ifdef DEBUG_CACHE
 		fprintf(stderr, "cached -> %d\n", _utf8.pos[index]);
 #endif
-			return _utf8.pos[index];
+			pos = _utf8.pos[index];
+			if (pos >= len)
+				pos = len;
+			return pos;
 		}
 		
 		pos = _utf8.pos[_utf8.last_pos];
