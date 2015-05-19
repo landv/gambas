@@ -98,7 +98,7 @@ Public Sub _new()
     [cmbToolbox, "/ToolboxSize", 0],
     [btnSortProperty, "/SortProperties", 1],
     [txtTabSize, "/DefaultTabSize", 2],
-    [cmbProcLimit, "/Editor/ProcedureLimit", 2],
+    [btnShowLimit, "/Editor/ProcedureLimit", 1],
     [btnShowLineNumber, "/Editor/ShowLineNumbers", 0],
     [btnShowChange, "/Editor/ShowChange", 1],
     [btnShowCurrent, "/Editor/ShowCurrent", 1],
@@ -322,9 +322,9 @@ Public Sub txtTabSize_Change()
 
 End
 
-Public Sub cmbProcLimit_Click()
+Public Sub btnShowLimit_Click()
 
-  Settings["/Editor/ProcedureLimit"] = cmbProcLimit.Index
+  Settings["/Editor/ProcedureLimit"] = btnShowLimit.Value
   RefreshEditor
 
 End

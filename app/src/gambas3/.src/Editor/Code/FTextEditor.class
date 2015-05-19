@@ -23,13 +23,13 @@ Static Public CompressMessage As String
 
 Public Path As String
 Public RichText As String
-Private Editor As Editor
 Public Age As Integer
 
 Property Read ReadOnly As Boolean
 
 Static Private $aExt As String[] = ["htm", "html", "xml", "kml", "svg", "css", "webpage", "js", "c", "h", "cpp", "gbs"]
 
+Private $hEditor As TextEditor
 Private $bNoHighlight As Boolean
 Private $bShowCompress As Boolean
 Private $bModule As Boolean
@@ -41,8 +41,8 @@ Private Const VIEWMODE_NORMAL As Integer = 0
 Private Const VIEWMODE_HORIZONTAL As Integer = 1
 Private Const VIEWMODE_VERTICAL As Integer = 2
 
-Private $hEditor1 As Editor
-Private $hEditor2 As Editor
+Private $hEditor1 As TextEditor
+Private $hEditor2 As TextEditor
 Private $hInsertColor As CInsertColor
 Private $hBookmark As CBookmark
 Private $hCompletion As CCompletion
@@ -58,7 +58,7 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
   $iLastLine = -1
 
   Path = sPath
-  Editor = edtEditor
+  $hEditor = edtEditor
   
   If bModule Then
     mnuShowCode.Show
@@ -74,9 +74,9 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
   
 End
 
-Public Sub GetEditor() As Editor
+Public Sub GetEditor() As TextEditor
   
-  Return Editor
+  Return $hEditor
   
 End
 
@@ -87,7 +87,7 @@ Public Sub LoadFile() As Boolean
   
   With edtEditor
     .Clear
-    .Flags[Editor.HighlightBraces] = True
+    .ShowBraces = True
   End With
   
   $bWebPage = False
@@ -96,20 +96,20 @@ Public Sub LoadFile() As Boolean
 
     Select Case sExt
       Case "css"
-        edtEditor.Highlight = Highlight.CSS
+        edtEditor.Highlight = "css"
       Case "webpage"
-        edtEditor.Highlight = Highlight.WebPage
+        edtEditor.Highlight = "webpage"
         $bWebPage = True
       Case "js"
-        edtEditor.Highlight = Highlight.JavaScript
+        edtEditor.Highlight = "javascript"
       Case "c"
-        edtEditor.Highlight = Highlight.C
+        edtEditor.Highlight = "c"
       Case "cpp", "h"
-        edtEditor.Highlight = Highlight.CPlusPlus
+        edtEditor.Highlight = "c++"
       Case "gbs"
-        edtEditor.Highlight = Highlight.Gambas
+        edtEditor.Highlight = "gambas"
       Case Else 
-        edtEditor.Highlight = Highlight.HTML
+        edtEditor.Highlight = "html"
     End Select
     
     $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
@@ -163,7 +163,7 @@ Public Sub ReadConfig()
 
   Project.SetSmallFont(panToolbar)
   edtEditor.ReadConfig
-  edtEditor.Parent.Background = edtEditor.Styles[Highlight.Background].Color
+  'edtEditor.Parent.Background = edtEditor.Styles[Highlight.Background].Color
   If $hEditor1 Then $hEditor1.ReadConfig
   If $hEditor2 Then $hEditor2.ReadConfig
   $hCompletion.ReadConfig
@@ -179,8 +179,8 @@ Public Function Save() As Boolean
 
   Save.Begin(Path)
 
-  File.Save(Path, Editor.Text)
-  Editor.Reset
+  $hEditor.Save(Path)
+  ' TODO: Editor.Reset
   $bModify = False
   DrawTitle
 
@@ -238,14 +238,13 @@ End
 
 Private Sub InAlternate() As Boolean
 
-  Dim sText As String = String.Left(Editor.Lines[Editor.Line].Text, Editor.Column)
+  Dim sText As String = String.Left($hEditor.Current.Text, $hEditor.Column)
   Dim bAlt As Boolean
   Dim I As Integer
   Dim bQuote As Boolean
   Dim sCar As String
   
-  Editor.Lines[Editor.Line].GetInitialState()
-  bAlt = Highlight.AlternateState
+  bAlt = $hEditor.Current.InitialState.Alternate
   
   I = 1
   While I <= String.Len(sText)
@@ -288,11 +287,11 @@ Private Sub FindCloseAlternate() As Boolean
   Dim sLine As String
   Dim I, J, A, B As Integer
   
-  I = Editor.Line 
-  J = Editor.Column
+  I = $hEditor.Line 
+  J = $hEditor.Column
   
-  While I < Editor.Lines.Count
-    sLine = Editor.Lines[I].Text
+  While I < $hEditor.Count
+    sLine = $hEditor[I].Text
     A = String.InStr(sLine, "<%", J + 1)
     B = String.InStr(sLine, "%>", J + 1)
     If B > 0 And If A = 0 Or A > B Then Return True
@@ -312,55 +311,33 @@ Public Sub Editors_KeyPress()
     
     Action["find"].Value = False
   
-  Else If Key.Code = Key.Insert Then
-
-    If Key.Shift Then
-      If Not Editor.ReadOnly Then
-        Editor.Paste
-      Endif 
-    Else If Key.Control Then
-      Editor.Copy
-    Endif 
+  ' Else If Key.Code = Key.Return Then 
+  '     
+  '   If Key.Control Then
+  '     
+  '     If Key.Shift Then 
+  '       If Editor.Lines[Editor.Line].Expanded Then
+  '         Editor.CollapseAll
+  '       Else
+  '         Editor.ExpandAll
+  '       Endif
+  '     Else
+  '       Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
+  '     Endif
+  '     Stop Event
+  '     
+  '   Endif
     
-  Else If Key.Code = Key.Delete Then
-
-    If Key.Shift Then
-      If Not Editor.ReadOnly Then
-        Editor.Cut
-      Endif 
-    Endif 
-    
-  Else If Key.Code = Key.Return Then 
-      
-    If Key.Control Then
-      
-      If Key.Shift Then 
-        If Editor.Lines[Editor.Line].Expanded Then
-          Editor.CollapseAll
-        Else
-          Editor.ExpandAll
-        Endif
-      Else
-        Editor.Lines[Editor.Line].Expanded = Not Editor.Lines[Editor.Line].Expanded
-      Endif
-      Stop Event
-      
-    Endif
-    
-  ' Else If Key.Code = Key["L"] And If Key.Control Then
-  '   
-  '   FMain.SearchProject
-  '   
   Endif 
   
-  If Editor.ReadOnly Then Return
+  If $hEditor.ReadOnly Then Return
    
   If Key.Code = Key.Return Or If Key.Code = Key.Enter Then
     If Key.Normal Then
       If $bWebPage Then
         If InAlternate() And If Not FindCloseAlternate() Then
-          Editor.Insert("\n%>")
-          Editor.Goto(Editor.Line, 0)
+          $hEditor.Insert("\n%>")
+          $hEditor.Goto(0, $hEditor.Line)
           Stop Event
         Endif
       Endif
@@ -369,29 +346,17 @@ Public Sub Editors_KeyPress()
   
 End
 
-
-
-'PUBLIC SUB Form_KeyPress(Ascii AS String, Code AS Integer, State AS Integer)
-'
-'  IF Code = Asc("S") AND State = Mouse.Control THEN
-'    ME.Save
-'  ENDIF
-'
-'END
-
-
-
 Public Sub Form_GotFocus()
   
-  Editor.SetFocus
+  $hEditor.SetFocus
   
 End
 
 Public Sub Goto(iLine As Integer, Optional iColumn As Integer = -1)
 
   'DEC iLine
-  If iColumn < 0 Then iColumn = Editor.Column
-  Editor.Goto(iLine, iColumn, True)
+  If iColumn < 0 Then iColumn = $hEditor.Column
+  $hEditor.Goto(iColumn, iLine)
 
 End
 
@@ -411,11 +376,11 @@ End
 
 Private Sub RefreshBackground()
 
-  Dim aEditor As Editor[] = [$hEditor1, $hEditor2]
-  Dim hEditor As Editor
+  Dim aEditor As TextEditor[] = [$hEditor1, $hEditor2]
+  Dim hEditor As TextEditor
   Dim bHasFocus As Boolean
 
-  If aEditor.Exist(Editor) Then
+  If aEditor.Exist($hEditor) Then
 
     For Each hEditor In aEditor
       If hEditor And If hEditor.HasFocus Then 
@@ -431,8 +396,8 @@ Private Sub RefreshBackground()
       hEditor.ReadConfig
       If Not hEditor.HasFocus Then
         If bHasFocus Then MTheme.InitEditor(hEditor, True)
-        hEditor.Flags[Editor.ShowCurrentLine] = False
-        hEditor.Flags[Editor.ShowModifiedLines] = False
+        $hEditor.ShowCurrent = False
+        $hEditor.ShowModified = False
       Endif
   
     Next
@@ -443,7 +408,7 @@ End
 
 Public Sub Editors_GotFocus()
 
-  Editor = Last
+  $hEditor = Last
   Project.SetCurrentPopup(mnuEditor)
   RefreshBackground
 
@@ -501,34 +466,34 @@ End
 
 Public Sub mnuCut_Click()
 
-  Editor.Cut
+  $hEditor.Cut
 
 End
 
 Public Sub mnuCopy_Click()
 
-  Editor.Copy
+  $hEditor.Copy
 
 End
 
 Public Sub mnuPaste_Click()
 
-  Editor.Paste
-  Editor.SetFocus
+  $hEditor.Paste
+  $hEditor.SetFocus
 
 End
 
 Public Sub mnuUndo_Click()
 
   $hCompletion.Hide
-  Editor.Undo
+  $hEditor.Undo
 
 End
 
 Public Sub mnuRedo_Click()
 
   $hCompletion.Hide
-  Editor.Redo
+  $hEditor.Redo
 
 End
 
@@ -537,7 +502,7 @@ Public Sub mnuGotoLine_Click()
 
   Dim iLine As Integer
 
-  iLine = FGotoLine.Run(Editor.Line + 1)
+  iLine = FGotoLine.Run($hEditor.Line + 1)
   If iLine <= 0 Then Return
   GotoCenter(iLine - 1)
 
@@ -554,7 +519,7 @@ End
 
 Public Sub mnuSelectAll_Click()
 
-  Editor.SelectAll()
+  $hEditor.SelectAll
 
 End
 
@@ -585,6 +550,9 @@ Public Sub OnProjectDebug()
 End
 
 Public Sub OnShowString(sStr As String, bIgnoreCase As Boolean)
+  
+  ' TODO:
+  Return
   
   edtEditor.ShowString(sStr, bIgnoreCase)
   If $hEditor1 Then $hEditor1.ShowString(sStr, bIgnoreCase)
@@ -661,9 +629,9 @@ Public Sub Reload()
   
   If $bNoHighlight Then
     If LTrim(sText) Like "<!DOCTYPE*" Or If LTrim(sText) Like "<html*" Then
-      edtEditor.Highlight = Highlight.HTML
+      edtEditor.Highlight = "HTML"
     Else
-      edtEditor.Highlight = Highlight.None
+      edtEditor.Highlight = ""
     Endif
   Endif
   
@@ -671,7 +639,7 @@ Public Sub Reload()
   
   UpdateEndOfLine
   
-  Editor.SetFocus
+  $hEditor.SetFocus
   Editors_Cursor
   Modify(True)
 
@@ -689,7 +657,7 @@ End
 
 Public Sub GetState() As String
   
-  Return CStr(Editor.Line) & "." & CStr(Editor.Column)
+  Return CStr($hEditor.Column) & "." & CStr($hEditor.Line)
   
 End
 
@@ -697,18 +665,18 @@ Public Sub SetState(sState As String)
   
   Dim aState As String[] = Split(sState, ".")
   
-  Editor.Goto(CInt(aState[0]), CInt(aState[1]))
+  GotoCenter(CInt(aState[1]), CInt(aState[0]))
   
 End
 
-Private Sub InitEditor(hEditor As Editor)
+Private Sub InitEditor(hEditor As TextEditor)
   
   With hEditor
     .Border = False
     .View = edtEditor
     .Highlight = edtEditor.Highlight
     '.Flags[Editor.HighlightImmediately] = edtEditor.Flags[Editor.HighlightImmediately]
-    .Flags[Editor.HighlightBraces] = edtEditor.Flags[Editor.HighlightBraces]
+    .ShowBraces = edtEditor.ShowBraces
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
@@ -723,9 +691,9 @@ Private Sub SetViewMode(iViewMode As Integer)
   $iViewMode = iViewMode
 
   If $iViewMode <> VIEWMODE_NORMAL And If Not $hEditor1 Then
-    $hEditor1 = New Editor(Me) As "Editors"
+    $hEditor1 = New TextEditor(Me) As "Editors"
     InitEditor($hEditor1)
-    $hEditor2 = New Editor(Me) As "Editors"
+    $hEditor2 = New TextEditor(Me) As "Editors"
     InitEditor($hEditor2)
     FSearch.OnNewForm(Me)
   Endif
@@ -736,8 +704,8 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Show
       splHorizontal.Hide
       splVertical.Hide
-      edtEditor.Goto(Editor.Line, Editor.Column, True)
-      Editor = edtEditor
+      edtEditor.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor = edtEditor
 
     Case VIEWMODE_HORIZONTAL
       $hEditor1.Reparent(splHorizontal)
@@ -745,9 +713,9 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Show
       splVertical.Hide
-      $hEditor1.Goto(Editor.Line, Editor.Column, True)
-      $hEditor2.Goto(Editor.Line, Editor.Column, True)
-      Editor = $hEditor1
+      $hEditor1.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor2.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor = $hEditor1
 
     Case VIEWMODE_VERTICAL
       $hEditor1.Reparent(splVertical)
@@ -755,13 +723,13 @@ Private Sub SetViewMode(iViewMode As Integer)
       edtEditor.Hide
       splHorizontal.Hide
       splVertical.Show
-      $hEditor1.Goto(Editor.Line, Editor.Column, True)
-      $hEditor2.Goto(Editor.Line, Editor.Column, True)
-      Editor = $hEditor1
+      $hEditor1.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor2.Goto($hEditor.Column, $hEditor.Line)
+      $hEditor = $hEditor1
 
   End Select
 
-  Editor.SetFocus
+  $hEditor.SetFocus
   Form_Arrange
   Editors_Cursor
 
@@ -794,31 +762,31 @@ End
 
 Public Sub GetText() As String
   
-  Return Editor.Text
+  Return $hEditor.Text
   
 End
 
 Public Sub GetPosition() As Integer
   
-  Return Editor.GetPosition()
+  Return $hEditor.GetPosition()
 
 End
 
 Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
   
-  Return Editor.SetPosition(hResult, bJustCheck)
+  Return $hEditor.SetPosition(hResult, bJustCheck)
   
 End
 
 Public Sub Replace(sReplace As String)
   
-  Editor.Replace(sReplace)
+  $hEditor.Replace(sReplace)
   
 End
 
 Public Sub GetSelection() As String
   
-  Return Editor.GetSelection()
+  Return $hEditor.GetSelection()
   
 End
 
@@ -830,7 +798,7 @@ End
 
 Private Sub SetText(sText As String)
   
-  Editor.Text = sText
+  $hEditor.Text = sText
   Me.Save
   UpdateCurrentProc
   'Editor.Begin
@@ -859,17 +827,17 @@ Public Sub Compress() As Boolean
   
   Inc Application.Busy
   Me.Save
-  sText = Editor.Text
+  sText = $hEditor.Text
   iLen = Len(sText)
   
   If iLen > 0 Then
   
-    Select Case Editor.Highlight 
-      Case Highlight.JavaScript
+    Select Case $hEditor.Highlight 
+      Case "javascript"
         sText = MCompressFile.Javascript(sText)
-      Case Highlight.CSS
+      Case "css"
         sText = MCompressFile.Css(sText)
-      Case Highlight.HTML
+      Case "html"
         sText = MCompressFile.Html(sText)
     End Select
     
@@ -889,7 +857,7 @@ Public Sub Compress() As Boolean
     If Not Exist(sPath) Then 
       Project.InsertFile(File.Name(sPath), File.Dir(sPath), Path, True)
     Else
-      File.Save(sPath, Editor.Text)
+      $hEditor.Save(sPath)
     Endif
     SetText(sText)
     CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b><p>" & ("Original file has been saved in the <b>Project</b> folder.")
@@ -941,16 +909,15 @@ Private Sub RefreshLineInfo(Optional bForce As Boolean) As Boolean
     $iLastLine = -1
   Endif
 
-  If Editor.Line <> $iLastLine Then
+  If $hEditor.Line <> $iLastLine Then
 
-    $iLastLine = Editor.Line
+    $iLastLine = $hEditor.Line
 
     UpdateCurrentProc
     bNewLine = True
 
   Endif
 
-  lblInfo.Text = CStr(Editor.Column + 1) & " : " & CStr(Editor.Line + 1)
   Return bNewLine
 
 End
@@ -982,35 +949,35 @@ End
 
 Public Sub mnuLowerCase_Click()
   
-  If Editor.ReadOnly Then Return
-  If Not Editor.Selected Then Return
+  If $hEditor.ReadOnly Then Return
+  If Not $hEditor.Selected Then Return
   
-  Editor.StoreSelection(True)
-  Editor.Begin
-  Editor.Insert(String.LCase(Editor.Selection.Text))
-  Editor.End
-  Editor.RecallSelection
+  $hEditor.StoreSelection(True)
+  $hEditor.Begin
+  $hEditor.Insert(String.LCase($hEditor.SelectedText))
+  $hEditor.End
+  $hEditor.RecallSelection
   
 End
 
 Public Sub mnuUpperCase_Click()
   
-  If Editor.ReadOnly Then Return
-  If Not Editor.Selected Then Return
+  If $hEditor.ReadOnly Then Return
+  If Not $hEditor.Selected Then Return
   
-  Editor.StoreSelection(True)
-  Editor.Begin
-  Editor.Insert(String.UCase(Editor.Selection.Text))
-  Editor.End
-  Editor.RecallSelection
+  $hEditor.StoreSelection(True)
+  $hEditor.Begin
+  $hEditor.Insert(String.UCase($hEditor.SelectedText))
+  $hEditor.End
+  $hEditor.RecallSelection
   
 End
 
 Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
-  Editor.SetFocus
+  $hEditor.SetFocus
   Wait
-  Editor.ShowMessageLabel(sMsg, Editor.CursorX, Editor.CursorY + Editor.LineHeight, True)
+  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, True)
 
 End
 
@@ -1034,21 +1001,21 @@ Private Sub GetProc(sLine As String) As String
 
   sLine = Trim(sLine)
 
-  Select Case Editor.Highlight
+  Select Case $hEditor.Highlight
     
-    Case Highlight.CSS
+    Case "css"
       
       iPos = InStr(sLine, "{")
       If iPos Then sProc = Trim(Left(sLine, iPos - 1))      
       
-    Case Highlight.HTML, Highlight.WebPage
+    Case "html", "webpage"
       
       If Left(sLine) = "<" Then
         iPos = InStr(sLine, " ")
         If iPos Then sProc = Left$(sLine, iPos - 1) & ">"
       Endif
       
-    Case Highlight.JavaScript
+    Case "javascript"
       
       If sLine Begins "function " Then
         sLine = Mid$(sLine, 10)
@@ -1058,7 +1025,7 @@ Private Sub GetProc(sLine As String) As String
         Endif
       Endif
       
-    Case Highlight.C, Highlight.CPlusPlus
+    Case "c", "c++"
       
       aStr = Split(sLine & " (", " ")
       For iInd = 0 To aStr.Max
@@ -1077,14 +1044,14 @@ Private Sub GetProc(sLine As String) As String
 
 End
 
-Private Sub GetCurrentProc(Optional iLine As Integer = Editor.Line) As String
+Private Sub GetCurrentProc(Optional iLine As Integer = $hEditor.Line) As String
   
   Dim sProc As String
   
   While iLine >= 0
     
-    If Editor.Lines[iLine].Limit Then 
-      sProc = GetProc(Editor.Lines[iLine].Text)  
+    If $hEditor[iLine].Limit Then 
+      sProc = GetProc($hEditor[iLine].Text)  
       Break
     Endif
     Dec iLine
@@ -1133,9 +1100,9 @@ Private Sub FillProc()
   iLine = -1
   bDecl = True
   Do
-    iLine = Editor.FindNextLimit(iLine)
+    iLine = $hEditor.FindNextLimit(iLine + 1)
     If iLine < 0 Then Break
-    sProc = GetProc(Editor.Lines[iLine].Text)
+    sProc = GetProc($hEditor[iLine].Text)
     If Not sProc Then Continue
     If $cProc.Exist(sProc) Then
       iNum = 2
@@ -1188,7 +1155,7 @@ End
 
 Private Sub GotoProc(iLine As Integer)
   
-  Editor.Goto(iLine, 0, True)
+  $hEditor.Goto(0, iLine)
   
 End
 
@@ -1236,13 +1203,13 @@ End
 
 Public Sub btnIndent_Click()
 
-  Editor.Indent
+  $hEditor.Indent
 
 End
 
 Public Sub btnUnindent_Click()
 
-  Editor.Unindent
+  $hEditor.Unindent
 
 End
 
@@ -1292,8 +1259,8 @@ Public Sub CheckCompletion(sMode As String)
 
   Dim sLine As String
   Dim sWord As String
-
-  sLine = String.Left$(Editor.Lines[Editor.Line].Text, Editor.Column)
+  
+  sLine = String.Left$($hEditor.Current.Text, $hEditor.Column)
   '"If Right$(RTrim(sLine)) = "'" Then Return
 
   ' If sMode = " " Then
@@ -1322,8 +1289,8 @@ Public Sub CheckCompletion(sMode As String)
   '   
   If sMode = "A" Then
     
-    If Not FCompletion.VisibleFrom(Editor) Then
-      sWord = $hCompletion.GetWord(sLine & Key.Text, Editor.Column + 1)
+    If Not FCompletion.VisibleFrom($hEditor) Then
+      sWord = $hCompletion.GetWord(sLine & Key.Text, $hEditor.Column + 1)
       If String.Len(sWord) >= 3 Then FCompletion.Open(Me, "I", sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
     Endif
@@ -1340,7 +1307,7 @@ Public Sub CheckCompletion(sMode As String)
   '   
   Else If sMode = "<" Then
     
-    If Not Editor.Selected And If Editor.Column >= 1 And If Not FCompletion.VisibleFrom(Editor) Then
+    If Not $hEditor.Selected And If $hEditor.Column >= 1 And If Not FCompletion.VisibleFrom($hEditor) Then
       
       sLine = String.Left(sLine, -1)
       sWord = GetRightString(sLine)
@@ -1356,7 +1323,7 @@ Public Sub CheckCompletion(sMode As String)
         
         '$bCheckSignature = True
         
-        sWord = $hCompletion.GetWord(sLine, Editor.Column - 1)
+        sWord = $hCompletion.GetWord(sLine, $hEditor.Column - 1)
         ' If Right(sLine) <> "." And If Len(sLine) > Len(sWord) And If Mid$(sLine, Len(sLine) - Len(sWord), 1) = "." Then
         '   iPos = Editor.Column
         '   Editor.Goto(Editor.Line, Editor.Column - String.Len(sWord) - 2)
@@ -1392,7 +1359,7 @@ End
 
 Public Sub GetKeywords() As String[]
   
-  Return Highlight._GetKeywords(Editor.Highlight)
+  Return $hEditor.Keywords
   
 End
 
@@ -1413,13 +1380,13 @@ Private Sub SortText(bDescent As Boolean)
   Dim iMode As Integer
   Dim I As Integer
   
-  If Editor.ReadOnly Then Return
-  If Not Editor.Selected Then Return
+  If $hEditor.ReadOnly Then Return
+  If Not $hEditor.Selected Then Return
   
-  Editor.StoreSelection
-  Editor.Begin
+  $hEditor.StoreSelection
+  $hEditor.Begin
   
-  aText = Split(Editor.Selection.Text, "\n")
+  aText = Split($hEditor.SelectedText, "\n")
   
   aPos = New Integer[]
   aVoid = New String[]
@@ -1439,9 +1406,9 @@ Private Sub SortText(bDescent As Boolean)
     aText.Add(aVoid[I], aPos[I])
   Next
   
-  Editor.Insert(aText.Join("\n"))
-  Editor.End
-  Editor.RecallSelection
+  $hEditor.Insert(aText.Join("\n"))
+  $hEditor.End
+  $hEditor.RecallSelection
   
 End
 

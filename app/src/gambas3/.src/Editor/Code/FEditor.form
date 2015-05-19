@@ -431,25 +431,12 @@
       Arrow = False
       Border = False
     }
-    { lblInfo Label
-      MoveScaled(143,0,11,4)
-      Font = Font["+2"]
-      Expand = True
-      Padding = 4
-      Alignment = Align.Right
-    }
   }
   { Panel1 Panel
     MoveScaled(6,7,38,63)
     Background = Color.TextBackground
     Expand = True
     Arrangement = Arrange.Fill
-    { edtEditor Editor Editors
-      Name = "edtEditor"
-      MoveScaled(3,1,24,16)
-      Expand = True
-      Border = False
-    }
     { splHorizontal HSplit
       MoveScaled(3,19,22,18)
       Visible = False
@@ -459,6 +446,12 @@
       MoveScaled(2,41,22,18)
       Visible = False
       Expand = True
+    }
+    { edtEditor TextEditor Editors
+      Name = "edtEditor"
+      MoveScaled(3,1,24,16)
+      Expand = True
+      Border = False
     }
   }
   { timShowHelp #Timer
@@ -645,6 +638,6 @@
   { Toolbar editor
     Text = "Editor"
     List = "save,reload,show-form,locked,run-me,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
-    Default = "save,reload,show-form,locked,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc,$lblInfo"
+    Default = "save,reload,show-form,locked,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc"
   }
 }

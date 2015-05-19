@@ -270,7 +270,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iR
       Paint.Background = .Foreground
     Endif
     
-    If .Font Then 
+    If .Font And If .Font.Modified Then 
       Paint.Font = .Font
     Endif
 
@@ -1329,14 +1329,16 @@ Public Sub _GetCellData(iRow As Integer, iColumn As Integer, Optional bCreate As
   hData = $cCells[GetCellKey(iRow, iColumn)]
   If Not hData Then
     If bCreate Then
-      hData = New _GridView_Data
-      'hData.Font = Me.Font
+      hData = New _GridView_Data As "GridViewData"
+      hData.Font = Me.Font.Copy()
+      hData.Font.Modified = False
       hData.Alignment = $hColumns[iColumn].Alignment
       $cCells[GetCellKey(iRow, iColumn)] = hData
     Else
-      $hData = New _GridView_Data
+      $hData = New _GridView_Data As "GridViewData"
+      $hData.Font = Me.Font.Copy()
+      $hData.Font.Modified = False
       $hData.Alignment = $hColumns[iColumn].Alignment
-      $hData.Font = Me.Font
       Raise Data(iRow, iColumn)
       hData = $hData
     Endif

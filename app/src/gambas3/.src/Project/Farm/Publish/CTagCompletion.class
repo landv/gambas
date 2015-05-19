@@ -12,7 +12,7 @@ Static Public Sub _init()
   
   Dim I As Integer
   
-  $aTag = ["Example", "Game", "OpenGL", "Database", "Multimedia", "Command-line", "Network", "Web"]
+  $aTag = ["Example", "Game", "OpenGL", "Database", "Multimedia", "Command-line", "Network", "Web", "Accessories", "Internet", "System"]
   For I = 5 To CInt(Split(System.FullVersion, ".")[1]) + 1
     $aTag.Add("Gambas 3." & CStr(I))
   Next

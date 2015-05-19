@@ -1,21 +1,25 @@
 ' Gambas class file
 
-Inherits Highlighter
+Inherits TextHighlighter
 
-Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+Public Const Name As String = "sql"
+
+Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"
 
 Static Private $cDatatype As Collection
 Static Private $cFunction As Collection
 Static Private $cKeyword As Collection
 Static Private $cOperator As Collection
+Static Private $aKeywords As String[]
 
-Static Private Sub LoadFile(sPath As String) As Collection
+Static Private Sub LoadFile(sPath As String, Optional bKeyword As Boolean) As Collection
   
   Dim sWord As String
   Dim cCol As New Collection(gb.IgnoreCase)
   
   For Each sWord In Split(File.Load(sPath), "\n", "", True)
     cCol[sWord] = True
+    If bKeyword Then $aKeywords.Add(sWord)
   Next
   Return cCol
   
@@ -24,9 +28,10 @@ End
 
 Static Public Sub _init()
   
+  $aKeywords = New String[]
   $cDatatype = LoadFile("sql/datatypes")
   $cFunction = LoadFile("sql/functions")
-  $cKeyword = LoadFile("sql/keywords")
+  $cKeyword = LoadFile("sql/keywords", True)
   $cOperator = LoadFile("sql/operators")
   
 End
@@ -53,8 +58,8 @@ Public Sub Run(sText As String)
   Dim sWait As String
   Dim iLen As Integer
   
-  iState = Me.State
-  iTag = Me.Tag
+  iState = TextHighlighter.State
+  iTag = TextHighlighter.Tag
   iLenText = String.Len(sText)
   
   For iPos = 1 To iLenText
@@ -66,27 +71,27 @@ Public Sub Run(sText As String)
       Case Highlight.Normal
         
         If Len(sCar) > 1 Then
-          Me.AddState(Highlight.Error)
+          TextHighlighter.Add(Highlight.Error)
         Else If Asc(sCar) < 33 Then
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
         Else If sCar = "#" Or If String.Mid$(sText, iPos, 2) = "--" Then
-          Me.AddState(Highlight.Comment, iLenText - iPos + 1)
+          TextHighlighter.Add(Highlight.Comment, iLenText - iPos + 1)
           Break
         Else If String.Mid$(sText, iPos, 2) = "/*" Then
           iState = Highlight.Comment
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
         Else If sCar = "'" Or If sCar = "\"" Then
           iState = Highlight.String
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
           sWait = sCar
         Else If sCar = "`" Then
           iState = Highlight.Symbol
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
           sWait = sCar
         Else
           iLen = Helper.ReadNumber(sText, iPos)
           If iLen > 0 Then
-            Me.AddState(Highlight.Number, iLen)
+            TextHighlighter.Add(Highlight.Number, iLen)
             iPos += iLen - 1
             Continue
           Endif
@@ -104,42 +109,42 @@ Public Sub Run(sText As String)
           
           If iLen > 0 Then
             If iState <> Highlight.Normal Then
-              Me.AddState(iState, iLen)
+              TextHighlighter.Add(iState, iLen)
               iPos += iLen - 1
               iState = Highlight.Normal
               Continue
             Else 
-              Me.AddState(Highlight.Symbol, iLen)
+              TextHighlighter.Add(Highlight.Symbol, iLen)
               iPos += iLen - 1
               Continue
             Endif
           Endif
           
-          Me.AddState(Highlight.Error)
+          TextHighlighter.Add(Highlight.Error)
             
         Endif
         
       Case Highlight.Symbol
         
-        Me.AddState(iState)
+        TextHighlighter.Add(iState)
         If sCar = sWait Then
           iState = Highlight.Normal
         Endif
         
       Case Highlight.Comment
         
-        Me.AddState(iState)
+        TextHighlighter.Add(iState)
         If String.Mid$(sText, iPos, 2) = "*/" Then
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
           Inc iPos
           iState = Highlight.Normal
         Endif
         
       Case Highlight.String
         
-        Me.AddState(iState)
+        TextHighlighter.Add(iState)
         If sCar = "\\" Then
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
           Inc iPos
         Else If sCar = sWait Then
           iState = Highlight.Normal
@@ -153,7 +158,13 @@ Public Sub Run(sText As String)
   '  Highlight.ShowLimit = LTrim(sText) Begins "function "
   'Endif
   
-  Me.State = iState
-  Me.Tag = iTag
+  TextHighlighter.State = iState
+  TextHighlighter.Tag = iTag
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+  Return $aKeywords
   
 End

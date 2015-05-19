@@ -47,6 +47,7 @@ typedef struct
 		gFont *font;
 		FONT_FUNC func;
 		void *object;
+		unsigned modified : 1;
 		enum { Name, Size, Grade, Bold, Italic, Underline, Strikeout };
 	}  
 	CFONT;

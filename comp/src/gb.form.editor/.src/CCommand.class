@@ -11,7 +11,6 @@ Public SY As Integer
 Public XA As Integer
 Public YA As Integer
 Public Text As String
-Public Overwrite As Boolean
 
 ' /**---- GCommand -----------------------------------------------------------*/
 ' 
@@ -34,18 +33,17 @@ Public Overwrite As Boolean
 ' };
 ' 
 
-Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, bOverwrite As Boolean)
+Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
   With hDoc.Current
     Type = iType
-    X = .Column
-    Y = .Line
+    X = X1
+    Y = Y1
+    XA = X2
+    YA = Y2
     SX = .SelectionColumn
     SY = .SelectionLine
-    XA = hDoc.XAfter
-    YA = hDoc.YAfter
     Text = sText
-    Overwrite = bOverwrite
   End With
   
 End
@@ -53,13 +51,13 @@ End
 Public Sub Print()
   
   Print ["BEGIN", "END", "INSERT", "DELETE"][Type];;
-  Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
+  Print "X =";; X;; "Y =";; Y;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
   
 End
 
-Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, bOverwrite As Boolean) As CCommand
+Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As String, X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) As CCommand
   
-  Return New CCommand(hDoc, iType, sText, bOverwrite)
+  Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2)
 
 End
 

@@ -13,7 +13,7 @@ Public Sub _new(hModule As Object)
   
 End
 
-Private Sub GetEditor() As Editor
+Private Sub GetEditor() As TextEditor
   
   Return $hModule.GetEditor()
   
@@ -44,7 +44,7 @@ End
 
 Public Sub OnKeyPress() As Boolean
 
-  Dim hEditor As Editor = GetEditor()
+  Dim hEditor As TextEditor = GetEditor()
   Dim bStop As Boolean
   
   If hEditor.ReadOnly Then Return

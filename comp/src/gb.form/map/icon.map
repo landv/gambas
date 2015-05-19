@@ -56,7 +56,7 @@ grid                    actions/view-grid;actions/games-config-board
 halt                    actions/process-stop
 harddisk                devices/drive-harddisk
 hardware                devices/audio-card
-help                    apps/help-browser
+help                    [breeze*]apps/toolbar/system-help;apps/help-browser
 home                    actions/go-home
 html                    $(mime)/text-html
 identity                apps/user-info;apps/preferences-desktop-user
@@ -142,7 +142,7 @@ stop                    actions/media-playback-stop
 sun                     status/weather-clear
 system                  devices/computer
 tablet                  devices/input-tablet
-terminal                apps/utilities-terminal
+terminal                [breeze*]apps/toolbar/utilities-terminal;apps/utilities-terminal
 text                    $(mime)/text-x-generic;$(mime)/text-plain
 text-bold               actions/format-text-bold
 text-center             actions/format-justify-center

@@ -134,8 +134,9 @@ Public Sub Form_Open()
   txtDesktop.Text = Project.ExtraDesktop
 
   edtLog.ReadConfig
-  edtLog.Flags[Editor.ShowModifiedLines] = False
-  edtLog.Flags[Editor.HideMargin] = True
+  edtLog.ShowModified = False
+  edtLog.ShowLineNumber = False
+  edtLog.ShowIcon = False
   edtLog.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
 End
@@ -543,7 +544,7 @@ End
 Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
 
   If Not bNoNewLine Then sText &= "\n"
-  edtLog.Goto(edtLog.Lines.Count, 0)
+  edtLog.Goto(0, edtLog.Lines.Count)
   edtLog.ReadOnly = False
   edtLog.Print(sText)
   edtLog.ReadOnly = True

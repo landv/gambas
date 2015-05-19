@@ -506,7 +506,7 @@ Private Sub GetNumberOfLines(sClass As String) As Integer
   Try hEditor = Project.LoadFile(sPath)
   If IsNull(hEditor) Then Return
   
-  Return hEditor.GetEditor().Lines.Count
+  Return hEditor.GetEditor().Count
   
 End
 
@@ -551,7 +551,7 @@ Private Sub LoadCurrentSourceCode() As String
     aDuration = $cLines[$sCurrentClass]
     
     iTime = $hCurrent.FirstTime
-    For I = $iFirstLine To $iFirstLine + edtSource.Lines.Count - 1
+    For I = $iFirstLine To $iFirstLine + edtSource.Count - 1
       Try iTime = Max(iTime, aDuration[I])
     Next
     $hCurrent.MaxTime = iTime
@@ -559,7 +559,7 @@ Private Sub LoadCurrentSourceCode() As String
   Endif
   
   gvwSource.Rows.Height = edtSource.LineHeight
-  gvwSource.Rows.Count = edtSource.Lines.Count
+  gvwSource.Rows.Count = edtSource.Count
   gvwSource.Row = 0
   gvwSource.Refresh
   
@@ -595,8 +595,12 @@ Public Sub ReadOneConfig()
   Project.SetSmallFont(gvwProfile)
   Project.SetSmallFont(tabInfo)
   edtSource.ReadConfig
-  edtSource.Flags[Editor.HideMargin] = Not edtSource.Flags[Editor.ShowLineNumbers]
-  edtSource.Flags[Editor.NoFolding] = True
+  edtSource.ShowIcon = False
+  edtSource.ShowPosition = False
+  edtSource.ShowModified = False
+  edtSource.ShowLineNumber = False
+  'edtSource.Flags[Editor.HideMargin] = Not edtSource.Flags[Editor.ShowLineNumbers]
+  'edtSource.Flags[Editor.NoFolding] = True
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetSmallFont(gvwSource)
   UpdateSource
@@ -686,6 +690,8 @@ Public Sub Form_Open()
   gvwProfile.Row = 0
   
   btnSave.Enabled = Left(File.Name($sPath)) = "."
+  
+  edtSource.Highlight = "gambas"
   
 End
 
@@ -1006,14 +1012,14 @@ End
 
 Public Sub gvwSource_Select()
 
-  edtSource.Goto(gvwSource.Row, 0)
+  edtSource.Goto(0, gvwSource.Row)
 
 End
 
 Public Sub edtSource_Cursor()
 
   gvwSource.Row = edtSource.Line
-  edtSource.Selection.Hide
+  edtSource.HideSelection
 
 End
 

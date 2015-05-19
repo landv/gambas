@@ -1,0 +1,42 @@
+' Gambas class file
+
+Export
+
+Create Static
+Create Private
+
+Static Public Const Name As String = ""
+
+Static Public _Highlight As Byte[]
+Static Public State As Integer
+Static Public Tag As Integer
+Static Public Alternate As Boolean
+Static Public TextAfter As String
+Static Public Limit As Boolean
+
+Static Public Sub Add((State) As Integer, Optional Count As Integer = 1)
+
+  Dim iState As Integer
+  
+  iState = State
+  If Alternate Then iState += 128
+  
+  If _Highlight.Count = 0 Or If _Highlight[_Highlight.Max - 1] <> iState Or If _Highlight[_Highlight.Max] > (255 - Count) Then
+    _Highlight.Add(iState)
+    _Highlight.Add(Count)
+  Else
+    _Highlight[_Highlight.Max] += Count
+  Endif
+  
+  TextHighlighter.State = State
+  
+End
+
+Public Sub Run((Text) As String)
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+End
+

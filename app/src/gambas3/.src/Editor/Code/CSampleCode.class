@@ -218,14 +218,14 @@ Private Sub Make(Optional iIndent As Integer) As String
   
 End
 
-Public Sub Insert(hEditor As Editor)
+Public Sub Insert(hEditor As TextEditor)
   
   Dim iIndent As Integer
   Dim sLine As String
   
-  sLine = hEditor.Lines[hEditor.Line].Text
+  sLine = hEditor.Current.Text
   iIndent = Len(sLine) - Len(LTrim(sLine))
-  hEditor.Insert(Make(iIndent), hEditor.Line, hEditor.Column)
+  hEditor.Insert(Make(iIndent))
   
 End
 
@@ -306,7 +306,7 @@ Private Sub NewLinePattern(sText As String, iPos As Integer) As Integer
 End
 
 
-Public Sub GotoNextPos(hEditor As Editor, iStart As Integer, iEnd As Integer, iPosStart As Integer) As Boolean
+Public Sub GotoNextPos(hEditor As TextEditor, iStart As Integer, iEnd As Integer, iPosStart As Integer) As Boolean
   
   Dim iPosText, iPosTextEnd As Integer
   Dim sText As String
@@ -320,7 +320,7 @@ Public Sub GotoNextPos(hEditor As Editor, iStart As Integer, iEnd As Integer, iP
   
   For iInd = iStart To iEnd - 1
     ' if hEditor.Lines[iInd].Length 
-    sText &= hEditor.Lines[iInd].Text & "\n"
+    sText &= hEditor[iInd].Text & "\n"
   Next
   iLen = String.Len(sText) - 1
   
@@ -460,10 +460,11 @@ FOUND:
   
   aCursor = CursorFromPos(sText, iPosText)
   If iPosTextEnd = iPosText Then
-    hEditor.Goto(iStart + aCursor[0], aCursor[1])
+    hEditor.Goto(aCursor[1], iStart + aCursor[0])
   Else
     aCursorEnd = CursorFromPos(sText, iPosTextEnd)
-    hEditor.Select(iStart + aCursor[0], aCursor[1], iStart + aCursorEnd[0], aCursorEnd[1])
+    hEditor.Goto(iStart + aCursor[0], aCursor[1])
+    hEditor.Goto(iStart + aCursorEnd[0], aCursorEnd[1], True)
   Endif
   
 Catch

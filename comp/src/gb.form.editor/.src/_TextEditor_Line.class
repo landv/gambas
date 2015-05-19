@@ -99,7 +99,7 @@ Private Function InitialState_Read() As _TextEditor_State
 
 End
 
-Public Sub Purge(Optional Comment As Boolean, (String) As Boolean, Replace As String = " ") As String
+Public Sub Purge(Optional KeepComment As Boolean, KeepString As Boolean, Replace As String = " ") As String
 
   Dim hDoc As CDocument = GetDoc()
   Dim aColor As Byte[]
@@ -118,11 +118,11 @@ Public Sub Purge(Optional Comment As Boolean, (String) As Boolean, Replace As St
   For I = 0 To aColor.Max Step 2
     iState = aColor[I]
     bReplace = False
-    If Not Comment Then
+    If Not KeepComment Then
       If iState = Highlight.Comment Or If iState = Highlight.Help Then
         bReplace = True
       Endif
-    Else If Not String And If iState = Highlight.String Then
+    Else If Not KeepString And If iState = Highlight.String Then
       bReplace = True
     Endif
     If bReplace Then

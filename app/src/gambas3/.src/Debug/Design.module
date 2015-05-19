@@ -68,7 +68,7 @@ Public Sub CheckErrorMessage(hEditor As FEditor)
   If hEditor Then
     If hEditor.Name == $sPosClass And If hEditor.GetEditor().Line = ($iPosLine - 1) Then
       hEditor.ShowErrorMessage($sError, "error")
-    Else If $iPosLine > hEditor.GetEditor().Lines.Count Then
+    Else If $iPosLine > hEditor.GetEditor().Count Then
       sPath = Project.FindForm(hEditor.Name)
       FMain.ShowError($sError, sPath)
     Endif
@@ -556,7 +556,7 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     sPath = Project.FindPath($sPosClass)
 
     With Project.Files[sPath]
-      .GetEditor().CurrentLine = -1
+      .GetEditor().StopLine = -1
       'Try .GetEditor().Lines[$iPosLine - 1].Current = False
     End With
 
@@ -584,9 +584,9 @@ Private Function SetPosition(sClass As String, iLine As Integer) As Boolean
     Project.LoadFile(sPath)
 
     With Project.Files[sPath]
-      If $iPosLine <= .GetEditor().Lines.Count Then
+      If $iPosLine <= .GetEditor().Count Then
         Project.OpenFile(sPath, $iPosLine)
-        .GetEditor().CurrentLine = $iPosLine - 1
+        .GetEditor().StopLine = $iPosLine - 1
         Return
       Endif
     End With
@@ -622,7 +622,7 @@ Public Sub RunUntil(hForm As FEditor, iLine As Integer)
   sClass = hForm.Name
 
   With hForm.GetEditor()
-    bOn = Not .Lines[iLine].Breakpoint
+    bOn = Not .[iLine].Breakpoint
   End With
 
   Inc iLine

@@ -2109,7 +2109,7 @@ Public Function LoadFile(sPath As String) As Object
 
 Catch
 
-  sErr = Error.Text '& "\n" & Error.Where
+  sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
   If hForm Then Try hForm.Delete
   Dec Application.Busy
   Try Files[sPath] = Null
@@ -2307,7 +2307,7 @@ Private Sub CompileError(sMsg As String)
   Dim sErr As String
   Dim sInfo As String
   Dim aInfo As String[]
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
 
   iPos = RInStr(sMsg, "\n")
   If iPos Then sMsg = Mid$(sMsg, iPos + 1)
@@ -2341,7 +2341,7 @@ Private Sub CompileError(sMsg As String)
 
     Try hEditor = hForm.GetEditor()
 
-    If hEditor And If iLine > hEditor.Lines.Count Then
+    If hEditor And If iLine > hEditor.Count Then
       SetMessage(File.BaseName(sFile) & ": " & sErr & " " & ("in form definition"))
       sMsg = "<b>" & sErr & "</b> " & ("in form definition")
     Else If iLine >= 1 Then
@@ -5364,22 +5364,22 @@ End
 
 Public Sub RefreshBreakpointPicture()
 
-  Dim iSize As Integer
-  Dim hImage As Image
-
-  iSize = Font[Settings["/Editor/Font"]].Height
-
-  'hImage = Picture["icon:/small/halt"].Image
-  hImage = Picture["img/16/breakpoint.png"].Image
-  'hImage.Opacity(0.75)
-  If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
-  Try Editor.BreakpointPicture = hImage.Picture
-
-  hImage = Picture["icon:/small/apply"].Image
-  'hImage.Opacity(0.75)
-  If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
-  Try Editor.BookmarkPicture = hImage.Picture
-
+  ' Dim iSize As Integer
+  ' Dim hImage As Image
+  ' 
+  ' iSize = Font[Settings["/Editor/Font"]].Height
+  ' 
+  ' 'hImage = Picture["icon:/small/halt"].Image
+  ' hImage = Picture["img/16/breakpoint.png"].Image
+  ' 'hImage.Opacity(0.75)
+  ' If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
+  ' Try Editor.BreakpointPicture = hImage.Picture
+  ' 
+  ' hImage = Picture["icon:/small/apply"].Image
+  ' 'hImage.Opacity(0.75)
+  ' If iSize < Stock.GetSize("small") Then hImage = hImage.Stretch(iSize, iSize)
+  ' Try Editor.BookmarkPicture = hImage.Picture
+  ' 
 End
 
 Public Sub IsStockAllowed() As Boolean
@@ -5604,7 +5604,7 @@ Public Sub StoreCombo(hCombo As ComboBox)
 
   iInd = hCombo.Find(sText)
   If iInd >= 0 Then hCombo.Remove(iInd)
-  hCombo.Add(sText, 0)
+  hCombo.Add(sText)
   hCombo.Text = sText
 
 End

@@ -858,7 +858,7 @@ End
 
 Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   Dim aSym As String[]
   Dim iInd As Integer
   Dim iLineDecl As Integer
@@ -869,7 +869,7 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   
   hEditor = hModule.GetEditor()
   
-  aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+  aSym = Highlight.Analyze(hEditor[iLine].Text)
   
   For iInd = 0 To aSym.Max - 1
     If aSym[iInd] = "STRUCT" Then Break
@@ -881,9 +881,9 @@ Static Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
   
   Do
     Inc iLine
-    If iLine >= hEditor.Lines.Count Then Return iLine
+    If iLine >= hEditor.Count Then Return iLine
     
-    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+    aSym = Highlight.Analyze(hEditor[iLine].Text)
     
     If aSym.Count >= 2 And If aSym[0] = "END" And If aSym[1] = "STRUCT" Then Break
     
@@ -918,7 +918,7 @@ End
 
 Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True)
   
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   Dim iLine As Integer
   Dim aSym As String[]
   Dim bStatic As Boolean
@@ -958,9 +958,9 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
   
   $bScanFoundEvent = False
   
-  For iLine = 0 To hEditor.Lines.Count - 1
+  For iLine = 0 To hEditor.Count - 1
     
-    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+    aSym = Highlight.Analyze(hEditor[iLine].Text)
     If aSym.Count = 0 Then Continue
     If Highlight.Types[0] = Highlight.Comment Or If Highlight.Types[0] = Highlight.Help Then Continue
     
@@ -1000,9 +1000,9 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     Endif
   Endif
   
-  For iLine = iLine To hEditor.Lines.Count - 1
+  For iLine = iLine To hEditor.Count - 1
     
-    aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+    aSym = Highlight.Analyze(hEditor[iLine].Text)
     If aSym.Count = 0 Then Continue
     
     bStatic = bModule
@@ -1167,7 +1167,7 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
         Next
         
         'iEnd = iInd
-        Try sSign = Trim(Mid$(Trim(hEditor.Lines[iLine].Text), Highlight.Positions[iStart] + 2))
+        Try sSign = Trim(Mid$(Trim(hEditor[iLine].Text), Highlight.Positions[iStart] + 2))
         If Not Error Then
           iPos = RInStr(sSign, ")")
           If iPos Then sSign = Trim(Left$(sSign, iPos - 1))
@@ -1228,8 +1228,8 @@ Static Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule A
     If sKind = "m" Then 
       Do
         Inc iLine
-        If iLine >= hEditor.Lines.Count Then Break
-        sLine = Trim(hEditor.Lines[iLine].Text)
+        If iLine >= hEditor.Count Then Break
+        sLine = Trim(hEditor[iLine].Text)
         iPos = InStr(sLine, "'")
         If iPos Then sLine = Trim(Left(sLine, iPos - 1))
         If Len(sLine) = 3 And If UCase(sLine) = "END" Then Break

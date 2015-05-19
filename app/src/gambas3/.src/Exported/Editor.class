@@ -128,7 +128,7 @@ Public Sub ReadConfig()
   
   Project.SetEditorFont(Me)
 
-  MTheme.InitEditor(Me)
+  'MTheme.InitEditor(Me)
 
   iLimit = Settings["/Editor/ProcedureLimit", 2]
   Me.Flags[Editor.ShowLimits] = iLimit > 0 And iLimit < 3

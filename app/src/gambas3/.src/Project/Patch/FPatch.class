@@ -32,7 +32,7 @@ Public Sub Form_Open()
   $hObs = New Observer(gvwHunks.Proxy, True) As "Observer"
 
   edtPatch.ReadConfig
-  edtPatch.Flags[Editor.ShowLineNumbers] = True
+  edtPatch.ShowLineNumber = True
 
 End
 
@@ -40,7 +40,7 @@ Private Sub Check(iRow As Integer, bActive As Boolean)
 
   $hPatch[iRow].Active = bActive
   gvwHunks[iRow, 0].Picture = If(bActive, Picture["img/16/checked.png"], Picture["img/16/unchecked.png"])
-  edtPatch.Highlight = IIf($hPatch[gvwHunks.Row].Active, Highlight.Diff, Highlight.Custom)
+  edtPatch.Highlight = IIf($hPatch[gvwHunks.Row].Active, "diff", "")
 
 End
 
@@ -93,9 +93,9 @@ End
 ' 
 ' End
 
-Public Sub edtPatch_Highlight()
+Public Sub edtPatch_Highlight(Text As String)
 
-  Highlight.Add(Highlight.Preprocessor, String.Len(Highlight.Text))
+  TextHighlighter.Add(Highlight.Preprocessor, String.Len(Text))
 
 End
 

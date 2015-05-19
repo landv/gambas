@@ -6,7 +6,7 @@ Private $bHasSVN As Boolean
 Private $bSVN As Boolean
 Private $bCVS As Boolean
 Private $bEnd As Boolean
-Private $hEditor As Editor
+Private $hEditor As TextEditor
 Private $bOutput As Boolean
 Private $sOutput As String
 Private $dOutput As Date
@@ -433,7 +433,7 @@ Public Sub Revert(Optional sPath As String) As Boolean
 
 End
 
-Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As Editor) As Boolean
+Public Sub CheckoutSVN(sPath As String, sDir As String, hEditor As TextEditor) As Boolean
 
   $hEditor = hEditor
   Run(["svn", "checkout", SvnPath$(sPath), SvnPath$(sDir)], True)

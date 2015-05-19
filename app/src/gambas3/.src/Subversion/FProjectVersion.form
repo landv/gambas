@@ -199,7 +199,7 @@
     { Separator1 Separator
       MoveScaled(21,20,35,0)
     }
-    { edtChange Editor
+    { edtChange TextEditor
       MoveScaled(3,21,65,21)
       Font = Font["Monospace"]
       Expand = True
@@ -207,12 +207,11 @@
     }
     Index = 2
     Text = ("Changes")
-    { edtDiff Editor
+    { edtDiff TextEditor
       MoveScaled(1,2,78,48)
       Font = Font["Monospace"]
       Expand = True
       Border = False
-      Highlight = Highlight.Diff
       ReadOnly = True
     }
     Index = 0

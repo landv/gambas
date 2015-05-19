@@ -125,7 +125,7 @@ Public Sub Update(Optional bForce As Boolean)
     $hCurrent = Project.ActiveForm
     If $hCurrent Then
       If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
-        bCode = $hCurrent.GetEditor().Highlight <> Highlight.None
+        bCode = $hCurrent.GetEditor().Highlight 
       Endif
       radCurrentProcedure.Enabled = bCode
       radCurrentFile.Enabled = True
@@ -405,7 +405,7 @@ Private Sub Run(iAction As Integer)
   Dim iTry As Integer
   Dim nReplace As Integer
   Dim hEditor As FEditor
-  Dim hTextEditor As Editor
+  Dim hTextEditor As TextEditor
   Dim iLastPos As Integer
   
   If InitSearch() Then Return
@@ -1122,3 +1122,15 @@ Public Sub radSearch_Click()
   cmbSearch.SetFocus
 
 End
+
+' Public Sub cmbSearch_KeyPress()
+' 
+'   If Key.Code = Key.Down Then
+'     Try cmbSearch.Text = cmbSearch[cmbSearch.Find(cmbSearch.Text) - 1].Text
+'     Stop Event
+'   Else If Key.Code = Key.Up Then
+'     Try cmbSearch.Text = cmbSearch[cmbSearch.Find(cmbSearch.Text) + 1].Text
+'     Stop Event
+'   Endif
+' 
+' End

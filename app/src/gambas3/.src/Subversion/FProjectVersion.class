@@ -69,10 +69,12 @@ Public Sub Form_Open()
   
   RefreshStatus(False)
   
+  edtChange.Highlight = "diff"
   edtChange.ReadConfig
   'edtChange.Flags[Editor.ShowCursorPosition] = True
   edtChange.Text = "\n---- " & DELIM_CHANGE & " ----\n\n" & $sChange
   
+  edtDiff.Highlight = "diff"
   edtDiff.ReadConfig
   edtDiff.Text = $sDiff
   

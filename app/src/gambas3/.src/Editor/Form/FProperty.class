@@ -688,7 +688,13 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "i", "l", "f", "d", "v", "Name", "Group" ', "EventName"
 
     Case "s"
-      bButton = True
+      If hProp.ConstantList Then
+        hEditor = cmbProperty
+        cmbProperty.ReadOnly = False
+        InitComboWith(hProp.GetConstantList())
+      Else
+        bButton = True
+      Endif
 
     Case "String[]", "Fields", "Field[]", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush"
 
@@ -714,6 +720,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       If hProp.ConstantClass Then
 
         hEditor = cmbProperty
+        cmbProperty.ReadOnly = True
         InitComboWith(hProp.GetConstantList())
 
       Endif
@@ -721,6 +728,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Case "b"
 
       hEditor = cmbProperty
+      cmbProperty.ReadOnly = True
       InitComboWith(["False", "True"])
 
     Case "Font", "Picture", "Path", "Color", "Image", "SvgImage", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush"

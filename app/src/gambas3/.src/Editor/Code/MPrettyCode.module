@@ -56,7 +56,7 @@ Private Sub InsertLine(aPos As Integer[], iLine As Integer, Optional iCount As I
 End
 
 
-Public Sub Run(hEditor As Editor, Optional iStart As Integer, Optional iEnd As Integer = -1)
+Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd As Integer = -1)
   
   Dim sLine As String
   Dim aLine As String[]
@@ -76,7 +76,7 @@ Public Sub Run(hEditor As Editor, Optional iStart As Integer, Optional iEnd As I
   $bKeepVoidLine = Settings["/FormatCode/KeepVoidLines", 0]
   
   If iEnd < 0 Then
-    iEnd = hEditor.Lines.Count - 1
+    iEnd = hEditor.Count - 1
   Endif
   
   $iLevel = iLevel
@@ -91,7 +91,7 @@ Public Sub Run(hEditor As Editor, Optional iStart As Integer, Optional iEnd As I
   While iLine <= iEnd
     
     $iLine = iLine
-    sLine = hEditor.Lines[iLine].Text
+    sLine = hEditor[iLine].Text
     sLine = IndentLine(sLine)
     
     If iLine < iStart Then
@@ -103,11 +103,12 @@ Public Sub Run(hEditor As Editor, Optional iStart As Integer, Optional iEnd As I
     aLine = Split(sLine, "\n")
     
     If aLine.Count <= 1 Then
-      hEditor.Lines[iLine].Text = sLine
+      hEditor[iLine].Text = sLine
     Else
-      hEditor.Lines[iLine].Text = aLine[0]
+      hEditor[iLine].Text = aLine[0]
       For I = 1 To aLine.Max
-        hEditor.Insert(aLine[I] & "\n", iLine + I, 0)
+        hEditor.Goto(0, iLine + I)
+        hEditor.Insert(aLine[I] & "\n")
       Next
       
       If aBookmark.Count Then
@@ -130,9 +131,9 @@ Public Sub Run(hEditor As Editor, Optional iStart As Integer, Optional iEnd As I
     iLine = Max(1, iStart)
     While iLine <= iEnd
       
-      If Not Trim(hEditor.Lines[iLine].Text) And If Not Trim$(hEditor.Lines[iLine - 1].Text) Then
+      If Not Trim(hEditor[iLine].Text) And If Not Trim$(hEditor[iLine - 1].Text) Then
         
-        hEditor.Remove(iLine - 1, 0, iLine, 0)
+        hEditor.Remove(0, iLine - 1, 0, iLine)
         Dec iEnd
         
         If aBookmark.Count Then

@@ -1,6 +1,8 @@
 ' Gambas class file
 
-Inherits Highlighter
+Inherits TextHighlighter
+
+Public Const Name As String = "c"
 
 Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$"
 Private Const DIGIT_CAR As String = "0123456789.+-eE"
@@ -58,15 +60,15 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
   Dim iPosType, iPosIdent, iPosAfterIdent As Integer
   Dim bLastExpr As Boolean
   
-  iState = Me.State
-  iTag = Me.Tag
+  iState = TextHighlighter.State
+  iTag = TextHighlighter.Tag
   iLenText = String.Len(sText)
   bLastExpr = True
   If iState = Highlight.Operator Then bLastExpr = False
   
   If Left(LTrim(sText)) = "#" Then
     
-    Me.AddState(Highlight.Preprocessor, iLenText)
+    TextHighlighter.Add(Highlight.Preprocessor, iLenText)
     iState = Highlight.Normal
     
   Else
@@ -126,7 +128,7 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
             Wend
           Endif
         
-          Me.AddState(Highlight.Number, String.Len(sIdent))
+          TextHighlighter.Add(Highlight.Number, String.Len(sIdent))
           iState = Highlight.Normal
           bLastExpr = True
           Continue
@@ -162,7 +164,7 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
             bLastExpr = True
           Endif
           
-          Me.AddState(iState, String.Len(sIdent))
+          TextHighlighter.Add(iState, String.Len(sIdent))
           iState = Highlight.Normal
           Continue
         
@@ -187,7 +189,7 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
             iState = Highlight.Error
           Endif
           
-          Me.AddState(iState, String.Len(sIdent))
+          TextHighlighter.Add(iState, String.Len(sIdent))
           iState = Highlight.Normal
           bLastExpr = False
           
@@ -201,7 +203,7 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
         If Not bSingleLineComment Then
           sCar = String.Mid$(sText, iPos, 2)
           If sCar = "*/" Then
-            Me.AddState(iState, 2)
+            TextHighlighter.Add(iState, 2)
             Inc iPos
             iState = Highlight.Normal
             Continue
@@ -214,25 +216,25 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
         If sCar = "\\" Then
           sCar = String.Mid$(sText, iPos + 1, 1)
           If sCar = "x" Then
-            Me.AddState(iState, 3)
+            TextHighlighter.Add(iState, 3)
             iPos += 2
             Continue
           Else If sCar = "u" Then
-            Me.AddState(iState, 5)
+            TextHighlighter.Add(iState, 5)
             iPos += 4
             Continue
           Else
-            Me.AddState(iState, 2)
+            TextHighlighter.Add(iState, 2)
             Inc iPos
             Continue
           Endif
         Else If sCar = "\"" And If Not bSingleQuoteString Then
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
           iState = Highlight.Normal
           bLastExpr = True
           Continue
         Else If sCar = "'" And If bSingleQuoteString Then
-          Me.AddState(iState)
+          TextHighlighter.Add(iState)
           iState = Highlight.Normal
           bLastExpr = True
           Continue
@@ -240,7 +242,7 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
         
       Endif
       
-      Me.AddState(iState)
+      TextHighlighter.Add(iState)
       
     Next
   
@@ -254,17 +256,17 @@ Public Sub RunWith(sText As String, cKeyword As Collection, cOperator As Collect
     
   Endif
   
-  Me.Limit = False
+  TextHighlighter.Limit = False
   If iPosIdent >= 1 And If Not IsSpace(Left(sText)) Then
     If InStr(String.Mid$(sText, iPosAfterIdent), "(") Then
       If RInStr(sText, ";") = 0 Then
-        Me.Limit = True
+        TextHighlighter.Limit = True
       Endif
     Endif
   Endif
   
-  Me.State = iState
-  Me.Tag = iTag
+  TextHighlighter.State = iState
+  TextHighlighter.Tag = iTag
   
 End
 

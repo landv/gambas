@@ -132,15 +132,16 @@
             Expand = True
             { panSepSource Panel
               MoveScaled(2,1,1,8)
+              Visible = False
               Background = Color.TextBackground
             }
-            { edtSource Editor
+            { edtSource TextEditor
               MoveScaled(4,1,11,8)
               Expand = True
               Border = False
               ScrollBar = Scroll.Vertical
-              Highlight = Highlight.Gambas
               ReadOnly = True
+              ShowCursor = False
             }
           }
         }

@@ -2,15 +2,19 @@
 
 { Form Form
   MoveScaled(0,0,125,103)
-  Arrangement = Arrange.Fill
+  Arrangement = Arrange.Vertical
+  { txtPrint TextBox
+    MoveScaled(5,2,24,4)
+    Visible = False
+  }
   { Panel1 VSplit
     MoveScaled(10,10,86,79)
+    Expand = True
     { TextEditor1 TextEditor
       MoveScaled(5,5,70,33)
       Font = Font["Gambas"]
       Border = False
       TabSize = 8
-      ShowPosition = True
       ShowLimit = True
       ShowCurrent = True
       ShowModified = True

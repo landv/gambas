@@ -136,6 +136,8 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 			);
 			GB.Call(&func, 3, TRUE);
 		}
+		
+		THIS->modified = TRUE;
 	}
 }
 
@@ -344,10 +346,21 @@ BEGIN_PROPERTY(Font_Strikeout)
 END_PROPERTY
 #endif
 
+BEGIN_PROPERTY(Font_Modified)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->modified);
+	else
+		THIS->modified = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+
+//-------------------------------------------------------------------------
+
 GB_DESC CFontsDesc[] =
 {
-	GB_DECLARE("Fonts", 0), 
-	GB_NOT_CREATABLE(),
+	GB_DECLARE_STATIC("Fonts"),
 
 	GB_STATIC_METHOD("_next", "s", Fonts_next, NULL),
 	GB_STATIC_METHOD("Exist", "b", Fonts_Exist, "(Family)s"),
@@ -355,7 +368,6 @@ GB_DESC CFontsDesc[] =
 	
 	GB_END_DECLARE
 };
-
 
 GB_DESC CFontDesc[] =
 {
@@ -372,6 +384,7 @@ GB_DESC CFontDesc[] =
 	GB_PROPERTY("Underline", "b", Font_Underline),
 	GB_PROPERTY("Strikeout", "b", Font_Strikeout),
 	GB_PROPERTY("Grade", "i", Font_Grade),
+	GB_PROPERTY("Modified", "b", Font_Modified),
 
 	GB_METHOD("ToString", "s", Font_ToString, 0),
 

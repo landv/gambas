@@ -25,12 +25,12 @@ Private $bNoUndo As Boolean
 
 Private $hDefaultInfo As New CLineInfo
 
-Private $sHighlight As String
-Private $hHighlight As Highlighter
+Private $hHighlight As TextHighlighter
+
 Private $bHighlighting As Boolean
 
-Private $iEndOfLine As Integer
-Private $sEndOfLine As String
+Private $iEndOfLine As Integer = gb.Unix
+Private $sEndOfLine As String = "\n"
 
 Public Sub _new()
   
@@ -65,7 +65,7 @@ Private Sub Text_Write(Value As String)
   
 End
 
-Public Sub Load(sPath As String)
+Public Sub Load(sPath As String, bAddNewLine As Boolean)
 
   Dim hFile As File
   Dim sLine As String
@@ -78,6 +78,12 @@ Public Sub Load(sPath As String)
   For Each sLine In hFile.Lines
     Lines.Add(sLine)
   Next
+  
+  If Not hFile.EndOfFile Then 
+    Lines.Add("")
+  Else If bAddNewLine And If Trim(sLine) Then 
+    Lines.Add("")
+  Endif
   
   LinesInfo = New CLineInfo[Lines.Count]
   HighlightFrom(0)
@@ -93,16 +99,12 @@ Public Sub Save(sPath As String)
   hFile.EndOfLine = $iEndOfLine
   For I = 0 To Lines.Max - 1
     Print #hFile, Lines[I]
-    If Info(I).Modified Then 
-      With SetInfo(I)
-        .Modified = False
-        .Saved = True
-      End With
-    Endif
   Next
   Print #hFile, Lines[Lines.Max];
+  
   Close #hFile
-  Refresh
+  
+  Reset(True)
   
 End
 
@@ -116,20 +118,6 @@ End
 Private Function Max_Read() As Integer
 
   Return Lines.Max
-
-End
-
-Private Sub AddUndo(hCmd As CCommand)
-
-  If $bNoUndo Then Return
-  
-  If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.Begin Then
-    $aUndo.Pop
-  Else
-    $aUndo.Add(hCmd)
-  Endif
-  
-  $aRedo.Clear
 
 End
 
@@ -184,6 +172,7 @@ Private Sub InsertLine(Y As Integer)
   LinesInfo[Y].Modified = True
   
   For Each hView In GetAllViews()
+    hView._ClearCacheWidth
     hView._RaiseChange
   Next
   
@@ -226,8 +215,17 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Dim I As Integer
   Dim sLine As String
   Dim hView As TextEditor
+  Dim XO, YO As Integer
+  Dim bHighlight As Boolean
+  Dim YA As Integer
+  Dim XA As Integer
   
   If Not sText Then Return
+  
+  'Debug X;; Y;; Quote(sText);; System.Backtrace.Join(" ")
+  
+  XO = X
+  YO = Y
   
   While Y > Lines.Count
     InsertLine(Lines.Count)
@@ -247,19 +245,30 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
     X = 0
     Inc Y
     InsertLine(Y)
+    bHighlight = True
     
   Next
   
   sLine = String.Left(Lines[Y], X) & aText[aText.Max]
-  YAfter = Y
-  XAfter = String.Len(sLine)
+  XA = String.Len(sLine)
+  YA = Y
   SetLine(Y, sLine & sRest)
   
-  If Not $bNoUndo Then AddUndo(CCommand(Me, CCommand.INSERT, sText))
+  XAfter = XA
+  YAfter = YA
+  
+  If Not $bNoUndo Then 
+    AddUndo(CCommand(Me, CCommand.INSERT, sText, XO, YO, XA, YA))
+  Endif
   
   For Each hView In GetAllViews()
     hView._AfterInsert(Y, YAfter)
   Next
+  
+  If bHighlight Then HighlightFrom(YO)
+  
+  XAfter = XA
+  YAfter = YA
   
 End
 
@@ -424,6 +433,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
 
   Dim sText As String
   Dim hView As TextEditor
+  Dim bHighlight As Boolean
   
   sText = GetText(X1, Y1, X2, Y2)
   
@@ -446,11 +456,17 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
   Else If Y1 < Y2 Then
     
+    bHighlight = True
+    
     SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1))
     
     Lines.Remove(Y1 + 1, Y2 - Y1)
     LinesInfo.Remove(Y1 + 1, Y2 - Y1)
     
+    For Each hView In GetAllViews()
+      hView._RaiseChange
+    Next
+  
     Refresh
   
   Endif
@@ -458,14 +474,21 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   XAfter = X1
   YAfter = Y1
   
-  If Not $bNoUndo Then 
-    AddUndo(CCommand(Me, CCommand.DELETE, sText))
+  If Not $bNoUndo Then
+    AddUndo(CCommand(Me, CCommand.DELETE, sText, X1, Y1, X2, Y2))
   Endif
   
   For Each hView In GetAllViews()
     hView._AfterRemove(Y1, Y2)
+    If Y2 > Y1 Then hView._ClearCacheWidth
   Next
-
+  
+  If bHighlight Then
+    HighlightFrom(Y1)
+    XAfter = X1
+    YAfter = Y1
+  Endif
+  
 End
 
 
@@ -611,6 +634,23 @@ Public Sub GetText(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer) A
 End
 
 
+Private Sub AddUndo(hCmd As CCommand)
+
+  If $bNoUndo Then Return
+  
+  'Print "AddUndo: ";
+  'hCmd.Print
+  
+  If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.Begin Then
+    $aUndo.Pop
+  Else
+    $aUndo.Add(hCmd)
+  Endif
+  
+  $aRedo.Clear
+
+End
+
 Public Sub Undo()
   
   Dim hCmd As CCommand
@@ -627,6 +667,10 @@ Public Sub Undo()
   Repeat
   
     hCmd = $aUndo.Pop()
+    
+    'Print "Undo: ";
+    'hCmd.Print
+    
     With hCmd
       
       Select Case .Type
@@ -639,17 +683,17 @@ Public Sub Undo()
         
         Case CCommand.INSERT
           Me.Current.Remove(.X, .Y, .XA, .YA)
-          If .SX <> .X Or If .SY <> .Y Then 
-            Me.Current.Goto(.SX, .SY)
-            Me.Current.Goto(.X, .Y, True)
-          Endif
+          'If .SX <> .X Or If .SY <> .Y Then 
+          '  Me.Current.Goto(.SX, .SY)
+          '  Me.Current.Goto(.X, .Y, True)
+          'Endif
           
         Case CCommand.DELETE
-          Me.Current.Goto(.XA, .YA)
+          Me.Current.Goto(.X, .Y)
           Me.Current.Insert(.Text)
-          If .SX <> .X Or If .SY <> .Y Then 
+          If .SX <> .XA Or If .SY <> .YA Then 
             Me.Current.Goto(.SX, .SY)
-            Me.Current.Goto(.X, .Y, True)
+            Me.Current.Goto(.XA, .YA, True)
           Endif
         
       End Select
@@ -682,6 +726,10 @@ Public Sub Redo()
   Repeat
   
     hCmd = $aRedo.Pop()
+    
+    'Print "Redo: ";
+    'hCmd.Print
+    
     With hCmd
       
       Select Case .Type
@@ -693,13 +741,13 @@ Public Sub Redo()
           Dec L
         
         Case CCommand.DELETE
-          If .SX <> .X Or If .SY <> .Y Then 
-            Me.Current.Goto(.SX, .SY)
-            Me.Current.Goto(.X, .Y, True)
-          Else
-            Me.Current.Goto(.X, .Y)
-          Endif
-          Me.Current.Remove(.XA, .YA, .X, .Y)
+          ' If .SX <> .X Or If .SY <> .Y Then 
+          '   Me.Current.Goto(.SX, .SY)
+          '   Me.Current.Goto(.X, .Y, True)
+          ' Else
+          '   Me.Current.Goto(.X, .Y)
+          ' Endif
+          Me.Current.Remove(.X, .Y, .XA, .YA)
           
         Case CCommand.INSERT
           If .SX <> .X Or If .SY <> .Y Then 
@@ -726,7 +774,7 @@ End
 
 Private Function Highlight_Read() As String
 
-  Return $sHighlight
+  If $hHighlight Then Return $hHighlight.Name
 
 End
 
@@ -734,28 +782,38 @@ Private Sub Highlight_Write(Value As String)
 
   Dim Y As Integer
   
-  $sHighlight = Value
-  If Not Value Then
-    $hHighlight = Null
+  If Value Then
+    If Value == "c++" Then Value = "cplusplus"
+    Try $hHighlight = Class.Load("TextHighlighter_" & Value).AutoCreate()
+    If Not $hHighlight Then Error.Raise("Unknown highlighter")
   Else
-    If LCase(Value) = "c++" Then Value = "CPlusPlus"
-    Try $hHighlight = Class.Load("Highlighter" & Value).AutoCreate()
-    If Error Then Error.Raise("Unknown highlighter:" & Error.Text)
-    For Y = 0 To LinesInfo.Max
-      If LinesInfo[Y] Then LinesInfo[Y].ClearHighlight()
-    Next
-    HighlightFrom(0)
+    $hHighlight = Null
   Endif
+  
+  For Y = 0 To LinesInfo.Max
+    If LinesInfo[Y] Then LinesInfo[Y].ClearHighlight()
+  Next
+  HighlightFrom(0)
 
 End
 
 Public Sub HighlightFrom(Y As Integer)
 
   Dim aHighlight As Byte[]
+  Dim bCustom As Boolean
+  Dim bRefresh As Boolean
   
-  If Not $hHighlight Then Return
-  
+  If $bNoUndo Then Return
   If $bHighlighting Then Return
+  
+  If Not $hHighlight Then 
+    If Object.CanRaise(Me.Current, "Highlight") Then 
+      bCustom = True
+    Else
+      Return
+    Endif
+  Endif
+
   $bHighlighting = True
 
   Begin()
@@ -765,42 +823,54 @@ Public Sub HighlightFrom(Y As Integer)
     If Y < 0 Or If Y > Lines.Max Then Break
     If Info(Y).Colors Then Break
   
+    bRefresh = True
+  
     If Y = 0 Then
-      $hHighlight.State = Highlight.Normal
-      $hHighlight.Tag = 0
-      $hHighlight.Alternate = False
+      TextHighlighter.State = Highlight.Normal
+      TextHighlighter.Tag = 0
+      TextHighlighter.Alternate = False
     Else
       With Info(Y - 1)
-        $hHighlight.State = .State
-        $hHighlight.Tag = .Tag
-        $hHighlight.Alternate = .Alternate
+        TextHighlighter.State = .State
+        TextHighlighter.Tag = .Tag
+        TextHighlighter.Alternate = .Alternate
       End With
     Endif
-    $hHighlight.Limit = False
+    TextHighlighter.Limit = False
     
     With SetInfo(Y)
   
       aHighlight = New Byte[]
       .Colors = aHighlight
-      Highlighter._Highlight = aHighlight
-      Highlighter.TextAfter = ""
+      TextHighlighter._Highlight = aHighlight
+      TextHighlighter.TextAfter = ""
       
       'Debug "Before: State = "; .State;; "Tag = "; .Tag;; "Alternate = "; .Alternate;; "Limit = "; .Limit
       
-      $hHighlight.Run(Lines[Y])
+      '$hHighlight.Run(Lines[Y])
       
-      If $hHighlight.TextAfter And If Lines[Y] <> $hHighlight.TextAfter Then
+      If bCustom Then
+      
+        Me.Current._RaiseHighlight(Lines[Y])
+        
+      Else
+        
+        $hHighlight.Run(Lines[Y])
+        
+      Endif
+      
+      If TextHighlighter.TextAfter And If Lines[Y] <> TextHighlighter.TextAfter Then
         Me.Current.Goto(0, Y)
         Me.Current.Remove(0, Y, String.Len(Lines[Y]), Y)
-        Me.Current.Insert($hHighlight.TextAfter)
+        Me.Current.Insert(TextHighlighter.TextAfter)
         .Colors = aHighlight
       Endif
-  
-      If .Alternate <> $hHighlight.Alternate Or If .State <> $hHighlight.State Or If .Tag <> $hHighlight.Tag Or If .Limit <> $hHighlight.Limit Then
-        .Alternate = $hHighlight.Alternate
-        .State = $hHighlight.State
-        .Tag = $hHighlight.Tag
-        .Limit = $hHighlight.Limit
+      
+      If .Alternate <> TextHighlighter.Alternate Or If .State <> TextHighlighter.State Or If .Tag <> TextHighlighter.Tag Or If .Limit <> TextHighlighter.Limit Then
+        .Alternate = TextHighlighter.Alternate
+        .State = TextHighlighter.State
+        .Tag = TextHighlighter.Tag
+        .Limit = TextHighlighter.Limit
         'Debug "Update: State = "; .State;; "Tag = "; .Tag;; "Alternate = "; .Alternate;; "Limit = "; .Limit
         If Y < Lines.Max Then SetInfo(Y + 1).ClearHighlight()
       Endif
@@ -813,7 +883,7 @@ Public Sub HighlightFrom(Y As Integer)
 
   End()
 
-  Refresh
+  If bRefresh Then Refresh
   
   $bHighlighting = False
     
@@ -835,7 +905,7 @@ End
 
 Private Function Keywords_Read() As String[]
 
-  If $hHighlight Then Return $hHighlight.GetKeywords()
+  Try Return $hHighlight.GetKeywords()
 
 End
 
@@ -924,4 +994,177 @@ Private Sub EndOfLine_Write(Value As Integer)
   
   $iEndOfLine = Value  
 
+End
+
+Private Sub IsWordChar(sCar As String) As Boolean
+  
+  If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("_$", sCar) Then Return True
+  
+End
+
+
+Public Sub WordLeft(X As Integer, Y As Integer, Optional bWord As Boolean) As Integer
+
+  Dim sLine As String = Lines[Y]
+  Dim X2 As Integer
+  Dim sCar As String
+  
+  X2 = X
+  
+  If Not bWord Then
+    While X2 > 0
+      If Not IsSpace(String.Mid$(sLine, X2, 1)) Then Break
+      Dec X2
+    Wend
+  Endif
+  
+  If X2 > 0 Then
+    If IsWordChar(String.Mid$(sLine, X2, 1)) Then
+      Do
+        Dec X2
+        If X2 <= 0 Or If Not IsWordChar(String.Mid$(sLine, X2, 1)) Then Break
+      Loop
+    Else If Not bWord Then
+      Do
+        Dec X2
+        If X2 <= 0 Then Break
+        sCar = String.Mid$(sLine, X2, 1)
+        If IsWordChar(sCar) Or If IsSpace(sCar) Then Break
+      Loop
+    Endif
+  Endif
+  
+  Return X2
+  
+End
+
+' int GDocument::wordLeft(int y, int x, bool word)
+' {
+'   int xw = x;
+'   GString s = lines.at(y)->s;
+' 
+'   if (!word)
+'   {
+'     while (xw > 0 && s.isSpace(xw - 1))
+'       xw--;
+'   }
+'   
+'   if (xw > 0)
+'   {
+'     if (s.isWordChar(xw - 1))
+'     {
+'       for(;;)
+'       {
+'         xw--;
+'         if (xw <= 0 || !s.isWordChar(xw - 1))
+'           break;
+'       }
+'     }
+'     else if (!word)
+'     {
+'       for(;;)
+'       {
+'         xw--;
+'         if (xw <= 0 || s.isWordChar(xw - 1) || s.isSpace(xw - 1))
+'           break;
+'       }
+'     }
+'   }
+' 
+'   return xw;
+' }
+' 
+
+Public Sub WordRight(X As Integer, Y As Integer, Optional bWord As Boolean) As Integer
+
+  Dim sLine As String = Lines[Y]
+  Dim iLen As Integer = String.Len(sLine)
+  Dim X2 As Integer
+  Dim sCar As String
+  
+  X2 = X
+  
+  If X2 < iLen Then
+    
+    If IsWordChar(String.Mid$(sLine, X2 + 1, 1)) Then
+      Do
+        Inc X2
+        If X2 >= iLen Or If Not IsWordChar(String.Mid$(sLine, X2 + 1, 1)) Then Break
+      Loop
+    Else If Not bWord Then
+      Do
+        Inc X2
+        If X2 >= iLen Then Break
+        sCar = String.Mid$(sLine, X2 + 1, 1)
+        If IsWordChar(sCar) Or If IsSpace(sCar) Then Break
+      Loop
+    Endif
+    
+    If Not bWord Then
+      While X2 < iLen
+        If Not IsSpace(String.Mid$(sLine, X2 + 1, 1)) Then Break
+        Inc X2
+      Wend
+    Endif
+    
+  Endif
+  
+  Return X2
+  
+End
+
+
+' int GDocument::wordRight(int y, int x, bool word)
+' {
+'   int xw = x;
+'   GString s = lines.at(y)->s;
+'   int len = s.length();
+' 
+'   if (xw < len)
+'   {
+'     if (s.isWordChar(xw))
+'     {
+'       for(;;)
+'       {
+'         xw++;
+'         if (xw >= len || !s.isWordChar(xw))
+'           break;
+'       }
+'     }
+'     else if (!word)
+'     {
+'       for(;;)
+'       {
+'         xw++;
+'         if (xw >= len || s.isWordChar(xw) || s.isSpace(xw))
+'           break;
+'       }
+'     }
+'   }
+' 
+'   if (!word)
+'   {
+'     while (xw < len && s.isSpace(xw))
+'       xw++;
+'   }
+'   
+'   return xw;
+' }
+' 
+
+Public Sub Reset(Optional bSave As Boolean)
+
+  Dim I As Integer
+  
+  For I = 0 To Lines.Max
+    If Info(I).Modified Then 
+      With SetInfo(I)
+        .Modified = False
+        .Saved = bSave
+      End With
+    Endif
+  Next
+
+  Refresh  
+  
 End

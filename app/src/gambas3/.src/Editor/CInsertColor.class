@@ -19,11 +19,11 @@ Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   $hModule = hModule
   
   Select Case GetEditor().Highlight
-    Case Highlight.Gambas
+    Case "gambas"
       $aPattern = ["&H", "#", "&"]
-    Case Highlight.CSS, Highlight.WebPage, Highlight.HTML
+    Case "css", "webpage", "html"
       $aPattern = ["#"]
-    Case Highlight.JavaScript
+    Case "javascript"
       $aPattern = ["#"]
     Case Else
       $aPattern = ["#"]
@@ -39,7 +39,7 @@ Public Sub _new(hModule As Object, hMenuButton As MenuButton)
   
 End
 
-Private Sub GetEditor() As Editor
+Private Sub GetEditor() As TextEditor
   
   Return $hModule.GetEditor()
   

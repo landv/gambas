@@ -632,7 +632,7 @@ End
 Private Sub ConvertClass(sPath As String)
   
   Dim sLine As String
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   Dim iLine As Integer
   Dim sNewLine As String
   Dim sIndent As String
@@ -644,10 +644,10 @@ Private Sub ConvertClass(sPath As String)
   $hForm = Project.LoadFile(sPath)
   hEditor = $hForm.GetEditor()
   
-  For iLine = 0 To hEditor.Lines.Count - 1
+  For iLine = 0 To hEditor.Count - 1
     
-    hEditor.Goto(iLine, 0)
-    sLine = hEditor.Lines[iLine].Text
+    hEditor.Goto(0, iLine)
+    sLine = hEditor[iLine].Text
     
     If Left(LTrim(sLine)) <> "'" Then
       

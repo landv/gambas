@@ -995,9 +995,10 @@ void gControl::refresh(int x, int y, int w, int h)
 		gtk_widget_queue_draw(border);
 	else
 	{
-		// Buggy GTK+
-		// gtk_widget_queue_draw_area(border, x, y, w, h);
-		GdkRectangle r;
+		// Buggy GTK+?
+		gtk_widget_queue_draw_area(border, x, y, w, h);
+		
+		/*GdkRectangle r;
 		GtkAllocation a;
 
 		gtk_widget_get_allocation(border, &a);
@@ -1007,7 +1008,7 @@ void gControl::refresh(int x, int y, int w, int h)
 		r.width = w;
 		r.height = h;
 
-		gdk_window_invalidate_rect(gtk_widget_get_window(border), &r, TRUE);
+		gdk_window_invalidate_rect(gtk_widget_get_window(border), &r, TRUE);*/
 	}
 
 	afterRefresh();

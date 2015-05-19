@@ -232,9 +232,57 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
         DefaultValue = 0
     End Select
   Endif
+  
+  GoSub GET_KIND
 
+  If Type = "Color" Then DefaultValue = Color.Default
+
+  If Left(Name) = "#" Then
+    Coord = Name = "#X" Or Name = "#Y" Or Name = "#Width" Or Name = "#Height"
+    If Coord Then DefaultValue = Null
+  Endif
+  
+  If bDoNotApply Then
+    DoNotApply = True
+  Else
+    DoNotApply = GetFlag($cRedirect, sClass, Name)
+    If Not DoNotApply And If Name = "Enabled" And If hClass.Container Then 
+      DoNotApply = True
+    Endif
+  Endif
+
+  'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
+  
+  AlwaysRead = GetFlag($cAlwaysRead, sClass, Name)
+
+  If hClass.MultiContainer Then
+    Exclude = Name = "Text" Or Name = "Index" Or Name = "Picture"
+    'AlwaysRead = Name = "Text" OR Name = "Picture"
+    Hidden = Name = "Index"
+  Endif
+
+  'Translate = $cTranslate.Exist(Name) Or $cTranslate.Exist(sClass & "." & Name)
+  Translate = GetFlag($cTranslate, sClass, Name)
+  Shortcut = GetFlag($cShortcut, sClass, Name)
+  UpdateName = GetFlag($cUpdateName, sClass, Name)
+  
+  Virtual = bVirtual
+  Return
+  
+GET_KIND:
+
+  ' {...:Arg}
+    
+  iPos = RInStr(sKind, ":")
+  If iPos Then 
+    Argument = Mid$(sKind, iPos + 1)
+    sKind = Left$(sKind, iPos - 1)
+  Endif
+  
   If sKind Then 
-
+    
+    ' {Class.Alpha;Beta...} or {Class.*}
+    
     iPos = InStr(sKind, ".")
     If iPos Then
     
@@ -274,75 +322,39 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
       ' if the default value is numeric, transform it into its symbol
       sList = ConstantList["#" & CStr(DefaultValue)]
       If sList Then DefaultValue = sList
-
-    Else
-  
-      iPos = InStr(sKind, ":")
-      If iPos Then 
-        sArg = Mid$(sKind, iPos + 1)
-        sKind = Left$(sKind, iPos - 1)
-      Endif
-  
-      Select Case sKind
       
-        Case Else ' Color,Path,Font,Range
-  
-          Type = sKind
-          Argument = sArg
-  
-      End Select
+      Return
+    
+    Else If InStr(sKind, ";")
       
-    Endif
-  
-  Else
-
-    If Type = "i" Then
-      If Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 Then
-        Type = "Color"
-      Endif
-    Else If Type = "s" Then
-      If InStr(Name, "Path") Then
-        Type = "Path"
-      Else If Name = "Menu" Then
-        Type = "Menu"
-      Endif
-  
+      ConstantList = New Collection
+      For Each sList In Split(sKind, ";")
+        ConstantList[sList] = sList
+      Next
+      
+      Return
+    
     Endif
     
-  Endif
-
-  If Type = "Color" Then DefaultValue = Color.Default
-
-  If Left(Name) = "#" Then
-    Coord = Name = "#X" Or Name = "#Y" Or Name = "#Width" Or Name = "#Height"
-    If Coord Then DefaultValue = Null
+    Type = sKind
+    
   Endif
   
-  If bDoNotApply Then
-    DoNotApply = True
-  Else
-    DoNotApply = GetFlag($cRedirect, sClass, Name)
-    If Not DoNotApply And If Name = "Enabled" And If hClass.Container Then 
-      DoNotApply = True
+
+  If Type = "i" Then
+    If Name = "Background" Or Name = "Foreground" Or InStr(Name, "Color") > 0 Then
+      Type = "Color"
     Endif
+  Else If Type = "s" Then
+    If InStr(Name, "Path") Then
+      Type = "Path"
+    Else If Name = "Menu" Then
+      Type = "Menu"
+    Endif
+
   Endif
-
-  'IF DoNotApply THEN PRINT "DoNotApply: "; sClass; "."; Name
-  
-  AlwaysRead = GetFlag($cAlwaysRead, sClass, Name)
-
-  If hClass.MultiContainer Then
-    Exclude = Name = "Text" Or Name = "Index" Or Name = "Picture"
-    'AlwaysRead = Name = "Text" OR Name = "Picture"
-    Hidden = Name = "Index"
-  Endif
-
-  'Translate = $cTranslate.Exist(Name) Or $cTranslate.Exist(sClass & "." & Name)
-  Translate = GetFlag($cTranslate, sClass, Name)
-  Shortcut = GetFlag($cShortcut, sClass, Name)
-  UpdateName = GetFlag($cUpdateName, sClass, Name)
-  
-  Virtual = bVirtual
+    
+  Return
 
 Catch
 

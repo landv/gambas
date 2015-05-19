@@ -26,14 +26,14 @@ Public Sub _new()
   
   edtOutput.Styles[Highlight.Keyword].Underline = True
   edtOutput.Styles[Highlight.Keyword].Bold = False
-  edtOutput.Styles[Highlight.Keyword].Foreground = Color.Blue
-  edtOutput.Overwrite = True
-  edtOutput.Flags[Editor.AlwaysShowCursor] = True
-  edtOutput.Flags[Editor.ShowDots] = False
+  edtOutput.Styles[Highlight.Keyword].Color = Color.Blue
+  'edtOutput.Overwrite = True
+  'edtOutput.Flags[Editor.AlwaysShowCursor] = True
+  'edtOutput.Flags[Editor.ShowDots] = False
 
 End
 
-Public Sub GetEditor() As Editor
+Public Sub GetEditor() As TextEditor
   
   Return edtOutput
   
@@ -76,10 +76,11 @@ Public Sub ReadConfig()
 
   MTheme.InitEditor(edtOutput)
 
-  edtOutput.Flags[Editor.ShowCurrentLine] = False
-  edtOutput.Flags[Editor.ShowModifiedLines] = False
-  edtOutput.Flags[Editor.ShowLineNumbers] = False
-  edtOutput.Flags[Editor.HideMargin] = True
+  edtOutput.ShowPosition = False
+  edtOutput.ShowCurrent = False
+  edtOutput.ShowModified = False
+  edtOutput.ShowLineNumber = False
+  edtOutput.ShowIcon = False
   
   Project.SetSmallFont(tlbOutput)
   
@@ -101,9 +102,10 @@ Public Sub edtOutput_KeyPress()
     If Key.Code = Key["L"] Then
       Clear
     Else If Key.Code = Key["G"] Then 
-      edtOutput.ReadOnly = False
-      edtOutput.Print(Chr$(7))
-      edtOutput.ReadOnly = True
+      ' edtOutput.ReadOnly = False
+      ' edtOutput.Print(Chr$(7))
+      ' edtOutput.ReadOnly = True
+      ' TODO: flash
     Endif
     
   Endif
@@ -403,14 +405,15 @@ Public Sub btnEcho_Click()
 
 End
 
-Public Sub edtOutput_Highlight()
-
-  If $iLinkLen = 0 Then Return
-  If $iLinkY <> Highlight.Line Then Return
-
-  Highlight.Add(Highlight.Keyword, $iLinkLen)
-
-End
+' TODO: highlight debug
+' Public Sub edtOutput_Highlight()
+' 
+'   If $iLinkLen = 0 Then Return
+'   If $iLinkY <> Highlight.Line Then Return
+' 
+'   Highlight.Add(Highlight.Keyword, $iLinkLen)
+' 
+' End
 
 Public Sub edtOutput_MouseMove()
 
@@ -433,12 +436,12 @@ Public Sub edtOutput_MouseMove()
     MY = Mouse.ScreenY - edtOutput.ScreenY
   Endif
 
-  X = edtOutput.PosToColumn(MX, MY)
-  Y = edtOutput.PosToLine(MY)
+  X = edtOutput.ToColumn(MX, MY)
+  Y = edtOutput.ToLine(MY)
   
   If Y >= 0 And If X >= 0 Then
   
-    sText = edtOutput.Lines[Y].Text
+    sText = edtOutput[Y].Text
     
     iPos = InStr(sText, ": ")
     If iPos Then
@@ -453,14 +456,14 @@ Public Sub edtOutput_MouseMove()
   
   If $iLinkLen Then 
     $iLinkLen = 0
-    Try edtOutput.Lines[$iLinkY].Refresh
+    Try edtOutput[$iLinkY].Refresh
   Endif
   
   If iNewLen Then 
     $iLinkX = iNewX
     $iLinkY = iNewY
     $iLinkLen = iNewLen
-    edtOutput.Lines[iNewY].Refresh
+    edtOutput[iNewY].Refresh
   Endif
   
   If $iLinkLen Then 
@@ -475,7 +478,7 @@ Public Sub edtOutput_Leave()
 
   If $iLinkLen Then 
     $iLinkLen = 0
-    edtOutput.Lines[$iLinkY].Refresh
+    edtOutput[$iLinkY].Refresh
   Endif
   
 End
@@ -483,7 +486,7 @@ End
 Public Sub edtOutput_MouseDown()
 
   If $iLinkLen And If Mouse.Normal Then
-    If Not Project.Goto(Left$(edtOutput.Lines[$iLinkY].Text, $iLinkLen)) Then 
+    If Not Project.Goto(Left$(edtOutput[$iLinkY].Text, $iLinkLen)) Then 
       Stop Event
     Endif
   Endif

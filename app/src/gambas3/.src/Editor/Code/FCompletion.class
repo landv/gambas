@@ -25,7 +25,7 @@ Private $iMinH As Integer
 Private $iMaxY As Integer
 
 Private $hForm As Object
-Private $hEditor As Editor
+Private $hEditor As TextEditor
 Private $bGambas As Boolean
 
 Private $bHideLater As Boolean
@@ -106,7 +106,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
       Dec $iCol
       FillWithSpecial()
     Case "<"
-      $bGambas = $hEditor Is FEditor
+      $bGambas = $hForm Is FEditor
       $sText = sClass
       iPos = String.InStr(sClass, "_")
       If iPos Then 
@@ -174,7 +174,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
     Me.Resize(W + 4, Min(10 * gvwComp.Rows[0].H, gvwComp.ScrollH) + 2)
   Endif
 
-  sText = String.Left($hEditor.Lines[$hEditor.Line].Text, $iCol)
+  sText = String.Left($hEditor[$hEditor.Line].Text, $iCol)
   
   If InStr(" ./", sMode) And If Key.Code <> Key.Backspace Then 
     sText &= Key.Text
@@ -184,10 +184,10 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
 
   iX = Max(0, Min(iX, $hEditor.Window.ClientW - Me.Width))
 
-  iY = $hEditor.Y + $hEditor.CursorY + $hEditor.LineHeight
+  iY = $hEditor.Y + $hEditor.ToPosY() + $hEditor.LineHeight
 
   If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
-    iY = $hEditor.Y + $hEditor.CursorY - Me.Height
+    iY = $hEditor.Y + $hEditor.ToPosY() - Me.Height
     If iY < 0 Then
       Me.Height += iY
       iY = 0
@@ -408,8 +408,8 @@ Private Sub GetEvents(sCtrl As String) As String[]
   If $sEventClass Then Try aEvent = CComponent.Classes[$sEventClass].Events
   
   If Not aEvent Then
-    For iLine = 0 To $hEditor.Lines.Count - 1
-      sLine = $hEditor.Lines[iLine].Purge(False, True)
+    For iLine = 0 To $hEditor.Count - 1
+      sLine = $hEditor[iLine].Purge(False, True)
       
       aLine = Scan(sLine, "*NEW * AS \"*\"*")
       If aLine.Count <> 4 Then Continue
@@ -518,14 +518,14 @@ Private Sub FillWithIdent(sWord As String)
   iLine = -1
   Do
   
-    iLine = $hEditor.FindNextWord(sWord, iLine + 1)
+    iLine = $hEditor.FindNextString(sWord, iLine + 1)
     If iLine < 0 Then Break 
     If iLine = $hEditor.Line Then Continue
 
     If $bGambas Then
-      sLine = Highlight.Purge($hEditor.Lines[iLine].Text)
+      sLine = Highlight.Purge($hEditor[iLine].Text)
     Else
-      sLine = $hEditor.Lines[iLine].Text
+      sLine = $hEditor[iLine].Text
     Endif
     sUCaseLine = String.UCase(sLine) ' Only ASCII characters are interesting there...
   
@@ -821,7 +821,7 @@ Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
   Endif
 
   With $hEditor
-    .Select(.Line, $iCol, .Line, .Column)
+    .Goto($iCol, .Line, True)
     .Insert(sText)
     .SetFocus
   End With
@@ -872,7 +872,7 @@ Private Sub CompleteItem() As Boolean
     $sText = sText
 
     With $hEditor
-      .Select(.Line, $iCol, .Line, .Column)
+      .Goto($iCol, .Line, True)
       .Insert($sText)
     End With
 
@@ -965,7 +965,7 @@ Public Sub Form_Close()
 
 End
 
-Public Sub HideFrom(hEditor As Editor)
+Public Sub HideFrom(hEditor As TextEditor)
   
   If $hEditor <> hEditor Then Return
   $hEditor = Null
@@ -974,7 +974,7 @@ Public Sub HideFrom(hEditor As Editor)
   
 End
 
-Public Sub VisibleFrom(hEditor As Editor) As Boolean
+Public Sub VisibleFrom(hEditor As TextEditor) As Boolean
   
   If $hEditor = hEditor And If Me.Visible And If Not $bHideLater Then Return True
   

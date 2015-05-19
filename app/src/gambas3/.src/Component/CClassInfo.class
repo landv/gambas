@@ -437,7 +437,7 @@ End
 Public Sub GetHelpMarkup() As String
   
   Dim hForm As FEditor
-  Dim hEdit As Editor
+  Dim hEdit As TextEditor
   Dim I As Integer
   Dim sLine As String
   Dim sMarkup As String
@@ -461,8 +461,8 @@ Public Sub GetHelpMarkup() As String
     
     If Not hEdit Then Return  
   
-    For I = 0 To hEdit.Lines.Count - 1
-      sLine = Trim(hEdit.Lines[I].Text)
+    For I = 0 To hEdit.Count - 1
+      sLine = Trim(hEdit[I].Text)
       If sLine Begins "''' " Then
         sMarkup &= Trim(Mid$(sLine, 4)) & "\n"
       Else

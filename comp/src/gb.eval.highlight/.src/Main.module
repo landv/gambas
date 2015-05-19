@@ -14,11 +14,11 @@ Public Sub Main2()
   Dim aScan As String[]
   Dim I As Integer
   
-  For I = 1 To 10
+  For I = 1 To 1
   
     fTime = Timer
     
-    For Each sLine In Split(File.Load("~/gambas/3.0/contrib/Sebastian Kulesz/gbcrash/carta.html"), "\n")
+    For Each sLine In Split(File.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/test.html"), "\n")
   
       'Inc iLine
       'Debug iLine;; Len(sLine)
@@ -46,16 +46,16 @@ End
 
 Public Sub Main()
 
-  ' Dim sLine As String
-  ' 
-  ' Highlight.State = Highlight.Normal
-  ' Highlight.Tag = 0
-  ' 
-  ' For Each sLine In Split(File.Load("test.css"), "\n")
-  '   
-  '   Highlight.Text = sLine
-  '   HighlightCSS.Run()
-  '   
-  ' Next
+  Dim sLine As String
+  
+  Highlight.State = Highlight.Normal
+  Highlight.Tag = 0
+  
+  For Each sLine In Split(File.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/test.html"), "\n")
+    
+    Highlight.Text = sLine
+    HighlightHtml.Run(STYLE_WEB)
+    
+  Next
 
 End

@@ -43,6 +43,9 @@ Public Sub Form_Open()
   aGroup.Add(CSoftwareGroup("Audio", ("Audio"), "audio"))
   aGroup.Add(CSoftwareGroup("Video", ("Video"), "video"))
   aGroup.Add(CSoftwareGroup("Office", ("Office"), "office"))
+  aGroup.Add(CSoftwareGroup("Accessories", ("Accessories"), "tools"))
+  aGroup.Add(CSoftwareGroup("Internet", ("Internet"), "internet"))
+  aGroup.Add(CSoftwareGroup("System", ("System"), "computer"))
 
   aGroup.Sort
 

@@ -16,7 +16,7 @@ Public Sub _new(hModule As Object, hMenuButton As MenuButton, hMenu As Menu)
   
 End
 
-Private Sub GetEditor() As Editor
+Private Sub GetEditor() As TextEditor
 
   Return $hModule.GetEditor()
 
@@ -27,7 +27,7 @@ Private Sub FillMenu(aBook As Integer[])
   Dim hMenu As Menu
   Dim iLine As Integer
   Dim sLine As String
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   
   $hMenu.Children.Clear
   
@@ -60,7 +60,7 @@ Private Sub FillMenu(aBook As Integer[])
     hEditor = GetEditor()
     
     For Each iLine In aBook
-      Try sLine = hEditor.Lines[iLine].Text
+      Try sLine = hEditor[iLine].Text
       If Error Then Continue
       
       hMenu = New Menu($hMenu) As "mnuGoto"
@@ -75,11 +75,11 @@ End
 Private Sub Clear()
   
   Dim iLine As Integer
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   
   hEditor = GetEditor()
-  For Each iLine In GetEditor().Bookmarks
-    hEditor.Lines[iLine].Bookmark = False
+  For Each iLine In hEditor.Bookmarks
+    hEditor[iLine].Bookmark = False
   Next
   
 End
@@ -88,14 +88,14 @@ Public Sub Load()
   
   Dim aBook As Integer[]
   Dim iLine As Integer
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   
   aBook = Project.Config["Bookmarks/" &/ $sName]
   If aBook Then
     aBook.Sort
     hEditor = GetEditor()    
     For Each iLine In aBook
-      Try hEditor.Lines[iLine].Bookmark = True
+      Try hEditor[iLine].Bookmark = True
     Next
   Endif
   
@@ -114,10 +114,10 @@ End
 
 Public Sub mnuAdd_Click()
 
-  Dim hEditor As Editor
+  Dim hEditor As TextEditor
   
   hEditor = GetEditor()
-  hEditor.Lines[hEditor.Line].Bookmark = Not hEditor.Lines[hEditor.Line].Bookmark  
+  hEditor.Current.Bookmark = Not hEditor.Current.Bookmark  
   Save
   
 End
@@ -131,7 +131,7 @@ End
 
 Public Sub mnuGoto_Click()
   
-  GetEditor().Goto(Last.Tag, 0, True)
+  GetEditor().GotoCenter(0, Last.Tag)
   
 End
 
@@ -143,13 +143,13 @@ End
 
 Public Sub MovePrevious()
   
-  Dim hEditor As Editor = GetEditor()
+  Dim hEditor As TextEditor = GetEditor()
   Dim iLine As Integer = hEditor.Line
   
   While iLine > 0
     Dec iLine
-    If hEditor.Lines[iLine].Bookmark Then
-      hEditor.Goto(iLine, 0, True)
+    If hEditor[iLine].Bookmark Then
+      hEditor.GotoCenter(0, iLine)
       Return
     Endif
   Wend
@@ -158,13 +158,13 @@ End
 
 Public Sub MoveNext()
   
-  Dim hEditor As Editor = GetEditor()
+  Dim hEditor As TextEditor = GetEditor()
   Dim iLine As Integer = hEditor.Line
   
-  While iLine < (hEditor.Lines.Count - 1)
+  While iLine < (hEditor.Count - 1)
     Inc iLine
-    If hEditor.Lines[iLine].Bookmark Then
-      hEditor.Goto(iLine, 0, True)
+    If hEditor[iLine].Bookmark Then
+      hEditor.GotoCenter(0, iLine)
       Return
     Endif
   Wend

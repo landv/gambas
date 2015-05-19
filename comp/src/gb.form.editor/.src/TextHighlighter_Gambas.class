@@ -1,10 +1,12 @@
 ' Gambas class file
 
-Inherits Highlighter
+Inherits TextHighlighter
+
+Public Const Name As String = "gambas"
 
 Class Highlight
 
-Public Sub _new()
+Static Public Sub _init()
   
   Component.Load("gb.eval")
   
@@ -15,28 +17,6 @@ Public Sub GetKeywords() As String[]
   Return System.Keywords
   
 End
-
-' static int is_proc(void)
-' {
-'   PATTERN pattern;
-'   int i;
-' 
-'   if (!EVAL->pattern)
-'     return FALSE;
-' 
-'   for (i = 0;; i++)
-'   {
-'     pattern = EVAL->pattern[i];
-'     if (PATTERN_is_end(pattern))
-'       return FALSE;
-' 
-'     if (PATTERN_is(pattern, RS_PRIVATE) || PATTERN_is(pattern, RS_PUBLIC) || PATTERN_is(pattern, RS_STATIC) || PATTERN_is(pattern, RS_FAST))
-'       continue;
-' 
-'     return (PATTERN_is(pattern, RS_SUB) || PATTERN_is(pattern, RS_PROCEDURE) || PATTERN_is(pattern, RS_FUNCTION));
-'   }
-' }
-' 
 
 Private Sub IsProc() As Boolean
 
@@ -66,35 +46,32 @@ Public Sub Run(Text As String)
   Dim I As Integer
   Dim iLen As Integer
   
-  iState = Me.State
-  iTag = Me.Tag
+  iState = TextHighlighter.State
+  iTag = TextHighlighter.Tag
   
   Highlight.Analyze(Text, True)
-  Me.Limit = IsProc()
+  TextHighlighter.Limit = IsProc()
   
   iPos = 0
   For I = 0 To Highlight.Symbols.Max
     
     If iPos < Highlight.Positions[I] Then 
-      Me.State = Highlight.Normal
-      Me.Add(Highlight.Positions[I] - iPos)
+      TextHighlighter.Add(Highlight.Normal, Highlight.Positions[I] - iPos)
       iPos = Highlight.Positions[I]
     Endif
     
     iLen = String.Len(Highlight.Symbols[I])
-    Me.State = Highlight.Types[I]
-    Me.Add(iLen)
+    TextHighlighter.Add(Highlight.Types[I], iLen)
     iPos += iLen
     
   Next
 
   If iPos < String.Len(Highlight.TextAfter) Then 
-    Me.State = Highlight.Normal
-    Me.Add(String.Len(Highlight.TextAfter) - iPos)
+    TextHighlighter.Add(Highlight.Normal, String.Len(Highlight.TextAfter) - iPos)
   Endif
   
-  Me.State = iState
-  Me.Tag = iTag
-  Me.TextAfter = Highlight.TextAfter
+  TextHighlighter.State = iState
+  TextHighlighter.Tag = iTag
+  TextHighlighter.TextAfter = Highlight.TextAfter
 
 End

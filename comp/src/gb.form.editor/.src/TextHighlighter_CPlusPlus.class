@@ -1,6 +1,8 @@
 ' Gambas class file
 
-Inherits Highlighter
+Inherits TextHighlighter
+
+Public Const Name As String = "c++"
 
 Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$"
 Private Const DIGIT_CAR As String = "0123456789.+-eE"
@@ -50,6 +52,6 @@ End
 
 Public Sub Run(Text As String)
 
-  HighlighterC.RunWith(Text, $cKeyword, $cOperator, $cType)
+  TextHighlighter_C.RunWith(Text, $cKeyword, $cOperator, $cType)
   
 End

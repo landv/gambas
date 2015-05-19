@@ -402,10 +402,9 @@ Public Sub ReadConfig()
   Dim hCtrl As Control
   
   edtRequest.ReadConfig
-  edtRequest.Flags[Editor.ShowLimits] = False
-  edtRequest.Flags[Editor.ShowModifiedLines] = False
-  edtRequest.Flags[Editor.HighlightImmediately] = True
-  edtRequest.Flags[Editor.HideMargin] = True
+  edtRequest.ShowLimit = False
+  edtRequest.ShowModified = False
+  edtRequest.ShowLineNumber = False
   
   For Each hCtrl In [panToolBar, tabTable, tlbData, tlbData2, tlbData3, tlbField, tbvField, tlbIndex, tbvIndex, dvwData, dvwRequest]
     Project.SetSmallFont(hCtrl)
@@ -636,7 +635,7 @@ Public Sub btnRunQuery_Click()
     Try $hConn.Exec(sReq)
     If Not Error Then 
       Balloon.Info(("OK"), btnRunQuery)
-      edtRequest.Reset
+      'edtRequest.Reset
     Endif
   Endif
   

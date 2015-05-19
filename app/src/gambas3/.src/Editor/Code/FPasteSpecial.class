@@ -7,10 +7,10 @@ Public Const MODE_STRING As Integer = 1
 Public Const MODE_STRING_SPLIT As Integer = 2
 Public Const MODE_COMMENT As Integer = 3
 
-Private $hEditor As Editor
+Private $hEditor As TextEditor
 Private $iMode As Integer
 
-Public Sub Run(hEditor As Editor, Optional iMode As Integer = MODE_NORMAL) As Boolean
+Public Sub Run(hEditor As TextEditor, Optional iMode As Integer = MODE_NORMAL) As Boolean
 
   Dim sFormat As String
   
@@ -137,11 +137,11 @@ Public Sub PastePrint(sText As String)
   'sText = Trim(sText)
   If Not sText Then Return
   
-  sLine = $hEditor.Lines[$hEditor.Line].Text
+  sLine = $hEditor.Current.Text
   sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))
   
   $hEditor.Begin
-  $hEditor.Goto($hEditor.Line, 0)
+  $hEditor.Goto(0, $hEditor.Line)
   
   For Each sText In Split(sText, "\n")
     If sText Then
@@ -163,11 +163,11 @@ Public Sub PasteComment(sText As String)
   
   sText = Replace(sText, "\t", Space$(Project.TabSize))
   
-  sLine = $hEditor.Lines[$hEditor.Line].Text
+  sLine = $hEditor.Current.Text
   sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))
   
   $hEditor.Begin
-  $hEditor.Goto($hEditor.Line, 0)
+  $hEditor.Goto(0, $hEditor.Line)
   
   For Each sText In Split(sText, "\n")
     $hEditor.Insert(sIndent & "' " & sText & "\n")
@@ -182,7 +182,7 @@ Public Sub PasteStringSplit(sText As String)
   Dim sIndent As String
   Dim bNext As Boolean
 
-  sLine = $hEditor.Lines[$hEditor.Line].Text
+  sLine = $hEditor.Current.Text
   sIndent = Space$(Len(sLine) - Len(LTrim(sLine)))
 
   $hEditor.Begin

@@ -1,6 +1,8 @@
 ' Gambas class file
 
-Inherits Highlighter
+Inherits TextHighlighter
+
+Public Const Name As String = "javascript"
 
 Private Const IDENT_CAR As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$"
 Private Const DIGIT_CAR As String = "0123456789.+-eE"
@@ -39,8 +41,6 @@ Public Sub GetKeywords() As String[]
   
 End
 
-
-
 Public Sub Run(sText As String)
   
   Dim iState As Integer
@@ -54,8 +54,8 @@ Public Sub Run(sText As String)
   Dim bTestShowLimit As Boolean
   Dim bLastExpr As Boolean
   
-  iState = Highlight.State
-  iTag = Highlight.Tag
+  iState = TextHighlighter.State
+  iTag = TextHighlighter.Tag
   iLenText = String.Len(sText)
   bLastExpr = True
   If iState = Highlight.Operator Then bLastExpr = False
@@ -64,10 +64,10 @@ Public Sub Run(sText As String)
 
     sCar = String.Mid$(sText, iPos, 1)
     
-    If HighlighterHTML.AllowCode And If sCar = "<" And String.Mid$(sText, iPos, 2) = "<%" Then
-      HighlighterHTML.MeetCodeAt = iPos
-      Highlight.State = iState
-      Highlight.Tag = iTag
+    If TextHighlighter_Html.AllowCode And If sCar = "<" And String.Mid$(sText, iPos, 2) = "<%" Then
+      TextHighlighter_Html.MeetCodeAt = iPos
+      TextHighlighter.State = iState
+      TextHighlighter.Tag = iTag
       Return
     Endif
   
@@ -114,11 +114,11 @@ Public Sub Run(sText As String)
             sIdent &= sCar
           Wend
           
-          Me.AddState(Highlight.DataType, String.Len(sIdent))
+          TextHighlighter.Add(Highlight.DataType, String.Len(sIdent))
           iState = Highlight.Normal
           Continue
         Else
-          Me.AddState(Highlight.Operator)
+          TextHighlighter.Add(Highlight.Operator)
           Continue
         Endif
         
@@ -158,7 +158,7 @@ Public Sub Run(sText As String)
           Wend
         Endif
       
-        Me.AddState(Highlight.Number, String.Len(sIdent))
+        TextHighlighter.Add(Highlight.Number, String.Len(sIdent))
         iState = Highlight.Normal
         bLastExpr = True
         Continue
@@ -186,7 +186,7 @@ Public Sub Run(sText As String)
           bLastExpr = True
         Endif
         
-        Me.AddState(iState, String.Len(sIdent))
+        TextHighlighter.Add(iState, String.Len(sIdent))
         iState = Highlight.Normal
         Continue
       
@@ -214,7 +214,7 @@ Public Sub Run(sText As String)
           iState = Highlight.Error
         Endif
         
-        Me.AddState(iState, String.Len(sIdent))
+        TextHighlighter.Add(iState, String.Len(sIdent))
         iState = Highlight.Normal
         
         'Dec iPos
@@ -227,7 +227,7 @@ Public Sub Run(sText As String)
       If Not bSingleLineComment Then
         sCar = String.Mid$(sText, iPos, 2)
         If sCar = "*/" Then
-          Me.AddState(iState, 2)
+          TextHighlighter.Add(iState, 2)
           Inc iPos
           iState = Highlight.Normal
           Continue
@@ -239,25 +239,25 @@ Public Sub Run(sText As String)
       If sCar = "\\" Then
         sCar = String.Mid$(sText, iPos + 1, 1)
         If sCar = "x" Then
-          Me.AddState(iState, 3)
+          TextHighlighter.Add(iState, 3)
           iPos += 2
           Continue
         Else If sCar = "u" Then
-          Me.AddState(iState, 5)
+          TextHighlighter.Add(iState, 5)
           iPos += 4
           Continue
         Else
-          Me.AddState(iState, 2)
+          TextHighlighter.Add(iState, 2)
           Inc iPos
           Continue
         Endif
       Else If sCar = "\"" And If Not bSingleQuoteString Then
-        Me.AddState(iState)
+        TextHighlighter.Add(iState)
         iState = Highlight.Normal
         bLastExpr = True
         Continue
       Else If sCar = "'" And If bSingleQuoteString Then
-        Me.AddState(iState)
+        TextHighlighter.Add(iState)
         iState = Highlight.Normal
         bLastExpr = True
         Continue
@@ -265,7 +265,7 @@ Public Sub Run(sText As String)
       
     Endif
     
-    Me.AddState(iState)
+    TextHighlighter.Add(iState)
     
   Next
   
@@ -278,10 +278,10 @@ Public Sub Run(sText As String)
   Endif
   
   If bTestShowLimit Then
-    Me.Limit = LTrim(sText) Begins "function "
+    TextHighlighter.Limit = LTrim(sText) Begins "function "
   Endif
   
-  Me.State = iState
-  Me.Tag = iTag
+  TextHighlighter.State = iState
+  TextHighlighter.Tag = iTag
   
 End

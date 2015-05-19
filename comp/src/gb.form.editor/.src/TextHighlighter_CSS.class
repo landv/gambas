@@ -1,6 +1,8 @@
 ' Gambas class file
 
-Inherits Highlighter
+Inherits TextHighlighter
+
+Public Const Name As String = "css"
 
 Static Private $cProp As New Collection
 Static Private $aKeywords As String[]
@@ -76,9 +78,9 @@ Public Sub Run(sText As String)
   Dim iSaveState As Integer
   Dim iPos, iPos2 As Integer
 
-  iState = Me.State
+  iState = TextHighlighter.State
   If iState = Highlight.Normal Then iState = Highlight.Keyword
-  iTag = Me.Tag
+  iTag = TextHighlighter.Tag
   sOrgText = sText
   iNextState = iState
 
@@ -106,8 +108,8 @@ Public Sub Run(sText As String)
           iState = Highlight.Comment
           iNextState = iState
           Goto NEXT_STATE
-        Else If HighlighterHTML.AllowCode And If sCar = "<" And If Mid$(sText, iInd, 2) = "<%" Then
-          HighlighterHTML.MeetCodeAt = iInd
+        Else If TextHighlighter_Html.AllowCode And If sCar = "<" And If Mid$(sText, iInd, 2) = "<%" Then
+          TextHighlighter_Html.MeetCodeAt = iInd
           Break
         Endif
         
@@ -181,9 +183,9 @@ Public Sub Run(sText As String)
           If Not sProperty Then Goto NEXT_STATE
           
           If sProperty Then
-            Me.AddState(IIf($cProp.Exist(sProperty), Highlight.Symbol, Highlight.Error), iPos)
+            TextHighlighter.Add(IIf($cProp.Exist(sProperty), Highlight.Symbol, Highlight.Error), iPos)
           Else
-            Me.AddState(Highlight.Symbol, iPos)
+            TextHighlighter.Add(Highlight.Symbol, iPos)
           Endif
           iInd += iPos - 1
           Continue
@@ -230,15 +232,15 @@ Public Sub Run(sText As String)
   
   NEXT_STATE:
   
-    Me.AddState(iState)
+    TextHighlighter.Add(iState)
     iState = iNextState
 
   Next
   
   If iNextState = Highlight.String Then iNextState = iSaveState
   
-  Me.State = iNextState
-  Me.Tag = iTag
-  Me.Limit = bLimit
+  TextHighlighter.State = iNextState
+  TextHighlighter.Tag = iTag
+  TextHighlighter.Limit = bLimit
 
 End

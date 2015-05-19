@@ -766,7 +766,7 @@ Public Sub LoadProxyConfig()
   
 End
 
-Public Sub FindMarkup(hEdit As Editor, iLine As Integer) As String
+Public Sub FindMarkup(hEdit As TextEditor, iLine As Integer) As String
   
   Dim I As Integer
   Dim sHelp As String
@@ -774,7 +774,7 @@ Public Sub FindMarkup(hEdit As Editor, iLine As Integer) As String
   
   ' Try to find help on the line of the declaration
   
-  Highlight.Analyze(hEdit.Lines[iLine].Text)
+  Highlight.Analyze(hEdit[iLine].Text)
   I = Highlight.Symbols.Max
   If I >= 1 Then
     If Highlight.Types[I] = Highlight.Help Then
@@ -788,7 +788,7 @@ Public Sub FindMarkup(hEdit As Editor, iLine As Integer) As String
   If Not sHelp Then
   
     For I = iLine - 1 DownTo 0
-      sLine = Trim(hEdit.Lines[I].Text)
+      sLine = Trim(hEdit[I].Text)
       If sLine Begins "'' " Or If sLine = "''" Then 
         sHelp = RTrim(Mid(sLine, 4)) & "\n" & sHelp
       Else

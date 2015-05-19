@@ -276,6 +276,8 @@ static void CFONT_manage(int prop, CFONT *_object, void *_param)
 			value._object.value = THIS;
 			GB.SetProperty(THIS->object, "Font", &value);
 		}
+		
+		THIS->modified = TRUE;
 	}
 }
 
@@ -577,10 +579,20 @@ BEGIN_PROPERTY(Font_Styles)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(Font_Modified)
+
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->modified);
+	else
+		THIS->modified = VPROP(GB_BOOLEAN);
+
+END_PROPERTY
+
+//---------------------------------------------------------------------------
+
 GB_DESC CFontsDesc[] =
 {
-	GB_DECLARE("Fonts", 0),
-	GB_NOT_CREATABLE(),
+	GB_DECLARE_STATIC("Fonts"),
 
 	GB_STATIC_METHOD("Exist", "b", Fonts_Exist, "(Family)s"),
 	GB_STATIC_METHOD("_next", "s", Fonts_next, NULL),
@@ -608,6 +620,7 @@ GB_DESC CFontDesc[] =
 	GB_PROPERTY("Italic", "b", Font_Italic),
 	GB_PROPERTY("Underline", "b", Font_Underline),
 	GB_PROPERTY("Strikeout", "b", Font_Strikeout),
+	GB_PROPERTY("Modified", "b", Font_Modified),
 
 	GB_METHOD("ToString", "s", Font_ToString, NULL),
 

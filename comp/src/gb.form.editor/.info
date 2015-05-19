@@ -4,7 +4,7 @@ C
 _Properties
 C
 s
-*,Border=True,ScrollBar{Scroll.*}=Both,ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowCursor=True
+*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowCursor=True
 _DrawWith
 C
 s
@@ -37,6 +37,10 @@ TextArea
 :
 
 
+:Highlight
+:
+
+(Text)s
 Text
 p
 s
@@ -209,10 +213,22 @@ _SetDocument
 m
 
 (hDoc)CDocument;
+_ClearCacheWidth
+m
+
+[(Y)i]
+Refresh
+m
+
+
+GotoCenter
+m
+
+(NX)i(NY)i
 Load
 m
 
-(Path)s
+(Path)s[(AddNewLine)b]
 Save
 m
 
@@ -269,10 +285,10 @@ Redo
 m
 
 
-Goto
+Cut
 m
 
-(NX)i(NY)i[(Mark)b]
+
 SelectAll
 m
 
@@ -281,6 +297,10 @@ Insert
 m
 
 (Text)s
+Goto
+m
+
+(NX)i(NY)i[(Mark)b]
 FindPreviousLimit
 m
 i
@@ -293,10 +313,10 @@ HideSelection
 m
 
 
-GotoCenter
+EnsureVisible_Timer
 m
 
-(NX)i(NY)i
+
 View_MouseDown
 m
 
@@ -329,10 +349,6 @@ _AfterRemove
 m
 
 (Y1)i(Y2)i
-_ClearCacheWidth
-m
-
-[(Y)i]
 View_Draw
 m
 
@@ -378,6 +394,10 @@ m
 CDocument
 
 View_GotFocus
+m
+
+
+View_LostFocus
 m
 
 
@@ -429,6 +449,14 @@ Scroll
 m
 
 (X)i(Y)i
+Reset
+m
+
+
+_RaiseHighlight
+m
+
+(sText)s
 #TextEditorStyle
 
 C
@@ -448,6 +476,49 @@ _call
 M
 TextEditorStyle
 (Color)i[(Bold)b(Underline)b]
+#TextHighlighter
+
+A
+Name
+C
+s
+?
+_Highlight
+V
+Byte[]
+
+State
+V
+i
+
+Tag
+V
+i
+
+Alternate
+V
+b
+
+TextAfter
+V
+s
+
+Limit
+V
+b
+
+Add
+M
+
+(State)i[(Count)i]
+Run
+m
+
+(Text)s
+GetKeywords
+m
+String[]
+
 #_TextEditor_Line
 
 C
@@ -490,7 +561,7 @@ m
 Purge
 m
 s
-[(Comment)b(String)b(Replace)s]
+[(KeepComment)b(KeepString)b(Replace)s]
 #_TextEditor_State
 
 C
@@ -520,6 +591,10 @@ C
 _new
 m
 
+
+_GetStyles
+m
+TextEditorStyle[]
 
 _get
 m
