@@ -503,7 +503,7 @@ Private Sub FillWithIdent(sWord As String)
     
   Endif
   
-  Try aKeywords = $hForm.GetKeywords()
+  Try aKeywords = $hEditor.Keywords
   If aKeywords Then
     For Each sCar In aKeywords
       If sCar Like sWord & "*" Then 

@@ -998,7 +998,10 @@ End
 
 Private Sub IsWordChar(sCar As String) As Boolean
   
-  If IsLetter(sCar) Or If IsDigit(sCar) Or If InStr("_$", sCar) Then Return True
+  If IsSpace(sCar) Then Return
+  If IsPunct(sCar) And If InStr("_$", sCar) = 0 Then Return
+  If String.Code(sCar) = 160 Then Return
+  Return True
   
 End
 

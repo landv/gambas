@@ -132,6 +132,7 @@ Private $bShowBraces As Boolean
 'Private $aSaveCursor As Integer[]
 
 Public _Views As TextEditor[]
+Private $bFirstFocus As Boolean
 
 Public Sub _new()
   
@@ -755,7 +756,7 @@ Public Sub View_KeyPress()
       Endif
     
     Case Key.Left
-      NormalizeColumn
+      $X = NormalizeColumn($X, $Y)
       If Key.Control Then
         If $X = 0 Then
           Goto(-1, $Y - 1, Key.Shift)
@@ -798,7 +799,7 @@ Public Sub View_KeyPress()
       If Key.Control Then
         Goto(0, 0, Key.Shift)
       Else
-        NormalizeColumn
+        $X = NormalizeColumn($X, $Y)
         sTab = GetIndentText($Y)
         If $X <> Len(sTab) Then
           Goto(Len(sTab), $Y, Key.Shift)
@@ -1047,7 +1048,7 @@ Public Sub View_MouseDown()
   
   Y = PosToLine(Mouse.Y)
   If Y >= 0 Then
-    X = PosToColumn(Y, Mouse.X)
+    X = NormalizeColumn(PosToColumn(Y, Mouse.X), Y)
     Goto(X, Y)
   Endif
   
@@ -1103,7 +1104,7 @@ Public Sub View_MouseMove()
   
     Y = PosToLine(Mouse.ScreenY - $hView.ScreenY)
     If Y >= 0 Then
-      X = PosToColumn(Y, Mouse.ScreenX - $hView.ScreenX)
+      X = NormalizeColumn(PosToColumn(Y, Mouse.ScreenX - $hView.ScreenX), Y)
       Goto(X, Y, True)
     Endif
     
@@ -1167,12 +1168,9 @@ Private Sub DeleteSelection() As Boolean
   
 End
 
-Private Sub NormalizeColumn()
+Private Sub NormalizeColumn(X As Integer, Y As Integer) As Integer
 
-  'Dim X As String
-
-  $X = Min(String.Len($hDoc.Lines[$Y]), $X)
-  'If X <> $X Then Goto(X, $Y)
+  Return Min(String.Len($hDoc.Lines[Y]), X)
 
 End
 
@@ -1184,7 +1182,7 @@ Public Sub Insert(Text As String)
   DeleteSelection
   If Not Text Then Return
 
-  NormalizeColumn
+  $X = NormalizeColumn($X, $Y)
   
   $hDoc.Begin
   
@@ -1289,7 +1287,7 @@ Private Sub DeleteLeft()
   
   If DeleteSelection() Then Return
 
-  NormalizeColumn
+  $X = NormalizeColumn($X, $Y)
   
   If $X = 0 Then
     If $Y > 0 Then
@@ -2070,13 +2068,20 @@ End
 
 Public Sub View_GotFocus()
   
-  If Object.Parent($hDoc) = Me Then Return
+  If Not $bFirstFocus Then
+    $bFirstFocus = True
+    EnsureVisible(True)
+  Endif
   
-  _Views = Me.View._Views
-  _RemoveView(Me)
-  _AddView(Me.View)
-  Me.View._Views = Null
-  Object.Attach($hDoc, Me, "Document")
+  If Object.Parent($hDoc) <> Me Then 
+  
+    _Views = Me.View._Views
+    _RemoveView(Me)
+    _AddView(Me.View)
+    Me.View._Views = Null
+    Object.Attach($hDoc, Me, "Document")
+    
+  Endif
   
 End
 
@@ -2521,11 +2526,11 @@ End
 ' END_METHOD
 ' 
 
-Public Sub FindNextString((String) As String, Start As Integer) As Integer
+Public Sub FindNextString(Search As String, Start As Integer) As Integer
   
   Do
     If Start >= $hDoc.Count Then Return -1
-    If InStr($hDoc.Lines[Start], String) Then Return Start
+    If String.InStr($hDoc.Lines[Start], Search, 1, gb.IgnoreCase) Then Return Start
     Inc Start
   Loop
   
