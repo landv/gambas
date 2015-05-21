@@ -701,17 +701,13 @@ static void QT_Init(void)
 
 	//qApp->setAttribute(Qt::AA_ImmediateWidgetCreation);
 
-	#ifndef NO_X_WINDOW
-		X11_init(QX11Info::display(), QX11Info::appRootWindow());
-	#endif
+	X11_init(QX11Info::display(), QX11Info::appRootWindow());
 
 	/*QX11Info::setAppDpiX(0, 92);
 	QX11Info::setAppDpiY(0, 92);*/
 		
 	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
 	
-	//Q3MimeSourceFactory::addFactory(&myMimeSourceFactory);
-
 	MAIN_update_scale();
 
 	qApp->installEventFilter(&CWidget::manager);
@@ -725,9 +721,6 @@ static void QT_Init(void)
 	}
 
 	//qt_x11_set_global_double_buffer(false);
-
-	//Q3StyleSheet::defaultSheet()->item("tt")->setFontFamily("Monospace");
-	//Q3StyleSheet::defaultSheet()->item("pre")->setFontFamily("Monospace");
 
 	qApp->setQuitOnLastWindowClosed(false);
 	

@@ -81,9 +81,12 @@ typedef
 	struct {
 		int count;
 		Atom atoms[MAX_WINDOW_PROP];
+		bool changed;
 		}
 	X11_PROPERTY;
 
+static Window _window = 0;
+static bool _window_visible;
 static X11_PROPERTY _window_prop;
 static X11_PROPERTY _window_save[2];
 
@@ -249,6 +252,7 @@ static void load_window_state(Window win, Atom prop)
 	char *data;
 
 	_window_prop.count = 0;
+	_window_prop.changed = FALSE;
 
 	//get_property(win, X11_atom_net_wm_state, MAX_WINDOW_STATE * sizeof(Atom), &data, &length);
 	data = get_property(win, prop, &length);
@@ -262,10 +266,10 @@ static void load_window_state(Window win, Atom prop)
 
 static void save_window_state(Window win, Atom prop)
 {
-	if (_window_prop.count > 0)
+	if (_window_prop.changed)
 	{
-		XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace,
-				(unsigned char *)_window_prop.atoms, _window_prop.count);
+		//fprintf(stderr, "XChangeProperty: %ld %ld\n", (long)win, (long)prop);
+		XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace, (unsigned char *)_window_prop.atoms, _window_prop.count);
 	}
 }
 
@@ -294,6 +298,7 @@ static void set_window_state(Atom prop)
 	}
 
 	_window_prop.atoms[_window_prop.count++] = prop;
+	_window_prop.changed = TRUE;
 }
 
 static void clear_window_state(Atom prop)
@@ -309,6 +314,7 @@ static void clear_window_state(Atom prop)
 			for (; i < _window_prop.count; i++)
 				_window_prop.atoms[i] = _window_prop.atoms[i + 1];
 
+			_window_prop.changed = TRUE;
 			return;
 		}
 	}
@@ -349,16 +355,16 @@ void X11_exit()
 }
 
 
-void X11_window_change_property(Window window, bool visible, Atom property, bool set)
+void X11_window_change_property(Atom property, bool set)
 {
 	XEvent e;
 
-	if (visible)
+	if (_window_visible)
 	{
 		e.xclient.type = ClientMessage;
 		e.xclient.message_type = X11_atom_net_wm_state;
 		e.xclient.display = _display;
-		e.xclient.window = window;
+		e.xclient.window = _window;
 		e.xclient.format = 32;
 		e.xclient.data.l[0] = set ? 1 : 0;
 		e.xclient.data.l[1] = property;
@@ -370,15 +376,29 @@ void X11_window_change_property(Window window, bool visible, Atom property, bool
 	}
 	else
 	{
-		load_window_state(window, X11_atom_net_wm_state);
-
 		if (set)
 			set_window_state(property);
 		else
 			clear_window_state(property);
-
-		save_window_state(window, X11_atom_net_wm_state);
 	}
+}
+
+void X11_window_change_begin(Window window, bool visible)
+{
+	_window = window;
+	_window_visible = visible;
+	
+	if (!visible)
+		load_window_state(window, X11_atom_net_wm_state);
+}
+
+void X11_window_change_end()
+{
+	if (!_window_visible)
+		save_window_state(_window, X11_atom_net_wm_state);
+	
+	XFlush(_display);
+	_window = (Window)0;
 }
 
 

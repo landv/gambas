@@ -3,16 +3,25 @@
 { Form Form
   MoveScaled(0,0,74,74)
   Margin = True
+  { Menu1 Menu
+    Text = ("Menu1")
+    { Menu2 Menu
+      Text = ("Menu2")
+    }
+    { Menu3 Menu
+      Text = ("Menu3")
+    }
+  }
   { MenuButton1 MenuButton
     MoveScaled(2,2,17,4)
     AutoResize = True
     Text = ("MenuButton1")
+    Menu = "Menu1"
   }
   { Button1 Button
-    MoveScaled(35,2,16,4)
-    Text = ("Button1")
+    MoveScaled(27,2,16,4)
   }
-  { DirChooser1 DirChooser
-    MoveScaled(1,9,72,64)
+  { DateBox1 DateBox
+    MoveScaled(34,11,24,4)
   }
 }

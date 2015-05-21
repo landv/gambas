@@ -123,17 +123,17 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
     
 End
 
-Private Sub GetTopLevelWindow(hCtrl As Control) As Window
-
-  Dim hWin As Window
-  
-  Do
-    hWin = hCtrl.Window
-    If hWin.TopLevel Then Return hWin
-    hCtrl = hWin.Parent
-  Loop
-
-End
+' Private Sub GetTopLevelWindow(hCtrl As Control) As Window
+' 
+'   Dim hWin As Window
+'   
+'   Do
+'     hWin = hCtrl.Window
+'     If hWin.TopLevel Then Return hWin
+'     hCtrl = hWin.Parent
+'   Loop
+' 
+' End
 
 Public Sub Detach(hWin As Window)
   
@@ -366,17 +366,17 @@ End
 
 Private Sub MoveHandle()
 
-  Dim hWin As Window = $hCurrent.Window
-  
-  panRight.Move(hWin.Width, Max(0, (hWin.Height - panRight.Height) / 2))
-  panDown.Move(Max(0, (hWin.Width - panRight.Width) / 2), hWin.Height)
-  panRightDown.Move(hWin.Width, hWin.Height)
-  dwgBorder.Move(0, 0, hWin.Width + 4, hWin.Height + 4)
-  
-  dwgBorder.Lower
-  panRight.Raise
-  panDown.Raise
-  panRightDown.Raise
+  ' Dim hWin As Window = $hCurrent.Window
+  ' 
+  ' panRight.Move(hWin.Width, Max(0, (hWin.Height - panRight.Height) / 2))
+  ' panDown.Move(Max(0, (hWin.Width - panRight.Width) / 2), hWin.Height)
+  ' panRightDown.Move(hWin.Width, hWin.Height)
+  ' dwgBorder.Move(0, 0, hWin.Width + 4, hWin.Height + 4)
+  ' 
+  ' dwgBorder.Lower
+  ' panRight.Raise
+  ' panDown.Raise
+  ' panRightDown.Raise
   
 End
 
@@ -386,15 +386,15 @@ Private Sub GetParent() As Workspace
   
 End
 
-Private Sub IsDetached(hWindow As Window) As Boolean
-
-  Dim iInd As Integer
-  
-  iInd = GetIndex(hWindow)
-  If iInd < 0 Then Return
-  Return Not tabWorkspace[iInd].Visible
-  
-End
+' Private Sub IsDetached(hWindow As Window) As Boolean
+' 
+'   Dim iInd As Integer
+'   
+'   iInd = GetIndex(hWindow)
+'   If iInd < 0 Then Return
+'   Return Not tabWorkspace[iInd].Visible
+'   
+' End
 
 
 Public Sub Activate(Optional hWindow As Window)

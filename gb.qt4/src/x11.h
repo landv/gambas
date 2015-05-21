@@ -85,7 +85,10 @@ void X11_exit();
 void X11_sync(void);
 
 /* Functions to deal with the _NET_WM_STATE and _NET_WM_TYPE property */
-void X11_window_change_property(Window window, bool visible, Atom property, bool set);
+void X11_window_change_property(Atom property, bool set);
+void X11_window_change_begin(Window window, bool visible);
+void X11_window_change_end();
+
 bool X11_window_has_property(Window window, Atom property);
 void X11_window_save_properties(Window window);
 void X11_window_restore_properties(Window window);

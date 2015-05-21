@@ -712,7 +712,7 @@ Public Sub Load()
       Inc iLine
       
       If hSym.Kind = "C" Then
-        hSym.Value = aLine[iLine]
+        hSym.Value = UnQuote(aLine[iLine])
       Else
         hSym.Signature = aLine[iLine]
       Endif

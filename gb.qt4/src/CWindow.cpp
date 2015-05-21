@@ -23,8 +23,6 @@
 
 #define __CWINDOW_CPP
 
-#undef QT3_SUPPORT
-
 #include <qnamespace.h>
 #include <qapplication.h>
 #include <qmenubar.h>
@@ -115,25 +113,6 @@ bool CWINDOW_Embedded = false;
 static int CWINDOW_EmbedState = 0;
 #endif
 
-#ifndef NO_X_WINDOW
-void CWINDOW_change_property(QWidget *w, Atom property, bool set)
-{
-	if (!w->isWindow())
-		return;
-
-	X11_window_change_property(w->winId(), w->isVisible(), property, set);
-}
-
-bool CWINDOW_has_property(QWidget *w, Atom property)
-{
-	if (!w->isWindow())
-		return false;
-
-	return X11_window_has_property(w->winId(), property);
-}
-
-#endif
-
 // Fix a QT little boring visual bug on menubars
 #if 0
 void CWINDOW_fix_menubar(CWINDOW *window)
@@ -164,7 +143,7 @@ static void clear_mask(CWINDOW *_object)
 		//WINDOW->setResizable(WINDOW->isResizable(), true);
 		if (v && THIS->reallyMasked)
 		{
-			X11_window_remap(WINDOW->winId());
+			X11_window_remap(WINDOW->effectiveWinId());
 			WINDOW->initProperties();
 		}
 		#endif
@@ -1010,9 +989,13 @@ static void manage_window_property(void *_object, void *_param, Atom property)
 	else
 	{
 		if (READ_PROPERTY)
-			GB.ReturnBoolean(CWINDOW_has_property(WINDOW, property));
+			GB.ReturnBoolean(X11_window_has_property(WINDOW->effectiveWinId(), property));
 		else
-			CWINDOW_change_property(WINDOW, property, VPROP(GB_BOOLEAN));
+		{
+			X11_window_change_begin(WINDOW->effectiveWinId(), WINDOW->isVisible());
+			X11_window_change_property(property, VPROP(GB_BOOLEAN));
+			X11_window_change_end();
+		}
 	}
 }
 
@@ -1090,7 +1073,7 @@ BEGIN_PROPERTY(Window_Sticky)
 	else
 	{
 		THIS->sticky = VPROP(GB_BOOLEAN);
-		X11_window_set_desktop(WINDOW->winId(), WINDOW->isVisible(), THIS->sticky ? 0xFFFFFFFF : X11_get_current_desktop());
+		X11_window_set_desktop(WINDOW->effectiveWinId(), WINDOW->isVisible(), THIS->sticky ? 0xFFFFFFFF : X11_get_current_desktop());
 	}
 
 END_PROPERTY
@@ -1639,7 +1622,7 @@ void MyMainWindow::showEvent(QShowEvent *e)
 		raise();
 		//setFocus();
 		activateWindow();
-		//X11_window_activate(winId());
+		//X11_window_activate(effectiveWinId());
 		_activate = false;
 	}
 
@@ -1655,11 +1638,14 @@ void MyMainWindow::initProperties()
 	if (!THIS->toplevel)
 		return;
 
-	CWINDOW_change_property(this, X11_atom_net_wm_state_above, THIS->stacking == 1);
-	CWINDOW_change_property(this, X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
-	CWINDOW_change_property(this, X11_atom_net_wm_state_below, THIS->stacking == 2);
-	CWINDOW_change_property(this, X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
-	X11_set_window_type(winId(), _type);
+	X11_window_change_begin(effectiveWinId(), isVisible());
+	X11_window_change_property(X11_atom_net_wm_state_above, THIS->stacking == 1);
+	X11_window_change_property(X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
+	X11_window_change_property(X11_atom_net_wm_state_below, THIS->stacking == 2);
+	X11_window_change_property(X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
+	X11_window_change_end();
+	
+	X11_set_window_type(effectiveWinId(), _type);
 	#endif
 }
 
@@ -1681,7 +1667,7 @@ void MyMainWindow::present()
 {
 	if (!isVisible())
 	{
-		//X11_window_startup(WINDOW->winId(), THIS->x, THIS->y, THIS->w, THIS->h);
+		//X11_window_startup(WINDOW->effectiveWinId(), THIS->x, THIS->y, THIS->w, THIS->h);
 
 		if (isUtility() && _resizable)
 			setMinimumSize(THIS->minw, THIS->minh);
@@ -1757,10 +1743,13 @@ void MyMainWindow::showActivate(QWidget *transient)
 	if (!THIS->title && _border)
 		setWindowTitle(TO_QSTRING(GB.Application.Title()));
 
-	initProperties();
-	//::sleep(1);
-
+#ifdef QT5
 	present();
+	initProperties();
+#else
+	initProperties();
+	present();
+#endif
 
 	afterShow();
 
@@ -1771,7 +1760,7 @@ void MyMainWindow::showActivate(QWidget *transient)
 			newParentWidget = CWidget::getTopLevel((CWIDGET *)CWINDOW_Main)->widget.widget;
 		
 		if (newParentWidget)
-			X11_set_transient_for(winId(), newParentWidget->winId());
+			X11_set_transient_for(effectiveWinId(), newParentWidget->effectiveWinId());
 	}
 	#endif
 }
@@ -1836,8 +1825,8 @@ void MyMainWindow::showModal(void)
 	#ifndef NO_X_WINDOW
 	if (CWINDOW_Active)
 	{
-		//qDebug("Active = %p X11_set_transient_for(0x%08x, 0x%08x)", CWINDOW_Active, winId(), CWINDOW_Active->widget.widget->winId());
-		X11_set_transient_for(winId(), CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget->winId());
+		//qDebug("Active = %p X11_set_transient_for(0x%08x, 0x%08x)", CWINDOW_Active, effectiveWinId(), CWINDOW_Active->widget.widget->effectiveWinId());
+		X11_set_transient_for(effectiveWinId(), CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget->effectiveWinId());
 	}
 	#endif
 
@@ -2032,14 +2021,14 @@ int MyMainWindow::getType()
 		return 0;
 	else
 		return _type;
-	//return X11_get_window_type(winId());
+	//return X11_get_window_type(effectiveWinId());
 }
 
 void MyMainWindow::setType(int type)
 {
 	if (!isWindow())
 		return;
-	X11_set_window_type(winId(), type);
+	X11_set_window_type(effectiveWinId(), type);
 	_type = type;
 }
 #endif

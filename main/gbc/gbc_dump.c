@@ -61,18 +61,22 @@ static void print_quoted(FILE *file, const char *str)
 {
 	unsigned char c;
 	
+	fputc('"', file);
 	for(;;)
 	{
 		c = *str++;
 		if (!c)
-			return;
+			break;
 		if (c == '\n')
 			fputs("\\n", file);
 		else if (c == '\t')
 			fputs("\\t", file);
+		else if (c == '"')
+			fputs("\\\"", file);
 		else
 			fputc(c, file);
 	}
+	fputc('"', file);
 }
 
 static void dump_name(int index)

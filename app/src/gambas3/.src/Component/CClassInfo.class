@@ -979,6 +979,8 @@ End
 
 
 Public Sub AddSymbol(hSym As CSymbolInfo)
+
+  If Not hSym.Name Then Stop
   
   Symbols[hSym.Name] = hSym
   If hSym.IsEvent() And Not hSym.IsHidden() Then HasEvents = True

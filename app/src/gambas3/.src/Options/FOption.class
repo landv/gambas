@@ -918,6 +918,8 @@ Private Sub RefreshBackground()
   Dim hImage As Image
   Dim iColor As Integer
   
+  Inc Application.Busy
+  
   iColor = FColorChooser.FromString(Settings["/BackgroundColor", "#FFFFFF"])
   
   svwBackground.Children.Clear
@@ -941,6 +943,7 @@ Private Sub RefreshBackground()
     Endif
   Next
   
+  Dec Application.Busy
 
 End
 
