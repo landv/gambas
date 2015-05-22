@@ -4,7 +4,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowCursor=True"
+"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True"
 _DrawWith
 C
 s
@@ -201,6 +201,10 @@ ShowCursor
 p
 b
 
+ShowExpand
+p
+b
+
 _Views
 v
 TextEditor[]
@@ -249,6 +253,10 @@ End
 m
 
 
+_IsRowExpanded
+m
+b
+(Y)i
 Remove
 m
 
@@ -309,6 +317,14 @@ FindNextLimit
 m
 i
 (Y)i
+CollapseAll
+m
+
+
+ExpandAll
+m
+
+
 HideSelection
 m
 
@@ -344,7 +360,7 @@ m
 _AfterInsert
 m
 
-(Y1)i(Y2)i
+(Y1)i(Y2)i(N)i
 _AfterRemove
 m
 
@@ -457,6 +473,14 @@ _RaiseHighlight
 m
 
 (sText)s
+_CollapseRow
+m
+
+(Y)i[(bNoRefresh)b]
+_ExpandRow
+m
+
+(Y)i
 #TextEditorStyle
 
 C
@@ -545,6 +569,10 @@ b
 InitialState
 r
 _TextEditor_State
+
+Expanded
+p
+b
 
 Breakpoint
 p

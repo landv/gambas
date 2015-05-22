@@ -661,10 +661,12 @@ ANOTHER_SYMBOL:
   iLine = $hEditor.Line
   iCol = $hEditor.Column
 
+  $hEditor.Begin
   InsertFunction(sName & "_Read", sType, False, "", bStatic)
   If Not bRead Then
     InsertFunction(sName & "_Write", "", False, "Value As " & sType, bStatic)
   Endif
+  $hEditor.End
 
   $hEditor.Goto(iCol, iLine)
 
@@ -950,9 +952,9 @@ Public Sub Editors_KeyPress()
 
     If aSymbol.Count >= 4 Then
       If aSymbol[0] = "PROPERTY" Or If aSymbol[0] = "STATIC" And aSymbol[1] = "PROPERTY" Then
-        $hEditor.Insert("\n")
         InsertProperty
-        Stop Event
+        '$hEditor.Insert("\n")
+        'Stop Event
         Return
       Endif
     Endif
@@ -2990,31 +2992,31 @@ End
 
 Public Sub GetFoldedProc() As Integer[]
 
-  ' TODO: Dim aFold As New Integer[]
-  ' Dim iLine As Integer
-  ' 
-  ' Do
-  '   If Not $hEditor[iLine].Expanded Then
-  '     'DEBUG Name;; iLine
-  '     aFold.Add(iLine)
-  '   Endif
-  '   iLine = $hEditor.FindNextLimit(iLine)
-  '   If iLine < 0 Then Break
-  ' Loop
-  ' 
-  ' Return aFold
+  Dim aFold As New Integer[]
+  Dim iLine As Integer
+  
+  Do
+    If Not $hEditor[iLine].Expanded Then
+      'DEBUG Name;; iLine
+      aFold.Add(iLine)
+    Endif
+    iLine = $hEditor.FindNextLimit(iLine)
+    If iLine < 0 Then Break
+  Loop
+  
+  Return aFold
 
 End
 
 Public Sub SetFoldedProc(aFold As Integer[])
 
-  ' TODO: Dim iLine As Integer
-  ' 
-  ' 'Editor.Lines.ExpandAll
-  ' For Each iLine In aFold
-  '   'DEBUG Name;; iLine
-  '   $hEditor[iLine].Expanded = False
-  ' Next
+  Dim iLine As Integer
+  
+  $hEditor.ExpandAll
+  For Each iLine In aFold
+    'DEBUG Name;; iLine
+    $hEditor[iLine].Expanded = False
+  Next
 
 End
 

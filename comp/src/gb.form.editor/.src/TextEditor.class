@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowCursor=True"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -56,10 +56,13 @@ Property ShowPosition As Boolean
 Property ShowIcon As Boolean
 Property ShowBraces As Boolean
 Property ShowCursor As Boolean
+Property ShowExpand As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
 Static Private $cShortcut As Collection
+
+Public _Views As TextEditor[]
 
 Private $hPanel As Panel
 Private $hView As ScrollArea
@@ -128,11 +131,11 @@ Private $bShowModified As Boolean
 Private $bShowPosition As Boolean
 Private $bShowIcon As Boolean
 Private $bShowBraces As Boolean
+Private $bShowExpand As Boolean
 
-'Private $aSaveCursor As Integer[]
-
-Public _Views As TextEditor[]
 Private $bFirstFocus As Boolean
+
+Private $aFold As Integer[]
 
 Public Sub _new()
   
@@ -254,7 +257,7 @@ Private Sub UpdateMargin()
     $iWidthLineNumber = (CInt(Log10($hDoc.Count + $iLineNumberOffset)) + 1) * $hFont.TextWidth("9") + 8
     $MW += $iWidthLineNumber
   Endif
-  If $bShowIcon Then 
+  If $bShowIcon Or If $bShowExpand Then 
     $iPosIcon = $MW
     $MW += $hRows.Height
   Endif
@@ -448,6 +451,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim WC As Integer
   Dim sCar As String
   Dim S As Float
+  Dim S3 As Float
 
   'Debug Row
   
@@ -540,9 +544,9 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   If $bShowLimit And If Row > 0 Then
     If Not RTrim($hDoc.Lines[Row]) And If Row < $hDoc.Max Then
-      If $hDoc.Info(Row + 1).Limit Then YL = Y + Height \ 2
+      If $hDoc.Info(ViewToReal(RealToView(Row) + 1)).Limit Then YL = Y + Height \ 2
     Else
-      If hInfo.Limit And RTrim($hDoc.Lines[Row - 1]) Then YL = Y
+      If hInfo.Limit And RTrim($hDoc.Lines[ViewToReal(RealToView(Row) - 1)]) Then YL = Y
     Endif
   Endif
   
@@ -574,7 +578,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       Paint.FillRect(X, YL, Width, 1, $iLimitColor)
     Endif
     
-    If $bShowIcon Then
+    If $bShowIcon Or If $bShowExpand Then
 
       Paint.Save
       Paint.Translate(X + $iPosIcon + 2, Y + 2)
@@ -587,13 +591,19 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       Endif
       
       If hInfo.Bookmark Then
-        S /= 3
-        Paint.MoveTo(0, S)
-        Paint.RelLineTo(S, S)
-        Paint.RelLineTo(2 * S, - S * 2)
-        Paint.LineWidth = S / 2
+        S3 = S / 3
+        Paint.MoveTo(0, S3)
+        Paint.RelLineTo(S3, S3)
+        Paint.RelLineTo(2 * S3, - S3 * 2)
+        Paint.LineWidth = S3 / 2
         Paint.Background = $hStyles[Highlight.Current].Color
         Paint.Stroke
+      Endif
+      
+      If $bShowExpand Then
+        If hInfo.Limit Then
+          Style.PaintArrow(0, 0, S, S, If(_IsRowExpanded(Row), Align.Bottom, Align.Right))
+        Endif
       Endif
       
       Paint.Restore
@@ -743,13 +753,13 @@ Public Sub View_KeyPress()
     Case Key.Right
       If Key.Control Then
         If $X >= String.Len($hDoc.Lines[$Y]) Then
-          Goto(0, $Y + 1, Key.Shift)
+          Goto(0, ViewToReal(RealToView($Y) + 1), Key.Shift)
         Else
           Goto($hDoc.WordRight($X, $Y), $Y, Key.Shift)
         Endif
       Else If Key.Normal Or If Key.Shift Then
         If $X >= String.Len($hDoc.Lines[$Y]) Then
-          Goto(0, $Y + 1, Key.Shift)
+          Goto(0, ViewToReal(RealToView($Y) + 1), Key.Shift)
         Else
           Goto($X + 1, $Y, Key.Shift)
         Endif
@@ -759,13 +769,13 @@ Public Sub View_KeyPress()
       $X = NormalizeColumn($X, $Y)
       If Key.Control Then
         If $X = 0 Then
-          Goto(-1, $Y - 1, Key.Shift)
+          Goto(-1, ViewToReal(RealToView($Y) - 1), Key.Shift)
         Else
           Goto($hDoc.WordLeft($X, $Y), $Y, Key.Shift)
         Endif
       Else If Key.Normal Or If Key.Shift Then
         If $X = 0 Then
-          Goto(-1, $Y - 1, Key.Shift)
+          Goto(-1, ViewToReal(RealToView($Y) - 1), Key.Shift)
         Else
           Goto($X - 1, $Y, Key.Shift)
         Endif
@@ -780,7 +790,7 @@ Public Sub View_KeyPress()
           Goto(0, 0, Key.Shift)
         Endif
       Else
-        Goto($X, $Y - 1, Key.Shift)
+        Goto($X, ViewToReal(RealToView($Y) - 1), Key.Shift)
       Endif
       
     Case Key.Down
@@ -792,7 +802,7 @@ Public Sub View_KeyPress()
           Goto(-1, $hDoc.Max, Key.Shift)
         Endif
       Else
-        Goto($X, $Y + 1, Key.Shift)
+        Goto($X, ViewToReal(RealToView($Y) + 1), Key.Shift)
       Endif
       
     Case Key.Home
@@ -816,11 +826,15 @@ Public Sub View_KeyPress()
       Endif
       
     Case Key.PageUp
-      Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hRows._GetRowHeight($Y) - $hView.ClientH)
+      Y = RealToView($Y)
+      Y = $hRows._FindRowFromPos($hRows._GetRowY(Y) + $hRows._GetRowHeight(Y) - $hView.ClientH)
+      Y = ViewToReal(Y)
       Goto($X, Max(0, Y), Key.Shift)
       
     Case Key.PageDown
-      Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hView.ClientH)
+      Y = RealToView($Y)
+      Y = $hRows._FindRowFromPos($hRows._GetRowY(Y) + $hView.ClientH)
+      Y = ViewToReal(Y)
       If Y >= 0 Then 
         Goto($X, Y, Key.Shift)
       Else
@@ -828,6 +842,22 @@ Public Sub View_KeyPress()
       Endif
       
     Case Key.Enter, Key.Return
+      
+      If $hDoc.Info($Y).Limit Then
+        If Key.Control Then
+          If Key.Alt Then
+            If _IsRowExpanded($Y) Then
+              CollapseAll
+            Else
+              ExpandAll
+            Endif
+          Else
+            ToggleRow($Y)
+          Endif
+          Goto STOP_EVENT
+        Endif
+      Endif
+      
       If $bReadOnly Then Goto STOP_EVENT
       If Not $bOverwrite Then sTab = GetIndentText($Y)
       
@@ -889,6 +919,8 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     NX = -1
   Endif
   
+  NY = CheckFolded(NY)
+  
   If NY <> $Y Then
     SX = $SX
     SY = $SY
@@ -930,7 +962,8 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   If Not $bReadOnly Then $hTimerCursor.Start
   _RefreshLine($Y)
   
-  $hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y))
+  '$hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y))
+  EnsureVisible
   
   CheckMatch
   
@@ -948,8 +981,9 @@ Private Sub EnsureVisible(Optional bCenter As Boolean)
   Dim Y As Integer
   Dim H As Integer
   
-  Y = $hRows._GetRowY($Y)
-  H = $hRows._GetRowHeight($Y)
+  Y = RealToView($Y)
+  H = $hRows._GetRowHeight(Y)
+  Y = $hRows._GetRowY(Y)
   
   If bCenter Then
     Y = Y - $hView.ClientH \ 2 + H \ 2
@@ -1035,7 +1069,7 @@ End
 
 Private Sub PosToLine(PY As Integer) As Integer
 
-  Return $hRows._FindRowFromPos(PY + $hView.ScrollY)
+  Return ViewToReal($hRows._FindRowFromPos(PY + $hView.ScrollY))
 
 End
 
@@ -1048,8 +1082,14 @@ Public Sub View_MouseDown()
   
   Y = PosToLine(Mouse.Y)
   If Y >= 0 Then
-    X = NormalizeColumn(PosToColumn(Y, Mouse.X), Y)
-    Goto(X, Y)
+    If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
+      If $hDoc.Info(Y).Limit Then
+        ToggleRow(Y)
+      Endif
+    Else
+      X = NormalizeColumn(PosToColumn(Y, Mouse.X), Y)
+      Goto(X, Y)
+    Endif
   Endif
   
   $bMouseDown = True
@@ -1060,11 +1100,19 @@ Public Sub View_DblClick()
   
   Dim X, Y As Integer
   
-  If $bShowIcon Then
+  If $bShowIcon Or If $bShowExpand Then
     Y = PosToLine(Mouse.Y)
     If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then 
-      Goto(0, Y)
-      Raise Margin
+      If $hDoc.Info(Y).Limit Then
+        If _IsRowExpanded(Y) Then
+          ExpandAll
+        Else
+          CollapseAll
+        Endif
+      Else
+        Goto(0, Y)
+        Raise Margin
+      Endif
     Endif
   Endif
   
@@ -1214,15 +1262,19 @@ Public Sub Insert(Text As String)
   
 End
 
-Public Sub _AfterInsert(Y1 As Integer, Y2 As Integer)
+Public Sub _AfterInsert(Y1 As Integer, Y2 As Integer, N As Integer)
 
   Dim Y As Integer
   
   For Y = Y1 To Y2
     UpdateWidth(Y)
   Next
+  
   UpdateMargin
-  $hRows.Count = $hDoc.Count
+  
+  _ExpandInsert(Y1, N)
+  
+  UpdateCount
   
 End
 
@@ -1276,7 +1328,8 @@ Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   
   If $iLargestLine >= Min(Y1, Y2) And If $iLargestLine <= Max(Y1, Y2) Then UpdateWidth
   UpdateMargin
-  $hRows.Count = $hDoc.Count
+  _ExpandRemove(Y1, Y2)
+  UpdateCount
   
 End
 
@@ -1363,25 +1416,33 @@ Private Sub CheckMatch()
   Dim sOther As String
   Dim sLine As String
   Dim iLen As Integer
+  Dim iOldXM, iOldYM As Integer
+  
+  iOldXM = $XM
+  iOldYM = $YM
   
   $XM = 0
   $YM = -1
 
-  If Not $bShowBraces Then Return
+  If $bShowBraces Then 
   
-  Y = $Y
-  X = Min(String.Len($hDoc.Lines[Y]), $X)
-  
-  If X > 0 Then 
+    Y = $Y
+    X = Min(String.Len($hDoc.Lines[Y]), $X)
+    
+    If X > 0 Then 
+      sCar = String.Mid$($hDoc.Lines[Y], X, 1)
+      iMatch = InStr(MATCH_STRING, sCar)
+      If iMatch Then Goto FIND_MATCH
+    Endif
+    
+    Inc X
     sCar = String.Mid$($hDoc.Lines[Y], X, 1)
     iMatch = InStr(MATCH_STRING, sCar)
     If iMatch Then Goto FIND_MATCH
+    
   Endif
   
-  Inc X
-  sCar = String.Mid$($hDoc.Lines[Y], X, 1)
-  iMatch = InStr(MATCH_STRING, sCar)
-  If iMatch Then Goto FIND_MATCH
+  If $XM <> iOldXM Or If $YM <> iOldYM Then Refresh
   
   Return
   
@@ -1460,6 +1521,7 @@ End
 
 Public Sub _RefreshLine(Y As Integer) 
 
+  Y = RealToView(Y)
   $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
 
 End
@@ -1677,7 +1739,7 @@ Public Sub View_Draw()
   iRow = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y)
   If iRow < 0 Then Return
   iRow2 = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y + hClip.H - 1)
-  If iRow2 < 0 Then iRow2 = $hDoc.Count - 1
+  If iRow2 < 0 Then iRow2 = $hRows.Count - 1
   
   XO = - $hView.ScrollX
   XX = XO
@@ -1707,7 +1769,7 @@ Public Sub View_Draw()
     X = XX
 
     Paint.Save
-    DrawLine(X, Y, $iWidth, H, I)
+    DrawLine(X, Y, $iWidth, H, ViewToReal(I))
     Paint.Restore
     
     Y += H
@@ -2624,3 +2686,600 @@ Public Sub _RaiseHighlight(sText As String)
   Raise Highlight(sText)
   
 End
+
+Private Sub ViewToReal(Y As Integer) As Integer
+
+  Dim I As Integer
+  Dim M As Integer
+  Dim J As Integer
+  
+  If Not $aFold Then Return Y
+  
+  M = $hDoc.Max
+  
+  For I = 0 To $aFold.Max Step 2
+    If Y <= $aFold[I] Then Break
+    J = I + 1
+    If $aFold[J] < M Then
+      Y += $aFold[J] - $aFold[I]
+    Else
+      Y = M + 1
+    Endif
+  Next
+  
+  Return Y
+  
+End
+
+
+' int GEditor::viewToReal(int row) const
+' {
+'   uint i;
+'   GFoldedProc *fp;
+'   
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (row <= fp->start)
+'       break;
+'     if (fp->end < (numLines() - 1))
+'       row += fp->end - fp->start;
+'     else
+'       row = numLines();
+'   }
+'   
+'   return row;
+' }
+' 
+
+Private Sub RealToView(Y As Integer) As Integer
+
+  Dim I As Integer
+  Dim YY As Integer
+  Dim J As Integer
+  
+  If Not $aFold Then Return Y
+  
+  YY = Y
+  
+  For I = 0 To $aFold.Max Step 2
+    If Y < $aFold[I] Then Continue
+    J = I + 1
+    If Y <= $aFold[J] Then
+      YY -= Y - $aFold[I]
+    Else
+      YY -= $aFold[J] - $aFold[I]
+    Endif
+  Next
+  
+  Return YY
+  
+End
+
+
+
+' int GEditor::realToView(int row) const
+' {
+'   uint i;
+'   GFoldedProc *fp;
+'   int y;
+'   
+'   //fprintf(stderr, "realToView: %d -> ", row);
+'   
+'   y = row;
+'   
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (row < fp->start)
+'       continue;
+'     if (row <= fp->end)
+'       y -= row - fp->start;
+'     else
+'       y -= fp->end - fp->start;
+'   }
+'   
+'   //fprintf(stderr, "%d\n", y);
+'   
+'   return y;
+' }
+' 
+
+Private Sub UpdateCount()
+
+  $hRows.Count = RealToView($hDoc.Max) + 1
+  _ResizeContents
+  $hView.Refresh
+
+End
+
+Private Sub CheckCursorWithFolding(Y As Integer) As Integer
+
+  Dim NY As Integer
+  Dim I As Integer
+
+  NY = Y
+  For I = 0 To $aFold.Max Step 2
+    If Y > $aFold[I] And If Y <= $aFold[I + 1] Then
+      NY = $aFold[I]
+      Break
+    Endif
+  Next
+  
+  Return NY
+
+  ' int GEditor::checkCursor(int y)
+  ' {
+  '   uint i;
+  '   GFoldedProc *fp;
+  '   int ny;
+  '   
+  '   ny = y;
+  '   for (i = 0; i < fold.count(); i++)
+  '   {
+  '     fp = fold.at(i);
+  '     if (y > fp->start && y <= fp->end)
+  '     {
+  '       ny = fp->start;
+  '       break;
+  '     }
+  '   }
+  '   
+  '   return ny;
+  ' }
+  ' 
+  
+
+End
+
+Public Sub _CollapseRow(Y As Integer, Optional bNoRefresh As Boolean)
+
+  Dim iStart As Integer
+  Dim iEnd As Integer
+  Dim iPos As Integer
+  Dim I As Integer
+  Dim NY As Integer
+  
+  If Not $hDoc.Info(Y).Limit Then
+    Y = FindPreviousLimit(Y)
+  Endif
+
+' void GEditor::foldLine(int row, bool no_refresh)
+' {
+'   uint i;
+'   int pos;
+'   int start, end;
+'   GFoldedProc *fp;
+'   int ny;
+'   
+'   if (getFlag(NoFolding))
+'     return;
+'   
+'   if (!doc->hasLimit(row))
+'     row = doc->getPreviousLimit(row);
+'   
+  If Y < 0 Or If Y >= $hDoc.Count Then Return
+
+'   if (row < 0 || row >= numLines())
+'     return;
+'   
+'   //fprintf(stderr, "foldLine %d\n", row);
+'   
+
+  iStart = Y
+  iEnd = FindNextLimit(iStart)
+  If iEnd < 0 Then
+    iEnd = $hDoc.Max
+  Else
+    Dec iEnd
+  Endif
+
+'   start = row;
+'   end = doc->getNextLimit(row);
+'   if (end < 0)
+'     end = numLines() - 1;
+'   else
+'     end--;
+'   /*else
+'   {
+'     while (end > start)
+'     {
+'       end--;
+'       l = doc->lines.at(end);
+'       //qDebug("[%d] state = %d %d", end, l->highlight ? l->highlight[0].state : -1, l->highlight ? l->highlight[0].len : -1);
+'       if (!l->highlight || (l->highlight[0].state != GLine::Comment && l->highlight[0].state != GLine::Help))
+'         break;
+'     }
+'   }*/
+'   
+  iPos = -1
+  
+  If Not $aFold Then $aFold = New Integer[]
+  
+  For I = 0 To $aFold.Max Step 2
+    If iEnd >= $aFold[I] And If iStart <= $aFold[I + 1] Then Return
+    If iPos < 0 And If iStart < $aFold[I] Then
+      iPos = I
+    Endif
+  Next
+
+'   pos = -1;
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (end >= fp->start && start <= fp->end)
+'       return;
+'     if (pos < 0 && start < fp->start)
+'       pos = i;
+'   }
+'   
+
+  If iPos < 0 Then
+    $aFold.Add(iStart)
+    $aFold.Add(iEnd)
+  Else
+    $aFold.Add(iStart, iPos)
+    $aFold.Add(iEnd, iPos + 1)
+  Endif
+
+'   fp = new GFoldedProc;
+'   fp->start = start;
+'   fp->end = end;
+'   
+'   if (pos < 0)
+'     fold.append(fp);
+'   else
+'     fold.insert(pos, fp);
+'   
+'   //dump_fold(fold);
+'   
+
+  NY = CheckCursorWithFolding(Y)
+  If NY <> Y Then Goto($X, NY)
+
+'   ny = checkCursor(y);
+'   if (ny != y)
+'     cursorGoto(ny, x, false);
+'   
+
+  If Not bNoRefresh Then UpdateCount
+
+'   if (!no_refresh)
+'   {
+'     setNumRows(numLines());  
+'     //redrawContents();
+'   }
+' }
+
+End
+
+Public Sub _ExpandRow(Y As Integer)
+
+' 
+' void GEditor::unfoldLine(int row)
+' {
+'   uint i;
+'   GFoldedProc *fp;
+' 
+'   //fprintf(stderr, "unfoldLine %d\n", row);
+'  
+  Dim I As Integer
+
+  For I = 0 To $aFold.Max Step 2
+    If Y >= $aFold[I] And If Y <= $aFold[I + 1] Then
+      $aFold.Remove(I, 2)
+      UpdateCount
+      Break
+    Endif
+  Next
+ 
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (row >= fp->start && row <= fp->end)
+'     {
+'       fold.remove(i);
+'       //dump_fold(fold);
+'       setNumRows(numLines());  
+'       //redrawContents();
+'       return;
+'     }
+'   }
+'   
+' }
+' 
+' 
+
+End
+
+Private Function ShowExpand_Read() As Boolean
+
+  Return $bShowExpand
+
+End
+
+Private Sub ShowExpand_Write(Value As Boolean)
+
+  $bShowExpand = Value
+  UpdateMargin
+
+End
+
+Public Sub _IsRowExpanded(Y As Integer) As Boolean
+
+  Dim D As Integer
+  Dim F As Integer
+  Dim I As Integer
+
+  If Not $aFold Then Return True
+
+  D = 0
+  F = $aFold.Count
+  
+  While F > D
+    
+    I = ((F + D) \ 4) * 2
+    If $aFold[I] = Y Then Return 
+    If $aFold[I] < Y Then
+      D = I + 2
+    Else
+      F = I
+    Endif
+    
+  Wend
+  
+  Return True
+
+End
+
+Private Sub ToggleRow(Y As Integer)
+
+  If _IsRowExpanded(Y) Then
+    _CollapseRow(Y)
+  Else
+    _ExpandRow(Y)
+  Endif
+
+End
+
+' bool GEditor::isFolded(int row)
+' {
+'   uint i;
+'   GFoldedProc *fp;
+'   int d, f;
+'   
+'   d = 0;
+'   f = fold.count();
+'   
+'   while (f > d)
+'   {
+'     i = (f + d) / 2;
+'     fp = fold.at(i);
+'     if (fp->start == row)
+'       return true;
+'     else if (fp->start < row)
+'       d = i + 1;
+'     else
+'       f = i;
+'   }
+'   
+'   return false;
+' }
+' 
+' 
+
+Private Sub CheckFolded(Y As Integer) As Integer
+
+  Dim I As Integer
+  
+  If Not $aFold Then Return Y
+
+  For I = 0 To $aFold.Max Step 2
+    If Y <= $aFold[I + 1] Then
+      If Y > $aFold[I] Then Return $aFold[I]
+      Break
+    Endif
+  Next
+  
+  Return Y
+
+End
+
+' int GEditor::checkFolded(int row)
+' {
+'   uint i;
+'   GFoldedProc *fp;
+'   
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (row <= fp->end)
+'     {
+'       if (row > fp->start)
+'         return fp->start;
+'       else
+'         break;
+'     }
+'   }
+'   
+'   return row;
+' }
+' 
+
+Public Sub CollapseAll()
+
+  Dim Y As Integer
+  
+  Y = 0
+  Do
+    _CollapseRow(Y, True)
+    Y = FindNextLimit(Y)
+    If Y < 0 Then Break
+  Loop
+  UpdateCount
+  EnsureVisible(True)
+  
+End
+
+
+' void GEditor::foldAll()
+' {
+'   int row;
+'   
+'   if (getFlag(NoFolding))
+'     return;
+'   
+'   row = 0;
+'   for(;;)
+'   {
+'     foldLine(row, true);
+'     row = doc->getNextLimit(row);
+'     if (row < 0)
+'       break;
+'   }
+'   
+'   setNumRows(numLines());
+'   //updateContents();
+' }
+' 
+
+Public Sub ExpandAll()
+  
+  $aFold = Null
+  UpdateCount
+  EnsureVisible(True)
+  
+End
+
+
+' void GEditor::unfoldAll()
+' {
+'   foldClear();
+'   setNumRows(numLines());  
+'   ensureCursorVisible();
+'   //redrawContents();
+' }
+' 
+' 
+
+Private Sub _ExpandRemove(Y1 As Integer, Y2 As Integer)
+
+  Dim N As Integer
+  Dim I As Integer
+  
+  If Not $aFold Then Return
+  
+  If Y2 <= Y1 Then
+    _ExpandRow(Y1)
+    Return
+  Endif
+
+  N = Y2 - Y1
+
+  While I < $aFold.Count
+    If Y2 < $aFold[I] Then
+      $aFold[I] -= N
+      $aFold[I + 1] -= N
+      I += 2
+    Else If Y1 > $aFold[I + 1] Then
+      I += 2
+    Else
+      $aFold.Remove(I, 2)
+    Endif
+  Wend
+
+End
+
+' void GEditor::foldRemove(int y1, int y2)
+' {
+'   uint i;
+'   GFoldedProc *fp;
+'   int n;
+'   
+'   if (getFlag(NoFolding))
+'     return;
+'   
+'   if (y2 < 0)
+'   {
+'     unfoldLine(y1);
+'     return;
+'   }
+'   
+'   n = y2 - y1 + 1;
+'   
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (y2 < fp->start)
+'     {
+'       fp->start -= n;
+'       fp->end -= n;
+'     }
+'     else if (y1 > fp->end)
+'       continue;
+'     else
+'     {
+'       fold.remove(i);
+'       i--;
+'     }
+'   }
+' }
+' 
+
+Private Sub _ExpandInsert(Y As Integer, N As Integer)
+
+  Dim I As Integer
+  
+  If Not $aFold Then Return
+
+  If N = 0 Then
+    _ExpandRow(Y)
+    Return
+  Endif
+  
+  While I < $aFold.Count
+    If $aFold[I] > Y Then
+      $aFold[I] += N
+      $aFold[I + 1] += N
+      I += 2
+    Else If $aFold[I + 1] >= Y Then
+      '$aFold[I + 1] += N
+      $aFold.Remove(I, 2)
+    Else
+      I += 2
+    Endif
+  Wend
+
+End
+' 
+' void GEditor::foldInsert(int y, int n)
+' {
+'   uint i;
+'   GFoldedProc *fp;
+'   
+'   if (getFlag(NoFolding))
+'     return;
+'   
+'   if (n == 0)
+'   {
+'     unfoldLine(y);
+'     return;
+'   }
+'   
+'   for (i = 0; i < fold.count(); i++)
+'   {
+'     fp = fold.at(i);
+'     if (fp->start > y)
+'     {
+'       fp->start += n;
+'       fp->end += n;
+'     }
+'     else if (fp->end >= y)
+'     {
+'       fp->end += n;
+'       fold.remove(i); //unfoldLine(fp->start);
+'       i--;
+'     }
+'   }
+' }
+' 

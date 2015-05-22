@@ -1464,3 +1464,33 @@ Public Sub mnuEolMac_Click()
   Modify
   
 End
+
+Public Sub GetFoldedProc() As Integer[]
+
+  Dim aFold As New Integer[]
+  Dim iLine As Integer
+  
+  Do
+    If Not $hEditor[iLine].Expanded Then
+      'DEBUG Name;; iLine
+      aFold.Add(iLine)
+    Endif
+    iLine = $hEditor.FindNextLimit(iLine)
+    If iLine < 0 Then Break
+  Loop
+  
+  Return aFold
+
+End
+
+Public Sub SetFoldedProc(aFold As Integer[])
+
+  Dim iLine As Integer
+  
+  $hEditor.ExpandAll
+  For Each iLine In aFold
+    'DEBUG Name;; iLine
+    $hEditor[iLine].Expanded = False
+  Next
+
+End

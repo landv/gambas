@@ -463,8 +463,8 @@ FOUND:
     hEditor.Goto(aCursor[1], iStart + aCursor[0])
   Else
     aCursorEnd = CursorFromPos(sText, iPosTextEnd)
-    hEditor.Goto(iStart + aCursor[0], aCursor[1])
-    hEditor.Goto(iStart + aCursorEnd[0], aCursorEnd[1], True)
+    hEditor.Goto(aCursor[1], iStart + aCursor[0])
+    hEditor.Goto(aCursorEnd[1], iStart + aCursorEnd[0], True)
   Endif
   
 Catch

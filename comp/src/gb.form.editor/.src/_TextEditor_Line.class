@@ -10,7 +10,7 @@ Property Text As String
 Property Read Length As Integer
 Property Read Limit As Boolean
 Property Read InitialState As _TextEditor_State
-
+Property Expanded As Boolean
 Property Breakpoint As Boolean
 Property Bookmark As Boolean
 
@@ -135,4 +135,22 @@ Public Sub Purge(Optional KeepComment As Boolean, KeepString As Boolean, Replace
   
   Return sPurge
   
+End
+
+Private Function Expanded_Read() As Boolean
+
+  Return GetView()._IsRowExpanded(_Line)
+
+End
+
+Private Sub Expanded_Write(Value As Boolean)
+
+  With GetView()
+    If Value Then
+      ._ExpandRow(_Line)
+    Else
+      ._CollapseRow(_Line)
+    Endif
+  End With
+
 End

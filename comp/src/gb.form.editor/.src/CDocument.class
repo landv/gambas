@@ -191,6 +191,7 @@ Public Sub SetLine(Y As Integer, sLine As String)
 
   Dim hView As TextEditor
   
+  If Info(Y).Colors Then SetInfo(Y).ClearHighlight
   If sLine = Lines[Y] Then Return
   Lines[Y] = sLine
   With SetInfo(Y)
@@ -212,7 +213,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Dim iLen As Integer
   Dim sRest As String
   Dim aText As String[]
-  Dim I As Integer
+  Dim I, N As Integer
   Dim sLine As String
   Dim hView As TextEditor
   Dim XO, YO As Integer
@@ -227,9 +228,10 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   XO = X
   YO = Y
   
-  While Y > Lines.Count
-    InsertLine(Lines.Count)
-  Wend
+  ' While Y >= Lines.Count
+  '   InsertLine(Lines.Count)
+  '   Inc N
+  ' Wend
   
   iLen = String.Len(Lines[Y])
   If X > iLen Then 
@@ -245,6 +247,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
     X = 0
     Inc Y
     InsertLine(Y)
+    Inc N
     bHighlight = True
     
   Next
@@ -262,7 +265,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Endif
   
   For Each hView In GetAllViews()
-    hView._AfterInsert(Y, YAfter)
+    hView._AfterInsert(YO, YAfter, N)
   Next
   
   If bHighlight Then HighlightFrom(YO)
@@ -595,7 +598,9 @@ Public Sub Info(Y As Integer) As CLineInfo
   Dim hInfo As CLineInfo
 
   hInfo = LinesInfo[Y]
-  If Not hInfo Then hInfo = $hDefaultInfo
+  If Not hInfo Then 
+    hInfo = $hDefaultInfo
+  Endif
   Return hInfo
 
 End
@@ -856,6 +861,7 @@ Public Sub HighlightFrom(Y As Integer)
       Else
         
         $hHighlight.Run(Lines[Y])
+        If Y = 0 Then TextHighlighter.Limit = True
         
       Endif
       
