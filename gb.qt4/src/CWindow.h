@@ -165,6 +165,8 @@ typedef
 	}
 	MODAL_INFO;
 
+enum { PROP_ALL = -1, PROP_STACKING = 1, PROP_SKIP_TASKBAR = 2, PROP_BORDER = 4, PROP_STICKY = 8 };
+	
 class MyMainWindow : public QWidget
 {
 	Q_OBJECT
@@ -206,7 +208,7 @@ public:
 	MyMainWindow(QWidget *parent, const char *name, bool embedded = false);
 	~MyMainWindow();
 
-	void initProperties();
+	void initProperties(int which);
 	void present();
 	void showActivate(QWidget *parent = 0);
 	//void activateLater() { _activate = true; }

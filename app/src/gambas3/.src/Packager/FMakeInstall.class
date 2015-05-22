@@ -137,6 +137,8 @@ Public Sub Form_Open()
   edtLog.ShowModified = False
   edtLog.ShowLineNumber = False
   edtLog.ShowIcon = False
+  edtLog.ShowExpand = False
+  edtLog.ShowPosition = False
   edtLog.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
 
 End
@@ -523,7 +525,7 @@ Private Function GetSystemFromName(sName As String) As String
   Dim hCtrl As CheckBox
 
   For Each hCtrl In GetSystemControls()
-    If hCtrl.Text = sName Then Return hCtrl.Parent.Tag
+    If Replace(hCtrl.Text, "&", "") = sName Then Return hCtrl.Parent.Tag
   Next
 
 End
@@ -534,7 +536,7 @@ Public Function GetSystemName(sTag As String) As String
   Dim hCtrl As CheckBox
 
   For Each hCtrl In GetSystemControls()
-    If hCtrl.Parent.Tag = sTag Then Return hCtrl.Text
+    If hCtrl.Parent.Tag = sTag Then Return Replace(hCtrl.Text, "&", "")
   Next
 
 End
@@ -544,7 +546,7 @@ End
 Public Sub AddLog(sText As String, Optional bNoNewLine As Boolean)
 
   If Not bNoNewLine Then sText &= "\n"
-  edtLog.Goto(0, edtLog.Lines.Count)
+  edtLog.Goto(0, edtLog.Count)
   edtLog.ReadOnly = False
   edtLog.Print(sText)
   edtLog.ReadOnly = True
@@ -574,7 +576,7 @@ Private Sub FillComboWithSystems(hCombo As ComboBox)
     Else If hCombo = cmbGroup Or If hCombo = cmbMenu Then
       If sSys = "autotools" Or If sSys = "self" Then Continue
     Endif
-    If hCtrl.Value Then hCombo.Add(hCtrl.Text)
+    If hCtrl.Value Then hCombo.Add(GetSystemName(sSys))
   Next
 
   hCombo.Index = 0

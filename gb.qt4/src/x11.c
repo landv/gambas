@@ -539,6 +539,7 @@ void X11_window_set_desktop(Window window, bool visible, int desktop)
 	{
 		XChangeProperty(_display, window, X11_atom_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
 				(unsigned char *)&desktop, 1);
+		XFlush(_display);
 	}
 }
 
@@ -634,7 +635,9 @@ void X11_set_window_decorated(Window window, bool decorated)
 		(uchar *)hints, sizeof (MwmHints)/sizeof(long));
 	
 	if (hints != &new_hints)
-		XFree (hints);
+		XFree(hints);
+	
+	XFlush(_display);
 }
 
 void X11_window_remap(Window window)
@@ -642,11 +645,13 @@ void X11_window_remap(Window window)
 	XWithdrawWindow(_display, window, DefaultScreen(_display));
 	XUnmapWindow(_display, window);
 	XMapWindow(_display, window);
+	XFlush(_display);
 }
 
 void X11_window_activate(Window window)
 {
 	XSetInputFocus(_display, window, RevertToParent, CurrentTime);
+	XFlush(_display);
 }
 
 bool X11_get_available_geometry(int screen, int *x, int *y, int *w, int *h)

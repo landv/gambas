@@ -255,7 +255,7 @@
         }
         { chkDebian CheckBox chkDistro
           Name = "chkDebian"
-          MoveScaled(12,2,17,4)
+          MoveScaled(14,2,17,4)
           #Translate = False
           Expand = True
           Text = "Debian"
@@ -299,7 +299,7 @@
         }
         { chkMageia CheckBox chkDistro
           Name = "chkMageia"
-          MoveScaled(12,1,27,4)
+          MoveScaled(13,1,27,4)
           #Translate = False
           Expand = True
           Text = "Mageia"
@@ -647,19 +647,10 @@
         Picture = Picture["icon:/small/copy"]
       }
     }
-    { Panel5 Panel
-      MoveScaled(7,21,66,36)
-      Background = Color.TextBackground
+    { edtLog TextEditor
+      MoveScaled(12,25,49,28)
       Expand = True
-      Arrangement = Arrange.Fill
-      Padding = 2
-      Border = Border.Plain
-      { edtLog TextEditor
-        MoveScaled(5,4,49,28)
-        Expand = True
-        Border = False
-        ReadOnly = True
-      }
+      ReadOnly = True
     }
     Index = 0
   }

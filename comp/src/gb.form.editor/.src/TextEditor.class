@@ -355,7 +355,7 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
   Dim I As Integer
   Dim hStyle As TextEditorStyle
   Dim bAlt As Boolean
-  Dim iLen As Byte
+  Dim iLen As Integer
   Dim P As Integer
   Dim sStr As String
   Dim SX As Integer
@@ -434,6 +434,14 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     X = X2
     
   Next
+  
+  sStr = String.Mid$(sText, P + 1)
+  If sStr And If X <= XMax Then
+    
+    Paint.Background = $iForeground
+    DrawText(sStr, SX, X, Y)
+        
+  Endif
 
 End
 
@@ -1083,6 +1091,7 @@ Public Sub View_MouseDown()
   Y = PosToLine(Mouse.Y)
   If Y >= 0 Then
     If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
+      Goto(0, Y)
       If $hDoc.Info(Y).Limit Then
         ToggleRow(Y)
       Endif

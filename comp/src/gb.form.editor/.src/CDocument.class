@@ -849,6 +849,7 @@ Public Sub HighlightFrom(Y As Integer)
       .Colors = aHighlight
       TextHighlighter._Highlight = aHighlight
       TextHighlighter.TextAfter = ""
+      TextHighlighter.Line = Y
       
       'Debug "Before: State = "; .State;; "Tag = "; .Tag;; "Alternate = "; .Alternate;; "Limit = "; .Limit
       

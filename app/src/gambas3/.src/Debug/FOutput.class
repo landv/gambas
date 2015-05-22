@@ -81,6 +81,7 @@ Public Sub ReadConfig()
   edtOutput.ShowModified = False
   edtOutput.ShowLineNumber = False
   edtOutput.ShowIcon = False
+  edtOutput.ShowExpand = False
   
   Project.SetSmallFont(tlbOutput)
   
@@ -406,14 +407,14 @@ Public Sub btnEcho_Click()
 End
 
 ' TODO: highlight debug
-' Public Sub edtOutput_Highlight()
-' 
-'   If $iLinkLen = 0 Then Return
-'   If $iLinkY <> Highlight.Line Then Return
-' 
-'   Highlight.Add(Highlight.Keyword, $iLinkLen)
-' 
-' End
+Public Sub edtOutput_Highlight(Text As String)
+
+  If $iLinkLen = 0 Then Return
+  If $iLinkY <> TextHighlighter.Line Then Return
+
+  TextHighlighter.Add(Highlight.Keyword, $iLinkLen)
+
+End
 
 Public Sub edtOutput_MouseMove()
 
@@ -444,7 +445,7 @@ Public Sub edtOutput_MouseMove()
     sText = edtOutput[Y].Text
     
     iPos = InStr(sText, ": ")
-    If iPos Then
+    If iPos > X Then
       aScan = Scan(Left(sText, iPos - 1), "*.*.*")
       If aScan.Count = 3 And If IsDigit(aScan[2]) Then 
         iNewY = Y

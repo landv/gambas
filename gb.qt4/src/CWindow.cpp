@@ -144,7 +144,7 @@ static void clear_mask(CWINDOW *_object)
 		if (v && THIS->reallyMasked)
 		{
 			X11_window_remap(WINDOW->effectiveWinId());
-			WINDOW->initProperties();
+			WINDOW->initProperties(PROP_ALL);
 		}
 		#endif
 	}
@@ -935,70 +935,6 @@ BEGIN_PROPERTY(Window_FullScreen)
 END_PROPERTY
 
 
-#ifdef NO_X_WINDOW
-
-BEGIN_PROPERTY(Window_Stacking)
-
-	if (READ_PROPERTY)
-		GB.ReturnInteger(0);
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(Window_TopOnly)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(FALSE);
-		
-END_PROPERTY
-
-
-BEGIN_PROPERTY(Window_SkipTaskbar)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(FALSE);
-
-END_PROPERTY
-
-
-BEGIN_PROPERTY(Window_Sticky)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(FALSE);
-
-END_PROPERTY
-
-BEGIN_PROPERTY(Window_Utility)
-
-	if (READ_PROPERTY)
-		GB.ReturnBoolean(FALSE);
-
-END_PROPERTY
-
-#endif
-
-#ifndef NO_X_WINDOW
-
-static void manage_window_property(void *_object, void *_param, Atom property)
-{
-	if (!THIS->toplevel)
-	{
-		if (READ_PROPERTY)
-			GB.ReturnBoolean(FALSE);
-	}
-	else
-	{
-		if (READ_PROPERTY)
-			GB.ReturnBoolean(X11_window_has_property(WINDOW->effectiveWinId(), property));
-		else
-		{
-			X11_window_change_begin(WINDOW->effectiveWinId(), WINDOW->isVisible());
-			X11_window_change_property(property, VPROP(GB_BOOLEAN));
-			X11_window_change_end();
-		}
-	}
-}
-
 BEGIN_PROPERTY(Window_Stacking)
 
 	int p;
@@ -1020,7 +956,7 @@ BEGIN_PROPERTY(Window_Stacking)
 		if (p >= 0 && p <= 2)
 		{
 			THIS->stacking = p;
-			WINDOW->initProperties();
+			WINDOW->initProperties(PROP_STACKING);
 		}
 	}
 
@@ -1043,7 +979,7 @@ BEGIN_PROPERTY(Window_TopOnly)
 	else
 	{
 		THIS->stacking = VPROP(GB_BOOLEAN) ? 1 : 0;
-		WINDOW->initProperties();
+		WINDOW->initProperties(PROP_STACKING);
 	}
 	
 END_PROPERTY
@@ -1051,10 +987,22 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_SkipTaskbar)
 
-	manage_window_property(_object, _param, X11_atom_net_wm_state_skip_taskbar);
-
-	if (!READ_PROPERTY)
+	if (!THIS->toplevel)
+	{
+		if (READ_PROPERTY)
+			GB.ReturnBoolean(FALSE);
+		return;
+	}
+	
+	if (READ_PROPERTY)
+	{
+		GB.ReturnBoolean(THIS->skipTaskbar);
+	}
+	else
+	{
 		THIS->skipTaskbar = VPROP(GB_BOOLEAN);
+		WINDOW->initProperties(PROP_SKIP_TASKBAR);
+	}
 
 END_PROPERTY
 
@@ -1073,7 +1021,7 @@ BEGIN_PROPERTY(Window_Sticky)
 	else
 	{
 		THIS->sticky = VPROP(GB_BOOLEAN);
-		X11_window_set_desktop(WINDOW->effectiveWinId(), WINDOW->isVisible(), THIS->sticky ? 0xFFFFFFFF : X11_get_current_desktop());
+		WINDOW->initProperties(PROP_STICKY);
 	}
 
 END_PROPERTY
@@ -1089,8 +1037,6 @@ BEGIN_PROPERTY(Window_Utility)
 	}
 
 END_PROPERTY
-
-#endif //------------------------------------------------------------------------------------------
 
 
 BEGIN_METHOD_VOID(Window_Center)
@@ -1630,22 +1576,39 @@ void MyMainWindow::showEvent(QShowEvent *e)
 }
 
 
-void MyMainWindow::initProperties()
+void MyMainWindow::initProperties(int which)
 {
 	#ifndef NO_X_WINDOW
 	CWIDGET *_object = CWidget::get(this);
 
-	if (!THIS->toplevel)
+	if (!THIS->toplevel || effectiveWinId() == 0)
 		return;
 
-	X11_window_change_begin(effectiveWinId(), isVisible());
-	X11_window_change_property(X11_atom_net_wm_state_above, THIS->stacking == 1);
-	X11_window_change_property(X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
-	X11_window_change_property(X11_atom_net_wm_state_below, THIS->stacking == 2);
-	X11_window_change_property(X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
-	X11_window_change_end();
+	if (which & (PROP_STACKING | PROP_SKIP_TASKBAR))
+	{
+		X11_window_change_begin(effectiveWinId(), isVisible());
+		
+		if (which & PROP_STACKING)
+		{
+			X11_window_change_property(X11_atom_net_wm_state_above, THIS->stacking == 1);
+			X11_window_change_property(X11_atom_net_wm_state_stays_on_top, THIS->stacking == 1);
+			X11_window_change_property(X11_atom_net_wm_state_below, THIS->stacking == 2);
+		}
+		if (which & PROP_SKIP_TASKBAR)
+			X11_window_change_property(X11_atom_net_wm_state_skip_taskbar, THIS->skipTaskbar);
+		
+		X11_window_change_end();
+	}
 	
-	X11_set_window_type(effectiveWinId(), _type);
+	if (which == PROP_ALL)
+		X11_set_window_type(effectiveWinId(), _type);
+	
+	if (which & PROP_BORDER)
+		X11_set_window_decorated(effectiveWinId(), _border);
+	
+	if (which & PROP_STICKY)
+		X11_window_set_desktop(effectiveWinId(), isVisible(), THIS->sticky ? 0xFFFFFFFF : X11_get_current_desktop());
+	
 	#endif
 }
 
@@ -1743,15 +1706,9 @@ void MyMainWindow::showActivate(QWidget *transient)
 	if (!THIS->title && _border)
 		setWindowTitle(TO_QSTRING(GB.Application.Title()));
 
-#ifdef QT5
+	createWinId();
+	initProperties(PROP_ALL);
 	present();
-	initProperties();
-#else
-	initProperties();
-	present();
-#endif
-
-	afterShow();
 
 	#ifndef NO_X_WINDOW
 	if (isUtility())
@@ -1987,7 +1944,13 @@ void MyMainWindow::setBorder(bool b)
 	_border = b;
 	if (!isWindow())
 		return;
-	doReparent(parentWidget(), pos());
+	
+	if (effectiveWinId())
+	{
+		initProperties(PROP_BORDER);
+		X11_window_remap(effectiveWinId());
+	}
+	//doReparent(parentWidget(), pos());
 }
 
 void MyMainWindow::setResizable(bool b)
@@ -2376,11 +2339,6 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 		else
 			f |= Qt::Window;
 		
-		if (_border)
-			f &= ~(Qt::FramelessWindowHint);
-		else
-			f |= Qt::FramelessWindowHint;
-		
 		if (!old_toplevel)
 			CWindow::insertTopLevel(THIS);
 	}
@@ -2399,7 +2357,6 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	//if (!THIS->hidden) showIt = true;
 	//hide();
 	hidden = THIS->hidden || !WIDGET->isVisible();
-	//qDebug("doReparent: %s %p: hidden = %d", THIS->widget.name, THIS, hidden);
 	if (parent != parentWidget() || f != windowFlags())
 	{
 		reparented = true;
@@ -2412,7 +2369,7 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	if (!THIS->embedded)
 	{
 		#ifndef NO_X_WINDOW
-			initProperties();
+			initProperties(PROP_ALL);
 			if (active && hasBorder())
 				activateWindow();
 		#endif

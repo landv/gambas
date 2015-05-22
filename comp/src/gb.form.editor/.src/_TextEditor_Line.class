@@ -52,7 +52,11 @@ End
 
 Public Sub Refresh()
   
-  GetDoc().Refresh(_Line)
+  With GetDoc()
+    .Info(_Line).ClearHighlight
+    .HighlightFrom(_Line)
+    .Refresh(_Line)
+  End With
   
 End
 
