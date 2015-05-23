@@ -108,7 +108,7 @@ Public Sub SetPosition(hFindResult As CFindResult, bJustCheck As Boolean) As Boo
     hFindResult.Text = "<nobr>" & sLine
   Else
     ' TODO Me[iLine].Expanded = True
-    Me.Goto(iColumn, iLine)
+    Me.GotoCenter(iColumn, iLine)
     Me.Goto(iColumn + hFindResult.Length, iLine, True)
   Endif
   

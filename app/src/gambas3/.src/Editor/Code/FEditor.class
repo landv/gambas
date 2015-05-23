@@ -165,7 +165,7 @@ Public Sub ReadConfig()
 
 End
 
-Public Function Save(Optional bReset As Boolean) As Boolean
+Public Function Save() As Boolean
 
   Dim sHeader As String
 
@@ -2890,7 +2890,7 @@ Public Sub SetState(sState As String)
 
   Dim aState As String[] = Split(sState, ".")
 
-  GotoCenter(CInt(aState[1]), CInt(aState[0]))
+  GotoCenter(CInt(aState[0]), CInt(aState[1]))
 
 End
 

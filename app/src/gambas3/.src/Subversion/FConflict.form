@@ -70,21 +70,15 @@
           MoveScaled(32,0,4,4)
           Expand = True
         }
-        { lblCursor Label
-          MoveScaled(50,0,10,4)
-          Font = Font["+2"]
-          Padding = 4
-          AutoResize = True
-        }
       }
       { Separator1 Separator
         MoveScaled(29,7,20,0)
       }
-      { edtConflict Editor
+      { edtConflict TextEditor
         MoveScaled(4,10,17,12)
         Expand = True
         Border = False
-        Highlight = Highlight.Custom
+        Highlight = "Custom"
       }
     }
     { lblPath Label

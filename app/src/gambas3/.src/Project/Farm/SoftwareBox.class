@@ -223,7 +223,7 @@ Public Sub DrawingArea_Draw()
     ' Paint.Background = iCol
     ' Paint.DrawText(sText, X, Y + Paint.Font.Height, Paint.W, Paint.H, Align.TopLeft)
     
-    X -= CSoftware.ICON_SIZE + P
+    X = P '-= CSoftware.ICON_SIZE + P
     
     sText = .Description
     Paint.Font = Font["-1"]
@@ -231,6 +231,7 @@ Public Sub DrawingArea_Draw()
     W = Paint.W - X - P * 2
     H = Paint.H - Y - CSoftware.ICON_SIZE - P * 2
     If .URL Then H -= Desktop.Scale
+    
     Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + CSoftware.ICON_SIZE + P, W, H)
     
     PaintStat($hSoft)

@@ -665,7 +665,7 @@ Public Sub SetState(sState As String)
   
   Dim aState As String[] = Split(sState, ".")
   
-  GotoCenter(CInt(aState[1]), CInt(aState[0]))
+  GotoCenter(CInt(aState[0]), CInt(aState[1]))
   
 End
 

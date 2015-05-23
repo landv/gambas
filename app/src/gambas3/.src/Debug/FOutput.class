@@ -407,7 +407,7 @@ Public Sub btnEcho_Click()
 End
 
 ' TODO: highlight debug
-Public Sub edtOutput_Highlight(Text As String)
+Public Sub edtOutput_Highlight((Text) As String)
 
   If $iLinkLen = 0 Then Return
   If $iLinkY <> TextHighlighter.Line Then Return

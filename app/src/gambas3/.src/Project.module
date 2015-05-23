@@ -2650,7 +2650,7 @@ Public Sub Save(Optional bReset As Boolean)
 
   For Each hForm In Files
     If hForm Is FEditor Then
-      If hForm.Save(bReset) Then Break
+      If hForm.Save() Then Break
     Else
       If hForm.Save() Then Break
     Endif

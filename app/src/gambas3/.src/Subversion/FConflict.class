@@ -31,12 +31,6 @@ Public Sub Run(sPath As String) As Boolean
 End
 
 
-Public Sub edtConflict_Cursor()
-
-  lblCursor.Text = CStr(edtConflict.Line + 1) & ":" & CStr(edtConflict.Column + 1)
-
-End
-
 Public Sub btnCut_Click()
 
   edtConflict.Cut
@@ -90,10 +84,9 @@ Private Sub LoadFile(sPath As String)
   Inc Application.Busy
   
   If $iType = TYPE_TEXT Then
-    edtConflict.Text = File.Load(sPath)
+    edtConflict.Load(sPath)
     $bModify = False
     edtConflict.SetFocus
-    edtConflict_Cursor
   Else
     fprInfo.Hide
   'Else If $iType = TYPE_IMAGE Then
@@ -181,33 +174,31 @@ Public Sub Form_Open()
 End
 
 
-Public Sub edtConflict_Highlight()
+Public Sub edtConflict_Highlight(Text As String)
 
   Dim iState As Integer
-  Dim sText As String
 
-  iState = Highlight.State
-  sText = Highlight.Text
+  iState = TextHighlighter.State
 
-  Highlight.ShowLimit = False
+  TextHighlighter.Limit = False
   
-  If sText Begins "<<<<<<" Then 
+  If Text Begins "<<<<<<" Then 
     'iPos = String.InStr(sText, " ")
-    Highlight.Add(Highlight.Comment, String.Len(sText))
+    TextHighlighter.Add(Highlight.Comment, String.Len(Text))
     'Highlight.Add(Highlight.Keyword, String.Len(sText) - iPos)
-    Highlight.State = Highlight.Number
-    Highlight.ShowLimit = True
-  Else If sText Begins "======" Then
-    Highlight.Add(Highlight.Comment, String.Len(sText))
-    Highlight.State = Highlight.Function
-  Else If sText Begins ">>>>>>" Then
-    Highlight.Add(Highlight.Comment, String.Len(sText))
+    TextHighlighter.State = Highlight.Number
+    TextHighlighter.ShowLimit = True
+  Else If Text Begins "======" Then
+    TextHighlighter.Add(Highlight.Comment, String.Len(Text))
+    TextHighlighter.State = Highlight.Function
+  Else If Text Begins ">>>>>>" Then
+    TextHighlighter.Add(Highlight.Comment, String.Len(Text))
     'iPos = String.InStr(sText, " ")
     'Highlight.Add(Highlight.Comment, iPos)
     'Highlight.Add(Highlight.Keyword, String.Len(sText) - iPos)
-    Highlight.State = Highlight.Normal
+    TextHighlighter.State = Highlight.Normal
   Else 
-    Highlight.Add(iState, String.Len(sText))
+    TextHighlighter.Add(iState, String.Len(Text))
   Endif
 
 End
@@ -239,10 +230,10 @@ Public Sub btnSolve_Click()
   
   btnSave_Click
   
-  For iInd = 0 To edtConflict.Lines.Count - 1
-    sText = edtConflict.Lines[iInd].Text
+  For iInd = 0 To edtConflict.Count - 1
+    sText = edtConflict[iInd].Text
     If sText Begins "<<<<<<" Or If sText Begins "======" Or If sText Begins ">>>>>>" Then 
-      edtConflict.Goto(iInd, 0)
+      edtConflict.GotoCenter(0, iInd)
       Message.Warning(("Some conflicts are not yet resolved."))
       Return
     Endif
@@ -261,9 +252,8 @@ Public Sub btnSave_Click()
 
   Select $iType
     Case TYPE_TEXT
-      File.Save($sPath, edtConflict.Text)
+      edtConflict.Save($sPath)
       $bModify = False
-      edtConflict.Reset
     Default
       If $sLoadedPath <> $sPath Then
         Kill $sPath
