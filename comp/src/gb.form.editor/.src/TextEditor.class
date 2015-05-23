@@ -120,6 +120,7 @@ Private $hTabImage As Image
 Private $hFont As Font
 Private $iAscent As Integer
 
+Private $fCharWidth As Float
 Private $cCacheWidth As New Collection
 
 Private $iStopLine As Integer = -1
@@ -186,6 +187,9 @@ End
 
 Private Sub CalcSizes()
 
+  Dim I As Integer
+  Dim sText As String
+  
   $hFont = $hView.Font
   $iAscent = $hFont.Ascent
   $hRows.Height = $hFont.Height + 1
@@ -194,8 +198,24 @@ Private Sub CalcSizes()
   $iTabWidth = $hFont.TextWidth("m") * $iTabSize
   $fTabSymbolSize = Max(1, $hRows.H / 5)
   $hTabImage = Null
+  
+  $fCharWidth = $iSpaceWidth
+  For I = 33 To 255
+    If I > 127 And If I < 160 Then Continue
+    If I = 173 Then Continue
+    If $hFont.TextWidth(Chr$(I)) <> $iSpaceWidth Then 
+      $fCharWidth = 0
+      Break
+    Endif
+  Next
+  
+  If $fCharWidth Then
+    sText = String$(4, "AbCdEfGh01#@WwmM")
+    $fCharWidth = $hFont.TextWidth(sText) / Len(sText)
+    Debug Me;; $fCharWidth
+  Endif
+  
   _ClearCacheWidth
-
   UpdateWidth
   UpdateMargin
 
@@ -229,14 +249,28 @@ End
 
 Public Sub Load(Path As String, Optional AddNewLine As Boolean)
   
+  Inc Application.Busy
   $hDoc.Load(Path, AddNewLine)
   Init
+  Dec Application.Busy
+  
+Catch
+  
+  Dec Application.Busy
+  Error.Propagate
   
 End
 
 Public Sub Save(Path As String)
   
+  Inc Application.Busy
   $hDoc.Save(Path)
+  Dec Application.Busy
+  
+Catch
+  
+  Dec Application.Busy
+  Error.Propagate
   
 End
 
@@ -622,11 +656,31 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
 End
 
-Private Sub LineWidth(Y As Integer, Optional iLen As Integer = -1) As Integer
+Fast Private Sub LineWidth(Y As Integer, Optional iLen As Integer = -1) As Integer
   
   Dim aText As String[]
   Dim W As Integer
   Dim I As Integer
+  
+  If $fCharWidth Then
+    
+    If iLen < 0 Then
+      aText = Split($hDoc.Lines[Y], "\t")
+    Else
+      aText = Split(String.Left($hDoc.Lines[Y], iLen), "\t")
+    Endif
+    
+    If aText.Count = 0 Then Return 0
+  
+    For I = 0 To aText.Max - 1
+      W += $fCharWidth * String.Len(aText[I])
+      W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
+    Next
+    W += $fCharWidth * String.Len(aText[aText.Max])
+    
+    Return W
+    
+  Endif
   
   Try Return $cCacheWidth[Y][iLen]
   
@@ -638,11 +692,23 @@ Private Sub LineWidth(Y As Integer, Optional iLen As Integer = -1) As Integer
   
   If aText.Count = 0 Then Return 0
   
-  For I = 0 To aText.Max - 1
-    W += $hFont.TextWidth(aText[I])
-    W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
-  Next
-  W += $hFont.TextWidth(aText[aText.Max])
+  ' If $fCharWidth Then
+  ' 
+  '   For I = 0 To aText.Max - 1
+  '     W += $fCharWidth * String.Len(aText[I])
+  '     W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
+  '   Next
+  '   W += $fCharWidth * String.Len(aText[aText.Max])
+  '   
+  ' Else
+  
+    For I = 0 To aText.Max - 1
+      W += $hFont.TextWidth(aText[I])
+      W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
+    Next
+    W += $hFont.TextWidth(aText[aText.Max])
+    
+  ' Endif
   
   If Not $cCacheWidth.Exist(Y) Then 
     If $cCacheWidth.Count > 64 Then
@@ -1275,6 +1341,8 @@ Public Sub _AfterInsert(Y1 As Integer, Y2 As Integer, N As Integer)
 
   Dim Y As Integer
   
+  If $iLargestLine >= Y1 Then $iLargestLine += N
+  
   For Y = Y1 To Y2
     UpdateWidth(Y)
   Next
@@ -1335,7 +1403,16 @@ End
 
 Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   
-  If $iLargestLine >= Min(Y1, Y2) And If $iLargestLine <= Max(Y1, Y2) Then UpdateWidth
+  If Y1 > Y2 Then Swap Y1, Y2
+  
+  If $iLargestLine >= Y1 Then
+    If $iLargestLine <= Y2 Then
+      UpdateWidth
+    Else
+      $iLargestLine -= Y2 - Y1
+    Endif
+  Endif
+  
   UpdateMargin
   _ExpandRemove(Y1, Y2)
   UpdateCount
@@ -2702,19 +2779,21 @@ Private Sub ViewToReal(Y As Integer) As Integer
   Dim M As Integer
   Dim J As Integer
   
-  If Not $aFold Then Return Y
+  If $aFold Then 
   
-  M = $hDoc.Max
-  
-  For I = 0 To $aFold.Max Step 2
-    If Y <= $aFold[I] Then Break
-    J = I + 1
-    If $aFold[J] < M Then
-      Y += $aFold[J] - $aFold[I]
-    Else
-      Y = M + 1
-    Endif
-  Next
+    M = $hDoc.Max
+    
+    For I = 0 To $aFold.Max Step 2
+      If Y <= $aFold[I] Then Break
+      J = I + 1
+      If $aFold[J] < M Then
+        Y += $aFold[J] - $aFold[I]
+      Else
+        Y = M + 1
+      Endif
+    Next
+    
+  Endif
   
   Return Y
   
@@ -2747,21 +2826,25 @@ Private Sub RealToView(Y As Integer) As Integer
   Dim YY As Integer
   Dim J As Integer
   
-  If Not $aFold Then Return Y
+  If $aFold Then 
   
-  YY = Y
+    YY = Y
   
-  For I = 0 To $aFold.Max Step 2
-    If Y < $aFold[I] Then Continue
-    J = I + 1
-    If Y <= $aFold[J] Then
-      YY -= Y - $aFold[I]
-    Else
-      YY -= $aFold[J] - $aFold[I]
-    Endif
-  Next
+    For I = 0 To $aFold.Max Step 2
+      If Y < $aFold[I] Then Continue
+      J = I + 1
+      If Y <= $aFold[J] Then
+        YY -= Y - $aFold[I]
+      Else
+        YY -= $aFold[J] - $aFold[I]
+      Endif
+    Next
+    
+    Y = YY
+    
+  Endif
   
-  Return YY
+  Return Y
   
 End
 
