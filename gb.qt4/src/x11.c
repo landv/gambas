@@ -56,9 +56,9 @@ Atom X11_atom_net_wm_window_type;
 Atom X11_atom_net_wm_window_type_normal;
 Atom X11_atom_net_wm_window_type_utility;
 Atom X11_atom_net_wm_desktop;
+Atom X11_atom_net_wm_user_time;
 Atom X11_atom_net_current_desktop;
 Atom X11_atom_net_workarea = None;
-
 Atom X11_atom_motif_wm_hints = None;
 Atom X11_atom_net_system_tray = None;
 
@@ -133,11 +133,12 @@ static void init_atoms()
 	X11_atom_net_wm_state_below = XInternAtom(_display, "_NET_WM_STATE_BELOW", True);
 	X11_atom_net_wm_state_stays_on_top = XInternAtom(_display, "_NET_WM_STATE_STAYS_ON_TOP", True);
 	X11_atom_net_wm_state_skip_taskbar = XInternAtom(_display, "_NET_WM_STATE_SKIP_TASKBAR", True);
-
 	X11_atom_net_wm_desktop = XInternAtom(_display, "_NET_WM_DESKTOP", True);
 	X11_atom_net_wm_window_type = XInternAtom(_display, "_NET_WM_WINDOW_TYPE", True);
 	X11_atom_net_wm_window_type_normal = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_NORMAL", True);
 	X11_atom_net_wm_window_type_utility = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_UTILITY", True);
+	X11_atom_net_wm_user_time = XInternAtom(_display, "_NET_WM_USER_TIME", True);
+
 	X11_atom_net_supported = XInternAtom(_display, "_NET_SUPPORTED", True);
 	
 	_atom_init = TRUE;
@@ -188,6 +189,11 @@ static int find_atom(Atom atom)
 		memcpy(_property_value, (char *)data, count * size);
 	}
 #endif
+
+void X11_flush()
+{
+	XFlush(_display);
+}
 
 char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcount)
 {
@@ -727,6 +733,7 @@ bool X11_send_move_resize_event(Window window, int x, int y, int w, int h)
 	return FALSE;
 }
 
+#if 0
 static Atom get_net_system_tray(void)
 {
 	char buf[64];
@@ -791,8 +798,12 @@ bool X11_window_dock(Window window)
 	
 	return FALSE;
 }
+#endif
 
-void X11_flush()
+void X11_window_set_user_time(Window win, int timestamp)
 {
+	ulong timestamp_long = (long)timestamp;
+
+	XChangeProperty(_display, win, X11_atom_net_wm_user_time, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&timestamp_long, 1);
 	XFlush(_display);
 }

@@ -109,6 +109,7 @@ public:
 	void showModal();
 	void showPopup();
 	void showPopup(int x, int y);
+	void activate();
 	void raise();
 	virtual void move(int x, int y);
 	virtual void resize(int w, int h);

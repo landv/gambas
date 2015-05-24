@@ -720,6 +720,12 @@ BEGIN_PROPERTY(Window_TakeFocus)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(Window_Activate)
+	
+	WINDOW->activate();
+
+END_METHOD
+
 //-------------------------------------------------------------------------
 
 BEGIN_METHOD_VOID(CFORM_new)
@@ -828,6 +834,8 @@ GB_DESC CWindowDesc[] =
 	GB_METHOD("ShowDialog", "i", CWINDOW_show_modal, NULL),
 	GB_METHOD("ShowPopup", "i", Window_ShowPopup, "[(X)i(Y)i]"),
 	GB_METHOD("Center", NULL, CWINDOW_center, NULL),
+	GB_METHOD("Activate", NULL, Window_Activate, NULL),
+
 	GB_PROPERTY_READ("Modal", "b", CWINDOW_modal),
 	GB_PROPERTY_READ("TopLevel", "b", CWINDOW_top_level),
 	GB_PROPERTY_READ("Closed", "b", CWINDOW_closed),

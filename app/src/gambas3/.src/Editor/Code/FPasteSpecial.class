@@ -108,6 +108,11 @@ Public Sub Form_Open()
   Dim aFormat As String[]
   Dim iInd As Integer
   
+  If LCase($hEditor.Highlight) <> "gambas" Then
+    radPasteNormal.Value = True
+    panType.Hide
+  Endif
+  
   aFormat = $aFormat.Copy()
 
   For iInd = 0 To aFormat.Max

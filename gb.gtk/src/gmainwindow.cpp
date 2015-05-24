@@ -837,6 +837,12 @@ void gMainWindow::showActivate()
 		gtk_window_present(GTK_WINDOW(border));
 }
 
+void gMainWindow::activate()
+{
+	if (isTopLevel() && isVisible())
+		gtk_window_present(GTK_WINDOW(border));
+}
+
 void gMainWindow::showPopup()
 {
 	int x, y;

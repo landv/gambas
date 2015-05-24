@@ -178,7 +178,6 @@ Public Sub _new()
   
 End
 
-
 Private Function Text_Read() As String
 
   Return $hDoc.Text
@@ -212,7 +211,6 @@ Private Sub CalcSizes()
   If $fCharWidth Then
     sText = String$(4, "AbCdEfGh01#@WwmM")
     $fCharWidth = $hFont.TextWidth(sText) / Len(sText)
-    Debug Me;; $fCharWidth
   Endif
   
   _ClearCacheWidth
@@ -609,16 +607,16 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       Endif
     Endif
     
-    If YL < 0 Then
+    If YL < 0 Or If YL = Y Then
       If $bShowLineNumber Then
         iCol = $iForeground
         If (Row + 1) Mod 10 Then iCol = $iLimitColor
         Paint.Background = iCol
         Paint.DrawText(CStr(Row + 1 + $iLineNumberOffset), X, Y, $iWidthLineNumber - 4, Height, Align.TopRight)
       Endif
-    Else
-      Paint.FillRect(X, YL, Width, 1, $iLimitColor)
     Endif
+    
+    If YL >= 0 Then Paint.FillRect(X, YL, Width, 1, $iLimitColor)
     
     If $bShowIcon Or If $bShowExpand Then
 
@@ -917,7 +915,7 @@ Public Sub View_KeyPress()
       
     Case Key.Enter, Key.Return
       
-      If $hDoc.Info($Y).Limit Then
+      If $bShowExpand And If $hDoc.Info($Y).Limit Then
         If Key.Control Then
           If Key.Alt Then
             If _IsRowExpanded($Y) Then
@@ -1019,8 +1017,8 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     $X = NX
     $Y = NY
     $XX = LineWidth($Y, $X)
-    $XM = 0
-    $YM = -1
+    '$XM = 0
+    '$YM = -1
     bRaiseCursor = True
   Endif
   
@@ -1158,7 +1156,7 @@ Public Sub View_MouseDown()
   If Y >= 0 Then
     If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
       Goto(0, Y)
-      If $hDoc.Info(Y).Limit Then
+      If $bShowExpand And If $hDoc.Info(Y).Limit Then
         ToggleRow(Y)
       Endif
     Else
@@ -1178,7 +1176,7 @@ Public Sub View_DblClick()
   If $bShowIcon Or If $bShowExpand Then
     Y = PosToLine(Mouse.Y)
     If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then 
-      If $hDoc.Info(Y).Limit Then
+      If $bShowExpand And If $hDoc.Info(Y).Limit Then
         If _IsRowExpanded(Y) Then
           ExpandAll
         Else
@@ -1375,7 +1373,7 @@ Public Sub Paste()
   Dim sText As String
   
   If Clipboard.Type <> Clipboard.Text Then Return
-  sText = Clipboard.Paste()
+  sText = Clipboard.Paste("text/plain")
   If Not sText Then Return
   
   Insert(sText)
@@ -1528,9 +1526,7 @@ Private Sub CheckMatch()
     
   Endif
   
-  If $XM <> iOldXM Or If $YM <> iOldYM Then Refresh
-  
-  Return
+  Goto FOUND
   
 FIND_MATCH:
 
@@ -1558,9 +1554,9 @@ FIND_MATCH:
         
         X = 0
         Inc Y
-        If Y > $hDoc.Max Then Return
+        If Y > $hDoc.Max Then Goto FOUND
         Inc N
-        If N > 1000 Then Return
+        If N > 1000 Then Goto FOUND
         
         sLine = $hDoc.Lines[Y]
         iLen = String.Len(sLine)
@@ -1574,9 +1570,9 @@ FIND_MATCH:
       While X < 0
         
         Dec Y
-        If Y < 0 Then Return
+        If Y < 0 Then Goto FOUND
         Inc N
-        If N > 1000 Then Return
+        If N > 1000 Then Goto FOUND
         
         sLine = $hDoc.Lines[Y]
         X = String.Len(sLine) - 1
@@ -1592,8 +1588,7 @@ FIND_MATCH:
         If L = 0 Then
           $XM = X
           $YM = Y
-          _RefreshLine(Y)
-          Return
+          Goto FOUND
         Endif
         
       Case sCar
@@ -1602,6 +1597,14 @@ FIND_MATCH:
     End Select
     
   Loop
+  
+FOUND:
+
+  If $XM <> iOldXM Or If $YM <> iOldYM Then 
+    _RefreshLine(iOldYM)
+    _RefreshLine($Y)
+    _RefreshLine($YM)
+  Endif
   
 End
 

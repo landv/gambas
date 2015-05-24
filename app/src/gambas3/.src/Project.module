@@ -2506,7 +2506,7 @@ Public Function Compile(Optional bAll As Boolean, Optional bNoDebug As Boolean, 
   sDir = Project.Dir
 
   FProperty.SaveProperty
-  Save(True)
+  Save(True) 
 
   If VersionControl.HasConflict() Then
     UnlockIt()
@@ -2642,7 +2642,7 @@ Public Sub Step()
 
 End
 
-Public Sub Save(Optional bReset As Boolean)
+Public Sub Save(Optional (bReset) As Boolean)
 
   Dim hForm As Object
 

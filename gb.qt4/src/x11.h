@@ -107,6 +107,8 @@ void X11_set_window_tool(Window window, int tool, Window parent);
 int X11_get_window_tool(Window window);
 void X11_window_set_desktop(Window window, bool visible, int desktop);
 int X11_window_get_desktop(Window window);
+void X11_window_set_user_time(Window win, int timestamp);
+
 int X11_get_current_desktop();
 
 int X11_get_window_type(Window window);

@@ -1,16 +1,24 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,68,50)
+  MoveScaled(0,0,68,49)
   Text = ("Paste special")
   Icon = Picture["icon:/small/paste"]
   Resizable = False
+  Arrangement = Arrange.Vertical
+  AutoResize = True
   Spacing = True
+  Margin = True
   Padding = 8
+  { Label1 Label
+    MoveScaled(1,1,48,4)
+    Font = Font["Bold"]
+    Text = ("Clipboard contents")
+  }
   { lstFormat ListBox
     MoveScaled(1,5,66,17)
   }
-  { Panel2 Panel
+  { panType Panel
     MoveScaled(1,23,66,20)
     Arrangement = Arrange.Vertical
     { radPasteNormal RadioButton
@@ -36,7 +44,7 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(1,45,66,4)
+    MoveScaled(1,44,66,4)
     Spacing = True
     { Panel1 Panel
       MoveScaled(1,0,4,4)
@@ -52,10 +60,5 @@
       Text = ("Cancel")
       Cancel = True
     }
-  }
-  { Label1 Label
-    MoveScaled(1,1,48,4)
-    Font = Font["Bold"]
-    Text = ("Clipboard contents")
   }
 }

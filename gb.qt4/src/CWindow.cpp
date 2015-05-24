@@ -1296,6 +1296,13 @@ BEGIN_PROPERTY(Window_TakeFocus)
 
 END_PROPERTY
 
+BEGIN_METHOD_VOID(Window_Activate)
+	
+	if (THIS->toplevel && WINDOW->isVisible() && !WINDOW->isHidden())
+		WINDOW->activateWindow();
+
+END_METHOD
+
 
 /***************************************************************************/
 
@@ -1368,6 +1375,8 @@ GB_DESC CWindowDesc[] =
 	GB_METHOD("ShowDialog", "i", Window_ShowModal, NULL),
 	GB_METHOD("ShowPopup", "i", Window_ShowPopup, "[(X)i(Y)i]"),
 	GB_METHOD("Center", NULL, Window_Center, NULL),
+	GB_METHOD("Activate", NULL, Window_Activate, NULL),
+
 	GB_PROPERTY_READ("Modal", "b", Window_Modal),
 	GB_PROPERTY_READ("TopLevel", "b", Window_TopLevel),
 	GB_PROPERTY_READ("Closed", "b", Window_Closed),
@@ -1584,6 +1593,9 @@ void MyMainWindow::initProperties(int which)
 	if (!THIS->toplevel || effectiveWinId() == 0)
 		return;
 
+	//qDebug("initProperties: %d", which);
+	X11_flush();
+	
 	if (which & (PROP_STACKING | PROP_SKIP_TASKBAR))
 	{
 		X11_window_change_begin(effectiveWinId(), isVisible());
@@ -1637,6 +1649,14 @@ void MyMainWindow::present()
 		
 		setAttribute(Qt::WA_ShowWithoutActivating, THIS->noTakeFocus);
 
+#ifndef QT5
+		if (effectiveWinId() == 0)
+		{
+			createWinId();
+			initProperties(PROP_ALL);
+		}
+#endif
+		
 		if (getState() & Qt::WindowMinimized)
 			showMinimized();
 		else if (getState() & Qt::WindowFullScreen)
@@ -1645,6 +1665,7 @@ void MyMainWindow::present()
 			showMaximized();
 		else
 			show();
+		
 		
 		if (isUtility() && _resizable)
     	setSizeGrip(true);
@@ -1661,6 +1682,16 @@ void MyMainWindow::present()
 			//else
 			activateWindow();
 		}
+		
+#if QT5
+		//qDebug("createWinId: %p", (void *)effectiveWinId());
+		initProperties(PROP_ALL);
+		if (THIS->noTakeFocus)
+			X11_window_set_user_time(effectiveWinId(), 0);
+#endif
+	
+		if (THIS->stacking == 1)
+			raise();
 	}
 	else
 	{
@@ -1706,8 +1737,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 	if (!THIS->title && _border)
 		setWindowTitle(TO_QSTRING(GB.Application.Title()));
 
-	createWinId();
-	initProperties(PROP_ALL);
 	present();
 
 	#ifndef NO_X_WINDOW

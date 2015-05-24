@@ -69,7 +69,8 @@ End
 
 Private Sub HideList()
 
-  If $hPopup Then 
+  If $hPopup And If $hPopup.Visible Then 
+    'Debug System.Backtrace.Join(" ")
     $hPopup.Hide
     $hObsWindow = Null
   Endif
@@ -108,7 +109,7 @@ Public Sub TextBox_KeyPress()
         Return
         
       Case Key.Enter, Key.Return
-        GridView_Click
+        GridView_MouseUp
         Stop Event
         Return
         
@@ -151,6 +152,8 @@ Public Sub Timer_Timer()
   Dim aList As String[]
   Dim hCtrl As TextBox
   Dim hPanel As Panel
+  
+  'Debug
   
   $hTimer.Stop
   
@@ -196,6 +199,7 @@ Public Sub Timer_Timer()
   
   MovePopup
   $hPopup.Show
+  '$hPopup.Raise
   $hObsWindow = New Observer(hCtrl.Window) As "Window"
   
   Object.Unlock(hCtrl)
@@ -229,13 +233,29 @@ Public Sub TextBox_Resize()
   
 End
 
-Public Sub TextBox_LostFocus()
-  
-  HideList
+Private Sub DeletePopup()
+
   If $hPopup Then
     $hPopup.Delete
     $hPopup = Null
   Endif
+
+End
+
+Public Sub TextBox_LostFocus()
+
+  If Not $hPopup Then Return
+  If $hList.HasFocus Then Return
+  
+  HideList
+  DeletePopup
+  
+End
+
+Public Sub GridView_GotFocus()
+
+  GetTextBox().Window.Activate
+  GetTextBox().SetFocus
   
 End
 
@@ -251,7 +271,7 @@ Private Sub Delay_Write(Value As Integer)
 
 End
 
-Public Sub GridView_Click()
+Public Sub GridView_MouseUp()
 
   Dim hCtrl As TextBox
   
@@ -292,3 +312,4 @@ Public Sub Window_Move()
   MovePopup
   
 End
+

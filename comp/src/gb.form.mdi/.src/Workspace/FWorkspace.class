@@ -119,7 +119,7 @@ Public Sub Add(hWin As Window, Optional bResize As Boolean, Optional iGrid As In
   
   hWindow.Observer = New Observer(hWin, True) As "Watcher"
   UpdateTitle(hWin)
-  Activate
+  ActivateWindow()
     
 End
 
@@ -176,7 +176,7 @@ Public Sub Attach(hWin As Window)
   hWindow.Detached = False
   Dec $nDetach
   
-  Activate
+  ActivateWindow()
   
   GetParent()._RaiseAttach(hWin)
     
@@ -201,7 +201,7 @@ Public Sub SetResizable(hWin As Window, bResize As Boolean, Optional iGrid As In
     hWin.Reparent(panWorkspace)
   Endif
   
-  If hWindow = $hCurrent Then Activate
+  If hWindow = $hCurrent Then ActivateWindow()
   
 End
 
@@ -249,9 +249,9 @@ Private Sub RemoveWindow(hWin As Window, Optional bClose As Boolean)
   Endif
   
   If $hCurrent Then
-    Activate($hCurrent.Window)
+    ActivateWindow($hCurrent.Window)
   Else
-    Activate
+    ActivateWindow
   Endif
   
   Dec $iNoWait
@@ -335,7 +335,7 @@ End
 
 Public Sub Watcher_Activate()
   
-  Activate(Last)
+  ActivateWindow(Last)
   
 End
 
@@ -397,7 +397,7 @@ End
 ' End
 
 
-Public Sub Activate(Optional hWindow As Window)
+Public Sub ActivateWindow(Optional hWindow As Window)
   
   Dim hWin As CWindow
   Dim iInd As Integer
@@ -477,7 +477,7 @@ End
 
 Public Sub tabWorkspace_Click()
   
-  Activate()
+  ActivateWindow()
   
 End
 
@@ -696,13 +696,13 @@ End
 
 Public Sub lblTitle_MouseDown()
 
-  Activate  
+  ActivateWindow()
 
 End
 
 Public Sub tabWorkspace_MouseUp()
 
-  Activate
+  ActivateWindow()
 
 End
 
@@ -783,7 +783,7 @@ End
 
 Public Sub mnuWindow_Click()
   
-  Activate($aWindow[Last.Tag].Window)
+  ActivateWindow($aWindow[Last.Tag].Window)
   
 End
 
@@ -837,7 +837,7 @@ Public Sub UnLock()
 
   If $iLock = 0 Then 
     CheckWindow
-    Activate
+    ActivateWindow
     ShowTabStrip
     panWorkspace.Show
   Endif
@@ -885,7 +885,7 @@ Public Sub mnuSort_Click()
     UpdateTitleFromIndex(iInd)
   Next
   
-  Activate(hWin)
+  ActivateWindow(hWin)
   
 End
 
