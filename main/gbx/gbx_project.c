@@ -370,19 +370,19 @@ void PROJECT_init(const char *file)
 
 	if (EXEC_arch)
 	{
-		if (FILE_is_absolute(file))
+		if (FILE_is_relative(file))
 		{
-			path = FILE_get_dir(file);
-			FILE_chdir(path);
+			path = FILE_getcwd(file);
+			if (path == NULL)
+				goto _PANIC;
 		}
-
-		path = FILE_getcwd(NULL);
-		if (path == NULL)
-			goto _PANIC;
+			
+		path = FILE_get_dir(path);
+		FILE_chdir(path);
 	}
 	else
 	{
-		if (*file == '/')
+		if (FILE_is_absolute(file))
 		{
 			path = file;
 		}
