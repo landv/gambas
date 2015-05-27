@@ -108,11 +108,7 @@ END_METHOD
 
 BEGIN_METHOD(Component_IsLoaded, GB_STRING name)
 
-	const char *name = GB_ToZeroString(ARG(name));
-	COMPONENT *comp;
-
-	comp = COMPONENT_find(name);
-	GB_ReturnBoolean(comp && comp->loaded);
+	GB_ReturnBoolean(COMPONENT_is_loaded(GB_ToZeroString(ARG(name))));
 
 END_METHOD
 

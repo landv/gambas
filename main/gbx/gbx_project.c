@@ -368,6 +368,9 @@ void PROJECT_init(const char *file)
 		return;
 	}
 
+	if (*file == '.' && file[1] == '/')
+		file += 2;
+
 	if (EXEC_arch)
 	{
 		if (FILE_is_relative(file))
@@ -376,6 +379,8 @@ void PROJECT_init(const char *file)
 			if (path == NULL)
 				goto _PANIC;
 		}
+		else
+			path = file;
 			
 		path = FILE_get_dir(path);
 		FILE_chdir(path);
@@ -388,9 +393,6 @@ void PROJECT_init(const char *file)
 		}
 		else
 		{
-			if (*file == '.' && file[1] == '/')
-				file += 2;
-
 			path = FILE_getcwd(file);
 			if (path == NULL)
 				goto _PANIC;

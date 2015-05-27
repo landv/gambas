@@ -108,6 +108,9 @@ Time x11_get_server_timestamp(Display *dpy, Window wnd)
 	if (timestamp_atom == None) 
 		timestamp_atom = XInternAtom(dpy, "STALONETRAY_TIMESTAMP", False);
 
+	if (GB.Component.IsLoaded("gb.qt5"))
+		return CurrentTime;
+	
 	x11_ok(); /* Just reset the status (XXX) */
 	/* Trigger PropertyNotify event which has a timestamp field */
 	XChangeProperty(dpy, wnd, timestamp_atom, timestamp_atom, 8, PropModeReplace, &c, 1);
@@ -116,6 +119,7 @@ Time x11_get_server_timestamp(Display *dpy, Window wnd)
 	/* Wait for the event
 	 * XXX: this may block... */
 	timestamp_wnd = wnd;
+	
 	XIfEvent(dpy, &xevent, x11_wait_for_timestamp, (XPointer)&timestamp_wnd);
 
 	return x11_ok() ? xevent.xproperty.time : CurrentTime;

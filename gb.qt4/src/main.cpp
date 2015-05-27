@@ -96,12 +96,17 @@
 #include "cpaint_impl.h"
 #include "CTrayIcon.h"
 
-#ifndef NO_X_WINDOW
 #include <QX11Info>
 #ifndef QT5
 #include "CEmbedder.h"
 #endif
+
 #include "x11.h"
+
+#ifdef QT5
+#include <xcb/xcb.h>
+#include <xcb/xproto.h>
+#include <QAbstractNativeEventFilter>
 #endif
 
 #include "main.h"
@@ -548,14 +553,186 @@ void MyApplication::commitDataRequested(QSessionManager &session)
 	session.setRestartCommand(cmd);
 }
 
-#ifndef NO_X_WINDOW
+//---------------------------------------------------------------------------
 
 static void x11_set_event_filter(void (*filter)(XEvent *))
 {
 	_x11_event_filter = filter;
 }
 
-#ifndef QT5
+#ifdef QT5
+
+class MyNativeEventFilter: public QAbstractNativeEventFilter
+{
+public:
+	
+	static MyNativeEventFilter manager;
+	
+	virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *)
+	{
+		xcb_generic_event_t *ev = static_cast<xcb_generic_event_t *>(message);
+		int type = ev->response_type & ~0x80;
+		
+		switch(type)
+		{
+			case XCB_KEY_PRESS:
+			case XCB_KEY_RELEASE:
+				MAIN_x11_last_key_code = ((xcb_key_press_event_t *)ev)->detail;
+				break;
+		}
+		
+		if (_x11_event_filter)
+		{
+			XEvent xev;
+			
+			CLEAR(&xev);
+			xev.xany.type = type;
+			xev.xany.display = QX11Info::display();
+			xev.xany.send_event = ev->response_type & 0x80 ? 1 : 0;
+			
+			switch (type)
+			{
+				//case XCB_KEY_PRESS:
+				//case XCB_KEY_RELEASE:
+				case XCB_EXPOSE:
+				{
+					xcb_expose_event_t *e = (xcb_expose_event_t *)ev;
+					xev.xexpose.window = e->window;
+					xev.xexpose.x = e->x;
+					xev.xexpose.y = e->y;
+					xev.xexpose.width = e->width;
+					xev.xexpose.height = e->height;
+					xev.xexpose.count = e->count;
+					break;
+				}
+				
+				case XCB_VISIBILITY_NOTIFY:
+				{
+					xcb_visibility_notify_event_t *e = (xcb_visibility_notify_event_t *)ev;
+					xev.xvisibility.window = e->window;
+					xev.xvisibility.state = e->state;
+					break;
+				}
+				
+				case XCB_DESTROY_NOTIFY:
+				{
+					xcb_destroy_notify_event_t *e = (xcb_destroy_notify_event_t *)ev;
+					xev.xdestroywindow.event = e->event;
+					xev.xdestroywindow.window = e->window;
+					break;
+				}
+				
+				case XCB_MAP_NOTIFY:
+				{
+					xcb_map_notify_event_t *e = (xcb_map_notify_event_t *)ev;
+					xev.xmap.event = e->event;
+					xev.xmap.window = e->window;
+					xev.xmap.override_redirect = e->override_redirect;
+					break;
+				}
+				
+				case XCB_UNMAP_NOTIFY:
+				{
+					xcb_unmap_notify_event_t *e = (xcb_unmap_notify_event_t *)ev;
+					xev.xunmap.event = e->event;
+					xev.xunmap.window = e->window;
+					xev.xunmap.from_configure = e->from_configure;
+					break;
+				}
+
+				case XCB_REPARENT_NOTIFY:
+				{
+					xcb_reparent_notify_event_t *e = (xcb_reparent_notify_event_t *)ev;
+					xev.xreparent.event = e->event;
+					xev.xreparent.window = e->window;
+					xev.xreparent.parent = e->parent;
+					xev.xreparent.x = e->x;
+					xev.xreparent.y = e->y;
+					xev.xreparent.override_redirect = e->override_redirect;
+					break;
+				}
+				
+				case XCB_CONFIGURE_NOTIFY:
+				{
+					xcb_configure_notify_event_t *e = (xcb_configure_notify_event_t *)ev;
+					xev.xconfigure.event = e->event;
+					xev.xconfigure.window = e->window;
+					xev.xconfigure.x = e->x;
+					xev.xconfigure.y = e->y;
+					xev.xconfigure.width = e->width;
+					xev.xconfigure.height = e->height;
+					xev.xconfigure.border_width = e->border_width;
+					xev.xconfigure.override_redirect = e->override_redirect;
+					break;
+				}
+				case XCB_PROPERTY_NOTIFY:
+				{
+					xcb_property_notify_event_t *e = (xcb_property_notify_event_t *)ev;
+					xev.xproperty.window = e->window;
+					xev.xproperty.atom = e->atom;
+					xev.xproperty.time = e->time;
+					xev.xproperty.state = e->state;
+					break;
+				}
+
+				case XCB_SELECTION_CLEAR:
+				{
+					xcb_selection_clear_event_t *e = (xcb_selection_clear_event_t *)ev;
+					xev.xselectionclear.window = e->owner;
+					xev.xselectionclear.selection = e->selection;
+					xev.xselectionclear.time = e->time;
+					break;
+				}
+
+				case XCB_SELECTION_REQUEST:
+				{
+					xcb_selection_request_event_t *e = (xcb_selection_request_event_t *)ev;
+					xev.xselectionrequest.owner = e->owner;
+					xev.xselectionrequest.requestor = e->requestor;
+					xev.xselectionrequest.selection = e->selection;
+					xev.xselectionrequest.target = e->target;
+					xev.xselectionrequest.property = e->property;
+					xev.xselectionrequest.time = e->time;
+					break;
+				}
+				
+				case XCB_SELECTION_NOTIFY:
+				{
+					xcb_selection_notify_event_t *e = (xcb_selection_notify_event_t *)ev;
+					xev.xselection.requestor = e->requestor;
+					xev.xselection.selection = e->selection;
+					xev.xselection.target = e->target;
+					xev.xselection.property = e->property;
+					xev.xselection.time = e->time;
+					break;
+				}
+					
+				case XCB_CLIENT_MESSAGE:
+				{
+					xcb_client_message_event_t *e = (xcb_client_message_event_t *)ev;
+					xev.xclient.window = e->window;
+					xev.xclient.message_type = e->type;
+					xev.xclient.format = e->format;
+					memcpy(&xev.xclient.data, &e->data, 20);
+					break;
+				}
+				
+				default:
+					//qDebug("gb.qt5: warning: unhandled xcb event: %d", type);
+					return false;
+			}
+			
+			(*_x11_event_filter)(&xev);
+		}
+		
+		return false;
+	}
+};
+
+MyNativeEventFilter MyNativeEventFilter::manager;
+
+#else
+
 bool MyApplication::x11EventFilter(XEvent *e)
 {
 	// Workaround for input methods that void the key code of KeyRelease eventFilter
@@ -569,11 +746,10 @@ bool MyApplication::x11EventFilter(XEvent *e)
 	
 	return false;
 }
-#endif
 
 #endif
 
-/** MyTimer ****************************************************************/
+//---------------------------------------------------------------------------
 
 MyTimer::MyTimer(GB_TIMER *t) : QObject(0)
 {
@@ -592,7 +768,7 @@ void MyTimer::timerEvent(QTimerEvent *e)
 		GB.RaiseTimer(timer);
 }
 
-/***************************************************************************/
+//---------------------------------------------------------------------------
 
 static void release_grab()
 {
@@ -711,6 +887,9 @@ static void QT_Init(void)
 	MAIN_update_scale();
 
 	qApp->installEventFilter(&CWidget::manager);
+#ifdef QT5
+	qApp->installNativeEventFilter(&MyNativeEventFilter::manager);
+#endif
 
 	MyApplication::setEventFilter(true);
 	

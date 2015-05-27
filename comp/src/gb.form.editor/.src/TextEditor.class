@@ -262,6 +262,7 @@ End
 Public Sub Save(Path As String)
   
   Inc Application.Busy
+  $hDoc.HighlightFrom($Y)
   $hDoc.Save(Path)
   Dec Application.Busy
   

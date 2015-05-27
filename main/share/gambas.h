@@ -927,6 +927,7 @@ typedef
 		struct {
 			bool (*Load)(const char *);
 			bool (*Exist)(const char *);
+			bool (*IsLoaded)(const char *);
 			char *(*Current)(void);
 			bool (*GetInfo)(const char *, void **);
 			void (*Signal)(int, void *);

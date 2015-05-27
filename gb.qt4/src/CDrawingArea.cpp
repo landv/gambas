@@ -459,10 +459,11 @@ void MyDrawingArea::updateCache()
 
 	if (_cached) // && !_transparent)
 	{
+#ifndef QT5
 		setAttribute(Qt::WA_DontCreateNativeAncestors, true);
 		setAttribute(Qt::WA_NativeWindow, true);
-		
 		setAttribute(Qt::WA_PaintOnScreen, true);
+#endif
 		setAttribute(Qt::WA_OpaquePaintEvent, true);
 		setAttribute(Qt::WA_StaticContents, true);
 		createBackground(width(), height());

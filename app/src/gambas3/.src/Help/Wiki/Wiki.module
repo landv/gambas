@@ -650,7 +650,7 @@ Public Sub GetToDo() As String[]
   Dim sComp As String
   Dim sName As String
   Dim iCpt As Integer
-  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base"]
+  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base", "gb.qt5", "gb.qt5.opengl", "gb.qt5.webkit"]
   Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
   Dim sPath As String
   Dim aResult As New String[]

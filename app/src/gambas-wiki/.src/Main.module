@@ -790,7 +790,7 @@ Public Sub GetStat() As String[]
     sDir = System.Path &/ "share/gambas" & System.Version &/ "info" 
   Endif
 
-  aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.gtk3.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gui.base", "gb.geom"]
+  aIgnore = ["gb.gui.info", "gb.gtk.info", "gb.gtk3.info", "gb.gui.opengl.info", "gb.gtk.opengl.info", "gb.gtk3.opengl.info", "gb.gui.base", "gb.geom", "gb.qt5.info", "gb.qt5.opengl.info", "gb.qt5.webkit.info"]
 
   For Each sFile In Dir(sDir, "*.info")
     If aIgnore.Find(sFile) >= 0 Then Continue
@@ -936,7 +936,7 @@ Public Sub GetToDo() As String[]
   Dim sComp As String
   Dim sName As String
   Dim iCpt As Integer
-  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base", "gb.option", "gb.v4l"]
+  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base", "gb.option", "gb.v4l", "gb.qt5", "gb.qt5.opengl", "gb.qt5.webkit"]
   Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
   Dim sPath As String
   Dim aResult As New String[]

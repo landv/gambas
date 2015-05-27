@@ -385,3 +385,10 @@ void COMPONENT_exec(const char *name, int argc, char **argv)
 		LIBRARY_exec(comp->library, argc, argv);
 }
 
+bool COMPONENT_is_loaded(const char *name)
+{
+	COMPONENT *comp;
+
+	comp = COMPONENT_find(name);
+	return comp && comp->loaded;
+}

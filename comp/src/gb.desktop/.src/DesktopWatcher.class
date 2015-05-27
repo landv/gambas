@@ -50,7 +50,7 @@ Public Sub X11Watcher_Property((Window) As Integer, {Property} As Integer)
 
   Else  
   
-    hWin = Desktop.Windows[Window]
+    hWin = Desktop.Windows.FromHandle(Window)
     If hWin Then
       If {Property} = Atom["_NET_WM_STATE"] Then
         Raise WindowState(hWin)
@@ -69,7 +69,7 @@ End
 
 Public Sub X11Watcher_Configure((Window) As Integer, (X) As Integer, (Y) As Integer, (Width) As Integer, (Height) As Integer)
   
-  Dim hWin As DesktopWindow = Desktop.Windows[Window]
+  Dim hWin As DesktopWindow = Desktop.Windows.FromHandle(Window)
   
   If hWin Then
     hWin.Refresh

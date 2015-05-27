@@ -20,8 +20,9 @@ Private $bInitOffline As Boolean
 
 Public Sub ActualComponent(sComp As String) As String
   
-  If sComp = "gb.gui" Or If sComp = "gb.gtk" Or If sComp = "gb.gtk3" Then Return "gb.qt4"
-  If sComp = "gb.gui.opengl" Or If sComp = "gb.gtk.opengl" Or If sComp = "gb.gtk3.opengl" Then Return "gb.qt4.opengl"
+  If sComp = "gb.gui" Or If sComp = "gb.gtk" Or If sComp = "gb.gtk3" Or If sComp = "gb.qt5" Then Return "gb.qt4"
+  If sComp = "gb.gui.opengl" Or If sComp = "gb.gtk.opengl" Or If sComp = "gb.gtk3.opengl" Or If sComp = "gb.qt5.opengl" Then Return "gb.qt4.opengl"
+  If sComp = "gb.qt5.webkit" Then Return "gb.qt4.webkit"
   Return sComp
   
 End
@@ -181,7 +182,7 @@ Public Function GetSymbolHelpPath(hSymbol As CSymbolInfo) As String
   Else
     sLink = "/comp"
     sComp = hSymbol.Component
-    If sComp = "gb.qt4" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt"
+    If sComp = "gb.qt5" Or If sComp = "gb.gtk" Or If sComp = "gb.gui" Then sComp = "gb.qt4"
     sLink &= "/" & sComp
     If hSymbol.Class <> "." Then sLink &= "/" & LCase(hSymbol.Class)
   Endif

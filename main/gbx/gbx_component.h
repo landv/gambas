@@ -71,6 +71,7 @@ void COMPONENT_unload(COMPONENT *comp);
 void COMPONENT_load_all(void);
 void COMPONENT_load_all_finish(void);
 
+bool COMPONENT_is_loaded(const char *name);
 
 COMPONENT *COMPONENT_next(COMPONENT *comp);
 
