@@ -2322,6 +2322,9 @@ static void post_focus_change(void *)
 {
 	CWIDGET *current, *control;
 	
+	if (!_focus_change)
+		return;
+	
 	//qDebug("post_focus_change");
 
 	for(;;)
@@ -2358,6 +2361,11 @@ static void handle_focus_change()
 	
 	_focus_change = TRUE;
 	GB.Post((void (*)())post_focus_change, NULL);
+}
+
+void CWIDGET_finish_focus(void)
+{
+	post_focus_change(NULL);
 }
 
 void CWIDGET_handle_focus(CWIDGET *control, bool on) 

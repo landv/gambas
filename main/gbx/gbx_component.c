@@ -55,8 +55,8 @@
 #include "gbx_component.h"
 
 
-//#define DEBUG_COMP
-/*#define DEBUG_PRELOAD*/
+//#define DEBUG_COMP 1
+//#define DEBUG_PRELOAD
 
 COMPONENT *COMPONENT_current = NULL;
 COMPONENT *COMPONENT_main;
@@ -136,6 +136,7 @@ void COMPONENT_load_all(void)
 	
 	_load_all = FALSE;
 }
+
 
 void COMPONENT_load_all_finish(void)
 {
@@ -221,7 +222,7 @@ COMPONENT *COMPONENT_create(const char *name)
 		//fprintf(stderr, "COMPONENT_create: %s\n", path);
 
 		if (FILE_exist(path))
-			comp->library = LIBRARY_create(name);
+			comp->library = LIBRARY_create(comp->name);
 
 		if (can_archive)
 		{
@@ -229,7 +230,7 @@ COMPONENT *COMPONENT_create(const char *name)
 			sprintf(path, ARCH_PATTERN, COMPONENT_path, name);
 
 			if (FILE_exist(path))
-				comp->archive = ARCHIVE_create(name, NULL);
+				comp->archive = ARCHIVE_create(comp->name, NULL);
 		}
 	}
 
@@ -237,11 +238,29 @@ COMPONENT *COMPONENT_create(const char *name)
 	LIST_insert(&_component_list, comp, &comp->list);
 	COMPONENT_count++;
 
+#if 0
 	if (!comp->library && !comp->archive && !same_name_as_project)
 	{
 		COMPONENT_delete(comp);
+		
+		// If gb.qt5 components are not present, automatically switch to gb.qt4 components
+		
+		if (strncmp(name, "gb.qt5", 6) == 0 && (name[6] == 0 || name[6] == '.'))
+		{
+			char new_name[strlen(name) + 1];
+			
+			if (name[6] == 0)
+				ERROR_warning("gb.qt5 not found, using gb.qt4 instead.");
+			
+			strcpy(new_name, "gb.qt4");
+			strcat(new_name, &name[6]);
+			
+			return COMPONENT_create(new_name);
+		}
+		
 		THROW(E_LIBRARY, name, "cannot find component");
 	}
+#endif
 
 	return comp;
 }

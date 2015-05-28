@@ -35,6 +35,8 @@ Private Sub MakeStock()
   Dim bOK As Boolean
   Dim bFound As Boolean
   Dim sTest As String
+  Dim aPath As String[]
+  Dim I As Integer
   
   hFile = Open "~/gambas/3.0/trunk/comp/src/gb.form/map/icon.map"
   
@@ -52,9 +54,13 @@ Private Sub MakeStock()
     If Left(sIcon) = ";" Then Continue
     sPath = Trim(aLine[1])
     If Not sPath Then Continue
-    sPath = Split(sPath, ";")[0]
     
-    If sPath Begins "[elementary]" Then sPath = Mid$(sPath, InStr(sPath, "]") + 1)
+    aPath = Split(sPath, ";")
+    For I = 0 To aPath.Max
+      sPath = aPath[I]
+      If sPath Begins "[elementary]" Then Break
+      If Left(sPath) <> "[" Then Break
+    Next
     
     Print sIcon;; sPath
     If sIcon = "favorite" Then Stop

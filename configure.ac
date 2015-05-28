@@ -8,6 +8,7 @@ dnl ---- Initialization
 m4_include([version.m4])
 AC_INIT(gambas3, GB_VERSION, GB_MAIL, [], GB_URL)
 AC_CONFIG_MACRO_DIR([m4])
+AC_PROG_LN_S
 
 AC_CONFIG_SUBDIRS(main)
 

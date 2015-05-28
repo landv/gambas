@@ -304,8 +304,6 @@ BEGIN_PROPERTY(Style_Name)
 	const char *name = qApp->style()->metaObject()->className();
 	int len = strlen(name);
 	
-	fprintf(stderr, "Style_Name: %s\n", name);
-	
 	if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
 		len -= 5;
 	if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)

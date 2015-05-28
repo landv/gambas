@@ -1612,8 +1612,8 @@ void MyMainWindow::initProperties(int which)
 		X11_window_change_end();
 	}
 	
-	if (which == PROP_ALL)
-		X11_set_window_type(effectiveWinId(), _type);
+	//if (which == PROP_ALL)
+	//	X11_set_window_type(effectiveWinId(), _type);
 	
 	if (which & PROP_BORDER)
 		X11_set_window_decorated(effectiveWinId(), _border);
@@ -1638,7 +1638,7 @@ void MyMainWindow::activateLater()
 	activateWindow();
 }
 
-void MyMainWindow::present()
+void MyMainWindow::present(QWidget *parent)
 {
 	if (!isVisible())
 	{
@@ -1666,23 +1666,6 @@ void MyMainWindow::present()
 		else
 			show();
 		
-		
-		if (isUtility() && _resizable)
-    	setSizeGrip(true);
-		else
-			setSizeGrip(false);
-		
-		if (hasBorder() && !THIS->noTakeFocus)
-		{
-			//MAIN_process_events();
-			//usleep(50000);
-			//_activate = TRUE;
-			//if (isToolbar())
-			//QTimer::singleShot(50, this, SLOT(activateLater()));
-			//else
-			activateWindow();
-		}
-		
 #if QT5
 		//qDebug("createWinId: %p", (void *)effectiveWinId());
 		initProperties(PROP_ALL);
@@ -1690,8 +1673,10 @@ void MyMainWindow::present()
 			X11_window_set_user_time(effectiveWinId(), 0);
 #endif
 	
-		if (THIS->stacking == 1)
-			raise();
+		if (isUtility() && _resizable)
+    	setSizeGrip(true);
+		else
+			setSizeGrip(false);
 	}
 	else
 	{
@@ -1702,11 +1687,14 @@ void MyMainWindow::present()
 			setState(windowState() & ~Qt::WindowMinimized);
 			//qDebug("_activate set #2");
 		}
-		
-		raise();
-		if (hasBorder())
-			activateWindow();
 	}
+	
+	if (parent || (hasBorder() && !THIS->noTakeFocus))
+		activateWindow();
+	if (parent)
+		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
+	if (parent || THIS->stacking == 1)
+		raise();
 }
 
 void MyMainWindow::showActivate(QWidget *transient)
@@ -1789,6 +1777,8 @@ void MyMainWindow::showModal(void)
 	if (isModal())
 		return;
 
+	CWIDGET_finish_focus();
+	
 	info.that = this;
 	info.old = MyApplication::eventLoop;
 	info.save = CWINDOW_Current;
@@ -1805,17 +1795,9 @@ void MyMainWindow::showModal(void)
 
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-	present();
+	present(CWINDOW_Active ? CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget : 0);
 	afterShow();
 	
-	#ifndef NO_X_WINDOW
-	if (CWINDOW_Active)
-	{
-		//qDebug("Active = %p X11_set_transient_for(0x%08x, 0x%08x)", CWINDOW_Active, effectiveWinId(), CWINDOW_Active->widget.widget->effectiveWinId());
-		X11_set_transient_for(effectiveWinId(), CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget->effectiveWinId());
-	}
-	#endif
-
 	THIS->loopLevel++;
 	CWINDOW_Current = THIS;
 	
@@ -2604,8 +2586,6 @@ void CWINDOW_activate(CWIDGET *ob)
 {
 	CWINDOW *active;
 
-	//qDebug("CWINDOW_activate: %s", ob ? ob->name : "NULL");
-	
 	if (ob)
 	{
 		active = CWidget::getWindow(ob);

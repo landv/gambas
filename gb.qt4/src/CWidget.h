@@ -213,6 +213,7 @@ void CWIDGET_move_cached(void *_object, int x, int y);
 void CWIDGET_resize_cached(void *_object, int w, int h);
 void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h);
 void CWIDGET_handle_focus(CWIDGET *control, bool on);
+void CWIDGET_finish_focus(void);
 void CWIDGET_register_proxy(void *_object, void *proxy);
 bool CWIDGET_container_for(void *_object, void *container_for);
 void *CWIDGET_enter_popup();

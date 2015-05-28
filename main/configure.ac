@@ -117,6 +117,8 @@ lib/geom/Makefile \
 lib/draw/Makefile \
 lib/gui/Makefile \
 lib/gui.opengl/Makefile \
+lib/gui.qt/Makefile \
+lib/gui.qt.webkit/Makefile \
 lib/image/Makefile \
 lib/image.effect/Makefile \
 lib/signal/Makefile \

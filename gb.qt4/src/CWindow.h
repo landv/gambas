@@ -209,7 +209,7 @@ public:
 	~MyMainWindow();
 
 	void initProperties(int which);
-	void present();
+	void present(QWidget *parent = 0);
 	void showActivate(QWidget *parent = 0);
 	//void activateLater() { _activate = true; }
 	void showModal();
