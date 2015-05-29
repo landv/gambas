@@ -48,7 +48,7 @@ int gDesktop::_desktop_scale = 0;
 
 bool gDesktop::rightToLeft()
 {
-	return gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
+	return MAIN_rtl; //gtk_widget_get_default_direction() == GTK_TEXT_DIR_RTL;
 }
 
 void gDesktop::init()

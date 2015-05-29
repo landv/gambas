@@ -43,6 +43,7 @@ extern GB_CLASS CLASS_Printer;
 extern GB_CLASS CLASS_SvgImage;
 
 extern bool MAIN_debug_busy;
+extern bool MAIN_rtl;
 #endif
 
 #define GB (*GB_PTR)

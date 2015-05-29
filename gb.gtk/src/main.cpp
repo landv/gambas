@@ -102,6 +102,7 @@ static void *_old_hook_main;
 
 int MAIN_scale = 0;
 bool MAIN_debug_busy = false;
+bool MAIN_rtl = false;
 
 extern "C"
 {
@@ -531,18 +532,20 @@ static void my_error(int code,char *error,char *where)
 
 static void my_lang(char *lang, int rtl)
 {
-	int bucle, ct;
+	int i, n;
 	gControl *iter;
 
+	MAIN_rtl = rtl;
+	
 	if (rtl)
 		gtk_widget_set_default_direction(GTK_TEXT_DIR_RTL);
 	else
 		gtk_widget_set_default_direction(GTK_TEXT_DIR_LTR);
 
-	ct=gApplication::controlCount();
-	for (bucle=0;bucle<ct;bucle++)
+	n = gApplication::controlCount();
+	for (i = 0; i < n; i++)
 	{
-		iter=gApplication::controlItem(bucle);
+		iter = gApplication::controlItem(i);
 		if (iter->isVisible() && iter->isContainer())
 			((gContainer*)iter)->performArrange();
 	}

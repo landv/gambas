@@ -204,10 +204,16 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 		//fprintf(stderr, "arrange: %s %d (%d %d) (%d %d)\n", ((gControl *)_object)->name(), arr->mode, ((gContainer *)_object)->width(), ((gContainer *)_object)->height(), ((gContainer *)_object)->clientWidth(), ((gContainer *)_object)->clientHeight());
 
 		invert = arr->invert;
-		rtl = IS_RIGHT_TO_LEFT() ^ invert;
+		rtl = IS_RIGHT_TO_LEFT();
 		rtlm = rtl ? -1 : 1;
 		swap = (arr->mode & 1) == 0; // means "vertical"
 
+		if (!swap && invert)
+		{
+			rtl = !rtl;
+			invert = false;
+		}
+		
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
 		
 		if (arr->margin)
@@ -464,24 +470,30 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 						if (swap)
 						{
-							if (rtl || invert)
+							if (invert)
 							{
-								if ((y > yc) && ((y + (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) > hc))
+								if ((y < hc) && ((y - (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_H(wid))) < yc))
 								{
-									y = yc;
-									x -= w + spacing;
+									y = hc;
+									x += w + spacing;
 									w = 0;
 								}
 
 								if (IS_EXPAND(ob))
 								{
-									MOVE_RESIZE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y, GET_WIDGET_W(wid), hc - y);
-									y = hc + spacing;
+									if (rtl)
+										MOVE_RESIZE_WIDGET(ob, wid, wc - (x - xc) - GET_WIDGET_W(wid), yc, GET_WIDGET_W(wid), y - yc);
+									else
+										MOVE_RESIZE_WIDGET(ob, wid, x, yc, GET_WIDGET_W(wid), y - yc);
+									y = yc - spacing;
 								}
 								else
 								{
-									MOVE_WIDGET(ob, wid, x - GET_WIDGET_W(wid), y);
-									y += GET_WIDGET_H(wid) + spacing;
+									if (rtl)
+										MOVE_WIDGET(ob, wid, wc - (x - xc) - GET_WIDGET_W(wid), y -  GET_WIDGET_H(wid));
+									else
+										MOVE_WIDGET(ob, wid, x, y -  GET_WIDGET_H(wid));
+									y -= GET_WIDGET_H(wid) + spacing;
 								}
 
 								if (GET_WIDGET_W(wid) > w)
@@ -498,12 +510,18 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 								if (IS_EXPAND(ob))
 								{
-									MOVE_RESIZE_WIDGET(ob, wid, x, y, GET_WIDGET_W(wid), hc - y);
+									if (rtl)
+										MOVE_RESIZE_WIDGET(ob, wid, wc - (x - xc) - GET_WIDGET_W(wid), y, GET_WIDGET_W(wid), hc - y);
+									else
+										MOVE_RESIZE_WIDGET(ob, wid, x, y, GET_WIDGET_W(wid), hc - y);
 									y = hc + spacing;
 								}
 								else
 								{
-									MOVE_WIDGET(ob, wid, x, y);
+									if (rtl)
+										MOVE_WIDGET(ob, wid, wc - (x - xc) - GET_WIDGET_W(wid), y);
+									else
+										MOVE_WIDGET(ob, wid, x, y);
 									y += GET_WIDGET_H(wid) + spacing;
 								}
 
@@ -515,9 +533,9 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 						{
 							if (rtl)
 							{
-								if ((x < (xc + wc)) && ((x - (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_W(wid))) < xc))
+								if ((x < wc) && ((x - (IS_EXPAND(ob) ? DESKTOP_SCALE : GET_WIDGET_W(wid))) < xc))
 								{
-									x = xc + wc;
+									x = wc;
 									y += h + spacing;
 									h = 0;
 								}
