@@ -205,7 +205,6 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 
 		invert = arr->invert;
 		rtl = IS_RIGHT_TO_LEFT();
-		rtlm = rtl ? -1 : 1;
 		swap = (arr->mode & 1) == 0; // means "vertical"
 
 		if (!swap && invert)
@@ -213,6 +212,8 @@ void FUNCTION_NAME(void *_object) //(QFrame *cont)
 			rtl = !rtl;
 			invert = false;
 		}
+		
+		rtlm = rtl ? -1 : 1;
 		
 		autoresize = arr->autoresize; // && !IS_EXPAND(_object);
 		
