@@ -115,6 +115,13 @@ public slots:
 	void slotHidden();
 };
 
+class MyMenu: public QMenu
+{
+public:
+	
+	virtual void setVisible(bool visible);
+};
+
 void CMENU_popup(CMENU *_object, const QPoint &pos);
 
 #endif

@@ -327,7 +327,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 		if (!menu->menu)
 		{
-			menu->menu = new QMenu();
+			menu->menu = new MyMenu();
 			menu->menu->setSeparatorsCollapsible(true);
 			((QAction *)(menu->widget.widget))->setMenu(menu->menu);
 
@@ -1049,5 +1049,14 @@ void CMenu::slotDestroyed(void)
 	#ifdef DEBUG_MENU
 	qDebug("*** } CMenu::destroy: %p", THIS);
 	#endif
+}
+
+//---------------------------------------------------------------------------
+
+void MyMenu::setVisible(bool visible)
+{
+	if (!visible)
+		setAttribute(Qt::WA_NoMouseReplay);
+	QMenu::setVisible(visible);
 }
 
