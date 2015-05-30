@@ -313,6 +313,11 @@ Public Sub Editor_KeyPress()
   
   Dim hEditor As Control = Last
   
+  If Not $hEditor Then 
+    Stop Event
+    Return
+  Endif
+  
   Select Case Key.Code
       
     Case Key.Escape

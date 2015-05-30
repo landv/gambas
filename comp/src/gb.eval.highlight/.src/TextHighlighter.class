@@ -1,0 +1,173 @@
+' Gambas class file
+
+Export
+
+Create Static
+Create Private
+
+Static Public Const Name As String = ""
+
+Static Property Read DefaultStyle As TextHighlighterStyle[]
+
+Static Public _Highlight As Byte[]
+Static Public (Line) As Integer
+Static Public State As Integer
+Static Public Tag As Integer
+Static Public Alternate As Boolean
+Static Public TextAfter As String
+Static Public Limit As Boolean
+
+Static Private $aStyle As TextHighlighterStyle[]
+
+Static Public Sub Add((State) As Integer, Optional Count As Integer = 1)
+
+  Dim iState As Integer
+  
+  iState = State
+  If Alternate Then iState += 128
+  
+  If _Highlight.Count = 0 Or If _Highlight[_Highlight.Max - 1] <> iState Or If _Highlight[_Highlight.Max] > (255 - Count) Then
+    _Highlight.Add(iState)
+    _Highlight.Add(Count)
+  Else
+    _Highlight[_Highlight.Max] += Count
+  Endif
+  
+  TextHighlighter.State = State
+  
+End
+
+Static Public Sub _get(Type As String) As TextHighlighter
+
+	Try Return Class.Load("TextHighlighter_" & Type).AutoCreate()
+	Error.Raise("Cannot load highlighter: " & Type)
+
+End
+
+Public Sub Run((Text) As String)
+  
+End
+
+Public Sub GetKeywords() As String[]
+  
+End
+
+Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As String
+
+  Dim aResult As New String[]
+  Dim sLine As String
+  Dim aHighlight As Byte[]
+  Dim Y As Integer
+  Dim I As Integer
+  Dim sHTML As String
+  Dim aText As String[]
+  Dim iState As Integer
+  Dim hStyle As TextHighlighterStyle
+  Dim bAlt As Boolean
+  Dim iLen As Integer
+  Dim P As Integer
+  Dim sLineHtml As String
+  Dim iColor As Integer
+  
+  If Not Styles Then Styles = TextHighlighter.DefaultStyle
+  
+  TextHighlighter.State = Highlight.Normal
+  TextHighlighter.Tag = 0
+  TextHighlighter.Alternate = False
+  TextHighlighter.Limit = False
+  
+  aText = Split(Text, "\n")
+  
+  iColor = Color.Black
+  aResult.Add("<pre><font color=\"#000000\">")
+  
+  For Y = 0 To aText.Max
+    
+    aHighlight = New Byte[]
+    
+    TextHighlighter._Highlight = aHighlight
+    TextHighlighter.TextAfter = ""
+    TextHighlighter.Line = Y
+    
+    sLine = aText[Y]
+    Me.Run(sLine)
+    If Y = 0 Then TextHighlighter.Limit = False
+    
+    If TextHighlighter.TextAfter Then sLine = TextHighlighter.TextAfter
+
+    sLineHtml = ""
+    P = 1
+    
+    For I = 0 To aHighlight.Max Step 2
+      
+      iState = aHighlight[I] And 31
+      Try hStyle = Styles[iState]
+      If Error Then hStyle = Styles[0]
+      bAlt = aHighlight[I] >= 128
+      iLen = aHighlight[I + 1]      
+      
+      sHtml = Html(String.Mid$(sLine, P, iLen))
+      P += iLen
+      
+      If hStyle.Bold Then sHtml = "<b>" & sHtml & "</b>"
+      If hStyle.Underline Then sHtml = "<u>" & sHtml & "</u>"
+      If hStyle.Color <> iColor Then
+        iColor = hStyle.Color
+        sHtml = "</font><font color=\"#" & Hex$(hStyle.Color, 6) & "\">" & sHtml
+      Endif
+      
+      sLineHtml &= sHtml
+      
+    Next
+    
+    If P < String.Len(sLine) Then sLineHtml &= Html(String.Mid$(sLine, P))
+    
+    If TextHighlighter.Limit Then 
+      If Y And If Not Trim(aResult[aResult.Max]) Then
+        aResult.Add("<div style=\"height:1px;background:#808080;position:relative;top:-0.5em;\"></div>")
+      Else
+        aResult.Add("<div style=\"height:1px;background:#808080;\"></div>")
+      Endif
+    Endif
+    
+    aResult.Add(sLineHtml & "\n")
+    
+  Next
+  
+  aResult.Add("</font></pre>")
+  
+  Return aResult.Join("")
+  
+ End
+
+
+Static Private Function DefaultStyle_Read() As TextHighlighterStyle[]
+
+  If Not $aStyle Then
+  
+    $aStyle = New TextHighlighterStyle[32]
+    
+    $aStyle[Highlight.Background] = TextHighlighterStyle(Color.White)
+    $aStyle[Highlight.Normal] = TextHighlighterStyle(Color.Black)
+    $aStyle[Highlight.Keyword] = TextHighlighterStyle(Color.Black, True)
+    $aStyle[Highlight.Datatype] = TextHighlighterStyle(&HDF6B00&, True)
+    $aStyle[Highlight.Function] = TextHighlighterStyle(&H3398C3&, True)
+    $aStyle[Highlight.Operator] = TextHighlighterStyle(Color.Black, True)
+    $aStyle[Highlight.Symbol] = TextHighlighterStyle(Color.Black)
+    $aStyle[Highlight.Number] = TextHighlighterStyle(&HFF0000&, True)
+    $aStyle[Highlight.String] = TextHighlighterStyle(&H7F0000&)
+    $aStyle[Highlight.Comment] = TextHighlighterStyle(&H888888&, False)
+    $aStyle[Highlight.Help] = TextHighlighterStyle(&H888888&, True)
+    $aStyle[Highlight.Preprocessor] = TextHighlighterStyle(&H006E28&, True)
+    $aStyle[Highlight.Breakpoint] = TextHighlighterStyle(&HFF5F5F&)
+    $aStyle[Highlight.Current] = TextHighlighterStyle(&H42C9FF&)
+    $aStyle[Highlight.Selection] = TextHighlighterStyle(&HC3EDFF&)
+    $aStyle[Highlight.Highlight] = TextHighlighterStyle(&H7FFF00&)
+    $aStyle[Highlight.CurrentLine] = TextHighlighterStyle(&HE7F3FF&)
+    $aStyle[Highlight.Error] = TextHighlighterStyle(&HBF0303&, False, True)
+    
+  Endif
+  
+  Return $aStyle
+
+End

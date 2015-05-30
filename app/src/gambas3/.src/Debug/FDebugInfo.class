@@ -737,7 +737,6 @@ Public Sub tbvLocal_Activate()
   sExpr = hTable[hTable.Row, iCol].Text
   sVal = hTable[hTable.Row, iCol + 1].Text
   
-  
   If Left(sVal) = "(" Then 
     Design.Command("#X" & sExpr & "\t" & sExpr)
   Else
@@ -746,6 +745,13 @@ Public Sub tbvLocal_Activate()
   Endif
 
 End
+
+Public Sub IsEditing() As Boolean
+  
+  Return Not IsNull(tbvLocal.Editor)
+  
+End
+
 
 Public Sub tbvObject_Activate()
 

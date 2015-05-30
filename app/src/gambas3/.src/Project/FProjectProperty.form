@@ -333,15 +333,15 @@
           { btnAddRequire Button
             MoveScaled(0,1,16,4)
             Text = ("Require") & "..."
-            Picture = Picture["icon:/small/play"]
+            Picture = Picture["icon:/small/ok"]
           }
           { btnAddExclude Button
             MoveScaled(0,5,16,4)
             Text = ("Exclude") & "..."
-            Picture = Picture["icon:/small/stop"]
+            Picture = Picture["icon:/small/close"]
           }
           { btnRemove Button
-            MoveScaled(1,9,17,4)
+            MoveScaled(0,10,17,4)
             Text = Shortcut(("Remove"), "R")
             Picture = Picture["icon:/small/remove"]
           }

@@ -5,20 +5,25 @@ Public Sub DrawingArea1_Draw()
 
   Dim sText As String
 
-  Image.Debug = True
+  ' Image.Debug = True
+  ' 
+  ' sText = "<b>Bonjour</b> tout le monde ! <font color=\"red\">Gambas <i>rules !</i></font>"
+  ' 
+  ' Paint.Font = Font["Ubuntu,20"]
+  ' 
+  ' Paint.Background = Color.Gray
+  ' Paint.DrawRichTextShadow(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.TopLeft, 2)
+  ' Paint.Background = Color.Black
+  ' Paint.DrawRichText(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.TopLeft)
+  ' 
+  ' Paint.Background = Color.Black
+  ' Paint.DrawRichTextShadow(sText, 17, 17, Paint.W - 32, Paint.H - 32, Align.Center, 2)
+  ' Paint.Background = Color.White
+  ' Paint.DrawRichText(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.Center)
 
-  sText = "<b>Bonjour</b> tout le monde ! <font color=\"red\">Gambas <i>rules !</i></font>"
-
-  Paint.Font = Font["Ubuntu,20"]
-
-  Paint.Background = Color.Gray
-  Paint.DrawRichTextShadow(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.TopLeft, 2)
-  Paint.Background = Color.Black
-  Paint.DrawRichText(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.TopLeft)
-
-  Paint.Background = Color.Black
-  Paint.DrawRichTextShadow(sText, 17, 17, Paint.W - 32, Paint.H - 32, Align.Center, 2)
-  Paint.Background = Color.White
-  Paint.DrawRichText(sText, 16, 16, Paint.W - 32, Paint.H - 32, Align.Center)
+  sText = "Anti-aliased drawing with the Paint class.\n\nThis example shows the different methods of the Paint class."
+  Paint.Font = Font["OxygenSans,9"]
+  sText = Paint.TrimText(sText, 187, 43)
+  Paint.DrawText(sText, 0, 0, Paint.W, Paint.H)
 
 End

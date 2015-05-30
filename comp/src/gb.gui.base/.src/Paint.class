@@ -2,6 +2,16 @@
 
 Export
 
+Static Private Sub AddThreeDots(sStr As String) As String
+  
+  While InStr(". \n", Right(sStr))
+    sStr = Left(sStr, -1)
+  Wend
+  Return sStr & "…"
+  
+End
+
+
 Static Public Sub TrimText(Text As String, W As Float, Optional H As Float) As String
   
   Dim I, S, L As Integer
@@ -30,7 +40,9 @@ Static Public Sub TrimText(Text As String, W As Float, Optional H As Float) As S
     If (HT + HL) > H Then
       WT = Paint.Font.TextWidth(sLine & "…")
       If WT > W Then
-        Return String.Left(Text, S - 1) & "…"
+        Return AddThreeDots(String.Left(Text, S - 1))
+      Else If sCar = "\n" Then
+        Return AddThreeDots(String.Left(Text, I - 1))
       Endif
     Else
       WT = Paint.Font.TextWidth(sLine)
@@ -38,6 +50,7 @@ Static Public Sub TrimText(Text As String, W As Float, Optional H As Float) As S
         Text = String.Left(Text, S - 1) & "\n" & String.Mid$(Text, S + 1)
         HT += HL
         SL = S + 1
+        Dec I
       Endif
     Endif
     

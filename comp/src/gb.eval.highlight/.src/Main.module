@@ -46,16 +46,15 @@ End
 
 Public Sub Main()
 
-  Dim sLine As String
-  
-  Highlight.State = Highlight.Normal
-  Highlight.Tag = 0
-  
-  For Each sLine In Split(File.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/test.html"), "\n")
-    
-    Highlight.Text = sLine
-    HighlightHtml.Run(STYLE_WEB)
-    
-  Next
+  Dim hFile As File
+
+  hFile = Open "~/test.html" For Create
+  Print #hFile, "<html><body>"
+  Print #hFile, "<div style=\"font-family:monospace;\">";
+  Print #hFile, TextHighlighter["Gambas"].ToHTML(File.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/CRecentProject.class"))
+  Print #hFile, "</div>"
+  Print #hFile, "</body></html>"
+  hFile.Close
+
 
 End

@@ -1093,10 +1093,10 @@ Private Sub ReadComponent()
   
   lvwRequire.Clear
   For Each sComp In $aRequire
-    lvwRequire.Add(sComp, sComp, Picture["icon:/small/play"])
+    lvwRequire.Add(sComp, sComp, Picture["icon:/small/ok"])
   Next
   For Each sComp In $aExclude
-    lvwRequire.Add(sComp, sComp, Picture["icon:/small/stop"])
+    lvwRequire.Add(sComp, sComp, Picture["icon:/small/close"])
   Next
   
 End
@@ -1119,9 +1119,9 @@ Private Sub AddRequireExclude(sComp As String, aComp As String[])
   If lvwRequire.Exist(sComp) Then Return
   
   If aComp = $aRequire Then
-    sIcon = "play"
+    sIcon = "ok"
   Else
-    sIcon = "stop"
+    sIcon = "close"
   Endif
 
   aComp.Add(sComp)

@@ -13,8 +13,6 @@ Private $iType As Integer
 Private $hObserver As Observer
 Private $iArrange As Integer
 Private $hObsList As Observer
-Private $hButton As Label
-Private $bOpenExtern As Boolean
 Private $dRecent As Date
 Private $sLastURL As String
 Private $hHelp As WebView
@@ -28,18 +26,6 @@ Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Opt
   
   $hObserver = New Observer($hFilter) As "Filter"
   $hObsList = New Observer(hList) As "ScrollView"
-  
-  $hButton = New Label(hList.Window) As "Button"
-  $hButton.Ignore = True
-  $hButton.Hide
-  $hButton.Text = ("Open in another window") & "…"
-  $hButton.ResizeScaled(1, 1)
-  $hButton.Padding = 4
-  $hButton.AutoResize = True
-  $hButton.Font.Grade = -1
-  $hButton.Mouse = Mouse.Pointing
-  $hButton.Border = False
-  $hButton.Foreground = Color.LightBackground
   
 End
 
@@ -256,7 +242,6 @@ End
 
 Public Sub Clear()
   
-  HideButton
   $hList.Children.Clear
   $hHelp = Null
   
@@ -422,57 +407,17 @@ Public Sub dwgTitle_Draw()
   
 End
 
-Private Sub HideButton()
-
-  $hButton.Hide
-  $hButton.Reparent($hButton.Window)
-
-End
-
 Public Sub ProjectItem_Click()
 
   Raise Click(Last.Path, False)
   
 End
 
-Public Sub Button_Enter()
+Public Sub ProjectItem_ButtonClick()
   
-  $hButton.Foreground = Color.SelectedBackground
-  
-End
-
-Public Sub Button_Leave()
-  
-  $hButton.Foreground = Color.LightBackground
+  Raise Click(Last.Path, True)
   
 End
-
-Public Sub Button_MouseDown()
-  
-  Raise Click(Last.Parent.Parent.Path, True)
-  
-End
-
-Public Sub ProjectItem_Enter()
-  
-  Dim hProject As ProjectBox
-  
-  If Not $bOpenExtern Then Return
-  hProject = Last  
-  $hButton.Reparent(hProject.Children[0])
-  $hButton.Move(3, hProject.H - $hButton.H - 3, hProject.W - 6, $hButton.H)
-  $hButton.Show
-  
-End
-
-Public Sub ProjectItem_Leave()
-  
-  If Not $bOpenExtern Then Return
-  HideButton
-  
-End
-
-
 
 Public Sub GetFirst() As String
 
@@ -526,14 +471,13 @@ End
 
 Private Function AllowOpenExtern_Read() As Boolean
 
-  Return $bOpenExtern
+  Return ProjectBox.ShowButton
 
 End
 
 Private Sub AllowOpenExtern_Write(Value As Boolean)
 
-  $bOpenExtern = Value
-  If Not Value Then $hButton.Hide
+  ProjectBox.ShowButton = Value
 
 End
 

@@ -1862,6 +1862,10 @@ Public Sub Form_KeyPress()
       Return
     Endif
     
+    If FDebugInfo.IsEditing() Then
+      Return
+    Endif
+    
     HidePanels
     FProperty.HideProperty
     Try Project.ActiveForm.SetFocus

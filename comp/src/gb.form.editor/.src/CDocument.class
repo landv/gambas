@@ -789,8 +789,7 @@ Private Sub Highlight_Write(Value As String)
   
   If Value Then
     If Value == "c++" Then Value = "cplusplus"
-    Try $hHighlight = Class.Load("TextHighlighter_" & Value).AutoCreate()
-    If Not $hHighlight Then Error.Raise("Unknown highlighter")
+    $hHighlight = TextHighlighter[Value]
   Else
     $hHighlight = Null
   Endif

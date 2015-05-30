@@ -23,8 +23,6 @@
 
 #define __CMENU_CPP
 
-#undef QT3_SUPPORT
-
 #include <QMenuBar>
 #include <QMenu>
 #include <QKeyEvent>
@@ -692,6 +690,8 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 			THIS->disabled = true;
 		}
 
+		//qDebug("CMENU_popup: %p: open", THIS);
+
 		// The Click event is posted, it does not occur immediately.
 		save = CWIDGET_enter_popup();
 		THIS->exec = true;
@@ -706,6 +706,8 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 
 		//CWIDGET_check_hovered();
 
+		//qDebug("CMENU_popup: %p: close", THIS);
+		
 		if (_popup_menu_clicked)
 		{
 			CMENU *menu = _popup_menu_clicked;
@@ -713,6 +715,8 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 			send_click_event(menu);
 		}
 
+		//qDebug("CMENU_popup: %p: end", THIS);
+		
 		MENU_popup_count++;
 
 		//MyMainWindow *toplevel = (MyMainWindow *)(THIS->toplevel);

@@ -28,7 +28,7 @@ Public Sub _new()
 
   Dim hBorder As Border
   
-  hBorder = Border("radius:5;width:2.5;margin:8;padding:6")
+  hBorder = Border("radius:2;width:1;margin:8;padding:3 6;")
   hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
   gvwComponent.Rows.Border = hBorder
   
