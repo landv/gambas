@@ -60,9 +60,9 @@ Private Sub UpdateSpinBoxWidth()
   Dim N As Integer
 
   N = Max(Abs($hSpinBox.MinValue), Abs($hSpinBox.MaxValue))
-  If $hSpinBox.MinValue < 0 Then N *= 10
+  'If $hSpinBox.MinValue < 0 Then N *= 10
 
-  $hSpinBox.W = Max(Desktop.Scale * 8, (2 + Len(CStr(N))) * $hSpinBox.Font.TextWidth("0") + Desktop.Scale * 2)
+  $hSpinBox.W = Max(Desktop.Scale * 8, (2 + Len(CStr(N))) * $hSpinBox.Font.TextWidth("0") + $hSpinBox.Font.TextWidth("-") + Desktop.Scale * 2)
 
 End
 

@@ -46,12 +46,14 @@ int EXPORT GB_INIT(void)
 	const char *comp2;
 
 	env = getenv("GB_GUI");
-	if (env)
+	if (env && *env)
 	{
 		if (strcmp(env, "gb.qt4") == 0)
 			use = USE_GB_QT4;
 		else if (strcmp(env, "gb.qt5") == 0)
 			use = USE_GB_QT5;
+		else
+			fprintf(stderr, "gb.gui: warning: '%s' component not supported\n", env);
 	}
 	
 	if (use == USE_NOTHING)

@@ -42,10 +42,13 @@
 #include "CImage.h"
 #include "CPicture.h"
 
-#ifndef NO_X_WINDOW
+#ifdef QT5
+#include <QScreen>
+#include <QDesktopWidget>
+#endif
+
 #include <QX11Info>
 #include <X11/Xlib.h>
-#endif
 
 
 static QHash<QByteArray, CPICTURE *> dict;
@@ -131,34 +134,35 @@ static void flush_picture()
 }
 
 
-CPICTURE *CPICTURE_grab(QWidget *wid, int x, int y, int w, int h)
+CPICTURE *CPICTURE_grab(QWidget *wid, int screen, int x, int y, int w, int h)
 {
-  CPICTURE *pict;
-  int id;
+	CPICTURE *pict;
 
-  pict = create();
+	pict = create();
 
-  if (!wid)
-  {
-		#ifdef NO_X_WINDOW
-			qDebug("Qt/Embedded: Full screen grab not implemented");
-		#else
-			id = QX11Info::appRootWindow();
-	
-			if (w <= 0 || h <= 0)
-			{
-				x = 0; y = 0; w = -1; h = -1;
-			}
-			
-			*pict->pixmap = QPixmap::grabWindow(id, x, y, w, h);
-		#endif
-  }
-  else
-  {
-    *pict->pixmap = QPixmap::grabWindow(wid->winId());
-  }
+	if (!wid)
+	{
+		if (w <= 0 || h <= 0)
+		{
+			x = 0; y = 0; w = -1; h = -1;
+		}
+		
+#ifdef QT5
+		*pict->pixmap = QGuiApplication::primaryScreen()->grabWindow(QX11Info::appRootWindow(), x, y, w, h);
+#else
+		*pict->pixmap = QPixmap::grabWindow(QX11Info::appRootWindow(), x, y, w, h);
+#endif
+	}
+	else
+	{
+#ifdef QT5
+		*pict->pixmap = QGuiApplication::screens().at(QApplication::desktop()->screenNumber(wid))->grabWindow(wid->winId());
+#else
+		*pict->pixmap = QPixmap::grabWindow(wid->winId());
+#endif
+	}
 
-  return pict;
+	return pict;
 }
 
 

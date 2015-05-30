@@ -3202,7 +3202,6 @@ GB_DESC CControlDesc[] =
 
 	GB_METHOD("SetFocus", NULL, Control_SetFocus, NULL),
 	GB_METHOD("Refresh", NULL, Control_Refresh, NULL),
-	//GB_METHOD("Screenshot", "Picture", Control_Screenshot, NULL),
 	GB_METHOD("Drag", "Control", Control_Drag, "(Data)v[(Format)s]"),
 	GB_METHOD("Grab", NULL, Control_Grab, NULL),
 

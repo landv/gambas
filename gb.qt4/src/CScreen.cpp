@@ -132,7 +132,7 @@ END_PROPERTY
 
 BEGIN_METHOD(Desktop_Screenshot, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_INTEGER h)
 
-	GB.ReturnObject(CPICTURE_grab(0, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, 0), VARGOPT(h, 0)));
+	GB.ReturnObject(CPICTURE_grab(0, -1, VARGOPT(x, 0), VARGOPT(y, 0), VARGOPT(w, 0), VARGOPT(h, 0)));
 
 END_METHOD
 
