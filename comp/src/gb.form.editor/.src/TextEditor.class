@@ -138,6 +138,8 @@ Private $bFirstFocus As Boolean
 
 Private $aFold As Integer[]
 
+Private $aSaveCursor As Integer[]
+
 Public Sub _new()
   
   If Not $cShortcut Then
@@ -488,11 +490,8 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim X2X As Integer
   Dim iCol As Integer
   Dim hInfo As CLineInfo
-  Dim YL As Integer
   Dim WC As Integer
   Dim sCar As String
-  Dim S As Float
-  Dim S3 As Float
 
   'Debug Row
   
@@ -576,7 +575,17 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     Paint.FillRect(X + $XX, Y, WC, Height, Color.SetAlpha($iForeground, 128))
   Endif
   
-  Paint.Translate(- $MW, 0)
+End
+
+Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
+  
+  Dim iCol As Integer
+  Dim hInfo As CLineInfo
+  Dim YL As Integer
+  Dim S As Float
+  Dim S3 As Float
+
+  hInfo = $hDoc.Info(Row)
   X += $hView.ScrollX
   
   ' Limit
@@ -593,64 +602,60 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
   ' Margin
   
-  If $MW Then
-    
-    Paint.FillRect(X, Y, $MW, Height, $iBackground)
-    
-    If $bShowModified Then
-      If hInfo.Modified Or If hInfo.Saved Then
-        If hInfo.Modified Then
-          iCol = Color.Merge($iBackground, Color.Red, 0.2)
-        Else If hInfo.Saved Then
-          iCol = Color.Merge($iBackground, Color.Green, 0.2)
-        Endif
-        Paint.FillRect(X + $MW - 4, Y, 4, Height, iCol)
-      Endif
-    Endif
-    
-    If YL < 0 Or If YL = Y Then
-      If $bShowLineNumber Then
-        iCol = $iForeground
-        If (Row + 1) Mod 10 Then iCol = $iLimitColor
-        Paint.Background = iCol
-        Paint.DrawText(CStr(Row + 1 + $iLineNumberOffset), X, Y, $iWidthLineNumber - 4, Height, Align.TopRight)
-      Endif
-    Endif
-    
-    If YL >= 0 Then Paint.FillRect(X, YL, Width, 1, $iLimitColor)
-    
-    If $bShowIcon Or If $bShowExpand Then
-
-      Paint.Save
-      Paint.Translate(X + $iPosIcon + 2, Y + 2)
-      S = $hRows.H - 4
-      
-      If hInfo.Breakpoint Then
-        Paint.Ellipse(0, 0, S, S)
-        Paint.Background = $hStyles[Highlight.Breakpoint].Color
-        Paint.Fill
-      Endif
-      
-      If hInfo.Bookmark Then
-        S3 = S / 3
-        Paint.MoveTo(0, S3)
-        Paint.RelLineTo(S3, S3)
-        Paint.RelLineTo(2 * S3, - S3 * 2)
-        Paint.LineWidth = S3 / 2
-        Paint.Background = $hStyles[Highlight.Current].Color
-        Paint.Stroke
-      Endif
-      
-      If $bShowExpand Then
-        If hInfo.Limit Then
-          Style.PaintArrow(0, 0, S, S, If(_IsRowExpanded(Row), Align.Bottom, Align.Right))
-        Endif
-      Endif
-      
-      Paint.Restore
-        
-    Endif
+  Paint.FillRect(X, Y, $MW, Height, $iBackground)
   
+  If $bShowModified Then
+    If hInfo.Modified Or If hInfo.Saved Then
+      If hInfo.Modified Then
+        iCol = Color.Merge($iBackground, Color.Red, 0.2)
+      Else If hInfo.Saved Then
+        iCol = Color.Merge($iBackground, Color.Green, 0.2)
+      Endif
+      Paint.FillRect(X + $MW - 4, Y, 4, Height, iCol)
+    Endif
+  Endif
+  
+  If YL < 0 Or If YL = Y Then
+    If $bShowLineNumber Then
+      iCol = $iForeground
+      If (Row + 1) Mod 10 Then iCol = $iLimitColor
+      Paint.Background = iCol
+      Paint.DrawText(CStr(Row + 1 + $iLineNumberOffset), X, Y, $iWidthLineNumber - 4, Height, Align.TopRight)
+    Endif
+  Endif
+  
+  If YL >= 0 Then Paint.FillRect(X, YL, Width, 1, $iLimitColor)
+  
+  If $bShowIcon Or If $bShowExpand Then
+
+    Paint.Save
+    Paint.Translate(X + $iPosIcon + 2, Y + 2)
+    S = $hRows.H - 4
+    
+    If hInfo.Breakpoint Then
+      Paint.Ellipse(0, 0, S, S)
+      Paint.Background = $hStyles[Highlight.Breakpoint].Color
+      Paint.Fill
+    Endif
+    
+    If hInfo.Bookmark Then
+      S3 = S / 3
+      Paint.MoveTo(0, S3)
+      Paint.RelLineTo(S3, S3)
+      Paint.RelLineTo(2 * S3, - S3 * 2)
+      Paint.LineWidth = S3 / 2
+      Paint.Background = $hStyles[Highlight.Current].Color
+      Paint.Stroke
+    Endif
+    
+    If $bShowExpand Then
+      If hInfo.Limit Then
+        Style.PaintArrow(0, 0, S, S, If(_IsRowExpanded(Row), Align.Bottom, Align.Right))
+      Endif
+    Endif
+    
+    Paint.Restore
+      
   Endif
   
 End
@@ -855,7 +860,9 @@ Public Sub View_KeyPress()
       Endif
       
     Case Key.Up
-      If Key.Control Then
+      If Key.Alt Then
+        MoveSelection(True)
+      Else If Key.Control Then
         Y = FindPreviousLimit($Y)
         If Y >= 0 Then 
           Goto($X, Y, Key.Shift)
@@ -867,7 +874,9 @@ Public Sub View_KeyPress()
       Endif
       
     Case Key.Down
-      If Key.Control Then
+      If Key.Alt Then
+        MoveSelection(False)
+      Else If Key.Control Then
         Y = FindNextLimit($Y)
         If Y >= 0 Then 
           Goto($X, Y, Key.Shift)
@@ -1406,6 +1415,7 @@ Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   
   If $iLargestLine >= Y1 Then
     If $iLargestLine <= Y2 Then
+      $iLargestLine = -1
       UpdateWidth
     Else
       $iLargestLine -= Y2 - Y1
@@ -1814,6 +1824,8 @@ Public Sub View_Draw()
   Dim iRow, iRow2 As Integer
   Dim hClip As Rect
   Dim hRect As Rect
+  Dim aRow As Integer[]
+  Dim iMaxRow As Integer
   
   $iBackground = $hStyles[Highlight.Background].Color
   $iForeground = $hStyles[Highlight.Normal].Color
@@ -1851,20 +1863,32 @@ Public Sub View_Draw()
   hClip = hClip.Intersection(hRect)
   If Not hClip Then Return
   
-  Y = YY
+  iMaxRow = iRow2 - iRow
+  aRow = New Integer[iMaxRow + 1]
+  For I = 0 To iMaxRow
+    aRow[I] = ViewToReal(iRow + I)
+  Next
+  
   H = $hRows.Height
   
-  For I = iRow To iRow2
-
-    X = XX
-
+  Y = YY
+  For I = 0 To iMaxRow
     Paint.Save
-    DrawLine(X, Y, $iWidth, H, ViewToReal(I))
+    DrawLine(XX, Y, $iWidth, H, aRow[I])
     Paint.Restore
-    
     Y += H
-    
   Next
+  
+  If $MW Then
+    Paint.Font = $hLabel.Font
+    Y = YY
+    For I = 0 To iMaxRow
+      Paint.Save
+      DrawMargin(XX, Y, $iWidth, H, aRow[I])
+      Paint.Restore
+      Y += H
+    Next
+  Endif
   
 End
 
@@ -3379,3 +3403,99 @@ End
 '   }
 ' }
 ' 
+Private Sub MoveSelection(bUp As Boolean)
+
+  Dim X, Y As Integer
+  Dim X1, Y1, X2, Y2 As Integer
+  Dim sText As String
+  Dim bSelect As Boolean
+
+  X = $X
+  Y = $Y
+
+  If Not HasSelection() Then
+    X1 = 0
+    Y1 = $Y
+    If $Y < $hDoc.Max Then
+      X2 = 0
+      Y2 = $Y + 1
+    Else
+      X2 = LineLength($Y)
+      Y2 = $Y
+    Endif
+  Else
+    bSelect = True
+    GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2)
+    X1 = 0
+    If X2 > 0 And If Y2 < $hDoc.Max Then 
+      Inc Y2
+      X2 = 0
+    Endif
+  Endif
+  
+  If bUp Then
+    If Y1 = 0 Then Return
+  Else
+    If Y2 = $hDoc.Max Then Return
+  Endif
+  
+  Goto(X1, Y1)
+  Goto(X2, Y2, True)
+
+  $hDoc.Begin
+  
+  sText = $hDoc.GetText(X1, Y1, X2, Y2)
+  Remove(X1, Y1, X2, Y2)
+  If bUp Then
+    Dec Y1
+    Dec Y2
+  Else
+    Inc Y1
+    Inc Y2
+  Endif
+  Goto(X1, Y1)
+  Insert(sText)
+  
+  If bSelect Then
+    Goto(X1, Y1)
+    Goto(X2, Y2, True)
+  Else  
+    If bUp Then
+      Goto(X, Y - 1)
+    Else
+      Goto(X, Y + 1)
+    Endif
+  Endif
+  
+  $hDoc.HighlightFrom($Y)
+    
+  $hDoc.End
+
+End
+
+Private Sub LineLength(Y As Integer) As Integer
+  
+  Return String.Len($hDoc.Lines[Y])
+  
+End
+
+Public Sub _SaveCursor()
+  
+  $aSaveCursor = [$X, $Y, $SX, $SY]
+  
+End
+
+Public Sub _RestoreCursor()
+  
+  Dim X, Y, SX, SY As Integer
+  
+  X = $aSaveCursor[0]
+  Y = $aSaveCursor[1]
+  SX = $aSaveCursor[2]
+  SY = $aSaveCursor[3]
+  
+  Goto(SX, SY)
+  If X <> SX Or If Y <> SY Then Goto(X, Y, True)
+  
+End
+

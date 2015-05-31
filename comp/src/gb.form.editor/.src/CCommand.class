@@ -48,10 +48,11 @@ Public Sub _new(hDoc As CDocument, iType As Integer, Optional sText As String, X
   
 End
 
-Public Sub Print()
+Public Sub Print(sPrefix As String)
   
+  Print sPrefix;
   Print ["BEGIN", "END", "INSERT", "DELETE"][Type];;
-  Print "X =";; X;; "Y =";; Y;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
+  Print "X =";; X;; "Y =";; Y;; "SX =";; SX;; "SY =";; SY;; "XA =";; XA;; "YA =";; YA;; "Text =";; Quote(Text)
   
 End
 
@@ -59,6 +60,18 @@ Static Public Sub _call(hDoc As CDocument, iType As Integer, Optional sText As S
   
   Return New CCommand(hDoc, iType, sText, X1, Y1, X2, Y2)
 
+End
+
+Public Sub MoveCursor(hDoc As CDocument)
+
+  If SX <> X Or If SY <> Y Then 
+    hDoc.Current.Goto(SX, SY)
+    hDoc.Current.Goto(X, Y, True)
+  Else
+    hDoc.Current.Goto(X, Y)
+  Endif
+
+  
 End
 
 

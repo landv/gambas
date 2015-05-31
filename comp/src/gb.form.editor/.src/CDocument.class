@@ -28,6 +28,7 @@ Private $hDefaultInfo As New CLineInfo
 Private $hHighlight As TextHighlighter
 
 Private $bHighlighting As Boolean
+Private $cHighlightLater As Collection
 
 Private $iEndOfLine As Integer = gb.Unix
 Private $sEndOfLine As String = "\n"
@@ -124,14 +125,14 @@ End
 Public Sub Begin()
 
   If $bNoUndo Then Return
-  AddUndo(CCommand(Me, CCommand.BEGIN))
+  AddUndo(CCommand(Me, CCommand.BEGIN,, Me.Current.Column, Me.Current.Line))
   
 End
 
 Public Sub End()
   
   If $bNoUndo Then Return
-  AddUndo(CCommand(Me, CCommand.END))
+  AddUndo(CCommand(Me, CCommand.END,, Me.Current.Column, Me.Current.Line))
   
 End
 
@@ -643,8 +644,7 @@ Private Sub AddUndo(hCmd As CCommand)
 
   If $bNoUndo Then Return
   
-  'Print "AddUndo: ";
-  'hCmd.Print
+  'hCmd.Print("AddUndo: ")
   
   If hCmd.Type = CCommand.END And If $aUndo.Count And If $aUndo[$aUndo.Max].Type = CCommand.Begin Then
     $aUndo.Pop
@@ -656,6 +656,15 @@ Private Sub AddUndo(hCmd As CCommand)
 
 End
 
+Private Sub HighlightLater()
+
+  For Each $cHighlightLater
+    HighlightFrom($cHighlightLater.Key)
+  Next
+  $cHighlightLater = Null
+  
+End
+
 Public Sub Undo()
   
   Dim hCmd As CCommand
@@ -665,6 +674,7 @@ Public Sub Undo()
   If $aUndo.Count = 0 Then Return
   
   $bNoUndo = True
+  $cHighlightLater = New Collection
   
   bOverwrite = Me.Current.Overwrite
   Me.Current.Overwrite = False
@@ -681,6 +691,7 @@ Public Sub Undo()
       Select Case .Type
         
         Case CCommand.BEGIN
+          .MoveCursor(Me)
           Dec L
         
         Case CCommand.END
@@ -713,6 +724,8 @@ Public Sub Undo()
   
   $bNoUndo = False
   
+  HighlightLater
+  
 End
 
 Public Sub Redo()
@@ -724,6 +737,7 @@ Public Sub Redo()
   If $aRedo.Count = 0 Then Return
   
   $bNoUndo = True
+  $cHighlightLater = New Collection
   
   bOverwrite = Me.Current.Overwrite
   Me.Current.Overwrite = False
@@ -743,6 +757,7 @@ Public Sub Redo()
           Inc L
           
         Case CCommand.END
+          .MoveCursor(Me)
           Dec L
         
         Case CCommand.DELETE
@@ -755,12 +770,7 @@ Public Sub Redo()
           Me.Current.Remove(.X, .Y, .XA, .YA)
           
         Case CCommand.INSERT
-          If .SX <> .X Or If .SY <> .Y Then 
-            Me.Current.Goto(.SX, .SY)
-            Me.Current.Goto(.X, .Y, True)
-          Else
-            Me.Current.Goto(.X, .Y)
-          Endif
+          .MoveCursor(Me)
           Me.Current.Insert(.Text)
         
       End Select
@@ -774,6 +784,7 @@ Public Sub Redo()
   Me.Current.Overwrite = bOverwrite
   
   $bNoUndo = False
+  HighlightLater
   
 End
 
@@ -806,8 +817,13 @@ Public Sub HighlightFrom(Y As Integer)
   Dim aHighlight As Byte[]
   Dim bCustom As Boolean
   Dim bRefresh As Boolean
+  Dim bBegin As Boolean
   
-  If $bNoUndo Then Return
+  If $bNoUndo Then 
+    $cHighlightLater[Y] = True
+    Return
+  Endif
+  
   If $bHighlighting Then Return
   
   If Not $hHighlight Then 
@@ -819,8 +835,6 @@ Public Sub HighlightFrom(Y As Integer)
   Endif
 
   $bHighlighting = True
-
-  Begin()
 
   Do
 
@@ -866,6 +880,11 @@ Public Sub HighlightFrom(Y As Integer)
       Endif
       
       If TextHighlighter.TextAfter And If Lines[Y] <> TextHighlighter.TextAfter Then
+        If Not bBegin Then
+          bBegin = True
+          Me.Current._SaveCursor
+          Begin()
+        Endif
         Me.Current.Goto(0, Y)
         Me.Current.Remove(0, Y, String.Len(Lines[Y]), Y)
         Me.Current.Insert(TextHighlighter.TextAfter)
@@ -887,7 +906,10 @@ Public Sub HighlightFrom(Y As Integer)
     
   Loop
 
-  End()
+  If bBegin Then 
+    Me.Current._RestoreCursor
+    End()
+  Endif
 
   If bRefresh Then Refresh
   
