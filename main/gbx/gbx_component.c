@@ -238,11 +238,11 @@ COMPONENT *COMPONENT_create(const char *name)
 	LIST_insert(&_component_list, comp, &comp->list);
 	COMPONENT_count++;
 
-#if 0
 	if (!comp->library && !comp->archive && !same_name_as_project)
 	{
 		COMPONENT_delete(comp);
 		
+#if 0
 		// If gb.qt5 components are not present, automatically switch to gb.qt4 components
 		
 		if (strncmp(name, "gb.qt5", 6) == 0 && (name[6] == 0 || name[6] == '.'))
@@ -257,10 +257,10 @@ COMPONENT *COMPONENT_create(const char *name)
 			
 			return COMPONENT_create(new_name);
 		}
+#endif
 		
 		THROW(E_LIBRARY, name, "cannot find component");
 	}
-#endif
 
 	return comp;
 }
