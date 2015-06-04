@@ -114,7 +114,6 @@ End
 Public Sub GotoHome()
   
   GotoURL(GetHomeURL())
-  webHelp.TextZoom = 0.8
   
 End
 
@@ -165,7 +164,7 @@ End
 
 Public Sub btnZoomNormal_Click()
   
-  webHelp.TextZoom = 0.8
+  webHelp.TextZoom = 1
   
 End
 
@@ -181,7 +180,6 @@ End
 Public Sub btnWebSite_Click()
   
   GotoURL("http://gambas.sourceforge.net")
-  webHelp.TextZoom = 0.8
   
 End
 

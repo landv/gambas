@@ -70,7 +70,7 @@ Public Sub Form_Open()
   btnSoft = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Installed software"), "icon:/large/download", sFont) As "btnList"
   btnFarm = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Software farm") & "...", "icon:/large/book", sFont) As "btnFarm"
   btnOpenExtern = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Open file") & "...", "icon:/large/edit", sFont) As "btnOpenExtern"
-  btnAbout = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/gambas", sFont) As "btnAbout"
+  btnAbout = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("About Gambas") & "...", "icon:/large/info", sFont) As "btnAbout"
   btnQuit = New CCoolButton(panButton, W, HEIGHT_BUTTON, ("Quit"), "icon:/large/quit", sFont) As "btnQuit"
   
   btnRecent.Tag = LIST_RECENT

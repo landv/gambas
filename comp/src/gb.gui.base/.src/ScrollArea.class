@@ -686,8 +686,8 @@ End
 Private Sub Background_Write(Value As Integer)
 
   $iBackground = Value
-  '$hHBar.Background = Value
-  '$hVBar.Background = Value
+  $hHBar.Background = Value
+  $hVBar.Background = Value
   $hDrawingArea.Refresh
 
 End

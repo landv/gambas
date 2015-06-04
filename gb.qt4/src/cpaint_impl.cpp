@@ -372,7 +372,12 @@ static void Font(GB_PAINT *d, int set, GB_FONT *font)
 {
 	if (set)
 	{
-		QFont f(*((CFONT *)(*font))->font);
+		QFont f;
+		
+		if (*font)
+			f = QFont(*((CFONT *)(*font))->font);
+		else if ((GB.Is(d->device, CLASS_DrawingArea)))
+			f = (((CWIDGET *)d->device)->widget)->font();
 		PAINTER(d)->setFont(f);
 
 		// Strange bug of QT. Sometimes the font does not apply (cf. DrawTextShadow)

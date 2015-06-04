@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gtextbox.cpp
+	gtextbox.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -30,6 +30,8 @@
 
 #define MAX_ICONS 2
 
+#if GTK_CHECK_VERSION(3,14,0)
+	
 struct _GtkEntryPrivate
 {
   void         *icons[MAX_ICONS];
@@ -38,86 +40,26 @@ struct _GtkEntryPrivate
   GtkIMContext          *im_context;
   GtkWidget             *popup_menu;
 
-  GdkDevice             *device;
-
   GdkWindow             *text_area;
-
-  PangoLayout           *cached_layout;
-  PangoAttrList         *attrs;
-
-  gchar        *im_module;
-
-  gdouble       progress_fraction;
-  gdouble       progress_pulse_fraction;
-  gdouble       progress_pulse_current;
-
-  gchar        *placeholder_text;
-
-  void *bubble_window;
-  void *text_handle;
-  GtkWidget     *selection_bubble;
-  guint          selection_bubble_timeout_id;
-
-  gfloat        xalign;
-
-  gint          ascent;                     /* font ascent in pango units  */
-  gint          current_pos;
-  gint          descent;                    /* font descent in pango units */
-  gint          dnd_position;               /* In chars, -1 == no DND cursor */
-  gint          drag_start_x;
-  gint          drag_start_y;
-  gint          focus_width;
-  gint          insert_pos;
-  gint          selection_bound;
-  gint          scroll_offset;
-  gint          start_x;
-  gint          start_y;
-  gint          width_chars;
-
-  gunichar      invisible_char;
-
-  guint         button;
-  guint         blink_time;                  /* time in msec the cursor has blinked since last user event */
-  guint         blink_timeout;
-  guint         recompute_idle;
-
-  guint16       x_text_size;                 /* allocated size, in bytes */
-  guint16       x_n_bytes;                   /* length in use, in bytes */
-
-  guint16       preedit_length;              /* length of preedit string, in bytes */
-  guint16	preedit_cursor;	             /* offset of cursor within preedit string, in chars */
-
-  guint         shadow_type             : 4;
-  guint         editable                : 1;
-  guint         in_drag                 : 1;
-  guint         overwrite_mode          : 1;
-  guint         visible                 : 1;
-
-  guint         activates_default       : 1;
-  guint         cache_includes_preedit  : 1;
-  guint         caps_lock_warning       : 1;
-  guint         caps_lock_warning_shown : 1;
-  guint         change_count            : 8;
-  guint         cursor_visible          : 1;
-  guint         editing_canceled        : 1; /* Only used by GtkCellRendererText */
-  guint         has_frame               : 1;
-  guint         in_click                : 1; /* Flag so we don't select all when clicking in entry to focus in */
-  guint         is_cell_renderer        : 1;
-  guint         invisible_char_set      : 1;
-  guint         interior_focus          : 1;
-  guint         mouse_cursor_obscured   : 1;
-  guint         need_im_reset           : 1;
-  guint         progress_pulse_mode     : 1;
-  guint         progress_pulse_way_back : 1;
-  guint         real_changed            : 1;
-  guint         resolved_dir            : 4; /* PangoDirection */
-  guint         select_words            : 1;
-  guint         select_lines            : 1;
-  guint         truncate_multiline      : 1;
-  guint         cursor_handle_dragged   : 1;
-  guint         selection_handle_dragged : 1;
-  guint         populate_all            : 1;
 };
+
+#else
+
+struct _GtkEntryPrivate
+{
+	void         *icons[MAX_ICONS];
+
+	GtkEntryBuffer        *buffer;
+	GtkIMContext          *im_context;
+	GtkWidget             *popup_menu;
+
+	GdkDevice             *device;
+
+	GdkWindow             *text_area;
+};
+
+#endif
+
 #endif
 
 #ifdef GTK3
@@ -484,33 +426,33 @@ void gTextBox::setAlignment(int al)
 
 void gTextBox::updateCursor(GdkCursor *cursor)
 {
-  GdkWindow *win;
-  
-  gControl::updateCursor(cursor);
-  if (!entry)
-  	return;
+	GdkWindow *win;
+	
+	gControl::updateCursor(cursor);
+	if (!entry)
+		return;
 
 #ifdef GTK3
 	win = GTK_ENTRY(entry)->priv->text_area;
 #else
-  win = GTK_ENTRY(entry)->text_area;
+	win = GTK_ENTRY(entry)->text_area;
 #endif
 
-  if (!win)
-  	return;
-  	
-  if (cursor)
-    gdk_window_set_cursor(win, cursor);
-  else
-  {
-    cursor = gdk_cursor_new_for_display(gtk_widget_get_display(widget), GDK_XTERM);
-    gdk_window_set_cursor(win, cursor);
+	if (!win)
+		return;
+		
+	if (cursor)
+		gdk_window_set_cursor(win, cursor);
+	else
+	{
+		cursor = gdk_cursor_new_for_display(gtk_widget_get_display(widget), GDK_XTERM);
+		gdk_window_set_cursor(win, cursor);
 #ifdef GTK3
 		g_object_unref(cursor);
 #else
-    gdk_cursor_unref(cursor);
+		gdk_cursor_unref(cursor);
 #endif
-  }
+	}
 }
 
 void gTextBox::clear()

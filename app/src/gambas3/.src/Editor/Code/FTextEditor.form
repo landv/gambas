@@ -218,29 +218,29 @@
     Key = "text"
     Text = ("Text editor")
     Separator = True
+    { btnShowCode ToolButton mnuShowCode
+      Name = "btnShowCode"
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Code")
+      Action = ".show-class"
+      Picture = Picture["icon:/small/next"]
+    }
     { btnSave ToolButton mnuSave
       Name = "btnSave"
-      MoveScaled(0,0,4,4)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
     }
     { btnReload ToolButton mnuReload
       Name = "btnReload"
-      MoveScaled(3,0,4,4)
+      MoveScaled(8,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/revert"]
     }
-    { btnShowCode ToolButton mnuShowCode
-      Name = "btnShowCode"
-      MoveScaled(6,0,4,4)
-      ToolTip = ("Code")
-      Action = ".show-class"
-      Picture = Picture["img/16/class.png"]
-    }
     { ToolButton7 ToolButton
-      MoveScaled(9,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Lock / unlock file")
       Action = ".locked"
       Picture = Picture["icon:/small/lock"]
@@ -248,7 +248,7 @@
     }
     { btnCut ToolButton mnuCut
       Name = "btnCut"
-      MoveScaled(13,0,4,4)
+      MoveScaled(16,0,4,4)
       Visible = False
       ToolTip = ("Cut")
       Action = ".cut"
@@ -256,7 +256,7 @@
     }
     { btnCopy ToolButton mnuCopy
       Name = "btnCopy"
-      MoveScaled(16,0,4,4)
+      MoveScaled(20,0,4,4)
       Visible = False
       ToolTip = ("Copy")
       Action = ".copy"
@@ -264,7 +264,7 @@
     }
     { btnPaste ToggleButton mnuPaste
       Name = "btnPaste"
-      MoveScaled(19,0,4,4)
+      MoveScaled(24,0,4,4)
       ToolTip = ("Paste")
       Action = ".paste"
       Picture = Picture["icon:/small/paste"]
@@ -300,6 +300,7 @@
     }
     { btnBookmark MenuButton
       MoveScaled(52,0,6,4)
+      Visible = False
       ToolTip = ("Bookmarks")
       Action = ".bookmark"
       Picture = Picture["icon:/small/bookmark"]
@@ -517,7 +518,7 @@
   }
   { Action show-class
     Text = "Code"
-    Picture = "img/16/class.png"
+    Picture = "icon:/small/next"
   }
   { Action show-code
     Text = "Open code"
@@ -573,7 +574,7 @@
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "save,reload,show-class,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
-    Default = "save,reload,show-class,locked,paste,undo,redo,bookmark,color,|,compress,uncompress,|,|,proc"
+    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
+    Default = "show-class,save,reload,locked,paste,undo,redo,color,|,compress,uncompress,|,|,proc"
   }
 }

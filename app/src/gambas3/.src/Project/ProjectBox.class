@@ -215,7 +215,7 @@ Public Sub DrawingArea_Draw()
     
     If bSmall Then
     
-      WT = Paint.Font.TextWidth(sText)
+      WT = Paint.Font.TextWidth(sText & " ")
       
       Paint.Font.Bold = False
       sText = .Version

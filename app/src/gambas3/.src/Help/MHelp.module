@@ -18,20 +18,40 @@ Public $PopupHelpCache As Collection
 
 Private $bInitOffline As Boolean
 
+Private $cSubstComponent As New Collection
+
+Public Sub _init()
+
+  Dim sComp As String
+  
+  For Each sComp In ["gb.gui", "gb.gtk", "gb.gtk3", "gb.qt5", "gb.gui.qt"]
+    $cSubstComponent[sComp] = "gb.qt4"
+  Next
+  For Each sComp In ["gb.gui.opengl", "gb.gtk.opengl", "gb.gtk3.opengl", "gb.qt5.opengl"]
+    $cSubstComponent[sComp] = "gb.qt4.opengl"
+  Next
+  For Each sComp In ["gb.qt5.webkit", "gb.gui.qt.webkit"]
+    $cSubstComponent[sComp] = "gb.qt4.webkit"
+  Next
+  
+End
+
+
 Public Sub ActualComponent(sComp As String) As String
   
-  If sComp = "gb.gui" Or If sComp = "gb.gtk" Or If sComp = "gb.gtk3" Or If sComp = "gb.qt5" Then Return "gb.qt4"
-  If sComp = "gb.gui.opengl" Or If sComp = "gb.gtk.opengl" Or If sComp = "gb.gtk3.opengl" Or If sComp = "gb.qt5.opengl" Then Return "gb.qt4.opengl"
-  If sComp = "gb.qt5.webkit" Then Return "gb.qt4.webkit"
-  Return sComp
+  If $cSubstComponent.Exist(sComp) Then
+    Return $cSubstComponent[sComp]
+  Else
+    Return sComp
+  Endif
   
 End
 
 
 Private Sub GetPath(sPath As String) As String
   
-  sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
-  sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
+  'sPath = Replace(sPath, "/gb+gui/", "/gb+qt/")
+  'sPath = Replace(sPath, "/gb+gtk/", "/gb+qt/")
   Return System.Path &/ "share/gambas" & CStr(System.Version) &/ "help" &/ sPath
   
 End

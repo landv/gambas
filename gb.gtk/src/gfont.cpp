@@ -473,8 +473,13 @@ const char *gFont::toString()
 {
 	GString *desc = g_string_new(name());
 	char *ret;
+	int s;
 	
-	g_string_append_printf(desc, ",%g", (double)((int)(size() * 10 + 0.5)) / 10);
+	s = (int)(size() * 10 + 0.5);
+	
+	g_string_append_printf(desc, ",%d", s / 10);
+	if (s % 10)
+		g_string_append_printf(desc, ".%d", s % 10);
 	if (bold())
 		g_string_append(desc, ",Bold");
 	if (italic())

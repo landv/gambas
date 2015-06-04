@@ -1189,6 +1189,7 @@ Public Sub panToolBar_Configure()
   UpdateMenu
 
   If $bModule Then
+    'Action[".show-class"].Picture = Project.GetFileIcon(File.SetExt(Path, "class"), 16)
     btnShowCode.Show
     mnuShowCode.Show
   Else

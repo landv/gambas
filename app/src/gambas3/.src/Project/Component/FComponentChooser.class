@@ -17,6 +17,7 @@ Private $aHidden As String[]
 Private $iTooltipLastRow As Integer
 Private $bShowCheckedOnly As Boolean
 Private $aLibraries As New String[]
+'Private $iRow As Integer = -1
 
 ' Private Sub GetParent() As ComponentChooser
 ' 
@@ -28,19 +29,23 @@ Public Sub _new()
 
   Dim hBorder As Border
   
-  hBorder = Border("radius:2;width:1;margin:8;padding:3 6;")
+  hBorder = Border("style:none;bottom-style:solid;padding:2 0 0 8;")
   hBorder.Color = Color.Gradient(Color.LightForeground, Color.TextBackground)
   gvwComponent.Rows.Border = hBorder
+  'gvwComponent.Padding = 4
   
-  gvwComponent.Columns.Count = 4
-  gvwComponent.Columns[0].Width = 0
+  gvwComponent.Columns.Count = 5
+  gvwComponent.Columns[0].Width = 24
   'gvwComponent.Columns[0].Expand = False
   'gvwComponent.Columns[1].Expand = False
   gvwComponent.Columns[2].Expand = True
-  gvwComponent.Columns[3].Width = 40
+  gvwComponent.Columns[3].Width = 24
+  gvwComponent.Columns[4].Width = 24
   'gvwComponent.Columns[3].Expand = False
 
   ScrollArea(gvwComponent.Proxy).Shadow = True
+  
+  SetCheckable(False)
 
   RefreshList
 
@@ -59,6 +64,7 @@ Private Sub RefreshList()
     
     sComp = hComp.Key
     If hComp.Hidden Then Continue
+    If hComp.Library Then Continue
     If hComp.Key = CComponent.PROJECT_NAME Then Continue
     If hComp.Key = Project.Name Then Continue 
     If $aHidden And If $aHidden.Exist(sComp) Then Continue
@@ -127,7 +133,7 @@ End
 
 Public Sub btnZoomNormal_Click()
   
-  webAboutComponent.TextZoom = 0.8
+  webAboutComponent.TextZoom = 1
   
 End
 
@@ -151,7 +157,7 @@ Private Sub SetComponents(Value As String[])
   
   gvwComponent.UnSelectAll
   gvwComponent.Rows.Count = $aComp.Count
-  gvwComponent.Columns[0].W = -1
+  'gvwComponent.Columns[1].W = -1
   gvwComponent_Arrange
 
 End
@@ -166,13 +172,13 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
     Select Case Column
       
       Case 0
-        If $cComp Then
-          If sComp = "gb" Then
-            .Picture = $hPictLocked
-          Else
-            .Picture = $aPict[GetState(sComp)]
-          Endif
-        Endif
+        ' If $cComp Then
+        '   If sComp = "gb" Then
+        '     .Picture = $hPictLocked
+        '   Else
+        '     .Picture = $aPict[GetState(sComp)]
+        '   Endif
+        ' Endif
       
       Case 1
         .Text = hComp.Key
@@ -205,6 +211,11 @@ Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
           Case CComponent.DEPRECATED
             .Picture = Picture["img/16/deprecated.png"]
         End Select
+        
+      Case 4
+        'If Row = $iRow Then
+          .Picture = Picture["icon:/16/next"]
+        'Endif
       
     End Select
     
@@ -239,13 +250,6 @@ Public Sub gvwComponent_Arrange()
     'Debug I;; gvwComponent.Rows[I].H
   Next
 
-End
-
-Public Sub gvwComponent_Activate()
-  
-  MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, GetCurrent(),, "v&nh&l=" & MHelp.GetLanguage())
-  wizComponent.MoveNext
-  
 End
 
 Public Sub HasBorder() As Boolean
@@ -287,15 +291,28 @@ Public Sub SetHiddenComponents(Value As String[])
   
 End
 
+' Private Sub SetCurrentRow(iRow As Integer)
+' 
+'   If iRow = $iRow Then Return
+'   
+'   If $iRow >= 0 Then gvwComponent.Rows[$iRow].Refresh
+'   $iRow = iRow
+'   If $iRow >= 0 Then gvwComponent.Rows[$iRow].Refresh
+' 
+' End
+
 Public Sub gvwComponent_MouseMove()
 
-  Dim iRow As Integer
   Dim hComp As CComponent
   Dim sText As String
+  Dim iCol As Integer
+  Dim iRow As Integer
   
-  If gvwComponent.ColumnAt(Mouse.X) = 3 Then
-    
-    iRow = gvwComponent.RowAt(Mouse.Y)
+  iRow = gvwComponent.RowAt(Mouse.ScreenY - gvwComponent.ScreenY - gvwComponent.ClientY)
+  iCol = gvwComponent.ColumnAt(Mouse.ScreenX - gvwComponent.ScreenX - gvwComponent.ClientX)
+  If iCol < 0 Then iRow = -1
+  
+  If iCol = 3 Then
     
     Try hComp = CComponent.All[$aComp[iRow]]
     If hComp Then
@@ -322,7 +339,15 @@ Public Sub gvwComponent_MouseMove()
     $iTooltipLastRow = -1
     
   Endif
-
+  
+  If iCol = 4 Then
+    gvwComponent.Mouse = Mouse.Pointing
+  Else
+    gvwComponent.Mouse = Mouse.Default
+  Endif
+  
+  'SetCurrentRow(iRow)
+  
 End
 
 Public Sub IsCheckable() As Boolean
@@ -333,7 +358,7 @@ End
 
 Public Sub SetCheckable(Value As Boolean)
   
-  gvwComponent.Columns[0].W = If(Value, 40, 0)
+  gvwComponent.Columns[0].W = If(Value, 32, 8)
 
   If Value Then
     
@@ -381,12 +406,14 @@ End
 Public Sub gvwComponent_Leave()
 
   gvwComponent.Tooltip = ""
+  'SetCurrentRow(-1)
 
 End
 
 Public Sub gvwComponent_Enter()
 
   $iTooltipLastRow = -1
+  gvwComponent_MouseMove
 
 End
 
@@ -401,17 +428,24 @@ Public Sub gvwComponent_Click()
   Dim sComp As String
   'Dim sDep As String
   
-  If gvwComponent.Column <> 0 Then Return
+  If gvwComponent.Column = 0 And IsCheckable() Then 
   
-  sComp = $aComp[gvwComponent.Row]
-  If sComp = "gb" Then Return
+    sComp = $aComp[gvwComponent.Row]
+    If sComp = "gb" Then Return
+    
+    Select Case GetState(sComp)
+      Case ComponentChooser.Checked
+        UncheckComponent(sComp)
+      Case Else
+        CheckComponent(sComp)
+    End Select
+    
+  Else If gvwComponent.Column = 4 Then
+    
+    MHelp.InitWebViewWith(webAboutComponent, MHelp.TYPE_COMPONENT, GetCurrent(),, "v&nh&l=" & MHelp.GetLanguage())
+    wizComponent.MoveNext
   
-  Select Case GetState(sComp)
-    Case ComponentChooser.Checked
-      UncheckComponent(sComp)
-    Case Else
-      CheckComponent(sComp)
-  End Select
+  Endif
   
   ' For Each sDep In GetRequire(hCompItem.Key)
   '   If hCompItem.Value Then
@@ -536,6 +570,7 @@ Public Sub UncheckComponent(sComp As String, Optional sParent As String) As Bool
   For Each sDep In GetRequire(sComp)
     hComp = $cComp[sDep]
     hComp.Dependencies.Remove(hComp.Dependencies.Find(sComp))
+    If hComp.Dependencies.Count = 0 Then UncheckComponent(sDep)
   Next
   
   gvwComponent.Refresh
@@ -700,3 +735,41 @@ Public Sub GetLibraries() As String[]
   
 End
 
+
+Public Sub gvwComponent_Scroll()
+
+  gvwComponent_MouseMove
+
+End
+
+Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, Column As Integer)
+
+  Dim sComp As String = $aComp[Row]
+  'Dim hComp As CComponent = CComponent.All[sComp]
+
+  If Not IsCheckable() Then Return
+  
+  Select Case Column
+    
+    Case 0
+      
+      X += (Width - 16) \ 2
+      Width = 16
+      Height = 16
+      
+      If sComp = "gb" Then
+        Style.PaintCheck(X, Y, Width, Height, CheckBox.True, Style.Disabled)
+      Else
+        Select Case GetState(sComp)
+          Case ComponentChooser.Checked
+            Style.PaintCheck(X, Y, Width, Height, CheckBox.True)
+          Case ComponentChooser.GrayChecked
+            Style.PaintCheck(X, Y, Width, Height, CheckBox.None)
+          Case ComponentChooser.Unchecked
+            Style.PaintCheck(X, Y, Width, Height, CheckBox.False)
+        End Select
+      Endif
+  
+  End Select
+
+End

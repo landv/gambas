@@ -194,14 +194,13 @@ Public Sub SetLine(Y As Integer, sLine As String)
   
   If Info(Y).Colors Then SetInfo(Y).ClearHighlight
   If sLine = Lines[Y] Then Return
+  
   Lines[Y] = sLine
-  With SetInfo(Y)
-    .Modified = True
-    .ClearHighlight()
-  End With
+  SetInfo(Y).Modified = True
   
   For Each hView In GetAllViews()
     hView._ClearCacheWidth(Y)
+    hView._UpdateHeight(Y)
     hView._RaiseChange
   Next
   

@@ -3839,6 +3839,7 @@ End
 
 Public Sub tlbForm_Configure()
 
+  'Action[".show-class"].Picture = Project.GetFileIcon(File.SetExt(Path, "class"), 16)
   UpdateMenu
 
 End

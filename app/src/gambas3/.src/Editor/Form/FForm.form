@@ -267,26 +267,26 @@
     Key = "form"
     Text = ("Form")
     Separator = True
+    { ToolButton12 ToolButton mnuShowCode
+      Name = "ToolButton12"
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Code")
+      Action = ".show-class"
+      Picture = Picture["icon:/small/next"]
+    }
     { ToolButton9 ToolButton mnuSave
       Name = "ToolButton9"
-      MoveScaled(0,0,4,4)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
     }
     { ToolButton11 ToolButton mnuReload
       Name = "ToolButton11"
-      MoveScaled(3,0,4,4)
+      MoveScaled(7,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/revert"]
-    }
-    { ToolButton12 ToolButton mnuShowCode
-      Name = "ToolButton12"
-      MoveScaled(7,0,4,4)
-      ToolTip = ("Code")
-      Action = ".show-class"
-      Picture = Picture["img/16/class.png"]
     }
     { ToolButton7 ToolButton
       MoveScaled(10,0,4,4)
@@ -849,7 +849,7 @@
   }
   { Action show-class
     Text = "Code"
-    Picture = "img/16/class.png"
+    Picture = "icon:/small/next"
   }
   { Action show-tab
     Text = "Show tab"
@@ -893,7 +893,7 @@
 { Toolbars
   { Toolbar form
     Text = "Form"
-    List = "save,reload,show-class,locked,run-me,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
-    Default = "save,reload,show-class,locked,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    List = "show-class,save,reload,locked,run-me,cut,copy,paste,delete,undo,redo,menu,grid,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-vertical,arrange-horizontal,arrange-column,arrange-row,arrange-hcenter,arrange-vcenter,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
+    Default = "show-class,save,reload,locked,undo,redo,menu,grid,|,raise,lower,align-top,align-bottom,align-left,align-right,same-width,same-height,arrange-hcenter,arrange-vcenter,|,move-tab-first,move-tab-previous,move-tab-next,move-tab-last,show-tab,|,text-bold,text-italic,text-underline,text-zoom-in,text-zoom-out,text-zoom-normal,format-background,format-foreground"
   }
 }

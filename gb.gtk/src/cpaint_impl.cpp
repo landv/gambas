@@ -452,6 +452,13 @@ static void update_layout(GB_PAINT *d)
 	}
 }
 
+static void apply_font(gFont *font, void *object = 0)
+{
+	GB_PAINT *d = (GB_PAINT *)DRAW.Paint.GetCurrent();
+	update_layout(d);
+}
+
+
 // Font is used by X11!
 static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 {
@@ -460,7 +467,7 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 		GB.Unref(POINTER(&EXTRA(d)->font));
 		if (*font)
 		{
-			EXTRA(d)->font = CFONT_create(((CFONT *)(*font))->font->copy());
+			EXTRA(d)->font = CFONT_create(((CFONT *)(*font))->font->copy(), apply_font);
 			GB.Ref(EXTRA(d)->font);
 		}
 		else
@@ -475,11 +482,11 @@ static void _Font(GB_PAINT *d, int set, GB_FONT *font)
 			if (GB.Is(d->device, CLASS_DrawingArea))
 			{
 				gDrawingArea *wid = (gDrawingArea *)((CWIDGET *)d->device)->widget;
-				EXTRA(d)->font = CFONT_create(wid->font()->copy());
+				EXTRA(d)->font = CFONT_create(wid->font()->copy(), apply_font);
 			}
 			else
 			{
-				EXTRA(d)->font = CFONT_create(new gFont());
+				EXTRA(d)->font = CFONT_create(new gFont(), apply_font);
 			}
 			
 			GB.Ref(EXTRA(d)->font);

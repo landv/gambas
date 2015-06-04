@@ -201,7 +201,7 @@ Private Sub DrawAlignedPicture(hPict As Picture, X As Integer, Y As Integer, W A
 End
 
 
-Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, (iRow) As Integer, iCol As Integer, hData As _GridView_Data, hRowBorder As Border)
+Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRow As Integer, iCol As Integer, hData As _GridView_Data, hRowBorder As Border)
 
   Dim hRect As Rect = Rect(X, Y, W, H)
   Dim hPict As Picture
@@ -340,11 +340,11 @@ DRAW_GRID:
   If $bGrid Then
     iColor = Color.Merge(Color.LightForeground, $hView.Background)
     If System.RightToLeft Then
-      Paint.FillRect(hRect.X, hRect.Y, 1, hRect.H, iColor)
+      If iCol > 0 Then Paint.FillRect(hRect.X, hRect.Y, 1, hRect.H, iColor)
     Else
-      Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
+      If iCol < $hColumns.Max Then Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
     Endif
-    Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
+    If iRow < $hRows.Max Then Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
   Endif
   
   Paint.Restore
@@ -484,16 +484,16 @@ Public Sub ScrollArea_Draw()
     Loop
   Endif
 
-  If $iHeader And Horizontal Then 
-    'Draw.ClipRect = hClip
-    If $bGrid Then 
-      If System.RightToLeft Then
-        Paint.FillRect(X, F, 1, H - F, iGrid)
-      Else
-        Paint.FillRect(X - 1, F, 1, H - F, iGrid)
-      Endif
-    Endif
-  Endif
+  ' If $iHeader And Horizontal Then 
+  '   'Draw.ClipRect = hClip
+  '   If $bGrid Then 
+  '     If System.RightToLeft Then
+  '       Paint.FillRect(X, F, 1, H - F, iGrid)
+  '     Else
+  '       Paint.FillRect(X - 1, F, 1, H - F, iGrid)
+  '     Endif
+  '   Endif
+  ' Endif
     
   ' Row headers
 
@@ -540,10 +540,10 @@ Public Sub ScrollArea_Draw()
   Endif
 
   $aRowY.Add(Y - F)
-  If $iHeader And Vertical Then 
-    'Draw.ClipRect = hClip
-    If $bGrid Then Paint.FillRect(F, Y - 1, W - F, 1, iGrid)
-  Endif
+  ' If $iHeader And Vertical Then 
+  '   'Draw.ClipRect = hClip
+  '   If $bGrid Then Paint.FillRect(F, Y - 1, W - F, 1, iGrid)
+  ' Endif
 
   ' Top-left frame
   
@@ -722,9 +722,12 @@ Public Sub ScrollArea_Draw()
       If I = $iRow And If J = $iCol Then
         If System.RightToLeft Then
           hCursor = Rect(X + 1, Y, Max(0, W - 1), Max(0, H - 1))
+          If J = 0 Then Inc hCursor.Left
         Else
           hCursor = Rect(X, Y, Max(0, W - 1), Max(0, H - 1))
+          If J = $hColumns.Max Then Inc hCursor.Right
         Endif
+        If I = $hRows.Max Then Dec hCursor.Bottom
         ' Paint.Begin(Draw.Device)
         ' Paint.ClipRect = hClip
         ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
@@ -760,10 +763,10 @@ Public Sub ScrollArea_Draw()
       'Paint.FillRect(hSpan.X, hSpan.Y, hSpan.W, hSpan.H, Color.SetAlpha(Color.SelectedBackground, 192))
       'Draw.ClipRect = hClip
       Paint.Background = Color.LightBackground 'iGrid 'Color.LightForeground
-      Paint.AntiAlias = False
+      Paint.LineCap = Paint.LineCapSquare
+      Paint.LineWidth = 1.5
       Paint.Rectangle(hCursor.X, hCursor.Y, hCursor.W, hCursor.H)
       Paint.Stroke
-      Paint.AntiAlias = True
     Endif
   Endif
   

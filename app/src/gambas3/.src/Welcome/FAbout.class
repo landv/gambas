@@ -28,10 +28,12 @@ Public Sub _new()
   Dim hImage As Image
   Dim hBackground As Image
   
-  hImage = Image.Load("img/background/tawhid.png")
-  hBackground = New Image(hImage.W, hImage.H, Color.SetAlpha(Color.TextBackground, 160))
-  hBackground.PaintImage(hImage, 0, 0)
-  Me.Picture = hBackground.Picture
+  Me.Background = Color.SetAlpha(Color.TextBackground, 90)
+
+  'hImage = Image.Load("img/background/tawhid.png")
+  'hBackground = New Image(hImage.W, hImage.H, Color.SetAlpha(Color.TextBackground, 160))
+  'hBackground.PaintImage(hImage, 0, 0)
+  'Me.Picture = hBackground.Picture
   
 End
 
@@ -41,8 +43,6 @@ Public Sub Form_Open()
   Dim hImage As Image
   Dim Y As Integer
   Dim E As Float
-
-  Me.Background = &HFFFFFFFF&
 
   $hWelcome = New CWelcome(dwgWelcome)
 

@@ -3,6 +3,7 @@
 Private $hProjectItem As ProjectBox
 Private $sLast As String
 Private $bShowButton As Boolean
+Private $bShowAnother As Boolean
 
 Public Sub _new()
   
@@ -19,6 +20,7 @@ Public Sub Form_Open()
   dchProject.Bookmarks = [["Name": ("Installed software"), "Path": Desktop.DataDir &/ "gambas3/src", "Icon": "icon:/small/download"]]
   dchProject.ShowFile = True
   dchProject_Change
+  UpdateButtons
   'tabProject_Click
 
 End
@@ -72,12 +74,14 @@ Catch
   
 End
 
-Private Sub ShowButton()
+Private Sub UpdateButtons()
 
   If Not $bShowButton Or If Not $sLast Then
-    panOpen.Hide
+    btnOpen.Hide
+    btnOpenAnother.Hide
   Else
-    panOpen.Show
+    btnOpen.Show
+    btnOpenAnother.Visible = $bShowAnother
   Endif
 
 End
@@ -108,7 +112,7 @@ Public Sub dchProject_Change()
     
   Endif
   
-  ShowButton
+  UpdateButtons
   
 End
 
@@ -157,19 +161,20 @@ End
 Public Sub SetShowButton(Value As Boolean)
   
   $bShowButton = Value
-  ShowButton
+  UpdateButtons
   
 End
 
 Public Sub GetShowAnother() As Boolean
   
-  Return btnOpenAnother.Visible
+  Return $bShowAnother
   
 End
 
 Public Sub SetShowAnother(Value As Boolean)
 
-  btnOpenAnother.Visible = Value  
+  $bShowAnother = Value
+  UpdateButtons
   
 End
 
@@ -189,5 +194,12 @@ End
 Public Sub btnCancel_Click()
 
   GetParent()._RaiseCancel()
+
+End
+
+Public Sub Form_Arrange()
+
+  panOpen.Move(Me.ClientW - panOpen.W - Desktop.Scale, Me.ClientH - panOpen.H - Desktop.Scale)
+  panOpen.Raise
 
 End

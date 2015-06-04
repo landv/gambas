@@ -2560,6 +2560,14 @@ void MyMainWindow::setState(Qt::WindowStates state)
 		_state = state;
 }
 
+void MyMainWindow::setVisible(bool visible)
+{
+	if (!visible)
+		setAttribute(Qt::WA_NoMouseReplay);
+	QWidget::setVisible(visible);
+}
+
+
 /***************************************************************************
 
 	CWindow

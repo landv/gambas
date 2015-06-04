@@ -238,26 +238,26 @@
     Key = "editor"
     Text = ("Editor")
     Separator = True
+    { btnForm ToolButton mnuForm
+      Name = "btnForm"
+      MoveScaled(0,0,4,4)
+      ToolTip = ("Form")
+      Action = ".show-form"
+      Picture = Picture["icon:/small/next"]
+    }
     { btnSave ToolButton mnuSave
       Name = "btnSave"
-      MoveScaled(0,0,4,4)
+      MoveScaled(3,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
     }
     { btnReload ToolButton mnuReload
       Name = "btnReload"
-      MoveScaled(3,0,4,4)
+      MoveScaled(6,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/revert"]
-    }
-    { btnForm ToolButton mnuForm
-      Name = "btnForm"
-      MoveScaled(6,0,4,4)
-      ToolTip = ("Form")
-      Action = ".show-form"
-      Picture = Picture["img/16/form.png"]
     }
     { btnLocked ToolButton
       MoveScaled(10,0,4,4)
@@ -308,34 +308,35 @@
       Text = ("Paste special") & "..."
       Picture = Picture["icon:/small/paste"]
     }
-    { btnInsertColor MenuButton
-      MoveScaled(45,0,6,4)
-      ToolTip = ("Insert color")
-      Action = ".color"
-      Picture = Picture["icon:/small/color"]
-      Border = False
-    }
-    { btnBookmark MenuButton
-      MoveScaled(51,0,6,4)
-      ToolTip = ("Bookmarks")
-      Action = ".bookmark"
-      Picture = Picture["icon:/small/bookmark"]
-      Border = False
-      Menu = "mnuBookmark"
-    }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(57,0,4,4)
+      MoveScaled(45,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(60,0,4,4)
+      MoveScaled(48,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
+    }
+    { btnBookmark MenuButton
+      MoveScaled(52,0,6,4)
+      Visible = False
+      ToolTip = ("Bookmarks")
+      Action = ".bookmark"
+      Picture = Picture["icon:/small/bookmark"]
+      Border = False
+      Menu = "mnuBookmark"
+    }
+    { btnInsertColor MenuButton
+      MoveScaled(57,0,6,4)
+      ToolTip = ("Insert color")
+      Action = ".color"
+      Picture = Picture["icon:/small/color"]
+      Border = False
     }
     { btnIndent ToolButton
       MoveScaled(63,0,4,4)
@@ -591,7 +592,7 @@
   { Action show-form
     Text = "Open form"
     Shortcut = "F12"
-    Picture = "img/16/form.png"
+    Picture = "icon:/small/next"
   }
   { Action ucase
     Text = "Upper case"
@@ -637,7 +638,7 @@
 { Toolbars
   { Toolbar editor
     Text = "Editor"
-    List = "save,reload,show-form,locked,run-me,cut,copy,paste,paste-special,color,bookmark,undo,redo,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
-    Default = "save,reload,show-form,locked,paste,color,bookmark,undo,redo,comment,uncomment,break,watch,|,proc"
+    List = "show-form,save,reload,locked,run-me,cut,copy,paste,paste-special,undo,redo,bookmark,color,indent,unindent,comment,uncomment,pretty,break,watch,find-definition,view-nosplit,view-hsplit,view-vsplit,proc"
+    Default = "show-form,save,reload,locked,paste,undo,redo,color,comment,uncomment,break,watch,|,proc"
   }
 }

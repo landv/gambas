@@ -139,6 +139,7 @@ Private $bFirstFocus As Boolean
 Private $aFold As Integer[]
 
 Private $aSaveCursor As Integer[]
+Private $hFontNumber As Font
 
 Public Sub _new()
   
@@ -183,7 +184,7 @@ End
 Private Function Text_Read() As String
 
   Return $hDoc.Text
-
+  
 End
 
 Private Sub CalcSizes()
@@ -192,8 +193,12 @@ Private Sub CalcSizes()
   Dim sText As String
   
   $hFont = $hView.Font
-  $iAscent = $hFont.Ascent
   $hRows.Height = $hFont.Height + 1
+
+  $hFontNumber = Me.Parent.Font.Copy()
+  $hFontNumber.Size *= $hRows.Height / $hFontNumber.Height
+  
+  $iAscent = $hFont.Ascent
   $iLargestLine = -1
   $iSpaceWidth = $hFont.TextWidth(" ")
   $iTabWidth = $hFont.TextWidth("m") * $iTabSize
@@ -202,7 +207,7 @@ Private Sub CalcSizes()
   
   $fCharWidth = $iSpaceWidth
   For I = 33 To 255
-    If I > 127 And If I < 160 Then Continue
+    If I > 126 And If I < 160 Then Continue
     If I = 173 Then Continue
     If $hFont.TextWidth(Chr$(I)) <> $iSpaceWidth Then 
       $fCharWidth = 0
@@ -225,6 +230,7 @@ End
 
 Private Sub Init()
 
+  $hRows.Clear
   $hRows.Count = $hDoc.Count
   CalcSizes
   $X = 0
@@ -289,7 +295,7 @@ Private Sub UpdateMargin()
   $iPosIcon = 0
   
   If $bShowLineNumber Then 
-    $iWidthLineNumber = (CInt(Log10($hDoc.Count + $iLineNumberOffset)) + 1) * $hFont.TextWidth("9") + 8
+    $iWidthLineNumber = (CInt(Log10($hDoc.Count + $iLineNumberOffset)) + 1) * $hLabel.Font.TextWidth("9") * $hRows.Height / $hLabel.Font.Height + 8
     $MW += $iWidthLineNumber
   Endif
   If $bShowIcon Or If $bShowExpand Then 
@@ -313,7 +319,7 @@ Private Sub HasSelection() As Boolean
   
 End
 
-Private Sub DrawText(sText As String, SX As Integer, X As Integer, Y As Integer)
+Fast Private Sub DrawText(sText As String, SX As Integer, X As Integer, Y As Integer)
 
   Dim iTab, iTab2, iLen As Integer
   Dim YT As Integer
@@ -385,7 +391,7 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
 
 End
 
-Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, Y As Integer, H As Integer)
+Fast Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, Y As Integer, H As Integer)
 
   Dim I As Integer
   Dim hStyle As TextEditorStyle
@@ -495,10 +501,6 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
 
   'Debug Row
   
-  Paint.Translate($MW, 0)
-  
-  hInfo = $hDoc.Info(Row)
-  
   ' Current line or stop line
   
   If Row = $iStopLine Then
@@ -507,6 +509,12 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     Paint.FillRect(X, Y, Width, Height, $hStyles[Highlight.CurrentLine].Color)
   Endif
 
+  Paint.ClipRect = Rect($MW, Y, Width - $MW, Height)
+  
+  Paint.Translate($MW, 0)
+  
+  hInfo = $hDoc.Info(Row)
+  
   ' Selection
     
   If HasSelection() Then
@@ -582,8 +590,8 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   Dim iCol As Integer
   Dim hInfo As CLineInfo
   Dim YL As Integer
-  Dim S As Float
-  Dim S3 As Float
+  Dim S, SS As Float
+  Dim H As Integer
 
   hInfo = $hDoc.Info(Row)
   X += $hView.ScrollX
@@ -602,7 +610,7 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
   ' Margin
   
-  Paint.FillRect(X, Y, $MW, Height, $iBackground)
+  'Paint.FillRect(X, Y, $MW, Height, $iBackground)
   
   If $bShowModified Then
     If hInfo.Modified Or If hInfo.Saved Then
@@ -620,7 +628,7 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
       iCol = $iForeground
       If (Row + 1) Mod 10 Then iCol = $iLimitColor
       Paint.Background = iCol
-      Paint.DrawText(CStr(Row + 1 + $iLineNumberOffset), X, Y, $iWidthLineNumber - 4, Height, Align.TopRight)
+      Paint.DrawText(CStr(Row + 1 + $iLineNumberOffset), X, Y, $iWidthLineNumber - 4, Height, Align.Right)
     Endif
   Endif
   
@@ -628,33 +636,51 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
   If $bShowIcon Or If $bShowExpand Then
 
-    Paint.Save
-    Paint.Translate(X + $iPosIcon + 2, Y + 2)
-    S = $hRows.H - 4
-    
-    If hInfo.Breakpoint Then
-      Paint.Ellipse(0, 0, S, S)
-      Paint.Background = $hStyles[Highlight.Breakpoint].Color
-      Paint.Fill
-    Endif
-    
-    If hInfo.Bookmark Then
-      S3 = S / 3
-      Paint.MoveTo(0, S3)
-      Paint.RelLineTo(S3, S3)
-      Paint.RelLineTo(2 * S3, - S3 * 2)
-      Paint.LineWidth = S3 / 2
-      Paint.Background = $hStyles[Highlight.Current].Color
-      Paint.Stroke
-    Endif
-    
-    If $bShowExpand Then
-      If hInfo.Limit Then
-        Style.PaintArrow(0, 0, S, S, If(_IsRowExpanded(Row), Align.Bottom, Align.Right))
+    If hInfo.Breakpoint Or If hInfo.Bookmark Or If hInfo.Limit Then
+
+      H = $hRows.H
+      Paint.Save
+      Paint.Translate(X + $iPosIcon + H / 4, Y + H / 4)
+      S = H / 2
+      Paint.LineWidth = S / 6
+      
+      If hInfo.Breakpoint Then
+        Paint.Ellipse(0, 0, S, S)
+        Paint.Background = Color.SetAlpha($hStyles[Highlight.Breakpoint].Color, 128)
+        Paint.Fill(True)
+        Paint.Stroke
       Endif
+      
+      If hInfo.Bookmark Then
+        SS = S / 3
+        Paint.MoveTo(0, SS)
+        Paint.RelLineTo(SS, SS)
+        Paint.RelLineTo(2 * SS, - SS * 2)
+        Paint.LineWidth = SS / 2
+        Paint.Background = $hStyles[Highlight.Current].Color
+        Paint.Stroke
+      Endif
+      
+      If $bShowExpand Then
+        If hInfo.Limit Then
+          SS = S / 2
+          Paint.Background = $iForeground
+          'Style.PaintArrow(0, 0, S, S, If(_IsRowExpanded(Row), Align.Bottom, Align.Right))
+          'Style.PaintArrow(X + $iPosIcon + 3, Y + 3, S, S, If(_IsRowExpanded(Row), Align.Bottom, Align.Right))
+          Paint.MoveTo(0, SS)
+          Paint.RelLineTo(S, 0)
+          If Not _IsRowExpanded(Row) Then
+            Paint.MoveTo(SS, 0)
+            Paint.RelLineTo(0, S)
+          Endif
+          Paint.LineCap = Paint.LineCapRound
+          Paint.Stroke
+        Endif
+      Endif
+      
+      Paint.Restore
+      
     Endif
-    
-    Paint.Restore
       
   Endif
   
@@ -665,6 +691,8 @@ Fast Private Sub LineWidth(Y As Integer, Optional iLen As Integer = -1) As Integ
   Dim aText As String[]
   Dim W As Integer
   Dim I As Integer
+  
+  Try Return $cCacheWidth[Y][iLen]
   
   If $fCharWidth Then
     
@@ -682,40 +710,36 @@ Fast Private Sub LineWidth(Y As Integer, Optional iLen As Integer = -1) As Integ
     Next
     W += $fCharWidth * String.Len(aText[aText.Max])
     
-    Return W
-    
-  Endif
-  
-  Try Return $cCacheWidth[Y][iLen]
-  
-  If iLen < 0 Then
-    aText = Split($hDoc.Lines[Y], "\t")
   Else
-    aText = Split(String.Left($hDoc.Lines[Y], iLen), "\t")
-  Endif
   
-  If aText.Count = 0 Then Return 0
-  
-  ' If $fCharWidth Then
-  ' 
-  '   For I = 0 To aText.Max - 1
-  '     W += $fCharWidth * String.Len(aText[I])
-  '     W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
-  '   Next
-  '   W += $fCharWidth * String.Len(aText[aText.Max])
-  '   
-  ' Else
-  
-    For I = 0 To aText.Max - 1
-      W += $hFont.TextWidth(aText[I])
-      W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
-    Next
-    W += $hFont.TextWidth(aText[aText.Max])
+    If iLen < 0 Then
+      aText = Split($hDoc.Lines[Y], "\t")
+    Else
+      aText = Split(String.Left($hDoc.Lines[Y], iLen), "\t")
+    Endif
     
-  ' Endif
-  
+    If aText.Count = 0 Then Return 0
+    
+    ' If $fCharWidth Then
+    ' 
+    '   For I = 0 To aText.Max - 1
+    '     W += $fCharWidth * String.Len(aText[I])
+    '     W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
+    '   Next
+    '   W += $fCharWidth * String.Len(aText[aText.Max])
+    '   
+    ' Else
+    
+      For I = 0 To aText.Max - 1
+        W += $hFont.TextWidth(aText[I])
+        W = ((W + $iTabWidth) \ $iTabWidth) * $iTabWidth
+      Next
+      W += $hFont.TextWidth(aText[aText.Max])
+      
+  Endif
+    
   If Not $cCacheWidth.Exist(Y) Then 
-    If $cCacheWidth.Count > 64 Then
+    If $cCacheWidth.Count > 80 Then
       For Each $cCacheWidth
         $cCacheWidth.Remove($cCacheWidth.Key)
         Break
@@ -925,16 +949,17 @@ Public Sub View_KeyPress()
       
     Case Key.Enter, Key.Return
       
-      If $bShowExpand And If $hDoc.Info($Y).Limit Then
+      If $bShowExpand Then
         If Key.Control Then
+          Y = FindPreviousLimit($Y + 1)
           If Key.Alt Then
-            If _IsRowExpanded($Y) Then
+            If _IsRowExpanded(Y) Then
               CollapseAll
             Else
               ExpandAll
             Endif
           Else
-            ToggleRow($Y)
+            ToggleRow(Y)
           Endif
           Goto STOP_EVENT
         Endif
@@ -1836,7 +1861,7 @@ Public Sub View_Draw()
   
   hClip = Paint.ClipRect
   'Debug hClip.Y;; hClip.H
-  Paint.FillRect(hClip.X, hClip.Y, hClip.W, hClip.H, $iBackground)
+  Paint.FillRect(hClip.X + $MW, hClip.Y, hClip.W, hClip.H, $iBackground)
   
   iRow = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y)
   If iRow < 0 Then Return
@@ -1876,18 +1901,23 @@ Public Sub View_Draw()
     Paint.Save
     DrawLine(XX, Y, $iWidth, H, aRow[I])
     Paint.Restore
-    Y += H
+    Y += $hRows._GetRowHeight(aRow[I])
   Next
   
   If $MW Then
-    Paint.Font = $hLabel.Font
+    
+    'Paint.FillRect(0, hClip.Y, $MW, hClip.H, $iBackground)
+    
+    Paint.Font = $hFontNumber
+    
     Y = YY
     For I = 0 To iMaxRow
       Paint.Save
       DrawMargin(XX, Y, $iWidth, H, aRow[I])
       Paint.Restore
-      Y += H
+      Y += $hRows._GetRowHeight(aRow[I])
     Next
+    
   Endif
   
 End
@@ -2907,8 +2937,16 @@ End
 
 Private Sub UpdateCount()
 
+  Dim Y As Integer
+  Dim X As Integer
+  
   $hRows.Count = RealToView($hDoc.Max) + 1
   _ResizeContents
+  
+  Y = ViewToReal(RealToView($Y))
+  X = NormalizeColumn($X, Y)
+  Goto(X, Y)
+  
   $hView.Refresh
 
 End
@@ -3120,6 +3158,7 @@ End
 
 Private Sub ShowExpand_Write(Value As Boolean)
 
+  If Not Value Then ExpandAll
   $bShowExpand = Value
   UpdateMargin
 
@@ -3499,3 +3538,8 @@ Public Sub _RestoreCursor()
   
 End
 
+Public Sub _UpdateHeight((Y) As Integer)
+  
+  
+  
+End

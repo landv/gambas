@@ -17,7 +17,6 @@ Private $bNoHeader As Boolean
 
 Public Sub _new()
 
-  Me.Zoom = 0.8
   $hObs = New Observer(Me) As "WebView"
   $hObsForm = New Observer(Me.Parent) As "Container"
   

@@ -1245,6 +1245,7 @@ Public Sub OnProjectChange()
   UpdateGlobalLayout
   UpdateMenu
   mnuFilterAdd.Visible = VersionControl.Enabled() 'And panSearchProject.Hovered
+  txtSearchProject.Clear
   mnuUseTerminal.Value = Project.UseTerminal
   mnuRedirectStderr.Value = Project.RedirectStderr
   mnuUseHttpServer.Value = Project.UseHttpServer

@@ -13,11 +13,11 @@
       ShowSplitter = False
     }
     { Panel2 Panel
-      MoveScaled(60,0,66,56)
+      MoveScaled(60,3,66,56)
       Visible = False
       Arrangement = Arrange.Fill
       { panProject Panel
-        MoveScaled(1,1,64,53)
+        MoveScaled(1,1,64,44)
         Background = Color.TextBackground
         Arrangement = Arrange.Vertical
         Spacing = True
@@ -32,29 +32,29 @@
           Mode = Select.None
           Border = False
         }
-        { panOpen HBox
-          MoveScaled(1,46,62,4)
-          Visible = False
-          Spacing = True
-          Invert = True
-          { btnCancel Button
-            MoveScaled(45,0,16,4)
-            Text = ("Cancel")
-            Cancel = True
-          }
-          { btnOpenAnother Button
-            MoveScaled(18,0,26,4)
-            Visible = False
-            AutoResize = True
-            Text = ("Open in another window") & "..."
-          }
-          { btnOpen Button
-            MoveScaled(1,0,16,4)
-            Text = ("Open")
-            Default = True
-          }
-        }
       }
+    }
+  }
+  { panOpen HBox
+    MoveScaled(53,59,78,4)
+    Ignore = True
+    AutoResize = True
+    Spacing = True
+    Invert = True
+    { btnCancel Button
+      MoveScaled(45,0,16,4)
+      Text = ("Cancel")
+      Cancel = True
+    }
+    { btnOpenAnother Button
+      MoveScaled(18,0,26,4)
+      AutoResize = True
+      Text = ("Open in another window") & "..."
+    }
+    { btnOpen Button
+      MoveScaled(1,0,16,4)
+      Text = ("Open")
+      Default = True
     }
   }
 }

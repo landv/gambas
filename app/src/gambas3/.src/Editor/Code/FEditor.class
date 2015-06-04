@@ -3051,11 +3051,13 @@ Public Sub panToolBar_Configure()
   UpdateMenu
   
   If $sModule Then
-    Action[".show-form"].Picture = Picture["img/16/" & $sModule & ".png"]
+    'Action[".show-form"].Picture = Project.GetFileIcon(File.SetExt(Path, $sModule), 16)
     btnForm.ToolTip = CModule[$sModule].Name
     btnForm.Show
+    mnuForm.Show
   Else
     btnForm.Hide
+    mnuForm.Hide
   Endif
 
 End
