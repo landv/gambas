@@ -599,8 +599,7 @@ Public Sub ReadOneConfig()
   edtSource.ShowPosition = False
   edtSource.ShowModified = False
   edtSource.ShowLineNumber = False
-  'edtSource.Flags[Editor.HideMargin] = Not edtSource.Flags[Editor.ShowLineNumbers]
-  'edtSource.Flags[Editor.NoFolding] = True
+  edtSource.ShowExpand = False
   panSepSource.Background = edtSource.Styles[Highlight.Background].Color
   Project.SetSmallFont(gvwSource)
   UpdateSource

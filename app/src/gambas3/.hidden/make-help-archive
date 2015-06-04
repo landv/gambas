@@ -1,0 +1,4 @@
+#!/bin/sh
+cd ~/wiki
+tar cfj gambas-wiki.tar.bz2 --exclude=passwd\* --exclude=\*.log --exclude=~page.\* gambas
+mv gambas-wiki.tar.bz2 ~/cgi-bin

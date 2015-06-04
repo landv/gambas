@@ -570,7 +570,7 @@ Public Sub UncheckComponent(sComp As String, Optional sParent As String) As Bool
   For Each sDep In GetRequire(sComp)
     hComp = $cComp[sDep]
     hComp.Dependencies.Remove(hComp.Dependencies.Find(sComp))
-    If hComp.Dependencies.Count = 0 Then UncheckComponent(sDep)
+    If hComp.Dependencies.Count = 0 And If Not hComp.Checked Then UncheckComponent(sDep)
   Next
   
   gvwComponent.Refresh

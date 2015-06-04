@@ -29,7 +29,7 @@ Public Sub Convert(sMarkup As String, hMarkdown As Markdown) As String
   $cLink = New Collection
   $aIndex = New String[]
   EnableCode = 0
-  
+
   Return ConvertMarkup(Split(sMarkup, "\n"))
   
 End
@@ -68,6 +68,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   Dim aSaveTableClass As String[]
   Dim sClass As String
   Dim sList As String
+  Dim bSaveComment As Boolean
   
   aResult = New String[]
   
@@ -79,6 +80,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   $aTableClass = New String[]
   aSaveTablePos = $aTablePos
   $aTablePos = New Integer[]
+  bSaveComment = $bComment
   
   ' iLine = 0
   ' Do
@@ -96,6 +98,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   For iLine = 0 To aLine.Max
     
     sLine = LTrim(aLine[iLine])
+    
     If Not sLine Then Continue
     If Left(sLine) <> "[" Then Continue
     I = InStr(sLine, "]:")
@@ -511,6 +514,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     aResult[iIndexPos] = "<div class=\"index\">\n" & ConvertMarkup($aIndex) & "</div>\n"
   Endif
   
+  $bComment = bSaveComment
   $aMarkup = aSaveMarkup
   $aTable = aSaveTable
   $aTableClass = aSaveTableClass
@@ -557,8 +561,8 @@ CLOSE_PARA:
     'aResult.Add("")
     bInsidePar = False
     bIgnorePar = False
-  Else If iLine > 0 And If aResult[aResult.Max] Then
-    'aResult.Add("")
+  'Else If iLine > 0 And If aResult[aResult.Max] Then
+  '  'aResult.Add("")
   Endif
   Return
   

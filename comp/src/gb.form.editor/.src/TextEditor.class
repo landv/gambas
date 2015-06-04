@@ -1861,7 +1861,7 @@ Public Sub View_Draw()
   
   hClip = Paint.ClipRect
   'Debug hClip.Y;; hClip.H
-  Paint.FillRect(hClip.X + $MW, hClip.Y, hClip.W, hClip.H, $iBackground)
+  Paint.FillRect(hClip.X, hClip.Y, hClip.W, hClip.H, $iBackground)
   
   iRow = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y)
   If iRow < 0 Then Return
@@ -2831,7 +2831,7 @@ Public Sub _RaiseHighlight(sText As String)
   
 End
 
-Private Sub ViewToReal(Y As Integer) As Integer
+Fast Private Sub ViewToReal(Y As Integer) As Integer
 
   Dim I As Integer
   Dim M As Integer
@@ -2878,7 +2878,7 @@ End
 ' }
 ' 
 
-Private Sub RealToView(Y As Integer) As Integer
+Fast Private Sub RealToView(Y As Integer) As Integer
 
   Dim I As Integer
   Dim YY As Integer

@@ -1219,6 +1219,7 @@ Public Sub btnDownloadHelp_Click()
   Dim sFile As String
   Dim sDir As String
   Dim sTimestamp As String
+  Dim sParentDir As String
 
   Inc Application.Busy
   
@@ -1239,9 +1240,10 @@ Public Sub btnDownloadHelp_Click()
   ' Endif
   
   sDir = MHelp.GetOfflineDir()
+  sParentDir = File.Dir(sDir)
   
-  Project.MakeDir(File.Dir(sDir))
-  sFile = File.Dir(sDir) &/ "wiki.tar.bz2"
+  Project.MakeDir(sParentDir)
+  sFile = sParentDir &/ "wiki.tar.bz2"
   Try Kill sFile
   
   Exec ["wget", "-q", "-O", "-", "http://gambaswiki.org/timestamp"] To sTimestamp
@@ -1252,10 +1254,22 @@ Public Sub btnDownloadHelp_Click()
     Goto FAIL
   Endif
   
-  Shell "cd " & Shell$(File.Dir(sFile)) & " && tar xfj " & Shell$(File.Name(sFile)) & " && mv gambas wiki" Wait
-  If Not IsDir(sDir) Then
+  Shell "rm -rf " & Shell(sParentDir &/ "gambas") Wait
+  
+  Shell "cd " & Shell$(sParentDir) & " && tar xfj " & Shell$(File.Name(sFile)) Wait
+  
+  If Not IsDir(sParentDir &/ "gambas") Then
     Shell "rm -rf " & Shell(sDir) & " " & Shell$(sFile) Wait
     sMsg = ("Unable to uncompress documentation.")
+    Goto FAIL
+  Endif
+
+  If IsDir(sDir & "~") Then Shell "rm -rf " & Shell(sDir & "~") Wait
+  If IsDir(sDir) Then Try Move sDir To sDir & "~"
+  Try Move sParentDir &/ "gambas" To sDir
+  
+  If Not IsDir(sDir) Then
+    sMsg = ("Unable to install documentation.")
     Goto FAIL
   Endif
   
@@ -1324,5 +1338,11 @@ Public Sub choBackgroundColor_Click()
 
   Project.SetBackgroundColor("#" & Hex$(choBackgroundColor.Current, 6))
   RefreshBackground
+
+End
+
+Public Sub Form_Activate()
+
+  ipnOption_Click
 
 End

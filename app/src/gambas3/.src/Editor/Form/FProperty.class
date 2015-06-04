@@ -23,12 +23,15 @@ Private $bSort As Boolean
 Private $bDisableIntegratedHelp As Boolean
 Private $hWebView As WebView
 
-Private $iHighlightColor As Integer
+Private $iBgDefault As Integer
+Private $iBgSet As Integer
+Private $iBgModified As Integer
 
 Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]",
   "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table"]
 
 Private Const PADDING As Integer = 6
+Private $cInitialValue As Collection
 
 Public Sub _new()
 
@@ -39,6 +42,10 @@ Public Sub _new()
   grdProperty.Columns.Resizable = True
 
   ScrollArea(grdProperty.Proxy).Shadow = True
+  
+  $iBgDefault = Color.TextBackground
+  $iBgSet = Color.Merge(Color.TextBackground, Color.LightForeground, 0.25)
+  $iBgModified = Color.Merge(Color.TextBackground, Color.LightBackground, 0.25)
   
 End
 
@@ -91,6 +98,7 @@ Public Sub RefreshAll()
   Dim sProp As String
   Dim sVal As String
   Dim iInd As Integer
+  Dim iBg As Integer
 
   '   DIM aColor AS NEW Integer[]
   '   DIM sClassColor AS String
@@ -188,6 +196,8 @@ Public Sub RefreshAll()
       aProp.Add(CPropertyInfo.EVENT_NAME, 0)
     Endif
   Endif
+  
+  $cInitialValue = New Collection
 
   For Each sProp In aProp
 
@@ -201,21 +211,23 @@ Public Sub RefreshAll()
 
     'If sProp = "Filter" Then Stop
     sVal = GetProperty(sProp)
+    $cInitialValue[sProp] = sVal
 
     grdProperty[iRow, 0].Font = grdProperty.Font
     grdProperty[iRow, 0].Alignment = Align.Normal
     grdProperty[iRow, 1].Alignment = Align.Normal
-
+    
     If CControl.WasDefaultValue Then
-      grdProperty[iRow, 0].Background = grdProperty.Background 'Color.Default 'Color.TextBackground
-      grdProperty[iRow, 1].Background = grdProperty.Background 'Color.Default 'Color.TextBackground
+      iBg = $iBgDefault
       grdProperty[iRow, 0].Font.Bold = False
     Else
-      grdProperty[iRow, 0].Background = $iHighlightColor 'Color.LightBackground
-      grdProperty[iRow, 1].Background = $iHighlightColor 'Color.LightBackground
+      iBg = $iBgSet
       grdProperty[iRow, 0].Font.Bold = True
     Endif
 
+    grdProperty[iRow, 0].Background = iBg
+    grdProperty[iRow, 1].Background = iBg
+    
     grdProperty[iRow, 1].Text = sVal
     'grdProperty[iRow, 0].Padding = 4
     '
@@ -303,6 +315,8 @@ End
 Public Sub RefreshOne(hCtrl As CControl, sProp As String)
 
   Dim iRow As Integer
+  Dim iBg As Integer
+  Dim sVal As String
 
   If Not $bMany Then
     If $hObject <> hCtrl Then Return
@@ -319,17 +333,19 @@ Public Sub RefreshOne(hCtrl As CControl, sProp As String)
     If Not $cIndex.Exist(sProp) Then Return
 
     iRow = $cIndex[sProp]
-    grdProperty[iRow, 1].Text = GetProperty(sProp)
+    sVal = GetProperty(sProp)
+    grdProperty[iRow, 1].Text = sVal
 
-    If CControl.WasDefaultValue Then
-      grdProperty[iRow, 0].Background = Color.TextBackground
-      grdProperty[iRow, 1].Background = Color.TextBackground
-      grdProperty[iRow, 0].Font.Bold = False
+    If sVal = $cInitialValue[sProp] Then
+      iBg = If(CControl.WasDefaultValue, $iBgDefault, $iBgSet)
+      grdProperty[iRow, 0].Font.Bold = True
     Else
-      grdProperty[iRow, 0].Background = Color.LightBackground
-      grdProperty[iRow, 1].Background = Color.LightBackground
+      iBg = $iBgModified
       grdProperty[iRow, 0].Font.Bold = True
     Endif
+    
+    grdProperty[iRow, 0].Background = iBg
+    grdProperty[iRow, 1].Background = iBg
     
   Endif
 
@@ -1169,7 +1185,7 @@ Public Sub ReadConfig()
   ' MTheme.InitControl(spnProperty)
   ' MTheme.InitControl(txtProperty)
   ' MTheme.InitControl(btnProperty)
-  $iHighlightColor = MTheme.GetColor("Selection")
+  '$iHighlightColor = MTheme.GetColor("Selection")
   MoveProperty
   RefreshAll
 

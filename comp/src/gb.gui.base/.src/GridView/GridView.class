@@ -342,9 +342,9 @@ DRAW_GRID:
     If System.RightToLeft Then
       If iCol > 0 Then Paint.FillRect(hRect.X, hRect.Y, 1, hRect.H, iColor)
     Else
-      If iCol < $hColumns.Max Then Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
+      If iCol < $hColumns.Max Or If hRect.X + hRect.W < $hView.ClientW Then Paint.FillRect(hRect.X + hRect.W - 1, hRect.Y, 1, hRect.H, iColor)
     Endif
-    If iRow < $hRows.Max Then Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
+    If iRow < $hRows.Max Or If hRect.Y + hRect.H < $hView.ClientH Then Paint.FillRect(hRect.X, hRect.Y + hRect.H - 1, hRect.W, 1, iColor)
   Endif
   
   Paint.Restore
@@ -484,16 +484,16 @@ Public Sub ScrollArea_Draw()
     Loop
   Endif
 
-  ' If $iHeader And Horizontal Then 
-  '   'Draw.ClipRect = hClip
-  '   If $bGrid Then 
-  '     If System.RightToLeft Then
-  '       Paint.FillRect(X, F, 1, H - F, iGrid)
-  '     Else
-  '       Paint.FillRect(X - 1, F, 1, H - F, iGrid)
-  '     Endif
-  '   Endif
-  ' Endif
+  If $iHeader And Horizontal Then 
+    'Draw.ClipRect = hClip
+    If $bGrid Then 
+      If System.RightToLeft Then
+        If X > 0 Then Paint.FillRect(X, F, 1, H - F, iGrid)
+      Else
+        If X < $hView.ClientW Then Paint.FillRect(X - 1, F, 1, H - F, iGrid)
+      Endif
+    Endif
+  Endif
     
   ' Row headers
 
@@ -540,10 +540,13 @@ Public Sub ScrollArea_Draw()
   Endif
 
   $aRowY.Add(Y - F)
-  ' If $iHeader And Vertical Then 
-  '   'Draw.ClipRect = hClip
-  '   If $bGrid Then Paint.FillRect(F, Y - 1, W - F, 1, iGrid)
-  ' Endif
+  
+  If $iHeader And Vertical Then 
+    'Draw.ClipRect = hClip
+    If $bGrid Then 
+      If Y < $hView.ClientH Then Paint.FillRect(F, Y - 1, W - F, 1, iGrid)
+    Endif
+  Endif
 
   ' Top-left frame
   

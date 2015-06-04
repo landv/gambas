@@ -110,6 +110,8 @@ Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
     
   Next
   
+  hEditor.Background = hEditor.Styles[Highlight.Background].Color
+  hEditor.Foreground = hEditor.Styles[Highlight.Normal].Color
   hEditor.Refresh
   
 End

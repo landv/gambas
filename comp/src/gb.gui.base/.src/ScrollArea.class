@@ -24,6 +24,7 @@ Property NoBackground As Boolean
 Property ScrollBar As Integer
 Property Tracking As Boolean
 Property Background As Integer
+Property Foreground As Integer
 Property Tablet As Boolean
 Property Shadow As Boolean
 Property Read View As DrawingArea
@@ -64,6 +65,7 @@ Private $iShadowN As Integer
 Private $iShadowS As Integer
 Private $iShadowW As Integer
 Private $iShadowE As Integer
+Private $hCorner As DrawingArea
 
 Private Sub LoadFades()
   
@@ -107,6 +109,8 @@ Public Sub _new()
   $hHBar.Step = Desktop.Scale
   $hVBar = New ScrollBar(Me) As "Scrollbar"
   $hVBar.Step = Desktop.Scale
+
+  $hCorner = New DrawingArea(Me)
   
   Me.Proxy = $hDrawingArea
   Me._Container = $hDrawingArea
@@ -124,6 +128,7 @@ Private Sub UpdateScrollbarVisibility()
   
     $hHBar.Visible = $bHBarVisible
     $hVBar.Visible = $bVBarVisible
+    $hCorner.Visible = $bHBarVisible And $bHBarVisible
     
   'Else
   
@@ -285,6 +290,10 @@ RETRY:
     Else
       $hVBar.Move(W + SP, 0, SB, H)
     Endif
+  Endif
+  
+  If $bHBarVisible And If $bVBarVisible Then
+    $hCorner.Move($hVBar.X, $hHBar.Y, SB, SB)
   Endif
   
   $bNoArrange = False
@@ -688,6 +697,7 @@ Private Sub Background_Write(Value As Integer)
   $iBackground = Value
   $hHBar.Background = Value
   $hVBar.Background = Value
+  $hCorner.Background = Value
   $hDrawingArea.Refresh
 
 End
@@ -833,4 +843,19 @@ Public Sub RefreshRect(X As Integer, Y As Integer, Width As Integer, Height As I
   
   $hDrawingArea.Refresh(X - Me.ScrollX, Y - Me.ScrollY, Width, Height)
   
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $hCorner.Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $hDrawingArea.Foreground = Value
+  $hCorner.Foreground = Value
+  $hHBar.Foreground = Value
+  $hVBar.Foreground = Value
+
 End
