@@ -1,11 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,125,103)
+  MoveScaled(0,0,101,89)
   Arrangement = Arrange.Vertical
-  { txtPrint TextBox
-    MoveScaled(5,2,24,4)
-    Visible = False
+  { Panel2 HBox
+    MoveScaled(2,2,47,4)
+    { txtPrint TextBox
+      MoveScaled(0,0,24,4)
+      Visible = False
+    }
+    { Button1 Button
+      MoveScaled(28,0,15,4)
+      Text = ("Wrap")
+    }
   }
   { Panel1 VSplit
     MoveScaled(10,10,86,79)
@@ -14,14 +21,13 @@
       MoveScaled(5,5,70,33)
       Font = Font["Liberation Mono,9"]
       Border = False
+      ReadOnly = True
       TabSize = 8
-      ShowPosition = True
       ShowLimit = True
       ShowCurrent = True
       ShowLineNumber = True
       ShowModified = True
       ShowBraces = True
-      ShowIcon = True
       ShowExpand = True
     }
   }

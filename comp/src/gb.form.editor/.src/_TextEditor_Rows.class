@@ -4,12 +4,17 @@ Property Count As Integer
 Property Read Max As Integer
 Property Height, H As Integer
 
+Public RelativeY As Integer
+
 Event _Fake
 
 Private $nRows As Integer
 Private $cHeight As Collection
 Private $aHeight As Integer[]
 Private $iHeight As Integer 
+
+Private $cCacheRowY As New Collection
+Private $cCacheRowFromPos As New Collection
 
 Private Sub GetView() As TextEditor
   
@@ -21,6 +26,13 @@ Private Function Count_Read() As Integer
   
   Return $nRows
   
+End
+
+Private Sub ClearCache()
+
+  $cCacheRowY.Clear
+  $cCacheRowFromPos.Clear
+
 End
 
 Private Sub Count_Write(Value As Integer)
@@ -41,8 +53,20 @@ Private Sub Count_Write(Value As Integer)
     Wend
   Endif
   
+  ClearCache
+  
   hView._ResizeContents
   
+End
+
+Private Sub StripCache(cCol As Collection)
+
+  If cCol.Count < 256 Then Return
+  For Each cCol
+    cCol.Remove(cCol.Key)
+    Break
+  Next
+
 End
 
 Public Sub _GetRowY(iRow As Integer) As Integer
@@ -51,14 +75,22 @@ Public Sub _GetRowY(iRow As Integer) As Integer
   Dim DH As Integer = $iHeight
   Dim I As Integer
   
-  Y = iRow * DH
+  If Not $cHeight Then Return iRow * DH
+  
+  Try Return $cCacheRowY[iRow]
   
   If $cHeight Then
     
+    Y = iRow * DH
+  
     For Each I In $aHeight
       If I < iRow Then Y += $cHeight[I] * DH - DH
     Next
+    
   Endif
+  
+  $cCacheRowY[iRow] = Y
+  StripCache($cCacheRowY)
   
   Return Y
   
@@ -97,8 +129,8 @@ Public Sub _ResetRowHeight(iRow As Integer)
   If $cHeight.Exist(iRow) Then
     $cHeight.Remove(iRow)
     $aHeight.Remove($aHeight.Find(iRow))
+    ClearCache
     hView._ResizeContents()
-    hView._RaiseRowResize(iRow)
   Endif
   
 End
@@ -109,6 +141,8 @@ Public Sub _SetRowHeight(iRow As Integer, H As Integer)
   'Dim DH As Integer = $iHeight
   Dim OH As Integer
   'Dim bCancel As Boolean
+  
+  ClearCache
   
   If Not $cHeight Then 
     $cHeight = New Collection
@@ -160,19 +194,52 @@ Public Sub _FindRowFromPos(Y As Integer) As Integer
   
   Dim iRow, YY, H As Integer
   Dim DH As Integer = $iHeight
+  Dim iCache As Long
+  Dim YO As Integer
   
   If $cHeight Then
+    
+    Try iCache = $cCacheRowFromPos[Y]
+    If Not Error Then
+      If iCache < 0 Then Return -1
+      RelativeY = iCache And &HFFFFFFFF&
+      Return Lsr(iCache, 32)
+    Endif
+    
+    YO = Y
+  
     For Each iRow In $aHeight
       YY = iRow * DH
       If Y < YY Then Break
       H = $cHeight[iRow] * $iHeight
-      If Y < (YY + H) Then Return iRow
+      If Y < (YY + H) Then 
+        RelativeY = Y - YY
+        Goto RETURN_POS
+      Endif
       Y -= H - DH
     Next
   Endif
   
   iRow = Y / DH
+  RelativeY = Y - iRow * DH
+  
   If iRow < 0 Or If iRow >= $nRows Then iRow = -1
+
+RETURN_POS:
+
+  If $cHeight Then
+  
+    If iRow < 0 Then
+      iCache = -1
+    Else
+      iCache = Shl(CLong(iRow), 32) + RelativeY
+    Endif
+    
+    $cCacheRowFromPos[YO] = iCache
+    StripCache($cCacheRowFromPos)
+    
+  Endif
+  
   Return iRow
   
 End
@@ -186,6 +253,7 @@ End
 Private Sub Height_Write(Value As Integer)
   
   $iHeight = Value
+  ClearCache
   
 End
 
@@ -213,5 +281,7 @@ Public Sub Clear()
     $cHeight.Clear
     $aHeight.Clear
   Endif
+  
+  ClearCache
   
 End

@@ -145,6 +145,10 @@ Keywords
 r
 String[]
 
+Wrap
+p
+b
+
 ScrollX
 p
 i
@@ -221,7 +225,7 @@ Copy
 m
 
 
-_ClearCacheWidth
+_ClearCachePos
 m
 
 [(Y)i]
@@ -365,6 +369,10 @@ _AfterRemove
 m
 
 (Y1)i(Y2)i
+_UpdateAllHeight
+m
+
+
 View_Draw
 m
 
@@ -429,6 +437,10 @@ ToPosY
 m
 i
 [(Line)i]
+ToPos
+m
+Point
+[(Line)i(Column)i]
 ToColumn
 m
 i
@@ -489,10 +501,14 @@ _RestoreCursor
 m
 
 
-_UpdateHeight
+_UpdateLineHeight
 m
 
 (Y)i
+TimerHeight_Timer
+m
+
+
 #TextEditorStyle
 
 C

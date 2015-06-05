@@ -62,8 +62,19 @@ Private Sub Text_Write(Value As String)
     Lines = Split(Value, "\n")
     LinesInfo = New CLineInfo[Lines.Count]
     HighlightFrom(0)
+    LayoutLines
   Endif
   
+End
+
+Private Sub LayoutLines()
+
+  Dim hView As TextEditor
+
+  For Each hView In GetAllViews()
+    hView._UpdateAllHeight
+  Next
+
 End
 
 Public Sub Load(sPath As String, bAddNewLine As Boolean)
@@ -88,6 +99,7 @@ Public Sub Load(sPath As String, bAddNewLine As Boolean)
   
   LinesInfo = New CLineInfo[Lines.Count]
   HighlightFrom(0)
+  LayoutLines
   
 End
 
@@ -173,7 +185,7 @@ Private Sub InsertLine(Y As Integer)
   LinesInfo[Y].Modified = True
   
   For Each hView In GetAllViews()
-    hView._ClearCacheWidth
+    hView._ClearCachePos
     hView._RaiseChange
   Next
   
@@ -199,8 +211,8 @@ Public Sub SetLine(Y As Integer, sLine As String)
   SetInfo(Y).Modified = True
   
   For Each hView In GetAllViews()
-    hView._ClearCacheWidth(Y)
-    hView._UpdateHeight(Y)
+    hView._ClearCachePos(Y)
+    hView._UpdateLineHeight(Y)
     hView._RaiseChange
   Next
   
@@ -483,7 +495,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   
   For Each hView In GetAllViews()
     hView._AfterRemove(Y1, Y2)
-    If Y2 > Y1 Then hView._ClearCacheWidth
+    If Y2 > Y1 Then hView._ClearCachePos
   Next
   
   If bHighlight Then
