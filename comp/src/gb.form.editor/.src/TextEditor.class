@@ -1029,13 +1029,13 @@ Public Sub View_KeyPress()
     
     Case Key.Right
       If Key.Control Then
-        If $X >= String.Len($hDoc.Lines[$Y]) Then
+        If $X >= $hDoc.LineLength[$Y] Then
           Goto(0, _ViewToReal(_RealToView($Y) + 1), Key.Shift)
         Else
           Goto($hDoc.WordRight($X, $Y), $Y, Key.Shift)
         Endif
       Else If Key.Normal Or If Key.Shift Then
-        If $X >= String.Len($hDoc.Lines[$Y]) Then
+        If $X >= $hDoc.LineLength[$Y] Then
           Goto(0, _ViewToReal(_RealToView($Y) + 1), Key.Shift)
         Else
           Goto($X + 1, $Y, Key.Shift)
@@ -1222,7 +1222,7 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     Endif
   Endif
   
-  iLen = LineLength(NY)
+  iLen = $hDoc.LineLength[NY]
   If NX < 0 Or If NX > iLen Then NX = iLen
   
   If Not Mark Then HideSelection
@@ -1316,7 +1316,7 @@ Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
   Dim LP As Point
   
   sStr = $hDoc.Lines[Y]
-  iLen = String.Len(sStr)
+  iLen = $hDoc.LineLength[Y]
   
   If PX < $MW Then Return 0
   
@@ -1424,7 +1424,7 @@ Public Sub View_DblClick()
   If Mouse.X >= $MW Then
     X = $X
     If $X >= 0 Then Goto($hDoc.WordLeft($X, $Y, True), $Y)
-    If $X < String.Len($hDoc.Lines[$Y]) Then X = $hDoc.WordRight($X, $Y, True)
+    If $X < $hDoc.LineLength[$Y] Then X = $hDoc.WordRight($X, $Y, True)
     Goto(X, $Y, True)
   Endif
   
@@ -1663,7 +1663,7 @@ Private Sub DeleteLeft()
   
   If $X = 0 Then
     If $Y > 0 Then
-      Remove(String.Len($hDoc.Lines[$Y - 1]), $Y - 1, 0, $Y)
+      Remove($hDoc.LineLength[$Y - 1], $Y - 1, 0, $Y)
     Endif
   Else
     sTab = GetIndentText($Y)
@@ -1684,7 +1684,7 @@ Private Sub DeleteRight()
 
   If DeleteSelection() Then Return
 
-  If $X >= String.Len($hDoc.Lines[$Y]) Then
+  If $X >= $hDoc.LineLength[$Y] Then
     If $Y < $hDoc.Max Then
       Remove($X, $Y, 0, $Y + 1)
     Endif
@@ -1746,7 +1746,7 @@ Private Sub CheckMatch()
   If $bShowBraces Then 
   
     Y = $Y
-    X = Min(String.Len($hDoc.Lines[Y]), $X)
+    X = Min($hDoc.LineLength[Y], $X)
     
     If X > 0 Then 
       sCar = String.Mid$($hDoc.Lines[Y], X, 1)
@@ -1777,7 +1777,7 @@ FIND_MATCH:
   $YMO = Y
   
   sLine = $hDoc.Lines[Y]
-  iLen = String.Len(sLine) 
+  iLen = $hDoc.LineLength[Y]
 
   Do
     
@@ -1794,7 +1794,7 @@ FIND_MATCH:
         If N > 1000 Then Goto FOUND
         
         sLine = $hDoc.Lines[Y]
-        iLen = String.Len(sLine)
+        iLen = $hDoc.LineLength[Y]
         
       Wend
       
@@ -1810,7 +1810,7 @@ FIND_MATCH:
         If N > 1000 Then Goto FOUND
         
         sLine = $hDoc.Lines[Y]
-        X = String.Len(sLine) - 1
+        X = $hDoc.LineLength[Y] - 1
         
       Wend
       
@@ -3742,7 +3742,7 @@ Private Sub MoveSelection(bUp As Boolean)
       X2 = 0
       Y2 = $Y + 1
     Else
-      X2 = LineLength($Y)
+      X2 = $hDoc.LineLength[$Y]
       Y2 = $Y
     Endif
   Else
@@ -3793,12 +3793,6 @@ Private Sub MoveSelection(bUp As Boolean)
     
   $hDoc.End
 
-End
-
-Private Sub LineLength(Y As Integer) As Integer
-  
-  Return String.Len($hDoc.Lines[Y])
-  
 End
 
 Public Sub _SaveCursor()
@@ -3893,6 +3887,9 @@ Public Sub _UpdateLineHeight(Y As Integer)
     $hRows._SetRowHeight(Y, 1)
     'Print
   Endif
+  
+  If Y = $Y Then $XY = LinePos($Y, $X)
+  If Y = $SY Then $SXY = LinePos($Y, $X)
   
   Try $cCachePos.Remove(Y)
   

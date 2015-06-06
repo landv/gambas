@@ -484,14 +484,16 @@ Public Sub Text(X As Float, Y As Float, sText As String, sFont As String, iAlign
 
   hOutline = Paint.PathOutline
   
-  For Each hPoly In hOutline
-    If hPoly.Count < 2 Then Continue
-    hShape = New CImageShape
-    Shapes.Add(hShape)
-    For Each hPoint In hPoly
-      hShape.Add(hPoint)
+  If hOutLine Then
+    For Each hPoly In hOutline
+      If hPoly.Count < 2 Then Continue
+      hShape = New CImageShape
+      Shapes.Add(hShape)
+      For Each hPoint In hPoly
+        hShape.Add(hPoint)
+      Next
     Next
-  Next
+  Endif
   
   Paint.End
   

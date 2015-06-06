@@ -202,8 +202,8 @@ Public Sub _FindRowFromPos(Y As Integer) As Integer
   Dim J As Integer
   
   If Not $cHeight Then
-    I = Y \ DH
-    If I < 0 Or If I >= $nRows Then Return -1
+    I = Min($nRows - 1, Y \ DH)
+    If I < 0 Then Return -1
     RelativeY = Y - I * DH
     Return hView._ViewToReal(I)
   Endif

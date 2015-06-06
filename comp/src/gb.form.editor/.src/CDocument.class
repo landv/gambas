@@ -15,6 +15,7 @@ Property EndOfLine As Integer
 
 Public Lines As String[]
 Public LinesInfo As CLineInfo[]
+Public LineLength As Integer[]
 
 Public XAfter As Integer
 Public YAfter As Integer
@@ -43,6 +44,7 @@ Public Sub Clear()
   
   Lines = New String[1]
   LinesInfo = New CLineInfo[1]
+  LineLength = New Integer[1]
   $aUndo.Clear
   $aRedo.Clear
   
@@ -54,6 +56,17 @@ Private Function Text_Read() As String
 
 End
 
+Private Sub UpdateLineLength()
+
+  Dim I As Integer
+
+  LineLength = New Integer[Lines.Count]
+  For I = 0 To Lines.Max
+    LineLength[I] = String.Len(Lines[I])
+  Next
+
+End
+
 Private Sub Text_Write(Value As String)
 
   Clear
@@ -61,6 +74,7 @@ Private Sub Text_Write(Value As String)
   If Value Then
     Lines = Split(Value, "\n")
     LinesInfo = New CLineInfo[Lines.Count]
+    UpdateLineLength
     HighlightFrom(0)
     LayoutLines
   Endif
@@ -98,6 +112,7 @@ Public Sub Load(sPath As String, bAddNewLine As Boolean)
   Endif
   
   LinesInfo = New CLineInfo[Lines.Count]
+  UpdateLineLength
   HighlightFrom(0)
   LayoutLines
   
@@ -181,6 +196,7 @@ Private Sub InsertLine(Y As Integer)
   Dim hView As TextEditor
   
   Lines.Add("", Y)
+  LineLength.Add(0, Y)
   LinesInfo.Add(CLineInfo(), Y)
   LinesInfo[Y].Modified = True
   
@@ -208,6 +224,7 @@ Public Sub SetLine(Y As Integer, sLine As String)
   If sLine = Lines[Y] Then Return
   
   Lines[Y] = sLine
+  LineLength[Y] = String.Len(sLine)
   SetInfo(Y).Modified = True
   
   For Each hView In GetAllViews()
@@ -245,7 +262,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   '   Inc N
   ' Wend
   
-  iLen = String.Len(Lines[Y])
+  iLen = LineLength[Y]
   If X > iLen Then 
     SetLine(Y, Lines[Y] & Space$(X - iLen))
   Endif
@@ -463,7 +480,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
       Swap X1, X2
     Endif
   
-    If X2 > X1 And If X1 < String.Len(Lines[Y1]) Then
+    If X2 > X1 And If X1 < LineLength[Y1] Then
       
       SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y1], X2 + 1))
       
@@ -477,6 +494,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
     
     Lines.Remove(Y1 + 1, Y2 - Y1)
     LinesInfo.Remove(Y1 + 1, Y2 - Y1)
+    LineLength.Remove(Y1 + 1, Y2 - Y1)
     
     For Each hView In GetAllViews()
       hView._RaiseChange
@@ -897,7 +915,7 @@ Public Sub HighlightFrom(Y As Integer)
           Begin()
         Endif
         Me.Current.Goto(0, Y)
-        Me.Current.Remove(0, Y, String.Len(Lines[Y]), Y)
+        Me.Current.Remove(0, Y, LineLength[Y], Y)
         Me.Current.Insert(TextHighlighter.TextAfter)
         .Colors = aHighlight
       Endif
@@ -934,7 +952,7 @@ Private Function Length_Read() As Integer
   Dim L As Integer
 
   For Y = 0 To Lines.Max
-    L += String.Len(Lines[Y])
+    L += LineLength[Y]
   Next
   
   L += Lines.Max * Len($sEndOfLine)
@@ -1120,7 +1138,7 @@ End
 Public Sub WordRight(X As Integer, Y As Integer, Optional bWord As Boolean) As Integer
 
   Dim sLine As String = Lines[Y]
-  Dim iLen As Integer = String.Len(sLine)
+  Dim iLen As Integer = LineLength[Y]
   Dim X2 As Integer
   Dim sCar As String
   
