@@ -70,8 +70,6 @@ Public Sub _new(sPath As String, Optional bModule As Boolean)
   
   $bModule = bModule
   
-  'edtEditor.Flags[Editor.ShowCursorPosition] = True
-  
 End
 
 Public Sub GetEditor() As TextEditor
@@ -704,6 +702,7 @@ Private Sub InitEditor(hEditor As TextEditor)
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
+    .Wrap = edtEditor.Wrap
   End With 
   hEditor.ReadConfig
   
@@ -1224,6 +1223,7 @@ Public Sub Form_Open()
 
   ReadConfig
   SetReadOnly
+  Action[".wrap", Me].Value = Settings["/Editor/WrapTextByDefault", False]
 
 End
 
@@ -1453,10 +1453,20 @@ End
 Public Sub Action_Activate((Key) As String) As Boolean
   
   Select Case Key
+    
     Case ".locked"
       Project.SetReadOnly(Path, Action[Key, Me].Value)
+    
+    Case ".wrap"
+      $hEditor.Wrap = mnuWrap.Value
+      If $hEditor1 Then
+        $hEditor1.Wrap = $hEditor.Wrap
+        $hEditor2.Wrap = $hEditor.Wrap
+      Endif
+    
     Case Else
       Return True
+  
   End Select
   
 End

@@ -105,6 +105,7 @@ Public Sub _new()
     [btnShowDots, "/Editor/ShowDots", 1],
     [btnFold, "/Editor/ShowExpand", 1],
     [btnFoldProc, "/Editor/CollapseByDefault", 0],
+    [btnWrapText, "/Editor/WrapTextByDefault", 0],
     [btnOutput, "/QuietExternalCommands", 0],
     [btnUtility, "/UseUtilityWindows", 1],
     [btnStartupLoad, "/RestoreFiles", 1],
@@ -704,6 +705,12 @@ End
 Public Sub btnFoldProc_Click()
 
   Settings["/Editor/CollapseByDefault"] = btnFoldProc.Value
+
+End
+
+Public Sub btnWrapText_Click()
+
+  Settings["/Editor/WrapTextByDefault"] = btnWrapText.Value
 
 End
 

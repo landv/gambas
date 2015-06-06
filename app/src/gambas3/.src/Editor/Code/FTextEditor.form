@@ -81,6 +81,47 @@
     }
     { mnuSep4 Menu
     }
+    { mnuEditorView Menu
+      Text = ("View")
+      { mnuWrap Menu
+        Action = ".wrap"
+        Text = ("Automatic word wrap")
+        Picture = Picture["img/16/wrap.png"]
+        Toggle = True
+      }
+      { mnuNoSplit Menu
+        Action = ".view-nosplit"
+        Text = ("No split")
+        Picture = Picture["icon:/small/view-normal"]
+      }
+      { mnuHorizontalSplit Menu
+        Action = ".view-hsplit"
+        Text = ("Horizontal split")
+        Picture = Picture["icon:/small/view-split-h"]
+        Shortcut = "Ctrl+H"
+      }
+      { mnuVerticalSplit Menu
+        Action = ".view-vsplit"
+        Text = ("Vertical split")
+        Picture = Picture["icon:/small/view-split-v"]
+        Shortcut = "Ctrl+J"
+      }
+    }
+    { mnuEndOfLine Menu
+      Text = ("End of line")
+      { mnuEolUnix Menu
+        Text = ("Unix")
+        Radio = True
+      }
+      { mnuEolWindows Menu
+        Text = ("Windows")
+        Radio = True
+      }
+      { mnuEolMac Menu
+        Text = ("MAC")
+        Radio = True
+      }
+    }
     { mnuAdvanced Menu
       Text = ("Advanced")
       { mnuUpperCase Menu
@@ -129,41 +170,6 @@
         Action = ".uncompress"
         Text = ("Uncompress file")
         Picture = Picture["icon:/small/undo"]
-      }
-    }
-    { mnuEndOfLine Menu
-      Text = ("End of line")
-      { mnuEolUnix Menu
-        Text = ("Unix")
-        Radio = True
-      }
-      { mnuEolWindows Menu
-        Text = ("Windows")
-        Radio = True
-      }
-      { mnuEolMac Menu
-        Text = ("MAC")
-        Radio = True
-      }
-    }
-    { mnuEditorView Menu
-      Text = ("View")
-      { mnuNoSplit Menu
-        Action = ".view-nosplit"
-        Text = ("No split")
-        Picture = Picture["icon:/small/view-normal"]
-      }
-      { mnuHorizontalSplit Menu
-        Action = ".view-hsplit"
-        Text = ("Horizontal split")
-        Picture = Picture["icon:/small/view-split-h"]
-        Shortcut = "Ctrl+H"
-      }
-      { mnuVerticalSplit Menu
-        Action = ".view-vsplit"
-        Text = ("Vertical split")
-        Picture = Picture["icon:/small/view-split-v"]
-        Shortcut = "Ctrl+J"
       }
     }
     { Menu1 Menu
@@ -272,34 +278,34 @@
     }
     { btnUndo ToolButton mnuUndo
       Name = "btnUndo"
-      MoveScaled(38,0,4,4)
+      MoveScaled(28,0,4,4)
       ToolTip = ("Undo")
       Action = ".undo"
       Picture = Picture["icon:/small/undo"]
     }
     { btnRedo ToolButton mnuRedo
       Name = "btnRedo"
-      MoveScaled(41,0,4,4)
+      MoveScaled(31,0,4,4)
       ToolTip = ("Redo")
       Action = ".redo"
       Picture = Picture["icon:/small/redo"]
     }
     { btnIndent ToolButton
-      MoveScaled(45,0,4,4)
+      MoveScaled(35,0,4,4)
       Visible = False
       ToolTip = ("Indent")
       Action = ".indent"
       Picture = Picture["icon:/small/indent"]
     }
     { btnUnindent ToolButton
-      MoveScaled(48,0,4,4)
+      MoveScaled(38,0,4,4)
       Visible = False
       ToolTip = ("Unindent")
       Action = ".unindent"
       Picture = Picture["icon:/small/unindent"]
     }
     { btnBookmark MenuButton
-      MoveScaled(52,0,6,4)
+      MoveScaled(42,0,6,4)
       Visible = False
       ToolTip = ("Bookmarks")
       Action = ".bookmark"
@@ -308,12 +314,19 @@
       Menu = "mnuBookmark"
     }
     { btnInsertColor MenuButton
-      MoveScaled(58,0,6,4)
+      MoveScaled(48,0,6,4)
       ToolTip = ("Insert color")
       Action = ".color"
       Picture = Picture["icon:/small/color"]
       Border = False
       Menu = "mnuColor"
+    }
+    { btnWrap ToolButton
+      MoveScaled(56,0,4,4)
+      ToolTip = ("Automatic word wrap")
+      Action = ".wrap"
+      Picture = Picture["img/16/wrap.png"]
+      Toggle = True
     }
     { Separator1 Separator
       MoveScaled(64,0,1,4)
@@ -372,7 +385,7 @@
       Border = False
     }
     { btnEndOfLine MenuButton
-      MoveScaled(116,0,11,4)
+      MoveScaled(117,0,11,4)
       Visible = False
       ToolTip = ("End of line")
       Action = ".eol"
@@ -569,12 +582,17 @@
     Shortcut = "Ctrl+J"
     Picture = "icon:/small/view-split-v"
   }
+  { Action wrap
+    Text = "Automatic word wrap"
+    Shortcut = ""
+    Picture = "img/16/wrap.png"
+  }
 }
 
 { Toolbars
   { Toolbar text
     Text = "Text editor"
-    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
-    Default = "show-class,save,reload,locked,paste,undo,redo,color,|,compress,uncompress,|,|,proc"
+    List = "show-class,save,reload,locked,cut,copy,paste,undo,redo,indent,unindent,bookmark,color,wrap,compress,uncompress,view-nosplit,view-hsplit,view-vsplit,proc,eol"
+    Default = "show-class,save,reload,locked,paste,undo,redo,color,wrap,|,compress,uncompress,|,|,proc"
   }
 }

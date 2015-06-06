@@ -105,7 +105,6 @@ Public Sub _new(sPath As String)
   $hEditor = edtEditor
   edtEditor.ShowIcon = True
   edtEditor.ShowBraces = True 
-  'edtEditor.Wrap = True
   edtEditor.Highlight = "gambas"
 
   $hInsertColor = New CInsertColor(Me, btnInsertColor)
@@ -2905,7 +2904,7 @@ Private Sub InitEditor(hEditor As TextEditor)
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
     .ShowIcon = True
-    '.Wrap = True
+    .Wrap = edtEditor.Wrap
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
   End With
   hEditor.ReadConfig
@@ -3717,12 +3716,23 @@ End
 Public Sub Action_Activate((Key) As String) As Boolean
   
   Select Case Key
+    
     Case ".locked"
       Project.SetReadOnly(Path, Action[Key, Me].Value)
+      
     Case ".run-me"
       Project.Run(False, 0, Me.Name)
+      
+    Case ".wrap"
+      $hEditor.Wrap = mnuWrap.Value
+      If $hEditor1 Then
+        $hEditor1.Wrap = $hEditor.Wrap
+        $hEditor2.Wrap = $hEditor.Wrap
+      Endif
+    
     Case Else
       Return True
+      
   End Select
   
 End
@@ -3734,3 +3744,8 @@ Public Sub Form_Close()
 End
 
 
+Public Sub Form_Open()
+
+  Action[".wrap", Me].Value = Settings["/Editor/WrapTextByDefault", False]
+
+End
