@@ -38,24 +38,13 @@ End
 Private Sub Count_Write(Value As Integer)
   
   Dim hView As TextEditor = GetView()
-  Dim iRow As Integer
+  
+  ClearCache
   
   If Value = $nRows Then Return
   
   $nRows = Value
-  
-  If $aHeight Then
-    While $aHeight.Count
-      If $aHeight[$aHeight.Max] < $nRows Then Break
-      iRow = $aHeight[$aHeight.Max]
-      $cHeight.Remove(iRow)
-      $aHeight.Remove($aHeight.Max)
-    Wend
-  Endif
-  
-  ClearCache
-  
-  hView._ResizeContents
+   hView._ResizeContents
   
 End
 
@@ -71,21 +60,30 @@ End
 
 Public Sub _GetRowY(iRow As Integer) As Integer
   
+  Dim hView As TextEditor = GetView()
   Dim Y As Integer
   Dim DH As Integer = $iHeight
   Dim I As Integer
+  Dim iViewRow As Integer
   
-  If Not $cHeight Then Return iRow * DH
+  iViewRow = hView._RealToView(iRow)
+  
+  If Not $cHeight Then Return iViewRow * DH
   
   Try Return $cCacheRowY[iRow]
   
   If $cHeight Then
     
-    Y = iRow * DH
+    Y = iViewRow
   
     For Each I In $aHeight
-      If I < iRow Then Y += $cHeight[I] * DH - DH
+      If I >= iRow Then Break
+      If hView._IsRowVisible(I) Then 
+        Y += CInt($cHeight[I]) - 1
+      Endif
     Next
+    
+    Y *= DH
     
   Endif
   
@@ -175,72 +173,78 @@ End
 
 Public Sub _GetHeight() As Integer
   
-  Dim H, DH, HR As Integer
+  Dim hView As TextEditor = GetView()
+  Dim H, DH As Integer
+  Dim I As Integer
   
   DH = $iHeight
-  H = DH * $nRows
+  H = $nRows
   If $cHeight Then
-    H -= DH * $cHeight.Count
-    For Each HR In $cHeight
-      H += HR * DH
-    Next 
+    For Each I In $aHeight
+      If hView._IsRowVisible(I) Then H += CInt($cHeight[I]) - 1
+    Next
   Endif
   
-  Return H
+  Return H * DH
   
 End
 
 Public Sub _FindRowFromPos(Y As Integer) As Integer
   
-  Dim iRow, YY, H As Integer
+  Dim hView As TextEditor = GetView()
   Dim DH As Integer = $iHeight
   Dim iCache As Long
-  Dim YO As Integer
+  Dim D As Integer
+  Dim F As Integer
+  Dim I As Integer
+  Dim RY As Integer
+  Dim RH As Integer
+  Dim J As Integer
   
-  If $cHeight Then
+  If Not $cHeight Then
+    I = Y \ DH
+    If I < 0 Or If I >= $nRows Then Return -1
+    RelativeY = Y - I * DH
+    Return hView._ViewToReal(I)
+  Endif
     
-    Try iCache = $cCacheRowFromPos[Y]
-    If Not Error Then
-      If iCache < 0 Then Return -1
-      RelativeY = iCache And &HFFFFFFFF&
-      Return Lsr(iCache, 32)
-    Endif
-    
-    YO = Y
-  
-    For Each iRow In $aHeight
-      YY = iRow * DH
-      If Y < YY Then Break
-      H = $cHeight[iRow] * $iHeight
-      If Y < (YY + H) Then 
-        RelativeY = Y - YY
-        Goto RETURN_POS
-      Endif
-      Y -= H - DH
-    Next
+  Try iCache = $cCacheRowFromPos[Y]
+  If Not Error Then
+    If iCache < 0 Then Return -1
+    RelativeY = iCache And &HFFFFFFFF&
+    Return Lsr(iCache, 32)
   Endif
   
-  iRow = Y / DH
-  RelativeY = Y - iRow * DH
-  
-  If iRow < 0 Or If iRow >= $nRows Then iRow = -1
-
-RETURN_POS:
-
-  If $cHeight Then
-  
-    If iRow < 0 Then
-      iCache = -1
+  D = 0
+  F = $nRows
+  While F > D
+    I = (F + D) \ 2
+    J = hView._ViewToReal(I)
+    RY = _GetRowY(J)
+    RH = _GetRowHeight(J)
+    If Y < RY Then
+      F = I
+    Else If Y >= RY + RH Then
+      D = I + 1
     Else
-      iCache = Shl(CLong(iRow), 32) + RelativeY
+      Break
     Endif
-    
-    $cCacheRowFromPos[YO] = iCache
-    StripCache($cCacheRowFromPos)
-    
+  Wend
+  
+  I = J
+  RelativeY = Y - RY
+  
+  If I < 0 Or If I >= hView.Count Then
+    I = -1
+    iCache = -1
+  Else
+    iCache = Shl(CLong(I), 32) + RelativeY
   Endif
   
-  Return iRow
+  $cCacheRowFromPos[Y] = iCache
+  StripCache($cCacheRowFromPos)
+  
+  Return I
   
 End
 

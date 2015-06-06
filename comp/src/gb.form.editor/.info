@@ -4,7 +4,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True"
+"*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True"
 _DrawWith
 C
 s
@@ -261,6 +261,14 @@ End
 m
 
 
+_ViewToReal
+m
+i
+(Y)i
+_RealToView
+m
+i
+(Y)i
 _IsRowExpanded
 m
 b
@@ -485,6 +493,10 @@ _RaiseHighlight
 m
 
 (sText)s
+_CheckRowWithFolding
+m
+i
+(Y)i
 _CollapseRow
 m
 
@@ -492,6 +504,10 @@ m
 _ExpandRow
 m
 
+(Y)i
+_IsRowVisible
+m
+b
 (Y)i
 _SaveCursor
 m

@@ -105,6 +105,7 @@ Public Sub _new(sPath As String)
   $hEditor = edtEditor
   edtEditor.ShowIcon = True
   edtEditor.ShowBraces = True 
+  'edtEditor.Wrap = True
   edtEditor.Highlight = "gambas"
 
   $hInsertColor = New CInsertColor(Me, btnInsertColor)
@@ -2904,6 +2905,7 @@ Private Sub InitEditor(hEditor As TextEditor)
     .ReadOnly = edtEditor.ReadOnly
     .TabSize = edtEditor.TabSize
     .ShowIcon = True
+    '.Wrap = True
     '.Flags[Editor.ShowCursorPosition] = edtEditor.Flags[Editor.ShowCursorPosition]
   End With
   hEditor.ReadConfig
