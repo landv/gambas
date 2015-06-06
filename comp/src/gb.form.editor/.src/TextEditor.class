@@ -1845,7 +1845,7 @@ End
 
 Public Sub _RefreshLine(Y As Integer) 
 
-  'Y = RealToView(Y)
+  If Y < 0 Then Return
   $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
 
 End
@@ -2041,7 +2041,7 @@ Public Sub _ResizeContents()
   
   If $iWidth < $hView.ScrollWidth Then
     _UpdateAllHeight
-  Else If $cLineLayout And If $cLineLayout.Count Then
+  Else If $iWidth > $hView.ScrollWidth And If $cLineLayout And If $cLineLayout.Count Then
     _UpdateAllHeight
   Endif
   
@@ -3121,7 +3121,7 @@ Public Sub _RealToView(Y As Integer) As Integer
   Dim YO As Integer
   
   If $aFold Then 
-  
+    
     Try Return $cCacheView[- Y]
   
     YO = Y
@@ -3180,10 +3180,8 @@ Private Sub UpdateCount()
   Dim Y As Integer
   'Dim X As Integer
   
-  $hRows.Count = _RealToView($hDoc.Max) + 1
   _ClearCachePos
-  $cCacheView.Clear
-  _ResizeContents
+  $hRows.Count = _RealToView($hDoc.Max) + 1
   
   Y = _ViewToReal(_RealToView($Y))
   'X = NormalizeColumn($X, Y)
@@ -3344,7 +3342,10 @@ Public Sub _CollapseRow(Y As Integer, Optional bNoRefresh As Boolean)
 '     cursorGoto(ny, x, false);
 '   
 
-  If Not bNoRefresh Then UpdateCount
+  If Not bNoRefresh Then 
+    $cCacheView.Clear
+    UpdateCount
+  Endif
 
 '   if (!no_refresh)
 '   {
@@ -3370,10 +3371,12 @@ Public Sub _ExpandRow(Y As Integer)
   For I = 0 To $aFold.Max Step 2
     If Y >= $aFold[I] And If Y <= $aFold[I + 1] Then
       $aFold.Remove(I, 2)
+      $cCacheView.Clear
       UpdateCount
       Break
     Endif
   Next
+  
  
 '   for (i = 0; i < fold.count(); i++)
 '   {
@@ -3548,6 +3551,8 @@ Public Sub CollapseAll()
     Y = FindNextLimit(Y)
     If Y < 0 Then Break
   Loop
+
+  $cCacheView.Clear
   UpdateCount
   EnsureVisible(True)
   
@@ -3579,8 +3584,9 @@ Public Sub ExpandAll()
   
   $aFold = Null
   UpdateCount
+  $cCacheView.Clear
   EnsureVisible(True)
-  
+ 
 End
 
 
@@ -3619,6 +3625,8 @@ Private Sub _ExpandRemove(Y1 As Integer, Y2 As Integer)
       $aFold.Remove(I, 2)
     Endif
   Wend
+  
+  $cCacheView.Clear
 
 End
 
@@ -3681,6 +3689,8 @@ Private Sub _ExpandInsert(Y As Integer, N As Integer)
       I += 2
     Endif
   Wend
+  
+  $cCacheView.Clear
 
 End
 ' 
