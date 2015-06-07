@@ -22,11 +22,17 @@ Static Private $aStyle As TextHighlighterStyle[]
 Static Public Sub Add((State) As Integer, Optional Count As Integer = 1)
 
   Dim iState As Integer
+  Dim I As Integer
   
   iState = State
   If Alternate Then iState += 128
   
   If _Highlight.Count = 0 Or If _Highlight[_Highlight.Max - 1] <> iState Or If _Highlight[_Highlight.Max] > (255 - Count) Then
+    For I = 1 To Count \ 255
+      _Highlight.Add(iState)
+      _Highlight.Add(255)
+    Next
+    Count = Count % 255
     _Highlight.Add(iState)
     _Highlight.Add(Count)
   Else
