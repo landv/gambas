@@ -180,7 +180,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
     sText &= Key.Text
   Endif
 
-  iX = $hEditor.X + $hEditor.ToPosX() + $hEditor.TextWidth(sText)
+  iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.TextWidth(sText)
 
   iX = Max(0, Min(iX, $hEditor.Window.ClientW - Me.Width))
 

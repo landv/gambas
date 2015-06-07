@@ -3895,20 +3895,29 @@ Public Sub _UpdateLineHeight(Y As Integer)
   
 End
 
-Public Sub _UpdateAllHeight()
+Public Sub _UpdateAllHeight(Optional bNow As Boolean)
 
+  Dim TY As Integer
+  
   If Not $cLineLayout Then 
+
+    TY = $hRows._GetRowY($Y) - $hView.ScrollY
     $hRows.Clear
+    _ClearCachePos
     $XY = LinePos($Y, $X)
     $SXY = LinePos($SY, $SX)
+    $hView.ScrollY = $hRows._GetRowY($Y) - TY
     Return
+    
   Endif
   
-  If Not $hTimerHeight Then
-    $hTimerHeight = New Timer As "TimerHeight"
-    $hTimerHeight.Delay = 50
-    $hTimerHeight.Start
+  If bNow Then
+    TimerHeight_Timer
   Else
+    If Not $hTimerHeight Then
+      $hTimerHeight = New Timer As "TimerHeight"
+      $hTimerHeight.Delay = 50
+    Endif
     $hTimerHeight.Start
   Endif
   
@@ -3917,22 +3926,30 @@ End
 Public Sub TimerHeight_Timer()
   
   Dim Y As Integer
+  Dim TY As Integer
+
+  TY = $hRows._GetRowY($Y) - $hView.ScrollY
 
   $bNoResizeContents = True
   For Y = 0 To $hDoc.Max
     _UpdateLineHeight(Y)
   Next
   $bNoResizeContents = False
-  $cCachePos.Clear
+  _ClearCachePos
   _ResizeContents
+  
+  $hView.ScrollY = $hRows._GetRowY($Y) - TY
+  
   EnsureVisible
   $hView.Refresh
   
   $XY = LinePos($Y, $X)
   $SXY = LinePos($SY, $SX)
   
-  $hTimerHeight.Stop
-  $hTimerHeight = Null
+  If $hTimerHeight Then
+    $hTimerHeight.Stop
+    $hTimerHeight = Null
+  Endif
   
 End
 
@@ -3952,7 +3969,7 @@ Private Sub Wrap_Write(Value As Boolean)
     $cLineLayout = Null
   Endif
 
-  _UpdateAllHeight
+  _UpdateAllHeight(True)
   CalcSizes
   EnsureVisible
 
