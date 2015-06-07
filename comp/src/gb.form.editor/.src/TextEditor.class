@@ -122,7 +122,7 @@ Private $iMultiLineColor As Integer
 Private $iLineNumberOffset As Integer
 Private $hTabImage As Image
 Private $hFont As Font
-Private $hFontBold As Font
+'Private $hFontBold As Font
 Private $iAscent As Integer
 
 Private $fCharWidth As Float
@@ -204,8 +204,8 @@ Private Sub CalcSizes()
   
   $hFont = $hView.Font
   
-  $hFontBold = $hView.Font.Copy()
-  $hFontBold.Bold = True
+  '$hFontBold = $hView.Font.Copy()
+  '$hFontBold.Bold = True
   
   $LH = $hFont.Height + 1
   $hRows.Height = $LH
@@ -506,22 +506,23 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     '   Paint.Translate(- X, - Y)
     ' Endif
     
-    If hStyle.Bold Then Paint.Font = $hFontBold
+    'If hStyle.Bold Then Paint.Font = $hFontBold
     If InStr(sStr, "\t") Then
-        'Paint.Background = Color.Merge(hStyle.Color, $iBackground)
-        'DrawText(sStr, SX, XX + 1, YY)
-      'Endif        
+      If hStyle.Bold Then
+        Paint.Background = Color.Merge(hStyle.Color, $iBackground)
+        DrawText(sStr, X, XX + 1, YY)
+      Endif        
       Paint.Background = hStyle.Color
       DrawText(sStr, X, XX, YY)
     Else
-      'If hStyle.Bold Then
-        'Paint.Background = Color.Merge(hStyle.Color, $iBackground)
-        'Paint.DrawText(sStr, XX + 1, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
-      'Endif
+      If hStyle.Bold Then
+        Paint.Background = Color.Merge(hStyle.Color, $iBackground)
+        Paint.DrawText(sStr, XX + 1, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+      Endif
       Paint.Background = hStyle.Color
       Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
     Endif
-    If hStyle.Bold Then Paint.Font = $hFont
+    'If hStyle.Bold Then Paint.Font = $hFont
     
     ' If hStyle.Bold Then
     '   Paint.End
@@ -3969,7 +3970,7 @@ Private Sub Wrap_Write(Value As Boolean)
     $cLineLayout = Null
   Endif
 
-  _UpdateAllHeight(True)
+  _UpdateAllHeight '(True)
   CalcSizes
   EnsureVisible
 
