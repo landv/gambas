@@ -2037,7 +2037,7 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
 
   If iInd < 1 Then Return
 
-  $iPosSignature = $hEditor.ToPosX(Highlight.Positions[iInd - 1])
+  $iPosSignature = Highlight.Positions[iInd - 1]
 
   If iInd >= 2 Then bNew = aExpr[iInd - 2] = "NEW"
 

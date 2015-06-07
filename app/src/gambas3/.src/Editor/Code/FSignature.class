@@ -10,8 +10,8 @@ Private $iMinW As Integer
 Private $iMinH As Integer
 Private $iMaxY As Integer
 Private $hSymbol As CSymbolInfo
-Private $X As Integer
 Private $iArrow As Integer
+Private $iCol As Integer
 
 Public Sub _new()
   
@@ -45,7 +45,7 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
     Endif
   Endif
   
-  iY = $hEditor.Y + $hEditor.ToPosY() + $hEditor.LineHeight
+  iY = $hEditor.Y + $hEditor.ToPosY() + $hEditor.Current.Height
   
   If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
     iY = $hEditor.Y + $hEditor.ToPosY() - Me.Height
@@ -69,7 +69,7 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
   If $bUseHelp Then btnHelp.Refresh
 
   hCont = $hEditor.Parent
-  iX = $X
+  iX = $hEditor.ToPosX($iCol)
   Do
     If hCont Is Form Then Break
     iX += hCont.X
@@ -94,7 +94,7 @@ Private Sub UpdateSignature(Optional hForm As FEditor)
 End
 
 
-Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As Integer)
+Public Sub Open(hForm As FEditor, iCol As Integer, hSymbol As CSymbolInfo, iArg As Integer)
   
   Dim sSign As String
   Dim sName As String
@@ -123,7 +123,7 @@ Public Sub Open(hForm As FEditor, iX As Integer, hSymbol As CSymbolInfo, iArg As
   'DEBUG lblSignature.W;; hEditor.W
   
   $hSymbol = hSymbol
-  $X = iX
+  $iCol = iCol
   
   UpdateSignature(hForm)
   

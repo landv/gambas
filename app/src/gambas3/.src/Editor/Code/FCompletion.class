@@ -180,11 +180,11 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
     sText &= Key.Text
   Endif
 
-  iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.Font.TextWidth(sText)
+  iX = $hEditor.X + $hEditor.ToPosX() + $hEditor.TextWidth(sText)
 
   iX = Max(0, Min(iX, $hEditor.Window.ClientW - Me.Width))
 
-  iY = $hEditor.Y + $hEditor.ToPosY() + $hEditor.LineHeight
+  iY = $hEditor.Y + $hEditor.ToPosY() + $hEditor.Current.Height
 
   If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
     iY = $hEditor.Y + $hEditor.ToPosY() - Me.Height

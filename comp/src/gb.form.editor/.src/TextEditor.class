@@ -825,7 +825,7 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
 End
 
-Private Sub TextWidth(sText As String) As Integer
+Public Sub TextWidth(sText As String) As Integer
 
   Dim aText As String[]
   Dim I As Integer
@@ -3899,6 +3899,8 @@ Public Sub _UpdateAllHeight()
 
   If Not $cLineLayout Then 
     $hRows.Clear
+    $XY = LinePos($Y, $X)
+    $SXY = LinePos($SY, $SX)
     Return
   Endif
   
@@ -3952,6 +3954,7 @@ Private Sub Wrap_Write(Value As Boolean)
 
   _UpdateAllHeight
   CalcSizes
+  EnsureVisible
 
 End
 
@@ -3970,3 +3973,9 @@ End
 '   Next
 '   
 ' End
+
+Public Sub _GetRowHeight(Y As Integer) As Integer
+  
+  Return $hRows._GetRowHeight(Y)
+  
+End
