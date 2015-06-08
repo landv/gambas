@@ -193,19 +193,10 @@ End
 
 Private Sub InsertLine(Y As Integer)
   
-  Dim hView As TextEditor
-  
   Lines.Add("", Y)
   LineLength.Add(0, Y)
   LinesInfo.Add(CLineInfo(), Y)
   LinesInfo[Y].Modified = True
-  
-  For Each hView In GetAllViews()
-    hView._ClearCachePos
-    hView._RaiseChange
-  Next
-  
-  Refresh
   
 End
 
@@ -216,7 +207,7 @@ End
 '   FOR_EACH_VIEW(v) { v->lineInserted(y); }
 ' }
 
-Public Sub SetLine(Y As Integer, sLine As String)
+Public Sub SetLine(Y As Integer, sLine As String, Optional bNoRefresh As Boolean)
 
   Dim hView As TextEditor
   
@@ -233,7 +224,7 @@ Public Sub SetLine(Y As Integer, sLine As String)
     hView._RaiseChange
   Next
   
-  Refresh(Y)
+  If Not bNoRefresh Then Refresh(Y)
   
 End
 
@@ -264,19 +255,27 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   
   iLen = LineLength[Y]
   If X > iLen Then 
-    SetLine(Y, Lines[Y] & Space$(X - iLen))
+    SetLine(Y, Lines[Y] & Space$(X - iLen), True)
   Endif
   
   sRest = String.Mid$(Lines[Y], X + 1)
   aText = Split(sText, "\n")
   
+  N = aText.Max
+  
+  If N > 0 Then
+    For Each hView In GetAllViews()
+      hView._BeforeInsert(YO, N)
+    Next
+  Endif
+  
+  
   For I = 0 To aText.Max - 1
     
-    SetLine(Y, String.Left(Lines[Y], X) & aText[I])
+    SetLine(Y, String.Left(Lines[Y], X) & aText[I], True)
     X = 0
     Inc Y
     InsertLine(Y)
-    Inc N
     bHighlight = True
     
   Next
@@ -284,7 +283,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   sLine = String.Left(Lines[Y], X) & aText[aText.Max]
   XA = String.Len(sLine)
   YA = Y
-  SetLine(Y, sLine & sRest)
+  SetLine(Y, sLine & sRest, True)
   
   XAfter = XA
   YAfter = YA
@@ -294,6 +293,13 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   Endif
   
   For Each hView In GetAllViews()
+    If N > 0 Then
+      hView._ClearCachePos
+      hView._RaiseChange
+      hView.Refresh
+    Else
+      hView._RefreshLine(YO)
+    Endif
     hView._AfterInsert(YO, YAfter, N)
   Next
   

@@ -7,21 +7,25 @@
     MoveScaled(2,2,74,4)
     { txtPrint TextBox
       MoveScaled(0,0,24,4)
-      Visible = False
     }
     { Button1 Button
       MoveScaled(28,0,15,4)
       Text = ("Wrap")
+    }
+    { Button2 Button
+      MoveScaled(45,0,15,4)
+      Text = ("Cache")
     }
   }
   { Panel1 VSplit
     MoveScaled(10,10,86,79)
     Expand = True
     { TextEditor1 TextEditor
-      MoveScaled(5,5,70,33)
-      Font = Font["Liberation Mono,9"]
+      MoveScaled(6,5,70,33)
+      Font = Font["Gambas,10"]
       Border = False
       TabSize = 8
+      Wrap = True
       ShowLimit = True
       ShowCurrent = True
       ShowLineNumber = True

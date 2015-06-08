@@ -961,55 +961,39 @@ static int find(CARRAY *_object, int mode, void *value, int start)
 	return (-1);
 }
 
-static int find_string(CARRAY *_object, int mode, const char *value, int len_value, int start)
-{
-	char **data;
-	char *str;
-	int i;
-	int len;
-	
-	//fprintf(stderr, "find_string: %p %d: %.*s | %s\n", THIS, THIS->count, len_value, value, DEBUG_get_current_position());
-	
-	if (start < 0)
-		start = 0;
-	else if (start >= THIS->count)
-		return (-1);
-	
-	data = ((char **)THIS->data);
-	
-	if (mode == GB_COMP_BINARY)
-	{
-		for (i = start; i < THIS->count; i++)
-		{
-			str = data[i];
-			len = STRING_length(str);
-			if (STRING_equal(str, len, value, len_value))
-				return i;
-		}
-	}
-	else if (mode == GB_COMP_NOCASE)
-	{
-		for (i = start; i < THIS->count; i++)
-		{
-			str = data[i];
-			len = STRING_length(str);
-			if (STRING_equal_ignore_case(str, len, value, len_value))
-				return i;
-		}
-	}
-	else
-	{
-		COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
-		
-		for (i = start; i < THIS->count; i++)
-		{
-			if ((*compare)(&data[i], &value) == 0)
-				return i;
-		}
-	}
-
-	return (-1);
-}
+#define IMPLEMENT_find_fast(_type, _gtype, _ctype) \
+static int find_##_ctype(CARRAY *_object, int value, int start) \
+{ \
+	int count = THIS->count; \
+	_ctype *data; \
+	int i; \
+	\
+	if (start < 0) \
+		start = 0; \
+	else if (start > count) \
+		return (-1); \
+	\
+	data = (_ctype *)THIS->data; \
+	\
+	for (i = start; i < count; i++) \
+	{ \
+		if (data[i] == value) \
+			return i; \
+	} \
+	\
+	return (-1); \
+} \
+\
+BEGIN_METHOD(Array_##_type##_Find, _gtype value; GB_INTEGER start) \
+\
+	GB_ReturnInteger(find_##_ctype(THIS, VARG(value), VARGOPT(start, 0))); \
+\
+END_METHOD \
+BEGIN_METHOD(Array_##_type##_Exist, _gtype value) \
+\
+	GB_ReturnBoolean(find_##_ctype(THIS, VARG(value), 0) >= 0); \
+\
+END_METHOD
 
 #define IMPLEMENT_find(_type, _gtype) \
 BEGIN_METHOD(Array_##_type##_Find, _gtype value; GB_INTEGER start) \
@@ -1023,12 +1007,13 @@ BEGIN_METHOD(Array_##_type##_Exist, _gtype value) \
 \
 END_METHOD
 
-IMPLEMENT_find(Integer, GB_INTEGER)
-/*IMPLEMENT_find(short, GB_INTEGER)
-IMPLEMENT_find(byte, GB_INTEGER)*/
-IMPLEMENT_find(Long, GB_LONG)
-IMPLEMENT_find(Float, GB_FLOAT)
-IMPLEMENT_find(Single, GB_SINGLE)
+IMPLEMENT_find_fast(Boolean, GB_BOOLEAN, bool)
+IMPLEMENT_find_fast(Byte, GB_INTEGER, uchar)
+IMPLEMENT_find_fast(Short, GB_INTEGER, short)
+IMPLEMENT_find_fast(Integer, GB_INTEGER, int)
+IMPLEMENT_find_fast(Long, GB_LONG, int64_t)
+IMPLEMENT_find_fast(Float, GB_FLOAT, double)
+IMPLEMENT_find_fast(Single, GB_SINGLE, float)
 IMPLEMENT_find(Date, GB_DATE)
 IMPLEMENT_find(Variant, GB_VARIANT)
 
@@ -1090,6 +1075,56 @@ BEGIN_METHOD(Array_Object_ExistByRef, GB_OBJECT value)
 END_METHOD
 
 
+static int find_string(CARRAY *_object, int mode, const char *value, int len_value, int start)
+{
+	char **data;
+	char *str;
+	int i;
+	int len;
+	
+	//fprintf(stderr, "find_string: %p %d: %.*s | %s\n", THIS, THIS->count, len_value, value, DEBUG_get_current_position());
+	
+	if (start < 0)
+		start = 0;
+	else if (start >= THIS->count)
+		return (-1);
+	
+	data = ((char **)THIS->data);
+	
+	if (mode == GB_COMP_BINARY)
+	{
+		for (i = start; i < THIS->count; i++)
+		{
+			str = data[i];
+			len = STRING_length(str);
+			if (STRING_equal(str, len, value, len_value))
+				return i;
+		}
+	}
+	else if (mode == GB_COMP_NOCASE)
+	{
+		for (i = start; i < THIS->count; i++)
+		{
+			str = data[i];
+			len = STRING_length(str);
+			if (STRING_equal_ignore_case(str, len, value, len_value))
+				return i;
+		}
+	}
+	else
+	{
+		COMPARE_FUNC compare = COMPARE_get(THIS->type, mode);
+		
+		for (i = start; i < THIS->count; i++)
+		{
+			if ((*compare)(&data[i], &value) == 0)
+				return i;
+		}
+	}
+
+	return (-1);
+}
+
 BEGIN_METHOD(Array_String_Find, GB_STRING value; GB_INTEGER mode; GB_INTEGER start)
 
 	GB_ReturnInteger(find_string(THIS, VARGOPT(mode, GB_COMP_BINARY), STRING(value), LENGTH(value), VARGOPT(start, 0)));
@@ -1102,7 +1137,6 @@ BEGIN_METHOD(Array_String_Exist, GB_STRING value; GB_INTEGER mode)
 	GB_ReturnBoolean(find_string(THIS, VARGOPT(mode, GB_COMP_BINARY), STRING(value), LENGTH(value), 0) >= 0);
 
 END_METHOD
-
 
 BEGIN_METHOD(Array_String_join, GB_STRING sep; GB_STRING esc)
 
@@ -1569,8 +1603,8 @@ GB_DESC NATIVE_BooleanArray[] =
 	GB_METHOD("Add", NULL, Array_Integer_Add, "(Value)b[(Index)i]"),
 	GB_METHOD("Push", NULL, Array_Integer_Push, "(Value)b"),
 	GB_METHOD("_put", NULL, Array_Boolean_put, "(Value)b(Index)i."),
-	GB_METHOD("Find", "i", Array_Integer_Find, "(Value)b[(Start)i]"),
-	GB_METHOD("Exist", "b", Array_Integer_Exist, "(Value)b"),
+	GB_METHOD("Find", "i", Array_Boolean_Find, "(Value)b[(Start)i]"),
+	GB_METHOD("Exist", "b", Array_Boolean_Exist, "(Value)b"),
 
 	GB_METHOD("Pop", "b", Array_Pop, NULL),
 	GB_METHOD("_get", "b", Array_get, "(Index)i."),
@@ -1601,8 +1635,8 @@ GB_DESC NATIVE_ByteArray[] =
 	GB_METHOD("Add", NULL, Array_Integer_Add, "(Value)c[(Index)i]"),
 	GB_METHOD("Push", NULL, Array_Integer_Push, "(Value)c"),
 	GB_METHOD("_put", NULL, Array_Byte_put, "(Value)c(Index)i."),
-	GB_METHOD("Find", "i", Array_Integer_Find, "(Value)c[(Start)i]"),
-	GB_METHOD("Exist", "b", Array_Integer_Exist, "(Value)c"),
+	GB_METHOD("Find", "i", Array_Byte_Find, "(Value)c[(Start)i]"),
+	GB_METHOD("Exist", "b", Array_Byte_Exist, "(Value)c"),
 
 	GB_METHOD("Pop", "c", Array_Pop, NULL),
 	GB_METHOD("_get", "c", Array_get, "(Index)i."),
@@ -1635,8 +1669,8 @@ GB_DESC NATIVE_ShortArray[] =
 	GB_METHOD("Add", NULL, Array_Integer_Add, "(Value)h[(Index)i]"),
 	GB_METHOD("Push", NULL, Array_Integer_Push, "(Value)h"),
 	GB_METHOD("_put", NULL, Array_Short_put, "(Value)h(Index)i."),
-	GB_METHOD("Find", "i", Array_Integer_Find, "(Value)h[(Start)i]"),
-	GB_METHOD("Exist", "b", Array_Integer_Exist, "(Value)h"),
+	GB_METHOD("Find", "i", Array_Short_Find, "(Value)h[(Start)i]"),
+	GB_METHOD("Exist", "b", Array_Short_Exist, "(Value)h"),
 
 	GB_METHOD("Pop", "h", Array_Pop, NULL),
 	GB_METHOD("_get", "h", Array_get, "(Index)i."),

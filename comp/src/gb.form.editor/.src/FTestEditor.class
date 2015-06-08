@@ -5,6 +5,8 @@ Public Sub Form_Open()
 
   'TextEditor1.LineNumberOffset = 10000
   
+  'Image.Debug = True
+  
   TextEditor1.Highlight = "gambas"
   'TextEditor1.Highlight = "C++"
   
@@ -56,6 +58,12 @@ End
 
 Public Sub Button2_Click()
 
-  TextEditor1.Test
+  TextEditor1.PrintCache
+
+End
+
+Public Sub txtPrint_KeyPress()
+
+  Debug Key.Code;; Quote(Key.Text)
 
 End

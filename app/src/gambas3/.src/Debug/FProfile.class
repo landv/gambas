@@ -445,13 +445,15 @@ Public Sub gvwProfile_Data(Row As Integer, Column As Integer)
           .Text = Format(hProf.Time, ",0")
         Endif
       Case 3
+        .Text = Format(hProf.Time / hProf.Count, ",0.##")
+      Case 4
         If $bPercent Then
           .Text = Format(hProf.Self / $iTime * 100, "0.00")
         Else
           .Text = Format(hProf.Self, ",0")
         Endif
-      Case 4
-        .Text = Format(hProf.Time / hProf.Count, ",0.##")
+      Case 5
+        .Text = Format(hProf.Self / hProf.Count, ",0.##")
     End Select
     
   End With
@@ -628,7 +630,7 @@ Public Sub Form_Open()
   ReadOneConfig
 
   With gvwProfile
-    .Columns.Count = 5
+    .Columns.Count = 6
     .Columns[0].Text = ("Function")
     .Columns[0].Width = -1
     .Columns[1].Text = ("Calls")
@@ -637,12 +639,15 @@ Public Sub Form_Open()
     .Columns[2].Text = ("Duration")
     .Columns[2].Alignment = Align.Right
     .Columns[2].Width = -1
-    .Columns[3].Text = ("Self")
+    .Columns[3].Text = ("Average")
     .Columns[3].Alignment = Align.Right
-    .Columns[3].Width = -1
-    .Columns[4].Text = ("Average")
+    .Columns[3].Width = 0
+    .Columns[4].Text = ("Self")
     .Columns[4].Alignment = Align.Right
-    .Columns[4].Width = 0
+    .Columns[4].Width = -1
+    .Columns[5].Text = ("Average")
+    .Columns[5].Alignment = Align.Right
+    .Columns[5].Width = 0
   End With
 
   With gvwCalled
@@ -824,7 +829,8 @@ Public Sub btnAverage_Click()
 
   $bAverage = Not $bAverage
   
-  gvwProfile.Columns[4].Width = If($bAverage, -1, 0)
+  gvwProfile.Columns[5].Width = If($bAverage, -1, 0)
+  gvwProfile.Columns[3].Width = If($bAverage, -1, 0)
   gvwCalled.Columns[3].Width = If($bAverage, -1, 0)
   gvwSource.Columns[2].Width = If($bAverage, -1, 0)
   UpdateSource

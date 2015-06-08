@@ -151,6 +151,10 @@ Private $cLineLayout As Collection
 Private $hTimerHeight As Timer
 Private $bNoResizeContents As Boolean
 
+Static Private $cGlobalCacheText As New Collection
+Private $cCacheText As Collection
+Private $sCacheTextKey As String
+
 Public Sub _new()
   
   If Not $cShortcut Then
@@ -166,7 +170,7 @@ Public Sub _new()
       "CTRL+Z": "Undo"]
   Endif
   
-  $hPanel = New Panel(Me)
+  $hPanel = New Panel(Me) As "ViewPanel"
   $hPanel.Arrangement = Arrange.Fill
   $hPanel.Border = Border.Plain
 
@@ -185,7 +189,7 @@ Public Sub _new()
   $hRows = New _TextEditor_Rows As "Rows"
   $hStyles = New _TextEditor_Styles As "Styles"
   
-  $hPanel.Background = $hStyles[Highlight.Background].Color
+  '$hPanel.Background = $hStyles[Highlight.Background].Color
 
   _SetDocument(Null)
   
@@ -224,7 +228,7 @@ Private Sub CalcSizes()
   For I = 33 To 255
     If I > 126 And If I < 160 Then Continue
     If I = 173 Then Continue
-    If $hFont.TextWidth(Chr$(I)) <> $iSpaceWidth Then 
+    If $hFont.TextWidth(String.Chr$(I)) <> $iSpaceWidth Then 
       $fCharWidth = 0
       Break
     Endif
@@ -233,6 +237,13 @@ Private Sub CalcSizes()
   If $fCharWidth Then
     sText = String$(4, "AbCdEfGh01#@WwmM")
     $fCharWidth = $hFont.TextWidth(sText) / Len(sText)
+  Endif
+  
+  $sCacheTextKey = $hFont.ToString()
+  $cCacheText = $cGlobalCacheText[$sCacheTextKey]
+  If Not $cCacheText Then
+    $cCacheText = New Collection
+    $cGlobalCacheText[$sCacheTextKey] = $cCacheText
   Endif
   
   _ClearCachePos
@@ -414,6 +425,23 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
 
 End
 
+' Public Sub PrintCache()
+' 
+'   Dim hImage As Image
+'   Dim iSize As Integer
+'   Dim cCache As Collection
+'   
+'   For Each cCache In $cGlobalCacheText
+'     For Each hImage In cCache
+'       iSize += hImage.W * hImage.H
+'       'Debug Mid$($cCacheText.Key, 2)
+'     Next
+'   Next
+'   Debug iSize
+'   
+' End
+' 
+
 Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, Y As Integer, H As Integer, aLayout As Integer[])
 
   Dim I As Integer
@@ -428,6 +456,7 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
   Dim XMin As Integer
   Dim XMax As Integer
   Dim aStyle As TextEditorStyle[]
+  Dim hImage As Image
   
   Dim XX, YY As Integer
   Dim hPos As Point
@@ -435,6 +464,8 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
   Dim iLayout As Integer
   Dim iRest As Integer
   Dim bBreak As Boolean
+  Dim sKey As String
+  Dim W As Integer
   
   'Dim hTemp As Image
 
@@ -498,7 +529,6 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     If bAlt Then Paint.FillRect(XX, YY, X2 - XX, H, Color.SetAlpha(&HD0D0D0&, 192))
     
     sStr = String.Mid$(sText, P + 1, iLen)
-    
     ' If hStyle.Bold Then
     '   hTemp = New Image(X2 - X, H, Color.Transparent)
     '   Paint.Begin(hTemp)
@@ -514,13 +544,41 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
       Endif        
       Paint.Background = hStyle.Color
       DrawText(sStr, X, XX, YY)
-    Else
-      If hStyle.Bold Then
-        Paint.Background = Color.Merge(hStyle.Color, $iBackground)
-        Paint.DrawText(sStr, XX + 1, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+    Else If Trim(sStr) Then
+      If iLen <= 16 Then
+        sKey = Chr$(iState) & sStr
+        hImage = $cCacheText[sKey]
+        If Not hImage Then
+          
+          W = X2 - XX
+          If W <= 0 Then W = TextWidth(sStr)
+          If hStyle.Bold Then Inc W
+          hImage = New Image(W, H, Color.Transparent)
+          
+          Paint.Begin(hImage)
+          Paint.Font = $hFont
+          Paint.Translate(- XX, - YY)
+          GoSub DRAW_TEXT
+          Paint.End
+          
+          If $cCacheText.Count > 256 Then
+            For Each $cCacheText
+              $cCacheText.Remove($cCacheText.Key)
+              Break
+            Next
+          Endif
+          
+        Else
+          
+          $cCacheText.Remove(sKey)
+          
+        Endif
+        
+        $cCacheText[sKey] = hImage
+        Paint.DrawImage(hImage, XX, YY)
+      Else
+        GoSub DRAW_TEXT
       Endif
-      Paint.Background = hStyle.Color
-      Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
     Endif
     'If hStyle.Bold Then Paint.Font = $hFont
     
@@ -552,6 +610,19 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     DrawText(sStr, X, XX, YY)
         
   Endif
+  
+  Return
+
+DRAW_TEXT:  
+
+  If hStyle.Bold Then
+    Paint.Background = Color.Merge(hStyle.Color, $iBackground)
+    Paint.DrawText(sStr, XX + 1, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
+  Endif
+  Paint.Background = hStyle.Color
+  Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
+  
+  Return
 
 End
 
@@ -1570,22 +1641,37 @@ Public Sub Insert(Text As String)
   
 End
 
+Public Sub _BeforeInsert(Y1 As Integer, N As Integer)
+  
+  $hRows._BeforeInsert(Y1, N, $cLineLayout)
+  
+End
+
 Public Sub _AfterInsert(Y1 As Integer, Y2 As Integer, N As Integer)
 
   Dim Y As Integer
   
-  If $iLargestLine >= Y1 Then $iLargestLine += N
-  
-  For Y = Y1 To Y2
-    UpdateWidth(Y)
-  Next
-  
-  UpdateMargin
-  
   _ExpandInsert(Y1, N)
   
-  UpdateCount
+  If Not $cLineLayout Then
+    
+    If $iLargestLine >= Y1 Then $iLargestLine += N
   
+    For Y = Y1 To Y2
+      UpdateWidth(Y)
+    Next
+    
+  Endif
+    
+  If $cLineLayout Then
+    
+    'If N > 0 Then _UpdateAllHeight(True)
+    
+  Endif
+  
+  UpdateMargin
+  UpdateCount
+
 End
 
 
@@ -1636,19 +1722,40 @@ End
 
 Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   
+  Dim X As Integer
+  Dim Y As Integer
+  
   If Y1 > Y2 Then Swap Y1, Y2
   
-  If $iLargestLine >= Y1 Then
-    If $iLargestLine <= Y2 Then
-      $iLargestLine = -1
-      UpdateWidth
-    Else
-      $iLargestLine -= Y2 - Y1
+  _ClearCachePos
+  
+  If Y2 > Y1 Then
+    $hRows._AfterRemove(Y1, Y2, $cLineLayout)
+    _ExpandRemove(Y1, Y2)
+  Endif
+  
+  Y = Min($Y, $hDoc.Max)
+  X = Min($X, $hDoc.LineLength[Y])
+  If X <> $X Or If Y <> $Y Then Goto(X, Y)
+
+  If Not $cLineLayout Then  
+    
+    If $iLargestLine >= Y1 Then
+      If $iLargestLine <= Y2 Then
+        $iLargestLine = -1
+        UpdateWidth
+      Else
+        $iLargestLine -= Y2 - Y1
+      Endif
     Endif
+  
+  Else
+  
+    'If Y2 > Y1 Then _UpdateAllHeight(True)
+    
   Endif
   
   UpdateMargin
-  _ExpandRemove(Y1, Y2)
   UpdateCount
   
 End
@@ -2132,6 +2239,8 @@ Public Sub View_Draw()
     Next
     
   Endif
+  
+  'PrintCache
   
 End
 
@@ -3439,7 +3548,7 @@ Public Sub _IsRowExpanded(Y As Integer) As Boolean
 
 End
 
-Public Sub _IsRowVisible(Y As Integer) As Boolean
+Fast Public Sub _IsRowVisible(Y As Integer) As Boolean
   
   Dim D As Integer
   Dim F As Integer
@@ -3465,6 +3574,16 @@ Public Sub _IsRowVisible(Y As Integer) As Boolean
   
   Return True
 
+End
+
+Public Sub _GetLastVisibleRow() As Integer
+
+  Dim N As Integer
+  
+  N = $hDoc.Max
+  If _IsRowVisible(N) Then Return N
+  Return $aFold[$aFold.Max - 1]
+  
 End
 
 
@@ -3912,13 +4031,14 @@ Public Sub _UpdateAllHeight(Optional bNow As Boolean)
     
   Endif
   
+  If Not $hTimerHeight Then
+    $hTimerHeight = New Timer As "TimerHeight"
+    $hTimerHeight.Delay = 50
+  Endif
+  
   If bNow Then
-    TimerHeight_Timer
+    $hTimerHeight.Trigger
   Else
-    If Not $hTimerHeight Then
-      $hTimerHeight = New Timer As "TimerHeight"
-      $hTimerHeight.Delay = 50
-    Endif
     $hTimerHeight.Start
   Endif
   
@@ -3970,7 +4090,7 @@ Private Sub Wrap_Write(Value As Boolean)
     $cLineLayout = Null
   Endif
 
-  _UpdateAllHeight '(True)
+  _UpdateAllHeight(True)
   CalcSizes
   EnsureVisible
 
@@ -3997,3 +4117,19 @@ Public Sub _GetRowHeight(Y As Integer) As Integer
   Return $hRows._GetRowHeight(Y)
   
 End
+
+' Public Sub _Lock()
+'   
+'   Inc $iLock
+'   
+' End
+' 
+' Public Sub _Unlock()
+'   
+'   Dec $iLock
+'   If $iLock = 0 Then
+'     
+'   Endif
+'   
+' End
+' 
