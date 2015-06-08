@@ -309,6 +309,7 @@ void gControl::initAll(gContainer *parent)
 	_no_auto_grab = false;
 	_no_background = false;
 	_scrollbar = SCROLL_NONE;
+	_input_method = NULL;
 
 	onFinish = NULL;
 	onFocusEvent = NULL;
@@ -388,6 +389,7 @@ gControl::~gControl()
 	CLEAN_POINTER(gApplication::_previous_control);
 	CLEAN_POINTER(gApplication::_old_active_control);
 	CLEAN_POINTER(gApplication::_button_grab);
+	CLEAN_POINTER(gApplication::_enter_after_button_grab);
 	CLEAN_POINTER(gApplication::_control_grab);
 	CLEAN_POINTER(gApplication::_ignore_until_next_enter);
 }
@@ -980,6 +982,7 @@ MISC
 
 void gControl::refresh()
 {
+	//refresh(0, 0, 0, 0);
 	gtk_widget_queue_draw(border);
 	if (frame != border && GTK_IS_WIDGET(frame))
 		gtk_widget_queue_draw(frame);
@@ -991,25 +994,23 @@ void gControl::refresh()
 
 void gControl::refresh(int x, int y, int w, int h)
 {
-	if (x < 0 || y < 0 || w < 0 || h < 0)
-		gtk_widget_queue_draw(border);
-	else
+	GdkRectangle r;
+	GtkAllocation a;
+
+	gtk_widget_get_allocation(border, &a);
+
+	if (x < 0 || y < 0 || w <= 0 || h <= 0)
 	{
-		// Buggy GTK+?
-		gtk_widget_queue_draw_area(border, x, y, w, h);
-		
-		/*GdkRectangle r;
-		GtkAllocation a;
-
-		gtk_widget_get_allocation(border, &a);
-
-		r.x = a.x + x;
-		r.y = a.y + y;
-		r.width = w;
-		r.height = h;
-
-		gdk_window_invalidate_rect(gtk_widget_get_window(border), &r, TRUE);*/
+		x = y = 0;
+		w = width();
+		h = height();
 	}
+	r.x = a.x + x;
+	r.y = a.y + y;
+	r.width = w;
+	r.height = h;
+
+	gdk_window_invalidate_rect(gtk_widget_get_window(border), &r, TRUE);
 
 	afterRefresh();
 }
@@ -2252,6 +2253,8 @@ void gControl::emitEnterEvent(bool no_leave)
 {
 	gContainer *cont;
 
+	//fprintf(stderr, "start enter %s\n", name());
+	
 	if (parent())
 		parent()->emitEnterEvent(true);
 
@@ -2264,11 +2267,20 @@ void gControl::emitEnterEvent(bool no_leave)
 			cont->child(i)->emitLeaveEvent();
 	}
 
+	gApplication::_enter = this;
+	
+	if (gApplication::_leave)
+	{
+		if (gApplication::_leave == this || gApplication::_leave->isAncestorOf(this))
+			gApplication::_leave = NULL;
+	}
+	
 	if (_inside)
 		return;
-
 	_inside = true;
 
+	//fprintf(stderr, "end enter %s\n", name());
+	
 	setMouse(mouse());
 
 	if (gApplication::_ignore_until_next_enter)
@@ -2285,9 +2297,14 @@ void gControl::emitEnterEvent(bool no_leave)
 
 void gControl::emitLeaveEvent()
 {
+	if (gApplication::_enter == this)
+		gApplication::_enter = NULL;
+					
 	if (!_inside)
 		return;
 
+	//fprintf(stderr, "start leave %s\n", name());
+	
 	if (isContainer())
 	{
 		gContainer *cont = (gContainer *)this;
@@ -2299,6 +2316,8 @@ void gControl::emitLeaveEvent()
 
 	_inside = false;
 
+	//fprintf(stderr, "end leave %s\n", name());
+	
 	if (parent()) parent()->setMouse(parent()->mouse());
 
 	if (gApplication::_ignore_until_next_enter)
@@ -2375,6 +2394,19 @@ void gControl::setCanFocus(bool vl)
 		return;
 	
 	gtk_widget_set_can_focus(widget, vl);
+	
+	/*_has_input_method = vl;
+	
+	if (_input_method && !vl)
+	{
+		g_object_unref(_input_method);
+		_input_method = NULL;
+	}
+	else if (!_input_method && vl)
+	{
+		_input_method = gtk_im_multicontext_new();
+	}*/
+	
 	if (pr)
 		pr->updateFocusChain();
 }
@@ -2420,5 +2452,5 @@ void gControl::setColorButton()
 
 GtkIMContext *gControl::getInputMethod()
 {
-	return NULL;
+	return _input_method;
 }

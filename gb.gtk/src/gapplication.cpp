@@ -91,19 +91,24 @@ static GtkWindowGroup *get_window_group(GtkWidget *widget)
 	return false;
 }*/
 
+/*
 static bool check_crossing_event(GdkEvent *event)
 {
 	#if DEBUG_ENTER_LEAVE
 	fprintf(stderr, "check_crossing_event: %d / %d\n", event->crossing.detail, event->crossing.mode);
 	#endif
 	
-	if (event->crossing.detail != GDK_NOTIFY_INFERIOR 
-	    && (event->crossing.mode == GDK_CROSSING_NORMAL || event->crossing.mode == GDK_CROSSING_STATE_CHANGED))
+	return true;
+	
+	if ((event->crossing.mode == GDK_CROSSING_NORMAL || event->crossing.mode == GDK_CROSSING_STATE_CHANGED))
 		// || event->crossing.mode == GDK_CROSSING_UNGRAB || event->crossing.mode == GDK_CROSSING_GTK_UNGRAB))
 		return true;
 	else
+	{
+		fprintf(stderr, "ignore\n");
 		return false;
-}
+	}
+}*/
 
 static gControl *find_child(gControl *control, int rx, int ry, gControl *button_grab = NULL)
 {
@@ -166,7 +171,6 @@ void gApplication::checkHoveredControl(gControl *control)
 		#if DEBUG_ENTER_LEAVE
 		fprintf(stderr, "checkHoveredControl: _enter <- %s\n", control ? control->name() : "ø");
 		#endif
-		gApplication::_enter = control;
 		
 		if (control)
 		{
@@ -266,8 +270,6 @@ static void gambas_handle_event(GdkEvent *event)
 #endif
 
 	button_grab = gApplication::_button_grab;
-	if (event->type == GDK_BUTTON_RELEASE)
-		gApplication::setButtonGrab(NULL);
 
 	if (gApplication::_control_grab)
 	{
@@ -395,24 +397,6 @@ __FOUND_WIDGET:
 	//if (group != gApplication::currentGroup())
 	//	goto __HANDLE_EVENT;
 	
-	if (!gdk_events_pending() && event->type != GDK_ENTER_NOTIFY && event->type != GDK_LEAVE_NOTIFY)
-	{
-		if (gApplication::_leave)
-		{
-			//if () // || (gApplication::_leave != control && check_crossing_event(event)))
-			#if DEBUG_ENTER_LEAVE
-			fprintf(stderr, "post leave: %s\n", gApplication::_leave->name());
-			#endif
-			
-			if (gApplication::_enter == gApplication::_leave)
-				gApplication::_enter = NULL;
-			
-			gApplication::_leave->emitLeaveEvent();
-			
-			gApplication::_leave = NULL;
-		}
-	}
-	
 	cancel = false;
 	
 	gApplication::updateLastEvent(event);
@@ -421,10 +405,27 @@ __FOUND_WIDGET:
 	{
 		case GDK_ENTER_NOTIFY:
 			
-			control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
+			control = find_child(control, (int)event->crossing.x_root, (int)event->crossing.y_root);
 			
-			//fprintf(stderr, "GDK_ENTER_NOTIFY: %s (%s)\n", control->name(), gApplication::_enter ? gApplication::_enter->name() : "ø");
+#if DEBUG_ENTER_LEAVE
+			fprintf(stderr, "GDK_ENTER_NOTIFY: %s (%s) %d %d %p %p\n", control->name(), gApplication::_enter ? gApplication::_enter->name() : "ø", (int)event->crossing.x_root, (int)event->crossing.y_root, event->crossing.window, event->crossing.subwindow);
+#endif
 			
+			if (button_grab)
+			{
+				gApplication::_enter_after_button_grab = control;
+				break;
+			}
+			
+			if (gApplication::_leave)
+			{
+				if (gApplication::_leave == control || gApplication::_leave->isAncestorOf(control))
+					gApplication::_leave = NULL;
+			}
+	
+			gApplication::checkHoveredControl(control);
+			
+			/*
 			if (gApplication::_leave == control)
 			{
 				#if DEBUG_ENTER_LEAVE
@@ -441,16 +442,23 @@ __FOUND_WIDGET:
 					#endif
 					gApplication::checkHoveredControl(control);
 				}
-			}
+			}*/
 
 			break;
 		
 		case GDK_LEAVE_NOTIFY:
 			
-			//fprintf(stderr, "GDK_LEAVE_NOTIFY: %s\n", control->name());
+#if DEBUG_ENTER_LEAVE
+			fprintf(stderr, "GDK_LEAVE_NOTIFY: %s %p %p\n", control->name(), event->crossing.window, event->crossing.subwindow);
+#endif
+			
+			if (button_grab)
+				break;
 			
 			//control = find_child(control, (int)event->button.x_root, (int)event->button.y_root);
 			
+			gApplication::_leave = control;
+			/*
 			if (gdk_events_pending() && gApplication::_leave == NULL)
 			{
 				if (check_crossing_event(event))
@@ -465,9 +473,6 @@ __FOUND_WIDGET:
 			{
 				if (check_crossing_event(event))
 				{
-					if (gApplication::_enter == control)
-						gApplication::_enter = NULL;
-					
 					if (gApplication::_leave == control)
 						gApplication::_leave = NULL;
 			
@@ -477,6 +482,7 @@ __FOUND_WIDGET:
 					control->emitLeaveEvent();
 				}
 			}
+			*/
 			
 			//if (widget != control->border && widget != control->widget)
 			//	goto __RETURN;
@@ -754,7 +760,34 @@ __HANDLE_EVENT:
 	
 __RETURN:
 
-	(void)0;
+	if (!gdk_events_pending()) // && event->type != GDK_ENTER_NOTIFY && event->type != GDK_LEAVE_NOTIFY)
+	{
+		if (gApplication::_leave)
+		{
+			//if () // || (gApplication::_leave != control && check_crossing_event(event)))
+			#if DEBUG_ENTER_LEAVE
+			fprintf(stderr, "post leave: %s\n", gApplication::_leave->name());
+			#endif
+			
+			if (gApplication::_enter == gApplication::_leave)
+				gApplication::_enter = NULL;
+			
+			gApplication::_leave->emitLeaveEvent();
+			
+			gApplication::_leave = NULL;
+		}
+	}
+
+	if (event->type == GDK_BUTTON_RELEASE && gApplication::_button_grab)
+	{
+		if (gApplication::_enter_after_button_grab)
+		{
+			gApplication::checkHoveredControl(gApplication::_enter_after_button_grab);
+			gApplication::_enter_after_button_grab = NULL;
+		}
+		gApplication::setButtonGrab(NULL);
+	}
+
 }
 
 
@@ -778,6 +811,7 @@ gControl *gApplication::_enter = NULL;
 gControl *gApplication::_leave = NULL;
 gControl *gApplication::_ignore_until_next_enter = NULL;
 gControl *gApplication::_button_grab = NULL;
+gControl *gApplication::_enter_after_button_grab = NULL;
 gControl *gApplication::_control_grab = NULL;
 gControl *gApplication::_active_control = NULL;
 gControl *gApplication::_previous_control = NULL;

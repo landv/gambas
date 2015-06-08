@@ -308,6 +308,7 @@ public:
 private:
 	gContainer *pr;
 	char *_name;
+	GtkIMContext *_input_method;
 };
 
 #define SIGNAL(_signal) ((void *)_signal)

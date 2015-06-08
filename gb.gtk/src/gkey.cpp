@@ -3,6 +3,7 @@
   gkey.cpp
 
   (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+  (c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -314,8 +315,11 @@ void gKey::setActiveControl(gControl *control)
 #endif
 		if (!_im_has_input_method)
 		{
+			gtk_im_context_reset(_im_context);
 			gtk_im_context_set_client_window (_im_context, 0);
+			gtk_im_context_reset(_im_context);
 			gtk_im_context_focus_out(_im_context);
+			gtk_im_context_reset(_im_context);
 		}
 
 		_im_control = NULL;
@@ -328,7 +332,9 @@ void gKey::setActiveControl(gControl *control)
 		if (!control->hasInputMethod())
 		{
 			_im_has_input_method = FALSE;
-			gtk_im_context_set_client_window (_im_context, _im_window);
+			gtk_im_context_reset(_im_context);
+			gtk_im_context_set_client_window (_im_context, gtk_widget_get_window(control->widget));
+			gtk_im_context_reset(_im_context);
 			gtk_im_context_focus_in(_im_context);
 			gtk_im_context_reset(_im_context);
 			//slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(_im_context));
@@ -345,7 +351,7 @@ void gKey::setActiveControl(gControl *control)
 
 #if DEBUG_IM
 		fprintf(stderr,"\n------------------------\n");
-		fprintf(stderr, "gtk_im_context_focus_in\n");
+		fprintf(stderr, "gtk_im_context_focus_in: _im_has_input_method = %d\n", _im_has_input_method);
 #endif
 	}
 }
@@ -414,6 +420,10 @@ bool gKey::raiseEvent(int type, gControl *control, const char *text)
 	bool parent_got_it = false;
 	bool cancel = false;
 
+#if DEBUG_IM
+	fprintf(stderr, "gKey::raiseEvent to %p %s\n", control, control->name());
+#endif
+					
 	if (text)
 		_event.string = (gchar *)text;
 
@@ -471,6 +481,10 @@ gboolean gcb_key_event(GtkWidget *widget, GdkEvent *event, gControl *control)
 		control = gApplication::activeControl();*/
 	if (!control || control != gApplication::activeControl())
 		return false;
+	
+#if DEBUG_IM
+	fprintf(stderr, "handle it\n");
+#endif
 
 	//if (event->type == GDK_KEY_PRESS)
 	//	fprintf(stderr, "GDK_KEY_PRESS: control = %p %s %p %08X\n", control, control ? control->name() : "", event, event->key.state);
@@ -487,7 +501,7 @@ gboolean gcb_key_event(GtkWidget *widget, GdkEvent *event, gControl *control)
 	if (gKey::enable(control, &event->key))
 	{
 		gKey::disable();
-		return gKey::canceled();
+		return gKey::canceled() || !_im_has_input_method;
 	}
 
 	if (gKey::mustIgnoreEvent(&event->key))

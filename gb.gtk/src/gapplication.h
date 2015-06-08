@@ -113,6 +113,7 @@ public:
 	static gControl *_previous_control;
 	static gControl *_old_active_control;
 	static gControl *_button_grab;
+	static gControl *_enter_after_button_grab;
 	static gControl *_control_grab;
 	static guint32 _event_time;
 	static GdkEvent *_event;
