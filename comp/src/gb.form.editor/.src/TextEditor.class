@@ -42,7 +42,7 @@ Property Bookmarks As Integer[]
 Property Read Styles As _TextEditor_Styles
 Property View As TextEditor
 Property Read Keywords As String[]
-Property Wrap As Boolean
+Property Wrap As Boolean 
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -335,7 +335,10 @@ Private Sub UpdateMargin()
   
   If MW <> $MW Then
     $MW = MW
-    If $cLineLayout Then UpdateWidth
+    If $cLineLayout Then 
+      _UpdateAllHeight
+      UpdateWidth
+    Endif
   Endif
 
 End
@@ -413,14 +416,7 @@ Private Sub DrawMatch(X As Integer, Y As Integer, H As Integer, XM As Integer, Y
   Dim WW As Integer
   
   XY = LinePos(YM, XM)
-  'sCar = String.Mid$($hDoc.Lines[YM], XM + 1, 1)
   WW = TextWidth(String.Mid$($hDoc.Lines[YM], XM + 1, 1))
-  'Paint.FillRect(X, Y + H - 1, $hView.Font.TextWidth(sCar), 1, Color.SelectedBackground)
-  'Paint.Save
-  'Paint.Background = Color.SelectedBackground
-  'Paint.DrawTextShadow(sCar, X, Y, $hView.Font.TextWidth(sCar), H, Align.TopLeft,, 1)
-  'Paint.DrawText(sCar, X + 1, Y + $hView.Font.Ascent)
-  'Paint.Restore
   Paint.FillRect(X + XY.X, Y + XY.Y, WW, H, $hStyles[Highlight.Highlight].Color)
 
 End
@@ -500,23 +496,30 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
     Endif
     
     If bBreak Then
-      XX = X
+      XX = X + LinePos(Row, P).X
       YY += H
       bBreak = False
     Endif
     
     If P + iLen >= iNextBreak Then
+      
       bBreak = True
+      
       iRest = P + iLen - iNextBreak
       iLen = iNextBreak - P
+      
       Inc iLayout
+      
       If iLayout < aLayout.Count Then
         iNextBreak += aLayout[iLayout]
       Else
         iNextBreak = Len(sText) + 1
       Endif
+      
       If iRest Then I -= 2
+      
       If iLen = 0 Then Goto NEXT_PATTERN
+      
     Endif
     
     hPos = LinePos(Row, P + iLen)
@@ -646,6 +649,8 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim XY2X As Integer
   Dim XY1Y As Integer
   Dim XY2Y As Integer
+  Dim XS As Integer
+  Dim XX As Integer
 
   'Debug Row
   H = $LH
@@ -658,7 +663,8 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     Paint.FillRect(X, Y + $XY.Y, Width, H, $hStyles[Highlight.CurrentLine].Color)
   Endif
 
-  Paint.ClipRect = Rect($MW, Y, Width - $MW, Height)
+  Paint.Rectangle($MW, Y, Width - $MW, Height)
+  Paint.Clip
   
   Paint.Translate($MW, 0)
   
@@ -728,6 +734,13 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     If Row = $YM Then DrawMatch(X, Y, H, $XM, $YM)
   Endif
   
+  ' ' Tab
+  ' 
+  ' If Row = $Y Then
+  '   XX = LineStartPos(Row)
+  '   If XX Then Paint.FillRect(X, Y, XX - X, Height, Color.SetAlpha($iMultiLineColor, 128))
+  ' Endif
+  
   ' Text
   
   Try aLayout = $cLineLayout[Row]
@@ -746,12 +759,15 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       
       P = 1
       YY = Y
+      XX = X
+      XS = X + LineStartPos(Row)
       For I = 0 To aLayout.Max
-        DrawText(String.Mid$(sText, P, aLayout[I]), X, X, YY)
+        DrawText(String.Mid$(sText, P, aLayout[I]), X, XX, YY)
         YY += H
+        XX = XS
         P += aLayout[I]
       Next
-      DrawText(String.Mid$(sText, P), X, X, YY)
+      DrawText(String.Mid$(sText, P), X, XX, YY)
       
     Else
       
@@ -945,6 +961,7 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
   Dim hPos As Point
   Dim cCache As Collection
   Dim XO As Integer
+  Dim XX As Integer
   
   XO = X
   Try hPos = $cCachePos[Y][XO]
@@ -961,7 +978,9 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
         P += aLayout[I]
         X -= aLayout[I]
       Next
-      hPos = Point(TextWidth(String.Mid$($hDoc.Lines[Y], P + 1, X)), I * $LH)
+      XX = TextWidth(String.Mid$($hDoc.Lines[Y], P + 1, X))
+      If I Then XX += LineStartPos(Y)
+      hPos = Point(XX, I * $LH)
       Goto RETURN_POS
     Endif
   Endif
@@ -992,6 +1011,19 @@ RETURN_POS:
   Return hPos
 
 End
+
+Private Sub LineStartPos(Y As Integer) As Integer
+
+  Dim S As Integer
+  Dim aLayout As Integer[]
+  
+  S = Len($hDoc.Lines[Y]) - Len(LTrim($hDoc.Lines[Y]))
+  Try aLayout = $cLineLayout[Y]
+  If aLayout And If S >= aLayout[0] Then S = aLayout[0] - 1
+  Return LinePos(Y, S).X
+  
+End
+
 
 Private Sub FindLargestLine() As Integer
 
@@ -1065,6 +1097,8 @@ Public Sub View_KeyPress()
   Dim sAction As String
   Dim sTab As String
   Dim bCancel As Boolean
+  Dim aLayout As Integer[]
+  Dim I, P As Integer
 
   bCancel = Raise KeyPress
   If bCancel Then Goto STOP_EVENT
@@ -1166,12 +1200,19 @@ Public Sub View_KeyPress()
       If Key.Control Then
         Goto(0, 0, Key.Shift)
       Else
-        '$X = NormalizeColumn($X, $Y)
-        sTab = GetIndentText($Y)
-        If $X <> Len(sTab) Then
-          Goto(Len(sTab), $Y, Key.Shift)
+        Try aLayout = $cLineLayout[$Y]
+        If Not aLayout Or If $X < aLayout[0] Then
+          P = GetIndent($Y)
+          If P = $X Then P = 0
+          Goto(P, $Y, Key.Shift)
         Else
-          Goto(0, $Y, Key.Shift)
+          P = aLayout[0]
+          For I = 1 To aLayout.Max
+            If $X < P + aLayout[I] Then Break
+            P += aLayout[I]
+          Next
+          If P = $X Then P = GetIndent($Y)
+          Goto(P, $Y, Key.Shift)
         Endif
       Endif
       
@@ -1179,7 +1220,21 @@ Public Sub View_KeyPress()
       If Key.Control Then
         Goto(-1, $hDoc.Max, Key.Shift)
       Else
-        Goto(-1, $Y, Key.Shift)
+        Try aLayout = $cLineLayout[$Y]
+        If Not aLayout Then
+          Goto(-1, $Y, Key.Shift)
+        Else
+          P = 0
+          For I = 0 To aLayout.Max
+            P += aLayout[I]
+            If $X < P Then 
+              Dec P
+              Break
+            Endif
+          Next
+          If P = $X Or If I = aLayout.Count Then P = -1
+          Goto(P, $Y, Key.Shift)
+        Endif
       Endif
       
     Case Key.PageUp
@@ -1451,6 +1506,7 @@ Public Sub View_MouseDown()
   Dim X As Integer
   Dim RY As Integer
   
+  $bFirstFocus = True
   If Not Mouse.Left Then Return
   
   Y = PosToLine(Mouse.Y)
@@ -3987,8 +4043,10 @@ Public Sub _UpdateLineHeight(Y As Integer)
       If P >= S And If Trim(String.Mid(sText, S, P - S + 1)) Then D = P
     Endif
     
+    If aLayout.Count = 0 Then WMax -= LineStartPos(Y)
     aLayout.Add(D - S + 1)
     S = D + 1
+    
     'sText = String.Mid$(sText, D + 1)
     'If Not sText Then Break
     

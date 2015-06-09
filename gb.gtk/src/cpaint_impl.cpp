@@ -449,6 +449,19 @@ static void update_layout(GB_PAINT *d)
 		_Font(d, FALSE, (GB_FONT *)&font);
 		gt_add_layout_from_font(dx->layout, font->font, d->resolutionY);
 		dx->ascent = font->font->ascentF();
+		
+		pango_cairo_context_set_font_options(pango_layout_get_context(dx->layout), gdk_screen_get_font_options (gdk_screen_get_default()));
+		
+		/*cairo_font_options_t *options = cairo_font_options_create(); //cairo_font_options_copy(pango_cairo_context_get_font_options(pango_layout_get_context(dx->layout)));
+		cairo_font_options_set_antialias(options, CAIRO_ANTIALIAS_GRAY);
+		cairo_font_options_set_hint_style(options, CAIRO_HINT_STYLE_MEDIUM);
+		cairo_font_options_set_hint_metrics(options, CAIRO_HINT_METRICS_ON);
+		cairo_font_options_set_subpixel_order(options, CAIRO_SUBPIXEL_ORDER_RGB);
+		pango_cairo_context_set_font_options(pango_layout_get_context(dx->layout), options);
+		cairo_font_options_destroy(options);*/
+		
+		pango_layout_context_changed(dx->layout);
+	
 	}
 }
 
@@ -960,6 +973,7 @@ static PangoLayout *create_pango_layout(GB_PAINT *d)
 	if (!dx->layout)
 	{
 		dx->layout = pango_cairo_create_layout(dx->context);
+		
 		update_layout(d);
 	}
 		
