@@ -606,12 +606,17 @@ bool gDialog::selectFolder()
 
 #ifdef GTK3
 
+GType type1, type2;
+
 bool gDialog::selectFont()
 {
 	GtkFontChooserDialog *dialog;
 	PangoFontDescription *desc;
 	gFont *font;
 
+	type1 = pango_font_family_get_type();
+	type2 = pango_font_face_get_type();
+	
 	dialog = (GtkFontChooserDialog *)gtk_font_chooser_dialog_new(DIALOG_title, NULL);
 
 	if (DIALOG_font)
