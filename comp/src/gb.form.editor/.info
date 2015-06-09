@@ -541,25 +541,10 @@ TimerHeight_Timer
 m
 
 
-#TextEditorStyle
+Styles_Change
+m
 
-C
-Color
-v
-i
 
-Bold
-v
-b
-
-Underline
-v
-b
-
-_call
-M
-TextEditorStyle
-(Color)i[(Bold)b(Underline)b]
 #_TextEditor_Line
 
 C
@@ -637,7 +622,7 @@ b
 #_TextEditor_Styles
 
 C
-:_Fake
+:Change
 :
 
 
@@ -653,3 +638,7 @@ _get
 m
 TextEditorStyle
 (Style)i
+Style_Change
+m
+
+

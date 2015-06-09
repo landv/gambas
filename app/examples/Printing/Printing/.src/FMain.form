@@ -19,7 +19,7 @@
       { btnOpenText Button
         MoveScaled(0,0,19,4)
         AutoResize = True
-        Text = ("Load text file...")
+        Text = ("Load text file") & "..."
         Picture = Picture["icon:/16/text"]
       }
       { btnRichText ToggleButton
@@ -33,6 +33,7 @@
         MoveScaled(41,0,17,4)
         Expand = True
         Picture = Picture["icon:/16/font"]
+        ReadOnly = True
       }
       { btnPrintText Button
         MoveScaled(61,0,12,4)
@@ -46,7 +47,7 @@
       Text = ("<h2>Hello!</h2>\nThis is a <b>text printing</b> <i>example</i>.")
     }
     { scrText ScrollArea
-      MoveScaled(1,23,46,26)
+      MoveScaled(1,23,40,26)
       Background = Color.TextBackground
       Expand = True
       ScrollBar = Scroll.Vertical
@@ -62,7 +63,7 @@
       { btnOpenImage Button
         MoveScaled(0,0,21,4)
         AutoResize = True
-        Text = ("Load image file...")
+        Text = ("Load image file") & "..."
         Picture = Picture["icon:/16/image"]
       }
       { Panel1 Panel

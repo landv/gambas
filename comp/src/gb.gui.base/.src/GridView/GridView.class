@@ -1992,7 +1992,7 @@ Public Sub _InsertRows(Start As Integer, Length As Integer)
   $hRows.Count += Length
   
 End
-' 
+
 Public Sub _GetTextHeight() As Integer
   
   If $iTextHeight = 0 Then $iTextHeight = Me.Font.TextHeight(" ")

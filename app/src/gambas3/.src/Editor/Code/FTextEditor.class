@@ -899,9 +899,9 @@ End
 Public Sub mnuCompress_Click()
 
   If Compress() Then
-    Message.Error(CompressMessage)
+    FMain.ShowError(CompressMessage)
   Else
-    If CompressMessage Then Message.Info(CompressMessage)
+    If CompressMessage Then FMain.ShowInfo(CompressMessage)
   Endif
   
 End

@@ -801,7 +801,7 @@ End
 
 Public Sub ScrollArea_MouseDown()
   
-  If Not $hDrawingArea.Hovered Then
+  If Not $hDrawingArea.Hovered And If Not Me.Design Then
     Stop Event
     Return
   Endif

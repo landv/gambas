@@ -1,20 +1,58 @@
 ' Gambas class file
 
-Export
+Event Change
 
-Public (Color) As Integer
-Public Bold As Boolean
-'Public Italic As Boolean
-Public Underline As Boolean
+Property Color As Integer
+Property Bold As Boolean
+Property Underline As Boolean
 
-Static Public Sub _call((Color) As Integer, Optional (Bold) As Boolean, (Underline) As Boolean) As TextEditorStyle
+Private $iColor As Integer
+Private $bBold As Boolean
+Private $bUnderline As Boolean
 
-  Dim hStyle As New TextEditorStyle
+Public Sub _new((Color) As Integer, Optional Bold As Boolean, Underline As Boolean)
+
+  $iColor = Color
+  $bBold = Bold
+  $bUnderline = Underline
   
-  hStyle.Color = Color
-  hStyle.Bold = Bold
-  hStyle.Underline = Underline
-  
-  Return hStyle
-  
+End
+
+Private Function Color_Read() As Integer
+
+  Return $iColor
+
+End
+
+Private Sub Color_Write(Value As Integer)
+
+  $iColor = Value
+  Raise Change
+
+End
+
+Private Function Bold_Read() As Boolean
+
+  Return $bBold
+
+End
+
+Private Sub Bold_Write(Value As Boolean)
+
+  $bBold = Value
+  Raise Change
+
+End
+
+Private Function Underline_Read() As Boolean
+
+  Return $bUnderline
+
+End
+
+Private Sub Underline_Write(Value As Boolean)
+
+  $bUnderline = Value
+  Raise Change
+
 End
