@@ -605,6 +605,7 @@ bool gDialog::selectFolder()
 }
 
 #ifdef GTK3
+
 bool gDialog::selectFont()
 {
 	GtkFontChooserDialog *dialog;

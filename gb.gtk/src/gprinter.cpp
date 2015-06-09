@@ -138,7 +138,9 @@ static gboolean find_file_printer(GtkPrinter *gtk_printer, gPrinter *printer)
 	return FALSE;
 }
 
-//extern void _gtk_printer_option_widget_get_type(void);
+#ifdef GTK3
+extern "C" void gtk_printer_option_widget_get_type(void);
+#endif
 
 gPrinter *gPrinter::_current = NULL;
 
@@ -150,7 +152,9 @@ gPrinter::gPrinter()
 	_page_count = 1;
 	_page_count_set = false;
 	
-	//_gtk_printer_option_widget_get_type();
+#ifdef GTK3
+	gtk_printer_option_widget_get_type();
+#endif
 	gtk_enumerate_printers((GtkPrinterFunc)find_default_printer, this, NULL, TRUE);
 
 	setPaperModel(GB_PRINT_A4);
