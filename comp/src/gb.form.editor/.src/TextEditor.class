@@ -1548,9 +1548,6 @@ Public Sub View_DblClick()
         Else
           CollapseAll
         Endif
-      Else
-        Goto(0, Y)
-        Raise Margin
       Endif
     Endif
   Endif
@@ -1606,6 +1603,10 @@ Public Sub View_MouseUp()
   If $hTimerScroll Then
     $hTimerScroll.Stop
     $hTimerScroll = Null
+  Else
+    If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
+      Raise Margin
+    Endif    
   Endif
 
   $bMouseDown = False
@@ -2828,6 +2829,7 @@ Private Sub PrintNewLine()
   Dim X As Integer
 
   X = $X
+  Goto(-1, $Y)
   Insert("\n")
   If $bTerminal Then Goto(X, $Y)
 

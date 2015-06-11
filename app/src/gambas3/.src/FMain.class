@@ -2620,7 +2620,14 @@ End
 
 Public Sub txtSearchProject_Click()
 
-  mnuCloseAll_Click
+  'mnuCloseAll_Click
+  panProject.Hidden = True
 
 End
 
+
+Public Sub tabProperty_CloseAll()
+
+  panProperty.Hidden = True
+
+End

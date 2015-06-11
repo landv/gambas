@@ -2,10 +2,12 @@
 
 { Form Form
   MoveScaled(0,0,31,21)
-  Background = &HBFFF7F&
+  Background = Color.LightBackground
   { Label1 Label
-    MoveScaled(6,5,19,4)
+    MoveScaled(6,5,17,8)
+    Font = Font["+3"]
     Padding = 4
-    Border = Border.Plain
+    AutoResize = True
+    Border = Border.Sunken
   }
 }

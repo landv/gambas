@@ -485,6 +485,8 @@ End
 Public Sub UpdateSize()
 
   Dim Y, H As Integer
+  Dim W As Integer
+  Dim X As Integer
 
   If tabWorkspace.Visible Then
 
@@ -492,22 +494,19 @@ Public Sub UpdateSize()
       Me.Background = Color.Default
       imgBackground.Hide
       panWorkspace.Background = Color.Background
-      panWorkspace.Border = If($bBorder, Border.Plain, Border.None)
+      'panWorkspace.Border = If($bBorder, Border.Plain, Border.None)
     Endif
     'If $bLogo Then picLogo.Hide
     
     With tabWorkspace
       
-      If .Orientation = Align.Top Then
-        Y = .ClientY - If($bBorder, 1, 0) 'H - .H + .ClientY * 2 + 2
-        H = Me.ClientH - Y
-      Else
-        Y = 0
-        H = .ClientY + .ClientH + If($bBorder, 1, 0)
-      Endif
-    
-      panWorkspace.Move(0, Y, Me.ClientW, H)
-      svwWorkspace.Move(0, Y, Me.ClientW, H)
+      X = .ClientX
+      Y = .ClientY
+      H = .ClientH
+      W = .ClientW
+      
+      panWorkspace.Move(X, Y, W, H)
+      svwWorkspace.Move(X, Y, W, H)
       
     End With
       
@@ -526,6 +525,8 @@ Public Sub UpdateSize()
     Endif
 
   Endif
+
+  tabWorkspace.CloseButton = $aWindow.Count >= 2
   
   'DEBUG tabWorkspace.Visible;; "Index =";; tabWorkspace.Index;; "ClientY =";; tabWorkspace.ClientY
 
@@ -999,4 +1000,16 @@ Public Sub mnuAttach_Click()
   
   Attach($aWindow[Last.Tag].Window)
   
+End
+
+Public Sub CloseAll()
+  
+  CloseWindows(CLOSE_ALL)
+
+End
+
+Public Sub tabWorkspace_CloseAll()
+
+  CloseWindows(CLOSE_ALL)
+
 End

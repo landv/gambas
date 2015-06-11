@@ -528,6 +528,7 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
   Dim sFile As String
   Dim sMap As String
   Dim sDirPattern As String
+  'Dim sCache As String
   
   If Not $bInit Then 
     InitTheme
@@ -544,6 +545,12 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
   hPict = Picture[CStr(iSize) &/ Key]
   If hPict Then Return hPict
   
+  ' sCache = User.Home &/ ".cache/gambas3/gb.form/theme/" &/ LCase(Application.Theme) &/ CStr(iSize) &/ Key & ".png"
+  ' If Exist(sCache) Then
+  '   Try hPict = Picture.Load(sCache)
+  '   If hPict Then Goto __RETURN
+  ' Endif
+ 
   For Each sPath In $aIconPath
     
     If sPath = "#" Then
@@ -646,6 +653,8 @@ __RETURN:
   Endif
 
   If hPict Then
+    ' Main.MkDir(File.Dir(sCache))
+    ' Try hPict.Save(sCache)
     Picture[CStr(iSize) &/ Key] = hPict
     Return hPict
   Endif

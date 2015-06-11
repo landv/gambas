@@ -2854,7 +2854,7 @@ C
 _Properties
 C
 s
-"*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Moveable,Highlight"
+"*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,CloseButton,Moveable,Highlight"
 _Similar
 C
 s
@@ -2883,6 +2883,10 @@ i
 :
 
 (Source)i(Target)i
+:CloseAll
+:
+
+
 Count
 p
 i
@@ -2928,6 +2932,10 @@ p
 i
 
 Moveable
+p
+b
+
+CloseButton
 p
 b
 
@@ -3039,6 +3047,18 @@ _MoveTab
 m
 
 (hSrc)_TabPanelButton;(hDst)_TabPanelButton;(bAfter)b
+TabPanel_Arrange
+m
+
+
+ClosePanel_Draw
+m
+
+
+CloseAll_Click
+m
+
+
 #TableView
 GridView
 C

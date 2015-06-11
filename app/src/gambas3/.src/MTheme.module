@@ -73,6 +73,7 @@ Public Sub WriteFile(sPath As String, cColor As Collection)
   
   hSettings = New Settings(sPath)
   WriteSettings(hSettings, "Theme", cColor)  
+  hSettings.Save
   
 End
 

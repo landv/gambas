@@ -182,6 +182,19 @@ Private Sub MakeMap()
 End
 #Endif
 
+Public Sub MkDir(Path As String)
+
+  Dim sElt As String
+  Dim sMake As String = "/"
+
+  For Each sElt In Split(Path, "/")
+    sMake &/= sElt
+    If IsDir(sMake) Then Continue
+    Try Mkdir sMake
+  Next
+
+End
+
 Public Sub Main()
 
   ' Dim hTask As Task

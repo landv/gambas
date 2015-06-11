@@ -79,7 +79,8 @@ Public Sub _new()
   Dim aColors As Integer[]
 
   cmbTheme.List = $aThemeName.Copy().Sort(gb.Language)
-  cmbTheme.Add(("Select a theme"), 0)
+  cmbTheme.Add(("Custom"), 0)
+  
   cmbIconTheme.List = [("Desktop"), "Gambas", "Gnome", "KDE", "KDE4", "LXDE", "Mate", "XFCE"].Insert(Stock.Themes)
   cmbBrowser.List = [("(Default)"), "Konqueror", "Rekonq", "Firefox", "Iceweasel", "Epiphany", "SeaMonkey", "Opera", "Chromium"]
   cmbTerminal.List = [("(Default)"), "Konsole", "Gnome Terminal", "XFCE Terminal", "XTerm", "lxterminal"]
@@ -139,6 +140,14 @@ Public Sub _new()
   cmbIconTheme.Index = Max(0, cmbIconTheme.List.Find(Settings["/Theme"]))
   cmbBrowser.Index = $aBrowser.Find(Settings["/Browser"]) + 1
   cmbTerminal.Index = $aTerminal.Find(Settings["/Terminal"]) + 1
+  
+  iInd = $aTheme.Find(Settings["/Editor/Theme"])
+  If iInd >= 0 Then
+    cmbTheme.Text = $aThemeName[iInd]
+  Else
+    cmbTheme.Index = 0
+  Endif
+  
   panDownloadHelp.Visible = btnOfflineHelp.Value
   
   UpdateFont(txtGlobalFont.Value)
@@ -187,9 +196,17 @@ End
 
 Public Sub cmbTheme_Click()
 
-  If cmbTheme.Index <= 0 Then Return
+  Dim iTheme As Integer
 
-  $cCurrent = MTheme.ReadFile($aTheme[$aThemeName.Find(cmbTheme.Text)])
+  iTheme = $aThemeName.Find(cmbTheme.Text)
+
+  If iTheme < 0 Then 
+    Settings["/Editor/Theme"] = ""
+    Return
+  Endif
+
+  Settings["/Editor/Theme"] = $aTheme[iTheme]
+  $cCurrent = MTheme.ReadFile($aTheme[iTheme])
   RefreshEditor
   
 End
@@ -538,29 +555,24 @@ Public Sub dwgStyle_Draw()
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
 
-  Draw.Font = Font[txtEditorFont.Value]
-  If hStyle.Underline Then Draw.Font.Underline = True
-  If hStyle.Italic Then Draw.Font.Italic = True
+  Paint.Font = Font[txtEditorFont.Value]
+  If hStyle.Underline Then Paint.Font.Underline = True
   
-  If MTheme.IsBackgroundStyle(sKey) Then 
+  If MTheme.IsBackgroundStyle(sKey) Then
     iBackground = hStyle.Foreground
     iForeground = CStyle[$cCurrent["Normal"]].Foreground
-  Else 
-    iBackground = hStyle.Background
+  Else
+    iBackground = CStyle[$cCurrent["Background"]].Foreground
     iForeground = hStyle.Foreground
   Endif
   
-  If iBackground = Color.Default Then iBackground = CStyle[$cCurrent["Background"]].Foreground
-  
-  'If iBackground <> Color.Default Then 
-    Draw.FillColor = iBackground
-    Draw.FillStyle = Fill.Solid
-    Draw.LineStyle = Line.None
-    Draw.Rect(0, 0, hDraw.Width, hDraw.Height)
-  'Endif
-  Draw.Foreground = iForeground
-  Draw.Text(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
-  If hStyle.Bold Then Draw.Text(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
+  If hStyle.Bold Then
+    Paint.Background = Color.SetAlpha(iForeground, 128)
+    Paint.DrawText(sName, 5, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
+  Endif
+  Paint.Background = iForeground
+  Paint.DrawText(sName, 4, 0, hDraw.Width - 8, hDraw.Height, Align.Normal)
   
 End
 
@@ -577,17 +589,8 @@ Public Sub mnuPopup_Show()
   With CStyle[$cCurrent[$sStyle]]
   
     mnuBold.Checked = .Bold
-    mnuItalic.Checked = .Italic
     mnuUnderline.Checked = .Underline
 
-    If MTheme.IsBackgroundStyle($sStyle) Then 
-      mnuForeground.Hide
-      mnuBackground.Checked = False
-    Else
-      mnuForeground.Show
-      mnuBackground.Checked = .Background <> Color.Default
-    Endif
-  
   End With 
   
 End
@@ -598,11 +601,11 @@ Private Sub UpdateStyle()
   
   With hStyle
     .Bold = mnuBold.Checked
-    .Italic = mnuItalic.Checked
     .Underline = mnuUnderline.Checked
   End With
   
   $cCurrent[$sStyle] = hStyle.ToString()
+  cmbTheme.Index = 0
   RefreshEditor
   
 End
@@ -614,13 +617,6 @@ Public Sub mnuBold_Click()
   
 End
 
-Public Sub mnuItalic_Click()
-  
-  mnuItalic.Checked = Not mnuItalic.Checked
-  UpdateStyle
-  
-End
-
 Public Sub mnuUnderline_Click()
   
   mnuUnderline.Checked = Not mnuUnderline.Checked
@@ -628,7 +624,7 @@ Public Sub mnuUnderline_Click()
   
 End
 
-Public Sub mnuForeground_Click()
+Public Sub mnuColor_Click()
   
   Dim hStyle As New CStyle($cCurrent[$sStyle])
   Dim iColor As Integer = hStyle.Foreground
@@ -637,32 +633,7 @@ Public Sub mnuForeground_Click()
   
   hStyle.Foreground = FColorChooser.Value
   $cCurrent[$sStyle] = hStyle.ToString()
-  RefreshEditor
-  
-End
-
-Public Sub mnuBackground_Click()
-  
-  Dim hStyle As New CStyle($cCurrent[$sStyle])
-  Dim iColor As Integer = hStyle.Background
-  Dim iDefault As Integer
-  
-  If MTheme.IsBackgroundStyle($sStyle) Then 
-    mnuForeground_Click
-    Return 
-  Endif
-  
-  iDefault = CStyle[$cCurrent["Background"]].Foreground
-  If iColor = Color.Default Then iColor = iDefault
-
-  If FColorChooser.Run("&H" & Hex$(iColor, 6) & "&") Then Return
-  
-  If FColorChooser.Color = "" Or If FColorChooser.Value = iDefault Then 
-    hStyle.Background = Color.Default
-  Else
-    hStyle.Background = FColorChooser.Value
-  Endif
-  $cCurrent[$sStyle] = hStyle.ToString()
+  cmbTheme.Index = 0
   RefreshEditor
   
 End

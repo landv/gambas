@@ -3,7 +3,7 @@
 Export
 Inherits UserContainer
 
-Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,Moveable,Highlight"
+Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,TextFont,Picture,Orientation{Align.Top;Bottom}=Top,Closable,CloseButton,Moveable,Highlight"
 Public Const _Similar As String = "TabStrip"
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DefaultEvent As String = "Click"
@@ -11,6 +11,7 @@ Public Const _DefaultEvent As String = "Click"
 Event Click
 Event Close(Index As Integer)
 Event Move(Source As Integer, Target As Integer)
+Event CloseAll
 
 Property Count As Integer
 Property Index As Integer
@@ -25,6 +26,7 @@ Property Closable As Boolean
 Property Read Current As _TabPanelContainer
 Property Background As Integer
 Property Moveable As Boolean
+Property CloseButton As Boolean
 
 Private $hTabBar As DrawingArea
 Private $hTabBarContainer As DrawingArea
@@ -52,6 +54,9 @@ Private Const ARROW_WIDTH As Integer = 12
 Private $hRightArrow As DrawingArea
 Private $hLeftArrow As DrawingArea
 Private $bMoveable As Boolean
+Private $hCloseAll As ToolButton
+Private $hClosePanel As DrawingArea
+Private $hObserver As Observer
 
 Public Sub _new()
 
@@ -78,12 +83,14 @@ Public Sub _new()
   $hLeftArrow.Ignore = True
   $hLeftArrow.Mouse = Mouse.Pointing
   $hLeftArrow.Name = Me.Name & "_LeftArrow"
-
+  
   $hPanel = New DrawingArea(Me) As "Panel"
   $hPanel.Expand = True
   $hPanel.Name = Me.Name & "_Panel"
   '$hPanel.Arrangement = Arrange.Fill
   '$hPanel.Padding = 1
+  
+  $hObserver = New Observer(Me) As "TabPanel"
 
   Me.Count = 1
   Me.Arrangement = Arrange.None
@@ -225,14 +232,39 @@ End
 Private Sub UpdateLayout()
   
   Dim hCtrl As _TabPanelButton
+  Dim W As Integer
+  Dim H As Integer
+  Dim X As Integer
+  
+  $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale * 2
+  
+  W = Me.W
+  H = $hTabBar.H
+  
+  If Not $hClosePanel Or If W < H * 3 Then
+    H = 0
+    If $hClosePanel Then $hClosePanel.Hide
+  Else
+    X = If(System.RightToLeft, H, 0)
+    W -= H
+    $hClosePanel.Show
+    $hClosePanel.Raise
+  Endif
+  
+  Me._Arrangement = Arrange.None
   
   Select Case $iOrientation
     Case Align.Top
-      Me._Arrangement = Arrange.Vertical
-      $hTabBar.Next = $hPanel
+      $hTabBar.Move(X, 0, W, $hTabBar.H)
+      If H Then $hClosePanel.Move(If(System.RightToLeft, 0, W), 0, H, H)
+      $hPanel.Move(0, $hTabBar.H, Me.W, Me.H - $hTabBar.H)
+      '$hTabBar.Next = $hPanel
     Case Align.Bottom
-      Me._Arrangement = Arrange.Vertical
-      $hPanel.Next = $hTabBar
+      $hTabBar.Move(X, Me.H - $hTabBar.H, W, $hTabBar.H)
+      If H Then $hClosePanel.Move(If(System.RightToLeft, 0, W), $hTabBar.Y, H, H)
+      $hPanel.Move(0, 0, Me.W, Me.H - $hTabBar.H)
+      'Me._Arrangement = Arrange.Vertical
+      '$hPanel.Next = $hTabBar
   End Select
   
   For Each hCtrl In $aButton
@@ -245,7 +277,6 @@ Private Sub UpdateLayout()
   Next
   
   'Debug Me.Name;; $hTabBar.Font.Height;; "'"; $hTabBar.Font.ToString(); "'"
-  $hTabBar.Height = $hTabBar.Font.Height + Desktop.Scale * 2
   
   $hTabBarContainer.Arrangement = Arrange.Horizontal
   _EnsureCurrentVisible
@@ -870,4 +901,62 @@ Private Sub Moveable_Write(Value As Boolean)
 
   $bMoveable = Value
 
+End
+
+Private Function CloseButton_Read() As Boolean
+
+  Return $hClosePanel
+
+End
+
+Private Sub CloseButton_Write(Value As Boolean)
+
+  Dim hSave As Container
+  
+  If Value = CloseButton_Read() Then Return
+  
+  If Value Then
+    
+    hSave = Me._Container
+    Me._Container = Null
+    
+    $hClosePanel = New DrawingArea(Me) As "ClosePanel"
+    $hClosePanel.Arrangement = Arrange.Fill
+    $hCloseAll = New ToolButton($hClosePanel) As "CloseAll"
+    $hCloseAll.Picture = Picture["icon:/small/close"]
+    $hCloseAll.Show
+    
+    Me._Container = hSave
+    
+  Else
+    $hClosePanel.Delete
+    $hClosePanel = Null
+    $hCloseAll = Null
+  Endif
+  
+  TabBar_Arrange
+
+End
+
+Public Sub TabPanel_Arrange()
+  
+  UpdateLayout
+  
+End
+
+Public Sub ClosePanel_Draw()
+  
+  Select Case $iOrientation
+    Case Align.Top
+      Paint.FillRect(0, Paint.H - 1, Paint.W, 1, Color.LightForeground)
+    Case Align.Bottom
+      Paint.FillRect(0, 0, Paint.W, 1, Color.LightForeground)
+  End Select
+  
+End
+
+Public Sub CloseAll_Click()
+  
+  Raise CloseAll
+  
 End

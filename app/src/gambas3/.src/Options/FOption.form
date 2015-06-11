@@ -11,22 +11,19 @@
   Spacing = True
   { mnuPopup Menu
     Visible = False
-    { mnuForeground Menu
-      Text = ("Foreground color") & "..."
-    }
-    { mnuBackground Menu
-      Text = ("Background color") & "..."
+    { mnuColor Menu
+      Text = ("Color") & "..."
+      Picture = Picture["icon:/small/color"]
     }
     { Menu1 Menu
     }
     { mnuBold Menu
       Text = ("Bold")
-    }
-    { mnuItalic Menu
-      Text = ("Italic")
+      Picture = Picture["icon:/small/text-bold"]
     }
     { mnuUnderline Menu
       Text = ("Underline")
+      Picture = Picture["icon:/small/text-underline"]
     }
   }
   { ipnOption IconPanel

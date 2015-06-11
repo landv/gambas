@@ -2,9 +2,9 @@
 
 Public Index As Integer
 Public Foreground As Integer
-Public Background As Integer
+'Public Background As Integer
 Public Bold As Boolean
-Public Italic As Boolean
+'Public Italic As Boolean
 Public Underline As Boolean
 
 Static Public Sub _get((Style) As String) As CStyle
@@ -27,9 +27,7 @@ End
 Public Sub Reset()
 
   Foreground = Color.Default
-  Background = Color.Default
   Bold = False
-  Italic = False
   Underline = False
   
 End
@@ -45,15 +43,11 @@ Public Sub FromString(sStyle As String)
   For Each sStr In Split(sStyle)
     If Left(sStr) = "#" Then 
       iColor = Val("&H" & Mid$(sStr, 2) & "&") 
-      If Foreground = Color.Default Then 
-        Foreground = iColor
-      Else 
-        Background = iColor
-      Endif
+      Foreground = iColor
     Else If sStr = "Bold" Then 
       Bold = True
-    Else If sStr = "Italic" Then 
-      Italic = True
+    ' Else If sStr = "Italic" Then 
+    '   Italic = True
     Else If sStr = "Underline" Then
       Underline = True
     Endif
@@ -66,9 +60,8 @@ Public Sub ToString() As String
   Dim sStr As String
   
   sStr = "#" & Hex$(Foreground, 6)
-  If Background <> Color.Default Then sStr &= ",#" & Hex$(Background, 6)
   If Bold Then sStr &= ",Bold"
-  If Italic Then sStr &= ",Italic"
+  'If Italic Then sStr &= ",Italic"
   If Underline Then sStr &= ",Underline"
   
   Return sStr

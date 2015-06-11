@@ -233,3 +233,9 @@ Private Sub Image_Write(Value As Image)
   $hWorkspace.SetImage(Value)
 
 End
+
+Public Sub CloseAll()
+
+  $hWorkspace.CloseAll
+
+End
