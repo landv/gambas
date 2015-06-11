@@ -111,6 +111,7 @@ Public Sub _new()
   $hVBar.Step = Desktop.Scale
 
   $hCorner = New DrawingArea(Me)
+  $hCorner.Hide
   
   Me.Proxy = $hDrawingArea
   Me._Container = $hDrawingArea
@@ -294,6 +295,9 @@ RETRY:
   
   If $bHBarVisible And If $bVBarVisible Then
     $hCorner.Move($hVBar.X, $hHBar.Y, SB, SB)
+    $hCorner.Show
+  Else
+    $hCorner.Hide
   Endif
   
   $bNoArrange = False
