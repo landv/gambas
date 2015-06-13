@@ -370,6 +370,7 @@ Public Sub DrawingArea_MouseMove()
   If $bDrag Then TimerDrag_Timer
   
   X = Mouse.ScreenX - Me.ScreenX
+  If Mouse.Shift And If Mouse.Control Then Debug X
   
   If X >= 0 And If X < Me.W Then
     bShowClose = IsClosable()

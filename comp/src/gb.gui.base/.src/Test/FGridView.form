@@ -4,6 +4,8 @@
   MoveScaled(0,0,72,68)
   Font = Font["Monospace,Italic,12"]
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
   { HBox1 HBox
     MoveScaled(6,1,45,4)
     { txtPadding SpinBox
@@ -16,7 +18,6 @@
   { gvwInfo GridView
     MoveScaled(6,10,51,31)
     Expand = True
-    Border = False
     Mode = Select.Multiple
     Grid = False
     Padding = 0
@@ -25,11 +26,13 @@
   }
   { TextBox1 TextBox
     MoveScaled(11,47,24,4)
+    Visible = False
     Text = ("TextBox1")
     Border = False
   }
   { TextArea1 TextArea
     MoveScaled(10,57,25,10)
+    Visible = False
     Text = ("TextArea1")
     Border = False
   }

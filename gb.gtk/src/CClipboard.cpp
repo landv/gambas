@@ -223,6 +223,15 @@ BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 	 
 END_METHOD
 
+BEGIN_PROPERTY(Clipboard_Current)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(gClipboard::getCurrent());
+	else
+		gClipboard::setCurrent(VPROP(GB_INTEGER));
+
+END_PROPERTY
+
 
 GB_DESC CClipboardDesc[] =
 {
@@ -231,10 +240,15 @@ GB_DESC CClipboardDesc[] =
   GB_CONSTANT("None", "i", 0),
   GB_CONSTANT("Text", "i", 1),
   GB_CONSTANT("Image", "i", 2),
+  
+  GB_CONSTANT("Default", "i", 0),
+  GB_CONSTANT("Selection", "i", 1),
 
   GB_STATIC_METHOD("_exit", 0, CCLIPBOARD_clear, 0),
   GB_STATIC_METHOD("Clear", 0, CCLIPBOARD_clear, 0),
 
+  GB_STATIC_PROPERTY("Current", "i", Clipboard_Current),
+  
   GB_STATIC_PROPERTY_READ("Format", "s", CCLIPBOARD_format),
   GB_STATIC_PROPERTY_READ("Formats", "String[]", CCLIPBOARD_formats),
   GB_STATIC_PROPERTY_READ("Type", "i", CCLIPBOARD_type),

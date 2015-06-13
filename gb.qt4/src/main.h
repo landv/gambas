@@ -32,6 +32,7 @@
 #include <QTimerEvent>
 #include <QEventLoop>
 #include <QSessionManager>
+#include <QClipboard>
 
 #define DO_NOT_USE_QT_INTERFACE
 #include "gb.qt.h"
@@ -109,7 +110,7 @@ public:
 public slots:
 
 	void linkDestroyed(QObject *);
-	void clipboardHasChanged();
+	void clipboardHasChanged(QClipboard::Mode);
 	void commitDataRequested(QSessionManager &);
 
 private:

@@ -1378,6 +1378,9 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     $SXY = $XY
   Else
     Refresh
+    Clipboard.Current = Clipboard.Selection
+    Copy()
+    Clipboard.Current = Clipboard.Default
   Endif
   
   $bShowCursor = True
@@ -1513,16 +1516,17 @@ Public Sub View_MouseDown()
   Dim RY As Integer
   
   $bFirstFocus = True
-  If Not Mouse.Left Then Return
   
   Y = PosToLine(Mouse.Y)
   RY = $hRows.RelativeY
   
   If Y >= 0 Then
     If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
-      Goto(0, Y)
-      If $bShowExpand And If $hDoc.Info(Y).Limit Then
-        ToggleRow(Y)
+      If Mouse.Left Then
+        Goto(0, Y)
+        If $bShowExpand And If $hDoc.Info(Y).Limit Then
+          ToggleRow(Y)
+        Endif
       Endif
     Else
       'X = NormalizeColumn(PosToColumn(Y, Mouse.X, RY), Y)
@@ -1532,6 +1536,7 @@ Public Sub View_MouseDown()
   Endif
   
   $bMouseDown = True
+  
 
 End
 
@@ -1604,13 +1609,19 @@ Public Sub View_MouseUp()
     $hTimerScroll.Stop
     $hTimerScroll = Null
   Else
-    If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
+    If Mouse.Left And If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
       Raise Margin
     Endif    
   Endif
-
-  $bMouseDown = False
   
+  If Mouse.Middle Then
+    Clipboard.Current = Clipboard.Selection
+    Paste
+    Clipboard.Current = Clipboard.Default
+  Endif
+  
+  $bMouseDown = False
+    
 End
 
 Public Sub TimerScroll_Timer()

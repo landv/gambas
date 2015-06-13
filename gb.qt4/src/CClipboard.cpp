@@ -53,6 +53,9 @@ static int _picture_x = -1;
 static int _picture_y = -1;
 
 enum { MIME_UNKNOWN, MIME_TEXT, MIME_IMAGE };
+enum { CLIPBOARD_DEFAULT, CLIPBOARD_SELECTION };
+
+static int _current_clipboard = CLIPBOARD_DEFAULT;
 
 static int get_type(const QMimeData *src)
 {
@@ -180,37 +183,41 @@ static void paste(const QMimeData *data, const char *fmt)
 
 ***************************************************************************/
 
-static GB_ARRAY _clipboard_formats = NULL;
+static GB_ARRAY _clipboard_formats[2] = { NULL };
 
-void CLIPBOARD_has_changed()
+#define CURRENT_MODE() (_current_clipboard == CLIPBOARD_SELECTION ? QClipboard::Selection : QClipboard::Clipboard)
+
+void CLIPBOARD_has_changed(QClipboard::Mode mode)
 {
-	GB.Unref(POINTER(&_clipboard_formats));
-	_clipboard_formats = NULL;
+	int clipboard = mode == QClipboard::Selection ? CLIPBOARD_SELECTION : CLIPBOARD_DEFAULT;
+	GB.Unref(POINTER(&_clipboard_formats[clipboard]));
+	_clipboard_formats[clipboard] = NULL;
 }
 
 static GB_ARRAY load_clipboard_formats()
 {
-	if (!_clipboard_formats)
+	if (!_clipboard_formats[_current_clipboard])
 	{
 		//qDebug("load clipboard formats");
-		GB.Array.New(&_clipboard_formats, GB_T_STRING, 0);
-		get_formats(QApplication::clipboard()->mimeData(), _clipboard_formats);
-		GB.Ref(_clipboard_formats);
+		GB.Array.New(&_clipboard_formats[_current_clipboard], GB_T_STRING, 0);
+		get_formats(QApplication::clipboard()->mimeData(CURRENT_MODE()), _clipboard_formats[_current_clipboard]);
+		GB.Ref(_clipboard_formats[_current_clipboard]);
 	}
 	
-	return _clipboard_formats;
+	return _clipboard_formats[_current_clipboard];
 }
 
 static int get_clipboard_type()
 {
 	int i;
 	QString format;
+	GB_ARRAY formats;
 	
-	load_clipboard_formats();
+	formats = load_clipboard_formats();
 	
-	for (i = 0; i < GB.Array.Count(_clipboard_formats); i++)
+	for (i = 0; i < GB.Array.Count(formats); i++)
 	{
-		format = *((char **)GB.Array.Get(_clipboard_formats, i));
+		format = *((char **)GB.Array.Get(formats, i));
 		if (format.startsWith("text/"))
 			return MIME_TEXT;
 		else if (format.startsWith("image/"))
@@ -224,25 +231,27 @@ static int get_clipboard_type()
 
 BEGIN_METHOD_VOID(Clipboard_exit)
 
-	CLIPBOARD_has_changed();
+	CLIPBOARD_has_changed(QClipboard::Clipboard);
+	CLIPBOARD_has_changed(QClipboard::Selection);
 
 END_METHOD
 
 
 BEGIN_METHOD_VOID(CCLIPBOARD_clear)
 
-	QApplication::clipboard()->clear();
+	QApplication::clipboard()->clear(CURRENT_MODE());
 
 END_METHOD
 
 
 BEGIN_PROPERTY(CCLIPBOARD_format)
 
-	load_clipboard_formats();
-	if (GB.Array.Count(_clipboard_formats) == 0)
+	GB_ARRAY formats = load_clipboard_formats();
+	
+	if (GB.Array.Count(formats) == 0)
 		GB.ReturnVoidString();
 	else
-		GB.ReturnString(*((char **)GB.Array.Get(_clipboard_formats, 0)));
+		GB.ReturnString(*((char **)GB.Array.Get(formats, 0)));
 
 END_PROPERTY
 
@@ -280,7 +289,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 		}
 
 		data->setData(format, QByteArray(VARG(data).value._string, GB.StringLength(VARG(data).value._string)));
-		QApplication::clipboard()->setMimeData(data);
+		QApplication::clipboard()->setMimeData(data, CURRENT_MODE());
 	}
 	else if (VARG(data).type >= GB_T_OBJECT && GB.Is(VARG(data).value._object, CLASS_Image))
 	{
@@ -292,7 +301,7 @@ BEGIN_METHOD(CCLIPBOARD_copy, GB_VARIANT data; GB_STRING format)
 		img = *CIMAGE_get((CIMAGE *)VARG(data).value._object);
 		img.detach();
 
-		QApplication::clipboard()->setImage(img);
+		QApplication::clipboard()->setImage(img, CURRENT_MODE());
 	}
 	else
 		goto _BAD_FORMAT;
@@ -308,9 +317,18 @@ END_METHOD
 
 BEGIN_METHOD(CCLIPBOARD_paste, GB_STRING format)
 
-	paste(QApplication::clipboard()->mimeData(), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
+	paste(QApplication::clipboard()->mimeData(CURRENT_MODE()), MISSING(format) ?  NULL : GB.ToZeroString(ARG(format)));
 
 END_METHOD
+
+BEGIN_PROPERTY(Clipboard_Current)
+
+	if (READ_PROPERTY)
+		GB.ReturnInteger(_current_clipboard);
+	else
+		_current_clipboard = VPROP(GB_INTEGER);
+
+END_PROPERTY
 
 
 GB_DESC CClipboardDesc[] =
@@ -322,12 +340,17 @@ GB_DESC CClipboardDesc[] =
 	GB_CONSTANT("None", "i", 0),
 	GB_CONSTANT("Text", "i", 1),
 	GB_CONSTANT("Image", "i", 2),
+	
+	GB_CONSTANT("Default", "i", 0),
+	GB_CONSTANT("Selection", "i", 1),
 
 	GB_STATIC_METHOD("Clear", NULL, CCLIPBOARD_clear, NULL),
 
 	GB_STATIC_PROPERTY_READ("Format", "s", CCLIPBOARD_format),
 	GB_STATIC_PROPERTY_READ("Formats", "String[]", CCLIPBOARD_formats),
 	GB_STATIC_PROPERTY_READ("Type", "i", CCLIPBOARD_type),
+	
+	GB_STATIC_PROPERTY("Current", "i", Clipboard_Current),
 
 	GB_STATIC_METHOD("Copy", NULL, CCLIPBOARD_copy, "(Data)v[(Format)s]"),
 	GB_STATIC_METHOD("Paste", "v", CCLIPBOARD_paste, "[(Format)s]"),

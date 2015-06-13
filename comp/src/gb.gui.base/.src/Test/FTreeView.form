@@ -3,6 +3,8 @@
 { Form Form
   MoveScaled(0,0,88,84)
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
   { mnuPopup Menu
     Text = ("Menu1")
     Visible = False
@@ -53,10 +55,10 @@
     Sorted = True
     Editable = True
     Resizable = True
-    Border = False
   }
   { GridView1 GridView
     MoveScaled(20,51,37,27)
+    Expand = True
     ShowCursor = True
     Header = GridView.Both
   }

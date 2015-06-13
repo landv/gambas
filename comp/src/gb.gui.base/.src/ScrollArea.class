@@ -51,7 +51,6 @@ Private $bVBarVisible As Boolean
 Private $hObserver As Observer
 Private $iScroll As Integer = Scroll.Both
 Private $iBackground As Integer = Color.Default
-Private $bBorder As Boolean 
 Private $hTimerScroll As Timer
 Private $hTimerArrange As Timer
 Private $DX As Integer
@@ -66,6 +65,7 @@ Private $iShadowS As Integer
 Private $iShadowW As Integer
 Private $iShadowE As Integer
 Private $hCorner As DrawingArea
+Private $hBorder As DrawingArea
 
 Private Sub LoadFades()
   
@@ -143,7 +143,7 @@ End
 
 Private Sub LayoutScrollbars()
   
-  Dim SB, SP, FW, W, H, P As Integer
+  Dim SB, SP, FW, X, Y, W, H, P As Integer
   Dim bHBarAllowed, bVBarAllowed As Boolean
   Dim bHBarVisible, bVBarVisible As Boolean
   Dim OW, OH, OWC, OHC As Integer
@@ -156,7 +156,11 @@ Private Sub LayoutScrollbars()
   
   SB = Style.ScrollbarSize
   SP = Style.ScrollbarSpacing
-  'If $bBorder Then FW = Style.FrameWidth
+  If $hBorder Then 
+    FW = 1
+    X = 1
+    Y = 1
+  Endif
   
   bHBarAllowed = $iScroll = Scroll.Horizontal Or $iScroll = Scroll.Both
   bVBarAllowed = $iScroll = Scroll.Vertical Or $iScroll = Scroll.Both
@@ -248,8 +252,8 @@ RETRY:
   If bHBarVisible Then H -= SB + SP
   If bVBarVisible Then W -= SB + SP
   
-  W += FW * 2
-  H += FW * 2
+  'W += FW * 2
+  'H += FW * 2
   
   If W <> OW Or If H <> OH Then
     OW = W
@@ -263,9 +267,9 @@ RETRY:
     $hDrawingArea.Hide
   Else
     If $bVBarVisible And If System.RightToLeft Then
-      $hDrawingArea.Move(SP + SB, 0, W, H)
+      $hDrawingArea.Move(SP + SB + X, Y, W, H)
     Else
-      $hDrawingArea.Move(0, 0, W, H)
+      $hDrawingArea.Move(X, Y, W, H)
     Endif
     $hDrawingArea.Show
   Endif
@@ -280,16 +284,16 @@ RETRY:
   
   If $bHBarVisible Then 
     If System.RightToLeft Then
-      $hHBar.Move(Me.W - W, H + SP, W, SB)
+      $hHBar.Move(X + Me.W - W, Y + H + SP, W, SB)
     Else
-      $hHBar.Move(0, H + SP, W, SB)
+      $hHBar.Move(X, Y + H + SP, W, SB)
     Endif
   Endif
   If $bVBarVisible Then 
     If System.RightToLeft Then
-      $hVBar.Move(0, 0, SB, H)
+      $hVBar.Move(X, Y, SB, H)
     Else
-      $hVBar.Move(W + SP, 0, SB, H)
+      $hVBar.Move(X + W + SP, Y, SB, H)
     Endif
   Endif
   
@@ -314,6 +318,10 @@ End
 Public Sub ScrollArea_Arrange()
   
   LayoutScrollbars
+  If $hBorder Then
+    $hBorder.Move(0, 0, Me.W, Me.H)
+    $hBorder.Lower
+  Endif
   ' If Not $hTimerArrange Then
   '   $hTimerArrange = New Timer As "TimerArrange"
   '   $hTimerArrange.Trigger
@@ -406,11 +414,6 @@ Public Sub DrawingArea_Draw()
   Dim iWestWidth As Integer
   Dim iEastWidth As Integer
   
-  If $bBorder Then 
-    FW = 1 'Style.FrameWidth
-    Paint.Save
-  Endif
-  
   DW = Draw.W
   'If $bVBarVisible Then DW -= $hVBar.W
   'If System.RightToLeft Then DX = $hVBar.W + Style.ScrollbarSpacing
@@ -485,11 +488,6 @@ Public Sub DrawingArea_Draw()
 
   Endif
   
-  If $bBorder Then 
-    Paint.Restore
-    Style.PaintPanel(0, 0, DW, DH, Border.Plain, Style.StateOf($hDrawingArea)) 'If(Me.HasFocus, Draw.Focus, Draw.Normal))
-  Endif
-  
 End
 
 Public Sub DrawingArea_Enter()
@@ -519,15 +517,27 @@ End
 
 Private Function Border_Read() As Boolean
 
-  Return $bBorder
+  Return $hBorder
 
 End
 
 Private Sub Border_Write(Value As Boolean)
 
-  $bBorder = Value
+  Dim hSave As Container
+  
+  If Border_Read() = Value Then Return
+  
+  If Value Then
+    hSave = Me._Container
+    Me._Container = Null
+    $hBorder = New DrawingArea(Me) As "Border"
+    Me._Container = hSave
+  Else
+    $hBorder.Delete
+    $hBorder = Null
+  Endif
+  
   ScrollArea_Arrange
-  $hDrawingArea.Refresh
 
 End
 
@@ -622,16 +632,16 @@ End
 
 Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer) As Boolean
   
-  Dim PW, PH, CX, CY, CW, CH, F As Integer
+  Dim PW, PH, CX, CY, CW, CH As Integer
   Dim XX, YY, WW, HH As Float
   
-  If $bBorder Then
-    F = 1 'Style.FrameWidth
-    X -= F
-    Y -= F
-    W += F * 2
-    H += F * 2
-  Endif
+  ' If $bBorder Then
+  '   F = 1 'Style.FrameWidth
+  '   X -= F
+  '   Y -= F
+  '   W += F * 2
+  '   H += F * 2
+  ' Endif
   
   'Debug X;; Y;; W;; H;; "[";; $hDrawingArea.W;; $hDrawingArea.H;; "]"
   
@@ -811,17 +821,15 @@ Public Sub ScrollArea_MouseDown()
   Endif
   
   Mouse.Translate(- $hDrawingArea.X, 0)
-  'Error "->";; Mouse.X
-  
+
 End
 
 Public Sub ScrollArea_MouseMove()
   
-  'Debug Mouse.X;;
   Mouse.Translate(- $hDrawingArea.X, 0)
-  'Error "->";; Mouse.X
   
 End
+
 
 Private Function UseMouse_Read() As Boolean
 
@@ -860,4 +868,10 @@ Private Sub Foreground_Write(Value As Integer)
   $hHBar.Foreground = Value
   $hVBar.Foreground = Value
 
+End
+
+Public Sub Border_Draw()
+  
+  Style.PaintPanel(0, 0, $hBorder.W, $hBorder.H, Border.Plain, Style.StateOf($hDrawingArea)) 'If(Me.HasFocus, Draw.Focus, Draw.Normal))
+  
 End

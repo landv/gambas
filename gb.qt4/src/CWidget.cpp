@@ -343,6 +343,7 @@ bool CWIDGET_container_for(void *_object, void *container_for)
 
 static void CWIDGET_enter(void *_object)
 {
+	//qDebug("CWIDGET_enter: %p %s", THIS, THIS->name);
 	if (!THIS->flag.inside)
 	{
 		THIS->flag.inside = true;
@@ -352,6 +353,7 @@ static void CWIDGET_enter(void *_object)
 
 static void CWIDGET_leave(void *_object)
 {
+	//qDebug("CWIDGET_leave: %p %s", THIS, THIS->name);
 	if (THIS->flag.inside)
 	{
 		THIS->flag.inside = false;
@@ -2654,6 +2656,9 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 			MOUSE_info.state = mevent->buttons();
 			MOUSE_info.modifier = mevent->modifiers();
 
+			//if (type == QEvent::MouseButtonPress)
+			//	qDebug("GB.Raise on %p (%s %p) %d", widget, control ? GB.GetClassName(control) : "-", control, event_id);
+			
 			cancel = GB.Raise(control, event_id, 0); //, GB_T_INTEGER, p.x(), GB_T_INTEGER, p.y(), GB_T_INTEGER, state);
 
 			CMOUSE_clear(false);

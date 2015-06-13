@@ -67,6 +67,6 @@ bool CDRAG_drag_move(QWidget *w, CWIDGET *control, QDropEvent *e);
 bool CDRAG_drag_drop(QWidget *w, CWIDGET *control, QDropEvent *e);
 void CDRAG_hide_frame(CWIDGET *control);
 
-void CLIPBOARD_has_changed();
+void CLIPBOARD_has_changed(QClipboard::Mode mode);
 
 #endif

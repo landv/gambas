@@ -59,7 +59,9 @@ typedef
 	struct _GtkTargetPair GtkTargetPair;
 #endif
 
+static int _current_clipboard = gClipboard::Clipboard;
 static GtkClipboard *_clipboard = NULL;
+static GtkClipboard *_selection = NULL;
 
 static char *convert_format(char *fmt)
 {
@@ -97,15 +99,35 @@ static GList *gdk_drag_context_list_targets(GdkDragContext *context)
 
 ************************************************************************/
 
-void gClipboard::init()
+static GtkClipboard *get_clipboard()
 {
-	if (!_clipboard) 
-		_clipboard = gtk_clipboard_get_for_display(gdk_display_get_default(), GDK_SELECTION_CLIPBOARD);
+	if (_current_clipboard == gClipboard::Selection)
+	{
+		if (!_selection)
+			_selection = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+		return _selection;
+	}
+	else
+	{
+		if (!_clipboard)
+			_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+		return _clipboard;
+	}
+}
+
+void gClipboard::setCurrent(int clipboard)
+{
+	_current_clipboard = clipboard;
+}
+
+int gClipboard::getCurrent()
+{
+	return _current_clipboard;
 }
 
 void gClipboard::clear()
 {
-	gtk_clipboard_clear(_clipboard);
+	gtk_clipboard_clear(get_clipboard());
 }
 
 char *gClipboard::getFormat(int n)
@@ -115,7 +137,7 @@ char *gClipboard::getFormat(int n)
 	GdkAtom *targets;
 	char *fmt, *cfmt;
 
-	if (!gtk_clipboard_wait_for_targets(_clipboard, &targets, &n_tg))
+	if (!gtk_clipboard_wait_for_targets(get_clipboard(), &targets, &n_tg))
 		return NULL;
 	
 	for (i = 0; i < n_tg; i++)
@@ -150,19 +172,19 @@ static void cb_get_text(GtkClipboard *clipboard, GtkSelectionData *selection, gu
 
 int gClipboard::getType()
 {
-	if (gtk_clipboard_wait_is_image_available(_clipboard)) return Image;
-	if (gtk_clipboard_wait_is_text_available(_clipboard)) return Text;
+	if (gtk_clipboard_wait_is_image_available(get_clipboard())) return Image;
+	if (gtk_clipboard_wait_is_text_available(get_clipboard())) return Text;
 	return Nothing;
 }
 
 void gClipboard::setImage(gPicture *image)
 {
-	gtk_clipboard_set_image(_clipboard, image->getPixbuf());
+	gtk_clipboard_set_image(get_clipboard(), image->getPixbuf());
 }
 
 gPicture * gClipboard::getImage()
 {
-  return new gPicture(gtk_clipboard_wait_for_image(_clipboard));
+  return new gPicture(gtk_clipboard_wait_for_image(get_clipboard()));
 }
 
 static void 
@@ -206,7 +228,7 @@ void gClipboard::setText(char *text, int len, char *format)
 	if (!text)
 		return;
 		
-	gt_clipboard_set_text(_clipboard, format, text, len);
+	gt_clipboard_set_text(get_clipboard(), format, text, len);
 }
 
 char *gClipboard::getText(int *len, const char *format)
@@ -221,7 +243,7 @@ char *gClipboard::getText(int *len, const char *format)
 
 	*len = 0;
 	
-	if (!gtk_clipboard_wait_for_targets(_clipboard, &targets, &n_tg) || n_tg <= 0)
+	if (!gtk_clipboard_wait_for_targets(get_clipboard(), &targets, &n_tg) || n_tg <= 0)
 		return NULL;
 	
 	for (i = 0; i < n_tg; i++)
@@ -239,10 +261,10 @@ char *gClipboard::getText(int *len, const char *format)
 	if (i >= n_tg)
 		return NULL;
 	
-	if (!gtk_clipboard_wait_is_target_available(_clipboard, target))
+	if (!gtk_clipboard_wait_is_target_available(get_clipboard(), target))
 		return NULL;
 	
-	data = gtk_clipboard_wait_for_contents(_clipboard, target);
+	data = gtk_clipboard_wait_for_contents(get_clipboard(), target);
 	*len = gtk_selection_data_get_length(data);
 	text = (char *)g_malloc(*len);
 	memcpy(text, gtk_selection_data_get_data(data), *len);

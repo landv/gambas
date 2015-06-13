@@ -35,8 +35,13 @@ public:
 		Text = 1,
 		Image = 2
 	};
+	enum {
+		Clipboard = 0,
+		Selection = 1
+	};
 	
-	static void init();
+	static void setCurrent(int clipboard);
+	static int getCurrent();
 	static void clear();
 	static char *getFormat(int n = 0);
 	static int getType();

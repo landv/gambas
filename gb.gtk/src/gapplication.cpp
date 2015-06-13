@@ -946,7 +946,6 @@ void gApplication::init(int *argc, char ***argv)
 
 	gdk_event_handler_set((GdkEventFunc)gambas_handle_event, NULL, NULL);
 	
-	gClipboard::init();
 	gKey::init();
 	
 	onEnterEventLoop = do_nothing;

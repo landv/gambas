@@ -366,12 +366,12 @@ MyApplication::MyApplication(int &argc, char **argv)
 
 void MyApplication::initClipboard()
 {
-  QObject::connect(clipboard(), SIGNAL(dataChanged()), qApp, SLOT(clipboardHasChanged()));
+  QObject::connect(clipboard(), SIGNAL(changed(QClipboard::Mode)), qApp, SLOT(clipboardHasChanged(QClipboard::Mode)));
 }
 
-void MyApplication::clipboardHasChanged()
+void MyApplication::clipboardHasChanged(QClipboard::Mode m)
 {
-	CLIPBOARD_has_changed();
+	CLIPBOARD_has_changed(m);
 }
 
 static bool QT_EventFilter(QEvent *e)
