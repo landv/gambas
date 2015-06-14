@@ -1137,3 +1137,31 @@ Public Sub GetDefaultPage() As String
   Return sResult
   
 End
+
+Public Sub GetPackageTable() As String[]
+
+  Dim aResult As String[]
+  Dim sComp As String
+  Dim sNeed As String
+  
+  aResult = New String[]
+  aResult.Add("[[")
+  aResult.Add("Package")
+  aResult.Add("--")
+  aResult.Add("Depends on these packages")
+  
+  For Each sComp In CComponent.ListAll()
+    
+    aResult.Add("==")
+    aResult.Add("'gambas3-" & Replace(sComp, ".", "-") & "'")
+    aResult.Add("--")
+    For Each sNeed In CComponent.Get(sComp).Require
+      aResult.Add("'gambas3-" & Replace(sNeed, ".", "-") & "'\\")
+    Next
+  Next
+  
+  aResult.Add("]]")
+  
+  Return aResult
+  
+End

@@ -200,6 +200,10 @@ Public Sub Command(sCommand As String) As String[]
   Else If sCommand = "changes" Then
     
     Return Main.GetChanges()
+    
+  Else If sCommand = "package-table" Then
+
+    Return Main.GetPackageTable()
 
   Else
     

@@ -825,6 +825,7 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   Dim YL As Integer
   Dim S, SS As Float
   Dim H As Integer
+  Dim sStr As String
 
   hInfo = $hDoc.Info(Row)
   X += $hView.ScrollX
@@ -859,10 +860,18 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
   If YL < 0 Or If YL = Y Then
     If $bShowLineNumber Then
-      iCol = $iForeground
-      If (Row + 1) Mod 10 Then iCol = $iLimitColor
+      If (Row + 1) Mod 10 = 0 Then
+        iCol = $iForeground
+      Else
+        iCol = $iLimitColor
+      Endif
       Paint.Background = iCol
-      Paint.DrawText(CStr(Row + 1 + $iLineNumberOffset), X, Y, $iWidthLineNumber - 4, H, Align.Right)
+      sStr = CStr(Row + 1 + $iLineNumberOffset)
+      Paint.DrawText(sStr, X, Y, $iWidthLineNumber - 4, H, Align.Right)
+      ' If Row = $Y Then 
+      '   Paint.Background = Color.SetAlpha(iCol, 128)
+      '   Paint.DrawText(sStr, X + 1, Y, $iWidthLineNumber - 4, H, Align.Right)
+      ' Endif
     Endif
   Endif
   
@@ -1520,6 +1529,8 @@ Public Sub View_MouseDown()
   
   $bFirstFocus = True
   
+  If Mouse.Right Then Return
+  
   Y = PosToLine(Mouse.Y)
   RY = $hRows.RelativeY
   
@@ -1539,13 +1550,14 @@ Public Sub View_MouseDown()
   Endif
   
   $bMouseDown = True
-  
 
 End
 
 Public Sub View_DblClick()
   
   Dim X, Y As Integer
+  
+  If Mouse.Right Then Return
   
   If $bShowIcon Or If $bShowExpand Then
     Y = PosToLine(Mouse.Y)
@@ -1569,8 +1581,9 @@ Public Sub View_DblClick()
   
 End
 
-
 Public Sub View_MouseDrag()
+  
+  If Mouse.Right Then Return
   
   If Not $hTimerScroll Then
     $hTimerScroll = New Timer As "TimerScroll"
