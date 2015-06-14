@@ -260,7 +260,6 @@ Private Sub Init()
 
   $hRows.Clear
   $hRows.Count = $hDoc.Count
-  CalcSizes
   $X = 0
   $Y = 0
   $XY = New Point
@@ -269,6 +268,7 @@ Private Sub Init()
   $SY = 0
   $SXY = New Point
   $YM = -1
+  CalcSizes
   $bShowCursor = True
   GotoCenter(0, 0)
   $bStyleChanged = True

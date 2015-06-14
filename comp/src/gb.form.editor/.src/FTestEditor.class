@@ -34,7 +34,7 @@ Public Sub Form_Open()
   'TextEditor1.Text = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz\n---"
 
   'TextEditor1.Text = "If sType = \"class\" And If Dir(File.Dir(sPath), File.BaseName(sPath) &/ \".*\").Count >= 2 Then Dec iCount\n'titi\n'tata"
-
+  
 End
 
 Public Sub TextEditor1_Margin()
@@ -65,5 +65,11 @@ End
 Public Sub txtPrint_KeyPress()
 
   Debug Key.Code;; Quote(Key.Text)
+
+End
+
+Public Sub Button3_Click()
+
+  TextEditor1.Clear
 
 End
