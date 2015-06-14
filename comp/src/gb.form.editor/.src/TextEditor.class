@@ -1283,7 +1283,10 @@ Public Sub View_KeyPress()
       Insert("\n" & String.Left(sTab, $X))
       
     Case Key.BackSpace
-      If Key.Normal Then
+      If Key.Control Then
+        If $bReadOnly Then Goto STOP_EVENT
+        DeleteWordLeft
+      Else If Key.Normal Then
         If $bReadOnly Then Goto STOP_EVENT
         DeleteLeft
       Endif
@@ -1861,6 +1864,28 @@ Private Sub DeleteLeft()
   Endif
 
 End
+
+Private Sub DeleteWordLeft()
+  
+  Dim X As Integer
+  
+  If DeleteSelection() Then Return
+
+  If $X = 0 Then
+    DeleteLeft
+    Return
+  Endif
+  
+  X = $hDoc.WordLeft($X, $Y)
+  If X = $X Then Return
+  
+  Begin()
+  Goto(X, $Y, True)
+  DeleteSelection()
+  End()
+  
+End
+
 
 Private Sub DeleteRight()
 
