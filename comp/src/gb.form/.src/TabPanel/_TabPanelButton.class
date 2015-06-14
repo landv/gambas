@@ -366,11 +366,13 @@ Public Sub DrawingArea_MouseMove()
   Dim bInClose As Boolean
   Dim X As Integer
   Dim bShowClose As Boolean
+  Dim bShift As Boolean
   
   If $bDrag Then TimerDrag_Timer
   
   X = Mouse.ScreenX - Me.ScreenX
-  If Mouse.Shift And If Mouse.Control Then Debug X
+  Try bShift = Mouse.Shift And Mouse.Control
+  If Not Error And If bShift Then Debug X
   
   If X >= 0 And If X < Me.W Then
     bShowClose = IsClosable()
