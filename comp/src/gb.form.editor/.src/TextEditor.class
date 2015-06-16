@@ -1510,11 +1510,13 @@ Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
     ' Break
     
   Loop
-  
-  If LP.Y < RY Then
-    D = Min(iLen, D + 1)
-  Else If LP.Y > RY Then
-    D = Max(0, D - 1)
+
+  If LP Then  
+    If LP.Y < RY Then
+      D = Min(iLen, D + 1)
+    Else If LP.Y > RY Then
+      D = Max(0, D - 1)
+    Endif
   Endif
 '   _posOutside = d > len;
   Return D
