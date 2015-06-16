@@ -156,6 +156,7 @@ Private $bNoResizeContents As Boolean
 Static Private $cGlobalCacheText As New Collection
 Private $cCacheText As Collection
 Private $sCacheTextKey As String
+Private $bUpdateHeightAllowed As Boolean
 
 Public Sub _new()
   
@@ -1456,12 +1457,13 @@ End
 
 Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
 
-  Dim I As Integer = -1
+  Dim I As Integer 
   Dim iLen As Integer
   Dim D As Integer
   Dim F As Integer
   Dim sStr As String
   Dim LP As Point
+  Dim J As Integer
   
   sStr = $hDoc.Lines[Y]
   iLen = $hDoc.LineLength[Y]
@@ -1481,29 +1483,33 @@ Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
   D = 0
   F = iLen
   
-  While F > D
-    If I < 0 Then
-      I = PX \ $hFont.TextWidth("m")
-    Else
-      I = (D + F) \ 2
-    Endif
+  Do
+    
+    J = (D + F) \ 2
+    If J = I Then Break
+    I = J
     
     LP = LinePos(Y, I)
     
     If RY < LP.Y Or If RY = LP.Y And PX < LP.X Then
       F = I
-      Continue
-    Endif
-    
-    LP = LinePos(Y, I + 1)
-    If RY > LP.Y Or If PX >= LP.X Then
+    Else If RY > LP.Y Or If PX > LP.X Then
       D = I + 1
-      Continue
+    Else
+      D = I
+      Break
     Endif
-    D = I
-    Break
     
-  Wend
+    ' 'LP = LinePos(Y, I + 1)
+    ' If RY > LP.Y Or If PX >= LP.X Then
+    '   D = I '+ 1
+    '   Continue
+    ' Endif
+    ' 
+    ' D = I
+    ' Break
+    
+  Loop
   
   If LP.Y < RY Then
     D = Min(iLen, D + 1)
@@ -2258,7 +2264,7 @@ End
 Public Sub _ResizeContents()
   
   If $bNoResizeContents Then Return
-  
+
   If $iWidth < $hView.ScrollWidth Then
     _UpdateAllHeight
   Else If $iWidth > $hView.ScrollWidth And If $cLineLayout And If $cLineLayout.Count Then
@@ -2279,6 +2285,11 @@ Public Sub View_Draw()
   Dim aRow As Integer[]
   Dim iMaxRow As Integer
   Dim W As Integer
+  
+  If Not $bUpdateHeightAllowed Then
+    $bUpdateHeightAllowed = True
+    _UpdateAllHeight(True)
+  Endif
   
   If $bStyleChanged Then
     $iBackground = $hStyles[Highlight.Background].Color
@@ -4139,6 +4150,8 @@ Public Sub _UpdateAllHeight(Optional bNow As Boolean)
 
   Dim TY As Integer
   
+  If Not $bUpdateHeightAllowed Then Return
+  
   If Not $cLineLayout Then 
 
     TY = $hRows._GetRowY($Y) - $hView.ScrollY
@@ -4157,7 +4170,8 @@ Public Sub _UpdateAllHeight(Optional bNow As Boolean)
   Endif
   
   If bNow Then
-    $hTimerHeight.Trigger
+    '$hTimerHeight.Trigger
+    TimerHeight_Timer
   Else
     $hTimerHeight.Start
   Endif
@@ -4167,10 +4181,22 @@ End
 Public Sub TimerHeight_Timer()
   
   Dim Y As Integer
-  Dim TY As Integer
+  Dim CY, TY As Integer
 
-  TY = $hRows._GetRowY($Y) - $hView.ScrollY
-
+  'Debug Me.Window.Title;; $iWidth;; $hView.ClientW
+  
+  Y = $hRows._GetRowY($Y)
+  If Y < $hView.ScrollY Then
+    TY = 0
+    CY = PosToLine(TY)
+  Else If Y + $LH >= $hView.ScrollY + $hView.ClientH Then
+    TY = $hView.ClientH
+    CY = PosToLine(TY)
+  Else
+    TY = Y - $hView.ScrollY
+    CY = $Y
+  Endif
+  
   $bNoResizeContents = True
   For Y = 0 To $hDoc.Max
     _UpdateLineHeight(Y)
@@ -4179,14 +4205,14 @@ Public Sub TimerHeight_Timer()
   _ClearCachePos
   _ResizeContents
   
-  $hView.ScrollY = $hRows._GetRowY($Y) - TY
+  $hView.ScrollY = $hRows._GetRowY(CY) - TY
   
-  EnsureVisible
+  'EnsureVisible
   $hView.Refresh
   
   $XY = LinePos($Y, $X)
   $SXY = LinePos($SY, $SX)
-  
+    
   If $hTimerHeight Then
     $hTimerHeight.Stop
     $hTimerHeight = Null
