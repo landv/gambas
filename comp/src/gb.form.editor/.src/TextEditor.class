@@ -1047,6 +1047,8 @@ Private Sub FindLargestLine() As Integer
   Dim W As Integer
   Dim WM As Integer = -1
 
+  If $hDoc.Count >= 10000 Then Inc Application.Busy
+
   For I = 0 To $hDoc.Count - 1
     W = LinePos(I).X
     If W > WM Then
@@ -1055,6 +1057,8 @@ Private Sub FindLargestLine() As Integer
     Endif
   Next
   
+  If $hDoc.Count >= 10000 Then Dec Application.Busy
+
   Return WM
 
 End
@@ -1255,19 +1259,26 @@ Public Sub View_KeyPress()
       
     Case Key.PageUp
       'Y = RealToView($Y)
-      Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hRows._GetRowHeight($Y) - $hView.ClientH)
+      'Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hRows._GetRowHeight($Y) - $hView.ClientH)
       'Y = ViewToReal(Y)
-      Goto($X, Max(0, Y), Key.Shift)
+      'Goto($X, Max(0, Y), Key.Shift)
+      If Key.Normal Then
+        GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y - $hView.ClientH - $hView.ScrollY, Key.Shift)
+      Endif
       
     Case Key.PageDown
       'Y = RealToView($Y)
-      Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hView.ClientH)
+      'Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hView.ClientH)
       'Y = ViewToReal(Y)
-      If Y >= 0 Then 
-        Goto($X, Y, Key.Shift)
-      Else
-        Goto($X, $hDoc.Max, Key.Shift)
+      'If Y >= 0 Then 
+        'Goto($X, Y, Key.Shift)
+      'Else
+        'Goto($X, $hDoc.Max, Key.Shift)
+      'Endif
+      If Key.Normal Then
+        GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y + $hView.ClientH - $hView.ScrollY, Key.Shift)
       Endif
+      
       
     Case Key.Enter, Key.Return
       
@@ -2344,7 +2355,7 @@ Public Sub View_Draw()
   
   W = $MW
   If $bShowModified Then W -= 4
-  If W > 0 Then Paint.FillRect(XX, hClip.Y, W, hClip.H, Color.SetAlpha($iLimitColor, &HC0))
+  If W > 0 Then Paint.FillRect(XX + $hView.ScrollX, hClip.Y, W, hClip.H, Color.SetAlpha($iLimitColor, &HC0))
   
   Y = YY
   For I = 0 To iMaxRow
@@ -4199,6 +4210,8 @@ Public Sub TimerHeight_Timer()
     CY = $Y
   Endif
   
+  If $hDoc.Count >= 10000 Then Inc Application.Busy
+  
   $bNoResizeContents = True
   For Y = 0 To $hDoc.Max
     _UpdateLineHeight(Y)
@@ -4219,6 +4232,8 @@ Public Sub TimerHeight_Timer()
     $hTimerHeight.Stop
     $hTimerHeight = Null
   Endif
+  
+  If $hDoc.Count >= 10000 Then Dec Application.Busy
   
 End
 
