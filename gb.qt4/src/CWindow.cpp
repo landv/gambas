@@ -1693,7 +1693,7 @@ void MyMainWindow::present(QWidget *parent)
 		activateWindow();
 	if (parent)
 		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
-	if (parent || THIS->stacking == 1)
+	//if (parent || THIS->stacking == 1)
 		raise();
 }
 

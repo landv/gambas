@@ -231,16 +231,13 @@ void *GB_SubCollectionContainer(void *_object)
 
 void GB_SubCollectionAdd(void *_object, const char *key, int len, void *value)
 {
-	void *old_value = NULL;
-
   if (len <= 0)
     len = strlen(key);
 
+	GB.Ref(value);
+	GB_SubCollectionRemove(THIS, key, len);
 	//fprintf(stderr, "GB_SubCollectionAdd: insert %p '%.*s'\n", value, len, key);
-	GB.HashTable.Get(THIS->hash_table, key, len, &old_value);
 	GB.HashTable.Add(THIS->hash_table, key, len, value);
-  GB.Ref(value);
-  GB.Unref(&old_value);
 }
 
 void GB_SubCollectionRemove(void *_object, const char *key, int len)

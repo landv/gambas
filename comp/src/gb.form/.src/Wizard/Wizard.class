@@ -124,6 +124,9 @@ Private Sub DoAnimate(iSrc As Integer, iDest As Integer)
   Dim hCont As Container
   Dim hSrc As _WizardContainer
   Dim hDest As _WizardContainer
+  Dim Y As Integer
+  
+  Y = If($hWizard.GetBorder(), 1, 0)
   
   hCont = $hWizard.GetContainer()
   hSrc = $aStep[iSrc]
@@ -136,7 +139,7 @@ Private Sub DoAnimate(iSrc As Integer, iDest As Integer)
   
   If iDest > iSrc Then
     
-    hDest.Move(hCont.W, 0)
+    hDest.Move(hCont.W, Y)
     
     fTime = Timer
     While hDest.X > 0
@@ -147,7 +150,7 @@ Private Sub DoAnimate(iSrc As Integer, iDest As Integer)
     
   Else
     
-    hDest.Move(- hCont.W, 0)
+    hDest.Move(- hCont.W, Y)
     
     fTime = Timer
     While hDest.X < 0

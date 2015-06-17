@@ -14,12 +14,12 @@ Private $iIgnore As Integer
 
 Private $iLine As Integer
 Private $bImport As Boolean
+Private $bCancel As Boolean
 
-Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅàáâãäå[a]Ææ[ae]Çç[c]ÈÉÊËèéêë[e]ÌÍÎÏìíîï[i]Ññ[n]ÒÓÔÕÖòóôõö[o]ÙÚÛÜùúûü[u]Ýýÿ[y]ß[ss]°[]"
+'Private Const REMOVE_ACC As String = "ÀÁÂÃÄÅàáâãäå[a]Ææ[ae]Çç[c]ÈÉÊËèéêë[e]ÌÍÎÏìíîï[i]Ññ[n]ÒÓÔÕÖòóôõö[o]ÙÚÛÜùúûü[u]Ýýÿ[y]ß[ss]°[]"
 
-Static Public Function Run(hConn As Connection, aTable As String[], sPath As String) As Boolean
+Static Public Function Run(hConn As Connection, aTable As String[]) As Boolean
   
-  $sPath = sPath
   $hConn = hConn
   $aTable = aTable
   Table = ""
@@ -28,11 +28,9 @@ Static Public Function Run(hConn As Connection, aTable As String[], sPath As Str
   
 End
 
-Public Sub btnOK_Click()
+Public Sub wizImport_Close()
 
   DoImport
-  btnOK.Enabled = False
-  tabImport.Index = 2
  
 End
 
@@ -44,11 +42,12 @@ End
 
 Public Sub Form_Open()
 
-  fprImport.Path = $sPath
-  'txtPath.Text = $sPath
-  
+  spnImport.Stop
+
+  fchImport.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
+  fchImport.Value = Settings["/Connection/ImportPath"]
+
   cmbTable.List = $aTable
-  cmbTable.Text = File.BaseName($sPath)
 
   txtPreview.Font = Font[Settings["/Editor/Font", Project.DEFAULT_FONT]]
 
@@ -57,12 +56,6 @@ Public Sub Form_Open()
   gvwMessage.Columns[0].Width = Desktop.Scale * 6
   gvwMessage.Columns[1].Text = ("Message")
   
-  cmbCharset.Text = Project.Config["/FImportTable/Charset", "UTF-8"]
-  cmbEndOfLine.Text = Project.Config["/FImportTable/EndOfLine", "Unix"]
-  cmbDelim.Text = Project.Config["/FImportTable/Delim", ","]
-  cmbEscape.Text = Project.Config["/FImportTable/Escape", Chr$(34)]
-  chkStrip.Value = Project.Config["/FImportTable/StripSpace", False]
-  txtIgnore.Value = Project.Config["/FImportTable/Ignore", 0]
   Settings.Read(Me)
   
 End
@@ -107,6 +100,8 @@ Private Sub UpdateKey()
   Dim aData As String[]
   Dim iLine As Integer
   Dim sData As String
+
+  If wizImport.Index < 1 Then Return
 
   UpdateDelim
   
@@ -177,9 +172,13 @@ Private Sub DoMessage(sMsg As String, Optional bNoLine As Boolean)
   gvwMessage.Rows.Count = iRow + 1
   
   If Not bNoLine Then gvwMessage[iRow, 0].Text = CStr($iLine)
-  gvwMessage[iRow, 1].Text = sMsg
+  If sMsg Begins "** " Then
+    gvwMessage[iRow, 1].Text = Mid$(sMsg, 3)
+    gvwMessage[iRow, 1].Foreground = Color.Red
+  Else
+    gvwMessage[iRow, 1].Text = sMsg
+  Endif
 
-  If tabImport.Index <> 2 Then tabImport.Index = 2 
   Wait
   
 End
@@ -188,11 +187,6 @@ End
 Private Function TransformField(sName As String) As String
 
   Dim iInd As Integer
-  Dim sCar As String
-  Dim iPos As Integer
-  Dim iPosL As Integer
-  Dim iPosR As Integer
-  Dim sNewName As String
   
   sName = Trim(sName) 
    
@@ -202,20 +196,20 @@ Private Function TransformField(sName As String) As String
     Endif
   Next
   
-  For iInd = 1 To String.Len(sName)
-    sCar = String.Mid$(sName, iInd, 1)
-    iPos = InStr(REMOVE_ACC, sCar)
-    If iPos Then
-      iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
-      iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
-      If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then 
-        sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
-      Endif 
-    Endif
-    sNewName &= sCar
-  Next
-
-  Return sNewName
+  ' For iInd = 1 To String.Len(sName)
+  '   sCar = String.Mid$(sName, iInd, 1)
+  '   iPos = InStr(REMOVE_ACC, sCar)
+  '   If iPos Then
+  '     iPosL = InStr(REMOVE_ACC, "[", iPos + 1)
+  '     iPosR = InStr(REMOVE_ACC, "]", iPos + 1)
+  '     If iPosL <> 0 And If iPosR <> 0 And If iPosL < iPosR Then 
+  '       sCar = Mid$(REMOVE_ACC, iPosL + 1, iPosR - iPosL - 1)
+  '     Endif 
+  '   Endif
+  '   sNewName &= sCar
+  ' Next
+  
+  Return Util.RemoveAccents(sName)
   
 End
 
@@ -306,9 +300,10 @@ Private Sub DoImport()
   Dim sKey As String
   Dim nImport As Integer
   Dim sDestCharset As String
-  Dim hWaiting As CWaitingAnimation
 
   $bImport = True 
+  $bCancel = False
+  
   gvwMessage.Rows.Count = 0
   hConn = $hConn
   sTable = Trim(cmbTable.Text)
@@ -316,7 +311,7 @@ Private Sub DoImport()
   
   UpdateDelim
   
-  hWaiting = New CWaitingAnimation(Me, True)
+  spnImport.Start
   
   If hConn.IgnoreCharset Then
     sDestCharset = "UTF-8"
@@ -407,14 +402,15 @@ Private Sub DoImport()
     rData.Update
     
     Inc nImport
-    hWaiting.SetValue(Seek(hFile) / Lof(hFile))
-    If hWaiting.Cancelled Then Error.Raise(("Cancelled by user"))
+    spnImport.Value = Seek(hFile) / Lof(hFile)
+    spnImport.Wait
+    If $bCancel Then Error.Raise(("Cancelled by user"))
     
   Wend
   
-  hWaiting.SetValue(1)
+  spnImport.Value = 1
   hConn.Commit
-  hWaiting.Stop
+  spnImport.Stop
 
   If nImport = 0 Then
     DoMessage(("No record imported."))
@@ -429,6 +425,7 @@ Private Sub DoImport()
 Finally
   
   Close #hFile
+  spnImport.Stop
   $bImport = False
   
 Catch
@@ -459,8 +456,52 @@ Public Sub Form_Close()
 
 End
 
-Public Sub tabImport_Click()
+Public Sub wizImport_BeforeChange()
 
-  If tabImport.Index = 0 Then btnOK.Enabled = True
+  Select Case wizImport.Index
+    
+    Case 0
+      $sPath = fchImport.SelectedPath
+      If Not Exist($sPath) Then Stop Event
+      
+      cmbCharset.Text = Project.Config["/FImportTable/Charset", "UTF-8"]
+      cmbEndOfLine.Text = Project.Config["/FImportTable/EndOfLine", "Unix"]
+      cmbDelim.Text = Project.Config["/FImportTable/Delim", ","]
+      cmbEscape.Text = Project.Config["/FImportTable/Escape", Chr$(34)]
+      chkStrip.Value = Project.Config["/FImportTable/StripSpace", False]
+      txtIgnore.Value = Project.Config["/FImportTable/Ignore", 0]
+      cmbTable.Text = File.BaseName($sPath)
+    
+  End Select
+
+End
+
+Public Sub wizImport_Cancel()
+
+  If $bImport Then
+    $bCancel = True
+  Else
+    Me.Close
+  Endif
+
+End
+
+Public Sub wizImport_Arrange()
+
+  spnImport.Move((wizImport.ClientW - spnImport.W) \ 2, (wizImport.ClientH - spnImport.H) \ 2)
+
+End
+
+Public Sub fchImport_Activate()
+
+  wizImport.MoveNext
+
+End
+
+Public Sub wizImport_Change()
+
+  If wizImport.Index = 1 Then
+    UpdateKey
+  Endif
 
 End

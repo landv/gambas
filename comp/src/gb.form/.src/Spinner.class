@@ -18,6 +18,7 @@ Private $hTimer As Timer
 Private $iBorder As Integer
 Private $bLabel As Boolean
 Private $fValue As Float
+Private $fLastWait As Float
 
 Public Sub _new()
   
@@ -42,6 +43,18 @@ Public Sub Stop()
   
 End
 
+Public Sub Wait()
+  
+  If $fLastWait = 0 Or If (Timer - $fLastWait) >= 0.2 Then
+    Wait 0.05
+    $fLastWait = Timer
+  Else
+    Wait
+  Endif
+  
+End
+
+
 Public Sub DrawingArea_Draw()
   
   Dim iFlag As Integer
@@ -52,35 +65,48 @@ Public Sub DrawingArea_Draw()
   Dim D As Float
   Dim I As Integer
   Dim C As Float
+  Dim W As Float
+  Dim H As Float
   
   If Not Me.Design Then
     If $fStartTime = 0 Then Goto DRAW_BORDER
     D = Frac(Timer - $fStartTime) * Pi(2)
   Endif
   
-  X = Paint.W / 2
-  Y = Paint.H / 2
-  R = Min(Paint.W, Paint.H) / 2 * 7 / 8
+  W = Paint.W
+  H = Paint.H
   
-  Paint.LineWidth = R / 8
-  Paint.LineCap = Paint.LineCapRound
+  If $bLabel Then
+    H -= Paint.Font.Height
+  Endif
   
-  For I = 0 To 11
+  If H > 0 Then
+  
+    X = W / 2
+    Y = H / 2
+    R = Min(W, H) / 2 * 7 / 8
     
-    A = Pi(2) * I / 12
-    C = Frac(1 + (D - A) / Pi(2))
+    Paint.LineWidth = R / 8
+    Paint.LineCap = Paint.LineCapRound
     
-    'Paint.Background = Color.Merge(Color.Background, Color.Foreground, C / 4)
-    Paint.Background = Color.SetAlpha(Color.Foreground, 255 * (1 - C / 4))
-    Paint.MoveTo(X + Cos(A) * R / 2, Y + Sin(A) * R / 2)
-    Paint.LineTo(X + Cos(A) * R, Y + Sin(A) * R)
-    Paint.Stroke
+    For I = 0 To 11
+      
+      A = Pi(2) * I / 12
+      C = Frac(1 + (D - A) / Pi(2))
+      
+      'Paint.Background = Color.Merge(Color.Background, Color.Foreground, C / 4)
+      Paint.Background = Color.SetAlpha(Color.Foreground, 255 * (1 - C / 4))
+      Paint.MoveTo(X + Cos(A) * R / 2, Y + Sin(A) * R / 2)
+      Paint.LineTo(X + Cos(A) * R, Y + Sin(A) * R)
+      Paint.Stroke
+      
+    Next
     
-  Next
+  Endif
   
   If $bLabel Then
     Paint.Background = Color.Foreground
-    Paint.DrawText(Format($fValue, "0%"), 0, 0, Paint.W, Paint.H, Align.Center)
+    Paint.DrawText(Format($fValue, "0%"), 0, Paint.H - Paint.Font.Height, Paint.W, Paint.Font.Height, Align.Center)
   Endif
   
 DRAW_BORDER:

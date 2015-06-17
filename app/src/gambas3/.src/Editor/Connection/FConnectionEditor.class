@@ -1686,14 +1686,7 @@ Public Sub btnImport_Click()
   
   If SaveTable() Then Return
   
-  Dialog.Title = ("Select the CSV file to import")
-  Dialog.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
-  Dialog.Path = Settings["/Connection/ImportPath"]
-  If Dialog.OpenFile() Then Return
-  Settings["/Connection/ImportPath"] = Dialog.Path
-  If Not Exist(Dialog.Path) Then Return
-  
-  FImportTable.Run($hConn, GetTableList(), Dialog.Path) 
+  FImportTable.Run($hConn, GetTableList()) 
   If FImportTable.Table Then
     LoadList(FImportTable.Table)
   Else

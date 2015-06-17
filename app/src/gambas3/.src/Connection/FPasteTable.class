@@ -177,7 +177,7 @@ Private Sub DoCopyTable(hSrc As Connection, hDst As Connection, sSrc As String, 
         rDst = hDst.Create(sDst)
         For iInd = 0 To rSrc.Fields.Count - 1
           rDst[iInd] = rSrc[iInd]
-          If rSrc.Fields[iInd].Type = gb.String Then
+          If rSrc.Fields[iInd].Type = gb.String And If rSrc[iInd] Then
             Try rDst[iInd] = Conv(rSrc[iInd], sSrcCharset, sDstCharset)
           Endif
         Next

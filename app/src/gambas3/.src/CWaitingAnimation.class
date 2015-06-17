@@ -3,11 +3,11 @@
 Property Read Cancelled As Boolean
 
 Private $hPanel As Panel
-Private $hMovieBox As MovieBox
 Private $hLabel As Label
 Private $hButton As Button
 Private $bCancelled As Boolean
 Private $fLastWait As Float
+Private $hSpinner As Spinner
 
 Private Sub DisableWindow(hWindow As Window, bDisable As Boolean)
 
@@ -27,17 +27,24 @@ Public Sub _new(hWindow As Window, Optional bWithCancel As Boolean)
   With $hPanel
     .Ignore = True
     .Move((hWindow.ClientW - Desktop.Scale * 16) / 2, (hWindow.ClientH - Desktop.Scale * 16) / 2, Desktop.Scale * 16, Desktop.Scale * 16)
-    .Background = Color.LightForeground
+    '.Background = Color.LightForeground
   End With
   
-  $hMovieBox = New MovieBox($hPanel)
-  With $hMovieBox
-    .Alignment = Align.Center
-    .Background = Color.White
-    .Path = "img/waiting.gif"
-    .Playing = True
-    .Move(8, 8, $hPanel.W - 16, $hPanel.H - 16)
-  End With    
+  $hSpinner = New Spinner($hPanel)
+  With $hSpinner
+     .Move(8, 8, $hPanel.W - 16, $hPanel.H - 16)
+     .Show
+     .Start
+  End With
+  
+  ' $hMovieBox = New MovieBox($hPanel)
+  ' With $hMovieBox
+  '   .Alignment = Align.Center
+  '   .Background = Color.White
+  '   .Path = "img/waiting.gif"
+  '   .Playing = True
+  '   .Move(8, 8, $hPanel.W - 16, $hPanel.H - 16)
+  ' End With    
   
   $hLabel = New Label($hPanel)
   With $hLabel
