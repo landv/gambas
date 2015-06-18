@@ -448,7 +448,7 @@ GB_DESC PolygonDesc[] =
 	GB_METHOD("Clean", "Polygon", Polygon_Clean, "[(Distance)f]"),
 
 	GB_METHOD("Add", NULL, Polygon_Add, "(X)f(Y)f"),
-	GB_METHOD("AddPoint", NULL, Polygon_AddPoint, "(Point)Point;"),
+	GB_METHOD("AddPoint", NULL, Polygon_AddPoint, "(Point)PointF;"),
 	GB_METHOD("Remove", NULL, Polygon_Remove, "(Index)i[(Count)i]"),
 
 	GB_INTERFACE("_convert", &_convert_polygon),
