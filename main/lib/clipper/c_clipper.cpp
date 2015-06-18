@@ -436,7 +436,7 @@ GB_DESC PolygonDesc[] =
 	GB_METHOD("_free", NULL, Polygon_free, NULL),
 
 	GB_METHOD("_get", "PointF", Polygon_get, "(Index)i"),
-	GB_METHOD("_put", NULL, Polygon_put, "(Index)i(Point)PointF;"),
+	GB_METHOD("_put", NULL, Polygon_put, "(Point)PointF;(Index)i"),
 
 	GB_PROPERTY_READ("Count", "i", Polygon_Count),
 	GB_PROPERTY_READ("Max", "i", Polygon_Max),
