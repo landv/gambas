@@ -22,6 +22,7 @@ Property Action As String
 Property Design As Boolean
 Property Settings As Variant[]
 Property Transparent As Boolean
+Property MinSize As Integer
 
 Private $hForm As FSidePanel
 
@@ -202,5 +203,17 @@ End
 Private Sub Transparent_Write(Value As Boolean)
 
   $hForm.SetTransparent(Value)
+
+End
+
+Private Function MinSize_Read() As Integer
+
+  Return $hForm.GetMinSize()
+
+End
+
+Private Sub MinSize_Write(Value As Integer)
+
+  $hForm.SetMinSize(Value)
 
 End

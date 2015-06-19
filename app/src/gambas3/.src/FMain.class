@@ -39,6 +39,8 @@ Public Sub _new()
   ScrollArea(tvwProject.Proxy.Proxy).Shadow = True
   'tvwProject.Columns.Count = 2
   
+  panProject.MinSize = Desktop.Scale * 24
+  
   Design.Init
   
   FDebugInfo.Load(panDebug)

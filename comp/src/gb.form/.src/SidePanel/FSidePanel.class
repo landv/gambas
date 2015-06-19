@@ -21,6 +21,7 @@ Private $bCanMove As Boolean
 Private $bInside As Boolean
 Private $bDblClick As Boolean
 Private $bTransparent As Boolean
+Private $iMinSize As Integer
 
 Private BUTTON_H As Integer = 6
 Private BUTTON_H_TRANS As Integer = 4
@@ -42,6 +43,7 @@ Public Sub _new()
 
   $bVisible = True
   $iOrientation = Align.Top
+  $iMinSize = Desktop.Scale * 8
   'btnSide.Transparent = True
   'btnSide2.Transparent = True
 
@@ -539,7 +541,7 @@ Private Function GetDim(H As Integer) As Integer
   
   Dim iMin As Integer
 
-  iMin = Min($iMax, Max(BUTTON_H, Desktop.Scale * 8))
+  iMin = Min($iMax, Max(BUTTON_H, $iMinSize))
 
   If H < BUTTON_H Then
     H = If($bTransparent, 1, BUTTON_H)
@@ -564,7 +566,7 @@ Public Sub panMove_MouseMove()
   If Not Me.Parent.Enabled Then Return
   If $bFixed Then Return
 
-  iMax = Max(0, $iMax - Desktop.Scale * 8)
+  iMax = Max(0, $iMax - $iMinSize)
 
   Select Case $iOrientation
     Case Align.Top
@@ -990,6 +992,18 @@ End
 Public Sub mnuTransparent_Click()
   
   SetTransparent(Not IsTransparent())
+  
+End
+
+Public Sub GetMinSize() As Integer
+  
+  Return $iMinSize
+  
+End
+
+Public Sub SetMinSize(iMinSize As Integer)
+  
+  $iMinSize = Max(Desktop.Scale, iMinSize)
   
 End
 

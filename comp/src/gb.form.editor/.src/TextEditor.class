@@ -1493,12 +1493,13 @@ Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
 '   
   D = 0
   F = iLen
+  J = -1
   
   Do
     
-    J = (D + F) \ 2
-    If J = I Then Break
-    I = J
+    I = (D + F) \ 2
+    If I = J Then Break
+    J = I
     
     LP = LinePos(Y, I)
     

@@ -12,6 +12,7 @@
     Arrangement = Arrange.Fill
     Count = 4
     TextFont = Font["Bold,+2"]
+    ShowIndex = True
     Border = False
     ActionText = ("Import")
     ActionPicture = Picture["icon:/small/open"]
@@ -144,7 +145,7 @@
       MoveScaled(1,1,59,49)
     }
     { spnImport Spinner
-      MoveScaled(66,24,18,18)
+      MoveScaled(66,24,18,20)
       Ignore = True
       Label = True
     }

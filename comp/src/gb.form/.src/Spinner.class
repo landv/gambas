@@ -4,10 +4,10 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border{Border.*}=None,Label"
+Public Const _Properties As String = "*,Border,Label"
 Public Const _DefaultSize As String = "8,8"
 
-Property Border As Integer
+Property Border As Boolean
 Property Label As Boolean
 Property Value As Float
 Property Enabled As Boolean
@@ -15,7 +15,7 @@ Property Enabled As Boolean
 Private $hDrawingArea As DrawingArea
 Private $fStartTime As Float
 Private $hTimer As Timer
-Private $iBorder As Integer
+Private $bBorder As Boolean
 Private $bLabel As Boolean
 Private $fValue As Float
 Private $fLastWait As Float
@@ -67,6 +67,7 @@ Public Sub DrawingArea_Draw()
   Dim C As Float
   Dim W As Float
   Dim H As Float
+  Dim HL As Integer
   
   If Not Me.Design Then
     If $fStartTime = 0 Then Goto DRAW_BORDER
@@ -77,7 +78,8 @@ Public Sub DrawingArea_Draw()
   H = Paint.H
   
   If $bLabel Then
-    H -= Paint.Font.Height
+    HL = Paint.Font.Height + Desktop.Scale
+    H -= HL + Desktop.Scale
   Endif
   
   If H > 0 Then
@@ -106,12 +108,12 @@ Public Sub DrawingArea_Draw()
   
   If $bLabel Then
     Paint.Background = Color.Foreground
-    Paint.DrawText(Format($fValue, "0%"), 0, Paint.H - Paint.Font.Height, Paint.W, Paint.Font.Height, Align.Center)
+    Paint.DrawText(Format($fValue, "0%"), 0, Paint.H - HL, Paint.W, HL - Desktop.Scale, Align.Center)
   Endif
   
 DRAW_BORDER:
   
-  If $iBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, $iBorder, iFlag)
+  If $bBorder Then Style.PaintPanel(0, 0, Paint.W, Paint.H, Border.Plain, iFlag)
   
 End
 
@@ -121,15 +123,15 @@ Public Sub Timer_Timer()
   
 End
 
-Private Function Border_Read() As Integer
+Private Function Border_Read() As Boolean
 
-  Return $iBorder
+  Return $bBorder
 
 End
 
-Private Sub Border_Write(Value As Integer)
+Private Sub Border_Write(Value As Boolean)
 
-  $iBorder = Value
+  $bBorder = Value
   $hDrawingArea.Refresh
 
 End
