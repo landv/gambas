@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -58,6 +58,7 @@ Property ShowIcon As Boolean
 Property ShowBraces As Boolean
 Property ShowCursor As Boolean
 Property ShowExpand As Boolean
+Property ShowSpaces As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
@@ -141,6 +142,7 @@ Private $bShowPosition As Boolean
 Private $bShowIcon As Boolean
 Private $bShowBraces As Boolean
 Private $bShowExpand As Boolean
+Private $bShowSpaces As Boolean
 
 Private $bFirstFocus As Boolean
 
@@ -259,8 +261,7 @@ End
 
 Private Sub Init()
 
-  $hRows.Clear
-  $hRows.Count = $hDoc.Count
+  $bStyleChanged = True
   $X = 0
   $Y = 0
   $XY = New Point
@@ -269,13 +270,19 @@ Private Sub Init()
   $SY = 0
   $SXY = New Point
   $YM = -1
+  
+  $hRows.Clear
+  $hRows.Count = $hDoc.Count
+  
   CalcSizes
-  $bShowCursor = True
-  GotoCenter(0, 0)
-  $bStyleChanged = True
+  
   $cCachePos.Clear
   $cCacheText.Clear
   $cCacheView.Clear
+  
+  $bShowCursor = True
+  GotoCenter(0, 0)
+  
   Refresh
 
 End
@@ -445,7 +452,7 @@ End
 ' End
 ' 
 
-Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, Y As Integer, H As Integer, aLayout As Integer[])
+Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[], X As Integer, Y As Integer, H As Integer, aLayout As Integer[])
 
   Dim I As Integer
   Dim hStyle As TextEditorStyle
@@ -453,7 +460,6 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
   Dim iLen As Integer
   Dim P As Integer
   Dim sStr As String
-  Dim sText As String
   Dim X2 As Integer
   Dim iState As Integer
   Dim XMin As Integer
@@ -478,7 +484,6 @@ Private Sub DrawHighlightedText(Row As Integer, aColor As Byte[], X As Integer, 
 
   XX = X
   YY = Y
-  sText = $hDoc.Lines[Row]
   
   If aLayout Then
     iNextBreak = aLayout[0]
@@ -658,6 +663,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim XY2Y As Integer
   Dim XS As Integer
   Dim XX As Integer
+  Dim hPos As Point
 
   'Debug Row
   H = $LH
@@ -751,17 +757,16 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   ' Text
   
   Try aLayout = $cLineLayout[Row]
- 
+  sText = $hDoc.Lines[Row]
+    
   If hInfo.Colors Then
     
-    DrawHighlightedText(Row, hInfo.Colors, X, Y, H, aLayout)
+    DrawHighlightedText(Row, sText, hInfo.Colors, X, Y, H, aLayout)
     
   Else
     
     Paint.Background = $iForeground
 
-    sText = $hDoc.Lines[Row]
-    
     If aLayout Then
       
       P = 1
@@ -784,8 +789,21 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     
   Endif
   
-  If Row = $Y And If aLayout Then
+  ' Ending spaces
+  
+  If $bShowSpaces And If sText Ends " " Then
     
+    XX = X + $iSpaceWidth \ 2 - 1
+    YY = Y + H \ 2 - 1
+    For P = String.Len(sText) DownTo 1
+      If String.Mid$(sText, P, 1) <> " " Then Break
+      hPos = LinePos(Row, P - 1)
+      Paint.FillRect(XX + hPos.X, YY + hPos.Y, 2, 2, $iLimitColor)
+    Next
+    
+  Endif
+  
+  If Row = $Y And If aLayout Then
     
     Paint.FillRect($iWidth - $MW - 4, Y, 4, Height, $iMultiLineColor)
     
@@ -4302,4 +4320,17 @@ Public Sub Styles_Change()
   $bStyleChanged = True
   $cCacheText.Clear
   
+End
+
+Private Function ShowSpaces_Read() As Boolean
+
+  Return $bShowSpaces
+
+End
+
+Private Sub ShowSpaces_Write(Value As Boolean)
+
+  $bShowSpaces = Value
+  $hView.Refresh
+
 End

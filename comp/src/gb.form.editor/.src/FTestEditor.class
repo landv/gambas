@@ -9,12 +9,12 @@ Public Sub Form_Open()
   
   'TextEditor1.Highlight = "html"
   'TextEditor1.Highlight = "C++"
-  TextEditor1.Highlight = "gambas"
+  'TextEditor1.Highlight = "gambas"
   
   'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/TextEditor.class", True)
   'TextEditor1.Load("/var/log/thttpd/debug.log.old")
   'TextEditor1.Load("~/cosme/style.css")
-  TextEditor1.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
+  'TextEditor1.Load("~/gambas/3.0/trunk/app/src/gambas3/.src/Project.module")
   'TextEditor1.Load("~/gambas/3.0/trunk/gb.qt4/src/CWidget.cpp")
   'TextEditor1.Load("~/gambas/3.0/trunk/main/share/gb_reserved_temp.h")
   'TextEditor1.Goto(0, TextEditor1.Count - 1)
@@ -32,7 +32,7 @@ Public Sub Form_Open()
   
   'TextEditor2.View = TextEditor1
   
-  'TextEditor1.Text = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz\n---"
+  TextEditor1.Text = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 
   'TextEditor1.Text = "If sType = \"class\" And If Dir(File.Dir(sPath), File.BaseName(sPath) &/ \".*\").Count >= 2 Then Dec iCount\n'titi\n'tata"
   

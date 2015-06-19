@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbc_dump.c
+	gbc_dump.c
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -48,29 +48,30 @@ static int _buffer_ptr = 0;
 
 static const char *get_name(int index)
 {
-  return TABLE_get_symbol_name(JOB->class->table, index);
+	return TABLE_get_symbol_name(JOB->class->table, index);
 }
 
-
-static const char *get_string(int index)
+static void get_string(int index, const char **str, int *len)
 {
-  return TABLE_get_symbol_name(JOB->class->string, index);
+	SYMBOL *sym = TABLE_get_symbol(JOB->class->string, index);
+	*str = sym->name;
+	*len = sym->len;
 }
 
-static void print_quoted(FILE *file, const char *str)
+static void print_quoted(FILE *file, const char *str, int len)
 {
 	unsigned char c;
 	
 	fputc('"', file);
-	for(;;)
+	while (len--)
 	{
 		c = *str++;
-		if (!c)
-			break;
 		if (c == '\n')
 			fputs("\\n", file);
 		else if (c == '\t')
 			fputs("\\t", file);
+		else if (c == 0)
+			fputs("\\0", file);
 		else if (c == '"')
 			fputs("\\\"", file);
 		else
@@ -81,255 +82,255 @@ static void print_quoted(FILE *file, const char *str)
 
 static void dump_name(int index)
 {
-  printf("%s", get_name(index));
+	printf("%s", get_name(index));
 }
 
 
 static void dump_type(TYPE type, bool as)
 {
-  int value;
-  TYPE_ID id;
-  CLASS_ARRAY *array;
-  int i;
+	int value;
+	TYPE_ID id;
+	CLASS_ARRAY *array;
+	int i;
 
-  id = TYPE_get_id(type);
-  value = TYPE_get_value(type);
+	id = TYPE_get_id(type);
+	value = TYPE_get_value(type);
 
-  if (id == T_ARRAY)
-  {
-    array = &JOB->class->array[value];
+	if (id == T_ARRAY)
+	{
+		array = &JOB->class->array[value];
 
-    printf("[");
-    for (i = 0; i < array->ndim; i++)
-    {
-      if (i > 0)
-        printf(",");
-      printf("%d", array->dim[i]);
-    }
-    printf("] As ");
-    dump_type(array->type, FALSE);
-  }
-  else if (id == T_OBJECT && value >= 0)
-  {
-    if (as)
-      printf(" As ");
-    dump_name(JOB->class->class[value].index);
-  }
-  else
-  {
-    if (as)
-      printf(" As ");
-    printf("%s", TYPE_get_desc(type));
-  }
+		printf("[");
+		for (i = 0; i < array->ndim; i++)
+		{
+			if (i > 0)
+				printf(",");
+			printf("%d", array->dim[i]);
+		}
+		printf("] As ");
+		dump_type(array->type, FALSE);
+	}
+	else if (id == T_OBJECT && value >= 0)
+	{
+		if (as)
+			printf(" As ");
+		dump_name(JOB->class->class[value].index);
+	}
+	else
+	{
+		if (as)
+			printf(" As ");
+		printf("%s", TYPE_get_desc(type));
+	}
 }
 
 
 static void dump_function(FUNCTION *func)
 {
-  int i;
+	int i;
 
 	//printf("<%lld> ", func->byref);
 	
-  printf("(");
+	printf("(");
 
-  for (i = 0; i < func->nparam; i++)
-  {
-    if (i > 0) printf(", ");
+	for (i = 0; i < func->nparam; i++)
+	{
+		if (i > 0) printf(", ");
 
-    if (i >= func->npmin)
-      printf("Optional ");
+		if (i >= func->npmin)
+			printf("Optional ");
 		
 		if (func->byref & (1LL << i))
 			printf("ByRef ");
 
-    dump_name(func->param[i].index);
-    dump_type(func->param[i].type, TRUE);
-  }
+		dump_name(func->param[i].index);
+		dump_type(func->param[i].type, TRUE);
+	}
 
-  if (func->vararg)
-  {
-    if (func->nparam > 0)
-      printf(", ");
-    printf("...");
-  }
+	if (func->vararg)
+	{
+		if (func->nparam > 0)
+			printf(", ");
+		printf("...");
+	}
 
-  printf(")");
+	printf(")");
 }
 
 
 
 void CLASS_dump(void)
 {
-  int i;
-  TYPE type;
-  CLASS_SYMBOL *sym;
-  CLASS *class = JOB->class;
+	int i;
+	TYPE type;
+	CLASS_SYMBOL *sym;
+	CLASS *class = JOB->class;
 
-  if (JOB->is_module)
-    printf("MODULE ");
-  else if (JOB->is_form)
-    printf("FORM ");
-  else
-    printf("CLASS ");
+	if (JOB->is_module)
+		printf("MODULE ");
+	else if (JOB->is_form)
+		printf("FORM ");
+	else
+		printf("CLASS ");
 
-  printf("%s\n", class->name);
+	printf("%s\n", class->name);
 
-  if (class->parent != NO_SYMBOL)
-  {
-    printf("CLASS INHERITS ");
-    dump_name(class->class[class->parent].index);
-    putchar('\n');
-  }
+	if (class->parent != NO_SYMBOL)
+	{
+		printf("CLASS INHERITS ");
+		dump_name(class->class[class->parent].index);
+		putchar('\n');
+	}
 
-  if (class->exported)
-    printf("EXPORT\n");
+	if (class->exported)
+		printf("EXPORT\n");
 
-  if (class->autocreate)
-    printf("CREATE\n");
+	if (class->autocreate)
+		printf("CREATE\n");
 
-  if (class->optional)
-    printf("OPTIONAL\n");
+	if (class->optional)
+		printf("OPTIONAL\n");
 
-  putchar('\n');
+	putchar('\n');
 
-  printf("Static size : %d octets\n", class->size_stat);
-  printf("Dynamic size : %d octets\n\n", class->size_dyn);
+	printf("Static size : %d octets\n", class->size_stat);
+	printf("Dynamic size : %d octets\n\n", class->size_dyn);
 
-  for (i = 0; i < TABLE_count(class->table); i++)
-  {
-    sym = CLASS_get_symbol(class, i);
-    type = sym->global.type;
-    if (TYPE_is_null(type))
-      continue;
+	for (i = 0; i < TABLE_count(class->table); i++)
+	{
+		sym = CLASS_get_symbol(class, i);
+		type = sym->global.type;
+		if (TYPE_is_null(type))
+			continue;
 
-    if (TYPE_is_static(type)) printf("Static ");
-    if (TYPE_is_public(type)) printf("Public "); else printf("Private ");
+		if (TYPE_is_static(type)) printf("Static ");
+		if (TYPE_is_public(type)) printf("Public "); else printf("Private ");
 
-    switch(TYPE_get_kind(type))
-    {
-      case TK_VARIABLE:
+		switch(TYPE_get_kind(type))
+		{
+			case TK_VARIABLE:
 
-        dump_name(i);
-        dump_type(type, TRUE);
-        break;
+				dump_name(i);
+				dump_type(type, TRUE);
+				break;
 
-      case TK_FUNCTION:
+			case TK_FUNCTION:
 
-        if (TYPE_get_id(type) == T_VOID)
-          printf("Procedure ");
-        else
-          printf("Function ");
+				if (TYPE_get_id(type) == T_VOID)
+					printf("Procedure ");
+				else
+					printf("Function ");
 
-        dump_name(i);
-        dump_function(&class->function[sym->global.value]);
+				dump_name(i);
+				dump_function(&class->function[sym->global.value]);
 
-        break;
+				break;
 
-      case TK_CONST:
+			case TK_CONST:
 
-        printf("Const ");
-        dump_name(i);
-        dump_type(type, TRUE);
-        printf(" = ");
-        dump_name(class->constant[sym->global.value].index);
+				printf("Const ");
+				dump_name(i);
+				dump_type(type, TRUE);
+				printf(" = ");
+				dump_name(class->constant[sym->global.value].index);
 
-        break;
+				break;
 
-      case TK_PROPERTY:
+			case TK_PROPERTY:
 
-        printf("Property ");
-        if (class->prop[sym->global.value].write == NO_SYMBOL)
-          printf("Read ");
-        dump_name(i);
-        dump_type(type, TRUE);
-        break;
+				printf("Property ");
+				if (class->prop[sym->global.value].write == NO_SYMBOL)
+					printf("Read ");
+				dump_name(i);
+				dump_type(type, TRUE);
+				break;
 
-      case TK_EVENT:
+			case TK_EVENT:
 
-        printf("Event ");
-        dump_name(i);
-        break;
+				printf("Event ");
+				dump_name(i);
+				break;
 
-      case TK_UNKNOWN: printf("Unknown "); break;
-      case TK_EXTERN: printf("Extern "); break;
-      case TK_LABEL: printf("Label "); break;
-    }
+			case TK_UNKNOWN: printf("Unknown "); break;
+			case TK_EXTERN: printf("Extern "); break;
+			case TK_LABEL: printf("Label "); break;
+		}
 
-    putchar('\n');
+		putchar('\n');
 
-    /*
-    if (TYPE_get_kind(type) == TK_FUNCTION)
-    {
-      func = &class->function[value];
-      printf(" L:%ld", func->line);
-    }
-    else if (TYPE_get_kind(type) == TK_EVENT)
-      func = (FUNCTION *)&class->event[value];
-    else if (TYPE_get_kind(type) == TK_EXTERN)
-    {
-      func = (FUNCTION *)&class->ext_func[value];
-      printf(" in %s", TABLE_get_symbol_name(class->table, class->ext_func[value].library));
-    }
-    */
-  }
+		/*
+		if (TYPE_get_kind(type) == TK_FUNCTION)
+		{
+			func = &class->function[value];
+			printf(" L:%ld", func->line);
+		}
+		else if (TYPE_get_kind(type) == TK_EVENT)
+			func = (FUNCTION *)&class->event[value];
+		else if (TYPE_get_kind(type) == TK_EXTERN)
+		{
+			func = (FUNCTION *)&class->ext_func[value];
+			printf(" in %s", TABLE_get_symbol_name(class->table, class->ext_func[value].library));
+		}
+		*/
+	}
 
-  putchar('\n');
+	putchar('\n');
 }
 
 static void export_newline(void)
 {
-  fputc('\n', _finfo);
+	fputc('\n', _finfo);
 }
 
 static void export_type(TYPE type, bool scomma)
 {
-  int value;
+	int value;
 	int index;
-  TYPE_ID id;
+	TYPE_ID id;
 
-  id = TYPE_get_id(type);
-  value = TYPE_get_value(type);
+	id = TYPE_get_id(type);
+	value = TYPE_get_value(type);
 
-  if (id == T_OBJECT && value >= 0)
-  {
-    fprintf(_finfo, "%s", get_name(JOB->class->class[value].index));
-    if (scomma)
-      fputc(';', _finfo);
-  }
-  else if (id == T_ARRAY)
+	if (id == T_OBJECT && value >= 0)
+	{
+		fprintf(_finfo, "%s", get_name(JOB->class->class[value].index));
+		if (scomma)
+			fputc(';', _finfo);
+	}
+	else if (id == T_ARRAY)
 	{
 		type = JOB->class->array[value].type;
 		index = CLASS_get_array_class(JOB->class, TYPE_get_id(type), TYPE_get_value(type));
 		fprintf(_finfo, "%s", get_name(JOB->class->class[index].index));
-    if (scomma)
-      fputc(';', _finfo);
+		if (scomma)
+			fputc(';', _finfo);
 	}
-  // TODO: Manage T_STRUCT
-  else
-    fprintf(_finfo, "%s", TYPE_get_short_desc(type));
+	// TODO: Manage T_STRUCT
+	else
+		fprintf(_finfo, "%s", TYPE_get_short_desc(type));
 }
 
 
 static void export_signature(int nparam, int npmin, PARAM *param, bool vararg)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < nparam; i++)
-  {
-    if (i == npmin)
-      fprintf(_finfo, "[");
+	for (i = 0; i < nparam; i++)
+	{
+		if (i == npmin)
+			fprintf(_finfo, "[");
 
-    fprintf(_finfo, "(%s)", get_name(param[i].index));
-    export_type(param[i].type, TRUE);
-  }
+		fprintf(_finfo, "(%s)", get_name(param[i].index));
+		export_type(param[i].type, TRUE);
+	}
 
-  if (npmin < nparam)
-    fprintf(_finfo, "]");
+	if (npmin < nparam)
+		fprintf(_finfo, "]");
 
-  if (vararg)
-    fprintf(_finfo, ".");
+	if (vararg)
+		fprintf(_finfo, ".");
 
-  export_newline();
+	export_newline();
 }
 
 
@@ -348,9 +349,9 @@ static void close_file_and_rename(FILE *f, const char *file, const char *dest)
 	if (f)
 	{
 		fclose(f);
-    FILE_unlink(dest); 
-    FILE_rename(file, dest);
-    FILE_set_owner(dest, COMP_project);
+		FILE_unlink(dest); 
+		FILE_rename(file, dest);
+		FILE_set_owner(dest, COMP_project);
 	}
 	else
 	{
@@ -505,16 +506,18 @@ static void class_update_exported(CLASS *class)
 
 static void insert_class_info(CLASS *class, FILE *fw)
 {
-  int i;
-  TYPE type;
-  CLASS_SYMBOL *sym;
-  char kind;
-  int val;
-  FUNCTION *func;
-  EVENT *event;
-  EXTFUNC *extfunc;
-  CONSTANT *cst;
+	int i;
+	TYPE type;
+	CLASS_SYMBOL *sym;
+	char kind;
+	int val;
+	FUNCTION *func;
+	EVENT *event;
+	EXTFUNC *extfunc;
+	CONSTANT *cst;
 	int line;
+	const char *str;
+	int len;
 	
 	if (JOB->verbose)
 		printf("Insert '%s' information into .info file\n", class->name);
@@ -596,7 +599,10 @@ static void insert_class_info(CLASS *class, FILE *fw)
 		{
 			val = class->prop[sym->global.value].comment;
 			if (val != NO_SYMBOL)
-				fprintf(_finfo, "%s", get_string(val));
+			{
+				get_string(val, &str, &len);
+				fprintf(_finfo, "%.*s", len, str);
+			}
 		}
 
 		export_newline();
@@ -630,7 +636,8 @@ static void insert_class_info(CLASS *class, FILE *fw)
 						break;
 					
 					case T_STRING:
-						print_quoted(_finfo, get_string(cst->value));
+						get_string(cst->value, &str, &len);
+						print_quoted(_finfo, str, len);
 						export_newline();
 						break;
 
@@ -736,15 +743,15 @@ void CLASS_export(void)
 	char *line;
 	int len;
 	bool inserted = FALSE;
-  CLASS *class = JOB->class;
-  int cmp;
-  const char *msg;
+	CLASS *class = JOB->class;
+	int cmp;
+	const char *msg;
 
-  if (chdir(FILE_get_dir(COMP_project)))
-  {
-    msg = "Cannot change directory";
-    goto __ERROR;
-  }
+	if (chdir(FILE_get_dir(COMP_project)))
+	{
+		msg = "Cannot change directory";
+		goto __ERROR;
+	}
 	
 	class_update_exported(class);
 
@@ -821,6 +828,6 @@ void CLASS_export(void)
 	
 __ERROR:
 
-  THROW("Cannot create class information: &1: &2", msg, strerror(errno));
+	THROW("Cannot create class information: &1: &2", msg, strerror(errno));
 }
 
