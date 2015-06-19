@@ -29,7 +29,7 @@ Public Sub ReadConfig()
   Me.ShowLineNumber = Settings["/Editor/ShowLineNumbers", False]
   Me.ShowCurrent = Settings["/Editor/ShowCurrent", True]
   Me.ShowExpand = Settings["/Editor/ShowExpand", True]
-  'Me.Flags[Editor.ShowDots] = Settings["/Editor/ShowDots", True]
+  Me.ShowSpaces = Settings["/Editor/ShowSpaces", True]
   'Me.Flags[Editor.NoFolding] = Not Settings["/Editor/ShowFolding", True]
   Me.ShowBraces = True
   

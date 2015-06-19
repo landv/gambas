@@ -103,7 +103,7 @@ Public Sub _new()
     [btnShowLineNumber, "/Editor/ShowLineNumbers", 0],
     [btnShowChange, "/Editor/ShowChange", 1],
     [btnShowCurrent, "/Editor/ShowCurrent", 1],
-    [btnShowDots, "/Editor/ShowDots", 1],
+    [btnShowSpaces, "/Editor/ShowSpaces", 1],
     [btnFold, "/Editor/ShowExpand", 1],
     [btnFoldProc, "/Editor/CollapseByDefault", 0],
     [btnWrapText, "/Editor/WrapTextByDefault", 0],
@@ -368,9 +368,9 @@ Public Sub btnShowCurrent_Click()
 
 End
 
-Public Sub btnShowDots_Click()
+Public Sub btnShowSpaces_Click()
 
-  Settings["/Editor/ShowDots"] = btnShowDots.Value
+  Settings["/Editor/ShowSpaces"] = btnShowSpaces.Value
   RefreshEditor
 
 End
