@@ -53,9 +53,19 @@ static const char *get_name(int index)
 
 static void get_string(int index, const char **str, int *len)
 {
-	SYMBOL *sym = TABLE_get_symbol(JOB->class->string, index);
-	*str = sym->name;
-	*len = sym->len;
+	SYMBOL *sym;
+	
+	if (index == VOID_STRING)
+	{
+		*str = "";
+		*len = 0;
+	}
+	else
+	{
+		sym = TABLE_get_symbol(JOB->class->string, index);
+		*str = sym->name;
+		*len = sym->len;
+	}
 }
 
 static void print_quoted(FILE *file, const char *str, int len)
