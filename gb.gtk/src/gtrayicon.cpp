@@ -383,5 +383,5 @@ void gTrayIcon::exit()
 
 bool gTrayIcon::hasSystemTray()
 {
-	return true;
+	return X11_get_system_tray() != 0;
 }

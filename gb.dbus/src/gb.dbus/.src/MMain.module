@@ -92,10 +92,19 @@ End
 
 Public Sub Main()
 
-  ' Dim hobject As New MyObject
+  Dim hobject As New MyObject
+  
   ' 
-  ' DBus.Name = "org.gambas.somethingiswrong"
-  ' 
-  ' DBus.System.Register(hobject, "/path/object")
+  DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
+  DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
+
+  Wait 5
+  
+  DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.IconChanged")
+  DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.NewStatus", ["Chuck!"])
+  
+  Wait 30
+  
+  DBus.Session.Unregister(hObject)
 
 End

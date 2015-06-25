@@ -10,7 +10,7 @@ Static Public _ApplicationCache As New Collection
 Static Private $sAppName As String
 Static Private $iRegisterCount As Integer
 
-Static Public Sub _get(Application As String) As DBusApplication
+Static Public Sub _get((Application) As String) As DBusApplication
   
   Dim hConn As DBusConnection
   Dim hApp As DBusApplication
@@ -45,7 +45,7 @@ Static Public Sub _Normalize(sName As String, Optional bKeepCase As Boolean) As 
     sCar = Mid$(sName, iInd, 1)
     If IsLetter(sCar) Then
       If Not bKeepCase Then sCar = LCase(sCar)
-    Else If IsDigit(sCar) Then
+    Else If IsDigit(sCar) Or If InStr("-", sCar) Then
     Else
       If Right(sRes) <> "." Then
         sCar = "."

@@ -33,6 +33,8 @@ extern bool DBUS_Debug;
 bool DBUS_call_method(DBusConnection *connection, const char *application, const char *path, const char *interface, const char *method, 
                       const char *signature_in, const char *signature_out, GB_ARRAY arguments);
 
+bool DBUS_send_signal(DBusConnection *connection, const char *path, const char *interface, const char *signal, const char *signature_in, GB_ARRAY arguments);
+
 char *DBUS_introspect(DBusConnection *connection, const char *dest, const char *path);
 
 bool DBUS_register(DBusConnection *connection, const char *name, bool unique);

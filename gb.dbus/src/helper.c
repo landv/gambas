@@ -800,6 +800,40 @@ __RETURN:
 	return ret;
 }
 
+
+bool DBUS_send_signal(DBusConnection *connection, const char *path, const char *interface, const char *signal, const char *signature_in, GB_ARRAY arguments)
+{
+	DBusMessage *message;
+	bool ret;
+	
+	message = dbus_message_new_signal(path, interface, signal);
+	if (!message)
+	{
+		GB.Error("Couldn't allocate D-Bus message");
+		return TRUE;
+	}
+	
+	ret = TRUE;
+	
+	//dbus_message_set_auto_start(message, TRUE);
+
+	if (define_arguments(message, signature_in, arguments))
+		goto __RETURN;
+	
+	//dbus_error_init(&error);
+	dbus_connection_send(connection, message, NULL);
+	//dbus_connection_flush(connection);
+	check_message(connection);
+	ret = FALSE;
+
+__RETURN:
+	
+	dbus_message_unref(message);
+	
+	return ret;
+}
+
+
 bool DBUS_retrieve_message_arguments(DBusMessage *message)
 {
 	DBusMessageIter iter;

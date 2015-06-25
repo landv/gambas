@@ -139,6 +139,43 @@ Public Sub _Unregister(hConnection As DBusConnection)
   
 End
 
+Static Private Sub ToDBusSignature(sSign As String) As String[]
+  
+  Dim aResult As New String[]
+  Dim sOne As String
+  Dim iPos As Integer
+  
+  If Not sSign Then Return aResult
+  
+  While sSign
+    
+    If IsLCase(Left(sSign)) Then
+      sOne = ConvType(Left(sSign))
+      sSign = Mid$(sSign, 2)
+    Else
+      iPos = InStr(sSign, ";")
+      If iPos Then
+        sOne = Left(sSign, iPos - 1)
+        sSign = Mid$(sSign, iPos + 1)
+      Else
+        sOne = sSign
+        sSign = ""
+      Endif
+      sOne = ConvType(sOne)
+    Endif
+    If Not sOne Then Return
+    
+    aResult.Add(sOne)
+    
+  Wend
+    
+  Return aResult
+  
+End
+
+
+
+
 Public Sub _Introspect() As String
   
   Dim sRes As String
@@ -148,15 +185,13 @@ Public Sub _Introspect() As String
   Dim bHasProperty As Boolean
   Dim bHasMethod As Boolean
   Dim sType As String
-  Dim sSign As String
   Dim sArg As String
-  Dim sOne As String
-  Dim iPos As Integer
   Dim iInd As Integer
   Dim cDescInterface As New Collection
   Dim sDesc As String
   Dim sInterface As String
   Dim sPrefix As String
+  Dim aSign As String[]
   
   sRes &= "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
   sRes &= "<node>\n"
@@ -205,7 +240,11 @@ Public Sub _Introspect() As String
     
     With hClass[sSymbol]
       
-      If .Static Then Continue
+      If .Kind = Class.Event Then
+        sSymbol = Mid$(sSymbol, 2)
+      Else
+        If .Static Then Continue
+      Endif
     
       sPrefix = ""
       If $aInterface Then
@@ -230,55 +269,39 @@ Public Sub _Introspect() As String
           
       Select Case .Kind
 
-        Case Class.Method
+        Case Class.Method, Class.Event
 
-          sArg = ""
-          iInd = 0
+          aSign = ToDBusSignature(.Signature)
+          If Not aSign Then Continue
+
+          For iInd = 0 To aSign.Max
+            sArg &= "      <arg name=\"arg" & CStr(iInd + 1) & "\" type=\"" & aSign[iInd] & "\"/>\n"
+          Next
+
+          If .Kind = Class.Event Then
             
-          sSign = .Signature
-          If sSign Then
-            While sSign
-              If IsLCase(Left(sSign)) Then
-                sOne = ConvType(Left(sSign))
-                sSign = Mid$(sSign, 2)
-              Else
-                iPos = InStr(sSign, ";")
-                If iPos Then
-                  sOne = Left(sSign, iPos - 1)
-                  sSign = Mid$(sSign, iPos + 1)
-                Else
-                  sOne = sSign
-                  sSign = ""
-                Endif
-                sOne = ConvType(sOne)
-              Endif
-              If Not sOne Then
-                sArg = ""
-                Break
-              Endif
-              
-              Inc iInd
-              sArg &= "      <arg name=\"arg" & CStr(iInd) & "\" type=\"" & sOne & "\" direction=\"in\"/>\n"
-              
-            Wend
+            sDesc &= "    <signal name=\"" & sSymbol & "\">\n"
+            If sArg Then sDesc &= sArg
+            sDesc &= "    </signal>\n"
             
-            If Not sArg Then Continue
+          Else
+            
+            sDesc &= "    <method name=\"" & sSymbol & "\">\n"
+          
+            If sArg Then sDesc &= sArg
+            
+            If sType Then
+              sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
+            Endif
+            
+            sDesc &= "    </method>\n"
+            
           Endif
-          
-          sDesc &= "    <method name=\"" & sSymbol & "\">\n"
-          
-          If sArg Then sDesc &= sArg
-          
-          If sType Then
-            sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
-          Endif
-          
-          sDesc &= "    </method>\n"
           
         Case Class.Property
           
           sDesc &= "    <property name=\"" & sSymbol & "\" type=\"" & sType & "\" access=\"" & If(.ReadOnly, "read", "readwrite") & "\"/>\n"
-
+          
       End Select
     End With
     
@@ -458,3 +481,31 @@ Catch
   $hObserver.Error(Error.Text)
   
 End
+
+
+Public Sub _Raise(hConnection As DBusConnection, sSignal As String, aArg As Object)
+
+  Dim hClass As Class
+  Dim aSign As String[]
+  Dim iPos As Integer
+  Dim sInterface As String
+  Dim sSymbol As String
+  
+  hClass = Object.Class(Me)
+  sSymbol = ":" & Replace(sSignal, ".", "_")
+  If Not hClass.Exist(sSymbol) Then Error.Raise("Unknown signal")
+
+  With hClass[sSymbol]
+    aSign = ToDBusSignature(.Signature)
+    If Not aSign Then Error.Raise("Unknown signal")
+  End With
+  
+  iPos = RInStr(sSignal, ".")
+  If iPos Then
+    sInterface = Left(sSignal, iPos - 1)
+    sSignal = Mid$(sSignal, iPos + 1)
+  Endif
+  hConnection._SendSignal($sPath, sInterface, sSignal, aSign.Join(""), aArg)
+  
+End
+

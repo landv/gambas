@@ -27,6 +27,7 @@
 #include <QDesktopWidget>
 #include <QToolTip>
 #include <QSessionManager>
+#include <QSystemTrayIcon>
 
 #include "gambas.h"
 #include "main.h"
@@ -125,7 +126,8 @@ BEGIN_PROPERTY(Desktop_HasSystemTray)
 	#ifdef NO_X_WINDOW
 		GB.Return(FALSE);
 	#else
-		GB.ReturnBoolean(X11_get_system_tray() != None);
+		GB.ReturnBoolean(QSystemTrayIcon::isSystemTrayAvailable());
+		//GB.ReturnBoolean(X11_get_system_tray() != None);
 	#endif
 
 END_PROPERTY

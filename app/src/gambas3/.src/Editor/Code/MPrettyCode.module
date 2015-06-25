@@ -67,6 +67,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   Dim aBreakpoint As Integer[]
   Dim bBreakpoint As Boolean
   Dim I As Integer
+  Dim X As Integer
+  Dim Y As Integer
   
   aBreakpoint = hEditor.Breakpoints
   aBookmark = hEditor.Bookmarks
@@ -84,6 +86,9 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   $iLastDim = -1
   $iLastSelect = -1
   $bLastWrap = False
+  
+  X = hEditor.Column
+  Y = hEditor.Line
   
   hEditor.Begin
   
@@ -157,7 +162,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   
   If bBookmark Then hEditor.Bookmarks = aBookmark
   If bBreakpoint Then hEditor.Breakpoints = aBreakpoint
-    
+  
+  hEditor.Goto(X, Y)
   hEditor.End
   
 End

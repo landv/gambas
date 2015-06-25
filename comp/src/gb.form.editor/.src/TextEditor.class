@@ -475,6 +475,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
   Dim bBreak As Boolean
   Dim sKey As String
   Dim W As Integer
+  Dim iLayoutCount As Integer
   
   'Dim hTemp As Image
 
@@ -486,8 +487,10 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
   YY = Y
   
   If aLayout Then
+    iLayoutCount = aLayout.Count
     iNextBreak = aLayout[0]
   Else
+    iLayoutCount = 0
     iNextBreak = Len(sText) + 1 ' Always greater than String.Len(), and faster
   Endif
 
@@ -522,7 +525,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
       
       Inc iLayout
       
-      If iLayout < aLayout.Count Then
+      If iLayout < iLayoutCount Then
         iNextBreak += aLayout[iLayout]
       Else
         iNextBreak = Len(sText) + 1

@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  x11.c
+	x11.c
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -87,17 +87,17 @@ static GB_FUNCTION _x11_configure_notify_func;
 
 static void init_atoms()
 {
-  if (_atom_init)
-    return;
+	if (_atom_init)
+		return;
 
 	//fprintf(stderr, "init_atom: display = %p\n", _display);
 	X11_atom_net_current_desktop = XInternAtom(_display, "_NET_CURRENT_DESKTOP", True);
 	//fprintf(stderr, "init_atom: #1\n");
-  X11_atom_net_wm_state = XInternAtom(_display, "_NET_WM_STATE", True);
-  X11_atom_net_wm_state_above = XInternAtom(_display, "_NET_WM_STATE_ABOVE", True);
-  X11_atom_net_wm_state_below = XInternAtom(_display, "_NET_WM_STATE_BELOW", True);
-  X11_atom_net_wm_state_stays_on_top = XInternAtom(_display, "_NET_WM_STATE_STAYS_ON_TOP", True);
-  X11_atom_net_wm_state_skip_taskbar = XInternAtom(_display, "_NET_WM_STATE_SKIP_TASKBAR", True);
+	X11_atom_net_wm_state = XInternAtom(_display, "_NET_WM_STATE", True);
+	X11_atom_net_wm_state_above = XInternAtom(_display, "_NET_WM_STATE_ABOVE", True);
+	X11_atom_net_wm_state_below = XInternAtom(_display, "_NET_WM_STATE_BELOW", True);
+	X11_atom_net_wm_state_stays_on_top = XInternAtom(_display, "_NET_WM_STATE_STAYS_ON_TOP", True);
+	X11_atom_net_wm_state_skip_taskbar = XInternAtom(_display, "_NET_WM_STATE_SKIP_TASKBAR", True);
 
 	X11_atom_net_wm_desktop = XInternAtom(_display, "_NET_WM_DESKTOP", True);
 	X11_atom_net_wm_window_type = XInternAtom(_display, "_NET_WM_WINDOW_TYPE", True);
@@ -106,7 +106,7 @@ static void init_atoms()
 	
 	X11_UTF8_STRING = XInternAtom(X11_display, "UTF8_STRING", True);
 
-  _atom_init = TRUE;
+	_atom_init = TRUE;
 }
 
 #define PROPERTY_START_READ 1024
@@ -136,8 +136,8 @@ static size_t sizeof_format(int format)
 char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcount)
 {
 	uchar *data;
-  unsigned long count;
-  unsigned long after;
+	unsigned long count;
+	unsigned long after;
 	unsigned long offset;
 	int size, offset_size;
 
@@ -185,13 +185,13 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 #if 0
 static void get_property(Window wid, Atom prop, int maxlength, unsigned char **data, unsigned long *count)
 {
-  Atom type;
-  int format;
-  unsigned long after;
+	Atom type;
+	int format;
+	unsigned long after;
 
-  XGetWindowProperty(_display, wid, prop, 0, maxlength / 4,
-    False, AnyPropertyType, &type, &format,
-    count, &after, data);
+	XGetWindowProperty(_display, wid, prop, 0, maxlength / 4,
+		False, AnyPropertyType, &type, &format,
+		count, &after, data);
 }
 #endif
 
@@ -206,9 +206,9 @@ static char *get_property(Window wid, Atom prop, int *count)
 Atom X11_get_property_type(Window wid, Atom prop, int *format)
 {
 	uchar *data = NULL;
-  unsigned long count;
-  unsigned long after;
-  Atom type;
+	unsigned long count;
+	unsigned long after;
+	Atom type;
 
 	if (XGetWindowProperty(X11_display, wid, prop, 0, PROPERTY_START_READ / sizeof(int32_t),
 			False, AnyPropertyType, &type, format,
@@ -250,72 +250,72 @@ Atom X11_intern_atom(const char *name, bool create)
 
 static void load_window_state(Window win, Atom prop)
 {
-  int length;
-  char *data;
+	int length;
+	char *data;
 
-  _window_prop.count = 0;
+	_window_prop.count = 0;
 
 	data = get_property(win, prop, &length);
 
-  if (length > MAX_WINDOW_PROP)
-    length = MAX_WINDOW_PROP;
+	if (length > MAX_WINDOW_PROP)
+		length = MAX_WINDOW_PROP;
 
-  _window_prop.count = length;
-  memcpy(_window_prop.atoms, data, length * sizeof(Atom));
+	_window_prop.count = length;
+	memcpy(_window_prop.atoms, data, length * sizeof(Atom));
 }
 
 static void save_window_state(Window win, Atom prop)
 {
 	if (_window_prop.count > 0)
 	{
-  	XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace,
-      	(unsigned char *)_window_prop.atoms, _window_prop.count);
+		XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace,
+				(unsigned char *)_window_prop.atoms, _window_prop.count);
 	}
 }
 
 static bool has_window_state(Atom prop)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < _window_prop.count; i++)
-  {
-    if (_window_prop.atoms[i] == prop)
-      return TRUE;
-  }
+	for (i = 0; i < _window_prop.count; i++)
+	{
+		if (_window_prop.atoms[i] == prop)
+			return TRUE;
+	}
 
-  return FALSE;
+	return FALSE;
 }
 
 static void set_window_state(Atom prop)
 {
-  if (has_window_state(prop))
-    return;
+	if (has_window_state(prop))
+		return;
 
-  if (_window_prop.count == MAX_WINDOW_PROP)
-  {
-    fprintf(stderr, "X11: set_window_state: Too many properties in window\n");
-    return;
-  }
+	if (_window_prop.count == MAX_WINDOW_PROP)
+	{
+		fprintf(stderr, "X11: set_window_state: Too many properties in window\n");
+		return;
+	}
 
-  _window_prop.atoms[_window_prop.count++] = prop;
+	_window_prop.atoms[_window_prop.count++] = prop;
 }
 
 static void clear_window_state(Atom prop)
 {
-  int i;
+	int i;
 
-  for (i = 0; i < _window_prop.count; i++)
-  {
-    if (_window_prop.atoms[i] == prop)
-    {
-      _window_prop.count--;
+	for (i = 0; i < _window_prop.count; i++)
+	{
+		if (_window_prop.atoms[i] == prop)
+		{
+			_window_prop.count--;
 
-      for (; i < _window_prop.count; i++)
-        _window_prop.atoms[i] = _window_prop.atoms[i + 1];
+			for (; i < _window_prop.count; i++)
+				_window_prop.atoms[i] = _window_prop.atoms[i + 1];
 
-      return;
-    }
-  }
+			return;
+		}
+	}
 }
 
 
@@ -329,20 +329,20 @@ bool X11_do_init()
 	GB.Component.GetInfo("DISPLAY", POINTER(&_display));
 
 	_root = DefaultRootWindow(_display);
-  
-  X11_ready = _display != NULL;
-  
-  if (!X11_ready)
-  {
-  	fprintf(stderr, "WARNING: X11_init() has failed\n");
-  	return TRUE;
-  }
-  
+	
+	X11_ready = _display != NULL;
+	
+	if (!X11_ready)
+	{
+		fprintf(stderr, "WARNING: X11_init() has failed\n");
+		return TRUE;
+	}
+	
 	init_atoms();
 	
 	_has_test_extension = XTestQueryExtension(_display, &event_base, &error_base, &major_version, &minor_version);
 	
-  return FALSE;
+	return FALSE;
 }
 
 void X11_exit()
@@ -357,8 +357,8 @@ void X11_exit()
 
 void X11_send_client_message(Window dest, Window window, Atom message, char *data, int format, int count)
 {
-  XEvent e;
-  int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
+	XEvent e;
+	int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
 
 	//fprintf(stderr, "X11_send_client_message: dest = %ld window = %ld message = %ld format = %d count = %d\n", dest, window, message, format, count);
 	
@@ -379,67 +379,69 @@ void X11_send_client_message(Window dest, Window window, Atom message, char *dat
 	}
 
 	XSendEvent(X11_display, dest, False, mask, &e);
+	XFlush(X11_display);
 }
 
 void X11_window_change_property(Window window, bool visible, Atom property, bool set)
 {
-  XEvent e;
-  long mask = (SubstructureRedirectMask | SubstructureNotifyMask);
+	XEvent e;
+	long mask = (SubstructureRedirectMask | SubstructureNotifyMask);
 
-  if (visible)
-  {
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = X11_atom_net_wm_state;
-    e.xclient.display = _display;
-    e.xclient.window = window;
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = set ? 1 : 0;
-    e.xclient.data.l[1] = property;
-    e.xclient.data.l[2] = 0;
-    e.xclient.data.l[3] = 0;
-    e.xclient.data.l[4] = 0;
+	if (visible)
+	{
+		e.xclient.type = ClientMessage;
+		e.xclient.message_type = X11_atom_net_wm_state;
+		e.xclient.display = _display;
+		e.xclient.window = window;
+		e.xclient.format = 32;
+		e.xclient.data.l[0] = set ? 1 : 0;
+		e.xclient.data.l[1] = property;
+		e.xclient.data.l[2] = 0;
+		e.xclient.data.l[3] = 0;
+		e.xclient.data.l[4] = 0;
 
-    XSendEvent(_display, _root, False, mask, &e);
-  }
-  else
-  {
-    load_window_state(window, X11_atom_net_wm_state);
+		XSendEvent(_display, _root, False, mask, &e);
+		XFlush(X11_display);
+	}
+	else
+	{
+		load_window_state(window, X11_atom_net_wm_state);
 
-    if (set)
-      set_window_state(property);
-    else
-      clear_window_state(property);
+		if (set)
+			set_window_state(property);
+		else
+			clear_window_state(property);
 
-    save_window_state(window, X11_atom_net_wm_state);
-  }
+		save_window_state(window, X11_atom_net_wm_state);
+	}
 }
 
 
 bool X11_window_has_property(Window window, Atom property)
 {
-  load_window_state(window, X11_atom_net_wm_state);
-  return has_window_state(property);
+	load_window_state(window, X11_atom_net_wm_state);
+	return has_window_state(property);
 }
 
 void X11_sync(void)
 {
-  XSync(_display, False);
+	XSync(_display, False);
 }
 
 void X11_window_save_properties(Window window)
 {
-  load_window_state(window, X11_atom_net_wm_state);
-  _window_save[0] = _window_prop;
-  //load_window_state(window, X11_atom_net_wm_window_type);
-  //_window_save[1] = _window_prop;
+	load_window_state(window, X11_atom_net_wm_state);
+	_window_save[0] = _window_prop;
+	//load_window_state(window, X11_atom_net_wm_window_type);
+	//_window_save[1] = _window_prop;
 }
 
 void X11_window_restore_properties(Window window)
 {
-  _window_prop = _window_save[0];
-  save_window_state(window, X11_atom_net_wm_state);
-  //_window_prop = _window_save[1];
-  //save_window_state(window, X11_atom_net_wm_window_type);
+	_window_prop = _window_save[0];
+	save_window_state(window, X11_atom_net_wm_state);
+	//_window_prop = _window_save[1];
+	//save_window_state(window, X11_atom_net_wm_window_type);
 }
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
@@ -450,60 +452,60 @@ void X11_window_restore_properties(Window window)
 
 void X11_window_dock(Window window)
 {
-  Window xmanager=None;
-  XClientMessageEvent ev;
-  Atom OpCodeAtom;
-  Screen *xscreen;
-  char buf[256];
-  Atom selection_atom;
+	Window xmanager=None;
+	XClientMessageEvent ev;
+	Atom OpCodeAtom;
+	Screen *xscreen;
+	char buf[256];
+	Atom selection_atom;
 
-  buf[0]=0;
+	buf[0]=0;
 
-  xscreen = DefaultScreenOfDisplay(_display);
-  sprintf(buf,"_NET_SYSTEM_TRAY_S%d",XScreenNumberOfScreen(xscreen));
-  selection_atom = XInternAtom(_display, buf, 0);
+	xscreen = DefaultScreenOfDisplay(_display);
+	sprintf(buf,"_NET_SYSTEM_TRAY_S%d",XScreenNumberOfScreen(xscreen));
+	selection_atom = XInternAtom(_display, buf, 0);
 
-  XGrabServer(_display);
+	XGrabServer(_display);
 
-  xmanager = XGetSelectionOwner(_display, selection_atom);
-  if (xmanager != None)
-    XSelectInput(_display, xmanager, StructureNotifyMask);
+	xmanager = XGetSelectionOwner(_display, selection_atom);
+	if (xmanager != None)
+		XSelectInput(_display, xmanager, StructureNotifyMask);
 
-  XUngrabServer(_display);
-  XFlush(_display);
+	XUngrabServer(_display);
+	XFlush(_display);
 
-  /***********************************************
-    Dock Tray Icon
-  ************************************************/
+	/***********************************************
+		Dock Tray Icon
+	************************************************/
 
-  OpCodeAtom = XInternAtom(_display, OPCODE, 0);
+	OpCodeAtom = XInternAtom(_display, OPCODE, 0);
 
-  ev.type = ClientMessage;
-  ev.window = xmanager;
-  ev.message_type = OpCodeAtom;
-  ev.format = 32;
-  ev.data.l[0] = 0;
-  ev.data.l[1] = SYSTEM_TRAY_REQUEST_DOCK;
-  ev.data.l[2] = window;
-  ev.data.l[3] = 0;
-  ev.data.l[4] = 0;
+	ev.type = ClientMessage;
+	ev.window = xmanager;
+	ev.message_type = OpCodeAtom;
+	ev.format = 32;
+	ev.data.l[0] = 0;
+	ev.data.l[1] = SYSTEM_TRAY_REQUEST_DOCK;
+	ev.data.l[2] = window;
+	ev.data.l[3] = 0;
+	ev.data.l[4] = 0;
 
-  XSendEvent(_display, xmanager, 0, NoEventMask, (XEvent *)&ev);
-  XSync(_display, 0);
+	XSendEvent(_display, xmanager, 0, NoEventMask, (XEvent *)&ev);
+	XSync(_display, 0);
 }
 
 void X11_window_startup(Window window, int x, int y, int w, int h)
 {
-  XSizeHints s;
+	XSizeHints s;
 
-  s.flags = USPosition | PPosition | USSize | PSize;
+	s.flags = USPosition | PPosition | USSize | PSize;
 
-  s.x = x;
-  s.y = y;
-  s.width = w;
-  s.height = h;
+	s.x = x;
+	s.y = y;
+	s.width = w;
+	s.height = h;
 
-  XSetWMNormalHints(_display, window, &s);
+	XSetWMNormalHints(_display, window, &s);
 }
 
 void X11_find_windows(Window **window_list, int *count)
@@ -567,7 +569,7 @@ void X11_set_window_tool(Window window, int tool, Window parent)
 int X11_get_window_tool(Window window)
 {
 	load_window_state(window, X11_atom_net_wm_window_type);
-  return has_window_state(X11_atom_net_wm_window_type_utility);
+	return has_window_state(X11_atom_net_wm_window_type_utility);
 }
 
 
@@ -575,29 +577,30 @@ int X11_get_window_tool(Window window)
 
 void X11_window_set_desktop(Window window, bool visible, int desktop)
 {
-  XEvent e;
-  long mask = (SubstructureRedirectMask | SubstructureNotifyMask);
+	XEvent e;
+	long mask = (SubstructureRedirectMask | SubstructureNotifyMask);
 
-  if (visible)
-  {
-    e.xclient.type = ClientMessage;
-    e.xclient.message_type = X11_atom_net_wm_desktop;
-    e.xclient.display = _display;
-    e.xclient.window = window;
-    e.xclient.format = 32;
-    e.xclient.data.l[0] = desktop;
-    e.xclient.data.l[1] = 1;
-    e.xclient.data.l[2] = 0;
-    e.xclient.data.l[3] = 0;
-    e.xclient.data.l[4] = 0;
+	if (visible)
+	{
+		e.xclient.type = ClientMessage;
+		e.xclient.message_type = X11_atom_net_wm_desktop;
+		e.xclient.display = _display;
+		e.xclient.window = window;
+		e.xclient.format = 32;
+		e.xclient.data.l[0] = desktop;
+		e.xclient.data.l[1] = 1;
+		e.xclient.data.l[2] = 0;
+		e.xclient.data.l[3] = 0;
+		e.xclient.data.l[4] = 0;
 
-    XSendEvent(_display, _root, False, mask, &e);
-  }
-  else
-  {
-  	XChangeProperty(_display, window, X11_atom_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
-      	(unsigned char *)&desktop, 1);
-  }
+		XSendEvent(_display, _root, False, mask, &e);
+		XFlush(_display);
+	}
+	else
+	{
+		XChangeProperty(_display, window, X11_atom_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
+				(unsigned char *)&desktop, 1);
+	}
 }
 
 
@@ -631,16 +634,16 @@ static void init_keycode()
 
 	XDisplayKeycodes(_display, &_min_keycode, &_max_keycode);
 	
-  _keycode_map = XGetKeyboardMapping(_display, _min_keycode, _max_keycode - _min_keycode + 1, &_keysyms_per_keycode);
-  _modifier_map = XGetModifierMapping(_display);
-  
-  p = _modifier_map->modifiermap;
-  for (i = 0; i < 8; i++)
-  {
-  	pm = p;
-  	for (j = 0; j < _modifier_map->max_keypermod; j++)
-  	{
-  		//for (k = 0; k < 3; k++)
+	_keycode_map = XGetKeyboardMapping(_display, _min_keycode, _max_keycode - _min_keycode + 1, &_keysyms_per_keycode);
+	_modifier_map = XGetModifierMapping(_display);
+	
+	p = _modifier_map->modifiermap;
+	for (i = 0; i < 8; i++)
+	{
+		pm = p;
+		for (j = 0; j < _modifier_map->max_keypermod; j++)
+		{
+			//for (k = 0; k < 3; k++)
 				switch (XkbKeycodeToKeysym(_display, *p, 0, 0))
 				{
 					case XK_Shift_L: _shift_keycode = pm; break;
@@ -649,9 +652,9 @@ static void init_keycode()
 			p++;
 		}
 	}
-  
-  //fprintf(stderr, "SHIFT: %d  ALTGR: %d\n", _shift_keycode[0], _alt_gr_keycode[0]);
-  
+	
+	//fprintf(stderr, "SHIFT: %d  ALTGR: %d\n", _shift_keycode[0], _alt_gr_keycode[0]);
+	
 	_init_keycode = TRUE;
 }
 

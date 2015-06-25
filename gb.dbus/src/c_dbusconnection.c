@@ -143,6 +143,38 @@ BEGIN_METHOD(DBusConnection_CallMethod, GB_STRING application; GB_STRING object;
 	
 END_METHOD
 
+BEGIN_METHOD(DBusConnection_SendSignal, GB_STRING object; GB_STRING interface; GB_STRING signal; GB_STRING input_signature; GB_OBJECT arguments)
+
+	char *object = GB.ToZeroString(ARG(object));
+	char *interface = GB.ToZeroString(ARG(interface));
+	char *signal = GB.ToZeroString(ARG(signal));
+	char *input_signature = GB.ToZeroString(ARG(input_signature));
+	
+	if (DBUS_validate_path(object, LENGTH(object)))
+	{
+		GB.Error("Invalid object path");
+		return;
+	}
+	
+	if (!*interface)
+		interface = NULL;
+	else if (DBUS_validate_interface(interface, LENGTH(interface)))
+	{
+		GB.Error("Invalid interface name");
+		return;
+	}
+	
+	if (DBUS_validate_method(signal, LENGTH(signal)))
+	{
+		GB.Error("Invalid signal name");
+		return;
+	}
+	
+	if (DBUS_send_signal(THIS->connection, object, interface, signal, input_signature, VARG(arguments)))
+		return;
+
+END_METHOD
+
 BEGIN_PROPERTY(DBusConnection_Applications)
 
 	DBUS_call_method(THIS->connection, "org.freedesktop.DBus", "/", "org.freedesktop.DBus", "ListNames", "", "as", NULL);
@@ -220,6 +252,25 @@ BEGIN_METHOD(DBusConnection_Unregister, GB_OBJECT object)
 
 END_METHOD
 
+BEGIN_METHOD(DBusConnection_Raise, GB_OBJECT object; GB_STRING signal; GB_OBJECT arguments)
+
+	GB_FUNCTION func;
+	void *object = VARG(object);
+	
+	if (GB.CheckObject(object))
+		return;
+
+	if (GB.GetFunction(&func, object, "_Raise", NULL, NULL))
+	{
+		GB.Error("Cannot find _Raise method");
+		return;
+	}
+	
+	GB.Push(3, GB_T_OBJECT, THIS, GB_T_STRING, STRING(signal), LENGTH(signal), GB_T_OBJECT, VARGOPT(arguments, NULL));
+	GB.Call(&func, 3, TRUE);
+
+END_METHOD
+
 BEGIN_PROPERTY(DBusConnection_Tag)
 
 	if (READ_PROPERTY)
@@ -238,6 +289,7 @@ GB_DESC CDBusConnectionDesc[] =
 	GB_METHOD("_free", NULL, DBusConnection_free, NULL),
 	GB_METHOD("_Introspect", "s", DBusConnection_Introspect, "(Application)s[(Object)s]"),
 	GB_METHOD("_CallMethod", "v", DBusConnection_CallMethod, "(Application)s(Object)s(Interface)s(Method)s(InputSignature)s(OutputSignature)s(Arguments)Array;"),
+	GB_METHOD("_SendSignal", "v", DBusConnection_SendSignal, "(Object)s(Interface)s(Signal)s(InputSignature)s(Arguments)Array;"),
 	//GB_METHOD("_AddMatch", "b", DBusConnection_AddMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
 	//GB_METHOD("_RemoveMatch", "b", DBusConnection_RemoveMatch, "(Type)s[(Object)s(Member)s(Interface)s(Destination)s]"),
 	GB_PROPERTY_READ("Applications", "String[]", DBusConnection_Applications),
@@ -245,7 +297,8 @@ GB_DESC CDBusConnectionDesc[] =
 	GB_METHOD("_ReleaseName", "b", DBusConnection_ReleaseName, "(Name)s"),
 	GB_PROPERTY_READ("_Name", "s", DBusConnection_Name),
 	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s[(Interface)String[];]"),
-	GB_METHOD("Unregister", NULL, DBusConnection_Unregister, "(Object)DBusObject"),
+	GB_METHOD("Unregister", NULL, DBusConnection_Unregister, "(Object)DBusObject;"),
+	GB_METHOD("Raise", NULL, DBusConnection_Raise, "(Object)DBusObject;(Signal)s[(Arguments)Array;]"),
 	GB_PROPERTY("Tag", "v", DBusConnection_Tag),
 
   GB_END_DECLARE

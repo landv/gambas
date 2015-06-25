@@ -27,10 +27,13 @@
 #include "main.h"
 
 #include "CMenu.h"
+//#include "CMouse.h"
 #include "CWindow.h"
 #include "CTrayIcon.h"
 
 DECLARE_EVENT(EVENT_Click);
+//DECLARE_EVENT(EVENT_TrayIconDblClick);
+//DECLARE_EVENT(EVENT_TrayIconMouseWheel);
 
 int TRAYICON_count = 0;
 
@@ -223,6 +226,7 @@ BEGIN_METHOD_VOID(TrayIcon_Show)
 		QSystemTrayIcon *indicator = new QSystemTrayIcon();
 
 		QObject::connect(indicator, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), &TrayIconManager::manager, SLOT(activated(QSystemTrayIcon::ActivationReason)));
+		//indicator->installEventFilter(&TrayIconManager::manager);
 		
 		THIS->indicator = indicator;
 		TRAYICON_count++;
@@ -365,8 +369,59 @@ void TrayIconManager::activated(QSystemTrayIcon::ActivationReason reason)
 {
 	CTRAYICON *_object = find_trayicon(sender());
 	if (THIS)
-		GB.Raise(THIS, EVENT_Click, 0);
+	{
+		//qDebug("reason = %d", (int)reason);
+		switch(reason)
+		{
+			//case QSystemTrayIcon::DoubleClick:
+			//	GB.Raise(THIS, EVENT_TrayIconDblClick, 0);
+			//	break;
+				
+			case QSystemTrayIcon::Trigger:
+				GB.Raise(THIS, EVENT_Click, 0);
+				break;
+			
+			default:
+				break;
+		}
+	}
 }
+
+#if 0
+bool TrayIconManager::eventFilter(QObject *o, QEvent *e)
+{
+	qDebug("event: %d", e->type());
+	
+	if (e->type() == QEvent::Wheel)
+	{
+		CTRAYICON *_object = find_trayicon(o);
+		if (!THIS && GB.CanRaise(THIS, EVENT_MouseWheel))
+		{
+			bool cancel;
+			QWheelEvent *ev = (QWheelEvent *)e;
+			
+			CMOUSE_clear(true);
+			MOUSE_info.x = ev->x();
+			MOUSE_info.y = ev->y();
+			MOUSE_info.screenX = ev->globalX();
+			MOUSE_info.screenY = ev->globalY();
+			MOUSE_info.state = ev->buttons();
+			MOUSE_info.modifier = ev->modifiers();
+			MOUSE_info.orientation = ev->orientation();
+			MOUSE_info.delta = ev->delta();
+
+			cancel = GB.Raise(THIS, EVENT_TrayIconMouseWheel, 0);
+
+			CMOUSE_clear(false);
+			
+			if (cancel)
+				return true;
+		}
+	}
+	
+	return QObject::eventFilter(o, e);
+}
+#endif
 
 //---------------------------------------------------------------------------
 
@@ -405,6 +460,8 @@ GB_DESC TrayIconDesc[] =
 	GB_PROPERTY("Tag", "v", TrayIcon_Tag),
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	//GB_EVENT("DblClick", NULL, NULL, &EVENT_TrayIconDblClick),
+	//GB_EVENT("MouseWheel", NULL, NULL, &EVENT_TrayIconMouseWheel),
 
 	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),
 

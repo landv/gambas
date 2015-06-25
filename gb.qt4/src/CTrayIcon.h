@@ -61,6 +61,8 @@ public:
 
 	static TrayIconManager manager;
 
+	//virtual bool eventFilter(QObject *o, QEvent *e);
+	
 public slots:
 
 	void activated(QSystemTrayIcon::ActivationReason);

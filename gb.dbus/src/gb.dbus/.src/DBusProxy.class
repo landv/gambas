@@ -11,7 +11,7 @@ Private $sInterface As String
 Private $sIntrospection As String
 Private $cSignature As New Collection
 
-Public Sub _new(Application As DBusApplication, ObjectPath As String, Optional Interface As String)
+Public Sub _new((Application) As DBusApplication, ObjectPath As String, Optional Interface As String)
   
   Dim iPos, iPos2 As Integer
   

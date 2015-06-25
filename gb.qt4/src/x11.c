@@ -733,7 +733,6 @@ bool X11_send_move_resize_event(Window window, int x, int y, int w, int h)
 	return FALSE;
 }
 
-#if 0
 static Atom get_net_system_tray(void)
 {
 	char buf[64];
@@ -747,16 +746,17 @@ static Atom get_net_system_tray(void)
 	return X11_atom_net_system_tray;
 }
 
+Window X11_get_system_tray()
+{
+	return XGetSelectionOwner(_display, get_net_system_tray());
+}
+
+#if 0
 #define SYSTEM_TRAY_REQUEST_DOCK    0
 #define SYSTEM_TRAY_BEGIN_MESSAGE   1
 #define SYSTEM_TRAY_CANCEL_MESSAGE  2
 
 #define OPCODE "_NET_SYSTEM_TRAY_OPCODE"
-
-Window X11_get_system_tray()
-{
-	return XGetSelectionOwner(_display, get_net_system_tray());
-}
 
 bool X11_window_dock(Window window)
 {
