@@ -24,6 +24,7 @@
 #include "widgets.h"
 
 #include <unistd.h>
+#include "x11.h"
 #include "gapplication.h"
 #include "gmouse.h"
 #include "gtrayicon.h"
