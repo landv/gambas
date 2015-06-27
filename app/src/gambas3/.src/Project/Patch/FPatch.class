@@ -75,10 +75,10 @@ Public Sub gvwHunks_Select()
 
     If $hPatch[.Row].Active Then
       'gvwHunks[.Row, 0].Picture = Picture["img/16/checked.png"]
-      edtPatch.Highlight = Highlight.Diff
+      edtPatch.Highlight = "diff"
     Else
       'gvwHunks[.Row, 0].Picture = Picture["img/16/unchecked.png"]
-      edtPatch.Highlight = Highlight.Custom
+      edtPatch.Highlight = ""
     Endif
     edtPatch.Text = $hPatch[.Row].Text
   End With
