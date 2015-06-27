@@ -120,7 +120,10 @@ static void handle_signal(int signum, siginfo_t *info, void *context)
 				break;
 			
 			if (errno != EINTR)
+			{
 				ERROR_warning("cannot write signal #%d into signal pipe: %s", signum, strerror(errno));
+				break;
+			}
 		}
 	}
 	
