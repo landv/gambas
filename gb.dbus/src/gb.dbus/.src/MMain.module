@@ -98,13 +98,19 @@ Public Sub Main()
   DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
   DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
 
-  Wait 5
-  
-  DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.IconChanged")
-  DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.NewStatus", ["Chuck!"])
-  
-  Wait 30
-  
-  DBus.Session.Unregister(hObject)
+  ' Wait 5
+  ' 
+  ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.IconChanged")
+  ' DBus.Session.Raise(hObject, "org.freedesktop.StatusNotifierItem.NewStatus", ["Chuck!"])
+  ' 
+  ' Wait 30
+  ' 
+  ' DBus.Session.Unregister(hObject)
 
 End
+
+' Public Sub Main()
+' 
+'   DBus["org.kde.StatusNotifierItem-3527-1"]["/StatusNotifierItem", "org.kde.StatusNotifierItem"].ContextMenu(0, 0)
+' 
+' End

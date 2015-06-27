@@ -1585,7 +1585,7 @@ Public Sub View_MouseDown()
       Endif
     Else
       'X = NormalizeColumn(PosToColumn(Y, Mouse.X, RY), Y)
-      X = PosToColumn(Y, Mouse.X, RY)
+      X = PosToColumn(Y, Mouse.X - 4, RY)
       Goto(X, Y)
     Endif
   Endif

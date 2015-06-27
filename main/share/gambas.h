@@ -938,7 +938,7 @@ typedef
 		bool (*GetFunction)(GB_FUNCTION *, void *, const char *, const char *, const char *);
 		GB_VALUE *(*Call)(GB_FUNCTION *, int, int);
 		void *(*GetClassInterface)(GB_CLASS, const char *);
-		bool (*GetProperty)(void *, const char *);
+		void *(*GetProperty)(void *, const char *);
 		bool (*SetProperty)(void *, const char *, GB_VALUE *value);
 		bool (*Serialize)(const char *path, GB_VALUE *value);
 		bool (*UnSerialize)(const char *path, GB_VALUE *value);

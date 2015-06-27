@@ -105,6 +105,19 @@ static FORMAT _formats[] =
 	_p; \
 })
 
+#define INV_SPREMUL(__p) \
+({ \
+	uint _p = (__p); \
+	if (SALPHA(_p) == 0) \
+		_p = 0; \
+	else if (SALPHA(_p) != 0xFF) \
+		_p = ((SALPHA(_p) << 24) \
+				| (((255*SRED(_p))/ SALPHA(_p)) << 16) \
+				| (((255*SGREEN(_p)) / SALPHA(_p)) << 8) \
+				| ((255*SBLUE(_p)) / SALPHA(_p))); \
+	_p; \
+})
+
 #define SWAP(__p) \
 ({ \
 	uint _p = (__p); \
@@ -241,9 +254,40 @@ static void convert_image(uchar *dst, int dst_format, uchar *src, int src_format
 	dm = &d[len];
 
 	psrc = GB_IMAGE_FMT_IS_PREMULTIPLIED(src_format);
-	src_format = GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(src_format);
-
 	pdst = GB_IMAGE_FMT_IS_PREMULTIPLIED(dst_format);
+
+	if (psrc != pdst && GB_IMAGE_FMT_IS_SWAPPED(dst_format))
+	{
+		p = (uint *)dst;
+		pm = (uint *)dm;
+	
+		if (psrc)
+		{
+			#ifdef DEBUG_CONVERT
+			fprintf(stderr, "convert_image: premultiplied -> normal\n");
+			#endif
+			// convert premultiplied to normal
+			while (p != pm)
+			{
+				*p = INV_PREMUL(*p);
+				p++;
+			}
+		}
+		else
+		{
+			#ifdef DEBUG_CONVERT
+			fprintf(stderr, "convert_image: normal -> premultiplied\n");
+			#endif
+			// convert normal to premultiplied
+			while (p != pm)
+			{
+				*p = PREMUL(*p);
+				p++;
+			}
+		}
+	}
+
+	src_format = GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(src_format);
 	dst_format = GB_IMAGE_FMT_CLEAR_PREMULTIPLIED(dst_format);
 
 	#ifdef DEBUG_CONVERT
@@ -296,6 +340,52 @@ static void convert_image(uchar *dst, int dst_format, uchar *src, int src_format
 				goto __210X;  
 		}  
 	}
+	else if (dst_format == GB_IMAGE_ARGB || dst_format == GB_IMAGE_XRGB)
+	{
+		switch (src_format)
+		{
+			case GB_IMAGE_ARGB: case GB_IMAGE_XRGB: 
+				goto __0123;
+	
+			case GB_IMAGE_BGRA: case GB_IMAGE_BGRX:
+				goto __3210;
+	
+			case GB_IMAGE_ABGR: case GB_IMAGE_XBGR:
+				goto __0321;
+	
+			case GB_IMAGE_RGBA: case GB_IMAGE_RGBX:
+				goto __3012;
+				
+			case GB_IMAGE_RGB:
+				goto __012X;
+	
+			case GB_IMAGE_BGR:
+				goto __210X;
+		}
+	}
+	else if (dst_format == GB_IMAGE_ABGR || dst_format == GB_IMAGE_XBGR)
+	{
+		switch (src_format)
+		{
+			case GB_IMAGE_ABGR: case GB_IMAGE_XBGR:
+				goto __0123;
+	
+			case GB_IMAGE_RGBA: case GB_IMAGE_RGBX:
+				goto __3210;
+	
+			case GB_IMAGE_ARGB: case GB_IMAGE_XRGB:
+				goto __0321;
+	
+			case GB_IMAGE_BGRA: case GB_IMAGE_BGRX:
+				goto __3012;
+	
+			case GB_IMAGE_BGR:
+				goto __012X;
+			
+			case GB_IMAGE_RGB:
+				goto __210X;  
+		}  
+	}
 	
 __0123:         
 
@@ -321,6 +411,22 @@ __3210:
 	}
 	goto __PREMULTIPLIED;
 
+__0321:
+
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 0321\n");
+	#endif
+	while (d != dm)
+	{
+		d[0] = s[0];
+		d[1] = s[3];
+		d[2] = s[2];
+		d[3] = s[1];
+		s += 4;
+		d += 4;
+	}
+	goto __PREMULTIPLIED;
+
 __2103:
 
 	#ifdef DEBUG_CONVERT
@@ -333,6 +439,23 @@ __2103:
 		d[1] = s[1];
 		d[2] = s[0];
 		d[3] = s[3];
+		s += 4;
+		d += 4;
+	}
+	goto __PREMULTIPLIED;
+	
+__3012:
+
+	#ifdef DEBUG_CONVERT
+	fprintf(stderr, "convert_image: 3012\n");
+	#endif
+
+	while (d != dm)
+	{
+		d[0] = s[3];
+		d[1] = s[0];
+		d[2] = s[1];
+		d[3] = s[2];
 		s += 4;
 		d += 4;
 	}
@@ -391,34 +514,34 @@ __210X:
 	
 __PREMULTIPLIED:
 
-	if (psrc == pdst)
-		return;
-	
-	p = (uint *)dst;
-	pm = (uint *)dm;
-	
-	if (psrc)
+	if (psrc != pdst && !GB_IMAGE_FMT_IS_SWAPPED(dst_format))
 	{
-		#ifdef DEBUG_CONVERT
-		fprintf(stderr, "convert_image: premultiplied -> normal\n");
-		#endif
-		// convert premultiplied to normal
-		while (p != pm)
+		p = (uint *)dst;
+		pm = (uint *)dm;
+	
+		if (psrc)
 		{
-			*p = INV_PREMUL(*p);
-			p++;
+			#ifdef DEBUG_CONVERT
+			fprintf(stderr, "convert_image: premultiplied -> normal\n");
+			#endif
+			// convert premultiplied to normal
+			while (p != pm)
+			{
+				*p = INV_PREMUL(*p);
+				p++;
+			}
 		}
-	}
-	else
-	{
-		#ifdef DEBUG_CONVERT
-		fprintf(stderr, "convert_image: normal -> premultiplied\n");
-		#endif
-		// convert normal to premultiplied
-		while (p != pm)
+		else
 		{
-			*p = PREMUL(*p);
-			p++;
+			#ifdef DEBUG_CONVERT
+			fprintf(stderr, "convert_image: normal -> premultiplied\n");
+			#endif
+			// convert normal to premultiplied
+			while (p != pm)
+			{
+				*p = PREMUL(*p);
+				p++;
+			}
 		}
 	}
 }
@@ -474,6 +597,19 @@ const char *IMAGE_format_to_string(int fmt)
 	}
 	
 	return NULL;
+}
+
+int IMAGE_format_from_string(char *fmt)
+{
+	FORMAT *pf;
+	
+	for (pf = _formats; pf->name; pf++)
+	{
+		if (strcmp(fmt, pf->name) == 0)
+			return pf->format;
+	}
+	
+	return -1;
 }
 
 void IMAGE_convert(GB_IMG *img, int dst_format)

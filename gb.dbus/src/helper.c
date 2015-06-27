@@ -123,11 +123,11 @@ CONV_TYPE _conv_type[] =
 };
 
 
-const char *DBUS_to_dbus_type(GB_TYPE type)
+static const char *to_dbus_type(GB_VALUE *arg)
 {
 	CONV_TYPE *p;
 	
-	switch(type)
+	switch(arg->type)
 	{
 		case GB_T_BOOLEAN: return DBUS_TYPE_BOOLEAN_AS_STRING;
 		case GB_T_BYTE: return DBUS_TYPE_BYTE_AS_STRING;
@@ -140,13 +140,24 @@ const char *DBUS_to_dbus_type(GB_TYPE type)
 		case GB_T_STRING: return DBUS_TYPE_STRING_AS_STRING;
 		default: break;
 	}
-	
-	for (p = _conv_type; p->name; p++)
+
+	if (arg->type >= GB_T_OBJECT)
 	{
-		if (GB.FindClass(p->name) == type)
-			return p->dbus;
+		for (p = _conv_type; p->name; p++)
+		{
+			if (GB.FindClass(p->name) == arg->type)
+				return p->dbus;
+		}
+				
+		if (GB.Is(arg->_object.value, GB.FindClass("Array")))
+			return "av";
+		
+		if (GB.Is(arg->_object.value, GB.FindClass("DBusVariant")))
+			return "v";
+
+		return NULL;
 	}
-	
+			
 	return "v";
 }
 
@@ -409,9 +420,9 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				
 				if (array)
 				{
-					value.type = GB.Array.Type(array);
 					for (i = 0; i < GB.Array.Count(array); i++)
 					{
+						value.type = GB.Array.Type(array);
 						GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
 						GB.BorrowValue(&value);
 						if (append_arg(&citer, contents_signature, &value))
@@ -439,9 +450,9 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			
 			if (array)
 			{
-				value.type = GB.Array.Type(array);
 				for (i = 0; i < GB.Array.Count(array); i++)
 				{
+					value.type = GB.Array.Type(array);
 					GB.ReadValue(&value, GB.Array.Get(array, i), value.type);
 					GB.BorrowValue(&value);
 					sign = dbus_signature_iter_get_signature(&siter_contents);
@@ -463,7 +474,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			GB_VALUE rarg;
 			GB_VALUE *old_arg = arg;
 			
-			if (arg->type == CLASS_DBusVariant)
+			if (arg->type >= GB_T_OBJECT && GB.Is(arg->_object.value, GB.FindClass("DBusVariant")))
 			{
 				CDBUSVARIANT *dbusvariant = (CDBUSVARIANT *)arg->_object.value;
 				
@@ -471,15 +482,22 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				rarg._variant.value = dbusvariant->value;
 				arg = &rarg;
 				
-				contents_signature = dbusvariant->signature;
+				contents_signature = CDBUSVARIANT_get_signature(dbusvariant);
 			}
 			else
 			{
-				contents_signature = DBUS_to_dbus_type(arg->type);
+				contents_signature = to_dbus_type(arg);
 			}
 			
 			if (!contents_signature)
 				goto __UNSUPPORTED;
+			
+			if (arg->type == GB_T_NULL)
+			{
+				dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, contents_signature, &citer);
+				dbus_message_iter_close_container(iter, &citer);
+				break;
+			}
 			
 			dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
 			GB.BorrowValue(arg);
@@ -1021,6 +1039,8 @@ static DBusHandlerResult filter_func(DBusConnection *connection, DBusMessage *me
 			continue;
 		if (check_filter(obs->interface, dbus_message_get_interface(message)))
 			continue;
+		
+		//print_message(message, FALSE);
 		
 		found = TRUE;
 		obs->message = message;

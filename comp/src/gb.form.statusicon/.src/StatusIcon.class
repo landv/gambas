@@ -1,0 +1,149 @@
+' Gambas class file
+
+Export
+
+Public Const _IsControl As Boolean = True
+Public Const _IsVirtual As Boolean = True
+Public Const _Group As String = "Special"
+Public Const _Properties As String = "Name,Picture,Visible=False,Menu"
+Public Const _DefaultEvent As String = "Click"
+
+Public Enum Horizontal, Vertical
+
+Event Click
+Event Scroll(Delta As Float, Orientation As Integer)
+Event Menu
+
+Property Name As String
+Property Picture As Picture
+Property Visible As Boolean
+Property Menu As String
+
+Static Private $iCount As Integer
+
+Private $sName As String
+Private $iId As Integer
+Private $bVisible As Boolean
+Private $hObject As StatusIconDBusObject
+Private $hIcon As Picture
+Private $sMenu As String
+
+Public Sub _new()
+  
+  $hObject = New StatusIconDBusObject As "StatusIcon"
+  Inc $iCount
+  $iId = $iCount
+  $sName = Application.Name 
+  If $iId > 1 Then $sName &= "-" & CStr($iId)
+  
+End
+
+
+Public Sub Show()
+  
+  Dim sService As String
+  
+  If $bVisible Then Return
+  
+  DBus.Session.Register($hObject, "/org/gambas/StatusIcon/" & CStr($iId), ["org.kde.StatusNotifierItem"])
+  sService = "org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId)
+  'DBus.Session._RequestName(sService, True)
+  
+  DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem("/org/gambas/StatusIcon/" & CStr($iId))
+  
+  $bVisible = True
+  
+End
+
+
+Public Sub Hide()
+  
+  If Not $bVisible Then Return
+  
+  'DBus.Session._ReleaseName("org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId))
+  DBus.Session.Unregister($hObject)
+  
+  $bVisible = False
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return $bVisible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  If Value Then
+    Show
+  Else
+    Hide
+  Endif
+
+End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Sub Name_Write(Value As String)
+
+  $sName = Value
+
+End
+
+Private Function Picture_Read() As Picture
+
+  Return $hIcon
+
+End
+
+Private Sub Picture_Write(Value As Picture)
+
+  $hIcon = Value
+  If $bVisible Then DBus.Session.Raise($hObject, "org.kde.StatusNotifierItem.NewIcon")
+
+End
+
+Public Sub _Activate()
+  
+  Raise Click
+  
+End
+
+Public Sub _ContextMenu(X As Integer, Y As Integer)
+  
+  Dim hMenu As Menu
+  Dim hParent As Control
+  
+  Try hParent = Object.Parent(Me)
+  If hParent Then hMenu = Main.FindMenu(hParent, $sMenu)
+  
+  If hMenu Then
+    hMenu.Popup(X, Y)
+  Else
+    Raise Menu
+  Endif
+  
+End
+
+Private Function Menu_Read() As String
+
+  Return $sMenu
+
+End
+
+Private Sub Menu_Write(Value As String)
+
+  $sMenu = Value
+
+End
+
+Public Sub _Scroll(Delta As Integer, bVertical As Boolean)
+  
+  Raise Scroll(Delta / 120, If(bVertical, Vertical, Horizontal))
+  
+End

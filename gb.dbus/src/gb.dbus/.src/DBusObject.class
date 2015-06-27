@@ -41,9 +41,21 @@ Private $iRegister As Integer
 Private $bRegisterParent As Boolean
 
 Static Private Sub ConvType(sType As String) As String
+
+  Dim sSign As String
+  Dim hClass As Class
   
-  Return $cType[sType]
+  sSign = $cType[sType]
   
+  If Not sSign Then
+    Try hClass = Classes[sType]
+    If hClass And If hClass.Parent And If hClass.Parent.Name = "DBusVariant" Then
+      sSign = hClass["Signature"].Value
+    Endif
+  Endif
+  
+  Return sSign
+      
 End
 
 Public Sub _AddChild(sChild As String)
@@ -144,25 +156,32 @@ Static Private Sub ToDBusSignature(sSign As String) As String[]
   Dim aResult As New String[]
   Dim sOne As String
   Dim iPos As Integer
+  Dim sClass As String
   
   If Not sSign Then Return aResult
   
   While sSign
     
     If IsLCase(Left(sSign)) Then
+      
       sOne = ConvType(Left(sSign))
       sSign = Mid$(sSign, 2)
+      
     Else
+      
       iPos = InStr(sSign, ";")
       If iPos Then
-        sOne = Left(sSign, iPos - 1)
+        sClass = Left(sSign, iPos - 1)
         sSign = Mid$(sSign, iPos + 1)
       Else
-        sOne = sSign
+        sClass = sSign
         sSign = ""
       Endif
-      sOne = ConvType(sOne)
+      
+      sOne = ConvType(sClass)
+      
     Endif
+    
     If Not sOne Then Return
     
     aResult.Add(sOne)
@@ -192,6 +211,9 @@ Public Sub _Introspect() As String
   Dim sInterface As String
   Dim sPrefix As String
   Dim aSign As String[]
+  Dim sKind As String
+  Dim sSign As String
+  Dim bReadOnly As Boolean
   
   sRes &= "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
   sRes &= "<node>\n"
@@ -207,7 +229,7 @@ Public Sub _Introspect() As String
   
   For Each sSymbol In hClass.Symbols
     With hClass[sSymbol]
-      If InStr(sSymbol, "_") Then Continue
+      If Left(sSymbol) = "_" Then Continue
       If .Static Then Continue
       If .Kind = Class.Property Then 
         bHasProperty = True
@@ -217,23 +239,30 @@ Public Sub _Introspect() As String
     End With
   Next
   
+  sRes &= "  <interface name=\"org.freedesktop.DBus.Peer\">\n"
+          "    <method name=\"Ping\"/>\n"
+          "    <method name=\"GetMachineId\">\n"
+          "      <arg name=\"machine_uuid\" type=\"s\" direction=\"out\"/>\n"
+          "    </method>\n"
+          "  </interface>"
+  
   If bHasProperty Then
     sRes &= "  <interface name=\"org.freedesktop.DBus.Properties\">\n"
-    sRes &= "    <method name=\"Get\">\n"
-    sRes &= "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
-    sRes &= "      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
-    sRes &= "      <arg name=\"value\" type=\"v\" direction=\"out\"/>\n"
-    sRes &= "    </method>\n"
-    sRes &= "    <method name=\"Set\">\n"
-    sRes &= "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
-    sRes &= "      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
-    sRes &= "      <arg name=\"value\" type=\"v\" direction=\"in\"/>\n"
-    sRes &= "    </method>\n"
-    sRes &= "    <method name=\"GetAll\">\n"
-    sRes &= "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
-    sRes &= "      <arg name=\"values\" type=\"a{sv}\" direction=\"out\"/>\n"
-    sRes &= "    </method>\n"
-    sRes &= "  </interface>\n"
+            "    <method name=\"Get\">\n"
+            "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+            "      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
+            "      <arg name=\"value\" type=\"v\" direction=\"out\"/>\n"
+            "    </method>\n"
+            "    <method name=\"Set\">\n"
+            "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+            "      <arg name=\"property_name\" type=\"s\" direction=\"in\"/>\n"
+            "      <arg name=\"value\" type=\"v\" direction=\"in\"/>\n"
+            "    </method>\n"
+            "    <method name=\"GetAll\">\n"
+            "      <arg name=\"interface_name\" type=\"s\" direction=\"in\"/>\n"
+            "      <arg name=\"values\" type=\"a{sv}\" direction=\"out\"/>\n"
+            "    </method>\n"
+            "  </interface>\n"
   Endif
   
   For Each sSymbol In hClass.Symbols
@@ -259,51 +288,56 @@ Public Sub _Introspect() As String
       If InStr(sSymbol, "_") Then Continue
       
       sDesc = ""
-      
       sType = ""
+      sKind = .Kind
+      sSign = .Signature
+      bReadOnly = .ReadOnly
       
       If .Type Then
         sType = ConvType(.Type)
         If Not sType Then Continue
       Endif
+      
+    End With
+    
+    Select Case sKind
+
+      Case Class.Method, Class.Event
+
+        aSign = ToDBusSignature(sSign)
+        If Not aSign Then Continue
+        
+        sArg = ""
+
+        For iInd = 0 To aSign.Max
+          sArg &= "      <arg name=\"arg" & CStr(iInd + 1) & "\" type=\"" & aSign[iInd] & "\"/>\n"
+        Next
+
+        If sKind = Class.Event Then
           
-      Select Case .Kind
-
-        Case Class.Method, Class.Event
-
-          aSign = ToDBusSignature(.Signature)
-          If Not aSign Then Continue
-
-          For iInd = 0 To aSign.Max
-            sArg &= "      <arg name=\"arg" & CStr(iInd + 1) & "\" type=\"" & aSign[iInd] & "\"/>\n"
-          Next
-
-          If .Kind = Class.Event Then
-            
-            sDesc &= "    <signal name=\"" & sSymbol & "\">\n"
-            If sArg Then sDesc &= sArg
-            sDesc &= "    </signal>\n"
-            
-          Else
-            
-            sDesc &= "    <method name=\"" & sSymbol & "\">\n"
+          sDesc &= "    <signal name=\"" & sSymbol & "\">\n"
+          If sArg Then sDesc &= sArg
+          sDesc &= "    </signal>\n"
           
-            If sArg Then sDesc &= sArg
-            
-            If sType Then
-              sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
-            Endif
-            
-            sDesc &= "    </method>\n"
-            
+        Else
+          
+          sDesc &= "    <method name=\"" & sSymbol & "\">\n"
+        
+          If sArg Then sDesc &= sArg
+          
+          If sType Then
+            sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
           Endif
           
-        Case Class.Property
+          sDesc &= "    </method>\n"
           
-          sDesc &= "    <property name=\"" & sSymbol & "\" type=\"" & sType & "\" access=\"" & If(.ReadOnly, "read", "readwrite") & "\"/>\n"
-          
-      End Select
-    End With
+        Endif
+        
+      Case Class.Property
+        
+        sDesc &= "    <property name=\"" & sSymbol & "\" type=\"" & sType & "\" access=\"" & If(bReadOnly, "read", "readwrite") & "\"/>\n"
+        
+    End Select
     
     If sPrefix Then
       cDescInterface[sInterface] &= sDesc
@@ -363,6 +397,7 @@ Private Sub GetAllProperties()
   Dim sSymbol As String
   Dim sInterface As String
   Dim sPrefix As String
+  Dim sProp As String
   
   With $hObserver.Message
   
@@ -371,11 +406,12 @@ Private Sub GetAllProperties()
     hClass = Object.Class(Me)
     
     For Each sSymbol In hClass.Symbols
+
       With hClass[sSymbol]
         
         If .Kind <> Class.Property Then Continue
         If .Static Then Continue
-      
+        
         sPrefix = ""
         If $aInterface Then
           For Each sInterface In $aInterface
@@ -385,14 +421,14 @@ Private Sub GetAllProperties()
           Next
         Endif
     
-        sSymbol = Mid$(sSymbol, Len(sPrefix) + 1)
-        If InStr(sSymbol, "_") Then Continue
+        sProp = Mid$(sSymbol, Len(sPrefix) + 1)
+        If InStr(sProp, "_") Then Continue
         
         If Not sPrefix Then sInterface = $sInterface
         
         If sInterface <> sWantInterface Then Continue
         
-        cVal[sSymbol] = Object.GetProperty(Me, sSymbol)
+        cVal[sProp] = Object.GetProperty(Me, sSymbol)
         
       End With
     Next
@@ -441,6 +477,7 @@ Public Sub DBusObserver_Message()
   Dim vVal As Variant
   Dim sMethod As String
   Dim sInterface As String
+  Dim sType As String
   
   sMethod = $hObserver.Message.Member
   sInterface = $hObserver.Message.Interface
@@ -473,11 +510,19 @@ Public Sub DBusObserver_Message()
     sMethod = Replace(sInterface, ".", "_") & "_" & sMethod
   Endif
   
-  vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)
-  $hObserver.Reply(ConvType(Object.Class(Me)[sMethod].Type), [vVal])
+  sType = Object.Class(Me)[sMethod].Type
+  If sType Then
+    vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)
+    sType = ConvType(sType)
+    If Not sType Then sType = "v"
+    $hObserver.Reply(sType, [vVal])
+  Else
+    Object.Call(Me, sMethod, $hObserver.Message.Arguments)
+  Endif
 
 Catch
 
+  'Debug Error.Text
   $hObserver.Error(Error.Text)
   
 End

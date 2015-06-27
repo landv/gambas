@@ -342,7 +342,6 @@ END_METHOD
 
 BEGIN_PROPERTY(Image_Format)
 
-	char *format;
 	int fmt;
 
 	if (READ_PROPERTY)
@@ -351,19 +350,11 @@ BEGIN_PROPERTY(Image_Format)
 	}
 	else
 	{
-		format = GB.ToZeroString(PROP(GB_STRING));
+		fmt = IMAGE_format_from_string(GB.ToZeroString(PROP(GB_STRING)));
 		
-		if (!strcasecmp(format, "BGRA"))
-			fmt = GB_IMAGE_BGRA;
-		else if (!strcasecmp(format, "BGRP"))
-			fmt = GB_IMAGE_BGRP;
-		else if (!strcasecmp(format, "RGBA"))
-			fmt = GB_IMAGE_RGBA;
-		else if (!strcasecmp(format, "RGBP"))
-			fmt = GB_IMAGE_RGBP;
-		else
+		if (fmt < 0)
 		{
-			GB.Error("Unsupported conversion");
+			GB.Error("Unknown format");
 			return;
 		}
 		

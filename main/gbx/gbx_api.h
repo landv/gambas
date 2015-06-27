@@ -48,7 +48,7 @@ bool GB_Stopped(void);
 int GB_NParam(void);
 const char *GB_GetUnknown(void);
 
-bool GB_GetProperty(void *object, const char *property);
+void *GB_GetProperty(void *object, const char *property);
 bool GB_SetProperty(void *object, const char *name, GB_VALUE *value);
 
 bool GB_Serialize(const char *path, GB_VALUE *value);

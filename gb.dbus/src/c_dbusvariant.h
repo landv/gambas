@@ -40,8 +40,9 @@ typedef
 	struct {
 		GB_BASE ob;
 		GB_VARIANT_VALUE value;
-		char *signature;
 	}
 	CDBUSVARIANT;
 
+char *CDBUSVARIANT_get_signature(CDBUSVARIANT *_object);
+	
 #endif /* __CDBUS_H */

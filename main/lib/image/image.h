@@ -34,6 +34,7 @@ static inline int RED(uint rgba) { return ((rgba >> 16) & 0xff); }
 static inline int GREEN(uint rgba) { return ((rgba >> 8) & 0xff); }
 static inline int BLUE(uint rgba) { return (rgba & 0xff); }
 static inline int ALPHA(uint rgba) { return ((rgba >> 24) & 0xff); }
+
 static inline uint RGB(int r, int g, int b) { return (0xff << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff); }
 static inline uint RGBA(int r, int g, int b, int a) { return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff); }
 static inline int GRAY(uint rgba) { return (RED(rgba) * 11 + GREEN(rgba) * 16 + BLUE(rgba) * 5) / 32; }
@@ -68,6 +69,7 @@ void IMAGE_replace(GB_IMG *img, GB_COLOR src, GB_COLOR dst, bool noteq);
 void IMAGE_set_default_format(int format);
 int IMAGE_get_default_format();
 const char *IMAGE_format_to_string(int fmt);
+int IMAGE_format_from_string(char *fmt);
 
 void IMAGE_bitblt(GB_IMG *dst, int dx, int dy, int dw, int dh, GB_IMG *src, int sx, int sy, int sw, int sh);
 void IMAGE_draw_alpha(GB_IMG *dst, int dx, int dy, GB_IMG *src, int sx, int sy, int sw, int sh);

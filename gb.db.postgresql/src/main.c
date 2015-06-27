@@ -39,6 +39,7 @@
 	#undef PACKAGE_STRING
 	#undef PACKAGE_TARNAME
 	#undef PACKAGE_VERSION
+	#undef PACKAGE_URL
 #endif
 
 #include "gb.db.proto.h"
