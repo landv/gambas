@@ -7,7 +7,8 @@ Private $sName As String
 Private $cCache As New Collection
 Private $sKey As String
 Private $iIndex As Integer
-Private $hObject As DBusProxy
+Private $iRequest As Integer
+'Private $hObject As DBusProxy
 
 Property Read Connection As DBusConnection
 Property Read Name As String
@@ -70,30 +71,59 @@ Private Function Index_Read() As Integer
 
 End
 
-Public Sub _unknown(...) As Variant
+' Public Sub _unknown(...) As Variant
+'   
+'   Dim aArg As Variant[]
+'   'Dim iInd As Integer
+'   Dim hObject As DBusProxy = $hObject
+'   
+'   If Param.Count Then
+'     ' aArg = New Variant[Param.Count]
+'     ' For iInd = 0 To Param.Max
+'     '   aArg[iInd] = Param[iInd]
+'     ' Next
+'     aArg = Param.All
+'   Endif
+'   
+'   $hObject = Null
+'   Return hObject._Invoke(Param.Name, aArg)
+'   
+' End
+' 
+' Public Sub _property() As Boolean
+'   
+'   $hObject = _get(Replace($sName, "/", "."))
+'   Return $hObject._property()
+'   
+' End
+
+
+Private Sub Request()
   
-  Dim aArg As Variant[]
-  'Dim iInd As Integer
-  Dim hObject As DBusProxy = $hObject
-  
-  If Param.Count Then
-    ' aArg = New Variant[Param.Count]
-    ' For iInd = 0 To Param.Max
-    '   aArg[iInd] = Param[iInd]
-    ' Next
-    aArg = Param.All
-  Endif
-  
-  $hObject = Null
-  Return hObject._Invoke(Param.Name, aArg)
+  Inc $iRequest
+  If $iRequest = 1 Then DBus.Session._RequestName($sName, True)
   
 End
 
-Public Sub _property() As Boolean
+Private Sub Release()
   
-  $hObject = _get(Replace($sName, "/", "."))
-  Return $hObject._property()
+  Dec $iRequest
+  If $iRequest > 0 Then Return
+  DBus.Session._ReleaseName($sName)
   
 End
 
+Public Sub Register((Object) As DBusObject, Path As String, Optional Interfaces As String[])
+  
+  Request()
+  Object._Register($hConn, $sName &/ Path, Interfaces)
+  
+End
+
+Public Sub Unregister((Object) As DBusObject)
+  
+  Object._Unregister($hConn)
+  Release()
+  
+End
 

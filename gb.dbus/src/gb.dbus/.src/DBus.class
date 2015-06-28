@@ -99,3 +99,16 @@ Static Private Sub Name_Write(Value As String)
   $sAppName = _Normalize(Value, True)
 
 End
+
+Static Public Sub Register((Object) As DBusObject, Path As String, Optional Interfaces As String[])
+  
+  Object._Register(DBus.Session, Path, Interfaces)
+  
+End
+
+Static Public Sub Unregister((Object) As DBusObject)
+  
+  Object._Unregister(DBus.Session)
+  
+End
+

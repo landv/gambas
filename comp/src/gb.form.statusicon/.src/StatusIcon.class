@@ -52,12 +52,11 @@ Public Sub Show()
   
   sService = GetServiceName()
   
-  DBus.Session._RequestName(sService, True)
-  DBus.Session.Register($hObject, sService & "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+  DBus[sService].Register($hObject, "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+  
   DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem(sService)
   
   $bVisible = True
-  'DBus.Session.Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Active"])
   
 End
 
@@ -66,11 +65,8 @@ Public Sub Hide()
   
   If Not $bVisible Then Return
 
-   DBus.Session._ReleaseName(GetServiceName())
-   DBus.Session.Unregister($hObject)
-  
+  DBus[GetServiceName()].Unregister($hObject)
   $bVisible = False
-  'DBus.Session.Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Passive"])
 
 End
 
