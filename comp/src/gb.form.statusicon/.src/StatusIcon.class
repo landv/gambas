@@ -38,6 +38,11 @@ Public Sub _new()
   
 End
 
+Private Sub GetServiceName() As String
+
+  Return "org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId)
+
+End
 
 Public Sub Show()
   
@@ -45,13 +50,14 @@ Public Sub Show()
   
   If $bVisible Then Return
   
-  DBus.Session.Register($hObject, "/org/gambas/StatusIcon/" & CStr($iId), ["org.kde.StatusNotifierItem"])
-  sService = "org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId)
-  'DBus.Session._RequestName(sService, True)
+  sService = GetServiceName()
   
-  DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem("/org/gambas/StatusIcon/" & CStr($iId))
+  DBus.Session._RequestName(sService, True)
+  DBus.Session.Register($hObject, sService & "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+  DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem(sService)
   
   $bVisible = True
+  'DBus.Session.Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Active"])
   
 End
 
@@ -59,11 +65,12 @@ End
 Public Sub Hide()
   
   If Not $bVisible Then Return
-  
-  'DBus.Session._ReleaseName("org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId))
-  DBus.Session.Unregister($hObject)
+
+   DBus.Session._ReleaseName(GetServiceName())
+   DBus.Session.Unregister($hObject)
   
   $bVisible = False
+  'DBus.Session.Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Passive"])
 
 End
 

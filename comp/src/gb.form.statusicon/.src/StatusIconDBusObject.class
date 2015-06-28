@@ -117,7 +117,7 @@ Property Read org_kde_StatusNotifierItem_IconName As String
 ' Carries an ARGB32 binary representation of the icon, the format of icon data used in this specification is described in Section Icons
 ' org.freedesktop.StatusNotifierItem.OverlayIconName
 ' 
-Property Read org_kde_StatusNotifierItem_IconPixmap As DBusStatusIconPixmap
+Property Read org_kde_StatusNotifierItem_IconPixmap As _DBusStatusIconPixmap
 
 ' STRING org.freedesktop.StatusNotifierItem.OverlayIconName ();
 ' 
@@ -239,7 +239,7 @@ End
 
 Private Function org_kde_StatusNotifierItem_Status_Read() As String
 
-  Return "Active"
+  Return If(GetParent().Visible, "Active", "Passive")
 
 End
 
@@ -251,7 +251,7 @@ End
 
 Private Function org_kde_StatusNotifierItem_WindowId_Read() As Integer
 
-  
+  Return 0
 
 End
 
@@ -261,9 +261,9 @@ Private Function org_kde_StatusNotifierItem_IconName_Read() As String
 
 End
 
-Private Function org_kde_StatusNotifierItem_IconPixmap_Read() As DBusStatusIconPixmap
+Private Function org_kde_StatusNotifierItem_IconPixmap_Read() As _DBusStatusIconPixmap
 
-  Return New DBusStatusIconPixmap(GetParent().Picture)
+  Return New _DBusStatusIconPixmap(GetParent().Picture)
 
 End
 
@@ -306,24 +306,3 @@ Private Sub GetParent() As StatusIcon
   Return Object.Parent(Me)
 
 End
-
-' Private Sub PictureToIconPixmap(hPict As Picture) As StatusIconPixmap
-' 
-'   Dim hImage As Image
-'   
-'   If Not hPict Then
-'     hImage = Image.Load("default.png")
-'   Else
-'     hImage = hPict.Image
-'   Endif
-'   
-'   ' a(iiay)
-'   Return New StatusIconPixmap([[hImage.W, hImage.H, Byte[].FromString(String@(hImage.Data, hImage.W * hImage.H * SizeOf(gb.Integer)))]])
-'   
-' End
-' 
-' Public Sub _new()
-'   
-'   Class.Load("StatusIconPixmap")
-'   
-' End

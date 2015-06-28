@@ -8,7 +8,6 @@ Public Const Signature As String = "a(iiay)"
 Public Sub _new(hPict As Picture)
 
   Dim hImage As Image
-  Dim sData As String
   
   If Not hPict Then
     hImage = Image.Load("default.png")
@@ -18,9 +17,7 @@ Public Sub _new(hPict As Picture)
   
   hImage.Format = "ARGB"
   
-  sData = String@(hImage.Data, hImage.W * hImage.H * SizeOf(gb.Integer))
-  Me.Value = [[hImage.W, hImage.H, Byte[].FromString(sData)]]
-  'System._Breakpoint
+  Me.Value = [[hImage.W, hImage.H, Byte[].FromString(String@(hImage.Data, hImage.W * hImage.H * SizeOf(gb.Integer)))]]
   
 End
 

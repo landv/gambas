@@ -65,50 +65,54 @@ Public Sub _AddChild(sChild As String)
   
 End
 
-Public Sub _GetPath() As String
-  
-  Return $sPath
-  
-End
-
-
-Public Sub _Register(hConnection As DBusConnection, sPath As String, Optional aInterface As String[])
+Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optional aInterface As String[])
   
   Dim hParent As DBusObject
   Dim sParent As String
+  Dim iPos As Integer
+  Dim sService As String
+  Dim sPath As String
+  
+  If $sPath Then
+    If $sPath <> sFullPath Then Error.Raise("Object already registered")
+    Inc $iRegister
+    Return
+  Endif
   
   Inc $iRegister
-  If $iRegister > 1 Then Return
   
   If Not $sName Then $sName = DBus._RegisterApplication(hConnection)
   
-  If Left(sPath) <> "/" Then sPath = "/" & sPath
+  iPos = InStr(sFullPath, "/")
+  If iPos = 0 Then Error.Raise("Bad object path")
+  sService = Left(sFullPath, iPos - 1)
+  sPath = Mid$(sFullPath, iPos)
   
-  If _ObjectCache.Exist(sPath) Then Return
+  If _ObjectCache.Exist(sFullPath) Then Return
   
-  $sPath = sPath
+  $sPath = sFullPath
   
   $sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
   If aInterface Then $aInterface = aInterface.Copy()
   'Debug $sPath;; $sInterface
   
-  _ObjectCache[sPath] = Me
+  _ObjectCache[sFullPath] = Me
   
   If sPath <> "/" Then
     
     sParent = File.Dir(sPath)
-    hParent = _ObjectCache[sParent]
+    hParent = _ObjectCache[sService &/ sParent]
     If Not hParent Then
       $bRegisterParent = True
       hParent = New DBusObject
-      hParent._Register(hConnection, sParent)
+      hParent._Register(hConnection, sService &/ sParent)
     Endif
   
     hParent._AddChild(File.Name(sPath))
     
   Endif
   
-  $hObserver = New DBusObserver(hConnection, DBus.Method, sPath) As "DBusObserver"
+  $hObserver = New DBusObserver(hConnection, DBus.Method, sPath, "", "", sService) As "DBusObserver"
   
 End
 
@@ -118,15 +122,22 @@ Public Sub _Unregister(hConnection As DBusConnection)
   Dim hChild As DBusObject
   Dim sParent As String
   Dim hParent As DBusObject
+  Dim sService As String
+  Dim iPos As Integer
+  Dim sPath As String
   
   Dec $iRegister
   If $iRegister > 0 Then Return
   
+  iPos = InStr($sPath, "/")
+  sService = Left($sPath, iPos - 1)
+  sPath = Mid$($sPath, iPos)
+  
   If $bRegisterParent Then
     
     $bRegisterParent = False
-    sParent = File.Dir($sPath)
-    hParent = _ObjectCache[sParent]
+    sParent = File.Dir(sPath)
+    hParent = _ObjectCache[sService &/ sParent]
     If hParent Then
       hParent._Unregister(hConnection)
       Return
@@ -482,7 +493,7 @@ Public Sub DBusObserver_Message()
   sMethod = $hObserver.Message.Member
   sInterface = $hObserver.Message.Interface
   
-  'Debug sInterface;; sMethod
+  'Debug "["; $hObserver.Message.Destination; "]";; sInterface;; sMethod
   
   If InStr(sMethod, "_") Then Return
   
