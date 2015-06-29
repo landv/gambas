@@ -817,7 +817,7 @@ static void unrelease_grab()
 static bool must_quit(void)
 {
 	#if DEBUG_WINDOW
-	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
+	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d MAIN_in_message_box = %d _prevent_quit = %d", CWindow::count, CWatch::count, in_event_loop, MAIN_in_message_box, _prevent_quit);
 	#endif
 	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0 && _prevent_quit == 0;
 }
@@ -830,6 +830,10 @@ static void check_quit_now(intptr_t param)
 	{
 		if (QApplication::instance())
 		{
+			GB_FUNCTION func;
+			GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL);
+			GB.Call(&func, 0, FALSE);
+			
 #ifndef QT5
 			qApp->syncX();
 #endif

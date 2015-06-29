@@ -62,7 +62,7 @@ static gboolean cb_button_press(GtkStatusIcon *plug, GdkEventButton *event, gTra
 	{
 		gMouse::validate();
 		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, event->button, event->state);
-		if (event->type == GDK_BUTTON_PRESS)
+		if (event->type == GDK_BUTTON_PRESS && event->button == 1)
 			data->onClick(data);
 		/*else if (event->type == GDK_2BUTTON_PRESS)
 			data->onDoubleClick(data);*/

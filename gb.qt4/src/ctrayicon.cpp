@@ -212,7 +212,7 @@ BEGIN_METHOD_VOID(TrayIcon_Show)
 		QSystemTrayIcon *indicator = new QSystemTrayIcon();
 
 		QObject::connect(indicator, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), &TrayIconManager::manager, SLOT(activated(QSystemTrayIcon::ActivationReason)));
-		//indicator->installEventFilter(&TrayIconManager::manager);
+		indicator->installEventFilter(&TrayIconManager::manager);
 		
 		THIS->indicator = indicator;
 		QT_PreventQuit(true);
@@ -362,7 +362,7 @@ void TrayIconManager::activated(QSystemTrayIcon::ActivationReason reason)
 	CTRAYICON *_object = find_trayicon(sender());
 	if (THIS)
 	{
-		qDebug("reason = %d", (int)reason);
+		//qDebug("reason = %d", (int)reason);
 		switch(reason)
 		{
 			//case QSystemTrayIcon::DoubleClick:

@@ -113,6 +113,7 @@ BEGIN_METHOD_VOID(TrayIcon_free)
 
 	GB.StoreObject(NULL, POINTER(&THIS->picture));
 	GB.StoreVariant(NULL, &THIS->base.tag);
+	GB.FreeString(&THIS->popup);
 
 	destroy_tray_icon(THIS);
 
@@ -276,6 +277,12 @@ BEGIN_METHOD_VOID(TrayIcon_unknown)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(TrayIcons_DeleteAll)
+
+	gTrayIcon::exit();
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 GB_DESC TrayIconsDesc[] =
@@ -285,6 +292,7 @@ GB_DESC TrayIconsDesc[] =
 	GB_STATIC_PROPERTY_READ("Count", "i", TrayIcons_Count),
 	GB_STATIC_METHOD("_get","TrayIcon", TrayIcons_get,"(Index)i"),
 	GB_STATIC_METHOD("_next", "TrayIcon", TrayIcons_next, NULL),
+	GB_STATIC_METHOD("DeleteAll", NULL, TrayIcons_DeleteAll, NULL),
 	
 	GB_END_DECLARE
 };

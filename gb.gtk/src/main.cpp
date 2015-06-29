@@ -364,9 +364,14 @@ extern "C"
 
 void my_quit (void)
 {
+	GB_FUNCTION func;
+	
 	while (gtk_events_pending())
 		gtk_main_iteration();
   
+	GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL);
+	GB.Call(&func, 0, FALSE);
+	
 	CWINDOW_delete_all();
 	gControl::cleanRemovedControls();
 
