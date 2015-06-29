@@ -267,7 +267,7 @@ static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 		pos = _utf8.lpos;
 		if (pos >= len)
 			pos = len;
-		return len;
+		return pos;
 	}
 	
 	min_index = 0;
