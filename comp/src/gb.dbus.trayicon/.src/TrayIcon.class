@@ -5,7 +5,7 @@ Export
 Public Const _IsControl As Boolean = True
 Public Const _IsVirtual As Boolean = True
 Public Const _Group As String = "Special"
-Public Const _Properties As String = "Name,Picture,Visible=False,PopupMenu{Menu}"
+Public Const _Properties As String = "Name,Picture,Visible=False,PopupMenu{Menu},Tooltip"
 Public Const _DefaultEvent As String = "Click"
 
 Public Enum Horizontal, Vertical
@@ -177,5 +177,6 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
+  If $bVisible Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewTooltip")
 
 End

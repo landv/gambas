@@ -37,7 +37,7 @@ Event org_kde_StatusNotifierItem_NewOverlayIcon
 ' 
 ' The item has a new tooltip: the graphical representation should read it again immediately.
 ' NewStatus
-Event org_kde_StatusNotifierItem_NewTooltip
+Event org_kde_StatusNotifierItem_NewToolTip
 
 ' 
 ' VOID org.freedesktop.StatusNotifierItem.NewStatus (STRING status);
@@ -166,7 +166,7 @@ Property Read org_kde_StatusNotifierItem_AttentionMovieName As String
 ' 
 '     STRING: descriptive text for this tooltip. It can contain also a subset of the HTML markup language, for a list of allowed tags see Section Markup.
 ' 
-Property Read org_kde_StatusNotifierItem_Tooltip As Variant
+Property Read org_kde_StatusNotifierItem_ToolTip As _DBusStatusIconTooltip
 
 ' Methods
 ' ContextMenu
@@ -289,9 +289,12 @@ Private Function org_kde_StatusNotifierItem_AttentionIconPixmap_Read() As Varian
 
 End
 
-Private Function org_kde_StatusNotifierItem_Tooltip_Read() As Variant
+Private Function org_kde_StatusNotifierItem_ToolTip_Read() As _DBusStatusIconTooltip
 
-  
+  Dim sText As String
+
+  sText = GetParent().Text
+  If sText Then Return New _DBusStatusIconTooltip(GetParent().Picture, Application.Title, sText)
 
 End
 
