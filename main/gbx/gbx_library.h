@@ -66,6 +66,7 @@ int LIBRARY_load(LIBRARY *lib);
 void LIBRARY_unload(LIBRARY *lib);
 
 void LIBRARY_declare(GB_DESC **desc);
+void LIBRARY_declare_one(GB_DESC *desc);
 
 bool LIBRARY_get_interface_by_name(const char *name, int version, void *iface);
 void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface);

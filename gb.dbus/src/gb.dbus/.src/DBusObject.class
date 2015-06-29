@@ -561,7 +561,9 @@ Public Sub _Raise(hConnection As DBusConnection, sSignal As String, aArg As Obje
     sInterface = Left(sSignal, iPos - 1)
     sSignal = Mid$(sSignal, iPos + 1)
   Endif
-  hConnection._SendSignal($sPath, sInterface, sSignal, aSign.Join(""), aArg)
+  
+  iPos = InStr($sPath, "/")
+  hConnection._SendSignal(Mid$($sPath, iPos), sInterface, sSignal, aSign.Join(""), aArg)
   
 End
 

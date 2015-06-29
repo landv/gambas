@@ -36,7 +36,7 @@
 
 BEGIN_METHOD_VOID(CSTOCK_get)
 
-	GB.Deprecated("gb.gtk", "Stock class", NULL);
+	GB.Deprecated(GTK_NAME, "Stock class", NULL);
 	GB.ReturnNull();
 
 END_METHOD

@@ -5,7 +5,7 @@ Export
 Public Const _IsControl As Boolean = True
 Public Const _IsVirtual As Boolean = True
 Public Const _Group As String = "Special"
-Public Const _Properties As String = "Name,Picture,Visible=False,Menu"
+Public Const _Properties As String = "Name,Picture,Visible=False,PopupMenu{Menu}"
 Public Const _DefaultEvent As String = "Click"
 
 Public Enum Horizontal, Vertical
@@ -15,26 +15,29 @@ Event Scroll(Delta As Float, Orientation As Integer)
 Event Menu
 
 Property Name As String
-Property Picture As Picture
+Property Picture, Icon As Picture
 Property Visible As Boolean
-Property Menu As String
+Property PopupMenu As String
+Property Text, Tooltip As String
 
 Static Private $iCount As Integer
 
 Private $sName As String
 Private $iId As Integer
 Private $bVisible As Boolean
-Private $hObject As StatusIconDBusObject
+Private $hObject As DBusStatusIcon
 Private $hIcon As Picture
 Private $sMenu As String
+Private $sText As String
 
 Public Sub _new()
   
-  $hObject = New StatusIconDBusObject As "StatusIcon"
+  $hObject = New DBusStatusIcon As "StatusIcon"
   Inc $iCount
   $iId = $iCount
   $sName = Application.Name 
   If $iId > 1 Then $sName &= "-" & CStr($iId)
+  TrayIcons._All.Add(Me)
   
 End
 
@@ -69,6 +72,20 @@ Public Sub Hide()
   $bVisible = False
 
 End
+
+Public Sub Delete()
+
+  Dim iIndex As Integer
+  
+  Hide
+  
+  iIndex = TrayIcons._All.FindByRef(Me)
+  If iIndex < 0 Then Return
+  
+  TrayIcons._All.Remove(iIndex)
+  
+End
+
 
 Private Function Visible_Read() As Boolean
 
@@ -107,7 +124,7 @@ End
 Private Sub Picture_Write(Value As Picture)
 
   $hIcon = Value
-  If $bVisible Then DBus.Session.Raise($hObject, "org.kde.StatusNotifierItem.NewIcon")
+  If $bVisible Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewIcon")
 
 End
 
@@ -133,13 +150,13 @@ Public Sub _ContextMenu(X As Integer, Y As Integer)
   
 End
 
-Private Function Menu_Read() As String
+Private Function PopupMenu_Read() As String
 
   Return $sMenu
 
 End
 
-Private Sub Menu_Write(Value As String)
+Private Sub PopupMenu_Write(Value As String)
 
   $sMenu = Value
 
@@ -149,4 +166,16 @@ Public Sub _Scroll(Delta As Integer, bVertical As Boolean)
   
   Raise Scroll(Delta / 120, If(bVertical, Vertical, Horizontal))
   
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
 End

@@ -301,7 +301,7 @@ Private Function org_kde_StatusNotifierItem_AttentionMovieName_Read() As String
 
 End
 
-Private Sub GetParent() As StatusIcon
+Private Sub GetParent() As TrayIcon
 
   Return Object.Parent(Me)
 

@@ -160,7 +160,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_painted)
 	if (!deprecated)
 	{
 		deprecated = true;
-		GB.Deprecated("gb.gtk", "DrawingArea.Painted", NULL);
+		GB.Deprecated(GTK_NAME, "DrawingArea.Painted", NULL);
 	}
 	
 	if (READ_PROPERTY)

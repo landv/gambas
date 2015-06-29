@@ -30,8 +30,8 @@
 
 #ifndef __CTRAYICON_CPP
 
-extern GB_DESC CTrayIconDesc[];
-extern GB_DESC CTrayIconsDesc[];
+extern GB_DESC TrayIconDesc[];
+extern GB_DESC TrayIconsDesc[];
 
 #else
 
@@ -45,6 +45,7 @@ typedef
 	{
 		GTK_CONTROL base;
 		CPICTURE *picture;
+		char *popup;
 	}  
 	CTRAYICON;
 

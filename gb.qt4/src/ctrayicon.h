@@ -1,6 +1,6 @@
 /***************************************************************************
 
-	CTrayIcon.h
+	ctrayicon.h
 
 	(c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -25,14 +25,14 @@
 #define __CTRAYICON_H
 
 #include "gambas.h"
+#include "main.h"
 
-#include <QSystemTrayIcon>
 #include "CPicture.h"
+#include <QSystemTrayIcon>
 
 #ifndef __CTRAYICON_CPP
 extern GB_DESC TrayIconsDesc[];
 extern GB_DESC TrayIconDesc[];
-extern int TRAYICON_count;
 #else
 
 #define THIS  ((CTRAYICON *)_object)
@@ -61,7 +61,7 @@ public:
 
 	static TrayIconManager manager;
 
-	//virtual bool eventFilter(QObject *o, QEvent *e);
+	virtual bool eventFilter(QObject *o, QEvent *e);
 	
 public slots:
 

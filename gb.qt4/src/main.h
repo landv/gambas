@@ -155,5 +155,7 @@ void QT_RaiseAction(const char *key);
 void *QT_GetObject(QWidget *);
 void QT_Link(QObject *, void *);
 void *QT_GetLink(QObject *);
+void QT_PreventQuit(bool inc);
+QMenu *QT_FindMenu(void *parent, const char *name);
 
 #endif

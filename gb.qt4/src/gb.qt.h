@@ -43,6 +43,7 @@
 #include <QPen>
 #include <QTransform>
 #include <QColor>
+#include <QMenu>
 
 #define QT_INTERFACE_VERSION 1
 

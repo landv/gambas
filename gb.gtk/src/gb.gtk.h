@@ -34,6 +34,12 @@
 
 #define GTK_INTERFACE_VERSION 1
 
+#ifdef GTK3
+#define GTK_NAME "gb.gtk3"
+#else
+#define GTK_NAME "gb.gtk"
+#endif
+
 typedef
 	struct 
 	{

@@ -52,16 +52,10 @@ public:
 	int loopLevel() { return _loopLevel; }
 
 //"Events"
-	void (*onDoubleClick)(gTrayIcon *sender);
-	void (*onMousePress)(gTrayIcon *sender);
-	void (*onMouseRelease)(gTrayIcon *sender);
-	void (*onMouseWheel)(gTrayIcon *sender);
+	void (*onClick)(gTrayIcon *sender);
+	void (*onScroll)(gTrayIcon *sender);
 	void (*onMenu)(gTrayIcon *sender);
 	void (*onDestroy)(gTrayIcon *sender);
-	void (*onFocusEnter)(gTrayIcon *sender);
-	void (*onFocusLeave)(gTrayIcon *sender);
-	void (*onEnter)(gTrayIcon *sender);
-	void (*onLeave)(gTrayIcon *sender);
 
 //"Static"
 

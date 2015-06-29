@@ -283,6 +283,12 @@ void LIBRARY_exec(LIBRARY *lib, int argc, char **argv)
 		(*func)(argc, argv);
 }
 
+void LIBRARY_declare_one(GB_DESC *desc)
+{
+	CLASS_find_global(desc->name);
+	if (CLASS_register(desc) == NULL)
+		THROW(E_REGISTER, desc->name);
+}
 
 void LIBRARY_declare(GB_DESC **desc)
 {

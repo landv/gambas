@@ -419,16 +419,42 @@ static void analyze_include(char *include_list)
 	STR_free(include_list);
 }
 
+static void analyze_classes(GB_DESC **desc)
+{
+	int nclass;
+	int *sort;
+	int i;
+	GB_DESC **p;
+
+	nclass = 0;
+	
+	p = desc;
+	while (*p)
+	{
+		nclass++;
+		p++;
+	}
+	
+	ALLOC(&sort, sizeof(int) * nclass);
+	for (i = 0; i < nclass; i++)
+		sort[i] = i;
+	
+	_sort_desc = desc;
+	qsort(sort, nclass, sizeof(int), (int (*)(const void *, const void *))sort_desc);
+
+	for (i = 0; i < nclass; i++)
+		analyze_class(desc[sort[i]]);
+		
+	FREE(&sort);
+}
+
 static bool analyze_native_component(const char *path)
 {
 	lt_dlhandle lib;
 	GB_DESC **desc;
+	GB_DESC **desc_opt;
 	char **include;
-	GB_DESC **p;
 	bool ret = FALSE;
-	int nclass;
-	int *sort;
-	int i;
 
 	if (_verbose)
 		fprintf(stderr, "Loading native component: %s\n", path);
@@ -447,36 +473,20 @@ static bool analyze_native_component(const char *path)
 		analyze_include(*include);
 
 	desc = lt_dlsym(lib, LIB_CLASS);
+	desc_opt = lt_dlsym(lib, LIB_OPTIONAL);
 
 	if (desc)
 	{
-		p = desc;
-		nclass = 0;
-		while (*p)
-		{
-			nclass++;
-			p++;
-		}
-	
-		ALLOC(&sort, sizeof(int) * nclass);
-		for (i = 0; i < nclass; i++)
-			sort[i] = i;
-		
-		_sort_desc = desc;
-		qsort(sort, nclass, sizeof(int), (int (*)(const void *, const void *))sort_desc);
-	
-		for (i = 0; i < nclass; i++)
-			analyze_class(desc[sort[i]]);
-			
-		FREE(&sort);
+		analyze_classes(desc);
+		if (desc_opt)
+			analyze_classes(desc_opt);
 	}
 	else
 	{
 		if (_verbose)
 			warning("cannot find '" LIB_CLASS "' symbol in shared library.");
-		//ret = TRUE;
 	}
-
+	
 	// Do not close shared libraries, except on openbsd that seems to feel better with
 	#ifdef OS_OPENBSD
 	lt_dlclose(lib);

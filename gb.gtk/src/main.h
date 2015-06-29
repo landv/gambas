@@ -34,6 +34,7 @@
 extern const GB_INTERFACE *GB_PTR;
 extern IMAGE_INTERFACE IMAGE;
 
+extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Picture;
 extern GB_CLASS CLASS_Image;
 extern GB_CLASS CLASS_DrawingArea;

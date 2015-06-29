@@ -94,7 +94,7 @@
 #include "cprinter.h"
 #include "csvgimage.h"
 #include "cpaint_impl.h"
-#include "CTrayIcon.h"
+#include "ctrayicon.h"
 
 #include <QX11Info>
 #ifndef QT5
@@ -152,6 +152,7 @@ static QTranslator *_translator = NULL;
 static bool _application_keypress = false;
 static GB_FUNCTION _application_keypress_func;
 static bool _check_quit_posted = false;
+static int _prevent_quit = 0;
 
 #ifndef NO_X_WINDOW
 static void (*_x11_event_filter)(XEvent *) = 0;
@@ -818,7 +819,7 @@ static bool must_quit(void)
 	#if DEBUG_WINDOW
 	qDebug("must_quit: Window = %d Watch = %d in_event_loop = %d", CWindow::count, CWatch::count, in_event_loop);
 	#endif
-	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0 && TRAYICON_count == 0;
+	return CWINDOW_must_quit() && CWatch::count == 0 && in_event_loop && MAIN_in_message_box == 0 && _prevent_quit == 0;
 }
 
 static void check_quit_now(intptr_t param)
@@ -829,7 +830,6 @@ static void check_quit_now(intptr_t param)
 	{
 		if (QApplication::instance())
 		{
-			TRAYICON_close_all();
 #ifndef QT5
 			qApp->syncX();
 #endif
@@ -1208,6 +1208,30 @@ void *QT_GetLink(QObject *qobject)
 	return _link_map.value(qobject, 0);
 }
 
+void QT_PreventQuit(bool inc)
+{
+	if (inc)
+		_prevent_quit++;
+	else
+	{
+		_prevent_quit--;
+		MAIN_check_quit();
+	}
+}
+
+QMenu *QT_FindMenu(void *parent, const char *name)
+{
+	CMENU *menu = NULL;
+	
+	if (parent && GB.Is(parent, CLASS_Control))
+	{
+		CWINDOW *window = CWidget::getWindow((CWIDGET *)parent);
+		menu = CWindow::findMenu(window, name);
+	}
+
+	return menu ? menu->menu : NULL;
+}
+
 extern "C" {
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -1239,10 +1263,15 @@ GB_DESC *GB_CLASSES[] EXPORT =
 #ifndef QT5
 	CEmbedderDesc,
 #endif
-	TrayIconDesc, TrayIconsDesc,
 	CWatcherDesc,
 	PrinterDesc,
 	SvgImageDesc,
+	NULL
+};
+
+GB_DESC *GB_OPTIONAL_CLASSES[] EXPORT =
+{
+	TrayIconDesc,TrayIconsDesc,
 	NULL
 };
 
@@ -1335,6 +1364,18 @@ int EXPORT GB_INIT(void)
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRP);
 	DRAW_init();
+	
+	env = getenv("KDE_SESSION_VERSION");
+	if (env && *env && atoi(env) >= 4)
+	{
+		GB.Component.Load("gb.dbus");
+		GB.Component.Load("gb.dbus.trayicon");
+	}
+	else
+	{
+		GB.Component.Declare(TrayIconsDesc);
+		GB.Component.Declare(TrayIconDesc);
+	}
 	
 	CLASS_Control = GB.FindClass("Control");
 	CLASS_Container = GB.FindClass("Container");

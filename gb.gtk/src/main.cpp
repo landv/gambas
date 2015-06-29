@@ -72,6 +72,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
 
+GB_CLASS CLASS_Control;
 GB_CLASS CLASS_Picture;
 GB_CLASS CLASS_Image;
 GB_CLASS CLASS_DrawingArea;
@@ -149,8 +150,6 @@ extern "C"
 		CVPanelDesc,
 		CMenuDesc,
 		CMenuChildrenDesc,
-		CTrayIconDesc,
-		CTrayIconsDesc,
 		CWindowMenusDesc,
 		CWindowControlsDesc,
 		CWindowDesc,
@@ -183,6 +182,13 @@ extern "C"
 		CStockDesc,
 		PrinterDesc,
 		SvgImageDesc,
+		NULL
+	};
+
+	GB_DESC *GB_OPTIONAL_CLASSES[] EXPORT =
+	{
+		TrayIconDesc,
+		TrayIconsDesc,
 		NULL
 	};
 
@@ -222,7 +228,19 @@ extern "C"
 		
 		CWatcher::init();
 
-		//CLASS_Control = GB.FindClass("Control");
+		env = getenv("KDE_SESSION_VERSION");
+		if (env && *env && atoi(env) >= 4)
+		{
+			GB.Component.Load("gb.dbus");
+			GB.Component.Load("gb.dbus.trayicon");
+		}
+		else
+		{
+			GB.Component.Declare(TrayIconsDesc);
+			GB.Component.Declare(TrayIconDesc);
+		}
+		
+		CLASS_Control = GB.FindClass("Control");
 		//CLASS_Container = GB.FindClass("Container");
 		//CLASS_UserControl = GB.FindClass("UserControl");
 		//CLASS_UserContainer = GB.FindClass("UserContainer");

@@ -252,25 +252,6 @@ BEGIN_METHOD(DBusConnection_Unregister, GB_OBJECT object)
 
 END_METHOD
 
-BEGIN_METHOD(DBusConnection_Raise, GB_OBJECT object; GB_STRING signal; GB_OBJECT arguments)
-
-	GB_FUNCTION func;
-	void *object = VARG(object);
-	
-	if (GB.CheckObject(object))
-		return;
-
-	if (GB.GetFunction(&func, object, "_Raise", NULL, NULL))
-	{
-		GB.Error("Cannot find _Raise method");
-		return;
-	}
-	
-	GB.Push(3, GB_T_OBJECT, THIS, GB_T_STRING, STRING(signal), LENGTH(signal), GB_T_OBJECT, VARGOPT(arguments, NULL));
-	GB.Call(&func, 3, TRUE);
-
-END_METHOD
-
 BEGIN_PROPERTY(DBusConnection_Tag)
 
 	if (READ_PROPERTY)
@@ -298,7 +279,6 @@ GB_DESC CDBusConnectionDesc[] =
 	GB_PROPERTY_READ("_Name", "s", DBusConnection_Name),
 	GB_METHOD("Register", NULL, DBusConnection_Register, "(Object)DBusObject;(Path)s[(Interface)String[];]"),
 	GB_METHOD("Unregister", NULL, DBusConnection_Unregister, "(Object)DBusObject;"),
-	GB_METHOD("Raise", NULL, DBusConnection_Raise, "(Object)DBusObject;(Signal)s[(Arguments)Array;]"),
 	GB_PROPERTY("Tag", "v", DBusConnection_Tag),
 
   GB_END_DECLARE

@@ -58,14 +58,14 @@ static gboolean cb_button_press(GtkStatusIcon *plug, GdkEventButton *event, gTra
 	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
-	if (data->onMousePress)
+	if (data->onClick)
 	{
 		gMouse::validate();
 		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, event->button, event->state);
 		if (event->type == GDK_BUTTON_PRESS)
-			data->onMousePress(data);
-		else if (event->type == GDK_2BUTTON_PRESS)
-			data->onDoubleClick(data);
+			data->onClick(data);
+		/*else if (event->type == GDK_2BUTTON_PRESS)
+			data->onDoubleClick(data);*/
 		gMouse::invalidate();
 	}
 
@@ -76,7 +76,7 @@ static gboolean cb_button_press(GtkStatusIcon *plug, GdkEventButton *event, gTra
 	return false;
 }
 
-static gboolean cb_button_release(GtkStatusIcon *plug, GdkEventButton *event, gTrayIcon *data)
+/*static gboolean cb_button_release(GtkStatusIcon *plug, GdkEventButton *event, gTrayIcon *data)
 {
 	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
@@ -90,7 +90,7 @@ static gboolean cb_button_release(GtkStatusIcon *plug, GdkEventButton *event, gT
 	}
 
 	return false;
-}
+}*/
 
 static gboolean cb_menu(GtkStatusIcon *plug, guint button, guint activate_time, gTrayIcon *data)
 {
@@ -130,7 +130,7 @@ static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon 
 	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
 
-	if (data->onMouseWheel)
+	if (data->onScroll)
 	{
 		dir = event->direction;
 
@@ -158,7 +158,7 @@ static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon 
 		gMouse::validate();
 		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, 0, event->state);
 		gMouse::setWheel(dt, ort);
-		data->onMouseWheel(data);
+		data->onScroll(data);
 		gMouse::invalidate();
 	}
 	
@@ -175,16 +175,10 @@ gTrayIcon::gTrayIcon()
 	buftext = NULL;
 	_icon = NULL;
 	_loopLevel = 0;
-
-	onMousePress = NULL;
-	onMouseRelease = NULL;
-	onMouseWheel = NULL;
+	
+	onClick = NULL;
+	onScroll = NULL;
 	onMenu = NULL;
-	onFocusEnter = NULL;
-	onFocusLeave = NULL;
-	onDoubleClick = NULL;
-	onEnter = NULL;
-	onLeave = NULL;
 	
 	trayicons = g_list_append(trayicons, (gpointer)this);
 }
@@ -306,17 +300,9 @@ void gTrayIcon::setVisible(bool vl)
 
 			gtk_status_icon_set_visible(plug, TRUE);
 
-			//g_signal_connect(G_OBJECT(plug), "destroy", G_CALLBACK(cb_destroy),(gpointer)this);
 			g_signal_connect(G_OBJECT(plug), "button-press-event", G_CALLBACK(cb_button_press), (gpointer)this);
-			g_signal_connect(G_OBJECT(plug), "button-release-event", G_CALLBACK(cb_button_release),(gpointer)this);
-			//g_signal_connect(G_OBJECT(plug), "activate", G_CALLBACK(cb_activate),(gpointer)this);
-			//g_signal_connect(G_OBJECT(plug),"focus-in-event",G_CALLBACK(tray_focus_In),(gpointer)this);
-			//g_signal_connect(G_OBJECT(plug),"focus-out-event",G_CALLBACK(tray_focus_Out),(gpointer)this);
-			//g_signal_connect(G_OBJECT(plug),"enter-notify-event",G_CALLBACK(tray_enterleave),(gpointer)this);
-			//g_signal_connect(G_OBJECT(plug),"leave-notify-event",G_CALLBACK(tray_enterleave),(gpointer)this);
 			g_signal_connect(G_OBJECT(plug), "popup-menu", G_CALLBACK(cb_menu), (gpointer)this);
 			g_signal_connect(G_OBJECT(plug), "scroll-event", G_CALLBACK(cb_scroll), (gpointer)this);
-			//g_signal_connect(G_OBJECT(plug),"expose-event", G_CALLBACK(cb_expose), (gpointer)this);
 			
 			_visible_count++;
 

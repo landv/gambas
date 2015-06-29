@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  CTrayIcon.cpp
+  ctrayicon.cpp
 
   (c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -26,16 +26,15 @@
 #include "gambas.h"
 #include "main.h"
 
-#include "CMenu.h"
-//#include "CMouse.h"
-#include "CWindow.h"
-#include "CTrayIcon.h"
+#include <QMenu>
+#include <QWheelEvent>
+
+#include "gb.form.properties.h"
+#include "ctrayicon.h"
 
 DECLARE_EVENT(EVENT_Click);
-//DECLARE_EVENT(EVENT_TrayIconDblClick);
-//DECLARE_EVENT(EVENT_TrayIconMouseWheel);
-
-int TRAYICON_count = 0;
+DECLARE_EVENT(EVENT_Scroll);
+DECLARE_EVENT(EVENT_Menu);
 
 static QList<CTRAYICON *> _list;
 static QPixmap *_default_trayicon = NULL;
@@ -50,12 +49,11 @@ static void destroy_trayicon(CTRAYICON *_object)
 	{
 		TRAYICON->deleteLater();
 		THIS->indicator = NULL;
-		TRAYICON_count--;
-		MAIN_check_quit();
+		QT_PreventQuit(false);
 	}
 }
 
-void TRAYICON_close_all(void)
+static void delete_all(void)
 {
 	CTRAYICON *_object, *last = 0;
 	int i;
@@ -98,7 +96,7 @@ static void define_icon(CTRAYICON *_object)
 		return;
 
 	if (THIS->icon)
-		TRAYICON->setIcon(*(THIS->icon->pixmap));
+		TRAYICON->setIcon(*THIS->icon->pixmap);
 	else
 	{
 		if (!_default_trayicon)
@@ -113,7 +111,7 @@ static void define_icon(CTRAYICON *_object)
 
 static void define_menu(CTRAYICON *_object)
 {
-	CMENU *menu;
+	QMenu *menu;
 	
 	if (!TRAYICON)
 		return;
@@ -121,21 +119,9 @@ static void define_menu(CTRAYICON *_object)
 	menu = NULL;
 	
 	if (THIS->popup)
-	{
-		void *parent = GB.Parent(THIS);
-		qDebug("parent = %p", parent);
-		
-		if (parent && GB.Is(parent, CLASS_Control))
-		{
-			CWINDOW *window = CWidget::getWindow((CWIDGET *)parent);
-			menu = CWindow::findMenu(window, THIS->popup);
-		}
-	}
+		menu = QT_FindMenu(GB.Parent(THIS), THIS->popup);
 	
-	if (menu)
-		TRAYICON->setContextMenu(menu->menu);
-	else
-		TRAYICON->setContextMenu(NULL);
+	TRAYICON->setContextMenu(menu);
 }
 
 static CTRAYICON *find_trayicon(const QObject *o)
@@ -229,7 +215,7 @@ BEGIN_METHOD_VOID(TrayIcon_Show)
 		//indicator->installEventFilter(&TrayIconManager::manager);
 		
 		THIS->indicator = indicator;
-		TRAYICON_count++;
+		QT_PreventQuit(true);
 
 		define_tooltip(THIS);
 		define_icon(THIS);
@@ -361,6 +347,12 @@ BEGIN_METHOD_VOID(TrayIcon_exit)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(TrayIcons_DeleteAll)
+
+	delete_all();
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 TrayIconManager TrayIconManager::manager;
@@ -370,7 +362,7 @@ void TrayIconManager::activated(QSystemTrayIcon::ActivationReason reason)
 	CTRAYICON *_object = find_trayicon(sender());
 	if (THIS)
 	{
-		//qDebug("reason = %d", (int)reason);
+		qDebug("reason = %d", (int)reason);
 		switch(reason)
 		{
 			//case QSystemTrayIcon::DoubleClick:
@@ -387,32 +379,17 @@ void TrayIconManager::activated(QSystemTrayIcon::ActivationReason reason)
 	}
 }
 
-#if 0
 bool TrayIconManager::eventFilter(QObject *o, QEvent *e)
 {
-	qDebug("event: %d", e->type());
-	
 	if (e->type() == QEvent::Wheel)
 	{
 		CTRAYICON *_object = find_trayicon(o);
-		if (!THIS && GB.CanRaise(THIS, EVENT_MouseWheel))
+		if (!THIS)
 		{
 			bool cancel;
 			QWheelEvent *ev = (QWheelEvent *)e;
 			
-			CMOUSE_clear(true);
-			MOUSE_info.x = ev->x();
-			MOUSE_info.y = ev->y();
-			MOUSE_info.screenX = ev->globalX();
-			MOUSE_info.screenY = ev->globalY();
-			MOUSE_info.state = ev->buttons();
-			MOUSE_info.modifier = ev->modifiers();
-			MOUSE_info.orientation = ev->orientation();
-			MOUSE_info.delta = ev->delta();
-
-			cancel = GB.Raise(THIS, EVENT_TrayIconMouseWheel, 0);
-
-			CMOUSE_clear(false);
+			cancel = GB.Raise(THIS, EVENT_Scroll, 2, GB_T_FLOAT, ev->delta() / 120, GB_T_INTEGER, ev->orientation() == Qt::Vertical);
 			
 			if (cancel)
 				return true;
@@ -421,7 +398,6 @@ bool TrayIconManager::eventFilter(QObject *o, QEvent *e)
 	
 	return QObject::eventFilter(o, e);
 }
-#endif
 
 //---------------------------------------------------------------------------
 
@@ -432,6 +408,7 @@ GB_DESC TrayIconsDesc[] =
 	GB_STATIC_METHOD("_next", "TrayIcon", TrayIcons_next, NULL),
 	GB_STATIC_METHOD("_get", "TrayIcon", TrayIcons_get, "(Index)i"),
 	GB_STATIC_PROPERTY_READ("Count", "i", TrayIcons_Count),
+	GB_STATIC_METHOD("DeleteAll", NULL, TrayIcons_DeleteAll, NULL),
 
 	GB_END_DECLARE
 };
@@ -442,6 +419,9 @@ GB_DESC TrayIconDesc[] =
 	GB_DECLARE("TrayIcon", sizeof(CTRAYICON)),
 
 	GB_STATIC_METHOD("_exit", NULL, TrayIcon_exit, NULL),
+
+	GB_CONSTANT("Horizontal", "i", 0),
+	GB_CONSTANT("Vertical", "i", 1),
 
 	GB_METHOD("_new", NULL, TrayIcon_new, NULL),
 	GB_METHOD("_free", NULL, TrayIcon_free, NULL),
@@ -460,8 +440,8 @@ GB_DESC TrayIconDesc[] =
 	GB_PROPERTY("Tag", "v", TrayIcon_Tag),
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
-	//GB_EVENT("DblClick", NULL, NULL, &EVENT_TrayIconDblClick),
-	//GB_EVENT("MouseWheel", NULL, NULL, &EVENT_TrayIconMouseWheel),
+	GB_EVENT("Scroll", NULL, "(Delta)f(Orientation)i", &EVENT_Scroll),
+	GB_EVENT("Menu", NULL, NULL, &EVENT_Menu),
 
 	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),
 

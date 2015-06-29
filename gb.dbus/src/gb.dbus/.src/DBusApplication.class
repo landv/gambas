@@ -127,3 +127,9 @@ Public Sub Unregister((Object) As DBusObject)
   
 End
 
+Public Sub Raise((Object) As DBusObject, Signal As String, Optional Arguments As Variant[])
+  
+  ' Apparently you can't define the sender of the signal!
+  Object._Raise($hConn, Signal, Arguments)
+  
+End

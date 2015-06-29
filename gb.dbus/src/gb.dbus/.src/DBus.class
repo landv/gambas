@@ -112,3 +112,8 @@ Static Public Sub Unregister((Object) As DBusObject)
   
 End
 
+Static Public Sub Raise((Object) As DBusObject, Signal As String, Optional Arguments As Variant[])
+  
+  Object._Raise(DBus.Session, Signal, Arguments)
+  
+End

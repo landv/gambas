@@ -37,6 +37,7 @@ typedef
 #define LIB_EXIT         "GB_EXIT"
 #define LIB_INTERFACE    "GB_INTERFACE"
 #define LIB_CLASS        "GB_CLASSES"
+#define LIB_OPTIONAL     "GB_OPTIONAL_CLASSES"
 #define LIB_INCLUDE      "GB_INCLUDE"
 #define LIB_SIGNAL       "GB_SIGNAL"
 #define LIB_INFO         "GB_INFO"

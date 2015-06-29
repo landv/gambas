@@ -931,6 +931,7 @@ typedef
 			char *(*Current)(void);
 			bool (*GetInfo)(const char *, void **);
 			void (*Signal)(int, void *);
+			void (*Declare)(GB_DESC *);
 		}
 		Component;
 

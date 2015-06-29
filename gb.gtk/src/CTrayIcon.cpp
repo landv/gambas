@@ -30,68 +30,51 @@
 #include "CTrayIcon.h"
 #include "CPicture.h"
 #include "CContainer.h"
+#include "CMenu.h"
+#include "gmouse.h"
 
-DECLARE_EVENT(EVENT_DblClick);
-DECLARE_EVENT(EVENT_MouseMove);
-DECLARE_EVENT(EVENT_MouseWheel);
-DECLARE_EVENT(EVENT_MouseDown);
-DECLARE_EVENT(EVENT_MouseUp);
+DECLARE_EVENT(EVENT_Click);
+DECLARE_EVENT(EVENT_Scroll);
 DECLARE_EVENT(EVENT_Menu);
-DECLARE_EVENT(EVENT_Enter);
-DECLARE_EVENT(EVENT_Leave);
-DECLARE_EVENT(EVENT_GotFocus);
-DECLARE_EVENT(EVENT_LostFocus);
 
-static void Tray_destroy(gTrayIcon *sender)
+static void cb_destroy(gTrayIcon *sender)
 {
 	CTRAYICON *_object = (CTRAYICON*)sender->hFree;
 	THIS->base.widget = NULL;
 	GB.Unref(POINTER(&_object));
 }
 
-static void Tray_enter(gTrayIcon *sender)
+static void cb_click(gTrayIcon *sender)
 {
-	GB.Raise(sender->hFree, EVENT_Enter, 0);
+	GB.Raise(sender->hFree, EVENT_Click, 0);
 }
 
-static void Tray_leave(gTrayIcon *sender)
+static void cb_menu(gTrayIcon *sender)
 {
-	GB.Raise(sender->hFree,EVENT_Leave,0);
+	CTRAYICON *_object = (CTRAYICON *)sender->hFree;
+	
+	if (THIS->popup)
+	{
+		void *parent = GB.Parent(THIS);
+		if (parent && GB.Is(parent, CLASS_Control))
+		{
+			gMainWindow *window = ((CWIDGET *)parent)->widget->window();
+			gMenu *menu = gMenu::findFromName(window, THIS->popup);
+			if (menu)
+			{
+				menu->popup();
+				CMENU_check_popup_click();
+			}
+			return;
+		}
+	}
+
+	GB.Raise(sender->hFree, EVENT_Menu, 0);
 }
 
-static void Tray_dblClick(gTrayIcon *sender)
+static void cb_scroll(gTrayIcon *sender)
 {
-	GB.Raise(sender->hFree,EVENT_DblClick,0);
-}
-
-static void Tray_press(gTrayIcon *sender)
-{
-	GB.Raise(sender->hFree,EVENT_MouseDown,0);
-}
-
-static void Tray_release(gTrayIcon *sender)
-{
-	GB.Raise(sender->hFree,EVENT_MouseUp,0);
-}
-
-static void Tray_menu(gTrayIcon *sender)
-{
-	GB.Raise(sender->hFree,EVENT_Menu,0);
-}
-
-static void Tray_gotFocus(gTrayIcon *sender)
-{
-	GB.Raise(sender->hFree,EVENT_GotFocus,0);
-}
-
-static void Tray_lostFocus(gTrayIcon *sender)
-{
-	GB.Raise(sender->hFree,EVENT_LostFocus,0);
-}
-
-static void cb_mouse_wheel(gTrayIcon *sender)
-{
-	GB.Raise(sender->hFree, EVENT_MouseWheel, NULL);
+	GB.Raise(sender->hFree, EVENT_Scroll, 2, GB_T_FLOAT, (float)gMouse::delta(), GB_T_INTEGER, gMouse::orientation());
 }
 
 static int CTRAYICON_check(void *_object)
@@ -99,23 +82,17 @@ static int CTRAYICON_check(void *_object)
 	return TRAYICON == NULL;
 }
 
-BEGIN_METHOD_VOID(CTRAYICON_new)
+BEGIN_METHOD_VOID(TrayIcon_new)
 
 	THIS->base.widget = new gTrayIcon();
 	TRAYICON->hFree = (void*)THIS;
   
 	THIS->base.tag.type = GB_T_NULL;
 	
-	TRAYICON->onMousePress=Tray_press;
-	TRAYICON->onMouseRelease=Tray_release;
-	TRAYICON->onMenu=Tray_menu;
-	TRAYICON->onDestroy=Tray_destroy;
-	TRAYICON->onFocusEnter=Tray_gotFocus;
-	TRAYICON->onFocusLeave=Tray_lostFocus;
-	TRAYICON->onDoubleClick=Tray_dblClick;
-	TRAYICON->onEnter=Tray_enter;
-	TRAYICON->onLeave=Tray_leave;
-	TRAYICON->onMouseWheel = cb_mouse_wheel;
+	TRAYICON->onClick = cb_click;
+	TRAYICON->onMenu = cb_menu;
+	TRAYICON->onDestroy = cb_destroy;
+	TRAYICON->onScroll = cb_scroll;
 	
 	GB.Ref(THIS);
 	//Add_Tray(_object);
@@ -132,7 +109,7 @@ static void destroy_tray_icon(CTRAYICON *_object)
 	}
 }
 
-BEGIN_METHOD_VOID(CTRAYICON_free)
+BEGIN_METHOD_VOID(TrayIcon_free)
 
 	GB.StoreObject(NULL, POINTER(&THIS->picture));
 	GB.StoreVariant(NULL, &THIS->base.tag);
@@ -142,14 +119,14 @@ BEGIN_METHOD_VOID(CTRAYICON_free)
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CTRAYICON_destroy)
+BEGIN_METHOD_VOID(TrayIcon_Delete)
 
 	destroy_tray_icon(THIS);
 
 END_METHOD
 
 
-BEGIN_PROPERTY(CTRAYICON_picture)
+BEGIN_PROPERTY(TrayIcon_Picture)
 
 	if (READ_PROPERTY)
 	{
@@ -165,7 +142,7 @@ BEGIN_PROPERTY(CTRAYICON_picture)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CTRAYICON_tooltip)
+BEGIN_PROPERTY(TrayIcon_Text)
 
 	if (READ_PROPERTY)
 	{
@@ -178,20 +155,20 @@ BEGIN_PROPERTY(CTRAYICON_tooltip)
 END_PROPERTY
 
 
-BEGIN_METHOD_VOID(CTRAYICON_show)
+BEGIN_METHOD_VOID(TrayIcon_Show)
 
 	TRAYICON->show();
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CTRAYICON_hide)
+BEGIN_METHOD_VOID(TrayIcon_Hide)
 
 	TRAYICON->hide();
 	MAIN_check_quit();
 
 END_METHOD
 
-BEGIN_PROPERTY(CTRAYICON_visible)
+BEGIN_PROPERTY(TrayIcon_Visible)
 
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(TRAYICON->isVisible());
@@ -204,31 +181,7 @@ BEGIN_PROPERTY(CTRAYICON_visible)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CTRAYICON_screen_x)
-
-	GB.ReturnInteger(TRAYICON->screenX());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CTRAYICON_screen_y)
-
-	GB.ReturnInteger(TRAYICON->screenY());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CTRAYICON_width)
-
-	GB.ReturnInteger(TRAYICON->width());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CTRAYICON_height)
-
-	GB.ReturnInteger(TRAYICON->height());
-
-END_PROPERTY
-
-BEGIN_PROPERTY(CTRAYICON_tag)
+BEGIN_PROPERTY(TrayIcon_Tag)
 
 	if (READ_PROPERTY)
 		GB.ReturnVariant(&THIS->base.tag);
@@ -237,13 +190,13 @@ BEGIN_PROPERTY(CTRAYICON_tag)
 
 END_METHOD
 
-BEGIN_PROPERTY(CTRAYICONS_Count)
+BEGIN_PROPERTY(TrayIcons_Count)
 
 	GB.ReturnInteger(gTrayIcon::count());
 
 END_PROPERTY
 
-BEGIN_METHOD (CTRAYICONS_get, GB_INTEGER index)
+BEGIN_METHOD(TrayIcons_get, GB_INTEGER index)
 
 	int index = VARG(index);
 	
@@ -257,7 +210,7 @@ BEGIN_METHOD (CTRAYICONS_get, GB_INTEGER index)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CTRAYICONS_next)
+BEGIN_METHOD_VOID(TrayIcons_next)
 
 	int *vl;
 	
@@ -274,56 +227,98 @@ BEGIN_METHOD_VOID(CTRAYICONS_next)
 
 END_METHOD
 
+BEGIN_PROPERTY(TrayIcon_PopupMenu)
 
-GB_DESC CTrayIconsDesc[] =
+	if (READ_PROPERTY)
+		GB.ReturnString(THIS->popup);
+	else
+		GB.StoreString(PROP(GB_STRING), &(THIS->popup));
+
+END_PROPERTY
+
+BEGIN_METHOD_VOID(TrayIcon_unknown)
+
+	static char prop[32];
+	char *name = GB.GetUnknown();
+	
+	if (strcasecmp(name, "ScreenX") == 0 || strcasecmp(name, "ScreenY") == 0)
+	{
+		sprintf(prop, "TrayIcon.%s", name);
+		GB.Deprecated(GTK_NAME, prop, NULL);
+		
+		if (READ_PROPERTY)
+		{
+			GB.ReturnInteger(0);
+			GB.ReturnConvVariant();
+			return;
+		}
+		else
+			GB.Error(GB_ERR_NWRITE, GB.GetClassName(NULL), name);
+	}
+	else if (strcasecmp(name, "W") == 0 || strcasecmp(name, "Width") == 0 || strcasecmp(name, "H") == 0 || strcasecmp(name, "Height") == 0)
+	{
+		sprintf(prop, "TrayIcon.%s", name);
+		GB.Deprecated(GTK_NAME, prop, NULL);
+		
+		if (READ_PROPERTY)
+		{
+			GB.ReturnInteger(24);
+			GB.ReturnConvVariant();
+			return;
+		}
+		else
+			GB.Error(GB_ERR_NWRITE, GB.GetClassName(NULL), name);
+	}
+	else
+	{
+		GB.Error(GB_ERR_NSYMBOL, GB.GetClassName(NULL), name);
+	}
+
+END_METHOD
+
+//---------------------------------------------------------------------------
+
+GB_DESC TrayIconsDesc[] =
 {
 	GB_DECLARE("TrayIcons", 0), GB_NOT_CREATABLE(),
 	
-	GB_STATIC_PROPERTY_READ("Count","i",CTRAYICONS_Count),
-	GB_STATIC_METHOD("_get","TrayIcon",CTRAYICONS_get,"(Index)i"),
-	GB_STATIC_METHOD("_next", "TrayIcon", CTRAYICONS_next, 0),
+	GB_STATIC_PROPERTY_READ("Count", "i", TrayIcons_Count),
+	GB_STATIC_METHOD("_get","TrayIcon", TrayIcons_get,"(Index)i"),
+	GB_STATIC_METHOD("_next", "TrayIcon", TrayIcons_next, NULL),
 	
 	GB_END_DECLARE
 };
 
-GB_DESC CTrayIconDesc[] =
+GB_DESC TrayIconDesc[] =
 {
 	GB_DECLARE("TrayIcon", sizeof(CTRAYICON)), 
 	GB_HOOK_CHECK(CTRAYICON_check),
 	
-	GB_METHOD("_new",0,CTRAYICON_new,0),
-	GB_METHOD("_free",0,CTRAYICON_free,0),
+	GB_CONSTANT("Horizontal", "i", 0),
+	GB_CONSTANT("Vertical", "i", 1),
+
+	GB_METHOD("_new", NULL, TrayIcon_new, NULL),
+	GB_METHOD("_free", NULL, TrayIcon_free, NULL),
+
+	GB_METHOD("Show", NULL, TrayIcon_Show, NULL),
+	GB_METHOD("Hide", NULL, TrayIcon_Hide, NULL),
+	GB_METHOD("Delete", NULL, TrayIcon_Hide, NULL),
+
+	GB_PROPERTY("Picture", "Picture", TrayIcon_Picture),
+	GB_PROPERTY("Icon", "Picture", TrayIcon_Picture),
+	GB_PROPERTY("Visible", "b", TrayIcon_Visible),
+
+	GB_PROPERTY("Text", "s", TrayIcon_Text),
+	GB_PROPERTY("PopupMenu", "s", TrayIcon_PopupMenu),
+	GB_PROPERTY("Tooltip", "s", TrayIcon_Text),
+	GB_PROPERTY("Tag", "v", TrayIcon_Tag),
 	
-	GB_METHOD("Show", 0, CTRAYICON_show, 0),
-	GB_METHOD("Hide", 0, CTRAYICON_hide, 0),
-	GB_METHOD("Delete",0, CTRAYICON_destroy,0),
-	
-	GB_PROPERTY("Visible","b",CTRAYICON_visible),
-	GB_PROPERTY("Picture","Picture",CTRAYICON_picture),
-	GB_PROPERTY("Icon","Picture",CTRAYICON_picture),
-	GB_PROPERTY("Tooltip","s",CTRAYICON_tooltip),
-	GB_PROPERTY("Text","s",CTRAYICON_tooltip),
-	GB_PROPERTY("Tag", "v", CTRAYICON_tag),
-	
-	GB_PROPERTY_READ("ScreenX","i",CTRAYICON_screen_x),
-	GB_PROPERTY_READ("ScreenY","i",CTRAYICON_screen_y),
-	GB_PROPERTY_READ("Width","i",CTRAYICON_width),
-	GB_PROPERTY_READ("Height","i",CTRAYICON_height),
-	GB_PROPERTY_READ("W","i",CTRAYICON_width),
-	GB_PROPERTY_READ("H","i",CTRAYICON_height),
-		
-	GB_EVENT("MouseDown", 0, 0, &EVENT_MouseDown),
-	GB_EVENT("MouseUp", 0, 0, &EVENT_MouseUp),
-	GB_EVENT("Menu", 0, 0, &EVENT_Menu),
-	GB_EVENT("DblClick", 0, 0, &EVENT_DblClick),
-	GB_EVENT("Enter", 0, 0, &EVENT_Enter), 
-	GB_EVENT("Leave", 0, 0, &EVENT_Leave), 
-	GB_EVENT("GotFocus", 0, 0, &EVENT_GotFocus),
-	GB_EVENT("LostFocus", 0, 0, &EVENT_LostFocus),
-	GB_EVENT("MouseMove", 0, 0, &EVENT_MouseMove), //TODO
-	GB_EVENT("MouseWheel", 0, 0, &EVENT_MouseWheel), //TODO
-	
-	//GB_CONSTANT("_Properties", "s", "Visible=False,Tag,Tooltip,Picture"),
+	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("Scroll", NULL, "(Delta)f(Orientation)i", &EVENT_Scroll),
+	GB_EVENT("Menu", NULL, NULL, &EVENT_Menu),
+
+	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),
+
 	TRAYICON_DESCRIPTION,
 	
 	GB_END_DECLARE

@@ -87,6 +87,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_CurrentComponent,
 	(void *)COMPONENT_get_info,
 	(void *)COMPONENT_signal,
+	(void *)LIBRARY_declare_one,
 
 	(void *)GB_Push,
 	(void *)GB_GetFunction,
