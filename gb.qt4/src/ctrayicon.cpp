@@ -384,12 +384,12 @@ bool TrayIconManager::eventFilter(QObject *o, QEvent *e)
 	if (e->type() == QEvent::Wheel)
 	{
 		CTRAYICON *_object = find_trayicon(o);
-		if (!THIS)
+		if (THIS)
 		{
 			bool cancel;
 			QWheelEvent *ev = (QWheelEvent *)e;
 			
-			cancel = GB.Raise(THIS, EVENT_Scroll, 2, GB_T_FLOAT, ev->delta() / 120, GB_T_INTEGER, ev->orientation() == Qt::Vertical);
+			cancel = GB.Raise(THIS, EVENT_Scroll, 2, GB_T_FLOAT, ev->delta() / 120.0, GB_T_INTEGER, ev->orientation() == Qt::Vertical);
 			
 			if (cancel)
 				return true;
