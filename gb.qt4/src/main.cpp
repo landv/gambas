@@ -1377,8 +1377,8 @@ int EXPORT GB_INIT(void)
 	}
 	else
 	{
-		GB.Component.Declare(TrayIconsDesc);
 		GB.Component.Declare(TrayIconDesc);
+		GB.Component.Declare(TrayIconsDesc);
 	}
 	
 	CLASS_Control = GB.FindClass("Control");

@@ -1334,7 +1334,10 @@ Public Sub View_KeyPress()
       Endif
     
     Case Key.Delete
-      If Key.Normal Then
+      If Key.Control Then
+        If $bReadOnly Then Goto STOP_EVENT
+        DeleteWordRight
+      Else If Key.Normal Then
         If $bReadOnly Then Goto STOP_EVENT
         DeleteRight
       Endif
@@ -1931,6 +1934,27 @@ Private Sub DeleteWordLeft()
   Endif
   
   X = $hDoc.WordLeft($X, $Y)
+  If X = $X Then Return
+  
+  Begin()
+  Goto(X, $Y, True)
+  DeleteSelection()
+  End()
+  
+End
+
+Private Sub DeleteWordRight()
+  
+  Dim X As Integer
+  
+  If DeleteSelection() Then Return
+
+  If $X >= $hDoc.LineLength[$Y] Then
+    DeleteRight
+    Return
+  Endif
+  
+  X = $hDoc.WordRight($X, $Y)
   If X = $X Then Return
   
   Begin()
