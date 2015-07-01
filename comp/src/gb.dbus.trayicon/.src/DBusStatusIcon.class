@@ -278,7 +278,7 @@ Private Function org_kde_StatusNotifierItem_IconPixmap_Read() As _DBusStatusIcon
   
   hPict = GetParent().Picture
   If Not hPict Then hPict = Picture["default.png"]
-  Return New _DBusStatusIconPixmap(GetParent().Picture)
+  Return New _DBusStatusIconPixmap(hPict)
 
 End
 

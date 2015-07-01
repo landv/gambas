@@ -235,7 +235,7 @@ Public Sub _Introspect() As String
   sRes &= "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
   sRes &= "<node>\n"
   
-  sRes &= "  <interface name=\"org.freedesktop.Introspectable\">\n"
+  sRes &= "  <interface name=\"org.freedesktop.DBus.Introspectable\">\n"
   sRes &= "    <method name=\"Introspect\">\n"
   sRes &= "      <arg name=\"xml_data\" type=\"s\" direction=\"out\"/>\n"
   sRes &= "    </method>\n"

@@ -211,11 +211,13 @@ Static Private Sub GetDesktop() As String
     Else If InStr(X11.GetWindowProperty(X11.RootWindow, "_DT_SAVE_MODE"), "xfce4") Then
       $sDesktop = "XFCE"
     Else
-      Select Case Application.Env["XDG_CURRENT_DESKTOP"]
+      Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
         Case "LXDE"
           $sDesktop = "LXDE"
+        Case "UNITY"
+          $sDesktop = "UNITY"
         Default
-          $sDesktop = "?"
+          $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
       End Select
     Endif
 

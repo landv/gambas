@@ -36,7 +36,6 @@ Private $bIconDirty As Boolean
 Public Sub _new()
   
   $hObject = New DBusStatusIcon As "StatusIcon"
-  $hMenu = New DBusStatusIconMenu
 
   $bAppIndicator = LCase(Env["XDG_CURRENT_DESKTOP"]) = "unity"
   
@@ -47,13 +46,11 @@ Public Sub _new()
   TrayIcons._All.Add(Me)
   
   If $bAppIndicator Then
+    $hMenu = New DBusStatusIconMenu
     DBus.Register($hObject, "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
     DBus.Register($hMenu, "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
-    Debug $hMenu._Path
     DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem("/org/kde/statusnotifieritem" &/ CStr($iId))
-    
     Try Mkdir _GetIconThemePath()
-    
   Endif
   
 End
@@ -90,10 +87,9 @@ Public Sub Show()
   Else
   
     DBus[sService].Register($hObject, "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+    DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem(sService)
   
   Endif
-  
-  'DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Active"])
   
   $bVisible = True
   
