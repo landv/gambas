@@ -10,7 +10,8 @@ Public Sub _new(hPict As Picture)
   Dim hImage As Image
   
   If Not hPict Then
-    Me.Value = [[64, 64, Byte[].FromString(File.Load("default.bin"))]]
+    Me.Value = []
+    'Me.Value = [[64, 64, Byte[].FromString(File.Load("default.bin"))]]
   Else
     hImage = hPict.Image
     hImage.Format = "ARGB"

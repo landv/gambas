@@ -6,6 +6,7 @@ Inherits _DBus
 
 Static Property Name As String
 Static Public _ApplicationCache As New Collection
+Static Property Read Null As DBusNull
 
 Static Private $sAppName As String
 Static Private $iRegisterCount As Integer
@@ -116,4 +117,10 @@ Static Public Sub Raise((Object) As DBusObject, Signal As String, Optional Argum
   
   Object._Raise(DBus.Session, Signal, Arguments)
   
+End
+
+Static Private Function Null_Read() As DBusNull
+
+  Return DBusNull
+
 End

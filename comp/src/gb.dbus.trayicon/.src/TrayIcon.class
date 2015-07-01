@@ -22,42 +22,78 @@ Property Text, Tooltip As String
 
 Static Private $iCount As Integer
 
+Private $bAppIndicator As Boolean
 Private $sName As String
 Private $iId As Integer
 Private $bVisible As Boolean
 Private $hObject As DBusStatusIcon
+Private $hMenu As DBusStatusIconMenu
 Private $hIcon As Picture
 Private $sMenu As String
 Private $sText As String
+Private $bIconDirty As Boolean
 
 Public Sub _new()
   
   $hObject = New DBusStatusIcon As "StatusIcon"
+  $hMenu = New DBusStatusIconMenu
+
+  $bAppIndicator = LCase(Env["XDG_CURRENT_DESKTOP"]) = "unity"
+  
   Inc $iCount
   $iId = $iCount
   $sName = Application.Name 
   If $iId > 1 Then $sName &= "-" & CStr($iId)
   TrayIcons._All.Add(Me)
   
+  If $bAppIndicator Then
+    DBus.Register($hObject, "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
+    DBus.Register($hMenu, "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
+    Debug $hMenu._Path
+    DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem("/org/kde/statusnotifieritem" &/ CStr($iId))
+    
+    Try Mkdir _GetIconThemePath()
+    
+  Endif
+  
 End
 
 Private Sub GetServiceName() As String
 
-  Return "org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId)
+  If $bAppIndicator Then
+    Return DBus.Session._Name
+  Else
+    Return "org.kde.StatusNotifierItem-" & CStr(Application.Handle) & "-" & CStr($iId)
+  Endif
 
 End
+
+Public Sub _GetMenu() As DBusStatusIconMenu
+  
+  Return $hMenu
+  
+End
+
 
 Public Sub Show()
   
   Dim sService As String
   
   If $bVisible Then Return
-  
+
   sService = GetServiceName()
   
-  DBus[sService].Register($hObject, "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+  If $bAppIndicator Then
   
-  DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem(sService)
+    DBus[sService].Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Active"])
+    
+  Else
+  
+    DBus[sService].Register($hObject, "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+  
+  Endif
+  
+  'DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Active"])
   
   $bVisible = True
   
@@ -65,10 +101,19 @@ End
 
 
 Public Sub Hide()
+
+  Dim sService As String
   
   If Not $bVisible Then Return
 
-  DBus[GetServiceName()].Unregister($hObject)
+  sService = GetServiceName()
+  
+  If $bAppIndicator Then 
+    DBus[sService].Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Passive"])
+  Else    
+    DBus[sService].Unregister($hObject)
+  Endif
+  
   $bVisible = False
 
 End
@@ -124,7 +169,14 @@ End
 Private Sub Picture_Write(Value As Picture)
 
   $hIcon = Value
-  If $bVisible Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewIcon")
+  
+  If $bAppIndicator Then 
+    $bIconDirty = True
+    Hide
+    Show
+  Endif
+  
+  If $bVisible Or If $bAppIndicator Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewIcon")
 
 End
 
@@ -164,7 +216,7 @@ End
 
 Public Sub _Scroll(Delta As Integer, bVertical As Boolean)
   
-  Raise Scroll(Delta / 120, If(bVertical, Vertical, Horizontal))
+  Raise Scroll(Sgn(Delta), If(bVertical, Vertical, Horizontal))
   
 End
 
@@ -177,6 +229,36 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
-  If $bVisible Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewTooltip")
+  If $bVisible Or If $bAppIndicator Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewTooltip")
 
+End
+
+Public Sub _GetIconName() As String
+  
+  Dim hPict As Picture
+  Dim sPath As String
+  Dim sName As String
+  
+  If $bAppIndicator Then
+    
+    sPath = _GetIconThemePath()
+    sName = "icon-" & CStr($iId) & ".png"
+    
+    If Not Exist(sPath &/ sName) Or If $bIconDirty Then
+      hPict = $hIcon
+      If Not hPict Then hPict = Picture["default.png"]
+      hPict.Save(sPath &/ sName)
+      $bIconDirty = False
+    Endif
+    
+    Return File.BaseName(sName)
+    
+  Endif
+  
+End
+
+Public Sub _GetIconThemePath() As String
+  
+  Return File.SetExt(Temp$("gb.dbus.trayicon"), "")
+  
 End

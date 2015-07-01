@@ -59,7 +59,7 @@ static void set_filter(char **property, const char *str, int len)
 	if (!str)
 		return;
 	
-	if (len <= 0)
+	if (len < 0)
 		len = strlen(str);
 	
 	if (len == 0) // || (len == 1 && *str == '*'))

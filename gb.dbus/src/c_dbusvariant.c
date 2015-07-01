@@ -51,7 +51,7 @@ END_PROPERTY*/
 
 GB_DESC CDBusVariantDesc[] =
 {
-  GB_DECLARE("DBusVariant", sizeof(CDBUSVARIANT)), GB_NOT_CREATABLE(),
+  GB_DECLARE("DBusVariant", sizeof(CDBUSVARIANT)),
 
 	GB_METHOD("_free", NULL, DBusVariant_free, NULL),
 	GB_PROPERTY("Value", "v", DBusVariant_Value),

@@ -1,0 +1,41 @@
+' Gambas class file
+
+Inherits DBusObject
+
+'event ItemsPropertiesUpdated(Variant[]
+
+Property Read com_canonical_dbusmenu_Version As Integer
+Property Read com_canonical_dbusmenu_Status As String
+
+
+Private Function com_canonical_dbusmenu_Version_Read() As Integer
+
+  Return 2
+
+End
+
+
+Private Function com_canonical_dbusmenu_Status_Read() As String
+
+  Return "normal"
+
+End
+
+Public Sub com_canonical_dbusmenu_Event(Id As Integer, EventId As String, Data As Variant, TimeStamp As Integer)
+  
+End
+
+Public Sub com_canonical_dbusmenu_GetProperty(Id As Integer, PropertyName As String) As Variant
+  
+End
+
+Public Sub com_canonical_dbusmenu_GetLayout(ParentId As Integer, RecursionDepth As Integer, PropertyNames As String[]) As Integer
+  
+End
+
+Public Sub com_canonical_dbusmenu_GetGroupProperties(IdList As Integer[], PropertyNames As String[]) As Variant
+  
+End
+
+
+

@@ -32,6 +32,9 @@ Static Private $cType As Collection = [
   
 Static Private $sName As String
 
+Property Read _Path As String
+
+Private $sFullPath As String
 Private $sPath As String
 Private $sInterface As String
 Private $aInterface As String[]
@@ -73,8 +76,8 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
   Dim sService As String
   Dim sPath As String
   
-  If $sPath Then
-    If $sPath <> sFullPath Then Error.Raise("Object already registered")
+  If $sFullPath Then
+    If $sFullPath <> sFullPath Then Error.Raise("Object already registered")
     Inc $iRegister
     Return
   Endif
@@ -90,11 +93,12 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
   
   If _ObjectCache.Exist(sFullPath) Then Return
   
-  $sPath = sFullPath
+  $sFullPath = sFullPath
+  $sPath = sPath
+  'Debug $sFullPath; " | "; $sPath
   
   $sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
   If aInterface Then $aInterface = aInterface.Copy()
-  'Debug $sPath;; $sInterface
   
   _ObjectCache[sFullPath] = Me
   
@@ -111,7 +115,7 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
     hParent._AddChild(File.Name(sPath))
     
   Endif
-  
+
   $hObserver = New DBusObserver(hConnection, DBus.Method, sPath, "", "", sService) As "DBusObserver"
   
 End
@@ -129,9 +133,9 @@ Public Sub _Unregister(hConnection As DBusConnection)
   Dec $iRegister
   If $iRegister > 0 Then Return
   
-  iPos = InStr($sPath, "/")
-  sService = Left($sPath, iPos - 1)
-  sPath = Mid$($sPath, iPos)
+  iPos = InStr($sFullPath, "/")
+  sService = Left($sFullPath, iPos - 1)
+  sPath = Mid$($sFullPath, iPos)
   
   If $bRegisterParent Then
     
@@ -147,14 +151,16 @@ Public Sub _Unregister(hConnection As DBusConnection)
   
   If $aChildren Then
     For Each sChild In $aChildren
-      hChild = _ObjectCache[$sPath &/ sChild]
+      hChild = _ObjectCache[$sFullPath &/ sChild]
       hChild._Unregister(hConnection)
     Next
   Endif
   
   $hObserver = Null
-  _ObjectCache[$sPath] = Null
+  _ObjectCache[$sFullPath] = Null
+  $sFullPath = ""
   $sPath = ""
+  
   If _ObjectCache.Count = 0 Then 
     DBus._UnregisterApplication(hConnection)
     $sName = ""
@@ -396,6 +402,7 @@ Private Sub GetProperty()
   
 Catch
   
+  If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.Get: error: "; Error.Text
   $hObserver.Error(Error.Text)
   
 End
@@ -409,6 +416,7 @@ Private Sub GetAllProperties()
   Dim sInterface As String
   Dim sPrefix As String
   Dim sProp As String
+  Dim vVal As Variant
   
   With $hObserver.Message
   
@@ -439,7 +447,14 @@ Private Sub GetAllProperties()
         
         If sInterface <> sWantInterface Then Continue
         
-        cVal[sProp] = Object.GetProperty(Me, sSymbol)
+        vVal = Object.GetProperty(Me, sSymbol)
+        If IsNull(vVal) Then
+          If TypeOf(vVal) = gb.String Then
+            cVal[sProp] = DBus.Null
+          Endif
+        Else
+          cVal[sProp] = vVal
+        Endif
         
       End With
     Next
@@ -450,6 +465,7 @@ Private Sub GetAllProperties()
   
 Catch
   
+  If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.GetAll: error: "; Error.Text
   $hObserver.Error(Error.Text)
   
 End
@@ -478,6 +494,7 @@ Private Sub SetProperty()
   
 Catch
   
+  If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.Set: error: "; Error.Text
   $hObserver.Error(Error.Text)
   
 End
@@ -521,6 +538,15 @@ Public Sub DBusObserver_Message()
     sMethod = Replace(sInterface, ".", "_") & "_" & sMethod
   Endif
   
+  ' If InStr(sMethod, "XAyatana") Then
+  '   With $hObserver.Message.Arguments
+  '     Print sMethod
+  '     For I = 0 To .Max
+  '       Print "["; I; "] "; .[I]
+  '     Next
+  '   End With
+  ' Endif
+
   sType = Object.Class(Me)[sMethod].Type
   If sType Then
     vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)
@@ -534,6 +560,7 @@ Public Sub DBusObserver_Message()
 Catch
 
   'Debug Error.Text
+  If DBus.Debug Then Error "gb.dbus: "; sInterface; "."; sMethod; ": error: "; Error.Text
   $hObserver.Error(Error.Text)
   
 End
@@ -562,8 +589,14 @@ Public Sub _Raise(hConnection As DBusConnection, sSignal As String, aArg As Obje
     sSignal = Mid$(sSignal, iPos + 1)
   Endif
   
-  iPos = InStr($sPath, "/")
-  hConnection._SendSignal(Mid$($sPath, iPos), sInterface, sSignal, aSign.Join(""), aArg)
+  iPos = InStr($sFullPath, "/")
+  hConnection._SendSignal(Mid$($sFullPath, iPos), sInterface, sSignal, aSign.Join(""), aArg)
   
 End
 
+
+Private Function _Path_Read() As String
+
+  Return $sPath
+
+End

@@ -92,11 +92,16 @@ End
 
 Public Sub Main()
 
-  Dim hobject As New MyObject
+  Dim vVal As Variant
   
-  ' 
-  DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
-  DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
+  vVal = Null
+  Print TypeOf(vVal)
+
+  'Print DBus.Null
+  'Print DBus.Null
+   
+  'DBus.Session.Register(hObject, "/StatusNotifierItem", ["org.freedesktop.StatusNotifierItem"])
+  'DBus.Session._RequestName("org.freedesktop.StatusNotifierItem-" & CStr(Application.Handle) & "-1", True)
 
   ' Wait 5
   ' 

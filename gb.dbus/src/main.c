@@ -33,20 +33,24 @@
 GB_INTERFACE GB EXPORT;
 
 GB_CLASS CLASS_DBusVariant;
+GB_CLASS CLASS_DBusNull;
+GB_CLASS CLASS_DBusObject;
 
 GB_DESC *GB_CLASSES[] EXPORT =
 {
 	CDBusVariantDesc,
 	CDBusObserverMessageDesc,
 	CDBusObserverDesc,
-  CDBusConnectionDesc,
-  CDBusDesc,
-  NULL
+	CDBusConnectionDesc,
+	CDBusDesc,
+	NULL
 };
 
 int EXPORT GB_INIT(void)
 {
 	CLASS_DBusVariant = GB.FindClass("DBusVariant");
+	CLASS_DBusNull = GB.FindClass("DBusNull");
+	CLASS_DBusObject = GB.FindClass("DBusObject");
 	return 0;
 }
 

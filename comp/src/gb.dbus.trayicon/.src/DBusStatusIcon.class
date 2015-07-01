@@ -109,6 +109,7 @@ Property Read org_kde_StatusNotifierItem_WindowId As Integer
 ' 
 ' An icon can either be identified by its Freedesktop-compliant icon name, carried by this property of by the icon data itself, carried by the property IconPixmap. Visualizations are encouraged to prefer icon names over icon pixmaps if both are available (FIXME: still not very defined: could e the pixmap used as fallback if an icon name is not found?)
 Property Read org_kde_StatusNotifierItem_IconName As String
+Property Read org_kde_StatusNotifierItem_IconThemePath As String
 
 ' org.freedesktop.StatusNotifierItem.IconPixmap
 ' 
@@ -168,6 +169,10 @@ Property Read org_kde_StatusNotifierItem_AttentionMovieName As String
 ' 
 Property Read org_kde_StatusNotifierItem_ToolTip As _DBusStatusIconTooltip
 
+Property Read org_kde_StatusNotifierItem_ItemIsMenu As Boolean
+
+Property Read org_kde_StatusNotifierItem_Menu As DBusObject
+
 ' Methods
 ' ContextMenu
 ' 
@@ -208,7 +213,13 @@ End
 
 Public Sub org_kde_StatusNotifierItem_SecondaryActivate((X) As Integer, (Y) As Integer)
   
+  Debug
   
+End
+
+Public Sub org_kde_StatusNotifierItem_XAyatanaSecondaryActivate((Foo) As Integer)
+  
+  Debug
   
 End
 
@@ -257,12 +268,16 @@ End
 
 Private Function org_kde_StatusNotifierItem_IconName_Read() As String
 
-  'Return "audio-volume-low"
+  Return GetParent()._GetIconName()
 
 End
 
 Private Function org_kde_StatusNotifierItem_IconPixmap_Read() As _DBusStatusIconPixmap
 
+  Dim hPict As Picture
+  
+  hPict = GetParent().Picture
+  If Not hPict Then hPict = Picture["default.png"]
   Return New _DBusStatusIconPixmap(GetParent().Picture)
 
 End
@@ -275,6 +290,8 @@ End
 
 Private Function org_kde_StatusNotifierItem_OverlayIconPixmap_Read() As Variant
 
+  Return New _DBusStatusIconPixmap(Null)
+
 End
 
 Private Function org_kde_StatusNotifierItem_AttentionIconName_Read() As String
@@ -285,7 +302,7 @@ End
 
 Private Function org_kde_StatusNotifierItem_AttentionIconPixmap_Read() As Variant
 
-  
+  Return New _DBusStatusIconPixmap(Null)
 
 End
 
@@ -294,18 +311,32 @@ Private Function org_kde_StatusNotifierItem_ToolTip_Read() As _DBusStatusIconToo
   Dim sText As String
 
   sText = GetParent().Text
-  If sText Then Return New _DBusStatusIconTooltip(GetParent().Picture, Application.Title, sText)
+  Return New _DBusStatusIconTooltip(GetParent().Picture, Application.Title, sText)
 
 End
 
 Private Function org_kde_StatusNotifierItem_AttentionMovieName_Read() As String
-
-  
 
 End
 
 Private Sub GetParent() As TrayIcon
 
   Return Object.Parent(Me)
+
+End
+
+Private Function org_kde_StatusNotifierItem_ItemIsMenu_Read() As Boolean
+
+End
+
+Private Function org_kde_StatusNotifierItem_Menu_Read() As DBusObject
+
+  Return GetParent()._GetMenu()
+
+End
+
+Private Function org_kde_StatusNotifierItem_IconThemePath_Read() As String
+
+  Return GetParent()._GetIconThemePath()
 
 End

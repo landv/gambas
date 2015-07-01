@@ -152,8 +152,11 @@ static const char *to_dbus_type(GB_VALUE *arg)
 		if (GB.Is(arg->_object.value, GB.FindClass("Array")))
 			return "av";
 		
-		if (GB.Is(arg->_object.value, GB.FindClass("DBusVariant")))
+		if (GB.Is(arg->_object.value, CLASS_DBusVariant))
 			return "v";
+
+		if (GB.Is(arg->_object.value, CLASS_DBusNull))
+			return "s";
 
 		return NULL;
 	}
@@ -303,10 +306,33 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	
 	if (gtype == GB_T_NULL)
 	{
+		GB.Error("Unsupported datatype for signature '&1'", sign);
 		goto __UNSUPPORTED;
 	}
 	else if (gtype != GB_T_VARIANT)
 	{
+		if (arg->type >= GB_T_OBJECT)
+		{
+			if (GB.Is(arg->_object.value, CLASS_DBusNull))
+			{
+				GB.ReleaseValue(arg);
+				arg->type = GB_T_NULL;
+			}
+			else if (GB.Is(arg->_object.value, CLASS_DBusObject) && type == DBUS_TYPE_OBJECT_PATH)
+			{
+				GB_VALUE *val = GB.GetProperty(arg->_object.value, "_Path");
+	
+				if (val && (val->type == GB_T_STRING || val->type != GB_T_CSTRING))
+				{
+					GB_VALUE save = *arg;
+					// The value returned by GB.GetProperty() is not referenced, so it must not be freed.
+					*arg = *val;
+					arg->type = GB_T_CSTRING;
+					GB.ReleaseValue(&save);
+				}
+			}
+		}
+			
 		if (GB.Conv(arg, gtype))
 		{
 			GB.ReleaseValue(arg);
@@ -371,7 +397,11 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 		case DBUS_TYPE_OBJECT_PATH:
 		case DBUS_TYPE_SIGNATURE:
 		{
-			const char *str = GB.ToZeroString((GB_STRING *)arg);
+			const char *str;
+			if (arg->type == GB_T_NULL)
+				str = "";
+			else
+				str = GB.ToZeroString((GB_STRING *)arg);
 			dbus_message_iter_append_basic(iter, type, &str);
 			break;
 		}
@@ -474,7 +504,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			GB_VALUE rarg;
 			GB_VALUE *old_arg = arg;
 			
-			if (arg->type >= GB_T_OBJECT && GB.Is(arg->_object.value, GB.FindClass("DBusVariant")))
+			if (arg->type >= GB_T_OBJECT && GB.Is(arg->_object.value, CLASS_DBusVariant))
 			{
 				CDBUSVARIANT *dbusvariant = (CDBUSVARIANT *)arg->_object.value;
 				
@@ -483,21 +513,33 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 				arg = &rarg;
 				
 				contents_signature = CDBUSVARIANT_get_signature(dbusvariant);
+				//fprintf(stderr, "#1: %s\n", contents_signature);
 			}
+			/*else if (arg->type >= GB_T_OBJECT && GB.Is(arg->_object.value, CLASS_DBusNull))
+			{
+				GB.ReleaseValue(arg);
+				arg->type = GB_T_NULL;
+				contents_signature = "s";
+				fprintf(stderr, "#2\n");
+			}*/
 			else
 			{
 				contents_signature = to_dbus_type(arg);
+				//fprintf(stderr, "#3: %s\n", contents_signature);
 			}
 			
 			if (!contents_signature)
+			{
+				GB.Error("Unsupported datatype in variant value");
 				goto __UNSUPPORTED;
+			}
 			
-			if (arg->type == GB_T_NULL)
+			/*if (arg->type == GB_T_NULL)
 			{
 				dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, contents_signature, &citer);
 				dbus_message_iter_close_container(iter, &citer);
 				break;
-			}
+			}*/
 			
 			dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, contents_signature, &citer);
 			GB.BorrowValue(arg);
@@ -512,6 +554,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 		}
 		
 		default:
+			GB.Error("Unsupported signature: &1", sign);
 			goto __UNSUPPORTED;
 	}
 	
@@ -519,7 +562,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	return FALSE;
 	
 __UNSUPPORTED:
-	GB.Error("Unsupported datatype");
+	//GB.Error("Unsupported datatype");
 	goto __ERROR;
 
 __ERROR_SIGN:

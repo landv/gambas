@@ -197,19 +197,8 @@ End
 
 Public Sub Main()
 
-  ' Dim hTask As Task
-  ' 
-  ' hTask = New CTaskDirSize("~") As "Task"
-  ' 
-  ' While hTask.Running
-  '   Wait 0.1
-  ' Wend
-  ' 
-  ' Print hTask.Value
-  Dim hPict As Picture
+  Print Hex$(Color.TooltipBackground, 6)
+  Print Hex$(Color.TooltipForeground, 6)
 
-  'Application.Theme = "kde5"
-
-  hPict = Picture["icon:/48/book"]
   
 End

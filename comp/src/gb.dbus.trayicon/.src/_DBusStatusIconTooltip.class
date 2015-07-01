@@ -10,7 +10,6 @@ Public Sub _new(hPict As Picture, sTitle As String, sTooltip As String)
   Dim hPixmap As _DBusStatusIconPixmap
   
   hPixmap = New _DBusStatusIconPixmap(hPict)
-  
   Me.Value = ["", hPixmap.Value, sTooltip, ""]
   
 End
