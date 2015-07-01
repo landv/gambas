@@ -632,6 +632,52 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 
 END_METHOD
 
+BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
+
+	CLASS *class;
+	CLASS_DESC *desc;
+	int index;
+	int i, np;
+	void *object = VARG(object);
+	GB_ARRAY params = VARGOPT(params, NULL);
+
+	if (GB_CheckObject(object))
+		return;
+	
+	class = OBJECT_class(object);
+	
+	index = CLASS_find_symbol(class, GB_ToZeroString(ARG(event)));
+	if (index == NO_SYMBOL)
+		goto __UNKNOWN_EVENT;
+
+	desc = class->table[index].desc;
+	if (CLASS_DESC_get_type(desc) != CD_EVENT)
+		goto __UNKNOWN_EVENT;
+	
+	if (params)
+		np = GB_ArrayCount(params);
+	else
+		np = 0;
+
+	if (np)
+	{
+		STACK_check(np);
+
+		for (i = 0; i < np; i++)
+		{
+			CARRAY_get_value(params, i, SP);
+			PUSH();
+		}
+	}
+
+	GB_ReturnBoolean(GB_Raise(object, desc->event.index, np));
+	
+__UNKNOWN_EVENT:
+
+	GB_Error("Unknown event");
+	
+END_METHOD
+
 
 BEGIN_METHOD(Object_IsValid, GB_OBJECT object)
 
@@ -876,6 +922,7 @@ GB_DESC NATIVE_Object[] =
 	GB_STATIC_METHOD("SizeOf", "i", Object_SizeOf, "(Object)o"),
 	GB_STATIC_METHOD("Address", "p", Object_Address, "(Object)o"),
 	GB_STATIC_METHOD("CanRaise", "b", Object_CanRaise, "(Object)o(Event)s"),
+	GB_STATIC_METHOD("Raise", "b", Object_Raise, "(Object)o(Event)s[(Arguments)Array;]"),
 
 	GB_END_DECLARE
 };
