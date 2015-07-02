@@ -34,7 +34,6 @@
 
 DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Scroll);
-DECLARE_EVENT(EVENT_Menu);
 
 static QList<CTRAYICON *> _list;
 static QPixmap *_default_trayicon = NULL;
@@ -441,7 +440,6 @@ GB_DESC TrayIconDesc[] =
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
 	GB_EVENT("Scroll", NULL, "(Delta)f(Orientation)i", &EVENT_Scroll),
-	GB_EVENT("Menu", NULL, NULL, &EVENT_Menu),
 
 	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),
 

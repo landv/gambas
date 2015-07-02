@@ -35,7 +35,6 @@
 
 DECLARE_EVENT(EVENT_Click);
 DECLARE_EVENT(EVENT_Scroll);
-DECLARE_EVENT(EVENT_Menu);
 
 static void cb_destroy(gTrayIcon *sender)
 {
@@ -69,7 +68,7 @@ static void cb_menu(gTrayIcon *sender)
 		}
 	}
 
-	GB.Raise(sender->hFree, EVENT_Menu, 0);
+	//GB.Raise(sender->hFree, EVENT_Menu, 0);
 }
 
 static void cb_scroll(gTrayIcon *sender)
@@ -323,7 +322,6 @@ GB_DESC TrayIconDesc[] =
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
 	GB_EVENT("Scroll", NULL, "(Delta)f(Orientation)i", &EVENT_Scroll),
-	GB_EVENT("Menu", NULL, NULL, &EVENT_Menu),
 
 	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),
 

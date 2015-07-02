@@ -181,9 +181,9 @@ Property Read org_kde_StatusNotifierItem_Menu As DBusObject
 ' Asks the status notifier item to show a context menu, this is typically a consequence of user input, such as mouse right click over the graphical representation of the item.
 ' 
 ' the x and y parameters are in screen coordinates and is to be considered an hint to the item about where to show the context menu.
-Public Sub org_kde_StatusNotifierItem_ContextMenu(X As Integer, Y As Integer)
+Public Sub org_kde_StatusNotifierItem_ContextMenu((X) As Integer, (Y) As Integer)
   
-  GetParent()._ContextMenu(X, Y)
+  'GetParent()._ContextMenu(X, Y)
   
 End
 

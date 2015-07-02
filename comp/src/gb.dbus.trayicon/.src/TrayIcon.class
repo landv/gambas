@@ -12,7 +12,6 @@ Public Enum Horizontal, Vertical
 
 Event Click
 Event Scroll(Delta As Float, Orientation As Integer)
-Event Menu
 
 Property Name As String
 Property Picture, Icon As Picture
@@ -171,8 +170,10 @@ Private Sub Picture_Write(Value As Picture)
   
   If $bAppIndicator Then 
     $bIconDirty = True
-    Hide
-    Show
+    If $bVisible Then
+      Hide
+      Show
+    Endif
   Endif
   
   If $bVisible Or If $bAppIndicator Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewIcon")
@@ -193,17 +194,13 @@ Private Sub GetMenu() As Menu
 
 End
 
-Public Sub _ContextMenu(X As Integer, Y As Integer)
-  
-  Dim hMenu As Menu = GetMenu()
-  
-  If hMenu Then
-    hMenu.Popup(X, Y)
-  Else
-    Raise Menu
-  Endif
-  
-End
+' Public Sub _ContextMenu(X As Integer, Y As Integer)
+'   
+'   Dim hMenu As Menu = GetMenu()
+'   
+'   If hMenu Then hMenu.Popup(X, Y)
+'   
+' End
 
 Private Function PopupMenu_Read() As String
 
