@@ -104,11 +104,11 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
   sService = Left(sFullPath, iPos - 1)
   sPath = Mid$(sFullPath, iPos)
   
-  If _ObjectCache.Exist(sFullPath) Then Return
+  If _ObjectCache.Exist(sFullPath) Then Error.Raise("Path already used")
   
   $sFullPath = sFullPath
   $sPath = sPath
-  'Debug $sFullPath; " | "; $sPath
+  'Debug Me;; $sFullPath; " | "; $sPath
   
   $sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
   If aInterface Then $aInterface = aInterface.Copy()
@@ -591,12 +591,13 @@ Public Sub DBusObserver_Message()
     Endif
   Else
     Object.Call(Me, sMethod, $hObserver.Message.Arguments)
+    $hObserver.Reply()
   Endif
 
 Catch
 
   'Debug Error.Text
-  If DBus.Debug Then Error "gb.dbus: "; sInterface; "."; sMethod; ": error: "; Error.Text
+  If DBus.Debug Then Error "gb.dbus: "; sInterface; "."; sMethod; ": error: "; Error.Text;; Error.Backtrace.Join(" ")
   $hObserver.Error(Error.Text)
   
 End
@@ -609,6 +610,8 @@ Public Sub _Raise(hConnection As DBusConnection, sSignal As String, aArg As Obje
   Dim iPos As Integer
   Dim sInterface As String
   Dim sSymbol As String
+  
+  If Not $sFullPath Then Error.Raise("DBus object is not registered")
   
   hClass = Object.Class(Me)
   sSymbol = ":" & Replace(sSignal, ".", "_")

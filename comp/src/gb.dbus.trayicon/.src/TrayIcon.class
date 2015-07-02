@@ -48,8 +48,8 @@ Public Sub _new()
   $hMenu = New DBusStatusIconMenu As "StatusIconMenu"
   
   If $bAppIndicator Then
-    DBus.Register($hMenu, "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
     DBus.Register($hObject, "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
+    DBus.Register($hMenu, "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
     DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem("/org/kde/statusnotifieritem" &/ CStr($iId))
     Try Mkdir _GetIconThemePath()
   Endif

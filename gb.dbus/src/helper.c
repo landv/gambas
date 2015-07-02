@@ -348,6 +348,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 			
 		if (GB.Conv(arg, gtype))
 		{
+			//BREAKPOINT();
 			GB.ReleaseValue(arg);
 			GB.Error("Type mismatch");
 			return TRUE;
@@ -994,8 +995,11 @@ bool DBUS_reply(DBusConnection *connection, DBusMessage *message, const char *si
 
 	reply = dbus_message_new_method_return(message);
 	
-	if (define_arguments(reply, signature, arguments))
-		goto __RETURN;
+	if (signature && *signature && arguments)
+	{
+		if (define_arguments(reply, signature, arguments))
+			goto __RETURN;
+	}
 	
 	if (!dbus_connection_send(connection, reply, &serial)) 
 	{

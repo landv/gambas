@@ -2,20 +2,22 @@
 
 Inherits DBusObject
 
-Event com_canonical_dbusmenu_LayoutUpdated(Revision As Integer, ParentId As Integer)
+Event com_canonical_dbusmenu_LayoutUpdated(Revision As _DBusUInt, ParentId As Integer)
 'event ItemsPropertiesUpdated(Variant[]
 
-Property Read com_canonical_dbusmenu_Version As Integer
+Property Read com_canonical_dbusmenu_Version As _DBusUInt
 Property Read com_canonical_dbusmenu_Status As String
+Property Read com_canonical_dbusmenu_TextDirection As String
+Property Read com_canonical_dbusmenu_IconThemePath As String[]
 
 Static Private ALL_PROPS As String[] = ["type", "label", "enabled", "visible", "toggle-type", "toggle-state", "icon-data", "shortcut", "children-display"]
 
 Private $aProp As New Collection[]
 Private $iRevision As Integer
 
-Private Function com_canonical_dbusmenu_Version_Read() As Integer
+Private Function com_canonical_dbusmenu_Version_Read() As _DBusUInt
 
-  Return 2
+  Return _DBusUInt(2)
 
 End
 
@@ -51,7 +53,7 @@ End
 
 Public Sub com_canonical_dbusmenu_GetGroupProperties(IdList As Integer[], PropertyNames As String[]) As _DBusMenuProperties
   
-  Dim aResult As New Variant[]
+  Dim aResult As New Variant[][]
   Dim iId As Integer
   Dim hResult As _DBusMenuProperties
   
@@ -60,7 +62,7 @@ Public Sub com_canonical_dbusmenu_GetGroupProperties(IdList As Integer[], Proper
   Next
   
   hResult = New _DBusMenuProperties
-  hResult.Value = aResult
+  hResult.Value = [aResult]
   Return hResult
   
 End
@@ -98,6 +100,8 @@ Public Sub com_canonical_dbusmenu_GetLayout(ParentId As Integer, RecursionDepth 
   Dim hLayout As _DBusMenuLayout
   Dim hItem As _DBusMenuItem
   
+  'Debug ParentId;; RecursionDepth;; PropertyNames.Join()
+  
   hItem = GetLayout(ParentId, RecursionDepth, PropertyNames)
   
   hLayout = New _DBusMenuLayout
@@ -130,50 +134,54 @@ Private Sub UpdateMenuRec(hMenu As Menu) As Integer
   cProp["id"] = iId
   cProp["menu"] = hMenu
 
-  sText = hMenu.Text
-  If Not sText Then cProp["type"] = "separator"
-  'cProp["type"] = If(sText, "standard", "separator")
-  
-  sText = Replace(sText, "_", "__")
-  iPos = InStr(sText, "&")
-  If iPos Then
-    If Mid$(sText, iPos + 1, 1) <> "&" Then
-      Mid$(sText, iPos, 1) = "_"
+  If iId > 0 Then
+
+    sText = hMenu.Text
+    If Not sText Then cProp["type"] = "separator"
+    'cProp["type"] = If(sText, "standard", "separator")
+    
+    sText = Replace(sText, "_", "__")
+    iPos = InStr(sText, "&")
+    If iPos Then
+      If Mid$(sText, iPos + 1, 1) <> "&" Then
+        Mid$(sText, iPos, 1) = "_"
+      Endif
     Endif
+    sText = Replace(sText, "&&", "&")
+    cProp["label"] = sText
+    
+    If Not hMenu.Enabled Then cProp["enabled"] = False
+    If Not hMenu.Visible Then cProp["visible"] = False
+    
+    If hMenu.Picture Then
+      sTemp = File.SetExt(Temp$("icon"), "png")
+      hMenu.Picture.Save(sTemp)
+      cProp["icon-data"] = Byte[].FromString(File.Load(sTemp))
+      Kill sTemp
+    Endif
+    
+    If hMenu.Radio Then
+      cProp["toggle-type"] = "radio"
+      cProp["toggle-state"] = If(hMenu.Value, 1, 0)
+    Else If hMenu.Toggle Or If hMenu.Checked Then
+      cProp["toggle-type"] = "checkmark"
+      cProp["toggle-state"] = If(hMenu.Value, 1, 0)
+    Endif
+    
+    ' shortcut
+    
+    sShortcut = hMenu.Shortcut
+    If sShortcut Then
+      
+      sShortcut = Replace(sShortcut, "Ctrl+", "Control+")
+      aShortcut = Split(sShortcut, "+")
+      cProp["shortcut"] = [aShortcut]
+    Endif
+    
   Endif
-  sText = Replace(sText, "&&", "&")
-  cProp["label"] = sText
-  
-  If Not hMenu.Enabled Then cProp["enabled"] = False
-  If Not hMenu.Visible Then cProp["visible"] = False
   
   If hMenu.Children.Count Then cProp["children-display"] = "submenu"
-  
-  If hMenu.Picture Then
-    sTemp = File.SetExt(Temp$("icon"), "png")
-    hMenu.Picture.Save(sTemp)
-    cProp["icon-data"] = Byte[].FromString(File.Load(sTemp))
-    Kill sTemp
-  Endif
-  
-  If hMenu.Radio Then
-    cProp["toggle-type"] = "radio"
-    cProp["toggle-state"] = If(hMenu.Value, 1, 0)
-  Else If hMenu.Toggle Or If hMenu.Checked Then
-    cProp["toggle-type"] = "checkmark"
-    cProp["toggle-state"] = If(hMenu.Value, 1, 0)
-  Endif
-  
-  ' shortcut
-  
-  sShortcut = hMenu.Shortcut
-  If sShortcut Then
     
-    sShortcut = Replace(sShortcut, "Ctrl+", "Control+")
-    aShortcut = Split(sShortcut, "+")
-    cProp["shortcut"] = [aShortcut]
-  Endif
-  
   $aProp.Add(cProp)
   
   aChild = New Integer[]
@@ -192,10 +200,15 @@ End
 
 Public Sub _UpdateMenu(hMenu As Menu)
 
+  Dim hRevision As _DBusUInt
+  
   Inc $iRevision
   $aProp.Clear
   UpdateMenuRec(hMenu)
-  DBus.Raise(Me, "com.canonical.dbusmenu.LayoutUpdated", [$iRevision, 0])
+  
+  hRevision = New _DBusUInt
+  hRevision.Value = $iRevision
+  DBus.Raise(Me, "com.canonical.dbusmenu.LayoutUpdated", [hRevision, 0])
   
 End
 
@@ -204,8 +217,9 @@ Public Sub com_canonical_dbusmenu_Event(Id As Integer, EventId As String, (Data)
   
   If EventId = "clicked" Then
     GetParent()._Clicked($aProp[Id]["menu"])
+  Else
+    Debug Id;; EventId;; Data;; TimeStamp
   Endif
-  'Debug Id;; EventId;; Data;; TimeStamp
   
 End
 
@@ -213,4 +227,16 @@ Public Sub com_canonical_dbusmenu_AboutToShow(ParentId As Integer) As Boolean
   
   Return GetParent()._AboutToShow($aProp[ParentId]["menu"])
   
+End
+
+Private Function com_canonical_dbusmenu_TextDirection_Read() As String
+
+  Return If(System.RightToLeft, "rtl", "ltr")
+
+End
+
+Private Function com_canonical_dbusmenu_IconThemePath_Read() As String[]
+
+  Return New String[]
+
 End

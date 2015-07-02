@@ -157,6 +157,19 @@ License version 3 and version 2.1 along with this program.  If not, see
 			</td>
 			<td>""</td>
 		</tr>
+		<tr>
+			<td>disposition</td>
+			<td>string</td>
+			<td>
+			How the menuitem feels the information it's displaying to the
+			user should be presented.
+			- "normal" a standard menu item
+			- "informative" providing additional information to the user
+			- "warning" looking at potentially harmful results
+			- "alert" something bad could potentially happen
+			</td>
+			<td>"normal"</td>
+		</tr>
 		</table>
 
 		Vendor specific properties can be added by prefixing them with
@@ -171,20 +184,36 @@ License version 3 and version 2.1 along with this program.  If not, see
 			</dox:d>
 		</property>
 
-        <property name="Status" type="s" access="read">
-            <dox:d>
-            Tells if the menus are in a normal state or they believe that they
-            could use some attention.  Cases for showing them would be if help
-            were referring to them or they accessors were being highlighted.
-            This property can have two values: "normal" in almost all cases and
-            "notice" when they should have a higher priority to be shown.
-            </dox:d>
-        </property>
+		<property name="TextDirection" type="s" access="read">
+			<dox:d>
+			Represents the way the text direction of the application.  This
+			allows the server to handle mismatches intelligently.  For left-
+			to-right the string is "ltr" for right-to-left it is "rtl".
+			</dox:d>
+		</property>
+
+		<property name="Status" type="s" access="read">
+			<dox:d>
+			Tells if the menus are in a normal state or they believe that they
+			could use some attention.  Cases for showing them would be if help
+			were referring to them or they accessors were being highlighted.
+			This property can have two values: "normal" in almost all cases and
+			"notice" when they should have a higher priority to be shown.
+			</dox:d>
+		</property>
+
+		<property name="IconThemePath" type="as" access="read">
+			<dox:d>
+			A list of directories that should be used for finding icons using
+			the icon naming spec.  Idealy there should only be one for the icon
+			theme, but additional ones are often added by applications for
+			app specific icons.
+			</dox:d>
+		</property>
 
 <!-- Functions -->
 
 		<method name="GetLayout">
-			<annotation name="com.trolltech.QtDBus.QtTypeName.Out1" value="DBusMenuLayoutItem"/>
 			<dox:d>
 			  Provides the layout and propertiers that are attached to the entries
 			  that are in the layout.  It only gives the items that are children
@@ -225,8 +254,6 @@ License version 3 and version 2.1 along with this program.  If not, see
 		</method>
 
 		<method name="GetGroupProperties">
-			<annotation name="com.trolltech.QtDBus.QtTypeName.In0" value="QList&lt;int&gt;"/>
-			<annotation name="com.trolltech.QtDBus.QtTypeName.Out0" value="DBusMenuItemList"/>
 			<dox:d>
 			Returns the list of items which are children of @a parentId.
 			</dox:d>
@@ -280,6 +307,8 @@ License version 3 and version 2.1 along with this program.  If not, see
 
 			@li "clicked"
 			@li "hovered"
+			@li "opened"
+			@li "closed"
 
 			Vendor specific events can be added by prefixing them with "x-<vendor>-"
 			]]></dox:d>
@@ -294,6 +323,26 @@ License version 3 and version 2.1 along with this program.  If not, see
 			</arg>
 			<arg type="u" name="timestamp" direction="in" >
 				<dox:d>The time that the event occured if available or the time the message was sent if not</dox:d>
+			</arg>
+		</method>
+
+		<method name="EventGroup">
+			<dox:d>
+				Used to pass a set of events as a single message for possibily several
+				different menuitems.  This is done to optimize DBus traffic.
+			</dox:d>
+			<arg type="a(isvu)" name="events" direction="in">
+				<dox:d>
+					An array of all the events that should be passed.  This tuple should
+					match the parameters of the 'Event' signal.  Which is roughly:
+					id, eventID, data and timestamp.
+				</dox:d>
+			</arg>
+			<arg type="ai" name="idErrors" direction="out">
+				<dox:d>
+					I list of menuitem IDs that couldn't be found.  If none of the ones
+					in the list can be found, a DBus error is returned.
+				</dox:d>
 			</arg>
 		</method>
 
@@ -314,10 +363,34 @@ License version 3 and version 2.1 along with this program.  If not, see
 			</arg>
 		</method>
 
+		<method name="AboutToShowGroup">
+			<dox:d>
+				A function to tell several menus being shown that they are about to
+				be shown to the user.  This is likely only useful for programitc purposes
+				so while the return values are returned, in general, the singular function
+				should be used in most user interacation scenarios.
+			</dox:d>
+			<arg type="ai" name="ids" direction="in">
+				<dox:d>
+					The IDs of the menu items who's submenus are being shown.
+				</dox:d>
+			</arg>
+			<arg type="ai" name="updatesNeeded" direction="out">
+				<dox:d>
+					The IDs of the menus that need updates.  Note: if no update information
+					is needed the DBus message should set the no reply flag.
+				</dox:d>
+			</arg>
+			<arg type="ai" name="idErrors" direction="out">
+				<dox:d>
+					I list of menuitem IDs that couldn't be found.  If none of the ones
+					in the list can be found, a DBus error is returned.
+				</dox:d>
+			</arg>
+		</method>
+
 <!-- Signals -->
 		<signal name="ItemsPropertiesUpdated">
-			<annotation name="com.trolltech.QtDBus.QtTypeName.In0" value="DBusMenuItemList"/>
-			<annotation name="com.trolltech.QtDBus.QtTypeName.In1" value="DBusMenuItemKeysList"/>
 			<dox:d>
 			Triggered when there are lots of property updates across many items
 			so they all get grouped into a single dbus message.  The format is
@@ -327,7 +400,6 @@ License version 3 and version 2.1 along with this program.  If not, see
 			<arg type="a(ia{sv})" name="updatedProps" direction="out" />
 			<arg type="a(ias)" name="removedProps" direction="out" />
 		</signal>
-
 		<signal name="LayoutUpdated">
 			<dox:d>
 			Triggered by the application to notify display of a layout update, up to

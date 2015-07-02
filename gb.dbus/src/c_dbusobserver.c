@@ -269,7 +269,7 @@ BEGIN_METHOD(DBusObserver_Reply, GB_STRING signature; GB_OBJECT args)
 
 	if (THIS->message)
 	{
-		if (!DBUS_reply(THIS->connection, THIS->message, GB.ToZeroString(ARG(signature)), VARG(args)))
+		if (!DBUS_reply(THIS->connection, THIS->message, MISSING(signature) ? NULL : GB.ToZeroString(ARG(signature)), VARGOPT(args, NULL)))
 			THIS->reply = TRUE;
 	}
 
