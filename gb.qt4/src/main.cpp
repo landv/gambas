@@ -101,6 +101,7 @@
 #include "CEmbedder.h"
 #endif
 
+#include "desktop.h"
 #include "x11.h"
 
 #ifdef QT5
@@ -1338,9 +1339,9 @@ const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 
 int EXPORT GB_INIT(void)
 {
-	// Do not disable GLib support
-	
 	char *env;
+	
+	// Do not disable GLib support
 	
 	env = getenv("KDE_FULL_SESSION");
 	if (env && !strcasecmp(env, "true"))
@@ -1369,13 +1370,7 @@ int EXPORT GB_INIT(void)
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRP);
 	DRAW_init();
 	
-	env = getenv("KDE_SESSION_VERSION");
-	if (env && *env && atoi(env) >= 4)
-	{
-		GB.Component.Load("gb.dbus");
-		GB.Component.Load("gb.dbus.trayicon");
-	}
-	else
+	if (DESKTOP_load_trayicon_component())
 	{
 		GB.Component.Declare(TrayIconDesc);
 		GB.Component.Declare(TrayIconsDesc);

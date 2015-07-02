@@ -14,6 +14,7 @@ gb_qt4_la_CPPFLAGS = @QT_INC@ -I$(top_srcdir)/share/
 
 gb_qt4_la_SOURCES = \
  x11.h x11.c \
+ desktop.h desktop.c \
  gb.qt.h main.h main_moc.cpp main.cpp \
  CFont.h CFont.cpp \
  CScreen.h CScreen.cpp \

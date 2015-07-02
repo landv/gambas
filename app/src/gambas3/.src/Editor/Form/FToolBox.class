@@ -203,8 +203,11 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
             Endif
           Next
           If Not bExist Then 
-            'If Not $cToolBar[sGroup] Then Stop
-            $cToolBar[sGroup].Add(sCtrl, hComp.Key, hClass.Family)
+            If $cToolBar[sGroup] Then 
+              $cToolBar[sGroup].Add(sCtrl, hComp.Key, hClass.Family)
+            Else
+              Error "gambas3: warning: unknown control group: "; sGroup
+            Endif
           Endif
         Next
 

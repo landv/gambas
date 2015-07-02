@@ -43,6 +43,21 @@ Private $hObserver As DBusObserver
 Private $iRegister As Integer
 Private $bRegisterParent As Boolean
 
+Static Private Sub IsDBusValues(sType As String) As Boolean
+  
+  Dim hClass As Class
+  
+  If sType = "DBusValues" Then Return True
+  
+  Try hClass = Classes[sType]
+  If Not hClass Then Return
+  If Not hClass.Parent Then Return
+  
+  Return IsDBusValues(hClass.Parent.Name)
+  
+End
+
+
 Static Private Sub ConvType(sType As String) As String
 
   Dim sSign As String
@@ -50,11 +65,9 @@ Static Private Sub ConvType(sType As String) As String
   
   sSign = $cType[sType]
   
-  If Not sSign Then
-    Try hClass = Classes[sType]
-    If hClass And If hClass.Parent And If hClass.Parent.Name = "DBusVariant" Then
-      sSign = hClass["Signature"].Value
-    Endif
+  If Not sSign And If IsDBusValues(sType) Then
+    hClass = Classes[sType]
+    sSign = hClass["Signature"].Value
   Endif
   
   Return sSign
@@ -175,7 +188,10 @@ Static Private Sub ToDBusSignature(sSign As String) As String[]
   Dim iPos As Integer
   Dim sClass As String
   
-  If Not sSign Then Return aResult
+  If Not sSign Then 
+    If DBus.Debug Then Error "gb.dbus: void signature"
+    Return aResult
+  Endif
   
   While sSign
     
@@ -199,7 +215,10 @@ Static Private Sub ToDBusSignature(sSign As String) As String[]
       
     Endif
     
-    If Not sOne Then Return
+    If Not sOne Then 
+      If DBus.Debug Then Error "gb.dbus: cannot convert signature for "; sClass
+      Return
+    Endif
     
     aResult.Add(sOne)
     
@@ -231,6 +250,9 @@ Public Sub _Introspect() As String
   Dim sKind As String
   Dim sSign As String
   Dim bReadOnly As Boolean
+  Dim bMulti As Boolean
+  Dim aType As String[]
+  Dim I As Integer
   
   sRes &= "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\" \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n"
   sRes &= "<node>\n"
@@ -261,7 +283,7 @@ Public Sub _Introspect() As String
           "    <method name=\"GetMachineId\">\n"
           "      <arg name=\"machine_uuid\" type=\"s\" direction=\"out\"/>\n"
           "    </method>\n"
-          "  </interface>"
+          "  </interface>\n"
   
   If bHasProperty Then
     sRes &= "  <interface name=\"org.freedesktop.DBus.Properties\">\n"
@@ -311,7 +333,9 @@ Public Sub _Introspect() As String
       bReadOnly = .ReadOnly
       
       If .Type Then
-        sType = ConvType(.Type)
+        sType = .Type
+        bMulti = IsDBusValues(sType)
+        sType = ConvType(sType)
         If Not sType Then Continue
       Endif
       
@@ -343,7 +367,14 @@ Public Sub _Introspect() As String
           If sArg Then sDesc &= sArg
           
           If sType Then
-            sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
+            If bMulti Then
+              aType = DBus.SplitSignature(sType)
+              For I = 0 To aType.Max
+                sDesc &= "      <arg name=\"value" & CStr(I + 1) & "\" type=\"" & aType[I] & "\" direction=\"out\"/>\n"
+              Next
+            Else
+              sDesc &= "      <arg name=\"value\" type=\"" & sType & "\" direction=\"out\"/>\n"
+            Endif
           Endif
           
           sDesc &= "    </method>\n"
@@ -458,7 +489,7 @@ Private Sub GetAllProperties()
         
       End With
     Next
-      
+    
     $hObserver.Reply("a{sv}", [cVal])
     
   End With
@@ -510,7 +541,7 @@ Public Sub DBusObserver_Message()
   sMethod = $hObserver.Message.Member
   sInterface = $hObserver.Message.Interface
   
-  'Debug "["; $hObserver.Message.Destination; "]";; sInterface;; sMethod
+  If DBus.Debug Then Error "gb.dbus: call: ["; $hObserver.Message.Destination; "]";; sInterface;; sMethod
   
   If InStr(sMethod, "_") Then Return
   
@@ -550,9 +581,14 @@ Public Sub DBusObserver_Message()
   sType = Object.Class(Me)[sMethod].Type
   If sType Then
     vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)
-    sType = ConvType(sType)
-    If Not sType Then sType = "v"
-    $hObserver.Reply(sType, [vVal])
+    If TypeOf(vVal) = gb.Object And If vVal Is DBusValues Then
+      sType = vVal.Signature
+      $hObserver.Reply(sType, vVal.Value)
+    Else
+      sType = ConvType(sType)
+      If Not sType Then sType = "v"
+      $hObserver.Reply(sType, [vVal])
+    Endif
   Else
     Object.Call(Me, sMethod, $hObserver.Message.Arguments)
   Endif

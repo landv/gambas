@@ -1,8 +1,8 @@
 /***************************************************************************
 
-  main.c
+  desktop.h
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,40 +21,21 @@
 
 ***************************************************************************/
 
-#define __MAIN_C
+#ifndef __DESKTOP_H
+#define __DESKTOP_H
 
-#include "c_dbusvariant.h"
-#include "c_dbusconnection.h"
-#include "c_dbusobserver.h"
-#include "c_dbus.h"
+#include "gambas.h"
+#include "gb_common.h"
 
-#include "main.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-GB_INTERFACE GB EXPORT;
+const char *DESKTOP_get_type();
+bool DESKTOP_load_trayicon_component();
 
-GB_CLASS CLASS_DBusVariant;
-GB_CLASS CLASS_DBusNull;
-GB_CLASS CLASS_DBusObject;
-
-GB_DESC *GB_CLASSES[] EXPORT =
-{
-	CDBusVariantDesc,
-	CDBusObserverMessageDesc,
-	CDBusObserverDesc,
-	CDBusConnectionDesc,
-	CDBusDesc,
-	NULL
-};
-
-int EXPORT GB_INIT(void)
-{
-	CLASS_DBusVariant = GB.FindClass("DBusVariant");
-	CLASS_DBusNull = GB.FindClass("_DBusNull");
-	CLASS_DBusObject = GB.FindClass("DBusObject");
-	return 0;
+#ifdef __cplusplus
 }
+#endif
 
-void EXPORT GB_EXIT()
-{
-}
-
+#endif

@@ -640,13 +640,19 @@ BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
 	int i, np;
 	void *object = VARG(object);
 	GB_ARRAY params = VARGOPT(params, NULL);
+	int len = LENGTH(event);
+	char event[len + 2];
 
 	if (GB_CheckObject(object))
 		return;
 	
 	class = OBJECT_class(object);
 	
-	index = CLASS_find_symbol(class, GB_ToZeroString(ARG(event)));
+	event[0] = ':';
+	memcpy(&event[1], STRING(event), len);
+	event[len + 1] = 0;
+	
+	index = CLASS_find_symbol(class, event);
 	if (index == NO_SYMBOL)
 		goto __UNKNOWN_EVENT;
 
@@ -671,6 +677,7 @@ BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
 	}
 
 	GB_ReturnBoolean(GB_Raise(object, desc->event.index, np));
+	return;
 	
 __UNKNOWN_EVENT:
 

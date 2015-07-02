@@ -34,6 +34,7 @@
 #include "gkey.h"
 
 #include "x11.h"
+#include "desktop.h"
 #include "CScreen.h"
 #include "CStyle.h"
 #include "CDraw.h"
@@ -228,13 +229,7 @@ extern "C"
 		
 		CWatcher::init();
 
-		env = getenv("KDE_SESSION_VERSION");
-		if (env && *env && atoi(env) >= 4)
-		{
-			GB.Component.Load("gb.dbus");
-			GB.Component.Load("gb.dbus.trayicon");
-		}
-		else
+		if (DESKTOP_load_trayicon_component())
 		{
 			GB.Component.Declare(TrayIconsDesc);
 			GB.Component.Declare(TrayIconDesc);

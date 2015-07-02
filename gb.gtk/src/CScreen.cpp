@@ -33,6 +33,7 @@
 #include "gapplication.h"
 #include "gmainwindow.h"
 #include "cpaint_impl.h"
+#include "desktop.h"
 
 extern int CWINDOW_Embedder;
 extern bool CWINDOW_Embedded;
@@ -136,6 +137,12 @@ BEGIN_PROPERTY(Desktop_HasSystemTray)
 	#else
 		GB.ReturnBoolean(gTrayIcon::hasSystemTray());
 	#endif
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Desktop_Type)
+
+	GB.ReturnConstZeroString(DESKTOP_get_type());
 
 END_PROPERTY
 
@@ -402,6 +409,8 @@ GB_DESC DesktopDesc[] =
 	GB_STATIC_PROPERTY_READ("HasSystemTray", "b", Desktop_HasSystemTray),
 	
 	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
+
+	GB_STATIC_PROPERTY_READ("Type", "s", Desktop_Type),
 
 	GB_END_DECLARE
 };

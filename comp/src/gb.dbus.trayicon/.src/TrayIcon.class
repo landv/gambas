@@ -45,10 +45,11 @@ Public Sub _new()
   If $iId > 1 Then $sName &= "-" & CStr($iId)
   TrayIcons._All.Add(Me)
   
+  $hMenu = New DBusStatusIconMenu As "StatusIconMenu"
+  
   If $bAppIndicator Then
-    $hMenu = New DBusStatusIconMenu
-    DBus.Register($hObject, "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
     DBus.Register($hMenu, "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
+    DBus.Register($hObject, "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
     DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem("/org/kde/statusnotifieritem" &/ CStr($iId))
     Try Mkdir _GetIconThemePath()
   Endif
@@ -87,6 +88,7 @@ Public Sub Show()
   Else
   
     DBus[sService].Register($hObject, "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
+    DBus[sService].Register($hMenu, "/StatusNotifierItem/menu", ["com.canonical.dbusmenu"])
     DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem(sService)
   
   Endif
@@ -182,13 +184,17 @@ Public Sub _Activate()
   
 End
 
+Private Sub GetMenu() As Menu
+  
+  Dim hParent As Control
+  Try hParent = Object.Parent(Me)
+  If hParent Then Return Main.FindMenu(hParent, $sMenu)
+
+End
+
 Public Sub _ContextMenu(X As Integer, Y As Integer)
   
-  Dim hMenu As Menu
-  Dim hParent As Control
-  
-  Try hParent = Object.Parent(Me)
-  If hParent Then hMenu = Main.FindMenu(hParent, $sMenu)
+  Dim hMenu As Menu = GetMenu()
   
   If hMenu Then
     hMenu.Popup(X, Y)
@@ -204,9 +210,16 @@ Private Function PopupMenu_Read() As String
 
 End
 
+Private Sub UpdateMenu()
+
+  $hMenu._UpdateMenu(GetMenu())
+
+End
+
 Private Sub PopupMenu_Write(Value As String)
 
   $sMenu = Value
+  UpdateMenu
 
 End
 
@@ -256,5 +269,24 @@ End
 Public Sub _GetIconThemePath() As String
   
   Return File.SetExt(Temp$("gb.dbus.trayicon"), "")
+  
+End
+
+Public Sub _Clicked(hMenu As Menu)
+
+  If hMenu.Toggle Then
+    hMenu.Value = Not hMenu.Value
+    UpdateMenu
+  Else
+    hMenu.Value = True
+  Endif
+  
+End
+
+Public Sub _AboutToShow(hMenu As Menu) As Boolean
+  
+  Object.Raise(hMenu, "Show")
+  UpdateMenu
+  Return True
   
 End

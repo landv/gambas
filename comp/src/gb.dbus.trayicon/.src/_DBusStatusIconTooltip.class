@@ -5,7 +5,7 @@ Inherits DBusVariant
 
 Public Const Signature As String = "(sa(iiay)ss)" '(STRING, ARRAY(INT, INT, ARRAY BYTE), STRING, STRING) 
 
-Public Sub _new(hPict As Picture, sTitle As String, sTooltip As String)
+Public Sub _new(hPict As Picture, (sTitle) As String, sTooltip As String)
 
   Dim hPixmap As _DBusStatusIconPixmap
   

@@ -48,6 +48,12 @@ BEGIN_PROPERTY(DBus_Debug)
 
 END_PROPERTY
 
+BEGIN_METHOD(DBus_SplitSignature, GB_STRING sign)
+
+	GB.ReturnObject(DBUS_split_signature(GB.ToZeroString(ARG(sign))));
+
+END_METHOD
+
 GB_DESC CDBusDesc[] =
 {
   GB_DECLARE_STATIC("_DBus"),
@@ -60,6 +66,8 @@ GB_DESC CDBusDesc[] =
   GB_CONSTANT("Reply", "i", DBUS_MESSAGE_TYPE_METHOD_RETURN),
   GB_CONSTANT("Signal", "i", DBUS_MESSAGE_TYPE_SIGNAL),
   GB_CONSTANT("Error", "i", DBUS_MESSAGE_TYPE_ERROR),
+  
+  GB_STATIC_METHOD("SplitSignature", "String[]", DBus_SplitSignature, "(Signature)s"),
   
   GB_END_DECLARE
 };

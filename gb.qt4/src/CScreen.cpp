@@ -39,10 +39,9 @@
 #include "CFont.h"
 #include "CScreen.h"
 
-#ifndef NO_X_WINDOW
 #include <QX11Info>
 #include "x11.h"
-#endif
+#include "desktop.h"
 
 #if QT_VERSION >= 0x040600
 #define NUM_SCREENS() (QApplication::desktop()->screenCount())
@@ -142,6 +141,12 @@ END_METHOD
 BEGIN_PROPERTY(Desktop_Scale)
 
 	GB.ReturnInteger(MAIN_scale);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(Desktop_Type)
+
+	GB.ReturnConstZeroString(DESKTOP_get_type());
 
 END_PROPERTY
 
@@ -418,6 +423,8 @@ GB_DESC DesktopDesc[] =
 	GB_STATIC_PROPERTY_READ("HasSystemTray", "b", Desktop_HasSystemTray),
 	
 	GB_STATIC_METHOD("Screenshot", "Picture", Desktop_Screenshot, "[(X)i(Y)i(Width)i(Height)i]"),
+	
+	GB_STATIC_PROPERTY_READ("Type", "s", Desktop_Type),
 
 	GB_END_DECLARE
 };

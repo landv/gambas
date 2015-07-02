@@ -90,6 +90,7 @@ gb_gtk3_la_SOURCES = \
 	gprinter.h gprinter.cpp \
 	gglarea.h gglarea.cpp \
 	x11.h x11.c \
+	desktop.h desktop.c \
 	sm/bonobo-macros.h \
 	sm/gnome-macros.h \
 	sm/gnome-uidefs.h \

@@ -5,7 +5,6 @@ Export
 'STATIC PROPERTY READ Menus AS _DesktopMenus
 'STATIC PROPERTY READ Icons AS _DesktopIcons
 Static Property Read ScreenSaver As _Desktop_ScreenSaver
-Static Property Read Type As String
 Static Property Count As Integer
 Static Property Current As Integer
 Static Property Read Windows As _Desktop_Windows
@@ -280,12 +279,6 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
   Endif
 
   Shell sCmd
-
-End
-
-Static Private Function Type_Read() As String
-
-  Return GetDesktop()
 
 End
 

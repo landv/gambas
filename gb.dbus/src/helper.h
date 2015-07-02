@@ -52,4 +52,6 @@ const char *DBUS_to_dbus_type(GB_TYPE type);
 
 bool DBUS_error(DBusConnection *connection, DBusMessage *message, const char *type, const char *error);
 
+GB_ARRAY DBUS_split_signature(const char *signature);
+
 #endif
