@@ -213,13 +213,13 @@ End
 
 Public Sub org_kde_StatusNotifierItem_SecondaryActivate((X) As Integer, (Y) As Integer)
   
-  Debug
+  GetParent()._MiddleClick()
   
 End
 
 Public Sub org_kde_StatusNotifierItem_XAyatanaSecondaryActivate((Foo) As Integer)
   
-  Debug
+  GetParent()._MiddleClick()
   
 End
 

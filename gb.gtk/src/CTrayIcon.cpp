@@ -34,6 +34,7 @@
 #include "gmouse.h"
 
 DECLARE_EVENT(EVENT_Click);
+DECLARE_EVENT(EVENT_MiddleClick);
 DECLARE_EVENT(EVENT_Scroll);
 
 static void cb_destroy(gTrayIcon *sender)
@@ -43,9 +44,12 @@ static void cb_destroy(gTrayIcon *sender)
 	GB.Unref(POINTER(&_object));
 }
 
-static void cb_click(gTrayIcon *sender)
+static void cb_click(gTrayIcon *sender, int button)
 {
-	GB.Raise(sender->hFree, EVENT_Click, 0);
+	if (button == 1)
+		GB.Raise(sender->hFree, EVENT_Click, 0);
+	else if (button == 2)
+		GB.Raise(sender->hFree, EVENT_MiddleClick, 0);
 }
 
 static void cb_menu(gTrayIcon *sender)
@@ -321,6 +325,7 @@ GB_DESC TrayIconDesc[] =
 	GB_PROPERTY("Tag", "v", TrayIcon_Tag),
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("MiddleClick", NULL, NULL, &EVENT_MiddleClick),
 	GB_EVENT("Scroll", NULL, "(Delta)f(Orientation)i", &EVENT_Scroll),
 
 	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),

@@ -52,7 +52,7 @@ public:
 	int loopLevel() { return _loopLevel; }
 
 //"Events"
-	void (*onClick)(gTrayIcon *sender);
+	void (*onClick)(gTrayIcon *sender, int button);
 	void (*onScroll)(gTrayIcon *sender);
 	void (*onMenu)(gTrayIcon *sender);
 	void (*onDestroy)(gTrayIcon *sender);

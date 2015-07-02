@@ -11,6 +11,7 @@ Public Const _DefaultEvent As String = "Click"
 Public Enum Horizontal, Vertical
 
 Event Click
+Event MiddleClick
 Event Scroll(Delta As Float, Orientation As Integer)
 
 Property Name As String
@@ -286,5 +287,11 @@ Public Sub _AboutToShow(hMenu As Menu) As Boolean
   Object.Raise(hMenu, "Show")
   UpdateMenu
   Return True
+  
+End
+
+Public Sub _MiddleClick()
+  
+  Raise MiddleClick
   
 End

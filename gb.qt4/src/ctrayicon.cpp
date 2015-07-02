@@ -33,6 +33,7 @@
 #include "ctrayicon.h"
 
 DECLARE_EVENT(EVENT_Click);
+DECLARE_EVENT(EVENT_MiddleClick);
 DECLARE_EVENT(EVENT_Scroll);
 
 static QList<CTRAYICON *> _list;
@@ -372,6 +373,10 @@ void TrayIconManager::activated(QSystemTrayIcon::ActivationReason reason)
 				GB.Raise(THIS, EVENT_Click, 0);
 				break;
 			
+			case QSystemTrayIcon::MiddleClick:
+				GB.Raise(THIS, EVENT_MiddleClick, 0);
+				break;
+			
 			default:
 				break;
 		}
@@ -439,6 +444,7 @@ GB_DESC TrayIconDesc[] =
 	GB_PROPERTY("Tag", "v", TrayIcon_Tag),
 	
 	GB_EVENT("Click", NULL, NULL, &EVENT_Click),
+	GB_EVENT("MiddleClick", NULL, NULL, &EVENT_MiddleClick),
 	GB_EVENT("Scroll", NULL, "(Delta)f(Orientation)i", &EVENT_Scroll),
 
 	GB_METHOD("_unknown", "v", TrayIcon_unknown, "."),
