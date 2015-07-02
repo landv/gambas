@@ -67,7 +67,7 @@ GB_DESC CDBusDesc[] =
   GB_CONSTANT("Signal", "i", DBUS_MESSAGE_TYPE_SIGNAL),
   GB_CONSTANT("Error", "i", DBUS_MESSAGE_TYPE_ERROR),
   
-  GB_STATIC_METHOD("SplitSignature", "String[]", DBus_SplitSignature, "(Signature)s"),
+  GB_STATIC_METHOD("_SplitSignature", "String[]", DBus_SplitSignature, "(Signature)s"),
   
   GB_END_DECLARE
 };

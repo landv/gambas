@@ -81,6 +81,20 @@ Public Sub _AddChild(sChild As String)
   
 End
 
+Public Sub _RemoveChild(sChild As String)
+  
+  Dim iPos As Integer
+  
+  If Not $aChildren Then Return
+  iPos = $aChildren.Find(sChild)
+  If iPos >= 0 Then
+    $aChildren.Remove(iPos)
+    If $aChildren.Count = 0 Then $aChildren = Null
+  Endif
+  
+End
+
+
 Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optional aInterface As String[])
   
   Dim hParent As DBusObject
@@ -163,16 +177,21 @@ Public Sub _Unregister(hConnection As DBusConnection)
   Endif
   
   If $aChildren Then
-    For Each sChild In $aChildren
+    For Each sChild In $aChildren.Copy()
       hChild = _ObjectCache[$sFullPath &/ sChild]
       hChild._Unregister(hConnection)
     Next
+    $aChildren = Null
   Endif
   
+  hParent = _ObjectCache[File.Dir($sFullPath)]
+  If hParent Then hParent._RemoveChild(File.Name($sFullPath))
+    
   $hObserver = Null
   _ObjectCache[$sFullPath] = Null
   $sFullPath = ""
   $sPath = ""
+  
   
   If _ObjectCache.Count = 0 Then 
     DBus._UnregisterApplication(hConnection)
@@ -368,7 +387,7 @@ Public Sub _Introspect() As String
           
           If sType Then
             If bMulti Then
-              aType = DBus.SplitSignature(sType)
+              aType = DBus._SplitSignature(sType)
               For I = 0 To aType.Max
                 sDesc &= "      <arg name=\"value" & CStr(I + 1) & "\" type=\"" & aType[I] & "\" direction=\"out\"/>\n"
               Next
@@ -496,7 +515,7 @@ Private Sub GetAllProperties()
   
 Catch
   
-  If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.GetAll: error: "; Error.Text
+  If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.GetAll: error: "; Error.Text;; Error.Backtrace.Join(" ")
   $hObserver.Error(Error.Text)
   
 End
@@ -584,6 +603,9 @@ Public Sub DBusObserver_Message()
     If TypeOf(vVal) = gb.Object And If vVal Is DBusValues Then
       sType = vVal.Signature
       $hObserver.Reply(sType, vVal.Value)
+    Else If TypeOf(vVal) = gb.Object And If vVal Is DBusVariant Then
+      sType = vVal.Signature
+      $hObserver.Reply(sType, [vVal.Value])
     Else
       sType = ConvType(sType)
       If Not sType Then sType = "v"
@@ -596,7 +618,6 @@ Public Sub DBusObserver_Message()
 
 Catch
 
-  'Debug Error.Text
   If DBus.Debug Then Error "gb.dbus: "; sInterface; "."; sMethod; ": error: "; Error.Text;; Error.Backtrace.Join(" ")
   $hObserver.Error(Error.Text)
   

@@ -108,7 +108,8 @@ Public Sub Hide()
   
   If $bAppIndicator Then 
     DBus[sService].Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Passive"])
-  Else    
+  Else
+    DBus[sService].Unregister($hMenu)
     DBus[sService].Unregister($hObject)
   Endif
   

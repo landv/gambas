@@ -62,7 +62,7 @@ Public Sub com_canonical_dbusmenu_GetGroupProperties(IdList As Integer[], Proper
   Next
   
   hResult = New _DBusMenuProperties
-  hResult.Value = [aResult]
+  hResult.Value = aResult
   Return hResult
   
 End
@@ -134,7 +134,7 @@ Private Sub UpdateMenuRec(hMenu As Menu) As Integer
   cProp["id"] = iId
   cProp["menu"] = hMenu
 
-  If iId > 0 Then
+  'If iId > 0 Then
 
     sText = hMenu.Text
     If Not sText Then cProp["type"] = "separator"
@@ -178,7 +178,7 @@ Private Sub UpdateMenuRec(hMenu As Menu) As Integer
       cProp["shortcut"] = [aShortcut]
     Endif
     
-  Endif
+  'Endif
   
   If hMenu.Children.Count Then cProp["children-display"] = "submenu"
     
@@ -200,15 +200,11 @@ End
 
 Public Sub _UpdateMenu(hMenu As Menu)
 
-  Dim hRevision As _DBusUInt
-  
   Inc $iRevision
   $aProp.Clear
   UpdateMenuRec(hMenu)
   
-  hRevision = New _DBusUInt
-  hRevision.Value = $iRevision
-  DBus.Raise(Me, "com.canonical.dbusmenu.LayoutUpdated", [hRevision, 0])
+  DBus.Raise(Me, "com.canonical.dbusmenu.LayoutUpdated", [_DBusUInt($iRevision), 0])
   
 End
 
