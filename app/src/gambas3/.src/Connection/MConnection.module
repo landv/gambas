@@ -12,7 +12,7 @@ Public Enum MD_VERSION = 0, MD_FIELD = 1, MD_INDEX = 2, MD_TABLE = 3
 
 Private $bError As Boolean
 
-Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean) 
+Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Optional bWithDatabase As Boolean, Optional sPassword As String) 
   
   hConn.Type = LCase(hConfig["Connection/Type"])
   If hConn.Type = "sqlite" Then
@@ -21,7 +21,11 @@ Public Sub InitFrom(hConn As Connection, hConfig As Object, sName As String, Opt
     hConn.Host = hConfig["Connection/Host"]
     hConn.Port = hConfig["Connection/Port"]
     hConn.User = hConfig["Connection/User"]
-    hConn.Password = LoadPassword(sName, hConfig["Connection/RememberPassword"])
+    If sPassword Then 
+      hConn.Password = sPassword
+    Else
+      hConn.Password = LoadPassword(sName, hConfig["Connection/RememberPassword"])
+    Endif
   Endif
   
   If bWithDatabase Then hConn.Name = hConfig["Connection/Database"]

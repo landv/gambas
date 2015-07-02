@@ -258,7 +258,7 @@ Public Sub txtDatabase_Click()
     Inc Application.Busy
     lvwDatabase.Clear
     FillConfig(hConfig)
-    MConnection.InitFrom($hConn, hConfig, txtName.Text)
+    MConnection.InitFrom($hConn, hConfig, txtName.Text,, txtPassword.Text)
     $hConn.Open
     FillDatabaseList
     panChooseDatabase.Show
