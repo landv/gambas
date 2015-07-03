@@ -124,3 +124,9 @@ Static Private Function Null_Read() As Object
   Return _DBusNull
 
 End
+
+Static Public Sub _HasSystemTray() As Boolean
+  
+  Return DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].IsStatusNotifierHostRegistered
+  
+End

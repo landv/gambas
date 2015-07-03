@@ -150,6 +150,12 @@ void COMPONENT_load_all_finish(void)
 	{
 		ARCHIVE_load_exported_class(comp->archive, AR_LOAD_ONLY);
 	}
+
+	LIST_for_each(comp, _component_list)
+	{
+		if (comp->library)
+			LIBRARY_after_init(comp->library);
+	}
 }
 
 

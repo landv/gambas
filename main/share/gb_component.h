@@ -34,6 +34,7 @@ typedef
   INTERFACE;
 
 #define LIB_INIT         "GB_INIT"
+#define LIB_AFTER_INIT   "GB_AFTER_INIT"
 #define LIB_EXIT         "GB_EXIT"
 #define LIB_INTERFACE    "GB_INTERFACE"
 #define LIB_CLASS        "GB_CLASSES"

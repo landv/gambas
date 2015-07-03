@@ -149,6 +149,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_NextEnum,
 	(void *)GB_StopAllEnum,
 
+	(void *)GB_GetReturnValue,
 	(void *)GB_Return,
 	(void *)GB_ReturnInteger,
 	(void *)GB_ReturnLong,
@@ -1494,6 +1495,10 @@ void GB_StopAllEnum(void *enum_object)
 	GB_EndEnum(save);
 }
 
+GB_VALUE *GB_GetReturnValue(void)
+{
+	return (GB_VALUE *)&TEMP;
+}
 
 void GB_Return(GB_TYPE type, ...)
 {

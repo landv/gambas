@@ -214,7 +214,7 @@ Public Sub com_canonical_dbusmenu_Event(Id As Integer, EventId As String, (Data)
   If EventId = "clicked" Then
     GetParent()._Clicked($aProp[Id]["menu"])
   Else
-    Debug Id;; EventId;; Data;; TimeStamp
+    'Debug Id;; EventId;; Data;; TimeStamp
   Endif
   
 End

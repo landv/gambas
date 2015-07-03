@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  desktop.h
+  main.h
 
   (c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,20 +21,14 @@
 
 ***************************************************************************/
 
-#ifndef __DESKTOP_H
-#define __DESKTOP_H
+#ifndef __MAIN_H
+#define __MAIN_H
 
 #include "gambas.h"
 #include "gb_common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-const char *DESKTOP_get_type();
-
-#ifdef __cplusplus
-}
+#ifndef __MAIN_C
+extern GB_INTERFACE GB;
 #endif
 
 #endif

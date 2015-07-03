@@ -956,7 +956,7 @@ typedef
 		void (*CheckPost)(void);
 		bool (*CanRaise)(void *, int);
 		int (*GetEvent)(GB_CLASS, const char *);
-		char *(*GetLastEventName)();
+		char *(*GetLastEventName)(void);
 		void (*RaiseTimer)(void *);
 		bool (*Stopped)(void);
 
@@ -988,13 +988,14 @@ typedef
 		void *(*AutoCreate)(GB_CLASS, int);
 		bool (*CheckObject)(void *);
 
-		void *(*GetEnum)();
-		void (*StopEnum)();
+		void *(*GetEnum)(void);
+		void (*StopEnum)(void);
 		void *(*BeginEnum)(void *);
 		void (*EndEnum)(void *);
-		bool (*NextEnum)();
+		bool (*NextEnum)(void);
 		void (*StopAllEnum)(void *);
 
+		GB_VALUE *(*GetReturnValue)(void);
 		void (*Return)(GB_TYPE, ...);
 		void (*ReturnInteger)(int);
 		void (*ReturnLong)(int64_t);
@@ -1006,9 +1007,9 @@ typedef
 		void (*ReturnSingle)(float);
 		void (*ReturnFloat)(double);
 		void (*ReturnVariant)(GB_VARIANT_VALUE *);
-		void (*ReturnConvVariant)();
-		void (*ReturnBorrow)();
-		void (*ReturnRelease)();
+		void (*ReturnConvVariant)(void);
+		void (*ReturnBorrow)(void);
+		void (*ReturnRelease)(void);
 		void (*ReturnPtr)(GB_TYPE, void *);
 		void (*ReturnSelf)(void *);
 
@@ -1150,15 +1151,15 @@ typedef
 
 		struct {
 			void (*Start)(int length);
-			char *(*End)();
+			char *(*End)(void);
 			void (*Add)(const char *src, int len);
 			}
 		String;
 		
 		struct {
-			char *(*GetCurrentPosition)();
-			void (*EnterEventLoop)();
-			void (*LeaveEventLoop)();
+			char *(*GetCurrentPosition)(void);
+			void (*EnterEventLoop)(void);
+			void (*LeaveEventLoop)(void);
 			}
 		Debug;
 		

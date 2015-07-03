@@ -1,6 +1,6 @@
 /***************************************************************************
 
-  desktop.h
+  main.c
 
   (c) 2015 Benoît Minisini <gambas@users.sourceforge.net>
 
@@ -21,20 +21,53 @@
 
 ***************************************************************************/
 
-#ifndef __DESKTOP_H
-#define __DESKTOP_H
+#define __MAIN_C
 
-#include "gambas.h"
-#include "gb_common.h"
+#include "cfaketrayicon.h"
+#include "main.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+GB_INTERFACE GB EXPORT;
 
-const char *DESKTOP_get_type();
+// Prevents gbi3 from complaining
 
-#ifdef __cplusplus
+GB_DESC *GB_CLASSES[] EXPORT =
+{
+  NULL
+};
+
+GB_DESC *GB_OPTIONAL_CLASSES[] EXPORT =
+{
+	FakeTrayIconDesc, FakeTrayIconsDesc,
+	NULL
+};
+
+int EXPORT GB_INIT(void)
+{
+	return 0;
 }
-#endif
 
-#endif
+void EXPORT GB_AFTER_INIT(void)
+{
+	GB_FUNCTION func;
+	bool has_dbus_systemtray = FALSE;
+	void (*declare_tray_icon)();
+	
+	GB.Component.Load("gb.dbus");
+	
+	if (!GB.GetFunction(&func, (void *)GB.FindClass("DBus"), "_HasSystemTray", NULL, NULL))
+		has_dbus_systemtray = GB.Call(&func, 0, FALSE)->_boolean.value;
+	
+	if (has_dbus_systemtray)
+		GB.Component.Load("gb.dbus.trayicon");
+	else
+	{
+		GB.Component.GetInfo("DECLARE_TRAYICON", POINTER(&declare_tray_icon));
+		(*declare_tray_icon)();
+	}
+}
+
+void EXPORT GB_EXIT()
+{
+}
+
+

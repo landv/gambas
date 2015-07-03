@@ -72,5 +72,6 @@ bool LIBRARY_get_interface_by_name(const char *name, int version, void *iface);
 void LIBRARY_get_interface(LIBRARY *lib, int version, void *iface);
 
 void LIBRARY_exec(LIBRARY *lib, int argc, char **argv);
+void LIBRARY_after_init(LIBRARY *lib);
 
 #endif

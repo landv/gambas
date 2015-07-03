@@ -274,6 +274,14 @@ int LIBRARY_load(LIBRARY *lib)
 	return order;
 }
 
+void LIBRARY_after_init(LIBRARY *lib)
+{
+	void (*func)();
+	
+	func = get_symbol(lib, LIB_AFTER_INIT, FALSE);
+	if (func) (*func)();
+}
+
 void LIBRARY_exec(LIBRARY *lib, int argc, char **argv)
 {
   void (*func)();

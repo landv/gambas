@@ -42,7 +42,7 @@ bool GB_Raise(void *object, int event_id, int nparam, ...);
 void GB_RaiseBegin(GB_RAISE_HANDLER *handler);
 void GB_RaiseEnd(GB_RAISE_HANDLER *handler);
 int GB_GetEvent(void *class, char *name);
-char *GB_GetLastEventName();
+char *GB_GetLastEventName(void);
 bool GB_Stopped(void);
 
 int GB_NParam(void);
@@ -70,6 +70,7 @@ void GB_EndEnum(void *);
 bool GB_NextEnum(void);
 void GB_StopAllEnum(void *);
 
+GB_VALUE *GB_GetReturnValue(void);
 void GB_Return(GB_TYPE type, ...);
 void GB_ReturnInteger(int val);
 #define GB_ReturnInt GB_ReturnInteger

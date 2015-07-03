@@ -108,254 +108,230 @@ bool MAIN_rtl = false;
 
 extern "C"
 {
-	GB_INTERFACE GB EXPORT;
-	IMAGE_INTERFACE IMAGE EXPORT;
 
-	GB_DESC *GB_CLASSES[] EXPORT =
-	{
-		ScreenDesc,
-		ScreensDesc,
-		DesktopDesc,
-		ApplicationDesc,
-		StyleDesc,
-		CSelectDesc,
-		CAlignDesc,
-		CArrangeDesc,
-		CBorderDesc,
-		CScrollDesc,
-		CColorDesc,
-		CFontsDesc,
-		CFontDesc,
-		CKeyDesc,
-		CImageDesc,
-		CPictureDesc,
-		CClipboardDesc,
-		CDragDesc,
-		CCursorDesc,
-		CMouseDesc,
-		CPointerDesc,
-		CMessageDesc,
-		CDialogDesc,
-		CWatcherDesc,
-		CWidgetDesc,
-		CChildrenDesc,
-		CContainerDesc,
-		CDrawingAreaDesc,
-		CFrameDesc,
-		CUserControlDesc,
-		CUserContainerDesc,
-		CPanelDesc,
-		CHBoxDesc,
-		CVBoxDesc,
-		CHPanelDesc,
-		CVPanelDesc,
-		CMenuDesc,
-		CMenuChildrenDesc,
-		CWindowMenusDesc,
-		CWindowControlsDesc,
-		CWindowDesc,
-		CWindowsDesc,
-		CFormDesc,
-		CLabelDesc,
-		CTextLabelDesc,
-		CSliderDesc,
-		CScrollBarDesc,
-		CButtonDesc,
-		CToggleButtonDesc,
-		CCheckBoxDesc,
-		CRadioButtonDesc,
-		CToolButtonDesc,
-		CPictureBoxDesc,
-		CMovieBoxDesc,
-		CTextBoxSelectionDesc,
-		CTextBoxDesc,
-		CTextAreaDesc,
-		CTextAreaSelectionDesc,
-		CComboBoxDesc,
-		CComboBoxItemDesc,
-		CTabStripDesc,
-		CTabStripContainerDesc,
-		CTabStripContainerChildrenDesc,
-		CPluginDesc,
-		CScrollViewDesc,
-		CSpinBoxDesc,
-		CSeparatorDesc,
-		CStockDesc,
-		PrinterDesc,
-		SvgImageDesc,
-		NULL
-	};
+GB_INTERFACE GB EXPORT;
+IMAGE_INTERFACE IMAGE EXPORT;
 
-	GB_DESC *GB_OPTIONAL_CLASSES[] EXPORT =
-	{
-		TrayIconDesc,
-		TrayIconsDesc,
-		NULL
-	};
+static void declare_tray_icon()
+{
+GB.Component.Declare(TrayIconsDesc);
+GB.Component.Declare(TrayIconDesc);
+}
 
-	void *GB_GTK_1[] EXPORT =
-	{
-		(void *)GTK_INTERFACE_VERSION,
-		(void *)GTK_CreateGLArea,
-		NULL
-	};
+GB_DESC *GB_CLASSES[] EXPORT =
+{
+	ScreenDesc,
+	ScreensDesc,
+	DesktopDesc,
+	ApplicationDesc,
+	StyleDesc,
+	CSelectDesc,
+	CAlignDesc,
+	CArrangeDesc,
+	CBorderDesc,
+	CScrollDesc,
+	CColorDesc,
+	CFontsDesc,
+	CFontDesc,
+	CKeyDesc,
+	CImageDesc,
+	CPictureDesc,
+	CClipboardDesc,
+	CDragDesc,
+	CCursorDesc,
+	CMouseDesc,
+	CPointerDesc,
+	CMessageDesc,
+	CDialogDesc,
+	CWatcherDesc,
+	CWidgetDesc,
+	CChildrenDesc,
+	CContainerDesc,
+	CDrawingAreaDesc,
+	CFrameDesc,
+	CUserControlDesc,
+	CUserContainerDesc,
+	CPanelDesc,
+	CHBoxDesc,
+	CVBoxDesc,
+	CHPanelDesc,
+	CVPanelDesc,
+	CMenuDesc,
+	CMenuChildrenDesc,
+	CWindowMenusDesc,
+	CWindowControlsDesc,
+	CWindowDesc,
+	CWindowsDesc,
+	CFormDesc,
+	CLabelDesc,
+	CTextLabelDesc,
+	CSliderDesc,
+	CScrollBarDesc,
+	CButtonDesc,
+	CToggleButtonDesc,
+	CCheckBoxDesc,
+	CRadioButtonDesc,
+	CToolButtonDesc,
+	CPictureBoxDesc,
+	CMovieBoxDesc,
+	CTextBoxSelectionDesc,
+	CTextBoxDesc,
+	CTextAreaDesc,
+	CTextAreaSelectionDesc,
+	CComboBoxDesc,
+	CComboBoxItemDesc,
+	CTabStripDesc,
+	CTabStripContainerDesc,
+	CTabStripContainerChildrenDesc,
+	CPluginDesc,
+	CScrollViewDesc,
+	CSpinBoxDesc,
+	CSeparatorDesc,
+	CStockDesc,
+	PrinterDesc,
+	SvgImageDesc,
+	NULL
+};
 
-	const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
+void *GB_GTK_1[] EXPORT =
+{
+	(void *)GTK_INTERFACE_VERSION,
+	(void *)GTK_CreateGLArea,
+	NULL
+};
 
-	int EXPORT GB_INIT(void)
-	{
-		char *env;
-		
-		env = getenv("GB_GUI_BUSY");
-		if (env && atoi(env))
-			MAIN_debug_busy = true;
-		
-		GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
-		_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
-		GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
-		GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
-		GB.Hook(GB_HOOK_TIMER,(void *)my_timer);
-		GB.Hook(GB_HOOK_WATCH,(void *)my_watch);
-		GB.Hook(GB_HOOK_POST,(void*)my_post);
-		GB.Hook(GB_HOOK_ERROR,(void*)my_error);
-		GB.Hook(GB_HOOK_LANG,(void*)my_lang);
+const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 
-		GB.Component.Load("gb.draw");
-		GB.Component.Load("gb.image");
-		GB.Component.Load("gb.gui.base");
-		GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
-		IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
-		DRAW_init();
-		
-		CWatcher::init();
-
-		if (DESKTOP_load_trayicon_component())
-		{
-			GB.Component.Declare(TrayIconsDesc);
-			GB.Component.Declare(TrayIconDesc);
-		}
-		
-		CLASS_Control = GB.FindClass("Control");
-		//CLASS_Container = GB.FindClass("Container");
-		//CLASS_UserControl = GB.FindClass("UserControl");
-		//CLASS_UserContainer = GB.FindClass("UserContainer");
-		CLASS_Window = GB.FindClass("Window");
-		CLASS_Menu = GB.FindClass("Menu");
-		CLASS_Picture = GB.FindClass("Picture");
-		//CLASS_Drawing = GB.FindClass("Drawing");
-		CLASS_DrawingArea = GB.FindClass("DrawingArea");
-		CLASS_Printer = GB.FindClass("Printer");
-		CLASS_Image = GB.FindClass("Image");
-		CLASS_SvgImage = GB.FindClass("SvgImage");
-		
-#if !defined(GLIB_VERSION_2_36)
-		g_type_init();
-#endif /* !defined(GLIB_VERSION_2_36) */
-		
-		my_lang(GB.System.Language(), GB.System.IsRightToLeft());
-
-		return -1;
-	}
-
-	void EXPORT GB_EXIT()
-	{
-		CWatcher::exit();
-	}
-
-	int EXPORT GB_INFO(const char *key, void **value)
-	{
-		if (!strcasecmp(key, "DISPLAY"))
-		{
-			#ifdef GDK_WINDOWING_X11
-			#ifndef GAMBAS_DIRECTFB			
-			*value = (void *)gdk_x11_display_get_xdisplay(gdk_display_get_default());
-			#else
-			// For DirectFB
-			*value=0;
-			stub("DIRECTFB/EXPORT GB_INFO");
-			#endif
-			#else
-			// For Win32
-			*value=0;
-			stub("no-X11/EXPORT GB_INFO");
-			#endif
-			return TRUE;
-		}
-		else if (!strcasecmp(key, "ROOT_WINDOW"))
-		{
-			#ifdef GDK_WINDOWING_X11
-			#ifndef GAMBAS_DIRECTFB
-			*value = (void *)gdk_x11_get_default_root_xwindow();
-			#else
-			// For DirectFB
-			*value=0;
-			stub("DIRECTFB/EXPORT GB_INFO");
-			#endif
-			#else
-			// For Win32
-			*value=0;
-			stub("no-X11/EXPORT GB_INFO");
-			#endif
-			return TRUE;
-		}
-		else if (!strcasecmp(key, "GET_HANDLE"))
-		{
-			*value = (void *)CWIDGET_get_handle;
-			return TRUE;
-		}
-		else if (!strcasecmp(key, "SET_EVENT_FILTER"))
-		{
-			*value = (void *)gApplication::setEventFilter;
-			return TRUE;
-		}
-		else if (!strcasecmp(key, "TIME"))
-		{
-			*value = (void *)(intptr_t)gtk_get_current_event_time(); //gdk_x11_display_get_user_time(gdk_display_get_default());
-			return TRUE;
-		}
-		else
-			return FALSE;
-	}
-
-	static void activate_main_window(intptr_t)
-	{
-		if (gMainWindow::_active)
-			gtk_window_present(GTK_WINDOW(gMainWindow::_active->topLevel()->border));
-	}
+int EXPORT GB_INIT(void)
+{
+	char *env;
 	
-	void EXPORT GB_SIGNAL(int signal, void *param)
+	env = getenv("GB_GUI_BUSY");
+	if (env && atoi(env))
+		MAIN_debug_busy = true;
+	
+	GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
+	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
+	GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
+	GB.Hook(GB_HOOK_LOOP, (void *)my_loop);
+	GB.Hook(GB_HOOK_TIMER,(void *)my_timer);
+	GB.Hook(GB_HOOK_WATCH,(void *)my_watch);
+	GB.Hook(GB_HOOK_POST,(void*)my_post);
+	GB.Hook(GB_HOOK_ERROR,(void*)my_error);
+	GB.Hook(GB_HOOK_LANG,(void*)my_lang);
+
+	GB.Component.Load("gb.draw");
+	GB.Component.Load("gb.image");
+	GB.Component.Load("gb.gui.base");
+	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
+	DRAW_init();
+	
+	CWatcher::init();
+
+	CLASS_Control = GB.FindClass("Control");
+	//CLASS_Container = GB.FindClass("Container");
+	//CLASS_UserControl = GB.FindClass("UserControl");
+	//CLASS_UserContainer = GB.FindClass("UserContainer");
+	CLASS_Window = GB.FindClass("Window");
+	CLASS_Menu = GB.FindClass("Menu");
+	CLASS_Picture = GB.FindClass("Picture");
+	//CLASS_Drawing = GB.FindClass("Drawing");
+	CLASS_DrawingArea = GB.FindClass("DrawingArea");
+	CLASS_Printer = GB.FindClass("Printer");
+	CLASS_Image = GB.FindClass("Image");
+	CLASS_SvgImage = GB.FindClass("SvgImage");
+	
+#if !defined(GLIB_VERSION_2_36)
+	g_type_init();
+#endif /* !defined(GLIB_VERSION_2_36) */
+	
+	my_lang(GB.System.Language(), GB.System.IsRightToLeft());
+
+	return -1;
+}
+
+void EXPORT GB_EXIT()
+{
+	CWatcher::exit();
+}
+
+int EXPORT GB_INFO(const char *key, void **value)
+{
+	if (!strcasecmp(key, "DISPLAY"))
 	{
-		static GtkWidget *save_popup_grab = NULL;
-		
-		switch(signal)
-		{
-			case GB_SIGNAL_DEBUG_BREAK:
-				if (gApplication::_popup_grab)
-				{
-					save_popup_grab = gApplication::_popup_grab;
-					gApplication::ungrabPopup();
-				}
-				break;
-				
-			case GB_SIGNAL_DEBUG_FORWARD:
-				//while (qApp->activePopupWidget())
-				//	delete qApp->activePopupWidget();
-				if (gdk_display_get_default())
-				gdk_display_sync(gdk_display_get_default());
-				break;
-				
-			case GB_SIGNAL_DEBUG_CONTINUE:
-				GB.Post((GB_CALLBACK)activate_main_window, 0);
-				if (save_popup_grab)
-				{
-					gApplication::_popup_grab = save_popup_grab;
-					save_popup_grab = NULL;
-					gApplication::grabPopup();
-				}
-				break;
-		}
+		*value = (void *)gdk_x11_display_get_xdisplay(gdk_display_get_default());
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "ROOT_WINDOW"))
+	{
+		*value = (void *)gdk_x11_get_default_root_xwindow();
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "GET_HANDLE"))
+	{
+		*value = (void *)CWIDGET_get_handle;
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "SET_EVENT_FILTER"))
+	{
+		*value = (void *)gApplication::setEventFilter;
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "TIME"))
+	{
+		*value = (void *)(intptr_t)gtk_get_current_event_time(); //gdk_x11_display_get_user_time(gdk_display_get_default());
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "DECLARE_TRAYICON"))
+	{
+		*value = (void *)declare_tray_icon;
+		return TRUE;
+	}
+	else
+		return FALSE;
+}
+
+static void activate_main_window(intptr_t)
+{
+	if (gMainWindow::_active)
+		gtk_window_present(GTK_WINDOW(gMainWindow::_active->topLevel()->border));
+}
+
+void EXPORT GB_SIGNAL(int signal, void *param)
+{
+	static GtkWidget *save_popup_grab = NULL;
+	
+	switch(signal)
+	{
+		case GB_SIGNAL_DEBUG_BREAK:
+			if (gApplication::_popup_grab)
+			{
+				save_popup_grab = gApplication::_popup_grab;
+				gApplication::ungrabPopup();
+			}
+			break;
+			
+		case GB_SIGNAL_DEBUG_FORWARD:
+			//while (qApp->activePopupWidget())
+			//	delete qApp->activePopupWidget();
+			if (gdk_display_get_default())
+			gdk_display_sync(gdk_display_get_default());
+			break;
+			
+		case GB_SIGNAL_DEBUG_CONTINUE:
+			GB.Post((GB_CALLBACK)activate_main_window, 0);
+			if (save_popup_grab)
+			{
+				gApplication::_popup_grab = save_popup_grab;
+				save_popup_grab = NULL;
+				gApplication::grabPopup();
+			}
+			break;
 	}
 }
+
+} // extern "C"
 
 void my_quit (void)
 {
@@ -364,8 +340,11 @@ void my_quit (void)
 	while (gtk_events_pending())
 		gtk_main_iteration();
   
-	GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL);
-	GB.Call(&func, 0, FALSE);
+	if (GB.ExistClass("TrayIcons"))
+	{
+		if (!GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL))
+			GB.Call(&func, 0, FALSE);
+	}
 	
 	CWINDOW_delete_all();
 	gControl::cleanRemovedControls();

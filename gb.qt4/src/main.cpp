@@ -832,8 +832,12 @@ static void check_quit_now(intptr_t param)
 		if (QApplication::instance())
 		{
 			GB_FUNCTION func;
-			GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL);
-			GB.Call(&func, 0, FALSE);
+			
+			if (GB.ExistClass("TrayIcons"))
+			{
+				if (!GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL))
+					GB.Call(&func, 0, FALSE);
+			}
 			
 #ifndef QT5
 			qApp->syncX();
@@ -1237,6 +1241,12 @@ QMenu *QT_FindMenu(void *parent, const char *name)
 	return menu ? menu->menu : NULL;
 }
 
+static void declare_tray_icon()
+{
+	GB.Component.Declare(TrayIconDesc);
+	GB.Component.Declare(TrayIconsDesc);
+}
+
 extern "C" {
 
 GB_DESC *GB_CLASSES[] EXPORT =
@@ -1271,12 +1281,6 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	CWatcherDesc,
 	PrinterDesc,
 	SvgImageDesc,
-	NULL
-};
-
-GB_DESC *GB_OPTIONAL_CLASSES[] EXPORT =
-{
-	TrayIconDesc,TrayIconsDesc,
 	NULL
 };
 
@@ -1370,12 +1374,6 @@ int EXPORT GB_INIT(void)
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRP);
 	DRAW_init();
 	
-	if (DESKTOP_load_trayicon_component())
-	{
-		GB.Component.Declare(TrayIconDesc);
-		GB.Component.Declare(TrayIconsDesc);
-	}
-	
 	CLASS_Control = GB.FindClass("Control");
 	CLASS_Container = GB.FindClass("Container");
 	CLASS_UserControl = GB.FindClass("UserControl");
@@ -1436,6 +1434,11 @@ int EXPORT GB_INFO(const char *key, void **value)
 	else if (!strcasecmp(key, "TIME"))
 	{
 		*value = (void *)QX11Info::appTime();
+		return TRUE;
+	}
+	else if (!strcasecmp(key, "DECLARE_TRAYICON"))
+	{
+		*value = (void *)declare_tray_icon;
 		return TRUE;
 	}
 	else

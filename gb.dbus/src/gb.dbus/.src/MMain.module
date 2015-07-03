@@ -93,10 +93,9 @@ End
 Public Sub Main()
 
   Dim vVal As Variant
-  
-  vVal = Null
-  Print TypeOf(vVal)
 
+  Print DBus._HasSystemTray()
+  
   'Print DBus.Null
   'Print DBus.Null
    

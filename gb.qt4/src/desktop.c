@@ -100,19 +100,3 @@ const char *DESKTOP_get_type()
 	
 	return _desktop;
 }
-
-bool DESKTOP_load_trayicon_component()
-{
-	const char *desktop = DESKTOP_get_type();
-	
-	if (strcmp(desktop, "KDE4") == 0 || strcmp(desktop, "KDE5") == 0 || strcmp(desktop, "UNITY") == 0)
-	{
-		GB.Component.Load("gb.dbus");
-		GB.Component.Load("gb.dbus.trayicon");
-		return FALSE;
-	}
-	else
-	{
-		return TRUE;
-	}
-}
