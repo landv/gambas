@@ -382,7 +382,7 @@ Private Sub DoFind(Optional bBackward As Boolean)
   
   sText = Trim(txtFind.Text)
   
-  If sText And If hView.FindText(sText, bBackward, chkCaseSensitive.Value, True, chkHighlight.Value) Then
+  If sText And If hView.FindText(sText, bBackward, chkCaseSensitive.Value, True) Then ', chkHighlight.Value) Then
     panFind.Background = &HFFDFDF
   Else
     panFind.Background = Color.Default

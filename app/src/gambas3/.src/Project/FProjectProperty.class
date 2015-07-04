@@ -1,7 +1,6 @@
 ' Gambas class file
 
 Static Private $bShowUsed As Boolean
-Static Private $bShowDeprecated As Boolean
 Static Private $bShowLibraries As Boolean
 
 
@@ -103,7 +102,6 @@ Public Sub Form_Open()
   choComponent.Libraries = $aLibraries
   
   chkShowUsed.Value = $bShowUsed
-  chkShowDeprecated.Value = $bShowDeprecated
   $bCanInitComponents = True
 
   ipnProject.Index = 0
@@ -429,12 +427,6 @@ End
 Public Sub chkShowUsed_Click()
 
   choComponent.ShowCheckedOnly = chkShowUsed.Value
-
-End
-
-Public Sub chkShowDeprecated_Click()
-
-  choComponent.ShowDeprecated = chkShowDeprecated.Value
 
 End
 

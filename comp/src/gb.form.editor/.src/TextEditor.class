@@ -159,6 +159,7 @@ Static Private $cGlobalCacheText As New Collection
 Private $cCacheText As Collection
 Private $sCacheTextKey As String
 Private $bUpdateHeightAllowed As Boolean
+Private $bPrint As Boolean
 
 Public Sub _new()
   
@@ -1320,9 +1321,11 @@ Public Sub View_KeyPress()
       Endif
       
       If $bReadOnly Then Goto STOP_EVENT
-      If Not $bOverwrite Then sTab = GetIndentText($Y)
       
+      If Not $bPrint Then $bOverwrite = False
+      sTab = GetIndentText($Y)
       Insert("\n" & String.Left(sTab, $X))
+      If Not $bPrint Then $bOverwrite = True
       
     Case Key.BackSpace
       If Key.Control Then
@@ -3210,6 +3213,7 @@ Public Sub Print(Text As String)
   $hDoc.Begin
   bSaveOverwrite = $bOverwrite
   $bOverwrite = True
+  $bPrint = True
   
   J = 1
   For I = 1 To Len(Text)
@@ -3250,6 +3254,7 @@ Public Sub Print(Text As String)
   If I > J Then Insert(Mid$(Text, J, I - J))
   
   $bOverwrite = bSaveOverwrite  
+  $bPrint = False
   $hDoc.End
   
 End

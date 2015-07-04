@@ -36,8 +36,12 @@ Private $sFormatEqual As String
 
 Private Const QT4_SUPPORT As String = "qt4"
 Private QT4_SUPPORT_PACKAGES As String[] = ["gb.qt4:gb.gui", "gb.qt4.opengl:gb.gui.opengl"]
+Private Const QT5_SUPPORT As String = "qt5"
+Private QT5_SUPPORT_PACKAGES As String[] = ["gb.qt5:gb.gui", "gb.qt5.opengl:gb.gui.opengl"]
 Private Const GTK_SUPPORT As String = "gtk"
 Private GTK_SUPPORT_PACKAGES As String[] = ["gb.gtk:gb.gui", "gb.gtk.opengl:gb.gui.opengl"]
+Private Const GTK3_SUPPORT As String = "gtk3"
+Private GTK3_SUPPORT_PACKAGES As String[] = ["gb.gtk3:gb.gui"] ', "gb.gtk.opengl:gb.gui.opengl"]
 
 Public Sub CheckProgram()
   
@@ -538,9 +542,21 @@ Private Sub MakeSupportPackage(sSys As String)
   AddLog("\n============ " & Subst(("Making &1 support package..."), "GTK+"))
   GoSub MAKE_PACKAGE
 
+  If Not Project.Components.Exist("gb.gui.opengl") Then
+    sSupport = GTK3_SUPPORT
+    aPackage = GTK3_SUPPORT_PACKAGES
+    AddLog("\n============ " & Subst(("Making &1 support package..."), "GTK+3"))
+    GoSub MAKE_PACKAGE
+  Endif
+
   sSupport = QT4_SUPPORT
   aPackage = QT4_SUPPORT_PACKAGES
   AddLog("\n============ " & Subst(("Making &1 support package..."), "QT4"))
+  GoSub MAKE_PACKAGE
+
+  sSupport = QT5_SUPPORT
+  aPackage = QT5_SUPPORT_PACKAGES
+  AddLog("\n============ " & Subst(("Making &1 support package..."), "QT5"))
   GoSub MAKE_PACKAGE
   
   Return

@@ -773,3 +773,9 @@ Public Sub gvwComponent_Draw(X As Integer, Y As Integer, Width As Integer, Heigh
   End Select
 
 End
+
+Public Sub btnDeprecated_Click()
+
+  SetShowDeprecated(btnDeprecated.Value)
+
+End
