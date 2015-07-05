@@ -1141,7 +1141,7 @@ Public Sub View_KeyPress()
   Dim bCancel As Boolean
   Dim aLayout As Integer[]
   Dim I, P As Integer
-
+  Dim bSaveOverwrite As Boolean = $bOverwrite
   bCancel = Raise KeyPress
   If bCancel Then Goto STOP_EVENT
 
@@ -1325,7 +1325,8 @@ Public Sub View_KeyPress()
       If Not $bPrint Then $bOverwrite = False
       sTab = GetIndentText($Y)
       Insert("\n" & String.Left(sTab, $X))
-      If Not $bPrint Then $bOverwrite = True
+      'If Not $bPrint Then $bOverwrite = True
+      $bOverwrite = bSaveOverwrite
       
     Case Key.BackSpace
       If Key.Control Then
