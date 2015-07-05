@@ -127,6 +127,6 @@ End
 
 Static Public Sub _HasSystemTray() As Boolean
   
-  Return DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].IsStatusNotifierHostRegistered
+  Try Return DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].IsStatusNotifierHostRegistered
   
 End
