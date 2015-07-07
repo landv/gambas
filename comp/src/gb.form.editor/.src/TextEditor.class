@@ -2757,6 +2757,7 @@ End
 Public Sub _SetDocument(hDoc As CDocument)
 
   If hDoc Then
+    If hDoc = $hDoc Then Return
     $hDoc = hDoc
   Else
     $hDoc = New CDocument

@@ -170,7 +170,7 @@ Public Sub _Paint(hImage As Image, X As Float, Y As Float, Optional hRect As Rec
   Endif
   
   If $bFastZoom Then
-    Paint.ZoomImage(hImage, $fZoom, X, Y, If($bGrid, Color.LightForeground, Color.Default), hRect)
+    Paint.ZoomImage(hImage, $fZoom, X, Y, If($bGrid, Color.Gray, Color.Default), hRect)
   Else
     Paint.DrawImage(hImage, X, Y, hImage.W * $fZoom, hImage.H * $fZoom,, hRect)
   Endif

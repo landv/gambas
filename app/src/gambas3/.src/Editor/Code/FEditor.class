@@ -2486,6 +2486,9 @@ Private Sub RefreshBackground()
   Dim bHasFocus As Boolean
 
   If aEditor.Exist($hEditor) Then
+    
+    ' It does not work anymore. Both splitted editors are desaturated!
+    Return
 
     For Each hEditor In aEditor
       If hEditor And If hEditor.HasFocus Then 
@@ -2517,6 +2520,7 @@ Public Sub Editors_GotFocus()
   Project.SetCurrentPopup(mnuEditor)
 
   RefreshBackground
+  UpdateCurrentProc
 
 End
 

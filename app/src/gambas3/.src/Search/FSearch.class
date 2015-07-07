@@ -129,7 +129,7 @@ Public Sub Update(Optional bForce As Boolean)
       Endif
       radCurrentProcedure.Enabled = bCode
       radCurrentFile.Enabled = True
-      radCurrentFile.Value = True
+      'radCurrentFile.Value = True
     Else
       bAllProject = True
       radCurrentProcedure.Enabled = False
@@ -894,13 +894,14 @@ Public Sub btnReplaceAll_Click()
 
 End
 
-Public Sub WakeUp(bReplace As Boolean)
+Public Sub WakeUp(bReplace As Boolean, Optional bKeepSearchIn As Boolean)
   
   Dim sFind As String
 
   $bReplace = bReplace
   Me.Show
 
+  If Not bKeepSearchIn Then radCurrentFile.Value = True
   Update()
   
   If Not $hCurrent Is FForm Then 
