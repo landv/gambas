@@ -245,8 +245,7 @@ _OPEN:
 	#endif
 }
 
-
-void STREAM_release(STREAM *stream)
+static void release_buffer(STREAM *stream)
 {
 	if (stream->common.buffer)
 	{
@@ -257,7 +256,11 @@ void STREAM_release(STREAM *stream)
 		stream->common.buffer_pos = 0;
 		stream->common.buffer_len = 0;
 	}
-	
+}
+
+void STREAM_release(STREAM *stream)
+{
+	release_buffer(stream);
 	STREAM_cancel(stream);
 }
 
@@ -539,6 +542,8 @@ void STREAM_seek(STREAM *stream, int64_t pos, int whence)
 				THROW_SYSTEM(errno, NULL);
 		}
 	}
+	
+	release_buffer(stream);
 }
 
 static void fill_buffer(STREAM *stream, char *addr, bool do_not_wait_ready)
