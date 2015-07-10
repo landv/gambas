@@ -30,6 +30,8 @@ Private $hHighlight As TextHighlighter
 
 Private $bHighlighting As Boolean
 Private $cHighlightLater As Collection
+Private $iNoHighlight As Integer
+Private $iBegin As Integer
 
 Private $iEndOfLine As Integer = gb.Unix
 Private $sEndOfLine As String = "\n"
@@ -47,6 +49,9 @@ Public Sub Clear()
   LineLength = New Integer[1]
   $aUndo.Clear
   $aRedo.Clear
+  $iBegin = 0
+  $iNoHighlight = 0
+  $cHighlightLater = Null
   
 End
 
@@ -152,13 +157,18 @@ End
 Public Sub Begin()
 
   If $bNoUndo Then Return
+  Inc $iBegin
   AddUndo(CCommand(Me, CCommand.BEGIN,, Me.Current.Column, Me.Current.Line))
+  DisableHighlight
   
 End
 
 Public Sub End()
   
   If $bNoUndo Then Return
+  If $iBegin = 0 Then Error.Raise("Missing call to Begin")
+  Dec $iBegin
+  EnableHighlight
   AddUndo(CCommand(Me, CCommand.END,, Me.Current.Column, Me.Current.Line))
   
 End
@@ -691,15 +701,6 @@ Private Sub AddUndo(hCmd As CCommand)
 
 End
 
-Private Sub HighlightLater()
-
-  For Each $cHighlightLater
-    HighlightFrom($cHighlightLater.Key)
-  Next
-  $cHighlightLater = Null
-  
-End
-
 Public Sub Undo()
   
   Dim hCmd As CCommand
@@ -709,7 +710,7 @@ Public Sub Undo()
   If $aUndo.Count = 0 Then Return
   
   $bNoUndo = True
-  $cHighlightLater = New Collection
+  DisableHighlight
   
   bOverwrite = Me.Current.Overwrite
   Me.Current.Overwrite = False
@@ -758,8 +759,7 @@ Public Sub Undo()
   Me.Current.Overwrite = bOverwrite
   
   $bNoUndo = False
-  
-  HighlightLater
+  EnableHighlight
   
 End
 
@@ -772,7 +772,7 @@ Public Sub Redo()
   If $aRedo.Count = 0 Then Return
   
   $bNoUndo = True
-  $cHighlightLater = New Collection
+  DisableHighlight
   
   bOverwrite = Me.Current.Overwrite
   Me.Current.Overwrite = False
@@ -819,7 +819,7 @@ Public Sub Redo()
   Me.Current.Overwrite = bOverwrite
   
   $bNoUndo = False
-  HighlightLater
+  EnableHighlight
   
 End
 
@@ -854,12 +854,12 @@ Public Sub HighlightFrom(Y As Integer)
   Dim bRefresh As Boolean
   Dim bBegin As Boolean
   
-  If $bNoUndo Then 
+  If $bHighlighting Then Return
+  
+  If $iNoHighlight Then 
     $cHighlightLater[Y] = True
     Return
   Endif
-  
-  If $bHighlighting Then Return
   
   If Not $hHighlight Then 
     If Object.CanRaise(Me.Current, "Highlight") Then 
@@ -1234,3 +1234,27 @@ Public Sub Reset(Optional bSave As Boolean)
   Refresh  
   
 End
+
+Public Sub DisableHighlight()
+  
+  Inc $iNoHighlight
+  If $iNoHighlight = 1 Then $cHighlightLater = New Collection
+  
+End
+
+Public Sub EnableHighlight()
+  
+  Dim cHighlightLater As Collection
+  
+  Dec $iNoHighlight
+  If $iNoHighlight = 0 Then 
+    cHighlightLater = $cHighlightLater
+    For Each cHighlightLater
+      HighlightFrom(cHighlightLater.Key)
+    Next
+    $cHighlightLater = Null
+  Endif
+  
+End
+
+
