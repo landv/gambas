@@ -370,8 +370,8 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 		else if (!cb)
 			return 1;
 
-		lca = STRING_get_utf8_char_length(ca);
-		lcb = STRING_get_utf8_char_length(cb);
+		lca = STRING_utf8_get_char_length(ca);
+		lcb = STRING_utf8_get_char_length(cb);
 		if (lca > 1 || lcb > 1)
 		{
 			if ((result = COMPARE_string_lang(&a[ai], lca, &b[bi], lcb, nocase, FALSE)))

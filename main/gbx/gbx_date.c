@@ -36,6 +36,7 @@
 #include "gbx_value.h"
 #include "gbx_local.h"
 #include "gbx_number.h"
+#include "gbx_c_string.h"
 
 #include "gbx_date.h"
 
@@ -468,7 +469,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 	if (read_integer(&nbr))
 		return TRUE;
 
-	c = get_char();
+	c = COMMON_get_unicode_char();
 
 	if (c == info->date_sep)
 	{
@@ -477,7 +478,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 		if (read_integer(&nbr2))
 			return TRUE;
 
-		c = get_char();
+		c = COMMON_get_unicode_char();
 
 		if ((c < 0) || isspace(c))
 		{
@@ -511,7 +512,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 		if (read_integer(&nbr))
 			return TRUE;
 
-		c = get_char();
+		c = COMMON_get_unicode_char();
 	}
 
 	if (c == info->time_sep)
@@ -521,7 +522,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 		if (read_integer(&nbr2))
 			return TRUE;
 
-		c = get_char();
+		c = COMMON_get_unicode_char();
 
 		if ((c < 0) || isspace(c))
 		{

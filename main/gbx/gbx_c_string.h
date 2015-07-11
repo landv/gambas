@@ -29,10 +29,18 @@
 #ifndef __GBX_C_STRING_C
 
 EXTERN GB_DESC NATIVE_String[];
+EXTERN const char STRING_char_length[];
 
 #endif
 
-int STRING_get_utf8_char_length(unsigned char c);
+#define UNICODE_INVALID 0xFFFFFFFFU
+
 bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int len);
+void STRING_utf8_from_unicode(uint code, char *sstr);
+uint STRING_utf8_to_unicode(const char *sstr, int len);
+
+#define STRING_utf8_get_char_length(_c) ((int)STRING_char_length[(unsigned char)(_c)])
+
+int COMMON_get_unicode_char();
 
 #endif

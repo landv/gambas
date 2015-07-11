@@ -45,6 +45,7 @@
 #include "gbx_math.h"
 #include "gbx_date.h"
 #include "gbx_string.h"
+#include "gbx_c_string.h"
 #include "gbx_api.h"
 #include "gb_file.h"
 #include "gbx_component.h"
@@ -77,8 +78,8 @@ LOCAL_INFO LOCAL_default = {
 	0, 0,
 	3, 3,
 	0,
-	'/', ':',
 	{ 0 },
+	'/', ':',
 	"",
 	"",
 	{ LO_MONTH, LO_DAY, LO_YEAR },
@@ -219,7 +220,6 @@ static void add_thousand_sep(int *before)
 }
 
 
-/*static char *strnadd(char *dst, char *src, int len, int *before)*/
 static void add_string(const char *src, int len, int *before)
 {
 	if (len == 0)
@@ -233,6 +233,13 @@ static void add_string(const char *src, int len, int *before)
 		if (before)
 			add_thousand_sep(before);
 	}
+}
+
+static void add_unicode(uint unicode)
+{
+	char str[8];
+	STRING_utf8_from_unicode(unicode, str);
+	add_string(str, STRING_utf8_get_char_length(*str), NULL);
 }
 
 static void add_currency(const char *sym)
@@ -458,7 +465,7 @@ static void fill_local_info(void)
 				if (!isdigit(c))
 				{
 					if (LOCAL_local.date_sep == 0)
-						LOCAL_local.date_sep = c;
+						LOCAL_local.date_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
 				}
 
 		}
@@ -501,7 +508,7 @@ static void fill_local_info(void)
 				if (!isdigit(c))
 				{
 					if (LOCAL_local.time_sep == 0)
-						LOCAL_local.time_sep = c;
+						LOCAL_local.time_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
 				}
 		}
 	}
@@ -1451,9 +1458,9 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 			if (!add_date_token(&vdate, &token, token_count))
 			{
 				if (c == '/')
-					put_char(local_current->date_sep);
+					add_unicode(local_current->date_sep);
 				else if (c == ':')
-					put_char(local_current->time_sep);
+					add_unicode(local_current->time_sep);
 				else
 					put_char(c);
 			}
@@ -1689,3 +1696,4 @@ void LOCAL_set_first_day_of_week(char day)
 	if (day >= -1 && day <= 6)
 		LOCAL_first_day_of_week = day;
 }
+

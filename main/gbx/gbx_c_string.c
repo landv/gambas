@@ -29,6 +29,7 @@
 
 #include "gb_common.h"
 #include "gb_common_case.h"
+#include "gb_common_buffer.h"
 
 #include <wctype.h>
 #include <wchar.h>
@@ -47,9 +48,7 @@
 
 //#define DEBUG_CACHE
 
-#define UNICODE_INVALID 0xFFFFFFFFU
-
-static const char _char_length[256] =
+const char STRING_char_length[256] =
 {
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -62,13 +61,6 @@ static const char _char_length[256] =
 };
 
 /***************************************************************************/
-
-#define utf8_get_char_length(_c) ((int)_char_length[(unsigned char)(_c)])
-
-int STRING_get_utf8_char_length(unsigned char c)
-{
-	return utf8_get_char_length(c);
-}
 
 static int utf8_get_length(const char *sstr, int len)
 {
@@ -87,7 +79,7 @@ static int utf8_get_length(const char *sstr, int len)
 	return ulen;
 }
 
-static uint utf8_to_unicode(const char *sstr, int len)
+uint STRING_utf8_to_unicode(const char *sstr, int len)
 {
 	const uchar *str = (const uchar *)sstr;
 	uint unicode;
@@ -97,31 +89,31 @@ static uint utf8_to_unicode(const char *sstr, int len)
 		case 2:
 			unicode = (str[1] & 0x3F) + ((str[0] & 0x1F) << 6);
 			if (unicode < 0x80)
-				goto _INVALID;
+				goto __INVALID;
 			break;
 			
 		case 3:
 			unicode = (str[2] & 0x3F) + ((str[1] & 0x3F) << 6) + ((str[0] & 0xF) << 12);
 			if (unicode < 0x800)
-				goto _INVALID;
+				goto __INVALID;
 			break;
 		
 		case 4:
 			unicode = (str[3] & 0x3F) + ((str[2] & 0x3F) << 6) + ((str[1] & 0x3F) << 12) + ((str[0] & 0x7) << 18);
 			if (unicode < 0x10000)
-				goto _INVALID;
+				goto __INVALID;
 			break;
 		
 		case 5:
 			unicode = (str[4] & 0x3F) + ((str[3] & 0x3F) << 6) + ((str[2] & 0x3F) << 12) + ((str[1] & 0x3F) << 18) + ((str[0] & 0x3) << 24);
 			if (unicode < 0x200000)
-				goto _INVALID;
+				goto __INVALID;
 			break;
 		
 		case 6:
 			unicode = (str[5] & 0x3F) + ((str[4] & 0x3F) << 6) + ((str[3] & 0x3F) << 12) + ((str[2] & 0x3F) << 18) + ((str[1] & 0x3F) << 24) + ((str[0] & 0x1) << 30);
 			if (unicode < 0x4000000)
-				goto _INVALID;
+				goto __INVALID;
 			break;
 			
 		default:
@@ -131,12 +123,12 @@ static uint utf8_to_unicode(const char *sstr, int len)
 	
 	return unicode;
 	
-_INVALID:
+__INVALID:
 
 	return UNICODE_INVALID;
 }
 
-static void utf8_from_unicode(uint code, char *sstr)
+void STRING_utf8_from_unicode(uint code, char *sstr)
 {
 	uchar *str = (uchar *)sstr;
 	
@@ -180,6 +172,21 @@ static void utf8_from_unicode(uint code, char *sstr)
 	else
 		str[0] = 0;
 }
+
+int COMMON_get_unicode_char()
+{
+	int lc;
+	uint uc;
+	
+	lc = STRING_utf8_get_char_length(*COMMON_get_current());
+	if (COMMON_pos + lc > COMMON_len)
+		return -1;
+	
+	uc = STRING_utf8_to_unicode(COMMON_get_current(), lc);
+	COMMON_pos += lc;
+	return (int)uc;
+}
+
 
 /***************************************************************************/
 
@@ -245,7 +252,7 @@ static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 			if (pos >= len)
 				return len;
 
-			pos += utf8_get_char_length(str[pos]);
+			pos += STRING_utf8_get_char_length(str[pos]);
 			_utf8.pos[++_utf8.last_pos] = pos;
 
 			if (index == _utf8.last_pos)
@@ -320,7 +327,7 @@ static int utf8_get_pos(const char *ref, const char *start, int len, int index)
 			pos = len;
 			break;
 		}
-		pos += utf8_get_char_length(str[pos]);
+		pos += STRING_utf8_get_char_length(str[pos]);
 	}
 	
 	_utf8.cindex[_utf8.cnext] = j;
@@ -336,7 +343,7 @@ __CALC_POS:
 			pos = len;
 			break;
 		}
-		pos += utf8_get_char_length(str[pos]);
+		pos += STRING_utf8_get_char_length(str[pos]);
 	}
 	
 	_utf8.lindex = index;
@@ -439,7 +446,7 @@ static void String_Mid(ushort code)
 		
 		if (length == 1)
 		{
-			ulen = utf8_get_char_length(str[ulen]);
+			ulen = STRING_utf8_get_char_length(str[ulen]);
 		}
 		else
 		{
@@ -550,8 +557,8 @@ bool STRING_convert_to_unicode(wchar_t **pwstr, int *pwlen, const char *str, int
 	
 	for (i = 0; i < wlen; i++)
 	{
-		lc = utf8_get_char_length(*str);
-		wstr[i] = (wchar_t)utf8_to_unicode(str, lc);
+		lc = STRING_utf8_get_char_length(*str);
+		wstr[i] = (wchar_t)STRING_utf8_to_unicode(str, lc);
 		if (wstr[i] == UNICODE_INVALID)
 			return TRUE;
 		str += lc;
@@ -618,7 +625,7 @@ static void convert_string(char *str, int len, bool upper)
 		while (p < pe)
 		{
 			c = *p;
-			lc = utf8_get_char_length(c);
+			lc = STRING_utf8_get_char_length(c);
 			
 			if (lc == 1)
 			{
@@ -627,11 +634,11 @@ static void convert_string(char *str, int len, bool upper)
 			}
 			else
 			{
-				wc = (wchar_t)utf8_to_unicode(p, lc);
+				wc = (wchar_t)STRING_utf8_to_unicode(p, lc);
 				wc = towupper(wc);
 				// We suppose that the conversion does not change the number of bytes!
-				utf8_from_unicode((uint)wc, p);
-				//if (utf8_get_char_length(*p) != lc)
+				STRING_utf8_from_unicode((uint)wc, p);
+				//if (STRING_utf8_get_char_length(*p) != lc)
 				//	fprintf(stderr, "convert_string: not the same number of bytes!\n");
 				p += lc;
 			}
@@ -642,7 +649,7 @@ static void convert_string(char *str, int len, bool upper)
 		while (p < pe)
 		{
 			c = *p;
-			lc = utf8_get_char_length(c);
+			lc = STRING_utf8_get_char_length(c);
 			
 			if (lc == 1)
 			{
@@ -651,11 +658,11 @@ static void convert_string(char *str, int len, bool upper)
 			}
 			else
 			{
-				wc = (wchar_t)utf8_to_unicode(p, lc);
+				wc = (wchar_t)STRING_utf8_to_unicode(p, lc);
 				wc = towlower(wc);
 				// We suppose that the conversion does not change the number of bytes!
-				utf8_from_unicode((uint)wc, p);
-				//if (utf8_get_char_length(*p) != lc)
+				STRING_utf8_from_unicode((uint)wc, p);
+				//if (STRING_utf8_get_char_length(*p) != lc)
 				//	fprintf(stderr, "convert_string: not the same number of bytes!\n");
 				p += lc;
 			}
@@ -696,7 +703,7 @@ BEGIN_METHOD(String_UCaseFirst, GB_STRING str)
 	
 	result = STRING_new_temp(str, len);
 	
-	lc = utf8_get_char_length(result[0]);
+	lc = STRING_utf8_get_char_length(result[0]);
 	
 	if (lc == 1)
 	{
@@ -704,10 +711,10 @@ BEGIN_METHOD(String_UCaseFirst, GB_STRING str)
 	}
 	else
 	{
-		wc = (wchar_t)utf8_to_unicode(result, lc);
+		wc = (wchar_t)STRING_utf8_to_unicode(result, lc);
 		wc = towupper(wc);
 		// We suppose that the conversion does not change the number of bytes!
-		utf8_from_unicode((uint)wc, result);
+		STRING_utf8_from_unicode((uint)wc, result);
 	}
 
 	GB_ReturnString(result);
@@ -719,8 +726,8 @@ BEGIN_METHOD(String_Chr, GB_INTEGER code)
 
 	char temp[8];
 
-	utf8_from_unicode(VARG(code), temp);
-	temp[utf8_get_char_length(temp[0])] = 0;
+	STRING_utf8_from_unicode(VARG(code), temp);
+	temp[STRING_utf8_get_char_length(temp[0])] = 0;
 	GB_ReturnNewZeroString(temp);
 
 END_METHOD
@@ -741,9 +748,9 @@ BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 	str = STRING(str);
 	len = LENGTH(str);
 	pos = utf8_get_pos(VARG(str).addr, str, len, index - 1);
-	lc = utf8_get_char_length(str[pos]);
+	lc = STRING_utf8_get_char_length(str[pos]);
 	
-	GB_ReturnInteger(utf8_to_unicode(&str[pos], lc));
+	GB_ReturnInteger(STRING_utf8_to_unicode(&str[pos], lc));
 	
 END_METHOD
 
@@ -832,7 +839,7 @@ BEGIN_METHOD(String_IsValid, GB_STRING str)
 	
 	while (len)
 	{
-		lc = utf8_get_char_length(*str);
+		lc = STRING_utf8_get_char_length(*str);
 		len -= lc;
 		if (len < 0)
 			goto _INVALID;
@@ -846,7 +853,7 @@ BEGIN_METHOD(String_IsValid, GB_STRING str)
 				goto _INVALID;
 		}
 		
-		unicode = utf8_to_unicode((char *)str, lc);
+		unicode = STRING_utf8_to_unicode((char *)str, lc);
 		if (unicode == UNICODE_INVALID)
 			goto _INVALID;
 		if (!IS_VALID(unicode))
