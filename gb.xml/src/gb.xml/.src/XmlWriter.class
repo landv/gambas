@@ -203,6 +203,8 @@ Public Function EndDocument() As String
     Me.EndElement()
   Wend
   $opened = False
+  Flush #$stream
+  
   Return $buffer
   
 End
