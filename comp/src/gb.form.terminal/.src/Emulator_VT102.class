@@ -1,0 +1,530 @@
+' Gambas class file
+
+'Gambas class file
+'Implementation d'un parser VT102
+
+Private Const DEL As Integer = 127
+Private Const ESC As Integer = 27
+Private $iTokeniserPos As Integer
+Private $aTokenBuffer As New Integer[256]
+Private $aModes As New Boolean[19]
+
+Private Const MAX_ARGUMENT As Integer = 4096
+
+Private Const MODE_AppScreen As Integer = 6      ' Mode #1
+Private Const MODE_AppCuKeys As Integer = 7     ' Application cursor keys(DECCKM)
+Private Const MODE_AppKeyPad As Integer = 8   '
+Private Const MODE_Mouse1000 As Integer = 9    ' Send mouse X, Y position On press And release
+Private Const MODE_Mouse1001 As Integer = 10    ' Use Hilight mouse tracking
+Private Const MODE_Mouse1002 As Integer = 11    ' Use cell motion mouse tracking
+Private Const MODE_Mouse1003 As Integer = 12    ' Use all motion mouse tracking
+Private Const MODE_Mouse1005 As Integer = 13    ' Xterm - style extended coordinates
+Private Const MODE_Mouse1006 As Integer = 14    ' 2 nd Xterm - style extended coordinates
+Private Const MODE_Mouse1015 As Integer = 15    ' Urxvt - style extended coordinates
+Private Const MODE_Ansi As Integer = 16         ' Use US Ascii For character sets G0 - G3(DECANM)
+Private Const MODE_132Columns As Integer = 17   ' 80 < - > 132 column mode switch(DECCOLM)
+Private Const MODE_Allow132Columns As Integer = 18 ' Allow DECCOLM mode
+'Private Const MODE_total(19)
+Private Arg As New Integer[15]
+Private iArg As Integer
+' Character Class flags used While decoding
+Const CTL As Integer = 1 ' Control character
+Const CHR As Integer = 2 ' Printable character
+Const CPN As Integer = 4 ' TODO: Document Me
+Const DIG As Integer = 8 ' Digit
+Const SCS As Integer = 16 ' Select Character Set
+Const GRP As Integer = 32 ' TODO: Document Me
+Const CPS As Integer = 64 ' Character which indicates End Of window resize
+Private $aCharClass As New Integer[256]
+
+Private Enum TY_CTL, TY_CHR, TY_ESC, TY_ESC_CS, TY_ESC_DE, TY_CSI_PS, TY_CSI_PE, TY_CSI_PR, TY_CSI_PG, TY_VT52
+
+' 0/8     1/9    2/10    3/11    4/12    5/13    6/14    7/15
+Private VT100Graphics As Integer[] = [
+  &H0020, &H25C6, &H2592, &H2409, &H240c, &H240d, &H240a, &H00b0,
+  &H00b1, &H2424, &H240b, &H2518, &H2510, &H250c, &H2514, &H253c,
+  &HF800, &HF801, &H2500, &HF803, &HF804, &H251c, &H2524, &H2534,
+  &H252c, &H2502, &H2264, &H2265, &H03C0, &H2260, &H00A3, &H00b7]
+
+Private _CurrentScreen As CScreen
+
+
+Public Sub _new()
+  
+  $aModes[MODE_Ansi] = True
+  Initialize
+  
+End
+
+Private Sub Initialize()
+  
+  Dim i As Integer
+  Dim s As String
+  Dim aByte As New Byte[]
+  
+  For i = 0 To 31
+    $aCharClass[i] = $aCharClass[i] Or CTL 
+  Next
+  
+  For i = 32 To 255
+    $aCharClass[i] = $aCharClass[i] Or CHR
+  Next
+  
+  For Each i In aByte.FromString("@ABCDGHILMPSTXZcdfry")
+    'i = Asc(s)
+    $aCharClass[i] = $aCharClass[i] Or CPN
+  Next
+  $aCharClass[Asc("t")] = $aCharClass[i] Or CPS
+  
+  For Each i In aByte.FromString("0123456789")
+    'i = Asc(s)
+    $aCharClass[i] = $aCharClass[i] Or DIG
+  Next
+  
+  For Each i In aByte.FromString("()+*%")
+    'i = Asc(s)
+    $aCharClass[i] = $aCharClass[i] Or SCS
+  Next
+  
+  For Each i In aByte.FromString("()+*#[]%")
+    'i = Asc(s)
+    $aCharClass[i] = $aCharClass[i] Or GRP
+  Next
+  
+  ResetTokenizer
+  
+End
+
+Public Sub ReceiveData(sData As String)
+  
+  Dim i As Integer
+  
+  sData = Conv(sData, System.Charset, "utf-8")
+  
+  For i = 1 To String.Len(sData)
+    ReceiveChar(String.Code(sData, i))
+  Next
+  
+End
+
+Public Sub ReceiveChar(iChar As Integer)
+  
+  Dim i As Integer
+  Dim s As String = String.Chr(iCHar)
+  
+  If iChar = DEL Then Return
+  If iChar < 256 And If ($aCharClass[iChar] And CTL) = CTL And If Not (($iTokeniserPos >= 2 And $aTokenBuffer[1] = Asc("]")) And iChar = 7) Then
+    If iChar = (Asc("X") - Asc("@")) Or iChar = (Asc("Z") - Asc("@")) Or iChar = ESC Then ResetTokenizer
+    If iChar <> ESC Then
+      ProcessToken(TY_CTL, iChar + Asc("@"), 0, 0, 0)
+      Return
+    Endif
+    
+  Endif
+  'If iChar as integer = ESC Then Print iChar
+  AddToTokeniser(iChar)
+  If $aModes[MODE_Ansi] Then
+    
+    If $iTokeniserPos = 1 And $aTokenBuffer[0] = ESC Then Return
+    If $iTokeniserPos = 1 And $aTokenBuffer[0] = ESC + 128 Then 
+      $aTokenBuffer[0] = ESC
+      ReceiveChar(Asc("["))
+      Return
+    Endif
+    
+    If $iTokeniserPos = 2 And If $aTokenBuffer[1] < 256 And If ($aCharClass[iChar] And GRP) = GRP Then Return
+    
+    If $iTokeniserPos = 3 And If $aTokenBuffer[2] = Asc("?") Then Return
+    If $iTokeniserPos = 3 And If $aTokenBuffer[2] = Asc(">") Then Return
+    If $iTokeniserPos = 3 And If $aTokenBuffer[2] = Asc("!") Then Return
+    
+    If $iTokeniserPos = 1 And iChar >= 32 Then
+      ProcessToken(TY_CHR, 0, 0, ApplyCharset(iChar), 0)
+      ResetTokenizer
+      Return
+    Endif
+    If $iTokeniserPos = 1 And $aTokenBuffer[0] = ESC Then
+      ProcessToken(TY_ESC, $iTokeniserPos[1], 0, 0, 0)
+      ResetTokenizer
+      Return
+    Endif
+    If $iTokeniserPos = 3 And If $aTokenBuffer[1] < 256 And If ($aCharClass[iChar] And SCS) = SCS Then
+      ProcessToken(TY_ESC_CS, $aTokenBuffer[1], $aTokenBuffer[2], 0, 0)
+      ResetTokenizer
+      Return
+    Endif
+    If $iTokeniserPos = 3 And If $aTokenBuffer[1] = Asc("#") Then
+      ProcessToken(TY_ESC_DE, $aTokenBuffer[2], 0, 0, 0)
+      ResetTokenizer
+      Return
+    Endif
+    
+    'resize = \e[8;<row>;<col>t
+    If $iTokeniserPos >= 3 Then
+      If $aTokenBuffer[2] <> Asc("?") And If $aTokenBuffer[2] <> Asc("!") And If $aTokenBuffer[2] <> Asc(">") Then
+        If iChar < 256 And If ($aCharClass[iChar] And CPS) = CPS Then
+          ProcessToken(TY_CSI_PS, iChar, Arg[0], Arg[1], Arg[2])
+          ResetTokenizer
+          Return
+        Endif
+      Endif
+    Endif
+    
+    If $iTokeniserPos >= 3 And If $aTokenBuffer[2] = Asc("!") Then
+      ProcessToken(TY_CSI_PE, iChar, 0, 0, 0)
+      ResetTokenizer
+      Return
+    Endif
+    
+    'Un chiffre est reconnu
+    If $iTokeniserPos >= 3 And If iChar < 256 And If ($aCharClass[iChar] And DIG) = DIG Then 
+      AddDigit(iChar - Asc("0"))
+      Return
+    Endif
+    
+    'Detection du séparateur ";"
+    If $iTokeniserPos >= 3 And If iChar = Asc(";") Then
+      AddArgument()
+      Return
+    Endif
+    
+    For i = 0 To iArg - 1
+      
+      If $iTokeniserPos >= 3 And If $aTokenBuffer[2] = Asc("?") Then
+        ProcessToken(TY_CSI_PR, iChar, Arg[i], 0, 0)
+      Else 
+        If $iTokeniserPos >= 3 And If $aTokenBuffer[2] = Asc(">") Then
+          ProcessToken(TY_CSI_PG, iChar, 0, 0, 0)
+        Else 
+          If iChar = Asc("m") And Arg.Count - i >= 4 And (Arg[i] = 38 Or Arg[i] = 48) And Arg[i + 1] = 2 Then
+            i += 2
+            ProcessToken(TY_CSI_PS, iChar, Arg[i - 2], Colors.COLOR_SPACE_RGB, (Lsl(Arg[i], 16) Or (Lsl(Arg[i + 1], 8) Or Arg[i + 2])))
+            i += 2
+          Else
+            If iChar = Asc("m") And Arg.Count >= 2 And (Arg[i] = 38 Or Arg[i] = 48) And Arg[i + 1] = 5 Then
+              i += 2
+              ProcessToken(TY_CSI_PS, iChar, Arg[i - 2], Colors.COLOR_SPACE_256, Arg[i])
+            Else
+              ProcessToken(TY_CSI_PS, iChar, Arg[i], 0, 0)
+            Endif
+            
+          Endif
+        Endif
+      Endif
+    Next
+    ResetTokenizer
+  Else
+    'VT52 Mode
+    If $iTokeniserPos = 1 And If $aTokenBuffer[0] = ESC Then
+      Return
+    Endif
+    If $iTokeniserPos = 1 And If $aTokenBuffer[0] < 256 And If ($aCharClass[$aTokenBuffer[0]] And CHR) = CHR Then
+      ProcessToken(TY_CHR, 0, 0, $aTokenBuffer[0], 0)
+      ResetTokenizer
+      Return
+    Endif
+    If $iTokeniserPos = 2 And If $aTokenBuffer[1] = Asc("Y") Then
+      Return
+    Endif
+    If $iTokeniserPos = 3 And If $aTokenBuffer[1] = Asc("Y") Then
+      Return
+    Endif
+    If $iTokeniserPos < 4 Then
+      ProcessToken(TY_VT52, $aTokenBuffer[1], 0, 0, 0)
+      ResetTokenizer
+      Return
+    Endif
+    ProcessToken(TY_VT52, $aTokenBuffer[1], 0, $aTokenBuffer[2], $aTokenBuffer[3])
+    ResetTokenizer
+    Return
+    
+  Endif
+  
+End
+
+Private Function ApplyCharset(c As Integer) As Integer
+  
+  Return c
+  
+End
+
+Private Sub ResetTokenizer()
+  
+  Dim iArg As Integer
+  
+  iArg = 0
+  Arg[0] = 0
+  Arg[1] = 0
+  $iTokeniserPos = 0
+  '$aTokenBuffer.Clear
+  
+End
+
+Public Sub AddToTokeniser(iChar As Integer)
+  
+  $aTokenBuffer[$iTokeniserPos] = iChar
+  $iTokeniserPos = Min($iTokeniserPos + 1, 255)
+  
+End
+
+Private Sub GetMode(iMode As Integer) As Boolean
+  
+  Return $aModes[iMode]
+  
+End
+
+Private Sub ProcessToken(bType As Byte, ySub As Short, ysub2 As Short, Arg1 As Integer, Arg2 As Integer)
+  
+  Select Case bType
+      
+    Case TY_CHR
+     'Try _CurrentScreen.DisplayCharacter(Arg1)
+      Print String.Chr(Arg1);
+    Case TY_CTL
+      Select Case Chr(ySub)
+          
+        Case "@"
+        Case "A"
+        Case "B"
+        Case "C"
+        Case "D"
+        Case "E"
+        Case "F"
+        Case "G"
+        Case "H"
+        Case "I"
+        Case "J"
+        Case "K"
+        Case "L"
+        Case "M"
+        Case "N"
+        Case "O"
+        Case "P"
+        Case "Q"
+        Case "R"
+        Case "S"
+        Case "T"
+        Case "U"
+        Case "V"
+        Case "W"
+        Case "X"
+        Case "Y"
+        Case "Z"
+        Case "["
+        Case "\\"
+        Case "]"
+        Case "^"
+        Case "_"
+          
+      End Select
+      
+      'Print "TY_CTL"
+    Case TY_ESC
+      Select Case Chr(ySub)
+        Case "D"
+        Case "E"
+        Case "H"
+        Case "M"
+        Case "Z"
+        Case "c"
+        Case "n"
+        Case "o"
+        Case "7"
+        Case "8"
+        Case "="
+        Case ">"
+        Case "<"
+      End Select
+      'Print "TY_ESC"
+    Case TY_ESC_CS
+      Select Case Chr(ySub)
+        Case "("
+          Select Case Chr(ysub2)
+            Case "0"
+            Case "A"
+            Case "B"
+          End Select
+        Case ")"
+          Select Case Chr(ySUb2)
+            Case "0"
+            Case "A"
+            Case "B"
+          End Select
+        Case "*"
+          Select Case Chr(ySUb2)
+            Case "0"
+            Case "A"
+            Case "B"
+          End Select
+        Case "+"
+          Select Case Chr(ySUb2)
+            Case "0"
+            Case "A"
+            Case "B"
+          End Select
+        Case "%"
+          Select Case Chr(ySUb2)
+            Case "G"
+            Case "@"
+              
+          End Select
+      End Select
+      'Print "TY_ESC_CS"
+    Case TY_ESC_DE
+      'Print "TY_ESC_DE"
+      Select Case Chr(ySub)
+        Case "3"
+        Case "4"
+        Case "5"
+        Case "6"
+        Case "8"
+      End Select
+    Case TY_CSI_PS
+      'Print "TY_CSI_PS"
+      Select Case Chr(ySub)
+        Case "t"
+          Select Case ysub2
+              Case 8
+              Case 28 
+          End Select
+        Case "K"
+          Select Case ySUb2
+              Case 0
+              Case 1
+              Case 2
+              
+          End Select
+        Case "J"
+          Select Case ySub2
+              Case 0
+              Case 1
+              Case 2
+              Case 3
+          End Select
+        Case "g"
+          Select Case ySub2
+              Case 0
+              Case 3
+          End Select
+        Case "h"
+          Select Case ySub2
+              Case 4
+              Case 20
+          End Select
+        Case "i"
+          Select Case ySub2
+              Case 0
+          End Select
+        Case "l"
+          Select Case ySub2
+              Case 4
+              Case 20
+          End Select
+        Case "s"
+          Select Case ySub2
+              Case 0
+          End Select
+        Case "u"
+          Select Case ySub2
+              Case 0
+          End Select
+        Case "m"
+          Select Case ySub2
+              Case 0
+              Case 1
+              Case 3
+              Case 4
+              Case 5
+              Case 7
+              Case 10
+              Case 11
+              Case 12
+              Case 22
+              Case 23
+              Case 24
+              Case 25
+              Case 27
+              Case 30
+              Case 31
+              Case 32
+              Case 33
+              Case 34
+              Case 35
+              Case 36
+              Case 37
+              Case 38
+              Case 39
+              Case 40
+              Case 41
+              Case 42
+              Case 43
+              Case 44
+              Case 45
+              Case 46
+              Case 47
+              Case 48
+              Case 49
+              Case 90
+              Case 91
+              Case 92
+              Case 93
+              Case 94
+              Case 95
+              Case 96
+              Case 97
+              Case 100
+              Case 101
+              Case 102
+              Case 103
+              Case 104
+              Case 105
+              Case 106
+              Case 107
+              
+          End Select
+        Case "n"
+          Select Case ySub2
+              Case 5
+              Case 6
+              
+          End Select
+        Case "q"
+          Select Case ySub2
+              Case 1
+              Case 2
+              Case 3
+              Case 4
+          End Select
+        Case "x"
+          Select Case ySub2
+              Case 0
+              Case 1
+          End Select
+      End Select
+    Case TY_CSI_PE
+      'Print "TY_CSI_PE"
+    Case TY_CSI_PR
+      'Print "TY_CSI_PR"
+    Case TY_CSI_PG
+      'Print "TY_CSI_PG"
+    Case TY_VT52
+      'Print "TY_VT52"
+      
+  End Select
+  
+End
+
+Private Sub AddDigit(iDigit As Integer)
+  
+  If Arg[iArg] < 15 Then
+    Arg[Arg.Max] = 10 * Arg[Arg.Max] + iDigit
+  Endif
+  
+End
+
+Private Sub AddArgument()
+  
+  iArg = Min(iArg + 1, 14)
+  Arg[iArg] = 0
+  
+End

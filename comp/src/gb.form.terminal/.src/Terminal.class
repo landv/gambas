@@ -1,0 +1,13 @@
+' Gambas class file
+
+'C'est la classe maitresse qui fournit les flux a l'emulateur
+
+Private Proc As Process
+Private sFile As String
+Static Public Sub Main()
+Dim hEmulator As New Emulator_VT102
+
+hEmulator.ReceiveData(File.Load("Text1"))
+
+
+End
