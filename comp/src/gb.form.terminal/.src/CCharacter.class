@@ -2,3 +2,89 @@
 
 'Classe representant un caractere affiche avec toutes les caracteristique
 ' de couleur ou de representation
+
+Const LINE_DEFAULT As Integer = 0
+Const LINE_WRAPPED As Integer = 1
+Const LINE_DOUBLEWIDTH As Integer = 2
+Const LINE_DOUBLEHEIGHT As Integer = 4
+
+Const DEFAULT_RENDITION As Integer = 0
+Const RE_BOLD As Integer = 1
+Const RE_BLINK As Integer = 2
+Const RE_UNDERLINE As Integer = 4
+Const RE_REVERSE As Integer = 8
+Const RE_INTENSIVE As Integer = 8
+Const RE_ITALIC As Integer = 16
+Const RE_CURSOR As Integer = 32
+Const RE_EXTENDED_CHAR As Integer = 64
+
+Public Character As Integer
+Public Rendition As Integer
+Public ForeGroundColor As Colors
+Public BackGroundColor As Colors
+Public IsRealCharacter As Boolean
+
+' Unicode character In the range Of U + 2500 ~ U+257F are known as line
+' characters, Or box - drawing characters.Currently, konsole draws those
+' characters itself, instead Of using the glyph provided by the font.
+' Unfortunately, some Line characters can 't be simulated by the existing 5x5
+' pixel matrix.Typical examples are ╳(U+2573) and ╰(U+2570). So those
+' unsupported Line characters should be drawn In the normal way.
+
+Public Function IsSupportedLineChar(CodePoint As Integer) As Boolean
+  
+  Dim Index As Integer
+
+  If (CodePoint And &HFF80) <> &H2500 Then Return False
+  Index = (CodePoint & &H007F)
+  If (index >= &H04 And index <= &H4F) Or 
+      (Index >= &H4C And index <= &H4F) Or
+      (Index >= &H6D And index <= &H73) Then
+    Return False
+  Else
+    Return True
+  Endif
+  
+End
+
+' A single character In the terminal which consists Of a unicode character
+' value, foreground And background colors And a set Of rendition attributes
+' which specify how it should be drawn.
+
+Public Sub _new(Optional iChar As Integer, hFC As Colors = Colors(Colors.COLOR_SPACE_DEFAULT, Colors.DEFAULT_FORE_COLOR), hFB As Colors = Colors(Colors.COLOR_SPACE_DEFAULT, Color.DEFAULT_BACK_COLOR), iR As Integer = DEFAULT_RENDITION, bReal As Boolean = True)
+  
+Character = iChar
+ Rendition = iR
+ ForeGroundColor = hFC
+ BackGroundColor = hFB
+ IsRealCharacter = bReal
+  
+End
+
+
+Public Function Compare(b As CCharacter) As Boolean
+  
+  Return Me.Character = b.Character And EqualFormat(b)
+  
+End
+
+Public Function EqualFormat(b As CCharacter) As Boolean
+  
+  Return BackGroundColor.Compare(b.BackGroundColor) And
+  ForeGroundColor.Compare(b.ForeGroundColor) And
+  Rendition = b.Rendition
+  
+End
+
+Public Function FontWeight(base As ColorEntry[]) As Integer
+  
+  If ForeGroundColor._ColorSpace = Colors.COLOR_SPACE_DEFAULT Then
+    Return base[ForeGroundColor._u + 0 + IIf(ForeGroundColor._v, Colors.BASE_COLORS, 0)].FontWeight
+  Else If ForeGroundColor._ColorSpace = Colors.COLOR_SPACE_SYSTEM Then
+    Return base[ForeGroundColor._u + 2 + IIf(ForeGroundColor._v, colors.BASE_COLORS, 0)].fontWeight
+  Else
+    Return ColorEntry.UseCurrentFormat
+  Endif
+  
+End
+
