@@ -27,15 +27,15 @@
 
 char COMMON_buffer[256];
 int COMMON_pos;
+int COMMON_len;
 
 static char *common_buffer;
-static int common_len;
 static int common_last;
 
 void COMMON_buffer_init(char *str, int len)
 {
   common_buffer = str;
-  common_len = len;
+  COMMON_len = len;
   COMMON_pos = 0;
   common_last = (-1);
 }
@@ -43,7 +43,7 @@ void COMMON_buffer_init(char *str, int len)
 
 int COMMON_look_char(void)
 {
-  if (COMMON_pos >= common_len)
+  if (COMMON_pos >= COMMON_len)
     return (-1);
 
   return (unsigned char)(common_buffer[COMMON_pos]);
@@ -52,7 +52,7 @@ int COMMON_look_char(void)
 
 int COMMON_get_char(void)
 {
-  if (COMMON_pos >= common_len)
+  if (COMMON_pos >= COMMON_len)
     common_last = (-1);
   else
     common_last = (unsigned char)(common_buffer[COMMON_pos++]);
@@ -69,7 +69,7 @@ int COMMON_last_char(void)
 
 int COMMON_put_char(char c)
 {
-  if (COMMON_pos >= common_len)
+  if (COMMON_pos >= COMMON_len)
     return (-1);
 
   common_buffer[COMMON_pos++] = c;
@@ -99,7 +99,7 @@ char *COMMON_get_current(void)
 
 int COMMON_get_size_left(void)
 {
-  return common_len - COMMON_pos;
+  return COMMON_len - COMMON_pos;
 }
 
 

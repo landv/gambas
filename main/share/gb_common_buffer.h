@@ -28,6 +28,7 @@
 
 #ifndef __COMMON_BUFFER_C
 EXTERN int COMMON_pos;
+EXTERN int COMMON_len;
 EXTERN char COMMON_buffer[];
 #endif
 
