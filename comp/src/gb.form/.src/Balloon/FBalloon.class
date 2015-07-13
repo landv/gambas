@@ -70,6 +70,7 @@ End
 Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
   Dim hImage As Image
+  Dim DX, DY, DW, DH As Integer 'Current screen's dimensions
   Dim SX, SY, CX, CY As Integer
   Dim X, Y, X1, Y1, X2, Y2, X3, Y3, Y4 As Integer
   Dim hWin As Window
@@ -98,11 +99,19 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   CX = hWin.ScreenX + hWin.W \ 2
   CY = hWin.ScreenY + hWin.H \ 2
   
+  With Screens[hWin.Screen]
+    DX = .X
+    DY = .Y
+    DH = .H
+    DW = .W
+  End With
+  
+  
   'DEBUG "CX =";; CX;; "CY =";; CY
-'   IF SX < (Desktop.W \ 2) THEN 
+'   IF SX < (DW \ 2) THEN 
 '     X = Max(0, SX - ME.W \ 2 - 32)
 '   ELSE 
-'     X = Min(Desktop.W - ME.W, SX - ME.W \ 2 + 32)
+'     X = Min(DW - ME.W, SX - ME.W \ 2 + 32)
 '   ENDIF
 ' 
   If W <= 0 Then 
@@ -116,15 +125,15 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     X = SX - W \ 2 + ARROW_HEIGHT
   Endif
 
-  'X = Desktop.X + Max(4, Min(Desktop.W - W - 4, X))
-  X = Min(X, Desktop.X + Desktop.W - W - 4)
-  X = Max(X, Desktop.X)
-
-  'IF SY < (Desktop.H \ 2) THEN 
+  'X = DX + Max(4, Min(DW - W - 4, X))
+  X = Min(X, DX + DW - W - 4)
+  X = Max(X, DX)
+  
+  'IF SY < (DH \ 2) THEN 
   
   'DEBUG SY;; CY;; ME.H
   
-  If (SY >= CY And SY < (Desktop.Y + Desktop.Height - H)) Or SY < (Desktop.Y + H) Then 
+  If (SY >= CY And SY < (DY + DH - H)) Or SY < (DY + H) Then 
     Y1 = 1
     'Y4 = ARROW_HEIGHT
     Y2 = ARROW_HEIGHT + 1
@@ -140,9 +149,9 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
   Y3 = Y2
   
-  'Y = Desktop.Y + Max(4, Min(Desktop.H - H - 4, Y))
-  Y = Min(Y, Desktop.Y + Desktop.H - H - 4)
-  Y = Max(Y, Desktop.Y)
+  'Y = DY + Max(4, Min(DH - H - 4, Y))
+  Y = Min(Y, DY + DH - H - 4)
+  Y = Max(Y, DY)
   
   'Debug "X =";; X;; "Y =";; Y;; "W =";; W;; "H =";; H
 
