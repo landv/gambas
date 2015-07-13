@@ -60,3 +60,52 @@ End
 '   Print
 '   
 ' End
+
+Static Public Sub Distance(String1 As String, String2 As String) As Integer
+  
+  Dim L1 As Integer = String.Len(String1)
+  Dim L2 As Integer = String.Len(String2)
+  Dim D As New Integer[L1 + 1, L2 + 1]
+  Dim I, J, C As Integer
+  Dim C1, C1M, C2, C2M As String
+  
+  For I = 0 To L1
+    D[I, 0] = I
+  Next
+  
+  For J = 0 To L2
+    D[0, J] = J
+  Next
+  
+  For I = 1 To L1
+    
+    C1M = C1
+    C1 = String.Mid$(String1, I, 1)
+    
+    C2 = ""
+    
+    For J = 1 To L2
+      
+      C2M = C2
+      C2 = String.Mid$(String2, J, 1)
+      
+      If C1 = C2 Then
+        C = 0
+      Else
+        C = 1
+      Endif
+      
+      D[I, J] = Min(Min(D[I - 1, J] + 1, D[I, J - 1] + 1), D[I - 1, J - 1] + C)
+      
+      If I > 1 And If J > 1 Then
+        If C1 = C2M And If C1M = C2 Then
+          D[I, J] = Min(D[I, J], D[I - 2, J - 2] + C)
+        Endif
+      Endif
+      
+    Next
+  Next
+  
+  Return D[L1, L2]
+  
+End
