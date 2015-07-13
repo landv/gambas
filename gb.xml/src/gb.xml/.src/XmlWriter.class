@@ -6,110 +6,78 @@ Property Read Data As String
 Property Read DTD As _XmlWriterDTD
 Property OutputStream As Stream
 
-Private $buffer As String
-Private $stream As Stream
-Private $indent As Boolean
-Private $TagEnded As Boolean = True
-Private $encoding As String = "UTF-8"
+Private $stream As Stream ''The stream the XmlWriter is currently writing into
+Private $indent As Boolean ''If the XmlWriter must indent its output
+Private $sData As String ''The data of the recently closed stream buffer
 
-Private $opened As Boolean = False
-Private $lastWasElement As Boolean = False
+'Internal state
+Private $lastWasBlock As Boolean = False '' If the last instruction was a block, then the current must write a line break before
+Private $bTagOpen As Boolean = False ''If a tag is currently open
+Private $bStringStream As Boolean ''If we are working on our own internal string stream
+Private $aElementsPile As New String[] ''The pile of all the currently open elements
 
-Private PileElements As New String[]
-
-Public Sub Open(Optional fileName As String, Optional Indent As Boolean, Optional Encoding As String)
+Public Sub Open(Optional fileName As String, Optional Indent As Boolean = $indent, Optional Encoding As String = "UTF-8")
   
   If fileName Then
     If Left(fileName) <> "/" Then fileName = ".." &/ fileName
     $stream = Open fileName For Output Create
+  Else If Not $stream
+    $stream = Open String For Write
+    $bStringStream = True
   Endif
   
   $indent = Indent
   
-  $opened = True
-  
-  If Encoding Then $encoding = Encoding
-  
-  Write("<?xml version=\"1.0\" encoding=\"" & $encoding & "\"?>\n")
-  
-End
-
-Private Sub Write(Data As String, Optional IgnoreIndent As Boolean, Optional LineBreak As Boolean = False)
-  
-  If Not $opened Then Error.Raise("Document not opened")
-  LineBreak = LineBreak And $indent
-  If $indent And Not IgnoreIndent Then Data = String$(PileElements.Count, " ") & Data
-  If LineBreak Then Data &= "\n"
-  If $stream Then
-    Write #$stream, Data
-  Else
-    $buffer &= Data
-  Endif
+  Print #$stream, "<?xml version=\"1.0\" encoding=\""; Encoding; "\"?>"
   
 End
 
 Public Sub Flush()
   
-  If Not $stream Then Return
-  Write #$stream, $buffer
-  $buffer = ""
+  CheckStream()
+  Flush #$stream
   
 End
 
 Public Sub Element(TagName As String, Optional Value As String, Optional Prefix As String, Optional URI As String)
   
-  Dim Xmlns, sData As String
-  If URI Then
-    Xmlns = " xmlns"
-    If Prefix Then Xmlns &= ":" & Prefix
-    Xmlns &= "=\"" & URI & "\""
-  Endif
+  PrintIndent()
+  
   If Prefix Then TagName = Prefix & ":" & TagName
-  If Not $TagEnded Then 
-    Write(">" & If($indent, "\n", ""), True)
-    $TagEnded = True
-  Endif
-  sData = "<" & TagName & Xmlns
+  Print #$stream, "<"; TagName; 
+  
+  If URI Then PrintXmlNsAttribute(Prefix, URI)
+  
   If Value Then
-    sData &= ">" & Value & "</" & TagName & "> "
+    Print #$stream, ">"; Value; "</"; TagName; "> ";
   Else
-    sData &= " />"
+    Print #$stream, " />";
   Endif
-  Write(sData,, True)
   
 End
 
 Public Sub StartElement(TagName As String, Optional Attributes As String[], Optional Prefix As String, Optional URI As String)
   
-  Dim Xmlns, sData As String
   Dim i As Integer = 0
-  If URI Then
-    Xmlns = " xmlns"
-    If Prefix Then Xmlns &= ":" & Prefix
-    Xmlns &= "=\"" & URI & "\""
-  Endif
+  
+  PrintIndent()
+  
   If Prefix Then TagName = Prefix & ":" & TagName
   
-  sData = "<" & TagName
+  Print #$stream, "<" & TagName;
+  
+  If URI Then PrintXmlNsAttribute(Prefix, URI)
   
   If Attributes
     If (Attributes.Count Mod 2) Then Attributes.Push("")
     For i = 0 To Attributes.Max Step 2
-      sData &= " " & Attributes[i] & "=\"" & Attributes[i + 1] & "\""
+      Print #$stream, " "; Attributes[i]; "=\""; Attributes[i + 1]; "\"";
     Next
   Endif
   
-  sData &= Xmlns
-  
-  If Not $TagEnded Then 'On ferme le tag précédent
-    Write(">" & If($indent, "\n", ""), True)
-  Endif
-  
-  $TagEnded = False
-  
-  Write(sData)
-  
-  PileElements.Push(TagName)
+  $bTagOpen = True
+  $lastWasBlock = True
+  $aElementsPile.Push(TagName)
   
 End
 
@@ -117,102 +85,137 @@ Public Sub EndElement()
   
   Dim tag As String
   
-  If Not PileElements.Count Then Return
+  If Not $aElementsPile.Count Then Return
   
-  tag = PileElements.Pop()
+  tag = $aElementsPile.Pop()
   
-  If Not $TagEnded Then 'On ferme le tag précédent
-    Write(" />" & If($indent, "\n", ""), True) 'Pas de contenu
-    $TagEnded = True
+  If $bTagOpen Then 'On ferme le tag précédent
+    Print #$stream, " />";
+    $bTagOpen = False
   Else
-    Write("</" & tag & ">" & If($indent, "\n", ""), Not $lastWasElement)
+    If $lastWasBlock Then PrintIndent()
+    Print #$stream, "</"; tag; ">";
   Endif
   
-  $lastWasElement = True
+  $lastWasBlock = True
   
 End
 
 Public Sub Attribute(Name As String, Value As String, Optional Prefix As String, Optional URI As String)
   
   Dim sData As String 
-  
+  If Not $bTagOpen Then Error.Raise("Writing attribute with no open tag")
   If Prefix Then 
     Name = Prefix & ":" & Name
   Endif
   
   sData = " " & Name & "=\"" & XmlElement.NormalizeAttributeContent(Value) & "\""
   
-  If URI Then sData &= " xmlns" & If(Prefix, ":" & Prefix, "") & "=\"" & URI & "\""
+  If URI Then PrintXmlNsAttribute(Prefix, URI)
   
-  Write(sData, True)
-  
-End
-
-Public Sub Comment(sComment As String)
-  
-  
-  If Not $TagEnded Then 
-    Write(">" & If($indent, "\n", ""), True)
-    $TagEnded = True
-  Endif
-  Write("<!--" & sComment & "-->",, True)
-  
-  $lastWasElement = False
+  Print #$stream, sData;
   
 End
 
 Public Sub Text(sText As String)
   
+  CloseTags()
+  Print #$stream, XmlNode.Serialize(sText);
   
-  If Not $TagEnded Then 
-    Write(">", True)
-    $TagEnded = True
-  Endif
-  Write(XmlNode.Serialize(sText), True)
-  $lastWasElement = False
+  $lastWasBlock = False
+  
+End
+
+Public Sub Comment(sComment As String)
+  
+  PrintIndent()
+  Print #$stream, "<!--"; sComment; "-->";
+  
+  $lastWasBlock = True
   
 End
 
 Public Sub CDATA(data As String)
   
-  If Not $TagEnded Then 
-    Write(">" & If($indent, "\n", ""), True)
-    $TagEnded = True
-  Endif
-  Write("<![CDATA[" & data & "]]>", True)
+  PrintIndent()
+  Print #$stream, "<![CDATA["; data; "]]>";
   
-  $lastWasElement = False
+  $lastWasBlock = True
 End
 
 Public Sub PI(Target As String, Content As String)
   
-  If Not $TagEnded Then 
-    Write(">" & If($indent, "\n", ""), True)
-    $TagEnded = True
-  Endif
-  Write("<?" & Target & " " & Content & "?>", True, True)
+  PrintIndent()
+  Print #$stream, "<?"; Target; " "; Content; "?>";
   
-  $lastWasElement = True
+  $lastWasBlock = True
 End
-
-
 
 Public Function EndDocument() As String
   
-  While PileElements.Count
+  CheckStream()
+  
+  While $aElementsPile.Count
     Me.EndElement()
   Wend
-  $opened = False
-  Flush #$stream
   
-  Return $buffer
+  Try Flush #$stream
+  
+  If $bStringStream Then 
+    $sData = Null
+    Try $sData = Close $stream
+    Return $sData
+  Endif
   
 End
 
+Public Sub Close() As String
+  
+  EndDocument()
+  If Not $bStringStream Then Close $stream
+  Return $sData
+  
+End
+
+'Utils
+
+Private Sub CheckStream()
+  
+  If Not $stream Then Error.Raise("No output stream") 
+  
+End
+
+Private Sub CloseTags()
+  
+  CheckStream()
+  If $bTagOpen Then 
+    Print #$stream, ">";
+    $bTagOpen = False
+  Endif
+  
+End
+
+Private Sub PrintIndent()
+  
+  CloseTags()
+  If $indent Then 
+    If $lastWasBlock Then Print #$stream
+    Print #$stream, String$($aElementsPile.Count, " ");
+  Endif
+  
+End
+
+Private Sub PrintXmlNsAttribute(Prefix As String, URI As String)
+  
+  Print #$stream, " xmlns"; If(Prefix, ":" & Prefix, ""); "=\""; URI; "\"";
+  
+End
+
+'Properties
 
 Private Function Data_Read() As String
 
-  Return $buffer
+  Return $sData
 
 End
 
@@ -224,6 +227,7 @@ End
 
 Private Sub OutputStream_Write(Value As Stream)
 
+  $bStringStream = $bStringStream And $stream = Value 
   $stream = Value
 
 End

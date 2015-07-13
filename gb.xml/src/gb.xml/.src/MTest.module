@@ -5,9 +5,7 @@ Public Sub Main()
 Dim writer As New XmlWriter
 
   
-writer.Open("", True)
-
-
+writer.Open("text.xml", True)
 writer.StartElement("toto")
 writer.StartElement("titi")
 writer.Attribute("titi", "tutu\ntoto")
@@ -16,17 +14,21 @@ writer.EndElement()
 writer.StartElement("titi")
 writer.Text("hello")
 writer.EndElement()
-writer.Element("toto", "hello")
+writer.Element("toto", "hello", "np", "http://np.org")
+writer.StartElement("foo", ["fizz", "buzz"], "tx", "http://example.com/tx.xml")
 writer.StartElement("titi")
 writer.Text("hello")
 writer.EndElement()
 writer.Element("toto", "hello")
+writer.Comment("Hidden")
+writer.CDATA("Raw Data")
+writer.PI("hello", "worldl")
 writer.StartElement("titi")
 writer.Text("hello")
-writer.EndElement()
 
-writer.EndDocument()
-
+Print "======"
+Print writer.Close()
+Print "======"
 Print writer.Data
 
 End
