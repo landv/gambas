@@ -2339,6 +2339,7 @@ End
 Private Sub GetPackagePrefix(sVendor As String, bPrefix As Boolean) As String
 
   Dim sText As String
+  Dim sPackage As String
   
   sVendor = String.LCase(Trim(sVendor))
   sVendor = Replace(sVendor, "-", "_")
@@ -2346,7 +2347,8 @@ Private Sub GetPackagePrefix(sVendor As String, bPrefix As Boolean) As String
   If Project.Type = Project.TYPE_COMPONENT Then
 
     If Not sVendor Then sVendor = "gb"
-    If GetPackageName() Begins sVendor & "." Then 
+    sPackage = GetPackageName()
+    If sPackage Begins sVendor & "-" Or If sPackage = sVendor Then 
       sVendor = ""
     Else 
       sVendor &= "-"

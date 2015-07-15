@@ -99,17 +99,19 @@ Public Sub Form_Open()
   'InitSystemControls
   InitSystems
 
+  If Project.Type = Project.TYPE_COMPONENT Then
+    txtVendor.Text = Split(Project.Name, ".")[0]
+    txtVendor.Enabled = False
+    chkPrefix.Value = True
+    chkPrefix.Enabled = False
+  Endif 
+
   UpdatePackageName
 
   cmbCategories.List = Split(File.Load("install/categories"), "\n", "", True)
 
   txtLicense.List = ["General Public License", "Freeware", "Public Domain", "Lesser General Public License", "Other License(s)", "Non-Free License"]
   
-  If Project.Type = Project.TYPE_COMPONENT Then 
-    chkPrefix.Value = True
-    chkPrefix.Enabled = False
-  Endif 
-
   chkCreateDir.Value = Project.CreateEachDirectory
 
   tvwDep.Columns.Count = 3
@@ -282,6 +284,17 @@ Public Sub wizInstall_BeforeChange()
   Select Case wizInstall.Index
 
     Case 0
+      
+      If Project.Type = Project.TYPE_COMPONENT Then
+        
+        If InStr(Project.Name, ".") = 0 Then
+          Message.Warning(("The project name must be prefixed by the vendor name followed by a dot:") & " <tt>&lt;vendor&gt;." & Project.Name & "</tt>\n\n" & ("Please rename your project if you want to create a package."))
+          Stop Event
+          Return
+        Endif
+        
+      Endif
+      
       
       Project.Maintainer = Trim(txtName.Text)
       Project.Address = Trim(txtMail.Text)

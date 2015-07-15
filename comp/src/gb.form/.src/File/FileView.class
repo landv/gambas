@@ -213,7 +213,7 @@ Private Sub GetIcon(sPath As String, iSize As Integer) As Picture
   
 Catch
   
-  Error "gb.form: unable to get icon for file: "; File.Name(sPath)
+  Error "gb.form: unable to get icon for file: "; File.Name(sPath); ": "; Error.Text
   
 End
 

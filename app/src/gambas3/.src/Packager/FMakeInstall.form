@@ -56,17 +56,28 @@
         MaxValue = 999
       }
     }
+    { HBox8 HBox
+      MoveScaled(1,15,70,4)
+      Spacing = True
+      { Label3 Label
+        MoveScaled(0,0,23,4)
+        Text = ("Vendor name")
+      }
+      { txtVendor TextBox
+        MoveScaled(24,0,44,4)
+        Expand = True
+      }
+    }
     { TextLabel2 TextLabel
-      MoveScaled(1,14,64,4)
+      MoveScaled(1,19,64,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Maintainer information")
       Alignment = Align.BottomNormal
     }
     { HBox1 HBox
-      MoveScaled(1,19,71,4)
+      MoveScaled(1,24,71,4)
       Spacing = True
-      Indent = True
       { Label1 Label
         MoveScaled(0,0,23,4)
         Text = ("Name")
@@ -77,9 +88,8 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(1,24,70,4)
+      MoveScaled(1,29,70,4)
       Spacing = True
-      Indent = True
       { Label2 Label
         MoveScaled(0,0,23,4)
         Text = ("E-mail")
@@ -89,23 +99,9 @@
         Expand = True
       }
     }
-    { HBox8 HBox
-      MoveScaled(1,29,70,4)
-      Spacing = True
-      Indent = True
-      { Label3 Label
-        MoveScaled(0,0,23,4)
-        Text = ("Vendor name")
-      }
-      { txtVendor TextBox
-        MoveScaled(24,0,44,4)
-        Expand = True
-      }
-    }
     { HBox16 HBox
       MoveScaled(1,34,70,4)
       Spacing = True
-      Indent = True
       { Label7 Label
         MoveScaled(0,0,23,4)
         Text = ("URL")
@@ -118,7 +114,6 @@
     { HBox19 HBox
       MoveScaled(1,39,70,4)
       Spacing = True
-      Indent = True
       { Label9 Label
         MoveScaled(0,0,23,4)
       }
@@ -132,7 +127,7 @@
       MoveScaled(1,44,72,12)
       Spacing = True
       { Panel4 VBox
-        MoveScaled(0,0,24,10)
+        MoveScaled(0,0,23,10)
         { Label6 Label
           MoveScaled(0,0,23,4)
           Font = Font["Bold"]
@@ -149,7 +144,7 @@
       MoveScaled(1,57,73,4)
       Spacing = True
       { Label5 Label
-        MoveScaled(0,0,24,4)
+        MoveScaled(0,0,23,4)
         Font = Font["Bold"]
         Text = ("License")
       }

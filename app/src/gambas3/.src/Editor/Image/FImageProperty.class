@@ -1230,7 +1230,8 @@ Private Sub InitShapes()
 
   $aShape = New CImageSelection[]
   
-  $aShape.Add(CImageSelection.FromString(("Arrow"), "-0.5,0.5*;1,0.5*  0.8,0.3*;1,0.5*;0.8,0.7*"))
+  $aShape.Add(CImageSelection.FromString(("Arrow"), "-0.5,0.5*;1,0.5* 0.8,0.3*;1,0.5*;0.8,0.7*"))
+  '$aShape.Add(CImageSelection.FromString(("Double arrow"), "-0.5,0.5*;1,0.5*  0.8,0.3*;1,0.5*;0.8,0.7*"))
   $aShape.Add(CImageSelection.FromString(("Arrow #2"), "0,1;0,2;4,2;4,3;6,1.5*;4,0;4,1;0,1;0.5,1.5+"))
   $aShape.Add(CImageSelection.FromString(("Triangle"), "0,0*;0,1*;0.86602540378444,0.5*;0,0;0.28867513459481,0.5+;0,0.5+;0.43301270189222,0.75+;0.43301270189222,0.25+"))
   $aShape.Add(CImageSelection.FromString(("Square triangle"), "0,0*;1,0*;0,1*;0,0;1,0+;0,1+;0.333333333333,0.333333333333+;0.5,0+;0.5,0.5+;0,0.5+"))

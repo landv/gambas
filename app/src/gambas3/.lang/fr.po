@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.7.90\n"
-"PO-Revision-Date: 2015-07-04 13:14 UTC\n"
+"PO-Revision-Date: 2015-07-15 02:02 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1193,7 +1193,7 @@ msgstr "Indenter"
 msgid "Unindent"
 msgstr "Désindenter"
 
-#: FProjectChooser.form:78
+#: FProjectChooser.form:79
 msgid "Open"
 msgstr "Ouvrir"
 
@@ -1697,7 +1697,7 @@ msgstr "Titre du projet"
 msgid "The project title is the true name of the application."
 msgstr "Le titre du projet est le nom complet de l'application."
 
-#: FCreateProject.form:426 FProjectChooser.form:73 ProjectBox.class:268
+#: FCreateProject.form:426 FProjectChooser.form:74 ProjectBox.class:268
 msgid "Open in another window"
 msgstr "Ouvrir dans une nouvelle fenêtre"
 
@@ -1773,7 +1773,7 @@ msgstr "Message"
 msgid "native code"
 msgstr "code natif"
 
-#: FMakeInstall.form:753 FOption.class:699 FOutput.form:84 FPublish.form:170
+#: FMakeInstall.form:748 FOption.class:699 FOutput.form:84 FPublish.form:170
 msgid "Clear"
 msgstr "Effacer"
 
@@ -1885,7 +1885,7 @@ msgstr "Pile des appels"
 msgid "The file has been modified.\n\nAll your changes will be lost."
 msgstr "Le fichier a été modifié.\n\nToutes les modifications seront perdues."
 
-#: FEditor.class:2678 FTextEditor.class:1085
+#: FEditor.class:2682 FTextEditor.class:1085
 msgid "(Declarations)"
 msgstr "(Déclarations)"
 
@@ -2109,7 +2109,7 @@ msgstr "S'enregistrer"
 msgid "Confirm password"
 msgstr "Confirmer le mot de passe"
 
-#: FFarmRegister.form:108 FMakeInstall.form:219 FOption.form:269
+#: FFarmRegister.form:108 FMakeInstall.form:232 FOption.form:269
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -2617,23 +2617,23 @@ msgstr "Presse-papier système"
 msgid "Arrow"
 msgstr "Flèche"
 
-#: FImageProperty.class:1234
+#: FImageProperty.class:1235
 msgid "Arrow #2"
 msgstr "Flèche n°2"
 
-#: FImageProperty.class:1235
+#: FImageProperty.class:1236
 msgid "Triangle"
 msgstr "Triangle"
 
-#: FImageProperty.class:1236
+#: FImageProperty.class:1237
 msgid "Square triangle"
 msgstr "Triangle rectangle"
 
-#: FImageProperty.class:1237
+#: FImageProperty.class:1238
 msgid "Pentagon"
 msgstr "Pentagone"
 
-#: FImageProperty.class:1238
+#: FImageProperty.class:1239
 msgid "Hexagon"
 msgstr "Hexagone"
 
@@ -3037,7 +3037,7 @@ msgstr "Enregistrer le projet"
 msgid "Save project as"
 msgstr "Enregistrer le projet sous"
 
-#: FMain.form:311 FMakeInstall.class:257 FSave.class:28 FWelcome.class:74
+#: FMain.form:311 FMakeInstall.class:259 FSave.class:28 FWelcome.class:74
 msgid "Quit"
 msgstr "Quitter"
 
@@ -3405,107 +3405,115 @@ msgstr "Conserver les informations de débogage dans l'exécutable"
 msgid "Create a shortcut on the desktop"
 msgstr "Créer un raccourci sur le bureau"
 
-#: FMakeInstall.class:116
+#: FMakeInstall.class:118
 msgid "Package"
 msgstr "Paquet"
 
-#: FMakeInstall.class:117
+#: FMakeInstall.class:119
 msgid "Min. version"
 msgstr "Version min."
 
-#: FMakeInstall.class:118
+#: FMakeInstall.class:120
 msgid "Max. version"
 msgstr "Version max."
 
-#: FMakeInstall.class:124
+#: FMakeInstall.class:126
 msgid "File or directory"
 msgstr "Fichier ou répertoire"
 
-#: FMakeInstall.class:257 Package.module:195
+#: FMakeInstall.class:259 Package.module:199
 msgid "The packages have been successfully created."
 msgstr "Les paquets ont été créés avec succès."
 
-#: FMakeInstall.class:293
+#: FMakeInstall.class:291
+msgid "Please rename your project if you want to create a package."
+msgstr "Veuillez renommer votre projet si vous désirez créer un paquet."
+
+#: FMakeInstall.class:291
+msgid "The project name must be prefixed by the vendor name followed by a dot:"
+msgstr "Le nom du projet doit être préfixé par le nom du fournisseur suivi d'un point :"
+
+#: FMakeInstall.class:306
 msgid "Please enter your name."
 msgstr "Veuillez saisir votre nom."
 
-#: FMakeInstall.class:298
+#: FMakeInstall.class:311
 msgid "Please enter your e-mail address."
 msgstr "Veuillez saisir votre adresse e-mail."
 
-#: FMakeInstall.class:312
+#: FMakeInstall.class:325
 msgid "There is no CHANGELOG entry for this release."
 msgstr "Il n'y aucune information de changement pour cette version."
 
-#: FMakeInstall.class:319
+#: FMakeInstall.class:332
 msgid "Please enter the first CHANGELOG entry."
 msgstr "Veuillez saisir la première entrée du CHANGELOG."
 
-#: FMakeInstall.class:330
+#: FMakeInstall.class:343
 msgid "Please choose at least one target distribution."
 msgstr "Veuillez sélectionner au moins une distribution cible."
 
-#: FMakeInstall.class:368
+#: FMakeInstall.class:381
 msgid "Please choose the package group for each target distribution."
 msgstr "Veuillez sélectionner un groupe de paquet pour chaque distribution cible."
 
-#: FMakeInstall.class:370
+#: FMakeInstall.class:383
 msgid "Please choose a package group."
 msgstr "Veuillez sélectionner un groupe de paquet."
 
-#: FMakeInstall.class:380
+#: FMakeInstall.class:393
 msgid "Please choose the menu location for each target distribution."
 msgstr "Veuillez sélectionner un emplacement de menu pour chaque distribution cible."
 
-#: FMakeInstall.class:382
+#: FMakeInstall.class:395
 msgid "Please choose a menu location."
 msgstr "Veuillez sélectionner un emplacement de menu."
 
-#: FMakeInstall.class:401
+#: FMakeInstall.class:414
 msgid "Cannot found extra file: &1"
 msgstr "Impossible de trouver le fichier supplémentaire : &1"
 
-#: FMakeInstall.class:407
+#: FMakeInstall.class:420
 msgid "Please choose a target directory for each extra file."
 msgstr "Veuillez choisir un répertoire de destination pour chaque fichier supplémentaire."
 
-#: FMakeInstall.class:415
+#: FMakeInstall.class:428
 msgid "Debian packaging system cannot handle spaces in file names."
 msgstr "Le système de gestion de paquets de Debian ne peut gérer les noms de fichiers contenant un caractère d'espacement."
 
-#: FMakeInstall.class:421
+#: FMakeInstall.class:434
 msgid "Debian packaging system cannot handle spaces in directories."
 msgstr "Le système de gestion de paquets de Debian ne peut gérer les noms de répertoires contenant un caractère d'espacement."
 
-#: FMakeInstall.class:437
+#: FMakeInstall.class:450
 msgid "The package cannot be stored inside the project directory."
 msgstr "Le paquet ne peut être créé à l'intérieur du répertoire du projet."
 
-#: FMakeInstall.class:475
+#: FMakeInstall.class:488
 msgid "Initial release"
 msgstr "Version initiale"
 
-#: FMakeInstall.class:729
+#: FMakeInstall.class:742
 msgid "Menus"
 msgstr "Menus"
 
-#: FMakeInstall.class:797
+#: FMakeInstall.class:810
 msgid "Groups"
 msgstr "Groupes"
 
-#: FMakeInstall.class:915
+#: FMakeInstall.class:928
 msgid "Incorrect characters"
 msgstr "Caractères incorrects"
 
-#: FMakeInstall.class:988
+#: FMakeInstall.class:1001
 msgid "Do you really want to remove all extra dependencies?"
 msgstr "Voulez-vous vraiment retirer toutes les dépendances supplémentaires ?"
 
-#: FMakeInstall.class:1087
+#: FMakeInstall.class:1100
 msgid "Do you really want to remove all extra files?"
 msgstr "Voulez-vous vraiment retirer tous les fichiers supplémentaires ?"
 
-#: FMakeInstall.class:1135
+#: FMakeInstall.class:1148
 msgid "Select the destination directory"
 msgstr "Sélectionnez le répertoire destination"
 
@@ -3529,107 +3537,107 @@ msgstr "Préfixer le nom du paquet avec le nom du fournisseur"
 msgid "Package version"
 msgstr "Version du paquet"
 
-#: FMakeInstall.form:192
-msgid "Maintainer information"
-msgstr "Informations sur le mainteneur"
-
-#: FMakeInstall.form:235 FOption.form:291 FPublish.form:83
+#: FMakeInstall.form:194 FOption.form:291 FPublish.form:83
 msgid "Vendor name"
 msgstr "Nom du fournisseur"
 
-#: FMakeInstall.form:251 FOption.form:325
+#: FMakeInstall.form:207
+msgid "Maintainer information"
+msgstr "Informations sur le mainteneur"
+
+#: FMakeInstall.form:247 FOption.form:325
 msgid "URL"
 msgstr "URL"
 
-#: FMakeInstall.form:272
+#: FMakeInstall.form:267
 msgid "Sign package"
 msgstr "Signer le paquet"
 
-#: FMakeInstall.form:304
+#: FMakeInstall.form:299
 msgid "License"
 msgstr "Licence"
 
-#: FMakeInstall.form:315
+#: FMakeInstall.form:310
 msgid "Changelog"
 msgstr "Liste des changements"
 
-#: FMakeInstall.form:335
+#: FMakeInstall.form:330
 msgid "Target distribution"
 msgstr "Distribution cible"
 
-#: FMakeInstall.form:601
+#: FMakeInstall.form:596
 msgid "Self-extractible"
 msgstr "Auto-extractible"
 
-#: FMakeInstall.form:606
+#: FMakeInstall.form:601
 msgid "Package group"
 msgstr "Groupe de paquet"
 
-#: FMakeInstall.form:626
+#: FMakeInstall.form:621
 msgid "Menu entry"
 msgstr "Entrée de menu"
 
-#: FMakeInstall.form:648
+#: FMakeInstall.form:643
 msgid "Categories"
 msgstr "Catégories"
 
-#: FMakeInstall.form:657
+#: FMakeInstall.form:652
 msgid "Desktop configuration file"
 msgstr "Fichier de configuration du bureau"
 
-#: FMakeInstall.form:663
+#: FMakeInstall.form:658
 msgid "Mimetypes"
 msgstr "Types MIME"
 
-#: FMakeInstall.form:671
+#: FMakeInstall.form:666
 msgid "Enter the mimetypes handled by your application there.\nPlease enter one mimetype by line.\n"
 msgstr "Saisissez les types MIME gérés par votre application.\nVeuillez saisir un type MIME par ligne.\n"
 
-#: FMakeInstall.form:683
+#: FMakeInstall.form:678
 msgid "Additional configuration"
 msgstr "Configuration additionnelle"
 
-#: FMakeInstall.form:691
+#: FMakeInstall.form:686
 msgid "The following will be added to the end of the desktop configuration file."
 msgstr "Le texte suivant sera ajouté à la fin du fichier de configuration du bureau."
 
-#: FMakeInstall.form:699
+#: FMakeInstall.form:694
 msgid "Extra dependencies"
 msgstr "Dépendances supplémentaires"
 
-#: FMakeInstall.form:703
+#: FMakeInstall.form:698
 msgid "Same dependencies for all targets"
 msgstr "Mêmes dépendances pour toutes les cibles"
 
-#: FMakeInstall.form:759
+#: FMakeInstall.form:754
 msgid "Extra files"
 msgstr "Fichiers supplémentaires"
 
-#: FMakeInstall.form:763
+#: FMakeInstall.form:758
 msgid "Same files for all targets"
 msgstr "Mêmes fichiers pour toutes les cibles"
 
-#: FMakeInstall.form:776
+#: FMakeInstall.form:771
 msgid "Extra files must be located in the <b>Project</b> folder of the current project, i.e. the <tt>.hidden</tt> directory of the project on the disk."
 msgstr "Les fichiers supplémentaires doivent être situés dans le dossier <b>Projet</b> du projet en cours, correspondant au répertoire <tt>.hidden</tt> du projet sur le disque."
 
-#: FMakeInstall.form:834
+#: FMakeInstall.form:829
 msgid "Extra autoconf tests"
 msgstr "Tests autoconf supplémentaires"
 
-#: FMakeInstall.form:840
+#: FMakeInstall.form:835
 msgid "Add extra tests for the configuration process.\n<p><b>Leave this blank if you don't need it, or if you don't know anything about <i>autoconf</i> scripts.</b>"
 msgstr "Ajout de tests supplémentaires au processus de configuration.\n<p><b>Laissez ce champ vide si vous n'en avez pas besoin, ou si vous ne connaissez rien aux scripts <i>autoconf</i>.</b>"
 
-#: FMakeInstall.form:848
+#: FMakeInstall.form:843
 msgid "Destination directory"
 msgstr "Répertoire de destination"
 
-#: FMakeInstall.form:857
+#: FMakeInstall.form:852
 msgid "Create directories for each distribution"
 msgstr "Créer des répertoires pour chaque distribution"
 
-#: FMakeInstall.form:869
+#: FMakeInstall.form:864
 msgid "Commands output"
 msgstr "Sortie des commandes"
 
@@ -6737,67 +6745,67 @@ msgstr "Routines"
 msgid "Symbols"
 msgstr "Symboles"
 
-#: Package.module:67
+#: Package.module:71
 msgid "'&1' is missing."
 msgstr "'&1' est introuvable."
 
-#: Package.module:76
+#: Package.module:80
 msgid "'&1' and '&2' are missing."
 msgstr "'&1' et '&2' sont introuvables."
 
-#: Package.module:168
+#: Package.module:172
 msgid "Saving CHANGELOG file."
 msgstr "Sauvegarde du fichier CHANGELOG."
 
-#: Package.module:538
+#: Package.module:542
 msgid "Making &1 support package..."
 msgstr "Création du paquet de support &1..."
 
-#: Package.module:576
+#: Package.module:592
 msgid "Creating package for &1."
 msgstr "Création du paquet pour &1."
 
-#: Package.module:607
+#: Package.module:623
 msgid "The package build has failed."
 msgstr "La construction des paquets a échoué."
 
-#: Package.module:649
+#: Package.module:665
 msgid "Making build directory."
 msgstr "Fabrication du répertoire de construction."
 
-#: Package.module:677
+#: Package.module:693
 msgid "Creating desktop file..."
 msgstr "Création du fichier *.desktop..."
 
-#: Package.module:685
+#: Package.module:701
 msgid "Sources are being debianizated."
 msgstr "\"Debianisation\" des sources..."
 
-#: Package.module:867
+#: Package.module:883
 msgid "Creating package..."
 msgstr "Création du paquet..."
 
-#: Package.module:875
+#: Package.module:891
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' a échoué."
 
-#: Package.module:1126
+#: Package.module:1142
 msgid "Initializing ~/RPM directory."
 msgstr "Initialisation du répertoire ~/RPM."
 
-#: Package.module:1146
+#: Package.module:1162
 msgid "Creating source package."
 msgstr "Création du paquet des sources."
 
-#: Package.module:1170
+#: Package.module:1186
 msgid "Creating .spec file."
 msgstr "Creation du fichier .spec."
 
-#: Package.module:1428
+#: Package.module:1444
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' a retourné le code d'erreur suivant :"
 
-#: Package.module:1824
+#: Package.module:1840
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' a retourné le code d'erreur suivant:"
 

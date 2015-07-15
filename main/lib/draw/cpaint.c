@@ -1492,27 +1492,34 @@ BEGIN_METHOD(Paint_ZoomImage, GB_OBJECT image; GB_INTEGER zoom; GB_INTEGER x; GB
 	if (border && zoom >= 3)
 	{
 		float dashes[2] = { 1.0, 1.0 };
-		int count = 2;
+		int count;
 		float *pdashes = dashes;
 	
-		PAINT->Dash(THIS, TRUE, &pdashes, &count);
-		PAINT->Background(THIS, TRUE, &borderColor);
-
-		for (i = sx, xr = x; i < (sx + sw); i++, xr += zoom)
+		for (i = sx + 1, xr = x + zoom; i < (sx + sw); i++, xr += zoom)
 		{
 			//PAINT->FillRect(THIS, xr, y, 1, sh * zoom, borderColor);
 			PAINT->MoveTo(THIS, xr, y);
 			PAINT->LineTo(THIS, xr, y + sh * zoom);
 		}
 		
-		for (j = sy, yr = y; j < (sy + sh); j++, yr += zoom)
+		for (j = sy + 1, yr = y + zoom; j < (sy + sh); j++, yr += zoom)
 		{
 			//PAINT->FillRect(THIS, x, yr, sw * zoom, 1, borderColor);
 			PAINT->MoveTo(THIS, x, yr);
 			PAINT->LineTo(THIS, x + sw * zoom, yr);
 		}
 		
+		count = 0;
+		PAINT->Dash(THIS, TRUE, NULL, &count);
+		PAINT->Background(THIS, TRUE, &borderColor);
+		PAINT->Stroke(THIS, TRUE);
+		
+		borderColor ^= 0xFFFFFF;
+		count = 2;
+		PAINT->Dash(THIS, TRUE, &pdashes, &count);
+		PAINT->Background(THIS, TRUE, &borderColor);
 		PAINT->Stroke(THIS, FALSE);
+		
 		THIS->has_path = FALSE;
 	}
 	

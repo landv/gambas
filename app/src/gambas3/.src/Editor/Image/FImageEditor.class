@@ -292,11 +292,11 @@ Private Sub ApplyTransformation(iTrans As Integer)
           '$hPasteSelect.Rotate(Rad(-90))
       End Select
       
+      $hChangeRect = $hPasteCurrent.GetExtents()
+      $hPasteSelect = $hPasteCurrent.Copy()
+     
     Endif
     
-    $hChangeRect = $hPasteCurrent.GetExtents()
-    $hPasteSelect = $hPasteCurrent.Copy()
-     
     imvImage.Refresh
       
     Return

@@ -38,6 +38,7 @@ Event Click
 Event Rename 
 Event Cancel
 Event Compare(Key As String, OtherKey As String)
+Event Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, Key As String)
 
 Private Enum EVENT_ACTIVATE, EVENT_CLICK, EVENT_RENAME
 
@@ -394,17 +395,20 @@ Public Sub ScrollArea_Draw()
   Dim hRect As New Rect
   Dim hClip, hSaveClip As Rect
   Dim bHover As Boolean
+  Dim bRaiseDraw As Boolean
   
   If $aItems.Count = 0 Then Return
   If $iLock Then Return
   
-  hSaveClip = Draw.ClipRect
+  hSaveClip = Paint.ClipRect
   
   If $hPicture Then 
     Draw.FillX = - $hView.ScrollX
     Draw.FillY = - $hView.ScrollY
     Draw.Tile($hPicture, 0, 0, Draw.Width, Draw.Height)
   Endif
+  
+  bRaiseDraw = Object.CanRaise(Me, "Draw")
   
   X = hSaveClip.X + $hView.ScrollX
   Y = hSaveClip.Y + $hView.ScrollY
@@ -433,8 +437,13 @@ Public Sub ScrollArea_Draw()
       hClip = hRect.Intersection(hSaveClip)
       If hClip Then
         bHover = iPos = $iHover
-        If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
+        'If $iMode = Select.Multiple And If iPos = $iStart Then bHover = True
         hItem._Draw(hRect, hClip, Me, $bHorizontal, False, bHover) ' _HaveFocus, $iMouseOver = k And Me.Tracking)
+        If bRaiseDraw Then
+          Paint.Save
+          Raise Draw(hRect.X, hRect.Y, hRect.W, hRect.H, hItem.Key)
+          Paint.Restore
+        Endif
       Endif
       
     Endif
@@ -562,7 +571,7 @@ Public Sub ScrollArea_Scroll()
   
   If Not Me.Enabled Or If Me.Design Then Return
   ExitRename
-  SetHoverItem(FindIcon(Mouse.ScreenX - $hView.ScreenX - $hView.ClientX + $hView.ScrollX, Mouse.ScreenY - $hView.ScreenY - $hView.ClientY + $hView.ScrollY))
+  SetHoverItem(FindIconAccurate(Mouse.ScreenX - $hView.ScreenX - $hView.ClientX + $hView.ScrollX, Mouse.ScreenY - $hView.ScreenY - $hView.ClientY + $hView.ScrollY))
   
 End
 
@@ -878,21 +887,49 @@ Public Sub ScrollArea_MouseDown()
     
     If Not bCtrl And If $iMode <> Select.Single Then UnselectAll
     
-    If $iMode = Select.Multiple And If Mouse.Left Then
-      $bSelRect = True
-      $X1 = X
-      $Y1 = Y
-      $X2 = X
-      $Y2 = Y
-      $hSelTimer = New Timer As "SelTimer"
-      $hSelTimer.Delay = 50
-      $hSelTimer.Start
-      SelectRect
-    Endif
+  Endif
+  
+End
+
+Public Sub ScrollArea_MouseDrag()
+  
+  Dim X, Y As Integer
+  Dim bShift As Boolean
+  Dim bCtrl As Boolean
+  Dim iPos As Integer
+  
+  If Not Me.Enabled Or If Me.Design Then Return
+  If $aItems.Count = 0 Then Return
+  If $iMode = Select.None Then Return
+  'If Not Mouse.Left Then Return
+  
+  If $iMode = Select.Multiple And If Mouse.Left And If Not $bSelRect Then
+    
+    bShift = Mouse.Shift
+    bCtrl = Mouse.Control
+  
+    X = Mouse.StartX + $hView.ScrollX
+    Y = Mouse.StartY + $hView.ScrollY
+    iPos = FindIconAccurate(X, Y)
+    
+    $bSelRect = True
+    $X1 = X
+    $Y1 = Y
+    $X2 = X
+    $Y2 = Y
+    $hSelTimer = New Timer As "SelTimer"
+    $hSelTimer.Delay = 50
+    $hSelTimer.Start
+    
+    Inc $iLock
+    If iPos >= 0 Then $aItems[iPos].Selected = Not $aItems[iPos].Selected
+    Dec $iLock
+    SelectRect(True)
     
   Endif
   
 End
+
 
 Private Sub UpdateSelRect(X As Integer, Y As Integer)
   
@@ -949,6 +986,7 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
   Dim hItem As _IconView_Item
   Dim hRect As New Rect
   Dim hSel As Rect
+  Dim hSelRect As Rect
   
   If Not $bSelRect Then
     GetIconGeometry($iStart, hRect)
@@ -983,13 +1021,18 @@ Private Sub SelectRect(Optional iSelect As Integer = 1)
     If iPos >= 0 And If iPos < $aItems.Count Then
       
       GetIconGeometry(iPos, hRect)
-      hRect.Adjust(4)
-      If hRect.Intersection(hSel) Then
+      hRect.Adjust(2)
+      
+      hSelRect = hRect.Intersection(hSel)
+      
+      If hSelRect Then
         hItem = $aItems[iPos]
-        If iSelect = 1 Then
-          hItem.Selected = Not hItem.Selected
-        Else
-          hItem.Selected = iSelect
+        If hItem._Intersect(hRect, hSelRect, $bHorizontal) Then
+          If iSelect = 1 Then
+            hItem.Selected = Not hItem.Selected
+          Else
+            hItem.Selected = iSelect
+          Endif
         Endif
       Endif
       
@@ -1261,6 +1304,16 @@ Public Sub _MoveItem(hItem As _IconView_Item, iNewPos As Integer)
   $hView.View.Refresh
   
 End
+
+Public Sub _IsHovered(hItem As _IconView_Item) As Boolean
+
+  Dim iPos As Integer
+  
+  iPos = _FindItem(hItem)
+  If iPos >= 0 Then Return iPos = $iHover
+  
+End
+
 
 Private Function IconSize_Read() As Integer
 

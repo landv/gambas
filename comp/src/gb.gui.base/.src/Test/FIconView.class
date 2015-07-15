@@ -50,3 +50,12 @@ Public Sub IconView1_Click()
   Debug IconView1.Item.Key
 
 End
+
+Public Sub IconView1_Draw(X As Integer, Y As Integer, Width As Integer, Height As Integer, (Key) As String)
+
+  If IconView1[Key].Hovered Then
+    Paint.Font.Grade = -2
+    Paint.DrawText(Format(Stat("~" &/ Key).Size \ 1024, ",0") & "K", X, Y, Width, Height, Align.TopRight)
+  Endif
+
+End
