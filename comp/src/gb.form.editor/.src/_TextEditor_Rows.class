@@ -294,13 +294,13 @@ Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer, cLineLayout As Collection)
   If Not $aHeight Then Return
   
   While I < $aHeight.Count
-    If $aHeight[I] >= Y1 Then Break
+    If $aHeight[I] > Y1 Then Break
     Inc I
   Wend
   
   While I < $aHeight.Count
     Y = $aHeight[I]
-    If Y >= Y2 Then Break
+    If Y > Y2 Then Break
     $aHeight.Remove(I)
     $cHeight.Remove(Y)
     cLineLayout.Remove(Y)
@@ -335,7 +335,7 @@ Public Sub _BeforeInsert(Y1 As Integer, N As Integer, cLineLayout As Collection)
   
   For I = $aHeight.Max DownTo 0
     Y = $aHeight[I]
-    If Y < Y1 Then Break
+    If Y <= Y1 Then Break
     $aHeight[I] = Y + N
     $cHeight[Y + N] = $cHeight[Y]
     $cHeight.Remove(Y)

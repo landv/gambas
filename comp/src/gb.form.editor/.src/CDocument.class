@@ -264,9 +264,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   ' Wend
   
   iLen = LineLength[Y]
-  If X > iLen Then 
-    SetLine(Y, Lines[Y] & Space$(X - iLen), True)
-  Endif
+  If X > iLen Then SetLine(Y, Lines[Y] & Space$(X - iLen), True)
   
   sRest = String.Mid$(Lines[Y], X + 1)
   aText = Split(sText, "\n")
@@ -506,7 +504,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
     
     bHighlight = True
     
-    SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1))
+    SetLine(Y1, String.Left(Lines[Y1], X1) & String.Mid$(Lines[Y2], X2 + 1), True)
     
     Lines.Remove(Y1 + 1, Y2 - Y1)
     LinesInfo.Remove(Y1 + 1, Y2 - Y1)
