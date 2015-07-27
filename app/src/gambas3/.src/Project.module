@@ -336,6 +336,14 @@ Public Sub Main()
 
   Inc Application.Busy
 
+  FHelpBrowser.Load
+  FHelpShortcut.Load
+
+  ' QT5: If the main form is shown after the MDI windows have been embeddded, then 
+  ' the window drawing becomes buggy
+  
+  FMain.Show
+  
   If sPath Then 
     If IsDir(sPath) Then
       Project.Open(sPath)
@@ -344,13 +352,16 @@ Public Sub Main()
     Else
       FMain.ShowWarning(("File not found!") & "\n\n<tt>" & sPath & "</tt>")
     Endif
+    If Not Project.Dir Then
+      FMain.Close
+      Dec Application.Busy
+      Return
+    Endif
   Endif
 
-  FHelpBrowser.Load
-  FHelpShortcut.Load
   RefreshActivate
-  FMain.Show
-  FWelcome.SetFocus
+  
+  If Not sPath Then FMain.Welcome
 
   Dec Application.Busy
 
@@ -2008,7 +2019,6 @@ Public Function LoadFile(sPath As String) As Object
   Dim sType As String
   Dim sErr As String
 
-  'DIM hActive AS Object
 
   hForm = Files[sPath]
 
@@ -2888,7 +2898,10 @@ Public Sub Activate(hForm As Object)
 
   If hForm Then
     SelectKey(hForm.Path)
-    If ActiveForm = hForm Then Return
+    If ActiveForm = hForm Then 
+      Try ActiveForm.SetFocus
+      Return
+    Endif
     'ELSE
     'IF NOT ActiveForm THEN RETURN
   Endif

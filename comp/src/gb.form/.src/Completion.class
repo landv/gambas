@@ -279,7 +279,7 @@ Public Sub GridView_MouseUp()
   
   hCtrl = GetTextBox()
   
-  hCtrl.Text = String.Left(hCtrl.Text, Start) & List[$hList.Row]
+  Try hCtrl.Text = String.Left(hCtrl.Text, Start) & List[$hList.Row]
   HideList
   'hCtrl.SetFocus
   Raise Activate

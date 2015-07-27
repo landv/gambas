@@ -722,7 +722,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	if (status != PGRES_COMMAND_OK)
 	{
-		GB.Error("Cannot set datestyle to ISO: &1", PQerrorMessage(conn));
+		GB.Error("Cannot set 'datestyle' to 'ISO': &1", PQerrorMessage(conn));
 		PQclear(res);
 		PQfinish(conn);
 		return TRUE;
@@ -733,6 +733,20 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	db->handle = conn;
 	db->version = db_version(db);
 
+	if (db->version >= 90000)
+	{
+		res = PQexec(conn, "set bytea_output=escape");
+		status = PQresultStatus(res);
+
+		if (status != PGRES_COMMAND_OK)
+		{
+			GB.Error("Cannot set 'bytea_output' to 'escape': &1", PQerrorMessage(conn));
+			PQclear(res);
+			PQfinish(conn);
+			return TRUE;
+		}
+	}
+	
 	/* flags */
 
 	db->flags.no_table_type = TRUE;

@@ -85,10 +85,19 @@ Public Sub Form_Open()
   'tvwProject_LostFocus
   
   frmWelcome = New FWelcome(dwgWelcome)
+  frmWelcome.Hide
   
   UpdateGlobalLayout
   
 End
+
+Public Sub Welcome()
+  
+  frmWelcome.Show
+  frmWelcome.SetFocus
+  
+End
+
 
 Public Sub Form_Close()
   
@@ -2375,6 +2384,8 @@ Public Sub dwgWelcome_Draw()
   Dim X As Integer
   Dim Y As Integer
   
+  If Not frmWelcome.Visible Then Return
+  
   If Not $hCornerNW Then
     $hCornerNW = Image.Load("img/welcome/corner.png")
     $hCornerNE = $hCornerNW.Copy().RotateRight()
@@ -2633,3 +2644,4 @@ Public Sub tabProperty_CloseAll()
   panProperty.Hidden = True
 
 End
+

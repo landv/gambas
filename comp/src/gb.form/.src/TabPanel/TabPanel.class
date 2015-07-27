@@ -256,12 +256,12 @@ Private Sub UpdateLayout()
   Select Case $iOrientation
     Case Align.Top
       $hTabBar.Move(X, 0, W, $hTabBar.H)
-      If H Then $hClosePanel.Move(If(System.RightToLeft, 0, W), 0, H, H)
+      If H And If $hClosePanel Then $hClosePanel.Move(If(System.RightToLeft, 0, W), 0, H, H)
       $hPanel.Move(0, $hTabBar.H, Me.W, Me.H - $hTabBar.H)
       '$hTabBar.Next = $hPanel
     Case Align.Bottom
       $hTabBar.Move(X, Me.H - $hTabBar.H, W, $hTabBar.H)
-      If H Then $hClosePanel.Move(If(System.RightToLeft, 0, W), $hTabBar.Y, H, H)
+      If H And If $hClosePanel Then $hClosePanel.Move(If(System.RightToLeft, 0, W), $hTabBar.Y, H, H)
       $hPanel.Move(0, 0, Me.W, Me.H - $hTabBar.H)
       'Me._Arrangement = Arrange.Vertical
       '$hPanel.Next = $hTabBar

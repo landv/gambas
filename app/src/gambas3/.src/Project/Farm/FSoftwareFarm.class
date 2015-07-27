@@ -631,13 +631,7 @@ Public Sub dwgName_Draw()
 
   If Not $hSoft Then Return
   
-  Paint.Font.Grade = 7
-
-  With $hSoft
-    'Paint.Background = Color.Foreground
-    sText = .Name & " " & .Version & " (" & .Vendor & ")"
-    Paint.DrawTextShadow(sText, 0, 0, Paint.W, Paint.H, Align.Left)
-    Paint.DrawText(sText, 0, 0, Paint.W, Paint.H, Align.Left)
-  End With
+  Paint.Font.Grade = 6
+  $hSoft.PaintName(0, 0)
 
 End

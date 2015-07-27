@@ -2365,13 +2365,16 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 
 	//qDebug("doReparent: %s %p: visible = %d opened = %d hidden = %d isVisible = %d isHidden = %d shown = %d", 
 	//				THIS->widget.name, THIS, THIS->widget.flag.visible, THIS->opened, THIS->hidden, isVisible(), isHidden(), THIS->widget.flag.shown);
+	
 	//if (!THIS->hidden) showIt = true;
 	//hide();
+	
 	hidden = THIS->hidden || !WIDGET->isVisible();
 	if (parent != parentWidget() || f != windowFlags())
 	{
 		reparented = true;
 		setParent(parent, f);
+		//qDebug("setParent %d", f != windowFlags());
 	}
 	
 	move(pos);
@@ -2594,6 +2597,8 @@ void CWINDOW_activate(CWIDGET *ob)
 {
 	CWINDOW *active;
 
+	//qDebug("CWINDOW_activate: %s", ob ? ob->name : NULL);
+	
 	if (ob)
 	{
 		active = CWidget::getWindow(ob);
@@ -2612,7 +2617,7 @@ void CWINDOW_activate(CWIDGET *ob)
 	if (active == CWINDOW_Active)
 		return;
 
-	//qDebug("activate: (%s %p): (%s %p) -> (%s %p)", ob ? GB.GetClassName(ob) : "", ob, CWINDOW_Active ? GB.GetClassName(CWINDOW_Active) : "", CWINDOW_Active, active ? GB.GetClassName(active) : "", active);
+	//qDebug("CWINDOW_activate: (%s %p): (%s %p) -> (%s %p)", ob ? GB.GetClassName(ob) : "", ob, CWINDOW_Active ? GB.GetClassName(CWINDOW_Active) : "", CWINDOW_Active, active ? GB.GetClassName(active) : "", active);
 
 	if (CWINDOW_Active)
 	{

@@ -25,23 +25,7 @@ Private Enum TAG_VARIABLE, TAG_CODE_MARKUP
 Static Private $sTextAfter As String
 Static Private $sBufferAfter As String
 
-Static Private $aStateStack As String[]
-
-Private Sub PushHighlightState()
-  
-  If Not $aStateStack Then $aStateStack = New Integer[]
-  
-  $aStateStack.Push(TextHighlighter.State)
-  $aStateStack.Push(TextHighlighter.Tag)
-  
-End
-
-Private Sub PopHighlightState()
-
-  TextHighlighter.Tag = $aStateStack.Pop()
-  TextHighlighter.State = $aStateStack.Pop()
-
-End
+Static Private $aStateStack As Integer[]
 
 Private Sub AnalyzeCode(sText As String) As String
   
@@ -287,7 +271,7 @@ STATE_DOUBLE_MARKUP:
       Continue
     Endif
     
-    If iState = Highlight.Keyword Then sMarkup &= sCar
+    'If iState = Highlight.Keyword Then sMarkup &= sCar
     Add(sCar, iState)
     
   Loop
@@ -305,10 +289,11 @@ READ_SCRIPT:
       Break
     Endif
     $sBufferAfter &= String.Left(sText, MeetCodeAt - 1)
-    TextHighlighter.Alternate = True
-    Add("<%", Highlight.Keyword)
+    
     I = MeetCodeAt + 2
+    sMarkup = "<%"
     GoSub READ_CODE
+    
     sText = String.Mid$(sText, I)
     sHighlightText = sText
   Wend
@@ -349,10 +334,11 @@ READ_STYLE:
       Break
     Endif
     $sBufferAfter &= String.Left(sText, MeetCodeAt - 1)
-    TextHighlighter.Alternate = True
-    Add("<%", Highlight.Keyword)
+    
+    sMarkup = "<%"
     I = MeetCodeAt + 2
     GoSub READ_CODE
+    
     sText = String.Mid$(sText, I)
     sHighlightText = sText
   Wend
@@ -385,7 +371,9 @@ STATE_STYLE:
 STATE_CODE:
 
   'Print "**** STATE_CODE"
+  sMarkup = ""
   GoSub READ_CODE
+  
   If I > iLenText Then
     Goto END_TEXT
   Else
@@ -433,9 +421,10 @@ IGNORE_STRING:
 
 READ_CODE:
 
-  PushHighlightState
+  GoSub PUSH_STATE
 
   TextHighlighter.Alternate = True
+  If sMarkup Then Add(sMarkup, Highlight.Keyword)
   TextHighlighter.State = Highlight.Normal
   TextHighlighter.Tag = 0
   bClose = False
@@ -460,17 +449,17 @@ READ_CODE:
   If bClose Then
     $sBufferAfter &= AnalyzeCode(String.Mid$(sText, iStart, I - iStart - 1))
     Add("%>", Highlight.Keyword)
+    GoSub POP_STATE
     TextHighlighter.Alternate = False
     iTagCode = 0
     Inc I
-    PopHighlightState
     iNextState = TextHighlighter.State
   Else
     $sBufferAfter &= AnalyzeCode(String.Mid$(sText, iStart))
+    GoSub POP_STATE
     iTagCode = TAG_CODE
     iTagMode = TextHighlighter.Tag
     iNextState = TextHighlighter.State
-    PopHighlightState
   Endif
 
   Return
@@ -503,10 +492,9 @@ NEXT_CHAR:
       GoSub READ_CODE_COMMENT
       Goto NEXT_CHAR
     Else
-      TextHighlighter.Alternate = True
       sCar = String.Mid$(sText, I + 1, 1)
       If sCar = "=" Then
-        Add("<%=", Highlight.Keyword)
+        sMarkup = "<%="
         I += 2
       Else If sCar = "!" Then
         iPos = String.InStr(sText, "%>", I)
@@ -516,7 +504,7 @@ NEXT_CHAR:
         TextHighlighter.Alternate = False
         Goto NEXT_CHAR
       Else
-        Add("<%", Highlight.Keyword)
+        sMarkup = "<%"
         Inc I
       Endif
       GoSub READ_CODE
@@ -524,6 +512,22 @@ NEXT_CHAR:
     Endif
     
   Endif
+  
+  Return
+  
+PUSH_STATE:
+  
+  If Not $aStateStack Then $aStateStack = New Integer[]
+  
+  $aStateStack.Push(TextHighlighter.State)
+  $aStateStack.Push(TextHighlighter.Tag)
+  
+  Return
+
+POP_STATE:
+
+  TextHighlighter.Tag = $aStateStack.Pop()
+  TextHighlighter.State = $aStateStack.Pop()
   
   Return
   
@@ -539,7 +543,7 @@ END_TEXT:
   TextHighlighter.State = iNextState
   TextHighlighter.Tag = iTag + iTagCode + Shl(iTagMode, 8) + If(bNextLimit, TAG_NEXT_LIMIT, 0)
   TextHighlighter.Limit = bLimit
-  'Print "--> "; Bin$(Highlight.Tag, 16);; Highlight.Text
+  'Print "--> "; iNextState;; Bin$(TextHighlighter.Tag, 16);; TextHighlighter.TextAfter
   
 End
 

@@ -545,3 +545,20 @@ Catch
   Return Error.Text
   
 End
+
+Public Sub PaintName(X As Float, Y As Float)
+
+  Dim iCol As Integer
+  Dim sText As String
+  
+  iCol = Color.Foreground
+    
+  Paint.Background = iCol
+  sText = Name
+  If Vendor Then sText &= " <i>(" & Vendor & ")</i>"
+  sText &= " - " & Version
+  Paint.Background = iCol
+  Paint.DrawRichTextShadow(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
+  Paint.DrawRichText(sText, X, Y, Paint.W, Paint.H, Align.TopLeft)
+  
+End

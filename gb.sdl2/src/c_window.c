@@ -558,6 +558,12 @@ BEGIN_PROPERTY(Window_Resizable)
 
 END_PROPERTY
 
+BEGIN_PROPERTY(Window_Handle)
+
+	GB.ReturnInteger(SDL_GetWindowId(WINDOW));
+
+END_PROPERTY
+
 // Does not work
 #if 0
 BEGIN_PROPERTY(Window_Border)
@@ -600,6 +606,8 @@ GB_DESC WindowDesc[] =
 	GB_PROPERTY_READ("H", "i", Window_Height),
 	GB_PROPERTY_READ("Width", "i", Window_Width),
 	GB_PROPERTY_READ("Height", "i", Window_Height),
+	
+	GB_PROPERTY_READ("Handle", "i", Window_Handle),
 	
 	GB_PROPERTY("FrameRate", "f", Window_FrameRate),
 	GB_PROPERTY_READ("FrameCount", "i", Window_FrameCount),

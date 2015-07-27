@@ -148,6 +148,7 @@ static GB_DESC NATIVE_GambasLanguage[] =
 	GB_METHOD("Round", "f", NULL, "(Value)f[(Round)i]"),
 
 	GB_METHOD("Rnd", "f", NULL, "[(From)f(To)f]"),
+	GB_METHOD("Rand", "i", NULL, "(From)i[(To)i]"),
 
 	GB_METHOD("Min", "v", NULL, "(Value)v(Value2)v"),
 	GB_METHOD("Max", "v", NULL, "(Value)v(Value2)v"),

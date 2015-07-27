@@ -14,10 +14,12 @@ Public Sub Form_Open()
 
   $hWatcher = New Watcher(ToolButton1) As "Watcher"
 
+  Workspace1.Lock
   Button2_Click
   Button2_Click
   Button2_Click
   Button2_Click
+  Workspace1.Unlock
 
 End
 

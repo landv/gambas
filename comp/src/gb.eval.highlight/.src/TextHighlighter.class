@@ -74,6 +74,8 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
   Dim P As Integer
   Dim sLineHtml As String
   Dim iColor As Integer
+  Dim sOldStyle As String
+  Dim sStyle As String
   
   If Not Styles Then Styles = TextHighlighter.DefaultStyle
   
@@ -85,7 +87,8 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
   aText = Split(Text, "\n")
   
   iColor = Color.Black
-  aResult.Add("<pre><font color=\"#000000\">")
+  aResult.Add("<pre><span style=\"color:black;\">")
+  sOldStyle = "color:#000000;"
   
   For Y = 0 To aText.Max
     
@@ -110,16 +113,21 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
       Try hStyle = Styles[iState]
       If Error Then hStyle = Styles[0]
       bAlt = aHighlight[I] >= 128
-      iLen = aHighlight[I + 1]      
+      iLen = aHighlight[I + 1]
       
       sHtml = Html(String.Mid$(sLine, P, iLen))
       P += iLen
       
       If hStyle.Bold Then sHtml = "<b>" & sHtml & "</b>"
       If hStyle.Underline Then sHtml = "<u>" & sHtml & "</u>"
-      If hStyle.Color <> iColor Then
-        iColor = hStyle.Color
-        sHtml = "</font><font color=\"#" & Hex$(hStyle.Color, 6) & "\">" & sHtml
+      
+      sStyle = ""
+      If bAlt Then sStyle &= "background:#E0E0E0;"
+      If hStyle.Color Then sStyle &= "color:#" & Hex$(hStyle.Color, 6)
+      
+      If sStyle <> sOldStyle Then
+        sOldStyle = sStyle
+        sHtml = "</span><span style=\"" & sStyle & "\">" & sHtml
       Endif
       
       sLineHtml &= sHtml
@@ -140,7 +148,7 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
     
   Next
   
-  aResult.Add("</font></pre>")
+  aResult.Add("</span></pre>")
   
   Return aResult.Join("")
   

@@ -100,6 +100,8 @@ Static Public Sub GetInfo() As String[]
   Dim sPattern As String
   Dim aLib As New String[]
   Dim aSearchPath As New String[]
+  Dim sVar As String
+  Dim aEnv As String[]
   
   aText.Add("[System]")
   aText.Add("Gambas=" & System.FullVersion)
@@ -162,8 +164,20 @@ Static Public Sub GetInfo() As String[]
 
   aText.Insert(aLib.Sort())
 
+  aText.Add("[Environment]")
+  
+  aEnv = New String[]
+  For Each sVar In Env
+    aEnv.Add(sVar)
+  Next
+  aEnv.Sort
+  
+  For Each sVar In aEnv
+    aText.Add(sVar & "=" & Env[sVar])
+  Next
+  
   Return aText
-    
+
 End
 
 

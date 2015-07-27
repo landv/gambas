@@ -777,7 +777,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 					abort_child(CHILD_CANNOT_PLUG_OUTPUT);
 			}
 		}
-
+		
 		pwd = FALSE;
 		
 		if (env)
