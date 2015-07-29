@@ -201,10 +201,7 @@ static EXTERN_FUNC *get_function(CLASS_EXTERN *ext)
 	call = lt_dlsym(handle, ext->alias);
 	
 	if (call == NULL)
-	{
-		lt_dlclose(handle);
 		THROW(E_EXTSYM, ext->library, ext->alias);
-	}
 
 	ALLOC_ZERO(&func, sizeof(EXTERN_FUNC));
 	func->next = _functions;
