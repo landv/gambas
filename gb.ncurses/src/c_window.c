@@ -501,14 +501,14 @@ END_METHOD
 BEGIN_METHOD_VOID(Window_ReadLine)
 
 	char line[256]; /* XXX: Must be enough! */
-	int len;
+	int ret;
 
-	len = getnstr(line, sizeof(line) - 1);
-	if (len == ERR) {
+	bzero(line, sizeof(line));
+	ret = wgetnstr(THIS->main, line, sizeof(line) - 1);
+	if (ret == ERR) {
 		GB.ReturnNull();
 		return;
 	}
-	line[len] = 0;
 	GB.ReturnNewZeroString(line);
 
 END_METHOD

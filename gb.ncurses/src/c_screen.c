@@ -158,6 +158,18 @@ BEGIN_METHOD_VOID(Screen_free)
 END_METHOD
 #endif
 
+BEGIN_METHOD_VOID(Screen_Beep)
+
+	beep();
+
+END_METHOD
+
+BEGIN_METHOD_VOID(Screen_Flash)
+
+	flash();
+
+END_METHOD
+
 BEGIN_METHOD_VOID(Screen_Refresh)
 
 	SCREEN_refresh();
@@ -242,6 +254,8 @@ GB_DESC CScreenDesc[] = {
 	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 
 	GB_STATIC_METHOD("_init", NULL, Screen_init, NULL),
+	GB_STATIC_METHOD("Beep", NULL, Screen_Beep, NULL),
+	GB_STATIC_METHOD("Flash", NULL, Screen_Flash, NULL),
 	GB_STATIC_METHOD("Refresh", NULL, Screen_Refresh, NULL),
 	GB_STATIC_METHOD("Resize", NULL, Screen_Resize, "(Lines)i(Cols)i"),
 
