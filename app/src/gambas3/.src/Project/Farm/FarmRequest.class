@@ -97,18 +97,20 @@ Public Sub Request_Finished()
   
   If $bFile Then
     ResultFile = $hForm.TargetFile
-    For Each sHeader In $hForm.Headers
-      If sHeader Begins "Content-Disposition:" Then
-        iPos = InStr(sHeader, "filename=")
-        If iPos Then
-          sName = File.SetName(ResultFile, UnQuote(Mid$(sHeader, iPos + 9)))
-          Try Kill sName
-          Move ResultFile To sName
-          ResultFile = sName
-          Break
+    If $hForm.Headers Then
+      For Each sHeader In $hForm.Headers
+        If sHeader Begins "Content-Disposition:" Then
+          iPos = InStr(sHeader, "filename=")
+          If iPos Then
+            sName = File.SetName(ResultFile, UnQuote(Mid$(sHeader, iPos + 9)))
+            Try Kill sName
+            Move ResultFile To sName
+            ResultFile = sName
+            Break
+          Endif
         Endif
-      Endif
-    Next
+      Next
+    Endif
     Raise Finished
     Return
   Endif

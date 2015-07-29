@@ -107,8 +107,8 @@ Public Sub PaintColor(X As Integer, Y As Integer, W As Integer, H As Integer, iC
     Paint.Rectangle(X, Y, W, H)
     Paint.Clip
     
-    For J = 0 To W Step 8
-      For I = 0 To H Step 8
+    For J = 0 To W + 7 Step 8
+      For I = 0 To H + 7 Step 8
       
         If ((I + J) \ 8) And 1 Then 
           C = Color.Blend(iColor, &H808080)

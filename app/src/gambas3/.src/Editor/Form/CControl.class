@@ -471,7 +471,7 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
         If Not IsNull(Val(vRealVal)) Then
           vRealVal = Val(vRealVal)
         Else
-          vRealVal = Object.GetProperty(Color, vRealVal)
+          vRealVal = FColorChooser.FromString(vRealVal) 'Object.GetProperty(Color, vRealVal)
         Endif
       Endif
 

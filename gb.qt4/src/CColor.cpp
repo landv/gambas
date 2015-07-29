@@ -146,21 +146,21 @@ GB_DESC CColorDesc[] =
 {
   GB_DECLARE_STATIC("Color"),
 
-  GB_STATIC_PROPERTY("Background", "i", Color_Background),
-  GB_STATIC_PROPERTY("SelectedBackground", "i", Color_SelectedBackground),
-  GB_STATIC_PROPERTY("LightBackground", "i", Color_LightBackground),
-  GB_STATIC_PROPERTY("TextBackground", "i", Color_TextBackground),
-  GB_STATIC_PROPERTY("ButtonBackground", "i", Color_ButtonBackground),
-  GB_STATIC_PROPERTY("TooltipBackground", "i", Color_TooltipBackground),
+  GB_STATIC_PROPERTY_READ("Background", "i", Color_Background),
+  GB_STATIC_PROPERTY_READ("SelectedBackground", "i", Color_SelectedBackground),
+  GB_STATIC_PROPERTY_READ("LightBackground", "i", Color_LightBackground),
+  GB_STATIC_PROPERTY_READ("TextBackground", "i", Color_TextBackground),
+  GB_STATIC_PROPERTY_READ("ButtonBackground", "i", Color_ButtonBackground),
+  GB_STATIC_PROPERTY_READ("TooltipBackground", "i", Color_TooltipBackground),
 
-  GB_STATIC_PROPERTY("Foreground", "i", Color_Foreground),
-  GB_STATIC_PROPERTY("LightForeground", "i", Color_LightForeground),
-  GB_STATIC_PROPERTY("SelectedForeground", "i", Color_SelectedForeground),
-  GB_STATIC_PROPERTY("TextForeground", "i", Color_TextForeground),
-  GB_STATIC_PROPERTY("ButtonForeground", "i", Color_ButtonForeground),
-  GB_STATIC_PROPERTY("TooltipForeground", "i", Color_TooltipForeground),
-  GB_STATIC_PROPERTY("LinkForeground", "i", Color_LinkForeground),
-  GB_STATIC_PROPERTY("VisitedForeground", "i", Color_VisitedForeground),
+  GB_STATIC_PROPERTY_READ("Foreground", "i", Color_Foreground),
+  GB_STATIC_PROPERTY_READ("LightForeground", "i", Color_LightForeground),
+  GB_STATIC_PROPERTY_READ("SelectedForeground", "i", Color_SelectedForeground),
+  GB_STATIC_PROPERTY_READ("TextForeground", "i", Color_TextForeground),
+  GB_STATIC_PROPERTY_READ("ButtonForeground", "i", Color_ButtonForeground),
+  GB_STATIC_PROPERTY_READ("TooltipForeground", "i", Color_TooltipForeground),
+  GB_STATIC_PROPERTY_READ("LinkForeground", "i", Color_LinkForeground),
+  GB_STATIC_PROPERTY_READ("VisitedForeground", "i", Color_VisitedForeground),
 
   GB_END_DECLARE
 };

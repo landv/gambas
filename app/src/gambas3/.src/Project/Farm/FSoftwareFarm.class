@@ -627,11 +627,9 @@ End
 
 Public Sub dwgName_Draw()
 
-  Dim sText As String
-
   If Not $hSoft Then Return
   
-  Paint.Font.Grade = 6
+  Paint.Font.Grade = 4
   $hSoft.PaintName(0, 0)
 
 End
