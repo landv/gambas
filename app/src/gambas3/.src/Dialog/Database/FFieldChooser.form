@@ -17,7 +17,7 @@
       MoveScaled(21,0,40,4)
       Expand = True
       Padding = 4
-      Border = Border.Raised
+      Border = Border.Plain
     }
     { Label2 Label
       MoveScaled(0,5,19,4)
@@ -27,48 +27,52 @@
       MoveScaled(21,5,40,4)
       Expand = True
       Padding = 4
-      Border = Border.Raised
+      Border = Border.Plain
     }
   }
   { panField HBox
-    MoveScaled(1,12,66,35)
+    MoveScaled(1,11,66,36)
     Expand = True
     Spacing = True
     { lstField ListBox
-      MoveScaled(2,1,25,33)
+      MoveScaled(2,1,25,34)
       Expand = True
       Mode = Select.Multiple
     }
     { panFieldList VBox
-      MoveScaled(29,1,5,32)
+      MoveScaled(29,1,5,34)
       Spacing = True
       { Panel2 Panel
-        MoveScaled(0,3,5,1)
+        MoveScaled(0,0,5,1)
         Expand = True
       }
       { btnRight Button
-        MoveScaled(0,5,5,5)
+        MoveScaled(0,2,5,5)
         Picture = Picture["icon:/16/right"]
       }
       { btnLeft Button
-        MoveScaled(0,11,5,5)
+        MoveScaled(0,8,5,5)
         Picture = Picture["icon:/16/left"]
       }
       { btnUp Button
-        MoveScaled(0,17,5,5)
+        MoveScaled(0,14,5,5)
         Picture = Picture["icon:/16/up"]
       }
       { btnDown Button
-        MoveScaled(0,23,5,5)
+        MoveScaled(0,20,5,5)
         Picture = Picture["icon:/16/down"]
       }
+      { btnClear Button
+        MoveScaled(0,26,5,5)
+        Picture = Picture["icon:/16/delete"]
+      }
       { Panel3 Panel
-        MoveScaled(0,29,5,1)
+        MoveScaled(0,32,5,1)
         Expand = True
       }
     }
     { lstFieldList ListBox
-      MoveScaled(36,1,26,32)
+      MoveScaled(36,1,26,34)
       Expand = True
       Mode = Select.Multiple
     }

@@ -34,9 +34,14 @@
     Connection = Connections["Connection2"]
     Table = "test"
     { DataBrowser1 DataBrowser
-      MoveScaled(2,11,52,18)
+      MoveScaled(2,7,52,18)
       Expand = True
       Grid = True
+    }
+    { DataComboView1 DataComboView
+      MoveScaled(2,30,50,4)
+      Table = "color"
+      Columns = ["color", "name"]
     }
   }
 }

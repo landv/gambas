@@ -86,6 +86,7 @@ Public Sub gvwPreview_MouseMove()
   If iRow >= 0 And If (iRow * BY_LINE + iPos) > Len($sData) Then iRow = -1
   
   If iRow <> $iRow Or If iPos <> $iPos Then
+    If $iRow >= 0 Then gvwPreview.Rows[$iRow].Refresh
     $iRow = iRow
     $iPos = iPos
     gvwPreview.Rows[$iRow].Refresh

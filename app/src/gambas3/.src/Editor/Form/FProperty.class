@@ -213,9 +213,9 @@ Public Sub RefreshAll()
     sVal = GetProperty(sProp)
     $cInitialValue[sProp] = sVal
 
-    grdProperty[iRow, 0].Font = grdProperty.Font
+    'grdProperty[iRow, 0].Font = grdProperty.Font
     grdProperty[iRow, 0].Alignment = Align.Normal
-    grdProperty[iRow, 1].Alignment = Align.Normal
+    grdProperty[iRow, 1].Alignment = Align.TopNormal
     
     If CControl.WasDefaultValue Then
       iBg = $iBgDefault
@@ -1033,7 +1033,7 @@ Public Sub txtProperty_Click()
     Case "Fields", "Field[]"
 
       sConnection = GetConnection()
-      sTable = GetTable()
+      sTable = GetTable($sOption)
       If sConnection And If sTable Then
         If FFieldChooser.Run(sConnection, sTable, True, $sOldVal) Then Goto _EXIT
         $hEditor.Text = FFieldChooser.Value

@@ -138,6 +138,22 @@ End
 
 Public Sub lstField_Activate()
 
-  If Not $bMulti Then btnOK.Value = True
+  If Not $bMulti Then 
+    btnOK.Value = True
+  Else
+    btnRight_Click
+  Endif
+
+End
+
+Public Sub lstFieldList_Activate()
+
+  btnLeft_Click
+
+End
+
+Public Sub btnClear_Click()
+
+  lstFieldList.Clear
 
 End
