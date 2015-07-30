@@ -31,7 +31,6 @@ Event Validate
 'Property Font As Font
 
 Private $hDrawingArea As DrawingArea
-Private $sText As String
 Private $hPopup As Window
 Private $hSrc As DataSource
 Private $hView As DataView
@@ -47,6 +46,9 @@ Private $bInside As Boolean
 Private $bInsideArrow As Boolean
 Private $bPressed As Boolean
 
+Private $aText As String[]
+Private $aWidth As Integer[]
+Private $aAlign As Integer[]
 
 Public Sub _new()
   
@@ -290,13 +292,15 @@ End
 Private Sub SetValue(vVal As Variant)
 
   Dim sText As String
-  Dim iInd As Integer
+  Dim I As Integer
   Dim hView As TableView
 
   LoadPopup
   If IsNull(vVal) Then
     '$hView.Create()
-    $sText = ""
+    $aText = Null
+    $aWidth = Null
+    $aAlign = Null
     $hDrawingArea.Refresh
     Return
   Endif
@@ -306,11 +310,16 @@ Private Sub SetValue(vVal As Variant)
 
   hView = $hView.View
   
-  For iInd = 0 To hView.Columns.Count - 1
-    sText &= " | " & hView[hView.Row, iInd].Text
+  $aText = New String[hView.Columns.Count]
+  $aWidth = New Integer[$aText.Count]
+  $aAlign = New Integer[$aText.Count]
+  
+  For I = 0 To $aText.Max
+    $aText[I] = hView[hView.Row, I].Text
+    $aWidth[I] = hView.Columns[I].Width
+    $aAlign[I] = hView[hView.Row, I].Alignment
   Next
   
-  $sText = Mid$(sText, 4)
   $hDrawingArea.Refresh
 
 End
@@ -374,8 +383,8 @@ Private Sub OpenPopup()
   
     $hView.Current = [$vCurrent]
     
-    $hPopup.Resize(Me.Width, Min(8, $hView.Count) * (1 + $hView.View.Rows.Height) + $hView.View.Columns.H + 2)
-    $hPopup.ShowPopup(Me.ScreenX, Me.ScreenY + Me.Height)
+    $hPopup.Resize(Me.Width - Desktop.Scale, Min(8, $hView.Count) * (1 + $hView.View.Rows.Height) + $hView.View.Columns.H + 2)
+    $hPopup.ShowPopup(Me.ScreenX + Desktop.Scale, Me.ScreenY + Me.Height)
     
   Endif
 
@@ -428,6 +437,8 @@ Public Sub DrawingArea_Draw()
   Dim iFlag As Integer
   Dim sText As String
   Dim bFlat As Boolean
+  Dim I As Integer
+  Dim X2 As Integer
   
   If $bInside And If Me.Enabled Then iFlag += Draw.Hover
   If Not Me.Enabled Then iFlag += Draw.Disabled
@@ -435,48 +446,21 @@ Public Sub DrawingArea_Draw()
   
   '' TODO: System.RightToLeft
 
-  'bFlat = Not $bBorder 'And Not $bInside
-
-  'If $bInsideArrow Then
-  '  Draw.Style.Button(0, 0, Me.W, Me.H, False, iFlag, bFlat)
-  '  'Draw.Save
-  '  'Draw.Clip(Me.W - Desktop.Scale * 3 + 3, 0, Desktop.Scale * 3 - 3, Me.H)
-  '  'Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, Not $bBorder)
-  '  'Draw.Restore
-  'Else
-    Draw.Style.Button(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
-  'Endif
+  Style.PaintButton(0, 0, Me.W, Me.H, $bPressed, iFlag, bFlat)
+  Style.PaintArrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
     
-  X = Desktop.Scale
+  If $aText Then 
+    
+    X = Desktop.Scale
   
-  ' If $hPicture Then
-  '   If Me.Enabled Then
-  '     Draw.Picture($hPicture, X, (Me.H - $hPicture.H) / 2)
-  '   Else
-  '     Draw.Picture($hPicture.Image.Desaturate().Picture, X, (Me.H - $hPicture.H) / 2)
-  '   Endif
-  '   X += $hPicture.H + Desktop.Scale
-  ' Endif
-  
-  If $sText Then 
-    sText = $sText
-    'If $iShortcutPos Then sText = String.Left($sText, $iShortcutPos - 1) & String.Mid$($sText, $iShortcutPos + 1)
-    'If Not $hPicture And If Not $bArrow Then
-    '  X = (Me.W - Draw.Font.TextWidth(sText)) \ 2
-    'Endif
-    Draw.Text(sText, X, 0, Me.W - X, Me.H, Align.Left)
-    'If $iShortcutPos Then
-    '  X2 = X + Draw.Font.TextWidth(String.Left(sText, $iShortcutPos))
-    '  X += Draw.Font.TextWidth(String.Left(sText, $iShortcutPos - 1))
-    '  Y = (Me.H - Draw.Font.Height) / 2 + Draw.Font.Ascent + 1
-    '  Draw.Line(X, Y, X2, Y)
-    'Endif
+    Paint.ClipRect = Rect(0, 0, Me.W - Desktop.Scale * 3, Me.H)
+    For I = 0 To $aText.Max
+      X2 = X + $aWidth[I]
+      Paint.DrawText($aText[I], X + 4, 0, X2 - X - 5, Me.H, $aAlign[I])
+      X = X2
+    Next
+    
   Endif
-  
-  'If $bArrow Then
-    'If $bBorder Or If $bInside Then Draw.Style.Separator(Me.W - Desktop.Scale * 3, 3, 3, Me.H - 6, True)
-    Draw.Style.Arrow(Me.W - Desktop.Scale * 2, 0, Desktop.Scale, Me.H, Align.Bottom, iFlag)
-  'Endif
   
 End
 
