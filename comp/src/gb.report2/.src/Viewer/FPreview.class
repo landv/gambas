@@ -6,6 +6,8 @@ Private $hPrinter As New Printer As "Printer"
 Private $iCurPrinterResolution As Integer
 Private $bVerif As Boolean
 Private $bPrinting As Boolean
+Private $iPrinterRes As Integer = 1200
+Private $iFileRes As Integer = 150
 
 Static Public Function Run(hReport As Report)
   
@@ -94,7 +96,7 @@ End
 Public Sub sldZoom_Change()
   
   Dim hButton As ToolButton
-
+  
   View.ScaleMode = View.Custom
   View.Zoom = sldZoom.Value / 100
   'lblZoom.Text = Str(Slider1.Value) & " %"
@@ -104,15 +106,15 @@ Public Sub sldZoom_Change()
   Next
   
   bFlag = False  
-
+  
 End
 
 Public Sub View_Zoom()
-
+  
   Object.Lock(sldZoom)
   sldZoom.Value = View.Zoom * 100
   Object.Unlock(sldZoom)
-
+  
   lblZoom.Text = Str(sldZoom.Value) & " %"
   
 End
@@ -140,6 +142,7 @@ Public Sub Mode_Click()
   View.ScaleMode = hCurButton.Tag
   'View.Refresh
   'View.Refresh
+
 End
 
 Public Sub tgbGrayScale_Click()
@@ -209,7 +212,7 @@ Public Sub txtFile_Click()
   Dialog.Filter = ["*.pdf", ("PDF files"), "*.ps", ("Postscript files")]
   
   If Dialog.SaveFile() Then Return
-
+  
   txtFile.Text = Dialog.Path
   $bVerif = True
   $hPrinter.OutputFile = Dialog.Path
@@ -217,14 +220,14 @@ Public Sub txtFile_Click()
 End
 
 Private Sub RefreshPrintButton()
-
+  
   If $bPrinting Then
-
+    
     btnPrint.Picture = Picture["icon:/small/cancel"]
     btnPrint.Text = ("Cancel")
     
   Else
-
+    
     btnPrint.Picture = Picture[If(tabPrint.Index = 0, "icon:/small/printer", "icon:/small/pdf")]
     btnPrint.Text = ("Print")
     
@@ -232,7 +235,7 @@ Private Sub RefreshPrintButton()
   
   btnPrint2.Picture = btnPrint.Picture
   btnPrint2.Text = btnPrint.Text
-
+  
 End
 
 Public Sub tabPrint_Click()
@@ -240,9 +243,16 @@ Public Sub tabPrint_Click()
   If tabPrint.Index = 0 Then
     $hPrinter.OutputFile = ""
     $hPrinter.Name = cmbPrinter.Text
+    $hPrinter.Resolution = $iPrinterRes
+    Object.Lock(cmbResolution)
+    Try cmbResolution.Index = Max(cmbResolution.Find(Str($iPrinterRes)), 0)
+    Object.Unlock(cmbResolution)
   Else
     $hPrinter.OutputFile = txtFile.Text
-    $hPrinter.Resolution = 300
+    $hPrinter.Resolution = $iFileRes
+    Object.Lock(cmbResolution)
+    Try cmbResolution.Index = Max(cmbResolution.Find(Str($iFileRes)), 0)
+    Object.Unlock(cmbResolution)
   Endif
   
   RefreshPrintButton
@@ -390,14 +400,15 @@ Public Sub Form_Close()
     Settings["FPreview/GrayScale"] = tgbGrayScale.Value
     Settings["FPreview/ReverseOrder"] = tgbReverseCopies.Value
     Settings["FPreview/CollateCopies"] = tgbCollateCopies.Value
-    
+    Settings["FPreview/FileResolution"] = $iFileRes
+    Settings["FPreview/PrinterResolution"] = $iPrinterRes
     Settings.Save()
   Endif
   
 End
 
 Public Sub Form_Open()
-
+  
   Dim hButton As ToolButton
   
   $aModeButtons = [btnOnePage, btnTwoPages, btnFullWidth, btnRealSize]
@@ -419,13 +430,17 @@ Public Sub Form_Open()
     txtFile.Text = Settings["FPreview/OutputFile", User.Home &/ "report.pdf"]
     $hPrinter.OutputFile = txtFile.Text
     $hPrinter.Name = Settings["FPreview/Printer"] 
-    If Settings["FPreview/PrintToFile"] = True Then tabPrint.Index = 1
+    If Settings["FPreview/PrintToFile"] = True Then 
+      tabPrint.Index = 1
+    Endif
     
     Try $hPrinter.Duplex = Settings["FPreview/Duplex"]
     Try $hPrinter.GrayScale = Settings["FPreview/GrayScale"] 
     Try $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
     Try $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
-    
+    Try $iFileRes = Settings["FPreview/FileResolution", 150] 
+    Try $iPrinterRes = Settings["FPreview/PrinterResolution", 1200] 
+    Try $hPrinter.Duplex = Settings["FPreview/Duplex", Printer.Simplex] = cmbDuplex.Index
   Endif
   
   SelectPrinter($hPrinter.Name)
@@ -433,47 +448,47 @@ Public Sub Form_Open()
   $bPrinting = False
   
   btnOnePage.Value = True
-
+  tabPrint_Click
 End
 
 Public Sub btnZoomIn_Click()
-
+  
   sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100) + 0.5) * 2 + 0.5) / 2) + 0.5
-
+  
 End
 
 Public Sub btnZoomOut_Click()
-
+  
   sldZoom.Value = 100 * 2 ^ (Int((Log2(sldZoom.Value / 100)) * 2 - 0.5) / 2) + 0.5
-
+  
 End
 
 Public Sub panSide_Arrange()
-
+  
   With btnCloseSide
     .Move(.Parent.W - .W, 0, Desktop.Scale * 4, Desktop.Scale * 4)
   End With
-
+  
 End
 
 Public Sub btnCloseSide_Click()
-
+  
   panSide.Hide
   btnShowSide.Show
   btnPrint2.Show
-
+  
 End
 
 Public Sub btnShowSide_Click()
-
+  
   panSide.Show
   btnShowSide.Hide
   btnPrint2.Hide
-
+  
 End
 
 Public Sub mnuPrint_Show()
-
+  
   Dim hMenu As Menu
   
   mnuPrintPDF.Checked = tabPrint.Index = 1
@@ -485,7 +500,7 @@ Public Sub mnuPrint_Show()
       hMenu.Checked = hMenu.Text = cmbPrinter.Text
     Endif
   Next
-
+  
 End
 
 Public Sub mnuPrintPDF_Click()
@@ -502,3 +517,24 @@ Public Sub mnuPrintPrinter_Click()
   
 End
 
+Public Sub spResolution_Change()
+  
+End
+
+Public Sub SpinBar1_Change()
+  
+  Last.Text = "toto" & Last.Value
+  
+End
+
+Public Sub cmbResolution_Click()
+
+  If tabPrint.Index = 0 Then
+    $iPrinterRes = cmbResolution.Text
+    $hPrinter.Resolution = $iPrinterRes
+    Else
+    $iFileRes = cmbResolution.Text
+    $hPrinter.Resolution = $iFileRes
+  Endif
+
+End
