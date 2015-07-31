@@ -32,7 +32,7 @@ BEGIN_METHOD(Key_get, GB_STRING key)
 
 	char *key = GB.ToZeroString(ARG(key));
 
-	if (GB.GetProperty((void *)GB.FindClass("Key"), key))
+	if (!GB.GetProperty((void *)GB.FindClass("Key"), key))
 	{
 		GB.Error(NULL);
 		GB.ReturnInteger(gKey::fromString(GB.ToZeroString(ARG(key))));
