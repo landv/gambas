@@ -9,6 +9,7 @@ Private Enum WIZ_INDEX, WIZ_FARM, WIZ_SOFTWARE
 Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_VOTE, SORT_INSTALLED
 
 Private $hIdentity As FarmIdentity
+Private $hTimerArrange As Timer
 
 Public Sub Run()
   
@@ -178,7 +179,7 @@ Public Sub Request_Finished()
     
     hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
     If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Hide
-    hSoftwareBox.ResizeScaled(48, 15)
+    hSoftwareBox.ResizeScaled(48, 30)
     If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Load
     
   Next
@@ -213,6 +214,8 @@ End
 
 Public Sub Form_Close()
 
+  If $hTimerArrange Then $hTimerArrange.Stop
+  
   FarmRequestManager.Clear
   FarmIdentity.LastFarm = $hIdentity.Farm
   Settings.Write(Me)
@@ -364,6 +367,7 @@ Private Sub UpdateSoftware()
     Endif
     
     imvScreenshot.Image = Null
+    panScreenshot.Hide
     If .DownloadScreenshot() Then
       Software_Screenshot
     Else
@@ -381,8 +385,13 @@ End
 Public Sub Software_Screenshot()
   
   spnScreenshot.Hide
-  Try imvScreenshot.Image = $hSoft.Screenshot
-  imvScreenshot.ZoomFit
+  If $hSoft.Screenshot Then
+    Try imvScreenshot.Image = $hSoft.Screenshot
+    imvScreenshot.ZoomFit
+    panScreenshot.Show
+  Else
+    panScreenshot.Hide
+  Endif
   
 End
 
@@ -409,7 +418,7 @@ Public Sub panTitle_Arrange()
 
   W = picIcon.Parent.H - Desktop.Scale * 2
   picIcon.Resize(W, W)
-  dwgStat.Move(dwgStat.Parent.W - dwgStat.W - Desktop.Scale, Desktop.Scale)
+  'dwgStat.Move(dwgStat.Parent.W - dwgStat.W - Desktop.Scale, Desktop.Scale)
   
 End
 
@@ -426,13 +435,34 @@ End
 ' 
 ' End
 
-Public Sub panDesc_Arrange()
+Public Sub panTextDesc_Arrange()
 
-  spnScreenshot.Move(imvScreenshot.ScreenX - spnScreenshot.Parent.ScreenX + imvScreenshot.W \ 2 - 16, imvScreenshot.ScreenY - spnScreenshot.Parent.ScreenY + imvScreenshot.H \ 2 - 16, 32, 32)
-  If wizFarm.Index = WIZ_SOFTWARE Then imvScreenshot.ZoomFit
-  If txtDescription.Visible Then txtDescription.H = txtDescription.Font.RichTextHeight(Replace(Html(txtDescription.Text), "\n", "<br>"), txtDescription.W)
+  If txtDescription.Visible Then
+    If Not $hTimerArrange Then
+      $hTimerArrange = New Timer As "TimerArrange"
+      $hTimerArrange.Trigger
+    Endif
+    
+  Endif
 
 End
+
+Public Sub TimerArrange_Timer()
+  
+  txtDescription.H = txtDescription.Font.RichTextHeight(Replace(Html(txtDescription.Text), "\n", "<br>"), txtDescription.W)
+  $hTimerArrange.Stop
+  $hTimerArrange = Null
+  
+End
+
+
+Public Sub panDesc_Arrange()
+  
+  spnScreenshot.Move(panDesc.ScreenX - spnScreenshot.Parent.ScreenX + panDesc.W \ 2 - spnScreenshot.W \ 2, panDesc.ScreenY - spnScreenshot.Parent.ScreenY + panDesc.H \ 2 - spnScreenshot.H \ 2)
+  If wizFarm.Index = WIZ_SOFTWARE Then imvScreenshot.ZoomFit
+  
+End
+
 
 Public Sub dwgStat_Draw()
   
@@ -534,7 +564,11 @@ End
 
 Public Sub urlWebSite_Click()
 
-  Project.OpenWebPage(urlWebSite.Link)
+  Dim sLink As String
+
+  sLink = urlWebSite.Link
+  If sLink Not Like "http*://*" Then sLink = "http://" &/ sLink
+  Project.OpenWebPage(sLink)
   Stop Event
 
 End

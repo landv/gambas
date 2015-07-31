@@ -38,7 +38,6 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
-  $hDraw.Mouse = If($sText, Mouse.Pointing, Mouse.Default)
   UpdateSize
   $hDraw.Refresh
 
@@ -59,9 +58,12 @@ End
 
 Public Sub DrawingArea_Draw()
   
+  Dim sText As String
+  
   Paint.Background = If($bVisited, Color.VisitedForeground, Color.LinkForeground)
   Paint.Font.Underline = True
-  Paint.DrawText($sText, $iPadding, $iPadding, Paint.W - $iPadding * 2, Paint.H - $iPadding * 2, Align.Normal)
+  sText = GetText()
+  Paint.DrawText(sText, $iPadding, $iPadding, Paint.W - $iPadding * 2, Paint.H - $iPadding * 2, Align.Normal)
   
 End
 
@@ -78,10 +80,22 @@ Private Sub AutoResize_Write(Value As Boolean)
 
 End
 
+Private Sub GetText() As String
+  
+  If $sText Then Return $sText
+  Return $sLink
+  
+End
+
+
 Private Sub UpdateSize()
   
+  Dim sText As String
+  
+  $hDraw.Mouse = If($sLink, Mouse.Pointing, Mouse.Default)
   If Not $bAutoResize Then Return
-  Me.Resize($hDraw.Font.TextWidth($sText) + $iPadding * 2, $hDraw.Font.TextHeight($sText) + $iPadding * 2)
+  sText = GetText()
+  Me.Resize($hDraw.Font.TextWidth(sText) + $iPadding * 2, $hDraw.Font.TextHeight(sText) + $iPadding * 2)
   
 End
 
@@ -128,5 +142,7 @@ End
 Private Sub Link_Write(Value As String)
 
   $sLink = Value
+  Updatesize
+  $hDraw.Refresh
 
 End

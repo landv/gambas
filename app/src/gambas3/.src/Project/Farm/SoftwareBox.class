@@ -152,8 +152,8 @@ Public Sub DrawingArea_Draw()
   Paint.AntiAlias = False
   Paint.Rectangle(X + 1, Y + 1, W - 3, H - 3)
   
-  Paint.Background = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
-  Paint.Fill(True)
+  'Paint.Background = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
+  'Paint.Fill(True)
   
   If $hDrawingArea.HasFocus Or If $bHighlight Then
     Paint.Background = Color.LightBackground
@@ -201,7 +201,7 @@ Public Sub DrawingArea_Draw()
       Paint.DrawImage(.Icon, X, Y)
       X += .Icon.W + P
     Else
-      X += CSoftware.ICON_SIZE + P
+      X += CSoftware.IconSize + P
     Endif
     
     Paint.Font.Grade = 3
@@ -213,10 +213,11 @@ Public Sub DrawingArea_Draw()
     Paint.Font = Font["-1"]
     
     W = Paint.W - X - P * 2
-    H = Paint.H - Y - CSoftware.ICON_SIZE - P * 2
+    H = Paint.H - Y - CSoftware.IconSize - P * 2
     If .URL Then H -= Desktop.Scale
     
-    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + CSoftware.ICON_SIZE + P, W, H)
+    Paint.Background = Color.TextForeground
+    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + CSoftware.IconSize + P, W, H)
     
     PaintStat($hSoft)
     
@@ -254,7 +255,6 @@ End
 
 Static Public Sub PaintStat(hSoft As CSoftware, Optional bWithSize As Boolean)
 
-  Dim sVote As String
   Dim sDownload As String
   Dim X, Y, W As Integer
   Dim P As Integer
@@ -263,29 +263,34 @@ Static Public Sub PaintStat(hSoft As CSoftware, Optional bWithSize As Boolean)
   
   With hSoft
   
-    sVote = CStr(.VoteCount)
     sDownload = CStr(.DownloadCount)
     
     Y = P
-    W = Paint.Font.TextWidth(sVote)
+    'W = Paint.Font.TextWidth(sVote)
     
-    X = Paint.W - P - 32 - W - Paint.Font.TextWidth(sDownload) - 20
-    Paint.DrawImage(If(.YourVote = 1, $hVote, $hVoteOff), X, Y)
+    X = Paint.W - P - Paint.Font.TextWidth(sDownload) - $hInstall.W - P \ 2
     
-    X += 20
-    Paint.DrawText(sVote, X, Y, Paint.W, 16, Align.Left)
-    
-    X += W + 8
-    
+    Paint.FillRect(X - P, 0, Paint.W - X + P * 2, $hInstall.H + P * 2, Color.TextBackground)
     Paint.DrawImage($hInstall, X, Y)
+    X += $hInstall.W + P \ 2
+    Paint.DrawText(sDownload, X, Y, Paint.W - X, $hInstall.H, Align.Left)
     
-    X += 20
-    Paint.DrawText(sDownload, X, Y, Paint.W, 16, Align.Left)
-    
-    If bWithSize Then
-      Y += 24
-      Paint.DrawText(Project.GetFileSize(.Size), P, Y, Paint.W - P * 2, 16, Align.Right)
-    Endif
+    ' 'Paint.DrawImage(If(.YourVote = 1, $hVote, $hVoteOff), X, Y)
+    ' 
+    ' X += 20
+    ' Paint.DrawText(sVote, X, Y, Paint.W, 16, Align.Left)
+    ' 
+    ' X += W + 8
+    ' 
+    ' Paint.DrawImage($hInstall, X, Y)
+    ' 
+    ' X += 20
+    ' Paint.DrawText(sDownload, X, Y, Paint.W, 16, Align.Left)
+    ' 
+    ' If bWithSize Then
+    '   Y += 24
+    '   Paint.DrawText(Project.GetFileSize(.Size), P, Y, Paint.W - P * 2, 16, Align.Right)
+    ' Endif
     
   End With
   

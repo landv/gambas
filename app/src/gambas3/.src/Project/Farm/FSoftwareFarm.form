@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,100,82)
+  MoveScaled(0,0,103,82)
   Background = Color.TextBackground
   Text = ("Gambas Software Farm")
   Arrangement = Arrange.Vertical
@@ -135,6 +135,7 @@
     }
     { Separator3 Separator
       MoveScaled(20,22,21,0)
+      Visible = False
     }
     { Panel7 Panel
       MoveScaled(1,24,91,38)
@@ -147,7 +148,7 @@
         Background = Color.TextBackground
         Foreground = Color.TextForeground
         Expand = True
-        Arrangement = Arrange.Vertical
+        Arrangement = Arrange.Row
         Spacing = True
         Margin = True
         Border = False
@@ -163,42 +164,44 @@
     Text = ("")
     { Panel9 Panel
       MoveScaled(6,0,77,55)
-      Background = Color.TextBackground
       Foreground = Color.TextForeground
       Expand = True
       Arrangement = Arrange.Vertical
       { panTitle HBox
         MoveScaled(2,1,71,10)
-        Background = &HF8F8F8&
         Spacing = True
         Margin = True
+        { dwgName DrawingArea
+          MoveScaled(4,1,28,5)
+          Expand = True
+        }
+        { dwgStat DrawingArea
+          MoveScaled(32,1,17,4)
+        }
+        { Panel8 Panel
+          MoveScaled(56,2,1,7)
+        }
         { picIcon PictureBox
-          MoveScaled(1,1,8,8)
+          MoveScaled(59,1,8,8)
           Stretch = True
           Alignment = Align.Center
         }
         { Panel13 Panel
-          MoveScaled(13,0,1,7)
-        }
-        { dwgName DrawingArea
-          MoveScaled(16,2,28,5)
-          Expand = True
-        }
-        { dwgStat DrawingArea
-          MoveScaled(46,1,17,4)
+          MoveScaled(69,1,1,7)
         }
       }
       { Separator1 Separator
         MoveScaled(28,17,16,0)
+        Visible = False
       }
       { panDesc HSplit
         MoveScaled(2,18,73,36)
         Expand = True
         Border = False
-        { Panel3 HBox
+        { Panel6 HBox
           MoveScaled(1,1,52,34)
           Margin = True
-          { Panel11 ScrollView
+          { panTextDesc ScrollView
             MoveScaled(1,1,48,32)
             Expand = True
             Arrangement = Arrange.Vertical
@@ -217,71 +220,79 @@
               Border = False
               ScrollBar = Scroll.None
             }
-            { panURL HBox
-              MoveScaled(2,10,29,4)
+            { panURL VBox
+              MoveScaled(2,10,29,7)
+              Spacing = True
+              { lblDesc2 Label
+                MoveScaled(0,0,14,3)
+                Font = Font["Bold"]
+                Text = ("Web site")
+              }
               { urlWebSite URLLabel
-                MoveScaled(0,0,18,3)
+                MoveScaled(0,4,18,3)
                 AutoResize = True
-                Text = ("Developer web site")
               }
             }
             { lblTags Label
-              MoveScaled(2,16,14,3)
+              MoveScaled(2,18,14,3)
               Font = Font["Bold"]
               Text = ("Tags")
             }
             { panTags HPanel
-              MoveScaled(2,20,26,8)
+              MoveScaled(2,22,26,8)
               AutoResize = True
               Spacing = True
             }
           }
         }
-        { Panel6 Panel
+        { panScreenshot Panel
           MoveScaled(55,8,15,19)
+          Visible = False
           Arrangement = Arrange.Fill
           Margin = True
           { imvScreenshot ImageView
             MoveScaled(1,1,13,15)
+            Border = False
+            Alignment = Align.TopLeft
           }
         }
       }
       { spnScreenshot Spinner
-        MoveScaled(64,10,8,6)
+        MoveScaled(64,10,10,10)
         Ignore = True
       }
     }
     { HBox2 HBox
-      MoveScaled(2,56,86,7)
-      Background = &HFFFFFF&
+      MoveScaled(2,58,86,6)
       Spacing = True
       Margin = True
       { btnInstall Button
-        MoveScaled(9,0,15,5)
+        MoveScaled(9,0,15,4)
         Mouse = Mouse.Pointing
         AutoResize = True
         Text = ("Install")
       }
       { btnDownload Button
-        MoveScaled(25,0,15,5)
+        MoveScaled(25,0,15,4)
         Mouse = Mouse.Pointing
         AutoResize = True
         Text = ("Download")
         Picture = Picture["icon:/medium/download"]
       }
       { btnVote Button
-        MoveScaled(38,0,15,5)
+        MoveScaled(38,0,15,4)
+        Visible = False
         Mouse = Mouse.Pointing
         AutoResize = True
         Text = ("Vote")
         Picture = Picture["icon:/medium/bookmark"]
       }
       { Panel10 Panel
-        MoveScaled(53,0,2,5)
+        MoveScaled(53,0,2,4)
         Expand = True
       }
       { btnRemove Button
-        MoveScaled(57,0,15,5)
+        MoveScaled(57,0,15,4)
         Mouse = Mouse.Pointing
         AutoResize = True
         Text = ("Remove")

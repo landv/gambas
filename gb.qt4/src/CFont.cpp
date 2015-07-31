@@ -639,6 +639,7 @@ GB_DESC CFontDesc[] =
 	GB_PROPERTY_READ("Ascent", "i", Font_Ascent),
 	GB_PROPERTY_READ("Descent", "i", Font_Descent),
 	GB_PROPERTY_READ("Height", "i", Font_Height),
+	GB_PROPERTY_READ("H", "i", Font_Height),
 
 	GB_PROPERTY_READ("Fixed", "b", Font_Fixed),
 	GB_PROPERTY_READ("Scalable", "b", Font_Scalable),

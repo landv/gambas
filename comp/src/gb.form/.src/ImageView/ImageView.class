@@ -3,7 +3,7 @@
 Export
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,Grid,UseMouse=True"
+Public Const _Properties As String = "*,Border=True,Alignment{Align.*}=Center,Grid,UseMouse=True"
 Public Const _DefaultSize As String = "36,36"
 Public Const _Group As String = "View"
 Public Const _DrawWith As String = "DrawingArea"
@@ -17,6 +17,7 @@ Property Zoom As Float
 Property Design As Boolean
 Property Grid As Boolean
 Property UseMouse As Boolean
+Property Alignment As Integer
 
 Property ScrollX As Integer
 Property ScrollY As Integer
@@ -35,6 +36,7 @@ Private $fZoom As Float = 1
 Private $bZoom As Boolean
 Private $bFastZoom As Boolean
 Private $bGrid As Boolean
+Private $iAlign As Integer = Align.Center
 
 ' Private $fBrightness As Float
 ' Private $fContrast As Float
@@ -111,13 +113,25 @@ Private Sub GetViewRect() As Rect
   Endif
   
   If W <= $hView.W Then
-    X = ($hView.W - W) \ 2
+    If Align.IsLeft($iAlign) Then
+      X = 0
+    Else If Align.IsRight($iAlign) Then
+      X = $hView.W - W
+    Else
+      X = ($hView.W - W) \ 2
+    Endif
   Else
     X = - $hView.ScrollX
   Endif
   
   If H <= $hView.H Then
-    Y = ($hView.H - H) \ 2
+    If Align.IsTop($iAlign) Then
+      Y = 0
+    Else If Align.IsBottom($iAlign) Then
+      Y = $hView.H - H
+    Else
+      Y = ($hView.H - H) \ 2
+    Endif
   Else
     Y = - $hView.ScrollY
   Endif
@@ -384,4 +398,17 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   
   $hView.EnsureVisible(X, Y, W, H)
   
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlign = Value
+  $hView.Refresh
+
 End
