@@ -11,9 +11,9 @@ gb_qt5_opengl_la_CPPFLAGS = @QT5OPENGL_INC@
 gb_qt5_opengl_la_SOURCES = main.h main.cpp
  
 if QT_OLD_OPENGL
-gb_qt5_opengl_la_SOURCES += COldGLarea_moc.cpp COldGLArea.h COldGLarea.cpp
+gb_qt5_opengl_la_SOURCES += COldGLarea_moc.cpp COldGLarea.h COldGLarea.cpp
 else
-gb_qt5_opengl_la_SOURCES += CGLarea_moc.cpp CGLArea.h CGLarea.cpp
+gb_qt5_opengl_la_SOURCES += CGLarea_moc.cpp CGLarea.h CGLarea.cpp
 endif
  
  
