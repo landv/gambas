@@ -157,6 +157,7 @@ BEGIN_METHOD(CTOOLBUTTON_new, GB_OBJECT parent)
 	wid->setAutoRaise(true);
 
 	CWIDGET_new(wid, (void *)_object);
+	wid->calcMinimumSize();
 
 END_METHOD
 
@@ -553,7 +554,6 @@ void MyPushButton::calcMinimumSize()
 MyToolButton::MyToolButton(QWidget *parent) :
 	QToolButton(parent)
 {
-	calcMinimumSize();
 }
 
 MyToolButton::~MyToolButton()
