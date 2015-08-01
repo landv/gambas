@@ -1245,7 +1245,7 @@ Private Sub UpdateGlobalLayout()
     hMenu.Enabled = hMenu.Visible
   Next
   
-  sepMenu.Visible = bWelcome Or Not bFake
+  'sepMenu.Visible = bWelcome Or Not bFake
 
 End
 
@@ -1965,7 +1965,7 @@ Public Sub mnuHideMenu_Click()
   
   If Me.Menus.Visible Then
     Me.Menus.Hide
-    sepMenu.Hide
+    'sepMenu.Hide
     btnShowMenu.Show
     Settings["/ShowMenus"] = Me.Menus.Visible
     'Message.Optional(Subst(("To show the menu bar again, hit the following keys:<p><b>&1</b>"), mnuHideMenu.Shortcut), ("OK"), "HideMenu", "menu", Settings["/AlwaysDisplayOptionalMessages"])
@@ -1978,7 +1978,7 @@ End
 Public Sub btnShowMenu_Click()
   
   Me.Menus.Show
-  sepMenu.Show
+  'sepMenu.Show
   btnShowMenu.Hide
   Settings["/ShowMenus"] = Me.Menus.Visible
   

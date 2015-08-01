@@ -152,6 +152,7 @@ public:
 	void emitResize();
 	void setGeometryHints();
 	virtual void updateFont();
+	void present();
 	
 	GtkWindowGroup *group;
 	GtkAccelGroup *accel;

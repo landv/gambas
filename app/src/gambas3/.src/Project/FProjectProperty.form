@@ -7,6 +7,8 @@
   Persistent = True
   Resizable = False
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
   { mnuInsertEnv Menu
     { Menu17 Menu mnuInsertEnv
       Name = "Menu17"
@@ -91,33 +93,31 @@
     }
   }
   { ipnProject IconPanel
-    MoveScaled(1,0,108,69)
+    MoveScaled(1,1,108,69)
     Expand = True
     Arrangement = Arrange.Vertical
+    Spacing = True
     Count = 8
+    Border = True
     Index = 0
     Text = ("General")
     { Panel1 Panel
-      MoveScaled(1,0,88,10)
+      MoveScaled(1,0,85,9)
       { btnIcon ToolButton
-        MoveScaled(1,1,8,8)
+        MoveScaled(0,0,8,8)
         Border = True
       }
       { txtName TextLabel
-        MoveScaled(10,1,77,8)
+        MoveScaled(9,0,66,8)
         Expand = True
         Alignment = Align.Left
       }
     }
-    { Separator3 Separator
-      MoveScaled(53,11,29,0)
-    }
-    { HPanel1 HPanel
+    { panGeneral HPanel
       MoveScaled(1,11,84,58)
       Expand = True
       AutoResize = True
       Spacing = True
-      Margin = True
       { Label16 Label
         MoveScaled(0,0,16,4)
         Font = Font["Bold"]
@@ -195,7 +195,6 @@
       MoveScaled(1,1,82,68)
       Expand = True
       Spacing = True
-      Margin = True
       { lblInfo Label
         MoveScaled(0,0,79,3)
         Font = Font["Bold"]
@@ -356,9 +355,8 @@
     Index = 2
     Text = ("Components")
     { Panel3 HBox
-      MoveScaled(3,2,77,6)
+      MoveScaled(3,2,77,4)
       Spacing = True
-      Margin = True
       { chkShowUsed CheckBox
         MoveScaled(1,0,46,3)
         Expand = True
@@ -370,83 +368,66 @@
         Picture = Picture["icon:/small/undo"]
       }
     }
-    { Separator5 Separator
-      MoveScaled(2,13,21,0)
-    }
     { choComponent ComponentChooser
       MoveScaled(8,27,67,37)
       Expand = True
     }
     Index = 3
     Text = ("Libraries")
-    { Panel9 Panel
-      MoveScaled(2,1,82,9)
+    { Panel4 Panel
+      MoveScaled(3,2,80,7)
       Background = Color.TextBackground
-      Arrangement = Arrange.Fill
+      Arrangement = Arrange.Horizontal
+      Spacing = True
       Margin = True
-      { Panel4 Panel
-        MoveScaled(1,1,80,7)
-        Arrangement = Arrange.Horizontal
-        Spacing = True
-        Margin = True
-        Border = Border.Plain
-        { PictureBox1 PictureBox
-          MoveScaled(1,1,6,6)
-          Picture = Picture["icon:/32/warning"]
-          AutoResize = True
-          Alignment = Align.Left
-        }
-        { TextLabel1 TextLabel
-          MoveScaled(7,1,66,5)
-          Font = Font["-1"]
-          Expand = True
-          Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
-          Alignment = Align.Left
-        }
+      Border = Border.Plain
+      { PictureBox1 PictureBox
+        MoveScaled(1,1,6,6)
+        Picture = Picture["icon:/32/warning"]
+        AutoResize = True
+        Alignment = Align.Left
       }
-    }
-    { Separator6 Separator
-      MoveScaled(35,11,21,0)
-      Visible = False
+      { TextLabel1 TextLabel
+        MoveScaled(7,1,66,5)
+        Font = Font["-1"]
+        Expand = True
+        Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
+        Alignment = Align.Left
+      }
     }
     { gvwLibrary GridView
       MoveScaled(6,20,59,29)
       Expand = True
-      Border = False
       Mode = Select.Single
       Grid = False
     }
-    { Separator7 Separator
-      MoveScaled(25,51,23,0)
-    }
     { HBox18 HBox
-      MoveScaled(1,53,84,6)
+      MoveScaled(1,53,84,4)
       Spacing = True
-      Margin = True
       { btnInsertLib Button
-        MoveScaled(1,1,17,4)
+        MoveScaled(0,0,17,4)
         Text = Shortcut(("Add"), "A") & "..."
         Picture = Picture["icon:/small/add"]
       }
       { btnRemoveLib Button
-        MoveScaled(19,1,17,4)
+        MoveScaled(18,0,17,4)
         Text = Shortcut(("Remove"), "R")
         Picture = Picture["icon:/small/remove"]
       }
       { btnMoveUpLib Button
-        MoveScaled(37,1,6,4)
+        MoveScaled(36,0,6,4)
         Picture = Picture["icon:/small/up"]
       }
       { btnMoveDownLib Button
-        MoveScaled(44,1,6,4)
+        MoveScaled(43,0,6,4)
         Picture = Picture["icon:/small/down"]
       }
       { Panel2 Panel
-        MoveScaled(51,1,12,4)
+        MoveScaled(50,0,12,4)
         Expand = True
       }
       { btnUndoLib Button
-        MoveScaled(66,1,17,4)
+        MoveScaled(65,0,17,4)
         Text = Shortcut(("Reset"), "R")
         Picture = Picture["icon:/small/undo"]
       }
@@ -456,17 +437,12 @@
     { tvwEnv TableView
       MoveScaled(3,6,68,20)
       Expand = True
-      Border = False
       Padding = 4
       Header = GridView.Horizontal
     }
-    { Separator8 Separator
-      MoveScaled(30,31,24,0)
-    }
     { HBox3 HBox
-      MoveScaled(1,36,40,6)
+      MoveScaled(1,36,40,4)
       Spacing = True
-      Margin = True
       { btnInsertEnv MenuButton
         MoveScaled(0,0,19,4)
         Text = ("&Insert")
@@ -484,17 +460,12 @@
     { tvwArg TableView
       MoveScaled(6,4,58,19)
       Expand = True
-      Border = False
       Padding = 4
       Header = GridView.Vertical
     }
-    { Separator9 Separator
-      MoveScaled(26,27,34,0)
-    }
     { HBox2 HBox
-      MoveScaled(9,45,53,6)
+      MoveScaled(9,45,53,4)
       Spacing = True
-      Margin = True
       { btnInsertArg Button
         MoveScaled(0,0,17,4)
         Text = Shortcut(("Insert"), "I")
@@ -517,9 +488,8 @@
     Index = 6
     Text = ("Options")
     { Panel6 VBox
-      MoveScaled(0,0,89,66)
+      MoveScaled(0,0,86,66)
       Spacing = True
-      Margin = True
       { Label7 Label
         MoveScaled(0,0,84,3)
         Font = Font["Bold"]
@@ -700,29 +670,24 @@
     { gvwStat GridView
       MoveScaled(10,7,62,25)
       Expand = True
-      Border = False
       Padding = 8
     }
     Index = 0
   }
-  { Separator1 Separator
-    MoveScaled(54,70,23,0)
-  }
   { Panel10 HBox
-    MoveScaled(29,71,63,6)
+    MoveScaled(29,72,63,4)
     Spacing = True
-    Margin = True
     { Panel11 Panel
       MoveScaled(2,1,19,3)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(22,1,17,4)
+      MoveScaled(22,0,17,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(40,1,18,4)
+      MoveScaled(40,0,18,4)
       Text = ("Cancel")
       Cancel = True
     }

@@ -33,7 +33,7 @@ End
 Public Sub Form_Arrange()
 
   webShortcut.Raise
-  webShortcut.Move(tabShortcut.ClientX, tabShortcut.ClientY, tabShortcut.ClientW, tabShortcut.ClientH)
+  webShortcut.Move(tabShortcut.X + tabShortcut.ClientX, tabShortcut.Y + tabShortcut.ClientY, tabShortcut.ClientW, tabShortcut.ClientH)
 
 End
 

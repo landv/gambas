@@ -27,7 +27,8 @@ Public Sub Run(sPath As String) As Boolean
   SetPath(sPath)
   btnClose.Show
   panMediaClose.Show
-  tabInfo.Border = False
+  'tabInfo.Border = False
+  Me.Margin = True
   Return Not FFileProperties.ShowModal()
   
 End
@@ -249,7 +250,13 @@ End
 
 Public Sub Form_Arrange()
 
-  If btnClose.Visible Then btnClose.Move(Me.ClientW - btnClose.W - Desktop.Scale, Me.ClientH - btnClose.H - Desktop.Scale)
+  Dim D As Integer
+  
+  If btnClose.Visible Then 
+    D = Desktop.Scale
+    If Me.Margin Then D += Desktop.Scale
+    btnClose.Move(Me.ClientW - btnClose.W - D, Me.ClientH - btnClose.H - D)
+  Endif
 
 End
 

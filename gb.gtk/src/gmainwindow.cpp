@@ -557,11 +557,19 @@ void gMainWindow::emitOpen()
 	//_no_resize_event = false;
 }
 
+void gMainWindow::present()
+{
+	if (_no_take_focus)
+		gtk_widget_show(GTK_WIDGET(border));
+	else
+		gtk_window_present(GTK_WINDOW(border));
+}
+
 void gMainWindow::afterShow()
 {
 	if (_activate)
 	{
-		gtk_window_present(GTK_WINDOW(border));
+		present();
 		_activate = false;
 	}
 }
@@ -586,13 +594,10 @@ void gMainWindow::setVisible(bool vl)
 		visible = true;
 		_hidden = false;
 		
-		setTransparent(_transparent);
+		setTransparent(_transparent); // must not call gtk_window_present!
 
 		if (isTopLevel())
 		{
-			if (!_title || !*_title)
-				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
-			
 			/*if (!_xembed)
 			{
 				fprintf(stderr, "gtk_window_group_add_window: %p -> %p\n", border, gApplication::currentGroup());
@@ -609,16 +614,20 @@ void gMainWindow::setVisible(bool vl)
 			#endif
 
 			gtk_window_move(GTK_WINDOW(border), bufX, bufY);
+			
 			if (isPopup())
 			{
 				gtk_widget_show_now(border);
 				gtk_widget_grab_focus(border);
 			}
-			else if (_no_take_focus)
-				gtk_widget_show(border);
 			else
-				gtk_window_present(GTK_WINDOW(border));
+			{
+				present();
+			}
 
+			if (!_title || !*_title)
+				gtk_window_set_title(GTK_WINDOW(border), gApplication::defaultTitle());
+			
 			if (isUtility())
 			{
 				gMainWindow *parent = _current;
@@ -712,7 +721,7 @@ void gMainWindow::setFullscreen(bool vl)
 	{
 		gtk_window_fullscreen(GTK_WINDOW(border));
 		if (isVisible())
-			gtk_window_present(GTK_WINDOW(border));
+			present();
 	}
 	else
 		gtk_window_unfullscreen(GTK_WINDOW(border));
@@ -834,13 +843,13 @@ void gMainWindow::showActivate()
 
 	show();
 	if (v)
-		gtk_window_present(GTK_WINDOW(border));
+		present();
 }
 
 void gMainWindow::activate()
 {
 	if (isTopLevel() && isVisible())
-		gtk_window_present(GTK_WINDOW(border));
+		present();
 }
 
 void gMainWindow::showPopup()
@@ -853,7 +862,7 @@ void gMainWindow::showPopup()
 void gMainWindow::raise()
 {
 	if (!isTopLevel()) { gControl::raise(); return; }
-	gtk_window_present(GTK_WINDOW(border));
+	present();
 }
 
 const char* gMainWindow::text()
@@ -1631,7 +1640,7 @@ void gMainWindow::setTransparent(bool vl)
 	bufW = w - 1;
 	resize(w, h);
 
-	gtk_window_present(GTK_WINDOW(border));
+	//gtk_window_present(GTK_WINDOW(border));
 }
 
 bool gMainWindow::closeAll()

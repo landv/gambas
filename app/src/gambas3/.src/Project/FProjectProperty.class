@@ -1203,3 +1203,9 @@ Public Sub btnAddExclude_Click()
 
 End
 
+
+Public Sub panGeneral_Arrange()
+
+  txtAuthor.H = panGeneral.H - txtAuthor.Y - Desktop.Scale
+
+End

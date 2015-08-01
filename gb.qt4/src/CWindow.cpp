@@ -1593,6 +1593,9 @@ void MyMainWindow::initProperties(int which)
 	if (!THIS->toplevel || effectiveWinId() == 0)
 		return;
 
+	if (!THIS->title && _border)
+		setWindowTitle(TO_QSTRING(GB.Application.Title()));
+
 	//qDebug("initProperties: %d", which);
 	X11_flush();
 	
@@ -1621,16 +1624,14 @@ void MyMainWindow::initProperties(int which)
 	if (which & PROP_STICKY)
 		X11_window_set_desktop(effectiveWinId(), isVisible(), THIS->sticky ? 0xFFFFFFFF : X11_get_current_desktop());
 	
+	X11_flush();
 	#endif
 }
 
-void MyMainWindow::afterShow()
+void MyMainWindow::setEventLoop()
 {
 	if (!CWIDGET_test_flag(THIS, WF_CLOSED))
-	{
-		//define_mask(THIS, THIS->picture, THIS->masked);	
 		THIS->loopLevel = CWINDOW_Current ? CWINDOW_Current->loopLevel : 0;
-	}
 }
 
 void MyMainWindow::activateLater()
@@ -1666,17 +1667,21 @@ void MyMainWindow::present(QWidget *parent)
 		else
 			show();
 		
-#if QT5
+#ifdef QT5
 		//qDebug("createWinId: %p", (void *)effectiveWinId());
+		if (THIS->noTakeFocus)
+			X11_window_set_user_time(effectiveWinId(), 0);
 		initProperties(PROP_ALL);
 		if (THIS->noTakeFocus)
 			X11_window_set_user_time(effectiveWinId(), 0);
+#else
+		initProperties(PROP_SKIP_TASKBAR);
 #endif
 	
-		if (isUtility() && _resizable)
-    	setSizeGrip(true);
+		/*if (isUtility() && _resizable)
+			setSizeGrip(true);
 		else
-			setSizeGrip(false);
+			setSizeGrip(false);*/
 	}
 	else
 	{
@@ -1722,10 +1727,8 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 	//CWIDGET_clear_flag(THIS, WF_CLOSED);
 
-	if (!THIS->title && _border)
-		setWindowTitle(TO_QSTRING(GB.Application.Title()));
-
 	present();
+	setEventLoop();
 
 	#ifndef NO_X_WINDOW
 	if (isUtility())
@@ -1796,7 +1799,7 @@ void MyMainWindow::showModal(void)
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
 	present(CWINDOW_Active ? CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget : 0);
-	afterShow();
+	setEventLoop();
 	
 	THIS->loopLevel++;
 	CWINDOW_Current = THIS;
@@ -1856,7 +1859,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 	setFocus();
 	show();
 	raise();
-	afterShow();
+	setEventLoop();
 	//QTimer::singleShot(50, this, SLOT(activateLater()));
 	
 	THIS->loopLevel++;

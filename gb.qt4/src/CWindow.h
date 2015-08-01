@@ -216,7 +216,7 @@ public:
 	//void activateLater() { _activate = true; }
 	void showModal();
 	void showPopup(QPoint &pos);
-	void afterShow();
+	void setEventLoop();
 	//bool isModal() { return testWFlags(WShowModal); }
 	void doReparent(QWidget *w, const QPoint &p);
 

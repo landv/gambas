@@ -740,12 +740,8 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	conn = mysql_init(NULL);
 
-	/* (BM) connect by default to the mysql database */
-
-	if (desc->name)
-		name = desc->name;
-	else
-		name = "mysql"; /* Note: Users may not have access to database mysql */
+	// NULL is a possible database name
+	name = desc->name;
 
 	//mysql_options(conn, MYSQL_READ_DEFAULT_GROUP,"Gambas");
 

@@ -171,23 +171,25 @@
         MoveScaled(2,1,71,10)
         Spacing = True
         Margin = True
-        { dwgName DrawingArea
-          MoveScaled(4,1,28,5)
-          Expand = True
-        }
-        { dwgStat DrawingArea
-          MoveScaled(32,1,17,4)
-        }
-        { Panel8 Panel
-          MoveScaled(56,2,1,7)
-        }
         { picIcon PictureBox
-          MoveScaled(59,1,8,8)
+          MoveScaled(1,1,8,8)
           Stretch = True
           Alignment = Align.Center
         }
+        { Panel8 Panel
+          MoveScaled(11,1,1,7)
+          Visible = False
+        }
+        { dwgName DrawingArea
+          MoveScaled(15,1,28,5)
+          Expand = True
+        }
+        { dwgStat DrawingArea
+          MoveScaled(45,1,17,4)
+        }
         { Panel13 Panel
           MoveScaled(69,1,1,7)
+          Visible = False
         }
       }
       { Separator1 Separator
