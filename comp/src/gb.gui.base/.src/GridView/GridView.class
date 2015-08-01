@@ -713,7 +713,6 @@ Public Sub ScrollArea_Draw()
       If Not hRowBorder Then
         If $iMode And If Not _DoNotDrawSelection Then
           If _IsRowSelected(I) Then
-            If I = 0 Then Debug Y;; hSpan.Y;; Paint.ClipRect.Y
             Paint.FillRect(0, Y, Paint.W, H, Color.SetAlpha(Color.SelectedBackground, 192))
           Endif
         Endif
