@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,59,32)
+  MoveScaled(0,0,113,71)
   Visible = False
   Action = "help"
   Text = ("Help browser")
@@ -67,7 +67,7 @@
       MoveScaled(51,0,1,4)
     }
     { btnWebSite ToolButton
-      MoveScaled(52,0,21,4)
+      MoveScaled(52,0,31,4)
       #Translate = False
       ToolTip = "Gambas web site"
       AutoResize = True
@@ -75,7 +75,7 @@
       Picture = Picture["icon:/small/gambas"]
     }
     { btnPrint ToolButton
-      MoveScaled(73,0,8,4)
+      MoveScaled(84,0,8,4)
       AutoResize = True
       Text = ("Print")
       Picture = Picture["icon:/small/print"]
@@ -84,22 +84,25 @@
   { Printer1 #Printer
     #MoveScaled(4,2)
   }
-  { sepToolbar Separator
-    MoveScaled(12,5,20,0)
-  }
-  { splHelp HSplit
-    MoveScaled(2,9,80,29)
+  { Panel1 Panel
+    MoveScaled(2,9,81,30)
     Expand = True
-    { tvwClasses TreeView
-      MoveScaled(3,1,16,27)
-      Visible = False
+    Arrangement = Arrange.Fill
+    Border = Border.Plain
+    { splHelp HSplit
+      MoveScaled(0,0,80,29)
       Expand = True
-      Sorted = True
-      Border = False
-    }
-    { !webHelp HelpView
-      MoveScaled(22,2,28,16)
-      #Public = True
+      { tvwClasses TreeView
+        MoveScaled(3,1,16,27)
+        Visible = False
+        Expand = True
+        Sorted = True
+        Border = False
+      }
+      { !webHelp HelpView
+        MoveScaled(22,2,28,16)
+        #Public = True
+      }
     }
   }
   { movWaiting MovieBox

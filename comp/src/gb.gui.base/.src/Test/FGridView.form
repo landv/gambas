@@ -7,21 +7,25 @@
   Spacing = True
   Margin = True
   { HBox1 HBox
-    MoveScaled(6,1,45,4)
+    MoveScaled(6,1,55,4)
     { txtPadding SpinBox
       MoveScaled(3,0,8,4)
     }
     { Button1 Button
       MoveScaled(18,0,14,4)
     }
+    { Button2 Button
+      MoveScaled(34,0,16,4)
+      Text = ("Border")
+    }
   }
   { gvwInfo GridView
-    MoveScaled(6,10,51,31)
+    MoveScaled(8,11,51,31)
     Expand = True
+    Border = False
     Mode = Select.Multiple
-    Grid = False
     Padding = 0
-    Header = GridView.Both
+    ShowCursor = True
     Sorted = True
   }
   { TextBox1 TextBox

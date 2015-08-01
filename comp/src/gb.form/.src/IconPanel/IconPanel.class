@@ -24,13 +24,11 @@ Private $aCont As New _IconPanelContainer[]
 Private $iCurrent As Integer = -1
 Private $hPanel As Panel
 Private $hBorder As Panel
+Private $hSep As Separator
 
 Private Const MIN_WIDTH_PANEL As Integer = 20
 
 Public Sub _new()
-
-  Dim hSep As Separator
-  'Dim hSpace As Panel
 
   Me.Spacing = True
 
@@ -48,8 +46,8 @@ Public Sub _new()
   $hView.Border = False
   '$hView.ScrollBar = Scroll.None
   
-  hSep = New Separator($hBorder)
-  hSep.W = 1
+  $hSep = New Separator($hBorder)
+  $hSep.W = 1
   
   'hSpace = New Panel($hBorder)
   'hSpace.W = Desktop.Scale
@@ -252,13 +250,15 @@ End
 
 Private Function Border_Read() As Boolean
 
-  Return $hBorder.Border <> Border.None
+  Return $hView.Border <> Border.None
 
 End
 
 Private Sub Border_Write(bBorder As Boolean)
 
-  $hBorder.Border = If(bBorder, Border.Plain, Border.None)
+  $hView.Border = If(bBorder, Border.Plain, Border.None)
+  $hSep.Visible = Not bBorder
+  $hBorder.Spacing = bBorder
 
 End
 

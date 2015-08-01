@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,94,62)
+  MoveScaled(0,0,96,64)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -9,6 +9,7 @@
   Utility = True
   Arrangement = Arrange.Fill
   Spacing = True
+  Margin = True
   { mnuPopup Menu
     Visible = False
     { mnuColor Menu
@@ -30,8 +31,8 @@
     MoveScaled(1,1,92,60)
     Arrangement = Arrange.Vertical
     Spacing = True
-    Margin = True
     Count = 10
+    Border = True
     Index = 0
     Text = ("Identity")
     Picture = Picture["icon:/medium/user"]

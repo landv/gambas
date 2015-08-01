@@ -29,7 +29,7 @@ Public Sub Form_Open()
   ' Next
   'gvwInfo[8, 0].Border = hBorderLeft
   
-  gvwInfo.Rows.Border = New Border("margin:4;radius:8;padding:6;width:4.5;style:double")
+  'gvwInfo.Rows.Border = New Border("margin:4;radius:8;padding:6;width:4.5;style:double")
   
   'gvwinfo.Rows.Resizable = True
   gvwinfo[0, 0].Text = "Bleu"
@@ -151,5 +151,11 @@ End
 Public Sub Button1_Click()
 
   Me.Font = Null
+
+End
+
+Public Sub Button2_Click()
+
+  gvwInfo.Border = Not gvwInfo.Border
 
 End

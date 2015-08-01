@@ -7,6 +7,7 @@
   Persistent = True
   Arrangement = Arrange.Vertical
   Spacing = True
+  Margin = True
   { mnuTranslation Menu
     Visible = False
     { mnuNew Menu
@@ -40,7 +41,6 @@
     MoveScaled(1,1,107,72)
     Expand = True
     Arrangement = Arrange.Vertical
-    Border = False
     Count = 3
     Index = 0
     Text = ("Translation")
@@ -187,7 +187,7 @@
       MoveScaled(15,62,15,0)
     }
     { HBox6 Panel
-      MoveScaled(1,63,102,5)
+      MoveScaled(1,63,102,4)
       Arrangement = Arrange.Horizontal
       AutoResize = True
       Spacing = True

@@ -5,10 +5,11 @@
   Text = ("Configure shortcuts")
   Icon = Picture["icon:/small/shortcut"]
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
   { tvwShortcut TableView
     MoveScaled(3,1,76,70)
     Expand = True
-    Border = False
     Mode = Select.Single
     Header = GridView.Horizontal
     ScrollBar = Scroll.Vertical
@@ -17,13 +18,9 @@
   { timAfter #Timer
     #MoveScaled(63.4286,29.1429)
   }
-  { Separator1 Separator
-    MoveScaled(7,75,70,0)
-  }
   { HBox2 HBox
-    MoveScaled(1,77,89,6)
+    MoveScaled(1,77,89,4)
     Spacing = True
-    Margin = True
     { btnFind ToggleButton
       MoveScaled(0,0,22,4)
       AutoResize = True
