@@ -37,6 +37,7 @@
 #include "gbx_local.h"
 #include "gbx_number.h"
 #include "gbx_c_string.h"
+#include "gbx_math.h"
 
 #include "gbx_date.h"
 
@@ -753,6 +754,7 @@ __MAKE_DATE:
 int DATE_diff(VALUE *date1, VALUE *date2, int period)
 {
 	int64_t diff = 0;
+	int sdiff;
 	DATE_SERIAL ds1 = {0};
 	DATE_SERIAL ds2 = {0};
 	bool neg;
@@ -762,6 +764,9 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 		case DP_DAY:
 		case DP_WEEK:
 			diff = date1->_date.date - date2->_date.date;
+			sdiff = lsgn(diff);
+			if (sdiff != lsgn(date1->_date.time - date2->_date.time))
+				diff -= sdiff;
 			break;
 
 		case DP_MILLISECOND:
@@ -781,6 +786,9 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 
 		case DP_WEEKDAY:
 			diff = date1->_date.date - date2->_date.date;
+			sdiff = lsgn(diff);
+			if (sdiff != lsgn(date1->_date.time - date2->_date.time))
+				diff -= sdiff;
 			ds1 = *DATE_split(date1);
 			ds2 = *DATE_split(date2);
 			break;
@@ -875,6 +883,7 @@ int DATE_get_timezone(void)
 	{
 		struct tm *tm = localtime(&t);
 		tz = -tm->tm_gmtoff;
+		last = t;
 	}
 
 	return tz;
