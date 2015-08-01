@@ -424,13 +424,8 @@ Public Sub SetPath(sPath As String)
 
   Dim sMsg As String
   
-  If txtFile.ReadOnly Then
-    If Not Exist(sPath) Then sMsg = ("File not found.")
-    SetDir(sPath)
-  Else
-    If Not IsDir(File.Dir(sPath)) Then sMsg = ("Directory not found.")
-    SetDir(File.Dir(sPath))
-  Endif
+  If Not IsDir(File.Dir(sPath)) Then sMsg = ("Directory not found.")
+  SetDir(File.Dir(sPath))
 
   If Not GetMulti() Then 
   

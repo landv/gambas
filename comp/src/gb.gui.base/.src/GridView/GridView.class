@@ -574,7 +574,7 @@ Public Sub ScrollArea_Draw()
   
   ' Cells
   
-  hRect = New Rect($hView.ClientX - $hView.Proxy.X, $hView.ClientY, $hView.ClientW, $hView.ClientH)
+  hRect = New Rect(0, 0, $hView.ClientW, $hView.ClientH)
   hRect.Adjust(F)
   If System.RightToLeft Then
     hRect.Adjust(0, $hColumns.Height, $hRows.Width, 0)
@@ -713,6 +713,7 @@ Public Sub ScrollArea_Draw()
       If Not hRowBorder Then
         If $iMode And If Not _DoNotDrawSelection Then
           If _IsRowSelected(I) Then
+            If I = 0 Then Debug Y;; hSpan.Y;; Paint.ClipRect.Y
             Paint.FillRect(0, Y, Paint.W, H, Color.SetAlpha(Color.SelectedBackground, 192))
           Endif
         Endif
@@ -730,7 +731,7 @@ Public Sub ScrollArea_Draw()
           hCursor = Rect(X, Y, Max(0, W - 1), Max(0, H - 1))
           If J = $hColumns.Max Then Inc hCursor.Right
         Endif
-        If I = $hRows.Max Then Dec hCursor.Bottom
+        'If I = $hRows.Max Then Dec hCursor.Bottom
         ' Paint.Begin(Draw.Device)
         ' Paint.ClipRect = hClip
         ' Paint.Brush = Paint.Color(Color.SetAlpha(Color.SelectedBackground, 192))
@@ -844,7 +845,7 @@ End
 
 Public Sub _GetFrameWidth() As Integer
   
-  If $hView.Border Then Return 1 'Return Style.FrameWidth
+  'If $hView.Border Then Return 1 'Return Style.FrameWidth
   
 End
 
@@ -927,6 +928,7 @@ Public Sub ScrollArea_MouseMove()
   Dim F As Integer = _GetFrameWidth()
   Dim bInRowHeader As Boolean
 
+  If Me.Design Then Return
   If Not Me.Enabled Then Return
   If $bIgnoreMove Then Return
   If _NoMouse Then Return
@@ -1134,6 +1136,7 @@ End
 
 Public Sub ScrollArea_MouseDrag()
   
+  If Me.Design Then Return
   If Not Me.Enabled Then Return
   If _NoMouse Then Return
   
@@ -1160,6 +1163,7 @@ Public Sub ScrollArea_MouseDown()
   $MX = Mouse.X - F
   $MY = Mouse.Y - F
   
+  If Me.Design Then Return
   If Not Me.Enabled Then Return
   If _NoMouse Then Return
   
@@ -1254,6 +1258,7 @@ End
 
 Private Sub AfterMouseUp()
   
+  If Me.Design Then Return
   If _NoMouse Then Return
   
   $bResize = False
@@ -1295,6 +1300,7 @@ Public Sub ScrollArea_DblClick()
   
   'Debug $bInCell
   
+  If Me.Design Then Return
   If _NoMouse Then Return
   
   If $bInCell Then 

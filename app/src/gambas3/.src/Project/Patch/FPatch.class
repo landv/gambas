@@ -13,8 +13,9 @@ Private $bWindowed As Boolean
 Public Sub _new()
 
   $bWindowed = Not Me.Parent
-  Panel3.Visible = $bWindowed
-  HBox2.Visible = $bWindowed
+  panSelectPath.Visible = $bWindowed
+  panButton.Visible = $bWindowed
+  Me.Margin = $bWindowed
 
 End
 

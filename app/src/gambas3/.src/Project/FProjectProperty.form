@@ -7,6 +7,8 @@
   Persistent = True
   Resizable = False
   Arrangement = Arrange.Vertical
+  Spacing = True
+  Margin = True
   { mnuInsertEnv Menu
     { Menu17 Menu mnuInsertEnv
       Name = "Menu17"
@@ -95,6 +97,7 @@
     Expand = True
     Arrangement = Arrange.Vertical
     Count = 8
+    Border = True
     Index = 0
     Text = ("General")
     { Panel1 Panel
@@ -112,7 +115,7 @@
     { Separator3 Separator
       MoveScaled(53,11,29,0)
     }
-    { HPanel1 HPanel
+    { panGeneral HPanel
       MoveScaled(1,11,84,58)
       Expand = True
       AutoResize = True
@@ -705,24 +708,20 @@
     }
     Index = 0
   }
-  { Separator1 Separator
-    MoveScaled(54,70,23,0)
-  }
   { Panel10 HBox
-    MoveScaled(29,71,63,6)
+    MoveScaled(29,71,63,4)
     Spacing = True
-    Margin = True
     { Panel11 Panel
       MoveScaled(2,1,19,3)
       Expand = True
     }
     { btnOK Button
-      MoveScaled(22,1,17,4)
+      MoveScaled(22,0,17,4)
       Text = ("OK")
       Default = True
     }
     { btnCancel Button
-      MoveScaled(40,1,18,4)
+      MoveScaled(40,0,18,4)
       Text = ("Cancel")
       Cancel = True
     }
