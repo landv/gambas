@@ -19,7 +19,7 @@ Private $W As Integer
 Private $H As Integer
 Private $DX As Integer
 Private $DY As Integer
-Private $dShow As Float
+Private $fShow As Float
 Private $sOld As String
 Private $bInside As Boolean
 
@@ -248,6 +248,9 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
   
   hCtrl = Application.ActiveControl
   
+  Try GetTopLevel(hCtrl).Show
+  Try hCtrl.SetFocus
+  
   If Not Me.Visible Then 
     hWin = Application.ActiveWindow
     Me.Show
@@ -262,10 +265,7 @@ Private Sub MakeBorder(Optional W As Integer, H As Integer)
     Me.Raise
   Endif
   
-  Try GetTopLevel(hCtrl).Show
-  Try hCtrl.SetFocus
-  
-  $dShow = Timer
+  $fShow = Timer
   
 End
 
@@ -325,18 +325,15 @@ End
 
 Public Sub Form_Show()
 
-  'DEBUG
   'timCheck.Enabled = FALSE
   'GetTopLevel($hCtrl).Show
-  timCheck.Delay = timCheck.Delay
-  timCheck.Enabled = True
+  timCheck.Start
 
 End
 
 Public Sub Form_Hide()
 
-  'Debug
-  timCheck.Enabled = False
+  timCheck.Stop
   $hObs = Null
   $hWatcher2 = Null
 
@@ -388,9 +385,7 @@ End
 
 Public Sub timCheck_Timer()
 
-  'Debug Me.X;; Me.Y;; Me.Visible;; Me.Picture.W;; Me.Picture.H
-  If $bInside Or If Not Object.IsValid($hCtrl) Or If (Timer - $dShow) > ($iDelay / 1000) Then
-    'Debug
+  If $bInside Or If Not Object.IsValid($hCtrl) Or If (Timer - $fShow) > ($iDelay / 1000) Then
     Me.Close
     Return 
   Endif 
