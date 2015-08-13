@@ -686,17 +686,17 @@ PATTERN *TRANS_get_constant_value(TRANS_DECL *decl, PATTERN *current)
 		{
 			value = *current++;
 			if (!PATTERN_is_string(value))
-				THROW("Syntax error");
+				THROW("Constant string expected");
 			index = PATTERN_index(value);
 			value = *current++;
 			if (!PATTERN_is(value, RS_RBRA))
-				THROW("Syntax error");
+				THROW("Missing right brace");
 			TYPE_set_id(&decl->type, T_CSTRING);
 		}
 		else
 		{
 			if (!PATTERN_is_string(value))
-				THROW("Syntax error");
+				THROW("Constant string expected");
 		}
 
 		decl->is_integer = FALSE;
