@@ -26,11 +26,11 @@
 #include "utils.h"
 
 Document* XMLDocument_New();
-Document* XMLDocument_NewFromFile(const char *fileName, const size_t lenFileName, const DocumentType docType = XMLDocumentType);
+Document* XMLDocument_NewFromFile(const char *fileName, const size_t lenFileName, const DocumentType docType = XMLDocumentType) throw(XMLParseException);
 void XMLDocument_Release(Document *doc);
 
 void XMLDocument_Open(Document *doc, const char *fileName, const size_t lenFileName) throw(XMLParseException);
-void XMLDocument_SetContent(Document *doc, const char *content, size_t len) throw(XMLParseException);
+void XMLDocument_SetContent(Document *doc, const char *content, const size_t len) throw(XMLParseException);
 void XMLDocument_Save(Document *doc, const char *fileName, bool indent = false);
 
 void XMLDocument_SetRoot(Document *doc, Element *newRoot);

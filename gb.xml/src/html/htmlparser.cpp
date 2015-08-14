@@ -305,7 +305,7 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                         //Seeking to the next white space or tag-end
                         while(!(XML.isWhiteSpace(s)) && pos < endData && s != '>'){pos++; s = *pos;}
                         delimiter = s;
-                        char* delimiterPos = (char*)memchr(pos, delimiter, endData - pos);
+                        const char* delimiterPos = (char*)memchr(pos, delimiter, endData - pos);
 
                         XML.XMLElement_AddAttribute(elmt, attrNamestart, attrNameEnd - attrNamestart,
                                            pos, delimiterPos - pos);
@@ -315,7 +315,8 @@ Node** parseHTML(char const *data, const size_t lendata, size_t *nodeCount)// XM
                     else
                     {
                         pos++;
-                        char* delimiterPos = (char*)memchr(pos, delimiter, endData - pos);
+                        const char* delimiterPos = (char*)memchr(pos, delimiter, endData - pos);
+                        if(!delimiterPos) delimiterPos = endData;
 
                         XML.XMLElement_AddAttribute(elmt, attrNamestart, attrNameEnd - attrNamestart,
                                            pos, delimiterPos - pos);
