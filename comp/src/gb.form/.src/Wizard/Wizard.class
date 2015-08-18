@@ -311,12 +311,15 @@ End
 Public Sub Wizard_Next()
 
   Dim iInd As Integer = GetNext($iCurrent)
+  Dim bCancel As Boolean
+  
   If iInd >= 0 Then
     Inc $iAllowAnimation
     Index_Write(iInd)
     Dec $iAllowAnimation
   Else
-    Raise BeforeChange
+    bCancel = Raise BeforeChange
+    If bCancel Then Return
     Raise {Close}
   Endif
 

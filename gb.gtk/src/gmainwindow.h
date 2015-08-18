@@ -127,6 +127,7 @@ public:
 	void (*onActivate)(gMainWindow *sender);
 	void (*onDeactivate)(gMainWindow *sender);
 	void (*onState)(gMainWindow *sender);
+	void (*onFontChange)(gMainWindow *sender);
 
 //"Static"
 	static GList *windows;

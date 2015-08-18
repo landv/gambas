@@ -52,7 +52,7 @@ Public Sub _new()
   Me.Proxy = $hTextBox
   
   $hButton = New ToolButton($hBackground) As "Button"
-  $hButton.W = 24
+  $hButton.W = Desktop.Scale * 3
   $hButton.Picture = Picture["./img/select.png"]
   '$hButton.Hide
   
@@ -230,7 +230,7 @@ Public Sub Background_Arrange()
   If System.RightToLeft Then
     X = FW
     For Each hCtrl In aCtrl
-      hCtrl.W = 24
+      hCtrl.W = Desktop.Scale * 3
       hCtrl.Move(X, FH, hCtrl.W, H)
       X += hCtrl.W
     Next
@@ -243,7 +243,7 @@ Public Sub Background_Arrange()
   Else
     X = Me.W - FW
     For Each hCtrl In aCtrl
-      hCtrl.W = 24
+      hCtrl.W = Desktop.Scale * 3
       X -= hCtrl.W
       hCtrl.Move(X, FH, hCtrl.W, H)
     Next

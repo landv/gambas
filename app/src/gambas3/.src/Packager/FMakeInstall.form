@@ -111,18 +111,6 @@
         Expand = True
       }
     }
-    { HBox19 HBox
-      MoveScaled(1,39,70,4)
-      Spacing = True
-      { Label9 Label
-        MoveScaled(0,0,23,4)
-      }
-      { chkSignature CheckBox
-        MoveScaled(24,0,39,4)
-        AutoResize = True
-        Text = ("Sign package")
-      }
-    }
     { Panel1 HBox
       MoveScaled(1,44,72,12)
       Spacing = True
@@ -627,8 +615,24 @@
     }
     Index = 10
     Text = ("Create package")
+    { HBox19 HBox
+      MoveScaled(1,1,74,4)
+      Visible = False
+      Spacing = True
+      { chkSignature CheckBox
+        MoveScaled(0,0,34,4)
+        AutoResize = True
+        Text = ("Sign packages using passphrase")
+      }
+      { txtPassPhrase TextBox
+        MoveScaled(36,0,13,4)
+        Enabled = False
+        Expand = True
+        Password = True
+      }
+    }
     { Panel6 HBox
-      MoveScaled(2,1,82,4)
+      MoveScaled(2,8,82,4)
       { Label10 Label
         MoveScaled(0,0,28,4)
         Font = Font["Bold"]

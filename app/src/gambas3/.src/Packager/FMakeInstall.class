@@ -16,6 +16,7 @@ Private Const TAB_DEP As Integer = 6
 Private Const TAB_FILE As Integer = 7
 Private Const TAB_TEST As Integer = 8
 Private Const TAB_DIR As Integer = 9
+Private Const TAB_CREATE As Integer = 10
 
 Private Sub HasDebianTarget() As Boolean
   
@@ -453,6 +454,16 @@ Public Sub wizInstall_BeforeChange()
       Endif
       Settings["/FMakeInstall/PackagePath"] = Package.Path
       
+    Case TAB_CREATE
+      
+      If chkSignature.Value And If Not txtPassPhrase.Text Then
+        txtPassPhrase.SetFocus
+        Balloon.Warning(("Please enter your passphrase."), txtPassPhrase)
+        Stop Event
+        Return
+      Endif
+      Package.Signature = If(chkSignature.Value, txtPassPhrase.Text, "")
+      
   End Select
   
 End 
@@ -513,6 +524,9 @@ Public Sub wizInstall_Change()
       
     Case TAB_DIR
       dchInstall.SelectedPath = Settings["/FMakeInstall/PackagePath", System.User.Home]
+      
+    Case TAB_CREATE
+      chkSignature.Value = Settings["/FMakeInstall/SignPackage", False]
       
   End Select
 
@@ -1177,5 +1191,13 @@ End
 Public Sub btnCopy_Click()
 
   Clipboard.Copy(edtLog.Text, "text/plain;charset=utf-8")
+
+End
+
+Public Sub chkSignature_Click()
+
+  Settings["/FMakeInstall/SignPackage"] = CBool(chkSignature.Value)
+  txtPassPhrase.Enabled = chkSignature.Value
+  If txtPassPhrase.Enabled Then txtPassPhrase.SetFocus
 
 End

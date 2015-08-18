@@ -349,13 +349,13 @@ Static Public Function GetSize(Size As String) As Integer
   
   Select Case Size
     Case "small"
-      iSize = 16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
+      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 8 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "medium"
-      iSize = 22 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 4 
+      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 11  '22 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 4 
     Case "large"
-      iSize = 32 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 8
+      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 16  '32 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 8
     Case "huge"
-      iSize = 48 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 8
+      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 24  '48 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 8
     Case Else 
       Try iSize = CInt(Size)
   End Select
