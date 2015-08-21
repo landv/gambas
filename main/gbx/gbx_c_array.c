@@ -656,13 +656,23 @@ END_METHOD
 
 void CARRAY_resize(CARRAY *_object, int size)
 {
-	int count = THIS->count;
+	int count;
 
+	if (size < 0)
+	{
+		GB_Error((char *)E_ARG);
+		return;
+	}
+	
+	count = THIS->count;
+	if (size == count)
+		return;
+	
 	if (size > count)
 	{
 		ARRAY_add_many_void(&THIS->data, size - count);
 	}
-	else if ((size < count) && (size >= 0))
+	else
 	{
 		release(THIS, size, -1);
 		ARRAY_remove_many(&THIS->data, size, count - size);
