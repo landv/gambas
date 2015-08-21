@@ -431,12 +431,17 @@ int *CARRAY_get_array_bounds(CARRAY *_object)
 	return THIS->dim;
 }
 
+static void check_size(CARRAY *_object, int size, int inc)
+{
+	size = (size + inc - 1) / inc * inc;
+	if (size > (INT_MAX / THIS->size))
+		THROW(E_MEMORY);
+}
 
 BEGIN_METHOD(Array_new, GB_INTEGER size)
 
 	TYPE type;
 	CLASS *klass;
-	int max_size;
 	int inc;
 	GB_INTEGER *sizes = ARG(size);
 	int nsize = GB_NParam() + 1;
@@ -463,20 +468,23 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 
 	THIS->type = type;
 	THIS->size = TYPE_sizeof_memory(type);
-	max_size = INT_MAX / THIS->size;
 
 	if (nsize <= 1)
 	{
 		int size = VARGOPT(size, 0);
-		if (size > max_size)
-			THROW(E_MEMORY);
+
 		if (size < 0)
 			size = 0;
 
 		inc = (size / 8) & ~7;
 		if (inc < 8)
 			inc = 8;
+		else if (inc > 256)
+			inc = 256;
 
+		if (size)
+			check_size(THIS, size, inc);
+		
 		ARRAY_create_with_size(&THIS->data, THIS->size, inc);
 		if (size > 0)
 			ARRAY_add_many_void(&THIS->data, size);
@@ -501,8 +509,7 @@ BEGIN_METHOD(Array_new, GB_INTEGER size)
 				return;
 			}
 			size *= sizes[i].value;
-			if (size > max_size)
-				THROW(E_MEMORY);
+			check_size(THIS, size, 0);
 		}
 
 		ALLOC_ZERO(&THIS->dim, nsize * sizeof(int));
@@ -670,6 +677,7 @@ void CARRAY_resize(CARRAY *_object, int size)
 	
 	if (size > count)
 	{
+		check_size(THIS, size, DATA_TO_ARRAY(THIS->data)->inc);
 		ARRAY_add_many_void(&THIS->data, size - count);
 	}
 	else
