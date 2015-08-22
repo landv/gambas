@@ -433,7 +433,9 @@ int *CARRAY_get_array_bounds(CARRAY *_object)
 
 static void check_size(CARRAY *_object, int size, int inc)
 {
-	size = (size + inc - 1) / inc * inc;
+	if (inc > 0)
+		size = (size + inc - 1) / inc * inc;
+	
 	if (size > (INT_MAX / THIS->size))
 		THROW(E_MEMORY);
 }
