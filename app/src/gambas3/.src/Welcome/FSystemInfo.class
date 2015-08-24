@@ -1,7 +1,6 @@
 ' Gambas class file
 
 Private $sInfo As String
-Private $sInfoAnnoymous As String
 
 Public Sub btnClose_Click()
 
@@ -11,7 +10,7 @@ End
 
 Public Sub btnCopy_Click()
 
-  Clipboard.Copy(IIf(chkCopyAnonymous.Value, $sInfoAnnoymous, $sInfo))
+  Clipboard.Copy($sInfo)
 
 End
 
@@ -196,9 +195,6 @@ Public Sub Form_Open()
   
   Inc Application.Busy
   
-  'txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
-  chkCopyAnonymous.Value = Settings["/FSystemInfo/CopyAnonymous", True]
-
   aText = GetInfo()
   
   gvwInfo.Rows.Count = aText.Count
@@ -230,28 +226,22 @@ Public Sub Form_Open()
   gvwInfo.Columns[0].Width = -1
   gvwInfo.Columns[1].Width = Desktop.Scale * 2
   
-  $sInfo = aText.Join("\n")
-  $sInfoAnnoymous = ReplaceUsersName($sInfo)
+  $sInfo = MakeAnonymous(aText.Join("\n"))
 
   Dec Application.Busy
 
 End
 
-Function ReplaceUsersName(sText As String) As String
-Dim sRetText As String   
-  sRetText = Replace(sText, gethostname(), "<hostname>")
-  sRetText = Replace(sRetText, User.Home, "<User.Home>")
-  sRetText = Replace(sRetText, User.Name, "<User.Name>")
-  Return sRetText
-End
+Function MakeAnonymous(sText As String) As String
 
-Public Sub chkCopyAnonymous_Click()
-  Settings["/FSystemInfo/CopyAnonymous"] = chkCopyAnonymous.Value
+  Dim sRetText As String
+  
+  sRetText = Replace(sText, System.Host, "<hostname>")
+  sRetText = Replace(sRetText, User.Home, "<home>")
+  sRetText = Replace(sRetText, User.Name, "<user>")
+  
+  Return sRetText
   
 End
 
-Public Function gethostname() As String
-Dim sRet As String
-    Shell "hostname" To sRet
-    Return Replace(sRet, gb.NewLine, Null)
-End
+

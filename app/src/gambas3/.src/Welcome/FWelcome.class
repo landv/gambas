@@ -86,16 +86,13 @@ Public Sub Form_Open()
 
   $iSort = Settings["/FWelcome/SortRecent", CRecentProject.SORT_BY_DATE]
   UpdateMenuSort
-  $hRecent.Fill
-
+  $hRecent.SetSort($iSort)
+  
   If CRecentProject.All.Count Then
     Toggle(LIST_RECENT)
   Else
     Toggle(LIST_EXAMPLE)
   Endif
-  
-  ' sorting as stored in Settings
-  $hRecent.SetSort($iSort)
   
   $hWelcome = New CWelcome(dwgWelcome)
   
