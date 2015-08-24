@@ -1,6 +1,7 @@
 ' Gambas class file
 
 Private $sInfo As String
+Private $sInfoAnnoymous As String
 
 Public Sub btnClose_Click()
 
@@ -10,7 +11,7 @@ End
 
 Public Sub btnCopy_Click()
 
-  Clipboard.Copy($sInfo)
+  Clipboard.Copy(IIf(chkCopyAnonymous.Value, $sInfoAnnoymous, $sInfo))
 
 End
 
@@ -104,7 +105,10 @@ Static Public Sub GetInfo() As String[]
   Dim aEnv As String[]
   
   aText.Add("[System]")
-  aText.Add("Gambas=" & System.FullVersion)
+  ' aText.Add("Gambas=" & System.FullVersion)
+  Exec ["gba3", "-V"] To sTemp
+  aText.Add("Gambas=" & Replace(sTemp, gb.NewLine, Null))
+
   aText.Add("OperatingSystem=" & System.Family)
   
   Exec ["uname", "-r"] To sTemp
@@ -146,7 +150,7 @@ Static Public Sub GetInfo() As String[]
      "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
   Endif
   cFile = New Collection
-  
+  aText.Add("")
   aText.Add("[Libraries]")
   'For Each sDir In ["/bin", "/lib", "/usr/lib"]
   For Each sDir In aSearchPath
@@ -164,6 +168,7 @@ Static Public Sub GetInfo() As String[]
 
   aText.Insert(aLib.Sort())
 
+  aText.Add("")
   aText.Add("[Environment]")
   
   aEnv = New String[]
@@ -192,6 +197,7 @@ Public Sub Form_Open()
   Inc Application.Busy
   
   'txtInfo.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+  chkCopyAnonymous.Value = Settings["/FSystemInfo/CopyAnonymous", True]
 
   aText = GetInfo()
   
@@ -207,6 +213,10 @@ Public Sub Form_Open()
         .ColumnSpan = 3
         .Padding = 4
       End With
+    Else If IsNull(sText) Then 
+         gvwInfo[I, 0].Text = Null
+         gvwInfo[I, 1].Text = Null
+         gvwInfo[I, 2].Text = Null
     Else
       aLine = Split(sText, "=")
       gvwInfo[I, 0].Text = Space$(4) & Trim(aLine[0])
@@ -221,7 +231,27 @@ Public Sub Form_Open()
   gvwInfo.Columns[1].Width = Desktop.Scale * 2
   
   $sInfo = aText.Join("\n")
-  
+  $sInfoAnnoymous = ReplaceUsersName($sInfo)
+
   Dec Application.Busy
 
+End
+
+Function ReplaceUsersName(sText As String) As String
+Dim sRetText As String   
+  sRetText = Replace(sText, gethostname(), "<hostname>")
+  sRetText = Replace(sRetText, User.Home, "<User.Home>")
+  sRetText = Replace(sRetText, User.Name, "<User.Name>")
+  Return sRetText
+End
+
+Public Sub chkCopyAnonymous_Click()
+  Settings["/FSystemInfo/CopyAnonymous"] = chkCopyAnonymous.Value
+  
+End
+
+Public Function gethostname() As String
+Dim sRet As String
+    Shell "hostname" To sRet
+    Return Replace(sRet, gb.NewLine, Null)
 End

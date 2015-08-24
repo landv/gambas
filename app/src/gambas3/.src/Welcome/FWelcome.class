@@ -93,7 +93,10 @@ Public Sub Form_Open()
   Else
     Toggle(LIST_EXAMPLE)
   Endif
-
+  
+  ' sorting as stored in Settings
+  $hRecent.SetSort($iSort)
+  
   $hWelcome = New CWelcome(dwgWelcome)
   
 End

@@ -96,6 +96,10 @@ Public Sub tabProject_Click()
 
   If tabProject.Text = ("Recent") Then 
     $hRecent.Fill
+    
+    ' sorting as stored in Settings
+    $hRecent.SetSort($iSort)
+    
     $hRecent.ApplyFilter(txtFilter.Text)
     txtFilter.SetFocus
   Else If tabProject.Text = ("Examples") Then 
