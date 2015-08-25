@@ -22,15 +22,17 @@ Public Sub Main()
   Dim hMsg As New SmtpClient
   
   hMsg.Debug = True
-  hMsg.To.Add("somebody@gmail.com")
-  hMsg.Subject = "Test"
+  hMsg.To.Add("benoit@minisini.fr")
+  hMsg.Subject = "Test mail headers 5"
   hMsg.Add("Something" & "\n\n" & ("-- \nPowered by ") & Application.Name & "\n")
-  hMsg.From = "somebody@gmail.com"
-  hMsg.Host = "smtp.gmail.com"
-  hMsg.Port = 465
-  hMsg.User = "unknown@gmail.com"
-  hMsg.Password = "donotknow"
-  hMsg.Encrypt = Net.SSL
+  hMsg.From = "benoit.minisini@gmail.com"
+  hMsg.Host = "smtp.free.fr"
+  'hMsg.Port = 465
+  'hMsg.Encrypt = Net.SSL
+  'hMsg.User = "benoit.minisini@gmail.com"
+  'Print "Password:"
+  'Line Input hMsg.Password
+  hMsg.MessageId = "BUG16@gambaswiki.org"
   
   Try hMsg.Send()
   If Not Error Then
