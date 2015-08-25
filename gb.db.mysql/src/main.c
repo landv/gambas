@@ -163,14 +163,20 @@ static char *get_quote_string(const char *str, int len, char quote)
 	return res;
 }
 
-/* Internal function to convert a database type into a Gambas type */
+// Internal function to convert a database type into a Gambas type
+//
+// Look at https://dev.mysql.com/doc/refman/5.0/en/c-api-data-structures.html
+// for how to make the difference between a text field and a blob field.
 
-static GB_TYPE conv_type(int type, int len)
+#define IS_BINARY_FIELD(_f) ((_f)->charsetnr == 63)
+#define SET_BINARY_FIELD(_f, _v) ((_f)->charsetnr = (_v) ? 63 : 0)
+
+static GB_TYPE conv_type(const MYSQL_FIELD *f)
 {
-	switch(type)
+	switch(f->type)
 	{
 		case FIELD_TYPE_TINY:
-			return (len == 1 ? GB_T_BOOLEAN : GB_T_INTEGER);
+			return (f->max_length == 1 ? GB_T_BOOLEAN : GB_T_INTEGER);
 
 		case FIELD_TYPE_INT24:
 		case FIELD_TYPE_SHORT:
@@ -193,26 +199,22 @@ static GB_TYPE conv_type(int type, int len)
 			return GB_T_DATE;
 
 		case FIELD_TYPE_LONG_BLOB:
-			//fprintf(stderr, "FIELD_TYPE_LONG_BLOB: %d\n", len);
-			return DB_T_BLOB;
-
-		case FIELD_TYPE_BLOB: // TEXT
-			//fprintf(stderr, "FIELD_TYPE_BLOB: %d\n", len);
-			if (len >= 0x1000000 || len <= 0) // LONG BLOB
+		case FIELD_TYPE_TINY_BLOB:
+		case FIELD_TYPE_MEDIUM_BLOB:
+		case FIELD_TYPE_BLOB:
+			if (IS_BINARY_FIELD(f))
 				return DB_T_BLOB;
 			else
 				return GB_T_STRING;
 			
 		case FIELD_TYPE_BIT:
-			if (len == 1)
+			if (f->max_length == 1)
 				return GB_T_BOOLEAN;
-			else if (len <= 32)
+			else if (f->max_length <= 32)
 				return GB_T_INTEGER;
-			else if (len <= 64)
+			else if (f->max_length <= 64)
 				return GB_T_LONG;
 
-		case FIELD_TYPE_TINY_BLOB:
-		case FIELD_TYPE_MEDIUM_BLOB:
 		case FIELD_TYPE_STRING:
 		case FIELD_TYPE_VAR_STRING:
 		case FIELD_TYPE_SET:
@@ -225,9 +227,10 @@ static GB_TYPE conv_type(int type, int len)
 }
 
 
-/* Internal function to convert a string database type into an integer database type */
+// Internal function to convert a string database type
+// into a fake MYSQL_FIELD structure
 
-static int conv_string_type(const char *type, long *len)
+static void conv_string_type(const char *type, MYSQL_FIELD *f)
 {
 	CONV_STRING_TYPE *cst;
 	long l;
@@ -243,21 +246,22 @@ static int conv_string_type(const char *type, long *len)
 
 	if (cst->type)
 	{
-		if (len)
+		SET_BINARY_FIELD(f, FALSE);
+		f->max_length = 0;
+		
+		if (cst->type == FIELD_TYPE_BLOB || cst->type == FIELD_TYPE_TINY_BLOB || cst->type == FIELD_TYPE_MEDIUM_BLOB || cst->type == FIELD_TYPE_LONG_BLOB)
+		{
+			SET_BINARY_FIELD(f, strcmp(&type[strlen(type) - 4], "blob") == 0);
+		}
+		else
 		{
 			type += strlen(cst->pattern);
 			if (sscanf(type, "(%ld)", &l) == 1)
-				*len = l;
-			else if (cst->type == FIELD_TYPE_LONG_BLOB)
-				*len = -1;
-			else if (cst->type == FIELD_TYPE_MEDIUM_BLOB || cst->type == FIELD_TYPE_BLOB)
-				*len = 65535;
-			else
-				*len = 0;
+				f->max_length = l;
 		}
 	}
 
-	return cst->type;
+	f->type = cst->type;
 }
 
 #if 0
@@ -277,17 +281,18 @@ static const char *get_type_name(int type)
 
 /* Internal function to convert a database value into a Gambas variant value */
 
-static void conv_data(int version, const char *data, long data_length, GB_VARIANT_VALUE *val, int type, int len)
+static void conv_data(int version, const char *data, long data_length, GB_VARIANT_VALUE *val, MYSQL_FIELD *f)
 {
 	GB_VALUE conv;
 	GB_DATE_SERIAL date;
 	double sec;
+	int type = f->type;
 
 	switch (type)
 	{
 		case FIELD_TYPE_TINY:
 
-			if (len == 1)
+			if (f->max_length == 1)
 			{
 				val->type = GB_T_BOOLEAN;
 				/*GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);*/
@@ -410,23 +415,19 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 
 			break;
 
-		case FIELD_TYPE_LONG_BLOB:
-			// The BLOB are read by the blob_read() driver function
-			// You must set NULL there.
-			val->type = GB_T_NULL;
-			break;
-
-		// query_fill() only gets this constant, whatever the blob is
 		case FIELD_TYPE_BLOB:
-			if (len >= 0x1000000 || len <= 0) // LONG BLOB
+		case FIELD_TYPE_LONG_BLOB:
+		case FIELD_TYPE_TINY_BLOB:
+		case FIELD_TYPE_MEDIUM_BLOB:
+			if (IS_BINARY_FIELD(f))
 			{
+				// The BLOB are read by the blob_read() driver function
+				// You must set NULL there.
 				val->type = GB_T_NULL;
 				break;
 			}
 			// else continue!
 
-		case FIELD_TYPE_TINY_BLOB:
-		case FIELD_TYPE_MEDIUM_BLOB:
 		case FIELD_TYPE_STRING:
 		case FIELD_TYPE_VAR_STRING:
 		case FIELD_TYPE_SET:
@@ -1031,7 +1032,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		value.value.type = GB_T_NULL;
 
 		if (data)
-			conv_data(db->version, data, mysql_fetch_lengths(res)[i], &value.value, field->type, field->max_length);
+			conv_data(db->version, data, mysql_fetch_lengths(res)[i], &value.value, field);
 
 		GB.StoreVariant(&value, &buffer[i]);
 	
@@ -1191,9 +1192,7 @@ static int field_index(DB_RESULT Result, const char *name, DB_DATABASE *db)
 static GB_TYPE field_type(DB_RESULT result, int field)
 {
 	MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
-	GB_TYPE type = conv_type(f->type, f->max_length);
-
-	//fprintf(stderr, "field_type: %s %lu -> %ld\n", get_type_name(f->type), f->max_length, type);
+	GB_TYPE type = conv_type(f);
 
 	return type;
 }
@@ -1213,7 +1212,7 @@ static GB_TYPE field_type(DB_RESULT result, int field)
 static int field_length(DB_RESULT result, int field)
 {
 	MYSQL_FIELD *f = mysql_fetch_field_direct((MYSQL_RES *)result, field);
-	GB_TYPE type = conv_type(f->type, f->max_length);
+	GB_TYPE type = conv_type(f);
 
 	if (type != GB_T_STRING)
 		return 0;
@@ -1906,10 +1905,9 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 	MYSQL_RES *res;
 	MYSQL_ROW row;
+	MYSQL_FIELD f;
 	GB_VARIANT def;
 	char *val;
-	int type;
-	long len = 0;
 
 	if (do_query_cached(db, "Unable to get field info: &1", &res, "sfc:&1", query, 1, table))
 		return TRUE;
@@ -1921,17 +1919,11 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	}
 
 	info->name = NULL;
-	type = conv_string_type(row[1], &len);
-
-	info->type = conv_type(type, len);
+	conv_string_type(row[1], &f);
+	info->type = conv_type(&f);
 
 	if (info->type == GB_T_STRING)
-	{
-		info->length = len;
-		/* (BM) That's new! a TEXT field has a length of 65535 */
-		if (info->length >= 65535)
-			info->length = 0;
-	}
+		info->length = f.max_length;
 	else
 		info->length = 0;
 
@@ -1954,7 +1946,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 			if (val && *val)
 			{
-				conv_data(db->version, val, 0, &def.value, type, len);
+				conv_data(db->version, val, 0, &def.value, &f);
 				GB.StoreVariant(&def, &info->def);
 			}
 		}

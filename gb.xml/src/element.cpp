@@ -300,8 +300,16 @@ Attribute* XMLAttribute_New(const char *nattrName, const size_t nlenAttrName,
     newAttr->attrName = (char*)malloc(sizeof(char)*(nlenAttrName));
     memcpy(newAttr->attrName, nattrName, nlenAttrName);
     
-    newAttr->attrValue = (char*)malloc(nlenAttrVal);
-    memcpy(newAttr->attrValue, nattrVal, nlenAttrVal);
+    if(nattrVal && nlenAttrVal)
+    {
+        newAttr->attrValue = (char*)malloc(nlenAttrVal);
+        memcpy(newAttr->attrValue, nattrVal, nlenAttrVal);
+    }
+    else
+    {
+        newAttr->attrValue = 0;
+        newAttr->lenAttrValue = 0;
+    }
 
     return newAttr;
 }

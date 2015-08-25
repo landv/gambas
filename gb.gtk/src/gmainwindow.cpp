@@ -243,6 +243,7 @@ void gMainWindow::initialize()
 	onActivate = NULL;
 	onDeactivate = NULL;
 	onState = NULL;
+	onFontChange = NULL;
 	
 	accel = gtk_accel_group_new();
 }
@@ -1461,6 +1462,7 @@ void gMainWindow::updateFont()
 {
 	gContainer::updateFont();
 	gMenu::updateFont(this);
+	emit(SIGNAL(onFontChange));
 }
 
 void gMainWindow::checkMenuBar()

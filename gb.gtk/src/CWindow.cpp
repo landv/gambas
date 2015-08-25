@@ -50,7 +50,7 @@ DECLARE_EVENT(EVENT_Move);
 DECLARE_EVENT(EVENT_Resize);
 DECLARE_EVENT(EVENT_Title);
 DECLARE_EVENT(EVENT_Icon);
-//DECLARE_EVENT(EVENT_State);
+DECLARE_EVENT(EVENT_Font);
 
 void CWINDOW_check_main_window(CWINDOW *win)
 {
@@ -62,62 +62,60 @@ void CWINDOW_check_main_window(CWINDOW *win)
 }
 
 
-static void gb_raise_window_Open(gMainWindow *sender)
+static void cb_open(gMainWindow *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
+	CWIDGET *_object = GetObject(sender);
+	GB.Raise(THIS, EVENT_Open, 0);
+}
 
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Open,0);
+static void cb_font_change(gMainWindow *sender)
+{
+	CWIDGET *_object = GetObject(sender);
+	GB.Raise(THIS, EVENT_Font, 0);
 }
 
 /*static void gb_post_window_Open(gMainWindow *sender)
 {
-	GB.Post((GB_POST_FUNC)gb_raise_window_Open, (long)sender);
+	GB.Post((GB_POST_FUNC)cb_open, (long)sender);
 }*/
 
-static void gb_raise_window_Show(gMainWindow *sender)
+static void cb_show(gMainWindow *sender)
 {
-	CWIDGET *ob = GetObject(sender);
+	CWIDGET *_object = GetObject(sender);
 
-	if (!ob) return;
-	GB.Ref(ob);
-	GB.Raise((void*)ob,EVENT_Show,0);
+	GB.Ref(THIS);
+	GB.Raise(THIS, EVENT_Show, 0);
 	if (!sender->spontaneous())
-		CACTION_raise(ob);
-	GB.Unref(POINTER(&ob));
+		CACTION_raise(THIS);
+	GB.Unref(POINTER(&_object));
 }
 
 /*static void gb_post_window_Show(gMainWindow *sender)
 {
-	GB.Post( (void (*)())gb_raise_window_Show,(long)sender);
+	GB.Post( (void (*)())cb_show,(long)sender);
 }*/
 
-static void gb_raise_window_Hide(gMainWindow *sender)
+static void cb_hide(gMainWindow *sender)
 {
-	CWIDGET *ob=GetObject(sender);
+	CWIDGET *_object = GetObject(sender);
 
-	if (!ob) return;
-	GB.Ref(ob);
-	GB.Raise((void*)ob,EVENT_Hide,0);
+	GB.Ref(THIS);
+	GB.Raise(THIS, EVENT_Hide, 0);
 	if (!sender->spontaneous())
-		CACTION_raise(ob);
-	GB.Unref(POINTER(&ob));
+		CACTION_raise(THIS);
+	GB.Unref(POINTER(&_object));
 }
 
-static void gb_raise_window_Move(gMainWindow *sender)
+static void cb_move(gMainWindow *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
-
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Move,0);
+	CWIDGET *_object = GetObject(sender);
+	GB.Raise(THIS, EVENT_Move, 0);
 }
 
-static void gb_raise_window_Resize(gMainWindow *sender)
+static void cb_resize(gMainWindow *sender)
 {
-	CWIDGET *_ob=GetObject(sender);
-
-	if (!_ob) return;
-	GB.Raise((void*)_ob,EVENT_Resize,0);
+	CWIDGET *_object = GetObject(sender);
+	GB.Raise(THIS, EVENT_Resize, 0);
 }
 
 static bool close_window(CWINDOW *_object, int ret = 0)
@@ -282,15 +280,15 @@ BEGIN_METHOD(CWINDOW_new, GB_OBJECT parent;)
 
 	InitControl(THIS->ob.widget, (CWIDGET*)THIS);
 	
-	WINDOW->onOpen = gb_raise_window_Open;
-	WINDOW->onShow = gb_raise_window_Show;
-	WINDOW->onHide = gb_raise_window_Hide;
-	WINDOW->onMove = gb_raise_window_Move;
-	WINDOW->onResize = gb_raise_window_Resize;
+	WINDOW->onOpen = cb_open;
+	WINDOW->onShow = cb_show;
+	WINDOW->onHide = cb_hide;
+	WINDOW->onMove = cb_move;
+	WINDOW->onResize = cb_resize;
 	WINDOW->onClose = gb_raise_window_Close;
 	WINDOW->onActivate = cb_activate;
 	WINDOW->onDeactivate = cb_deactivate;
-	//WINDOW->onState = cb_state;
+	WINDOW->onFontChange = cb_font_change;
 
 END_METHOD
 
@@ -891,7 +889,7 @@ GB_DESC CWindowDesc[] =
 	GB_EVENT("Hide", NULL, NULL, &EVENT_Hide),
 	GB_EVENT("Title", NULL, NULL, &EVENT_Title),
 	GB_EVENT("Icon", NULL, NULL, &EVENT_Icon),
-	//GB_EVENT("State", NULL, NULL, &EVENT_State),
+	GB_EVENT("Font", NULL, NULL, &EVENT_Font),
 
 	GB_END_DECLARE
 };

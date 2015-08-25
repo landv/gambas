@@ -390,9 +390,9 @@ void MyDrawingArea::clearBackground()
 		XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
 		XFlush(QX11Info::display());
 #else
-		update();
+ 		update();
 #endif
-	}
+ 	}
 }
 
 void MyDrawingArea::resizeEvent(QResizeEvent *e)

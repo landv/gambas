@@ -108,6 +108,7 @@ Private Sub LoadUntil(iIndex As Integer)
   Dim iLimit As Integer
   Dim aSort As String[]
   Dim hReq As SQLRequest
+  Dim iBusy As Integer = Application.Busy
   
   If $aKey.Count = 0 Then Return
   
@@ -126,11 +127,13 @@ Private Sub LoadUntil(iIndex As Integer)
   
   If $aVal.Count = 0 Then
     rData = $DB.Limit(iLimit).Exec(hReq())
+    
     iCount = rData.Count
   Else
     aVal = $aVal[$aVal.Max]
     'sReq &= " WHERE " & Where(aVal)
-    hReq = hReq.Where(Common.MakeNextWhere(aSort, aVal))
+    hReq = hReq.And().Where(Common.MakeNextWhere(aSort, aVal))
+    
     rData = $DB.Limit(iLimit).Exec(hReq())
     ' TODO: ne pas faire MoveNext si l'enregistrement $aVal[$aVal.Max] a disparu
     'rData.MoveNext
@@ -149,11 +152,11 @@ Private Sub LoadUntil(iIndex As Integer)
     Inc iPos
     rData.MoveNext
   Wend
-
-  Dec Application.Busy
   
   Raise CacheResize
   
+Finally
+  If iBusy <> Application.Busy Then Dec Application.Busy
 End
 
 
@@ -182,6 +185,7 @@ End
 
 Public Function _get(Index As Integer) As Result
   
+  Dim iBusy As Integer = Application.Busy
   Dim hReq As SQLRequest
   Dim aSort As String[]
   Dim aCol As String[]
@@ -212,10 +216,9 @@ Public Function _get(Index As Integer) As Result
         Else
           hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter)
         Endif
+        
         $rData = $DB.Exec(hReq())
       Endif
-      
-      Dec Application.Busy
   
       Raise CacheResize
       
@@ -227,7 +230,7 @@ Public Function _get(Index As Integer) As Result
   
     LoadUntil(Index)
   
-    If Index >= $aVal.Count Then Return
+    If Index >= $aVal.Count Then Return $rData
       
     If $rData Then
       $rData.MoveTo(Index - $iDataIndex)
@@ -244,8 +247,9 @@ Public Function _get(Index As Integer) As Result
     If $iDataIndex = 0 Then
       hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).OrderBy(aSort)
     Else
-      hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
+      hReq = $DB.SQL.Select(aCol).From($sTable).Where($sFilter).And().Where(Common.MakeNextWhere(aSort, $aVal[$iDataIndex - 1])).OrderBy(aSort)
     Endif
+    
     $rData = $DB.Limit(LIMIT_INC).Exec(hReq.Get())
     
     'hReq = Request().Where($sFilter).Where(Common.MakeNextWhere($aKey, $aVal[$iDataIndex]))
@@ -253,12 +257,13 @@ Public Function _get(Index As Integer) As Result
   
     $rData.MoveTo(Index - $iDataIndex)
     
-    Dec Application.Busy
-    
   Endif
   
+  If iBusy <> Application.Busy Then Dec Application.Busy
   Return $rData
   
+Finally
+  If iBusy <> Application.Busy Then Dec Application.Busy
 End
 
 Private Function Keys_Read() As String[]

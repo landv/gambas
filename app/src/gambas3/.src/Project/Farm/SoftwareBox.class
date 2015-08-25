@@ -128,6 +128,7 @@ Public Sub DrawingArea_Draw()
   Dim P As Integer
   Dim iCol As Integer
   Dim sText As String
+  Dim HN As Integer
   
   If Not $bInit Then Load
   
@@ -205,8 +206,8 @@ Public Sub DrawingArea_Draw()
     Endif
     
     Paint.Font.Grade = 3
-    $hSoft.PaintName(X, Y)
-    
+    HN = $hSoft.PaintName(X, Y)
+      
     X = P '-= CSoftware.ICON_SIZE + P
     
     sText = .Description
@@ -217,7 +218,7 @@ Public Sub DrawingArea_Draw()
     If .URL Then H -= Desktop.Scale
     
     Paint.Background = Color.TextForeground
-    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + CSoftware.IconSize + P, W, H)
+    Paint.DrawText(Paint.TrimText(sText, W, H), X, Y + Max(CSoftware.IconSize, HN) + P, W, H)
     
     PaintStat($hSoft)
     

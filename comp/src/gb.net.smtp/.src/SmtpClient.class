@@ -22,6 +22,9 @@ Property From As String
 Property Subject As String
 Property Body As String
 
+Property MessageId As String
+Property InReplyTo As String
+
 Property Read To As String[]
 Property Read Cc As String[]
 Property Read Bcc As String[]
@@ -47,6 +50,10 @@ Private $aPart As New SmtpPart[]
 Private $bAlternative As Boolean
 Private $hSession As SmtpSession
 Private $iEncrypt As Integer
+
+Private $cCustomHeaders As New String[]
+Private $sMessageId As String
+Private $sInReplyTo As String
 
 Static Public Sub _init()
   
@@ -366,7 +373,20 @@ Static Public Sub FormatDate({Date} As Date) As String
 
 End
 
+Public Sub AddHeader(Name As String, Value As String)
+
+  If Not Value Then Return
+  
+  $cCustomHeaders.Add(Name)
+  $cCustomHeaders.Add(Value)
+  
+End
+
 Private Sub SendHeaders()
+
+  Dim I As Integer
+  
+  If $sMessageId Then $hSession.PrintHeader("Message-ID", "<" & $sMessageId & ">")
 
   $hSession.PrintHeader("Date", FormatDate(Now))
 
@@ -376,6 +396,15 @@ Private Sub SendHeaders()
 
   If $aTo.Count Then $hSession.PrintHeader("To", $aTo.Join(","))
   If $aCc.Count Then $hSession.PrintHeader("CC", $aCc.Join(","))
+
+  If $sInReplyTo Then
+    $hSession.PrintHeader("References", "<" & $sInReplyTo & ">")
+    $hSession.PrintHeader("In-Reply-To", "<" & $sInReplyTo & ">")
+  Endif
+  
+  For I = 0 To $cCustomHeaders.Max Step 2
+    $hSession.PrintHeader($cCustomHeaders[I], $cCustomHeaders[I + 1])
+  Next
 
   $hSession.Print("MIME-Version: 1.0")
   
@@ -453,5 +482,30 @@ End
 Private Sub Encrypt_Write(Value As Integer)
 
   $iEncrypt = Value
+
+End
+
+Private Function MessageId_Read() As String
+
+  Return $sMessageId
+
+End
+
+Private Sub MessageId_Write(Value As String)
+
+  $sMessageId = Value
+  
+
+End
+
+Private Function InReplyTo_Read() As String
+
+  Return $sInReplyTo
+
+End
+
+Private Sub InReplyTo_Write(Value As String)
+
+  $sInReplyTo = Value
 
 End

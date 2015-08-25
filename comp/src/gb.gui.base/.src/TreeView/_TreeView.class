@@ -477,8 +477,8 @@ Public Sub _GetItemHeight(hItem As _TreeView_Item) As Integer
   Dim PH As Integer
 
   If Not hItem Then Return
-  PH = Me.Font.Height + 4
-  If hItem.Picture Then PH = Max(PH, hItem.Picture.H + 4)
+  PH = Me.Font.Height + (Desktop.Scale \ 4) * 2 + 2
+  If hItem.Picture Then PH = Max(PH, hItem.Picture.H + (Desktop.Scale \ 4) * 2 + 2)
   Return PH
   
 End

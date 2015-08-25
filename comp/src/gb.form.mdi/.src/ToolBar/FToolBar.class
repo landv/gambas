@@ -1600,6 +1600,12 @@ Public Sub SetIconSize(iSize As Integer)
 
   If $iIconSize = iSize Then Return
   $iIconSize = iSize
+  UpdateSize
+  
+End
+
+Private Sub UpdateSize()
+
   Inc Application.Busy
   SaveConfig
   LoadConfig
@@ -1637,5 +1643,11 @@ Public Sub panToolbar_Draw()
     Draw.Rect(0, 0, panToolBar.W, panToolBar.H)
     Draw.Rect(1, 1, panToolBar.W - 2, panToolBar.H - 2)
   Endif
+
+End
+
+Public Sub Form_Font()
+
+  If $bOpened Then UpdateSize
 
 End

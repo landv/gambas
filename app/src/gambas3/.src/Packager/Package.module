@@ -2,6 +2,7 @@
 
 Public Path As String
 Public ChangeLog As String
+Public Signature As String
 
 Private RPMBUILD_PROG As String
 Private DKPG_PROG As String
@@ -1979,7 +1980,7 @@ Private Sub MakeAutotoolsPackage((sSys) As String)
     Print #hFile, "dnl -- package generated with gambas3 ide --"
     Print #hFile, ""
     Print #hFile, "AC_INIT(configure.ac)"
-    Print #hFile, "GB_INIT_PROJECT(" & Project.Name & ")"
+    Print #hFile, "GB_INIT_PROJECT([" & Project.Name & "])"
     Print #hFile, ""
     Print #hFile, "dnl -- create makefile --"
     Print #hFile, ""

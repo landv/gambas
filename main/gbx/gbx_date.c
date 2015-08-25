@@ -764,9 +764,9 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 		case DP_DAY:
 		case DP_WEEK:
 			diff = date1->_date.date - date2->_date.date;
-			sdiff = lsgn(diff);
-			if (sdiff != lsgn(date1->_date.time - date2->_date.time))
-				diff -= sdiff;
+			sdiff = lsgn(date1->_date.time - date2->_date.time);
+			if (sdiff != lsgn(diff))
+				diff += sdiff;
 			break;
 
 		case DP_MILLISECOND:
@@ -786,9 +786,9 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 
 		case DP_WEEKDAY:
 			diff = date1->_date.date - date2->_date.date;
-			sdiff = lsgn(diff);
-			if (sdiff != lsgn(date1->_date.time - date2->_date.time))
-				diff -= sdiff;
+			sdiff = lsgn(date1->_date.time - date2->_date.time);
+			if (sdiff != lsgn(diff))
+				diff += sdiff;
 			ds1 = *DATE_split(date1);
 			ds2 = *DATE_split(date2);
 			break;

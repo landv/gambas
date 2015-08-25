@@ -224,6 +224,8 @@ GB_TYPE sqlite_get_type(const char *type, int *length)
 	{
 		gtype = DB_T_BLOB;;
 	}
+	else
+		gtype = GB_T_STRING;
 
 	if (gtype == GB_T_STRING && type && length != NULL)
 	{

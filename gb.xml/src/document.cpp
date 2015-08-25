@@ -47,7 +47,7 @@ Document* XMLDocument_New()
     
 }
 
-Document* XMLDocument_NewFromFile(const char *fileName, const size_t lenFileName, const DocumentType docType)
+Document* XMLDocument_NewFromFile(const char *fileName, const size_t lenFileName, const DocumentType docType)  throw(XMLParseException)
 {
     Document *newDoc = (Document*)malloc(sizeof(Document));
 
@@ -56,8 +56,16 @@ Document* XMLDocument_NewFromFile(const char *fileName, const size_t lenFileName
     newDoc->root = 0;
     newDoc->parentDocument = newDoc;
     newDoc->docType = docType;
-
-    XMLDocument_Open(newDoc, fileName, lenFileName);
+    
+    try
+    {
+        XMLDocument_Open(newDoc, fileName, lenFileName);
+    }
+    catch(XMLParseException ex)
+    {
+        XMLDocument_Release(newDoc);
+        throw ex;
+    }
 
     return newDoc;
 }
@@ -99,7 +107,7 @@ void XMLDocument_Open(Document *doc, const char *fileName, const size_t lenFileN
     
 }
 
-void XMLDocument_SetContent(Document *doc, const char *content, size_t len) throw(XMLParseException)
+void XMLDocument_SetContent(Document *doc, const char *content, const size_t len) throw(XMLParseException)
 {
     char *posStart = 0, *posEnd = 0;
     

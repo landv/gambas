@@ -64,12 +64,16 @@ else \
     XMLNode_appendChild(curElement, _elmt); \
 }
 
-#define THROW(_ex) for(size_t i = 0; i < *nodeCount; i++)\
-{\
-    XMLNode_Free(elements[i]);\
-}\
-free(elements);\
-throw(_ex)
+void parser_cleanup(Node **elements, size_t *nodeCount)
+{
+    for(size_t i = *nodeCount; i --> 0;)
+    {
+        XMLNode_Free(elements[i]);
+    }
+    free(elements);
+}
+
+#define THROW(_ex) parser_cleanup(elements, nodeCount); throw(_ex)
 
 Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw(XMLParseException)
 {
@@ -308,7 +312,13 @@ Node** parseXML(char const *data, const size_t lendata, size_t *nodeCount) throw
                     pos++;
 
                     char* delimiterPos = (char*)memchr(pos, delimiter, endData - pos);
-
+                    
+                    if(!delimiterPos)
+                    {
+                        THROW(XMLParseException_New("Never-ending attribute value",
+                        data, lendata, pos - 1));
+                    }
+                    
                     XMLElement_AddAttribute(elmt, attrNamestart, attrNameEnd - attrNamestart,
                                        pos, delimiterPos - pos);
                     pos = delimiterPos;

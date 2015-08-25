@@ -547,7 +547,7 @@ Catch
   
 End
 
-Public Sub PaintName(X As Float, Y As Float)
+Public Sub PaintName(X As Float, Y As Float) As Integer
 
   Dim iCol As Integer
   Dim sText As String
@@ -578,8 +578,11 @@ Public Sub PaintName(X As Float, Y As Float)
   Paint.Font.Grade -= 2
   Paint.Background = Color.Merge(iCol, Color.TextBackground)
   Paint.DrawText(Vendor, X, Y, Paint.W, Paint.H, Align.TopLeft)
+  Y += Paint.Font.H
   
   Paint.Restore
+  
+  Return Y
   
 End
 
