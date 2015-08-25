@@ -243,6 +243,7 @@ void gMainWindow::initialize()
 	onActivate = NULL;
 	onDeactivate = NULL;
 	onState = NULL;
+	onFontChange = NULL;
 	
 	accel = gtk_accel_group_new();
 }
