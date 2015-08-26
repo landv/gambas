@@ -155,11 +155,20 @@ Public Sub StoreSelection(Optional bNoFullLines As Boolean)
     $iEndColumn = .Column
     
     If Not bNoFullLines Then 
-      If $iEndColumn > 0 Or Not .Selected Then 
-        Inc $iEndLine
-        $iEndColumn = 0
-        $iStartColumn = 0
-        RecallSelection
+      If $iEndLine >= $iStartLine Then
+        If $iEndColumn > 0 Or Not .Selected Then 
+          Inc $iEndLine
+          $iEndColumn = 0
+          $iStartColumn = 0
+          RecallSelection
+        Endif
+      Else
+        If $iStartColumn > 0 Or Not .Selected Then 
+          Inc $iStartLine
+          $iStartColumn = 0
+          $iEndColumn = 0
+          RecallSelection
+        Endif
       Endif
     Endif
     
