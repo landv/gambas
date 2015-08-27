@@ -358,9 +358,7 @@ static void free_local_info(void)
 
 static void fill_local_info(void)
 {
-	static struct tm tm = { 0 };
 	struct lconv *info;
-	char buf[64];
 	char *p;
 	char c;
 	char *dp;
@@ -368,6 +366,7 @@ static void fill_local_info(void)
 	char *codeset;
 	const char *lang;
 	char *am_pm;
+	bool got_second;
 
 	/* Localisation courante */
 
@@ -412,105 +411,126 @@ static void fill_local_info(void)
 	LOCAL_local.intl_currency_symbol = STRING_conv_to_UTF8(info->int_curr_symbol, 0);
 	STRING_ref(LOCAL_local.intl_currency_symbol);*/
 
-	// Date/time format
-
-	tm.tm_year = 4; /* 02/03/1904 05:06:07 */
-	tm.tm_mday = 2;
-	tm.tm_mon = 2;
-	tm.tm_hour = 5;
-	tm.tm_min = 6;
-	tm.tm_sec = 7;
-
 	// Date format
 	
-	strftime(buf, sizeof(buf), "%x", &tm);
-	if (!isdigit(buf[0])) // The default date is not a numeric one, so we use the american format
-		strcpy(buf,"03/02/1904");
-	
+	p = nl_langinfo(D_FMT);
+	//fprintf(stderr, "date format: %s\n", p);
 	dp = LOCAL_local.date_order;
 
-	for (p = buf;;)
+	if (strcmp(p, "%D") == 0)
+		p = "%m/%d/%y";
+	else if (strcmp(p, "%F") == 0)
+		p = "%Y-%m-%d";
+	
+	for (;;)
 	{
 		c = *p++;
 		if (!c)
 			break;
 
-		switch(c)
+		if (c == '%')
 		{
-			case '4':
-				*dp++ = LO_YEAR;
-				stradd_sep(LOCAL_local.long_date, "yyyy", " ");
-				stradd_sep(LOCAL_local.medium_date, "yyyy", " ");
-				stradd_sep(LOCAL_local.short_date, "yyyy", "/");
-				stradd_sep(LOCAL_local.general_date, "yyyy", "/");
-				break;
-
-			case '3':
-				*dp++ = LO_MONTH;
-				stradd_sep(LOCAL_local.long_date, "mmmm", " ");
-				stradd_sep(LOCAL_local.medium_date, "mmm", " ");
-				stradd_sep(LOCAL_local.short_date, "mm", "/");
-				stradd_sep(LOCAL_local.general_date, "mm", "/");
-				break;
-
-			case '2':
-				*dp++ = LO_DAY;
-				stradd_sep(LOCAL_local.long_date, "dddd d", " ");
-				stradd_sep(LOCAL_local.medium_date, "dd", " ");
-				stradd_sep(LOCAL_local.short_date, "dd", "/");
-				stradd_sep(LOCAL_local.general_date, "dd", "/");
-				break;
-
-			default:
-				if (!isdigit(c))
+			c = *p++;
+			if (c != '%')
+			{
+				if (c == 'E' || c == 'O')
+					c = *p++;
+				
+				switch (c)
 				{
-					if (LOCAL_local.date_sep == 0)
-						LOCAL_local.date_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
+					case 'y': case 'Y':
+						*dp++ = LO_YEAR;
+						stradd_sep(LOCAL_local.long_date, "yyyy", " ");
+						stradd_sep(LOCAL_local.medium_date, "yyyy", " ");
+						stradd_sep(LOCAL_local.short_date, "yyyy", "/");
+						stradd_sep(LOCAL_local.general_date, "yyyy", "/");
+						break;
+						
+					case 'b': case 'B': case 'h': case 'm':
+						*dp++ = LO_MONTH;
+						stradd_sep(LOCAL_local.long_date, "mmmm", " ");
+						stradd_sep(LOCAL_local.medium_date, "mmm", " ");
+						stradd_sep(LOCAL_local.short_date, "mm", "/");
+						stradd_sep(LOCAL_local.general_date, "mm", "/");
+						break;
+						
+					case 'd': case 'e':
+						*dp++ = LO_DAY;
+						stradd_sep(LOCAL_local.long_date, "dddd d", " ");
+						stradd_sep(LOCAL_local.medium_date, "dd", " ");
+						stradd_sep(LOCAL_local.short_date, "dd", "/");
+						stradd_sep(LOCAL_local.general_date, "dd", "/");
+						break;
 				}
-
+				continue;
+			}
 		}
+		
+		if (dp != LOCAL_local.date_order && LOCAL_local.date_sep == 0)
+			LOCAL_local.date_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
 	}
 
 	// Time format
 
-	strftime(buf, sizeof(buf), "%X", &tm);
-
+	p = nl_langinfo(T_FMT);
+	//fprintf(stderr, "time format: %s\n", p);
 	tp = LOCAL_local.time_order;
+	
+	if (strcmp(p, "%T") == 0 || strcmp(p, "%R") == 0 || strcmp(p, "%r") == 0)
+		p = "%H:%M:%S";
+	
+	got_second = FALSE;
 
-	for (p = buf;;)
+	for (;;)
 	{
 		c = *p++;
 		if (!c)
 			break;
 
-		switch(c)
+		if (c == '%')
 		{
-			case '5':
-				*tp++ = LO_HOUR;
-				stradd_sep(LOCAL_local.long_time, "hh", ":");
-				stradd_sep(LOCAL_local.medium_time, "hh", ":");
-				stradd_sep(LOCAL_local.short_time, "hh", ":");
-				break;
-
-			case '6':
-				*tp++ = LO_MINUTE;
-				stradd_sep(LOCAL_local.long_time, "nn", ":");
-				stradd_sep(LOCAL_local.medium_time, "nn", ":");
-				stradd_sep(LOCAL_local.short_time, "nn", ":");
-				break;
-
-			case '7':
-				*tp++ = LO_SECOND;
-				stradd_sep(LOCAL_local.long_time, "ss", ":");
-				break;
-
-			default:
-				if (!isdigit(c))
+			c = *p++;
+			if (c != '%')
+			{
+				if (c == 'E' || c == 'O')
+					c = *p++;
+				
+				switch(c)
 				{
-					if (LOCAL_local.time_sep == 0)
-						LOCAL_local.time_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
+					case 'H': case 'I': case 'k': case 'l':
+						*tp++ = LO_HOUR;
+						stradd_sep(LOCAL_local.long_time, "hh", ":");
+						stradd_sep(LOCAL_local.medium_time, "hh", ":");
+						stradd_sep(LOCAL_local.short_time, "hh", ":");
+						break;
+
+					case 'M':
+						*tp++ = LO_MINUTE;
+						stradd_sep(LOCAL_local.long_time, "nn", ":");
+						stradd_sep(LOCAL_local.medium_time, "nn", ":");
+						stradd_sep(LOCAL_local.short_time, "nn", ":");
+						break;
+
+					case 'S':
+						*tp++ = LO_SECOND;
+						stradd_sep(LOCAL_local.long_time, "ss", ":");
+						got_second = TRUE;
+						break;
 				}
+				continue;
+			}
 		}
+
+		if (tp != LOCAL_local.time_order && LOCAL_local.time_sep == 0)
+			LOCAL_local.time_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
+	}
+	
+	// Fix missing seconds
+	
+	if (!got_second)
+	{
+		*tp++ = LO_SECOND;
+		stradd_sep(LOCAL_local.long_time, "ss", ":");
 	}
 
 	// Fix the french date separator
