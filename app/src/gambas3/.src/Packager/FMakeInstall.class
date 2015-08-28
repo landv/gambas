@@ -101,8 +101,8 @@ Public Sub Form_Open()
   InitSystems
 
   If Project.Type = Project.TYPE_COMPONENT Then
-    txtVendor.Text = Split(Project.Name, ".")[0]
-    txtVendor.Enabled = False
+    ' txtVendor.Text = Split(Project.Name, ".")[0]
+    ' txtVendor.Enabled = False
     chkPrefix.Value = True
     chkPrefix.Enabled = False
   Endif 
@@ -286,15 +286,15 @@ Public Sub wizInstall_BeforeChange()
 
     Case 0
       
-      If Project.Type = Project.TYPE_COMPONENT Then
-        
-        If InStr(Project.Name, ".") = 0 Then
-          Message.Warning(("The project name must be prefixed by the vendor name followed by a dot:") & " <tt>&lt;vendor&gt;." & Project.Name & "</tt>\n\n" & ("Please rename your project if you want to create a package."))
-          Stop Event
-          Return
-        Endif
-        
-      Endif
+      ' If Project.Type = Project.TYPE_COMPONENT Then
+      '   
+      '   If InStr(Project.Name, ".") = 0 Then
+      '     Message.Warning(("Your project is a component, so its name must be prefixed by the vendor name followed by a dot:") & " <tt>&lt;vendor&gt;." & Project.Name & "</tt>\n\n" & ("Please rename your project if you want to create a package."))
+      '     Stop Event
+      '     Return
+      '   Endif
+      '   
+      ' Endif
       
       
       Project.Maintainer = Trim(txtName.Text)
