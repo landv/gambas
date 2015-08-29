@@ -72,7 +72,7 @@ Public Sub dwgWelcome_Draw()
     Paint.Begin($hText)
     Paint.Font = Font["+10,Bold"]
     Y = Paint.Font.Ascent
-    X = PaintText("Gambas " & Project.FullVersionWithRevision, 8, Y, Color.White) 'TEXT_COLOR)
+    X = PaintText("Gambas " & Project.FullVersion, 8, Y, Color.White) 'TEXT_COLOR)
     'Paint.Font = Font["+12,Bold"]
     'PaintText(Project.FullVersionWithRevision, X + 8, Paint.Font.Ascent, Color.White) 'Color.SelectedForeground)
     

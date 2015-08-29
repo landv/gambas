@@ -104,7 +104,6 @@ Static Public Sub GetInfo() As String[]
   Dim aEnv As String[]
   
   aText.Add("[System]")
-  ' aText.Add("Gambas=" & System.FullVersion)
   ' getting Version: set to FullVersionWithRevision at Project.initVersion
   aText.Add("Gambas=" & Project.FullVersionWithRevision)
 
