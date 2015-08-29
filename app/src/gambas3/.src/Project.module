@@ -396,7 +396,7 @@ Private Sub InitVersion()
   aVer = Split(sVer, " ")
   sVer = Trim(aVer[aVer.Max])
 
-  If sVer And sVer <> FullVersionWithRevision Then
+  If sVer And sVer <> FullVersion Then
     'Version &= " (r" & sVer & ")"
     FullVersionWithRevision &= " (" & sVer & ")"
   Endif
