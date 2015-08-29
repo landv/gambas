@@ -105,8 +105,8 @@ Static Public Sub GetInfo() As String[]
   
   aText.Add("[System]")
   ' aText.Add("Gambas=" & System.FullVersion)
-  Exec ["gbx3", "-V"] To sTemp
-  aText.Add("Gambas=" & Trim(sTemp))
+  ' getting Version set to FullVersionWithRevision at Project.initVersion
+  aText.Add("Gambas=" & Project.FullVersionWithRevision)
 
   aText.Add("OperatingSystem=" & System.Family)
   
@@ -231,7 +231,7 @@ Public Sub Form_Open()
 
 End
 
-Sub MakeAnonymous(aText As String[]) As String
+Sub MakeAnonymous(aText As String[])
 
   Dim I As Integer
   Dim sText As String

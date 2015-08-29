@@ -388,7 +388,14 @@ Private Sub InitVersion()
   If FullVersionWithRevision Ends ".0" Then
     FullVersionWithRevision = Left$(FullVersionWithRevision, -2)
   Endif
-  sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
+  ' sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
+
+  ' getting whole Version from the Compiler, it knows about the real used revision, if any
+  Exec [System.Path &/ "bin/gbc" & System.Version, "-V"] To sVer
+  sVer = Replace(sVer, gb.NewLine, Null)
+  aVer = Split(sVer, " ")
+  sVer = Trim(aVer[aVer.Max])
+
   If sVer Then
     'Version &= " (r" & sVer & ")"
     FullVersionWithRevision &= " (" & sVer & ")"
