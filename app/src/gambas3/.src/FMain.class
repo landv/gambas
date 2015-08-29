@@ -2638,10 +2638,28 @@ Public Sub txtSearchProject_Click()
 
 End
 
+Public Sub HideTool()
+
+  panProperty.Hidden = True
+
+End
 
 Public Sub tabProperty_CloseAll()
 
-  panProperty.Hidden = True
+  HideTool
+
+End
+
+
+Public Sub msgError_Open()
+
+  sepMessage.Show
+
+End
+
+Public Sub msgError_Close()
+
+  sepMessage.Hide
 
 End
 

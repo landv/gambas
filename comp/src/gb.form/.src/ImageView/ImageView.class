@@ -172,7 +172,7 @@ Public Sub ImageToView(ImagePoint As Point) As Point
   
 End
 
-Public Sub _Paint(hImage As Image, X As Float, Y As Float, Optional hRect As Rect)
+Public Sub _Paint(hImage As Image, X As Float, Y As Float, Optional hRect As Rect) ', fOpacity As Float = 1.0)
   
   If Not hImage Then Return
   

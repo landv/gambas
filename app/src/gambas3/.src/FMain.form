@@ -1072,14 +1072,14 @@
       MenuOnly = True
     }
   }
-  { Separator7 Separator
+  { sepMessage Separator
     MoveScaled(58,9,38,0)
     Visible = False
   }
   { msgError MessageView
     MoveScaled(27,10,57,6)
+    Background = &HFFFFEF&
     Animated = True
-    Separator = True
   }
   { Panel1 Panel
     MoveScaled(1,18,105,77)
@@ -1163,7 +1163,7 @@
           }
         }
         { panProperty SidePanel
-          MoveScaled(27,0,32,65)
+          MoveScaled(28,0,32,65)
           ToolTip = ("Properties")
           Arrangement = Arrange.Vertical
           Action = "property"
@@ -1171,12 +1171,12 @@
           Separator = True
           Transparent = True
           { panImageProperty Panel
-            MoveScaled(9,3,16,14)
+            MoveScaled(7,4,16,14)
             Expand = True
             Arrangement = Arrange.Fill
           }
           { panTabProperty Panel
-            MoveScaled(1,5,28,42)
+            MoveScaled(3,6,28,42)
             Expand = True
             Arrangement = Arrange.Vertical
             { tabProperty TabPanel

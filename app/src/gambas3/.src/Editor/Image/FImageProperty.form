@@ -9,19 +9,12 @@
     Arrangement = Arrange.Vertical
     Border = False
     ScrollBar = Scroll.Vertical
-    { lblInfo Label
-      MoveScaled(0,0,9,4)
-      Font = Font["+2"]
-      Padding = 4
-    }
-    { Separator5 Separator
-      MoveScaled(11,4,23,0)
-    }
     { tabBrush TabPanel
-      MoveScaled(1,5,61,53)
+      MoveScaled(1,6,61,53)
       Arrangement = Arrange.Vertical
       Border = False
       Count = 4
+      CloseButton = True
       Index = 0
       Text = ("Color")
       { Panel3 Panel
@@ -199,7 +192,7 @@
       Index = 0
     }
     { Separator4 Separator
-      MoveScaled(22,58,15,0)
+      MoveScaled(22,60,15,0)
     }
     { HBox4 HBox
       MoveScaled(0,61,56,4)
