@@ -6,7 +6,6 @@ Private $hPrinter As New Printer As "Printer"
 Private $iCurPrinterResolution As Integer
 Private $bVerif As Boolean
 Private $bPrinting As Boolean
-Private $iPrinterRes As Integer = 1200
 Private $iFileRes As Integer = 150
 
 Static Public Function Run(hReport As Report)
@@ -191,9 +190,9 @@ Public Sub cmbPaper_Click()
   If View.Report.Paper = i Then Return 
   View.Report.Paper = i
   If i = 0 Then
-    pnlCustom.Enabled = True
+    pnlCustom.Visible = True
   Else
-    pnlCustom.Enabled = False
+    pnlCustom.Visible = False
     View.Refresh
     GetValuesFromReport
   Endif
@@ -243,14 +242,12 @@ Public Sub tabPrint_Click()
   If tabPrint.Index = 0 Then
     $hPrinter.OutputFile = ""
     $hPrinter.Name = cmbPrinter.Text
-    $hPrinter.Resolution = $iPrinterRes
-    Object.Lock(cmbResolution)
-    Try cmbResolution.Index = Max(cmbResolution.Find(Str($iPrinterRes)), 0)
-    Object.Unlock(cmbResolution)
+    $hPrinter.Resolution = 1200 
   Else
     $hPrinter.OutputFile = txtFile.Text
     $hPrinter.Resolution = $iFileRes
     Object.Lock(cmbResolution)
+    pnlResolution.Enabled = True
     Try cmbResolution.Index = Max(cmbResolution.Find(Str($iFileRes)), 0)
     Object.Unlock(cmbResolution)
   Endif
@@ -401,7 +398,6 @@ Public Sub Form_Close()
     Settings["FPreview/ReverseOrder"] = tgbReverseCopies.Value
     Settings["FPreview/CollateCopies"] = tgbCollateCopies.Value
     Settings["FPreview/FileResolution"] = $iFileRes
-    Settings["FPreview/PrinterResolution"] = $iPrinterRes
     Settings.Save()
   Endif
   
@@ -439,7 +435,6 @@ Public Sub Form_Open()
     Try $hPrinter.ReverseOrder = Settings["FPreview/ReverseOrder"] 
     Try $hPrinter.CollateCopies = Settings["FPreview/CollateCopies"] 
     Try $iFileRes = Settings["FPreview/FileResolution", 150] 
-    Try $iPrinterRes = Settings["FPreview/PrinterResolution", 1200] 
     Try $hPrinter.Duplex = Settings["FPreview/Duplex", Printer.Simplex] = cmbDuplex.Index
   Endif
   
@@ -530,8 +525,7 @@ End
 Public Sub cmbResolution_Click()
 
   If tabPrint.Index = 0 Then
-    $iPrinterRes = cmbResolution.Text
-    $hPrinter.Resolution = $iPrinterRes
+    $hPrinter.Resolution = 1200
     Else
     $iFileRes = cmbResolution.Text
     $hPrinter.Resolution = $iFileRes

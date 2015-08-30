@@ -109,7 +109,7 @@ End
 
 
 Public Sub Area_MouseWheel()
-Print "wheel"
+
   If Not $hView.Arrangement = Arrange.Row Then
   $hView.Arrangement = Arrange.Row
   $hView.Column = 0
