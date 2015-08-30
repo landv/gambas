@@ -74,6 +74,7 @@ Public Sub _new(sPath As String)
   Path = sPath
   
   dwgBackground.Lower
+  dwgInfo.Background = Color.SetAlpha(dwgInfo.Background, 128)
   
   'Reload
   
@@ -150,6 +151,7 @@ Public Sub cmbZoom_Click()
   imvImage.Zoom = CFloat(Trim(String.Left(cmbZoom.Text, -1)))
   imvImage.Grid = imvImage.Zoom > 8
   panBackground_Arrange
+  $hCurrentPoint = FindBestMagnet(GetImagePos())
   UpdateInfo
   
 End
