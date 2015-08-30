@@ -1406,44 +1406,42 @@ End
 '   
 ' End
 
-Private Sub PaintImage(hImage As Image, X As Float, Y As Float, Optional fOpacity As Float = 1.0, Optional hRect As Rect)
-
-  Dim fZoom As Float = imvImage.Zoom
-  Dim iZoom As Integer = CInt(fZoom)
-  Dim I, P, S As Integer
-
-  If Not hImage Then Return
-  
-  If hRect Then
-    X += hRect.X * fZoom
-    Y += hRect.Y * fZoom
-  Else
-    hRect = Rect(0, 0, hImage.W, hImage.H)
-  Endif
-  
-  Paint.ZoomImage(hImage, fZoom, X, Y, Color.SetAlpha(Color.Black, 128), hRect, fOpacity)
-  
-  ' Paint.DrawImage(hImage, X, Y, hRect.W * fZoom, hRect.H * fZoom, fOpacity, hRect) 'hRect.W, hRect.H)
-  
-  ' If iZoom > 8 Then
-  '   
-  '   P = X
-  '   S = hRect.H * iZoom
-  '   For I = 0 To hRect.W - 1
-  '     Paint.FillRect(P, Y, 1, S, Color.LightForeground)
-  '     P += iZoom
-  '   Next
-  '   
-  '   P = Y
-  '   S = hRect.W * iZoom
-  '   For I = 0 To hRect.H - 1
-  '     Paint.FillRect(X, P, S, 1, Color.LightForeground)
-  '     P += iZoom
-  '   Next
-  '   
-  ' Endif
-  
-End
+' Private Sub PaintImage(hImage As Image, X As Float, Y As Float, Optional fOpacity As Float = 1.0, Optional hRect As Rect)
+' 
+'   Dim fZoom As Float = imvImage.Zoom
+' 
+'   If Not hImage Then Return
+'   
+'   If hRect Then
+'     X += hRect.X * fZoom
+'     Y += hRect.Y * fZoom
+'   Else
+'     hRect = Rect(0, 0, hImage.W, hImage.H)
+'   Endif
+'   
+'   Paint.ZoomImage(hImage, fZoom, X, Y, Color.SetAlpha(Color.Black, 128), hRect, fOpacity)
+'   
+'   ' Paint.DrawImage(hImage, X, Y, hRect.W * fZoom, hRect.H * fZoom, fOpacity, hRect) 'hRect.W, hRect.H)
+'   
+'   ' If iZoom > 8 Then
+'   '   
+'   '   P = X
+'   '   S = hRect.H * iZoom
+'   '   For I = 0 To hRect.W - 1
+'   '     Paint.FillRect(P, Y, 1, S, Color.LightForeground)
+'   '     P += iZoom
+'   '   Next
+'   '   
+'   '   P = Y
+'   '   S = hRect.W * iZoom
+'   '   For I = 0 To hRect.H - 1
+'   '     Paint.FillRect(X, P, S, 1, Color.LightForeground)
+'   '     P += iZoom
+'   '   Next
+'   '   
+'   ' Endif
+'   
+' End
 
 Public Sub imvImage_Draw(hZoom As Image)
   
@@ -1458,7 +1456,6 @@ Public Sub imvImage_Draw(hZoom As Image)
   Dim Y As Integer
   Dim iGrid As Integer
   Dim W As Float
-  Dim hSave As Image
   Dim hZoomOrg As Image
     
   If Project.ActiveForm = Me And If FImageProperty.HasBalance() Then bBalance = True

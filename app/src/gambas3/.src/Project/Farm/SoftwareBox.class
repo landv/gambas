@@ -254,10 +254,10 @@ Private Function Software_Read() As CSoftware
 
 End
 
-Static Public Sub PaintStat(hSoft As CSoftware, Optional bWithSize As Boolean)
+Static Public Sub PaintStat(hSoft As CSoftware, Optional (bWithSize) As Boolean)
 
   Dim sDownload As String
-  Dim X, Y, W As Integer
+  Dim X, Y As Integer
   Dim P As Integer
   
   P = Desktop.Scale

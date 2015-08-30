@@ -28,7 +28,7 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(1,1,92,60)
+    MoveScaled(1,1,94,60)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 10
@@ -85,8 +85,21 @@
         MoveScaled(20,0,44,4)
       }
     }
-    { HBox39 HBox
+    { HBox36 HBox
       MoveScaled(1,25,66,4)
+      Spacing = True
+      Indent = True
+      { Label35 Label
+        MoveScaled(0,0,17,4)
+        Expand = True
+        Text = ("Vendor prefix")
+      }
+      { txtVendorPrefix TextBox
+        MoveScaled(20,0,44,4)
+      }
+    }
+    { HBox39 HBox
+      MoveScaled(1,31,66,4)
       Spacing = True
       Indent = True
       { Label37 Label
@@ -102,7 +115,7 @@
       }
     }
     { HBox40 HBox
-      MoveScaled(1,30,66,4)
+      MoveScaled(1,36,66,4)
       Spacing = True
       Indent = True
       { Label38 Label
@@ -115,7 +128,7 @@
       }
     }
     { HBox34 HBox
-      MoveScaled(1,35,66,4)
+      MoveScaled(1,41,66,4)
       Spacing = True
       Indent = True
       { Label41 Label
