@@ -123,11 +123,10 @@
       }
     }
   }
-  { panSide HBox
+  { panSide Panel
     MoveScaled(65,1,41,76)
-    { Separator1 Separator
-      MoveScaled(1,22,0,15)
-    }
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
     { Panel4 VBox
       MoveScaled(1,1,39,73)
       Expand = True
@@ -206,7 +205,8 @@
         Index = 0
       }
       { Separator2 Separator
-        MoveScaled(3,15,32,1)
+        MoveScaled(3,15,32,0)
+        Visible = False
       }
       { VBox1 VBox
         MoveScaled(3,16,38,59)

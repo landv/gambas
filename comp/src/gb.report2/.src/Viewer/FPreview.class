@@ -35,19 +35,19 @@ End
 
 Private Sub SelectPrinter(Optional sName As String)
   
+  Dim iPrinter As Integer
+  
   If sName Then
     $hPrinter.Name = sName
-    $hPrinter.FullPage = True
-    Object.Lock(cmbPrinter)
-    Try cmbPrinter.Index = cmbPrinter.List.Find(sName)
-    Object.Unlock(cmbPrinter)
   Else
     $hPrinter.Name = Printer.Default
-    Object.Lock(cmbPrinter)
-    cmbPrinter.Index = cmbPrinter.List.Find(Printer.Default)
-    Object.Unlock(cmbPrinter)
   Endif
   
+  Object.Lock(cmbPrinter)
+  iPrinter = Max(0, cmbPrinter.List.Find($hPrinter.Name))
+  Try cmbPrinter.Index = iPrinter
+   Object.Unlock(cmbPrinter)
+    
   'NOTE: force the printer fullpage mode because it make error on report placement
   $hPrinter.FullPage = True
   
