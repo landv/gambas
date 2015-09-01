@@ -6,11 +6,13 @@ Static Public Sub _call(Text As String, Shortcut As String) As String
 
   Dim iPos As Integer
   
-  iPos = String.InStr(Text, "&")
-  If iPos Then 
-    Shortcut = String.Mid$(Text, iPos + 1, 1)
-    Text = Left(Text, iPos - 1) & Mid$(Text, iPos + 1)
-  Endif
+  ' iPos = String.InStr(Text, "&")
+  ' If iPos Then 
+  '   Shortcut = String.Mid$(Text, iPos + 1, 1)
+  '   Text = String.Left(Text, iPos - 1) & String.Mid$(Text, iPos + 1)
+  ' Endif
+  
+  If Not Shortcut Then Return Text
   
   iPos = InStr(Text, Shortcut, 1, gb.IgnoreCase)
   If iPos = 0 Then Return Text '& " (&" & String.UCase(Shortcut) & ")"

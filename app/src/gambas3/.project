@@ -1,21 +1,21 @@
 # Gambas Project File 3.0
-# Compiled with Gambas 3.8.0
+# Compiled with Gambas 3.8.90
 Title=Gambas 3
 Startup=Project
 Icon=img/logo/logo-ide.png
-Version=3.8.0
+Version=3.8.90
 VersionFile=1
-Component=gb.db
 Component=gb.image
 Component=gb.gui.qt
 Component=gb.form
-Component=gb.db.form
 Component=gb.clipper
-Component=gb.eval
-Component=gb.eval.highlight
+Component=gb.db
+Component=gb.db.form
 Component=gb.debug
 Component=gb.desktop.x11
 Component=gb.desktop
+Component=gb.eval
+Component=gb.eval.highlight
 Component=gb.form.dialog
 Component=gb.form.editor
 Component=gb.settings
@@ -25,6 +25,7 @@ Component=gb.gui.qt.webkit
 Component=gb.net
 Component=gb.net.curl
 Component=gb.markdown
+Component=gb.util
 Description="Integrated Development Environment for Gambas"
 Authors="Benoît Minisini\nFabien Bodard\nCharlie Reinl\nJosé Luis Redrejo\nRobert Rowe\nTobias Boege"
 TabSize=2

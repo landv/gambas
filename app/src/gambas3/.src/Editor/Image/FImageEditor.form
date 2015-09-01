@@ -523,11 +523,11 @@
     MoveScaled(2,13,141,74)
     Expand = True
     { panBackground Panel
-      MoveScaled(7,5,62,37)
+      MoveScaled(9,6,62,37)
       Expand = True
       Arrangement = Arrange.Fill
       { dwgBackground DrawingArea
-        MoveScaled(37,6,24,24)
+        MoveScaled(30,6,24,24)
         Background = Color.LightForeground
       }
       { imvImage ImageView
@@ -535,6 +535,11 @@
         Tracking = True
         Border = False
         UseMouse = False
+      }
+      { dwgInfo DrawingArea
+        MoveScaled(34,23,17,5)
+        Background = Color.ButtonBackground
+        Ignore = True
       }
     }
     { timSelect #Timer

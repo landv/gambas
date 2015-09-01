@@ -69,6 +69,12 @@ Public Sub Form_Open()
     txtVendor.Text = Settings["/Packager/Vendor"]
   Endif
     
+  If Project.VendorPrefix Then
+    txtVendorPrefix.Text = Project.VendorPrefix
+  Else
+    txtVendorPrefix.Text = Settings["/Packager/VendorPrefix"]
+  Endif
+    
   If Project.License Then
     txtLicense.Text = Project.License
   Else 
@@ -101,8 +107,8 @@ Public Sub Form_Open()
   InitSystems
 
   If Project.Type = Project.TYPE_COMPONENT Then
-    txtVendor.Text = Split(Project.Name, ".")[0]
-    txtVendor.Enabled = False
+    ' txtVendor.Text = Split(Project.Name, ".")[0]
+    ' txtVendor.Enabled = False
     chkPrefix.Value = True
     chkPrefix.Enabled = False
   Endif 
@@ -154,7 +160,7 @@ End
 
 Private Sub UpdatePackageName()
   
-  txtPackage.Text = Package.GetPackageFullName(txtVendor.Text, chkPrefix.Value, True)
+  txtPackage.Text = Package.GetPackageFullName(txtVendor.Text, txtVendorPrefix.Text, chkPrefix.Value, True)
   
 End
 
@@ -286,20 +292,21 @@ Public Sub wizInstall_BeforeChange()
 
     Case 0
       
-      If Project.Type = Project.TYPE_COMPONENT Then
-        
-        If InStr(Project.Name, ".") = 0 Then
-          Message.Warning(("The project name must be prefixed by the vendor name followed by a dot:") & " <tt>&lt;vendor&gt;." & Project.Name & "</tt>\n\n" & ("Please rename your project if you want to create a package."))
-          Stop Event
-          Return
-        Endif
-        
-      Endif
+      ' If Project.Type = Project.TYPE_COMPONENT Then
+      '   
+      '   If InStr(Project.Name, ".") = 0 Then
+      '     Message.Warning(("Your project is a component, so its name must be prefixed by the vendor name followed by a dot:") & " <tt>&lt;vendor&gt;." & Project.Name & "</tt>\n\n" & ("Please rename your project if you want to create a package."))
+      '     Stop Event
+      '     Return
+      '   Endif
+      '   
+      ' Endif
       
       
       Project.Maintainer = Trim(txtName.Text)
       Project.Address = Trim(txtMail.Text)
       Project.Vendor = Trim(txtVendor.Text)
+      Project.VendorPrefix = Trim(txtVendorPrefix.Text)
       Project.License = Trim(txtLicense.Text)
       Project.Url = Trim(txtUrl.Text)
       
@@ -895,6 +902,12 @@ Public Sub txtVendor_Change()
 
 End
 
+Public Sub txtVendorPrefix_Change()
+
+  UpdatePackageName  
+
+End
+
 Public Sub chkCreateDir_Click()
 
   Project.CreateEachDirectory = chkCreateDir.Value
@@ -1185,6 +1198,12 @@ End
 Public Sub txtVendor_KeyPress()
 
   Project.OnVendorKeyPress
+
+End
+
+Public Sub txtVendorPrefix_KeyPress()
+
+  Project.OnVendorKeyPress(True)
 
 End
 

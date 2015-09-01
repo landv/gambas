@@ -997,7 +997,7 @@ Public Sub OnProjectActivate()
   Dim hCurrent As FImageEditor
   
   UpdateBalance
-  UpdateInfo
+  'UpdateInfo
   
   hCurrent = GetCurrent()
   If hCurrent Then
@@ -1012,13 +1012,6 @@ Public Sub btnBalanceApply_Click()
   Try GetCurrent().ApplyBalance
   btnBalanceReset_Click
 
-End
-
-Public Sub UpdateInfo(Optional sInfo As String)
-  
-  If Not sInfo Then Try sInfo = GetCurrent().GetImageInfo()
-  lblInfo.Text = sInfo
-  
 End
 
 Private Sub ToBrush() As CReportBrush
@@ -1378,5 +1371,11 @@ Public Sub panSlider_Arrange()
     If hChild.Visible Then H += hChild.H
   Next
   panSlider.H = H + Desktop.Scale * 2
+
+End
+
+Public Sub tabBrush_CloseAll()
+
+  FMain.HideTool
 
 End

@@ -123,16 +123,15 @@
       }
     }
   }
-  { panSide HBox
+  { panSide Panel
     MoveScaled(65,1,41,76)
-    { Separator1 Separator
-      MoveScaled(1,22,0,15)
-    }
+    Arrangement = Arrange.Horizontal
+    Border = Border.Plain
     { Panel4 VBox
-      MoveScaled(1,2,39,73)
+      MoveScaled(1,1,39,73)
       Expand = True
       { tabPrint TabPanel
-        MoveScaled(0,0,37,10)
+        MoveScaled(0,0,37,15)
         Arrangement = Arrange.Vertical
         Spacing = True
         Margin = True
@@ -140,7 +139,7 @@
         Count = 2
         Index = 0
         Text = ("Printer")
-        { Panel13 HBox
+        { pnlResolution HBox
           MoveScaled(1,1,37,4)
           Spacing = True
           { PictureBox1 PictureBox
@@ -152,6 +151,20 @@
             MoveScaled(5,0,31,4)
             Expand = True
             ReadOnly = True
+          }
+        }
+        { Panel7 HBox
+          MoveScaled(1,6,35,4)
+          Spacing = True
+          { Label2 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Recto Verso")
+          }
+          { cmbDuplex ComboBox
+            MoveScaled(15,0,21,4)
+            Expand = True
+            ReadOnly = True
+            List = [("None"), ("Short side"), ("Long side")]
           }
         }
         Index = 1
@@ -171,18 +184,8 @@
             ReadOnly = True
           }
         }
-        Index = 0
-      }
-      { Separator2 Separator
-        MoveScaled(2,11,32,0)
-      }
-      { VBox1 VBox
-        MoveScaled(1,14,38,59)
-        Expand = True
-        Spacing = True
-        Margin = True
         { HBox3 HBox
-          MoveScaled(1,0,34,4)
+          MoveScaled(1,6,35,4)
           Spacing = True
           { TextLabel1 TextLabel
             MoveScaled(1,1,12,3)
@@ -199,8 +202,48 @@
             Text = ("dpi")
           }
         }
+        Index = 0
+      }
+      { Separator2 Separator
+        MoveScaled(3,15,32,0)
+        Visible = False
+      }
+      { VBox1 VBox
+        MoveScaled(3,16,38,59)
+        Expand = True
+        Spacing = True
+        Margin = True
+        { Panel6 HBox
+          MoveScaled(2,0,34,4)
+          Spacing = True
+          { Label1 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Range")
+          }
+          { TextBox1 ButtonBox
+            MoveScaled(15,0,18,4)
+            Expand = True
+            Picture = Picture["icon:/16/clear"]
+          }
+        }
+        { HBox1 HBox
+          MoveScaled(2,5,34,4)
+          Spacing = True
+          { Label4 Label
+            MoveScaled(0,0,12,4)
+            Text = ("Copies")
+          }
+          { TextBox2 SpinBox
+            MoveScaled(15,0,12,4)
+            Expand = True
+            MinValue = 1
+          }
+        }
+        { Panel5 Panel
+          MoveScaled(2,10,33,5)
+        }
         { Panel14 HBox
-          MoveScaled(1,6,36,4)
+          MoveScaled(1,17,36,4)
           Spacing = True
           { Label10 Label
             MoveScaled(0,0,12,4)
@@ -214,7 +257,7 @@
           }
         }
         { Panel8 HBox
-          MoveScaled(1,10,36,4)
+          MoveScaled(1,21,36,4)
           Spacing = True
           { Label3 Label
             MoveScaled(0,0,12,4)
@@ -228,8 +271,8 @@
           }
         }
         { pnlCustom VBox
-          MoveScaled(0,14,36,9)
-          Enabled = False
+          MoveScaled(0,25,36,9)
+          Visible = False
           Spacing = True
           { Panel3 HBox
             MoveScaled(1,0,32,4)
@@ -266,66 +309,29 @@
             }
           }
         }
-        { Panel7 HBox
-          MoveScaled(1,24,36,4)
-          Spacing = True
-          { Label2 Label
-            MoveScaled(0,0,12,4)
-            Text = ("Recto Verso")
-          }
-          { cmbDuplex ComboBox
-            MoveScaled(15,0,21,4)
-            Expand = True
-            ReadOnly = True
-            List = [("None"), ("Short side"), ("Long side")]
-          }
+        { Panel13 Panel
+          MoveScaled(2,34,33,4)
+          Expand = True
         }
         { tgbGrayScale CheckBox
-          MoveScaled(1,29,34,4)
+          MoveScaled(1,36,34,4)
           Text = ("Grayscale")
         }
         { tgbFullPage CheckBox
-          MoveScaled(1,33,24,4)
+          MoveScaled(1,40,24,4)
           Visible = False
           Text = ("Full page")
         }
-        { Panel6 HBox
-          MoveScaled(2,37,34,4)
-          Spacing = True
-          { Label1 Label
-            MoveScaled(0,0,12,4)
-            Text = ("Range")
-          }
-          { TextBox1 ButtonBox
-            MoveScaled(15,0,18,4)
-            Expand = True
-            Picture = Picture["icon:/16/clear"]
-          }
-        }
-        { HBox1 HBox
-          MoveScaled(2,42,34,4)
-          Spacing = True
-          { Label4 Label
-            MoveScaled(0,0,12,4)
-            Text = ("Copies")
-          }
-          { TextBox2 SpinBox
-            MoveScaled(15,0,12,4)
-            Expand = True
-            MinValue = 1
-          }
-        }
         { tgbCollateCopies CheckBox
-          MoveScaled(1,47,35,3)
+          MoveScaled(1,45,35,3)
           Text = ("Collate copies")
         }
         { tgbReverseCopies CheckBox
-          MoveScaled(1,50,36,4)
+          MoveScaled(1,48,36,4)
           Text = ("Reverse order")
         }
-        { Panel5 Panel
-          MoveScaled(2,53,33,2)
-          Expand = True
+        { Panel15 Panel
+          MoveScaled(1,52,35,2)
         }
         { HBox2 HBox
           MoveScaled(2,55,33,4)

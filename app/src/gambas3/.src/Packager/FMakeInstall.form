@@ -68,15 +68,27 @@
         Expand = True
       }
     }
+    { HBox20 HBox
+      MoveScaled(1,20,70,4)
+      Spacing = True
+      { Label9 Label
+        MoveScaled(0,0,23,4)
+        Text = ("Vendor prefix")
+      }
+      { txtVendorPrefix TextBox
+        MoveScaled(24,0,44,4)
+        Expand = True
+      }
+    }
     { TextLabel2 TextLabel
-      MoveScaled(1,19,64,4)
+      MoveScaled(1,24,64,4)
       Font = Font["Bold"]
       AutoResize = True
       Text = ("Maintainer information")
       Alignment = Align.BottomNormal
     }
     { HBox1 HBox
-      MoveScaled(1,24,71,4)
+      MoveScaled(1,29,71,4)
       Spacing = True
       { Label1 Label
         MoveScaled(0,0,23,4)
@@ -88,7 +100,7 @@
       }
     }
     { HBox2 HBox
-      MoveScaled(1,29,70,4)
+      MoveScaled(1,34,70,4)
       Spacing = True
       { Label2 Label
         MoveScaled(0,0,23,4)
@@ -100,7 +112,7 @@
       }
     }
     { HBox16 HBox
-      MoveScaled(1,34,70,4)
+      MoveScaled(1,39,70,4)
       Spacing = True
       { Label7 Label
         MoveScaled(0,0,23,4)
@@ -291,6 +303,7 @@
       { HBox17 HBox panDistro
         Name = "HBox17"
         MoveScaled(43,20,42,9)
+        Visible = False
         Tag = "mandriva"
         Padding = 4
         { PictureBox8 PictureBox
@@ -373,7 +386,7 @@
           MoveScaled(14,1,26,4)
           #Translate = False
           Expand = True
-          Text = "Ubuntu / Mint"
+          Text = "Ubuntu / Kubuntu / Mint..."
         }
       }
       { HBox18 HBox panDistro

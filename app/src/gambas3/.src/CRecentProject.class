@@ -11,7 +11,7 @@ Static Private $hSettings As Settings
 Public Const MAX_RECENT As Integer = 100
 
 Public Path As String
-Public Date As Date
+Public ({Date}) As Date
 
 Public Sub _new(sPath As String, dDate As Date)
   

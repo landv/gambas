@@ -129,6 +129,7 @@ Public Sub _new()
     [txtName, "/Identity/Name", User.Name],
     [txtMail, "/Identity/Mail", User.Name & "@" & System.Host],
     [txtVendor, "/Packager/Vendor", ""],
+    [txtVendorPrefix, "/Packager/VendorPrefix", ""],
     [txtLicense, "/Packager/License", "General Public License"],
     [txtURL, "/Packager/URL", "www.endoftheinternet.com"],
     [cmbPrefix, "/Packager/UsePrefix", 0]]
@@ -1092,6 +1093,12 @@ Public Sub txtVendor_LostFocus()
 
 End
 
+Public Sub txtVendorPrefix_LostFocus()
+
+  Settings["/Packager/VendorPrefix"] = txtVendorPrefix.Text
+
+End
+
 Public Sub txtLicense_LostFocus()
 
   Settings["/Packager/License"] = txtLicense.Text
@@ -1309,6 +1316,12 @@ End
 Public Sub txtVendor_KeyPress()
 
   Project.OnVendorKeyPress
+
+End
+
+Public Sub txtVendorPrefix_KeyPress()
+
+  Project.OnVendorKeyPress(True)
 
 End
 

@@ -1656,8 +1656,8 @@ void MyMainWindow::present(QWidget *parent)
 		if (effectiveWinId() == 0)
 		{
 			createWinId();
-			initProperties(PROP_ALL);
 		}
+		initProperties(PROP_ALL);
 #endif
 		
 		if (getState() & Qt::WindowMinimized)
@@ -1963,6 +1963,7 @@ void MyMainWindow::setBorder(bool b)
 	
 	if (effectiveWinId())
 	{
+		qDebug("effectiveWinId");
 		initProperties(PROP_BORDER);
 		X11_window_remap(effectiveWinId());
 	}

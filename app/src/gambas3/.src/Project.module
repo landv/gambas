@@ -75,6 +75,7 @@ Public PackageSignature As Boolean
 Public Maintainer As String
 Public Address As String
 Public Vendor As String
+Public VendorPrefix As String
 Public Url As String
 Public License As String
 Public CreateEachDirectory As Boolean
@@ -384,15 +385,9 @@ Private Sub InitVersion()
   aVer.Remove(aVer.Max)
   Version = aVer.Join(".")
 
-  FullVersionWithRevision = FullVersion
-  If FullVersionWithRevision Ends ".0" Then
-    FullVersionWithRevision = Left$(FullVersionWithRevision, -2)
-  Endif
-  sVer = VersionControl.GetVersion(File.Dir(File.Dir(File.Dir(Application.Path))))
-  If sVer Then
-    'Version &= " (r" & sVer & ")"
-    FullVersionWithRevision &= " (" & sVer & ")"
-  Endif
+  Exec [System.Path &/ "bin/gbx" & System.Version, "-V"] To sVer
+  FullVersionWithRevision = Trim(sVer)
+  If FullVersionWithRevision Ends ".0" Then FullVersionWithRevision = Left$(FullVersionWithRevision, -2)
 
 Catch
 
@@ -3219,6 +3214,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   'BreakOnError = False
   Maintainer = ""
   Vendor = ""
+  VendorPrefix = ""
   Address = ""
   Url = ""
   License = ""
@@ -3438,6 +3434,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "vendor"
         Vendor = sVal
 
+      Case "vendorprefix"
+        VendorPrefix = sVal
+
       Case "address"
         Address = sVal
 
@@ -3635,6 +3634,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
 
   If Maintainer Then Print #hFic, "Maintainer="; Maintainer
   If Vendor Then Print #hFic, "Vendor="; Vendor
+  If VendorPrefix Then Print #hFic, "VendorPrefix="; VendorPrefix
   If Address Then Print #hFic, "Address="; Address
   If Url And If Url <> DEFAULT_URL Then Print #hFic, "Url="; Url
   If License Then Print #hFic, "License="; License
@@ -6126,7 +6126,7 @@ Public Sub UpdateComponentFile()
   
 End
 
-Public Sub OnVendorKeyPress()
+Public Sub OnVendorKeyPress(Optional bPrefix As Boolean)
   
   If Key.Text Then
     If Len(Key.Text) = 1 Then 
@@ -6134,7 +6134,9 @@ Public Sub OnVendorKeyPress()
       If Asc(Key.Text) = 127 Then Return
       If IsDigit(Key.Text) Then Return
       If IsLetter(Key.Text) Then Return
-      If InStr("-_", Key.Text) Then Return
+      If Not bPrefix Then
+        If InStr("-_", Key.Text) Then Return
+      Endif
     Endif
     Stop Event
   Endif

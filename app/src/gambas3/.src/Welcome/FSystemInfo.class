@@ -104,9 +104,8 @@ Static Public Sub GetInfo() As String[]
   Dim aEnv As String[]
   
   aText.Add("[System]")
-  ' aText.Add("Gambas=" & System.FullVersion)
-  Exec ["gba3", "-V"] To sTemp
-  aText.Add("Gambas=" & Replace(sTemp, gb.NewLine, Null))
+  ' getting Version: set to FullVersionWithRevision at Project.initVersion
+  aText.Add("Gambas=" & Project.FullVersionWithRevision)
 
   aText.Add("OperatingSystem=" & System.Family)
   
@@ -141,11 +140,11 @@ Static Public Sub GetInfo() As String[]
   Endif
   If System.Family = "Cygwin" Then
      aSearchPath = ["/bin", "/lib", "/usr/lib"]
-     cSearch = ["Qt4": "cygQtCore*.dll", "Qt5": "cygQt5Core*.dll", "GTK+": "cyggtk-x11-2*.dll", "GTK+3": "cyggtk-3-*.dll", "SDL": "cygSDL-*.dll", "GStreamer": "cyggstreamer-*.dll", "Poppler": "cygpoppler-*.dll", "Curl": "cygcurl-*.dll", "OpenGL": "cygGL-*.dll", 
+     cSearch = ["QT4": "cygQtCore*.dll", "QT5": "cygQt5Core*.dll", "GTK+2": "cyggtk-x11-2*.dll", "GTK+3": "cyggtk-3-*.dll", "SDL": "cygSDL-*.dll", "GStreamer": "cyggstreamer-*.dll", "Poppler": "cygpoppler-*.dll", "Curl": "cygcurl-*.dll", "OpenGL": "cygGL-*.dll", 
       "Cairo": "cygcairo-[0-9]*.dll", "DBus": "cygdbus-[0-9]*.dll"]
   Else 
      aSearchPath = ["/lib", "/usr/lib"]
-     cSearch = ["Qt4": "libQtCore.so.*.*.*", "Qt5": "libQt5Core.so.*.*.*", "GTK+": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
+     cSearch = ["QT4": "libQtCore.so.*.*.*", "QT5": "libQt5Core.so.*.*.*", "GTK+2": "libgtk-x11-2*.so.*.*.*", "GTK+3": "libgtk-3*.so.*.*.*", "SDL": "libSDL-1.*.so.*.*.*", "GStreamer": "libgstreamer-*.so.*.*.*", "Poppler": "libpoppler.so.*.*.*", "Curl": "libcurl.so.*.*.*", 
      "OpenGL": "libGL.so.*.*.*", "Cairo": "libcairo.so.*.*.*", "DBus": "libdbus-[0-9].so.*.*.*"]
   Endif
   cFile = New Collection
@@ -196,6 +195,9 @@ Public Sub Form_Open()
   Inc Application.Busy
   
   aText = GetInfo()
+  MakeAnonymous(aText)
+  
+  Project.SetEditorFont(gvwInfo)
   
   gvwInfo.Rows.Count = aText.Count
   gvwInfo.Columns.Count = 3
@@ -209,13 +211,9 @@ Public Sub Form_Open()
         .ColumnSpan = 3
         .Padding = 4
       End With
-    Else If IsNull(sText) Then 
-         gvwInfo[I, 0].Text = Null
-         gvwInfo[I, 1].Text = Null
-         gvwInfo[I, 2].Text = Null
-    Else
+    Else If sText Then 
       aLine = Split(sText, "=")
-      gvwInfo[I, 0].Text = Space$(4) & Trim(aLine[0])
+      gvwInfo[I, 0].Text = Space$(2) & Trim(aLine[0])
       gvwInfo[I, 0].Padding = 4
       gvwInfo[I, 2].Text = Trim(aLine[1])
       gvwInfo[I, 2].Padding = 4
@@ -226,22 +224,24 @@ Public Sub Form_Open()
   gvwInfo.Columns[0].Width = -1
   gvwInfo.Columns[1].Width = Desktop.Scale * 2
   
-  $sInfo = MakeAnonymous(aText.Join("\n"))
+  $sInfo = aText.Join("\n")
 
   Dec Application.Busy
 
 End
 
-Function MakeAnonymous(sText As String) As String
+Sub MakeAnonymous(aText As String[])
 
-  Dim sRetText As String
-  
-  sRetText = Replace(sText, System.Host, "<hostname>")
-  sRetText = Replace(sRetText, User.Home, "<home>")
-  sRetText = Replace(sRetText, User.Name, "<user>")
-  
-  Return sRetText
-  
+  Dim I As Integer
+  Dim sText As String
+
+  For I = 0 To aText.Max
+    sText = Replace(aText[I], System.Host, "<hostname>")
+    sText = Replace(sText, User.Home, "<home>")
+    aText[I] = Replace(sText, User.Name, "<user>")
+    
+  Next
+
 End
 
 

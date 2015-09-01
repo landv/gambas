@@ -199,8 +199,10 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 
 			if (CTYPE_get_kind(gp->ctype) == TK_VARIABLE)
 			{
-				if (!CTYPE_is_static(gp->ctype) && DEBUG_info->op)
+				if (!CTYPE_is_static(gp->ctype))
 				{
+					if (!DEBUG_info->op)
+						continue;
 					var = &DEBUG_info->cp->load->dyn[gp->value];
 					addr = (char *)DEBUG_info->op + var->pos;
 					ref = DEBUG_info->op;

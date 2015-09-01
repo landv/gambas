@@ -1635,7 +1635,15 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
             iPos = String.InStr(sVal, "&")
             If iPos Then
               sShortcut = String.Mid$(sVal, iPos + 1, 1)
-              sLine &= "Shortcut((" & Quote(String.Left(sVal, iPos - 1) & String.Mid$(sVal, iPos + 1)) & "), " & Quote(sShortcut) & ")"
+              If InStr("& ", sShortcut) Then 
+                sShortcut = ""
+              Else
+                sVal = String.Left(sVal, iPos - 1) & String.Mid(sVal, iPos + 1)
+              Endif
+            Endif
+            
+            If sShortcut Then
+              sLine &= "Shortcut((" & Quote(sVal) & "), " & Quote(sShortcut) & ")"
             Else
               sLine &= "(" & Quote(sVal) & ")"
             Endif

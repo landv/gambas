@@ -408,8 +408,9 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
           
           If InStr(sValue, "\\\"") Then Error "gambas3: "; File.Name(Path); ".form: "; sValue
           
-          aScan = Scan(Mid$(sValue, 10), "(*),*)*")
-          vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(aScan[1])))
+          aScan = Scan(Mid$(sValue, 10), "(*)*)*")
+          
+          vValue = Shortcut(UnQuote(Trim(aScan[0])), UnQuote(Trim(Mid(aScan[1], 2))))
           If aScan[2] Then vValue &= UnQuote(Trim(Mid$(Trim(aScan[2]), 2)))
           
         Else

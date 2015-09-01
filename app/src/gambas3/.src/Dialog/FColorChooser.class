@@ -80,29 +80,9 @@ Public Sub Form_Open()
   Dim hClass As CClassInfo
   Dim hSym As CSymbolInfo
   Dim sColor As String
+  Dim iIndex As Integer
   
   Settings.Read(Me)
-
-  $aColorName = New String[]
-  hClass = CComponent.Classes["Color"]
-  
-  For Each hSym In hClass.Symbols
-    sColor = hSym.Name
-    If sColor = "Default" Then Continue
-    If InStr("RC", hSym.Kind) And If hSym.Type = "i" And If Not $aColorName.Exist(sColor) Then
-      $aColorName.Add(sColor)
-    Endif
-  Next
-  
-  $aColorName.Sort()
-
-  $aPict = New Picture[$aColorName.Count]
-
-  gvwColor.Columns.Count = 2
-  gvwColor.Mode = Select.Single
-  gvwColor.Columns[0].W = 24
-  gvwColor.Columns[0].Alignment = Align.Center
-  gvwColor.Rows.Count = $aColorName.Count + 1
 
   cmbPrefix.List = $aPrefix
   If $aPrefix Then
@@ -111,18 +91,50 @@ Public Sub Form_Open()
     cmbPrefix.Hide
   Endif
 
+  $aColorName = New String[]
+  
+  hClass = CComponent.Classes["Color"]
+  If hClass Then
+    
+    For Each hSym In hClass.Symbols
+      sColor = hSym.Name
+      If sColor = "Default" Then Continue
+      If InStr("RC", hSym.Kind) And If hSym.Type = "i" And If Not $aColorName.Exist(sColor) Then
+        $aColorName.Add(sColor)
+      Endif
+    Next
+    
+    $aColorName.Sort()
+    
+    $aPict = New Picture[$aColorName.Count]
+  
+    gvwColor.Columns.Count = 2
+    gvwColor.Mode = Select.Single
+    gvwColor.Columns[0].W = 24
+    gvwColor.Columns[0].Alignment = Align.Center
+    gvwColor.Rows.Count = $aColorName.Count + 1
+    
+  Endif
+
   If Not IsNull(Val($sColor)) Then
     gvwColor.Row = 0
     dlgColor.SelectedColor = Val($sColor)
-    tabColor.Index = 1
+    iIndex = 1
   Else
     If $sColor Then
       gvwColor.Row = $aColorName.Find($sColor) + 1
     Else
       gvwColor.Row = 0
     Endif
-    tabColor.Index = 0
+    iIndex = 0
   Endif
+  
+  If Not hClass Then
+    iIndex = 1
+    tabColor[0].Visible = False
+  Endif
+  
+  tabColor.Index = iIndex
   
   dlgColor.ShowAlpha = $bAlpha
   
