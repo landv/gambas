@@ -685,7 +685,11 @@ BEGIN_PROPERTY(ComboBox_Border)
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(COMBOBOX->hasFrame());
 	else
+	{
 		COMBOBOX->setFrame(VPROP(GB_BOOLEAN));
+		QEvent e(QEvent::FontChange);
+		COMBOBOX->changeEvent(&e);
+	}
 
 END_PROPERTY
 

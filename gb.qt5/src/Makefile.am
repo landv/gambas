@@ -53,5 +53,6 @@ gb_qt5_la_SOURCES = \
  ctrayicon.h ctrayicon_moc.cpp ctrayicon.cpp \
  CWatcher.h CWatcher_moc.cpp CWatcher.cpp \
  cprinter.h cprinter_moc.cpp cprinter.cpp \
- csvgimage.h csvgimage_moc.cpp csvgimage.cpp
+ csvgimage.h csvgimage_moc.cpp csvgimage.cpp \
+ fix_breeze.h fix_breeze.cpp
 
