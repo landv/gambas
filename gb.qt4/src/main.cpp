@@ -110,6 +110,7 @@
 #include <QAbstractNativeEventFilter>
 #endif
 
+#include "fix_breeze.h"
 #include "main.h"
 
 /*#define DEBUG*/
@@ -892,6 +893,14 @@ static void QT_Init(void)
 	QX11Info::setAppDpiY(0, 92);*/
 		
 	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
+	
+	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
+	{
+		char *env = getenv("GB_QT_NO_BREEZE_FIX");
+		if (!env || atoi(env) == 0)
+			qApp->setStyle(new FixBreezeStyle);
+	}
+	
 	
 	MAIN_update_scale();
 
