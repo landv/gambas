@@ -267,7 +267,7 @@ in C and less in what's available in a Gambas component, so I stuck to whatever 
 routines use in this module.
 zxMarce, 20150826
 */
-static bool is_host_a_connstring(char *host_or_cs)
+static bool is_host_a_connstring(const char *host_or_cs)
 {
 
 #ifdef ODBC_DEBUG_HEADER
@@ -276,29 +276,25 @@ fprintf(stderr,"\tis_host_a_connstring: '%s'\n", host_or_cs);
 fflush(stderr);
 #endif
 
-  int length = strlen(host_or_cs);
-  bool connstrCharFound = FALSE;
-  int counter;
-  char curChar;
+	int counter;
+	char curChar;
 
-  for (counter = 0; counter < length; counter++)
-  {
-    curChar = host_or_cs[counter];
-    if ((curChar == '=') | (curChar == ';'))
-    {
-      connstrCharFound = TRUE;
-      break;
-    }
-  }
+	if (!host_or_cs)
+		return FALSE;
+	
+	for (counter = 0; counter < strlen(host_or_cs); counter++)
+	{
+		curChar = host_or_cs[counter];
+		if ((curChar == '=') || (curChar == ';'))
+			return TRUE;
+	}
 
-  return connstrCharFound;
-
+	return FALSE;
 }
 
 /* Internal function to convert a database type into a Gambas type */
 static GB_TYPE conv_type(int type)
 {
-
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tconv_type: Field type: %d\n",type);
@@ -433,37 +429,11 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
   Returns the character used for quoting object names.
 
 *****************************************************************************/
+
 static const char *get_quote(void)
 {
 	return QUOTE_STRING;
 }
-
-/* Internal function to allocate the ODBC handle */
-static ODBC_CONN * SQL_Handle(void)
-{
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tSQL_Handle\n");
-fflush(stderr);
-#endif
-
-	return (ODBC_CONN *) malloc(sizeof(ODBC_CONN));
-
-}
-
-/* Internal function to deallocate the ODBC handle */
-void SQL_Handle_free(ODBC_CONN * ptr)
-{
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tSQL_Handle_free, pointer is %p\n",ptr);
-fflush(stderr);
-#endif
-
-	free(ptr);
-
-}
-
 
 /*****************************************************************************
 
@@ -492,17 +462,22 @@ fflush(stderr);
 	//int V_OD_erg;
 	SQLRETURN retcode;
 	ODBC_CONN *odbc;
+	bool hostIsAConnString;
+	char *host;
+	char *user;
 
-        /* zxMarce: Check for invalid Connection.Host property */
-        if (!desc->host)
-        {
-                GB.Error("Connection's Host property is Null");
-		return TRUE;
-        }
-        bool hostIsAConnString = is_host_a_connstring(desc->host);
+	host = desc->host;
+	if (!host)
+		host = "";
+	
+	user = desc->user;
+	if (!user)
+		user = "";
+	
+	hostIsAConnString = is_host_a_connstring(host);
 
 	/* Allocate the ODBC handle */
-	odbc = SQL_Handle();
+	odbc = (ODBC_CONN *)malloc(sizeof(ODBC_CONN));
 	odbc->odbcHandle = NULL;
 	odbc->odbcEnvHandle = NULL;
 
@@ -544,7 +519,7 @@ fflush(stderr);
 	if (hostIsAConnString)
 	{
 		/* zxMarce: Connect to Database (desc->host is an ODBC Connection String) */
-		retcode = SQLDriverConnect(odbc->odbcHandle, 0, (SQLCHAR *) desc->host, SQL_NTS, 0, 0, 0, SQL_DRIVER_NOPROMPT);
+		retcode = SQLDriverConnect(odbc->odbcHandle, 0, (SQLCHAR *)host, SQL_NTS, 0, 0, 0, SQL_DRIVER_NOPROMPT);
 		/* The last three zero params in the call above can be used to retrieve the actual connstring used, 
 		   should unixODBC "complete" the passed ConnString with data from a matching defined DSN. Not 
 		   doing it here, but maybe useful to fill in the other Gambas Connection object properties (user, 
@@ -563,19 +538,16 @@ fflush(stderr);
 
 	} else {
 		/* Connect to Database (desc->host is an ODBC Data Source Name) */
-		retcode = SQLConnect(odbc->odbcHandle, (SQLCHAR *) desc->host, SQL_NTS, (SQLCHAR *) desc->user, SQL_NTS, (SQLCHAR *) desc->password, SQL_NTS);
+		retcode = SQLConnect(odbc->odbcHandle, (SQLCHAR *)host, SQL_NTS, (SQLCHAR *)user, SQL_NTS, (SQLCHAR *) desc->password, SQL_NTS);
 	}
 
 	retcode = SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_AUTOCOMMIT, (void *) SQL_AUTOCOMMIT_ON, SQL_NTS);
-	odbc->dsn_name = malloc(sizeof(char) * strlen(desc->host));
+	
+	odbc->dsn_name = malloc(sizeof(char) * strlen(host));
 	strcpy(odbc->dsn_name, desc->host);
 
-        /* zxMarce: Skip copying a null string, otherwise: SEGFAULT */
-        if (!hostIsAConnString)
-        {
-                odbc->user_name = malloc(sizeof(char) * strlen(desc->user));
-                strcpy(odbc->user_name, desc->user);
-        }
+	odbc->user_name = malloc(sizeof(char) * strlen(user));
+	strcpy(odbc->user_name, user);
 
 	db->version = 3;
 
@@ -649,7 +621,7 @@ fflush(stderr);
 	
 	if (conn)
 	{
-		SQL_Handle_free(conn);
+		free(conn);
 		db->handle = NULL;
 	}
 }
@@ -2930,14 +2902,8 @@ static int user_exist(DB_DATABASE *db, const char *name)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 
-	if (strcmp(han->user_name, name) == 0)
-	{
-
-		return TRUE;
-	}
-	return FALSE;
-//  GB.Error("ODBC does not implement this function");
-
+	return strcmp(han->user_name, name) == 0;
+	//  GB.Error("ODBC does not implement this function");
 }
 
 
@@ -2960,8 +2926,12 @@ static int user_exist(DB_DATABASE *db, const char *name)
 static int user_list(DB_DATABASE *db, char ***users)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
-	GB.NewArray(users, sizeof(char *), 1);
-	(*users)[0] = GB.NewZeroString(han->user_name);
+	
+	if (users)
+	{
+		GB.NewArray(users, sizeof(char *), 1);
+		(*users)[0] = GB.NewZeroString(han->user_name);
+	}
 
 	//GB.Error("ODBC does not implement this function");
 	return (1);
