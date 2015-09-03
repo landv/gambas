@@ -21,7 +21,7 @@ install-exec-local:
 	 $(INSTALL) .component $(DESTDIR)/$(GBLIBRARY_path)/$(COMPONENT_name).component; \
 	 chmod a-x $(DESTDIR)/$(GBLIBRARY_path)/$(COMPONENT_name).component; \
 	 echo "Installing $(PACKAGE).info in $(GBINFO_path)"; \
-	 $(INSTALL) -d .info $(DESTDIR)/$(GBINFO_path); \
+	 $(INSTALL) -d $(DESTDIR)/$(GBINFO_path); \
 	 $(INSTALL) .info $(DESTDIR)/$(GBINFO_path)/$(COMPONENT_name).info; \
 	 chmod a-x $(DESTDIR)/$(GBINFO_path)/$(COMPONENT_name).info; \
 	 echo "Installing $(PACKAGE).list in $(GBINFO_path)"; \
