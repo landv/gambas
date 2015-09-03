@@ -4,6 +4,7 @@
 
   (c) 2004-2007 Andrea Bortolan <andrea_bortolan@yahoo.it>
   (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2015 zxMarce <d4t4full@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,7 +28,11 @@
 //#define ODBC_TYPE
 //#define ODBC_DEBUG
 //#define DEBUG_ODBC
+
+//#ifndef ODBC_DEBUG_HEADER
 //#define ODBC_DEBUG_HEADER
+//#endif
+
 //#define ODBC_DEBUG_MEM
 
 #include <stdio.h>
@@ -51,7 +56,6 @@
 
 #include "gb.db.proto.h"
 #include "main.h"
-
 
 GB_INTERFACE GB EXPORT;
 DB_INTERFACE DB EXPORT;
@@ -253,70 +257,88 @@ fflush(stderr);
 	return FALSE; 
 }
 
-
-/* Internal function to convert a database type into a Gambas type */
-
-static GB_TYPE conv_type(int type)
+/* 
+Internal function to check if the .Host property is actually an ODBC connection string.
+ODBC ConnStrings have one or more "ParamName=ParamValue" pairs, delimited by semicolons.
+The function helps the component know whether to call SQLConnect (when a host/DSN), 
+or SQLDriverConnect (when a ConnString).
+I know there are C functions to locate CHARs in a CHAR[], but I'm not well versed
+in C and less in what's available in a Gambas component, so I stuck to whatever other 
+routines use in this module.
+zxMarce, 20150826
+*/
+static bool is_host_a_connstring(const char *host_or_cs)
 {
 
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tconv_type :Field type :%d\n",type);
+fprintf(stderr,"\tis_host_a_connstring: '%s'\n", host_or_cs);
+fflush(stderr);
+#endif
+
+	int counter;
+	char curChar;
+
+	if (!host_or_cs)
+		return FALSE;
+	
+	for (counter = 0; counter < strlen(host_or_cs); counter++)
+	{
+		curChar = host_or_cs[counter];
+		if ((curChar == '=') || (curChar == ';'))
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+/* Internal function to convert a database type into a Gambas type */
+static GB_TYPE conv_type(int type)
+{
+#ifdef ODBC_DEBUG_HEADER
+fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
+fprintf(stderr,"\tconv_type: Field type: %d\n",type);
 fflush(stderr);
 #endif
 	switch (type)
 	{
 		case SQL_BINARY:
 			return GB_T_BOOLEAN;
-
-			/*case INT8OID: */
+                /*case INT8OID: */
 		case SQL_NUMERIC:
 			return GB_T_FLOAT;
-			
 		case SQL_DECIMAL:
 			return GB_T_INTEGER;
-		
 		case SQL_INTEGER:
 			return GB_T_INTEGER;
-		
 		case SQL_SMALLINT:
 			return GB_T_INTEGER;
-			
-
-// New datatype bigint 64 bits
 		case SQL_BIGINT:
+                        // New datatype bigint 64 bits
 			return GB_T_LONG;
-
 		case SQL_FLOAT:
 			return GB_T_FLOAT;
 		case SQL_REAL:
 			return GB_T_FLOAT;
 		case SQL_DOUBLE:
 			return GB_T_FLOAT;
-
 		case SQL_DATETIME:
 		case SQL_TYPE_DATE:
 		case SQL_TYPE_TIME:
 		case SQL_TYPE_TIMESTAMP:
 			return GB_T_DATE;
-
-// Data type for BLOB
-
 		case SQL_LONGVARCHAR:
 		case SQL_VARBINARY:
-		case SQL_LONGVARBINARY:
+		case SQL_LONGVARBINARY: // Data type for BLOB
 			return DB_T_BLOB;
-
 		case SQL_CHAR:
 		default:
 			return GB_T_STRING;
-
 	}
 }
 
  
 /* Internal function to convert a database value into a Gambas variant value */
-
 static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 {
 	GB_VALUE conv;
@@ -331,81 +353,58 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 		case SQL_DECIMAL:
 		case SQL_INTEGER:
 		case SQL_SMALLINT:
-	
 			val->type = GB_T_INTEGER;
-			
 			if (GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv))
 				val->value._integer = 0;
 			else
 				val->value._integer = conv._integer.value;
-
 			break;
 			
 		case SQL_NUMERIC:
 		case SQL_FLOAT:
 		case SQL_REAL:
 		case SQL_DOUBLE:
-			
 			val->type = GB_T_FLOAT;
-			
 			if (GB.NumberFromString(GB_NB_READ_FLOAT, data, strlen(data), &conv))
 				val->value._float = 0;
 			else
 				val->value._float = conv._float.value;
-			
 			break;
 			
-			
-// Data type bigint 64 bits
-		case SQL_BIGINT:
-
+		case SQL_BIGINT: // Data type bigint 64 bits
 			val->type = GB_T_LONG;
-			
 			if (GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv))
 				val->value._long = 0;
 			else
 				val->value._long = conv._long.value;
-
 			break;
 
-// Data type BLOB 
-   	case SQL_LONGVARCHAR:
+		case SQL_LONGVARCHAR:
 		case SQL_VARBINARY:
-		case SQL_LONGVARBINARY:
-			
+		case SQL_LONGVARBINARY: // Data type BLOB
 			// The BLOB are read by the blob_read() driver function
 			// You must set NULL there.
 			val->type = GB_T_NULL;
 			break;
 
-// Data type for Time
 		case SQL_TYPE_DATE:
 		case SQL_TYPE_TIME:
 		case SQL_TYPE_TIMESTAMP:
-		case SQL_DATETIME:
+		case SQL_DATETIME: // Data type for Time
 			{
-				//case FIELD_TYPE_TIMESTAMP:
-
 				memset(&date, 0, sizeof(date));
-
 				len = strlen(data);
 				if (len > 3 && strcmp(&data[len - 2], "BC") == 0)
 					bc != 0;
 				else
 					bc = 0;
-
 				sscanf(data, "%4d-%2d-%2d %2d:%2d:%lf", &date.year, &date.month,
 							 &date.day, &date.hour, &date.min, &sec);
 				date.sec = (short) sec;
 				date.msec = (short) ((sec - date.sec) * 1000 + 0.5);
-				//break;
-
-
 				if (bc)
 					date.year = (-date.year);
-
 				GB.MakeDate(&date, (GB_DATE *) & conv);
-
 				val->type = GB_T_DATE;
 				val->value._date.date = conv._date.value.date;
 				val->value._date.time = conv._date.value.time;
@@ -414,10 +413,8 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 
 		case SQL_CHAR:
 		default:
-
 			val->type = GB_T_CSTRING;
 			val->value._string = data;
-
 			break;
 	}
 
@@ -453,46 +450,37 @@ static const char *get_quote(void)
 
 *****************************************************************************/
 
-/* Internal function to allocate the ODBC handle */
-static ODBC_CONN * SQL_Handle(void)
-{
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tSQL_Handle\n");
-fflush(stderr);
-#endif
-	return (ODBC_CONN *) malloc(sizeof(ODBC_CONN));
-}
-
-void SQL_Handle_free(ODBC_CONN * ptr)
-{
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tSQL_Handle_free, pointer is %p\n",ptr);
-fflush(stderr);
-#endif
-
-	free(ptr); 
-}
-
-
 static int open_database(DB_DESC * desc, DB_DATABASE *db)
 {
+
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\topen_database\n");
 fflush(stderr);
 #endif
+
 	//int V_OD_erg;
 	SQLRETURN retcode;
 	ODBC_CONN *odbc;
+	bool hostIsAConnString;
+	char *host;
+	char *user;
+
+	host = desc->host;
+	if (!host)
+		host = "";
+	
+	user = desc->user;
+	if (!user)
+		user = "";
+	
+	hostIsAConnString = is_host_a_connstring(host);
 
 	/* Allocate the ODBC handle */
-	odbc = SQL_Handle();
-
-
+	odbc = (ODBC_CONN *)malloc(sizeof(ODBC_CONN));
 	odbc->odbcHandle = NULL;
-	odbc->odbcEnvHandle=NULL;
+	odbc->odbcEnvHandle = NULL;
+
 	/* Allocate the Environment handle */
 	retcode = SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &odbc->odbcEnvHandle);
 
@@ -527,27 +515,43 @@ fflush(stderr);
 	}
 
 	SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_LOGIN_TIMEOUT, (SQLPOINTER)(intptr_t)db->timeout, 0);
-	/* Connect to Database (Data Source Name) */
-	retcode =SQLConnect(odbc->odbcHandle, (SQLCHAR *) desc->host, SQL_NTS, (SQLCHAR *) desc->user, SQL_NTS, (SQLCHAR *) desc->password, SQL_NTS);
-	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
-	{
-		SQLFreeHandle(SQL_HANDLE_DBC, odbc->odbcHandle);
-		SQLFreeHandle(SQL_HANDLE_ENV, odbc->odbcEnvHandle);
-		free(odbc);
-		GB.Error("Unable to connect to data source");
-		return TRUE;
 
+	if (hostIsAConnString)
+	{
+		/* zxMarce: Connect to Database (desc->host is an ODBC Connection String) */
+		retcode = SQLDriverConnect(odbc->odbcHandle, 0, (SQLCHAR *)host, SQL_NTS, 0, 0, 0, SQL_DRIVER_NOPROMPT);
+		/* The last three zero params in the call above can be used to retrieve the actual connstring used, 
+		   should unixODBC "complete" the passed ConnString with data from a matching defined DSN. Not 
+		   doing it here, but maybe useful to fill in the other Gambas Connection object properties (user, 
+		   pass, etc) after parsing it. Also note that the ConnString MAY refer to a DSN, and include
+		   user/pass, if desired.
+                   Example - ODBC-ConnString, all one line (must assign this to the Connection.Host property in 
+		   Gambas code and then call Connection.Open):
+                     "Driver=<driverSectionNameInODBCInst.Ini>;
+                      Server=<serverNameOrIP>;
+                      Port=<serverTcpPort>;
+                      Database=<defaultDatabase>;
+                      UId=<userName>;
+                      Pwd=<password>;
+                      TDS_Version=<useNormally'7.2'>"
+		*/
+
+	} else {
+		/* Connect to Database (desc->host is an ODBC Data Source Name) */
+		retcode = SQLConnect(odbc->odbcHandle, (SQLCHAR *)host, SQL_NTS, (SQLCHAR *)user, SQL_NTS, (SQLCHAR *) desc->password, SQL_NTS);
 	}
-	retcode =SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_AUTOCOMMIT,(void *) SQL_AUTOCOMMIT_ON, SQL_NTS);
-	odbc->dsn_name = malloc(sizeof(char) * strlen(desc->host));
+
+	retcode = SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_AUTOCOMMIT, (void *) SQL_AUTOCOMMIT_ON, SQL_NTS);
+	
+	odbc->dsn_name = malloc(sizeof(char) * strlen(host));
 	strcpy(odbc->dsn_name, desc->host);
 
-	odbc->user_name = malloc(sizeof(char) * strlen(desc->user));
-	strcpy(odbc->user_name, desc->user);
+	odbc->user_name = malloc(sizeof(char) * strlen(user));
+	strcpy(odbc->user_name, user);
 
 	db->version = 3;
 
-	retcode =SQLGetFunctions(odbc->odbcHandle, SQL_API_SQLFETCHSCROLL,&odbc->FetchScroll_exist);
+	retcode = SQLGetFunctions(odbc->odbcHandle, SQL_API_SQLFETCHSCROLL, &odbc->FetchScroll_exist);
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
 		GB.Error("Error calling the ODBC SQLGetFunction API");
@@ -559,11 +563,12 @@ fflush(stderr);
 	db->flags.no_table_type = TRUE;
 	db->flags.no_seek = (odbc->FetchScroll_exist == SQL_FALSE);
 	db->flags.no_serial = TRUE;		// Need to be done!
-	db->flags.no_blob = FALSE;			// Need to be done!
+	db->flags.no_blob = FALSE;		// Need to be done!
 	db->flags.no_collation = TRUE;
 
 	db->handle = odbc;
 	return FALSE;
+
 }
 
 /*****************************************************************************
@@ -616,7 +621,7 @@ fflush(stderr);
 	
 	if (conn)
 	{
-		SQL_Handle_free(conn);
+		free(conn);
 		db->handle = NULL;
 	}
 }
@@ -766,51 +771,41 @@ if (ptr != NULL)
 }
 
 /* Internal function to implement the query execution */
-
-static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res,
-										const char *query, int nsubst, ...)
+static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res, const char *query, int nsubst, ...)
 {
+
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tdo_query db %p, ODBC_result res %p , db->handle %p,query =%s\n",db,res,db->handle,query);
+fprintf(stderr,"\tdo_query db %p, ODBC_result res %p, db->handle %p, query = '%s'\n", db, res, db->handle, query);
 fflush(stderr);
 #endif
+
 	ODBC_CONN *handle = (ODBC_CONN *)db->handle;
 	SQLRETURN retcode= SQL_SUCCESS;
 	ODBC_RESULT * odbcres;
 
-
-
 	odbcres = SQL_Result();	
 	odbcres->odbcStatHandle = NULL;
 
-
 	/* Allocate the space for the result structure */
 
-
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, handle->odbcHandle, &odbcres->odbcStatHandle);
-
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
 		GB.Error("Cannot allocate statement handle");
 		return retcode;
 	}
 
-
 	retcode = SQLSetStmtAttr(odbcres->odbcStatHandle, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER) SQL_SCROLLABLE, 0);
-
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
 		odbcres->Cursor_Scrollable = SQL_FALSE;
 	} 
 	else odbcres->Cursor_Scrollable=SQL_TRUE;
 
-
 	odbcres->Function_exist = handle->FetchScroll_exist;
 
 	/* Execute the query */
-
-
 	retcode = SQLExecDirect(odbcres->odbcStatHandle, (SQLCHAR *) query, SQL_NTS);
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
@@ -818,7 +813,6 @@ fflush(stderr);
 		GB.Error("Error while executing the statement");
 		return retcode;
 	}
-
 
 	if (res)
 	{
@@ -829,10 +823,24 @@ fflush(stderr);
 			GB.Error("Unable to retrieve row count");
 			return retcode;
 		}
+
+#ifdef ODBC_DEBUG_HEADER
+fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
+fprintf(stderr,"\tdo_query.SQLRowCount (res TRUE): %d\n", odbcres->count);
+fflush(stderr);
+#endif
+
 		*res = odbcres;
 	}
 	else
 	{
+
+#ifdef ODBC_DEBUG_HEADER
+fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
+fprintf(stderr,"\tdo_query.SQLRowCount (res FALSE): %d\n", odbcres->count);
+fflush(stderr);
+#endif
+
 		SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
 		SQL_Result_Free(odbcres);
 	}
@@ -845,6 +853,7 @@ fflush(stderr);
 /* Internal function - free the result structure create to allocate the result row */
 static void query_free_result(ODBC_RESULT * result)
 {
+
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tquery_free_result %p\n",result);
@@ -852,37 +861,35 @@ fflush(stderr);
 #endif
 	
 	ODBC_FIELDS *current, *next;
-	
-
-
 	current = (ODBC_FIELDS *) result->fields;
 	next = (ODBC_FIELDS *) result->fields;
 
 	while(current!=NULL)
 	{
-	
 		next = (ODBC_FIELDS *) current->next;
 
 		if (current->fieldata != NULL)
 		{
-		free(current->fieldata);//091107
-		current->fieldata=NULL;//091107
+		        free(current->fieldata); //091107
+                        current->fieldata = NULL;  //091107
 		}
-		if(current!=NULL)
+
+		if(current != NULL)
 		{
 			free(current);
-			current=NULL;//091107
+			current = NULL; //091107
 		}
+
 		current = next;
+
 	}
-if(result!=NULL){
-	free(result);
-	result=NULL;//091107
-}
+
+        if(result != NULL){
+	        free(result);
+	        result = NULL; //091107
+        }
 
 }
-
-
 
 
 /*****************************************************************************
@@ -913,6 +920,13 @@ fflush(stderr);
 
 static int get_num_columns(ODBC_RESULT *result)
 {
+
+#ifdef ODBC_DEBUG_HEADER
+fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
+fprintf(stderr,"\tget_num_columns\n");
+fflush(stderr);
+#endif
+
 	SQLSMALLINT colsNum = 0;
 	SQLRETURN retcode;
 	
@@ -928,11 +942,13 @@ static int get_num_columns(ODBC_RESULT *result)
 /* Internal function - create the space for the result and bind the column to each field-space allocated */
 static void query_make_result(ODBC_RESULT * result)
 {
+
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tquery_make_result %p,result->odbcStatHandle %p\n" ,result,result->odbcStatHandle);
+fprintf(stderr,"\tquery_make_result result %p, result->odbcStatHandle %p\n", result, result->odbcStatHandle);
 fflush(stderr);
 #endif
+
 	SQLCHAR colname[32];
 	SQLSMALLINT colnamelen;
 	SQLULEN precision;
@@ -942,9 +958,7 @@ fflush(stderr);
 	ODBC_FIELDS *field, *current;
 	SQLINTEGER collen;
 	int nresultcols;
-	//int V_OD_erg=0;
 
-	
 	nresultcols = get_num_columns(result);
 	result->fields = NULL;
 
@@ -960,7 +974,6 @@ fflush(stderr);
 
 	}
 
-
 	for (i = 0; i < nresultcols; i++)
 	{
 
@@ -975,7 +988,7 @@ fflush(stderr);
 		 * Set column length to max of display length, and column name
 		 * length. Plus one byte for null terminator
 		 */
-		//printf("collen : %u e display len %u\n",strlen((char *) colname),displaysize);
+		//printf("collen : %u, display len %u\n", strlen((char *) colname), displaysize);
 
 		if (displaysize >= strlen((char *) colname))
 		{
@@ -986,27 +999,24 @@ fflush(stderr);
 			collen = strlen((char *) colname) + 1;
 		}
 
-		if(collen <=0){
-		collen=1;
+		if(collen <= 0){
+		        collen = 1;
 		}
 		current->fieldata = (SQLCHAR *) malloc(collen);
 		current->outlen = collen;
-		
 
 		if (collen > 0)
 			current->fieldata[collen-1] = '\0';
+
 		current->next = NULL;
 
-
 		{
-
 			field = malloc(sizeof(ODBC_FIELDS));
 			current->next = (struct ODBC_FIELDS *) field;
 			current = field;
-			current->next=NULL;
-			current->fieldata=NULL;
-			current->outlen=0;
-
+			current->next = NULL;
+			current->fieldata = NULL;
+			current->outlen = 0;
 		}
 
 	}
@@ -1033,15 +1043,16 @@ fflush(stderr);
 static void query_init(DB_RESULT result, DB_INFO * info, int *count)
 {
 
-	ODBC_RESULT *res = (ODBC_RESULT *) result;
-	SQLSMALLINT colsNum = 0;
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tquery_init, res %p,res->odbcStatHandle %p\n",res,res->odbcStatHandle);
+fprintf(stderr,"\tquery_init\n");
 fflush(stderr);
 #endif
 
+	ODBC_RESULT *res = (ODBC_RESULT *) result;
+	SQLSMALLINT colsNum = 0;
 	colsNum = get_num_columns(res);
+
 	if (!colsNum)
 		return;
 
@@ -1050,6 +1061,7 @@ fflush(stderr);
 	*count = res->count;
 	info->nfield = colsNum;
 	query_make_result(res);
+
 }
 
 
@@ -2890,14 +2902,8 @@ static int user_exist(DB_DATABASE *db, const char *name)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 
-	if (strcmp(han->user_name, name) == 0)
-	{
-
-		return TRUE;
-	}
-	return FALSE;
-//  GB.Error("ODBC does not implement this function");
-
+	return strcmp(han->user_name, name) == 0;
+	//  GB.Error("ODBC does not implement this function");
 }
 
 
@@ -2920,8 +2926,12 @@ static int user_exist(DB_DATABASE *db, const char *name)
 static int user_list(DB_DATABASE *db, char ***users)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
-	GB.NewArray(users, sizeof(char *), 1);
-	(*users)[0] = GB.NewZeroString(han->user_name);
+	
+	if (users)
+	{
+		GB.NewArray(users, sizeof(char *), 1);
+		(*users)[0] = GB.NewZeroString(han->user_name);
+	}
 
 	//GB.Error("ODBC does not implement this function");
 	return (1);

@@ -29,7 +29,7 @@ AC_DEFUN([GB_INIT_PROJECT],
   COMPONENT_build=`cat $1/.project | grep "^Type=Component" | sed s/"Type=Component"/1/g`
   AC_SUBST(COMPONENT_build)
   
-  if test "$(COMPONENT_build)" = "1"; then
+  if test "$COMPONENT_build" = "1"; then
     COMPONENT_name=$2
     AC_SUBST(COMPONENT_name)
   fi
