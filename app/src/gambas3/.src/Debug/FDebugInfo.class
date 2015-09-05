@@ -1094,9 +1094,11 @@ Public Sub HideSearchList()
   
 End
 
-Public Sub SetSearchListInfo(sText As String)
+Public Sub SetSearchListInfo(Optional sText As String)
   
   lblBrowse.Text = sText
+  gvwFind.Visible = sText
+  lblNotFound.Visible = Not sText
   'lblBrowse.Show
   
 End
