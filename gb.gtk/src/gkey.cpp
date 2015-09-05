@@ -307,6 +307,7 @@ void gKey::exit()
 void gKey::setActiveControl(gControl *control)
 {
 	const char *slave;
+	GtkIMContext *context;
 
 	if (_im_control)
 	{
@@ -343,8 +344,16 @@ void gKey::setActiveControl(gControl *control)
 		else
 		{
 			_im_has_input_method = TRUE;
-			slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(control->getInputMethod()));
-			_im_is_xim = slave && strcmp(slave, "xim") == 0;
+			context = control->getInputMethod();
+			if (GTK_IS_IM_MULTICONTEXT(context))
+			{
+				slave = gtk_im_multicontext_get_context_id(GTK_IM_MULTICONTEXT(context));
+				_im_is_xim = slave && strcmp(slave, "xim") == 0;
+			}
+			else
+			{
+				_im_is_xim = FALSE;
+			}
 		}
 
 		_im_ignore_event = FALSE;
