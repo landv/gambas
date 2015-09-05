@@ -677,7 +677,7 @@ void gTextArea::paste()
 	if (gClipboard::getType() != gClipboard::Text) 
 		return;
 	
-	txt = gClipboard::getText(&len, NULL);
+	txt = gClipboard::getText(&len, "text/plain");
 	if (txt)
 		gtk_text_buffer_insert_at_cursor(_buffer, (const gchar *)txt, len);
 }
