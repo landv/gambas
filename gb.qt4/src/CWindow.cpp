@@ -1487,7 +1487,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_enterLoop = false;
 	_utility = false;
 	_state = windowState();
-	_screen = QApplication::desktop()->primaryScreen();
+	_screen = -1;
 	
 	//setAttribute(Qt::WA_KeyCompression, true);
 	//setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1644,12 +1644,8 @@ void MyMainWindow::present(QWidget *parent)
 {
 	if (parent)
 		_screen = QApplication::desktop()->screenNumber(parent);
-	else if (CWINDOW_Active)
-		_screen = QApplication::desktop()->screenNumber(CWINDOW_Active->widget.widget);
-	else if (CWINDOW_Main)
-		_screen = QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget);
 	else
-		_screen = 0;
+		_screen = -1;
 	
 	if (!isVisible())
 	{
@@ -2438,6 +2434,18 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	}
 }
 
+int MyMainWindow::currentScreen() const
+{
+	if (_screen >= 0)
+		return _screen;
+	
+	if (CWINDOW_Active)
+		return QApplication::desktop()->screenNumber(CWINDOW_Active->widget.widget);
+	else if (CWINDOW_Main)
+		return QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget);
+	else
+		return QApplication::desktop()->primaryScreen();
+}
 
 void MyMainWindow::center(bool force = false)
 {
@@ -2450,7 +2458,7 @@ void MyMainWindow::center(bool force = false)
 
 	THIS->mustCenter = false;
 
-	r = QApplication::desktop()->availableGeometry(_screen);
+	r = QApplication::desktop()->availableGeometry(currentScreen());
 
 	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }
