@@ -183,6 +183,7 @@ private:
 	bool _utility;
 	int _type;
 	Qt::WindowStates _state;
+	int _screen;
 
 protected:
 
@@ -250,6 +251,8 @@ public:
 	
 	void setState(Qt::WindowStates state);
 	Qt::WindowStates getState() const;
+	
+	void setTransientFor(QWidget *parent);
 	
 	virtual void resize(int w, int h);
 	virtual void setGeometry(int x, int y, int w, int h);

@@ -1487,6 +1487,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_enterLoop = false;
 	_utility = false;
 	_state = windowState();
+	_screen = QApplication::desktop()->primaryScreen();
 	
 	//setAttribute(Qt::WA_KeyCompression, true);
 	//setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1639,6 +1640,15 @@ void MyMainWindow::setEventLoop()
 void MyMainWindow::activateLater()
 {
 	activateWindow();
+}
+
+void MyMainWindow::setTransientFor(QWidget *parent)
+{
+	if (parent)
+	{
+		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
+		_screen = QApplication::desktop()->screenNumber(parent);
+	}
 }
 
 void MyMainWindow::present(QWidget *parent)
@@ -2440,19 +2450,13 @@ void MyMainWindow::center(bool force = false)
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QPoint p;
 	QRect r;
-	int screen;
 
 	if (!force && !THIS->mustCenter)
 		return;
 
-	if (!force && parentWidget())
-		screen = QApplication::desktop()->screenNumber(parentWidget());
-	else
-		screen = QApplication::desktop()->screenNumber(this);
-	
 	THIS->mustCenter = false;
 
-	r = QApplication::desktop()->availableGeometry(screen);
+	r = QApplication::desktop()->availableGeometry(_screen);
 
 	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }
