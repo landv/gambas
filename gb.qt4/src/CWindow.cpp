@@ -2440,13 +2440,19 @@ void MyMainWindow::center(bool force = false)
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QPoint p;
 	QRect r;
+	int screen;
 
 	if (!force && !THIS->mustCenter)
 		return;
 
+	if (!force && parentWidget())
+		screen = QApplication::desktop()->screenNumber(parentWidget());
+	else
+		screen = QApplication::desktop()->screenNumber(this);
+	
 	THIS->mustCenter = false;
 
-	r = QApplication::desktop()->availableGeometry(QApplication::desktop()->screenNumber(this));
+	r = QApplication::desktop()->availableGeometry(screen);
 
 	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }
