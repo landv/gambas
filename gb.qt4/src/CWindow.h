@@ -85,8 +85,8 @@ typedef
 		unsigned hideMenuBar : 1;
 		unsigned showMenuBar : 1;
 		unsigned sticky : 1;
-		unsigned mustCenter : 1;
 		unsigned noTakeFocus : 1;
+		unsigned moved : 1;
 		}
 	CWINDOW;
 
@@ -244,8 +244,8 @@ public:
 	bool isPersistent(void);
 	void setPersistent(bool);
 
-	void center(bool);
-	void configure(void);
+	void center();
+	void configure();
 	
 	void setName(const char *, CWIDGET *);
 	

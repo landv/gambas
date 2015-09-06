@@ -698,7 +698,6 @@ END_METHOD
 BEGIN_METHOD_VOID(Window_ShowModal)
 
 	THIS->ret = 0;
-	THIS->mustCenter = true;
 
 	if (!emit_open_event(THIS))
 	{
@@ -1045,7 +1044,7 @@ BEGIN_METHOD_VOID(Window_Center)
 	if (!THIS->toplevel)
 		return;
 
-	WINDOW->center(true);
+	WINDOW->center();
 
 END_METHOD
 
@@ -2447,16 +2446,11 @@ int MyMainWindow::currentScreen() const
 		return QApplication::desktop()->primaryScreen();
 }
 
-void MyMainWindow::center(bool force = false)
+void MyMainWindow::center()
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QPoint p;
 	QRect r;
-
-	if (!force && !THIS->mustCenter)
-		return;
-
-	THIS->mustCenter = false;
 
 	r = QApplication::desktop()->availableGeometry(currentScreen());
 
@@ -2699,7 +2693,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			if (THIS->toplevel)
+			if (THIS->toplevel && !THIS->moved)
 				w->center();
 			
 			//handle_focus(THIS);

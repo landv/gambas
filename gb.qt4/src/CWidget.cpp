@@ -590,7 +590,7 @@ void CWIDGET_move(void *_object, int x, int y)
 		CWINDOW *win = (CWINDOW *)_object;
     win->x = x;
     win->y = y;
-		win->mustCenter = false;
+		win->moved = true;
   }
   
 	if (wid)
@@ -699,7 +699,7 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
     win->y = y;
     win->w = w;
     win->h = h;
-		win->mustCenter = false;
+		win->moved = true;
   }
 
 	CWIDGET_check_visibility(THIS);
