@@ -305,11 +305,11 @@ BEGIN_PROPERTY(Screens_Count)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(Screens_Primary)
+/*BEGIN_PROPERTY(Screens_Primary)
 
 	GB.ReturnInteger(QApplication::desktop()->primaryScreen());
 
-END_PROPERTY
+END_PROPERTY*/
 
 
 BEGIN_METHOD(Screens_get, GB_INTEGER screen)
@@ -411,8 +411,6 @@ GB_DESC ScreensDesc[] =
 	GB_STATIC_PROPERTY_READ("Count", "i", Screens_Count),
 	GB_STATIC_METHOD("_get", "Screen", Screens_get, "(Screen)i"),
 	GB_STATIC_METHOD("_next", "Screen", Screens_next, NULL),
-	
-	GB_STATIC_PROPERTY_READ("Primary", "i", Screens_Primary),
 	
 	GB_END_DECLARE
 };

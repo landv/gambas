@@ -1512,12 +1512,10 @@ MyMainWindow::~MyMainWindow()
 
 	if (CWINDOW_Active == THIS)
 		CWINDOW_Active = 0;
+	
 	if (CWINDOW_LastActive == THIS)
-	{
 		CWINDOW_LastActive = 0;
-		//qDebug("CWINDOW_LastActive = 0");
-	}
-
+	
 	if (sg)
 		delete sg;
 		
@@ -1646,7 +1644,13 @@ void MyMainWindow::present(QWidget *parent)
 {
 	if (parent)
 		_screen = QApplication::desktop()->screenNumber(parent);
-		
+	else if (CWINDOW_Active)
+		_screen = QApplication::desktop()->screenNumber(CWINDOW_Active->widget.widget);
+	else if (CWINDOW_Main)
+		_screen = QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget);
+	else
+		_screen = 0;
+	
 	if (!isVisible())
 	{
 		//X11_window_startup(WINDOW->effectiveWinId(), THIS->x, THIS->y, THIS->w, THIS->h);
@@ -1742,7 +1746,6 @@ void MyMainWindow::showActivate(QWidget *transient)
 	
 	present(newParentWidget);
 	setEventLoop();
-
 }
 
 void on_error_show_modal(MODAL_INFO *info)
@@ -1801,7 +1804,7 @@ void MyMainWindow::showModal(void)
 
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-	present(CWINDOW_Active ? CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget : 0);
+	present(CWINDOW_Current ? CWidget::getTopLevel((CWIDGET *)CWINDOW_Current)->widget.widget : 0);
 	setEventLoop();
 	
 	THIS->loopLevel++;

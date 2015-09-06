@@ -63,7 +63,6 @@ public:
 	static bool rightToLeft();
 	
 	static int count();
-	static int primary();
 	static void geometry(int screen, GdkRectangle *rect);
 	static void availableGeometry(int screen, GdkRectangle *rect);
 	

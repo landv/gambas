@@ -349,11 +349,6 @@ int gDesktop::count()
 #endif
 }
 
-int gDesktop::primary()
-{
-	return gdk_screen_get_number(gdk_screen_get_default());
-}
-
 void gDesktop::geometry(int screen, GdkRectangle *rect)
 {
 	rect->x = rect->y = rect->width = rect->height = 0;
