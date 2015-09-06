@@ -28,6 +28,7 @@
 #include "gb_error.h"
 #include "gb_array.h"
 
+#include "eval_analyze.h"
 #include "eval_trans.h"
 #include "gb_code.h"
 #include "eval.h"
@@ -51,6 +52,7 @@ void EVAL_exit(void)
 {
   EVAL_clear(&EVAL_read_expr, FALSE);
   RESERVED_exit();
+	EVAL_analyze_exit();
 }
 
 GB_VALUE *EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION get_value)
