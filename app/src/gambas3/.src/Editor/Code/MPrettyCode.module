@@ -66,9 +66,10 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   Dim bBookmark As Boolean
   Dim aBreakpoint As Integer[]
   Dim bBreakpoint As Boolean
-  Dim I As Integer
   Dim X As Integer
   Dim Y As Integer
+  Dim aText As String[]
+  Dim bModified As Boolean
   
   aBreakpoint = hEditor.Breakpoints
   aBookmark = hEditor.Bookmarks
@@ -87,16 +88,16 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   $iLastSelect = -1
   $bLastWrap = False
   
+  aText = Split(hEditor.Text, "\n")
+  
   X = hEditor.Column
   Y = hEditor.Line
-  
-  hEditor.Begin
   
   iLine = 0
   While iLine <= iEnd
     
     $iLine = iLine
-    sLine = hEditor[iLine].Text
+    sLine = aText[iLine]
     sLine = IndentLine(sLine)
     
     If iLine < iStart Then
@@ -108,13 +109,17 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
     aLine = Split(sLine, "\n")
     
     If aLine.Count <= 1 Then
-      hEditor[iLine].Text = sLine
+      
+      If aText[iLine] <> sLine Then
+        aText[iLine] = sLine
+        bModified = True
+      Endif
+      
     Else
-      hEditor[iLine].Text = aLine[0]
-      For I = 1 To aLine.Max
-        hEditor.Goto(0, iLine + I)
-        hEditor.Insert(aLine[I] & "\n")
-      Next
+      
+      aText[iLine] = aLine[0]
+      aLine.Remove(0)
+      aText.Insert(aLine, iLine + 1)
       
       If aBookmark.Count Then
         InsertLine(aBookmark, iLine + 1, aLine.Max)
@@ -126,6 +131,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
       Endif
       
       iLine += aLine.Max
+      bModified = True
+      
     Endif
     
     Inc iLine
@@ -136,9 +143,11 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
     iLine = Max(1, iStart)
     While iLine <= iEnd
       
-      If Not Trim(hEditor[iLine].Text) And If Not Trim$(hEditor[iLine - 1].Text) Then
+      If Not Trim(aText[iLine]) And If Not Trim$(aText[iLine - 1]) Then
         
-        hEditor.Remove(0, iLine - 1, 0, iLine)
+        aText.Remove(iLine - 1)
+        bModified = True
+        'hEditor.Remove(0, iLine - 1, 0, iLine)
         Dec iEnd
         
         If aBookmark.Count Then
@@ -163,8 +172,13 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
   If bBookmark Then hEditor.Bookmarks = aBookmark
   If bBreakpoint Then hEditor.Breakpoints = aBreakpoint
   
-  hEditor.Goto(X, Y)
-  hEditor.End
+  If bModified Then
+    hEditor.Begin
+    hEditor.SelectAll
+    hEditor.Insert(aText.Join("\n"))
+    hEditor.Goto(X, Y)
+    hEditor.End
+  Endif
   
 End
 

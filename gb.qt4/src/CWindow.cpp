@@ -1642,17 +1642,11 @@ void MyMainWindow::activateLater()
 	activateWindow();
 }
 
-void MyMainWindow::setTransientFor(QWidget *parent)
-{
-	if (parent)
-	{
-		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
-		_screen = QApplication::desktop()->screenNumber(parent);
-	}
-}
-
 void MyMainWindow::present(QWidget *parent)
 {
+	if (parent)
+		_screen = QApplication::desktop()->screenNumber(parent);
+		
 	if (!isVisible())
 	{
 		//X11_window_startup(WINDOW->effectiveWinId(), THIS->x, THIS->y, THIS->w, THIS->h);
@@ -1708,10 +1702,11 @@ void MyMainWindow::present(QWidget *parent)
 	
 	if (parent || (hasBorder() && !THIS->noTakeFocus))
 		activateWindow();
+	
 	if (parent)
 		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
-	//if (parent || THIS->stacking == 1)
-		raise();
+
+	raise();
 }
 
 void MyMainWindow::showActivate(QWidget *transient)
@@ -1739,19 +1734,15 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 	//CWIDGET_clear_flag(THIS, WF_CLOSED);
 
-	present();
-	setEventLoop();
-
-	#ifndef NO_X_WINDOW
 	if (isUtility())
 	{
 		if (!newParentWidget && CWINDOW_Main && THIS != CWINDOW_Main)
 			newParentWidget = CWidget::getTopLevel((CWIDGET *)CWINDOW_Main)->widget.widget;
-		
-		if (newParentWidget)
-			X11_set_transient_for(effectiveWinId(), newParentWidget->effectiveWinId());
 	}
-	#endif
+	
+	present(newParentWidget);
+	setEventLoop();
+
 }
 
 void on_error_show_modal(MODAL_INFO *info)

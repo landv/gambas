@@ -252,8 +252,6 @@ public:
 	void setState(Qt::WindowStates state);
 	Qt::WindowStates getState() const;
 	
-	void setTransientFor(QWidget *parent);
-	
 	virtual void resize(int w, int h);
 	virtual void setGeometry(int x, int y, int w, int h);
 	
