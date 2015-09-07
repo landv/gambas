@@ -260,16 +260,18 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 {
 	QPoint p;
 	QWidget *newParentWidget;
+	bool moved = THIS->moved;
 	
 	if (move)
 	{
 		p.setX(x);
 		p.setY(y);
+		moved = true;
 	}
 	else if (THIS->toplevel)
   {
-	   p.setX(THIS->x);
-	   p.setY(THIS->y);
+		p.setX(THIS->x);
+		p.setY(THIS->y);
   }
   else
     p = WIDGET->pos();
@@ -290,6 +292,8 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 	}
 	else
 		CWIDGET_move(THIS, p.x(), p.y());
+	
+	THIS->moved = moved;
 }
 
 void CWINDOW_ensure_active_window()
@@ -2693,7 +2697,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			if (THIS->toplevel && !THIS->moved)
+			if (THIS->toplevel && (w->windowFlags() & Qt::Popup) == 0 && (!THIS->moved || w->isModal()))
 				w->center();
 			
 			//handle_focus(THIS);

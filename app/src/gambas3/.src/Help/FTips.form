@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(31.5714,17,87,75)
+  MoveScaled(0,0,87,75)
   Background = Color.TextBackground
   Text = ("Tips of the day")
   Icon = Picture["icon:/small/lamp"]
@@ -9,7 +9,7 @@
   Spacing = True
   Margin = True
   { dwgBackground DrawingArea
-    MoveScaled(1,1,80,6)
+    MoveScaled(1,2,80,6)
     Arrangement = Arrange.Horizontal
     { PictureBox1 PictureBox
       MoveScaled(0,0,5,5)
@@ -17,7 +17,7 @@
       Alignment = Align.Center
     }
     { lblTitle Label
-      MoveScaled(7,1,54,5)
+      MoveScaled(9,1,54,5)
       Font = Font["Bold,+3"]
       Foreground = Color.SelectedForeground
       Expand = True
