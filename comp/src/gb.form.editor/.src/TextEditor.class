@@ -1585,15 +1585,15 @@ Public Sub View_MouseDown()
   If Y >= 0 Then
     If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
       If Mouse.Left Then
-        Goto(0, Y)
-        If $bShowExpand And If $hDoc.Info(Y).Limit Then
+        Goto(0, Y, Mouse.Shift)
+        If Mouse.Normal And If $bShowExpand And If $hDoc.Info(Y).Limit Then
           ToggleRow(Y)
         Endif
       Endif
     Else
       'X = NormalizeColumn(PosToColumn(Y, Mouse.X, RY), Y)
       X = PosToColumn(Y, Mouse.X - 4, RY)
-      Goto(X, Y)
+      Goto(X, Y, Mouse.Shift)
     Endif
   Endif
   
@@ -1673,7 +1673,7 @@ Public Sub View_MouseUp()
     $hTimerScroll.Stop
     $hTimerScroll = Null
   Else
-    If Mouse.Left And If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
+    If Mouse.Left And If Mouse.Normal And If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
       Raise Margin
     Endif    
   Endif
