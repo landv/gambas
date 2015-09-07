@@ -62,6 +62,8 @@ static char *COMP_classes = NULL;
 COMPILE COMP_current;
 uint COMPILE_version = GAMBAS_PCODE_VERSION;
 
+#define STARTUP_MAX_LINE 256
+
 const FORM_FAMILY COMP_form_families[] =
 {
 	{ "form", FORM_NORMAL },
@@ -182,6 +184,22 @@ static void add_component_list_file(char *name)
 }
 
 
+static FILE *open_project_file()
+{
+	FILE *fp = fopen(COMP_project, "r");
+	if (!fp)
+		THROW(E_OPEN, COMP_project);
+	return fp;
+}
+
+static bool line_begins_with(const char *line, const char *key, int len)
+{
+	if (len < 0)
+		len = strlen(key);
+	
+	return strncmp(line, key, len) == 0;
+}
+
 static void startup_print(FILE *fs, const char *key, const char *def)
 {
 	FILE *fp;
@@ -189,16 +207,14 @@ static void startup_print(FILE *fs, const char *key, const char *def)
 	int len = strlen(key);
 	bool print = FALSE;
 	
-	fp = fopen(COMP_project, "r");
-	if (!fp)
-		return;
+	fp = open_project_file();
 		
 	for(;;)
 	{
 		if (read_line(fp, line, sizeof(line)))
 			break;
 
-		if (strncmp(line, key, len) == 0)
+		if (line_begins_with(line, key, len))
 		{
 			fprintf(fs, "%s\n", &line[len]);
 			print = TRUE;
@@ -209,6 +225,113 @@ static void startup_print(FILE *fs, const char *key, const char *def)
 	
 	if (!print && def)
 		fprintf(fs, "%s\n", def);
+}
+
+static char *find_version_in_file(void)
+{
+	char *dir, *pdir;
+	FILE *fv;
+	char line[256];
+	const char *path;
+	int len;
+	
+	dir = STR_copy(COMP_project);
+	
+	for(;;)
+	{
+		pdir = STR_copy(FILE_get_dir(dir));
+		STR_free(dir);
+		dir = pdir;
+		
+		if (dir[0] == '/' && dir[1] == 0)
+		{
+			STR_free(dir);
+			return NULL;
+		}
+		
+		path = FILE_cat(dir, "VERSION", NULL);
+		
+		if (FILE_exist(path))
+		{
+			STR_free(dir);
+			break;
+		}
+	}
+	
+	fv = fopen(path, "r");
+	if (!fv)
+		return NULL;
+
+	len = fread(line, 1, sizeof(line) - 1, fv);
+	line[len] = 0;
+	return STR_copy(line);
+}
+
+static void startup_print_version(FILE *fs)
+{
+	FILE *fp;
+	char line[256];
+	char *version = NULL;
+	
+	fp = open_project_file();
+		
+	for(;;)
+	{
+		if (read_line(fp, line, sizeof(line)))
+			break;
+
+		if (line_begins_with(line, "VersionFile=", 12))
+		{
+			if (line[12] == '1')
+			{
+				version = find_version_in_file();
+				break;
+			}
+		}
+		else if (line_begins_with(line, "Version=", 8))
+		{
+			version = STR_copy(&line[8]);
+		}
+	}
+	
+	fclose(fp);
+	
+	if (version)
+	{
+		fputs(version, fs);
+		fputc('\n', fs);
+		STR_free(version);
+	}
+	else
+		fputs("0.0.0\n", fs);
+}
+
+static void create_startup_file()
+{
+	const char *name;
+	FILE *fs;
+	
+	name = FILE_cat(FILE_get_dir(COMP_project), ".startup", NULL);
+	fs = fopen(name, "w");
+	if (!fs)
+		THROW("Cannot create .startup file");
+
+	startup_print(fs, "Startup=", "");
+	startup_print(fs, "Title=", "");
+	startup_print(fs, "Stack=", "0");
+	startup_print(fs, "StackTrace=", "0");
+	
+	startup_print_version(fs);
+	
+	fputc('\n', fs);
+	startup_print(fs, "Component=", NULL);
+	startup_print(fs, "Library=", NULL);
+	fputc('\n', fs);
+
+	if (fclose(fs))
+		THROW("Cannot create .startup file");
+	
+	FILE_set_owner(name, COMP_project);
 }
 
 #undef isdigit
@@ -280,8 +403,6 @@ void COMPILE_init(void)
 	const char *root;
 	FILE *fp;
 	char line[256];
-	const char *name;
-	FILE *fs;
 
 	RESERVED_init();
 
@@ -308,10 +429,8 @@ void COMPILE_init(void)
 
 	add_component_list_file("gb");
 
-	fp = fopen(COMP_project, "r");
-	if (!fp)
-		THROW(E_OPEN, COMP_project);
-		
+	fp = open_project_file();
+	
 	for(;;)
 	{
 		if (read_line(fp, line, sizeof(line)))
@@ -327,26 +446,10 @@ void COMPILE_init(void)
 
 	fclose(fp);
 
-	name = FILE_cat(FILE_get_dir(COMP_project), ".startup", NULL);
-	fs = fopen(name, "w");
-	if (!fs)
-		THROW("Cannot create .startup file");
-
-	startup_print(fs, "Startup=", "");
-	startup_print(fs, "Title=", "");
-	startup_print(fs, "Stack=", "0");
-	startup_print(fs, "StackTrace=", "0");
-	startup_print(fs, "Version=", "");
-	fputc('\n', fs);
-	startup_print(fs, "Component=", NULL);
-	startup_print(fs, "Library=", NULL);
-	fputc('\n', fs);
-
-	if (fclose(fs))
-		THROW("Cannot create .startup file");
-		
-	FILE_set_owner(name, COMP_project);
-
+	// Startup file
+	
+	create_startup_file();
+	
 	// Adds a separator to make the difference between classes from components 
 	// (they must be searched in the global symbol table) and classes from the
 	// project (they must be searched in the project symbol table)
