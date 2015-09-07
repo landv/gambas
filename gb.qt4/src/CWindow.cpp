@@ -1850,6 +1850,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 
 	setWindowFlags(Qt::Popup | flags);
 	setWindowModality(Qt::ApplicationModal);
+	THIS->popup = true;
 
 	/*if (_resizable && _border)
 	{
@@ -1895,6 +1896,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 	{
 		setWindowModality(Qt::NonModal);
 		setWindowFlags(Qt::Window | flags);
+		THIS->popup = false;
 	}
 	
 	CWIDGET_leave_popup(save_popup);
@@ -2697,7 +2699,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			if (THIS->toplevel && (w->windowFlags() & Qt::Popup) == 0 && (!THIS->moved || w->isModal()))
+			if (THIS->toplevel && !THIS->popup && (!THIS->moved || w->isModal()))
 				w->center();
 			
 			//handle_focus(THIS);

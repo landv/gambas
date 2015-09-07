@@ -87,6 +87,7 @@ typedef
 		unsigned sticky : 1;
 		unsigned noTakeFocus : 1;
 		unsigned moved : 1;
+		unsigned popup : 1;
 		}
 	CWINDOW;
 
