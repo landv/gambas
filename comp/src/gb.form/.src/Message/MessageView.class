@@ -28,7 +28,8 @@ Private $aIcon As New Picture[]
 Public Sub _new()
   
   $hView = New DrawingArea(Me) As "View"
-  $hView.Background = Color.Merge(Color.LightBackground, Color.TextBackground, 0.9)
+  $hView.Background = Color.TextBackground
+  $hView.Foreground = Color.TextForeground
   
   $hClose = New Button($hView) As "CloseButton"
   $hClose.H = Desktop.Scale * 4

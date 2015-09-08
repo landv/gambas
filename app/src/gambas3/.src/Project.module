@@ -2082,7 +2082,7 @@ Public Function LoadFile(sPath As String) As Object
             
             Dec Application.Busy
             Files[sPath] = Null
-            FMain.ShowError(("Cannot open a binary file.") & "\n\n" & sPath, sPath)
+            FMain.ShowError(("Cannot open a binary file."), sPath)
             Return
             
           Endif
