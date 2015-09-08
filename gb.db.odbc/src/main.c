@@ -736,9 +736,26 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 }
 
 
+static char *query_param[3];
+
+static void query_get_param(int index, char **str, int *len, char quote)
+{
+	if (index > 3)
+		return;
+
+	index--;
+	*str = query_param[index];
+	*len = strlen(*str);
+	
+	if (quote == '\'' || quote == '`')
+	{
+		*str = DB.QuoteString(*str, *len, quote);
+		*len = GB.StringLength(*str);
+	}
+}
 
 /* Internal function to implement the query execution */
-static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res, const char *query, int nsubst, ...)
+static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res, const char *qtemp, int nsubst, ...)
 {
 
 #ifdef ODBC_DEBUG_HEADER
@@ -747,9 +764,28 @@ fprintf(stderr,"\tdo_query db %p, ODBC_result res %p, db->handle %p, query = '%s
 fflush(stderr);
 #endif
 
+	va_list args;
 	ODBC_CONN *handle = (ODBC_CONN *)db->handle;
 	SQLRETURN retcode= SQL_SUCCESS;
 	ODBC_RESULT * odbcres;
+	const char *query;
+	int i;
+
+	if (nsubst)
+	{
+		va_start(args, nsubst);
+		if (nsubst > 3)
+			nsubst = 3;
+		for (i = 0; i < nsubst; i++)
+			query_param[i] = va_arg(args, char *);
+
+		query = DB.SubstString(qtemp, 0, query_get_param);
+	}
+	else
+		query = qtemp;
+
+	if (DB.IsDebug())
+		fprintf(stderr, "gb.db.odbc: %p: %s\n", handle, query);
 
 	GB.AllocZero(POINTER(&odbcres), sizeof(ODBC_RESULT));
 
@@ -789,6 +825,9 @@ fflush(stderr);
 			GB.Error("Unable to retrieve row count");
 			return retcode;
 		}
+
+	if (DB.IsDebug())
+		fprintf(stderr, "gb.db.odbc: -> %d rows\n", (int)odbcres->count);
 
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
@@ -2163,14 +2202,14 @@ static int table_is_system(DB_DATABASE *db, const char *table)
 static int table_delete(DB_DATABASE *db, const char *table)
 {
 	int exit;
-	SQLCHAR query[101] = "DROP TABLE ";
+	const char *query = "DROP TABLE &1";
 
-	strcpy((char *)&query[11], table);
-	exit = do_query(db, "Cannot delete table:&1", NULL, (char *) query, 0);
+	exit = do_query(db, "Cannot delete table: &1", NULL, query, 1, table);
+	/* BM: What's that ???
 	if (exit == 0)
 	{
 		exit = do_query(db, "Cannot delete table:&1", NULL, "COMMIT", 0);
-	}
+	}*/
 
 	return (exit);
 }
