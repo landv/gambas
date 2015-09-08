@@ -266,7 +266,7 @@ static int do_query(DB_DATABASE *db, const char *error, SQLITE_RESULT **pres, co
 	}
 
 	if (DB.IsDebug())
-		fprintf(stderr, "sqlite3: %p: %s\n", conn, query);
+		fprintf(stderr, "gb.db.sqlite3: %p: %s\n", conn, query);
 
 	if (db->timeout > 0)
 		max_retry = db->timeout * 5;
