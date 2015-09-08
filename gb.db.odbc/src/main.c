@@ -737,39 +737,6 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 
 
 
-ODBC_RESULT *SQL_Result(void)
-{
-	ODBC_RESULT * res;
-	#ifdef ODBC_DEBUG_HEADER
-	fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-	fprintf(stderr,"\tSQL_Result\n");
-	fflush(stderr);
-	#endif
-
-	res=malloc(sizeof(ODBC_RESULT));
-	if (res== NULL){
-		GB.Error("Error allocating memory");
-	}
-
-	res->fields=NULL;
-	res->odbcStatHandle=NULL;
-
-	return(res);
-
-}
-
-static void SQL_Result_Free(ODBC_RESULT * ptr)
-{
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tSQL_Result_Free %p\n",ptr);
-fflush(stderr);
-#endif
-if (ptr != NULL)
-	free(ptr);
-	return;
-}
-
 /* Internal function to implement the query execution */
 static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res, const char *query, int nsubst, ...)
 {
@@ -784,8 +751,7 @@ fflush(stderr);
 	SQLRETURN retcode= SQL_SUCCESS;
 	ODBC_RESULT * odbcres;
 
-	odbcres = SQL_Result();	
-	odbcres->odbcStatHandle = NULL;
+	GB.AllocZero(POINTER(&odbcres), sizeof(ODBC_RESULT));
 
 	/* Allocate the space for the result structure */
 
@@ -842,7 +808,7 @@ fflush(stderr);
 #endif
 
 		SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
-		SQL_Result_Free(odbcres);
+		GB.Free(POINTER(&odbcres));
 	}
 
 	return retcode;
