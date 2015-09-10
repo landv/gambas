@@ -36,22 +36,22 @@
       Border = Border.Plain
     }
     { Panel3 HBox
-      MoveScaled(1,10,70,4)
+      MoveScaled(1,10,87,4)
       Spacing = True
       { chkPrefix CheckBox
-        MoveScaled(0,0,41,4)
+        MoveScaled(0,0,52,4)
         AutoResize = True
-        Text = ("Prefix package name with the vendor name")
+        Text = ("Add vendor prefix or name to package names")
       }
       { Label8 Label
-        MoveScaled(43,0,16,4)
+        MoveScaled(55,0,16,4)
         Expand = True
         AutoResize = True
         Text = ("Package version")
         Alignment = Align.Right
       }
       { txtPackageVersion SpinBox
-        MoveScaled(62,0,8,4)
+        MoveScaled(72,0,8,4)
         MinValue = 1
         MaxValue = 999
       }
