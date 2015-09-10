@@ -118,7 +118,7 @@ Private Sub GetParent() As TrayIcon
 
 End
 
-Private Sub UpdateMenuRec(hMenu As Menu) As Integer
+Private Sub UpdateMenuRec(hMenu As Menu, Optional bChild As Boolean) As Integer
 
   Dim hChild As Menu
   Dim cProp As New Collection
@@ -151,7 +151,7 @@ Private Sub UpdateMenuRec(hMenu As Menu) As Integer
     cProp["label"] = sText
     
     If Not hMenu.Enabled Then cProp["enabled"] = False
-    If Not hMenu.Visible Then cProp["visible"] = False
+    If bChild And If Not hMenu.Visible Then cProp["visible"] = False
     
     If hMenu.Picture Then
       sTemp = File.SetExt(Temp$("icon"), "png")
@@ -188,7 +188,7 @@ Private Sub UpdateMenuRec(hMenu As Menu) As Integer
   
   For Each hChild In hMenu.Children
     
-    aChild.Add(UpdateMenuRec(hChild))
+    aChild.Add(UpdateMenuRec(hChild, True))
     
   Next
   
@@ -204,7 +204,7 @@ Public Sub _UpdateMenu(hMenu As Menu)
   $aProp.Clear
   UpdateMenuRec(hMenu)
   
-  DBus.Raise(Me, "com.canonical.dbusmenu.LayoutUpdated", [_DBusUInt($iRevision), 0])
+  If DBus.IsRegistered(Me) Then DBus.Raise(Me, "com.canonical.dbusmenu.LayoutUpdated", [_DBusUInt($iRevision), 0])
   
 End
 
