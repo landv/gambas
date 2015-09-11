@@ -314,6 +314,7 @@ Public Sub Save(Path As String)
   Inc Application.Busy
   $hDoc.HighlightFrom($Y)
   $hDoc.Save(Path)
+  $hTimerChange = Null
   Dec Application.Busy
   
 Catch
@@ -2527,6 +2528,7 @@ End
 
 Public Sub TimerChange_Timer()
   
+  If Not $hTimerChange Then Return
   $hTimerChange = Null
   Raise Change
   
@@ -3375,6 +3377,7 @@ End
 
 Public Sub Reset()
   
+  $hTimerChange = Null
   $hDoc.Reset
   
 End

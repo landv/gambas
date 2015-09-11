@@ -600,6 +600,182 @@
       ScrollBar = Scroll.Vertical
     }
     Index = 5
+    Text = ("Code formatting")
+    Picture = Picture["icon:/medium/wizard"]
+    { Label52 Label
+      MoveScaled(1,0,63,3)
+      Font = Font["Bold"]
+      Text = ("Automatic formatting")
+    }
+    { HBox25 HBox
+      MoveScaled(1,4,66,4)
+      Spacing = True
+      Indent = True
+      { Label22 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Control structure automatic completion")
+      }
+      { btnControlStructCompletion SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { HBox43 HBox
+      MoveScaled(1,9,66,4)
+      Spacing = True
+      Indent = True
+      { Label51 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Local variable automatic declaration")
+      }
+      { btnLocalVarDecl SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { HBox47 HBox
+      MoveScaled(1,14,66,4)
+      Spacing = True
+      Indent = True
+      { Label56 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Comments automatic insertion")
+      }
+      { btnComment SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { Label48 Label
+      MoveScaled(1,20,63,3)
+      Font = Font["Bold"]
+      Text = ("Explicit formating")
+    }
+    { HBox33 HBox
+      MoveScaled(1,24,66,4)
+      Spacing = True
+      Indent = True
+      { Label31 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Format on load & save")
+      }
+      { btnFormatOnLoad SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { HBox30 HBox
+      MoveScaled(1,29,66,4)
+      Spacing = True
+      Indent = True
+      { Label28 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Indent local variable declaration")
+      }
+      { btnIndentDim SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { HBox31 HBox
+      MoveScaled(1,34,66,4)
+      Spacing = True
+      Indent = True
+      { Label29 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Remove useless spaces at end of line")
+      }
+      { btnRemoveSpace SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { HBox32 HBox
+      MoveScaled(1,39,66,4)
+      Spacing = True
+      Indent = True
+      { Label30 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Keep successive void lines")
+      }
+      { btnKeepVoidLine SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    Index = 6
+    Text = ("Code snippets")
+    Picture = Picture["icon:/medium/insert-text"]
+    { Label47 Label
+      MoveScaled(1,0,63,3)
+      Font = Font["Bold"]
+      Text = ("Code snippets")
+    }
+    { HBox9 HBox
+      MoveScaled(1,4,66,4)
+      Spacing = True
+      { Label55 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Activate code snippets")
+      }
+      { btnCodeSnippet SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
+    { Panel9 HBox
+      MoveScaled(1,9,66,25)
+      Expand = True
+      { HBox27 VBox
+        MoveScaled(0,0,65,24)
+        Expand = True
+        Spacing = True
+        { gvwSnippet GridView
+          MoveScaled(4,2,33,16)
+          Expand = True
+          Mode = Select.Single
+          ScrollBar = Scroll.Vertical
+        }
+        { VBox2 HBox
+          MoveScaled(1,19,62,4)
+          Spacing = True
+          { btnInsertSnippet Button
+            MoveScaled(0,0,17,4)
+            AutoResize = True
+            Text = Shortcut(("New"), "N") & "..."
+            Picture = Picture["icon:/small/new"]
+          }
+          { btnEditSnippet Button
+            MoveScaled(18,0,17,4)
+            AutoResize = True
+            Text = Shortcut(("Edit"), "E") & "..."
+            Picture = Picture["icon:/small/edit"]
+          }
+          { btnRemoveSnippet Button
+            MoveScaled(36,0,17,4)
+            AutoResize = True
+            Text = Shortcut(("Remove"), "R")
+            Picture = Picture["icon:/small/delete"]
+          }
+          { btnImportSnippet Button
+            MoveScaled(0,25,17,4)
+            Visible = False
+            AutoResize = True
+            Text = Shortcut(("Import"), "I") & "..."
+            Picture = Picture["icon:/small/open"]
+          }
+        }
+      }
+    }
+    Index = 7
     Text = ("Background")
     Picture = Picture["icon:/medium/image"]
     { Label14 Label
@@ -618,7 +794,7 @@
       MoveScaled(1,58,65,5)
       ReadOnly = True
     }
-    Index = 6
+    Index = 8
     Text = ("Help & applications")
     Picture = Picture["icon:/medium/help"]
     { Label46 Label
@@ -750,182 +926,6 @@
       { cmbTerminal ComboBox
         MoveScaled(46,0,20,4)
         ReadOnly = True
-      }
-    }
-    Index = 7
-    Text = ("Code formatting")
-    Picture = Picture["icon:/medium/wizard"]
-    { Label52 Label
-      MoveScaled(1,0,63,3)
-      Font = Font["Bold"]
-      Text = ("Automatic formatting")
-    }
-    { HBox25 HBox
-      MoveScaled(1,4,66,4)
-      Spacing = True
-      Indent = True
-      { Label22 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Control structure automatic completion")
-      }
-      { btnControlStructCompletion SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox43 HBox
-      MoveScaled(1,9,66,4)
-      Spacing = True
-      Indent = True
-      { Label51 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Local variable automatic declaration")
-      }
-      { btnLocalVarDecl SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox47 HBox
-      MoveScaled(1,14,66,4)
-      Spacing = True
-      Indent = True
-      { Label56 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Comments automatic insertion")
-      }
-      { btnComment SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { Label48 Label
-      MoveScaled(1,20,63,3)
-      Font = Font["Bold"]
-      Text = ("Explicit formating")
-    }
-    { HBox33 HBox
-      MoveScaled(1,24,66,4)
-      Spacing = True
-      Indent = True
-      { Label31 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Format on load & save")
-      }
-      { btnFormatOnLoad SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox30 HBox
-      MoveScaled(1,29,66,4)
-      Spacing = True
-      Indent = True
-      { Label28 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Indent local variable declaration")
-      }
-      { btnIndentDim SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox31 HBox
-      MoveScaled(1,34,66,4)
-      Spacing = True
-      Indent = True
-      { Label29 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Remove useless spaces at end of line")
-      }
-      { btnRemoveSpace SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { HBox32 HBox
-      MoveScaled(1,39,66,4)
-      Spacing = True
-      Indent = True
-      { Label30 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Keep successive void lines")
-      }
-      { btnKeepVoidLine SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    Index = 8
-    Text = ("Code snippets")
-    Picture = Picture["icon:/medium/insert-text"]
-    { Label47 Label
-      MoveScaled(1,0,63,3)
-      Font = Font["Bold"]
-      Text = ("Code snippets")
-    }
-    { HBox9 HBox
-      MoveScaled(1,4,66,4)
-      Spacing = True
-      { Label55 Label
-        MoveScaled(0,0,47,4)
-        Expand = True
-        Text = ("Activate code snippets")
-      }
-      { btnCodeSnippet SwitchButton
-        MoveScaled(50,0,16,4)
-        Animated = True
-      }
-    }
-    { Panel9 HBox
-      MoveScaled(1,9,66,25)
-      Expand = True
-      { HBox27 VBox
-        MoveScaled(0,0,65,24)
-        Expand = True
-        Spacing = True
-        { gvwSnippet GridView
-          MoveScaled(4,2,33,16)
-          Expand = True
-          Mode = Select.Single
-          ScrollBar = Scroll.Vertical
-        }
-        { VBox2 HBox
-          MoveScaled(1,19,62,4)
-          Spacing = True
-          { btnInsertSnippet Button
-            MoveScaled(0,0,17,4)
-            AutoResize = True
-            Text = Shortcut(("New"), "N") & "..."
-            Picture = Picture["icon:/small/new"]
-          }
-          { btnEditSnippet Button
-            MoveScaled(18,0,17,4)
-            AutoResize = True
-            Text = Shortcut(("Edit"), "E") & "..."
-            Picture = Picture["icon:/small/edit"]
-          }
-          { btnRemoveSnippet Button
-            MoveScaled(36,0,17,4)
-            AutoResize = True
-            Text = Shortcut(("Remove"), "R")
-            Picture = Picture["icon:/small/delete"]
-          }
-          { btnImportSnippet Button
-            MoveScaled(0,25,17,4)
-            Visible = False
-            AutoResize = True
-            Text = Shortcut(("Import"), "I") & "..."
-            Picture = Picture["icon:/small/open"]
-          }
-        }
       }
     }
     Index = 9
