@@ -73,7 +73,8 @@ static CWATCH *find_watch_path(CINOTIFY *ino, const char *path)
 {
 	CWATCH *watch = NULL;
 
-	GB.HashTable.Get(ino->watches, path, 0, (void **) &watch);
+	GB.HashTable.Get(ino->watches, path, GB.StringLength((char *) path),
+			 (void **) &watch);
 	return watch;
 }
 
@@ -128,7 +129,10 @@ static void destroy_watch(CWATCH *watch)
 	inotify_rm_watch(_ino.fd, watch->wd);
 	GB.HashTable.Remove(_ino.watches, (char *) &watch->wd,
 			    sizeof(watch->wd));
-	GB.HashTable.Remove(_ino.watches, watch->path, 0);
+	if (watch->path) {
+		GB.HashTable.Remove(_ino.watches, watch->path,
+				    GB.StringLength(watch->path));
+	}
 
 	GB.FreeString(&watch->path);
 	GB.StoreVariant(NULL, &watch->tag);
