@@ -370,7 +370,7 @@ BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow;
 	THIS->tag.type = GB_T_NULL;
 
 	GB.HashTable.Add(_ino.watches, (char *) &wd, sizeof(wd), THIS);
-	GB.HashTable.Add(_ino.watches, path, 0, THIS);
+	GB.HashTable.Add(_ino.watches, path, GB.StringLength(path), THIS);
 
 END_METHOD
 
