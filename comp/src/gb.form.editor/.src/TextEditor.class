@@ -292,6 +292,7 @@ End
 
 Private Sub Text_Write(Value As String)
 
+  Goto(0, 0)
   $hDoc.Text = Value
   Init
 

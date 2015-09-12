@@ -155,7 +155,7 @@ Private Sub LayoutScrollbars()
   'Debug Me.ClientW;; System.Backtrace.Join(" ")
   
   SB = Style.ScrollbarSize
-  SP = Style.ScrollbarSpacing
+  SP = 0 'Style.ScrollbarSpacing
   If $hBorder Then 
     FW = 1
     X = 1
