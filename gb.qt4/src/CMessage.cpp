@@ -65,7 +65,7 @@ static int make_message(int type, int nbmax, void *_param)
 	QPushButton *button[3];
 	int ret, nbutton;
 	QMessageBox::Icon icon;
-	const char *stock;
+	//const char *stock;
 	QString title;
 	QWidget *parent;
 	int i, n;
@@ -146,36 +146,36 @@ static int make_message(int type, int nbmax, void *_param)
 	{
 		case MSG_INFO:
 			icon = QMessageBox::Information;
-			stock = "icon:/48/info";
+			//stock = "icon:/48/info";
 			break;
 		case MSG_WARNING:
 			icon = QMessageBox::Warning;
-			stock = "icon:/48/warning";
+			//stock = "icon:/48/warning";
 			break;
 		case MSG_ERROR:
 			icon = QMessageBox::Critical;
-			stock = "icon:/48/error";
+			//stock = "icon:/48/error";
 			break;
 		case MSG_QUESTION:
 			icon = QMessageBox::Question;
-			stock = "icon:/48/question";
+			//stock = "icon:/48/question";
 			break;
 		case MSG_DELETE:
 			icon = QMessageBox::Warning;
-			stock = "icon:/48/trash";
+			//stock = "icon:/48/trash";
 			break;
 		default:
 			icon = QMessageBox::Information;
-			stock = 0;
+			//stock = 0;
 	}
 
 	mb->setIcon(icon);
-	if (stock)
+	/*if (stock)
 	{
 		CPICTURE *pict = CPICTURE_get_picture(stock);
 		if (pict)
 			mb->setIconPixmap(*pict->pixmap);
-	}
+	}*/
 	
 	// Title
 

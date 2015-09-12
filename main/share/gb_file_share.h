@@ -128,8 +128,8 @@ bool FILE_copy(const char *src, const char *dst);
 
 #endif
 
-#define FILE_is_absolute(_path) (*(_path) == '/')
-#define FILE_is_relative(_path) (*(_path) != '/')
+#define FILE_is_absolute(_path) (*(_path) == '/' || * (_path) == '~')
+#define FILE_is_relative(_path) (!FILE_is_absolute(_path))
 
 #endif
 

@@ -189,6 +189,9 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 		if (FILE_is_relative(path) && !((mode & ST_DIRECT) && path[0] == '.' && isdigit(path[1])))
 		{
 			ARCHIVE *arch = NULL;
+			const char *tpath = path;
+			
+			/*ARCHIVE *arch = NULL;
 			
 			if (strncmp(path, "../", 3))
 				ARCHIVE_get_current(&arch);
@@ -199,10 +202,18 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 			{
 				sclass = &STREAM_arch;
 				goto _OPEN;
-			}
+			}*/
 
 			if ((mode & ST_ACCESS) != ST_READ || mode & ST_PIPE)
 				THROW(E_ACCESS);
+			
+			if (!ARCHIVE_find_from_path(&arch, &tpath))
+			{
+				sclass = &STREAM_arch;
+				goto __OPEN;
+			}
+			
+			path = tpath;
 		}
 
 		if (mode & ST_DIRECT)
@@ -211,7 +222,7 @@ void STREAM_open(STREAM *stream, const char *path, int mode)
 			sclass = &STREAM_buffer;
 	}
 
-_OPEN:
+__OPEN:
 
 	stream->common.mode = mode;
 	stream->common.swap = FALSE;
