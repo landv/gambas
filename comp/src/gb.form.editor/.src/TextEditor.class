@@ -159,7 +159,9 @@ Static Private $cGlobalCacheText As New Collection
 Private $cCacheText As Collection
 Private $sCacheTextKey As String
 Private $bUpdateHeightAllowed As Boolean
+
 Private $bPrint As Boolean
+Private $sPrintBuffer As String
 
 Public Sub _new()
   
@@ -3209,15 +3211,105 @@ End
 ' }
 ' 
 
+Private Sub PrintAnsi(Text As String, I As Integer) As Integer
+
+  Dim C As String
+  Dim N As Integer
+  Dim aParam As New Integer[]
+  Dim bDigit As Boolean
+
+  C = Mid$(Text, I, 1)
+  
+  If C = "[" Then ' [
+      
+    N = 1
+    Inc I
+    While I <= Len(Text)
+      Inc N
+      C = Mid$(Text, I, 1)
+      If IsDigit(C) Then
+        If Not bDigit Then
+          aParam.Add(0)
+          bDigit = True
+        Endif
+        aParam[aParam.Max] = aParam[aParam.Max] * 10 + Asc(C) - 48
+      Else If C = ";" Then
+        bDigit = False
+      Else
+        Break
+      Endif
+      Inc I
+    Wend
+    
+    If I > Len(Text) Then 
+      $sPrintBuffer = Chr$(27) & Mid$(Text, I, N)
+      Return N
+    Endif
+    
+    Select Case C
+      
+      Case "A"
+        If aParam.Count Then
+          RelGoto(0, - aParam[0])
+        Else
+          RelGoto(0, -1)
+        Endif
+        
+      Case "B"
+        If aParam.Count Then
+          RelGoto(0, aParam[0])
+        Else
+          RelGoto(0, 1)
+        Endif
+        
+      Case "C"
+        If aParam.Count Then
+          RelGoto(aParam[0], 0)
+        Else
+          RelGoto(1, 0)
+        Endif
+        
+      Case "D"
+        If aParam.Count Then
+          RelGoto(- aParam[0], 0)
+        Else
+          RelGoto(-1, 0)
+        Endif
+        
+      
+      Case "K"
+        aParam.Resize(1)
+        Select Case aParam[0]
+          Case 0
+            ClearLine(False, True)
+          Case 1
+            ClearLine(True, False)
+          Case 2
+            ClearLine(True, True)
+        End Select
+    
+    End Select
+    
+  Endif
+
+  Return N
+    
+End
+
 Public Sub Print(Text As String)
   
   Dim I, J, C As Integer
   Dim bSaveOverwrite As Boolean
   
-  $hDoc.Begin
+  $hDoc.DisableUndo
   bSaveOverwrite = $bOverwrite
   $bOverwrite = True
   $bPrint = True
+  
+  If $sPrintBuffer Then
+    Text = $sPrintBuffer & Text
+    $sPrintBuffer = ""
+  Endif
   
   J = 1
   For I = 1 To Len(Text)
@@ -3242,11 +3334,9 @@ Public Sub Print(Text As String)
         ' Flash
       Else If C = 8 Then
         If $X > 0 Then Goto($X - 1, $Y)
-      ' Else If C = 27 Then
-      '   Inc I
-      '   I += PrintAnsi(Text, I)
-      '   Dec I
-      '   J = I
+      Else If C = 27 Then
+        I += PrintAnsi(Text, I + 1)
+        J = I + 1
       Else
         Insert("^" & Chr$(64 + C))
       Endif
@@ -3259,7 +3349,7 @@ Public Sub Print(Text As String)
   
   $bOverwrite = bSaveOverwrite  
   $bPrint = False
-  $hDoc.End
+  $hDoc.EnableUndo
   
 End
 
@@ -4370,4 +4460,58 @@ Private Sub ShowSpaces_Write(Value As Boolean)
   $bShowSpaces = Value
   $hView.Refresh
 
+End
+
+' void GEditor::clearLine(bool before, bool after)
+' {
+'   int ox = x;
+' 
+'   doc->begin();
+' 
+'   if (before)
+'   {
+'     QString ins;
+' 
+'     doc->remove(y, 0, y, x + 1);
+'     ins.fill(' ', ox + 1);
+'     doc->insert(y, 0, ins);
+'     x = ox;
+'   }
+' 
+'   if (after)
+'   {
+'     doc->remove(y, x, y, doc->lineLength(y) -1);
+'   }
+' 
+'   doc->end();
+' }
+' 
+' 
+
+Private Sub ClearLine(bBefore As Boolean, bAfter As Boolean)
+
+  Dim OX As Integer
+
+  OX = $X
+
+  $hDoc.Begin()
+  
+  If bBefore Then
+    $hDoc.Remove(0, $Y, $X + 1, 0)
+    $hDoc.Insert(Space$(OX + 1), 0, $Y)
+    $X = OX
+  Endif
+  
+  If bAfter Then
+    $hDoc.Remove($X, $Y, $hDoc.LineLength[$Y], $Y)
+  Endif
+  
+  $hDoc.End()
+
+End
+
+Private Sub RelGoto(DX As Integer, DY As Integer)
+  
+  Goto(Max(0, $X + DX), Max(0, $Y + DY))
+  
 End

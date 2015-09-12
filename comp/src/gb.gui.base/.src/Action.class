@@ -49,13 +49,21 @@ End
 
 Static Private Sub SetToggle(hCtrl As Object, bVal As Boolean)
   
-  If hCtrl Is Menu And If hCtrl.Toggle Then hCtrl.Checked = bVal
-  If hCtrl Is ToggleButton Then hCtrl.Value = bVal
-  If hCtrl Is ToolButton And If hCtrl.Toggle Then hCtrl.Value = bVal
-  If hCtrl Is Window Then hCtrl.Visible = bVal
-  If hCtrl Is CheckBox Then hCtrl.Value = bVal
-  If Object.Type(hCtrl) = "SidePanel" Then hCtrl.Hidden = Not bVal
-  If Object.Type(hCtrl) = "ToolBar" Then hCtrl.Hidden = Not bVal
+  If hCtrl Is Menu And If hCtrl.Toggle Then
+    hCtrl.Checked = bVal
+  Else If hCtrl Is ToggleButton Then
+    hCtrl.Value = bVal
+  Else If hCtrl Is ToolButton And If hCtrl.Toggle Then 
+    hCtrl.Value = bVal
+  Else If hCtrl Is Window Then 
+    hCtrl.Visible = bVal
+  Else If hCtrl Is CheckBox Then 
+    hCtrl.Value = bVal
+  Else If Object.Type(hCtrl) = "SidePanel" Then 
+    hCtrl.Hidden = Not bVal
+  Else If Object.Type(hCtrl) = "ToolBar" Then 
+    hCtrl.Hidden = Not bVal
+  Endif
   
 End
 
@@ -160,7 +168,7 @@ Static Public Sub Raise(Control As Object)
   If $iGlobalLock Then Return
   If Not Object.IsValid(Control) Then
     Error "gb.gui: warning: cannot raise action: invalid control: "; Control
-    Error System.Backtrace.Join("\n")
+    Error "gb.gui: "; System.Backtrace.Join("\n")
     Return
   Endif
 

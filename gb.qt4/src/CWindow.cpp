@@ -1073,7 +1073,11 @@ BEGIN_PROPERTY(Window_Visible)
 		GB.ReturnBoolean(!WINDOW->isHidden());
 	else
 	{
-		if (VPROP(GB_BOOLEAN))
+		bool show = !!VPROP(GB_BOOLEAN);
+		if (show == !WINDOW->isHidden())
+			return;
+		
+		if (show)
 			Window_Show(_object, _param);
 		else
 			Window_Hide(_object, _param);
@@ -1645,6 +1649,10 @@ void MyMainWindow::activateLater()
 
 void MyMainWindow::present(QWidget *parent)
 {
+	//CWIDGET *_object = CWidget::get(this);
+	//CWIDGET *_parent = parent ? CWidget::get(parent) : 0;
+	//qDebug("present: %p %s: parent = %p %s", THIS, _object->name, _parent, _parent ? _parent->name : "");
+	
 	if (parent)
 		_screen = QApplication::desktop()->screenNumber(parent);
 	else
@@ -1776,6 +1784,7 @@ void MyMainWindow::showModal(void)
 {
 	//Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
 	CWIDGET *_object = CWidget::get(this);
+	CWINDOW *parent;
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	//QPoint p = pos();
 	QEventLoop eventLoop;
@@ -1803,7 +1812,11 @@ void MyMainWindow::showModal(void)
 
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-	present(CWINDOW_Current ? CWidget::getTopLevel((CWIDGET *)CWINDOW_Current)->widget.widget : 0);
+	parent = CWINDOW_Current;
+	if (!parent)
+		parent = CWINDOW_Main;
+	
+	present(parent ? CWidget::getTopLevel((CWIDGET *)parent)->widget.widget : 0);
 	setEventLoop();
 	
 	THIS->loopLevel++;
