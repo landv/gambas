@@ -2128,6 +2128,14 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
 
   'ENDIF
 
+  If Not $hSymbol Then
+    If sPattern = "(" Then
+      Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+    Else If sPattern = "[" Then
+      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+    Endif
+  Endif
+
   Return $hSymbol
 
 End
