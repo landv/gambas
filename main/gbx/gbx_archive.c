@@ -360,6 +360,9 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 			
 			i++;
 		}
+		
+		if (i == STACK_frame_count)
+			*parch = NULL;
 	}
 
 	//fprintf(stderr, "--> %s / %s\n", *parch ? (*parch)->name : "NULL", *ppath);
