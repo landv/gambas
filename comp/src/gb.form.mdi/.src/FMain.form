@@ -5,13 +5,17 @@
   Arrangement = Arrange.Vertical
   { ToolBar1 ToolBar
     MoveScaled(0,0,45,5)
+    Key = "test"
     Separator = True
     { ToolButton1 ToolButton
       MoveScaled(0,0,5,4)
+      Action = "a"
       Picture = Picture["icon:/22/bookmark"]
     }
     { ToolButton2 ToolButton
       MoveScaled(5,0,4,4)
+      Visible = False
+      Action = "b"
       Picture = Picture["icon:/22/computer"]
     }
     { Separator1 Separator
@@ -19,10 +23,13 @@
     }
     { ToolButton3 ToolButton
       MoveScaled(13,0,4,4)
+      Visible = False
+      Action = "c"
       Picture = Picture["icon:/22/edit"]
     }
     { ToolButton4 ToolButton
       MoveScaled(18,0,4,4)
+      Action = "d"
       Picture = Picture["icon:/22/component"]
     }
   }
@@ -65,5 +72,34 @@
       MoveScaled(34,0,16,4)
       Text = ("Orientation")
     }
+  }
+}
+
+# Gambas Action File 3.0
+
+{ Actions
+  { Action a
+    Text = ""
+    Picture = "icon:/22/bookmark"
+  }
+  { Action b
+    Text = ""
+    Picture = "icon:/22/computer"
+  }
+  { Action c
+    Text = ""
+    Picture = "icon:/22/edit"
+  }
+  { Action d
+    Text = ""
+    Picture = "icon:/22/component"
+  }
+}
+
+{ Toolbars
+  { Toolbar test
+    Text = ""
+    List = "a,b,c,d"
+    Default = "a,|,d"
   }
 }

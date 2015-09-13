@@ -481,6 +481,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
   Dim sKey As String
   Dim W As Integer
   Dim iLayoutCount As Integer
+  Dim iCol As Integer
   
   'Dim hTemp As Image
 
@@ -561,11 +562,13 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
     
     'If hStyle.Bold Then Paint.Font = $hFontBold
     If InStr(sStr, "\t") Then
+      iCol = hStyle.Color
+      Paint.Background = iCol
       If hStyle.Bold Then
-        Paint.Background = Color.Merge(hStyle.Color, $iBackground)
+        'Paint.Background = Color.Gradient(iCol, $iBackground)
         DrawText(sStr, X, XX + 1, YY)
       Endif        
-      Paint.Background = hStyle.Color
+      'Paint.Background = iCol
       DrawText(sStr, X, XX, YY)
     Else If Trim(sStr) Then
       If iLen <= 16 Then
@@ -638,11 +641,13 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
 
 DRAW_TEXT:  
 
+  iCol = hStyle.Color
+  Paint.Background = iCol
   If hStyle.Bold Then
-    Paint.Background = Color.Merge(hStyle.Color, $iBackground)
+    'Paint.Background = Color.Gradient(iCol, $iBackground)
     Paint.DrawText(sStr, XX + 1, YY + $iAscent) 'DrawText(sStr, SX, X + 1, Y)
   Endif
-  Paint.Background = hStyle.Color
+  'Paint.Background = iCol
   Paint.DrawText(sStr, XX, YY + $iAscent) 'DrawText(sStr, SX, X, Y)
   
   Return

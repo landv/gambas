@@ -93,10 +93,8 @@ Private Sub InitAction()
   
   Dim hCtrl As Control
   Dim sAction As String
+  Dim aAction As String[]
   
-  'For Each hCtrl In svwAction.Children
-  '  hCtrl.Delete
-  'Next
   svwAction.Children.Clear
   svwAction.Arrangement = Arrange.None
   
@@ -105,15 +103,18 @@ Private Sub InitAction()
   AddAction("~")
   
   'Print $hToolbar.Children.Count;; $hToolbar._Container.Children.Count
-  For Each sAction In MAction.Toolbars[$hForm.ToolbarKey].List
-  
-    If Not MAction.Actions.Exist(sAction) Then Continue
-    hCtrl = $hForm.FindControl(sAction, True)
-    If Not hCtrl Then Continue
+  aAction = MAction.Toolbars[$hForm.ToolbarKey].List
+  If aAction Then
+    For Each sAction In aAction
     
-    AddAction(sAction)
-    
-  Next
+      If Not MAction.Actions.Exist(sAction) Then Continue
+      hCtrl = $hForm.FindControl(sAction, True)
+      If Not hCtrl Then Continue
+      
+      AddAction(sAction)
+      
+    Next
+  Endif
   
   svwAction.Arrangement = Arrange.Row
   

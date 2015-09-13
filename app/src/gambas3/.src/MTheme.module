@@ -90,12 +90,56 @@ Public Sub Copy(cColor As Collection) As Collection
 
 End
 
+Public Sub InvertColor(iCol As Integer, iBg As Integer, Optional (sColor) As String) As Integer
+
+  Dim H, S, V As Integer
+  Dim LB As Integer
+  Dim L As Integer
+  Dim VB As Integer
+
+  VB = Color[iBg].Value
+  LB = Color.Desaturate(iBg) And 255
+
+  With Color[iCol]
+    H = .Hue
+    S = .Saturation
+    V = .Value
+  End With
+  
+  With Color[iCol Xor &HFFFFFF&]
+    S = .Saturation
+    V = .Value
+  End With
+  
+  If iCol <> iBg And If V <> VB Then
+  
+    Do
+      iCol = Color.HSV(H, S, V)
+      L = Color.Desaturate(iCol) And 255
+      If Abs(L - LB) >= 32 Then Break
+      V = Max(0, Min(255, V + 8 * Sgn(V - VB)))
+      If V = 255 Or If V = 0 Then Break
+    Loop
+    
+  Else
+    
+    iCol = Color.HSV(H, S, V)
+    
+  Endif
+  
+  Return iCol
+
+End
+
 Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
   
   Dim iInd As Integer  
   Dim hStyle As New CStyle
   Dim iStyle As Integer
   Dim iCol As Integer
+  Dim bInvert As Boolean
+  
+  bInvert = Settings["/Editor/InvertTheme", 0]
   
   For iInd = 0 To ColorKeys.Max
     
@@ -103,6 +147,10 @@ Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
     iStyle = Object.GetProperty(Classes["Highlight"], ColorKeys[iInd])
     With hEditor.Styles[iStyle]
       iCol = hStyle.Foreground
+      If bInvert Then 
+        'If ColorKeys[iInd] = "CurrentLine" Then Stop
+        iCol = InvertColor(iCol, hEditor.Styles[Highlight.Background].Color, ColorKeys[iInd])
+      Endif
       If bDesaturate Then iCol = Color.Desaturate(iCol)
       .Color = iCol
       .Bold = hStyle.Bold
@@ -113,6 +161,7 @@ Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
   
   hEditor.Background = hEditor.Styles[Highlight.Background].Color
   hEditor.Foreground = hEditor.Styles[Highlight.Normal].Color
+  
   hEditor.Refresh
   
 End

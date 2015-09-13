@@ -148,6 +148,7 @@ Public Sub _new()
   Else
     cmbTheme.Index = 0
   Endif
+  chkInvertTheme.Value = Settings["/Editor/InvertTheme", 0]
   
   panDownloadHelp.Visible = btnOfflineHelp.Value
   
@@ -553,8 +554,12 @@ Public Sub dwgStyle_Draw()
   Dim sName As String
   Dim iForeground As Integer
   Dim iBackground As Integer
+  Dim bInvert As Boolean
+  Dim iBg As Integer
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
+  bInvert = Settings["/Editor/InvertTheme", 0]
+  If bInvert Then iBg = CStyle[$cCurrent["Background"]].Foreground
 
   Paint.Font = Font[txtEditorFont.Value]
   If hStyle.Underline Then Paint.Font.Underline = True
@@ -565,6 +570,11 @@ Public Sub dwgStyle_Draw()
   Else
     iBackground = CStyle[$cCurrent["Background"]].Foreground
     iForeground = hStyle.Foreground
+  Endif
+  
+  If bInvert Then 
+    iBackground = MTheme.InvertColor(iBackground, iBg)
+    iForeground = MTheme.InvertColor(iForeground, iBg)
   Endif
   
   Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
@@ -1335,5 +1345,12 @@ End
 Public Sub Form_Activate()
 
   ipnOption_Click
+
+End
+
+Public Sub chkInvertTheme_Click()
+
+  Settings["/Editor/InvertTheme"] = chkInvertTheme.Value
+  RefreshEditor
 
 End

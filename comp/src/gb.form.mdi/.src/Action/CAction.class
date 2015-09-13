@@ -53,7 +53,7 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hM
     Endif
   Endif
   
-  If Left(sPicture) = "$" Or If Not sPicture Then
+  If Left(sPicture) = "$" Then
   Else
     If sPicture Not Begins "icon:/" Then sPicture = ".." &/ sPicture
     IconPath = sPicture
