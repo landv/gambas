@@ -559,7 +559,10 @@ Public Sub dwgStyle_Draw()
 
   sName = MTheme.ColorNames[MTheme.ColorKeys.Find(sKey)]
   bInvert = Settings["/Editor/InvertTheme", 0]
-  If bInvert Then iBg = CStyle[$cCurrent["Background"]].Foreground
+  If bInvert Then 
+    iBg = CStyle[$cCurrent["Background"]].Foreground
+    If Color[iBg].Value < 128 Then bInvert = False
+  Endif
 
   Paint.Font = Font[txtEditorFont.Value]
   If hStyle.Underline Then Paint.Font.Underline = True
@@ -567,15 +570,19 @@ Public Sub dwgStyle_Draw()
   If MTheme.IsBackgroundStyle(sKey) Then
     iBackground = hStyle.Foreground
     iForeground = CStyle[$cCurrent["Normal"]].Foreground
+    If bInvert Then 
+      iBackground = MTheme.InvertColor(iBackground, sKey)
+      iForeground = MTheme.InvertColor(iForeground, "Normal")
+    Endif
   Else
     iBackground = CStyle[$cCurrent["Background"]].Foreground
     iForeground = hStyle.Foreground
+    If bInvert Then 
+      iBackground = MTheme.InvertColor(iBackground, "Background")
+      iForeground = MTheme.InvertColor(iForeground, sKey)
+    Endif
   Endif
   
-  If bInvert Then 
-    iBackground = MTheme.InvertColor(iBackground, iBg)
-    iForeground = MTheme.InvertColor(iForeground, iBg)
-  Endif
   
   Paint.FillRect(0, 0, hDraw.W, hDraw.H, iBackground)
   If hStyle.Bold Then
