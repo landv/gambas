@@ -58,7 +58,7 @@ Static Public Sub _get(Path As String) As Picture
     ' Support for dark themes
     
     If Not $bInit Then
-      If Color[Color.Desaturate(Color.Background)].Blue < 128 Or If Env["GB_GUI_DARK_THEME"] = "1" Then $bDarkTheme = True
+      If Color[Color.Background].Luminance < 128 Or If Env["GB_GUI_DARK_THEME"] = "1" Then $bDarkTheme = True
       $bInit = True
     Endif
     
