@@ -154,6 +154,11 @@ void ARCH_define_output(const char *path)
 	ARCH_output = STR_copy(path);
 }
 
+static void print_separation()
+{
+	printf("---------------------------------------- ------------------------------ -------- -----\n");
+}
+
 void ARCH_define_project(const char *project)
 {
 	char *name;
@@ -207,7 +212,11 @@ void ARCH_init(void)
 	write_int(ARCH_VERSION);
 	
 	if (ARCH_verbose)
-		printf("Format version: %d\n", ARCH_VERSION);
+	{
+		print_separation();
+		printf("%-40.40s %-30.30s %8s %5s\n", "Path", "Abbrev. path","Size","Index");
+		print_separation();
+	}
 
 	pos_start = get_pos();
 	write_int(0);
@@ -233,7 +242,7 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 	len = lsrc;
 	
 	if (ARCH_verbose)
-		printf("%s", tpath); 	
+		printf("%-40.40s", tpath); 	
 	
 	for(;;)
 	{
@@ -252,7 +261,7 @@ static void compress_file_name(const char *src, int lsrc, char **dst, int *ldst)
 	}
 
 	if (ARCH_verbose)
-		printf(" -> %s\n", tpath); 	
+		printf(" %-30.30s", tpath); 	
 		
 	*dst = tpath;
 	*ldst = len;
@@ -304,6 +313,12 @@ void ARCH_exit(void)
 
 	make_executable();
 
+	if (ARCH_verbose)
+	{
+		print_separation();
+		printf("Writing archive format version %d:\n%s\n", ARCH_VERSION,ARCH_output);
+	}
+	
 	/* Free everything */
 
 	for (i = 0; i < TABLE_count(arch_table); i++)
@@ -353,7 +368,7 @@ int ARCH_add_file(const char *path)
 		sym->len = 0;
 		fclose(file);
 		if (ARCH_verbose)
-			printf("Adding directory %s", rel_path);
+			printf(" %8s", "-");
 	}
 	else
 	{
@@ -378,11 +393,11 @@ int ARCH_add_file(const char *path)
 		fclose(file);
 
 		if (ARCH_verbose)
-			printf("Adding file %s (%d bytes)", rel_path, sym->len);
+			printf(" %8d", sym->len);
 	}
 	
 	if (ARCH_verbose)
-		printf(" -> %d\n", ind);
+		printf(" %5d\n", ind);
 	
 	return ind;
 }

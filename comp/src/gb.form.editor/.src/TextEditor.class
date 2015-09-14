@@ -2367,8 +2367,8 @@ Public Sub View_Draw()
     $iBackground = $hStyles[Highlight.Background].Color
     $iForeground = $hStyles[Highlight.Normal].Color
     $iSelectedBackground = $hStyles[Highlight.Selection].Color
-    $iLimitColor = Color.Merge($iBackground, $hStyles[Highlight.Comment].Color)
-    $iMultiLineColor = Color.Merge($iBackground, $iLimitColor)
+    $iLimitColor = Color.Gradient($iBackground, $hStyles[Highlight.Comment].Color)
+    $iMultiLineColor = Color.Gradient($iBackground, $iLimitColor)
     $bStyleChanged = False
   Endif
 

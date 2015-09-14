@@ -319,25 +319,25 @@ static void handle_rgba_property(CCOLOR *_object, void *_param, int prop)
 	}
 }
 
-BEGIN_PROPERTY(CCOLOR_info_alpha)
+BEGIN_PROPERTY(ColorInfo_Alpha)
 
 	handle_rgba_property(_object, _param, CC_A);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_info_red)
+BEGIN_PROPERTY(ColorInfo_Red)
 
 	handle_rgba_property(_object, _param, CC_R);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_info_green)
+BEGIN_PROPERTY(ColorInfo_Green)
 
 	handle_rgba_property(_object, _param, CC_G);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_info_blue)
+BEGIN_PROPERTY(ColorInfo_Blue)
 
 	handle_rgba_property(_object, _param, CC_B);
 
@@ -369,25 +369,25 @@ static void handle_hsv_property(CCOLOR *_object, void *_param, int prop)
 	}
 }
 
-BEGIN_PROPERTY(CCOLOR_info_hue)
+BEGIN_PROPERTY(ColorInfo_Hue)
 
 	handle_hsv_property(THIS, _param, CC_H);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_info_saturation)
+BEGIN_PROPERTY(ColorInfo_Saturation)
 
 	handle_hsv_property(THIS, _param, CC_S);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_info_value)
+BEGIN_PROPERTY(ColorInfo_Value)
 
 	handle_hsv_property(THIS, _param, CC_V);
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CCOLOR_info_color)
+BEGIN_PROPERTY(ColorInfo_Color)
 
 	CCOLOR *info = THIS;
 
@@ -397,6 +397,14 @@ BEGIN_PROPERTY(CCOLOR_info_color)
 		gt_color_to_rgba(VPROP(GB_INTEGER), &info->r, &info->g, &info->b, &info->a);
 
 END_PROPERTY
+
+BEGIN_PROPERTY(ColorInfo_Luminance)
+
+	GB.ReturnInteger((int)(0.299 * THIS->r + 0.587 * THIS->g + 0.114 * THIS->b + 0.5));
+
+END_PROPERTY
+
+//---------------------------------------------------------------------------
 
 BEGIN_METHOD(Color_Lighter, GB_INTEGER color)
 
@@ -519,14 +527,15 @@ GB_DESC CColorInfoDesc[] =
 {
   GB_DECLARE("ColorInfo", sizeof(CCOLOR)), GB_NOT_CREATABLE(),
 
-  GB_PROPERTY("Alpha", "i", CCOLOR_info_alpha),
-  GB_PROPERTY("Red", "i", CCOLOR_info_red),
-  GB_PROPERTY("Green", "i", CCOLOR_info_green),
-  GB_PROPERTY("Blue", "i", CCOLOR_info_blue),
-  GB_PROPERTY("Hue", "i", CCOLOR_info_hue),
-  GB_PROPERTY("Saturation", "i", CCOLOR_info_saturation),
-  GB_PROPERTY("Value", "i", CCOLOR_info_value),
-  GB_PROPERTY("Color", "i", CCOLOR_info_color),
+  GB_PROPERTY("Alpha", "i", ColorInfo_Alpha),
+  GB_PROPERTY("Red", "i", ColorInfo_Red),
+  GB_PROPERTY("Green", "i", ColorInfo_Green),
+  GB_PROPERTY("Blue", "i", ColorInfo_Blue),
+  GB_PROPERTY("Hue", "i", ColorInfo_Hue),
+  GB_PROPERTY("Saturation", "i", ColorInfo_Saturation),
+  GB_PROPERTY("Value", "i", ColorInfo_Value),
+  GB_PROPERTY("Color", "i", ColorInfo_Color),
+  GB_PROPERTY("Luminance", "i", ColorInfo_Luminance),
   
   GB_END_DECLARE
 };

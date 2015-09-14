@@ -323,13 +323,13 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 	
 	if (*parch)
 		return FALSE;
-
+	
 	if (COMPONENT_current && COMPONENT_current->archive)
 		*parch = COMPONENT_current->archive;
 	else if (CP && CP->component && CP->component->archive)
 		*parch = CP->component->archive;
 	else
-		*parch = EXEC_arch ? ARCHIVE_main : NULL;
+		*parch = NULL;
 	
 	//fprintf(stderr, "ARCHIVE_find_from_path: %s (%s)\n", *ppath, *parch ? (*parch)->name : "NULL");
 	
@@ -364,8 +364,11 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 		if (i == STACK_frame_count)
 			*parch = NULL;
 	}
-
-	//fprintf(stderr, "--> %s / %s\n", *parch ? (*parch)->name : "NULL", *ppath);
+	
+	if (*parch == NULL && EXEC_arch)
+		*parch = ARCHIVE_main;
+	
+	//fprintf(stderr, "--> '%s' / %s\n", *parch ? (*parch)->name : "(null)", *ppath);
 	
 	return *parch == NULL;
 }

@@ -8,24 +8,6 @@ Static $cCache As New Collection
 Static Private $bInit As Boolean
 Static Private $bDarkTheme As Boolean
 
-Static Private Sub GetCurrentComponent() As String
-
-  Dim iPos As Integer
-  Dim sFunc As String
-  Dim sComp As String
-  
-  sFunc = System.Backtrace[2]
-  iPos = InStr(sFunc, ".")
-  Try sComp = Classes[Left(sFunc, iPos - 1)].Component.Name
-  
-  'Debug sComp
-  Return sComp
-
-Catch
-  
-End
-
-
 Static Public Sub _get(Path As String) As Picture
   
   Dim sKey As String
@@ -39,7 +21,7 @@ Static Public Sub _get(Path As String) As Picture
   If Path Begins "icon:/" Then
     sKey = Path
   Else If File.IsRelative(Path) Then
-    sKey = GetCurrentComponent() &/ Path
+    sKey = Component.FindFromPath(Path) &/ Path
   Else
     sKey = Path
   Endif
@@ -76,7 +58,7 @@ Static Public Sub _get(Path As String) As Picture
     ' Support for dark themes
     
     If Not $bInit Then
-      If Color[Color.Desaturate(Color.Background)].Blue < 128 Then $bDarkTheme = True
+      If Color[Color.Desaturate(Color.Background)].Blue < 128 Or If Env["GB_GUI_DARK_THEME"] = "1" Then $bDarkTheme = True
       $bInit = True
     Endif
     
@@ -109,7 +91,7 @@ Static Public Sub _put(Value As Picture, Path As String)
   If Path Begins "icon:/" Then
     sKey = Path
   Else If File.IsRelative(Path) Then
-    sKey = GetCurrentComponent() &/ Path
+    sKey = Component.FindFromPath(Path) &/ Path
   Else
     sKey = Path
   Endif
