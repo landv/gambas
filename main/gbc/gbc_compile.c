@@ -315,6 +315,9 @@ static void create_startup_file()
 	fs = fopen(name, "w");
 	if (!fs)
 		THROW("Cannot create .startup file");
+	
+	// Do that now, otherwise file buffer can be erased
+	FILE_set_owner(name, COMP_project);
 
 	startup_print(fs, "Startup=", "");
 	startup_print(fs, "Title=", "");
@@ -330,8 +333,6 @@ static void create_startup_file()
 
 	if (fclose(fs))
 		THROW("Cannot create .startup file");
-	
-	FILE_set_owner(name, COMP_project);
 }
 
 #undef isdigit
