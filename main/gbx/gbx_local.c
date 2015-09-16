@@ -356,6 +356,17 @@ static void free_local_info(void)
 	CLEAR(&LOCAL_local);
 }
 
+static char fix_separator(const char *str)
+{
+	if (!*str || !str[1])
+		return str[0];
+	
+	if ((uchar)str[0] == 0xC2 && (uchar)str[1] == 0xA0 && str[2] == 0)
+		return ' ';
+	
+	return '?';
+}
+
 static void fill_local_info(void)
 {
 	struct lconv *info;
@@ -399,7 +410,7 @@ static void fill_local_info(void)
 	//fprintf(stderr, "'%s' '%s'\n", nl_langinfo(THOUSANDS_SEP), nl_langinfo(MON_THOUSANDS_SEP));
 
 	LOCAL_local.decimal_point = *(info->decimal_point);
-	LOCAL_local.thousand_sep = *(info->thousands_sep);
+	LOCAL_local.thousand_sep = fix_separator(info->thousands_sep);
 	if (LOCAL_local.thousand_sep == 0)
 		LOCAL_local.thousand_sep = ' ';
 	LOCAL_local.group_size = *(info->grouping);
@@ -537,11 +548,8 @@ static void fill_local_info(void)
 	
 	lang = LOCAL_get_lang();
 	if (strcmp(lang, "fr") == 0 || strncmp(lang, "fr_", 3) == 0)
-	{
 		LOCAL_local.date_sep = '/';
-		//LOCAL_local.thousand_sep = '~';
-	}
-
+	
 	stradd_sep(LOCAL_local.general_date, LOCAL_local.long_time, " ");
 	am_pm = nl_langinfo(AM_STR);
 	if (am_pm && *am_pm)
@@ -555,7 +563,7 @@ static void fill_local_info(void)
 
 	// Currency format
 
-	LOCAL_local.currency_thousand_sep = *(info->mon_thousands_sep);
+	LOCAL_local.currency_thousand_sep = fix_separator(info->mon_thousands_sep);
 	if (LOCAL_local.currency_thousand_sep == 0)
 		LOCAL_local.currency_thousand_sep = ' ';
 	LOCAL_local.currency_group_size = *(info->mon_grouping);
