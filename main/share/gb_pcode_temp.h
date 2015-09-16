@@ -37,6 +37,34 @@
 
 /*#define DEBUG*/
 
+static void print_quoted_string(FILE *out, const char *s, bool trans)
+{
+	const char *p = s;
+	unsigned char c;
+	
+	if (trans)
+		fputc('(', out);
+	fputc('"', out);
+	while ((c = (unsigned char)*p++))
+	{
+		if (c < 32)
+		{
+			fputc('\\', out);
+			if (c == '\n')
+				fputc('n', out);
+			else if (c == '\t')
+				fputc('n', out);
+			else
+				fprintf(out, "\\x%02X", c);
+		}
+		else
+			fputc(c, out);
+	}
+	fputc('"', out);
+	if (trans)
+		fputc(')', out);
+}
+
 short PCODE_dump(FILE *out, ushort addr, PCODE *code)
 {
 	static const char *op_comp[] = { "=", "<>", ">", "<=", "<", ">=", "==", "CASE" };
@@ -100,7 +128,7 @@ short PCODE_dump(FILE *out, ushort addr, PCODE *code)
 		fprintf(out, " %04hX", code[j]);
 	}
 
-	for (j = 0; j < (3 - (ncode % 3)); j++)
+	for (; j < ((ncode + 2) / 3 * 3); j++)
 		fprintf(out, "     ");
 
 	fprintf(out, "  ");
@@ -143,11 +171,10 @@ short PCODE_dump(FILE *out, ushort addr, PCODE *code)
 					break;
 			}
 
-			if (trans)
-				fprintf(out, " (\"%s\")", TABLE_get_symbol_name(table, JOB->class->constant[value].value));
-			else
-				fprintf(out, " \"%s\"", TABLE_get_symbol_name(table, JOB->class->constant[value].value));
-
+			fputc(' ', out);
+			
+			print_quoted_string(out, TABLE_get_symbol_name(table, JOB->class->constant[value].value), trans);
+			
 			break;
 
 		case 0xD: case 0xC:

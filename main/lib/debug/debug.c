@@ -153,7 +153,10 @@ static bool calc_position_from_line(CLASS *class, ushort line, FUNCTION **functi
 	FUNCTION *func = NULL;
 	FUNC_DEBUG *debug = NULL;
 
-	for (i = 0; i < class->load->n_func; i++)
+	// Look at the first functions last, because global variables can be declared and 
+	// initialized everywhere in the file, and initialization function is the first one.
+	
+	for(i = class->load->n_func - 1; i >= 0; i--)
 	{
 		func = &class->load->func[i];
 		debug = func->debug;
@@ -162,7 +165,7 @@ static bool calc_position_from_line(CLASS *class, ushort line, FUNCTION **functi
 			break;
 	}
 
-	if (i >= class->load->n_func)
+	if (i < 0)
 		return TRUE;
 
 	//fprintf(stderr, "calc_position_from_line: %s OK\n", debug->name);
