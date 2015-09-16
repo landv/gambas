@@ -1004,6 +1004,8 @@ static void query_release(DB_RESULT result, DB_INFO *info)
 	result.
 	<next> is a boolean telling if we want the next row.
 
+	This function must return DB_OK, DB_ERROR or DB_NO_DATA
+	
 	This function must use GB.StoreVariant() to store the value in the
 	buffer.
 
@@ -1039,7 +1041,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		//fprintf(stderr, "query_fill: %d: (%d, %d) : %s : %d\n", i, field->type, field->length, data, buffer[i].type);
 	}
 
-	return FALSE;
+	return DB_OK;
 }
 
 

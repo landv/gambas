@@ -272,10 +272,10 @@ int SqliteDatabase::create() {
 };
 
 int SqliteDatabase::drop() {
-  if (active == false) return DB_ERROR;
+  if (active == false) return DB_GOT_ERROR;
   disconnect();
   if (!unlink(db.c_str())) 
-     return DB_ERROR;
+     return DB_GOT_ERROR;
   return DB_COMMAND_OK;
 };
 
