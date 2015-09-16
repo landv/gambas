@@ -292,6 +292,11 @@ Public Sub DrawingArea_MouseDown()
       'Me.Parent.SetFocus()
       hTabPanel.Index = GetIndex()
     Endif
+  Else If Mouse.Middle Then
+    If IsClosable() Then
+      hTabPanel = GetParent()
+      hTabPanel._Close(GetIndex())
+    Endif
   Endif
   
 End

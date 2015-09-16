@@ -275,6 +275,7 @@ Public Sub _Clicked(hMenu As Menu)
 
   If hMenu.Toggle Then
     hMenu.Value = Not hMenu.Value
+    Object.Raise(hMenu, "Click")
     UpdateMenu
   Else
     hMenu.Value = True

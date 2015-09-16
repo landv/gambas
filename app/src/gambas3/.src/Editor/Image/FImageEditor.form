@@ -446,9 +446,15 @@
       Picture = Picture["img/draw/magic.png"]
       Toggle = True
     }
+    { btnHide ToolButton
+      MoveScaled(102,0,4,4)
+      ToolTip = ("Hide selection")
+      Action = ".hide"
+      Picture = Picture["img/draw/hide.png"]
+    }
     { btnEditSelection ToolButton btnTool
       Name = "btnEditSelection"
-      MoveScaled(103,0,4,4)
+      MoveScaled(106,0,4,4)
       Tag = "change"
       ToolTip = ("Edit selection")
       Action = ".tool-change"
@@ -456,13 +462,7 @@
       Toggle = True
     }
     { Separator8 Separator
-      MoveScaled(107,0,1,4)
-    }
-    { btnHide ToolButton
-      MoveScaled(108,0,4,4)
-      ToolTip = ("Hide selection")
-      Action = ".hide"
-      Picture = Picture["img/draw/hide.png"]
+      MoveScaled(110,0,1,4)
     }
     { btnInvert ToolButton
       MoveScaled(111,0,4,4)
@@ -741,7 +741,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,hide,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
-    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,tool-change,|,hide,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
+    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
+    Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
   }
 }

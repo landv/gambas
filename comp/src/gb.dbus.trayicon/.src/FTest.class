@@ -4,6 +4,7 @@
 Public Sub TrayIcon1_Click()
 
   Debug
+  Me.Visible = Not Me.Visible
 
 End
 
@@ -52,5 +53,29 @@ End
 Public Sub TrayIcon1_MiddleClick()
 
   Debug
+
+End
+
+Public Sub Menu6_Click()
+
+  Debug
+
+End
+
+Public Sub Menu7_Click()
+
+  Debug
+
+End
+
+Public Sub Menu8_Click()
+
+  Debug
+
+End
+
+Public Sub Button3_Click()
+
+  Menu5.Value = Not Menu5.Value
 
 End
