@@ -110,44 +110,29 @@ static bool load_buffer(CRESULT *_object, int vpos)
 	int i, ind;
 	int pos;
 
-	//fprintf(stderr, "load_buffer: %ld -> %d\n", THIS->pos, vpos);
-
-	/* if THIS->count < 0, that's mean that the driver couldn't determine it */
+	if (vpos == THIS->pos)
+		return FALSE;
 
 	DB_CurrentDatabase = &THIS->conn->db;
 
-	if (THIS->count >= 0 && (vpos < 0 || vpos >= THIS->count || THIS->info.nfield == 0))
+	if (THIS->count < 0)
 	{
-		/* Andrea Bortolan's changes for the ODBC modules*/
-
-		/* ODBC does return the number of rows affected by the query when execute a insert,apdate or delete query,
-			for all others case it returns -1 even if the query was execute without errors        	*/
-		/* Here the check for this case -1 means that the query was executed correctly
-			so get the result. 									*/
-		/* If the pos (the result row) does not exist because pos is > of the rows available than the ODBC module
-			will rise an Error ODBC_END_OF_DATA that must be catched by the application */
-
-		#if 0
-		if (THIS->count == -1)
-			{
-				if (THIS->handle && pos != THIS->pos)
-					{
-							THIS->driver->Result.Fill(THIS->handle, pos, THIS->buffer,(pos > 0) && (pos == (THIS->pos + 1)));
-					}
-				THIS->pos = pos;
-					THIS->available = TRUE;
-			}
-			else
-		/* End of Andrea's changes */
-		#endif
-
+		if (vpos != (THIS->pos + 1))
+		{
+			GB.Error("Result is forward only");
+			return TRUE;
+		}
+	}
+	else 
+	{
+		if (vpos < 0 || vpos >= THIS->count || THIS->info.nfield == 0)
 		{
 			THIS->pos = -1;
 			THIS->available = FALSE;
 			return TRUE;
 		}
 	}
-	else
+	
 	{
 		if (THIS->handle && vpos != THIS->pos)
 		{
@@ -358,7 +343,7 @@ ERROR:
 }
 
 
-BEGIN_METHOD_VOID(CRESULT_free)
+BEGIN_METHOD_VOID(Result_free)
 
 	release_buffer(THIS);
 
@@ -379,28 +364,28 @@ BEGIN_METHOD_VOID(CRESULT_free)
 END_METHOD
 
 
-BEGIN_PROPERTY(CRESULT_count)
+BEGIN_PROPERTY(Result_Count)
 
 	GB.ReturnInteger(THIS->count);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CRESULT_max)
+BEGIN_PROPERTY(Result_Max)
 
 	GB.ReturnInteger(THIS->count - 1);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CRESULT_index)
+BEGIN_PROPERTY(Result_Index)
 
 	GB.ReturnInteger(THIS->pos);
 
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CRESULT_available)
+BEGIN_PROPERTY(Result_Available)
 
 	GB.ReturnBoolean(THIS->available);
 
@@ -423,7 +408,7 @@ static void check_blob(CRESULT *_object, int field)
 	}
 }
 
-BEGIN_METHOD(CRESULT_get, GB_STRING field)
+BEGIN_METHOD(Result_get, GB_STRING field)
 
 	int index;
 	GB_TYPE type;
@@ -445,7 +430,7 @@ BEGIN_METHOD(CRESULT_get, GB_STRING field)
 END_METHOD
 
 
-BEGIN_METHOD(CRESULT_put, GB_VARIANT value; GB_STRING field)
+BEGIN_METHOD(Result_put, GB_VARIANT value; GB_STRING field)
 
 	int index;
 	GB_TYPE type;
@@ -545,42 +530,45 @@ BEGIN_METHOD(CRESULT_copy, GB_OBJECT result)
 END_METHOD
 #endif
 
-BEGIN_METHOD_VOID(CRESULT_move_first)
+BEGIN_METHOD_VOID(Result_MoveFirst)
 
 	GB.ReturnBoolean(load_buffer(THIS, 0));
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CRESULT_move_last)
+BEGIN_METHOD_VOID(Result_MoveLast)
 
-	GB.ReturnBoolean(load_buffer(THIS, THIS->count - 1));
+	if (THIS->count < 0)
+		GB.Error("Result is forward only");
+	else
+		GB.ReturnBoolean(load_buffer(THIS, THIS->count - 1));
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CRESULT_move_previous)
+BEGIN_METHOD_VOID(Result_MovePrevious)
 
 	GB.ReturnBoolean(load_buffer(THIS, THIS->pos - 1));
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CRESULT_move_next)
+BEGIN_METHOD_VOID(Result_MoveNext)
 
 	GB.ReturnBoolean(load_buffer(THIS, THIS->pos + 1));
 
 END_METHOD
 
 
-BEGIN_METHOD(CRESULT_move_to, GB_INTEGER pos)
+BEGIN_METHOD(Result_MoveTo, GB_INTEGER pos)
 
 	GB.ReturnBoolean(load_buffer(THIS, VARG(pos)));
 
 END_METHOD
 
 
-BEGIN_METHOD_VOID(CRESULT_next)
+BEGIN_METHOD_VOID(Result_next)
 
 	int *pos = (int *)GB.GetEnum();
 
@@ -591,7 +579,7 @@ BEGIN_METHOD_VOID(CRESULT_next)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CRESULT_update)
+BEGIN_METHOD_VOID(Result_Update)
 
 	int i;
 	bool comma;
@@ -703,7 +691,7 @@ BEGIN_METHOD_VOID(CRESULT_update)
 END_METHOD
 
 
-BEGIN_METHOD(CRESULT_delete, GB_BOOLEAN keep)
+BEGIN_METHOD(Result_Delete, GB_BOOLEAN keep)
 
 	DB_INFO *info = &THIS->info;
 	int *pos;
@@ -759,7 +747,7 @@ END_METHOD
 
 
 
-BEGIN_PROPERTY(CRESULT_fields)
+BEGIN_PROPERTY(Result_Fields)
 
 	GB_SubCollectionNew(&THIS->fields, &_fields_desc, THIS);
 	GB.ReturnObject(THIS->fields);
@@ -767,7 +755,7 @@ BEGIN_PROPERTY(CRESULT_fields)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(CRESULT_connection)
+BEGIN_PROPERTY(Result_Connection)
 
 	GB.ReturnObject(THIS->conn);
 
@@ -780,29 +768,29 @@ GB_DESC CResultDesc[] =
 
 	GB_HOOK_CHECK(check_result),
 
-	GB_METHOD("_free", NULL, CRESULT_free, NULL),
+	GB_METHOD("_free", NULL, Result_free, NULL),
 
-	GB_PROPERTY_READ("Count", "i", CRESULT_count),
-	GB_PROPERTY_READ("Length", "i", CRESULT_count),
-	GB_PROPERTY_READ("Available", "b", CRESULT_available),
-	GB_PROPERTY_READ("Index", "i", CRESULT_index),
-	GB_PROPERTY_READ("Max", "i", CRESULT_max),
+	GB_PROPERTY_READ("Count", "i", Result_Count),
+	GB_PROPERTY_READ("Length", "i", Result_Count),
+	GB_PROPERTY_READ("Available", "b", Result_Available),
+	GB_PROPERTY_READ("Index", "i", Result_Index),
+	GB_PROPERTY_READ("Max", "i", Result_Max),
 
-	GB_METHOD("_get", "v", CRESULT_get, "(Field)s"),
-	GB_METHOD("_put", NULL, CRESULT_put, "(Value)v(Field)s"),
-	GB_METHOD("_next", NULL, CRESULT_next, NULL),
+	GB_METHOD("_get", "v", Result_get, "(Field)s"),
+	GB_METHOD("_put", NULL, Result_put, "(Value)v(Field)s"),
+	GB_METHOD("_next", NULL, Result_next, NULL),
 
-	GB_METHOD("MoveFirst", "b", CRESULT_move_first, NULL),
-	GB_METHOD("MoveLast", "b", CRESULT_move_last, NULL),
-	GB_METHOD("MovePrevious", "b", CRESULT_move_previous, NULL),
-	GB_METHOD("MoveNext", "b", CRESULT_move_next, NULL),
-	GB_METHOD("MoveTo", "b", CRESULT_move_to, "(Index)i"),
+	GB_METHOD("MoveFirst", "b", Result_MoveFirst, NULL),
+	GB_METHOD("MoveLast", "b", Result_MoveLast, NULL),
+	GB_METHOD("MovePrevious", "b", Result_MovePrevious, NULL),
+	GB_METHOD("MoveNext", "b", Result_MoveNext, NULL),
+	GB_METHOD("MoveTo", "b", Result_MoveTo, "(Index)i"),
 
-	GB_METHOD("Update", NULL, CRESULT_update, NULL),
-	GB_METHOD("Delete", NULL, CRESULT_delete, "[(Keep)b]"),
+	GB_METHOD("Update", NULL, Result_Update, NULL),
+	GB_METHOD("Delete", NULL, Result_Delete, "[(Keep)b]"),
 	
-	GB_PROPERTY_READ("Fields", ".Result.Fields", CRESULT_fields),
-	GB_PROPERTY_READ("Connection", "Connection", CRESULT_connection),
+	GB_PROPERTY_READ("Fields", ".Result.Fields", Result_Fields),
+	GB_PROPERTY_READ("Connection", "Connection", Result_Connection),
 
 	GB_END_DECLARE
 };
@@ -877,13 +865,13 @@ static void set_blob(CBLOB *_object, char *data, int length)
 	BLOB->length = length;
 }
 
-BEGIN_METHOD_VOID(CBLOB_init)
+BEGIN_METHOD_VOID(Blob_init)
 
 	CLASS_Blob = GB.FindClass("Blob");
 
 END_METHOD
 
-BEGIN_METHOD_VOID(CBLOB_free)
+BEGIN_METHOD_VOID(Blob_free)
 
 	//GB.Unref(POINTER(&BLOB->result));
 	set_blob(BLOB, NULL, 0);
@@ -896,7 +884,7 @@ END_METHOD
 
 END_PROPERTY*/
 
-BEGIN_PROPERTY(CBLOB_data)
+BEGIN_PROPERTY(Blob_Data)
 
 	if (READ_PROPERTY)
 	{
@@ -912,7 +900,7 @@ BEGIN_PROPERTY(CBLOB_data)
 
 END_PROPERTY
 
-BEGIN_PROPERTY(CBLOB_length)
+BEGIN_PROPERTY(Blob_Length)
 
 	GB.ReturnInteger(BLOB->length);
 
@@ -925,12 +913,12 @@ GB_DESC CBlobDesc[] =
 
 	//GB_HOOK_CHECK(check_blob),
 
-	GB_STATIC_METHOD("_init", NULL, CBLOB_init, NULL),
-	GB_METHOD("_free", NULL, CBLOB_free, NULL),
+	GB_STATIC_METHOD("_init", NULL, Blob_init, NULL),
+	GB_METHOD("_free", NULL, Blob_free, NULL),
 
 	//GB_PROPERTY_READ("Result", "Result", CBLOB_result),
-	GB_PROPERTY("Data", "s", CBLOB_data),
-	GB_PROPERTY_READ("Length", "i", CBLOB_length),
+	GB_PROPERTY("Data", "s", Blob_Data),
+	GB_PROPERTY_READ("Length", "i", Blob_Length),
 	GB_INTERFACE("_convert", &_convert_blob),
 	//GB_METHOD("_unknown", "v", CBLOB_unknown, "v"),
 
