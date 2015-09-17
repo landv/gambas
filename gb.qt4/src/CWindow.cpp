@@ -1711,7 +1711,7 @@ void MyMainWindow::present(QWidget *parent)
 		}
 	}
 	
-	if (parent || (hasBorder() && !THIS->noTakeFocus))
+	if (!THIS->noTakeFocus) // && (parent || hasBorder()))
 		activateWindow();
 	
 	if (parent)
