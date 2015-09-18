@@ -1,4 +1,4 @@
-EXTRA_DIST = reconf src spec mime desktop
+EXTRA_DIST = reconf src spec mime desktop template
 
 install-exec-local:
 	@if test "x$(ROOT)" != "x"; then \
@@ -43,6 +43,10 @@ install-exec-local:
 	@echo "Installing the Gambas appdata file"
 	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/appdata
 	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/appdata
+	
+	@echo "Installing the Gambas template projects"
+	$(INSTALL) -d $(DESTDIR)$(gbdatadir)/template;
+	cp -R $(srcdir)/template/* $(DESTDIR)$(gbdatadir)/template;
 
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gambas$(GAMBAS_VERSION)

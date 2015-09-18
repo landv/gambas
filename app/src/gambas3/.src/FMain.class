@@ -62,6 +62,7 @@ End
 Public Sub Form_Open()
   
   'DEBUG
+  Me.Move(Screen.AvailableX, Screen.AvailableY, Screen.AvailableWidth, Screen.AvailableHeight)
   Settings.Read(Me)
   Settings.Read(panProject, "panProject")
   Settings.Read(panProperty, "panProperty")

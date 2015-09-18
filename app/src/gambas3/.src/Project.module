@@ -5915,7 +5915,7 @@ Public Sub OpenFake() As Boolean
   Try Mkdir sDir &/ ".src"
   Try Mkdir sDir &/ ".hidden"
   
-  Copy "template/_fake_project" To sDir &/ ".project"
+  Copy "_fake_project" To sDir &/ ".project"
   
   Return Project.Open(sDir)
   
@@ -6166,4 +6166,11 @@ Private Sub RefreshIcon(sPath As String)
     
   Endif
 
+End
+
+Public Sub GetBookmarks() As Collection[]
+  
+  Return [["Name": ("Installed software"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/src", "Icon": "icon:/small/download"],
+    ["Name": ("Project templates"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/template", "Icon": "icon:/small/copy"]]  
+  
 End
