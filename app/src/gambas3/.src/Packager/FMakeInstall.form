@@ -634,11 +634,13 @@
       Spacing = True
       { chkSignature CheckBox
         MoveScaled(0,0,34,4)
+        #Translate = False
         AutoResize = True
-        Text = ("Sign packages using passphrase")
+        Text = "Sign packages using passphrase"
       }
       { txtPassPhrase TextBox
         MoveScaled(36,0,13,4)
+        #Translate = False
         Enabled = False
         Expand = True
         Password = True
