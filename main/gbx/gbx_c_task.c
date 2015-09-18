@@ -385,7 +385,7 @@ static bool start_task(CTASK *_object)
 		}
 		END_TRY
 		
-		exit(CHILD_OK);
+		_exit(CHILD_OK);
 	}
 	
 	return FALSE;
