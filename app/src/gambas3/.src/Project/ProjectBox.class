@@ -168,7 +168,7 @@ Public Sub DrawingArea_Draw()
     Paint.Rectangle(X, Y, W - 1, H - 1)
 
     If $bSelected Then
-      iBg = Color.LightBackground
+      iBg = Color.Gradient(Color.LightBackground, Color.TextBackground)
     Else
       iBg = Color.Merge(Color.TextForeground, Color.TextBackground, 0.97)
     Endif
@@ -209,7 +209,7 @@ Public Sub DrawingArea_Draw()
     
     Paint.DrawImage($hIcon, X, Y)
     
-    iCol = If($bSelected, Color.SelectedForeground, Color.Foreground)
+    iCol = Color.Foreground 'If($bSelected, Color.SelectedForeground, Color.Foreground)
     
     X += ICON_SIZE + P
 

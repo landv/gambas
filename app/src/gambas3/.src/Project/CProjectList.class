@@ -250,22 +250,22 @@ Private Sub GetTemplates() As String[]
   Dim sDir As String
 
   sDir = System.Path &/ "share/" & "gambas" & System.Version &/ "template"
-  For Each sFile In Dir(sDir)
-    If Left(sFile) = "." Then Continue
-    If Not Exist(sDir &/ sFile &/ ".project") Then Continue
-    aList.Add(sDir &/ sFile)
-  Next
-
-  sDir = Desktop.DataDir &/ "gambas3/template/"
-  If IsDir(sDir) Then 
-    For Each sFile In Dir(sDir)
+  If IsDir(sDir) Then
+    For Each sFile In Dir(sDir).Sort(gb.Natural)
       If Left(sFile) = "." Then Continue
       If Not Exist(sDir &/ sFile &/ ".project") Then Continue
       aList.Add(sDir &/ sFile)
     Next
   Endif
 
-  aList.Sort(gb.Natural)
+  sDir = Desktop.DataDir &/ "gambas3/template/"
+  If IsDir(sDir) Then 
+    For Each sFile In Dir(sDir).Sort(gb.Natural)
+      If Left(sFile) = "." Then Continue
+      If Not Exist(sDir &/ sFile &/ ".project") Then Continue
+      aList.Add(sDir &/ sFile)
+    Next
+  Endif
 
   Return aList
 
