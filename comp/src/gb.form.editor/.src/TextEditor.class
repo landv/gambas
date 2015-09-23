@@ -1878,8 +1878,9 @@ Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   
   If Y2 > Y1 Then
     $hRows._AfterRemove(Y1, Y2, $cLineLayout)
-    _ExpandRemove(Y1, Y2)
   Endif
+  
+  _ExpandRemove(Y1, Y2)
   
   Y = Min($Y, $hDoc.Max)
   X = Min($X, $hDoc.LineLength[Y])
