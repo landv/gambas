@@ -1,0 +1,47 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,64,64)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
+  Index = 0
+  Text = ("Section 1")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(0,2,60,6)
+    Height = "1cm"
+    Border = ReportBorder["Top:2px #000000;Bottom:2px #000000;Left:2px #000000;Right:2px #000000;TopLeftCorner:2mm;TopRightCorner:2mm"]
+    { ReportLabel1 ReportLabel
+      #MoveScaled(1,1,16,4)
+      Width = "5cm"
+    }
+    { ReportLabel2 ReportLabel
+      #MoveScaled(19,1,18,4)
+      Width = "5cm"
+      Border = ReportBorder["Left:2px #000000;Right:2px #000000"]
+    }
+    { ReportLabel3 ReportLabel
+      #MoveScaled(39,1,19,4)
+      Expand = True
+    }
+  }
+  { ReportVBox1 ReportVBox
+    #MoveScaled(1,12,61,44)
+    { TableLine ReportHBox
+      #MoveScaled(0,0,60,4)
+      Height = "1cm"
+      Border = ReportBorder["Bottom:2px #000000;Left:2px #000000;Right:2px #000000"]
+      { ReportLabel4 ReportLabel
+        #MoveScaled(0,0,17,4)
+        Width = "5cm"
+      }
+      { ReportLabel5 ReportLabel
+        #MoveScaled(19,1,20,4)
+        Width = "5cm"
+        Border = ReportBorder["Left:2px #000000;Right:2px #000000"]
+      }
+      { ReportLabel6 ReportLabel
+        #MoveScaled(42,0,15,4)
+      }
+    }
+  }
+  Index = 0
+}

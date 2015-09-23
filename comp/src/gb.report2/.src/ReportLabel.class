@@ -39,6 +39,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
     If $sText Then
       sText = $sText
     Else
+      
       Raise Data(DataIndex)
       sText = Data
     Endif
@@ -81,7 +82,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   If $sText Then
     sTempText = $sText
   Else
-    Raise Data(DataIndex)
+     Raise Data(DataIndex)
     sTempText = Data
   Endif
   

@@ -1,0 +1,20 @@
+' Gambas class file
+
+
+Public Sub Report_Open()
+
+  TableLine.DataCount = 8
+
+End
+
+Public Sub ReportLabel4_Data(Index As Integer)
+Print Index
+  Last.Data = Index
+
+End
+
+Public Sub ReportLabel5_Data(Index As Integer)
+Print Index
+  Last.Data = TableLine.DataIndex
+
+End
