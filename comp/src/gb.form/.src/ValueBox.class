@@ -113,6 +113,8 @@ Private Sub UpdateType()
   Border_Write(bBorder)
   ReadOnly_Write(bReadOnly)
   
+  $hCtrl.Show
+  
 End
 
 Public Sub NumberBox_KeyPress()

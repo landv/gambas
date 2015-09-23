@@ -181,7 +181,7 @@ Private Sub DrawDoc(Page As Integer, iRow As Integer, iCol As Integer)
   
   Dim iDocX, iDocY As Integer
   Dim fShad As Float = $fZoom * ($iSpacing / 4)
-  Dim fFullContentWidth As Float
+  'Dim fFullContentWidth As Float
 
   If $colLayout.Exist(Page) Then
     $fScaledDocWidth = $colLayout[Page].Width * $fZoom
