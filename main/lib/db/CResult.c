@@ -109,7 +109,11 @@ static bool load_buffer(CRESULT *_object, int vpos)
 {
 	int i, ind;
 	int pos;
+	int result;
 
+	if (!THIS->handle)
+		return TRUE;
+	
 	if (vpos == THIS->pos)
 		return FALSE;
 
@@ -133,45 +137,48 @@ static bool load_buffer(CRESULT *_object, int vpos)
 		}
 	}
 	
+	pos = DELETE_MAP_virtual_to_real(THIS->dmap, vpos);
+
+	//fprintf(stderr, "Result %p: Loading real %ld\n", THIS, pos);
+
+	void_buffer(THIS);
+
+	result = THIS->driver->Result.Fill(&THIS->conn->db, THIS->handle, pos, THIS->buffer, (pos > 0) && (pos == (DELETE_MAP_virtual_to_real(THIS->dmap, THIS->pos) + 1)));
+	
+	if (result == DB_ERROR)
+		return TRUE;
+	else if (result == DB_NO_DATA)
 	{
-		if (THIS->handle && vpos != THIS->pos)
+		THIS->pos = -1;
+		THIS->available = FALSE;
+		return TRUE;
+	}
+
+	if (THIS->mode == RESULT_EDIT)
+	{
+		q_init();
+
+		for (i = 0; i < THIS->info.nindex; i++)
 		{
-			pos = DELETE_MAP_virtual_to_real(THIS->dmap, vpos);
-
-			//fprintf(stderr, "Result %p: Loading real %ld\n", THIS, pos);
-
-			void_buffer(THIS);
-
-			THIS->driver->Result.Fill(&THIS->conn->db, THIS->handle, pos, THIS->buffer,
-				(pos > 0) && (pos == (DELETE_MAP_virtual_to_real(THIS->dmap, THIS->pos) + 1)));
-
-			if (THIS->mode == RESULT_EDIT)
+			ind = THIS->info.index[i];
+			if (i > 0) q_add(" AND ");
+			q_add(THIS->info.field[ind].name);
+			if (THIS->buffer[ind].type == GB_T_NULL)
+				q_add(" IS NULL");
+			else
 			{
-				q_init();
-
-				for (i = 0; i < THIS->info.nindex; i++)
-				{
-					ind = THIS->info.index[i];
-					if (i > 0) q_add(" AND ");
-					q_add(THIS->info.field[ind].name);
-					if (THIS->buffer[ind].type == GB_T_NULL)
-						q_add(" IS NULL");
-					else
-					{
-						q_add(" = ");
-						DB_FormatVariant(THIS->driver, &THIS->buffer[ind], q_add_length);
-					}
-				}
-
-				GB.FreeString(&THIS->edit);
-				THIS->edit = q_steal();
+				q_add(" = ");
+				DB_FormatVariant(THIS->driver, &THIS->buffer[ind], q_add_length);
 			}
 		}
 
-		THIS->pos = vpos;
-		THIS->available = TRUE;
-		return FALSE;
+		GB.FreeString(&THIS->edit);
+		THIS->edit = q_steal();
 	}
+
+	THIS->pos = vpos;
+	THIS->available = TRUE;
+	return FALSE;
 }
 
 
