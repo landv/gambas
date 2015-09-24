@@ -187,7 +187,7 @@ Public Sub gvwProc_Draw(X As Integer, Y As Integer, Width As Integer, Height As 
 
   If $sClass Then
     
-    CComponent.GetClassSymbols($sClass)
+    Project.Documentation.GetClassSymbols($sClass)
     Try hSymbol = $hModule.Scan[sName]
     If hSymbol And If hSymbol.Kind = "M" Then Paint.Font.Bold = True
   

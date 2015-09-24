@@ -143,14 +143,14 @@ Public Sub Command(sCommand As String) As String[]
   
   Else If sCommand = "classes" And If Wiki.Component Then
     
-    hComp = CComponent.All[Wiki.Component]
+    hComp = Wiki.Documentation[Wiki.Component]
     If hComp Then Return hComp.WikiGetClasses()
 
     Return MakeError(("This component does not exist."))
   
   Else If sCommand = "description" And If Wiki.Component Then
     
-    hComp = CComponent.All[Wiki.Component]
+    hComp = Wiki.Documentation[Wiki.Component]
     If hComp Then Return hComp.WikiGetDescription()
 
     Return MakeError(("This component does not exist."))
@@ -164,7 +164,7 @@ Public Sub Command(sCommand As String) As String[]
     Endif
     
     If sClass Then
-      hComp = CComponent.Get(Wiki.Component)
+      hComp = Wiki.Documentation.Get(Wiki.Component)
       If hComp Then
         hClass = hComp[sClass]
         If hClass Then Return hClass.WikiGetSymbols()
@@ -175,7 +175,7 @@ Public Sub Command(sCommand As String) As String[]
   
   Else If sCommand = "syntax" And If Wiki.Symbol Then
   
-    hComp = CComponent.Get(Wiki.Component)
+    hComp = Wiki.Documentation.Get(Wiki.Component)
     If hComp Then
       hClass = hComp[Wiki.Class]
       If hClass Then 

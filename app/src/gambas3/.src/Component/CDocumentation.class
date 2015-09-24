@@ -1,0 +1,1142 @@
+' Gambas class file
+
+Create Static
+
+Public (Components) As New Collection
+Public Libraries As New String[]
+Public (Classes) As Collection
+
+Static Private $cName As Collection
+Static Public Features As New Collection
+Static Private $cRescue As New Collection
+
+Private $sName As String
+Private Similars As New Collection
+
+Private $bScanFoundEvent As Boolean
+Private $hDumbClass As CClassInfo
+Private $hClass As CClassInfo
+
+Private $cImplement As New Collection
+
+Private Sub SortComponents()
+  
+  Dim iMax As Integer
+  Dim hComponent As CComponent
+  Dim cNewAll As New Collection
+  Dim iInd As Integer
+  
+  For Each hComponent In Components
+    hComponent.CalcSortKey
+    iMax = Max(iMax, hComponent.SortKey)
+    'PRINT hComponent.Key;; hComponent.SortKey
+  Next
+  
+  For iInd = 1 To iMax
+    For Each hComponent In Components
+      If hComponent.SortKey = iInd Then
+        cNewAll.Add(hComponent, hComponent.Key)
+        'DEBUG hComponent.Key;; hComponent.SortKey
+      Endif
+    Next
+  Next
+  
+  Components = cNewAll
+  
+End
+
+Static Private Sub InitComponentNames()
+  
+  $cName["gb"] = ("Internal native classes")
+  $cName["gb.args"] = ("Program arguments parser")
+  $cName["gb.cairo"] = ("Cairo graphic library")
+  $cName["gb.chart"] = ("Chart drawing")
+  $cName["gb.clipper"] = ("Polygon management based on Clipper library")
+  $cName["gb.complex"] = ("Complex numbers management")
+  $cName["gb.compress"] = ("Compression & decompression")
+  $cName["gb.compress.bzlib2"] = ("bzlib2 compression driver")
+  $cName["gb.compress.zlib"] = ("zlib compression driver")
+  $cName["gb.crypt"] = ("MD5/DES/SHA crypting")
+  $cName["gb.data"] = ("More data containers")
+  $cName["gb.db"] = ("Database access")
+  '$cName["gb.db.firebird"] = ("Firebird database driver")
+  $cName["gb.db.form"] = ("Data bound controls")
+  $cName["gb.db.mysql"] = ("MySQL database driver")
+  $cName["gb.db.odbc"] = ("ODBC database driver")
+  $cName["gb.db.postgresql"] = ("PostgreSQL database driver")
+  $cName["gb.db.sqlite2"] = ("SQLite 2 database driver")
+  $cName["gb.db.sqlite3"] = ("SQLite 3 database driver")
+  $cName["gb.debug"] = ("Application debugger helper")
+  $cName["gb.desktop"] = ("Desktop management component")
+  $cName["gb.desktop.x11"] = ("X-Window library support")
+  $cName["gb.desktop.gnome.keyring"] = ("Gnome keyring support for desktop management component")
+  $cName["gb.dbus"] = ("D-Bus interface")
+  $cName["gb.eval"] = ("Expression evaluator")
+  $cName["gb.eval.highlight"] = ("Syntax highlighter routines")
+  $cName["gb.form"] = ("More controls for graphical components")
+  $cName["gb.form.dialog"] = ("Enhanced standard dialogs")
+  $cName["gb.form.editor"] = ("Text editor with syntax highlighting")
+  $cName["gb.form.mdi"] = ("Multi Document Interface")
+  $cName["gb.form.stock"] = ("Default icon theme")
+  $cName["gb.gmp"] = ("GNU Multiple Precision Arithmetic Library")
+  $cName["gb.gsl"] = ("GNU Scientific Library")
+  $cName["gb.gtk"] = ("GTK+2 toolkit")
+  $cName["gb.gtk.opengl"] = ("OpenGL with GTK+ toolkit")
+  $cName["gb.gtk3"] = ("GTK+3 toolkit")
+  $cName["gb.gui"] = ("QT/GTK+ switcher component")
+  $cName["gb.gui.opengl"] = ("OpenGL with QT/GTK+ switcher component")
+  $cName["gb.gui.qt"] = ("QT4/QT5 switcher component")
+  $cName["gb.gui.qt.webkit"] = ("QT4/QT5 WebKit switcher component")
+  $cName["gb.gui.trayicon"] = ("System tray icon management component")
+  $cName["gb.httpd"] = ("Embedded HTTP server")
+  $cName["gb.image"] = ("Image management")
+  $cName["gb.image.effect"] = ("Image filtering component")
+  $cName["gb.image.imlib"] = ("Image routines from the Imlib2 library")
+  $cName["gb.image.io"] = ("Image loading and saving")
+  $cName["gb.inotify"] = ("Filesystem events monitoring")
+  $cName["gb.libxml"] = ("XML tools based on libxml")
+  $cName["gb.logging"] = ("Flexible logging system")
+  $cName["gb.map"] = ("Online map viewer")
+  $cName["gb.markdown"] = ("Gambas Markdown markup syntax")
+  $cName["gb.media"] = ("GStreamer multimedia component")
+  $cName["gb.media.form"] = ("Multimedia controls")
+  $cName["gb.memcached"] = ("Memcached client")
+  $cName["gb.mime"] = ("MIME format management based on GMime library")
+  $cName["gb.mysql"] = ("MySQL specific routines")
+  $cName["gb.ncurses"] = ("NCurses library")
+  $cName["gb.net"] = ("Network programming")
+  $cName["gb.net.curl"] = ("Network high-level protocols management")
+  $cName["gb.net.pop3"] = ("POP3 client")
+  $cName["gb.net.smtp"] = ("SMTP client")
+  $cName["gb.openal"] = ("OpenAL 3D audio library")
+  $cName["gb.opengl"] = ("3D programming with OpenGL")
+  $cName["gb.opengl.glu"] = ("OpenGL utility component")
+  $cName["gb.opengl.glsl"] = ("OpenGL shaders management")
+  $cName["gb.opengl.sge"] = ("Simple OpenGL game engine based on MD2 format")
+  $cName["gb.openssl"] = ("OpenSSL library routines")
+  $cName["gb.option"] = ("GNU command option parser")
+  $cName["gb.pcre"] = ("Perl-compatible Regular Expression Matching")
+  $cName["gb.pdf"] = ("PDF renderer based on Poppler library")
+  $cName["gb.qt4"] = ("QT4 toolkit")
+  $cName["gb.qt4.ext"] = ("QT4 toolkit extension")
+  $cName["gb.qt4.webkit"] = ("QT4 WebKit component")
+  $cName["gb.qt4.opengl"] = ("OpenGL with QT4 toolkit")
+  $cName["gb.qt5"] = ("QT5 toolkit")
+  $cName["gb.qt5.webkit"] = ("QT5 WebKit component")
+  $cName["gb.qt5.opengl"] = ("OpenGL with QT5 toolkit")
+  $cName["gb.report"] = ("Report designer")
+  $cName["gb.report2"] = ("Report designer")
+  $cName["gb.scanner"] = ("Scanner management library based on SANE")
+  $cName["gb.sdl"] = ("SDL library")
+  $cName["gb.sdl.sound"] = ("SDL sound & CD-ROM management")
+  $cName["gb.sdl2"] = ("SDL2 component")
+  $cName["gb.sdl2.audio"] = ("SDL2 audio component")
+  $cName["gb.settings"] = ("Application settings management")
+  $cName["gb.signal"] = ("Signals management")
+  $cName["gb.util"] = ("Utility component")
+  $cName["gb.util.web"] = ("Web applications utility component")
+  $cName["gb.v4l"] = ("Video capture")
+  $cName["gb.vb"] = ("Visual Basic compatibility")
+  $cName["gb.xml"] = ("XML tools")
+  $cName["gb.xml.html"] = ("HTML generator")
+  $cName["gb.xml.rpc"] = ("XML-RPC protocol")
+  $cName["gb.xml.xslt"] = ("XSLT tools based on libxslt and libxml")
+  $cName["gb.web"] = ("Web applications tools")
+  
+  ' For Each $cName
+  '   Print "gambas3-"; Replace($cName.Key, ".", "-")
+  ' Next
+  
+  Features["form"] = ("Graphical form management")
+  Features["eventloop"] = ("Event loop management")
+  Features["imageio"] = ("Image loading and saving")
+  Features["openglviewer"] = ("OpenGL display")
+  Features["complex"] = ("Complex numbers")
+  Features["xml"] = ("XML management")
+  
+End
+
+Public Sub AddSimilar(sCtrl As String, sSimilar As String)
+  
+  Dim aSimilar As String[]
+  
+  aSimilar = Similars[sSimilar]
+  If Not aSimilar Then
+    aSimilar = New String[]
+    Similars[sSimilar] = aSimilar
+  Endif
+  aSimilar.Add(sCtrl)
+  
+End
+
+Public Sub GetSimilars(sCtrl As String) As String[]
+  
+  Dim aSimilar As String[] = Similars[sCtrl]
+  
+  If Not aSimilar Then aSimilar = New String[]
+  
+  Return aSimilar
+  
+End
+
+Private Sub InitComponent(sFile As String)
+  
+  Dim hComponent As CComponent
+  Dim hFic As File
+  Dim sLig As String
+  Dim sKey As String
+  Dim sPath As String
+  Dim iPos As Integer
+  Dim sGroup As String
+  
+  sPath = Component.Path &/ sFile 
+  
+  Try hFic = Open sPath
+  If Error Then
+    Error "gambas3: warning: cannot read "; sPath
+    Return
+  Endif
+  
+  Line Input #hFic, sLig
+  sLig = Trim(sLig)
+  
+  If sLig = "[Component]" Then
+    
+    hComponent = New CComponent(Me)
+    hComponent.Key = File.BaseName(sFile)
+    hComponent.ThirdParty = Not $cName.Exist(hComponent.key)
+    hComponent.Name = $cName[hComponent.Key]
+    
+    If Not hComponent.Name Then hComponent.Name = " " 'Subst(("&1 component"), hComponent.Key)
+    
+    For Each sLig In hFic.Lines
+      
+      sLig = Trim(sLig)
+      
+      If Not sLig Then Continue
+      If Left(sLig) = ";" Or Left(sLig) = "'" Then Continue
+      
+      If sLig = "[Component]" Then Break
+      
+      If Left(sLig) = "[" And If Right(sLig) = "]" Then
+        sGroup = Mid$(sLig, 2, -1)
+        Continue
+      Endif
+      
+      iPos = InStr(sLig, "=")
+      If iPos = 0 Then Continue
+      
+      sKey = Left$(sLig, iPos - 1)
+      sLig = Mid$(sLig, iPos + 1)
+      
+      With hComponent
+        
+        If sKey = "Author" Or sKey = "Authors" Then
+          .Authors = Split(sLig)
+        Else If sKey = "Require" Or sKey = "Requires" Then
+          .Require = Split(sLig)
+        Else If sKey = "Exclude" Or sKey = "Excludes" Then
+          .Exclude = Split(sLig)
+        Else If sKey = "Implement" Or sKey = "Implements" Then
+          .Implement = Split(LCase(sLig))
+        Else If sKey = "Need" Or sKey = "Needs" Then
+          .Need = Split(LCase(sLig))
+        Else If sKey = "Alpha" Then
+          .State = CComponent.UNSTABLE
+        Else If sKey = "State" Then 
+          Select Case LCase(sLig)
+            Case "stable", "finished"
+              .State = CComponent.STABLE
+            Case "notfinished", "unfinished"
+              .State = CComponent.STABLE_NOT_FINISHED
+            Case "experimental", "unstable"
+              .State = CComponent.UNSTABLE
+            Case "deprecated"
+              .State = CComponent.DEPRECATED
+            Default
+              .State = CInt(sLig)
+          End Select
+        Else If sKey = "Version" Then
+          .Version = sLig
+        Else If sKey = "Hidden" Then
+          .Hidden = sLig = "True"
+        Endif
+        
+        ' Endif
+        
+      End With
+      
+    Next
+    
+    If hComponent.Key Then
+      Components[hComponent.Key] = hComponent
+    Endif
+    
+  Endif
+  
+  Close #hFic
+  
+Catch 
+  
+  Debug "Unable to read component file:";; sFile
+  
+End
+
+Public Sub FullReset()
+  
+  Components.Clear
+  Features.Clear
+  _new
+  
+End
+
+Static Public Sub _init()
+  
+  $cRescue["3.0:form"] = "gb.qt4"
+  $cRescue["3.0:openglviewer"] = "gb.qt4.opengl"
+  $cRescue["3.0:imageio"] = "gb.image.io"
+  $cRescue["3.0:eventloop"] = "gb.qt4"
+  $cRescue["3.0:xml"] = "gb.xml"
+
+  $cName = New Collection
+  InitComponentNames
+  
+End
+
+Public Sub _new(Optional sName As String)
+  
+  Dim aComp As String[]
+  Dim sFile As String
+  Dim hComp As CComponent
+  
+  $sName = sName
+  
+  $cImplement.Clear
+  
+  aComp = Dir(Component.Path, "*.component").Sort()
+  For Each sFile In aComp
+    'If Not $cName.Exist(File.BaseName(sFile)) Then Continue
+    InitComponent(sFile)
+  Next
+  
+  hComp = New CComponent(Me)
+  hComp.Key = CComponent.PROJECT_NAME
+  hComp.Name = " "
+  Components[hComp.Key] = hComp
+  
+  SortComponents
+  
+  Reset
+  
+End
+
+Public Sub CreateClass(sClass As String, sParent As String, sComp As String) As CClassInfo
+  
+  Dim hClass As CClassInfo
+  Dim hComp As CComponent
+  
+  hClass = New CClassInfo(Me, sClass, sComp, sParent)
+  
+  Classes[sComp &/ sClass] = hClass
+  Classes[sClass] = hClass
+  
+  hComp = Components[sComp]
+  If hComp Then  
+    'If hComp.Type Then Classes[hComp.Type &/ sClass] = hClass
+    If sClass <> "." Then hComp.ClassList.Add(sClass)
+  End If
+  
+  Return hClass
+  
+End
+
+Static Public Sub GetInfoDir() As String
+  
+  Return System.Path &/ "share/" & "gambas" & System.Version & "/info"
+  
+End
+
+
+Public Sub Exit()
+  
+  $hClass = Null
+  $hDumbClass = Null
+  Components = Null
+  Classes = Null
+  If Not $sName Then CModule.Exit
+  
+End
+
+Public Sub MakeInheritance(hModule As Object, cSymbol As Collection, sParent As String, Optional sComponent As String)
+  
+  Dim cClassSymbol As Collection  
+  Dim hSymbol As CSymbolInfo
+  
+  'Debug hModule.Name;; "->";; sParent;; sComponent
+  
+  hModule.ParentClass = sParent
+  hModule.ParentComponent = sComponent
+  If Not hModule.AutoCreatable Then hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
+  cClassSymbol = GetClassSymbols(sComponent &/ sParent)
+  If cClassSymbol Then
+    For Each hSymbol In cClassSymbol
+      cSymbol[hSymbol.Name] = hSymbol
+      If hSymbol.IsEvent() And If Not hSymbol.IsHidden() Then $bScanFoundEvent = True
+    Next
+  Endif
+  
+End
+
+' Static Private Sub ConvertSignature(sCode As String) As String
+'   
+'   Dim iInd As Integer
+'   Dim aSym As String[]
+'   Dim sSign As Integer
+'   Dim bOptional As Boolean
+'   Dim sType As String
+'   
+'   aSym = Highlight.Analyze("Sub Func(" & sCode & ")")
+'   
+'   aSym.Remove(0, 3)
+'   aSym.Remove(aSym.Max)
+'   
+'   Do
+'   
+'     If aSym[iInd] = "OPTIONAL" Then
+'       sSign &= "["
+'       bOptional = True
+'     Endif
+'     sSign &= "(" & aSym[iInd] & ")"
+'     Inc iInd
+'     If aSym[iInd] <> "AS" Then Break
+'     Inc iInd
+'     sType = FEditor.ReadSymbolType(aSym, iInd)
+'     If Len(sType) > 1 Then sType &= ";"
+'     sSign &= sType
+'     
+'     Do
+'     Loop
+'   
+'   Loop
+'   
+'   If bOptional Then sSign &= "]"
+' 
+' Finally
+' 
+'   Return sSign
+' 
+' End
+
+Private Sub ScanStruct(hModule As Object, iLine As Integer) As Integer
+  
+  Dim hEditor As TextEditor
+  Dim aSym As String[]
+  Dim iInd As Integer
+  Dim iLineDecl As Integer
+  Dim sClass As String
+  Dim hSymbol As CSymbolInfo
+  Dim cSymbol As New Collection
+  Dim hClass As CClassInfo
+  
+  hEditor = hModule.GetEditor()
+  
+  aSym = Highlight.Analyze(hEditor[iLine].Text)
+  
+  For iInd = 0 To aSym.Max - 1
+    If aSym[iInd] = "STRUCT" Then Break
+  Next
+  If iInd = aSym.Max Then Return iLine
+  
+  iLineDecl = iLine
+  sClass = aSym[iInd + 1]
+  
+  Do
+    Inc iLine
+    If iLine >= hEditor.Count Then Return iLine
+    
+    aSym = Highlight.Analyze(hEditor[iLine].Text)
+    
+    If aSym.Count >= 2 And If aSym[0] = "END" And If aSym[1] = "STRUCT" Then Break
+    
+    If aSym.Count = 0 Then Continue
+    If Highlight.Types[0] <> Highlight.Symbol Then Continue
+    
+    hSymbol = New CSymbolInfo(Me)
+    With hSymbol
+      .Name = aSym[0]
+      .Class = sClass
+      .Kind = "v"
+      .NotPublic = False
+      .LineNumber = iLine + 1
+      .Type = FEditor.ReadSymbolType(aSym, 1)
+      cSymbol[.Name] = hSymbol
+    End With
+    
+  Loop
+  
+  hClass = Classes[sClass]
+  If hClass And If Not hClass.Structure Then Return
+  
+  hClass = CreateClass(sClass, "", CComponent.PROJECT_NAME)
+  hClass.Structure = True
+  hClass.Symbols = cSymbol
+  hClass.DeclareIn = hModule.Name
+  hClass.DeclareAtLine = iLineDecl
+  
+  Return iLine
+  
+End
+
+Private Sub ScanClass(hModule As Object, cSymbol As Collection, bModule As Boolean, Optional bCanInherit As Boolean = True)
+  
+  Dim hEditor As TextEditor
+  Dim iLine As Integer
+  Dim aSym As String[]
+  Dim bStatic As Boolean
+  Dim bPublic As Boolean
+  Dim sKind As String
+  Dim iInd As Integer
+  Dim hSymbol, hSymbol2 As CSymbolInfo
+  'Dim aSymbol As CSymbolInfo[]
+  Dim iStart As Integer
+  Dim hClass As CClassInfo
+  Dim sName, sName2 As String
+  Dim aName As String[]
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sSign As String
+  Dim bExport As Boolean
+  Dim bBrace As Boolean
+  
+  'Debug "ScanClass "; hModule.Name
+  
+  hEditor = hModule.GetEditor()
+  hModule.AutoCreatable = False
+  hModule.NotCreatable = False
+  'DEBUG hModule.Name; " := "; hModule.AutoCreatable
+  
+  If bCanInherit Then
+    
+    hClass = Classes[hModule.Name]
+    
+    If hClass And If hClass.Component = CComponent.PROJECT_NAME And If hClass.Parent Then
+      hClass = Classes[hClass.ParentComponent &/ hClass.Parent]
+      MakeInheritance(hModule, cSymbol, hClass.Name, hClass.Component)
+      bCanInherit = False
+    Endif 
+    
+  Endif
+  
+  $bScanFoundEvent = False
+  
+  For iLine = 0 To hEditor.Count - 1
+    
+    aSym = Highlight.Analyze(hEditor[iLine].Text)
+    If aSym.Count = 0 Then Continue
+    If Highlight.Types[0] = Highlight.Comment Or If Highlight.Types[0] = Highlight.Help Then Continue
+    
+    Select Case aSym[0]
+        
+      Case "INHERITS"
+        
+        If aSym.Count >= 2 And If bCanInherit And If Highlight.Types[1] = Highlight.Datatype Then
+          MakeInheritance(hModule, cSymbol, aSym[iInd + 1])
+          bCanInherit = False
+        Endif
+        Continue
+        
+      Case "CREATE"
+        If aSym.Count = 1 Or If aSym[1] = "STATIC" Then 
+          hModule.AutoCreatable = True
+          'DEBUG hModule.Name; " := "; hModule.AutoCreatable
+        Else If aSym[1] = "PRIVATE" Then 
+          hModule.NotCreatable = True
+        Endif
+        
+      Case "EXPORT"
+        bExport = True
+      Default
+        Break
+        
+    End Select
+    
+  Next 
+  
+  If bExport And If bCanInherit Then
+    hClass = Classes[hModule.Name]
+    'sParent = aSym[iInd + 1]
+    If hClass And If hClass.Component <> Project.Name And If hClass.Component <> CComponent.PROJECT_NAME Then
+      MakeInheritance(hModule, cSymbol, hModule.Name, hClass.Component)
+      bCanInherit = False
+    Endif
+  Endif
+  
+  For iLine = iLine To hEditor.Count - 1
+    
+    aSym = Highlight.Analyze(hEditor[iLine].Text)
+    If aSym.Count = 0 Then Continue
+    
+    bStatic = bModule
+    bPublic = False
+    If bModule And Project.ModulePublic Then bPublic = True
+    sKind = ""
+    
+    For iInd = 0 To aSym.Count - 1
+      Select Case aSym[iInd]
+        Case "PUBLIC"
+          sKind = "v"
+          bPublic = True
+        Case "PRIVATE"
+          sKind = "v"
+          bPublic = False
+        Case "STATIC"
+          sKind = "v"
+          bStatic = True
+        Case "PROPERTY"
+          sKind = "p"
+          bPublic = True
+        Case "READ"
+          If sKind = "p" Then sKind = "r"
+          Inc iInd
+          Break
+        Case "EVENT"
+          sKind = ":"
+          bStatic = False
+          bPublic = True
+          Inc iInd
+          $bScanFoundEvent = True
+          Break
+        Case "SUB", "PROCEDURE", "FUNCTION"
+          sKind = "m"
+          Inc iInd
+          Break
+        Case "EXTERN"
+          sKind = "X"
+          Inc iInd
+          Break
+        Case "CONST"
+          sKind = "C"
+          bStatic = True
+          Inc iInd
+          Break
+        Case "ENUM"
+          sKind = "E"
+          bStatic = True
+          Inc iInd
+          Break
+        Case "STRUCT"
+          sKind = "S"
+          Break
+        Case "FAST"
+          ' continue
+        Case Else
+          Break
+      End Select
+    Next
+    
+    If sKind = "E" Then
+      For iInd = iInd To aSym.Count - 1
+        If Highlight.Types[iInd] = Highlight.Symbol Then
+          
+          hSymbol = New CSymbolInfo(Me)
+          With hSymbol
+            .Name = aSym[iInd]
+            .Class = hModule.Name
+            .Kind = "C"
+            .NotPublic = Not bPublic
+            .LineNumber = iLine + 1
+            .Type = "i"
+            cSymbol[.Name] = hSymbol
+            bCanInherit = False
+          End With
+          
+        Endif
+      Next
+      Continue
+    Else If sKind = "S" Then
+      iLine = ScanStruct(hModule, iLine)
+      Continue
+    Endif
+    
+    'IF NOT bPublic THEN CONTINUE
+    If Not sKind Then Continue
+    If iInd >= aSym.Count Then Continue
+    
+    'ANOTHER_SYMBOL:
+    
+    sName = aSym[iInd]
+    
+    If sName = "(" Then
+      bBrace = True
+      Inc iInd
+      sName = aSym[iInd]
+    Else
+      bBrace = False
+    Endif
+    
+    If sName = "{" Then
+      If iInd + 2 > aSym.Max Then Continue
+      Inc iInd
+      sName = aSym[iInd]
+      If aSym[iInd + 1] = "}" Then Inc iInd
+    Endif
+    
+    If bBrace Then
+      If aSym[iInd + 1] = ")" Then Inc iInd
+    Endif
+    
+    aName = Null
+    
+    If InStr("pr", sKind) And If (iInd + 2) <= aSym.Max And If aSym[iInd + 1] = "," Then
+      
+      aName = [sName]
+      iInd += 2
+      
+      Do
+        sName2 = aSym[iInd]
+        If Left(sName2) = "{" Then
+          If iInd + 2 > aSym.Max Then Break
+          Inc iInd
+          sName2 = aSym[iInd]
+          If aSym[iInd + 1] = "}" Then Inc iInd
+        Endif
+        
+        aName.Add(sName2)
+        
+        If (iInd + 2) > aSym.Max Then Break
+        If aSym[iInd + 1] <> "," Then Break
+        iInd += 2
+        
+      Loop
+      
+    Endif
+    
+    If sKind = ":" Then sName = ":" & sName
+    
+    hSymbol = New CSymbolInfo(Me)
+    With hSymbol
+      .Name = sName
+      .Class = hModule.Name
+      .Kind = sKind
+      .NotPublic = Not bPublic
+      .LineNumber = iLine + 1
+      
+      If InStr(":mX", sKind) Then
+        
+        For iStart = iInd + 1 To aSym.Count - 1
+          If aSym[iStart] = "(" Then Break
+        Next
+        
+        For iInd = aSym.Count - 1 To 0 Step -1
+          If aSym[iInd] = ")" Then
+            Break
+          Else If aSym[iInd] = "AS" Then
+            If iInd < (aSym.Count - 1) Then
+              .Type = FEditor.ReadSymbolType(aSym, iInd)
+            Endif
+          Endif
+        Next
+        
+        'iEnd = iInd
+        Try sSign = Trim(Mid$(Trim(hEditor[iLine].Text), Highlight.Positions[iStart] + 2))
+        If Not Error Then
+          iPos = RInStr(sSign, ")")
+          If iPos Then sSign = Trim(Left$(sSign, iPos - 1))
+          .Signature = "#" & sSign
+        Endif
+        
+        'FOR iInd = iStart TO iEnd
+        '  .Signature = .Signature & aSym[iInd] & " "
+        'NEXT
+        
+      Else
+        Inc iInd
+        
+        ' If iInd <= aSym.Max And If aSym[iInd] = "," Then
+        '   If Not aSymbol Then aSymbol = New CSymbolInfo[]
+        '   aSymbol.Add(hSymbol)
+        '   Inc iInd
+        '   Goto ANOTHER_SYMBOL
+        ' Endif
+        
+        .Type = FEditor.ReadSymbolType(aSym, iInd)
+        
+        If .Kind = "C" Then
+          
+          Do
+            Inc iInd
+            If iInd >= aSym.Count Then Break
+            If aSym[iInd] = "=" Then
+              Inc iInd
+              If iInd < aSym.Count Then
+                .Value = aSym[iInd]
+                If .Type = "s" Then .Value = UnQuote(.Value)
+              Endif
+            Endif
+          Loop
+          
+        Endif
+        
+      Endif
+      
+      If bStatic Then .Kind = UCase(.Kind)
+      
+      cSymbol[.Name] = hSymbol
+
+      If aName Then
+        For Each sName In aName
+          hSymbol2 = hSymbol.Copy("", "")
+          hSymbol2.Name = sName
+          hSymbol2.LineNumber = hSymbol.LineNumber
+          cSymbol[sName] = hSymbol2
+        Next
+      Endif
+
+      bCanInherit = False
+      
+    End With
+    
+    If sKind = "m" Then 
+      Do
+        Inc iLine
+        If iLine >= hEditor.Count Then Break
+        sLine = Trim(hEditor[iLine].Text)
+        iPos = InStr(sLine, "'")
+        If iPos Then sLine = Trim(Left(sLine, iPos - 1))
+        If Len(sLine) = 3 And If UCase(sLine) = "END" Then Break
+        If Len(sLine) = 7 And If UCase(sLine) = "END SUB" Then Break
+        If Len(sLine) = 12 And If UCase(sLine) = "END FUNCTION" Then Break
+        'aSym = Highlight.Analyze(hEditor.Lines[iLine])
+        'IF aSym.Count = 1 AND IF aSym[0] = "END" THEN BREAK
+      Loop
+    Endif
+    
+  Next
+  
+  'DEBUG "< "; hModule.Name
+  
+End
+
+' Static Private Function GetHelpLine(iLine As Integer, hEditor As Editor) As Integer
+' 
+'   Dim aSym As String[]
+'   Dim HelpLine As Integer
+' 
+'   Do
+'     Dec iLine
+'     If iLine < 0 Then Return HelpLine
+'     aSym = Highlight.Analyze(hEditor.Lines[iLine].Text)
+'     If aSym.Count = 1 Then
+'       If Left(aSym[0], 2) = "''" Then HelpLine = iLine
+'     Else
+'       Return HelpLine
+'     Endif
+'     
+'   Loop
+' 
+' End
+
+Private Sub ScanForm(hForm As FForm, cSymbol As Collection)
+  
+  Dim hControl As CControl
+  Dim hSymbol As CSymbolInfo
+  
+  'PRINT "ScanForm "; hForm.Name
+  
+  For Each hControl In hForm.Control
+    If hControl.Name = hForm.Name Then Continue
+    hSymbol = New CSymbolInfo(Me)
+    With hSymbol
+      .Name = hControl.Name
+      .Type = hControl.Kind
+      .Class = hForm.Name
+      .Kind = "t"
+      .NotPublic = (Not Project.ControlPublic) And Not hControl.Public
+      cSymbol[.Name] = hSymbol
+    End With
+  Next
+  
+End
+
+Private Sub GetModule(sClass As String) As Object
+  
+  Dim sPath As String
+  Dim sFamily As String
+  
+  sPath = Project.FindPath(sClass & ".module")
+  If sPath Then Return Project.LoadFile(sPath)
+  For Each sFamily In CFamily.List
+    sPath = Project.FindPath(sClass & "." & sFamily)
+    If sPath Then Return Project.LoadFile(sPath)
+  Next
+  sPath = Project.FindPath(sClass & ".class")
+  If sPath Then Return Project.LoadFile(sPath)
+  
+End
+
+Public Sub IsAutoCreatable(sClass As String) As Boolean
+  
+  Dim hClass As CClassInfo
+  Dim hModule As Object
+  
+  GetClassSymbols(sClass)
+  
+  hClass = Classes[sClass]
+  If hClass Then Return hClass.AutoCreatable
+  
+  hModule = GetModule(sClass)
+  If hModule Is FEditor Then 
+    'DEBUG sClass; " -> "; hModule.AutoCreatable
+    Return hModule.AutoCreatable
+  Endif
+  
+End
+
+Private Sub MustScan(hEditor As FEditor) As Boolean
+  
+  Dim sParent As String
+  Dim hParentEditor As FEditor
+  Dim bTest As Boolean
+  
+  If Not hEditor.Scan Then Return True
+  
+  If hEditor.ParentClass Then 
+    sParent = hEditor.ParentClass
+    Try hParentEditor = GetModule(sParent) ' The user can decide that the parent is a form by error!
+    If hParentEditor And If hParentEditor <> hEditor Then 
+      hEditor.ParentClass = "" ' Avoid circular inheritance
+      bTest = MustScan(hParentEditor)
+      hEditor.ParentClass = sParent
+      Return bTest
+    Endif
+  Endif
+  
+End
+
+Public Sub GetClassDescription(sClass As String) As CClassInfo
+  
+  GetClassSymbols(sClass)
+  Return $hClass
+  
+End
+
+Public Sub GetLastClass() As CClassInfo
+  
+  Return $hClass
+  
+End
+
+Public Sub ScanSingleClass(hPModule As FEditor) As Collection
+  
+  Dim cSymbol As Collection
+
+  cSymbol = New Collection(gb.IgnoreCase)
+  hPModule.Scan = cSymbol
+  ScanClass(hPModule, cSymbol, File.Ext(hPModule.Path) = "module", False)
+  Return cSymbol
+  
+End
+
+
+Public Function GetClassSymbols(sClass As String, Optional sComponent As String) As Collection
+  
+  Dim hClass As CClassInfo
+  Dim bClass As Boolean
+  Dim sPath As String
+  Dim hPForm As Object
+  Dim hPModule As FEditor
+  Dim hPClass As FEditor
+  'Dim hModule As Object
+  Dim cSymbol As Collection
+  Dim hSymbol As CSymbolInfo
+  'Dim aClass As String[]
+  Dim sFamily As String
+  
+  If Len(sClass) <= 1 Then
+    If sClass <> "." And If Not IsUpper(sClass) Then Return
+  Endif
+  
+  'Debug sClass
+  'If sClass = "MaskBox" Then Stop
+  
+  If sComponent Then
+    bClass = sComponent = CComponent.PROJECT_NAME
+    hClass = Classes[sComponent &/ sClass]
+  Else
+    If Not $sName Then bClass = Project.ExistClass(sClass)
+    hClass = Classes[sClass]
+  Endif
+  
+  If Not bClass Then
+    If hClass Then
+      $hClass = hClass
+      Return hClass.Symbols
+    Else
+      If Right(sClass, 2) = "[]" Then
+        'GetClassSymbols(Left(sClass, -2))
+        hClass = CreateClass(sClass, "", "*")
+        hClass.CopyFrom(Classes["*[]"], "*", Left(sClass, -2))
+        $hClass = hClass
+        Return hClass.Symbols
+      Endif
+      
+      'Error "gambas3: warning: unknown class: "; sClass
+      Return
+    Endif
+  Endif
+  
+  sPath = Project.FindPath(sClass & ".module")
+  If Exist(sPath) Then hPModule = Project.LoadFile(sPath)
+  For Each sFamily In CFamily.List
+    sPath = Project.FindPath(sClass & "." & sFamily)
+    If Exist(sPath) Then 
+      Try hPForm = Project.LoadFile(sPath)
+      Break
+    Endif
+  Next
+  sPath = Project.FindPath(sClass & ".class")
+  If Exist(sPath) Then hPClass = Project.LoadFile(sPath)
+  
+  cSymbol = New Collection
+  
+  If Not $hDumbClass Then $hDumbClass = New CClassInfo(Me, "", "")
+  $hDumbClass.Name = sClass
+  
+  If hPModule Then
+    cSymbol = hPModule.Scan
+    If MustScan(hPModule) Then
+      cSymbol = New Collection(gb.IgnoreCase)
+      hPModule.Scan = cSymbol
+      ScanClass(hPModule, cSymbol, True)
+    Endif
+    $hDumbClass.Parent = hPModule.ParentClass
+    $hDumbClass.Creatable = False
+    $hDumbClass.AutoCreatable = False
+    $hDumbClass.HasEvents = $bScanFoundEvent
+    '$hDumbClass.ParentComponent = hPModule.ParentComponent
+  Else If hPClass Then
+    cSymbol = hPClass.Scan
+    If MustScan(hPClass) Then
+      cSymbol = New Collection(gb.IgnoreCase)
+      hPClass.Scan = cSymbol
+      If hPForm Then
+        For Each hSymbol In Classes[sFamily].Symbols
+          cSymbol[hSymbol.Name] = hSymbol
+        Next
+        hPClass.ParentClass = sFamily
+        If hPForm Is FForm Then ScanForm(hPForm, cSymbol)
+      Endif
+      ScanClass(hPClass, cSymbol, False, IsNull(hPForm))
+    Endif
+    $hDumbClass.Parent = hPClass.ParentClass
+    $hDumbClass.ParentComponent = hPClass.ParentComponent
+    $hDumbClass.Creatable = Not hPClass.NotCreatable
+    $hDumbClass.AutoCreatable = hPClass.AutoCreatable
+    $hDumbClass.HasEvents = $bScanFoundEvent
+  Endif
+  
+  $hDumbClass.Symbols = cSymbol
+  $hClass = $hDumbClass
+  
+  Return cSymbol
+  
+End
+
+Public Sub Reset()
+  
+  Dim hComponent As CComponent
+  Dim sLib As String
+  
+  For Each hComponent In Components
+    hComponent.Loaded = False
+  Next
+  
+  For Each sLib In Libraries
+    Components[sLib] = Null
+  Next
+  Libraries.Clear
+  
+  If Not $sName Then CModule.Reset
+  
+  Classes = New Collection(gb.IgnoreCase)
+  
+  Components["gb"].Load
+  
+End
+
+Public Sub AddLibrary(sPath As String)
+  
+  Dim hComp As CComponent
+  
+  hComp = New CComponent(Me)
+  hComp.Key = File.Name(sPath)
+  hComp.Name = hComp.Key
+  hComp.Library = True
+  hComp.Path = sPath
+  
+  Libraries.Add(hComp.Key)
+  Components[hComp.Key] = hComp
+  
+  hComp.Load
+  
+End
+
+Public Sub RemoveLibrary(sPath As String)
+  
+  Dim sKey As String = File.Name(sPath)
+  Dim iPos As Integer = Libraries.Find(sKey)
+  
+  If iPos < 0 Then Return
+  
+  Libraries.Remove(iPos)
+  Components[sKey] = Null
+  
+End
+
+Public Sub LoadProjectComponent()
+  
+  Components[CComponent.PROJECT_NAME].Load
+  
+End
+
+Public Sub _get(sComp As String) As CComponent
+
+  Return Components[sComp]
+  
+End
+
+Public Sub Get(sComp As String) As CComponent
+
+  Dim hComp As CComponent
+  
+  hComp = Components[sComp]
+  hComp.Load
+  Return hComp
+  
+End
+
+Public Sub Exist(sComp As String) As Boolean
+  
+  Return Components.Exist(sComp)
+  
+End
+
+Public Sub ImplementAndNeed(hComp As CComponent)
+
+  Dim sElt As String
+  
+  For Each sElt In hComp.Implement
+    $cImplement[sElt] = hComp.Key
+  Next
+
+  For Each sElt In hComp.Need
+    If $cImplement.Exist(sElt) Then Continue
+    sElt = "3.0:" & sElt
+    If $cRescue.Exist(sElt) Then 
+      Components[$cRescue[sElt]].Load()
+    Else 
+      Error.Raise("No default component for implementation of " & sElt)
+    Endif 
+  Next
+  
+End

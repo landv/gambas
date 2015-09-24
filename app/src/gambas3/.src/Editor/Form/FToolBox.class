@@ -155,14 +155,14 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
 
     ' Get all toolbars
 
-    For Each hComp In CComponent.All
+    For Each hComp In Project.Documentation.Components
 
       With hComp
 
         If Not hComp.UsedByProject() Then Continue
 
         For Each sCtrl In .Controls
-          sGroup = CComponent.Classes[sCtrl].Group
+          sGroup = Project.Documentation.Classes[sCtrl].Group
           cToolBar[sGroup] = sGroup
         Next
 
@@ -186,14 +186,14 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
       AddToolBar(Mid$(sGroup, 3), "Not yet implemented")
     Next
     
-    For Each hComp In CComponent.All
+    For Each hComp In Project.Documentation.Components
 
       With hComp
 
         If Not hComp.UsedByProject() Then Continue
 
         For Each sCtrl In .Controls
-          hClass = CComponent.Classes[sCtrl]
+          hClass = Project.Documentation.Classes[sCtrl]
           sGroup = hClass.Group
           bExist = False
           For Each hToolBar In $cToolBar

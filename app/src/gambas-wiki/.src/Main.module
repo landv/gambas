@@ -1146,11 +1146,47 @@ Public Sub GetDefaultPage() As String
   
 End
 
+Private Sub AddDependencies(aResult As String[], aComp As String[])
+
+  Dim sComp As String
+
+  For Each sComp In aComp
+    If Not CComponent.HasPackage(sComp) Then Continue
+    aResult.Add("'gambas3-" & Replace(sComp, ".", "-") & "'\\")
+  Next
+
+End
+
+Private Sub AddProjectDependencies(aResult As String[], sProject As String, Optional aMore As String[])
+
+  Dim aComp As New String[]
+  Dim sLine As String
+  Dim sComp As String
+
+  For Each sLine In Split(File.Load(sProject & ".project"), "\n")
+    If sLine Begins "Component=" Then
+      aComp.Add(Mid$(sLine, InStr(sLine, "=") + 1))
+    Endif
+  Next
+  aComp.Sort()
+  
+  aResult.Add("==")
+  aResult.Add("'" & sProject & "'")
+  aResult.Add("--")
+  aResult.Add("'gambas3-runtime'\\")
+  If aMore Then 
+    For Each sComp In aMore
+      aResult.Add("'" & sComp & "'\\")
+    Next
+  Endif
+  AddDependencies(aResult, aComp)
+
+End
+
 Public Sub GetPackageTable() As String[]
 
   Dim aResult As String[]
   Dim sComp As String
-  Dim sNeed As String
   
   aResult = New String[]
   aResult.Add("[[")
@@ -1158,14 +1194,21 @@ Public Sub GetPackageTable() As String[]
   aResult.Add("--")
   aResult.Add("Depends on these packages")
   
+  aResult.Insert(["==", "'gambas3-devel'", "--"])
+  aResult.Insert(["==", "'gambas3-runtime'", "--"])
+  
+  AddProjectDependencies(aResult, "gambas3-ide", ["gambas3-devel"])
+  AddProjectDependencies(aResult, "gambas3-scripter", ["gambas3-devel"])
+  
   For Each sComp In CComponent.ListAll()
+    
+    If Not CComponent.HasPackage(sComp) Then Continue
     
     aResult.Add("==")
     aResult.Add("'gambas3-" & Replace(sComp, ".", "-") & "'")
     aResult.Add("--")
-    For Each sNeed In CComponent.Get(sComp).Require
-      aResult.Add("'gambas3-" & Replace(sNeed, ".", "-") & "'\\")
-    Next
+    AddDependencies(aResult, CComponent.Get(sComp).Require)
+    
   Next
   
   aResult.Add("]]")

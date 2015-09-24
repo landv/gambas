@@ -21,7 +21,7 @@ Static Public ExpressionStart As Integer
 
 Static Private $cStructClose As New Collection(gb.IgnoreCase)
 
-Static Private $hVirtualSymbol As New CSymbolInfo
+Static Private $hVirtualSymbol As New CSymbolInfo(Project.Documentation)
 
 Static Private $bPublic As Boolean
 Static Private $bStatic As Boolean
@@ -445,7 +445,7 @@ Private Sub CreateMenu()
 
   mnuGoto.Children.Clear
 
-  cSymbol = CComponent.GetClassSymbols(Me.Name)
+  cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
   If cSymbol Then
     For Each hSymbol In cSymbol
   
@@ -1523,7 +1523,7 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
   Endif
 
   If sSymbol = "SUPER" Then
-    CComponent.GetClassSymbols(Me.Name)
+    Project.Documentation.GetClassSymbols(Me.Name)
     Return ParentClass
   Endif
 
@@ -1590,7 +1590,7 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
 
   ' Look for private symbols
 
-  Try $hSymbol = CComponent.GetClassSymbols(Me.Name)[sSymbol]
+  Try $hSymbol = Project.Documentation.GetClassSymbols(Me.Name)[sSymbol]
   If Not Error Then
     If $hSymbol Then
       ' A private symbol that is a method or an event cannot be followed by a point
@@ -1611,7 +1611,7 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
   ' Look for subroutines
 
   If Not bPoint Then
-    $hSymbol = CComponent.GetClassSymbols(".")[sSymbol]
+    $hSymbol = Project.Documentation.GetClassSymbols(".")[sSymbol]
     If $hSymbol Then
       Return $hSymbol.Type
     Endif
@@ -1621,7 +1621,7 @@ Public Function GetSymbolType(sSymbol As String, Optional bPoint As Boolean) As 
 
   $bLastStatic = True
 
-  If CComponent.Classes.Exist(sSymbol) Then
+  If Project.Documentation.Classes.Exist(sSymbol) Then
     'TRY $hSymbol = CComponent.GetClassSymbols(sSymbol)["_call"]
     Return sSymbol
   Endif
@@ -1812,7 +1812,7 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
         If sType Then
           If aType[iInd + 1] = Highlight.Symbol Then
             'PRINT sType; " ";
-            cSymbol = CComponent.GetClassSymbols(sType)
+            cSymbol = Project.Documentation.GetClassSymbols(sType)
             $hSymbol = Null
             Try $hSymbol = cSymbol[aExpr[iInd + 1]]
             If Not $hSymbol Then Return
@@ -1835,7 +1835,7 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
       If bNeedMethod Then
         bNeedMethod = False
       Else
-        Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+        Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_call"]
         If Not $hSymbol Then Return
         sType = $hSymbol.Type ' A method cannot return static classes
         $bLastStatic = False
@@ -1845,7 +1845,7 @@ Public Function GetExpressionType(aExpr As String[], aType As Integer[], bPointA
       If Not sType Then ' Array constructor operator [ ... ]
         Return
       Else
-        Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+        Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_get"]
         If Not $hSymbol Then Return
         sType = $hSymbol.Type
         $bLastStatic = False ' A method cannot return static classes
@@ -2054,13 +2054,13 @@ Private Function GetExpressionSignature(aExpr As String[], aType As Integer[]) A
   If sType Then
     If sPattern = "(" Then
       If bNew Then
-        Try $hSymbol = CComponent.GetClassSymbols(sType)["_new"]
+        Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_new"]
       Else
-        Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+        Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_call"]
       Endif
     Else If sPattern = "[" Then
       $hSymbol = Null
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+      Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_get"]
     Endif
   Endif
 
@@ -2105,7 +2105,7 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
   'IF NOT $hSymbol THEN
   'IF sPattern = "(" THEN
   If bNew Then
-    Try $hSymbol = CComponent.GetClassSymbols(sType)["_new"]
+    Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_new"]
     'ELSE
     '  TRY $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
   Endif
@@ -2130,9 +2130,9 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
 
   If Not $hSymbol Then
     If sPattern = "(" Then
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+      Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_call"]
     Else If sPattern = "[" Then
-      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+      Try $hSymbol = Project.Documentation.GetClassSymbols(sType)["_get"]
     Endif
   Endif
 
@@ -2364,7 +2364,7 @@ Private Sub FindDefinition() As Boolean
       If System.Datatypes.Exist(sKeyword, gb.IgnoreCase) Then
         MHelp.ShowHelpBrowserWith(MHelp.TYPE_NATIVE, sKeyword)
       Else
-        hClass = CComponent.Classes[sKeyword]
+        hClass = Project.Documentation.Classes[sKeyword]
         If hClass Then
           'MHelp.GotoClass(hClass.Component, hClass.Name)
           MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, hClass.Name)
@@ -2402,7 +2402,7 @@ Private Sub FindDefinition() As Boolean
   hSymbol = GetExpressionSymbol(Highlight.Symbols, Highlight.Types)
   If Not hSymbol Then
     If sKeyword Then
-      If CComponent.Classes.Exist(sKeyword) Then
+      If Project.Documentation.Classes.Exist(sKeyword) Then
         MHelp.ShowHelpBrowserWith(MHelp.TYPE_CLASS, sKeyword)
       Endif
     Endif
@@ -2733,10 +2733,10 @@ Private Sub FillProcCombo()
   {Scan} = Null
   
   If Project.IsSourcePath(Path) Then
-    cSymbol = CComponent.GetClassSymbols(Me.Name)
+    cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
     If Not cSymbol Then cSymbol = New Collection
   Else
-    cSymbol = CComponent.ScanSingleClass(Me)
+    cSymbol = Project.Documentation.ScanSingleClass(Me)
   Endif
 
   aStaticPrivate = New String[]
@@ -3433,7 +3433,7 @@ Private Sub GetExpressionTypeWithEval(aSym As String[], aType As Integer[]) As S
     Else If aType[I] = Highlight.Function Then
       
       I2 = FindNextBracket(aSym, I, "(", ")")
-      hSymbol = CComponent.GetClassSymbols(".")[aSym[I]]
+      hSymbol = Project.Documentation.GetClassSymbols(".")[aSym[I]]
       Try sType = hSymbol.Type
       If sType Then I = I2
         

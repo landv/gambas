@@ -210,6 +210,10 @@ Private $aSystems As String[] = ["archlinux", "autotools", "debian", "fedora", "
 Private $hBackground As Image
 Private $bBackgroundValid As Boolean
 
+' Global documentation object
+' Another one is created for the offline wiki
+Public Documentation As New CDocumentation
+
 Public Sub _init()
 
   ExampleTitle["Automation"] = ("Automation")
@@ -904,7 +908,8 @@ Public Sub Exit()
   CSampleCode.Exit
   CLibraryInfo.Exit
   CRecentProject.Exit
-  CComponent.Exit
+  Wiki.Documentation.Exit
+  Documentation.Exit
 
 End
 
@@ -3255,7 +3260,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         'If JustUpdateVersion Then
         '  Components.Add(sVal)
         'Else
-          hComp = CComponent.All[sVal]
+          hComp = Project.Documentation[sVal]
           If hComp And If Not hComp.Hidden Then
             Components.Add(sVal)
           Else
@@ -3266,7 +3271,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
       Case "library"
         If bConvert Then
           For Each sVal In MConvert.ConvertComponent(sVal)
-            If CComponent.All.Exist(sVal) Then
+            If Project.Documentation.Exist(sVal) Then
               If Not Components.Exist(sVal) Then Components.Add(sVal)
             Else
               aMissing.Add(sVal)
@@ -3603,7 +3608,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   Print #hFic, "Version="; FormatVersion()
   If VersionFile Then Print #hFic, "VersionFile=1"
 
-  For Each hComp In CComponent.All
+  For Each hComp In Documentation.Components
     If Components.Find(hComp.Key) >= 0 Then
       Print #hFic, "Component="; hComp.Key
     Endif
@@ -4644,7 +4649,7 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
 
   ' Sort components
 
-  For Each hComp In CComponent.All
+  For Each hComp In Documentation.Components
     If Components.Find(hComp.Key) >= 0 Then
       aLib.Add(hComp.Key)
     Endif
@@ -4659,18 +4664,18 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
 
   If sLibComp <> $sOldRefreshComponents Or If bForce Then
 
-    CComponent.Reset
+    Documentation.Reset
 
     For Each sLib In Components
-      CComponent.All[sLib].Load
+      Documentation[sLib].Load
     Next
 
     For Each sLib In Libraries
-      CComponent.AddLibrary(sLib)
+      Documentation.AddLibrary(sLib)
     Next
 
     If Not $bTesting Then
-      CComponent.LoadProjectComponent
+      Documentation.LoadProjectComponent
       FToolBox.RefreshToolbar(bForce)
       FCompletion.OnRefreshComponents
       FMain.OnRefreshComponents
@@ -5364,13 +5369,14 @@ Public Sub MakeDirectoryIcon(Optional sDir As String)
     If Project.Icon Then sIcon = sDir &/ Project.Icon
   Endif
 
-  hDirIcon = Image.Load("img/logo/gambas-folder-64.png")
+  hDirIcon = Image.Load("img/logo/folder.png")
 
   If sIcon Then
-    Try hIcon = StretchIcon(sIcon, 16)
-    If hIcon Then hDirIcon.PaintImage(hIcon, 40, 34)
+    Try hIcon = StretchIcon(sIcon, 128)
+    If hIcon Then hDirIcon.PaintImage(hIcon, 64, 88)
   Endif
 
+  Try Kill sDir &/ ".icon.png"
   hDirIcon.Save(sDir &/ ".icon.png")
   File.Save(sDir &/ ".directory", "[Desktop Entry]\nIcon=./.icon.png\n")
 
@@ -6169,6 +6175,9 @@ Private Sub RefreshIcon(sPath As String)
 End
 
 Public Sub GetBookmarks() As Collection[]
+  
+  Try Mkdir Desktop.DataDir &/ "gambas3/src"
+  Try Mkdir Desktop.DataDir &/ "gambas3/template"
   
   Return [["Name": ("Installed software"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/src", "Icon": "icon:/small/download"],
     ["Name": ("Project templates"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/template", "Icon": "icon:/small/copy"]]  

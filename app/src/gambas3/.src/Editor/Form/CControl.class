@@ -74,7 +74,7 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim hClass As CClassInfo
    
   Do
-    hClass = CComponent.Classes[sComp &/ sClass]
+    hClass = Project.Documentation.Classes[sComp &/ sClass]
     If Not hClass Then Break
     sComp = hClass.Component
     If sComp = CComponent.PROJECT_NAME Then
@@ -153,7 +153,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
   'If sClass = "Report" Then Stop
 
-  hClass = CComponent.Classes[sClass]
+  hClass = Project.Documentation.Classes[sClass]
   bExist = hClass <> Null
   If bExist Then
     DrawWith = hClass.DrawWith
@@ -332,7 +332,7 @@ Private Sub InitControl()
   $cValue["#Height"] = 0
 
   If DrawWith Then
-    For Each hProp In CComponent.Classes[Kind].Properties
+    For Each hProp In Project.Documentation.Classes[Kind].Properties
       If Not hProp.Coord Then SetProperty(hProp.Name, hProp.DefaultValue)
     Next
   Endif
@@ -351,7 +351,7 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   Parent = hParent
   $hFamily = hFamily
   
-  hClass = CComponent.Classes[sClass]
+  hClass = Project.Documentation.Classes[sClass]
   
   If hClass.Form Then
   
@@ -435,7 +435,7 @@ End
 
 Public Sub HasProperty(sProp As String) As Boolean
   
-  Try Return CComponent.Classes[Kind].Properties.Exist(sProp)
+  Try Return Project.Documentation.Classes[Kind].Properties.Exist(sProp)
   
 End
 
@@ -446,7 +446,7 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
   Dim hProp As CPropertyInfo
   Dim vConstVal As Variant
   
-  Try hProp = CComponent.Classes[Kind].Properties[sProp]
+  Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
   If IsNull(hProp) Then Return
 
   If IsNull(vVal) Then
@@ -491,7 +491,7 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
       'ENDIF
 
       If Not IsNull(vConstVal) Then
-        vRealVal = CInt(CComponent.Classes[hProp.ConstantClass].Symbols[vConstVal].Value)
+        vRealVal = CInt(Project.Documentation.Classes[hProp.ConstantClass].Symbols[vConstVal].Value)
       Else 
         vRealVal = Null
       Endif
@@ -523,7 +523,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
-  Try hProp = CComponent.Classes[Kind].Properties[sProp]
+  Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
   'IF ERROR THEN STOP
   If IsNull(hProp) Then Return ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
 
@@ -555,7 +555,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Endif
   If bDoNotApply Then Goto _DO_NOT_APPLY
   If Unknown Then 
-    If Not CComponent.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
+    If Not Project.Documentation.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
     ' If Not hProp.Coord Then 
     '   If sProp <> "Background" And sProp <> "Foreground" Then 
     '     Goto _DO_NOT_APPLY
@@ -667,7 +667,7 @@ Public Function GetProperty(sProp As String) As Variant
 
   'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
-  Try hProp = CComponent.Classes[Kind].Properties[sProp]
+  Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
   'If Error Then Stop
   If hProp Then 
     If hProp.AlwaysRead Then
@@ -700,7 +700,7 @@ Public Function GetPropertyDefault(sProp As String) As Variant
   vVal = GetProperty(sProp) '$cValue[sProp]
 
   If IsNull(vVal) Then
-    Try vVal = CComponent.Classes[Kind].Properties[sProp].DefaultValue
+    Try vVal = Project.Documentation.Classes[Kind].Properties[sProp].DefaultValue
   Endif 
   
   Return vVal
@@ -763,7 +763,7 @@ Public Function GetPropertyString(sProp As String) As String
   Dim vVal As Variant
   Dim hProp As CPropertyInfo
 
-  Try hProp = CComponent.Classes[Kind].Properties[sProp]
+  Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
   If IsNull(hProp) Then Return
     'PRINT Kind; "."; sProp; " ???"
   'ENDIF
@@ -793,13 +793,13 @@ End
 
 Public Function IsContainer() As Boolean
 
-  Try Return CComponent.Classes[Kind].Container
+  Try Return Project.Documentation.Classes[Kind].Container
 
 End
 
 Public Function IsMultiContainer() As Boolean
 
-  Try Return CComponent.Classes[Kind].MultiContainer
+  Try Return Project.Documentation.Classes[Kind].MultiContainer
 
 End
 
@@ -1567,10 +1567,10 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
   Dim sShortcut As String
   Dim sThreeDots As String
 
-  cProp = CComponent.Classes[Kind].Properties
+  cProp = Project.Documentation.Classes[Kind].Properties
   'If Not CComponent.Classes[Kind].PropertyList Then Stop
 
-  For Each sProp In CComponent.Classes[Kind].PropertyList
+  For Each sProp In Project.Documentation.Classes[Kind].PropertyList
 
     'PRINT Name; "."; sProp
 

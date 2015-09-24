@@ -264,7 +264,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
       Inc iLevel
       sClass = Split(Trim(Mid$(sLine, 2)), " ")[1]
       If Left$(sClass) = "#" Then sClass = Mid$(sClass, 2)
-      If Not CComponent.Classes.Exist(sClass) Then Return Subst(("Unknown control: &1"), sClass)
+      If Not Project.Documentation.Classes.Exist(sClass) Then Return Subst(("Unknown control: &1"), sClass)
     Else If sLine = "}" Then
       Dec iLevel
       If iLevel = 0 Then Break
@@ -779,14 +779,14 @@ Private Sub SaveOne(hCtrl As CControl)
 
     If Not $bDoNotArrange Then
 
-      Try sArr = CComponent.Classes[hCtrl.Kind].Symbols["_DefaultArrangement"].Value
+      Try sArr = Project.Documentation.Classes[hCtrl.Kind].Symbols["_DefaultArrangement"].Value
 
       If Not Error Then
 
         iArr = 0
         
         If Left(sArr) = "F" Then
-          Try iArr = CComponent.Classes["Arrange"].Symbols[hCtrl.GetProperty("Arrangement")].Value
+          Try iArr = Project.Documentation.Classes["Arrange"].Symbols[hCtrl.GetProperty("Arrangement")].Value
         Else
           iArr = InStr("HVRC", Left$(sArr))
         Endif
@@ -1316,7 +1316,7 @@ Public Function CreateControl(sClass As String, hParent As CControl, Optional sN
   Endif
 
   ' If the component is not loaded, then return null
-  If Not CComponent.Classes.Exist(sClass) Then
+  If Not Project.Documentation.Classes.Exist(sClass) Then
     FMain.ShowError(Subst(("Component missing for control &1"), sClass))
     hCtrl = New CControl(sName, "DrawingArea", hParent, Me, $hFamily)
   Else
@@ -1372,7 +1372,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
   $hUndo.Begin
   hCtrl = CreateControl(sClass, hParent,, True)
 
-  With CComponent.Classes[sClass]
+  With Project.Documentation.Classes[sClass]
     W = .DefaultWidth
     H = .DefaultHeight
   End With
@@ -1591,7 +1591,7 @@ Private Sub DrawDropFrame()
   Y = CControl.Grid($iContY, Project.Snap) + hParent.ClientY
   'Debug X;; Y;; "->";; $iContX;; $iContY
 
-  With CComponent.Classes[sClass]
+  With Project.Documentation.Classes[sClass]
     W = .DefaultWidth
     H = .DefaultHeight
   End With
@@ -2205,7 +2205,7 @@ Private Sub GotoEventMethod(hCtrl As CControl, sEvent As String)
   If Not hEditor Then Return
 
   '' TODO: Undo should remove the possibly created event handler
-  hSymbol = CComponent.Classes[hCtrl.Kind].Symbols[":" & sEvent]
+  hSymbol = Project.Documentation.Classes[hCtrl.Kind].Symbols[":" & sEvent]
   If Not hSymbol Then
     Error "gambas3: event '"; sEvent; "' does not exist on control '"; hCtrl.Kind; "'"
     Return
@@ -2225,7 +2225,7 @@ Public Sub Control_DblClick()
 
   hCurrent = Control[Last.Tag]
 
-  sEvent = CComponent.Classes[hCurrent.Kind].DefaultEvent
+  sEvent = Project.Documentation.Classes[hCurrent.Kind].DefaultEvent
   If Not sEvent Then Return
 
   GotoEventMethod(hCurrent, sEvent)
@@ -2276,17 +2276,17 @@ Private Sub CreateMenu()
   'If Not $bReadOnly Then
 
     If Master Then
-      cCtrl = CComponent.Classes[Master.Kind].Events
+      cCtrl = Project.Documentation.Classes[Master.Kind].Events
       sGroup = Master.GetGroup()
     Else
-      cCtrl = CComponent.Classes[Family].Events
+      cCtrl = Project.Documentation.Classes[Family].Events
       sGroup = Family
     Endif
     
     If cCtrl Then
 
       mnuEvent.Children.Clear
-      cSymbol = CComponent.GetClassSymbols(Me.Name)
+      cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
 
       If cSymbol Then
 
@@ -2319,13 +2319,13 @@ Private Sub CreateMenu()
 
     If Selection.Count = 1 Then
 
-      hClass = CComponent.Classes[Master.Kind]
+      hClass = Project.Documentation.Classes[Master.Kind]
       For Each sName In hClass.GetSimilars()
         If sName = Master.Kind Then Continue
         hMenu = New Menu(mnuChange) As "mnuChange"
         hMenu.Text = sName
         'hMenu.Picture = FFormStack.GetControlIcon(sName)
-        hClass = CComponent.Classes[sName]
+        hClass = Project.Documentation.Classes[sName]
         If hClass Then
           hMenu.Picture = CControl.GetIcon(sName, hClass.Component, 16)
         Else
@@ -2555,7 +2555,7 @@ Public Sub RefreshForComponent()
 
   For Each hCtrl In Control
     If hCtrl.Control Is DrawingArea Then
-      If Not CComponent.Classes.Exist(hCtrl.Kind) Then
+      If Not Project.Documentation.Classes.Exist(hCtrl.Kind) Then
         Me.Delete
         Project.Files[Path] = Null
         Return
@@ -3337,7 +3337,7 @@ Public Sub Control_Drop()
 
     sClass = Drag.Data
     
-    With CComponent.Classes[sClass]
+    With Project.Documentation.Classes[sClass]
       W = .DefaultWidth
       H = .DefaultHeight
     End With

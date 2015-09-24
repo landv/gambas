@@ -25,6 +25,8 @@ Public (Component) As String
 Public (Class) As String
 Public Symbol As String
 
+Public Documentation As New CDocumentation("wiki")
+
 Private Sub AddLinkSuffix(sReq As String)
 
   If LinkSuffix Then
@@ -479,8 +481,8 @@ Public Function GetClassLinkFromName(sClass As String) As String
 
   Dim sComp As String = Wiki.Component
 
-  If IsNull(CComponent.Get(sComp)[sClass]) Then
-    sComp = CComponent.Classes[sClass].Component
+  If IsNull(Documentation.Get(sComp)[sClass]) Then
+    sComp = Documentation.Classes[sClass].Component
   Endif
 
   Return "<a href=\"" & WikiRoot &/ LCase("comp" &/ sComp &/ sClass) & "\">" & Html(sClass) & "</a>"
@@ -542,7 +544,7 @@ Public Sub GetClassTitle(Optional sPath As String) As String
     sClass = aPath[2]
   Endif
   
-  Try hComp = CComponent.Get(sComponent)
+  Try hComp = Documentation.Get(sComponent)
   Try hClass = hComp[sClass]
   
   If hClass Then
@@ -577,7 +579,7 @@ Public Sub GetSymbolTitle(Optional sPath As String) As String
     If Left(sSymbol) = "." Then sSymbol = ":" & Mid$(sSymbol, 2)
   Endif
   
-  Try hSym = CComponent.Get(sComponent)[sClass].Symbols[sSymbol]
+  Try hSym = Documentation.Get(sComponent)[sClass].Symbols[sSymbol]
   
   If sPath Then
     If Not hSym Then Return sSymbol & " ?"
@@ -639,88 +641,88 @@ Public Sub MakeAbsolute(sPath As String, sRoot As String) As String
   
 End
 
-Public Sub GetToDo() As String[]
-  
-  Dim hComp As CComponent
-  Dim hClass As CClassInfo
-  Dim hSymbol As CSymbolInfo
-  Dim bPrintComponent As Boolean
-  Dim bPrintClass As Boolean
-  Dim sClass As String
-  Dim sComp As String
-  Dim sName As String
-  Dim iCpt As Integer
-  Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base", "gb.qt5", "gb.qt5.opengl", "gb.qt5.webkit"]
-  Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
-  Dim sPath As String
-  Dim aResult As New String[]
-
-  CComponent.Init
-
-  For Each sComp In CComponent.ListAll()
-    
-    hComp = CComponent.Get(sComp)
-    hComp.Load
-    bPrintComponent = True
-
-    For Each sClass In hComp.ClassList
-  
-      If sClass = "." Then Continue
-      If InStr(sClass, "*") Then Continue
-      
-      hClass = hComp[sClass]
-  
-      bPrintClass = True
-  
-      'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
-      If aIgnore.Find(sComp) >= 0 Then Continue
-  
-      For Each hSymbol In hClass.Symbols
-  
-        If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
-        
-        sName = hSymbol.Name
-        
-        If hSymbol.Kind = "C" Then
-          
-          If Left(sName) = "_" Then Continue
-          
-        Else
-        
-          If LCase(sName) = "_free" Then Continue
-          If LCase(sName) = "_new" Then
-            If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
-          Endif
-          
-          If InStr(sName, "_") Then
-            If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
-          Endif
-          
-        Endif
-        
-        sPath = "/comp" &/ LCase(sComp &/ hSymbol.Class &/ Replace(hSymbol.Name, ":", "."))
-        If Not ExistPage(sPath) Then
-          
-          If bPrintComponent Then
-            aResult.Add("## [" & sComp & "] (/comp" &/ sComp & ")")
-            bPrintComponent = False
-          Endif
-          If bPrintClass Then
-            aResult.Add("* **[" & hClass.Name & "] (/comp" &/ sComp &/ LCase(hClass.Name) & ")**")
-            bPrintClass = False
-          Endif
-          aResult.Add("  * [" & sPath & "]")
-          Inc iCpt
-        Endif
-      Next
-    Next
-  
-  Next
-
-  aResult.Insert([Subst("There are &1 symbols to document yet.", CStr(iCpt)), ""], 0)
-  Return aResult
-  
-End
+' Public Sub GetToDo() As String[]
+'   
+'   Dim hComp As CComponent
+'   Dim hClass As CClassInfo
+'   Dim hSymbol As CSymbolInfo
+'   Dim bPrintComponent As Boolean
+'   Dim bPrintClass As Boolean
+'   Dim sClass As String
+'   Dim sComp As String
+'   Dim sName As String
+'   Dim iCpt As Integer
+'   Dim aIgnore As String[] = ["gb.gui", "gb.gtk", "gb.gtk.opengl", "gb.gtk3", "gb.gtk3.opengl", "gb.gui.opengl", "gb.gui.base", "gb.qt5", "gb.qt5.opengl", "gb.qt5.webkit"]
+'   Dim aAllow As String[] = ["_new", "_put", "_get", "_call", "_next"]
+'   Dim sPath As String
+'   Dim aResult As New String[]
+' 
+'   $hDoc.Reset
+' 
+'   For Each sComp In 
+'     
+'     hComp = CComponent.Get(sComp)
+'     hComp.Load
+'     bPrintComponent = True
+' 
+'     For Each sClass In hComp.ClassList
+'   
+'       If sClass = "." Then Continue
+'       If InStr(sClass, "*") Then Continue
+'       
+'       hClass = hComp[sClass]
+'   
+'       bPrintClass = True
+'   
+'       'If $cCompRedirect And If $cCompRedirect.Exist(sComp) Then Continue
+'       If aIgnore.Find(sComp) >= 0 Then Continue
+'   
+'       For Each hSymbol In hClass.Symbols
+'   
+'         If hSymbol.Class <> hClass.Name Or If hSymbol.Component <> hClass.Component Then Continue
+'         
+'         sName = hSymbol.Name
+'         
+'         If hSymbol.Kind = "C" Then
+'           
+'           If Left(sName) = "_" Then Continue
+'           
+'         Else
+'         
+'           If LCase(sName) = "_free" Then Continue
+'           If LCase(sName) = "_new" Then
+'             If Not hClass.Creatable Or If hClass.IsVirtual() Then Continue
+'           Endif
+'           
+'           If InStr(sName, "_") Then
+'             If Left(sName) <> "_" Or If aAllow.Find(sName) < 0 Then Continue
+'           Endif
+'           
+'         Endif
+'         
+'         sPath = "/comp" &/ LCase(sComp &/ hSymbol.Class &/ Replace(hSymbol.Name, ":", "."))
+'         If Not ExistPage(sPath) Then
+'           
+'           If bPrintComponent Then
+'             aResult.Add("## [" & sComp & "] (/comp" &/ sComp & ")")
+'             bPrintComponent = False
+'           Endif
+'           If bPrintClass Then
+'             aResult.Add("* **[" & hClass.Name & "] (/comp" &/ sComp &/ LCase(hClass.Name) & ")**")
+'             bPrintClass = False
+'           Endif
+'           aResult.Add("  * [" & sPath & "]")
+'           Inc iCpt
+'         Endif
+'       Next
+'     Next
+'   
+'   Next
+' 
+'   aResult.Insert([Subst("There are &1 symbols to document yet.", CStr(iCpt)), ""], 0)
+'   Return aResult
+'   
+' End
 
 ' Private Sub MakeLink(sLink As String, sLang As String) As String
 ' 
@@ -809,6 +811,8 @@ Public Sub PrintPage()
   '     Print "<div><i><a target=\"_blank\" href=\"" & Html(URL.UnsetQuery("http://" & Application.Host &/ Application.Root &/ Request.Path & Wiki.LinkSuffix, "l")) & "\">" & Html(("The english page is more recent.")) & "</a></i></div>"
   '   Endif
   ' Endif
+  
+  Documentation.Reset
   
   sData = LTrim(File.Load(Wiki.GetPagePathFrom(sPath)))
   If Wiki.Class Then

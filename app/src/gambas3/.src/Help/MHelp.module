@@ -86,7 +86,7 @@ Public Sub Open()
   Dim sTool As String = FToolBox.GetTool()
   
   If sTool Then 
-    GotoClass(CComponent.Classes[sTool].Component, sTool)
+    GotoClass(Project.Documentation.Classes[sTool].Component, sTool)
     FToolBox.SetTool
   Else
     Project.OpenWebPage(GetPath("tree/index.html"))
@@ -389,13 +389,13 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       iPos = InStr(sSymbol, "_")
       If iPos Then sSymbol = ":" & Mid$(sSymbol, iPos + 1)
     Endif
-    Try hSymbol = CComponent.GetClassSymbols(sClass)[sSymbol]
+    Try hSymbol = Project.Documentation.GetClassSymbols(sClass)[sSymbol]
     If Not hSymbol Then 
       hEditor.GetSymbolType(sSymbol)
       hSymbol = hEditor.GetLastSymbolDesc()
     Endif
     If hSymbol Then 
-      Try hComp = CComponent.All[hSymbol.Component]
+      Try hComp = Project.Documentation[hSymbol.Component]
       If Not hSymbol.Component Or If hSymbol.Component = CComponent.PROJECT_NAME Then
         sHtml = hSymbol.GetHelpHTML()
         sUrl = "-" & sClass & "-" & sSymbol
@@ -409,9 +409,9 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
   Else If iType = TYPE_CLASS Or If iType = TYPE_CONTROL Then
     
-    Try hClass = CComponent.Classes[sSymbol]
+    Try hClass = Project.Documentation.Classes[sSymbol]
     If hClass Then 
-      Try hComp = CComponent.All[hClass.Component]
+      Try hComp = Project.Documentation[hClass.Component]
       If hClass.Component And If hClass.Component <> CComponent.PROJECT_NAME And If Not hComp.Library And If Not hComp.ThirdParty Then
         sUrl = hClass.GetHelpURL()
       Else 'If hClass.Help Then
@@ -421,8 +421,8 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Else 
       sSymbol = File.Name(sSymbol)
       If Project.GetClasses().Exist(sSymbol) Then
-        CComponent.GetClassSymbols(sSymbol)
-        sHtml = CComponent.GetLastClass().GetHelpHTML()
+        Project.Documentation.GetClassSymbols(sSymbol)
+        sHtml = Project.Documentation.GetLastClass().GetHelpHTML()
         sUrl = "-" & sSymbol
       Endif
     Endif
@@ -433,7 +433,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     
   Else If iType = TYPE_COMPONENT
     
-    Try hComp = CComponent.All[sSymbol]
+    Try hComp = Project.Documentation[sSymbol]
     If hComp.Library Or If hComp.ThirdParty Then
       sUrl = sSymbol
       sHtml = hComp.GetHelpHTML()

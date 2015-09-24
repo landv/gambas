@@ -53,6 +53,8 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION)
 	@rm -f $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION)
 	@(cd $(srcdir)/src; for p in `cat INSTALL`; do rm -f $(DESTDIR)$(bindir)/$$p.gambas; done)
+	@rm -rf $(DESTDIR)$(datarootdir)/appdata/gambas3.appdata.xml
+	@rm -rf $(DESTDIR)$(gbdatadir)/template
 
 dist-hook:
 	@(cd $(distdir)/src; \

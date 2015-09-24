@@ -89,13 +89,9 @@ Private Sub CreateProject() As Boolean
   Else
   
     sName = Trim(txtName.Text)
-    sDir = dchProject.SelectedPath
+    sDir = dchProject.SelectedPath &/ sName
     
-    Shell "cp -R " & Shell$($sTemplate) & " " & Shell$(sDir) & " 2>&1" To sTemp
-    If Process.LastValue Then Error.Raise(sTemp)
-    
-    If sName <> File.Name($sTemplate) Then Move sDir &/ File.Name($sTemplate) To sDir &/ sName
-    sDir &/= sName
+    Project.CopyProject($sTemplate, sDir)
     
     Shell "rm -rf " & Shell$(sDir &/ ".lang") Wait
     Kill sDir &/ "icon.png"

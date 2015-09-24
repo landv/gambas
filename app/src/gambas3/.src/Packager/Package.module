@@ -234,7 +234,7 @@ Private Function IsConsoleProject() As Boolean
   Dim hComp As CComponent
 
   For Each sLib In Project.Components
-    hComp = CComponent.All[sLib]
+    hComp = Project.Documentation[sLib]
     If hComp.IsForm() Then Return False
   Next
 
@@ -465,7 +465,7 @@ Private Function GetDependency(sLib As String) As String
     
   Else
     
-    hComponent = CComponent.All[sLib]
+    hComponent = Project.Documentation[sLib]
     sPackageName = ComponentToPackageName(sLib)
     
     aMinVersion = Split(MIN_VERSION, ".")
