@@ -2,6 +2,7 @@
 
 Create Static
 
+Public Name As String
 Public (Components) As New Collection
 Public Libraries As New String[]
 Public (Classes) As Collection
@@ -10,7 +11,6 @@ Static Private $cName As Collection
 Static Public Features As New Collection
 Static Private $cRescue As New Collection
 
-Private $sName As String
 Private Similars As New Collection
 
 Private $bScanFoundEvent As Boolean
@@ -309,7 +309,7 @@ Public Sub _new(Optional sName As String)
   Dim sFile As String
   Dim hComp As CComponent
   
-  $sName = sName
+  Name = sName
   
   $cImplement.Clear
   
@@ -363,7 +363,7 @@ Public Sub Exit()
   $hDumbClass = Null
   Components = Null
   Classes = Null
-  If Not $sName Then CModule.Exit
+  If Not Name Then CModule.Exit
   
 End
 
@@ -963,7 +963,7 @@ Public Function GetClassSymbols(sClass As String, Optional sComponent As String)
     bClass = sComponent = CComponent.PROJECT_NAME
     hClass = Classes[sComponent &/ sClass]
   Else
-    If Not $sName Then bClass = Project.ExistClass(sClass)
+    If Not Name Then bClass = Project.ExistClass(sClass)
     hClass = Classes[sClass]
   Endif
   
@@ -1047,6 +1047,9 @@ Public Sub Reset()
   Dim hComponent As CComponent
   Dim sLib As String
   
+  'Debug Name
+  'Error System.Backtrace.Join(" ")
+  
   For Each hComponent In Components
     hComponent.Loaded = False
   Next
@@ -1056,9 +1059,10 @@ Public Sub Reset()
   Next
   Libraries.Clear
   
-  If Not $sName Then CModule.Reset
+  If Not Name Then CModule.Reset
   
   Classes = New Collection(gb.IgnoreCase)
+  $cImplement.Clear
   
   Components["gb"].Load
   

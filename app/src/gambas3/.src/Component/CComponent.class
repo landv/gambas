@@ -485,12 +485,12 @@ Public Sub Load()
   If Loaded Then Return
   Loaded = True
   
-  'Debug "Loading: "; Key
+  'Debug "Loading: "; Key;; "("; Documentation.Name; ")"
   Project.SetMessage(Subst(("Loading information on component &1..."), Key))
   
   'If Key = Project.Name Then Goto HAS_BEEN_LOADED
   
-  'If Key = "gb.qt4" Then Stop
+  If Key = "gb.form.mdi" And If Documentation.Name Then Stop
   
   ClassList = New String[]
   Controls = New String[]
