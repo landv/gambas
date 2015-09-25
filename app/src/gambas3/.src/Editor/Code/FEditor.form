@@ -109,7 +109,7 @@
     { mnuWatch Menu
       Action = ".watch"
       Text = Shortcut(("Watch expression"), "W")
-      Picture = Picture["icon:/small/watch"]
+      Picture = Picture["img/16/watch.png"]
     }
     { mnuSepBookmark Menu
     }
@@ -447,15 +447,10 @@
     }
   }
   { Panel1 Panel
-    MoveScaled(7,9,38,63)
+    MoveScaled(10,9,38,63)
     Background = Color.TextBackground
     Expand = True
     Arrangement = Arrange.Fill
-    { splHorizontal HSplit
-      MoveScaled(3,19,22,18)
-      Visible = False
-      Expand = True
-    }
     { splVertical VSplit
       MoveScaled(2,41,22,18)
       Visible = False
@@ -466,6 +461,11 @@
       MoveScaled(3,1,24,16)
       Expand = True
       Border = False
+    }
+    { splHorizontal HSplit
+      MoveScaled(3,19,22,18)
+      Visible = False
+      Expand = True
     }
   }
   { timShowHelp #Timer

@@ -60,7 +60,10 @@ static CSCREEN *_screens[MAX_SCREEN] = { NULL };
 static CSCREEN *get_screen(int num)
 {
 	if (num < 0 || num >= MAX_SCREEN || num >= NUM_SCREENS())
+	{
+		GB.Error(GB_ERR_ARG);
 		return NULL;
+	}
 	
 	if (!_screens[num])
 	{
@@ -300,6 +303,13 @@ BEGIN_PROPERTY(Screens_Count)
 	GB.ReturnInteger(NUM_SCREENS());
 
 END_PROPERTY
+
+
+/*BEGIN_PROPERTY(Screens_Primary)
+
+	GB.ReturnInteger(QApplication::desktop()->primaryScreen());
+
+END_PROPERTY*/
 
 
 BEGIN_METHOD(Screens_get, GB_INTEGER screen)

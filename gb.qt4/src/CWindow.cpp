@@ -260,16 +260,18 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 {
 	QPoint p;
 	QWidget *newParentWidget;
+	bool moved = THIS->moved;
 	
 	if (move)
 	{
 		p.setX(x);
 		p.setY(y);
+		moved = true;
 	}
 	else if (THIS->toplevel)
   {
-	   p.setX(THIS->x);
-	   p.setY(THIS->y);
+		p.setX(THIS->x);
+		p.setY(THIS->y);
   }
   else
     p = WIDGET->pos();
@@ -290,6 +292,8 @@ static void reparent_window(CWINDOW *_object, void *parent, bool move, int x = 0
 	}
 	else
 		CWIDGET_move(THIS, p.x(), p.y());
+	
+	THIS->moved = moved;
 }
 
 void CWINDOW_ensure_active_window()
@@ -698,7 +702,6 @@ END_METHOD
 BEGIN_METHOD_VOID(Window_ShowModal)
 
 	THIS->ret = 0;
-	THIS->mustCenter = true;
 
 	if (!emit_open_event(THIS))
 	{
@@ -1045,7 +1048,7 @@ BEGIN_METHOD_VOID(Window_Center)
 	if (!THIS->toplevel)
 		return;
 
-	WINDOW->center(true);
+	WINDOW->center();
 
 END_METHOD
 
@@ -1070,7 +1073,11 @@ BEGIN_PROPERTY(Window_Visible)
 		GB.ReturnBoolean(!WINDOW->isHidden());
 	else
 	{
-		if (VPROP(GB_BOOLEAN))
+		bool show = !!VPROP(GB_BOOLEAN);
+		if (show == !WINDOW->isHidden())
+			return;
+		
+		if (show)
 			Window_Show(_object, _param);
 		else
 			Window_Hide(_object, _param);
@@ -1487,6 +1494,7 @@ MyMainWindow::MyMainWindow(QWidget *parent, const char *name, bool embedded) :
 	_enterLoop = false;
 	_utility = false;
 	_state = windowState();
+	_screen = -1;
 	
 	//setAttribute(Qt::WA_KeyCompression, true);
 	//setAttribute(Qt::WA_InputMethodEnabled, true);
@@ -1511,12 +1519,10 @@ MyMainWindow::~MyMainWindow()
 
 	if (CWINDOW_Active == THIS)
 		CWINDOW_Active = 0;
+	
 	if (CWINDOW_LastActive == THIS)
-	{
 		CWINDOW_LastActive = 0;
-		//qDebug("CWINDOW_LastActive = 0");
-	}
-
+	
 	if (sg)
 		delete sg;
 		
@@ -1643,6 +1649,15 @@ void MyMainWindow::activateLater()
 
 void MyMainWindow::present(QWidget *parent)
 {
+	//CWIDGET *_object = CWidget::get(this);
+	//CWIDGET *_parent = parent ? CWidget::get(parent) : 0;
+	//qDebug("present: %p %s: parent = %p %s", THIS, _object->name, _parent, _parent ? _parent->name : "");
+	
+	if (parent)
+		_screen = QApplication::desktop()->screenNumber(parent);
+	else
+		_screen = -1;
+	
 	if (!isVisible())
 	{
 		//X11_window_startup(WINDOW->effectiveWinId(), THIS->x, THIS->y, THIS->w, THIS->h);
@@ -1696,12 +1711,13 @@ void MyMainWindow::present(QWidget *parent)
 		}
 	}
 	
-	if (parent || (hasBorder() && !THIS->noTakeFocus))
+	if (!THIS->noTakeFocus) // && (parent || hasBorder()))
 		activateWindow();
+	
 	if (parent)
 		X11_set_transient_for(effectiveWinId(), parent->effectiveWinId());
-	//if (parent || THIS->stacking == 1)
-		raise();
+
+	raise();
 }
 
 void MyMainWindow::showActivate(QWidget *transient)
@@ -1729,19 +1745,14 @@ void MyMainWindow::showActivate(QWidget *transient)
 
 	//CWIDGET_clear_flag(THIS, WF_CLOSED);
 
-	present();
-	setEventLoop();
-
-	#ifndef NO_X_WINDOW
 	if (isUtility())
 	{
 		if (!newParentWidget && CWINDOW_Main && THIS != CWINDOW_Main)
 			newParentWidget = CWidget::getTopLevel((CWIDGET *)CWINDOW_Main)->widget.widget;
-		
-		if (newParentWidget)
-			X11_set_transient_for(effectiveWinId(), newParentWidget->effectiveWinId());
 	}
-	#endif
+	
+	present(newParentWidget);
+	setEventLoop();
 }
 
 void on_error_show_modal(MODAL_INFO *info)
@@ -1773,6 +1784,7 @@ void MyMainWindow::showModal(void)
 {
 	//Qt::WindowFlags flags = windowFlags() & ~Qt::WindowType_Mask;
 	CWIDGET *_object = CWidget::get(this);
+	CWINDOW *parent;
 	bool persistent = CWIDGET_test_flag(THIS, WF_PERSISTENT);
 	//QPoint p = pos();
 	QEventLoop eventLoop;
@@ -1800,7 +1812,11 @@ void MyMainWindow::showModal(void)
 
 	_enterLoop = false; // Do not call exitLoop() if we do not entered the loop yet!
 	
-	present(CWINDOW_Active ? CWidget::getTopLevel((CWIDGET *)CWINDOW_Active)->widget.widget : 0);
+	parent = CWINDOW_Current;
+	if (!parent)
+		parent = CWINDOW_Main;
+	
+	present(parent ? CWidget::getTopLevel((CWIDGET *)parent)->widget.widget : 0);
 	setEventLoop();
 	
 	THIS->loopLevel++;
@@ -1847,6 +1863,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 
 	setWindowFlags(Qt::Popup | flags);
 	setWindowModality(Qt::ApplicationModal);
+	THIS->popup = true;
 
 	/*if (_resizable && _border)
 	{
@@ -1892,6 +1909,7 @@ void MyMainWindow::showPopup(QPoint &pos)
 	{
 		setWindowModality(Qt::NonModal);
 		setWindowFlags(Qt::Window | flags);
+		THIS->popup = false;
 	}
 	
 	CWIDGET_leave_popup(save_popup);
@@ -2434,19 +2452,26 @@ void MyMainWindow::doReparent(QWidget *parent, const QPoint &pos)
 	}
 }
 
+int MyMainWindow::currentScreen() const
+{
+	if (_screen >= 0)
+		return _screen;
+	
+	if (CWINDOW_Active)
+		return QApplication::desktop()->screenNumber(CWINDOW_Active->widget.widget);
+	else if (CWINDOW_Main)
+		return QApplication::desktop()->screenNumber(CWINDOW_Main->widget.widget);
+	else
+		return QApplication::desktop()->primaryScreen();
+}
 
-void MyMainWindow::center(bool force = false)
+void MyMainWindow::center()
 {
 	CWINDOW *_object = (CWINDOW *)CWidget::get(this);
 	QPoint p;
 	QRect r;
 
-	if (!force && !THIS->mustCenter)
-		return;
-
-	THIS->mustCenter = false;
-
-	r = QApplication::desktop()->availableGeometry(QApplication::desktop()->screenNumber(this));
+	r = QApplication::desktop()->availableGeometry(currentScreen());
 
 	CWIDGET_move(THIS, r.x() + (r.width() - width()) / 2, r.y() + (r.height() - height()) / 2);
 }
@@ -2687,7 +2712,7 @@ bool CWindow::eventFilter(QObject *o, QEvent *e)
 		{
 			MyMainWindow *w = (MyMainWindow *)o;
 
-			if (THIS->toplevel)
+			if (THIS->toplevel && !THIS->popup && (!THIS->moved || w->isModal()))
 				w->center();
 			
 			//handle_focus(THIS);

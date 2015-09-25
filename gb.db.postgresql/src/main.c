@@ -988,7 +988,10 @@ static void query_release(DB_RESULT result, DB_INFO *info)
 	<pos> is the index of the record in the result.
 	<buffer> points to an array having one element for each field in the
 	result.
+	<next> is a boolean telling if we want the next row.
 
+	This function must return DB_OK, DB_ERROR or DB_NO_DATA
+	
 	This function must use GB.StoreVariant() to store the value in the
 	buffer.
 
@@ -1014,7 +1017,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 		GB.StoreVariant(&value, &buffer[i]);
 	}
 
-	return FALSE;
+	return DB_OK;
 }
 
 

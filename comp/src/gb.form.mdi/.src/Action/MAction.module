@@ -133,10 +133,11 @@ Public Sub InitAction()
   Actions = New Collection
   Toolbars = New Collection
 
-  For Each sFile In Dir(".action", "*.action")
-    LoadAction(".action" &/ sFile)
-  Next
-  
+  ' Why loading gb.form.mdi actions??
+  ' For Each sFile In Dir(".action", "*.action")
+  '   LoadAction(".action" &/ sFile)
+  ' Next
+
   For Each sFile In Dir("../.action", "*.action")
     LoadAction("../.action" &/ sFile)
   Next

@@ -86,7 +86,7 @@ Public Sub Show()
     DBus[sService].Raise($hObject, "org.kde.StatusNotifierItem.NewStatus", ["Active"])
     
   Else
-  
+    
     DBus[sService].Register($hObject, "/StatusNotifierItem", ["org.kde.StatusNotifierItem"])
     DBus[sService].Register($hMenu, "/StatusNotifierItem/menu", ["com.canonical.dbusmenu"])
     DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].RegisterStatusNotifierItem(sService)
@@ -275,6 +275,7 @@ Public Sub _Clicked(hMenu As Menu)
 
   If hMenu.Toggle Then
     hMenu.Value = Not hMenu.Value
+    Object.Raise(hMenu, "Click")
     UpdateMenu
   Else
     hMenu.Value = True

@@ -85,8 +85,9 @@ typedef
 		unsigned hideMenuBar : 1;
 		unsigned showMenuBar : 1;
 		unsigned sticky : 1;
-		unsigned mustCenter : 1;
 		unsigned noTakeFocus : 1;
+		unsigned moved : 1;
+		unsigned popup : 1;
 		}
 	CWINDOW;
 
@@ -183,6 +184,7 @@ private:
 	bool _utility;
 	int _type;
 	Qt::WindowStates _state;
+	int _screen;
 
 protected:
 
@@ -243,13 +245,15 @@ public:
 	bool isPersistent(void);
 	void setPersistent(bool);
 
-	void center(bool);
-	void configure(void);
+	void center();
+	void configure();
 	
 	void setName(const char *, CWIDGET *);
 	
 	void setState(Qt::WindowStates state);
 	Qt::WindowStates getState() const;
+	
+	int currentScreen() const;
 	
 	virtual void resize(int w, int h);
 	virtual void setGeometry(int x, int y, int w, int h);

@@ -1,25 +1,25 @@
 /***************************************************************************
 
-  main.c
+	main.c
 
-  (c) 2004-2007 Andrea Bortolan <andrea_bortolan@yahoo.it>
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
-  (c) 2015 zxMarce <d4t4full@gmail.com>
+	(c) 2004-2007 Andrea Bortolan <andrea_bortolan@yahoo.it>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2015 zxMarce <d4t4full@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -202,21 +202,21 @@ fprintf(stderr,"\tunquote\n");
 fflush(stderr);
 #endif
 
-  int i;
-  char c;
+	int i;
+	char c;
 
-  if (!data || *data != '\'')
-    return TRUE;
+	if (!data || *data != '\'')
+		return TRUE;
 
-  for (i = 1;; i++)
-  {
-    c = data[i];
-    if (c == '\'')
-      break;
-    if (c == '\\')
-      i++;
-    (*add)(&data[i], 1);
-  }
+	for (i = 1;; i++)
+	{
+		c = data[i];
+		if (c == '\'')
+			break;
+		if (c == '\\')
+			i++;
+		(*add)(&data[i], 1);
+	}
 
 	return FALSE;
 }
@@ -231,28 +231,28 @@ fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tunquote_blob\n");
 fflush(stderr);
 #endif
-  int i;
-  char c;
+	int i;
+	char c;
 
 
-  for (i = 0; i < len; i++)
-  {
-    c = data[i];
+	for (i = 0; i < len; i++)
+	{
+		c = data[i];
 
-    if (c == '\\')
-    {
-      i++;
-      c = data[i];
-      if (c >= '0' && c <= '9' && i < (len - 2))
-      {
-      	c = ((data[i] - '0') << 6) + ((data[i + 1] - '0') << 3) + (data[i + 2] - '0');
-      	i += 2;
-      	(*add)(&c, 1);
-      	continue;
-      }
+		if (c == '\\')
+		{
+			i++;
+			c = data[i];
+			if (c >= '0' && c <= '9' && i < (len - 2))
+			{
+				c = ((data[i] - '0') << 6) + ((data[i + 1] - '0') << 3) + (data[i + 2] - '0');
+				i += 2;
+				(*add)(&c, 1);
+				continue;
+			}
 		}
-    (*add)(&data[i], 1);
-  }
+		(*add)(&data[i], 1);
+	}
 
 	return FALSE; 
 }
@@ -304,7 +304,7 @@ fflush(stderr);
 	{
 		case SQL_BINARY:
 			return GB_T_BOOLEAN;
-                /*case INT8OID: */
+								/*case INT8OID: */
 		case SQL_NUMERIC:
 			return GB_T_FLOAT;
 		case SQL_DECIMAL:
@@ -314,7 +314,7 @@ fflush(stderr);
 		case SQL_SMALLINT:
 			return GB_T_INTEGER;
 		case SQL_BIGINT:
-                        // New datatype bigint 64 bits
+												// New datatype bigint 64 bits
 			return GB_T_LONG;
 		case SQL_FLOAT:
 			return GB_T_FLOAT;
@@ -337,7 +337,7 @@ fflush(stderr);
 	}
 }
 
- 
+
 /* Internal function to convert a database value into a Gambas variant value */
 static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 {
@@ -399,7 +399,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 				else
 					bc = 0;
 				sscanf(data, "%4d-%2d-%2d %2d:%2d:%lf", &date.year, &date.month,
-							 &date.day, &date.hour, &date.min, &sec);
+							&date.day, &date.hour, &date.min, &sec);
 				date.sec = (short) sec;
 				date.msec = (short) ((sec - date.sec) * 1000 + 0.5);
 				if (bc)
@@ -424,9 +424,9 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 
 /*****************************************************************************
 
-  get_quote()
+	get_quote()
 
-  Returns the character used for quoting object names.
+	Returns the character used for quoting object names.
 
 *****************************************************************************/
 
@@ -437,16 +437,16 @@ static const char *get_quote(void)
 
 /*****************************************************************************
 
-  open_database()
+	open_database()
 
-  Connect to a database.
+	Connect to a database.
 
-  <desc> points at a structure describing each connection parameter.
+	<desc> points at a structure describing each connection parameter.
 
-  This function must return a database handle, or NULL if the connection
-  has failed.
+	This function must return a database handle, or NULL if the connection
+	has failed.
 
-  The name of the database can be NULL, meaning a default database.
+	The name of the database can be NULL, meaning a default database.
 
 *****************************************************************************/
 
@@ -521,19 +521,19 @@ fflush(stderr);
 		/* zxMarce: Connect to Database (desc->host is an ODBC Connection String) */
 		retcode = SQLDriverConnect(odbc->odbcHandle, 0, (SQLCHAR *)host, SQL_NTS, 0, 0, 0, SQL_DRIVER_NOPROMPT);
 		/* The last three zero params in the call above can be used to retrieve the actual connstring used, 
-		   should unixODBC "complete" the passed ConnString with data from a matching defined DSN. Not 
-		   doing it here, but maybe useful to fill in the other Gambas Connection object properties (user, 
-		   pass, etc) after parsing it. Also note that the ConnString MAY refer to a DSN, and include
-		   user/pass, if desired.
-                   Example - ODBC-ConnString, all one line (must assign this to the Connection.Host property in 
-		   Gambas code and then call Connection.Open):
-                     "Driver=<driverSectionNameInODBCInst.Ini>;
-                      Server=<serverNameOrIP>;
-                      Port=<serverTcpPort>;
-                      Database=<defaultDatabase>;
-                      UId=<userName>;
-                      Pwd=<password>;
-                      TDS_Version=<useNormally'7.2'>"
+			should unixODBC "complete" the passed ConnString with data from a matching defined DSN. Not 
+			doing it here, but maybe useful to fill in the other Gambas Connection object properties (user, 
+			pass, etc) after parsing it. Also note that the ConnString MAY refer to a DSN, and include
+			user/pass, if desired.
+									Example - ODBC-ConnString, all one line (must assign this to the Connection.Host property in 
+			Gambas code and then call Connection.Open):
+										"Driver=<driverSectionNameInODBCInst.Ini>;
+											Server=<serverNameOrIP>;
+											Port=<serverTcpPort>;
+											Database=<defaultDatabase>;
+											UId=<userName>;
+											Pwd=<password>;
+											TDS_Version=<useNormally'7.2'>"
 		*/
 
 	} else {
@@ -573,17 +573,17 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  close_database()
+	close_database()
 
-  Terminates the database connection.
+	Terminates the database connection.
 
-  <handle> contains the database handle.
+	<handle> contains the database handle.
 
 *****************************************************************************/
 
 static void close_database(DB_DATABASE *db)
 {
-  //SQLRETURN retcode;
+	//SQLRETURN retcode;
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tclose_database\n");
@@ -643,18 +643,18 @@ static GB_ARRAY get_collations(DB_DATABASE *db)
 
 /*****************************************************************************
 
-  format_value()
+	format_value()
 
-  This function transforms a gambas value into a string value that can
-  be inserted into a SQL query.
+	This function transforms a gambas value into a string value that can
+	be inserted into a SQL query.
 
-  <arg> points to the value.
-  <add> is a callback called to insert the string into the query.
+	<arg> points to the value.
+	<add> is a callback called to insert the string into the query.
 
-  This function must return TRUE if it translates the value, and FALSE if
-  it does not.
+	This function must return TRUE if it translates the value, and FALSE if
+	it does not.
 
-  If the value is not translated, then a default translation is used.
+	If the value is not translated, then a default translation is used.
 
 *****************************************************************************/
 
@@ -713,13 +713,13 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  format_blob()
+	format_blob()
 
-  This function transforms a blob value into a string value that can
-  be inserted into a SQL query.
+	This function transforms a blob value into a string value that can
+	be inserted into a SQL query.
 
-  <blob> points to the DB_BLOB structure.
-  <add> is a callback called to insert the string into the query.
+	<blob> points to the DB_BLOB structure.
+	<add> is a callback called to insert the string into the query.
 
 *****************************************************************************/
 
@@ -736,42 +736,26 @@ static void format_blob(DB_BLOB *blob, DB_FORMAT_CALLBACK add)
 }
 
 
+static char *query_param[3];
 
-ODBC_RESULT *SQL_Result(void)
+static void query_get_param(int index, char **str, int *len, char quote)
 {
-	ODBC_RESULT * res;
-	#ifdef ODBC_DEBUG_HEADER
-	fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-	fprintf(stderr,"\tSQL_Result\n");
-	fflush(stderr);
-	#endif
+	if (index > 3)
+		return;
 
-	res=malloc(sizeof(ODBC_RESULT));
-	if (res== NULL){
-		GB.Error("Error allocating memory");
+	index--;
+	*str = query_param[index];
+	*len = strlen(*str);
+	
+	if (quote == '\'' || quote == '`')
+	{
+		*str = DB.QuoteString(*str, *len, quote);
+		*len = GB.StringLength(*str);
 	}
-
-	res->fields=NULL;
-	res->odbcStatHandle=NULL;
-
-	return(res);
-
-}
-
-static void SQL_Result_Free(ODBC_RESULT * ptr)
-{
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tSQL_Result_Free %p\n",ptr);
-fflush(stderr);
-#endif
-if (ptr != NULL)
-	free(ptr);
-	return;
 }
 
 /* Internal function to implement the query execution */
-static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res, const char *query, int nsubst, ...)
+static int do_query(DB_DATABASE *db, const char *error, ODBC_RESULT ** res, const char *qtemp, int nsubst, ...)
 {
 
 #ifdef ODBC_DEBUG_HEADER
@@ -780,12 +764,30 @@ fprintf(stderr,"\tdo_query db %p, ODBC_result res %p, db->handle %p, query = '%s
 fflush(stderr);
 #endif
 
+	va_list args;
 	ODBC_CONN *handle = (ODBC_CONN *)db->handle;
 	SQLRETURN retcode= SQL_SUCCESS;
 	ODBC_RESULT * odbcres;
+	const char *query;
+	int i;
 
-	odbcres = SQL_Result();	
-	odbcres->odbcStatHandle = NULL;
+	if (nsubst)
+	{
+		va_start(args, nsubst);
+		if (nsubst > 3)
+			nsubst = 3;
+		for (i = 0; i < nsubst; i++)
+			query_param[i] = va_arg(args, char *);
+
+		query = DB.SubstString(qtemp, 0, query_get_param);
+	}
+	else
+		query = qtemp;
+
+	if (DB.IsDebug())
+		fprintf(stderr, "gb.db.odbc: %p: %s\n", handle, query);
+
+	GB.AllocZero(POINTER(&odbcres), sizeof(ODBC_RESULT));
 
 	/* Allocate the space for the result structure */
 
@@ -824,6 +826,9 @@ fflush(stderr);
 			return retcode;
 		}
 
+	if (DB.IsDebug())
+		fprintf(stderr, "gb.db.odbc: -> %d rows\n", (int)odbcres->count);
+
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tdo_query.SQLRowCount (res TRUE): %d\n", odbcres->count);
@@ -842,7 +847,7 @@ fflush(stderr);
 #endif
 
 		SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
-		SQL_Result_Free(odbcres);
+		GB.Free(POINTER(&odbcres));
 	}
 
 	return retcode;
@@ -870,8 +875,8 @@ fflush(stderr);
 
 		if (current->fieldata != NULL)
 		{
-		        free(current->fieldata); //091107
-                        current->fieldata = NULL;  //091107
+						free(current->fieldata); //091107
+												current->fieldata = NULL;  //091107
 		}
 
 		if(current != NULL)
@@ -884,26 +889,26 @@ fflush(stderr);
 
 	}
 
-        if(result != NULL){
-	        free(result);
-	        result = NULL; //091107
-        }
+				if(result != NULL){
+					free(result);
+					result = NULL; //091107
+				}
 
 }
 
 
 /*****************************************************************************
 
-  exec_query()
+	exec_query()
 
-  Send a query to the server and gets the result.
+	Send a query to the server and gets the result.
 
-  <handle> is the database handle, as returned by open_database()
-  <query> is the query string.
-  <result> will receive the result handle of the query.
-  <err> is an error message used when the query failed.
+	<handle> is the database handle, as returned by open_database()
+	<query> is the query string.
+	<result> will receive the result handle of the query.
+	<err> is an error message used when the query failed.
 
-  <result> can be NULL, when we don't care getting the result.
+	<result> can be NULL, when we don't care getting the result.
 
 *****************************************************************************/
 
@@ -985,9 +990,9 @@ fflush(stderr);
 		SQLColAttribute(result->odbcStatHandle, i + 1, SQL_COLUMN_DISPLAY_SIZE, NULL,0, NULL, &displaysize);
 
 		/*
-		 * Set column length to max of display length, and column name
-		 * length. Plus one byte for null terminator
-		 */
+		* Set column length to max of display length, and column name
+		* length. Plus one byte for null terminator
+		*/
 		//printf("collen : %u, display len %u\n", strlen((char *) colname), displaysize);
 
 		if (displaysize >= strlen((char *) colname))
@@ -1000,7 +1005,7 @@ fflush(stderr);
 		}
 
 		if(collen <= 0){
-		        collen = 1;
+						collen = 1;
 		}
 		current->fieldata = (SQLCHAR *) malloc(collen);
 		current->outlen = collen;
@@ -1027,16 +1032,19 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  query_init()
+	query_init()
 
-  Initialize an info structure from a query result.
+	Initialize an info structure from a query result.
 
-  <result> is the handle of the query result.
-  <info> points to the info structure.
-  <count> will receive the number of records returned by the query.
+	<result> is the handle of the query result.
+	<info> points to the info structure.
+	<count> will receive the number of records returned by the query.
 
-  This function must initialize the info->nfield field with the number of
-  field in the query result.
+	This function must initialize the info->nfield field with the number of
+	field in the query result.
+	
+	If <count> receives -1, that will mean that the result is "move forward"
+	only
 
 *****************************************************************************/
 
@@ -1068,12 +1076,12 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  query_release()
+	query_release()
 
-  Free the info structure filled by query_init() and the result handle.
+	Free the info structure filled by query_init() and the result handle.
 
-  <result> is the handle of the query result.
-  <info> points to the info structure.
+	<result> is the handle of the query result.
+	<info> points to the info structure.
 
 *****************************************************************************/
 
@@ -1101,17 +1109,21 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  query_fill()
+	query_fill()
 
-  Fill a result buffer with the value of each field of a record.
+	Fill a result buffer with the value of each field of a record.
 
-  <result> is the handle of the result.
-  <pos> is the index of the record in the result.
-  <buffer> points to an array having one element for each field in the
-  result.
+	<db> is the database handle, as returned by open_database()
+	<result> is the handle of the result.
+	<pos> is the index of the record in the result.
+	<buffer> points to an array having one element for each field in the
+	result.
+	<next> is a boolean telling if we want the next row.
 
-  This function must use GB.StoreVariant() to store the value in the
-  buffer.
+	This function must return DB_OK, DB_ERROR or DB_NO_DATA
+	
+	This function must use GB.StoreVariant() to store the value in the
+	buffer.
 
 *****************************************************************************/
 
@@ -1143,7 +1155,6 @@ fflush(stderr);
 			current = (ODBC_FIELDS *) current->next;
 	}
 
-
 	if (res->Function_exist == SQL_TRUE)
 	{
 		if(res->Cursor_Scrollable == SQL_TRUE)
@@ -1157,20 +1168,25 @@ fflush(stderr);
 	}
 	else
 	{
-				
-		if (!next) return TRUE;
+		if (!next)
+		{
+			GB.Error("Unable to fetch row");
+			return DB_ERROR;
+		}
+
 		retcode2 = SQLFetch(res->odbcStatHandle);
 	}
 
 	if ((retcode2 != SQL_SUCCESS) && (retcode2 != SQL_SUCCESS_WITH_INFO) && (retcode2 != SQL_NO_DATA_FOUND) && (retcode2 != SQL_NO_DATA))
-		GB.Error("ODBC_ERROR");
+	{
+		GB.Error("Unable to fetch row");
+		return DB_ERROR;
+	}
+		
 	current = res->fields;
 			
 	if((retcode2 == SQL_NO_DATA_FOUND) || (retcode2==SQL_NO_DATA))
-		{
-		GB.Error("ODBC_END_OF_DATA");
-		//return false;
-		}
+		return DB_NO_DATA;
 
 	if (retcode2 != SQL_NO_DATA_FOUND && retcode2 != SQL_NO_DATA)
 	{
@@ -1200,26 +1216,28 @@ fflush(stderr);
 			displaysize=strlen((char *) namebuff) + 1;
 		}
 
-if (displaysize>0) 
-{
-	if (displaysize < 2) displaysize=2; 
-	if (type != SQL_LONGVARCHAR && type != SQL_VARBINARY && type != SQL_LONGVARBINARY)
+	if (displaysize > 0)
 	{
-		fieldata=malloc(sizeof(char)*(displaysize));
-		SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
+		if (displaysize < 2) 
+			displaysize = 2; 
 	
-	} else
-	{
-		//BLOB field, not retrieved here 
-				
-		//the BLOB field hasn't the string terminator
-		displaysize=displaysize-1;
+		if (type != SQL_LONGVARCHAR && type != SQL_VARBINARY && type != SQL_LONGVARBINARY)
+		{
+			fieldata=malloc(sizeof(char)*(displaysize));
+			SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
+		
+		} 
+		else
+		{
+			//BLOB field, not retrieved here 
+					
+			//the BLOB field hasn't the string terminator
+			displaysize=displaysize-1;
 
+		}
+		
+		current->outlen=displaysize;
 	}
-	current->outlen=displaysize;
-
-
-}
 
 	value.type = GB_T_VARIANT;
 	value.value.type = GB_T_NULL;
@@ -1245,20 +1263,20 @@ if (displaysize>0)
 
 	}	/* while rows to fetch */
 
-return FALSE;
+	return DB_OK;
 }
 
 
 /*****************************************************************************
 
-  blob_read()
+	blob_read()
 
-  Returns the value of a BLOB field.
+	Returns the value of a BLOB field.
 
-  <result> is the handle of the result.
-  <pos> is the index of the record in the result.
-  <blob> points at a DB_BLOB structure that will receive a pointer to the
-  data and its length.
+	<result> is the handle of the result.
+	<pos> is the index of the record in the result.
+	<blob> points at a DB_BLOB structure that will receive a pointer to the
+	data and its length.
 
 *****************************************************************************/
 
@@ -1354,12 +1372,12 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_name()
+	field_name()
 
-  Return the name of a field in a result from its index.
+	Return the name of a field in a result from its index.
 
-  <result> is the result handle.
-  <field> is the field index.
+	<result> is the result handle.
+	<field> is the field index.
 
 *****************************************************************************/
 
@@ -1379,7 +1397,7 @@ fflush(stderr);
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
 
 	SQLDescribeCol(res->odbcStatHandle, field + 1, colname, sizeof(colname),
-								 &colnamelen, &coltype, &precision, &scale, NULL);
+								&colnamelen, &coltype, &precision, &scale, NULL);
 	//colnamer = malloc(sizeof(char) * strlen((char *) colname) + 1);
 	strcpy(_buffer, (char *) colname);
 	return _buffer;
@@ -1388,13 +1406,13 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_index()
+	field_index()
 
-  Return the index of a field in a result from its name.
+	Return the index of a field in a result from its name.
 
-  <result> is the result handle.
-  <name> is the field name.
-  <handle> is needed by this driver to enable table.field syntax
+	<result> is the result handle.
+	<name> is the field name.
+	<handle> is needed by this driver to enable table.field syntax
 
 *****************************************************************************/
 
@@ -1420,7 +1438,7 @@ fflush(stderr);
 	for (field = 0; field < colsNum; field++)
 	{
 		SQLDescribeCol(res->odbcStatHandle, field + 1, colname, sizeof(colname),
-									 &colnamelen, &coltype, &precision, &scale, NULL);
+									&colnamelen, &coltype, &precision, &scale, NULL);
 
 		if (strcmp(name, (char *)colname) == 0)
 		{
@@ -1436,12 +1454,12 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_type()
+	field_type()
 
-  Return the Gambas type of a field in a result from its index.
+	Return the Gambas type of a field in a result from its index.
 
-  <result> is the result handle.
-  <field> is the field index.
+	<result> is the result handle.
+	<field> is the field index.
 
 *****************************************************************************/
 
@@ -1461,7 +1479,7 @@ fflush(stderr);
 	SQLRETURN retcode;
 
 	retcode=SQLDescribeCol(res->odbcStatHandle, field + 1, colname, sizeof(colname),
-								 &colnamelen, &coltype, &precision, &scale, NULL);
+								&colnamelen, &coltype, &precision, &scale, NULL);
 
 	if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO)
 	{
@@ -1475,12 +1493,12 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_length()
+	field_length()
 
-  Return the length of a field in a result from its index.
+	Return the length of a field in a result from its index.
 
-  <result> is the result handle.
-  <field> is the field index.
+	<result> is the result handle.
+	<field> is the field index.
 
 *****************************************************************************/
 
@@ -1507,14 +1525,14 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  begin_transaction()
+	begin_transaction()
 
-  Begin a transaction.
+	Begin a transaction.
 
-  <handle> is the database handle.
+	<handle> is the database handle.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 static int begin_transaction(DB_DATABASE *db)
@@ -1527,14 +1545,14 @@ static int begin_transaction(DB_DATABASE *db)
 
 /*****************************************************************************
 
-  commi_transaction()
+	commi_transaction()
 
-  Commit a transaction.
+	Commit a transaction.
 
-  <handle> is the database handle.
+	<handle> is the database handle.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -1546,14 +1564,14 @@ static int commit_transaction(DB_DATABASE *db)
 
 /*****************************************************************************
 
-  rollback_transaction()
+	rollback_transaction()
 
-  Rolllback a transaction.
+	Rolllback a transaction.
 
-  <handle> is the database handle.
+	<handle> is the database handle.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 static int rollback_transaction(DB_DATABASE *db)
@@ -1565,21 +1583,21 @@ static int rollback_transaction(DB_DATABASE *db)
 
 /*****************************************************************************
 
-  table_init()
+	table_init()
 
-  Initialize an info structure from table fields.
+	Initialize an info structure from table fields.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <info> points at the info structure.
+	<handle> is the database handle.
+	<table> is the table name.
+	<info> points at the info structure.
 
-  This function must initialize the following info fields:
-   - info->nfield must contain the number of fields in the table.
-   - info->fields is a char*[] pointing at the name of each field.
-   - info->types is a GB_TYPE[] giving the gambas type of each field.
+	This function must initialize the following info fields:
+	- info->nfield must contain the number of fields in the table.
+	- info->fields is a char*[] pointing at the name of each field.
+	- info->types is a GB_TYPE[] giving the gambas type of each field.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -1614,7 +1632,7 @@ fflush(stderr);
 
 	if (!SQL_SUCCEEDED
 			(colsNum =
-			 SQLColumns(statHandle, NULL, 0, NULL, 0, (SQLCHAR *) table, SQL_NTS, NULL,
+			SQLColumns(statHandle, NULL, 0, NULL, 0, (SQLCHAR *) table, SQL_NTS, NULL,
 									0)))
 		return -1;
 
@@ -1625,11 +1643,11 @@ fflush(stderr);
 	while (SQL_SUCCEEDED(SQLFetch(statHandle)))
 	{
 		SQLGetData(statHandle, SQLColumns_COLUMN_NAME, SQL_C_CHAR, current->fieldname,
-							 sizeof(current->fieldname), 0);
+							sizeof(current->fieldname), 0);
 
 		if (!SQL_SUCCEEDED
 				(SQLGetData
-				 (statHandle, SQLColumns_SQL_DATA_TYPE, SQL_C_CHAR, &coltype[0],
+				(statHandle, SQLColumns_SQL_DATA_TYPE, SQL_C_CHAR, &coltype[0],
 					sizeof(coltype), 0)))
 			return TRUE;
 
@@ -1637,7 +1655,7 @@ fflush(stderr);
 
 		if (!SQL_SUCCEEDED
 				(SQLGetData
-				 (statHandle, SQLColumns_COLUMN_SIZE, SQL_C_CHAR, precision,
+				(statHandle, SQLColumns_COLUMN_SIZE, SQL_C_CHAR, precision,
 					sizeof(precision), 0)))
 			return TRUE;
 
@@ -1674,23 +1692,23 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  table_index()
+	table_index()
 
-  Initialize an info structure from table primary index.
+	Initialize an info structure from table primary index.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <info> points at the info structure.
+	<handle> is the database handle.
+	<table> is the table name.
+	<info> points at the info structure.
 
-  This function must initialize the following info fields:
-   - info->nindex must contain the number of fields in the primary index.
-   - info->index is a int[] giving the index of each index field in
-     info->fields.
+	This function must initialize the following info fields:
+	- info->nindex must contain the number of fields in the primary index.
+	- info->index is a int[] giving the index of each index field in
+		info->fields.
 
-  This function must be called after table_init().
+	This function must be called after table_init().
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -1847,12 +1865,12 @@ while(current != NULL){
 
 /*****************************************************************************
 
-  table_release()
+	table_release()
 
-  Free the info structure filled by table_init() and/or table_index()
+	Free the info structure filled by table_init() and/or table_index()
 
-  <handle> is the database handle.
-  <info> points at the info structure.
+	<handle> is the database handle.
+	<info> points at the info structure.
 
 *****************************************************************************/
 
@@ -1864,14 +1882,14 @@ static void table_release(DB_DATABASE *db, DB_INFO * info)
 
 /*****************************************************************************
 
-  table_exist()
+	table_exist()
 
-  Returns if a table exists
+	Returns if a table exists
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns TRUE if the table exists, and FALSE if not.
+	This function returns TRUE if the table exists, and FALSE if not.
 
 *****************************************************************************/
 
@@ -1915,15 +1933,15 @@ fflush(stderr);
 	}
 
 	SQLBindCol(statHandle, SQLTables_TABLE_NAME, SQL_C_CHAR, szTableName,
-						 sizeof(szTableName), &nIndicatorName);
+						sizeof(szTableName), &nIndicatorName);
 	SQLBindCol(statHandle, SQLTables_TABLE_TYPE, SQL_C_CHAR, szTableType,
-						 sizeof(szTableType), &nIndicatorType);
+						sizeof(szTableType), &nIndicatorType);
 	SQLBindCol(statHandle, SQLTables_REMARKS, SQL_C_CHAR, szTableRemarks,
-						 sizeof(szTableRemarks), &nIndicatorRemarks);
+						sizeof(szTableRemarks), &nIndicatorRemarks);
 	// GET RESULTS
 	nReturn = SQLFetch(statHandle);
 	while ((nReturn == SQL_SUCCESS || nReturn == SQL_SUCCESS_WITH_INFO)
-				 && compare != 0)
+				&& compare != 0)
 	{
 		//printf("le tabelle in comparazione %s : %s\n",szTableName,table);
 		compare = strncmp((char *)szTableName, table, len);
@@ -1947,17 +1965,17 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  table_list()
+	table_list()
 
-  Returns an array containing the name of each table in the database
+	Returns an array containing the name of each table in the database
 
-  <handle> is the database handle.
-  <tables> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<tables> points to a variable that will receive the char* array.
 
-  This function returns the number of tables, or -1 if the command has
-  failed.
+	This function returns the number of tables, or -1 if the command has
+	failed.
 
-  Be careful: <tables> can be NULL, so that just the count is returned.
+	Be careful: <tables> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
@@ -2000,11 +2018,11 @@ fflush(stderr);
 	}
 
 	SQLBindCol(statHandle, SQLTables_TABLE_NAME, SQL_C_CHAR, szTableName,
-						 sizeof(szTableName), &nIndicatorName);
+						sizeof(szTableName), &nIndicatorName);
 	SQLBindCol(statHandle, SQLTables_TABLE_TYPE, SQL_C_CHAR, szTableType,
-						 sizeof(szTableType), &nIndicatorType);
+						sizeof(szTableType), &nIndicatorType);
 	SQLBindCol(statHandle, SQLTables_REMARKS, SQL_C_CHAR, szTableRemarks,
-						 sizeof(szTableRemarks), &nIndicatorRemarks);
+						sizeof(szTableRemarks), &nIndicatorRemarks);
 	// GET RESULTS
 	nReturn = SQLFetch(statHandle);
 
@@ -2071,16 +2089,16 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  table_primary_key()
+	table_primary_key()
 
-  Returns a string representing the primary key of a table.
+	Returns a string representing the primary key of a table.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <key> points to a string that will receive the primary key.
+	<handle> is the database handle.
+	<table> is the table name.
+	<key> points to a string that will receive the primary key.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2140,12 +2158,12 @@ fflush(stderr);
 
 		if (!SQL_SUCCEEDED
 				(SQLGetData
-				 (statHandle, 4, SQL_C_CHAR, &szColumnName[0], sizeof(szColumnName), 0)))
+				(statHandle, 4, SQL_C_CHAR, &szColumnName[0], sizeof(szColumnName), 0)))
 			strcpy((char *) szColumnName, "Unknown");
 
 		if (!SQL_SUCCEEDED
 				(SQLGetData
-				 (statHandle, 6, SQL_C_CHAR, &szKeyName[0], sizeof(szKeyName), 0)))
+				(statHandle, 6, SQL_C_CHAR, &szKeyName[0], sizeof(szKeyName), 0)))
 			strcpy((char *) szKeyName, "Unknown");
 
 		*(char **)GB.Add(primary) = GB.NewZeroString((char *)szColumnName);
@@ -2162,15 +2180,15 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  table_is_system()
+	table_is_system()
 
-  Returns if a table is a system table.
+	Returns if a table is a system table.
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns TRUE if the table is a system table, and FALSE if
-  not.
+	This function returns TRUE if the table is a system table, and FALSE if
+	not.
 
 *****************************************************************************/
 
@@ -2182,29 +2200,29 @@ static int table_is_system(DB_DATABASE *db, const char *table)
 
 /*****************************************************************************
 
-  table_delete()
+	table_delete()
 
-  Deletes a table.
+	Deletes a table.
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
 static int table_delete(DB_DATABASE *db, const char *table)
 {
 	int exit;
-	SQLCHAR query[101] = "DROP TABLE ";
+	const char *query = "DROP TABLE &1";
 
-	strcpy((char *)&query[11], table);
-	exit = do_query(db, "Cannot delete table:&1", NULL, (char *) query, 0);
+	exit = do_query(db, "Cannot delete table: &1", NULL, query, 1, table);
+	/* BM: What's that ???
 	if (exit == 0)
 	{
 		exit = do_query(db, "Cannot delete table:&1", NULL, "COMMIT", 0);
-	}
+	}*/
 
 	return (exit);
 }
@@ -2213,17 +2231,17 @@ static int table_delete(DB_DATABASE *db, const char *table)
 
 /*****************************************************************************
 
-  table_create()
+	table_create()
 
-  Creates a table.
+	Creates a table.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <fields> points to a linked list of field descriptions.
-  <key> is the primary key.
+	<handle> is the database handle.
+	<table> is the table name.
+	<fields> points to a linked list of field descriptions.
+	<key> is the primary key.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2344,15 +2362,15 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_exist()
+	field_exist()
 
-  Returns if a field exists in a given table
+	Returns if a field exists in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the field name.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the field name.
 
-  This function returns TRUE if the field exists, and FALSE if not.
+	This function returns TRUE if the field exists, and FALSE if not.
 
 *****************************************************************************/
 
@@ -2384,7 +2402,7 @@ fflush(stderr);
 
 	if (!SQL_SUCCEEDED
 			(colsNum =
-			 SQLColumns(statHandle, NULL, 0, NULL, 0, (SQLCHAR *) table, SQL_NTS, NULL,
+			SQLColumns(statHandle, NULL, 0, NULL, 0, (SQLCHAR *) table, SQL_NTS, NULL,
 									0)))
 	{
 		SQLFreeHandle(SQL_HANDLE_STMT, statHandle);
@@ -2396,7 +2414,7 @@ fflush(stderr);
 	while (SQL_SUCCEEDED(SQLFetch(statHandle)))
 	{
 		SQLGetData(statHandle, SQLColumns_COLUMN_NAME, SQL_C_CHAR, colname,
-							 sizeof(colname), 0);
+							sizeof(colname), 0);
 
 //printf("field exist dopo la get data - field =%s, Colname %s\n",field,colname);
 
@@ -2420,18 +2438,18 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_list()
+	field_list()
 
-  Returns an array containing the name of each field in a given table
+	Returns an array containing the name of each field in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <fields> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<table> is the table name.
+	<fields> points to a variable that will receive the char* array.
 
-  This function returns the number of fields, or -1 if the command has
-  failed.
+	This function returns the number of fields, or -1 if the command has
+	failed.
 
-  Be careful: <fields> can be NULL, so that just the count is returned.
+	Be careful: <fields> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
@@ -2485,7 +2503,7 @@ fflush(stderr);
 	{
 		if (!SQL_SUCCEEDED
 				(SQLGetData
-				 (statHandle, SQLColumns_COLUMN_NAME, SQL_C_CHAR, current->fieldname,
+				(statHandle, SQLColumns_COLUMN_NAME, SQL_C_CHAR, current->fieldname,
 					sizeof(current->fieldname), 0)))
 			strcpy((char *)current->fieldname, "Unknown");
 
@@ -2519,17 +2537,17 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  field_info()
+	field_info()
 
-  Get field description
+	Get field description
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the field name.
-  <info> points to a structure filled by the function.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the field name.
+	<info> points to a structure filled by the function.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2639,15 +2657,15 @@ fflush(stderr);
 
 /*****************************************************************************
 
-  index_exist()
+	index_exist()
 
-  Returns if an index exists in a given table
+	Returns if an index exists in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the index name.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the index name.
 
-  This function returns TRUE if the index exists, and FALSE if not.
+	This function returns TRUE if the index exists, and FALSE if not.
 
 *****************************************************************************/
 
@@ -2660,18 +2678,18 @@ static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 
 /*****************************************************************************
 
-  index_list()
+	index_list()
 
-  Returns an array containing the name of each index in a given table
+	Returns an array containing the name of each index in a given table
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <indexes> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<table> is the table name.
+	<indexes> points to a variable that will receive the char* array.
 
-  This function returns the number of indexes, or -1 if the command has
-  failed.
+	This function returns the number of indexes, or -1 if the command has
+	failed.
 
-  Be careful: <indexes> can be NULL, so that just the count is returned.
+	Be careful: <indexes> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
@@ -2684,17 +2702,17 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 
 /*****************************************************************************
 
-  index_info()
+	index_info()
 
-  Get index description
+	Get index description
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <field> is the index name.
-  <info> points to a structure filled by the function.
+	<handle> is the database handle.
+	<table> is the table name.
+	<field> is the index name.
+	<info> points to a structure filled by the function.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2707,16 +2725,16 @@ static int index_info(DB_DATABASE *db, const char *table, const char *index,	DB_
 
 /*****************************************************************************
 
-  index_delete()
+	index_delete()
 
-  Deletes an index.
+	Deletes an index.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <index> is the index name.
+	<handle> is the database handle.
+	<table> is the table name.
+	<index> is the index name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2729,17 +2747,17 @@ static int index_delete(DB_DATABASE *db, const char *table, const char *index)
 
 /*****************************************************************************
 
-  index_create()
+	index_create()
 
-  Creates an index.
+	Creates an index.
 
-  <handle> is the database handle.
-  <table> is the table name.
-  <index> is the index name.
-  <info> points to a structure describing the index.
+	<handle> is the database handle.
+	<table> is the table name.
+	<index> is the index name.
+	<info> points to a structure describing the index.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2752,14 +2770,14 @@ static int index_create(DB_DATABASE *db, const char *table, const char *index, D
 
 /*****************************************************************************
 
-  database_exist()
+	database_exist()
 
-  Returns if a database exists
+	Returns if a database exists
 
-  <handle> is any database handle.
-  <name> is the database name.
+	<handle> is any database handle.
+	<name> is the database name.
 
-  This function returns TRUE if the database exists, and FALSE if not.
+	This function returns TRUE if the database exists, and FALSE if not.
 
 *****************************************************************************/
 
@@ -2780,17 +2798,17 @@ static int database_exist(DB_DATABASE *db, const char *name)
 
 /*****************************************************************************
 
-  database_list()
+	database_list()
 
-  Returns an array containing the name of each database
+	Returns an array containing the name of each database
 
-  <handle> is any database handle.
-  <databases> points to a variable that will receive the char* array.
+	<handle> is any database handle.
+	<databases> points to a variable that will receive the char* array.
 
-  This function returns the number of databases, or -1 if the command has
-  failed.
+	This function returns the number of databases, or -1 if the command has
+	failed.
 
-  Be careful: <databases> can be NULL, so that just the count is returned.
+	Be careful: <databases> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
@@ -2808,15 +2826,15 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
 /*****************************************************************************
 
-  database_is_system()
+	database_is_system()
 
-  Returns if a database is a system database.
+	Returns if a database is a system database.
 
-  <handle> is any database handle.
-  <name> is the database name.
+	<handle> is any database handle.
+	<name> is the database name.
 
-  This function returns TRUE if the database is a system database, and
-  FALSE if not.
+	This function returns TRUE if the database is a system database, and
+	FALSE if not.
 
 *****************************************************************************/
 
@@ -2828,11 +2846,11 @@ static int database_is_system(DB_DATABASE *db, const char *name)
 
 /*****************************************************************************
 
-  table_type()
-  Not Valid in postgresql
+	table_type()
+	Not Valid in postgresql
 
-  <handle> is the database handle.
-  <table> is the table name.
+	<handle> is the database handle.
+	<table> is the table name.
 
 *****************************************************************************/
 
@@ -2845,15 +2863,15 @@ static char *table_type(DB_DATABASE *db, const char *table, const char *type)
 
 /*****************************************************************************
 
-  database_delete()
+	database_delete()
 
-  Deletes a database.
+	Deletes a database.
 
-  <handle> is the database handle.
-  <name> is the database name.
+	<handle> is the database handle.
+	<name> is the database name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2866,15 +2884,15 @@ static int database_delete(DB_DATABASE *db, const char *name)
 
 /*****************************************************************************
 
-  database_create()
+	database_create()
 
-  Creates a database.
+	Creates a database.
 
-  <handle> is the database handle.
-  <name> is the database name.
+	<handle> is the database handle.
+	<name> is the database name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2887,14 +2905,14 @@ static int database_create(DB_DATABASE *db, const char *name)
 
 /*****************************************************************************
 
-  user_exist()
+	user_exist()
 
-  Returns if a user exists.
+	Returns if a user exists.
 
-  <handle> is any database handle.
-  <name> is the user name.
+	<handle> is any database handle.
+	<name> is the user name.
 
-  This function returns TRUE if the user exists, and FALSE if not.
+	This function returns TRUE if the user exists, and FALSE if not.
 
 *****************************************************************************/
 
@@ -2909,17 +2927,17 @@ static int user_exist(DB_DATABASE *db, const char *name)
 
 /*****************************************************************************
 
-  user_list()
+	user_list()
 
-  Returns an array containing the name of each user.
+	Returns an array containing the name of each user.
 
-  <handle> is the database handle.
-  <users> points to a variable that will receive the char* array.
+	<handle> is the database handle.
+	<users> points to a variable that will receive the char* array.
 
-  This function returns the number of users, or -1 if the command has
-  failed.
+	This function returns the number of users, or -1 if the command has
+	failed.
 
-  Be careful: <users> can be NULL, so that just the count is returned.
+	Be careful: <users> can be NULL, so that just the count is returned.
 
 *****************************************************************************/
 
@@ -2940,16 +2958,16 @@ static int user_list(DB_DATABASE *db, char ***users)
 
 /*****************************************************************************
 
-  user_info()
+	user_info()
 
-  Get user description
+	Get user description
 
-  <handle> is the database handle.
-  <name> is the user name.
-  <info> points to a structure filled by the function.
+	<handle> is the database handle.
+	<name> is the user name.
+	<info> points to a structure filled by the function.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2962,15 +2980,15 @@ static int user_info(DB_DATABASE *db, const char *name, DB_USER * info)
 
 /*****************************************************************************
 
-  user_delete()
+	user_delete()
 
-  Deletes a user.
+	Deletes a user.
 
-  <handle> is any database handle.
-  <name> is the user name.
+	<handle> is any database handle.
+	<name> is the user name.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -2983,16 +3001,16 @@ static int user_delete(DB_DATABASE *db, const char *name)
 
 /*****************************************************************************
 
-  user_create()
+	user_create()
 
-  Creates a user.
+	Creates a user.
 
-  <handle> is the database handle.
-  <name> is the user name.
-  <info> points to a structure describing the user.
+	<handle> is the database handle.
+	<name> is the user name.
+	<info> points to a structure describing the user.
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -3005,16 +3023,16 @@ static int user_create(DB_DATABASE *db, const char *name, DB_USER * info)
 
 /*****************************************************************************
 
-  user_set_password()
+	user_set_password()
 
-  Change the user password.
+	Change the user password.
 
-  <handle> is the database handle.
-  <name> is the user name.
-  <password> is the new password
+	<handle> is the database handle.
+	<name> is the user name.
+	<password> is the new password
 
-  This function returns TRUE if the command has failed, and FALSE if
-  everything was OK.
+	This function returns TRUE if the command has failed, and FALSE if
+	everything was OK.
 
 *****************************************************************************/
 
@@ -3026,7 +3044,7 @@ static int user_set_password(DB_DATABASE *db, const char *name, const char *pass
 
 /*****************************************************************************
 
-  The driver interface
+	The driver interface
 
 *****************************************************************************/
 
@@ -3034,7 +3052,7 @@ DECLARE_DRIVER(_driver, "odbc");
 
 /*****************************************************************************
 
-  The component entry and exit functions.
+	The component entry and exit functions.
 
 *****************************************************************************/
 

@@ -658,6 +658,22 @@ BEGIN_METHOD(File_Save, GB_STRING path; GB_STRING data)
 
 END_METHOD
 
+BEGIN_METHOD(File_IsRelative, GB_STRING path)
+
+	char *path = STRING(path);
+	int len = LENGTH(path);
+	
+	if (len <= 0)
+	{
+		GB_ReturnBoolean(FALSE);
+		return;
+	}
+	
+	GB_ReturnBoolean(FILE_is_relative(path));
+
+END_METHOD
+
+//---------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Stream_Handle)
 
@@ -892,6 +908,8 @@ GB_DESC NATIVE_File[] =
 	GB_STATIC_METHOD("SetName", "s", File_SetName, "(Path)s(NewName)s"),
 	GB_STATIC_METHOD("SetExt", "s", File_SetExt, "(Path)s(NewExt)s"),
 	GB_STATIC_METHOD("SetBaseName", "s", File_SetBaseName, "(Path)s(NewBaseName)s"),
+
+	GB_STATIC_METHOD("IsRelative", "b", File_IsRelative, "(Path)s"),
 
 	GB_STATIC_METHOD("Load", "s", File_Load, "(FileName)s"),
 	GB_STATIC_METHOD("Save", NULL, File_Save, "(FileName)s(Data)s"),

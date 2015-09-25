@@ -542,8 +542,8 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
     iSize = GetSize(sSize)
   Endif
   
-  hPict = Picture[CStr(iSize) &/ Key]
-  If hPict Then Return hPict
+  'hPict = Picture[CStr(iSize) &/ Key]
+  'If hPict Then Return hPict
   
   ' sCache = User.Home &/ ".cache/gambas3/gb.form/theme/" &/ LCase(Application.Theme) &/ CStr(iSize) &/ Key & ".png"
   ' If Exist(sCache) Then
@@ -655,7 +655,7 @@ __RETURN:
   If hPict Then
     ' Main.MkDir(File.Dir(sCache))
     ' Try hPict.Save(sCache)
-    Picture[CStr(iSize) &/ Key] = hPict
+    'Picture[CStr(iSize) &/ Key] = hPict
     Return hPict
   Endif
   

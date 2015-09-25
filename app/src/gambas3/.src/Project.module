@@ -914,7 +914,11 @@ Private Sub AddEmblem(hSource As Image, sEmblem As String) As Image
   Dim iSize As Integer
   Dim hImage As Image
 
-  hEmblem = Picture[sEmblem].Image
+  Try hEmblem = Picture[sEmblem].Image
+  If Error Then 
+    Error "gambas3: warning: unable to add emblem: "; sEmblem
+    Return hSource
+  Endif
 
   iSize = Min(hEmblem.H, hSource.H / 2)
   hEmblem = hEmblem.Stretch(-1, iSize) ', iSize * hEmblem.H / hEmblem.W)
@@ -2082,7 +2086,7 @@ Public Function LoadFile(sPath As String) As Object
             
             Dec Application.Busy
             Files[sPath] = Null
-            FMain.ShowError(("Cannot open a binary file.") & "\n\n" & sPath, sPath)
+            FMain.ShowError(("Cannot open a binary file."), sPath)
             Return
             
           Endif

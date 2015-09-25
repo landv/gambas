@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  gbx_stream_arch.c
+	gbx_stream_arch.c
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -41,99 +41,99 @@
 
 static int stream_open(STREAM *stream, const char *path, int mode)
 {
-  ARCHIVE_FIND find;
+	ARCHIVE_FIND find;
 
-  if (ARCHIVE_get(NULL, &path, &find))
-  {
-    errno = ENOENT;
-    return TRUE;
-  }
-
-  if (find.pos < 0)
-  {
-  	errno = EISDIR;
+	if (ARCHIVE_get(NULL, &path, &find))
+	{
+		errno = ENOENT;
 		return TRUE;
 	}
 
-  if ((mode & ST_ACCESS) != ST_READ)
-  {
-    errno = EACCES;
-    return TRUE;
-  }
+	if (find.pos < 0)
+	{
+		errno = EISDIR;
+		return TRUE;
+	}
+
+	if ((mode & ST_ACCESS) != ST_READ)
+	{
+		errno = EACCES;
+		return TRUE;
+	}
 
 	stream->common.available_now = TRUE;
-  stream->arch.arch = find.arch;
-  stream->arch.size = find.len;
-  stream->arch.start = find.pos;
-  stream->arch.pos = 0;
+	stream->arch.arch = find.arch;
+	stream->arch.size = find.len;
+	stream->arch.start = find.pos;
+	stream->arch.pos = 0;
 
-  return FALSE;
+	return FALSE;
 }
 
 
 static int stream_close(STREAM *stream)
 {
-  return FALSE;
+	return FALSE;
 }
 
 
 static int stream_read(STREAM *stream, char *buffer, int len)
 {
-  bool strip = FALSE;
-  int max;
+	bool strip = FALSE;
+	int max;
 
-  max = stream->arch.size - stream->arch.pos;
+	max = stream->arch.size - stream->arch.pos;
 
-  if (len > max)
-  {
-    strip = TRUE;
-    len = max;
-    errno = 0;
-  }
+	if (len > max)
+	{
+		strip = TRUE;
+		len = max;
+		errno = 0;
+	}
 
-  if (ARCHIVE_read(stream->arch.arch, stream->arch.start + stream->arch.pos, buffer, len))
-    strip = TRUE;
+	if (ARCHIVE_read(stream->arch.arch, stream->arch.start + stream->arch.pos, buffer, len))
+		strip = TRUE;
 
-  stream->arch.pos += len;
-  STREAM_eff_read = len;
+	stream->arch.pos += len;
+	STREAM_eff_read = len;
 
-  return strip;
+	return strip;
 }
 
 
 static int stream_write(STREAM *stream, char *buffer, int len)
 {
-  return TRUE;
+	return TRUE;
 }
 
 
 static int stream_seek(STREAM *stream, int64_t pos, int whence)
 {
-  int64_t new_pos;
+	int64_t new_pos;
 
-  switch(whence)
-  {
-    case SEEK_SET:
-      new_pos = pos;
-      break;
+	switch(whence)
+	{
+		case SEEK_SET:
+			new_pos = pos;
+			break;
 
-    case SEEK_CUR:
-      new_pos = stream->arch.pos + pos;
-      break;
+		case SEEK_CUR:
+			new_pos = stream->arch.pos + pos;
+			break;
 
-    case SEEK_END:
-      new_pos = stream->arch.size - pos;
-      break;
+		case SEEK_END:
+			new_pos = stream->arch.size - pos;
+			break;
 
-    default:
-      return TRUE;
-  }
+		default:
+			return TRUE;
+	}
 
-  if (new_pos < 0 || new_pos > stream->arch.size)
-    return TRUE;
+	if (new_pos < 0 || new_pos > stream->arch.size)
+		return TRUE;
 
-  stream->arch.pos = (int)new_pos;
-  return FALSE;
+	stream->arch.pos = (int)new_pos;
+	return FALSE;
 }
 
 #define stream_getchar NULL
@@ -141,32 +141,32 @@ static int stream_seek(STREAM *stream, int64_t pos, int whence)
 
 static int stream_tell(STREAM *stream, int64_t *pos)
 {
-  *pos = stream->arch.pos;
-  return FALSE;
+	*pos = stream->arch.pos;
+	return FALSE;
 }
 
 
 static int stream_flush(STREAM *stream)
 {
-  return FALSE;
+	return FALSE;
 }
 
 
 static int stream_eof(STREAM *stream)
 {
-  return (stream->arch.pos >= stream->arch.size);
+	return (stream->arch.pos >= stream->arch.size);
 }
 
 
 static int stream_lof(STREAM *stream, int64_t *len)
 {
-  *len = stream->arch.size;
-  return FALSE;
+	*len = stream->arch.size;
+	return FALSE;
 }
 
 static int stream_handle(STREAM *stream)
 {
-  return -1;
+	return -1;
 }
 
 

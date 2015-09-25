@@ -457,6 +457,11 @@ Public Sub gvwProfile_Data(Row As Integer, Column As Integer)
     End Select
     
   End With
+  
+Catch
+  
+  gvwProfile.Data.Text = ""
+  gvwProfile.Data.Background = Color.ButtonBackground
 
 End
 
@@ -806,6 +811,11 @@ Public Sub gvwCalled_Data(Row As Integer, Column As Integer)
     
   End With
 
+Catch
+  
+  gvwCalled.Data.Text = ""
+  gvwCalled.Data.Background = Color.ButtonBackground
+
 End
 
 Public Sub gvwCalled_Activate()
@@ -980,6 +990,11 @@ Public Sub gvwSource_Data(Row As Integer, Column As Integer)
     
   End With
   
+Catch
+  
+  gvwSource.Data.Text = ""
+  gvwSource.Data.Background = Color.ButtonBackground
+
 End
 
 Public Sub edtSource_Scroll()

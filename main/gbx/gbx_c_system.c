@@ -347,7 +347,6 @@ GB_DESC NATIVE_System[] =
 	GB_STATIC_PROPERTY_READ("Domain", "s", System_Domain),
 	GB_STATIC_PROPERTY_READ("ByteOrder", "i", System_ByteOrder),
 	GB_STATIC_PROPERTY_READ("Error", "i", System_Error),
-	
 	GB_STATIC_PROPERTY_READ("TimeZone", "i", System_TimeZone),
 
 	GB_CONSTANT("Family", "s", SYSTEM),

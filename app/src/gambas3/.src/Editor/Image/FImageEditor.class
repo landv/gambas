@@ -1696,7 +1696,7 @@ Public Sub imvImage_Draw(hZoom As Image)
     
     With $hPasteSelect.GetExtents()
       If .Width > 0 And If .Height > 0 Then
-        hImage = New Image(Ceil(.Width) + 1, Ceil(.Height) + 1, Color.Transparent)
+        hImage = New Image(Ceil(.Width), Ceil(.Height), Color.Transparent)
         
         Paint.Begin(hImage)
         Paint.Brush = Paint.Image($hPaste)

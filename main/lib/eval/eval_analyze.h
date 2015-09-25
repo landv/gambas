@@ -26,8 +26,7 @@
 
 #include "eval.h"
 
-#define EVAL_MAX_COLOR  256
-
-PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *result, bool rewrite);
+void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *result, bool rewrite);
+void EVAL_analyze_exit(void);
 
 #endif

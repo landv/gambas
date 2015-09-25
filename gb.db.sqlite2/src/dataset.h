@@ -82,7 +82,7 @@ class Dataset;		// forward declaration of class Dataset
 #define DB_COMMAND_OK		0	// OK - command executed
 #define DB_EMPTY_QUERY		1	// Query didn't return tuples
 #define DB_TUPLES_OK		2	// Query returned tuples
-#define DB_ERROR		5
+#define DB_GOT_ERROR		5
 #define DB_BAD_RESPONSE		6
 #define DB_UNEXPECTED		7	// This shouldn't ever happen
 #define DB_UNEXPECTED_RESULT   -1       //For integer functions

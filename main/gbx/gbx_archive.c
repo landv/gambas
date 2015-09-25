@@ -316,23 +316,60 @@ void ARCHIVE_exit(void)
 
 /* ### *parch must be initialized to NULL or a valid archive */
 /* Returns a true archive, never the main archive if we are not running an executable */
-static bool get_current(ARCHIVE **parch, const char **ppath)
+bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 {
+	int i;
+	CLASS *class;
+	
 	if (*parch)
 		return FALSE;
-
-	if (strncmp(*ppath, "../", 3) == 0)
-	{
-		*parch = EXEC_arch ? ARCHIVE_main : NULL;
-		*ppath += 3;
-	}
-	else if (COMPONENT_current && COMPONENT_current->archive)
+	
+	if (COMPONENT_current && COMPONENT_current->archive)
 		*parch = COMPONENT_current->archive;
 	else if (CP && CP->component && CP->component->archive)
 		*parch = CP->component->archive;
 	else
-		*parch = EXEC_arch ? ARCHIVE_main : NULL;
-
+		*parch = NULL;
+	
+	//fprintf(stderr, "ARCHIVE_find_from_path: %s (%s)\n", *ppath, *parch ? (*parch)->name : "NULL");
+	
+	i = 0;
+	while (strncmp(*ppath, "../", 3) == 0)
+	{
+		*ppath += 3;
+		if (*parch == NULL || *parch == ARCHIVE_main)
+			continue;
+		
+		while (i < STACK_frame_count)
+		{
+			class = STACK_frame[i].cp;
+			//fprintf(stderr, "[%d] %s / %s\n", i, class ? class->name : "NULL", class && class->component && class->component->archive ? class->component->archive->name : "NULL");
+			if (class)
+			{
+				if (!class->component)
+				{
+					*parch = NULL;
+					break;
+				}
+				if (class->component && class->component->archive != *parch)
+				{
+					*parch = class->component->archive;
+					break;
+				}
+			}
+			
+			i++;
+		}
+		
+		if (i == STACK_frame_count)
+			*parch = NULL;
+	}
+	
+	if (*parch == NULL && EXEC_arch)
+		*parch = ARCHIVE_main;
+	
+	//fprintf(stderr, "--> '%s' / %s\n", *parch ? (*parch)->name : "(null)", *ppath);
+	
 	return *parch == NULL;
 }
 
@@ -358,7 +395,7 @@ bool ARCHIVE_get(ARCHIVE *arch, const char **ppath, ARCHIVE_FIND *find)
 	if (!*ppath || **ppath == 0)
 		return TRUE;
 
-	if (get_current(&arch, ppath))
+	if (ARCHIVE_find_from_path(&arch, ppath))
 	{
 		// no archive found, we try a lstat
 		if (!PROJECT_path)

@@ -25,6 +25,7 @@
 
 #include "gambas.h"
 #include "gb_common.h"
+#include "gb_array.h"
 #include "eval_analyze.h"
 
 #include "CSystem.h"
@@ -33,8 +34,10 @@
 static char _analyze_buffer[256];
 static int _analyze_buffer_pos;
 
-static EVAL_COLOR colors[EVAL_MAX_COLOR];
-static int colors_len;
+#define COLOR_BUFFER_SIZE 256
+static EVAL_COLOR _colors[COLOR_BUFFER_SIZE];
+static int _colors_len = 0;
+static EVAL_COLOR *_color_buffer = NULL;
 
 static int get_type(PATTERN *pattern)
 {
@@ -139,18 +142,49 @@ static void add_data(int state, int len)
 {
 	EVAL_COLOR *color;
 
-	if (colors_len >= EVAL_MAX_COLOR || len == 0)
+	if (len == 0)
 		return;
+	
+	if (_colors_len >= COLOR_BUFFER_SIZE)
+	{
+		if (!_color_buffer)
+			ARRAY_create_inc(&_color_buffer, COLOR_BUFFER_SIZE);
+		
+		color = ARRAY_add_many(&_color_buffer, COLOR_BUFFER_SIZE);
+		memcpy(color, _colors, sizeof(EVAL_COLOR) * COLOR_BUFFER_SIZE);
+		_colors_len = 0;
+	}
 
 	//printf("[%d] %d %d\n", colors_len, state, len);
 
-	color = &colors[colors_len];
+	color = &_colors[_colors_len];
 	color->state = state;
 	color->len = len;
 	color->alternate = FALSE;
-	colors_len++;
+	_colors_len++;
 }
 
+static void flush_colors(EVAL_ANALYZE *result)
+{
+	EVAL_COLOR *color;
+	
+	if (_color_buffer)
+	{
+		if (_colors_len)
+		{
+			color = ARRAY_add_many(&_color_buffer, _colors_len);
+			memcpy(color, _colors, sizeof(EVAL_COLOR) * _colors_len);
+		}
+		
+		result->color = _color_buffer;
+		result->len = ARRAY_count(_color_buffer);
+	}
+	else
+	{
+		result->color = _colors;
+		result->len = _colors_len;
+	}
+}
 
 static int is_proc(void)
 {
@@ -274,8 +308,10 @@ static void analyze(EVAL_ANALYZE *result)
 	int len, i;
 	bool preprocessor;
 
+	_colors_len = 0;
+	EVAL_analyze_exit();
+	
 	pattern = EVAL->pattern;
-	colors_len = 0;
 	nspace = 0;
 	preprocessor = FALSE;
 
@@ -519,9 +555,7 @@ static void analyze(EVAL_ANALYZE *result)
 	}
 
 	flush_result(result);
-
-	result->color = colors;
-	result->len = colors_len;
+	flush_colors(result);
 
 	//fprintf(stderr, "analyze: %d %s\n", strlen(result->str), result->str);
 }
@@ -614,4 +648,8 @@ PUBLIC void EVAL_analyze(const char *src, int len, int state, EVAL_ANALYZE *resu
 }
 
 
-
+void EVAL_analyze_exit(void)
+{
+	if (_color_buffer)
+		ARRAY_delete(&_color_buffer);
+}

@@ -38,7 +38,6 @@ Private $iArgSignature As Integer
 Private $iPosSignature As Integer
 Private $bCleanOnSave As Boolean
 Private $bShowPopupHelp As Boolean
-Private $bSkipChangeEvent As Boolean
 
 Private $bDoNotSavePosition As Boolean
 
@@ -171,6 +170,7 @@ Public Function Save() As Boolean
   Dim sHeader As String
 
   If Me.ReadOnly Then Return
+  
   If Not $bModify Then
     ' TODO: If bReset Then $hEditor.Reset
     Return
@@ -187,23 +187,22 @@ Public Function Save() As Boolean
   If RTrim($hEditor[0].Text) <> sHeader Then
     $hEditor.Goto(0, 0)
     $hEditor.Insert(sHeader & "\n")
-    $bSkipChangeEvent = True
   Endif
 
   If $hEditor.Count < 2 Or If $hEditor[1].Text Then
     $hEditor.Goto(0, 1)
     $hEditor.Insert("\n")
-    $bSkipChangeEvent = True
   Endif
 
   $hEditor.End
   
   If Settings["/FormatCode/FormatOnLoad"] Then 
     MPrettyCode.Run(edtEditor)
-    $bSkipChangeEvent = True
   Endif
-  $hEditor.Save(Path)
 
+  ' Now the Editor.Save() method automatically cancels pending Change events.
+  $hEditor.Save(Path)
+  
   ' ENDIF
 
   $bModify = False
@@ -320,11 +319,7 @@ End
 
 Public Sub Editors_Change()
   
-  If $bSkipChangeEvent Then
-    $bSkipChangeEvent = False
-  Else
-    Modify
-  Endif
+  Modify
 
 End
 
@@ -2132,6 +2127,14 @@ Private Function GetExpressionSymbol(aExpr As String[], aType As Integer[]) As C
   '   ENDIF
 
   'ENDIF
+
+  If Not $hSymbol Then
+    If sPattern = "(" Then
+      Try $hSymbol = CComponent.GetClassSymbols(sType)["_call"]
+    Else If sPattern = "[" Then
+      Try $hSymbol = CComponent.GetClassSymbols(sType)["_get"]
+    Endif
+  Endif
 
   Return $hSymbol
 

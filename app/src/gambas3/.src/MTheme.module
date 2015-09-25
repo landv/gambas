@@ -90,29 +90,91 @@ Public Sub Copy(cColor As Collection) As Collection
 
 End
 
+Public Sub InvertColor(iCol As Integer, sKey As String) As Integer
+
+  ' Dim R, G, B As Integer
+  ' Dim Y, U, V As Float
+  ' 
+  ' With Color[iCol]
+  '   R = .Red
+  '   G = .Green
+  '   B = .Blue
+  ' End With
+  ' 
+  ' Y = 0.299 * R + 0.587 * G + 0.114 * B
+  ' U = 0.436 * (B - Y) / (1 - 0.114)
+  ' V = 0.615 * (R - Y) / (1 - 0.299)
+  ' 
+  ' R = Y + 1.14 * V
+  ' G = Y - 0.395 * U - 0.581 * V
+  ' B = Y + 2.033 * U
+  ' 
+  ' Return Color.RGB(R, G, B)
+  
+  Dim H, S, V, L As Integer
+  
+  With Color[iCol]
+    H = .Hue
+    S = .Saturation
+    V = .Value
+    L = .Luminance
+  End With
+  
+  If sKey = "CurrentLine" Then
+    If V > 128 Then
+      V *= 0.5
+      S = 255 - (255 - S) / 2
+    Endif
+  Else If S < 32 Or If sKey = "Background" Then 
+    V = 255 - V
+  Else If IsBackgroundStyle(sKey) Then
+    V *= 0.75
+  Endif
+  
+  Return Color.HSV(H, S, V)
+  
+End
+
 Public Sub InitEditor(hEditor As TextEditor, Optional bDesaturate As Boolean)
   
   Dim iInd As Integer  
   Dim hStyle As New CStyle
   Dim iStyle As Integer
   Dim iCol As Integer
+  Dim iBg As Integer
+  Dim bInvert As Boolean
+  Dim sKey As String
   
+  bInvert = Settings["/Editor/InvertTheme", 0]
   For iInd = 0 To ColorKeys.Max
     
-    hStyle.FromString(Settings["Highlight" &/ ColorKeys[iInd], $cDefault[ColorKeys[iInd]]])
-    iStyle = Object.GetProperty(Classes["Highlight"], ColorKeys[iInd])
+    sKey = ColorKeys[iInd]
+    
+    hStyle.FromString(Settings["Highlight" &/ sKey, $cDefault[sKey]])
+    iStyle = Object.GetProperty(Classes["Highlight"], sKey)
     With hEditor.Styles[iStyle]
       iCol = hStyle.Foreground
+      
+      If iInd = 0 Then 
+        iBg = iCol
+        If Color[iBg].Value < 128 Then bInvert = False
+      Endif
+      
+      If bInvert Then iCol = InvertColor(iCol, sKey)
+      
       If bDesaturate Then iCol = Color.Desaturate(iCol)
+      
       .Color = iCol
       .Bold = hStyle.Bold
       .Underline = hStyle.Underline
+      
     End With
     
   Next
   
   hEditor.Background = hEditor.Styles[Highlight.Background].Color
   hEditor.Foreground = hEditor.Styles[Highlight.Normal].Color
+  
   hEditor.Refresh
   
 End

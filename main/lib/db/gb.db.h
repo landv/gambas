@@ -253,6 +253,12 @@ typedef
 #define DB_T_SERIAL ((GB_TYPE)-1)
 #define DB_T_BLOB   ((GB_TYPE)-2)
 
+// Result.Fill() return values
+
+#define DB_OK          0
+#define DB_ERROR       1
+#define DB_NO_DATA     2
+
 /* Field Separator Character e.g. Table.field = Table.field */
 
 #define FLD_SEP '.'

@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CWidget.cpp
+	CWidget.cpp
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -67,7 +67,7 @@
 #include <QSet>
 #include <QScrollBar>
 #include <QLineEdit>
- 
+
 #ifndef NO_X_WINDOW
 static QMap<int, int> _x11_to_qt_keycode;
 #endif
@@ -227,12 +227,12 @@ void CWIDGET_set_name(CWIDGET *_object, const char *name)
 
 void *CWIDGET_get_parent(void *_object)
 {
-  QWidget *parent = WIDGET->parentWidget();
+	QWidget *parent = WIDGET->parentWidget();
 
-  if (!parent || (GB.Is(THIS, CLASS_Window) && ((CWINDOW *)_object)->toplevel))
-    return NULL;
-  else
-    return CWidget::get(parent);
+	if (!parent || (GB.Is(THIS, CLASS_Window) && ((CWINDOW *)_object)->toplevel))
+		return NULL;
+	else
+		return CWidget::get(parent);
 }
 
 int CWIDGET_get_handle(void *_object)
@@ -583,22 +583,23 @@ static void CWIDGET_after_geometry_change(void *_object, bool arrange)
 
 void CWIDGET_move(void *_object, int x, int y)
 {
-  QWidget *wid = get_widget(THIS);
+	QWidget *wid = get_widget(THIS);
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
+	if (GB.Is(THIS, CLASS_Window))
+	{
 		CWINDOW *win = (CWINDOW *)_object;
-    win->x = x;
-    win->y = y;
-		win->mustCenter = false;
-  }
-  
+		win->x = x;
+		win->y = y;
+		if (!win->moved && (x || y))
+			win->moved = true;
+	}
+	
 	if (wid)
 	{
 		if (x == wid->x() && y == wid->y())
 			return;
 
-  	wid->move(x, y);
+		wid->move(x, y);
 	}
 
 	CWIDGET_after_geometry_change(THIS, false);
@@ -607,19 +608,19 @@ void CWIDGET_move(void *_object, int x, int y)
 /*
 void CWIDGET_move_cached(void *_object, int x, int y)
 {
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-  }
-  
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		((CWINDOW *)_object)->x = x;
+		((CWINDOW *)_object)->y = y;
+	}
+	
 	CWIDGET_after_geometry_change(THIS, false);
 }
 */
 
 void CWIDGET_resize(void *_object, int w, int h)
 {
-  QWidget *wid = get_widget_resize(THIS);
+	QWidget *wid = get_widget_resize(THIS);
 	bool window;
 	bool resizable = true;
 	bool decide_w, decide_h;
@@ -651,17 +652,17 @@ void CWIDGET_resize(void *_object, int w, int h)
 		if (!resizable)
 			((MyMainWindow *)wid)->setResizable(true);
 	}
-  
+	
 	wid->resize(qMax(0, w), qMax(0, h));
 
-  if (window)
-  {
+	if (window)
+	{
 		((MyMainWindow *)wid)->setResizable(resizable);
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-    // menu bar height is ignored
-    //((CWINDOW *)_object)->container->resize(w, h);
-  }
+		((CWINDOW *)_object)->w = w;
+		((CWINDOW *)_object)->h = h;
+		// menu bar height is ignored
+		//((CWINDOW *)_object)->container->resize(w, h);
+	}
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
@@ -669,11 +670,11 @@ void CWIDGET_resize(void *_object, int w, int h)
 /*
 void CWIDGET_resize_cached(void *_object, int w, int h)
 {
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-  }
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		((CWINDOW *)_object)->w = w;
+		((CWINDOW *)_object)->h = h;
+	}
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
@@ -681,7 +682,7 @@ void CWIDGET_resize_cached(void *_object, int w, int h)
 
 void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 {
-  QWidget *wid = get_widget(THIS);
+	QWidget *wid = get_widget(THIS);
 
 	if (wid)
 	{
@@ -692,15 +693,17 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 			h = wid->height();
 	}
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
+	if (GB.Is(THIS, CLASS_Window))
+	{
 		CWINDOW *win = (CWINDOW *)_object;
 		win->x = x;
-    win->y = y;
-    win->w = w;
-    win->h = h;
-		win->mustCenter = false;
-  }
+		win->y = y;
+		win->w = w;
+		win->h = h;
+		
+		if (!win->moved && (x || y))
+			win->moved = true;
+	}
 
 	CWIDGET_check_visibility(THIS);
 
@@ -730,7 +733,7 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 #if 0
 void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 {
-  QWidget *wid = get_widget(THIS);
+	QWidget *wid = get_widget(THIS);
 
 	if (wid)
 	{
@@ -752,14 +755,14 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 		wid->setGeometry(x, y, qMax(0, w), qMax(0, h));
 	}
 
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-    //((CWINDOW *)_object)->container->resize(w, h);
-  }
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		((CWINDOW *)_object)->x = x;
+		((CWINDOW *)_object)->y = y;
+		((CWINDOW *)_object)->w = w;
+		((CWINDOW *)_object)->h = h;
+		//((CWINDOW *)_object)->container->resize(w, h);
+	}
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
@@ -768,13 +771,13 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 /*
 void CWIDGET_move_resize_cached(void *_object, int x, int y, int w, int h)
 {
-  if (GB.Is(THIS, CLASS_Window))
-  {
-    ((CWINDOW *)_object)->x = x;
-    ((CWINDOW *)_object)->y = y;
-    ((CWINDOW *)_object)->w = w;
-    ((CWINDOW *)_object)->h = h;
-  }
+	if (GB.Is(THIS, CLASS_Window))
+	{
+		((CWINDOW *)_object)->x = x;
+		((CWINDOW *)_object)->y = y;
+		((CWINDOW *)_object)->w = w;
+		((CWINDOW *)_object)->h = h;
+	}
 
 	CWIDGET_after_geometry_change(THIS, true);
 }
@@ -1786,9 +1789,9 @@ BEGIN_PROPERTY(Control_Tracking)
 
 	HANDLE_PROXY(_object);
 
-  if (READ_PROPERTY)
-    GB.ReturnBoolean(THIS->flag.tracking);
-  else
+	if (READ_PROPERTY)
+		GB.ReturnBoolean(THIS->flag.tracking);
+	else
 	{
 		if (VPROP(GB_BOOLEAN) != THIS->flag.tracking)
 		{
@@ -2517,18 +2520,18 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		goto __NEXT;
 	}
 	
-  __FOCUS_IN:
-  {
+	__FOCUS_IN:
+	{
 		CWIDGET_handle_focus(control, true);
 		goto __NEXT;
-  }
-  
-  __FOCUS_OUT:
-  {
+	}
+	
+	__FOCUS_OUT:
+	{
 		CWIDGET_handle_focus(control, false);
 		goto __NEXT;
-  }
-  
+	}
+	
 	__CONTEXT_MENU:
 	{
 		while (EXT(control) && EXT(control)->proxy_for)
@@ -2578,7 +2581,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		/*if (type == QEvent::MouseButtonPress)
 		{
 			qDebug("mouse event on [%s %s %p] (%s %p) %s%s%s", widget->metaObject()->className(), qPrintable(widget->objectName()), widget, 
-						 control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "", original ? "ORIGINAL ": "");
+						control ? GB.GetClassName(control) : "-", control, real ? "REAL " : "", design ? "DESIGN " : "", original ? "ORIGINAL ": "");
 			//getDesignDebug(widget);
 		}*/
 		
@@ -3238,7 +3241,7 @@ GB_DESC CControlDesc[] =
 	GB_PROPERTY("Design", "b", Control_Design),
 	GB_PROPERTY("Name", "s", Control_Name),
 	GB_PROPERTY("Tag", "v", Control_Tag),
-  GB_PROPERTY("Tracking", "b", Control_Tracking),
+	GB_PROPERTY("Tracking", "b", Control_Tracking),
 	GB_PROPERTY("Mouse", "i", Control_Mouse),
 	GB_PROPERTY("Cursor", "Cursor", Control_Cursor),
 	GB_PROPERTY("Tooltip", "s", Control_Tooltip),

@@ -592,6 +592,20 @@ Private Sub FindPathInBrowseResult(sPath As String) As Integer
   
 End
 
+Private Sub UpdateSearchList()
+
+  Dim iLen As Integer
+
+  iLen = gvwFind.Rows.Count
+  If iLen = 0 Then
+    FDebugInfo.SetSearchListInfo()
+  Else If iLen = 1 Then
+    FDebugInfo.SetSearchListInfo(("One match"))
+  Else
+    FDebugInfo.SetSearchListInfo(Subst(("&1 matches"), iLen))
+  Endif
+    
+End
 
 Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As Integer = -1, Optional bRefresh As Boolean)
   
@@ -639,7 +653,7 @@ Private Sub BrowseFile(sPath As String, bReplace As Boolean, Optional iIndex As 
   Next
   
   gvwFind.Rows.Count = $aBrowse.Count
-  gvwFind.Show
+  UpdateSearchList
   
 End
 
@@ -649,8 +663,8 @@ Public Sub ResetBrowse()
   gvwFind.Clear
   gvwFind.Rows.Height = Max(gvwFind.Font.Height, $hFont.Height) + 4
   $aBrowse.Clear
-  gvwFind.Hide
   ClearCache
+  UpdateSearchList
   
 End
 
@@ -660,7 +674,6 @@ Private Sub Browse(Optional bReplace As Boolean, Optional bAgain As Boolean)
   Dim sDir As String
   Dim sFile As String
   Dim sPath As String
-  Dim iLen As Integer
   Dim sName As String
   Dim sExt As String
   Dim fTime As Float
@@ -749,15 +762,8 @@ Finally
   
   Dec FMain.NoMessage
   
-  iLen = gvwFind.Rows.Count
-  If iLen = 0 Then
-    FDebugInfo.HideSearchList
-  Else If iLen = 1 Then
-    FDebugInfo.SetSearchListInfo(("One match"))
-  Else
-    FDebugInfo.SetSearchListInfo(Subst(("&1 matches"), iLen))
-  Endif
-
+  UpdateSearchList
+  
   'lblBrowse.Hide
   FDebugInfo.EnableGUI(True)
   'btnClose.Text = ("Close")
@@ -1090,6 +1096,7 @@ Public Sub RefreshBrowse()
   gvwFind.ScrollX = 0
   timRefresh.Stop
   BrowseTimeStamp = Project.TimeStamp
+  UpdateSearchList
   
 Catch
   

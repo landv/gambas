@@ -36,7 +36,7 @@ Static Public Sub _get((Application) As String) As DBusApplication
   
 End
 
-Static Public Sub _Normalize(sName As String, Optional bKeepCase As Boolean) As String
+Static Public Sub _Normalize(sName As String, Optional bKeepCase As Boolean, Optional sMore As String) As String
   
   Dim sRes As String
   Dim iInd As Integer
@@ -46,7 +46,8 @@ Static Public Sub _Normalize(sName As String, Optional bKeepCase As Boolean) As 
     sCar = Mid$(sName, iInd, 1)
     If IsLetter(sCar) Then
       If Not bKeepCase Then sCar = LCase(sCar)
-    Else If IsDigit(sCar) Or If InStr("-", sCar) Then
+    Else If IsDigit(sCar) Or If sCar = "_" Then
+    Else If InStr(sMore, sCar) Then
     Else
       If Right(sRes) <> "." Then
         sCar = "."
@@ -91,13 +92,13 @@ End
 Static Private Function Name_Read() As String
 
   If $sAppName Then Return $sAppName
-  Return "org.gambas." & _Normalize(Application.Name, True)
+  Return "org.gambas." & _Normalize(Application.Name, True, "-_")
   
 End
 
 Static Private Sub Name_Write(Value As String)
 
-  $sAppName = _Normalize(Value, True)
+  $sAppName = _Normalize(Value, True, "-_")
 
 End
 
@@ -112,6 +113,13 @@ Static Public Sub Unregister((Object) As DBusObject)
   Object._Unregister(DBus.Session)
   
 End
+
+Static Public Sub IsRegistered((Object) As DBusObject) As Boolean
+  
+  Return {Object}._Path
+  
+End
+
 
 Static Public Sub Raise((Object) As DBusObject, Signal As String, Optional Arguments As Variant[])
   

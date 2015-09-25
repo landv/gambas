@@ -112,6 +112,17 @@ BEGIN_METHOD(Component_IsLoaded, GB_STRING name)
 
 END_METHOD
 
+BEGIN_METHOD(Component_FindFromPath, GB_STRING path)
+
+	ARCHIVE *arch = NULL;
+	const char *path = GB_ToZeroString(ARG(path));
+	ARCHIVE_find_from_path(&arch, &path);
+	if (arch)
+		GB_ReturnNewZeroString(arch->name);
+	else
+		GB_ReturnVoidString();
+
+END_METHOD
 
 //---- Classes ------------------------------------------------------------
 
@@ -859,6 +870,7 @@ GB_DESC NATIVE_Component[] =
 	//GB_STATIC_METHOD("_get", "Component", library_get, "(Name)s"),
 	GB_STATIC_METHOD("Load", "Component", Component_Load, "(Name)s"),
 	GB_STATIC_METHOD("IsLoaded", "b", Component_IsLoaded, "(Name)s"),
+	GB_STATIC_METHOD("FindFromPath", "s", Component_FindFromPath, "(Name)s"),
 	GB_STATIC_PROPERTY_READ("Path", "s", Component_Path),
 
 	GB_PROPERTY_READ("Name", "s", Component_Name),

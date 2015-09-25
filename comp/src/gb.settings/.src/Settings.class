@@ -384,6 +384,7 @@ Private Sub WriteWindow(hWindow As Window, sKey As String)
   'Dim hDesktopWin As DesktopWindow
   
   S = hWindow.Screen
+  
   X = hWindow.X - Screens[S].AvailableX
   Y = hWindow.Y - Screens[S].AvailableY
   W = hWindow.Width

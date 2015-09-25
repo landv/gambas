@@ -124,7 +124,7 @@ Public Sub _Register(hConnection As DBusConnection, sFullPath As String, Optiona
   $sPath = sPath
   'Debug Me;; $sFullPath; " | "; $sPath
   
-  $sInterface = $sName & "." & DBus._Normalize(Object.Class(Me).Name)
+  $sInterface = DBus._Normalize($sName & "." & Object.Class(Me).Name)
   If aInterface Then $aInterface = aInterface.Copy()
   
   _ObjectCache[sFullPath] = Me

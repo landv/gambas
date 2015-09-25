@@ -22,7 +22,7 @@ Public YAfter As Integer
 
 Private $aUndo As New CCommand[]
 Private $aRedo As New CCommand[]
-Private $bNoUndo As Boolean
+Private $iNoUndo As Integer
 
 Private $hDefaultInfo As New CLineInfo
 
@@ -156,7 +156,7 @@ End
 
 Public Sub Begin()
 
-  If $bNoUndo Then Return
+  If $iNoUndo Then Return
   Inc $iBegin
   AddUndo(CCommand(Me, CCommand.BEGIN,, Me.Current.Column, Me.Current.Line))
   DisableHighlight
@@ -165,7 +165,7 @@ End
 
 Public Sub End()
   
-  If $bNoUndo Then Return
+  If $iNoUndo Then Return
   If $iBegin = 0 Then Error.Raise("Missing call to Begin")
   Dec $iBegin
   EnableHighlight
@@ -296,7 +296,7 @@ Public Sub Insert(sText As String, X As Integer, Y As Integer)
   XAfter = XA
   YAfter = YA
   
-  If Not $bNoUndo Then 
+  If $iNoUndo = 0 Then 
     AddUndo(CCommand(Me, CCommand.INSERT, sText, XO, YO, XA, YA))
   Endif
   
@@ -521,7 +521,7 @@ Public Sub Remove(X1 As Integer, Y1 As Integer, X2 As Integer, Y2 As Integer)
   XAfter = X1
   YAfter = Y1
   
-  If Not $bNoUndo Then
+  If $iNoUndo = 0 Then
     AddUndo(CCommand(Me, CCommand.DELETE, sText, X1, Y1, X2, Y2))
   Endif
   
@@ -685,7 +685,7 @@ End
 
 Private Sub AddUndo(hCmd As CCommand)
 
-  If $bNoUndo Then Return
+  If $iNoUndo Then Return
   
   'hCmd.Print("AddUndo: ")
   
@@ -707,7 +707,7 @@ Public Sub Undo()
   
   If $aUndo.Count = 0 Then Return
   
-  $bNoUndo = True
+  DisableUndo
   DisableHighlight
   
   bOverwrite = Me.Current.Overwrite
@@ -756,7 +756,7 @@ Public Sub Undo()
   
   Me.Current.Overwrite = bOverwrite
   
-  $bNoUndo = False
+  EnableUndo
   EnableHighlight
   
 End
@@ -769,7 +769,7 @@ Public Sub Redo()
   
   If $aRedo.Count = 0 Then Return
   
-  $bNoUndo = True
+  DisableUndo
   DisableHighlight
   
   bOverwrite = Me.Current.Overwrite
@@ -816,7 +816,7 @@ Public Sub Redo()
   
   Me.Current.Overwrite = bOverwrite
   
-  $bNoUndo = False
+  EnableUndo
   EnableHighlight
   
 End
@@ -1255,4 +1255,15 @@ Public Sub EnableHighlight()
   
 End
 
+Public Sub DisableUndo()
+  
+  Inc $iNoUndo
+  
+End
+
+Public Sub EnableUndo()
+  
+  Dec $iNoUndo
+  
+End
 

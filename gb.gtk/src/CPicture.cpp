@@ -54,105 +54,26 @@ void* GTK_GetPicture(GdkPixbuf *buf)
 	return (void*)pic;
 }
 
-/*******************************************************************************
 
-Picture Cache
-
-********************************************************************************/
-
-static GHashTable *_cache = NULL;
-
-static void destroy_key(char *key)
+bool CPICTURE_load_image(gPicture **p, const char *path, int lenp)
 {
-	//fprintf(stderr, "destroy_key: '%s'\n", key);
-	g_free(key);
+	char *addr;
+	int len;
+	
+	*p = NULL;
+	
+	if (GB.LoadFile(path, lenp, &addr, &len))
+	{
+		GB.Error(NULL);
+		return FALSE;
+	}
+			
+	*p = gPicture::fromMemory(addr, len);
+	GB.ReleaseFile(addr, len);
+	return *p != NULL;
 }
 
-static void destroy_value(CPICTURE *pic)
-{
-	//fprintf(stderr, "destroy_value: %p\n", pic);
-	GB.Unref((void **)POINTER(&pic));
-}
-
-static CPICTURE *cache_get(char *key)
-{
-	if (!_cache)
-		return NULL;
-
-	return (CPICTURE *)g_hash_table_lookup(_cache, (gconstpointer)key);
-}
-
-static void cache_add(char *key, CPICTURE *pic)
-{
-	if (!_cache)
-		_cache = g_hash_table_new_full(g_str_hash, g_str_equal, (GDestroyNotify)destroy_key, (GDestroyNotify)destroy_value);
-
-	if (!key || !*key)
-		return;
-
-	GB.Ref((void *)pic);
-	//fprintf(stderr, "cache_add: '%s' %p\n", key, pic);
-	g_hash_table_replace(_cache, (gpointer)g_strdup(key), (gpointer)pic);
-}
-
-static void cache_flush()
-{
-	if (!_cache)
-		return;
-
-	g_hash_table_destroy(_cache);
-	_cache = NULL;
-}
-
-/*******************************************************************************
-
-	class Picture
-
-*******************************************************************************/
-
-#define LOAD_IMAGE_FUNC CPICTURE_load_image
-
-#define IMAGE_TYPE gPicture
-
-#define CREATE_IMAGE_FROM_MEMORY(_image, _addr, _len, _ok) \
-	_image = gPicture::fromMemory(_addr, _len);
-
-#define DELETE_IMAGE(_image)
-
-#define CREATE_PICTURE_FROM_IMAGE(_cpicture, _image) \
-	_cpicture = CPICTURE_create(_image);
-
-#define GET_FROM_CACHE(_key) (cache_get(_key))
-
-#define GET_FROM_STOCK(_name, _len) gPicture::fromNamedIcon(_name, _len)
-
-#define INSERT_INTO_CACHE(_key, _cpicture) cache_add((_key), (_cpicture))
-
-#define APPLICATION_THEME CAPPLICATION_Theme
-
-#include "gb.form.picture.h"
-
-
-BEGIN_METHOD(CPICTURE_get, GB_STRING path)
-
-	GB.ReturnObject(get_picture(STRING(path), LENGTH(path)));
-
-END_METHOD
-
-
-BEGIN_METHOD(CPICTURE_put, GB_OBJECT picture; GB_STRING path)
-
-	set_picture(STRING(path), LENGTH(path), (CPICTURE *)VARG(picture));
-
-END_METHOD
-
-
-BEGIN_METHOD_VOID(CPICTURE_flush)
-
-	cache_flush();
-
-END_METHOD
-
+//---------------------------------------------------------------------------
 
 BEGIN_METHOD(CPICTURE_new, GB_INTEGER w; GB_INTEGER h; GB_BOOLEAN trans)
 
@@ -310,13 +231,8 @@ GB_DESC CPictureDesc[] =
 
 	//GB_STATIC_METHOD("_exit", NULL, CPICTURE_flush, NULL),
 
-	GB_METHOD("_new", 0, CPICTURE_new, "[(Width)i(Height)i(Transparent)b]"),
-	GB_METHOD("_free", 0, CPICTURE_free, 0),
-	GB_STATIC_METHOD("_exit",0,CPICTURE_flush,0),
-
-	GB_STATIC_METHOD("_get", "Picture", CPICTURE_get, "(Path)s"),
-	GB_STATIC_METHOD("_put", 0, CPICTURE_put, "(Picture)Picture;(Path)s"),
-	GB_STATIC_METHOD("Flush", 0, CPICTURE_flush, 0),
+	GB_METHOD("_new", NULL, CPICTURE_new, "[(Width)i(Height)i(Transparent)b]"),
+	GB_METHOD("_free", NULL, CPICTURE_free, NULL),
 
 	GB_PROPERTY_READ("Width", "i", CPICTURE_width),
 	GB_PROPERTY_READ("Height", "i", CPICTURE_height),

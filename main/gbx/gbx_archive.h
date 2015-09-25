@@ -87,6 +87,7 @@ bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path);
 void ARCHIVE_dir_first(ARCHIVE *arch, const char *path, const char *pattern, int attr);
 bool ARCHIVE_dir_next(char **name, int *len, int attr);
 
+bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath);
 bool ARCHIVE_get_current(ARCHIVE **parch);
 
 bool ARCHIVE_check_addr(char *addr);
