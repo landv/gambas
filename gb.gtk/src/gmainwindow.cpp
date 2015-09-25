@@ -234,6 +234,7 @@ void gMainWindow::initialize()
 	_transparent = false;
 	_utility = false;
 	_no_take_focus = false;
+	_moved = false;
 
 	onOpen = NULL;
 	onShow = NULL;
@@ -452,6 +453,9 @@ void gMainWindow::move(int x, int y)
 	
 	if (isTopLevel())
 	{
+		if (!_moved && (x || y))
+			_moved = true;
+		
 		if (x == bufX && y == bufY) 
 			return;
 	
@@ -842,6 +846,8 @@ void gMainWindow::showActivate()
 {
 	bool v = isTopLevel() && isVisible() && !_no_take_focus;
 
+	if (!_moved)
+		center();
 	show();
 	if (v)
 		present();

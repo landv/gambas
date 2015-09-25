@@ -198,6 +198,7 @@ public:
 	unsigned _utility : 1;
 	unsigned _transparent : 1;
 	unsigned _no_take_focus : 1;
+	unsigned _moved : 1;
 };
 
 #endif
