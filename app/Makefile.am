@@ -33,10 +33,10 @@ install-exec-local:
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
 		cp -f $(srcdir)/mime/application-x-gambas*.png $(DESTDIR)$(gbdatadir)/icons; \
 		echo "Registering Gambas script mimetype"; \
-		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
+		xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
 		xdg-mime install $(srcdir)/mime/application-x-gambasscript.xml; \
 		echo "Registering Gambas server page mimetype"; \
-		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
+		xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
 		xdg-mime install $(srcdir)/mime/application-x-gambasserverpage.xml; \
 	fi
 
