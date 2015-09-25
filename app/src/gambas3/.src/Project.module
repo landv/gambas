@@ -212,7 +212,7 @@ Private $bBackgroundValid As Boolean
 
 ' Global documentation object
 ' Another one is created for the offline wiki
-Public Documentation As New CDocumentation
+Public Documentation As CDocumentation
 
 Public Sub _init()
 
@@ -314,6 +314,8 @@ Public Sub Main()
 
   RefreshBreakpointPicture
 
+  Documentation = New CDocumentation
+  
   If $bTesting And If sPath Then
     InitVersion
     InitWebView
