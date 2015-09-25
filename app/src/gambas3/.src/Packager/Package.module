@@ -116,6 +116,63 @@ Private Sub RemoveEmptyLines(sText As String) As String
   
 End
 
+
+Private Sub GetShortDesc(sText As String, Optional iMax As Integer) As String
+
+  Dim iPos As Integer
+  
+  iPos = InStr(sText, ". ")
+  If iPos = 0 Then iPos = Len(sText) + 1
+  sText = Trim(Left(sText, iPos))
+  
+  If iMax And If Len(sText) > iMax Then
+    sText = Left(sText, iMax - 3) & "..."
+  Endif
+  
+  Return sText
+  
+End
+
+Private Sub FormatDesc(sText As String, Optional iMax As Integer) As String[]
+
+  Dim aLine As New String[]
+  Dim iPos As Integer
+  Dim I As Integer
+  Dim sLine As String
+
+  If iMax = 0 Then Return Split(sText, "\n")
+
+  aLine.Add("")
+
+  While sText
+    
+    aLine[aLine.Max] &= String.Left(sText)
+    sText = String.Mid$(sText, 2)
+    
+    sLine = aLine[aLine.Max]
+    If String.Len(sLine) > iMax Then
+      For I = Len(sLine) - 1 DownTo 1
+        iPos = InStr(" .,;", Mid$(sLine, I, 1))
+        If iPos Then
+          aLine[aLine.Max] = Left(sLine, I)
+          aLine.Add(Mid$(sLine, I + 1))
+          Break
+        Endif
+      Next
+      If I = 0 Then
+        aLine[aLine.Max] = String.Left(sLine, iMax)
+        aLine.Add(String.Mid$(sLine, iMax + 1))
+      Endif
+    Endif
+    
+  Wend
+  
+  Return aLine
+  
+End
+
+
+
 Private Sub GetVersion() As String
 
   Return Project.FormatVersion()
@@ -154,7 +211,11 @@ Private Sub InitMake(sSys As String)
 
   $sVersion = GetVersion()
   
-  $sDescription = RemoveEmptyLines(Project.Description)
+  If Project.Description Then
+    $sDescription = RemoveEmptyLines(Project.Description)
+  Else
+    $sDescription = "Missing description"
+  Endif
   
   $bSupportPackage = Project.Components.Exist("gb.gui")
 
@@ -692,7 +753,7 @@ Private Function MakeDebPackage(sSys As String)
   sPackageName = FormatDebPackageName($sUnsafePackageName)
   
   '$sName = Replace$($sName, "_", "-")
-  sIcon = sPackageName & ".png"
+  sIcon = sPackageName & ".xpm"
 
   ' Step 1. Create the build directory
 
@@ -709,7 +770,7 @@ Private Function MakeDebPackage(sSys As String)
 
   sArch = sPackagePath &/ "src/raw.tar.gz"
   ' FIXME: Don't write the icon inside the project! Find another solution!
-  Project.StretchIcon(Project.Dir &/ Project.Icon, 48).Save(Project.Dir &/ sIcon)
+  Project.StretchIcon(Project.Dir &/ Project.Icon, 32).Save(Project.Dir &/ sIcon)
   
   Project.MakeSourcePackageTo(sArch)
   
@@ -759,7 +820,7 @@ Private Function MakeDebPackage(sSys As String)
     hFile = Open sPackagePath &/ "debian/menu" For Create 
     Print #hFile, "?package("; sPackageName; "):needs=\""; IIf(IsConsoleProject(), "text", "X11"); "\" section=\""; Project.Menus[sSys]; "\"\\"
     Print #hFile, "title=\""; IIf(Project.Title, Project.Title, Project.Name); "\"\\" 
-    Print #hFile, "command=\"/usr/bin/"; sPackageName; "\"\\"
+    Print #hFile, "command=\"/usr/bin/"; $sName; "\"\\"
     Print #hFile, "icon=\"/usr/share/pixmaps/"; sIcon; "\""
     Close #hFile
   Endif 
@@ -832,24 +893,24 @@ Private Function MakeDebPackage(sSys As String)
   Endif 
   Print #hFile
 
-  Print #hFile, "Description: ";
-  If Project.Title Then 
-    Print #hFile, Project.Title
-  Else 
-    Print #hFile, Project.Name
-  Endif 
+  Print #hFile, GetShortDesc("Description: " & $sDescription, 80)
+  ' If Project.Title Then 
+  '   Print #hFile, Project.Title
+  ' Else 
+  '   Print #hFile, Project.Name
+  ' Endif 
   
-  For Each sLine In Split(Trim($sDescription), "\n")
+  For Each sLine In FormatDesc($sDescription, 80)
     Print #hFile, " "; sLine
   Next
 
   Select Case Project.Type
     Case Project.TYPE_NORMAL
-      Print #hFile, " This program is written in Gambas"
+      Print #hFile, " This program is written in Gambas."
     Case Project.TYPE_LIBRARY
-      Print #hFile, " This is a Gambas library"
+      Print #hFile, " This is a Gambas library."
     Case Project.TYPE_COMPONENT
-      Print #hFile, " This is a Gambas component written in Gambas"
+      Print #hFile, " This is a Gambas component written in Gambas."
   End Select
   
   Close #hFile
@@ -937,6 +998,8 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   Dim hFile As File
   Dim sPackageName As String
   Dim sPackagePath As String
+  Dim sDesc As String
+  Dim sLine As String
       
   Inc Application.Busy
   
@@ -993,7 +1056,16 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "Package: "; sPackageName
   Print #hFile, "Architecture: all"
   Print #hFile, "Depends: "; FormatDebPackageName($sUnsafePackageName);; "(>=";; $sVersion;; "), "; FormatDebPackageName($sUnsafePackageName);; "(<=";; $sVersion; ")"; GetDependencies(aComp)
-  Print #hFile, "Description: This is the "; sSupport; " support for "; If(Project.Title, Project.Title, Project.Name)
+  
+  sDesc = sSupport & " package for " & If(Project.Title, Project.Title, Project.Name)
+  
+  Print #hFile, GetShortDesc("Description: " & sDesc, 80)
+  
+  sDesc = "This is the dummy " & sDesc
+  
+  For Each sLine In FormatDesc(sDesc)
+    Print #hFile, " "; sLine
+  Next
   
   
   ' debian/rules
