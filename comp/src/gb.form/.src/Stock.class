@@ -19,49 +19,49 @@ Static Private $bDebug As Boolean
 
 Class _DefaultStock
 
-Static Private Sub GetDesktop() As String
-  
-  Dim sOutput As String
-  
-  If Env["KDE_FULL_SESSION"] Then
-    If Env["KDE_SESSION_VERSION"] = "4" Then
-      Return "KDE4"
-    Else If Env["KDE_SESSION_VERSION"] = "5" Then
-      Return "KDE5"
-    Else
-      Return "KDE"
-    Endif
-  Else If Env["GNOME_DESKTOP_SESSION_ID"] Then
-    Return "GNOME"
-  Else If Env["MATE_DESKTOP_SESSION_ID"] Or If Env["MATECORBA_SOCKETDIR"] Then
-    Return "MATE"
-  Else If Env["E_BIN_DIR"] And If Env["E_LIB_DIR"] Then
-    Return "ENLIGHTENMENT"
-  Else If Env["WMAKER_BIN_NAME"] Then
-    Return "WINDOWMAKER"
-  Else If Env["DESKTOP_SESSION"] = "LXDE" Then
-    Return "LXDE"
-  Else
-    Shell "xprop -root XFCE_DESKTOP_WINDOW" To sOutput
-    If sOutput Then Return "XFCE"
-  Endif
-  
-  Select Case Env["XDG_CURRENT_DESKTOP"]
-    Case "LXDE"
-      Return "LXDE"
-  End Select
-  
-  Return ""
-  
-Catch
-  
-End
+' Static Private Sub GetDesktop() As String
+'   
+'   Dim sOutput As String
+'   
+'   If Env["KDE_FULL_SESSION"] Then
+'     If Env["KDE_SESSION_VERSION"] = "4" Then
+'       Return "KDE4"
+'     Else If Env["KDE_SESSION_VERSION"] = "5" Then
+'       Return "KDE5"
+'     Else
+'       Return "KDE"
+'     Endif
+'   Else If Env["GNOME_DESKTOP_SESSION_ID"] Then
+'     Return "GNOME"
+'   Else If Env["MATE_DESKTOP_SESSION_ID"] Or If Env["MATECORBA_SOCKETDIR"] Then
+'     Return "MATE"
+'   Else If Env["E_BIN_DIR"] And If Env["E_LIB_DIR"] Then
+'     Return "ENLIGHTENMENT"
+'   Else If Env["WMAKER_BIN_NAME"] Then
+'     Return "WINDOWMAKER"
+'   Else If Env["DESKTOP_SESSION"] = "LXDE" Then
+'     Return "LXDE"
+'   Else
+'     Shell "xprop -root XFCE_DESKTOP_WINDOW" To sOutput
+'     If sOutput Then Return "XFCE"
+'   Endif
+'   
+'   Select Case Env["XDG_CURRENT_DESKTOP"]
+'     Case "LXDE"
+'       Return "LXDE"
+'   End Select
+'   
+'   Return ""
+'   
+' Catch
+'   
+' End
 
 Static Private Sub SearchDesktop()
   
   Dim sDesktop As String
   If Application.Theme Then Return
-  sDesktop = GetDesktop()
+  sDesktop = Desktop.Type
   If $bDebug Then Error "gb.form: desktop is " & sDesktop
   Application.Theme = LCase(sDesktop)
   

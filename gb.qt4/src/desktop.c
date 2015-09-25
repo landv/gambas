@@ -36,7 +36,8 @@ extern const GB_INTERFACE *GB_PTR;
 }
 #endif
 
-static const char *_desktop;
+static bool _desktop_done = FALSE;
+static char _desktop[16];
 
 static const char *calc_desktop_type()
 {
@@ -77,25 +78,24 @@ static const char *calc_desktop_type()
 		return "WINDOWMAKER";
 	
 	env = getenv("XDG_CURRENT_DESKTOP");
-	if (env && *env)
-	{
-		if (strcasecmp(env, "LXDE") == 0)
-			return "LXDE";
-		if (strcasecmp(env, "UNITY") == 0)
-			return "UNITY";
-	}
+	if (env && *env && strlen(env) < sizeof(_desktop))
+		return env;
 	
-	return NULL;
+	return "?";
 }
 
 const char *DESKTOP_get_type()
 {
-	if (!_desktop)
+	const char *type;
+	char *p;
+	
+	if (!_desktop_done)
 	{
-		const char *type = calc_desktop_type();
-		if (!type)
-			type = "?";
-		_desktop = type;
+		type = calc_desktop_type();
+		p = _desktop;
+		
+		while ((*p++ = *type++));
+		_desktop_done = TRUE;
 	}
 	
 	return _desktop;
