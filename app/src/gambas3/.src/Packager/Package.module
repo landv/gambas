@@ -46,6 +46,8 @@ Private GTK_SUPPORT_PACKAGES As String[] = ["gb.gtk:gb.gui", "gb.gtk.opengl:gb.g
 Private Const GTK3_SUPPORT As String = "gtk3"
 Private GTK3_SUPPORT_PACKAGES As String[] = ["gb.gtk3:gb.gui"] ', "gb.gtk.opengl:gb.gui.opengl"]
 
+Private Const DEBIAN_STANDARD As String = "3.6.9"
+
 Public Sub CheckProgram()
   
   'IF $bChecked THEN RETURN
@@ -881,7 +883,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, GetExtraDependencies(sSys);
   Print #hFile
 
-  Print #hFile, "Standards-Version: 3.7.2"
+  Print #hFile, "Standards-Version: "; DEBIAN_STANDARD
   Print #hFile
   Print #hFile, "Package: "; sPackageName
   Print #hFile, "Architecture: all"
@@ -1051,7 +1053,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
   Print #hFile, "Build-Depends: debhelper (>= 7)"
-  Print #hFile, "Standards-Version: 3.9.2"
+  Print #hFile, "Standards-Version: "; DEBIAN_STANDARD
   Print #hFile
   Print #hFile, "Package: "; sPackageName
   Print #hFile, "Architecture: all"
