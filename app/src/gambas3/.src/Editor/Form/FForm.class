@@ -2936,7 +2936,7 @@ Public Sub UpdateTitle()
     If hPict Then
       If hPict.Width <> 16 Or hPict.Height <> 16 Then hPict = hPict.Image.Stretch(16, 16).Picture
     Else
-      hPict = Picture["img/16/gambas.png"]
+      hPict = Picture["img/logo/head-16.png"]
     Endif
 
     imgIcon.Picture = hPict

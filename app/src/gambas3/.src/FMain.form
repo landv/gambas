@@ -314,7 +314,7 @@
     { mnuViewProject Menu
       Action = "project"
       Text = ("Project")
-      Picture = Picture["img/16/gambas.png"]
+      Picture = Picture["icon:/small/view-split-h"]
       Toggle = True
       Checked = True
       Shortcut = "F10"
@@ -436,7 +436,6 @@
       }
       { mnuAddProjectLink Menu
         Text = Shortcut(("Project link"), "P") & "..."
-        Picture = Picture["img/logo/logo-16.png"]
         Visible = False
       }
       { Menu19 Menu
@@ -835,7 +834,7 @@
       Visible = False
       ToolTip = ("Project")
       Action = "project"
-      Picture = Picture["img/16/gambas.png"]
+      Picture = Picture["icon:/small/view-split-h"]
       Toggle = True
       Value = True
     }
@@ -1454,7 +1453,7 @@
   { Action project
     Text = "Project"
     Shortcut = "F10"
-    Picture = "img/16/gambas.png"
+    Picture = "icon:/small/view-split-h"
   }
   { Action project-property
     Text = "Properties"
