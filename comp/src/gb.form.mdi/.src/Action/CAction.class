@@ -54,7 +54,7 @@ Public Sub _new(sKey As String, bHasShortcut As Boolean, cSlot As Collection, hM
   Endif
   
   If Left(sPicture) = "$" Then
-  Else
+  Else If sPicture Then
     If sPicture Not Begins "icon:/" Then sPicture = ".." &/ sPicture
     IconPath = sPicture
     Try Icon = Picture[IconPath]

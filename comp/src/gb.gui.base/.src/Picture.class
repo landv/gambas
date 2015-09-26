@@ -8,6 +8,39 @@ Static $cCache As New Collection
 Static Private $bInit As Boolean
 Static Private $bDarkTheme As Boolean
 
+Static Private Sub GetKey(sPath As String) As String
+  
+  Dim sKey As String
+  
+  If sPath Begins "icon:/" Then
+    
+    sKey = sPath
+    
+  Else If File.IsRelative(sPath) Then
+    
+    While sPath Begins "./"
+      sPath = Mid$(sPath, 3)
+    Wend
+    
+    sKey = Component.FindFromPath(".." &/ sPath)
+    If sKey Then sKey &= ":"
+    
+    While sPath Begins "../"
+      sPath = Mid$(sPath, 4)
+    Wend
+    sKey &= sPath
+    
+  Else
+    
+    sKey = sPath
+    
+  Endif
+  
+  Return sKey
+  
+End
+
+
 Static Public Sub _get(Path As String) As Picture
   
   Dim sKey As String
@@ -18,14 +51,7 @@ Static Public Sub _get(Path As String) As Picture
   
   If Not Path Then Return
   
-  If Path Begins "icon:/" Then
-    sKey = Path
-  Else If File.IsRelative(Path) Then
-    sKey = Component.FindFromPath(Path) &/ Path
-  Else
-    sKey = Path
-  Endif
-  
+  sKey = GetKey(Path)
   hPict = $cCache[sKey]
   If hPict Then Return hPict
   
@@ -38,9 +64,6 @@ Static Public Sub _get(Path As String) As Picture
     
     sPath = Path
     
-    While sPath Begins "./"
-      sPath = Mid$(sPath, 3)
-    Wend
     If File.IsRelative(sPath) Then sPath = ".." &/ sPath
     'Debug Path;; System.Backtrace.Join(" ")
     
@@ -71,8 +94,10 @@ Static Public Sub _get(Path As String) As Picture
     Endif
     
     Try hPict = Image.Load(sPath).Picture
-    If Error Then Return Null
-    ' Error "gb.gui: warning: unable to load icon "; Path; ": "; System.Backtrace.Join(" ")
+    If Error Then
+      'Error "gb.gui: warning: unable to load icon "; Path; ": "; System.Backtrace.Join(" ")
+      Return Null
+    Endif
   Endif
   
 __LOAD_OK:
@@ -88,14 +113,7 @@ Static Public Sub _put(Value As Picture, Path As String)
   
   If Not Path Then Return
   
-  If Path Begins "icon:/" Then
-    sKey = Path
-  Else If File.IsRelative(Path) Then
-    sKey = Component.FindFromPath(Path) &/ Path
-  Else
-    sKey = Path
-  Endif
-  
+  sKey = GetKey(Path)
   $cCache[sKey] = Value
   
 End
@@ -105,8 +123,6 @@ Static Public Sub Flush()
   $cCache.Clear
   
 End
-
-
 
 Static Public Sub _exit()
   
