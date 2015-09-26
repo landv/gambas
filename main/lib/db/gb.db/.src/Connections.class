@@ -13,7 +13,7 @@ Static Private $sKey As String
 
 Static Public Sub Exist(Name As String) As Boolean
   
-  If $cConn.Exist(Name) Or If Exist("../.connection" &/ Name & ".connection") Then Return True
+  If $cConn.Exist(Name) Or If Exist(".../.connection" &/ Name & ".connection") Then Return True
   
 End
 
@@ -24,7 +24,7 @@ Static Private Sub Init()
   If $aConn Then Return
   $aConn = New String[]
   
-  For Each sFile In Dir("../.connection", "*.connection")
+  For Each sFile In Dir(".../.connection", "*.connection")
     $aConn.Add(File.BaseName(sFile))
   Next
   
@@ -39,7 +39,7 @@ Static Private Sub ReadConnectionFile(sName As String) As Collection
   Dim bInConnection As Boolean
   Dim aLine As String[]
   
-  sPath = "../.connection" &/ sName & ".connection"
+  sPath = ".../.connection" &/ sName & ".connection"
   If Not Exist(sPath) Then Return
   
   hFile = Open sPath
@@ -178,7 +178,7 @@ Static Public Sub Create(Name As String) As Connection
 
   hConn = GetConnectionFrom(Name, cData)
   
-  sPath = "../.connection" &/ Name & ".template"
+  sPath = ".../.connection" &/ Name & ".template"
   If Exist(sPath) Then
     
     hConnDB = New Connection
