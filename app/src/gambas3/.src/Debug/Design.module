@@ -902,7 +902,7 @@ Private Sub Start(sCmd As String)
   
       Select Case Desktop.Type
       
-        Case "KDE", "KDE4"
+        Case Like "KDE*"
           sProg = "konsole"
           
         Case "GNOME"        
@@ -910,6 +910,9 @@ Private Sub Start(sCmd As String)
           
         Case "XFCE"
           sProg = "Terminal"
+          
+        Case "LXDE"
+          sProg = "lxterminal"
         
         Default
           sProg = "xterm"
@@ -946,6 +949,9 @@ Private Sub Start(sCmd As String)
     Case "Terminal"
       aExec.Insert(["Terminal", "--hide-menubar", "--hide-toolbars", "--title=" & sTitle, "--hold", "-x"], 0)
     
+    Case "lxterminal"
+      aExec.Insert(["lxterminal", "-t", sTitle, "-e"], 0)
+      
     Case "xterm"
       aExec.Insert(["xterm", "-title", sTitle, "-hold", "-e"], 0)
       
