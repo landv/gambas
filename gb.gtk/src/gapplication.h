@@ -73,6 +73,7 @@ public:
 	static guint32 lastEventTime() { return _event_time; }
 	static GdkEvent *lastEvent() { return _event; }
 	static void updateLastEvent(GdkEvent *e);
+	static void updateLastEventTime();
 
 	static bool (*onKeyEvent)(int type);
 	
