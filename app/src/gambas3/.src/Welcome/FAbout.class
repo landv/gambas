@@ -189,7 +189,7 @@ Private Sub GetAuthor()
   
   gvwAuthor.Columns.Count = 1
   gvwAuthor.Rows.Count = aAuthor.Count
-  gvwAuthor.Columns[0].Width = Me.ClientWidth - Desktop.Scale * 4
+  gvwAuthor.Columns[0].Width = Me.ClientWidth - Desktop.Scale * 6
   
   For I = 0 To aAuthor.Max
     
