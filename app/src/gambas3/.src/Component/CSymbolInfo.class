@@ -59,7 +59,7 @@ End
 
 Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
   
-  Dim hSym As New CSymbolInfo
+  Dim hSym As New CSymbolInfo(Documentation)
   
   With hSym
     .Name = Name
