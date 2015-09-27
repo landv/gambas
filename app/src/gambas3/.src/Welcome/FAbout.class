@@ -127,9 +127,9 @@ Private Sub GetAuthor()
   Dim sCountry As String
   Dim sName As String
   Dim aAuthor As New String[]
-  Dim sAuthor As String
   Dim aSplit As String[]
   Dim iPos As Integer
+  Dim I As Integer
 
   hFic = Open "authors.txt"
 
@@ -187,11 +187,14 @@ Private Sub GetAuthor()
 
   aAuthor.Sort(gb.Language + gb.IgnoreCase)
   
-  sText = ""
+  gvwAuthor.Columns.Count = 1
+  gvwAuthor.Rows.Count = aAuthor.Count
+  gvwAuthor.Columns[0].Width = Me.ClientWidth - Desktop.Scale * 4
   
-  For Each sAuthor In aAuthor
+  For I = 0 To aAuthor.Max
     
-    aSplit = Split(sAuthor, "\n")
+    sText = ""
+    aSplit = Split(aAuthor[I], "\n")
     
     sName = aSplit[0]
 
@@ -205,29 +208,25 @@ Private Sub GetAuthor()
       
       sText &= "<b><font size=+1>" & aSplit[0] & "</font>"
       If aSplit[2] Then sText &= " (" & aSplit[2] & ")"
+      If aSplit[3] Then sText &= "<br><i>" & aSplit[3] & "</i>"
       sText &= "<blockquote>"
-      If aSplit[3] Then sText &= "<u>" & aSplit[3] & "</u><br>"
       sText &= aSplit[4]
       If aSplit[1] Then sText &= "<br>" & ("Financial support") & "<br>" & GetStars(CInt(aSplit[1]))
       sText &= "</b>"
 
     Endif
     
-    sText &= "</blockquote><br>\n"
+    sText &= "</blockquote>"
+    
+    gvwAuthor[I, 0].WordWrap = True
+    gvwAuthor[I, 0].RichText = sText
+    gvwAuthor.Rows[I].Height = -1
+    gvwAuthor.Rows[I].Height += Desktop.Scale * 3
     
   Next
 
-  'txtAuthor.X = Desktop.Scale
-  'txtAuthor.W = txtAuthor.Parent.W - Desktop.Scale * 2
-  txtAuthor.Text = sText
-  txtAuthor.Adjust
-  'txtAuthor.Height += 128
-  'txtAuthor.W = txtAuthor.Parent.W - Desktop.Scale * 2
-
-Catch
-
-  txtAuthor.Text = Error.Text
-  txtAuthor.Adjust
+  gvwAuthor.Padding = Desktop.Scale
+  gvwAuthor.H = gvwAuthor.ScrollHeight
 
 End
 

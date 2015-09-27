@@ -46,8 +46,12 @@
       Text = ("<h2 align=center>Authors</h2>\n")
       Alignment = Align.Bottom
     }
-    { txtAuthor TextLabel
-      MoveScaled(7,124,41,8)
+    { gvwAuthor GridView
+      MoveScaled(18,123,28,8)
+      Background = Color.Transparent
+      Border = False
+      Grid = False
+      ScrollBar = Scroll.None
     }
     { Panel3 Panel
       MoveScaled(28,133,10,43)
