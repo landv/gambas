@@ -89,7 +89,9 @@ if [ x"$KDE_FULL_SESSION" = x"true" ]; then
   fi
 elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DESKTOP=Gnome;
 elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DESKTOP=Gnome;
-elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DESKTOP=Xfce;
+# enhance xfce detection as seen in http://unix.stackexchange.com/questions/116539/how-to-detect-the-desktop-environment-in-a-bash-script
+elif [ xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1 ] || \
+[ -n "$(echo $XDG_DATA_DIRS | grep -Eo 'xfce')" ];  then DESKTOP=Xfce;
 elif [ x"$DESKTOP_SESSION" == x"LXDE" ]; then DESKTOP=LXDE;
 elif [ x"$E_BIN_DIR" != x"" ]; then DESKTOP=Enlightenment;
 elif [ x"$WMAKER_BIN_NAME" != x"" ]; then DESKTOP=WindowMaker;
