@@ -11,65 +11,21 @@
   { dwgWelcome DrawingArea
     MoveScaled(0,0,69,24)
   }
-  { svwAuthor ScrollView
-    MoveScaled(3,24,66,44)
-    Expand = True
-    Arrangement = Arrange.Vertical
-    Spacing = True
-    Margin = True
-    Padding = 16
-    Border = False
-    ScrollBar = Scroll.None
-    { Panel2 Panel
-      MoveScaled(30,0,10,41)
-    }
-    { TextLabel4 TextLabel
-      MoveScaled(0,57,76,7)
-      Font = Font["Bold,+10"]
-      AutoResize = True
-      Text = ("Gambas<br>\nAlmost<br>\nMeans<br>\nB A S I C !")
-      Alignment = Align.Center
-    }
-    { Image1 PictureBox
-      MoveScaled(24,66,20,17)
-      Picture = Picture["img/logo/logo.png"]
-      Alignment = Align.Center
-    }
-    { TextLabel2 TextLabel
-      MoveScaled(2,85,58,29)
-      AutoResize = True
-      Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
-    }
-    { TextLabel3 TextLabel
-      MoveScaled(0,113,61,8)
-      Padding = 8
-      Text = ("<h2 align=center>Authors</h2>\n")
-      Alignment = Align.Bottom
-    }
-    { gvwAuthor GridView
-      MoveScaled(18,123,28,8)
-      Background = Color.Transparent
-      Border = False
-      Grid = False
-      ScrollBar = Scroll.None
-    }
-    { Panel3 Panel
-      MoveScaled(28,133,10,43)
-    }
+  { lblLicense TextLabel
+    MoveScaled(5,7,43,22)
+    Visible = False
+    Text = ("<h2 align=center>Licence</h2>\n\n<p align=center>This program is FREE SOFTWARE; you can redistribute it AND/OR modify it under the terms of the GNU General Public License as published by the Free Software Foundation ; either version 2, or (at your option) any later version.</p>\n\n<p align=center>This program is distributed in the hope that it will be useful but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>\n")
   }
-  { timAuthor #Timer
+  { gvwAbout GridView
+    MoveScaled(7,34,16,16)
+    Expand = True
+    Border = False
+    Grid = False
+    ScrollBar = Scroll.None
+  }
+  { timAbout #Timer
     #MoveScaled(48,38)
     Enabled = True
     Delay = 25
-  }
-  { picGradientTop PictureBox
-    MoveScaled(0,24,80,7)
-    Visible = False
-    Ignore = True
-  }
-  { picGradientBottom PictureBox
-    MoveScaled(0,61,80,7)
-    Visible = False
-    Ignore = True
   }
 }
