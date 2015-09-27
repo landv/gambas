@@ -186,12 +186,11 @@ Public Sub _Unregister(hConnection As DBusConnection)
   
   hParent = _ObjectCache[File.Dir($sFullPath)]
   If hParent Then hParent._RemoveChild(File.Name($sFullPath))
-    
+  
   $hObserver = Null
   _ObjectCache[$sFullPath] = Null
   $sFullPath = ""
   $sPath = ""
-  
   
   If _ObjectCache.Count = 0 Then 
     DBus._UnregisterApplication(hConnection)
@@ -467,12 +466,17 @@ Private Sub GetAllProperties()
   Dim sPrefix As String
   Dim sProp As String
   Dim vVal As Variant
+  Dim hObs As DBusObserver
   
-  With $hObserver.Message
+  hObs = $hObserver
+  
+  With hObs.Message
   
     sWantInterface = .Arguments[0]
     
     hClass = Object.Class(Me)
+    
+    'Debug "["
     
     For Each sSymbol In hClass.Symbols
 
@@ -501,22 +505,26 @@ Private Sub GetAllProperties()
         If IsNull(vVal) Then
           If TypeOf(vVal) = gb.String Then
             cVal[sProp] = DBus.Null
+            'Debug sProp; ": "; "DBus.Null"
           Endif
         Else
           cVal[sProp] = vVal
+          'If TypeOf(vVal) = gb.Object Then Debug sProp; ": "; vVal
         Endif
         
       End With
     Next
     
-    $hObserver.Reply("a{sv}", [cVal])
+    'Debug "]"
+    
+    hObs.Reply("a{sv}", [cVal])
     
   End With
   
 Catch
   
   If DBus.Debug Then Error "gb.dbus: org.freedesktop.Properties.GetAll: error: "; Error.Text;; Error.Backtrace.Join(" ")
-  $hObserver.Error(Error.Text)
+  hObs.Error(Error.Text)
   
 End
 
@@ -556,17 +564,20 @@ Public Sub DBusObserver_Message()
   Dim sMethod As String
   Dim sInterface As String
   Dim sType As String
+  Dim hObs As DBusObserver
   
-  sMethod = $hObserver.Message.Member
-  sInterface = $hObserver.Message.Interface
+  hObs = $hObserver
   
-  If DBus.Debug Then Error "gb.dbus: call: ["; $hObserver.Message.Destination; "]";; sInterface;; sMethod
+  sMethod = hObs.Message.Member
+  sInterface = hObs.Message.Interface
+  
+  If DBus.Debug Then Error "gb.dbus: call: ["; hObs.Message.Destination; "]";; sInterface;; sMethod
   
   If InStr(sMethod, "_") Then Return
   
   If sInterface = "org.freedesktop.DBus.Introspectable" Or If Not sInterface Then
     If sMethod = "Introspect" Then
-      $hObserver.Reply("s", [_Introspect()])
+      hObs.Reply("s", [_Introspect()])
       Return
     Endif
   Endif
@@ -599,27 +610,27 @@ Public Sub DBusObserver_Message()
 
   sType = Object.Class(Me)[sMethod].Type
   If sType Then
-    vVal = Object.Call(Me, sMethod, $hObserver.Message.Arguments)
+    vVal = Object.Call(Me, sMethod, hObs.Message.Arguments)
     If TypeOf(vVal) = gb.Object And If vVal Is DBusValues Then
       sType = vVal.Signature
-      $hObserver.Reply(sType, vVal.Value)
+      hObs.Reply(sType, vVal.Value)
     Else If TypeOf(vVal) = gb.Object And If vVal Is DBusVariant Then
       sType = vVal.Signature
-      $hObserver.Reply(sType, [vVal.Value])
+      hObs.Reply(sType, [vVal.Value])
     Else
       sType = ConvType(sType)
       If Not sType Then sType = "v"
-      $hObserver.Reply(sType, [vVal])
+      hObs.Reply(sType, [vVal])
     Endif
   Else
-    Object.Call(Me, sMethod, $hObserver.Message.Arguments)
-    $hObserver.Reply()
+    Object.Call(Me, sMethod, hObs.Message.Arguments)
+    hObs.Reply()
   Endif
 
 Catch
 
   If DBus.Debug Then Error "gb.dbus: "; sInterface; "."; sMethod; ": error: "; Error.Text;; Error.Backtrace.Join(" ")
-  $hObserver.Error(Error.Text)
+  hObs.Error(Error.Text)
   
 End
 
