@@ -1,5 +1,10 @@
 ' Gambas class file
 
+Private Sub Reload()
+
+  TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
+
+End
 
 Public Sub Form_Open()
 
@@ -10,9 +15,10 @@ Public Sub Form_Open()
   'TextEditor1.Highlight = "html"
   'TextEditor1.Highlight = "C++"
   TextEditor1.Highlight = "gambas"
+  Reload
   
   'TextEditor1.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Dialog.class")
-  TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
+  'TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
   'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/TextEditor.class", True)
   'TextEditor1.Load("/var/log/thttpd/debug.log.old")
   'TextEditor1.Load("~/cosme/style.css")
@@ -76,5 +82,11 @@ End
 Public Sub Button3_Click()
 
   TextEditor1.Clear
+
+End
+
+Public Sub Button4_Click()
+
+  Reload
 
 End

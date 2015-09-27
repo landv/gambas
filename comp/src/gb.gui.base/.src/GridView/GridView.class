@@ -390,12 +390,14 @@ Public Sub ScrollArea_Draw()
   
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
-  If $iBg = Color.Default Then 
-    iBg = Color.TextBackground
-  Else
-    iBg = $iBg
+  If $iBg <> Color.Transparent Then
+    If $iBg = Color.Default Then 
+      iBg = Color.TextBackground
+    Else
+      iBg = $iBg
+    Endif
+    Paint.FillRect(0, 0, Paint.W, Paint.H, iBg)
   Endif
-  Paint.FillRect(0, 0, Paint.W, Paint.H, iBg)
   
   If $hColumns.Count = 0 And If $hRows.Count = 0 Then Return
   
