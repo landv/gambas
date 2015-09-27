@@ -611,6 +611,8 @@ Private Sub ShowProperty(Optional sFocus As String)
     If iRow >= 0 Then grdProperty.Row = iRow
   Endif
 
+  $bButton = False
+
   If grdProperty.Row = 0 Then Return
 
   If grdProperty.Row = 1 Then

@@ -10,7 +10,7 @@ Static Public Function Run(sText As String) As Boolean
   Value = sText
   hForm = New FText
 
-  Return hForm.ShowModal()
+  Return Not hForm.ShowModal()
 
 End
 
@@ -29,14 +29,14 @@ End
 
 Public Sub btnCancel_Click()
 
-  Me.Close(True)
+  Me.Close
 
 End
 
 Public Sub btnOK_Click()
 
   Value = txtText.Text
-  Me.Close
+  Me.Close(True)
 
 End
 

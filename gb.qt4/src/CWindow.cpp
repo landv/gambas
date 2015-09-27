@@ -1074,8 +1074,6 @@ BEGIN_PROPERTY(Window_Visible)
 	else
 	{
 		bool show = !!VPROP(GB_BOOLEAN);
-		if (show == !WINDOW->isHidden())
-			return;
 		
 		if (show)
 			Window_Show(_object, _param);

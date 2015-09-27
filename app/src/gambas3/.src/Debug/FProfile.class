@@ -383,8 +383,8 @@ Public Sub Init(sPath As String)
           If Not Error Then 
             Inc aCount[iLastLine]
           Else
+            If iLastLine >= 0 Then Debug hCurrent.Name; "."; iLastLine + 1; " ("; aLine.Count; ")"
             hCurrent.FirstTime += iTime - iLastTime
-            If iLastLine >= 0 Then Debug hCurrent.Name; "."; iLastLine + 1
           Endif
           
           iLastLine = iLine
