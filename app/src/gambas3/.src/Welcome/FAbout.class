@@ -167,7 +167,7 @@ Private Sub FillAbout()
   gvwAbout.Columns.Count = 1
   N = 6
   
-  gvwAbout.Rows.Count = aAuthor.Count + N + 1
+  gvwAbout.Rows.Count = aAuthor.Count + N
   gvwAbout.Columns[0].Width = Me.ClientWidth - Desktop.Scale * 6
   gvwAbout.Padding = Desktop.Scale
   
@@ -231,9 +231,6 @@ Private Sub FillAbout()
     gvwAbout.Rows[I + N].Height += Desktop.Scale * 3
     
   Next
-
-  ' Space
-  gvwAbout.Rows[gvwAbout.Rows.Max].H = dwgAbout.H
 
 End
 

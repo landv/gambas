@@ -185,6 +185,7 @@ End
 
 Public Sub View_MouseDown()
 
+  'Debug Mouse.Left;; $iIndex
   If Not Mouse.Left Or If $iIndex < 0 Then Return
   
   $iCurrent = $iIndex
