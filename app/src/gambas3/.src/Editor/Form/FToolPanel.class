@@ -155,7 +155,7 @@ Public Procedure btnControl_MouseUp()
     'MHelp.GotoClass(CComponent.Classes[Last.Tag[0]].Component, Last.Tag[0])
     sClass = Last.Tag[0]
     If sClass <> SELECT_TOOL Then
-      sComp = CComponent.Classes[sClass].Component
+      sComp = Project.Documentation.Classes[sClass].Component
       If sComp = CComponent.PROJECT_NAME Then
         Project.OpenFile(Last.Tag[0])
       Else

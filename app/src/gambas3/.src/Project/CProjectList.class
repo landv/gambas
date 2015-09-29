@@ -1,10 +1,12 @@
 ' Gambas class file
 
-Public Enum TYPE_RECENT, TYPE_EXAMPLE, TYPE_SOFTWARE
+Public Enum TYPE_RECENT, TYPE_EXAMPLE, TYPE_SOFTWARE, TYPE_TEMPLATE
 
 Event Click(Path As String, Another As Boolean)
+Event DblClick(Path As String)
 
 Property AllowOpenExtern As Boolean
+Property Current As ProjectBox
 
 Private $hList As ScrollView
 Private $hFilter As ButtonBox
@@ -16,6 +18,7 @@ Private $hObsList As Observer
 Private $dRecent As Date
 Private $sLastURL As String
 Private $hHelp As WebView
+Private $hCurrent As ProjectBox
 
 Public Sub _new(hList As ScrollView, hFilter As ButtonBox, iType As Integer, Optional iArrange As Integer = Arrange.Row)
   
@@ -240,10 +243,74 @@ Private Sub FillWithSoftware()
 
 End
 
+Private Sub GetTemplates() As String[]
+
+  Dim sFile As String
+  Dim aList As New String[]
+  Dim sDir As String
+
+  sDir = System.Path &/ "share/" & "gambas" & System.Version &/ "template"
+  If IsDir(sDir) Then
+    For Each sFile In Dir(sDir).Sort(gb.Natural)
+      If Left(sFile) = "." Then Continue
+      If Not Exist(sDir &/ sFile &/ ".project") Then Continue
+      aList.Add(sDir &/ sFile)
+    Next
+  Endif
+
+  sDir = Desktop.DataDir &/ "gambas3/template/"
+  If IsDir(sDir) Then 
+    For Each sFile In Dir(sDir).Sort(gb.Natural)
+      If Left(sFile) = "." Then Continue
+      If Not Exist(sDir &/ sFile &/ ".project") Then Continue
+      aList.Add(sDir &/ sFile)
+    Next
+  Endif
+
+  Return aList
+
+End
+
+Private Sub FillWithTemplate()
+
+  Dim hProjectItem As ProjectBox
+  Dim sGroup As String
+  Dim aSoft As String[]
+  Dim sSoft As String
+  
+  Inc Application.Busy
+  $hList.Arrangement = Arrange.None
+  
+  aSoft = GetTemplates()
+  If aSoft.Count Then
+    
+    Clear
+
+    For Each sSoft In aSoft
+    
+      hProjectItem = New ProjectBox($hList) As "ProjectItem"
+      hProjectItem.ResizeScaled(40, 16)
+      hProjectItem.Path = sSoft
+      hProjectItem.Group = sGroup
+      hProjectItem.Template = True
+    
+    Next
+  
+    ApplyFilter($hFilter.Text)
+    $hList.Arrangement = $iArrange
+    $hFilter.Enabled = True
+  
+  Endif
+  
+  Dec Application.Busy
+
+End
+
 Public Sub Clear()
   
   $hList.Children.Clear
   $hHelp = Null
+  $hCurrent = Null
   
 End
 
@@ -335,6 +402,8 @@ Public Sub Fill(Optional bClear As Boolean)
       FillWithExample
     Case TYPE_SOFTWARE
       FillWithSoftware
+    Case TYPE_TEMPLATE
+      FillWithTemplate
   End Select
   
 End
@@ -409,7 +478,15 @@ End
 
 Public Sub ProjectItem_Click()
 
-  Raise Click(Last.Path, False)
+  Me.Current = Last
+  Raise Click($hCurrent.Path, False)
+  
+End
+
+Public Sub ProjectItem_DblClick()
+
+  Me.Current = Last
+  Raise DblClick($hCurrent.Path)
   
 End
 
@@ -500,4 +577,20 @@ Public Sub ExampleWebView_Menu()
   
   Stop Event
   
+End
+
+Private Function Current_Read() As ProjectBox
+
+  Return $hCurrent
+
+End
+
+Private Sub Current_Write(Value As ProjectBox)
+
+  If $hCurrent = Value Then Return
+  
+  If $hCurrent Then $hCurrent.Selected = False
+  $hCurrent = Value
+  If $hCurrent Then $hCurrent.Selected = True
+
 End

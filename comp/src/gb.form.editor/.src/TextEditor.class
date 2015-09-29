@@ -95,6 +95,8 @@ Private $Y As Integer
 Private $XY As Point
 Private $bShowCursor As Boolean
 Private $bHideCursor As Boolean
+Private $LX As Integer
+Private $LY As Integer
 
 Private $hTimerCursor As Timer
 Private $hTimerChange As Timer
@@ -148,6 +150,7 @@ Private $bFirstFocus As Boolean
 
 Private $aFold As Integer[]
 
+Private $iSaveCursor As Integer
 Private $aSaveCursor As Integer[]
 Private $hFontNumber As Font
 
@@ -301,14 +304,15 @@ End
 Public Sub Load(Path As String, Optional AddNewLine As Boolean)
   
   Inc Application.Busy
+  Goto(0, 0)
   $hDoc.Load(Path, AddNewLine)
   Init
   Dec Application.Busy
   
-Catch
+'Catch
   
-  Dec Application.Busy
-  Error.Propagate
+'  Dec Application.Busy
+'  Error.Propagate
   
 End
 
@@ -1386,6 +1390,20 @@ Public Sub HideSelection()
 
 End
 
+Public Sub _RaiseCursor()
+
+  If $iSaveCursor Then Return
+  If $X = $LX And If $Y = $LY Then Return
+  If $hDoc.IsLocked() Then Return
+
+  $LX = $X
+  $LY = $Y
+  EnsureVisible
+  If $bShowPosition Then UpdatePosition
+  Raise Cursor
+
+End
+
 Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
 
   Dim bRaiseCursor As Boolean
@@ -1449,16 +1467,9 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   _RefreshLine($Y)
   
   '$hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y))
-  EnsureVisible
   
   CheckMatch
-  
-  If bRaiseCursor Then 
-    If $bShowPosition Then
-      UpdatePosition
-    Endif
-    Raise Cursor
-  Endif
+  _RaiseCursor
   
 End
 
@@ -4212,13 +4223,17 @@ End
 
 Public Sub _SaveCursor()
   
-  $aSaveCursor = [$X, $Y, $SX, $SY]
+  If $iSaveCursor = 0 Then $aSaveCursor = [$X, $Y, $SX, $SY]
+  Inc $iSaveCursor
   
 End
 
 Public Sub _RestoreCursor()
   
   Dim X, Y, SX, SY As Integer
+  
+  Dec $iSaveCursor
+  If $iSaveCursor Then Return
   
   X = $aSaveCursor[0]
   Y = $aSaveCursor[1]

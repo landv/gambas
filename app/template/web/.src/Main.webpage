@@ -1,0 +1,27 @@
+<%
+Dim sEnv As String
+%>
+
+<html>
+<body>
+
+<h1>Gambas web application</h1>
+<table border="1" cellpadding="4" cellspacing="0">
+  <tr>
+    <th>Variable</th>
+    <th>Value</th>
+  </tr>
+<%
+For Each sEnv In Env
+%>
+  <tr>
+    <td><%=sEnv%></td>
+    <td><%=Env[sEnv]%></td>
+  </tr>
+<%
+Next
+%>
+</table>
+
+</body>
+</html>

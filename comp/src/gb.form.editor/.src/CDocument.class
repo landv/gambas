@@ -171,6 +171,8 @@ Public Sub End()
   EnableHighlight
   AddUndo(CCommand(Me, CCommand.END,, Me.Current.Column, Me.Current.Line))
   
+  CheckUnlock
+  
 End
 
 Private Function Current_Read() As TextEditor
@@ -1264,6 +1266,24 @@ End
 Public Sub EnableUndo()
   
   Dec $iNoUndo
+  CheckUnlock
   
 End
 
+Public Sub IsLocked() As Boolean
+  
+  Return $iBegin + $iNoUndo
+  
+End
+
+Private Sub CheckUnlock()
+
+  Dim hView As TextEditor
+  
+  If IsLocked() Then Return
+  For Each hView In GetAllViews()
+    hView._RaiseCursor
+  Next
+  
+
+End

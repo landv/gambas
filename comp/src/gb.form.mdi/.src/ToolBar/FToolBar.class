@@ -1277,20 +1277,23 @@ Private Sub CalcIconSize(iIconSize As Integer) As Integer
   
 End
 
-Private Sub GetIcon(sIcon As String) As Picture
+Private Sub GetIcon(hAction As CAction) As Picture
   
   Dim aIcon As String[]
   Dim hIcon As Picture
   Dim iSize As Integer
+  Dim sIcon As String
   
   iSize = CalcIconSize($iIconSize)
+  
+  sIcon = hAction.IconPath
   
   If sIcon Begins "icon:/" Then
     aIcon = Split(sIcon, "/")
     aIcon[1] = iSize
     hIcon = Picture[aIcon.Join("/")]
   Else
-    hIcon = Picture[sIcon]
+    hIcon = hAction.Icon
     If hIcon Then
       hIcon = hIcon.Image.Stretch(iSize, iSize).Picture
     Endif
@@ -1326,7 +1329,7 @@ Private Sub ResizeControl(hCtrl As Control, iDim As Integer)
       If Left$(sAction) = "." Then sAction = Mid$(sAction, 2)
       hAction = MAction.Actions[sAction]
       If hAction And If hAction.IconPath Then
-        hToolButton.Picture = GetIcon(hAction.IconPath)
+        hToolButton.Picture = GetIcon(hAction)
       Endif
     Endif
   Endif

@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Public Documentation As CDocumentation
 Public Name As String
 Public Parent As String
 Public Symbols As Collection
@@ -27,11 +28,12 @@ Public DeclareIn As String
 Public DeclareAtLine As Integer
 Public Help As String
 
-Public Sub _new(sName As String, sComp As String, Optional sParent As String)
+Public Sub _new(hDoc As CDocumentation, sName As String, sComp As String, Optional sParent As String)
 
   Dim hSym As CSymbolInfo
   Dim hParent As CClassInfo
 
+  Documentation = hDoc
   Name = sName
   {Parent} = sParent
   Component = sComp
@@ -43,11 +45,11 @@ Public Sub _new(sName As String, sComp As String, Optional sParent As String)
     '  STOP
     '  Error.Raise(Error.Text)
     'ENDIF
-    hParent = CComponent.Classes[sComp &/ sParent]
-    If Not hParent Then hParent = CComponent.Classes[sParent]
+    hParent = Documentation.Classes[sComp &/ sParent]
+    If Not hParent Then hParent = hDoc.Classes[sParent]
     ParentComponent = hParent.Component
 
-    For Each hSym In CComponent.GetClassSymbols(sParent, ParentComponent) ' CComponent.Classes[sParent].Symbols
+    For Each hSym In Documentation.GetClassSymbols(sParent, ParentComponent)
       Symbols[hSym.Name] = hSym
     Next
     
@@ -161,7 +163,7 @@ Public Sub InitControl()
 
   If Similars Then
     For Each sStr In Similars
-      CComponent.AddSimilar(Name, sStr)
+      Documentation.AddSimilar(Name, sStr)
     Next
   Endif
 
@@ -178,7 +180,7 @@ Public Sub InitControl()
   While Left$(sProp) = "*"
     sProp = Mid$(sProp, 3)
     sStr = ""
-    Try sStr = CComponent.Classes[sParent].Symbols["_Properties"].Value 
+    Try sStr = Documentation.Classes[sParent].Symbols["_Properties"].Value 
     If sStr Then 
       If sProp Then
         sProp = sStr & "," & sProp
@@ -186,7 +188,7 @@ Public Sub InitControl()
         sProp = sStr
       Endif 
     Endif
-    sParent = CComponent.Classes[sParent].ParentComponent &/ CComponent.Classes[sParent].Parent
+    sParent = Documentation.Classes[sParent].ParentComponent &/ Documentation.Classes[sParent].Parent
     ' If Error Then
     '   Debug Error.Text; " !"
     '   Debug System.Backtrace.Join(" ")
@@ -196,7 +198,7 @@ Public Sub InitControl()
 
 '   IF Left$(sProp) = "*" THEN
 '     sProp = Mid$(sProp, 3)
-'     sParent = CComponent.Classes[Parent].Symbols["_Properties"].Value
+'     sParent = Classes[Parent].Symbols["_Properties"].Value
 '     IF Left(sParent, Len(CPropertyInfo.EVENT_NAME)) = CPropertyInfo.EVENT_NAME THEN
 '       sParent = Mid$(sParent, Len(CPropertyInfo.EVENT_NAME) + 2)
 '     ENDIF
@@ -230,18 +232,13 @@ Public Sub InitControl()
     bRemove = Left(sProp) = "-"
     If bRemove Then sProp = Mid$(sProp, 2)
 
-    ' IF sProp = "Action" AND Name = "ToolBar" THEN 
-    '   DEBUG CComponent.Classes.Count;; Component;; CComponent.Classes[Component &/ Name].Symbols[sProp]
-    '   STOP
-    ' ENDIF
-
     If bRemove Then
       Properties[sProp] = Null
     Else
 
       If Component Then
         'PRINT "? "; Component; ": "; Name; "."; sProp
-        If Not CComponent.Classes[Component &/ Name].Symbols[sProp] Then
+        If Not Documentation.Classes[Component &/ Name].Symbols[sProp] Then
           Error Component; ": "; Name; "."; sProp; " declared but not implemented"
           Continue
         Endif
@@ -257,7 +254,7 @@ Public Sub InitControl()
         bDoNotApply = VirtualControl
       Endif
       
-      hProp = New CPropertyInfo(Component, Name, sProp, sKind, False, bDoNotApply, sDefVal)
+      hProp = New CPropertyInfo(Documentation, Component, Name, sProp, sKind, False, bDoNotApply, sDefVal)
       Properties[sProp] = hProp
     Endif
 
@@ -284,21 +281,21 @@ Public Sub InitControl()
     If hProp.Translate Then bTranslate = True
   Next
 
-  Properties["#X"] = New CPropertyInfo("", Name, "#X", "", True, True)
-  Properties["#Y"] = New CPropertyInfo("", Name, "#Y", "", True, True)
+  Properties["#X"] = New CPropertyInfo(Documentation, "", Name, "#X", "", True, True)
+  Properties["#Y"] = New CPropertyInfo(Documentation, "", Name, "#Y", "", True, True)
   If Not VirtualControl Then
-    Properties["#Width"] = New CPropertyInfo("", Name, "#Width", "", True, True)
-    Properties["#Height"] = New CPropertyInfo("", Name, "#Height", "", True, True)
+    Properties["#Width"] = New CPropertyInfo(Documentation, "", Name, "#Width", "", True, True)
+    Properties["#Height"] = New CPropertyInfo(Documentation, "", Name, "#Height", "", True, True)
   Endif
   
   If VirtualControl Then
     
-    hProp = New CPropertyInfo("", Name, "X", "", True, True, "0")
+    hProp = New CPropertyInfo(Documentation, "", Name, "X", "", True, True, "0")
     hProp.Exclude = True
     Properties["X"] = hProp
     PropertyList.Add("X")
     
-    hProp = New CPropertyInfo("", Name, "Y", "", True, True, "0")
+    hProp = New CPropertyInfo(Documentation, "", Name, "Y", "", True, True, "0")
     hProp.Exclude = True
     Properties["Y"] = hProp
     PropertyList.Add("Y")
@@ -308,21 +305,21 @@ Public Sub InitControl()
   CPropertyInfo.CreatingSpecialProperty = True
   
   If bTranslate Then
-    Properties[CPropertyInfo.TRANSLATE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.TRANSLATE_NAME, "")
+    Properties[CPropertyInfo.TRANSLATE_NAME] = New CPropertyInfo(Documentation, Component, Name, CPropertyInfo.TRANSLATE_NAME, "")
     PropertyList.Add(CPropertyInfo.TRANSLATE_NAME, 0)
   Endif
 
   If {Form} Then 
     If Family = "Form" Then
-      Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.SCALE_NAME, "")
+      Properties[CPropertyInfo.SCALE_NAME] = New CPropertyInfo(Documentation, Component, Name, CPropertyInfo.SCALE_NAME, "")
       PropertyList.Add(CPropertyInfo.SCALE_NAME, 0)
     Endif
   Else
-    Properties[CPropertyInfo.PUBLIC_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.PUBLIC_NAME, "")
+    Properties[CPropertyInfo.PUBLIC_NAME] = New CPropertyInfo(Documentation, Component, Name, CPropertyInfo.PUBLIC_NAME, "")
     PropertyList.Add(CPropertyInfo.PUBLIC_NAME, 0)
   Endif
 
-  Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Component, Name, CPropertyInfo.EVENT_NAME, "")
+  Properties[CPropertyInfo.EVENT_NAME] = New CPropertyInfo(Documentation, Component, Name, CPropertyInfo.EVENT_NAME, "")
   PropertyList.Add(CPropertyInfo.EVENT_NAME, 0)
 
   CPropertyInfo.CreatingSpecialProperty = False
@@ -354,7 +351,7 @@ Public Function GetProperties() As Collection
   Endif
 
   If {Parent} Then
-    Return CComponent.Classes[ParentComponent &/ {Parent}].GetProperties()
+    Return Documentation.Classes[ParentComponent &/ {Parent}].GetProperties()
   Endif
 
 End
@@ -367,7 +364,7 @@ Public Function Inherits(sClass As String) As Boolean
   If {Parent} = sClass Then Return True
   If Not Parent Then Return False
   
-  hClass = CComponent.Classes[ParentComponent &/ Parent] 
+  hClass = Documentation.Classes[ParentComponent &/ Parent] 
   Return hClass.Inherits(sClass)
 
 End
@@ -379,7 +376,7 @@ Public Sub GetHelpURL() As String
   Dim sComp As String
   Dim hComp As CComponent
   
-  If Component And If Component <> CComponent.PROJECT_NAME Then hComp = CComponent.All[Component]
+  If Component And If Component <> CComponent.PROJECT_NAME Then hComp = Documentation[Component]
   
   If hComp Then
 
@@ -412,14 +409,14 @@ Public Sub GetSimilars() As String[]
   Dim sSimilar As String
   Dim aSimilar As New String[]
   
-  For Each sSimilar In CComponent.GetSimilars(Name)
+  For Each sSimilar In Documentation.GetSimilars(Name)
     cSimilar[sSimilar] = True
   Next
   
   If Similars Then
     For Each sSimilar In Similars
       cSimilar[sSimilar] = True
-      For Each sSimilar In CComponent.GetSimilars(sSimilar)
+      For Each sSimilar In Documentation.GetSimilars(sSimilar)
         If sSimilar <> Name Then cSimilar[sSimilar] = True
       Next
     Next
@@ -524,7 +521,7 @@ Public Sub GetHelpHTML() As String
 
   sHelp = Markup.Convert(GetHelpMarkup())
   
-  hClassInfo = CComponent.GetClassDescription(sClass)
+  hClassInfo = Documentation.GetClassDescription(sClass)
   cClassSymbols = hClassInfo.Symbols 'CComponent.GetClassSymbols(sClass)
   
   'If hClassInfo.Name = sClass Then hClassInfo.Name = hClassInfo.Parent ????? Do not modify the class info!
@@ -640,8 +637,8 @@ Public Sub GetHelpHTML() As String
   If hClassInfo.Parent Then
     
     sParent = hClassInfo.Parent
-    hParentClass = CComponent.Classes[hClassInfo.ParentComponent &/ sParent]
-    If Not hParentClass Then hParentClass = CComponent.GetClassDescription(sParent)
+    hParentClass = Documentation.Classes[hClassInfo.ParentComponent &/ sParent]
+    If Not hParentClass Then hParentClass = Documentation.GetClassDescription(sParent)
     
     If hClassInfo.Parent = hClassInfo.Name Then
       sStr = ("This class reimplements &1")
@@ -652,7 +649,7 @@ Public Sub GetHelpHTML() As String
     sInfo &= Subst(sStr, Subst("<a href=\"&1\">&2</a>", Html(hParentClass.GetHelpURL()), hParentClass.Name))
 
     If hClassInfo.ParentComponent <> hClassInfo.Component Then
-      sInfo &= " " & Subst(("in &1"), Subst("<a href=\"&1\">&2</a>", Html(CComponent.All[hClassInfo.ParentComponent].GetHelpURL()), hClassInfo.ParentComponent))
+      sInfo &= " " & Subst(("in &1"), Subst("<a href=\"&1\">&2</a>", Html(Documentation[hClassInfo.ParentComponent].GetHelpURL()), hClassInfo.ParentComponent))
     Endif
     
     sInfo &= "<br>"

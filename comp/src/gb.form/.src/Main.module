@@ -201,7 +201,36 @@ End
 
 Public Sub Main()
 
-  FTestBalloon.ShowModal
+  Dim hTask As CTaskDirSize
 
+  hTask = New CTaskDirSize("/home/benoit/gambas/3.0") As "Task"
+  
+  Wait 10
+  
+End
+
+Public Sub Task_Read(sData As String)
+
+  Debug sData
+  
+End
+
+Public Sub Task_Error(Data As String)
+  
+  Debug Data
+  
+End
+
+
+Public Sub Task_Kill()
+
+  Dim sStr As String
+  Try sStr = Last.Value
+  If Error Then 
+    Debug Error.Text
+  Else
+    Debug "->";; sStr
+  Endif
+  
   
 End

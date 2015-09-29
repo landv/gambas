@@ -760,12 +760,7 @@ End
 
 Private Sub SetPicture(sPict As String)
   
-  Dim hPict As Picture
-
   txtPicture.Text = sPict
-  hPict = Project.GetPicture(sPict)
-  If hPict Then hPict = hPict.Image.Stretch(48, 48).Picture
-  'btnIcon.Picture = hPict
   WriteMenu
   
 Catch
@@ -956,7 +951,7 @@ Public Sub gvwMenu_Data(Row As Integer, Column As Integer)
       
       Case 0
         If .Picture Then
-          hPict = Project.GetPicture(.Picture)
+          Try hPict = Project.GetPicture(.Picture)
           If hPict Then hPict = hPict.Image.Stretch(16, 16).Picture
           gvwMenu.Data.Picture = hPict
           gvwMenu.Data.Alignment = Align.Center

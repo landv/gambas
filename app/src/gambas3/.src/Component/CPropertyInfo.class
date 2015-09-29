@@ -15,7 +15,7 @@ Static Private $cUpdateName As New Collection
 Static Private $cAlwaysRead As New Collection
 Static Private $cShortcut As New Collection
 
-
+Public Documentation As CDocumentation
 Public Name As String
 Public Type As String
 Public DefaultValue As Variant 
@@ -141,7 +141,7 @@ Private Sub GetFlag(cCol As Collection, sClass As String, sName As String) As Bo
 End
 
 
-Public Sub _new(sComponent As String, sClass As String, sName As String, sKind As String, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
+Public Sub _new(hDoc As CDocumentation, sComponent As String, sClass As String, sName As String, sKind As String, Optional bVirtual As Boolean, Optional bDoNotApply As Boolean, Optional sDefVal As String)
 
   Dim iPos As Integer
   Dim sList As String
@@ -153,6 +153,7 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Dim sArg As String
   Dim hClass As CClassInfo
 
+  Documentation = hDoc
   Name = sName
 
   If CreatingSpecialProperty Then
@@ -189,12 +190,12 @@ Public Sub _new(sComponent As String, sClass As String, sName As String, sKind A
   Endif
 
   If sComponent Then
-    hClass = CComponent.Classes[sComponent &/ sClass]
+    hClass = Documentation.Classes[sComponent &/ sClass]
     Try hSym = hClass.Symbols[sName]
     Type = hSym.Type
     sSign = hSym.Signature
   Else
-    hClass = CComponent.Classes[sClass]
+    hClass = Documentation.Classes[sClass]
     If Name = "X" Or If Name = "Y" Then
       Type = "i"
       sKind = "Position"
@@ -294,7 +295,7 @@ GET_KIND:
       
       If sArg = "*" Then 
 
-        For Each hSym In CComponent.Classes[ConstantClass].Symbols
+        For Each hSym In Documentation.Classes[ConstantClass].Symbols
 
           If hSym.Kind = "C" Then
             If Not hSym.IsHidden() Then
@@ -311,7 +312,7 @@ GET_KIND:
 
         For Each sList In cList
 
-          hSym = CComponent.Classes[ConstantClass].Symbols[sList]
+          hSym = Documentation.Classes[ConstantClass].Symbols[sList]
           ' Maybe the constant declared in the property don't really exist
           Try ConstantList["#" & CStr(hSym.Value)] = sList
 

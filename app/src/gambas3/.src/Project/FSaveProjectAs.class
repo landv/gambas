@@ -79,6 +79,8 @@ Public Sub Form_Open()
   Settings.Read(Me)
   Settings.Read(dchProject, "dchProject")
 
+  dchProject.Bookmarks = Project.GetBookmarks()
+
 End
 
 Public Sub Form_Close()

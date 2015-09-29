@@ -228,7 +228,7 @@ Private Sub FillTree()
   Next
   tvwClasses["$"].Expanded = True
   
-  For Each hClass In CComponent.Classes
+  For Each hClass In Project.Documentation.Classes
     
     If hClass.Name = "." Then Continue
     If InStr(hClass.Name, "*") Then Continue

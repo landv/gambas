@@ -4,9 +4,11 @@ Static Public InAnotherWindow As Boolean
 
 Static Private $sPath As String
 
-Static Private $cVar As New Collection(gb.IgnoreCase)
 Static Private $bRepository As Boolean
 Static Private $bAnother As Boolean
+
+Static Private $hTemplate As CProjectList
+Static Private $sTemplate As String
 
 Static Public Sub Run(Optional bAnother As Boolean) As String
   
@@ -20,98 +22,54 @@ Public Sub Form_Open()
 
   'dchProject.SelectedPath = Settings["/FCreateProject/Path", System.User.Home]
   Settings.Read(Me)
-  lstType.Select(panDefaultType)
   wizProject.Index = 0
   edtOutput.ReadConfig
   edtOutput.Text = ""
   chkOther.Visible = $bAnother
   Settings.Read(dchProject, "dchProject")
-      
+
+  ProjectBox.ShowButton = False
+  $hTemplate = New CProjectList(svwTemplate, txtFilter, CProjectList.TYPE_TEMPLATE, Arrange.Row) As "ProjectItem"
+  $hTemplate.Fill
+  $hTemplate.ApplyFilter(txtFilter.Text)
+  txtFilter.SetFocus
+
+  $sTemplate = ""
+
   Dec Application.Busy
 
 End
 
-Private Sub GetTest(sTest As String) As Boolean
+Public Sub wizProject_Cancel()
+
+  Me.Close  
+
+End
+
+Public Sub ProjectItem_Click(sPath As String, (bAnother) As Boolean)
   
-  Return Eval(sTest, $cVar)
+  $sTemplate = sPath
+  Balloon.Hide
   
 End
 
-Private Sub JumpFile(hFile As File, sBegin As String, sEnd As String, Optional sSearch As String)
+Public Sub ProjectItem_DblClick((sPath) As String)
   
-  Dim sLine As String
-  Dim iLevel As Integer
-
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
-    sLine = Trim(sLine)
-    
-    If sSearch And If sLine = sSearch Then 
-      If iLevel = 0 Then Return 
-      Continue
-    Endif
-    
-    If sLine Begins sBegin & " " Then 
-      Inc iLevel
-    Else If sLine = sEnd Then 
-      If iLevel = 0 Then Return
-      Dec iLevel
-    Endif
-  
-  Wend
+  wizProject.MoveNext
   
 End
-
-
-Private Sub GetFile(sPath As String) As String
-  
-  Dim hFile As File
-  Dim sLine As String
-  Dim sTrim As String
-  Dim sResult As String
-  Dim iPos As Integer
-  Dim iPos2 As Integer
-  
-  hFile = Open sPath
-  While Not Eof(hFile)
-    Line Input #hFile, sLine
-    sTrim = Trim(sLine)
-    
-    If Left(sTrim, 4) = "@IF " Then 
-      If Not GetTest(Mid$(sTrim, 5)) Then 
-        JumpFile(hFile, "@IF", "@ENDIF", "@ELSE")
-      Endif 
-    Else If sTrim = "@ELSE" Then 
-      JumpFile(hFile, "@IF", "@ENDIF")
-    Else If Left(sTrim) <> "@" Then 
-    
-      iPos = 1
-      Do
-        iPos = InStr(sLine, "$(", iPos)
-        If iPos = 0 Then Break
-        iPos2 = InStr(sLine, ")", iPos)
-        sLine = Left(sLine, iPos - 1) & CStr($cVar[Mid$(sLine, iPos + 2, iPos2 - iPos - 2)]) & Mid(sLine, iPos2 + 1)
-      Loop
-    
-      sResult &= sLine & "\n"
-      
-    Endif
-    
-  Wend 
-  
-  Return sResult
-  
-End
-
 
 Private Sub CreateProject() As Boolean
   
   Dim sDir As String
   Dim sName As String
-  Dim hCtrl As Object
   Dim sPath As String 
-  Dim sDest As String
   Dim bErr As Boolean
+  Dim hFile As File
+  Dim hDest As File
+  Dim sLine As String
+  Dim sTemp As String
+  
   'DIM hIcon AS Picture
 
   If $bRepository Then 
@@ -133,47 +91,43 @@ Private Sub CreateProject() As Boolean
     sName = Trim(txtName.Text)
     sDir = dchProject.SelectedPath &/ sName
     
-    $cVar["NAME"] = sName
+    Project.CopyProject($sTemplate, sDir)
     
-    $cVar["TITLE"] = Trim(txtTitle.Text)
-    If Not $cVar["TITLE"] Then $cVar["TITLE"] = sName
-    $cVar["LANGUAGE"] = System.Language
-  
-    For Each hCtrl In lstType.Children
-      If hCtrl.Tag Then $cVar[hCtrl.Tag] = False
-    Next
-    $cVar[lstType.Current.Tag] = True
+    Shell "rm -rf " & Shell$(sDir &/ ".lang") Wait
+    Kill sDir &/ "icon.png"
     
-    For Each hCtrl In svwOption.Children
-      If hCtrl.Tag Then $cVar[hCtrl.Tag] = hCtrl.Value
-    Next
+    sTemp = Temp$()
     
-    $cVar["GRAPHIC"] = $cVar["QT"] Or $cVar["GTK"] Or $cVar["GUI"]
+    hFile = Open sDir &/ ".project"
+    hDest = Open sTemp For Create
     
-    Try Rmdir sDir
-    
-    Mkdir sDir
-    Mkdir sDir &/ ".src"
-    Mkdir sDir &/ ".hidden"
-    
-    For Each sPath In Split(GetFile("template/list"), "\n", "", True)
+    For Each sLine In hFile.Lines
       
-      sDest = sPath
-      If Left(sDest) = "_" Then sDest = "." & Mid(sDest, 2)
-      
-      If InStr(sDest, "/") Then 
-        Try Mkdir sDir &/ File.Dir(sDest)
-      Else If CModule.Ext.Exist(File.Ext(sDest))
-        sDest = ".src" &/ sDest
+      If sLine Begins "# Compiled with" Then 
+        Continue
+      Else If sLine Begins "Title=" Then
+        sLine = "Title=" & txtTitle.Text
+      Else If sLine Begins "Translate=" Then
+        If Not chkTranslate.Value Then Continue
+        sLine = "Translate=1"
+        Mkdir sDir &/ ".lang"
+      Else If sLine Begins "Version=" Then
+        sLine = "Version=0.0.1"
+      Else If sLine Begins "Description=" Then
+        Continue
+      Else If sLine Begins "Icon=" Then
+        Continue
       Endif
       
-      If File.Ext(sPath) = "png" Then 
-        Copy "template" &/ File.Name(sPath) To sDir &/ sDest
-      Else
-        File.Save(sDir &/ sDest, GetFile("template" &/ File.Name(sPath)))
-      Endif
+      Print #hDest, sLine
       
     Next
+    
+    Close #hFile
+    Close #hDest
+    
+    Kill sDir &/ ".project"
+    Copy sTemp To sDir &/ ".project"
     
     Project.MakeDirectoryIcon(sDir)
 
@@ -208,6 +162,13 @@ End
 Public Sub wizProject_BeforeChange()
   
   Select Case wizProject.Index
+    
+    Case 0
+      If Not $sTemplate Then
+        Balloon.Warning(("Please choose a template"), svwTemplate)
+        Stop Event
+      Endif
+      $bRepository = File.Name($sTemplate) = "~subversion"
     
     Case 1
       panRepository.Visible = $bRepository
@@ -265,18 +226,12 @@ Public Sub wizProject_Close()
 
 End
 
-Public Sub wizProject_Cancel()
-
-  Me.Close  
-
-End
-
-Public Sub lstType_Click()
-
-  $bRepository = Left(lstType.Current.Tag) = "!"
-  svwOption.Enabled = Not $bRepository
-
-End
+' Public Sub lstType_Click()
+' 
+'   $bRepository = Left(lstType.Current.Tag) = "!"
+'   svwOption.Enabled = Not $bRepository
+' 
+' End
 
 Public Sub txtName_Change()
 
@@ -285,5 +240,12 @@ Public Sub txtName_Change()
   Else
     lblFinalDir.Text = dchProject.SelectedPath &/ "..."
   Endif
+
+End
+
+Public Sub svwTemplate_MouseUp()
+
+  $hTemplate.Current = Null
+  $sTemplate = ""
 
 End

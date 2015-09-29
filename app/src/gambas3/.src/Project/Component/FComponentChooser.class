@@ -60,7 +60,7 @@ Private Sub RefreshList()
   
   sFilter = txtFilter.Text
   
-  For Each hComp In CComponent.All
+  For Each hComp In Project.Documentation.Components
     
     sComp = hComp.Key
     If hComp.Hidden Then Continue
@@ -165,7 +165,7 @@ End
 Public Sub gvwComponent_Data(Row As Integer, Column As Integer)
   
   Dim sComp As String = $aComp[Row]
-  Dim hComp As CComponent = CComponent.All[sComp]
+  Dim hComp As CComponent = Project.Documentation[sComp]
   
   With gvwComponent.Data
   
@@ -314,7 +314,7 @@ Public Sub gvwComponent_MouseMove()
   
   If iCol = 3 Then
     
-    Try hComp = CComponent.All[$aComp[iRow]]
+    Try hComp = Project.Documentation[$aComp[iRow]]
     If hComp Then
       Select Case hComp.State
         Case CComponent.STABLE_NOT_FINISHED
@@ -459,7 +459,7 @@ End
 
 Private Sub GetRequire(sComp As String) As String[]
   
-  Dim hComp As CComponent = CComponent.All[sComp]
+  Dim hComp As CComponent = Project.Documentation[sComp]
   
   Return hComp.Require
   
@@ -626,9 +626,9 @@ Public Sub CheckSelection() As Boolean
     aNeed = New String[]
     aExclude = New String[]
 
-    For Each sImpl In CComponent.All[sComp].Implement
+    For Each sImpl In Project.Documentation[sComp].Implement
     
-      For Each hComp In CComponent.All
+      For Each hComp In Project.Documentation.Components
       
         If hComp.Key = sComp Then Continue
         If hComp.Implement.Find(sImpl) >= 0 Then
@@ -640,7 +640,7 @@ Public Sub CheckSelection() As Boolean
     
     Next
 
-    For Each sExcl In CComponent.All[sComp].Exclude
+    For Each sExcl In Project.Documentation[sComp].Exclude
       If Not aComp.Exist(sExcl) Then Continue
       If Not aExclude.Exist(sExcl) Then aExclude.Add(sExcl)
     Next
@@ -658,9 +658,9 @@ Public Sub CheckSelection() As Boolean
       Return True
     Endif
 
-    For Each sNeed In CComponent.All[sComp].Need
+    For Each sNeed In Project.Documentation[sComp].Need
       bFound = False
-      For Each hComp In CComponent.All
+      For Each hComp In Project.Documentation.Components
         If hComp.Implement.Exist(sNeed) Then
           If Not aNeed.Exist(hComp.Key) Then aNeed.Add(hComp.Key)
           If aComp.Exist(hComp.Key) Then bFound = True
@@ -672,7 +672,7 @@ Public Sub CheckSelection() As Boolean
       Endif 
     Next
       
-    For Each sNeed In CComponent.All[sComp].Require
+    For Each sNeed In Project.Documentation[sComp].Require
       If Not aComp.Exist(sNeed) Then 
         Message.Warning(Subst(("The &1 component needs the &2 component."), "<b>" & sComp & "</b>", "<b>" & sNeed & "</b>"))
         Return True

@@ -19,7 +19,7 @@ Static Private Sub GetColor(sName As String) As Integer
   Dim hClass As CClassInfo
   Dim hSym As CSymbolInfo
   
-  hClass = CComponent.Classes["Color"]
+  hClass = Project.Documentation.Classes["Color"]
   hSym = hClass.Symbols[sName]
   If hSym.Kind = "C" And If hSym.Type = "i" Then Return CInt(hSym.Value)
   Try Return Object.GetProperty(Classes["Color"], sName)
@@ -93,7 +93,7 @@ Public Sub Form_Open()
 
   $aColorName = New String[]
   
-  hClass = CComponent.Classes["Color"]
+  hClass = Project.Documentation.Classes["Color"]
   If hClass Then
     
     For Each hSym In hClass.Symbols

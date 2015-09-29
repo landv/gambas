@@ -1,4 +1,4 @@
-EXTRA_DIST = reconf src spec mime desktop
+EXTRA_DIST = reconf src spec mime desktop template
 
 install-exec-local:
 	@if test "x$(ROOT)" != "x"; then \
@@ -33,22 +33,28 @@ install-exec-local:
 		$(INSTALL) -d $(DESTDIR)$(gbdatadir)/icons; \
 		cp -f $(srcdir)/mime/application-x-gambas*.png $(DESTDIR)$(gbdatadir)/icons; \
 		echo "Registering Gambas script mimetype"; \
-		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
+		xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasscript.png application-x-gambasscript; \
 		xdg-mime install $(srcdir)/mime/application-x-gambasscript.xml; \
 		echo "Registering Gambas server page mimetype"; \
-		xdg-icon-resource install --context mimetypes --size 64 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
+		xdg-icon-resource install --context mimetypes --size 256 $(DESTDIR)$(gbdatadir)/icons/application-x-gambasserverpage.png application-x-gambasserverpage; \
 		xdg-mime install $(srcdir)/mime/application-x-gambasserverpage.xml; \
 	fi
 
 	@echo "Installing the Gambas appdata file"
 	@$(INSTALL) -d $(DESTDIR)$(datarootdir)/appdata
 	@$(INSTALL) $(srcdir)/desktop/gambas3.appdata.xml $(DESTDIR)$(datarootdir)/appdata
+	
+	@echo "Installing the Gambas template projects"
+	$(INSTALL) -d $(DESTDIR)$(gbdatadir)/template;
+	cp -R $(srcdir)/template/* $(DESTDIR)$(gbdatadir)/template;
 
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/gambas$(GAMBAS_VERSION)
 	@rm -f $(DESTDIR)$(bindir)/gbs$(GAMBAS_VERSION)
 	@rm -f $(DESTDIR)$(bindir)/gbw$(GAMBAS_VERSION)
 	@(cd $(srcdir)/src; for p in `cat INSTALL`; do rm -f $(DESTDIR)$(bindir)/$$p.gambas; done)
+	@rm -rf $(DESTDIR)$(datarootdir)/appdata/gambas3.appdata.xml
+	@rm -rf $(DESTDIR)$(gbdatadir)/template
 
 dist-hook:
 	@(cd $(distdir)/src; \

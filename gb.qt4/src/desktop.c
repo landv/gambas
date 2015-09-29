@@ -36,14 +36,15 @@ extern const GB_INTERFACE *GB_PTR;
 }
 #endif
 
-static const char *_desktop;
+static bool _desktop_done = FALSE;
+static char _desktop[16];
 
 static const char *calc_desktop_type()
 {
 	char *env;
 	
 	env = getenv("KDE_FULL_SESSION");
-	if (env && strcmp(env, "true") == 0)
+	if (env && strcasecmp(env, "true") == 0)
 	{
 		env = getenv("KDE_SESSION_VERSION");
 		if (env)
@@ -64,6 +65,10 @@ static const char *calc_desktop_type()
 	if (env && *env)
 		return "MATE";
 	
+	env = getenv("XDG_CURRENT_DESKTOP");
+	if (env && *env && strlen(env) < sizeof(_desktop))
+		return env;
+	
   env = getenv("E_BIN_DIR");
 	if (env && *env)
 	{
@@ -76,26 +81,33 @@ static const char *calc_desktop_type()
 	if (env && *env)
 		return "WINDOWMAKER";
 	
-	env = getenv("XDG_CURRENT_DESKTOP");
-	if (env && *env)
-	{
-		if (strcasecmp(env, "LXDE") == 0)
-			return "LXDE";
-		if (strcasecmp(env, "UNITY") == 0)
-			return "UNITY";
-	}
+	env = getenv("DESKTOP_SESSION");
+	if (env && strcasecmp(env, "XFCE") == 0)
+		return "XFCE";
 	
-	return NULL;
+	env = getenv("XDG_MENU_PREFIX");
+	if (env && strncasecmp(env, "XFCE", 4) == 0)
+		return "XFCE";
+	
+	env = getenv("XDG_DATA_DIRS");
+	if (env && strstr(env, "/xfce"))
+		return "XFCE";
+	
+	return "?";
 }
 
 const char *DESKTOP_get_type()
 {
-	if (!_desktop)
+	const char *type;
+	char *p;
+	
+	if (!_desktop_done)
 	{
-		const char *type = calc_desktop_type();
-		if (!type)
-			type = "?";
-		_desktop = type;
+		type = calc_desktop_type();
+		p = _desktop;
+		
+		while ((*p++ = *type++));
+		_desktop_done = TRUE;
 	}
 	
 	return _desktop;

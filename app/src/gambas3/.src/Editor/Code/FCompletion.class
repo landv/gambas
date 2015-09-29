@@ -264,7 +264,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
 
   If $bGambas Then
 
-    CComponent.All["gb"].Load
+    Project.Documentation["gb"].Load
   
     For Each sClass In Project.GetClasses()
       If sClass Like sBegin & "*" Then aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
@@ -283,11 +283,11 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
     For Each sLib In aLib
       
       If sLib <> CComponent.PROJECT_NAME Then
-        If Not CComponent.All.Exist(sLib) Then Continue
-        CComponent.All[sLib].Load
+        If Not Project.Documentation.Exist(sLib) Then Continue
+        Project.Documentation[sLib].Load
       Endif
       
-      For Each sClass In CComponent.All[sLib].ClassList
+      For Each sClass In Project.Documentation[sLib].ClassList
         
         If IsLetter(Left$(sClass)) Then
           If sClass Like sBegin & "*" Then 
@@ -298,7 +298,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
               aClass.Remove(iPos)
             Loop
             
-            If CComponent.Classes[sClass].Properties Then
+            If Project.Documentation.Classes[sClass].Properties Then
               aClass.Add(sClass & " " & MHelp.TYPE_CONTROL)
             Else
               aClass.Add(sClass & " " & MHelp.TYPE_CLASS)
@@ -317,7 +317,7 @@ Private Sub AddClassesAndFill(aClass As String[], Optional sBegin As String)
 
   If Not $hClassPicture Then $hClassPicture = Project.MakeModuleIcon("class", 16).Picture
   
-    hPic[0] = Picture["img/logo/logo-16.png"]
+    hPic[0] = Picture["img/logo/head-16.png"]
     hPic[1] = $hClassPicture
     hPic[2] = Picture["img/symbol/control.png"]
     hPic[3] = Picture["img/symbol/symbol.png"]
@@ -351,10 +351,10 @@ Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boo
 
   ClearRows
 
-  cSymbol = CComponent.GetClassSymbols(sClass)
+  cSymbol = Project.Documentation.GetClassSymbols(sClass)
   If Not cSymbol Then Return
 
-  If CComponent.IsAutoCreatable(sClass) Then bStatic = False
+  If Project.Documentation.IsAutoCreatable(sClass) Then bStatic = False
 
   For Each hSymbol In cSymbol
     If hSymbol.NotPublic <> bPrivate Then Continue
@@ -405,7 +405,7 @@ Private Sub GetEvents(sCtrl As String) As String[]
     Endif
   Endif
   
-  If $sEventClass Then Try aEvent = CComponent.Classes[$sEventClass].Events
+  If $sEventClass Then Try aEvent = Project.Documentation.Classes[$sEventClass].Events
   
   If Not aEvent Then
     For iLine = 0 To $hEditor.Count - 1
@@ -420,7 +420,7 @@ Private Sub GetEvents(sCtrl As String) As String[]
       If iPos Then sLine = Left(sLine, iPos - 1)
       $sEventClass = sLine
       
-      Try aEvent = CComponent.Classes[$sEventClass].Events
+      Try aEvent = Project.Documentation.Classes[$sEventClass].Events
       If aEvent Then Break
       
     Next
@@ -553,7 +553,7 @@ Private Sub FillWithIdent(sWord As String)
 
   If $bGambas Then
     
-    cSymbol = CComponent.GetClassSymbols(GetClass())
+    cSymbol = Project.Documentation.GetClassSymbols(GetClass())
     If cSymbol Then
       For Each hSymbol In cSymbol
         If Not hSymbol.NotPublic Then Continue

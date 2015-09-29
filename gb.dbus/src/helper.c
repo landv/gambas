@@ -296,6 +296,7 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	GB_TYPE gtype;
 	char *sign;
 	GB_VALUE rarg;
+	GB_VALUE targ;
 	
 	if (arg->type == GB_T_VARIANT)
 		GB.Conv(arg, arg->_variant.value.type);
@@ -314,12 +315,15 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	}
 	else if (gtype != GB_T_VARIANT)
 	{
+		// The contents of arg must not be modified, because it may have to be freed later by the caller
+		
 		if (arg->type >= GB_T_OBJECT)
 		{
 			if (GB.Is(arg->_object.value, CLASS_DBusNull))
 			{
+				targ.type = GB_T_NULL;
 				GB.ReleaseValue(arg);
-				arg->type = GB_T_NULL;
+				arg = &targ;
 			}
 			else if (GB.Is(arg->_object.value, CLASS_DBusObject) && type == DBUS_TYPE_OBJECT_PATH)
 			{
@@ -327,22 +331,23 @@ static bool append_arg(DBusMessageIter *iter, const char *signature, GB_VALUE *a
 	
 				if (val && (val->type == GB_T_STRING || val->type != GB_T_CSTRING))
 				{
-					GB_VALUE save = *arg;
+					targ = *val;
+					targ.type = GB_T_CSTRING;
 					// The value returned by GB.GetProperty() is not referenced, so it must not be freed.
-					*arg = *val;
-					arg->type = GB_T_CSTRING;
-					GB.ReleaseValue(&save);
+					GB.BorrowValue(&targ);
+					GB.ReleaseValue(arg);
+					arg = &targ;
 				}
 			}
 			else if (GB.Is(arg->_object.value, CLASS_DBusVariant))
 			{
 				CDBUSVARIANT *dbusvariant = (CDBUSVARIANT *)arg->_object.value;
 				
-				rarg.type = GB_T_VARIANT;
-				rarg._variant.value = dbusvariant->value;
-				GB.BorrowValue(&rarg);
+				targ.type = GB_T_VARIANT;
+				targ._variant.value = dbusvariant->value;
+				GB.BorrowValue(&targ);
 				GB.ReleaseValue(arg);
-				arg = &rarg;
+				arg = &targ;
 			}
 		}
 			

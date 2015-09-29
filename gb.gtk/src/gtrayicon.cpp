@@ -39,24 +39,11 @@ gTrayIcon
 
 **************************************************************************/
 
-/*static gboolean cb_activate(GtkStatusIcon *plug, gTrayIcon *data)
-{
-	if (!gApplication::userEvents()) return false;
-	if (gApplication::loopLevel() > data->loopLevel()) return false;
-
-	//gApplication::updateLastEventTime(event);
-
-	if (data->onDoubleClick)
-		data->onDoubleClick(data);
-
-	return false;
-}*/
-
-
 static gboolean cb_button_press(GtkStatusIcon *plug, GdkEventButton *event, gTrayIcon *data)
 {
-	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
+
+	gApplication::updateLastEventTime();
 
 	if (data->onClick)
 	{
@@ -76,50 +63,17 @@ static gboolean cb_button_press(GtkStatusIcon *plug, GdkEventButton *event, gTra
 	return false;
 }
 
-/*static gboolean cb_button_release(GtkStatusIcon *plug, GdkEventButton *event, gTrayIcon *data)
-{
-	if (!gApplication::userEvents()) return false;
-	if (gApplication::loopLevel() > data->loopLevel()) return false;
-
-	if (data->onMouseRelease)
-	{
-		gMouse::validate();
-		gMouse::setMouse((int)event->x, (int)event->y, (int)event->x_root, (int)event->y_root, event->button, event->state);
-		data->onMouseRelease(data);
-		gMouse::invalidate();
-	}
-
-	return false;
-}*/
-
 static gboolean cb_menu(GtkStatusIcon *plug, guint button, guint activate_time, gTrayIcon *data)
 {
-	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
 	
+	gApplication::updateLastEventTime();
+
 	if (data->onMenu)
 		data->onMenu(data);
 	
 	return false;
 }
-
-/*static gboolean tray_focus_In(GtkWidget *widget,GdkEventFocus *event,gTrayIcon *data)
-{
-	if (!gApplication::allEvents()) return false;
-	if (gApplication::loopLevel() > data->loopLevel()) return false;
-
-	if (data->onFocusEnter) data->onFocusEnter(data);
-	return false;
-}
-
-static gboolean tray_focus_Out(GtkWidget *widget,GdkEventFocus *event,gTrayIcon *data)
-{
-	if (!gApplication::allEvents()) return false;
-	if (gApplication::loopLevel() > data->loopLevel()) return false;
-
-	if (data->onFocusLeave) data->onFocusLeave(data);
-	return false;
-}*/
 
 static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon *data)
 {
@@ -127,8 +81,9 @@ static gboolean cb_scroll(GtkStatusIcon *plug, GdkEventScroll *event, gTrayIcon 
 	int dt = 0;
 	int ort = 0;
 	
-	if (!gApplication::userEvents()) return false;
 	if (gApplication::loopLevel() > data->loopLevel()) return false;
+
+	gApplication::updateLastEventTime();
 
 	if (data->onScroll)
 	{

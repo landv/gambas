@@ -122,6 +122,7 @@ Public Sub Delete()
   Dim iIndex As Integer
   
   Hide
+  $hMenu = Null
   
   iIndex = TrayIcons._All.FindByRef(Me)
   If iIndex < 0 Then Return

@@ -153,7 +153,7 @@ Public Sub RefreshAll()
 
   'PRINT "Kind = "; sClass
   'cProp = CControl.PropertiesInOrder[sClass]
-  Try aProp = CComponent.Classes[sClass].PropertyList
+  Try aProp = Project.Documentation.Classes[sClass].PropertyList
   If Not aProp Then
     Error "gambas3: cannot get property list of "; sClass
     aProp = New String[]
@@ -201,7 +201,7 @@ Public Sub RefreshAll()
 
   For Each sProp In aProp
 
-    hProp = CComponent.Classes[sClass].GetProperties()[sProp]
+    hProp = Project.Documentation.Classes[sClass].GetProperties()[sProp]
     If hProp.Hidden Then Continue
 
     $cIndex[sProp] = iRow
@@ -611,6 +611,8 @@ Private Sub ShowProperty(Optional sFocus As String)
     If iRow >= 0 Then grdProperty.Row = iRow
   Endif
 
+  $bButton = False
+
   If grdProperty.Row = 0 Then Return
 
   If grdProperty.Row = 1 Then
@@ -639,7 +641,7 @@ Private Sub ShowProperty(Optional sFocus As String)
   Else
 
     sProp = grdProperty[grdProperty.Row, 0].Text
-    hProp = CComponent.Classes[$hObject.Kind].GetProperties()[sProp]
+    hProp = Project.Documentation.Classes[$hObject.Kind].GetProperties()[sProp]
     sType = hProp.Type
     sOption = hProp.Argument
 
@@ -660,7 +662,7 @@ Private Sub ShowProperty(Optional sFocus As String)
     Else If hProp.Virtual Then
       sHelp = "?"
     Else
-      hSymbol = CComponent.Classes[$hObject.Kind].Symbols[hProp.Name]
+      hSymbol = Project.Documentation.Classes[$hObject.Kind].Symbols[hProp.Name]
       MHelp.InitWebViewWith($hWebView, MHelp.TYPE_SYMBOL, hSymbol.Name, hSymbol.Class, If($hWebView, "notitle", ""))
     Endif
 

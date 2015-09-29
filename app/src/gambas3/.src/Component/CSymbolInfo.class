@@ -3,6 +3,7 @@
 Static Private $cTypeName As New Collection
 Static Private $cNameType As New Collection(gb.IgnoreCase)
 
+Public Documentation As CDocumentation
 Public Name As String
 Public Type As String
 Public Kind As String
@@ -49,9 +50,16 @@ Static Public Sub NameToType(sType As String) As String
   
 End
 
+Public Sub _new(hDoc As CDocumentation)
+  
+  Documentation = hDoc
+  
+End
+
+
 Public Sub Copy(sType As String, sNewType As String) As CSymbolInfo
   
-  Dim hSym As New CSymbolInfo
+  Dim hSym As New CSymbolInfo(Documentation)
   
   With hSym
     .Name = Name
@@ -408,11 +416,11 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
   sSign = GetNativeSignature()
   
   If Name = "_new" Then
-    hClass = CComponent.GetClassDescription({Component} &/ {Class})
+    hClass = Documentation.GetClassDescription({Component} &/ {Class})
     Do
       If Not hClass.Parent Then Break
       'If hClass.ParentComponent = hClass.Component Then Break
-      hClass = CComponent.GetClassDescription(hClass.ParentComponent &/ hClass.Parent)
+      hClass = Documentation.GetClassDescription(hClass.ParentComponent &/ hClass.Parent)
       'hClass = CComponent.Classes[hClass.ParentComponent &/ hClass.Parent]
       hSym = hClass.Symbols["_new"]
       If hSym Then sSign = MergeSignature(sSign, hClass.Symbols["_new"].GetNativeSignature())
@@ -769,7 +777,7 @@ Public Function GetHelpURL(Optional bShowFile As Boolean) As String
     Return MHelp.GetLangURL(Name)
   Endif
 
-  If Component And If Component <> CComponent.PROJECT_NAME Then hComp = CComponent.All[Component]
+  If Component And If Component <> CComponent.PROJECT_NAME Then hComp = Documentation[Component]
   
   If hComp Then
 
@@ -942,7 +950,7 @@ Public Sub GetHelpMarkup() As String
   
   sPath = Project.FindPath({Class})
   If Not sPath Then
-    hClass = CComponent.Classes[{Class}]
+    hClass = Documentation.Classes[{Class}]
     If hClass And If hClass.DeclareIn Then
       sPath = Project.FindPath(hClass.DeclareIn)
     Endif
@@ -1277,7 +1285,7 @@ Public Sub WikiGetSyntax() As String[]
 
     Case "_put"
 
-      sType = CComponent.All[Component][Class].Symbols["_get"].Type
+      sType = Documentation[Component][Class].Symbols["_get"].Type
 
       If IsStatic() Then
         sName = Class
@@ -1338,7 +1346,7 @@ Public Sub WikiGetSyntax() As String[]
       sSyntax &= Keyword("Dim") & " " & sName & " " & Keyword("As") & " " & GetSyntaxType(Class) & "\n"
       sSyntax &= sName & " " & Keyword("=") & " " & Keyword("New") & " " & GetSyntaxType(Class)
       sSyntax &= " " & Keyword("(") & GetSyntaxSignature() & Keyword(")")
-      If CComponent.Get(Component)[Class].HasEvents Then
+      If Documentation.Get(Component)[Class].HasEvents Then
         sSyntax &= " <b>[</b> " & Keyword("As") & " \"<i>event name</i>\" <b>]</b>"
       Endif
 

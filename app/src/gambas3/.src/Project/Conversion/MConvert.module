@@ -399,7 +399,7 @@ Private Sub FindClassSymbol(sClass As String, sSymbol As String, aSym As String[
     Endif
     
     If sType <> sClass Then
-      hClass = CComponent.Classes[sType]
+      hClass = Project.Documentation.Classes[sType]
       If Not hClass Then Return
       If Not hClass.Inherits(sClass) Then Return
     Endif
@@ -803,7 +803,7 @@ Public Sub ConvertComponent(sComp As String) As String[]
   
   While iInd < aComp.Count
     
-    hComp = CComponent.All[aComp[iInd]]
+    hComp = Project.Documentation[aComp[iInd]]
     If hComp Then
       For Each sComp In hComp.Require
         If Not aComp.Exist(sComp) Then aComp.Add(sComp)

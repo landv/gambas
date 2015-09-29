@@ -59,7 +59,7 @@ static void cb_menu(gTrayIcon *sender)
 	if (THIS->popup)
 	{
 		void *parent = GB.Parent(THIS);
-		if (parent && GB.Is(parent, CLASS_Control))
+		if (parent && !CWIDGET_check(parent) && GB.Is(parent, CLASS_Control))
 		{
 			gMainWindow *window = ((CWIDGET *)parent)->widget->window();
 			gMenu *menu = gMenu::findFromName(window, THIS->popup);

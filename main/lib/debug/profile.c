@@ -81,7 +81,7 @@ void PROFILE_init(const char *path)
 	_file = fopen(path, "w");
 	if (!_file)
 	{
-		fprintf(stderr, "gb.profile: cannot create profile file '%s': %s\n", path, strerror(errno));
+		fprintf(stderr, "gb.debug: cannot create profile file '%s': %s\n", path, strerror(errno));
 		abort();
 	}
 	
@@ -136,7 +136,7 @@ static void check_size()
 	_count = 0;
 	if (ftell(_file) > _max_profile_size)
 	{
-		fprintf(stderr, "gb.profile: maximum profile size reached\n");
+		fprintf(stderr, "gb.debug: maximum profile size reached\n");
 		PROFILE_exit();
 		abort();
 	}

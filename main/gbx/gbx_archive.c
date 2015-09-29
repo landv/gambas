@@ -333,36 +333,44 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 	
 	//fprintf(stderr, "ARCHIVE_find_from_path: %s (%s)\n", *ppath, *parch ? (*parch)->name : "NULL");
 	
-	i = 0;
-	while (strncmp(*ppath, "../", 3) == 0)
+	if (strncmp(*ppath, ".../", 4) == 0)
 	{
-		*ppath += 3;
-		if (*parch == NULL || *parch == ARCHIVE_main)
-			continue;
-		
-		while (i < STACK_frame_count)
+		*ppath += 4;
+		*parch = NULL;
+	}
+	else
+	{
+		i = 0;
+		while (strncmp(*ppath, "../", 3) == 0)
 		{
-			class = STACK_frame[i].cp;
-			//fprintf(stderr, "[%d] %s / %s\n", i, class ? class->name : "NULL", class && class->component && class->component->archive ? class->component->archive->name : "NULL");
-			if (class)
+			*ppath += 3;
+			if (*parch == NULL || *parch == ARCHIVE_main)
+				continue;
+			
+			while (i < STACK_frame_count)
 			{
-				if (!class->component)
+				class = STACK_frame[i].cp;
+				//fprintf(stderr, "[%d] %s / %s\n", i, class ? class->name : "NULL", class && class->component && class->component->archive ? class->component->archive->name : "NULL");
+				if (class)
 				{
-					*parch = NULL;
-					break;
+					if (!class->component)
+					{
+						*parch = NULL;
+						break;
+					}
+					if (class->component && class->component->archive != *parch)
+					{
+						*parch = class->component->archive;
+						break;
+					}
 				}
-				if (class->component && class->component->archive != *parch)
-				{
-					*parch = class->component->archive;
-					break;
-				}
+				
+				i++;
 			}
 			
-			i++;
+			if (i == STACK_frame_count)
+				*parch = NULL;
 		}
-		
-		if (i == STACK_frame_count)
-			*parch = NULL;
 	}
 	
 	if (*parch == NULL && EXEC_arch)

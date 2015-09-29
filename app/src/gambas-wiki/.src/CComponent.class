@@ -947,3 +947,15 @@ Catch
   Return ["`" & Error.Where & ": " & Error.Text & "`"]
 
 End
+
+Static Public Sub HasPackage(sComp As String) As Boolean
+  
+  If sComp Begins "gb.gui" Then Return
+  If sComp = "gb.eval" Then Return
+  If sComp = "gb.geom" Then Return
+  If sComp = "gb.draw" Then Return
+  If sComp = "gb.debug" Then Return
+  
+  Return True
+  
+End

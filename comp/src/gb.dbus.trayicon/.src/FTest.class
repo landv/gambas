@@ -79,3 +79,10 @@ Public Sub Button3_Click()
   Menu5.Value = Not Menu5.Value
 
 End
+
+Public Sub Menu9_Click()
+
+  TrayIcon1.Delete
+  Me.Close()
+
+End

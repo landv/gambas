@@ -1216,6 +1216,11 @@ void gApplication::updateLastEvent(GdkEvent *e)
 	_event_time = gdk_event_get_time(e);
 }
 
+void gApplication::updateLastEventTime()
+{
+	_event_time = gtk_get_current_event_time();
+}
+
 static void post_focus_change(void *)
 {
 	gControl *current, *control, *next;

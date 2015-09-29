@@ -185,6 +185,7 @@ End
 
 Public Sub View_MouseDown()
 
+  'Debug Mouse.Left;; $iIndex
   If Not Mouse.Left Or If $iIndex < 0 Then Return
   
   $iCurrent = $iIndex
@@ -205,6 +206,7 @@ Public Sub View_MouseMove()
   If I = $iIndex Then Return
   
   $iIndex = I
+  'Debug I
   $iLastIndex = $iIndex
   
   If I >= 0 Then
@@ -263,6 +265,7 @@ Public Sub View_Leave()
 
   If $iIndex >= 0 Then
     $iIndex = -1
+    'Debug -1
     $hView.Refresh
   Endif
 

@@ -463,13 +463,13 @@ Public Sub wizInstall_BeforeChange()
       
     Case TAB_CREATE
       
-      If chkSignature.Value And If Not txtPassPhrase.Text Then
-        txtPassPhrase.SetFocus
-        Balloon.Warning(("Please enter your passphrase."), txtPassPhrase)
-        Stop Event
-        Return
-      Endif
-      Package.Signature = If(chkSignature.Value, txtPassPhrase.Text, "")
+      ' If chkSignature.Value And If Not txtPassPhrase.Text Then
+      '   txtPassPhrase.SetFocus
+      '   Balloon.Warning(("Please enter your passphrase."), txtPassPhrase)
+      '   Stop Event
+      '   Return
+      ' Endif
+      ' Package.Signature = If(chkSignature.Value, txtPassPhrase.Text, "")
       
   End Select
   

@@ -27,6 +27,9 @@ Private $sStartup As String
 Private $aComponents As New String[]
 Private $bRead As Boolean
 
+Private $sTranslatedTitle As String
+Private $sTranslatedDescription As String
+
 Private Sub GetProjectPath(sPath As String) As String
   
   Do
@@ -210,5 +213,48 @@ Public Sub GetIconPath() As String
   Else
     Return "img/logo/project.png"
   Endif  
+  
+End
+
+Private Sub GetTranslation(sStr As String) As String
+
+  Dim sLang As String
+  Dim sPath As String
+  Dim aTrans As String[]
+  Dim iPos As Integer
+  Dim sTrans As String
+  
+  sLang = Language.Find(System.Language)  
+  sPath = $sPath &/ ".lang" &/ sLang & ".po"
+  If Not Exist(sPath) Then Return sStr
+  
+  aTrans = Split(File.Load(sPath), "\n")
+  iPos = aTrans.Find("msgid " & Quote(sStr))
+  If iPos < 0 Then Return sStr
+  
+  sTrans = aTrans[iPos + 1]
+  If sTrans Not Begins "msgstr " Then Return sStr
+  
+  Return UnQuote(Mid$(sTrans, 8))
+  
+End
+
+Public Sub GetTranslatedTitle() As String
+  
+  If Not $sTranslatedTitle Then
+    ReadProject
+    $sTranslatedTitle = GetTranslation($sTitle)
+  Endif
+  Return $sTranslatedTitle
+  
+End
+
+Public Sub GetTranslatedDescription() As String
+  
+  If Not $sTranslatedDescription Then
+    ReadProject
+    $sTranslatedDescription = GetTranslation($sDescription)
+  Endif
+  Return $sTranslatedDescription
   
 End
