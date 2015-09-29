@@ -65,6 +65,10 @@ static const char *calc_desktop_type()
 	if (env && *env)
 		return "MATE";
 	
+	env = getenv("XDG_CURRENT_DESKTOP");
+	if (env && *env && strlen(env) < sizeof(_desktop))
+		return env;
+	
   env = getenv("E_BIN_DIR");
 	if (env && *env)
 	{
@@ -85,9 +89,9 @@ static const char *calc_desktop_type()
 	if (env && strncasecmp(env, "XFCE", 4) == 0)
 		return "XFCE";
 	
-	env = getenv("XDG_CURRENT_DESKTOP");
-	if (env && *env && strlen(env) < sizeof(_desktop))
-		return env;
+	env = getenv("XDG_DATA_DIRS");
+	if (env && strstr(env, "/xfce"))
+		return "XFCE";
 	
 	return "?";
 }
