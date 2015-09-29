@@ -1868,7 +1868,10 @@ Public Sub Form_KeyPress()
 
     ' Top-level forms get key event before now.
     Try hEditor = Project.ActiveForm
-    If hEditor And If FCompletion.VisibleFrom(hEditor.GetEditor()) Then Return
+    If hEditor Then
+      If FCompletion.VisibleFrom(hEditor.GetEditor()) Then Return
+      If FSignature.VisibleFrom(hEditor.GetEditor()) Then Return
+    Endif
     
     If FSearch.InBrowse Then
       FSearch.Cancel
