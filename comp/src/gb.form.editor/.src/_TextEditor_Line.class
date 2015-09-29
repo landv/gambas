@@ -44,10 +44,12 @@ Private Sub Text_Write(Value As String)
 
   With GetView()
     If ._GetDocument().Lines[_Line] <> Value Then
+      ._SaveCursor
       .Begin
       .Remove(0, _Line, String.Len(._GetDocument().Lines[_Line]), _Line)
       .Insert(Value)
       .End
+      ._RestoreCursor
     Endif
   End With
 

@@ -2466,8 +2466,10 @@ Public Sub OpenExternFile(Optional sPath As String)
   
   If Not sPath Then
     Dialog.Title = ("Select a file")
+    Dialog.Path = Settings["/OpenExtern"]
     If Dialog.OpenFile() Then Return
     sPath = Dialog.Path
+    Settings["/OpenExtern"] = sPath
   Endif
   
   $bInOpenExtern = True
