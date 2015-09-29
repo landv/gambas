@@ -965,6 +965,7 @@ fflush(stderr);
 	int nresultcols;
 
 	nresultcols = get_num_columns(result);
+		
 	result->fields = NULL;
 
 	if (result->fields == NULL)
@@ -1061,7 +1062,7 @@ fflush(stderr);
 	SQLSMALLINT colsNum = 0;
 	colsNum = get_num_columns(res);
 
-	if (!colsNum)
+	if (colsNum == 0)
 		return;
 
 	//SQLRowCount(res->odbcStatHandle, &rowsNum);
@@ -1147,13 +1148,16 @@ fflush(stderr);
 #endif
 	
 	nresultcols = get_num_columns(res);
+	if (nresultcols == 0)
+		return DB_ERROR;
 
-	current = res->fields;
+	/*current = res->fields;
+	
 	for (i = 0; i < nresultcols; i++)
 	{
-		if(current->next != NULL)
+		if(current->next)
 			current = (ODBC_FIELDS *) current->next;
-	}
+	}*/
 
 	if (res->Function_exist == SQL_TRUE)
 	{
@@ -1183,29 +1187,26 @@ fflush(stderr);
 		return DB_ERROR;
 	}
 		
-	current = res->fields;
-			
 	if((retcode2 == SQL_NO_DATA_FOUND) || (retcode2==SQL_NO_DATA))
 		return DB_NO_DATA;
 
-	if (retcode2 != SQL_NO_DATA_FOUND && retcode2 != SQL_NO_DATA)
-	{
-
-		for (i = 0; i < nresultcols; i++)
-		{
-			displaysize=0;
-			char * fieldata;
-			SQLULEN   precision=0;
+	current = res->fields;
 			
-			SQLSMALLINT colnamelen=0,scale=0,type;
-			SQLLEN read=0;
-			SQLCHAR namebuff[25];
-				
-			SQLDescribeCol(res->odbcStatHandle, i+1 , namebuff, sizeof(namebuff), &colnamelen,&type,&precision, &scale,NULL);
-				
-			SQLColAttribute(res->odbcStatHandle, i+1 , SQL_DESC_LENGTH, "",0, NULL, (SQLPOINTER)&displaysize);
-				
-			read=0;
+	for (i = 0; i < nresultcols; i++)
+	{
+		displaysize=0;
+		char * fieldata;
+		SQLULEN   precision=0;
+		
+		SQLSMALLINT colnamelen=0,scale=0,type;
+		SQLLEN read=0;
+		SQLCHAR namebuff[25];
+			
+		SQLDescribeCol(res->odbcStatHandle, i+1 , namebuff, sizeof(namebuff), &colnamelen,&type,&precision, &scale,NULL);
+			
+		SQLColAttribute(res->odbcStatHandle, i+1 , SQL_DESC_LENGTH, "",0, NULL, (SQLPOINTER)&displaysize);
+			
+		read=0;
 
 		if (displaysize >= strlen((char *) namebuff))
 		{
@@ -1216,52 +1217,61 @@ fflush(stderr);
 			displaysize=strlen((char *) namebuff) + 1;
 		}
 
-	if (displaysize > 0)
-	{
-		if (displaysize < 2) 
-			displaysize = 2; 
-	
-		if (type != SQL_LONGVARCHAR && type != SQL_VARBINARY && type != SQL_LONGVARBINARY)
+		if (displaysize > 0)
 		{
-			fieldata=malloc(sizeof(char)*(displaysize));
-			SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
+			if (displaysize < 2) 
+				displaysize = 2; 
 		
-		} 
-		else
-		{
-			//BLOB field, not retrieved here 
-					
-			//the BLOB field hasn't the string terminator
-			displaysize=displaysize-1;
-
-		}
-		
-		current->outlen=displaysize;
-	}
-
-	value.type = GB_T_VARIANT;
-	value.value.type = GB_T_NULL;
-	if(current==NULL)GB.Error("ODBC internal error 4");
-//fprintf(stderr,"Lunghezza letta = %d\n",read);
-	if (current)
-	{
-		if(current->fieldata==NULL)GB.Error("ODBC internal error 5");
-		if (read == -1){
-			fieldata[0]=' ';fieldata[1]='\0';
-			current->type=SQL_CHAR;
-		}
-		conv_data((char *) fieldata, &value.value, (int) current->type);
-	}
-	
-	GB.StoreVariant(&value,&buffer[i]);
-	
-	if(displaysize >0 && fieldata !=NULL)free(fieldata);
-	current = (ODBC_FIELDS *) current->next;
-	fieldata=NULL;
+			if (type != SQL_LONGVARCHAR && type != SQL_VARBINARY && type != SQL_LONGVARBINARY)
+			{
+				fieldata=malloc(sizeof(char)*(displaysize));
+				SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
 			
-	}/* for all columns in this row  */
+			} 
+			else
+			{
+				//BLOB field, not retrieved here 
+						
+				//the BLOB field hasn't the string terminator
+				displaysize=displaysize-1;
 
-	}	/* while rows to fetch */
+			}
+			
+			current->outlen=displaysize;
+		}
+
+		value.type = GB_T_VARIANT;
+		value.value.type = GB_T_NULL;
+		
+		if (current==NULL)
+		{
+			GB.Error("ODBC internal error 4");
+			return DB_ERROR;
+		}
+		
+	//fprintf(stderr,"Lunghezza letta = %d\n",read);
+		if (current)
+		{
+			if(current->fieldata==NULL)
+			{
+				GB.Error("ODBC internal error 5");
+				return DB_ERROR;
+			}
+			
+			if (read == -1){
+				fieldata[0]=' ';fieldata[1]='\0';
+				current->type=SQL_CHAR;
+			}
+			conv_data((char *) fieldata, &value.value, (int) current->type);
+		}
+
+		GB.StoreVariant(&value,&buffer[i]);
+		
+		if(displaysize >0 && fieldata !=NULL)free(fieldata);
+		current = (ODBC_FIELDS *) current->next;
+		fieldata=NULL;
+				
+	}/* for all columns in this row  */
 
 	return DB_OK;
 }

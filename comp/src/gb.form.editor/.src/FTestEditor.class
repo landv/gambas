@@ -11,7 +11,8 @@ Public Sub Form_Open()
   'TextEditor1.Highlight = "C++"
   TextEditor1.Highlight = "gambas"
   
-  TextEditor1.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Dialog.class")
+  'TextEditor1.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Dialog.class")
+  TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
   'TextEditor1.Load("~/gambas/3.0/trunk/comp/src/gb.form.editor/.src/TextEditor.class", True)
   'TextEditor1.Load("/var/log/thttpd/debug.log.old")
   'TextEditor1.Load("~/cosme/style.css")
@@ -36,6 +37,8 @@ Public Sub Form_Open()
   'TextEditor1.Text = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 
   'TextEditor1.Text = "If sType = \"class\" And If Dir(File.Dir(sPath), File.BaseName(sPath) &/ \".*\").Count >= 2 Then Dec iCount\n'titi\n'tata"
+  
+  TextEditor1.SetFocus
   
 End
 

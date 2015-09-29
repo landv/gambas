@@ -28,6 +28,7 @@ End
 
 Public Sub Form_Open()
 
+  Me.Title = Dialog.Title
   dlgFont.FixedOnly = FixedOnly
   If Dialog.Font Then
     dlgFont.SelectedFont = Dialog.Font.ToString()

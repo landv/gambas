@@ -52,7 +52,8 @@ Public Sub CheckBox1_Click()
   DV.ShowShadow = Last.Value
 
 End
-Public Sub DV_Draw(Page As Integer, Width As Integer, Height As Integer)
+
+Public Sub DV_Draw(Page As Integer, (Width) As Integer, (Height) As Integer)
 
   'Debug "Load image : " & Page & "   | " & Width & " | " & height
   'Print Last.Zoom
@@ -97,7 +98,7 @@ Public Sub DV2_Zoom()
 
 End
 
-Public Sub DV2_Draw(Page As Integer, Width As Integer, Height As Integer)
+Public Sub DV2_Draw(Page As Integer, (Width) As Integer, (Height) As Integer)
 
   hpdf.Zoom = Last.Zoom / 0.72
   'Print Last.Zoom

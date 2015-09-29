@@ -481,7 +481,17 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 
 		c = COMMON_get_unicode_char();
 
-		if ((c < 0) || isspace(c))
+		if (c == info->date_sep)
+		{
+			set_date(&date, info->date_order[0], nbr);
+			set_date(&date, info->date_order[1], nbr2);
+
+			if (read_integer(&nbr))
+				return TRUE;
+
+			set_date(&date, info->date_order[2], nbr);
+		}
+		else if ((c < 0) || isspace(c))
 		{
 			i = 0;
 
@@ -492,16 +502,6 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 
 			if (info->date_order[i] == LO_YEAR) i++;
 			set_date(&date, info->date_order[i], nbr2);
-		}
-		else if (c == info->date_sep)
-		{
-			set_date(&date, info->date_order[0], nbr);
-			set_date(&date, info->date_order[1], nbr2);
-
-			if (read_integer(&nbr))
-				return TRUE;
-
-			set_date(&date, info->date_order[2], nbr);
 		}
 
 		jump_space();
@@ -525,17 +525,7 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 
 		c = COMMON_get_unicode_char();
 
-		if ((c < 0) || isspace(c))
-		{
-			i = 0;
-
-			if (info->time_order[i] == LO_SECOND) i++;
-			set_time(&date, info->time_order[i], nbr); i++;
-
-			if (info->time_order[i] == LO_SECOND) i++;
-			set_time(&date, info->time_order[i], nbr2);
-		}
-		else if (c == info->time_sep)
+		if (c == info->time_sep)
 		{
 			set_time(&date, info->time_order[0], nbr);
 			set_time(&date, info->time_order[1], nbr2);
@@ -552,6 +542,16 @@ bool DATE_from_string(const char *str, int len, VALUE *val, bool local)
 					return TRUE;
 				date.msec = nbr;
 			}
+		}
+		else if ((c < 0) || isspace(c))
+		{
+			i = 0;
+
+			if (info->time_order[i] == LO_SECOND) i++;
+			set_time(&date, info->time_order[i], nbr); i++;
+
+			if (info->time_order[i] == LO_SECOND) i++;
+			set_time(&date, info->time_order[i], nbr2);
 		}
 
 		c = get_char();

@@ -582,7 +582,7 @@ Public Sub btnRemove_Click()
   
   sErr = $hSoft.Delete()   
   If sErr Then
-    Message.Error(Subst(("Unable to remove <b>&1<b>:"), sName) & "\n\n" & sErr)
+    Message.Error(Subst(("Unable to remove <b>&1</b>:"), sName) & "\n\n" & sErr)
   Else
     Message(Subst("<b>&1</b> has been successfully removed.", sName))
   Endif

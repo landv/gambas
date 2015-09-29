@@ -1981,7 +1981,7 @@ void MyMainWindow::setBorder(bool b)
 	
 	if (effectiveWinId())
 	{
-		qDebug("effectiveWinId");
+		//qDebug("effectiveWinId");
 		initProperties(PROP_BORDER);
 		X11_window_remap(effectiveWinId());
 	}
