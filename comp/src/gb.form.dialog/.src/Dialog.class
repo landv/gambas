@@ -9,6 +9,10 @@ Static Property {Date} As Date
 
 Static Property FixedOnly As Boolean
 
+Static Property Key As String
+
+Static Private $sKey As String
+
 Static Public Function OpenFile(Optional Multi As Boolean) As Boolean
   
   Return FFileDialog.OpenFile(Multi)
@@ -82,5 +86,17 @@ End
 Static Private Sub FixedOnly_Write(Value As Boolean)
 
   FFontDialog.FixedOnly = Value
+
+End
+
+Static Private Function Key_Read() As String
+
+  Return $sKey
+
+End
+
+Static Private Sub Key_Write(Value As String)
+
+  $sKey = Value
 
 End

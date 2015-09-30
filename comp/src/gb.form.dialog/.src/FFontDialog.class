@@ -30,6 +30,11 @@ Public Sub Form_Open()
 
   Me.Title = Dialog.Title
   dlgFont.FixedOnly = FixedOnly
+
+  If Component.IsLoaded("gb.settings") And If Dialog.Key Then
+    Settings.Read(Me, "gb.form.dialog" &/ Dialog.Key)
+  Endif
+
   If Dialog.Font Then
     dlgFont.SelectedFont = Dialog.Font.ToString()
   Else
@@ -41,5 +46,13 @@ End
 Public Sub dlgFont_Activate()
 
   btnOK.Value = True
+
+End
+
+Public Sub Form_Close()
+
+  If Component.IsLoaded("gb.settings") And If Dialog.Key Then
+    Settings.Write(Me, "gb.form.dialog" &/ Dialog.Key)
+  Endif
 
 End
