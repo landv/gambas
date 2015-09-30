@@ -2,6 +2,7 @@
 
 Public Enum ACTION_NONE, ACTION_STROKE, ACTION_FILL, ACTION_CLEAR, ACTION_CLIP, ACTION_EXTENT, ACTION_HANDLE, ACTION_MAGNET, ACTION_SELECT
 Public Enum MAGNET_NONE, MAGNET_RECTANGLE, MAGNET_ELLIPSE
+Public Enum OP_UNION, OP_INTERSECTION, OP_DIFFERENCE, OP_XOR
 
 Private Enum CMD_MOVE_TO, CMD_LINE_TO ', CMD_RECTANGLE, CMD_ELLIPSE
 
@@ -12,6 +13,8 @@ Public _Magnets As New PointF[]
 Public _Matrix As New PaintMatrix
 Public _BrushMatrix As New PaintMatrix
 Public Current As Integer = -1
+
+Property Read Count As Integer
 
 Static Public FindIndex As Variant
 
@@ -1010,5 +1013,47 @@ Public Sub SelectNext(D As Float)
   
   I = FindShape(hCenter, D, True)
   If I >= 0 Then Select(I)
+  
+End
+
+Private Function Count_Read() As Integer
+
+  Return Shapes.Count
+
+End
+
+Public Sub Operation(iOp As Integer)
+  
+  Dim aPolygons As New Polygon[]
+  Dim aClip As New Polygon[]
+  Dim hShape As CImageShape
+  Dim I As Integer
+  
+  If Shapes.Count < 2 Then Return
+  
+  For I = 0 To Shapes.Max - 1
+    aPolygons.Add(Shapes[I].Points)
+  Next
+  
+  aClip.Add(Shapes[Shapes.Max].Points)
+  
+  
+  Select Case iOp
+    Case OP_UNION
+      aPolygons = Clipper.Union(aPolygons, aClip)
+    Case OP_INTERSECTION
+      aPolygons = Clipper.Intersection(aPolygons, aClip)
+    Case OP_DIFFERENCE
+      aPolygons = Clipper.Difference(aPolygons, aClip)
+    Case OP_XOR
+      aPolygons = Clipper.ExclusiveOr(aPolygons, aClip)
+  End Select
+  
+  Clear()
+  For I = 0 To aPolygons.Max
+    hShape = New CImageShape
+    hShape.Points = aPolygons[I]
+    AddShape(hShape)
+  Next
   
 End

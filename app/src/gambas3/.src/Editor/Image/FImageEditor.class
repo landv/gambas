@@ -463,7 +463,7 @@ Private Sub SetTool(sAction As String)
     Case "move"
       $iMouse = Mouse.SizeAll
     
-    Case "draw", "erase"
+    Case "draw", "erase", "rectangle", "ellipse"
       $iMouse = Mouse.Cross
     
     Case "magic"
@@ -1017,6 +1017,7 @@ Public Sub imvImage_MouseMove()
   Dim A As Float
   Dim hSelect As CImageSelection
   Dim I As Integer
+  Dim X1, X2, Y1, Y2 As Float
   
   $hCurrentPoint = FindBestMagnet(GetImagePos())
   UpdateInfo
@@ -1053,23 +1054,58 @@ Public Sub imvImage_MouseMove()
           $hFirstPoint = Null
         Endif
         
-      Case "rectangle"
+      Case "rectangle", "ellipse"
         
         If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
         If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
           $hSelect = $aUndo[$aUndo.Max].Copy()
-          WW = $hCurrentPoint.X - $hLastPoint.X + Sgn($hCurrentPoint.X - $hLastPoint.X)
-          HH = $hCurrentPoint.Y - $hLastPoint.Y + Sgn($hCurrentPoint.Y - $hLastPoint.Y)
-          If $bShift Then
-            WW *= 2
-            HH *= 2
-            $hSelect.Rectangle($hLastPoint.X - WW, $hLastPoint.Y - HH, WW, HH, FImageProperty.GetRoundness())
+          
+          X1 = $hCurrentPoint.X
+          Y1 = $hCurrentPoint.Y
+          X2 = $hLastPoint.X
+          Y2 = $hLastPoint.Y
+          If X1 > X2 Then Swap X1, X2
+          If Y1 > Y2 Then Swap Y1, Y2
+          
+          If X2 - X1 >= 0.25 And If Y2 - Y1 >= 0.25 Then 
+            X1 = Floor(X1)
+            X2 = Ceil(X2)
+            Y1 = Floor(Y1)
+            Y2 = Ceil(Y2)
+            WW = X2 - X1
+            HH = Y2 - Y1
           Else
-            $hSelect.Rectangle($hLastPoint.X, $hLastPoint.Y, WW, HH, FImageProperty.GetRoundness())
+            WW = 0
+            HH = 0
           Endif
+          
+          If $sTool = "ellipse" Then
+          
+            If $bShift Then
+              WW *= Sqr(2)
+              HH *= Sqr(2)
+              $hSelect.Ellipse(CInt($hLastPoint.X) - WW, CInt($hLastPoint.Y) - HH, WW * 2, HH * 2)
+            Else
+              $hSelect.Ellipse(CInt(Min($hLastPoint.X, $hCurrentPoint.X)), CInt(Min($hLastPoint.Y, $hCurrentPoint.Y)), WW, HH)
+            Endif
+          
+          Else
+            
+            If $bShift Then
+              WW *= 2
+              HH *= 2
+              $hSelect.Rectangle(X1 - WW, Y1 - HH, WW, HH, FImageProperty.GetRoundness())
+            Else
+              $hSelect.Rectangle(X1, Y1, WW, HH, FImageProperty.GetRoundness())
+            Endif
+            
+          Endif
+            
           imvImage.Refresh
           $iLastSelectW = WW
           $iLastSelectH = HH
+            
+          
         Endif
       
       Case "text"
@@ -1077,24 +1113,24 @@ Public Sub imvImage_MouseMove()
         $hLastPoint = GetImagePos() '$hCurrentPoint
         FImageProperty.RefreshTextOption
       
-      Case "ellipse"
-        
-        If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
-        If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
-          $hSelect = $aUndo[$aUndo.Max].Copy()
-          WW = Abs($hCurrentPoint.X - $hLastPoint.X + Sgn($hCurrentPoint.X - $hLastPoint.X))
-          HH = Abs($hCurrentPoint.Y - $hLastPoint.Y + Sgn($hCurrentPoint.Y - $hLastPoint.Y))
-          If $bShift Then
-            WW *= Sqr(2)
-            HH *= Sqr(2)
-            $hSelect.Ellipse($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
-          Else
-            $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), WW, HH)
-          Endif
-          imvImage.Refresh
-          $iLastSelectW = WW
-          $iLastSelectH = HH
-        Endif
+      ' Case "ellipse"
+      '   
+      '   If $bCtrl Then $hCurrentPoint.Y = $hLastPoint.Y + Abs($hCurrentPoint.X - $hLastPoint.X) * Sgn($hCurrentPoint.Y - $hLastPoint.Y)
+      '   If $hLastPoint.X <> $hCurrentPoint.X Or If $hLastPoint.Y <> $hCurrentPoint.Y Then
+      '     $hSelect = $aUndo[$aUndo.Max].Copy()
+      '     WW = Abs(CInt($hCurrentPoint.X) - CInt($hLastPoint.X)) '- ($hCurrentPoint.X > $hLastPoint.X)
+      '     HH = Abs(CInt($hCurrentPoint.Y) - CInt($hLastPoint.Y)) '- ($hCurrentPoint.Y > $hLastPoint.Y)
+      '     If $bShift Then
+      '       WW *= Sqr(2)
+      '       HH *= Sqr(2)
+      '       $hSelect.Ellipse(CInt($hLastPoint.X) - WW, CInt($hLastPoint.Y) - HH, WW * 2, HH * 2)
+      '     Else
+      '       $hSelect.Ellipse(CInt(Min($hLastPoint.X, $hCurrentPoint.X)), CInt(Min($hLastPoint.Y, $hCurrentPoint.Y)), WW, HH)
+      '     Endif
+      '     imvImage.Refresh
+      '     $iLastSelectW = WW
+      '     $iLastSelectH = HH
+      '   Endif
         
       Case "change", "paste"
         
@@ -2873,5 +2909,40 @@ End
 Public Sub dwgInfo_Draw()
 
   Paint.DrawText($sInfo, 0, 0, dwgInfo.W - Desktop.Scale, dwgInfo.H, Align.TopRight)
+
+End
+
+Public Sub btnUnion_Click()
+
+  DoOperation(CImageSelection.OP_UNION)
+  
+End
+
+Public Sub btnIntersection_Click()
+
+  DoOperation(CImageSelection.OP_INTERSECTION)
+  
+End
+
+Public Sub btnDifference_Click()
+
+  DoOperation(CImageSelection.OP_DIFFERENCE)
+  
+End
+
+Public Sub btnExclusive_Click()
+
+  DoOperation(CImageSelection.OP_XOR)
+  
+End
+
+Private Sub DoOperation(iOp As Integer)
+
+  If Not $hSelect Then Return
+  If $hSelect.Count < 2 Then Return
+  
+  AddUndo($hSelect.Copy())
+  $hSelect.Operation(iOp)
+  RefreshSelection
 
 End

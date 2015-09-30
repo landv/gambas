@@ -80,6 +80,28 @@
         Picture = Picture["img/draw/offset.png"]
         Shortcut = "Ctrl+*"
       }
+      { Menu5 Menu
+      }
+      { mnuUnion Menu btnUnion
+        Name = "mnuUnion"
+        Text = ("Union")
+        Picture = Picture["img/draw/union.png"]
+      }
+      { mnuIntersection Menu btnIntersection
+        Name = "mnuIntersection"
+        Text = ("Intersection")
+        Picture = Picture["img/draw/intersection.png"]
+      }
+      { mnuDifference Menu btnDifference
+        Name = "mnuDifference"
+        Text = ("Difference")
+        Picture = Picture["img/draw/difference.png"]
+      }
+      { mnuExclusive Menu btnExclusive
+        Name = "mnuExclusive"
+        Text = ("Exclusive or")
+        Picture = Picture["img/draw/exclusive.png"]
+      }
     }
     { mnuShapeGrid Menu
       Text = ("Shape grid")
@@ -464,53 +486,81 @@
     { Separator8 Separator
       MoveScaled(110,0,1,4)
     }
-    { btnInvert ToolButton
+    { btnUnion ToolButton
       MoveScaled(111,0,4,4)
+      Visible = False
+      ToolTip = ("Union")
+      Action = ".union"
+      Picture = Picture["img/draw/union.png"]
+    }
+    { btnIntersection ToolButton
+      MoveScaled(114,0,4,4)
+      Visible = False
+      ToolTip = ("Intersection")
+      Action = ".intersection"
+      Picture = Picture["img/draw/intersection.png"]
+    }
+    { btnDifference ToolButton
+      MoveScaled(117,0,4,4)
+      Visible = False
+      ToolTip = ("Difference")
+      Action = ".difference"
+      Picture = Picture["img/draw/difference.png"]
+    }
+    { btnExclusive ToolButton
+      MoveScaled(120,0,4,4)
+      Visible = False
+      ToolTip = ("Exclusive or")
+      Action = ".exclusive"
+      Picture = Picture["img/draw/exclusive.png"]
+    }
+    { btnInvert ToolButton
+      MoveScaled(124,0,4,4)
       ToolTip = ("Invert selection")
       Action = ".invert"
       Picture = Picture["img/draw/invert.png"]
     }
     { btnDuplicate ToolButton
-      MoveScaled(114,0,4,4)
+      MoveScaled(127,0,4,4)
       ToolTip = ("Duplicate selection")
       Action = ".duplicate"
       Picture = Picture["img/draw/duplicate.png"]
     }
     { btnOffset ToolButton
-      MoveScaled(118,0,4,4)
+      MoveScaled(131,0,4,4)
       ToolTip = ("Offset selection")
       Action = ".offset"
       Picture = Picture["img/draw/offset.png"]
     }
     { Separator5 Separator
-      MoveScaled(122,0,1,4)
+      MoveScaled(135,0,1,4)
     }
     { btnCrop ToolButton
-      MoveScaled(123,0,4,4)
+      MoveScaled(136,0,4,4)
       ToolTip = ("Crop")
       Action = ".crop"
       Picture = Picture["img/draw/crop.png"]
     }
     { btnFlipH ToolButton
-      MoveScaled(126,0,4,4)
+      MoveScaled(139,0,4,4)
       ToolTip = ("Horizontal flip")
       Action = ".flip-h"
       Picture = Picture["img/draw/hflip.png"]
     }
     { btnFlipV ToolButton
-      MoveScaled(129,0,4,4)
+      MoveScaled(142,0,4,4)
       ToolTip = ("Vertical flip")
       Action = ".flip-v"
       Picture = Picture["img/draw/vflip.png"]
     }
     { btnRotateR ToolButton
-      MoveScaled(132,0,4,4)
+      MoveScaled(145,0,4,4)
       ToolTip = ("Rotate clockwise")
       Action = ".rotate-r"
       Picture = Picture["img/draw/rotate-right.png"]
     }
     { btnRotateL ToolButton
-      MoveScaled(135,0,4,4)
+      MoveScaled(148,0,4,4)
       ToolTip = ("Rotate counter-clockwise")
       Action = ".rotate-l"
       Picture = Picture["img/draw/rotate-left.png"]
@@ -572,10 +622,18 @@
     Shortcut = "Ctrl+X"
     Picture = "icon:/small/cut"
   }
+  { Action difference
+    Text = "Difference"
+    Picture = "img/draw/difference.png"
+  }
   { Action duplicate
     Text = "Duplicate selection"
     Shortcut = "Ctrl+D"
     Picture = "img/draw/duplicate.png"
+  }
+  { Action exclusive
+    Text = "Exclusive or"
+    Picture = "img/draw/exclusive.png"
   }
   { Action flip-h
     Text = "Horizontal flip"
@@ -595,6 +653,10 @@
     Text = "Hide selection"
     Shortcut = "Esc"
     Picture = "img/draw/hide.png"
+  }
+  { Action intersection
+    Text = "Intersection"
+    Picture = "img/draw/intersection.png"
   }
   { Action invert
     Text = "Invert selection"
@@ -712,6 +774,10 @@
     Shortcut = "Ctrl+Z"
     Picture = "icon:/small/undo"
   }
+  { Action union
+    Text = "Union"
+    Picture = "img/draw/union.png"
+  }
   { Action zoom
     Text = "Zoom level"
     Picture = "$ComboBox"
@@ -741,7 +807,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
+    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,intersection,difference,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
     Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
   }
 }
