@@ -556,18 +556,14 @@ Static Public Sub FindMagnetFrom(aPoint As PointF[], hSearch As PointF, D As Flo
 End
 
 
-Public Sub FindMagnet(hSearch As PointF, D As Float, Optional iIgnoreAfter As Integer) As PointF
+Public Sub FindMagnet(hSearch As PointF, D As Float, Optional iIgnoreFrom As Integer = -1) As PointF
 
   Dim hPoint As PointF
   Dim I, N As Integer
   
   N = Shapes.Max
 
-  If iIgnoreAfter > 0 Then
-    N = iIgnoreAfter - 1
-  Else If iIgnoreAfter < 0 Then
-    N += iIgnoreAfter
-  Endif
+  If iIgnoreFrom >= 0 Then N = iIgnoreFrom - 1
   
   For I = 0 To N
     If I = Current Then Continue

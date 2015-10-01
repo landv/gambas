@@ -2,7 +2,9 @@
 
 Private Sub Reload()
 
-  TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
+  'TextEditor1.Highlight = "gambas"
+  'TextEditor1.Load("~/gambas/3.0/issues/754/test/.src/Main.module")
+  TextEditor1.Load("~/BUG.776")
 
 End
 
@@ -14,7 +16,6 @@ Public Sub Form_Open()
   
   'TextEditor1.Highlight = "html"
   'TextEditor1.Highlight = "C++"
-  TextEditor1.Highlight = "gambas"
   Reload
   
   'TextEditor1.Load("~/asap/guygle/trunk/gambas/guygle.cgi/.src/Site/Dialog.class")

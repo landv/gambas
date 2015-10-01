@@ -87,15 +87,15 @@
         Text = ("Union")
         Picture = Picture["img/draw/union.png"]
       }
-      { mnuIntersection Menu btnIntersection
-        Name = "mnuIntersection"
-        Text = ("Intersection")
-        Picture = Picture["img/draw/intersection.png"]
-      }
       { mnuDifference Menu btnDifference
         Name = "mnuDifference"
         Text = ("Difference")
         Picture = Picture["img/draw/difference.png"]
+      }
+      { mnuIntersection Menu btnIntersection
+        Name = "mnuIntersection"
+        Text = ("Intersection")
+        Picture = Picture["img/draw/intersection.png"]
       }
       { mnuExclusive Menu btnExclusive
         Name = "mnuExclusive"
@@ -322,7 +322,7 @@
       ToolTip = "Zoom level"
       Action = ".zoom"
       ReadOnly = True
-      List = ["0.25×", "0.33×", "0.5×", "1×", "2×", "3×", "4×", "5x", "6×", "8×", "10×", "12×", "16×", "24×", "32×"]
+      List = ["32×", "24×", "16×", "12×", "10×", "8×", "6×", "5x", "4×", "3×", "2×", "1×", "0.5×", "0.33×", "0.25×"]
     }
     { btnZoomOut ToolButton
       MoveScaled(31,0,4,4)
@@ -493,19 +493,19 @@
       Action = ".union"
       Picture = Picture["img/draw/union.png"]
     }
-    { btnIntersection ToolButton
-      MoveScaled(114,0,4,4)
-      Visible = False
-      ToolTip = ("Intersection")
-      Action = ".intersection"
-      Picture = Picture["img/draw/intersection.png"]
-    }
     { btnDifference ToolButton
-      MoveScaled(117,0,4,4)
+      MoveScaled(114,0,4,4)
       Visible = False
       ToolTip = ("Difference")
       Action = ".difference"
       Picture = Picture["img/draw/difference.png"]
+    }
+    { btnIntersection ToolButton
+      MoveScaled(117,0,4,4)
+      Visible = False
+      ToolTip = ("Intersection")
+      Action = ".intersection"
+      Picture = Picture["img/draw/intersection.png"]
     }
     { btnExclusive ToolButton
       MoveScaled(120,0,4,4)
@@ -807,7 +807,7 @@
 { Toolbars
   { Toolbar image
     Text = "Image editor"
-    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,intersection,difference,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
+    List = "save,reload,locked,undo,redo,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,resize,rotate,copy,cut,tool-paste,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,union,difference,intersection,exclusive,invert,duplicate,offset,crop,flip-h,flip-v,rotate-r,rotate-l"
     Default = "save,reload,locked,undo,redo,|,zoom-in,zoom,zoom-out,zoom-normal,zoom-fit,grid,|,copy,cut,tool-paste,|,tool-move,tool-draw,tool-erase,tool-line,tool-rectangle,tool-ellipse,tool-text,tool-magic,hide,tool-change,|,invert,duplicate,offset,|,crop,flip-h,flip-v,rotate-r,rotate-l"
   }
 }

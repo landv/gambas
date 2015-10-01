@@ -201,11 +201,8 @@ End
 
 Public Sub Main()
 
-  Dim hTask As CTaskDirSize
-
-  hTask = New CTaskDirSize("/home/benoit/gambas/3.0") As "Task"
-  
-  Wait 10
+  Application.Theme = "KDE5"
+  Picture["icon:/22/add"].Save("~/test.png")
   
 End
 

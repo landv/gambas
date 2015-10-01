@@ -408,14 +408,14 @@ void MyDrawingArea::updateBackground()
 	int wb, hb;
 #endif
 
-	if (drawn)
-	{
-		GB.Error("DrawingArea is being drawn");
-		return;
-	}
-
 	if (_cached)
 	{
+		if (drawn)
+		{
+			GB.Error("DrawingArea is being drawn");
+			return;
+		}
+
 		w = qMax(width(), 1);
 		h = qMax(height(), 1);
 		
