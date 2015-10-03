@@ -33,6 +33,7 @@
 #include <QEventLoop>
 #include <QSessionManager>
 #include <QClipboard>
+#include <QFont>
 
 #define DO_NOT_USE_QT_INTERFACE
 #include "gb.qt.h"
@@ -140,7 +141,7 @@ private:
 #define UTF8_NBUF 4
 
 void MAIN_check_quit(void);
-void MAIN_update_scale(void);
+void MAIN_update_scale(const QFont &);
 void MAIN_process_events(void);
 void MAIN_init_error(void);
 

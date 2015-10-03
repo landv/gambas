@@ -860,15 +860,9 @@ void MAIN_check_quit(void)
 	_check_quit_posted = true;
 }
 
-void MAIN_update_scale(void)
+void MAIN_update_scale(const QFont &font)
 {
-	//QFontMetrics fm(qApp->desktop()->font());
-	//MAIN_scale = GET_DESKTOP_SCALE(fm.height());
-	#ifdef NO_X_WINDOW
-	MAIN_scale = GET_DESKTOP_SCALE(qApp->desktop()->font().pointSize(), 96);
-	#else
-	MAIN_scale = GET_DESKTOP_SCALE(qApp->desktop()->font().pointSize(), QX11Info::appDpiY());
-	#endif
+	MAIN_scale = GET_DESKTOP_SCALE(font.pointSize(), QX11Info::appDpiY());
 }
 
 static void QT_InitEventLoop(void)
@@ -902,7 +896,7 @@ static void QT_Init(void)
 	}
 	
 	
-	MAIN_update_scale();
+	MAIN_update_scale(qApp->desktop()->font());
 
 	qApp->installEventFilter(&CWidget::manager);
 #ifdef QT5
