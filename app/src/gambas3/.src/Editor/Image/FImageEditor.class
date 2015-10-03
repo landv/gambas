@@ -135,14 +135,14 @@ End
 
 Public Sub btnZoomIn_Click()
 
-  Try Inc cmbZoom.Index
+  If cmbZoom.Index = 0 Then Return
+  Try Dec cmbZoom.Index
 
 End
 
 Public Sub btnZoomOut_Click()
 
-  If cmbZoom.Index = 0 Then Return
-  Dec cmbZoom.Index
+  Try Inc cmbZoom.Index
 
 End
 
@@ -1760,6 +1760,7 @@ Public Sub imvImage_Draw(hZoom As Image)
         $hPasteSelect.Translate(Floor(.X), Floor(.Y))
         Paint.End
       
+        Paint.ClipRect = Rect(hOffset.X, hOffset.Y, Ceil($hImage.W * imvImage.Zoom), Ceil($hImage.H * imvImage.Zoom))
         imvImage._Paint(hImage, hOffset.X + Floor(.X) * imvImage.Zoom, hOffset.Y + Floor(.Y) * imvImage.Zoom)
       Endif
     

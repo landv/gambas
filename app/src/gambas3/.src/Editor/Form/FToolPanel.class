@@ -17,11 +17,14 @@ Private $bNoEvent As Boolean
 
 Public Sub _new(sName As String, sType As String)
 
-  If Settings["/ToolboxSize", 0] Then
-    $iSize = 24
-  Else 
-    $iSize = 32
-  Endif
+  Select Case Settings["/ToolboxSize", 0]
+    Case 0
+      $iSize = 32
+    Case 1
+      $iSize = 24
+    Case 2
+      $iSize = 48
+  End Select
 
   Key = sName
   $sType = sType
