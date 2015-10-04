@@ -176,8 +176,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
     hEditor.Begin
     hEditor.SelectAll
     hEditor.Insert(aText.Join("\n"))
-    hEditor.Goto(X, Y)
     hEditor.End
+    hEditor.Goto(X, Y)
   Endif
   
 End
