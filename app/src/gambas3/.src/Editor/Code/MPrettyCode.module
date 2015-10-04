@@ -98,6 +98,7 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
     
     $iLine = iLine
     sLine = aText[iLine]
+    
     sLine = IndentLine(sLine)
     
     If iLine < iStart Then
@@ -130,7 +131,8 @@ Public Sub Run(hEditor As TextEditor, Optional iStart As Integer, Optional iEnd 
         bBreakpoint = True
       Endif
       
-      iLine += aLine.Max
+      iLine += aLine.Count
+      iEnd += aLine.Count
       bModified = True
       
     Endif
