@@ -71,6 +71,8 @@ Public Sub btnUp_Click()
   
   If iRow <= 0 Then Return
   
+  tvwBookmark.Save
+  
   iOther = $hBookmarkList.Find($hBookmarks[iRow - 1])
   iRow = $hBookmarkList.Find($hBookmarks[iRow])
   
@@ -88,6 +90,8 @@ Public Sub btnDown_Click()
   Dim iOther As Integer
   
   If iRow < 0 Or If iRow = $hBookmarks.Max Then Return
+  
+  tvwBookmark.Save
   
   iOther = $hBookmarkList.Find($hBookmarks[iRow + 1])
   iRow = $hBookmarkList.Find($hBookmarks[iRow])
