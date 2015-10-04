@@ -1007,10 +1007,9 @@ gPicture* gPicture::rotate(double angle)
 	
 	GdkPixbuf *src = getPixbuf();
 	gPicture *npic = new gPicture(PIXBUF, nw, nh, isTransparent());
+	npic->fill(0);
 	GdkPixbuf *dst = npic->getPixbuf();
-	
-	npic->fill(isTransparent() ? -1 : 0);
-	
+
 	rotate_image(cosa, -sina, sina, cosa, dx, dy,
 		gdk_pixbuf_get_pixels(dst), nw * 4, nw, nh,  
 		gdk_pixbuf_get_pixels(src), width() * 4, width(), height());

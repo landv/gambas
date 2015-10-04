@@ -18,6 +18,7 @@ Public Sub DrawTime()
   Dim tmpImg As Image
   'Dim hPict As Picture
   Dim hPict As Image
+  Dim I As Integer
 
   WI = Clock.Width
   HE = Clock.Height
@@ -37,6 +38,7 @@ Public Sub DrawTime()
   'hPict = New Image(Clock.W, Clock.H, Color.Transparent)
   'hPict.Draw(Clock, 0, 0)
   hPict = Clock.Copy()
+  
   'Draw.Begin(hPict)
     'tmpImg = picHour.Rotate(- Hour(Now) * Pi(2 / 12))
     tmpImg = picHour.Rotate(- ((Hour(Now) * 60) + Minute(Now)) * Pi(1 / 360))    

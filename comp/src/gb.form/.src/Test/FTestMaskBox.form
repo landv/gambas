@@ -3,26 +3,12 @@
 { Form Form
   MoveScaled(0,0,64,64)
   { MaskBox1 MaskBox
-    MoveScaled(11,14,24,4)
-    Text = ("x.x.x.x.")
-    Mask = "[x.][x.][x.][x.][x.][x.][x.][x.]"
+    MoveScaled(6,15,24,4)
+    Alignment = Align.Right
+    Mask = "#0<"
   }
-  { TextBox1 TextBox
-    MoveScaled(10,22,24,4)
-  }
-  { Label1 Label
-    MoveScaled(31,29,24,4)
-    Text = ("gfdf")
-  }
-  { ToggleButton1 ToggleButton
-    MoveScaled(11,38,16,4)
-  }
-  { Button1 Button
-    MoveScaled(42,22,10,4)
-    Picture = Picture["img/16/cross.png"]
-  }
-  { ToolButton1 ToolButton
-    MoveScaled(21,47,14,4)
-    Picture = Picture["img/16/cross.png"]
+  { MaskBox2 MaskBox
+    MoveScaled(8,24,24,4)
+    Mask = "##0.##0.##0.##0"
   }
 }

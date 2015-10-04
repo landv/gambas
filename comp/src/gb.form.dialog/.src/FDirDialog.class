@@ -14,6 +14,12 @@ Public Sub Form_Open()
   Me.Title = Dialog.Title
   dchChoose.Root = "/"
   dchChoose.ShowHidden = Dialog.ShowHidden
+
+  If Component.IsLoaded("gb.settings") And If Dialog.Key Then
+    Settings.Read(Me, "gb.form.dialog" &/ Dialog.Key)
+    Settings.Read(dchChoose, "/gb.form.dialog" &/ Dialog.Key &/ "dchChoose")
+  Endif
+
   If Not Dialog.Path Then 
     dchChoose.SelectedPath = "~"
   Else
@@ -45,6 +51,9 @@ End
 
 Public Sub Form_Close()
 
-  If Component.IsLoaded("gb.settings") Then Settings.Write(Me, "gb.form.dialog/FDirDialog")
+  If Component.IsLoaded("gb.settings") And If Dialog.Key Then
+    Settings.Write(Me, "gb.form.dialog" &/ Dialog.Key)
+    Settings.Write(dchChoose, "/gb.form.dialog" &/ Dialog.Key &/ "dchChoose")
+  Endif
 
 End

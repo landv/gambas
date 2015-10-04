@@ -165,8 +165,8 @@ END_METHOD
 
 static void set_font(QFont &font, void *object = 0)
 {
+	MAIN_update_scale(font);
 	qApp->setFont(font);
-	MAIN_update_scale();
 }
 
 BEGIN_PROPERTY(Application_Font)

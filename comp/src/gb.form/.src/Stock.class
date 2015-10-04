@@ -138,22 +138,36 @@ Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As
   
 End
 
-Static Private Sub FindInConfigFile(sPath As String, sPattern As String) As String[]
+Static Private Sub FindInConfigFile(aPath As String[], sPattern As String, Optional sFindFirst As String) As String[]
   
   Dim hFile As File
   Dim sLine As String
+  Dim sPath As String
   
-  If Not Exist(sPath) Then Return
+  For Each sPath In aPath
   
-  hFile = Open sPath
-  For Each sLine In hFile.Lines
-    If sLine Like sPattern Then Return Scan(sLine, sPattern)
+    If Not Exist(sPath) Then Continue
+    
+    hFile = Open sPath
+    For Each sLine In hFile.Lines
+      If sFindFirst Then
+        If sLine = sFindFirst Then
+          sFindFirst = ""
+        Else
+          Continue
+        Endif
+      Endif
+      If sLine Like sPattern Then Return Scan(sLine, sPattern)
+    Next
+    
   Next
   
 End
 
 ' TODO: Vérifier les thèmes
 ' FIXME: Mettre à jour
+
+
 
 Static Private Sub SearchTheme(sDesktop As String)
   
@@ -163,8 +177,12 @@ Static Private Sub SearchTheme(sDesktop As String)
   Dim sPath As String
   Dim sTheme As String
   Dim aFind As String[]
+  Dim sDefaultTheme As String
+  Dim sProg As String
 
-  Select Case LCase(sDesktop)
+  sDesktop = LCase(sDesktop)
+  
+  Select sDesktop
       
     Case "gnome"
       
@@ -193,100 +211,52 @@ Static Private Sub SearchTheme(sDesktop As String)
       AddPath("gnome", "/usr/share/icons/hicolor")
       'AddPath("gnome", "/usr/X11R6/share/icons/hicolor")
       
-    Case "kde"
+    Case "kde", "kde4", "kde5", "trinity"
       
-      Try Exec ["kde-config", "--path", "icon"] To sIconPath
-      If sIconPath Then 
-        
+      Select Case sDesktop
+        Case "kde"
+          sProg = "kde-config"
+        Case "trinity"
+          sProg = "tde-config"
+        Case "kde4"
+          sProg = "kde4-config"
+        Case "kde5" ' ??? How do you get KDE5 paths ???
+          sProg = ""
+      End Select
+      
+      If sProg Then
+        Try Exec [sProg, "--path", "icon"] To sIconPath
         sIconPath = Trim(sIconPath)
-        
-        If Not sTheme Then
+      Endif
       
-          Try hFile = Open "~/.kde/share/config/kdeglobals"
-          If Not Error Then
-            
-            While Not Eof(hFile)
-              Line Input #hFile, sLig
-              If sLig = "[Icons]" Then 
-                While Not Eof(hFile)
-                  Line Input #hFile, sLig
-                  If Left(sLig) = "[" Then Break
-                  If sLig Begins "Theme=" Then 
-                    sTheme = Mid$(sLig, 7)
-                    Break
-                  Endif 
-                Wend
-                Break
-              Endif 
-            Wend
-            Close #hFile
-            
-          Endif
-        Endif
+      If Not sIconPath Then sIconPath = "/usr/share/icons"
         
-        If sTheme Then
-          GetAllThemePath("kde", Split(sIconPath, ":"), sTheme)
-          'For Each sPath In Split(sIconPath, ":")
-          '  AddPath("gnome", sPath &/ sStyle)
-          'Next
-        Endif 
-            
-        For Each sPath In Split(sIconPath, ":")
-          AddPath("kde", sPath &/ "crystalsvg") ' default theme hardcoded in KDE sources
-        Next
+      If Not sTheme Then
+    
+        aFind = FindInConfigFile(["~/." & sDesktop & "/share/config/kdeglobals", "~/.kde/share/config/kdeglobals", "~/.config/kdeglobals"], "Theme=*", "[Icons]")
+        If aFind Then sTheme = aFind[0]
         
       Endif
       
-    Case "kde4", "kde5"
+      If sTheme Then GetAllThemePath(sDesktop, Split(sIconPath, ":"), sTheme)
       
-      Try Exec ["kde4-config", "--path", "icon"] To sIconPath
-      If sIconPath Then 
-        
-        sIconPath = Trim(sIconPath)
-        
-        If Not sTheme Then
-        
-          Try hFile = Open "~/.kde4/share/config/kdeglobals"
-          If Error Then Try hFile = Open "~/.kde/share/config/kdeglobals"
-          If Not Error Then
-            
-            While Not Eof(hFile)
-              Line Input #hFile, sLig
-              If sLig = "[Icons]" Then 
-                While Not Eof(hFile)
-                  Line Input #hFile, sLig
-                  If Left(sLig) = "[" Then Break
-                  If sLig Begins "Theme=" Then 
-                    sTheme = Mid$(sLig, 7)
-                    Break
-                  Endif 
-                Wend
-                Break
-              Endif 
-            Wend
-            Close #hFile
-            
-          Endif
-          
-        Endif
-        
-        If sTheme Then
-          GetAllThemePath("kde4", Split(sIconPath, ":"), sTheme)
-        Endif 
-          
-        For Each sPath In Split(sIconPath, ":")
-          AddPath("kde4", sPath &/ "oxygen") ' default theme hardcoded in KDE sources
-        Next
-        
-        AddPath("kde4", "/usr/share/icons/hicolor")
-        
-      Endif
+      Select Case sDesktop
+        Case "kde", "trinity"
+          sDefaultTheme = "crystalsvg"
+        Case "kde4"
+          sDefaultTheme = "oxygen"
+        Case "kde5"
+          sDefaultTheme = "breeze"
+      End Select
+      
+      For Each sPath In Split(sIconPath, ":")
+        AddPath(sDesktop, sPath &/ sDesktop)
+      Next
       
     Case "xfce"
       
       If Not sTheme Then
-        aFind = FindInConfigFile("~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
-        If Not aFind Then FindInConfigFile("~/.config/xfce4/mcs_settings/gtk.xml", "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
+        aFind = FindInConfigFile(["~/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml", "~/.config/xfce4/mcs_settings/gtk.xml"], "*<property name=\"IconThemeName\" type=\"string\" value=\"*\"/>*")
         If aFind Then sTheme = Trim(aFind[1])
       Endif
       
@@ -298,10 +268,7 @@ Static Private Sub SearchTheme(sDesktop As String)
     Case "lxde"
       
       If Not sTheme Then
-        aFind = FindInConfigFile("~/.config/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
-        If Not aFind Then aFind = FindInConfigFile("/etc/xdg/lxsession/LXDE/desktop.conf", "sNet/IconThemeName=*")
-        If Not aFind Then aFind = FindInConfigFile("~/.config/lxde/config", "sNet/IconThemeName=*")
-        If Not aFind Then aFind = FindInConfigFile("/usr/share/lxde/config", "sNet/IconThemeName=*")
+        aFind = FindInConfigFile(["~/.config/lxsession/LXDE/desktop.conf", "/etc/xdg/lxsession/LXDE/desktop.conf", "~/.config/lxde/config", "/usr/share/lxde/config"], "sNet/IconThemeName=*")
         If aFind Then sTheme = Trim(aFind[0])
       Endif
       
@@ -349,13 +316,13 @@ Static Public Function GetSize(Size As String) As Integer
   
   Select Case Size
     Case "small"
-      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 8 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 4 '16 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 4
     Case "medium"
-      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 11  '22 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 4 
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 5.5  '22 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 4 
     Case "large"
-      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 16  '32 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 8
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 8  '32 'CInt(Desktop.Scale * 5 / 8 + 0.5) * 8
     Case "huge"
-      iSize = (CInt(Desktop.Scale * 2.5) \ 8) * 24  '48 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 8
+      iSize = (CInt(Desktop.Scale * 2.5) \ 4) * 12  '48 'CInt(Desktop.Scale * 5 / 8 * 1.5 + 0.5) * 8
     Case Else 
       Try iSize = CInt(Size)
   End Select

@@ -417,8 +417,11 @@ Public Sub Read(hObject As Object, Optional sKey As String, Optional vDefault As
     If Not sKey Then sKey = Object.Type(hObject) 
     ReadWindow(hObject, sKey)
   Else
-    If Not sKey Then Try sKey = hObject.Name
-    sKey = GetTopLevel(hObject) &/ sKey
+    If Not sKey Then 
+      Try sKey = GetTopLevel(hObject) &/ hObject.Name
+    Else If Left(sKey) <> "/" Then
+      Try sKey = GetTopLevel(hObject) &/ sKey
+    Endif
     Try hObject.Settings = Me[sKey, vDefault]
   Endif
 
@@ -429,9 +432,12 @@ Public Sub Write(hObject As Object, Optional sKey As String)
   If Object.Is(hObject, "Window") Then
     If Not sKey Then sKey = Object.Type(hObject) 
     WriteWindow(hObject, sKey)
-  Else 'IF Object.Is(hObject, "SidePanel") THEN
-    If Not sKey Then Try sKey = hObject.Name
-    sKey = GetTopLevel(hObject) &/ sKey
+  Else
+    If Not sKey Then 
+      Try sKey = GetTopLevel(hObject) &/ hObject.Name
+    Else If Left(sKey) <> "/" Then
+      Try sKey = GetTopLevel(hObject) &/ sKey
+    Endif
     Try Me[sKey] = hObject.Settings
   Endif
 

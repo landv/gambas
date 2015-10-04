@@ -208,3 +208,18 @@ Public Sub btnUndo_Click()
   SetList($aUndo)
 
 End
+
+Public Sub btnInvert_Click()
+
+  Dim I As Integer
+  Dim iInd As Integer
+  Dim M As Integer
+
+  iInd = lstValue.Index
+  M = lstValue.Count - 1
+  For I = 0 To M \ 2
+    Swap lstValue[I].Text, lstValue[M - I].Text
+  Next
+  lstValue.Index = M - iInd
+
+End

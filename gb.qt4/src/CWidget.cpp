@@ -720,8 +720,10 @@ void CWIDGET_move_resize(void *_object, int x, int y, int w, int h)
 		
 		if (wid->isTopLevel())
 		{
-			wid->move(x, y);
-			wid->resize(qMax(0, w), qMax(0, h));
+			if (x != wid->x() || y != wid->y())
+				wid->move(x, y);
+			if (w != wid->width() || y != wid->height())
+				wid->resize(qMax(0, w), qMax(0, h));
 		}
 		else
 			wid->setGeometry(x, y, qMax(0, w), qMax(0, h));

@@ -36,6 +36,12 @@ Public Sub Form_Open()
   'fchChoose.Root = "/"
   fchChoose.Filter = Dialog.Filter
   fchChoose.ShowHidden = Dialog.ShowHidden
+
+  If Component.IsLoaded("gb.settings") And If Dialog.Key Then
+    Settings.Read(Me, "gb.form.dialog" &/ Dialog.Key)
+    Settings.Read(fchChoose, "/gb.form.dialog" &/ Dialog.Key &/ "fchChoose")
+  Endif
+
   If Dialog.Path Then fchChoose.SelectedPath = Dialog.Path
   
   If fchChoose.Filter.Count > 1 Then
@@ -116,6 +122,11 @@ End
 
 Public Sub Form_Close()
 
-  If Component.IsLoaded("gb.settings") Then Settings.Write(Me, "gb.form.dialog/FFileDialog")
+  If Component.IsLoaded("gb.settings") And If Dialog.Key Then
+    Settings.Write(Me, "gb.form.dialog" &/ Dialog.Key)
+    Settings.Write(fchChoose, "/gb.form.dialog" &/ Dialog.Key &/ "fchChoose")
+  Endif
+  
+  Dialog.Key = ""
 
 End

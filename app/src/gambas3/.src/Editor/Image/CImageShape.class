@@ -230,18 +230,20 @@ Private Sub GetExtentsMagnets() As PointF[]
   Dim aPoint As New PointF[]
   Dim X, Y As Float
   
-  With GetExtents()
-    If .W > 0 And If .H > 0 Then
-      Repeat
-        X = 0
+  If Points.Count Then
+    With GetExtents()
+      If .W > 0 And If .H > 0 Then
         Repeat
-          aPoint.Add(PointF(.X + X, .Y + Y))
-          X += .W / Grid
-        Until X > .W
-        Y += .H / Grid
-      Until Y > .H
-    Endif
-  End With
+          X = 0
+          Repeat
+            aPoint.Add(PointF(.X + X, .Y + Y))
+            X += .W / Grid
+          Until X > .W
+          Y += .H / Grid
+        Until Y > .H
+      Endif
+    End With
+  Endif
   
   Return aPoint
   
@@ -304,4 +306,3 @@ Public Sub GetOrientation() As Boolean
   Return hPolygon.Orientation
   
 End
-
