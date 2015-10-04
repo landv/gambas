@@ -2026,7 +2026,6 @@ Public Function LoadFile(sPath As String) As Object
   Dim sType As String
   Dim sErr As String
 
-
   hForm = Files[sPath]
 
   If Not hForm Then
@@ -2181,6 +2180,7 @@ End
 Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn As Integer = -1) As Object
 
   Dim hForm As Object
+  Dim bAlreadyLoaded As Boolean
 
   If InStr(sPath, "/") = 0 Then sPath = FindPath(sPath)
 
@@ -2206,6 +2206,8 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   If Not ProjectTree.Exist(sPath) Then
     RefreshKey(sPath)
   Endif
+  
+  If Files[sPath] Then bAlreadyLoaded = True
 
   LoadFile(sPath)
 
@@ -2224,7 +2226,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
 
   If iLine Then
     Try hForm.GotoCenter(iLine - 1, iColumn)
-  Else If hForm.Name = Startup Then
+  Else If hForm.Name = Startup And If Not bAlreadyLoaded Then
     Try hForm.GotoFunction(hForm.GetFunctionLine("Main"))
   Endif
 
