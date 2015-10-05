@@ -263,6 +263,8 @@ static char *find_version_in_file(void)
 		return NULL;
 
 	len = fread(line, 1, sizeof(line) - 1, fv);
+	while (len > 0 && isspace(line[len - 1]))
+		len--;
 	line[len] = 0;
 	return STR_copy(line);
 }
