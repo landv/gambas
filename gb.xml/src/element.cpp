@@ -210,27 +210,18 @@ bool XMLElement_AttributeContains(const Element *elmt, const char *attrName, siz
 {
         Attribute *attr = XMLElement_GetAttribute(elmt, attrName, lenAttrName);
         if(!attr) return false;
-        char *pos = (char*)memchr(attr->attrValue, ' ' ,attr->lenAttrValue);
-        char *oldPos = attr->attrValue;
-        
-        while(pos)
-        {
-            if((pos + 1) == lenValue + oldPos) //(pos + 1) - oldPos == lenValue
-            {
-                if(!memcmp(value, pos + 1, lenValue)) return true;
-            }
-            oldPos = pos + 1;
-            pos = (char*)memchr(pos, ' ' ,attr->lenAttrValue - (attr->attrValue - pos));
-        }
-        
-        if(((attr->attrValue + attr->lenAttrValue))  == lenValue + oldPos)
-        {
-            if(!memcmp(value, oldPos, lenValue)) return true;
-        }
-        
-        return false;
-        
+        char *pos = attr->attrValue;
+        size_t left = attr->lenAttrValue;
 
+        while (1) {
+            if (!memcmp(value, pos, lenValue)) return true;
+            pos = (char*)memchr(pos, ' ', left);
+            if (!pos) break;
+            pos++;
+            left = attr->lenAttrValue - (pos - attr->attrValue);
+        }
+
+        return false;
 }
 
 void XMLElement_RemoveAttribute(Element *elmt, const char *attrName, size_t lenAttrName)
