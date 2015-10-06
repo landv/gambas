@@ -768,13 +768,41 @@ Public Sub CloseAllWindows()
 
 End
 
+Public Sub ReloadFile(hForm As Object)
+  
+  Dim sPath As String
+  Dim sErr As String
+  
+  sPath = hForm.Path
+  
+  If hForm.IsModified() Then
+    If Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
+  Endif
+
+  Inc Application.Busy
+  hForm.Reload
+  Dec Application.Busy
+  
+Catch
+  
+  sErr = Error.Text '& "\n" & Error.Backtrace.Join(" ")
+  Try hForm.Delete
+  Dec Application.Busy
+  Try Files[sPath] = Null
+  FMain.ShowError(("Cannot reload file.") & "\n\n" & sErr, sPath)
+  
+End
+
+
 Public Sub ReloadAll()
 
   Dim hForm As Object
 
+  Inc Application.Busy
   For Each hForm In Files
-    Try hForm.Reload
+    ReloadFile(hForm)
   Next
+  Dec Application.Busy
 
 End
 
@@ -2132,6 +2160,7 @@ Catch
   FMain.ShowError(("Cannot open file.") & "\n\n" & sErr, sPath)
 
 End
+
 
 Public Function FindPath(sClass As String) As String
 
@@ -4692,6 +4721,8 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     If Components.Exist("gb.web") And If Not Exist(Project.Dir &/ ".public") Then InsertDirectory(Project.Dir &/ ".public")
 
     $sOldRefreshComponents = sLibComp
+    
+    ReloadAll
 
   Endif
 

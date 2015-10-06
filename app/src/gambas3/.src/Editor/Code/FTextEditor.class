@@ -669,11 +669,7 @@ End
 
 Public Sub mnuReload_Click()
 
-  If IsModified() Then
-    If Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
-  Endif
-
-  Reload
+  Project.ReloadFile(Me)
 
 End
 

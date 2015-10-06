@@ -1559,7 +1559,7 @@ End
 Public Sub mnuReload_Click()
   
   If CheckCurrent() Then Return
-  Reload
+  Project.ReloadFile(Me)
   
 End
 
