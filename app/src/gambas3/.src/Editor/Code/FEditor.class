@@ -916,10 +916,7 @@ Public Sub Editors_KeyPress()
           Inc iPos
         Wend
         $hEditor.Begin
-        $hEditor.Insert("\n" & Space$(iInd))
-        $hEditor.End
-        $hEditor.Begin
-        $hEditor.Insert(Mid$(Left$(sLine, iPos - 1), iInd + 1))
+        $hEditor.Insert("\n" & Space$(iInd) & Mid$(Left$(sLine, iPos - 1), iInd + 1))
         $hEditor.End
         Stop Event
       Endif
