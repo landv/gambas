@@ -180,47 +180,71 @@ or NULL and zero if it fails by any reason
 *********************************************************************************/
 static void u_String(char **target,unsigned int *lent,char *source,unsigned int len)
 {
-	int myok=Z_BUF_ERROR;
-	unsigned long l;
+	int res, try_gzip = 0;
+	z_stream stream = {
+		.zalloc = Z_NULL,
+		.zfree = Z_NULL,
+		.opaque = Z_NULL,
+		.avail_in = len,
+		.next_in = (Bytef *) source,
+	};
+	unsigned long pos = 0;
 
-	/* we assume src len * 1.8 as target len */
-	*lent=1.8*len;
-	GB.Alloc ((void**)target,(*lent)*sizeof(char));
+	*lent = 2 * len;
+	GB.Alloc((void **) target, *lent);
 
-	while (myok==Z_BUF_ERROR)
-	{
-		l = *lent;
-		myok=uncompress ((Bytef*)(*target),&l,(Bytef *)source,len);
-		*lent = (uint)l;
-		switch (myok)
-		{
-			case Z_OK: break;
-			case Z_DATA_ERROR:
-				*lent=0;
-				if (*target) GB.Free((void**)target);
-				GB.Error ("Invalid compressed string");
-				return;
-			case Z_BUF_ERROR: /* test and error method ! */
-				if ((*lent)<=10)
-					*lent+=(*lent);
-				else
-					*lent+=((*lent)*0.5);
-				GB.Realloc ((void**)target,(*lent)*sizeof(char));
-				break;
-			case Z_MEM_ERROR:
-				*lent=0;
-				if (*target) GB.Free((void**)target);
-				GB.Error ("Not enough memory: String too long");
-				return;
-			default:
-				*lent=0;
-				GB.Free((void**)target);
-				GB.Error ("Unable to inflate string");
-				return;
+	stream.avail_out = *lent;
+	stream.next_out = (Bytef *) *target;
+
+	inflateInit(&stream);
+	while (1) {
+		res = inflate(&stream, Z_NO_FLUSH);
+		switch (res) {
+		case Z_OK:
+			break;
+		case Z_BUF_ERROR:
+			pos = (unsigned long) (stream.next_out - (unsigned long) *target);
+			*lent += *lent / 2;
+			GB.Realloc((void **) target, *lent);
+			stream.avail_out = *lent - pos;
+			stream.next_out = (Bytef *) (*target + pos);
+			break;
+		case Z_STREAM_END:
+			pos = (unsigned long) (stream.next_out - (unsigned long) *target);
+			goto out;
+		case Z_DATA_ERROR:
+			/* Maybe we have gzip format? */
+			if (try_gzip) {
+				GB.Error("Invalid compressed string");
+				goto error;
+			}
+			inflateEnd(&stream);
+			stream.avail_in = len;
+			stream.next_in = (Bytef *) source;
+			stream.avail_out = *lent;
+			stream.next_out = (Bytef *) *target;
+			inflateInit2(&stream, 16 + MAX_WBITS);
+			try_gzip = 1;
+			continue;
+		case Z_MEM_ERROR:
+			GB.Error("Not enough memory: String too long");
+			goto error;
+		default:
+			GB.Error("Unable to inflate string");
+			goto error;
 		}
 	}
+out:
+	inflateEnd(&stream);
+	*lent = pos;
+	GB.Realloc((void **) target, *lent);
+	return;
 
+error:
+	*lent = 0;
+	GB.Free((void **) target);
 }
+
 /*********************************************************************************
 The Driver must provide this function:
 
