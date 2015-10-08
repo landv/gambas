@@ -42,7 +42,7 @@ SUBDIRS = \
  app \
  .
 
-EXTRA_DIST = component.am README README.*[^~] TODO TEMPLATE reconf reconf-all
+EXTRA_DIST = component.am README README.*[^~] TODO TEMPLATE reconf reconf-all VERSION
 
 am__tar = ${AMTAR} cof - "$$tardir"
 
