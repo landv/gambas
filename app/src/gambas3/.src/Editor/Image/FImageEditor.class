@@ -1066,7 +1066,7 @@ Public Sub imvImage_MouseMove()
         
         If $hFirstPoint And If Hyp($hCurrentPoint.X - $hFirstPoint.X, $hCurrentPoint.Y - $hFirstPoint.Y) > 8 / imvImage.Zoom Then 
           $hSelect.AddMagnet($hFirstPoint)
-          Debug "add magnet ";; $hFirstPoint.X;; $hFirstPoint.Y
+          'Debug "add magnet ";; $hFirstPoint.X;; $hFirstPoint.Y
           $hFirstPoint = Null
         Endif
         
@@ -1695,22 +1695,33 @@ Public Sub imvImage_Draw(hZoom As Image)
         
         Paint.Save
         
+        Paint.Dash = Null
+        
         If $sTool = "line" Then
           Paint.LineWidth = 1
-          FImageProperty.PaintForStroke
+          'FImageProperty.PaintForStroke
           Paint.AntiAlias = True
+          'Paint.LineWidth *= imvImage.Zoom
           Paint.LineJoin = Paint.LineJoinRound
         Else
           FImageProperty.PaintForStroke
           If $sTool = "erase" Then Paint.Background = Color.SetAlpha(Color.Gray, 128)
           Paint.LineWidth *= imvImage.Zoom
+          Paint.AntiAlias = False
         Endif
         
         'Paint.Background = Color.SetAlpha(Color.White, 128)
-        Paint.Dash = Null
         If Not Paint.Antialias Then Paint.Translate(imvImage.Zoom / 2, imvImage.Zoom / 2)
         Paint.MoveTo($hLastPoint.X * imvImage.Zoom + hOffset.X, $hLastPoint.Y * imvImage.Zoom + hOffset.Y)
         Paint.LineTo($hCurrentPoint.X * imvImage.Zoom + hOffset.X, $hCurrentPoint.Y * imvImage.Zoom + hOffset.Y)
+        
+        If $sTool = "line" Then
+          Paint.Background = Color.White
+          Paint.Stroke(True)
+          Paint.Background = Color.Black
+          Paint.Dash = [4, 4]
+        Endif
+        
         Paint.Stroke
         
         Paint.Restore

@@ -238,6 +238,21 @@
         ToolTip = ("Make transparent")
         Picture = Picture["img/draw/transparent.png"]
       }
+      { Separator5 Separator
+        MoveScaled(25,0,1,4)
+      }
+      { btnLineCap ToolButton
+        MoveScaled(27,0,4,4)
+        ToolTip = ("Line cap")
+      }
+      { btnLineJoin ToolButton
+        MoveScaled(33,0,4,4)
+        ToolTip = ("Line join")
+      }
+      { btnFillRule ToolButton
+        MoveScaled(39,0,4,4)
+        ToolTip = ("Fill rule")
+      }
     }
     { Separator6 Separator
       MoveScaled(18,66,15,0)

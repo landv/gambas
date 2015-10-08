@@ -525,7 +525,7 @@ Public Sub UpdateSize()
 
   Endif
 
-  tabWorkspace.CloseButton = $aWindow.Count >= 2
+  tabWorkspace.CloseButton = $aWindow.Count >= 1
   
   'DEBUG tabWorkspace.Visible;; "Index =";; tabWorkspace.Index;; "ClientY =";; tabWorkspace.ClientY
 

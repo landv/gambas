@@ -15,7 +15,14 @@ Public Sub Paint((hSelect) As CImageSelection, bWithMatrix As Boolean, (bSelecti
   Dim I As Integer
   
   If bWithMatrix Then Return
-  If Points.Count < 2 Then Return
+  If Points.Count = 0 Then Return
+  
+  If Points.Count = 1 Then
+    If bSelection Then
+      Paint.Arc(Points[0].X, Points[0].Y, 4 * Paint.LineWidth)
+    Endif
+    Return
+  Endif
   
   Paint.MoveTo(Points[0].X, Points[0].Y)
   For I = 1 To Points.Max

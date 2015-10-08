@@ -74,7 +74,6 @@
     { btnAbove ToolButton
       MoveScaled(4,0,4,4)
       ToolTip = ("Keep above")
-      Picture = Picture["img/16/raise.png"]
       Toggle = True
     }
     { btnClear ToolButton
@@ -102,7 +101,6 @@
       ToolTip = ("Entered text echo")
       AutoResize = True
       Text = ("Echo")
-      Picture = Picture["icon:/small/insert-text"]
       Toggle = True
     }
     { Separator1 Separator
@@ -119,7 +117,7 @@
       Visible = False
     }
     { chkCharset CheckBox
-      MoveScaled(54,0,19,4)
+      MoveScaled(54,0,27,4)
       Visible = False
       AutoResize = True
       Text = ("Use system charset")
