@@ -278,7 +278,6 @@ Private Sub AddError(sErr As String)
   If Not Trim(sErr) Then Return
   If UCase(sErr) = sErr Then Return
   If $aErr.Exist(sErr) Then Return
-  If sErr = "_call" Then Stop
   $aErr.Add(sErr)
   
 End

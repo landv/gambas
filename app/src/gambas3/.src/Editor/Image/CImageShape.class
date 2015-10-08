@@ -13,13 +13,19 @@ Public IsText As Boolean
 Public Sub Paint((hSelect) As CImageSelection, bWithMatrix As Boolean, (bSelection) As Boolean)
   
   Dim I As Integer
+  Dim D As Float
   
   If bWithMatrix Then Return
   If Points.Count = 0 Then Return
   
   If Points.Count = 1 Then
     If bSelection Then
-      Paint.Arc(Points[0].X, Points[0].Y, 4 * Paint.LineWidth)
+      D = 4 * Paint.LineWidth
+      Paint.Arc(Points[0].X, Points[0].Y, D)
+      Paint.MoveTo(Points[0].X, Points[0].Y - D)
+      Paint.LineTo(Points[0].X, Points[0].Y + D)
+      Paint.MoveTo(Points[0].X - D, Points[0].Y)
+      Paint.LineTo(Points[0].X + D, Points[0].Y)
     Endif
     Return
   Endif

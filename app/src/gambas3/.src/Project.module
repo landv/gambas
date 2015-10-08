@@ -5398,22 +5398,29 @@ Public Sub MakeDirectoryIcon(Optional sDir As String)
   Dim sIcon As String
   Dim hDirIcon As Image
   Dim hIcon As Image
+  Dim bExist As Boolean
+  Dim sPath As String
 
-  If Not sDir Then
-    sDir = Project.Dir
-    If Project.Icon Then sIcon = sDir &/ Project.Icon
+  If Not sDir Then sDir = Project.Dir
+  
+  If Project.Icon Then 
+    sIcon = sDir &/ Project.Icon
+  Else
+    sIcon = "img/logo/project.png"
   Endif
 
   hDirIcon = Image.Load("img/logo/folder.png")
 
-  If sIcon Then
-    Try hIcon = StretchIcon(sIcon, 128)
-    If hIcon Then hDirIcon.PaintImage(hIcon, 64, 88)
-  Endif
+  Try hIcon = StretchIcon(sIcon, 128)
+  If hIcon Then hDirIcon.PaintImage(hIcon, 64, 88)
 
   Try Kill sDir &/ ".icon.png"
   hDirIcon.Save(sDir &/ ".icon.png")
-  File.Save(sDir &/ ".directory", "[Desktop Entry]\nIcon=./.icon.png\n")
+
+  sPath = sDir &/ ".directory"
+  bExist = Exist(sPath)
+  File.Save(sPath, "[Desktop Entry]\nIcon=./.icon.png\n")
+  If Not bExist Then VersionControl.AddFile(sPath)
 
 Catch
 
