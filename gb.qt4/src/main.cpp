@@ -892,7 +892,10 @@ static void QT_Init(void)
 	{
 		char *env = getenv("GB_QT_NO_BREEZE_FIX");
 		if (!env || atoi(env) == 0)
+		{
+			CSTYLE_fix_breeze = TRUE;
 			qApp->setStyle(new FixBreezeStyle);
+		}
 	}
 	
 	

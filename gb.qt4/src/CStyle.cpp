@@ -41,6 +41,8 @@
 #include "x11.h"
 #endif
 
+bool CSTYLE_fix_breeze = false;
+
 static QWidget *_fake = 0;
 
 static QWidget *get_fake_widget()
@@ -301,20 +303,27 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Style_Name)
 
-	const char *name = qApp->style()->metaObject()->className();
-	int len = strlen(name);
-	
-	if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
-		len -= 5;
-	if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)
-		len -= 2;
-	if (name[0] == 'Q' && isupper(name[1]))
+	if (CSTYLE_fix_breeze)
 	{
-		len--;
-		name++;
+		GB.ReturnNewZeroString("Breeze");
 	}
-
-	GB.ReturnNewString(name, len);
+	else
+	{
+		const char *name = qApp->style()->metaObject()->className();
+		int len = strlen(name);
+	
+		if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
+			len -= 5;
+		if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)
+			len -= 2;
+		if (name[0] == 'Q' && isupper(name[1]))
+		{
+			len--;
+			name++;
+		}
+		
+		GB.ReturnNewString(name, len);
+	}
 
 END_PROPERTY
 

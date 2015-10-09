@@ -332,6 +332,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
 
     Else If Left$(sLine) = "}" Then
 
+      hCtrl.SetDesign
       'IF hCtrl = hParent THEN RETURN
       Dec iLevel
 
