@@ -242,16 +242,20 @@ void gPictureBox::redraw()
 {
 	GdkPixbuf *buf;
 	
-	if ( gtk_image_get_pixel_size(GTK_IMAGE(widget)) )
+	if (!_picture)
 	{
-		if (!_picture) return;
-		buf = gdk_pixbuf_scale_simple(_picture->getPixbuf(), width(), height(), GDK_INTERP_NEAREST);
-		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), buf);
-		g_object_unref(G_OBJECT(buf));
+		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), NULL);
 		return;
 	}
 	
-	gtk_image_set_from_pixbuf(GTK_IMAGE(widget), _picture ? _picture->getPixbuf() : NULL);
+	if ( gtk_image_get_pixel_size(GTK_IMAGE(widget)) )
+	{
+		buf = gdk_pixbuf_scale_simple(_picture->getPixbuf(), width(), height(), GDK_INTERP_NEAREST);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), buf);
+		g_object_unref(G_OBJECT(buf));
+	}
+	else
+		gtk_image_set_from_pixbuf(GTK_IMAGE(widget), _picture->getPixbuf());
 }
 
 
