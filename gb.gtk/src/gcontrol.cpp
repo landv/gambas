@@ -1509,12 +1509,19 @@ static bool must_patch(GtkWidget *widget)
 	parent = gtk_widget_get_parent(widget);
 	if (!parent)
 		return false;
+	
+	if (GTK_IS_SCROLLED_WINDOW(parent))
+	{
+		parent = gtk_widget_get_parent(parent);
+		if (!parent)
+			return false;
+	}
 
 	parent_control = gt_get_control(parent);
 	if (!parent_control)
 		return false;
 
-	return (parent_control->widget == widget);
+	return (parent_control->widget == widget || (GtkWidget *)parent_control->_scroll == widget);
 }
 
 //fprintf(stderr, #type "_get_preferred_height: %d %d\n", minimum_size ? *minimum_size : -1, natural_size ? *natural_size : -1);
@@ -1551,6 +1558,7 @@ static void type##_get_preferred_height_for_width(GtkWidget *widget, gint width,
 
 
 //fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(widget), klass->get_preferred_width, klass->get_preferred_height);
+//		fprintf(stderr, "PATCH_CLASS: %s\n", G_OBJECT_TYPE_NAME(widget));
 
 #define PATCH_CLASS(widget, type) \
 if (G_OBJECT_TYPE(widget) == type) \
@@ -1584,6 +1592,8 @@ PATCH_DECLARE(GTK_TYPE_CHECK_BUTTON)
 PATCH_DECLARE(GTK_TYPE_RADIO_BUTTON)
 PATCH_DECLARE(GTK_TYPE_NOTEBOOK)
 PATCH_DECLARE(GTK_TYPE_SOCKET)
+PATCH_DECLARE(GTK_TYPE_TEXT_VIEW)
+PATCH_DECLARE(GTK_TYPE_SCROLLBAR)
 
 /*int gt_get_preferred_width(GtkWidget *widget)
 {
@@ -1645,9 +1655,13 @@ void gControl::realize(bool make_frame)
 	else PATCH_CLASS(border, GTK_TYPE_RADIO_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_NOTEBOOK)
 	else PATCH_CLASS(border, GTK_TYPE_SOCKET)
+	else PATCH_CLASS(border, GTK_TYPE_TEXT_VIEW)
+	else PATCH_CLASS(border, GTK_TYPE_SCROLLBAR)
 	else fprintf(stderr, "gb.gtk3: warning: class %s was not patched\n", G_OBJECT_TYPE_NAME(border));
 
 	PATCH_CLASS(widget, GTK_TYPE_COMBO_BOX)
+	else PATCH_CLASS(widget, GTK_TYPE_TEXT_VIEW)
+
 #endif
 
 	connectParent();
@@ -1694,6 +1708,11 @@ void gControl::realize(bool make_frame)
 void gControl::realizeScrolledWindow(GtkWidget *wid, bool doNotRealize)
 {
 	_scroll = GTK_SCROLLED_WINDOW(gtk_scrolled_window_new(NULL, NULL));
+
+#ifdef GTK3	
+	PATCH_CLASS(_scroll, GTK_TYPE_SCROLLED_WINDOW)
+	PATCH_CLASS(wid, GTK_TYPE_TEXT_VIEW)
+#endif
 
 	border = gtk_alignment_new(0, 0, 1, 1);
 	gtk_widget_set_redraw_on_allocate(border, TRUE);

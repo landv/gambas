@@ -115,6 +115,7 @@ static gControl *find_child(gControl *control, int rx, int ry, gControl *button_
 	gContainer *cont;
 	gControl *child;
 	int x, y;
+	int cx, cy, cw, ch;
 	
 	if (gApplication::_control_grab)
 		return gApplication::_control_grab;
@@ -138,9 +139,26 @@ static gControl *find_child(gControl *control, int rx, int ry, gControl *button_
 	{
 		control->getScreenPos(&x, &y);
 		cont = (gContainer *)control;
-		child = cont->find(rx - x, ry - y);
+		
+		cx = cont->clientX();
+		cy = cont->clientY();
+		cw = cont->clientWidth();
+		ch = cont->clientHeight();
+		
+		//fprintf(stderr, "client area of %s: %d %d %d %d\n", control->name(), cx, cy, cw, ch);
+		
+		x = rx - x;
+		y = ry - y;
+		if (x < cx || y < cy || x >= (cx + cw) || y >= (cy + ch))
+		{
+			//fprintf(stderr, "outside of client area of %s\n", control->name());
+			return NULL;
+		}
+		
+		child = cont->find(x, y);
 		if (!child)
 			break;
+		
 		control = child;
 	}
 
@@ -406,6 +424,8 @@ __FOUND_WIDGET:
 		case GDK_ENTER_NOTIFY:
 			
 			control = find_child(control, (int)event->crossing.x_root, (int)event->crossing.y_root);
+			if (!control)
+				goto __HANDLE_EVENT;
 			
 #if DEBUG_ENTER_LEAVE
 			fprintf(stderr, "GDK_ENTER_NOTIFY: %s (%s) %d %d %p %p\n", control->name(), gApplication::_enter ? gApplication::_enter->name() : "ø", (int)event->crossing.x_root, (int)event->crossing.y_root, event->crossing.window, event->crossing.subwindow);
@@ -494,6 +514,8 @@ __FOUND_WIDGET:
 		case GDK_BUTTON_RELEASE:
 		{
 			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root, button_grab);
+			if (!control)
+				goto __HANDLE_EVENT;
 
 			bool menu = false;
 			
@@ -623,6 +645,8 @@ __FOUND_WIDGET:
 			gdk_event_request_motions(&event->motion);
 
 			save_control = control = find_child(control, (int)event->motion.x_root, (int)event->motion.y_root, button_grab);
+			if (!control)
+				goto __HANDLE_EVENT;
 			
 			//fprintf(stderr, "GDK_MOTION_NOTIFY: (%p %s) grab = %p\n", control, control->name(), button_grab);
 			
@@ -677,6 +701,8 @@ __FOUND_WIDGET:
 		case GDK_SCROLL:
 			
 			save_control = control = find_child(control, (int)event->scroll.x_root, (int)event->scroll.y_root);
+			if (!control)
+				goto __HANDLE_EVENT;
 
 		__SCROLL_TRY_PROXY:
 
