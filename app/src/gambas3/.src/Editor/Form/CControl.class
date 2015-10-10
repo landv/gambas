@@ -73,6 +73,7 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim I As Integer
   Dim hClass As CClassInfo
   Dim W As Integer
+  Dim F As Integer
    
   Do
     hClass = Project.Documentation.Classes[sComp &/ sClass]
@@ -105,16 +106,18 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
     
     Paint.Begin(hImage)
     
-    Paint.Rectangle(0, 0, hImage.W - 1, hImage.H - 1, 2)
+    F = 4
+    
+    Paint.Rectangle(0, F, hImage.W - 1, hImage.H - F * 2 - 1, 2)
     Paint.Background = Color.White
     Paint.Fill
     
-    Paint.Rectangle(0.5, 0.5, hImage.W - 1, hImage.H - 1, 2)
+    Paint.Rectangle(0.5, F + 0.5, hImage.W - 1, hImage.H - F * 2 - 1, 2)
     Paint.Background = Color.Gray
     Paint.LineWidth = 1
     Paint.Stroke
     
-    Paint.Rectangle(3, 3, hImage.W - 6, hImage.H - 6)
+    Paint.Rectangle(3, 3 + F, hImage.W - 6, hImage.H - 6 - F * 2)
     Paint.Clip
     
     Paint.Font.Size = 7

@@ -4,7 +4,7 @@ Export
 
 Class Stock
 
-Static $cCache As New Collection
+Static Private $cCache As New Collection
 Static Private $bInit As Boolean
 Static Private $bDarkTheme As Boolean
 
@@ -129,3 +129,4 @@ Static Public Sub _exit()
   $cCache.Clear
   
 End
+

@@ -1030,11 +1030,16 @@ static void hook_main(int *argc, char ***argv)
 
 static void hook_quit()
 {
+	GB_FUNCTION func;
+	
 	CWINDOW_close_all(true);
 	CWINDOW_delete_all(true);
 
 	qApp->sendPostedEvents(); //processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 	qApp->sendPostedEvents(0, QEvent::DeferredDelete);
+	
+	if (!GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_Quit", NULL, NULL))
+		GB.Call(&func, 0, FALSE);
 }
 
 
