@@ -69,6 +69,7 @@ const FORM_FAMILY COMP_form_families[] =
 	{ "form", FORM_NORMAL },
 	{ "report", FORM_NORMAL },
 	{ "webpage", FORM_WEBPAGE },
+	{ "webform", FORM_NORMAL },
 	{ NULL }
 };
 

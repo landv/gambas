@@ -143,7 +143,7 @@ Public Sub InitControl()
   hSym = Symbols["_IsForm"]
   If hSym Then Form = hSym.Value
   
-  If Form Then CModule.Activate(Family)
+  If Form Then CModule.Activate(Name)
 
   hSym = Symbols["_IsVirtual"]
   If hSym Then VirtualControl = hSym.Value

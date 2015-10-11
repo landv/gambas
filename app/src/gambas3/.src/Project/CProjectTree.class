@@ -514,7 +514,7 @@ Private Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       sExt = File.Ext(sPath)
       Select Case sExt
 
-        Case "form", "class", "module", "webpage", "report"
+        Case "form", "class", "module", "webpage", "report", "webform"
           If IsSourcePath(sPath) Then
             sModule = sExt
             sIcon = sExt & "-" & iSize

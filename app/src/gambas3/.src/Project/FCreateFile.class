@@ -250,7 +250,7 @@ Private Sub CreateFile() As Boolean
       
       Project.InsertSource(sName, sType, $sDir, sTemp)
   
-    Case "form", "report"
+    Case "form", "report", "webform"
     
       sTemp = "' Gambas class file\n\n"
       
@@ -301,9 +301,9 @@ Private Sub CreateFile() As Boolean
                    "}\n"
         Endif
         
-      Else If sType = "report" Then
+      Else
         
-        sTemp &= "  #MoveScaled(0,0,64,64)\n"
+        sTemp &= "  #MoveScaled(0,0,64,91)\n"
         
       Endif
       
@@ -446,7 +446,7 @@ Private Sub ImportFile() As Boolean
         sName = File.BaseName(Project.GetUniqueSourceName(sName))
         Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
     
-      Case "form", "report"
+      Case "form", "report", "webform"
         sName = File.BaseName(Project.GetUniqueSourceName(sName))
         Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
         Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)

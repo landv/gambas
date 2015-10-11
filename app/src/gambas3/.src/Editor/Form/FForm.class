@@ -119,9 +119,8 @@ Public Sub _new(sPath As String)
   Path = sPath
   Me.Name = File.BaseName(sPath)
 
-  Family = File.Ext(sPath)
-  Mid$(Family, 1, 1) = UCase(Left(Family))
-  $hFamily = CFamily.Get(Family)
+  $hFamily = CFamily.Get(File.Ext(sPath))
+  Family = $hFamily.Name
   panBorder.Background = $hFamily.Background
 
   Container = panBorder
@@ -2519,7 +2518,7 @@ Public Sub Control_Draw(...)
   If Not hCCtrl Then Return
   If Not hCtrl Is DrawingArea Then Return
 
-  If $hFamily.DrawControl(hCCtrl) Then
+  If hCCtrl.Parent And If $hFamily.DrawControl(hCCtrl) Then
 
     If Paint.Device Then Draw.Begin(Paint.Device)
 

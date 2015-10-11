@@ -442,33 +442,39 @@
       }
       { mnuNewModule Menu mnuNewFile
         Name = "mnuNewModule"
-        Text = Shortcut(("Module"), "M") & "..."
-        Picture = Picture["img/16/module.png"]
+        Text = ("Module") & "..."
+        Picture = Picture["img/module/module.png"]
         Tag = "module"
       }
       { mnuNewClass Menu mnuNewFile
         Name = "mnuNewClass"
-        Text = Shortcut(("Class"), "C") & "..."
-        Picture = Picture["img/16/class.png"]
+        Text = ("Class") & "..."
+        Picture = Picture["img/module/class.png"]
         Tag = "class"
       }
       { mnuNewForm Menu mnuNewFile
         Name = "mnuNewForm"
-        Text = Shortcut(("Form"), "F") & "..."
-        Picture = Picture["img/16/form.png"]
+        Text = ("Form") & "..."
+        Picture = Picture["img/module/form.png"]
         Tag = "form"
       }
       { mnuNewWebPage Menu mnuNewFile
         Name = "mnuNewWebPage"
-        Text = Shortcut(("WebPage"), "W") & "..."
-        Picture = Picture["img/16/webpage.png"]
+        Text = ("WebPage") & "..."
+        Picture = Picture["img/module/webpage.png"]
         Tag = "webpage"
       }
       { mnuNewReport Menu mnuNewFile
         Name = "mnuNewReport"
-        Text = Shortcut(("Report"), "R") & "..."
-        Picture = Picture["img/16/report.png"]
+        Text = ("Report") & "..."
+        Picture = Picture["img/module/report.png"]
         Tag = "report"
+      }
+      { mnuNewWebForm Menu mnuNewFile
+        Name = "mnuNewWebForm"
+        Text = ("WebForm") & "..."
+        Picture = Picture["img/module/webform.png"]
+        Tag = "webform"
       }
       { Menu18 Menu
       }

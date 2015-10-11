@@ -214,6 +214,9 @@ Private $bBackgroundValid As Boolean
 ' Another one is created for the offline wiki
 Public Documentation As CDocumentation
 
+' If GetFileIcon() has been called on an added file
+Private $bLastAdded As Boolean
+
 Public Sub _init()
 
   ExampleTitle["Automation"] = ("Automation")
@@ -794,12 +797,13 @@ Catch
 End
 
 
-Public Sub ReloadAll()
+Public Sub ReloadAll(Optional bFormOnly As Boolean)
 
   Dim hForm As Object
 
   Inc Application.Busy
   For Each hForm In Files
+    If bFormOnly And If Not hForm Is FForm Then Continue
     ReloadFile(hForm)
   Next
   Dec Application.Busy
@@ -1076,6 +1080,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     bConflict = False
     bLocked = IsLocked(sPath)
     bAdded = IsAdded(sPath)
+    $bLastAdded = bAdded
 
     If IsDir(sPath) Then
 
@@ -1100,7 +1105,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       sExt = File.Ext(sPath)
       Select Case sExt
 
-        Case "form", "class", "module", "webpage", "report"
+        Case "form", "class", "module", "webpage", "report", "webform"
           If IsSourcePath(sPath) Then
             sModule = sExt
             sIcon = sExt & "-" & iSize
@@ -1476,6 +1481,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
       With ProjectTree.Add(sKey, sFile, hPict, sParent)
         .Editable = Not IsLocked(sKey)
+        If $bLastAdded Then .RichText = "<b>" & .Text & "</b>"
         'If $cProjectFilter Then .Expanded = True
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
@@ -2078,7 +2084,7 @@ Public Function LoadFile(sPath As String) As Object
         Case "module", "class"
           hForm = New FEditor(sPath)
 
-        Case "form", "report"
+        Case "form", "report", "webform"
           If HasModule(sType) Then
             hForm = New FForm(sPath)
           Endif
@@ -2931,8 +2937,6 @@ Public Sub Activate(hForm As Object)
   Dim bTextEditor As Boolean
 
   If AboutToQuit Then Return
-
-  'Debug hForm
 
   If hForm Then
     SelectKey(hForm.Path)
@@ -4720,10 +4724,10 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     If Components.Exist("gb.db") And If Not Exist(Project.Dir &/ ".connection") Then InsertDirectory(Project.Dir &/ ".connection")
     If Components.Exist("gb.web") And If Not Exist(Project.Dir &/ ".public") Then InsertDirectory(Project.Dir &/ ".public")
 
+    If sLibComp <> $sOldRefreshComponents Then ReloadAll(True)
+
     $sOldRefreshComponents = sLibComp
     
-    ReloadAll
-
   Endif
 
 End
