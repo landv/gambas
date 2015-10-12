@@ -644,7 +644,7 @@ BEGIN_METHOD(CWIDGET_reparent, GB_OBJECT parent; GB_INTEGER x; GB_INTEGER y)
 		y = VARG(y);
 	}
 
-	CONTROL->reparent(parent ? (gContainer*)parent->ob.widget : NULL, x, y);
+	CONTROL->reparent(parent ? CONTAINER(parent) : NULL, x, y);
 
 END_METHOD
 
