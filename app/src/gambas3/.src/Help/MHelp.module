@@ -462,10 +462,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
     Endif
     sUrl = URL.SetQuery(sUrl, "l", GetLanguage())
     If sMore Then sUrl &= "&" & sMore
-    If hWebView.Url <> sUrl Then 
-      'Debug sUrl
-      hWebView.Url = sUrl
-    Endif
+    hWebView.Url = sUrl
     
   Else
     
