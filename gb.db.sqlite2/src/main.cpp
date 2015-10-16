@@ -1975,22 +1975,21 @@ static int database_list(DB_DATABASE *db, char ***databases)
 
 	/* Hostname contains home area */
 	dbhome = (char *)conn->getHostName();
-	WalkDirectory( dbhome, databases );
-
-	/* Checks GAMBAS_SQLITE_DBHOME if set, or Current Working Directory */
-	/* Might have to come back and seperate */
-	dbhome = GetDatabaseHome();
-	if (dbhome){
-			//GB.Error("Unable to get databases: &1", "Can't find current directory");
-			WalkDirectory( dbhome, databases );
-			GB.Free(POINTER(&dbhome));
+	if (dbhome && *dbhome)
+	{
+		WalkDirectory( dbhome, databases );
 	}
-
-	/*if (getcwd(cwd, MAX_PATH) != NULL){
-		if (strcmp(cwd, dbhome) != 0){
-				WalkDirectory( cwd, databases );
+	else
+	{
+		/* Checks GAMBAS_SQLITE_DBHOME if set, or Current Working Directory */
+		/* Might have to come back and seperate */
+		dbhome = GetDatabaseHome();
+		if (dbhome){
+				//GB.Error("Unable to get databases: &1", "Can't find current directory");
+				WalkDirectory( dbhome, databases );
+				GB.Free(POINTER(&dbhome));
 		}
-	}*/
+	}
 
 	return GB.Count(databases);
 }
