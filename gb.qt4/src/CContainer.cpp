@@ -676,7 +676,7 @@ void MyFrame::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);
 
-	if (_bg)
+	if (_bg || (_pixmap && _pixmap->hasAlphaChannel()))
 	{
 		CWIDGET *window = CWidget::get(parentWidget());
 		GB_COLOR col = CWIDGET_get_background(window);

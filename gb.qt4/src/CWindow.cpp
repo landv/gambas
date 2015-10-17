@@ -177,7 +177,7 @@ void CWINDOW_define_mask(CWINDOW *_object)
 		if (THIS->masked && background.hasAlpha())
 		{
 			THIS->reallyMasked = true;
-			WINDOW->setMask(background.mask());
+			WINDOW->setBetterMask(background);
 		}
 		else
 		{
@@ -2604,6 +2604,40 @@ void MyMainWindow::setVisible(bool visible)
 	QWidget::setVisible(visible);
 }
 
+void MyMainWindow::setBetterMask(QPixmap &bg)
+{
+	if (!bg.hasAlphaChannel())
+			return;
+
+	static const uchar qt_pixmap_bit_mask[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+	const QImage img = bg.toImage();
+	const QImage image = (img.depth() < 32 ? img.convertToFormat(QImage::Format_ARGB32_Premultiplied) : img);
+	const int w = image.width();
+	const int h = image.height();
+
+	QImage mask(w, h, QImage::Format_MonoLSB);
+	if (mask.isNull()) // allocation failed
+		return;
+
+	mask.setColorCount(2);
+	mask.setColor(0, QColor(Qt::color0).rgba());
+	mask.setColor(1, QColor(Qt::color1).rgba());
+
+	const int bpl = mask.bytesPerLine();
+
+	for (int y = 0; y < h; ++y) {
+		const QRgb *src = reinterpret_cast<const QRgb*>(image.scanLine(y));
+		uchar *dest = mask.scanLine(y);
+		memset(dest, 0, bpl);
+		for (int x = 0; x < w; ++x) {
+				if (qAlpha(*src) >= 128)
+						dest[x >> 3] |= qt_pixmap_bit_mask[x & 7];
+				++src;
+		}
+	}
+
+	setMask(QBitmap::fromImage(mask));
+}
 
 /***************************************************************************
 

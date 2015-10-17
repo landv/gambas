@@ -253,6 +253,8 @@ public:
 	void setState(Qt::WindowStates state);
 	Qt::WindowStates getState() const;
 	
+	void setBetterMask(QPixmap &bg);
+	
 	int currentScreen() const;
 	
 	virtual void resize(int w, int h);
