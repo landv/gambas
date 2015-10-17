@@ -673,6 +673,25 @@ BEGIN_METHOD(File_IsRelative, GB_STRING path)
 
 END_METHOD
 
+BEGIN_METHOD(File_IsHidden, GB_STRING path)
+
+	char *path = STRING(path);
+	int len = LENGTH(path);
+	int i;
+	
+	for (i = 0; i < len; i++)
+	{
+		if (path[i] == '.' && (i == 0 || path[i - 1] == '/'))
+		{
+			GB_ReturnBoolean(TRUE);
+			return;
+		}
+	}
+	
+	GB_ReturnBoolean(FALSE);
+
+END_METHOD
+
 //---------------------------------------------------------------------------
 
 BEGIN_PROPERTY(Stream_Handle)
@@ -910,6 +929,7 @@ GB_DESC NATIVE_File[] =
 	GB_STATIC_METHOD("SetBaseName", "s", File_SetBaseName, "(Path)s(NewBaseName)s"),
 
 	GB_STATIC_METHOD("IsRelative", "b", File_IsRelative, "(Path)s"),
+	GB_STATIC_METHOD("IsHidden", "b", File_IsHidden, "(Path)s"),
 
 	GB_STATIC_METHOD("Load", "s", File_Load, "(FileName)s"),
 	GB_STATIC_METHOD("Save", NULL, File_Save, "(FileName)s(Data)s"),
