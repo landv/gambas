@@ -544,7 +544,7 @@ fflush(stderr);
 	retcode = SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_AUTOCOMMIT, (void *) SQL_AUTOCOMMIT_ON, SQL_NTS);
 	
 	odbc->dsn_name = malloc(sizeof(char) * strlen(host));
-	strcpy(odbc->dsn_name, desc->host);
+	strcpy(odbc->dsn_name, host);
 
 	odbc->user_name = malloc(sizeof(char) * strlen(user));
 	strcpy(odbc->user_name, user);
