@@ -30,6 +30,14 @@ End
 
 Public Sub wizImport_Close()
 
+  Project.Config["/FImportTable/Path"] = fchImport.SelectedPath
+  Project.Config["/FImportTable/Charset"] = cmbCharset.Text
+  Project.Config["/FImportTable/EndOfLine"] = cmbEndOfLine.Text 
+  Project.Config["/FImportTable/Delim"] = cmbDelim.Text 
+  Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
+  Project.Config["/FImportTable/StripSpace"] = CBool(chkStrip.Value)
+  Project.Config["/FImportTable/Ignore"] = txtIgnore.Value
+
   DoImport
  
 End
@@ -42,10 +50,13 @@ End
 
 Public Sub Form_Open()
 
+  Settings.Read(Me)
+  Settings.Read(fchImport, "fchImport")
+  
   spnImport.Stop
-
+  
   fchImport.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
-  fchImport.Value = Settings["/Connection/ImportPath"]
+  fchImport.SelectedPath = Project.Config["/FImportTable/Path"]
 
   cmbTable.List = $aTable
 
@@ -56,7 +67,6 @@ Public Sub Form_Open()
   gvwMessage.Columns[0].Width = Desktop.Scale * 6
   gvwMessage.Columns[1].Text = ("Message")
   
-  Settings.Read(Me)
   
 End
 
@@ -248,6 +258,7 @@ End
 '   
 ' End
 ' 
+
 Private Sub MakeFields(aField As String[]) As String[]
 
   Dim I As Integer
@@ -446,13 +457,7 @@ Public Sub Form_Close()
   If $bImport Then Stop Event
   
   Settings.Write(Me)
-
-  Project.Config["/FImportTable/Charset"] = cmbCharset.Text
-  Project.Config["/FImportTable/EndOfLine"] = cmbEndOfLine.Text 
-  Project.Config["/FImportTable/Delim"] = cmbDelim.Text 
-  Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
-  Project.Config["/FImportTable/StripSpace"] = CBool(chkStrip.Value)
-  Project.Config["/FImportTable/Ignore"] = txtIgnore.Value
+  Settings.Write(fchImport)
 
 End
 

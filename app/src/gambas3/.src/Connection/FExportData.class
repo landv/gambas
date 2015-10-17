@@ -130,9 +130,9 @@ Public Sub fchExport_Activate()
 
   Project.Config["/FExportData/FieldNames"] = CBool(chkName.Value)
   Project.Config["/FExportData/Selection"] = CBool(chkSelection.Value)
-  Project.Config["/FImportTable/Path"] = fchExport.SelectedPath
-  Project.Config["/FImportTable/Delim"] = cmbDelim.Text 
-  Project.Config["/FImportTable/Escape"] = cmbEscape.Text 
+  Project.Config["/FExportData/Path"] = fchExport.SelectedPath
+  Project.Config["/FExportData/Delim"] = cmbDelim.Text 
+  Project.Config["/FExportData/Escape"] = cmbEscape.Text 
 
   Me.Close(True)
 
