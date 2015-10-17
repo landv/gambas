@@ -678,14 +678,34 @@ BEGIN_METHOD(File_IsHidden, GB_STRING path)
 	char *path = STRING(path);
 	int len = LENGTH(path);
 	int i;
+	char c;
 	
 	for (i = 0; i < len; i++)
 	{
-		if (path[i] == '.' && (i == 0 || path[i - 1] == '/'))
+		if (path[i] != '.')
+			continue;
+		
+		if (i > 0 && path[i - 1] != '/')
+			continue;
+		
+		if (i == (len - 1))
+			continue;
+		
+		c = path[i + 1];
+		if (c == '/')
+			continue;
+		
+		if (c == '.')
 		{
-			GB_ReturnBoolean(TRUE);
-			return;
+			if (i == (len - 2))
+				continue;
+		
+			if (path[i + 2] == '/')
+				continue;
 		}
+		
+		GB_ReturnBoolean(TRUE);
+		return;
 	}
 	
 	GB_ReturnBoolean(FALSE);
