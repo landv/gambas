@@ -270,7 +270,11 @@ int gScrollView::getFrameWidth()
 {
 	if (!hasBorder())
 		return 0;
+	else
+		return gApplication::getFrameWidth();
+}
 
+#if 0
 #ifdef GTK3
 	GtkStyleContext *context = gtk_widget_get_style_context(border);
 	GtkStateFlags state;
@@ -284,8 +288,10 @@ int gScrollView::getFrameWidth()
 	gtk_style_context_get_border(context, state, &b);
 	gtk_style_context_restore(context);
 
+	fprintf(stderr, "getFrameWidth: %d\n", p.left + b.left);
 	return p.left + b.left;
 #else
 	return border->style->xthickness;
 #endif
 }
+#endif
