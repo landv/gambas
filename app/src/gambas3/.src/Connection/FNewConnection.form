@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,70,80)
+  MoveScaled(0,0,87,80)
   Icon = Picture["img/16/database.png"]
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -9,7 +9,7 @@
   Spacing = True
   Margin = True
   { HBox7 HBox
-    MoveScaled(1,1,68,4)
+    MoveScaled(1,1,84,4)
     { Label7 Label
       MoveScaled(0,0,18,4)
       Text = ("Name")
@@ -26,9 +26,8 @@
       Text = ("Type")
     }
     { cmbType ComboBox
-      MoveScaled(27,0,22,4)
+      MoveScaled(27,0,25,4)
       #Translate = False
-      Expand = True
       ReadOnly = True
       List = ["MySQL", "PostgreSQL", "SQLite", "ODBC"]
     }
@@ -104,11 +103,11 @@
     }
   }
   { panDatabase VBox
-    MoveScaled(1,35,69,36)
+    MoveScaled(1,35,84,36)
     AutoResize = True
     Spacing = True
     { HBox6 HBox
-      MoveScaled(0,0,68,4)
+      MoveScaled(0,0,84,4)
       { Label6 Label
         MoveScaled(0,0,18,4)
         Text = ("Database")
@@ -138,12 +137,12 @@
           Spacing = True
           { btnCreateDatabase Button
             MoveScaled(0,0,14,4)
-            Expand = True
+            AutoResize = True
             Picture = Picture["icon:/small/new"]
           }
           { btnDeleteDatabase Button
             MoveScaled(15,0,14,4)
-            Expand = True
+            AutoResize = True
             Picture = Picture["icon:/small/delete"]
           }
         }
