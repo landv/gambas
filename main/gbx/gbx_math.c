@@ -54,6 +54,9 @@ static void GFSR_init(uint seed)
 	int i = 0, j;
 	uint t = seed;
 
+	if (t == 0)
+		t = (uint)-1;
+	
 	do
 	{
 		t ^= (t >> 5) ^ (t << 1);
