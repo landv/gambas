@@ -1392,6 +1392,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
               If sParent Then
                 If File.Ext(sParent) <> "class" Then
                   sParent = ""
+                Else If File.Dir(sParent) <> sDir Then
+                  sParent = ""
                 Else If Not ProjectTree.Exist(sParent) Then
                   If Not bIgnoreInheritance Then
                     $aInheritance.Add(sPath)
