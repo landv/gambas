@@ -412,7 +412,7 @@ Public Sub mnuPopup_Show()
         Endif
         
         'If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuCut.Enabled = True
-        mnuCut.Enabled = True
+        mnuCut.Enabled = True 'Not IsDir($sKey)
         
       Endif
       
@@ -1722,7 +1722,7 @@ Public Sub tvwProject_MouseDrag()
   
   Drag.Icon = tvwProject.Item.Picture
   tvwProject[sKey].Selected = True
-  Drag(tvwProject, sKey, If(Project.IsSourcePath(sKey), MMime.CLASS, MMime.DATA))
+  Drag(tvwProject, sKey, If(Project.IsSourcePath(sKey, True), MMime.CLASS, MMime.DATA))
   
 End
 
