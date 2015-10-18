@@ -6229,3 +6229,24 @@ Public Sub GetBookmarks() As Collection[]
     ["Name": ("Project templates"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/template", "Icon": "icon:/small/copy"]]  
   
 End
+
+Public Sub RevertFile(sPath As String)
+  
+  Inc Application.Busy
+  
+  VersionControl.Revert(sPath)
+  Try Project.Files[sPath].Reload
+  
+  If File.Ext(sPath) <> ".class" Then
+    sPath = File.SetExt(sPath, "class")
+    If Exist(sPath) Then
+      VersionControl.Revert(sPath)
+      Try Project.Files[sPath].Reload
+    Endif
+  Endif
+  
+  Project.Refresh
+  
+  Dec Application.Busy
+  
+End

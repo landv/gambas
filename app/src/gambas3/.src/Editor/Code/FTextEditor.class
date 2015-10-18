@@ -200,18 +200,13 @@ Public Sub Modify(Optional bReset As Boolean)
 
   If Project.ReadOnly Then Return
   
+  $bModify = True
+  Inc Project.TimeStamp
+  Inc Age
+  FSearch.OnFileChange(Me.Path)
+  
   If bReset Then
-    
-    If Not $bModify Then Return
     $bModify = False
-    
-  Else
-
-    $bModify = True
-    Inc Project.TimeStamp
-    Inc Age
-    FSearch.OnFileChange(Me.Path)
-    
   Endif
 
   DrawTitle

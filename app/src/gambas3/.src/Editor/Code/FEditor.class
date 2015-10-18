@@ -234,22 +234,17 @@ Public Sub Modify(Optional bReset As Boolean)
 
   If Me.ReadOnly Then Return
 
+  $bModify = True
+  Inc Project.TimeStamp
+  Inc Age
+  $cProc.Clear ' = New Collection
+  $aProc.Clear ' = New String[]
+
+  FSearch.OnFileChange(Me.Path)
+  FDebugInfo.RefreshTabs(Me.Path, Me.Name)
+
   If bReset Then
-
-    If Not $bModify Then Return
     $bModify = False
-
-  Else
-
-    $bModify = True
-    Inc Project.TimeStamp
-    Inc Age
-    $cProc.Clear ' = New Collection
-    $aProc.Clear ' = New String[]
-
-    FSearch.OnFileChange(Me.Path)
-    FDebugInfo.RefreshTabs(Me.Path, Me.Name)
-
   Endif
 
   DrawTitle
@@ -2207,9 +2202,9 @@ Public Sub Reload()
 
   edtEditor.Load(Path, True)
   $hBookmark.Load()
-  If Not Project.RestoringFiles Then
-    ' TODO: If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
-  Endif
+  ' If Not Project.RestoringFiles Then
+  '   If Settings["/Editor/Fold"] Then edtEditor.CollapseAll
+  ' Endif
 
   If Settings["/FormatCode/FormatOnLoad"] Then MPrettyCode.Run(edtEditor)
 

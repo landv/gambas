@@ -117,13 +117,13 @@ Public Sub Reload()
   
   $hImage = Image.Load(Path)
   imvImage.Image = $hImage
-  $bModify = False
   ClearSelection
   $aUndo.Clear
   $aRedo.Clear
   btnZoomFit_Click
   SetReadOnly
   panBackground_Arrange  
+  Modify(True)
   
 End
 
@@ -225,7 +225,7 @@ Public Sub Modify(Optional bReset As Boolean)
 
   $bModify = Not bReset
   DrawTitle
-  If $bModify Then Inc Project.TimeStamp
+  Inc Project.TimeStamp
 
 End
 
