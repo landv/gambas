@@ -162,9 +162,8 @@ void randomize(bool set, uint seed)
   struct timeval tv;
 
   if (!set && gettimeofday(&tv, NULL) == 0)
-    seed = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    seed = 0xD1C2B3A4 + (tv.tv_sec << 20) + tv.tv_usec;
 
-	//GFSR_init(0x1A2B3C4D);
 	GFSR_init(seed);
 }
 
@@ -223,7 +222,7 @@ void MATH_init(void)
 	// Internet condom
 	do
 		seed = GFSR_random();
-	while (nbits(seed) < 16);
+	while ((seed & 1) == 0 || nbits(seed) < 16);
 		
 	HASH_seed = seed;
 }
