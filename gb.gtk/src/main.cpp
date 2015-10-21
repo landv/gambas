@@ -346,6 +346,9 @@ void my_quit (void)
 			GB.Call(&func, 0, FALSE);
 	}
 	
+	if (!GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_Quit", NULL, NULL))
+		GB.Call(&func, 0, FALSE);
+	
 	CWINDOW_delete_all();
 	gControl::cleanRemovedControls();
 

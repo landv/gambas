@@ -214,6 +214,9 @@ Private $bBackgroundValid As Boolean
 ' Another one is created for the offline wiki
 Public Documentation As CDocumentation
 
+' If GetFileIcon() has been called on an added file
+Private $bLastAdded As Boolean
+
 Public Sub _init()
 
   ExampleTitle["Automation"] = ("Automation")
@@ -768,13 +771,42 @@ Public Sub CloseAllWindows()
 
 End
 
-Public Sub ReloadAll()
+Public Sub ReloadFile(hForm As Object)
+  
+  Dim sPath As String
+  Dim sErr As String
+  
+  sPath = hForm.Path
+  
+  If hForm.IsModified() Then
+    If Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
+  Endif
+
+  Inc Application.Busy
+  hForm.Reload
+  Dec Application.Busy
+  
+Catch
+  
+  sErr = Error.Text '& "\n" & Error.Backtrace.Join(" ")
+  Try hForm.Delete
+  Dec Application.Busy
+  Try Files[sPath] = Null
+  FMain.ShowError(("Cannot reload file.") & "\n\n" & sErr, sPath)
+  
+End
+
+
+Public Sub ReloadAll(Optional bFormOnly As Boolean)
 
   Dim hForm As Object
 
+  Inc Application.Busy
   For Each hForm In Files
-    Try hForm.Reload
+    If bFormOnly And If Not hForm Is FForm Then Continue
+    ReloadFile(hForm)
   Next
+  Dec Application.Busy
 
 End
 
@@ -1048,6 +1080,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     bConflict = False
     bLocked = IsLocked(sPath)
     bAdded = IsAdded(sPath)
+    $bLastAdded = bAdded
 
     If IsDir(sPath) Then
 
@@ -1072,7 +1105,7 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
       sExt = File.Ext(sPath)
       Select Case sExt
 
-        Case "form", "class", "module", "webpage", "report"
+        Case "form", "class", "module", "webpage", "report", "webform"
           If IsSourcePath(sPath) Then
             sModule = sExt
             sIcon = sExt & "-" & iSize
@@ -1359,6 +1392,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
               If sParent Then
                 If File.Ext(sParent) <> "class" Then
                   sParent = ""
+                Else If File.Dir(sParent) <> sDir Then
+                  sParent = ""
                 Else If Not ProjectTree.Exist(sParent) Then
                   If Not bIgnoreInheritance Then
                     $aInheritance.Add(sPath)
@@ -1448,6 +1483,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
       With ProjectTree.Add(sKey, sFile, hPict, sParent)
         .Editable = Not IsLocked(sKey)
+        If $bLastAdded Then .RichText = "<b>" & .Text & "</b>"
         'If $cProjectFilter Then .Expanded = True
         If bAfter Then .MoveAfter(sAfter)
         If bShow Then
@@ -2050,7 +2086,7 @@ Public Function LoadFile(sPath As String) As Object
         Case "module", "class"
           hForm = New FEditor(sPath)
 
-        Case "form", "report"
+        Case "form", "report", "webform"
           If HasModule(sType) Then
             hForm = New FForm(sPath)
           Endif
@@ -2132,6 +2168,7 @@ Catch
   FMain.ShowError(("Cannot open file.") & "\n\n" & sErr, sPath)
 
 End
+
 
 Public Function FindPath(sClass As String) As String
 
@@ -2902,8 +2939,6 @@ Public Sub Activate(hForm As Object)
   Dim bTextEditor As Boolean
 
   If AboutToQuit Then Return
-
-  'Debug hForm
 
   If hForm Then
     SelectKey(hForm.Path)
@@ -4691,8 +4726,10 @@ Public Sub RefreshComponents(Optional bForce As Boolean)
     If Components.Exist("gb.db") And If Not Exist(Project.Dir &/ ".connection") Then InsertDirectory(Project.Dir &/ ".connection")
     If Components.Exist("gb.web") And If Not Exist(Project.Dir &/ ".public") Then InsertDirectory(Project.Dir &/ ".public")
 
-    $sOldRefreshComponents = sLibComp
+    If sLibComp <> $sOldRefreshComponents Then ReloadAll(True)
 
+    $sOldRefreshComponents = sLibComp
+    
   Endif
 
 End
@@ -5367,22 +5404,29 @@ Public Sub MakeDirectoryIcon(Optional sDir As String)
   Dim sIcon As String
   Dim hDirIcon As Image
   Dim hIcon As Image
+  Dim bExist As Boolean
+  Dim sPath As String
 
-  If Not sDir Then
-    sDir = Project.Dir
-    If Project.Icon Then sIcon = sDir &/ Project.Icon
+  If Not sDir Then sDir = Project.Dir
+  
+  If Project.Icon Then 
+    sIcon = sDir &/ Project.Icon
+  Else
+    sIcon = "img/logo/project.png"
   Endif
 
   hDirIcon = Image.Load("img/logo/folder.png")
 
-  If sIcon Then
-    Try hIcon = StretchIcon(sIcon, 128)
-    If hIcon Then hDirIcon.PaintImage(hIcon, 64, 88)
-  Endif
+  Try hIcon = StretchIcon(sIcon, 128)
+  If hIcon Then hDirIcon.PaintImage(hIcon, 64, 88)
 
   Try Kill sDir &/ ".icon.png"
   hDirIcon.Save(sDir &/ ".icon.png")
-  File.Save(sDir &/ ".directory", "[Desktop Entry]\nIcon=./.icon.png\n")
+
+  sPath = sDir &/ ".directory"
+  bExist = Exist(sPath)
+  File.Save(sPath, "[Desktop Entry]\nIcon=./.icon.png\n")
+  If Not bExist Then VersionControl.AddFile(sPath)
 
 Catch
 
@@ -6185,5 +6229,26 @@ Public Sub GetBookmarks() As Collection[]
   
   Return [["Name": ("Installed software"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/src", "Icon": "icon:/small/download"],
     ["Name": ("Project templates"), "Path": Desktop.DataDir &/ "gambas" & System.Version & "/template", "Icon": "icon:/small/copy"]]  
+  
+End
+
+Public Sub RevertFile(sPath As String)
+  
+  Inc Application.Busy
+  
+  VersionControl.Revert(sPath)
+  Try Project.Files[sPath].Reload
+  
+  If File.Ext(sPath) <> ".class" Then
+    sPath = File.SetExt(sPath, "class")
+    If Exist(sPath) Then
+      VersionControl.Revert(sPath)
+      Try Project.Files[sPath].Reload
+    Endif
+  Endif
+  
+  Project.Refresh
+  
+  Dec Application.Busy
   
 End

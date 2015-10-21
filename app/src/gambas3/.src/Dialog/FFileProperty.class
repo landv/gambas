@@ -141,13 +141,7 @@ Public Sub btnRevert_Click()
 
   If Message.Warning(("You are going to cancel your changes!"), ("Continue"), ("Cancel")) = 2 Then Return
 
-  Inc Application.Busy
-  
-  VersionControl.Revert($sPath)
-  Try Project.Files[$sPath].Reload
-  Project.Refresh
-  
-  Dec Application.Busy
+  Project.RevertFile($sPath)
 
 End
 

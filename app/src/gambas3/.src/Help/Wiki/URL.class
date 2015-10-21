@@ -88,7 +88,7 @@ Static Private Sub HandleQuery(URL As String, bClear As Boolean, Field As String
 End
 
 
-Static Public Sub SetQuery(URL As String, Field As String, Value As String) As String
+Static Public Sub SetQuery(URL As String, Field As String, Optional Value As String) As String
   
   Return HandleQuery(URL, False, Field, Value)
   

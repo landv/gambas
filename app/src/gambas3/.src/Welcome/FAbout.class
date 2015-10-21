@@ -234,31 +234,60 @@ Private Sub FillAbout()
 
 End
 
-Public Sub timAbout_Timer()
+Private Sub ScrollText(D As Integer)
 
   Dim hImage As Image
   
-  If $bPressed Then
-    $Y += 8
-  Else
-    Inc $Y
-  Endif
-  
-  If $Y >= dwgAbout.H Then 
-    $Y = 0
-    hImage = $aCache[0]
-    $aCache[0] = $aCache[1]
-    $aCache[1] = $aCache[2]
-    $aCache[2] = hImage
-    
-    Inc $YP
-    If ($YP * dwgAbout.H) >= gvwAbout.ScrollH Then $YP = 0
+  $Y += D
 
-    PaintAbout($aCache[2], $YP)
+  If D > 0 Then
     
+    While $Y >= dwgAbout.H 
+      
+      $Y -= dwgAbout.H
+      
+      hImage = $aCache[0]
+      $aCache[0] = $aCache[1]
+      $aCache[1] = $aCache[2]
+      $aCache[2] = hImage
+      
+      Inc $YP
+      If ($YP * dwgAbout.H) >= gvwAbout.ScrollH Then $YP = 0
+  
+      PaintAbout($aCache[2], $YP)
+      
+    Wend
+
+  Else If D < 0 Then
+    
+    While $Y < 0 
+      
+      If $YP = 2 Then
+        $Y = 0
+        Break
+      Endif
+      
+      $Y += dwgAbout.H
+      
+      hImage = $aCache[2]
+      $aCache[2] = $aCache[1]
+      $aCache[1] = $aCache[0]
+      $aCache[0] = hImage
+      
+      Dec $YP
+      PaintAbout($aCache[0], $YP - 2)
+      
+    Wend
+
   Endif
   
   dwgAbout.Refresh
+  
+End
+
+Public Sub timAbout_Timer()
+
+  ScrollText(If($bPressed, 8, 1))
 
 End
 
@@ -322,5 +351,16 @@ End
 Public Sub dwgAbout_MouseUp()
 
   $bPressed = False
+
+End
+
+Public Sub dwgAbout_MouseWheel()
+
+  Dim I As Integer
+
+  For I = 1 To 32
+    ScrollText(If(Mouse.Forward, -2, 2))
+    Wait
+  Next
 
 End

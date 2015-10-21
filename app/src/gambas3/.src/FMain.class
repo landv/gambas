@@ -407,10 +407,12 @@ Public Sub mnuPopup_Show()
       If Not Project.Running Then
         
         If Clipboard.Format = MMime.CLASS Then
-          If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuPaste.Enabled = True
+          'If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuPaste.Enabled = True
+          mnuPaste.Enabled = True
         Endif
         
-        If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuCut.Enabled = True
+        'If IsDir(sParent) Or If Not Project.IsSourcePath(sParent) Then mnuCut.Enabled = True
+        mnuCut.Enabled = True 'Not IsDir($sKey)
         
       Endif
       
@@ -1052,7 +1054,7 @@ Public Sub mnuPaste_Click()
   Dim bSource As Boolean
   
   sDst = GetCurrentDir()
-  bSource = Project.IsSourcePath(sDst)
+  bSource = Project.IsSourcePath(sDst, True)
   If bSource Then
     sType = MMime.CLASS
   Else
@@ -1720,7 +1722,7 @@ Public Sub tvwProject_MouseDrag()
   
   Drag.Icon = tvwProject.Item.Picture
   tvwProject[sKey].Selected = True
-  Drag(tvwProject, sKey, If(Project.IsSourcePath(sKey), MMime.CLASS, MMime.DATA))
+  Drag(tvwProject, sKey, If(Project.IsSourcePath(sKey, True), MMime.CLASS, MMime.DATA))
   
 End
 

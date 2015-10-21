@@ -37,9 +37,9 @@ gScrollView::gScrollView(gContainer *parent) : gContainer(parent)
 	g_typ=Type_gScrollView;
 	
 	_maxw = _maxh = 0;
-	_mw = _mh = 0;
 	_timer = 0;
 	_no_auto_grab = TRUE;
+	_sw = _sh = 0;
 	
 	onScroll = NULL;
 	
@@ -166,8 +166,8 @@ void gScrollView::updateSize()
 	if (scrollWidth() != ww || scrollHeight() != hh)
 	{
 		//fprintf(stderr, "---> updateSize: %d %d (%d %d)\n", ww, hh, width(), height());
-		_client_w = ww;
-		_client_h = hh;
+		_sw = ww;
+		_sh = hh;
 		gtk_widget_set_size_request(widget, -1, -1);
 		gtk_widget_set_size_request(widget, ww, hh);
 	}
@@ -210,12 +210,12 @@ void gScrollView::ensureVisible(int x, int y, int w, int h)
 
 int gScrollView::scrollWidth()
 {
-	return _client_w;
+	return _sw;
 }
 
 int gScrollView::scrollHeight()
 {
-	return _client_h;
+	return _sh;
 }
 
 void gScrollView::updateCursor(GdkCursor *cursor)
@@ -270,7 +270,11 @@ int gScrollView::getFrameWidth()
 {
 	if (!hasBorder())
 		return 0;
+	else
+		return gApplication::getFrameWidth();
+}
 
+#if 0
 #ifdef GTK3
 	GtkStyleContext *context = gtk_widget_get_style_context(border);
 	GtkStateFlags state;
@@ -284,8 +288,10 @@ int gScrollView::getFrameWidth()
 	gtk_style_context_get_border(context, state, &b);
 	gtk_style_context_restore(context);
 
+	fprintf(stderr, "getFrameWidth: %d\n", p.left + b.left);
 	return p.left + b.left;
 #else
 	return border->style->xthickness;
 #endif
 }
+#endif

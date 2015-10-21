@@ -1297,7 +1297,7 @@ Public Sub View_KeyPress()
       'Y = $hRows._FindRowFromPos($hRows._GetRowY($Y) + $hRows._GetRowHeight($Y) - $hView.ClientH)
       'Y = ViewToReal(Y)
       'Goto($X, Max(0, Y), Key.Shift)
-      If Key.Normal Then
+      If Not Key.Control And If Not Key.Alt And If Not Key.Meta Then
         GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y - $hView.ClientH - $hView.ScrollY, Key.Shift)
       Endif
       
@@ -1310,7 +1310,7 @@ Public Sub View_KeyPress()
       'Else
         'Goto($X, $hDoc.Max, Key.Shift)
       'Endif
-      If Key.Normal Then
+      If Not Key.Control And If Not Key.Alt And If Not Key.Meta Then
         GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y + $hView.ClientH - $hView.ScrollY, Key.Shift)
       Endif
       
@@ -1320,14 +1320,16 @@ Public Sub View_KeyPress()
       If $bShowExpand Then
         If Key.Control Then
           Y = FindPreviousLimit($Y + 1)
-          If Key.Alt Then
-            If _IsRowExpanded(Y) Then
-              CollapseAll
+          If Y >= 0 Then
+            If Key.Alt Then
+              If _IsRowExpanded(Y) Then
+                CollapseAll
+              Else
+                ExpandAll
+              Endif
             Else
-              ExpandAll
+              ToggleRow(Y)
             Endif
-          Else
-            ToggleRow(Y)
           Endif
           Goto STOP_EVENT
         Endif

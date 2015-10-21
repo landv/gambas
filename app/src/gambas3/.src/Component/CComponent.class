@@ -490,8 +490,6 @@ Public Sub Load()
   
   'If Key = Project.Name Then Goto HAS_BEEN_LOADED
   
-  If Key = "gb.form.mdi" And If Documentation.Name Then Stop
-  
   ClassList = New String[]
   Controls = New String[]
   
@@ -720,7 +718,6 @@ Public Sub Load()
     If hSym And If hSym.Value Then
       If hClass.Parent Then
         hParent = cClasses[hClass.ParentComponent &/ hClass.Parent]
-        If Not hParent Then Stop
         hSym = hParent.Symbols["_IsForm"]
         If hSym And If hSym.Value Then
           Hiddens.Add(sClass)

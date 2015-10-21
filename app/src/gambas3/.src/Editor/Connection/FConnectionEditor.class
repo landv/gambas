@@ -1381,6 +1381,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
   
   Dim sError As String
   Dim bTrans As Boolean
+  Dim bOK As Boolean
   
   ' If $hFieldEditor.Hide() Then Return True
   ' If $hIndexEditor.Hide() Then Return True
@@ -1431,6 +1432,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
     
     If sTemp Then
       
+      bTrans = True
       $hConn.Begin
       
       rTemp = $hConn.Find(sTemp)
@@ -1454,6 +1456,7 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
       Next
       
       $hConn.Commit
+      bTrans = False
       
     Endif
     
@@ -1502,8 +1505,10 @@ Private Sub WriteTable(Optional sOldTable As String) As Boolean
       
   Endif
   
-  datData.Reset
+  bOK = True
     
+  datData.Reset
+  
   ModifyTable(True)
   ModifyMetadata(True)
   ReloadTable
@@ -1512,12 +1517,12 @@ Finally
   
   sError = Error.Text
 
-  $hConn.Rollback
+  If bTrans Then $hConn.Rollback
   
-  If sTemp Then
+  If sOldTable Then
+    If bOK Then Try $hConn.Tables.Remove(sOldTable)
+  Else If sTemp Then
     Try $hConn.Tables.Remove(sTemp)
-  Else If sOldTable
-    Try $hConn.Tables.Remove(sOldTable)
   Endif
   
   'Endif
@@ -1559,7 +1564,7 @@ End
 Public Sub mnuReload_Click()
   
   If CheckCurrent() Then Return
-  Reload
+  Project.ReloadFile(Me)
   
 End
 

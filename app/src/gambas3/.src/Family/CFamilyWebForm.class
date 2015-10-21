@@ -1,0 +1,105 @@
+' Gambas class file
+
+Inherits CFamily
+
+Public Const Name As String = "WebForm"
+'Public Const DropImageClass As String = "ReportImage"
+'Public Const DropImageProperty As String = "Image"
+Public Const EmbedContainer As String = "WebContainer"
+
+Public Sub _new()
+
+  Me.Background = Color.TextBackground
+  
+End
+
+
+Public Sub GetIcon(hCCtrl As CControl) As String
+  
+  Dim sImage As String
+  
+  Select hCCtrl.Kind
+  
+    ' Case "HBox"
+    '   sImage = "horizontal"
+    
+    Case "WebForm", "WebContainer"
+      sImage = "vertical"
+      
+    Case Else
+      sImage = Super.GetIcon(hCCtrl)
+      
+  End Select
+  
+  ' If hCCtrl.GetProperty("Invert") Then
+  '   If Exist("img/family/" &/ sImage & "-invert.png") Then sImage &= "-invert"
+  ' Endif
+  
+  Return sImage
+  
+End
+
+
+Public Sub DrawControl(hCCtrl As CControl) As Boolean
+  
+  Dim iBorder As Integer
+  Dim hCtrl As Control = hCCtrl.Control
+  Dim hParent As CControl
+  
+  'Debug hCCtrl.Name
+  
+  Select hCCtrl.Kind
+  
+    Case "WebContainer"
+    
+      Paint.Background = &HFFB0B0
+    
+    Case Else
+      
+      Return True
+
+  End Select
+
+  Paint.LineWidth = 1
+  Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
+  'Paint.AntiAlias = False
+  Paint.Stroke
+  'Paint.AntiAlias = True
+  
+End
+
+Public Sub ActionDialog(sAction As String) As Boolean
+
+  ' Dim vColor As Variant
+  ' 
+  ' Select Case sAction
+  '   
+  '   Case Like ".text-*"
+  '     Return Super.ActionDialog(sAction)
+  '     
+  '   Case Like ".format-*"
+  '     If FColorChooser.Run(, True) Then Return True
+  '     vColor = FColorChooser.Color
+  '     If Not IsNull(Val(vColor)) Then vColor = Val(vColor)
+  '     Me.ActionValue = vColor
+  '     
+  ' End Select
+  
+End
+
+Public Sub ActionExec(hCtrl As CControl, sAction As String)
+  
+  ' Select Case sAction
+  '   
+  '   Case Like ".text-*"
+  '     Super.ActionExec(hCtrl, sAction)
+  '     
+  '   Case ".format-background"
+  '     If hCtrl.HasProperty("Background") Then hCtrl.SetProperty("Background", Me.ActionValue)
+  '   
+  '   Case ".format-foreground"
+  '     If hCtrl.HasProperty("Foreground") Then hCtrl.SetProperty("Foreground", Me.ActionValue)
+  '   
+  ' End Select
+  
+End

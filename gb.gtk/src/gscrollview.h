@@ -54,7 +54,7 @@ public:
 private:
 	GtkWidget *viewport;
 	int _maxw, _maxh;
-  int _mw, _mh;
+	int _sw, _sh;
 };
 
 #endif

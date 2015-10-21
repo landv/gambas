@@ -291,7 +291,7 @@ static void class_replace_global(CLASS *class)
 static void release_class(CLASS *class)
 {
 	#if DEBUG_LOAD
-	fprintf(stderr, "Freeing %s\n", class->name);
+	fprintf(stderr, "release_class: %s\n", class->name);
 	#endif
 	OBJECT_release(class, NULL);
 	class->exit = TRUE;
@@ -365,9 +365,6 @@ void CLASS_clean_up(bool silent)
 
 		for (class = _classes; class; class = class->next)
 		{
-			/*if (!CLASS_is_native(class) && class->ready && !class->exit)
-				printf("%s: %d ready = %d\n", class->name, class->count, class->ready);*/
-
 			if (class->count == 0 && !CLASS_is_native(class) && CLASS_is_loaded(class) && !class->exit)
 			{
 				release_class(class);
@@ -397,7 +394,7 @@ void CLASS_clean_up(bool silent)
 
 			for (class = _classes; class; class = class->next)
 			{
-				if (!CLASS_is_native(class) && CLASS_is_loaded(class) && !class->exit && (!class->array_class || class->array_class->exit)) // && !class->astruct_class)
+				if (!CLASS_is_native(class) && CLASS_is_loaded(class) && !class->exit && (!class->array_class || class->array_class->count == 0)) // && !class->astruct_class)
 				{
 					if (!silent)
 						fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": % 5d %s\n", class->count, class->name);

@@ -203,7 +203,6 @@ BEGIN_METHOD(Alure_CreateBufferFromFile, GB_STRING path)
 
 	GB.ReleaseFile(addr, len);
 
-
 END_METHOD
 
 BEGIN_METHOD(Alure_BufferDataFromFile, GB_STRING path; GB_INTEGER buffer)
@@ -217,7 +216,6 @@ BEGIN_METHOD(Alure_BufferDataFromFile, GB_STRING path; GB_INTEGER buffer)
 	GB.ReturnBoolean(alureBufferDataFromMemory((const ALubyte *)addr, len, VARG(buffer)));
 
 	GB.ReleaseFile(addr, len);
-
 
 END_METHOD
 
@@ -378,36 +376,36 @@ GB_DESC AlureDesc[] =
 	GB_DECLARE_VIRTUAL("Alure"),
 
 	GB_STATIC_METHOD("_exit", NULL, Alure_exit, NULL),
-	
+
 	GB_STATIC_METHOD("GetVersion", "s", Alure_GetVersion, NULL),
 	GB_STATIC_METHOD("GetErrorString", "s", Alure_GetErrorString, NULL),
 	GB_STATIC_METHOD("GetDeviceNames", "String[]", Alure_GetDeviceNames, "(All)b"),
- 	GB_STATIC_METHOD("InitDevice", "b", Alure_InitDevice, "[(Name)s(Attributes)Integer[];]"),
- 	GB_STATIC_METHOD("ShutdownDevice", "b", Alure_ShutdownDevice, NULL),
- 	GB_STATIC_METHOD("GetSampleFormat", "i", Alure_GetSampleFormat, "(Channels)i(Bits)i(FloatBits)i"),
- 	GB_STATIC_METHOD("Sleep", "b", Alure_Sleep, "(Duration)f"),
- 	GB_STATIC_METHOD("StreamSizeIsMicroSec", "b", Alure_StreamSizeIsMicroSec, "(UseMicroSeconds)b"),
- 	GB_STATIC_METHOD("CreateBufferFromFile", "i", Alure_CreateBufferFromFile, "(Path)s"),
-// 	GB_STATIC_METHOD("CreateBufferFromMemory", "i", Alure_CreateBufferFromMemory, "(Data)p(Size)i"),
- 	GB_STATIC_METHOD("BufferDataFromFile", "b", Alure_BufferDataFromFile, "(Path)s(Buffer)i"),
-// 	GB_STATIC_METHOD("BufferDataFromMemory", "b", Alure_BufferDataFromMemory, "(Data)p(Size)i(Buffer)i"),
- 	GB_STATIC_METHOD("CreateStreamFromFile", "AlureStream", Alure_CreateStreamFromFile, "(Path)s(ChunkLength)i(NumBuf)i"),
-// 	GB_STATIC_METHOD("CreateStreamFromMemory", "AlureStream", Alure_CreateStreamFromFile, "(Data)p(Length)i(ChunkLength)i(NumBuf)i"),
-// 	GB_STATIC_METHOD("CreateStreamFromStaticMemory", "AlureStream", Alure_CreateStreamFromFile, "(Data)p(Length)i(ChunkLength)i(NumBuf)i"),
- 	GB_STATIC_METHOD("GetStreamBuffers", "Integer[]", Alure_GetStreamBuffers, "(Stream)AlureStream;"),
- 	GB_STATIC_METHOD("GetStreamLength", "l", Alure_GetStreamLength, "(Stream)AlureStream;"),
- 	GB_STATIC_METHOD("GetStreamFrequency", "i", Alure_GetStreamFrequency, "(Stream)AlureStream;"),
- 	GB_STATIC_METHOD("BufferDataFromStream", "i", Alure_BufferDataFromStream, "(Stream)AlureStream;(Buffers)Integer[];"),
- 	GB_STATIC_METHOD("RewindStream", "b", Alure_RewindStream, "(Stream)AlureStream;"),
- 	GB_STATIC_METHOD("SetStreamOrder", "b", Alure_SetStreamOrder, "(Stream)AlureStream;(Order)i"),
- 	GB_STATIC_METHOD("SetStreamPatchset", "b", Alure_SetStreamPatchset, "(Stream)AlureStream;(Patchset)s"),
- 	GB_STATIC_METHOD("DestroyStream", "b", Alure_DestroyStream, "(Stream)AlureStream;"),
- 	GB_STATIC_METHOD("Update", "Integer[]", Alure_Update, NULL),
- 	GB_STATIC_METHOD("UpdateInterval", "b", Alure_UpdateInterval, "(Interval)f"),
- 	GB_STATIC_METHOD("PlaySourceStream", "b", Alure_PlaySourceStream, "(Source)i(Stream)AlureStream;(NumBufs)i(LoopCount)i"),
- 	GB_STATIC_METHOD("PlaySource", "b", Alure_PlaySource, "(Source)i"),
- 	GB_STATIC_METHOD("StopSource", "b", Alure_StopSource, "(Source)i"),
- 	GB_STATIC_METHOD("ResumeSource", "b", Alure_StopSource, "(Source)i"),
+	GB_STATIC_METHOD("InitDevice", "b", Alure_InitDevice, "[(Name)s(Attributes)Integer[];]"),
+	GB_STATIC_METHOD("ShutdownDevice", "b", Alure_ShutdownDevice, NULL),
+	GB_STATIC_METHOD("GetSampleFormat", "i", Alure_GetSampleFormat, "(Channels)i(Bits)i(FloatBits)i"),
+	GB_STATIC_METHOD("Sleep", "b", Alure_Sleep, "(Duration)f"),
+	GB_STATIC_METHOD("StreamSizeIsMicroSec", "b", Alure_StreamSizeIsMicroSec, "(UseMicroSeconds)b"),
+	GB_STATIC_METHOD("CreateBufferFromFile", "i", Alure_CreateBufferFromFile, "(Path)s"),
+	// 	GB_STATIC_METHOD("CreateBufferFromMemory", "i", Alure_CreateBufferFromMemory, "(Data)p(Size)i"),
+	GB_STATIC_METHOD("BufferDataFromFile", "b", Alure_BufferDataFromFile, "(Path)s(Buffer)i"),
+	// 	GB_STATIC_METHOD("BufferDataFromMemory", "b", Alure_BufferDataFromMemory, "(Data)p(Size)i(Buffer)i"),
+	GB_STATIC_METHOD("CreateStreamFromFile", "AlureStream", Alure_CreateStreamFromFile, "(Path)s(ChunkLength)i(NumBuf)i"),
+	// 	GB_STATIC_METHOD("CreateStreamFromMemory", "AlureStream", Alure_CreateStreamFromFile, "(Data)p(Length)i(ChunkLength)i(NumBuf)i"),
+	// 	GB_STATIC_METHOD("CreateStreamFromStaticMemory", "AlureStream", Alure_CreateStreamFromFile, "(Data)p(Length)i(ChunkLength)i(NumBuf)i"),
+	GB_STATIC_METHOD("GetStreamBuffers", "Integer[]", Alure_GetStreamBuffers, "(Stream)AlureStream;"),
+	GB_STATIC_METHOD("GetStreamLength", "l", Alure_GetStreamLength, "(Stream)AlureStream;"),
+	GB_STATIC_METHOD("GetStreamFrequency", "i", Alure_GetStreamFrequency, "(Stream)AlureStream;"),
+	GB_STATIC_METHOD("BufferDataFromStream", "i", Alure_BufferDataFromStream, "(Stream)AlureStream;(Buffers)Integer[];"),
+	GB_STATIC_METHOD("RewindStream", "b", Alure_RewindStream, "(Stream)AlureStream;"),
+	GB_STATIC_METHOD("SetStreamOrder", "b", Alure_SetStreamOrder, "(Stream)AlureStream;(Order)i"),
+	GB_STATIC_METHOD("SetStreamPatchset", "b", Alure_SetStreamPatchset, "(Stream)AlureStream;(Patchset)s"),
+	GB_STATIC_METHOD("DestroyStream", "b", Alure_DestroyStream, "(Stream)AlureStream;"),
+	GB_STATIC_METHOD("Update", "Integer[]", Alure_Update, NULL),
+	GB_STATIC_METHOD("UpdateInterval", "b", Alure_UpdateInterval, "(Interval)f"),
+	GB_STATIC_METHOD("PlaySourceStream", "b", Alure_PlaySourceStream, "(Source)i(Stream)AlureStream;(NumBufs)i(LoopCount)i"),
+	GB_STATIC_METHOD("PlaySource", "b", Alure_PlaySource, "(Source)i"),
+	GB_STATIC_METHOD("StopSource", "b", Alure_StopSource, "(Source)i"),
+	GB_STATIC_METHOD("ResumeSource", "b", Alure_StopSource, "(Source)i"),
 
 	GB_END_DECLARE
 };

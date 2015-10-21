@@ -427,10 +427,13 @@ Private Sub Run(iAction As Integer)
     
     Try hTextEditor.Begin
     While aResult.Count
-      If $hCurrent.SetPosition(aResult[0], False) Then Break
-      Inc nReplace
-      $hCurrent.Replace(ReplaceString)
-      DoReplace(aResult, 0, ReplaceString)
+      If $hCurrent.SetPosition(aResult[0], False) Then 
+        aResult.Remove(0)
+      Else
+        Inc nReplace
+        $hCurrent.Replace(ReplaceString)
+        DoReplace(aResult, 0, ReplaceString)
+      Endif
     Wend
     Try hTextEditor.End
     

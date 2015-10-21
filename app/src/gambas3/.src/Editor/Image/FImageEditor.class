@@ -117,13 +117,13 @@ Public Sub Reload()
   
   $hImage = Image.Load(Path)
   imvImage.Image = $hImage
-  $bModify = False
   ClearSelection
   $aUndo.Clear
   $aRedo.Clear
   btnZoomFit_Click
   SetReadOnly
   panBackground_Arrange  
+  Modify(True)
   
 End
 
@@ -225,7 +225,7 @@ Public Sub Modify(Optional bReset As Boolean)
 
   $bModify = Not bReset
   DrawTitle
-  If $bModify Then Inc Project.TimeStamp
+  Inc Project.TimeStamp
 
 End
 
@@ -244,7 +244,7 @@ End
 Private Sub AddUndo(hObject As Object)
   
   If Not hObject Then Return
-  If $aUndo.Count = 64 Then $aUndo.Remove(0)
+  If $aUndo.Count = 256 Then $aUndo.Remove(0)
   $aUndo.Add(hObject)
   $aRedo.Clear
   
@@ -390,11 +390,7 @@ End
 
 Public Sub btnReload_Click()
 
-  If IsModified() Then
-    If Message.Warning(("The file has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
-  Endif
-
-  Reload
+  Project.ReloadFile(Me)
 
 End
 
@@ -549,6 +545,9 @@ Public Sub btnUndo_Click()
       $aRedo.Add($hSelect)
       $hSelect = vUndo
       imvImage.Refresh
+    Else If vUndo Is PointF Then
+      $aRedo.Add($hLastPoint)
+      $hLastPoint = vUndo
     Endif
     
   Until iLevel = 0
@@ -585,6 +584,9 @@ Public Sub btnRedo_Click()
       $aUndo.Add($hSelect)
       $hSelect = vUndo
       imvImage.Refresh
+    Else If vUndo Is PointF Then
+      $aUndo.Add($hLastPoint)
+      $hLastPoint = vUndo
     Endif
     
   Until iLevel = 0
@@ -613,10 +615,10 @@ Private Sub GetImagePos() As PointF
   Y = hPoint.Y + Frac((hPos.Y - hOrg.Y) / imvImage.Zoom)
   
   If $hMagnet Then
-    
     If Abs($hMagnet - PointF(X, Y)) <= 8 / imvImage.Zoom Then Return $hMagnet
+  Endif
     
-  Else If $bShowGrid Then
+  If $bShowGrid Then
   
     iSnap = FImageProperty.GetGridResolution() \ FImageProperty.GetGridSubdivision()
   
@@ -630,12 +632,12 @@ Private Sub GetImagePos() As PointF
   
   Else If $sTool = "draw" Or If $sTool = "erase" Then
     
-    X = CInt(X)
-    Y = CInt(Y)
-  
     If FImageProperty.GetSize() Then
-      X += 0.5
-      Y += 0.5
+      X = CInt(X * 2) / 2
+      Y = CInt(Y * 2) / 2
+    Else
+      X = CInt(X)
+      Y = CInt(Y)
     Endif
     
   Else
@@ -701,6 +703,8 @@ Private Sub AddStroke(hPoint As PointF)
  
   FImageProperty.PaintForStroke(Null, True)
   
+  If Not Paint.AntiAlias Then Paint.Translate(0.5, 0.5)
+  
   Paint.MoveTo($hLastPoint.X, $hLastPoint.Y)
   Paint.LineTo(hPoint.X, hPoint.Y)
   
@@ -764,12 +768,16 @@ Public Sub imvImage_MouseDown()
     Case "line"
       
       CreateSelection
+      
+      BeginUndo
       AddUndo($hSelect.Copy())
+      If $hLastPoint Then AddUndo($hLastPoint.Copy())
+      EndUndo
       
       $hCurrentPoint = GetImagePos()
       If $hMagnet Then $hCurrentPoint = $hMagnet
       
-      If Not Mouse.Shift Or If Not $hLastPoint Then 
+      If Not Mouse.Shift Or If Not $hLastPoint Or If $hSelect.Count = 0 Then 
         $hSelect.MoveTo($hCurrentPoint.X, $hCurrentPoint.Y)
       Else
         $hSelect.LineTo($hCurrentPoint.X, $hCurrentPoint.Y)
@@ -799,8 +807,8 @@ Public Sub imvImage_MouseDown()
       
       If $hPaste Then
         $hLastPoint = GetImagePos()
-        If $hMagnet Then $hLastPoint = $hMagnet
-        $hLastPoint = GetImagePos()
+        'If $hMagnet Then $hLastPoint = $hMagnet
+        '$hLastPoint = GetImagePos()
       Endif
       
     Case "change"
@@ -992,8 +1000,6 @@ FIND_MAGNET:
 
   If hMagnet Then
    
-    'Print "Magnet";; hMagnet; " <- "; hPoint
-   
     If bCurrent Then
       hCurrent = hMagnet
       $hLastMagnet = Null
@@ -1070,7 +1076,7 @@ Public Sub imvImage_MouseMove()
         
         If $hFirstPoint And If Hyp($hCurrentPoint.X - $hFirstPoint.X, $hCurrentPoint.Y - $hFirstPoint.Y) > 8 / imvImage.Zoom Then 
           $hSelect.AddMagnet($hFirstPoint)
-          Debug "add magnet ";; $hFirstPoint.X;; $hFirstPoint.Y
+          'Debug "add magnet ";; $hFirstPoint.X;; $hFirstPoint.Y
           $hFirstPoint = Null
         Endif
         
@@ -1224,6 +1230,13 @@ Public Sub imvImage_MouseMove()
               hSelect.Translate($hCurrentPoint.X - $hLastPoint.X, $hCurrentPoint.Y - $hLastPoint.Y)
               
           End Select
+          
+          ' If $sTool = "paste" Then
+          '   If $hPaste Then
+          '     $hPasteCurrent = $hPasteSelect.Copy()
+          '     $hChangeRect = $hPasteCurrent.GetExtents()
+          '   Endif
+          ' Endif
           
         Endif
         
@@ -1699,10 +1712,13 @@ Public Sub imvImage_Draw(hZoom As Image)
         
         Paint.Save
         
+        Paint.Dash = Null
+        
         If $sTool = "line" Then
           Paint.LineWidth = 1
-          FImageProperty.PaintForStroke
+          'FImageProperty.PaintForStroke
           Paint.AntiAlias = True
+          'Paint.LineWidth *= imvImage.Zoom
           Paint.LineJoin = Paint.LineJoinRound
         Else
           FImageProperty.PaintForStroke
@@ -1711,10 +1727,17 @@ Public Sub imvImage_Draw(hZoom As Image)
         Endif
         
         'Paint.Background = Color.SetAlpha(Color.White, 128)
-        Paint.Dash = Null
         If Not Paint.Antialias Then Paint.Translate(imvImage.Zoom / 2, imvImage.Zoom / 2)
         Paint.MoveTo($hLastPoint.X * imvImage.Zoom + hOffset.X, $hLastPoint.Y * imvImage.Zoom + hOffset.Y)
         Paint.LineTo($hCurrentPoint.X * imvImage.Zoom + hOffset.X, $hCurrentPoint.Y * imvImage.Zoom + hOffset.Y)
+        
+        If $sTool = "line" Then
+          Paint.Background = Color.White
+          Paint.Stroke(True)
+          Paint.Background = Color.Black
+          Paint.Dash = [4, 4]
+        Endif
+        
         Paint.Stroke
         
         Paint.Restore
@@ -1762,6 +1785,21 @@ Public Sub imvImage_Draw(hZoom As Image)
       
         Paint.ClipRect = Rect(hOffset.X, hOffset.Y, Ceil($hImage.W * imvImage.Zoom), Ceil($hImage.H * imvImage.Zoom))
         imvImage._Paint(hImage, hOffset.X + Floor(.X) * imvImage.Zoom, hOffset.Y + Floor(.Y) * imvImage.Zoom)
+        
+        If $bPress Then
+          Paint.LineWidth = 1 / imvImage.Zoom
+          Paint.AntiAlias = False
+          Paint.LineJoin = Paint.LineJoinMiter
+          Paint.Translate(hOffset.X + 0.5, hOffset.Y + 0.5)
+          Paint.Scale(imvImage.Zoom, imvImage.Zoom)
+          Paint.Rectangle(.X, .Y, .W, .H)
+          Paint.Background = Color.White
+          Paint.Stroke(True)
+          Paint.Background = Color.Black
+          Paint.Dash = [4.0, 4.0]
+          Paint.DashOffset = 0
+          Paint.Stroke
+        Endif
       Endif
     
     End With
@@ -1778,7 +1816,7 @@ Public Sub imvImage_Draw(hZoom As Image)
     Paint.Scale(imvImage.Zoom, imvImage.Zoom)
     
     Paint.LineWidth = 2 / imvImage.Zoom
-    Paint.AntiAlias = True
+    Paint.AntiAlias = False
     Paint.LineJoin = Paint.LineJoinRound
       
     If $sTool = "change" Then
@@ -1794,23 +1832,15 @@ Public Sub imvImage_Draw(hZoom As Image)
     With $hChangeRect
       
       Paint.Rectangle(.X, .Y, .W, .H)
-      Paint.Stroke
+      Paint.Stroke(True)
       
-      'Paint.LineWidth = 1 / imvImage.Zoom
-      ' Paint.MoveTo(.X + .W / 2, .Y + .H / 2)
-      ' Paint.RelMoveTo(0, -4 / imvImage.Zoom)
-      ' Paint.RelLineTo(0, 8 / imvImage.Zoom)
-      ' Paint.RelMoveTo(-4 / imvImage.Zoom, -4 / imvImage.Zoom)
-      ' Paint.RelLineTo(8 / imvImage.Zoom, 0)
-      ' Paint.Stroke
+      Paint.Background = Color.SetAlpha(Color.White, 128)
+      Paint.Dash = [2.0, 2.0]
+      Paint.DashOffset = 0
+      Paint.Stroke
       
     End With
     
-    Paint.Background = Color.SetAlpha(Color.White, 128)
-    Paint.Dash = [2.0, 2.0]
-    Paint.DashOffset = 0
-    Paint.Rectangle($hChangeRect.X, $hChangeRect.Y, $hChangeRect.W, $hChangeRect.H)
-    Paint.Stroke
     
     Paint.Background = Color.SetAlpha(Color.Red, 128)
     Paint.Arc($hChangeRect.X + 0.5 / imvImage.Zoom, $hChangeRect.Y + 0.5 / imvImage.Zoom, 7 / imvImage.Zoom)

@@ -3536,7 +3536,14 @@ __PUSH_GENERIC:
 				fast = 0x81 + np;
 		}
 		else if (class->quick_array == CQA_COLLECTION)
+		{
+			if (np < 1)
+				THROW(E_NEPARAM);
+			else if (np > 1)
+				THROW(E_TMPARAM);
+			
 			fast = 0xC0;
+		}
 		else
 		{
 			// Check the symbol existance, but *not virtually*
@@ -3657,7 +3664,14 @@ __POP_GENERIC:
 		if (class->quick_array == CQA_ARRAY)
 			fast = 1;
 		else if (class->quick_array == CQA_COLLECTION)
+		{
+			if (np < 2)
+				THROW(E_NEPARAM);
+			else if (np > 2)
+				THROW(E_TMPARAM);
+			
 			fast = 2;
+		}
 		else
 		{
 			// Check the symbol existance, but *not virtually*

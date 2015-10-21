@@ -275,8 +275,8 @@ static int Begin(GB_PAINT *d)
 
 		}
 
-		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
-		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
+		rx = gDesktop::resolution(); //device->physicalDpiX();
+		ry = gDesktop::resolution(); //device->physicalDpiY();
 
 #else
 		GdkDrawable *dr;
@@ -300,8 +300,8 @@ static int Begin(GB_PAINT *d)
 			dr = gtk_widget_get_window(wid->widget);
 		}
 
-		d->resolutionX = gDesktop::resolution(); //device->physicalDpiX();
-		d->resolutionY = gDesktop::resolution(); //device->physicalDpiY();
+		rx = gDesktop::resolution(); //device->physicalDpiX();
+		ry = gDesktop::resolution(); //device->physicalDpiY();
 		
 		EXTRA(d)->context = gdk_cairo_create(dr);
 #endif

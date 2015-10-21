@@ -82,13 +82,14 @@
     }
   }
   { spnHelp SidePanel
-    MoveScaled(11,46,24,13)
+    MoveScaled(15,46,24,13)
     Arrangement = Arrange.Fill
     Orientation = Align.Bottom
     Separator = True
     Transparent = True
-    { webHelp WebView
-      MoveScaled(1,2,21,9)
+    { webHelp HelpView
+      MoveScaled(3,1,16,9)
+      NoHeader = True
     }
   }
 }

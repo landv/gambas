@@ -31,6 +31,10 @@ Private $flY1 As Float = 0.5
 Private $flX2 As Float = 1
 Private $flY2 As Float = 0.5
 
+Private $iLineCap As Integer
+Private $iLineJoin As Integer
+Private $iFillRule As Integer
+
 'Static Public Value As String  '"radialgradient(0.5,0.5,1,0.5,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])" '"lineargradient(0,0.5,1,0.5,[&hFFFFFF,&h000000,&h00FF00],[0,0.5,1])"
 
 Private Sub GetCurrent() As FImageEditor
@@ -66,6 +70,10 @@ Public Sub _new()
   $aGradient.Add(CReportBrush["LinearGradient(0,0.5,1,0.5,[#000000,#FFFFFFFF],[0,1])"])
   
   palColor.Colors = $aDefaultColor
+  
+  SetLineCap(Paint.LineCapButt)
+  SetLineJoin(Paint.LineJoinMiter)
+  SetFillRule(Paint.FillRuleWinding)
   
 End
 
@@ -215,8 +223,8 @@ Public Sub PaintForStroke(Optional hRect As RectF, Optional bIgnoreOpacity As Bo
   Else
     Paint.LineWidth = iSize
     Paint.AntiAlias = True
-    Paint.LineCap = Paint.LineCapRound
-    Paint.LineJoin = Paint.LineJoinRound
+    Paint.LineCap = $iLineCap
+    Paint.LineJoin = $iLineJoin
   Endif
   
   If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
@@ -226,6 +234,7 @@ End
 
 Public Sub PaintForFill(Optional hRect As RectF)
   
+  Paint.FillRule = $iFillRule
   If Not hRect Then hRect = RectF(0, 0, Paint.W, Paint.H)
   Paint.Brush = GetBrush(hRect)
   
@@ -1378,4 +1387,78 @@ Public Sub tabBrush_CloseAll()
 
   FMain.HideTool
 
+End
+
+Private Sub SetLineCap(iLineCap As Integer)
+
+  Dim sImage As String
+  
+  Select Case iLineCap
+    Case Paint.LineCapButt
+      sImage = "butt"
+    Case Paint.LineCapRound
+      sImage = "round"
+    Case Paint.LineCapSquare
+      sImage = "square"
+  End Select
+  
+  btnLineCap.Picture = Picture["img/draw/cap-" & sImage & ".png"]
+  
+  $iLineCap = iLineCap
+
+End
+
+Private Sub SetLineJoin(iLineJoin As Integer)
+
+  Dim sImage As String
+  
+  Select Case iLineJoin
+    Case Paint.LineJoinBevel
+      sImage = "bevel"
+    Case Paint.LineJoinMiter
+      sImage = "miter"
+    Case Paint.LineJoinRound
+      sImage = "round"
+  End Select
+  
+  btnLineJoin.Picture = Picture["img/draw/join-" & sImage & ".png"]
+  
+  $iLineJoin = iLineJoin
+
+End
+
+Public Sub btnLineCap_Click()
+
+  SetLineCap(($iLineCap + 1) Mod 3)
+
+End
+
+Public Sub btnLineJoin_Click()
+
+  SetLineJoin(($iLineJoin + 1) Mod 3)
+
+End
+
+Private Sub SetFillRule(iFillRule As Integer)
+
+  Dim sImage As String
+  
+  Select Case iFillRule
+    Case Paint.FillRuleEvenOdd
+      sImage = "exclusive"
+    Case Paint.FillRuleWinding
+      sImage = "union"
+  End Select
+  
+  btnFillRule.Picture = Picture["img/draw/" & sImage & ".png"]
+  
+  $iFillRule = iFillRule
+
+End
+
+
+Public Sub btnFillRule_Click()
+  
+  SetFillRule(1 - $iFillRule)
+  
 End

@@ -471,26 +471,33 @@ Public Sub crdBottomLeft2_Change()
 
 End
 
+Private Sub HandleCheck(hCtrl As CoordBox, hMain As CoordBox, bCheck As Boolean)
+
+  hCtrl.Enabled = Not bCheck
+  If bCheck Then hCtrl.Value = hMain.Value
+
+End
+
 Public Sub chkTopLeft_Click()
 
-  crdTopLeft2.Enabled = Not Last.Value
+  HandleCheck(crdTopLeft2, crdTopLeft1, Last.Value)
 
 End
 
 Public Sub chkTopRight_Click()
 
-  crdTopRight2.Enabled = Not Last.value
+  HandleCheck(crdTopRight2, crdTopRight1, Last.Value)
 
 End
 
 Public Sub chkBottomRight_Click()
 
-  crdBottomRight2.Enabled = Not Last.value
+  HandleCheck(crdBottomRight2, crdBottomRight1, Last.Value)
 
 End
 
 Public Sub chkBottomLeft_Click()
 
-  crdBottomLeft2.Enabled = Not Last.value
+  HandleCheck(crdBottomLeft2, crdBottomLeft1, Last.Value)
 
 End

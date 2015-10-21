@@ -2165,17 +2165,18 @@ static int database_list(DB_DATABASE *db, char ***databases)
 	GB.NewArray(databases, sizeof(char *), 0);
 
 	/* Hostname contains home area */
-	dbhome = conn->host;
-	walk_directory(dbhome, databases);
-
-	/* Checks GAMBAS_SQLITE_DBHOME if set, or Current Working Directory */
-	/* Might have to come back and seperate */
-	dbhome = get_database_home();
-	if (dbhome)
+	if (conn->host && *conn->host)
 	{
-		//GB.Error("Unable to get databases: &1", "Can't find current directory");
-		walk_directory(dbhome, databases);
-		GB.Free(POINTER(&dbhome));
+		walk_directory(conn->host, databases);
+	}
+	else
+	{
+		dbhome = get_database_home();
+		if (dbhome)
+		{
+			walk_directory(dbhome, databases);
+			GB.Free(POINTER(&dbhome));
+		}
 	}
 
 	return GB.Count(databases);

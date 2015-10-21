@@ -42,11 +42,14 @@ Public Sub Add(sControl As String, Optional sComp As String, Optional sType As S
 
   Dim hCtrl As ToolButton
   Dim hPict As Picture
+  Dim W, H As Integer
 
   If Not sType Then sType = "*"
 
+  W = $iSize + 8
+  H = $iSize + 8
+
   hCtrl = New ToolButton(panTool) As "btnControl"
-  hCtrl.Move(0, 0, $iSize + 8, $iSize + 8)
   hCtrl.Tag = [sControl, sType]
   hCtrl.Border = False
   hCtrl.Toggle = True
@@ -55,11 +58,13 @@ Public Sub Add(sControl As String, Optional sComp As String, Optional sType As S
 
   hPict = CControl.GetIcon(sControl, sComp)
   If hPict Then
+    If hPict.W > hPict.H Then W = ($iSize * hPict.W) \ hPict.H + 8
     Picture[".control" &/ LCase(sControl)] = hPict
-    If hPict.Width <> $iSize Then hPict = hPict.Image.Stretch($iSize, $iSize).Picture
+    If hPict.Height <> $iSize Then hPict = hPict.Image.Stretch(-1, $iSize).Picture
     hCtrl.Picture = hPict
   Endif
 
+  hCtrl.Move(0, 0, W, H)
   $cButton[sControl] = hCtrl
 
 End

@@ -119,9 +119,8 @@ Public Sub _new(sPath As String)
   Path = sPath
   Me.Name = File.BaseName(sPath)
 
-  Family = File.Ext(sPath)
-  Mid$(Family, 1, 1) = UCase(Left(Family))
-  $hFamily = CFamily.Get(Family)
+  $hFamily = CFamily.Get(File.Ext(sPath))
+  Family = $hFamily.Name
   panBorder.Background = $hFamily.Background
 
   Container = panBorder
@@ -167,7 +166,6 @@ Public Sub Reload() As Boolean
   If sErr Then Error.Raise(sErr)
 
   $bConvert = False
-  $bModify = False
 
   UpdateSnap
   UpdateBorder
@@ -184,6 +182,7 @@ Public Sub Reload() As Boolean
   $hUndo.Enable
   
   SetReadOnly
+  Modify(True)
 
 End
 
@@ -332,6 +331,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
 
     Else If Left$(sLine) = "}" Then
 
+      hCtrl.SetDesign
       'IF hCtrl = hParent THEN RETURN
       Dec iLevel
 
@@ -1873,14 +1873,12 @@ Public Sub Modify(Optional bReset As Boolean)
 
   If $bModify <> bReset Then Return
 
+  hEditor = GetClassEditor()
+  If hEditor Then hEditor.Scan = Null
+  Inc Project.TimeStamp
+
   $bModify = Not bReset
   DrawTitle
-
-  If $bModify Then
-    hEditor = GetClassEditor()
-    If hEditor Then hEditor.Scan = Null
-    Inc Project.TimeStamp
-  Endif
 
 End
 
@@ -2518,7 +2516,7 @@ Public Sub Control_Draw(...)
   If Not hCCtrl Then Return
   If Not hCtrl Is DrawingArea Then Return
 
-  If $hFamily.DrawControl(hCCtrl) Then
+  If hCCtrl.Parent And If $hFamily.DrawControl(hCCtrl) Then
 
     If Paint.Device Then Draw.Begin(Paint.Device)
 
@@ -3212,11 +3210,7 @@ End
 
 Public Sub mnuReload_Click()
 
-  If IsModified() Then
-    If Message.Warning(("The form has been modified.\n\nAll your changes will be lost."), ("Reload"), ("Cancel")) <> 1 Then Return
-  Endif
-
-  Reload
+  Project.ReloadFile(Me)
 
 End
 

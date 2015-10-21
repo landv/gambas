@@ -100,7 +100,7 @@ End
 Private Function GetHomeURL() As String
 
   'Debug MHelp.GetURL() & "?help&" & MHelp.GetLanguage() & "&v3"
-  Return MHelp.GetURL() & "?l=" & MHelp.GetLanguage()
+  Return MHelp.GetURL() & "?nl&l=" & MHelp.GetLanguage()
 
 End
 
@@ -239,7 +239,6 @@ Private Sub FillTree()
       sComponent = hClass.Component
     Endif
     sClass = hClass.Name
-    If sClass = "Hunk" Then Stop
     
     If Not tvwClasses.Exist(sComponent) Then 
       tvwClasses.Add(sComponent, sComponent, Picture["img/16/component.png"])

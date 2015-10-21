@@ -49,6 +49,8 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   Dim I As Integer
   Dim iMode As Integer
   Dim fDashOffset As Float
+  Dim iFillRule As Integer
+  
   'Dim hExtent As RectF
   
   fDashOffset = Paint.DashOffset
@@ -74,7 +76,10 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     
     hTemp = New Image(hImage.W, hImage.H, Color.Transparent)
     
+    iFillRule = Paint.FillRule
+    
     Paint.Begin(hTemp)
+    Paint.FillRule = iFillRule
     
     Paint.Brush = hBrush
    
@@ -177,7 +182,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
   
   If iAction = ACTION_FILL Then 
     
-    Paint.FillRule = Paint.FillRuleWinding
+    'Paint.FillRule = Paint.FillRuleWinding
     Paint.Fill
     Paint.End
     
@@ -185,7 +190,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     
   Else If iAction = ACTION_CLEAR Then
     
-    Paint.FillRule = Paint.FillRuleWinding
+    'Paint.FillRule = Paint.FillRuleWinding
     Paint.Fill
     
     If _Invert Then
@@ -206,7 +211,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
       Paint.LineTo(0, 0)
     Endif
     
-    Paint.LineJoin = Paint.LineJoinMiter
+    'Paint.LineJoin = Paint.LineJoinMiter
   
     Paint.Stroke
     
@@ -220,7 +225,7 @@ Public Sub Paint(hImage As Image, iAction As Integer, Optional bAll As Boolean)
     '   Paint.LineTo(0, 0)
     ' Endif
   
-    Paint.FillRule = Paint.FillRuleWinding
+    'Paint.FillRule = Paint.FillRuleWinding
     Paint.Clip
     
   Else If iAction = ACTION_HANDLE Or If iAction = ACTION_MAGNET Then

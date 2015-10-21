@@ -425,6 +425,9 @@ Public Sub SetPath(sPath As String)
   Dim sMsg As String
   
   If Not IsDir(File.Dir(sPath)) Then sMsg = ("Directory not found.")
+  
+  If File.IsHidden(sPath) Then SetShowHidden(True)
+  
   SetDir(File.Dir(sPath))
 
   If Not GetMulti() Then 
