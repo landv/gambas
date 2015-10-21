@@ -374,7 +374,7 @@ IMPLEMENT_XV(Listeneriv, GB_INTEGER)
 
 IMPLEMENT_GET_X(GetListenerf, Single, ALfloat)
 IMPLEMENT_GET_XV(GetListenerfv, GB_T_SINGLE, get_listener_float_param_size)
-IMPLEMENT_GET_X(GetListeneri, Single, ALint)
+IMPLEMENT_GET_X(GetListeneri, Integer, ALint)
 IMPLEMENT_GET_XV(GetListeneriv, GB_T_INTEGER, get_listener_integer_param_size)
 
 #undef ID_PARAM
@@ -391,7 +391,7 @@ IMPLEMENT_XV(Sourceiv, GB_INTEGER)
 
 IMPLEMENT_GET_X(GetSourcef, Single, ALfloat)
 IMPLEMENT_GET_XV(GetSourcefv, GB_T_SINGLE, get_source_float_param_size)
-IMPLEMENT_GET_X(GetSourcei, Single, ALint)
+IMPLEMENT_GET_X(GetSourcei, Integer, ALint)
 IMPLEMENT_GET_XV(GetSourceiv, GB_T_INTEGER, get_source_integer_param_size)
 
 #define IMPLEMENT_ACTION(_name) \
@@ -501,7 +501,7 @@ IMPLEMENT_XV(Bufferiv, GB_INTEGER)
 
 IMPLEMENT_GET_X(GetBufferf, Single, ALfloat)
 IMPLEMENT_GET_XV(GetBufferfv, GB_T_SINGLE, get_buffer_float_param_size)
-IMPLEMENT_GET_X(GetBufferi, Single, ALint)
+IMPLEMENT_GET_X(GetBufferi, Integer, ALint)
 IMPLEMENT_GET_XV(GetBufferiv, GB_T_INTEGER, get_buffer_integer_param_size)
 
 
