@@ -893,7 +893,7 @@ Public Sub chkGetVersionFromFile_Click()
 
   txtMajor.Enabled = Not chkGetVersionFromFile.Value
   txtMinor.Enabled = txtMajor.Enabled
-  txtRelease.Enabled = txtRelease.Enabled
+  txtRelease.Enabled = txtMajor.Enabled
 
 End
 
