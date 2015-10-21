@@ -461,6 +461,7 @@ Public Sub InitWebViewWith(hWebView As WebView, iType As Integer, sSymbol As Str
       sUrl = URL.UnsetQuery(sUrl, "nh")
     Endif
     sUrl = URL.SetQuery(sUrl, "l", GetLanguage())
+    sUrl = URL.SetQuery(sUrl, "nl")
     If sMore Then sUrl &= "&" & sMore
     hWebView.Url = sUrl
     

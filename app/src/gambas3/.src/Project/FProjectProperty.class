@@ -892,8 +892,8 @@ End
 Public Sub chkGetVersionFromFile_Click()
 
   txtMajor.Enabled = Not chkGetVersionFromFile.Value
-  txtMinor.Enabled = Not chkGetVersionFromFile.Value
-  txtRelease.Enabled = Not chkGetVersionFromFile.Value
+  txtMinor.Enabled = txtMajor.Enabled
+  txtRelease.Enabled = txtRelease.Enabled
 
 End
 
@@ -1013,9 +1013,9 @@ Private Sub ReadComponentFile()
   Try aVer = Split(cComp["CompatibleUntil"], ".")
   If aVer And If aVer.Count = 3 Then
     chkCompat.Value = True
-    Try txtMajor.Value = CInt(aVer[0])
-    Try txtMinor.Value = CInt(aVer[1])
-    Try txtRelease.Value = CInt(aVer[2])
+    Try txtCompMajor.Value = CInt(aVer[0])
+    Try txtCompMinor.Value = CInt(aVer[1])
+    Try txtCompRelease.Value = CInt(aVer[2])
   Else
     chkCompat.Value = False
   Endif
@@ -1052,7 +1052,7 @@ Private Sub WriteComponent()
     cComp["Need"] = $aNeed
     cComp["Require"] = $aRequire
     cComp["Exclude"] = $aExclude
-    If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtMajor.Value) & "." & CStr(txtMinor.Value) & "." & CStr(txtRelease.Value)
+    If chkCompat.Value Then cComp["CompatibleUntil"] = CStr(txtCompMajor.Value) & "." & CStr(txtCompMinor.Value) & "." & CStr(txtCompRelease.Value)
     cComp["Include"] = Split(Trim(txtIncludeInfo.Text))
     
   Endif
@@ -1149,9 +1149,9 @@ End
 
 Public Sub chkCompat_Click()
 
-  txtMajor.Enabled = chkCompat.Value
-  txtMinor.Enabled = chkCompat.Value
-  txtRelease.Enabled = chkCompat.Value
+  txtCompMajor.Enabled = chkCompat.Value
+  txtCompMinor.Enabled = chkCompat.Value
+  txtCompRelease.Enabled = chkCompat.Value
 
 End
 
