@@ -18,8 +18,9 @@ Private Sub _PrintLink()
   
   aPath = Split(Main.Path, "/", "", True)
   For Each sElt In aPath
+    If sPath Then Print "&nbsp;&bull;&nbsp;";
     sPath &= "/" & sElt
-    Print "<a href=\""; Application.Root &/ sPath; Main.LinkSuffix; "\">"; "/"; sElt; "</a>";
+    Print "<a href=\""; Application.Root &/ sPath; Main.LinkSuffix; "\">"; sElt; "</a>";
   Next
   
 End
@@ -237,14 +238,22 @@ Private Sub _PrintLang()
 
   Dim sLang As String
   
-  Print "<select id=\"lang\" name=\"lang\" onchange=\"document.form.submit();\">"
-
-  For Each sLang In Main.Languages.Copy().Sort()
-    Print "<option value=\""; sLang; "\"";
-    If sLang = Main.Lang Then Print " selected";
-    Print ">"; Html(sLang); "</option>"
-  Next
-
-  Print "</select>"  
+  If Request.Exist("nl") Then
+    
+    Print "<input type=\"hidden\" name=\"lang\" value=\""; Html(Main.Lang); "\">"
+  
+  Else
+    
+    Print "<select id=\"lang\" name=\"lang\" onchange=\"document.form.submit();\">"
+  
+    For Each sLang In Main.Languages.Copy().Sort()
+      Print "<option value=\""; sLang; "\"";
+      If sLang = Main.Lang Then Print " selected";
+      Print ">"; Html(sLang); "</option>"
+    Next
+  
+    Print "</select>"  
+    
+  Endif
 
 End

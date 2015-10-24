@@ -131,22 +131,19 @@ H1 { display: none; }
   </div>
 
   <%If Not Main.Edit And If Request["ident"] Then%>
-    <div align="center" style="max-width: 24em;margin: 0 auto;">
-      <!--<div class="login-glue"></div>-->
-      <div class="login"><div>
-        <%If Session.Id Then%>
-          <div id="user" class="label-login" align="left"><%=Main.UserName%></div>
-          <div class="command"><input type="submit" name="logout" value="<%=("Logout")%>"></div>
-        <%Else%>
-          <div class="label-login" align="left"><%=("Login")%>&nbsp;</div>
-          <input type="text" name="login" id="login" maxlength="16">
-          <div class="label-login" align="left"><%=("Password")%>&nbsp;</div>
-          <input type="password" name="password" id="password" maxlength="16">
-          <div class="command"><input type="submit" name="ok" id="ok" value="<%=("OK")%>"></div>
-          <div class="command"><input type="submit" id="cancel" value="<%=("Cancel")%>"></div>
-        <%Endif%>
-      </div></div>
-    </div>
+    <div class="login"><div>
+      <%If Session.Id Then%>
+        <div id="user" class="label-login" align="left"><%=Main.UserName%></div>
+        <div class="command"><input type="submit" name="logout" value="<%=("Logout")%>"></div>
+      <%Else%>
+        <div class="label-login" align="left"><%=("Login")%>&nbsp;</div>
+        <input type="text" name="login" id="login" maxlength="16">
+        <div class="label-login" align="left"><%=("Password")%>&nbsp;</div>
+        <input type="password" name="password" id="password" maxlength="16">
+        <div class="command"><input type="submit" name="ok" id="ok" value="<%=("OK")%>"></div>
+        <div class="command"><input type="submit" id="cancel" value="<%=("Cancel")%>"></div>
+      <%Endif%>
+    </div></div>
   <%Endif%>
 
 </div>

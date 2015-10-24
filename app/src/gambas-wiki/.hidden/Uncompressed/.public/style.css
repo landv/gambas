@@ -1,3 +1,8 @@
+/*@font-face {
+  font-family: 'default-font';
+  src: url('/Roboto-Light.ttf');
+}*/
+
 HTML, BODY {
   height: 100%;
   }
@@ -5,26 +10,52 @@ HTML, BODY {
 BODY {
   padding: 0px;
   margin: 0px auto;
-  font-family: sans-serif;
+  /*font-size: 10pt;
+  font-family: default-font;*/
   background: white;
   color: black;
 }
 
-INPUT {
+INPUT[type=text] {
+  border: solid #C0C0C0 1px;
+  height: 1.8em;
+  padding: 0 2px;
+}
+
+INPUT[type=password] {
+  border: solid #C0C0C0 1px;
+  height: 1.8em;
+  padding: 0 2px;
+}
+
+INPUT[type=text]:focus {
   border: solid gray 1px;
-  background: white;
-  color: black;
+}
+
+INPUT[type=button] {
+  font-size: 80%;
 }
 
 INPUT[type=submit] {
+  font-size: 80%;
+}
+
+
+/*INPUT {
+  border: solid gray 1px;
+  background: white;
+  color: black;
+}*/
+
+/*INPUT[type=submit] {
   border: solid black 1px;
   cursor: pointer;
   box-shadow: 0 0 4px gray;
-}
+}*/
 
-INPUT[type=submit]:hover {
+/*INPUT[type=submit]:hover {
   background: #E8E8E8;
-}
+}*/
 
 #login {
   width: 10em;
@@ -60,7 +91,7 @@ H1,H2,H3,H4,H5,H6 {
 H1,H2 {
   letter-spacing: 1px;
   padding: 0.2em 0.1em;
-  border-bottom: solid 2px #D8D8D8;
+  border-bottom: solid 1px #D8D8D8;
   font-weight: normal;
 }
 
@@ -143,14 +174,16 @@ TABLE.desc > TBODY > TR > TH {
   width: 100%;
   position: fixed;
   z-index: 10;
-  background: #DF6B00;
-  border-bottom: solid 1px gray;
+  background: #F0F0F0;
+  /*background: #DFA36F;
+  border-top: solid 3px #DF6B00;
+  border-bottom: solid 4px #DF6B00;*/
 }
 
 .header-inside {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2px 16px 4px;
+  /*max-width: 800px;
+  margin: 0 auto;*/
+  padding: 2px 4px;
   /*background: #E8E8E8;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
@@ -173,15 +206,15 @@ TABLE.desc > TBODY > TR > TH {
 
 .title {
   display: inline-block;
-  color: white;
+  color: gray;
 }
 
 .title A:link {
-  color: white;
+  color: gray;
 }
 
 .title A:visited {
-  color: white;
+  color: gray;
 }
 
 .title-v {
@@ -192,9 +225,9 @@ TABLE.desc > TBODY > TR > TH {
 .page {
   padding: 4px 8px;
   max-width: 800px;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
   position: relative;
-  top: 2.5em;
+  top: 1.5em;
 }
 
 .page-edit {
@@ -228,7 +261,7 @@ DIV.message {
 .command {
   display: inline-block;
   margin-left: 8px;
-  margin-top: 2px;
+  vertical-align: top;
 }
 
 #lang {
@@ -451,17 +484,14 @@ DIV.syntax > P:first-child {
 
 .login {
   position: absolute;
-  background: #DF6B00;
-  color: white;
-  border-bottom: solid 1px gray;
-  border-left: solid 1px gray;
-  border-right: solid 1px gray;
-  /*border-bottom-left-radius: 32px;
-  border-bottom-right-radius: 32px;
-  box-shadow: 0 0 8px gray;*/
-  padding: 0 16px 16px 16px;
+  background: white;
+  border: solid 2px gray;
+  padding: 1em;
   width: 24em;
   z-index: -1;
+  text-align: center;
+  right: 1em;
+  top: 3em;
 }
 
 .login-glue {

@@ -44,7 +44,7 @@ Private Sub ReadConfig()
         hCtrl.Text = vVal
       Case "SwitchButton"
         hCtrl.Value = vVal
-      Case "TextBox"
+      Case "TextBox", "MaskBox"
         hCtrl.Text = vVal
       Case "FontBox"
         hCtrl.Value = vVal
@@ -1327,18 +1327,6 @@ End
 Public Sub Form_Close()
 
   Settings.Save
-
-End
-
-Public Sub txtVendor_KeyPress()
-
-  Project.OnVendorKeyPress
-
-End
-
-Public Sub txtVendorPrefix_KeyPress()
-
-  Project.OnVendorKeyPress(True)
 
 End
 

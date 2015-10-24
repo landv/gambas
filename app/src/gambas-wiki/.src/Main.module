@@ -324,6 +324,21 @@ Private Sub RegisterUser() As Boolean
   
 End
 
+Private Sub AddCacheHeaders(Optional dLast As Date)
+
+  'If InternetExplorer Then Return
+
+  If Not dLast Then 
+    Try dLast = Stat(Args[0]).LastModified
+    If Error Then dLast = Now
+  Endif
+  Response.AddHeader("Expires", CGI.FormatDate(DateAdd(Now, gb.Month, 2)))
+  Response.AddHeader("Cache-Control", "public")
+  'Response.AddHeader("Cache-Control", "max-age=5184000")
+  Response.AddHeader("Last-Modified", CGI.FormatDate(dLast))
+
+End
+
 Public Sub Main()
 
   Dim sMsg As String
@@ -380,15 +395,23 @@ Public Sub Main()
   
   If File.Name(Path) = "style.css" Then
     Response.ContentType = "text/css"
+    AddCacheHeaders
     Response.Begin
     Print Replace(File.Load(".public/style.css"), "<%/%>", Application.Root);
     Response.End
     Return
   Else If Path And If Exist(".public" &/ Path) Then
+    AddCacheHeaders
     Response.SendFile(".public" &/ Path)
     Return
   Endif
   
+  SetLanguage(Request["l"])
+  If Request.Exist("v") Then AddLinkSuffix("v")
+  If Request.Exist("nh") Then AddLinkSuffix("nh")
+  If Request.Exist("nl") Then AddLinkSuffix("nl")
+  If Request.Exist("w") Then AddLinkSuffix("w")
+
   If Path = "/~register" Then
     If Request.Exist("cancel") Then
       Response.Redirect(Application.Root)
@@ -447,18 +470,13 @@ Public Sub Main()
     Endif
   Endif
 
-  SetLanguage(Request["l"])
-  If Request.Exist("v") Then AddLinkSuffix("v")
-  If Request.Exist("nh") Then AddLinkSuffix("nh")
-  If Request.Exist("w") Then AddLinkSuffix("w")
-    
   If Request.Exist("logout") Then
     
     Session.Abandon
     
   Else If Request.Exist("register") Then
     
-    Response.Redirect(Application.Root &/ "~register")
+    Response.Redirect(Application.Root &/ "~register" & Main.LinkSuffix)
     Return
    
   Else If Request["login"] And If Request["password"] And If Request["ok"] Then
@@ -521,6 +539,10 @@ Public Sub Main()
         Return
       Endif
       
+    Else If Request.Exist("historic") Then
+
+      Redirect("h=1")
+    
     Else If Request.Exist("preview") Then
       
       Preview = True
@@ -556,10 +578,6 @@ Public Sub Main()
       
       Edit = True
       
-    Else If Request.Exist("historic") Then
-
-      Redirect("h=1")
-    
     Else If Request.Exist("prev") Then
       
       History = Max(0, History + 1)

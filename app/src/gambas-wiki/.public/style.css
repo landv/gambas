@@ -34,12 +34,13 @@ INPUT[type=text]:focus {
 
 INPUT[type=button] {
   font-size: 80%;
+  height: 2em;
 }
 
 INPUT[type=submit] {
   font-size: 80%;
+  height: 2em;
 }
-
 
 /*INPUT {
   border: solid gray 1px;
@@ -86,13 +87,14 @@ P {
 
 H1,H2,H3,H4,H5,H6 {
   margin-bottom: 0;
+  font-family: serif;
 }
 
 H1,H2 {
   letter-spacing: 1px;
-  padding: 0.2em 0.1em;
-  border-bottom: solid 1px #D8D8D8;
-  font-weight: normal;
+  padding: 0.2em 0;
+  /*border-bottom: solid 1px #D8D8D8;*/
+  /*font-weight: normal;*/
 }
 
 CODE {
@@ -174,15 +176,17 @@ TABLE.desc > TBODY > TR > TH {
   width: 100%;
   position: fixed;
   z-index: 10;
-  background: #DFA36F;
+  background: white;
+  box-shadow: 0 0 8px gray;
+  /*background: #DFA36F;
   border-top: solid 3px #DF6B00;
-  border-bottom: solid 4px #DF6B00;
+  border-bottom: solid 4px #DF6B00;*/
 }
 
 .header-inside {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2px 16px 4px;
+  /*max-width: 800px;
+  margin: 0 auto;*/
+  padding: 2px 4px;
   /*background: #E8E8E8;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
@@ -205,15 +209,15 @@ TABLE.desc > TBODY > TR > TH {
 
 .title {
   display: inline-block;
-  color: white;
+  color: gray;
 }
 
 .title A:link {
-  color: white;
+  color: gray;
 }
 
 .title A:visited {
-  color: white;
+  color: gray;
 }
 
 .title-v {
@@ -224,9 +228,9 @@ TABLE.desc > TBODY > TR > TH {
 .page {
   padding: 4px 8px;
   max-width: 800px;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
   position: relative;
-  top: 2.5em;
+  top: 2em;
 }
 
 .page-edit {
@@ -234,7 +238,7 @@ TABLE.desc > TBODY > TR > TH {
   /*max-width: 800px;
   margin: 0 auto;*/
   position: absolute;
-  top: 2.5em;
+  top: 2em;
   bottom: 0;
   left: 0;
   right: 0;
@@ -260,7 +264,7 @@ DIV.message {
 .command {
   display: inline-block;
   margin-left: 8px;
-  margin-top: 2px;
+  vertical-align: top;
 }
 
 #lang {
@@ -483,17 +487,14 @@ DIV.syntax > P:first-child {
 
 .login {
   position: absolute;
-  background: #DFA36F;
-  color: white;
-  border-bottom: solid 4px #DF6B00;
-  border-left: solid 4px #DF6B00;
-  border-right: solid 4px #DF6B00;
-  /*border-bottom-left-radius: 32px;
-  border-bottom-right-radius: 32px;
-  box-shadow: 0 0 8px gray;*/
-  padding: 0 1em 1em 1em;
+  background: white;
+  border: solid 2px gray;
+  padding: 1em;
   width: 24em;
   z-index: -1;
+  text-align: center;
+  right: 1em;
+  top: 3em;
 }
 
 .login-glue {

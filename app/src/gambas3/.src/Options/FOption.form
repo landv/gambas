@@ -81,8 +81,9 @@
         Expand = True
         Text = ("Vendor name")
       }
-      { txtVendor TextBox
+      { txtVendor MaskBox
         MoveScaled(20,0,44,4)
+        Filter = "[A-Za-z0-9_-]"
       }
     }
     { HBox36 HBox
@@ -94,8 +95,9 @@
         Expand = True
         Text = ("Vendor prefix")
       }
-      { txtVendorPrefix TextBox
+      { txtVendorPrefix MaskBox
         MoveScaled(20,0,44,4)
+        Filter = "[A-Za-z0-9]"
       }
     }
     { HBox39 HBox

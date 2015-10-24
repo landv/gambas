@@ -6186,6 +6186,11 @@ End
 
 Public Sub OnVendorKeyPress(Optional bPrefix As Boolean)
   
+  If Key.Control Then
+    Stop Event
+    Return
+  Endif
+  
   If Key.Text Then
     If Len(Key.Text) = 1 Then 
       If Asc(Key.Text) < 32 Then Return

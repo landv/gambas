@@ -9,7 +9,7 @@ Inherits UserControl
 Private Const MARGIN As Integer = 5
 
 Private $hView As ScrollView
-Private $hEditor As TextBox
+Private $hEditor As MaskBox
 Private $hBorder As Panel
 Private $hCompletion As CTagCompletion
 
@@ -111,11 +111,6 @@ Public Sub Editor_KeyPress()
     Endif
   Endif
   
-  If Key.Text Then
-    If IsDigit(Key.Text) Or If IsLetter(Key.Text) Or If InStr(" -.\b\n\r\e", Key.Text) Then Return
-    Stop Event
-  Endif
-  
 End
 
 Public Sub GetTags() As String[]
@@ -163,9 +158,10 @@ Public Sub Clear()
 
   $hView.Children.Clear
   
-  $hEditor = New TextBox($hView) As "Editor"
+  $hEditor = New MaskBox($hView) As "Editor"
   $hEditor.Border = False
   $hEditor.MaxLength = 24
+  $hEditor.Filter = "[0-9A-Za-z .-]"
   ResizeEditor
   
   $hCompletion = New CTagCompletion($hEditor) As "Completion"
