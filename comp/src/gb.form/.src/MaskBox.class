@@ -4,13 +4,16 @@ Export
 
 Inherits TextBox
 
-Public Const _Properties As String = "*,-Password,-MaxLength,Action,Mask,ShowDefault"
+Public Const _Properties As String = "*,-Password,-MaxLength,Action,Filter,Mask,ShowDefault"
 'Public Const _DefaultEvent As String = "Click"
 'Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
 Public Const _DrawWith As String = "TextBox"
 
+Event Filter(Char As String)
+
 Property Mask As String
+Property Filter As String
 Property ShowDefault As Boolean
 'Property Text As String
 
@@ -29,6 +32,8 @@ Private $sAlign As String
 
 Private $iPosFocus As Integer
 Private $bShowDefault As Boolean
+
+Private $sFilter As String
 
 Public Sub _new()
   
@@ -564,15 +569,59 @@ End
 
 Public Sub TextBox_Change()
   
-  If Not $sMaskOrg Then Return
+  Dim I As Integer
+  Dim sText As String
+  Dim sCar As String
+  Dim sNewText As String
+  Dim iPos As Integer
+  Dim iDec As Integer
+  Dim bStop As Boolean
+  Dim bCanRaise As Boolean
   
-  Object.Lock(Me)
-  If Me.HasFocus Or If $bShowDefault Then
-    If Me.Text = "" Then Me.Text = MakeDefault()
-  Else
-    If Me.Text = MakeDefault() Then Me.Text = ""
+  bCanRaise = Object.CanRaise(Me, "Filter")
+  
+  If $sFilter Or If bCanRaise Then
+    
+    sText = Me.Text
+    iPos = Me.Pos    
+    For I = 1 To String.Len(sText)
+      sCar = String.Mid$(sText, I, 1)
+      If $sFilter And If sCar Like $sFilter Then
+        sNewText &= sCar
+        Continue
+      Endif
+      If bCanRaise Then
+        bStop = Raise Filter(sCar)
+        If Not bStop Then
+          sNewText &= sCar
+          Continue
+        Endif
+      Endif
+      
+      If I <= iPos Then Inc iDec
+      
+    Next
+    
+    If sNewText <> sText Then
+      Object.Lock(Me)
+      Me.Text = sNewText
+      Me.Pos = iPos - iDec
+      Object.Unlock(Me)
+    Endif
+    
   Endif
-  Object.Unlock(Me)
+  
+  If $sMaskOrg Then 
+  
+    Object.Lock(Me)
+    If Me.HasFocus Or If $bShowDefault Then
+      If Me.Text = "" Then Me.Text = MakeDefault()
+    Else
+      If Me.Text = MakeDefault() Then Me.Text = ""
+    Endif
+    Object.Unlock(Me)
+    
+  Endif
   
 End
 
@@ -594,22 +643,46 @@ Private Sub IsValid(sText As String) As Boolean
   Dim I As Integer
   Dim sMask As String
   Dim sCar As String
+  Dim bStop As Boolean
+  Dim bCanRaise As Boolean
   
-  If Not $sMaskOrg Then Return True
+  bCanRaise = Object.CanRaise(Me, "Filter")
   
-  If String.Len(sText) > $aMask.Count Then Return False
-  
-  For I = 1 To String.Len(sText)
+  If $sFilter Or If bCanRaise Then
     
-    sCar = String.Mid$(sText, I, 1)
-    sMask = $aMask[I - 1]
-    If sMask Then
-      If sCar Not Like sMask Then Return False
-    Else
-      If sCar <> String.Mid$($sSeparator, I, 1) Then Return False
-    Endif
+    For I = 1 To String.Len(sText)
+      
+      sCar = String.Mid$(sText, I, 1)
+      
+      If $sFilter And If sCar Like $sFilter Then Continue
+      If bCanRaise Then
+        bStop = Raise Filter(sCar)
+        If Not bStop Then Continue
+      Endif
+      
+      Return False
+      
+    Next
     
-  Next
+  Endif
+  
+  If $sMaskOrg Then
+  
+    If String.Len(sText) > $aMask.Count Then Return False
+    
+    For I = 1 To String.Len(sText)
+      
+      sCar = String.Mid$(sText, I, 1)
+      sMask = $aMask[I - 1]
+      If sMask Then
+        If sCar Not Like sMask Then Return False
+      Else
+        If sCar <> String.Mid$($sSeparator, I, 1) Then Return False
+      Endif
+      
+    Next
+    
+  Endif
   
   Return True
   
@@ -624,4 +697,48 @@ Public Sub Clear()
     Me.Text = ""
   Endif
   
+End
+
+Private Function Filter_Read() As String
+
+  Return $sFilter
+
+End
+
+' Private Sub MakeFilter()
+' 
+'   Dim aFilter As New String[]
+'   Dim sFilter As String
+'   Dim iPos As Integer
+' 
+'   sFilter = $sFilterOrg
+'   $sFilter = ""
+' 
+'   While sFilter
+'     
+'     If Left(sFilter) = "[" Then
+'       iPos = InStr(sFilter, "]")
+'       If iPos Then
+'         aFilter.Add(Mid$(sFilter, 2, iPos - 2))
+'         sFilter = Mid$(sFilter, iPos + 1)
+'         Continue
+'       Endif
+'     Endif
+'     
+'     $sFilter &= String.Left(sFilter)
+'     sFilter = String.Mid$(sFilter, 2)
+'     
+'   Wend
+'   
+'   $sFilterLike = "[" & aFilter.Join("") & "]"
+' 
+' End
+
+Private Sub Filter_Write(Value As String)
+
+  $sFilter = Value
+  If Not IsValid(Me.Text) Then
+    Clear()
+  Endif
+
 End

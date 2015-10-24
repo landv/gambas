@@ -2212,7 +2212,7 @@ C
 _Properties
 C
 s
-"*,-Password,-MaxLength,Action,Mask,ShowDefault"
+"*,-Password,-MaxLength,Action,Filter,Mask,ShowDefault"
 _Similar
 C
 s
@@ -2221,7 +2221,15 @@ _DrawWith
 C
 s
 "TextBox"
+:Filter
+:
+
+(Char)s
 Mask
+p
+s
+
+Filter
 p
 s
 

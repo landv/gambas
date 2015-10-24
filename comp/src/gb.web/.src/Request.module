@@ -10,6 +10,9 @@ Property Query As String
 Property Read Files As Collection
 Property Delimiter As String
 Property Read InternetExplorer As Integer
+Property Read Referer As String
+Property Read UserAgent As String
+
 Property Read Get As _Request_Get
 Property Read Post As _Request_Post
 Property Debug As Boolean
@@ -204,5 +207,17 @@ Private Sub Query_Write(Value As String)
 
   CGI["QUERY_STRING"] = Value
   Reload
+
+End
+
+Private Function Referer_Read() As String
+
+  Return CGI["HTTP_REFERER"]
+
+End
+
+Private Function UserAgent_Read() As String
+
+  Return CGI["HTTP_USER_AGENT"]
 
 End
