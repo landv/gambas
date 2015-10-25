@@ -18,97 +18,100 @@ Private $aImplemented As New String[]
 Private $bExecuteFromArgs As Boolean
 Private $bFast As Boolean
 Private $sUse As String
+Private $bPrecompiler As Boolean
+Private $aVarsDecl As New String[]
+Private $cNativeTypes As Collection = ["i": "Integer", "s": "String", "f": "Float", "d": "Date", "b": "Boolean", "v": "Variant", "o": "Object", "l": "Long", "p": "Pointer"]
 
 Public Sub Main() As Integer
-  
+
   Dim sName As String
   Dim sCacheDir As String = File.Dir(File.Dir(Temp$())) &/ "script-cache"
   Dim sRes As String
   Dim bCompile As Boolean
-  
+
   If Not Exist(sCacheDir) Then Mkdir sCacheDir
-  
+
   $sPath = ParseArgs()
   sName = File.Name($sPath)
-  
-  If IsNull($sPath) Then 
-    
+
+  If IsNull($sPath) Then
+
     $sPath = Read Lof(File.In)
-    If Not $sPath Then 
+    If Not $sPath Then
       Error "gbs: no script file specified"
       Error "Type 'gbs"; System.Version; " --help' for more information."
       Return 1
     Else
       $bExecuteFromArgs = True
     Endif
-    
+
   Endif
-  
+
   If Not $bExecuteFromArgs Then
-    If Not Exist($sPath) Then 
+    If Not Exist($sPath) Then
       $sPath = Application.Dir &/ $sPath
-      If Not Exist($sPath) And Not $bExecuteFromArgs Then 
+      If Not Exist($sPath) And Not $bExecuteFromArgs Then
         Error "gbs: script file does not exist: " & Application.Args[1]
         Return 1
       Endif
     Endif
-  Endif 
-  
+  Endif
+
   $sMainScriptPath = File.Dir($sPath)
-  
-  If $bExecuteFromArgs Then 
-    Shell ("echo " & $sPath & "|md5sum") To $sMd5
+
+  If $bExecuteFromArgs Then
+    Shell ("echo '" & $sPath & "'|md5sum") To $sMd5
   Else
     Exec ["md5sum", $sPath] To $sMd5
   Endif
   $sMd5 = Scan($sMd5, "* *")[0]
   If $bFast Then $sMd5 &= "-f"
-  
-  If $bNoCache Or $bExecuteFromArgs Then 
-    
+
+  If $bNoCache Or $bExecuteFromArgs Then
+
     bCompile = True
-    
-  Else  
-    
-    If Not Exist(sCacheDir &/ $sMd5 &/ sName) Then 
+
+  Else
+
+    If Not Exist(sCacheDir &/ $sMd5 &/ sName) Then
       bCompile = True
     Else
-      
-      bCompile = Not IsValid(sCacheDir &/ $sMd5 & ".info") 
+
+      bCompile = Not IsValid(sCacheDir &/ $sMd5 & ".info")
     Endif
-    
+
   Endif
-  
-  If bCompile Then 
-    
-    If Left(File.Name(Args[0]), -1) = "gbw" Then 
+
+  If bCompile Then
+
+    If Left(File.Name(Args[0]), -1) = "gbw" Then
       If $bVerbose Then Print "gbs: compiling server page"
       $sPath = MServerPage.Make($sPath)
-      If $bVerbose Then 
+      If $bVerbose Then
         Print String$(20, "-")
         Print File.Load($sPath)
         Print String$(20, "-")
-      Endif 
+      Endif
     Endif
-    
+
     MakeVirtualProject
-    
+
     Shell (System.Path &/ "bin/gbc" & System.Version & " -ag " & $sPrjPath & " 2>&1") To sRes
-    
-    If sRes <> "OK\n" Then 
+
+    If sRes <> "OK\n" Then
       Error sRes
       Print File.Load($sPrjPath &/ ".project")
       Print File.Load($sPrjPath &/ ".src" &/ "MMain.module")
       Return 1
     Endif
-    
+
     Try Mkdir sCacheDir &/ $sMd5
-    Exec [System.Path &/ "bin/gba" & System.Version, "-o", sCacheDir &/ $sMd5 &/ sName, $sPrjPath] To sRes 
-    
+    Exec [System.Path &/ "bin/gba" & System.Version, "-o", sCacheDir &/ $sMd5 &/ sName, $sPrjPath] To sRes
+
     File.Save(sCacheDir &/ $sMd5 & ".info", $aIncFiles.Join("\n"))
-    
+
   Endif
-  
+
   $aAppArgs.Insert(["gbr3", sCacheDir &/ $sMd5 &/ sName], 0)
   'Print $aAppArgs.Join(" ")
   Exec $aAppArgs Wait
@@ -116,152 +119,158 @@ Public Sub Main() As Integer
     Error "Segmentation fault"
   Endif
   Return Process.LastValue
-  
+
 End
 
 Private Function ParseArgs() As String
-  
+
   Dim I As Integer
   Dim sApp As String
-  
+
   For I = 1 To Args.Max
-    
+
     If Args[I] = "--" Then
       Inc I
       Break
     Else If Left(Args[I]) <> "-" Then
       Break
     Endif
-    
+
     Select Case Args[I]
-        
+
       Case "-V", "--version"
-        
+
         Print Application.Version
         Quit
-        
+
       Case "-L", "--license"
-        
+
         Print
         If File.Name(Args[0]) = ("gbs" & System.Version) Then
-          Print "GAMBAS Scripter version " & Application.Version 
+          Print "GAMBAS Scripter version " & Application.Version
         Else
-          Print "GAMBAS Webpage Scripter version " & Application.Version 
+          Print "GAMBAS Webpage Scripter version " & Application.Version
         Endif
         Print File.Load("license")
         Quit
-        
+
       Case "-h", "--help"
-        
+
         If File.Name(Args[0]) = ("gbs" & System.Version) Then
           Print File.Load("usage-gbs")
         Else
           Print File.Load("usage-gbw")
         Endif
         Quit
-        
+
       Case "-c", "--nocache"
-        
+
         $bNoCache = True
-        
+
       Case "-v", "--verbose"
-        
+
         $bVerbose = True
-        
+
       Case "-e"
-        
+
         $bExecuteFromArgs = True
-        
+
       Case "-f", "--fast"
-        
+
         $bFast = True
+
       Case "-u"
+
         If Not (Application.Args[I + 1] Begins "-") Then
           $sUse = Application.Args[I + 1]
           Inc I
         Endif
-        
+
+      Case "-p"
+
+        $bPrecompiler = True
+
       Case Else
-        
+
         Error "gbs3: Unknown option: "; Args[I]
         Quit 1
-        
+
     End Select
-    
+
   Next
-  
+
   sApp = Args[I]
   Inc I
   While I < Args.Count
     $aAppArgs.Add(Args[I])
     Inc I
   Wend
-  
+
   Return sApp
-  
+
 End
 
 Private Sub MakeVirtualProject()
-  
+
   Dim s As String
   Dim sPrjFileContent As String
   Dim i As Integer
-  
-  $sPrjPath = Temp("project") 
-  
+
+  $sPrjPath = Temp("project")
+
   If $bVerbose Then Print "gbs: create project"
-  
+
   Try Mkdir $sPrjPath
   Try Mkdir $sPrjPath &/ ".src"
-  
+
   sPrjFileContent = "# Gambas Project File 3.0\n"
   sPrjFileContent &= "Title=Gambas Script\n"
   sPrjFileContent &= "Startup=MMain\n"
-  
-  $hOutFile = Open $sPrjPath &/ ".src/MMain.module" For Write Create 
+
+  $hOutFile = Open $sPrjPath &/ ".src/MMain.module" For Write Create
   Print #$hOutFile, "' Gambas module file\n"
   If $bFast Then Print #$hOutFile, "Fast"
-  
+
   $iLevel = 0
   If $bExecuteFromArgs Then
     GenerateFilesFromArgs($sPath)
   Else
     GenerateFiles($sPath)
   Endif
-  
+
   For Each s In $cComponents
     GetNeededComp(s)
   Next
-  
+
   For Each s In $cComponents
     GetRequiredComp(s)
   Next
-  
+
   CComponent.Exit
-  
+
   $aSortKey.Sort
-  
+
   For Each i In $aSortKey
     sPrjFileContent &= "Component=" & $cComponents[i] & "\n"
-    
+
   Next
-  
+
   File.Save($sPrjPath &/ ".project", sPrjFileContent)
-  
+
   Close $hOutFile
-  
+
 End
 
 Private Sub CompileError(sPath As String, iLine As Integer, sMessage As String)
-  
+
   Error "gbs3: "; sPath; "."; iLine; ": "; sMessage
   CComponent.Exit
   Quit
-  
+
 End
 
 Private Sub GenerateFiles(Path As String)
-  
+
   Dim hFile As File
   Dim sLine As String
   Dim sPath As String
@@ -273,57 +282,59 @@ Private Sub GenerateFiles(Path As String)
   Dim aSym As String[]
   Dim iInd As Integer
   Dim iLine As Integer
-  
-  If Not Exist(Path) Then Return 
-  
-  If $aIncFiles.Exist(Path) Then Return 
-  
+  Dim sWord As String
+
+  If Not Exist(Path) Then Return
+
+  If $aIncFiles.Exist(Path) Then Return
+
   If $bVerbose Then Print "gbs: process file: "; Path
-  
+
   Inc $iLevel
-  
+
   $aIncFiles.Add(Path)
   $aIncFiles.Add(Stat(Path).LastModified)
-  
-  hFile = Open Path For Read 
-  
+
+  hFile = Open Path For Read
+
   While Not Eof(hFile)
-    
+
     Inc iLine
     Line Input #hFile, sLine
-    If sLine Like "#!*" Then Continue 
-    
+    If sLine Like "#!*" Then Continue
+
     aSym = Highlight.Analyze(sLine)
-    
+
     If aSym.Count Then
       If Highlight.Types[aSym.Max] = Highlight.Comment Or If Highlight.Types[aSym.Max] = Highlight.Help Then
         aSym.Remove(aSym.Max)
       Endif
     Endif
-    
-    If aSym.Count = 2 And If aSym[0] = "INCLUDE" And If Highlight.Types[1] = Highlight.String Then 
+    'Find the include keyword and add the queried files.
+    If aSym.Count = 2 And If aSym[0] = "INCLUDE" And If Highlight.Types[1] = Highlight.String Then
       sPath = Mid$(aSym[1], 2, -1) 'Trim(Scan(sLine, "INCLUDE *")[0])
       If Not Exist(sPath) Then sPath = $sMainScriptPath &/ sPath
       If $bVerbose Then Print "gbs: include script file: " & sPath
-      
+
       GenerateFiles(sPath)
-      Continue 
+      Continue
     Endif
-    
-    If aSym.Count = 2 And If aSym[0] = "END" And If aSym[1] == "CLASS" And If bInClass Then 
+
+    'Find the END CLASS keyword and close the class if true
+    If aSym.Count = 2 And If aSym[0] = "END" And If aSym[1] == "CLASS" And If bInClass Then
       Close #$hOutClass
-      
+
       bInClass = False
-      Continue 
+      Continue
     Endif
-    
-    If aSym.Count = 2 And If aSym[0] = "CLASS" And If Highlight.Types[1] = Highlight.Symbol Then 
-      
+
+    If aSym.Count = 2 And If aSym[0] = "CLASS" And If Highlight.Types[1] = Highlight.Symbol Then
+
       If bInClass Then
         CompileError(Path, iLine, "Unexpected CLASS declaration")
       Endif
       sClass = aSym[1] 'Trim(Scan(sLine, "CLASS *")[0])
-      If IsNull(sClass) Then 
+      If IsNull(sClass) Then
         CompileError(Path, iLine, "Class name missing")
         Continue
       Endif
@@ -331,16 +342,16 @@ Private Sub GenerateFiles(Path As String)
       $hOutClass = Open $sPrjPath &/ ".src" &/ sClass & ".class" For Write Create
       If $bFast Then Print #$hOutClass, "Fast"
       bInClass = True
-      Continue       
+      Continue
     Endif
-    
-    If aSym.Count >= 2 And If aSym[0] == "USE" Then 
-      
+
+    If aSym.Count >= 2 And If aSym[0] == "USE" Then
+
       For iInd = 1 To aSym.Max Step 2
         If Highlight.Types[iInd] <> Highlight.String Then CompileError(Path, iLine, "Syntax error")
         s = Mid$(aSym[iInd], 2, -1)
         If $bVerbose Then Print "gbs: use component: "; s
-        
+
         If Not CComponent.All.Exist(s) Then CompileError(Path, iLine, Subst("Unknown component: &1", s))
         $cComponents[CComponent.All[s].SortKey] = s
         $aSortKey.Add(CComponent.All[s].SortKey)
@@ -350,119 +361,119 @@ Private Sub GenerateFiles(Path As String)
           If s <> "," Then CompileError(Path, iLine, "Comma missing")
         Endif
       Next
-      Continue 
+      Continue
     Endif
-    
-    If aSym.Count = 5 And If aSym[0] = "PUBLIC" And If (aSym[1] = "SUB" Or aSym[0] = "PROCEDURE") And If aSym[2] = "Main" And If aSym[3] = "(" And If aSym[4] = ")" Then 
+
+    If aSym.Count = 5 And If aSym[0] = "PUBLIC" And If (aSym[1] = "SUB" Or aSym[0] = "PROCEDURE") And If aSym[2] = "Main" And If aSym[3] = "(" And If aSym[4] = ")" Then
       If $bVerbose Then Print "gbs: Main procedure already defined"
       bAutoMain = False
     Endif
-    
-    If bInClass Then 
+
+    If bInClass Then
       Print #$hOutClass, sLine
-    Else 
+    Else
       sCodeBuf &= sLine & "\n"
-      
-      If aSym.Count = 1 And If aSym[0] = "END" Then 
+
+      If aSym.Count = 1 And If aSym[0] = "END" Then
         Print #$hOutFile, sCodeBuf
         sCodeBuf = Null
       Endif
     Endif
-    
+
   Wend
-  
+
   If bInClass Then CompileError(Path, iLine, "END CLASS missing")
-  
-  If bAutoMain And Not IsNull(sCodeBuf) And $iLevel = 1 Then 
+
+  If bAutoMain And Not IsNull(sCodeBuf) And $iLevel = 1 Then
     If $bVerbose Then Print "gbs: Main procedure not defined, create it"
     Print #$hOutFile, "Public Sub Main()"
     Print #$hOutFile, sCodeBuf
     Print #$hOutFile, "End"
   Endif
-  
+
   Close #hFile
-  
+
   Dec $iLevel
-  
+
 End
 
 Public Function IsValid(sPath As String) As Boolean
-  
+
   Dim aFileInfo As String[]
   Dim i As Integer
-  
+
   If Not Exist(sPath) Then Return False
-  
+
   aFileInfo = Split(File.Load(sPath), "\n")
-  
+
   For i = 0 To aFileInfo.Max Step 2
     If Stat(aFileInfo[i]).LastModified > CDate(aFileInfo[i + 1]) Then Return False
   Next
-  
+
   Return True
-  
+
 Catch
   Return False
-  
+
 End
 
 Public Sub GetRequiredComp(sComp As String)
-  
+
   Dim s As String
-  
+
   If Not CComponent.All.Exist(sComp) Then Return
-  
+
   For Each s In CComponent.All[sComp].Require
-    If Not $cComponents.Exist(s) Then      
+    If Not $cComponents.Exist(s) Then
       $cComponents.Add(s, CComponent.All[s].Sortkey)
       $aSortKey.add(CComponent.All[s].SortKey)
       $aImplemented.Insert(CComponent.All[s].Implement)
-      GetRequiredComp(s)   
+      GetRequiredComp(s)
     Endif
-    
+
   Next
-  
+
 End
 
 Private Sub GetNeededComp(sComp As String)
-  
+
   Dim s, t As String
   Dim bExist As Boolean
-  
+
   If Not CComponent.All.Exist(sComp) Then Return
-  
+
   For Each s In CComponent.All[sComp].Need
     If $aImplemented.Exist(s) Then Break
-    
+
     For Each t In CComponent.WhoImplement[s]
-      If $cComponents.Exist(t) Then 
+      If $cComponents.Exist(t) Then
         bExist = True
-        Break 
+        Break
       Endif
-      
-    Next 
-    
-    If Not bExist Then  
+
+    Next
+
+    If Not bExist Then
       t = CComponent.WhoImplement[s][0]
       $cComponents.Add(t, CComponent.All[t].SortKey)
       $aSortKey.add(CComponent.All[t].SortKey)
       $aImplemented.Insert(CComponent.All[t].Implement)
     Endif
-    
+
     GetNeededComp(t)
-    
+
   Next
-  
+
 End
 
 Private Sub GenerateFilesFromArgs(sLine As String)
-  
+
   Dim bCrochetOuvert As Boolean
-  
+
   Dim s As String
   Dim i As Integer
-  Dim sCode As String
-  
+  Dim sCode, sNew As String
+
   'Use management
   If $sUse
     For Each s In Split($sUse)
@@ -473,20 +484,78 @@ Private Sub GenerateFilesFromArgs(sLine As String)
     Next
     s = ""
   Endif
-  
-  For i = 1 To Len(sLine) 
+
+  For i = 1 To Len(sLine)
     s = Mid(sLine, i, 1)
     If s = "[" Then bCrochetOuvert = True
     If s = "]" Then bCrochetOuvert = False
-    
-    If s = ":" And Not bCrochetOuvert Then s = "\n" 
-    
+
+    If s = ":" And Not bCrochetOuvert Then s = "\n"
     sCode &= s
-    
+
   Next
-  scode = "Public Sub Main()\n" & sCode 
+  $aVarsDecl.Clear
+  If $bPrecompiler Then
+    For Each s In Split(sCode, "\n")
+      sNew &= PrecompileLine(s) & "\n"
+    Next
+    'We look in the code if none of the insertion declaration exist already.
+    For i = 0 To $aVarsDecl.Max
+      If InStr(sNew, $aVarsDecl[i], 0, gb.IgnoreCase) Then $aVarsDecl[i] = ""
+    Next
+  Endif
+
+  scode = "Public Sub Main()\n" & $aVarsDecl.Join("\n") & "\n" & sNew
   sCode &= "\nEnd\n"
-  
+
   Print #$hOutFile, sCode
-  
+
+End
+
+Private Function PrecompileLine(sLine As String) As String
+
+  Dim iBeg As Integer
+  Dim iEnd As Integer
+  Dim iVend As Integer
+  Dim sVar As String
+  Dim sType As String
+  Dim sDecl As String
+
+  ibeg = 1
+  While iBeg > 0
+    'Recherche d'une accolade ouverte
+    iBeg = InStr(sLine, "{", iBeg)
+    If iBeg Then
+      'Recherche de l'acolade fermée
+      Inc iBeg
+      iEnd = InStr(sLine, "}", iBeg)
+      If iEnd Then
+        'Vérifier l'absence d'espace après
+        If Mid(sLine, iEnd + 1, 1) <> " " Then
+
+          'Trouver le nom de la variable
+          iVend = InStr(sLine, "=", iEnd + 1)
+          If Not iVend Then iVend = InStr(sLine, " ", iEnd + 1)
+          If Not iVend Then iVend = Len(sLine) + 1
+          If iEnd + 1 = iVend Then Continue
+        
+
+        'Stocker le nom de la variable et son type
+        sVar = Mid(sLine, iEnd + 1, iVend - iEnd - 1)
+        sType = Mid(sLine, iBeg, iEnd - iBeg)
+        'Si le type est une abreviation connue alors on le remplace par le type complet
+        If $cNativeTypes.Exist(sType) Then sType = $cNativeTypes[sType]
+        'On retire l'insert de déclaration
+        Mid(sline, 1, iEnd + 2) = Replace(Mid(sLine, 1, iEnd + 2), Mid(sLine, iBeg - 1, iEnd - iBeg + 2), "")
+        'On génère la ligne de déclaration
+        sDecl = "Dim " & sVar & " As " & sType
+        'et on vérifie si elle n'existe pas déja... sinon on l'ajoute
+        If Not $aVarsDecl.Exist(sDecl) Then $aVarsDecl.Add(sDecl)
+        iBeg = 1
+      Endif
+    Endif
+  Endif
+Wend
+Return sLine
+
 End

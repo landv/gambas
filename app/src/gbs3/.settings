@@ -3,7 +3,7 @@ Count=0
 
 [DebugWindow]
 Count=1
-DebugWindow[1]="aSym"
+DebugWindow[1]="Split(sCode, \"\\n\")"
 
 [DebugWindow/$aAppArgs]
 Geometry=[13,42,335,301]
@@ -16,6 +16,9 @@ Geometry=[0,0,301,301]
 
 [DebugWindow/$aSortKey]
 Geometry=[0,0,301,301]
+
+[DebugWindow/$aVarsDecl]
+Geometry=[688,290,224,280]
 
 [DebugWindow/$cComponents]
 Geometry=[0,24,210,210]
@@ -44,6 +47,9 @@ Geometry=[0,0,301,301]
 [DebugWindow/Split(LCase(sLig))]
 Geometry=[0,24,210,210]
 
+[DebugWindow/Split(sCode, "\n")]
+Geometry=[966,482,224,280]
+
 [DebugWindow/WhoImplement[s]]
 Geometry=[0,24,210,210]
 
@@ -51,7 +57,7 @@ Geometry=[0,24,210,210]
 Geometry=[-6,-3,281,210]
 
 [DebugWindow/aSym]
-Geometry=[0,24,210,210]
+Geometry=[453,228,224,280]
 
 [DebugWindow/hComp]
 Geometry=[0,24,210,210]
@@ -82,20 +88,21 @@ SearchComment=False
 SearchString=True
 
 [OpenFile]
-Active=7
-File[1]=".src/MMain.module:2.45"
+Active=1
+File[1]=".src/MMain.module:27.61"
 File[2]=".src/MServerPage.module:3.0"
 File[3]=".src/CComponent.class:19.0"
 File[4]="usage-gbs:0.0"
 File[5]="license:0.4"
 File[6]="usage-gbw:0.0"
-Count=7
-File[7]="icon.png"
+Count=6
 
 [VersionControl]
 User="gambas"
 RememberPassword=0
 
 [Watches]
-Count=0
+Count=2
+Watch[1]="sLine"
+Watch[2]="iVend"
 
