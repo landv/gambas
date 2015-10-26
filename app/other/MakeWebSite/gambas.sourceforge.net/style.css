@@ -671,3 +671,145 @@ A.download-blue:hover {
 .all-news a:visited {
   color: white;
 }
+
+/*------------------------------------------------------------------*/
+
+.menu-clearfix {
+  margin: 0;
+  padding: 0;
+}
+
+.menu-clearfix:after {
+  display: block;
+  clear: both;
+}
+ 
+.menu {
+  /*width:1000px;*/
+  margin: 0px auto;
+}
+ 
+.menu li {
+  margin: 0px;
+  list-style: none;
+}
+ 
+.menu a {
+  /*transition:all linear 0.15s;*/
+  /*color:#919191;*/
+}
+ 
+.menu li:hover > a, .menu .current-item > a {
+  background: #D0D0D0;
+}
+ 
+.menu > ul > li {
+  float: left;
+  display: inline-block;
+  position: relative;
+  line-height: 1.5em;
+}
+ 
+.menu > ul > li > a {
+  /*padding: 10px 40px;*/
+  display: inline-block;
+  padding: 2px 8px;
+  color: white;
+}
+ 
+.menu > ul > li:hover > a, .menu > ul > .current-item > a {
+  background: #BF5C00;
+  /*background:#2e2728;*/
+}
+ 
+.menu li:hover .sub-menu {
+  display: block;
+}
+ 
+.sub-menu {
+  /*padding: 5px 0px;*/
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0px;
+  z-index: 4;
+  /*transition: opacity linear 0.15s;*/
+  box-shadow: 0 3px 6px rgba(1,1,1,0.5);
+  background: #DF6B00;
+  color: white;
+  /*border: solid 1px gray;*/
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  /*background: #2e2728;*/
+}
+ 
+.sub-menu li {
+  display: block;
+}
+ 
+.sub-menu li a {
+  color: white;
+  display: block;
+  padding: 3px 12px;
+}
+ 
+.sub-menu li a:hover, .sub-menu .current-item a {
+  background: #BF5C00;
+}
+
+#m-menu {
+  display: block;
+  height: 1.5em;
+  padding-bottom: 4px;
+  padding-left: 12em;
+  background: #DF6B00;
+  /*width: 100%;*/
+  /*box-shadow:0px 1px 3px rgba(0,0,0,0.2);
+  background:#3e3436;*/
+}
+
+#m-contents-frame {
+  margin-left: 12em;
+  height: 100%;
+  flex: 1;
+}
+
+#m-contents {
+  width: 100%;
+  height: 100%;
+}
+ 
+#m-logo {
+  background-image: url('logo-circle.png');
+  background-size: 100% 100%;
+  width: 12em;
+  height: 12em;
+  cursor: pointer;
+  margin: 1em 0;
+}
+
+#m-header {
+  background: #3398C3;
+  color: white;
+  font-weight: bold;
+  font-size: 200%;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+  padding: 0.2em 6em;
+  padding-right: 0.2em;
+}
+
+IMG.icon {
+  height: 1.3em;
+  vertical-align: text-top;
+}
+
+#m-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 12em;
+  text-align: center;
+  z-index: 1;
+}

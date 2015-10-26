@@ -276,7 +276,7 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
       iPos2 = InStr(sData, "}", iPos + 1)
       If iPos2 = 0 Then Break
       sStr = Mid$(sData, iPos + 1, iPos2 - iPos - 1)
-      If InStr(sStr, "\n") Then Continue
+      If InStr(sStr, "\n") Or Left(sStr) = " " Or Right(sStr) = " " Then Continue
       $cTrans[sStr] = sStr
       Print "{"; sStr; "}";
       sStr = MTranslation[sStr]
@@ -293,7 +293,7 @@ Private Sub Translate(sSrc As String, sDest As String, Optional bNoTrans As Bool
     iPos2 = InStr(sData, ")", iPos)
     If iPos2 = 0 Then Break
     
-    sStr = "http://gambaswiki.org/wiki/" &/ Mid$(sData, iPos + 7, iPos2 - iPos - 7) & "?w&amp;l=" & $sLang
+    sStr = "http://gambaswiki.org/wiki/" &/ Mid$(sData, iPos + 7, iPos2 - iPos - 7) & "?nh&amp;l=" & $sLang
     
     sData = Left$(sData, iPos - 1) & sStr & Mid$(sData, iPos2 + 1)
   Loop
