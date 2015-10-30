@@ -141,6 +141,7 @@ Private Sub FormatDesc(sText As String, Optional iMax As Integer) As String[]
   Dim iPos As Integer
   Dim I As Integer
   Dim sLine As String
+  Dim sCar As String
 
   If iMax = 0 Then Return Split(sText, "\n")
 
@@ -148,8 +149,15 @@ Private Sub FormatDesc(sText As String, Optional iMax As Integer) As String[]
 
   While sText
     
-    aLine[aLine.Max] &= String.Left(sText)
+    sCar = String.Left(sText)
     sText = String.Mid$(sText, 2)
+    
+    If sCar = "\n" Then
+      aLine.Add("")
+      Continue
+    Endif
+    
+    aLine[aLine.Max] &= sCar
     
     sLine = aLine[aLine.Max]
     If String.Len(sLine) > iMax Then
