@@ -1,0 +1,19 @@
+' Gambas class file
+
+Inherits ITest
+
+' Interface methods
+Public Sub Run(oTestResult As TestResult)
+    ' This test fails
+
+    Error.Raise("Das ist ein Fehler")
+    oTestResult.Assert(False)
+    oTestResult.EndTest
+
+End Sub
+
+Private Function ITest_CountTestCases() As Integer
+
+    Return 1
+
+End Function

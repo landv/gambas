@@ -2,17 +2,22 @@
 
 Public Sub _new()
 
-    Dim test As New TestCase
     Dim testco As New TestSuite
+    Dim singletest As TestCase
 
 End
 
 Public Sub Form_Open()
 
     Dim f As New TestResult
-    Dim test As New Test1
+    Dim blub As Variant
+    Dim test As New TestCase
 
-    f.AssertEqualsFloat(1.23, 1, 0)
+    f.AssertEqualsFloat(1.23, 1, 0, "Test Float equals")
+    f.AssertNotEmpty(blub)
     test.Run(f)
+
+    Debug f.Errors.Count
+    f.EndTest
 
 End

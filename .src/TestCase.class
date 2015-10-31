@@ -1,37 +1,36 @@
 ' Gambas class file
 
-' Gambas class
-' The TestCase class is responsible for executing a specific test case.
-' The test case to be executed is specified through the Name and TestContainer
-' properties in the class.  The Run method will call the appropriate Setup
-' and TearDown methods for the test case as well as executing the test case
-' method itself.
+''' The TestCase class is responsible for executing a specific test case.
+''' The test case to be executed is specified through the Name and TestContainer
+''' properties in the class.  The Run method will call the appropriate Setup
+''' and TearDown methods for the test case as well as executing the test case
+''' method itself.
 
 Inherits ITestCase
 
-' Member variables
+'' Member variables
 Private $Name As String
 Private m_oTestContainer As ITestContainer
 Private TestCaseCount As Integer
 
-' Initializes the TestCase.  Used in lieu of a constructor.
-Public Sub Initialize(sName As String, oTestContainer As ITestContainer)
+'' Initializes the TestCase.  Used in lieu of a constructor.
+Public Sub _new(sName As String, oTestContainer As ITestContainer)
 
     $Name = sName
     m_oTestContainer = oTestContainer
 
 End Sub
 
-' Name of the test case
+'' Name of the test case
 Property Read Name As String
 
-' Reference to the test container containing the test method to be executed.
+'' Reference to the test container containing the test method to be executed.
 Property Read TestContainer As ITestContainer
 
-' Name of the test case
+'' Name of the test case
 Property Read ITestCase_Name As String
 
-' Test container that the test case uses
+'' Test container that the test case uses
 Property Read ITestCase_TestContainer As ITestContainer
 
 Function ITestCase_Read() As String
@@ -42,17 +41,17 @@ End
 
 'Create the fixture, run the test and collect the results in TestResult
 Public Sub Run(oTestResult As TestResult)
-    ' Start test
+    '' Start test
 
     oTestResult.StartTest(Me)
 
     'On Error Resume Next
 
-    ' Set up test fixture
+    '' Set up test fixture
     Try m_oTestContainer.Setup
 
-    ' Run test
-    ' Check for exceptions if Setup or Test method
+    '' Run test
+    '' Check for exceptions if Setup or Test method
     If ( Error ) Then
         oTestResult.AddError(Error.Code, Error.Where & "::Setup", Error.Text)
         Error.Clear
@@ -60,8 +59,8 @@ Public Sub Run(oTestResult As TestResult)
         m_oTestContainer.RunTestCase(Me, oTestResult)
     End If
 
-    ' Tear down test fixture
-    ' must ensure that test fixture is properly torn down if any failures have occurred
+    '' Tear down test fixture
+    '' must ensure that test fixture is properly torn down if any failures have occurred
     m_oTestContainer.TearDown
 
     If ( Error ) Then
@@ -79,7 +78,7 @@ Public Function CountTestCases() As Integer
 
 End Function
 
-' Interface methods
+'' Interface methods
 
 Private Sub ITest_Run(ByRef oTestResult As TestResult)
 

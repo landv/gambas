@@ -1,0 +1,18 @@
+' Gambas class file
+
+Inherits ITest
+
+' Interface methods
+Public Sub Run(oTestResult As TestResult)
+    ' test succeeds
+
+    oTestResult.Assert(True)
+    oTestResult.EndTest
+
+End Sub
+
+Public Function CountTestCases() As Integer
+
+    Return 1
+
+End Function
