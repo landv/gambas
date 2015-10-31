@@ -74,7 +74,7 @@ void STREAM_exit(void)
 	STREAM_close(&_temp_stream);
 }
 
-static void wait_for_fd_ready_to_read(fd)
+static void wait_for_fd_ready_to_read(int fd)
 {
 	if (fd >= 0)
 		WATCH_process(fd, -1, 0);
