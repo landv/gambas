@@ -1,5 +1,5 @@
 #!/usr/bin/python
- 
+
 def get_primes7(n):
     """
     standard optimized sieve algorithm to get a list of prime numbers
@@ -24,7 +24,7 @@ def get_primes7(n):
         i = i+1
         m = 2*i+3
     return [2]+[x for x in s if x]
- 
-for t in range(10):
+
+for t in range(5):
     res = get_primes7(10000000)
     print len(res)

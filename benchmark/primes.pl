@@ -2,10 +2,10 @@
 
 use strict;
 use warnings;
- 
+
 sub get_primes7($) {
     my ($n) = @_;
- 
+
     if ($n < 2) { return (); }
     if ($n == 2) { return (2); }
     # do only odd numbers starting at 3
@@ -36,9 +36,9 @@ sub get_primes7($) {
     }
     return @res;
 }
- 
+
 my @res;
-for (1..10) {
+for (1..5) {
     @res = get_primes7(10000000);
     print scalar @res; print "\n";
-} 
+}

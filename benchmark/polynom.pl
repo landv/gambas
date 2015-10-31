@@ -26,10 +26,10 @@ sub poly($)
   }
 
   return $pu;
-} 
+}
 
 my $res;
-for (1..4) {
+for (1..2) {
     $res = poly(0.2);
     print "$res\n";
-} 
+}

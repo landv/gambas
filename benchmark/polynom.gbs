@@ -11,7 +11,7 @@ Sub Test(X As Float) As Float
 
   For I = 0 To N - 1
     For J = 0 To 99
-      Mu =  (Mu + 2.0) / 2.0
+      Mu =  Mu / 2 + 1
       aPoly[J] = Mu
     Next
     Su = 0.0
@@ -27,7 +27,7 @@ End
 
 Dim I as Integer
 
-For I = 1 To 4
+For I = 1 To 2
   Print Test(0.2)
 Next
 

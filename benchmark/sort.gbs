@@ -4,7 +4,7 @@ Sub BubbleSort(aTab As Integer[])
 
   Dim N As Integer = aTab.Max
   Dim I, J As Integer
-  
+
   For I = 0 to N - 1
     For J = I + 1 To N
       If aTab[J] < aTab[I] Then
@@ -12,7 +12,7 @@ Sub BubbleSort(aTab As Integer[])
       Endif
     Next
   Next
-  
+
 End
 
 Dim I As Integer

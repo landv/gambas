@@ -16,13 +16,13 @@ def mandelbrot(w, h) :
 
   for y in range(h) :
     Ci = y * invN + ymin
-    
+
     for x in range(w) :
       Zr = 0.0
       Zi = 0.0
       Tr = 0.0
       Ti = 0.0
-      Cr = x * invN + xmin  
+      Cr = x * invN + xmin
       if (checknext) :
 	for k in range(MAXITER) :
 	  Zi = 2 * Zr * Zi + Ci
@@ -47,8 +47,8 @@ def mandelbrot(w, h) :
 	else :
 	  out.write("0")
 	  checknext = True
-	  
+
     out.write("\n")
 
-for i in range(50) :
+for i in range(20) :
   mandelbrot(200, 200)
