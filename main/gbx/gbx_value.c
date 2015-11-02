@@ -1605,8 +1605,9 @@ void VALUE_convert_boolean(VALUE *value)
 	};
 
 	char *addr;
+	TYPE type = value->type;
 
-	if (TYPE_is_object(value->type))
+	if (TYPE_is_object(type))
 	{
 		if (value->_object.object)
 		{
@@ -1617,7 +1618,7 @@ void VALUE_convert_boolean(VALUE *value)
 		return;
 	}
 	else
-		goto *jump[value->type];
+		goto *jump[type];
 
 __c2b:
 __h2b:
@@ -1668,17 +1669,51 @@ __n2b:
 
 __v2:
 {
+	static const void *jumpv[] = { &&__NR, &&__bv2b, &&__bv2b, &&__hv2b, &&__iv2b, &&__lv2b, &&__iv2b, &&__lv2b, &&__lv2b, &&__sv2b, &&__sv2b, &&__pv2b, &&__N, &&__N, &&__N, &&__nv2b };
 	int test;
 
-	switch(TYPE_sizeof_memory(value->_variant.vtype))
-	{
-		case 4: test = value->_variant.value._integer != 0; break;
-		case 8: test = value->_variant.value._long != 0; break;
-		default: test = 0;
-	}
-	VARIANT_free((VARIANT *)&value->_variant.vtype);
+	type = value->_variant.vtype;
+	if (TYPE_is_object(type))
+		goto __ov2b;
+	else
+		goto *jumpv[type];
+
+__bv2b:
+	test = value->_variant.value._boolean != 0;
+	goto __VOK;
+
+__hv2b:
+	test = value->_variant.value._short != 0;
+	goto __VOK;
+
+__iv2b:
+	test = value->_variant.value._integer != 0;
+	goto __VOK;
+
+__lv2b:
+	test = value->_variant.value._long != 0;
+	goto __VOK;
+
+__pv2b:
+	test = value->_variant.value._pointer != 0;
+	goto __VOK;
+
+__ov2b:
+	test = value->_variant.value._object != 0;
+	OBJECT_UNREF(value->_variant.value._object);
+	goto __VOK;
+
+__sv2b:
+	test = value->_variant.value._string && *value->_variant.value._string;
+	STRING_unref(&value->_variant.value._string);
+	goto __VOK;
+
+__nv2b:
+	test = FALSE;
+
+__VOK:
 	value->type = T_BOOLEAN;
-	value->_integer.value = test;
+	value->_integer.value = test ? -1 : 0;
 	return;
 }
 
@@ -1691,7 +1726,7 @@ __func:
 
 __N:
 
-	THROW(E_TYPE, "Boolean", TYPE_get_name(value->type));
+	THROW(E_TYPE, "Boolean", TYPE_get_name(type));
 
 __NR:
 
