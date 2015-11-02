@@ -18,17 +18,17 @@ gb_la_CFLAGS = -DGBX_INFO $(AM_CFLAGS) -O0
 libgbx_a_SOURCES = \
  gb_error.h gb_error.c \
  gbx_split.h gbx_split.c \
- gbx_exec_loop.c
+ gbx_exec_loop.c \
+ gb_hash.c \
+ gb_common_check.h gb_common.c \
+ gbx_value.h gbx_value.c
 
 gbx3_SOURCES = \
- gb_common_check.h gb_common.c \
  gbx_debug.h gbx_debug.c \
  gbx_jit.h gbx_jit.c \
  gb_alloc.c gb_array.c \
  gbx_stack.h gbx_stack.c \
  gb_buffer.c gbx_replace.c \
- gbx_value.h gbx_value.c \
- gb_hash.c \
  gb_table.c \
  gb_list.c \
  gbx_type.h gbx_type.c \

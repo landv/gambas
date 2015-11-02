@@ -128,7 +128,7 @@ static void *SubrTable[] =
 	SUBR_bit,        /* 36 64 */
 	SUBR_is_type,    /* 37 65 */
 	SUBR_type,       /* 38 66 */
-	SUBR_conv,       /* 39 67 */
+	NULL,            /* 39 67 */
 	SUBR_hex_bin,    /* 40 68 */
 	SUBR_hex_bin,    /* 41 69 */
 	SUBR_val,        /* 42 6A */
@@ -304,7 +304,7 @@ void EXEC_loop(void)
 		/* 64 BClr...         */  &&_SUBR_CODE,
 		/* 65 IsBoolean...    */  &&_SUBR_CODE,
 		/* 66 TypeOf          */  &&_SUBR_CODE,
-		/* 67 CBool...        */  &&_SUBR_CODE,
+		/* 67 CBool...        */  &&_SUBR_CONV,
 		/* 68 Bin$            */  &&_SUBR_CODE,
 		/* 69 Hex$            */  &&_SUBR_CODE,
 		/* 6A Val             */  &&_SUBR,
@@ -2406,6 +2406,12 @@ _SUBR_COMPI:
 		P1->_boolean.value = result <= 0 ? -1 : 0;
 		goto _NEXT;
 	}
+
+_SUBR_CONV:
+
+  VALUE_convert(SP - 1, code & 0x3F);
+	goto _NEXT;
+
 }
 
 
@@ -3546,7 +3552,7 @@ __PUSH_NATIVE_ARRAY:
 __PUSH_NATIVE_COLLECTION:
 
 	val = &SP[-2];
-	EXEC_object_fast(val, &class, &object);
+	EXEC_object_array(val, class, object);
 
 	VALUE_conv_string(&val[1]);
 	//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
@@ -3743,7 +3749,7 @@ __POP_NATIVE_ARRAY:
 __POP_NATIVE_COLLECTION:
 
 	val = &SP[-2];
-	EXEC_object_fast(val, &class, &object);
+	EXEC_object_array(val, class, object);
 
 	VALUE_conv_variant(&val[-1]);
 	VALUE_conv_string(&val[1]);

@@ -31,8 +31,8 @@
 #include <ctype.h>
 #include <string.h>
 
-extern unsigned char COMMON_tolower[];
-extern unsigned char COMMON_toupper[];
+extern const unsigned char COMMON_tolower[];
+extern const unsigned char COMMON_toupper[];
 
 int COMMON_strcasecmp(const char *s1, const char *s2);
 int COMMON_strncasecmp(const char *s1, const char *s2, size_t n);

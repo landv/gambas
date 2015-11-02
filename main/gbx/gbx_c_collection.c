@@ -46,7 +46,7 @@ static void clear(CCOLLECTION *col)
 
 	CLEAR(&iter);
 	col->locked = TRUE;
-	
+
 	for(;;)
 	{
 		value = HASH_TABLE_next(col->hash_table, &iter, FALSE);
@@ -82,7 +82,7 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 		return;
 
 	last = col->hash_table->last;
-	
+
 	if (last)
 	{
 		save_enum = GB_BeginEnum(col);
@@ -96,7 +96,7 @@ static void remove_key(CCOLLECTION *col, const char *key, int len)
 	}
 
 	VARIANT_free((VARIANT *)value);
-	
+
 	if (!col->locked)
 		HASH_TABLE_remove(col->hash_table, key, len);
 	else // Prevent the freed variant to be freed twice if the collection is locked (i.e. being destroyed)
@@ -233,19 +233,19 @@ BEGIN_METHOD_VOID(Collection_Copy)
 	GB_VARIANT value;
 	char *key;
 	int len;
-	
+
 	GB_CollectionNew(&col, THIS->mode);
-	
+
 	CLEAR(&iter);
-	
+
 	for(;;)
 	{
 		if (GB_CollectionEnum(THIS, &iter, &value, &key, &len))
 			break;
-		
+
 		GB_CollectionSet(col, key, len, &value);
 	}
-	
+
 	GB_ReturnObject(col);
 
 END_METHOD
@@ -305,7 +305,7 @@ bool GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
 		data = (VARIANT *)add_key((CCOLLECTION *)col, key, len);
 		if (!data)
 			return TRUE;
-		GB_StoreVariant(value, data);
+		VALUE_write_variant((VALUE *)value, data);
 	}
 	return FALSE;
 }

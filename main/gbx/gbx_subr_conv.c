@@ -35,8 +35,8 @@
 void SUBR_is_type(ushort code)
 {
 	static void *jump[] = {
-		&&__BAD, &&__BOOLEAN, &&__BAD, &&__BAD, &&__INTEGER, &&__LONG, &&__BAD, &&__FLOAT, 
-		&&__DATE, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__NUMBER, &&__NULL, 
+		&&__BAD, &&__BOOLEAN, &&__BAD, &&__BAD, &&__INTEGER, &&__LONG, &&__BAD, &&__FLOAT,
+		&&__DATE, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__BAD, &&__NUMBER, &&__NULL,
 		&&__BAD, &&__BAD
 		};
 
@@ -48,18 +48,18 @@ void SUBR_is_type(ushort code)
 	SUBR_ENTER_PARAM(1);
 
 	code &= 0x3F;
-	
+
 	if (code == T_NULL)
 		goto __NULL;
-		
+
 	//VALUE_conv_string(PARAM);
 	SUBR_get_string_len(PARAM, &addr, &len);
 	VALUE_from_string(&temp, addr, len);
-	
+
 	goto *jump[code];
 
 __BOOLEAN:
-	
+
 	test = temp.type == T_BOOLEAN;
 	goto __END;
 
@@ -102,12 +102,12 @@ __END:
 	SP++;
 }
 
-
+/*
 void SUBR_conv(ushort code)
 {
   VALUE_convert(SP - 1, code & 0x3F);
 }
-
+*/
 
 void SUBR_type(ushort code)
 {
@@ -192,7 +192,7 @@ void SUBR_format(ushort code)
   {
 		if (PARAM[1].type == T_VARIANT)
 			VARIANT_undo(&PARAM[1]);
-			
+
     if (TYPE_is_string(PARAM[1].type))
     {
       fmt_type = LF_USER;
@@ -212,7 +212,7 @@ void SUBR_format(ushort code)
 
 	if (PARAM->type == T_VARIANT)
 		VARIANT_undo(PARAM);
-	
+
   if (PARAM->type == T_DATE)
   {
     date = DATE_split(PARAM);
@@ -239,7 +239,7 @@ void SUBR_hex_bin(ushort code)
 {
 	static const int base[] = { 2, 16, 8 };
 	static const int max_prec[] = { 64, 16, 22 };
-	
+
 	int mode;
   int prec = 0;
 
@@ -248,7 +248,7 @@ void SUBR_hex_bin(ushort code)
   VALUE_conv(PARAM, T_LONG);
 
 	mode = (code >> 8) - CODE_BIN;
-	
+
   if (NPARAM == 2)
   {
     VALUE_conv_integer(&PARAM[1]);

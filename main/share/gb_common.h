@@ -139,6 +139,12 @@ typedef
 #define OS_64BITS 1
 #endif
 
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define OS_LITTLE_ENDIAN 1
+#else
+#define OS_BIG_ENDIAN 1
+#endif
+	
 #ifndef LLONG_MAX
 #define LLONG_MAX 9223372036854775807LL
 #endif

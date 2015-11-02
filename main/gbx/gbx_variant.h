@@ -31,7 +31,7 @@
 // On ARM 32 bits, sizeof(VARIANT) = 12, so it must be packed like GB_VARIANT
 
 typedef
-  struct 
+  struct
 	{
     TYPE type;
 		union {

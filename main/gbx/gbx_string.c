@@ -93,7 +93,7 @@ static void *_my_realloc(void *ptr, int size)
 #define STRING_last_count 32
 static char *STRING_last[STRING_last_count] = { 0 };
 
-const char STRING_char_string[512] = 
+const char STRING_char_string[512] =
 "\x00\x00\x01\x00\x02\x00\x03\x00\x04\x00\x05\x00\x06\x00\x07\x00\x08\x00\x09\x00\x0A\x00\x0B\x00\x0C\x00\x0D\x00\x0E\x00\x0F\x00"
 "\x10\x00\x11\x00\x12\x00\x13\x00\x14\x00\x15\x00\x16\x00\x17\x00\x18\x00\x19\x00\x1A\x00\x1B\x00\x1C\x00\x1D\x00\x1E\x00\x1F\x00"
 "\x20\x00\x21\x00\x22\x00\x23\x00\x24\x00\x25\x00\x26\x00\x27\x00\x28\x00\x29\x00\x2A\x00\x2B\x00\x2C\x00\x2D\x00\x2E\x00\x2F\x00"
@@ -206,12 +206,12 @@ void STRING_free_real(char *ptr)
 		//fprintf(stderr, "free STRING_utf8_current (%p)\n", ptr);
 		STRING_utf8_current = NULL;
 	}
-	
+
 	MEMORY_count--;
-	
+
 	if (pool < POOL_SIZE)
 	{
-		if (_pool_count[pool] < POOL_MAX)		
+		if (_pool_count[pool] < POOL_MAX)
 		{
 			#ifdef DEBUG_ME
 			fprintf(stderr, "STRING_free_real: (%p / %p) %d bytes to pool %d\n", str, ptr, size, pool);
@@ -224,7 +224,7 @@ void STRING_free_real(char *ptr)
 			return;
 		}
 	}
-	
+
 	_my_free(str);
 }
 
@@ -232,13 +232,13 @@ static STRING *realloc_string(STRING *str, int new_len)
 {
 	int size;
 	int new_size;
-	
+
 	if (new_len == str->len)
 		return str;
-		
+
 	size = REAL_SIZE(str->len + 1 + sizeof(STRING));
 	new_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
-	
+
 	if (new_size != size)
 	{
 		if (new_len == 0)
@@ -265,7 +265,7 @@ static STRING *realloc_string(STRING *str, int new_len)
 			str = nstr;
 		}
 	}
-	
+
 	str->len = new_len;
 	return str;
 }
@@ -274,7 +274,7 @@ static void clear_pool(void)
 {
 	int i;
 	STRING *str, *next;
-	
+
 	for (i = 0; i < POOL_SIZE; i++)
 	{
 		#ifdef DEBUG_ME
@@ -321,7 +321,7 @@ char *STRING_new(const char *src, int len)
 	fprintf(stderr, "STRING_new %p ( 0 ) \"%.*s\"\n", data, len, src);
 	fflush(stderr);
 	#endif
-	
+
 	return data;
 }
 
@@ -331,12 +331,12 @@ char *STRING_free_later(char *ptr)
 		THROW(E_STRING);*/
 
 	//static int nfl = 0;
-	
+
 	if (ptr)
 	{
 		//nfl++;
 		//fprintf(stderr, "% 8d % 6d\n", nfl, STRING_length(ptr));
-		
+
 		#ifdef DEBUG_ME
 		if (STRING_last[_index])
 		{
@@ -348,7 +348,7 @@ char *STRING_free_later(char *ptr)
 
 		//if (STRING_last[_index] && STRING_length(STRING_last[_index]) >= 1024)
 		//	fprintf(stderr, "STRING_free_later: free [%d] %d\n", _index, STRING_length(STRING_last[_index]));
-		
+
 		STRING_unref(&STRING_last[_index]);
 
 		#ifdef DEBUG_ME
@@ -365,7 +365,7 @@ char *STRING_free_later(char *ptr)
 		if (_index >= STRING_last_count)
 			_index = 0;
 	}
-	
+
 	return ptr;
 }
 
@@ -379,7 +379,7 @@ int STRING_get_free_index(void)
 void STRING_clear_cache(void)
 {
 	int i;
-	
+
 	for (i = 0; i < STRING_last_count; i++)
 	{
 		#ifdef DEBUG_ME
@@ -389,9 +389,9 @@ void STRING_clear_cache(void)
 		STRING_unref(&STRING_last[i]);
 		STRING_last[i] = NULL;
 	}
-	
+
 	_index = 0;
-	
+
 	clear_pool();
 }
 
@@ -399,11 +399,11 @@ void STRING_clear_cache(void)
 void STRING_exit(void)
 {
 	STRING_clear_cache();
-	
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, "STRING_exit\n");
 	#endif
-	
+
 	if (_conv_unicode_utf8 != ((iconv_t)-1))
 		iconv_close(_conv_unicode_utf8);
 	if (_conv_utf8_unicode != ((iconv_t)-1))
@@ -439,15 +439,15 @@ bool STRING_extend_will_realloc(char *str, int new_len)
 	STRING *sstr;
 	int size;
 	int new_size;
-	
+
 	if (!str)
 		return new_len != 0;
-	
+
 	sstr = STRING_from_ptr(str);
-	
+
 	if (new_len == sstr->len)
 		return FALSE;
-		
+
 	size = REAL_SIZE(sstr->len + 1 + sizeof(STRING));
 	new_size = REAL_SIZE(new_len + 1 + sizeof(STRING));
 	return size != new_size;
@@ -578,7 +578,7 @@ static int get_param_index(const char *str, int len, uint *pos, int *len_pattern
 	int index;
 	bool err;
 	uchar d;
-	
+
 	i = *pos + 1;
 	d = str[i];
 	if (d == '&')
@@ -613,10 +613,10 @@ static int get_param_index(const char *str, int len, uint *pos, int *len_pattern
 	{
 		index = INDEX_IGNORE;
 	}
-	
+
 	if (len_pattern)
 		*len_pattern = i - *pos + 1;
-		
+
 	*pos = i;
 	return index;
 }
@@ -637,15 +637,15 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 
 	if (len <= 0)
 		len = strlen(str);
-	
+
 	// Comment to force a commit because svn unexpectedly lost my log
 	if (len == 0)
 		return NULL;
 
 	// Calculate the length
-	
+
 	len_subst = len;
-	
+
 	for (i = 0; i < len; i++)
 	{
 		c = str[i];
@@ -653,7 +653,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 		{
 			np = get_param_index(str, len, &i, &lenp);
 			len_subst -= lenp;
-			
+
 			switch (np)
 			{
 				case INDEX_AT:
@@ -673,7 +673,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			}
 		}
 	}
-	
+
 	subst = STRING_new(NULL, len_subst);
 	ps = subst;
 
@@ -703,7 +703,7 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 		else
 			*ps++ = c;
 	}
-	
+
 	*ps = 0;
 	return STRING_free_later(subst);
 }
@@ -721,7 +721,7 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 		len = strlen(str);
 
 	STRING_start_len(len);
-	
+
 	for (i = 0; i < len; i++)
 	{
 		c = str[i];
@@ -746,7 +746,7 @@ char *STRING_subst_add(const char *str, int len, SUBST_ADD_FUNC add_param)
 		else
 			STRING_make_char(c);
 	}
-	
+
 	return STRING_end_temp();
 }
 
@@ -761,6 +761,9 @@ char *STRING_add(char *str, const char *src, int len)
 	if (len <= 0)
 		return str;
 
+	if (!str)
+		return STRING_new(src, len);
+
 	old_len = STRING_length(str);
 
 	str = STRING_extend(str, old_len + len);
@@ -769,7 +772,7 @@ char *STRING_add(char *str, const char *src, int len)
 		memcpy(&str[old_len], src, len);
 		str[old_len + len] = 0;
 	}
-	
+
 	return str;
 }
 
@@ -780,11 +783,11 @@ char *STRING_add_char(char *str, char c)
 	char *p;
 
 	str = STRING_extend(str, len + 1);
-		
+
 	p = str + len;
 	p[0] = c;
 	p[1] = 0;
-	
+
 	return str;
 }
 
@@ -800,7 +803,7 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 		is += ls;
 	else if (is == 0)
 		is = right ? ls : 1;
-	
+
 	ls = ls - lp + 1; /* Longueur du début du texte où effectuer la recherche */
 
 	if (is > ls)
@@ -823,11 +826,11 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 	if (lp == 1)
 	{
 		char cp = *pp;
-		
+
 		if (nocase)
 		{
 			cp = tolower(cp);
-			
+
 			if (right)
 			{
 				for (; is >= 0; is--)
@@ -864,13 +867,13 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 				}
 			}
 		}
-		
+
 		return 0;
 	}
-	
+
 	pos = 0;
 	ps += is;
-	
+
 	if (right)
 	{
 		if (nocase)
@@ -879,16 +882,16 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 			{
 				if (tolower(ps[0]) != tolower(pp[0]))
 					goto __NEXT_RN;
-				
+
 				for (ip = 1; ip < lp; ip++)
 				{
 					if (tolower(ps[ip]) != tolower(pp[ip]))
 						goto __NEXT_RN;
 				}
-	
+
 				pos = is + 1;
 				goto __FOUND;
-	
+
 		__NEXT_RN:
 			;
 			}
@@ -899,16 +902,16 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 			{
 				if (ps[0] != pp[0])
 					goto __NEXT_R;
-				
+
 				for (ip = 1; ip < lp; ip++)
 				{
 					if (ps[ip] != pp[ip])
 						goto __NEXT_R;
 				}
-	
+
 				pos = is + 1;
 				goto __FOUND;
-	
+
 		__NEXT_R:
 			;
 			}
@@ -922,16 +925,16 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 			{
 				if (tolower(ps[0]) != tolower(pp[0]))
 					goto __NEXT_LN;
-				
+
 				for (ip = 1; ip < lp; ip++)
 				{
 					if (tolower(ps[ip]) != tolower(pp[ip]))
 						goto __NEXT_LN;
 				}
-	
+
 				pos = is + 1;
 				goto __FOUND;
-	
+
 		__NEXT_LN:
 			;
 			}
@@ -942,16 +945,16 @@ int STRING_search(const char *ps, int ls, const char *pp, int lp, int is, bool r
 			{
 				if (ps[0] != pp[0])
 					goto __NEXT_L;
-				
+
 				for (ip = 1; ip < lp; ip++)
 				{
 					if (ps[ip] != pp[ip])
 						goto __NEXT_L;
 				}
-	
+
 				pos = is + 1;
 				goto __FOUND;
-	
+
 		__NEXT_L:
 			;
 			}
@@ -966,10 +969,10 @@ __FOUND:
 void STRING_start_len(int len)
 {
 	_make.inc = 32;
-	
+
 	if (len == 0)
 		len = 32;
-		
+
 	_make.buffer = STRING_new(NULL, len);
 	_make.max = len;
 	_make.len = 0;
@@ -998,7 +1001,7 @@ void STRING_make(const char *src, int len)
 
   if (len <= 0)
     return;
-    
+
 	if (_make.ntemp)
 		STRING_make_dump();
 
@@ -1015,9 +1018,9 @@ void STRING_make(const char *src, int len)
 			if (_make.inc > 1024)
 				_make.inc = 1024;
 		}
-		
+
 		_make.max += pos;
-		
+
 		//fprintf(stderr, "STRING_extend: %d\n", _max - STRING_length(SUBST_buffer));
 		pos = _make.ptr - _make.buffer;
 		_make.buffer = STRING_extend(_make.buffer, _make.max);
@@ -1032,7 +1035,7 @@ char *STRING_end()
 {
 	if (_make.ntemp)
 		STRING_make_dump();
-	
+
 	if (_make.len)
 	{
 		_make.buffer = STRING_extend(_make.buffer, _make.len);
@@ -1040,17 +1043,17 @@ char *STRING_end()
 	}
 	else
 		STRING_free(&_make.buffer);
-	
+
 	return _make.buffer;
 }
 
 char *STRING_end_temp()
 {
 	STRING_end();
-	
+
 	if (_make.buffer)
 		STRING_free_later(_make.buffer);
-	
+
 	return _make.buffer;
 }
 
@@ -1065,17 +1068,17 @@ static iconv_t my_iconv_open(const char *dst, const char *src)
 	const char *osrc, *odst;
 	iconv_t *cache;
 	iconv_t handle;
-	
+
 	osrc = src;
 	odst = dst;
-	
+
 	if (dst == SC_UNICODE)
 		dst = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
 	else if (dst == SC_UTF8)
 		dst = "UTF-8";
 	else if (!dst || *dst == 0)
 		dst = "ASCII";
-		
+
 	if (src == SC_UNICODE)
 		src = EXEC_big_endian ? "UCS-4BE" : "UCS-4LE";
 	else if (src == SC_UTF8)
@@ -1089,10 +1092,10 @@ static iconv_t my_iconv_open(const char *dst, const char *src)
 		cache = &_conv_utf8_unicode;
 	else
 		cache = NULL;
-	
+
 	if (cache && *cache != ((iconv_t)-1))
 		return *cache;
-	
+
 	//fprintf(stderr, "iconv_open: %s -> %s\n", src, dst);
 	handle = iconv_open(dst, src);
 	if (cache)
@@ -1105,7 +1108,7 @@ static void my_iconv_close(iconv_t handle)
 {
 	if (handle == _conv_unicode_utf8 || handle == _conv_utf8_unicode)
 		return;
-	
+
 	iconv_close(handle);
 }
 
@@ -1131,7 +1134,7 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 		return errcode;
 
 	unicode = (dst == SC_UNICODE);
-	
+
 	handle = my_iconv_open(dst, src);
 	if (handle == (iconv_t)(-1))
 	{
@@ -1143,42 +1146,42 @@ int STRING_conv(char **result, const char *str, int len, const char *src, const 
 	else
 	{
 		err = FALSE;
-	
+
 		for(;;)
 		{
 			out = COMMON_buffer;
 			out_len = COMMON_BUF_MAX;
-	
+
 			#if defined(OS_SOLARIS) || defined(OS_FREEBSD) || defined(OS_OPENBSD)
 			ret = iconv(handle, &in, &in_len, &out, &out_len);
 			#else
 			ret = iconv(handle, (char **)&in, &in_len, &out, &out_len);
 			#endif
-	
+
 			if (ret != (size_t)(-1) || errno == E2BIG)
 				*result = STRING_add(*result, COMMON_buffer, COMMON_BUF_MAX - out_len);
-	
+
 			if (ret != (size_t)(-1))
 				break;
-	
+
 			if (errno != E2BIG)
 			{
 				err = TRUE;
 				break;
 			}
 		}
-		
+
 		my_iconv_close(handle);
-	
+
 		if (unicode)
 			*result = STRING_add(*result, "\0\0\0", 3);
-	
+
 		STRING_extend_end(*result);
-	
+
 		if (err)
 			errcode = E_CONV;
 	}
-	
+
 	if (throw && errcode)
 		THROW(errcode);
 
@@ -1276,14 +1279,5 @@ char *STRING_conv_file_name(const char *name, int len)
 	else
 		return "";
 }
-
-
-/****************************************************************************
-
-	Common string routines
-
-****************************************************************************/
-
-#include "gb_common_string_temp.h"
 
 

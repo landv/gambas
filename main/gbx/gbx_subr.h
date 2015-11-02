@@ -173,7 +173,7 @@ void SUBR_is(ushort code);
 /* subr_conv.c */
 
 void SUBR_is_type(ushort code);
-void SUBR_conv(ushort code);
+//void SUBR_conv(ushort code);
 void SUBR_type(ushort code);
 void SUBR_str(void);
 void SUBR_val(void);

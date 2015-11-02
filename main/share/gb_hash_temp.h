@@ -36,7 +36,9 @@
 //#define NODE_length(_table, _node) (*((ushort *)(((char *)_node) + sizeof(HASH_NODE) + (_table)->s_value)))
 #define NODE_key(_table, _node) ((HASH_KEY *)(((char *)_node) + sizeof(HASH_NODE) + (_table)->s_value))
 
+#define MUST_RESIZE(hash) ((hash_table->size >= 3 * hash_table->nnodes && hash_table->size > HASH_TABLE_MIN_SIZE) || (3 * hash_table->size <= hash_table->nnodes && hash_table->size < HASH_TABLE_MAX_SIZE))
 static void hash_table_resize(HASH_TABLE *hash_table);
+
 static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *key, int len);
 static HASH_NODE *hash_node_new(HASH_TABLE *hash_table, const char *key, int len);
 static void hash_node_destroy(HASH_NODE *hash_node);
@@ -85,7 +87,7 @@ static uint key_hash_binary(const char *key, int len)
 		key += len - 8;
 		len = 8;
 	}
-	
+
 	goto *jump[len];
 
 __LEN_8:
@@ -120,7 +122,7 @@ static uint key_hash_text(const char *key, int len)
 		key += len - 8;
 		len = 8;
 	}
-	
+
 	goto *jump[len];
 
 __LEN_8:
@@ -175,14 +177,14 @@ void HASH_TABLE_delete(HASH_TABLE **hash)
 
 	if (hash_table == NULL)
 		return;
-	
+
 	#ifdef KEEP_ORDER
 	HASH_NODE *node, *next;
-	
+
 	node = hash_table->sfirst;
 	hash_table->sfirst = NULL;
 	hash_table->slast = NULL;
-	
+
 	while (node)
 	{
 		next = node->snext;
@@ -191,7 +193,7 @@ void HASH_TABLE_delete(HASH_TABLE **hash)
 	}
 	#else
 	int i;
-	
+
 	for (i = 0; i < hash_table->size; i++)
 		hash_nodes_destroy(hash_table->nodes[i]);
 	#endif
@@ -233,7 +235,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
 	{
 		hash = key_hash_binary(key, len);
 		node = &hash_table->nodes[hash % hash_table->size];
-	
+
 		//n = 0;
 		while (*node)
 		{
@@ -244,7 +246,7 @@ static HASH_NODE **hash_table_lookup_node(HASH_TABLE *hash_table, const char *ke
 			node = &(*node)->next;
 		}
 	}
-	
+
 	//fprintf(stderr, "hash_table_lookup_node %p: %d %d -> %d\n", hash_table, hash_table->size, hash_table->nnodes, n);
 	return node;
 }
@@ -256,7 +258,7 @@ void *HASH_TABLE_lookup(HASH_TABLE *hash_table, const char *key, int len, bool s
 
 	if (len == 0)
 		return NULL;
-	
+
 	node = *hash_table_lookup_node(hash_table, key, len);
 	if (set_last)
 		hash_table->last = node;
@@ -280,7 +282,10 @@ void *HASH_TABLE_insert(HASH_TABLE *hash_table, const char *key, int len)
 	/*if (!hash_table->frozen)*/
 
 	value = NODE_value(*node);
-	hash_table_resize(hash_table);
+
+	if (MUST_RESIZE(hash_table))
+		hash_table_resize(hash_table);
+
 	return value;
 }
 
@@ -316,7 +321,8 @@ void HASH_TABLE_remove(HASH_TABLE *hash_table, const char *key, int len)
 		hash_table->last = NULL;
 
 		/*if (!hash_table->frozen)*/
-		hash_table_resize(hash_table);
+		if (MUST_RESIZE(hash_table))
+			hash_table_resize(hash_table);
 	}
 }
 
@@ -379,7 +385,7 @@ static void dump_hash_table(HASH_TABLE *hash_table)
 	int i;
 	HASH_NODE *node;
 	HASH_KEY *node_key;
-	
+
 	for (i = 0; i < hash_table->size; i++)
 	{
 		fprintf(stderr, "%5d: ", i);
@@ -406,17 +412,13 @@ static void hash_table_resize(HASH_TABLE *hash_table)
 	int i;
 	HASH_FUNC hash_func = get_hash_func(hash_table);
 
-	if (!((hash_table->size >= 3 * hash_table->nnodes && hash_table->size > HASH_TABLE_MIN_SIZE) ||
-	      (3 * hash_table->size <= hash_table->nnodes && hash_table->size < HASH_TABLE_MAX_SIZE)))
-		return;
-	
 	new_size = MinMax(spaced_primes_closest(hash_table->nnodes), HASH_TABLE_MIN_SIZE, HASH_TABLE_MAX_SIZE);
 
 	//fprintf(stderr, "**** hash_table_resize %p %d: %d -> %d\n", hash_table, hash_table->nnodes, hash_table->size, new_size);
-	
+
 	//fprintf(stderr, "BEFORE:\n");
 	//dump_hash_table(hash_table);
-	
+
 	old_nodes = hash_table->nodes;
 	ALLOC_ZERO(&new_nodes, new_size * sizeof(HASH_NODE *));
 
@@ -449,7 +451,7 @@ static HASH_NODE *hash_node_new(HASH_TABLE *hash_table, const char *key, int len
 
 	if (len > 65535)
 		len = 65535;
-	
+
 	size = sizeof(HASH_NODE) + hash_table->s_value + sizeof(HASH_KEY) + len;
 	ALLOC_ZERO(&hash_node, size);
 
@@ -505,7 +507,7 @@ static void hash_nodes_destroy(HASH_NODE *hash_node)
 void HASH_TABLE_get_key(HASH_TABLE *hash_table, HASH_NODE *node, char **key, int *len)
 {
 	HASH_KEY *node_key;
-	
+
 	if (LIKELY(node != NULL))
 	{
 		node_key = NODE_key(hash_table, node);

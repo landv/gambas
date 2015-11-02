@@ -28,6 +28,7 @@
 
 #include "gb_common_check.h"
 
+#include "gb_common_string_temp.h"
 #include "gb_common_case_temp.h"
 #include "gb_common_buffer_temp.h"
 #include "gb_common_swap_temp.h"
@@ -79,13 +80,13 @@ bool CHECK_address(void *ptr, ssize_t len)
 
 	if (len < 0)
 		return TRUE;
-	
+
 	CHECK_enter();
 	if (sigsetjmp(CHECK_jump, TRUE) == 0)
 	{
 		for (i = 0; i < len; i += 1024)
 			_dummy = ((int *)ptr)[i];
-		
+
 		_dummy = ((int *)ptr)[len >> 2];
 	}
 	CHECK_leave();

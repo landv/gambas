@@ -81,6 +81,118 @@ void THROW_TYPE_STRING(TYPE type)
 	THROW(E_TYPE, TYPE_get_name(T_STRING), TYPE_get_name(type));
 }
 
+static void undo_variant(VALUE *value)
+{
+	static void *jump[16] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VOID, &&__FUNCTION, &&__CLASS, &&__NULL
+		};
+
+	TYPE type = value->_variant.vtype;
+
+	//if (index != T_NULL)
+	//	VALUE_read(value, &value->_variant.value, value->_variant.vtype);
+
+	value->type = type;
+
+	if (TYPE_is_object(type))
+		goto __OBJECT;
+	else
+		goto *jump[type];
+
+__BOOLEAN:
+
+	value->_boolean.value = value->_variant.value._boolean ? -1 : 0;
+	return;
+
+__BYTE:
+
+	value->_byte.value = value->_variant.value._byte;
+	return;
+
+__SHORT:
+
+	value->_short.value = value->_variant.value._short;
+	return;
+
+__INTEGER:
+
+	value->_integer.value = value->_variant.value._integer;
+	return;
+
+__LONG:
+
+	value->_long.value = value->_variant.value._long;
+	return;
+
+__SINGLE:
+
+	value->_single.value = value->_variant.value._single;
+	return;
+
+__FLOAT:
+
+	value->_float.value = value->_variant.value._float;
+	return;
+
+__DATE:
+
+	// It works, as the normal date field is before the variant date field!
+	value->_date.date = value->_variant.value._date.date;
+	value->_date.time = value->_variant.value._date.time;
+	return;
+
+__STRING:
+
+	{
+		char *str = value->_variant.value._string;
+
+		value->type = T_STRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = STRING_length(str);
+
+		return;
+	}
+
+__CSTRING:
+
+	{
+		char *str = value->_variant.value._string;
+
+		value->type = T_CSTRING;
+		value->_string.addr = str;
+		value->_string.start = 0;
+		value->_string.len = strlen(str);
+
+		return;
+	}
+
+__OBJECT:
+
+	value->_object.object = value->_variant.value._object;
+	return;
+
+__POINTER:
+
+	value->_pointer.value = value->_variant.value._pointer;
+	return;
+
+__CLASS: // Is it useful for variants ?
+
+	value->_class.class = value->_variant.value._object;
+	value->_class.super = NULL;
+	return;
+
+__NULL:
+	return;
+
+__VOID:
+__FUNCTION:
+
+	ERROR_panic("Bad type (%d) for undo_variant", type);
+}
+
 
 static void VALUE_put(VALUE *value, void *addr, TYPE type)
 {
@@ -224,7 +336,7 @@ __VARIANT:
 __POINTER:
 	value->_pointer.value = NULL;
 	return;
-	
+
 __DATE:
 	value->_date.date = 0;
 	value->_date.time = 0;
@@ -375,13 +487,13 @@ __g2i:
 	value->_integer.value = (int)value->_single.value;
 	value->type = T_INTEGER;
 	return;
-	
+
 __f2i:
 
 	value->_integer.value = (int)value->_float.value;
 	value->type = T_INTEGER;
 	return;
-	
+
 __p2i:
 
 	value->_integer.value = (int)(intptr_t)value->_pointer.value;
@@ -577,7 +689,7 @@ __p2s:
 	#endif
 	BORROW(value);
 	return;
-	
+
 __d2s:
 
 	len = DATE_to_string(COMMON_buffer, value);
@@ -622,7 +734,7 @@ __s2g:
 
 	if (NUMBER_from_string(NB_READ_FLOAT, value->_string.addr + value->_string.start, value->_string.len, value))
 		goto __N;
-	
+
 	value->_single.value = value->_float.value;
 
 	STRING_unref(&addr);
@@ -671,10 +783,10 @@ __n2p:
 	value->_pointer.value = 0;
 	value->type = T_POINTER;
 	return;
-	
+
 __v2:
 
-	VALUE_undo_variant(value);
+	undo_variant(value);
 	goto __CONV;
 
 __s2v:
@@ -715,12 +827,12 @@ __i2p:
 	value->_pointer.value = (void *)(intptr_t)value->_integer.value;
 	value->type = T_POINTER;
 	return;
-	
+
 __l2p:
 	value->_pointer.value = (void *)(intptr_t)value->_long.value;
 	value->type = T_POINTER;
 	return;
-	
+
 __F2p:
 
 	value->_pointer.value = EXTERN_make_callback(&value->_function);
@@ -742,10 +854,10 @@ __OBJECT:
 
 		if (type == T_VARIANT)
 			goto __2v;
-		
+
 		if (!value->_object.object)
 			goto __N;
-		
+
 		if (value->type == T_OBJECT)
 			class = OBJECT_class(value->_object.object);
 		else
@@ -759,14 +871,14 @@ __OBJECT:
 			if (!((*class->convert)(value->_object.object, type, value)))
 			{
 				OBJECT_UNREF(unref);
-				
+
 				if (value->type == old_type)
 					goto __TYPE;
 				else
 					goto __OK;
 			}
 		}
-		
+
 		goto __N;
 	}
 
@@ -781,7 +893,7 @@ __OBJECT:
 		if (value->type == T_POINTER)
 		{
 			class = (CLASS *)type;
-			
+
 			if (CLASS_is_struct(class))
 			{
 				value->_object.object = CSTRUCT_create_static(STRUCT_CONST, class, value->_pointer.value);
@@ -789,7 +901,7 @@ __OBJECT:
 				goto __TYPE;
 			}
 		}
-		
+
 		if (value->type == T_VARIANT)
 			goto __v2;
 
@@ -799,10 +911,10 @@ __OBJECT:
 		if (value->type == T_CLASS)
 		{
 			class = value->_class.class;
-			
+
 			if (CLASS_is_virtual(class))
 				THROW(E_VIRTUAL);
-			
+
 			CLASS_load(class);
 
 			if (class->auto_create)
@@ -829,7 +941,7 @@ __OBJECT:
 					}
 				}
 			}
-			
+
 			goto __N;
 		}
 	}
@@ -870,7 +982,7 @@ __RETRY:
 			goto __TYPE;
 		}
 	}
-	
+
 	CLASS *class2 = (CLASS *)type;
 	if (class2->has_convert)
 	{
@@ -903,6 +1015,61 @@ __NR:
 }
 
 
+void VALUE_write_variant(VALUE *value, void *addr)
+{
+	static void *jump[16] = {
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
+		&&__STRING, &&__CSTRING, &&__POINTER, &&__VOID, &&__VOID, &&__VOID, &&__NULL
+		};
+
+	TYPE type = value->_variant.vtype;
+
+	if (TYPE_is_object(type))
+		goto __OBJECT;
+	else
+		goto *jump[type];
+
+__BOOLEAN:
+__BYTE:
+__SHORT:
+__INTEGER:
+__LONG:
+__SINGLE:
+__FLOAT:
+__DATE:
+__POINTER:
+__NULL:
+
+	VARIANT_free((VARIANT *)addr);
+	((VARIANT *)addr)->type = value->_variant.vtype;
+	((VARIANT *)addr)->value.data = value->_variant.value.data;
+	return;
+
+__CSTRING:
+__STRING:
+{
+	char *str = value->_variant.value._string;
+	STRING_ref(str);
+	VARIANT_free((VARIANT *)addr);
+	((VARIANT *)addr)->type = GB_T_STRING;
+	((VARIANT *)addr)->value._string = str;
+	return;
+}
+
+__OBJECT:
+{
+	void *object = value->_variant.value._object;
+	OBJECT_REF(object);
+	VARIANT_free((VARIANT *)addr);
+	((VARIANT *)addr)->type = type;
+	((VARIANT *)addr)->value._object = object;
+	return;
+}
+
+__VOID:
+
+	ERROR_panic("Bad type (%d) for VALUE_write_variant", type);
+}
 
 void VALUE_write(VALUE *value, void *addr, TYPE type)
 {
@@ -1249,7 +1416,7 @@ __OBJECT:
 
 	{
 		CLASS *class;
-		
+
 		if (VALUE_is_null(value))
 			goto __NULL;
 
@@ -1265,7 +1432,7 @@ __OBJECT:
 				return;
 			}
 		}
-		
+
 		*len = sprintf(COMMON_buffer, "(%s %p)", class->name, value->_object.object);
 		*addr = COMMON_buffer;
 		return;
@@ -1299,7 +1466,7 @@ __FUNCTION:
 
 	//if (unknown_function(value))
 	//	goto __CONV;
-	
+
 	*len = sprintf(COMMON_buffer, "(Function %s:%d)", value->_function.class->name, value->_function.index);
 	*addr = COMMON_buffer;
 }
@@ -1311,10 +1478,10 @@ void VALUE_from_string(VALUE *value, const char *addr, int len)
 
 	while (len > 0 && isspace(*addr))
 		addr++, len--;
-	
+
 	while (len > 0 && isspace(addr[len - 1]))
 		len--;
-	
+
 	if (len <= 0)
 		return;
 
@@ -1351,7 +1518,7 @@ void VALUE_class_write(CLASS *class, VALUE *value, char *addr, CTYPE ctype)
 	if (ctype.id == T_OBJECT)
 	{
 		TYPE type = (ctype.value >= 0) ? (TYPE)class->load->class_ref[ctype.value] : T_OBJECT;
-		
+
 		VALUE_conv(value, type);
 
 		OBJECT_REF(value->_object.object);
@@ -1387,28 +1554,28 @@ bool VALUE_is_null(VALUE *val)
 		&&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__FALSE, &&__DATE,
 		&&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FALSE, &&__FALSE, &&__NULL
 		};
-	
+
 	TYPE type = val->type;
-	
+
 	if (TYPE_is_object(type))
 		return val->_object.object == NULL;
 	else
 		goto *jump[type];
-	
+
 __NULL:
 	return TRUE;
-	
+
 __STRING:
 	return val->_string.addr == 0 || val->_string.len == 0;
-	
+
 __DATE:
 	return val->_date.date == 0 && val->_date.time == 0;
-	
+
 __POINTER:
 	return val->_pointer.value == NULL;
-	
+
 __VARIANT:
-	
+
 	if (val->_variant.vtype == T_NULL)
 		return TRUE;
 
@@ -1417,13 +1584,13 @@ __VARIANT:
 
 	if (val->_variant.vtype == T_DATE)
 		return val->_variant.value.data == 0;
-	
+
 	if (val->_variant.vtype == T_POINTER)
 		return val->_variant.value._pointer == NULL;
 
 	if (TYPE_is_object(val->_variant.vtype))
 		return val->_variant.value._object == NULL;
-	
+
 __FALSE:
 	return FALSE;
 }
@@ -1438,8 +1605,6 @@ void VALUE_convert_boolean(VALUE *value)
 	};
 
 	char *addr;
-
-__CONV:
 
 	if (TYPE_is_object(value->type))
 	{
@@ -1481,7 +1646,7 @@ __f2b:
 	return;
 
 __d2b:
-	
+
 	value->_integer.value = (value->_date.date != 0 || value->_date.time != 0) ? -1 : 0;
 	value->type = T_BOOLEAN;
 	return;
@@ -1502,9 +1667,20 @@ __n2b:
 	return;
 
 __v2:
+{
+	int test;
 
-	VALUE_undo_variant(value);
-	goto __CONV;
+	switch(TYPE_sizeof_memory(value->_variant.vtype))
+	{
+		case 4: test = value->_variant.value._integer != 0; break;
+		case 8: test = value->_variant.value._long != 0; break;
+		default: test = 0;
+	}
+	VARIANT_free((VARIANT *)&value->_variant.vtype);
+	value->type = T_BOOLEAN;
+	value->_integer.value = test;
+	return;
+}
 
 __func:
 
@@ -1520,7 +1696,7 @@ __N:
 __NR:
 
 	THROW(E_NRETURN);
-	
+
 __OK:
 	return;
 }
@@ -1533,7 +1709,7 @@ void VALUE_convert_integer(VALUE *value)
 		&&__NR, &&__TYPE, &&__TYPE, &&__TYPE, &&__OK, &&__l2i, &&__g2i, &&__f2i,
 		&&__d2i, &&__s2i, &&__s2i, &&__N, &&__v2, &&__func, &&__N, &&__N
 	};
-		
+
 	char *addr;
 
 __CONV:
@@ -1572,7 +1748,7 @@ __s2i:
 
 __v2:
 
-	VALUE_undo_variant(value);
+	undo_variant(value);
 	if (TYPE_is_object(value->type))
 		goto __N;
 	else
@@ -1610,7 +1786,7 @@ void VALUE_convert_float(VALUE *value)
 		&&__NR, &&__b2f, &&__c2f, &&__h2f, &&__i2f, &&__l2f, &&__g2f, &&__OK,
 		&&__d2f, &&__s2f, &&__s2f, &&__N, &&__v2, &&__func, &&__N, &&__N
 	};
-	
+
 	char *addr;
 
 __CONV:
@@ -1634,7 +1810,7 @@ __l2f:
 	value->_float.value = value->_long.value;
 	value->type = T_FLOAT;
 	return;
-	
+
 __g2f:
 
 	value->_float.value = value->_single.value;
@@ -1659,7 +1835,7 @@ __s2f:
 
 __v2:
 
-	VALUE_undo_variant(value);
+	undo_variant(value);
 	if (TYPE_is_object(value->type))
 		goto __N;
 	else
@@ -1679,7 +1855,7 @@ __N:
 __NR:
 
 	THROW(E_NRETURN);
-	
+
 __OK:
 
 	return;
@@ -1751,7 +1927,7 @@ __n2s:
 
 __v2:
 
-	VALUE_undo_variant(value);
+	undo_variant(value);
 	if (TYPE_is_object(value->type))
 		goto __N;
 	else
@@ -1865,7 +2041,7 @@ __CONV:
 
 		if (type == T_VARIANT)
 			goto __2v;
-		
+
 		goto __N;
 	}
 	#endif
@@ -1887,10 +2063,10 @@ __CONV:
 		if (value->type == T_CLASS)
 		{
 			class = value->_class.class;
-			
+
 			if (CLASS_is_virtual(class))
 				THROW(E_VIRTUAL);
-			
+
 			CLASS_load(class);
 
 			if (class->auto_create)
@@ -1950,12 +2126,12 @@ __RETRY:
 			goto __TYPE;
 		}
 	}
-	
+
 	THROW(E_TYPE, TYPE_get_name(type), TYPE_get_name((TYPE)class));
 
 __v2:
 
-	VALUE_undo_variant(value);
+	undo_variant(value);
 	goto __CONV;
 
 __func:
@@ -1978,112 +2154,5 @@ __N:
 
 void VALUE_undo_variant(VALUE *value)
 {
-	static void *jump[16] = {
-		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__DATE,
-		&&__STRING, &&__CSTRING, &&__POINTER, &&__VOID, &&__FUNCTION, &&__CLASS, &&__NULL
-		};
-
-	TYPE type = value->_variant.vtype;
-
-	//if (index != T_NULL)
-	//	VALUE_read(value, &value->_variant.value, value->_variant.vtype);
-
-	value->type = type;
-
-	if (TYPE_is_object(type))
-		goto __OBJECT;
-	else
-		goto *jump[type];
-
-__BOOLEAN:
-
-	value->_boolean.value = value->_variant.value._boolean ? -1 : 0;
-	return;
-
-__BYTE:
-
-	value->_byte.value = value->_variant.value._byte;
-	return;
-
-__SHORT:
-
-	value->_short.value = value->_variant.value._short;
-	return;
-
-__INTEGER:
-
-	value->_integer.value = value->_variant.value._integer;
-	return;
-
-__LONG:
-
-	value->_long.value = value->_variant.value._long;
-	return;
-
-__SINGLE:
-
-	value->_single.value = value->_variant.value._single;
-	return;
-
-__FLOAT:
-
-	value->_float.value = value->_variant.value._float;
-	return;
-
-__DATE:
-
-	// It works, as the normal date field is before the variant date field!
-	value->_date.date = value->_variant.value._date.date;
-	value->_date.time = value->_variant.value._date.time;
-	return;
-
-__STRING:
-
-	{
-		char *str = value->_variant.value._string;
-
-		value->type = T_STRING;
-		value->_string.addr = str;
-		value->_string.start = 0;
-		value->_string.len = STRING_length(str);
-
-		return;
-	}
-
-__CSTRING:
-
-	{
-		char *str = value->_variant.value._string;
-
-		value->type = T_CSTRING;
-		value->_string.addr = str;
-		value->_string.start = 0;
-		value->_string.len = strlen(str);
-
-		return;
-	}
-
-__OBJECT:
-
-	value->_object.object = value->_variant.value._object;
-	return;
-
-__POINTER:
-
-	value->_pointer.value = value->_variant.value._pointer;
-	return;
-
-__CLASS: // Is it useful for variants ?
-
-	value->_class.class = value->_variant.value._object;
-	value->_class.super = NULL;
-	return;
-
-__NULL:
-	return;
-	
-__VOID:
-__FUNCTION:
-
-	ERROR_panic("Bad type (%d) for VALUE_undo_variant", type);
+	undo_variant(value);
 }

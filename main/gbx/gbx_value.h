@@ -211,7 +211,7 @@ typedef
 
 typedef
 	void (*VALUE_CONVERT_FUNC)(VALUE *);
-	
+
 #define VALUE_copy(_dst, _src) \
 	((_dst)->_void.type = (_src)->_void.type, \
 	(_dst)->_void.ptype = (_src)->_void.ptype, \
@@ -219,7 +219,7 @@ typedef
 	(_dst)->_void.value[1] = (_src)->_void.value[1])
 
 #define VALUE_is_equal(_v1, _v2) (*_v1 == *v2)
-	
+
 #define VALUE_is_object(val) (TYPE_is_object((val)->type))
 #define VALUE_is_string(val) ((val)->type == T_STRING || (val)->type == T_CSTRING)
 #define VALUE_is_number(val) ((val)->type >= T_BYTE && (val)->type <= T_FLOAT)
@@ -238,6 +238,7 @@ void VALUE_read(VALUE *value, void *addr, TYPE type);
 void VALUE_write(VALUE *value, void *addr, TYPE type);
 
 void VALUE_undo_variant(VALUE *value);
+void VALUE_write_variant(VALUE *value, void *addr);
 
 //void VALUE_put(VALUE *value, void *addr, TYPE type);
 
@@ -341,10 +342,16 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 		VALUE_convert_float(_value); \
 })
 
+#define VALUE_conv_variant(_value) \
+({ \
+	if (UNLIKELY((_value)->type != T_VARIANT)) \
+		VALUE_convert_variant(_value); \
+})
+
 //#define VALUE_conv_boolean(_value) VALUE_conv(_value, T_BOOLEAN)
 #define VALUE_conv_integer(_value) VALUE_conv(_value, T_INTEGER)
 //#define VALUE_conv_float(_value) VALUE_conv(_value, T_FLOAT)
-#define VALUE_conv_variant(_value) VALUE_conv(_value, T_VARIANT)
+//#define VALUE_conv_variant(_value) VALUE_conv(_value, T_VARIANT)
 #define VALUE_conv_object(_value, _type) VALUE_conv(_value, _type)
 
 #define VALUE_conv_string(_value) \
