@@ -20,7 +20,7 @@ sub advance($)
 {
   my ($dt) = @_;
   my ($mm, $mm2, $j, $dx, $dy, $dz, $distance, $mag);
-  
+
 #  This is faster in the outer loop...
   for (0..$last) {
 #  But not in the inner loop. Strange.
@@ -38,7 +38,7 @@ sub advance($)
       $vys[$j] += $dy * $mm;
       $vzs[$_] -= $dz * $mm2;
       $vzs[$j] += $dz * $mm;
-    }  
+    }
 
 # We're done with planet $_ at this point
 # This could be done in a seperate loop, but it's slower
@@ -89,16 +89,16 @@ sub offset_momentum
   (0, 1.66007664274403694e-03, -2.76742510726862411e-03, 2.96460137564761618e-03, 2.68067772490389322e-03);
 @vys = map {$_ * DAYS_PER_YEAR}
   (0, 7.69901118419740425e-03, 4.99852801234917238e-03, 2.37847173959480950e-03, 1.62824170038242295e-03);
-@vzs = map {$_ * DAYS_PER_YEAR} 
+@vzs = map {$_ * DAYS_PER_YEAR}
   (0, -6.90460016972063023e-05, 2.30417297573763929e-05, -2.96589568540237556e-05, -9.51592254519715870e-05);
-@mass = map {$_ * SOLAR_MASS} 
+@mass = map {$_ * SOLAR_MASS}
   (1, 9.54791938424326609e-04, 2.85885980666130812e-04, 4.36624404335156298e-05, 5.15138902046611451e-05);
 
 $last = @xs - 1;
 
 offset_momentum();
 
-for (1..10)
+for (1..5)
 {
   printf ("%.9f\n", energy());
 

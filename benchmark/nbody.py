@@ -8,7 +8,7 @@
 # modified by Maciej Fijalkowski
 # 2to3
 
-import sys 
+import sys
 
 def combinations(l):
     result = []
@@ -109,7 +109,7 @@ def offset_momentum(ref, bodies=SYSTEM, px=0.0, py=0.0, pz=0.0):
 
 def main():
     offset_momentum(BODIES['sun'])
-    for t in range(10):
+    for t in range(5):
 	report_energy()
 	for n in range(100000):
 	    advance(0.01)

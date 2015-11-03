@@ -4,7 +4,7 @@ Class Body
 
   Static Private SOLAR_MASS As Float = 4 * Pi * Pi
   Private Const DAYS_PER_YEAR As Float = 365.24
-  
+
   Public X As Float
   Public Y As Float
   Public Z As Float
@@ -180,7 +180,7 @@ Class NBodySystem
 
       Next
     Next
-    
+
     return E
 
   End
@@ -191,7 +191,7 @@ End Class
 Dim S As New NBodySystem
 Dim I, N As Integer
 
-For N = 1 To 10
+For N = 1 To 5
 
   Print S.Energy()
 

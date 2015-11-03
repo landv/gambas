@@ -2200,7 +2200,12 @@ End
 
 Public Sub Reload()
 
+  Dim aBreakpoint As Integer[]
+
+  aBreakpoint = edtEditor.Breakpoints
   edtEditor.Load(Path, True)
+  edtEditor.Breakpoints = aBreakpoint
+  CheckBreakpoints()
   $hBookmark.Load()
   ' If Not Project.RestoringFiles Then
   '   If Settings["/Editor/Fold"] Then edtEditor.CollapseAll

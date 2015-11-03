@@ -67,9 +67,9 @@ sub mandelbrot($$)
     }
 
     print "\n";
-  } 
+  }
 }
 
-for(1..50) {
+for(1..20) {
   mandelbrot(200, 200);
 }

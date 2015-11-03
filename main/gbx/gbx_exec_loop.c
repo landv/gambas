@@ -68,6 +68,7 @@ static void my_VALUE_class_constant(CLASS *class, VALUE *value, int ind);
 static void _push_array(ushort code);
 static void _pop_array(ushort code);
 static void _quit(ushort code);
+static void _break(ushort code);
 
 //static void _SUBR_comp(ushort code);
 static void _SUBR_compn(ushort code);
@@ -460,7 +461,7 @@ void EXEC_loop(void)
 
 	int NO_WARNING(ind);
 	ushort code;
-	
+
 	goto _MAIN;
 
 /*-----------------------------------------------*/
@@ -470,7 +471,7 @@ _MAIN:
 #if 0
 	{
 		FILE *f;
-		
+
 		f = fopen("/var/log/thttpd/pcode.log", "a");
 		if (f)
 		{
@@ -516,7 +517,7 @@ _NEXT:
 #if 0
 	{
 		FILE *f;
-		
+
 		f = fopen("/var/log/thttpd/pcode.log", "a");
 		if (f)
 		{
@@ -529,7 +530,7 @@ _NEXT:
 		}
 	}
 #endif
-	
+
 #if DEBUG_PCODE
 		DEBUG_where();
 		fprintf(stderr, "[%4d] ", (int)(intptr_t)(SP - (VALUE *)STACK_base));
@@ -570,6 +571,7 @@ _PUSH_PARAM:
 /*-----------------------------------------------*/
 
 _PUSH_ARRAY:
+
 	_push_array(code);
 	goto _NEXT;
 
@@ -607,7 +609,7 @@ _PUSH_EVENT:
 		ind = EXEC_push_unknown_event(ind & 1);
 	else if (CP->parent)
 		ind += CP->parent->n_event;
-	
+
 	SP->type = T_FUNCTION;
 	SP->_function.kind = FUNCTION_EVENT;
 	SP->_function.index = ind;
@@ -615,7 +617,7 @@ _PUSH_EVENT:
 	SP->_function.class = NULL;
 	SP->_function.object = NULL;
 	SP++;
-	
+
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -655,7 +657,6 @@ _POP_PARAM:
 _POP_CTRL:
 
 	_pop_ctrl(GET_XX());
-
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -685,7 +686,7 @@ _POP_OPTIONAL:
 				VALUE_default(&SP[-1], val->_void.ptype);
 			else
 				VALUE_conv(&SP[-1], val->_void.ptype);
-			
+
 			SP--;
 			*val = *SP;
 		}
@@ -773,9 +774,9 @@ _PUSH_ME:
 			SP->_class.class = SP->_class.class->parent;
 			SP->_class.super = EXEC_super;
 		}
-		
+
 		EXEC_super = SP;
-		
+
 		//fprintf(stderr, "%s\n", DEBUG_get_current_position());
 		//BREAKPOINT();
 	}
@@ -831,29 +832,29 @@ _PUSH_MISC:
 		goto _NEXT;
 
 	__PUSH_STRING:
-		
+
 		SP->type = T_CSTRING;
 		SP->_string.addr = ""; // NULL
 		SP->_string.start = SP->_string.len = 0;
 		SP++;
 		goto _NEXT;
-		
+
 	__PUSH_PINF:
-	
+
 		SP->type = T_FLOAT;
 		SP->_float.value = INFINITY;
 		SP++;
 		goto _NEXT;
-		
+
 	__PUSH_MINF:
-	
+
 		SP->type = T_FLOAT;
 		SP->_float.value = -INFINITY;
 		SP++;
 		goto _NEXT;
-	
+
 	__PUSH_COMPLEX:
-	
+
 		EXEC_push_complex();
 		goto _NEXT;
 
@@ -868,7 +869,7 @@ _PUSH_MISC:
 		goto _NEXT;
 
 	/*__POP_LAST:
-	
+
 		VALUE_conv(&SP[-1], T_OBJECT);
 		OBJECT_UNREF(EVENT_Last);
 		SP--;
@@ -913,7 +914,7 @@ _ON_GOTO_GOSUB:
 
 	{
 		int n, m;
-		
+
 		m = GET_XX();
 		SP--;
 		VALUE_conv_integer(SP);
@@ -931,21 +932,21 @@ _ON_GOTO_GOSUB:
 /*-----------------------------------------------*/
 
 _GOSUB:
-	
+
 	{
 		VALUE *ctrl;
 		int i;
-		
+
 		STACK_check(1 + FP->stack_usage - FP->n_local);
-		
+
 		SP->type = T_VOID;
 		SP->_void.value[0] = (intptr_t)PC;
 		SP->_void.value[1] = (intptr_t)GP;
-		
+
 		GP = SP;
-		
+
 		SP++;
-		
+
 		ctrl = &BP[FP->n_local];
 		for (i = 0; i < FP->n_ctrl; i++)
 		{
@@ -992,18 +993,18 @@ _RETURN:
 
 	{
 		static const void *return_jump[] = { &&__RETURN_GOSUB, &&__RETURN_VALUE, &&__RETURN_VOID };
-		
+
 		TYPE type;
 		VALUE *ctrl;
 		int i;
-		
+
 		goto *return_jump[GET_UX()];
-		
+
 	__RETURN_GOSUB:
-		
+
 		if (!GP)
 			goto __RETURN_VOID;
-		
+
 		ctrl = &BP[FP->n_local];
 		GP++;
 
@@ -1012,33 +1013,33 @@ _RETURN:
 			RELEASE(&ctrl[i]);
 			ctrl[i] = GP[i];
 		}
-		
+
 		GP--;
-		
+
 		SP = GP;
 		PC = (PCODE *)GP->_void.value[0] + 2;
 		GP = (VALUE *)GP->_void.value[1];
-		
+
 		goto _MAIN;
 
 	__RETURN_VALUE:
-	
+
 		type = FP->type;
 		//if (TYPE_is_pure_object(type) && ((CLASS *)type)->override)
 		//	type = (TYPE)(((CLASS *)type)->override);
-		
+
 		VALUE_conv(&SP[-1], type);
 		SP--;
 		*RP = *SP;
-		
+
 		goto __RETURN_LEAVE;
-	
+
 	__RETURN_VOID:
 
 		VALUE_default(RP, FP->type);
-		
+
 	__RETURN_LEAVE:
-	
+
 		EXEC_leave_keep();
 
 		if (PC == NULL || FP->fast)
@@ -1046,7 +1047,7 @@ _RETURN:
 
 		goto _NEXT;
 	}
-	
+
 /*-----------------------------------------------*/
 
 _CALL:
@@ -1055,11 +1056,11 @@ _CALL:
 		VALUE * NO_WARNING(val);
 
 		{
-			static const void *call_jump[] = 
+			static const void *call_jump[] =
 			{
 				&&__CALL_NULL, &&__CALL_NATIVE, &&__CALL_PRIVATE, &&__CALL_PUBLIC,
-				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
-				&&__CALL_SUBR 
+				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL,
+				&&__CALL_SUBR
 			};
 
 			ind = GET_3X();
@@ -1068,7 +1069,7 @@ _CALL:
 			if (!TYPE_is_function(val->type))
 			{
 				bool defined = EXEC_object(val, &EXEC.class, (OBJECT **)&EXEC.object);
-				
+
 				val->type = T_FUNCTION;
 				val->_function.kind = FUNCTION_CALL;
 				val->_function.defined = defined;
@@ -1164,7 +1165,7 @@ _CALL:
 				SP->_boolean.value = ind ? -1 : 0;
 				SP++;
 			}
-			
+
 			//EVENT_Last = old_last;
 
 			goto _NEXT;
@@ -1201,7 +1202,7 @@ _CALL:
 				VALUE_conv_object(SP - 1, (TYPE)EXEC.class);
 				goto _NEXT;
 			}
-			
+
 		__CALL_SPEC:
 
 			if (!EXEC.desc)
@@ -1233,9 +1234,9 @@ _CALL:
 			EXEC.index = val->_function.index;
 			EXTERN_call();
 			goto _NEXT;
-			
+
 		__CALL_SUBR:
-		
+
 			((EXEC_FUNC_CODE)(EXEC.class->table[val->_function.index].desc->method.exec))(code);
 			SP[-2] = SP[-1];
 			SP--;
@@ -1247,11 +1248,11 @@ _CALL:
 _CALL_QUICK:
 
 		{
-			static const void *call_jump[] = 
+			static const void *call_jump[] =
 			{
 				&&__CALL_NULL, &&__CALL_NATIVE_Q, &&__CALL_PRIVATE_Q, &&__CALL_PUBLIC_Q,
-				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
-				&&__CALL_SUBR 
+				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL,
+				&&__CALL_SUBR
 			};
 
 			ind = GET_3X();
@@ -1293,13 +1294,13 @@ _CALL_QUICK:
 			}
 			else
 				goto _MAIN;
-			
+
 		__CALL_NATIVE_Q:
-		
+
 			EXEC.native = TRUE;
 			EXEC.index = val->_function.index;
 			EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
-			
+
 			EXEC_native_quick();
 			goto _NEXT;
 		}
@@ -1347,13 +1348,13 @@ _CALL_EASY:
 
 		EXEC_enter_easy();
 		goto _MAIN;
-		
+
 	__CALL_NATIVE_E:
-	
+
 		EXEC.native = TRUE;
 		EXEC.index = val->_function.index;
 		EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
-		
+
 		EXEC_native_easy();
 		goto _NEXT;
 	}
@@ -1364,11 +1365,11 @@ _CALL_EASY:
 _CALL_SLOW:
 
 		{
-			static const void *call_jump[] = 
+			static const void *call_jump[] =
 			{
 				&&__CALL_NULL, &&__CALL_NATIVE_S, &&__CALL_PRIVATE_S, &&__CALL_PUBLIC_S,
-				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL, 
-				&&__CALL_SUBR 
+				&&__CALL_EVENT, &&__CALL_EXTERN, &&__CALL_UNKNOWN, &&__CALL_CALL,
+				&&__CALL_SUBR
 			};
 
 			ind = GET_3X();
@@ -1408,13 +1409,13 @@ _CALL_SLOW:
 			}
 			else
 				goto _MAIN;
-			
+
 		__CALL_NATIVE_S:
-			
+
 			EXEC.native = TRUE;
 			EXEC.index = val->_function.index;
 			EXEC.desc = &EXEC.class->table[EXEC.index].desc->method;
-			
+
 			EXEC_native();
 			goto _NEXT;
 		}
@@ -1434,13 +1435,13 @@ _JUMP_FIRST:
 
 _JUMP_NEXT:
 	{
-		static const void *jn_jump[] = 
-			{ 
+		static const void *jn_jump[] =
+			{
 				&&_JN_START, NULL, &&_JN_BYTE, &&_JN_SHORT, &&_JN_INTEGER, &&_JN_LONG, &&_JN_SINGLE, &&_JN_FLOAT
 			};
-			
-		static const void *jn_test[] = 
-			{ 
+
+		static const void *jn_test[] =
+			{
 				NULL, NULL, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST, &&_JN_INTEGER_TEST,
 				&&_JN_LONG_TEST, &&_JN_SINGLE_TEST, &&_JN_FLOAT_TEST
 			};
@@ -1449,7 +1450,7 @@ _JUMP_NEXT:
 		VALUE * NO_WARNING(end);
 		VALUE * NO_WARNING(inc);
 		VALUE * NO_WARNING(val);
-		
+
 		end = &BP[PC[-1] & 0xFF];
 		inc = end + 1;
 		val = &BP[PC[2] & 0xFF];
@@ -1459,7 +1460,7 @@ _JUMP_NEXT:
 	_JN_START:
 
 		type = val->type;
-		
+
 		if (type < T_BYTE || type > T_FLOAT)
 			THROW(E_TYPE, "Number", TYPE_get_name(type));
 
@@ -1482,21 +1483,21 @@ _JUMP_NEXT:
 		_pop_ctrl(ind);
 
 		val = &BP[PC[2] & 0xFF];
-		
+
 		*PC |= type;
 		goto *jn_test[type];
-		
+
 	_JN_BYTE:
 		val->_integer.value = (unsigned char)(val->_integer.value + inc->_integer.value);
 		goto _JN_INTEGER_TEST;
-	
+
 	_JN_SHORT:
 		val->_integer.value = (short)(val->_integer.value + inc->_integer.value);
 		goto _JN_INTEGER_TEST;
-	
+
 	_JN_INTEGER:
 		val->_integer.value += inc->_integer.value;
-	
+
 	_JN_INTEGER_TEST:
 		if ((inc->_integer.value > 0 && val->_integer.value <= end->_integer.value)
 			  || (inc->_integer.value < 0 && val->_integer.value >= end->_integer.value))
@@ -1506,10 +1507,10 @@ _JUMP_NEXT:
 		}
 		else
 			goto _JN_END;
-		
+
 	_JN_LONG:
 		val->_long.value += inc->_long.value;
-		
+
 	_JN_LONG_TEST:
 		if ((inc->_long.value > 0 && val->_long.value <= end->_long.value)
 			  || (inc->_long.value < 0 && val->_long.value >= end->_long.value))
@@ -1519,10 +1520,10 @@ _JUMP_NEXT:
 		}
 		else
 			goto _JN_END;
-		
+
 	_JN_SINGLE:
 		val->_single.value += inc->_single.value;
-		
+
 	_JN_SINGLE_TEST:
 		if ((inc->_single.value > 0 && val->_single.value <= end->_single.value)
 			  || (inc->_single.value < 0 && val->_single.value >= end->_single.value))
@@ -1532,10 +1533,10 @@ _JUMP_NEXT:
 		}
 		else
 			goto _JN_END;
-		
+
 	_JN_FLOAT:
 		val->_float.value += inc->_float.value;
-		
+
 	_JN_FLOAT_TEST:
 		if ((inc->_float.value > 0 && val->_float.value <= end->_float.value)
 			  || (inc->_float.value < 0 && val->_float.value >= end->_float.value))
@@ -1545,7 +1546,7 @@ _JUMP_NEXT:
 		}
 		else
 			goto _JN_END;
-		
+
 	_JN_END:
 		PC += (signed short)PC[1] + 2;
  		goto _MAIN;
@@ -1719,95 +1720,95 @@ _ADD_QUICK:
 
 	{
 		static void *_aq_jump[] = {
-			&&__AQ_VOID, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT, 
+			&&__AQ_VOID, &&__AQ_BOOLEAN, &&__AQ_BYTE, &&__AQ_SHORT, &&__AQ_INTEGER, &&__AQ_LONG, &&__AQ_SINGLE, &&__AQ_FLOAT,
 			&&__AQ_DATE, &&__AQ_STRING, &&__AQ_STRING, &&__AQ_POINTER, &&__AQ_VARIANT, &&__AQ_BOOLEAN, &&__AQ_BOOLEAN, &&__AQ_BOOLEAN
 			};
-	
+
 		TYPE NO_WARNING(type);
 		int NO_WARNING(value);
 		VALUE * NO_WARNING(P1);
 		void * NO_WARNING(jump_end);
-	
+
 		P1 = SP - 1;
-	
+
 		jump_end = &&__AQ_END;
 		type = P1->type;
 		value = GET_XXX();
-	
+
 	__AQ_JUMP:
-		
+
 		if (TYPE_is_object(type))
 			goto __AQ_OBJECT;
 		else
 			goto *_aq_jump[type];
-		
+
 	__AQ_VOID:
-	
+
 		THROW(E_NRETURN);
-	
+
 	__AQ_BYTE:
-		
+
 		P1->_integer.value = (unsigned char)(P1->_integer.value + value);
 		goto *jump_end;
-	
+
 	__AQ_SHORT:
-	
+
 		P1->_integer.value = (short)(P1->_integer.value + value);
 		goto *jump_end;
-	
+
 	__AQ_INTEGER:
-	
+
 		P1->_integer.value += value;
 		goto *jump_end;
-	
+
 	__AQ_LONG:
-	
+
 		P1->_long.value += (int64_t)value;
 		goto *jump_end;
-	
+
 	__AQ_SINGLE:
-	
+
 		P1->_single.value += (float)value;
 		goto *jump_end;
-	
+
 	__AQ_DATE:
 	__AQ_STRING:
-		
+
 		VALUE_conv_float(P1);
-	
+
 	__AQ_FLOAT:
-	
+
 		P1->_float.value += (double)value;
 		goto *jump_end;
-	
+
 	__AQ_POINTER:
-	
+
 		P1->_pointer.value += value;
 		goto *jump_end;
-		
+
 	__AQ_VARIANT:
-		
+
 		jump_end = &&__AQ_VARIANT_END;
 		VARIANT_undo(P1);
 		type = P1->type;
 		goto __AQ_JUMP;
-			
+
 	__AQ_OBJECT:
-	
+
 		if (EXEC_check_operator_single(P1, CO_ADDF))
 		{
 			EXEC_operator_object_add_quick(P1, value);
 			goto *jump_end;
 		}
-	
+
 	__AQ_BOOLEAN:
-		
+
 		THROW(E_TYPE, "Number", TYPE_get_name(type));
-	
+
 	__AQ_VARIANT_END:
-	
+
 		VALUE_conv_variant(P1);
-	
+
 	__AQ_END:
 		goto _NEXT;
 	}
@@ -1855,53 +1856,7 @@ _CATCH:
 
 _BREAK:
 
-	//DEBUG_where(); fputc('\n', stderr);
-
-	if (EXEC_debug)
-	{
-		//TRACE.ec = PC + 1;
-		//TRACE.ep = SP;
-
-		TC = PC + 1;
-		TP = SP;
-
-		if (CP && CP->component == COMPONENT_main)
-		{
-			if (EXEC_profile_instr)
-				DEBUG.Profile.Add(CP, FP, PC);
-
-			ind = GET_UX();
-
-			if (ind == 0)
-			{
-				if (!DEBUG_info->stop)
-					goto _NEXT;
-
-				// Return from (void stack)
-				if (DEBUG_info->leave)
-				{
-					if (STACK_get_current()->pc)
-						goto _NEXT;
-					if (FP == DEBUG_info->fp)
-						goto _NEXT;
-					if (BP > DEBUG_info->bp)
-						goto _NEXT;
-				}
-				// Forward or Return From
-				else if (DEBUG_info->fp != NULL)
-				{
-					if (BP > DEBUG_info->bp)
-						goto _NEXT;
-				}
-				// otherwise, Next
-			}
-
-			DEBUG.Breakpoint(ind);
-		}
-	}
-	else
-		*PC = C_NOP;
-
+	_break(code);
 	goto _NEXT;
 
 /*-----------------------------------------------*/
@@ -1937,9 +1892,9 @@ _SUBR_LEFT:
 
 	{
 		int val;
-	
+
 		SUBR_ENTER();
-	
+
 		if (LIKELY(!SUBR_check_string(PARAM)))
 		{
 			if (NPARAM == 1)
@@ -1949,13 +1904,13 @@ _SUBR_LEFT:
 				VALUE_conv_integer(&PARAM[1]);
 				val = PARAM[1]._integer.value;
 			}
-		
+
 			if (val < 0)
 				val += PARAM->_string.len;
-		
+
 			PARAM->_string.len = MinMax(val, 0, PARAM->_string.len);
 		}
-	
+
 		SP -= NPARAM;
 		SP++;
 	}
@@ -1964,13 +1919,13 @@ _SUBR_LEFT:
 /*-----------------------------------------------*/
 
 _SUBR_RIGHT:
-	
+
 	{
 		int val;
 		int new_len;
-	
+
 		SUBR_ENTER();
-	
+
 		if (LIKELY(!SUBR_check_string(PARAM)))
 		{
 			if (NPARAM == 1)
@@ -1980,16 +1935,16 @@ _SUBR_RIGHT:
 				VALUE_conv_integer(&PARAM[1]);
 				val = PARAM[1]._integer.value;
 			}
-		
+
 			if (val < 0)
 				val += PARAM->_string.len;
-		
+
 			new_len = MinMax(val, 0, PARAM->_string.len);
-		
+
 			PARAM->_string.start += PARAM->_string.len - new_len;
 			PARAM->_string.len = new_len;
 		}
-	
+
 		SP -= NPARAM;
 		SP++;
 	}
@@ -2002,26 +1957,26 @@ _SUBR_MID:
 		int start;
 		int len;
 		bool null;
-	
+
 		SUBR_ENTER();
-	
+
 		null = SUBR_check_string(PARAM);
-	
+
 		VALUE_conv_integer(&PARAM[1]);
 		start = PARAM[1]._integer.value - 1;
-	
+
 		if (start < 0)
 			THROW(E_ARG);
-	
+
 		if (null)
 			goto _SUBR_MID_FIN;
-			
+
 		if (start >= PARAM->_string.len)
 		{
 			VOID_STRING(PARAM);
 			goto _SUBR_MID_FIN;
 		}
-	
+
 		if (NPARAM == 2)
 			len = PARAM->_string.len;
 		else
@@ -2029,12 +1984,12 @@ _SUBR_MID:
 			VALUE_conv_integer(&PARAM[2]);
 			len = PARAM[2]._integer.value;
 		}
-	
+
 		if (len < 0)
 			len = Max(0, PARAM->_string.len - start + len);
-	
+
 		len = MinMax(len, 0, PARAM->_string.len - start);
-	
+
 		if (len == 0)
 		{
 			RELEASE_STRING(PARAM);
@@ -2043,11 +1998,11 @@ _SUBR_MID:
 		}
 		else
 			PARAM->_string.start += start;
-	
+
 		PARAM->_string.len = len;
-	
+
 	_SUBR_MID_FIN:
-	
+
 		SP -= NPARAM;
 		SP++;
 	}
@@ -2058,21 +2013,21 @@ _SUBR_MID:
 _SUBR_LEN:
 	{
 		int len;
-	
+
 		SUBR_GET_PARAM(1);
-	
+
 		if (SUBR_check_string(PARAM))
 			len = 0;
 		else
 			len = PARAM->_string.len;
-	
+
 		RELEASE_STRING(PARAM);
-	
+
 		PARAM->type = T_INTEGER;
 		PARAM->_integer.value = len;
 	}
 	goto _NEXT;
-	
+
 /*-----------------------------------------------*/
 
 _SUBR_COMP:
@@ -2086,7 +2041,7 @@ _SUBR_COMP:
 		char NO_WARNING(result);
 		VALUE *NO_WARNING(P1);
 		VALUE *NO_WARNING(P2);
-		
+
 		P1 = SP - 2;
 		P2 = SP - 1;
 
@@ -2099,7 +2054,7 @@ _SUBR_COMP:
 
 		result = P1->_integer.value == P2->_integer.value;
 		goto __SC_END;
-		
+
 	__SC_LONG:
 
 		VALUE_conv(P1, T_LONG);
@@ -2138,7 +2093,7 @@ _SUBR_COMP:
 			result = 0;
 		else
 			result = STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
-		
+
 		RELEASE_STRING(P1);
 		RELEASE_STRING(P2);
 		goto __SC_END;
@@ -2175,7 +2130,7 @@ _SUBR_COMP:
 		goto __SC_END_RELEASE;
 
 	__SC_OBJECT_FLOAT:
-		
+
 		result = EXEC_comparator(OP_OBJECT_FLOAT, CO_EQUALF, P1, P2);
 		goto __SC_END;
 
@@ -2183,7 +2138,7 @@ _SUBR_COMP:
 
 		result = EXEC_comparator(OP_FLOAT_OBJECT, CO_EQUALF, P1, P2);
 		goto __SC_END;
-		
+
 	__SC_OBJECT_OTHER:
 
 		result = EXEC_comparator(OP_OBJECT_OTHER, CO_EQUALO, P1, P2);
@@ -2193,18 +2148,18 @@ _SUBR_COMP:
 
 		result = EXEC_comparator(OP_OTHER_OBJECT, CO_EQUALO, P1, P2);
 		goto __SC_END;
-		
+
 	__SC_OBJECT_OBJECT:
 
 		result = EXEC_comparator(OP_OBJECT_OBJECT, CO_EQUAL, P1, P2);
 		goto __SC_END;
-		
+
 	__SC_VARIANT:
 
 		{
 			bool variant = FALSE;
 			TYPE type;
-		
+
 			if (TYPE_is_variant(P1->type))
 			{
 				VARIANT_undo(P1);
@@ -2225,7 +2180,7 @@ _SUBR_COMP:
 					*PC |= code;
 				goto *jump[code];
 			}
-			
+
 			type = Max(P1->type, P2->type);
 
 			if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
@@ -2254,7 +2209,7 @@ _SUBR_COMP:
 
 		P1->type = T_BOOLEAN;
 		SP--;
-		P1->_boolean.value = -result;	
+		P1->_boolean.value = -result;
 		goto _NEXT;
 	}
 
@@ -2485,7 +2440,7 @@ __INTEGER:
 
 	result = P1->_integer.value == P2->_integer.value;
 	goto __END;
-	
+
 __LONG:
 
 	VALUE_conv(P1, T_LONG);
@@ -2524,7 +2479,7 @@ __STRING:
 		result = 0;
 	else
 		result = STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
-	
+
 	RELEASE_STRING(P1);
 	RELEASE_STRING(P2);
 	goto __END;
@@ -2565,7 +2520,7 @@ __VARIANT:
 	{
 		bool variant = FALSE;
 		TYPE type;
-	
+
 		if (TYPE_is_variant(P1->type))
 		{
 			VARIANT_undo(P1);
@@ -2634,7 +2589,7 @@ __INTEGER:
 
 	result = P1->_integer.value == P2->_integer.value;
 	goto __END;
-	
+
 __LONG:
 
 	VALUE_conv(P1, T_LONG);
@@ -2673,7 +2628,7 @@ __STRING:
 		result = 0;
 	else
 		result = STRING_equal_same(P1->_string.addr + P1->_string.start, P2->_string.addr + P2->_string.start, P1->_string.len);
-	
+
 	RELEASE_STRING(P1);
 	RELEASE_STRING(P2);
 	goto __END;
@@ -2710,7 +2665,7 @@ __OBJECT:
 	goto __END_RELEASE;
 
 __OBJECT_FLOAT:
-	
+
 	result = EXEC_comparator(OP_OBJECT_FLOAT, CO_EQUALF, P1, P2);
 	goto __END;
 
@@ -2718,7 +2673,7 @@ __FLOAT_OBJECT:
 
 	result = EXEC_comparator(OP_FLOAT_OBJECT, CO_EQUALF, P1, P2);
 	goto __END;
-	
+
 __OBJECT_OTHER:
 
 	result = EXEC_comparator(OP_OBJECT_OTHER, CO_EQUALO, P1, P2);
@@ -2728,18 +2683,18 @@ __OTHER_OBJECT:
 
 	result = EXEC_comparator(OP_OTHER_OBJECT, CO_EQUALO, P1, P2);
 	goto __END;
-	
+
 __OBJECT_OBJECT:
 
 	result = EXEC_comparator(OP_OBJECT_OBJECT, CO_EQUAL, P1, P2);
 	goto __END;
-		
+
 __VARIANT:
 
 	{
 		bool variant = FALSE;
 		TYPE type;
-	
+
 		if (TYPE_is_variant(P1->type))
 		{
 			VARIANT_undo(P1);
@@ -2760,7 +2715,7 @@ __VARIANT:
 				*PC |= code;
 			goto *jump[code];
 		}
-			
+
 		type = Max(P1->type, P2->type);
 
 		if (TYPE_is_object_null(P1->type) && TYPE_is_object_null(P2->type))
@@ -2979,7 +2934,7 @@ __POINTER:
 	P1->_pointer.value += (intptr_t)P2->_pointer.value; goto __END;
 
 __OBJECT_FLOAT:
-	
+
 	EXEC_operator(OP_OBJECT_FLOAT, CO_ADDF, P1, P2);
 	goto __END;
 
@@ -2987,7 +2942,7 @@ __FLOAT_OBJECT:
 
 	EXEC_operator(OP_FLOAT_OBJECT, CO_ADDF, P1, P2);
 	goto __END;
-	
+
 __OBJECT_OTHER:
 
 	EXEC_operator(OP_OBJECT_OTHER, CO_ADDO, P1, P2);
@@ -2997,17 +2952,17 @@ __OTHER_OBJECT:
 
 	EXEC_operator(OP_OTHER_OBJECT, CO_ADDO, P1, P2);
 	goto __END;
-	
+
 __OBJECT:
 
 	EXEC_operator(OP_OBJECT_OBJECT, CO_ADD, P1, P2);
 	goto __END;
-	
+
 __VARIANT:
 
 	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_add, CO_ADD);
 	goto __ERROR;
-	
+
 __ERROR:
 
 	THROW(E_TYPE, "Number", TYPE_get_name(type));
@@ -3083,7 +3038,7 @@ __POINTER:
 	P1->_pointer.value -= (intptr_t)P2->_pointer.value; goto __END;
 
 __OBJECT_FLOAT:
-	
+
 	EXEC_operator(OP_OBJECT_FLOAT, CO_SUBF, P1, P2);
 	goto __END;
 
@@ -3091,7 +3046,7 @@ __FLOAT_OBJECT:
 
 	EXEC_operator(OP_FLOAT_OBJECT, CO_SUBF, P1, P2);
 	goto __END;
-	
+
 __OBJECT_OTHER:
 
 	EXEC_operator(OP_OBJECT_OTHER, CO_SUBO, P1, P2);
@@ -3101,12 +3056,12 @@ __OTHER_OBJECT:
 
 	EXEC_operator(OP_OTHER_OBJECT, CO_SUBO, P1, P2);
 	goto __END;
-	
+
 __OBJECT:
 
 	EXEC_operator(OP_OBJECT_OBJECT, CO_SUB, P1, P2);
 	goto __END;
-	
+
 __VARIANT:
 
 	MANAGE_VARIANT_POINTER_OBJECT(_SUBR_sub, CO_SUB);
@@ -3124,7 +3079,7 @@ __END:
 static void _SUBR_mul(ushort code)
 {
 	static void *jump[] = {
-		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, 
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR,
 		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT
 		};
 
@@ -3181,7 +3136,7 @@ __FLOAT:
 	goto __END;
 
 __OBJECT_FLOAT:
-	
+
 	EXEC_operator(OP_OBJECT_FLOAT, CO_MULF, P1, P2);
 	goto __END;
 
@@ -3189,7 +3144,7 @@ __FLOAT_OBJECT:
 
 	EXEC_operator(OP_FLOAT_OBJECT, CO_MULF, P1, P2);
 	goto __END;
-	
+
 __OBJECT_OTHER:
 
 	EXEC_operator(OP_OBJECT_OTHER, CO_MULO, P1, P2);
@@ -3199,12 +3154,12 @@ __OTHER_OBJECT:
 
 	EXEC_operator(OP_OTHER_OBJECT, CO_MULO, P1, P2);
 	goto __END;
-	
+
 __OBJECT:
 
 	EXEC_operator(OP_OBJECT_OBJECT, CO_MUL, P1, P2);
 	goto __END;
-	
+
 __VARIANT:
 
 	MANAGE_VARIANT_OBJECT(_SUBR_mul, CO_MUL);
@@ -3222,7 +3177,7 @@ __END:
 static void _SUBR_div(ushort code)
 {
 	static void *jump[] = {
-		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR, 
+		&&__VARIANT, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, &&__ERROR,
 		&&__OBJECT_FLOAT, &&__FLOAT_OBJECT, &&__OBJECT_OTHER, &&__OTHER_OBJECT, &&__OBJECT
 		};
 
@@ -3253,7 +3208,7 @@ __FLOAT:
 	THROW(E_ZERO);
 
 __OBJECT_FLOAT:
-	
+
 	EXEC_operator(OP_OBJECT_FLOAT, CO_DIVF, P1, P2);
 	goto __CHECK_OBJECT;
 
@@ -3261,7 +3216,7 @@ __FLOAT_OBJECT:
 
 	EXEC_operator(OP_FLOAT_OBJECT, CO_DIVF, P1, P2);
 	goto __CHECK_OBJECT;
-	
+
 __OBJECT_OTHER:
 
 	EXEC_operator(OP_OBJECT_OTHER, CO_DIVO, P1, P2);
@@ -3271,12 +3226,12 @@ __OTHER_OBJECT:
 
 	EXEC_operator(OP_OTHER_OBJECT, CO_DIVO, P1, P2);
 	goto __CHECK_OBJECT;
-	
+
 __OBJECT:
 
 	EXEC_operator(OP_OBJECT_OBJECT, CO_DIV, P1, P2);
 	goto __CHECK_OBJECT;
-	
+
 __VARIANT:
 
 	MANAGE_VARIANT_OBJECT(_SUBR_div, CO_DIV);
@@ -3290,7 +3245,7 @@ __CHECK_OBJECT:
 
 	if (P1->_object.object == NULL)
 		THROW(E_ZERO);
-	
+
 __END:
 
 	SP--;
@@ -3495,13 +3450,13 @@ static void _push_array(ushort code)
 	static const void *jump[] = {
 		&&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC, &&__PUSH_GENERIC,
 		&&__PUSH_ARRAY, &&__PUSH_ARRAY, &&__PUSH_ARRAY, &&__PUSH_ARRAY,
-		&&__PUSH_NATIVE_ARRAY, NULL, &&__PUSH_NATIVE_ARRAY_SINGLE, &&__PUSH_NATIVE_ARRAY_SINGLE,
-		&&__PUSH_NATIVE_COLLECTION, NULL, NULL, NULL
+		&&__PUSH_NATIVE_ARRAY, NULL, &&__PUSH_NATIVE_ARRAY_SIMPLE, &&__PUSH_NATIVE_ARRAY_SIMPLE,
+		&&__PUSH_NATIVE_COLLECTION, &&__PUSH_NATIVE_ARRAY_INTEGER, &&__PUSH_NATIVE_ARRAY_FLOAT, NULL
 	};
 
 	CLASS *class;
 	OBJECT *object;
-	ushort np = GET_3X();
+	ushort np;
 	int i;
 	void *NO_WARNING(data);
 	bool defined;
@@ -3509,10 +3464,11 @@ static void _push_array(ushort code)
 	uint fast;
 	CARRAY *array;
 
-	goto *jump[((unsigned char)code) >> 4];
+	goto *jump[(code >> 4) & 0xF];
 
 __PUSH_GENERIC:
 
+	np = GET_3X();
 	val = &SP[-np];
 	np--;
 
@@ -3527,13 +3483,22 @@ __PUSH_GENERIC:
 			if (np == 1)
 			{
 				array = (CARRAY *)object;
-				if (TYPE_is_object(array->type))
+				if (array->type == GB_T_INTEGER)
+					fast = 0xD0;
+				else if (array->type == GB_T_FLOAT)
+					fast = 0xE0;
+				else if (TYPE_is_object(array->type))
 					fast = 0xB0;
 				else
 					fast = 0xA0 + array->type;
 			}
 			else
+			{
+				if (np > MAX_ARRAY_DIM)
+					THROW(E_TMPARAM);
+
 				fast = 0x81 + np;
+			}
 		}
 		else if (class->quick_array == CQA_COLLECTION)
 		{
@@ -3541,7 +3506,7 @@ __PUSH_GENERIC:
 				THROW(E_NEPARAM);
 			else if (np > 1)
 				THROW(E_TMPARAM);
-			
+
 			fast = 0xC0;
 		}
 		else
@@ -3563,6 +3528,7 @@ __PUSH_GENERIC:
 
 __PUSH_NATIVE_ARRAY:
 
+	np = GET_3X();
 	val = &SP[-np];
 	np--;
 	EXEC_object_array(val, class, object);
@@ -3589,10 +3555,10 @@ __PUSH_NATIVE_COLLECTION:
 	RELEASE_STRING(&val[1]);
 	goto __PUSH_NATIVE_END;
 
-__PUSH_NATIVE_ARRAY_SINGLE:
+__PUSH_NATIVE_ARRAY_SIMPLE:
 
 	val = &SP[-2];
-	np &= 0x1F;
+	np = code & 0x1F;
 
 	EXEC_object_array(val, class, object);
 	array = (CARRAY *)object;
@@ -3602,6 +3568,38 @@ __PUSH_NATIVE_ARRAY_SINGLE:
 	data = CARRAY_get_data_throw(array, val[1]._integer.value);
 
 	VALUE_read_inline_type(val, data, np, array->type, __PUSH_NATIVE_END_NOREF, __PUSH_NATIVE_END);
+
+__PUSH_NATIVE_ARRAY_INTEGER:
+
+	val = &SP[-2];
+	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
+
+	VALUE_conv_integer(&val[1]);
+	i = val[1]._integer.value;
+
+	if (i < 0 || i >= array->count)
+		THROW(E_BOUND);
+
+	val->_integer.value = ((int *)(array->data))[i];
+	val->type = GB_T_INTEGER;
+	goto __PUSH_NATIVE_END_NOREF;
+
+__PUSH_NATIVE_ARRAY_FLOAT:
+
+	val = &SP[-2];
+	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
+
+	VALUE_conv_integer(&val[1]);
+	i = val[1]._integer.value;
+
+	if (i < 0 || i >= array->count)
+		THROW(E_BOUND);
+
+	val->_float.value = ((double *)(array->data))[i];
+	val->type = GB_T_FLOAT;
+	goto __PUSH_NATIVE_END_NOREF;
 
 __PUSH_NATIVE_END_NOREF:
 
@@ -3618,6 +3616,7 @@ __PUSH_NATIVE_END:
 
 __PUSH_ARRAY:
 
+	np = GET_3X();
 	val = &SP[-np];
 	np--;
 	defined = EXEC_object(val, &class, &object);
@@ -3638,39 +3637,68 @@ __PUSH_ARRAY_2:
 
 static void _pop_array(ushort code)
 {
-	static const void *jump[] = { &&__POP_GENERIC, &&__POP_QUICK_ARRAY, && __POP_QUICK_COLLECTION, &&__POP_ARRAY };
+	static const void *jump[] = {
+		&&__POP_GENERIC, &&__POP_GENERIC, &&__POP_GENERIC, &&__POP_GENERIC,
+		&&__POP_ARRAY, &&__POP_ARRAY, &&__POP_ARRAY, &&__POP_ARRAY,
+		&&__POP_NATIVE_ARRAY, NULL, &&__POP_NATIVE_ARRAY_SIMPLE, &&__POP_NATIVE_ARRAY_SIMPLE,
+		&&__POP_NATIVE_COLLECTION, &&__POP_NATIVE_ARRAY_INTEGER, &&__POP_NATIVE_ARRAY_FLOAT, NULL
+	};
+
 
 	CLASS *class;
 	OBJECT *object;
-	ushort np = GET_3X();
+	ushort np;
 	int i;
 	void *data;
 	bool defined;
 	VALUE *NO_WARNING(val);
 	VALUE swap;
 	int fast;
+	CARRAY *array;
 
-	val = &SP[-np];
-	goto *jump[((unsigned char)code) >> 6];
+	goto *jump[(code >> 4) & 0xF];
 
 __POP_GENERIC:
 
+	np = GET_3X();
+	val = &SP[-np];
+
 	defined = EXEC_object(val, &class, &object);
 
-	fast = 3;
+	fast = 0x40 + np;
 
 	if (defined)
 	{
 		if (class->quick_array == CQA_ARRAY)
-			fast = 1;
+		{
+			if (np == 2)
+			{
+				array = (CARRAY *)object;
+				if (array->type == GB_T_INTEGER)
+					fast = 0xD0;
+				else if (array->type == GB_T_FLOAT)
+					fast = 0xE0;
+				else if (TYPE_is_object(array->type))
+					fast = 0xB0;
+				else
+					fast = 0xA0 + array->type;
+			}
+			else
+			{
+				if (np > (MAX_ARRAY_DIM + 1))
+					THROW(E_TMPARAM);
+
+				fast = 0x80 + np;
+			}
+		}
 		else if (class->quick_array == CQA_COLLECTION)
 		{
 			if (np < 2)
 				THROW(E_NEPARAM);
 			else if (np > 2)
 				THROW(E_TMPARAM);
-			
-			fast = 2;
+
+			fast = 0xC0;
 		}
 		else
 		{
@@ -3685,48 +3713,36 @@ __POP_GENERIC:
 		}
 	}
 
-	*PC |= fast << 6;
+	*PC = (*PC & 0xFF00) | fast;
 
 	goto __POP_ARRAY_2;
 
-__POP_QUICK_ARRAY:
+__POP_NATIVE_ARRAY:
+
+	np = GET_3X();
+	val = &SP[-np];
 
 	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
 
-	TYPE type = ((CARRAY *)object)->type;
-
-	VALUE_copy(&swap, &val[0]);
+	/*VALUE_copy(&swap, &val[0]);
 	VALUE_copy(&val[0], &val[-1]);
-	VALUE_copy(&val[-1], &swap);
+	VALUE_copy(&val[-1], &swap);*/
 
 	//VALUE_conv(&val[0], type);
-	VALUE_conv_integer(&val[1]);
+	for (i = 1; i < np; i++)
+		VALUE_conv_integer(&val[i]);
 
-	if (np == 2)
-	{
-		data = CARRAY_get_data((CARRAY *)object, val[1]._integer.value);
-	}
-	else
-	{
-		for (i = 2; i < np; i++)
-			VALUE_conv_integer(&val[i]);
-
-		data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
-	}
+	data = CARRAY_get_data_multi((CARRAY *)object, (GB_INTEGER *)&val[1], np - 1);
 	if (data == NULL)
 		PROPAGATE();
 
-	VALUE_write(val, data, type);
+	VALUE_write(&val[-1], data, array->type);
+	goto __POP_NATIVE_END;
 
-	SP = val + 1;
-	RELEASE(SP - 1);
-	RELEASE(SP - 2);
-	SP -= 2;
-	//OBJECT_UNREF(object);
-	return;
+__POP_NATIVE_COLLECTION:
 
-__POP_QUICK_COLLECTION:
-
+	val = &SP[-2];
 	EXEC_object_fast(val, &class, &object);
 
 	VALUE_conv_variant(&val[-1]);
@@ -3738,17 +3754,91 @@ __POP_QUICK_COLLECTION:
 	RELEASE_MANY(SP, 3);
 	return;
 
+__POP_NATIVE_ARRAY_SIMPLE:
+
+	val = &SP[-2];
+	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
+
+	/*VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);*/
+
+	//VALUE_conv(&val[0], type);
+	VALUE_conv_integer(&val[1]);
+
+	data = CARRAY_get_data(array, val[1]._integer.value);
+	if (data == NULL)
+		PROPAGATE();
+
+	VALUE_write(&val[-1], data, array->type);
+	goto __POP_NATIVE_END;
+
+__POP_NATIVE_ARRAY_INTEGER:
+
+	val = &SP[-2];
+	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
+
+	/*VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);*/
+
+	VALUE_conv_integer(&val[-1]);
+	VALUE_conv_integer(&val[1]);
+
+	i = val[1]._integer.value;
+	if (i < 0 || i >= array->count)
+		THROW(E_BOUND);
+
+	((int *)(array->data))[i] = val[-1]._integer.value;
+	goto __POP_NATIVE_FAST_END;
+
+__POP_NATIVE_ARRAY_FLOAT:
+
+	val = &SP[-2];
+	EXEC_object_array(val, class, object);
+	array = (CARRAY *)object;
+
+	/*VALUE_copy(&swap, &val[0]);
+	VALUE_copy(&val[0], &val[-1]);
+	VALUE_copy(&val[-1], &swap);*/
+
+	VALUE_conv_float(&val[-1]);
+	VALUE_conv_integer(&val[1]);
+
+	i = val[1]._integer.value;
+	if (i < 0 || i >= array->count)
+		THROW(E_BOUND);
+
+	((double *)(array->data))[i] = val[-1]._float.value;
+
+__POP_NATIVE_FAST_END:
+
+	SP = val + 1;
+	OBJECT_UNREF(object);
+	SP -= 2;
+	return;
+
+__POP_NATIVE_END:
+
+	SP = val + 1;
+	OBJECT_UNREF(object);
+	RELEASE(SP - 2);
+	SP -= 2;
+	//OBJECT_UNREF(object);
+	return;
+
 __POP_ARRAY:
+
+	np = GET_3X();
+	val = &SP[-np];
 
 	defined = EXEC_object(val, &class, &object);
 
 __POP_ARRAY_2:
 
 	/* swap object and value to be inserted */
-
-	//swap = val[0];
-	//val[0] = val[-1];
-	//val[-1] = swap;
 	VALUE_copy(&swap, &val[0]);
 	VALUE_copy(&val[0], &val[-1]);
 	VALUE_copy(&val[-1], &swap);
@@ -3783,4 +3873,49 @@ static void _quit(ushort code)
 			EXEC_quit();
 			break;
 	}
+}
+
+static void _break(ushort code)
+{
+	if (EXEC_debug)
+	{
+		TC = PC + 1;
+		TP = SP;
+
+		if (CP && CP->component == COMPONENT_main)
+		{
+			if (EXEC_profile_instr)
+				DEBUG.Profile.Add(CP, FP, PC);
+
+			code = (uchar)code;
+
+			if (code == 0)
+			{
+				if (!DEBUG_info->stop)
+					return;
+
+				// Return from (void stack)
+				if (DEBUG_info->leave)
+				{
+					if (STACK_get_current()->pc)
+						return;
+					if (FP == DEBUG_info->fp)
+						return;
+					if (BP > DEBUG_info->bp)
+						return;
+				}
+				// Forward or Return From
+				else if (DEBUG_info->fp != NULL)
+				{
+					if (BP > DEBUG_info->bp)
+						return;
+				}
+				// otherwise, Next
+			}
+
+			DEBUG.Breakpoint(code);
+		}
+	}
+	else
+		*PC = C_NOP;
 }
