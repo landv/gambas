@@ -8,9 +8,6 @@
   <%If System.RightToLeft Then%>
   <link rel="stylesheet" href="<%/%>/style-rtl.css">
   <%Endif%>
-  <%If Request.Exist("w") Then%>
-  <link rel="stylesheet" href="<%/%>/style-w.css">
-  <%Endif%>
   <link rel="icon" href="<%/%>/logo.png" type="image/png">
   <title><%=("Gambas Documentation")%> - <%_PrintTitle%></title>
 </head>
@@ -32,7 +29,11 @@ H1 { display: none; }
 <%Endif%>
   
 
-<%If Request.Exist("v") Then%>
+<%If Request.Exist("v") Or If Request.Exist("nh") Then%>
+
+  <style type="text/css">
+  BODY { letter-spacing: 1px; }
+  </style>
 
   <%If Not Request.Exist("nh") Then%>
   
@@ -51,7 +52,7 @@ H1 { display: none; }
   
   <%Else%>
   
-  <div class="page"  style="top:0;">
+  <div class="page" style="top:0.5em;">
 
   <%Endif%>
   
@@ -120,10 +121,10 @@ H1 { display: none; }
       <%Endif%>
       <div style="float:right;">
       <%If Session.Id Then%>
+        <div class="user-name"><%=Main.FullName%></div>
         <div class="command"><input type="submit" name="logout" value="<%= ("Logout")%>"></div>
       <%Else%>
         <div class="command"><input type="submit" name="ident" value="<%=("Login")%>"></div>
-        <div class="command"><input type="submit" name="register" value="<%=("Register")%>"></div>
       <%Endif%>
       <%_PrintLang%>
       </div>

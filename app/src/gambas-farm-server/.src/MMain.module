@@ -658,6 +658,8 @@ Private Sub GetSoftware()
   Dim sDir As String
   Dim aDep As Integer[]
   Dim I As Integer
+  'Dim rAllSoftware As Result
+  'Dim iDownload As Integer
   
   OpenDatabase
   
@@ -715,6 +717,11 @@ Private Sub GetSoftware()
     If rUser.Available Then sOwner = rUser!login
     If Not sOwner Then sOwner = "?"
     
+    ' rAllSoftware = DB.Find("software", "vendor = &1 AND name = &2", rSoftware!vendor, rSoftware!name)
+    ' For Each rAllSoftware
+    '   iDownload += rAllSoftware!download
+    ' Next
+    
     Print "10 OK"
     Print "Id="; rSoftware!id
     Print "Name="; Quote(rSoftware!name)
@@ -728,6 +735,7 @@ Private Sub GetSoftware()
     Try Print "RequiredGambasVersion="; ToVersion(rSoftware!gambas)
     Print "Checksum="; Quote(rSoftware!checksum)
     Print "DownloadCount="; rSoftware!download
+    'Print "FullDownloadCount="; iDownload
     Print "VoteCount="; rSoftware!vote
     Print "Owner="; Quote(sOwner)
     

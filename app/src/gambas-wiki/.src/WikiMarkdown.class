@@ -205,6 +205,14 @@ Public Sub Command(sCommand As String) As String[]
 
     Return Main.GetPackageTable()
 
+  Else If sCommand = "developer-table" Then
+    
+    Return Main.GetDeveloperTable()
+
+  Else If sCommand = "translator-table" Then
+
+    Return Main.GetTranslatorTable()
+
   Else
     
     Return ["**COMMAND: `" & sCommand & "`**"]

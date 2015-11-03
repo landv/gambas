@@ -20,10 +20,15 @@ Public Preview As Boolean
 Public LinkSuffix As String
 Public History As Integer
 Public UserName As String
+Public FullName As String
 
 Public (Component) As String
 Public (Class) As String
 Public Symbol As String
+
+Private $aDeveloperTable As String[]
+Private $aTranslatorTable As String[]
+Private $bInitAuthor As Boolean
 
 Private Sub AddLinkSuffix(sReq As String)
 
@@ -136,194 +141,194 @@ Public Sub Warning(sMsg As String)
   
 End
 
-Private Sub CheckLogin(sLogin As String) As Boolean
-  
-  Dim I As Integer
-  Dim sCar As String
-  
-  If Len(sLogin) < 2 Or If Len(sLogin) > 16 Then
-    Warning("The login must have at least than 2 characters and at most 16 characters.")
-    Return True
-  Endif
-  
-  If Not IsLetter(Left(sLogin)) Then
-    Warning("The login must start with a letter.")
-    Return True
-  Endif
-  
-  For I = 2 To Len(sLogin)
-    sCar = Mid$(sLogin, I, 1)
-    If IsLetter(sCar) Or If IsDigit(sCar) Then Continue
-    Warning("The login can only include digits or letters")
-    Return True
-  Next
-  
-End
+' Private Sub CheckLogin(sLogin As String) As Boolean
+'   
+'   Dim I As Integer
+'   Dim sCar As String
+'   
+'   If Len(sLogin) < 2 Or If Len(sLogin) > 16 Then
+'     Warning("The login must have at least than 2 characters and at most 16 characters.")
+'     Return True
+'   Endif
+'   
+'   If Not IsLetter(Left(sLogin)) Then
+'     Warning("The login must start with a letter.")
+'     Return True
+'   Endif
+'   
+'   For I = 2 To Len(sLogin)
+'     sCar = Mid$(sLogin, I, 1)
+'     If IsLetter(sCar) Or If IsDigit(sCar) Then Continue
+'     Warning("The login can only include digits or letters")
+'     Return True
+'   Next
+'   
+' End
+' 
+' Private Sub CheckPassword(sPassword As String) As Boolean
+' 
+'   If Len(sPassword) < 4 Or If Len(sPassword) > 32 Then
+'     Warning("The password must have at least 4 characters and at most 32 characters.")
+'     Return True
+'   Endif
+' 
+' End
+' 
+' Private Sub CheckEmail(sEmail As String) As Boolean
+' 
+'   If sEmail Like "*@*.*" Then
+'     If InStr(sEMail, "@", InStr(sEmail, "@") + 1) = 0 Then
+'       Return
+'     Endif
+'   Endif
+' 
+'   Warning("Invalid e-mail address.")
+'   Return True
+' 
+' End
 
-Private Sub CheckPassword(sPassword As String) As Boolean
-
-  If Len(sPassword) < 4 Or If Len(sPassword) > 32 Then
-    Warning("The password must have at least 4 characters and at most 32 characters.")
-    Return True
-  Endif
-
-End
-
-Private Sub CheckEmail(sEmail As String) As Boolean
-
-  If sEmail Like "*@*.*" Then
-    If InStr(sEMail, "@", InStr(sEmail, "@") + 1) = 0 Then
-      Return
-    Endif
-  Endif
-
-  Warning("Invalid e-mail address.")
-  Return True
-
-End
-
-Private Sub RegisterUser() As Boolean
-
-  Dim sFirstName As String
-  Dim sLastName As String
-  Dim sLogin As String
-  Dim sPassword As String
-  Dim sEmail2 As String
-  Dim sEmail As String
-  Dim sPassword2 As String
-  Dim sKey As String
-  Dim I As Integer
-  Dim aUser As CUser[]
-  Dim hUser As CUser
-  Dim hSmtpClient As SmtpClient
-  Dim iResult As Integer
-  Dim iSeed As Integer
-
-  If CUser.Lock() Then
-    Warning("Database is locked. Try again later")
-    Return
-  Endif
-  
-  sLogin = Trim(Request["login"])
-  If Not sLogin Then
-    Warning("Please enter your login.")
-    Return
-  Endif
-  
-  sPassword = Trim(Request["password"])
-  If Not sPassword Then
-    Warning("Please enter your password.")
-    Return
-  Endif
-  
-  sPassword2 = Trim(Request["cpassword"])
-  If Not sPassword2 Then
-    Warning("Please enter the confirmation password.")
-    Return
-  Endif
-  
-  sFirstName = Trim(Request["fname"])
-  If Not sFirstName Then
-    Warning("Please enter your first name.")
-    Return
-  Endif
-
-  sLastName = Trim(Request["lname"])
-  If Not sLastName Then
-    Warning("Please enter your last name.")
-    Return
-  Endif
-
-  sEmail = Trim(Request["email"])
-  If Not sEmail Then
-    Warning("Please enter your e-mail.")
-    Return
-  Endif
-  
-  sEmail2 = Trim(Request["cemail"])
-  If Not sEmail2 Then
-    Warning("Please enter the confirmation e-mail.")
-    Return
-  Endif
-  
-  If CheckLogin(sLogin) Then Return
-  
-  If CheckPassword(sPassword) Then Return
-  
-  If sPassword2 <> sPassword Then
-    Warning("The confirmation password does not match.")
-    Return
-  Endif
-  
-  If CheckEmail(sEmail) Then Return
-  
-  If sEmail2 <> sEmail2 Then
-    Warning("The confirmation e-mail does not match.")
-    Return
-  Endif
-  
-  aUser = CUser.Load()
-
-  If CUser.Find(aUser, sLogin) Then
-    Warning("This login is already in use.")
-    Return
-  Endif
-  
-  If CUser.FindByEmail(aUser, sEmail) Then
-    Warning("This e-mail is already in use.")
-    Return
-  Endif
-  
-  Try iResult = CInt(Request["result"])
-  Try iSeed = CInt(Request["seed"])
-  Randomize iSeed
-  iSeed = Int(Rnd(0, 16777216))
-  If iSeed <> iResult Then
-    Warning("The result is incorrect.")
-    Return
-  Endif
-  
-  For I = 1 To 6
-    sKey &= Hex$(Int(Rnd(65536)), 4)
-  Next
-  
-  hSmtpClient = New SmtpClient
-  hSmtpClient.From = "noreply@gambaswiki.org"
-  hSmtpClient.To.Add(sFirstName & " " & sLastName & " <" & sEmail & ">")
-  hSmtpClient.Host = "smtp.hosting.blueleader.net"
-  hSmtpClient.Subject = "Gambas wiki registration confirmation"
-  hSmtpClient.Body = "Hi,\n\n"
-    "You have requested a Gambas wiki account.\n"
-    "Please click on the following link to confirm your registration:\n\n"
-    "http://" & Application.Host &/ Application.Root &/ "~confirm?key=" & URL.Encode(sKey) & "&login=" & URL.Encode(sLogin) & "\n\n"
-  
-  Try hSmtpClient.Send
-  If Error Then
-    Warning("Cannot send confirmation mail:" & " " & Error.Text)
-    Return
-  Endif
-  
-  hUser = New CUser
-  hUser.Login = sLogin
-  hUser.Password = sPassword
-  hUser.FirstName = sFirstName
-  hUser.LastName = sLastName
-  hUser.Email = sEmail
-  hUser.Confirm = sKey
-  aUser.Add(hUser)
-  CUser.Save(aUser)
-  
-  Message("You have been successfully registered! A confirmation mail has been sent...")
-  
-  CUser.Unlock
-  
-  Main.Log("Registration requested", sLogin)
-  
-  Response.Redirect(Application.Root &/ Request.Path)
-  Return True
-  
-End
-
+' Private Sub RegisterUser() As Boolean
+' 
+'   Dim sFirstName As String
+'   Dim sLastName As String
+'   Dim sLogin As String
+'   Dim sPassword As String
+'   Dim sEmail2 As String
+'   Dim sEmail As String
+'   Dim sPassword2 As String
+'   Dim sKey As String
+'   Dim I As Integer
+'   Dim aUser As CUser[]
+'   Dim hUser As CUser
+'   Dim hSmtpClient As SmtpClient
+'   Dim iResult As Integer
+'   Dim iSeed As Integer
+' 
+'   If CUser.Lock() Then
+'     Warning("Database is locked. Try again later")
+'     Return
+'   Endif
+'   
+'   sLogin = Trim(Request["login"])
+'   If Not sLogin Then
+'     Warning("Please enter your login.")
+'     Return
+'   Endif
+'   
+'   sPassword = Trim(Request["password"])
+'   If Not sPassword Then
+'     Warning("Please enter your password.")
+'     Return
+'   Endif
+'   
+'   sPassword2 = Trim(Request["cpassword"])
+'   If Not sPassword2 Then
+'     Warning("Please enter the confirmation password.")
+'     Return
+'   Endif
+'   
+'   sFirstName = Trim(Request["fname"])
+'   If Not sFirstName Then
+'     Warning("Please enter your first name.")
+'     Return
+'   Endif
+' 
+'   sLastName = Trim(Request["lname"])
+'   If Not sLastName Then
+'     Warning("Please enter your last name.")
+'     Return
+'   Endif
+' 
+'   sEmail = Trim(Request["email"])
+'   If Not sEmail Then
+'     Warning("Please enter your e-mail.")
+'     Return
+'   Endif
+'   
+'   sEmail2 = Trim(Request["cemail"])
+'   If Not sEmail2 Then
+'     Warning("Please enter the confirmation e-mail.")
+'     Return
+'   Endif
+'   
+'   If CheckLogin(sLogin) Then Return
+'   
+'   If CheckPassword(sPassword) Then Return
+'   
+'   If sPassword2 <> sPassword Then
+'     Warning("The confirmation password does not match.")
+'     Return
+'   Endif
+'   
+'   If CheckEmail(sEmail) Then Return
+'   
+'   If sEmail2 <> sEmail2 Then
+'     Warning("The confirmation e-mail does not match.")
+'     Return
+'   Endif
+'   
+'   aUser = CUser.Load()
+' 
+'   If CUser.Find(aUser, sLogin) Then
+'     Warning("This login is already in use.")
+'     Return
+'   Endif
+'   
+'   If CUser.FindByEmail(aUser, sEmail) Then
+'     Warning("This e-mail is already in use.")
+'     Return
+'   Endif
+'   
+'   Try iResult = CInt(Request["result"])
+'   Try iSeed = CInt(Request["seed"])
+'   Randomize iSeed
+'   iSeed = Int(Rnd(0, 16777216))
+'   If iSeed <> iResult Then
+'     Warning("The result is incorrect.")
+'     Return
+'   Endif
+'   
+'   For I = 1 To 6
+'     sKey &= Hex$(Int(Rnd(65536)), 4)
+'   Next
+'   
+'   hSmtpClient = New SmtpClient
+'   hSmtpClient.From = "noreply@gambaswiki.org"
+'   hSmtpClient.To.Add(sFirstName & " " & sLastName & " <" & sEmail & ">")
+'   hSmtpClient.Host = "smtp.hosting.blueleader.net"
+'   hSmtpClient.Subject = "Gambas wiki registration confirmation"
+'   hSmtpClient.Body = "Hi,\n\n"
+'     "You have requested a Gambas wiki account.\n"
+'     "Please click on the following link to confirm your registration:\n\n"
+'     "http://" & Application.Host &/ Application.Root &/ "~confirm?key=" & URL.Encode(sKey) & "&login=" & URL.Encode(sLogin) & "\n\n"
+'   
+'   Try hSmtpClient.Send
+'   If Error Then
+'     Warning("Cannot send confirmation mail:" & " " & Error.Text)
+'     Return
+'   Endif
+'   
+'   hUser = New CUser
+'   hUser.Login = sLogin
+'   hUser.Password = sPassword
+'   hUser.FirstName = sFirstName
+'   hUser.LastName = sLastName
+'   hUser.Email = sEmail
+'   hUser.Confirm = sKey
+'   aUser.Add(hUser)
+'   CUser.Save(aUser)
+'   
+'   Message("You have been successfully registered! A confirmation mail has been sent...")
+'   
+'   CUser.Unlock
+'   
+'   Main.Log("Registration requested", sLogin)
+'   
+'   Response.Redirect(Application.Root &/ Request.Path)
+'   Return True
+'   
+' End
+' 
 Private Sub AddCacheHeaders(Optional dLast As Date)
 
   'If InternetExplorer Then Return
@@ -339,6 +344,38 @@ Private Sub AddCacheHeaders(Optional dLast As Date)
 
 End
 
+Private Sub LoadUser(sUser As String) As Collection
+
+  Dim sPath As String
+  Dim cUser As Collection
+  Dim sLine As String
+  Dim iPos As Integer
+  Dim sField As String
+  Dim sValue As String
+
+  sPath = User.Home &/ "data/@/.user" &/ UCase(sUser)
+  If Not Exist(sPath) Then Return
+  
+  cUser = New Collection
+  
+  For Each sLine In Split(File.Load(sPath), "\n")
+    iPos = InStr(sLine, ": ")
+    If iPos = 0 Then Continue
+    sField = Left(sLine, iPos - 1)
+    sValue = Mid$(sLine, iPos + 2)
+    If sField = "mot de passe" Then
+      cUser["password"] = sValue
+    Else If sField = "activé" Then
+      cUser["activé"] = sValue <> "Non"
+    Else
+      cUser[sField] = sValue
+    Endif
+  Next
+  
+  Return cUser
+
+End
+
 Public Sub Main()
 
   Dim sMsg As String
@@ -346,10 +383,10 @@ Public Sub Main()
   Dim sDir As String
   Dim aPath As String[]
   Dim sLang As String
-  Dim hUser As CUser
   Dim sData As String
   Dim sPath As String
   Dim sText As String
+  Dim cUser As Collection
   
   ' If Application.Host = "gambasfarm.org" Then
   '   Response.Redirect("http://gambasfarm.org/farm")
@@ -406,28 +443,36 @@ Public Sub Main()
     Return
   Endif
   
+  If Request.Exist("lang") Then
+    sLang = Request["lang"]
+    If sLang = DEFAULT_LANG Then sLang = ""
+    If sLang <> Request["l"] Then
+      If sLang Then
+        Redirect("l=" & sLang)
+      Else
+        Redirect
+      Endif
+    Endif
+  Endif
+
   SetLanguage(Request["l"])
-  If Request.Exist("v") Then AddLinkSuffix("v")
-  If Request.Exist("nh") Then AddLinkSuffix("nh")
+  If Request.Exist("v") Or If Request.Exist("nh") Then AddLinkSuffix("nh")
   If Request.Exist("nl") Then AddLinkSuffix("nl")
   If Request.Exist("w") Then AddLinkSuffix("w")
 
-  If Path = "/~register" Then
-    If Request.Exist("cancel") Then
-      Response.Redirect(Application.Root)
-      Return
-    Else If Request.Exist("confirm") Then
-      If RegisterUser() Then Return
-    Endif
-    Register.Render
-    If Session.Id And If Session["login"] = "" Then Session.Abandon
-    Return
-  Endif
+  ' If Path = "/~register" Then
+  '   If Request.Exist("cancel") Then
+  '     Response.Redirect(Application.Root)
+  '     Return
+  '   Else If Request.Exist("confirm") Then
+  '     If RegisterUser() Then Return
+  '   Endif
+  '   Register.Render
+  '   If Session.Id And If Session["login"] = "" Then Session.Abandon
+  '   Return
+  ' Endif
   
-  If Path = "/~confirm" Then
-    Confirm.Render
-    Return
-  Else If Path = "/~stat" Then
+  If Path = "/~stat" Then
     HttpStat.Render
     Return
   Else If Path Begins "/~dump" Then
@@ -458,41 +503,30 @@ Public Sub Main()
     Return
   Endif
   
-  If Request.Exist("lang") Then
-    sLang = Request["lang"]
-    If sLang = DEFAULT_LANG Then sLang = ""
-    If sLang <> Request["l"] Then
-      If sLang Then
-        Redirect("l=" & sLang)
-      Else
-        Redirect
-      Endif
-    Endif
-  Endif
-
   If Request.Exist("logout") Then
     
     Session.Abandon
     
-  Else If Request.Exist("register") Then
-    
-    Response.Redirect(Application.Root &/ "~register" & Main.LinkSuffix)
-    Return
-   
+  ' Else If Request.Exist("register") Then
+  '   
+  '   Response.Redirect(Application.Root &/ "~register" & Main.LinkSuffix)
+  '   Return
+  '  
   Else If Request["login"] And If Request["password"] And If Request["ok"] Then
     
     Session.Abandon
     
-    For Each hUser In CUser.Load()
-      If hUser.Login = Request["login"] And If hUser.Password = Request["password"] And If Not hUser.Confirm Then
-        Session["login"] = hUser.Login
-        Break
-      Endif
-    Next
+    cUser = LoadUser(Request["login"])
+    If cUser And If cUser["password"] = Request["password"] And If cUser["activé"] Then
+      Session["login"] = LCase(Request["login"])
+      Session["full-name"] = Trim(cUser["prénom"] & " " & cUser["nom"])
+    Endif
     
   Endif
 
   UserName = Session["login"]
+  FullName = Session["full-name"]
+  If Not FullName Then FullName = UserName
   {Exist} = Main.ExistPage(Path)
   Image = IsImage(Path)
   Try History = CInt(Request["h"])
@@ -609,6 +643,7 @@ Public Sub Main()
 
   Wiki.Render
   CComponent.Exit
+  CAuthor.Exit
   
 Catch
   
@@ -1234,3 +1269,96 @@ Public Sub GetPackageTable() As String[]
   Return aResult
   
 End
+
+Private Sub InitAuthor()
+  
+  Dim hFile As File
+  Dim hAuthor As CAuthor
+  Dim aDev As New String[]
+  Dim aTrans As New String[]
+  Dim aCountry As New String[]
+  Dim cCountry As New Collection
+  Dim sCountry As String
+  Dim aAuthor As Object[]
+  Dim iInd As Integer
+  Dim sWork As String
+  
+  If $bInitAuthor Then Return
+  
+  hFile = Open "authors.txt" For Read 
+  
+  While Not Eof(hFile)
+    hAuthor = New CAuthor(hFile)
+  Wend 
+  
+  Close #hFile
+  
+  CAuthor.All.Sort
+  
+  For Each hAuthor In CAuthor.All
+  
+    If hAuthor.Translator Then 
+    
+      For Each sCountry In hAuthor.Translation
+        If Not cCountry.Exist(sCountry) Then
+          cCountry[sCountry] = New Object[]
+          aCountry.Add(sCountry)
+        Endif
+        cCountry[sCountry].Add(hAuthor)
+      Next
+      
+    Endif
+    
+    If hAuthor.Developer Then
+    
+      aDev.Add("==")
+      aDev.Add(hAuthor.GetLink())
+      aDev.Add("--")
+      aDev.Add(hAuthor.Country)
+      aDev.Add("--")
+      For Each sWork In hAuthor.Works
+        aDev.Add("* " & sWork)
+      Next
+    
+    Endif
+  
+  Next 
+  
+  $aDeveloperTable = aDev
+  
+  aCountry.Sort
+  
+  For Each sCountry In aCountry
+  
+    aTrans.Add("==")
+    aTrans.Add(sCountry)
+    aTrans.Add("--")
+    
+    aAuthor = cCountry[sCountry]
+    For iInd = 0 To aAuthor.Max
+      aTrans.Add(aAuthor[iInd].GetLink() & "\\")
+    Next
+    
+  Next 
+  
+  $aTranslatorTable = aTrans
+  
+  $bInitAuthor = True
+  
+End
+
+Public Sub GetDeveloperTable() As String[]
+  
+  InitAuthor
+  Return $aDeveloperTable
+  
+End
+
+Public Sub GetTranslatorTable() As String[]
+  
+  InitAuthor
+  Return $aTranslatorTable
+  
+End
+
+

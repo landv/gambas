@@ -10,10 +10,11 @@ HTML, BODY {
 BODY {
   padding: 0px;
   margin: 0px auto;
+  font-family: sans-serif;
   /*font-size: 10pt;
   font-family: default-font;*/
   background: white;
-  color: black;
+  color: #404040;
 }
 
 INPUT[type=text] {
@@ -87,12 +88,11 @@ P {
 
 H1,H2,H3,H4,H5,H6 {
   margin-bottom: 0;
-  font-family: serif;
 }
 
 H1,H2 {
   letter-spacing: 1px;
-  padding: 0.2em 0;
+  /*padding: 0.2em 0;*/
   /*border-bottom: solid 1px #D8D8D8;*/
   /*font-weight: normal;*/
 }
@@ -177,7 +177,7 @@ TABLE.desc > TBODY > TR > TH {
   position: fixed;
   z-index: 10;
   background: white;
-  box-shadow: 0 0 8px gray;
+  /*border-bottom: solid 1px #C0C0C0;*/
   /*background: #DFA36F;
   border-top: solid 3px #DF6B00;
   border-bottom: solid 4px #DF6B00;*/
@@ -194,7 +194,7 @@ TABLE.desc > TBODY > TR > TH {
 }
 
 .header-inside-v {
-  max-width: 800px;
+  max-width: 80em;
   margin: 0 auto;
   background: #E8E8E8;
   border-bottom-left-radius: 32px;
@@ -226,8 +226,8 @@ TABLE.desc > TBODY > TR > TH {
 }
 
 .page {
-  padding: 4px 8px;
-  max-width: 800px;
+  padding: 0 0.5em 0.5em 0.5em;
+  max-width: 80em;
   /*margin: 0 auto;*/
   position: relative;
   top: 2em;
@@ -286,7 +286,6 @@ DIV.message {
   top: 0;
   bottom: 0;
   padding: 4px;
-  border-top: solid 2px #D8D8D8;
 }
 
 .edit {
@@ -580,3 +579,52 @@ DIV.syntax > P:first-child {
   box-shadow: 0 0 4px gray;
 }
 
+.user-name {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+DIV.welcome {
+  color: #3398C3;
+  /*padding: 0.5em 1em;*/
+  /*border-radius: 1em;*/
+  font-size: 150%;
+  letter-spacing: 1px;
+}
+
+DIV.news {
+  /*padding: 1em;
+  border: solid 0.3em #3398C3;
+  border-radius: 0.6em;*/
+  margin-top: 2em;
+  margin-bottom: 1em;
+  border-top: solid 0.4em #3398C3;
+  padding-left: 8em;
+  padding-right: 2em;
+}
+
+DIV.news > H3 {
+  margin-top: 0;
+  border-bottom: solid 1px #AFE8FF;
+}
+
+DIV.date {
+  position: relative;
+  float: left;
+  display: table;
+  background: #8CC7DF;
+  font-weight: bold;
+  color: white;
+  border: solid 0.4em #3398C3;
+  border-radius: 100%;
+  margin-top: -1.5em;
+  margin-left: -7em;
+  width: 5em;
+  height: 5em;
+}
+
+DIV.date p {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
