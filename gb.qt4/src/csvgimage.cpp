@@ -28,6 +28,8 @@
 #include "cpaint_impl.h"
 #include "csvgimage.h"
 
+#include <QtGlobal>
+
 #define MM_TO_PT(_mm) ((_mm) * 72 / 25.4)
 #define PT_TO_MM(_pt) ((_pt) / 72 * 25.4)
 
@@ -116,6 +118,14 @@ BEGIN_METHOD(SvgImage_Resize, GB_FLOAT width; GB_FLOAT height)
 
 END_METHOD
 
+#ifdef QT5
+static void myMessageHandler(QtMsgType, const QMessageLogContext &, const QString &)
+#else
+static void myMessageHandler(QtMsgType, const char *)
+#endif
+{
+}
+
 static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 {
 	QSvgRenderer *renderer;
@@ -129,7 +139,17 @@ static const char *load_file(CSVGIMAGE *_object, const char *path, int len_path)
 
 	data = QByteArray::fromRawData(addr, len);
 
+#ifdef QT5
+	qInstallMessageHandler(myMessageHandler);
+#else
+	qInstallMsgHandler(myMessageHandler);
+#endif
 	renderer = new QSvgRenderer(data);
+#ifdef QT5
+	qInstallMessageHandler(0);
+#else
+	qInstallMsgHandler(0);
+#endif
 	if (!renderer->isValid())
 	{
 		error = "Unable to load SVG file: unable to create renderer";

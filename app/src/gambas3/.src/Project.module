@@ -1014,14 +1014,14 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
   'Dim hImageStartup As Image
   Dim sKey As String
 
-  If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
+  'If Not $cImageCache["base"] Then $cImageCache["base"] = Picture["icon:/32/file"].Image
 
   If iSize = 0 Then iSize = 16
 
   sKey = sModule & "-" & iSize & If(bStartup, "s", "") & ".png"
   hImage = $cImageCache[sKey]
   If Not hImage Then
-    hImage = $cImageCache["base"]
+    hImage = Picture["icon:/" &/ CStr(iSize) &/ "file"].Image '$cImageCache["base"]
     hImage = hImage.Stretch(iSize, iSize)
     hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
     hImage.PaintImage(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
