@@ -110,16 +110,23 @@ Static Private Sub AddPath(sMap As String, sPath As String, Optional sPattern As
   
   If Not sPattern Then
     
-    If File.Name(sPath) Begins "breeze" Then
-      sPattern = "*"
-    Else
-      aDir = Dir(sPath, "[1-9]*", gb.Directory) 
-      If aDir.Count > 0 And If aDir[0] Like "*[1-9]x[1-9]*" Then
-        sPattern = "&1x&1!&2"
-      Else If Exist(sPath &/ "scalable") Then
-        sPattern = "&1x&1!&2"
+    sPattern = "*"
+    
+    aDir = Dir(sPath, "*", gb.Directory) 
+    If aDir.Count Then
+      If aDir[0] Like "*[1-9]x[1-9]*" Then
+          sPattern = "&1x&1!&2"
+      Else If IsDigit(aDir[0]) Or If Exist(sPath &/ "scalable") Then
+        sPattern = "&1!&2"
       Else
-        sPattern = "&2!&1"
+        aDir = Dir(sPath &/ aDir[0], "*", gb.Directory)
+        If aDir.Count Then
+          If aDir[0] Like "*[1-9]x[1-9]*" Then
+            sPattern = "&2!&1x&1"
+          Else If IsDigit(aDir[0]) Or If Exist(sPath &/ "scalable") Then
+            sPattern = "&2!&1"
+          Endif
+        Endif
       Endif
     Endif
   Endif
@@ -171,8 +178,8 @@ End
 
 Static Private Sub SearchTheme(sDesktop As String)
   
-  Dim hFile As File
-  Dim sLig As String
+  'Dim hFile As File
+  'Dim sLig As String
   Dim sIconPath As String
   Dim sPath As String
   Dim sTheme As String
@@ -285,7 +292,7 @@ Static Private Sub SearchTheme(sDesktop As String)
       
   End Select 
   
-  AddPath("", "stock", "&2")
+  AddPath("", "stock", "&1")
   $aIconPath.Add("#")
   
 End
@@ -500,6 +507,8 @@ Static Public Function _get((Key) As String, Optional {Default} As String) As Pi
   If Not $bInit Then 
     InitTheme
   Endif
+  
+  If $bDebug Then Error "gb.form: load stock icon: "; Key
   
   iSize = 16
   iPos = InStr(Key, "/")
