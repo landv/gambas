@@ -476,7 +476,7 @@ Private Function CopyExtraFiles(sSys As String, sBuildDir As String)
   
 End
 
-Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
+Private Function GetExtraFilesDir(sSys As String, sFormat As String, Optional bDebian As Boolean) As String
   
   Dim sFile As String
   Dim aFile As String[]
@@ -489,7 +489,11 @@ Private Function GetExtraFilesDir(sSys As String, sFormat As String) As String
     aFile = Split(sFile, "\t")
     aFile.Resize(2)
     
-    sRes &= Subst(sFormat, Shell$(aFile[1])) & "\n"
+    If bDebian Then
+      sRes &= Subst(sFormat, aFile[1]) & "\n"
+    Else
+      sRes &= Subst(sFormat, Shell$(aFile[1])) & "\n"
+    Endif
     
   Next
   
@@ -846,7 +850,7 @@ Private Function MakeDebPackage(sSys As String)
     Print #hFile, "usr/share/applications"
     Print #hFile, "usr/share/pixmaps"
   Endif 
-  Print #hFile, GetExtraFilesDir(sSys, "&1")
+  Print #hFile, GetExtraFilesDir(sSys, "&1", True)
   Close #hFile
   
   'debian/install

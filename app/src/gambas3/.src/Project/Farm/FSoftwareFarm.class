@@ -6,7 +6,7 @@ Private $hSoft As CSoftware
 
 Private Enum WIZ_INDEX, WIZ_FARM, WIZ_SOFTWARE
 
-Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_VOTE, SORT_INSTALLED
+Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_INSTALLED
 
 Private $hIdentity As FarmIdentity
 Private $hTimerArrange As Timer
@@ -126,7 +126,7 @@ Public Sub Reload()
   svwFarm.Children.Clear
   
   hReq = New FarmRequest($hIdentity.Farm) As "Request"
-  hReq.SearchSoftware(["date", "download", "vote", "date"][cmbSort.Index], "", txtFilter.Text, tagFarm.GetTags())
+  hReq.SearchSoftware(["date", "download", "date"][cmbSort.Index], "", txtFilter.Text, tagFarm.GetTags())
   spnFarm.Show
   
 End
