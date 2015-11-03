@@ -1,0 +1,21 @@
+#!/usr/bin/env gbs3
+
+Dim S As String = "abcdefgh" & "efghefgh"
+Dim M As Integer = (1024 \ Len(S)) * 768
+Dim G As String
+Dim I As Integer
+Dim L As Integer
+Dim F As Float = Timer
+
+While I < M + 1000
+
+  Inc I
+  G &= S
+  G = Replace(G, "efgh", "____")
+  L = Len(S) * I
+  If L Mod (1024*256) = 0 Then
+    Print CInt(Timer - F);"sec\t\t";L \ 1024;"kb"
+    Flush
+  Endif
+
+Wend
