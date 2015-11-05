@@ -1444,6 +1444,13 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   _RefreshLine($Y)
   
   If NX <> $X Or If NY <> $Y Then
+    
+    If Not Mark Then
+      _RefreshLine(NY)
+    Else
+      _RefreshLine(Min(NY, $Y), Max(NY, $Y) - Min(NY, $Y) + 1)
+    Endif
+    
     $X = NX
     $Y = NY
     $XY = LinePos($Y, $X)
@@ -1458,7 +1465,6 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     $SY = $Y
     $SXY = $XY
   Else
-    Refresh
     Clipboard.Current = Clipboard.Selection
     Copy()
     Clipboard.Current = Clipboard.Default
@@ -1466,7 +1472,6 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   
   $bShowCursor = True
   If Not $bReadOnly Then $hTimerCursor.Start
-  _RefreshLine($Y)
   
   '$hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y))
   
@@ -2155,10 +2160,17 @@ FOUND:
   
 End
 
-Public Sub _RefreshLine(Y As Integer) 
+Public Sub _RefreshLine(Y As Integer, Optional N As Integer = 1)
 
-  If Y < 0 Then Return
-  $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
+  If Y < 0 Or If Y > $hDoc.Max Or If N <= 0 Then Return
+  
+  N = Min(N, $hDoc.Count - Y)
+  
+  If N = 1 Then
+    $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
+  Else
+    $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowY(Y + N) - $hRows._GetRowY(Y))
+  Endif
 
 End
 
@@ -3480,7 +3492,6 @@ End
 
 Public Sub Refresh()
   
-  'Debug System.Backtrace.Join(" ")
   $hView.Refresh
   
 End
