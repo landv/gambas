@@ -60,7 +60,7 @@ static int _last_error;
 static int check_result(PGresult *res, const char *err)
 {
 	_last_error = 0;
-	
+
 	if (!res)
 	{
 		GB.Error("Out of memory");
@@ -123,7 +123,7 @@ static char *get_quote_string(const char *str, int len, char quote)
 	char *res, *p, c;
 	int len_res;
 	int i;
-	
+
 	len_res = len;
 	for (i = 0; i < len; i++)
 	{
@@ -131,9 +131,9 @@ static char *get_quote_string(const char *str, int len, char quote)
 		if (c == quote || c == '\\' || c == 0)
 			len_res++;
 	}
-	
+
 	res = GB.TempString(NULL, len_res);
-	
+
 	p = res;
 	for (i = 0; i < len; i++)
 	{
@@ -152,7 +152,7 @@ static char *get_quote_string(const char *str, int len, char quote)
 			*p++ = c;
 	}
 	*p = 0;
-	
+
 	return res;
 }
 
@@ -163,13 +163,13 @@ static char *get_quoted_table(const char *table)
 	int len;
 	char *point;
 	char *res;
-	
+
 	if (!table || !*table)
 		return "";
-	
+
 	len = strlen(table);
 	point = index(table, '.');
-	
+
 	if (!point)
 	{
 		res = GB.TempString(NULL, len + 2);
@@ -180,24 +180,24 @@ static char *get_quoted_table(const char *table)
 		res = GB.TempString(NULL, len + 2);
 		sprintf(res, "%.*s.\"%s\"", (int)(point - table), table, point + 1);
 	}
-	
+
 	return res;
 }
 
 static bool get_table_schema(const char **table, char **schema)
 {
 	char *point;
-	
+
 	//fprintf(stderr, "get_table_schema: %s\n", *table);
-	
+
 	*schema = NULL;
-	
+
 	if (!*table || !**table)
 	{
 		//fprintf(stderr, "get_table_schema: -> NULL\n");
 		return TRUE;
 	}
-	
+
 	point = strchr(*table, '.');
 	if (!point)
 	{
@@ -205,7 +205,7 @@ static bool get_table_schema(const char **table, char **schema)
 		*schema = "public";
 		return FALSE;
 	}
-	
+
 	*schema = GB.TempString(*table, point - *table);
 	*table = point + 1;
 	//fprintf(stderr, "get_table_schema: -> %s / %s\n", *schema, *table);
@@ -500,7 +500,7 @@ static void query_get_param(int index, char **str, int *len, char quote)
 	index--;
 	*str = query_param[index];
 	*len = strlen(*str);
-	
+
 	if (quote == '\'')
 	{
 		*str = get_quote_string(*str, *len, quote);
@@ -588,7 +588,7 @@ static void fill_field_info(DB_DATABASE *db, DB_FIELD *info, PGresult *res, int 
 	char *val;
 	Oid type;
 	GB_VARIANT def;
-	
+
 	info->name = NULL;
 
 	type = atoi(PQgetvalue(res, row, col));
@@ -640,7 +640,7 @@ static void fill_field_info(DB_DATABASE *db, DB_FIELD *info, PGresult *res, int 
 				GB.StoreVariant(&def, &info->def);
 			}
 		}
-	}	
+	}
 
 	if (db->flags.no_collation)
 		info->collation = NULL;
@@ -699,9 +699,9 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 		GB.Error("Cannot open database: database name too long");
 		return TRUE;
 	}
-	
+
 	//fprintf(stderr, "gb.db.postgresql: host = `%s` port = `%s` dbnname = `%s` user = `%s` password = `%s`\n", desc->host, desc->port, dbname, desc->user, desc->password);
-	
+
 	conn = PQsetdbLogin(desc->host, desc->port, NULL, NULL, dbname, desc->user, desc->password);
 
 	if (!conn)
@@ -746,7 +746,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 			return TRUE;
 		}
 	}
-	
+
 	/* flags */
 
 	db->flags.no_table_type = TRUE;
@@ -867,24 +867,32 @@ static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 
 			date = GB.SplitDate((GB_DATE *)arg);
 
-			bc = date->year < 0;
-
-			l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
-				abs(date->year), date->month, date->day,
-				date->hour, date->min, date->sec);
-
-			add(_buffer, l);
-
-			if (date->msec)
+			if (date->year == 0)
 			{
-				l = sprintf(_buffer, ".%03d", date->msec);
+				l = sprintf(_buffer, "'%02d:%02d:%02d'", date->hour, date->min, date->sec);
 				add(_buffer, l);
 			}
+			else
+			{
+				bc = date->year < 0;
 
-			if (bc)
-				add(" BC", 3);
+				l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
+					abs(date->year), date->month, date->day,
+					date->hour, date->min, date->sec);
 
-			add("'", 1);
+				add(_buffer, l);
+
+				if (date->msec)
+				{
+					l = sprintf(_buffer, ".%03d", date->msec);
+					add(_buffer, l);
+				}
+
+				if (bc)
+					add(" BC", 3);
+
+				add("'", 1);
+			}
 
 			return TRUE;
 
@@ -991,7 +999,7 @@ static void query_release(DB_RESULT result, DB_INFO *info)
 	<next> is a boolean telling if we want the next row.
 
 	This function must return DB_OK, DB_ERROR or DB_NO_DATA
-	
+
 	This function must use GB.StoreVariant() to store the value in the
 	buffer.
 
@@ -1346,7 +1354,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 							"and pg_attribute.attnum > 0 and not pg_attribute.attisdropped "
 							"and pg_attribute.attrelid = pg_class.oid ";
 	}
-                
+
 	PGresult *res;
 	int i, n;
 	DB_FIELD *f;
@@ -1354,7 +1362,7 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 
 	// Table name
 	info->table = GB.NewZeroString(table);
-	
+
 	if (get_table_schema(&table, &schema))
 	{
 		if (do_query(db,"Unable to get table fields: &1", &res, qfield_all, 1, table))
@@ -1378,9 +1386,9 @@ static int table_init(DB_DATABASE *db, const char *table, DB_INFO *info)
 	for (i = 0; i < n; i++)
 	{
 		f = &info->field[i];
-		
+
 		fill_field_info(db, f, res, i, 1);
-		
+
 		f->name = GB.NewZeroString(PQgetvalue(res, i, 0));
 	}
 
@@ -1556,7 +1564,7 @@ static int table_exist(DB_DATABASE *db, const char *table)
 	PGresult *res;
 	int exist;
 	char *schema;
-	
+
 	if (get_table_schema(&table, &schema))
 	{
 		if (do_query(db, "Unable to check table: &1", &res, query, 1, table))
@@ -1803,7 +1811,7 @@ static int table_is_system(DB_DATABASE *db, const char *table)
 	char *schema;
 
 	get_table_schema(&table, &schema);
-	
+
 	if (schema)
 		return !strcmp(schema, "pg_catalog");
 
@@ -2159,7 +2167,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 	PGresult *res;
 	char *schema;
 	const char *fulltable = table;
-	
+
 	if (get_table_schema(&table, &schema))
 	{
 		if (do_query(db, "Unable to get field info: &1", &res, query, 2, table, field))
@@ -2223,7 +2231,7 @@ static int index_exist(DB_DATABASE *db, const char *table, const char *index)
 	PGresult *res;
 	int exist;
 	char *schema;
-	
+
 	if (get_table_schema(&table, &schema))
 	{
 		if (do_query(db, "Unable to check index: &1", &res, query, 2, table, index))
@@ -2278,7 +2286,7 @@ static int index_list(DB_DATABASE *db, const char *table, char ***indexes)
 	int i;
 	int count;
 	char *schema;
-	
+
 	if (get_table_schema(&table, &schema))
 	{
 		if (do_query(db, "Unable to get indexes: &1", &res, query, 1, table))
