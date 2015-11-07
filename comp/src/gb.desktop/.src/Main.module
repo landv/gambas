@@ -153,14 +153,10 @@ End
 
 Public Sub Main()
 
-  Dim hWindow As DesktopWindow
-  Dim hFrame As Rect
+  Dim aFile As DesktopFile[]
 
-  For Each hWindow In Desktop.Windows
-    hFrame = hWindow.Frame
-    Print hWindow.Id;; hWindow.Name;; hFrame.X;; hFrame.Y;; hFrame.W;; hFrame.H    
-  Next
-  
+  aFile = DesktopFile.FromMime("image/png")
+
 End
 
 

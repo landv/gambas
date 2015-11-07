@@ -41,6 +41,10 @@ gDrawingArea Widget
 #ifdef GTK3
 static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gDrawingArea *data)
 {
+	/*cairo_rectangle_list_t *list;
+	cairo_rectangle_t *r;
+	int i;*/
+
 	if (data->cached())
 	{
 		cairo_set_source_surface(cr, data->buffer, 0, 0);
@@ -56,6 +60,29 @@ static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gDrawingArea *data)
 			data->_in_draw_event = true;
 			data->onExpose(data, cr);
 			data->_in_draw_event = false;
+			/*
+			list = cairo_copy_clip_rectangle_list(cr);
+
+			fprintf(stderr, "%d %d\n", list->status, list->num_rectangles);
+			if (list->status != CAIRO_STATUS_SUCCESS)
+			{
+				data->onExpose(data, cr);
+			}
+			else
+			{
+				for (i = 0; i < list->num_rectangles; i++)
+				{
+					r = &list->rectangles[i];
+					cairo_save(cr);
+					cairo_rectangle(cr, r->x, r->y, r->width, r->height);
+					cairo_clip(cr);
+					data->onExpose(data, cr);
+					cairo_restore(cr);
+				}
+			}
+
+			cairo_rectangle_list_destroy(list);
+			*/
 		}
 		data->drawBorder(cr);
 	}
@@ -72,7 +99,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 	else
 	{
 		//data->drawBackground();
-		
+
 		if (data->onExpose)
 		{
 			data->_in_draw_event = true;
@@ -105,7 +132,7 @@ static void cb_size(GtkWidget *wid, GtkAllocation *a, gDrawingArea *data)
 {
 	if (data->canFocus())
 		data->setFocus();
-	
+
 	return false;
 }*/
 
@@ -117,27 +144,27 @@ void gDrawingArea::create(void)
 	bool was_visible = isVisible();
 	GdkRectangle rect;
 	int bg, fg;
-	
+
 	if (border)
 	{
 		getGeometry(&rect);
 		bg = background();
 		fg = foreground();
 		parent()->remove(this);
-		
+
 		for (i = 0; i < childCount(); i++)
 		{
 			ch = child(i)->border;
 			g_object_ref(G_OBJECT(ch));
 			gtk_container_remove(GTK_CONTAINER(widget), ch);
 		}
-		
+
 		_no_delete = true;
 		gtk_widget_destroy(border);
 		_no_delete = false;
 		doReparent = true;
 	}
-	
+
 	if (_cached || _use_tablet)
 	{
 		border = gtk_event_box_new();
@@ -153,23 +180,23 @@ void gDrawingArea::create(void)
 	}
 
 	realize(false);
-	
+
 	g_signal_connect(G_OBJECT(border), "size-allocate", G_CALLBACK(cb_size), (gpointer)this);
 	ON_DRAW_BEFORE(border, this, cb_expose, cb_draw);
-	
+
 	updateUseTablet();
-	
+
 	if (doReparent)
 	{
 		if (box)
 			gtk_widget_realize(box);
-				
+
 		setBackground(bg);
 		setForeground(fg);
 		setFont(font());
 		bufX = bufY = bufW = bufH = -1;
 		setGeometry(&rect);
-		
+
 		for (i = 0; i < childCount(); i++)
 		{
 			ch = child(i)->border;
@@ -177,7 +204,7 @@ void gDrawingArea::create(void)
 			moveChild(child(i), child(i)->x(), child(i)->y());
 			g_object_unref(G_OBJECT(ch));
 		}
-		
+
 		if (was_visible)
 			show();
 		else
@@ -194,12 +221,12 @@ gDrawingArea::gDrawingArea(gContainer *parent) : gContainer(parent)
 	_resize_cache = false;
 	_no_background = false;
 	_use_tablet = false;
-	
+
 	onExpose = NULL;
 	onFontChange = NULL;
-		
+
 	g_typ = Type_gDrawingArea;
-	
+
 	create();
 }
 
@@ -221,9 +248,9 @@ void gDrawingArea::updateEventMask()
 	/*
 	static int event_mask;
 	XWindowAttributes attr;
-		
+
 	gtk_widget_realize(border);
-	
+
 	if (!enabled())
 	{
 		XGetWindowAttributes(gdk_display, GDK_WINDOW_XID(border->window), &attr);
@@ -245,16 +272,16 @@ void gDrawingArea::setEnabled(bool vl)
 
 void gDrawingArea::setCached(bool vl)
 {
-	if (vl == _cached) return;	
-	
+	if (vl == _cached) return;
+
 	_cached = vl;
-	
+
 	if (!_cached)
 	{
 		UNREF_BUFFER();
-		set_gdk_bg_color(border, background());	
+		set_gdk_bg_color(border, background());
 	}
-	
+
 	create();
 	resizeCache();
 }
@@ -270,17 +297,17 @@ void gDrawingArea::resizeCache()
 #endif
 	GdkWindow *win;
 	cairo_t *cr;
-	
+
 	if (!_cached)
 		return;
-	
+
 	win = gtk_widget_get_window(GTK_WIDGET(box));
 	if (!win)
 		return;
-	
+
 	w = width();
 	h = height();
-	
+
 	if (buffer)
 	{
 #ifdef GTK3
@@ -292,7 +319,7 @@ void gDrawingArea::resizeCache()
 	}
 	else
 		bw = bh = 0;
-	
+
 	if (bw != w || bh != h)
 	{
 #ifdef GTK3
@@ -302,14 +329,14 @@ void gDrawingArea::resizeCache()
 		buf = gdk_pixmap_new(win, w, h, -1);
 		cr = gdk_cairo_create(buf);
 #endif
-		
+
 		if (w > bw || h > bh || !buffer)
 		{
 			gt_cairo_set_source_color(cr, realBackground(true));
 			cairo_rectangle(cr, 0, 0, w, h);
 			cairo_fill(cr);
 		}
-	
+
 		if (buffer)
 		{
 			if (bw > w) bw = w;
@@ -325,11 +352,11 @@ void gDrawingArea::resizeCache()
 
 			UNREF_BUFFER();
 		}
-		
+
 		buffer = buf;
 		cairo_destroy(cr);
-	}	
-	
+	}
+
 	//drawBorder(buffer);
 	refreshCache();
 }
@@ -359,7 +386,7 @@ void gDrawingArea::updateCache()
 {
 	if (!_cached)
 		return;
-	
+
 	if (!_resize_cache)
 	{
 		_resize_cache = true;
@@ -369,7 +396,7 @@ void gDrawingArea::updateCache()
 
 void gDrawingArea::clear()
 {
-	if (_cached && buffer) 
+	if (_cached && buffer)
 	{
 		UNREF_BUFFER();
 		resizeCache();
@@ -388,10 +415,10 @@ void gDrawingArea::setNoBackground(bool vl)
 {
 	/*
 	GdkWindow *win;
-	
+
 	gtk_widget_realize(widget);
 	win = widget->window;
-	
+
 	if (vl)
 		gdk_window_set_back_pixmap(win, NULL, FALSE);
 	else

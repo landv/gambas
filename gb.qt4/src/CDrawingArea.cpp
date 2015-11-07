@@ -72,12 +72,12 @@ MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 	_no_background = false;
 	_in_draw_event = false;
 	_draw_event = EVENT_Draw;
-	
+
 	setAttribute(Qt::WA_KeyCompression, false);
 	setAttribute(Qt::WA_PaintOnScreen, false);
 	setAttribute(Qt::WA_OpaquePaintEvent, false);
 	setAttribute(Qt::WA_StaticContents, false);
-	
+
 	setAllowFocus(false);
 }
 
@@ -142,7 +142,7 @@ void MyDrawingArea::setFrozen(bool f)
 	XFlush(QX11Info::display());
 #endif
 #endif
-	
+
 	_frozen = f;
 }
 
@@ -158,46 +158,46 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	int fw;
 	GB_COLOR bg;
 	GB_RAISE_HANDLER handler;
-	
+
 	if (!_object)
 		return;
-			
+
 	//qDebug("paint: %d %d %d %d", r.x(), r.y(), r.width(), r.height());
 
 	_in_draw_event = true;
-		
+
 	PAINT_begin(THIS);
 	p = PAINT_get_current();
-		
+
 	/*if (!isTransparent())
 	{
 		p->translate(-r.x(), -r.y());
 	}*/
-	
+
 	//p->save();
-	
+
 	fw = frameWidth();
-	
-	bg = CWIDGET_get_background((CWIDGET *)THIS); 
+
+	bg = CWIDGET_get_background((CWIDGET *)THIS);
 	if (bg != COLOR_DEFAULT)
 	{
 		p->fillRect(fw, fw, width() - fw * 2, height() - fw * 2, TO_QCOLOR(bg));
 	}
-	
+
 	PAINT_clip(r.x(), r.y(), r.width(), r.height());
-	
+
 	//p->setClipRegion(event->region().intersect(contentsRect()));
 	//p->setBrushOrigin(-r.x(), -r.y());
 
 	handler.callback = cleanup_drawing;
 	handler.data = (intptr_t)THIS;
-		
+
 	GB.RaiseBegin(&handler);
 	GB.Raise(THIS, _draw_event, 0);
 	GB.RaiseEnd(&handler);
-	
+
 	//p->restore();
-	
+
 	if (frame)
 	{
 		QPainter pf(this);
@@ -206,7 +206,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 		pf.setRenderHint(QPainter::Antialiasing, false);
 		drawFrame(&pf);
 	}
-		
+
 	PAINT_end();
 
 	_in_draw_event = false;
@@ -229,11 +229,11 @@ void MyDrawingArea::createBackground(int w, int h)
 #endif
 	_background_w = w;
 	_background_h = h;
-	
+
 	//qDebug("createBackground: %d x %d : %d -> %08X / winId = %08X", w, h, xinfo.depth(), (int)_background, (int)winId());
 	//p = QPixmap::fromX11Pixmap(_background, QPixmap::ExplicitlyShared);
 	//qDebug("color = %06X -> %06X", palette().color(backgroundRole()).rgb(), QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
-	
+
 #if 0
 	gc = XCreateGC(QX11Info::display(), _background, 0, 0);
 	//XSetForeground(QX11Info::display(), gc, QColormap::instance().pixel((unsigned long)palette().color(backgroundRole()).rgb()));
@@ -243,12 +243,12 @@ void MyDrawingArea::createBackground(int w, int h)
 #endif
 
 	_background_pixmap.fill(CCOLOR_make(CWIDGET_get_real_background((CWIDGET *)THIS)));
-	
+
 	//qDebug("XSetWindowBackgroundPixmap: %08X %08X", (int)winId(), (int)_background);
 #ifndef QT5
 	XSetWindowBackgroundPixmap(QX11Info::display(), winId(), _background);
 	XClearArea(QX11Info::display(), winId(), 0, 0, 0, 0, True);
-	
+
 	if (old)
 		XFreePixmap(QX11Info::display(), (Pixmap)old);
 
@@ -301,13 +301,13 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 		}
 #endif
 #endif
-		
+
 		QPainter p(this);
 
 #ifdef QT5
 		p.drawPixmap(0, 0, _background_pixmap);
 #endif
-		
+
 		if (frameWidth())
 		{
 			QRegion r(0, 0, width(), height());
@@ -316,7 +316,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 			p.setClipping(true);
 			//p.drawPixmap(0, 0, *getBackgroundPixmap());
 		}
-	
+
 		drawFrame(&p);
 	}
 	else
@@ -332,7 +332,7 @@ void MyDrawingArea::paintEvent(QPaintEvent *event)
 				cache = new QPixmap(r.width(), r.height());
 				cache->fill(this, r.x(), r.y());
 			}*/
-			
+
 			redraw(r, true);
 
 			/*if (!isTransparent())
@@ -418,12 +418,12 @@ void MyDrawingArea::updateBackground()
 
 		w = qMax(width(), 1);
 		h = qMax(height(), 1);
-		
+
 		if (w != _background_w || h != _background_h)
 		{
 #ifndef QT5
 			Qt::HANDLE old = _background;
-			
+
 			wb = qMin(w, _background_w);
 			hb = qMin(h, _background_h);
 
@@ -483,7 +483,7 @@ void MyDrawingArea::updateCache()
 		update();
 		#endif
 	}
-	
+
 	updateNoBackground();
 }
 
@@ -491,7 +491,7 @@ void MyDrawingArea::setCached(bool c)
 {
 	if (c == _cached)
 		return;
-	
+
 	_cached = c;
 	updateCache();
 }
@@ -561,7 +561,7 @@ BEGIN_PROPERTY(CDRAWINGAREA_cached)
 	{
 		GB_COLOR bg = CWIDGET_get_background((CWIDGET *)THIS);
 		GB_COLOR fg = CWIDGET_get_foreground((CWIDGET *)THIS);
-		
+
 		if (bg == COLOR_DEFAULT)
 		{
 			CWIDGET_set_color((CWIDGET *)THIS, WIDGET->palette().color(WIDGET->backgroundRole()).rgb() & 0xFFFFFF, fg);
@@ -635,13 +635,13 @@ END_PROPERTY
 BEGIN_PROPERTY(CDRAWINGAREA_painted)
 
 	static bool deprecated = false;
-	
+
 	if (!deprecated)
 	{
 		deprecated = true;
 		GB.Deprecated(QT_NAME, "DrawingArea.Painted", NULL);
 	}
-	
+
 	if (READ_PROPERTY)
 		GB.ReturnBoolean(true);
 
@@ -669,15 +669,15 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 	/*if (WIDGET->isCached())
 	{
 		QRect r;
-		
+
 		if (!MISSING(x) && !MISSING(y))
 			r.setRect(VARG(x), VARG(y), VARGOPT(w, WIDGET->width()), VARGOPT(h, WIDGET->height()));
 		else
 			r.setRect(0, 0, WIDGET->width(), WIDGET->height());
-		
+
 		WIDGET->redraw(r, false);
 	}*/
-	
+
 	if (!MISSING(x) && !MISSING(y))
 	{
 		x = VARG(x);
@@ -690,7 +690,7 @@ BEGIN_METHOD(DrawingArea_Refresh, GB_INTEGER x; GB_INTEGER y; GB_INTEGER w; GB_I
 	{
 		WIDGET->update();
 	}
-	
+
 END_METHOD
 
 BEGIN_PROPERTY(DrawingArea_Tablet)
@@ -699,7 +699,7 @@ BEGIN_PROPERTY(DrawingArea_Tablet)
 		GB.ReturnBoolean(THIS->widget.flag.use_tablet);
 	else
 		THIS->widget.flag.use_tablet = VPROP(GB_BOOLEAN);
-		
+
 END_PROPERTY
 
 GB_DESC CDrawingAreaDesc[] =
@@ -709,7 +709,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_METHOD("_new", NULL, CDRAWINGAREA_new, "(Parent)Container;"),
 
 	GB_PROPERTY("Cached", "b", CDRAWINGAREA_cached),
-	
+
 	GB_PROPERTY("Arrangement", "i", Container_Arrangement),
 	GB_PROPERTY("AutoResize", "b", Container_AutoResize),
 	GB_PROPERTY("Spacing", "b", Container_Spacing),
@@ -721,7 +721,7 @@ GB_DESC CDrawingAreaDesc[] =
 	GB_PROPERTY("Border", "i", CDRAWINGAREA_border),
 	GB_PROPERTY("NoBackground", "b", DrawingArea_NoBackground),
 	GB_PROPERTY("Background", "i", DrawingArea_Background),
-	
+
 	GB_PROPERTY("Focus", "b", CDRAWINGAREA_focus),
 	GB_PROPERTY("Enabled", "b", CDRAWINGAREA_enabled),
 	GB_PROPERTY("Painted", "b", CDRAWINGAREA_painted),
