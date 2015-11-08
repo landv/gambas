@@ -1,0 +1,89 @@
+' Gambas class file
+
+Export
+Create Private
+
+Public Const _IsControl As Boolean = True
+Public Const _Properties As String = "Tag"
+Public Const _Family As String = "WebForm"
+
+Property Read Id As Integer
+Property Read Name As String
+Property Tag As Variant
+Property Parent As WebContainer
+
+Static Private $iLastId As Integer
+Static Private $cFromId As New Collection
+
+Private $iId As Integer
+Private $iParentId As Integer
+Private $sName As String
+Private $vTag As Variant
+
+Public Sub _new(Optional Parent As WebContainer)
+  
+  If Not Parent And If Not Me Is WebForm Then Error.Raise("Null object")
+  
+  $sName = Param.EventName
+  
+  Inc $iLastId
+  $iId = $iLastId
+  If Not $sName Then $sName = "#" & CStr($iId)
+  
+  $cFromId[$iId] = Me
+  
+  If Parent Then 
+    $iParentId = Parent.Id
+    Parent._Add(Me)
+  Endif
+  
+End
+
+
+Private Function Id_Read() As Integer
+
+  Return $iId
+
+End
+
+Static Public Sub FromId(Id As Integer) As WebControl
+  
+  Return $cFromId[Id]
+  
+End
+
+Private Function Parent_Read() As WebContainer
+
+  If $iParentId = 0 Then Return
+  Return $cFromId[$iParentId]
+
+End
+
+Private Sub Parent_Write(Value As WebContainer)
+
+  If Value = Me.Parent Then Return
+
+  If Me Is WebForm Then Error.Raise("Read-only property")
+  Me.Parent._Remove(Me)
+  $iParentId = Value.Id
+  Me.Parent._Add(Me)
+
+End
+
+Private Function Name_Read() As String
+
+  Return $sName
+
+End
+
+Private Function Tag_Read() As Variant
+
+  Return $vTag
+
+End
+
+Private Sub Tag_Write(Value As Variant)
+
+  $vTag = Value
+
+End

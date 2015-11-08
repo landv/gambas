@@ -167,14 +167,14 @@ BEGIN_METHOD_VOID(Classes_next)
 	CLASS *class;
 
 	class = *pcurrent;
-	
+
 	for(;;)
 	{
 		if (!class)
 			class = CLASS_get_list();
 		else
 			class = class->next;
-		
+
 		if (!class)
 		{
 			GB_StopEnum();
@@ -186,11 +186,11 @@ BEGIN_METHOD_VOID(Classes_next)
 			GB_ReturnObject(class);
 			break;
 		}
-		
+
 	}
 
 	*pcurrent = class;
-	
+
 END_METHOD
 
 
@@ -251,9 +251,9 @@ BEGIN_PROPERTY(Class_Symbols)
 	GB_ARRAY array;
 	CLASS_DESC_SYMBOL *cds;
 	int index = 0;
-	
+
 	GB_ArrayNew(&array, T_STRING, 0);
-	
+
 	for(;;)
 	{
 		cds = CLASS_get_next_sorted_symbol(class, &index);
@@ -261,7 +261,7 @@ BEGIN_PROPERTY(Class_Symbols)
 			break;
 		*((char **)GB_ArrayAdd(array)) = STRING_new(cds->name, cds->len);
 	}
-	
+
 	GB_ReturnObject(array);
 
 END_PROPERTY
@@ -308,7 +308,7 @@ END_PROPERTY
 BEGIN_METHOD_VOID(Class_AutoCreate)
 
 	CLASS *class = OBJECT(CLASS);
-	
+
 	if (!class->auto_create)
 		GB_ReturnNull();
 	else
@@ -469,7 +469,7 @@ BEGIN_PROPERTY(Symbol_Value)
 		GB_ReturnConstZeroString(desc->constant.value._string);
 	else
 		GB_ReturnPtr(desc->constant.type, (void *)&desc->constant.value);
-	
+
 	GB_ReturnConvVariant();
 
 END_PROPERTY
@@ -527,7 +527,7 @@ BEGIN_METHOD(Object_Attach, GB_OBJECT object; GB_OBJECT parent; GB_STRING name)
 		return;
 
 	OBJECT_attach(object, parent, name);
-	
+
 	/*if (OBJECT_is(object, CLASS_Observer))
 		COBSERVER_attach((COBSERVER *)object, parent, GB_ToZeroString(ARG(name)));*/
 
@@ -543,7 +543,7 @@ BEGIN_METHOD(Object_Detach, GB_OBJECT object)
 
 	if (OBJECT_is(object, CLASS_Observer))
 		COBSERVER_detach((COBSERVER *)object);
-	
+
 	OBJECT_detach(object);
 
 END_METHOD
@@ -615,7 +615,7 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 
 	if (GB_CheckObject(object))
 		return;
-	
+
 	if (GB_GetFunction(&func, object, name, NULL, NULL))
 	{
 		error(E_NSYMBOL, OBJECT_class(object), name);
@@ -637,7 +637,7 @@ BEGIN_METHOD(Object_Call, GB_OBJECT object; GB_STRING method; GB_OBJECT params)
 	}
 
 	GB_Call(&func, np, FALSE);
-	
+
 	if (TEMP.type != T_VOID)
 		GB_ReturnConvVariant();
 
@@ -656,13 +656,13 @@ BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
 
 	if (GB_CheckObject(object))
 		return;
-	
+
 	class = OBJECT_class(object);
-	
+
 	event[0] = ':';
 	memcpy(&event[1], STRING(event), len);
 	event[len + 1] = 0;
-	
+
 	index = CLASS_find_symbol(class, event);
 	if (index == NO_SYMBOL)
 		goto __UNKNOWN_EVENT;
@@ -670,7 +670,7 @@ BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
 	desc = class->table[index].desc;
 	if (CLASS_DESC_get_type(desc) != CD_EVENT)
 		goto __UNKNOWN_EVENT;
-	
+
 	if (params)
 		np = GB_ArrayCount(params);
 	else
@@ -689,11 +689,11 @@ BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
 
 	GB_ReturnBoolean(GB_Raise(object, desc->event.index, np));
 	return;
-	
+
 __UNKNOWN_EVENT:
 
 	GB_Error("Unknown event");
-	
+
 END_METHOD
 
 
@@ -827,7 +827,7 @@ BEGIN_METHOD(Object_CanRaise, GB_OBJECT object; GB_STRING name)
 		GB_ReturnBoolean(FALSE);
 	else
 		GB_ReturnBoolean(GB_CanRaise(object, index));
-	
+
 END_METHOD
 
 #endif

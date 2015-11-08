@@ -1,0 +1,37 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Text,Icon"
+Public Const _DrawWith As String = "Button"
+
+Property Text As String
+Property Icon As String
+
+Private $sText As String
+Private $sIcon As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Private Function Icon_Read() As String
+
+  Return $sIcon
+
+End
+
+Private Sub Icon_Write(Value As String)
+
+  $sIcon = Value
+
+End

@@ -1,0 +1,31 @@
+' Gambas class file
+
+Export
+
+Inherits WebControl
+
+Public Const _IsContainer As Boolean = True
+Public Const _Group As String = "Container"
+
+Property Read Count As Integer
+
+Private $aChildren As New Integer[]
+
+Public Sub _Add(hChild As WebControl)
+  
+  $aChildren.Add(hChild.Id)
+  
+End
+
+Public Sub _Remove(hChild As WebControl)
+  
+  $aChildren.Remove($aChildren.Find(hChild.Id))
+  
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $aChildren.Count
+
+End

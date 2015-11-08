@@ -1,0 +1,99 @@
+' Gambas class file
+
+Export
+
+Static Private $iSectionSize As Integer
+Static Private $iSectionPos As Integer
+
+Static Private Sub GotoNextSection(hFile As File)
+  
+  $iSectionPos += $iSectionSize
+  Seek #hFile, $iSectionPos
+  $iSectionSize = Read #hFile As Integer
+  $iSectionPos += 4
+  
+End
+
+Static Private Sub ReadZeroString(hFile As File) As String
+  
+  Dim sStr As String
+  Dim iPos As Integer
+  
+  Do
+    sStr &= Read #hFile, Min(16, Lof(hFile) - Seek(hFile))
+    iPos = InStr(sStr, Chr$(0))
+    If iPos Then Return Left(sStr, iPos - 1)
+  Loop
+  
+End
+
+
+
+Static Public Sub Stat(Name As String) As ClassStat
+
+  Dim sPath As String
+  Dim hFile As File
+  Dim hStat As ClassStat
+  Dim iVal As Integer
+  Dim iParent As Integer
+  Dim iFlag As Short
+  Dim bDebug As Boolean
+  Dim iStringPos As Integer
+  
+  sPath = "../.gambas" &/ UCase(Name)
+  If Not Exist(sPath) Then Error.Raise("Class not found")
+  
+  hStat = New ClassStat
+  hStat.Name = Name
+  
+  hFile = Open sPath
+  
+  Seek #hFile, 8
+  iVal = Read #hFile As Integer
+  If iVal <> &H12345678 Then hFile.ByteOrder = 1 - hFile.ByteOrder
+  Seek #hFile, 12
+  iVal = Read #hFile As Integer
+  bDebug = iVal And 1
+  
+  $iSectionSize = 16
+  
+  GotoNextSection(hFile) ' info
+  Seek #hFile, $iSectionPos
+  iParent = Read #hFile As Short
+  iFlag = Read #hFile As Short
+  
+  hStat.Exported = iFlag And 1
+  
+  GotoNextSection(hFile) ' description
+  GotoNextSection(hFile) ' constant
+  GotoNextSection(hFile) ' reference
+  
+  If iParent <> -1 Then
+  
+    Seek #hFile, $iSectionPos + iParent * 4
+    iParent = Read #hFile As Integer
+    iParent = Abs(iParent)
+  
+  Endif
+    
+  Do
+    iStringPos = $iSectionPos
+    Try GotoNextSection(hFile)
+    If Error Then Break
+  Loop
+  
+  Seek #hFile, iStringPos
+  hStat.Name = ReadZeroString(hFile)
+  
+  If iParent > 0 Then
+  
+    Seek #hFile, iStringPos + iParent
+    hStat.Parent = ReadZeroString(hFile)
+    
+  Endif
+  
+  Close hFile
+  
+  Return hStat
+  
+End

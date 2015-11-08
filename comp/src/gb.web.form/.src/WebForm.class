@@ -1,0 +1,83 @@
+' Gambas class file
+
+Export
+Create Static
+
+Inherits WebContainer
+
+Public Const _IsForm As Boolean = True
+Public Const _HiddenControls As String = "WebControl,WebForm"
+
+Static Public Sub Main()
+
+  Dim sPath As String
+  Dim hClass As Class
+  Dim hForm As WebForm
+  Dim iPos As Integer
+  Dim sClass As String
+  Dim hStat As ClassStat
+  
+  sPath = Mid$(Request.Path, 2)
+  
+  If Not sPath Then
+    hForm = Application.Startup.AutoCreate()
+  Else
+    iPos = InStr(sPath, "/")
+    If iPos = 0 Then
+      sClass = sPath
+      sPath = ""
+    Else
+      sClass = Left(sPath, iPos - 1)
+      sPath = Mid$(sPath, iPos + 1)
+    Endif
+    
+    Try hStat = Class.Stat(sClass)
+    If Not hStat Then Goto NOT_FOUND
+    If LCase(hStat.Parent) <> "webform" Then Goto NOT_FOUND
+    
+    Try hClass = Class.Load(sClass)
+    If Not hClass Then Goto NOT_FOUND
+    
+    hForm = hClass.AutoCreate()
+    
+  Endif
+  
+  hForm.Render
+  
+  Return
+  
+NOT_FOUND:
+
+  Response.Status = "404 NotFound"
+  Response.Begin
+  Print "<html><body><h1>404 NotFound</h1></body></html>"
+  Response.End
+  
+End
+
+Public Sub Render()
+  
+  Response.Buffered = True
+  Response.Begin
+  Print Header.ToString()
+  Print "<body>"
+  Print "<h1>"; Object.Type(Me); "</h1>"
+  Print Me.Count
+  Print "</body>"
+  Print "</html>"
+  Response.End
+  
+End
+
+Public Sub RenderStyleSheet()
+  
+  
+  
+End
+
+Public Sub RenderJavascript()
+  
+  
+  
+End
+

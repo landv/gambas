@@ -2,4 +2,9 @@
 
 Public Sub Main()
 
+  Dim hStat As ClassStat
+
+  Try hStat = Class.Stat("String")
+  Print hStat
+
 End
