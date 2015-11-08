@@ -270,7 +270,7 @@ static void http_fix_progress_cb(void *_object, double *dltotal, double *dlnow, 
 	*ulnow = THIS_HTTP->len_sent;
 }
 
-static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
+static void http_get(void *_object, GB_ARRAY custom_headers, char *target, CURLoption method)
 {
 	struct curl_slist *headers = NULL;
 	int i;
@@ -299,7 +299,7 @@ static void http_get(void *_object, GB_ARRAY custom_headers, char *target)
 	
 	http_initialize_curl_handle(_object, custom_headers);
 	
-	curl_easy_setopt(THIS_CURL, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(THIS_CURL, method, 1);
 	
 	if (THIS_HTTP->sent_headers)
 	{
@@ -558,7 +558,14 @@ END_METHOD
 
 BEGIN_METHOD(HttpClient_Get, GB_OBJECT headers; GB_STRING target)
 
-	http_get(THIS, VARGOPT(headers, 0), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)));
+	http_get(THIS, VARGOPT(headers, 0), MISSING(target) ? NULL : GB.ToZeroString(ARG(target)), CURLOPT_HTTPGET);
+
+END_METHOD
+
+
+BEGIN_METHOD(HttpClient_Head, GB_OBJECT headers)
+
+	http_get(THIS, VARGOPT(headers, 0), NULL, CURLOPT_NOBODY);
 
 END_METHOD
 
@@ -647,6 +654,7 @@ GB_DESC CHttpClientDesc[] =
   GB_METHOD("_free", NULL, HttpClient_free, NULL),
   GB_METHOD("Stop", NULL, HttpClient_Stop, NULL),
   GB_METHOD("Get", NULL, HttpClient_Get, "[(Headers)String[];(TargetFile)s]"),
+  GB_METHOD("Head", NULL, HttpClient_Head, "[(Headers)String[]]"),
   GB_METHOD("Post", NULL, HttpClient_Post, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("Put", NULL, HttpClient_Put, "(ContentType)s(Data)s[(Headers)String[];(TargetFile)s]"),
   GB_METHOD("PostFile", NULL, HttpClient_PostFile, "(ContentType)s(Path)s[(Headers)String[];(TargetFile)s]"),
