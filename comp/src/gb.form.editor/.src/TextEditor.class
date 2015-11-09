@@ -63,6 +63,8 @@ Property ShowSpaces As Boolean
 Private Const MATCH_STRING As String = "()[]{}"
 
 Static Private $cShortcut As Collection
+Static Private $bRemoteDisplayChecked As Boolean
+Static Private $bRemoteDisplay As Boolean
 
 Public _Views As TextEditor[]
 
@@ -174,6 +176,8 @@ Private $sPrintBuffer As String
 
 Public Sub _new()
   
+  Dim sDisplay As String
+  
   If Not $cShortcut Then
     $cShortcut = [
       "CTRL+A": "SelectAll",
@@ -185,6 +189,12 @@ Public Sub _new()
       "SHIFT+Del": "Cut",
       "CTRL+Y": "Redo",
       "CTRL+Z": "Undo"]
+  Endif
+  
+  If Not $bRemoteDisplayChecked Then
+    sDisplay = Env["DISPLAY"]
+    If sDisplay And If Left(sDisplay) <> ":" Then $bRemoteDisplay = True
+    $bRemoteDisplayChecked = True
   Endif
   
   $hPanel = New Panel(Me) As "ViewPanel"
@@ -258,11 +268,13 @@ Private Sub CalcSizes()
     $fCharWidth = $hFont.TextWidth(sText) / Len(sText)
   Endif
   
-  $sCacheTextKey = $hFont.ToString()
-  $cCacheText = $cGlobalCacheText[$sCacheTextKey]
-  If Not $cCacheText Then
-    $cCacheText = New Collection
-    $cGlobalCacheText[$sCacheTextKey] = $cCacheText
+  If Not $bRemoteDisplay Then
+    $sCacheTextKey = $hFont.ToString()
+    $cCacheText = $cGlobalCacheText[$sCacheTextKey]
+    If Not $cCacheText Then
+      $cCacheText = New Collection
+      $cGlobalCacheText[$sCacheTextKey] = $cCacheText
+    Endif
   Endif
   
   _ClearCachePos
@@ -291,8 +303,12 @@ Private Sub Init()
   CalcSizes
   
   $cCachePos.Clear
-  $cCacheText.Clear
   $cCacheView.Clear
+  
+  If Not $bRemoteDisplay Then
+    ClearCacheText
+    ClearCacheLine
+  Endif
   
   $bShowCursor = True
   GotoCenter(0, 0)
@@ -583,7 +599,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
       'Paint.Background = iCol
       DrawText(sStr, X, XX, YY)
     Else If Trim(sStr) Then
-      If iLen <= 16 Then
+      If Not $bRemoteDisplay And If iLen <= 16 Then
         sKey = Chr$(iState) & sStr
         hImage = $cCacheText[sKey]
         If Not hImage Then
@@ -2181,13 +2197,15 @@ Public Sub _RefreshLine(Y As Integer, Optional N As Integer = 1)
   
   N = Min(N, $hDoc.Count - Y)
   
-  For I = Y To Y + N - 1
-    hImage = $cCacheLine[I]
-    If hImage Then
-      $iCacheLineH -= hImage.H
-      $cCacheLine.Remove(I)
-    Endif
-  Next
+  If Not $bRemoteDisplay Then
+    For I = Y To Y + N - 1
+      hImage = $cCacheLine[I]
+      If hImage Then
+        $iCacheLineH -= hImage.H
+        $cCacheLine.Remove(I)
+      Endif
+    Next
+  Endif
   
   If N = 1 Then
     $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
@@ -2469,7 +2487,7 @@ Public Sub View_Draw()
     iRow = aRow[I]
     H = $hRows._GetRowHeight(iRow)
     
-    If H >= $hView.ClientH Then
+    If H >= $hView.ClientH Or If $bRemoteDisplay Then
       Paint.Save
       DrawLine(XX, Y, $iWidth, H, iRow)
       Paint.Restore
@@ -4546,7 +4564,7 @@ End
 Public Sub Styles_Change()
   
   $bStyleChanged = True
-  $cCacheText.Clear
+  ClearCacheText
   
 End
 
@@ -4626,7 +4644,15 @@ End
 
 Private Sub ClearCacheLine()
 
+  If $bRemoteDisplay Then Return
   $cCacheLine.Clear
   $iCacheLineH = 0
+
+End
+
+Private Sub ClearCacheText()
+
+  If $bRemoteDisplay Then Return
+  $cCacheText.Clear
 
 End
