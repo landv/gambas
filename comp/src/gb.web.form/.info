@@ -1,10 +1,33 @@
+#Arrange
+
+C
+None
+C
+i
+0
+Vertical
+C
+i
+1
+Horizontal
+C
+i
+2
+Row
+C
+i
+3
+Column
+C
+i
+4
 #WebButton
 WebControl
 C
 _Properties
 C
 s
-"*,Text,Icon"
+"*,Text,Image{ImagePath}"
 _DrawWith
 C
 s
@@ -13,9 +36,21 @@ Text
 p
 s
 
-Icon
+Image
 p
 s
+
+_BeforeRender
+m
+
+
+_Render
+m
+
+
+_AfterRender
+m
+
 
 #WebContainer
 WebControl
@@ -28,9 +63,29 @@ _Group
 C
 s
 "Container"
+_Properties
+C
+s
+"*,Arrangement{Arrange.*},Margin,Spacing,Border"
 Count
 r
 i
+
+Arrangement
+p
+i
+
+Margin
+p
+b
+
+Spacing
+p
+b
+
+Border
+p
+b
 
 _Add
 m
@@ -40,6 +95,18 @@ _Remove
 m
 
 (hChild)WebControl;
+_IsFirstChild
+m
+b
+(hChild)WebControl;
+_Render
+m
+
+
+_RenderStyleSheet
+m
+
+
 #WebControl
 
 
@@ -50,7 +117,7 @@ T
 _Properties
 C
 s
-"Tag"
+"Tag,Expand"
 _Family
 C
 s
@@ -71,6 +138,10 @@ Parent
 p
 WebContainer
 
+Expand
+p
+b
+
 _new
 m
 
@@ -79,6 +150,34 @@ FromId
 M
 WebControl
 (Id)i
+_BeforeRender
+m
+
+
+_Render
+m
+
+
+_AfterRender
+m
+
+
+_RenderStyleSheet
+m
+
+
+_StartStyleSheet
+m
+
+
+_AddStyleSheet
+m
+
+(sStyle)s
+_EndStyleSheet
+m
+
+
 #WebForm
 WebContainer
 CA
@@ -90,15 +189,31 @@ _HiddenControls
 C
 s
 "WebControl,WebForm"
+_Properties
+C
+s
+"*,Title"
+Title
+p
+s
+
 Main
 M
+
+
+RenderStyleSheet
+m
 
 
 Render
 m
 
 
-RenderStyleSheet
+_BeforeRender
+m
+
+
+_AfterRender
 m
 
 
@@ -109,3 +224,19 @@ m
 #WebHTML
 WebControl
 C
+_Properties
+C
+s
+"*,Text"
+Html
+p
+s
+
+Text
+p
+s
+
+_Render
+m
+
+

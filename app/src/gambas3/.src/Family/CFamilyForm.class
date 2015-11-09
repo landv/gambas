@@ -150,3 +150,18 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
   End Select
   
 End
+
+Public Sub SelectImage(sPropertyType As String, sImage As String) As String
+
+  Dim iOption As Integer
+
+  If sPropertyType <> "Image" Then iOption = FSelectIcon.SELECT_STOCK
+  If sPropertyType = "SvgImage" Then
+    iOption += FSelectIcon.SELECT_SVGIMAGE
+  Else
+    iOption += FSelectIcon.SELECT_IMAGE
+  Endif
+  
+  Return FSelectIcon.Run(sImage, iOption) 'GetPicture()
+      
+End

@@ -7,6 +7,11 @@ Inherits WebContainer
 
 Public Const _IsForm As Boolean = True
 Public Const _HiddenControls As String = "WebControl,WebForm"
+Public Const _Properties As String = "*,Title"
+
+Property Title As String
+
+Private $sTitle As String
 
 Static Public Sub Main()
 
@@ -20,7 +25,9 @@ Static Public Sub Main()
   sPath = Mid$(Request.Path, 2)
   
   If Not sPath Then
+    
     hForm = Application.Startup.AutoCreate()
+    
   Else
     iPos = InStr(sPath, "/")
     If iPos = 0 Then
@@ -42,7 +49,15 @@ Static Public Sub Main()
     
   Endif
   
-  hForm.Render
+  If sPath Then
+    If sPath Begins "style:" And If sPath Ends ".css" Then
+      hForm.RenderStyleSheet
+    Else If Exist("../.public/" &/ sPath) Then
+      Response.SendFile("../.public/" &/ sPath)
+    Endif
+  Else
+    hForm.Render
+  Endif
   
   Return
   
@@ -55,23 +70,62 @@ NOT_FOUND:
   
 End
 
-Public Sub Render()
+Public Sub _BeforeRender()
   
   Response.Buffered = True
   Response.Begin
-  Print Header.ToString()
+  
+  Header.Form = Me
+  Header.__Render()
+  'Print Header.ToString();
+  Header.Form = Null
+  
   Print "<body>"
-  Print "<h1>"; Object.Type(Me); "</h1>"
-  Print Me.Count
+  
+  Super._BeforeRender()
+  
+End
+
+
+Public Sub _AfterRender()
+  
+  Super._AfterRender()
+
   Print "</body>"
   Print "</html>"
+  
   Response.End
+  
+End
+
+Public Sub Render()
+  
+  Dim hForm As WebForm
+  
+  hForm = Main.CurrentForm
+  Main.CurrentForm = Me
+  
+  Me._BeforeRender()
+  Me._Render()
+  Me._AfterRender()
+  
+  Main.CurrentForm = hForm
   
 End
 
 Public Sub RenderStyleSheet()
   
+  Response.Buffered = True
+  Response.ContentType = "text/css;charset=utf-8"
+  Response.Begin
   
+  Print File.Load("style.css");
+  
+  Me._RenderStyleSheet()
+  
+  If Exist("../style.css") Then Print File.Load("../style.css");
+  
+  Response.End
   
 End
 
@@ -81,3 +135,15 @@ Public Sub RenderJavascript()
   
 End
 
+
+Private Function Title_Read() As String
+
+  Return $sTitle
+
+End
+
+Private Sub Title_Write(Value As String)
+
+  $sTitle = Value
+
+End

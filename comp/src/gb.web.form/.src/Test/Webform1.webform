@@ -2,13 +2,51 @@
 
 { WebForm Webform
   #MoveScaled(0,0,74,91)
-  { WebHTML1 WebHTML
-    #MoveScaled(27,2,27,11)
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Spacing = True
+  Title = ("Hello world !")
+  { WebContainer4 WebContainer
+    #MoveScaled(6,2,64,8)
+    Border = True
+    { WebHTML2 WebHTML
+      #MoveScaled(3,1,27,5)
+      Text = ("<h1>Header</h1>")
+    }
   }
-  { WebButton1 WebButton
-    #MoveScaled(27,15,19,5)
-  }
-  { WebContainer1 WebContainer
-    #MoveScaled(2,2,23,42)
+  { WebContainer3 WebContainer
+    #MoveScaled(5,14,67,46)
+    Expand = True
+    Arrangement = Arrange.Horizontal
+    Spacing = True
+    { WebContainer1 WebContainer
+      #MoveScaled(1,1,23,42)
+      Arrangement = Arrange.Vertical
+      Margin = True
+      Spacing = True
+      Border = True
+      { WebButton1 WebButton
+        #MoveScaled(0,1,19,5)
+        Text = ("Hello world!")
+      }
+      { WebButton2 WebButton
+        #MoveScaled(0,7,19,5)
+        Text = ("Button2")
+        Image = "icon.png"
+      }
+      { WebButton3 WebButton
+        #MoveScaled(0,13,19,5)
+        Text = ("Button3")
+      }
+    }
+    { WebContainer2 WebContainer
+      #MoveScaled(25,1,41,42)
+      Expand = True
+      Border = True
+      { WebHTML1 WebHTML
+        #MoveScaled(3,3,27,11)
+        Text = ("<h2>Ceci est un titre !</h2>")
+      }
+    }
   }
 }

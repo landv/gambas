@@ -544,3 +544,9 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
   End Select
   
 End
+
+Public Sub SelectImage((sPropertyType) As String, sImage As String) As String
+
+  Return FSelectIcon.Run(sImage) 'GetPicture()
+      
+End

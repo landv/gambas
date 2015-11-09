@@ -67,10 +67,10 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim hPict As Picture
   Dim hImage As Image
   Dim sPath As String
-  Dim sText As String
-  Dim X, Y As Float
-  Dim iInd As Integer
-  Dim I As Integer
+  'Dim sText As String
+  'Dim X, Y As Float
+  'Dim iInd As Integer
+  'Dim I As Integer
   Dim hClass As CClassInfo
   Dim W As Integer
   Dim F As Integer
@@ -1642,7 +1642,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           
     Select Case hProp.Type
 
-      Case "s", "v", "List", "Path", "Table", "Menu", "ReportCoord", "Field"
+      Case "s", "v", "List", "Path", "ImagePath", "Table", "Menu", "ReportCoord", "Field"
 
         If bTranslate Then
           

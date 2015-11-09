@@ -225,10 +225,7 @@ Public Sub DrawIcon(hCont As Container, hCCtrl As CControl)
   Dim sImage As String
 
   sImage = Me.GetIcon(hCCtrl)
-
   If Not sImage Then Return
-  
-  'Debug hCCtrl.Name;; sImage
   
   hIcon = hCCtrl["#icon"]
   
@@ -444,3 +441,8 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
 
 End
 
+Public Sub SelectImage((sPropertyType) As String, sImage As String) As String
+  
+  Return FSelectIcon.Run(sImage, FSelectIcon.SELECT_IMAGE)
+  
+End

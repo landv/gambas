@@ -4,31 +4,41 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Tag"
+Public Const _Properties As String = "Tag,Expand"
 Public Const _Family As String = "WebForm"
 
 Property Read Id As Integer
 Property Read Name As String
 Property Tag As Variant
 Property Parent As WebContainer
+Property Expand As Boolean
 
 Static Private $iLastId As Integer
 Static Private $cFromId As New Collection
+
+Static Private $aStyleSheet As String[]
+Static Private $iStyleSheet As Integer
 
 Private $iId As Integer
 Private $iParentId As Integer
 Private $sName As String
 Private $vTag As Variant
+Private $bExpand As Boolean
 
 Public Sub _new(Optional Parent As WebContainer)
   
   If Not Parent And If Not Me Is WebForm Then Error.Raise("Null object")
   
-  $sName = Param.EventName
+  If Me Is WebForm Then
+    $sName = Object.Type(Me)
+    Object.Attach(Me, Me, $sName)
+  Else
+    $sName = Param.EventName
+  Endif
   
   Inc $iLastId
   $iId = $iLastId
-  If Not $sName Then $sName = "#" & CStr($iId)
+  If Not $sName Then $sName = "WebControl" & CStr($iId)
   
   $cFromId[$iId] = Me
   
@@ -85,5 +95,89 @@ End
 Private Sub Tag_Write(Value As Variant)
 
   $vTag = Value
+
+End
+
+Public Sub _BeforeRender()
+  
+  Print "<div id=\""; $sName; "\">"
+  
+End
+
+Public Sub _Render()
+  
+  
+  
+End
+
+Public Sub _AfterRender()
+  
+  Print "</div>"
+  
+End
+
+Public Sub _RenderStyleSheet()
+  
+  Dim hParent As WebContainer
+  
+  _StartStyleSheet
+  If $bExpand Then _AddStyleSheet("flex-grow: 1;")
+  
+  hParent = Me.Parent
+  If hParent And If hParent.Spacing Then
+    Select Case hParent.Arrangement
+      Case Arrange.Vertical
+        If Not hParent._IsFirstChild(Me) Then _AddStyleSheet("margin-top: 0.5em;")
+      Case Arrange.Horizontal
+        If Not hParent._IsFirstChild(Me) Then _AddStyleSheet("margin-left: 0.5em;")
+      Case Arrange.Column, Arrange.Row
+        _AddStyleSheet("margin-right: 0.5em; margin-bottom: 0.5em;")
+    End Select
+    
+  Endif
+  
+  _EndStyleSheet
+  
+End
+
+Public Sub _StartStyleSheet()
+  
+  Inc $iStyleSheet
+  If $iStyleSheet = 1 Then $aStyleSheet = New String[]
+  
+End
+
+Public Sub _AddStyleSheet(sStyle As String)
+  
+  $aStyleSheet.Add(sStyle)
+  
+End
+
+
+Public Sub _EndStyleSheet()
+  
+  Dec $iStyleSheet
+  If $iStyleSheet Then Return
+  
+  If $aStyleSheet.Count Then
+    Print "#"; Me.Name; " {"
+    Print "  "; $aStyleSheet.Join("\n  ")
+    Print "}"
+    $aStyleSheet.Clear
+  Endif
+  
+End
+
+
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  $bExpand = Value
 
 End

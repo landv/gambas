@@ -4,9 +4,9 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <%--<meta http-equiv="X-UA-Compatible" content="chrome=1">--%>
-  <%--<link rel="stylesheet" href="<%/%>/<%="style:" & Application.Version & "." & Main.DomainName & ".css"%>">--%>
-  <%--<link rel="icon" href="<%=Main.ImageRoot%>/app/icon.png" type="image/png">--%>
+  <link rel="stylesheet" href="<%/%>/<%=Object.Type(Form) &/ "style:" & Application.Version & ".css"%>">
+  <%--<meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <%--<link rel="icon" href="<%=Main.ImageRoot%>/app/icon.png" type="image/png">
   <%--<link rel="alternate" type="application/rss+xml" href="$(rss-link)" title="$(rss-title)">--%>
-  <title>Title</title>
+  <title><%=GetTitle()%></title>
 </head>

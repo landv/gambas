@@ -23,8 +23,8 @@ Public Sub GetIcon(hCCtrl As CControl) As String
     ' Case "HBox"
     '   sImage = "horizontal"
     
-    Case "WebForm", "WebContainer"
-      sImage = "vertical"
+    'Case "WebForm", "WebContainer"
+    '  sImage = "vertical"
       
     Case Else
       sImage = Super.GetIcon(hCCtrl)
@@ -102,4 +102,10 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
   '   
   ' End Select
   
+End
+
+Public Sub SelectImage(sPropertyType As String, sImage As String) As String
+
+  Return FSelectIcon.Run(sImage, FSelectIcon.SELECT_IMAGE + FSelectIcon.SELECT_SVGIMAGE + FSelectIcon.SELECT_PUBLIC)
+      
 End

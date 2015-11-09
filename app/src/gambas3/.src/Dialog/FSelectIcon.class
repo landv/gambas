@@ -2,16 +2,20 @@
 
 'STATIC PRIVATE $aImgExt AS String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 
+Public Const SELECT_STOCK As Integer = 1
+Public Const SELECT_IMAGE As Integer = 2
+Public Const SELECT_SVGIMAGE As Integer = 4
+Public Const SELECT_PUBLIC As Integer = 8
+
 Private $sIcon As String
 Private $sSize As String
-Private $bNoStock As Boolean
-Private $bSvgImage As Boolean
+Private $iOption As Integer
 
-Public Sub Run(sIcon As String, Optional bNoStock As Boolean, Optional bSvgImage As Boolean) As String
+Public Sub Run(sIcon As String, Optional iOption As Integer = SELECT_IMAGE + SELECT_STOCK) As String
   
   $sIcon = sIcon
-  $bNoStock = bNoStock Or Not Project.IsStockAllowed() Or bSvgImage
-  $bSvgImage = bSvgImage
+  If Not Project.IsStockAllowed() Then iOption = iOption And Not SELECT_STOCK
+  $iOption = iOption
   If Not Me.ShowModal() Then Return
   Return $sIcon
   
@@ -21,22 +25,25 @@ End
 Public Sub Form_Open()
 
   Dim iPos As Integer
+  Dim aFilter As String[]
 
   Inc Application.Busy
   
   Settings.Read(Me)
 
-  If $bSvgImage Then
-    fchIcon.Filter = ["*.svg", ("SVG image files")]
+  aFilter = New String[]
+  If $iOption And SELECT_IMAGE Then aFilter.Insert(["*.png;*.jpg;*.jpeg;*.xpm;*.gif;*.mng", ("Image files")])
+  If $iOption And SELECT_SVGIMAGE Then aFilter.Insert(["*.svg", ("SVG image files")])
+
+  If $iOption And SELECT_PUBLIC Then
+    fchIcon.Root = Project.Dir &/ ".public"
   Else
-    fchIcon.Filter = ["*.png;*.jpg;*.jpeg;*.xpm;*.gif;*.mng", ("Image files")]
+    fchIcon.Root = Project.Dir
   Endif
-  
-  fchIcon.Root = Project.Dir
   
   cmbSize.List = ["small", "medium", "large", "huge", "16", "22", "32", "48", "64", "96", "128"]
   
-  tabIcon[1].Visible = Not $bNoStock
+  tabIcon[1].Visible = $iOption And SELECT_STOCK
   
   If $sIcon Begins "icon:/" Then 
     $sIcon = Mid$($sIcon, 7)

@@ -3,14 +3,14 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Text,Icon"
+Public Const _Properties As String = "*,Text,Image{ImagePath}"
 Public Const _DrawWith As String = "Button"
 
 Property Text As String
-Property Icon As String
+Property Image As String
 
 Private $sText As String
-Private $sIcon As String
+Private $sImage As String
 
 Private Function Text_Read() As String
 
@@ -24,14 +24,34 @@ Private Sub Text_Write(Value As String)
 
 End
 
-Private Function Icon_Read() As String
+Private Function Image_Read() As String
 
-  Return $sIcon
+  Return $sImage
 
 End
 
-Private Sub Icon_Write(Value As String)
+Private Sub Image_Write(Value As String)
 
-  $sIcon = Value
+  $sImage = Value
 
+End
+
+Public Sub _BeforeRender()
+  
+  Print "<button id=\""; Me.Name; "\">";
+  
+End
+
+
+Public Sub _Render()
+  
+  If $sImage Then Print "<img class=\"button-image\" src=\""; Html(Application.Root &/ Main.CurrentForm.Name &/ $sImage); "\">";
+  Print Html($sText);
+  
+End
+
+Public Sub _AfterRender()
+  
+  Print "</button>"
+  
 End

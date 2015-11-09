@@ -6,10 +6,19 @@ Inherits WebControl
 
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
+Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,Border"
 
 Property Read Count As Integer
+Property Arrangement As Integer
+Property Margin As Boolean
+Property Spacing As Boolean
+Property Border As Boolean
 
 Private $aChildren As New Integer[]
+Private $iArrangement As Integer
+Private $bMargin As Boolean
+Private $bSpacing As Boolean
+Private $bBorder As Boolean
 
 Public Sub _Add(hChild As WebControl)
   
@@ -23,9 +32,118 @@ Public Sub _Remove(hChild As WebControl)
   
 End
 
+Public Sub _IsFirstChild(hChild As WebControl) As Boolean
+  
+  Return $aChildren[0] = hChild.Id
+  
+End
+
+
 
 Private Function Count_Read() As Integer
 
   Return $aChildren.Count
+
+End
+
+Public Sub _Render()
+  
+  Dim I As Integer
+  
+  For I = 0 To $aChildren.Max
+    With WebControl.FromId($aChildren[I])
+      ._BeforeRender()
+      ._Render()
+      ._AfterRender()
+    End With
+  Next
+  
+End
+
+Public Sub _RenderStyleSheet()
+  
+  Dim I As Integer
+  
+  Me._StartStyleSheet
+  
+  Super._RenderStyleSheet()
+  
+  If $iArrangement Then
+  
+    Me._AddStyleSheet("display: flex;")
+    Select Case $iArrangement
+      Case Arrange.Horizontal
+        Me._AddStyleSheet("flex-direction: row;")
+      Case Arrange.Vertical
+        Me._AddStyleSheet("flex-direction: column;")
+      Case Arrange.Column
+        Me._AddStyleSheet("flex-direction: column;")
+        Me._AddStyleSheet("flex-wrap: wrap;")
+      Case Arrange.Row
+        Me._AddStyleSheet("flex-direction: row;")
+        Me._AddStyleSheet("flex-wrap: wrap;")
+    End Select
+    
+  Endif
+  
+  If $bMargin Then Me._AddStyleSheet("padding: 0.5em;")
+  
+  If $bBorder Then Me._AddStyleSheet("border: solid gray 1px;")
+  
+  Me._EndStyleSheet
+  
+  For I = 0 To $aChildren.Max
+    With WebControl.FromId($aChildren[I])
+      ._RenderStyleSheet()
+    End With
+  Next
+  
+End
+
+Private Function Arrangement_Read() As Integer
+
+  Return $iArrangement
+
+End
+
+Private Sub Arrangement_Write(Value As Integer)
+
+  $iArrangement = Value
+
+End
+
+Private Function Margin_Read() As Boolean
+
+  Return $bMargin
+
+End
+
+Private Sub Margin_Write(Value As Boolean)
+
+  $bMargin = Value
+
+End
+
+Private Function Spacing_Read() As Boolean
+
+  Return $bSpacing
+
+End
+
+Private Sub Spacing_Write(Value As Boolean)
+
+  $bSpacing = Value
+
+End
+
+Private Function Border_Read() As Boolean
+
+  Return $bBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bBorder = Value
 
 End

@@ -474,7 +474,7 @@ Public Sub btnIcon_Click()
 
   Dim sIcon As String
 
-  sIcon = FSelectIcon.Run($sIcon, True)
+  sIcon = FSelectIcon.Run($sIcon, FSelectIcon.SELECT_IMAGE)
   If Not sIcon Then Return
 
   $sIcon = sIcon

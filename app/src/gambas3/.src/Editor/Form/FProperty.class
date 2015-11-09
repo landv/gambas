@@ -5,6 +5,7 @@ Private $cIndex As New Collection
 Private $bMany As Boolean
 Private $hObject As CControl
 Private $hForm As FForm
+Private $hFamily As CFamily
 
 Private $iLast As Integer
 Private $sLast As String
@@ -28,7 +29,7 @@ Private $iBgSet As Integer
 Private $iBgModified As Integer
 
 Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]",
-  "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table"]
+  "Image", "ImagePath", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table"]
 
 Private Const PADDING As Integer = 6
 Private $cInitialValue As Collection
@@ -111,6 +112,9 @@ Public Sub RefreshAll()
     HideAll
     Return
   Endif
+  
+  $hFamily = $hForm.GetFamily()
+  
   'IF NOT $hForm THEN RETURN 'GOTO _HIDE
 
   Try cSelection = $hForm.Selection
@@ -298,6 +302,7 @@ Public Sub HideAll()
   sepProperty.Hide
   'lblMessage.Show
   $hForm = Null
+  $hFamily = Null
 
 End
 
@@ -422,7 +427,7 @@ Public Function SaveProperty() As Boolean
         vVal = sVal
       Endif
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ImagePath", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
       
       vVal = sVal
 
@@ -747,7 +752,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.ReadOnly = True
       InitComboWith(["False", "True"])
 
-    Case "Font", "Picture", "Path", "Color", "Image", "SvgImage", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush"
+    Case "Font", "Picture", "Path", "Color", "Image", "ImagePath", "SvgImage", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush"
 
       bButton = True
       txtProperty.ReadOnly = True
@@ -994,16 +999,22 @@ Public Sub txtProperty_Click()
       If FColorChooser.Run(sColor, True) Then Goto _EXIT
       $hEditor.Text = FColorChooser.Color
 
-    Case "Picture", "Image", "SvgImage"
+    Case "Picture", "Image", "ImagePath", "SvgImage"
 
-      sDest = FSelectIcon.Run($sOldVal, $sType = "Image", $sType = "SvgImage") 'GetPicture()
+      sDest = $hFamily.SelectImage($sType, $sOldVal)
       If Not sDest Then Goto _EXIT
       $hEditor.Text = sDest
+
+    ' Case "WebImage"
+    '   
+    '   sDest = FSelectIcon.Run($sOldVal, FSelectIcon.SELECT_IMAGE + FSelectIcon.SELECT_SVGIMAGE + FSelectIcon.SELECT_PUBLIC)
+    '   If Not sDest Then Goto _EXIT
+    '   $hEditor.Text = sDest
 
     Case "Path"
       
       If $sClass = "MovieBox" Then
-        sDest = FSelectIcon.Run($sOldVal, True) 'GetPicture()
+        sDest = FSelectIcon.Run($sOldVal, FSelectIcon.SELECT_IMAGE) 'GetPicture()
         If Not sDest Then Goto _EXIT
         $hEditor.Text = sDest
       Else

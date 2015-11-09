@@ -367,7 +367,7 @@ httpd_server *httpd_initialize(char *hostname, httpd_sockaddr * sa4P,
 		syslog(LOG_NOTICE, "starting on port %d", (int) hs->port);
 	else
 		syslog(LOG_NOTICE, "starting on %.80s, port %d", httpd_ntoa(hs->listen4_fd != -1 ? sa4P : sa6P), (int) hs->port);
-	
+
 	return hs;
 }
 
@@ -3074,7 +3074,7 @@ static char **make_envp(httpd_conn * hc)
 	if (getenv("TZ") != (char *) 0)
 		envp[envn++] = build_env("TZ=%s", getenv("TZ"));
 
-	//fprintf(stderr, "make_envp #2.4: %d %p\n", getpid(), hc->hs->cgi_pattern);  
+	//fprintf(stderr, "make_envp #2.4: %d %p\n", getpid(), hc->hs->cgi_pattern);
 	//envp[envn++] = build_env( "CGI_PATTERN=%s", hc->hs->cgi_pattern );
 
 #ifdef X_CGI_HEADER
@@ -3689,7 +3689,7 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 		strcpy(public_file, PUBLIC_PREFIX);
 		strcpy(&public_file[strlen(PUBLIC_PREFIX)], hc->expnfilename);
 	}
-	
+
 	/* Stat the file. */
 	//if (stat(hc->expnfilename, &hc->sb) < 0)
 	/*{
@@ -3697,7 +3697,7 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 		//httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
 		return -1;
 	}*/
-	
+
 #if 0
 	/* Is it world-readable or world-executable?  We check explicitly instead
 	 ** of just trying to open it, so that no one ever gets surprised by
@@ -3746,9 +3746,9 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 		{
 			//hc->file_address = mmc_map(hc->expnfilename, &(hc->sb), nowP);
 			//if (hc->file_address == (char *) 0)
-		
+
 			//syslog(LOG_DEBUG, "%.*s", public_file_len, public_file);
-		
+
 			if (GB.LoadFile(public_file, public_file_len, &hc->file_address, &hc->file_len))
 			{
 				httpd_send_err(hc, 500, err500title, "", err500form, hc->encodedurl);
@@ -3758,7 +3758,7 @@ static int really_start_request(httpd_conn * hc, struct timeval *nowP)
 		}
 
 		return 0;
-	}	
+	}
 
 #if 0
 		/* If there's pathinfo, it's just a non-existent file. */
