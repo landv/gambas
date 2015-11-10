@@ -30,15 +30,21 @@ End
 Public Sub WebContainer2_Render()
 
   Dim sKey As String
+  Dim cState As Collection
+  Dim vVal As Variant
   
   If Session.Id Then
     
-    Print "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">"
-    For Each sKey In Session.Keys
-      Print "<tr><td>"; Html(sKey); "</td>";
-      Print "<td><tt>"; Html(JSON.Encode(Session[sKey])); "</tt></td></tr>"
-    Next
-    Print "</table>"
+    Print "<h3>Application state</h3>"
+    cState = Session["#webform1"]
+    If cState Then
+      Print "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">"
+      For Each vVal In cState
+        Print "<tr><td>"; Html(cState.Key); "</td>";
+        Print "<td><tt>"; Html(JSON.Encode(vVal)); "</tt></td></tr>"
+      Next
+      Print "</table>"
+    Endif
     
   Endif
 

@@ -223,13 +223,19 @@ End
 Public Sub _SetProperty(sProp As String, vValue As Variant)
 
   Dim cProp As Collection
+  Dim cForm As Collection
+  Dim sForm As String
 
   If WebForm._InExec Then
     Refresh
-    cProp = Session["#" & $iId]
+    sForm = "#" & LCase(Form_Read().Name)
+    cForm = Session[sForm]
+    If Not cForm Then cForm = New Collection
+    cProp = cForm[$sName]
     If Not cProp Then cProp = New Collection
     cProp[sProp] = vValue
-    Session["#" & $iId] = cProp
+    cForm[$sName] = cProp
+    Session[sForm] = cForm
   Endif
   
 End
@@ -242,7 +248,7 @@ Public Sub _InitProperties()
   
   If Not Session.Id Then Return
   
-  cProp = Session["#" & $iId]
+  Try cProp = Session["#" & LCase(Form_Read().Name)][$sName]
   If Not cProp Then Return
   
   For Each vVal In cProp
