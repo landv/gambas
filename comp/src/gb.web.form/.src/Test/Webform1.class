@@ -1,2 +1,65 @@
 ' Gambas class file
 
+Public Sub _new()
+
+  Me.Style["height"] = "100%"
+  WebContainer2.Style["background-color"] = "#E7FFDF"
+  WebHTML2.Style["font-size"] = "200%"
+  WebHTML2.Style["font-weight"] = "bold"
+
+End
+
+Public Sub WebButton3_Click()
+
+  Last.Text = "Gambas rules!"
+
+End
+
+Public Sub WebForm_Open()
+
+  WebForm.Print("Form is opened")
+
+End
+
+Public Sub WebButton2_Click()
+
+  WebButton2.Parent.Border = Not WebButton2.Parent.Border
+
+End
+
+Public Sub WebContainer2_Render()
+
+  Dim sKey As String
+  
+  If Session.Id Then
+    
+    Print "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">"
+    For Each sKey In Session.Keys
+      Print "<tr><td>"; Html(sKey); "</td>";
+      Print "<td><tt>"; Html(JSON.Encode(Session[sKey])); "</tt></td></tr>"
+    Next
+    Print "</table>"
+    
+  Endif
+
+End
+
+Public Sub WebButton1_Click()
+
+  Randomize
+  WebHTML2.Style["font-size"] = "100%"
+  WebHTML2.Html &= "<span style=\"color:#" & Hex$(Rand(0, &HFFFFFF&), 6) & ";margin-left:1em;\">Hello wordl!</span>"
+
+End
+
+Public Sub WebForm_Event()
+
+  WebContainer2.Refresh
+
+End
+
+Public Sub WebButton4_Click()
+
+  WebButton4.Text = CStr(CInt(WebButton4.Text) + 1)
+
+End

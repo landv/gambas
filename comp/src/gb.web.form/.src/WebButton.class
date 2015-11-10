@@ -5,6 +5,9 @@ Inherits WebControl
 
 Public Const _Properties As String = "*,Text,Image{ImagePath}"
 Public Const _DrawWith As String = "Button"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
 
 Property Text As String
 Property Image As String
@@ -21,6 +24,7 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
+  Me._SetProperty("Text", Value)
 
 End
 
@@ -33,25 +37,29 @@ End
 Private Sub Image_Write(Value As String)
 
   $sImage = Value
+  Me._SetProperty("Image", Value)
 
 End
 
 Public Sub _BeforeRender()
   
-  Print "<button id=\""; Me.Name; "\">";
+  Print "<button id=\""; Me.Name; "\" onclick=\"gw.raise("; JS(Me.Form.Name); ","; JS(Me.Name); ",'click');\"";
+  Me._RenderStyleSheet()
+  Print ">";
   
 End
 
 
 Public Sub _Render()
   
-  If $sImage Then Print "<img class=\"button-image\" src=\""; Html(Application.Root &/ Main.CurrentForm.Name &/ $sImage); "\">";
+  If $sImage Then Print "<img class=\"button-image\" src=\""; Html(Application.Root &/ $sImage); "\">";
   Print Html($sText);
   
 End
 
 Public Sub _AfterRender()
   
+  Raise Render
   Print "</button>"
   
 End

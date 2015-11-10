@@ -1,17 +1,18 @@
 # Gambas Form File 3.0
 
-{ WebForm Webform
+{ WebForm WebForm
   #MoveScaled(0,0,74,91)
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
-  Title = ("Hello world !")
+  Title = ("gb.web.form test")
   { WebContainer4 WebContainer
     #MoveScaled(6,2,64,8)
+    Margin = True
     Border = True
     { WebHTML2 WebHTML
       #MoveScaled(3,1,27,5)
-      Text = ("<h1>Header</h1>")
+      Text = ("Header")
     }
   }
   { WebContainer3 WebContainer
@@ -31,22 +32,23 @@
       }
       { WebButton2 WebButton
         #MoveScaled(0,7,19,5)
-        Text = ("Button2")
+        Text = ("Border")
         Image = "icon.png"
       }
       { WebButton3 WebButton
         #MoveScaled(0,13,19,5)
-        Text = ("Button3")
+        Text = ("Change text")
+      }
+      { WebButton4 WebButton
+        #MoveScaled(0,19,19,5)
+        Text = ("0")
       }
     }
     { WebContainer2 WebContainer
       #MoveScaled(25,1,41,42)
       Expand = True
+      Margin = True
       Border = True
-      { WebHTML1 WebHTML
-        #MoveScaled(3,3,27,11)
-        Text = ("<h2>Ceci est un titre !</h2>")
-      }
     }
   }
 }

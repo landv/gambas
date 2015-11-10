@@ -6,39 +6,54 @@ Create Private
 Public Const _IsControl As Boolean = True
 Public Const _Properties As String = "Tag,Expand"
 Public Const _Family As String = "WebForm"
+Public Const _DefaultEvent As String = "Render"
+
+Event Render
 
 Property Read Id As Integer
 Property Read Name As String
 Property Tag As Variant
 Property Parent As WebContainer
 Property Expand As Boolean
+Property Read Style As WebControlStyle
+Property Read Form As WebForm
 
 Static Private $iLastId As Integer
 Static Private $cFromId As New Collection
 
 Static Private $aStyleSheet As String[]
-Static Private $iStyleSheet As Integer
 
 Private $iId As Integer
 Private $iParentId As Integer
 Private $sName As String
 Private $vTag As Variant
+
+Private $iStyleSheet As Integer
+Private $hStyle As WebControlStyle
+
 Private $bExpand As Boolean
+
+Public _Refresh As Boolean
+
 
 Public Sub _new(Optional Parent As WebContainer)
   
-  If Not Parent And If Not Me Is WebForm Then Error.Raise("Null object")
+  Dim hForm As WebForm
   
-  If Me Is WebForm Then
-    $sName = Object.Type(Me)
-    Object.Attach(Me, Me, $sName)
-  Else
-    $sName = Param.EventName
-  Endif
+  If Not Parent And If Not Me Is WebForm Then Error.Raise("Null object")
   
   Inc $iLastId
   $iId = $iLastId
-  If Not $sName Then $sName = "WebControl" & CStr($iId)
+  
+  If Me Is WebForm Then
+    $sName = Object.Type(Me)
+    Object.Attach(Me, Me, "WebForm")
+  Else
+    $sName = Param.EventName
+    If Not $sName Then $sName = "WebControl" & CStr($iId)
+    hForm = Form_Read()
+    If hForm Then hForm._FromName[$sName] = $iId
+  Endif
   
   $cFromId[$iId] = Me
   
@@ -95,23 +110,25 @@ End
 Private Sub Tag_Write(Value As Variant)
 
   $vTag = Value
+  _SetProperty("Tag", Value)
 
 End
 
 Public Sub _BeforeRender()
   
-  Print "<div id=\""; $sName; "\">"
+  Print "<div id=\""; $sName; "\"";
+  Me._RenderStyleSheet()
+  Print ">"
   
 End
 
 Public Sub _Render()
   
-  
-  
 End
 
 Public Sub _AfterRender()
   
+  Raise Render
   Print "</div>"
   
 End
@@ -121,6 +138,7 @@ Public Sub _RenderStyleSheet()
   Dim hParent As WebContainer
   
   _StartStyleSheet
+  
   If $bExpand Then _AddStyleSheet("flex-grow: 1;")
   
   hParent = Me.Parent
@@ -134,6 +152,10 @@ Public Sub _RenderStyleSheet()
         _AddStyleSheet("margin-right: 0.5em; margin-bottom: 0.5em;")
     End Select
     
+  Endif
+  
+  If $hStyle Then
+    If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
   Endif
   
   _EndStyleSheet
@@ -160,9 +182,10 @@ Public Sub _EndStyleSheet()
   If $iStyleSheet Then Return
   
   If $aStyleSheet.Count Then
-    Print "#"; Me.Name; " {"
-    Print "  "; $aStyleSheet.Join("\n  ")
-    Print "}"
+    'Print "#"; Me.Name; " {"
+    'Print "  "; $aStyleSheet.Join("\n  ")
+    'Print "}"
+    Print " style=\""; $aStyleSheet.Join(""); "\"";
     $aStyleSheet.Clear
   Endif
   
@@ -179,5 +202,100 @@ End
 Private Sub Expand_Write(Value As Boolean)
 
   $bExpand = Value
+  _SetProperty("Expand", Value)
+  Me.Parent.Refresh
 
+End
+
+Private Function Style_Read() As WebControlStyle
+
+  If Not $hStyle Then $hStyle = New WebControlStyle As "Style"
+  Return $hStyle
+
+End
+
+Private Function Form_Read() As WebForm
+
+  Try Return Object.Parent(Me)
+
+End
+
+Public Sub _SetProperty(sProp As String, vValue As Variant)
+
+  Dim cProp As Collection
+
+  If WebForm._InExec Then
+    Refresh
+    cProp = Session["#" & $iId]
+    If Not cProp Then cProp = New Collection
+    cProp[sProp] = vValue
+    Session["#" & $iId] = cProp
+  Endif
+  
+End
+
+Public Sub _InitProperties()
+
+  Dim cProp As Collection
+  Dim vVal As Variant
+  Dim sProp As String
+  
+  If Not Session.Id Then Return
+  
+  cProp = Session["#" & $iId]
+  If Not cProp Then Return
+  
+  For Each vVal In cProp
+    sProp = cProp.Key
+    'WebForm.Print("set " & sProp)
+    If sProp = "#style" Then
+      $hStyle = New WebControlStyle
+      $hStyle._Style = vVal
+    Else
+      Try Object.SetProperty(Me, cProp.Key, vVal)
+    Endif
+  Next
+  
+End
+
+Public Sub Style_Change()
+  
+  _SetProperty("#style", $hStyle._Style)
+  
+End
+
+Public Sub Refresh()
+  
+  If WebForm._InExec Then
+    _Refresh = True
+    Form_Read()._HasRefresh = True
+  Endif
+  
+End
+
+Public Sub _RefreshReply() As Boolean
+  
+  Dim hFile As File
+  Dim sResult As String
+  
+  If _Refresh Then 
+    
+    Print "$("; JS(Me.Name); ").outerHTML =";
+    
+    hFile = Open String For Write
+    Output To #hFile
+    
+    Me._BeforeRender()
+    Me._Render()
+    Me._AfterRender()
+    
+    sResult = Close #hFile
+    Output To Default
+    
+    Print JS(sResult)
+    
+    Return True
+    
+  Endif
+  
 End

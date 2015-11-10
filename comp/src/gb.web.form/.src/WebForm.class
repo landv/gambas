@@ -8,8 +8,19 @@ Inherits WebContainer
 Public Const _IsForm As Boolean = True
 Public Const _HiddenControls As String = "WebControl,WebForm"
 Public Const _Properties As String = "*,Title"
+Public Const _DefaultEvent As String = "Open"
+
+Static Public _InExec As Integer
+
+Static Private $aJavascript As New String[]
+
+Event Open
+Event Event
 
 Property Title As String
+
+Public _FromName As New Collection
+Public _HasRefresh As Boolean
 
 Private $sTitle As String
 
@@ -28,7 +39,23 @@ Static Public Sub Main()
     
     hForm = Application.Startup.AutoCreate()
     
+  Else If sPath Begins "style:" And sPath Ends ".css" Then
+    
+    RenderStyleSheet
+    Return
+    
+  Else If sPath Begins "lib:" And sPath Ends ".js" Then
+    
+    RenderJavascript
+    Return
+    
+  Else If Exist("../.public/" &/ sPath) Then
+    
+    Response.SendFile("../.public/" &/ sPath)
+    Return
+    
   Else
+    
     iPos = InStr(sPath, "/")
     If iPos = 0 Then
       sClass = sPath
@@ -49,12 +76,9 @@ Static Public Sub Main()
     
   Endif
   
-  If sPath Then
-    If sPath Begins "style:" And If sPath Ends ".css" Then
-      hForm.RenderStyleSheet
-    Else If Exist("../.public/" &/ sPath) Then
-      Response.SendFile("../.public/" &/ sPath)
-    Endif
+  hForm._InitProperties
+  If sPath = "x" Then
+    hForm._Exec(JSON.Decode(Request["c"]))
   Else
     hForm.Render
   Endif
@@ -70,7 +94,12 @@ NOT_FOUND:
   
 End
 
-Public Sub _BeforeRender()
+Public Sub Render()
+  
+  'Dim hForm As WebForm
+  
+  'hForm = Main.CurrentForm
+  'Main.CurrentForm = Me
   
   Response.Buffered = True
   Response.Begin
@@ -80,40 +109,28 @@ Public Sub _BeforeRender()
   'Print Header.ToString();
   Header.Form = Null
   
-  Print "<body>"
+  Print "<body onload=\"gw.raise("; JS(Me.Name); ",null,'open');\">"
   
-  Super._BeforeRender()
+  Print "<script type=\"text/javascript\" src=\""; Application.Root &/ "/lib:" & Application.Version & ".js"; "\"></script>"
   
-End
-
-
-Public Sub _AfterRender()
-  
-  Super._AfterRender()
-
-  Print "</body>"
-  Print "</html>"
-  
-  Response.End
-  
-End
-
-Public Sub Render()
-  
-  Dim hForm As WebForm
-  
-  hForm = Main.CurrentForm
-  Main.CurrentForm = Me
+  'Print "<style type=\"text/css\">"
+  'Me._RenderStyleSheet
+  'Print "</style>"
   
   Me._BeforeRender()
   Me._Render()
   Me._AfterRender()
   
-  Main.CurrentForm = hForm
+  Print "</body>"
+  Print "</html>"
+  
+  Response.End
+  
+  'Main.CurrentForm = hForm
   
 End
 
-Public Sub RenderStyleSheet()
+Static Private Sub RenderStyleSheet()
   
   Response.Buffered = True
   Response.ContentType = "text/css;charset=utf-8"
@@ -121,17 +138,21 @@ Public Sub RenderStyleSheet()
   
   Print File.Load("style.css");
   
-  Me._RenderStyleSheet()
-  
   If Exist("../style.css") Then Print File.Load("../style.css");
   
   Response.End
   
 End
 
-Public Sub RenderJavascript()
+Static Private Sub RenderJavascript()
   
+  Response.ContentType = "text/javascript;charset=utf-8"
+  Response.Begin
   
+  Print "$root = "; JS(Application.Root)
+  Print File.Load("lib.js")
+  
+  Response.End
   
 End
 
@@ -145,5 +166,60 @@ End
 Private Sub Title_Write(Value As String)
 
   $sTitle = Value
+  Me._SetProperty("Title", Value)
 
+End
+
+Static Public Sub Print(Text As String)
+  
+  $aJavascript.Add("console.log(" & JS(Text) & ");")
+  
+End
+
+' Static Public Sub _AddReply(sStr As String)
+'   
+'   $aJavascript.Add(sStr)
+'   
+' End
+
+
+Public Sub _Exec(aCmd As Variant[])
+  
+  Dim hCtrl As WebControl
+  Dim iOldInExec As Integer = _InExec
+  
+  Inc _InExec
+  
+  Raise Event
+  
+  Select Case aCmd[0]
+    
+    Case "raise"
+      If aCmd[1] Then
+        hCtrl = WebControl.FromId(_FromName[aCmd[1]])
+      Else
+        hCtrl = Me
+      Endif
+      
+      Object.Raise(hCtrl, aCmd[2], aCmd[3])
+    
+  End Select
+  
+  _InExec = iOldInExec
+  
+  Response.Begin
+  Print $aJavascript.Join("\n")
+  If _HasRefresh Then
+    Me._RefreshReply()
+  Endif
+  Response.End
+  
+Catch
+  
+  _InExec = iOldInExec
+  
+  Response.Begin
+  Print "console.log("; JS(Error.Where & ": " & Error.Text); ");"
+  Response.End
+  
 End

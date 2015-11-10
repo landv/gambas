@@ -20,6 +20,7 @@ End
 Private Sub Html_Write(Value As String)
 
   $sHTML = Value
+  Me._SetProperty("Html", Value)
 
 End
 

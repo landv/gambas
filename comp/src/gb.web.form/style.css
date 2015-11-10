@@ -1,9 +1,15 @@
-BODY {
+HTML, BODY {
   margin: 0;
   padding: 0;
-  }
-  
-button-image {
+  height: 100%;
+  width: 100%;
+}
+
+HTML, BODY, DIV {
+  box-sizing: border-box;
+}
+
+.button-image {
   margin-right: 0.5em;
   vertical-align: middle;
 }

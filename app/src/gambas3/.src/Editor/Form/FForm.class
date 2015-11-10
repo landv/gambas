@@ -307,6 +307,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
       sOldClass = ""
 
       If IsNull(hCtrl) Then
+        sClass = $hFamily.Name
         hCtrl = CreateControl(sClass, Null, Me.Name)
         RootControl = hCtrl
       Else

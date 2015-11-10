@@ -2726,11 +2726,12 @@ Private Sub FillProcCombo()
   {Scan} = Null
   
   If Project.IsSourcePath(Path) Then
-    cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
-    If Not cSymbol Then cSymbol = New Collection
+    Try cSymbol = Project.Documentation.GetClassSymbols(Me.Name)
   Else
-    cSymbol = Project.Documentation.ScanSingleClass(Me)
+    Try cSymbol = Project.Documentation.ScanSingleClass(Me)
   Endif
+
+  If Not cSymbol Then cSymbol = New Collection
 
   aStaticPrivate = New String[]
   aPrivate = New String[]

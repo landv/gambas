@@ -42,8 +42,20 @@ End
 
 Private Function Count_Read() As Integer
 
-  Return $aChildren.Count
+  Try Return $aChildren.Count
 
+End
+
+Public Sub _InitProperties()
+  
+  Dim I As Integer
+  
+  Super._InitProperties()
+  
+  For I = 0 To $aChildren.Max
+    WebControl.FromId($aChildren[I])._InitProperties()
+  Next
+  
 End
 
 Public Sub _Render()
@@ -109,6 +121,7 @@ End
 Private Sub Arrangement_Write(Value As Integer)
 
   $iArrangement = Value
+  Me._SetProperty("Arrangement", Value)
 
 End
 
@@ -121,6 +134,7 @@ End
 Private Sub Margin_Write(Value As Boolean)
 
   $bMargin = Value
+  Me._SetProperty("Margin", Value)
 
 End
 
@@ -133,6 +147,7 @@ End
 Private Sub Spacing_Write(Value As Boolean)
 
   $bSpacing = Value
+  Me._SetProperty("Spacing", Value)
 
 End
 
@@ -145,5 +160,18 @@ End
 Private Sub Border_Write(Value As Boolean)
 
   $bBorder = Value
+  Me._SetProperty("Border", Value)
 
+End
+
+Public Sub _RefreshReply() As Boolean
+  
+  Dim I As Integer
+  
+  If Super._RefreshReply() Then Return
+  
+  For I = 0 To $aChildren.Max
+    WebControl.FromId($aChildren[I])._RefreshReply()
+  Next
+  
 End

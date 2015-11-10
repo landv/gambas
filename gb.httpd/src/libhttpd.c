@@ -3481,8 +3481,9 @@ static void cgi_child(httpd_conn * hc)
 		(void) close(p[0]);
 		if (p[1] != STDOUT_FILENO)
 			(void) dup2(p[1], STDOUT_FILENO);
-		if (p[1] != STDERR_FILENO)
-			(void) dup2(p[1], STDERR_FILENO);
+		// BM: let stderr go to the IDE
+		//if (p[1] != STDERR_FILENO)
+		//	(void) dup2(p[1], STDERR_FILENO);
 		if (p[1] != STDOUT_FILENO && p[1] != STDERR_FILENO)
 			(void) close(p[1]);
 	}
@@ -3491,8 +3492,9 @@ static void cgi_child(httpd_conn * hc)
 		/* Otherwise, the request socket is stdout/stderr. */
 		if (hc->conn_fd != STDOUT_FILENO)
 			(void) dup2(hc->conn_fd, STDOUT_FILENO);
-		if (hc->conn_fd != STDERR_FILENO)
-			(void) dup2(hc->conn_fd, STDERR_FILENO);
+		// BM: let stderr go to the IDE
+		// if (hc->conn_fd != STDERR_FILENO)
+		//	(void) dup2(hc->conn_fd, STDERR_FILENO);
 	}
 
 	/* At this point we would like to set close-on-exec again for hc->conn_fd

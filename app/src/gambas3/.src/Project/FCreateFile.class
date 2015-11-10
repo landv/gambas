@@ -270,7 +270,7 @@ Private Sub CreateFile() As Boolean
       Project.InsertSource(sName, "class", $sDir, sTemp, True, True)
       
       sTemp = Project.FORM_MAGIC & "\n\n" &   
-              "{ " & sName & " " & UCase(Left(sType)) & Mid$(sType, 2) & "\n"
+              "{ " & sName & " " & CFamily.Get(sType).Name & "\n"
       
       If sType = "form" Then
       
