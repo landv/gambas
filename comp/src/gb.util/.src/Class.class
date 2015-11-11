@@ -43,6 +43,9 @@ Static Public Sub Stat(Name As String) As ClassStat
   sPath = "../.gambas" &/ UCase(Name)
   If Not Exist(sPath) Then Error.Raise("Class not found")
   
+  $iSectionPos = 0
+  $iSectionSize = 0
+  
   hStat = New ClassStat
   hStat.Name = Name
   
