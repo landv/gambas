@@ -191,7 +191,7 @@ static void stradd_sep(char *dst, const char *src, const char *sep)
 {
 	if (*dst)
 		strcat(dst, sep);
-	
+
 	strcat(dst, src);
 }
 
@@ -360,10 +360,10 @@ static char fix_separator(const char *str)
 {
 	if (!*str || !str[1])
 		return str[0];
-	
+
 	if ((uchar)str[0] == 0xC2 && (uchar)str[1] == 0xA0 && str[2] == 0)
 		return ' ';
-	
+
 	return '?';
 }
 
@@ -384,7 +384,7 @@ static void fill_local_info(void)
 	free_local_info();
 
 	/* local encoding */
-	
+
 	if (!LOCAL_is_UTF8)
 		STRING_free(&LOCAL_encoding);
 
@@ -405,7 +405,7 @@ static void fill_local_info(void)
 	/* Numeric information */
 
 	info = localeconv();
-	
+
 	//fprintf(stderr, "'%s' '%s' %d %d\n", info->thousands_sep, info->mon_thousands_sep, *info->thousands_sep, *info->grouping);
 	//fprintf(stderr, "'%s' '%s'\n", nl_langinfo(THOUSANDS_SEP), nl_langinfo(MON_THOUSANDS_SEP));
 
@@ -423,7 +423,7 @@ static void fill_local_info(void)
 	STRING_ref(LOCAL_local.intl_currency_symbol);*/
 
 	// Date format
-	
+
 	p = nl_langinfo(D_FMT);
 	//fprintf(stderr, "date format: %s\n", p);
 	dp = LOCAL_local.date_order;
@@ -432,7 +432,7 @@ static void fill_local_info(void)
 		p = "%m/%d/%y";
 	else if (strcmp(p, "%F") == 0)
 		p = "%Y-%m-%d";
-	
+
 	for (;;)
 	{
 		c = *p++;
@@ -446,7 +446,7 @@ static void fill_local_info(void)
 			{
 				if (c == 'E' || c == 'O')
 					c = *p++;
-				
+
 				switch (c)
 				{
 					case 'y': case 'Y':
@@ -456,7 +456,7 @@ static void fill_local_info(void)
 						stradd_sep(LOCAL_local.short_date, "yyyy", "/");
 						stradd_sep(LOCAL_local.general_date, "yyyy", "/");
 						break;
-						
+
 					case 'b': case 'B': case 'h': case 'm':
 						*dp++ = LO_MONTH;
 						stradd_sep(LOCAL_local.long_date, "mmmm", " ");
@@ -464,7 +464,7 @@ static void fill_local_info(void)
 						stradd_sep(LOCAL_local.short_date, "mm", "/");
 						stradd_sep(LOCAL_local.general_date, "mm", "/");
 						break;
-						
+
 					case 'd': case 'e':
 						*dp++ = LO_DAY;
 						stradd_sep(LOCAL_local.long_date, "dddd d", " ");
@@ -476,7 +476,7 @@ static void fill_local_info(void)
 				continue;
 			}
 		}
-		
+
 		if (dp != LOCAL_local.date_order && LOCAL_local.date_sep == 0)
 			LOCAL_local.date_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
 	}
@@ -486,10 +486,10 @@ static void fill_local_info(void)
 	p = nl_langinfo(T_FMT);
 	//fprintf(stderr, "time format: %s\n", p);
 	tp = LOCAL_local.time_order;
-	
+
 	if (strcmp(p, "%T") == 0 || strcmp(p, "%R") == 0 || strcmp(p, "%r") == 0)
 		p = "%H:%M:%S";
-	
+
 	got_second = FALSE;
 
 	for (;;)
@@ -505,7 +505,7 @@ static void fill_local_info(void)
 			{
 				if (c == 'E' || c == 'O')
 					c = *p++;
-				
+
 				switch(c)
 				{
 					case 'H': case 'I': case 'k': case 'l':
@@ -535,9 +535,9 @@ static void fill_local_info(void)
 		if (tp != LOCAL_local.time_order && LOCAL_local.time_sep == 0)
 			LOCAL_local.time_sep = STRING_utf8_to_unicode(p - 1, STRING_utf8_get_char_length(c));
 	}
-	
+
 	// Fix missing seconds
-	
+
 	if (!got_second)
 	{
 		*tp++ = LO_SECOND;
@@ -545,11 +545,11 @@ static void fill_local_info(void)
 	}
 
 	// Fix the french date separator
-	
+
 	lang = LOCAL_get_lang();
 	if (strcmp(lang, "fr") == 0 || strncmp(lang, "fr_", 3) == 0)
 		LOCAL_local.date_sep = '/';
-	
+
 	stradd_sep(LOCAL_local.general_date, LOCAL_local.long_time, " ");
 	am_pm = nl_langinfo(AM_STR);
 	if (am_pm && *am_pm)
@@ -577,13 +577,13 @@ static void fill_local_info(void)
 	strcpy(LOCAL_local.general_currency, "($#,##0.");
 	strncat(LOCAL_local.general_currency, "########", Min(8, info->frac_digits));
 	strcat(LOCAL_local.general_currency, ")");
-	
+
 	strcpy(LOCAL_local.intl_currency, "($$#,##0.");
 	strncat(LOCAL_local.intl_currency, "########", Min(8, info->int_frac_digits));
 	strcat(LOCAL_local.intl_currency, ")");
 
 	init_currency_flag(info);
-	
+
 	LOCAL_local.true_str = STRING_new_zero(LOCAL_gettext(LOCAL_default.true_str));
 	LOCAL_local.len_true_str = STRING_length(LOCAL_local.true_str);
 	LOCAL_local.false_str = STRING_new_zero(LOCAL_gettext(LOCAL_default.false_str));
@@ -621,7 +621,7 @@ const char *LOCAL_get_lang(void)
 			lang = "en_US";
 		_lang = STRING_new_zero(lang);
 	}
-	
+
 	return _lang;
 }
 
@@ -675,7 +675,7 @@ void LOCAL_set_lang(const char *lang)
 			break;
 		}
 	}
-	
+
 	var = getenv("GB_REVERSE");
 	if (var && !(var[0] == '0' && var[1] == 0))
 		rtl = !rtl;
@@ -716,12 +716,12 @@ bool LOCAL_format_number(double number, int fmt_type, const char *fmt, int len_f
 	int pos_first_digit;
 
 	bool intl_currency;
-	
+
 	if (local)
 		local_current = &LOCAL_local;
 	else
 		local_current = &LOCAL_default;
-	
+
 	switch(fmt_type)
 	{
 		case LF_USER:
@@ -1007,15 +1007,15 @@ _FORMAT:
 		if (!exposant) ndigit += number_exp;
 		ndigit = MinMax(ndigit, 0, MAX_FLOAT_DIGIT);
 		//fprintf(stderr, "number_mant = %.24g  number_exp = %d  ndigit = %d\n", number_mant, number_exp, ndigit);
-		
+
 		power = pow10_uint64_p(ndigit + 1);
-		
+
 		mantisse = number_mant * power;
 		if ((mantisse % 10) >= 5)
 			mantisse += 10;
-		
+
 		//fprintf(stderr, "-> power = %" PRId64 " mantisse = %" PRId64 "\n", power, mantisse);
-		
+
 		if (mantisse >= power)
 		{
 			ndigit = sprintf(buf, ".%" PRId64, mantisse);
@@ -1026,7 +1026,7 @@ _FORMAT:
 		{
 			ndigit = sprintf(buf, "0.%" PRId64, mantisse);
 		}
-		
+
 		ndigit--;
 		buf[ndigit] = 0;
 
@@ -1207,13 +1207,13 @@ static void add_number(int value, int pad)
 	static char temp[8] = { 0 };
 	int i, n;
 	bool minus = FALSE;
-	
+
 	if (value < 0)
 	{
 		value = (-value);
 		minus = TRUE;
 	}
-	
+
 	n = 0;
 	for (i = 7; i >= 0; i--)
 	{
@@ -1231,14 +1231,14 @@ static void add_number(int value, int pad)
 			value /= 10;
 		}
 	}
-	
+
 	if (minus)
 	{
 		i--;
 		temp[i] = '-';
 		n++;
 	}
-	
+
 	add_string(&temp[i], n, NULL);
 }
 
@@ -1253,13 +1253,13 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 		return FALSE;
 
 	date_token = *token == 'd' || *token == 'm' || *token == 'y';
-	
+
 	if ((date_token && DATE_SERIAL_has_no_date(date))) // || (!date_token && DATE_SERIAL_has_no_time(date)))
 	{
 		*token = 0;
 		return TRUE;
 	}
-	
+
 	switch (*token)
 	{
 		case 'd':
@@ -1323,9 +1323,9 @@ static bool add_date_token(DATE_SERIAL *date, char *token, int count)
 			}
 
 			break;
-			
+
 		case 't':
-			
+
 			if (count <= 2)
 			{
 				time_t t = (time_t)0L;
@@ -1453,7 +1453,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 		if (pos == pos_ampm)
 		{
 			add_date_token(&vdate, &token, token_count);
-			
+
 			/* passage en struct tm */
 
 			date_tm.tm_sec = date->sec;
@@ -1504,7 +1504,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 }
 
 
-void LOCAL_load_translation(ARCHIVE *arch)
+static void LOCAL_load_translation(ARCHIVE *arch)
 {
 	char *domain = NULL;
 	char *lang_list;
@@ -1597,7 +1597,7 @@ void LOCAL_load_translation(ARCHIVE *arch)
 
 	dst = FILE_cat(FILE_make_temp(NULL, NULL), "tr", NULL);
 	mkdir(dst, S_IRWXU);
-		
+
 	dst = FILE_cat(FILE_make_temp(NULL, NULL), "tr", lang, NULL);
 	mkdir(dst, S_IRWXU);
 
@@ -1627,7 +1627,7 @@ void LOCAL_load_translation(ARCHIVE *arch)
 __ERROR:
 
 	// If the *.mo was not copied, then the following functions will failed
-	
+
 	#ifdef DEBUG_LANG
 
 		fprintf(stderr, "bindtextdomain: %s\n", bindtextdomain(domain, FILE_cat(FILE_make_temp(NULL, NULL), "tr", NULL)));
@@ -1685,7 +1685,7 @@ const char *LOCAL_gettext(const char *msgid)
 		fprintf(stderr, "dgettext(\"%s\", \"%s\") -> \"%s\"\n", arch->domain, msgid, tr);
 		#endif
 	}
-	
+
 	if (tr == msgid)
 	{
 		if (!_translation_loaded)
@@ -1707,12 +1707,12 @@ const char *LOCAL_gettext(const char *msgid)
 int LOCAL_get_first_day_of_week()
 {
 	const char *lang;
-	
+
 	if (LOCAL_first_day_of_week >= 0)
 		return LOCAL_first_day_of_week;
-	
+
 	lang = LOCAL_get_lang();
-	
+
 	if (strcmp(lang, "en") == 0 || strncmp(lang, "en_", 3) == 0 || strcmp(lang, "C") == 0)
 		return 0;
 	else
