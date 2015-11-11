@@ -3037,19 +3037,39 @@ Private Sub GetVersion(Optional bWriteProject As Boolean) As Boolean
 
   aVer = Split(Trim(sVer), ".")
 
+  If aVer.Count = 0 Then Goto BAD_VERSION
+
   Try iMajor = aVer[0]
-  Try iMinor = aVer[1]
+  If Error Or If iMajor < 0 Then Goto BAD_VERSION
+  
+  If aVer.Count >= 2 Then
+    Try iMinor = aVer[1]
+    If Error Or If iMinor < 0 Then Goto BAD_VERSION
+  Else
+    iMinor = 0
+  Endif
+
+  If aVer.Count >= 3 Then
+    Try iRelease = aVer[2]
+    If Error Or If iRelease < 0 Then Goto BAD_VERSION
+  Else
+    iRelease = 0
+  Endif
 
   MajorVersion = iMajor
   MinorVersion = iMinor
-
-  Try iRelease = aVer[2]
-  If Not Error Then ReleaseVersion = iRelease
+  ReleaseVersion = iRelease
   
   If bWriteProject Then
     sVer = FormatVersion()
     If sVer <> sOldVer Then WriteProject
   Endif
+  
+  Return
+  
+BAD_VERSION:
+
+  FMain.ShowError(Subst(("The contents of VERSION file at &1 is incorrect."), "<tt>" & sDir & "</tt>"))
 
 End
 

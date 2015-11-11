@@ -57,11 +57,15 @@ Public Sub Open(Text As String, Optional Icon As Picture)
   
   Dim fTime As Float
   
+  If $sText = Text Then Return
+  
   If Me.Visible Then
+    
     $aText.Add(Text)
     $aIcon.Add(Icon)
     UpdateButton
     Return
+    
   Endif
   
   $sText = Text
@@ -120,6 +124,9 @@ Public Sub Close()
     $aText.Remove(0)
     $aIcon.Remove(0)
     Open($sText, $hIcon)
+  Else
+    $sText = ""
+    $hIcon = Null
   Endif
   
 End
