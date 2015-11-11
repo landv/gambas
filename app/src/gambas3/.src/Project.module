@@ -3037,7 +3037,7 @@ Private Sub GetVersion(Optional bWriteProject As Boolean) As Boolean
 
   aVer = Split(Trim(sVer), ".")
 
-  iMajor = aVer[0]
+  Try iMajor = aVer[0]
   Try iMinor = aVer[1]
 
   MajorVersion = iMajor

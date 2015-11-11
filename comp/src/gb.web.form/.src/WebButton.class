@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Text,Image{ImagePath}"
+Public Const _Properties As String = "*,Enabled=True,Text,Image{ImagePath}"
 Public Const _DrawWith As String = "Button"
 Public Const _DefaultEvent As String = "Click"
 
@@ -11,9 +11,11 @@ Event Click
 
 Property Text As String
 Property Image As String
+Property Enabled As Boolean
 
 Private $sText As String
 Private $sImage As String
+Private $bDisabled As Boolean
 
 Private Function Text_Read() As String
 
@@ -43,8 +45,9 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<button id=\""; Me.Name; "\" onclick=\"gw.raise("; JS(Me.Form.Name); ","; JS(Me.Name); ",'click');\"";
+  Print "<button id=\""; Me.Name; "\""; Me._GetEventJS("onclick", "click");
   Me._RenderStyleSheet()
+  If $bDisabled Then Print " disabled";
   Print ">";
   
 End
@@ -52,7 +55,13 @@ End
 
 Public Sub _Render()
   
-  If $sImage Then Print "<img class=\"button-image\" src=\""; Html(Application.Root &/ $sImage); "\">";
+  If $sImage Then 
+    If $sText Then
+      Print "<img class=\"button-image\" src=\""; Html(Application.Root &/ $sImage); "\">";
+    Else
+      Print "<img src=\""; Html(Application.Root &/ $sImage); "\">";
+    Endif
+  Endif
   Print Html($sText);
   
 End
@@ -62,4 +71,17 @@ Public Sub _AfterRender()
   Raise Render
   Print "</button>"
   
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return Not $bDisabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $bDisabled = Not Value
+  Me._SetProperty("Enabled", Value)
+
 End

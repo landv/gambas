@@ -1,0 +1,85 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Enabled=True,ReadOnly,Text"
+Public Const _DrawWith As String = "TextBox"
+
+Event Change
+
+Property Text As String
+Property Enabled As Boolean
+Property ReadOnly As Boolean
+
+Private $sText As String
+Private $bDisabled As Boolean
+Private $bReadOnly As Boolean
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $sText = Value Then Return
+  
+  $sText = Value
+  Me._SetProperty("Text", Value)
+  Raise Change
+
+End
+
+Public Sub _BeforeRender()
+  
+  Print "<input type=\"text\" id=\""; Me.Name; "\""; Me._GetUpdateJS("onchange", "text", "this.value");
+  Me._RenderStyleSheet()
+  If $bDisabled Then Print " disabled";
+  If $bReadOnly Then Print " readonly";
+  If $sText Then Print " value=\""; Html($sText); "\"";
+  Print ">"
+  
+End
+
+
+Public Sub _AfterRender()
+  
+  'Raise Render
+  'Print "</input>"
+  
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return Not $bDisabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $bDisabled = Not Value
+  Me._SetProperty("Enabled", Value)
+
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  Me._SetProperty("ReadOnly", Value)
+
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "text" Then Try Me.Text = vValue
+  
+End
+

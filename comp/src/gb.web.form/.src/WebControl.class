@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Tag,Expand"
+Public Const _Properties As String = "Width,Height,Visible=True,Tag,Expand"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -15,8 +15,11 @@ Property Read Name As String
 Property Tag As Variant
 Property Parent As WebContainer
 Property Expand As Boolean
+Property Visible As Boolean
 Property Read Style As WebControlStyle
 Property Read Form As WebForm
+Property Width, W As String
+Property Height, H As String
 
 Static Private $iLastId As Integer
 Static Private $cFromId As New Collection
@@ -251,6 +254,7 @@ Public Sub _InitProperties()
   Try cProp = Session["#" & LCase(Form_Read().Name)][$sName]
   If Not cProp Then Return
   
+  Object.Lock(Me)
   For Each vVal In cProp
     sProp = cProp.Key
     'WebForm.Print("set " & sProp)
@@ -261,6 +265,7 @@ Public Sub _InitProperties()
       Try Object.SetProperty(Me, cProp.Key, vVal)
     Endif
   Next
+  Object.Unlock(Me)
   
 End
 
@@ -272,6 +277,7 @@ End
 
 Public Sub Refresh()
   
+  If WebForm._DisableRefresh Then Return
   If WebForm._InExec Then
     _Refresh = True
     Form_Read()._HasRefresh = True
@@ -304,4 +310,85 @@ Public Sub _RefreshReply() As Boolean
     
   Endif
   
+End
+
+Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As String) As String
+  
+  Dim sStr As String
+  
+  If Not Object.CanRaise(Me, sEvent) Then Return
+  
+  sStr = " " & sProp & "=\"gw.raise(" & JS(Me.Form.Name) & "," 
+  If Me Is WebForm Then
+    sStr &= "null"
+  Else
+    sStr &= JS($sName)
+  Endif
+  sStr &= "," & JS(sEvent)
+  If sArg Then sStr &= "," & sArg
+  sStr &= ");\""
+  
+  Return sStr
+  
+End
+
+Public Sub _GetUpdateJS(sEvent As String, sProp As String, sGetValue As String) As String
+  
+  Dim sStr As String
+  
+  sStr = " " & sEvent & "=\"gw.update(" & JS(Me.Form.Name) & "," 
+  If Me Is WebForm Then
+    sStr &= "null"
+  Else
+    sStr &= JS($sName)
+  Endif
+  sStr &= "," & JS(sProp) & "," & sGetValue & ");\""
+  
+  Return sStr
+  
+End
+
+Public Sub _UpdateProperty((sProp) As String, (vValue) As Variant)
+  
+End
+
+Private Function Width_Read() As String
+
+  If $hStyle Then Return $hStyle["width"]
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  Style_Read()["width"] = Value
+
+End
+
+Private Function Height_Read() As String
+
+  If $hStyle Then Return $hStyle["height"]
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  Style_Read()["height"] = Value
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  If Not $hStyle Then Return
+  Return $hStyle["display"] <> "none"
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  If Value Then
+    If $hStyle Then Style_Read()["display"] = ""
+  Else
+    Style_Read()["display"] = "none"
+  Endif
+
 End

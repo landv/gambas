@@ -74,7 +74,7 @@ End
 
 Public Sub _RenderStyleSheet()
   
-  Dim I As Integer
+  'Dim I As Integer
   
   Me._StartStyleSheet
   
@@ -104,11 +104,11 @@ Public Sub _RenderStyleSheet()
   
   Me._EndStyleSheet
   
-  For I = 0 To $aChildren.Max
-    With WebControl.FromId($aChildren[I])
-      ._RenderStyleSheet()
-    End With
-  Next
+  ' For I = 0 To $aChildren.Max
+  '   With WebControl.FromId($aChildren[I])
+  '     ._RenderStyleSheet()
+  '   End With
+  ' Next
   
 End
 

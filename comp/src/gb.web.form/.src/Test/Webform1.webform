@@ -1,18 +1,24 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,74,91)
+  #MoveScaled(0,0,93,91)
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
   Title = ("gb.web.form test")
   { WebContainer4 WebContainer
     #MoveScaled(6,2,64,8)
+    Arrangement = Arrange.Horizontal
     Margin = True
     Border = True
     { WebHTML2 WebHTML
       #MoveScaled(3,1,27,5)
+      Expand = True
       Text = ("Header")
+    }
+    { btnClose WebButton
+      #MoveScaled(56,1,5,5)
+      Image = "close.png"
     }
   }
   { WebContainer3 WebContainer
@@ -30,10 +36,9 @@
         #MoveScaled(0,1,19,5)
         Text = ("Hello world!")
       }
-      { WebButton2 WebButton
+      { WebButton5 WebButton
         #MoveScaled(0,7,19,5)
-        Text = ("Border")
-        Image = "icon.png"
+        Text = ("Reset text")
       }
       { WebButton3 WebButton
         #MoveScaled(0,13,19,5)
@@ -43,12 +48,39 @@
         #MoveScaled(0,19,19,5)
         Text = ("0")
       }
+      { WebButton2 WebButton
+        #MoveScaled(0,25,19,5)
+        Text = ("Border")
+        Image = "icon.png"
+      }
+      { WebButton6 WebButton
+        #MoveScaled(0,31,18,5)
+        Text = ("Toggle enabled")
+      }
     }
-    { WebContainer2 WebContainer
-      #MoveScaled(25,1,41,42)
+    { WebContainer5 WebContainer
+      #MoveScaled(27,4,31,31)
       Expand = True
+      Arrangement = Arrange.Vertical
       Margin = True
+      Spacing = True
       Border = True
+      { WebTextBox1 WebTextBox
+        #MoveScaled(1,2,25,5)
+        Width = "16em"
+        Height = "2em"
+      }
+      { WebHtml1 WebHtml
+        #MoveScaled(2,8,23,5)
+        Height = "2em"
+        Visible = False
+      }
+      { WebContainer2 WebContainer
+        #MoveScaled(2,16,26,13)
+        Expand = True
+        Margin = True
+        Border = True
+      }
     }
   }
 }

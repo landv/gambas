@@ -21,6 +21,7 @@ Property Title As String
 
 Public _FromName As New Collection
 Public _HasRefresh As Boolean
+Public _DisableRefresh As Integer
 
 Private $sTitle As String
 
@@ -109,7 +110,7 @@ Public Sub Render()
   'Print Header.ToString();
   Header.Form = Null
   
-  Print "<body onload=\"gw.raise("; JS(Me.Name); ",null,'open');\">"
+  Print "<body"; Me._GetEventJS("onload", "open"); ">"
   
   Print "<script type=\"text/javascript\" src=\""; Application.Root &/ "/lib:" & Application.Version & ".js"; "\"></script>"
   
@@ -176,11 +177,11 @@ Static Public Sub Print(Text As String)
   
 End
 
-' Static Public Sub _AddReply(sStr As String)
-'   
-'   $aJavascript.Add(sStr)
-'   
-' End
+Static Public Sub _AddReply(sStr As String)
+  
+  $aJavascript.Add(sStr)
+  
+End
 
 
 Public Sub _Exec(aCmd As Variant[])
@@ -202,6 +203,18 @@ Public Sub _Exec(aCmd As Variant[])
       Endif
       
       Object.Raise(hCtrl, aCmd[2], aCmd[3])
+      
+    Case "update"
+      
+      If aCmd[1] Then
+        hCtrl = WebControl.FromId(_FromName[aCmd[1]])
+      Else
+        hCtrl = Me
+      Endif
+      Inc _DisableRefresh
+      hCtrl._UpdateProperty(aCmd[2], aCmd[3])
+      Dec _DisableRefresh
+      
     
   End Select
   
@@ -221,5 +234,12 @@ Catch
   Response.Begin
   Print "console.log("; JS(Error.Where & ": " & Error.Text); ");"
   Response.End
+  
+End
+
+Public Sub Close()
+  
+  Session["#" & LCase(Me.Name)] = Null
+  _AddReply("window.location.reload(true);")
   
 End
