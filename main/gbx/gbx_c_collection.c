@@ -110,6 +110,7 @@ BEGIN_METHOD(Collection_new, GB_INTEGER mode)
 
 	HASH_TABLE_create(&THIS->hash_table, TYPE_sizeof(T_VARIANT), mode);
 	THIS->last = NULL;
+	THIS->default_value.type = GB_T_NULL;
 
 END_METHOD
 
@@ -117,6 +118,7 @@ END_METHOD
 BEGIN_METHOD_VOID(Collection_free)
 
 	clear(THIS);
+	GB_StoreVariant(NULL, POINTER(&THIS->default_value));
 
 END_METHOD
 
@@ -204,7 +206,14 @@ END_METHOD
 
 BEGIN_METHOD(Collection_get, GB_STRING key)
 
-	GB_ReturnVariant(get_key(THIS, STRING(key), LENGTH(key), !DEBUG_inside_eval));
+	void *value = get_key(THIS, STRING(key), LENGTH(key), !DEBUG_inside_eval);
+	if (!value)
+	{
+		if (THIS->has_default)
+			value = (void *)&THIS->default_value;
+	}
+
+	GB_ReturnVariant(value);
 
 END_METHOD
 
@@ -250,6 +259,20 @@ BEGIN_METHOD_VOID(Collection_Copy)
 
 END_METHOD
 
+
+BEGIN_PROPERTY(Collection_Default)
+
+	if (READ_PROPERTY)
+		GB_ReturnVariant(&THIS->default_value);
+	else
+	{
+		GB_StoreVariant(PROP(GB_VARIANT), POINTER(&THIS->default_value));
+		THIS->has_default = THIS->default_value.type != GB_T_NULL;
+	}
+
+END_PROPERTY
+
+
 #endif
 
 
@@ -263,6 +286,7 @@ GB_DESC NATIVE_Collection[] =
 	GB_PROPERTY_READ("Count", "i", Collection_Count),
 	GB_PROPERTY_READ("Length", "i", Collection_Count),
 	GB_PROPERTY("Key", "s", Collection_Key),
+	GB_PROPERTY("Default", "v", Collection_Default),
 
 	GB_METHOD("Add", NULL, Collection_Add, "(Value)v(Key)s"),
 	GB_METHOD("Exist", "b", Collection_Exist, "(Key)s"),
@@ -312,21 +336,33 @@ bool GB_CollectionSet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
 
 bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *value)
 {
+	CCOLLECTION *_object = (CCOLLECTION *)col;
 	VARIANT *var;
+	bool ret;
 
-	var = (VARIANT *)get_key((CCOLLECTION *)col, key, len, !DEBUG_inside_eval);
 	value->type = T_VARIANT;
-	if (var)
+
+	var = (VARIANT *)get_key(THIS, key, len, !DEBUG_inside_eval);
+
+	if (!var)
 	{
-		value->value.type = var->type;
-		value->value.value.data = var->value.data;
-		return FALSE;
+		if (!THIS->has_default)
+		{
+			value->value.type = GB_T_NULL;
+			return TRUE;
+		}
+
+		var = (VARIANT *)&THIS->default_value;
+		ret = TRUE;
 	}
 	else
 	{
-		value->value.type = GB_T_NULL;
-		return TRUE;
+		ret = FALSE;
 	}
+
+	value->value.type = var->type;
+	value->value.value.data = var->value.data;
+	return ret;
 }
 
 bool GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *value, char **key, int *len)
