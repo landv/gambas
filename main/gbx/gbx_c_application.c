@@ -172,7 +172,7 @@ END_PROPERTY
 BEGIN_PROPERTY(Application_Env_Count)
 
 	int n = 0;
-	
+
 	while(environ[n])
 		n++;
 
@@ -221,7 +221,7 @@ END_METHOD
 static void init_again(int old_pid)
 {
 	char old[PATH_MAX];
-	
+
 	FILE_remove_temp_file();
 	snprintf(old, sizeof(old),FILE_TEMP_DIR, getuid(), old_pid);
 	rename(old, FILE_make_temp(NULL, NULL));
@@ -325,7 +325,7 @@ GB_DESC NATIVE_App[] =
   GB_STATIC_PROPERTY_READ("Id", "i", Application_Id),
   GB_STATIC_PROPERTY_READ("Handle", "i", Application_Id),
   GB_STATIC_PROPERTY_READ("Version", "s", Application_Version),
-  GB_STATIC_PROPERTY_READ("Dir", "i", Application_Dir),
+  GB_STATIC_PROPERTY_READ("Dir", "s", Application_Dir),
   GB_STATIC_PROPERTY("Daemon", "b", Application_Daemon),
   GB_STATIC_PROPERTY_READ("Startup", "Class", Application_Startup),
 	GB_STATIC_PROPERTY("Priority", "i", Application_Priority),
