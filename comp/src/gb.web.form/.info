@@ -27,7 +27,7 @@ C
 _Properties
 C
 s
-"*,Enabled=True,Text,Image{ImagePath}"
+"*,Text,Image{ImagePath}"
 _DrawWith
 C
 s
@@ -48,7 +48,89 @@ Image
 p
 s
 
-Enabled
+_BeforeRender
+m
+
+
+_Render
+m
+
+
+_AfterRender
+m
+
+
+#WebCheckBox
+WebControl
+C
+_Properties
+C
+s
+"*,Text,Value"
+_DrawWith
+C
+s
+"CheckBox"
+:Click
+:
+
+
+Value
+p
+b
+
+Checked
+p
+b
+
+Text
+p
+s
+
+_BeforeRender
+m
+
+
+_AfterRender
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
+#WebComboBox
+WebControl
+C
+_Properties
+C
+s
+"*,List,ReadOnly=True"
+_DrawWith
+C
+s
+"ComboBox"
+:Change
+:
+
+
+Text
+r
+s
+
+Count
+r
+i
+
+Index
+p
+i
+
+List
+p
+String[]
+
+ReadOnly
 p
 b
 
@@ -61,6 +143,14 @@ m
 
 
 _AfterRender
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
+Clear
 m
 
 
@@ -145,7 +235,7 @@ T
 _Properties
 C
 s
-"Width,Height,Visible=True,Tag,Expand,Ignore"
+"Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore"
 _Family
 C
 s
@@ -207,6 +297,10 @@ p
 s
 
 Ignore
+p
+b
+
+Enabled
 p
 b
 
@@ -480,7 +574,7 @@ C
 _Properties
 C
 s
-"*,Enabled=True,ReadOnly,Text"
+"*,ReadOnly,Text"
 _DrawWith
 C
 s
@@ -492,10 +586,6 @@ s
 Text
 p
 s
-
-Enabled
-p
-b
 
 ReadOnly
 p

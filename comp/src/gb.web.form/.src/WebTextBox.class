@@ -3,17 +3,15 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Enabled=True,ReadOnly,Text"
+Public Const _Properties As String = "*,ReadOnly,Text"
 Public Const _DrawWith As String = "TextBox"
 
 Event Change
 
 Property Text As String
-Property Enabled As Boolean
 Property ReadOnly As Boolean
 
 Private $sText As String
-Private $bDisabled As Boolean
 Private $bReadOnly As Boolean
 
 Private Function Text_Read() As String
@@ -36,7 +34,7 @@ Public Sub _BeforeRender()
   
   Print "<input type=\"text\" id=\""; Me.Name; "\""; Me._GetUpdateJS("onchange", "text", "this.value");
   Me._RenderStyleSheet()
-  If $bDisabled Then Print " disabled";
+  If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
   If $sText Then Print " value=\""; Html($sText); "\"";
   Print ">"
@@ -49,19 +47,6 @@ Public Sub _AfterRender()
   'Raise Render
   'Print "</input>"
   
-End
-
-Private Function Enabled_Read() As Boolean
-
-  Return Not $bDisabled
-
-End
-
-Private Sub Enabled_Write(Value As Boolean)
-
-  $bDisabled = Not Value
-  Me._SetProperty("Enabled", Value)
-
 End
 
 Private Function ReadOnly_Read() As Boolean

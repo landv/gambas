@@ -26,19 +26,29 @@
     Expand = True
     Margin = True
     Spacing = True
-    Count = 2
+    Count = 3
     Index = 0
-    Text = ("test")
+    Text = ("General")
     { WebTextBox1 WebTextBox
-      #MoveScaled(6,6,22,8)
+      #MoveScaled(2,4,22,8)
       Text = ("Hello !")
     }
+    { WebCheckBox1 WebCheckBox
+      #MoveScaled(26,6,26,4)
+      Text = ("Check and uncheck me!")
+    }
+    { WebComboBox1 WebComboBox
+      #MoveScaled(3,14,22,4)
+      List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+    }
     Index = 1
-    Text = ("titi")
+    Text = ("Options")
     { WebButton3 WebButton
       #MoveScaled(8,6,21,8)
       Text = ("Test")
     }
+    Index = 2
+    Text = ("Tab 3")
     Index = 0
   }
   { WebContainer2 WebContainer

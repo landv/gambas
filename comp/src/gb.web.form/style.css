@@ -10,7 +10,12 @@ HTML, BODY, DIV {
 }
 
 BUTTON {
-  padding: 0;
+  padding: 0 0.5em;
+  font: inherit;
+}
+
+INPUT {
+  font: inherit;
 }
 
 .gw-button-image {
@@ -21,6 +26,7 @@ BUTTON {
 .gw-tab-header {
   margin-bottom: -1px;
   z-index: 1;
+  line-height: 2em;
 }
 
 .gw-tab {
@@ -39,6 +45,8 @@ BUTTON {
   border-left: solid #C0C0C0 1px;
   border-top: solid #C0C0C0 1px;
   border-right: solid #C0C0C0 1px;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
   background: white;
 }
 
@@ -46,3 +54,7 @@ BUTTON {
   border: solid #C0C0C0 1px;
 }
 
+.gw-checkbox {
+  vertical-align: middle;
+  margin-right: 0.5em;
+}

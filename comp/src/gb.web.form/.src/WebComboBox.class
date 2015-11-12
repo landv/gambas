@@ -1,0 +1,118 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,List,ReadOnly=True"
+Public Const _DrawWith As String = "ComboBox"
+
+Event Change
+
+Property Read Text As String
+Property Read Count As Integer
+Property Index As Integer
+Property List As String[]
+Property ReadOnly As Boolean
+
+Private $iIndex As Integer
+Private $aList As New String[]
+Private $bReadOnly As Boolean
+
+Private Function Text_Read() As String
+
+  Try Return $aList[$iIndex]
+  Return -1
+
+End
+
+Public Sub _BeforeRender()
+  
+  Print "<select id=\""; Me.Name; "\""; Me._GetUpdateJS("onchange", "index", "this.selectedIndex");
+  Me._RenderStyleSheet()
+  Print ">"
+  
+End
+
+
+
+Public Sub _Render()
+  
+  Dim I As Integer
+  
+  For I = 0 To $aList.Max
+    Print "<option";
+    If I = $iIndex Then Print " selected";
+    Print ">"; Html($aList[I]); "</option>"
+  Next
+  
+End
+
+Public Sub _AfterRender()
+  
+  Print "</select>"
+  
+End
+
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "index" Then Try Me.Index = vValue
+  
+End
+
+
+Private Function Index_Read() As Integer
+
+  Return $iIndex
+
+End
+
+Private Sub Index_Write(Value As Integer)
+
+  If $iIndex < 0 Or If $iIndex >= $aList.Count Then Error.Raise("Out of bounds")
+  $iIndex = Value
+  Me._SetProperty("Index", $iIndex)
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $aList.Count
+
+End
+
+Private Function List_Read() As String[]
+
+  Return $aList.Copy()
+
+End
+
+Private Sub List_Write(Value As String[])
+
+  If Not Value Then
+    $aList.Clear
+  Else
+    $aList = Value.Copy()
+  Endif
+  Me._SetProperty("List", $aList)
+
+End
+
+Public Sub Clear()
+  
+  List_Write(Null)
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  Me._SetProperty("ReadOnly", Value)
+
+End

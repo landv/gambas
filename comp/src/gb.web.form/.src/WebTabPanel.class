@@ -119,7 +119,7 @@ Public Sub _Render()
   Print "<div class=\"gw-tab-header\" style=\"display:flex;flex-flow:row;\">"
   For I = 0 To $aTab.Max
     Print "<div class=\""; If(I = $iIndex, "gw-tab-selected", "gw-tab"); "\"";
-    If I <> $iIndex Then Print " onclick=\"gw.update("; JS(Me.Form.Name); ","; JS(Me.Name); ",'index',"; I; ");\"";
+    If I <> $iIndex Then Print Me._GetUpdateJS("onclick", "index", CStr(I));
     Print ">"; $aText[I]; "</div>"
   Next
   Print "</div>"

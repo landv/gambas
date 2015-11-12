@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Width,Height,Visible=True,Tag,Expand,Ignore"
+Public Const _Properties As String = "Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -21,6 +21,7 @@ Property Read Form As WebForm
 Property Width, W As String
 Property Height, H As String
 Property Ignore As Boolean
+Property Enabled As Boolean
 
 Static Private $iLastId As Integer
 Static Private $cFromId As New Collection
@@ -39,7 +40,8 @@ Private $hStyle As WebControlStyle
 
 Private $bExpand As Boolean
 Private $bIgnore As Boolean
-
+Private $bDisabled As Boolean
+Private $bHidden As Boolean
 
 Public Sub _new(Optional Parent As WebContainer)
   
@@ -165,7 +167,7 @@ Public Sub _RenderStyleSheet()
     If hParent Then
       Select Case hParent.Arrangement
         Case Arrange.Vertical
-          _AddStyleSheet("display: block;")
+          _AddStyleSheet("display:block;")
           If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5em;")
         Case Arrange.Horizontal
           '_AddStyleSheet("display: block;")
@@ -409,18 +411,24 @@ End
 
 Private Function Visible_Read() As Boolean
 
-  If Not $hStyle Then Return True
-  Return $hStyle["display"] <> "none"
+  Return Not $bHidden
+  
+  ' If Not $hStyle Then Return True
+  ' Return $hStyle["display"] <> "none"
 
 End
 
 Private Sub Visible_Write(Value As Boolean)
 
-  If Value Then
-    If $hStyle Then Style_Read()["display"] = ""
-  Else
-    Style_Read()["display"] = "none"
-  Endif
+  $bHidden = Not Value
+  _SetProperty("Visible", Value)
+  Me.Parent.Refresh
+  
+  ' If Value Then
+  '   If $hStyle Then Style_Read()["display"] = ""
+  ' Else
+  '   Style_Read()["display"] = "none"
+  ' Endif
 
 End
 
@@ -442,4 +450,17 @@ Public Sub SetFocus()
   
   WebForm._AddReply("gw.setFocus(" & JS($sName) & ");")
   
+End
+
+Private Function Enabled_Read() As Boolean
+
+  Return Not $bDisabled
+
+End
+
+Private Sub Enabled_Write(Value As Boolean)
+
+  $bDisabled = Not Value
+  Me._SetProperty("Enabled", Value)
+
 End

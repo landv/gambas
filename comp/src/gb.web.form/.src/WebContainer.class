@@ -63,6 +63,7 @@ Public Sub _Render()
   
   For I = 0 To $aChildren.Max
     With WebControl.FromId($aChildren[I])
+      If Not .Visible Then Continue
       ._BeforeRender()
       ._Render()
       ._AfterRender()

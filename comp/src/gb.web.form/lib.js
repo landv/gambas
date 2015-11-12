@@ -8,6 +8,7 @@ gw = {
   send: function(form, command)
   {
     var xhr = new XMLHttpRequest();
+    console.log(command);
     xhr.open('GET', $root + '/' + form + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
@@ -45,23 +46,27 @@ gw = {
   {
     var start, end;
     
-    if (o.createTextRange) 
+    try
     {
-      var r = document.selection.createRange().duplicate();
-      r.moveEnd('character', o.value.length)
-      if (r.text == '')
-        start = o.value.length;
-      else
-        start = o.value.lastIndexOf(r.text);
-      r.moveStart('character', -o.value.length);
-      end = r.text.length;
-      return [start, end];
+      if (o.createTextRange) 
+      {
+        var r = document.selection.createRange().duplicate();
+        r.moveEnd('character', o.value.length)
+        if (r.text == '')
+          start = o.value.length;
+        else
+          start = o.value.lastIndexOf(r.text);
+        r.moveStart('character', -o.value.length);
+        end = r.text.length;
+        return [start, end];
+      }
+      
+      if (o.selectionStart && o.selectionEnd)
+        return [o.selectionStart, o.selectionEnd];
     }
+    catch(e) {};
     
-    if (o.selectionStart && o.selectionEnd)
-      return [o.selectionStart, o.selectionEnd];
-    
-    return null;
+    return undefined;
   },
   
   setSelection: function(o, sel)
@@ -69,7 +74,7 @@ gw = {
     if (sel)
     {
       if (o.setSelectionRange)
-        o.setSelectionRange(sel[0], sel[1]);
+        try { o.setSelectionRange(sel[0], sel[1]) } catch(e) {};
     }
   },
   
