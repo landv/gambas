@@ -1270,6 +1270,33 @@ Public Sub GetPackageTable() As String[]
   
 End
 
+Public Sub GetProjectDependencies(sProject As String) As String[]
+  
+  Dim aComp As New String[]
+  Dim sLine As String
+  Dim sComp As String
+  Dim aResult As New String[]
+
+  For Each sLine In Split(File.Load(sProject & ".project"), "\n")
+    If sLine Begins "Component=" Then
+      aComp.Add(Mid$(sLine, InStr(sLine, "=") + 1))
+    Endif
+  Next
+  aComp.Sort()
+  
+  For Each sComp In aComp
+    aResult.Add("* [/comp/" & sComp & "]")
+  Next
+  
+  Return aResult
+  
+Catch
+  
+  Return [Error.Text]
+  
+End
+
+
 Private Sub InitAuthor()
   
   Dim hFile As File

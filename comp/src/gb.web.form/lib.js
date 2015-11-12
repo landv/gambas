@@ -71,5 +71,12 @@ gw = {
       if (o.setSelectionRange)
         o.setSelectionRange(sel[0], sel[1]);
     }
+  },
+  
+  setFocus: function(id)
+  {
+    $(id).focus();
+    gw.active = document.activeElement.id;
+    gw.selection = undefined;
   }
 }

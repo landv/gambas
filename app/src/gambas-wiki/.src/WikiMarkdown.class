@@ -212,6 +212,10 @@ Public Sub Command(sCommand As String) As String[]
   Else If sCommand = "translator-table" Then
 
     Return Main.GetTranslatorTable()
+    
+  Else If sCommand = "project-dependencies" Then
+    
+    Return Main.GetProjectDependencies(aArg[1])
 
   Else
     

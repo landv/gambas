@@ -7,12 +7,14 @@ Inherits WebControl
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,Border"
+Public Const _DefaultArrangement As String = "F"
 
-Property Read Count As Integer
 Property Arrangement As Integer
 Property Margin As Boolean
 Property Spacing As Boolean
 Property Border As Boolean
+
+Public _Container As WebContainer
 
 Private $aChildren As New Integer[]
 Private $iArrangement As Integer
@@ -32,18 +34,15 @@ Public Sub _Remove(hChild As WebControl)
   
 End
 
-Public Sub _IsFirstChild(hChild As WebControl) As Boolean
+Public Sub _IsFirstVisibleChild(hChild As WebControl) As Boolean
+
+  Dim I As Integer
   
-  Return $aChildren[0] = hChild.Id
+  For I = 0 To $aChildren.Max
+    If $aChildren[I] = hChild.Id Then Return True
+    If WebControl.FromId($aChildren[I]).Visible Then Return
+  Next
   
-End
-
-
-
-Private Function Count_Read() As Integer
-
-  Try Return $aChildren.Count
-
 End
 
 Public Sub _InitProperties()
@@ -80,27 +79,30 @@ Public Sub _RenderStyleSheet()
   
   Super._RenderStyleSheet()
   
-  If $iArrangement Then
+  If Not _Container Then
   
-    Me._AddStyleSheet("display: flex;")
-    Select Case $iArrangement
-      Case Arrange.Horizontal
-        Me._AddStyleSheet("flex-direction: row;")
-      Case Arrange.Vertical
-        Me._AddStyleSheet("flex-direction: column;")
-      Case Arrange.Column
-        Me._AddStyleSheet("flex-direction: column;")
-        Me._AddStyleSheet("flex-wrap: wrap;")
-      Case Arrange.Row
-        Me._AddStyleSheet("flex-direction: row;")
-        Me._AddStyleSheet("flex-wrap: wrap;")
-    End Select
+    If $iArrangement Then
+    
+      Me._AddStyleSheet("display:flex;")
+      Select Case $iArrangement
+        Case Arrange.Horizontal
+          Me._AddStyleSheet("flex-flow:row;")
+        Case Arrange.Vertical
+          Me._AddStyleSheet("flex-flow:column;")
+        Case Arrange.Column
+          Me._AddStyleSheet("flex-flow:column wrap;")
+          'If $bSpacing And If $aChildren.Count Then Me._AddStyleSheet("margin-right:-0.5em;margin-bottom:-0.5em;")
+        Case Arrange.Row
+          Me._AddStyleSheet("flex-flow:row wrap;")
+          'If $bSpacing And If $aChildren.Count Then Me._AddStyleSheet("margin-right:-0.5em;margin-bottom:-0.5em;")
+      End Select
+      
+    Endif
+    
+    If $bMargin Then Me._AddStyleSheet("padding:0.5em;")
+    If $bBorder Then Me._AddStyleSheet("border:solid #C0C0C0 1px;")
     
   Endif
-  
-  If $bMargin Then Me._AddStyleSheet("padding: 0.5em;")
-  
-  If $bBorder Then Me._AddStyleSheet("border: solid gray 1px;")
   
   Me._EndStyleSheet
   
@@ -122,6 +124,7 @@ Private Sub Arrangement_Write(Value As Integer)
 
   $iArrangement = Value
   Me._SetProperty("Arrangement", Value)
+  UpdateContainer()
 
 End
 
@@ -135,6 +138,7 @@ Private Sub Margin_Write(Value As Boolean)
 
   $bMargin = Value
   Me._SetProperty("Margin", Value)
+  UpdateContainer()
 
 End
 
@@ -148,6 +152,7 @@ Private Sub Spacing_Write(Value As Boolean)
 
   $bSpacing = Value
   Me._SetProperty("Spacing", Value)
+  UpdateContainer()
 
 End
 
@@ -173,5 +178,24 @@ Public Sub _RefreshReply() As Boolean
   For I = 0 To $aChildren.Max
     WebControl.FromId($aChildren[I])._RefreshReply()
   Next
+  
+End
+
+Public Sub _SetContainer(hCont As WebContainer)
+  
+  _Container = hCont
+  UpdateContainer()
+  
+End
+
+Private Sub UpdateContainer()
+
+  If Not _Container Then Return
+  
+  With _Container
+    .Arrangement = $iArrangement
+    .Spacing = $bSpacing
+    .Margin = $bMargin
+  End With
   
 End

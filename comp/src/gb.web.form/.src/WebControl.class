@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Width,Height,Visible=True,Tag,Expand"
+Public Const _Properties As String = "Width,Height,Visible=True,Tag,Expand,Ignore"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -20,11 +20,14 @@ Property Read Style As WebControlStyle
 Property Read Form As WebForm
 Property Width, W As String
 Property Height, H As String
+Property Ignore As Boolean
 
 Static Private $iLastId As Integer
 Static Private $cFromId As New Collection
 
 Static Private $aStyleSheet As String[]
+
+Public _Refresh As Boolean
 
 Private $iId As Integer
 Private $iParentId As Integer
@@ -35,13 +38,10 @@ Private $iStyleSheet As Integer
 Private $hStyle As WebControlStyle
 
 Private $bExpand As Boolean
-
-Public _Refresh As Boolean
+Private $bIgnore As Boolean
 
 
 Public Sub _new(Optional Parent As WebContainer)
-  
-  Dim hForm As WebForm
   
   If Not Parent And If Not Me Is WebForm Then Error.Raise("Null object")
   
@@ -52,21 +52,32 @@ Public Sub _new(Optional Parent As WebContainer)
     $sName = Object.Type(Me)
     Object.Attach(Me, Me, "WebForm")
   Else
-    $sName = Param.EventName
-    If Not $sName Then $sName = "WebControl" & CStr($iId)
-    hForm = Form_Read()
-    If hForm Then hForm._FromName[$sName] = $iId
+    _SetName(Param.EventName)
   Endif
   
   $cFromId[$iId] = Me
   
   If Parent Then 
+    If Parent._Container Then Parent = Parent._Container
     $iParentId = Parent.Id
     Parent._Add(Me)
   Endif
   
 End
 
+Public Sub _SetName(sName As String)
+  
+  Dim hForm As WebForm
+  
+  If Not sName Then sName = "$" & CStr($iId)
+  hForm = Form_Read()
+  If hForm Then 
+    If $sName Then hForm._FromName[$sName] = Null
+    hForm._FromName[sName] = $iId
+  Endif
+  $sName = sName
+  
+End
 
 Private Function Id_Read() As Integer
 
@@ -142,18 +153,28 @@ Public Sub _RenderStyleSheet()
   
   _StartStyleSheet
   
-  If $bExpand Then _AddStyleSheet("flex-grow: 1;")
+  If $bIgnore Then
+    
+    _AddStyleSheet("position:absolute;")
+    
+  Else
   
-  hParent = Me.Parent
-  If hParent And If hParent.Spacing Then
-    Select Case hParent.Arrangement
-      Case Arrange.Vertical
-        If Not hParent._IsFirstChild(Me) Then _AddStyleSheet("margin-top: 0.5em;")
-      Case Arrange.Horizontal
-        If Not hParent._IsFirstChild(Me) Then _AddStyleSheet("margin-left: 0.5em;")
-      Case Arrange.Column, Arrange.Row
-        _AddStyleSheet("margin-right: 0.5em; margin-bottom: 0.5em;")
-    End Select
+    If $bExpand Then _AddStyleSheet("flex-grow:1;")
+    
+    hParent = Me.Parent
+    If hParent Then
+      Select Case hParent.Arrangement
+        Case Arrange.Vertical
+          _AddStyleSheet("display: block;")
+          If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5em;")
+        Case Arrange.Horizontal
+          '_AddStyleSheet("display: block;")
+          If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-left:0.5em;")
+        Case Arrange.Column, Arrange.Row
+          _AddStyleSheet("display:inline-block;")
+          _AddStyleSheet("margin-right:0.5em;margin-bottom:0.5em;")
+      End Select
+    Endif
     
   Endif
   
@@ -243,6 +264,12 @@ Public Sub _SetProperty(sProp As String, vValue As Variant)
   
 End
 
+Public Sub _InitSpecialProperty((sProp) As String, (vVal) As Variant)
+  
+  
+  
+End
+
 Public Sub _InitProperties()
 
   Dim cProp As Collection
@@ -258,11 +285,15 @@ Public Sub _InitProperties()
   For Each vVal In cProp
     sProp = cProp.Key
     'WebForm.Print("set " & sProp)
-    If sProp = "#style" Then
-      $hStyle = New WebControlStyle
-      $hStyle._Style = vVal
+    If Left(sProp) = "#" Then
+      If sProp = "#style" Then
+        $hStyle = New WebControlStyle
+        $hStyle._Style = vVal
+      Else
+        Me._InitSpecialProperty(sProp, vVal)
+      Endif
     Else
-      Try Object.SetProperty(Me, cProp.Key, vVal)
+      Try Object.SetProperty(Me, sProp, vVal)
     Endif
   Next
   Object.Unlock(Me)
@@ -378,7 +409,7 @@ End
 
 Private Function Visible_Read() As Boolean
 
-  If Not $hStyle Then Return
+  If Not $hStyle Then Return True
   Return $hStyle["display"] <> "none"
 
 End
@@ -391,4 +422,24 @@ Private Sub Visible_Write(Value As Boolean)
     Style_Read()["display"] = "none"
   Endif
 
+End
+
+Private Function Ignore_Read() As Boolean
+
+  Return $bIgnore
+
+End
+
+Private Sub Ignore_Write(Value As Boolean)
+
+  $bIgnore = Value
+  _SetProperty("Ignore", Value)
+  Me.Parent.Refresh
+
+End
+
+Public Sub SetFocus()
+  
+  WebForm._AddReply("gw.setFocus(" & JS($sName) & ");")
+  
 End

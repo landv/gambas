@@ -1,14 +1,47 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,64,91)
+  #MoveScaled(0,0,96,111)
+  Height = "100%"
+  Arrangement = Arrange.Vertical
+  Margin = True
   Title = ("This is webform2")
-  { WebButton1 WebButton
-    #MoveScaled(7,8,16,4)
-    Text = ("A button")
+  { WebContainer1 WebContainer
+    #MoveScaled(8,4,58,6)
+    Arrangement = Arrange.Horizontal
+    Margin = True
+    Spacing = True
+    Border = True
+    { WebButton1 WebButton
+      #MoveScaled(0,0,16,4)
+      Text = ("A button")
+    }
+    { WebButton2 WebButton
+      #MoveScaled(18,0,18,4)
+      Text = ("Another button")
+    }
   }
-  { WebButton2 WebButton
-    #MoveScaled(7,16,18,4)
-    Text = ("Another button")
+  { WebTabPanel1 WebTabPanel
+    #MoveScaled(4,17,57,48)
+    Expand = True
+    Margin = True
+    Spacing = True
+    Count = 2
+    Index = 0
+    Text = ("test")
+    { WebTextBox1 WebTextBox
+      #MoveScaled(6,6,22,8)
+      Text = ("Hello !")
+    }
+    Index = 1
+    Text = ("titi")
+    { WebButton3 WebButton
+      #MoveScaled(8,6,21,8)
+      Text = ("Test")
+    }
+    Index = 0
+  }
+  { WebContainer2 WebContainer
+    #MoveScaled(13,72,62,32)
   }
 }

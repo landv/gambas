@@ -221,10 +221,8 @@ Public Sub _Exec(aCmd As Variant[])
   _InExec = iOldInExec
   
   Response.Begin
+  If _HasRefresh Then Me._RefreshReply()
   Print $aJavascript.Join("\n")
-  If _HasRefresh Then
-    Me._RefreshReply()
-  Endif
   Response.End
   
 Catch

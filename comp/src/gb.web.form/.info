@@ -21,37 +21,6 @@ Column
 C
 i
 4
-#WebBackground
-
-C
-Color
-v
-s
-
-Image
-v
-s
-
-Repeat
-v
-s
-
-Attachment
-v
-s
-
-Position
-v
-s
-
-Size
-v
-s
-
-ToString
-m
-s
-
 #WebButton
 WebControl
 C
@@ -110,10 +79,10 @@ _Properties
 C
 s
 "*,Arrangement{Arrange.*},Margin,Spacing,Border"
-Count
-r
-i
-
+_DefaultArrangement
+C
+s
+"F"
 Arrangement
 p
 i
@@ -130,6 +99,10 @@ Border
 p
 b
 
+_Container
+v
+WebContainer
+
 _Add
 m
 
@@ -138,7 +111,7 @@ _Remove
 m
 
 (hChild)WebControl;
-_IsFirstChild
+_IsFirstVisibleChild
 m
 b
 (hChild)WebControl;
@@ -158,6 +131,10 @@ _RefreshReply
 m
 b
 
+_SetContainer
+m
+
+(hCont)WebContainer;
 #WebControl
 
 
@@ -168,7 +145,7 @@ T
 _Properties
 C
 s
-"Width,Height,Visible=True,Tag,Expand"
+"Width,Height,Visible=True,Tag,Expand,Ignore"
 _Family
 C
 s
@@ -229,6 +206,10 @@ H
 p
 s
 
+Ignore
+p
+b
+
 _Refresh
 v
 b
@@ -237,6 +218,10 @@ _new
 m
 
 [(Parent)WebContainer;]
+_SetName
+m
+
+(sName)s
 FromId
 M
 WebControl
@@ -277,6 +262,10 @@ Refresh
 m
 
 
+_InitSpecialProperty
+m
+
+(sProp)s(vVal)v
 _InitProperties
 m
 
@@ -301,6 +290,10 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
+SetFocus
+m
+
+
 #WebControlStyle
 
 C
@@ -418,6 +411,69 @@ _Render
 m
 
 
+#WebTabPanel
+WebContainer
+C
+_Properties
+C
+s
+"*,Border=True,Count{Range:1;256}=1,Index,Text"
+_IsContainer
+C
+b
+T
+_IsMultiContainer
+C
+b
+T
+_DrawWith
+C
+s
+"TabPanel"
+_DefaultEvent
+C
+s
+"Click"
+:Click
+:
+
+
+Count
+p
+i
+
+Text
+p
+s
+
+Index
+p
+i
+
+Border
+p
+b
+
+_new
+m
+
+
+_InitSpecialProperty
+m
+
+(sProp)s(vVal)v
+_Render
+m
+
+
+_RenderStyleSheet
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
 #WebTextBox
 WebControl
 C

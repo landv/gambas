@@ -735,7 +735,6 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim iTab As Integer
   Dim sVal As String
   Dim sArr As String
-  Dim iArr As Integer
   Dim bInvert As Boolean
   Dim sName As String
   Dim sGroup As String
@@ -781,18 +780,11 @@ Private Sub SaveOne(hCtrl As CControl)
     If Not $bDoNotArrange Then
 
       Try sArr = Project.Documentation.Classes[hCtrl.Kind].Symbols["_DefaultArrangement"].Value
-
       If Not Error Then
 
-        iArr = 0
-        
-        If Left(sArr) = "F" Then
-          Try iArr = Project.Documentation.Classes["Arrange"].Symbols[hCtrl.GetProperty("Arrangement")].Value
-        Else
-          iArr = InStr("HVRC", Left$(sArr))
-        Endif
+        If Left(sArr) = "F" Then Try sArr = Left(hCtrl.GetProperty("Arrangement"))
 
-        If iArr Then
+        If sArr Then
 
           Try bInvert = Not IsNull(hCtrl.GetProperty("Invert"))
           'IF hCtrl.Kind = "TabStrip" THEN
@@ -801,12 +793,12 @@ Private Sub SaveOne(hCtrl As CControl)
             hTab = hCtrl.Control
 
             For iTab = 0 To hTab.Count - 1
-              ArrangeContainer(hCtrl.Control, iArr, bInvert, False, iTab)
+              ArrangeContainer(hCtrl.Control, sArr, bInvert, False, iTab)
             Next
 
           Else
 
-            ArrangeContainer(hCtrl.Control, iArr, bInvert, False)
+            ArrangeContainer(hCtrl.Control, sArr, bInvert, False)
 
           Endif
 
@@ -1924,7 +1916,7 @@ Public Sub DoLower()
 
 End
 
-Private Function GetSortKey(hCtrl As Control, iArr As Integer, bInvert As Boolean) As String
+Private Function GetSortKey(hCtrl As Control, sArr As String, bInvert As Boolean) As String
 
   Dim sKey As String
   Dim X, Y As Integer
@@ -1934,15 +1926,15 @@ Private Function GetSortKey(hCtrl As Control, iArr As Integer, bInvert As Boolea
   
   If bInvert Then X = 999999 - X
 
-  Select Case iArr
+  Select Case sArr
 
-    Case Arrange.Horizontal
+    Case "H"
       sKey = Format(X, "000000") & Format(hCtrl.W, "000000")
-    Case Arrange.Vertical
+    Case "V"
       sKey = Format(Y, "000000") & Format(hCtrl.H, "000000")
-    Case Arrange.TopBottom
+    Case "C"
       sKey = Format(X, "000000") & Format(Y, "000000") & Format(hCtrl.W, "000000") & Format(hCtrl.H, "000000")
-    Case Arrange.LeftRight
+    Case "R"
       sKey = Format(Y, "000000") & Format(X, "000000") & Format(hCtrl.H, "000000") & Format(hCtrl.W, "000000")
 
   End Select
@@ -1951,7 +1943,7 @@ Private Function GetSortKey(hCtrl As Control, iArr As Integer, bInvert As Boolea
 
 End
 
-Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bInvert As Boolean, Optional bRec As Boolean = True, Optional iIndex As Integer = -1)
+Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInvert As Boolean, Optional bRec As Boolean = True, Optional iIndex As Integer = -1)
 
   Dim aPos As New String[]
   Dim sPos As String
@@ -1980,10 +1972,10 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bIn
     Next
   Else If Selection.Count = 1 Then
     Try hCont = Master.Control
-    If hCont Then ArrangeContainer(hCont, iArr, bInvert, bRec)
+    If hCont Then ArrangeContainer(hCont, sArr, bInvert, bRec)
     Return
   Else
-    ArrangeContainer(RootControl.Control, iArr, bInvert, bRec)
+    ArrangeContainer(RootControl.Control, sArr, bInvert, bRec)
     Return
   Endif
 
@@ -1995,10 +1987,10 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bIn
     If bRec Then
       Try hCont = hCtrl
       If Not Error Then
-        ArrangeContainer(hCtrl, iArr, bInvert)
+        ArrangeContainer(hCtrl, sArr, bInvert)
       Endif
     Endif
-    aPos.Add(GetSortKey(hCtrl, iArr, bInvert))
+    aPos.Add(GetSortKey(hCtrl, sArr, bInvert))
   Next
 
   If aPos.Count Then 
@@ -2007,7 +1999,7 @@ Private Sub ArrangeContainer(hParent As Container, iArr As Integer, Optional bIn
   
     For Each sPos In aPos
       For Each hCtrl In aCtrl
-        If GetSortKey(hCtrl, iArr, bInvert) = sPos Then
+        If GetSortKey(hCtrl, sArr, bInvert) = sPos Then
           hCtrl.Lower
           Break
         Endif

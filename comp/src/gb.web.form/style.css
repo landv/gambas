@@ -13,7 +13,36 @@ BUTTON {
   padding: 0;
 }
 
-.button-image {
+.gw-button-image {
   margin-right: 0.5em;
   vertical-align: middle;
 }
+
+.gw-tab-header {
+  margin-bottom: -1px;
+  z-index: 1;
+}
+
+.gw-tab {
+  color: gray;
+  padding: 0 0.5em;
+  cursor: pointer;
+  border-top: solid transparent 1px;
+}
+
+.gw-tab:hover {
+  color: black;
+}
+
+.gw-tab-selected {
+  padding: 0 0.5em;
+  border-left: solid #C0C0C0 1px;
+  border-top: solid #C0C0C0 1px;
+  border-right: solid #C0C0C0 1px;
+  background: white;
+}
+
+.gw-tab-border {
+  border: solid #C0C0C0 1px;
+}
+

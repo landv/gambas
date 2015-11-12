@@ -548,6 +548,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Dim vDefault As Variant
   Dim hProp As CPropertyInfo
   Dim vRealVal As Variant
+  Dim hClass As Class
 
   'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
@@ -583,7 +584,11 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Endif
   If bDoNotApply Then Goto _DO_NOT_APPLY
   If Unknown Then 
-    If Not Project.Documentation.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
+    hClass = Object.Class(Control)
+    If Not hClass.Exist(sProp) Then Goto _DO_NOT_APPLY
+    If hClass[sProp].Kind <> Class.Property Then Goto _DO_NOT_APPLY
+    If hClass[sProp].ReadOnly Then Goto _DO_NOT_APPLY
+    'If Not Project.Documentation.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
     ' If Not hProp.Coord Then 
     '   If sProp <> "Background" And sProp <> "Foreground" Then 
     '     Goto _DO_NOT_APPLY

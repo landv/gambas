@@ -1,7 +1,8 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,93,91)
+  #MoveScaled(0,0,119,91)
+  Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
@@ -22,7 +23,7 @@
     }
   }
   { WebContainer3 WebContainer
-    #MoveScaled(5,14,67,46)
+    #MoveScaled(2,17,110,46)
     Expand = True
     Arrangement = Arrange.Horizontal
     Spacing = True
@@ -59,28 +60,77 @@
       }
     }
     { WebContainer5 WebContainer
-      #MoveScaled(27,4,31,31)
+      #MoveScaled(31,3,66,39)
       Expand = True
       Arrangement = Arrange.Vertical
       Margin = True
       Spacing = True
       Border = True
       { WebTextBox1 WebTextBox
-        #MoveScaled(1,2,25,5)
-        Width = "16em"
+        #MoveScaled(4,9,25,5)
         Height = "2em"
       }
       { WebHtml1 WebHtml
-        #MoveScaled(2,8,23,5)
-        Height = "2em"
+        #MoveScaled(8,15,23,5)
         Visible = False
       }
       { WebContainer2 WebContainer
-        #MoveScaled(2,16,26,13)
+        #MoveScaled(6,23,26,13)
         Expand = True
         Margin = True
         Border = True
       }
+      { WebHtml3 WebHtml
+        #MoveScaled(2,1,19,6)
+        Ignore = True
+        Text = ("Absolute !")
+      }
+    }
+  }
+  { WebContainer6 WebContainer
+    #MoveScaled(29,65,69,22)
+    Arrangement = Arrange.Row
+    Spacing = True
+    Border = True
+    { WebButton7 WebButton
+      #MoveScaled(1,1,15,4)
+      Width = "8em"
+      Text = ("B1")
+    }
+    { WebButton8 WebButton
+      #MoveScaled(17,1,17,4)
+      Width = "8em"
+      Text = ("B2")
+    }
+    { WebButton9 WebButton
+      #MoveScaled(3,6,15,4)
+      Width = "8em"
+      Text = ("B3")
+    }
+    { WebButton10 WebButton
+      #MoveScaled(20,6,17,4)
+      Width = "8em"
+      Text = ("B4")
+    }
+    { WebButton11 WebButton
+      #MoveScaled(1,11,15,4)
+      Width = "8em"
+      Text = ("B5")
+    }
+    { WebButton12 WebButton
+      #MoveScaled(17,11,17,4)
+      Width = "8em"
+      Text = ("B6")
+    }
+    { WebButton14 WebButton
+      #MoveScaled(1,16,17,4)
+      Width = "8em"
+      Text = ("B8")
+    }
+    { WebButton13 WebButton
+      #MoveScaled(18,16,15,4)
+      Width = "8em"
+      Text = ("B7")
     }
   }
 }

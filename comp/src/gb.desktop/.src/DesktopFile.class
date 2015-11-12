@@ -346,8 +346,6 @@ Static Public Sub FromMime(MimeType As String) As DesktopFile[]
       
       'Print "["; sMime; "]"
       
-      If sMime Begins "image/" Then Stop
-      
       For Each sDir In Main.GetDataDir()
         sFound = FindInMimeInfoCache(sDir &/ "applications/mimeapps.list", sMime)
         If sFound Then sList &= ";" & sFound
