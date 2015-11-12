@@ -1022,7 +1022,7 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
   hImage = $cImageCache[sKey]
   If Not hImage Then
     hImage = Picture["icon:/" &/ CStr(iSize) &/ "file"].Image '$cImageCache["base"]
-    hImage = hImage.Stretch(iSize, iSize)
+    'hImage = hImage.Stretch(iSize, iSize)
     hImageModule = Image.Load("img/module" &/ sModule & ".png") '.Stretch(iSize / 2, iSize / 2)
     hImage.PaintImage(hImageModule, iSize / 4, iSize / 4, iSize / 2, iSize / 2)
 
