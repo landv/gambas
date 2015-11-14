@@ -6,6 +6,7 @@ Inherits WebControl
 Public Const _Properties As String = "*,Text,Image{ImagePath}"
 Public Const _DrawWith As String = "Button"
 Public Const _DefaultEvent As String = "Click"
+Public Const _DefaultSize As String = "24,4"
 
 Event Click
 
@@ -43,7 +44,7 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<button id=\""; Me.Name; "\""; Me._GetEventJS("onclick", "click");
+  Print "<button class=\"gw-button\" id=\""; Me.Name; "\""; Me._GetEventJS("onclick", "click");
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   Print ">";

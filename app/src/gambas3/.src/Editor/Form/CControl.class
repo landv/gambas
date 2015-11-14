@@ -13,14 +13,15 @@ Static Public COMPLEX_STRING_PROPERTIES As String[] = ["Font[", "Picture[", "Ima
 Public Name As String
 Public Parent As CControl
 Public Control As Object
-Public Selected As Boolean
 Public Kind As String
-Public Virtual As Boolean
-Public Unknown As Boolean
 Public Tag As Variant
 Public DrawWith As String
+Public Selected As Boolean
+Public Virtual As Boolean
+Public Unknown As Boolean
 Public {Public} As Boolean
 Public VirtualCoord As Boolean
+Public NoParent As Boolean
 
 Property Read X As Integer
 Property Read Y As Integer
@@ -181,6 +182,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
     DrawWith = hClass.DrawWith
     If DrawWith Then sClass = DrawWith
   Endif
+  NoParent = Not hClass.ConstructorNeedParent()
 
   Select Case LCase(sClass)
 
@@ -280,7 +282,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
       hCtrl.Padding = 4
       hCtrl.Background = Color.TextBackground
       hCtrl.Text = "<html><body><h2>" & sName & "</h2></body></html>"
-      
+    
     ' Case "listcontainer"
     '   hCtrl = New ListContainer(hParent)
     '   hLabel = New Label(hCtrl)
@@ -742,6 +744,8 @@ End
 
 Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As String
   
+  Dim sVal As String
+  
   Select Case hProp.Type
 
     Case "b"
@@ -768,8 +772,10 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
     Case "Color"
 
       vVal = CStr(vVal)
-      If Not IsNull(Val(vVal)) Then
-        Return "&H" & Hex$(vVal, 6) & "&"
+      If IsInteger(vVal) Then
+        sVal = Hex$(vVal, 8)
+        If sVal Begins "00" Then sVal = Mid$(sVal, 3)
+        Return "&H" & sVal & "&"
       Else
         Return vVal
       Endif

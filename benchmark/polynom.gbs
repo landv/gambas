@@ -11,7 +11,7 @@ Sub Test(X As Float) As Float
 
   For I = 0 To N - 1
     For J = 0 To 99
-      Mu =  Mu / 2 + 1
+      Mu =  Mu / 2.0 + 1
       aPoly[J] = Mu
     Next
     Su = 0.0

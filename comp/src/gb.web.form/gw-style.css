@@ -1,0 +1,121 @@
+HTML, BODY {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+HTML, BODY, DIV {
+  box-sizing: border-box;
+}
+
+SELECT {
+  height: 2em;
+}
+
+INPUT {
+  font: inherit;
+}
+
+.gw-button {
+  padding: 0 0.5em;
+  font: inherit;
+  min-height: 2em;
+}
+
+.gw-button-image {
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+.gw-tab-header {
+  margin-bottom: -1px;
+  z-index: 1;
+  line-height: 2em;
+}
+
+.gw-tab {
+  color: gray;
+  padding: 0 0.5em;
+  cursor: pointer;
+  border-top: solid transparent 1px;
+}
+
+.gw-tab:hover {
+  color: black;
+}
+
+.gw-tab-selected {
+  padding: 0 0.5em;
+  border-left: solid #C0C0C0 1px;
+  border-top: solid #C0C0C0 1px;
+  border-right: solid #C0C0C0 1px;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+  background: white;
+}
+
+.gw-tab-border {
+  border: solid #C0C0C0 1px;
+}
+
+.gw-checkbox-label,.gw-radiobutton-label {
+  vertical-align: middle;
+}
+
+.gw-checkbox-toggle,.gw-radiobutton-toggle {
+  vertical-align: middle;
+  margin: 0;
+  margin-right: 0.5em;
+}
+
+.gw-textbox {
+  height: 2em;
+  box-sizing: border-box;
+  padding: 0 0.25em;
+}
+
+.gw-combobox {
+  display: inline-block;
+  position: relative;
+  height: 2em;
+}
+
+.gw-combobox SELECT {
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  float: right;
+}
+
+.gw-combobox INPUT {
+  width: 100%;
+  height: 2em;
+  box-sizing: border-box;
+  padding: 0 2.25em 0 0.25em;
+  vertical-align: middle;
+}
+
+.gw-combobox-arrow {
+  display: inline-block;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAI0lEQVQYlWNgoAZoYGBg+I8DN+BT1MCABhrwSSIrwilJHgAAbCcP9dwIQGIAAAAASUVORK5CYII=');
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 2em;
+  width: 2em;
+  margin-left: -2em;
+  /*pointer-events: none;*/
+  vertical-align: middle;
+  border: none;
+  overflow: hidden;
+}
+
+.gw-selectbox {
+  display: inline-block;
+  position: relative;
+  height: 2em;
+}
+
+.gw-selectbox SELECT {
+  width: 100%;
+}

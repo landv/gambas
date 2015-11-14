@@ -8,11 +8,13 @@ Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
 Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,Border"
 Public Const _DefaultArrangement As String = "F"
+Public Const _DefaultSize As String = "32,32"
 
 Property Arrangement As Integer
 Property Margin As Boolean
 Property Spacing As Boolean
 Property Border As Boolean
+Property Read Children As WebControl[]
 
 Public _Container As WebContainer
 
@@ -199,4 +201,16 @@ Private Sub UpdateContainer()
     .Margin = $bMargin
   End With
   
+End
+
+Private Function Children_Read() As WebControl[]
+
+  Dim aChildren As WebControl[]
+  Dim I As Integer
+
+  aChildren = New WebControl[$aChildren.Count]
+  For I = 0 To $aChildren.Max
+    aChildren[I] = WebControl.FromId($aChildren[I])
+  Next
+  Return aChildren
 End

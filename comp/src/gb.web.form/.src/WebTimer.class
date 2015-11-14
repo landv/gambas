@@ -1,0 +1,55 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _IsControl As Boolean = True
+Public Const _IsVirtual As Boolean = True
+Public Const _Properties As String = "*,-Width,-Height,-Visible,-Expand,-Ignore,Enabled,Delay{Range:0;86400000;10;ms}=1000"
+Public Const _Group As String = "Special"
+Public Const _DefaultEvent As String = "Timer"
+
+Event Timer
+
+Property Delay As Integer
+
+Private $iDelay As Integer = 1000
+
+Public Sub _new()
+  
+  Me.Enabled = False
+  
+End
+
+
+Private Function Delay_Read() As Integer
+
+  Return $iDelay
+
+End
+
+Private Sub Delay_Write(Value As Integer)
+
+  $iDelay = Value
+  Me._SetProperty("Delay", Value)
+
+End
+
+Public Sub _BeforeRender()
+  
+End
+
+
+Public Sub _Render()
+  
+  If Me.Enabled Then
+    WebForm._AddJavascript("gw.addTimer(" & JS(Me.Form.Name) & "," & JS(Me.Name) & "," & CStr($iDelay) & ");")
+  Else
+    WebForm._AddJavascript("gw.removeTimer(" & JS(Me.Form.Name) & "," & JS(Me.Name) & ");")
+  Endif
+  
+End
+
+Public Sub _AfterRender()
+  
+End

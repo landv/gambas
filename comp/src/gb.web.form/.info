@@ -21,6 +21,37 @@ Column
 C
 i
 4
+#Color
+
+CO
+Default
+C
+i
+-1
+Black
+C
+i
+0
+White
+C
+i
+16777215
+Gray
+C
+i
+8421504
+LightGray
+C
+i
+12632256
+SetAlpha
+M
+i
+(Color)i(Alpha)i
+RGB
+M
+i
+(Red)i(Green)i(Blue)i[(Alpha)i]
 #WebButton
 WebControl
 C
@@ -36,6 +67,10 @@ _DefaultEvent
 C
 s
 "Click"
+_DefaultSize
+C
+s
+"24,4"
 :Click
 :
 
@@ -71,6 +106,10 @@ _DrawWith
 C
 s
 "CheckBox"
+_DefaultSize
+C
+s
+"24,4"
 :Click
 :
 
@@ -87,11 +126,7 @@ Text
 p
 s
 
-_BeforeRender
-m
-
-
-_AfterRender
+_Render
 m
 
 
@@ -110,12 +145,20 @@ _DrawWith
 C
 s
 "ComboBox"
+_DefaultSize
+C
+s
+"24,4"
+:Click
+:
+
+
 :Change
 :
 
 
 Text
-r
+p
 s
 
 Count
@@ -142,10 +185,6 @@ _Render
 m
 
 
-_AfterRender
-m
-
-
 _UpdateProperty
 m
 
@@ -154,6 +193,14 @@ Clear
 m
 
 
+Add
+m
+
+(Item)s[(Index)i]
+Remove
+m
+
+(Index)i
 #WebContainer
 WebControl
 C
@@ -173,6 +220,10 @@ _DefaultArrangement
 C
 s
 "F"
+_DefaultSize
+C
+s
+"32,32"
 Arrangement
 p
 i
@@ -188,6 +239,10 @@ b
 Border
 p
 b
+
+Children
+r
+WebControl[]
 
 _Container
 v
@@ -235,7 +290,7 @@ T
 _Properties
 C
 s
-"Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore"
+"Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
 _Family
 C
 s
@@ -303,6 +358,14 @@ b
 Enabled
 p
 b
+
+Background
+p
+i
+
+Foreground
+p
+i
 
 _Refresh
 v
@@ -379,7 +442,7 @@ s
 _GetUpdateJS
 m
 s
-(sEvent)s(sProp)s(sGetValue)s
+(sEvent)s(sProp)s(sGetValue)s[(sMore)s]
 _UpdateProperty
 m
 
@@ -425,7 +488,7 @@ T
 _HiddenControls
 C
 s
-"WebControl,WebForm"
+"WebControl,WebForm,Timer"
 _Properties
 C
 s
@@ -474,6 +537,10 @@ Render
 m
 
 
+_AddJavascript
+M
+
+(sStr)s
 Print
 M
 
@@ -505,6 +572,45 @@ _Render
 m
 
 
+#WebRadioButton
+WebControl
+C
+_Properties
+C
+s
+"*,Text,Value"
+_DrawWith
+C
+s
+"RadioButton"
+_DefaultSize
+C
+s
+"24,4"
+:Click
+:
+
+
+Value
+p
+b
+
+Checked
+p
+b
+
+Text
+p
+s
+
+_Render
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
 #WebTabPanel
 WebContainer
 C
@@ -579,6 +685,10 @@ _DrawWith
 C
 s
 "TextBox"
+_DefaultSize
+C
+s
+"24,4"
 :Change
 :
 
@@ -603,3 +713,50 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
+#WebTimer
+WebControl
+C
+_IsControl
+C
+b
+T
+_IsVirtual
+C
+b
+T
+_Properties
+C
+s
+"*,-Width,-Height,-Visible,-Expand,-Ignore,Enabled,Delay{Range:0;86400000;10;ms}=1000"
+_Group
+C
+s
+"Special"
+_DefaultEvent
+C
+s
+"Timer"
+:Timer
+:
+
+
+Delay
+p
+i
+
+_new
+m
+
+
+_BeforeRender
+m
+
+
+_Render
+m
+
+
+_AfterRender
+m
+
+

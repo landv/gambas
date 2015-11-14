@@ -1,14 +1,15 @@
 #!/usr/bin/perl -w
 
 my $str='abcdefgh'.'efghefgh';
-my $imax=1024/length($str)*768;
+my $imax = 1024 / length($str) * 512;
 
 my $starttime=time();
 
 my $gstr='';
 my $i=0;
 
-while($i++ < $imax+1000){   #adding 1000 iterations to delay exit. This will allow to capture memory usage on last step
+while($i++ < $imax+1000)
+{
 
         $gstr.=$str;
         $gstr=~s/efgh/____/g;

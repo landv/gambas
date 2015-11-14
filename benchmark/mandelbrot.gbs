@@ -1,7 +1,7 @@
 #!/usr/bin/env gbs3
 
 Private Const MAXITER As Integer = 50
-Private Const LIMIT As Integer = 4
+Private Const LIMIT As Float = 4.0
 
 Sub Mandelbrot(W As Integer, H As Integer)
 
@@ -27,7 +27,7 @@ Sub Mandelbrot(W As Integer, H As Integer)
       If CheckNext Then
 
         For K = 1 To MAXITER
-          Zi = 2 * Zr * Zi + Ci
+          Zi = 2.0 * Zr * Zi + Ci
           Zr = {Tr} - Ti + Cr
           Ti = Zi * Zi
           {Tr} = Zr * Zr
@@ -45,7 +45,7 @@ Sub Mandelbrot(W As Integer, H As Integer)
 
         For K = 1 To MAXITER
 
-          Zi = 2 * Zr * Zi + Ci
+          Zi = 2.0 * Zr * Zi + Ci
           Zr = {Tr} - Ti + Cr
           Ti = Zi * Zi
           {Tr} = Zr * Zr

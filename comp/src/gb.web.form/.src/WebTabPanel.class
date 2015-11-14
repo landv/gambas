@@ -125,7 +125,7 @@ Public Sub _Render()
   Print "</div>"
   
   Print "<div";
-  If $bBorder Then Print " class=\"gw-tab-border\";"
+  If $bBorder Then Print " class=\"gw-tab-border\""
   Print " style=\"flex-grow:1;\">"
   
   With $aTab[$iIndex]

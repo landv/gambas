@@ -6,13 +6,13 @@ Create Static
 Inherits WebContainer
 
 Public Const _IsForm As Boolean = True
-Public Const _HiddenControls As String = "WebControl,WebForm"
+Public Const _HiddenControls As String = "WebControl,WebForm,Timer"
 Public Const _Properties As String = "*,Title"
 Public Const _DefaultEvent As String = "Open"
 
 Static Public _InExec As Integer
 
-Static Private $aJavascript As New String[]
+Static Private $aJavascript As String[]
 
 Event Open
 Event Event
@@ -95,6 +95,13 @@ NOT_FOUND:
   
 End
 
+Static Public Sub _AddJavascript(sStr As String)
+  
+  $aJavascript.Add(sStr)
+  
+End
+
+
 Public Sub Render()
   
   'Dim hForm As WebForm
@@ -118,9 +125,17 @@ Public Sub Render()
   'Me._RenderStyleSheet
   'Print "</style>"
   
+  $aJavascript = New String[]
+  
   Me._BeforeRender()
   Me._Render()
   Me._AfterRender()
+  
+  If $aJavascript Then
+    Print "<script type=\"text/javascript\">"
+    Print $aJavascript.Join("\n")
+    Print "</script>"
+  Endif
   
   Print "</body>"
   Print "</html>"
@@ -137,7 +152,7 @@ Static Private Sub RenderStyleSheet()
   Response.ContentType = "text/css;charset=utf-8"
   Response.Begin
   
-  Print File.Load("style.css");
+  Print File.Load("gw-style.css");
   
   If Exist("../style.css") Then Print File.Load("../style.css");
   
@@ -191,11 +206,15 @@ Public Sub _Exec(aCmd As Variant[])
   
   Inc _InExec
   
+  $aJavascript = New String[]
+  
+  Print("Event")
   Raise Event
   
   Select Case aCmd[0]
     
     Case "raise"
+      
       If aCmd[1] Then
         hCtrl = WebControl.FromId(_FromName[aCmd[1]])
       Else

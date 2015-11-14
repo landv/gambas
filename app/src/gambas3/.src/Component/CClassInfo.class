@@ -4,20 +4,14 @@ Public Documentation As CDocumentation
 Public Name As String
 Public Parent As String
 Public Symbols As Collection
-Public Creatable As Boolean
-Public AutoCreatable As Boolean
 Public (Component) As String
 Public ParentComponent As String
 Public DefaultEvent As String
-Public HasEvents As Boolean
 Public Events As String[]
 Public PropertyList As String[]
 Public Properties As Collection
 Public VirtualControl As Boolean
 Public DrawWith As String
-Public Container As Boolean
-Public (Form) As Boolean
-Public MultiContainer As Boolean
 Public DefaultWidth As Short
 Public DefaultHeight As Short
 Public Group As String
@@ -27,6 +21,12 @@ Public Structure As Boolean
 Public DeclareIn As String
 Public DeclareAtLine As Integer
 Public Help As String
+Public Creatable As Boolean
+Public AutoCreatable As Boolean
+Public HasEvents As Boolean
+Public Container As Boolean
+Public (Form) As Boolean
+Public MultiContainer As Boolean
 
 Public Sub _new(hDoc As CDocumentation, sName As String, sComp As String, Optional sParent As String)
 
@@ -339,6 +339,7 @@ Public Sub InitControl()
     DefaultWidth = 8 * Desktop.Scale
     DefaultHeight = 8 * Desktop.Scale
   Endif
+  
 End
 
 
@@ -364,7 +365,7 @@ Public Function Inherits(sClass As String) As Boolean
   If {Parent} = sClass Then Return True
   If Not Parent Then Return False
   
-  hClass = Documentation.Classes[ParentComponent &/ Parent] 
+  hClass = Documentation.Classes[ParentComponent &/ Parent]
   Return hClass.Inherits(sClass)
 
 End
@@ -1009,5 +1010,20 @@ Public Sub WikiGetDescription() As String
   Wend
   
   Return sDesc
+  
+End
+
+Public Sub ConstructorNeedParent() As Boolean
+
+  Dim hClass As CClassInfo
+  Dim hSym As CSymbolInfo
+  
+  hClass = Me
+  Do
+    hSym = hClass.Symbols["_new"]
+    If hSym And If hSym.Signature Then Return True
+    If Not hClass.Parent Then Return False
+    hClass = Documentation.Classes[ParentComponent &/ hClass.Parent]
+  Loop
   
 End

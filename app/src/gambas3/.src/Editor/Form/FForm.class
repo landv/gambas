@@ -751,7 +751,7 @@ Private Sub SaveOne(hCtrl As CControl)
   sGroup = hCtrl.GetProperty(CPropertyInfo.EVENT_NAME)
   bPublic = hCtrl.Public
 
-  If hCtrl.Virtual Then
+  If hCtrl.NoParent Then
     AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " #" & hCtrl.Kind & " " & sGroup))
   Else
     AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " " & hCtrl.Kind & " " & sGroup))

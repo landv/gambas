@@ -22,8 +22,9 @@
     }
   }
   { WebTabPanel1 WebTabPanel
-    #MoveScaled(4,17,57,48)
+    #MoveScaled(6,15,77,69)
     Expand = True
+    Arrangement = Arrange.Vertical
     Margin = True
     Spacing = True
     Count = 3
@@ -33,13 +34,61 @@
       #MoveScaled(2,4,22,8)
       Text = ("Hello !")
     }
+    { WebTimer1 WebTimer
+      #MoveScaled(55,5)
+    }
     { WebCheckBox1 WebCheckBox
       #MoveScaled(26,6,26,4)
       Text = ("Check and uncheck me!")
     }
-    { WebComboBox1 WebComboBox
-      #MoveScaled(3,14,22,4)
+    { WebContainer3 WebContainer
+      #MoveScaled(3,17,65,4)
+      Arrangement = Arrange.Horizontal
+      Spacing = True
+      { WebComboBox1 WebComboBox
+        #MoveScaled(0,0,22,4)
+        Expand = True
+        List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+        ReadOnly = False
+      }
+      { WebButton4 WebButton
+        #MoveScaled(23,0,19,4)
+        Text = ("New element")
+      }
+      { WebButton5 WebButton
+        #MoveScaled(43,0,19,4)
+        Text = ("Clear")
+      }
+    }
+    { WebComboBox2 WebComboBox
+      #MoveScaled(3,25,22,4)
       List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+    }
+    { WebTextBox2 WebTextBox
+      #MoveScaled(26,26,15,4)
+    }
+    { WebContainer4 WebContainer
+      #MoveScaled(3,35,44,23)
+      Background = &HA08BB5DF&
+      Arrangement = Arrange.Vertical
+      Margin = True
+      { WebRadioButton1 WebRadioButton
+        #MoveScaled(2,1,24,4)
+        Text = ("Alpha")
+      }
+      { WebRadioButton2 WebRadioButton
+        #MoveScaled(2,6,24,4)
+        Text = ("Beta")
+        Value = True
+      }
+      { WebRadioButton3 WebRadioButton
+        #MoveScaled(2,11,24,4)
+        Text = ("Gamma")
+      }
+      { WebCheckBox2 WebCheckBox
+        #MoveScaled(2,17,24,4)
+        Text = ("Gambas Almost Means Basic!")
+      }
     }
     Index = 1
     Text = ("Options")
@@ -52,6 +101,6 @@
     Index = 0
   }
   { WebContainer2 WebContainer
-    #MoveScaled(13,72,62,32)
+    #MoveScaled(13,90,62,14)
   }
 }

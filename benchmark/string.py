@@ -5,7 +5,7 @@ import time
 import sys
 
 str = 'abcdefgh'+'efghefgh'
-imax = 1024/len(str)*768
+imax = 1024 / len(str) * 512
 
 starttime = time.time();
 sys.stdout.flush()

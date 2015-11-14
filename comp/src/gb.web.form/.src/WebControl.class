@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore"
+Public Const _Properties As String = "Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -22,6 +22,8 @@ Property Width, W As String
 Property Height, H As String
 Property Ignore As Boolean
 Property Enabled As Boolean
+Property Background As Integer
+Property Foreground As Integer
 
 Static Private $iLastId As Integer
 Static Private $cFromId As New Collection
@@ -42,6 +44,8 @@ Private $bExpand As Boolean
 Private $bIgnore As Boolean
 Private $bDisabled As Boolean
 Private $bHidden As Boolean
+Private $iBackground As Integer = Color.Default
+Private $iForeground As Integer = Color.Default
 
 Public Sub _new(Optional Parent As WebContainer)
   
@@ -132,7 +136,7 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<div id=\""; $sName; "\"";
+  Print "<div class=\"gw-"; LCase(Mid$(Object.Type(Me), 4)); "\" id=\""; $sName; "\"";
   Me._RenderStyleSheet()
   Print ">"
   
@@ -180,9 +184,10 @@ Public Sub _RenderStyleSheet()
     
   Endif
   
-  If $hStyle Then
-    If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
-  Endif
+  If $iBackground <> Color.Default Then _AddStyleSheet("background-color:" & GetColor($iBackground) & ";")
+  If $iForeground <> Color.Default Then _AddStyleSheet("color:" & GetColor($iForeground) & ";")
+  
+  If $hStyle And If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
   
   _EndStyleSheet
   
@@ -268,8 +273,6 @@ End
 
 Public Sub _InitSpecialProperty((sProp) As String, (vVal) As Variant)
   
-  
-  
 End
 
 Public Sub _InitProperties()
@@ -308,9 +311,23 @@ Public Sub Style_Change()
   
 End
 
+Private Sub IsHidden() As Boolean
+  
+  Dim hCtrl As WebControl
+  
+  hCtrl = Me
+  While hCtrl
+    If Not hCtrl.Visible Then Return True
+    hCtrl = hCtrl.Parent
+  Wend
+  
+End
+
+
 Public Sub Refresh()
   
   If WebForm._DisableRefresh Then Return
+  If IsHidden() Then Return
   If WebForm._InExec Then
     _Refresh = True
     Form_Read()._HasRefresh = True
@@ -365,7 +382,7 @@ Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As Strin
   
 End
 
-Public Sub _GetUpdateJS(sEvent As String, sProp As String, sGetValue As String) As String
+Public Sub _GetUpdateJS(sEvent As String, sProp As String, sGetValue As String, Optional sMore As String) As String
   
   Dim sStr As String
   
@@ -375,7 +392,9 @@ Public Sub _GetUpdateJS(sEvent As String, sProp As String, sGetValue As String) 
   Else
     sStr &= JS($sName)
   Endif
-  sStr &= "," & JS(sProp) & "," & sGetValue & ");\""
+  sStr &= "," & JS(sProp) & "," & sGetValue & ");"
+  If sMore Then sStr &= sMore
+  sStr &= "\""
   
   Return sStr
   
@@ -462,5 +481,52 @@ Private Sub Enabled_Write(Value As Boolean)
 
   $bDisabled = Not Value
   Me._SetProperty("Enabled", Value)
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackground
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBackground = Value
+  Me._SetProperty("Background", Value)
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $iForeground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $iForeground = Value
+  Me._SetProperty("Foreground", Value)
+  
+
+End
+
+Private Sub GetColor(iCol As Integer) As String
+
+  Dim A As Integer
+  Dim R As Integer
+  Dim G As Integer
+  Dim B As Integer
+
+  A = Lsr(iCol, 24)
+  R = Lsr(iCol, 16) And 255
+  G = Lsr(iCol, 8) And 255
+  B = iCol And 255
+  
+  If A Then
+    Return "rgba(" & CStr(R) & "," & CStr(G) & "," & CStr(B) & "," & CStr(Round(A / 255, -2)) & ")"
+  Else
+    Return "#" & Hex$(R, 2) & Hex$(G, 2) & Hex$(B, 2)
+  Endif
 
 End

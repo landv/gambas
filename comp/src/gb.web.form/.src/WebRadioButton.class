@@ -4,7 +4,7 @@ Export
 Inherits WebControl
 
 Public Const _Properties As String = "*,Text,Value"
-Public Const _DrawWith As String = "CheckBox"
+Public Const _DrawWith As String = "RadioButton"
 Public Const _DefaultSize As String = "24,4"
 
 Event Click
@@ -33,8 +33,8 @@ End
 
 Public Sub _Render()
 
-  If $sText Then Print "<label class=\"gw-checkbox-label\" id=\""; Me.Name; "\">";
-  Print "<input  class=\"gw-checkbox-toggle\" type=\"checkbox\""; Me._GetUpdateJS("onclick", "value", "this.checked");
+  If $sText Then Print "<label class=\"gw-radiobutton-label\" id=\""; Me.Name; "\">";
+  Print "<input class=\"gw-radiobutton-toggle\" type=\"radio\""; Me._GetUpdateJS("onchange", "value", "this.checked"); " name=\""; Me.Parent.Name; "\"";
   If Not Me.Enabled Then Print " disabled";
   If $bChecked Then Print " checked";
   Print ">";
@@ -58,9 +58,23 @@ End
 
 Private Sub Value_Write(Value As Boolean)
 
-  If $bChecked = Value Then Return
-  $bChecked = Value
-  Me._SetProperty("Value", Value)
+  Dim hCtrl As WebControl
+  Dim hRadio As WebRadioButton
+  
+  If $bChecked <> Value Then 
+    $bChecked = Value
+    Me._SetProperty("Value", Value)
+  Endif
+  
+  If $bChecked Then
+    For Each hCtrl In Me.Parent.Children
+      If hCtrl Is WebRadioButton And If hCtrl <> Me Then
+        hRadio = hCtrl
+        hRadio.Value = False
+      Endif
+    Next
+  Endif
+  
   Raise Click
 
 End

@@ -113,6 +113,8 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   Dim iLast As Integer
   Dim bExist As Boolean
   Dim sOldTab As String
+  Dim cHidden As Collection
+  
   'Dim sType As String
 
   If Project.Components Then
@@ -154,12 +156,18 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
   If Project.Components Then
 
     ' Get all toolbars
+    
+    cHidden = New Collection
 
     For Each hComp In Project.Documentation.Components
 
       With hComp
 
         If Not hComp.UsedByProject() Then Continue
+
+        For Each sCtrl In .Hiddens
+          cHidden[sCtrl] = True
+        Next
 
         For Each sCtrl In .Controls
           sGroup = Project.Documentation.Classes[sCtrl].Group
@@ -193,6 +201,7 @@ Public Sub RefreshToolbar(Optional bForce As Boolean)
         If Not hComp.UsedByProject() Then Continue
 
         For Each sCtrl In .Controls
+          If cHidden.Exist(sCtrl) Then Continue
           hClass = Project.Documentation.Classes[sCtrl]
           sGroup = hClass.Group
           bExist = False

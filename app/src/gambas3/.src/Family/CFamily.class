@@ -12,6 +12,8 @@ Public Const AllowScaledProperty As Boolean = False
 Public Const HasMenuEditor As Boolean = False
 Public Const EmbedContainer As String = ""
 
+Public AllowedProperties As String[]
+
 Public ActionValue As Variant
 
 Private $hTimer As Timer

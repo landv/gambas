@@ -5,6 +5,8 @@ function $(a)
 
 gw = {
 
+  timers: {},
+
   send: function(form, command)
   {
     var xhr = new XMLHttpRequest();
@@ -83,5 +85,27 @@ gw = {
     $(id).focus();
     gw.active = document.activeElement.id;
     gw.selection = undefined;
+  },
+  
+  resizeComboBox: function(id)
+  {
+    $(id + '-select').style.width = $(id).offsetWidth + 'px';
+  },
+  
+  addTimer: function(form, id, delay)
+  {
+    gw.removeTimer(form, id);
+    gw.timers[form + '.' + id] = setInterval(function() { gw.raise(form, id, 'timer'); }, delay);
+  },
+  
+  removeTimer: function(form, id)
+  {
+    var t = gw.timers[form + '.' + id];
+    if (t)
+    {
+      clearInterval(gw.timers[form + '.' + id]);
+      gw.timers[form + '.' + id] = undefined;
+    }
   }
+  
 }

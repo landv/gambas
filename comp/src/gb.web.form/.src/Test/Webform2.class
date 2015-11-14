@@ -14,10 +14,10 @@ Public Sub WebContainer2_Render()
   
   If Session.Id Then
     
-    Print "<div style=\"margin: 0.5em 0;\"><b>Application state</b></div>"
+    Print "<div style=\"margin:0.5em 0;\"><b>Application state</b></div>"
     cState = Session["#" & LCase(Me.Name)]
     If cState Then
-      Print "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\" style=\"font-size:small;\">"
+      Print "<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\" style=\"font-size:x-small;border-collapse:collapse;\">"
       For Each vVal In cState
         Print "<tr><td>"; Html(cState.Key); "</td>";
         Print "<td><tt>"; Html(JSON.Encode(vVal)); "</tt></td></tr>"
@@ -39,5 +39,26 @@ End
 Public Sub WebTabPanel1_Click()
 
   If WebTabPanel1.Index = 0 Then WebTextBox1.SetFocus
+
+End
+
+Public Sub WebButton4_Click()
+
+  WebComboBox1.Add("Item #" & CStr(WebComboBox1.Count))
+
+End
+
+Public Sub WebButton5_Click()
+
+  WebComboBox1.Clear
+
+End
+
+Public Sub WebTimer1_Timer()
+
+  Dim iCpt As Integer
+
+  Try iCpt = CInt(WebTextBox2.Text)
+  WebTextBox2.Text = CInt(iCpt + 1)
 
 End
