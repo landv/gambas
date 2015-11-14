@@ -81,7 +81,7 @@ enum {
 	OP_OBJECT_OBJECT
 	};
 
-	
+
 #ifndef __GBX_EXEC_C
 
 extern STACK_CONTEXT EXEC_current;
@@ -168,7 +168,7 @@ void EXEC_loop(void);
 	((LIKELY(TYPE_is_pure_object((_val)->type))) ? (*(_pclass) = EXEC_object_real(_val, _pobject)), TRUE : \
 	TYPE_is_variant((_val)->type) ? (*(_pclass) = EXEC_object_variant(_val, _pobject)), FALSE : \
 	EXEC_object_other(_val, _pclass, _pobject))
-	
+
 #define EXEC_object_fast(_val, _pclass, _pobject) \
 ({ \
 	if ((_val)->type != T_CLASS) \

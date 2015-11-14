@@ -106,7 +106,7 @@ void EXEC_init(void)
 	test._string[3] = 0xDD;
 
 	EXEC_big_endian = test._int == 0xAABBCCDDL;
-	
+
 	if (EXEC_big_endian)
 		ERROR_warning("CPU is big endian");
 
@@ -156,7 +156,7 @@ void UNBORROW(VALUE *value)
 		OBJECT_UNREF_KEEP(value->_object.object);
 		return;
 	}
-	
+
 	goto *jump[type];
 
 __VARIANT:
@@ -213,36 +213,36 @@ void RELEASE_many(VALUE *value, int n)
 		};
 
 	TYPE type;
-	
+
 	while (n)
 	{
 		n--;
 		value--;
-		
+
 		type = value->type;
-	
+
 		if (UNLIKELY(TYPE_is_object(type)))
 		{
 			OBJECT_UNREF(value->_object.object);
 			continue;
 		}
-		
+
 		goto *jump[type];
-	
+
 	__VARIANT:
 		if (value->_variant.vtype == T_STRING)
 			STRING_unref(&value->_variant.value._string);
 		else if (TYPE_is_object(value->_variant.vtype))
 			OBJECT_UNREF(value->_variant.value._object);
 		continue;
-	
+
 	__FUNCTION:
 		OBJECT_UNREF(value->_function.object);
 		continue;
-	
+
 	__STRING:
 		STRING_unref(&value->_string.addr);
-	
+
 	__NONE:
 		continue;
 	}
@@ -324,7 +324,7 @@ static ushort exec_enter_can_quick(void)
 		return C_CALL_SLOW;
 
 	/* check arguments type */
-	
+
 	for (i = 0; i < nparam; i++)
 	{
 		if (SP[i - nparam].type != func->param[i].type)
@@ -337,23 +337,23 @@ static ushort exec_enter_can_quick(void)
 static void init_local_var(CLASS *class, FUNCTION *func)
 {
 	static const void *jump[] = {
-		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT, 
-		&&__DATE, &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL, 
+		&&__VOID, &&__BOOLEAN, &&__BYTE, &&__SHORT, &&__INTEGER, &&__LONG, &&__SINGLE, &&__FLOAT,
+		&&__DATE, &&__STRING, &&__STRING, &&__POINTER, &&__VARIANT, &&__FUNCTION, &&__CLASS, &&__NULL,
 		&&__OBJECT
 		};
-		
+
 	CLASS_LOCAL *local;
 	int n;
 	CTYPE ctype;
 	VALUE *value;
-	
+
 	local = func->local;
 	value = SP;
-	
+
 	for (n = func->n_local; n; n--, value++, local++)
 	{
 		ctype = local->type;
-		
+
 		value->type = ctype.id;
 		goto *jump[ctype.id];
 
@@ -373,7 +373,7 @@ static void init_local_var(CLASS *class, FUNCTION *func)
 	__SINGLE:
 		value->_single.value = 0;
 		continue;
-	
+
 	__FLOAT:
 		value->_float.value = 0;
 		continue;
@@ -411,7 +411,7 @@ static void init_local_var(CLASS *class, FUNCTION *func)
 	__NULL:
 		ERROR_panic("VALUE_default: Unknown default type");
 	}
-	
+
 	SP = value;
 }
 
@@ -442,7 +442,7 @@ void EXEC_enter(void)
 	if (func->debug)
 		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
 	#endif
-	
+
 	optional = func->optional;
 
 	// Check number of arguments
@@ -487,7 +487,7 @@ void EXEC_enter(void)
 				SP->_void.ptype = func->param[i].type;
 				SP++;
 			}
-			
+
 			//EXEC.nparam = func->n_param;
 			nparam = func->n_param;
 		}
@@ -510,7 +510,7 @@ void EXEC_enter(void)
 	CP = class;
 	EP = NULL;
 	GP = NULL;
-	
+
 	PROFILE_ENTER_FUNCTION();
 
 	if (func->error)
@@ -563,9 +563,9 @@ void EXEC_enter(void)
 void EXEC_enter_check(bool defined)
 {
 	ushort mode = defined ? exec_enter_can_quick() : C_CALL_SLOW;
-	
+
 	*PC = (*PC & 0xFF) | mode;
-	
+
 	switch(mode)
 	{
 		case C_CALL_QUICK: EXEC_enter_quick(); break;
@@ -597,7 +597,7 @@ void EXEC_enter_quick(void)
 	if (func->debug)
 		fprintf(stderr, "%s.%s\n", EXEC.class->name, func->debug->name);
 	#endif
-		
+
 	/* save context & check stack */
 
 	STACK_push_frame(&EXEC_current, func->stack_usage);
@@ -617,7 +617,7 @@ void EXEC_enter_quick(void)
 		EC = PC + func->error;
 	else
 		EC = NULL;
-	
+
 	PROFILE_ENTER_FUNCTION();
 
 	/* reference the object so that it is not destroyed during the function call */
@@ -655,7 +655,7 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	VALUE *xp, *pp;
 	int i, n, bit;
 	int nb;
-	
+
 	pc++;
 	nbyref = 1 + (*pc & 0xF);
 	pc_func = FP->code;
@@ -672,16 +672,16 @@ static int exec_leave_byref(ushort *pc, int nparam)
 		if (pc[i] & ~pc_func[i])
 			return 0;
 	}
-	
+
 	xp = PP - nparam;
 	pp = xp;
-	
+
 	for (i = 0, n = 0, nb = 0; i < nparam; i++)
 	{
 		bit = i & 15;
 		if (bit == 0)
 			n++;
-		
+
 		if (n <= nbyref && (pc[n] & (1 << bit)))
 		{
 			xp[nb] = *pp;
@@ -703,10 +703,10 @@ static int exec_leave_byref(ushort *pc, int nparam)
 	SP += nb;
 	OBJECT_UNREF(OP);
 	SP -= nb;
-	
+
 	PROFILE_LEAVE_FUNCTION();
 	STACK_pop_frame(&EXEC_current);
-	
+
 	PC += nbyref + 1;
 	return nb;
 }
@@ -782,10 +782,10 @@ void EXEC_leave_drop()
 	EXEC_release_return_value();
 
 	//VALUE_copy(&ret, RP);
-	
+
   pc = STACK_get_previous_pc();
   nparam = FP->n_param;
-  
+
 	/* ByRef arguments management */
 
 	nb = (pc && PCODE_is(pc[1], C_BYREF)) ? exec_leave_byref(pc, nparam) : 0;
@@ -800,7 +800,7 @@ void EXEC_leave_drop()
 	}
 
 	SP += nb;
-	
+
 #if DEBUG_STACK
 	fprintf(stderr, "| << EXEC_leave()\n");
 	print_register();
@@ -823,10 +823,10 @@ void EXEC_leave_keep()
 
 	// RP may be indirectly freed by OBJECT_UNREF()
 	VALUE_copy(&ret, RP);
-	
+
   pc = STACK_get_previous_pc();
   nparam = FP->n_param;
-	
+
 	// ByRef arguments management
 
 	nb = (pc && PCODE_is(pc[1], C_BYREF)) ? exec_leave_byref(pc, nparam) : 0;
@@ -847,7 +847,7 @@ void EXEC_leave_keep()
 			SP--;
 			OBJECT_UNREF(SP->_function.object);
 		}
-		
+
 		COPY_VALUE(SP, &ret);
 		RP->type = T_VOID;
 		if (PCODE_is_variant(*PC) && SP->type != T_VOID)
@@ -860,7 +860,7 @@ void EXEC_leave_keep()
 	}
 
 	SP += nb;
-	
+
 #if DEBUG_STACK
 	fprintf(stderr, "| << EXEC_leave()\n");
 	print_register();
@@ -888,7 +888,7 @@ void EXEC_function_real()
 		EXEC_enter();
 	}
 	END_ERROR
-	
+
 	if (FP->fast)
 		EXEC_jit_function_loop();
 	else
@@ -904,17 +904,17 @@ void EXEC_jit_function_loop()
 	CATCH
 	{
 		ERROR_set_last(TRUE);
-		
+
 		ERROR_lock();
 		while (PC != NULL && EC == NULL)
 			EXEC_leave_drop();
 		ERROR_unlock();
-		
+
 		STACK_pop_frame(&EXEC_current);
 		PROPAGATE();
 	}
 	END_TRY
-	
+
 	STACK_pop_frame(&EXEC_current);
 }
 
@@ -1131,14 +1131,14 @@ static ushort exec_native_can_quick(void)
 	CLASS_DESC_METHOD *desc = EXEC.desc;
 	int i;
 	int nparam = EXEC.nparam;
-	
+
 	/* check number of arguments */
 
 	//fprintf(stderr, "exec_native_can_quick: %s.%s(%d) npmin:%d npmax:%d npvar:%d\n", desc->class->name, desc->name, nparam, desc->npmin, desc->npmax, desc->npvar);
 
 	if (desc->npmin < desc->npmax || nparam != desc->npmin || desc->npvar)
 		return C_CALL_SLOW;
-		
+
 	/* check arguments type */
 
 	for (i = 0; i < nparam; i++)
@@ -1153,9 +1153,9 @@ static ushort exec_native_can_quick(void)
 void EXEC_native_check(bool defined)
 {
 	ushort mode = defined ? exec_native_can_quick() : C_CALL_SLOW;
-	
+
 	*PC = (*PC & 0xFF) | mode;
-	
+
 	switch(mode)
 	{
 		case C_CALL_QUICK: EXEC_native_quick(); break;
@@ -1194,7 +1194,7 @@ void EXEC_native_check(bool defined)
 bool EXEC_call_native(void (*exec)(), void *object, TYPE type, VALUE *param)
 {
 	bool error;
-	
+
 	EXEC_call_native_inline(exec, object, type, param);
 	return error;
 }
@@ -1217,7 +1217,7 @@ void EXEC_native_quick(void)
 		POP();
 		PROPAGATE();
 	}
-	
+
 	if (desc->type == T_VOID)
 	{
 		RELEASE_MANY(SP, nparam);
@@ -1273,7 +1273,7 @@ void EXEC_native(void)
 	{
 		n = desc->npmin;
 		nm = desc->npmax;
-		
+
 		if (UNLIKELY(nparam < n))
 			THROW(E_NEPARAM);
 
@@ -1302,7 +1302,7 @@ void EXEC_native(void)
 				{
 					STACK_RELOCATE(value);
 				}*/
-				
+
 				SP += n;
 				nparam = nm;
 
@@ -1335,7 +1335,7 @@ void EXEC_native(void)
 					{
 						STACK_RELOCATE(value);
 					}*/
-					
+
 					SP += n;
 					nparam = nm;
 
@@ -1365,7 +1365,7 @@ void EXEC_native(void)
 
 	EXEC_call_native_inline(desc->exec, object, desc->type, &SP[-nparam]);
 	COPY_VALUE(&ret, &TEMP);
-	
+
 	if (UNLIKELY(error))
 	{
 		RELEASE_MANY(SP, nparam);
@@ -1375,22 +1375,22 @@ void EXEC_native(void)
 			SP--;
 			OBJECT_UNREF(SP->_function.object);
 		}
-		
+
 		PROPAGATE();
 	}
-	
+
 	// If the function description is on the stack
 
 	if (desc->type == T_VOID)
 	{
 		RELEASE_MANY(SP, nparam);
-		
+
 		if (use_stack)
 		{
 			SP--;
 			OBJECT_UNREF(SP->_function.object);
 		}
-		
+
 		SP->type = T_VOID;
 		SP->_void.ptype = T_NULL;
 		SP++;
@@ -1400,16 +1400,16 @@ void EXEC_native(void)
 	{
 		BORROW(&ret);
 		RELEASE_MANY(SP, nparam);
-		
+
 		if (use_stack)
 		{
 			SP--;
 			OBJECT_UNREF(SP->_function.object);
-		
+
 			if (PCODE_is_variant(*PC) && ret.type != T_VOID)
 				VALUE_conv_variant(&ret);
 		}
-	
+
 		COPY_VALUE(SP, &ret);
 		SP++;
 	}
@@ -1429,6 +1429,15 @@ CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
 	object = val->_object.object;
 	class = val->_object.class;
 
+	if (class->is_simple)
+	{
+		if (!object)
+			THROW(E_NULL);
+
+		class = object->class;
+		goto __RETURN;
+	}
+
 	if (!object)
 	{
 		/* A null object and a virtual class means that we want to pass a static class */
@@ -1437,14 +1446,9 @@ CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
 		CLASS_load(class);
 		goto __RETURN;
 	}
-	
-	if (UNLIKELY(val == EXEC_super))
-	{
+
+	if (val == EXEC_super)
 		EXEC_super = val->_object.super;
-		//*class = (*class)->parent;
-		if (UNLIKELY(class == NULL))
-			THROW(E_PARENT);
-	}
 	else if (!class->is_virtual)
 		class = object->class;
 
@@ -1452,11 +1456,11 @@ CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
 
 	if (UNLIKELY(class->must_check && (*(class->check))(object)))
 		THROW(E_IOBJECT);
-		
+
 __RETURN:
 
 	*pobject = object;
-	
+
 	return class;
 }
 
@@ -1500,9 +1504,9 @@ __CHECK:
 
 	if (UNLIKELY(class->must_check && (*(class->check))(object)))
 		THROW(E_IOBJECT);
-		
+
 	*pobject = object;
-	
+
 	return class;
 }
 
@@ -1554,7 +1558,7 @@ __CLASS:
 		if (UNLIKELY(class == NULL))
 			THROW(E_PARENT);
 	}
-	
+
 	CLASS_load(class);
 	goto __RETURN;
 
@@ -1582,12 +1586,12 @@ __CHECK:
 
 	if (UNLIKELY(class->must_check && (*(class->check))(object)))
 		THROW(E_IOBJECT);
-		
+
 __RETURN:
 
 	*pclass = class;
 	*pobject = object;
-	
+
 	return defined;
 }
 
@@ -1625,7 +1629,7 @@ void EXEC_public(CLASS *class, void *object, const char *name, int nparam)
 
 	if (UNLIKELY(desc == NULL))
 		return;
-	
+
 	EXEC_public_desc(class, object, &desc->method, nparam);
 	EXEC_release_return_value();
 }
@@ -1726,13 +1730,13 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 			EXEC.nparam = 0;
 			EXEC_function();
 		}
-		
+
 		if (EXEC_special(special, class, object, nparam, drop))
 		{
 			if (nparam)
 				THROW(E_TMPARAM);
 		}
-		
+
 		return;
 	}
 
@@ -1741,7 +1745,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 	for(i = 0, np = 0; i < nher; i++)
 	{
 		class = her[i];
-	
+
 		index = class->special[special];
 		if (index == NO_SYMBOL)
 			continue;
@@ -1757,10 +1761,10 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 	opt = arg + np;
 	nparam_opt = nparam - np;
 	nparam = np;
-	
+
 	// nparam is now the number of mandatory arguments
 	// naram_opt is the number of optional arguments
-	
+
 	for(;;)
 	{
 		nher--;
@@ -1794,7 +1798,7 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 			np = desc->method.npmin;
 			if (np > nparam) np = nparam;
 			nparam -= np;
-			
+
 			npopt = desc->method.npmax - desc->method.npmin;
 			if (npopt > nparam_opt) npopt = nparam_opt;
 			nparam_opt -= npopt;
@@ -1808,9 +1812,9 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 		if (np > 0 || npopt > 0)
 		{
 			STACK_check(np + npopt);
-			
+
 			base = SP;
-			
+
 			for (i = 0; i < np; i++)
 			{
 				*SP++ = base[arg];
@@ -1825,10 +1829,10 @@ void EXEC_special_inheritance(int special, CLASS *class, OBJECT *object, int npa
 				opt++;
 			}
 		}
-		
+
 		EXEC_special(special, class, object, np + npopt, drop);
 	}
-	
+
 	SP -= save_nparam;
 }
 
@@ -1850,7 +1854,7 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 		OBJECT_lock(object, FALSE);
 
 //     SP--; /* class */
-// 
+//
 //     SP->_object.class = class;
 //     SP->_object.object = object;
 //     SP++;
@@ -1940,7 +1944,7 @@ void EXEC_new(void)
 	}
 
 	save = EVENT_enter_name(name);
-	
+
 	TRY
 	{
 		OBJECT_lock(object, TRUE);
@@ -1983,22 +1987,22 @@ void *EXEC_auto_create(CLASS *class, bool ref)
 	void *object;
 
 	object = CLASS_auto_create(class, 0); /* object is checked by CLASS_auto_create */
-	
+
 	/*if (UNLIKELY(class->must_check && (*(class->check))(object)))
 		THROW(E_IOBJECT);*/
 
 	if (ref)
 		OBJECT_REF(object);
-	
+
 	return object;
 }
 
 void EXEC_dup(int n)
 {
 	VALUE *src;
-	
+
 	STACK_check(n);
-	
+
 	src = SP - n;
 	while (n > 0)
 	{
@@ -2012,12 +2016,12 @@ void EXEC_push_complex(void)
 {
 	static void *(*func)(double) = NULL;
 	void *ob;
-	
+
 	SP--;
 	if (SP->type < T_INTEGER || SP->type > T_FLOAT)
 		THROW_ILLEGAL();
 	SP++;
-	
+
 	if (!func)
 	{
 		if (COMPONENT_get_info("PUSH_COMPLEX", POINTER(&func)))
@@ -2027,7 +2031,7 @@ void EXEC_push_complex(void)
 				THROW(E_MATH);
 		}
 	}
-	
+
 	SP--;
 	VALUE_conv_float(SP);
 	ob = (*func)(SP->_float.value);

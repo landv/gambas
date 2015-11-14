@@ -105,7 +105,7 @@ static void exit_class(CLASS *class, bool native)
 
 	if (CLASS_is_native(class) != native)
 		return;
-	
+
 	if (!CLASS_is_loaded(class))
 		return;
 
@@ -132,7 +132,7 @@ static void unload_class(CLASS *class)
 	else if (!CLASS_is_native(class))
 	{
 		#ifdef OS_64BITS
-			
+
 			if (class->load)
 			{
 				FREE(&class->load->desc);
@@ -143,32 +143,32 @@ static void unload_class(CLASS *class)
 				FREE(&class->load->ext);
 				FREE(&class->load->local);
 				FREE(&class->load->array);
-				
+
 				if (class->debug)
 				{
 					int i;
 					FUNCTION *func;
-					
+
 					for (i = 0; i < class->load->n_func; i++)
 					{
 						func = &class->load->func[i];
 						FREE(&func->debug->local);
 					}
-					
+
 					FREE(&class->load->global);
 					FREE(&class->load->debug);
 				}
-				
+
 				FREE(&class->load->func);
 			}
 
 		#endif
-		
+
 		if (class->load)
 			FREE(&class->load->prof);
-		
+
 		FREE(&class->jit_functions);
-		
+
 		FREE(&class->load);
 		//if (!class->mmapped)
 		FREE(&class->data);
@@ -211,7 +211,7 @@ static void class_replace_global(CLASS *class)
 	if (CLASS_is_loaded(class))
 	{
 		//fprintf(stderr, "class_replace_global: %p %s\n", class, name);
-		
+
 		name = class->name;
 		len = strlen(name);
 
@@ -223,15 +223,15 @@ static void class_replace_global(CLASS *class)
 			parent = parent->parent;
 		}
 		while (parent);
-		
+
 		ALLOC(&old_name, len + nprefix + 1);
 		for (i = 0; i < nprefix; i++)
 			old_name[i] = '>';
 		strcpy(&old_name[i], name);
-		
+
 		old_class = CLASS_find_global(old_name);
 		//fprintf(stderr, "-> %p %s\n", old_class, old_name);
-		
+
 		FREE(&old_name);
 		/*FREE(&old_class->name, "class_replace_global");
 		old_class->free_name = FALSE;
@@ -253,26 +253,26 @@ static void class_replace_global(CLASS *class)
 
 		new_class->name = class->name;
 		class->name = new_name;*/
-		
+
 		swap = *class;
 		*class = *old_class;
 		*old_class = swap;
-		
+
 		SWAP_FIELD(swap_name, class, old_class, name);
 		SWAP_FIELD(swap_free_name, class, old_class, free_name);
 		SWAP_FIELD(parent, class, old_class, next);
 		SWAP_FIELD(i, class, old_class, count);
 		SWAP_FIELD(i, class, old_class, ref);
-		
+
 		for (i = 0; i < old_class->n_desc; i++)
 		{
 			cds = &old_class->table[i];
 			if (cds->desc && cds->desc->method.class == class)
 				cds->desc->method.class = old_class;
 		}
-		
+
 		CLASS_inheritance(class, old_class, FALSE);
-		
+
 		/*for(;;)
 		{
 			class->override = new_class;
@@ -421,7 +421,7 @@ void CLASS_clean_up(bool silent)
 void CLASS_exit()
 {
 	CLASS *class, *next;
-	
+
 	#if DEBUG_LOAD
 	fprintf(stderr, "Unloading classes...\n");
 	#endif
@@ -460,7 +460,7 @@ CLASS *CLASS_look(const char *name, int len)
 		name = "MyListBox";
 		len = 9;
 	}*/
-	
+
 	//if (CP && CP->component && CP->component->archive)
 	if (!_global && !ARCHIVE_get_current(&arch))
 	{
@@ -536,7 +536,7 @@ CLASS *CLASS_find(const char *name)
 	ALLOC_ZERO(&class, sizeof(CLASS));
 	csym->class = class;
 	class->ref = 1;
-	
+
 	class->next = _classes;
 	_classes = class;
 
@@ -551,7 +551,7 @@ CLASS *CLASS_find(const char *name)
 	if (_first == NULL)
 		_first = class;
 	class->class = _first;
-	
+
 	class->global = global;
 
 	return class;
@@ -696,12 +696,12 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 	TYPE *sign;
 	int i, n;
 	TYPE type;
-	
+
 	switch (CLASS_DESC_get_type(cd))
 	{
 		case CD_METHOD:
 		case CD_STATIC_METHOD:
-			
+
 			sign = cd->method.signature;
 			n = cd->method.npmax;
 			break;
@@ -711,9 +711,9 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 			sign = cd->event.signature;
 			n = cd->event.npmax;
 			break;
-			
+
 		case CD_EXTERN:
-			
+
 			sign = cd->ext.signature;
 			n = cd->ext.npmax;
 			break;
@@ -722,7 +722,7 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 
 			return NULL;
 	}
-	
+
 	for (i = 0; i < n; i++)
 	{
 		type = sign[i];
@@ -730,7 +730,7 @@ char *CLASS_DESC_get_signature(CLASS_DESC *cd)
 		if (TYPE_is_object(type))
 			res = STRING_add_char(res, ';');
 	}
-	
+
 	return res;
 }
 
@@ -752,9 +752,9 @@ void CLASS_free(void *object)
 	ON_ERROR_2(error_CLASS_free, object, &save)
 	{
 		((OBJECT *)object)->ref = 1; // Prevents anybody from freeing the object!
-		
+
 		EXEC_special_inheritance(SPEC_FREE, class, object, 0, TRUE);
-		
+
 		((OBJECT *)object)->ref = 0;
 		EXEC = save;
 		OBJECT_release(class, object);
@@ -766,14 +766,14 @@ void CLASS_free(void *object)
 void CLASS_ref(void *object)
 {
 	char *name;
-	
+
 	((OBJECT *)object)->ref++;
-	
+
 	if (OBJECT_class(object) == FREE_MARK)
 		name = "*ALREADY FREED*";
 	else
 		name = OBJECT_class(object)->name;
-	
+
 	#if DEBUG_MEMORY
 	fprintf(stderr, "%s: %s: ref(%s <%d>) -> %ld\n", OBJECT_ref_where,
 		DEBUG_get_current_position(),
@@ -791,7 +791,7 @@ bool CLASS_unref(void *ob, bool can_free)
 	char *name;
 
 	OBJECT *object = (OBJECT *)ob;
-	
+
 	if (OBJECT_class(object) == FREE_MARK)
 		name = "*ALREADY FREED*";
 	else
@@ -827,7 +827,7 @@ bool CLASS_unref(void *ob, bool can_free)
 		CLASS_free(object);
 		return TRUE;
 	}
-	
+
 	return FALSE;
 }
 #endif
@@ -860,7 +860,7 @@ static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const
 
 		if (result > 0)
 			continue;
-		
+
 		if (result == 0)
 		{
 			s1 = cds[sym[i]].name;
@@ -873,7 +873,7 @@ static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const
 					break;
 				len--;
 			}
-			
+
 			if (result == 0)
 			{
 				if (*cds[pivot].name != '.')
@@ -894,7 +894,7 @@ static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const
 	val = sym[pos];
 	sym[pos] = sym[start];
 	sym[start] = val;
-	
+
 	return pos; // et sa position est retournée
 }
 
@@ -915,9 +915,9 @@ void CLASS_sort(CLASS *class)
 
 	if (!class->n_desc)
 		return;
-	
+
 	_sorted_class = class;
-	
+
 	ALLOC(&sym, sizeof(ushort) * class->n_desc);
 
 	for (i = 0; i < class->n_desc; i++)
@@ -978,7 +978,7 @@ void CLASS_inheritance(CLASS *class, CLASS *parent, bool in_jit_compilation)
 
 	if (!class->array_type)
 		class->array_type = parent->array_type;
-	
+
 	//fprintf(stderr, "CLASS_inheritance: %s %s\n", class->name, class->auto_create ? "AUTO CREATE" : "");
 }
 
@@ -997,7 +997,7 @@ const char *CLASS_DESC_get_type_name(const CLASS_DESC *desc)
 		case CD_CONSTANT_ID: return "C";
 		case CD_EVENT_ID: return ":";
 		case CD_EXTERN_ID: return "X";
-		default: 
+		default:
 			//fprintf(stderr, "CLASS_DESC_get_type_name: %s: %ld\n", desc->gambas.name, desc->gambas.val4);
 			return "?";
 	}
@@ -1007,15 +1007,15 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 {
 	TYPE *sd, *sp;
 	int nsd, nsp;
-	
+
 	if (!TYPE_are_compatible(desc->property.type, pdesc->property.type))
 		return TRUE;
-	
+
 	switch (type)
 	{
 		case CD_METHOD:
 		case CD_STATIC_METHOD:
-			
+
 			sd = desc->method.signature;
 			nsd = desc->method.npmax;
 			sp = pdesc->method.signature;
@@ -1029,9 +1029,9 @@ static bool check_signature(char type, const CLASS_DESC *desc, const CLASS_DESC 
 			sp = pdesc->event.signature;
 			nsp = pdesc->event.npmax;
 			break;
-			
+
 		case CD_EXTERN:
-			
+
 			sd = desc->ext.signature;
 			nsd = desc->ext.npmax;
 			sp = pdesc->ext.signature;
@@ -1058,11 +1058,11 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 	char type, parent_type;
 	CLASS_DESC_SYMBOL *cds;
 	bool check;
-	
+
 	#if DEBUG_DESC
 	fprintf(stderr, "\n---- %s\n", class->name);
 	#endif
-	
+
 	// Compute number of public descriptions
 
 	class->n_desc = n_desc;
@@ -1114,14 +1114,14 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 					continue;
 
 				cds = &parent->table[ind];
-					
+
 				// The parent class public symbols of non-native classes were replaced by the symbol kind returned by CLASS_DESC_get_type_name()
 				// Only the first inheritance level is tested against signature compatibility
-				
+
 				if (cds->desc && !check)
 				{
 					parent_type = CLASS_DESC_get_type(cds->desc);
-					
+
 					if (parent_type != type)
 					{
 						#if DEBUG_DESC
@@ -1129,27 +1129,27 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 						#endif
 						THROW(E_OVERRIDE, CLASS_get_name(parent), cds->name, CLASS_get_name(class));
 					}
-					
+
 					if (!CLASS_is_native(class) && strcasecmp(name, "_new"))
 					{
 						//fprintf(stderr, "check_signature: %s\n", name);
 						if (check_signature(type, &desc[j], cds->desc))
 							THROW(E_OVERRIDE, CLASS_get_name(parent), cds->name, CLASS_get_name(class));
 					}
-					
+
 					check = TRUE;
 				}
-				
+
 				cds = &class->table[ind];
-				
+
 				#if DEBUG_DESC
 				fprintf(stderr, "%s: [%d] (%p %ld) := (%p %ld)\n", name, ind, cds->desc, cds->desc ? cds->desc->gambas.val1 : 0, &desc[j], desc[j].gambas.val1);
 				#endif
-				
+
 				cds->desc = (CLASS_DESC *)&desc[j];
 				cds->name = ".";
 				cds->len = 1;
-				
+
 				/*if (!desc[j].gambas.val1 && index(CD_CALL_SOMETHING_LIST, type) != NULL)
 				{
 					//#if DEBUG_DESC
@@ -1159,7 +1159,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 				}*/
 			}
 		}
-		
+
 		for (pnonher = nonher; *pnonher; pnonher++)
 		{
 			ind = CLASS_find_symbol(class->parent, *pnonher);
@@ -1191,11 +1191,11 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 		class->table[i].name = (char *)name;
 		class->table[i].len = strlen(name);
 	}
-	
+
 	#if DEBUG_DESC
 	{
 		CLASS_DESC_SYMBOL *cds;
-		
+
 		for (i = 0; i < class->n_desc; i++)
 		{
 			cds = &class->table[i];
@@ -1210,13 +1210,13 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 
 void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int size_static)
 {
-	// If the class is native and static, then size_dynamic == 0. But if we want to inherit 
-	// the static class, and make the inherited class dynamic, then class->off_event must 
+	// If the class is native and static, then size_dynamic == 0. But if we want to inherit
+	// the static class, and make the inherited class dynamic, then class->off_event must
 	// start after the object header. So we fix size_dynamic accordingly.
-	
+
 	if (all && size_dynamic == 0)
 		size_dynamic = sizeof(OBJECT);
-	
+
 	if (class->parent)
 	{
 		if (all)
@@ -1246,8 +1246,12 @@ void CLASS_calc_info(CLASS *class, int n_event, int size_dynamic, bool all, int 
 		ALLOC_ZERO(&class->stat, class->size_stat);
 	else
 		class->stat = NULL;
-		
+
 	class->is_stream = (class == CLASS_Stream) || (class->parent && class->parent->is_stream);
+
+	class->is_simple = class->parent == NULL && !class->is_virtual && !class->must_check;
+	if (class->parent)
+		class->parent->is_simple = FALSE;
 }
 
 
@@ -1307,9 +1311,9 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 	void *ob = class->instance;
 
 	//fprintf(stderr, ">>> CLASS_auto_create: %s (%p)\n", class->name, ob);
-	
+
 	// We automatically release invalid automatic instances
-	
+
 	if (ob)
 	{
 		if (OBJECT_is_valid(ob))
@@ -1330,7 +1334,7 @@ void *CLASS_auto_create(CLASS *class, int nparam)
 	//OBJECT_REF(ob, "CLASS_auto_create");
 
 	//fprintf(stderr, "<<< CLASS_auto_create: %s (%p) valid=%d\n", class->name, ob, OBJECT_is_valid(ob));
-	
+
 	return class->instance;
 }
 
@@ -1340,7 +1344,7 @@ void CLASS_search_special(CLASS *class)
 {
 	static int _operator_strength = 0;
 	int sym;
-	
+
 	class->special[SPEC_NEW] = CLASS_get_symbol_index_kind(class, "_new", CD_METHOD, 0);
 	class->special[SPEC_FREE] = CLASS_get_symbol_index_kind(class, "_free", CD_METHOD, 0);
 	class->special[SPEC_GET] = CLASS_get_symbol_index_kind(class, "_get", CD_METHOD, CD_STATIC_METHOD);
@@ -1352,14 +1356,14 @@ void CLASS_search_special(CLASS *class)
 	class->special[SPEC_PROPERTY] = CLASS_get_symbol_index_kind(class, "_property", CD_METHOD, CD_STATIC_METHOD);
 	class->special[SPEC_COMPARE] = CLASS_get_symbol_index_kind(class, "_compare", CD_METHOD, 0);
 	class->special[SPEC_ATTACH] = CLASS_get_symbol_index_kind(class, "_attach", CD_METHOD, 0);
-	
+
 	sym = CLASS_get_symbol_index_kind(class, "_@_convert", CD_CONSTANT, 0);
 	if (sym != NO_SYMBOL)
 	{
 		class->has_convert = TRUE;
 		class->convert = CLASS_get_desc(class, sym)->constant.value._pointer;
 	}
-	
+
 	sym = CLASS_get_symbol_index_kind(class, "_@_operator", CD_CONSTANT, 0);
 	if (sym != NO_SYMBOL)
 	{
@@ -1368,7 +1372,7 @@ void CLASS_search_special(CLASS *class)
 		_operator_strength++;
 		CLASS_set_operator_strength(class, _operator_strength);
 	}
-	
+
 	if (class->special[SPEC_NEXT] != NO_SYMBOL)
 		class->enum_static = CLASS_DESC_get_type(CLASS_get_desc(class, class->special[SPEC_NEXT])) == CD_STATIC_METHOD;
 	if (class->special[SPEC_UNKNOWN] != NO_SYMBOL)
@@ -1387,7 +1391,7 @@ CLASS *CLASS_check_global(CLASS *class)
 
 		/*if (class->has_child)
 			THROW(E_CLASS, class->name, "Overriding an already inherited class is forbidden", "");*/
-			
+
 		class_replace_global(class);
 	}
 
@@ -1410,7 +1414,7 @@ CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index)
 {
 	CLASS_DESC_SYMBOL *old = NULL;
 	CLASS_DESC_SYMBOL *cur;
-	
+
 	for(;;)
 	{
 		if (*index >= class->n_desc)
@@ -1419,15 +1423,15 @@ CLASS_DESC_SYMBOL *CLASS_get_next_sorted_symbol(CLASS *class, int *index)
 		cur = &class->table[class->sort[*index]];
 		if (*index > 0)
 			old = &class->table[class->sort[*index - 1]];
-		
+
 		(*index)++;
-		
+
 		if (!cur->desc)
 			continue;
-		
+
 		if (old && !TABLE_compare_ignore_case(cur->name, cur->len, old->name, old->len))
 			continue;
-		
+
 		return cur;
 	}
 }
@@ -1439,7 +1443,7 @@ void CLASS_create_array_class(CLASS *class)
 	char *name_joker;
 	GB_DESC *desc;
 	CLASS *array_type = (CLASS *)class->array_type;
-	
+
 	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
 	name_joker = STRING_new(class->name, strlen(class->name) - 2);
@@ -1449,7 +1453,7 @@ void CLASS_create_array_class(CLASS *class)
 		array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
 		class->array_type = (TYPE)array_type;
 	}
-	
+
 	TYPE_joker = array_type;
 	array_type->array_class = class;
 
@@ -1462,7 +1466,7 @@ void CLASS_create_array_class(CLASS *class)
 	class->is_array = TRUE;
 	class->quick_array = CQA_ARRAY;
 	class->data = (char *)desc;
-	
+
 	STRING_free(&name_joker);
 	TYPE_joker = save;
 }
@@ -1478,7 +1482,7 @@ CLASS *CLASS_get_array_class(CLASS *class)
 		class->array_class = class->global ? CLASS_find_global(name) : CLASS_find(name);
 		CLASS_create_array_class(class->array_class);
 	}
-	
+
 	return class->array_class;
 }
 
@@ -1489,7 +1493,7 @@ void CLASS_create_array_of_struct_class(CLASS *class)
 	char *name_joker;
 	GB_DESC *desc;
 	CLASS *array_type = (CLASS *)class->array_type;
-	
+
 	//fprintf(stderr, "CLASS_create_array_class: create %s\n", class->name);
 
 	name_joker = STRING_new(&class->name[1], strlen(class->name) - 3);
@@ -1499,7 +1503,7 @@ void CLASS_create_array_of_struct_class(CLASS *class)
 		array_type = class->global ? CLASS_find_global(name_joker) : CLASS_find(name_joker);
 		class->array_type = (TYPE)array_type;
 	}
-	
+
 	TYPE_joker = array_type;
 	array_type->astruct_class = class;
 
@@ -1512,7 +1516,7 @@ void CLASS_create_array_of_struct_class(CLASS *class)
 	class->is_array = TRUE;
 	class->is_array_of_struct = TRUE;
 	class->data = (char *)desc;
-	
+
 	STRING_free(&name_joker);
 	TYPE_joker = save;
 }
@@ -1527,7 +1531,7 @@ CLASS *CLASS_get_array_of_struct_class(CLASS *class)
 		class->astruct_class = class->global ? CLASS_find_global(name) : CLASS_find(name);
 		CLASS_create_array_of_struct_class(class->astruct_class);
 	}
-	
+
 	return class->astruct_class;
 }
 
@@ -1542,9 +1546,9 @@ int CLASS_sizeof(CLASS *class)
 char *CLASS_get_name(CLASS *class)
 {
 	char *name = class->name;
-	
+
 	while (*name == '>')
 		name++;
-	
+
 	return name;
 }

@@ -21,6 +21,7 @@ libgbx_a_SOURCES = \
  gbx_exec_loop.c \
  gb_hash.c \
  gb_common_check.h gb_common.c \
+ gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_operator.c \
  gbx_value.h gbx_value.c
 
 gbx3_SOURCES = \
@@ -32,7 +33,6 @@ gbx3_SOURCES = \
  gb_table.c \
  gb_list.c \
  gbx_type.h gbx_type.c \
- gbx_exec.h gbx_exec.c gbx_exec_push.c gbx_exec_enum.c gbx_exec_pop.c gbx_exec_operator.c \
  gbx_class_desc.h gbx_class.h gbx_class_init.c gbx_class.c gbx_class_native.c \
  gbx_class_load.c gbx_class_load.h \
  gbx_event.h gbx_event.c \

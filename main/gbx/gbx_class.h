@@ -195,7 +195,7 @@ typedef
 		int value;
 		}
 	GLOBAL_SYMBOL;
-	
+
 typedef
 	struct {
 		int nfield;
@@ -286,7 +286,8 @@ typedef
 		unsigned property_static : 1;     //          If _property is static
 		unsigned has_convert : 1;         //          If the _convert interface is implemented
 		unsigned has_operators : 1;       //          If the _operators interface is implemented
-		unsigned _reserved : 3;           //  24  36
+		unsigned is_simple : 1;           //          Class has no parent, no child, is not virtual, and has no 'check' function.
+		unsigned _reserved : 2;           //  24  36
 
 		short n_desc;                     //  26  38  number of descriptions
 		short n_event;                    //  28  40  number of events
@@ -298,10 +299,10 @@ typedef
 
 		int (*check)();                   //  44  72  method for checking that an object is valid
 
-		char *data;                       //  48  80  class file data for loaded class 
+		char *data;                       //  48  80  class file data for loaded class
 		                                  //          or generated description for native class
 		                                  //          or generated description for structures
-		
+
 		CLASS_LOAD *load;                 //  52  88  information about loaded class
 
 		char *stat;                       //  56  96  static class data
@@ -320,19 +321,19 @@ typedef
 		TYPE array_type;                  // 104 160  datatype of the contents if this class is an array class of objects
 		struct _CLASS *array_class;       // 108 168  array of class
 		struct _CLASS *astruct_class;     // 112 176  array of struct class
-		
+
 		void *instance;                   // 116 184  automatically created instance
 		void **operators;                 // 120 192  arithmetic interface
 		bool (*convert)();                // 124 200  convert method
-		
+
 		COMPONENT *component;             // 128 208  The component the class belongs to
-		
+
 		void (**jit_functions)(void);     // 132 216  array of jit functions
 
 		struct _CLASS *next;              // 136 224  next class
 		}
 	CLASS;
-	
+
 typedef
 	struct {
 		SYMBOL sym;
