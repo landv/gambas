@@ -17,6 +17,10 @@ INPUT {
   font: inherit;
 }
 
+H1,H2,H3,P {
+  margin-top: 0.5rem;
+}
+
 .gw-button {
   padding: 0 0.5em;
   font: inherit;
@@ -119,3 +123,57 @@ INPUT {
 .gw-selectbox SELECT {
   width: 100%;
 }
+
+.gw-window {
+  position: absolute;
+  border: solid 1px white;
+  box-shadow: 0 0 8px black;
+  border-radius: 0.5em;
+  background: white;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.gw-window-titlebar {
+  display: flex;
+  flex-flow: row;
+  background: black;
+  font-weight: bold;
+  height: 2em;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+  pointer-events: none;
+}
+
+.gw-window-title {
+  flex-grow: 1;
+  color: white;
+  line-height: 2em;
+  padding-left: 0.5em;
+}
+
+.gw-window-button {
+  position: absolute;
+  padding: 0;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1.5em;
+  top: 0em;
+  right: 0em;
+  margin-top: 0.25em;
+  margin-right: 0.25em
+}
+
+@-moz-document url-prefix() {
+  .gw-window-button {
+    display: inline-flex;
+  };
+}
+
+.gw-window-contents {
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+  padding: 0.5em;
+}
+

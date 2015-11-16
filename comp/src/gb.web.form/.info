@@ -256,6 +256,10 @@ _Remove
 m
 
 (hChild)WebControl;
+_UpdateChildName
+m
+
+(sOld)s(sNew)s
 _IsFirstVisibleChild
 m
 b
@@ -280,6 +284,18 @@ _SetContainer
 m
 
 (hCont)WebContainer;
+_InitSpecialProperty
+m
+
+(sProp)s(vVal)v
+_Raise
+m
+
+(sName)s
+_Lower
+m
+
+(sName)s
 #WebControl
 
 
@@ -316,7 +332,7 @@ p
 v
 
 Parent
-p
+r
 WebContainer
 
 Expand
@@ -378,11 +394,19 @@ m
 _SetName
 m
 
-(sName)s
+[(sName)s(bNoForm)b]
+_SetForm
+m
+
+(hForm)WebForm;
 FromId
 M
 WebControl
 (Id)i
+FromName
+M
+WebControl
+(Name)s
 _SetProperty
 m
 
@@ -431,6 +455,10 @@ Style_Change
 m
 
 
+IsHidden
+m
+b
+
 _RefreshReply
 m
 b
@@ -442,12 +470,28 @@ s
 _GetUpdateJS
 m
 s
-(sEvent)s(sProp)s(sGetValue)s[(sMore)s]
+(sEvent)s(sProp)s[(sGetValue)s(sMore)s]
 _UpdateProperty
 m
 
 (sProp)s(vValue)v
 SetFocus
+m
+
+
+Raise
+m
+
+
+Lower
+m
+
+
+_GetNames
+M
+s
+
+Delete
 m
 
 
@@ -488,7 +532,7 @@ T
 _HiddenControls
 C
 s
-"WebControl,WebForm,Timer"
+"WebControl,WebForm,WebWindow,Timer"
 _Properties
 C
 s
@@ -500,6 +544,10 @@ s
 _InExec
 V
 i
+
+_Current
+V
+WebForm
 
 :Open
 :
@@ -513,15 +561,15 @@ Title
 p
 s
 
-_FromName
-v
-Collection
+_DisableRefresh
+V
+i
 
 _HasRefresh
 v
 b
 
-_DisableRefresh
+_Window
 v
 i
 
@@ -549,10 +597,26 @@ _AddReply
 M
 
 (sStr)s
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
 Close
 m
 
 
+Open
+m
+
+(Child)WebForm;
+Move
+m
+
+(X)s(Y)s[(Width)s(Height)s]
+Resize
+m
+
+(Width)s(Height)s
 #WebHtml
 WebControl
 C
@@ -618,10 +682,6 @@ _Properties
 C
 s
 "*,Border=True,Count{Range:1;256}=1,Index,Text"
-_IsContainer
-C
-b
-T
 _IsMultiContainer
 C
 b

@@ -6,24 +6,27 @@ Create Static
 Inherits WebContainer
 
 Public Const _IsForm As Boolean = True
-Public Const _HiddenControls As String = "WebControl,WebForm,Timer"
+Public Const _HiddenControls As String = "WebControl,WebForm,WebWindow,Timer"
 Public Const _Properties As String = "*,Title"
 Public Const _DefaultEvent As String = "Open"
 
 Static Public _InExec As Integer
+Static Public _Current As WebForm
 
-Static Private $aJavascript As String[]
+Static Private $aJavascript As New String[]
 
 Event Open
 Event Event
 
 Property Title As String
 
-Public _FromName As New Collection
+Static Public _DisableRefresh As Integer
+
 Public _HasRefresh As Boolean
-Public _DisableRefresh As Integer
+Public _Window As Integer
 
 Private $sTitle As String
+Private $bOpened As Boolean
 
 Static Public Sub Main()
 
@@ -77,6 +80,7 @@ Static Public Sub Main()
     
   Endif
   
+  _Current = hForm
   hForm._InitProperties
   If sPath = "x" Then
     hForm._Exec(JSON.Decode(Request["c"]))
@@ -104,11 +108,6 @@ End
 
 Public Sub Render()
   
-  'Dim hForm As WebForm
-  
-  'hForm = Main.CurrentForm
-  'Main.CurrentForm = Me
-  
   Response.Buffered = True
   Response.Begin
   
@@ -121,28 +120,35 @@ Public Sub Render()
   
   Print "<script type=\"text/javascript\" src=\""; Application.Root &/ "/lib:" & Application.Version & ".js"; "\"></script>"
   
-  'Print "<style type=\"text/css\">"
-  'Me._RenderStyleSheet
-  'Print "</style>"
-  
   $aJavascript = New String[]
+  
+  ' If $aWindows Then
+  '   Print "<div id=\""; Me.Name; "-windows\">"
+  '   For Each sName In $aWindows
+  '     hWindow = WebControl.FromId(_FromName[sName])
+  '     hWindow._BeforeRender()
+  '     hWindow._Render()
+  '     hWindow._AfterRender()
+  '   Next
+  '   Print "</div>"
+  ' Endif
   
   Me._BeforeRender()
   Me._Render()
   Me._AfterRender()
   
-  If $aJavascript Then
-    Print "<script type=\"text/javascript\">"
+  Print "<script type=\"text/javascript\">"
+  Print "gw.form = "; JS(Object.Type(Me)); ";"
+  If $aJavascript Then 
     Print $aJavascript.Join("\n")
-    Print "</script>"
+    $aJavascript.Clear
   Endif
+  Print "</script>"
   
   Print "</body>"
   Print "</html>"
   
   Response.End
-  
-  'Main.CurrentForm = hForm
   
 End
 
@@ -165,7 +171,7 @@ Static Private Sub RenderJavascript()
   Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
   
-  Print "$root = "; JS(Application.Root)
+  Print "$root = "; JS(Application.Root); ";"
   Print File.Load("lib.js")
   
   Response.End
@@ -203,12 +209,10 @@ Public Sub _Exec(aCmd As Variant[])
   
   Dim hCtrl As WebControl
   Dim iOldInExec As Integer = _InExec
+  Dim sErr As String
   
   Inc _InExec
   
-  $aJavascript = New String[]
-  
-  Print("Event")
   Raise Event
   
   Select Case aCmd[0]
@@ -216,7 +220,7 @@ Public Sub _Exec(aCmd As Variant[])
     Case "raise"
       
       If aCmd[1] Then
-        hCtrl = WebControl.FromId(_FromName[aCmd[1]])
+        hCtrl = WebControl.FromName(aCmd[1])
       Else
         hCtrl = Me
       Endif
@@ -226,13 +230,14 @@ Public Sub _Exec(aCmd As Variant[])
     Case "update"
       
       If aCmd[1] Then
-        hCtrl = WebControl.FromId(_FromName[aCmd[1]])
+        hCtrl = WebControl.FromName(aCmd[1])
+        If Not hCtrl Then Error.Raise("Unknown control: " & aCmd[1] & "\n" & WebControl._GetNames())
       Else
         hCtrl = Me
       Endif
-      Inc _DisableRefresh
+      'Inc _DisableRefresh
       hCtrl._UpdateProperty(aCmd[2], aCmd[3])
-      Dec _DisableRefresh
+      'Dec _DisableRefresh
       
     
   End Select
@@ -241,22 +246,90 @@ Public Sub _Exec(aCmd As Variant[])
   
   Response.Begin
   If _HasRefresh Then Me._RefreshReply()
+  ' If $aWindows Then
+  '   For Each sName In $aWindows
+  '     hWindow = WebControl.FromId(_FromName[sName])
+  '     hWindow._RefreshReply()
+  '   Next
+  ' Endif
   Print $aJavascript.Join("\n")
+  $aJavascript.Clear
   Response.End
   
 Catch
   
+  sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
   _InExec = iOldInExec
   
   Response.Begin
-  Print "console.log("; JS(Error.Where & ": " & Error.Text); ");"
+  Print "console.log("; JS(sErr); ");"
+  Print "console.log("; JS($aJavascript.Join("\n")); ");"
   Response.End
   
 End
 
 Public Sub Close()
   
-  Session["#" & LCase(Me.Name)] = Null
-  _AddReply("window.location.reload(true);")
+  Dim bCancel As Boolean
+  
+  If Me._Window Then
+  
+    WebControl.FromId(Me._Window).Delete
+    _AddReply("gw.window.refresh();")
+  
+  Else
+    
+    Session["#" & LCase(Me.Name)] = Null
+    _AddReply("window.location.reload(true);")
+    
+  Endif
+    
+End
+
+Public Sub Open(Child As WebForm)
+  
+  Dim hWindow As WebWindow
+  
+  If $bOpened Then Return
+  
+  hWindow = New WebWindow(Me)
+  hWindow.Child = Child
+  Child._Window = hWindow.Id
+  
+  $bOpened = True
+  
+End
+
+Public Sub Move(X As String, Y As String, Optional Width As String, Optional Height As String)
+  
+  Dim hWindow As WebWindow
+
+  Try hWindow = WebControl.FromId(_Window)
+  If hWindow Then hWindow.Move(X, Y, Width, Height)
+  
+End
+
+Public Sub Resize(Width As String, Height As String)
+  
+  Dim hWindow As WebWindow
+
+  Try hWindow = WebControl.FromId(_Window)
+  If hWindow Then hWindow.Resize(Width, Height)
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim aWindows As String[]
+  Dim sName As String
+  
+  If sProp = "#windows" Then
+    aWindows = vValue
+    Inc _DisableRefresh
+    For Each sName In aWindows
+      WebControl.FromName(sName).Raise()
+    Next
+    Dec _DisableRefresh
+  Endif
   
 End

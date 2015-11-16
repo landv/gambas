@@ -32,7 +32,7 @@ End
 
 Public Sub WebForm_Event()
 
-  WebContainer2.Refresh
+  'WebContainer2.Refresh
 
 End
 
@@ -60,5 +60,21 @@ Public Sub WebTimer1_Timer()
 
   Try iCpt = CInt(WebTextBox2.Text)
   WebTextBox2.Text = CInt(iCpt + 1)
+
+End
+
+Public Sub WebButton2_Click()
+
+  Dim hForm As FMessage
+
+  Randomize
+  
+  hForm = New FMessage
+  Me.Open(hForm)
+  hForm.Move(Rand(16, 24), Rand(4, 16), 32, 32)
+  
+Catch
+  
+  Me.Print(Error.Text & ": " & Error.Backtrace.Join(" "))
 
 End

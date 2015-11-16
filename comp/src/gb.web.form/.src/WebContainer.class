@@ -18,7 +18,8 @@ Property Read Children As WebControl[]
 
 Public _Container As WebContainer
 
-Private $aChildren As New Integer[]
+Private $aChildren As New String[]
+Private $aExtraChildren As New String[]
 Private $iArrangement As Integer
 Private $bMargin As Boolean
 Private $bSpacing As Boolean
@@ -26,23 +27,46 @@ Private $bBorder As Boolean
 
 Public Sub _Add(hChild As WebControl)
   
-  $aChildren.Add(hChild.Id)
+  $aChildren.Add(hChild.Name)
+  If WebForm._InExec Then
+    $aExtraChildren.Add(Object.Type(hChild))
+    $aExtraChildren.Add(hChild.Name)
+    Me._SetProperty("#extra", $aExtraChildren)
+  Endif
+  Me._SetProperty("#children", $aChildren)
   
 End
 
 Public Sub _Remove(hChild As WebControl)
   
-  $aChildren.Remove($aChildren.Find(hChild.Id))
+  Dim iPos As Integer
+  
+  $aChildren.Remove($aChildren.Find(hChild.Name))
+  If WebForm._InExec Then
+    iPos = $aExtraChildren.Find(hChild.Name)
+    If iPos >= 0 Then 
+      $aExtraChildren.Remove(iPos - 1, 2)
+      Me._SetProperty("#extra", $aExtraChildren)
+    Endif
+  Endif
+  Me._SetProperty("#children", $aChildren)
   
 End
+
+Public Sub _UpdateChildName(sOld As String, sNew As String)
+  
+  $aChildren[$aChildren.Find(sOld)] = sNew
+  
+End
+
 
 Public Sub _IsFirstVisibleChild(hChild As WebControl) As Boolean
 
   Dim I As Integer
   
   For I = 0 To $aChildren.Max
-    If $aChildren[I] = hChild.Id Then Return True
-    If WebControl.FromId($aChildren[I]).Visible Then Return
+    If $aChildren[I] = hChild.Name Then Return True
+    If WebControl.FromName($aChildren[I]).Visible Then Return
   Next
   
 End
@@ -54,7 +78,7 @@ Public Sub _InitProperties()
   Super._InitProperties()
   
   For I = 0 To $aChildren.Max
-    WebControl.FromId($aChildren[I])._InitProperties()
+    WebControl.FromName($aChildren[I])._InitProperties()
   Next
   
 End
@@ -64,7 +88,7 @@ Public Sub _Render()
   Dim I As Integer
   
   For I = 0 To $aChildren.Max
-    With WebControl.FromId($aChildren[I])
+    With WebControl.FromName($aChildren[I])
       If Not .Visible Then Continue
       ._BeforeRender()
       ._Render()
@@ -179,7 +203,7 @@ Public Sub _RefreshReply() As Boolean
   If Super._RefreshReply() Then Return
   
   For I = 0 To $aChildren.Max
-    WebControl.FromId($aChildren[I])._RefreshReply()
+    WebControl.FromName($aChildren[I])._RefreshReply()
   Next
   
 End
@@ -210,7 +234,75 @@ Private Function Children_Read() As WebControl[]
 
   aChildren = New WebControl[$aChildren.Count]
   For I = 0 To $aChildren.Max
-    aChildren[I] = WebControl.FromId($aChildren[I])
+    aChildren[I] = WebControl.FromName($aChildren[I])
   Next
   Return aChildren
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  Dim I As Integer
+  Dim sClass As String
+  Dim sName As String
+  Dim hCtrl As WebControl
+  Dim hForm As WebForm
+  Dim aExtraChildren As String[]
+  
+  If sProp = "#extra" Then
+    
+    hForm = Me.Form
+    aExtraChildren = vVal
+    
+    For I = 0 To aExtraChildren.Max Step 2
+      
+      sClass = aExtraChildren[I]
+      sName = aExtraChildren[I + 1]
+      
+      'WebForm.Print("create " & sClass & " as " & sName)
+      
+      hCtrl = Object.New(sClass, [Me])
+      hCtrl._SetName(sName, True)
+      
+      'WebForm.Print(WebControl._GetNames())
+      
+      ' TODO: attach to the real form
+      'If Left(sName) <> "$" Then Object.Attach(hCtrl, hForm, sName)
+      
+    Next
+    
+    $aExtraChildren = aExtraChildren
+    
+  Else If sProp = "#children" Then
+    
+    $aChildren = vVal
+    Me.Refresh
+      
+  Endif
+  
+End
+
+Public Sub _Raise(sName As String)
+
+  Dim iPos As Integer
+  
+  iPos = $aChildren.Find(sName)
+  If iPos < 0 Then Return
+  
+  $aChildren.Remove(iPos)
+  $aChildren.Add(sName)
+  Me._SetProperty("#children", $aChildren)
+  
+End
+
+Public Sub _Lower(sName As String)
+
+  Dim iPos As Integer
+  
+  iPos = $aChildren.Find(sName)
+  If iPos < 0 Then Return
+  
+  $aChildren.Remove(iPos)
+  $aChildren.Add(sName, 0)
+  Me._SetProperty("#children", $aChildren)
+  
 End

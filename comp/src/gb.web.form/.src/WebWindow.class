@@ -1,0 +1,192 @@
+' Gambas class file
+
+Inherits WebControl
+
+'Public Const _Properties As String = "*,Text"
+'Public Const _DefaultEvent As String = "Click"
+
+'Event Click
+
+Property X As String
+Property Y As String
+Property Width, W As String
+Property Height, H As String
+Property Child As WebForm
+
+Private $sX As String
+Private $sY As String
+Private $sWidth As String
+Private $sHeight As String
+Private $iFormId As Integer
+
+Public Sub _RenderStyleSheet()
+  
+  Me._StartStyleSheet
+  
+  Me._AddStyleSheet("display:flex;")
+  Me._AddStyleSheet("flex-flow:column;")
+  If $sX Then Me._AddStyleSheet("left:" & $sX & ";")
+  If $sY Then Me._AddStyleSheet("top:" & $sY & ";")
+  If $sWidth Then Me._AddStyleSheet("width:" & $sWidth & ";")
+  If $sHeight Then Me._AddStyleSheet("height:" & $sHeight & ";")
+  
+  Me._EndStyleSheet
+  
+End
+
+Private Sub GetTitle() As String
+
+  Dim hForm As WebForm
+
+  Try hForm = WebControl.FromId($iFormId)
+  If hForm Then Return hForm.Title
+
+End
+
+Public Sub _Render()
+  
+  Print "<button class=\"gw-window-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
+  Print "<img src=\""; Html(Application.Root &/ "gw-close.png"); "\">";
+  Print "</button>"
+  Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
+  Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
+  Print "</div>"
+  
+  Print "<div class=\"gw-window-contents\">"
+  If $iFormId Then 
+    With WebControl.FromId($iFormId)
+      ._BeforeRender()
+      ._Render()
+      ._AfterRender()
+    End With
+  Endif
+  Print "</div>"
+  
+  WebForm._AddJavascript("gw.window.open(" & JS(Me.Name) & ");")
+  
+End
+
+
+Private Function X_Read() As String
+
+  Return $sX
+
+End
+
+Private Sub X_Write(Value As String)
+
+  If $sX = Value Then Return
+  $sX = Value
+  If $sX And If IsDigit($sX) Then $sX &= "em"
+  Me._SetProperty("X", Value)
+
+End
+
+Private Function Y_Read() As String
+
+  Return $sY
+
+End
+
+Private Sub Y_Write(Value As String)
+
+  If $sY = Value Then Return
+  $sY = Value
+  If $sY And If IsDigit($sY) Then $sY &= "em"
+  Me._SetProperty("Y", Value)
+
+End
+
+Private Function Width_Read() As String
+
+  Return $sWidth 
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  If $sWidth = Value Then Return
+  $sWidth = Value
+  If $sWidth And If IsDigit($sWidth) Then $sWidth &= "em"
+  Me._SetProperty("Width", Value)
+
+End
+
+Private Function Height_Read() As String
+
+  Return $sHeight
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  If $sHeight = Value Then Return
+  $sHeight = Value
+  If $sHeight And If IsDigit($sHeight) Then $sHeight &= "em"
+  Me._SetProperty("Height", Value)
+
+End
+
+Public Sub Move(X As String, Y As String, Optional Width As String, Height As String)
+  
+  X_Write(X)
+  Y_Write(Y)
+  If Not IsMissing(Width) Then Width_Write(Width)
+  If Not IsMissing(Height) Then Height_Write(Height)
+  
+End
+
+Public Sub Resize(Width As String, Height As String)
+  
+  Width_Write(Width)
+  Height_Write(Height)
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim hChild As WebForm
+  
+  If sProp = "#geometry" Then 
+    
+    Try Move(vValue[0], vValue[1], vValue[2], vValue[3])
+  
+  Else If sProp = "#close" Then
+    
+    hChild = Child_Read()
+    If hChild Then hChild.Close
+    
+  Endif
+  
+End
+
+Private Function Child_Read() As WebForm
+
+  If $iFormId Then Return WebControl.FromId($iFormId)
+
+End
+
+Private Sub Child_Write(Value As WebForm)
+
+  $iFormId = Value.Id
+  Me._SetProperty("#child", [Object.Type(Value), Value.Name])
+
+End
+
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  Dim hChild As WebForm
+  Dim aWindow As String[]
+  
+  If sProp = "#child" Then
+    
+    aWindow = vVal
+    hChild = Object.New(aWindow[0])
+    hChild._SetName(aWindow[1], True)
+    hChild._Window = Me.Id
+    $iFormId = hChild.Id
+    
+  Endif
+  
+End

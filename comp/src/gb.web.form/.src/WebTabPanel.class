@@ -4,7 +4,6 @@ Export
 Inherits WebContainer
 
 Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text"
-Public Const _IsContainer As Boolean = True
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DrawWith As String = "TabPanel"
 Public Const _DefaultEvent As String = "Click"
@@ -56,7 +55,7 @@ Private Sub Count_Write(Value As Integer)
     $aTab[I] = New WebContainer(Me)
     sName = Me.Name & "." & CStr(I)
     Object.Attach($aTab[I], Object.Parent(Me), sName)
-    $aTab[I]._SetName(sName)
+    $aTab[I]._SetName(sName, True)
     $aText[I] = "Tab #" & CStr(I)
   Next
   

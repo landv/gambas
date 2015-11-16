@@ -1,0 +1,30 @@
+# Gambas Form File 3.0
+
+{ WebForm WebForm
+  #MoveScaled(0,0,79,51)
+  Expand = True
+  Arrangement = Arrange.Vertical
+  Margin = True
+  Title = ("This is a very important message")
+  { WebHtml1 WebHtml
+    #MoveScaled(5,4,31,14)
+    Text = ("<h1>Welcome to the <tt>gb.web.form</tt> component!</h1>\n<p>This component aims at making web application as easy as making desktop applications.</p>\n<p>This goal is difficult to achieve, but I hope to succeed!</p>")
+  }
+  { WebContainer1 WebContainer
+    #MoveScaled(10,22,58,11)
+    Expand = True
+  }
+  { WebContainer2 WebContainer
+    #MoveScaled(9,40,65,8)
+    Arrangement = Arrange.Horizontal
+    { WebContainer3 WebContainer
+      #MoveScaled(7,2,6,4)
+      Expand = True
+    }
+    { WebButton1 WebButton
+      #MoveScaled(44,2,16,4)
+      Width = "8em"
+      Text = ("OK")
+    }
+  }
+}

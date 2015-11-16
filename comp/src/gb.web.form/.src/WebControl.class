@@ -13,7 +13,7 @@ Event Render
 Property Read Id As Integer
 Property Read Name As String
 Property Tag As Variant
-Property Parent As WebContainer
+Property Read Parent As WebContainer
 Property Expand As Boolean
 Property Visible As Boolean
 Property Read Style As WebControlStyle
@@ -26,7 +26,9 @@ Property Background As Integer
 Property Foreground As Integer
 
 Static Private $iLastId As Integer
+Static Private $iLastFormId As Integer
 Static Private $cFromId As New Collection
+Static Private $cFromName As New Collection
 
 Static Private $aStyleSheet As String[]
 
@@ -34,6 +36,7 @@ Public _Refresh As Boolean
 
 Private $iId As Integer
 Private $iParentId As Integer
+Private $iFormId As Integer
 Private $sName As String
 Private $vTag As Variant
 
@@ -49,41 +52,73 @@ Private $iForeground As Integer = Color.Default
 
 Public Sub _new(Optional Parent As WebContainer)
   
-  If Not Parent And If Not Me Is WebForm Then Error.Raise("Null object")
-  
   Inc $iLastId
   $iId = $iLastId
   
   If Me Is WebForm Then
-    $sName = Object.Type(Me)
     Object.Attach(Me, Me, "WebForm")
+    $iFormId = $iId
+    Inc $iLastFormId
+    _SetName("@" & CStr($iLastFormId))
   Else
+    Try $iFormId = Parent.Form.Id
     _SetName(Param.EventName)
   Endif
   
   $cFromId[$iId] = Me
   
-  If Parent Then 
-    If Parent._Container Then Parent = Parent._Container
-    $iParentId = Parent.Id
-    Parent._Add(Me)
-  Endif
+  Parent_Write(Parent)
   
 End
 
-Public Sub _SetName(sName As String)
+Public Sub _SetName(Optional sName As String, Optional bNoForm As Boolean)
   
   Dim hForm As WebForm
+  Dim iSuffix As Integer
+  Dim sNameSuffix As String
+  Dim hParent As WebContainer
   
   If Not sName Then sName = "$" & CStr($iId)
-  hForm = Form_Read()
-  If hForm Then 
-    If $sName Then hForm._FromName[$sName] = Null
-    hForm._FromName[sName] = $iId
+  
+  If Not bNoForm Then
+    hForm = Form_Read()
+    If hForm Then
+      sName = hForm.Name & "." & sName
+    Endif
   Endif
+
+  If sName = $sName Then Return
+
+  If $sName Then $cFromName[$sName] = Null
+
+  Do
+    If iSuffix = 0 Then
+      sNameSuffix = sName
+    Else
+      sNameSuffix = sName & "-" & CStr(iSuffix + 1)
+    Endif
+    If Not $cFromName.Exist(sNameSuffix) Then 
+      sName = sNameSuffix
+      Break
+    Endif
+    Inc iSuffix
+  Loop
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._UpdateChildName($sName, sName)
+  
+  $cFromName[sName] = $iId
   $sName = sName
   
 End
+
+Public Sub _SetForm(hForm As WebForm)
+  
+  $iFormId = hForm.Id
+  
+End
+
+
 
 Private Function Id_Read() As Integer
 
@@ -97,6 +132,12 @@ Static Public Sub FromId(Id As Integer) As WebControl
   
 End
 
+Static Public Sub FromName(Name As String) As WebControl
+  
+  Try Return $cFromId[$cFromName[Name]]
+  
+End
+
 Private Function Parent_Read() As WebContainer
 
   If $iParentId = 0 Then Return
@@ -106,12 +147,26 @@ End
 
 Private Sub Parent_Write(Value As WebContainer)
 
-  If Value = Me.Parent Then Return
+  Dim hParent As WebContainer
+  Dim sParent As String
+  
+  hParent = Parent_Read()
+  
+  If Value = hParent Then Return
 
-  If Me Is WebForm Then Error.Raise("Read-only property")
-  Me.Parent._Remove(Me)
-  $iParentId = Value.Id
-  Me.Parent._Add(Me)
+  If hParent Then hParent._Remove(Me)
+  
+  If Value Then
+    If Value._Container Then Value = Value._Container
+    $iParentId = Value.Id
+    $iFormId = Value.Form.Id
+    Value._Add(Me)
+    sParent = Value.Name
+  Else 
+    $iParentId = 0
+  Endif
+  
+  '_SetProperty("#parent", sParent)
 
 End
 
@@ -136,7 +191,11 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<div class=\"gw-"; LCase(Mid$(Object.Type(Me), 4)); "\" id=\""; $sName; "\"";
+  If Me Is Webform Then
+    Print "<div class=\"gw-form\" id=\""; $sName; "\"";
+  Else
+    Print "<div class=\"gw-"; LCase(Mid$(Object.Type(Me), 4)); "\" id=\""; $sName; "\"";
+  Endif
   Me._RenderStyleSheet()
   Print ">"
   
@@ -234,7 +293,7 @@ Private Sub Expand_Write(Value As Boolean)
 
   $bExpand = Value
   _SetProperty("Expand", Value)
-  Me.Parent.Refresh
+  Try Me.Parent.Refresh
 
 End
 
@@ -247,7 +306,7 @@ End
 
 Private Function Form_Read() As WebForm
 
-  Try Return Object.Parent(Me)
+  Try Return $cFromId[$iFormId]
 
 End
 
@@ -294,6 +353,8 @@ Public Sub _InitProperties()
       If sProp = "#style" Then
         $hStyle = New WebControlStyle
         $hStyle._Style = vVal
+      ' Else If sProp = "#parent" Then
+      '   Parent_Write(FromName(vVal))
       Else
         Me._InitSpecialProperty(sProp, vVal)
       Endif
@@ -311,7 +372,7 @@ Public Sub Style_Change()
   
 End
 
-Private Sub IsHidden() As Boolean
+Public Sub IsHidden() As Boolean
   
   Dim hCtrl As WebControl
   
@@ -330,7 +391,7 @@ Public Sub Refresh()
   If IsHidden() Then Return
   If WebForm._InExec Then
     _Refresh = True
-    Form_Read()._HasRefresh = True
+    Try Form_Read()._HasRefresh = True
   Endif
   
 End
@@ -342,7 +403,7 @@ Public Sub _RefreshReply() As Boolean
   
   If _Refresh Then 
     
-    Print "$("; JS(Me.Name); ").outerHTML =";
+    Print "$("; JS(Me.Name); ").outerHTML = ";
     
     hFile = Open String For Write
     Output To #hFile
@@ -354,7 +415,7 @@ Public Sub _RefreshReply() As Boolean
     sResult = Close #hFile
     Output To Default
     
-    Print JS(sResult)
+    Print JS(sResult); ";"
     
     Return True
     
@@ -368,7 +429,7 @@ Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As Strin
   
   If Not Object.CanRaise(Me, sEvent) Then Return
   
-  sStr = " " & sProp & "=\"gw.raise(" & JS(Me.Form.Name) & "," 
+  sStr = " " & sProp & "=\"gw.raise(" '& JS(Me.Form.Name) & "," 
   If Me Is WebForm Then
     sStr &= "null"
   Else
@@ -382,11 +443,11 @@ Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As Strin
   
 End
 
-Public Sub _GetUpdateJS(sEvent As String, sProp As String, sGetValue As String, Optional sMore As String) As String
+Public Sub _GetUpdateJS(sEvent As String, sProp As String, Optional sGetValue As String = "null", Optional sMore As String) As String
   
   Dim sStr As String
   
-  sStr = " " & sEvent & "=\"gw.update(" & JS(Me.Form.Name) & "," 
+  sStr = " " & sEvent & "=\"gw.update(" '& JS(Me.Form.Name) & "," 
   If Me Is WebForm Then
     sStr &= "null"
   Else
@@ -529,4 +590,55 @@ Private Sub GetColor(iCol As Integer) As String
     Return "#" & Hex$(R, 2) & Hex$(G, 2) & Hex$(B, 2)
   Endif
 
+End
+
+Public Sub Raise()
+
+  Dim hParent As WebContainer
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._Raise($sName)
+  
+End
+
+Public Sub Lower()
+
+  Dim hParent As WebContainer
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._Lower($sName)
+  
+End
+
+Static Public Sub _GetNames() As String
+  
+  Dim aKey As New String[]
+  
+  For Each $cFromName
+    aKey.Add($cFromName.Key)
+  Next
+  
+  Return aKey.Join(",")
+  
+End
+
+Public Sub Delete()
+
+  Dim hParent As WebContainer
+  Dim sForm As String
+  Dim cForm As Collection
+  
+  hParent = Parent_Read()
+  If hParent Then hParent._Remove(Me)
+  
+  sForm = "#" & LCase(Form_Read().Name)
+  cForm = Session[sForm]
+  If cForm Then 
+    cForm[$sName] = Null
+    Session[sForm] = cForm
+  Endif
+  
+  $cFromName[$sName] = Null
+  $cFromId[$iId] = Null
+  
 End
