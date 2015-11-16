@@ -111,14 +111,14 @@ static X11_ATOM _atoms[] =
 	{NULL}
 };
 
-typedef 
+typedef
 	struct {
 		unsigned long flags;
 		unsigned long functions;
 		unsigned long decorations;
 		long input_mode;
 		unsigned long status;
-	} 
+	}
 	MwmHints;
 
 static void init_atoms()
@@ -140,17 +140,17 @@ static void init_atoms()
 	X11_atom_net_wm_user_time = XInternAtom(_display, "_NET_WM_USER_TIME", True);
 
 	X11_atom_net_supported = XInternAtom(_display, "_NET_SUPPORTED", True);
-	
+
 	_atom_init = TRUE;
 }
 
 static Atom get_atom(int index)
 {
 	X11_ATOM *a = &_atoms[index];
-	
+
 	if (!a->atom)
 		a->atom = XInternAtom(_display, a->name, True);
-		
+
 	return a->atom;
 }
 
@@ -158,7 +158,7 @@ static int find_atom(Atom atom)
 {
 	int i = 0;
 	X11_ATOM *p = _atoms;
-	
+
 	while (p->name)
 	{
 		if (!p->atom)
@@ -209,24 +209,24 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 			False, AnyPropertyType, type, format,
 			&count, &after, &data) != Success)
 		return NULL;
-	
+
 	*pcount += count;
-	
+
 	size = *format == 32 ? sizeof(long) : ( *format == 16 ? sizeof(short) : 1 );
 	offset_size = *format == 32 ? sizeof(int32_t) : ( *format == 16 ? sizeof(short) : 1 );
-	
+
 	//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld\n", *format, size, count, after);
-	
+
 	GB.FreeString(&_property_value);
 	_property_value = GB.NewString((char *)data, count * size);
 	XFree(data);
-	
+
 	offset = count * offset_size / sizeof(int32_t);
-	
+
 	while (after)
 	{
 		//fprintf(stderr, "X11_get_property: offset = %ld read = %ld\n", offset, Min(after, PROPERTY_NEXT_READ) / sizeof(int32_t));
-	
+
 		if (XGetWindowProperty(_display, wid, prop, offset, Min(after, PROPERTY_NEXT_READ) / sizeof(int32_t),
 				False, AnyPropertyType, type, format,
 				&count, &after, &data) != Success)
@@ -234,13 +234,13 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 
 		*pcount += count;
 		offset += count * offset_size / sizeof(int32_t);
-		
+
 		//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld next offset = %ld\n", *format, size, count, after, offset);
-	
+
 		_property_value = GB.AddString(_property_value, (char *)data, count * size);
 		XFree(data);
 	}
-	
+
 	return _property_value;
 }
 
@@ -248,7 +248,7 @@ static char *get_property(Window wid, Atom prop, int *count)
 {
 	Atom type;
 	int format;
-	
+
 	return X11_get_property(wid, prop, &type, &format, count);
 }
 
@@ -267,7 +267,8 @@ static void load_window_state(Window win, Atom prop)
 		length = MAX_WINDOW_PROP;
 
 	_window_prop.count = length;
-	memcpy(_window_prop.atoms, data, length * sizeof(Atom));
+	if (data)
+		memcpy(_window_prop.atoms, data, length * sizeof(Atom));
 }
 
 static void save_window_state(Window win, Atom prop)
@@ -338,7 +339,7 @@ static void init_net_supported()
 	data = get_property(_root, X11_atom_net_supported, &count);
 	if (!data)
 		return;
-	
+
 	GB.NewArray(&_supported, sizeof(Atom), count);
 	memcpy(_supported, data, sizeof(Atom) * count);
 }
@@ -393,7 +394,7 @@ void X11_window_change_begin(Window window, bool visible)
 {
 	_window = window;
 	_window_visible = visible;
-	
+
 	if (!visible)
 		load_window_state(window, X11_atom_net_wm_state);
 }
@@ -402,7 +403,7 @@ void X11_window_change_end()
 {
 	if (!_window_visible)
 		save_window_state(_window, X11_atom_net_wm_state);
-	
+
 	XFlush(_display);
 	_window = (Window)0;
 }
@@ -552,34 +553,34 @@ void X11_window_set_desktop(Window window, bool visible, int desktop)
 
 int X11_window_get_desktop(Window window)
 {
-	int length = 0;
+	int length;
 	char *data = NULL;
 	int desktop = 0;
 
 	data = get_property(window, X11_atom_net_wm_desktop, &length);
-
 	if (data)
 		desktop = *((int *)data);
-	
+
 	return desktop;
 }
 
 int X11_get_current_desktop()
 {
-	int length = 0;
+	int length;
 	char *data;
-	int desktop;
+	int desktop = 0;
 
 	data = get_property(_root, X11_atom_net_current_desktop, &length);
+	if (data)
+		desktop = *((int *)data);
 
-	desktop = *((int *)data);
 	return desktop;
 }
 
 int X11_get_window_type(Window window)
 {
 	int index;
-	
+
 	load_window_state(window, X11_atom_net_wm_window_type);
 	index = find_atom(_window_prop.atoms[0]);
 	if (index < 0)
@@ -603,7 +604,7 @@ void X11_set_transient_for(Window window, Window parent)
 void X11_set_window_decorated(Window window, bool decorated)
 {
 	// Motif structures
-	
+
 	MwmHints *hints;
 	MwmHints new_hints;
 
@@ -612,7 +613,7 @@ void X11_set_window_decorated(Window window, bool decorated)
 	int format;
 	ulong nitems;
 	ulong bytes_after;
-	
+
 	if (X11_atom_motif_wm_hints == None)
 		X11_atom_motif_wm_hints = XInternAtom(_display, "_MOTIF_WM_HINTS", True);
 
@@ -620,7 +621,7 @@ void X11_set_window_decorated(Window window, bool decorated)
 		X11_atom_motif_wm_hints, 0, sizeof(MwmHints)/sizeof(long),
 		False, AnyPropertyType, &type, &format, &nitems,
 		&bytes_after, &data);
-	
+
 	if (type == None)
 	{
 		hints = &new_hints;
@@ -632,17 +633,17 @@ void X11_set_window_decorated(Window window, bool decorated)
 	}
 	else
 		hints = (MwmHints *)data;
-	
+
 	hints->flags |= (1 << 1);
-	hints->decorations = decorated ? 1 : 0;	
-	
+	hints->decorations = decorated ? 1 : 0;
+
 	XChangeProperty(_display, window,
 		X11_atom_motif_wm_hints, X11_atom_motif_wm_hints, 32, PropModeReplace,
 		(uchar *)hints, sizeof (MwmHints)/sizeof(long));
-	
+
 	if (hints != &new_hints)
 		XFree(hints);
-	
+
 	XFlush(_display);
 }
 
@@ -675,7 +676,7 @@ bool X11_get_available_geometry(int screen, int *x, int *y, int *w, int *h)
 													X11_atom_net_workarea, 0, 4, False, XA_CARDINAL,
 													&ret, &format, &nitems, &after, &data);
 
-	if (e == Success && ret == XA_CARDINAL && format == 32 && nitems == 4) 
+	if (e == Success && ret == XA_CARDINAL && format == 32 && nitems == 4)
 	{
 		long *workarea = (long *)data;
 		*x = workarea[0];
@@ -683,18 +684,18 @@ bool X11_get_available_geometry(int screen, int *x, int *y, int *w, int *h)
 		*w = workarea[2];
 		*h = workarea[3];
 		err = FALSE;
-	} 
+	}
 
 	if (data)
 		XFree(data);
-	
+
 	return err;
 }
 
 bool X11_is_supported_by_WM(Atom atom)
 {
 	int i;
-	
+
 	if (_supported)
 	{
 		for (i = 0; i < GB.Count(_supported); i++)
@@ -714,10 +715,10 @@ bool X11_send_move_resize_event(Window window, int x, int y, int w, int h)
 
 	if (!_net_moveresize_window)
 		_net_moveresize_window = XInternAtom(_display, "_NET_MOVERESIZE_WINDOW", True);
-	
+
 	if (!X11_is_supported_by_WM(_net_moveresize_window))
 		return TRUE;
-	
+
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = _net_moveresize_window;
 	e.xclient.display = _display;
@@ -729,20 +730,20 @@ bool X11_send_move_resize_event(Window window, int x, int y, int w, int h)
 	e.xclient.data.l[3] = w;
 	e.xclient.data.l[4] = h;
 	XSendEvent(_display, _root, FALSE, (SubstructureNotifyMask | SubstructureRedirectMask), &e);
- 
+
 	return FALSE;
 }
 
 static Atom get_net_system_tray(void)
 {
 	char buf[64];
-	
+
 	if (X11_atom_net_system_tray == None)
 	{
 		sprintf(buf, "_NET_SYSTEM_TRAY_S%d", XScreenNumberOfScreen(DefaultScreenOfDisplay(_display)));
 		X11_atom_net_system_tray = XInternAtom(_display, buf, 0);
 	}
-	
+
 	return X11_atom_net_system_tray;
 }
 
@@ -772,7 +773,7 @@ bool X11_window_dock(Window window)
 
 	XUngrabServer(_display);
 	XFlush(_display);
-	
+
 	if (xmanager == None)
 		return TRUE;
 
@@ -795,7 +796,7 @@ bool X11_window_dock(Window window)
 	XSendEvent(_display, xmanager, 0, NoEventMask, (XEvent *)&ev);
 	XSync(_display, 0);
 	usleep(10000);
-	
+
 	return FALSE;
 }
 #endif
