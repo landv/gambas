@@ -1,5 +1,12 @@
 ' Gambas class file
 
+Public Sub _new()
+  
+  WebHtml1.Style["font-size"] = "140%"
+  WebHtml1.Style["vertical-align"] = "middle"
+  
+End
+
 
 Public Sub WebButton1_Click()
 
@@ -32,7 +39,7 @@ End
 
 Public Sub WebForm_Event()
 
-  'WebContainer2.Refresh
+  WebContainer2.Refresh
 
 End
 
@@ -56,10 +63,7 @@ End
 
 Public Sub WebTimer1_Timer()
 
-  Dim iCpt As Integer
-
-  Try iCpt = CInt(WebTextBox2.Text)
-  WebTextBox2.Text = CInt(iCpt + 1)
+  WebHtml1.Text = Format(Now, gb.LongTime)
 
 End
 
@@ -70,11 +74,29 @@ Public Sub WebButton2_Click()
   Randomize
   
   hForm = New FMessage
-  Me.Open(hForm)
+  hForm.Show()
   hForm.Move(Rand(16, 24), Rand(4, 16), 32, 32)
   
 Catch
   
   Me.Print(Error.Text & ": " & Error.Backtrace.Join(" "))
+
+End
+
+Public Sub WebButton6_Click()
+
+  WebTimer1.Enabled = Not WebTimer1.Enabled
+
+End
+
+Public Sub WebSlider1_Change()
+
+  WebSpinBox1.Value = WebSlider1.Value
+
+End
+
+Public Sub WebSpinBox1_Change()
+
+  WebSlider1.Value = WebSpinBox1.Value
 
 End

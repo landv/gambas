@@ -12,12 +12,14 @@ Property Y As String
 Property Width, W As String
 Property Height, H As String
 Property Child As WebForm
+Property Resizable As Boolean
 
 Private $sX As String
 Private $sY As String
 Private $sWidth As String
 Private $sHeight As String
 Private $iFormId As Integer
+Private $bResizable As Boolean
 
 Public Sub _RenderStyleSheet()
   
@@ -45,11 +47,11 @@ End
 
 Public Sub _Render()
   
+  Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
+  Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
   Print "<button class=\"gw-window-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
   Print "<img src=\""; Html(Application.Root &/ "gw-close.png"); "\">";
   Print "</button>"
-  Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
-  Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
   Print "</div>"
   
   Print "<div class=\"gw-window-contents\">"
@@ -62,7 +64,7 @@ Public Sub _Render()
   Endif
   Print "</div>"
   
-  WebForm._AddJavascript("gw.window.open(" & JS(Me.Name) & ");")
+  WebForm._AddJavascript("gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & ");")
   
 End
 
@@ -189,4 +191,17 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
     
   Endif
   
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  $bResizable = Value
+  Me._SetProperty("Resizable", Value)
+
 End

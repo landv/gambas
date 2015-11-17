@@ -6,23 +6,37 @@
   Arrangement = Arrange.Vertical
   Margin = True
   Title = ("This is webform2")
-  { WebContainer1 WebContainer
-    #MoveScaled(8,4,58,6)
-    Arrangement = Arrange.Horizontal
+  { WebContainer1 WebHBox
+    #MoveScaled(2,1,90,6)
     Margin = True
     Spacing = True
     Border = True
     { WebButton1 WebButton
-      #MoveScaled(0,0,16,4)
+      #MoveScaled(3,1,16,4)
       Text = ("A button")
     }
     { WebButton2 WebButton
-      #MoveScaled(18,0,18,4)
+      #MoveScaled(21,1,18,4)
       Text = ("Add window")
     }
+    { WebButton6 WebButton
+      #MoveScaled(40,1,16,4)
+      Text = ("Toggle timer")
+    }
+    { WebContainer6 WebContainer
+      #MoveScaled(62,1,7,4)
+      Expand = True
+    }
+    { WebHtml1 WebHtml
+      #MoveScaled(72,1,15,4)
+    }
+  }
+  { WebTimer1 WebTimer
+    #MoveScaled(83,9)
+    Enabled = True
   }
   { WebTabPanel1 WebTabPanel
-    #MoveScaled(6,15,77,69)
+    #MoveScaled(6,15,85,69)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True
@@ -34,16 +48,12 @@
       #MoveScaled(2,4,22,8)
       Text = ("Hello !")
     }
-    { WebTimer1 WebTimer
-      #MoveScaled(55,5)
-    }
     { WebCheckBox1 WebCheckBox
       #MoveScaled(26,6,26,4)
       Text = ("Check and uncheck me!")
     }
-    { WebContainer3 WebContainer
-      #MoveScaled(3,17,65,4)
-      Arrangement = Arrange.Horizontal
+    { WebContainer3 WebHBox
+      #MoveScaled(3,17,67,4)
       Spacing = True
       { WebComboBox1 WebComboBox
         #MoveScaled(0,0,22,4)
@@ -60,17 +70,26 @@
         Text = ("Clear")
       }
     }
-    { WebComboBox2 WebComboBox
-      #MoveScaled(3,25,22,4)
-      List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+    { WebContainer5 WebHBox
+      #MoveScaled(3,25,77,4)
+      { WebComboBox2 WebComboBox
+        #MoveScaled(0,0,22,4)
+        List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+      }
+      { WebTextBox2 WebTextBox
+        #MoveScaled(23,0,15,4)
+      }
+      { WebSpinBox1 WebSpinBox
+        #MoveScaled(41,0,13,4)
+      }
+      { WebSlider1 WebSlider
+        #MoveScaled(57,0,15,4)
+        Expand = True
+      }
     }
-    { WebTextBox2 WebTextBox
-      #MoveScaled(26,26,15,4)
-    }
-    { WebContainer4 WebContainer
+    { WebContainer4 WebVBox
       #MoveScaled(3,35,44,23)
       Background = &HA08BB5DF&
-      Arrangement = Arrange.Vertical
       Margin = True
       { WebRadioButton1 WebRadioButton
         #MoveScaled(2,1,24,4)

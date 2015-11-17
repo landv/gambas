@@ -110,6 +110,10 @@ _DefaultSize
 C
 s
 "24,4"
+_Similar
+C
+s
+"WebButton"
 :Click
 :
 
@@ -149,6 +153,10 @@ _DefaultSize
 C
 s
 "24,4"
+_Similar
+C
+s
+"TextBox"
 :Click
 :
 
@@ -536,7 +544,7 @@ s
 _Properties
 C
 s
-"*,Title"
+"*,Title,Resizable"
 _DefaultEvent
 C
 s
@@ -560,6 +568,10 @@ WebForm
 Title
 p
 s
+
+Resizable
+p
+b
 
 _DisableRefresh
 V
@@ -605,10 +617,10 @@ Close
 m
 
 
-Open
+Show
 m
 
-(Child)WebForm;
+[(Parent)WebForm;]
 Move
 m
 
@@ -617,6 +629,25 @@ Resize
 m
 
 (Width)s(Height)s
+#WebHBox
+WebContainer
+C
+_Properties
+C
+s
+"*,-Arrangement"
+_DefaultArrangement
+C
+s
+"H"
+_Similar
+C
+s
+"WebContainer"
+_new
+m
+
+
 #WebHtml
 WebControl
 C
@@ -651,6 +682,10 @@ _DefaultSize
 C
 s
 "24,4"
+_Similar
+C
+s
+"WebButton"
 :Click
 :
 
@@ -668,6 +703,76 @@ p
 s
 
 _Render
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
+#WebSlider
+WebSpinBox
+C
+_DrawWith
+C
+s
+"Slider"
+_DefaultSize
+C
+s
+"24,4"
+_BeforeRender
+m
+
+
+#WebSpinBox
+WebControl
+C
+_Properties
+C
+s
+"*,MinValue=0,MaxValue=100,Step=1,Value=0"
+_DrawWith
+C
+s
+"SpinBox"
+_DefaultSize
+C
+s
+"24,4"
+_DefaultEvent
+C
+s
+"Change"
+:Change
+:
+
+
+Value
+p
+i
+
+MinValue
+p
+i
+
+MaxValue
+p
+i
+
+Step
+p
+i
+
+Text
+r
+s
+
+_BeforeRender
+m
+
+
+_AfterRender
 m
 
 
@@ -804,6 +909,10 @@ Delay
 p
 i
 
+Enabled
+p
+b
+
 _new
 m
 
@@ -817,6 +926,29 @@ m
 
 
 _AfterRender
+m
+
+
+Refresh
+m
+
+
+#WebVBox
+WebContainer
+C
+_Properties
+C
+s
+"*,-Arrangement"
+_DefaultArrangement
+C
+s
+"V"
+_Similar
+C
+s
+"WebContainer"
+_new
 m
 
 

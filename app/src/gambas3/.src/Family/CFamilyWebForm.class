@@ -20,8 +20,11 @@ Public Sub GetIcon(hCCtrl As CControl) As String
   
   Select hCCtrl.Kind
   
-    ' Case "HBox"
-    '   sImage = "horizontal"
+    Case "WebHBox"
+      sImage = "horizontal"
+    
+    Case "WebVBox"
+      sImage = "vertical"
     
     'Case "WebForm", "WebContainer"
     '  sImage = "vertical"
@@ -49,7 +52,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
   Select hCCtrl.Kind
   
-    Case "WebContainer"
+    Case "WebContainer", "WebHBox", "WebVBox"
     
       Paint.Background = &HFFB0B0
     

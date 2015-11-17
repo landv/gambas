@@ -5276,12 +5276,13 @@ End
 '' Open a URL inside an external browser.
 '' - ~sLink~ is the URL to open.
 
-Public Sub OpenWebPage(sLink As String)
+Public Sub OpenWebPage(sLink As String, Optional bNewInstance As Boolean) As Process
 
   Dim sExec As String
   Dim aTest As String[]
   Dim bCheck As Boolean
-  Dim hFirefox As Process
+  Dim hProcess As Process
+  Dim sNewInstance As String
 
   If Not Browser Then
 
@@ -5331,21 +5332,35 @@ Public Sub OpenWebPage(sLink As String)
     If Not bCheck Then Return
 
     Browser = sExec
-
+    
   Endif
 
   If Left(sLink) = "/" Then
     sLink = "file://" & Replace(sLink, "?", "%3F")
   Endif
 
-  If Browser = "firefox" Or If Browser = "iceweasel" Then
-    hFirefox = Shell "firefox -remote \"openURL(" & sLink & ",new-window)\"" Wait
-    If hFirefox.Value Then
-      Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
-    End If
-  Else
-    Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
-  End If
+  ' If Browser = "firefox" Or If Browser = "iceweasel" Then
+  '   hProcess = Shell "firefox -remote \"openURL(" & sLink & ",new-window)\"" Wait
+  '   If hFirefox.Value Then
+  '     Shell Browser & " " & Chr$(34) & sLink & Chr$(34)
+  '   End If
+  ' Else
+  sExec = Browser
+  
+  If bNewInstance Then 
+    
+    ' Select Case Browser
+    '   
+    '   Case "firefox", "iceweasel", "mozilla-firefox"
+    '     sExec &= " --new-instance"
+    '     
+    ' End Select
+    
+  Endif
+  
+  hProcess = Shell sExec & " " & Chr$(34) & sLink & Chr$(34)
+  Return hProcess
+  'End If
 
 Catch
 

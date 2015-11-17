@@ -317,7 +317,7 @@ Public Sub _SetProperty(sProp As String, vValue As Variant)
   Dim sForm As String
 
   If WebForm._InExec Then
-    Refresh
+    Me.Refresh
     sForm = "#" & LCase(Form_Read().Name)
     cForm = Session[sForm]
     If Not cForm Then cForm = New Collection

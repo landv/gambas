@@ -7,7 +7,7 @@ Inherits WebContainer
 
 Public Const _IsForm As Boolean = True
 Public Const _HiddenControls As String = "WebControl,WebForm,WebWindow,Timer"
-Public Const _Properties As String = "*,Title"
+Public Const _Properties As String = "*,Title,Resizable"
 Public Const _DefaultEvent As String = "Open"
 
 Static Public _InExec As Integer
@@ -19,6 +19,7 @@ Event Open
 Event Event
 
 Property Title As String
+Property Resizable As Boolean
 
 Static Public _DisableRefresh As Integer
 
@@ -27,6 +28,7 @@ Public _Window As Integer
 
 Private $sTitle As String
 Private $bOpened As Boolean
+Private $bResizable As Boolean
 
 Static Public Sub Main()
 
@@ -286,34 +288,48 @@ Public Sub Close()
     
 End
 
-Public Sub Open(Child As WebForm)
+' Public Sub Open(Child As WebForm)
+'   
+'   Dim hWindow As WebWindow
+'   
+'   If $bOpened Then Return
+'   
+'   hWindow = New WebWindow(Me)
+'   hWindow.Child = Child
+'   Child._Window = hWindow.Id
+'   
+'   $bOpened = True
+'   
+' End
+
+Public Sub Show(Optional Parent As WebForm)
   
   Dim hWindow As WebWindow
   
   If $bOpened Then Return
   
-  hWindow = New WebWindow(Me)
-  hWindow.Child = Child
-  Child._Window = hWindow.Id
+  If Not Parent Then Parent = WebForm._Current
+  
+  hWindow = New WebWindow(Parent)
+  hWindow.Child = Me
+  hWindow.Resizable = $bResizable
+  Me._Window = hWindow.Id
   
   $bOpened = True
   
 End
 
+
 Public Sub Move(X As String, Y As String, Optional Width As String, Optional Height As String)
   
-  Dim hWindow As WebWindow
-
-  Try hWindow = WebControl.FromId(_Window)
+  Dim hWindow As WebWindow = WebControl.FromId(_Window)
   If hWindow Then hWindow.Move(X, Y, Width, Height)
   
 End
 
 Public Sub Resize(Width As String, Height As String)
   
-  Dim hWindow As WebWindow
-
-  Try hWindow = WebControl.FromId(_Window)
+  Dim hWindow As WebWindow = WebControl.FromId(_Window)
   If hWindow Then hWindow.Resize(Width, Height)
   
 End
@@ -332,4 +348,18 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     Dec _DisableRefresh
   Endif
   
+End
+
+Private Function Resizable_Read() As Boolean
+
+  Return $bResizable
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  Dim hWindow As WebWindow = WebControl.FromId(_Window)
+  $bResizable = Value
+  If hWindow Then hWindow.Resizable = Value
+
 End

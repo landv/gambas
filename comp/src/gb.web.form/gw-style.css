@@ -137,12 +137,11 @@ H1,H2,H3,P {
 .gw-window-titlebar {
   display: flex;
   flex-flow: row;
-  background: black;
+  background: #2980B9;
   font-weight: bold;
   height: 2em;
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0.5em;
-  pointer-events: none;
 }
 
 .gw-window-title {
@@ -150,10 +149,10 @@ H1,H2,H3,P {
   color: white;
   line-height: 2em;
   padding-left: 0.5em;
+  pointer-events: none;
 }
 
 .gw-window-button {
-  position: absolute;
   padding: 0;
   width: 1.5em;
   height: 1.5em;

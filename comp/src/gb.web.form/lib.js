@@ -117,7 +117,7 @@ gw = {
   
   window: 
   {
-    open: function(id)
+    open: function(id, resizable)
     {
       gw.window.close(id);
 
@@ -132,10 +132,14 @@ gw = {
       gw.windows.push(id);
       
       $(id).addEventListener('mousedown', gw.window.onMouseDown);
+      
+      $(id).gw_resizable = resizable;
       // Touch events 
       //pane.addEventListener('touchstart', onTouchDown);
       //document.addEventListener('touchmove', onTouchMove);
       //document.addEventListener('touchend', onTouchEnd);
+      
+      gw.window.updateTitleBars();
     },
     
     close: function(id)
@@ -176,7 +180,17 @@ gw = {
       }
     },
     
-    raise: function(id)
+    updateTitleBars: function()
+    {
+      var i;
+      
+      for (i = 0; i < gw.windows.length - 1; i++)
+        $(gw.windows[i] + '-titlebar').style.backgroundColor = '#C0C0C0';
+      
+      $(gw.windows[gw.windows.length - 1] + '-titlebar').style.backgroundColor = '';
+    },
+    
+    raise: function(id, send)
     {
       var i = gw.windows.indexOf(id);
       if (i < 0)
@@ -188,7 +202,10 @@ gw = {
       for (i = 0; i < gw.windows.length; i++)
         $(gw.windows[i]).style.zIndex = 10 + i;
         
-      gw.update('', '#windows', gw.windows);
+      gw.window.updateTitleBars();
+        
+      if (send)
+        gw.update('', '#windows', gw.windows);
     },
     
     onMouseDown: function(e)
@@ -232,7 +249,7 @@ gw = {
       
       for (i = 0; i < gw.windows.length; i++)
       {
-        id = gw.windows[gw.windows.length - i - 1]
+        id = gw.windows[gw.windows.length - i - 1];
         elt = $(id);
         b = elt.getBoundingClientRect();
         
@@ -244,16 +261,22 @@ gw = {
         x = e.clientX - bx;
         y = e.clientY - by;
         
-        console.log(x + ',' + y + ' : ' + bx + ',' + by + ',' + bw + ',' + bh);
+        //console.log(x + ',' + y + ' : ' + bx + ',' + by + ',' + bw + ',' + bh);
         
         if (x >= 0 && x < bw && y >= 0 && y < bh)
         {
-          onTopEdge = y < MARGINS;
-          onLeftEdge = x < MARGINS;
-          onRightEdge = x >= (bw - MARGINS);
-          onBottomEdge = y >= (bh - MARGINS);
-          
-          isResizing = onTopEdge || onLeftEdge || onRightEdge || onBottomEdge;
+          if (elt.gw_resizable)
+          {
+            onTopEdge = y < MARGINS;
+            onLeftEdge = x < MARGINS;
+            onRightEdge = x >= (bw - MARGINS);
+            onBottomEdge = y >= (bh - MARGINS);
+            
+            isResizing = onTopEdge || onLeftEdge || onRightEdge || onBottomEdge;
+          }
+          else
+            onTopEdge = onLeftEdge = onRightEdge = onBottomEdge = isResizing = false;
+            
           isMoving = !isResizing && y < ($(id + '-titlebar').offsetHeight + MARGINS);
           
           gw.window.context = {
@@ -288,6 +311,7 @@ gw = {
         var id = gw.window.context.id;
         var b = $(id).getBoundingClientRect();
         gw.window.context = undefined;
+        gw.window.raise(id, true);
         gw.update(id, '#geometry', [ b.left + 'px', b.top + 'px', b.width + 'px', b.height + 'px']);
       }
     },
@@ -297,6 +321,8 @@ gw = {
       var id, elt, c, e, x, y, w, h;
       var minWidth = 120;
       var minHeight;
+      
+      //requestAnimationFrame(gw.window.animate);
       
       c = gw.window.context;
       if (!c) return;

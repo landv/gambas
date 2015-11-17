@@ -45,6 +45,7 @@ Private $sProfilePath As String
 
 Private $sPipeError As String
 Private $hPipeError As File
+Private $hBrowser As Process
 
 Public Sub Init()
  
@@ -470,6 +471,8 @@ Public Sub Stop()
 
   If $iState = STATE_STOP Then Return
 
+  'Try $hBrowser.Kill
+  '$hBrowser = Null
   Try $hProcess.Kill
   AfterStop
 
@@ -981,7 +984,10 @@ Private Sub Start(sCmd As String)
 
   UpdateMinimize
 
-  If sOpenWebBrowser Then Project.OpenWebPage(sOpenWebBrowser)
+  If sOpenWebBrowser Then
+    $hBrowser = Project.OpenWebPage(sOpenWebBrowser, True)
+    'If $hBrowser Then Object.Attach($hBrowser, Me, "Browser")
+  Endif
 
   'PRINT "Debug.Start"
   'PRINT "Debug.Start -> OK"
@@ -989,6 +995,13 @@ Private Sub Start(sCmd As String)
   'Signal
 
 End
+
+' Public Sub Browser_Kill()
+'   
+'   Stop()
+'   
+' End
+
 
 Private Sub UpdateMinimize()
   
