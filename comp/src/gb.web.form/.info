@@ -52,6 +52,17 @@ RGB
 M
 i
 (Red)i(Green)i(Blue)i[(Alpha)i]
+#Message
+
+C
+_call
+M
+
+(Text)s[(Button)s]
+Warning
+M
+
+(Text)s[(Button1)s(Button2)s(Button3)s]
 #WebButton
 WebControl
 C
@@ -70,7 +81,7 @@ s
 _DefaultSize
 C
 s
-"24,4"
+"16,4"
 :Click
 :
 
@@ -304,6 +315,10 @@ _Lower
 m
 
 (sName)s
+Delete
+m
+
+
 #WebControl
 
 
@@ -391,6 +406,10 @@ Foreground
 p
 i
 
+_NextName
+V
+s
+
 _Refresh
 v
 b
@@ -399,10 +418,6 @@ _new
 m
 
 [(Parent)WebContainer;]
-_SetName
-m
-
-[(sName)s(bNoForm)b]
 _SetForm
 m
 
@@ -503,6 +518,26 @@ Delete
 m
 
 
+Show
+m
+
+
+Hide
+m
+
+
+_get
+m
+v
+(Key)s
+_put
+m
+
+(Value)v(Key)s
+Reset
+m
+
+
 #WebControlStyle
 
 C
@@ -577,6 +612,10 @@ _DisableRefresh
 V
 i
 
+_Loaded
+v
+b
+
 _HasRefresh
 v
 b
@@ -601,6 +640,10 @@ _AddJavascript
 M
 
 (sStr)s
+_load
+m
+
+
 Print
 M
 
@@ -620,11 +663,15 @@ m
 Show
 m
 
-[(Parent)WebForm;]
+
 Move
 m
 
 (X)s(Y)s[(Width)s(Height)s]
+ShowModal
+m
+
+
 Resize
 m
 
@@ -659,6 +706,48 @@ Html
 p
 s
 
+Text
+p
+s
+
+_Render
+m
+
+
+#WebImage
+WebControl
+C
+_Properties
+C
+s
+"*,Image{ImagePath}"
+Image
+p
+s
+
+_BeforeRender
+m
+
+
+_AfterRender
+m
+
+
+#WebLabel
+WebControl
+C
+_Properties
+C
+s
+"*,Text"
+_DrawWith
+C
+s
+"Label"
+_DefaultSize
+C
+s
+"24,4"
 Text
 p
 s
@@ -839,6 +928,57 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
+#WebTextArea
+WebControl
+C
+_Properties
+C
+s
+"*,ReadOnly,Wrap,Text"
+_DrawWith
+C
+s
+"TextArea"
+_DefaultSize
+C
+s
+"16,16"
+:Change
+:
+
+
+Text
+p
+s
+
+ReadOnly
+p
+b
+
+Wrap
+p
+b
+
+_RenderStyleSheet
+m
+
+
+_BeforeRender
+m
+
+
+_Render
+m
+
+
+_AfterRender
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
 #WebTextBox
 WebControl
 C
@@ -933,6 +1073,10 @@ Refresh
 m
 
 
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
 #WebVBox
 WebContainer
 C

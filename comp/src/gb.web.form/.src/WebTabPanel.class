@@ -52,10 +52,10 @@ Private Sub Count_Write(Value As Integer)
   Me._Container = Null
   
   For I = iOldSize To $aTab.Max
-    $aTab[I] = New WebContainer(Me)
     sName = Me.Name & "." & CStr(I)
+    WebControl._NextName = sName
+    $aTab[I] = New WebContainer(Me)
     Object.Attach($aTab[I], Object.Parent(Me), sName)
-    $aTab[I]._SetName(sName, True)
     $aText[I] = "Tab #" & CStr(I)
   Next
   
@@ -143,8 +143,8 @@ Public Sub _RenderStyleSheet()
   
   Super._RenderStyleSheet()
   
-   Me._AddStyleSheet("display:flex;")
-   Me._AddStyleSheet("flex-flow:column;")
+  Me._AddStyleSheet("display:flex;")
+  Me._AddStyleSheet("flex-flow:column;")
   
   Me._EndStyleSheet
   

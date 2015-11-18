@@ -13,6 +13,7 @@ Property Width, W As String
 Property Height, H As String
 Property Child As WebForm
 Property Resizable As Boolean
+Property Modal As Boolean
 
 Private $sX As String
 Private $sY As String
@@ -20,6 +21,7 @@ Private $sWidth As String
 Private $sHeight As String
 Private $iFormId As Integer
 Private $bResizable As Boolean
+Private $bModal As Boolean
 
 Public Sub _RenderStyleSheet()
   
@@ -27,8 +29,14 @@ Public Sub _RenderStyleSheet()
   
   Me._AddStyleSheet("display:flex;")
   Me._AddStyleSheet("flex-flow:column;")
+  
   If $sX Then Me._AddStyleSheet("left:" & $sX & ";")
   If $sY Then Me._AddStyleSheet("top:" & $sY & ";")
+  
+  If Not $sX Or If Not $sY Then
+    WebForm._AddJavascript("gw.window.center(" & JS(Me.Name) & ")")
+  Endif
+  
   If $sWidth Then Me._AddStyleSheet("width:" & $sWidth & ";")
   If $sHeight Then Me._AddStyleSheet("height:" & $sHeight & ";")
   
@@ -64,7 +72,7 @@ Public Sub _Render()
   Endif
   Print "</div>"
   
-  WebForm._AddJavascript("gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & ");")
+  WebForm._AddJavascript("gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS($bModal) & ");")
   
 End
 
@@ -184,8 +192,8 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
   If sProp = "#child" Then
     
     aWindow = vVal
+    WebControl._NextName = aWindow[1]
     hChild = Object.New(aWindow[0])
-    hChild._SetName(aWindow[1], True)
     hChild._Window = Me.Id
     $iFormId = hChild.Id
     
@@ -203,5 +211,28 @@ Private Sub Resizable_Write(Value As Boolean)
 
   $bResizable = Value
   Me._SetProperty("Resizable", Value)
+
+End
+
+Public Sub Delete()
+
+  Dim hChild As WebForm
+  
+  hChild = Child_Read()
+  If hChild Then hChild.Delete
+  Super.Delete()
+  
+End
+
+Private Function Modal_Read() As Boolean
+
+  Return $bModal
+
+End
+
+Private Sub Modal_Write(Value As Boolean)
+
+  $bModal = Value
+  Me._SetProperty("Modal", Value)
 
 End

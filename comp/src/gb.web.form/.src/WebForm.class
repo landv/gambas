@@ -23,12 +23,17 @@ Property Resizable As Boolean
 
 Static Public _DisableRefresh As Integer
 
+Public _Loaded As Boolean
 Public _HasRefresh As Boolean
 Public _Window As Integer
 
 Private $sTitle As String
-Private $bOpened As Boolean
 Private $bResizable As Boolean
+Private $sX As String
+Private $sY As String
+Private $sWidth As String
+Private $sHeight As String
+'Private $bCentered As Boolean
 
 Static Public Sub Main()
 
@@ -83,7 +88,6 @@ Static Public Sub Main()
   Endif
   
   _Current = hForm
-  hForm._InitProperties
   If sPath = "x" Then
     hForm._Exec(JSON.Decode(Request["c"]))
   Else
@@ -106,6 +110,14 @@ Static Public Sub _AddJavascript(sStr As String)
   $aJavascript.Add(sStr)
   
 End
+
+Public Sub _load()
+  
+  Me._InitProperties
+  _Loaded = True
+  
+End
+
 
 
 Public Sub Render()
@@ -134,6 +146,8 @@ Public Sub Render()
   '   Next
   '   Print "</div>"
   ' Endif
+  
+  Print "<div id=\"gw-modal\"></div>"
   
   Me._BeforeRender()
   Me._Render()
@@ -226,6 +240,7 @@ Public Sub _Exec(aCmd As Variant[])
       Else
         hCtrl = Me
       Endif
+      If Not hCtrl Then Return
       
       Object.Raise(hCtrl, aCmd[2], aCmd[3])
       
@@ -233,7 +248,7 @@ Public Sub _Exec(aCmd As Variant[])
       
       If aCmd[1] Then
         hCtrl = WebControl.FromName(aCmd[1])
-        If Not hCtrl Then Error.Raise("Unknown control: " & aCmd[1] & "\n" & WebControl._GetNames())
+        If Not hCtrl Then Return 'Error.Raise("Unknown control: " & aCmd[1] & " " & aCmd[2] & "\n" & WebControl._GetNames())
       Else
         hCtrl = Me
       Endif
@@ -273,6 +288,7 @@ End
 Public Sub Close()
   
   Dim bCancel As Boolean
+  Dim hWindow As WebControl
   
   If Me._Window Then
   
@@ -281,7 +297,7 @@ Public Sub Close()
   
   Else
     
-    Session["#" & LCase(Me.Name)] = Null
+    Me.Delete
     _AddReply("window.location.reload(true);")
     
   Endif
@@ -302,20 +318,29 @@ End
 '   
 ' End
 
-Public Sub Show(Optional Parent As WebForm)
+Public Sub Show()
   
   Dim hWindow As WebWindow
   
-  If $bOpened Then Return
+  If _Window Then Return
   
-  If Not Parent Then Parent = WebForm._Current
-  
-  hWindow = New WebWindow(Parent)
+  hWindow = New WebWindow(WebForm._Current)
   hWindow.Child = Me
   hWindow.Resizable = $bResizable
-  Me._Window = hWindow.Id
+  hWindow.Move($sX, $sY, $sWidth, $sHeight)
   
-  $bOpened = True
+  _Window = hWindow.Id
+  
+End
+
+Public Sub ShowModal()
+  
+  Dim hWindow As WebWindow
+  
+  If Not _Window Then Show()
+  
+  hWindow = WebControl.FromId(_Window)
+  If hWindow Then hWindow.Modal = True
   
 End
 
@@ -323,6 +348,13 @@ End
 Public Sub Move(X As String, Y As String, Optional Width As String, Optional Height As String)
   
   Dim hWindow As WebWindow = WebControl.FromId(_Window)
+  
+  $sX = X
+  $sY = Y
+  If Not IsMissing(Width) Then $sWidth = Width
+  If Not IsMissing(Height) Then $sHeight = Height
+  '$bCentered = False
+  
   If hWindow Then hWindow.Move(X, Y, Width, Height)
   
 End
@@ -330,6 +362,11 @@ End
 Public Sub Resize(Width As String, Height As String)
   
   Dim hWindow As WebWindow = WebControl.FromId(_Window)
+  
+  $sWidth = Width
+  $sHeight = Height
+  '$bCentered = False
+  
   If hWindow Then hWindow.Resize(Width, Height)
   
 End
@@ -363,3 +400,12 @@ Private Sub Resizable_Write(Value As Boolean)
   If hWindow Then hWindow.Resizable = Value
 
 End
+
+' Public Sub Center()
+'   
+'   Dim hWindow As WebWindow = WebControl.FromId(_Window)
+'   
+'   $bCentered = True
+'   If hWindow Then hWindow.Centered = True
+'   
+' End

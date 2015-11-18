@@ -117,7 +117,9 @@ gw = {
   
   window: 
   {
-    open: function(id, resizable)
+    zIndex: 0,
+    
+    open: function(id, resizable, modal)
     {
       gw.window.close(id);
 
@@ -128,18 +130,19 @@ gw = {
         console.log('document.addEventListener');
       }
       
-      $(id).style.zIndex = 10 + gw.windows.length;
       gw.windows.push(id);
       
       $(id).addEventListener('mousedown', gw.window.onMouseDown);
       
       $(id).gw_resizable = resizable;
+      $(id).gw_modal = modal;
       // Touch events 
       //pane.addEventListener('touchstart', onTouchDown);
       //document.addEventListener('touchmove', onTouchMove);
       //document.addEventListener('touchend', onTouchEnd);
       
       gw.window.updateTitleBars();
+      gw.window.refresh();
     },
     
     close: function(id)
@@ -154,7 +157,6 @@ gw = {
         gw.windows.splice(i, 1);
         gw.window.refresh();
       }
-      
     },
     
     refresh: function()
@@ -165,12 +167,14 @@ gw = {
       {
         if ($(gw.windows[i]))
         {
-          $(gw.windows[i]).style.zIndex = 10 + i;
+          $(gw.windows[i]).style.zIndex = 11 + i * 2;
           i++;
         }
         else
           gw.windows.splice(i, 1);
       }
+      
+      gw.window.updateModal();
       
       if (gw.windows.length == 0)
       {
@@ -200,12 +204,38 @@ gw = {
       gw.windows.push(id);
       
       for (i = 0; i < gw.windows.length; i++)
-        $(gw.windows[i]).style.zIndex = 10 + i;
+        $(gw.windows[i]).style.zIndex = 11 + i * 2;
         
       gw.window.updateTitleBars();
         
       if (send)
         gw.update('', '#windows', gw.windows);
+    },
+    
+    updateModal: function()
+    {
+      var i, elt = $('gw-modal');
+      
+      for (i = gw.windows.length - 1; i >= 0; i--)
+      {
+        if ($(gw.windows[i]).gw_modal)
+        {
+          gw.window.zIndex = 10 + i * 2;
+          elt.style.zIndex = 10 + i * 2;
+          elt.style.display = 'block';
+          return;
+        }
+      }
+      
+      gw.window.zIndex = 0;
+      elt.style.display = 'none';
+    },
+    
+    center: function(id)
+    {
+      $(id).style.left = ((window.innerWidth - $(id).offsetWidth) / 2 + 0) + 'px';
+      $(id).style.top = ((window.innerHeight - $(id).offsetHeight) / 2 + 0) + 'px';
+      gw.window.updateGeometry(id);
     },
     
     onMouseDown: function(e)
@@ -216,6 +246,8 @@ gw = {
     onDown: function(e)
     {
       var c;
+      
+      gw.window.context = undefined;
       
       if (e.target.className == 'gw-window-button')
         return;
@@ -251,6 +283,10 @@ gw = {
       {
         id = gw.windows[gw.windows.length - i - 1];
         elt = $(id);
+        
+        if (elt.style.zIndex < gw.window.zIndex)
+          continue;
+        
         b = elt.getBoundingClientRect();
         
         bx = b.left; // - MARGINS;
@@ -300,6 +336,12 @@ gw = {
       }
     },
     
+    updateGeometry: function(id)
+    {
+      var b = $(id).getBoundingClientRect();
+      gw.update(id, '#geometry', [ b.left + 'px', b.top + 'px', b.width + 'px', b.height + 'px']);
+    },
+    
     onUp: function(e)
     {
       var c = gw.window.context;
@@ -309,10 +351,9 @@ gw = {
       if (c && (c.isMoving || c.isResizing))
       {
         var id = gw.window.context.id;
-        var b = $(id).getBoundingClientRect();
         gw.window.context = undefined;
         gw.window.raise(id, true);
-        gw.update(id, '#geometry', [ b.left + 'px', b.top + 'px', b.width + 'px', b.height + 'px']);
+        gw.window.updateGeometry(id);
       }
     },
 

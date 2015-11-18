@@ -31,7 +31,7 @@ Public Sub _GetStyleSheet() As String[]
   Dim sValue As String
   
   For Each sValue In _Style
-    aStyle.Add(_Style.Key & ": " & sValue & ";")
+    aStyle.Add(_Style.Key & ":" & sValue & ";")
   Next
   
   Return aStyle

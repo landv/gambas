@@ -47,7 +47,7 @@ Public Sub _Render()
     Print "<div class=\"gw-combobox-arrow\">";
   Endif
   
-  Print "<select id=\""; Me.Name; "-select\""; Me._GetUpdateJS("onchange", "index", "this.selectedIndex"); ">"
+  Print "<select id=\""; Me.Name; "-select\" autocomplete=\"off\""; Me._GetUpdateJS("onchange", "index", "this.selectedIndex"); ">"
   
   For I = 0 To $aList.Max
     Print "<option";

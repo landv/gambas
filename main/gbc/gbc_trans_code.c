@@ -69,7 +69,7 @@ static void create_local_from_param()
 	int i;
 
 	JOB->line--; // For line number of declaration
-	
+
 	for (i = 0; i < func->nparam; i++)
 	{
 		if (TYPE_get_id(func->param[i].type) != T_VOID)
@@ -77,7 +77,7 @@ static void create_local_from_param()
 			add_local(func->param[i].index, func->param[i].type, (i - func->nparam), func->param[i].ignore);
 		}
 	}
-	
+
 	JOB->line++;
 }
 
@@ -89,7 +89,7 @@ static void remove_local()
 	for (i = 0; i < ARRAY_count(func->local); i++)
 	{
 		sym = CLASS_get_symbol(JOB->class, func->local[i].index);
-		
+
 		if (!sym->local_used)
 		{
 			if (sym->local.value < 0)
@@ -97,7 +97,7 @@ static void remove_local()
 			else
 				COMPILE_print(MSG_WARNING, sym->local.line, "unused variable: &1", SYMBOL_get_name(&sym->symbol));
 		}
-			
+
 		TYPE_clear(&sym->local.type);
 	}
 }
@@ -521,12 +521,12 @@ static void trans_call(const char *name, int nparam)
 		return;
 
 	sym = (CLASS_SYMBOL *)TABLE_get_symbol(JOB->class->table, index);
-	
+
 	if (TYPE_get_kind(sym->global.type) != TK_FUNCTION)
 		return;
 
 	sym->global_used = TRUE;
-	
+
 	CODE_push_global(sym->global.value, FALSE, TRUE);
 	CODE_call(nparam);
 	CODE_drop();

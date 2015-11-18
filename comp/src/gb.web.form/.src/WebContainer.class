@@ -260,8 +260,8 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
       
       'WebForm.Print("create " & sClass & " as " & sName)
       
+      WebControl._NextName = sName
       hCtrl = Object.New(sClass, [Me])
-      hCtrl._SetName(sName, True)
       
       'WebForm.Print(WebControl._GetNames())
       
@@ -304,5 +304,15 @@ Public Sub _Lower(sName As String)
   $aChildren.Remove(iPos)
   $aChildren.Add(sName, 0)
   Me._SetProperty("#children", $aChildren)
+  
+End
+
+Public Sub Delete()
+
+  While $aChildren.Count
+    WebControl.FromName($aChildren[0]).Delete
+  Wend
+  
+  Super.Delete
   
 End

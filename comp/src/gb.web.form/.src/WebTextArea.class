@@ -1,0 +1,103 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,ReadOnly,Wrap,Text"
+Public Const _DrawWith As String = "TextArea"
+Public Const _DefaultSize As String = "16,16"
+
+Event Change
+
+Property Text As String
+Property ReadOnly As Boolean
+Property Wrap As Boolean
+
+Private $sText As String
+Private $bReadOnly As Boolean
+Private $bWrap As Boolean
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  If $sText = Value Then Return
+  
+  $sText = Value
+  Me._SetProperty("Text", Value)
+  Raise Change
+
+End
+
+Public Sub _RenderStyleSheet()
+  
+  Me._StartStyleSheet
+  
+  Super._RenderStyleSheet()
+  
+  If Not $bWrap Then Me._AddStyleSheet("white-space:pre;")
+  
+  Me._EndStyleSheet
+  
+End
+
+
+Public Sub _BeforeRender()
+  
+  Print "<textarea class=\"gw-textarea\" id=\""; Me.Name; "\" autocomplete=\"off\""; Me._GetUpdateJS("onchange", "text", "this.value");
+  Me._RenderStyleSheet()
+  If Not Me.Enabled Then Print " disabled";
+  If $bReadOnly Then Print " readonly";
+  Print ">";
+  
+End
+
+Public Sub _Render()
+  
+  Print Html($sText);
+  
+End
+
+
+Public Sub _AfterRender()
+  
+  Print "</textarea>"
+  
+End
+
+Private Function ReadOnly_Read() As Boolean
+
+  Return $bReadOnly
+
+End
+
+Private Sub ReadOnly_Write(Value As Boolean)
+
+  $bReadOnly = Value
+  Me._SetProperty("ReadOnly", Value)
+
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "text" Then Try Me.Text = vValue
+  
+End
+
+
+Private Function Wrap_Read() As Boolean
+
+  Return $bWrap
+
+End
+
+Private Sub Wrap_Write(Value As Boolean)
+
+  $bWrap = Value
+  Me._SetProperty("Wrap", Value)
+
+End

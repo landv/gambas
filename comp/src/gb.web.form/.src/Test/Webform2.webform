@@ -1,13 +1,13 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,96,111)
+  #MoveScaled(0,0,121,111)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
   Title = ("This is webform2")
   { WebContainer1 WebHBox
-    #MoveScaled(2,1,90,6)
+    #MoveScaled(2,1,116,6)
     Margin = True
     Spacing = True
     Border = True
@@ -23,20 +23,23 @@
       #MoveScaled(40,1,16,4)
       Text = ("Toggle timer")
     }
+    { WebButton7 WebButton
+      #MoveScaled(57,1,16,4)
+      Text = ("Warning")
+    }
     { WebContainer6 WebContainer
-      #MoveScaled(62,1,7,4)
+      #MoveScaled(84,1,4,4)
       Expand = True
     }
-    { WebHtml1 WebHtml
-      #MoveScaled(72,1,15,4)
+    { WebLabel1 WebLabel
+      #MoveScaled(92,1,15,4)
     }
   }
   { WebTimer1 WebTimer
     #MoveScaled(83,9)
-    Enabled = True
   }
   { WebTabPanel1 WebTabPanel
-    #MoveScaled(6,15,85,69)
+    #MoveScaled(7,15,85,69)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True
@@ -87,26 +90,46 @@
         Expand = True
       }
     }
-    { WebContainer4 WebVBox
-      #MoveScaled(3,35,44,23)
-      Background = &HA08BB5DF&
-      Margin = True
-      { WebRadioButton1 WebRadioButton
-        #MoveScaled(2,1,24,4)
-        Text = ("Alpha")
+    { WebContainer7 WebHBox
+      #MoveScaled(3,35,77,25)
+      Spacing = True
+      { WebContainer4 WebVBox
+        #MoveScaled(1,1,44,23)
+        Expand = True
+        Background = &HA08BB5DF&
+        Margin = True
+        { WebRadioButton1 WebRadioButton
+          #MoveScaled(2,1,24,4)
+          Text = ("Alpha")
+        }
+        { WebRadioButton2 WebRadioButton
+          #MoveScaled(2,6,24,4)
+          Text = ("Beta")
+          Value = True
+        }
+        { WebRadioButton3 WebRadioButton
+          #MoveScaled(2,11,24,4)
+          Text = ("Gamma")
+        }
+        { WebCheckBox2 WebCheckBox
+          #MoveScaled(2,17,24,4)
+          Text = ("Gambas Almost Means Basic!")
+        }
       }
-      { WebRadioButton2 WebRadioButton
-        #MoveScaled(2,6,24,4)
-        Text = ("Beta")
-        Value = True
-      }
-      { WebRadioButton3 WebRadioButton
-        #MoveScaled(2,11,24,4)
-        Text = ("Gamma")
-      }
-      { WebCheckBox2 WebCheckBox
-        #MoveScaled(2,17,24,4)
-        Text = ("Gambas Almost Means Basic!")
+      { WebContainer8 WebVBox
+        #MoveScaled(46,1,27,23)
+        Expand = True
+        Spacing = True
+        { WebLabel2 WebLabel
+          #MoveScaled(2,2,21,4)
+          Text = ("Please enter some text:")
+        }
+        { WebTextArea1 WebTextArea
+          #MoveScaled(2,7,22,14)
+          Height = "20em"
+          Expand = True
+          Wrap = True
+        }
       }
     }
     Index = 1
@@ -116,10 +139,10 @@
       Text = ("Test")
     }
     Index = 2
-    Text = ("Tab 3")
+    Text = ("Application state")
+    { WebContainer2 WebContainer
+      #MoveScaled(1,3,62,14)
+    }
     Index = 0
-  }
-  { WebContainer2 WebContainer
-    #MoveScaled(13,90,62,14)
   }
 }

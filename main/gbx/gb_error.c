@@ -136,7 +136,7 @@ void ERROR_debug(const char *msg, ...)
 		fprintf(stderr, "- ");
 
 	vfprintf(stderr, msg, args);
-	
+
 	fprintf(stderr, "\t\t\t\t\t\t\t\t\t");
 	DEBUG_where();
 	err = ERROR_current;
@@ -146,7 +146,7 @@ void ERROR_debug(const char *msg, ...)
 		err = err->prev;
 	}
 	fprintf(stderr, "NULL\n");
-	
+
 	va_end(args);
 }
 #endif
@@ -166,7 +166,7 @@ void ERROR_reset(ERROR_INFO *info)
 {
 	if (!info->code)
 		return;
-	
+
 	info->code = 0;
 	if (info->free)
 	{
@@ -185,7 +185,7 @@ void ERROR_clear()
 		#endif
 		return;
 	}
-	
+
 	#if DEBUG_ERROR
 	fprintf(stderr, "ERROR_clear: (%p)\n", ERROR_current);
 	#endif
@@ -200,7 +200,7 @@ void ERROR_enter(ERROR_CONTEXT *err)
 	//err->info.free = FALSE;
 	//err->info.msg = NULL;
 	//err->info.backtrace = NULL;
-	
+
 	ERROR_current = err;
 
 	#if DEBUG_ERROR
@@ -224,7 +224,7 @@ void ERROR_leave(ERROR_CONTEXT *err)
 {
 	if (err->prev == ERROR_LEAVE_DONE)
 		return;
-		
+
 	#if DEBUG_ERROR
 	fprintf(stderr, "<< ERROR_leave");
 	{
@@ -237,12 +237,12 @@ void ERROR_leave(ERROR_CONTEXT *err)
 		fprintf(stderr, " : %d %s\n", err->info.code, err->info.msg);
 	}
 	#endif
-	
+
 	//if (!err->prev)
 	//	BREAKPOINT();
-	
+
 	ERROR_current = err->prev;
-	
+
 	if (ERROR_current)
 	{
 		#if DEBUG_ERROR
@@ -268,24 +268,24 @@ void ERROR_propagate()
 	#if DEBUG_ERROR
 	ERROR_debug("ERROR_propagate: %p %d %s (ret = %d)\n", ERROR_current, ERROR_current->info.code, ERROR_current->info.msg, ERROR_current->ret);
 	#endif
-	
+
 	//fprintf(stderr, "ERROR_propagate: %p\n", ERROR_handler);
 
 	if (ERROR_in_catch(ERROR_current))
 		ERROR_leave(ERROR_current);
-	
+
 	while (ERROR_handler)
 	{
 		ph = ERROR_handler;
 		if (ERROR_current && ERROR_current->handler == ph)
 			break;
-		
+
 		//fprintf(stderr, "ERROR_propagate: %p @ %p (%p)\n", ERROR_handler, ERROR_handler->context, ERROR_current);
 		prev = ph->prev;
 		(*ph->handler)(ph->arg1, ph->arg2);
 		ERROR_handler = prev;
 	}
-	
+
 	longjmp(ERROR_current->env, 1);
 }
 
@@ -306,11 +306,11 @@ static int get_message_length(const char *pattern, char *arg[], int narg)
 {
 	int len;
 	int i;
-	
+
 	len = strlen(pattern) + narg;
 	for (i = 0; i < narg; i++)
 		len += strlen(arg[i]);
-	
+
 	if (!EXEC_debug)
 		len -= narg * 3;
 
@@ -344,7 +344,7 @@ void ERROR_define(const char *pattern, char *arg[])
 	else
 	{
 		ERROR_current->info.code = E_CUSTOM;
-		
+
 		if (arg)
 		{
 			msg = (char *)pattern;
@@ -353,7 +353,7 @@ void ERROR_define(const char *pattern, char *arg[])
 				c = *msg++;
 				if (c == 0)
 					break;
-					
+
 				if (c == '&')
 				{
 					c = *msg++;
@@ -376,7 +376,7 @@ void ERROR_define(const char *pattern, char *arg[])
 			msg = STRING_new(NULL, len);
 			ERROR_current->info.msg = msg;
 			ERROR_current->info.free = TRUE;
-		
+
 			if (EXEC_debug)
 			{
 				int i;
@@ -399,7 +399,7 @@ void ERROR_define(const char *pattern, char *arg[])
 					c = *pattern++;
 					if (c == 0)
 						break;
-						
+
 					if (c == '&')
 					{
 						c = *pattern++;
@@ -417,7 +417,7 @@ void ERROR_define(const char *pattern, char *arg[])
 					else
 						*msg++ = c;
 				}
-				
+
 				*msg = 0;
 			}
 
@@ -455,7 +455,7 @@ void ERROR_define(const char *pattern, char *arg[])
 	ERROR_current->info.cp = CP;
 	ERROR_current->info.fp = FP;
 	ERROR_current->info.pc = PC;
-	
+
 	#if DEBUG_ERROR
 	ERROR_debug("ERROR_define: %s\n", ERROR_current->info.msg);
 	#endif
@@ -468,14 +468,14 @@ void THROW(int code, ...)
 	char *arg[4];
 
 	va_start(args, code);
-	
+
 	for (i = 0; i < 4; i++)
 		arg[i] = va_arg(args, char *);
 
 	ERROR_define((char *)(intptr_t)code, arg);
 
 	va_end(args);
-	
+
 	PROPAGATE();
 }
 
@@ -500,7 +500,7 @@ void THROW_STACK()
 void THROW_SYSTEM(int err, const char *path)
 {
 	char buf[6];
-	
+
 	switch(err)
 	{
 		case ENOENT:
@@ -526,7 +526,7 @@ void THROW_SYSTEM(int err, const char *path)
 
 		case EEXIST:
 			THROW(E_EXIST, path);
-			
+
 		default:
 			sprintf(buf, "%d", err);
 			THROW(E_SYSTEM, buf, strerror(err));
@@ -556,9 +556,9 @@ void ERROR_panic(const char *error, ...)
 
 	fprintf(stderr, "\n** Oops! Internal error! **\n** ");
 	vfprintf(stderr, error, args);
-	
+
 	va_end(args);
-	
+
 	putc('\n', stderr);
 	if (ERROR_current->info.code)
 	{
@@ -591,7 +591,7 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 	{
 		char *p = ERROR_current->info.msg;
 		unsigned char c;
-		
+
 		if (p)
 		{
 			while ((c = *p++))
@@ -609,7 +609,7 @@ void ERROR_print_at(FILE *where, bool msgonly, bool newline)
 void ERROR_print(void)
 {
 	static bool lock = FALSE;
-	
+
 	if (EXEC_main_hook_done && !EXEC_debug && EXEC_Hook.error && !lock)
 	{
 		lock = TRUE;
@@ -619,7 +619,7 @@ void ERROR_print(void)
 	}
 
 	ERROR_print_at(stderr, FALSE, TRUE);
-	
+
 	if (ERROR_backtrace)
 		DEBUG_print_backtrace(ERROR_backtrace);
 }
@@ -688,9 +688,9 @@ void ERROR_warning(const char *warning, ...)
 
 	fprintf(stderr, "gbx" GAMBAS_VERSION_STRING ": warning: ");
 	vfprintf(stderr, warning, args);
-	
+
 	va_end(args);
-	
+
 	putc('\n', stderr);
 }
 
@@ -708,23 +708,23 @@ void ERROR_exit(void)
 void ERROR_hook(void)
 {
 	static bool no_rec = FALSE;
-	
+
 	ERROR_INFO save = { 0 };
 	ERROR_INFO last = { 0 };
 	CLASS_DESC_METHOD *handle_error;
-	
+
 	if (no_rec)
 		return;
-	
+
 	if (PROJECT_class && CLASS_is_loaded(PROJECT_class))
 	{
 		handle_error = (CLASS_DESC_METHOD *)CLASS_get_symbol_desc_kind(PROJECT_class, "Application_Error", CD_STATIC_METHOD, 0);
-		
+
 		if (handle_error)
 		{
 			no_rec = TRUE;
 			ERROR_save(&save, &last);
-			
+
 			TRY
 			{
 				EXEC_public_desc(PROJECT_class, NULL, handle_error, 0);

@@ -244,7 +244,7 @@ Public Sub SendFile(Path As String, Optional ContentType As String)
   Print "Content-length: "; Lof($hFile)
   Print
   While Not Eof($hFile)
-    sBuffer = Read #$hFile, -4096
+    sBuffer = Read #$hFile, -1024
     Print sBuffer;
   Wend
   Close #$hFile

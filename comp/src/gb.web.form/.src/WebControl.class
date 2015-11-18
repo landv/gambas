@@ -32,6 +32,8 @@ Static Private $cFromName As New Collection
 
 Static Private $aStyleSheet As String[]
 
+Static Public _NextName As String
+
 Public _Refresh As Boolean
 
 Private $iId As Integer
@@ -52,18 +54,28 @@ Private $iForeground As Integer = Color.Default
 
 Public Sub _new(Optional Parent As WebContainer)
   
+  Dim sName As String
+  
   Inc $iLastId
   $iId = $iLastId
+  
+  If _NextName Then
+    sName = _NextName
+    _NextName = ""
+  Endif
   
   If Me Is WebForm Then
     Object.Attach(Me, Me, "WebForm")
     $iFormId = $iId
     Inc $iLastFormId
-    _SetName("@" & CStr($iLastFormId))
+    If Not sName Then sName = "@" & CStr($iLastFormId)
   Else
     Try $iFormId = Parent.Form.Id
-    _SetName(Param.EventName)
+    If Not sName Then sName = Param.EventName
+    If Not sName Then sName = "$" & CStr($iId)
   Endif
+  
+  SetName(sName)
   
   $cFromId[$iId] = Me
   
@@ -71,21 +83,13 @@ Public Sub _new(Optional Parent As WebContainer)
   
 End
 
-Public Sub _SetName(Optional sName As String, Optional bNoForm As Boolean)
+Private Sub SetName(Optional sName As String)
   
-  Dim hForm As WebForm
   Dim iSuffix As Integer
   Dim sNameSuffix As String
   Dim hParent As WebContainer
   
-  If Not sName Then sName = "$" & CStr($iId)
-  
-  If Not bNoForm Then
-    hForm = Form_Read()
-    If hForm Then
-      sName = hForm.Name & "." & sName
-    Endif
-  Endif
+  If Left(sName) <> "@" Then sName = Form_Read().Name & "." & sName
 
   If sName = $sName Then Return
 
@@ -313,19 +317,13 @@ End
 Public Sub _SetProperty(sProp As String, vValue As Variant)
 
   Dim cProp As Collection
-  Dim cForm As Collection
-  Dim sForm As String
 
-  If WebForm._InExec Then
-    Me.Refresh
-    sForm = "#" & LCase(Form_Read().Name)
-    cForm = Session[sForm]
-    If Not cForm Then cForm = New Collection
-    cProp = cForm[$sName]
+  If Me.Form._Loaded Then
+    If WebForm._InExec Then Me.Refresh
+    cProp = Session[$sName]
     If Not cProp Then cProp = New Collection
     cProp[sProp] = vValue
-    cForm[$sName] = cProp
-    Session[sForm] = cForm
+    Session[$sName] = cProp
   Endif
   
 End
@@ -342,7 +340,7 @@ Public Sub _InitProperties()
   
   If Not Session.Id Then Return
   
-  Try cProp = Session["#" & LCase(Form_Read().Name)][$sName]
+  Try cProp = Session[$sName]
   If Not cProp Then Return
   
   Object.Lock(Me)
@@ -625,20 +623,68 @@ End
 Public Sub Delete()
 
   Dim hParent As WebContainer
-  Dim sForm As String
-  Dim cForm As Collection
   
   hParent = Parent_Read()
   If hParent Then hParent._Remove(Me)
   
-  sForm = "#" & LCase(Form_Read().Name)
-  cForm = Session[sForm]
-  If cForm Then 
-    cForm[$sName] = Null
-    Session[sForm] = cForm
-  Endif
+  Session[$sName] = Null
   
   $cFromName[$sName] = Null
   $cFromId[$iId] = Null
   
 End
+
+Public Sub Show()
+  
+  Me.Visible = True
+  
+End
+
+Public Sub Hide()
+  
+  Me.Visible = False
+  
+End
+
+Public Sub _get(Key As String) As Variant
+  
+  Dim cData As Collection
+  
+  If Not Key Then Error.Raise("Void key")
+  
+  cData = Session[$sName & ":data"]
+  If cData Then Return cData[Key]
+  
+End
+
+Public Sub _put(Value As Variant, Key As String)
+  
+  Dim cData As Collection
+  
+  If Not Key Then Error.Raise("Void key")
+  cData = Session[$sName & ":data"]
+  If Not cData Then cData = New Collection
+  cData[Key] = Value
+  Session[$sName & ":data"] = cData
+  
+End
+
+Public Sub Reset()
+  
+  Session[$sName & ":data"] = Null
+  
+End
+
+
+' Public Sub _GetBaseName() As String
+' 
+'   Dim iPos As Integer
+'   
+'   iPos = InStr($sName, ".")
+'   If iPos Then
+'     Return Mid$($sName, iPos + 1)
+'   Else
+'     Return $sName
+'   Endif
+'   
+' End

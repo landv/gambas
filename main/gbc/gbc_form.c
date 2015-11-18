@@ -67,7 +67,7 @@ void FORM_print(const char *buffer)
 {
 	if (JOB->verbose)
 		printf("%s", buffer);
-	
+
 	BUFFER_add(&JOB->source, buffer, strlen(buffer));
 }
 
@@ -76,7 +76,7 @@ void FORM_print_char(char c)
 {
 	if (JOB->verbose)
 		putchar(c);
-	
+
 	BUFFER_add_char(&JOB->source, c);
 }
 
@@ -125,7 +125,7 @@ static bool read_line(const char **str, int *len)
 				return TRUE;
 			if (car > ' ')
 				break;
-			
+
 			_current++;
 		}
 	}
@@ -142,7 +142,7 @@ static bool read_line(const char **str, int *len)
 
 	end = _current;
 	l = (int)(end - start);
-	
+
 	while (l > 0 && (uchar)end[-1] <= ' ')
 	{
 		end--;
@@ -240,21 +240,21 @@ static void save_action(bool delete)
 	char *name;
 	const char *line;
 	int len;
-	
+
 	path = FILE_cat(FILE_get_dir(COMP_project), ".action", NULL);
 	mkdir(path, 0777);
 	FILE_set_owner(path, COMP_project);
-	
+
 	name = STR_copy(FILE_set_ext(FILE_get_name(JOB->form), "action"));
 	path = FILE_cat(FILE_get_dir(COMP_project), ".action", name, NULL);
-	
+
 	if (delete)
 	{
 		if (FILE_exist(path))
 		{
 			if (JOB->verbose)
 				printf("Deleting action file %s\n", path);
-			
+
 			FILE_unlink(path);
 		}
 	}
@@ -262,7 +262,7 @@ static void save_action(bool delete)
 	{
 		if (JOB->verbose)
 			printf("Writing action file %s\n", path);
-		
+
 		file = fopen(path, "w");
 		if (!file)
 			THROW("Cannot create action file: &1", path);
@@ -279,10 +279,10 @@ static void save_action(bool delete)
 
 		if (fclose(file))
 			THROW("Cannot create action file: &1", path);
-			
+
 		FILE_set_owner(path, COMP_project);
 	}
-	
+
 	STR_free(name);
 }
 
@@ -295,7 +295,7 @@ char *FORM_get_file_family(const char *file, const FORM_FAMILY **family)
 		return NULL;
 
 	p = COMP_form_families;
-	
+
 	while (p->ext)
 	{
 		form = STR_copy(FILE_set_ext(file, p->ext));
@@ -367,7 +367,7 @@ void FORM_do(char *source, bool ctrl_public)
 				}
 				else
 					public = FALSE;
-				
+
 				if (ctrl_public || public)
 					FORM_print("Public");
 				else
@@ -445,7 +445,7 @@ void FORM_do(char *source, bool ctrl_public)
 					word++;
 					len--;
 				}
-				
+
 				print_fmt("  {", word, len, "} = New ");
 				parent_enter(word, len);
 
@@ -502,12 +502,13 @@ void FORM_do(char *source, bool ctrl_public)
 	if (form_parent_level > 0)
 		goto _ERROR;
 
+	FORM_print("\n  Try Me._load()\n");
 	FORM_print("\nEnd\n\n");
 
 	// Create or delete the action file if needed
-	
+
 	action = FALSE;
-	
+
 	while (!read_line(&line, &len))
 	{
 		if (!strncasecmp(line, "# Gambas Action File 3.0", len))
