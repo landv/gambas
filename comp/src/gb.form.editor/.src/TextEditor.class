@@ -1931,6 +1931,9 @@ Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   Y = Min($Y, $hDoc.Max)
   X = Min($X, $hDoc.LineLength[Y])
   If X <> $X Or If Y <> $Y Then Goto(X, Y)
+  
+  $SX = $X
+  $SY = $Y
 
   If Not $cLineLayout Then  
     
