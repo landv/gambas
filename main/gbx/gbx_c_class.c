@@ -687,7 +687,7 @@ BEGIN_METHOD(Object_Raise, GB_OBJECT object; GB_STRING event; GB_OBJECT params)
 		}
 	}
 
-	GB_ReturnBoolean(GB_Raise(object, desc->event.index, np));
+	GB_ReturnBoolean(GB_Raise(object, desc->event.index, -np));
 	return;
 
 __UNKNOWN_EVENT:

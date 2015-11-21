@@ -188,7 +188,7 @@ const void *const GAMBAS_Api[] =
 	(void *)NUMBER_from_string,
 	(void *)GB_NumberToString,
 	(void *)LOCAL_gettext,
-	
+
 	(void *)STRING_subst,
 	(void *)STRING_subst_add,
 	(void *)STRING_make,
@@ -288,14 +288,14 @@ const void *const GAMBAS_Api[] =
 	(void *)STRING_start_len,
 	(void *)STRING_end,
 	(void *)STRING_make,
-	
+
 	(void *)DEBUG_get_current_position,
 	(void *)DEBUG_enter_event_loop,
 	(void *)DEBUG_leave_event_loop,
-	
+
 	(void *)SIGNAL_register,
 	(void *)SIGNAL_unregister,
-	
+
 	(void *)LIST_insert,
 	(void *)LIST_remove,
 
@@ -330,17 +330,17 @@ void *GAMBAS_JitApi[] =
 {
 	(void *)EXEC_release,
 	(void *)RELEASE_many,
-	
+
 	(void *)EXEC_push_unknown,
 	(void *)EXEC_push_array,
-	
+
 	(void *)EXEC_pop_unknown,
 	(void *)EXEC_pop_array,
-	
+
 	(void *)CENUM_create,
 	(void *)EXEC_enum_first,
 	(void *)EXEC_enum_next,
-	
+
 	(void *)EXEC_new,
 	(void *)EXEC_enter_quick,
 	(void *)EXEC_enter,
@@ -351,15 +351,15 @@ void *GAMBAS_JitApi[] =
 	(void *)EXEC_leave_keep,
 	(void *)EXEC_leave_drop,
 	(void *)EXEC_function_loop,
-	
+
 	(void *)EXEC_special,
 	(void *)EXEC_object_variant,
 	(void *)EXEC_object_other,
-	
+
 	(void *)EXTERN_get_function_info,
 	(void *)EXTERN_call,
 	(void *)EXTERN_make_callback,
-	
+
 	(void *)STRING_new,
 	(void *)STRING_new_temp_value,
 	(void *)STRING_free_real,
@@ -367,21 +367,21 @@ void *GAMBAS_JitApi[] =
 	(void *)STRING_compare,
 	(void *)STRING_equal_ignore_case_same,
 	(void *)STRING_conv,
-	
+
 	(void *)OBJECT_comp_value,
 	(void *)COMPARE_object,
 	(void *)CLASS_inherits,
 	(void *)OBJECT_create,
 	(void *)CLASS_free,
 	(void *)SYMBOL_find,
-	
+
 	(void *)CARRAY_get_array_class,
 	(void *)CARRAY_get_data_multi,
 	(void *)CARRAY_create_static,
 	(void *)CSTRUCT_create_static,
-	
+
 	(void *)REGEXP_scan,
-	
+
 	(void *)VALUE_convert,
 	(void *)VALUE_to_string,
 	(void *)VALUE_convert_float,
@@ -389,12 +389,12 @@ void *GAMBAS_JitApi[] =
 	(void *)VALUE_convert_string,
 	(void *)VALUE_is_null,
 	(void *)VALUE_undo_variant,
-	
+
 	(void *)NUMBER_from_string,
 	(void *)NUMBER_int_to_string,
-	
+
 	(void *)LOCAL_format_number,
-	
+
 	(void *)DATE_to_string,
 	(void *)DATE_from_string,
 	(void *)DATE_comp,
@@ -402,10 +402,10 @@ void *GAMBAS_JitApi[] =
 	(void *)DATE_now,
 	(void *)DATE_add,
 	(void *)DATE_diff,
-	
+
 	(void *)randomize,
 	(void *)rnd,
-	
+
 	(void *)THROW,
 	(void *)ERROR_panic,
 	(void *)ERROR_propagate,
@@ -413,9 +413,9 @@ void *GAMBAS_JitApi[] =
 	(void *)ERROR_set_last,
 	(void *)ERROR_lock,
 	(void *)ERROR_unlock,
-	
+
 	(void *)TYPE_get_name,
-	
+
 	(void *)SUBR_not,
 	(void *)SUBR_and_,
 	(void *)SUBR_cat,
@@ -480,13 +480,13 @@ void *GAMBAS_JitApi[] =
 	(void *)SUBR_quote,
 	(void *)SUBR_unquote,
 	(void *)SUBR_ptr,
-	
+
 	(void *)CLASS_load_from_jit,
 	(void *)CLASS_run_inits,
-	
+
 	(void *)DEBUG_get_current_position,
 	(void *)NULL, // Later set to DEBUG.Profile.Add
-	
+
 	(void *)EXEC_quit,
 	NULL
 };
@@ -501,7 +501,7 @@ static int _raise_event_level = 0;
 #define CATCH_ERROR \
 	bool ret = FALSE; \
 	TRY
-	
+
 #define END_CATCH_ERROR \
 	CATCH \
 	{ \
@@ -514,7 +514,7 @@ static int _raise_event_level = 0;
 #define CATCH_ERROR_INT \
 	int ret = 0; \
 	TRY
-	
+
 #define END_CATCH_ERROR_INT \
 	CATCH \
 	{ \
@@ -527,7 +527,7 @@ static int _raise_event_level = 0;
 bool GB_GetInterface(const char *name, int version, void *iface)
 {
 	GB_LoadComponent(name);
-	
+
 	if (LIBRARY_get_interface_by_name(name, version, iface))
 		ERROR_panic("Cannot find interface of library '%s'", name);
 
@@ -715,9 +715,9 @@ void *GB_GetProperty(void *object, const char *name)
 			EXEC.native = FALSE;
 			EXEC.index = (int)(intptr_t)desc->property.read;
 			//EXEC.func = &class->load->func[(long)desc->property.read];
-	
+
 			EXEC_function_keep();
-	
+
 			TEMP = *RP;
 			UNBORROW(RP);
 			RP->type = T_VOID;
@@ -836,10 +836,10 @@ bool GB_CanRaise(void *object, int event_id)
 		if (OBJECT_parent(obs) && obs->event && obs->event[event_id])
 			return TRUE;
 	}
-	
+
 	if (!OBJECT_parent(object))
 		return FALSE;
-	
+
 	event_tab = OBJECT_event(object)->event;
 	func_id = event_tab[event_id];
 
@@ -850,14 +850,14 @@ bool GB_CanRaise(void *object, int event_id)
 static int get_event_func_id(ushort *event_tab, int event_id)
 {
 	int func_id;
-	
+
 	if (!event_tab)
 		return 0;
-		
+
 	func_id = event_tab[event_id];
 	if (!func_id)
 		return 0;
-		
+
 	return func_id;
 }
 
@@ -868,11 +868,11 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 	CLASS_DESC_METHOD *desc;
 	void *old_last;
 	bool result;
-	
+
 	func_id--;
 
 	if (OBJECT_is_class(observer))
-		class = (CLASS *)observer; //OBJECT_class(object);	
+		class = (CLASS *)observer; //OBJECT_class(object);
 	else
 		class = OBJECT_class(observer);
 
@@ -881,7 +881,7 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 	old_last = EVENT_Last;
 	EVENT_Last = object;
 	//OBJECT_REF(object, "raise_event");
-	
+
 // 	if (arg)
 // 	{
 // 		EXEC_dup(nparam);
@@ -893,7 +893,7 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 // 		va_end(args);
 // 	}
 
-	stop_event = GAMBAS_StopEvent;	
+	stop_event = GAMBAS_StopEvent;
 	GAMBAS_StopEvent = FALSE;
 
 	EXEC_public_desc(class, observer, desc, nparam);
@@ -905,9 +905,9 @@ static bool raise_event(OBJECT *observer, void *object, int func_id, int nparam)
 
 	if (GAMBAS_StopEvent)
 		result = TRUE;
-		
+
 	GAMBAS_StopEvent = stop_event;
-	
+
 	//OBJECT_UNREF(object, "raise_event");
 	EVENT_Last = old_last;
 
@@ -923,12 +923,12 @@ static GB_RAISE_HANDLER *_GB_Raise_handler = NULL;
 static void error_GB_Raise()
 {
 	void *object = (void *)ERROR_handler->arg1;
-	
+
 	RELEASE_MANY(SP, (int)(ERROR_handler->arg2));
 	OBJECT_UNREF(object);
-	
+
 	_raise_event_level--;
-	
+
 	if (_GB_Raise_handler && _GB_Raise_handler->level == _raise_event_level)
 	{
 		(*_GB_Raise_handler->callback)(_GB_Raise_handler->data);
@@ -967,9 +967,9 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 
 	arg = nparam < 0;
 	nparam = abs(nparam);
-	
+
 	_raise_event_level++;
-	
+
 	ON_ERROR_2(error_GB_Raise, object, nparam)
 	{
 		if (!arg)
@@ -978,11 +978,11 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 			push(nparam, args);
 			va_end(args);
 		}
-	
+
 		result = FALSE;
-	
+
 		// Observers before
-		
+
 		LIST_for_each(obs, OBJECT_event(object)->observer)
 		{
 			parent = OBJECT_active_parent(obs);
@@ -992,41 +992,39 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 				continue;
 			//if (obs->object != object)
 			//	continue;
-				
+
 			func_id = get_event_func_id(obs->event, event_id);
 			if (!func_id)
 				continue;
-			
+
 			if (!OBJECT_is_valid(parent))
 			{
 				OBJECT_detach((OBJECT *)obs);
 				continue;
 			}
-			
+
 			EXEC_dup(nparam);
 			result = raise_event(parent, object, func_id, nparam);
-			
+
 			if (result)
 				goto __RETURN;
 		}
-				
+
 		// Parent
-	
+
 		parent = OBJECT_active_parent(object);
 		if (parent)
 		{
 			func_id = get_event_func_id(OBJECT_event(object)->event, event_id);
+			#if DEBUG_EVENT
+				CLASS *class = OBJECT_class(object);
+				fprintf(stderr, "GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
+				fprintf(stderr, "func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
+				if (OBJECT_is_locked(parent))
+					fprintf(stderr, "parent is locked!\n");
+			#endif
 			if (func_id)
 			{
-				#if DEBUG_EVENT
-					CLASS *class = OBJECT_class(object);
-					printf("GB_Raise(%p, %d, %s)\n", object, event_id, class->event[event_id].name);
-					printf("func_id = %d  parent = (%s %p)\n", func_id, parent->class->name, parent);
-					if (OBJECT_is_locked(parent))
-						printf("parent is locked!\n");
-					fflush(NULL);
-				#endif
-
 				if (!OBJECT_is_valid(parent))
 					OBJECT_detach(object);
 				else
@@ -1038,9 +1036,9 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 				}
 			}
 		}
-			
+
 		// Observers after
-		
+
 		LIST_for_each(obs, OBJECT_event(object)->observer)
 		{
 			parent = OBJECT_active_parent(obs);
@@ -1050,32 +1048,32 @@ bool GB_Raise(void *object, int event_id, int nparam, ...)
 				continue;
 			//if (obs->object != object)
 			//	continue;
-				
+
 			func_id = get_event_func_id(obs->event, event_id);
 			if (!func_id)
 				continue;
-			
+
 			if (!OBJECT_is_valid(parent))
 			{
 				OBJECT_detach((OBJECT *)obs);
 				continue;
 			}
-			
+
 			EXEC_dup(nparam);
 			result = raise_event(parent, object, func_id, nparam);
 			if (result)
 				goto __RETURN;
 		}
-	
+
 __RETURN:
-	
+
 		RELEASE_MANY(SP, nparam);
-		OBJECT_UNREF(object);	
+		OBJECT_UNREF(object);
 	}
 	END_ERROR
 
 	_raise_event_level--;
-	
+
 	return result;
 }
 
@@ -1105,7 +1103,7 @@ bool GB_GetFunction(GB_FUNCTION *_func, void *object, const char *name, const ch
 	}
 
 	CLASS_load(class);
-	
+
 	index = CLASS_find_symbol(class, name);
 	if (index == NO_SYMBOL)
 	{
@@ -1183,9 +1181,9 @@ void *GB_GetClassInterface(void *_class, const char *_name)
 	CLASS *class = (CLASS *)_class;
 	int len = strlen(_name);
 	char name[len + 4];
-	
+
 	CLASS_load(class);
-	
+
 	strcpy(name, "_@");
 	strcat(name, _name);
 
@@ -1221,7 +1219,7 @@ GB_VALUE *GB_Call(GB_FUNCTION *_func, int nparam, int release)
 		EXEC_public_desc(func->desc->class, func->object, func->desc, nparam);
 		_event_stopped = GAMBAS_StopEvent;
 		GAMBAS_StopEvent = stop_event;
-		
+
 		if (release)
 			EXEC_release_return_value();
 		else
@@ -1300,7 +1298,7 @@ void GB_Error(const char *error, ...)
 
 	for (i = 0; i < 4; i++)
 		arg[i] = va_arg(args, char *);
-	
+
 	va_end(args);
 
 	ERROR_define(error, arg);
@@ -1383,7 +1381,7 @@ void GB_Unref(void **object)
 		#endif
 		OBJECT_UNREF(*object);
 	}
-	
+
 	#if TRACE_MEMORY
 	CP = save;
 	#endif
@@ -1657,7 +1655,7 @@ void GB_ReturnObject(void *val)
 void GB_ReturnVariant(GB_VARIANT_VALUE *val)
 {
 	TEMP._variant.type = T_VARIANT;
-	
+
 	if (!val)
 	{
 		TEMP._variant.vtype = T_NULL;
@@ -1937,10 +1935,10 @@ void GB_Watch(int fd, int flag, void *callback, intptr_t param)
 void *GB_Create(void *class, const char *name, void *parent)
 {
 	void *object;
-	
+
 	object = OBJECT_new(class, name, parent);
 	OBJECT_UNREF_KEEP(object);
-	
+
 	return object;
 }
 
@@ -1961,7 +1959,7 @@ void *GB_New(void *class, const char *name, void *parent)
 			nparam = (int)(intptr_t)parent;
 			parent = NULL;
 		}
-		
+
 		return OBJECT_create(class, name, parent, nparam);
 	}
 	else
@@ -1971,7 +1969,7 @@ void *GB_New(void *class, const char *name, void *parent)
 bool GB_CheckObject(void *object)
 {
 	CLASS *class;
-	
+
 	if (object == NULL)
 	{
 		GB_Error((char *)E_NULL);
@@ -2019,9 +2017,9 @@ void *GB_AppStartupClass(void)
 void *GB_Eval(void *expr, void *func)
 {
 	bool err = EVAL_expression((EXPRESSION *)expr, (EVAL_FUNCTION)func);
-	
+
 	EXEC_set_native_error(err);
-	
+
 	if (err)
 		return NULL;
 	else
@@ -2189,16 +2187,16 @@ char *GB_SystemCharset(void)
 char *GB_SystemDomainName(void)
 {
 	char host[256], domain[256];
-	
+
 	if (gethostname(host, sizeof(host) - 1))
 		return "";
-		
+
 	if (getdomainname(domain, sizeof(domain) - 1))
 		return "";
-	
+
 	if ((strlen(host) + strlen(domain)) > COMMON_BUF_MAX)
 		return "";
-	
+
 	*COMMON_buffer = 0;
 	if (*domain && strcmp(domain, "(none)"))
 	{
@@ -2206,7 +2204,7 @@ char *GB_SystemDomainName(void)
 		strcat(COMMON_buffer, ".");
 	}
 	strcat(COMMON_buffer, host);
-	
+
 	return COMMON_buffer;
 }
 
@@ -2318,7 +2316,7 @@ int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const 
 	char *pattern;
 	int len_pattern;
 	char *str;
-	
+
 	TRY
 	{
 		if (recursive)
@@ -2349,7 +2347,7 @@ int GB_FindFile(const char *dir, int recursive, int follow, void (*found)(const 
 		GAMBAS_Error = TRUE;
 	}
 	END_TRY;
-	
+
 	return ret;
 }
 #endif
@@ -2398,7 +2396,7 @@ static GB_BROWSE_PROJECT_CALLBACK _browse_project_func;
 static void project_file_found(const char *path)
 {
 	FILE_STAT info;
-	
+
 	FILE_stat(path, &info, FALSE);
 	(*_browse_project_func)(path, info.size);
 }
@@ -2406,7 +2404,7 @@ static void project_file_found(const char *path)
 void GB_BrowseProject(GB_BROWSE_PROJECT_CALLBACK func)
 {
 	ARCHIVE *arch = NULL;
-	
+
 	ARCHIVE_get_current(&arch);
 	if (!arch || (arch == ARCHIVE_main && !EXEC_arch))
 	{
@@ -2466,7 +2464,7 @@ void GB_Wait(int delay)
 	double stop, time;
 
 	DEBUG_enter_event_loop();
-		
+
 	if (delay == 0)
 	{
 		HOOK_DEFAULT(wait, WATCH_wait)(0);
@@ -2474,7 +2472,7 @@ void GB_Wait(int delay)
 	else
 	{
 		wait = delay / 1000.0;
-		
+
 		DATE_timer(&stop, FALSE);
 		stop += wait;
 
@@ -2488,7 +2486,7 @@ void GB_Wait(int delay)
 			wait = stop - time;
 			if (wait <= 0.0)
 				break;
-			
+
 			rem.tv_sec = 0;
 			rem.tv_nsec = 1000000;
 			nanosleep(&rem, &rem);
@@ -2501,7 +2499,7 @@ void GB_Wait(int delay)
 bool GB_Serialize(const char *path, GB_VALUE *value)
 {
 	STREAM stream;
-	
+
 	CATCH_ERROR
 	{
 		STREAM_open(&stream, path, ST_CREATE);
@@ -2514,7 +2512,7 @@ bool GB_Serialize(const char *path, GB_VALUE *value)
 bool GB_UnSerialize(const char *path, GB_VALUE *value)
 {
 	STREAM stream;
-	
+
 	CATCH_ERROR
 	{
 		STREAM_open(&stream, path, ST_READ);
