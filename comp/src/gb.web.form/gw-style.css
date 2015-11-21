@@ -43,6 +43,8 @@ H1,H2,H3,P {
   padding: 0 0.5em;
   cursor: pointer;
   border-top: solid transparent 1px;
+  border-right: solid transparent 1px;
+  border-left: solid transparent 1px;
 }
 
 .gw-tab:hover {
@@ -227,6 +229,12 @@ H1,H2,H3,P {
   z-index: 3;
 }
 
+.gw-menuitem > .gw-menu > .gw-submenu {
+  margin-top: 0;
+  top: 0;
+  left: 100%;
+}
+
 .gw-menu:hover > .gw-submenu {
   display: flex;
   flex-flow: column;
@@ -248,12 +256,6 @@ H1,H2,H3,P {
   display: block;
 }
 
-.gw-submenu > div {
-  cursor: default;
-  padding: 0.25em 1em;
-  margin: 0;
-}
-
 .gw-submenu > div:hover {
   background: #E0E0E0;
 }
@@ -263,29 +265,93 @@ H1,H2,H3,P {
   flex-flow: column;
 }
 
+.gw-menuitem > div {
+  display: table-cell !important;
+  vertical-align: middle;
+}
+
 .gw-menuitem-text {
-  display: inline-flex;
   flex-grow: 1;
-  margin-left: 0.5em;
+  padding: 0.125em 0.25em;
+  white-space: nowrap;
+}
+
+.gw-menuitem-icon {
+  padding: 0.125em 0.25em;
+}
+
+.gw-menuitem-icon > IMG {
+  vertical-align: middle;
 }
 
 .gw-menuitem-shortcut {
-  display: inline;
-  flex-grow: 1;
-  margin-left: 0.5em;
+  text-align: right;
+  padding: 0.125em 1em;
 }
 
 .gw-separator {
   display: flex !important;
+  position: relative;
   flex-grow: column;
   align-items: center;
+  vertical-align: middle;
   padding: 0 !important;
   pointer-events: none;
+  width: 1em;
+  height: 1em;
 }
 
-.gw-separator-line {
+.gw-separator-hline {
   display: block;
-  width: 100%;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   height: 1px;
   background: #C0C0C0;
 }
+
+.gw-separator-vline {
+  display: block;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #C0C0C0;
+}
+
+.gw-submenu > div {
+  display: flex !important;
+  cursor: default;
+  padding: 0.25em 1em;
+  margin: 0;
+}
+
+.gw-submenu > .gw-menuitem {
+  display: table-row !important;
+  table-layout: fixed;
+  cursor: default;
+  padding: 0;
+  margin: 0;
+}
+
+.gw-submenu > .gw-separator {
+  display: table-row !important;
+  cursor: default;
+  margin: 0;
+}
+
+.gw-menuitem > .gw-menu {
+  display: table-cell !important;
+  position: relative;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAJElEQVQYlWNgQIAGBgLgPyFF/wkp+o9NERMhe0m2AqckAy5JALuADHot/KmNAAAAAElFTkSuQmCC');
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 1em;
+}
+

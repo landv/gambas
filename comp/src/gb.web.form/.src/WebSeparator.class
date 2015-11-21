@@ -9,6 +9,10 @@ Public Const _DefaultSize As String = "24,4"
 
 Public Sub _Render()
   
-  Print "<div class=\"gw-separator-line\"></div>"
+  If Me.Parent.Arrangement = Arrange.Horizontal Then
+    Print "<div class=\"gw-separator-vline\"></div>"
+  Else
+    Print "<div class=\"gw-separator-hline\"></div>"
+  Endif
   
 End

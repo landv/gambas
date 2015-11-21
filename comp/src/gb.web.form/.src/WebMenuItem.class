@@ -6,6 +6,9 @@ Inherits WebControl
 Public Const _Properties As String = "*,Text,Image{ImagePath},Shortcut"
 'Public Const _DrawWith As String = "Label"
 Public Const _DefaultSize As String = "24,4"
+Public Const _DefaultEvent As String = "Click"
+
+Event Click
 
 Property Text As String
 Property Image As String
@@ -30,13 +33,13 @@ End
 
 Public Sub _Render()
   
-  If $sImage Then
-    Print "<img class=\"gw-menuitem-icon\" src=\""; Html(Application.Root &/ $sImage); "\">";
-  Endif
+  Print "<div class=\"gw-menuitem-icon\">";
+  If $sImage Then Print "<img class=\"gw-menuitem-icon\" src=\""; Html(Application.Root &/ $sImage); "\">";
+  Print "</div>";
   Print "<div class=\"gw-menuitem-text\">"; Html($sText); "</div>";
   Print "<div class=\"gw-menuitem-shortcut\">";
   If $sShortcut Then Print Html($sShortcut);
-  Print "</div>"
+  Print "</div><div></div>"
   
 End
 

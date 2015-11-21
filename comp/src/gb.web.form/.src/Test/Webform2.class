@@ -131,3 +131,15 @@ Public Sub WebForm_Message(Message As String, Button As Integer)
   Debug "Button #"; Button; " clicked on message '"; Message; "'"
 
 End
+
+Public Sub WebMenu2_Click(Target As WebControl)
+
+  Message("You have clicked on '" & Target.Name & "' control.")
+
+End
+
+Public Sub WebMenuItem6_Click()
+
+  Message.Error("Quit !")
+
+End

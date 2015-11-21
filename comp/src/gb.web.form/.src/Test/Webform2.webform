@@ -1,74 +1,69 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,121,129)
+  #MoveScaled(0,0,121,148)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
   Title = ("This is webform2")
   { WebHBox1 WebHBox
-    #MoveScaled(1,2,105,39)
+    #MoveScaled(1,2,105,62)
     { WebMenu1 WebMenu
-      #MoveScaled(4,1,43,34)
+      #MoveScaled(4,1,39,58)
       Text = ("File")
-      { WebContainer9 WebHBox
-        #MoveScaled(5,2,36,4)
-        Spacing = True
-        { WebImage1 WebImage
-          #MoveScaled(1,1,4,3)
+      { WebMenuItem4 WebMenuItem
+        #MoveScaled(3,3,24,4)
+        Text = ("New...")
+        Image = "new.png"
+        Shortcut = "CTRL+N"
+      }
+      { WebMenuItem5 WebMenuItem
+        #MoveScaled(3,8,24,4)
+        Text = ("Open...")
+        Image = "open.png"
+        Shortcut = "CTRL+O"
+      }
+      { WebMenu2 WebMenu
+        #MoveScaled(2,14,28,27)
+        Text = ("Project")
+        Image = "gw-close.png"
+        { WebMenuItem1 WebMenuItem
+          #MoveScaled(2,2,24,4)
+          Text = ("Compile")
+          Image = "new.png"
+          Shortcut = "F7"
+        }
+        { WebMenuItem2 WebMenuItem
+          #MoveScaled(2,7,24,4)
+          Text = ("Compile all")
           Image = "new.png"
         }
-        { WebLabel3 WebLabel
-          #MoveScaled(7,0,21,4)
-          Expand = True
-          Text = ("New project...")
+        { WebSeparator2 WebSeparator
+          #MoveScaled(2,13,24,2)
         }
-      }
-      { WebContainer10 WebHBox
-        #MoveScaled(5,7,36,4)
-        Spacing = True
-        { WebImage2 WebImage
-          #MoveScaled(1,1,4,3)
-          Image = "open.png"
-        }
-        { WebLabel4 WebLabel
-          #MoveScaled(7,0,21,4)
-          Expand = True
-          Text = ("Open project...")
+        { WebMenuItem3 WebMenuItem
+          #MoveScaled(2,16,24,4)
+          Text = ("Translate")
+          Shortcut = "CTRL+T"
         }
       }
       { WebSeparator1 WebSeparator
-        #MoveScaled(4,13,37,2)
-        Height = "1em"
+        #MoveScaled(3,43,24,2)
       }
-      { WebLabel7 WebLabel
-        #MoveScaled(5,16,15,4)
+      { WebMenuItem6 WebMenuItem
+        #MoveScaled(4,46,24,4)
         Text = ("Quit")
       }
     }
-    { WebMenu2 WebMenu
-      #MoveScaled(51,1,28,19)
-      Text = ("Project")
-      { WebMenuItem1 WebMenuItem
-        #MoveScaled(2,2,24,4)
-        Text = ("Compile")
-        Image = "new.png"
-        Shortcut = "F7"
-      }
-      { WebMenuItem2 WebMenuItem
-        #MoveScaled(2,7,24,4)
-        Text = ("Compile all")
-        Image = "new.png"
-        Shortcut = "ALT+F7"
-      }
-    }
+  }
+  { WebTimer1 WebTimer
+    #MoveScaled(110,55)
   }
   { WebContainer1 WebHBox
-    #MoveScaled(1,50,116,6)
+    #MoveScaled(1,68,116,6)
     Margin = True
     Spacing = True
-    Border = True
     { WebButton1 WebButton
       #MoveScaled(3,1,16,4)
       Text = ("A button")
@@ -84,6 +79,7 @@
     { WebButton7 WebButton
       #MoveScaled(57,1,16,4)
       Text = ("Warning")
+      Image = "gw-close.png"
     }
     { WebContainer6 WebContainer
       #MoveScaled(84,1,4,4)
@@ -93,11 +89,8 @@
       #MoveScaled(92,1,15,4)
     }
   }
-  { WebTimer1 WebTimer
-    #MoveScaled(105,58)
-  }
   { WebTabPanel1 WebTabPanel
-    #MoveScaled(4,58,85,69)
+    #MoveScaled(5,77,85,69)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True
@@ -114,7 +107,7 @@
       Text = ("Check and uncheck me!")
     }
     { WebContainer3 WebHBox
-      #MoveScaled(3,17,67,4)
+      #MoveScaled(3,17,80,4)
       Spacing = True
       { WebComboBox1 WebComboBox
         #MoveScaled(0,0,22,4)
@@ -129,6 +122,9 @@
       { WebButton5 WebButton
         #MoveScaled(43,0,19,4)
         Text = ("Clear")
+      }
+      { WebSeparator3 WebSeparator
+        #MoveScaled(64,0,11,4)
       }
     }
     { WebContainer5 WebHBox

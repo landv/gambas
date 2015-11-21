@@ -48,8 +48,11 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   Dim iBorder As Integer
   Dim hCtrl As Control = hCCtrl.Control
   Dim hParent As CControl
-  Dim sBackground As String
-  Dim sText As Variant
+  Dim sImage As String
+  Dim DS As Integer
+  Dim X As Integer
+  Dim hImage As Image
+  Dim sColor As Variant
   
   Select hCCtrl.Kind
   
@@ -61,6 +64,41 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
     '     
     '   End With
     ' 
+    
+    Case "WebMenuItem"
+      
+      DS = Desktop.Scale
+      
+      Paint.Background = Color.LightForeground
+      Paint.LineWidth = 1
+      Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
+      Paint.Stroke
+      
+      X = DS * 2 + Stock.GetSize("small")
+      sImage = hCCtrl.GetProperty("Image")
+      If sImage Then
+        
+        Try hImage = Image.Load(Project.Dir &/ ".public" &/ sImage)
+        
+        If hImage Then 
+          Paint.DrawImage(hImage, DS, CInt(Paint.H - hImage.H) \ 2)
+          X = DS + hImage.W + DS
+        Endif
+        
+      Endif
+      
+      sColor = hCCtrl.GetProperty("Foreground")
+      If sColor Then
+        Paint.Background = FColorChooser.FromString(sColor)
+      Else
+        Paint.Background = Color.TextForeground
+      Endif
+      
+      Paint.DrawText(hCCtrl.GetProperty("Text"), X, 0, Paint.W - X - DS, Paint.H, Align.Normal)
+      Paint.DrawText(hCCtrl.GetProperty("Shortcut"), X, 0, Paint.W - X - DS, Paint.H, Align.Right)
+      
+      Return
+    
     Case "WebContainer", "WebHBox", "WebVBox"
     
       Paint.Background = &HFFB0B0
@@ -73,9 +111,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
 
   Paint.LineWidth = 1
   Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
-  'Paint.AntiAlias = False
   Paint.Stroke
-  'Paint.AntiAlias = True
   
 End
 
@@ -115,7 +151,7 @@ Public Sub ActionExec(hCtrl As CControl, sAction As String)
   
 End
 
-Public Sub SelectImage(sPropertyType As String, sImage As String) As String
+Public Sub SelectImage((sPropertyType) As String, sImage As String) As String
 
   Return FSelectIcon.Run(sImage, FSelectIcon.SELECT_IMAGE + FSelectIcon.SELECT_SVGIMAGE + FSelectIcon.SELECT_PUBLIC)
       

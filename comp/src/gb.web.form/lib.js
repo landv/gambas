@@ -414,7 +414,6 @@ gw = {
     
       // This code executes when mouse moves without clicking
     
-      // style cursor
       if (c.onRightEdge && c.onBottomEdge || c.onLeftEdge && c.onTopEdge)
         elt.style.cursor = 'nwse-resize';
       else if (c.onRightEdge && c.onTopEdge || c.onBottomEdge && c.onLeftEdge)
@@ -428,9 +427,31 @@ gw = {
     }
   },
   
-  hideMenu: function(elt)
+  getTargetId: function(elt)
   {
-    elt.style.display = 'none';
-    setTimeout(function() { elt.style.display = ''; }, 150);
+    for(;;)
+    {
+      if (elt.id)
+        return elt.id;
+      elt = elt.parentNode;
+      if (!elt)
+        return;
+    }
+  },
+
+  menu:
+  {
+    hide: function(elt)
+    {
+      elt.style.display = 'none';
+      setTimeout(function() { elt.style.display = ''; }, 150);
+    },
+    
+    click: function(name, event)
+    {
+      var id = gw.getTargetId(event.target);
+      gw.update(name, '#click', id);
+      event.stopPropagation();
+    }
   }
 }

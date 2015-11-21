@@ -790,7 +790,7 @@ s
 _Properties
 C
 s
-"*,-Arrangement,-Margin,-Spacing,-Border,Text"
+"*,-Arrangement,-Margin,-Spacing,-Border,Text,Image{ImagePath)"
 _DefaultArrangement
 C
 s
@@ -815,11 +815,23 @@ Title
 p
 s
 
+Image
+p
+s
+
 _new
 m
 
 
+_BeforeRender
+m
+
+
 _Render
+m
+
+
+_AfterRender
 m
 
 
@@ -838,6 +850,14 @@ _DefaultSize
 C
 s
 "24,4"
+_DefaultEvent
+C
+s
+"Click"
+:Click
+:
+
+
 Text
 p
 s
