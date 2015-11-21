@@ -426,5 +426,11 @@ gw = {
       else
         elt.style.cursor = '';
     }
+  },
+  
+  hideMenu: function(elt)
+  {
+    elt.style.display = 'none';
+    setTimeout(function() { elt.style.display = ''; }, 150);
   }
 }

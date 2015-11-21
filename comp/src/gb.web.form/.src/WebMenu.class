@@ -1,0 +1,77 @@
+' Gambas class file
+
+Export
+Inherits WebContainer
+
+Public Const _Group As String = "Container"
+Public Const _Properties As String = "*,-Arrangement,-Margin,-Spacing,-Border,Text"
+Public Const _DefaultArrangement As String = "V"
+Public Const _DefaultEvent As String = "Click"
+Public Const _DrawWith As String = "TabPanel"
+
+Event Click(Target As WebControl)
+
+Property Text, Title As String
+Private $sText As String
+
+Public Sub _new()
+  
+  Me.Arrangement = Arrange.Vertical
+  
+End
+
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  Me._SetProperty("Text", Value)
+
+End
+
+Public Sub _Render()
+  
+  Dim hChild As WebControl
+  
+  Print "<div class=\"gw-menu-title\">"; 
+  If $sText Then
+    Print Html($sText);
+  Else
+    Print "&nbsp;";
+  Endif
+  Print "</div>"
+  Print "<div class=\"gw-menu-tape\"></div>"
+  
+  
+  Print "<div class=\"gw-submenu\""; Me._GetUpdateJS("onclick", "#click", "event.target.id", "gw.hideMenu(this);"); ">"
+  
+  For Each hChild In Me.Children
+    With hChild
+      If Not .Visible Then Continue
+      ._BeforeRender()
+      ._Render()
+      ._AfterRender()
+    End With
+  Next
+  
+  Print "</div>"
+  
+End
+
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim hControl As WebControl
+  
+  If sProp = "#click" Then
+    Try hControl = WebControl.FromName(vValue)
+    If hControl Then Raise Click(hControl)
+  Endif
+  
+End
+

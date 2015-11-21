@@ -119,3 +119,15 @@ Public Sub WebButton7_Click()
   Message.Warning("<b>File has been modified.</b><p>All changes will be lost!", "Cancel", "Delete")
 
 End
+
+Public Sub WebMenu1_Click(Target As WebControl)
+
+  Message("You have clicked on '" & Target.Name & "' control.")
+
+End
+
+Public Sub WebForm_Message(Message As String, Button As Integer)
+
+  Debug "Button #"; Button; " clicked on message '"; Message; "'"
+
+End

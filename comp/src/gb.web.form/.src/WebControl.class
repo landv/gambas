@@ -195,11 +195,7 @@ End
 
 Public Sub _BeforeRender()
   
-  If Me Is Webform Then
-    Print "<div class=\"gw-form\" id=\""; $sName; "\"";
-  Else
-    Print "<div class=\"gw-"; LCase(Mid$(Object.Type(Me), 4)); "\" id=\""; $sName; "\"";
-  Endif
+  Print "<div class=\"gw-"; LCase(Mid$(Object.Type(Me), 4)); "\" id=\""; $sName; "\"";
   Me._RenderStyleSheet()
   Print ">"
   
@@ -235,13 +231,13 @@ Public Sub _RenderStyleSheet()
       Select Case hParent.Arrangement
         Case Arrange.Vertical
           _AddStyleSheet("display:block;")
-          If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5em;")
+          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5em;")
         Case Arrange.Horizontal
           '_AddStyleSheet("display: block;")
-          If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-left:0.5em;")
+          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-left:0.5em;")
         Case Arrange.Column, Arrange.Row
           _AddStyleSheet("display:inline-block;")
-          _AddStyleSheet("margin-right:0.5em;margin-bottom:0.5em;")
+          If hParent.Spacing Then _AddStyleSheet("margin-right:0.5em;margin-bottom:0.5em;")
       End Select
     Endif
     
@@ -435,7 +431,8 @@ Public Sub _GetEventJS(sProp As String, sEvent As String, Optional sArg As Strin
   Endif
   sStr &= "," & JS(sEvent)
   If sArg Then sStr &= "," & sArg
-  sStr &= ");\""
+  sStr &= ");"
+  sStr &= "\""
   
   Return sStr
   
@@ -628,6 +625,7 @@ Public Sub Delete()
   If hParent Then hParent._Remove(Me)
   
   Session[$sName] = Null
+  Session[$sName & ":data"] = Null
   
   $cFromName[$sName] = Null
   $cFromId[$iId] = Null

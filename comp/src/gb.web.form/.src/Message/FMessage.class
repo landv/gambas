@@ -45,8 +45,32 @@ Public Sub _new()
 
 End
 
+Private Sub HandleClick(iButton As Integer)
+
+  Dim hForm As WebForm
+  Dim sName As String
+
+  hForm = WebControl.FromId(Me._Window).Form
+  sName = Me["#message"]
+  Object.Raise(hForm, "Message", [sName, iButton])
+  Me.Close
+
+End
+
 Public Sub btnButton1_Click()
 
-  Me.Close
+  HandleClick(0)
+
+End
+
+Public Sub btnButton2_Click()
+
+  HandleClick(1)
+
+End
+
+Public Sub btnButton3_Click()
+
+  HandleClick(2)
 
 End

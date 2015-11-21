@@ -55,11 +55,27 @@ i
 #Message
 
 C
+Name
+V
+s
+
 _call
 M
 
 (Text)s[(Button)s]
+Info
+M
+
+(Text)s[(Button)s]
 Warning
+M
+
+(Text)s[(Button1)s(Button2)s(Button3)s]
+Error
+M
+
+(Text)s[(Button)s]
+Question
 M
 
 (Text)s[(Button1)s(Button2)s(Button3)s]
@@ -600,6 +616,10 @@ WebForm
 :
 
 
+:Message
+:
+
+(Message)s(Button)i
 Title
 p
 s
@@ -641,6 +661,10 @@ M
 
 (sStr)s
 _load
+m
+
+
+_BeforeRender
 m
 
 
@@ -756,6 +780,80 @@ _Render
 m
 
 
+#WebMenu
+WebContainer
+C
+_Group
+C
+s
+"Container"
+_Properties
+C
+s
+"*,-Arrangement,-Margin,-Spacing,-Border,Text"
+_DefaultArrangement
+C
+s
+"V"
+_DefaultEvent
+C
+s
+"Click"
+_DrawWith
+C
+s
+"TabPanel"
+:Click
+:
+
+(Target)WebControl;
+Text
+p
+s
+
+Title
+p
+s
+
+_new
+m
+
+
+_Render
+m
+
+
+_UpdateProperty
+m
+
+(sProp)s(vValue)v
+#WebMenuItem
+WebControl
+C
+_Properties
+C
+s
+"*,Text,Image{ImagePath},Shortcut"
+_DefaultSize
+C
+s
+"24,4"
+Text
+p
+s
+
+Image
+p
+s
+
+Shortcut
+p
+s
+
+_Render
+m
+
+
 #WebRadioButton
 WebControl
 C
@@ -799,6 +897,25 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
+#WebSeparator
+WebControl
+C
+_Properties
+C
+s
+"*"
+_DrawWith
+C
+s
+"Separator"
+_DefaultSize
+C
+s
+"24,4"
+_Render
+m
+
+
 #WebSlider
 WebSpinBox
 C

@@ -23,7 +23,7 @@ Public Sub GetIcon(hCCtrl As CControl) As String
     Case "WebHBox"
       sImage = "horizontal"
     
-    Case "WebVBox"
+    Case "WebVBox", "WebMenu"
       sImage = "vertical"
     
     'Case "WebForm", "WebContainer"
@@ -49,9 +49,18 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   Dim hCtrl As Control = hCCtrl.Control
   Dim hParent As CControl
   Dim sBackground As String
+  Dim sText As Variant
   
   Select hCCtrl.Kind
   
+    ' Case "WebMenu"
+    '   
+    '   sText = hCCtrl.GetProperty("Text")
+    '   If Not sText Then sText = " "
+    '   With Paint.TextSize(sText)
+    '     
+    '   End With
+    ' 
     Case "WebContainer", "WebHBox", "WebVBox"
     
       Paint.Background = &HFFB0B0

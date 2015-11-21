@@ -17,6 +17,7 @@ Static Private $aJavascript As New String[]
 
 Event Open
 Event Event
+Event Message(Message As String, Button As Integer)
 
 Property Title As String
 Property Resizable As Boolean
@@ -118,6 +119,13 @@ Public Sub _load()
   
 End
 
+Public Sub _BeforeRender()
+  
+  Print "<div class=\"gw-form\" id=\""; Me.Name; "\"";
+  Me._RenderStyleSheet()
+  Print ">"
+  
+End
 
 
 Public Sub Render()

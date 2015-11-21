@@ -1,13 +1,71 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,121,111)
+  #MoveScaled(0,0,121,129)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
+  Spacing = True
   Title = ("This is webform2")
+  { WebHBox1 WebHBox
+    #MoveScaled(1,2,105,39)
+    { WebMenu1 WebMenu
+      #MoveScaled(4,1,43,34)
+      Text = ("File")
+      { WebContainer9 WebHBox
+        #MoveScaled(5,2,36,4)
+        Spacing = True
+        { WebImage1 WebImage
+          #MoveScaled(1,1,4,3)
+          Image = "new.png"
+        }
+        { WebLabel3 WebLabel
+          #MoveScaled(7,0,21,4)
+          Expand = True
+          Text = ("New project...")
+        }
+      }
+      { WebContainer10 WebHBox
+        #MoveScaled(5,7,36,4)
+        Spacing = True
+        { WebImage2 WebImage
+          #MoveScaled(1,1,4,3)
+          Image = "open.png"
+        }
+        { WebLabel4 WebLabel
+          #MoveScaled(7,0,21,4)
+          Expand = True
+          Text = ("Open project...")
+        }
+      }
+      { WebSeparator1 WebSeparator
+        #MoveScaled(4,13,37,2)
+        Height = "1em"
+      }
+      { WebLabel7 WebLabel
+        #MoveScaled(5,16,15,4)
+        Text = ("Quit")
+      }
+    }
+    { WebMenu2 WebMenu
+      #MoveScaled(51,1,28,19)
+      Text = ("Project")
+      { WebMenuItem1 WebMenuItem
+        #MoveScaled(2,2,24,4)
+        Text = ("Compile")
+        Image = "new.png"
+        Shortcut = "F7"
+      }
+      { WebMenuItem2 WebMenuItem
+        #MoveScaled(2,7,24,4)
+        Text = ("Compile all")
+        Image = "new.png"
+        Shortcut = "ALT+F7"
+      }
+    }
+  }
   { WebContainer1 WebHBox
-    #MoveScaled(2,1,116,6)
+    #MoveScaled(1,50,116,6)
     Margin = True
     Spacing = True
     Border = True
@@ -36,10 +94,10 @@
     }
   }
   { WebTimer1 WebTimer
-    #MoveScaled(83,9)
+    #MoveScaled(105,58)
   }
   { WebTabPanel1 WebTabPanel
-    #MoveScaled(7,15,85,69)
+    #MoveScaled(4,58,85,69)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True
@@ -75,6 +133,7 @@
     }
     { WebContainer5 WebHBox
       #MoveScaled(3,25,77,4)
+      Spacing = True
       { WebComboBox2 WebComboBox
         #MoveScaled(0,0,22,4)
         List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]

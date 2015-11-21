@@ -1,0 +1,14 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*"
+Public Const _DrawWith As String = "Separator"
+Public Const _DefaultSize As String = "24,4"
+
+Public Sub _Render()
+  
+  Print "<div class=\"gw-separator-line\"></div>"
+  
+End
