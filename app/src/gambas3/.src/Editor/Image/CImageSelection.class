@@ -650,14 +650,20 @@ Public Sub GetExtents(Optional bAll As Boolean) As RectF
   
   Dim hRect As RectF
   Dim I As Integer
+  Dim hRectShape As RectF
   
   If Shapes.Count = 0 Then Return New RectF
   
   If Current >= 0 And If Not bAll Then Return Shapes[Current].GetExtents()
   
-  hRect = Shapes[0].GetExtents()
-  For I = 1 To Shapes.Max
-    hRect = hRect.Union(Shapes[I].GetExtents())
+  For I = 0 To Shapes.Max
+    hRectShape = Shapes[I].GetExtents()
+    If Not hRectShape Then Continue
+    If Not hRect Then
+      hRect = hRectShape
+    Else
+      hRect = hRect.Union(hRectShape)
+    Endif
   Next
   
   Return hRect
@@ -668,6 +674,7 @@ Public Sub GetExtentsInt(Optional bAll As Boolean) As Rect
   
   Dim hExt As RectF = GetExtents(bAll)
   
+  If Not hExt Then Return
   Return Rect(Floor(hExt.X), Floor(hExt.Y), Ceil(hExt.Right) - Floor(hExt.X), Ceil(hExt.Bottom) - Floor(hExt.Y))
 End
 
@@ -718,6 +725,8 @@ Public Sub HFlip()
   Dim hMatrix As New PaintMatrix
   Dim hExt As RectF = GetExtents()
   
+  If Not hExt Then Return
+  
   hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
   hMatrix.Scale(-1, 1)
   hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
@@ -729,6 +738,8 @@ Public Sub VFlip()
   
   Dim hMatrix As New PaintMatrix
   Dim hExt As RectF = GetExtents()
+  
+  If Not hExt Then Return
   
   hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
   hMatrix.Scale(1, -1)
@@ -742,6 +753,8 @@ Public Sub Rotate(fAngle As Float)
   Dim hMatrix As New PaintMatrix
   Dim hExt As RectF = GetExtents()
   
+  If Not hExt Then Return
+  
   hMatrix.Translate(hExt.X + hExt.W / 2, hExt.Y + hExt.H / 2)
   hMatrix.Rotate(fAngle)
   hMatrix.Translate(- (hExt.X + hExt.W / 2), - (hExt.Y + hExt.H / 2))
@@ -753,6 +766,8 @@ Public Sub Scale(SX As Float, SY As Float, Optional bTopLeft As Boolean)
   
   Dim hMatrix As New PaintMatrix
   Dim hExt As RectF = GetExtents()
+  
+  If Not hExt Then Return
   
   If bTopLeft Then 
     hMatrix.Translate(hExt.X, hExt.Y)
@@ -907,8 +922,11 @@ Public Sub Duplicate()
   Dim hShape As CImageShape
   Dim DX, DY As Float
   Dim hMatrix As New PaintMatrix
+  Dim hExt As RectF = GetExtents()
   
-  With GetExtents()
+  If Not hExt Then Return
+  
+  With hExt
     DX = .W / 2
     DY = .H / 2
   End With
