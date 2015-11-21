@@ -902,7 +902,7 @@ Static Public Function CheckName(sName As String) As Boolean
   ' Control and group names can be void
   If Not sName Then Return
 
-  If Not IsLetter(Left(sName)) Then Return True
+  If Not IsLetter(Left(sName)) And Left(sName) <> "_" Then Return True
 
   For iInd = 2 To Len(sName)
     If InStr("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", UCase(Mid$(sName, iInd, 1))) = 0 Then
