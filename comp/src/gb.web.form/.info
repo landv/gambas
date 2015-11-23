@@ -85,7 +85,7 @@ C
 _Properties
 C
 s
-"*,Text,Image{ImagePath}"
+"*,Border=True,Text,Image{WebformImage}"
 _DrawWith
 C
 s
@@ -171,7 +171,7 @@ C
 _Properties
 C
 s
-"*,List,ReadOnly=True"
+"*,Border=True,List,ReadOnly=True"
 _DrawWith
 C
 s
@@ -345,7 +345,7 @@ T
 _Properties
 C
 s
-"Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
+"Class,Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
 _Family
 C
 s
@@ -422,6 +422,14 @@ Foreground
 p
 i
 
+Border
+p
+b
+
+Class
+p
+s
+
 _NextName
 V
 s
@@ -450,6 +458,10 @@ _SetProperty
 m
 
 (sProp)s(vValue)v
+_GetClassId
+m
+s
+[(sClass)s]
 _BeforeRender
 m
 
@@ -744,7 +756,7 @@ C
 _Properties
 C
 s
-"*,Image{ImagePath}"
+"*,Image{WebformImage}"
 Image
 p
 s
@@ -790,7 +802,7 @@ s
 _Properties
 C
 s
-"*,-Arrangement,-Margin,-Spacing,-Border,Text,Image{ImagePath)"
+"*,-Arrangement,-Margin,-Spacing,-Border,Text,Image{WebformImage)"
 _DefaultArrangement
 C
 s
@@ -841,7 +853,7 @@ C
 _Properties
 C
 s
-"*,Text,Image{ImagePath},Shortcut"
+"*,Text,Image{WebformImage},Shortcut"
 _DefaultSize
 C
 s
@@ -953,7 +965,7 @@ C
 _Properties
 C
 s
-"*,MinValue=0,MaxValue=100,Step=1,Value=0"
+"*,Border=True,MinValue=0,MaxValue=100,Step=1,Value=0"
 _DrawWith
 C
 s
@@ -1067,7 +1079,7 @@ C
 _Properties
 C
 s
-"*,ReadOnly,Wrap,Text"
+"*,Border=True,ReadOnly,Wrap,Text"
 _DrawWith
 C
 s
@@ -1118,7 +1130,7 @@ C
 _Properties
 C
 s
-"*,ReadOnly,Text"
+"*,Border=True,ReadOnly,Text"
 _DrawWith
 C
 s
@@ -1165,7 +1177,7 @@ T
 _Properties
 C
 s
-"*,-Width,-Height,-Visible,-Expand,-Ignore,Enabled,Delay{Range:0;86400000;10;ms}=1000"
+"*,-Class,-Width,-Height,-Visible,-Expand,-Ignore,Enabled,Delay{Range:0;86400000;10;ms}=1000"
 _Group
 C
 s

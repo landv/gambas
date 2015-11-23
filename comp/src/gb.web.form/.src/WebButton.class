@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Text,Image{ImagePath}"
+Public Const _Properties As String = "*,Border=True,Text,Image{WebformImage}"
 Public Const _DrawWith As String = "Button"
 Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,4"
@@ -44,7 +44,7 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<button class=\"gw-button\" id=\""; Me.Name; "\""; Me._GetEventJS("onclick", "click");
+  Print "<button"; Me._GetClassId(); Me._GetEventJS("onclick", "click");
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   Print ">";

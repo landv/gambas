@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,List,ReadOnly=True"
+Public Const _Properties As String = "*,Border=True,List,ReadOnly=True"
 Public Const _DrawWith As String = "ComboBox"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "TextBox"
@@ -32,7 +32,7 @@ Public Sub _BeforeRender()
     sClass = "gw-combobox"
   Endif
   
-  Print "<div class=\""; sClass; "\" id=\""; Me.Name; "\"";
+  Print "<div"; Me._GetClassId(sClass);
   Me._RenderStyleSheet()
   Print ">"
   

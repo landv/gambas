@@ -2010,7 +2010,7 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
   
     FFormStack.RefreshAll
   
-    Modify
+    'Modify
     
   Endif
   
@@ -2490,12 +2490,14 @@ End
 
 Public Sub Control_Enter()
 
+  If $iMode Then Return
   CheckHovered(Last)
 
 End
 
 Public Sub Control_Leave()
 
+  If $iMode Then Return
   CheckHovered
 
 End
@@ -3904,15 +3906,13 @@ Public Sub CheckHovered(Optional hCtrl As Control)
   
   Do
     hCCtrl = Null
-    If Not hCtrl.Ignore Then
-      sTag = hCtrl.Tag
-      If Left(sTag) = "#" Then 
-        hCCtrl = Object.Parent(hCtrl)
-      Else If sTag Then
-        hCCtrl = Control[hCtrl.Tag]
-      Endif
-      If hCCtrl Then Break
+    sTag = hCtrl.Tag
+    If Left(sTag) = "#" Then 
+      hCCtrl = Object.Parent(hCtrl)
+    Else If sTag Then
+      hCCtrl = Control[hCtrl.Tag]
     Endif
+    If hCCtrl Then Break
     hCtrl = hCtrl.Parent
   Loop
   

@@ -115,7 +115,9 @@ Public Sub _Render()
   
   Dim I As Integer
   
-  Print "<div class=\"gw-tab-header\" style=\"display:flex;flex-flow:row;\">"
+  Print "<div class=\"gw-tab-header";
+  If Not $bBorder Then Print " gw-noborder";
+  Print "\" style=\"display:flex;flex-flow:row;\">"
   For I = 0 To $aTab.Max
     Print "<div class=\""; If(I = $iIndex, "gw-tab-selected", "gw-tab"); "\"";
     If I <> $iIndex Then Print Me._GetUpdateJS("onclick", "index", CStr(I));
@@ -123,8 +125,8 @@ Public Sub _Render()
   Next
   Print "</div>"
   
-  Print "<div";
-  If $bBorder Then Print " class=\"gw-tab-border\""
+  Print "<div class=\"gw-tab-contents";
+  If Not $bBorder Then Print " gw-noborder\""
   Print " style=\"flex-grow:1;\">"
   
   With $aTab[$iIndex]

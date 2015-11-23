@@ -29,7 +29,7 @@ Private $iBgSet As Integer
 Private $iBgModified As Integer
 
 Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]",
-  "Image", "ImagePath", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table"]
+  "Image", "WebformImage", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table"]
 
 Private Const PADDING As Integer = 6
 Private $cInitialValue As Collection
@@ -427,7 +427,7 @@ Public Function SaveProperty() As Boolean
         vVal = sVal
       Endif
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "ImagePath", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "WebformImage", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
       
       vVal = sVal
 
@@ -752,7 +752,7 @@ Private Sub ShowProperty(Optional sFocus As String)
       cmbProperty.ReadOnly = True
       InitComboWith(["False", "True"])
 
-    Case "Font", "Picture", "Path", "Color", "Image", "ImagePath", "SvgImage", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush"
+    Case "Font", "Picture", "Path", "Color", "Image", "WebformImage", "SvgImage", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush"
 
       bButton = True
       txtProperty.ReadOnly = True
@@ -999,7 +999,7 @@ Public Sub txtProperty_Click()
       If FColorChooser.Run(sColor, True) Then Goto _EXIT
       $hEditor.Text = FColorChooser.Color
 
-    Case "Picture", "Image", "ImagePath", "SvgImage"
+    Case "Picture", "Image", "WebformImage", "SvgImage"
 
       sDest = $hFamily.SelectImage($sType, $sOldVal)
       If Not sDest Then Goto _EXIT

@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
+Public Const _Properties As String = "Class,Width,Height,Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -24,6 +24,8 @@ Property Ignore As Boolean
 Property Enabled As Boolean
 Property Background As Integer
 Property Foreground As Integer
+Property Border As Boolean
+Property Class As String
 
 Static Private $iLastId As Integer
 Static Private $iLastFormId As Integer
@@ -45,12 +47,15 @@ Private $vTag As Variant
 Private $iStyleSheet As Integer
 Private $hStyle As WebControlStyle
 
+Private $iBackground As Integer = Color.Default
+Private $iForeground As Integer = Color.Default
+
 Private $bExpand As Boolean
 Private $bIgnore As Boolean
 Private $bDisabled As Boolean
 Private $bHidden As Boolean
-Private $iBackground As Integer = Color.Default
-Private $iForeground As Integer = Color.Default
+Private $bNoBorder As Boolean
+Private $sClass As String
 
 Public Sub _new(Optional Parent As WebContainer)
   
@@ -193,9 +198,19 @@ Private Sub Tag_Write(Value As Variant)
 
 End
 
+Public Sub _GetClassId(Optional sClass As String) As String
+
+  If Not sClass Then sClass = "gw-" & LCase(Mid$(Object.Type(Me), 4))
+  If $bNoBorder Then sClass &= " gw-noborder"
+  If $sClass Then sClass &= " " & $sClass
+  Return " class=\"" & sClass & "\" id=\"" & $sName & "\""
+  
+End
+
+
 Public Sub _BeforeRender()
   
-  Print "<div class=\"gw-"; LCase(Mid$(Object.Type(Me), 4)); "\" id=\""; $sName; "\"";
+  Print "<div"; _GetClassId();
   Me._RenderStyleSheet()
   Print ">"
   
@@ -686,3 +701,29 @@ End
 '   Endif
 '   
 ' End
+
+Private Function Border_Read() As Boolean
+
+  Return $bNoBorder
+
+End
+
+Private Sub Border_Write(Value As Boolean)
+
+  $bNoBorder = Not Value
+  Me._SetProperty("Border", Value)
+
+End
+
+Private Function Class_Read() As String
+
+  Return $sClass
+
+End
+
+Private Sub Class_Write(Value As String)
+
+  $sClass = Value
+  Me._SetProperty("Class", Value)
+
+End

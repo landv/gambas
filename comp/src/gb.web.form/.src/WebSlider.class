@@ -8,7 +8,7 @@ Public Const _DefaultSize As String = "24,4"
 
 Public Sub _BeforeRender()
   
-  Print "<input class=\"gw-slider\" type=\"range\" id=\""; Me.Name; "\""; Me._GetUpdateJS("onchange", "value", "this.value");
+  Print "<input type=\"range\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "value", "this.value");
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   'If $bReadOnly Then Print " readonly";

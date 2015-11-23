@@ -1383,7 +1383,8 @@ Public Procedure Panel_MouseMove()
 
   Dim bSomethingDone As Boolean
   Dim hUndo As CUndo
-
+  Dim sArr As String
+  Dim sTag As String
 
   If Not $bMove Then Return
 
@@ -1396,24 +1397,28 @@ Public Procedure Panel_MouseMove()
   iPanX = $X + Mouse.ScreenX - $MX
   iPanY = $Y + Mouse.ScreenY - $MY 
 
-  ' Select Case Mid$(hPanel.Tag, 2)
-  ' 
-  '   Case "N", "S"
-  '     iPanX = hPanel.X
-  ' 
-  '   Case "W", "E"
-  '     iPanY = hPanel.Y
-  ' 
-  ' End Select
-
   iX = Control.X
   iY = Control.Y
   iW = Control.W
   iH = Control.H
 
   'Debug hCtrl.X;; hCtrl.Y; " / "; $X;; $Y; " -> "; iPanX;; iPanY
+  
+  sTag = Mid$(hPanel.Tag, 2)
+  
+  If $hFamily.AutomaticArrangement Then
+    sArr = Parent.GetArrangement()
+    Select Case sArr
+      Case "H"
+        If Right(sTag) <> "E" Then Return
+      Case "V"
+        If Left(sTag) <> "S" Then Return
+      Case "R", "C"
+        If Left(sTag) = "N" Or If Right(sTag) = "W" Then Return
+    End Select
+  Endif
 
-  Select Case Mid$(hPanel.Tag, 2)
+  Select Case sTag
 
     Case "N", "NW", "NE"
 
@@ -1426,7 +1431,7 @@ Public Procedure Panel_MouseMove()
 
   End Select
 
-  Select Case Mid$(hPanel.Tag, 2)
+  Select Case sTag
 
     Case "W", "NW", "SW"
 
@@ -1438,18 +1443,18 @@ Public Procedure Panel_MouseMove()
       iW = Grid(iPanX - hCtrl.X, Project.Snap)
 
   End Select
+  
+  If iW > 0 And If iH > 0 Then
 
-  If (iW > 0) And (iH > 0) Then
-
-    If (iX <> hCtrl.X) Or (iY <> hCtrl.Y) Then
-      If (iW <> hCtrl.W) Or (iH <> hCtrl.H) Then
+    If iX <> hCtrl.X Or If iY <> hCtrl.Y Then
+      If iW <> hCtrl.W Or If iH <> hCtrl.H Then
         MoveAndResize(iX, iY, iW, iH)
         bSomethingDone = True
       Else
         Move(iX, iY)
         bSomethingDone = True
       Endif
-    Else If (iW <> hCtrl.W) Or (iH <> hCtrl.H) Then
+    Else If iW <> hCtrl.W Or If iH <> hCtrl.H Then
       Resize(iW, iH)
       bSomethingDone = True
     Endif
@@ -1665,7 +1670,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           
     Select Case hProp.Type
 
-      Case "s", "v", "List", "Path", "ImagePath", "Table", "Menu", "ReportCoord", "Field"
+      Case "s", "v", "List", "Path", "WebformImage", "Table", "Menu", "ReportCoord", "Field"
 
         If bTranslate Then
           
@@ -2201,6 +2206,17 @@ Public Sub UpdateGeometry()
   
 End
 
+Public Sub GetArrangement() As String
+
+  Dim sArr As String
+  
+  Try sArr = Project.Documentation.Classes[Kind].Symbols["_DefaultArrangement"].Value
+  If Not Error And If Left(sArr) = "F" Then Try sArr = Left(GetProperty("Arrangement"))
+  Return sArr
+  
+End
+
+
 Public Sub Arrange()
 
   Dim sArr As String
@@ -2214,8 +2230,7 @@ Public Sub Arrange()
   
   If Not IsContainer() Then Return
   
-  Try sArr = Project.Documentation.Classes[Kind].Symbols["_DefaultArrangement"].Value
-  If Not Error And If Left(sArr) = "F" Then Try sArr = Left(GetProperty("Arrangement"))
+  sArr = GetArrangement()
   If Not sArr Then Return
   
   $bArranging = True

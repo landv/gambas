@@ -27,6 +27,16 @@ H1,H2,H3,P {
   min-height: 2em;
 }
 
+.gw-button.gw-noborder {
+  border: none;
+  background: none;
+}
+
+.gw-button.gw-noborder:hover {
+  border: none;
+  background: #E0E0E0;
+}
+
 .gw-button-image {
   margin-right: 0.5em;
   vertical-align: middle;
@@ -61,8 +71,16 @@ H1,H2,H3,P {
   background: white;
 }
 
-.gw-tab-border {
+.gw-tab-header.gw-noborder > div {
+  border: none;
+}
+
+.gw-tab-contents {
   border: solid #C0C0C0 1px;
+}
+
+.gw-tab-contents.gw-noborder {
+  border: none;
 }
 
 .gw-checkbox-label,.gw-radiobutton-label {
@@ -79,6 +97,9 @@ H1,H2,H3,P {
   height: 2em;
   box-sizing: border-box;
   padding: 0 0.25em;
+}
+.gw-textbox.gw-noborder {
+  border: none;
 }
 
 .gw-combobox {
@@ -100,6 +121,10 @@ H1,H2,H3,P {
   box-sizing: border-box;
   padding: 0 2.25em 0 0.25em;
   vertical-align: middle;
+}
+
+.gw-combobox.gw-noborder INPUT {
+  border: none;
 }
 
 .gw-combobox-arrow {
@@ -124,6 +149,10 @@ H1,H2,H3,P {
 
 .gw-selectbox SELECT {
   width: 100%;
+}
+
+.gw-selectbox.gw-noborder SELECT {
+  border: none;
 }
 
 .gw-window {
@@ -199,6 +228,11 @@ H1,H2,H3,P {
   resize: none;
 }
 
+.gw-textarea.gw-noborder {
+  border: none;
+}
+
+
 .gw-menu-title {
   display: inline-table;
   padding: 0.25em 0.5em;
@@ -244,11 +278,11 @@ H1,H2,H3,P {
   position: relative;
   background: white;
   z-index: 1004;
-  height: 2px;
+  height: 4px;
+  margin-top: -4px;
   margin-left: 1px;
   margin-right: 1px;
-  margin-top: -2px;
-  top: -3px;
+  top: -2px;
 }
 
 .gw-menu:hover > .gw-menu-tape {
@@ -356,3 +390,6 @@ H1,H2,H3,P {
   width: 1em;
 }
 
+.gw-spinbox.gw-noborder {
+  border: none;
+}

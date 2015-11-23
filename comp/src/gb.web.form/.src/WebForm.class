@@ -121,7 +121,9 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<div class=\"gw-form\" id=\""; Me.Name; "\"";
+  Print "<div class=\"gw-form";
+  If Me.Class Then Print " "; Me.Class;
+  Print "\" id=\""; Me.Name; "\"";
   Me._RenderStyleSheet()
   Print ">"
   

@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Image{ImagePath}"
+Public Const _Properties As String = "*,Image{WebformImage}"
 
 Property Image As String
 
@@ -13,7 +13,7 @@ Private $sImage As String
 Public Sub _BeforeRender()
   
   If $sImage Then
-    Print "<img class=\"gw-image\" id=\""; Me.Name; "\" src=\""; Html(Application.Root &/ $sImage); "\"";
+    Print "<img"; Me._GetClassId(); " src=\""; Html(Application.Root &/ $sImage); "\"";
     Me._RenderStyleSheet()
     Print ">";
   Else

@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,ReadOnly,Text"
+Public Const _Properties As String = "*,Border=True,ReadOnly,Text"
 Public Const _DrawWith As String = "TextBox"
 Public Const _DefaultSize As String = "24,4"
 
@@ -33,7 +33,7 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<input class=\"gw-textbox\" type=\"text\" id=\""; Me.Name; "\""; Me._GetUpdateJS("onchange", "text", "this.value");
+  Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value");
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";

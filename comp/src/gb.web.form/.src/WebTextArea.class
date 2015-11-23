@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,ReadOnly,Wrap,Text"
+Public Const _Properties As String = "*,Border=True,ReadOnly,Wrap,Text"
 Public Const _DrawWith As String = "TextArea"
 Public Const _DefaultSize As String = "16,16"
 
@@ -48,10 +48,10 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<textarea class=\"gw-textarea\" id=\""; Me.Name; "\" autocomplete=\"off\""; Me._GetUpdateJS("onchange", "text", "this.value");
-  Me._RenderStyleSheet()
+  Print "<textarea"; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); " autocomplete=\"off\""; 
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
+  Me._RenderStyleSheet()
   Print ">";
   
 End
