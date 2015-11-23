@@ -127,7 +127,7 @@ H1,H2,H3,P {
 }
 
 .gw-window {
-  position: absolute;
+  position: fixed;
   border: solid 1px white;
   box-shadow: 0 0 0.5em black;
   border-radius: 0.5em;
@@ -216,7 +216,7 @@ H1,H2,H3,P {
   border-right: solid 1px #C0C0C0;
   box-shadow: 0 0 0.25em #C0C0C0;
   background: white;
-  z-index: 2;
+  z-index: 1002;
 }
 
 .gw-submenu {
@@ -226,7 +226,7 @@ H1,H2,H3,P {
   background: white;
   box-shadow: 0 0.125em 0.25em #C0C0C0;
   margin-top: -0.25em;
-  z-index: 3;
+  z-index: 1003;
 }
 
 .gw-menuitem > .gw-menu > .gw-submenu {
@@ -236,15 +236,14 @@ H1,H2,H3,P {
 }
 
 .gw-menu:hover > .gw-submenu {
-  display: flex;
-  flex-flow: column;
+  display: table;
 }
 
 .gw-menu-tape {
   display: none;
   position: relative;
   background: white;
-  z-index: 4;
+  z-index: 1004;
   height: 2px;
   margin-left: 1px;
   margin-right: 1px;
@@ -290,38 +289,38 @@ H1,H2,H3,P {
 }
 
 .gw-separator {
-  display: flex !important;
   position: relative;
-  flex-grow: column;
-  align-items: center;
-  vertical-align: middle;
   padding: 0 !important;
   pointer-events: none;
-  width: 1em;
-  height: 1em;
 }
 
 .gw-separator-hline {
-  display: block;
   position: absolute;
-  margin: auto;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  height: inherit;
+  width: 100%;
+}
+
+.gw-separator-hline > div {
   height: 1px;
+  width: 100%;
   background: #C0C0C0;
 }
 
 .gw-separator-vline {
-  display: block;
   position: absolute;
-  margin: auto;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  width: inherit;
+}
+
+.gw-separator-vline > div {
   width: 1px;
+  height: 100%;
   background: #C0C0C0;
 }
 
@@ -344,6 +343,8 @@ H1,H2,H3,P {
   display: table-row !important;
   cursor: default;
   margin: 0;
+  width: auto;
+  height: 1em;
 }
 
 .gw-menuitem > .gw-menu {

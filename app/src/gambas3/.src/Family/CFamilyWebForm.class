@@ -6,6 +6,7 @@ Public Const Name As String = "WebForm"
 'Public Const DropImageClass As String = "ReportImage"
 'Public Const DropImageProperty As String = "Image"
 Public Const EmbedContainer As String = "WebContainer"
+Public Const AutomaticArrangement As Boolean = True
 
 Public Sub _new()
 
@@ -42,66 +43,93 @@ Public Sub GetIcon(hCCtrl As CControl) As String
   
 End
 
+Static Public Sub PaintMenuItem(hCCtrl As CControl)
+
+  Dim DS As Integer
+  Dim X As Integer
+  Dim sImage As String
+  Dim hImage As Image
+  Dim sColor As String
+  Dim bMenu As Boolean
+  Dim sText As String
+  
+  DS = Desktop.Scale
+  bMenu = hCCtrl.Kind = "WebMenu"
+  sText = hCCtrl.GetProperty("Text")
+  
+  If hCCtrl.Kind = "WebMenuItem" Then
+    X = DS * 2 + Stock.GetSize("small")
+  Else
+    X = DS
+  Endif
+  
+  sImage = hCCtrl.GetProperty("Image")
+  If sImage Then
+    
+    Try hImage = Image.Load(Project.Dir &/ ".public" &/ sImage)
+    
+    If hImage Then 
+      Paint.DrawImage(hImage, DS, CInt(Paint.H - hImage.H) \ 2)
+      X = DS + hImage.W + DS
+    Endif
+    
+  Endif
+  
+  sColor = hCCtrl.GetProperty("Foreground")
+  If sColor Then
+    Paint.Background = FColorChooser.FromString(sColor)
+  Else
+    Paint.Background = Color.TextForeground
+  Endif
+  
+  Paint.DrawText(sText, X, 0, Paint.W - X - DS, Paint.H, Align.Normal)
+  
+  If bMenu Then 
+    If hCCtrl.Parent And If hCCtrl.Parent.Kind = "WebMenu" Then Style.PaintArrow(Paint.W - DS * 4, 0, DS * 4, DS * 4, Align.Right)    
+  Else
+    Paint.DrawText(hCCtrl.GetProperty("Shortcut"), X, 0, Paint.W - X - DS, Paint.H, Align.Right)
+  Endif
+  
+  If bMenu Then
+    Paint.Background = &HFFB0B0
+    Paint.AntiAlias = False
+    If hCCtrl.Parent And If hCCtrl.Parent.Kind = "WebMenu" Then 
+      Paint.MoveTo(0, Paint.H - DS)
+      Paint.LineTo(0, 0)
+      Paint.LineTo(Paint.W - 1, 0)
+      Paint.LineTo(Paint.W - 1, Paint.H - DS)
+    Else
+      Paint.MoveTo(0, Paint.H - DS)
+      Paint.LineTo(0, 0)
+      X = Min(Paint.W - 1, X + Paint.TextSize(sText).Width + DS)
+      Paint.LineTo(X, 0)
+      Paint.LineTo(X, Paint.H - DS)
+      Paint.LineTo(Paint.W - 1, Paint.H - DS)
+    Endif
+    Paint.Stroke
+    Paint.AntiAlias = True
+  ' Else
+  '   Paint.Background = Color.SetAlpha(Color.LightForeground, 128)
+  '   Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1)
+  '   Paint.Stroke
+  Endif
+  
+End
+
+
 
 Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
-  Dim iBorder As Integer
-  Dim hCtrl As Control = hCCtrl.Control
-  Dim hParent As CControl
-  Dim sImage As String
-  Dim DS As Integer
-  Dim X As Integer
-  Dim hImage As Image
-  Dim sColor As Variant
-  
   Select hCCtrl.Kind
   
-    ' Case "WebMenu"
-    '   
-    '   sText = hCCtrl.GetProperty("Text")
-    '   If Not sText Then sText = " "
-    '   With Paint.TextSize(sText)
-    '     
-    '   End With
-    ' 
-    
     Case "WebMenuItem"
       
-      DS = Desktop.Scale
-      
-      Paint.Background = Color.LightForeground
-      Paint.LineWidth = 1
-      Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
-      Paint.Stroke
-      
-      X = DS * 2 + Stock.GetSize("small")
-      sImage = hCCtrl.GetProperty("Image")
-      If sImage Then
-        
-        Try hImage = Image.Load(Project.Dir &/ ".public" &/ sImage)
-        
-        If hImage Then 
-          Paint.DrawImage(hImage, DS, CInt(Paint.H - hImage.H) \ 2)
-          X = DS + hImage.W + DS
-        Endif
-        
-      Endif
-      
-      sColor = hCCtrl.GetProperty("Foreground")
-      If sColor Then
-        Paint.Background = FColorChooser.FromString(sColor)
-      Else
-        Paint.Background = Color.TextForeground
-      Endif
-      
-      Paint.DrawText(hCCtrl.GetProperty("Text"), X, 0, Paint.W - X - DS, Paint.H, Align.Normal)
-      Paint.DrawText(hCCtrl.GetProperty("Shortcut"), X, 0, Paint.W - X - DS, Paint.H, Align.Right)
-      
+      PaintMenuItem(hCCtrl)
       Return
-    
+      
     Case "WebContainer", "WebHBox", "WebVBox"
-    
-      Paint.Background = &HFFB0B0
+      CFamily.PaintContainer(0, 0, hCCtrl.W, hCCtrl.H)
+      Return
     
     Case Else
       
@@ -109,10 +137,6 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
 
   End Select
 
-  Paint.LineWidth = 1
-  Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
-  Paint.Stroke
-  
 End
 
 Public Sub ActionDialog(sAction As String) As Boolean

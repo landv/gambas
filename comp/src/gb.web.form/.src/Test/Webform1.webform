@@ -1,133 +1,133 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,119,91)
+  #MoveScaled(0,0,93,109)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
   Title = ("gb.web.form test")
   { WebContainer4 WebContainer
-    #MoveScaled(6,2,64,8)
+    #MoveScaled(1,1,91,6)
     Arrangement = Arrange.Horizontal
     Margin = True
     Border = True
     { WebHTML2 WebHTML
-      #MoveScaled(3,1,27,5)
+      #MoveScaled(1,1,27,4)
       Expand = True
       Text = ("Header")
     }
     { btnClose WebButton
-      #MoveScaled(48,1,13,5)
+      #MoveScaled(28,1,13,4)
       Image = "close.png"
     }
   }
   { WebContainer3 WebContainer
-    #MoveScaled(2,17,110,46)
+    #MoveScaled(1,8,91,48)
     Expand = True
     Arrangement = Arrange.Horizontal
     Spacing = True
     { WebContainer1 WebContainer
-      #MoveScaled(1,1,23,42)
+      #MoveScaled(1,1,23,46)
       Arrangement = Arrange.Vertical
       Margin = True
       Spacing = True
       Border = True
       { WebButton1 WebButton
-        #MoveScaled(0,1,19,5)
+        #MoveScaled(1,1,21,5)
         Text = ("Hello world!")
       }
       { WebButton5 WebButton
-        #MoveScaled(0,7,19,5)
+        #MoveScaled(1,7,21,5)
         Text = ("Reset text")
       }
       { WebButton3 WebButton
-        #MoveScaled(0,13,19,5)
+        #MoveScaled(1,13,21,5)
         Text = ("Change text")
       }
       { WebButton4 WebButton
-        #MoveScaled(0,19,19,5)
+        #MoveScaled(1,19,21,5)
         Text = ("0")
       }
       { WebButton2 WebButton
-        #MoveScaled(0,25,19,5)
+        #MoveScaled(1,25,21,5)
         Text = ("Border")
       }
       { WebButton6 WebButton
-        #MoveScaled(0,31,18,5)
+        #MoveScaled(1,31,21,5)
         Text = ("Toggle enabled")
       }
     }
     { WebContainer5 WebContainer
-      #MoveScaled(31,3,66,39)
+      #MoveScaled(25,1,64,46)
       Expand = True
       Arrangement = Arrange.Vertical
       Margin = True
       Spacing = True
       Border = True
       { WebTextBox1 WebTextBox
-        #MoveScaled(4,9,25,5)
+        #MoveScaled(1,1,62,5)
         Height = "2em"
       }
       { WebHtml1 WebHtml
-        #MoveScaled(8,15,23,5)
+        #MoveScaled(1,7,62,5)
         Visible = False
       }
       { WebContainer2 WebContainer
-        #MoveScaled(6,23,26,13)
+        #MoveScaled(1,13,62,13)
         Expand = True
         Margin = True
         Border = True
       }
       { WebHtml3 WebHtml
-        #MoveScaled(2,1,19,6)
+        #MoveScaled(1,27,62,6)
         Ignore = True
         Text = ("Absolute !")
       }
     }
   }
   { WebContainer6 WebContainer
-    #MoveScaled(29,65,69,22)
+    #MoveScaled(1,57,91,24)
     Arrangement = Arrange.Row
     Spacing = True
     Border = True
-    { WebButton7 WebButton
-      #MoveScaled(1,1,15,4)
-      Width = "8em"
-      Text = ("B1")
-    }
     { WebButton8 WebButton
-      #MoveScaled(17,1,17,4)
+      #MoveScaled(1,1,10,10)
       Width = "8em"
       Text = ("B2")
     }
     { WebButton9 WebButton
-      #MoveScaled(3,6,15,4)
+      #MoveScaled(12,1,10,10)
       Width = "8em"
       Text = ("B3")
     }
-    { WebButton10 WebButton
-      #MoveScaled(20,6,17,4)
+    { WebButton7 WebButton
+      #MoveScaled(23,1,10,10)
       Width = "8em"
-      Text = ("B4")
-    }
-    { WebButton11 WebButton
-      #MoveScaled(1,11,15,4)
-      Width = "8em"
-      Text = ("B5")
+      Text = ("B1")
     }
     { WebButton12 WebButton
-      #MoveScaled(17,11,17,4)
+      #MoveScaled(34,1,10,10)
       Width = "8em"
       Text = ("B6")
     }
+    { WebButton10 WebButton
+      #MoveScaled(45,1,10,10)
+      Width = "8em"
+      Text = ("B4")
+    }
     { WebButton14 WebButton
-      #MoveScaled(1,16,17,4)
+      #MoveScaled(56,1,10,10)
       Width = "8em"
       Text = ("B8")
     }
+    { WebButton11 WebButton
+      #MoveScaled(67,1,10,10)
+      Width = "8em"
+      Text = ("B5")
+    }
     { WebButton13 WebButton
-      #MoveScaled(18,16,15,4)
+      #MoveScaled(1,12,10,10)
       Width = "8em"
       Text = ("B7")
     }

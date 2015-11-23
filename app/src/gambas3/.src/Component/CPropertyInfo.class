@@ -15,11 +15,16 @@ Static Private $cTranslate As New Collection
 Static Private $cUpdateName As New Collection
 Static Private $cAlwaysRead As New Collection
 Static Private $cShortcut As New Collection
+Static Private $cArrangement As New Collection
 
 Public Documentation As CDocumentation
 Public Name As String
 Public Type As String
 Public DefaultValue As Variant 
+Public Argument As String
+Public ConstantClass As String
+Public ConstantList As Collection
+
 Public Coord As Boolean '' If a property is a coordinate
 Public Required As Boolean
 Public Exclude As Boolean
@@ -28,13 +33,11 @@ Public DoNotApply As Boolean
 Public AlwaysRead As Boolean
 Public Virtual As Boolean
 Public Translate As Boolean
-Public Argument As String
 Public UpdateName As Boolean 
 Public (Shortcut) As Boolean
+Public Arrangement As Boolean
 'PUBLIC Control AS Boolean
 
-Public ConstantClass As String
-Public ConstantList As Collection
 
 
 Static Public Sub _init()
@@ -128,6 +131,10 @@ Static Public Sub _init()
   $cShortcut["CheckBox.Text"] = True
   $cShortcut["ToggleButton.Text"] = True
   $cShortcut["DataCheckBox.Text"] = True
+  
+  $cArrangement["Arrangement"] = True
+  $cArrangement["Spacing"] = True
+  $cArrangement["Ignore"] = True
   
 End
 
@@ -267,6 +274,7 @@ Public Sub _new(hDoc As CDocumentation, sComponent As String, sClass As String, 
   Translate = GetFlag($cTranslate, sClass, Name)
   Shortcut = GetFlag($cShortcut, sClass, Name)
   UpdateName = GetFlag($cUpdateName, sClass, Name)
+  Arrangement = GetFlag($cArrangement, sClass, Name)
   
   Virtual = bVirtual
   Return

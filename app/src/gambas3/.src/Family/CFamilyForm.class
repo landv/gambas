@@ -98,7 +98,6 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         Return
       Endif
       'If hCCtrl.GetProperty("Background") Then Return
-      Paint.Background = &HFFB0B0
       'Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
     
     Case Else
@@ -107,11 +106,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
 
   End Select
 
-  Paint.LineWidth = 1
-  Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
-  'Paint.AntiAlias = False
-  Paint.Stroke
-  'Paint.AntiAlias = True
+  CFamily.PaintContainer(0, 0, hCtrl.W, hCtrl.H)
   
 End
 

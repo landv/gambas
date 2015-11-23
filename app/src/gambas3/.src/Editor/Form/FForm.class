@@ -90,6 +90,7 @@ Private $hUndo As New CUndo
 
 Private $hCtrlFrame As Control
 Private $hDropTarget As CControl
+Private $bLockArrangement As Boolean
 
 ' Static Private Sub Shortcut(Text As String, sShortcut As String) As String
 ' 
@@ -252,7 +253,11 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
   Dim sProp As String
   Dim aScan As String[]
   Dim aData As String[]
+  Dim DS As Integer
 
+  $bLockArrangement = True
+
+  DS = Desktop.Scale
   aData = Split(sData, "\n")
   
   ' Check that controls exist first
@@ -477,11 +482,12 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
         If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
         cCoord = Split(Mid$(sLine, 6, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        Try hCtrl.Move(CInt(cCoord[0]) / Project.Snap * Desktop.Scale, CInt(cCoord[1]) / Project.Snap * Desktop.Scale, True)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
         If cCoord.Count = 4 Then
-          Try hCtrl.Resize(CInt(cCoord[2]) / Project.Snap * Desktop.Scale, CInt(cCoord[3]) / Project.Snap * Desktop.Scale, True)
+          Try hCtrl.MoveAndResize(CInt(cCoord[0]) / Project.Snap * DS, CInt(cCoord[1]) / Project.Snap * DS, CInt(cCoord[2]) / Project.Snap * DS, CInt(cCoord[3]) / Project.Snap * DS, True)
+        Else
+          Try hCtrl.Move(CInt(cCoord[0]) / Project.Snap * DS, CInt(cCoord[1]) / Project.Snap * DS, True)
         Endif
 
         If Error Then Print "Error: Syntax error: "; sLine
@@ -491,7 +497,7 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
         If Left(sLine) = "#" Then sLine = Mid$(sLine, 2)
         cCoord = Split(Mid$(sLine, 12, -1))
         'TRY PRINT cCoord[0]; ","; cCoord[1]; ","; cCoord[2]; ","; cCoord[3]
-        Try hCtrl.Move(Round(CFloat(cCoord[0]) * Desktop.Scale), Round(CFloat(cCoord[1]) * Desktop.Scale), True)
+        'Try hCtrl.Move(Round(CFloat(cCoord[0]) * DS), Round(CFloat(cCoord[1]) * DS), True)
         'TRY hCtrl.SetProperty("X", Val(cCoord[0]))
         'TRY hCtrl.SetProperty("Y", Val(cCoord[1]))
         If cCoord.Count = 4 Then
@@ -504,14 +510,16 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
           If eW = 0 Then
             iW = 1
           Else
-            iW = Round(eW * Desktop.Scale)
+            iW = Round(eW * DS)
           Endif
           If eH = 0 Then
             iH = 1
           Else
-            iH = Round(eH * Desktop.Scale)
+            iH = Round(eH * DS)
           Endif
-          Try hCtrl.Resize(iW, iH, True)
+          Try hCtrl.MoveAndResize(Round(CFloat(cCoord[0]) * DS), Round(CFloat(cCoord[1]) * DS), iW, iH, True)
+        Else
+          Try hCtrl.Move(Round(CFloat(cCoord[0]) * DS), Round(CFloat(cCoord[1]) * DS), True)
         Endif
 
         If Error Then
@@ -529,6 +537,8 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
   Next
   
   $hUndo.End
+  
+  $bLockArrangement = False
 
 End
 
@@ -664,6 +674,17 @@ Public Sub AddLine(Optional sLig As String)
 
 End
 
+Public Sub GetControl(hCtrl As Control) As CControl
+
+  Dim sTag As String
+  
+  Try sTag = hCtrl.Tag
+  If Not sTag Then Return
+  Return Control[sTag]
+  
+End
+
+
 Public Function GetChildren(sName As String) As CControl[]
 
   Dim aList As New CControl[]
@@ -686,8 +707,8 @@ Public Function GetChildren(sName As String) As CControl[]
     'cList.Insert(Menus)
 
     For Each hChild In hCtrl.Control.Children
-      If Not hChild.Tag Or If hChild.Ignore Then Continue
-      If Control.Exist(hChild.Tag) Then aList.Add(Control[hChild.Tag])
+      hCChild = GetControl(hChild)
+      If hCChild Then aList.Add(hCChild)
     Next
 
     'ELSE IF hCtrl.Kind = "TabStrip" THEN
@@ -698,8 +719,8 @@ Public Function GetChildren(sName As String) As CControl[]
     For iTab = 0 To hTab.Count - 1
 
       For Each hChild In hTab[iTab].Children
-        If Not hChild.Tag Or If hChild.Ignore Then Continue
-        If Control.Exist(hChild.Tag) Then aList.Add(Control[hChild.Tag])
+        hCChild = GetControl(hChild)
+        If hCChild Then aList.Add(hCChild)
       Next
 
     Next
@@ -713,8 +734,8 @@ Public Function GetChildren(sName As String) As CControl[]
   Else
 
     For Each hChild In hCtrl.Control.Children
-      If Not hChild.Tag Or If hChild.Ignore Then Continue
-      If Control.Exist(hChild.Tag) Then aList.Add(Control[hChild.Tag])
+      hCChild = GetControl(hChild)
+      If hCChild Then aList.Add(hCChild)
     Next
 
   Endif
@@ -734,15 +755,12 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim hTab As Object
   Dim iTab As Integer
   Dim sVal As String
-  Dim sArr As String
-  Dim bInvert As Boolean
   Dim sName As String
   Dim sGroup As String
   Dim bPublic As Boolean
   Dim bTranslate As Boolean
+  Dim hCChild As CControl
 
-  'hCtrl = Control[sName]
-  'PRINT "SaveOne: hCtrl = "; hCtrl
   If IsNull(hCtrl) Then Return
 
   sName = hCtrl.Name
@@ -777,36 +795,7 @@ Private Sub SaveOne(hCtrl As CControl)
 
   If hCtrl.IsContainer() Then
 
-    If Not $bDoNotArrange Then
-
-      Try sArr = Project.Documentation.Classes[hCtrl.Kind].Symbols["_DefaultArrangement"].Value
-      If Not Error Then
-
-        If Left(sArr) = "F" Then Try sArr = Left(hCtrl.GetProperty("Arrangement"))
-
-        If sArr Then
-
-          Try bInvert = Not IsNull(hCtrl.GetProperty("Invert"))
-          'IF hCtrl.Kind = "TabStrip" THEN
-          If hCtrl.IsMultiContainer() Then
-
-            hTab = hCtrl.Control
-
-            For iTab = 0 To hTab.Count - 1
-              ArrangeContainer(hCtrl.Control, sArr, bInvert, False, iTab)
-            Next
-
-          Else
-
-            ArrangeContainer(hCtrl.Control, sArr, bInvert, False)
-
-          Endif
-
-        Endif
-
-      Endif
-
-    Endif
+    If Not $bDoNotArrange Then ArrangeContainerByDefault(hCtrl)
 
     If hCtrl.Kind = "Form" Then
 
@@ -815,9 +804,8 @@ Private Sub SaveOne(hCtrl As CControl)
       Next
 
       For Each hChild In hCtrl.Control.Children
-        'PRINT "SaveOne? "; Object.Type(hChild);; hChild.Tag; " "; Control[hChild.Tag]
-        If Not hChild.Tag Or If hChild.Ignore Then Continue
-        SaveOne(Control[hChild.Tag])
+        hCChild = GetControl(hChild)
+        If hCChild Then SaveOne(hCChild)
       Next
 
       'ELSE IF hCtrl.Kind = "TabStrip" THEN
@@ -844,8 +832,8 @@ Private Sub SaveOne(hCtrl As CControl)
         Endif
 
         For Each hChild In hTab[iTab].Children
-          If Not hChild.Tag Or If hChild.Ignore Then Continue
-          SaveOne(Control[hChild.Tag])
+          hCChild = GetControl(hChild)
+          If hCChild Then SaveOne(hCChild)
         Next
 
       Next
@@ -862,8 +850,8 @@ Private Sub SaveOne(hCtrl As CControl)
     Else
 
       For Each hChild In hCtrl.Control.Children
-        If Not hChild.Tag Or If hChild.Ignore Then Continue
-        SaveOne(Control[hChild.Tag])
+        hCChild = GetControl(hChild)
+        If hCChild Then SaveOne(hCChild)
       Next
 
       If hCtrl.Kind = "ToolBar" Then
@@ -1106,6 +1094,7 @@ Public Sub Control_MouseMove()
         iDepX = Master.Control.X
         iDepY = Master.Control.Y
 
+        Master.StartMoveResize
         Master.Move($X + Mouse.ScreenX - $MX, $Y + Mouse.ScreenY - $MY)
 
         iDepX = Master.Control.X - iDepX
@@ -1114,6 +1103,7 @@ Public Sub Control_MouseMove()
         If iDepX <> 0 Or iDepY <> 0 Then
           For Each hCtrl In Selection
             If hCtrl <> Master Then
+              hCtrl.StartMoveResize
               hCtrl.Move(hCtrl.Control.X + iDepX, hCtrl.Control.Y + iDepY, True)
             Endif
           Next
@@ -1220,6 +1210,12 @@ Public Sub Control_MouseUp()
       Endif
 
     Endif
+    
+  Else If $iMode = MODE_MOVE
+    
+    For Each hCtrl In Selection
+      hCtrl.EndMoveResize
+    Next
 
   Endif
 
@@ -1407,6 +1403,9 @@ Public Sub RemoveControl(sName As String)
   Endif
   
   hCCtrl.Delete
+  
+  hParent.UpdateArrangement
+  
   Modify
   RefreshProperty
   CheckHovered
@@ -1496,9 +1495,8 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
   For Each hChild In hParent.Control.Children
 
-    If Not hChild.Tag Or If hChild.Ignore Then Continue
-    hCtrl = Control[hChild.Tag]
-    If IsNull(hCtrl) Then Continue 'panel
+    hCtrl = GetControl(hChild)
+    If Not hCtrl Then Continue
 
     If hChild.X >= (X + W) Then Continue
     If hChild.Y >= (Y + H) Then Continue
@@ -1799,6 +1797,7 @@ End
 Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As Integer = -1)
 
   Dim sErr As String
+  Dim hParent As CControl
   
   If Not sData Then Return
 
@@ -1807,8 +1806,11 @@ Public Sub PutSelection(sData As String, sParent As String, Optional iIndex As I
   '$aSelectNew = New CControl[]
   $hUndo.Begin
   'UnSelectAll
-  If iIndex >= 0 Then Try Control[sParent].Control.Index = iIndex
-  sErr = FromString(sData, Control[sParent])
+  hParent = Control[sParent]
+  
+  If iIndex >= 0 Then Try hParent.Control.Index = iIndex
+  sErr = FromString(sData, hParent)
+  hParent.UpdateArrangement
   $hUndo.End
   $bSelectNew = False
   
@@ -1939,7 +1941,7 @@ Private Function GetSortKey(hCtrl As Control, sArr As String, bInvert As Boolean
 
   End Select
 
-  Return sKey
+  Return sKey & hCtrl.Name
 
 End
 
@@ -1956,14 +1958,14 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
   If hParent Then
     If iIndex < 0 Then
       For Each hCtrl In hParent.Children
-        If Not hCtrl.Tag Or If hCtrl.Ignore Then Continue
-        If Control.Exist(hCtrl.Tag) And If IsNull(Control[hCtrl.Tag].GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
+        hCCtrl = GetControl(hCtrl)
+        If hCCtrl And If IsNull(hCCtrl.GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
       Next
     Else ' Multicontainer
       hTab = hParent
       For Each hCtrl In hTab[iIndex].Children
-        If Not hCtrl.Tag Or If hCtrl.Ignore Then Continue
-        If Control.Exist(hCtrl.Tag) And If IsNull(Control[hCtrl.Tag].GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
+        hCCtrl = GetControl(hCtrl)
+        If hCCtrl And If IsNull(hCCtrl.GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
       Next
     Endif
   Else If Selection.Count >= 2 Then
@@ -2112,10 +2114,8 @@ Private Sub CenterContainer(hCCont As CControl, bVertical As Boolean)
 
   For Each hChild In hCont.Children
 
-    If Not hChild.Tag Or If hChild.Ignore Then Continue
-    If Not Control.Exist(hChild.Tag) Then Continue
-
-    hCCtrl = Control[hChild.Tag]
+    hCCtrl = GetControl(hChild)
+    If Not hCCtrl Then Continue
     If hCCtrl.Virtual Then Continue
 
     If bVertical Then
@@ -2505,30 +2505,43 @@ Public Sub Control_Draw(...)
   Dim hCtrl As Control = Last
   Dim hCCtrl As CControl = Control[hCtrl.Tag]
   Dim hPict As Picture
+  Dim DS As Integer
 
   If Not hCCtrl Then Return
   If Not hCtrl Is DrawingArea Then Return
 
-  If hCCtrl.Parent And If $hFamily.DrawControl(hCCtrl) Then
-
-    If Paint.Device Then Draw.Begin(Paint.Device)
-
-    hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
-    'Draw.ForeColor = Control[Name].Control.Foreground
-    If hPict Then
-      Draw.Picture(hPict, 4, 4)
-      Draw.Text(hCtrl.Tag, 8 + hPict.Width, 4)
-    Else
-      Draw.Text(hCtrl.Tag, 4, 4)
+  If hCCtrl.Parent Then
+  
+     DS = Desktop.Scale
+     
+    If hCCtrl.IsExpandedContents() Then
+      If hCCtrl["Background"] = Color.Default Then
+        Paint.FillRect(0, 0, Paint.W, Paint.H, $hFamily.Background)
+      Endif
+      Paint.Background = Color.SetAlpha(Color.Red, 128)
+      Paint.Polygon([Paint.W, 0, Paint.W - DS * 3, 0, Paint.W, DS * 3, Paint.W, 0])
+      'Paint.FillRect(0, 0, DS * 2, DS * 2, Color.Red)
+      Paint.Fill
     Endif
-    Draw.Foreground = Color.Gradient(Color.Background, &H808080&)
 
-    'Draw.LineStyle = Line.Dash
-    Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
-    'Draw.LineStyle = Line.None
+    If $hFamily.DrawControl(hCCtrl) Then
 
-    If Paint.Device Then Draw.End
-
+      hPict = Picture[".control" &/ LCase(hCCtrl.Kind)]
+      'Draw.ForeColor = Control[Name].Control.Foreground
+      If hPict Then
+        Paint.DrawPicture(hPict, DS, DS)
+        Paint.DrawText(hCtrl.Tag, DS * 2 + hPict.Width, DS, Paint.W, Paint.H, Align.TopLeft)
+      Else
+        Paint.DrawText(hCtrl.Tag, DS, DS, Paint.W, Paint.H, Align.TopLeft)
+      Endif
+      
+      Paint.Background = Color.Gradient(Color.Background, &H808080&)
+      Paint.Rectangle(0.5, 0.5, hCtrl.W - 1, hCtrl.H - 1)
+      Paint.LineWidth = 1
+      Paint.Stroke
+    
+    Endif
+    
   Endif
 
 End
@@ -2592,10 +2605,8 @@ Public Sub mnuSelectAll_Click()
   bFirst = True
 
   For Each hChild In hParent.Control.Children
-    If Not hChild.Tag Or If hChild.Ignore Then Continue
-    hCtrl = Control[hChild.Tag]
-    If IsNull(hCtrl) Then Continue 'panel
-    aSelect.Add(hCtrl)
+    hCtrl = GetControl(hChild)
+    If hCtrl Then aSelect.Add(hCtrl)
   Next
 
   For Each hCtrl In aSelect
@@ -3028,6 +3039,7 @@ Public Sub Handle_MouseDown()
   $Y = Mouse.ScreenY
   $W = RootControl.Control.W
   $H = RootControl.Control.H
+  RootControl.StartMoveResize
   $hUndo.Begin
 
 End
@@ -3082,6 +3094,7 @@ Public Sub Handle_MouseUp()
   If $hUndo.IsDisabled() Then $hUndo.Enable
   $hUndo.End
   $bMove = False
+  RootControl.EndMoveResize()
 
 End
 
@@ -3144,6 +3157,9 @@ Public Sub Action_Activate((Key) As String) As Boolean
 
     Case ".lower"
       DoLower
+      
+    ' Case ".toggle"
+    '   ToggleContainer
 
     Case ".grid"
       UpdateSnap
@@ -4004,4 +4020,57 @@ Public Sub GetFamily() As CFamily
   
   Return $hFamily
   
+End
+
+' Private Sub ToggleContainer()
+' 
+'   Dim hCCtrl As CControl
+' 
+'   For Each hCCtrl In Selection
+'     hCCtrl.ToggleContents
+'   Next
+' 
+' End
+
+Public Sub ArrangeContainerByDefault(hCtrl As CControl, Optional bReal As Boolean)
+
+  Dim sArr As String
+  Dim bInvert As Boolean
+  Dim hTab As Object
+  Dim iTab As Integer
+
+  Try sArr = Project.Documentation.Classes[hCtrl.Kind].Symbols["_DefaultArrangement"].Value
+
+  If Not Error Then
+
+    If Left(sArr) = "F" Then Try sArr = Left(hCtrl.GetProperty("Arrangement"))
+
+    If sArr Then
+
+      Try bInvert = Not IsNull(hCtrl.GetProperty("Invert"))
+      
+      If hCtrl.IsMultiContainer() Then
+
+        hTab = hCtrl.Control
+
+        For iTab = 0 To hTab.Count - 1
+          ArrangeContainer(hCtrl.Control, sArr, bInvert, False, iTab)
+        Next
+
+      Else
+
+        ArrangeContainer(hCtrl.Control, sArr, bInvert, False)
+
+      Endif
+        
+      If bReal And If $hFamily.AutomaticArrangement And If Not $bLockArrangement Then
+      
+        hCtrl.Arrange()
+      
+      Endif
+
+    Endif
+
+  Endif
+
 End

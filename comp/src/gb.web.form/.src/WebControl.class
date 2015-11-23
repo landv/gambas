@@ -230,7 +230,7 @@ Public Sub _RenderStyleSheet()
     If hParent Then
       Select Case hParent.Arrangement
         Case Arrange.Vertical
-          _AddStyleSheet("display:block;")
+          'If bInline Then _AddStyleSheet("display:block;")
           If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5em;")
         Case Arrange.Horizontal
           '_AddStyleSheet("display: block;")

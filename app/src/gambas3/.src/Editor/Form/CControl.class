@@ -30,6 +30,8 @@ Property Read Height As Integer
 Property Read W As Integer
 Property Read H As Integer
 
+Static Private $bDoNotMoveHandle As Boolean
+
 Private $cValue As New Collection
 
 Private $aPanel As New Panel[8] 'DrawingArea[1] '8
@@ -37,15 +39,16 @@ Private $aPanel As New Panel[8] 'DrawingArea[1] '8
 'PRIVATE CONST PAN_H AS Integer = 6
 'PRIVATE CONST PAN_W AS Integer = 6
 
+Private $bIsContainer As Boolean
+Private $bIsMultiContainer As Boolean
+
 Private $bMove As Boolean
 Private $X As Integer
 Private $Y As Integer
 Private $MX As Integer
 Private $MY As Integer
 Private $hFamily As CFamily
-'Private $bMaster As Boolean
-
-Static Private $bDoNotMoveHandle As Boolean
+Private $bArranging As Boolean
 
 
 Static Public Sub _init()
@@ -174,7 +177,7 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
   'PRINT "> CreateControl "; sClass
 
-  'If sClass = "TextEditor" Then Stop
+  'If sClass = "WebMenu" Then Stop
 
   hClass = Project.Documentation.Classes[sClass]
   bExist = hClass <> Null
@@ -308,27 +311,9 @@ Private Function CreateControl(sName As String, sClass As String, hParent As Obj
 
       Else
 
-        If bExist Then
-          Try hCtrl = New (sClass, hParent)
-          'If Error And If hClass.Family = "Form" Then Debug sClass; ": "; Error.Text
-          'ENDIF
-          'hCtrl = NEW (sClass, hParent)
-        Endif
-
-        If Not hCtrl Then
-          'PRINT "DrawingArea: sClass"
-          hCtrl = New DrawingArea(hParent)
-          'hCtrl.Merge = True
-          'hCtrl.Text = sClass & " ?"
-          'hCtrl.Design = True
-          'hCtrl.Painted = $hFamily.IsPainted(Me)
-          'hCtrl.Transparent = $hFamily.IsTransparent(Me)
-        Else
-          'hCtrl.Design = Not IsContainer()
-          ' If Not IsMultiContainer() Then
-          '   Try hCtrl.Text = sName
-          ' Endif
-        Endif
+        If bExist Then Try hCtrl = New (sClass, hParent)
+        If Not hCtrl Then Try hCtrl = New ($hFamily.Name & sClass, hParent)
+        If Not hCtrl Then hCtrl = New DrawingArea(hParent)
 
       Endif
 
@@ -419,6 +404,8 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
       'hCtrl.Resize(5 * Desktop.Scale, 5 * Desktop.Scale)
       iDim = 2 + (32 + Desktop.Scale - 1) \ Desktop.Scale '(40 + Desktop.Scale - 1) Div Desktop.Scale
       hCtrl.MoveScaled(0, 0, iDim, iDim)
+      hCtrl.Ignore = True
+      '$cValue["Ignore"] = True
       
     Else
 
@@ -444,12 +431,13 @@ Public Sub _new(sName As String, sClass As String, hParent As CControl, hForm As
   Endif
   
   VirtualCoord = hClass.Family <> "Form" And Not Virtual
+  
+  Try $bIsContainer = Project.Documentation.Classes[Kind].Container
+  Try $bIsMultiContainer = Project.Documentation.Classes[Kind].MultiContainer
 
   InitControl()
 
-  If IsMultiContainer() Then
-    Tag = New Collection
-  Endif
+  If $bIsMultiContainer Then Tag = New Collection
 
   UpdateName
 
@@ -551,8 +539,6 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   Dim hProp As CPropertyInfo
   Dim vRealVal As Variant
   Dim hClass As Class
-
-  'If $cSynonymous.Exist(sProp) Then sProp = $cSynonymous[sProp]
 
   Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
   'IF ERROR THEN STOP
@@ -672,13 +658,14 @@ _DO_NOT_APPLY:
   Endif
 
   If hProp.UpdateName Then UpdateName
+  If hProp.Arrangement Then UpdateArrangement
   
-  If Control Is DrawingArea Then 
-    Control.Refresh
-  Else If Control Is Menu Then
+  If Control Is Menu Then
     If sProp = "Text" Or If sProp = "Shortcut" Then
       Control.Text = RTrim($cValue["Text"] & "\t" & $cValue["Shortcut"])
-    Endif  
+    Endif
+  Else
+    Control.Refresh
   Endif
 
 Finally
@@ -831,13 +818,13 @@ End
 
 Public Function IsContainer() As Boolean
 
-  Try Return Project.Documentation.Classes[Kind].Container
+  Return $bIsContainer
 
 End
 
 Public Function IsMultiContainer() As Boolean
 
-  Try Return Project.Documentation.Classes[Kind].MultiContainer
+  Return $bIsMultiContainer
 
 End
 
@@ -848,6 +835,18 @@ Public Sub HasChildren() As Boolean
   Try hCont = Control
   If Not hCont Then Return
   Return hCont.Children.Count > 0
+  
+End
+
+Public Sub GetChildren() As CControl[]
+
+  Dim hForm As FForm
+  Dim aChildren As CControl[]
+  
+  hForm = GetForm()
+  aChildren = hForm.GetChildren(Name)
+  If Not aChildren Then aChildren = New CControl[]
+  Return aChildren
   
 End
 
@@ -1134,6 +1133,7 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
   hPanel.Resize(PAN_W, PAN_H)
   hPanel.Tag = "#" & sTag
   hPanel.Mouse = iMouse
+  HPanel.Ignore = True
   'hPanel.Tracking = True
   'hPanel.Merge = True
 
@@ -1203,7 +1203,7 @@ Private Sub MovePanel(iPanel As Integer)
 End
 
 
-Private Sub MoveAllHandle()
+Public Sub MoveAllHandle()
 
   Dim iInd As Integer
 
@@ -1218,6 +1218,17 @@ Private Sub MoveAllHandle()
   
 End
 
+
+Public Sub UpdateArrangement()
+
+  'If $bMove Then Return
+  
+  With GetForm()
+    If Parent Then .ArrangeContainerByDefault(Parent, True)
+    If $bIsContainer Then .ArrangeContainerByDefault(Me, True)
+  End With
+
+End
 
 Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
 
@@ -1253,6 +1264,8 @@ Public Sub Move(X As Integer, Y As Integer, Optional bFree As Boolean)
   
   MoveAllHandle
   
+  UpdateArrangement()
+  
 End
 
 Public Sub HasIcon() As Boolean
@@ -1271,14 +1284,11 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
   If Not bFree Then
     W = Grid(W, Project.Snap)
     H = Grid(H, Project.Snap)
-    'W = Grid(W, Desktop.Scale)
-    'H = Grid(H, Desktop.Scale)
   Endif
 
-  If W = GetProperty("#Width") And H = GetProperty("#Height") Then Return
+  If W = GetProperty("#Width") And If H = GetProperty("#Height") Then Return
 
   Control.Resize(W, H)
-  'IF Parent THEN Arrange(Parent.Control, FALSE)
 
   $bDoNotMoveHandle = True
 
@@ -1289,6 +1299,7 @@ Public Sub Resize(W As Integer, H As Integer, Optional bFree As Boolean)
 
   $bDoNotMoveHandle = False
 
+  UpdateArrangement()
   MoveAllHandle
 
 End
@@ -1330,12 +1341,13 @@ Public Sub MoveAndResize(X As Integer, Y As Integer, W As Integer, H As Integer,
   SetProperty("#Width", W)
   SetProperty("#Height", H)
 
-  $bDoNotMoveHandle = False
-
-  MoveAllHandle
-
   hUndo.End
   
+  $bDoNotMoveHandle = False
+
+  UpdateArrangement()
+  MoveAllHandle
+
 End
 
 
@@ -1348,7 +1360,7 @@ Public Procedure Panel_MouseDown()
   If Not Last.Tag Then Return
 
   GetUndo().Begin
-  $bMove = True
+  StartMoveResize
   $MX = Mouse.ScreenX
   $MY = Mouse.ScreenY
   $X = Last.X + Mouse.X
@@ -1457,7 +1469,8 @@ Public Procedure Panel_MouseUp()
 
   Dim hUndo As CUndo = GetUndo()
 
-  $bMove = False
+  EndMoveResize
+  
   If hUndo.IsDisabled() Then hUndo.Enable
   hUndo.End
   
@@ -2055,5 +2068,202 @@ Public Sub GetTable(Optional sField As String) As String
   sTable = Parent["Table"]
   If sTable Then Return sTable
   Return Parent.GetTable()
+  
+End
+
+Public Sub IsExpandedContents() As Boolean
+  
+  Return Not IsNull($cValue["#OldWidth"])
+  
+End
+
+
+Public Sub ExpandContents(Optional bForce As Boolean)
+  
+  Dim hUndo As CUndo = GetUndo()
+  Dim hChild As CControl
+  Dim hCont As Container
+  Dim W As Integer
+  Dim H As Integer
+  
+  If Not IsContainer() Then Return
+  hCont = Control
+  
+  hUndo.Begin
+  
+  If bForce Or If IsNull($cValue["#OldWidth"]) Then
+
+    For Each hChild In GetChildren()
+      
+      W = Max(W, hChild.Control.ScreenX - hCont.ScreenX + hChild.W)
+      H = Max(H, hChild.Control.ScreenY - hCont.ScreenY + hChild.H)
+      
+    Next
+    
+    If W = 0 Or If H = 0 Then Return
+    
+    W += Desktop.Scale
+    H += Desktop.Scale
+    
+    If IsNull($cValue["#OldWidth"]) Then
+      $cValue["#OldWidth"] = W_Read()
+      $cValue["#OldHeight"] = H_Read()
+    Endif
+    
+    Me.Raise
+    Resize(W, H)
+    
+  Endif
+    
+  If Parent And If Parent.Parent Then Parent.ExpandContents(True)
+  
+  hUndo.End
+  
+End
+
+Public Sub CollapseContents()
+  
+  Dim hUndo As CUndo = GetUndo()
+  Dim hChild As CControl
+  Dim hCont As Container
+  Dim W As Integer
+  Dim H As Integer
+  
+  If Not IsContainer() Then Return
+  hCont = Control
+
+  hUndo.Begin
+  
+  For Each hChild In GetChildren()
+    hChild.CollapseContents()
+  Next
+  
+  If IsExpandedContents() Then
+    
+    Try W = $cValue["#OldWidth"]
+    Try H = $cValue["#OldHeight"]
+    $cValue["#OldWidth"] = Null
+    $cValue["#OldHeight"] = Null
+    Resize(W, H)
+
+  Endif
+  
+  hUndo.End
+  
+End
+
+Public Sub ToggleContents()
+  
+  If IsExpandedContents() Then
+    CollapseContents
+  Else
+    ExpandContents
+  Endif
+  
+End
+
+Public Sub StartMoveResize()
+  
+  $bMove = True
+  
+End
+
+Public Sub EndMoveResize()
+  
+  $bMove = False
+  UpdateArrangement
+  
+End
+
+Public Sub UpdateGeometry()
+  
+  Dim hUndo As CUndo
+  
+  'If Control.X = Me.X And If Control.Y = Me.Y And If Control.W = Me.W And If Control.H = Me.H Then Return
+  
+  hUndo = GetUndo()
+  
+  $bDoNotMoveHandle = True
+
+  hUndo.Begin
+  SetProperty("#X", Control.X)
+  SetProperty("#Y", Control.Y)
+  If Not Virtual Then
+    SetProperty("#Width", Control.W)
+    SetProperty("#Height", Control.H)
+  Endif
+  hUndo.End
+
+  $bDoNotMoveHandle = False
+  
+  MoveAllHandle
+  UpdateArrangement
+  
+End
+
+Public Sub Arrange()
+
+  Dim sArr As String
+  Dim hTab As Object
+  Dim iTab As Integer
+  Dim hChild As Control
+  Dim hForm As FForm
+  Dim hCtrl As CControl
+  
+  If $bArranging Then Return
+  
+  If Not IsContainer() Then Return
+  
+  Try sArr = Project.Documentation.Classes[Kind].Symbols["_DefaultArrangement"].Value
+  If Not Error And If Left(sArr) = "F" Then Try sArr = Left(GetProperty("Arrangement"))
+  If Not sArr Then Return
+  
+  $bArranging = True
+  
+  hTab = Control
+  
+  Try hTab.Invert = Not IsNull(GetProperty("Invert"))
+  Try hTab.Margin = True 'Not IsNull(hCtrl.GetProperty("Margin"))
+  Try hTab.Spacing = Not IsNull(GetProperty("Spacing"))
+  
+  Select Case sArr
+    Case "V"
+      Try hTab.Arrangement = Arrange.Vertical
+    Case "H"
+      Try hTab.Arrangement = Arrange.Horizontal
+    Case "R"
+      Try hTab.Arrangement = Arrange.Row
+    Case "C"
+      Try hTab.Arrangement = Arrange.Column
+    Case "F" ' Is it a good idea to implemet "fill"?
+      Try hTab.Arrangement = Arrange.Fill
+  End Select
+  
+  Try hTab.Arrangement = Arrange.None
+  Try hTab.Margin = False
+  Try hTab.Spacing = False
+  Try hTab.Invert = False
+  
+  hForm = GetForm()
+  
+  If IsMultiContainer() Then
+
+    For iTab = 0 To hTab.Count - 1
+      For Each hChild In hTab[iTab].Children
+        hCtrl = hForm.GetControl(hChild)
+        If hCtrl Then hCtrl.UpdateGeometry
+      Next
+    Next
+
+  Else
+
+    For Each hChild In hTab.Children
+      hCtrl = hForm.GetControl(hChild)
+      If hCtrl Then hCtrl.UpdateGeometry
+    Next
+
+  Endif
+
+  $bArranging = False
   
 End
