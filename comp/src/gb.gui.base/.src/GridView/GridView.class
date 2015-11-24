@@ -928,6 +928,7 @@ Public Sub ScrollArea_MouseMove()
   Dim iMouse As Integer
   Dim F As Integer = _GetFrameWidth()
   Dim bInRowHeader As Boolean
+  Dim HW As Integer
 
   If Me.Design Then Return
   If Not Me.Enabled Then Return
@@ -967,6 +968,7 @@ Public Sub ScrollArea_MouseMove()
   
   $iRowResize = -1
   $iColResize = -1
+  HW = (Desktop.Scale * 3) \ 4
   
   bInRowHeader = InRowHeader(MX)
   
@@ -974,7 +976,7 @@ Public Sub ScrollArea_MouseMove()
     
     If $hRows.Resizable Then
       For I = 0 To $aRowY.Max
-        If MY >= ($aRowY[I] - 1) And If MY <= ($aRowY[I] + 2) Then
+        If MY >= ($aRowY[I] - HW) And If MY <= ($aRowY[I] + HW) Then
           If I + $iFirstRow Then
             iMouse = Mouse.SizeS
             $iRowResize = I + $iFirstRow - 1
@@ -1005,7 +1007,7 @@ Public Sub ScrollArea_MouseMove()
         ' Next
         For I = 1 To $hColumns.Count - 1
           With $hColumns[I]
-            If $hColumns[I].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
+            If $hColumns[I].Resizable And If X >= (.X - HW) And If X <= (.X + HW) Then
               iMouse = Mouse.SizeE
               $iColResize = I
               $iDimResize = $hColumns[$iColResize].Width
@@ -1016,7 +1018,7 @@ Public Sub ScrollArea_MouseMove()
       Else
         For I = 1 To $hColumns.Count - 1
           With $hColumns[I]
-            If $hColumns[I - 1].Resizable And If X >= (.X - 1) And If X <= (.X + 2) Then
+            If $hColumns[I - 1].Resizable And If X >= (.X - HW) And If X <= (.X + HW) Then
               iMouse = Mouse.SizeE
               $iColResize = I - 1
               $iDimResize = $hColumns[$iColResize].Width
@@ -1027,13 +1029,13 @@ Public Sub ScrollArea_MouseMove()
       Endif
       
       If System.RightToLeft Then
-        If $iColResize < 0 And If $hColumns[0].Resizable And If X >= ($hColumns._GetWidth() - 1) And If X <= ($hColumns._GetWidth() + 2) Then
+        If $iColResize < 0 And If $hColumns[0].Resizable And If X >= ($hColumns._GetWidth() - HW) And If X <= ($hColumns._GetWidth() + HW) Then
           iMouse = Mouse.SizeE
           $iColResize = 0
           $iDimResize = $hColumns[$iColResize].Width
         Endif
       Else
-        If $iColResize < 0 And If $hColumns[$hColumns.Count - 1].Resizable And If X >= ($hColumns._GetWidth() - 1) And If X <= ($hColumns._GetWidth() + 2) Then
+        If $iColResize < 0 And If $hColumns[$hColumns.Count - 1].Resizable And If X >= ($hColumns._GetWidth() - HW) And If X <= ($hColumns._GetWidth() + HW) Then
           iMouse = Mouse.SizeE
           $iColResize = $hColumns.Count - 1
           $iDimResize = $hColumns[$iColResize].Width
