@@ -3,13 +3,12 @@
 Inherits CFamily
 
 Public Const Name As String = "Form"
+Public Const ControlClass As String = "Control"
 Public Const DropImageClass As String = "PictureBox"
 Public Const DropImageProperty As String = "Picture"
 Public Const AllowScaledProperty As Boolean = True
 Public Const HasMenuEditor As Boolean = True
 Public Const EmbedContainer As String = "Panel"
-
-Static Private $hExpand As Picture
 
 Public Sub GetIcon(hCCtrl As CControl) As String
   
@@ -53,7 +52,6 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
   Dim iBorder As Integer
   Dim hCtrl As Control = hCCtrl.Control
-  Dim hParent As CControl
   
   'Debug hCCtrl.Name
   
@@ -65,20 +63,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
     
     Case "Panel"
     
-      If Not hCCtrl.HasChildren() And If hCCtrl.GetProperty("Expand") Then
-        hParent = hCCtrl.Parent
-        If hParent Then
-          If Not $hExpand Then $hExpand = Picture["img/family/expand.png"]
-          Select Case GetIcon(hParent)
-            Case Like "horizontal*", "row*"
-              Draw.Tile($hExpand, 0, (hCtrl.H - $hExpand.H) \ 2, hCtrl.W, $hExpand.H)
-              Return
-            Case Like "vertical*", "column*"
-              Draw.Tile($hExpand, (hCtrl.W - $hExpand.W) \ 2, 0, $hExpand.W, hCtrl.H)
-              Return
-          End Select
-        Endif
-      Endif
+      CFamily.PaintExpand(hCCtrl)
     
       Select Case hCCtrl.GetProperty("Border")
         Case "Raised"

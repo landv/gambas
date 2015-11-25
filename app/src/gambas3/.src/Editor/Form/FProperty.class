@@ -141,14 +141,15 @@ Public Sub RefreshAll()
       sClass = hCtrl.Kind
     Else If sClass <> hCtrl.Kind Then
       bDiff = True
+      Break
     Endif
 
   Next
 
+  If bDiff Then sClass = $hFamily.ControlClass
+  
   UpdateLabel
 
-  If bDiff Then sClass = "Control"
-  
   $sClass = sClass
 
   'If Not $bDisableIntegratedHelp Then

@@ -27,10 +27,7 @@ Private $bNoUpdateMenu As Boolean
 
 Private $iMode As Integer
 
-Private Const MODE_NOTHING As Integer = 0
-Private Const MODE_CREATE As Integer = 1
-Private Const MODE_MOVE As Integer = 2
-Private Const MODE_SELECT As Integer = 3
+Private Enum MODE_NOTHING, MODE_CREATE, MODE_MOVE, MODE_SELECT, MODE_RESIZE
 
 Private $sTool As String
 Private $hCurrent As CControl
@@ -892,7 +889,6 @@ Public Sub Control_MouseDown()
 
   Me.SetFocus
   Project.SetCurrentPopup(mnuForm)
-  'DrawControlFrame(Null)
 
   X = Mouse.X
   Y = Mouse.Y
@@ -1520,7 +1516,7 @@ Private Sub SelectIn(hParent As CControl, X As Integer, Y As Integer, W As Integ
 
 End
 
-Private Sub HideFrame()
+Public Sub HideFrame()
 
   Dim hCtrl As Control
 
@@ -4074,3 +4070,18 @@ Public Sub ArrangeContainerByDefault(hCtrl As CControl, Optional bReal As Boolea
   Endif
 
 End
+
+Public Sub StartResizeMode()
+  
+  $iMode = MODE_RESIZE
+  HideFrame
+  
+End
+
+Public Sub EndResizeMode()
+  
+  $iMode = MODE_NOTHING
+  CheckHovered
+  
+End
+

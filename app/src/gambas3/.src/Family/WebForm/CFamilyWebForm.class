@@ -3,8 +3,9 @@
 Inherits CFamily
 
 Public Const Name As String = "WebForm"
-'Public Const DropImageClass As String = "ReportImage"
-'Public Const DropImageProperty As String = "Image"
+Public Const ControlClass As String = "WebControl"
+Public Const DropImageClass As String = "WebImage"
+Public Const DropImageProperty As String = "Image"
 Public Const EmbedContainer As String = "WebContainer"
 Public Const AutomaticArrangement As Boolean = True
 
@@ -128,6 +129,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
       Return
       
     Case "WebContainer", "WebHBox", "WebVBox"
+      CFamily.PaintExpand(hCCtrl)
       CFamily.PaintContainer(0, 0, hCCtrl.W, hCCtrl.H)
       Return
     

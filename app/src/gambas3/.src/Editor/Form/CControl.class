@@ -574,8 +574,11 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
   If Unknown Then 
     hClass = Object.Class(Control)
     If Not hClass.Exist(sProp) Then Goto _DO_NOT_APPLY
-    If hClass[sProp].Kind <> Class.Property Then Goto _DO_NOT_APPLY
-    If hClass[sProp].ReadOnly Then Goto _DO_NOT_APPLY
+    With hClass[sProp]
+      If .Kind <> Class.Property Then Goto _DO_NOT_APPLY
+      If .ReadOnly Then Goto _DO_NOT_APPLY
+      If .Type <> hProp.Type Then Goto _DO_NOT_APPLY
+    End With
     'If Not Project.Documentation.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
     ' If Not hProp.Coord Then 
     '   If sProp <> "Background" And sProp <> "Foreground" Then 
@@ -1133,7 +1136,7 @@ Private Sub CreatePanel(iIndex As Integer, sTag As String, iMouse As Integer, bM
   hPanel.Resize(PAN_W, PAN_H)
   hPanel.Tag = "#" & sTag
   hPanel.Mouse = iMouse
-  HPanel.Ignore = True
+  hPanel.Ignore = True
   'hPanel.Tracking = True
   'hPanel.Merge = True
 
@@ -1221,10 +1224,11 @@ End
 
 Public Sub UpdateArrangement()
 
-  'If $bMove Then Return
+  Dim bIgnore As Boolean
   
   With GetForm()
-    If Parent Then .ArrangeContainerByDefault(Parent, True)
+    Try bIgnore = Control.Ignore
+    If Parent And If Not bIgnore Then .ArrangeContainerByDefault(Parent, True)
     If $bIsContainer Then .ArrangeContainerByDefault(Me, True)
   End With
 
@@ -1359,8 +1363,10 @@ Public Procedure Panel_MouseDown()
   If GetForm().ReadOnly Then Return
   If Not Last.Tag Then Return
 
-  GetUndo().Begin
+  GetForm().StartResizeMode
   StartMoveResize
+  
+  GetUndo().Begin
   $MX = Mouse.ScreenX
   $MY = Mouse.ScreenY
   $X = Last.X + Mouse.X
@@ -1479,9 +1485,9 @@ Public Procedure Panel_MouseUp()
   If hUndo.IsDisabled() Then hUndo.Enable
   hUndo.End
   
-  GetForm().CheckHovered(Control.Parent)
-
-End
+  GetForm().EndResizeMode
+  
+  End
 
 
 Public Sub Panel_Menu()
