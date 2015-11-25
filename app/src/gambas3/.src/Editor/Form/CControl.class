@@ -536,13 +536,16 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   Dim hUndo As CUndo = GetUndo()
   Dim vDefault As Variant
+  Dim hSym As CSymbolInfo
   Dim hProp As CPropertyInfo
   Dim vRealVal As Variant
   Dim hClass As Class
 
-  Try hProp = Project.Documentation.Classes[Kind].Properties[sProp]
-  'IF ERROR THEN STOP
-  If IsNull(hProp) Then Return ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
+  With Project.Documentation.Classes[Kind]
+    Try hProp = .Properties[sProp]
+    If IsNull(hProp) Then Return ' La propriété n'existe pas, donc on PEUT changer sa valeur !!
+    hSym = .Symbols[sProp]
+  End With
 
   hUndo.Begin
   hUndo.Add("SetControlProperty", [Me.Name, sProp, GetProperty(sProp), bDoNotApply])
@@ -577,7 +580,9 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
     With hClass[sProp]
       If .Kind <> Class.Property Then Goto _DO_NOT_APPLY
       If .ReadOnly Then Goto _DO_NOT_APPLY
-      If .Type <> hProp.Type Then Goto _DO_NOT_APPLY
+      If .Type <> hSym.Type Then 
+        Goto _DO_NOT_APPLY
+      Endif
     End With
     'If Not Project.Documentation.Classes[Object.Type(Control)].Properties.Exist(sProp) Then Goto _DO_NOT_APPLY
     ' If Not hProp.Coord Then 
