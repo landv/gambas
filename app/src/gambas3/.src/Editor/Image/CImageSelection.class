@@ -381,14 +381,14 @@ End
 ' End
 
 
-Public Sub Rectangle(X As Integer, Y As Integer, W As Integer, H As Integer, Optional R As Integer)
+Public Sub Rectangle(X As Float, Y As Float, W As Float, H As Float, Optional R As Integer)
 
   Dim A As Integer
   Dim XC, YC As Float
 
   If W = 0 Or If H = 0 Then Return  
   
-  R = Min(R, Min(W, H) \ 2)
+  R = Min(R, CInt(Min(W, H) / 2))
   
   If R <= 0 Then
   
@@ -508,7 +508,7 @@ Public Sub Text(X As Float, Y As Float, sText As String, sFont As String, iAlign
 End
 
 
-Public Sub Ellipse(X As Integer, Y As Integer, W As Integer, H As Integer)
+Public Sub Ellipse(X As Float, Y As Float, W As Float, H As Float)
   
   Dim A As Integer
   Dim XC, YC, WC, HC As Float

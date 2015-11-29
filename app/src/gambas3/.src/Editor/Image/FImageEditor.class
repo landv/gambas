@@ -1094,10 +1094,10 @@ Public Sub imvImage_MouseMove()
           If Y1 > Y2 Then Swap Y1, Y2
           
           If X2 - X1 >= 0.25 And If Y2 - Y1 >= 0.25 Then 
-            X1 = Floor(X1)
-            X2 = Ceil(X2)
-            Y1 = Floor(Y1)
-            Y2 = Ceil(Y2)
+            'X1 = Floor(X1)
+            'X2 = Ceil(X2)
+            'Y1 = Floor(Y1)
+            'Y2 = Ceil(Y2)
             WW = X2 - X1
             HH = Y2 - Y1
           Else
@@ -1108,11 +1108,11 @@ Public Sub imvImage_MouseMove()
           If $sTool = "ellipse" Then
           
             If $bShift Then
-              WW *= Sqr(2)
-              HH *= Sqr(2)
-              $hSelect.Ellipse(CInt($hLastPoint.X) - WW, CInt($hLastPoint.Y) - HH, WW * 2, HH * 2)
+              'WW *= 2 'Sqr(2)
+              'HH *= 2 'Sqr(2)
+              $hSelect.Ellipse($hLastPoint.X - WW, $hLastPoint.Y - HH, WW * 2, HH * 2)
             Else
-              $hSelect.Ellipse(CInt(Min($hLastPoint.X, $hCurrentPoint.X)), CInt(Min($hLastPoint.Y, $hCurrentPoint.Y)), WW, HH)
+              $hSelect.Ellipse(Min($hLastPoint.X, $hCurrentPoint.X), Min($hLastPoint.Y, $hCurrentPoint.Y), WW, HH)
             Endif
           
           Else
