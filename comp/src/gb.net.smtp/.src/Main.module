@@ -18,8 +18,26 @@ Public Sub Main()
   ' hClient.Add(File.Load("~/TexteDehorsilpleut.odt"), "application/vnd.oasis.opendocument.text", "Dehors il pleut.odt")
   ' hClient.Add(File.Load("~/balloon.png"), "image/png", "balloon.png")
   ' hClient.Send
-
+  
   Dim hMsg As New SmtpClient
+  
+  ' Dim sChallenge As String
+  ' Dim sKey As String
+  ' Dim sCommand As String
+  ' Dim sResult As String
+  ' 
+  ' sChallenge = "'abc'"
+  ' sKey = "benoit"
+  ' 
+  ' sCommand = "echo -n " & Shell$(sChallenge) & " | openssl md5 -hmac " & Shell$(sKey)
+  ' Shell sCommand To sResult
+  ' Print sResult
+  ' 
+  ' sCommand = "openssl md5 -hmac " & Shell$(sKey) & " << EOF\n'abc'"
+  ' Shell sCommand To sResult
+  ' Print sResult
+  ' 
+  ' Return
   
   hMsg.Debug = True
   hMsg.To.Add("benoit@minisini.fr")
