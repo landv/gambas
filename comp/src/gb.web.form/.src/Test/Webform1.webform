@@ -1,14 +1,14 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,93,109)
+  #MoveScaled(0,0,75,109)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
   Title = ("gb.web.form test")
   { WebContainer4 WebContainer
-    #MoveScaled(1,1,91,6)
+    #MoveScaled(1,1,73,6)
     Arrangement = Arrange.Horizontal
     Margin = True
     Border = True
@@ -19,11 +19,12 @@
     }
     { btnClose WebButton
       #MoveScaled(28,1,13,4)
-      Image = "close.png"
+      Border = False
+      Image = "gw-close.png"
     }
   }
   { WebContainer3 WebContainer
-    #MoveScaled(1,8,91,48)
+    #MoveScaled(1,8,73,48)
     Expand = True
     Arrangement = Arrange.Horizontal
     Spacing = True
@@ -59,77 +60,77 @@
       }
     }
     { WebContainer5 WebContainer
-      #MoveScaled(25,1,64,46)
+      #MoveScaled(25,1,65,46)
       Expand = True
       Arrangement = Arrange.Vertical
       Margin = True
       Spacing = True
       Border = True
       { WebTextBox1 WebTextBox
-        #MoveScaled(1,1,62,5)
+        #MoveScaled(1,1,63,5)
         Height = "2em"
       }
       { WebHtml1 WebHtml
-        #MoveScaled(1,7,62,5)
+        #MoveScaled(1,7,63,5)
         Visible = False
       }
       { WebContainer2 WebContainer
-        #MoveScaled(1,13,62,13)
+        #MoveScaled(1,13,63,15)
         Expand = True
         Margin = True
         Border = True
       }
       { WebHtml3 WebHtml
-        #MoveScaled(1,27,62,6)
+        #MoveScaled(1,29,63,6)
         Ignore = True
         Text = ("Absolute !")
       }
     }
   }
   { WebContainer6 WebContainer
-    #MoveScaled(1,57,91,24)
+    #MoveScaled(1,57,73,24)
     Arrangement = Arrange.Row
     Spacing = True
     Border = True
-    { WebButton8 WebButton
+    { WebButton7 WebButton
       #MoveScaled(1,1,10,10)
       Width = "8em"
-      Text = ("B2")
+      Text = ("B1")
     }
-    { WebButton9 WebButton
+    { WebButton13 WebButton
       #MoveScaled(12,1,10,10)
       Width = "8em"
-      Text = ("B3")
+      Text = ("B7")
     }
-    { WebButton7 WebButton
+    { WebButton11 WebButton
       #MoveScaled(23,1,10,10)
       Width = "8em"
-      Text = ("B1")
+      Text = ("B5")
     }
     { WebButton12 WebButton
       #MoveScaled(34,1,10,10)
       Width = "8em"
       Text = ("B6")
     }
-    { WebButton10 WebButton
+    { WebButton8 WebButton
       #MoveScaled(45,1,10,10)
+      Width = "8em"
+      Text = ("B2")
+    }
+    { WebButton9 WebButton
+      #MoveScaled(56,1,10,10)
+      Width = "8em"
+      Text = ("B3")
+    }
+    { WebButton10 WebButton
+      #MoveScaled(1,12,10,10)
       Width = "8em"
       Text = ("B4")
     }
     { WebButton14 WebButton
-      #MoveScaled(56,1,10,10)
+      #MoveScaled(12,12,10,10)
       Width = "8em"
       Text = ("B8")
-    }
-    { WebButton11 WebButton
-      #MoveScaled(67,1,10,10)
-      Width = "8em"
-      Text = ("B5")
-    }
-    { WebButton13 WebButton
-      #MoveScaled(1,12,10,10)
-      Width = "8em"
-      Text = ("B7")
     }
   }
 }

@@ -1,15 +1,18 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,113,125)
+  #MoveScaled(0,0,127,121)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Title = ("This is webform2")
+  { WebTimer1 WebTimer
+    #MoveScaled(100,5)
+  }
   { WebHBox1 WebHBox
-    #MoveScaled(1,1,111,38)
+    #MoveScaled(1,1,125,22)
     Spacing = True
     { WebMenu3 WebMenu
-      #MoveScaled(1,1,32,36)
+      #MoveScaled(1,1,32,20)
       Text = ("File")
       { WebMenuItem7 WebMenuItem
         #MoveScaled(1,1,30,4)
@@ -63,7 +66,7 @@
       }
     }
     { WebMenu1 WebMenu
-      #MoveScaled(34,1,30,36)
+      #MoveScaled(34,1,30,20)
       Text = ("Project")
       { WebMenuItem2 WebMenuItem
         #MoveScaled(1,1,28,4)
@@ -93,159 +96,168 @@
       }
     }
   }
+  { WebSeparator8 WebSeparator
+    #MoveScaled(1,23,125,3)
+    Height = "1px"
+  }
   { WebContainer1 WebHBox
-    #MoveScaled(1,39,111,6)
+    #MoveScaled(1,26,125,6)
     { WebButton1 WebButton
-      #MoveScaled(1,1,16,4)
+      #MoveScaled(1,1,13,4)
       Border = False
       Text = ("A button")
     }
     { WebButton2 WebButton
-      #MoveScaled(17,1,18,4)
+      #MoveScaled(14,1,13,4)
       Border = False
       Text = ("Add window")
     }
     { WebButton7 WebButton
-      #MoveScaled(35,1,16,4)
+      #MoveScaled(27,1,13,4)
       Border = False
       Text = ("Warning")
       Image = "gw-close.png"
     }
     { WebButton6 WebButton
-      #MoveScaled(51,1,16,4)
+      #MoveScaled(40,1,13,4)
       Border = False
       Text = ("Toggle timer")
     }
+    { WebButton8 WebButton
+      #MoveScaled(53,1,13,4)
+      Visible = False
+      Text = ("Hidden")
+    }
     { WebContainer6 WebContainer
-      #MoveScaled(67,1,14,4)
+      #MoveScaled(66,1,42,4)
       Expand = True
     }
     { WebLabel1 WebLabel
-      #MoveScaled(81,1,15,4)
+      #MoveScaled(108,1,15,4)
     }
   }
-  { WebTabPanel1 WebTabPanel
-    #MoveScaled(1,45,111,72)
+  { WebContainer9 WebContainer
+    #MoveScaled(1,32,125,88)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True
-    Spacing = True
-    Count = 3
-    Index = 0
-    Text = ("General")
-    { WebTextBox1 WebTextBox
-      #MoveScaled(1,1,108.7143,8)
-      Text = ("Hello !")
-    }
-    { WebCheckBox1 WebCheckBox
-      #MoveScaled(1,10,108.7143,4)
-      Text = ("Check and uncheck me!")
-    }
-    { WebContainer7 WebHBox
-      #MoveScaled(1,15,108.7143,33)
+    { WebTabPanel1 WebTabPanel
+      #MoveScaled(1,1,123,75)
+      Expand = True
+      Arrangement = Arrange.Vertical
+      Margin = True
       Spacing = True
-      { WebContainer4 WebVBox
-        #MoveScaled(1,1,38,31)
-        Expand = True
-        Background = &HA08BB5DF&
-        Margin = True
-        { WebRadioButton1 WebRadioButton
-          #MoveScaled(1,1,36,4)
-          Text = ("Alpha")
+      Count = 3
+      Index = 0
+      Text = ("General")
+      { WebTextBox1 WebTextBox
+        #MoveScaled(1,1,120.7143,4)
+        Text = ("Hello !")
+      }
+      { WebCheckBox1 WebCheckBox
+        #MoveScaled(1,6,120.7143,4)
+        Text = ("Check and uncheck me!")
+      }
+      { WebContainer7 WebHBox
+        #MoveScaled(1,11,120.7143,33)
+        Spacing = True
+        { WebContainer4 WebVBox
+          #MoveScaled(1,1,58.2857,31)
+          Expand = True
+          Background = &HA08BB5DF&
+          Margin = True
+          { WebRadioButton1 WebRadioButton
+            #MoveScaled(1,1,56.2857,4)
+            Text = ("Alpha")
+          }
+          { WebRadioButton2 WebRadioButton
+            #MoveScaled(1,5,56.2857,4)
+            Text = ("Beta")
+            Value = True
+          }
+          { WebRadioButton3 WebRadioButton
+            #MoveScaled(1,9,56.2857,4)
+            Text = ("Gamma")
+          }
+          { WebCheckBox2 WebCheckBox
+            #MoveScaled(1,13,56.2857,4)
+            Text = ("Gambas Almost Means Basic!")
+          }
         }
-        { WebRadioButton2 WebRadioButton
-          #MoveScaled(1,5,36,4)
-          Text = ("Beta")
-          Value = True
-        }
-        { WebRadioButton3 WebRadioButton
-          #MoveScaled(1,9,36,4)
-          Text = ("Gamma")
-        }
-        { WebCheckBox2 WebCheckBox
-          #MoveScaled(1,13,36,4)
-          Text = ("Gambas Almost Means Basic!")
+        { WebContainer8 WebVBox
+          #MoveScaled(60.2857,1,58.4286,31)
+          Expand = True
+          Spacing = True
+          { WebLabel2 WebLabel
+            #MoveScaled(1,1,56.4286,4)
+            Text = ("Please enter some text:")
+          }
+          { WebTextArea1 WebTextArea
+            #MoveScaled(1,6,56.4286,24)
+            Height = "20em"
+            Expand = True
+            Border = False
+            Wrap = True
+          }
         }
       }
-      { WebContainer8 WebVBox
-        #MoveScaled(40,1,36,31)
-        Expand = True
+      { WebContainer5 WebHBox
+        #MoveScaled(1,45,120.7143,6)
         Spacing = True
-        { WebLabel2 WebLabel
-          #MoveScaled(1,1,34,4)
-          Text = ("Please enter some text:")
+        { WebComboBox2 WebComboBox
+          #MoveScaled(1,1,22,4)
+          List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
         }
-        { WebTextArea1 WebTextArea
-          #MoveScaled(1,6,34,14)
-          Height = "20em"
+        { WebTextBox2 WebTextBox
+          #MoveScaled(24,1,15,4)
+        }
+        { WebSpinBox1 WebSpinBox
+          #MoveScaled(40,1,13,4)
+        }
+        { WebSlider1 WebSlider
+          #MoveScaled(54,1,64.7143,4)
           Expand = True
           Border = False
-          Wrap = True
         }
       }
+      { WebSeparator7 WebSeparator
+        #MoveScaled(1,52,120.7143,2)
+        Height = "1em"
+      }
+      { WebContainer3 WebHBox
+        #MoveScaled(1,55,120.7143,6)
+        Spacing = True
+        { WebComboBox1 WebComboBox
+          #MoveScaled(1,1,65.7143,4)
+          Expand = True
+          List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+          ReadOnly = False
+        }
+        { WebButton5 WebButton
+          #MoveScaled(67.7143,1,19,4)
+          Text = ("Clear")
+        }
+        { WebButton4 WebButton
+          #MoveScaled(87.7143,1,19,4)
+          Text = ("New element")
+        }
+        { WebSeparator3 WebSeparator
+          #MoveScaled(107.7143,1,11,4)
+          Ignore = True
+        }
+      }
+      Index = 1
+      Text = ("Options")
+      { WebButton3 WebButton
+        #MoveScaled(1,1,114.7143,8)
+        Text = ("Test")
+      }
+      Index = 2
+      Text = ("Application state")
+      { WebContainer2 WebContainer
+        #MoveScaled(1,1,114.7143,32)
+      }
+      Index = 0
     }
-    { WebContainer5 WebHBox
-      #MoveScaled(1,49,108.7143,6)
-      Spacing = True
-      { WebComboBox2 WebComboBox
-        #MoveScaled(1,1,22,4)
-        Border = False
-        List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
-      }
-      { WebTextBox2 WebTextBox
-        #MoveScaled(24,1,15,4)
-        Border = False
-      }
-      { WebSpinBox1 WebSpinBox
-        #MoveScaled(40,1,13,4)
-        Border = False
-      }
-      { WebSlider1 WebSlider
-        #MoveScaled(54,1,15,4)
-        Expand = True
-        Border = False
-      }
-    }
-    { WebSeparator7 WebSeparator
-      #MoveScaled(1,56,108.7143,2)
-      Height = "1em"
-    }
-    { WebContainer3 WebHBox
-      #MoveScaled(1,59,108.7143,6)
-      Spacing = True
-      { WebComboBox1 WebComboBox
-        #MoveScaled(1,1,22,4)
-        Expand = True
-        Border = False
-        List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
-        ReadOnly = False
-      }
-      { WebSeparator3 WebSeparator
-        #MoveScaled(24,1,11,4)
-      }
-      { WebButton4 WebButton
-        #MoveScaled(36,1,19,4)
-        Text = ("New element")
-      }
-      { WebButton5 WebButton
-        #MoveScaled(56,1,19,4)
-        Text = ("Clear")
-      }
-    }
-    Index = 1
-    Text = ("Options")
-    { WebButton3 WebButton
-      #MoveScaled(1,1,108.7143,8)
-      Text = ("Test")
-    }
-    Index = 2
-    Text = ("Application state")
-    { WebContainer2 WebContainer
-      #MoveScaled(1,1,108.7143,28)
-    }
-    Index = 0
-  }
-  { WebTimer1 WebTimer
-    #MoveScaled(79,88)
   }
 }

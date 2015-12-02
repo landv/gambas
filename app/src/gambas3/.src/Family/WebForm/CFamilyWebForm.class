@@ -129,8 +129,9 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
       Return
       
     Case "WebContainer", "WebHBox", "WebVBox"
-      CFamily.PaintExpand(hCCtrl)
-      CFamily.PaintContainer(0, 0, hCCtrl.W, hCCtrl.H)
+      If Not CFamily.PaintExpand(hCCtrl) Then
+        CFamily.PaintContainer(0, 0, hCCtrl.W, hCCtrl.H)
+      Endif
       Return
     
     Case Else

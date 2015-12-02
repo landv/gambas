@@ -263,6 +263,8 @@ Public Sub _RenderStyleSheet()
   
   If $hStyle And If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
   
+  If $bHidden Then $aStyleSheet.Add("display:none;")
+  
   _EndStyleSheet
   
 End

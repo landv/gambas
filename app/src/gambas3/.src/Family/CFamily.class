@@ -462,7 +462,7 @@ Static Public Sub PaintContainer(X As Float, Y As Float, W As Float, H As Float)
   
 End
 
-Static Public Sub PaintExpand(hCCtrl As CControl)
+Static Public Sub PaintExpand(hCCtrl As CControl) As Boolean
   
   Dim hParent As CControl
   
@@ -473,10 +473,10 @@ Static Public Sub PaintExpand(hCCtrl As CControl)
       Select Case hParent.GetArrangement()
         Case Like "H", "R"
           Draw.Tile($hExpand, 0, (hCCtrl.H - $hExpand.H) \ 2, hCCtrl.W, $hExpand.H)
-          Return
+          Return True
         Case Like "V", "C"
           Draw.Tile($hExpand, (hCCtrl.W - $hExpand.W) \ 2, 0, $hExpand.W, hCCtrl.H)
-          Return
+          Return True
       End Select
     Endif
   Endif

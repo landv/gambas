@@ -1918,22 +1918,26 @@ Private Function GetSortKey(hCtrl As Control, sArr As String, bInvert As Boolean
 
   Dim sKey As String
   Dim X, Y As Integer
+  Dim W As Integer
+  Dim H As Integer
   
   X = hCtrl.X + 500000
   Y = hCtrl.Y + 500000
+  W = hCtrl.W
+  H = hCtrl.H
   
   If bInvert Then X = 999999 - X
 
   Select Case sArr
 
     Case "H"
-      sKey = Format(X, "000000") & Format(hCtrl.W, "000000")
+      sKey = Format(X + W \ 2, "000000") & Format(H, "000000")
     Case "V"
-      sKey = Format(Y, "000000") & Format(hCtrl.H, "000000")
+      sKey = Format(Y + H \ 2, "000000") & Format(W, "000000")
     Case "C"
-      sKey = Format(X, "000000") & Format(Y, "000000") & Format(hCtrl.W, "000000") & Format(hCtrl.H, "000000")
+      sKey = Format(X \ (Desktop.Scale * 2), "000000") & Format(Y + H \ 2, "000000") '& Format(hCtrl.W, "000000") & Format(hCtrl.H, "000000")
     Case "R"
-      sKey = Format(Y, "000000") & Format(X, "000000") & Format(hCtrl.H, "000000") & Format(hCtrl.W, "000000")
+      sKey = Format(Y \ (Desktop.Scale * 2), "000000") & Format(X + W \ 2, "000000") '& Format(hCtrl.H, "000000") & Format(hCtrl.W, "000000")
 
   End Select
 
@@ -3902,13 +3906,15 @@ Public Sub CheckHovered(Optional hCtrl As Control)
   
   Do
     hCCtrl = Null
-    sTag = hCtrl.Tag
-    If Left(sTag) = "#" Then 
-      hCCtrl = Object.Parent(hCtrl)
-    Else If sTag Then
-      hCCtrl = Control[hCtrl.Tag]
+    Try sTag = hCtrl.Tag
+    If Not Error Then
+      If Left(sTag) = "#" Then 
+        hCCtrl = Object.Parent(hCtrl)
+      Else If sTag Then
+        hCCtrl = Control[hCtrl.Tag]
+      Endif
+      If hCCtrl Then Break
     Endif
-    If hCCtrl Then Break
     hCtrl = hCtrl.Parent
   Loop
   

@@ -2247,9 +2247,9 @@ Public Sub Arrange()
   $bArranging = True
   
   hTab = Control
-  
+
   Try hTab.Invert = Not IsNull(GetProperty("Invert"))
-  Try hTab.Margin = True 'Not IsNull(hCtrl.GetProperty("Margin"))
+  Try hTab.Margin = True 'Not IsNull(GetProperty("Margin"))
   Try hTab.Spacing = Not IsNull(GetProperty("Spacing"))
   
   Select Case sArr
@@ -2266,9 +2266,10 @@ Public Sub Arrange()
   End Select
   
   Try hTab.Arrangement = Arrange.None
-  Try hTab.Margin = False
-  Try hTab.Spacing = False
-  Try hTab.Invert = False
+  'Try hTab.Margin = False
+  'Try hTab.Spacing = False
+  'Try hTab.Invert = False
+  'Try hTab.Padding = 0
   
   hForm = GetForm()
   

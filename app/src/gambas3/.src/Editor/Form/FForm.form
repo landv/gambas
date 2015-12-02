@@ -156,11 +156,6 @@
         Picture = Picture["img/16/lower.png"]
         Shortcut = "End"
       }
-      { mnuToggleContainer Menu
-        Action = ".toggle"
-        Text = ("Expand or shrink container")
-        Picture = Picture["img/16/toggle-container.png"]
-      }
       { mnuArrangeSep Menu
       }
       { mnuArrangeHor Menu
@@ -268,7 +263,7 @@
     }
   }
   { tlbForm ToolBar
-    MoveScaled(0,0,170,4)
+    MoveScaled(0,0,169,4)
     Key = "form"
     Text = ("Form")
     Separator = True
@@ -883,11 +878,6 @@
   { Action text-zoom-out
     Text = "Smaller font"
     Picture = "icon:/small/zoom-out"
-  }
-  { Action toggle
-    Text = "Expand or shrink container"
-    Shortcut = ""
-    Picture = "img/16/toggle-container.png"
   }
   { Action undo
     Text = "Undo"

@@ -126,8 +126,8 @@ Public Sub _Render()
   Print "</div>"
   
   Print "<div class=\"gw-tab-contents";
-  If Not $bBorder Then Print " gw-noborder\""
-  Print " style=\"flex-grow:1;\">"
+  If Not $bBorder Then Print " gw-noborder\"";
+  Print "\" style=\"flex-grow:1;\">"
   
   With $aTab[$iIndex]
     ._BeforeRender()

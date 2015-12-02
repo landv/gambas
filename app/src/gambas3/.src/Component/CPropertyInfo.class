@@ -6,7 +6,7 @@ Public Const PUBLIC_NAME As String = "Public"
 Public Const TRANSLATE_NAME As String = "Translate"
 
 Static Public MULTI_CONTAINER_PROP As String[] = ["Index", "Count", "Text", "Picture"]
-Static Public ALLOWED_CONTROL_PROP As String[] = ["Text", "Foreground", "Background"]
+Static Public ALLOWED_CONTROL_PROP As String[] = ["Text", "Foreground", "Background", "Border", "Value"]
 
 Static Public CreatingSpecialProperty As Boolean
 
@@ -134,7 +134,9 @@ Static Public Sub _init()
   
   $cArrangement["Arrangement"] = True
   $cArrangement["Spacing"] = True
+  $cArrangement["Margin"] = True
   $cArrangement["Ignore"] = True
+  $cArrangement["Expand"] = True
   
 End
 

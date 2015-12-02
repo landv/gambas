@@ -66,6 +66,11 @@ Static Public Sub Main()
     Response.SendFile("../.public/" &/ sPath)
     Return
     
+  Else If Exist(".public/" &/ sPath) Then
+    
+    Response.SendFile(".public/" &/ sPath)
+    Return
+    
   Else
     
     iPos = InStr(sPath, "/")
