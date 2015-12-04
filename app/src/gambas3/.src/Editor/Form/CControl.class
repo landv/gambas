@@ -346,11 +346,11 @@ Private Sub InitControl()
   $cValue["#Width"] = 0
   $cValue["#Height"] = 0
 
-  If DrawWith Then
-    For Each hProp In Project.Documentation.Classes[Kind].Properties
-      If Not hProp.Coord Then SetProperty(hProp.Name, hProp.DefaultValue)
-    Next
-  Endif
+  ' If DrawWith Then
+  '   For Each hProp In Project.Documentation.Classes[Kind].Properties
+  '     If Not hProp.Coord Then SetProperty(hProp.Name, hProp.DefaultValue)
+  '   Next
+  ' Endif
 
 End
 
