@@ -1,23 +1,23 @@
 /***************************************************************************
 
-	x11.c
+  x11.c
 
-	(c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2, or (at your option)
-	any later version.
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2, or (at your option)
+  any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-	MA 02110-1301, USA.
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+  MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -46,7 +46,11 @@ Atom X11_atom_net_wm_window_type;
 Atom X11_atom_net_wm_window_type_normal;
 Atom X11_atom_net_wm_window_type_utility;
 Atom X11_atom_net_wm_desktop;
+Atom X11_atom_net_wm_user_time;
 Atom X11_atom_net_current_desktop;
+Atom X11_atom_net_workarea = None;
+Atom X11_atom_motif_wm_hints = None;
+Atom X11_atom_net_system_tray = None;
 
 Atom X11_UTF8_STRING;
 
@@ -74,6 +78,7 @@ typedef
 	struct {
 		int count;
 		Atom atoms[MAX_WINDOW_PROP];
+		bool changed;
 		}
 	X11_PROPERTY;
 
@@ -103,7 +108,8 @@ static void init_atoms()
 	X11_atom_net_wm_window_type = XInternAtom(_display, "_NET_WM_WINDOW_TYPE", True);
 	X11_atom_net_wm_window_type_normal = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_NORMAL", True);
 	X11_atom_net_wm_window_type_utility = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_UTILITY", True);
-	
+	X11_atom_net_wm_user_time = XInternAtom(_display, "_NET_WM_USER_TIME", True);
+
 	X11_UTF8_STRING = XInternAtom(X11_display, "UTF8_STRING", True);
 
 	_atom_init = TRUE;
@@ -136,8 +142,8 @@ static size_t sizeof_format(int format)
 char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcount)
 {
 	uchar *data;
-	unsigned long count;
-	unsigned long after;
+  unsigned long count;
+  unsigned long after;
 	unsigned long offset;
 	int size, offset_size;
 
@@ -147,24 +153,24 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 			False, AnyPropertyType, type, format,
 			&count, &after, &data) != Success)
 		return NULL;
-	
+
 	*pcount += count;
-	
+
 	size = sizeof_format(*format);
 	offset_size = *format == 32 ? sizeof(int32_t) : ( *format == 16 ? sizeof(short) : 1 );
-	
+
 	//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld\n", *format, size, count, after);
-	
+
 	GB.FreeString(&_property_value);
 	_property_value = GB.NewString((char *)data, count * size);
 	XFree(data);
-	
+
 	offset = count * offset_size / sizeof(int32_t);
-	
+
 	while (after)
 	{
 		//fprintf(stderr, "X11_get_property: offset = %ld read = %ld\n", offset, Min(after, PROPERTY_NEXT_READ) / sizeof(int32_t));
-	
+
 		if (XGetWindowProperty(_display, wid, prop, offset, Min(after, PROPERTY_NEXT_READ) / sizeof(int32_t),
 				False, AnyPropertyType, type, format,
 				&count, &after, &data) != Success)
@@ -172,13 +178,13 @@ char *X11_get_property(Window wid, Atom prop, Atom *type, int *format, int *pcou
 
 		*pcount += count;
 		offset += count * offset_size / sizeof(int32_t);
-		
+
 		//fprintf(stderr, "X11_get_property: format = %d size = %d count = %ld after = %ld next offset = %ld\n", *format, size, count, after, offset);
-	
+
 		_property_value = GB.AddString(_property_value, (char *)data, count * size);
 		XFree(data);
 	}
-	
+
 	return _property_value;
 }
 
@@ -199,7 +205,7 @@ static char *get_property(Window wid, Atom prop, int *count)
 {
 	Atom type;
 	int format;
-	
+
 	return X11_get_property(wid, prop, &type, &format, count);
 }
 
@@ -214,7 +220,7 @@ Atom X11_get_property_type(Window wid, Atom prop, int *format)
 			False, AnyPropertyType, &type, format,
 			&count, &after, &data) != Success)
 		return None;
-	
+
 	XFree(data);
 	return type;
 }
@@ -223,7 +229,7 @@ Atom X11_get_property_type(Window wid, Atom prop, int *format)
 	#if OS_64BITS
 	long padded_data[count];
 	int i;
-	
+
 	if (format == 32)
 	{
 		for (i = 0; i < count; i++)
@@ -241,7 +247,7 @@ void X11_set_property(Window wid, Atom prop, Atom type, int format, void *data, 
 Atom X11_intern_atom(const char *name, bool create)
 {
 	int val = atoi(name);
-	
+
 	if (val)
 		return (Atom)val;
 	else
@@ -254,6 +260,7 @@ static void load_window_state(Window win, Atom prop)
 	char *data;
 
 	_window_prop.count = 0;
+	_window_prop.changed = FALSE;
 
 	data = get_property(win, prop, &length);
 
@@ -261,15 +268,16 @@ static void load_window_state(Window win, Atom prop)
 		length = MAX_WINDOW_PROP;
 
 	_window_prop.count = length;
-	memcpy(_window_prop.atoms, data, length * sizeof(Atom));
+	if (data)
+		memcpy(_window_prop.atoms, data, length * sizeof(Atom));
 }
 
 static void save_window_state(Window win, Atom prop)
 {
-	if (_window_prop.count > 0)
+	if (_window_prop.changed)
 	{
-		XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace,
-				(unsigned char *)_window_prop.atoms, _window_prop.count);
+		//fprintf(stderr, "XChangeProperty: %ld %ld\n", (long)win, (long)prop);
+		XChangeProperty(_display, win, prop, XA_ATOM, 32, PropModeReplace, (unsigned char *)_window_prop.atoms, _window_prop.count);
 	}
 }
 
@@ -298,6 +306,7 @@ static void set_window_state(Atom prop)
 	}
 
 	_window_prop.atoms[_window_prop.count++] = prop;
+	_window_prop.changed = TRUE;
 }
 
 static void clear_window_state(Atom prop)
@@ -313,6 +322,7 @@ static void clear_window_state(Atom prop)
 			for (; i < _window_prop.count; i++)
 				_window_prop.atoms[i] = _window_prop.atoms[i + 1];
 
+			_window_prop.changed = TRUE;
 			return;
 		}
 	}
@@ -325,23 +335,23 @@ bool X11_do_init()
 
 	if (X11_ready)
 		return FALSE;
-		
+
 	GB.Component.GetInfo("DISPLAY", POINTER(&_display));
 
 	_root = DefaultRootWindow(_display);
-	
+
 	X11_ready = _display != NULL;
-	
+
 	if (!X11_ready)
 	{
 		fprintf(stderr, "WARNING: X11_init() has failed\n");
 		return TRUE;
 	}
-	
+
 	init_atoms();
-	
+
 	_has_test_extension = XTestQueryExtension(_display, &event_base, &error_base, &major_version, &minor_version);
-	
+
 	return FALSE;
 }
 
@@ -361,13 +371,13 @@ void X11_send_client_message(Window dest, Window window, Atom message, char *dat
 	int mask = (SubstructureRedirectMask | SubstructureNotifyMask);
 
 	//fprintf(stderr, "X11_send_client_message: dest = %ld window = %ld message = %ld format = %d count = %d\n", dest, window, message, format, count);
-	
+
 	e.xclient.type = ClientMessage;
 	e.xclient.message_type = message;
 	e.xclient.display = X11_display;
 	e.xclient.window = window;
 	e.xclient.format = format;
-	
+
 	memset(&e.xclient.data.l[0], 0, sizeof(long) * 5);
 	if (data)
 	{
@@ -521,10 +531,10 @@ void X11_find_windows(Window **window_list, int *count)
 void X11_get_window_title(Window window, char **result, int *length)
 {
 	static Atom _net_wm_name = 0;
-	
+
 	if (!_net_wm_name)
 		_net_wm_name = XInternAtom(_display, "_NET_WM_NAME", True);
-	
+
 	*result = get_property(window, _net_wm_name, length);
 }
 
@@ -600,6 +610,7 @@ void X11_window_set_desktop(Window window, bool visible, int desktop)
 	{
 		XChangeProperty(_display, window, X11_atom_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
 				(unsigned char *)&desktop, 1);
+		XFlush(_display);
 	}
 }
 
@@ -607,36 +618,42 @@ void X11_window_set_desktop(Window window, bool visible, int desktop)
 int X11_window_get_desktop(Window window)
 {
 	int length;
-	unsigned long *data;
+	char *data = NULL;
+	int desktop = 0;
 
-	data = (unsigned long *)get_property(window, X11_atom_net_wm_desktop, &length);
+	data = get_property(window, X11_atom_net_wm_desktop, &length);
+	if (data)
+		desktop = *((int *)data);
 
-	return data ? *data : 0;
+	return desktop;
 }
 
 int X11_get_current_desktop()
 {
 	int length;
-	unsigned long *data;
+	char *data;
+	int desktop = 0;
 
-	data = (unsigned long *)get_property(_root, X11_atom_net_current_desktop, &length);
+	data = get_property(_root, X11_atom_net_current_desktop, &length);
+	if (data)
+		desktop = *((int *)data);
 
-	return data ? *data : 0;
+	return desktop;
 }
 
 static void init_keycode()
 {
 	int i, j; //, k;
 	KeyCode *pm, *p;
-	
+
 	if (_init_keycode)
 		return;
 
 	XDisplayKeycodes(_display, &_min_keycode, &_max_keycode);
-	
+
 	_keycode_map = XGetKeyboardMapping(_display, _min_keycode, _max_keycode - _min_keycode + 1, &_keysyms_per_keycode);
 	_modifier_map = XGetModifierMapping(_display);
-	
+
 	p = _modifier_map->modifiermap;
 	for (i = 0; i < 8; i++)
 	{
@@ -652,20 +669,20 @@ static void init_keycode()
 			p++;
 		}
 	}
-	
+
 	//fprintf(stderr, "SHIFT: %d  ALTGR: %d\n", _shift_keycode[0], _alt_gr_keycode[0]);
-	
+
 	_init_keycode = TRUE;
 }
 
 static void send_modifiers(KeyCode *codes, bool press)
 {
 	int i;
-	
+
 	for (i = 0; i < _modifier_map->max_keypermod; i++)
 	{
 		if (codes[i])
-			XTestFakeKeyEvent(_display, codes[i], press, CurrentTime);	
+			XTestFakeKeyEvent(_display, codes[i], press, CurrentTime);
 	}
 }
 
@@ -673,9 +690,9 @@ static void handle_modifier(KeyCode code, KeySym keysym, bool press)
 {
 	KeySym *sym;
 	int i;
-	
+
 	sym = &_keycode_map[(code - _min_keycode) * _keysyms_per_keycode];
-	
+
 	for (i = 0; i < _keysyms_per_keycode; i++)
 	{
 		if (keysym == sym[i])
@@ -684,7 +701,7 @@ static void handle_modifier(KeyCode code, KeySym keysym, bool press)
 			break;
 		}
 	}
-	
+
 	switch(i)
 	{
 		case 1:
@@ -706,17 +723,17 @@ char *X11_send_key(char *key, bool press)
 {
 	KeySym keysym;
 	KeyCode code;
-	
+
 	if (!_has_test_extension)
 		return "No XTEST extension";
-	
+
 	if (!_init_keycode)
 		init_keycode();
-	
+
 	//fprintf(stderr, "X11_send_key: '%s' %d\n", key, XStringToKeysym(key));
-	
+
 	if (strlen(key) == 1)
-	{ 
+	{
 		if (*key == '\n')
 			keysym = XK_Return;
 		else if (*key == '\t')
@@ -728,10 +745,10 @@ char *X11_send_key(char *key, bool press)
 	}
 	else
 		keysym = XStringToKeysym(key);
-	
+
 	if (keysym == NoSymbol)
 		return "Unknown key";
-		
+
 	code = XKeysymToKeycode(_display, keysym);
 	if (code)
 	{
@@ -739,13 +756,13 @@ char *X11_send_key(char *key, bool press)
 			handle_modifier(code, keysym, TRUE);
 
 		XTestFakeKeyEvent(_display, code, press, CurrentTime);
-	
+
 		if (press)
 			handle_modifier(code, keysym, FALSE);
 	}
-	
+
 	usleep(1000);
-	
+
 	return NULL;
 }
 
@@ -754,7 +771,7 @@ void X11_enable_event_filter(bool enable)
 	static int count = 0;
 
 	void (*set_event_filter)(void *) = NULL;
-	
+
 	if (enable)
 		count++;
 	else
@@ -789,7 +806,7 @@ void X11_event_filter(XEvent *e)
 			GB_T_INTEGER, e->xconfigure.y,
 			GB_T_INTEGER, e->xconfigure.width,
 			GB_T_INTEGER, e->xconfigure.height);
-			
+
 		GB.Call(&_x11_configure_notify_func, 5, TRUE);
 	}
 
@@ -802,15 +819,15 @@ void X11_get_window_geometry(Window win, int *wx, int *wy, int *ww, int *wh)
 	Window p;
 	int transx, transy;
 	XWindowAttributes wattr;
-	
+
 	*wx = *wy = *ww = *wh = 0;
-	
+
 	if (!XTranslateCoordinates(_display, win, _root, 0, 0, &transx, &transy, &p))
 		return;
-	
+
 	if (!XGetWindowAttributes(_display, win, &wattr))
 		return;
-	
+
 	*wx = transx - wattr.border_width;
 	*wy = transy - wattr.border_width;
 	*ww = wattr.width + wattr.border_width * 2;
