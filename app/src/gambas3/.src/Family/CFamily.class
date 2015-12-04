@@ -19,6 +19,7 @@ Public AllowedProperties As String[]
 Public ActionValue As Variant
 
 Static Private $hExpand As Picture
+Static Private $hBroken As SvgImage
 
 Private $hTimer As Timer
 Private $hCurrentIcon As Control
@@ -480,5 +481,24 @@ Static Public Sub PaintExpand(hCCtrl As CControl) As Boolean
       End Select
     Endif
   Endif
+  
+End
+
+Static Public Sub PaintBroken()
+  
+  Dim W As Integer
+  
+  If Not $hBroken Then $hBroken = SvgImage.Load("img/broken.svg")
+  W = Min(Paint.W, Paint.H)
+  $hBroken.Resize(W, W)
+  Paint.MoveTo((Paint.W - W) / 2, (Paint.H - W) / 2)
+  $hBroken.Paint
+  Paint.Background = Color.Red
+  Paint.Dash = [1]
+  Paint.LineWidth = 2
+  Paint.Rectangle(1, 1, Paint.W - 2, Paint.H - 2)
+  Paint.AntiAlias = False
+  Paint.Stroke
+  Paint.AntiAlias = True
   
 End

@@ -247,6 +247,7 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
   Dim X, Y, W, H, W2, H2 As Float
   Dim fVal As Float
   Dim sPath As String
+  Dim hImage As Image
   Dim hSvgImage As SvgImage
   Dim hRect As Rect
 
@@ -359,8 +360,6 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
       Draw.LineStyle = Line.Dash
       Draw.Rect(0, 0, hCtrl.W, hCtrl.H)
 
-
-
     Case "ReportVBox", "Report"
 
       Draw.Foreground = &HFF8080&
@@ -370,44 +369,56 @@ Public Sub DrawControl(hCtrl As CControl) As Boolean
         Draw.LineStyle = Line.Solid
         Draw.FillStyle = Fill.Solid
         Draw.Foreground = Color.Red
-        
         DrawVArrow(10, 0, 10, hCtrl.Height)
-        
-        
       Endif
 
     Case "ReportImage"
 
       sPath = hCtrl["Image"]
       If Not sPath Then Return True
+      
       If hCtrl["#Image"] <> sPath Then
         hCtrl["#Image"] = sPath
+        hCtrl["#ImageObject"] = Null
         Try hCtrl["#ImageObject"] = Image.Load(Project.Dir &/ sPath)
-        If Error Then 
-          FMain.ShowMessage(Error.Text, "warning")
-        Endif
       Endif
       
-      hRect = New Rect(X, Y, W, H)
-      StretchImage(hRect, hCtrl["Stretch"], Classes["Align"][hCtrl["Alignment"]].Value, hCtrl["#ImageObject"].W, hCtrl["#ImageObject"].H)
-      Try Draw.Image(hCtrl["#ImageObject"], hRect.X, hRect.Y, hRect.W, hRect.H)
+      hImage = hCtrl["#ImageObject"]
+      If hImage Then
+        hRect = New Rect(X, Y, W, H)
+        StretchImage(hRect, hCtrl["Stretch"], Classes["Align"][hCtrl["Alignment"]].Value, hImage.W, hImage.H)
+        Paint.DrawImage(hImage, hRect.X, hRect.Y, hRect.W, hRect.H)
+      Else
+        CFamily.PaintBroken
+      Endif
 
     Case "ReportSvgImage"
 
       sPath = hCtrl["Image"]
       If Not sPath Then Return True
+      
       If hCtrl["#Image"] <> sPath Then
         hCtrl["#Image"] = sPath
-        hCtrl["#ImageObject"] = SvgImage.Load(Project.Dir &/ sPath)
-        hCtrl["#ImageW"] = hCtrl["#ImageObject"].Width
-        hCtrl["#ImageH"] = hCtrl["#ImageObject"].Height
+        hCtrl["#ImageObject"] = Null
+        Try hSvgImage = SvgImage.Load(Project.Dir &/ sPath)
+        If Not Error Then
+          hCtrl["#ImageObject"] = hSvgImage
+          hCtrl["#ImageW"] = hSvgImage.Width
+          hCtrl["#ImageH"] = hSvgImage.Height
+        Endif
       Endif
+      
       hSvgImage = hCtrl["#ImageObject"]
-      hRect = New Rect(X, Y, W, H)
-      StretchImage(hRect, hCtrl["Stretch"], Classes["Align"][hCtrl["Alignment"]].Value, hCtrl["#ImageW"], hCtrl["#ImageH"])
-      hSvgImage.Resize(hRect.W, hRect.H)
-      Paint.MoveTo(hRect.X, hRect.Y)
-      hSvgImage.Paint
+      
+      If hSvgImage Then
+        hRect = New Rect(X, Y, W, H)
+        StretchImage(hRect, hCtrl["Stretch"], Classes["Align"][hCtrl["Alignment"]].Value, hCtrl["#ImageW"], hCtrl["#ImageH"])
+        hSvgImage.Resize(hRect.W, hRect.H)
+        Paint.MoveTo(hRect.X, hRect.Y)
+        hSvgImage.Paint
+      Else
+        CFamily.PaintBroken
+      Endif
 
     Case Else
 
