@@ -10,6 +10,7 @@ Private Enum SORT_DATE, SORT_DOWNLOAD, SORT_INSTALLED
 
 Private $hIdentity As FarmIdentity
 Private $hTimerArrange As Timer
+Private $hObs As Observer
 
 Public Sub Run()
   
@@ -369,7 +370,7 @@ Private Sub UpdateSoftware()
     imvScreenshot.Image = Null
     panScreenshot.Hide
     If .DownloadScreenshot() Then
-      Software_Screenshot
+      UpdateScreenshot
     Else
       spnScreenshot.Show
       spnScreenshot.Raise
@@ -382,8 +383,8 @@ Private Sub UpdateSoftware()
   
 End
 
-Public Sub Software_Screenshot()
-  
+Private Sub UpdateScreenshot()
+
   spnScreenshot.Hide
   If $hSoft.Screenshot Then
     Try imvScreenshot.Image = $hSoft.Screenshot
@@ -392,6 +393,13 @@ Public Sub Software_Screenshot()
   Else
     panScreenshot.Hide
   Endif
+  
+End
+
+Public Sub Software_Screenshot()
+  
+  If $hSoft <> Last Then Return
+  UpdateScreenshot
   
 End
 
@@ -552,6 +560,7 @@ End
 
 Public Sub Software_Change()
   
+  If $hSoft <> Last Then Return
   UpdateSoftware
   
 End
@@ -613,8 +622,6 @@ End
 
 Public Sub wizFarm_Change()
 
-  Dim hObs As Observer
-  
   btnGoBack.Enabled = wizFarm.Index > 0
   
   Select Case wizFarm.Index
@@ -625,13 +632,17 @@ Public Sub wizFarm_Change()
   
     Case WIZ_FARM 
     
-      $hSoft = Null
+      If $hSoft Then 
+        $hSoft.Abort
+        $hSoft = Null
+      Endif
+      
       imvScreenshot.Image = Null
     
     Case WIZ_SOFTWARE 
     
       If Not $hSoft.Observed Then 
-        hObs = New Observer($hSoft) As "Software"
+        $hObs = New Observer($hSoft) As "Software"
         $hSoft.Observed = True
       Endif
     

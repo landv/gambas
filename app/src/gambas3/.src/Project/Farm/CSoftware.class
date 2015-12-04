@@ -101,6 +101,14 @@ Public Sub Start()
   
 End
 
+Public Sub Abort()
+  
+  Try $hRequest.Abort
+  Try $hRequestIcon.Abort
+  
+End
+
+
 
 Public Sub Request_Finished()
   

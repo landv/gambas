@@ -857,7 +857,7 @@ Public Sub Editors_KeyPress()
 
   Else If Key.Control Then
 
-    If Key.Code = Key.F12 Then
+    If Key.Code = Key.F12 And If Key.Shift Then
       
       For Each sLine In Split(File.Load("/proc/self/maps"), "\n")
         If InStr(sLine, "[heap]") Then
