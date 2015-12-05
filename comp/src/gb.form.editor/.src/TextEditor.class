@@ -1671,6 +1671,10 @@ Public Sub View_DblClick()
         Else
           CollapseAll
         Endif
+      Else
+        Goto(0, Y)
+        Raise Margin
+        Stop Event
       Endif
     Endif
   Endif
@@ -1727,10 +1731,6 @@ Public Sub View_MouseUp()
   If $hTimerScroll Then
     $hTimerScroll.Stop
     $hTimerScroll = Null
-  Else
-    If Mouse.Left And If Mouse.Normal And If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
-      Raise Margin
-    Endif    
   Endif
   
   If Mouse.Middle Then
@@ -2194,7 +2194,7 @@ End
 Public Sub _RefreshLine(Y As Integer, Optional N As Integer = 1)
 
   Dim I As Integer
-  Dim hImage As Variant
+  Dim hPict As Picture
   
   If Y < 0 Or If Y > $hDoc.Max Or If N <= 0 Then Return
   
@@ -2202,9 +2202,9 @@ Public Sub _RefreshLine(Y As Integer, Optional N As Integer = 1)
   
   If Not $bRemoteDisplay Then
     For I = Y To Y + N - 1
-      hImage = $cCacheLine[I]
-      If hImage Then
-        $iCacheLineH -= hImage.H
+      hPict = $cCacheLine[I]
+      If hPict Then
+        $iCacheLineH -= hPict.H
         $cCacheLine.Remove(I)
       Endif
     Next
@@ -2428,7 +2428,8 @@ Public Sub View_Draw()
   Dim aRow As Integer[]
   Dim iMaxRow As Integer
   Dim W, NL As Integer
-  Dim hImage As Image
+  'Dim hImage As Image
+  Dim hPict As Picture
   
   If Not $bUpdateHeightAllowed Then
     $bUpdateHeightAllowed = True
@@ -2495,27 +2496,28 @@ Public Sub View_Draw()
       DrawLine(XX, Y, $iWidth, H, iRow)
       Paint.Restore
     Else
-      hImage = $cCacheLine[iRow]
-      If Not hImage Then
-        hImage = New Image($iWidth, H, $iBackground)
-        Paint.Begin(hImage)
+      hPict = $cCacheLine[iRow]
+      If Not hPict Then
+        hPict = New Picture($iWidth, H)
+        hPict.Fill($iBackground)
+        Paint.Begin(hPict)
         Paint.Font = $hFont
         DrawLine(0, 0, $iWidth, H, iRow)
         Paint.End
-        $cCacheLine[iRow] = hImage
+        $cCacheLine[iRow] = hPict
         $iCacheLineH += H
-        Paint.DrawImage(hImage, XX, Y)
+        Paint.DrawPicture(hPict, XX, Y)
         
         While $iCacheLineH > $hView.ClientH 
-          For Each hImage In $cCacheLine
-            $iCacheLineH -= hImage.H
+          For Each hPict In $cCacheLine
+            $iCacheLineH -= hPict.H
             $cCacheLine.Remove($cCacheLine.Key)
             Break
           Next
         Wend
         
       Else
-        Paint.DrawImage(hImage, XX, Y)
+        Paint.DrawPicture(hPict, XX, Y)
       Endif
     Endif
     Y += H

@@ -562,3 +562,10 @@ Public Sub SelectImage((sPropertyType) As String, sImage As String) As String
   Return FSelectIcon.Run(sImage) 'GetPicture()
       
 End
+
+Static Public Sub InitCoord(hCtrl As CoordBox)
+  
+  hCtrl.Units = ["mm", "cm", "in", "ft", "px", "pt"]
+  hCtrl.DefaultUnit = "mm"
+  
+End

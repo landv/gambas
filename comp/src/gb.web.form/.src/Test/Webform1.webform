@@ -1,14 +1,14 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,75,109)
+  #MoveScaled(0,0,98,109)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Margin = True
   Spacing = True
   Title = ("gb.web.form test")
   { WebContainer4 WebContainer
-    #MoveScaled(1,1,73,6)
+    #MoveScaled(1,1,96,6)
     Arrangement = Arrange.Horizontal
     Margin = True
     Border = True
@@ -24,7 +24,7 @@
     }
   }
   { WebContainer3 WebContainer
-    #MoveScaled(1,8,73,48)
+    #MoveScaled(1,8,96,48)
     Expand = True
     Arrangement = Arrange.Horizontal
     Spacing = True
@@ -75,20 +75,19 @@
         Visible = False
       }
       { WebContainer2 WebContainer
-        #MoveScaled(1,13,63,15)
+        #MoveScaled(1,13,63,13)
         Expand = True
         Margin = True
         Border = True
       }
       { WebHtml3 WebHtml
-        #MoveScaled(1,29,63,6)
-        Ignore = True
+        #MoveScaled(1,27,63,8)
         Text = ("Absolute !")
       }
     }
   }
   { WebContainer6 WebContainer
-    #MoveScaled(1,57,73,24)
+    #MoveScaled(1,57,96,24)
     Arrangement = Arrange.Row
     Spacing = True
     Border = True
@@ -97,15 +96,15 @@
       Width = "8em"
       Text = ("B1")
     }
-    { WebButton13 WebButton
+    { WebButton11 WebButton
       #MoveScaled(12,1,10,10)
       Width = "8em"
-      Text = ("B7")
+      Text = ("B5")
     }
-    { WebButton11 WebButton
+    { WebButton13 WebButton
       #MoveScaled(23,1,10,10)
       Width = "8em"
-      Text = ("B5")
+      Text = ("B7")
     }
     { WebButton12 WebButton
       #MoveScaled(34,1,10,10)
@@ -123,12 +122,12 @@
       Text = ("B3")
     }
     { WebButton10 WebButton
-      #MoveScaled(1,12,10,10)
+      #MoveScaled(67,1,10,10)
       Width = "8em"
       Text = ("B4")
     }
     { WebButton14 WebButton
-      #MoveScaled(12,12,10,10)
+      #MoveScaled(78,1,10,10)
       Width = "8em"
       Text = ("B8")
     }

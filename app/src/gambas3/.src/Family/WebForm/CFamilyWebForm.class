@@ -133,6 +133,9 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
         CFamily.PaintContainer(0, 0, hCCtrl.W, hCCtrl.H)
       Endif
       Return
+      
+    Case "WebImage"
+      Return CFamily.PaintImage(hCCtrl, ".public")
     
     Case Else
       
@@ -182,4 +185,11 @@ Public Sub SelectImage((sPropertyType) As String, sImage As String) As String
 
   Return FSelectIcon.Run(sImage, FSelectIcon.SELECT_IMAGE + FSelectIcon.SELECT_SVGIMAGE + FSelectIcon.SELECT_PUBLIC)
       
+End
+
+Static Public Sub InitCoord(hCtrl As CoordBox)
+  
+  hCtrl.Units = ["em", "px", "ex", "mm", "cm", "in", "pt", "pc", "rem"]
+  hCtrl.DefaultUnit = "em"
+  
 End

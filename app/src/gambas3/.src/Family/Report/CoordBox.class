@@ -22,6 +22,8 @@ Property Alignment As Integer
 Property AllowRelative As Boolean
 Property AutoConvert As Boolean
 Property AllowNegative As Boolean
+Property Units As String[]
+Property DefaultUnit As String
 
 'Private $hPanel As Panel
 Private $hBackground As DrawingArea
@@ -30,22 +32,19 @@ Private $hTextBox As TextBox
 Private $hButton As MenuButton
 Private $hClear As ToolButton
 Private $hMenu As Menu
-Private $aUnits As String[] = ["cm", "mm", "in", "ft", "px", "pt"]
 Private $bAllowRelative As Boolean
 Private $bAutoConvert As Boolean
 Private $fCurVal As Float
 Private $bAllowNegative As Boolean
-Private Const DEFAULT_UNIT As String = "mm"
+
+Private $aUnits As String[]
+Private $sDefaultUnit As String
 
 Public Sub _new()
   
   $hBackground = New DrawingArea(Me) As "Background"
   $hBackground.Arrangement = Arrange.Horizontal
   Border_Write(True)
-  
-  $hClear = New ToolButton($hBackground) As "ClearButton"
-  $hClear.Picture = Picture["icon:/small/clear"]
-  $hClear.AutoResize = True
   
   $hTextBox = New TextBox($hBackground) As "TextBox"
   $hTextBox.Border = False
@@ -57,17 +56,25 @@ Public Sub _new()
   '$hButton.W = 30
   $hButton.Border = False
   $hButton.AutoResize = True
-  $hButton.Text = DEFAULT_UNIT
   $hButton.Tag = 0
   
-End
+  $hClear = New ToolButton($hBackground) As "ClearButton"
+  $hClear.Picture = Picture["icon:/small/clear"]
+  $hClear.AutoResize = True
+  
+  Units_Write(Null)
+  
+ End
 
 Private Function Value_Read() As String
+
+  Dim F As Float
   
-  If IsNumber($hTextBox.Text) Then
-    If Not $bAllowNegative And If Val($hTextBox.Text) <= 0 Then Return
-    Return Replace($hTextBox.Text, ",", ".") & $hButton.Text
-  Endif
+  Try F = CFloat($hTextBox.Text)
+  If Error Then Return
+  If Not $bAllowNegative And If F < 0 Then Return
+  
+  Return $hTextBox.Text & $hButton.Text
 
 End
 
@@ -82,7 +89,7 @@ Private Sub Value_Write(Value As String)
   
   If Not Value Then 
     $hTextBox.Text = ""
-    $hButton.Text = DEFAULT_UNIT
+    $hButton.Text = $sDefaultUnit
     Return
   Endif
   
@@ -92,11 +99,9 @@ Private Sub Value_Write(Value As String)
   Next
   Inc I
   
-  Try fValue = Val(Left$(Value, I - 1))
+  Try fValue = CFloat(Left$(Value, I - 1))
   If Error Then Error.Raise("Bad value")
   If fValue < 0 And If Not $bAllowNegative Then Error.Raise("Bad value")
-  
-  $hTextBox.Text = Str(fValue)
   
   Unit = Trim(Mid$(Value, I))
   If Not Unit Then Unit = "%"
@@ -107,6 +112,7 @@ Private Sub Value_Write(Value As String)
     Endif
   Endif
   
+  $hTextBox.Text = CStr(fValue)
   $hButton.Text = Unit
   
 End
@@ -220,31 +226,38 @@ Public Sub TextBox_Activate()
 End
 
 Public Sub TextBox_Change()
-  
-  'Try $fCurVal = CFloat(Last.Text)
-  
-  Raise Change
-  
-End
 
-Public Sub TextBox_KeyPress()
+  Dim fVal As Float
+  Dim iPos As Integer
+  Dim sText As String
   
-  Try $fCurVal = Val(Last.Text)
+  iPos = $hTextBox.Pos
+  sText = Replace($hTextBox.Text, ",", ".")
+  If sText <> $hTextBox.Text Then
+    $hTextBox.Text = sText
+    $hTextBox.Pos = iPos
+    Return
+  Endif
+  
+  Try fVal = CFloat(Last.Text)
+  If Error Then Return
+  
+  $fCurVal = fVal
+  Raise Change
   
 End
 
 Public Sub TextBox_MouseWheel()
   
-  Dim f As Float
+  Dim F As Float
   
-  Try f = Val($hTextBox.Text)
-  f += Mouse.Delta
+  F = $fCurVal + Mouse.Delta
   If Not $bAllowNegative Then 
-    $fCurVal = Max(0, f)
+    $fCurVal = Max(0, F)
   Else
-    $fCurVal = f
+    $fCurVal = F
   Endif
-  $hTextBox.Text = $fCurVal
+  $hTextBox.Text = CStr($fCurVal)
   'Raise Change
   
 End
@@ -339,7 +352,7 @@ End
 Public Sub ClearButton_Click()
   
   $hTextBox.Text = ""
-  $hButton.Text = DEFAULT_UNIT
+  $hButton.Text = $sDefaultUnit
   
 End
 
@@ -353,4 +366,46 @@ Private Sub AllowNegative_Write(Value As Boolean)
   
   $bAllowNegative = Value
   
+End
+
+Private Sub CheckDefaultUnit()
+
+  If Not $aUnits.Exist($sDefaultUnit) Then
+    $sDefaultUnit = $aUnits[0]
+  Endif
+
+End
+
+Private Function Units_Read() As String[]
+
+  Return $aUnits
+
+End
+
+Private Sub Units_Write(Value As String[])
+
+  If Value And If Value.Count Then
+    $aUnits = Value.Copy()
+  Else
+    $aUnits = ["mm", "cm", "in", "ft", "px", "pt"]
+  Endif
+  
+  CheckDefaultUnit
+  AllowRelative_Write($bAllowRelative)
+  ClearButton_Click
+
+End
+
+Private Function DefaultUnit_Read() As String
+
+  Return $sDefaultUnit
+
+End
+
+Private Sub DefaultUnit_Write(Value As String)
+
+  $sDefaultUnit = Value
+  CheckDefaultUnit
+  If Not $hTextBox.Text Then ClearButton_Click
+
 End

@@ -493,12 +493,31 @@ Static Public Sub PaintBroken()
   $hBroken.Resize(W, W)
   Paint.MoveTo((Paint.W - W) / 2, (Paint.H - W) / 2)
   $hBroken.Paint
-  Paint.Background = Color.Red
-  Paint.Dash = [1]
-  Paint.LineWidth = 2
-  Paint.Rectangle(1, 1, Paint.W - 2, Paint.H - 2)
-  Paint.AntiAlias = False
+  Paint.Background = Color.SetAlpha(Color.Red, 128)
+  Paint.Rectangle(0.5, 0.5, Paint.W - 1, Paint.H - 1)
   Paint.Stroke
-  Paint.AntiAlias = True
+  
+End
+
+Static Public Sub PaintImage(hCtrl As CControl, sRoot As String, Optional iAlign As Integer = Align.Center) As Boolean
+
+  Dim sPath As String
+  Dim hImage As Image
+  
+  sPath = hCtrl["Image"]
+  If Not sPath Then Return True
+      
+  If hCtrl["#ImagePath"] <> sPath Then
+    hCtrl["#ImagePath"] = sPath
+    hCtrl["#Image"] = Null
+    Try hCtrl["#Image"] = Image.Load(Project.Dir &/ sRoot &/ sPath)
+  Endif
+      
+  hImage = hCtrl["#Image"]
+  If hImage Then
+    Paint.StretchImage(hImage, 0, 0, Paint.W, Paint.H, iAlign)
+  Else
+    PaintBroken
+  Endif
   
 End

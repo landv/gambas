@@ -212,6 +212,43 @@ Static Public Sub DrawRichTextShadow(Text As String, X As Float, Y As Float, W A
   
 End
 
+Static Public Sub StretchImage((Image) As Image, X As Float, Y As Float, Width As Float, Height As Float, Optional Alignment As Integer = Align.Center, Optional Opacity As Float = 1, Optional Source As Rect)
+  
+  Dim W As Float
+  Dim H As Float
+  Dim S As Float
+  
+  If Source Then
+    W = Source.W
+    H = Source.H
+  Else
+    W = Image.W
+    H = Image.H
+  Endif
+  
+  If W <= 0 Or If H <= 0 Then Return
+  
+  S = Min(Width / W, Height / H)
+  W *= S
+  H *= S
+  
+  If Align.IsRight(Alignment) Then
+    X += Width - W
+  Else If Align.IsCenter(Alignment) Then
+    X += (Width - W) / 2
+  Endif
+  
+  If Align.IsBottom(Alignment) Then
+    Y += Height - H
+  Else If Align.IsMiddle(Alignment) Then
+    Y += (Height - H) / 2
+  Endif
+  
+  Paint.DrawImage(Image, X, Y, W, H, Opacity, Source)
+  
+End
+
+
 ' Static Public Debug As Boolean
 ' 
 ' Static Public Sub MoveTo(X As Float, Y As Float)

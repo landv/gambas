@@ -339,7 +339,7 @@ End
 
 Private Sub InitControl()
 
-  Dim hProp As CPropertyInfo
+  'Dim hProp As CPropertyInfo
 
   $cValue["#X"] = 0
   $cValue["#Y"] = 0
@@ -754,7 +754,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
 
       Return CStr(vVal)
 
-    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field"
+    Case "List", "Path", "Picture", "Font", "Table", "Menu", "Image", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "WebCoord"
 
       Return CStr(vVal)
       
@@ -1681,7 +1681,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           
     Select Case hProp.Type
 
-      Case "s", "v", "List", "Path", "WebformImage", "Table", "Menu", "ReportCoord", "Field"
+      Case "s", "v", "List", "Path", "WebformImage", "Table", "Menu", "ReportCoord", "Field", "WebCoord"
 
         If bTranslate Then
           

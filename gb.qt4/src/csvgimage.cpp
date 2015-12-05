@@ -191,10 +191,10 @@ BEGIN_METHOD(SvgImage_Load, GB_STRING path)
 
 END_METHOD
 
-BEGIN_METHOD_VOID(SvgImage_Paint)
+BEGIN_METHOD(SvgImage_Paint, GB_FLOAT x; GB_FLOAT y; GB_FLOAT w; GB_FLOAT h)
 
 	QPainter *painter = PAINT_get_current();
-	float x, y;
+	float xc, yc;
 	const char *err;
 
 	if (!painter)
@@ -216,8 +216,8 @@ BEGIN_METHOD_VOID(SvgImage_Paint)
 	if (THIS->width <= 0 || THIS->height <= 0)
 		return;
 
-	PAINT_get_current_point(&x, &y);
-	RENDERER->render(painter, QRectF(x, y, THIS->width, THIS->height));
+	PAINT_get_current_point(&xc, &yc);
+	RENDERER->render(painter, QRectF(VARGOPT(x, xc), VARGOPT(y, yc), VARGOPT(w, THIS->width), VARGOPT(h, THIS->height)));
 
 END_METHOD
 
@@ -256,12 +256,14 @@ GB_DESC SvgImageDesc[] =
 	GB_METHOD("_free", NULL, SvgImage_free, NULL),
 
 	GB_PROPERTY("Width", "f", SvgImage_Width),
+	GB_PROPERTY("W", "f", SvgImage_Width),
 	GB_PROPERTY("Height", "f", SvgImage_Height),
+	GB_PROPERTY("H", "f", SvgImage_Height),
 	GB_METHOD("Resize", NULL, SvgImage_Resize, "(Width)f(Height)f"),
 
 	GB_STATIC_METHOD("Load", "SvgImage", SvgImage_Load, "(Path)s"),
 	GB_METHOD("Save", NULL, SvgImage_Save, "(Path)s"),
-	GB_METHOD("Paint", NULL, SvgImage_Paint, NULL),
+	GB_METHOD("Paint", NULL, SvgImage_Paint, "[(X)f(Y)f(Width)f(Height)f]"),
 
 	GB_METHOD("Clear", NULL, SvgImage_Clear, NULL),
 

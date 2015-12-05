@@ -28,8 +28,7 @@ Private $iBgDefault As Integer
 Private $iBgSet As Integer
 Private $iBgModified As Integer
 
-Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]",
-  "Image", "WebformImage", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table"]
+Static Private $aFieldUseDelete As String[] = ["Font", "Picture", "String[]", "Path", "Color", "Field", "Fields", "Field[]", "Image", "WebformImage", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBorder", "ReportBoxShadow", "ReportBrush", "Table", "WebCoord"]
 
 Private Const PADDING As Integer = 6
 Private $cInitialValue As Collection
@@ -428,7 +427,7 @@ Public Function SaveProperty() As Boolean
         vVal = sVal
       Endif
 
-    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "WebformImage", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "Menu", "Table"
+    Case "s", "Font", "Picture", "Constant", "List", "Path", "Image", "WebformImage", "SvgImage", "ReportCoord", "ReportPadding", "ReportMargin", "ReportBoxShadow", "ReportBorder", "ReportBrush", "Field", "Menu", "Table", "WebCoord"
       
       vVal = sVal
 
@@ -535,7 +534,7 @@ Private Sub CancelProperty()
   $sOldVal = grdProperty[$iLast, 1].Text
   'DEBUG "$sOldVal =";; $sOldVal
   If $hEditor.Text <> $sOldVal Then
-    If $hEditor Is SpinBox Or If $hEditor Is AngleBox Then
+    If $hEditor Is SpinBox Or If $hEditor Is AngleBox Or If $hEditor Is CoordBox Then
       Try $hEditor.Value = $sOldVal
     Else
       $hEditor.Text = $sOldVal
@@ -801,6 +800,11 @@ Private Sub ShowProperty(Optional sFocus As String)
 
     Case "ReportCoord"
       hEditor = crdProperty
+      CFamilyReport.InitCoord(crdProperty)
+      
+    Case "WebCoord"
+      hEditor = crdProperty
+      CFamilyWebForm.InitCoord(crdProperty)
       
     Case "Angle"
       hEditor = txtAngle
@@ -1056,10 +1060,10 @@ Public Sub txtProperty_Click()
         $hEditor.Text = FText.Value
       Endif
 
-    Case "ReportCoord"
-
-      If FReportCoordChooser.Run($sOldVal) Then Goto _EXIT
-      $hEditor.Text = FReportCoordChooser.Coord
+    ' Case "ReportCoord"
+    ' 
+    '   If FReportCoordChooser.Run($sOldVal) Then Goto _EXIT
+    '   $hEditor.Text = FReportCoordChooser.Coord
 
     Case "ReportBrush"
 
