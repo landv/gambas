@@ -151,7 +151,7 @@ BEGIN_PROPERTY(__name##_Right)                                                  
     __return(__this->x + __this->w);                                                                                          \
   else                                                                                                                        \
   {                                                                                                                           \
-    __ctype x2 = VPROP(__gtype);                                                                                                  \
+    __ctype x2 = VPROP(__gtype);                                                                                              \
     if (x2 < __this->x)                                                                                                       \
       x2 = __this->x;                                                                                                         \
                                                                                                                               \
@@ -166,7 +166,7 @@ BEGIN_PROPERTY(__name##_Bottom)                                                 
     __return(__this->y + __this->h);                                                                                          \
   else                                                                                                                        \
   {                                                                                                                           \
-    __ctype y2 = VPROP(__gtype);                                                                                                  \
+    __ctype y2 = VPROP(__gtype);                                                                                              \
     if (y2 < __this->y)                                                                                                       \
       y2 = __this->y;                                                                                                         \
                                                                                                                               \
@@ -287,8 +287,8 @@ END_METHOD                                                                      
                                                                                                                               \
 BEGIN_METHOD(__name##_Contains, __gtype x; __gtype y)                                                                         \
                                                                                                                               \
-  __ctype x = VARG(x);                                                                                                            \
-  __ctype y = VARG(y);                                                                                                            \
+  __ctype x = VARG(x);                                                                                                        \
+  __ctype y = VARG(y);                                                                                                        \
                                                                                                                               \
   GB.ReturnBoolean((x >= __this->x) && (x < (__this->x + __this->w)) && (y >= __this->y) && (y < (__this->y + __this->h)));   \
                                                                                                                               \
@@ -296,10 +296,10 @@ END_METHOD                                                                      
                                                                                                                               \
 BEGIN_METHOD(__name##_Adjust, __gtype left; __gtype top; __gtype right; __gtype bottom)                                       \
                                                                                                                               \
-  __ctype left = VARG(left);                                                                                                      \
-  __ctype top = VARGOPT(top, left);                                                                                               \
-  __ctype right = VARGOPT(right, left);                                                                                           \
-  __ctype bottom = VARGOPT(bottom, top);                                                                                          \
+  __ctype left = VARG(left);                                                                                                  \
+  __ctype top = VARGOPT(top, left);                                                                                           \
+  __ctype right = VARGOPT(right, left);                                                                                       \
+  __ctype bottom = VARGOPT(bottom, top);                                                                                      \
                                                                                                                               \
   __this->x += left;                                                                                                          \
   __this->w -= (left + right);                                                                                                \
@@ -317,6 +317,54 @@ BEGIN_METHOD_VOID(__name##_Center)                                              
 	point->x = __this->x + __this->w / 2;                                                                                       \
 	point->y = __this->y + __this->h / 2;                                                                                       \
 	GB.ReturnObject(point);                                                                                                     \
+                                                                                                                              \
+END_METHOD                                                                                                                    \
+                                                                                                                              \
+BEGIN_METHOD(__name##_Stretch, __gtype width; __gtype height; GB_OBJECT frame; GB_INTEGER align)                              \
+                                                                                                                              \
+  __struct *frame = (__struct *)VARG(frame);                                                                                  \
+  int align = VARGOPT(align, ALIGN_CENTER);                                                                                   \
+  __ctype w = VARG(width);                                                                                                    \
+  __ctype h = VARG(height);                                                                                                   \
+                                                                                                                              \
+	__struct *result;                                                                                                           \
+	double scalew, scaleh;                                                                                                      \
+                                                                                                                              \
+	if (GB.CheckObject(frame))                                                                                                  \
+		return;                                                                                                                   \
+                                                                                                                              \
+	result = __struct##_create();                                                                                               \
+	if (w <= 0 || h <= 0 || frame->w <= 0 || frame->h <= 0)                                                                     \
+	{                                                                                                                           \
+		GB.ReturnObject(result);                                                                                                  \
+		return;                                                                                                                   \
+	}                                                                                                                           \
+                                                                                                                              \
+	scalew = (double)frame->w / w;                                                                                              \
+	scaleh = (double)frame->h / h;                                                                                              \
+	if (scalew > scaleh)                                                                                                        \
+		scalew = scaleh;                                                                                                          \
+	else                                                                                                                        \
+		scaleh = scalew;                                                                                                          \
+                                                                                                                              \
+	result->w = w * scalew;                                                                                                     \
+	result->h = h * scaleh;                                                                                                     \
+                                                                                                                              \
+	if (ALIGN_IS_LEFT(align))                                                                                                   \
+		result->x = frame->x;                                                                                                     \
+	else if (ALIGN_IS_CENTER(align))                                                                                            \
+		result->x = frame->x + (frame->w - result->w) / 2;                                                                        \
+	else if (ALIGN_IS_RIGHT(align))                                                                                             \
+		result->x = frame->x + frame->w - result->w;                                                                              \
+                                                                                                                              \
+	if (ALIGN_IS_TOP(align))                                                                                                    \
+		result->y = frame->y;                                                                                                     \
+	else if (ALIGN_IS_MIDDLE(align))                                                                                            \
+		result->y = frame->y + (frame->h - result->h) / 2;                                                                        \
+	else if (ALIGN_IS_BOTTOM(align))                                                                                            \
+		result->y = frame->y + frame->h - result->h;                                                                              \
+                                                                                                                              \
+	GB.ReturnObject(result);                                                                                                    \
                                                                                                                               \
 END_METHOD                                                                                                                    \
                                                                                                                               \
@@ -350,6 +398,7 @@ GB_DESC __name##Desc[] =                                                        
   GB_METHOD("Adjust", NULL, __name##_Adjust, "(Left)" __sign "[(Top)" __sign "(Right)" __sign "(Bottom)" __sign "]"),         \
   GB_METHOD("Center", #__pname, __name##_Center, NULL),                                                                       \
                                                                                                                               \
+  GB_STATIC_METHOD("Stretch", #__name, __name##_Stretch, "(Width)" __sign "(Height)" __sign "(Frame)" #__name ";[(Alignment)i]"), \
+                                                                                                                              \
   GB_END_DECLARE                                                                                                              \
-};                                                                                                                            
-
+};

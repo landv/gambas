@@ -26,6 +26,30 @@
 
 #include "gambas.h"
 
+enum
+{
+	ALIGN_NORMAL = 0x00,
+	ALIGN_LEFT = 0x01,
+	ALIGN_RIGHT = 0x02,
+	ALIGN_CENTER = 0x03,
+	ALIGN_TOP_NORMAL = 0x10,
+	ALIGN_TOP_LEFT = 0x11,
+	ALIGN_TOP_RIGHT = 0x12,
+	ALIGN_TOP = 0x13,
+	ALIGN_BOTTOM_NORMAL = 0x20,
+	ALIGN_BOTTOM_LEFT = 0x21,
+	ALIGN_BOTTOM_RIGHT = 0x22,
+	ALIGN_BOTTOM = 0x23,
+	ALIGN_JUSTIFY = 0x04,
+};
+
+#define ALIGN_IS_TOP(_align) (((_align) & 0xF0) == 0x10)
+#define ALIGN_IS_BOTTOM(_align) (((_align) & 0xF0) == 0x20)
+#define ALIGN_IS_MIDDLE(_align) (((_align) & 0xF0) == 0x00)
+#define ALIGN_IS_LEFT(_align) (((_align) & 0xF) == 0x1 || (((_align) & 0xF) == 0x0 && !GB.System.IsRightToLeft()))
+#define ALIGN_IS_RIGHT(_align) (((_align) & 0xF) == 0x2 || (((_align) & 0xF) == 0x0 && GB.System.IsRightToLeft()))
+#define ALIGN_IS_CENTER(_align) (((_align) & 0xF) == 0x3)
+
 typedef
 	struct {
 		GB_BASE ob;
@@ -78,4 +102,4 @@ typedef
 
 #endif
 
- 
+

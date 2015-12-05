@@ -24,31 +24,9 @@
 #ifndef __GB_FORM_H
 #define __GB_FORM_H
 
+#include "gb.geom.h"
+
 #define CONST_MAGIC 0x12345678
-
-enum
-{
-	ALIGN_NORMAL = 0x00, //Qt::AlignVCenter + Qt::AlignAuto,
-	ALIGN_LEFT = 0x01, //Qt::AlignVCenter + Qt::AlignLeft,
-	ALIGN_RIGHT = 0x02, //Qt::AlignVCenter + Qt::AlignRight,
-	ALIGN_CENTER = 0x03, //Qt::AlignVCenter + Qt::AlignHCenter,
-	ALIGN_TOP_NORMAL = 0x10, //Qt::AlignTop + Qt::AlignAuto,
-	ALIGN_TOP_LEFT = 0x11, //Qt::AlignTop + Qt::AlignLeft,
-	ALIGN_TOP_RIGHT = 0x12, //Qt::AlignTop + Qt::AlignRight,
-	ALIGN_TOP = 0x13, //Qt::AlignTop + Qt::AlignHCenter,
-	ALIGN_BOTTOM_NORMAL = 0x20, //Qt::AlignBottom + Qt::AlignAuto,
-	ALIGN_BOTTOM_LEFT = 0x21, //Qt::AlignBottom + Qt::AlignLeft,
-	ALIGN_BOTTOM_RIGHT = 0x22, //Qt::AlignBottom + Qt::AlignRight,
-	ALIGN_BOTTOM = 0x23, //Qt::AlignBottom + Qt::AlignHCenter,
-	ALIGN_JUSTIFY = 0x04, //Qt::AlignVCenter + Qt::AlignJustify	
-};
-
-#define ALIGN_IS_TOP(_align) (((_align) & 0xF0) == 0x10)
-#define ALIGN_IS_BOTTOM(_align) (((_align) & 0xF0) == 0x20)
-#define ALIGN_IS_MIDDLE(_align) (((_align) & 0xF0) == 0x00)
-#define ALIGN_IS_LEFT(_align) (((_align) & 0xF) == 0x1 || (((_align) & 0xF) == 0x0 && !GB.System.IsRightToLeft()))
-#define ALIGN_IS_RIGHT(_align) (((_align) & 0xF) == 0x2 || (((_align) & 0xF) == 0x0 && GB.System.IsRightToLeft()))
-#define ALIGN_IS_CENTER(_align) (((_align) & 0xF) == 0x3)
 
 enum {
 	BORDER_NONE = 0,

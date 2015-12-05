@@ -503,6 +503,9 @@ Static Public Sub PaintImage(hCtrl As CControl, sRoot As String, Optional iAlign
 
   Dim sPath As String
   Dim hImage As Image
+  Dim hSvgImage As SvgImage
+  Dim sExt As String
+  Dim hRect As RectF
   
   sPath = hCtrl["Image"]
   If Not sPath Then Return True
@@ -510,14 +513,29 @@ Static Public Sub PaintImage(hCtrl As CControl, sRoot As String, Optional iAlign
   If hCtrl["#ImagePath"] <> sPath Then
     hCtrl["#ImagePath"] = sPath
     hCtrl["#Image"] = Null
-    Try hCtrl["#Image"] = Image.Load(Project.Dir &/ sRoot &/ sPath)
+    hCtrl["#SvgImage"] = Null
+    sExt = File.Ext(sPath)
+    If sExt = "svg" Or If sExt = "svgz" Then
+      Try hCtrl["#SvgImage"] = SvgImage.Load(Project.Dir &/ sRoot &/ sPath)
+    Else
+      Try hCtrl["#Image"] = Image.Load(Project.Dir &/ sRoot &/ sPath)
+    Endif
   Endif
-      
+  
   hImage = hCtrl["#Image"]
   If hImage Then
-    Paint.StretchImage(hImage, 0, 0, Paint.W, Paint.H, iAlign)
-  Else
-    PaintBroken
+    hRect = RectF.Stretch(hImage.W, hImage.H, RectF(0, 0, Paint.W, Paint.H))
+    Paint.DrawImage(hImage, hRect.X, hRect.Y, hRect.W, hRect.H)
+    Return
   Endif
+  
+  hSvgImage = hCtrl["#SvgImage"]
+  If hSvgImage Then
+    hRect = RectF.Stretch(hSvgImage.W, hSvgImage.H, RectF(0, 0, Paint.W, Paint.H))
+    hSvgImage.Paint(hRect.X, hRect.Y, hRect.W, hRect.H)
+    Return
+  Endif
+  
+  PaintBroken
   
 End

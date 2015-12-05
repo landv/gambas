@@ -1257,6 +1257,8 @@ Private Sub UpdateMultiContainer(hCtrl As CControl, Optional iIndex As Integer =
     $hUndo.Enable
     $bDoNotModify = False
     
+    If $hFamily.AutomaticArrangement Then hCtrl.Arrange
+    
   End With
 
 End
@@ -1959,13 +1961,13 @@ Private Sub ArrangeContainer(hParent As Container, sArr As String, Optional bInv
     If iIndex < 0 Then
       For Each hCtrl In hParent.Children
         hCCtrl = GetControl(hCtrl)
-        If hCCtrl And If IsNull(hCCtrl.GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
+        If hCCtrl And If IsNull(hCCtrl.GetProperty("Ignore")) And If Not hCCtrl.Virtual Then aCtrl.Add(hCtrl)
       Next
     Else ' Multicontainer
       hTab = hParent
       For Each hCtrl In hTab[iIndex].Children
         hCCtrl = GetControl(hCtrl)
-        If hCCtrl And If IsNull(hCCtrl.GetProperty("Ignore")) Then aCtrl.Add(hCtrl)
+        If hCCtrl And If IsNull(hCCtrl.GetProperty("Ignore")) And If Not hCCtrl.Virtual Then aCtrl.Add(hCtrl)
       Next
     Endif
   Else If Selection.Count >= 2 Then

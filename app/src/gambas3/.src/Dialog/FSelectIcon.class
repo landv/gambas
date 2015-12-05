@@ -61,7 +61,7 @@ Public Sub Form_Open()
     Endif
     tabIcon.Index = 1 
   Else If $sIcon Then
-    fchIcon.SelectedPath = Project.Dir &/ $sIcon
+    fchIcon.SelectedPath = fchIcon.Root &/ $sIcon
     tabIcon.Index = 0
   Endif
 

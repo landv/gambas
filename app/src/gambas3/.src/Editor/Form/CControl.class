@@ -1681,7 +1681,7 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
           
     Select Case hProp.Type
 
-      Case "s", "v", "List", "Path", "WebformImage", "Table", "Menu", "ReportCoord", "Field", "WebCoord"
+      Case "s", "v", "List", "Path", "WebImage", "Table", "Menu", "ReportCoord", "Field", "WebCoord"
 
         If bTranslate Then
           
@@ -2195,7 +2195,10 @@ Public Sub UpdateGeometry()
   
   Dim hUndo As CUndo
   
-  'If Control.X = Me.X And If Control.Y = Me.Y And If Control.W = Me.W And If Control.H = Me.H Then Return
+  If Control.X = Me.X And If Control.Y = Me.Y Then
+    If Virtual Then Goto UPDATE_ARRANGEMENT
+    If Control.W = Me.W And If Control.H = Me.H Then Goto UPDATE_ARRANGEMENT
+  Endif
   
   hUndo = GetUndo()
   
@@ -2213,6 +2216,9 @@ Public Sub UpdateGeometry()
   $bDoNotMoveHandle = False
   
   MoveAllHandle
+  
+UPDATE_ARRANGEMENT:
+
   UpdateArrangement
   
 End
