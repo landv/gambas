@@ -39,95 +39,111 @@ manualpage()
 cat << _MANUALPAGE
 Name
 
-xdg-email - command line tool for sending mail using the user's preferred
-e-mail composer
+   xdg-email - command line tool for sending mail using the user's
+   preferred e-mail composer
 
 Synopsis
 
-xdg-email [--utf8] [--cc address] [--bcc address] [--subject text] [--body text
-] [--attach file] [ mailto-uri | address(es) ]
+   xdg-email [--utf8] [--cc address] [--bcc address] [--subject
+   text] [--body text] [--attach file] [ mailto-uri | address(es)
+   ]
 
-xdg-email { --help | --manual | --version }
+   xdg-email { --help | --manual | --version }
 
 Description
 
-xdg-email opens the user's preferred e-mail composer in order to send a mail to
-address(es) or mailto-uri. RFC2368 defines mailto: URIs. xdg-email limits
-support to, cc, subject and body fields in mailto-uri, all other fields are
-silently ignored. address(es) must follow the syntax of RFC822. Multiple
-addresses may be provided as separate arguments.
+   xdg-email opens the user's preferred e-mail composer in order
+   to send a mail to address(es) or mailto-uri. RFC2368 defines
+   mailto: URIs. xdg-email limits support to, cc, subject and body
+   fields in mailto-uri, all other fields are silently ignored.
+   address(es) must follow the syntax of RFC822. Multiple
+   addresses may be provided as separate arguments.
 
-All information provided on the command line is used to prefill corresponding
-fields in the user's e-mail composer. The user will have the opportunity to
-change any of this information before actually sending the e-mail.
+   All information provided on the command line is used to prefill
+   corresponding fields in the user's e-mail composer. The user
+   will have the opportunity to change any of this information
+   before actually sending the e-mail.
 
-xdg-email is for use inside a desktop session only. It is not recommended to
-use xdg-email as root.
-
-See http://portland.freedesktop.org/EmailConfig for information on how the user
-can change the e-mail composer that is used.
+   xdg-email is for use inside a desktop session only. It is not
+   recommended to use xdg-email as root.
 
 Options
 
---utf8
-    Indicates that all command line options that follow are in utf8. Without
-    this option, command line options are expected to be encoded according to
-    locale. If the locale already specifies utf8 this option has no effect.
-    This option does not affect mailto URIs that are passed on the command
-    line.
---cc address
-    Specify a recipient to be copied on the e-mail.
---bcc address
-    Specify a recipient to be blindly copied on the e-mail.
---subject text
-    Specify a subject for the e-mail.
---body text
-    Specify a body for the e-mail. Since the user will be able to make changes
-    before actually sending the e-mail, this can be used to provide the user
-    with a template for the e-mail. text may contain linebreaks.
---attach file
+   --utf8
+          Indicates that all command line options that follow are
+          in utf8. Without this option, command line options are
+          expected to be encoded according to locale. If the
+          locale already specifies utf8 this option has no effect.
+          This option does not affect mailto URIs that are passed
+          on the command line.
 
-    Specify an attachment for the e-mail. file must point to an existing file.
+   --cc address
+          Specify a recipient to be copied on the e-mail.
 
-    Some e-mail applications require the file to remain present after xdg-email
-    returns.
+   --bcc address
+          Specify a recipient to be blindly copied on the e-mail.
 
---help
-    Show command synopsis.
---manual
-    Show this manualpage.
---version
-    Show the xdg-utils version information.
+   --subject text
+          Specify a subject for the e-mail.
+
+   --body text
+          Specify a body for the e-mail. Since the user will be
+          able to make changes before actually sending the e-mail,
+          this can be used to provide the user with a template for
+          the e-mail. text may contain linebreaks.
+
+   --attach file
+          Specify an attachment for the e-mail. file must point to
+          an existing file.
+
+          Some e-mail applications require the file to remain
+          present after xdg-email returns.
+
+   --help
+          Show command synopsis.
+
+   --manual
+          Show this manual page.
+
+   --version
+          Show the xdg-utils version information.
 
 Environment Variables
 
-xdg-email honours the following environment variables:
+   xdg-email honours the following environment variables:
 
-XDG_UTILS_DEBUG_LEVEL
-    Setting this environment variable to a non-zero numerical value makes
-    xdg-email do more verbose reporting on stderr. Setting a higher value
-    increases the verbosity.
+   XDG_UTILS_DEBUG_LEVEL
+          Setting this environment variable to a non-zero
+          numerical value makes xdg-email do more verbose
+          reporting on stderr. Setting a higher value increases
+          the verbosity.
 
 Exit Codes
 
-An exit code of 0 indicates success while a non-zero exit code indicates
-failure. The following failure codes can be returned:
+   An exit code of 0 indicates success while a non-zero exit code
+   indicates failure. The following failure codes can be returned:
 
-1
-    Error in command line syntax.
-2
-    One of the files passed on the command line did not exist.
-3
-    A required tool could not be found.
-4
-    The action failed.
-5
-    No permission to read one of the files passed on the command line.
+   1
+          Error in command line syntax.
 
-Configuration
+   2
+          One of the files passed on the command line did not
+          exist.
 
-Visit http://portland.freedesktop.org/EmailConfig for information how to
-configure xdg-email to use the email client of your choice.
+   3
+          A required tool could not be found.
+
+   4
+          The action failed.
+
+   5
+          No permission to read one of the files passed on the
+          command line.
+
+See Also
+
+   xdg-open(1), xdg-mime(1), MIME applications associations
+   specification, RFC 6068 - The 'mailto' URI Scheme
 
 Examples
 
@@ -139,23 +155,24 @@ xdg-email --attach /tmp/logo.png \
           'jwhite@example.com'
 
 xdg-email --subject 'Your password is about to expire' \
-          'jwhite@example.com' 'bastian@example.com' 'whipple@example.com'
-
+          'jwhite@example.com' 'bastian@example.com' 'whipple@example.co
+m'
 _MANUALPAGE
 }
 
 usage()
 {
 cat << _USAGE
-xdg-email - command line tool for sending mail using the user's preferred
-e-mail composer
+   xdg-email - command line tool for sending mail using the user's
+   preferred e-mail composer
 
 Synopsis
 
-xdg-email [--utf8] [--cc address] [--bcc address] [--subject text] [--body text
-] [--attach file] [ mailto-uri | address(es) ]
+   xdg-email [--utf8] [--cc address] [--bcc address] [--subject
+   text] [--body text] [--attach file] [ mailto-uri | address(es)
+   ]
 
-xdg-email { --help | --manual | --version }
+   xdg-email { --help | --manual | --version }
 
 _USAGE
 }
@@ -172,6 +189,64 @@ DEBUG()
   [ ${XDG_UTILS_DEBUG_LEVEL} -lt $1 ] && return 0;
   shift
   echo "$@" >&2
+}
+
+# This handles backslashes but not quote marks.
+first_word()
+{
+    read first rest
+    echo "$first"
+}
+
+#-------------------------------------------------------------
+# map a binary to a .desktop file
+binary_to_desktop_file()
+{
+    search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    binary="`which "$1"`"
+    binary="`readlink -f "$binary"`"
+    base="`basename "$binary"`"
+    IFS=:
+    for dir in $search; do
+        unset IFS
+        [ "$dir" ] || continue
+        [ -d "$dir/applications" ] || [ -d "$dir/applnk" ] || continue
+        for file in "$dir"/applications/*.desktop "$dir"/applications/*/*.desktop "$dir"/applnk/*.desktop "$dir"/applnk/*/*.desktop; do
+            [ -r "$file" ] || continue
+            # Check to make sure it's worth the processing.
+            grep -q "^Exec.*$base" "$file" || continue
+            # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+            grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+            command="`which "$command"`"
+            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+                # Fix any double slashes that got added path composition
+                echo "$file" | sed -e 's,//*,/,g'
+                return
+            fi
+        done
+    done
+}
+
+#-------------------------------------------------------------
+# map a .desktop file to a binary
+## FIXME: handle vendor dir case
+desktop_file_to_binary()
+{
+    search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    desktop="`basename "$1"`"
+    IFS=:
+    for dir in $search; do
+        unset IFS
+        [ "$dir" ] && [ -d "$dir/applications" ] || continue
+        file="$dir/applications/$desktop"
+        [ -r "$file" ] || continue
+        # Remove any arguments (%F, %f, %U, %u, etc.).
+        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+        command="`which "$command"`"
+        readlink -f "$command"
+        return
+    done
 }
 
 #-------------------------------------------------------------
@@ -282,7 +357,7 @@ check_vendor_prefix()
     [ -n "$file_label" ] || file_label="filename"
     file=`basename "$1"`
     case "$file" in
-       [a-zA-Z]*-*)
+       [[:alpha:]]*-*)
          return
          ;;
     esac
@@ -304,7 +379,7 @@ check_output_file()
         fi
     else
         DIR=`dirname "$1"`
-        if [ ! -w "$DIR" -o ! -x "$DIR" ]; then
+        if [ ! -w "$DIR" ] || [ ! -x "$DIR" ]; then
             exit_failure_file_permission_write "no permission to create file '$1'"
         fi
     fi
@@ -332,7 +407,7 @@ check_common_commands()
             ;;
 
             --version)
-            echo "xdg-email 1.1.0 rc1"
+            echo "xdg-email 1.1.0 rc3"
             exit_success
             ;;
         esac
@@ -356,12 +431,86 @@ fi
 
 detectDE()
 {
-    if [ x"$KDE_FULL_SESSION" = x"true" ]; then DE=kde;
-    elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DE=gnome;
-    elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DE=gnome;
-    elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
-    elif [ x"$DESKTOP_SESSION" == x"LXDE" ]; then DE=lxde;
-    else DE=""
+    # see https://bugs.freedesktop.org/show_bug.cgi?id=34164
+    unset GREP_OPTIONS
+
+    if [ -n "${XDG_CURRENT_DESKTOP}" ]; then
+      case "${XDG_CURRENT_DESKTOP}" in
+         # only recently added to menu-spec, pre-spec X- still in use
+         Cinnamon|X-Cinnamon)
+           DE=cinnamon;
+           ;;
+         ENLIGHTENMENT)
+           DE=enlightenment;
+           ;;
+         # GNOME, GNOME-Classic:GNOME, or GNOME-Flashback:GNOME
+         GNOME*)
+           DE=gnome;
+           ;;
+         KDE)
+           DE=kde;
+           ;;
+         LXDE)
+           DE=lxde;
+           ;;
+         MATE)
+           DE=mate;
+           ;;
+         XFCE)
+           DE=xfce
+           ;;
+         X-Generic)
+           DE=generic
+           ;;
+      esac
+    fi
+
+    if [ x"$DE" = x"" ]; then
+      # classic fallbacks
+      if [ x"$KDE_FULL_SESSION" != x"" ]; then DE=kde;
+      elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DE=gnome;
+      elif [ x"$MATE_DESKTOP_SESSION_ID" != x"" ]; then DE=mate;
+      elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DE=gnome;
+      elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
+      elif xprop -root 2> /dev/null | grep -i '^xfce_desktop_window' >/dev/null 2>&1; then DE=xfce
+      elif echo $DESKTOP | grep -q '^Enlightenment'; then DE=enlightenment;
+      fi
+    fi
+
+    if [ x"$DE" = x"" ]; then
+      # fallback to checking $DESKTOP_SESSION
+      case "$DESKTOP_SESSION" in
+         gnome)
+           DE=gnome;
+           ;;
+         LXDE|Lubuntu)
+           DE=lxde; 
+           ;;
+         MATE)
+           DE=mate;
+           ;;
+         xfce|xfce4|'Xfce Session')
+           DE=xfce;
+           ;;
+      esac
+    fi
+
+    if [ x"$DE" = x"" ]; then
+      # fallback to uname output for other platforms
+      case "$(uname 2>/dev/null)" in 
+        CYGWIN*)
+          DE=cygwin;
+          ;;
+        Darwin)
+          DE=darwin;
+          ;;
+      esac
+    fi
+
+    if [ x"$DE" = x"gnome" ]; then
+      # gnome-default-applications-properties is only available in GNOME 2.x
+      # but not in GNOME 3.x
+      which gnome-default-applications-properties > /dev/null 2>&1  || DE="gnome3"
     fi
 }
 
@@ -372,7 +521,6 @@ detectDE()
 
 kfmclient_fix_exit_code()
 {
-    [ x"$KDE_SESSION_VERSION" = x"4" ] && return 0;
     version=`LC_ALL=C.UTF-8 kde-config --version 2>/dev/null | grep '^KDE'`
     major=`echo $version | sed 's/KDE.*: \([0-9]\).*/\1/'`
     minor=`echo $version | sed 's/KDE.*: [0-9]*\.\([0-9]\).*/\1/'`
@@ -396,12 +544,12 @@ run_thunderbird()
     fi
 
     MAILTO=$(echo "$MAILTO" | sed 's/&/\n/g')
-    TO=$(echo "$MAILTO" | grep '^to=' | sed 's/^to=//' | awk '{ printf "%s,",$0 }')
-    CC=$(echo "$MAILTO" | grep '^cc=' | sed 's/^cc=//' | awk '{ printf "%s,",$0 }')
-    BCC=$(echo "$MAILTO" | grep '^bcc=' | sed 's/^bcc=//' | awk '{ printf "%s,",$0 }')
+    TO=$(/bin/echo -e $(echo "$MAILTO" | grep '^to=' | sed 's/^to=//;s/%\(..\)/\\x\1/g' | awk '{ printf "%s,",$0 }'))
+    CC=$(/bin/echo -e $(echo "$MAILTO" | grep '^cc=' | sed 's/^cc=//;s/%\(..\)/\\x\1/g' | awk '{ printf "%s,",$0 }'))
+    BCC=$(/bin/echo -e $(echo "$MAILTO" | grep '^bcc=' | sed 's/^bcc=//;s/%\(..\)/\\x\1/g' | awk '{ printf "%s,",$0 }'))
     SUBJECT=$(echo "$MAILTO" | grep '^subject=' | tail -n 1)
     BODY=$(echo "$MAILTO" | grep '^body=' | tail -n 1)
-    ATTACH=$(echo "$MAILTO" | sed 's/^attach=/\n\nfile:\/\//g' | awk '/^file:/ { printf "%s,",$0 }' | sed 's/,$//')
+    ATTACH=$(/bin/echo -e $(echo "$MAILTO" | grep '^attach=' | sed 's/^attach=//;s/%\(..\)/\\x\1/g' | awk '{ printf "%s,",$0 }' | sed 's/,$//'))
 
     if [ -z "$TO" ] ; then
         NEWMAILTO=
@@ -437,34 +585,73 @@ run_thunderbird()
 
 open_kde()
 {
-    local client kde_email_profile_name
-    kde_email_profile_name=`kreadconfig --file emaildefaults --group Defaults --key Profile`
-    client=`kreadconfig --file emaildefaults --group PROFILE_"$kde_email_profile_name" --key EmailClient | cut -d ' ' -f 1`
-    echo $client | grep thunderbird > /dev/null 2>&1
+    if [ -n "$KDE_SESSION_VERSION" ] && [ "$KDE_SESSION_VERSION" -ge 5 ]; then
+        local kreadconfig=kreadconfig$KDE_SESSION_VERSION
+    else
+        local kreadconfig=kreadconfig
+    fi
+
+    if which $kreadconfig >/dev/null 2>&1; then
+        local profile=$($kreadconfig --file emaildefaults \
+                                     --group Defaults --key Profile)
+        if [ -n "$profile" ]; then
+            local client=$($kreadconfig --file emaildefaults \
+                                        --group "PROFILE_$profile" \
+                                        --key EmailClient \
+                                  | cut -d ' ' -f 1)
+
+            if echo "$client" | grep -Eq 'thunderbird|icedove'; then
+                run_thunderbird "$client" "$1"
+            fi
+        fi
+    fi
+
+    local command
+    case "$KDE_SESSION_VERSION" in
+        '') command=kmailservice ;;
+        4) command=kde-open ;;
+        *) command=kde-open$KDE_SESSION_VERSION ;;
+    esac
+
+    if which $command >/dev/null 2>&1; then
+        DEBUG 1 "Running $command \"$1\""
+        if [ "$KDE_SESSION_VERSION" = 3 ]; then
+            # KDE3 uses locale's encoding when decoding the URI,
+            # so set it to UTF-8
+            LC_ALL=C.UTF-8 $command "$1"
+        else
+            $command "$1"
+        fi
+    else
+        DEBUG 1 "$command missing; trying generic mode instead."
+        open_generic "$1"
+    fi
+
+    if [ $? = 0 ]; then
+        exit_success
+    else
+        exit_failure_operation_failed
+    fi
+}
+
+open_gnome3()
+{
+    local client
+    local desktop
+    desktop=`xdg-mime query default "x-scheme-handler/mailto"`
+    client=`desktop_file_to_binary "$desktop"`
+    echo $client | grep -E 'thunderbird|icedove' > /dev/null 2>&1
     if [ $? -eq 0 ] ; then
         run_thunderbird "$client" "$1"
     fi
 
-    if [ -f /etc/SuSE-release ] ; then
-        # Workaround for SUSE 10.0
-        [ -z "$client" ] && client="kmail"
-        if ! which "$client" > /dev/null 2> /dev/null; then
-            DEBUG 3 "KDE has $client configured as email client which isn't installed"
-            if which gnome-open > /dev/null 2> /dev/null && which evolution > /dev/null 2> /dev/null; then
-               DEBUG 3 "Try gnome-open instead"
-               open_gnome "$1"
-            fi
-        fi
-    fi
-    DEBUG 1 "Running kmailservice \"$1\""
-    if [ x"$KDE_SESSION_VERSION" = x"4" ]; then
-        KMAILSERVICE=`kde4-config --locate kmailservice --path exe 2>/dev/null`
+    if gvfs-open --help 2>/dev/null 1>&2; then
+        DEBUG 1 "Running gvfs-open \"$1\""
+        gvfs-open "$1"
     else
-        KMAILSERVICE=`which kmailservice 2>/dev/null`
+        DEBUG 1 "Running gnome-open \"$1\""
+        gnome-open "$1"
     fi
-    # KDE uses locale's encoding when decoding the URI, so set it to UTF-8
-    LC_ALL=C.UTF-8 $KMAILSERVICE "$1"
-    kfmclient_fix_exit_code $?
 
     if [ $? -eq 0 ]; then
         exit_success
@@ -477,7 +664,7 @@ open_gnome()
 {
     local client
     client=`gconftool-2 --get /desktop/gnome/url-handlers/mailto/command | cut -d ' ' -f 1` || ""
-    echo $client | grep thunderbird > /dev/null 2>&1
+    echo $client | grep -E 'thunderbird|icedove' > /dev/null 2>&1
     if [ $? -eq 0 ] ; then
         run_thunderbird "$client" "$1"
     fi
@@ -510,8 +697,42 @@ open_xfce()
     fi
 }
 
+open_envvar()
+{
+    local OLDIFS="$IFS"
+    IFS=:
+    for i in $MAILER; do
+	IFS="$OLDIFS"
+
+	eval "$i" '"$1"'
+
+	if [ $? -eq 0 ]; then
+	    exit_success
+	fi
+    done
+
+    exit_failure_operation_failed
+}
+
 open_generic()
 {
+    local client
+    local desktop
+    desktop=`xdg-mime query default "x-scheme-handler/mailto"`
+    client=`desktop_file_to_binary "$desktop"`
+    echo $client | grep -E 'thunderbird|icedove' > /dev/null 2>&1
+    if [ $? -eq 0 ] ; then
+        run_thunderbird "$client" "$1"
+    fi
+
+    xdg-open "$1"
+    local ret=$?
+
+    # 3 means exit_failure_operation_impossible
+    if [ $ret != 3 ]; then
+        exit $ret
+    fi
+
     IFS=":"
     for browser in $BROWSER; do
         if [ x"$browser" != x"" ]; then
@@ -534,7 +755,15 @@ open_generic()
 
 url_encode()
 {
-result=$(echo "$1" | $utf8 | awk '
+# The shell needs the default internal field separator
+# otherwise it would search for $utf8 as a command in whole.
+IFS=" "
+str=$(echo "$1" | $utf8)
+local ORIG_LANG="$LANG"
+local ORIG_LC_ALL="$LC_ALL"
+LANG=C
+LC_ALL=C
+result=$(echo "$str" | awk '
     BEGIN {
         for ( i=1; i<=255; ++i ) ord [ sprintf ("%c", i) "" ] = i + 0
         e = ""
@@ -548,9 +777,7 @@ result=$(echo "$1" | $utf8 | awk '
             c = substr ($0, i, 1)
             if ( ord [c] > 127 ) {
                 e = e "%" sprintf("%02X", ord [c])
-            } else if ( ord[c] == 45 ) {
-                e = e c
-            } else if ( c ~ /[@a-zA-Z0-9.\\\/]/ ) {
+            } else if ( c ~ /[@a-zA-Z0-9.\-\\\/]/ ) {
                 e = e c
             } else {
                 e = e "%" sprintf("%02X", ord [c])
@@ -561,6 +788,8 @@ result=$(echo "$1" | $utf8 | awk '
         print e
     }
 ')
+LANG="$ORIG_LANG"
+LC_ALL="$ORIG_LC_ALL"
 }
 
 options=
@@ -626,7 +855,7 @@ while [ $# -gt 0 ] ; do
         fi
         check_input_file "$1"
         file=`readlink -f "$1"` # Normalize path
-        if [ -z "$file" -o ! -f "$file" ] ; then
+        if [ -z "$file" ] || [ ! -f "$file" ] ; then
             exit_failure_file_missing "file '$1' does not exist"
         fi
 
@@ -698,15 +927,23 @@ if [ x"$DE" = x"" ]; then
     DE=generic
 fi
 
+if [ x"$MAILER" != x"" ]; then
+    DE=envvar
+fi
+
 # if BROWSER variable is not set, check some well known browsers instead
 if [ x"$BROWSER" = x"" ]; then
-    BROWSER=links2:links:lynx:w3m
+    BROWSER=www-browser:links2:elinks:links:lynx:w3m
     if [ -n "$DISPLAY" ]; then
-        BROWSER=firefox:mozilla:epiphany:konqueror:chromium-browser:google-chrome:$BROWSER
+        BROWSER=x-www-browser:firefox:iceweasel:seamonkey:mozilla:epiphany:konqueror:chromium-browser:google-chrome:$BROWSER
     fi
 fi
 
 case "$DE" in
+    envvar)
+    open_envvar "${mailto}"
+    ;;
+
     kde)
     open_kde "${mailto}"
     ;;
@@ -715,16 +952,15 @@ case "$DE" in
     open_gnome "${mailto}"
     ;;
 
-# BB 01Nov13: Fix to stop default web browser being run
-    lxde)
-    open_gnome "${mailto}"
+    gnome3|cinnamon|lxde|mate)
+    open_gnome3 "${mailto}"
     ;;
-    
+
     xfce)
     open_xfce "${mailto}"
     ;;
 
-    generic|lxde)
+    generic)
     open_generic "${mailto}"
     ;;
 
