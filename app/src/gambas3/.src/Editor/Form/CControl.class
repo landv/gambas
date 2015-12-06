@@ -487,7 +487,7 @@ Private Function GetRealValue(sProp As String, vVal As Variant) As Variant
 
       If TypeOf(vRealVal) = gb.String Then
         If Not IsNull(Val(vRealVal)) Then
-          vRealVal = Val(vRealVal)
+          vRealVal = CInt(Val(vRealVal))
         Else
           vRealVal = FColorChooser.FromString(vRealVal) 'Object.GetProperty(Color, vRealVal)
         Endif
@@ -556,7 +556,7 @@ Public Function SetProperty(sProp As String, vVal As Variant, Optional bDoNotApp
 
   ' valeur par défaut ?
 
-  'IF sProp = "Background" THEN STOP
+  'If sProp = "Background" Then Stop
 
   If Not hProp.Required Then
     If Not IsNull(vDefault) Then
@@ -766,7 +766,7 @@ Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As Str
     Case "Color"
 
       vVal = CStr(vVal)
-      If IsInteger(vVal) Then
+      If IsLong(vVal) Then
         sVal = Hex$(vVal, 8)
         If sVal Begins "00" Then sVal = Mid$(sVal, 3)
         Return "&H" & sVal & "&"
