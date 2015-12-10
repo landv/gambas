@@ -999,6 +999,69 @@ _Free
 m
 
 
+#ReportGridView
+ReportFrame
+C
+:Data
+:
+
+(Row)i(Column)i
+_IsControl
+C
+b
+T
+_IsContainer
+C
+b
+
+_Properties
+C
+s
+"*"
+_DefaultEvent
+C
+s
+"Data"
+None
+C
+i
+0
+Horizontal
+C
+i
+1
+Vertical
+C
+i
+2
+Both
+C
+i
+3
+Columns
+r
+_ReportGridView_Columns
+
+Rows
+r
+_ReportGridView_Rows
+
+Header
+p
+i
+
+_NormalizeUnits
+m
+
+
+_GetSizeHints
+m
+ReportSizeHints
+(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
+_Paint
+m
+
+(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
 #ReportHBox
 ReportContainer
 C
@@ -1277,6 +1340,39 @@ FromString
 M
 ReportSizeHints
 (Width)s(Height)s[(NotFinished)b]
+#ReportSizeParser
+
+C
+Value
+v
+f
+
+Unit
+v
+s
+
+_new
+m
+
+(Size)s[(bAllowRelative)b]
+'Create a new size object from its description.
+'#bAllowRelative# can be TRUE to allow the use of "%" as unit.
+ToInch
+m
+f
+
+IsRelative
+m
+b
+
+GetValue
+m
+f
+
+_get
+M
+TSizeParse
+(Size)s
 #ReportSvgImage
 ReportFrame
 C
@@ -1485,6 +1581,10 @@ tmrLayout_Timer
 m
 
 
+Refresh
+m
+
+
 MoveNext
 m
 
@@ -1505,10 +1605,6 @@ MoveTo
 m
 
 (Page)i
-Refresh
-m
-
-
 _ForceLayout
 m
 
@@ -1521,39 +1617,6 @@ UnlockLayout
 m
 
 
-#TSizeParse
-
-C
-Value
-v
-f
-
-Unit
-v
-s
-
-_new
-m
-
-(Size)s[(bAllowRelative)b]
-'Create a new size object from its description.
-'#bAllowRelative# can be TRUE to allow the use of "%" as unit.
-ToInch
-m
-f
-
-IsRelative
-m
-b
-
-GetValue
-m
-f
-
-_get
-M
-TSizeParse
-(Size)s
 #_ReportBorderSide
 
 C

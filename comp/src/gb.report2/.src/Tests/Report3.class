@@ -12,7 +12,7 @@ Public Sub _new()
   'ReportVBox1.Border.Left.Width = "1mm"
   'ReportVBox1.DataCount = 3
 
-For i = 0 To 20
+For i = 0 To 800
   'If i = 3 Then hBreak = New ReportPageBreak(Me)
   hCont = New ReportLabel(Me)
   hCont.BoxShadow.Blur = "5mm"

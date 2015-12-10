@@ -1,0 +1,83 @@
+' Gambas class file
+
+' Gambas class file
+
+Export
+Fast
+'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+Public Value As Float
+Public Unit As String
+
+'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+
+'#####################  PUBLIC PROCEDURES  #########################
+'' Create a new size object from its description.
+'' #bAllowRelative# can be TRUE to allow the use of "%" as unit.
+Public Sub _new(Size As String, Optional bAllowRelative As Boolean)
+  
+  Dim I As Integer
+  Dim sCar As String
+  
+  If Not size Then 
+   Unit = "cm"
+   Value = 0
+  Endif
+  
+  Size = Trim(Size)
+  
+  If Not Size Then
+    Unit = "px"
+    Return
+  Endif
+  
+  For I = 1 To Len(Size)
+    sCar = Mid$(Size, I, 1)
+    If Not IsDigit(sCar) And If sCar <> "-" And If sCar <> "." Then Break
+  Next
+  
+  Value = CFloat(Left$(Size, I - 1))
+  Unit = Trim(Mid$(Size, I))
+  
+  If Not Unit Then Unit = "px"
+  
+  If Not Report.AllowedUnits.Exist(Unit) Then 
+    If Not bAllowRelative Or Unit <> "%" Then
+      Error.Raise("Unknown unit")
+    Endif
+  Endif
+  
+End
+
+Public Sub ToInch() As Float
+  
+    Return Report.UnitToInch(Value, Unit)
+  
+End
+
+Public Sub IsRelative() As Boolean
+  
+  Return Unit = "%"
+  
+End
+
+Public Sub GetValue() As Float
+  
+  If IsRelative() Then 
+    Return Value
+  Else 
+    Return ToInch()
+  Endif
+  
+End
+
+Static Public Sub _get(Size As String) As TSizeParse
+  
+  Dim hSize As TSizeParse = New TSizeParse(Size)
+  
+  Return hSize
+  
+End
+
+'#####################  PRIVATE PROCEDURES  ########################
+'########################  PROPERTIES  #############################

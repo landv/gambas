@@ -143,6 +143,7 @@ Public Sub tmrLayout_Timer()
   
   If Not $hReport._LayoutNotFinished Or If $bLOckLayout Then 
     tmrLayout.Stop
+    $hView.Refresh
     Return
   Endif
   
