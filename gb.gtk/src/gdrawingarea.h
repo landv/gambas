@@ -39,8 +39,9 @@ public:
 	void setCached(bool vl);
 	void setNoBackground(bool vl);
 	void setUseTablet(bool vl);
-	
+
 	bool inDrawEvent() const { return _in_draw_event; }
+	static bool inAnyDrawEvent() { return _in_any_draw_event; }
 
 //"Methods"
 	void clear();
@@ -65,7 +66,7 @@ public:
 	void updateEventMask();
 	void setCache();
 	void updateUseTablet();
-	
+
 #ifdef GTK3
 	cairo_surface_t *buffer;
 #else
@@ -79,6 +80,7 @@ public:
 	unsigned _in_draw_event : 1;
 	unsigned _no_background : 1;
 	unsigned _use_tablet : 1;
+	static int _in_any_draw_event;
 };
 
 #endif

@@ -38,6 +38,8 @@ gDrawingArea Widget
 
 *****************************************************************************************/
 
+int gDrawingArea::_in_any_draw_event = 0;
+
 #ifdef GTK3
 static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gDrawingArea *data)
 {
@@ -57,8 +59,10 @@ static gboolean cb_draw(GtkWidget *wid, cairo_t *cr, gDrawingArea *data)
 
 		if (data->onExpose)
 		{
+			gDrawingArea::_in_any_draw_event++;
 			data->_in_draw_event = true;
 			data->onExpose(data, cr);
+			gDrawingArea::_in_any_draw_event--;
 			data->_in_draw_event = false;
 			/*
 			list = cairo_copy_clip_rectangle_list(cr);
@@ -102,6 +106,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 
 		if (data->onExpose)
 		{
+			gDrawingArea::_in_any_draw_event++;
 			data->_in_draw_event = true;
 
 			/*GdkRectangle *rect;
@@ -114,6 +119,7 @@ static gboolean cb_expose(GtkWidget *wid, GdkEventExpose *e, gDrawingArea *data)
 			g_free(rect);*/
 
 			data->onExpose(data, e->region, wid->allocation.x, wid->allocation.y);
+			gDrawingArea::_in_any_draw_event--;
 			data->_in_draw_event = false;
 		}
 		data->drawBorder(e);

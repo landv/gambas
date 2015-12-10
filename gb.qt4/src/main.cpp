@@ -296,13 +296,13 @@ bool MyAbstractEventDispatcher::processEvents(QEventLoop::ProcessEventsFlags fla
 	for(;;)
 	{
 		ptr = &CWIDGET_destroy_list;
-	
+
 		for(;;)
 		{
 			ob = *ptr;
 			if (!ob)
 				return ret;
-	
+
 			//if (MAIN_loop_level <= ob->level && !ob->flag.notified)
 			if (!ob->flag.notified)
 			{
@@ -383,11 +383,11 @@ static bool QT_EventFilter(QEvent *e)
 
 	if (!_application_keypress)
 		return false;
-		
+
 	if (e->type() == QEvent::KeyPress)
 	{
 		QKeyEvent *kevent = (QKeyEvent *)e;
-		
+
 		CKEY_clear(true);
 
 		GB.FreeString(&CKEY_info.text);
@@ -414,9 +414,9 @@ static bool QT_EventFilter(QEvent *e)
 
 	GB.Call(&_application_keypress_func, 0, FALSE);
 	cancel = GB.Stopped();
-	
+
 	CKEY_clear(false);
-		
+
 	return cancel;
 }
 
@@ -446,7 +446,7 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 		{
 			QWidget *widget = (QWidget *)o;
 			CWIDGET *control;
-			
+
 			if (widget->isWindow())
 			{
 				if (e->type() == QEvent::WindowActivate)
@@ -476,9 +476,9 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 {
 	if (o->isWidgetType())
 	{
-		CWIDGET *ob = CWidget::get(o);		
+		CWIDGET *ob = CWidget::get(o);
 		bool old, res;
-	
+
 		if (ob)
 		{
 			old = QT_Notify(ob, true);
@@ -487,7 +487,7 @@ bool MyApplication::eventFilter(QObject *o, QEvent *e)
 			return res;
 		}
 	}
-	
+
 	return QApplication::notify(o, e);
 }*/
 
@@ -512,7 +512,7 @@ void MyApplication::setTooltipEnabled(bool b)
 	b = !b;
 	if (b == _tooltip_disable)
 		return;
-		
+
 	_tooltip_disable = b;
 	setEventFilter(b);
 }
@@ -568,14 +568,14 @@ static void x11_set_event_filter(void (*filter)(XEvent *))
 class MyNativeEventFilter: public QAbstractNativeEventFilter
 {
 public:
-	
+
 	static MyNativeEventFilter manager;
-	
+
 	virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *)
 	{
 		xcb_generic_event_t *ev = static_cast<xcb_generic_event_t *>(message);
 		int type = ev->response_type & ~0x80;
-		
+
 		switch(type)
 		{
 			case XCB_KEY_PRESS:
@@ -583,16 +583,16 @@ public:
 				MAIN_x11_last_key_code = ((xcb_key_press_event_t *)ev)->detail;
 				break;
 		}
-		
+
 		if (_x11_event_filter)
 		{
 			XEvent xev;
-			
+
 			CLEAR(&xev);
 			xev.xany.type = type;
 			xev.xany.display = QX11Info::display();
 			xev.xany.send_event = ev->response_type & 0x80 ? 1 : 0;
-			
+
 			switch (type)
 			{
 				//case XCB_KEY_PRESS:
@@ -608,7 +608,7 @@ public:
 					xev.xexpose.count = e->count;
 					break;
 				}
-				
+
 				case XCB_VISIBILITY_NOTIFY:
 				{
 					xcb_visibility_notify_event_t *e = (xcb_visibility_notify_event_t *)ev;
@@ -616,7 +616,7 @@ public:
 					xev.xvisibility.state = e->state;
 					break;
 				}
-				
+
 				case XCB_DESTROY_NOTIFY:
 				{
 					xcb_destroy_notify_event_t *e = (xcb_destroy_notify_event_t *)ev;
@@ -624,7 +624,7 @@ public:
 					xev.xdestroywindow.window = e->window;
 					break;
 				}
-				
+
 				case XCB_MAP_NOTIFY:
 				{
 					xcb_map_notify_event_t *e = (xcb_map_notify_event_t *)ev;
@@ -633,7 +633,7 @@ public:
 					xev.xmap.override_redirect = e->override_redirect;
 					break;
 				}
-				
+
 				case XCB_UNMAP_NOTIFY:
 				{
 					xcb_unmap_notify_event_t *e = (xcb_unmap_notify_event_t *)ev;
@@ -654,7 +654,7 @@ public:
 					xev.xreparent.override_redirect = e->override_redirect;
 					break;
 				}
-				
+
 				case XCB_CONFIGURE_NOTIFY:
 				{
 					xcb_configure_notify_event_t *e = (xcb_configure_notify_event_t *)ev;
@@ -698,7 +698,7 @@ public:
 					xev.xselectionrequest.time = e->time;
 					break;
 				}
-				
+
 				case XCB_SELECTION_NOTIFY:
 				{
 					xcb_selection_notify_event_t *e = (xcb_selection_notify_event_t *)ev;
@@ -709,7 +709,7 @@ public:
 					xev.xselection.time = e->time;
 					break;
 				}
-					
+
 				case XCB_CLIENT_MESSAGE:
 				{
 					xcb_client_message_event_t *e = (xcb_client_message_event_t *)ev;
@@ -719,15 +719,15 @@ public:
 					memcpy(&xev.xclient.data, &e->data, 20);
 					break;
 				}
-				
+
 				default:
 					//qDebug("gb.qt5: warning: unhandled xcb event: %d", type);
 					return false;
 			}
-			
+
 			(*_x11_event_filter)(&xev);
 		}
-		
+
 		return false;
 	}
 };
@@ -743,10 +743,10 @@ bool MyApplication::x11EventFilter(XEvent *e)
 		MAIN_x11_last_key_code = e->xkey.keycode;
 	else if (e->type == XKeyRelease)
 		MAIN_x11_last_key_code = e->xkey.keycode;
-	
+
 	if (_x11_event_filter)
 		(*_x11_event_filter)(e);
-	
+
 	return false;
 }
 
@@ -777,8 +777,8 @@ static void release_grab()
 {
 	MAIN_mouseGrabber = QWidget::mouseGrabber();
 	MAIN_keyboardGrabber = QWidget::keyboardGrabber();
-	
-	if (MAIN_mouseGrabber) 
+
+	if (MAIN_mouseGrabber)
 	{
 		//qDebug("releaseMouse");
 		MAIN_mouseGrabber->releaseMouse();
@@ -788,7 +788,7 @@ static void release_grab()
 		//qDebug("releaseKeyboard");
 		MAIN_keyboardGrabber->releaseKeyboard();
 	}
-	
+
 	#ifndef NO_X_WINDOW
 	if (qApp->activePopupWidget())
 	{
@@ -807,7 +807,7 @@ static void unrelease_grab()
 		MAIN_mouseGrabber->grabMouse();
 		MAIN_mouseGrabber = 0;
 	}
-	
+
 	if (MAIN_keyboardGrabber)
 	{
 		//qDebug("grabKeyboard");
@@ -827,19 +827,19 @@ static bool must_quit(void)
 static void check_quit_now(intptr_t param)
 {
 	static bool exit_called = false;
-	
+
 	if (must_quit() && !exit_called)
 	{
 		if (QApplication::instance())
 		{
 			GB_FUNCTION func;
-			
+
 			if (GB.ExistClass("TrayIcons"))
 			{
 				if (!GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL))
 					GB.Call(&func, 0, FALSE);
 			}
-			
+
 #ifndef QT5
 			qApp->syncX();
 #endif
@@ -855,7 +855,7 @@ void MAIN_check_quit(void)
 {
 	if (_check_quit_posted)
 		return;
-	
+
 	GB.Post((GB_CALLBACK)check_quit_now, 0);
 	_check_quit_posted = true;
 }
@@ -885,9 +885,9 @@ static void QT_Init(void)
 
 	/*QX11Info::setAppDpiX(0, 92);
 	QX11Info::setAppDpiY(0, 92);*/
-		
+
 	/*fcntl(ConnectionNumber(qt_xdisplay()), F_SETFD, FD_CLOEXEC);*/
-	
+
 	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
 	{
 		char *env = getenv("GB_QT_NO_BREEZE_FIX");
@@ -897,8 +897,8 @@ static void QT_Init(void)
 			qApp->setStyle(new FixBreezeStyle);
 		}
 	}
-	
-	
+
+
 	MAIN_update_scale(qApp->desktop()->font());
 
 	qApp->installEventFilter(&CWidget::manager);
@@ -907,7 +907,7 @@ static void QT_Init(void)
 #endif
 
 	MyApplication::setEventFilter(true);
-	
+
 	if (GB.GetFunction(&_application_keypress_func, (void *)GB.Application.StartupClass(), "Application_KeyPress", "", "") == 0)
 	{
 		_application_keypress = true;
@@ -917,9 +917,9 @@ static void QT_Init(void)
 	//qt_x11_set_global_double_buffer(false);
 
 	qApp->setQuitOnLastWindowClosed(false);
-	
+
 	MyApplication::initClipboard();
-	
+
 	init = true;
 }
 
@@ -940,19 +940,19 @@ static void init_lang(char *lang, bool rtl)
 {
 	int pos;
 	QString locale(lang);
-	
+
 	pos = locale.lastIndexOf(".");
 	if (pos >= 0) locale = locale.left(pos);
-	
+
 	if (_translator)
 	{
 		qApp->removeTranslator(_translator);
 		delete _translator;
 		_translator = NULL;
 	}
-	
+
 	_translator = new QTranslator();
-	
+
 	if (!try_to_load_translation(locale))
 		goto __INSTALL_TRANSLATOR;
 
@@ -966,10 +966,10 @@ static void init_lang(char *lang, bool rtl)
 
 	delete _translator;
 	_translator = NULL;
-	
+
 	//if (strcmp(lang, "C"))
 	//	qDebug("gb.qt4: warning: unable to load Qt translation: %s", lang);
-	
+
 	goto __SET_DIRECTION;
 
 __INSTALL_TRANSLATOR:
@@ -1031,13 +1031,13 @@ static void hook_main(int *argc, char ***argv)
 static void hook_quit()
 {
 	GB_FUNCTION func;
-	
+
 	CWINDOW_close_all(true);
 	CWINDOW_delete_all(true);
 
 	qApp->sendPostedEvents(); //processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 	qApp->sendPostedEvents(0, QEvent::DeferredDelete);
-	
+
 	if (!GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_Quit", NULL, NULL))
 		GB.Call(&func, 0, FALSE);
 }
@@ -1046,7 +1046,7 @@ static void hook_quit()
 static void hook_loop()
 {
 	//qDebug("**** ENTERING EVENT LOOP");
-	
+
 	qApp->sendPostedEvents();
 	//qApp->processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::DeferredDeletion, 0);
 
@@ -1056,13 +1056,19 @@ static void hook_loop()
 		qApp->exec();
 	else
 		MAIN_check_quit();
-	
+
 	hook_quit();
 }
 
 
 static void hook_wait(int duration)
 {
+	if (MyDrawingArea::inAnyDrawEvent())
+	{
+		GB.Error("Wait is forbidden during a repaint event");
+		return;
+	}
+
 	MAIN_in_wait++;
 	if (duration > 0)
 	{
@@ -1086,7 +1092,7 @@ static void hook_timer(GB_TIMER *timer, bool on)
 		t->deleteLater();
 		timer->id = 0;
 	}
-	
+
 	if (on)
 		timer->id = (intptr_t)(new MyTimer(timer));
 }
@@ -1124,7 +1130,7 @@ static void hook_error(int code, char *error, char *where)
 	CWatch::stop();
 
 	msg = "<b>This application has raised an unexpected<br>error and must abort.</b><br><br>";
-	
+
 	if (code > 0)
 	{
 		msg = msg + "[%1] %2.<br>%3";
@@ -1148,7 +1154,7 @@ static void hook_error(int code, char *error, char *where)
 
 static void QT_InitWidget(QWidget *widget, void *object, int fill_bg)
 {
-	((CWIDGET *)object)->flag.fillBackground = fill_bg;	
+	((CWIDGET *)object)->flag.fillBackground = fill_bg;
 	CWIDGET_new(widget, object);
 }
 
@@ -1242,7 +1248,7 @@ void QT_PreventQuit(bool inc)
 QMenu *QT_FindMenu(void *parent, const char *name)
 {
 	CMENU *menu = NULL;
-	
+
 	if (parent && GB.Is(parent, CLASS_Control))
 	{
 		CWINDOW *window = CWidget::getWindow((CWIDGET *)parent);
@@ -1296,9 +1302,9 @@ GB_DESC *GB_CLASSES[] EXPORT =
 };
 
 #ifdef QT5
-void *GB_QT5_1[] EXPORT = 
+void *GB_QT5_1[] EXPORT =
 #else
-void *GB_QT4_1[] EXPORT = 
+void *GB_QT4_1[] EXPORT =
 #endif
 {
 	(void *)1,
@@ -1355,17 +1361,17 @@ const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 int EXPORT GB_INIT(void)
 {
 	char *env;
-	
+
 	// Do not disable GLib support
-	
+
 	env = getenv("KDE_FULL_SESSION");
 	if (env && !strcasecmp(env, "true"))
 		putenv((char *)"QT_NO_GLIB=1");
-	
+
 	env = getenv("GB_GUI_BUSY");
 	if (env && atoi(env))
 		MAIN_debug_busy = true;
-	
+
 	//putenv((char *)"QT_SLOW_TOPLEVEL_RESIZE=1");
 
 	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)hook_main);
@@ -1384,7 +1390,7 @@ int EXPORT GB_INIT(void)
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRP);
 	DRAW_init();
-	
+
 	CLASS_Control = GB.FindClass("Control");
 	CLASS_Container = GB.FindClass("Container");
 	CLASS_UserControl = GB.FindClass("UserControl");
@@ -1464,13 +1470,13 @@ extern Time	qt_x_time;
 static void activate_main_window(intptr_t value)
 {
 	CWINDOW *active;
-	
+
 	active = CWINDOW_Active;
 	if (!active) active = CWINDOW_LastActive;
-	
+
 	if (!active)
 		return;
-	
+
 	MyMainWindow *win = (MyMainWindow *)active->widget.widget;
 	if (win && !win->isWindow())
 		win = (MyMainWindow *)win->window();
@@ -1488,13 +1494,13 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 {
 	if (!qApp)
 		return;
-	
+
 	switch(signal)
 	{
 		case GB_SIGNAL_DEBUG_BREAK:
 			release_grab();
 			break;
-			
+
 		case GB_SIGNAL_DEBUG_FORWARD:
 			//while (qApp->activePopupWidget())
 			//	delete qApp->activePopupWidget();
@@ -1502,7 +1508,7 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 			qApp->syncX();
 #endif
 			break;
-			
+
 		case GB_SIGNAL_DEBUG_CONTINUE:
 			GB.Post((GB_CALLBACK)activate_main_window, 0);
 			unrelease_grab();

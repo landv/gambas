@@ -205,11 +205,11 @@ const char *GB_INCLUDE EXPORT = "gb.draw,gb.gui.base";
 int EXPORT GB_INIT(void)
 {
 	char *env;
-	
+
 	env = getenv("GB_GUI_BUSY");
 	if (env && atoi(env))
 		MAIN_debug_busy = true;
-	
+
 	GB.Hook(GB_HOOK_QUIT, (void *)my_quit);
 	_old_hook_main = GB.Hook(GB_HOOK_MAIN, (void *)my_main);
 	GB.Hook(GB_HOOK_WAIT, (void *)my_wait);
@@ -226,7 +226,7 @@ int EXPORT GB_INIT(void)
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
 	IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
 	DRAW_init();
-	
+
 	CWatcher::init();
 
 	CLASS_Control = GB.FindClass("Control");
@@ -241,11 +241,11 @@ int EXPORT GB_INIT(void)
 	CLASS_Printer = GB.FindClass("Printer");
 	CLASS_Image = GB.FindClass("Image");
 	CLASS_SvgImage = GB.FindClass("SvgImage");
-	
+
 #if !defined(GLIB_VERSION_2_36)
 	g_type_init();
 #endif /* !defined(GLIB_VERSION_2_36) */
-	
+
 	my_lang(GB.System.Language(), GB.System.IsRightToLeft());
 
 	return -1;
@@ -301,7 +301,7 @@ static void activate_main_window(intptr_t)
 void EXPORT GB_SIGNAL(int signal, void *param)
 {
 	static GtkWidget *save_popup_grab = NULL;
-	
+
 	switch(signal)
 	{
 		case GB_SIGNAL_DEBUG_BREAK:
@@ -311,14 +311,14 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 				gApplication::ungrabPopup();
 			}
 			break;
-			
+
 		case GB_SIGNAL_DEBUG_FORWARD:
 			//while (qApp->activePopupWidget())
 			//	delete qApp->activePopupWidget();
 			if (gdk_display_get_default())
 			gdk_display_sync(gdk_display_get_default());
 			break;
-			
+
 		case GB_SIGNAL_DEBUG_CONTINUE:
 			GB.Post((GB_CALLBACK)activate_main_window, 0);
 			if (save_popup_grab)
@@ -336,19 +336,19 @@ void EXPORT GB_SIGNAL(int signal, void *param)
 void my_quit (void)
 {
 	GB_FUNCTION func;
-	
+
 	while (gtk_events_pending())
 		gtk_main_iteration();
-  
+
 	if (GB.ExistClass("TrayIcons"))
 	{
 		if (!GB.GetFunction(&func, (void *)GB.FindClass("TrayIcons"), "DeleteAll", NULL, NULL))
 			GB.Call(&func, 0, FALSE);
 	}
-	
+
 	if (!GB.GetFunction(&func, (void *)GB.FindClass("_Gui"), "_Quit", NULL, NULL))
 		GB.Call(&func, 0, FALSE);
-	
+
 	CWINDOW_delete_all();
 	gControl::cleanRemovedControls();
 
@@ -370,10 +370,10 @@ static void my_main(int *argc, char ***argv)
 {
 	static bool init = false;
 	char *env;
-	
+
 	if (init)
 		return;
-	
+
 	env = getenv("GB_X11_INIT_THREADS");
 		if (env && atoi(env))
 	XInitThreads();
@@ -381,10 +381,10 @@ static void my_main(int *argc, char ***argv)
 	gApplication::init(argc, argv);
 	gApplication::setDefaultTitle(GB.Application.Title());
 	gDesktop::init();
-	
+
 	gApplication::onEnterEventLoop = GB.Debug.EnterEventLoop;
 	gApplication::onLeaveEventLoop = GB.Debug.LeaveEventLoop;
-		
+
 	MAIN_scale = gDesktop::scale();
 	#ifdef GDK_WINDOWING_X11
   	X11_init(gdk_x11_display_get_xdisplay(gdk_display_get_default()), gdk_x11_get_default_root_xwindow());
@@ -417,10 +417,10 @@ typedef
 
 gboolean my_timer_function(GB_TIMER *timer)
 {
-	if (timer->id)  
+	if (timer->id)
 	{
 		GB.RaiseTimer(timer);
-		
+
 		if (timer->id)
 		{
 			MyTimerId *id = (MyTimerId *)timer->id;
@@ -436,7 +436,7 @@ gboolean my_timer_function(GB_TIMER *timer)
 			//fprintf(stderr, "elapsed = %d  delay = %d  next = %d\n", elapsed, timer->delay, next);
 		}
 	}
-	
+
 	return false;
 }
 
@@ -476,7 +476,7 @@ static int my_loop()
 {
 	gControl::cleanRemovedControls();
 	_must_check_quit = true;
-	
+
 	for(;;)
 	{
 		if (_must_check_quit)
@@ -491,12 +491,18 @@ static int my_loop()
 	}
 
 	my_quit();
-	
+
   return 0;
 }
 
 static void my_wait(int duration)
 {
+	if (gDrawingArea::inAnyDrawEvent())
+	{
+		GB.Error("Wait is forbidden during a repaint event");
+		return;
+	}
+
 	if (duration > 0 && gKey::valid())
 	{
 #ifdef GTK3
@@ -536,7 +542,7 @@ static void my_lang(char *lang, int rtl)
 	gControl *iter;
 
 	MAIN_rtl = rtl;
-	
+
 	if (rtl)
 		gtk_widget_set_default_direction(GTK_TEXT_DIR_RTL);
 	else
@@ -566,9 +572,9 @@ void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 		if (gtk_events_pending ())
 			gtk_main_iteration_do (false);
 	}
-	else	
+	else
 		gtk_main_iteration_do(true);
-	
+
 	gApplication::_loopLevel--;
 
 	if (_post_check)
@@ -576,7 +582,7 @@ void MAIN_do_iteration(bool do_not_block, bool do_not_sleep)
 		_post_check = false;
 		GB.CheckPost();
 	}
-	
+
 	gControl::cleanRemovedControls();
 }
 
