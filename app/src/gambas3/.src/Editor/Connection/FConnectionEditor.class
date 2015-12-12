@@ -281,7 +281,7 @@ Public Sub Reload() As Boolean
   
   ' Endif
   
-  lblTitle.Text = "  " & $sTitle & "  "
+  btnTitle.Text = $sTitle
     
   $bMetadata = hConfig["Connection/DisplayMetadata"]
   $bTemplate = hConfig["Connection/RememberTemplate"]
@@ -1859,10 +1859,11 @@ Public Sub tabRequest_Click()
   
 End
 
-Public Sub tabRequest_Arrange()
+Public Sub panRequest_Arrange()
 
-  edtRequest.Move(tabRequest.X + tabRequest.ClientX, tabRequest.Y + tabRequest.ClientY, tabRequest.ClientW, tabRequest.ClientH)
-  edtRequest.Raise
+  tabRequest.H = tabRequest.ClientY
+  'edtRequest.Move(tabRequest.X + tabRequest.ClientX, tabRequest.Y + tabRequest.ClientY, tabRequest.ClientW, tabRequest.ClientH)
+  'edtRequest.Lower
 
 End
 
