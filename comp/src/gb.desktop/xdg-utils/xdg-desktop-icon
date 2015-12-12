@@ -36,15 +36,16 @@
 usage()
 {
 cat << _USAGE
-xdg-desktop-icon - command line tool for (un)installing icons to the desktop
+   xdg-desktop-icon - command line tool for (un)installing icons
+   to the desktop
 
 Synopsis
 
-xdg-desktop-icon install [--novendor] FILE
+   xdg-desktop-icon install [--novendor] FILE
 
-xdg-desktop-icon uninstall FILE
+   xdg-desktop-icon uninstall FILE
 
-xdg-desktop-icon { --help | --manual | --version }
+   xdg-desktop-icon { --help | --manual | --version }
 
 _USAGE
 }
@@ -54,136 +55,160 @@ manualpage()
 cat << _MANUALPAGE
 Name
 
-xdg-desktop-icon - command line tool for (un)installing icons to the desktop
+   xdg-desktop-icon - command line tool for (un)installing icons
+   to the desktop
 
 Synopsis
 
-xdg-desktop-icon install [--novendor] FILE
+   xdg-desktop-icon install [--novendor] FILE
 
-xdg-desktop-icon uninstall FILE
+   xdg-desktop-icon uninstall FILE
 
-xdg-desktop-icon { --help | --manual | --version }
+   xdg-desktop-icon { --help | --manual | --version }
 
 Description
 
-The xdg-desktop-icon program can be used to install an application launcher or
-other file on the desktop of the current user.
+   The xdg-desktop-icon program can be used to install an
+   application launcher or other file on the desktop of the
+   current user.
 
-An application launcher is represented by a *.desktop file. Desktop files are
-defined by the freedesktop.org Desktop Entry Specification. The most important
-aspects of *.desktop files are summarized below.
+   An application launcher is represented by a *.desktop file.
+   Desktop files are defined by the freedesktop.org Desktop Entry
+   Specification. The most important aspects of *.desktop files
+   are summarized below.
 
 Commands
 
-install
-    Installs FILE to the desktop of the current user. FILE can be a *.desktop
-    file or any other type of file.
-uninstall
-    Removes FILE from the desktop of the current user.
+   install
+          Installs FILE to the desktop of the current user. FILE
+          can be a *.desktop file or any other type of file.
+
+   uninstall
+          Removes FILE from the desktop of the current user.
 
 Options
 
---novendor
+   --novendor
+          Normally, xdg-desktop-icon checks to ensure that a
+          *.desktop file to be installed has a vendor prefix. This
+          option can be used to disable that check.
 
-    Normally, xdg-desktop-icon checks to ensure that a *.desktop file to be
-    installed has a vendor prefix. This option can be used to disable that
-    check.
+          A vendor prefix consists of alpha characters ([a-zA-Z])
+          and is terminated with a dash ("-"). Companies and
+          organizations are encouraged to use a word or phrase,
+          preferably the organizations name, for which they hold a
+          trademark as their vendor prefix. The purpose of the
+          vendor prefix is to prevent name conflicts.
 
-    A vendor prefix consists of alpha characters ([a-zA-Z]) and is terminated
-    with a dash ("-"). Companies and organizations are encouraged to use a word
-    or phrase, preferably the organizations name, for which they hold a
-    trademark as their vendor prefix. The purpose of the vendor prefix is to
-    prevent name conflicts.
+   --help
+          Show command synopsis.
 
---help
-    Show command synopsis.
---manual
-    Show this manualpage.
---version
-    Show the xdg-utils version information.
+   --manual
+          Show this manual page.
+
+   --version
+          Show the xdg-utils version information.
 
 Desktop Files
 
-An application launcher can be added to the desktop by installing a *.desktop
-file. A *.desktop file consists of a [Desktop Entry] header followed by several
-Key=Value lines.
+   An application launcher can be added to the desktop by
+   installing a *.desktop file. A *.desktop file consists of a
+   [Desktop Entry] header followed by several Key=Value lines.
 
-A *.desktop file can provide a name and description for an application in
-several different languages. This is done by adding a language code as used by
-LC_MESSAGES in square brackets behind the Key. This way one can specify
-different values for the same Key depending on the currently selected language.
+   A *.desktop file can provide a name and description for an
+   application in several different languages. This is done by
+   adding a language code as used by LC_MESSAGES in square
+   brackets behind the Key. This way one can specify different
+   values for the same Key depending on the currently selected
+   language.
 
-The following keys are often used:
+   The following keys are often used:
 
-Value=1.0
-    This is a mandatory field to indicate that the *.desktop file follows the
-    1.0 version of the specification.
-Type=Application
-    This is a mandatory field that indicates that the *.desktop file describes
-    an application launcher.
-Name=Application Name
-    The name of the application. For example Mozilla
-GenericName=Generic Name
-    A generic description of the application. For example Web Browser
-Comment=Comment
-    Optional field to specify a tooltip for the application. For example Visit
-    websites on the Internet
-Icon=Icon File
-    The icon to use for the application. This can either be an absolute path to
-    an image file or an icon-name. If an icon-name is provided an image lookup
-    by name is done in the user's current icon theme. The xdg-icon-resource
-    command can be used to install image files into icon themes. The advantage
-    of using an icon-name instead of an absolute path is that with an icon-name
-    the application icon can be provided in several different sizes as well as
-    in several differently themed styles.
-Exec=Command Line
-    The command line to start the application. If the application can open
-    files the %f placeholder should be specified. When a file is dropped on the
-    application launcher the %f is replaced with the file path of the dropped
-    file. If multiple files can be specified on the command line the %F
-    placeholder should be used instead of %f. If the application is able to
-    open URLs in addition to local files then %u or %U can be used instead of
-    %f or %F.
+   Type=Application
+          This is a mandatory field that indicates that the
+          *.desktop file describes an application launcher.
 
-For a complete oveview of the *.desktop file format please visit http://
-www.freedesktop.org/wiki/Standards/desktop-entry-spec
+   Name=Application Name
+          The name of the application. For example Mozilla
+
+   GenericName=Generic Name
+          A generic description of the application. For example
+          Web Browser
+
+   Comment=Comment
+          Optional field to specify a tooltip for the application.
+          For example Visit websites on the Internet
+
+   Icon=Icon File
+          The icon to use for the application. This can either be
+          an absolute path to an image file or an icon-name. If an
+          icon-name is provided an image lookup by name is done in
+          the user's current icon theme. The xdg-icon-resource
+          command can be used to install image files into icon
+          themes. The advantage of using an icon-name instead of
+          an absolute path is that with an icon-name the
+          application icon can be provided in several different
+          sizes as well as in several differently themed styles.
+
+   Exec=Command Line
+          The command line to start the application. If the
+          application can open files the %f placeholder should be
+          specified. When a file is dropped on the application
+          launcher the %f is replaced with the file path of the
+          dropped file. If multiple files can be specified on the
+          command line the %F placeholder should be used instead
+          of %f. If the application is able to open URLs in
+          addition to local files then %u or %U can be used
+          instead of %f or %F.
+
+   For a complete overview of the *.desktop file format please
+   visit
+   http://www.freedesktop.org/wiki/Specifications/desktop-entry-sp
+   ec
 
 Environment Variables
 
-xdg-desktop-icon honours the following environment variables:
+   xdg-desktop-icon honours the following environment variables:
 
-XDG_UTILS_DEBUG_LEVEL
-    Setting this environment variable to a non-zero numerical value makes
-    xdg-desktop-icon do more verbose reporting on stderr. Setting a higher
-    value increases the verbosity.
+   XDG_UTILS_DEBUG_LEVEL
+          Setting this environment variable to a non-zero
+          numerical value makes xdg-desktop-icon do more verbose
+          reporting on stderr. Setting a higher value increases
+          the verbosity.
 
 Exit Codes
 
-An exit code of 0 indicates success while a non-zero exit code indicates
-failure. The following failure codes can be returned:
+   An exit code of 0 indicates success while a non-zero exit code
+   indicates failure. The following failure codes can be returned:
 
-1
-    Error in command line syntax.
-2
-    One of the files passed on the command line did not exist.
-3
-    A required tool could not be found.
-4
-    The action failed.
-5
-    No permission to read one of the files passed on the command line.
+   1
+          Error in command line syntax.
+
+   2
+          One of the files passed on the command line did not
+          exist.
+
+   3
+          A required tool could not be found.
+
+   4
+          The action failed.
+
+   5
+          No permission to read one of the files passed on the
+          command line.
 
 See Also
 
-xdg-icon-resource(1)
+   xdg-icon-resource(1)
 
 Examples
 
-The company ShinyThings Inc. has developed an application named "WebMirror" and
-would like to add a launcher for for on the desktop. The company will use
-"shinythings" as its vendor id. In order to add the application to the desktop
-there needs to be a .desktop file for the application:
-
+   The company ShinyThings Inc. has developed an application named
+   "WebMirror" and would like to add a launcher for for on the
+   desktop. The company will use "shinythings" as its vendor id.
+   In order to add the application to the desktop there needs to
+   be a .desktop file for the application:
 shinythings-webmirror.desktop:
 
   [Desktop Entry]
@@ -196,15 +221,13 @@ shinythings-webmirror.desktop:
   Name=WebMirror
   Name[nl]=WebSpiegel
 
-Now the xdg-desktop-icon tool can be used to add the webmirror.desktop file to
-the desktop:
-
+   Now the xdg-desktop-icon tool can be used to add the
+   webmirror.desktop file to the desktop:
 xdg-desktop-icon install ./shinythings-webmirror.desktop
 
-To add a README file to the desktop as well, the following command can be used:
-
+   To add a README file to the desktop as well, the following
+   command can be used:
 xdg-desktop-icon install ./shinythings-README
-
 _MANUALPAGE
 }
 
@@ -220,6 +243,64 @@ DEBUG()
   [ ${XDG_UTILS_DEBUG_LEVEL} -lt $1 ] && return 0;
   shift
   echo "$@" >&2
+}
+
+# This handles backslashes but not quote marks.
+first_word()
+{
+    read first rest
+    echo "$first"
+}
+
+#-------------------------------------------------------------
+# map a binary to a .desktop file
+binary_to_desktop_file()
+{
+    search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    binary="`which "$1"`"
+    binary="`readlink -f "$binary"`"
+    base="`basename "$binary"`"
+    IFS=:
+    for dir in $search; do
+        unset IFS
+        [ "$dir" ] || continue
+        [ -d "$dir/applications" ] || [ -d "$dir/applnk" ] || continue
+        for file in "$dir"/applications/*.desktop "$dir"/applications/*/*.desktop "$dir"/applnk/*.desktop "$dir"/applnk/*/*.desktop; do
+            [ -r "$file" ] || continue
+            # Check to make sure it's worth the processing.
+            grep -q "^Exec.*$base" "$file" || continue
+            # Make sure it's a visible desktop file (e.g. not "preferred-web-browser.desktop").
+            grep -Eq "^(NoDisplay|Hidden)=true" "$file" && continue
+            command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+            command="`which "$command"`"
+            if [ x"`readlink -f "$command"`" = x"$binary" ]; then
+                # Fix any double slashes that got added path composition
+                echo "$file" | sed -e 's,//*,/,g'
+                return
+            fi
+        done
+    done
+}
+
+#-------------------------------------------------------------
+# map a .desktop file to a binary
+## FIXME: handle vendor dir case
+desktop_file_to_binary()
+{
+    search="${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    desktop="`basename "$1"`"
+    IFS=:
+    for dir in $search; do
+        unset IFS
+        [ "$dir" ] && [ -d "$dir/applications" ] || continue
+        file="$dir/applications/$desktop"
+        [ -r "$file" ] || continue
+        # Remove any arguments (%F, %f, %U, %u, etc.).
+        command="`grep -E "^Exec(\[[^]=]*])?=" "$file" | cut -d= -f 2- | first_word`"
+        command="`which "$command"`"
+        readlink -f "$command"
+        return
+    done
 }
 
 #-------------------------------------------------------------
@@ -330,7 +411,7 @@ check_vendor_prefix()
     [ -n "$file_label" ] || file_label="filename"
     file=`basename "$1"`
     case "$file" in
-       [a-zA-Z]*-*)
+       [[:alpha:]]*-*)
          return
          ;;
     esac
@@ -352,7 +433,7 @@ check_output_file()
         fi
     else
         DIR=`dirname "$1"`
-        if [ ! -w "$DIR" -o ! -x "$DIR" ]; then
+        if [ ! -w "$DIR" ] || [ ! -x "$DIR" ]; then
             exit_failure_file_permission_write "no permission to create file '$1'"
         fi
     fi
@@ -380,7 +461,7 @@ check_common_commands()
             ;;
 
             --version)
-            echo "xdg-desktop-icon 1.1.0 rc1"
+            echo "xdg-desktop-icon 1.1.0 rc3"
             exit_success
             ;;
         esac
@@ -404,12 +485,86 @@ fi
 
 detectDE()
 {
-    if [ x"$KDE_FULL_SESSION" = x"true" ]; then DE=kde;
-    elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DE=gnome;
-    elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DE=gnome;
-    elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
-    elif [ x"$DESKTOP_SESSION" == x"LXDE" ]; then DE=lxde;
-    else DE=""
+    # see https://bugs.freedesktop.org/show_bug.cgi?id=34164
+    unset GREP_OPTIONS
+
+    if [ -n "${XDG_CURRENT_DESKTOP}" ]; then
+      case "${XDG_CURRENT_DESKTOP}" in
+         # only recently added to menu-spec, pre-spec X- still in use
+         Cinnamon|X-Cinnamon)
+           DE=cinnamon;
+           ;;
+         ENLIGHTENMENT)
+           DE=enlightenment;
+           ;;
+         # GNOME, GNOME-Classic:GNOME, or GNOME-Flashback:GNOME
+         GNOME*)
+           DE=gnome;
+           ;;
+         KDE)
+           DE=kde;
+           ;;
+         LXDE)
+           DE=lxde;
+           ;;
+         MATE)
+           DE=mate;
+           ;;
+         XFCE)
+           DE=xfce
+           ;;
+         X-Generic)
+           DE=generic
+           ;;
+      esac
+    fi
+
+    if [ x"$DE" = x"" ]; then
+      # classic fallbacks
+      if [ x"$KDE_FULL_SESSION" != x"" ]; then DE=kde;
+      elif [ x"$GNOME_DESKTOP_SESSION_ID" != x"" ]; then DE=gnome;
+      elif [ x"$MATE_DESKTOP_SESSION_ID" != x"" ]; then DE=mate;
+      elif `dbus-send --print-reply --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.GetNameOwner string:org.gnome.SessionManager > /dev/null 2>&1` ; then DE=gnome;
+      elif xprop -root _DT_SAVE_MODE 2> /dev/null | grep ' = \"xfce4\"$' >/dev/null 2>&1; then DE=xfce;
+      elif xprop -root 2> /dev/null | grep -i '^xfce_desktop_window' >/dev/null 2>&1; then DE=xfce
+      elif echo $DESKTOP | grep -q '^Enlightenment'; then DE=enlightenment;
+      fi
+    fi
+
+    if [ x"$DE" = x"" ]; then
+      # fallback to checking $DESKTOP_SESSION
+      case "$DESKTOP_SESSION" in
+         gnome)
+           DE=gnome;
+           ;;
+         LXDE|Lubuntu)
+           DE=lxde; 
+           ;;
+         MATE)
+           DE=mate;
+           ;;
+         xfce|xfce4|'Xfce Session')
+           DE=xfce;
+           ;;
+      esac
+    fi
+
+    if [ x"$DE" = x"" ]; then
+      # fallback to uname output for other platforms
+      case "$(uname 2>/dev/null)" in 
+        CYGWIN*)
+          DE=cygwin;
+          ;;
+        Darwin)
+          DE=darwin;
+          ;;
+      esac
+    fi
+
+    if [ x"$DE" = x"gnome" ]; then
+      # gnome-default-applications-properties is only available in GNOME 2.x
+      # but not in GNOME 3.x
+      which gnome-default-applications-properties > /dev/null 2>&1  || DE="gnome3"
     fi
 }
 
@@ -420,7 +575,6 @@ detectDE()
 
 kfmclient_fix_exit_code()
 {
-    [ x"$KDE_SESSION_VERSION" = x"4" ] && return 0;
     version=`LC_ALL=C.UTF-8 kde-config --version 2>/dev/null | grep '^KDE'`
     major=`echo $version | sed 's/KDE.*: \([0-9]\).*/\1/'`
     minor=`echo $version | sed 's/KDE.*: [0-9]*\.\([0-9]\).*/\1/'`
@@ -519,7 +673,7 @@ if [ -n "$desktop_dir_kde" ]; then
         umask $save_umask
     fi
     # Is the KDE desktop dir != $HOME/Desktop ?
-    if [ x`readlink -f "$desktop_dir"` != x`readlink -f "$desktop_dir_kde"` ]; then
+    if [ "x`readlink -f "$desktop_dir"`" != "x`readlink -f "$desktop_dir_kde"`" ]; then
         # If so, don't create $HOME/Desktop if it doesn't exist
         [ -w "$desktop_dir" ] || desktop_dir=
     else

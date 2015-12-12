@@ -111,7 +111,7 @@ bool LOCAL_format_date(const DATE_SERIAL *date, int fmt_type, const char *fmt, i
 const char *LOCAL_get_lang(void);
 void LOCAL_set_lang(const char *lang);
 const char *LOCAL_gettext(const char *msgid);
-void LOCAL_load_translation(ARCHIVE *arch);
+//void LOCAL_load_translation(ARCHIVE *arch);
 int LOCAL_get_first_day_of_week();
 void LOCAL_set_first_day_of_week(char day);
 

@@ -58,6 +58,8 @@ DECLARE_EVENT(EVENT_Font);
 
 ***************************************************************************/
 
+int MyDrawingArea::_in_any_draw_event = 0;
+
 MyDrawingArea::MyDrawingArea(QWidget *parent) : MyContainer(parent)
 {
 	drawn = 0;
@@ -165,7 +167,8 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	//qDebug("paint: %d %d %d %d", r.x(), r.y(), r.width(), r.height());
 
 	_in_draw_event = true;
-		
+	_in_any_draw_event++;
+
 	PAINT_begin(THIS);
 	p = PAINT_get_current();
 		
@@ -210,6 +213,7 @@ void MyDrawingArea::redraw(QRect &r, bool frame)
 	PAINT_end();
 
 	_in_draw_event = false;
+	_in_any_draw_event--;
 }
 
 void MyDrawingArea::createBackground(int w, int h)

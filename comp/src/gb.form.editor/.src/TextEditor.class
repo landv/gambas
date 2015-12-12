@@ -63,6 +63,8 @@ Property ShowSpaces As Boolean
 Private Const MATCH_STRING As String = "()[]{}"
 
 Static Private $cShortcut As Collection
+Static Private $bRemoteDisplayChecked As Boolean
+Static Private $bRemoteDisplay As Boolean
 
 Public _Views As TextEditor[]
 
@@ -161,12 +163,20 @@ Private $bNoResizeContents As Boolean
 Static Private $cGlobalCacheText As New Collection
 Private $cCacheText As Collection
 Private $sCacheTextKey As String
+
+Private $cCacheLine As New Collection
+Private $iLastScrollX As Integer
+Private $hTimerCacheLine As Timer
+Private $iCacheLineH As Integer
+
 Private $bUpdateHeightAllowed As Boolean
 
 Private $bPrint As Boolean
 Private $sPrintBuffer As String
 
 Public Sub _new()
+  
+  Dim sDisplay As String
   
   If Not $cShortcut Then
     $cShortcut = [
@@ -179,6 +189,12 @@ Public Sub _new()
       "SHIFT+Del": "Cut",
       "CTRL+Y": "Redo",
       "CTRL+Z": "Undo"]
+  Endif
+  
+  If Not $bRemoteDisplayChecked Then
+    sDisplay = Env["DISPLAY"]
+    If sDisplay And If Left(sDisplay) <> ":" Then $bRemoteDisplay = True
+    $bRemoteDisplayChecked = True
   Endif
   
   $hPanel = New Panel(Me) As "ViewPanel"
@@ -195,7 +211,9 @@ Public Sub _new()
   
   $hTimerCursor = New Timer As "TimerCursor"
   $hTimerCursor.Delay = 500
-  $hTimerCursor.Start
+  
+  $hTimerCacheLine = New Timer As "TimerCacheLine"
+  $hTimerCacheLine.Delay = 5000
   
   $hRows = New _TextEditor_Rows As "Rows"
   $hStyles = New _TextEditor_Styles As "Styles"
@@ -250,11 +268,13 @@ Private Sub CalcSizes()
     $fCharWidth = $hFont.TextWidth(sText) / Len(sText)
   Endif
   
-  $sCacheTextKey = $hFont.ToString()
-  $cCacheText = $cGlobalCacheText[$sCacheTextKey]
-  If Not $cCacheText Then
-    $cCacheText = New Collection
-    $cGlobalCacheText[$sCacheTextKey] = $cCacheText
+  If Not $bRemoteDisplay Then
+    $sCacheTextKey = $hFont.ToString()
+    $cCacheText = $cGlobalCacheText[$sCacheTextKey]
+    If Not $cCacheText Then
+      $cCacheText = New Collection
+      $cGlobalCacheText[$sCacheTextKey] = $cCacheText
+    Endif
   Endif
   
   _ClearCachePos
@@ -283,8 +303,12 @@ Private Sub Init()
   CalcSizes
   
   $cCachePos.Clear
-  $cCacheText.Clear
   $cCacheView.Clear
+  
+  If Not $bRemoteDisplay Then
+    ClearCacheText
+    ClearCacheLine
+  Endif
   
   $bShowCursor = True
   GotoCenter(0, 0)
@@ -575,7 +599,7 @@ Private Sub DrawHighlightedText(Row As Integer, sText As String, aColor As Byte[
       'Paint.Background = iCol
       DrawText(sStr, X, XX, YY)
     Else If Trim(sStr) Then
-      If iLen <= 16 Then
+      If Not $bRemoteDisplay And If iLen <= 16 Then
         sKey = Chr$(iState) & sStr
         hImage = $cCacheText[sKey]
         If Not hImage Then
@@ -1298,7 +1322,9 @@ Public Sub View_KeyPress()
       'Y = ViewToReal(Y)
       'Goto($X, Max(0, Y), Key.Shift)
       If Not Key.Control And If Not Key.Alt And If Not Key.Meta Then
-        GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y - $hView.ClientH - $hView.ScrollY, Key.Shift)
+        If GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y - $hView.ClientH - $hView.ScrollY, Key.Shift) Then
+          Goto(0, 0, Key.Shift)
+        Endif
       Endif
       
     Case Key.PageDown
@@ -1311,7 +1337,9 @@ Public Sub View_KeyPress()
         'Goto($X, $hDoc.Max, Key.Shift)
       'Endif
       If Not Key.Control And If Not Key.Alt And If Not Key.Meta Then
-        GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y + $hView.ClientH - $hView.ScrollY, Key.Shift)
+        If GotoXY($X0 + $MW - $hView.ScrollX, $hRows._GetRowY($Y) + $XY.Y + $hView.ClientH - $hView.ScrollY, Key.Shift) Then
+          Goto(-1, $hDoc.Max, Key.Shift)
+        Endif
       Endif
       
       
@@ -1444,6 +1472,13 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   _RefreshLine($Y)
   
   If NX <> $X Or If NY <> $Y Then
+    
+    If Not Mark Then
+      _RefreshLine(NY)
+    Else
+      _RefreshLine(Min(NY, $Y), Max(NY, $Y) - Min(NY, $Y) + 1)
+    Endif
+    
     $X = NX
     $Y = NY
     $XY = LinePos($Y, $X)
@@ -1458,7 +1493,6 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     $SY = $Y
     $SXY = $XY
   Else
-    Refresh
     Clipboard.Current = Clipboard.Selection
     Copy()
     Clipboard.Current = Clipboard.Default
@@ -1466,7 +1500,6 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   
   $bShowCursor = True
   If Not $bReadOnly Then $hTimerCursor.Start
-  _RefreshLine($Y)
   
   '$hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y))
   
@@ -1638,6 +1671,10 @@ Public Sub View_DblClick()
         Else
           CollapseAll
         Endif
+      Else
+        Goto(0, Y)
+        Raise Margin
+        Stop Event
       Endif
     Endif
   Endif
@@ -1694,10 +1731,6 @@ Public Sub View_MouseUp()
   If $hTimerScroll Then
     $hTimerScroll.Stop
     $hTimerScroll = Null
-  Else
-    If Mouse.Left And If Mouse.Normal And If Mouse.X < $MW And If Mouse.X >= $iPosIcon Then
-      Raise Margin
-    Endif    
   Endif
   
   If Mouse.Middle Then
@@ -1898,6 +1931,9 @@ Public Sub _AfterRemove(Y1 As Integer, Y2 As Integer)
   Y = Min($Y, $hDoc.Max)
   X = Min($X, $hDoc.LineLength[Y])
   If X <> $X Or If Y <> $Y Then Goto(X, Y)
+  
+  $SX = $X
+  $SY = $Y
 
   If Not $cLineLayout Then  
     
@@ -2155,10 +2191,30 @@ FOUND:
   
 End
 
-Public Sub _RefreshLine(Y As Integer) 
+Public Sub _RefreshLine(Y As Integer, Optional N As Integer = 1)
 
-  If Y < 0 Then Return
-  $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
+  Dim I As Integer
+  Dim hPict As Picture
+  
+  If Y < 0 Or If Y > $hDoc.Max Or If N <= 0 Then Return
+  
+  N = Min(N, $hDoc.Count - Y)
+  
+  If Not $bRemoteDisplay Then
+    For I = Y To Y + N - 1
+      hPict = $cCacheLine[I]
+      If hPict Then
+        $iCacheLineH -= hPict.H
+        $cCacheLine.Remove(I)
+      Endif
+    Next
+  Endif
+  
+  If N = 1 Then
+    $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowHeight(Y))
+  Else
+    $hView.RefreshRect(0, $hRows._GetRowY(Y), $hView.ScrollW, $hRows._GetRowY(Y + N) - $hRows._GetRowY(Y))
+  Endif
 
 End
 
@@ -2357,6 +2413,7 @@ Public Sub _ResizeContents()
     _UpdateAllHeight
   Endif
   
+  ClearCacheLine
   $hView.ResizeContents($iWidth, $hRows._GetHeight())
   
 End
@@ -2370,7 +2427,9 @@ Public Sub View_Draw()
   Dim hRect As Rect
   Dim aRow As Integer[]
   Dim iMaxRow As Integer
-  Dim W As Integer
+  Dim W, NL As Integer
+  'Dim hImage As Image
+  Dim hPict As Picture
   
   If Not $bUpdateHeightAllowed Then
     $bUpdateHeightAllowed = True
@@ -2388,9 +2447,10 @@ Public Sub View_Draw()
 
   'Debug Me.Font.ToString();; Draw.Font.ToString()
   
+  NL = $hView.ClientH \ $hRows.H + 1
+  
   hClip = Paint.ClipRect
-  'Debug hClip.Y;; hClip.H
-  Paint.FillRect(hClip.X, hClip.Y, hClip.W, hClip.H, $iBackground)
+  If $hDoc.Count < NL Then Paint.FillRect(hClip.X, hClip.Y, hClip.W, hClip.H, $iBackground)
   
   iRow = $hRows._FindRowFromPos($hView.ScrollY + hClip.Y)
   If iRow < 0 Then Return
@@ -2426,18 +2486,46 @@ Public Sub View_Draw()
     aRow[I] = _ViewToReal(iRow + I)
   Next
   
-  W = $MW
-  If $bShowModified Then W -= 4
-  If W > 0 Then Paint.FillRect(XX + $hView.ScrollX, hClip.Y, W, hClip.H, Color.SetAlpha($iLimitColor, &HC0))
-  
   Y = YY
   For I = 0 To iMaxRow
-    Paint.Save
-    H = $hRows._GetRowHeight(aRow[I])
-    DrawLine(XX, Y, $iWidth, H, aRow[I])
-    Paint.Restore
+    iRow = aRow[I]
+    H = $hRows._GetRowHeight(iRow)
+    
+    If H >= $hView.ClientH Or If $bRemoteDisplay Then
+      Paint.Save
+      DrawLine(XX, Y, $iWidth, H, iRow)
+      Paint.Restore
+    Else
+      hPict = $cCacheLine[iRow]
+      If Not hPict Then
+        hPict = New Picture($iWidth, H)
+        hPict.Fill($iBackground)
+        Paint.Begin(hPict)
+        Paint.Font = $hFont
+        DrawLine(0, 0, $iWidth, H, iRow)
+        Paint.End
+        $cCacheLine[iRow] = hPict
+        $iCacheLineH += H
+        Paint.DrawPicture(hPict, XX, Y)
+        
+        While $iCacheLineH > $hView.ClientH 
+          For Each hPict In $cCacheLine
+            $iCacheLineH -= hPict.H
+            $cCacheLine.Remove($cCacheLine.Key)
+            Break
+          Next
+        Wend
+        
+      Else
+        Paint.DrawPicture(hPict, XX, Y)
+      Endif
+    Endif
     Y += H
   Next
+  
+  W = $MW
+  If $bShowModified Then W -= 4
+  If W > 0 Then Paint.FillRect(XX + $hView.ScrollX, hClip.Y, W, hClip.H, Color.Merge($iLimitColor, $iBackground, 0.8))
   
   If $MW Then
     
@@ -2453,6 +2541,9 @@ Public Sub View_Draw()
     Next
     
   Endif
+  
+  $hTimerCacheLine.Stop
+  $hTimerCacheLine.Start
   
   'PrintCache
   
@@ -2535,6 +2626,11 @@ Private Function Count_Read() As Integer
 End
 
 Public Sub View_Scroll()
+  
+  If $hView.ScrollX <> $iLastScrollX Then
+    ClearCacheLine
+    $iLastScrollX = $hView.ScrollX
+  Endif
   
   Raise Scroll
   
@@ -2813,6 +2909,8 @@ End
 
 Public Sub View_GotFocus()
   
+  $hTimerCursor.Start
+  
   If Not $bFirstFocus Then
     $bFirstFocus = True
     EnsureVisible(True)
@@ -2832,7 +2930,9 @@ End
 
 Public Sub View_LostFocus()
   
+  $hTimerCursor.Stop
   $hDoc.HighlightFrom($Y)
+  $hTimerCacheLine.Trigger
   
 End
 
@@ -2895,14 +2995,14 @@ Public Sub ToLine(Y As Integer) As Integer
   
 End
 
-Private Sub GotoXY(X As Integer, Y As Integer, bMark As Boolean)
+Private Sub GotoXY(X As Integer, Y As Integer, bMark As Boolean) As Boolean
   
   Dim L As Integer
   Dim RY As Integer
   Dim X0 As Integer
   
   L = PosToLine(Y)
-  If L < 0 Then Return
+  If L < 0 Then Return True
   
   RY = $hRows.RelativeY
   X0 = $X0
@@ -3480,7 +3580,7 @@ End
 
 Public Sub Refresh()
   
-  'Debug System.Backtrace.Join(" ")
+  ClearCacheLine
   $hView.Refresh
   
 End
@@ -4469,7 +4569,7 @@ End
 Public Sub Styles_Change()
   
   $bStyleChanged = True
-  $cCacheText.Clear
+  ClearCacheText
   
 End
 
@@ -4538,4 +4638,26 @@ Private Sub RelGoto(DX As Integer, DY As Integer)
   
   Goto(Max(0, $X + DX), Max(0, $Y + DY))
   
+End
+
+Public Sub TimerCacheLine_Timer()
+  
+  ClearCacheLine
+  $hTimerCacheLine.Stop
+  
+End
+
+Private Sub ClearCacheLine()
+
+  If $bRemoteDisplay Then Return
+  $cCacheLine.Clear
+  $iCacheLineH = 0
+
+End
+
+Private Sub ClearCacheText()
+
+  If $bRemoteDisplay Then Return
+  $cCacheText.Clear
+
 End

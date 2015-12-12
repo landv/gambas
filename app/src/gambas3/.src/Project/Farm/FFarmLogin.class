@@ -36,7 +36,6 @@ Public Sub btnOK_Click()
 
   $hIdentity.Password = txtPassword.Text
   'Settings["/Farm"] = cmbFarm.Text
-  FarmIdentity.RememberPassword = CBool(chkRememberPassword.Value)
   FarmIdentity.SaveSettings
 
   Me.Close(True)
@@ -102,5 +101,12 @@ Public Sub btnAnoymous_Click()
   txtLogin.Clear
   txtPassword.Clear
   btnOK.Value = True
+
+End
+
+Public Sub chkRememberPassword_Click()
+
+  FarmIdentity.RememberPassword = CBool(chkRememberPassword.Value)
+  FarmIdentity.SaveSettings
 
 End

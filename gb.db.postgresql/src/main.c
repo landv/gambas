@@ -456,6 +456,11 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 			if (bc)
 				date.year = (-date.year);
 
+			// 4713-01-01 BC is used for null dates
+			
+			if (date.year == -4713 && date.month == 1 && date.day == 1)
+				date.year = date.month = date.day = 0;
+
 			GB.MakeDate(&date, (GB_DATE *)&conv);
 
 			val->type = GB_T_DATE;
@@ -867,24 +872,36 @@ static int format_value(GB_VALUE *arg, DB_FORMAT_CALLBACK add)
 
 			date = GB.SplitDate((GB_DATE *)arg);
 
-			bc = date->year < 0;
+			// Gambas year is between -4801 and +9999
+			// PostgreSQL year is between -4713 and +294276
+			// So let's use -4713 for representing null dates.
 
-			l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
-				abs(date->year), date->month, date->day,
-				date->hour, date->min, date->sec);
-
-			add(_buffer, l);
-
-			if (date->msec)
+			if (date->year == 0)
 			{
-				l = sprintf(_buffer, ".%03d", date->msec);
+				l = sprintf(_buffer, "'4713-01-01 %02d:%02d:%02d BC'", date->hour, date->min, date->sec);
 				add(_buffer, l);
 			}
+			else
+			{
+				bc = date->year < 0;
 
-			if (bc)
-				add(" BC", 3);
+				l = sprintf(_buffer, "'%04d-%02d-%02d %02d:%02d:%02d",
+					abs(date->year), date->month, date->day,
+					date->hour, date->min, date->sec);
 
-			add("'", 1);
+				add(_buffer, l);
+
+				if (date->msec)
+				{
+					l = sprintf(_buffer, ".%03d", date->msec);
+					add(_buffer, l);
+				}
+
+				if (bc)
+					add(" BC", 3);
+
+				add("'", 1);
+			}
 
 			return TRUE;
 

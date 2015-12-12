@@ -415,12 +415,12 @@ Private Sub FromString(sData As String, Optional hParent As CControl) As String
           
         Else
 
-          Try vValue = CFloat(sValue)
-          If Not Error Then Goto SET_PROPERTY
-          
           Try vValue = CInt(Val(sValue))
           If Not Error Then Goto SET_PROPERTY
 
+          Try vValue = CFloat(sValue)
+          If Not Error Then Goto SET_PROPERTY
+          
           For Each sProp In CControl.COMPLEX_STRING_PROPERTIES
 
             If sValue Begins sProp Then

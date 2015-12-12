@@ -31,6 +31,8 @@ Public Sub X11Watcher_Property((Window) As Integer, {Property} As Integer)
   
   Dim hWin As DesktopWindow 
 
+  'Debug "DesktopWatcher: Window = ";; Window;; " RootWindow = "; X11.RootWindow;; " Property = ";; X11.GetAtomName({Property})
+
   If Window = X11.RootWindow Then
   
     Select Case {Property}
@@ -46,8 +48,7 @@ Public Sub X11Watcher_Property((Window) As Integer, {Property} As Integer)
       Case Atom["_NET_DESKTOP_GEOMETRY"]
         Raise Geometry
     End Select
-  'Print "DesktopWatcher: Window = ";; Window;; " Property = ";; X11.GetAtomName({Property})
-
+  
   Else  
   
     hWin = Desktop.Windows.FromHandle(Window)

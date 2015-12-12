@@ -12,7 +12,9 @@ Public Sub Add(hRequest As HttpForm)
   'hRequest.Debug = True
   hObs = New Observer(hRequest) As "Request"
   $aRequest.Add(hRequest)
+  'Debug "Add "; hRequest
   If $aRequest.Count <= MAX_REQUEST Then
+    'Debug "Submit "; hRequest
     hRequest.Submit
   Endif
   
@@ -22,9 +24,11 @@ Public Sub Remove(hRequest As HttpForm)
 
   Dim iPos As Integer
   
+  'Debug "Remove "; hRequest
   iPos = $aRequest.FindByRef(hRequest)
   If iPos >= 0 Then
     If iPos = 0 Then 
+      'Debug "Stop "; hRequest
       hRequest.Stop
     Else
       $aRequest.Remove(iPos)
@@ -38,12 +42,16 @@ Public Sub Request_Finished()
   
   Dim iPos As Integer
   
+  'Debug "Finished "; Last
+  
   If $aRequest.Count = 0 Then Return
   
+  'Debug "Remove "; Last
   iPos = $aRequest.FindByRef(Last)
   If iPos >= 0 Then 
     $aRequest.Remove(iPos)
     If $aRequest.Count >= MAX_REQUEST Then
+    'Debug "Submit "; $aRequest[MAX_REQUEST - 1]
       $aRequest[MAX_REQUEST - 1].Submit
     Endif
   Endif
@@ -71,8 +79,10 @@ Public Sub Clear()
 
   aClear = $aRequest.Copy()
   $aRequest.Clear
+  'Debug "Clear"
 
   For I = 0 To Min(aClear.Max, MAX_REQUEST)
+    'Debug "Stop "; aClear[I]
     aClear[I].Stop
   Next
   

@@ -62,6 +62,7 @@ static char *file_path = NULL;
 static bool file_dir_arch = FALSE;
 static int file_attr;
 static char *file_rdir_path = NULL;
+static bool _temp_used = FALSE;
 
 #endif
 
@@ -142,6 +143,8 @@ char *FILE_make_temp(int *len, const char *pattern)
 {
 	static int count = 0;
 
+	_temp_used = TRUE;
+
 	if (len)
 	{
 		if (pattern)
@@ -174,8 +177,10 @@ static void remove_temp_file(const char *path)
 
 void FILE_remove_temp_file(void)
 {
-	FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0, FALSE);
+	if (_temp_used)
+		FILE_recursive_dir(FILE_make_temp(NULL, NULL), NULL, remove_temp_file, 0, FALSE);
 	rmdir(FILE_make_temp(NULL, NULL));
+	_temp_used = FALSE;
 }
 
 void FILE_remove_temp_file_pid(pid_t pid)
@@ -188,12 +193,13 @@ void FILE_remove_temp_file_pid(pid_t pid)
 void FILE_init(void)
 {
 	struct stat info;
-	
+
+	_temp_used = TRUE;
 	FILE_remove_temp_file();
-	
+
 	snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_PREFIX, (int)getuid());
 	(void)mkdir(file_buffer, S_IRWXU);
-	
+
 	if (lstat(file_buffer, &info) == 0 && S_ISDIR(info.st_mode) && chown(file_buffer, getuid(), getgid()) == 0 && chmod(file_buffer, S_IRWXU) == 0)
 	{
 		snprintf(file_buffer, sizeof(file_buffer), FILE_TEMP_DIR, (int)getuid(), (int)getpid());
@@ -223,7 +229,7 @@ static char *stradd(char *d, const char *s)
 		d++;
 		s++;
 	}
-	
+
 	return d;
 }
 
@@ -294,7 +300,7 @@ const char *FILE_cat(const char *path, ...)
 	}
 
 	va_end(args);
-	
+
 	file_buffer_length = p - file_buffer;
 	return file_buffer;
 }
@@ -317,15 +323,15 @@ int FILE_buffer_length(void)
 static void init_file_buffer(const char *path)
 {
 	int len;
-	
+
 	if (path == file_buffer)
 		return;
-	
+
 	len = strlen(path);
-	
+
 	if (len > PATH_MAX)
 		THROW(E_TOOLONG);
-	
+
 	strcpy(file_buffer, path);
 	file_buffer_length = len;
 }
@@ -429,7 +435,7 @@ const char *FILE_get_basename(const char *path)
 	path = FILE_get_name(path);
 
 	init_file_buffer(path);
-	
+
 	p = rindex(file_buffer, '.');
 	if (p)
 		*p = 0;
@@ -503,7 +509,7 @@ void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 		ret = stat(path, &buf);
 	else
 		ret = lstat(path, &buf);
-		
+
 	if (ret)
 		THROW_SYSTEM(errno, path);
 
@@ -535,7 +541,7 @@ void FILE_stat(const char *path, FILE_STAT *info, bool follow)
 char *FILE_mode_to_string(mode_t mode)
 {
 	char *str = file_buffer;
-	
+
   str[0] = mode & S_IRUSR ? 'r' : '-';
   str[1] = mode & S_IWUSR ? 'w' : '-';
   str[2] = (mode & S_ISUID
@@ -552,9 +558,9 @@ char *FILE_mode_to_string(mode_t mode)
             ? (mode & S_IXOTH ? 't' : 'T')
             : (mode & S_IXOTH ? 'x' : '-'));
 	str[9] = 0;
-	
+
 	file_buffer_length = 9;
-	
+
 	return str;
 }
 
@@ -572,17 +578,17 @@ mode_t FILE_mode_from_string(mode_t mode, const char *str)
 		{ S_IXOTH | S_ISVTX, { '-', 'x', 'T', 't' }, { 0, S_IXOTH, S_ISVTX, S_IXOTH | S_ISVTX } },
 		{ 0 }
 	};
-	
+
 	unsigned char c, test;
 	FILE_MODE_DECODE *d = decode;
 	int i;
-	
+
 	while (d->mask)
 	{
 		c = *str++;
 		if (!c)
 			break;
-		
+
 		for (i = 0; i < 3; i++)
 		{
 			test = d->test[i];
@@ -594,10 +600,10 @@ mode_t FILE_mode_from_string(mode_t mode, const char *str)
 				break;
 			}
 		}
-		
+
 		d++;
 	}
-	
+
 	return mode;
 }
 
@@ -616,7 +622,7 @@ void FILE_chown(const char *path, const char *user)
 {
 	struct passwd *pwd;
 	uid_t uid;
-	
+
 	if (FILE_is_relative(path))
 		THROW(E_ACCESS);
 
@@ -632,7 +638,7 @@ void FILE_chown(const char *path, const char *user)
 			THROW(E_USER);
 		uid = pwd->pw_uid;
 	}
-	
+
 	if (chown(path, uid, (gid_t)-1))
 		THROW_SYSTEM(errno, path);
 }
@@ -642,7 +648,7 @@ void FILE_chgrp(const char *path, const char *group)
 {
 	struct group *grp;
 	gid_t gid;
-	
+
 	if (FILE_is_relative(path))
 		THROW(E_ACCESS);
 
@@ -658,7 +664,7 @@ void FILE_chgrp(const char *path, const char *group)
 			THROW(E_USER);
 		gid = grp->gr_gid;
 	}
-	
+
 	if (chown(path, (uid_t)-1, gid))
 		THROW_SYSTEM(errno, path);
 }
@@ -728,7 +734,7 @@ bool FILE_dir_next(char **path, int *len)
 	{
 		init_file_buffer(file_path);
 		p += file_buffer_length;
-		
+
 		if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
 			*p++ = '/';
 	}
@@ -742,16 +748,16 @@ bool FILE_dir_next(char **path, int *len)
 			dir_exit();
 			return TRUE;
 		}
-		
+
 		name = entry->d_name;
-		
+
 		if (name[0] == '.' && (name[1] == 0 || (name[1] == '.' && name[2] == 0)))
 			continue;
 
 		len_entry = strlen(name);
 		if ((len_entry + file_buffer_length) > PATH_MAX)
 			continue;
-			
+
 		if (file_attr)
 		{
 			#ifdef _DIRENT_HAVE_D_TYPE
@@ -809,7 +815,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 
 	STRING_free(&file_rdir_path);
 	file_rdir_path = STRING_new_zero(dir);
-	
+
 	FILE_dir_first(dir, NULL, attr != GB_STAT_DIRECTORY ? 0 : GB_STAT_DIRECTORY);
 	while (!FILE_dir_next(&file, &len))
 	{
@@ -826,7 +832,7 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 			is_dir = info.type == GB_STAT_DIRECTORY;
 		}
 		#endif
-		
+
 		if (is_dir)
 			push_path(&dir_list, path);
 		else
@@ -1058,17 +1064,17 @@ bool FILE_copy(const char *src, const char *dst)
 	struct stat info;
 
 	fprintf(stderr, "FILE_copy: %s -> %s\n", src, dst);
-	
+
 	if (stat(src, &info))
 		return TRUE;
-	
+
 	src_fd = open(src, O_RDONLY);
 	if (src_fd < 0)
 	{
 		fprintf(stderr, "open src failed\n");
 		return TRUE;
 	}
-	
+
 	dst_fd = creat(dst, info.st_mode);
 	if (dst_fd < 0)
 	{
@@ -1078,7 +1084,7 @@ bool FILE_copy(const char *src, const char *dst)
 		errno = save_errno;
 		return TRUE;
 	}
-	
+
 	ALLOC(&buf, MAX_IO);
 
 	for(;;)
@@ -1099,11 +1105,11 @@ bool FILE_copy(const char *src, const char *dst)
 			return TRUE;
 		}
 	}
-	
+
 	close(src_fd);
 	close(dst_fd);
 	IFREE(buf);
-	
+
 	return FALSE;
 }
 

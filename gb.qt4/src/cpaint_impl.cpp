@@ -61,7 +61,7 @@
 public:
 	QPainterPath *path;
 	GB_RECT *rect;
-	
+
 	ClipInfo() { path = NULL; rect = NULL; }
 	~ClipInfo() { delete path; delete rect; }
 };*/
@@ -78,7 +78,7 @@ typedef
 		//QList<ClipInfo *> *clipStack;
 	}
 	QT_PAINT_EXTRA;
-	
+
 #define EXTRA(d) ((QT_PAINT_EXTRA *)d->extra)
 
 #define COLOR_TO_INT(color) ((color).rgba() ^ 0xFF000000)
@@ -96,39 +96,39 @@ static inline qreal to_deg(float angle)
 static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 {
 	QPen pen;
-	
+
 	d->area.width = device->width();
 	d->area.height = device->height();
 	d->resolutionX = device->physicalDpiX();
 	d->resolutionY = device->physicalDpiY();
-	
-	if (!PAINTER(d)) 
+
+	if (!PAINTER(d))
 	{
 		if (device->paintingActive())
 		{
 			GB.Error("Device already being painted");
 			return TRUE;
 		}
-		
+
 		EXTRA(d)->painter = new QPainter(device);
 	}
-	
+
 #ifndef QT5
 	MyPaintEngine *engine = (MyPaintEngine *)device->paintEngine();
 	engine->patchFeatures();
 #endif
-	
+
 	//EXTRA(d)->path = NULL;
 	//EXTRA(d)->clip = NULL;
 	//EXTRA(d)->clipRect = NULL;
-	
+
 	EXTRA(d)->init = new QTransform();
 	*(EXTRA(d)->init) = PAINTER(d)->worldTransform();
-	
+
 	PAINTER(d)->setRenderHints(QPainter::Antialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::TextAntialiasing, true);
 	PAINTER(d)->setRenderHints(QPainter::SmoothPixmapTransform, true);
-	
+
 	pen = PAINTER(d)->pen();
 	pen.setCapStyle(Qt::FlatCap);
 	pen.setJoinStyle(Qt::MiterJoin);
@@ -136,7 +136,7 @@ static bool init_painting(GB_PAINT *d, QPaintDevice *device)
 	pen.setWidthF(1.0);
 	PAINTER(d)->setPen(pen);
 	PAINTER(d)->setBrush(Qt::black);
-	
+
 	return FALSE;
 }
 
@@ -184,35 +184,35 @@ static int Begin(GB_PAINT *d)
 {
 	void *device = d->device;
 	QPaintDevice *target = NULL;
-	
+
 	if (GB.Is(device, CLASS_Picture))
 	{
 		QPixmap *pixmap = ((CPICTURE *)device)->pixmap;
-		
+
 		if (pixmap->isNull())
 		{
 			GB.Error("Bad picture");
 			return TRUE;
 		}
-		
+
 		target = pixmap;
 	}
 	else if (GB.Is(device, CLASS_Image))
 	{
 		QImage *image = CIMAGE_get((CIMAGE *)device);
-		
+
 		if (image->isNull())
 		{
 			GB.Error("Bad image");
 			return TRUE;
 		}
-		
+
 		target = image;
 	}
 	else if (GB.Is(device, CLASS_DrawingArea))
 	{
 		MyDrawingArea *wid;
-		
+
 		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
 		if (wid->isCached())
@@ -226,18 +226,18 @@ static int Begin(GB_PAINT *d)
 				GB.Error("Cannot paint outside of Draw event handler");
 				return TRUE;
 			}
-			
+
 			target = wid;
 		}
-			
+
 		wid->drawn++;
-		
+
 		if (init_painting(d, target))
 			return TRUE;
-		
+
 		if (wid->isCached())
 			PAINTER(d)->initFrom(wid);
-		
+
 		d->area.width = wid->width();
 		d->area.height = wid->height();
 		return FALSE;
@@ -245,13 +245,13 @@ static int Begin(GB_PAINT *d)
 	else if (GB.Is(device, CLASS_Printer))
 	{
 		CPRINTER *printer = (CPRINTER *)device;
-		
+
 		if (!printer->printing)
 		{
 			GB.Error("Printer is not printing");
 			return TRUE;
 		}
-		
+
 		target = printer->printer;
 	}
 	else if (GB.Is(device, CLASS_SvgImage))
@@ -264,7 +264,7 @@ static int Begin(GB_PAINT *d)
 			return TRUE;
 		}
 	}
-	
+
 	return init_painting(d, target);
 }
 
@@ -276,14 +276,14 @@ static void End(GB_PAINT *d)
 	if (GB.Is(device, CLASS_DrawingArea))
 	{
 		MyDrawingArea *wid;
-		
+
 		wid = (MyDrawingArea *)(((CWIDGET *)device)->widget);
 
 		if (wid)
 		{
 			if (wid->isCached())
 				wid->refreshBackground();
-	
+
 			wid->drawn--;
 		}
 	}
@@ -298,7 +298,7 @@ static void End(GB_PAINT *d)
 			delete dx->clipStack->takeLast();
 		delete dx->clipStack;
 	}*/
-	
+
 	delete dx->init;
 	delete dx->path;
 	//delete dx->clip;
@@ -309,12 +309,12 @@ static void Save(GB_PAINT *d)
 {
 	//QT_PAINT_EXTRA *dx = EXTRA(d);
 	//ClipInfo *ci;
-	
+
 	PAINTER(d)->save();
-	
+
 	/*if (!dx->clipStack)
 		dx->clipStack = new QList<ClipInfo *>;
-	
+
 	ci = new ClipInfo;
 	if (dx->clip)
 		ci->path = new QPainterPath(*dx->clip);
@@ -323,23 +323,23 @@ static void Save(GB_PAINT *d)
 		ci->rect = new GB_RECT;
 		*ci->rect = *dx->clipRect;
 	}
-	
+
 	dx->clipStack->append(ci);*/
 }
 
 static void Restore(GB_PAINT *d)
 {
 	//QT_PAINT_EXTRA *dx = EXTRA(d);
-	
+
 	PAINTER(d)->restore();
-	
+
 	/*if (dx->clipStack && !dx->clipStack->isEmpty())
 	{
 		ClipInfo *ci = dx->clipStack->takeLast();
-		
+
 		delete dx->clip;
 		dx->clip = ci->path ? new QPainterPath(*(ci->path)) : NULL;
-		
+
 		delete dx->clipRect;
 		if (ci->rect)
 		{
@@ -348,11 +348,11 @@ static void Restore(GB_PAINT *d)
 		}
 		else
 			dx->clipRect = NULL;
-		
+
 		delete ci;
 	}*/
 }
-		
+
 static void Antialias(GB_PAINT *d, int set, int *antialias)
 {
 	if (set)
@@ -373,7 +373,7 @@ static void Font(GB_PAINT *d, int set, GB_FONT *font)
 	if (set)
 	{
 		QFont f;
-		
+
 		if (*font)
 			f = QFont(*((CFONT *)(*font))->font);
 		else if ((GB.Is(d->device, CLASS_DrawingArea)))
@@ -396,9 +396,9 @@ static void init_path(GB_PAINT *d)
 	switch (EXTRA(d)->fillRule)
 	{
 		case GB_PAINT_FILL_RULE_WINDING:
-			PATH(d)->setFillRule(Qt::WindingFill); 
+			PATH(d)->setFillRule(Qt::WindingFill);
 			break;
-		case GB_PAINT_FILL_RULE_EVEN_ODD: 
+		case GB_PAINT_FILL_RULE_EVEN_ODD:
 		default:
 			PATH(d)->setFillRule(Qt::OddEvenFill);
 	}
@@ -429,22 +429,22 @@ static void init_path(GB_PAINT *d)
 		EXTRA(d)->clipRect = NULL;
 	}
 }*/
-	
+
 static void Clip(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
 
 	PAINTER(d)->setClipPath(*PATH(d), PAINTER(d)->hasClipping() ? Qt::IntersectClip : Qt::ReplaceClip);
-	
+
 	/*QPainterPath path = PAINTER(d)->worldTransform().map(*PATH(d));
-	
+
 	if (CLIP(d))
 		path = CLIP(d)->intersected(path);
-	
+
 	delete EXTRA(d)->clip;
 	EXTRA(d)->clip = new QPainterPath(path);
 	delete_clip_rect(d);*/
-	
+
 	PRESERVE_PATH(d, preserve);
 }
 
@@ -463,9 +463,9 @@ static void get_path_extents(QPainterPath *path, GB_EXTENTS *ext, const QTransfo
 		ext->x1 = ext->x2 = ext->y1 = ext->y2 = 0.0;
 		return;
 	}
-	
+
 	QRectF rect = transform.inverted().mapRect(path->boundingRect());
-	
+
 	ext->x1 = (float)rect.left();
 	ext->y1 = (float)rect.top();
 	ext->x2 = (float)rect.right();
@@ -490,7 +490,7 @@ static void ClipExtents(GB_PAINT *d, GB_EXTENTS *ext)
 static void Fill(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
-	
+
 	//if (!CLIP(d))
 		PAINTER(d)->fillPath(*PATH(d), PAINTER(d)->brush());
 	/*else
@@ -499,14 +499,14 @@ static void Fill(GB_PAINT *d, int preserve)
 		path = path.intersected(*PATH(d));
 		PAINTER(d)->fillPath(path, PAINTER(d)->brush());
 	}*/
-	
+
 	PRESERVE_PATH(d, preserve);
 }
 
 static void Stroke(GB_PAINT *d, int preserve)
 {
 	CHECK_PATH(d);
-	
+
 	if (PAINTER(d)->pen().widthF() > 0.0)
 	{
 		//if (!CLIP(d))
@@ -515,23 +515,23 @@ static void Stroke(GB_PAINT *d, int preserve)
 		{
 			QPainterPathStroker stroker;
 			QPen pen = PAINTER(d)->pen();
-			
+
 			stroker.setCapStyle(pen.capStyle());
 			stroker.setDashOffset(pen.dashOffset());
 			stroker.setDashPattern(pen.dashPattern());
 			stroker.setJoinStyle(pen.joinStyle());
 			stroker.setMiterLimit(pen.miterLimit());
 			stroker.setWidth(pen.widthF());
-			
+
 			QPainterPath path = PAINTER(d)->worldTransform().inverted().map(*CLIP(d));
 			path = path.intersected(stroker.createStroke(*PATH(d)));
 			PAINTER(d)->fillPath(path, PAINTER(d)->brush());
 		}*/
 	}
-	
+
 	PRESERVE_PATH(d, preserve);
 }
-		
+
 static void PathExtents(GB_PAINT *d, GB_EXTENTS *ext)
 {
 	get_path_extents(PATH(d), ext, PAINTER(d)->transform());
@@ -622,7 +622,7 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 static void DashOffset(GB_PAINT *d, int set, float *offset)
 {
 	QPen pen = PAINTER(d)->pen();
-	
+
 	if (set)
 	{
 		pen.setDashOffset((qreal)*offset);
@@ -634,7 +634,7 @@ static void DashOffset(GB_PAINT *d, int set, float *offset)
 	}
 }
 
-		
+
 static void FillRule(GB_PAINT *d, int set, int *value)
 {
 	if (set)
@@ -658,7 +658,7 @@ static void FillStyle(GB_PAINT *d, int set, int *style)
 static void LineCap(GB_PAINT *d, int set, int *value)
 {
 	QPen pen = PAINTER(d)->pen();
-	
+
 	if (set)
 	{
 		switch (*value)
@@ -687,7 +687,7 @@ static void LineCap(GB_PAINT *d, int set, int *value)
 static void LineJoin(GB_PAINT *d, int set, int *value)
 {
 	QPen pen = PAINTER(d)->pen();
-	
+
 	if (set)
 	{
 		switch (*value)
@@ -741,7 +741,7 @@ static void MiterLimit(GB_PAINT *d, int set, float *value)
 static void Operator(GB_PAINT *d, int set, int *value)
 {
 	QPainter::CompositionMode mode;
-	
+
 	if (set)
 	{
 		switch (*value)
@@ -797,22 +797,22 @@ static void ClosePath(GB_PAINT *d)
 	PATH(d)->closeSubpath();
 }
 
-		
+
 static void Arc(GB_PAINT *d, float xc, float yc, float radius, float angle, float length, bool pie)
 {
 	CREATE_PATH(d);
 
 	QRectF rect;
 	rect.setCoords((qreal)(xc - radius), (qreal)(yc - radius), (qreal)(xc + radius), (qreal)(yc + radius));
-	
+
 	angle = - angle;
 	length = - length;
-	
+
 	if (pie)
 		PATH(d)->moveTo(xc, yc);
 	else
 		PATH(d)->arcMoveTo(rect, to_deg(angle));
-	
+
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 
 	if (pie)
@@ -825,15 +825,15 @@ static void Ellipse(GB_PAINT *d, float x, float y, float width, float height, fl
 
 	QRectF rect;
 	rect.setCoords((qreal)x, (qreal)y, (qreal)x + width, (qreal)y + height);
-	
+
 	angle = - angle;
 	length = - length;
-	
+
 	if (pie)
 		PATH(d)->moveTo(x + width / 2, y + height / 2);
 	else
 		PATH(d)->arcMoveTo(rect, to_deg(angle));
-	
+
 	PATH(d)->arcTo(rect, to_deg(angle), to_deg(length));
 	if (pie)
 		//PATH(d)->lineTo(x + width / 2, y + height / 2);
@@ -852,7 +852,7 @@ static void ClipRect(GB_PAINT *d, int x, int y, int w, int h)
 	ResetClip(d);
 	Rectangle(d, x, y, w, h);
 	Clip(d, FALSE);
-	
+
 	/*rect = new GB_RECT;
 	rect->x = x;
 	rect->y = y;
@@ -860,7 +860,7 @@ static void ClipRect(GB_PAINT *d, int x, int y, int w, int h)
 	rect->h = h;
 	EXTRA(d)->clipRect = rect;*/
 }
-	
+
 static void GetCurrentPoint(GB_PAINT *d, float *x, float *y)
 {
 	if (!PATH(d))
@@ -869,7 +869,7 @@ static void GetCurrentPoint(GB_PAINT *d, float *x, float *y)
 		*y = 0;
 		return;
 	}
-	
+
 	QPointF pt = PATH(d)->currentPosition();
 	*x = (float)pt.x();
 	*y = (float)pt.y();
@@ -928,41 +928,41 @@ static float _draw_x, _draw_y;
 static void draw_text(GB_PAINT *d, bool rich, const char *text, int len, float w, float h, int align, bool draw)
 {
 	QPointF pos;
-	
+
 	GetCurrentPoint(d, &_draw_x, &_draw_y);
-	
+
 	if (w < 0 && h < 0)
 		_draw_y -= PAINTER(d)->fontMetrics().ascent();
-		
+
 	if (draw)
 	{
 		begin_clipping(d);
-		
+
 		if (rich)
-			DRAW_rich_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+			DRAW_rich_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));
 		else
-			DRAW_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
-		
+			DRAW_text(PAINTER(d), QString::fromUtf8(text, len), _draw_x, _draw_y, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));
+
 		end_clipping(d);
 	}
 	else
 	{
 		CREATE_PATH(d);
-	
+
 		_draw_path = PATH(d);
 
 		MyPaintDevice device;
 		QPainter p(&device);
-		
+
 		p.setFont(PAINTER(d)->font());
 		p.setPen(PAINTER(d)->pen());
 		p.setBrush(PAINTER(d)->brush());
-		
+
 		if (rich)
-			DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
+			DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));
 		else
-			DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));	
-		
+			DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, w, h, CCONST_alignment(align, ALIGN_TOP_NORMAL, true));
+
 		p.end();
 		_draw_path = NULL;
 	}
@@ -983,19 +983,19 @@ static void get_text_extents(GB_PAINT *d, bool rich, const char *text, int len, 
 	QPainterPath path;
 	MyPaintDevice device;
 	QPainter p(&device);
-	
+
 	p.setFont(PAINTER(d)->font());
 	_draw_path = &path;
 	GetCurrentPoint(d, &_draw_x, &_draw_y);
 	_draw_y -= PAINTER(d)->fontMetrics().ascent();
-	
+
 	if (rich)
-		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, width, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
+		DRAW_rich_text(&p, QString::fromUtf8(text, len), 0, 0, width, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));
 	else
-		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, -1, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));	
-	
+		DRAW_text(&p, QString::fromUtf8(text, len), 0, 0, -1, -1, CCONST_alignment(ALIGN_TOP_NORMAL, ALIGN_TOP_NORMAL, true));
+
 	p.end();
-	
+
 	get_path_extents(&path, ext, QTransform());
 	_draw_path = NULL;
 }
@@ -1012,7 +1012,7 @@ static void RichTextExtents(GB_PAINT *d, const char *text, int len, GB_EXTENTS *
 
 static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
 {
-	QString s = QString::fromUtf8((const char *)text, len);  
+	QString s = QString::fromUtf8((const char *)text, len);
 	*w = get_text_width(PAINTER(d), s);
 	*h = get_text_height(PAINTER(d), s);
 }
@@ -1020,14 +1020,14 @@ static void TextSize(GB_PAINT *d, const char *text, int len, float *w, float *h)
 static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float *w, float *h)
 {
 	QTextDocument rt;
-	
+
 	rt.setDocumentMargin(0);
 	rt.setHtml(QString::fromUtf8((const char *)text, len));
 	rt.setDefaultFont(PAINTER(d)->font());
-	
+
 	if (sw > 0)
 		rt.setTextWidth(sw);
-	
+
 	*w = rt.idealWidth();
 	*h = rt.size().height();
 }
@@ -1035,7 +1035,7 @@ static void RichTextSize(GB_PAINT *d, const char *text, int len, float sw, float
 static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 {
 	QTransform *t = (QTransform *)matrix;
-	
+
 	if (set)
 	{
 		if (t)
@@ -1047,7 +1047,7 @@ static void Matrix(GB_PAINT *d, int set, GB_TRANSFORM matrix)
 		*t = PAINTER(d)->worldTransform();
 }
 
-		
+
 static void SetBrush(GB_PAINT *d, GB_BRUSH brush)
 {
 	QBrush *b = (QBrush *)brush;
@@ -1112,15 +1112,15 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 {
 	QImage *img = CIMAGE_get((CIMAGE *)image);
 	QRectF rect(x, y, w, h);
-	
+
 	begin_clipping(d);
-	
+
 	PAINTER(d)->setOpacity(opacity);
-	
+
 	if (source)
 	{
 		bool smooth = PAINTER(d)->testRenderHint(QPainter::SmoothPixmapTransform);
-		
+
 		if (w >= source->w && h >= source->h && w == (int)w && h == (int)h && ((int)w % source->w) == 0 && ((int)h % source->h) == 0)
 			PAINTER(d)->setRenderHint(QPainter::SmoothPixmapTransform, false);
 
@@ -1131,25 +1131,25 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	}
 	else
 		PAINTER(d)->drawImage(rect, *img);
-	
+
 	PAINTER(d)->setOpacity(1.0);
-	
+
 	end_clipping(d);
 }
-		
+
 static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float w, float h, GB_RECT *source)
 {
 	QPixmap *pix = ((CPICTURE *)picture)->pixmap;
 	QRectF rect(x, y, w, h);
 	QRectF srect;
-	
+
 	if (source)
 		srect = QRectF(source->x, source->y, source->w, source->h);
 	else
 		srect = QRectF(0, 0, pix->width(), pix->height());
 
 	begin_clipping(d);
-	
+
 	PAINTER(d)->drawPixmap(rect, *pix, srect);
 
 	end_clipping(d);
@@ -1158,7 +1158,7 @@ static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float
 static void GetPictureInfo(GB_PAINT *d, GB_PICTURE picture, GB_PICTURE_INFO *info)
 {
 	QPixmap *p = ((CPICTURE *)picture)->pixmap;
-	
+
 	info->width = p->width();
 	info->height = p->height();
 }
@@ -1184,7 +1184,7 @@ static void BrushColor(GB_BRUSH *brush, GB_COLOR color)
 static void BrushImage(GB_BRUSH *brush, GB_IMAGE image)
 {
 	QImage img(*CIMAGE_get((CIMAGE *)image));
-	
+
 	img.detach();
 	QBrush *br = new QBrush(img);
 	*brush = (GB_BRUSH)br;
@@ -1194,10 +1194,10 @@ static void BrushLinearGradient(GB_BRUSH *brush, float x0, float y0, float x1, f
 {
 	QLinearGradient gradient;
 	int i;
-	
+
 	gradient.setStart((qreal)x0, (qreal)y0);
 	gradient.setFinalStop((qreal)x1, (qreal)y1);
-	
+
 	for (i = 0; i < nstop; i++)
 		gradient.setColorAt((qreal)positions[i], CCOLOR_make(colors[i]));
 
@@ -1220,11 +1220,11 @@ static void BrushRadialGradient(GB_BRUSH *brush, float cx, float cy, float r, fl
 {
 	QRadialGradient gradient;
 	int i;
-	
+
 	gradient.setCenter((qreal)cx, (qreal)cy);
 	gradient.setRadius((qreal)r);
 	gradient.setFocalPoint((qreal)fx, (qreal)fy);
-	
+
 	for (i = 0; i < nstop; i++)
 		gradient.setColorAt((qreal)positions[i], CCOLOR_make(colors[i]));
 
@@ -1247,7 +1247,7 @@ static void BrushMatrix(GB_BRUSH brush, int set, GB_TRANSFORM matrix)
 {
 	QBrush *b = (QBrush *)brush;
 	QTransform *t = (QTransform *)matrix;
-	
+
 	if (set)
 	{
 		if (t)
@@ -1319,7 +1319,7 @@ static void TransformMultiply(GB_TRANSFORM matrix, GB_TRANSFORM matrix2)
 {
 	QTransform *t  = (QTransform *)matrix;
 	QTransform *t2  = (QTransform *)matrix2;
-	
+
 	*t = *t * *t2;
 }
 
@@ -1337,7 +1337,7 @@ static void TransformMap(GB_TRANSFORM matrix, double *x, double *y)
 }
 
 
-GB_PAINT_DESC PAINT_Interface = 
+GB_PAINT_DESC PAINT_Interface =
 {
 	// Size of the GB_PAINT structure extra data
 	sizeof(QT_PAINT_EXTRA),
@@ -1464,19 +1464,19 @@ void MyPaintEngine::patchFeatures()
 	}
 }
 
-bool MyPaintEngine::begin(QPaintDevice *pdev) 
+bool MyPaintEngine::begin(QPaintDevice *pdev)
 {
 	setActive(true);
-	return true; 
+	return true;
 }
 
-bool MyPaintEngine::end() 
+bool MyPaintEngine::end()
 {
 	setActive(false);
 	return true;
 }
 
-void MyPaintEngine::updateState(const QPaintEngineState &state) 
+void MyPaintEngine::updateState(const QPaintEngineState &state)
 {
 	//qDebug("MyPaintEngine::updateState: %04X", (int)state.state());
 }
@@ -1551,8 +1551,8 @@ MyPaintDevice::MyPaintDevice() : QPaintDevice()
 }
 
 QPaintEngine *MyPaintDevice::paintEngine() const
-{ 
-	return &engine; 
+{
+	return &engine;
 }
 
 int MyPaintDevice::metric(PaintDeviceMetric m) const

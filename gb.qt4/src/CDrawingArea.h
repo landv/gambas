@@ -64,9 +64,9 @@ public:
 
 	int drawn;
 	QPixmap *cache;
-	
+
 	virtual void setVisible(bool visible);
-	
+
 	//void setTransparent(bool);
 	//bool isTransparent(void) { return transparent; }
 
@@ -86,16 +86,17 @@ public:
 
 	void setAllowFocus(bool f);
 	bool isAllowFocus() const { return focusPolicy() != Qt::NoFocus; }
-	
+
 	void redraw(QRect &r, bool frame = false);
-	
+
 	bool hasNoBackground() const { return _no_background; }
 	void setNoBackground(bool on);
 	void updateNoBackground();
-	
+
 	void setDrawEvent(int event) { _draw_event = event; }
 	bool inDrawEvent() const { return _in_draw_event; }
-	
+	static bool inAnyDrawEvent() { return _in_any_draw_event > 0; }
+
 	void createBackground(int w, int h);
 #ifndef QT5
 	bool hasCacheBackground() const { return _cached && _background; }
@@ -103,11 +104,11 @@ public:
 	bool hasCacheBackground() const { return _cached && !_background_pixmap.isNull(); }
 #endif
 	void deleteBackground();
-	
+
 	QPixmap *getBackgroundPixmap();
 
 public slots:
-	
+
 	void setBackground();
 	//bool isTransparent() { return _transparent; }
 	//void setTransparent(bool on);
@@ -139,6 +140,7 @@ private:
 	bool _no_background;
 	bool _in_draw_event;
 	int _draw_event;
+	static int _in_any_draw_event;
 };
 
 #endif

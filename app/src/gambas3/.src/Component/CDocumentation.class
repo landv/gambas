@@ -375,7 +375,7 @@ Public Sub MakeInheritance(hModule As Object, cSymbol As Collection, sParent As 
   hModule.ParentClass = sParent
   hModule.ParentComponent = sComponent
   If Not hModule.AutoCreatable Then hModule.AutoCreatable = IsAutoCreatable(hModule.ParentClass)
-  cClassSymbol = GetClassSymbols(sComponent &/ sParent)
+  cClassSymbol = GetClassSymbols(sParent, sComponent)
   If cClassSymbol Then
     For Each hSymbol In cClassSymbol
       cSymbol[hSymbol.Name] = hSymbol

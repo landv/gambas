@@ -80,8 +80,12 @@ static void _SUBR_div(ushort code);
 
 //---- Subroutine dispatch table --------------------------------------------
 
-static void *SubrTable[] =
+static const void *SubrTable[] =
 {
+	/* 00 */ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+	/* 10 */ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+	/* 20 */ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+
 	/* 28 */  NULL,                 _SUBR_compn,          NULL,                 NULL,
 	/* 2C */  NULL,                 NULL,                 SUBR_near,            SUBR_case,
 	/* 30 */  _SUBR_add,            _SUBR_sub,            _SUBR_mul,            _SUBR_div,
@@ -503,7 +507,7 @@ _MAIN:
 _SUBR_CODE:
 
 	//fprintf(stderr, "gbx3: %02X: %s\n", (code >> 8), DEBUG_get_current_position());
-	(*(EXEC_FUNC_CODE)SubrTable[(code >> 8) - 0x28])(code);
+	(*(EXEC_FUNC_CODE)SubrTable[code >> 8])(code);
 
 	//if (PCODE_is_void(code))
 	//  POP();
@@ -547,7 +551,7 @@ _NEXT:
 
 _SUBR:
 
-	(*(EXEC_FUNC)SubrTable[(code >> 8) - 0x28])();
+	(*(EXEC_FUNC)SubrTable[code >> 8])();
 	goto _NEXT;
 
 /*-----------------------------------------------*/

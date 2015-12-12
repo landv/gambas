@@ -415,6 +415,7 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
   Dim sDir As String
   Dim sSubDir As String
   Dim sMime As String
+  Dim bBreak As Boolean
   
   For Each sFile In Split(sFile, ";")
     
@@ -429,8 +430,9 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
           If iSize > 32 Then Continue
           sTheme = Mid$(sTheme, 2)
         Endif
-        If File.Name(File.Dir(sTemplate)) Not Like sTheme Then Continue
+        If File.Dir(sTemplate) Not Like "*/" & sTheme & "/*" Then Continue
         sFile = Mid$(sFile, iPos + 1)
+        bBreak = True
       Endif
     Endif
     
@@ -485,6 +487,8 @@ Static Private Sub LoadIcon(sTemplate As String, sFile As String, iSize As Integ
       hPict = DoLoadIcon(sPath, iSize, iRealSize)
       If hPict Then Return hPict
     Endif
+    
+    If bBreak Then Break
     
   Next
   
