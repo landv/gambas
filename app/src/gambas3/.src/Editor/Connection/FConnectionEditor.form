@@ -3,88 +3,80 @@
 { Form Form
   MoveScaled(0,0,123,92)
   Arrangement = Arrange.Vertical
-  { HBox2 HBox
-    MoveScaled(1,0,102,4)
-    { btnTitle ToolButton
-      MoveScaled(0,0,4,4)
-      Picture = Picture["img/16/database.png"]
-    }
-    { lblTitle Label
-      MoveScaled(5,0,25,4)
-      Expand = True
-    }
-  }
-  { Separator4 Separator
-    MoveScaled(6,6,13,0)
-  }
   { panToolBar ToolBar
-    MoveScaled(3,6,75,4)
+    MoveScaled(4,0,87,4)
     Key = "connection"
     Text = ("Connection editor")
     Separator = True
+    { btnTitle ToolButton
+      MoveScaled(0,0,4,4)
+      Action = ".database"
+      AutoResize = True
+      Picture = Picture["img/16/database.png"]
+    }
     { btnSave ToolButton mnuSave
       Name = "btnSave"
-      MoveScaled(0,0,4,4)
+      MoveScaled(4,0,4,4)
       ToolTip = ("Save")
       Action = ".save"
       Picture = Picture["icon:/small/save"]
     }
     { btnReload ToolButton mnuReload
       Name = "btnReload"
-      MoveScaled(4,0,4,4)
+      MoveScaled(8,0,4,4)
       ToolTip = ("Reload")
       Action = ".reload"
       Picture = Picture["icon:/small/refresh"]
     }
     { btnShowSystem ToolButton
-      MoveScaled(8,0,4,4)
+      MoveScaled(12,0,4,4)
       ToolTip = ("Show system tables")
       Action = ".show-system"
       Picture = Picture["img/16/system-table.png"]
       Toggle = True
     }
     { btnNewTable ToolButton
-      MoveScaled(12,0,4,4)
+      MoveScaled(16,0,4,4)
       ToolTip = ("New table")
       Picture = Picture["icon:/small/new"]
     }
     { btnKill ToolButton
-      MoveScaled(16,0,7,4)
+      MoveScaled(21,0,7,4)
       ToolTip = ("Delete table")
       AutoResize = True
       Text = ("Remove")
       Picture = Picture["icon:/small/delete"]
     }
     { btnRename ToolButton
-      MoveScaled(24,0,9,4)
+      MoveScaled(30,0,9,4)
       ToolTip = ("Rename table")
       AutoResize = True
       Text = ("Rename") & "..."
       Picture = Picture["icon:/small/edit"]
     }
     { btnCopyTable ToolButton
-      MoveScaled(33,0,4,4)
+      MoveScaled(41,0,4,4)
       ToolTip = ("Copy table")
       AutoResize = True
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
     }
     { btnPasteTable ToolButton
-      MoveScaled(37,0,4,4)
+      MoveScaled(46,0,4,4)
       ToolTip = ("Paste table")
       AutoResize = True
       Text = ("Paste") & "..."
       Picture = Picture["icon:/small/paste"]
     }
     { btnImport ToolButton
-      MoveScaled(44,0,12,4)
+      MoveScaled(52,0,12,4)
       ToolTip = ("Import text file")
       AutoResize = True
       Text = ("Import") & "..."
       Picture = Picture["icon:/small/open"]
     }
     { btnRequest ToolButton
-      MoveScaled(56,0,16,4)
+      MoveScaled(64,0,16,4)
       ToolTip = ("SQL queries")
       AutoResize = True
       Text = ("SQL queries")
@@ -234,7 +226,7 @@
             Index = 0
           }
           { panRequest VBox
-            MoveScaled(4,5,61,24)
+            MoveScaled(2,10,61,24)
             Visible = False
             Background = Color.Background
             { tlbData2 ToolBar
@@ -262,7 +254,7 @@
               }
               { btnClear ToolButton
                 MoveScaled(32,0,4,4)
-                ToolTip = ("Cut")
+                ToolTip = ("Clear")
                 Picture = Picture["icon:/small/clear"]
               }
               { btnCut ToolButton mnuCut
@@ -297,8 +289,7 @@
               }
             }
             { tabRequest TabPanel
-              MoveScaled(3,5,33,16)
-              Expand = True
+              MoveScaled(3,5,33,7)
               Border = False
               Index = 0
               Text = ("")
@@ -306,7 +297,7 @@
             }
             { edtRequest TextEditor
               MoveScaled(18,15,40,7)
-              Ignore = True
+              Expand = True
               Border = False
               Highlight = "SQL"
             }
@@ -397,6 +388,10 @@
 # Gambas Action File 3.0
 
 { Actions
+  { Action database
+    Text = ""
+    Picture = "img/16/database.png"
+  }
   { Action reload
     Text = "Reload"
     Picture = "icon:/small/refresh"
@@ -414,7 +409,7 @@
 { Toolbars
   { Toolbar connection
     Text = "Connection editor"
-    List = "save,reload,show-system"
-    Default = "save,reload,show-system,$btnNewTable,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport,$btnRequest"
+    List = "database,save,reload,show-system"
+    Default = "database,save,reload,show-system,$btnNewTable,$btnKill,$btnRename,$btnCopyTable,$btnPasteTable,$btnImport,$btnRequest"
   }
 }
