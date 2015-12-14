@@ -42,9 +42,7 @@ End
 
 Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
-  Dim iBorder As Integer
   Dim hCtrl As Control = hCCtrl.Control
-  Dim hParent As CControl
   
   'Debug hCCtrl.Name
   
@@ -68,7 +66,7 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
 End
 
-Public Sub ActionDialog(sAction As String) As Boolean
+Public Sub ActionDialog((sAction) As String) As Boolean
 
   ' Dim vColor As Variant
   ' 
@@ -87,7 +85,7 @@ Public Sub ActionDialog(sAction As String) As Boolean
   
 End
 
-Public Sub ActionExec(hCtrl As CControl, sAction As String)
+Public Sub ActionExec((hCtrl) As CControl, (sAction) As String)
   
   ' Select Case sAction
   '   

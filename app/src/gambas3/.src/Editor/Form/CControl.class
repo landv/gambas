@@ -67,10 +67,6 @@ Static Public Sub GetIcon(sClass As String, sComp As String, Optional iSize As I
   Dim hPict As Picture
   Dim hImage As Image
   Dim sPath As String
-  Dim sText As String
-  Dim X, Y As Float
-  Dim iInd As Integer
-  Dim I As Integer
   Dim hClass As CClassInfo
   Dim W As Integer
   Dim F As Integer
@@ -351,8 +347,6 @@ End
 
 
 Private Sub InitControl()
-
-  Dim hProp As CPropertyInfo
 
   $cValue["#X"] = 0
   $cValue["#Y"] = 0
@@ -736,6 +730,8 @@ Public Function GetPropertyDefault(sProp As String) As Variant
 End
 
 Private Function ConvertToString(vVal As Variant, hProp As CPropertyInfo) As String
+  
+  Dim sVal As String
   
   Select Case hProp.Type
 
