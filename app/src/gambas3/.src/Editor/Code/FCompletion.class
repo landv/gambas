@@ -482,15 +482,16 @@ Private Sub FillWithIdent(sWord As String)
       Endif
     Next
   
-    For Each sCar In System.Keywords
-      If sCar Like sWord & "*" Then 
-        If cKey.Exist(sCar) Then Continue
-        cKey[sCar] = True
-        If sCar = UCase(sCar) Then sCar &= " "
-        aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
-      Endif
-    Next
-
+    ' For Each sCar In System.Keywords
+    '   If sCar Ends "$" Then Continue
+    '   If sCar Like sWord & "*" Then 
+    '     If cKey.Exist(sCar) Then Continue
+    '     cKey[sCar] = True
+    '     If sCar = UCase(sCar) Then sCar &= " "
+    '     aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
+    '   Endif
+    ' Next
+    
     If Left(sWord) = "_" Then 
       For Each sCar In $aSpecialMethods
         If sCar Like sWord & "*" Then 
@@ -503,11 +504,12 @@ Private Sub FillWithIdent(sWord As String)
     
   Endif
   
-  Try aKeywords = $hEditor.Keywords
+  Try aKeywords = $hEditor.Keywords.Sort()
   If aKeywords Then
     For Each sCar In aKeywords
       If sCar Like sWord & "*" Then 
         If cKey.Exist(sCar) Then Continue
+        If sCar Ends "$" And If cKey.Exist(Left(sCar, -1)) Then Continue
         cKey[sCar] = True
         If sCar = UCase(sCar) Then sCar &= " "
         aResult.Add(sCar & " " & MHelp.TYPE_KEYWORD)
@@ -564,7 +566,7 @@ Private Sub FillWithIdent(sWord As String)
         cKey[sCar] = True
       Next
     Endif
-  
+    
     If Right(sWord) = "_" Then
       AddEvents(aResult, String.Left(sOrg, -1))
     Endif
