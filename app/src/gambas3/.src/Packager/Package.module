@@ -47,6 +47,7 @@ Private Const GTK3_SUPPORT As String = "gtk3"
 Private GTK3_SUPPORT_PACKAGES As String[] = ["gb.gtk3:gb.gui"] ', "gb.gtk.opengl:gb.gui.opengl"]
 
 Private Const DEBIAN_STANDARD As String = "3.9.6"
+Private Const DEBIAN_DEBHELPER_VERSION As String = "9"
 
 Public Sub CheckProgram()
   
@@ -836,7 +837,7 @@ Private Function MakeDebPackage(sSys As String)
 
   'debian/compat
   hFile = Open sPackagePath &/ "debian/compat" For Create 
-  Print #hFile, "5"
+  Print #hFile, DEBIAN_DEBHELPER_VERSION
   Close #hFile
     
   'debian/menu
@@ -895,7 +896,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Section: contrib/"; Project.Groups[sSys]
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  Print #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas"; System.Version; "-dev (>= "; MIN_VERSION; "), gambas"; System.Version; "-dev (<< "; MAX_VERSION; ")";
+  Print #hFile, "Build-Depends: debhelper (>= "; DEBIAN_DEBHELPER_VERSION; "), gambas"; System.Version; "-dev (>= "; MIN_VERSION; "), gambas"; System.Version; "-dev (<< "; MAX_VERSION; ")";
   ' For Each sLib In GetDependencies()
   '   aVer = GetComponentMinMaxVersion(sLib)
   '   sLib = ComponentToPackageName(sLib)
@@ -1065,7 +1066,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
 
   'debian/compat
   hFile = Open sPackagePath &/ "debian/compat" For Create 
-  Print #hFile, "7"
+  Print #hFile, DEBIAN_DEBHELPER_VERSION
   Close #hFile
     
   'debian/control
@@ -1074,7 +1075,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "Section: contrib/"; Project.Groups[sSys]
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  Print #hFile, "Build-Depends: debhelper (>= 7)"
+  Print #hFile, "Build-Depends: debhelper (>= "; DEBIAN_DEBHELPER_VERSION; ")"
   Print #hFile, "Standards-Version: "; DEBIAN_STANDARD
   Print #hFile
   Print #hFile, "Package: "; sPackageName
