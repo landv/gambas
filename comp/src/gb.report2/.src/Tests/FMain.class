@@ -1,6 +1,11 @@
 ' Gambas class file
 
 Public Sub _new()
+Dim hLabel As New ReportLabel(Report)
+hLabel.Text = "Test"
+Report.Padding = ReportPadding["1cm"]
+hLabel.Border = ReportBorder["border:1px;toprightcorner:5mm 1cm"]
+hLabel.BackGround = ReportBrush["image(icon.png)"]
 Report.Preview()
 End
 

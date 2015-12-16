@@ -64,7 +64,7 @@ Static Public Sub _get(sValue As String) As ReportBrush
     Case "image"
       hBrush._Type = 1
       
-      hBrush._Image = Image.Load(ars[0])
+      hBrush._Image = Image.Load(Replace(ars[0], "\"", ""))
       hBrush._ImageDir = ars[0]
     Case "radialgradient"
       hBrush._Type = 3
