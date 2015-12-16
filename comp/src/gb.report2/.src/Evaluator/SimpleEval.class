@@ -374,7 +374,7 @@ Public Function Execute() As Boolean
         Inc rn
         nargs = op_arg_count(hVal.Value)
         If Stack.Count < nargs Then
-          Print "pas assez de valeur entrée"
+          'Print "pas assez de valeur entrée"
           Return False
         Endif
         If hVal.isFunction Then
