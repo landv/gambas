@@ -26,7 +26,7 @@ Private $sVersion As String
 Private $sDescription As String
 Private $sSavePath As String
 
-Private $bSupportPackage As Boolean
+Private $sSupportPackage As String
 
 Private MIN_VERSION As String
 Private Const MAX_VERSION As String = "3.99.0"
@@ -38,15 +38,16 @@ Private $sFormatMinMax As String
 Private $sFormatEqual As String
 
 Private Const QT4_SUPPORT As String = "qt4"
-Private QT4_SUPPORT_PACKAGES As String[] = ["gb.qt4:gb.gui", "gb.qt4.opengl:gb.gui.opengl"]
+Private QT4_SUPPORT_PACKAGES As String[] = ["gb.qt4:gb.gui", "gb.qt4:gb.gui.qt", "gb.qt4.opengl:gb.gui.opengl", "gb.qt4.webkit:gb.gui.qt.webkit"]
 Private Const QT5_SUPPORT As String = "qt5"
-Private QT5_SUPPORT_PACKAGES As String[] = ["gb.qt5:gb.gui", "gb.qt5.opengl:gb.gui.opengl"]
+Private QT5_SUPPORT_PACKAGES As String[] = ["gb.qt5:gb.gui", "gb.qt5:gb.gui.qt", "gb.qt5.opengl:gb.gui.opengl", "gb.qt5.webkit:gb.gui.qt.webkit"]
 Private Const GTK_SUPPORT As String = "gtk"
 Private GTK_SUPPORT_PACKAGES As String[] = ["gb.gtk:gb.gui", "gb.gtk.opengl:gb.gui.opengl"]
 Private Const GTK3_SUPPORT As String = "gtk3"
 Private GTK3_SUPPORT_PACKAGES As String[] = ["gb.gtk3:gb.gui"] ', "gb.gtk.opengl:gb.gui.opengl"]
 
 Private Const DEBIAN_STANDARD As String = "3.9.6"
+Private Const DEBIAN_DEBHELPER_VERSION As String = "9"
 
 Public Sub CheckProgram()
   
@@ -227,7 +228,13 @@ Private Sub InitMake(sSys As String)
     $sDescription = "Missing description"
   Endif
   
-  $bSupportPackage = Project.Components.Exist("gb.gui")
+  With Project.Components
+    If .Exist("gb.gui") Then
+      $sSupportPackage = "gb.gui"
+    Else If .Exist("gb.gui.qt") Then
+      $sSupportPackage = "gb.gui.qt"
+    Endif
+  End With
 
 End
 
@@ -625,16 +632,20 @@ Private Sub MakeSupportPackage(sSys As String)
   Dim sSupport As String
   Dim aPackage As String[]
   
-  sSupport = GTK_SUPPORT
-  aPackage = GTK_SUPPORT_PACKAGES
-  AddLog("\n============ " & Subst(("Making &1 support package..."), "GTK+"))
-  GoSub MAKE_PACKAGE
-
-  If Not Project.Components.Exist("gb.gui.opengl") Then
-    sSupport = GTK3_SUPPORT
-    aPackage = GTK3_SUPPORT_PACKAGES
-    AddLog("\n============ " & Subst(("Making &1 support package..."), "GTK+3"))
+  If $sSupportPackage = "gb.gui" Then
+  
+    sSupport = GTK_SUPPORT
+    aPackage = GTK_SUPPORT_PACKAGES
+    AddLog("\n============ " & Subst(("Making &1 support package..."), "GTK+"))
     GoSub MAKE_PACKAGE
+  
+    If Not Project.Components.Exist("gb.gui.opengl") Then
+      sSupport = GTK3_SUPPORT
+      aPackage = GTK3_SUPPORT_PACKAGES
+      AddLog("\n============ " & Subst(("Making &1 support package..."), "GTK+3"))
+      GoSub MAKE_PACKAGE
+    Endif
+    
   Endif
 
   sSupport = QT4_SUPPORT
@@ -704,7 +715,7 @@ Private Function MakePackage(sSys As String) As Boolean
     
   End Select
   
-  If $bSupportPackage Then MakeSupportPackage(sSys)
+  If $sSupportPackage Then MakeSupportPackage(sSys)
   
 Catch
 
@@ -826,7 +837,7 @@ Private Function MakeDebPackage(sSys As String)
 
   'debian/compat
   hFile = Open sPackagePath &/ "debian/compat" For Create 
-  Print #hFile, "5"
+  Print #hFile, DEBIAN_DEBHELPER_VERSION
   Close #hFile
     
   'debian/menu
@@ -885,7 +896,7 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Section: contrib/"; Project.Groups[sSys]
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  Print #hFile, "Build-Depends: debhelper (>= 5.0.0), gambas"; System.Version; "-dev (>= "; MIN_VERSION; "), gambas"; System.Version; "-dev (<< "; MAX_VERSION; ")";
+  Print #hFile, "Build-Depends: debhelper (>= "; DEBIAN_DEBHELPER_VERSION; "), gambas"; System.Version; "-dev (>= "; MIN_VERSION; "), gambas"; System.Version; "-dev (<< "; MAX_VERSION; ")";
   ' For Each sLib In GetDependencies()
   '   aVer = GetComponentMinMaxVersion(sLib)
   '   sLib = ComponentToPackageName(sLib)
@@ -1055,7 +1066,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
 
   'debian/compat
   hFile = Open sPackagePath &/ "debian/compat" For Create 
-  Print #hFile, "7"
+  Print #hFile, DEBIAN_DEBHELPER_VERSION
   Close #hFile
     
   'debian/control
@@ -1064,7 +1075,7 @@ Private Function MakeDebSupportPackage(sSys As String, sSupport As String, aComp
   Print #hFile, "Section: contrib/"; Project.Groups[sSys]
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
-  Print #hFile, "Build-Depends: debhelper (>= 7)"
+  Print #hFile, "Build-Depends: debhelper (>= "; DEBIAN_DEBHELPER_VERSION; ")"
   Print #hFile, "Standards-Version: "; DEBIAN_STANDARD
   Print #hFile
   Print #hFile, "Package: "; sPackageName
