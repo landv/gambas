@@ -18,6 +18,9 @@ Private $sFormat As String
 Private $iAlignment As Integer
 Private $fAngle As Integer
 Private $bUseField As Boolean
+Private $hEval As ReportEval
+Static Private $iPage As Integer
+Static Private $iIndex As Integer
 Event Data(Index As Integer)
 
 Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
@@ -44,9 +47,18 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
       sText = Data
     Endif
     
-    If $sFormat Then
-      Try $sText = Format($sText, $sFormat)
+    If $sText Begins "=" Then
+      If Not $hEval Or If $hEval.Formula <> Right($sText, -1) Then 
+        $hEval = New ReportEval(Right($sText, -1)) As "Eval"
+      Endif
     Endif
+    
+    If $sFormat Then
+      Try sText = Format(sText, $sFormat)
+    Endif
+    
+    
+    
     
     Paint.Font = Me.Font
     'If sText = "Gambas" Then Stop
@@ -79,6 +91,9 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Dim sTempText As Variant
   Dim iX, iY, iW, iH As Integer
   
+  $iPage = Page
+  $iIndex = DataIndex
+  
   If $sText Then
     sTempText = $sText
   Else
@@ -86,9 +101,15 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
     sTempText = Data
   Endif
   
+  If sTempText Begins "=" Then
+     $hEval.Execute
+     sTempText = $hEval.Value
+  Endif
+
   If $sFormat Then
     Try sTempText = Format(sTempText, $sFormat)
   Endif
+  
   If $bUseField Then
     sTempText = DecodeText(sTempText, Page)
   Endif
@@ -200,3 +221,15 @@ Private Sub UseField_Write(Value As Boolean)
   $bUseField = Value
 
 End
+
+Public Sub Eval_Data(Value As String)
+  'Print "appel"
+  Select Case LCase(Value)
+    Case "page"
+      Last.Data = $iPage + 1
+    Case "index"
+      Last.Data = $iIndex
+  End Select
+  
+End
+

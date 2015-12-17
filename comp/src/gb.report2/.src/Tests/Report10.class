@@ -1,0 +1,15 @@
+' Gambas class file
+
+
+Public Sub Report_Open()
+  ReportVBox1.DataCount = 100
+  ReportVBox2.DataCount = 4
+  ReportPanel1.Datacount = 3
+
+End
+
+Public Sub ReportLabel1_Data(Index As Integer)
+
+  'Last.data = Index
+
+End

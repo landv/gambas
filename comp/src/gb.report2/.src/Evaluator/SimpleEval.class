@@ -340,7 +340,7 @@ Public Function Execute() As Boolean
   Dim i, j As Integer
   Dim s, s2 As CResult
   Dim hVal As CResult
-
+  $cVars.Clear
   For i = 0 To aCResult.max
 
     hVal = aCResult[i]

@@ -874,7 +874,10 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
       hTItem.SizeHint = hChildHints
       'TODO: Restorer
       'hTItem.Index = TCont.Index
-      hTItem.Index = j 'iIndex
+      'Print hchild._count
+      hTItem.Index = IIf(hchild._count = 1, TCont.Index, j) 'iIndex
+      ' Print hchild.Tag
+      ' Print "Set J= " & hTItem.Index
       Inc iIndex
       'L'ajouter a la page
       aPageItems.Add(hTItem)

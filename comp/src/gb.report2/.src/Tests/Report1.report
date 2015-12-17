@@ -19,7 +19,7 @@
       Font = Font["+10"]
       Expand = True
       AutoResize = True
-      Text = ("toto")
+      Text = ("=\"Page \" & Page")
       Alignment = Align.Center
     }
   }
@@ -32,9 +32,13 @@
   { ReportHBox2 ReportPanel
     #MoveScaled(1,27,91,16)
     Height = "20mm"
-    Brush = ReportBrush["#FF0000"]
     Fixed = True
-    Border = ReportBorder["Top:1mm #FF00FF;Bottom:1mm #FF00FF;Left:1mm #FF00FF;Right:1mm #FF00FF"]
+    { ReportLabel2 ReportLabel
+      #MoveScaled(10,3,59,9)
+      Expand = True
+      Text = ("=pi() + 4")
+      Format = "0.00"
+    }
   }
   { ReportHBox3 ReportHBox
     #MoveScaled(1,44,91,6)
