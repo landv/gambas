@@ -180,7 +180,7 @@ static void conv_data(const char *data, GB_VARIANT_VALUE * val, int type)
 			break;
 
 		default:
-			
+
 			val->type = GB_T_CSTRING;
 			val->value._string = (char *)data;
 	}
@@ -274,13 +274,13 @@ static int do_query(DB_DATABASE *db, const char *error, SQLITE_RESULT **pres, co
 		max_retry = 600; // 120 s max
 	else
 		max_retry = 0;
-	
+
 	for(;;)
 	{
 		err = 0;
 
 		res = sqlite_query_exec(conn, query, _need_field_type);
-		
+
 		if (res)
 		{
 			if (pres)
@@ -289,19 +289,19 @@ static int do_query(DB_DATABASE *db, const char *error, SQLITE_RESULT **pres, co
 				sqlite_query_free(res);
 			break;
 		}
-		
+
 		err = conn->error;
-		
+
 		if (err != SQLITE_BUSY || retry >= max_retry)
 		{
 			GB.Error(error, sqlite_get_error_message(conn));
 			break;
 		}
-		
+
 		retry++;
 		usleep(200000);
 	}
-	
+
  	db->error = err;
 	_need_field_type = FALSE;
 	return err != 0;
@@ -479,11 +479,11 @@ static int walk_directory(const char *dir, char ***databases)
 		return -1;
 	}
 
-	while ((entry = readdir(dp)) != NULL) 
+	while ((entry = readdir(dp)) != NULL)
 	{
 		stat(entry->d_name, &statbuf);
 
-		if (S_ISREG(statbuf.st_mode)) 
+		if (S_ISREG(statbuf.st_mode))
 		{
 			if (is_database_file(entry->d_name))
 				*(char **)GB.Add(databases) = GB.NewZeroString(entry->d_name);
@@ -492,10 +492,10 @@ static int walk_directory(const char *dir, char ***databases)
 
 	// BM: you must call closedir()
 	closedir(dp);
-	
+
 	if (chdir(cwd))
 		fprintf(stderr, "gb.db.sqlite3: warning: chdir: %s\n", strerror(errno));
-	
+
 	return GB.Count(databases);
 }
 
@@ -839,7 +839,7 @@ static void query_release(DB_RESULT result, DB_INFO * info)
 	<next> is a boolean telling if we want the next row.
 
 	This function must return DB_OK, DB_ERROR or DB_NO_DATA
-	
+
 	This function must use GB.StoreVariant() to store the value in the
 	buffer.
 
@@ -857,7 +857,7 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	for (i = 0; i < res->ncol; i++)
 	{
 		type = res->types[i];
-		
+
 		if (type == DB_T_BLOB)
 			data = NULL;
 		else
@@ -1135,7 +1135,7 @@ static int table_index(DB_DATABASE * db, const char *table, DB_INFO * info)
 	/* Index primaire */
 
 	info->nindex = 0;
-	
+
 	if (do_query(db, "Unable to get primary index: &1", &res, qindex1, 1, table))
 		return TRUE;
 
@@ -1468,7 +1468,7 @@ static int table_is_system(DB_DATABASE * db, const char *table)
 /*****************************************************************************
 
   table_type()
-  
+
   Not Valid in Sqlite
 
   <handle> is the database handle.
@@ -1786,7 +1786,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 		fprintf(stderr, "_fieldType = %s\n", _fieldType);
 		autoinc = strstr(_fieldType, "INTEGER") && strstr(_fieldType, "AUTOINCREMENT");
 	}*/
-	
+
 	autoinc = FALSE;
 	info->collation = NULL;
 
@@ -1814,7 +1814,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 				while (p < p2 && *p == ' ')
 					p++;
 
-				if (*p == '\'')
+				if (*p == '\'' || *p == '"')
 					p++;
 
 				len = strlen(_fieldName);
@@ -1831,7 +1831,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 				len = p2 - p;
 				if (len <= 0)
 					break;
-				
+
 				field_desc = GB.NewString(p, len);
 
 				if (strstr(_fieldType, "INTEGER"))
@@ -1859,7 +1859,7 @@ static int field_info(DB_DATABASE *db, const char *table, const char *field, DB_
 
 		}
 	}
-	
+
 	if (!_table_schema)
 		GB.FreeString(&schema);
 
@@ -2313,7 +2313,7 @@ _CREATE_DATABASE:
 
 	sqlite_close_database(conn);
 	db->handle = save;
-	
+
 	return FALSE;
 }
 
