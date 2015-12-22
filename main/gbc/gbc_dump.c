@@ -54,7 +54,7 @@ static const char *get_name(int index)
 static void get_string(int index, const char **str, int *len)
 {
 	SYMBOL *sym;
-	
+
 	if (index == VOID_STRING)
 	{
 		*str = "";
@@ -71,7 +71,7 @@ static void get_string(int index, const char **str, int *len)
 static void print_quoted(FILE *file, const char *str, int len)
 {
 	unsigned char c;
-	
+
 	fputc('"', file);
 	while (len--)
 	{
@@ -140,7 +140,7 @@ static void dump_function(FUNCTION *func)
 	int i;
 
 	//printf("<%lld> ", func->byref);
-	
+
 	printf("(");
 
 	for (i = 0; i < func->nparam; i++)
@@ -149,7 +149,7 @@ static void dump_function(FUNCTION *func)
 
 		if (i >= func->npmin)
 			printf("Optional ");
-		
+
 		if (func->byref & (1LL << i))
 			printf("ByRef ");
 
@@ -359,7 +359,7 @@ static void close_file_and_rename(FILE *f, const char *file, const char *dest)
 	if (f)
 	{
 		fclose(f);
-		FILE_unlink(dest); 
+		FILE_unlink(dest);
 		FILE_rename(file, dest);
 		FILE_set_owner(dest, COMP_project);
 	}
@@ -383,19 +383,19 @@ static void read_line(char **line, int *len)
 	int l;
 	char c;
 	int lmax;
-	
+
 	*line = NULL;
 	*len = 0;
-	
+
 	if (!_buffer)
 		return;
-	
+
 	lmax = BUFFER_length(_buffer);
 	if (_buffer_ptr >= lmax)
 		return;
-	
+
 	*line = &_buffer[_buffer_ptr];
-	
+
 	l = 0;
 	for(;;)
 	{
@@ -409,7 +409,7 @@ static void read_line(char **line, int *len)
 		}
 		l++;
 	}
-	
+
 	*len = l;
 }
 
@@ -435,13 +435,13 @@ static void class_update_exported(CLASS *class)
 	bool optional;
 	bool has_static;
 	int cmp;
-	
+
 	if (load_file(".list") && !class->exported)
 		return;
-	
+
 	//if (!fr && !class->exported)
 	//	return;
-	
+
 	for(;;)
 	{
 		read_line(&name, &len);
@@ -456,15 +456,17 @@ static void class_update_exported(CLASS *class)
 			{
 				optional = TRUE;
 				name[len - 1] = 0;
+				len--;
 			}
 			if (name[len - 1] == '!')
 			{
 				has_static = TRUE;
 				name[len - 1] = 0;
+				len--;
 			}
 			cmp = strcmp(name, class->name);
 		}
-		
+
 		if (cmp == 0)
 		{
 			if (JOB->verbose)
@@ -484,16 +486,16 @@ static void class_update_exported(CLASS *class)
 			fputc('\n', fw);
 			inserted = TRUE;
 		}
-		
+
 		if (!name)
 			break;
-		
+
 		if (exist_bytecode_file(name))
 		{
 			if (JOB->verbose)
 				printf("Copy '%s' in .list file\n", name);
-		
-			create_file(&fw, ".list#");		
+
+			create_file(&fw, ".list#");
 			fputs(name, fw);
 			if (has_static && COMPILE_version >= 0x03060090)
 				fputc('!', fw);
@@ -507,10 +509,10 @@ static void class_update_exported(CLASS *class)
 				printf("Remove '%s' from .list file\n", name);
 		}
 	}
-	
+
 	if (_buffer)
 		BUFFER_delete(&_buffer);
-	
+
 	close_file_and_rename(fw, ".list#", ".list");
 }
 
@@ -528,10 +530,10 @@ static void insert_class_info(CLASS *class, FILE *fw)
 	int line;
 	const char *str;
 	int len;
-	
+
 	if (JOB->verbose)
 		printf("Insert '%s' information into .info file\n", class->name);
-		
+
 	_finfo = fw;
 
 	fprintf(_finfo, "#%s\n", class->name);
@@ -549,7 +551,7 @@ static void insert_class_info(CLASS *class, FILE *fw)
 	export_newline();
 
 	HELP_search_and_print_for_class(_finfo);
-	
+
 	for (i = 0; i < TABLE_count(class->table); i++)
 	{
 		sym = CLASS_get_symbol(class, i);
@@ -639,12 +641,12 @@ static void insert_class_info(CLASS *class, FILE *fw)
 					case T_LONG:
 						fprintf(_finfo, "%" PRId64 "\n", cst->lvalue);
 						break;
-					
+
 					case T_SINGLE:
 					case T_FLOAT:
 						fprintf(_finfo, "%s\n", get_name(cst->value));
 						break;
-					
+
 					case T_STRING:
 						get_string(cst->value, &str, &len);
 						print_quoted(_finfo, str, len);
@@ -676,7 +678,7 @@ static void insert_class_info(CLASS *class, FILE *fw)
 			default:
 				export_newline();
 		}
-		
+
 		HELP_search_and_print(_finfo, line);
 	}
 }
@@ -721,15 +723,15 @@ static void output_help(void)
 	int i;
 
 	JOB->hname = OUTPUT_get_help_file(JOB->name);
-	
+
 	if (!JOB->help)
 	{
 		FILE_unlink(JOB->hname);
 		return;
 	}
-		
+
 	file = fopen(JOB->hname, "w");
-	
+
 	if (!file)
 		THROW("Cannot create file: &1", JOB->hname);
 
@@ -737,10 +739,10 @@ static void output_help(void)
 	{
 		if (!JOB->help[i])
 			continue;
-		
+
 		fprintf(stderr, "[%d] = %.*s\n", i + JOB->help_first_line, get_help_comment_length(JOB->help[i]), JOB->help[i]);
 	}
-	
+
 	fclose(file);
 	FILE_set_owner(JOB->hname, COMP_project);
 }
@@ -762,11 +764,11 @@ void CLASS_export(void)
 		msg = "Cannot change directory";
 		goto __ERROR;
 	}
-	
+
 	class_update_exported(class);
 
 	load_file(".info");
-	
+
 	read_line(&line, &len);
 
 	for(;;)
@@ -780,29 +782,29 @@ void CLASS_export(void)
 		{
 			if (JOB->verbose)
 				printf("Remove '%s' information from .info file\n", class->name);
-		
+
 			for(;;)
 			{
 				read_line(&line, &len);
 				if (!line || *line == '#')
 					break;
 			}
-			
+
 			continue;
 		}
-		
+
 		if (cmp > 0 && class->exported && !inserted)
 		{
 			create_file(&fw, ".info#");
 			insert_class_info(class, fw);
 			inserted = TRUE;
 		}
-		
+
 		if (!line)
 			break;
-		
+
 		// copying class information
-		
+
 		if (exist_bytecode_file(&line[1]))
 		{
 			if (JOB->verbose)
@@ -829,13 +831,13 @@ void CLASS_export(void)
 			}
 		}
 	}
-	
+
 	if (_buffer)
 		BUFFER_delete(&_buffer);
-	
+
 	close_file_and_rename(fw, ".info#", ".info");
 	return;
-	
+
 __ERROR:
 
 	THROW("Cannot create class information: &1: &2", msg, strerror(errno));
