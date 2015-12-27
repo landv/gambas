@@ -187,14 +187,14 @@ Public Sub GetTemplate() As String
           Error.Raise("Unknown database field type")
       End Select
       
-      If hField.Default Then
+      If Not IsNull(hField.Default) Then
         Print #hFile, "    Default=";
         If hField.Type = db.String Then
           Print #hFile, Quote(hField.Default)
         Else If hField.Type = db.Boolean Then
           Print #hFile, If(hField.Default, "True", "False")
         Else If hField.Type = db.Date Then
-          Print #hFile, "CDate(\";CStr(hField.Default);" \ ")"
+          Print #hFile, "CDate(\""; CStr(hField.Default); "\")"
         Else
           Print #hFile, CStr(hField.Default)
         Endif

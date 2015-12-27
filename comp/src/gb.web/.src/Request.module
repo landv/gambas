@@ -12,6 +12,7 @@ Property Delimiter As String
 Property Read InternetExplorer As Integer
 Property Read Referer As String
 Property Read UserAgent As String
+Property Read Language As String
 
 Property Read Get As _Request_Get
 Property Read Post As _Request_Post
@@ -219,5 +220,21 @@ End
 Private Function UserAgent_Read() As String
 
   Return CGI["HTTP_USER_AGENT"]
+
+End
+
+Private Function Language_Read() As String
+
+  Dim aLang As String[]
+  Dim sLang As String
+  Dim iPos As Integer
+
+  aLang = Split(CGI["HTTP_ACCEPT_LANGUAGE"], ",")
+  If aLang.Count = 0 Then Return "C"
+  sLang = aLang[0]
+  iPos = InStr(sLang, ";")
+  If iPos Then sLang = Left(sLang, iPos - 1)
+  sLang = Replace(sLang, "-", "_")
+  Return sLang & ".UTF-8"
 
 End

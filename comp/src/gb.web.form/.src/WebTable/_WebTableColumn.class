@@ -1,0 +1,91 @@
+' Gambas class file
+
+Export
+
+Property Text As String
+Property Expand As Boolean
+Property Alignment As Integer
+Property Wrap As Boolean
+
+Event _Fake
+
+Public _Column As Integer
+
+Private $sText As String
+Private $bExpand As Boolean
+Private $iAlignment As Integer
+Private $bNoWrap As Boolean
+
+Private Sub GetTable() As WebTable
+
+  Return Object.Parent(Object.Parent(Me))
+
+End
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+  GetTable()._SetProperty("#[" & CStr(_Column) & "].text", Value)
+
+End
+
+Private Function Expand_Read() As Boolean
+
+  Return $bExpand
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+  $bExpand = Value
+  GetTable()._SetProperty("#[" & CStr(_Column) & "].expand", Value)
+
+End
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlignment
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlignment = Value
+  GetTable()._SetProperty("#[" & CStr(_Column) & "].alignment", Value)
+
+End
+
+Public Sub _PrintAlignment()
+  
+  Select Case $iAlignment
+    Case Align.Left
+      Print " align=\"left\"";
+    Case Align.Center
+      Print " align=\"center\"";
+    Case Align.Right
+      Print " align=\"right\"";
+    Case Align.Normal
+  End Select
+  
+  If $bNoWrap Then Print " nowrap";
+
+End
+
+Private Function Wrap_Read() As Boolean
+
+  Return $bNoWrap
+
+End
+
+Private Sub Wrap_Write(Value As Boolean)
+
+  $bNoWrap = Not Value
+  GetTable()._SetProperty("#[" & CStr(_Column) & "].wrap", Value)
+
+End

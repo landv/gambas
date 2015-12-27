@@ -10,7 +10,8 @@ HTML, BODY, DIV {
 }
 
 SELECT {
-  height: 2em;
+  min-height: 2rem;
+  font-size: inherit;
 }
 
 INPUT {
@@ -21,24 +22,41 @@ H1,H2,H3,P {
   margin-top: 0.5rem;
 }
 
+/*UL, OL {
+  padding-left: 2em;
+  margin-bottom: 0;
+}
+
+P:first-child,UL:first-child,OL:first-child {
+  margin-top: 0;
+}*/
+
 .gw-button {
-  padding: 0 0.5em;
+  padding: 0;
   font: inherit;
-  min-height: 2em;
+  /*min-height: 1rem;*/
 }
 
 .gw-button.gw-noborder {
-  border: none;
+  border: solid 1px transparent;
   background: none;
+  padding: 0;
 }
 
 .gw-button.gw-noborder:hover {
-  border: none;
-  background: #E0E0E0;
+  border: solid 1px #C0C0C0;
 }
 
 .gw-button-image {
   margin-right: 0.5em;
+}
+
+.gw-button > IMG {
+  vertical-align: middle;
+}
+
+.gw-button > DIV {
+  display: inline-block;
   vertical-align: middle;
 }
 
@@ -77,6 +95,13 @@ H1,H2,H3,P {
 
 .gw-tab-contents {
   border: solid #C0C0C0 1px;
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column;
+}
+
+.gw-tab-contents > DIV {
+  flex-grow: 1;
 }
 
 .gw-tab-contents.gw-noborder {
@@ -94,7 +119,7 @@ H1,H2,H3,P {
 }
 
 .gw-textbox {
-  height: 2em;
+  min-height: 2rem;
   box-sizing: border-box;
   padding: 0 0.25em;
 }
@@ -105,7 +130,7 @@ H1,H2,H3,P {
 .gw-combobox {
   display: inline-block;
   position: relative;
-  height: 2em;
+  min-height: 2rem;
 }
 
 .gw-combobox SELECT {
@@ -117,7 +142,7 @@ H1,H2,H3,P {
 
 .gw-combobox INPUT {
   width: 100%;
-  height: 2em;
+  min-height: 2rem;
   box-sizing: border-box;
   padding: 0 2.25em 0 0.25em;
   vertical-align: middle;
@@ -132,9 +157,9 @@ H1,H2,H3,P {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAI0lEQVQYlWNgoAZoYGBg+I8DN+BT1MCABhrwSSIrwilJHgAAbCcP9dwIQGIAAAAASUVORK5CYII=');
   background-position: center;
   background-repeat: no-repeat;
-  height: 2em;
-  width: 2em;
-  margin-left: -2em;
+  height: 2rem;
+  width: 2rem;
+  margin-left: -2rem;
   /*pointer-events: none;*/
   vertical-align: middle;
   border: none;
@@ -144,7 +169,7 @@ H1,H2,H3,P {
 .gw-selectbox {
   display: inline-block;
   position: relative;
-  height: 2em;
+  min-height: 2rem;
 }
 
 .gw-selectbox SELECT {
@@ -209,12 +234,13 @@ H1,H2,H3,P {
 
 .gw-label {
   white-space: nowrap;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
 }
 
 #gw-modal {
   display: none;
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   width: 100%;
@@ -394,3 +420,73 @@ H1,H2,H3,P {
 .gw-spinbox.gw-noborder {
   border: none;
 }
+
+.gw-expander-header + DIV {
+  margin-top: 0.5em;
+}
+
+.gw-expander-header > IMG {
+  vertical-align: middle;
+}
+
+.gw-expander-header > DIV {
+  display: inline-table;
+  vertical-align: middle;
+}
+
+.gw-expander-border {
+  border: solid 1px #C0C0C0;
+  padding: 0.5em;
+}
+
+.gw-table {
+  position: relative;
+  overflow: auto;
+  min-height: 4em;
+  border: solid 1px #C0C0C0;
+}
+
+.gw-table.gw-noborder {
+  border: none;
+}
+
+/*.gw-table-header {
+  height: 1.5em;
+  background-color: yellow;
+}*/
+
+.gw-table-contents {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.gw-table > DIV > TABLE {
+  border-collapse: collapse;
+}
+
+.gw-table > DIV > TABLE > THEAD > TR > TH {
+  text-align: left;
+  border-right: solid 1px #C0C0C0;
+  border-bottom: solid 1px #C0C0C0;
+  background-color: #E0E0E0;
+  padding: 0.25em;
+  vertical-align: top;
+}
+
+.gw-table > DIV > TABLE > TBODY > TR > TD {
+  border-right: solid 1px #C0C0C0;
+  padding: 0.25em;
+  vertical-align: top;
+}
+
+.gw-table > DIV > TABLE > TBODY > TR:last-child > TD {
+  border-bottom: solid 1px #C0C0C0;
+}
+
+.gw-table > DIV > TABLE > TBODY > TR:hover {
+  background-color: #F0F0F0;
+}
+

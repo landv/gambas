@@ -499,7 +499,7 @@ Static Public Sub PaintBroken()
   
 End
 
-Static Public Sub PaintImage(hCtrl As CControl, sRoot As String, Optional iAlign As Integer = Align.Center) As Boolean
+Static Public Sub PaintImage(hCtrl As CControl, sRoot As String, Optional (iAlign) As Integer = Align.Center) As Boolean
 
   Dim sPath As String
   Dim hImage As Image

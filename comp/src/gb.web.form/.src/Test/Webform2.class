@@ -127,9 +127,9 @@ Public Sub WebMenu3_Click(Target As WebControl)
 
 End
 
-Public Sub WebForm_Message(Message As String, Button As Integer)
+Public Sub WebForm_Message(Source As WebControl, Action As String)
 
-  Debug "Button #"; Button; " clicked on message '"; Message; "'"
+  Debug "Action '"; Action; "' on '"; Source.Name; "'"
 
 End
 

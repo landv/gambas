@@ -123,7 +123,7 @@ Public Function _GetSelectedRows() As Integer[]
   Dim I, J, S, L As Integer
   
   For I = 0 To $aSel.Max Step 2
-    S = $aSel[i]
+    S = $aSel[I]
     L = $aSel[I + 1]
     
     For J = 0 To L - 1

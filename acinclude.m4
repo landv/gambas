@@ -111,7 +111,7 @@ AC_DEFUN([GB_CONFIG_SUBDIRS],
     GB_WARNING([$1 component is disabled by configure option])
     $1_dir=""
   fi
-  
+
   AC_SUBST($1_dir)
 ])
 
@@ -130,7 +130,7 @@ AC_DEFUN([GB_INIT_SHORT],
   GB_INIT_AUTOMAKE
 
   AC_CANONICAL_HOST
-  
+
   gbbindir=$bindir/gambas$GAMBAS_VERSION
   AC_SUBST(gbbindir)
   gblibdir=$libdir/gambas$GAMBAS_VERSION
@@ -164,7 +164,7 @@ AC_DEFUN([GB_INIT],
   GB_INIT_SHORT($1)
   GB_SYSTEM
   GB_LIBTOOL
-  
+
   dnl ---- Checks for programs
 
   AC_PROG_CPP
@@ -198,7 +198,7 @@ AC_DEFUN([GB_INIT],
   dnl AC_FUNC_VPRINTF
   dnl AC_FUNC_WAIT3
   dnl AC_CHECK_FUNCS(getcwd gettimeofday mkdir rmdir select socket strdup strerror strtod strtol sysinfo)
-  
+
   AC_CHECK_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
 
   dnl ---- Checks for libraries
@@ -216,19 +216,19 @@ AC_DEFUN([GB_INIT],
   AC_SUBST(CXX_LIB)
 
   dnl ---- Check for shared library extension
-  
+
   GB_SHARED_LIBRARY_EXT()
-  
+
   dnl ---- Check for threading
-  
+
   GB_THREAD()
-  
+
   dnl ---- Check for mathematic libraries
-  
+
   GB_MATH()
-  
+
   dnl ---- Check for gettext lib
-  
+
   GB_GETTEXT()
 
   dnl ---- Support for colorgcc
@@ -242,9 +242,9 @@ AC_DEFUN([GB_INIT],
       CXX="g++"
     fi
   fi
-  
+
   dnl ---- Support for ccache
-  
+
   AC_ARG_ENABLE(
     ccache,
     [  --enable-ccache                use ccache if present (default: yes)],
@@ -256,17 +256,17 @@ AC_DEFUN([GB_INIT],
 
   if test "$gambas_colorgcc" = "yes"; then
     if test x"$CCACHE" != x; then
-      
+
       CC="ccache $CC"
       CXX="ccache $CXX"
-      
+
       if test x"$COLORGCC" != x; then
         if test "$gambas_colorgcc" = "yes"; then
           CC="colorgcc"
           CXX="colorgcc"
         fi
       fi
-    
+
     fi
   fi
 
@@ -300,9 +300,9 @@ AC_DEFUN([GB_INIT],
   AM_CXXFLAGS="$AM_CXXFLAGS -pipe -Wall -fno-exceptions -Wno-unused-value -fsigned-char"
 
   dnl ---- Check for gcc visibility flag
-  
+
   have_gcc_visibility=no
-  
+
   if test $SYSTEM != "CYGWIN"; then
     GB_CFLAGS_GCC_OPTION([-fvisibility=hidden],,
       [
@@ -310,25 +310,25 @@ AC_DEFUN([GB_INIT],
       AM_CXXFLAGS="$AM_CXXFLAGS -fvisibility=hidden"
       have_gcc_visibility=yes])
   fi
-	
+
   if test "$have_gcc_visibility" = "yes"; then
     AC_DEFINE(HAVE_GCC_VISIBILITY, 1, [Whether gcc supports -fvisibility=hidden])
   fi
 
   dnl ---- Debug flags
-  
+
   if test "$gambas_debug" = "yes"; then
     AM_CFLAGS="$AM_CFLAGS -g -ggdb"
     AM_CXXFLAGS="$AM_CXXFLAGS -g -ggdb"
   fi
 
   dnl ---- Optimization flags
-  
+
   if test "x$gambas_optimization" = "xyes"; then
-    AM_CFLAGS_OPT="$AM_CFLAGS -O3"
-    AM_CFLAGS="$AM_CFLAGS -Os"
-    AM_CXXFLAGS_OPT="$AM_CXXFLAGS -O3 -fno-omit-frame-pointer"
-    AM_CXXFLAGS="$AM_CXXFLAGS -Os -fno-omit-frame-pointer"
+    AM_CFLAGS_OPT="$AM_CFLAGS -O3 -march=native"
+    AM_CFLAGS="$AM_CFLAGS -Os -march=native"
+    AM_CXXFLAGS_OPT="$AM_CXXFLAGS -O3 -march=native -fno-omit-frame-pointer"
+    AM_CXXFLAGS="$AM_CXXFLAGS -Os -march=native -fno-omit-frame-pointer"
   else
     AM_CFLAGS_OPT="$AM_CFLAGS -O0"
     AM_CFLAGS="$AM_CFLAGS -O0"
@@ -338,12 +338,12 @@ AC_DEFUN([GB_INIT],
 
   CFLAGS=""
   CXXFLAGS=""
-  
+
   AC_SUBST(AM_CFLAGS)
   AC_SUBST(AM_CFLAGS_OPT)
   AC_SUBST(AM_CXXFLAGS)
   AC_SUBST(AM_CXXFLAGS_OPT)
-  
+
   rm -f DISABLED DISABLED.*
 ])
 
@@ -753,40 +753,40 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
   dnl   [  gb_lib_$1="$withval" ])
 
   have_$1=no
-  
+
   if test "$gb_enable_$1"="yes" && test ! -e DISABLED && test ! -e DISABLED.$3; then
 
     AC_MSG_CHECKING(for $3 component with pkg-config)
-  
+
     gb_inc_$1=""
     gb_lib_$1=""
     gb_ldflags_$1=""
     have_$1=yes
     gb_testval=""
-        
+
     pkg-config --silence-errors --exists $5
     if test $? -eq "0"; then
-      
+
       ## Checking for headers
-      
+
       $2_INC="`pkg-config --cflags $5`"
-    
+
       ## Checking for libraries
-      
+
       $2_LIB="`pkg-config --libs-only-l $5`"
       $2_LDFLAGS="`pkg-config --libs-only-L $5` `pkg-config --libs-only-other $5`"
       $2_DIR=$4
-          
+
     else
-      
+
       have_$1=no
-      
+
     fi
 
   fi
 
   if test "$have_$1" = "no"; then
-  
+
     if test "$gb_in_component_search" != "yes"; then
       touch DISABLED
       touch DISABLED.$3
@@ -805,15 +805,15 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     done
 
   else
-    
+
     AC_DEFINE(HAVE_$2_COMPONENT, 1, [Have $3 component])
-    
+
     AC_MSG_RESULT(OK)
-    
+
   fi
-  
+
   if test "$have_$1" = "no"; then
-  
+
     $2_INC=""
     $2_LIB=""
     $2_LDFLAGS=""
@@ -827,7 +827,7 @@ AC_DEFUN([GB_COMPONENT_PKG_CONFIG],
     fi
 
   fi
-  
+
   AC_SUBST($2_INC)
   AC_SUBST($2_LIB)
   AC_SUBST($2_LDFLAGS)
@@ -887,7 +887,7 @@ AC_DEFUN([GB_COMPONENT],
     ])
 
     AC_MSG_RESULT([$gb_cv_header_$1])
-    
+
     if test "$gb_cv_header_$1" = "no"; then
       for gb_result in $gb_file_list; do
         GB_WARNING([Unable to find file: $gb_result])
@@ -972,15 +972,15 @@ AC_DEFUN([GB_COMPONENT],
     AC_DEFINE(HAVE_$2_COMPONENT, 1, Have $3)
 
   else
-  
+
     have_$1=no
     touch DISABLED
     touch DISABLED.$3
-    
+
   fi
-  
+
   if test "$have_$1" = "no"; then
-  
+
     $2_INC=""
     $2_LIB=""
     $2_DIR=""
@@ -992,13 +992,13 @@ AC_DEFUN([GB_COMPONENT],
     fi
 
   fi
-  
+
   AC_SUBST($2_INC)
   AC_SUBST($2_LIB)
   AC_SUBST($2_LDFLAGS)
   AC_SUBST($2_DIR)
   AC_SUBST($2_PATH)
-  
+
 ])
 
 
@@ -1068,7 +1068,7 @@ AC_DEFUN([GB_FIND_QT_MOC],
   else
     gb_qt_version=$1
   fi
-  
+
   AC_ARG_WITH(moc,
     [  --with-moc      The path to the QT moc compiler. ],
     [  gb_path_qt_moc="$withval" ])
@@ -1079,36 +1079,36 @@ AC_DEFUN([GB_FIND_QT_MOC],
 
     gb_val=""
     if test "$gb_path_qt_moc" = no; then
-      
+
       for gb_dir in $QTDIR /usr/lib/qt$gb_qt_version /usr/lib/qt/$gb_qt_version /usr/local/lib/qt$gb_qt_version /usr/local/lib/qt/$gb_qt_version /usr/local/qt$gb_qt_version /usr/local/qt/$gb_qt_version /usr/share/qt$gb_qt_version /usr/qt/$gb_qt_version /usr/pkg/qt$gb_qt_version /usr/pkg /usr; do
-      
+
         gb_dir=$gb_dir/bin
-      	
+
         if test -r "$gb_dir/moc"; then
           if test "x`$gb_dir/moc -v 2>&1 | grep " $gb_qt_version\."`" != x; then
             gb_val=$gb_dir/moc
             break
           fi
         fi
-      
+
       done
-      
+
       gb_path_qt_moc=$gb_val
     fi
-    
+
     gb_cv_path_qt_moc=$gb_path_qt_moc
   ])
 
   AC_MSG_RESULT([$gb_cv_path_qt_moc])
-  
+
   if test x"$gb_cv_path_qt_moc" = x; then
     GB_WARNING([QT moc compiler not found. Try --with-moc option.])
     MOC=""
-    touch DISABLED 
+    touch DISABLED
   else
     MOC=$gb_cv_path_qt_moc
   fi
-  
+
   AC_SUBST(MOC)
 ])
 

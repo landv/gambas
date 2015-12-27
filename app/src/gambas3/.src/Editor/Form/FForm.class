@@ -38,6 +38,7 @@ Private $MY As Integer
 Private $W As Integer
 Private $H As Integer
 Private $bMove As Boolean
+Private $bSelectParent As Boolean
 
 Private $XS As Integer
 Private $YS As Integer
@@ -143,7 +144,7 @@ Public Sub Reload() As Boolean
 
   $bNoUpdateMenu = True
 
-  UnSelectAll
+  UnselectAll
   RefreshProperty
 
   $hUndo.Disable
@@ -892,6 +893,8 @@ Public Sub Control_MouseDown()
 
   X = Mouse.X
   Y = Mouse.Y
+  $bSelectParent = False
+          
   
   $hCurrent = Control[Last.Tag]
   
@@ -933,10 +936,14 @@ Public Sub Control_MouseDown()
   
       Else If $hCurrent Then
   
-        If Master <> $hCurrent Then
+        If Master = $hCurrent And If Mouse.Left Then
+          
+          $bSelectParent = True
+          
+        Else
   
           If Not $hCurrent.Selected Then
-            UnSelectAll
+            UnselectAll
           Endif
   
           SelectCurrent(True)
@@ -1108,6 +1115,8 @@ Public Sub Control_MouseMove()
         Endif
 
       End With
+      
+      $bSelectParent = False
 
     Endif
 
@@ -1199,7 +1208,7 @@ Public Sub Control_MouseUp()
         Else If $hCurrent.Parent = Master.Parent Then
           SelectCurrent
         Else
-          UnSelectAll
+          UnselectAll
           SelectCurrent(True)
         Endif
 
@@ -1213,6 +1222,8 @@ Public Sub Control_MouseUp()
       hCtrl.EndMoveResize
     Next
 
+    If $bSelectParent Then SelectParent
+    
   Endif
 
   Last.Mouse = Mouse.Arrow
@@ -1273,7 +1284,7 @@ Public Sub Control_Click()
     If hCCtrl.Selected Then
       'SelectControl(hCCtrl.Name)
     Else If Not $bSelectNew Then ' We must not unselect anything during PutSelection()
-      UnSelectAll
+      UnselectAll
     Endif
     RefreshProperty
     
@@ -1369,7 +1380,7 @@ Public Sub AddControl(sClass As String, Optional hParent As CControl, Optional X
   $hUndo.End
 
   $hCurrent = hCtrl
-  UnSelectAll
+  UnselectAll
   SelectCurrent(True)
   RefreshProperty
   FProperty.FocusOn("Name")
@@ -1396,7 +1407,7 @@ Public Sub RemoveControl(sName As String)
   $hUndo.End
   
   If hCCtrl.Selected Then
-    hCCtrl.UnSelect(Me)
+    hCCtrl.Unselect(Me)
     SelectionChange
   Endif
   
@@ -1431,12 +1442,12 @@ Private Function GetName(sClass As String) As String
 
 End
 
-Public Procedure UnSelectAll()
+Public Procedure UnselectAll()
 
   Dim hCtrl As CControl
 
   For Each hCtrl In Selection
-    hCtrl.UnSelect(Me, True)
+    hCtrl.Unselect(Me, True)
   Next
 
   Selection.Clear
@@ -1452,9 +1463,18 @@ Private Procedure SelectCurrent(Optional bMaster As Boolean)
 
 End
 
-Private Sub UnSelectCurrent()
+Private Procedure SelectParent()
 
-  $hCurrent.UnSelect(Me)
+  If Not $hCurrent.Parent Then Return
+  UnselectAll
+  $hCurrent.Parent.Select(Me, True)
+  SelectionChange
+
+End
+
+Private Sub UnselectCurrent()
+
+  $hCurrent.Unselect(Me)
   SelectionChange
   'RefreshProperty
 
@@ -1699,7 +1719,7 @@ Private Sub KillSelection()
     Next
 
     $hUndo.Begin
-    UnSelectAll
+    UnselectAll
 
     For Each hCtrl In cCopy
       RemoveControl(hCtrl.Name) 'hCtrl.Delete
@@ -1841,7 +1861,7 @@ Private Sub PasteSelection()
     hParent = hParent.Parent
   Endif
 
-  UnSelectAll
+  UnselectAll
 
   PutSelection(Clipboard.Paste(MMime.FORM), hParent.Name)
 
@@ -3114,12 +3134,12 @@ Public Sub Action_Activate((Key) As String) As Boolean
 
     Case ".copy"
       CopySelection
-      UnSelectAll
+      UnselectAll
       RefreshProperty
 
     Case ".copy-same"
       CopySelection(True)
-      UnSelectAll
+      UnselectAll
       RefreshProperty
 
     Case ".paste"
@@ -3324,7 +3344,7 @@ Public Sub Control_Drop()
     $hUndo.End
 
     $hCurrent = hCtrl
-    UnSelectAll
+    UnselectAll
     SelectCurrent(True)
     RefreshProperty
 
@@ -3601,7 +3621,7 @@ Public Sub mnuChange_Click()
   hParent = Master.Parent
 
   KillSelection
-  UnSelectAll
+  UnselectAll
   $bNoWarning = True
   PutSelection(sStr, hParent.Name)
   $bNoWarning = False
@@ -3686,7 +3706,7 @@ End
 
 Public Sub svwWorkspace_MouseDown()
 
-  UnSelectAll
+  UnselectAll
 
 End
 
@@ -3706,7 +3726,7 @@ Private Sub DeleteContainer()
   
   $hUndo.Begin
   DeleteSelection
-  UnSelectAll
+  UnselectAll
   PutSelection(sChildren, hParent.Name)
   
   For Each hCtrl In Selection
@@ -3740,7 +3760,7 @@ Private Sub EmbedIntoContainer()
   hParent.MoveAndResize(X1, Y1, X2 - X1 + Desktop.Scale, Y2 - Y1 + Desktop.Scale)
   
   DeleteSelection
-  UnSelectAll
+  UnselectAll
   PutSelection(sChildren, hParent.Name)
   
   For Each hCtrl In Selection

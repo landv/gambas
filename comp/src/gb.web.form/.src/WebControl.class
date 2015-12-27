@@ -9,6 +9,7 @@ Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
 Event Render
+Event Message(Source As WebControl, Action As String)
 
 Property Read Id As Integer
 Property Read Name As String
@@ -37,6 +38,8 @@ Static Private $aStyleSheet As String[]
 Static Public _NextName As String
 
 Public _Refresh As Boolean
+Public _EventName As String
+Public _Extra As Boolean
 
 Private $iId As Integer
 Private $iParentId As Integer
@@ -57,6 +60,7 @@ Private $bHidden As Boolean
 Private $bNoBorder As Boolean
 Private $sClass As String
 
+
 Public Sub _new(Optional Parent As WebContainer)
   
   Dim sName As String
@@ -75,6 +79,7 @@ Public Sub _new(Optional Parent As WebContainer)
     Inc $iLastFormId
     If Not sName Then sName = "@" & CStr($iLastFormId)
   Else
+    _EventName = Param.EventName
     Try $iFormId = Parent.Form.Id
     If Not sName Then sName = Param.EventName
     If Not sName Then sName = "$" & CStr($iId)
@@ -258,8 +263,8 @@ Public Sub _RenderStyleSheet()
     
   Endif
   
-  If $iBackground <> Color.Default Then _AddStyleSheet("background-color:" & GetColor($iBackground) & ";")
-  If $iForeground <> Color.Default Then _AddStyleSheet("color:" & GetColor($iForeground) & ";")
+  If $iBackground <> Color.Default Then _AddStyleSheet("background-color:" & _GetColor($iBackground) & ";")
+  If $iForeground <> Color.Default Then _AddStyleSheet("color:" & _GetColor($iForeground) & ";")
   
   If $hStyle And If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
   
@@ -402,7 +407,7 @@ Public Sub Refresh()
   If IsHidden() Then Return
   If WebForm._InExec Then
     _Refresh = True
-    Try Form_Read()._HasRefresh = True
+    WebForm._HasRefresh = True
   Endif
   
 End
@@ -584,7 +589,7 @@ Private Sub Foreground_Write(Value As Integer)
 
 End
 
-Private Sub GetColor(iCol As Integer) As String
+Public Sub _GetColor(iCol As Integer) As String
 
   Dim A As Integer
   Dim R As Integer

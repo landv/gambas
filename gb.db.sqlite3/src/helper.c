@@ -285,7 +285,7 @@ static int my_sqlite3_exec(
 
 		if (ncol > 0)
 		{
-			GB.Alloc(POINTER(&result->names), ncol * sizeof(const char *));
+			GB.AllocZero(POINTER(&result->names), ncol * sizeof(const char *));
 			if (need_types)
 			{
 				GB.Alloc(POINTER(&result->types), ncol * sizeof(int));

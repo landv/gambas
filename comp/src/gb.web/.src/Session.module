@@ -22,6 +22,9 @@ Property Unique As Boolean
 Property Modified As Boolean
 Property CookiePath As String
 Property Read Keys As String[]
+Property Read Size As Long
+
+Private $iSize As Long
 
 Private Sub LockSession() 
   
@@ -84,12 +87,13 @@ Private Sub SaveSession()
     Write #hFile, Now As Float
     Write #hFile, $eTimeout As Float
 
-    Output To #hFile
+    'Output To #hFile
     'WriteValue($cVal)
     Write #hFile, $cVal As Variant
     Write #hFile, $sCookiePath As String
-    Output To Default
+    'Output To Default
     
+    $iSize = Lof(hFile)
     Close #hFile
     
     LockSession
@@ -139,6 +143,9 @@ Private Sub LoadSession()
   
   LockSession
   hFile = Open $sPath
+  
+  $iSize = Lof(hFile)
+  
   Input From #hFile
 
   'IF ReadValue() = 1 THEN GOTO _ABANDON
@@ -342,9 +349,11 @@ Public Sub Abandon()
   Try Kill $sPath
   Try Kill $sPath & ".lock"
   Response.RemoveCookie("SESSION", $sId, "", GetCookiePath())
+  
   $sId = ""
   $sPath = ""
   $cVal = Null
+  $iSize = 0
   
 End
 
@@ -480,5 +489,11 @@ Private Function Keys_Read() As String[]
   Next
   Return aKey
   
+
+End
+
+Private Function Size_Read() As Long
+
+  Return $iSize
 
 End

@@ -236,3 +236,10 @@ Private Sub Modal_Write(Value As Boolean)
   Me._SetProperty("Modal", Value)
 
 End
+
+Public Sub _RefreshReply() As Boolean
+  
+  If Super._RefreshReply() Then Return
+  Child_Read()._RefreshReply()
+  
+End

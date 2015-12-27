@@ -15,6 +15,7 @@ gw = {
     console.log(command);
     xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
     xhr.onreadystatechange = function() {
+      //console.log('state = ' + xhr.readyState + ' / status = ' + xhr.status);
       if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
       {
         gw.active = document.activeElement.id;

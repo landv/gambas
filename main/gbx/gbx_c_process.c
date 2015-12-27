@@ -96,7 +96,7 @@ enum {
 	CHILD_CANNOT_PLUG_OUTPUT,
 	CHILD_CANNOT_EXEC,
 };
-	
+
 static const char *const _child_error[] = {
 	NULL,
 	"cannot open slave pseudo-terminal: ",
@@ -111,7 +111,7 @@ static const char *const _child_error[] = {
 static void close_fd(int *pfd)
 {
 	int fd = *pfd;
-	
+
 	if (fd >= 0)
 	{
 		#ifdef DEBUG_ME
@@ -253,9 +253,9 @@ static void prepare_child_error(CPROCESS *_object)
 {
 	int fd;
 	char path[PATH_MAX];
-	
+
 	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getpid(), (int)THIS->pid);
-	
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, "prepare_child_error: %p: %s\n", _object, path);
 	#endif
@@ -271,7 +271,7 @@ static void prepare_child_error(CPROCESS *_object)
 				_last_child_error = -1;
 				_last_child_error_errno = 0;
 			}
-			
+
 			close(fd);
 		}
 
@@ -279,26 +279,26 @@ static void prepare_child_error(CPROCESS *_object)
 		fprintf(stderr, "prepare_child_error: error = %d errno = %d\n", _last_child_error, _last_child_error_errno);
 		#endif
 	}
-	
+
 	unlink(path);
 }
 
 static void throw_last_child_error()
 {
 	int child_error, child_errno;
-	
+
 	if (_last_child_error == 0)
 		return;
-	
+
 	child_error = _last_child_error;
 	child_errno = _last_child_error_errno;
-	
+
 	_last_child_error = 0;
-	
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, "throw_last_child_error: %d %d\n", child_error, child_errno);
 	#endif
-	
+
 	if (child_error < 0)
 		THROW(E_CHILD, "unknown error", "");
 	else
@@ -378,18 +378,18 @@ static void abort_child(int error)
 	int fd;
 	int save_errno;
 	char path[PATH_MAX];
-	
+
 	fflush(stdout);
 	fflush(stderr);
-	
+
 	save_errno = errno;
-	
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, "abort_child: %d %d\n", error, save_errno);
 	#endif
 
 	snprintf(path, sizeof(path), FILE_TEMP_DIR "/%d.child", (int)getuid(), (int)getppid(), (int)getpid());
-	
+
 	fd = open(path, O_CREAT | O_WRONLY, 0600);
 	if (fd >= 0)
 	{
@@ -397,7 +397,7 @@ static void abort_child(int error)
 		&& write(fd, &save_errno, sizeof(int)) == sizeof(int);
 		close(fd);
 	}
-	
+
 	_exit(255);
 }
 
@@ -405,23 +405,23 @@ static void init_child_tty(int fd)
 {
 	struct termios terminal = { 0 };
 	tcgetattr(fd, &terminal);
-	
+
 	terminal.c_iflag |= ICRNL | IXON | IXOFF;
 	#ifdef IUTF8
-	if (LOCAL_is_UTF8) 
+	if (LOCAL_is_UTF8)
 		terminal.c_iflag |= IUTF8;
 	#endif
-	
+
 	terminal.c_oflag |= OPOST;
 	terminal.c_oflag &= ~ONLCR;
-	
+
 	terminal.c_lflag |= ISIG | ICANON | IEXTEN; // | ECHO;
 	terminal.c_lflag &= ~ECHO;
-	
+
 	#ifdef DEBUG_CHILD
 	fprintf(stderr, "init_child_tty: %s\n", isatty(fd) ? ttyname(fd) : "not a tty!");
 	#endif
-	
+
 	if (tcsetattr(fd, TCSANOW, &terminal))
 	{
 		#ifdef DEBUG_CHILD
@@ -520,14 +520,14 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			argv[0] = CPROCESS_shell;
 		else
 			argv[0] = "/bin/sh";
-		
+
 		argv[2] = (char *)cmd;
 
 		if (argv[2] == NULL || *argv[2] == 0)
 			return;
 
 		exec = argv[0];
-		
+
 		process->process_group = TRUE;
 	}
 	else
@@ -608,9 +608,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 
 	add_process_to_running_list(process);
 	OBJECT_REF(process);
-	
+
 	// Start the SIGCHLD callback
-	
+
 	init_child();
 
 	// Block SIGCHLD and fork
@@ -633,7 +633,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	}
 
 	// parent process
-	
+
 	if (pid)
 	{
 		process->pid = pid;
@@ -646,7 +646,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		{
 			if (tcgetattr(fd_master, &termios_master))
 				goto __ABORT_ERRNO;
-				
+
 			cfmakeraw(&termios_master);
 			//termios_master.c_lflag &= ~ECHO;
 
@@ -708,9 +708,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 		int ch_i, ch_n;
 
 		//bool stdin_isatty = isatty(STDIN_FILENO);
-		
+
 		sigprocmask(SIG_SETMASK, &old, NULL);
-		
+
 		if (mode & PM_SHELL)
 			setpgid(0, 0);
 
@@ -742,12 +742,12 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 			// Strange Linux behaviour ?
 			// Terminal initialization must be done on STDIN_FILENO after using dup2().
 			// If it is done on fd_slave, before using dup2(), it sometimes fails with no error.
-		
+
 			if (mode & PM_WRITE)
 				init_child_tty(STDIN_FILENO);
 			else if (mode & PM_READ)
 				init_child_tty(STDOUT_FILENO);
-			
+
 			/*puts("---------------------------------");
 			if (stdin_isatty) puts("STDIN is a tty");*/
 			/*tcgetattr(STDIN_FILENO, &termios_check);
@@ -777,9 +777,9 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 					abort_child(CHILD_CANNOT_PLUG_OUTPUT);
 			}
 		}
-		
+
 		pwd = FALSE;
-		
+
 		if (env)
 		{
 			char *str;
@@ -793,11 +793,11 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 					pwd = TRUE;
 			}
 		}
-		
+
 		// Return to the parent working directory if the PWD environment variable has not been set
 		if (!pwd)
 			FILE_chdir(PROJECT_oldcwd);
-		
+
 		execv(exec, (char **)argv);
 		abort_child(CHILD_CANNOT_EXEC);
 	}
@@ -809,7 +809,7 @@ static void run_process(CPROCESS *process, int mode, void *cmd, CARRAY *env)
 	#endif
 
 	return;
-	
+
 __ABORT_ERRNO:
 
 	save_errno = errno;
@@ -874,7 +874,7 @@ static void callback_child(int signum, intptr_t data)
 	}
 
 	throw_last_child_error();
-	
+
 	#ifdef DEBUG_ME
 	fprintf(stderr, "<< callback_child\n");
 	#endif
@@ -890,7 +890,7 @@ static void init_child(void)
 	#endif
 
 	_SIGCHLD_callback = SIGNAL_register(SIGCHLD, callback_child, 0);
-	
+
 	_init = TRUE;
 }
 
@@ -934,7 +934,7 @@ CPROCESS *CPROCESS_create(int mode, void *cmd, char *name, CARRAY *env)
 
 	if (!name || !*name)
 		STREAM_blocking(CSTREAM_stream(process), TRUE);
-	
+
 	return process;
 }
 
@@ -953,7 +953,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 	#endif
 
 	OBJECT_REF(process);
-	
+
 	sigfd = SIGNAL_get_fd();
 
 	ON_ERROR_1(error_CPROCESS_wait_for, process)
@@ -976,7 +976,7 @@ void CPROCESS_wait_for(CPROCESS *process, int timeout)
 		}
 	}
 	END_ERROR
-	
+
 	OBJECT_UNREF(process);
 
 	#if 0
@@ -1012,7 +1012,7 @@ BEGIN_METHOD_VOID(Process_exit)
 		stop_process(_running_process_list);
 
 	exit_child();
-	
+
 	STRING_free(&CPROCESS_shell);
 
 END_METHOD
@@ -1052,7 +1052,7 @@ BEGIN_METHOD_VOID(Process_Kill)
 		kill(-getpgid(THIS->pid), SIGKILL);
 	else
 		kill(THIS->pid, SIGKILL);
-	
+
 	//CPROCESS_wait_for(THIS);
 
 END_METHOD

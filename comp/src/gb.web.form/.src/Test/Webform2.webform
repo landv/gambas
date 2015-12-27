@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { WebForm WebForm
-  #MoveScaled(0,0,138,121)
+  #MoveScaled(0,0,138,122)
   Height = "100%"
   Arrangement = Arrange.Vertical
   Title = ("This is webform2")
@@ -155,13 +155,63 @@
         #MoveScaled(1,6,131.7143,4)
         Text = ("Check and uncheck me!")
       }
-      { WebContainer7 WebHBox
-        #MoveScaled(1,11,131.7143,33)
+      { WebContainer5 WebHBox
+        #MoveScaled(1,11,131.7143,6)
         Spacing = True
-        { WebContainer4 WebVBox
-          #MoveScaled(1,1,64,31)
+        { WebComboBox2 WebComboBox
+          #MoveScaled(1,1,22,4)
+          List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+        }
+        { WebTextBox2 WebTextBox
+          #MoveScaled(24,1,15,4)
+        }
+        { WebSpinBox1 WebSpinBox
+          #MoveScaled(40,1,13,4)
+        }
+        { WebSlider1 WebSlider
+          #MoveScaled(54,1,49,4)
           Expand = True
-          Background = &HA08BB5DF&
+          Border = False
+        }
+      }
+      { WebContainer3 WebHBox
+        #MoveScaled(1,18,131.7143,6)
+        Spacing = True
+        { WebComboBox1 WebComboBox
+          #MoveScaled(1,1,65.7143,4)
+          Width = "30em"
+          List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
+          ReadOnly = False
+        }
+        { WebButton4 WebButton
+          #MoveScaled(67.7143,1,19,4)
+          Text = ("New element")
+        }
+        { WebButton5 WebButton
+          #MoveScaled(87.7143,1,19,4)
+          Text = ("Clear")
+        }
+        { WebSeparator3 WebSeparator
+          #MoveScaled(107.7143,1,11,4)
+          Ignore = True
+        }
+      }
+      { WebSeparator7 WebSeparator
+        #MoveScaled(1,25,131.7143,2)
+        Height = "1em"
+      }
+      { WebContainer7 WebExpander
+        #MoveScaled(1,28,131.7143,32)
+        Background = &HA0FF7F00&
+        Arrangement = Arrange.Horizontal
+        Spacing = True
+        Indent = True
+        Text = ("This is an expander container")
+        Hidden = True
+        { WebContainer4 WebVBox
+          #MoveScaled(1.1429,1.1429,64,25.7143)
+          Expand = True
+          Background = &H80FFFF00&
           Margin = True
           { WebRadioButton1 WebRadioButton
             #MoveScaled(1,1,62,4)
@@ -182,7 +232,7 @@
           }
         }
         { WebContainer8 WebVBox
-          #MoveScaled(66,1,58.4286,31)
+          #MoveScaled(66.1429,1.1429,58.4286,25.7143)
           Expand = True
           Spacing = True
           { WebLabel2 WebLabel
@@ -197,55 +247,10 @@
           }
         }
       }
-      { WebContainer5 WebHBox
-        #MoveScaled(1,45,131.7143,6)
-        Spacing = True
-        { WebComboBox2 WebComboBox
-          #MoveScaled(1,1,22,4)
-          List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
-        }
-        { WebTextBox2 WebTextBox
-          #MoveScaled(24,1,15,4)
-        }
-        { WebSpinBox1 WebSpinBox
-          #MoveScaled(40,1,13,4)
-        }
-        { WebSlider1 WebSlider
-          #MoveScaled(54,1,49,4)
-          Expand = True
-          Border = False
-        }
-      }
-      { WebSeparator7 WebSeparator
-        #MoveScaled(1,52,131.7143,2)
-        Height = "1em"
-      }
-      { WebContainer3 WebHBox
-        #MoveScaled(1,55,131.7143,6)
-        Spacing = True
-        { WebComboBox1 WebComboBox
-          #MoveScaled(1,1,65.7143,4)
-          Expand = True
-          List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
-          ReadOnly = False
-        }
-        { WebButton5 WebButton
-          #MoveScaled(67.7143,1,19,4)
-          Text = ("Clear")
-        }
-        { WebButton4 WebButton
-          #MoveScaled(87.7143,1,19,4)
-          Text = ("New element")
-        }
-        { WebSeparator3 WebSeparator
-          #MoveScaled(107.7143,1,11,4)
-          Ignore = True
-        }
-      }
       { WebHBox2 WebHBox
-        #MoveScaled(1,62,131.7143,12)
+        #MoveScaled(1,61,131.7143,11)
         { WebImage1 WebImage
-          #MoveScaled(1,1,11,10)
+          #MoveScaled(1,1,9,9)
           Width = "8em"
           Image = "message/close.svg"
         }
@@ -253,18 +258,18 @@
       Index = 1
       Text = ("Options")
       { WebButton3 WebButton
-        #MoveScaled(1,1,109.7143,8)
+        #MoveScaled(1,1,131.7143,8)
         Text = ("Test")
       }
       Index = 2
       Text = ("Application state")
       { WebContainer2 WebContainer
-        #MoveScaled(1,1,109.7143,32)
+        #MoveScaled(1,1,131.7143,32)
       }
       Index = 0
     }
   }
   { WebTimer1 WebTimer
-    #MoveScaled(76,8)
+    #MoveScaled(70,8)
   }
 }

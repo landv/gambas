@@ -6,7 +6,7 @@ Inherits WebControl
 
 Public Const _IsContainer As Boolean = True
 Public Const _Group As String = "Container"
-Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,Border"
+Public Const _Properties As String = "*,Arrangement{Arrange.*},Margin,Spacing,Indent,Border"
 Public Const _DefaultArrangement As String = "F"
 Public Const _DefaultSize As String = "32,32"
 
@@ -14,25 +14,46 @@ Property Arrangement As Integer
 Property Margin As Boolean
 Property Spacing As Boolean
 Property Border As Boolean
+Property Indent As Boolean
+
 Property Read Children As WebControl[]
 
 Public _Container As WebContainer
 
 Private $aChildren As New String[]
-Private $aExtraChildren As New String[]
+Private $aExtraChildren As New String[][]
 Private $iArrangement As Integer
 Private $bMargin As Boolean
 Private $bSpacing As Boolean
 Private $bBorder As Boolean
+Private $bIndent As Boolean
 
 Public Sub _Add(hChild As WebControl)
   
+  Dim aExtraChild As String[]
+  Dim hParent As WebControl
+  
   $aChildren.Add(hChild.Name)
-  If WebForm._InExec Then
-    $aExtraChildren.Add(Object.Type(hChild))
-    $aExtraChildren.Add(hChild.Name)
+  
+  If WebForm._InExec And If Not Object.IsLocked(Me) Then
+  'If Not Object.IsLocked(Me) Then
+    
+    'Debug "Add extra "; hChild.Name; " to "; Me.Name
+    hChild._Extra = True
+    aExtraChild = [hChild.Name, Object.Type(hChild)]
+    
+    If hChild._EventName Then
+      aExtraChild.Add(hChild._EventName)
+      Try hParent = Object.Parent(hChild)
+      If Not Error Then aExtraChild.Add(hParent.Name)
+    Endif
+    
+    $aExtraChildren.Add(aExtraChild)
+    
     Me._SetProperty("#extra", $aExtraChildren)
+    
   Endif
+  
   Me._SetProperty("#children", $aChildren)
   
 End
@@ -42,13 +63,20 @@ Public Sub _Remove(hChild As WebControl)
   Dim iPos As Integer
   
   $aChildren.Remove($aChildren.Find(hChild.Name))
-  If WebForm._InExec Then
-    iPos = $aExtraChildren.Find(hChild.Name)
-    If iPos >= 0 Then 
-      $aExtraChildren.Remove(iPos - 1, 2)
-      Me._SetProperty("#extra", $aExtraChildren)
-    Endif
+  
+  If hChild._Extra Then
+    
+    For iPos = 0 To $aExtraChildren.Max
+      If $aExtraChildren[iPos][0] = hChild.Name Then
+        'Debug "Remove extra "; hChild.Name; " from "; Me.Name
+        $aExtraChildren.Remove(iPos)
+        Me._SetProperty("#extra", $aExtraChildren)
+        Break
+      Endif
+    Next
+    
   Endif
+  
   Me._SetProperty("#children", $aChildren)
   
 End
@@ -106,7 +134,7 @@ Public Sub _RenderStyleSheet()
   
   Super._RenderStyleSheet()
   
-  If Not _Container Then
+  If Not _Container And If Me.Visible Then
   
     If $iArrangement Then
     
@@ -127,6 +155,15 @@ Public Sub _RenderStyleSheet()
     Endif
     
     If $bMargin Then Me._AddStyleSheet("padding:0.5em;")
+    
+    If $bIndent Then
+      If $bMargin Then
+        Me._AddStyleSheet("padding-left:1em;")
+      Else
+        Me._AddStyleSheet("padding-left:0.5em;")
+      Endif
+    Endif
+    
     If $bBorder Then Me._AddStyleSheet("border:solid #C0C0C0 1px;")
     
   Endif
@@ -246,22 +283,34 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
   Dim sName As String
   Dim hCtrl As WebControl
   Dim hForm As WebForm
-  Dim aExtraChildren As String[]
+  Dim sEventName As String
+  Dim aExtraChildren As String[][]
+  Dim aExtraChild As String[]
+  Dim sParentName As String
   
   If sProp = "#extra" Then
     
     hForm = Me.Form
     aExtraChildren = vVal
     
-    For I = 0 To aExtraChildren.Max Step 2
+    For I = 0 To aExtraChildren.Max
       
-      sClass = aExtraChildren[I]
-      sName = aExtraChildren[I + 1]
+      aExtraChild = aExtraChildren[I]
       
-      'WebForm.Print("create " & sClass & " as " & sName)
+      sName = aExtraChild[0]
+      sClass = aExtraChild[1]
       
       WebControl._NextName = sName
       hCtrl = Object.New(sClass, [Me])
+      
+      If aExtraChild.Count = 4 Then
+        sEventName = aExtraChild[2]
+        sParentName = aExtraChild[3]
+        'Debug sName;; sClass; sEventName;; WebControl.FromName(sParentName)
+        If sEventName Then Object.Attach(hCtrl, WebControl.FromName(sParentName), sEventName)
+      Endif
+      
+      hCtrl._Extra = True
       
       'WebForm.Print(WebControl._GetNames())
       
@@ -307,12 +356,31 @@ Public Sub _Lower(sName As String)
   
 End
 
-Public Sub Delete()
 
+Public Sub DeleteChildren()
+  
   While $aChildren.Count
     WebControl.FromName($aChildren[0]).Delete
   Wend
   
+End
+
+Public Sub Delete()
+
+  DeleteChildren
   Super.Delete
   
+End
+
+Private Function Indent_Read() As Boolean
+
+  Return $bIndent
+
+End
+
+Private Sub Indent_Write(Value As Boolean)
+
+  $bIndent = Value
+  Me._SetProperty("Indent", Value)
+
 End

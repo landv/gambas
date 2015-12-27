@@ -61,7 +61,7 @@ Public Sub _Render()
       Print "<img src=\""; Html(Application.Root &/ $sImage); "\">";
     Endif
   Endif
-  Print Html($sText);
+  If $sText Then Print "<div>"; Html($sText); "</div>"
   
 End
 

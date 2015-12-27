@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Text"
+Public Const _Properties As String = "*,Text,Border"
 Public Const _DrawWith As String = "Label"
 Public Const _DefaultSize As String = "24,4"
 
@@ -27,6 +27,6 @@ End
 
 Public Sub _Render()
   
-  Print Html($sText);
+  Print Replace(Html($sText), "\n", "<br>");
   
 End

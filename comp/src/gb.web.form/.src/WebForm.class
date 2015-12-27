@@ -17,15 +17,14 @@ Static Private $aJavascript As New String[]
 
 Event Open
 Event Event
-Event Message(Message As String, Button As Integer)
 
 Property Title As String
 Property Resizable As Boolean
 
 Static Public _DisableRefresh As Integer
+Static Public _HasRefresh As Boolean
 
 Public _Loaded As Boolean
-Public _HasRefresh As Boolean
 Public _Window As Integer
 
 Private $sTitle As String
@@ -44,6 +43,9 @@ Static Public Sub Main()
   Dim iPos As Integer
   Dim sClass As String
   Dim hStat As ClassStat
+  
+  System.Language = Request.Language
+  'Debug "----";; Application.Request
   
   sPath = Mid$(Request.Path, 2)
   
@@ -82,12 +84,19 @@ Static Public Sub Main()
       sPath = Mid$(sPath, iPos + 1)
     Endif
     
-    Try hStat = Class.Stat(sClass)
-    If Not hStat Then Goto NOT_FOUND
+    Try hStat = Class.Stat(".." &/ sClass)
+    If Not hStat Then 
+      Try hStat = Class.Stat(sClass)
+      If Not hStat Then Goto NOT_FOUND
+    Endif
+    
     If LCase(hStat.Parent) <> "webform" Then Goto NOT_FOUND
     
     Try hClass = Class.Load(sClass)
-    If Not hClass Then Goto NOT_FOUND
+    If Not hClass Then 
+      Debug "Class.Load: "; Error.Text
+      Goto NOT_FOUND
+    Endif
     
     hForm = hClass.AutoCreate()
     
@@ -245,7 +254,7 @@ Public Sub _Exec(aCmd As Variant[])
   Inc _InExec
   
   Raise Event
-  
+
   Select Case aCmd[0]
     
     Case "raise"
@@ -255,6 +264,9 @@ Public Sub _Exec(aCmd As Variant[])
       Else
         hCtrl = Me
       Endif
+      
+      'Debug aCmd[1];; "("; hCtrl; ")";; aCmd[2];; aCmd[3]
+      
       If Not hCtrl Then Return
       
       Object.Raise(hCtrl, aCmd[2], aCmd[3])
@@ -277,7 +289,9 @@ Public Sub _Exec(aCmd As Variant[])
   _InExec = iOldInExec
   
   Response.Begin
-  If _HasRefresh Then Me._RefreshReply()
+  If _HasRefresh Then 
+    Me._RefreshReply()
+  Endif
   ' If $aWindows Then
   '   For Each sName In $aWindows
   '     hWindow = WebControl.FromId(_FromName[sName])
@@ -302,8 +316,8 @@ End
 
 Public Sub Close()
   
-  Dim bCancel As Boolean
-  Dim hWindow As WebControl
+  ' Dim bCancel As Boolean
+  ' Dim hWindow As WebControl
   
   If Me._Window Then
   
@@ -346,16 +360,20 @@ Public Sub Show()
   
   _Window = hWindow.Id
   
+  Raise Open
+  
 End
 
 Public Sub ShowModal()
   
   Dim hWindow As WebWindow
   
-  If Not _Window Then Show()
+  If _Window = 0 Then Show()
   
   hWindow = WebControl.FromId(_Window)
   If hWindow Then hWindow.Modal = True
+  
+  Raise Open
   
 End
 

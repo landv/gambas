@@ -39,8 +39,14 @@ Static Public Sub Stat(Name As String) As ClassStat
   Dim iFlag As Short
   Dim bDebug As Boolean
   Dim iStringPos As Integer
+  Dim sDir As String
   
-  sPath = "../.gambas" &/ UCase(Name)
+  While Name Begins "../" 
+    Name = Mid(Name, 4)
+    sDir &= "../"
+  Wend
+  
+  sPath = ".." &/ sDir &/ ".gambas" &/ UCase(Name)
   If Not Exist(sPath) Then Error.Raise("Class not found")
   
   $iSectionPos = 0

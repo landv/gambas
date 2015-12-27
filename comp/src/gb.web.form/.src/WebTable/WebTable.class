@@ -1,0 +1,267 @@
+' Gambas class file
+
+Export
+Inherits WebControl
+
+Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None"
+Public Const _DrawWith As String = "GridView"
+Public Const _DefaultSize As String = "24,24"
+Public Const _DefaultEvent As String = "Data"
+
+Event Data(Row As Integer, Column As Integer, Data As WebTableData)
+
+Property Read Columns As _WebTableColumns
+Property Count As Integer
+Property Read Max As Integer
+Property Mode As Integer
+Property Read Selection As Integer[]
+Property Display As Integer
+
+Private $hColumns As _WebTableColumns
+Private $iCount As Integer
+Private $iMode As Integer
+Private $hSelection As WebTableSelection
+Private $iDisplay As Integer
+
+
+Public Sub _new()
+  
+  $hColumns = New _WebTableColumns As "Columns"
+  
+End
+
+
+Private Function Columns_Read() As _WebTableColumns
+
+  Return $hColumns
+
+End
+
+Public Sub _Render()
+
+  Dim iRow As Integer
+  Dim iCol As Integer
+  Dim hData As WebTableData
+  Dim hCol As _WebTableColumn
+  Dim sStyle As String
+
+  If $hColumns.Count = 0 Then Return
+
+  Print "<div class=\"gw-table-contents\"><table>"
+  
+  $hColumns._Render()
+  
+  Print "<tbody>"
+  For iRow = 0 To Min($iDisplay, $iCount) - 1
+    Print "<tr>";
+    
+    If $iMode Then
+      Print "<td>";
+      If $iMode = Select.Single Then
+        Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
+      Else
+        Print "<input type=\"checkbox\""; 
+      Endif
+      Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked"); 
+      If IsSelected(iRow) Then Print " checked";
+      Print ">";
+      Print "</td>";
+    Endif
+    
+    For iCol = 0 To $hColumns.Count - 1
+      
+      hCol = $hColumns[iCol]
+      hData = New WebTableData
+      Raise Data(iRow, iCol, hData)
+      
+      Print "<td";
+      hCol._PrintAlignment()
+      sStyle = ""
+      If hData.Background <> Color.Default Then sStyle &= "background-color:" & WebControl._GetColor(hData.Background) & ";"
+      If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Background) & ";"
+      If sStyle Then Print " style=\""; sStyle; "\"";
+      Print ">";
+      If hData.Html Then
+        Print hData.Html;
+      Else
+        Print Html(hData.Text);
+      Endif
+      
+    Next
+    Print "</tr>"
+  Next
+  
+  Print "</tbody></table>"
+  If iRow < $iCount Then
+    Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-bottom.png"); "\"></button></div>"
+  Endif
+  Print "</div>"
+
+End
+
+
+Private Function Count_Read() As Integer
+
+  Return $iCount
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  If Value < 0 Then Error.Raise("Bad argument")
+  $iCount = Value
+  Me._SetProperty("Count", Value)
+  UnselectAll
+  Me.Display = 100
+
+End
+
+Private Function Max_Read() As Integer
+
+  Return $iCount - 1
+
+End
+
+Private Function Mode_Read() As Integer
+
+  Return $iMode
+
+End
+
+Private Sub Mode_Write(Value As Integer)
+
+  $iMode = Value
+  Me._SetProperty("Mode", Value)
+  SetSelection
+
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  Dim aProp As String[]
+  
+  If sProp = "#count" Then
+    $hColumns.Count = vVal
+  Else If sProp = "#selection" Then
+    $hSelection.SetSelection(vVal[1], vVal[0])
+  Else
+    aProp = Scan(sProp, "#\\[*].*")
+    Object.SetProperty($hColumns[CInt(aProp[0])], aProp[1], vVal)
+  Endif
+  
+  Me.Refresh
+  
+End
+
+Private Sub SetSelection()
+  
+  If $iMode = Select.None Then
+    $hSelection = Null
+    Me._SetProperty("#selection", Null)
+  Else
+    If Not $hSelection Then $hSelection = New WebTableSelection As "TableSelection"
+    $hSelection.SetProperty()
+  Endif
+  
+End
+
+
+Public Sub SelectAll()
+  
+  If $hSelection Then $hSelection.SelectAll
+  
+End
+
+Public Sub UnselectAll()
+  
+  If $hSelection Then $hSelection.UnselectAll
+  
+End
+
+Public Sub Select(Row As Integer, Optional Length As Integer = 1)
+  
+  If $hSelection Then 
+  
+    If $iMode = Select.Single Then
+      
+      $hSelection.UnselectAll
+      $hSelection.Select(Row)
+      
+    Else
+      
+      $hSelection.Select(Row, Length)
+      
+    Endif
+    
+  Endif
+  
+End
+
+Public Sub Unselect(Row As Integer, Optional Length As Integer = 1)
+  
+  If $hSelection Then $hSelection.Unselect(Row, Length)
+  
+End
+
+Public Sub IsSelected(Row As Integer) As Boolean
+  
+  If $hSelection Then Return $hSelection.IsSelected(Row)
+  
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Dim iRow As Integer
+  
+  If Left(sProp) = "!" Then
+    If sProp = "!!" Then
+      If vValue Then
+        SelectAll
+      Else
+        UnselectAll
+      Endif
+    Else
+      iRow = CInt(Mid(sProp, 2))
+      Inc WebForm._DisableRefresh
+      If vValue Then
+        Try Select(iRow)
+      Else
+        Try Unselect(iRow)
+      Endif
+      Dec WebForm._DisableRefresh
+    Endif
+  Else If sProp = "#more" Then
+    Me.Display += 100
+    WebForm._AddJavascript("$(" & JS(Me.Name) & ").scrollTop = $(" & JS(Me.Name) & ").scrollHeight;")
+  Endif
+  
+End
+
+Public Sub _IsEverythingSelected() As Boolean
+  
+  If $hSelection Then Return $hSelection.IsEverythingSelected()
+  
+End
+
+Private Function Selection_Read() As Integer[]
+
+  If $hSelection Then
+    Return $hSelection.GetSelectedRows()
+  Else
+    Return New Integer[]
+  Endif
+
+End
+
+Private Function Display_Read() As Integer
+
+  Return $iDisplay
+
+End
+
+Private Sub Display_Write(Value As Integer)
+
+  $iDisplay = Value
+  Me._SetProperty("Display", Value)
+
+End
