@@ -45,6 +45,8 @@
 
 #include "gb_arch_temp.h"
 
+//#define DEBUG_COMP 1
+
 /* main archive project (used only if gbx is run with -x flag) */
 ARCHIVE *ARCHIVE_main = NULL;
 
@@ -158,17 +160,11 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 			else
 				class = CLASS_find_global(name);*/
 
-			class = CLASS_find_global(name);
-			CLASS_check_global(class);
-
-			if (optional)
+			if (!optional || CLASS_look_global(name, len) == NULL)
 			{
-				if (CLASS_look_global(name, len))
-					class = NULL;
-			}
+				class = CLASS_find_global(name);
+				CLASS_check_global(class);
 
-			if (class)
-			{
 				#if DEBUG_COMP
 					fprintf(stderr, "Add to load: %p %s\n", class, name);
 				#endif
@@ -182,7 +178,7 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 		FREE(&buffer);
 	}
 
-	if (pass & AR_FIND_ONLY)
+	if (pass & AR_FIND_ONLY) // That way the 'pass' flag is always ignored.
 	{
 		#if DEBUG_COMP
 			fprintf(stderr, "<Load pass>\n");
@@ -320,19 +316,19 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 {
 	int i;
 	CLASS *class;
-	
+
 	if (*parch)
 		return FALSE;
-	
+
 	if (COMPONENT_current && COMPONENT_current->archive)
 		*parch = COMPONENT_current->archive;
 	else if (CP && CP->component && CP->component->archive)
 		*parch = CP->component->archive;
 	else
 		*parch = NULL;
-	
+
 	//fprintf(stderr, "ARCHIVE_find_from_path: %s (%s)\n", *ppath, *parch ? (*parch)->name : "NULL");
-	
+
 	if (strncmp(*ppath, ".../", 4) == 0)
 	{
 		*ppath += 4;
@@ -346,7 +342,7 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 			*ppath += 3;
 			if (*parch == NULL || *parch == ARCHIVE_main)
 				continue;
-			
+
 			while (i < STACK_frame_count)
 			{
 				class = STACK_frame[i].cp;
@@ -364,20 +360,20 @@ bool ARCHIVE_find_from_path(ARCHIVE **parch, const char **ppath)
 						break;
 					}
 				}
-				
+
 				i++;
 			}
-			
+
 			if (i == STACK_frame_count)
 				*parch = NULL;
 		}
 	}
-	
+
 	if (*parch == NULL && EXEC_arch)
 		*parch = ARCHIVE_main;
-	
+
 	//fprintf(stderr, "--> '%s' / %s\n", *parch ? (*parch)->name : "(null)", *ppath);
-	
+
 	return *parch == NULL;
 }
 
