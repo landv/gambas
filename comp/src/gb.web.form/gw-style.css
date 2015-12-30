@@ -34,13 +34,13 @@ P:first-child,UL:first-child,OL:first-child {
 .gw-button {
   padding: 0;
   font: inherit;
+  padding: 0 0.25em;
   /*min-height: 1rem;*/
 }
 
 .gw-button.gw-noborder {
   border: solid 1px transparent;
   background: none;
-  padding: 0;
 }
 
 .gw-button.gw-noborder:hover {
@@ -476,10 +476,18 @@ P:first-child,UL:first-child,OL:first-child {
   vertical-align: top;
 }
 
+.gw-table > DIV > TABLE > THEAD > TR > TH:last-child {
+  border-right: none;
+}
+
 .gw-table > DIV > TABLE > TBODY > TR > TD {
   border-right: solid 1px #C0C0C0;
   padding: 0.25em;
   vertical-align: top;
+}
+
+.gw-table > DIV > TABLE > TBODY > TR > TD:last-child {
+  border-right: none;
 }
 
 .gw-table > DIV > TABLE > TBODY > TR:last-child > TD {

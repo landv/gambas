@@ -3,13 +3,15 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Text,Border"
+Public Const _Properties As String = "*,Text,Alignment,Border"
 Public Const _DrawWith As String = "Label"
 Public Const _DefaultSize As String = "24,4"
 
 Property Text As String
+Property Alignment As Integer
 
 Private $sText As String
+Private $iAlign As Integer
 
 
 Private Function Text_Read() As String
@@ -29,4 +31,46 @@ Public Sub _Render()
   
   Print Replace(Html($sText), "\n", "<br>");
   
+End
+
+Public Sub _RenderStyleSheet()
+  
+  If $iAlign Then
+  
+    Me._StartStyleSheet
+    
+    Super._RenderStyleSheet()
+    
+    Select Case $iAlign
+      Case Align.Left
+        Me._AddStyleSheet("justify-content:flex-start;")
+      Case Align.Right
+        Me._AddStyleSheet("justify-content:flex-end;")
+      Case Align.Center
+        Me._AddStyleSheet("justify-content:center;")
+    End Select
+    
+    Me._EndStyleSheet
+    
+  Else
+    
+    Super._RenderStyleSheet
+    
+  Endif
+  
+  
+End
+
+
+Private Function Alignment_Read() As Integer
+
+  Return $iAlign
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+  $iAlign = Value
+  Me._SetProperty("Alignment", Value)
+
 End

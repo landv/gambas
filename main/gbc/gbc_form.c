@@ -502,7 +502,7 @@ void FORM_do(char *source, bool ctrl_public)
 	if (form_parent_level > 0)
 		goto _ERROR;
 
-	FORM_print("\n  Try Me._load()\n");
+	//FORM_print("\n  Try Me._load()\n");
 	FORM_print("\nEnd\n\n");
 
 	// Create or delete the action file if needed

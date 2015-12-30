@@ -769,6 +769,10 @@ _DefaultEvent
 C
 s
 "Open"
+Debug
+P
+b
+
 _InExec
 V
 i
@@ -825,7 +829,7 @@ _AddJavascript
 M
 
 (sStr)s
-_load
+_ready
 m
 
 
@@ -928,7 +932,7 @@ C
 _Properties
 C
 s
-"*,Text,Border"
+"*,Text,Alignment,Border"
 _DrawWith
 C
 s
@@ -941,7 +945,15 @@ Text
 p
 s
 
+Alignment
+p
+i
+
 _Render
+m
+
+
+_RenderStyleSheet
 m
 
 

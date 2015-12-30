@@ -8,11 +8,18 @@ gw = {
   timers: {},
   windows: [],
   form: '',
+  debug: false,
+
+  log: function(msg)
+  {
+    if (gw.debug)
+      console.log(msg);
+  },
 
   send: function(command)
   {
     var xhr = new XMLHttpRequest();
-    console.log(command);
+    gw.log(command);
     xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
     xhr.onreadystatechange = function() {
       //console.log('state = ' + xhr.readyState + ' / status = ' + xhr.status);
@@ -24,7 +31,9 @@ gw = {
         else
           gw.selection = undefined;
         
-        console.log(xhr.responseText);
+        if (gw.debug)
+          console.log(xhr.responseText);
+          
         eval(xhr.responseText);
         
         if (gw.active)
@@ -128,7 +137,7 @@ gw = {
       {
         document.addEventListener('mousemove', gw.window.onMove);
         document.addEventListener('mouseup', gw.window.onUp);
-        console.log('document.addEventListener');
+        gw.log('document.addEventListener');
       }
       
       gw.windows.push(id);
@@ -179,7 +188,7 @@ gw = {
       
       if (gw.windows.length == 0)
       {
-        console.log('document.removeEventListener');
+        gw.log('document.removeEventListener');
         document.removeEventListener('mousemove', gw.window.onMove);
         document.removeEventListener('mouseup', gw.window.onUp);
       }

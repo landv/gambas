@@ -47,7 +47,7 @@ static OBJECT *_event_object_list = NULL;
 char *OBJECT_where_am_i(const char *file, int line, const char *func)
 {
 	static char buffer[256];
-	
+
 	snprintf(buffer, sizeof(buffer), "[%s] %s:%d", file, func, line);
 	return buffer;
 }
@@ -56,7 +56,7 @@ char *OBJECT_where_am_i(const char *file, int line, const char *func)
 void *OBJECT_new(CLASS *class, const char *name, OBJECT *parent)
 {
 	OBJECT *object;
-	
+
 	ALLOC_ZERO(&object, class->size);
 
 	object->class = class;
@@ -91,11 +91,11 @@ static void dump_attach(char *title)
 static void call_attach_special_method(CLASS *class, void *ob, void *parent, const char *name)
 {
 	STACK_check(2);
-		
+
 	SP->_object.class = OBJECT_class(parent);
 	SP->_object.object = parent;
 	PUSH();
-	
+
 	if (name)
 	{
 		SP->type = T_CSTRING;
@@ -108,7 +108,7 @@ static void call_attach_special_method(CLASS *class, void *ob, void *parent, con
 		SP->type = T_NULL;
 	}
 	SP++;
-		
+
 	EXEC_special(SPEC_ATTACH, class, ob, 2, TRUE);
 }
 
@@ -153,7 +153,7 @@ void OBJECT_detach(OBJECT *ob)
 	//	return;
 
 	// Do not free the observers there
-	
+
 	remove_object(ob, ev);
 
 	//dump_attach("OBJECT_detach");
@@ -164,16 +164,16 @@ void OBJECT_detach(OBJECT *ob)
 	if (parent)
 	{
 		ev->parent = NULL;
-		
+
 		if (class->special[SPEC_ATTACH] != NO_SYMBOL)
 			call_attach_special_method(class, ob, parent, NULL);
-		
+
 		#if DEBUG_EVENT || DEBUG_REF
 			fprintf(stderr, "OBJECT_detach : Detach (%s %p) from (%s %p)\n",
 				ob->class->name, ob, parent->class->name, parent);
 		#endif
 		OBJECT_UNREF(parent);
-	}  
+	}
 }
 
 static void remove_observers(OBJECT *ob)
@@ -183,10 +183,10 @@ static void remove_observers(OBJECT *ob)
 	COBSERVER *obs, *next;
 
 	//fprintf(stderr, "Remove observers: %s %p\n", class->name, ob);
-	
+
 	if (!class->is_observer && class->n_event == 0)
 		return;
-	
+
 	ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
 	obs = ev->observer;
 	ev->observer = NULL;
@@ -198,9 +198,9 @@ static void remove_observers(OBJECT *ob)
 		fprintf(stderr, "Remove observer %p %d: %p: %p\n", obs, (int)obs->ob.ref, ob, obs->object);
 		#endif
 		OBJECT_UNREF(obs);
-		obs = next;  	
+		obs = next;
 	}
-	
+
 	//ev->observer = NULL;
 }
 
@@ -208,13 +208,13 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 {
 	CLASS *class = OBJECT_class(ob);
 	OBJECT_EVENT *ev;
-	
+
 	if (!name)
 		return;
 
 	if (!class->is_observer && class->n_event == 0)
 		return;
-		
+
 	OBJECT_detach(ob);
 
 	ev = (OBJECT_EVENT *)((char *)ob + class->off_event);
@@ -233,7 +233,7 @@ void OBJECT_attach(OBJECT *ob, OBJECT *parent, const char *name)
 
 	if (class->special[SPEC_ATTACH] != NO_SYMBOL)
 		call_attach_special_method(class, ob, parent, name);
-	
+
 	//dump_attach("OBJECT_attach");
 }
 
@@ -256,9 +256,9 @@ void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 		&&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT, &&__NEXT,
 		&&__STRING, &&__NEXT, &&__NEXT, &&__VARIANT, &&__ARRAY, &&__STRUCT, &&__NEXT, &&__OBJECT
 		};
-		
+
 	CTYPE type;
-		
+
 	while (nelt--)
 	{
 #if TRACE_MEMORY
@@ -268,23 +268,23 @@ void OBJECT_release_static(CLASS *class, CLASS_VAR *var, int nelt, char *data)
 
 		type = var->type;
 		goto *jump[type.id];
-		
+
 	__STRING:
 		STRING_unref((char **)&data[var->pos]);
 		goto __NEXT;
-			
+
 	__OBJECT:
 		OBJECT_UNREF(*((void **)&data[var->pos]));
 		goto __NEXT;
-		
+
 	__VARIANT:
 		VARIANT_free((VARIANT *)&data[var->pos]);
 		goto __NEXT;
-			
+
 	__ARRAY:
 		CARRAY_release_static(class, class->load->array[type.value], &data[var->pos]);
 		goto __NEXT;
-			
+
 	__STRUCT:
 		{
 			CLASS *sclass = class->load->class_ref[type.value];
@@ -307,7 +307,7 @@ static void release(CLASS *class, OBJECT *ob)
 
 	if (CLASS_is_native(class))
 		return;
-	
+
 	if (ob == NULL)
 	{
 		var = class->load->stat;
@@ -331,7 +331,7 @@ static void release(CLASS *class, OBJECT *ob)
 		var = class->load->dyn;
 		nelt = class->load->n_dyn;
 	}
-	
+
 	OBJECT_release_static(class, var, nelt, data);
 }
 
@@ -349,7 +349,7 @@ void OBJECT_release(CLASS *class, OBJECT *ob)
 		remove_observers(ob);
 		ob->ref = 0;
 	}
-	
+
 	release(class, ob);
 
 	if (ob)
@@ -392,7 +392,7 @@ static void error_OBJECT_create(void)
 
 void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 {
-	void *ob;
+	void *object;
 	void *save;
 	char *save_name;
 
@@ -402,30 +402,32 @@ void *OBJECT_create(CLASS *class, const char *name, void *parent, int nparam)
 
 	save = _object;
 	save_name = _object_name;
-	
+
 	ON_ERROR(error_OBJECT_create)
 	{
 		_object_name = EVENT_enter_name(name);
-		_object = ob = OBJECT_new(class, name, parent);
+		_object = object = OBJECT_new(class, name, parent);
 		if (OBJECT_set_pointer)
 		{
-			*OBJECT_set_pointer = ob;
-			OBJECT_ref(ob);
+			*OBJECT_set_pointer = object;
+			OBJECT_ref(object);
 			OBJECT_set_pointer = NULL;
 		}
-		
-		OBJECT_lock(ob, TRUE);
-		EXEC_special_inheritance(SPEC_NEW, class, ob, nparam, TRUE);
-		OBJECT_lock(ob, FALSE);
-		
+
+		OBJECT_lock(object, TRUE);
+		EXEC_special_inheritance(SPEC_NEW, class, object, nparam, TRUE);
+		OBJECT_lock(object, FALSE);
+
+		EXEC_special(SPEC_READY, class, object, 0, TRUE);
+
 		error_OBJECT_create();
 	}
 	END_ERROR
-	
+
 	_object = save;
 	_object_name = save_name;
-	
-	return ob;
+
+	return object;
 }
 
 
@@ -452,6 +454,7 @@ void *OBJECT_create_native(CLASS *class, VALUE *param)
 			break;
 	}
 
+	EXEC_special(SPEC_READY, OBJECT_class(object), object, 0, TRUE);
 	OBJECT_UNREF_KEEP(object);
 	return object;
 }
@@ -465,13 +468,13 @@ void OBJECT_lock(OBJECT *object, bool lock)
 		return;
 
 	class = object->class;
-	
+
 	if (class->is_observer)
 	{
 		COBSERVER_lock((COBSERVER *)object, lock);
 		return;
 	}
-	
+
 	if (class->n_event == 0)
 		return;
 
@@ -492,10 +495,10 @@ bool OBJECT_is_locked(OBJECT *object)
 		return FALSE;
 
 	class = object->class;
-	
+
 	if (class->is_observer)
 		return COBSERVER_is_locked((COBSERVER *)object);
-	
+
 	if (class->n_event == 0)
 		return FALSE;
 
@@ -506,10 +509,10 @@ bool OBJECT_is_locked(OBJECT *object)
 OBJECT *OBJECT_parent(void *object)
 {
 	CLASS *class = OBJECT_class(object);
-	
+
 	if (!class->is_observer && class->n_event == 0)
 		return NULL;
-	
+
 	//return ((OBJECT *)((intptr_t)OBJECT_event(object)->parent & ~1));
 	return OBJECT_event(object)->parent;
 }
@@ -518,7 +521,7 @@ OBJECT *OBJECT_parent(void *object)
 OBJECT *OBJECT_active_parent(void *object)
 {
 	OBJECT *parent = OBJECT_parent(object);
-	
+
 	if (!parent || OBJECT_is_locked((OBJECT *)object) || OBJECT_is_locked(parent))
 		return NULL;
 

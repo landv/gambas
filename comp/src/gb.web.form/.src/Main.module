@@ -8,3 +8,18 @@ Public Sub Main()
 
 End
 
+Public Sub DumpSession()
+  
+  Dim sKey As String
+
+  Debug Session.Id
+  
+  If Session.Id Then
+    
+    For Each sKey In Session.Keys
+      Debug sKey; ": "; JSON.Encode(Session[sKey])
+    Next
+    
+  Endif
+  
+End

@@ -10,9 +10,12 @@ Public Const _HiddenControls As String = "WebControl,WebForm,WebWindow,Timer"
 Public Const _Properties As String = "*,Title,Resizable"
 Public Const _DefaultEvent As String = "Open"
 
+Static Property Debug As Boolean
+
 Static Public _InExec As Integer
 Static Public _Current As WebForm
 
+Static Private $bDebug As Boolean
 Static Private $aJavascript As New String[]
 
 Event Open
@@ -103,6 +106,7 @@ Static Public Sub Main()
   Endif
   
   _Current = hForm
+  
   If sPath = "x" Then
     hForm._Exec(JSON.Decode(Request["c"]))
   Else
@@ -126,11 +130,11 @@ Static Public Sub _AddJavascript(sStr As String)
   
 End
 
-Public Sub _load()
+Public Sub _ready()
   
   Me._InitProperties
   _Loaded = True
-  
+
 End
 
 Public Sub _BeforeRender()
@@ -442,3 +446,16 @@ End
 '   If hWindow Then hWindow.Centered = True
 '   
 ' End
+
+Static Private Function Debug_Read() As Boolean
+
+  Return $bDebug
+
+End
+
+Static Private Sub Debug_Write(Value As Boolean)
+
+  $bDebug = Value
+  _AddJavascript("gw.debug = " & JS(Value))
+
+End

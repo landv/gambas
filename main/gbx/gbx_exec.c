@@ -1852,22 +1852,13 @@ void *EXEC_create_object(CLASS *class, int np, char *event)
 		OBJECT_lock(object, TRUE);
 		EXEC_special_inheritance(SPEC_NEW, class, object, np, TRUE);
 		OBJECT_lock(object, FALSE);
-
-//     SP--; /* class */
-//
-//     SP->_object.class = class;
-//     SP->_object.object = object;
-//     SP++;
+		EXEC_special(SPEC_READY, class, object, 0, TRUE);
 	}
 	CATCH
 	{
 		// _free() methods should not be called, but we must
 		OBJECT_UNREF(object);
 		PROPAGATE();
-//     SP--; /* class */
-//     SP->type = T_NULL;
-//     SP++;
-//     PROPAGATE();
 	}
 	END_TRY
 
@@ -1953,6 +1944,7 @@ void EXEC_new(void)
 		EVENT_leave_name(save);
 
 		SP--; /* class */
+		EXEC_special(SPEC_READY, class, object, 0, TRUE);
 
 		SP->_object.class = class;
 		SP->_object.object = object;

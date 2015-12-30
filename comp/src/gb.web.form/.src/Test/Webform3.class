@@ -12,13 +12,12 @@ Public Sub _new()
   Next
   'WebTable1.Columns[3].Expand = True
   
+  WebTable1.Count = 250
+  WebTable1.Select(2, 3)
 
 End
 
 Public Sub WebForm_Open()
-  
-  WebTable1.Count = 250
-  WebTable1.Select(2, 3)
   
 End
 
