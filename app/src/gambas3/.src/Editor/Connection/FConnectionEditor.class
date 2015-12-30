@@ -1269,6 +1269,7 @@ Public Sub btnDownIndex_Click()
   Inc tbvIndex.Row
   
   tbvIndex.Refresh
+  ModifyTable
   
 End
 
@@ -1300,6 +1301,7 @@ Public Sub btnUpIndex_Click()
   Dec tbvIndex.Row
   
   tbvIndex.Refresh
+  ModifyTable
   
 End
 
