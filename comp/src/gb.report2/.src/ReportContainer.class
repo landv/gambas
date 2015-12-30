@@ -187,7 +187,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
     Case Arrange.Horizontal
       Return GetHSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
     Case Arrange.Column
-      Return GetVSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+      Return GetVPSizeInt(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
     Case Arrange.Fill, Arrange.None
       Return Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
       'hMyHints.Height = AvailableH
@@ -236,6 +236,31 @@ Private Function GetHSizeInt((AvailableW) As Float, (AvailableH) As Float, (Tota
   Return hMyHints
 
 End
+
+Private Function GetVPSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
+  ' Dim hSizeInt As New ReportSizeHints
+  ' Dim htmpInts As ReportSizeHints
+  ' Dim hChild As ReportControl         ''Enfants
+  ' Dim fHeight, fSpc, fWidth As Float
+  ' Dim i, j As Integer
+  ' Dim bExitLoop As Boolean
+  ' Dim fMaxSpc As Float
+  ' 
+  ' 'D'abord utiliser la méthode du controle pour définir la taille
+  ' hSizeInt = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
+  ' 'Circuit court
+  ' If Me.Children.Count = 0 Then Return hSizeInt
+  ' 'Largeur d'un espace
+  ' fSpc = IIf(Me._RelativeSpacing, TotalHeight * Me._Spacing / 100, Me._Spacing)
+  ' ' Si ce n'est pas fait on enregistre la place nécéssaire a tout les éléments fixes
+  ' If Not $fFixedSize Then
+  '   
+  ' Endif
+  ' 
+End
+
+
+
 
 Private Function GetVSizeInt((AvailableW) As Float, (AvailableH) As Float, (TotalWidth) As Float, (TotalHeight) As Float, DataIndex As Integer) As ReportSizeHints
 
@@ -377,6 +402,13 @@ Public Sub _Reset()
   Next
 
 End
+
+
+
+
+
+
+
 
 Public Sub _SetChildGeometry(X As Float, Y As Float, W As Float, H As Float, ContPage As Integer, TCont As TControl, bInFixed As Boolean)
   'If Me.Tag = "*" Then Stop
@@ -520,7 +552,7 @@ Private Sub SetHChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim fTmpX, fX, fY As Float
   Dim hTItem As TControl
   Dim fMaxSpc As Float
-  Dim fChildX, fChildY, fChildW, fChildH As Float
+  Dim fChildY, fChildH As Float
   'Initialisation des variables
   fSpc = IIf(Me._RelativeSpacing, H * Me._Spacing / 100, Me._Spacing) 'ME._Spacing
   'On retire les marges a la hauteur et les bordures
@@ -723,7 +755,7 @@ Private Sub SetVChildGeometry(X As Float, Y As Float, W As Float, H As Float, Co
   Dim fChildX, fChildW As Float
   Dim iIndex As Integer
   Dim bFirst As Boolean
-  Dim hSizeInt As Boolean
+  'Dim hSizeInt As Boolean
   Dim bTop As Boolean
   Dim fPrevTH As Float
   Dim cChildFixe As New Collection

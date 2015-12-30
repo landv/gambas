@@ -178,7 +178,7 @@ End
 Public Sub _NormalizeUnits()
   
   Dim i As Integer
-  Dim SizeParse As TSizeParse
+  'Dim SizeParse As TSizeParse
   For i = 0 To $aBoxShadow.Max
     'With 
       $aBoxShadow[i]._XOffset = TSizeParse[$aBoxShadow[i].XOffset].GetValue()

@@ -25,7 +25,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
   
   Dim hPic As Image
   Dim fRatio As Float
-  Dim fSize As Float
+  'Dim fSize As Float
 
   hMyHints = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)
   
@@ -65,7 +65,7 @@ End
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
   
   Dim ix, iy As Float
-  Dim hBrush As PaintBrush
+  'Dim hBrush As PaintBrush
   Dim hPic As Image
   
   Dim w, h As Float

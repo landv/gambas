@@ -1,0 +1,78 @@
+' Gambas class file
+
+' ' Gambas class file
+' 
+' Export
+' 
+' Property Count As Integer
+' Property Width As String
+' Property Read _Width As Float
+' 
+' Private $aColumns As New _ReportGridView_Column[]
+' 
+' Private Function Count_Read() As Integer
+'   
+'   Return $aColumns.Count
+'   
+' End
+' 
+' Private Sub Count_Write(Value As Integer)
+'   
+'   Dim iOldCount As Integer = $aColumns.Count
+'   Dim I As Integer
+'   
+'   If Value = iOldCount Then Return
+'   
+'   Try $aColumns.Resize(Value)
+'   If Error Then Error.Raise("Bad argument")
+'   
+'   If Value > iOldCount Then
+'     'If GetView().AutoResize And 
+'     If iOldCount Then $aColumns[iOldCount - 1]._W = 0
+'     For I = iOldCount To Value - 1
+'       $aColumns[I] = New _ReportGridView_Column As "Column"
+'       $aColumns[I]._Column = I
+'       $aColumns[I].Width = "2cm"
+'     Next
+'   Endif
+'   
+' End
+' 
+' Public Sub _NormalizeUnits()
+'   
+'   Dim i As Integer
+'   For i = 0 To $aColumns.Max
+'     $aColumns[i]._Width = TSizeParse[$aColumns[i].Width].ToInch()
+'   Next
+'   
+' End
+' 
+' Public Sub _get(Index As Integer) As _ReportGridView_Column
+'   
+'   Return $aColumns[Index]
+'   
+' End
+' 
+' 
+' Private Function Width_Read() As String
+' 
+'   If $aColumns.Count Then Return $aColumns[0].Width
+'   Return -1
+' 
+' End
+' 
+' 
+' Private Sub Width_Write(Value As String)
+' 
+'   Dim i As Integer
+'   
+'   For i = 0 To $aColumns.Max
+'     $aColumns[i].Width = Value
+'   Next
+' 
+' End
+' 
+' Private Function _Width_Read() As Float
+' 
+'   Try Return $aColumns[0]._Width
+' End

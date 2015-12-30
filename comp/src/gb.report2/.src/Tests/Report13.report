@@ -1,0 +1,42 @@
+# Gambas Form File 3.0
+
+{ Report Report
+  #MoveScaled(0,0,109,91)
+  Padding = ReportPadding["Top:15mm;Bottom:15mm;Left:15mm;Right:15mm"]
+  Expand = True
+  Spacing = "8mm"
+  Count = 2
+  Index = 0
+  Text = ("")
+  { ReportHBox1 ReportHBox
+    #MoveScaled(1,1,107,20)
+    Height = "4cm"
+    Padding = ReportPadding["Top:5mm;Bottom:5mm;Left:5mm;Right:5mm"]
+    Border = ReportBorder["Top:1mm #7F7F7F;Bottom:1mm #7F7F7F;Left:1mm #7F7F7F;Right:1mm #7F7F7F;TopLeftCorner:5mm;TopRightCorner:5mm;BottomRightCorner:5mm;BottomLeftCorner:5mm"]
+    Background = ReportBrush["#EFDFFF"]
+    BoxShadow = ReportBoxShadow["1mm 1mm 2px 0px #C2C2C2"]
+    { ReportImage1 ReportImage
+      #MoveScaled(1,1,19,18)
+      Width = "4cm"
+      Height = "4cm"
+      AutoResize = True
+      Image = Image.Load("gambas.svg")
+    }
+    { ReportLabel1 ReportLabel
+      #MoveScaled(20,1,83,18)
+      Brush = ReportBrush["LinearGradient(1,0,1,1,[#5F5F5F,#BFBFBF],[0,1])"]
+      Font = Font["Bold,+10"]
+      Expand = True
+      Text = ("=\"GAMBAS - \" & index")
+      Alignment = Align.Center
+    }
+  }
+  Index = 1
+  Text = ("")
+  { ReportLabel2 ReportLabel
+    #MoveScaled(1,1,107,29)
+    Font = Font["+12"]
+    Text = ("PAGE OTHER")
+  }
+  Index = 0
+}

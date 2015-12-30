@@ -22,7 +22,7 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
   Dim hRect As RectF
   Dim fWidth, fHeight As Float
   Dim sText As String
-  Dim hExt As PaintExtents
+  'Dim hExt As PaintExtents
   'Obtenir la taille de l'objet de base en tenant compte
   'de padding et des dimensions fournies
   hSizeHint = Super._GetSizeHints(AvailableW, AvailableH, TotalWidth, TotalHeight, DataIndex)

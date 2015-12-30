@@ -1,0 +1,26 @@
+' Gambas class file
+
+Export
+Inherits ReportContainer
+Public Const _Properties As String = "*,ForceNewPage"
+Public Const _Similar As String = "ReportVBox"
+Public Const _DefaultArrangement As String = "V"
+
+
+' Definition
+' C'est la largeur maximal des objets qui donnes la largeur de la colonne.
+' Mais un objet ne peu être plus large que le container principal... soit une colonne.
+
+
+
+
+
+Public Sub _new()
+
+  Super._Arrangement = Arrange.Column
+
+End
+
+Public Sub _Free()
+
+End

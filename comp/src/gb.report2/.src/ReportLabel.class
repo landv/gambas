@@ -36,6 +36,12 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
   'Inutile de chercher a connaitre la taille réclamée par l'objet si elle est
   'soit définie par le parent, soit imposée par l'utilisateur
   
+    If $sText Begins "=" Then
+      If Not $hEval Or If $hEval.Formula <> Right($sText, -1) Then 
+        $hEval = New ReportEval(Right($sText, -1)) As "Eval"
+      Endif
+    Endif
+
   If Me.Autoresize Or If (Me._Width = 0 And Me._Height = 0) Then
     'Sinon on cherche la tailmle du texte
     
@@ -47,11 +53,6 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
       sText = Data
     Endif
     
-    If $sText Begins "=" Then
-      If Not $hEval Or If $hEval.Formula <> Right($sText, -1) Then 
-        $hEval = New ReportEval(Right($sText, -1)) As "Eval"
-      Endif
-    Endif
     
     If $sFormat Then
       Try sText = Format(sText, $sFormat)
@@ -229,6 +230,8 @@ Public Sub Eval_Data(Value As String)
       Last.Data = $iPage + 1
     Case "index"
       Last.Data = $iIndex
+    Case "pages"
+      Last.Data = Me.Report.PageCount
   End Select
   
 End

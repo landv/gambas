@@ -1,37 +1,38 @@
 ' Gambas class file
 
-'Export
+
+Export
 Inherits ReportFrame
-
-Event Data(Row As Integer, Column As Integer)
-'>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
-
-Public Const _IsControl As Boolean = True
-Public Const _IsContainer As Boolean = False
-Public Const _Properties As String = "*"
-Public Const _DefaultEvent As String = "Data"
-Public Enum None, Horizontal, Vertical, Both
-'Public Const _Family As String = "Report"
-
-'>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-Property Read Columns As _ReportGridView_Columns
-Property Read Rows As _ReportGridView_Rows
-Property Header As Integer
-'>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
-Private $hColumns As New _ReportGridView_Columns
-Private $hRows As New _ReportGridView_Rows As "Rows"
-Private $iRow As Integer
-Private $iHeader As Integer
-'#####################  PUBLIC PROCEDURES  #########################
-
-Public Sub _NormalizeUnits()
-  
-  Super._NormalizeUnits()
-  $hColumns._NormalizeUnits()
-  $hRows._NormalizeUnits()
-End
-
+' 
+' Event Data(Row As Integer, Column As Integer)
+' '>>>>>>>>>>>>>>>>>>>>>>  PUBLIC VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>>
+' 
+' Public Const _IsControl As Boolean = True
+' Public Const _IsContainer As Boolean = False
+' Public Const _Properties As String = "*"
+' Public Const _DefaultEvent As String = "Data"
+' Public Enum None, Horizontal, Vertical, Both
+' 'Public Const _Family As String = "Report"
+' 
+' '>>>>>>>>>>>>>>>>>>>>>>>>>>  PROPERTIES  >>>>>>>>>>>>>>>>>>>>>>>>>>>
+' 
+' Property Read Columns As _ReportGridView_Columns
+' Property Read Rows As _ReportGridView_Rows
+' Property Header As Integer
+' '>>>>>>>>>>>>>>>>>>>>>>  PRIVATE VARIABLES  >>>>>>>>>>>>>>>>>>>>>>>>
+' Private $hColumns As New _ReportGridView_Columns
+' Private $hRows As New _ReportGridView_Rows As "Rows"
+' Private $iRow As Integer
+' Private $iHeader As Integer
+' '#####################  PUBLIC PROCEDURES  #########################
+' 
+' Public Sub _NormalizeUnits()
+'   
+'   Super._NormalizeUnits()
+'   $hColumns._NormalizeUnits()
+'   $hRows._NormalizeUnits()
+' End
+' 
 Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As Float, TotalHeight As Float, DataIndex As Integer) As ReportSizeHints
   
   Dim hSizeHint As ReportSizeHints
@@ -40,120 +41,120 @@ Public Sub _GetSizeHints(AvailableW As Float, AvailableH As Float, TotalWidth As
   Return hSizeHint
   
 End
-
+' 
 Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl, DataIndex As Integer)
-  
-  Dim iCol, irow As Integer
-  Dim fX, fY As Float
-  Dim fMaxColHeight, fMaxRowHeight As Float
-  Dim fColWidth, fTotCol As Float
-  Dim atmpColWidth As New Float[]
-  Dim fRowHeight, fTotRow As Float
-  Dim atmpRowHeight As New Float[]
-  Dim bHeaderT As Boolean = ($iHeader = Both Or $iHeader = Horizontal)
-  Dim bHeaderL As Boolean = ($iHeader = Both Or $iHeader = Vertical)
-  Dim fColPos, fRowPos As Float
-  
-  fX = X + hControl.RealLeft
-  fY = Y + hControl.RealTop
-  Paint.LineWidth = 1
-  Paint.Brush = Paint.Color(Color.Gray)
- 'Dessiner le header
- fRowHeight = Me.Report._ToPixels($hRows._Height)
- fColWidth = Me.Report._ToPixels($hRows._Width)
- If bHeaderT Then 
- fColPos = fColWidth
- Paint.FillRect(fX, fY, hControl.RealWidth, fRowHeight, Color.LightGray)
- 
- 
- Paint.Background = Color.DarkGray
- fColPos = fColWidth
- For icol = 0 To $hColumns.Count - 1
-   Paint.Save
-   fColWidth = Me.Report._ToPixels($hColumns._Width)
-   
-      Paint.FillRect(FX + fColPos - 1, fy, 1, fRowHeight, Color.DarkGray)
-      Paint.Rectangle(FX + fColPos - 1, fY, fColWidth, fRowHeight)
-      Paint.Clip
-      Paint.Text("toto", FX + fColPos - 1, fY, fColWidth, fRowHeight, Align.Center)
-      Paint.Fill
-      Paint.Restore
-   fColPos += fColWidth
- Next
- Paint.FillRect(FX + fColPos - 1, fy, 1, fRowHeight, Color.DarkGray)
- 'Return
- 
- 
- Endif
- fRowPos = fRowHeight
- If bHeaderL Then
-   fColWidth = Me.Report._ToPixels($hRows._Width)
-   
-   Paint.FillRect(fX, fY, fColWidth, hControl.RealHeight, Color.LightGray)
-   
-   For irow = 0 To $hRows.Count - 1
- Paint.Save
-     fRowHeight = Me.Report._ToPixels($hRows._GetHeight(irow))
-     Print fRowPos
-     Paint.FillRect(fx, fy + fRowPos - 1, fColWidth, 1, Color.DarkGray)
-     Paint.Rectangle(fx, fy + fRowPos - 1, fColWidth, fRowHeight)
-     Paint.Clip
-     Paint.Text($hRows._GetRowText(iRow), fx, fy + fRowPos - 1, fColWidth, fRowHeight, Align.Center)
-
-     Paint.Background = Color.Black
-     Paint.Fill
-     fRowPos += fRowHeight
-     Paint.Restore
-   Next
-   Paint.FillRect(fx, fy + fRowPos - 1, fColWidth, 1, Color.DarkGray)
- Endif
- 
-   '  For iCol = 0 To $hColumns.count - 1
-   '    
-   '    atmpColWidth.Add(Me.Report._ToPixels($hColumns[iCol]._Width))
-   '    fTotCol += atmpColWidth[iCol]
-   '  If $iHeader = Vertical Or If $iHeader = Both Then
-   '  Next
-   '  Endif
-   '  If $iHeader = Horizontal Or If $iHeader = Both Then
-   '  For iRow = 0 To $hRows.Count 
-   '    'If irow = 2 Then Stop
-   '    atmpRowHeight.Add(Me.Report._ToPixels($hRows._GetHeight(iRow)))
-   '    fTotRow += atmpRowHeight[iRow]
-   '  Next
-   ' Endif
-    
-   
-  
-  
-    fTotCol = fx
-    fx = 0
-  
+'   
+'   Dim iCol, irow As Integer
+'   Dim fX, fY As Float
+'   Dim fMaxColHeight, fMaxRowHeight As Float
+'   Dim fColWidth, fTotCol As Float
+'   Dim atmpColWidth As New Float[]
+'   Dim fRowHeight, fTotRow As Float
+'   Dim atmpRowHeight As New Float[]
+'   Dim bHeaderT As Boolean = ($iHeader = Both Or $iHeader = Horizontal)
+'   Dim bHeaderL As Boolean = ($iHeader = Both Or $iHeader = Vertical)
+'   Dim fColPos, fRowPos As Float
+'   
+'   fX = X + hControl.RealLeft
+'   fY = Y + hControl.RealTop
+'   Paint.LineWidth = 1
+'   Paint.Brush = Paint.Color(Color.Gray)
+'  'Dessiner le header
+'  fRowHeight = Me.Report._ToPixels($hRows._Height)
+'  fColWidth = Me.Report._ToPixels($hRows._Width)
+'  If bHeaderT Then 
+'  fColPos = fColWidth
+'  Paint.FillRect(fX, fY, hControl.RealWidth, fRowHeight, Color.LightGray)
+'  
+'  
+'  Paint.Background = Color.DarkGray
+'  fColPos = fColWidth
+'  For icol = 0 To $hColumns.Count - 1
+'    Paint.Save
+'    fColWidth = Me.Report._ToPixels($hColumns._Width)
+'    
+'       Paint.FillRect(FX + fColPos - 1, fy, 1, fRowHeight, Color.DarkGray)
+'       Paint.Rectangle(FX + fColPos - 1, fY, fColWidth, fRowHeight)
+'       Paint.Clip
+'       Paint.Text("toto", FX + fColPos - 1, fY, fColWidth, fRowHeight, Align.Center)
+'       Paint.Fill
+'       Paint.Restore
+'    fColPos += fColWidth
+'  Next
+'  Paint.FillRect(FX + fColPos - 1, fy, 1, fRowHeight, Color.DarkGray)
+'  'Return
+'  
+'  
+'  Endif
+'  fRowPos = fRowHeight
+'  If bHeaderL Then
+'    fColWidth = Me.Report._ToPixels($hRows._Width)
+'    
+'    Paint.FillRect(fX, fY, fColWidth, hControl.RealHeight, Color.LightGray)
+'    
+'    For irow = 0 To $hRows.Count - 1
+'  Paint.Save
+'      fRowHeight = Me.Report._ToPixels($hRows._GetHeight(irow))
+'      Print fRowPos
+'      Paint.FillRect(fx, fy + fRowPos - 1, fColWidth, 1, Color.DarkGray)
+'      Paint.Rectangle(fx, fy + fRowPos - 1, fColWidth, fRowHeight)
+'      Paint.Clip
+'      Paint.Text($hRows._GetRowText(iRow), fx, fy + fRowPos - 1, fColWidth, fRowHeight, Align.Center)
+' 
+'      Paint.Background = Color.Black
+'      Paint.Fill
+'      fRowPos += fRowHeight
+'      Paint.Restore
+'    Next
+'    Paint.FillRect(fx, fy + fRowPos - 1, fColWidth, 1, Color.DarkGray)
+'  Endif
+'  
+'    '  For iCol = 0 To $hColumns.count - 1
+'    '    
+'    '    atmpColWidth.Add(Me.Report._ToPixels($hColumns[iCol]._Width))
+'    '    fTotCol += atmpColWidth[iCol]
+'    '  If $iHeader = Vertical Or If $iHeader = Both Then
+'    '  Next
+'    '  Endif
+'    '  If $iHeader = Horizontal Or If $iHeader = Both Then
+'    '  For iRow = 0 To $hRows.Count 
+'    '    'If irow = 2 Then Stop
+'    '    atmpRowHeight.Add(Me.Report._ToPixels($hRows._GetHeight(iRow)))
+'    '    fTotRow += atmpRowHeight[iRow]
+'    '  Next
+'    ' Endif
+'     
+'    
+'   
+'   
+'     fTotCol = fx
+'     fx = 0
+'   
 End
-
-'#####################  PRIVATE PROCEDURES  ########################
-'########################  PROPERTIES  #############################
-
-Private Function Columns_Read() As _ReportGridView_Columns
-  
-  Return $hColumns
-  
-End
-
-Private Function Rows_Read() As _ReportGridView_Rows
-  
-  Return $hRows
-  
-End
-
-Private Function Header_Read() As Integer
-
-  Return $iHeader
-
-End
-
-Private Sub Header_Write(Value As Integer)
-
-  $iHeader = Value
-
-End
+' 
+' '#####################  PRIVATE PROCEDURES  ########################
+' '########################  PROPERTIES  #############################
+' 
+' Private Function Columns_Read() As _ReportGridView_Columns
+'   
+'   Return $hColumns
+'   
+' End
+' 
+' Private Function Rows_Read() As _ReportGridView_Rows
+'   
+'   Return $hRows
+'   
+' End
+' 
+' Private Function Header_Read() As Integer
+' 
+'   Return $iHeader
+' 
+' End
+' 
+' Private Sub Header_Write(Value As Integer)
+' 
+'   $iHeader = Value
+' 
+' End

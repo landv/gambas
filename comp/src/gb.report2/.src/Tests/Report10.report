@@ -2,6 +2,7 @@
 
 { Report Report
   #MoveScaled(0,0,64,91)
+  Padding = ReportPadding["Top:2cm;Bottom:2cm;Left:2cm;Right:2cm"]
   Tag = "Report"
   Index = 0
   Text = ("")
@@ -14,7 +15,7 @@
     }
     { ReportVBox2 ReportVBox
       #MoveScaled(1,7,60,15)
-      AutoResize = True
+      Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
       Background = ReportBrush["#FF7F00"]
       { ReportLabel2 ReportLabel
         #MoveScaled(1,1,58,6)
@@ -24,12 +25,14 @@
       { ReportPanel1 ReportPanel
         #MoveScaled(1,7,58,6)
         Height = "7mm"
+        Margin = ReportMargin["Top:0mm;Bottom:2mm;Left:1cm;Right:1cm"]
         Tag = "hBox"
         Border = ReportBorder["Top:1mm #000000;Bottom:1mm #000000;Left:1mm #000000;Right:1mm #000000"]
         Background = ReportBrush["#00FF00"]
         Arrangement = Arrange.Vertical
         { ReportLabel3 ReportLabel
           #MoveScaled(4,2,62,7)
+          Padding = ReportPadding["Left:5mm"]
           Expand = True
           Tag = "label"
           Text = ("=\"Index = \" & index")
@@ -40,7 +43,7 @@
   { ReportLabel4 ReportLabel
     #MoveScaled(1,43,62,3)
     Fixed = True
-    Text = ("=page")
+    Text = ("=page & \" / \" & pages")
     Alignment = Align.Right
   }
   Index = 0

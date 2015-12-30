@@ -41,8 +41,8 @@ Static Public Sub _init()
 
   Dim s As String
   Dim ars As String[]
-  Dim aSh As New Byte[]
-  Dim i As Byte
+  'Dim aSh As New Byte[]
+  'Dim i As Byte
   
   For Each s In Split(File.Load("FunctionsList"), "\n")
     ars = Split(s, "|")
@@ -337,7 +337,7 @@ Public Function Execute() As Boolean
   Dim rn As Integer
   Dim res As CResult
   Dim nargs As Integer
-  Dim i, j As Integer
+  Dim i As Integer
   Dim s, s2 As CResult
   Dim hVal As CResult
   $cVars.Clear
@@ -421,28 +421,28 @@ Public Function Execute() As Boolean
 
 End
 
-Private Function GetVar(Res As CResult) As CResult
-
-  Dim hRes As CResult
-
-  If res.isVariable Then
-    $vData = Null
-    Raise Data
-    If $vData Then
-      Select Case TypeOf($vData)
-        Case gb.Integer, gb.Float
-          hres = New CResult($vData, CResult.TypeValue)
-        Case Else
-          hres = New CResult($vData, CResult.TypeString)
-      End Select
-      Return hres
-    Endif
-
-  Else
-    Return Res
-  Endif
-
-End
+' Private Function GetVar(Res As CResult) As CResult
+' 
+'   Dim hRes As CResult
+' 
+'   If res.isVariable Then
+'     $vData = Null
+'     Raise Data
+'     If $vData Then
+'       Select Case TypeOf($vData)
+'         Case gb.Integer, gb.Float
+'           hres = New CResult($vData, CResult.TypeValue)
+'         Case Else
+'           hres = New CResult($vData, CResult.TypeString)
+'       End Select
+'       Return hres
+'     Endif
+' 
+'   Else
+'     Return Res
+'   Endif
+' 
+' End
 
 Private Function CompareOp(Operator As CResult, Val1 As CResult, Optional Val2 As CResult) As CResult
 
@@ -792,7 +792,7 @@ Public Sub _RTRIM(Val1 As CResult) As CResult
 End
 
 ''Returns a string containing only space.
-Public Sub FSPACE(Val1 As CResult) As CResult
+Public Sub _SPACE(Val1 As CResult) As CResult
 
   Return New CResult(Space(Val1.value), CResult.TypeString)
 
@@ -847,9 +847,9 @@ Private Function Data_Read() As Variant
 
 End
 
-Private Sub Data_Write(Value As Variant)
+Private Sub Data_Write(vValue As Variant)
 
-  $vData = IIf(Value = Null, 0, Value)
+  $vData = IIf(vValue = Null, 0, vValue)
 
 End
 
@@ -859,9 +859,9 @@ Private Function Formula_Read() As String
 
 End
 
-Private Sub Formula_Write(Value As String)
+Private Sub Formula_Write(sValue As String)
 
-  $sFormula = Value
+  $sFormula = sValue
   $sErrorText = ""
   $iErrorPos = -1
 
