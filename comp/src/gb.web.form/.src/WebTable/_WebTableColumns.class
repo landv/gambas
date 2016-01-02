@@ -63,7 +63,11 @@ Public Sub _Render()
   
   For Each hCol In $aColumns
     Print "<th";
-    If hCol.Expand Then Print " width=\"100%\"";
+    If hCol.Expand Then 
+      Print " width=\"100%\"";
+    Else If hCol.Width Then
+      Print " style=\"min-width:"; hCol.Width; ";\"";
+    Endif
     Print ">";
     Print "<div";
     hCol._PrintAlignment()

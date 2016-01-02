@@ -233,9 +233,9 @@ P:first-child,UL:first-child,OL:first-child {
 }
 
 .gw-label {
-  white-space: nowrap;
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  overflow: hidden;
 }
 
 #gw-modal {
@@ -497,4 +497,3 @@ P:first-child,UL:first-child,OL:first-child {
 .gw-table > DIV > TABLE > TBODY > TR:hover {
   background-color: #F0F0F0;
 }
-

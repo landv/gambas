@@ -244,7 +244,11 @@ Public Sub _RenderStyleSheet()
     
   Else
   
-    If $bExpand Then _AddStyleSheet("flex-grow:1;")
+    If $bExpand Then 
+      _AddStyleSheet("flex-grow:1;")
+    Else
+      _AddStyleSheet("flex-shrink:0;")
+    Endif
     
     hParent = Me.Parent
     If hParent Then
@@ -589,7 +593,7 @@ Private Sub Foreground_Write(Value As Integer)
 
 End
 
-Public Sub _GetColor(iCol As Integer) As String
+Static Public Sub _GetColor(iCol As Integer) As String
 
   Dim A As Integer
   Dim R As Integer
