@@ -47,10 +47,10 @@ static PCRE_INTERFACE PCRE;
 static void init_pcre()
 {
 	static bool init = FALSE;
-	
+
 	if (init)
 		return;
-		
+
 	COMPONENT_load(COMPONENT_create("gb.pcre"));
 	LIBRARY_get_interface_by_name("gb.pcre", PCRE_INTERFACE_VERSION, &PCRE);
 	init = TRUE;
@@ -66,19 +66,19 @@ void SUBR_cat(ushort code)
 	{
 		int len, len2;
 		char *str;
-		
+
 		VALUE_conv_string(&PARAM[0]);
 		len = PARAM[0]._string.len ;
 		VALUE_conv_string(&PARAM[1]);
 		len2 = PARAM[1]._string.len;
-		
+
 		#if 0
 		if (EXEC_string_add)
 		{
 			EXEC_string_add = FALSE;
-			
+
 			str = PARAM[0]._string.addr;
-			
+
 			if (0 && PARAM[0].type == T_STRING && PARAM[0]._string.start == 0 && STRING_length(str) == len)
 			{
 				if (str && !STRING_extend_will_realloc(str, len + len2))
@@ -113,14 +113,14 @@ void SUBR_cat(ushort code)
 			}*/
 		}
 		#endif
-		
+
 		str = STRING_new(NULL, len + len2);
 
 		//fprintf(stderr, "normal: str = %p p0 = %p p1 = %p\n", str, PARAM[0]._string.addr + PARAM[0]._string.start, PARAM[1]._string.addr + PARAM[1]._string.start);
-		
+
 		memcpy(str, PARAM[0]._string.addr + PARAM[0]._string.start, len);
 		memcpy(&str[len], PARAM[1]._string.addr + PARAM[1]._string.start, len2);
-		
+
 		RELEASE_STRING(&PARAM[0]);
 		RELEASE_STRING(&PARAM[1]);
 
@@ -152,13 +152,13 @@ void SUBR_cat(ushort code)
 		while (i--)
 		{
 			len = PARAM->_string.len;
-			
+
 			if (len)
 			{
 				memcpy(ptr, PARAM->_string.addr + PARAM->_string.start, len);
 				ptr += len;
 			}
-			
+
 			RELEASE_STRING(PARAM);
 			PARAM++;
 		}
@@ -219,7 +219,7 @@ void SUBR_file(ushort code)
 		if (PARAM->type != T_NULL)
 		{
 			VALUE_get_string(PARAM, &addr, &len);
-			
+
 			if (len > 0)
 			{
 				if (ptr > str)
@@ -229,16 +229,16 @@ void SUBR_file(ushort code)
 					else if (slash && *addr == '/')
 						ptr--;
 				}
-				
+
 				slash = addr[len - 1] == '/';
-				
+
 				memcpy(ptr, addr, len);
 				ptr += len;
 			}
 
 			RELEASE_STRING(PARAM);
 		}
-		
+
 		PARAM++;
 	}
 
@@ -368,9 +368,9 @@ void SUBR_upper(ushort code)
 {
 	char *str;
 	int len, i;
-	
+
 	SUBR_ENTER_PARAM(1);
-	
+
 	if (SUBR_check_string(PARAM))
 	{
 		VOID_STRING(&SP[-1]);
@@ -381,7 +381,7 @@ void SUBR_upper(ushort code)
 		if (len > 0)
 		{
 			str = STRING_new(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
-		
+
 			if (code & 0x3F)
 			{
 				for (i = 0; i < len; i++)
@@ -392,7 +392,7 @@ void SUBR_upper(ushort code)
 				for (i = 0; i < len; i++)
 					str[i] = toupper(str[i]);
 			}
-			
+
 			SP--;
 			RELEASE_STRING(SP);
 			SP->type = T_STRING;
@@ -481,7 +481,7 @@ void SUBR_instr(ushort code)
 
 	if (NPARAM >= 3)
 		is = SUBR_get_integer(&PARAM[2]);
-	
+
 	if (NPARAM == 4)
 		nocase = SUBR_get_integer(&PARAM[3]) == GB_COMP_NOCASE;
 
@@ -515,14 +515,14 @@ void SUBR_like(ushort code)
 	SUBR_get_string_len(&PARAM[1], &pattern, &len_pattern);
 
 	goto *jump[code & 0x3];
-	
+
 __LIKE:
-	
+
 	ret = REGEXP_match(pattern, len_pattern, string, len_string);
 	goto __RETURN;
 
 __BEGINS:
-	
+
 	if (len_pattern == 0)
 		ret = TRUE;
 	else if (len_pattern <= len_string)
@@ -530,13 +530,13 @@ __BEGINS:
 	goto __RETURN;
 
 __ENDS:
-	
+
 	if (len_pattern == 0)
 		ret = TRUE;
 	else if (len_pattern <= len_string)
 		ret = STRING_equal_same(string + len_string - len_pattern, pattern, len_pattern);
 	goto __RETURN;
-	
+
 __MATCH:
 
 	init_pcre();
@@ -544,7 +544,7 @@ __MATCH:
 	goto __RETURN;
 
 __RETURN:
-	
+
 	RETURN->type = T_BOOLEAN;
 	RETURN->_boolean.value = -(ret ^ !!(code & 0x4));
 
@@ -624,22 +624,22 @@ void SUBR_replace(ushort code)
 	{
 		char cp = *pp;
 		char cr = *pr;
-		
+
 		ps = STRING_new_temp(ps, ls);
-		
+
 		for (pos = 0; pos < ls; pos++)
 		{
 			if (ps[pos] == cp)
 				ps[pos] = cr;
 		}
-		
+
 		RETURN->_string.addr = ps;
 		RETURN->_string.len = ls;
 	}
 	else
 	{
 		STRING_start_len(ls);
-	
+
 		for(;;)
 		{
 			pos = STRING_search(ps, ls, pp, lp, 1, FALSE, nocase);
@@ -661,7 +661,7 @@ void SUBR_replace(ushort code)
 			if (ls <= 0)
 				break;
 		}
-		
+
 		STRING_make(ps, ls);
 		RETURN->_string.addr = STRING_end_temp();
 		RETURN->_string.len = STRING_length(RETURN->_string.addr);
@@ -686,7 +686,7 @@ void SUBR_split(ushort code)
 	bool keep_esc = FALSE;
 
 	SUBR_ENTER();
-	
+
 	VALUE_conv_string(PARAM);
 	VALUE_get_string(PARAM, &str, &lstr);
 
@@ -899,23 +899,23 @@ void SUBR_is_chr(ushort code)
 void SUBR_tr(void)
 {
 	char *str;
-	
+
 	SUBR_ENTER_PARAM(1);
-	
+
 	VALUE_conv_string(&PARAM[0]);
-	
+
 	if (SUBR_check_string(PARAM))
 		STRING_void_value(RETURN);
 	else
 	{
 		str = STRING_new_temp(&PARAM->_string.addr[PARAM->_string.start], PARAM->_string.len);
-		
+
 		RETURN->type = T_CSTRING;
 		RETURN->_string.addr = (char *)LOCAL_gettext(str);
 		RETURN->_string.start = 0;
 		RETURN->_string.len = strlen(RETURN->_string.addr);
 	}
-	
+
 	SUBR_LEAVE();
 }
 
@@ -935,22 +935,22 @@ void SUBR_quote(ushort code)
 	int i;
 	unsigned char c;
 	char buf[8];
-	
+
 	SUBR_ENTER_PARAM(1);
 
 	VALUE_conv_string(&PARAM[0]);
-	
+
 	str = PARAM->_string.addr + PARAM->_string.start;
 	lstr = PARAM->_string.len;
-	
+
 	STRING_start_len(lstr);
-	
+
 	goto *jump[code & 0x7];
-	
+
 __QUOTE:
-	
+
 	STRING_make_char('"');
-	
+
 	for (i = 0; i < lstr; i++)
 	{
 		c = str[i];
@@ -975,22 +975,22 @@ __QUOTE:
 			STRING_make_char(c);
 		}
 	}
-	
+
 	STRING_make_char('"');
 	goto __END;
-	
+
 __SHELL:
 
-	if (!LOCAL_is_UTF8)
+	/*if (!LOCAL_is_UTF8)
 	{
 		char *conv;
   	STRING_conv(&conv, str, lstr, SC_UTF8, LOCAL_encoding, FALSE);
   	str = conv;
 		lstr = str ? strlen(str) : 0;
-	}
-	
+	}*/
+
 	// TODO: The following works with bash, but not with dash!
-	
+
 	STRING_make_char('\'');
 
 	for (i = 0; i < lstr; i++)
@@ -1022,7 +1022,7 @@ __SHELL:
 		}
 		*/
 	}
-	
+
 	STRING_make_char('\'');
 
 	goto __END;
@@ -1050,15 +1050,15 @@ __HTML:
 		else
 			STRING_make_char(c);
 	}
-	
+
 	goto __END;
-	
+
 __BASE64:
 	{
 		static const char base64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 		uchar *in;
 		char *out = buf;
-		
+
 		for (i = 0; i < (lstr - 2); i += 3)
 		{
 			in = (uchar *)&str[i];
@@ -1134,7 +1134,7 @@ __JAVASCRIPT:
 
 		STRING_make_char('\'');
 	}
-	
+
 	goto __END;
 
 #endif
@@ -1168,25 +1168,25 @@ static int read_hex_digit(unsigned char c)
 void SUBR_unquote(ushort code)
 {
 	static void *jump[4] = { &&__UNQUOTE, &&__FROM_BASE64, &&__FROM_URL, &&__ILLEGAL };
-	
+
 	char *str;
 	int lstr;
 	int i;
 	unsigned char c;
-	
+
 	SUBR_ENTER_PARAM(1);
 
 	VALUE_conv_string(&PARAM[0]);
-	
+
 	str = PARAM->_string.addr + PARAM->_string.start;
 	lstr = PARAM->_string.len;
-	
+
 	STRING_start_len(lstr);
-	
+
 	goto *jump[code & 0x3];
 
 __UNQUOTE:
-	
+
 	if (lstr >= 2 && str[0] == '"' && str[lstr - 1] == '"')
 	{
 		str++;
@@ -1202,7 +1202,7 @@ __UNQUOTE:
 			if (i >= lstr)
 				break;
 			c = str[i];
-			
+
 			if (c == 'n')
 				c = '\n';
 			else if (c == 't')
@@ -1213,23 +1213,23 @@ __UNQUOTE:
 			{
 				if (i >= (lstr - 2))
 					break;
-					
+
 				c = (read_hex_digit(str[i + 1]) << 4) + read_hex_digit(str[i + 2]);
 				i += 2;
 			}
 		}
-		
+
 		STRING_make_char(c);
 	}
-	
+
 	goto __END;
-	
+
 __FROM_BASE64:
 
 	{
 		char buf[4];
 		unsigned char n = 0;
-		
+
 		for (i = 0; i < lstr; i++)
 		{
 			c = str[i];
@@ -1247,7 +1247,7 @@ __FROM_BASE64:
 				break;
 			else
 				continue;
-			
+
 			switch (n & 3)
 			{
 				case 0: buf[0] = c << 2; break;
@@ -1261,7 +1261,7 @@ __FROM_BASE64:
 		if ((n & 3) > 1)
 			STRING_make(buf, (n & 3) - 1);
 	}
-	
+
 	goto __END;
 
 __FROM_URL:
@@ -1288,14 +1288,14 @@ __FROM_URL:
 __ILLEGAL:
 
 	THROW_ILLEGAL();
-	
+
 __END:
-	
+
 	RETURN->type = T_STRING;
 	RETURN->_string.addr = STRING_end_temp();
 	RETURN->_string.start = 0;
 	RETURN->_string.len = STRING_length(RETURN->_string.addr);
-	
+
 	SUBR_LEAVE();
 }
 
@@ -1309,9 +1309,9 @@ void SUBR_swap(ushort code)
 		SUBR_move(1);
 		return;
 	}
-	
+
 	SUBR_ENTER();
-	
+
 	if (NPARAM == 2 && (SUBR_get_integer(&PARAM[1]) == GB_BIG_ENDIAN) == EXEC_big_endian)
 	{
 		SP--;
@@ -1337,7 +1337,7 @@ void SUBR_swap(ushort code)
 			RETURN->_string.len = len;
 		}
 	}
-	
+
 	SUBR_LEAVE();
 }
 
