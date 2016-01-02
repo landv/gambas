@@ -234,8 +234,10 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-label {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 #gw-modal {
