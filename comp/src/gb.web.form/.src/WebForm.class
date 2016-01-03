@@ -413,14 +413,17 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   Dim aWindows As String[]
   Dim sName As String
   
-  If sProp = "#windows" Then
-    aWindows = vValue
-    Inc _DisableRefresh
-    For Each sName In aWindows
-      WebControl.FromName(sName).Raise()
-    Next
-    Dec _DisableRefresh
-  Endif
+  Select Case sProp
+  
+    Case "#windows" 
+      aWindows = vValue
+      Inc _DisableRefresh
+      For Each sName In aWindows
+        WebControl.FromName(sName).Raise()
+      Next
+      Dec _DisableRefresh
+      
+  End Select
   
 End
 
