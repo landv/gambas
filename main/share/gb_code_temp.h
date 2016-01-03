@@ -21,7 +21,7 @@
 
 ***************************************************************************/
 
-#define DEBUG
+//#define DEBUG
 
 #define write_Zxxx(code, val)  write_short(code | ((short)val & 0x0FFF))
 #define write_Z8xx(code, val)  write_short(code | ((short)val & 0x07FF))
