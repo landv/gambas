@@ -92,7 +92,7 @@ static void push_number(int index)
 
 		CODE_push_const(EVAL_add_constant(&cst));
 	}
-	
+
 	if (number.complex)
 		CODE_push_complex();
 }
@@ -161,9 +161,8 @@ static void trans_identifier(int index, bool first, bool point)
 {
 	SYMBOL *sym = TABLE_get_symbol(EVAL->table, index);
 
-	/* z�o terminal */
-
-	sym->name[sym->len] = 0;
+	if (sym->name[sym->len])
+		sym->name[sym->len] = 0;
 
 	if (point)
 	{
@@ -605,7 +604,7 @@ bool TRANS_affectation(void)
 
 	/*if (dup)
 		CODE_dup();*/
-	
+
 	CODE_dup(); // So that Assign() returns the assigned value
 
 	EVAL->current = left;

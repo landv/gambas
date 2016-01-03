@@ -21,7 +21,7 @@
 
 ***************************************************************************/
 
-//#define DEBUG
+#define DEBUG
 
 #define write_Zxxx(code, val)  write_short(code | ((short)val & 0x0FFF))
 #define write_Z8xx(code, val)  write_short(code | ((short)val & 0x07FF))
@@ -35,12 +35,14 @@
 	cur_func->last_code2 = cur_func->last_code; \
 	cur_func->last_code = cur_func->ncode; \
 }
+#define CURRENT_CLASS JOB->class
 #else
 #define LAST_CODE \
 { \
 	cur_func->last_code2 = cur_func->last_code; \
 	cur_func->last_code = cur_func->ncode; \
 }
+#define CURRENT_CLASS EVAL
 #endif
 
 short CODE_stack_usage;
@@ -256,7 +258,7 @@ bool CODE_popify_last(void)
 		#endif
 		return TRUE;
 	}
-	
+
 	/*
 	if (*last_code == (C_PUSH_MISC | CPM_LAST))
 	{
@@ -323,14 +325,14 @@ bool CODE_check_jump_not(void)
 {
 	ushort op;
 	PCODE *last_code = get_last_code();
-	
+
 	if (!last_code)
 		return FALSE;
-		
+
 	op = *last_code & 0xFF00;
 	if (op != C_NOT)
 		return FALSE;
-		
+
 	CODE_undo();
 	return TRUE;
 }
@@ -416,10 +418,14 @@ void CODE_push_const(ushort value)
 
 	use_stack(1);
 
-	#ifdef DEBUG
-	printf("PUSH CONST %d %s\n", value, TABLE_get_symbol_name(JOB->class->table, JOB->class->constant[value].index));
+#ifdef DEBUG
+	#ifdef PROJECT_EXEC
+	printf("PUSH CONST %d\n", value);
+	#else
+	printf("PUSH CONST %d %s\n", value, TABLE_get_symbol_name(CURRENT_CLASS->table, CURRENT_CLASS->constant[value].index));
 	#endif
-	
+#endif
+
 	if (value < 0xF00)
 		write_Zxxx(C_PUSH_CONST, value);
 	else
@@ -556,7 +562,7 @@ void CODE_push_symbol(short symbol)
 	use_stack(0);
 
 	#ifdef DEBUG
-	printf("PUSH SYMBOL %s\n", TABLE_get_symbol_name(JOB->class->table, symbol));
+	printf("PUSH SYMBOL %s\n", TABLE_get_symbol_name(CURRENT_CLASS->table, symbol));
 	#endif
 
 	write_short(C_PUSH_SYMBOL);
@@ -571,7 +577,7 @@ void CODE_pop_symbol(short symbol)
 	use_stack(-2);
 
 	#ifdef DEBUG
-	printf("POP SYMBOL %s\n", TABLE_get_symbol_name(JOB->class->table, symbol));
+	printf("POP SYMBOL %s\n", TABLE_get_symbol_name(CURRENT_CLASS->table, symbol));
 	#endif
 
 	write_short(C_POP_SYMBOL);
@@ -586,9 +592,13 @@ void CODE_push_unknown(short symbol)
 
 	use_stack(0);
 
-	#ifdef DEBUG
-	printf("PUSH UNKNOWN %s\n", TABLE_get_symbol_name(JOB->class->table, symbol));
+#ifdef DEBUG
+	#ifdef PROJECT_EXEC
+		printf("PUSH UNKNOWN %s\n", CURRENT_CLASS->unknown[symbol]);
+	#else
+		printf("PUSH UNKNOWN %s\n", TABLE_get_symbol_name(CURRENT_CLASS->table, symbol));
 	#endif
+#endif
 
 	write_short(C_PUSH_UNKNOWN);
 	write_short(symbol);
@@ -601,7 +611,7 @@ void CODE_push_unknown_event(short symbol)
 	use_stack(1);
 
 	#ifdef DEBUG
-	printf("PUSH UNKNOWN EVENT %s\n", TABLE_get_symbol_name(JOB->class->table, symbol));
+	printf("PUSH UNKNOWN EVENT %s\n", TABLE_get_symbol_name(CURRENT_CLASS->table, symbol));
 	#endif
 
 	write_ZZxx(C_PUSH_EVENT, 0xFF);
@@ -618,7 +628,7 @@ void CODE_pop_unknown(short symbol)
 	use_stack(-2);
 
 	#ifdef DEBUG
-	printf("POP UNKNOWN %s\n", TABLE_get_symbol_name(JOB->class->table, symbol));
+	printf("POP UNKNOWN %s\n", TABLE_get_symbol_name(CURRENT_CLASS->table, symbol));
 	#endif
 
 	write_short(C_POP_UNKNOWN);
@@ -641,7 +651,7 @@ void CODE_push_class(short class)
 	write_Z8xx(C_PUSH_CLASS, class);
 
 	#ifdef PROJECT_COMP
-	JOB->class->class[class].used = TRUE;
+	CURRENT_CLASS->class[class].used = TRUE;
 	#endif
 }
 
@@ -674,7 +684,7 @@ void CODE_on(uchar num)
 	LAST_CODE;
 
 	use_stack(-1);
-	
+
 	#ifdef DEBUG
 	printf("ON\n");
 	#endif
@@ -775,10 +785,10 @@ void CODE_jump_length(ushort src, ushort dst)
 		return;
 
 	int diff = (int)dst - (int)src;
-	
+
 	if (diff < -32768 || diff > 32767)
 		THROW("Jump is too far");
-	
+
 	if (cur_func->code[src] == C_BREAK)
 		cur_func->code[src + 2] = (short)(diff - 3); //dst - (src + 2) - 1;
 	else if (cur_func->code[src] == C_NOP)
@@ -824,9 +834,9 @@ void CODE_op(short op, short subcode, short nparam, bool fixed)
 	{
 		PCODE *last_code;
 		short value, value2;
-		
+
 		last_code = get_last_code();
-		
+
 		if (last_code && ((*last_code & 0xF000) == C_PUSH_QUICK))
 		{
 			value = *last_code & 0xFFF;
@@ -840,23 +850,23 @@ void CODE_op(short op, short subcode, short nparam, bool fixed)
 			*last_code = C_ADD_QUICK | (value & 0x0FFF);
 
 			use_stack(1 - nparam);
-			
+
 			// Now, look if we are PUSH QUICK then ADD QUICK
-			
+
 			last_code = get_last_code2();
 			if (last_code && ((*last_code & 0xF000) == C_PUSH_QUICK))
 			{
 				value2 = *last_code & 0xFFF;
 				if (value2 >= 0x800) value2 |= 0xF000;
 				value += value2;
-				
+
 				if (value >= -2048L && value < 2048L)
 				{
 					*last_code = C_PUSH_QUICK | (value & 0x0FFF);
 					CODE_undo();
 				}
 			}
-			
+
 			return;
 		}
 	}
@@ -991,7 +1001,7 @@ void CODE_return(int return_value)
 
 	if (return_value == 1)
 		use_stack(-1);
-	
+
 	write_ZZxx(C_RETURN, return_value);
 
 	#ifdef DEBUG
@@ -1009,7 +1019,7 @@ void CODE_quit(bool ret)
 	#ifdef DEBUG
 	printf("QUIT (%d)\n", ret);
 	#endif
-	
+
 	if (ret)
 		use_stack(-1);
 
@@ -1143,14 +1153,14 @@ void CODE_byref(uint64_t byref)
 		n = 1;
 	else
 		n = 0;
-		
+
 	write_ZZxx(C_BYREF, n);
 	while (n >= 0)
 	{
 		write_short(byref & 0xFFFF);
 		byref >>= 16;
 		n--;
-	}  
+	}
 }
 
 void CODE_call_byref(short nparam, uint64_t byref)
@@ -1265,7 +1275,7 @@ void CODE_drop(void)
 	}*/
 
 	//THROW("Internal compiler error: Bad stack drop!");
-	
+
 	LAST_CODE;
 
 	write_ZZxx(C_DROP, 1);

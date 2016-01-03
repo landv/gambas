@@ -28,6 +28,8 @@
 
 #ifndef __MAIN_C
 extern GB_INTERFACE GB;
+
+extern GB_CLASS CLASS_Expression;
 #endif
 
 #endif

@@ -47,7 +47,7 @@ static void EVAL_enter()
 	PP = SP;
 	FP = &EVAL->func;
 	PC = EVAL->func.code;
-	
+
 	OP = NULL;
 	CP = &EVAL->exec_class;
 	//AP = ARCH_from_class(CP);
@@ -57,7 +57,7 @@ static void EVAL_enter()
 	GP = NULL;
 
 	RP->type = T_VOID;
-	
+
 	PROFILE_ENTER_FUNCTION();
 }
 
@@ -94,10 +94,12 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 	bool debug;
 	bool error;
 	int nvar;
+	EXPRESSION *save_eval;
 	/*HASH_TABLE *hash_table;
 	char *name;
 	CCOL_ENUM enum_state;*/
 
+	save_eval = EVAL;
 	EVAL = expr;
 
 	#ifdef DEBUG
@@ -110,22 +112,34 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 
 	STACK_check(nvar);
 
+	if (expr->custom)
+		nvar--;
+
 	for (i = 0; i < nvar; i++)
 	{
-		SP[i].type = T_VARIANT;
-		SP[i]._variant.vtype = T_NULL;
+
+		SP->type = T_VARIANT;
+		SP->_variant.vtype = T_NULL;
+		SP++;
 
 		sym = (EVAL_SYMBOL *)TABLE_get_symbol(EVAL->table, EVAL->var[EVAL->nvar - i - 1]);
-		if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)&SP[i]))
+		if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)&SP[-1]))
 		{
 			GB_Error("Unknown symbol");
 			return TRUE;
 		}
 	}
-	
-	for (i = 0; i < nvar; i++)
-		BORROW(&SP[i]);
-	SP += nvar;
+
+	if (expr->custom)
+	{
+		SP->type = T_OBJECT;
+		SP->_object.object = expr->parent;
+		SP++;
+		nvar++;
+	}
+
+	for (i = 1; i <= nvar; i++)
+		BORROW(&SP[-i]);
 
 	debug = EXEC_debug;
 	EXEC_debug = FALSE;
@@ -140,8 +154,9 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 		error = TRUE;
 	}
 	END_TRY
-	
+
 	STACK_disable_for_eval();
 	EXEC_debug = debug;
+	EVAL = save_eval;
 	return error;
 }

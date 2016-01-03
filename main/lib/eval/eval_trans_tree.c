@@ -31,7 +31,7 @@
 #include "eval_read.h"
 #include "eval.h"
 
-/*#define DEBUG*/
+//#define DEBUG
 
 static short level;
 static PATTERN *current;
@@ -191,13 +191,13 @@ static void analyze_make_array()
 			/*if (n > MAX_PARAM_OP)
 				THROW("Too many arguments");*/
 			analyze_expr(0, RS_NONE);
-			
+
 			if (!checked)
 			{
 				collection = PATTERN_is(*current, RS_COLON);
 				checked = TRUE;
 			}
-			
+
 			if (collection)
 			{
 				if (!PATTERN_is(*current, RS_COLON))
@@ -208,7 +208,7 @@ static void analyze_make_array()
 					THROW("Too many arguments");*/
 				analyze_expr(0, RS_NONE);
 			}
-			
+
 			if (!PATTERN_is(*current, RS_COMMA))
 				break;
 			current++;
@@ -353,6 +353,13 @@ static void analyze_call()
 	}
 	else if (PATTERN_is_identifier(last_pattern))
 	{
+		if (EVAL->custom)
+		{
+			change_last_pattern(1, PATTERN_make(RT_IDENTIFIER, EVAL->var[0]));
+			add_reserved_pattern(RS_PT);
+			add_pattern(PATTERN_set_flag(last_pattern, RT_POINT));
+		}
+
 		check_last_first(1);
 	}
 	else if (PATTERN_is_string(last_pattern) || PATTERN_is_number(last_pattern))
@@ -362,7 +369,7 @@ static void analyze_call()
 
 	if (subr_pattern && subr_pattern == PATTERN_make(RT_SUBR, SUBR_VarPtr))
 		THROW("VarPtr() cannot be used with Eval()");
-		
+
 	for (;;)
 	{
 		if (PATTERN_is(*current, RS_RBRA))
@@ -470,13 +477,13 @@ static void analyze_expr(short priority, short op_main)
 	op_curr = op_main;
 	nparam = (op_main == RS_NONE || op_main == RS_UNARY) ? 0 : 1;
 
-	/* cas particulier de NEW */
-	/* obsol�e : ne doit jamais servir, l'analyse est faite ailleurs */
+	/* Special NEW case */
+	/* It should never be used, analysis is done elsewhere */
 
 	if (PATTERN_is(*current, RS_NEW))
 		THROW("Cannot use NEW operator there");
 
-	/* analyse des op�andes */
+	// Operand analysis
 
 READ_OPERAND:
 
@@ -488,7 +495,7 @@ READ_OPERAND:
 	if (nparam > MAX_PARAM_OP)
 		THROW("Expression too complex. Too many operands");
 
-	/* Lecture de l'op�ateur */
+	// operator
 
 READ_OPERATOR:
 
@@ -640,12 +647,12 @@ PUBLIC void TRANS_tree()
 
 	if (PATTERN_is_newline(*current) || PATTERN_is_end(*current))
 		THROW(E_SYNTAX);
-	
+
 	analyze_expr(0, RS_NONE);
 
 	while (PATTERN_is_newline(*current))
 		current++;
-	
+
 	EVAL->current = current;
 
 	#ifdef DEBUG
