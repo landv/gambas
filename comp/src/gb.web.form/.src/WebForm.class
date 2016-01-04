@@ -204,7 +204,9 @@ Static Private Sub RenderStyleSheet()
   
   Print File.Load("gw-style.css");
   
-  If Exist("../style.css") Then Print File.Load("../style.css");
+  If Exist("../style.css") Then 
+    Print File.Load("../style.css");
+  Endif
   
   Response.End
   

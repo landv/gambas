@@ -20,6 +20,7 @@ INPUT {
 
 H1,H2,H3,P {
   margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 /*UL, OL {
@@ -65,6 +66,10 @@ P:first-child,UL:first-child,OL:first-child {
   margin-bottom: -1px;
   z-index: 1;
   line-height: 2em;
+}
+
+.gw-tab-header.gw-noborder {
+  margin-bottom: 0;
 }
 
 .gw-tab {
@@ -472,11 +477,10 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-table > DIV > TABLE > THEAD > TR > TH {
   text-align: left;
-  border-right: solid 1px #C0C0C0;
-  border-bottom: solid 1px #C0C0C0;
   background-color: #E0E0E0;
-  padding: 0.25em;
+  padding: 0.25em 0.5em;
   vertical-align: top;
+  border-bottom: solid 1px #C0C0C0;
 }
 
 .gw-table > DIV > TABLE > THEAD > TR > TH:last-child {
@@ -484,19 +488,19 @@ P:first-child,UL:first-child,OL:first-child {
 }
 
 .gw-table > DIV > TABLE > TBODY > TR > TD {
-  border-right: solid 1px #C0C0C0;
-  padding: 0.25em;
+  /*border-right: solid 1px #C0C0C0;*/
+  padding: 0.25em 0.5em;
   vertical-align: top;
 }
 
-.gw-table > DIV > TABLE > TBODY > TR > TD:last-child {
+/*.gw-table > DIV > TABLE > TBODY > TR > TD:last-child {
   border-right: none;
 }
 
 .gw-table > DIV > TABLE > TBODY > TR:last-child > TD {
   border-bottom: solid 1px #C0C0C0;
-}
+}*/
 
-.gw-table > DIV > TABLE > TBODY > TR:hover {
+.gw-table > DIV > TABLE > TBODY > TR:nth-child(even) {
   background-color: #F0F0F0;
 }
