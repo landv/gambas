@@ -55,6 +55,8 @@ End
 
 Public Sub _Render()
   
+  Dim sOpen As String
+  
   Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
   Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
   Print "<button class=\"gw-window-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
@@ -72,7 +74,11 @@ Public Sub _Render()
   Endif
   Print "</div>"
   
-  WebForm._AddJavascript("gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS($bModal) & ");")
+  sOpen = "gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS($bModal)
+  If Me["min-width"] Then sOpen &= "," & JS(Me["min-width"]) & "," & JS(Me["min-height"]) 
+  sOpen &= ");"
+  
+  WebForm._AddJavascript(sOpen)
   
 End
 
@@ -159,6 +165,10 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   If sProp = "#geometry" Then 
     
+    If Not Me["min-width"] Then
+      Me["min-width"] = Left(vValue[2], -2)
+      Me["min-height"] = Left(vValue[3], -2)
+    Endif
     Try Move(vValue[0], vValue[1], vValue[2], vValue[3])
   
   Else If sProp = "#close" Then

@@ -23,6 +23,8 @@ Event Event
 
 Property Title As String
 Property Resizable As Boolean
+Property Width, W As String
+Property Height, H As String
 
 Static Public _DisableRefresh As Integer
 Static Public _HasRefresh As Boolean
@@ -464,3 +466,28 @@ Static Private Sub Debug_Write(Value As Boolean)
   _AddJavascript("gw.debug = " & JS(Value))
 
 End
+
+Private Function Width_Read() As String
+
+  Return Me.Style["min-width"]
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  Me.Style["min-width"] = Value
+
+End
+
+Private Function Height_Read() As String
+
+  Return Me.Style["min-height"]
+
+End
+
+Private Sub Height_Write(Value As String)
+
+  Me.Style["min-height"] = Value
+
+End
+

@@ -218,18 +218,15 @@ P:first-child,UL:first-child,OL:first-child {
   padding: 0;
   width: 1.5em;
   height: 1.5em;
-  line-height: 1.5em;
-  top: 0em;
-  right: 0em;
-  margin-top: 0.25em;
-  margin-right: 0.25em
+  top: 0.25em;
+  right: 0.25em;
 }
 
-@-moz-document url-prefix() {
+/*@-moz-document url-prefix() {
   .gw-window-button {
     display: inline-flex;
   };
-}
+}*/
 
 .gw-window-contents {
   display: flex;
