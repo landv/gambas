@@ -517,6 +517,8 @@ gw = {
       
       elt.gw_scroll = setTimeout(function()
         { 
+          //console.log("gw.table.onScroll: " + id + ": " + sw.scrollLeft + " " + sw.scrollTop);
+      
           gw.update(elt.id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
           clearTimeout(elt.gw_scroll); 
           elt.gw_scroll = undefined;
@@ -526,6 +528,9 @@ gw = {
     scroll: function(id, x, y)
     {
       var sw = $(id).firstChild
+      
+      //console.log("gw.table.scroll: " + id + ": " + x + " " + y);
+      
       if (x != sw.scrollLeft)
       {
         $(id).gw_noscroll = true;

@@ -513,3 +513,16 @@ P:first-child,UL:first-child,OL:first-child {
   background-position: center;
   background-repeat: no-repeat;
 }
+
+.gw-scrollview {
+  overflow: auto;
+  position: relative;
+}
+
+.gw-scrollview > DIV {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
