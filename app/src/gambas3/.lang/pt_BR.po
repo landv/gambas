@@ -221,9 +221,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gambas3 3.8.1\n"
-"PO-Revision-Date: 2015-12-10 22:40 UTC\n"
-"Last-Translator: henrique <henrique@apolo-vbox>\n"
+"Project-Id-Version: gambas3 3.8.4\n"
+"PO-Revision-Date: 2016-01-05 16:31 UTC\n"
+"Last-Translator: Edison Henrique Andreassy <ehasis@hotmail.com>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -405,7 +405,7 @@ msgstr "Classes"
 msgid "Class"
 msgstr "Classe"
 
-#: FProjectProperty.form:356 FPublish.form:125 FSoftwareFarm.form:312
+#: FProjectProperty.form:356 FPublish.form:126 FSoftwareFarm.form:312
 msgid "Description"
 msgstr "Descrição"
 
@@ -417,23 +417,23 @@ msgstr "Este componente ainda não é estável."
 msgid "This component is deprecated."
 msgstr "Este componente é obsoleto."
 
-#: CComponent.class:1682 FProjectVersion.class:287
+#: CComponent.class:1682 FProjectVersion.class:287 ProjectItem.class:82
 msgid "Author"
 msgstr "Autor"
 
-#: CComponent.class:1684 FAbout.class:192 FProjectProperty.form:368
+#: FProjectProperty.form:368 ProjectItem.class:82
 msgid "Authors"
 msgstr "Autores"
 
-#: CComponent.class:1694
+#: CComponent.class:1694 ComponentItem.class:161
 msgid "Implements"
 msgstr "Implementa"
 
-#: CComponent.class:1706 CLibraryInfo.class:158 LibraryItem.class:60
+#: FPropertyComponent.form:144 LibraryItem.class:60
 msgid "Requires"
 msgstr "Requer"
 
-#: CComponent.class:1721
+#: CComponent.class:1721 ComponentItem.class:155
 msgid "Excludes"
 msgstr "Exclui"
 
@@ -613,7 +613,7 @@ msgstr "Componente de filtragem de imagens"
 msgid "Image routines from the Imlib2 library"
 msgstr "Rotinas de imagem da biblioteca lmlib2"
 
-#: CDocumentation.class:93 FProjectProperty.form:500
+#: FPropertyComponent.form:176
 msgid "Image loading and saving"
 msgstr "Carregamento e salvamento de imagem"
 
@@ -809,15 +809,15 @@ msgstr "Ferramentas XSLT baseadas na libxslt e libxml"
 msgid "Web applications tools"
 msgstr "Ferramentas de aplicações Web"
 
-#: CDocumentation.class:148 FProjectProperty.form:488
+#: FPropertyComponent.form:164
 msgid "Graphical form management"
 msgstr "Gerênciamento de formulários gráficos"
 
-#: CDocumentation.class:149 FProjectProperty.form:494
+#: FPropertyComponent.form:170
 msgid "Event loop management"
 msgstr "Gerênciamento de eventos"
 
-#: CDocumentation.class:151 FProjectProperty.form:511
+#: FPropertyComponent.form:186
 msgid "OpenGL display"
 msgstr "Exibição OpenGL"
 
@@ -825,7 +825,7 @@ msgstr "Exibição OpenGL"
 msgid "Complex numbers"
 msgstr "Números complexos"
 
-#: CDocumentation.class:153 FProjectProperty.form:517
+#: FPropertyComponent.form:192
 msgid "XML management"
 msgstr "Gerenciamento XML"
 
@@ -845,7 +845,7 @@ msgstr "Local"
 msgid "WARNING! Library not found."
 msgstr "ATENÇÃO! Biblioteca não encontrada."
 
-#: CLibraryInfo.class:157 LibraryItem.class:58
+#: CLibraryInfo.class:157 ComponentItem.class:174 LibraryItem.class:58
 msgid "Provides"
 msgstr "Provê"
 
@@ -933,23 +933,23 @@ msgstr "Público"
 msgid "Data"
 msgstr "Dados"
 
-#: CRecentProject.class:68 FMain.class:671
+#: CRecentFile.class:70 CRecentProject.class:68 FMain.class:671
 msgid "Today"
 msgstr "Hoje"
 
-#: CRecentProject.class:70
+#: CRecentFile.class:72 CRecentProject.class:70
 msgid "Yesterday"
 msgstr "Ontem"
 
-#: CRecentProject.class:72
+#: CRecentFile.class:74 CRecentProject.class:72
 msgid "Two days ago"
 msgstr "A dois dias"
 
-#: CRecentProject.class:74
+#: CRecentFile.class:76 CRecentProject.class:74
 msgid "This week"
 msgstr "Esta semana"
 
-#: CRecentProject.class:76
+#: CRecentFile.class:78 CRecentProject.class:76
 msgid "This month"
 msgstr "Este mês"
 
@@ -981,7 +981,7 @@ msgstr "Não é possível construir executável."
 msgid "Unable to install source directory"
 msgstr "Não é possível instalar o diretório source"
 
-#: FTranslate.class:562 Project.module:505
+#: FTableChooser.form:68 FText.form:41 FTranslate.class:562 Project.module:505
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -992,6 +992,38 @@ msgstr "A fonte Gambas é publicada sob licença SIL Open Font license."
 #: CWelcome.class:85
 msgid "This program is published under the GNU General Public License."
 msgstr "Este programa é publicado sob a licença GNU General Public License."
+
+#: FProjectProperty.form:404 FPropertyComponent.form:82
+msgid "Experimental"
+msgstr "Experimental"
+
+#: FProjectProperty.form:404 FPropertyComponent.form:82
+msgid "Not finished but stable"
+msgstr "Não finalizado mas estável"
+
+#: FProjectProperty.form:404
+msgid "Deprecated"
+msgstr "Obsoleto"
+
+#: ComponentItem.class:242 FComponentChooser.class:540
+msgid "This component is required by the following library:<p>&1"
+msgstr "Este componente é requerido pelo pela seguinte biblioteca:<p>&1"
+
+#: ComponentItem.class:244 FComponentChooser.class:542
+msgid "This component is required by the following libraries:<p>&1"
+msgstr "Este componente é requerido pelas seguintes bibliotecas:<p>&1"
+
+#: ComponentItem.class:253 FComponentChooser.class:551
+msgid "This component is required by:<p>&1"
+msgstr "Este componente é requerido por:<p>&1"
+
+#: ComponentItem.class:254 FComponentChooser.class:552
+msgid "Keep"
+msgstr "Manter"
+
+#: ComponentItem.class:254 FComponentChooser.class:552 FDebugInfo.form:164
+msgid "Remove all"
+msgstr "Remover todos"
 
 #: Design.module:188 Project.module:2342
 msgid "first"
@@ -1049,41 +1081,9 @@ msgstr "Sistema"
 msgid "Free"
 msgstr "Livre"
 
-#: FComponentChooser.class:321 FProjectProperty.form:404
-msgid "Not finished but stable"
-msgstr "Não finalizado mas estável"
-
-#: FComponentChooser.class:323 FProjectProperty.form:404
-msgid "Experimental"
-msgstr "Experimental"
-
 #: FComponentChooser.class:325
 msgid "Stable"
 msgstr "Estável"
-
-#: FComponentChooser.class:327 FProjectProperty.form:404
-msgid "Deprecated"
-msgstr "Obsoleto"
-
-#: FComponentChooser.class:540
-msgid "This component is required by the following library:<p>&1"
-msgstr "Este componente é requerido pelo pela seguinte biblioteca:<p>&1"
-
-#: FComponentChooser.class:542
-msgid "This component is required by the following libraries:<p>&1"
-msgstr "Este componente é requerido pelas seguintes bibliotecas:<p>&1"
-
-#: FComponentChooser.class:551
-msgid "This component is required by:<p>&1"
-msgstr "Este componente é requerido por:<p>&1"
-
-#: FComponentChooser.class:552
-msgid "Keep"
-msgstr "Manter"
-
-#: FComponentChooser.class:552 FDebugInfo.form:164
-msgid "Remove all"
-msgstr "Remover todos"
 
 #: FComponentChooser.class:657
 msgid "These components are incompatible:<br>&1."
@@ -1201,7 +1201,7 @@ msgstr "Abrir"
 msgid "Open..."
 msgstr "Abrir..."
 
-#: FSaveProjectAs.form:82 FTextEditor.form:312
+#: FTextEditor.form:312
 msgid "Save"
 msgstr "Salvar"
 
@@ -1325,67 +1325,67 @@ msgstr "Este nome já existe."
 msgid "This field is used in an index."
 msgstr "Este campo é usado em um índice."
 
-#: FConnectionEditor.class:1398
+#: FConnectionEditor.class:1400
 msgid "The table '&1' has no primary key."
 msgstr "A tabela '&1' não tem chave primária."
 
-#: FConnectionEditor.class:1534
+#: FConnectionEditor.class:1536
 msgid "Cannot write table '&1'."
 msgstr "Não é possível gravar a tabela '&1'."
 
-#: FConnectionEditor.class:1646
+#: FConnectionEditor.class:1648
 msgid "Do you really want to delete table '&1'?"
 msgstr "Você realmente deseja excluir a tabela '&1'?"
 
-#: FConnectionEditor.class:1658
+#: FConnectionEditor.class:1660
 msgid "Cannot delete table '&1'."
 msgstr "Não é possível excluir a tabela '&1'."
 
-#: FConnectionEditor.class:1711
+#: FConnectionEditor.class:1713
 msgid "Do you really want to remove the selected rows?"
 msgstr "Você realmente deseja remover as linhas selecionadas?"
 
-#: FConnectionEditor.class:1872
+#: FConnectionEditor.class:1875
 msgid "Do you really want to remove this query?"
 msgstr "Você realmente deseja remover esta consulta?"
 
-#: FConnectionEditor.form:96
+#: FConnectionEditor.form:77
 msgid "Connection editor"
 msgstr "Editor de conexão"
 
-#: FConnectionEditor.form:117
+#: FConnectionEditor.form:109
 msgid "Show system tables"
 msgstr "Exibir tabelas de sistema"
 
-#: FConnectionEditor.form:125 FNewTable.form:19
+#: FConnectionEditor.form:121 FNewTable.form:19
 msgid "New table"
 msgstr "Nova tabela"
 
-#: FConnectionEditor.form:131
+#: FConnectionEditor.form:129
 msgid "Delete table"
 msgstr "Excluir tabela"
 
-#: FSoftwareFarm.form:411
+#: FPublish.form:269 FSoftwareFarm.form:411
 msgid "Remove"
 msgstr "Remover"
 
-#: FConnectionEditor.form:139 FNewTable.class:30
+#: FConnectionEditor.form:137 FNewTable.class:30
 msgid "Rename table"
 msgstr "Renomear tabela"
 
-#: FConnectionEditor.form:141 FMain.form:930
+#: FConnectionEditor.form:139 FMain.form:930
 msgid "Rename"
 msgstr "Renomear"
 
-#: FConnectionEditor.form:147
+#: FConnectionEditor.form:145
 msgid "Copy table"
 msgstr "Copiar tabela"
 
-#: FConnectionEditor.form:155 FPasteTable.form:22
+#: FConnectionEditor.form:153 FPasteTable.form:22
 msgid "Paste table"
 msgstr "Colar tabela"
 
-#: FConnectionEditor.form:163
+#: FConnectionEditor.form:161
 msgid "Import text file"
 msgstr "Importar arquivo texto"
 
@@ -1393,43 +1393,43 @@ msgstr "Importar arquivo texto"
 msgid "Import"
 msgstr "Importar"
 
-#: FConnectionEditor.form:171
+#: FConnectionEditor.form:169
 msgid "SQL queries"
 msgstr "Consultas SQL"
 
-#: FConnectionEditor.form:217
+#: FConnectionEditor.form:215
 msgid "Fields"
 msgstr "Campos"
 
-#: FOption.form:1354 FProjectProperty.form:638 FPublish.form:158
+#: FPublish.form:159
 msgid "Add"
 msgstr "Adicionar"
 
-#: FPublish.form:280
+#: FPublish.form:281
 msgid "Down"
 msgstr "Para baixo"
 
-#: FPublish.form:274
+#: FPublish.form:275
 msgid "Up"
 msgstr "Para cima"
 
-#: FConnectionEditor.form:262
+#: FConnectionEditor.form:260
 msgid "Copy field list"
 msgstr "Copiar lista de campos"
 
-#: FConnectionEditor.form:280
+#: FConnectionEditor.form:278
 msgid "Indexes"
 msgstr "Índices"
 
-#: FConnectionEditor.form:297
+#: FConnectionEditor.form:295
 msgid "New index"
 msgstr "Novo índice"
 
-#: FConnectionEditor.form:357
+#: FConnectionEditor.form:355
 msgid "Run query"
 msgstr "Executar a consulta"
 
-#: FConnectionEditor.form:363
+#: FConnectionEditor.form:361
 msgid "New query"
 msgstr "Nova consulta"
 
@@ -1437,19 +1437,23 @@ msgstr "Nova consulta"
 msgid "New"
 msgstr "Novo"
 
-#: FConnectionEditor.form:371
+#: FConnectionEditor.form:369
 msgid "Remove query"
 msgstr "Remover a consulta"
+
+#: FPublish.form:171
+msgid "Clear"
+msgstr "Limpar"
 
 #: FForm.form:164 FImageEditor.form:114 FOption.form:1116 FTextEditor.form:113
 msgid "Edit"
 msgstr "Editar"
 
-#: FConnectionEditor.form:459 FExportData.form:15
+#: FConnectionEditor.form:456 FExportData.form:15
 msgid "Export to CSV file"
 msgstr "Exportar para arquivo CSV"
 
-#: FConnectionEditor.form:461 FTranslate.form:90
+#: FConnectionEditor.form:458 FTranslate.form:90
 msgid "Export"
 msgstr "Exportar"
 
@@ -1545,7 +1549,7 @@ msgstr "Não pode adicionar arquivo."
 msgid "New file"
 msgstr "Novo arquivo"
 
-#: FMakePatch.form:66 FProjectProperty.form:733 FSearch.form:100
+#: FSearch.form:100
 msgid "Options"
 msgstr "Opções"
 
@@ -1715,7 +1719,7 @@ msgstr "Assistente para conversão Visual Basic"
 
 #: FCreateProjectOld.form:352
 msgid "Component programming"
-msgstr "Programação de componentes"
+msgstr "Programação de componente"
 
 #: FCreateProjectOld.form:358
 msgid "Project parent directory"
@@ -1788,10 +1792,6 @@ msgstr "Mensagem"
 #: FDebugInfo.class:174
 msgid "native code"
 msgstr "código nativo"
-
-#: FMakeInstall.form:754 FOption.class:717 FOutput.form:84 FPublish.form:170
-msgid "Clear"
-msgstr "Limpar"
 
 #: FDebugInfo.class:560
 msgid "Do you want to clear the expression list ?"
@@ -2073,7 +2073,7 @@ msgstr "Servidores"
 msgid "Authentication failed."
 msgstr "Autenticação falhou."
 
-#: FFarmLogin.form:26 FPublish.form:312 FSoftwareFarm.form:110
+#: FFarmLogin.form:26 FPublish.form:313 FSoftwareFarm.form:110
 msgid "Login"
 msgstr "-"
 
@@ -2105,15 +2105,15 @@ msgstr "Por favor informe um endereço de e-mail válido."
 msgid "Confirm password does not match."
 msgstr "Senha confirmada não confere."
 
-#: FFarmRegister.class:40
+#: FFarmRegister.class:40 Publish.module:43
 msgid "Unable to register user."
 msgstr "Não é possível registrar usuário."
 
-#: FFarmRegister.class:40
+#: FFarmRegister.class:40 Publish.module:42
 msgid "You have been successfully registered.\n\nYou will receive a confirmation e-mail soon."
 msgstr "Você foi registrado com sucesso.\n\nVocê receberá em breve um e-mail de confirmação."
 
-#: FFarmRegister.form:28 FPublish.form:319 FSoftwareFarm.form:117
+#: FFarmRegister.form:28 FPublish.form:320 FSoftwareFarm.form:117
 msgid "Register"
 msgstr "Registrar"
 
@@ -2213,19 +2213,19 @@ msgstr "Reverter"
 msgid "Select a font"
 msgstr "Selecione a fonte"
 
-#: FForm.class:140
+#: FForm.class:141
 msgid "Bad form file"
 msgstr "Arquivo de formulário inválido"
 
-#: FForm.class:268
+#: FForm.class:269
 msgid "Unknown control: &1"
 msgstr "Controle desconhecido: &1"
 
-#: FForm.class:1307
+#: FForm.class:1318
 msgid "Component missing for control &1"
 msgstr "Componente faltando para o controle &1"
 
-#: FForm.class:1816
+#: FForm.class:1836
 msgid "Cannot paste data."
 msgstr "Não é possível colar o dado."
 
@@ -3465,7 +3465,7 @@ msgstr "Versão max."
 msgid "File or directory"
 msgstr "Arquivo ou diretório"
 
-#: FMakeInstall.class:266 Package.module:283
+#: FMakeInstall.class:266 Package.module:290
 msgid "The packages have been successfully created."
 msgstr "Os pacotes foram criados com sucesso."
 
@@ -3573,7 +3573,7 @@ msgstr "Adiciona prefixo do distribuidor ou nome aos nomes de pacote"
 msgid "Package version"
 msgstr "Versão do pacote"
 
-#: FMakeInstall.form:197 FOption.form:296 FPublish.form:83
+#: FMakeInstall.form:197 FOption.form:296 FPublish.form:84
 msgid "Vendor name"
 msgstr "Nome do fornecedor"
 
@@ -4025,11 +4025,11 @@ msgstr "Mantenedor do pacote"
 msgid "Default license"
 msgstr "Licença padrão"
 
-#: FOption.form:370 FProjectProperty.form:421
+#: FOption.form:370 FProjectProperty.form:421 FPropertyComponent.form:99
 msgid "No"
 msgstr "Não"
 
-#: FOption.form:370 FProjectProperty.form:421
+#: FOption.form:370 FProjectProperty.form:421 FPropertyComponent.form:99
 msgid "Yes"
 msgstr "Sim"
 
@@ -4449,7 +4449,7 @@ msgstr "-"
 msgid "GB_DB_DEBUG=1"
 msgstr "-"
 
-#: FProjectProperty.form:269
+#: FProjectProperty.form:269 FPropertyComponent.form:60
 msgid "General"
 msgstr "Geral"
 
@@ -4481,15 +4481,15 @@ msgstr "Informação"
 msgid "Progress"
 msgstr "Progresso"
 
-#: FProjectProperty.form:404
+#: FProjectProperty.form:404 FPropertyComponent.form:82
 msgid "Finished and stable"
 msgstr "Finalizado e estável"
 
-#: FProjectProperty.form:415
+#: FProjectProperty.form:415 FPropertyComponent.form:93
 msgid "This component is hidden"
 msgstr "Este componente está oculto"
 
-#: FProjectProperty.form:432
+#: FProjectProperty.form:432 FPropertyComponent.form:110
 msgid "Compatible until version"
 msgstr "Compatível até a versão"
 
@@ -4513,11 +4513,11 @@ msgstr "Requer"
 msgid "Exclude"
 msgstr "Excluir"
 
-#: FProjectProperty.form:568
+#: FProjectProperty.form:568 FPropertyComponent.form:235
 msgid "Remove All"
 msgstr "Remover tudo"
 
-#: FProjectProperty.form:575
+#: FProjectProperty.form:575 FPropertyComponent.form:200
 msgid "Components"
 msgstr "Componentes"
 
@@ -4697,6 +4697,26 @@ msgstr "nenhum"
 msgid "Lock property"
 msgstr "Trancar propriedade"
 
+#: FPropertyComponent.class:163
+msgid "Library properties"
+msgstr "Propriedades da biblioteca"
+
+#: FPropertyComponent.form:43
+msgid "Component properties"
+msgstr "Propriedades de componente"
+
+#: FPropertyComponent.form:75
+msgid "Component advancement"
+msgstr "Avanço de componente"
+
+#: FPropertyComponent.form:135
+msgid "Exported classes"
+msgstr "Classes exportadas"
+
+#: FPropertyComponent.form:149
+msgid "Features"
+msgstr "Recursos"
+
 #: FProxy.form:37
 msgid "Port"
 msgstr "Porta"
@@ -4725,11 +4745,11 @@ msgstr "Você não pode publicar um software cuja a versão é \"0.0\"."
 msgid "Software"
 msgstr "-"
 
-#: FPublish.class:162
+#: FPublish.class:162 Publish.module:94
 msgid "The project has been successfully published."
 msgstr "O projeto foi publicado com sucesso."
 
-#: FPublish.class:162
+#: FPublish.class:162 Publish.module:95
 msgid "Unable to publish project."
 msgstr "Não é possível publicar projeto."
 
@@ -4757,51 +4777,51 @@ msgstr "Arquivos de captura de tela"
 msgid "Software description"
 msgstr "Descrição do software"
 
-#: FPublish.form:98 FSoftwareFarm.form:330
+#: FPublish.form:99 FSoftwareFarm.form:330
 msgid "Web site"
 msgstr "-"
 
-#: FPublish.form:113
+#: FPublish.form:114
 msgid "Create menu entry"
 msgstr "Criar entrada de menu"
 
-#: FPublish.form:134 FSoftwareFarm.form:182
+#: FPublish.form:135 FSoftwareFarm.form:182
 msgid "Tags"
 msgstr "Rótulos"
 
-#: FPublish.form:164
+#: FPublish.form:165
 msgid "Sort"
 msgstr "Ordenar"
 
-#: FPublish.form:176
+#: FPublish.form:177
 msgid "Screenshot"
 msgstr "Captura de tela"
 
-#: FPublish.form:181
+#: FPublish.form:182
 msgid "Keep the screenshot stored on the server"
 msgstr "Manter a captura de tela armazenada no servidor"
 
-#: FPublish.form:188
+#: FPublish.form:189
 msgid "Delete the screenshot stored on the server"
 msgstr "Excluir captura de tela armazenada no servidor"
 
-#: FPublish.form:194
+#: FPublish.form:195
 msgid "Upload a new screenshot taken from the clipboard"
 msgstr "Enviar uma nova captura de tela a partir da área de transferência"
 
-#: FPublish.form:200
+#: FPublish.form:201
 msgid "Upload a new screenshot taken from the following file:"
 msgstr "Enviar uma nova captura de tela a partir do seguinte arquivo:"
 
-#: FPublish.form:222
+#: FPublish.form:223
 msgid "Dependencies"
 msgstr "Dependências"
 
-#: FPublish.form:230
+#: FPublish.form:231
 msgid "Require Gambas version"
 msgstr "Versão requirida do Gambas"
 
-#: FPublish.form:295
+#: FPublish.form:296
 msgid "Publish as"
 msgstr "Publicar como"
 
@@ -6805,67 +6825,67 @@ msgstr "Sub-rotinas"
 msgid "Symbols"
 msgstr "Símbolos"
 
-#: Package.module:76
+#: Package.module:77
 msgid "'&1' is missing."
 msgstr "'&1' faltando."
 
-#: Package.module:85
+#: Package.module:86
 msgid "'&1' and '&2' are missing."
 msgstr "'&1' e '&2' estão faltando."
 
-#: Package.module:255
+#: Package.module:262
 msgid "Saving CHANGELOG file."
 msgstr "Salvando arquivo CHANGELOG."
 
-#: Package.module:630
+#: Package.module:639
 msgid "Making &1 support package..."
 msgstr "Criando o pacote de suporte &1..."
 
-#: Package.module:680
+#: Package.module:691
 msgid "Creating package for &1."
 msgstr "Criando pacotes para &1."
 
-#: Package.module:711
+#: Package.module:722
 msgid "The package build has failed."
 msgstr "A montagem do pacote falhou."
 
-#: Package.module:774
+#: Package.module:785
 msgid "Making build directory."
 msgstr "Criando diretório de construção."
 
-#: Package.module:802
+#: Package.module:813
 msgid "Creating desktop file..."
 msgstr "Criando arquivo de área de trabalho..."
 
-#: Package.module:810
+#: Package.module:821
 msgid "Sources are being debianizated."
 msgstr "Fontes foram debianizados."
 
-#: Package.module:995
+#: Package.module:1006
 msgid "Creating package..."
 msgstr "Criando pacote..."
 
-#: Package.module:1003
+#: Package.module:1014
 msgid "'dpkg-buildpackage' has failed."
 msgstr "'dpkg-buildpackage' falhou."
 
-#: Package.module:1283
+#: Package.module:1294
 msgid "Initializing ~/RPM directory."
 msgstr "Inicializando diretório ~/RPM."
 
-#: Package.module:1303
+#: Package.module:1314
 msgid "Creating source package."
 msgstr "Criando pacote de código-fonte."
 
-#: Package.module:1327
+#: Package.module:1338
 msgid "Creating .spec file."
 msgstr "Criando arquivo .spec."
 
-#: Package.module:1585
+#: Package.module:1596
 msgid "'rpmbuild' has returned the following error code:"
 msgstr "'rpmbuild' retornou o seguinte código de erro:"
 
-#: Package.module:1988
+#: Package.module:1999
 msgid "'tar' has returned the following error code:"
 msgstr "'tar' retornou o seguinte código de erro:"
 
