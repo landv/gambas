@@ -38,6 +38,8 @@ Private $sX As String
 Private $sY As String
 Private $sWidth As String
 Private $sHeight As String
+
+Private $hWindowContainer As WebContainer
 'Private $bCentered As Boolean
 
 Static Public Sub Main()
@@ -131,6 +133,13 @@ Static Public Sub _AddJavascript(sStr As String)
   $aJavascript.Add(sStr)
   
 End
+
+Public Sub _new()
+  
+  $hWindowContainer = New WebContainer(Me)
+  
+End
+
 
 Public Sub _ready()
   
@@ -361,7 +370,7 @@ Public Sub Show()
   
   If _Window Then Return
   
-  hWindow = New WebWindow(WebForm._Current)
+  hWindow = New WebWindow(WebForm._Current._GetWindowContainer())
   hWindow.Child = Me
   hWindow.Resizable = $bResizable
   hWindow.Move($sX, $sY, $sWidth, $sHeight)
@@ -489,5 +498,11 @@ Private Sub Height_Write(Value As String)
 
   Me.Style["min-height"] = Value
 
+End
+
+Public Sub _GetWindowContainer() As WebContainer
+  
+  Return $hWindowContainer
+  
 End
 

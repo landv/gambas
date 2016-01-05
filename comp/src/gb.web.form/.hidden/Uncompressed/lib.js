@@ -129,7 +129,7 @@ gw = {
   {
     zIndex: 0,
     
-    open: function(id, resizable, modal)
+    open: function(id, resizable, modal, minw, minh)
     {
       gw.window.close(id);
 
@@ -146,6 +146,20 @@ gw = {
       
       $(id).gw_resizable = resizable;
       $(id).gw_modal = modal;
+      
+      if (minw != undefined)
+      {
+        $(id).gw_minw = minw;
+        $(id).gw_minh = minh;
+      }
+      else
+      {
+        $(id).gw_minw = $(id).offsetWidth;
+        $(id).gw_minh = $(id).offsetHeight;
+      }
+      
+      //console.log('gw.window.open: minw = ' + $(id).gw_minw + ' minh = ' + $(id).gw_minh);
+      
       // Touch events 
       //pane.addEventListener('touchstart', onTouchDown);
       //document.addEventListener('touchmove', onTouchMove);
@@ -370,7 +384,7 @@ gw = {
     animate: function() 
     {
       var id, elt, c, e, x, y, w, h;
-      var minWidth = 120;
+      var minWidth;
       var minHeight;
       
       //requestAnimationFrame(gw.window.animate);
@@ -379,7 +393,8 @@ gw = {
       if (!c) return;
     
       elt = $(c.id);
-      minHeight = $(c.id + '-titlebar').offsetHeight + 2;
+      minWidth = elt.gw_minw;
+      minHeight = elt.gw_minh; //$(c.id + '-titlebar').offsetHeight + 2 + elt.gw_minh;
       e = gw.window.downEvent;
     
       if (c && c.isResizing && e)
