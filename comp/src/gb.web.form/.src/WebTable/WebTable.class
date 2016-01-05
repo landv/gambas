@@ -78,7 +78,7 @@ Public Sub _Render()
       hCol._PrintAlignment()
       sStyle = ""
       If hData.Background <> Color.Default Then sStyle &= "background-color:" & WebControl._GetColor(hData.Background) & ";"
-      If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Background) & ";"
+      If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Foreground) & ";"
       If sStyle Then Print " style=\""; sStyle; "\"";
       Print ">";
       If hData.Html Then
