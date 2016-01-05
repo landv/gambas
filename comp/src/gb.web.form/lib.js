@@ -485,36 +485,41 @@ gw = {
     onScroll: function(id, more)
     {
       var elt = $(id);
+      var sw = elt.firstChild;
       
+      if (more)
+      {
+        //if ((sw.scrollHeight - sw.scrollTop) === (sw.clientHeight))
+        if (sw.scrollTop >= (sw.scrollHeight - sw.clientHeight - 16))
+        {
+          /*var wait = document.createElement('div');
+          wait.className = 'gw-waiting';
+          elt.appendChild(wait);*/
+          if (elt.gw_scroll)
+          {
+            clearTimeout(elt.gw_scroll); 
+            elt.gw_scroll = undefined;
+          }
+          
+          gw.update(id, '#more', [sw.scrollLeft, sw.scrollTop]);
+          return;
+        }
+      }
+
       if (elt.gw_noscroll)
       {
         elt.gw_noscroll = undefined;
         return;
       }
       
-      if (more)
-      {
-        var sw = elt.firstChild;
-        if (sw.scrollHeight - sw.scrollTop === sw.clientHeight)
-        {
-          /*var wait = document.createElement('div');
-          wait.className = 'gw-waiting';
-          elt.appendChild(wait);*/
-          
-          gw.update(id, '#more', null);
-          return;
-        }
-      }
-      
       if (elt.gw_scroll)
         return;
       
-      console.log('onScroll ' + id);
-      
-      elt.gw_scroll = setTimeout(function() { 
-        gw.update(elt.id, '#scroll', [elt.firstChild.scrollLeft, elt.firstChild.scrollTop]); 
-        clearTimeout(elt.gw_scroll); 
-        elt.gw_scroll = undefined;
+      elt.gw_scroll = setTimeout(function()
+        { 
+          gw.update(elt.id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
+          clearTimeout(elt.gw_scroll); 
+          elt.gw_scroll = undefined;
         }, 250);
     },
     

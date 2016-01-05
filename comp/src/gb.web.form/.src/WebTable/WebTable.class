@@ -18,6 +18,7 @@ Property Read Selection As Integer[]
 Property Display As Integer
 Property ScrollX As Integer
 Property ScrollY As Integer
+'Property Fixed As Boolean
 
 Private $hColumns As _WebTableColumns
 Private $iCount As Integer
@@ -28,6 +29,7 @@ Private $iDisplay As Integer
 Private $iScrollX As Integer
 Private $iScrollY As Integer
 Private $bNoScrolling As Boolean
+'Private $bFixed As Boolean
 
 
 Public Sub _new()
@@ -53,7 +55,12 @@ Public Sub _Render()
 
   If $hColumns.Count = 0 Then Return
 
-  Print "<div id=\""; Me.Name & ":c"; "\" class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS($iDisplay < $iCount); ")\"><table>"
+  Print "<div id=\""; Me.Name & ":c"; "\" class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS($iDisplay < $iCount); ")\">";
+  'If $bFixed Then
+  '  Print "<table style=\"table-layout:fixed;\">"
+  'Else
+    Print "<table>"
+  'Endif
   
   $hColumns._Render()
   
@@ -99,6 +106,9 @@ Public Sub _Render()
   
   Print "</tbody></table>"
   
+  If $iDisplay < $iCount Then
+    Print "<div style=\"padding:4px;\"><img src=\""; Application.Root &/ "gw-table-more.gif\"></div>"
+  Endif
   ' If iRow < $iCount Then
   '   Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-bottom.png"); "\"></button></div>"
   ' Endif
@@ -127,6 +137,7 @@ Private Sub Count_Write(Value As Integer)
   Me._SetProperty("Count", Value)
   UnselectAll
   Me.Display = 100
+  Me.ScrollY = 0
 
 End
 
@@ -256,9 +267,12 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   Else If sProp = "#more" Then
     Me.Display += 100
     Me.SetFocus
+    Me.ScrollX = vValue[0]
+    Me.ScrollY = vValue[1]
     '$bNoScrolling = True
     'WebForm._AddJavascript("$(" & JS(Me.Name) & ").firstChild.scrollTop = $(" & JS(Me.Name) & ").firstChild.scrollHeight;")
   Else If sProp = "#scroll" Then
+    'Debug vValue[0];; vValue[1]
     Inc WebForm._DisableRefresh
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
@@ -321,3 +335,16 @@ Private Sub ScrollY_Write(Value As Integer)
   Me._SetProperty("ScrollY", Value)
 
 End
+
+' Private Function Fixed_Read() As Boolean
+' 
+'   Return $bFixed
+' 
+' End
+' 
+' Private Sub Fixed_Write(Value As Boolean)
+' 
+'   $bFixed = Value
+'   Me._SetProperty("Fixed", Value)
+' 
+' End
