@@ -214,7 +214,7 @@ Static Private Sub RenderStyleSheet()
   Response.ContentType = "text/css;charset=utf-8"
   Response.Begin
   
-  Print File.Load("gw-style.css");
+  Print Replace(File.Load("gw-style.css"), "$(root)", Application.Root);
   
   If Exist("../style.css") Then 
     Print File.Load("../style.css");

@@ -5,14 +5,16 @@ Public Sub _new()
 
   Dim I As Integer
   
-  WebTable1.Columns.Count = 8
+  WebForm.Debug = True
+  
+  WebTable1.Columns.Count = 12
   For I = 0 To WebTable1.Columns.Count - 1
     WebTable1.Columns[I].Text = Chr$(65 + I)
     WebTable1.Columns[I].Wrap = False
   Next
   'WebTable1.Columns[3].Expand = True
   
-  WebTable1.Count = 250
+  WebTable1.Count = 10000
   WebTable1.Select(2, 3)
 
 End

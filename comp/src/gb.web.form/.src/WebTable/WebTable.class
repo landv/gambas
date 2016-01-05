@@ -16,12 +16,18 @@ Property Read Max As Integer
 Property Mode As Integer
 Property Read Selection As Integer[]
 Property Display As Integer
+Property ScrollX As Integer
+Property ScrollY As Integer
 
 Private $hColumns As _WebTableColumns
 Private $iCount As Integer
 Private $iMode As Integer
 Private $hSelection As WebTableSelection
 Private $iDisplay As Integer
+
+Private $iScrollX As Integer
+Private $iScrollY As Integer
+Private $bNoScrolling As Boolean
 
 
 Public Sub _new()
@@ -47,7 +53,7 @@ Public Sub _Render()
 
   If $hColumns.Count = 0 Then Return
 
-  Print "<div class=\"gw-table-contents\"><table>"
+  Print "<div id=\""; Me.Name & ":c"; "\" class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS($iDisplay < $iCount); ")\"><table>"
   
   $hColumns._Render()
   
@@ -92,10 +98,18 @@ Public Sub _Render()
   Next
   
   Print "</tbody></table>"
-  If iRow < $iCount Then
-    Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-bottom.png"); "\"></button></div>"
-  Endif
+  
+  ' If iRow < $iCount Then
+  '   Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-bottom.png"); "\"></button></div>"
+  ' Endif
+  
   Print "</div>"
+  
+  If $bNoScrolling Then
+    $bNoScrolling = False
+  Else
+    WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ");")
+  Endif
 
 End
 
@@ -144,6 +158,9 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
     $hColumns.Count = vVal
   Else If sProp = "#selection" Then
     $hSelection.SetSelection(vVal[1], vVal[0])
+  Else If sProp = "#scroll" Then
+    $iScrollX = vVal[0]
+    $iScrollY = vVal[1]
   Else
     aProp = Scan(sProp, "#\\[*].*")
     Object.SetProperty($hColumns[CInt(aProp[0])], aProp[1], vVal)
@@ -209,6 +226,12 @@ Public Sub IsSelected(Row As Integer) As Boolean
   
 End
 
+Public Sub SetFocus()
+  
+  WebForm._AddReply("gw.setFocus(" & JS(Me.Name & ":c") & ");")
+  
+End
+
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   Dim iRow As Integer
@@ -232,7 +255,14 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     Endif
   Else If sProp = "#more" Then
     Me.Display += 100
-    WebForm._AddJavascript("$(" & JS(Me.Name) & ").scrollTop = $(" & JS(Me.Name) & ").scrollHeight;")
+    Me.SetFocus
+    '$bNoScrolling = True
+    'WebForm._AddJavascript("$(" & JS(Me.Name) & ").firstChild.scrollTop = $(" & JS(Me.Name) & ").firstChild.scrollHeight;")
+  Else If sProp = "#scroll" Then
+    Inc WebForm._DisableRefresh
+    Me.ScrollX = vValue[0]
+    Me.ScrollY = vValue[1]
+    Dec WebForm._DisableRefresh
   Endif
   
 End
@@ -263,5 +293,31 @@ Private Sub Display_Write(Value As Integer)
 
   $iDisplay = Value
   Me._SetProperty("Display", Value)
+
+End
+
+Private Function ScrollX_Read() As Integer
+
+  Return $iScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $iScrollX = Value
+  Me._SetProperty("ScrollX", Value)
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $iScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $iScrollY = Value
+  Me._SetProperty("ScrollY", Value)
 
 End
