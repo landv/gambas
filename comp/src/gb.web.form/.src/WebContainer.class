@@ -91,10 +91,12 @@ End
 Public Sub _IsFirstVisibleChild(hChild As WebControl) As Boolean
 
   Dim I As Integer
+  Dim hCtrl As WebControl
   
   For I = 0 To $aChildren.Max
     If $aChildren[I] = hChild.Name Then Return True
-    If WebControl.FromName($aChildren[I]).Visible Then Return
+    hCtrl = WebControl.FromName($aChildren[I])
+    If hCtrl.Visible And If Not hCtrl.Ignore Then Return
   Next
   
 End
