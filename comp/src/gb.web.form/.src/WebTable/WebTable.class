@@ -137,7 +137,6 @@ Private Sub Count_Write(Value As Integer)
   Me._SetProperty("Count", Value)
   UnselectAll
   Me.Display = 100
-  Me.ScrollY = 0
 
 End
 
@@ -348,3 +347,10 @@ End
 '   Me._SetProperty("Fixed", Value)
 ' 
 ' End
+
+Public Sub Clear()
+  
+  Me.Count = 0
+  Me.ScrollY = 0
+  
+End

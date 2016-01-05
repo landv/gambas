@@ -525,16 +525,19 @@ gw = {
     
     scroll: function(id, x, y)
     {
-      if (x != $(id).firstChild.scrollLeft)
+      var sw = $(id).firstChild
+      if (x != sw.scrollLeft)
       {
         $(id).gw_noscroll = true;
-        $(id).firstChild.scrollLeft = x;
+        sw.scrollLeft = x;
       }
-      if (y != $(id).firstChild.scrollTop)
+      if (y != sw.scrollTop)
       {
         $(id).gw_noscroll = true;
-        $(id).firstChild.scrollTop = y;
+        sw.scrollTop = y;
       }
+      if (x != sw.scrollLeft || y != sw.scrollTop)
+        gw.update(id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
     }
   }
 }
