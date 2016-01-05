@@ -325,10 +325,10 @@ AC_DEFUN([GB_INIT],
   dnl ---- Optimization flags
 
   if test "x$gambas_optimization" = "xyes"; then
-    AM_CFLAGS_OPT="$AM_CFLAGS -O3 -march=native"
-    AM_CFLAGS="$AM_CFLAGS -Os -march=native"
-    AM_CXXFLAGS_OPT="$AM_CXXFLAGS -O3 -march=native -fno-omit-frame-pointer"
-    AM_CXXFLAGS="$AM_CXXFLAGS -Os -march=native -fno-omit-frame-pointer"
+    AM_CFLAGS_OPT="$AM_CFLAGS -O3"
+    AM_CFLAGS="$AM_CFLAGS -Os"
+    AM_CXXFLAGS_OPT="$AM_CXXFLAGS -O3 -fno-omit-frame-pointer"
+    AM_CXXFLAGS="$AM_CXXFLAGS -Os -fno-omit-frame-pointer"
   else
     AM_CFLAGS_OPT="$AM_CFLAGS -O0"
     AM_CFLAGS="$AM_CFLAGS -O0"
