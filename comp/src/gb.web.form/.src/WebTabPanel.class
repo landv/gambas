@@ -126,7 +126,7 @@ Public Sub _Render()
   Print "</div>"
   
   Print "<div class=\"gw-tab-contents";
-  If Not $bBorder Then Print " gw-noborder\"";
+  If Not $bBorder Then Print " gw-noborder";
   Print "\">"
   
   With $aTab[$iIndex]
