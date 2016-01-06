@@ -24,7 +24,7 @@ Private $hColumns As _WebTableColumns
 Private $iCount As Integer
 Private $iMode As Integer
 Private $hSelection As WebTableSelection
-Private $iDisplay As Integer
+Private $iDisplay As Integer = 100
 
 Private $iScrollX As Integer
 Private $iScrollY As Integer
@@ -57,13 +57,13 @@ Public Sub _Render()
   If $hColumns.Count = 0 Then Return
 
   bMore = $iDisplay < $iCount
-  Print "<div id=\""; Me.Name & ":c"; "\" class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS(bMore); ")\">";
+  Print "<div class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS(bMore); ")\">";
   'If $bFixed Then
   '  Print "<table style=\"table-layout:fixed;\">"
   'Else
-    Print "<table>"
+    Print "<table id=\""; Me.Name; ":table\">"
   'Endif
-  
+
   $hColumns._Render()
   
   Print "<tbody>"
@@ -136,7 +136,7 @@ Private Sub Count_Write(Value As Integer)
   $iCount = Value
   Me._SetProperty("Count", Value)
   UnselectAll
-  Me.Display = 100
+  'Me.Display = 100
 
 End
 
@@ -168,9 +168,9 @@ Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
     $hColumns.Count = vVal
   Else If sProp = "#selection" Then
     $hSelection.SetSelection(vVal[1], vVal[0])
-  Else If sProp = "#scroll" Then
-    $iScrollX = vVal[0]
-    $iScrollY = vVal[1]
+  ' Else If sProp = "#scroll" Then
+  '   $iScrollX = vVal[0]
+  '   $iScrollY = vVal[1]
   Else
     aProp = Scan(sProp, "#\\[*].*")
     Object.SetProperty($hColumns[CInt(aProp[0])], aProp[1], vVal)
@@ -238,7 +238,7 @@ End
 
 Public Sub SetFocus()
   
-  WebForm._AddReply("gw.setFocus(" & JS(Me.Name & ":c") & ");")
+  WebForm._AddReply("gw.setFocus(" & JS(Me.Name & ":table") & ");")
   
 End
 
@@ -351,6 +351,7 @@ End
 Public Sub Clear()
   
   Me.Count = 0
+  Me.Display = 100
   Me.ScrollX = 0
   Me.ScrollY = 0
   

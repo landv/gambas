@@ -5,7 +5,12 @@ Inherits WebContainer
 
 Public Const _Similar As String = "WebContainer"
 
+Property ScrollX As Integer
+Property ScrollY As Integer
+
 Private $hCont As WebContainer
+Private $iScrollX As Integer
+Private $iScrollY As Integer
 
 Public Sub _new()
   
@@ -13,3 +18,52 @@ Public Sub _new()
   Me._Container = $hCont
   
 End
+
+Public Sub _Render()
+  
+  Print "<div onscroll=\"gw.table.onScroll("; JS(Me.Name); ",false)\">";
+  $hCont._Render()
+  Print "</div>"
+  
+  WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ");")
+
+End
+
+
+Private Function ScrollX_Read() As Integer
+
+  Return $iScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $iScrollX = Value
+  Me._SetProperty("ScrollX", Value)
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $iScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $iScrollY = Value
+  Me._SetProperty("ScrollY", Value)
+
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  If sProp = "#scroll" Then
+    Inc WebForm._DisableRefresh
+    Me.ScrollX = vValue[0]
+    Me.ScrollY = vValue[1]
+    Dec WebForm._DisableRefresh
+  Endif
+  
+End
+
