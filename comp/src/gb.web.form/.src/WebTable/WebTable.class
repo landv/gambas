@@ -52,10 +52,12 @@ Public Sub _Render()
   Dim hData As WebTableData
   Dim hCol As _WebTableColumn
   Dim sStyle As String
+  Dim bMore As Boolean
 
   If $hColumns.Count = 0 Then Return
 
-  Print "<div id=\""; Me.Name & ":c"; "\" class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS($iDisplay < $iCount); ")\">";
+  bMore = $iDisplay < $iCount
+  Print "<div id=\""; Me.Name & ":c"; "\" class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS(bMore); ")\">";
   'If $bFixed Then
   '  Print "<table style=\"table-layout:fixed;\">"
   'Else
@@ -106,9 +108,7 @@ Public Sub _Render()
   
   Print "</tbody></table>"
   
-  If $iDisplay < $iCount Then
-    Print "<div style=\"padding:4px;\"><img src=\""; Application.Root &/ "gw-table-more.gif\"></div>"
-  Endif
+  If bMore Then Print "<div style=\"padding:4px;\"><img src=\""; Application.Root &/ "gw-table-more.gif\"></div>"
   ' If iRow < $iCount Then
   '   Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-bottom.png"); "\"></button></div>"
   ' Endif
