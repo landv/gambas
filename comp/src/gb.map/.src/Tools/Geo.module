@@ -69,7 +69,7 @@ Public Function SexToDec(Value As String) As Float
   Dim ars As String[]
   'Lat
   ars = Scan(Value, "*°*'*''*")
-  fRet = Val(ars[0]) + Val(ars[1]) / 60 + Val(ars[2]) / 3600
+  fRet = Val(ars[0]) + Val(ars[1]) / 60 + CFloat(ars[2]) / 3600
   If ars.Count = 4 Then
     Select Case UCase(ars[3])
       Case "N", "E"
