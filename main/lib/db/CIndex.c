@@ -141,10 +141,10 @@ BEGIN_PROPERTY(CINDEX_fields)
 	GB_ARRAY array;
 	char *fields;
 	char *name;
-	
+
 	fields = GB.NewZeroString(THIS->info.fields);
 	GB.Array.New(&array, GB_T_STRING, 0);
-	
+
 	name = strtok(fields, ",");
 	while (name)
 	{
@@ -214,6 +214,7 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
   DB_INDEX info;
 	int i;
 	GB_ARRAY fields;
+	char *field;
 
   if (DB_CheckNameWith(name, "index", "."))
     return;
@@ -222,24 +223,29 @@ BEGIN_METHOD(CINDEX_add, GB_STRING name; GB_OBJECT fields; GB_BOOLEAN unique)
     return;
 
   info.name = name;
-	
+
 	fields = (GB_ARRAY)VARG(fields);
 	q_init();
 	for (i = 0; i < GB.Array.Count(fields); i++)
 	{
+		field = *(char **)GB.Array.Get(fields, i);
+
 		if (i > 0)
 			q_add(",");
-		
+
 		q_add(table->driver->GetQuote());
-		q_add(*(char **)GB.Array.Get(fields, i));
+		if (table->conn->db.flags.no_case)
+			q_add_lower(field);
+		else
+			q_add(field);
 		q_add(table->driver->GetQuote());
 	}
-	
+
   info.fields = q_steal();
   info.unique = VARGOPT(unique, FALSE);
 
   table->driver->Index.Create(&table->conn->db, table->name, name, &info);
-	
+
 	GB.FreeString(&info.fields);
 
 END_METHOD

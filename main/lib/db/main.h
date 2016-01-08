@@ -55,6 +55,7 @@ void DB_TryAnother(const char *);
 
 void q_init(void);
 void q_add(const char *str);
+void q_add_lower(const char *str);
 void q_add_length(const char *str, int len);
 char *q_get(void);
 char *q_steal(void);
