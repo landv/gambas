@@ -323,6 +323,7 @@ Public Sub _Exec(aCmd As Variant[])
 Catch
   
   sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
+  'Debug sErr
   _InExec = iOldInExec
   
   Response.Begin

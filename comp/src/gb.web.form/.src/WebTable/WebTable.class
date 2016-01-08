@@ -45,29 +45,16 @@ Private Function Columns_Read() As _WebTableColumns
 
 End
 
-Public Sub _Render()
-
+Private Sub PrintBody(iStart As Integer, iEnd As Integer)
+  
   Dim iRow As Integer
   Dim iCol As Integer
-  Dim hData As WebTableData
   Dim hCol As _WebTableColumn
+  Dim hData As WebTableData
   Dim sStyle As String
-  Dim bMore As Boolean
-
-  If $hColumns.Count = 0 Then Return
-
-  bMore = $iDisplay < $iCount
-  Print "<div class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ","; JS(bMore); ")\">";
-  'If $bFixed Then
-  '  Print "<table style=\"table-layout:fixed;\">"
-  'Else
-    Print "<table id=\""; Me.Name; ":table\">"
-  'Endif
-
-  $hColumns._Render()
   
   Print "<tbody>"
-  For iRow = 0 To Min($iDisplay, $iCount) - 1
+  For iRow = iStart To iEnd
     Print "<tr>";
     
     If $iMode Then
@@ -106,9 +93,30 @@ Public Sub _Render()
     Print "</tr>"
   Next
   
-  Print "</tbody></table>"
+  Print "</tbody>"
   
-  If bMore Then Print "<div style=\"padding:4px;\"><img src=\""; Application.Root &/ "gw-table-more.gif\"></div>"
+  If iRow < $iCount Then Print "<tbody id=\""; Me.Name; ":more\"><tr><td><div class=\"gw-table-more\"><img src=\""; Application.Root &/ "gw-table-more.gif\"></td></tr></div></tbody>"
+  
+End
+
+
+Public Sub _Render()
+
+  If $hColumns.Count = 0 Then Return
+
+  Print "<div class=\"gw-table-contents\" onscroll=\"gw.table.onScroll("; JS(Me.Name); ",true);\">";
+  'If $bFixed Then
+  '  Print "<table style=\"table-layout:fixed;\">"
+  'Else
+    Print "<table id=\""; Me.Name; ":table\">"
+  'Endif
+
+  $hColumns._Render()
+  
+  PrintBody(0, Min($iDisplay, $iCount) - 1)
+  
+  Print "</table>"
+  
   ' If iRow < $iCount Then
   '   Print "<div style=\"padding:0.25em;\"><button class=\"gw-button\""; Me._GetUpdateJS("onclick", "#more"); ">"; iRow; " / "; $iCount; "&nbsp;<img src=\""; Html(Application.Root &/ "gw-arrow-bottom.png"); "\"></button></div>"
   ' Endif
@@ -242,11 +250,29 @@ Public Sub SetFocus()
   
 End
 
+Private Sub SendMoreJavascript()
+
+  Dim hFile As File
+  Dim sResult As String
+
+  hFile = Open String For Write
+  Output To #hFile
+    
+  PrintBody($iDisplay, Min($iDisplay + 100, $iCount) - 1)
+    
+  sResult = Close #hFile
+  Output To Default
+  
+  WebForm._AddJavascript("$(" & JS(Me.Name & ":more") & ").outerHTML = " & JS(sResult) & ";")
+
+End
+
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   Dim iRow As Integer
   
   If Left(sProp) = "!" Then
+    
     If sProp = "!!" Then
       If vValue Then
         SelectAll
@@ -263,19 +289,27 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       Endif
       Dec WebForm._DisableRefresh
     Endif
+  
   Else If sProp = "#more" Then
-    Me.Display += 100
-    Me.SetFocus
+    
+    Inc WebForm._DisableRefresh
+    If $iDisplay < $iCount Then
+      SendMoreJavascript()
+      Me.Display += 100
+      Me.SetFocus
+    Endif
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
-    '$bNoScrolling = True
-    'WebForm._AddJavascript("$(" & JS(Me.Name) & ").firstChild.scrollTop = $(" & JS(Me.Name) & ").firstChild.scrollHeight;")
+    Dec WebForm._DisableRefresh
+    
+    
   Else If sProp = "#scroll" Then
-    'Debug vValue[0];; vValue[1]
+    
     Inc WebForm._DisableRefresh
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
     Dec WebForm._DisableRefresh
+    
   Endif
   
 End
