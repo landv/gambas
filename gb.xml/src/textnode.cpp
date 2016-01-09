@@ -313,3 +313,16 @@ CDATANode* XMLCDATA_New(const char *ncontent, const size_t nlen)
     return newComment;
 }
 
+
+bool XML_isTextNode(Node *node)
+{
+    switch(node->type)
+    {
+    case Node::NodeText:
+    case Node::Comment:
+    case Node::CDATA:
+        return true;
+    default:
+        return false;
+    }
+}

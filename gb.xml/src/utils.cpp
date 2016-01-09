@@ -21,10 +21,11 @@
 
 #include "utils.h"
 #include "gbinterface.h"
-#include "../gb_common.h"
+#include "gb_common.h"
 #include "textnode.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <memory.h>
 
 #ifdef OS_MACOSX

@@ -33,7 +33,7 @@
 #include "serializer.h"
 #include "parser.h"
 
-#include "../gambas.h"
+#include "gambas.h"
 #include "html/gb.xml.html.h"
 
 GB_INTERFACE GB EXPORT;

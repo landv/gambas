@@ -38,6 +38,8 @@ void XMLTextNode_setEscapedTextContent(TextNode *node, const char *ncontent, con
 
 void XMLTextNode_TrimContent(TextNode *node);
 
+bool XML_isTextNode(Node *node);
+
 
 CommentNode* XMLComment_New();
 CommentNode* XMLComment_New(const char *ncontent, const size_t nlen);

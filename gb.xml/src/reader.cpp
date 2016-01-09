@@ -359,7 +359,7 @@ int Reader::ReadChar(char car)
             inComment = true;
             //DESTROYPARENT(curNode);
             //UNREF(curNode);
-            curNode = XMLCDATA_New();
+            curNode = XMLComment_New();
             //GB.Ref(curNode);
         }
     }
@@ -424,7 +424,7 @@ int Reader::ReadChar(char car)
             curNode = newNode;
             //GB.Ref(curNode);
         }
-        else if(!curNode || (curNode->type != Node::NodeText && !inTag))//Pas de nœud courant -> nœud texte
+        else if(!curNode || (!XML_isTextNode(curNode) && !inTag))//Pas de nœud courant -> nœud texte
         {
             if(isWhiteSpace(car)) return 0;
             TextNode* newNode = XMLTextNode_New(&car, 1);
@@ -471,7 +471,8 @@ int Reader::ReadChar(char car)
                 ++lenAttrVal;
             }
         }
-        else if(curNode->type == Node::NodeText)
+        
+        else if(XML_isTextNode(curNode))
         {
             char *&textContent = ((TextNode*)curNode)->content;
             size_t &lenTextContent = ((TextNode*)curNode)->lenContent;

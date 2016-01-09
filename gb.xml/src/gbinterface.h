@@ -1,7 +1,7 @@
 #ifndef GBINTERFACE_H
 #define GBINTERFACE_H
 
-#include "../gambas.h"
+#include "gambas.h"
 
 extern "C" GB_INTERFACE GB;
 
