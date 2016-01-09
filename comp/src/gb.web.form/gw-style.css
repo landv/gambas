@@ -210,7 +210,7 @@ P:first-child,UL:first-child,OL:first-child {
 .gw-window-title {
   flex-grow: 1;
   color: white;
-  padding: 0 0.5em;
+  padding: 0 1em;
   pointer-events: none;
   height: 1.5em;
 }
@@ -219,6 +219,12 @@ P:first-child,UL:first-child,OL:first-child {
   width: 1.5em;
   height: 1.5em;
   padding: 0;
+}
+
+.gw-window-button > IMG {
+  width: 0.8em;
+  height: 0.8em;
+  margin: 0.35em;
 }
 
 /*@-moz-document url-prefix() {

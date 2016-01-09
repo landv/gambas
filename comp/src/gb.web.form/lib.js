@@ -278,8 +278,8 @@ gw = {
         $(id).gw_save_geometry = [$(id).style.left, $(id).style.top, $(id).style.width, $(id).style.height];
         $(id).style.left = '0';
         $(id).style.top = '0';
-        $(id).style.width = window.innerWidth + 'px';
-        $(id).style.height = window.innerHeight + 'px';
+        $(id).style.width = '100%';
+        $(id).style.height = '100%';
       }
       //gw.window.updateGeometry(id);
     },
