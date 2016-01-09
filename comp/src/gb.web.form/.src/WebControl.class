@@ -4,7 +4,7 @@ Export
 Create Private
 
 Public Const _IsControl As Boolean = True
-Public Const _Properties As String = "Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color}"
+Public Const _Properties As String = "Class,Width{WebCoord},Height{WebCoord},Visible=True,Enabled=True,Tag,Expand,Ignore,Background{Color},Foreground{Color},Tooltip"
 Public Const _Family As String = "WebForm"
 Public Const _DefaultEvent As String = "Render"
 
@@ -27,6 +27,7 @@ Property Background As Integer
 Property Foreground As Integer
 Property Border As Boolean
 Property Class As String
+Property Tooltip As String
 
 Static Private $iLastId As Integer
 Static Private $iLastFormId As Integer
@@ -59,6 +60,7 @@ Private $bDisabled As Boolean
 Private $bHidden As Boolean
 Private $bNoBorder As Boolean
 Private $sClass As String
+Private $sTooltip As String
 
 
 Public Sub _new(Optional Parent As WebContainer)
@@ -205,10 +207,14 @@ End
 
 Public Sub _GetClassId(Optional sClass As String) As String
 
+  Dim sResult As String
+  
   If Not sClass Then sClass = "gw-" & LCase(Mid$(Object.Type(Me), 4))
   If $bNoBorder Then sClass &= " gw-noborder"
   If $sClass Then sClass &= " " & $sClass
-  Return " class=\"" & sClass & "\" id=\"" & $sName & "\""
+  sResult = " class=\"" & sClass & "\" id=\"" & $sName & "\""
+  If $sTooltip Then sResult &= " title=\"" & Replace($sTooltip, Chr$(34), "&quot;") & "\""
+  Return sResult
   
 End
 
@@ -736,5 +742,18 @@ Private Sub Class_Write(Value As String)
 
   $sClass = Value
   Me._SetProperty("Class", Value)
+
+End
+
+Private Function Tooltip_Read() As String
+
+  Return $sTooltip
+
+End
+
+Private Sub Tooltip_Write(Value As String)
+
+  $sTooltip = Value
+  Me._SetProperty("Tooltip", Value)
 
 End
