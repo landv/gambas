@@ -202,26 +202,23 @@ P:first-child,UL:first-child,OL:first-child {
   flex-flow: row;
   background: #2980B9;
   font-weight: bold;
-  height: 2em;
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0.5em;
+  border-bottom: solid #2980B9 0.5em;
 }
 
 .gw-window-title {
   flex-grow: 1;
   color: white;
-  line-height: 2em;
-  padding-left: 0.5em;
+  padding: 0 0.5em;
   pointer-events: none;
+  height: 1.5em;
 }
 
 .gw-window-button {
-  position: absolute;
-  padding: 0;
   width: 1.5em;
   height: 1.5em;
-  top: 0.25em;
-  right: 0.25em;
+  padding: 0;
 }
 
 /*@-moz-document url-prefix() {

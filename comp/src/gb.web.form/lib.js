@@ -262,6 +262,28 @@ gw = {
       gw.window.updateGeometry(id);
     },
     
+    maximize: function(id)
+    {
+      var geom = $(id).gw_save_geometry;
+      if (geom != undefined)
+      {
+        $(id).style.left = geom[0];
+        $(id).style.top = geom[1];
+        $(id).style.width = geom[2];
+        $(id).style.height = geom[3];
+        $(id).gw_save_geometry = undefined;
+      }
+      else
+      {
+        $(id).gw_save_geometry = [$(id).style.left, $(id).style.top, $(id).style.width, $(id).style.height];
+        $(id).style.left = '0';
+        $(id).style.top = '0';
+        $(id).style.width = window.innerWidth + 'px';
+        $(id).style.height = window.innerHeight + 'px';
+      }
+      //gw.window.updateGeometry(id);
+    },
+    
     onMouseDown: function(e)
     {
       gw.window.onDown(e);
@@ -275,10 +297,13 @@ gw = {
       
       if (e.target.className == 'gw-window-button')
         return;
-      
+        
       gw.window.onMove(e);
       
       c = gw.window.context;
+      if ($(c.id).gw_save_geometry)
+        return;
+        
       if (c && (c.isMoving || c.isResizing))
       {
         gw.window.raise(c.id);

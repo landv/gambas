@@ -58,10 +58,15 @@ Public Sub _Render()
   Dim sOpen As String
   
   Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
-  Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
-  Print "<button class=\"gw-window-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
+  Print "<button class=\"gw-window-button gw-window-close-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
   Print "<img src=\""; Html(Application.Root &/ "gw-close.png"); "\">";
   Print "</button>"
+  Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
+  If $bResizable Then
+    Print "<button class=\"gw-window-button gw-window-max-button\" onclick=\"gw.window.maximize("; JS(Me.Name); ");\">";
+    Print "<img src=\""; Html(Application.Root &/ "gw-max.png"); "\">";
+    Print "</button>"
+  Endif
   Print "</div>"
   
   Print "<div class=\"gw-window-contents\">"
@@ -169,7 +174,9 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       Me["min-width"] = Left(vValue[2], -2)
       Me["min-height"] = Left(vValue[3], -2)
     Endif
+    Inc WebForm._DisableRefresh
     Try Move(vValue[0], vValue[1], vValue[2], vValue[3])
+    Dec WebForm._DisableRefresh
   
   Else If sProp = "#close" Then
     
