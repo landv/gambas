@@ -938,7 +938,8 @@ Public Sub Control_MouseDown()
   
         If Master = $hCurrent And If Mouse.Left Then
           
-          $bSelectParent = True
+          ' Selecting parent is disabled, Fabien has problem with it.
+          ' $bSelectParent = True
           
         Else
   

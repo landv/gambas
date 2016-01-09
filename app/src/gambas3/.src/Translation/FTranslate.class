@@ -357,6 +357,10 @@ Private Sub WriteTranslation(sPath As String, Optional iMode As Integer = EXPORT
           If Right$(sStr, 2) <> "\\n" Then
             sStr = sStr & "\\n"
           Endif
+        Else
+          While Right(sStr, 2) = "\\n" 
+            sStr = Left(sStr, -2)
+          Wend
         Endif
       Endif
 
