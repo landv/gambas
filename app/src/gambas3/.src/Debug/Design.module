@@ -827,7 +827,11 @@ Private Sub Start(sCmd As String)
   FMain.ShowDebug(True)
   FDebugInfo.UpdateView
 
-  aEnv = Project.Environment
+  aEnv = Project.Environment.Copy()
+  
+  If Not aEnv.Exist("GB_GUI=*", gb.Like) Then 
+    aEnv.Add("GB_GUI=")
+  Endif
 
   If Project.Profiling Then FProfile.CleanProfileFiles
 
@@ -857,7 +861,6 @@ Private Sub Start(sCmd As String)
       iPos = aEnv.Find("GB_HTTPD_PORT=*", gb.Like)
       sPort = "8080"
       If iPos < 0 Then
-        aEnv = aEnv.Copy()
         aEnv.Add("GB_HTTPD_PORT=8080")
       Else
         Try sPort = Scan(aEnv[iPos], "*=*")[1]

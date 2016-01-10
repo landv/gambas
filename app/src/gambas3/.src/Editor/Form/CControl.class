@@ -1685,19 +1685,19 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
 
         If bTranslate Then
           
+          sVal = vVal
+            
+          If sVal Ends "..." Then
+            sVal = Left(sVal, -3)
+            sThreeDots = "..."
+          Else If sVal Ends "…" Then
+            sVal = String.Left(sVal, -1)
+            sThreeDots = "…"
+          Else
+            sThreeDots = ""
+          Endif
+          
           If hProp.Shortcut Then
-            
-            sVal = vVal
-            
-            If sVal Ends "..." Then
-              sVal = Left(sVal, -3)
-              sThreeDots = "..."
-            Else If sVal Ends "…" Then
-              sVal = String.Left(sVal, -1)
-              sThreeDots = "…"
-            Else
-              sThreeDots = ""
-            Endif
             
             iPos = String.InStr(sVal, "&")
             If iPos Then
@@ -1718,8 +1718,12 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
             If sThreeDots Then sLine &= " & " & Quote(sThreeDots)
             
           Else
-            sLine &= "(" & Quote(vVal) & ")"
+            
+            sLine &= "(" & Quote(sVal) & ")"
+            
           Endif
+          
+          If sThreeDots Then sLine &= " & " & Quote(sThreeDots)
           
         Else
           sLine &= Quote$(vVal)
