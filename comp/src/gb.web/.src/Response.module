@@ -183,6 +183,8 @@ Public Sub GetContentTypeFrom(Path As String) As String
       Return "image/png"
     Case "gif"
       Return "image/gif"
+    Case "svg"
+      Return "image/svg+xml"
     Case "tiff", "tif"
       Return "image/tiff"
     Case "odt"

@@ -235,14 +235,14 @@ Private Sub CheckUnique()
   
   Else
 
-    dNow = Now
-    For Each sFile In Dir(sDir, sPrefix & ":*")
-      Try hStat = Stat(sDir &/ sFile)
-      If Error Then Continue
-      If DateDiff(hStat.LastModified, dNow, gb.Hour) >= 24 Then
-        Try Kill sDir &/ sFile
-      Endif
-    Next
+    ' dNow = Now
+    ' For Each sFile In Dir(sDir, sPrefix & ":*")
+    '   Try hStat = Stat(sDir &/ sFile)
+    '   If Error Then Continue
+    '   If DateDiff(hStat.LastModified, dNow, gb.Hour) >= 24 Then
+    '     Try Kill sDir &/ sFile
+    '   Endif
+    ' Next
     
   Endif
   
