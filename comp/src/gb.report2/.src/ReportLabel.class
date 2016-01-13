@@ -18,7 +18,7 @@ Private $sFormat As String
 Private $iAlignment As Integer
 Private $fAngle As Integer
 Private $bUseField As Boolean
-Private $hEval As ReportEval
+Private $hEval As _RepExp
 Static Private $iPage As Integer
 Static Private $iIndex As Integer
 Event Data(Index As Integer)
@@ -37,8 +37,9 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
   'soit définie par le parent, soit imposée par l'utilisateur
   
     If $sText Begins "=" Then
-      If Not $hEval Or If $hEval.Formula <> Right($sText, -1) Then 
-        $hEval = New ReportEval(Right($sText, -1)) As "Eval"
+      If Not $hEval Or If $hEval.Text <> Right($sText, -1) Then 
+        $hEval = New _RepExp As "Eval"
+        $hEval.Text = Right($sText, -1)
       Endif
     Endif
 
@@ -103,7 +104,7 @@ Public Sub _Paint(Page As Integer, X As Float, Y As Float, hControl As TControl,
   Endif
   
   If sTempText Begins "=" Then
-     $hEval.Execute
+     $hEval.Compile()
      sTempText = $hEval.Value
   Endif
 

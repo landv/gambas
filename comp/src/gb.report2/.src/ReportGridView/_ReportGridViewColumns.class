@@ -1,0 +1,119 @@
+' Gambas class file
+
+Property Count As Integer
+Property Read Max As Integer
+Property Read Height, H As String
+Property Resizable As Boolean
+Property Width, W As String
+Property Sort As Integer
+Property Ascending As Boolean
+
+
+Private $iCount As Integer
+Private $sHeight As String
+Private $bResizable As String
+Private $sWidth As String = "2cm"
+Private $iSort As Integer
+Private $bAscendig As Boolean
+
+Private $aColumns As New _ReportGridViewColumn[]
+
+
+Private Function Count_Read() As Integer
+
+  
+
+End
+
+Private Sub Count_Write(Value As Integer)
+
+  Dim iOldCount As Integer = $aColumns.Count
+  Dim i As Integer
+  
+  If Value = iOldCount Then Return
+  
+  Try $aColumns.Resize(Value)
+  If Error Then Error.Raise("Bad argument")
+  
+  If Value > iOldCount Then
+    'If GetView().AutoResize And If iOldCount Then $aColumns[iOldCount - 1]._W = 0
+    For i = iOldCount To Value - 1
+      
+    Next
+    
+  Endif
+  
+  For i = iOldCount To Value
+    
+  Next
+  
+
+End
+
+Private Function Max_Read() As Integer
+
+  
+
+End
+
+Private Function Height_Read() As String
+
+  
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+  
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+  
+
+End
+
+Private Function Width_Read() As String
+
+  
+
+End
+
+Private Sub Width_Write(Value As String)
+
+  
+
+End
+
+Private Function Sort_Read() As Integer
+
+  
+
+End
+
+Private Sub Sort_Write(Value As Integer)
+
+  
+
+End
+
+Private Function Ascending_Read() As Boolean
+
+  
+
+End
+
+Private Sub Ascending_Write(Value As Boolean)
+
+  
+
+End
+
+Private Function GetView() As ReportGridView
+  
+  Return Object.Parent(Me)
+  
+End
+
+

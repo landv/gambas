@@ -1,0 +1,64 @@
+' Gambas class file
+
+Property Width, W As String
+Property Text, Title As String
+Property Resizable As Boolean
+Property Expand As Boolean
+Property Alignment As Integer
+Property Background As ReportBrush
+
+Private $sWidth As String
+Private $sText As String
+Private $bExpand As String
+Private $bAlignment As Integer
+Private $hBackGround As New ReportBrush
+
+Public _Column As Integer                             ''Column Number
+
+Private Function Width_Read() As String
+
+End
+
+Private Sub Width_Write(Value As String)
+
+End
+
+Private Function Text_Read() As String
+
+End
+
+Private Sub Text_Write(Value As String)
+
+End
+
+Private Function Resizable_Read() As Boolean
+
+End
+
+Private Sub Resizable_Write(Value As Boolean)
+
+End
+
+Private Function Expand_Read() As Boolean
+
+End
+
+Private Sub Expand_Write(Value As Boolean)
+
+End
+
+Private Function Alignment_Read() As Integer
+
+End
+
+Private Sub Alignment_Write(Value As Integer)
+
+End
+
+Private Function Background_Read() As ReportBrush
+
+End
+
+Private Sub Background_Write(Value As ReportBrush)
+
+End
