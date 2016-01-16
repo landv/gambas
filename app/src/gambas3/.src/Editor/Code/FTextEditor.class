@@ -815,6 +815,7 @@ Private Sub SetText(sText As String)
   $hEditor.Text = sText
   $bModify = True
   Me.Save
+  $cProc = Null
   UpdateCurrentProc
   'Editor.Begin
   'Editor.SelectAll
