@@ -88,7 +88,7 @@ BEGIN_METHOD(TextBox_new, GB_OBJECT parent)
 	wid->setAlignment(Qt::AlignLeft);
 
 	CWIDGET_new(wid, (void *)_object);
-	
+
 END_METHOD
 
 
@@ -334,27 +334,7 @@ static void raise_click_event(void *_object)
 	THIS->click = true;
 	GB.Raise(THIS, EVENT_Click, 0);
 	THIS->click = false;
-	
-}
 
-static int combo_get_current_item(void *_object)
-{
-	COMBOBOX->sort();
-	return COMBOBOX->count() == 0 ? -1 : COMBOBOX->currentIndex();
-}
-
-static void combo_set_current_item(void *_object, int item)
-{
-	COMBOBOX->sort();
-	
-	if (item != combo_get_current_item(THIS))
-	{
-		if (item < COMBOBOX->count())
-			COMBOBOX->setCurrentIndex(item);
-	}
-	
-	if (item >= 0 && !COMBOBOX->signalsBlocked())
-		raise_click_event(THIS);
 }
 
 static int combo_find_item(void *_object, const QString& s)
@@ -367,6 +347,43 @@ static int combo_find_item(void *_object, const QString& s)
 	}
 
 	return (-1);
+}
+
+static int combo_get_current_item(void *_object)
+{
+	COMBOBOX->sort();
+
+	if (COMBOBOX->isEditable())
+		return combo_find_item(THIS, COMBOBOX->lineEdit()->text());
+	else
+		return COMBOBOX->count() == 0 ? -1 : COMBOBOX->currentIndex();
+}
+
+static void combo_set_current_item(void *_object, int item)
+{
+	COMBOBOX->sort();
+
+	if (COMBOBOX->isEditable())
+	{
+		if (item < 0 || item >= COMBOBOX->count())
+			COMBOBOX->lineEdit()->clear();
+		else
+		{
+			COMBOBOX->setCurrentIndex(item);
+			COMBOBOX->lineEdit()->setText(COMBOBOX->itemText(item));
+		}
+	}
+	else
+	{
+		if (item != combo_get_current_item(THIS))
+		{
+			if (item < COMBOBOX->count())
+				COMBOBOX->setCurrentIndex(item);
+		}
+	}
+
+	if (item >= 0 && !COMBOBOX->signalsBlocked())
+		raise_click_event(THIS);
 }
 
 static void combo_set_text(CCOMBOBOX *_object, QString &text)
@@ -385,7 +402,7 @@ static void combo_set_editable(void *_object, bool ed)
 	QLineEdit *textbox;
 	QString text;
 	bool hasFocus = COMBOBOX->hasFocus();
-	
+
 	if (ed == COMBOBOX->isEditable())
 		return;
 
@@ -415,13 +432,13 @@ static void combo_set_editable(void *_object, bool ed)
 		COMBOBOX->setEditable(false);
 		COMBOBOX->update();
 	}
-	
+
 	combo_set_text(THIS, text);
 	CWIDGET_reset_color((CWIDGET *)THIS);
 
 	if (hasFocus)
 		COMBOBOX->setFocus();
-	
+
 	if (CWIDGET_test_flag(THIS, WF_DESIGN))
 		COMBOBOX->setFocusPolicy(Qt::NoFocus);
 
@@ -431,7 +448,7 @@ static void combo_set_editable(void *_object, bool ed)
 static void combo_get_list(void *_object, GB_ARRAY array)
 {
 	int i;
-	
+
 	COMBOBOX->sort();
 	for (i = 0; i < COMBOBOX->count(); i++)
 	{
@@ -444,7 +461,7 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 {
 	int i;
 	QString text = COMBOBOX->currentText();
-	
+
 	COMBOBOX->blockSignals(true);
 	COMBOBOX->clear();
 
@@ -458,13 +475,13 @@ static void combo_set_list(void *_object, GB_ARRAY array)
 
 	COMBOBOX->setDirty();
 	combo_set_text(THIS, text);
-	
+
 	if (!COMBOBOX->isEditable())
 	{
 		if (combo_get_current_item(THIS) < 0)
 			combo_set_current_item(THIS, 0);
 	}
-	
+
 	COMBOBOX->blockSignals(false);
 }
 
@@ -569,10 +586,10 @@ BEGIN_METHOD(ComboBox_Add, GB_STRING item; GB_INTEGER pos)
 
 	COMBOBOX->blockSignals(true);
 	index = combo_get_current_item(THIS);
-	
+
 	if (pos < 0 || pos >= COMBOBOX->count())
 		pos = -1;
-	
+
 	if (pos < 0)
 		COMBOBOX->addItem(QSTRING_ARG(item));
 	else
@@ -584,9 +601,9 @@ BEGIN_METHOD(ComboBox_Add, GB_STRING item; GB_INTEGER pos)
 		combo_set_current_item(THIS, index);
 	else
 		combo_set_current_item(THIS, 0);
-	
+
 	COMBOBOX->blockSignals(false);
-	
+
 END_METHOD
 
 
@@ -665,7 +682,7 @@ END_METHOD
 BEGIN_PROPERTY(ComboBox_List)
 
 	GB_ARRAY array;
-	
+
 	if (READ_PROPERTY)
 	{
 		GB.Array.New(&array, GB_T_STRING, COMBOBOX->count());
