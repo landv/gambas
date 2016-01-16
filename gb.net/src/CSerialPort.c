@@ -50,7 +50,7 @@
 #define MAX_SERIAL_BUFFER_SIZE 65536
 
 
-GB_STREAM_DESC SerialStream = 
+GB_STREAM_DESC SerialStream =
 {
 	open: CSerialPort_stream_open,
 	close: CSerialPort_stream_close,
@@ -76,23 +76,23 @@ static SERIAL_SIGNAL get_signals(CSERIALPORT *_object)
 {
 	int ist = 0;
 	SERIAL_SIGNAL signals = { 0 };
-	
+
 	ioctl(THIS->port, TIOCMGET, &ist);
-	
+
 	signals.DSR = (ist & TIOCM_DSR) != 0;
 	signals.DTR = (ist & TIOCM_DTR) != 0;
 	signals.RTS = (ist & TIOCM_RTS) != 0;
 	signals.CTS = (ist & TIOCM_CTS) != 0;
 	signals.DCD = (ist & TIOCM_CAR) != 0;
 	signals.RNG = (ist & TIOCM_RNG) != 0;
-	
+
 	return signals;
 }
 
 static void raise_event(CSERIALPORT *_object, intptr_t event)
 {
 	int val = 0;
-	
+
 	if (event == EVENT_DSR)
 		val = THIS->signals.DSR;
 	else if (event == EVENT_DTR)
@@ -105,7 +105,7 @@ static void raise_event(CSERIALPORT *_object, intptr_t event)
 		val = THIS->signals.DCD;
 	else if (event == EVENT_RNG)
 		val = THIS->signals.RNG;
-	
+
 	GB.Raise(THIS, (int)event, 1, GB_T_BOOLEAN, val);
 	GB.Unref(POINTER(&_object));
 }
@@ -117,7 +117,7 @@ if (THIS->signals._signal != new_signals._signal) \
 	GB.Ref(THIS); \
 	GB.Post2(raise_event, (intptr_t)THIS, (intptr_t)EVENT_##_signal); \
 }
-	
+
 
 static int cb_change(intptr_t _object)
 {
@@ -131,14 +131,14 @@ static int cb_change(intptr_t _object)
 
 	/* Serial port signals status */
 	new_signals = get_signals(THIS);
-	
+
 	CHECK_SIGNAL(DSR);
 	CHECK_SIGNAL(DTR);
 	CHECK_SIGNAL(RTS);
 	CHECK_SIGNAL(CTS);
 	CHECK_SIGNAL(DCD);
 	CHECK_SIGNAL(RNG);
-	
+
 	return FALSE;
 }
 
@@ -153,7 +153,7 @@ static void assign_callback(CSERIALPORT *_object, int polling)
 
 	if (GB.CanRaise(THIS, EVENT_Read))
 		GB.Watch(port, GB_WATCH_READ, (void *)cb_read, (intptr_t)THIS);
-	
+
 	if (GB.CanRaise(THIS, EVENT_DTR)
 			|| GB.CanRaise(THIS, EVENT_CTS)
 			|| GB.CanRaise(THIS, EVENT_DCD)
@@ -162,7 +162,7 @@ static void assign_callback(CSERIALPORT *_object, int polling)
 			|| GB.CanRaise(THIS, EVENT_RTS))
 	{
 		// Polling is 50ms by default
-		GB.Every(polling, cb_change, (intptr_t)THIS);
+		THIS->every = GB.Every(polling, cb_change, (intptr_t)THIS);
 	}
 }
 
@@ -173,6 +173,12 @@ static void release_callback(CSERIALPORT *_object)
 
 static void close_serial_port(CSERIALPORT *_object)
 {
+	if (THIS->every)
+	{
+		GB.Unref(POINTER(&THIS->every));
+		THIS->every = NULL;
+	}
+
 	if (THIS->status)
 	{
 		release_callback(THIS);
@@ -219,9 +225,9 @@ int CSerialPort_stream_close(GB_STREAM *stream)
 {
 	void *_object = stream->tag;
 
-	if (!_object) 
+	if (!_object)
 		return -1;
-	
+
 	close_serial_port(THIS);
 	return 0;
 }
@@ -233,7 +239,7 @@ int CSerialPort_stream_lof(GB_STREAM *stream, int64_t *len)
 
 	*len=0;
 	if (!_object) return -1;
-	
+
 	if (ioctl(THIS->port,FIONREAD,&bytes)) return -1;
 	*len = bytes;
 	return 0;
@@ -245,7 +251,7 @@ int CSerialPort_stream_eof(GB_STREAM *stream)
 	int bytes;
 
 	if (!_object) return -1;
-	
+
 	if (ioctl(THIS->port,FIONREAD,&bytes)) return -1;
 	if (!bytes) return -1;
 	return 0;
@@ -258,25 +264,25 @@ int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len)
 	int no_block = 0;
 	int bytes;
 
-	if (!_object) 
+	if (!_object)
 		return -1;
-	
-	if (ioctl(THIS->port, FIONREAD, &bytes)) 
+
+	if (ioctl(THIS->port, FIONREAD, &bytes))
 		return -1;
-	
-	if (bytes < len) 
+
+	if (bytes < len)
 		return -1;
-	
+
 	ioctl(THIS->port, FIONBIO, &no_block);
-	
+
 	npos = read(THIS->port, (void*)buffer, len);
-	
+
 	no_block++;
 	ioctl(THIS->port, FIONBIO, &no_block);
-	
-	if (npos != len) 
+
+	if (npos != len)
 		return -1;
-	
+
 	return 0;
 }
 
@@ -286,19 +292,19 @@ int CSerialPort_stream_write(GB_STREAM *stream, char *buffer, int len)
 	int npos = -1;
 	int no_block = 0;
 
-	if (!_object) 
+	if (!_object)
 		return -1;
-	
+
 	ioctl(THIS->port, FIONBIO, &no_block);
-	
+
 	npos = write(THIS->port, (void*)buffer, len);
-	
+
 	no_block++;
 	ioctl(THIS->port, FIONBIO, &no_block);
-	
-	if (npos < 0) 
+
+	if (npos < 0)
 		return -1;
-	
+
 	return 0;
 }
 
@@ -386,7 +392,7 @@ END_PROPERTY
 BEGIN_PROPERTY(SerialPort_RTS)
 
 	int ist;
-	
+
 	if (READ_PROPERTY)
 	{
 		if (!THIS->status)
@@ -481,14 +487,14 @@ BEGIN_PROPERTY(SerialPort_FlowControl)
 	{
 		if (check_close(THIS))
 			return;
-		
+
 		flow = VPROP(GB_INTEGER);
 		if (flow < 0 || flow > 3)
 		{
 			GB.Error("Invalid flow control value");
 			return;
 		}
-		
+
 		THIS->flow = VPROP(GB_INTEGER);
 	}
 
@@ -499,7 +505,7 @@ END_PROPERTY
 BEGIN_PROPERTY(SerialPort_Parity)
 
 	int parity;
-	
+
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->parity);
 	else
@@ -513,7 +519,7 @@ BEGIN_PROPERTY(SerialPort_Parity)
 			GB.Error("Invalid parity");
 			return;
 		}
-		
+
 		THIS->parity = parity;
 	}
 
@@ -524,16 +530,16 @@ END_PROPERTY
 BEGIN_PROPERTY(SerialPort_Speed)
 
 	int speed;
-	
+
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->speed);
 	else
 	{
 		if (check_close(THIS))
 			return;
-		
+
 		speed = VPROP(GB_INTEGER);
-		
+
 		if (ConvertBaudRate(speed) == -1)
 			GB.Error("Invalid speed value");
 		else
@@ -547,16 +553,16 @@ END_PROPERTY
 BEGIN_PROPERTY(SerialPort_DataBits)
 
 	int value;
-	
+
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->dataBits);
 	else
 	{
 		if (check_close(THIS))
 			return;
-		
+
 		value = VPROP(GB_INTEGER);
-		
+
 		if (ConvertDataBits(value) == -1)
 			GB.Error("Invalid data bits value");
 		else
@@ -570,16 +576,16 @@ END_PROPERTY
 BEGIN_PROPERTY(SerialPort_StopBits)
 
 	int value;
-	
+
 	if (READ_PROPERTY)
 		GB.ReturnInteger(THIS->stopBits);
 	else
 	{
 		if (check_close(THIS))
 			return;
-		
+
 		value = VPROP(GB_INTEGER);
-		
+
 		if (ConvertStopBits(value) == -1)
 			GB.Error("Invalid stop bits value");
 		else
@@ -623,14 +629,14 @@ BEGIN_METHOD(SerialPort_Open, GB_INTEGER polling)
 		GB.Error("Port is already opened");
 		return;
 	}
-	
+
 	if ((err = OpenSerialPort(&THIS->port, THIS->flow, &THIS->oldtio, THIS->portName, THIS->speed, THIS->parity, THIS->dataBits, THIS->stopBits)))
 	{
 		sprintf(buffer, "#%d", err);
 		GB.Error("Cannot open serial port (&1)", buffer);
 		return;
 	}
-	
+
 	THIS->signals = get_signals(THIS);
 	THIS->stream.desc = &SerialStream;
 	THIS->stream.tag = THIS;
@@ -677,22 +683,22 @@ GB_DESC CSerialPortDesc[] =
 	GB_INHERITS("Stream"),
 
 	GB_CONSTANT("None", "i", 0),
-	
+
 	GB_CONSTANT("Hardware", "i", 1),
 	GB_CONSTANT("Software", "i", 2),
 	GB_CONSTANT("Both", "i", 3),
 
 	GB_CONSTANT("Even", "i", 1),
 	GB_CONSTANT("Odd", "i", 2),
-	
+
 	GB_CONSTANT("Bits1", "i", 1),
 	GB_CONSTANT("Bits2", "i", 2),
-	
+
 	GB_CONSTANT("Bits5", "i", 5),
 	GB_CONSTANT("Bits6", "i", 6),
 	GB_CONSTANT("Bits7", "i", 7),
 	GB_CONSTANT("Bits8", "i", 8),
-	
+
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("DTRChange", NULL, "(CurrentValue)b", &EVENT_DTR),
 	GB_EVENT("DSRChange", NULL, "(CurrentValue)b", &EVENT_DSR),
@@ -709,7 +715,7 @@ GB_DESC CSerialPortDesc[] =
 	GB_PROPERTY("PortName", "s", SerialPort_Port),
 	GB_PROPERTY("Parity", "i", SerialPort_Parity),
 	GB_PROPERTY("Speed", "i", SerialPort_Speed),
-	
+
 	GB_PROPERTY("DataBits", "i", SerialPort_DataBits),
 	GB_PROPERTY("StopBits", "i", SerialPort_StopBits),
 	GB_PROPERTY("DTR", "b", SerialPort_DTR),

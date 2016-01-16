@@ -38,7 +38,7 @@ extern GB_STREAM_DESC SerialStream;
 
 #endif
 
-typedef 
+typedef
 	struct
 	{
 		unsigned DSR : 1;
@@ -64,9 +64,10 @@ typedef
 		int stopBits;
 		int flow;
 		int polling;
+		GB_TIMER *every;
 		SERIAL_SIGNAL signals;
 		struct termios oldtio;
-	}  
+	}
 	CSERIALPORT;
 
 int CSerialPort_stream_read(GB_STREAM *stream, char *buffer, int len);
