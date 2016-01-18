@@ -457,7 +457,7 @@ static void conv_data(const char *data, int len, GB_VARIANT_VALUE *val, Oid type
 				date.year = (-date.year);
 
 			// 4713-01-01 BC is used for null dates
-			
+
 			if (date.year == -4713 && date.month == 1 && date.day == 1)
 				date.year = date.month = date.day = 0;
 
@@ -737,6 +737,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 
 	db->handle = conn;
 	db->version = db_version(db);
+	db->data = (void *)0; // transaction level
 
 	if (db->version >= 90000)
 	{
@@ -755,7 +756,7 @@ static int open_database(DB_DESC *desc, DB_DATABASE *db)
 	/* flags */
 
 	db->flags.no_table_type = TRUE;
-	db->flags.no_nest = TRUE;
+	//db->flags.no_nest = TRUE;
 	db->flags.no_case = TRUE;
 	db->flags.schema = TRUE;
 	db->flags.no_collation = db->version < 90100;
@@ -1247,7 +1248,19 @@ static int field_length(DB_RESULT result, int field)
 
 static int begin_transaction(DB_DATABASE *db)
 {
-	return do_query(db, "Unable to begin transaction: &1", NULL, "BEGIN", 0);
+	int trans = (int)(intptr_t)(db->data) + 1;
+	db->data = (void *)(intptr_t)trans;
+
+	if (trans == 1)
+	{
+		return do_query(db, "Unable to begin transaction: &1", NULL, "BEGIN", 0);
+	}
+	else
+	{
+		char buffer[8];
+		sprintf(buffer, "%d", trans - 1);
+		return do_query(db, "Unable to begin transaction: &1", NULL, "SAVEPOINT t&1", 1, buffer);
+	}
 }
 
 
@@ -1266,7 +1279,19 @@ static int begin_transaction(DB_DATABASE *db)
 
 static int commit_transaction(DB_DATABASE *db)
 {
-	return do_query(db, "Unable to commit transaction: &1", NULL, "COMMIT", 0);
+	int trans = (int)(intptr_t)(db->data) - 1;
+	db->data = (void *)(intptr_t)trans;
+
+	if (trans == 0)
+	{
+		return do_query(db, "Unable to commit transaction: &1", NULL, "COMMIT", 0);
+	}
+	else
+	{
+		char buffer[8];
+		sprintf(buffer, "%d", trans);
+		return do_query(db, "Unable to begin transaction: &1", NULL, "RELEASE SAVEPOINT t&1", 1, buffer);
+	}
 }
 
 
@@ -1285,7 +1310,19 @@ static int commit_transaction(DB_DATABASE *db)
 
 static int rollback_transaction(DB_DATABASE *db)
 {
-	return do_query(db, "Unable to rollback transaction: &1", NULL, "ROLLBACK", 0);
+	int trans = (int)(intptr_t)(db->data) - 1;
+	db->data = (void *)(intptr_t)trans;
+
+	if (trans == 0)
+	{
+		return do_query(db, "Unable to rollback transaction: &1", NULL, "ROLLBACK", 0);
+	}
+	else
+	{
+		char buffer[8];
+		sprintf(buffer, "%d", trans);
+		return do_query(db, "Unable to begin transaction: &1", NULL, "ROLLBACK TO SAVEPOINT t&1", 1, buffer);
+	}
 }
 
 
