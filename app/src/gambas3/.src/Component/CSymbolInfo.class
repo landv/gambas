@@ -514,6 +514,7 @@ Public Function GetSignature(bBalise As Boolean, Optional iShowArg As Integer = 
       If iPos = 0 Then Break
       $sArgAfter &= " = " & Mid$(sSign, iInd + 1, iPos - iInd - 1)
       iInd = iPos
+      Continue
     
     Endif
 
