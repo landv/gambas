@@ -1039,6 +1039,12 @@ Private Sub GetProc(sLine As String) As String
         If iPos Then
           sProc = Trim(Left$(sLine, iPos - 1))
         Endif
+      Else If sLine Like "*: function(*" Then
+        sLine = Trim(sLine)
+        iPos = InStr(sLine, ":")
+        sLine = RTrim(Left(sLine, iPos - 1))
+        If Left(sLine) = "'" Or If Left(sLine) = Chr$(34) Then sLine = Mid$(sLine, 2, -1)
+        sProc = sLine
       Endif
       
     Case "c", "c++"

@@ -5688,10 +5688,14 @@ Public Sub SetReadOnly(sPath As String, bReadOnly As Boolean)
   
 SET_READONLY:
 
-  If bReadOnly Then
-    Try Chmod sPath To "r-.r-.r-.."
-  Else
-    Try Chmod sPath To "rw.rw.r..."
+  If Stat(sPath).Type = gb.File Then 
+  
+    If bReadOnly Then
+      Try Chmod sPath To "r-.r-.r-.."
+    Else
+      Try Chmod sPath To "rw.rw.r..."
+    Endif
+    
   Endif
   
   hForm = Files[sPath]
@@ -5953,7 +5957,8 @@ Public Sub UpdateAllForms()
     If Stat(sPath).Type = gb.Link Then Continue
 
     hForm = LoadFile(sPath)
-    hForm.Save(True)
+    hForm.Modify()
+    hForm.Save()
 
   Next
 
