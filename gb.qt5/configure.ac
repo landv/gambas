@@ -39,6 +39,11 @@ GB_COMPONENT_PKG_CONFIG(
   'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets $QT_OPENGL_SUPPORT
 )
 
+GB_COMPONENT_PKG_CONFIG(
+  qt5ext, QT5EXT, gb.qt5.ext, [ext],
+  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets
+)
+
 MOC=`pkg-config --variable=host_bins Qt5Core`/moc
 AC_SUBST(MOC)
 
@@ -47,6 +52,7 @@ Makefile \
 src/Makefile \
 src/webkit/Makefile \
 src/opengl/Makefile \
+src/ext/Makefile \
 )
 
 ## src/ext/Makefile \
