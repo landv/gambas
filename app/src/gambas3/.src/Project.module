@@ -3069,7 +3069,7 @@ Private Sub GetVersion(Optional bWriteProject As Boolean) As Boolean
   
 BAD_VERSION:
 
-  FMain.ShowError(Subst(("The contents of VERSION file at &1 is incorrect."), "<tt>" & sDir & "</tt>"))
+  FMain.ShowError(("The contents of VERSION file is incorrect.") & "\n<tt>" & sDir & "</tt>")
 
 End
 
