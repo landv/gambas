@@ -172,13 +172,13 @@ int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool noc
   wchar_t *t2 = NULL;
   int i, cmp;
   int lt1, lt2;
-  
+
   if (l1 < 0)
   	l1 = s1 ? strlen(s1) : 0;
-  	
+
 	if (l2 < 0)
   	l2 = s2 ? strlen(s2) : 0;
-  
+
 	if (l1 == 0)
 	{
 		if (l2 == 0)
@@ -205,21 +205,21 @@ int COMPARE_string_lang(const char *s1, int l1, const char *s2, int l2, bool noc
 		for (i = 0; i < lt2; i++)
 			t2[i] = towlower(t2[i]);
 	}
-	
+
 	errno = 0;
 	cmp = wcscoll(t1, t2);
 	if (!errno)
 		return (cmp < 0) ? - 1 : (cmp > 0) ? 1 : 0;
-		
+
 __FAILED:
-	
+
 	return nocase ? TABLE_compare_ignore_case(s1, l1, s2, l2) : TABLE_compare(s1, l1, s2, l2);
 }
 
 /*
 	Natural sort order.
 	Based on the algorithm made by Martin Pol (http://sourcefrog.net/projects/natsort/)
-	
+
 	This software is copyright by Martin Pool, and made available under the same
 	licence as zlib:
 
@@ -246,33 +246,33 @@ static int strnatcmp_compare_right(const char *a, int la, const char *b, int lb)
 {
 	int bias = 0;
 	unsigned char ca, cb;
-     
+
 	/* The longest run of digits wins.  That aside, the greatest
 	value wins, but we can't know that it will until we've scanned
 	both numbers to know that they have the same magnitude, so we
 	remember it in BIAS. */
-  
-	for (;; a++, b++, la--, lb--) 
+
+	for (;; a++, b++, la--, lb--)
 	{
 		ca = (la > 0) ? *a : 0;
 		cb = (lb > 0) ? *b : 0;
-		
+
 	  if (!isdigit(ca) && !isdigit(cb))
 			return bias;
 	  else if (!isdigit(ca))
 			return -1;
 		else if (!isdigit(cb))
 			return +1;
-		else if (ca < cb) 
+		else if (ca < cb)
 		{
 			if (!bias)
 				bias = -1;
-		} 
-		else if (ca > cb) 
+		}
+		else if (ca > cb)
 		{
 			if (!bias)
 				bias = +1;
-		} 
+		}
 		else if (!ca) // && !cb)
 			return bias;
 	}
@@ -287,11 +287,11 @@ static int strnatcmp_compare_left(const char *a, int la, const char *b, int lb)
 
 	/* Compare two left-aligned numbers: the first to have a
 		different value wins. */
-	for (;; a++, b++, la--, lb--) 
+	for (;; a++, b++, la--, lb--)
 	{
 		ca = (la > 0) ? *a : 0;
 		cb = (lb > 0) ? *b : 0;
-		
+
 		if (!isdigit(ca) && !isdigit(cb))
 			return 0;
 		else if (!isdigit(ca))
@@ -312,9 +312,9 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 	int ai, bi, lca, lcb;
 	unsigned char ca, cb;
 	int fractional, result;
-		
+
 	ai = bi = 0;
-	
+
 	for(;;)
 	{
 		for(;;)
@@ -329,7 +329,7 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 				break;
 			ai++;
 		}
-		
+
 		for(;;)
 		{
 			if (bi >= lb)
@@ -342,23 +342,23 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 				break;
 			bi++;
 		}
-		
+
 		/* process run of digits */
-		if (ca >= '0' && ca <= '9' && cb >= '0' && cb <= '9') 
+		if (ca >= '0' && ca <= '9' && cb >= '0' && cb <= '9')
 		{
 			fractional = (ca == '0' || cb == '0');
 
-			if (fractional) 
+			if (fractional)
 			{
 				if ((result = strnatcmp_compare_left(a+ai, la-ai, b+bi, lb-bi)) != 0)
 					return result;
-			} 
+			}
 			else
 			{
 				if ((result = strnatcmp_compare_right(a+ai, la-ai, b+bi, lb-bi)) != 0)
 					return result;
 			}
-		}	
+		}
 
 		if (!ca)
 		{
@@ -383,10 +383,10 @@ int COMPARE_string_natural(const char *a, int la, const char *b, int lb, bool no
 		{
 			if (nocase)
 			{
-				ca = toupper(ca);
-				cb = toupper(cb);
+				ca = tolower(ca);
+				cb = tolower(cb);
 			}
-		
+
 			if (ca < cb)
 				return -1;
 			else if (ca > cb)
@@ -436,7 +436,7 @@ static int compare_string_lang_case(char **pa, char **pb)
 int COMPARE_string_like(const char *s1, int l1, const char *s2, int l2)
 {
 	int result;
-	
+
 	if (REGEXP_match(s2, l2, s1, l1))
 		return 0;
 	result = TABLE_compare_ignore_case(s1, l1, s2, l2);
@@ -474,14 +474,14 @@ int COMPARE_object(void **a, void **b)
 {
 	bool comp;
 	CLASS *ca, *cb;
-	
+
 	/*{
 		STACK_BACKTRACE *bt = STACK_get_backtrace();
 		fprintf(stderr, "COMPARE_object\n");
 		DEBUG_print_backtrace(bt);
 		STACK_free_backtrace(&bt);
 	}*/
-	
+
 	ca = OBJECT_class_null(*a);
 	cb = OBJECT_class_null(*b);
 
@@ -535,12 +535,12 @@ int COMPARE_variant(VARIANT *a, VARIANT *b)
 	TYPE type;
 	VALUE value;
 	int comp;
-	
+
 	if (a->type == T_NULL)
 		return b->type == T_NULL ? 0 : -1;
 	else if (b->type == T_NULL)
 		return 1;
-	
+
 	if (TYPE_is_object(a->type))
 	{
 		if (TYPE_is_object(b->type))
@@ -550,32 +550,32 @@ int COMPARE_variant(VARIANT *a, VARIANT *b)
 	}
 	else if (TYPE_is_object(b->type))
 		return -1;
-	
+
 	if (a->type == b->type)
 		return (*COMPARE_get(a->type, 0))(&a->value, &b->value);
-	
+
 	type = Max(a->type, b->type);
-	
+
 	if (b->type == type)
 	{
 		VARIANT *c;
-		
+
 		c = a;
 		a = b;
 		b = c;
 		_descent = !_descent;
 	}
-	
+
 	value.type = T_VARIANT;
 	value._variant.vtype = b->type;
 	value._variant.value.data = b->value.data;
-	
+
 	BORROW(&value);
 	VALUE_conv(&value, type);
 	VALUE_conv_variant(&value);
 	comp = (*COMPARE_get(type, 0))(&a->value, &value._variant.value);
 	RELEASE(&value);
-	
+
 	return comp;
 }
 
@@ -613,7 +613,7 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
       return (COMPARE_FUNC)compare_date;
 
     case T_STRING:
-			
+
 			if (mode & GB_COMP_NATURAL)
 				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_natural_case : compare_string_natural);
 			else if (mode & GB_COMP_LIKE)
@@ -622,14 +622,14 @@ COMPARE_FUNC COMPARE_get(TYPE type, int mode)
 				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_lang_case : compare_string_lang);
 			else
 				return (COMPARE_FUNC)((mode & GB_COMP_NOCASE) ? compare_string_case : compare_string_binary);
-			
+
 		case T_POINTER:
 			#ifdef OS_64BITS
 				return (COMPARE_FUNC)compare_long;
 			#else
 				return (COMPARE_FUNC)compare_integer;
 			#endif
-			
+
 		case T_VARIANT:
 			return (COMPARE_FUNC)COMPARE_variant;
 
