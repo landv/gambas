@@ -496,6 +496,12 @@ Public Sub ProjectItem_ButtonClick()
   
 End
 
+Public Sub ProjectItem_preparePopUp(item As ProjectBox)
+
+  $hCurrent = item
+
+End
+
 Public Sub GetFirst() As String
 
   Dim hChild As Control
@@ -588,6 +594,11 @@ End
 Private Sub Current_Write(Value As ProjectBox)
 
   If $hCurrent = Value Then Return
+  
+  If IsNull(Value) Then
+    $hCurrent = Value
+    Return
+  Endif 
   
   If $hCurrent Then $hCurrent.Selected = False
   $hCurrent = Value

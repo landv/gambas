@@ -5,7 +5,8 @@ Inherits UserControl
 Event Click
 Event DblClick
 Event ButtonClick
-
+Event preparePopUp(Item As ProjectBox)
+ 
 Static Public ShowButton As Boolean
 
 Property ShowPath As Boolean
@@ -418,6 +419,12 @@ End
 Private Function Info_Read() As CProjectInfo
 
   Return $hProjectInfo
+
+End
+
+Public Sub DrawingArea_MouseDown()
+ 
+   If Mouse.Right Then Raise preparePopUp(Me)
 
 End
 

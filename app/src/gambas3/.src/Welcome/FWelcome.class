@@ -318,9 +318,10 @@ End
 
 
 Public Sub lstRecent_Menu()
-
-  mnuSort.Popup
-
+   mnuRemove.Visible = Not IsNull($hRecent.Current)
+   mnuSep01.Visible = Not IsNull($hRecent.Current)
+   mnuSort.Popup
+   $hRecent.Current = Null
 End
 
 Private Sub UpdateMenuSort()
@@ -343,6 +344,14 @@ Public Sub mnuSort_Click()
   $hRecent.SetSort($iSort)
   'UpdateMenuSort
   
+End
+
+Public Sub mnuRemove_Click()
+Dim sPath As String = $hRecent.Current.Path
+   
+  $hRecent.Current.Delete()
+  CRecentProject.Remove(sPath)
+  $hRecent.Current = Null
 End
 
 Public Sub ProjectItem_Click(Path As String, (Another) As Boolean)

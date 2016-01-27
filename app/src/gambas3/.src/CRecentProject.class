@@ -192,6 +192,26 @@ Static Public Sub Add(sPath As String)
 
 End
 
+Static Public Sub Remove(sPath As String)
+Dim iInd As Integer
+Dim hRecentFile As CRecentProject
+
+  Load
+
+  If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
+    Sort = SORT_BY_DATE
+    All.Sort()
+
+    While iInd < All.Count
+      If All[iInd].Path = sPath Then
+        All.Remove(iInd)
+      Else
+        Inc iInd
+      Endif
+    Wend
+    Save
+End
+
 Static Public Sub Get(Optional iSort As Integer) As CRecentProject[]
   
   Load
