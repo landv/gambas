@@ -38,6 +38,11 @@ Private Sub Hidden_Write(Value As Boolean)
 
   $bHidden = Value
   Me._SetProperty("Hidden", Value)
+  If $bHidden Then
+    Raise Hide
+  Else
+    Raise Show
+  Endif
 
 End
 
