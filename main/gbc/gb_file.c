@@ -24,5 +24,6 @@
 #include "gb_common.h"
 #include "gb_error.h"
 #include "gb_alloc.h"
+#include "gb_str.h"
 
 #include "gb_file_temp.h"

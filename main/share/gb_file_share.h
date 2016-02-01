@@ -83,12 +83,14 @@ const char *FILE_find_gambas(void);
 void FILE_rename(const char *src, const char *dst);
 void FILE_unlink(const char *path);
 
+char *FILE_get_home(void);
+void FILE_exit(void);
+
 #ifdef PROJECT_EXEC
 
 void FILE_init(void);
 void FILE_remove_temp_file(void);
 void FILE_remove_temp_file_pid(pid_t pid);
-void FILE_exit(void);
 
 bool FILE_exist_follow(const char *path, bool follow);
 #define FILE_exist(_path) FILE_exist_follow(_path, FALSE)

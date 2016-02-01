@@ -58,6 +58,7 @@ char *COMP_root = NULL;
 char *COMP_project;
 char *COMP_project_name;
 char *COMP_info_path;
+char *COMP_lib_path;
 static char *COMP_classes = NULL;
 COMPILE COMP_current;
 uint COMPILE_version = GAMBAS_PCODE_VERSION;
@@ -103,25 +104,25 @@ static void add_memory_list(char *p, int size)
 	char *pe = p + size;
 	char *p2;
 	int len;
-	
+
 	for(;;)
 	{
 		if (p >= pe)
 			break;
-		
+
 		p2 = p;
 		while (p2 < pe && *p2 != '\n')
 			p2++;
-		
+
 		if (p2 >= pe)
 			break;
-		
+
 		len = p2 - p;
 		/*if (len > 2 && p[len - 1] == '?')
 			len--;*/
 
 		COMPILE_add_class(p, len);
-		
+
 		p = p2 + 1;
 	}
 }
@@ -148,16 +149,46 @@ static void add_library_list_file(const char *path)
 {
 	ARCH *arch;
 	ARCH_FIND find;
-	
-	if (FILE_exist(path))
+	const char *name;
+	char *rpath = NULL;
+
+	if (*path == ':')
+	{
+		name = &path[1];
+
+		rpath = STR_cat(FILE_cat(COMP_lib_path, name, NULL), ".gambas", NULL);
+		if (!FILE_exist(rpath))
+		{
+			STR_free(rpath);
+			rpath = STR_cat(FILE_cat(COMP_root, "lib/gambas" GAMBAS_VERSION_STRING, name, NULL), ".gambas", NULL);
+		}
+
+		if (!FILE_exist(rpath))
+			path = NULL;
+		else
+			path = rpath;
+	}
+	else
+	{
+		name = path;
+		if (!FILE_exist(path))
+			path = NULL;
+	}
+
+	if (path)
 	{
 		arch = ARCH_open(path);
-		
+
 		if (!ARCH_find(arch, ".list", 0, &find))
 			add_memory_list(&arch->addr[find.pos], find.len);
-			
+
 		ARCH_close(arch);
 	}
+	else
+		ERROR_warning("cannot find library: %s", name);
+
+	if (rpath)
+		STR_free(rpath);
 }
 
 
@@ -178,7 +209,7 @@ static void add_component_list_file(char *name)
 			THROW("Component not found: &1", name);
 		return;
 	}
-	
+
 	add_file_list(fi);
 
 	fclose(fi);
@@ -197,7 +228,7 @@ static bool line_begins_with(const char *line, const char *key, int len)
 {
 	if (len < 0)
 		len = strlen(key);
-	
+
 	return strncmp(line, key, len) == 0;
 }
 
@@ -207,9 +238,9 @@ static void startup_print(FILE *fs, const char *key, const char *def)
 	char line[256];
 	int len = strlen(key);
 	bool print = FALSE;
-	
+
 	fp = open_project_file();
-		
+
 	for(;;)
 	{
 		if (read_line(fp, line, sizeof(line)))
@@ -221,9 +252,9 @@ static void startup_print(FILE *fs, const char *key, const char *def)
 			print = TRUE;
 		}
 	}
-	
+
 	fclose(fp);
-	
+
 	if (!print && def)
 		fprintf(fs, "%s\n", def);
 }
@@ -235,30 +266,30 @@ static char *find_version_in_file(void)
 	char line[256];
 	const char *path;
 	int len;
-	
+
 	dir = STR_copy(COMP_project);
-	
+
 	for(;;)
 	{
 		pdir = STR_copy(FILE_get_dir(dir));
 		STR_free(dir);
 		dir = pdir;
-		
+
 		if (dir[0] == '/' && dir[1] == 0)
 		{
 			STR_free(dir);
 			return NULL;
 		}
-		
+
 		path = FILE_cat(dir, "VERSION", NULL);
-		
+
 		if (FILE_exist(path))
 		{
 			STR_free(dir);
 			break;
 		}
 	}
-	
+
 	fv = fopen(path, "r");
 	if (!fv)
 		return NULL;
@@ -275,9 +306,9 @@ static void startup_print_version(FILE *fs)
 	FILE *fp;
 	char line[256];
 	char *version = NULL;
-	
+
 	fp = open_project_file();
-		
+
 	for(;;)
 	{
 		if (read_line(fp, line, sizeof(line)))
@@ -296,9 +327,9 @@ static void startup_print_version(FILE *fs)
 			version = STR_copy(&line[8]);
 		}
 	}
-	
+
 	fclose(fp);
-	
+
 	if (version)
 	{
 		fputs(version, fs);
@@ -313,12 +344,12 @@ static void create_startup_file()
 {
 	const char *name;
 	FILE *fs;
-	
+
 	name = FILE_cat(FILE_get_dir(COMP_project), ".startup", NULL);
 	fs = fopen(name, "w");
 	if (!fs)
 		THROW("Cannot create .startup file");
-	
+
 	// Do that now, otherwise file buffer can be erased
 	FILE_set_owner(name, COMP_project);
 
@@ -326,9 +357,9 @@ static void create_startup_file()
 	startup_print(fs, "Title=", "");
 	startup_print(fs, "Stack=", "0");
 	startup_print(fs, "StackTrace=", "0");
-	
+
 	startup_print_version(fs);
-	
+
 	fputc('\n', fs);
 	startup_print(fs, "Component=", NULL);
 	startup_print(fs, "Library=", NULL);
@@ -404,25 +435,31 @@ static void init_version(void)
 
 void COMPILE_init(void)
 {
-	const char *root;
 	FILE *fp;
 	char line[256];
+	char *env;
 
 	RESERVED_init();
 
-	if (COMP_root)
-		root = COMP_root;
-	else
-		root = FILE_get_dir(FILE_get_dir(FILE_find_gambas()));
+	if (!COMP_root)
+		COMP_root = STR_copy(FILE_get_dir(FILE_get_dir(FILE_find_gambas())));
 
 	// Component directory
 
-	COMP_info_path = STR_copy(FILE_cat(root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
-	
+	COMP_info_path = STR_copy(FILE_cat(COMP_root, "share/gambas" GAMBAS_VERSION_STRING "/info", NULL));
+
+	// Local libraries directory
+
+	env = getenv("XDG_DATA_HOME");
+	if (env && *env)
+		COMP_lib_path = STR_copy(FILE_cat(env, "gambas3/lib", NULL));
+	else
+		COMP_lib_path = STR_copy(FILE_cat(FILE_get_home(), ".local/share/gambas3/lib", NULL));
+
 	// Project name
-	
+
 	COMP_project_name = STR_copy(FILE_get_name(FILE_get_dir(COMP_project)));
-	
+
 	// Bytecode version
 
 	init_version();
@@ -434,7 +471,7 @@ void COMPILE_init(void)
 	add_component_list_file("gb");
 
 	fp = open_project_file();
-	
+
 	for(;;)
 	{
 		if (read_line(fp, line, sizeof(line)))
@@ -451,13 +488,13 @@ void COMPILE_init(void)
 	fclose(fp);
 
 	// Startup file
-	
+
 	create_startup_file();
-	
-	// Adds a separator to make the difference between classes from components 
+
+	// Adds a separator to make the difference between classes from components
 	// (they must be searched in the global symbol table) and classes from the
 	// project (they must be searched in the project symbol table)
-	
+
 	COMPILE_add_class("-", 1);
 
 	/*
@@ -516,7 +553,7 @@ void COMPILE_begin(const char *file, bool trans, bool debug)
 		ERROR_warning("cannot stat file: %s", JOB->name);
 	else
 		size += info.st_size;
-	
+
 	if (JOB->form)
 	{
 		if (stat(JOB->form, &info))
@@ -547,7 +584,7 @@ void COMPILE_end(void)
 
 	if (JOB->help)
 		ARRAY_delete(&JOB->help);
-	
+
 	STR_free(JOB->name);
 	STR_free(JOB->form);
 	STR_free(JOB->output);
@@ -571,10 +608,10 @@ void COMPILE_exit(void)
 void COMPILE_add_class(const char *name, int len)
 {
 	unsigned char clen = len;
-	
+
 	if (clen != len)
 		ERROR_panic("Class name is too long");
-	
+
 	BUFFER_add(&COMP_classes, &clen, 1);
 	BUFFER_add(&COMP_classes, name, len);
 }
@@ -588,12 +625,12 @@ void COMPILE_end_class(void)
 void COMPILE_enum_class(char **name, int *len)
 {
 	char *p = *name;
-	
+
 	if (!p)
 		p = COMP_classes;
 	else
 		p += p[-1];
-	
+
 	*len = *p;
 	*name = p + 1;
 }
@@ -607,7 +644,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 
 	if (!JOB->warnings && type == MSG_WARNING)
 		return;
-	
+
   va_start(args, msg);
 
 	if (line < 0)
@@ -617,7 +654,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 	}
 	else
 		col = FALSE;
-	
+
 	if (JOB->name)
 	{
 		const char *name = FILE_get_name(JOB->name);
@@ -641,9 +678,9 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 	}
 	else
 		fprintf(stderr, "gbc: ");
-	
+
 	fprintf(stderr, "%s: ", type ? "warning" : "error");
-  
+
 	if (msg)
 	{
 		for (i = 0; i < 4; i++)
@@ -653,7 +690,7 @@ void COMPILE_print(int type, int line, const char *msg, ...)
 		fputs(ERROR_info.msg, stderr);
 		putc('\n', stderr);
 	}
-	
+
 	va_end(args);
 }
 

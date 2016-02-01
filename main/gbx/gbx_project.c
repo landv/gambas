@@ -31,7 +31,6 @@
 #include "gb_error.h"
 
 #include <unistd.h>
-#include <pwd.h>
 
 #include "gb_limit.h"
 #include "gb_buffer.h"
@@ -66,9 +65,6 @@ static char *project_buffer;
 //static char *project_ptr;
 static int project_line;
 
-static char *_home = NULL;
-static uid_t _uid = 0;
-
 static const char *_last_component = NULL;
 
 static void raise_error(const char *msg)
@@ -97,7 +93,7 @@ static void project_version(char *name, int len)
 static void project_component(char *name, int len)
 {
 	_last_component = name;
-	
+
 	name[len] = 0;
 
 	COMPONENT_create(name);
@@ -141,51 +137,11 @@ static void project_stacktrace(char *name, int len)
 	// Backtrace is always printed now.
 }
 
-#if 0
-static void project_command(char *line, int len)
+static void project_library_path(char *name, int len)
 {
-	static PROJECT_COMMAND command[] = {
-		{ "PROJECT", NULL },
-		{ "TITLE", project_title },
-		{ "LIBRARY", project_component },
-		{ "COMPONENT", project_component },
-		{ "STARTUP", project_startup },
-		{ "STACK", project_stack },
-		{ "VERSION", project_version },
-		{ "STACKTRACE", project_stacktrace },
-		{ NULL }
-		};
-
-	PROJECT_COMMAND *pc;
-	char cmd[32];
-	int len_cmd;
-
-	for (len_cmd = 0; len_cmd < len; len_cmd++)
-	{
-		if (line[len_cmd] == '=')
-			break;
-	}
-
-	if (len_cmd >= len || len_cmd >= sizeof(cmd) || len_cmd == 0)
-		raise_error("Syntax error");
-
-	strncpy(cmd, line, len_cmd);
-
-	for (pc = command; ; pc++)
-	{
-		if (pc->command == NULL)
-			break;
-			/*raise_error("Unknown command");*/
-
-		if (strncasecmp(pc->command, cmd, len_cmd) == 0)
-		{
-			if (pc->func)
-				(*pc->func)(&line[len_cmd + 1], len - len_cmd - 1);
-			break;
-		}
-	}
+	ARCHIVE_path = name;
+	name[len] = 0;
 }
-#endif
 
 static void check_after_analyze()
 {
@@ -199,71 +155,20 @@ static void check_after_analyze()
 		PROJECT_title = PROJECT_name;
 }
 
-#if 0
-static void project_analyze(char *addr, int len)
-{
-	char *end = &addr[len];
-	char c;
-	char *start;
-
-
-	project_ptr = addr;
-	project_line = 1;
-	start = project_ptr;
-
-	for(;;)
-	{
-		if (project_ptr >= end)
-			break;
-
-		c = *project_ptr++;
-
-		if (c == '\n')
-		{
-			project_line++;
-			start = project_ptr;
-			continue;
-		}
-
-		if (c == '#')
-		{
-			while ((project_ptr < end) && c != '\n')
-				c = *project_ptr++;
-			project_ptr--;
-			continue;
-		}
-
-		if (c <= ' ')
-			continue;
-
-		project_ptr--;
-		start = project_ptr;
-
-		while ((project_ptr < end) && (c != '\n'))
-			c = *project_ptr++;
-
-		project_command(start, project_ptr - start - 1);
-		project_ptr--;
-	}
-
-	check_after_analyze();
-}
-#endif
-
 static bool get_line(char **addr, const char *end, char **start, int *len)
 {
 	char *p = *addr;
-	
+
 	if (p >= end)
 		return FALSE;
-	
+
 	while (p < end && *p && *p != '\n')
 		p++;
-	
+
 	*start = *addr;
 	*len = p - *start;
 	*addr = p + 1;
-	
+
 	return (*len > 0);
 }
 
@@ -292,13 +197,17 @@ void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb)
 			get_line(&addr, end, &p, &l);
 	}
 
-	while (get_line(&addr, end, &p, &l));
+	if (get_line(&addr, end, &p, &l))
+	{
+		project_library_path(p, l);
+		while (get_line(&addr, end, &p, &l));
+	}
 
 	if (!cb)
 	{
 		while (get_line(&addr, end, &p, &l))
 			project_component(p, l);
-		
+
 		check_after_analyze();
 	}
 	else
@@ -309,23 +218,6 @@ void PROJECT_analyze_startup(char *addr, int len, PROJECT_COMPONENT_CALLBACK cb)
 			(*cb)(p);
 		}
 	}
-}
-
-char *PROJECT_get_home(void)
-{
-	struct passwd *info;
-	uid_t uid = getuid();
-	
-	if (!_home || _uid != uid)
-	{
-		STRING_free(&_home);
-		info = getpwuid(uid);
-		if (info)
-			_home = STRING_new_zero(info->pw_dir);
-		_uid = uid;
-	}
-
-	return _home;
 }
 
 void PROJECT_init(const char *file)
@@ -348,14 +240,14 @@ void PROJECT_init(const char *file)
 	#ifdef OS_64BITS
 	COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB64_PATH, NULL));
 	if (access(COMPONENT_path, F_OK))
-	{	
+	{
 		STRING_free(&COMPONENT_path);
 		COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
 	}
 	#else
 	COMPONENT_path = STRING_new_zero(FILE_cat(PROJECT_exec_path, GAMBAS_LIB_PATH, NULL));
 	#endif
-	
+
 	//STRING_new(&COMPONENT_user_path, FILE_cat(PROJECT_get_home(), ".local", GAMBAS_LIB_PATH, NULL), 0);
 
 	/* Project path & name*/
@@ -381,7 +273,7 @@ void PROJECT_init(const char *file)
 		}
 		else
 			path = file;
-			
+
 		path = FILE_get_dir(path);
 		FILE_chdir(path);
 	}
@@ -447,7 +339,7 @@ void PROJECT_load()
 	/* Project file analyze */
 
 	STACK_init();
-	
+
 	if (EXEC_arch)
 		file = ".startup";
 	else
@@ -462,7 +354,7 @@ void PROJECT_load()
 		ERROR_fatal("unable to find startup file");
 	}
 	END_TRY
-	
+
 	TRY
 	{
 		PROJECT_analyze_startup(project_buffer, len, NULL);
@@ -475,7 +367,7 @@ void PROJECT_load()
 			ERROR_fatal("unable to analyze startup file");
 	}
 	END_TRY
-	
+
 	// Loads all component
 	COMPONENT_load_all();
 }
@@ -484,7 +376,7 @@ void PROJECT_load_finish(void)
 {
 	// Load exported class of components written in Gambas
 	COMPONENT_load_all_finish();
-	
+
 	// Loads main archive
 	ARCHIVE_load_main();
 
@@ -499,8 +391,7 @@ void PROJECT_exit(void)
 
 	STRING_free(&PROJECT_name);
 	STRING_free(&PROJECT_path);
-	
+
 	STRING_free(&PROJECT_oldcwd);
 	STRING_free(&PROJECT_exec_path);
-	STRING_free(&_home);
 }

@@ -2,7 +2,7 @@
 
   gbx.c
 
-  (c) 2000-2013 Benoît Minisini <gambas@users.sourceforge.net>
+  (c) 2000-2016 Benoît Minisini <gambas@users.sourceforge.net>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ static void init(const char *file, int argc, char **argv)
 {
 	COMPONENT_init();
 	FILE_init();
-	
+
 	EXEC_init();
 	CLASS_init();
 	CFILE_init();
@@ -99,12 +99,12 @@ static void init(const char *file, int argc, char **argv)
 
 		if (PROJECT_run_httpd)
 			COMPONENT_exec("gb.httpd", argc, argv);
-		
+
 		PROJECT_load_finish();
 	}
 	else
 		STACK_init();
-		
+
 	if (EXEC_debug)
 	{
 		DEBUG.Welcome();
@@ -119,7 +119,7 @@ static void main_exit(bool silent)
 	// If the stack has not been initialized because the project could not be started, do it now
 	if (!SP)
 		STACK_init();
-	
+
 	TRY
 	{
 		SIGNAL_exit();
@@ -173,7 +173,7 @@ static bool is_option_arg(char **argv, int argc, int *i, char option, const char
 		}
 		else
 			*param = NULL;
-		
+
 		return TRUE;
 	}
 	else
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 	//sprintf(log_path, "/tmp/gambas-%d.log", getuid());
 	//log_file = freopen(log_path, "w+", stderr);
 	//fprintf(stderr, "Fichier log Gambas\n");
-	
+
 	/*struct rlimit rl = { 64000000, 64000000 };
 	if (setrlimit(RLIMIT_CORE, &rl))
 		perror(strerror(errno));*/
@@ -271,12 +271,12 @@ int main(int argc, char *argv[])
 			my_exit(0);
 		}
 	}
-	
+
 	if (!EXEC_arch && argc >= 2 && is_option(argv[1], 'e'))
 	{
 		if (argc < 3)
 			ERROR_fatal("-e option needs an expression.");
-		
+
 		_eval = TRUE;
 
 		TRY
@@ -292,11 +292,11 @@ int main(int argc, char *argv[])
 			_exit(1);
 		}
 		END_TRY
-		
+
 		main_exit(FALSE);
-		_exit(0);	
+		_exit(0);
 	}
-	
+
 	for (i = 1; i < argc; i++)
 	{
 		if (is_option(argv[i], 'g'))
@@ -344,9 +344,9 @@ int main(int argc, char *argv[])
 		{
 			if (file)
 				ERROR_fatal("too many %s.", EXEC_arch ? "executable files" : "project directories");
-			
+
 			file = argv[i];
-			
+
 			if (EXEC_arch)
 			{
 				i++;
@@ -361,16 +361,16 @@ int main(int argc, char *argv[])
 
 	if (EXEC_arch)
 		argv[0] = file;
-	
+
 	for (i = 1; i <= (argc - n); i++)
 		argv[i] = argv[i + n - 1];
 
 	argc -= n - 1;
-	
+
 	TRY
 	{
 		init(file, argc, argv);
-		
+
 		if (!EXEC_arch)
 			argv[0] = PROJECT_name;
 
@@ -392,7 +392,7 @@ int main(int argc, char *argv[])
 	CATCH
 	{
 		ERROR_hook();
-		
+
 		if (EXEC_debug && DEBUG_is_init())
 		{
 			if (!_welcome)
@@ -414,20 +414,20 @@ int main(int argc, char *argv[])
 	TRY
 	{
 		EXEC_public_desc(PROJECT_class, NULL, startup, 0);
-		
+
 		if (TYPE_is_boolean(startup->type))
 			ret = RP->_boolean.value ? 1 : 0;
 		else if (TYPE_is_integer(startup->type))
 			ret = RP->_integer.value & 0xFF;
 
 		EXEC_release_return_value();
-		
+
 		if (_quit_after_main)
 		{
 			main_exit(TRUE);
 			_exit(0);
 		}
-		
+
 		if (!ret)
 		{
 			DEBUG_enter_event_loop();
@@ -441,7 +441,7 @@ int main(int argc, char *argv[])
 		if (ERROR->info.code && ERROR->info.code != E_ABORT)
 		{
 			ERROR_hook();
-			
+
 			if (EXEC_debug)
 			{
 				DEBUG.Main(TRUE);
@@ -455,7 +455,7 @@ int main(int argc, char *argv[])
 				_exit(1);
 			}
 		}
-		
+
 		ret = EXEC_quit_value;
 	}
 	END_TRY

@@ -166,22 +166,22 @@ static void get_arguments(int argc, char **argv)
 				}
 				COMP_root = STR_copy(optarg);
 				break;
-				
+
 			case 'e':
 				ERROR_translate = TRUE;
 				break;
-				
+
 			case 1:
 				main_no_old_read_syntax = TRUE;
 				break;
-			
+
 			case 'L':
 				printf(
 					"\nGAMBAS Compiler version " VERSION " " __DATE__ " " __TIME__ "\n"
 					COPYRIGHT
 					);
 				exit(0);
-				
+
 			case 'h': case '?':
 				printf(
 					"\nCompile Gambas projects into architecture-independent bytecode.\n"
@@ -246,7 +246,7 @@ static void get_arguments(int argc, char **argv)
 	{
 		fprintf(stderr, "gbc: no current directory.\n");
 		exit(1);
-	}    
+	}
 
 	COMP_project = STR_copy(FILE_cat(dir, ".project", NULL));
 
@@ -311,7 +311,7 @@ static void compile_file(const char *file)
 	{
 		JOB->first_line = FORM_FIRST_LINE;
 		BUFFER_add(&JOB->source, "#Line " FORM_FIRST_LINE_STRING "\n", -1);
-		
+
 		BUFFER_create(&source);
 		BUFFER_load_file(&source, JOB->form);
 		BUFFER_add(&source, "\n\0", 2);
@@ -321,21 +321,21 @@ static void compile_file(const char *file)
 			case FORM_WEBPAGE:
 				FORM_webpage(source);
 				break;
-				
+
 			case FORM_NORMAL:
 			default:
 				FORM_do(source, main_public);
 				break;
 		}
-				
+
 		BUFFER_delete(&source);
-		
+
 		BUFFER_add(&JOB->source, "#Line 1\n", -1);
 	}
-	
+
 	COMPILE_load();
 	BUFFER_add(&JOB->source, "\n\0", 2);
-	
+
 	#if 0
 	fprintf(stderr, "-----------------\n");
 	fputs(JOB->source, stderr);
@@ -378,16 +378,16 @@ static void fill_files(const char *root, bool recursive)
 	const char *file;
 	struct stat info;
 	const char *ext;
-	
+
 	path = STR_copy(root);
-	
+
 	dir = opendir(path);
 	if (!dir)
 	{
 		fprintf(stderr, "gbc: cannot browse directory: %s\n", path);
 		exit(1);
 	}
-	
+
 	while ((dirent = readdir(dir)) != NULL)
 	{
 		file_name = dirent->d_name;
@@ -429,19 +429,19 @@ static void fill_files(const char *root, bool recursive)
 static void init_files(const char *first)
 {
 	bool recursive;
-	
+
 	ARRAY_create(&_files);
 
 	if (*first)
 		FILE_chdir(first);
-	
+
 	recursive = chdir(".src") == 0;
 	fill_files(FILE_get_current_dir(), recursive);
 	if (recursive) FILE_chdir("..");
 
 	// Sort paths
 	qsort(_files, ARRAY_count(_files), sizeof(*_files), (int (*)(const void *, const void *))compare_path);
-	
+
 	// End the list of classes
 	COMPILE_end_class();
 }
@@ -450,10 +450,10 @@ static void init_files(const char *first)
 static void exit_files(void)
 {
 	int i;
-	
+
 	for (i = 0; i < ARRAY_count(_files); i++)
 		STR_free(_files[i]);
-	
+
 	ARRAY_delete(&_files);
 }
 
@@ -461,7 +461,7 @@ static void exit_files(void)
 int main(int argc, char **argv)
 {
 	int i;
-	
+
 	MEMORY_init();
 	COMMON_init();
 
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
 		COMPILE_init();
 
 		// Remove information files if we are compiling everything
-		
+
 		if (main_compile_all)
 		{
 			if (main_verbose)
@@ -488,15 +488,16 @@ int main(int argc, char **argv)
 			compile_file(_files[i]);
 
 		exit_files();
-		
+
 		COMPILE_exit();
-		
+		FILE_exit();
+
 		puts("OK");
 	}
 	CATCH
 	{
 		fflush(NULL);
-		
+
 		COMPILE_print(MSG_ERROR, -1, NULL);
 		ERROR_print();
 		exit(1);

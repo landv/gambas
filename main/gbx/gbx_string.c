@@ -1242,7 +1242,7 @@ char *STRING_conv_file_name(const char *name, int len)
 		}
 
 		if (pos <= 1)
-			dir = PROJECT_get_home();
+			dir = FILE_get_home();
 		else
 		{
 			user = STRING_new_temp(&name[1], pos - 1);

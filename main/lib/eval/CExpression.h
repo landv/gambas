@@ -41,6 +41,7 @@ typedef
 		char *text;
 		void *env;
 		EXPRESSION expr;
+		int pos;
 		bool compiled;
 		}
 	CEXPRESSION;

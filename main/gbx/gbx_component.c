@@ -82,15 +82,15 @@ void COMPONENT_exit(void)
 	int max_order = 0;
 
 	_component_load = NULL;
-	
+
 	LIST_for_each(comp, _component_list)
 	{
 		if (comp->order > max_order)
 			max_order = comp->order;
 	}
-	
+
 	// if order < 0, the component is not unloaded
-	
+
 	for (order = 0; order <= max_order; order++)
 	{
 		LIST_for_each(comp, _component_list)
@@ -128,12 +128,12 @@ void COMPONENT_load_all(void)
 	}
 
 	_load_all = TRUE;
-	
+
 	LIST_for_each(comp, _component_list)
 	{
 		COMPONENT_load(comp);
 	}
-	
+
 	_load_all = FALSE;
 }
 
@@ -188,14 +188,23 @@ COMPONENT *COMPONENT_create(const char *name)
 	bool can_archive;
 	bool library = FALSE;
 	bool same_name_as_project = FALSE;
+	char *p = NULL;
 
-	if (*name == '/') // user library
+	if (*name == '/' || *name == ':') // user library
 	{
 		library = TRUE;
 		path = (char *)name;
-		name = FILE_get_name(name);
+		if (*path == ':')
+		{
+			name++;
+			p = rindex(name, ':');
+			if (p)
+				*p = 0;
+		}
+		else
+			name = FILE_get_basename(name);
 	}
-	
+
 	comp = COMPONENT_find(name);
 	if (comp)
 		return comp;
@@ -207,18 +216,21 @@ COMPONENT *COMPONENT_create(const char *name)
 
 	comp->name = STRING_new_zero(name);
 
+	if (p)
+		*p = ':';
+
 	if (library)
 	{
-		comp->archive = ARCHIVE_create(name, path);
+		comp->archive = ARCHIVE_create(comp->name, path);
 		comp->user = TRUE;
 	}
 	else
 	{
 		// Don't load the archive if it has the same name as the project
-		
+
 		if (PROJECT_name)
-			same_name_as_project = strcmp(name, PROJECT_name) == 0;
-		
+			same_name_as_project = strcmp(comp->name, PROJECT_name) == 0;
+
 		can_archive = !same_name_as_project;
 
 		// System wide component
@@ -247,24 +259,24 @@ COMPONENT *COMPONENT_create(const char *name)
 	if (!comp->library && !comp->archive && !same_name_as_project)
 	{
 		COMPONENT_delete(comp);
-		
+
 #if 0
 		// If gb.qt5 components are not present, automatically switch to gb.qt4 components
-		
+
 		if (strncmp(name, "gb.qt5", 6) == 0 && (name[6] == 0 || name[6] == '.'))
 		{
 			char new_name[strlen(name) + 1];
-			
+
 			if (name[6] == 0)
 				ERROR_warning("gb.qt5 not found, using gb.qt4 instead.");
-			
+
 			strcpy(new_name, "gb.qt4");
 			strcat(new_name, &name[6]);
-			
+
 			return COMPONENT_create(new_name);
 		}
 #endif
-		
+
 		THROW(E_LIBRARY, name, "cannot find component");
 	}
 
@@ -300,7 +312,7 @@ void COMPONENT_load(COMPONENT *comp)
 	#if DEBUG_COMP
 		fprintf(stderr, "Loading component %s\n", comp->name);
 	#endif
-		
+
 	comp->loading = TRUE;
 
 	current = COMPONENT_current;
@@ -311,7 +323,7 @@ void COMPONENT_load(COMPONENT *comp)
 		comp->order = LIBRARY_load(comp->library);
 		comp->library->persistent = _load_all;
 	}
-	
+
 	if (comp->archive)
 	{
 		if (_load_all)
@@ -319,7 +331,7 @@ void COMPONENT_load(COMPONENT *comp)
 			//fprintf(stderr, "load later: %s\n", comp->name);
 			LIST_insert(&_component_load, comp, &comp->load);
 		}
-		
+
 		ARCHIVE_load(comp->archive, !_load_all);
 	}
 
@@ -367,7 +379,7 @@ void COMPONENT_translation_must_be_reloaded(void)
 		if (comp->archive)
 			comp->archive->translation_loaded = FALSE;
 	}
-	
+
 	if (ARCHIVE_main)
 		ARCHIVE_main->translation_loaded = FALSE;
 }
@@ -387,25 +399,25 @@ void COMPONENT_signal(int signal, void *param)
 bool COMPONENT_get_info(const char *key, void **value)
 {
 	COMPONENT *comp;
-	
+
 	LIST_for_each(comp, _component_list)
 	{
 		if (comp->library && comp->library->info)
 			if ((*comp->library->info)(key, value))
 				return FALSE;
 	}
-	
+
 	return TRUE;
 }
 
 void COMPONENT_exec(const char *name, int argc, char **argv)
 {
 	COMPONENT *comp;
-	
+
 	comp = COMPONENT_create(name);
-	
+
 	COMPONENT_load(comp);
-	
+
 	if (comp->library)
 		LIBRARY_exec(comp->library, argc, argv);
 }

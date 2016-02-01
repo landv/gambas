@@ -253,7 +253,7 @@ const void *const GAMBAS_Api[] =
 	(void *)GB_SystemPath,
 	(void *)FILE_init,
 	(void *)GB_SystemDebug,
-	(void *)PROJECT_get_home,
+	(void *)FILE_get_home,
 
 	(void *)GB_ArrayNew,
 	(void *)GB_ArrayCount,

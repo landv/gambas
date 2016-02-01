@@ -35,6 +35,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <pwd.h>
 
 #ifdef PROJECT_EXEC
 
@@ -45,7 +46,6 @@
 #endif
 
 #include <sys/types.h>
-#include <pwd.h>
 #include <grp.h>
 
 #endif
@@ -76,6 +76,9 @@ static int file_buffer_length;
 #ifdef _DIRENT_HAVE_D_TYPE
 static bool _last_is_dir;
 #endif
+
+static char *_home = NULL;
+static uid_t _uid = 0;
 
 #ifdef PROJECT_EXEC
 
@@ -213,9 +216,17 @@ void FILE_init(void)
 
 void FILE_exit(void)
 {
+	STRING_free(&_home);
 	FILE_remove_temp_file();
 	STRING_free(&file_rdir_path);
 	dir_exit();
+}
+
+#else
+
+void FILE_exit(void)
+{
+	STR_free(_home);
 }
 
 #endif
@@ -1208,3 +1219,27 @@ void FILE_rename(const char *src, const char *dst)
 	#endif
 }
 
+char *FILE_get_home(void)
+{
+	struct passwd *info;
+	uid_t uid = getuid();
+
+	if (!_home || _uid != uid)
+	{
+#ifdef PROJECT_EXEC
+		STRING_free(&_home);
+#else
+		STR_free(_home);
+#endif
+		info = getpwuid(uid);
+		if (info)
+#ifdef PROJECT_EXEC
+			_home = STRING_new_zero(info->pw_dir);
+#else
+			_home = STR_copy(info->pw_dir);
+#endif
+		_uid = uid;
+	}
+
+	return _home;
+}
