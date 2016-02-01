@@ -3138,14 +3138,19 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
     If Type = TYPE_LIBRARY Then
       
       sDir = CLibraryInfo.UserPath
-      If Vendor Then sDir &/= LCase(Vendor)
+      If Vendor Then 
+        sDir &/= LCase(Vendor)
+      Else
+        sDir &/= "(unknown)"
+      Endif
       
       MakeDir(sDir)
       
       sLink = sDir &/ File.BaseName(sExecPath) & ":" & MajorVersion & "." & MinorVersion & ".gambas"
       
       If Not Exist(sLink) Then
-        Try Link sExecPath To sLink
+        Try Kill sLink
+        Try Copy sExecPath To sLink
         If Error Then
           FMain.ShowWarning(Subst(("Cannot install library in &1."), "<tt>" & sDir & "</tt>") & "\n\n" & Error.Text)
         Endif

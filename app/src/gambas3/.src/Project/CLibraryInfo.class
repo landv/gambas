@@ -184,7 +184,7 @@ Public Sub GetDescription(bLong As Boolean) As String
     If Require.Count Then AddInfo(("Requires"), Require.Join(", "))
   Endif
   
-  sDesc = "<font size=\"+2\"><b>" & File.Name(File.Dir(Path)) & " ▸ " & Name & "</b> " & Version & "</font>"
+  sDesc = "<font size=\"+1\"><b>" & File.Name(File.Dir(Path)) & " ▸ " & Name & "</b> " & Version & "</font>"
   If bLong Then sDesc &= "<p><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
   Return sDesc
   

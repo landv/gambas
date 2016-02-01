@@ -1236,4 +1236,9 @@ Public Sub gvwLibrary_Select()
     gvwLibrary[$iCurrentLibrary, 0].RichText = CLibraryInfo[$aLibraries[$iCurrentLibrary]].GetDescription(True)
     gvwLibrary.Rows[$iCurrentLibrary].H = -1
   Endif
+  
+  btnRemoveLib.Enabled = $iCurrentLibrary >= 0
+  btnMoveDownLib.Enabled = btnRemoveLib.Enabled
+  btnMoveUpLib.Enabled = btnRemoveLib.Enabled
+  
 End

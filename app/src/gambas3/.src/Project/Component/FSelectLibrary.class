@@ -42,35 +42,44 @@ Private Sub RefreshLibraries()
 
   For Each sDir In [CLibraryInfo.UserPath, Component.Path]
 
-  For Each sVendor In Dir(sDir, "*", gb.Directory).Sort(gb.Natural)
-    bParent = False
-    
-    For Each sLib In Dir(sDir &/ sVendor, "*.gambas", gb.File).Sort(gb.Natural)
+    For Each sVendor In Dir(sDir, "*", gb.Directory).Sort(gb.Natural)
+      bParent = False
       
-      sLib = File.BaseName(sLib)
-      sKey = sVendor &/ sLib
-      If cvwLibrary.Exist(sKey) Then Continue
-      
-      aLib = Split(sLib, ":")
-      If aLib.Count <> 2 Then Continue
-      
-      If Not bParent Then
-        cvwLibrary.Add(sVendor, sVendor, Picture["icon:/small/directory"]).Expanded = True
-        bParent = True
-      Endif
-
-      If sDir = Component.Path Then 
-        hPict = Picture["icon:/small/component"]
-      Else
-        hPict = Picture["icon:/small/book"]
-      Endif
-
-      cvwLibrary.Add(sKey, aLib[0], hPict, sVendor)[1] = aLib[1]
+      For Each sLib In Dir(sDir &/ sVendor, "*.gambas", gb.File).Sort(gb.Natural)
+        
+        sLib = File.BaseName(sLib)
+        sKey = sVendor &/ sLib
+        If cvwLibrary.Exist(sKey) Then Continue
+        
+        aLib = Split(sLib, ":")
+        If aLib.Count <> 2 Then Continue
+        
+        If Not bParent Then
+          If sVendor = "(unknown)" Then
+            With cvwLibrary.Add(sVendor, "", Picture["icon:/small/directory"])
+              .Expanded = True
+              .RichText = "<i>" & ("unknown") & "</i>"
+            End With
+          Else
+            cvwLibrary.Add(sVendor, sVendor, Picture["icon:/small/directory"]).Expanded = True
+          Endif
+          bParent = True
+        Endif
+  
+        If sDir = Component.Path Then 
+          hPict = Picture["icon:/small/component"]
+        Else
+          hPict = Picture["icon:/small/book"]
+        Endif
+  
+        cvwLibrary.Add(sKey, aLib[0], hPict, sVendor)[1] = aLib[1]
+        
+      Next
       
     Next
     
   Next
-  
+
   If cvwLibrary.Count Then
     cvwLibrary.Show
     panNoLibrary.Hide
@@ -78,9 +87,7 @@ Private Sub RefreshLibraries()
     cvwLibrary.Hide
     panNoLibrary.Show
   Endif
-  
-Next
-
+    
 End
 
 Public Sub Form_Open()
@@ -100,13 +107,16 @@ Public Sub cvwLibrary_Select()
     cvwLibrary.MoveChild
     cvwLibrary.Item.Selected = True
   Endif
+  
+  btnRemove.Enabled = cvwLibrary.Key
+  btnOK.Enabled = btnRemove.Enabled
 
 End
 
 Public Sub btnRemove_Click()
 
   If Not cvwLibrary.Key Then Return
-  Try Kill CLibraryInfo.UserPath &/ cvwLibrary.Key
+  Try Kill CLibraryInfo.UserPath &/ cvwLibrary.Key & ".gambas"
   RefreshLibraries
 
 End
