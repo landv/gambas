@@ -19,6 +19,7 @@ Property Picture, Icon As Picture
 Property Visible As Boolean
 Property PopupMenu As String
 Property Text, Tooltip As String
+Property Tag As Variant
 
 Static Private $iCount As Integer
 
@@ -32,6 +33,7 @@ Private $hIcon As Picture
 Private $sMenu As String
 Private $sText As String
 Private $bIconDirty As Boolean
+Private $vTag As Variant
 
 Public Sub _new()
   
@@ -296,4 +298,16 @@ Public Sub _MiddleClick()
   
   Raise MiddleClick
   
+End
+
+Private Function Tag_Read() As Variant
+
+  Return $vTag
+
+End
+
+Private Sub Tag_Write(Value As Variant)
+
+  $vTag = Value
+
 End
