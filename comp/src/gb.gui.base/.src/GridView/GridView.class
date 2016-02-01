@@ -2172,9 +2172,11 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
       If Not hFont Then hFont = Me.Font
       
       WT = WC - iPadding * 2 - 2
-      If .Border Then 
-        WT -= .Border.LeftPadding + .Border.RightPadding + .Border.LeftMargin + .Border.RightMargin + .Border.LeftWidth + .Border.RightWidth
-      Endif
+
+      hBorder = $hRows._GetRowBorder(iRow)
+      If hBorder Then WT -= hBorder.LeftPadding + hBorder.RightPadding + hBorder.LeftMargin + hBorder.RightMargin + hBorder.LeftWidth + hBorder.RightWidth
+      hBorder = .Border
+      If hBorder Then WT -= hBorder.LeftPadding + hBorder.RightPadding + hBorder.LeftMargin + hBorder.RightMargin + hBorder.LeftWidth + hBorder.RightWidth
       
       If .RichText Then
         If .WordWrap Then

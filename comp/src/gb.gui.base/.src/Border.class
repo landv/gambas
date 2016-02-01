@@ -134,7 +134,7 @@ Private Sub GetRectF(hRect As RectF, bPadding As Boolean, TopBorder As Border, B
 End
 
 
-Public Sub Paint(Rect As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border)
+Public Sub Paint((Rect) As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border)
   
   Dim fWidth As Single
   Dim iStyle As Integer
@@ -602,7 +602,7 @@ Private Sub ConvertToRect(hRect As RectF) As Rect
 End
 
 
-Public Sub GetRect(Rect As RectF, Optional WithPadding As Boolean, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
+Public Sub GetRect((Rect) As RectF, Optional WithPadding As Boolean, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
   
   Rect = GetRectF({Rect}, WithPadding, TopBorder, BottomBorder, LeftBorder, RightBorder)
   If Rect.IsVoid() Then Return
@@ -612,7 +612,7 @@ Public Sub GetRect(Rect As RectF, Optional WithPadding As Boolean, Optional TopB
 End
 
 
-Public Sub Clip(Rect As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
+Public Sub Clip((Rect) As RectF, Optional TopBorder As Border, BottomBorder As Border, LeftBorder As Border, RightBorder As Border) As Rect
   
   Rect = GetRectF(Rect, False, TopBorder, BottomBorder, LeftBorder, RightBorder)
   If Rect.IsVoid() Then Return Null
