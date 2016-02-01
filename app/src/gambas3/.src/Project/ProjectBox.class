@@ -109,12 +109,10 @@ Public Sub DrawingArea_MouseMove()
   
   Dim DS As Integer = Desktop.Scale
   Dim bInButton As Boolean
+  Dim sTooltip As String
   
-  If Rect(DS, DS, ICON_SIZE, ICON_SIZE).Contains(Mouse.X, Mouse.Y) Then
-    $hDrawingArea.Tooltip = $sToolTip
-  Else
-    $hDrawingArea.Tooltip = ""
-  Endif
+  If Rect(DS, DS, ICON_SIZE, ICON_SIZE).Contains(Mouse.X, Mouse.Y) Then sTooltip = $sToolTip
+  If sTooltip <> $hDrawingArea.Tooltip Then $hDrawingArea.Tooltip = sTooltip
   
   If ShowButton Then bInButton = Rect(0, $hDrawingArea.H - DS * 4, $hDrawingArea.W, DS * 4).Contains(Mouse.X, Mouse.Y)
   If bInButton <> $bInsideButton Then

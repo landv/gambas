@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,69,44)
+  MoveScaled(0,0,69,47)
   Text = ("Gambas interpreter crash")
   Icon = Picture["img/64/atari.png"]
   Resizable = False
@@ -9,7 +9,7 @@
   Spacing = True
   Margin = True
   { Panel6 HBox
-    MoveScaled(1,1,67,21)
+    MoveScaled(1,1,67,22)
     { Panel7 VBox
       MoveScaled(1,0,13,21)
       { picCrash PictureBox
@@ -22,11 +22,12 @@
       MoveScaled(15,0,51,21)
       Expand = True
       { lblMessage TextLabel
-        MoveScaled(0,0,32,12)
+        MoveScaled(2,1,32,9)
+        Expand = True
         Alignment = Align.Normal
       }
       { Panel5 Panel
-        MoveScaled(1,12,48,8)
+        MoveScaled(2,10,48,8)
         Arrangement = Arrange.Vertical
         { chkSend CheckBox
           MoveScaled(0,0,45,4)
@@ -41,14 +42,14 @@
     }
   }
   { txtDesc TextArea
-    MoveScaled(1,23,67,13)
+    MoveScaled(1,25,67,11)
     Visible = False
     Expand = True
   }
   { Panel3 Panel
     MoveScaled(19,37,22,1)
   }
-  { HBox1 HBox
+  { panButton HBox
     MoveScaled(3,39,58,4)
     Spacing = True
     { Panel1 Panel

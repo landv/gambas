@@ -1715,8 +1715,6 @@ Public Function GetEachProperty(DX As Integer, DY As Integer, Optional bNoScale 
               sLine &= "(" & Quote(sVal) & ")"
             Endif
             
-            If sThreeDots Then sLine &= " & " & Quote(sThreeDots)
-            
           Else
             
             sLine &= "(" & Quote(sVal) & ")"

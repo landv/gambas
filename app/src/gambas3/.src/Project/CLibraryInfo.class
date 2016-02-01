@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Static Property Read UserPath As String
+
 Public Name As String
 Public Path As String
 Public NotFound As Boolean
@@ -38,6 +40,24 @@ Static Public Sub Exit()
   
 End
 
+Static Public Sub SolvePath(sPath As String) As String
+  
+  Dim sSolve As String
+  
+  If Left(sPath) = ":" Then
+    sPath = Mid$(sPath, 2)
+    sSolve = CLibraryInfo.UserPath &/ sPath & ".gambas"
+    If Not Exist(sSolve) Then sSolve = Component.Path &/ sPath & ".gambas"
+  Else
+    sSolve = sPath
+    If sSolve Not Ends ".gambas" Then sSolve &= ".gambas"
+  Endif
+  
+  'sSolve = File.SetExt(sSolve, "gambas")
+  
+  If Exist(sSolve) Then Return sSolve
+  
+End
 
 Public Sub _new(sPath As String)
   
@@ -46,13 +66,17 @@ Public Sub _new(sPath As String)
   Dim sData As String
   Dim aData As String[]
   
-  ' Support for third-party components
-  If Left(sPath) <> "/" Then 
-    sPath = Component.Path &/ sPath
+  Name = File.BaseName(sPath)
+  iPos = RInStr(Name, ":")
+  If iPos Then 
+    Version = Mid$(Name, iPos + 1)
+    Name = Left(Name, iPos - 1)
   Endif
   
+  sPath = SolvePath(sPath)
+
   Path = sPath
-  Name = File.Name(sPath)
+  
   Classes = New String[]
   Libraries = New String[]
   Require = New String[]
@@ -147,7 +171,9 @@ Private Sub AddInfo(sTitle As String, sValue As String)
 End
 
 
-Public Sub GetDescription() As String
+Public Sub GetDescription(bLong As Boolean) As String
+  
+  Dim sDesc As String
   
   $sInfo = ""
   AddInfo(("Location"), Path)
@@ -158,6 +184,14 @@ Public Sub GetDescription() As String
     If Require.Count Then AddInfo(("Requires"), Require.Join(", "))
   Endif
   
-  Return "<font size=\"+1\"><b>" & Name & "</b> " & Version & "</font><br><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & "<br>" & $sInfo & "</font>"
+  sDesc = "<font size=\"+2\"><b>" & File.Name(File.Dir(Path)) & " ▸ " & Name & "</b> " & Version & "</font>"
+  If bLong Then sDesc &= "<p><font size=\"-1\" color=\"#" & Hex$(Color.Merge(Color.Foreground, Color.LightForeground), 6) & "\">" & $sInfo & "</font>"
+  Return sDesc
   
+End
+
+Static Private Function UserPath_Read() As String
+
+  Return Desktop.DataDir &/ "gambas3/lib"
+
 End

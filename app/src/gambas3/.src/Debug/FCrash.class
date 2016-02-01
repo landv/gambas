@@ -121,7 +121,7 @@ Public Sub chkSend_Click()
 
   txtDesc.Visible = chkSend.Value
   chkNoProject.Enabled = chkSend.Value
-  Me.H = Desktop.Scale * If(txtDesc.Visible, 50, 30)
+  Me.H = Desktop.Scale * If(txtDesc.Visible, 54, 31)
   txtDesc_LostFocus
 
 End

@@ -835,13 +835,13 @@ End
 
 Public Sub GetOfflineDir() As String
   
-  Return Desktop.DataDir &/ "gambas3" &/ "wiki"
+  Return Desktop.DataDir &/ "gambas3/wiki"
   
 End
 
 Public Sub GetOfflinePath(sPath As String) As String
   
-  Return Desktop.DataDir &/ "gambas3" &/ "wiki/data" &/ Wiki.Lang &/ sPath &/ "~page"
+  Return Desktop.DataDir &/ "gambas3/wiki/data" &/ Wiki.Lang &/ sPath &/ "~page"
   
 End
 

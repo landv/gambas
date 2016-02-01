@@ -950,7 +950,7 @@
     }
     { txtSearch ButtonBox
       MoveScaled(99,0,37,4)
-      ToolTip = ("Browse project...")
+      ToolTip = ("Browse project") & "..."
       Action = "find-project"
       Picture = Picture["icon:/small/find"]
     }
@@ -1082,7 +1082,7 @@
     Visible = False
   }
   { msgError MessageView
-    MoveScaled(27,10,57,6)
+    MoveScaled(28,10,57,6)
     Animated = True
   }
   { Panel1 Panel
@@ -1112,15 +1112,15 @@
       { Separator4 Separator
         MoveScaled(0,6,9,0)
       }
-      { timSearchProject #Timer
-        #MoveScaled(21,8)
-        Delay = 500
-      }
       { tvwProject TreeView
         MoveScaled(1,16,20,47)
         Drop = True
         Expand = True
         Border = False
+      }
+      { timSearchProject #Timer
+        #MoveScaled(21,8)
+        Delay = 500
       }
     }
     { Panel4 VBox
@@ -1211,15 +1211,15 @@
       }
     }
   }
-  { timOpen #Timer
-    #MoveScaled(113,20)
-  }
   { dwgWelcome DrawingArea
     MoveScaled(110,34,15,18)
     Ignore = True
     Arrangement = Arrange.Fill
     Margin = True
     Padding = 32
+  }
+  { timOpen #Timer
+    #MoveScaled(113,20)
   }
 }
 

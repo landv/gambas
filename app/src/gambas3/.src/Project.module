@@ -55,6 +55,8 @@ Public Snap As Integer
 Public Localize As Boolean
 Public Description As String
 Public Icon As String
+Public LibraryPath As String
+
 Private OldExecPath As String
 
 Public Systems As String[]
@@ -720,7 +722,7 @@ _INIT_AGAIN:
     ' Let's check libraries
     
     For Each sPath In Libraries
-      If Not Exist(sPath) Then
+      If Not CLibraryInfo.SolvePath(sPath) Then
         Message.Warning(("Some libraries used by the project are missing."))
         FProjectProperty.ShowLibraries()
         Break
@@ -3078,6 +3080,8 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
   Dim sExec As String
   Dim sExecPath As String
   Dim bOK As Boolean
+  Dim sDir As String
+  Dim sLink As String
 
   If CheckStartupClass() Then Return True
 
@@ -3130,6 +3134,24 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
 
     If Not VersionFile And If Not bDoNotIncVersion Then Inc ReleaseVersion
     WriteProject(True, True)
+
+    If Type = TYPE_LIBRARY Then
+      
+      sDir = CLibraryInfo.UserPath
+      If Vendor Then sDir &/= LCase(Vendor)
+      
+      MakeDir(sDir)
+      
+      sLink = sDir &/ File.BaseName(sExecPath) & ":" & MajorVersion & "." & MinorVersion & ".gambas"
+      
+      If Not Exist(sLink) Then
+        Try Link sExecPath To sLink
+        If Error Then
+          FMain.ShowWarning(Subst(("Cannot install library in &1."), "<tt>" & sDir & "</tt>") & "\n\n" & Error.Text)
+        Endif
+      Endif
+      
+    Endif
 
     If RunAfterMakingExec Then
       Shell Replace(RunAfterMakingExec, "$(FILE)", Shell$(sExecPath)) Wait
@@ -3233,6 +3255,7 @@ Public Sub ReadProject(Optional bConvert As Boolean)
 
   Components = New String[]
   Libraries = New String[]
+  LibraryPath = ""
   Title = ""
   TabSize = Settings["/DefaultTabSize", 2]
   Arguments = New String[]
@@ -3339,6 +3362,9 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Else
           If Not Libraries.Exist(sVal) Then Libraries.Add(sVal)
         Endif
+        
+      Case "librarypath"
+        LibraryPath = sVal
 
       Case "tabsize"
         TabSize = Val(sVal)
@@ -3673,6 +3699,7 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
     Endif
   Next
 
+  If LibraryPath Then Print #hFic, "LibraryPath="; LibraryPath
   For Each sVal In Libraries
     Print #hFic, "Library="; sVal
   Next

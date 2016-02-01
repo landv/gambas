@@ -25,6 +25,7 @@ Private $aRequire As String[]
 Private $aExclude As String[]
 Private $aImplement As String[]
 Private $hComp As FileCompletion
+Private $iCurrentLibrary As Integer
 
 Static Public Function Run() As Boolean
 
@@ -55,6 +56,7 @@ Public Sub Form_Open()
   
   With Project
 
+    txtVendor.Text = .Vendor
     txtTitle.Text = .Title
     txtDesc.Text = .Description
     txtAuthor.Text = .Authors
@@ -88,6 +90,7 @@ Public Sub Form_Open()
     cmbRedirect.Index = If(.RedirectStderr, 0, 1)
     cmbProfile.Index = If(.Profiling, 0, 1)
     cmbHttpServer.Index = If(.UseHttpServer, 0, 1)
+    txtLibraryPath.Text = .LibraryPath
     $aLibraries = .Libraries.Copy()
     $aComponents = .Components.Copy()
 
@@ -111,6 +114,10 @@ Public Sub Form_Open()
   btnOK.Enabled = Not Project.ReadOnly And Not Project.Running
 
   $bInitInfo = False
+  
+End
+
+Public Sub Form_Activate()
 
   If $bShowLibraries Then 
     $bShowLibraries = False
@@ -176,6 +183,7 @@ Private Function DoApply() As Boolean
 
   With Project
 
+    .Vendor = Trim(txtVendor.Text)
     .Title = Trim(txtTitle.Text)
     .Description = Trim(txtDesc.Text)
     .Authors = Trim(txtAuthor.Text)
@@ -219,6 +227,7 @@ Private Function DoApply() As Boolean
 
     .TabSize = txtTabSize.Value
     
+    .LibraryPath = Trim(txtLibraryPath.Text)
     .Libraries = $aLibraries
 
   End With
@@ -770,15 +779,9 @@ Public Sub btnInsertLib_Click()
   Dim sPath As String
   Dim I As Integer
 
-  Dialog.Title = ("Select a Gambas application")
-  Dialog.Filter = ["*.gambas", ("Gambas applications")]
-  Dialog.Path = Settings["/FProjectProperty/Library"]
+  If FSelectLibrary.Run() Then Return
 
-  If Dialog.OpenFile() Then Return
-  
-  sPath = Dialog.Path
-
-  Settings["/FProjectProperty/Library"] = File.Dir(sPath)
+  sPath = FSelectLibrary.Path
 
   hLib = CLibraryInfo[sPath]
   If hLib.Classes.Count = 0 Then
@@ -801,10 +804,12 @@ Public Sub btnInsertLib_Click()
     $aLibraries[I] = sPath
   Else
     $aLibraries.Add(sPath)
+    I = $aLibraries.Max
   Endif
   
   Project.UpdateLibraries($aLibraries)
   RefreshLibraries
+  gvwLibrary.Row = I
 
 End
 
@@ -823,7 +828,7 @@ Private Sub RefreshLibraries()
       
       '.Picture = Picture["icon:/large/exec"]
       .Alignment = Align.TopNormal
-      .RichText = CLibraryInfo[$aLibraries[Y]].GetDescription()
+      .RichText = CLibraryInfo[$aLibraries[Y]].GetDescription(False)
       .WordWrap = True
       .Background = Color.Gradient(Color.LightForeground, Color.TextBackground, 0.96)
       
@@ -835,6 +840,9 @@ Private Sub RefreshLibraries()
   
   choComponent.Libraries = $aLibraries
   
+  $iCurrentLibrary = -1
+  gvwLibrary.Row = -1
+  
 End
 
 Private Sub RemoveLibrary(sPath As String)
@@ -843,6 +851,7 @@ Private Sub RemoveLibrary(sPath As String)
   
   iPos = $aLibraries.Find(sPath)
   If iPos >= 0 Then
+    gvwLibrary.Row = -1
     $aLibraries.Remove(iPos)
     Project.UpdateLibraries($aLibraries)
     RefreshLibraries
@@ -1208,4 +1217,23 @@ Public Sub panGeneral_Arrange()
 
   txtAuthor.H = panGeneral.H - txtAuthor.Y - Desktop.Scale
 
+End
+
+Public Sub txtVendor_KeyPress()
+
+  Project.OnVendorKeyPress
+
+End
+
+Public Sub gvwLibrary_Select()
+
+  If $iCurrentLibrary >= 0 And If $iCurrentLibrary < gvwLibrary.Rows.Count Then 
+    gvwLibrary[$iCurrentLibrary, 0].RichText = CLibraryInfo[$aLibraries[$iCurrentLibrary]].GetDescription(False)
+    gvwLibrary.Rows[$iCurrentLibrary].H = -1
+  Endif
+  $iCurrentLibrary = gvwLibrary.Row  
+  If $iCurrentLibrary >= 0 Then 
+    gvwLibrary[$iCurrentLibrary, 0].RichText = CLibraryInfo[$aLibraries[$iCurrentLibrary]].GetDescription(True)
+    gvwLibrary.Rows[$iCurrentLibrary].H = -1
+  Endif
 End

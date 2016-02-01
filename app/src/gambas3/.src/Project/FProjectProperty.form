@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,110,77)
+  MoveScaled(0,2,112,80)
   Text = ("Project properties")
   Icon = Picture["icon:/small/edit"]
   Persistent = True
@@ -126,7 +126,7 @@
       }
     }
     { panGeneral HPanel
-      MoveScaled(1,11,84,58)
+      MoveScaled(1,10,84,59)
       Expand = True
       AutoResize = True
       Spacing = True
@@ -144,13 +144,23 @@
           List = [("Normal"), ("Library"), ("Component")]
         }
       }
-      { Label10 Label
+      { Label18 Label
         MoveScaled(0,5,16,4)
+        Font = Font["Bold"]
+        Text = ("Vendor")
+      }
+      { txtVendor MaskBox
+        MoveScaled(18,5,44,4)
+        Expand = True
+        Filter = "[A-Za-z0-9_-]"
+      }
+      { Label10 Label
+        MoveScaled(0,10,16,4)
         Font = Font["Bold"]
         Text = ("Version")
       }
       { HBox1 HBox
-        MoveScaled(18,5,64,4)
+        MoveScaled(18,10,64,4)
         Expand = True
         Spacing = True
         { txtMajor SpinBox
@@ -172,31 +182,31 @@
         }
       }
       { Label12 Label
-        MoveScaled(0,10,16,4)
+        MoveScaled(0,15,16,4)
         Font = Font["Bold"]
         Text = ("Title")
       }
       { txtTitle TextBox
-        MoveScaled(18,10,60,4)
+        MoveScaled(18,15,60,4)
         Expand = True
       }
       { Label3 Label
-        MoveScaled(0,15,16,4)
+        MoveScaled(0,19,16,4)
         Font = Font["Bold"]
         Text = ("Description")
       }
       { txtDesc TextArea
-        MoveScaled(18,15,60,22)
+        MoveScaled(18,20,60,19)
         Expand = True
         Wrap = True
       }
       { Label11 Label
-        MoveScaled(0,38,16,4)
+        MoveScaled(0,39,16,4)
         Font = Font["Bold"]
         Text = ("Authors")
       }
       { txtAuthor TextArea
-        MoveScaled(18,38,57,20)
+        MoveScaled(18,40,57,19)
         Expand = True
         Wrap = True
       }
@@ -213,7 +223,7 @@
         Text = ("Information")
       }
       { HBox15 HBox
-        MoveScaled(0,4,78,4)
+        MoveScaled(0,8,78,4)
         Spacing = True
         Indent = True
         { Label26 Label
@@ -227,7 +237,7 @@
         }
       }
       { HBox16 HBox
-        MoveScaled(0,9,71,4)
+        MoveScaled(0,13,71,4)
         Spacing = True
         Indent = True
         { Label25 Label
@@ -241,7 +251,7 @@
         }
       }
       { panCompatible HBox
-        MoveScaled(0,14,71,4)
+        MoveScaled(0,18,71,4)
         Spacing = True
         Indent = True
         { chkCompat CheckBox
@@ -265,7 +275,7 @@
         }
       }
       { HBox14 HBox
-        MoveScaled(0,19,71,4)
+        MoveScaled(0,23,71,4)
         Spacing = True
         Indent = True
         { Label13 Label
@@ -278,12 +288,12 @@
         }
       }
       { Label15 Label
-        MoveScaled(0,24,79,3)
+        MoveScaled(0,28,79,3)
         Font = Font["Bold"]
         Text = ("Required features")
       }
       { HBox7 HBox
-        MoveScaled(0,28,75,12)
+        MoveScaled(0,32,75,12)
         Indent = True
         { panNeed Panel
           MoveScaled(1,0,37,12)
@@ -321,7 +331,7 @@
         }
       }
       { Panel12 HBox
-        MoveScaled(0,41,80,3)
+        MoveScaled(0,45,80,3)
         { Label14 Label
           MoveScaled(0,0,35,3)
           Font = Font["Bold"]
@@ -330,34 +340,34 @@
         }
       }
       { HBox10 HBox
-        MoveScaled(0,45,81,22)
+        MoveScaled(0,49,81,18)
         Expand = True
         Spacing = True
         { lvwRequire ListView
-          MoveScaled(3,3,47,16)
+          MoveScaled(1,1,47,16)
           Expand = True
           Sorted = True
         }
         { VBox5 VBox
-          MoveScaled(59,1,20,20)
+          MoveScaled(59,1,20,17)
           Spacing = True
           { btnAddRequire Button
-            MoveScaled(0,1,16,4)
+            MoveScaled(0,0,16,4)
             Text = ("Require") & "..."
             Picture = Picture["icon:/small/ok"]
           }
           { btnAddExclude Button
-            MoveScaled(0,5,16,4)
+            MoveScaled(0,4,16,4)
             Text = ("Exclude") & "..."
             Picture = Picture["icon:/small/close"]
           }
           { btnRemove Button
-            MoveScaled(0,10,17,4)
+            MoveScaled(0,8,17,4)
             Text = Shortcut(("Remove"), "R")
             Picture = Picture["icon:/small/remove"]
           }
           { btnRemoveAll Button
-            MoveScaled(0,15,17,4)
+            MoveScaled(0,12,17,4)
             Text = ("Remove All")
             Picture = Picture["icon:/small/trash"]
           }
@@ -388,6 +398,7 @@
     Text = ("Libraries")
     { Panel4 Panel
       MoveScaled(3,2,80,7)
+      Visible = False
       Background = Color.TextBackground
       Arrangement = Arrange.Horizontal
       Spacing = True
@@ -406,6 +417,14 @@
         Text = ("<b>WARNING!</b> The project executable and the libraries it depends on must be stored inside the same directory. Otherwise the libraries will not be found.")
         Alignment = Align.Left
       }
+    }
+    { Label17 Label
+      MoveScaled(2,10,60,4)
+      AutoResize = True
+      Text = ("Runtime library search path")
+    }
+    { txtLibraryPath TextBox
+      MoveScaled(2,14,24,4)
     }
     { gvwLibrary GridView
       MoveScaled(6,20,59,29)
