@@ -277,8 +277,11 @@ Public Sub Run(sText As String)
     iState = Highlight.Normal
   Endif
   
+  TextHighlighter.Limit = False
   If bTestShowLimit Then
-    TextHighlighter.Limit = LTrim(sText) Begins "function "
+    If LTrim(sText) Begins "function" Or If Trim(sText) Like "*: function(*" Then
+      TextHighlighter.Limit = True
+    Endif
   Endif
   
   TextHighlighter.State = iState

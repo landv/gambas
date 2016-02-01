@@ -161,7 +161,7 @@ Public Sub Run(sText As String)
           iNextState = Highlight.Keyword
           iTag = Highlight.Keyword
           
-        Else If sCar = " " Then
+        Else If IsSpace(sCar) Then
           
           iState = Highlight.Symbol
           iNextState = iState
