@@ -19,6 +19,7 @@ Private $sName As String                ' Project name
 Private $sVendor As String              ' Vendor
 Private $sVendorPrefix As String        ' Vendor prefix
 Private $sComponentName As String       ' Project name with a vendor prefix
+Private $sLibraryName As String         ' Library name, with the version
 Private $sUnsafePackageName As String   ' Package name, i.e project name with prefix, but with possible forbidden characters inside
 Private $sCategories As String          ' Categories list
 Private $sHome As String                ' Home user directory
@@ -210,6 +211,8 @@ Private Sub InitMake(sSys As String)
   If Project.Type = Project.TYPE_COMPONENT Then
     If $sName Not Begins $sVendorPrefix & "." Then $sComponentName = $sVendorPrefix & "." & $sName
     $sComponentName = String.LCase($sComponentName)
+  Else If Project.Type = Project.TYPE_LIBRARY Then
+    $sLibraryName = $sName & ":" & Project.Major & "." & Project.Minor
   Endif
   
   '$sPrefix = GetPackagePrefix(Project.Vendor, Project.Prefix)
@@ -852,15 +855,18 @@ Private Function MakeDebPackage(sSys As String)
   
   'debian/dirs
   hFile = Open sPackagePath &/ "debian/dirs" For Create
-  If Project.Type = Project.TYPE_COMPONENT Then
-    Print #hFile, "usr/share/gambas"; System.Version; "/info"
-    Print #hFile, "usr/lib/gambas"; System.Version 
-    If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "usr/share/gambas" & System.Version & "/control/" & $sComponentName
-  Else 
-    Print #hFile, "usr/bin"
-    Print #hFile, "usr/share/applications"
-    Print #hFile, "usr/share/pixmaps"
-  Endif 
+  Select Case Project.Type
+    Case Project.TYPE_COMPONENT 
+      Print #hFile, "usr/share/gambas"; System.Version; "/info"
+      Print #hFile, "usr/lib/gambas"; System.Version 
+      If Exist(Project.Dir &/ ".hidden/control") Then Print #hFile, "usr/share/gambas" & System.Version & "/control/" & $sComponentName
+    Case Project.TYPE_LIBRARY
+      Print #hFile, "usr/lib/gambas"; System.Version; "/"; LCase($sVendor)
+    Case Project.TYPE_NORMAL
+      Print #hFile, "usr/bin"
+      Print #hFile, "usr/share/applications"
+      Print #hFile, "usr/share/pixmaps"
+  End Select
   Print #hFile, GetExtraFilesDir(sSys, "&1", True)
   Close #hFile
   
@@ -876,7 +882,7 @@ Private Function MakeDebPackage(sSys As String)
       
     Case Project.TYPE_LIBRARY
       
-      Print #hFile, "src/"; $sName; "/"; $sName; ".gambas usr/bin"
+      Print #hFile, "src/"; $sName; "/"; $sLibraryName; ".gambas usr/lib/gambas" & System.Version; "/"; LCase($sVendor)
       
     Case Project.TYPE_NORMAL
     
@@ -949,13 +955,25 @@ Private Function MakeDebPackage(sSys As String)
   Print "\tdh_testdir"
   Print "\ttouch build-stamp"
   Print "\t"; Project.GetCompileCommand(True, Not Project.KeepDebugInfo, True, False) & " src" &/ $sName
-  Print "\tgba"; System.Version;
-  If Project.Type = Project.TYPE_NORMAL Then Print " -o " & Shell$("src" &/ $sName &/ $sName);
+  Print "\tgba"; System.Version; " -o ";
+  
+  Select Case Project.Type
+    Case Project.TYPE_COMPONENT
+      Print Shell$("src" &/ $sName &/ $sComponentName & ".gambas");
+    Case Project.TYPE_LIBRARY
+      Print Shell$("src" &/ $sName &/ $sLibraryName & ".gambas");
+    Case Project.TYPE_NORMAL
+      Print Shell$("src" &/ $sName &/ $sName);
+  End Select
   Print " src" &/ $sName
-  If Project.Type = Project.TYPE_COMPONENT And If $sName <> $sComponentName Then
-    Print "\tmv "; Shell$("src" &/ $sName &/ $sName & ".gambas"); " "; Shell$("src" &/ $sName &/ $sComponentName & ".gambas")
-  Endif
-  'Print #hFile, "\tmv "; Shell$("src" &/ $sName &/ $sName & ".gambas") & " " & Shell$("src" &/ $sName &/ $sName)
+  
+  ' If Project.Type = Project.TYPE_COMPONENT 
+  '   If $sName <> $sComponentName Then
+  '     Print "\tmv "; Shell$("src" &/ $sName &/ $sName & ".gambas"); " "; Shell$("src" &/ $sName &/ $sComponentName & ".gambas")
+  '   Endif
+  ' Else If Project.Type = Project.TYPE_LIBRARY Then
+  '   Print "\tmv "; Shell$("src" &/ $sName &/ $sName & ".gambas"); " "; Shell$("src" &/ $sName &/ $sLibraryName & ".gambas")
+  ' Endif
   
   Print 
   Print "clean:"
@@ -1410,8 +1428,8 @@ Private Function MakeRpmPackage(sSys As String)
     Print #hFile, "install -d %{buildroot}/%{_bindir}"
     If Project.Type = Project.TYPE_NORMAL Then
       Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
-    Else ' TYPE_LIBRARY
-      Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName) & ".gambas"
+    Else If Project.Type = Project.TYPE_LIBRARY Then
+      Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; LCase($sVendor); "/"; Shell$($sLibraryName & ".gambas")
     Endif
     
     Print #hFile, GetExtraFilesDir(sSys, "install -d %{buildroot}/&1")
@@ -1516,8 +1534,8 @@ Private Function MakeRpmPackage(sSys As String)
   
     If Project.Type = Project.TYPE_NORMAL Then
       Print #hFile, FormatFileInList("%{_bindir}" &/ $sName)
-    Else ' TYPE_LIBRARY
-      Print #hFile, FormatFileInList("%{_bindir}" &/ $sName & ".gambas")
+    Else If Project.Type = Project.TYPE_LIBRARY Then
+      Print #hFile, FormatFileInList("%{_libdir}/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas")
     Endif
     
     Print #hFile, GetExtraFilesList(sSys, "", "&2");
@@ -1874,19 +1892,27 @@ Private Sub MakeTgzPackage(sSys As String)
   Shell "rm -rf " & Shell(sBuildDir) Wait
   Mkdir sBuildDir
 
-  If Project.Type = Project.TYPE_COMPONENT Then 
-  
-    For Each sCmd In ["/usr", "/usr/lib", "/usr/lib/gambas" & System.Version, "/usr/share", "/usr/share/gambas" & System.Version, "/usr/share/gambas" & System.Version & "/info", "/install"]
-      Try Mkdir sBuildDir &/ sCmd
-    Next
+  Select Case Project.Type
 
-  Else
-
-    For Each sCmd In ["/usr", "/usr/bin", "/usr/share", "/usr/share/applications", "/usr/share/pixmaps", "/install"]
-      Try Mkdir sBuildDir &/ sCmd
-    Next
+    Case Project.TYPE_COMPONENT 
   
-  Endif
+      For Each sCmd In ["/usr", "/usr/lib", "/usr/lib/gambas" & System.Version, "/usr/share", "/usr/share/gambas" & System.Version, "/usr/share/gambas" & System.Version & "/info", "/install"]
+        Try Mkdir sBuildDir &/ sCmd
+      Next
+      
+    Case Project.TYPE_LIBRARY
+      
+      For Each sCmd In ["/usr", "/usr/lib", "/usr/lib/gambas" & System.Version, "/usr/lib/gambas" & System.Version &/ LCase($sVendor), "/install"]
+        Try Mkdir sBuildDir &/ sCmd
+      Next
+      
+    Case Project.TYPE_NORMAL
+
+      For Each sCmd In ["/usr", "/usr/bin", "/usr/share", "/usr/share/applications", "/usr/share/pixmaps", "/install"]
+        Try Mkdir sBuildDir &/ sCmd
+      Next
+  
+  End Select
   
   CopyExtraFiles(sSys, sBuildDir)
   
@@ -1916,9 +1942,9 @@ Private Sub MakeTgzPackage(sSys As String)
     If Project.Type = Project.TYPE_NORMAL Then
       Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName
       Chmod sBuildDir &/ "/usr/bin" &/ $sName To "..x..x..x"
-    Else ' TYPE_LIBRARY
-      Copy Project.GetExecPath() To sBuildDir &/ "/usr/bin" &/ $sName & ".gambas"
-      Chmod sBuildDir &/ "/usr/bin" &/ $sName & ".gambas" To "..x..x..x"
+    Else If Project.Type = Project.TYPE_LIBRARY Then
+      Copy Project.GetExecPath() To sBuildDir &/ "/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas"
+      Chmod sBuildDir &/ "/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas" To "..x..x..x"
     Endif
       
     If Project.Type = Project.TYPE_NORMAL Then
@@ -2285,7 +2311,7 @@ Private Function MakeArchPackage(sSys As String)
         
         Print #hFile, "  install -d ${pkgdir}/usr/lib/gambas" & System.Version
         Print #hFile, "  install -d ${pkgdir}/usr/share/gambas" & System.Version &/ "info"
-        Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/lib/gambas" & System.Version
+        Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/lib/gambas" & System.Version &/ $sComponentName & ".gambas"
         Print #hFile, "  install .component ${pkgdir}/usr/lib/gambas" & System.Version &/ $sComponentName & ".component"
         Print #hFile, "  chmod a-x ${pkgdir}/usr/lib/gambas" & System.Version &/ $sComponentName & ".component" 
         Print #hFile, "  install .info ${pkgdir}/usr/share/gambas" & System.Version &/ "info" &/ $sComponentName & ".info"
@@ -2300,8 +2326,8 @@ Private Function MakeArchPackage(sSys As String)
         
       Case Project.TYPE_LIBRARY
         
-        Print #hFile, "  install -d ${pkgdir}/usr/bin"
-        Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/bin" &/ $sName & ".gambas"
+        Print #hFile, "  install -d ${pkgdir}/usr/lib/gambas" & System.Version &/ LCase($sVendor)
+        Print #hFile, "  install -m755 " & $sName & ".gambas ${pkgdir}/usr/lib/gambas" & System.Version &/ LCase($sVendor) &/ $sLibraryName & ".gambas"
 
       Case Project.TYPE_NORMAL
   

@@ -320,6 +320,14 @@ Public Sub wizInstall_BeforeChange()
         Stop Event
         Return
       Endif
+      
+      If Project.Type = Project.TYPE_LIBRARY Then
+        If Not Project.Vendor Then
+          Message.Warning(("Please enter the vendor name."))
+          Stop Event
+          Return
+        Endif
+      Endif
 
       Project.Description = txtDescribe.Text
       Project.Prefix = chkPrefix.Value
