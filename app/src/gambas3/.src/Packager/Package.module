@@ -212,7 +212,7 @@ Private Sub InitMake(sSys As String)
     If $sName Not Begins $sVendorPrefix & "." Then $sComponentName = $sVendorPrefix & "." & $sName
     $sComponentName = String.LCase($sComponentName)
   Else If Project.Type = Project.TYPE_LIBRARY Then
-    $sLibraryName = $sName & ":" & Project.Major & "." & Project.Minor
+    $sLibraryName = $sName & ":" & Project.MajorVersion & "." & Project.MinorVersion
   Endif
   
   '$sPrefix = GetPackagePrefix(Project.Vendor, Project.Prefix)
@@ -1425,10 +1425,11 @@ Private Function MakeRpmPackage(sSys As String)
   
     Print #hFile, "\n%install"
   
-    Print #hFile, "install -d %{buildroot}/%{_bindir}"
     If Project.Type = Project.TYPE_NORMAL Then
+      Print #hFile, "install -d %{buildroot}/%{_bindir}"
       Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_bindir}" &/ Shell$($sName)
     Else If Project.Type = Project.TYPE_LIBRARY Then
+      Print #hFile, "install -d %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; LCase($sVendor)
       Print #hFile, "install -p "; Shell$($sName); ".gambas %{buildroot}/%{_libdir}/gambas"; System.Version; "/"; LCase($sVendor); "/"; Shell$($sLibraryName & ".gambas")
     Endif
     
