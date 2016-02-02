@@ -576,7 +576,7 @@ Static Private Sub WriteValue(vVal As Variant)
     
 End
 
-Static Private Sub ToString(Value As Variant) As String
+Static Public Sub ToString(Value As Variant) As String
   
   $sStr = ""
   WriteValue(Value)
@@ -813,7 +813,7 @@ Static Private Sub ReadValue(Optional bNotStrict As Boolean) As Variant
 End
 
 
-Static Private Sub FromString(Value As String) As Variant
+Static Public Sub FromString(Value As String) As Variant
   
   Dim vVal As Variant
   $sStr = Value
