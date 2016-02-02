@@ -38,7 +38,8 @@ Public Title As String
 Public Startup As String
 Public (Components) As String[]
 Public Libraries As String[]
-Public Arguments As String[]
+Public Arguments As String[][]
+Public CurrentArgument As Integer
 Public Environment As String[]
 Public KeepDebugInfo As Boolean
 Public CreateShortcut As Boolean
@@ -3263,7 +3264,8 @@ Public Sub ReadProject(Optional bConvert As Boolean)
   LibraryPath = ""
   Title = ""
   TabSize = Settings["/DefaultTabSize", 2]
-  Arguments = New String[]
+  Arguments = New String[][]
+  CurrentArgument = 0
   Environment = New String[]
   MajorVersion = 0
   MinorVersion = 0
@@ -3372,10 +3374,17 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         LibraryPath = sVal
 
       Case "tabsize"
-        TabSize = Val(sVal)
+        TabSize = CInt(sVal)
 
       Case "arguments"
-        Arguments = Split(UnQuote(sVal), "\n")
+        If Left(sVal) = "[" Then
+          Arguments = Settings.FromString(sVal)
+        Else
+          Arguments = [Split(UnQuote(sVal), "\n")]
+        Endif
+        
+      Case "currentargument"
+        CurrentArgument = CInt(sVal)
 
       Case "environment"
         Environment = Split(UnQuote(sVal), "\n")
@@ -3387,25 +3396,25 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         Try ReleaseVersion = Val(cVer[2])
 
       Case "versionfile"
-        VersionFile = Val(sVal) <> 0
+        VersionFile = CInt(sVal) <> 0
 
       Case "localize", "translate"
-        Localize = Val(sVal) <> 0
+        Localize = CInt(sVal) <> 0
 
       Case "language"
         Language = sVal
 
       Case "keepdebuginfo"
-        KeepDebugInfo = Val(sVal) <> 0
+        KeepDebugInfo = CInt(sVal) <> 0
 
       Case "createshortcut"
-        CreateShortcut = Val(sVal) <> 0
+        CreateShortcut = CInt(sVal) <> 0
 
       Case "runafter"
         RunAfterMakingExec = sVal
 
       Case "makecomponent"
-        Type = If(Val(sVal) <> 0, TYPE_COMPONENT, TYPE_NORMAL)
+        Type = If(CInt(sVal) <> 0, TYPE_COMPONENT, TYPE_NORMAL)
         'CreateComponent = Val(sVal) <> 0
 
       Case "type"
@@ -3417,13 +3426,13 @@ Public Sub ReadProject(Optional bConvert As Boolean)
         End Select
 
       Case "controlpublic"
-        ControlPublic = Val(sVal) <> 0
+        ControlPublic = CInt(sVal) <> 0
 
       Case "modulepublic"
-        ModulePublic = Val(sVal) <> 0
+        ModulePublic = CInt(sVal) <> 0
 
       Case "warnings"
-        Warnings = Val(sVal) <> 0
+        Warnings = CInt(sVal) <> 0
 
       Case "description"
         Description = UnQuote(sVal)
@@ -3712,7 +3721,10 @@ Public Sub WriteProject(Optional bComponentDoNotChange As Boolean, Optional bMak
   If Description Then Print #hFic, "Description="; Quote(Description)
   If Authors Then Print #hFic, "Authors="; Quote(Authors)
 
-  If Arguments.Count Then Print #hFic, "Arguments="; Quote(Arguments.Join("\n"))
+  If Arguments.Count Then 
+    Print #hFic, "Arguments="; Settings.ToString(Arguments)
+    Print #hFic, "CurrentArgument="; CurrentArgument
+  Endif
   If Environment.Count Then Print #hFic, "Environment="; Quote(Environment.Join("\n"))
 
   Print #hFic, "TabSize="; CStr(TabSize)

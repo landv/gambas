@@ -92,6 +92,8 @@ End
 
 Public Sub Form_Open()
 
+  Settings.Read(Me)
+
   cvwLibrary.Columns.Count = 2
   cvwLibrary.Columns[0].Text = ("Library")
   cvwLibrary.Columns[0].Expand = True
@@ -124,5 +126,11 @@ End
 Public Sub cvwLibrary_Activate()
 
   btnOK.Value = True
+
+End
+
+Public Sub Form_Close()
+
+  Settings.Write(Me)
 
 End

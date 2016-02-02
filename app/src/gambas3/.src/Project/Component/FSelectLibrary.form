@@ -1,9 +1,8 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,64,64)
+  MoveScaled(0,0,64,50)
   Text = ("Select a library")
-  Resizable = False
   Arrangement = Arrange.Vertical
   Spacing = True
   Margin = True
@@ -12,7 +11,7 @@
     Expand = True
   }
   { panNoLibrary Panel
-    MoveScaled(13,39,43,17)
+    MoveScaled(9,21,43,17)
     Visible = False
     Background = Color.TextBackground
     Expand = True
@@ -26,7 +25,7 @@
     }
   }
   { HBox1 HBox
-    MoveScaled(1,59,62,4)
+    MoveScaled(1,44,62,4)
     Spacing = True
     { btnRemove Button
       MoveScaled(2,0,16,4)

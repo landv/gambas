@@ -889,7 +889,7 @@ Private Sub Start(sCmd As String)
   
   If Project.Arguments.Count Then
     aExec.Add("--")
-    aExec.Insert(Project.Arguments)
+    aExec.Insert(Project.Arguments[Project.CurrentArgument])
   Endif
   
   If bValgrind Then 
