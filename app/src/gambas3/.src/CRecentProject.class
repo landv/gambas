@@ -155,7 +155,7 @@ Static Private Sub Save()
 
 End
 
-Static Public Sub Add(sPath As String)
+Static Private Sub AddRemove(sPath As String, bAdd As Boolean)
 
   Dim iInd As Integer
   Dim hRecentFile As CRecentProject
@@ -178,38 +178,37 @@ Static Public Sub Add(sPath As String)
 
   Wend
 
-  hRecentFile = New CRecentProject(sPath, CStr(Now))
-  If Not hRecentFile.IsValid() Then Return
-  
-  All.Add(hRecentFile, 0)
+  If bAdd Then
 
-  'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
-  While All.Count > MAX_RECENT
-    All.Remove(All.Max)
-  Wend
+    hRecentFile = New CRecentProject(sPath, CStr(Now))
+    If hRecentFile.IsValid() Then 
+    
+      All.Add(hRecentFile, 0)
+    
+      'nMax = Settings["/Recent/Max", DEFAULT_MAX_RECENT]
+      While All.Count > MAX_RECENT
+        All.Remove(All.Max)
+      Wend
+      
+    Endif
+    
+  Endif
 
   Save
 
 End
 
+Static Public Sub Add(sPath As String)
+  
+  AddRemove(sPath, True)
+  
+End
+
+
 Static Public Sub Remove(sPath As String)
-Dim iInd As Integer
-Dim hRecentFile As CRecentProject
 
-  Load
+  AddRemove(sPath, False)
 
-  If Right$(sPath) = "/" Then sPath = Left$(sPath, -1)
-    Sort = SORT_BY_DATE
-    All.Sort()
-
-    While iInd < All.Count
-      If All[iInd].Path = sPath Then
-        All.Remove(iInd)
-      Else
-        Inc iInd
-      Endif
-    Wend
-    Save
 End
 
 Static Public Sub Get(Optional iSort As Integer) As CRecentProject[]

@@ -105,7 +105,7 @@ End
 
 Public Sub cvwLibrary_Select()
 
-  If Not cvwLibrary.Current.ParentKey Then
+  If cvwLibrary.Key And If Not cvwLibrary.Current.ParentKey Then
     cvwLibrary.MoveChild
     cvwLibrary.Item.Selected = True
   Endif
@@ -120,6 +120,7 @@ Public Sub btnRemove_Click()
   If Not cvwLibrary.Key Then Return
   Try Kill CLibraryInfo.UserPath &/ cvwLibrary.Key & ".gambas"
   RefreshLibraries
+  cvwLibrary_Select
 
 End
 

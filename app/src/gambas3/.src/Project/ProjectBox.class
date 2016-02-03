@@ -5,23 +5,23 @@ Inherits UserControl
 Event Click
 Event DblClick
 Event ButtonClick
-Event preparePopUp(Item As ProjectBox)
- 
+Event RemoveClick
+
 Static Public ShowButton As Boolean
 
 Property ShowPath As Boolean
 Property Path As String
 Property Highlight As Boolean
 Property Selected As Boolean
-'Property Background As Integer
-'Property Read IdealHeight As Integer
 Property ShowAuthors As Boolean
 Property Read Info As CProjectInfo
 
+Public ShowRemove As Boolean
 Public Group As String ' for examples
 Public Template As Boolean
 
-'Static Private $hGradient As Image
+Static Private $hRemove As Image
+Static Private $hRemoveGray As Image
 
 Private $hDrawingArea As DrawingArea
 Private $sPath As String
@@ -42,6 +42,7 @@ Private $iIdealW As Integer
 Private $bSelected As Boolean
 Private $sToolTip As String
 Private $bInsideButton As Boolean
+Private $bInsideRemove As Boolean
 
 Public Sub _new()
   
@@ -51,6 +52,11 @@ Public Sub _new()
   $hDrawingArea.Tracking = True
   
   $hObs = New Observer(Me) As "ProjectItem"
+  
+  If Not $hRemove Then
+    $hRemove = Picture["icon:/small/remove"].Image
+    $hRemoveGray = $hRemove.Copy().Brightness(1).Colorize(Color.LightGray)
+  Endif
   
   ' If Not $hGradient Then
   '   
@@ -109,6 +115,7 @@ Public Sub DrawingArea_MouseMove()
   
   Dim DS As Integer = Desktop.Scale
   Dim bInButton As Boolean
+  Dim bInRemove As Boolean
   Dim sTooltip As String
   
   If Rect(DS, DS, ICON_SIZE, ICON_SIZE).Contains(Mouse.X, Mouse.Y) Then sTooltip = $sToolTip
@@ -117,6 +124,12 @@ Public Sub DrawingArea_MouseMove()
   If ShowButton Then bInButton = Rect(0, $hDrawingArea.H - DS * 4, $hDrawingArea.W, DS * 4).Contains(Mouse.X, Mouse.Y)
   If bInButton <> $bInsideButton Then
     $bInsideButton = bInButton
+    $hDrawingArea.Refresh
+  Endif
+
+  If ShowRemove Then bInRemove = Rect($hDrawingArea.W - DS - $hRemove.W, DS, $hRemove.W, $hRemove.H).Contains(Mouse.X, Mouse.Y)
+  If bInRemove <> $bInsideRemove Then
+    $bInsideRemove = bInRemove
     $hDrawingArea.Refresh
   Endif
   
@@ -294,6 +307,10 @@ Public Sub DrawingArea_Draw()
     Paint.DrawText(("Open in another window") & "…", X + P, Y, W - P * 2, H, Align.Normal)
   Endif
   
+  If ShowRemove And If $bHighlight Then
+    Paint.DrawImage(If($bInsideRemove, $hRemove, $hRemoveGray), Paint.W - $hRemove.W - P, P)
+  Endif
+  
   ' If Template And If $sPath = GetParent().Current Then
   '   Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha(Color.SelectedBackground, 128))
   ' Endif
@@ -379,50 +396,9 @@ Private Sub Highlight_Write(Value As Boolean)
 
 End
 
-' Private Function IdealHeight_Read() As Integer
-'   
-'   Dim X, H As Integer
-' 
-'   If Not $hProjectInfo Then Return 0
-' 
-'   If $hProjectInfo.Description Then
-'     If Me.W = $iIdealW Then Return $iIdealH
-'   Else
-'     If $iIdealW Then Return $iIdealH
-'   Endif
-'   $iIdealW = Me.W
-' 
-'   X = ICON_SIZE + PADDING * 2
-'   'If $hProjectInfo Then
-'   '  sTitle = GetTitle()
-'     'H = $hDrawingArea.Font.RichTextHeight(sTitle, Min(Me.W - X, $hDrawingArea.Font.RichTextWidth(sTitle))) + PADDING * 2
-'     H = $hDrawingArea.Font.Height * 2 + PADDING * 2
-'   'Endif
-' 
-'   H = Max(H, X)
-'   If $bShowPath Then H += Desktop.Scale * 2
-'   
-'   If $hProjectInfo.Description Then
-'     H += $hSmallFont.RichTextHeight(Html($hProjectInfo.Description), Me.W - X - PADDING)
-'   Endif
-'   
-'   $iIdealH = H
-'   
-'   'Debug File.Name($sPath);; $iIdealW;; $iIdealH
-' 
-'   Return H
-'   
-' End
-
 Private Function Info_Read() As CProjectInfo
 
   Return $hProjectInfo
-
-End
-
-Public Sub DrawingArea_MouseDown()
- 
-   If Mouse.Right Then Raise preparePopUp(Me)
 
 End
 
@@ -431,6 +407,8 @@ Public Sub DrawingArea_MouseUp()
   If Mouse.Left Then 
     If $bInsideButton Then
       Raise ButtonClick
+    Else If $bInsideRemove Then
+      Raise RemoveClick
     Else
       Raise Click
     Endif

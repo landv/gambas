@@ -370,6 +370,7 @@ Private Sub FillWithRecent(bClear As Boolean)
       hProjectItem.ResizeScaled(1, 9)
     Endif
     hProjectItem.ShowAuthors = True
+    hProjectItem.ShowRemove = True
     hProjectItem.Path = hRecent.Path
     
   Next
@@ -493,6 +494,18 @@ End
 Public Sub ProjectItem_ButtonClick()
   
   Raise Click(Last.Path, True)
+  
+End
+
+Public Sub ProjectItem_RemoveClick()
+  
+  Dim hItem As ProjectBox
+  
+  If $iType <> TYPE_RECENT Then Return
+  hItem = Last
+  
+  CRecentProject.Remove(hItem.Path)
+  hItem.Delete
   
 End
 

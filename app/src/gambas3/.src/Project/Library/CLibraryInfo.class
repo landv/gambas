@@ -40,7 +40,7 @@ Static Public Sub Exit()
   
 End
 
-Static Public Sub SolvePath(sPath As String) As String
+Static Public Sub SolvePath(sPath As String, Optional bKeepPath As Boolean) As String
   
   Dim sSolve As String
   
@@ -55,7 +55,7 @@ Static Public Sub SolvePath(sPath As String) As String
   
   'sSolve = File.SetExt(sSolve, "gambas")
   
-  If Exist(sSolve) Then Return sSolve
+  If bKeepPath Or If Exist(sSolve) Then Return sSolve
   
 End
 
@@ -66,20 +66,23 @@ Public Sub _new(sPath As String)
   Dim sData As String
   Dim aData As String[]
   
-  Name = File.BaseName(sPath)
-  iPos = RInStr(Name, ":")
-  If iPos Then 
-    Version = Mid$(Name, iPos + 1)
-    Name = Left(Name, iPos - 1)
+  If Left(sPath) = ":" Then
+    Name = File.Name(sPath)
+    iPos = RInStr(Name, ":")
+    If iPos Then 
+      Version = Mid$(Name, iPos + 1)
+      Name = Left(Name, iPos - 1)
+    Endif
+  Else
+    Name = File.BaseName(sPath)
   Endif
   
-  sPath = SolvePath(sPath)
-
-  Path = sPath
+  sPath = SolvePath(sPath, True)
   
   Classes = New String[]
   Libraries = New String[]
   Require = New String[]
+  Path = sPath
     
   If Not sPath Or If Not Exist(sPath) Then 
     NotFound = True
@@ -174,6 +177,8 @@ End
 Public Sub GetDescription(bLong As Boolean) As String
   
   Dim sDesc As String
+  
+  If NotFound Then bLong = True
   
   $sInfo = ""
   AddInfo(("Location"), Path)

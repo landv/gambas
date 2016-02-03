@@ -137,7 +137,11 @@ Public Sub btnOpen_Click()
 
   $sPath = FOpenProject.Run()
   txtFilter.SetFocus
-  If $sPath Then Project.Open($sPath)
+  If $sPath Then 
+    Project.Open($sPath)
+  Else
+    $hRecent.Fill
+  Endif
 
 End
 
@@ -318,10 +322,9 @@ End
 
 
 Public Sub lstRecent_Menu()
-   mnuRemove.Visible = Not IsNull($hRecent.Current)
-   mnuSep01.Visible = Not IsNull($hRecent.Current)
-   mnuSort.Popup
-   $hRecent.Current = Null
+
+  mnuSort.Popup
+   
 End
 
 Private Sub UpdateMenuSort()
@@ -346,14 +349,6 @@ Public Sub mnuSort_Click()
   
 End
 
-Public Sub mnuRemove_Click()
-Dim sPath As String = $hRecent.Current.Path
-   
-  $hRecent.Current.Delete()
-  CRecentProject.Remove(sPath)
-  $hRecent.Current = Null
-End
-
 Public Sub ProjectItem_Click(Path As String, (Another) As Boolean)
 
   $sPath = Path
@@ -361,72 +356,12 @@ Public Sub ProjectItem_Click(Path As String, (Another) As Boolean)
 
 End
 
-' Public Sub txtFilter_Activate()
-' 
-'   If Not $hFirst Then Return
-'   $sPath = $hFirst.Path
-'   Project.Open($sPath)
-' 
-' End
-
 Public Sub btnAbout_Click()
   
   FAbout.Run
   txtFilter.SetFocus
   
 End
-
-' Public Sub dwgTitle_Draw()
-' 
-'   Dim sVersion As String = System.FullVersion 'WithRevision
-'   Dim sText As String
-' 
-'   Paint.DrawImage($hLogo, Paint.W - $hLogo.W + 16, 0)
-' 
-'   If sVersion Ends ".0" Then sVersion = Left(sVersion, -2)
-' 
-'   sText = "<font size=\"7\"><b>Gambas " & sVersion & "</b></font><br><font size=\"4\"><b>&nbsp;" & System.Family & " · " & System.Architecture & " · " & System.Language & "</b></font>"
-' 
-'   Paint.Brush = Paint.Color(Color.SetAlpha(Color.Black, 128))
-'   Paint.DrawRichText(sText, 12, 8, Paint.W - 16, Paint.H, Align.TopLeft)
-'   Paint.Brush = Paint.Color(Color.White)
-'   Paint.DrawRichText(sText, 8, 4, Paint.W - 16, Paint.H, Align.TopLeft)
-' 
-' End
-
-' Public Sub timLayout_Timer()
-' 
-'   Dim hList As ListContainer
-'   Dim hCtrl As Control
-'   Dim hProjectItem As ProjectItem
-'   
-'   If $iRecent = LIST_RECENT Then
-'     hList = lstRecent
-'   Else
-'     hList = lstExample
-'   Endif
-'   
-'   hList.Lock
-'   
-'   For Each hCtrl In hList.Children
-'     
-'     If hCtrl Is ProjectItem Then
-'       hProjectItem = hCtrl
-'       Object.Unlock(hProjectItem)
-'       hProjectItem.ProjectItem_BeforeArrange
-'     Endif
-'     
-'   Next
-'   
-'   hList.Unlock
-' 
-' End
-
-' Public Sub panButton_BeforeArrange()
-' 
-'   dwgFrame.Move(0, 0, panButton.W, panButton.H)
-' 
-' End
 
 Public Sub btnFarm_Click()
   
