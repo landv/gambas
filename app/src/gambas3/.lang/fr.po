@@ -222,7 +222,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gambas3 3.8.90\n"
-"POT-Creation-Date: 2016-02-02 05:06 UTC\n"
+"POT-Creation-Date: 2016-02-03 06:13 UTC\n"
 "PO-Revision-Date: 2016-02-02 05:05 UTC\n"
 "Last-Translator: Benoît Minisini <gambas@users.sourceforge.net>\n"
 "Language: fr\n"
@@ -432,7 +432,7 @@ msgstr "Auteurs"
 msgid "Implements"
 msgstr "Implémente"
 
-#: CComponent.class:1706 CLibraryInfo.class:184 LibraryItem.class:60
+#: CComponent.class:1706 CLibraryInfo.class:189 LibraryItem.class:60
 msgid "Requires"
 msgstr "Nécessite"
 
@@ -844,19 +844,19 @@ msgstr "Gestion du XML"
 msgid "Insert color"
 msgstr "Insérer une couleur"
 
-#: CLibraryInfo.class:169
+#: CLibraryInfo.class:172
 msgid "<b>&1:</b> &2"
 msgstr "<b>&1&nbsp;:</b> &2"
 
-#: CLibraryInfo.class:179 LibraryItem.class:54
+#: CLibraryInfo.class:184 LibraryItem.class:54
 msgid "Location"
 msgstr "Emplacement"
 
-#: CLibraryInfo.class:181 LibraryItem.class:56
+#: CLibraryInfo.class:186 LibraryItem.class:56
 msgid "WARNING! Library not found."
 msgstr "ATTENTION ! Bibliothèque introuvable."
 
-#: CLibraryInfo.class:183 LibraryItem.class:58
+#: CLibraryInfo.class:188 LibraryItem.class:58
 msgid "Provides"
 msgstr "Fournit"
 
@@ -1457,7 +1457,7 @@ msgstr "Supprimer la table"
 
 #: FConnectionEditor.form:131 FMain.form:1041 FMakeInstall.form:736
 #: FOption.form:1123 FProjectProperty.form:583 FPublish.form:269
-#: FSelectLibrary.form:48 FSoftwareFarm.form:411
+#: FSoftwareFarm.form:411
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -1749,7 +1749,7 @@ msgid "Project is translatable"
 msgstr "Le projet est traduisible"
 
 #: FCreateProject.form:159 FCreateProjectOld.form:426 FProjectChooser.form:80
-#: ProjectBox.class:290
+#: ProjectBox.class:303
 msgid "Open in another window"
 msgstr "Ouvrir dans une nouvelle fenêtre"
 
@@ -3122,15 +3122,15 @@ msgstr "Le fichier ou le répertoire n'existe plus."
 msgid "Sort history"
 msgstr "Trier l'historique"
 
-#: FMain.class:696 FOpenProject.form:77 FWelcome.form:35
+#: FMain.class:696 FOpenProject.form:77 FWelcome.form:33
 msgid "Sort by date"
 msgstr "Trier par date"
 
-#: FMain.class:696 FOpenProject.form:86 FWelcome.form:43
+#: FMain.class:696 FOpenProject.form:86 FWelcome.form:41
 msgid "Sort by name"
 msgstr "Trier par nom"
 
-#: FMain.class:696 FOpenProject.form:94 FWelcome.form:50
+#: FMain.class:696 FOpenProject.form:94 FWelcome.form:48
 msgid "Sort by path"
 msgstr "Trier dans l'ordre des chemins"
 
@@ -5146,6 +5146,10 @@ msgstr "Choisissez une bibliothèque"
 msgid "No library has been found on your system."
 msgstr "Aucune bibliothèque n'a été trouvée sur votre système."
 
+#: FSelectLibrary.form:48 FSoftwareFarm.class:321
+msgid "Uninstall"
+msgstr "Désinstaller"
+
 #: FSnippet.class:23
 msgid "Please enter a trigger string."
 msgstr "Veuillez saisir une chaîne de déclenchement."
@@ -5221,10 +5225,6 @@ msgstr "Annuler mon vote"
 #: FSoftwareFarm.class:317
 msgid "Upgrade"
 msgstr "Mettre à-jour"
-
-#: FSoftwareFarm.class:321
-msgid "Uninstall"
-msgstr "Désinstaller"
 
 #: FSoftwareFarm.class:488
 msgid "Do you really want to download <b>&1</b>?"
@@ -5526,13 +5526,9 @@ msgstr "Projets récents"
 msgid "Installed software"
 msgstr "Logiciels installés"
 
-#: FWelcome.form:27
+#: FWelcome.form:25
 msgid "Welcome to Gambas 3"
 msgstr "Bienvenue dans Gambas 3"
-
-#: FWelcome.form:59
-msgid "remove from list"
-msgstr ""
 
 #: FarmIdentity.class:135
 msgid "Anonymous"
