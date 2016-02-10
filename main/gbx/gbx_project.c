@@ -139,8 +139,16 @@ static void project_stacktrace(char *name, int len)
 
 static void project_library_path(char *name, int len)
 {
-	ARCHIVE_path = name;
-	name[len] = 0;
+	if (!EXEC_debug)
+	{
+		ARCHIVE_path = STRING_new_zero(STRING_conv_file_name(name, len));
+		if (*name != '/')
+		{
+			name = STRING_new_zero(FILE_cat(PROJECT_path, ARCHIVE_path, NULL));
+			STRING_free(&ARCHIVE_path);
+			ARCHIVE_path = name;
+		}
+	}
 }
 
 static void check_after_analyze()

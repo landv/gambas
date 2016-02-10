@@ -53,8 +53,8 @@ ARCHIVE *ARCHIVE_main = NULL;
 // Additional library search directory used in debug mode, normally '~/.config/share/gambas3/lib'
 char *ARCHIVE_path = NULL;
 
+static char *_local_path = NULL;
 static ARCHIVE *_archive_list = NULL;
-
 static char *arch_pattern = NULL;
 static int arch_index = 0;
 static ARCH *arch_dir = NULL;
@@ -202,26 +202,6 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 	COMPONENT_current = current;
 }
 
-#if 0
-static void load_component(char *name)
-{
-	COMPONENT *comp;
-
-	comp = COMPONENT_create(name);
-	COMPONENT_load(comp);
-}
-#endif
-
-/*static void load_dependencies(ARCHIVE *arch)
-{
-	char *buffer;
-	int len;
-
-	STREAM_load(".startup", &buffer, &len);
-	PROJECT_analyze_startup(buffer, len, load_component);
-	FREE(&buffer, "load_dependencies");
-}*/
-
 // archive path is an absolute path or :<vendor>/<library>:<version>
 
 static char *exist_library(const char *dir, const char *name)
@@ -269,13 +249,13 @@ void ARCHIVE_load(ARCHIVE *arch, bool load_exp)
 	{
 		if (*arch->path == ':')
 		{
-			if (EXEC_debug && !ARCHIVE_path)
+			if (!_local_path)
 			{
 				env = getenv("XDG_DATA_HOME");
 				if (env && *env)
-					ARCHIVE_path = STRING_new_zero(FILE_cat(env, "gambas3/lib", NULL));
+					_local_path = STRING_new_zero(FILE_cat(env, "gambas3/lib", NULL));
 				else
-					ARCHIVE_path = STRING_new_zero(FILE_cat(FILE_get_home(), ".local/share/gambas3/lib", NULL));
+					_local_path = STRING_new_zero(FILE_cat(FILE_get_home(), ".local/share/gambas3/lib", NULL));
 			}
 
 			name = &arch->path[1];
@@ -285,13 +265,16 @@ void ARCHIVE_load(ARCHIVE *arch, bool load_exp)
 
 		if (!(path = exist_library(PROJECT_path, name)))
 		{
-			if (!ARCHIVE_path || !(path = exist_library(ARCHIVE_path, name)))
+			if (!_local_path ||  !(path = exist_library(_local_path, name)))
 			{
-				if (!(path = exist_library(COMPONENT_path, name)))
+				if (!ARCHIVE_path || !(path = exist_library(ARCHIVE_path, name)))
 				{
-					dir = STRING_new_zero(FILE_cat(PROJECT_exec_path, "bin", NULL));
-					path = exist_library(dir, name);
-					STRING_free(&dir);
+					if (!(path = exist_library(COMPONENT_path, name)))
+					{
+						dir = STRING_new_zero(FILE_cat(PROJECT_exec_path, "bin", NULL));
+						path = exist_library(dir, name);
+						STRING_free(&dir);
+					}
 				}
 			}
 		}
@@ -357,6 +340,7 @@ void ARCHIVE_exit(void)
 	STRING_free(&arch_pattern);
 	STRING_free(&arch_prefix);
 	STRING_free(&ARCHIVE_path);
+	STRING_free(&_local_path);
 }
 
 
