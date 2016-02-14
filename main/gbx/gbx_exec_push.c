@@ -123,7 +123,7 @@ _PUSH_GENERIC:
 
 		goto _PUSH_UNKNOWN_METHOD;
 	}
-	
+
 	desc = class->table[index].desc;
 
 	switch (CLASS_DESC_get_type(desc))
@@ -137,7 +137,7 @@ _PUSH_GENERIC:
 					*PC |= 12;
 					PC[1] = index;
 				}
-				
+
 				goto _PUSH_CONST_STRING_2;
 			}
 			else
@@ -168,9 +168,9 @@ _PUSH_GENERIC:
 							goto _PUSH_CONSTANT_2;
 						}
 					}
-					
+
 					*PC |= 1;
-					
+
 					PC[1] = index;
 				}
 
@@ -200,8 +200,8 @@ _PUSH_GENERIC:
 
 			if (object == NULL)
 				THROW(E_DYNAMIC, CLASS_get_name(class), name);
-			
-			if (defined) 
+
+			if (defined)
 			{
 				*PC |= 11;
 				PC[1] = index;
@@ -308,7 +308,7 @@ _PUSH_GENERIC:
 			THROW(E_NSYMBOL, CLASS_get_name(class), name);
 	}
 
-	
+
 _PUSH_CONSTANT:
 
 	desc = class->table[PC[1]].desc;
@@ -327,7 +327,7 @@ _PUSH_CONST_STRING_2:
 
 	SP--;
 	SP->type = T_CSTRING;
-	
+
 	if (!desc->constant.value._string)
 	{
 		SP->_string.addr = NULL;
@@ -339,10 +339,10 @@ _PUSH_CONST_STRING_2:
 			SP->_string.addr = (char *)LOCAL_gettext(desc->constant.value._string);
 		else
 			SP->_string.addr = (char *)desc->constant.value._string;
-	
+
 		SP->_string.len = strlen(SP->_string.addr);
 	}
-	
+
 	SP->_string.start = 0;
 	SP++;
 	goto _FIN_DEFINED_NO_BORROW;
@@ -384,7 +384,7 @@ _PUSH_STRUCT_FIELD_2:
 		addr = (char *)((CSTATICSTRUCT *)object)->addr + desc->variable.offset;
 	else
 		addr = (char *)object + sizeof(CSTRUCT) + desc->variable.offset;
-	
+
 	ref = object;
 	goto _READ_VARIABLE;
 
@@ -542,7 +542,7 @@ _FIN:
 void EXEC_push_array(ushort code)
 {
 	static const void *jump[] = { &&__PUSH_GENERIC, &&__PUSH_QUICK_ARRAY, &&__PUSH_QUICK_COLLECTION, &&__PUSH_ARRAY };
-	
+
 	CLASS *class;
 	OBJECT *object;
 	GET_NPARAM(np);
@@ -558,11 +558,11 @@ void EXEC_push_array(ushort code)
 	np--;
 
 	goto *jump[((unsigned char)code) >> 6];
-	
+
 __PUSH_GENERIC:
 
 	defined = EXEC_object(val, &class, &object);
-	
+
 	fast = 3;
 
 	if (defined)
@@ -585,7 +585,7 @@ __PUSH_GENERIC:
 	}
 
 	*PC |= fast << 6;
-	
+
 	goto __PUSH_ARRAY_2;
 
 /*__PUSH_STATIC_ARRAY:
@@ -643,15 +643,15 @@ __PUSH_QUICK_ARRAY:
 __PUSH_QUICK_COLLECTION:
 
 	EXEC_object_fast(val, &class, &object);
-	
+
 	VALUE_conv_string(&val[1]);
 	//fprintf(stderr, "GB_CollectionGet: %p '%.*s'\n", val[1]._string.addr, val[1]._string.len, val[1]._string.addr + val[1]._string.start);
 	GB_CollectionGet((GB_COLLECTION)object, val[1]._string.addr + val[1]._string.start, val[1]._string.len, (GB_VARIANT *)val);
-	
+
 	RELEASE_STRING(&val[1]);
-	
+
 __PUSH_QUICK_END:
-	
+
 	SP = val;
 	PUSH();
 	OBJECT_UNREF(object);
@@ -660,7 +660,7 @@ __PUSH_QUICK_END:
 __PUSH_ARRAY:
 
 	defined = EXEC_object(val, &class, &object);
-	
+
 __PUSH_ARRAY_2:
 
 	if (EXEC_special(SPEC_GET, class, object, np, FALSE))
@@ -706,7 +706,7 @@ int EXEC_push_unknown_event(bool unknown)
 	int index;
 	CLASS_DESC *desc;
 	const char *name;
-	
+
 	if (unknown)
 	{
 		name = CP->load->unknown[PC[1]];
@@ -718,7 +718,7 @@ int EXEC_push_unknown_event(bool unknown)
 		desc = CP->table[index].desc;
 		if (CLASS_DESC_get_type(desc) != CD_EVENT)
 			THROW(E_DYNAMIC, CLASS_get_name(CP), name);
-		
+
 		PC[1] = index;
 		PC[0] &= ~1;
 	}
@@ -726,12 +726,12 @@ int EXEC_push_unknown_event(bool unknown)
 	{
 		desc = CP->table[PC[1]].desc;
 	}
-	
+
 	index = desc->event.index;
-	
+
 	//if (desc->event.class->parent)
 	//	index += desc->event.class->parent->n_event;
-	
+
 	return index;
 }
 

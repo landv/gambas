@@ -301,6 +301,10 @@ void COMPONENT_delete(COMPONENT *comp)
 	FREE(&comp);
 }
 
+static void error_COMPONENT_load(COMPONENT *current)
+{
+	COMPONENT_current = current;
+}
 
 void COMPONENT_load(COMPONENT *comp)
 {
@@ -318,22 +322,26 @@ void COMPONENT_load(COMPONENT *comp)
 	current = COMPONENT_current;
 	COMPONENT_current = comp;
 
-	if (comp->library)
+	ON_ERROR_1(error_COMPONENT_load, current)
 	{
-		comp->order = LIBRARY_load(comp->library);
-		comp->library->persistent = _load_all;
-	}
-
-	if (comp->archive)
-	{
-		if (_load_all)
+		if (comp->library)
 		{
-			//fprintf(stderr, "load later: %s\n", comp->name);
-			LIST_insert(&_component_load, comp, &comp->load);
+			comp->order = LIBRARY_load(comp->library);
+			comp->library->persistent = _load_all;
 		}
 
-		ARCHIVE_load(comp->archive, !_load_all);
+		if (comp->archive)
+		{
+			if (_load_all)
+			{
+				//fprintf(stderr, "load later: %s\n", comp->name);
+				LIST_insert(&_component_load, comp, &comp->load);
+			}
+
+			ARCHIVE_load(comp->archive, !_load_all);
+		}
 	}
+	END_ERROR
 
 	comp->loading = FALSE;
 	comp->loaded = TRUE;

@@ -104,7 +104,7 @@ static int align_pos(int pos, int size)
 int CLASS_sizeof_ctype(CLASS *class, CTYPE ctype)
 {
 	size_t size;
-	
+
 	if (ctype.id == TC_ARRAY)
 	{
 		CLASS_ARRAY *array = class->load->array[ctype.value];
@@ -128,7 +128,7 @@ TYPE CLASS_ctype_to_type(CLASS *class, CTYPE ctype)
 	else if (ctype.id == TC_STRUCT)
 		return (TYPE)(class->load->class_ref[ctype.value]);
 	else
-		return (TYPE)(ctype.id);	
+		return (TYPE)(ctype.id);
 }
 
 
@@ -216,10 +216,10 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 			#endif
 			pdesc++;
 		}
-	
+
 		if (section_size % size_one)
 			THROW(E_CLASS, _class_name, "Bad format in section: ", sec_name);
-	
+
 		size = section_size / size_one;
 		if (pcount) *pcount = size;
 		if (!size)
@@ -231,93 +231,93 @@ static char *get_section(char *sec_name, char **section, short *pcount, const ch
 			{
 				p = current + i * size_one;
 				pdesc = desc;
-				
+
 			__SWAP_NEXT:
 				goto *jump_swap[(int)(*pdesc++)];
-			
+
 			__SWAP_BYTE:
 				p++;
 				goto __SWAP_NEXT;
-			
+
 			__SWAP_SHORT:
 				SWAP_short((short *)p);
 				p += sizeof(short);
 				goto __SWAP_NEXT;
-				
+
 			__SWAP_INT:
 			__SWAP_POINTER:
 				SWAP_int((int *)p);
 				p += sizeof(int);
 				goto __SWAP_NEXT;
-				
+
 			__SWAP_CTYPE:
 			__SWAP_TYPE:
 				SWAP_type((CTYPE *)p);
 				p += sizeof(CTYPE);
 				goto __SWAP_NEXT;
-				
+
 			__SWAP_END:
 				continue;
 			}
 		}
-	
+
 		#ifdef OS_64BITS
-		
+
 		if (size_one_64 != size_one)
 		{
 			ALLOC(&alloc, size_one_64 * size);
-				
+
 			for (i = 0; i < size; i++)
 			{
 				p = current + i * size_one;
 				pa = alloc + i * size_one_64;
 				pdesc = desc;
-				
+
 			__TRANS_NEXT:
 				goto *jump_trans[(int)(*pdesc++)];
-			
+
 			__TRANS_BYTE:
 				*pa++ = *p++;
 				goto __TRANS_NEXT;
-			
+
 			__TRANS_SHORT:
 				*((short *)pa) = *((short *)p);
 				pa += sizeof(short);
 				p += sizeof(short);
 				goto __TRANS_NEXT;
-				
+
 			__TRANS_INT:
 			__TRANS_CTYPE:
 				*((int *)pa) = *((int *)p);
 				pa += sizeof(int);
 				p += sizeof(int);
-				goto __TRANS_NEXT;			
-			
+				goto __TRANS_NEXT;
+
 			__TRANS_TYPE:
 				*((int *)pa) = *((int *)p);
 				pa += sizeof(int);
 				p += sizeof(int);
 				*((int *)pa) = 0;
 				pa += sizeof(int);
-				goto __TRANS_NEXT;			
-			
+				goto __TRANS_NEXT;
+
 			__TRANS_POINTER:
 				*((int64_t *)pa) = *((int *)p);
 				pa += sizeof(int64_t);
 				p += sizeof(int);
-				goto __TRANS_NEXT;			
-				
+				goto __TRANS_NEXT;
+
 			__TRANS_END:
 				continue;
 			}
-			
+
 			return alloc;
 		}
-	
+
 		#endif
-	
+
 	}
-	
+
 	return current;
 }
 
@@ -333,30 +333,30 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	CLASS_DESC *desc;
 	CLASS_VAR *var;
 	GLOBAL_SYMBOL *global = NULL;
-	
+
 	name = (char *)(intptr_t)(*structure++);
 	RELOCATE(name);
 	#if DEBUG_STRUCT
 	fprintf(stderr, "Loading structure %s\n", name);
 	#endif
-	
+
 	if (class->global)
 		sclass = CLASS_find_global(name);
 	else
 		sclass = CLASS_find(name);
-	
+
 	if (CLASS_is_loaded(sclass))
 	{
 		if (!sclass->is_struct)
 			THROW_CLASS(class, "Class already exists: ", name);
-		
+
 		// Check compatibility with previous declaration
-		
+
 		if (sclass->load->n_dyn != nfield)
 			goto __MISMATCH;
-		
+
 		desc = (CLASS_DESC *)sclass->data;
-		
+
 		for (i = 0; i < nfield; i++)
 		{
 			field = (char *)(intptr_t)(*structure++);
@@ -364,44 +364,44 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 			len = strlen(field);
 			ctype = *((CTYPE *)structure);
 			structure++;
-			
+
 			if (CLASS_ctype_to_type(class, ctype) != desc[i].variable.type)
 				goto __MISMATCH;
-			
+
 			if (TABLE_compare_ignore_case_len(field, strlen(field), sclass->table[i].name, sclass->table[i].len))
 				goto __MISMATCH;
 		}
-		
+
 		// OK, they are the same!
 		return;
 	}
-	
+
 	sclass->swap = class->swap;
 	sclass->component = class->component;
 	sclass->debug = class->debug;
 
 	ALLOC_ZERO(&sclass->load, sizeof(CLASS_LOAD));
-	
+
 	ALLOC(&var, sizeof(CLASS_VAR) * nfield);
 	sclass->load->dyn = var;
 	sclass->load->n_dyn = nfield;
 	sclass->load->class_ref = class->load->class_ref;
 	sclass->load->array = class->load->array;
-	
+
 	if (sclass->debug)
 	{
 		ALLOC(&global, sizeof(GLOBAL_SYMBOL) * nfield);
 		sclass->load->global = global;
 		sclass->load->n_global = nfield;
 	}
-	
+
 	sclass->n_desc = nfield;
 	ALLOC(&sclass->table, sizeof(CLASS_DESC_SYMBOL) * nfield);
 	ALLOC(&desc, sizeof(CLASS_DESC) * nfield);
 	sclass->data = (char *)desc;
 
 	pos = 0; //sizeof(CSTRUCT);
-	
+
 	for (i = 0; i < nfield; i++)
 	{
 		field = (char *)(intptr_t)(*structure++);
@@ -409,7 +409,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		len = strlen(field);
 		ctype = *((CTYPE *)structure);
 		structure++;
-		
+
 		size = CLASS_sizeof_ctype(class, ctype);
 		pos = align_pos(pos, size);
 
@@ -418,10 +418,10 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 		desc[i].variable.ctype = ctype;
 		desc[i].variable.offset = pos; // This the position relative to the data, NOT the object!
 		desc[i].variable.class = sclass;
-		
+
 		var[i].type = ctype;
 		var[i].pos = pos;
-		
+
 		if (sclass->debug)
 		{
 			global[i].sym.name = field;
@@ -429,7 +429,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 			global[i].ctype = ctype;
 			global[i].value = i;
 		}
-		
+
 		#if DEBUG_STRUCT
 		fprintf(stderr, "  %d: %s As %s (%d) pos = %d\n", i, field, TYPE_get_name(desc[i].variable.type), CLASS_sizeof_ctype(class, ctype), pos);
 		#endif
@@ -440,7 +440,7 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 
 		pos += size; //sizeof_ctype(class, var->type);
 	}
-	
+
 	#ifdef OS_64BITS
 	size = align_pos(pos, 8);
 	#else
@@ -452,24 +452,24 @@ static void load_structure(CLASS *class, int *structure, int nfield)
 	#if DEBUG_STRUCT
 	fprintf(stderr, "  --> size = %d\n", size);
 	#endif
-	
+
 	CLASS_calc_info(sclass, 0, size, TRUE, 0);
 
 	CLASS_sort(sclass);
-	
+
 	if (sclass->debug)
 		sclass->load->sort = sclass->sort;
-	
+
 	CLASS_search_special(sclass);
 	/*for (i = 0; i < MAX_SPEC; i++)
 		sclass->special[i] = NO_SYMBOL;*/
-	
+
 	sclass->is_struct = TRUE;
-	
+
 	sclass->loaded = TRUE;
 	sclass->ready = TRUE;
 	return;
-	
+
 __MISMATCH:
 
 	THROW_CLASS(class, "Structure is declared elsewhere differently: ", CLASS_get_name(sclass));
@@ -497,7 +497,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	int len;
 	bool have_jit_functions = FALSE;
 	uchar flag;
-	
+
 	ALLOC_ZERO(&class->load, sizeof(CLASS_LOAD));
 
 	/* header */
@@ -522,7 +522,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	if (header->magic != OUTPUT_MAGIC)
 	{
 		int fd;
-		
+
 		fd = open("/tmp/gambas-bad-header.dump", O_CREAT | O_WRONLY, 0666);
 		if (fd >= 0)
 		{
@@ -532,14 +532,14 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 				fprintf(stderr, "Bad class file dumped at /tmp/gambas-bad-header.dump\n");
 			close(fd);
 		}
-		
+
 		THROW_CLASS(class, "Bad header", "");
 	}
-	
+
 	check_version(class, header->version);
 
 	class->debug = header->flag & CF_DEBUG;
-	
+
 	info = (CLASS_INFO *)get_section("info", &section, NULL, _s _s _i _i _s _s );
 	#ifdef OS_64BITS
 	class->load->desc =
@@ -560,7 +560,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	class->load->array = (CLASS_ARRAY **)get_section("array", &section, &n_array, _i);  // A special process is needed later
 
 	// Structure descriptions
-	
+
 	if (info->nstruct)
 	{
 		ALLOC(&structure, sizeof(CLASS_STRUCT) * info->nstruct);
@@ -570,7 +570,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 			structure[i].nfield = (n_struct - 1) / 2;
 		}
 	}
-	
+
 	// Loading code
 
 	for (i = 0; i < class->load->n_func; i++)
@@ -638,10 +638,10 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	}
 
 	// Profile information
-	
+
 	if (EXEC_profile)
 		ALLOC_ZERO(&class->load->prof, sizeof(uint) * (class->debug ? (1 + class->load->n_func) : 1));
-	
+
 	/* Source file path, ignored now! */
 
 	if (class->debug)
@@ -656,14 +656,14 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	for (i = 0; i < n_class_ref; i++)
 	{
 		offset = (int)(intptr_t)class->load->class_ref[i];
-		
+
 		// The compiler does not know if an array class is global or not, we must check now.
-		
+
 		if (offset >= 0)
 		{
 			name = &class->string[offset];
 			len = strlen(name);
-			
+
 			if (len >= 3 && name[len - 2] == '[')
 			{
 				do
@@ -671,12 +671,12 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 					len -= 2;
 				}
 				while (len >= 3 && name[len - 2] == '[');
-			
+
 				if (CLASS_look_global(name, len))
 					offset = (- offset);
 			}
 		}
-		
+
 		if (offset >= 0)
 			class->load->class_ref[i] = CLASS_find(&class->string[offset]);
 		else if (offset < -1)
@@ -705,7 +705,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 		if (func->n_local > 0)
 		{
 			func->local = (CLASS_LOCAL *)local;
-			
+
 			#ifdef OS_64BITS
 			// The local variable descriptions are CTYPE that are 32 bits only.
 			// We must transform a 64 bits integer array into a 32 bits integer array.
@@ -805,7 +805,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	}
 
 	// Create structures (we may need the structure size to compute the variable sizes)
-	
+
 	if (info->nstruct)
 	{
 		for (i = 0; i < info->nstruct; i++)
@@ -815,11 +815,11 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 
 	// Computes and align the position of each static and dynamic variables.
 	// Computes the total size needed accordingly.
-	
+
 	#ifdef DEBUG
 	fprintf(stderr, "Compute variable position for %s\n", class->name);
 	#endif
-	
+
 	pos = 0;
 	for (i = 0; i < class->load->n_stat; i++)
 	{
@@ -892,7 +892,7 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 				RELOCATE(func->debug->local[j].sym.name);
 		}
 	}
-	
+
 	/* Inheritance */
 
 	if (info->parent >= 0)
@@ -904,16 +904,16 @@ static void load_and_relocate(CLASS *class, int len_data, CLASS_DESC **pstart, i
 	/* If there is no dynamic variable, then the class is not instanciable */
 	//if (info->s_dynamic == 0)
 	//  class->no_create = TRUE;
-	
+
 	/* Class size and offsets */
 
 	CLASS_calc_info(class, class->n_event, info->s_dynamic, FALSE, info->s_static);
-	
+
 	*pstart = start;
 	*pndesc = n_desc;
-	
+
 	/* JIT function pointers */
-	
+
 	if (have_jit_functions)
 	{
 		ALLOC_ZERO(&class->jit_functions, sizeof(void(*)(void)) * class->load->n_func);
@@ -944,9 +944,9 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 	COMPONENT *save;
 	CLASS_DESC *start;
 	char kind;
-	
+
 	//size_t alloc = MEMORY_size;
-	
+
 	if (CLASS_is_loaded(class))
 		return;
 
@@ -1013,6 +1013,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		}
 		CATCH
 		{
+			COMPONENT_current = save;
 			THROW_CLASS(class, "Unable to load class file", "");
 		}
 		END_TRY
@@ -1051,7 +1052,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 	{
 		cc = &class->load->cst[i];
 		conv_type_simple(class, &(cc->type));
-		
+
 		switch (cc->type)
 		{
 			case T_BOOLEAN: case T_BYTE: case T_SHORT: case T_INTEGER:
@@ -1060,7 +1061,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 				cc->_integer.value = (int)(intptr_t)cc->_string.addr;
 				#endif
 				break;
-			
+
 			case T_LONG:
 				#ifdef OS_64BITS
 				// Special process for long constants: the first 32 bits part of the LONG constant
@@ -1076,18 +1077,18 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 				if (_swap)
 				{
 					int val;
-	
+
 					val = cc->_swap.val[0];
 					cc->_swap.val[0] = cc->_swap.val[1];
 					cc->_swap.val[1] = val;
 				}
 				break;
-				
+
 			case T_STRING: case T_CSTRING:
 				if (cc->_string.len)
 					cc->_string.addr += (intptr_t)class->string;
 				break;
-				
+
 			case T_FLOAT: case T_SINGLE:
 				cc->_string.addr += (intptr_t)class->string;
 				if (NUMBER_from_string(NB_READ_FLOAT, cc->_string.addr, strlen(cc->_string.addr), &value))
@@ -1116,12 +1117,12 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 		//desc->gambas.name = (char *)CLASS_DESC_get_type_name(desc);
 
 		conv_type(class, &desc->gambas.type);
-		
+
 		kind = *CLASS_DESC_get_type_name(desc);
 
 		if (!desc->gambas.val1 && index(CD_CALL_SOMETHING_LIST, kind) != NULL)
 			fprintf(stderr, "load_without_inits: '%s.%s' gambas.val1 == 0\n", class->name, desc->gambas.name);
-		
+
 		switch (kind)
 		{
 			case CD_METHOD:
@@ -1188,7 +1189,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 			case CD_EVENT:
 
 				//fprintf(stderr, "event %s.%s: %d %d\n", class->name, desc->event.name, first_event, (int)desc->event.index);
-				
+
 				event = &class->load->event[desc->event.index];
 				if (class->parent)
 					desc->event.index += class->parent->n_event;
@@ -1221,7 +1222,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	/* Transfer symbol kind into symbol name (which is stored in the symbol table now), like native classes */
 	// Define event index
-	
+
 	for (i = 0; i < n_desc; i++)
 	{
 		desc = &start[i];
@@ -1250,7 +1251,7 @@ static void load_without_inits(CLASS *class, bool in_jit_compilation)
 
 	if (EXEC_debug)
 		DEBUG.InitBreakpoints(class);
-	
+
 	//total += MEMORY_size - alloc;
 	//printf("%s: %d  TOTAL = %d\n", class->name, MEMORY_size - alloc, total);
 }
@@ -1285,7 +1286,7 @@ void CLASS_run_inits(CLASS *class)
 	//EXEC.func = &class->load->func[FUNC_INIT_STATIC];
 
 	EXEC_function();
-	
+
 	/* _init */
 	EXEC_public(class, NULL, "_init", 0);
 }
@@ -1298,7 +1299,7 @@ void CLASS_load_real(CLASS *class)
 	int len = strlen(name);
 
 	_load_class_from_jit = FALSE;
-	
+
 	if (!CLASS_is_loaded(class))
 	{
 		if (len >= 3 && name[len - 2] == '[' && name[len - 1] == ']' && !class->array_type)
@@ -1309,7 +1310,7 @@ void CLASS_load_real(CLASS *class)
 	}
 
 	load_without_inits(class, load_from_jit);
-	
+
 	if (load_from_jit)
 	{
 		class->loaded = TRUE;
@@ -1319,10 +1320,9 @@ void CLASS_load_real(CLASS *class)
 	{
 		class->loaded = TRUE;
 		class->ready = TRUE;
-		
+
 		CLASS_run_inits(class);
 	}
-
 	//EXEC_public(class, NULL, "_init", 0);
 }
 

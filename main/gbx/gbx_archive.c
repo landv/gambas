@@ -80,6 +80,11 @@ ARCHIVE *ARCHIVE_create(const char *name, const char *path)
 	return arch;
 }
 
+static void error_ARCHIVE_load_exported_class(COMPONENT *current)
+{
+	COMPONENT_current = current;
+}
+
 void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 {
 	char *buffer;
@@ -95,109 +100,112 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 		return;
 
 	current = COMPONENT_current;
-
 	COMPONENT_current = (COMPONENT *)arch->current_component;
 
-	/* COMPONENT_current is set => it will look in the archive */
-
-	#if DEBUG_COMP
-		fprintf(stderr, "load_exported_class: %s (component: %s)\n", arch->name, COMPONENT_current ? COMPONENT_current->name : "?");
-	#endif
-
-	if (!FILE_exist(".list"))
-		return;
-
-	if (pass & AR_FIND_ONLY)
+	ON_ERROR_1(error_ARCHIVE_load_exported_class, current)
 	{
-		#if DEBUG_COMP
-			fprintf(stderr, "<Find pass>\n");
-		#endif
-
-		STREAM_load(".list", &buffer, &len);
-		/* The file must end with a newline !*/
-		buffer[len - 1] = 0;
+		/* COMPONENT_current is set => it will look in the archive */
 
 		#if DEBUG_COMP
-			fprintf(stderr, "-----------\n%s\n----------\n\n", buffer);
+			fprintf(stderr, "load_exported_class: %s (component: %s)\n", arch->name, COMPONENT_current ? COMPONENT_current->name : "?");
 		#endif
 
-		ARRAY_create(&arch->exported);
-
-		name = strtok(buffer, "\n");
-		while (name)
+		if (FILE_exist(".list"))
 		{
-			#if DEBUG_COMP
-				fprintf(stderr, "Check %s global\n", name);
-			#endif
-
-			len = strlen(name);
-			optional = FALSE;
-
-			for(;;)
+			if (pass & AR_FIND_ONLY)
 			{
-				c = name[len - 1];
-				if (c == '?')
+				#if DEBUG_COMP
+					fprintf(stderr, "<Find pass>\n");
+				#endif
+
+				STREAM_load(".list", &buffer, &len);
+				/* The file must end with a newline !*/
+				buffer[len - 1] = 0;
+
+				#if DEBUG_COMP
+					fprintf(stderr, "-----------\n%s\n----------\n\n", buffer);
+				#endif
+
+				ARRAY_create(&arch->exported);
+
+				name = strtok(buffer, "\n");
+				while (name)
 				{
-					optional = TRUE;
-					len--;
+					#if DEBUG_COMP
+						fprintf(stderr, "Check %s global\n", name);
+					#endif
+
+					len = strlen(name);
+					optional = FALSE;
+
+					for(;;)
+					{
+						c = name[len - 1];
+						if (c == '?')
+						{
+							optional = TRUE;
+							len--;
+						}
+						else if (c == '!')
+							len--;
+						else
+							break;
+					}
+
+					name[len] = 0;
+
+					/*
+					class = CLASS_look_global(name, strlen(name));
+
+					if (class)
+					{
+						#if DEBUG_COMP
+							fprintf(stderr, "...override!\n");
+						#endif
+						CLASS_load(class);
+						CLASS_check_global(class);
+					}
+					else
+						class = CLASS_find_global(name);*/
+
+					if (!optional || CLASS_look_global(name, len) == NULL)
+					{
+						class = CLASS_find_global(name);
+						CLASS_check_global(class);
+
+						#if DEBUG_COMP
+							fprintf(stderr, "Add to load: %p %s\n", class, name);
+						#endif
+						class->component = COMPONENT_current;
+						*((CLASS **)ARRAY_add(&arch->exported)) = class;
+					}
+
+					name = strtok(NULL, "\n");
 				}
-				else if (c == '!')
-					len--;
-				else
-					break;
+
+				FREE(&buffer);
 			}
 
-			name[len] = 0;
-
-			/*
-			class = CLASS_look_global(name, strlen(name));
-
-			if (class)
+			if (pass & AR_FIND_ONLY) // That way the 'pass' flag is always ignored.
 			{
 				#if DEBUG_COMP
-					fprintf(stderr, "...override!\n");
+					fprintf(stderr, "<Load pass>\n");
 				#endif
-				CLASS_load(class);
-				CLASS_check_global(class);
+
+				for (i = 0; i < ARRAY_count(arch->exported); i++)
+				{
+					#if DEBUG_COMP
+						fprintf(stderr, "load %p %s\n", arch->exported[i], arch->exported[i]->name);
+					#endif
+					CLASS_load(arch->exported[i]);
+				}
+
+				ARRAY_delete(&arch->exported);
+				arch->exported_classes_loaded = TRUE;
 			}
-			else
-				class = CLASS_find_global(name);*/
-
-			if (!optional || CLASS_look_global(name, len) == NULL)
-			{
-				class = CLASS_find_global(name);
-				CLASS_check_global(class);
-
-				#if DEBUG_COMP
-					fprintf(stderr, "Add to load: %p %s\n", class, name);
-				#endif
-				class->component = COMPONENT_current;
-				*((CLASS **)ARRAY_add(&arch->exported)) = class;
-			}
-
-			name = strtok(NULL, "\n");
 		}
-
-		FREE(&buffer);
 	}
-
-	if (pass & AR_FIND_ONLY) // That way the 'pass' flag is always ignored.
-	{
-		#if DEBUG_COMP
-			fprintf(stderr, "<Load pass>\n");
-		#endif
-
-		for (i = 0; i < ARRAY_count(arch->exported); i++)
-		{
-			#if DEBUG_COMP
-				fprintf(stderr, "load %p %s\n", arch->exported[i], arch->exported[i]->name);
-			#endif
-			CLASS_load(arch->exported[i]);
-		}
-
-		ARRAY_delete(&arch->exported);
-		arch->exported_classes_loaded = TRUE;
-	}
+	END_ERROR
 
 	COMPONENT_current = current;
 }
