@@ -3149,12 +3149,10 @@ Public Function MakeExecutable(Optional bDoNotIncVersion As Boolean, Optional bS
       
       sLink = sDir &/ File.BaseName(sExecPath) & ":" & MajorVersion & "." & MinorVersion & ".gambas"
       
-      If Not Exist(sLink) Then
-        Try Kill sLink
-        Try Copy sExecPath To sLink
-        If Error Then
-          FMain.ShowWarning(Subst(("Cannot install library in &1."), "<tt>" & sDir & "</tt>") & "\n\n" & Error.Text)
-        Endif
+      Try Kill sLink
+      Try Copy sExecPath To sLink
+      If Error Then
+        FMain.ShowWarning(Subst(("Cannot install library in &1."), "<tt>" & sDir & "</tt>") & "\n\n" & Error.Text)
       Endif
       
     Endif

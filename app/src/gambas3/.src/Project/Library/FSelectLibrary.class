@@ -42,6 +42,8 @@ Private Sub RefreshLibraries()
 
   For Each sDir In [CLibraryInfo.UserPath, Component.Path]
 
+    If Not IsDir(sDir) Then Continue
+
     For Each sVendor In Dir(sDir, "*", gb.Directory).Sort(gb.Natural)
       bParent = False
       
