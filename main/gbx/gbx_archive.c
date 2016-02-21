@@ -210,7 +210,7 @@ void ARCHIVE_load_exported_class(ARCHIVE *arch, int pass)
 	COMPONENT_current = current;
 }
 
-// archive path is an absolute path or :<vendor>/<library>:<version>
+// Archive path is an absolute path or :<vendor>/<library>:<version>
 
 static char *exist_library(const char *dir, const char *name)
 {
@@ -271,7 +271,9 @@ void ARCHIVE_load(ARCHIVE *arch, bool load_exp)
 		else
 			name = FILE_get_name(arch->path);
 
-		if (!(path = exist_library(PROJECT_path, name)))
+		// For backward-compatibility, library name is searched in the current folder too, without the vendor.
+
+		if (!(path = exist_library(PROJECT_path, FILE_get_name(name))))
 		{
 			if (!_local_path ||  !(path = exist_library(_local_path, name)))
 			{
