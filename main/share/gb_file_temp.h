@@ -52,6 +52,9 @@
 
 #include "gb_file.h"
 
+#define OPT_NLINK 1
+#define OPT_FSTATAT 1
+
 #ifdef PROJECT_EXEC
 
 //FILE_STAT FILE_stat_info = { 0 };
@@ -690,6 +693,7 @@ void FILE_dir_first(const char *path, const char *pattern, int attr)
 
 	if (attr == (GB_STAT_FILE | GB_STAT_DIRECTORY))
 		attr = 0;
+
 	file_attr = attr;
 
 	if (FILE_is_relative(path))
@@ -715,6 +719,12 @@ void FILE_dir_first(const char *path, const char *pattern, int attr)
 	file_path = STRING_new_zero(path);
 }
 
+#if OPT_FSTATAT
+#else
+	#ifdef FSTATAT
+		#undef FSTATAT
+	#endif
+#endif
 
 bool FILE_dir_next(char **path, int *len)
 {
@@ -722,10 +732,11 @@ bool FILE_dir_next(char **path, int *len)
 	int len_entry;
 	bool ret;
 	char *name;
-	#ifdef _DIRENT_HAVE_D_TYPE
-	#else
+	#ifndef _DIRENT_HAVE_D_TYPE
 	struct stat info;
-	char *p = file_buffer;
+		#ifndef HAVE_FSTATAT
+		char *p = file_buffer;
+		#endif
 	#endif
 
 	if (file_dir_arch)
@@ -739,16 +750,17 @@ bool FILE_dir_next(char **path, int *len)
 	if (file_dir == NULL)
 		return TRUE;
 
-	#ifdef _DIRENT_HAVE_D_TYPE
-	#else
-	if (file_attr)
-	{
-		init_file_buffer(file_path);
-		p += file_buffer_length;
+	#ifndef _DIRENT_HAVE_D_TYPE
+		#ifndef HAVE_FSTATAT
+		if (file_attr)
+		{
+			init_file_buffer(file_path);
+			p += file_buffer_length;
 
-		if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
-			*p++ = '/';
-	}
+			if (p[-1] != '/' && (file_buffer[1] || file_buffer[0] != '/'))
+				*p++ = '/';
+		}
+		#endif
 	#endif
 
 	for(;;)
@@ -775,14 +787,18 @@ bool FILE_dir_next(char **path, int *len)
 			if ((file_attr == GB_STAT_DIRECTORY) ^ (entry->d_type == DT_DIR))
 				continue;
 			#else
-			strcpy(p, name);
-			if (stat(file_buffer, &info))
-			{
-				if (file_attr == GB_STAT_DIRECTORY)
+				#if HAVE_FSTATAT
+				if (fstatat(dirfd(file_dir), name, &info, 0))
+				#else
+				strcpy(p, name);
+				if (stat(file_buffer, &info))
+				#endif
+				{
+					if (file_attr == GB_STAT_DIRECTORY)
+						continue;
+				}
+				else if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
 					continue;
-			}
-			else if ((file_attr == GB_STAT_DIRECTORY) ^ (S_ISDIR(info.st_mode) != 0))
-				continue;
 			#endif
 		}
 
@@ -818,6 +834,9 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 	#endif
 	char *temp;
 	bool is_dir;
+	#if OPT_NLINK
+	bool no_subdir = FALSE;
+	#endif
 
 	if (!dir || *dir == 0)
 		dir = ".";
@@ -828,26 +847,45 @@ void FILE_recursive_dir(const char *dir, void (*found)(const char *), void (*aft
 	file_rdir_path = STRING_new_zero(dir);
 
 	FILE_dir_first(dir, NULL, attr != GB_STAT_DIRECTORY ? 0 : GB_STAT_DIRECTORY);
+
+	#if OPT_NLINK
+	if (file_dir)
+	{
+		struct stat dinfo;
+		fstat(dirfd(file_dir), &dinfo);
+		no_subdir = dinfo.st_nlink == 2;
+	}
+	#endif
+
 	while (!FILE_dir_next(&file, &len))
 	{
 		temp = STRING_new_temp(file, len);
 		path = (char *)FILE_cat(file_rdir_path, temp, NULL);
-		#ifdef _DIRENT_HAVE_D_TYPE
-		is_dir = _last_is_dir;
-		#else
-		if (follow)
-			is_dir = FILE_is_dir(path);
-		else
-		{
-			FILE_stat(path, &info, FALSE);
-			is_dir = info.type == GB_STAT_DIRECTORY;
-		}
-		#endif
 
-		if (is_dir)
-			push_path(&dir_list, path);
-		else
-			push_path(&list, path);
+		#if OPT_NLINK
+		if (!no_subdir || follow)
+		#endif
+		{
+			#ifdef _DIRENT_HAVE_D_TYPE
+			is_dir = _last_is_dir;
+			#else
+			if (follow)
+				is_dir = FILE_is_dir(path);
+			else
+			{
+				FILE_stat(path, &info, FALSE);
+				is_dir = info.type == GB_STAT_DIRECTORY;
+			}
+			#endif
+
+			if (is_dir)
+			{
+				push_path(&dir_list, path);
+				continue;
+			}
+		}
+
+		push_path(&list, path);
 	}
 
 	while (dir_list)

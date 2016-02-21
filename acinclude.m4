@@ -199,7 +199,7 @@ AC_DEFUN([GB_INIT],
   dnl AC_FUNC_WAIT3
   dnl AC_CHECK_FUNCS(getcwd gettimeofday mkdir rmdir select socket strdup strerror strtod strtol sysinfo)
 
-  AC_CHECK_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw)
+  AC_CHECK_FUNCS(setenv unsetenv getdomainname getpt cfmakeraw fstatat)
 
   dnl ---- Checks for libraries
 
