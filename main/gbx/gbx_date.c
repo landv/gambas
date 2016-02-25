@@ -764,7 +764,6 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 	{
 		case DP_DAY:
 		case DP_WEEK:
-			fprintf(stderr, "DATE_diff: (%d %d) -> (%d %d)\n", date2->_date.date, date2->_date.time, date1->_date.date, date1->_date.time);
 			diff = date1->_date.date - date2->_date.date;
 			if (diff)
 			{
