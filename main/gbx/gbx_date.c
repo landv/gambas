@@ -764,10 +764,14 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 	{
 		case DP_DAY:
 		case DP_WEEK:
+			fprintf(stderr, "DATE_diff: (%d %d) -> (%d %d)\n", date2->_date.date, date2->_date.time, date1->_date.date, date1->_date.time);
 			diff = date1->_date.date - date2->_date.date;
-			sdiff = lsgn(date1->_date.time - date2->_date.time);
-			if (sdiff != lsgn(diff))
-				diff += sdiff;
+			if (diff)
+			{
+				sdiff = lsgn(date1->_date.time - date2->_date.time);
+				if (sdiff != lsgn(diff))
+					diff += sdiff;
+			}
 			break;
 
 		case DP_MILLISECOND:
@@ -787,9 +791,12 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 
 		case DP_WEEKDAY:
 			diff = date1->_date.date - date2->_date.date;
-			sdiff = lsgn(date1->_date.time - date2->_date.time);
-			if (sdiff != lsgn(diff))
-				diff += sdiff;
+			if (diff)
+			{
+				sdiff = lsgn(date1->_date.time - date2->_date.time);
+				if (sdiff != lsgn(diff))
+					diff += sdiff;
+			}
 			ds1 = *DATE_split(date1);
 			ds2 = *DATE_split(date2);
 			break;
