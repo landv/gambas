@@ -67,6 +67,7 @@ static const short days_in_year[2][14] =
 
 static double _start_time;
 
+
 // Returns 1 for a leap year, 0 else
 
 static int date_is_leap_year(short year)
@@ -80,6 +81,7 @@ static int date_is_leap_year(short year)
 		return 0;
 }
 
+
 static bool date_is_valid(DATE_SERIAL *date)
 {
 	return ((date->year == 0
@@ -90,6 +92,7 @@ static bool date_is_valid(DATE_SERIAL *date)
 	        && (date->sec >= 0) && (date->sec <= 59));
 }
 
+
 static short date_to_julian_year(short year)
 {
 	if (year < 0)
@@ -98,6 +101,7 @@ static short date_to_julian_year(short year)
 		return year - DATE_YEAR_MIN - 1;
 }
 
+
 static short date_from_julian_year(short year)
 {
 	if (year < (-DATE_YEAR_MIN))
@@ -105,6 +109,7 @@ static short date_from_julian_year(short year)
 	else
 		return year + DATE_YEAR_MIN + 1;
 }
+
 
 void DATE_init(void)
 {
@@ -118,6 +123,7 @@ void DATE_init(void)
 	//DATE_init_local();
 }
 
+
 void DATE_init_local(void)
 {
 	// Prevent glibc for calling stat("/etc/localtime") again and again...
@@ -126,6 +132,7 @@ void DATE_init_local(void)
 
 	tzset();
 }
+
 
 DATE_SERIAL *DATE_split(VALUE *value)
 {
@@ -271,7 +278,7 @@ void DATE_from_time(time_t time, int usec, VALUE *val)
 {
 	static struct tm tm;
 	static time_t last_time = (time_t)-1;
-	
+
 	DATE_SERIAL date;
 
 	if (time != last_time)
@@ -306,6 +313,7 @@ void DATE_now(VALUE *val)
 	}
 }
 
+
 int DATE_to_string(char *buffer, VALUE *value)
 {
 	DATE_SERIAL *date;
@@ -313,7 +321,7 @@ int DATE_to_string(char *buffer, VALUE *value)
 
 	if (value->_date.date == 0 && value->_date.time == 0)
 		return 0;
-	
+
 	date = DATE_split(value);
 
 	if (value->_date.date == 0)
@@ -368,7 +376,7 @@ static bool read_integer(int *number)
 
 		buffer_pos++;
 	}
-	
+
 	if (minus)
 		nbr = (-nbr);
 
@@ -600,12 +608,13 @@ int DATE_comp_value(VALUE *date1, VALUE *date2)
 double DATE_to_double(struct timeval *time, int from_start)
 {
 	double result = (double)time->tv_sec + (double)time->tv_usec / 1E6;
-	
+
 	if (from_start)
 		result -= _start_time;
-	
+
 	return result;
 }
+
 
 bool DATE_timer(double *result, int from_start)
 {
@@ -616,17 +625,9 @@ bool DATE_timer(double *result, int from_start)
 		*result = 0;
 		return TRUE;
 	}
-	
+
 	*result = DATE_to_double(&tv, from_start);
 	return FALSE;
-}
-
-
-void DATE_void_value(VALUE *value)
-{
-	value->type = T_DATE;
-	value->_date.time = 0;
-	value->_date.date = 0;
 }
 
 
@@ -868,6 +869,7 @@ int DATE_diff(VALUE *date1, VALUE *date2, int period)
 
 	return diff;
 }
+
 
 // Beware: System.TimeZone is what must be added to go to UTC
 // So if the shell command `date` displays "UTC+2", then that

@@ -54,7 +54,7 @@ typedef
 #endif
 
 #endif
-  
+
 enum {
 	DP_MILLISECOND = 1,
   DP_SECOND = 2,
@@ -67,7 +67,7 @@ enum {
   DP_QUARTER = 9,
   DP_YEAR = 10,
   };
-  
+
 #ifndef GBX_INFO
 
 #define DATE_YEAR_MIN  -4801
@@ -77,7 +77,9 @@ enum {
 
 #define DATE_SERIAL_has_no_date(_date) ((_date)->year == 0)
 #define DATE_SERIAL_has_no_time(_date) ((_date)->hour == 0 && (_date)->min == 0 && (_date)->sec == 0 && (_date)->msec == 0)
-	
+
+#define DATE_void_value(_value) ((_value)->type = T_DATE, (_value)->_date.time = (_value)->_date.date = 0)
+
 void DATE_init(void);
 void DATE_init_local(void);
 int DATE_get_timezone(void);
@@ -93,8 +95,6 @@ int DATE_comp(DATE *date1, DATE *date2);
 
 double DATE_to_double(struct timeval *time, int from_start);
 bool DATE_timer(double *result, int from_start);
-
-void DATE_void_value(VALUE *value);
 
 void DATE_add(VALUE *date, int period, int val);
 int DATE_diff(VALUE *date1, VALUE *date2, int period);
