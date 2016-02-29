@@ -8,7 +8,9 @@ Static Private $aMonth As String[]
 Public Const _IsControl As Boolean = True
 Public Const _IsVirtual As Boolean = True
 Public Const _Group As String = "Network"
-Public Const _Properties As String = "Host,Port,User,Password,Encrypt{Net.None;SSL;TLS}=None"
+Public Const _Properties As String = "Host,Port,User,Password,Encrypt{Net.None;SSL;TLS}=None,Authentication{SmtpClient.Automatic;Login;Plain;CramMD5}"
+
+Public Enum Automatic = 0, Login = 1, Plain = 2, CramMD5 = 3
 
 Property Debug As Boolean
 
@@ -17,6 +19,7 @@ Property Port As Integer
 Property User As String
 Property Password As String
 Property Encrypt As Integer
+Property Authentication As Integer
 
 Property From As String
 Property Subject As String
@@ -54,6 +57,7 @@ Private $iEncrypt As Integer
 Private $cCustomHeaders As New String[]
 Private $sMessageId As String
 Private $sInReplyTo As String
+Private $iAuth As Integer
 
 Static Public Sub _init()
   
@@ -314,45 +318,64 @@ Private Sub Authenticate()
 
   If Not $sUser Then Return
 
-  ' AUTH LOGIN
-  $hSession.Send("AUTH LOGIN")
-  If $hSession.LastCode = "334" Then
-    $hSession.Send(Base64$($sUser))
+  If $iAuth = Automatic Or If $iAuth = Login Then
+
+    ' AUTH LOGIN
+    $hSession.Send("AUTH LOGIN")
     If $hSession.LastCode = "334" Then
-      $hSession.Send(Base64$($sPassword))
-      If $hSession.LastCode = "235" Then Return
+      $hSession.Send(Base64$($sUser))
+      If $hSession.LastCode = "334" Then
+        $hSession.Send(Base64$($sPassword))
+        If $hSession.LastCode = "235" Then Return
+      Endif
     Endif
+    
+    If $iAuth Then Goto _FAIL
+    
+  Endif
+  
+  If $iAuth = Automatic Or If $iAuth = Plain Then
+
+    ' AUTH PLAIN
+    $hSession.Send("AUTH PLAIN")
+    If $hSession.LastCode <> "334" Then
+      $hSession.Send("AUTH PLAIN " & Base64$($sUser & Chr$(0) & $sUser & Chr$(0) & $sPassword), True)
+    Else
+      $hSession.Send(Base64$($sUser & Chr$(0) & $sUser & Chr$(0) & $sPassword), True)
+    Endif
+    If $hSession.LastCode = "235" Then Return
+    
+    If $iAuth Then Goto _FAIL
+    
   Endif
 
-  ' AUTH PLAIN
-  $hSession.Send("AUTH PLAIN")
-  If $hSession.LastCode <> "334" Then
-    $hSession.Send("AUTH PLAIN " & Base64$($sUser & Chr$(0) & $sUser & Chr$(0) & $sPassword), True)
-  Else
-    $hSession.Send(Base64$($sUser & Chr$(0) & $sUser & Chr$(0) & $sPassword), True)
+  If $iAuth = Automatic Or If $iAuth = CramMD5 Then
+
+    ' CRAM-MD5
+    $hSession.Send("AUTH CRAM-MD5")
+    'If $hSession.LastCode = "334" Then Print "LastAnswer = "; $hSession.LastAnswer
+  
+    sChallenge64 = Split($hSession.LastAnswer, " ")[1]
+    sChallenge = UnBase64(sChallenge64)
+    sKey = $sPassword
+  
+    'sCommand = "echo -n " & Shell$(sChallenge) & " | openssl md5 -hmac " & Shell$(sKey)
+    sCommand = "openssl md5 -hmac " & Shell$(sKey) & " << EOF\n" & sChallenge
+    Shell sCommand To sDigestHex
+  
+    sDigestHex = Trim(Split(sDigestHex, "=")[1])
+    sResponse = Base64($sUser & sDigestHex)
+  
+    $hSession.Send(sResponse)
+    If $hSession.LastCode = "235" Then Return
+    
+    If $iAuth Then Goto _FAIL
+    
   Endif
-  If $hSession.LastCode = "235" Then Return
 
-  ' CRAM-MD5
-  $hSession.Send("AUTH CRAM-MD5")
-  'If $hSession.LastCode = "334" Then Print "LastAnswer = "; $hSession.LastAnswer
+_FAIL:
 
-  sChallenge64 = Split($hSession.LastAnswer, " ")[1]
-  sChallenge = UnBase64(sChallenge64)
-  sKey = $sPassword
-
-  'sCommand = "echo -n " & Shell$(sChallenge) & " | openssl md5 -hmac " & Shell$(sKey)
-  sCommand = "openssl md5 -hmac " & Shell$(sKey) & " << EOF\n" & sChallenge
-  Shell sCommand To sDigestHex
-
-  sDigestHex = Trim(Split(sDigestHex, "=")[1])
-  sResponse = Base64($sUser & sDigestHex)
-
-  $hSession.Send(sResponse)
-  If $hSession.LastCode = "235" Then Return
-
-  ' Nothing worked?
-  Error.Raise("Authentication failed")
+  Error.Raise("Authentication failed (" & $hSession.LastCode & ")")
 
 Catch
 
@@ -541,5 +564,17 @@ End
 Private Sub InReplyTo_Write(Value As String)
 
   $sInReplyTo = Value
+
+End
+
+Private Function Authentication_Read() As Integer
+
+  Return $iAuth
+
+End
+
+Private Sub Authentication_Write(Value As Integer)
+
+  $iAuth = Value
 
 End

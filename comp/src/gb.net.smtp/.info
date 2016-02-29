@@ -31,7 +31,23 @@ s
 _Properties
 C
 s
-"Host,Port,User,Password,Encrypt{Net.None;SSL;TLS}=None"
+"Host,Port,User,Password,Encrypt{Net.None;SSL;TLS}=None,Authentication{SmtpClient.Automatic;Login;Plain;CramMD5}"
+Automatic
+C
+i
+0
+Login
+C
+i
+1
+Plain
+C
+i
+2
+CramMD5
+C
+i
+3
 Debug
 p
 b
@@ -53,6 +69,10 @@ p
 s
 
 Encrypt
+p
+i
+
+Authentication
 p
 i
 
