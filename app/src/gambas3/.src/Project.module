@@ -1044,7 +1044,7 @@ Public Sub MakeModuleIcon(sModule As String, iSize As Integer, Optional bStartup
 
 End
 
-Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
+Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat) As Picture
 
   Dim hImage As Image
   Dim hPict As Picture
@@ -1077,7 +1077,8 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer) As Picture
     sLocalPrefix = "img/16"
   Endif
 
-  With Stat(sPath)
+  If Not hStat Then hStat = Stat(sPath)
+  With hStat
 
     bLink = .Type = gb.Link
     bConflict = False
@@ -1321,6 +1322,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim hModule As CModule
   Dim bSource As Boolean
   Dim bExtern As Boolean
+  Dim hStat As Stat
 
   If $cProjectFilter And If Not $cProjectFilter.Exist(sDir &/ sFile) Then Return
 
@@ -1347,8 +1349,10 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
   If Not ProjectTree.Exist(sParent) Then Return
 
-  If Not Exist(sPath) Then Return
-  With Stat(sPath)
+  Try hStat = Stat(sPath)
+  If Error Then Return
+
+  With hStat
 
     If .Hidden Then Return
 
@@ -1462,7 +1466,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
     If Not bIgnore Then
 
-      hPict = GetFileIcon(sPath)
+      hPict = GetFileIcon(sPath,, hStat)
 
       If bAfter Then
         With ProjectTree

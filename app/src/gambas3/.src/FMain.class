@@ -2039,16 +2039,6 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
   
   If NoMessage Then Return
   
-  ' If Not sKey Then sKey = Project.Dir
-  ' 
-  ' 'Try tvwProject[sKey].Selected = True
-  ' 'Wait
-  ' Try tvwProject[sKey].EnsureVisible
-  ' Y = 8
-  ' Try Y = tvwProject[sKey].Y + tvwProject[sKey].H \ 2
-  ' 
-  ' X = tvwProject.W \ 2
-  
   If sKey Then sMsg = "<b>" & GetKeyTitle(sKey) & "</b><p>" & sMsg
   
   sMsg = Replace(sMsg, "\n", "<br>")
@@ -2057,11 +2047,6 @@ Public Sub ShowMessage(sMsg As String, sIcon As String, Optional sKey As String)
     
     msgError.Open(sMsg, Picture["icon:/32/" & sIcon])
     
-    'Balloon(sMsg, tvwProject, Picture["icon:/32/" & sIcon], X, Y)
-    ' lblError.Text = Replace$(sMsg, "\n", "<br>")
-    ' imgIcon.Picture = Picture["icon:/32/" & sIcon]
-    ' panError.Height = lblError.Height
-    ' panError.Show
   Else
     
     If sIcon = "error" Then
