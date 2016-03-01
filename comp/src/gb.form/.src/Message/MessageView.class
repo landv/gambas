@@ -53,9 +53,35 @@ Private Sub UpdateButton()
 
 End
 
-Public Sub Open(Text As String, Optional Icon As Picture)
+Private Sub DoOpen()
   
   Dim fTime As Float
+  
+  UpdateButton
+  Me.H = 1
+  Me.Show
+  
+  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight($sText, Me.Parent.ClientW - Desktop.Scale * 4 - $hIcon.W) + Desktop.Scale * 4)
+  
+  If $bAnimate Then
+  
+    fTime = Timer
+    
+    While Me.H < $H
+      Me.H = $H * Min(1, (Timer - fTime) * 8)
+      Wait
+    Wend
+    
+  Endif
+  
+  Me.H = $H
+  
+  Raise Open
+  
+End
+
+
+Public Sub Open(Text As String, Optional Icon As Picture)
   
   If $sText = Text Then Return
   
@@ -75,26 +101,7 @@ Public Sub Open(Text As String, Optional Icon As Picture)
     If Error Then $hIcon = Picture["img/32/warning.png"]
   Endif
   
-  UpdateButton
-  Me.H = 1
-  Me.Show
-  
-  $H = Max($hIcon.H + Desktop.Scale * 2, Me.Font.RichTextHeight(Text, Me.Parent.ClientW - Desktop.Scale * 4 - $hIcon.W) + Desktop.Scale * 4)
-  
-  If $bAnimate Then
-  
-    fTime = Timer
-    
-    While Me.H < $H
-      Me.H = $H * Min(1, (Timer - fTime) * 8)
-      Wait
-    Wend
-    
-  Endif
-  
-  Me.H = $H
-  
-  Raise Open
+  DoOpen
   
 End
 
@@ -123,7 +130,7 @@ Public Sub Close()
     $hIcon = $aIcon[0]
     $aText.Remove(0)
     $aIcon.Remove(0)
-    Open($sText, $hIcon)
+    DoOpen
   Else
     $sText = ""
     $hIcon = Null
