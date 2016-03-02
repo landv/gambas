@@ -1741,6 +1741,12 @@ Public Sub mnuNewFile_Click()
   
 End
 
+Public Sub mnuImportFile_Click()
+  
+  FImportFile.Run(GetCurrent(), GetCurrentDir(), Last.Tag)
+  
+End
+
 Public Sub mnuAddProjectLink_Click()
   
   Dim sPath As String 

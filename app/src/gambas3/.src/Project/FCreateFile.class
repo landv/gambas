@@ -4,8 +4,6 @@ Private $sPath As String
 Private $sDir As String
 Private $sType As String
 Private $bDoNotSetName As Boolean
-Private $bInitFileChooser As Boolean
-Private $bInitFilter As Boolean
 
 Public Sub Run(sPath As String, sDir As String, sType As String)
   
@@ -22,13 +20,13 @@ Public Sub btnCancel_Click()
 
 End
 
-Public Sub lvwType_Select()
+Public Sub UpdateLayout()
 
   Dim sPrefix As String
   Dim hChild As Control
   Dim bOpt As Boolean
  
-  sPrefix = lvwType.Key
+  sPrefix = $sType
   For Each hChild In panOption.Children
     If Not hChild.Tag Then Continue
     hChild.Visible = Split(hChild.Tag, ",").Exist(sPrefix)
@@ -50,116 +48,38 @@ Public Sub lvwType_Select()
     Object.Unlock(txtName)
   Endif 
   
-  'iFilter = $aFilterType.Find(LCase(sPrefix))
-  '$iFilter = iFilter
-  '$bUpdateExistingTab = True
-  
   txtName.SelectAll
   txtName.SetFocus
-  $bInitFilter = False
-  
-  'UpdateExistingTab
   
 End
-
-Public Sub InitFilter()
-  
-  Dim aFilter As String[]
-  Dim hModule As CModule
-  Dim sType As String
-  
-  If $bInitFilter Then Return
-  
-  If Not $bInitFileChooser Then
-    Settings.Read(fchExisting)
-    $bInitFileChooser = True
-  Endif
-  
-  sType = lvwType.Key
-  
-  If Project.IsSourceDir($sDir) Then
-    
-    Select Case sType
-      
-      Case "module"
-        aFilter = ["*.module", ("Gambas modules")]
-      Case "class"
-        aFilter = ["*.class", ("Gambas classes")]
-      Case Else
-        hModule = CModule[sType]
-        aFilter = ["*." & hModule.Key, hModule.NameFilter]
-      
-    End Select
-
-  Else
-  
-    Select Case sType
-      Case "image"
-        aFilter = ["*.png;*.jpg;*.jpeg;*.xpm;*.gif", ("Picture files")]
-      Case "html"
-        aFilter = ["*.htm;*.html", ("HTML files")]
-      Case "css"
-        aFilter = ["*.css", ("Cascading style sheets")]
-      Case "js"
-        aFilter = ["*.js", ("Javascript files")]
-        
-    End Select
-    
-  Endif
-  
-  fchExisting.Filter = aFilter
-  
-  UpdateExistingTab
-  
-  $bInitFilter = True
-  
-End
-
 
 Public Sub Form_Open()
 
-  Dim hModule As CModule
+  Dim hPict As Picture
 
   $bDoNotSetName = False
   
   Settings.Read(Me)
   
-  lvwType.Clear
-
   If Project.IsSourceDir($sDir) Then
 
-    lvwType.Add("module", ("Module"), Project.MakeModuleIcon("module", 32).Picture)
-    lvwType.Add("class", ("Class"), Project.MakeModuleIcon("class", 32).Picture)
-    
-    For Each hModule In CModule.All
-      If hModule.Used Then
-        lvwType.Add(hModule.Key, hModule.Name, Project.MakeModuleIcon(hModule.Key, 32).Picture)
-      Endif
-    Next
-    
+    hPict = Project.MakeModuleIcon($sType, 64).Picture
+  
   Else
   
-    lvwType.Add("image", ("Image"), Picture["icon:/32/image"])
-    lvwType.Add("text", ("Text file"), Picture["icon:/32/text"])
-    lvwType.Add("html", ("HTML file"), Picture["icon:/32/html"])
-    lvwType.Add("css", ("Style sheet"), Picture["icon:/32/html"])
-    lvwType.Add("js", ("Javascript file"), Picture["icon:/32/script"])
-
+    Select Case $sType
+      Case "css"
+        hPict = Picture["icon:/64/html"]
+      Case "js"
+        hPict = Picture["icon:/64/script"]
+      Case Else
+        Try hPict = Picture["icon:/64/" & $sType]
+        If Error Then hPict = Picture["icon:/64/text"]
+    End Select
+  
   Endif
   
-  ' For Each hPanel In lstType.Children
-  '   If Not hPanel.Tag Then Continue
-  '   hPanel.Visible = aFilterType.Exist(hPanel.Tag)
-  '   If Not hPanel.Visible Then Continue
-  '   hPictureBox = hPanel.Children[0]
-  '   'hPictureBox.W = hPictureBox.H
-  '   hModule = CModule[hPanel.Tag]
-  '   If Not hModule Then Continue
-  '   hPanel.Visible = hModule.Used
-  '   If hPanel.Visible Then
-  '     If Not hPictureBox.Picture Then hPictureBox.Picture = Project.MakeModuleIcon(hPanel.Tag, 32).Picture
-  '   Endif
-  ' Next
+  picFile.Picture = hPict
   
   cmbParent.List = Project.GetClassesOnly()
   cmbParent.Add(("(No parent)"), 0)
@@ -169,11 +89,7 @@ Public Sub Form_Open()
   If cmbParent.Index < 0 Then cmbParent.Index = 0
   
   If Not $sType Then $sType = "module"
-  lvwType[$sType].Selected = True
-  
-  tabFile.Index = 0
-  
-  lvwType_Select
+  UpdateLayout
 
 End
 
@@ -197,7 +113,7 @@ End
 
 Private Sub CreateFile() As Boolean
   
-  Dim sType As String = lvwType.Key
+  Dim sType As String = $sType
   Dim sName As String = Trim(txtName.Text)
   Dim sMsg As String
   Dim sTemp As String
@@ -244,8 +160,16 @@ Private Sub CreateFile() As Boolean
     Case "class"
     
       sTemp = "' Gambas class file\n\n"
-      If chkExported.Value Then sTemp &= "EXPORT\n"
-      If cmbParent.Index > 0 Then sTemp &= "INHERITS " & cmbParent.Text & "\n"
+      
+      If chkExport.Value Then sTemp &= "Export\n"
+      
+      If chkCreateStatic.Value Then
+        sTemp &= "Create Static\n"
+      Else If chkCreatePrivate.Value Then
+        sTemp &= "Create Private\n"
+      Endif
+      
+      If cmbParent.Index > 0 Then sTemp &= "Inherits " & cmbParent.Text & "\n"
       sTemp = RTrim(sTemp) & "\n"
       
       Project.InsertSource(sName, sType, $sDir, sTemp)
@@ -354,133 +278,9 @@ Private Sub CreateFile() As Boolean
   
 End
 
-Private Sub ImportDependencies(sName As String, sExt As String, sOrig As String, bLink As Boolean)
-  
-  Dim hIn As File
-  Dim hOut As File
-  Dim sLine As String
-  Dim iPos As Integer
-  Dim sImg As String
-  Dim sImportDir As String
-  Dim sDestImg As String
-  Dim sForm As String
-  Dim bSave As Boolean
-
-  Inc Application.Busy
-  
-  sForm = Project.Dir &/ File.SetExt(sName, sExt)
-  sOrig = File.Dir(sOrig)
-  
-  hIn = Open sForm
-  hOut = Open Temp$(sExt) For Create 
-  
-  ' TODO: Import Image.Load(*) and SvgImage.Load(*)
-  
-  While Not Eof(hIn)
-  
-    Line Input #hIn, sLine
-    
-    iPos = InStr(sLine, "Picture[")
-    If iPos = 0 Then Goto NEXT_LINE
-    
-    sImg = Scan(sLine, "*Picture\\[\"*\"]")[1]
-    If sImg Begins "icon:/" Then Goto NEXT_LINE
-    
-    sImportDir = Project.Dir &/ "import"
-    If Not Exist(sImportDir) Then Project.InsertDirectory(sImportDir)
-    sImportDir &/= sName
-    If Not Exist(sImportDir) Then Project.InsertDirectory(sImportDir)
-    
-    sDestImg = sImportDir &/ File.Name(sImg)
-    
-    If Exist(sOrig &/ sImg) Then
-      If Not Exist(sDestImg) Then
-        Project.InsertFile(File.Name(sDestImg), File.Dir(sDestImg), sOrig &/ sImg, True, bLink)
-      Endif
-      sLine = Left(sLine, iPos + 7) & Chr$(34) & "import" &/ sName &/ File.Name(sDestImg) & Chr$(34) & "]"    
-      bSave = True
-    Else 
-      Continue 
-    Endif 
-
-NEXT_LINE:  
-    Print #hOut, sLine
-    
-  Wend
-  
-  Close #hOut
-  Close #hIn
-  
-  If bSave Then
-    Kill sForm
-    Copy Temp$(sExt) To sForm
-    Project.RefreshKey(sForm)
-  Endif
-  
-Finally 
-  
-  Dec Application.Busy  
-  
-End
-
-Private Sub ImportFile() As Boolean
-  
-  Dim sDir As String
-  Dim sName As String
-  Dim sTemp As String
-  Dim sExt As String
-  
-  For Each sTemp In fchExisting.SelectedPaths
-  
-    sDir = File.Dir(sTemp)
-    sName = File.Name(sTemp)
-    sExt = File.Ext(sTemp)
-    
-    Select Case sExt
-    
-      Case "module"
-        sName = File.BaseName(Project.GetUniqueSourceName(sName))
-        Project.InsertSource(sName, "module", $sDir, sTemp,,, chkLink.Value)
-    
-      Case "class"
-        sName = File.BaseName(Project.GetUniqueSourceName(sName))
-        Project.InsertSource(sName, "class", $sDir, sTemp,,, chkLink.Value)
-    
-      Case "form", "report", "webform"
-        sName = File.BaseName(Project.GetUniqueSourceName(sName))
-        Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-        Project.InsertSource(sName, sExt, $sDir, sTemp, False, True, chkLink.Value)
-        ImportDependencies(sName, sExt, sTemp, chkLink.Value)
-        Project.OpenForm(sName)
-            
-      Case "webpage"
-        sName = File.BaseName(Project.GetUniqueSourceName(sName))
-        Project.InsertSource(sName, "class", $sDir, File.SetExt(sTemp, "class"), True, True, chkLink.Value)
-        Project.InsertSource(sName, "webpage", $sDir, sTemp, False, False, chkLink.Value)
-    
-      Case Else
-        
-        Inc FMain.NoMessage
-        sName = Project.GetUniqueName($sDir, sName)
-        Project.InsertFile(sName, $sDir, sTemp,, chkLink.Value)
-        Dec FMain.NoMessage
-    
-    End Select
-    
-  Next
-  
-End
-
-
-
 Public Sub btnOK_Click()
 
-  If tabFile.Index = 0 Then   
-    If CreateFile() Then Return
-  Else 
-    If ImportFile() Then Return
-  Endif
-
+  If CreateFile() Then Return
   Me.Close(True)
 
 Catch 
@@ -493,57 +293,37 @@ End
 Public Sub Form_Close()
 
   Settings.Write(Me)  
-  Settings.Write(fchExisting)
-  $bInitFileChooser = False
   
 End
 
-Private Sub UpdateExistingTab()
-  
-  If CModule.Ext.Exist(lvwType.Key) Then 
-    fchExisting.ShowHidden = True
-  Endif
-  
-End
-
-
-Public Sub tabFile_Click()
-
-  If tabFile.Index = 1 Then 
-    InitFilter
-  Endif
-
-  fchExisting_Change
-
-End
-
-Public Sub fchExisting_Change()
-
-  If tabFile.Index = 1 Then 
-    btnOK.Enabled = fchExisting.Value
-  Else 
-    btnOK.Enabled = True
-  Endif  
-
-End
-
-Public Sub fchExisting_Activate()
-
-  btnOK.Value = True  
-
-End
-
-Public Sub fchExisting_Icon(Path As String)
-
-  If Exist(Path &/ ".project") Then 
-    fchExisting.Icon = Project.GetIcon(Path)    
-  Endif
-
-End
 
 Public Sub panType_Arrange()
 
   Dim hPictureBox As PictureBox = Last.Children[0]
   hPictureBox.W = hPictureBox.H
+
+End
+
+Public Sub panOption_Arrange()
+
+  Dim hChild As Control
+  Dim H As Integer
+
+  For Each hChild In panOption.Children
+    If hChild.Visible Then H = Max(H, hChild.Y + hChild.H)
+  Next
+  panNewFile.H = H + Desktop.Scale * 2
+
+End
+
+Public Sub chkCreatePrivate_Click()
+
+  If chkCreatePrivate.Value Then chkCreateStatic.Value = False
+
+End
+
+Public Sub chkCreateStatic_Click()
+
+  If chkCreateStatic.Value Then chkCreatePrivate.Value = False
 
 End
