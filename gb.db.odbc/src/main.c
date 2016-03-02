@@ -62,7 +62,7 @@ DB_INTERFACE DB EXPORT;
 
 static char _buffer[32];
 //static char _nullbuffer[10];
-static DB_DRIVER _driver; 
+static DB_DRIVER _driver;
 
 typedef struct
 	{
@@ -108,6 +108,153 @@ typedef struct
 	}
 ODBC_TABLES;
 
+/*
+* zxMarce: Routine to print to console the errors from the ODBC subsystem.
+* Adapted to obey Gambas' DB.IsDebug() and use SQLGetDiagRecW() instead of SQLGetDiagRec().
+* Mostly from http://www.easysoft.com/developer/interfaces/odbc/diagnostics_error_status_codes.html
+*/
+void reportODBCError(char *fn,
+										SQLHANDLE handle,
+										SQLSMALLINT type
+										)
+{
+
+	SQLINTEGER      i = 0;
+	SQLINTEGER      native;
+	SQLWCHAR        state[7];
+	SQLWCHAR        text[256];
+	SQLSMALLINT     len;
+	SQLRETURN       ret;
+
+	if(DB.IsDebug())
+	{
+		fprintf(stderr, "gb.db.odbc: %s\n", fn);
+		do
+		{
+			ret = SQLGetDiagRecW(type, handle, ++i, state, &native, text, sizeof(text), &len);
+
+			if (SQL_SUCCEEDED(ret))
+				fprintf(stderr, "gb.db.odbc: %s:%d:%d:%s\n", (char *)state, i, native, (char *)text);
+		}
+		while (ret == SQL_SUCCESS);
+	}
+}
+
+
+/* zxMarce: This is one way -hope there's an easier one- to retrieve a rowset
+* count for SELECT statements. Four steps (must have an scrollable cursor!):
+*   1- Remember the current row.
+*   2- Seek down to the last row in the rowset
+*   3- Get the last row's index (recno)
+*   4- Seek back to wherever we were at in step 1
+*/
+int GetRecordCount(SQLHANDLE stmtHandle, SQLINTEGER cursorScrollable)
+{
+	SQLRETURN retcode;              //ODBC call return values
+	int formerRecIdx = 0;           //Where we were when this all started.
+	SQLINTEGER myRecCnt = -1;       //Default for when there's no cursor.
+
+	//Make sure the statement has a cursor
+	if (stmtHandle && (cursorScrollable == SQL_TRUE))
+	{
+
+			//Tell ODBC we won't be actually reading data (speeds process up).
+			//SQL_ATTR_RETRIEVE_DATA = [SQL_RD_ON] | SQL_RD_OFF
+			retcode = SQLSetStmtAttr(stmtHandle, SQL_ATTR_RETRIEVE_DATA, (SQLPOINTER) SQL_RD_OFF, 0);
+			if (!SQL_SUCCEEDED(retcode))
+			{
+					reportODBCError("SQLSetStmtAttr SQL_ATTR_RETRIEVE_DATA",
+												stmtHandle,
+												SQL_HANDLE_STMT
+											);
+			}
+
+			//Fetch current row's index so we can return to it when done.
+			retcode = SQLGetStmtAttr(stmtHandle, SQL_ATTR_ROW_NUMBER, &formerRecIdx, 0, 0);
+			if (!SQL_SUCCEEDED(retcode))
+			{
+					reportODBCError("SQLGetStmtAttr SQL_ATTR_ROW_NUMBER",
+												stmtHandle,
+												SQL_HANDLE_STMT
+											);
+			}
+
+			//Advance the cursor to the last record.
+			retcode = SQLFetchScroll(stmtHandle, SQL_FETCH_LAST, (SQLINTEGER) 0);
+			if (SQL_SUCCEEDED(retcode))
+			{
+
+					//Fetch the last record's index
+					retcode = SQLGetStmtAttr(stmtHandle, SQL_ATTR_ROW_NUMBER, &myRecCnt, 0, 0);
+					if (SQL_SUCCEEDED(retcode))
+					{
+
+							//Set ret value
+							if (DB.IsDebug())
+							{
+									fprintf(stderr, "gb.db.odbc.GetRecordCount: Success, count=%d\n", (int) myRecCnt);
+							}
+
+					} else {
+
+							reportODBCError("SQLGetStmtAttr SQL_ATTR_ROW_NUMBER",
+															stmtHandle,
+															SQL_HANDLE_STMT
+														);
+
+					}
+
+					//Return cursor to original row.
+					retcode = SQLFetchScroll(stmtHandle, SQL_FETCH_ABSOLUTE, (SQLINTEGER) formerRecIdx);
+					//Since we have set the "do not read data" statement attribute, this call (may) return
+					//code 100 (SQL_NO_DATA) but that's OK for our purposes of just counting rows.
+					if (!SQL_SUCCEEDED(retcode) && (retcode != SQL_NO_DATA))
+					{
+							char mssg[128];
+							snprintf(mssg,
+											sizeof(mssg),
+											"SQLFetchScroll SQL_FETCH_ABSOLUTE (code %d) (rec %d)",
+											(int)retcode,
+											formerRecIdx
+											);
+
+							reportODBCError(mssg,
+															stmtHandle,
+															SQL_HANDLE_STMT
+														);
+					}
+
+			} else {
+
+					reportODBCError("SQLFetchScroll SQL_FETCH_LAST",
+													stmtHandle,
+													SQL_HANDLE_STMT
+												);
+
+			}
+
+			//Tell ODBC we will be reading data now.
+			//SQL_ATTR_RETRIEVE_DATA = [SQL_RD_ON] | SQL_RD_OFF
+			retcode = SQLSetStmtAttr(stmtHandle, SQL_ATTR_RETRIEVE_DATA, (SQLPOINTER) SQL_RD_ON, 0);
+			if (!SQL_SUCCEEDED(retcode))
+			{
+					reportODBCError("SQLSetStmtAttr SQL_ATTR_RETRIEVE_DATA",
+													stmtHandle,
+													SQL_HANDLE_STMT
+												);
+			}
+
+	} else {
+
+			if (DB.IsDebug())
+			{
+					fprintf(stderr, "gb.db.odbc: Cannot do GetRecordCount()!\n");
+			}
+
+	}
+
+	return ((int) myRecCnt);
+}
 
 
 /* BM: Replaces malloc() and free() by GB.Alloc() and GB.Free() */
@@ -148,7 +295,7 @@ fflush(stderr);
 			(*add)("\\\\", 2);
 		else if (c == '\'')
 			(*add)("''", 2);
-		
+
 		else
 			(*add)((char *)&c, 1);
 	}
@@ -254,16 +401,16 @@ fflush(stderr);
 		(*add)(&data[i], 1);
 	}
 
-	return FALSE; 
+	return FALSE;
 }
 
-/* 
+/*
 Internal function to check if the .Host property is actually an ODBC connection string.
 ODBC ConnStrings have one or more "ParamName=ParamValue" pairs, delimited by semicolons.
-The function helps the component know whether to call SQLConnect (when a host/DSN), 
+The function helps the component know whether to call SQLConnect (when a host/DSN),
 or SQLDriverConnect (when a ConnString).
 I know there are C functions to locate CHARs in a CHAR[], but I'm not well versed
-in C and less in what's available in a Gambas component, so I stuck to whatever other 
+in C and less in what's available in a Gambas component, so I stuck to whatever other
 routines use in this module.
 zxMarce, 20150826
 */
@@ -281,7 +428,7 @@ fflush(stderr);
 
 	if (!host_or_cs)
 		return FALSE;
-	
+
 	for (counter = 0; counter < strlen(host_or_cs); counter++)
 	{
 		curChar = host_or_cs[counter];
@@ -359,7 +506,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 			else
 				val->value._integer = conv._integer.value;
 			break;
-			
+
 		case SQL_NUMERIC:
 		case SQL_FLOAT:
 		case SQL_REAL:
@@ -370,7 +517,7 @@ static void conv_data(char *data, GB_VARIANT_VALUE * val, int type)
 			else
 				val->value._float = conv._float.value;
 			break;
-			
+
 		case SQL_BIGINT: // Data type bigint 64 bits
 			val->type = GB_T_LONG;
 			if (GB.NumberFromString(GB_NB_READ_LONG, data, strlen(data), &conv))
@@ -469,11 +616,11 @@ fflush(stderr);
 	host = desc->host;
 	if (!host)
 		host = "";
-	
+
 	user = desc->user;
 	if (!user)
 		user = "";
-	
+
 	hostIsAConnString = is_host_a_connstring(host);
 
 	/* Allocate the ODBC handle */
@@ -520,12 +667,12 @@ fflush(stderr);
 	{
 		/* zxMarce: Connect to Database (desc->host is an ODBC Connection String) */
 		retcode = SQLDriverConnect(odbc->odbcHandle, 0, (SQLCHAR *)host, SQL_NTS, 0, 0, 0, SQL_DRIVER_NOPROMPT);
-		/* The last three zero params in the call above can be used to retrieve the actual connstring used, 
-			should unixODBC "complete" the passed ConnString with data from a matching defined DSN. Not 
-			doing it here, but maybe useful to fill in the other Gambas Connection object properties (user, 
+		/* The last three zero params in the call above can be used to retrieve the actual connstring used,
+			should unixODBC "complete" the passed ConnString with data from a matching defined DSN. Not
+			doing it here, but maybe useful to fill in the other Gambas Connection object properties (user,
 			pass, etc) after parsing it. Also note that the ConnString MAY refer to a DSN, and include
 			user/pass, if desired.
-									Example - ODBC-ConnString, all one line (must assign this to the Connection.Host property in 
+									Example - ODBC-ConnString, all one line (must assign this to the Connection.Host property in
 			Gambas code and then call Connection.Open):
 										"Driver=<driverSectionNameInODBCInst.Ini>;
 											Server=<serverNameOrIP>;
@@ -542,7 +689,7 @@ fflush(stderr);
 	}
 
 	retcode = SQLSetConnectAttr(odbc->odbcHandle, SQL_ATTR_AUTOCOMMIT, (void *) SQL_AUTOCOMMIT_ON, SQL_NTS);
-	
+
 	odbc->dsn_name = malloc(sizeof(char) * strlen(host));
 	strcpy(odbc->dsn_name, host);
 
@@ -589,7 +736,7 @@ fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tclose_database\n");
 fflush(stderr);
 #endif
-	
+
 	ODBC_CONN *conn = (ODBC_CONN *)db->handle;
 
 	if (conn->odbcHandle)
@@ -602,23 +749,23 @@ fflush(stderr);
 		SQLFreeHandle(SQL_HANDLE_DBC, conn->odbcHandle);
 		conn->odbcHandle = NULL;
 	}
-	else 
+	else
 		GB.Error("ODBC module internal error");
-	
+
 	if (conn->odbcEnvHandle)
 	{
 		SQLFreeHandle(SQL_HANDLE_ENV, conn->odbcEnvHandle);
 		conn->odbcEnvHandle = NULL;
 	}
-	else 
+	else
 		GB.Error("ODBC module internal error");
 
 	if (conn->dsn_name)
 		free(conn->dsn_name);
-	
+
 	if (conn->user_name)
 		free(conn->user_name);
-	
+
 	if (conn)
 	{
 		free(conn);
@@ -746,7 +893,7 @@ static void query_get_param(int index, char **str, int *len, char quote)
 	index--;
 	*str = query_param[index];
 	*len = strlen(*str);
-	
+
 	if (quote == '\'' || quote == '`')
 	{
 		*str = DB.QuoteString(*str, *len, quote);
@@ -802,8 +949,8 @@ fflush(stderr);
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 	{
 		odbcres->Cursor_Scrollable = SQL_FALSE;
-	} 
-	else odbcres->Cursor_Scrollable=SQL_TRUE;
+	}
+	else odbcres->Cursor_Scrollable = SQL_TRUE;
 
 	odbcres->Function_exist = handle->FetchScroll_exist;
 
@@ -818,33 +965,20 @@ fflush(stderr);
 
 	if (res)
 	{
-		retcode = SQLRowCount(odbcres->odbcStatHandle, &odbcres->count);
+		/*retcode = SQLRowCount(odbcres->odbcStatHandle, &odbcres->count);
 		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO)
 		{
 			SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
 			GB.Error("Unable to retrieve row count");
 			return retcode;
-		}
-
-	if (DB.IsDebug())
-		fprintf(stderr, "gb.db.odbc: -> %d rows\n", (int)odbcres->count);
-
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tdo_query.SQLRowCount (res TRUE): %d\n", odbcres->count);
-fflush(stderr);
-#endif
-
+		}*/
+		odbcres->count = GetRecordCount(odbcres->odbcStatHandle, odbcres->Cursor_Scrollable);
+		if (DB.IsDebug())
+			fprintf(stderr, "gb.db.odbc: -> %d rows\n", (int)odbcres->count);
 		*res = odbcres;
 	}
 	else
 	{
-
-#ifdef ODBC_DEBUG_HEADER
-fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
-fprintf(stderr,"\tdo_query.SQLRowCount (res FALSE): %d\n", odbcres->count);
-fflush(stderr);
-#endif
 
 		SQLFreeHandle(SQL_HANDLE_STMT, odbcres->odbcStatHandle);
 		GB.Free(POINTER(&odbcres));
@@ -864,7 +998,7 @@ fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tquery_free_result %p\n",result);
 fflush(stderr);
 #endif
-	
+
 	ODBC_FIELDS *current, *next;
 	current = (ODBC_FIELDS *) result->fields;
 	next = (ODBC_FIELDS *) result->fields;
@@ -934,12 +1068,12 @@ fflush(stderr);
 
 	SQLSMALLINT colsNum = 0;
 	SQLRETURN retcode;
-	
+
 	retcode = SQLNumResultCols(result->odbcStatHandle, &colsNum);
-	
+
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
 		GB.Error("ODBC error: Unable to get the number of columns");
-	
+
 	return colsNum;
 }
 
@@ -965,7 +1099,7 @@ fflush(stderr);
 	int nresultcols;
 
 	nresultcols = get_num_columns(result);
-		
+
 	result->fields = NULL;
 
 	if (result->fields == NULL)
@@ -1043,7 +1177,7 @@ fflush(stderr);
 
 	This function must initialize the info->nfield field with the number of
 	field in the query result.
-	
+
 	If <count> receives -1, that will mean that the result is "move forward"
 	only
 
@@ -1066,7 +1200,7 @@ fflush(stderr);
 		return;
 
 	//SQLRowCount(res->odbcStatHandle, &rowsNum);
-	
+
 	*count = res->count;
 	info->nfield = colsNum;
 	query_make_result(res);
@@ -1122,7 +1256,7 @@ fflush(stderr);
 	<next> is a boolean telling if we want the next row.
 
 	This function must return DB_OK, DB_ERROR or DB_NO_DATA
-	
+
 	This function must use GB.StoreVariant() to store the value in the
 	buffer.
 
@@ -1140,19 +1274,19 @@ static int query_fill(DB_DATABASE *db, DB_RESULT result, int pos, GB_VARIANT_VAL
 	int nresultcols;
 	SQLINTEGER displaysize;
 	//int V_OD_erg=0;
-	
+
 #ifdef ODBC_DEBUG_HEADER
 fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\tquery_fill result %p,result->odbcStatHandle %p, pos %d\n",res,res->odbcStatHandle,pos);
 fflush(stderr);
 #endif
-	
+
 	nresultcols = get_num_columns(res);
 	if (nresultcols == 0)
 		return DB_ERROR;
 
 	/*current = res->fields;
-	
+
 	for (i = 0; i < nresultcols; i++)
 	{
 		if(current->next)
@@ -1162,7 +1296,7 @@ fflush(stderr);
 	if (res->Function_exist == SQL_TRUE)
 	{
 		if(res->Cursor_Scrollable == SQL_TRUE)
-		{	
+		{
 			retcode2 = SQLFetchScroll(res->odbcStatHandle, SQL_FETCH_ABSOLUTE, pos + 1);
 		}
 		else
@@ -1186,26 +1320,26 @@ fflush(stderr);
 		GB.Error("Unable to fetch row");
 		return DB_ERROR;
 	}
-		
+
 	if((retcode2 == SQL_NO_DATA_FOUND) || (retcode2==SQL_NO_DATA))
 		return DB_NO_DATA;
 
 	current = res->fields;
-			
+
 	for (i = 0; i < nresultcols; i++)
 	{
 		displaysize=0;
 		char * fieldata;
 		SQLULEN   precision=0;
-		
+
 		SQLSMALLINT colnamelen=0,scale=0,type;
 		SQLLEN read=0;
 		SQLCHAR namebuff[25];
-			
+
 		SQLDescribeCol(res->odbcStatHandle, i+1 , namebuff, sizeof(namebuff), &colnamelen,&type,&precision, &scale,NULL);
-			
+
 		SQLColAttribute(res->odbcStatHandle, i+1 , SQL_DESC_LENGTH, "",0, NULL, (SQLPOINTER)&displaysize);
-			
+
 		read=0;
 
 		if (displaysize >= strlen((char *) namebuff))
@@ -1219,36 +1353,36 @@ fflush(stderr);
 
 		if (displaysize > 0)
 		{
-			if (displaysize < 2) 
-				displaysize = 2; 
-		
+			if (displaysize < 2)
+				displaysize = 2;
+
 			if (type != SQL_LONGVARCHAR && type != SQL_VARBINARY && type != SQL_LONGVARBINARY)
 			{
 				fieldata=malloc(sizeof(char)*(displaysize));
-				SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read); 
-			
-			} 
+				SQLGetData(res->odbcStatHandle,i+1,SQL_C_CHAR , fieldata,displaysize,&read);
+
+			}
 			else
 			{
-				//BLOB field, not retrieved here 
-						
+				//BLOB field, not retrieved here
+
 				//the BLOB field hasn't the string terminator
 				displaysize=displaysize-1;
 
 			}
-			
+
 			current->outlen=displaysize;
 		}
 
 		value.type = GB_T_VARIANT;
 		value.value.type = GB_T_NULL;
-		
+
 		if (current==NULL)
 		{
 			GB.Error("ODBC internal error 4");
 			return DB_ERROR;
 		}
-		
+
 	//fprintf(stderr,"Lunghezza letta = %d\n",read);
 		if (current)
 		{
@@ -1257,7 +1391,7 @@ fflush(stderr);
 				GB.Error("ODBC internal error 5");
 				return DB_ERROR;
 			}
-			
+
 			if (read == -1){
 				fieldata[0]=' ';fieldata[1]='\0';
 				current->type=SQL_CHAR;
@@ -1266,11 +1400,11 @@ fflush(stderr);
 		}
 
 		GB.StoreVariant(&value,&buffer[i]);
-		
+
 		if(displaysize >0 && fieldata !=NULL)free(fieldata);
 		current = (ODBC_FIELDS *) current->next;
 		fieldata=NULL;
-				
+
 	}/* for all columns in this row  */
 
 	return DB_OK;
@@ -1302,7 +1436,7 @@ static void blob_read(DB_RESULT result, int pos, int field, DB_BLOB *blob)
 	ODBC_FIELDS * cfield ;
 	SQLLEN strlen;
 	SQLRETURN retcode;
-	
+
 	i = 0;
 	cfield = res->fields;
 
@@ -1316,29 +1450,29 @@ fflush(stderr);
 	{
 		if (cfield->next== NULL)
 		{
-			GB.Error("ODBC module :Internal error1"); 
+			GB.Error("ODBC module :Internal error1");
 			return;
 		}
-		
+
 		cfield=(ODBC_FIELDS *) cfield->next;
-		
+
 		if (cfield== NULL)
 		{
-			GB.Error("ODBC module :Internal error2"); 
+			GB.Error("ODBC module :Internal error2");
 			return;
 		}
-		
+
 		i++;
 	}
-	
+
 	if (i > field)
 	{
 		GB.Error("ODBC module : Internal error");
 		return;
 	}
-		
+
 	blob->data=NULL;
-	if (cfield->outlen > 0) 
+	if (cfield->outlen > 0)
 	{
 		blob->data = malloc( sizeof(char)*cfield->outlen);
 		blob->length = cfield->outlen;
@@ -1346,7 +1480,7 @@ fflush(stderr);
 		DB.Query.Init();
 
 		retcode = SQLGetData(res->odbcStatHandle,field+1,SQL_C_BINARY , blob->data,blob->length, &strlen);
-	
+
 		if (retcode != SQL_SUCCESS && retcode != SQL_SUCCESS_WITH_INFO)
 		{
 			GB.Error("Unable to retrieve blob data");
@@ -1358,11 +1492,11 @@ fflush(stderr);
 	}
 	else
 	{
-		blob->data = NULL; // 
+		blob->data = NULL; //
 		blob->length = 0;
 		return;
 	}
-		
+
 	char *data;
 	int len;
 
@@ -1373,7 +1507,7 @@ fflush(stderr);
 	}
 	else
 		blob->constant = TRUE;
-	
+
 	free(blob->data);//091107
 	blob->data = data;
 	blob->length = len;
@@ -1403,7 +1537,7 @@ fflush(stderr);
 	SQLSMALLINT colnamelen=0;
 	SQLULEN precision=0;
 	SQLSMALLINT scale=0;
-	
+
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
 
 	SQLDescribeCol(res->odbcStatHandle, field + 1, colname, sizeof(colname),
@@ -1441,7 +1575,7 @@ fflush(stderr);
 	SQLSMALLINT colsNum;
 	int field;
 	ODBC_RESULT *res = (ODBC_RESULT *) result;
-	
+
 	colnamelen = 32;
 	colsNum = get_num_columns(res);
 
@@ -1796,7 +1930,7 @@ retcode=SQLNumResultCols(statHandle2, &colsNum);
 		return retcode;
 	}
 
-	
+
 
 	if (!SQL_SUCCEEDED(nReturn = SQLPrimaryKeys(statHandle, 0, 0, 0, SQL_NTS, (SQLCHAR *)table, SQL_NTS)))
 	{
@@ -1815,7 +1949,7 @@ retcode=SQLNumResultCols(statHandle2, &colsNum);
 	while (SQL_SUCCEEDED(SQLFetch(statHandle)))
 	{
 
-	
+
 
 		if (!SQL_SUCCEEDED(SQLGetData (statHandle, 4, SQL_C_CHAR, szColumnName, sizeof(szColumnName), 0)))
 			strcpy((char *) szColumnName, "Unknown");
@@ -1861,7 +1995,7 @@ while(current != NULL){
 	if (current->next != NULL){
 		fieldstr = (ODBC_FIELDS *)current->next ;
 		free (current);
-		
+
 		current=fieldstr;
 	}else {
 	free (current);
@@ -1928,7 +2062,7 @@ fflush(stderr);
 	len = strlen(table);
 	if (len == 0)
 		return FALSE;
-	
+
 	retcode = SQLAllocHandle(SQL_HANDLE_STMT, han->odbcHandle, &statHandle);
 
 	if ((retcode != SQL_SUCCESS) && (retcode != SQL_SUCCESS_WITH_INFO))
@@ -2262,7 +2396,7 @@ fprintf(stderr,"[ODBC][%s][%d]\n",__FILE__,__LINE__);
 fprintf(stderr,"\ttable_create\n");
 fflush(stderr);
 #endif
-	
+
 	DB_FIELD *fp;
 	int comma;
 	char *type;
@@ -2286,7 +2420,7 @@ fflush(stderr);
 
 //AB autoincrement field is mapped to Integer because this is Database dependent
 			if (fp->type == DB_T_SERIAL)
-			DB.Query.Add(" INTEGER ");// 
+			DB.Query.Add(" INTEGER ");//
 //AB Blob field		else if (fp->type == DB_T_BLOB)
 			DB.Query.Add(" LONG VARBINARY ");
 
@@ -2294,7 +2428,7 @@ fflush(stderr);
 		switch (fp->type)
 		{
 			case GB_T_BOOLEAN:
-				type = "SMALLINT"; // 
+				type = "SMALLINT"; //
 				break;
 			case GB_T_INTEGER:
 				type = "INTEGER";
@@ -2303,7 +2437,7 @@ fflush(stderr);
 				type = "DOUBLE";
 				break;
 			case GB_T_DATE:
-				type = "DATE"; // AB changed the field name used by default from Timestamp to Date 
+				type = "DATE"; // AB changed the field name used by default from Timestamp to Date
 				break;
 // New datatype BIGINT 64 bits
 			case GB_T_LONG:
@@ -2358,7 +2492,7 @@ fflush(stderr);
 	DB.Query.Add(" )");
 
 	exit = do_query(db, "Cannot create table: &1", NULL, DB.Query.Get(), 0);
-	
+
 
 	if (exit == 0)
 	{
@@ -2578,7 +2712,7 @@ fflush(stderr);
 	//SQLRETURN V_OD_erg;
 	SQLLEN auton=SQL_FALSE;
 	int i;
-	
+
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
 	ODBC_CONN *han1 = (ODBC_CONN *)db->handle;
 
@@ -2590,7 +2724,7 @@ fflush(stderr);
 	strncpy((char *)&query[strlen(field)+13], table,strlen(table));
 	query[strlen(field)+14+strlen(table)]='\0';
 	strncpy((char *)&query[strlen(field)+13+strlen(table)],"\0\n\0\n",4);
-	
+
 
 	for (i = 0; i < 100; i++)
 		coltype[i] = '\0';
@@ -2614,7 +2748,7 @@ fflush(stderr);
 	{
 		return retcode;
 	}
-	
+
 	retcode=SQLColAttribute (statHandle1,1,SQL_DESC_AUTO_UNIQUE_VALUE,NULL,0,NULL,&auton);
 
 	SQLFreeHandle(SQL_HANDLE_STMT, statHandle1);
@@ -2627,13 +2761,13 @@ fflush(stderr);
 	while (SQL_SUCCEEDED(SQLFetch(statHandle)))
 	{
 		SQLGetData(statHandle, SQLColumns_COLUMN_NAME, SQL_C_CHAR, colname, sizeof(colname), 0);
-		
+
 
 		if (strcmp((char *) colname, field) == 0)
 		{
 			SQL_SUCCEEDED(SQLGetData(statHandle, SQLColumns_SQL_DATA_TYPE, SQL_C_CHAR, coltype, sizeof(coltype), 0));
 			SQL_SUCCEEDED(SQLGetData(statHandle, SQLColumns_COLUMN_SIZE, SQL_C_CHAR, precision, sizeof(precision), 0));
-			
+
 
 			break;
 		}
@@ -2651,7 +2785,7 @@ fflush(stderr);
 		if (info->length < 0)
 			info->length = 0;
 	}
-	
+
 	if (auton == SQL_TRUE)
 		info->type = DB_T_SERIAL;
 
@@ -2954,7 +3088,7 @@ static int user_exist(DB_DATABASE *db, const char *name)
 static int user_list(DB_DATABASE *db, char ***users)
 {
 	ODBC_CONN *han = (ODBC_CONN *)db->handle;
-	
+
 	if (users)
 	{
 		GB.NewArray(users, sizeof(char *), 1);
