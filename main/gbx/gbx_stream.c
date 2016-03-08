@@ -294,7 +294,10 @@ void STREAM_close(STREAM *stream)
 	if (!stream->common.standard)
 	{
 	  if ((*(stream->type->close))(stream))
-			THROW_SYSTEM(errno, "");
+		{
+			if (errno != EBADF)
+				THROW_SYSTEM(errno, "");
+		}
 	}
 
 	stream->type = NULL;
