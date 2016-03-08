@@ -999,37 +999,6 @@ _Free
 m
 
 
-#ReportGridView
-ReportFrame
-C
-Columns
-r
-_ReportGridViewColumns
-
-Rows
-r
-_ReportGridViewRows
-
-Data
-r
-_ReportGridViewData
-
-_Paint
-m
-
-(Page)i(X)f(Y)f(hControl)TControl;(DataIndex)i
-_GetSizeHints
-m
-ReportSizeHints
-(AvailableW)f(AvailableH)f(TotalWidth)f(TotalHeight)f(DataIndex)i
-_NormalizeUnits
-m
-
-
-_SetChildGeometry
-m
-
-(X)f(Y)f(W)f(H)f(ContPage)i(TCont)TControl;(bInFixed)b
 #ReportHBox
 ReportContainer
 C

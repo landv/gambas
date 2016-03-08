@@ -39,16 +39,16 @@ Public Sub _GetSizeHints((AvailableW) As Float, (AvailableH) As Float, (TotalWid
         If hpic.Width > hpic.Height Then
           fRatio = hpic.Height / hpic.Width
           
-          hMyHints.Width = AvailableW
-          hMyHints.Height = ((AvailableW - (Me.Border._Width + Me.Padding._Width)) * fRatio) + (Me.Padding._Height + Me.Border._Height)
+          hMyHints.Width = Min(Report.UnitToInch(hpic.Width, "px"), AvailableW)
+          hMyHints.Height = ((hMyHints.Width - (Me.Border._Width + Me.Padding._Width)) * fRatio) + (Me.Padding._Height + Me.Border._Height)
         Else
           fRatio = hpic.Width / hpic.Height
-          hMyHints.Height = AvailableH
-          hMyHints.Width = ((AvailableH - (Me.Border._Height + Me.Padding._Height)) * fRatio) + (Me.Border._Width + Me.Padding._Width)
+          hMyHints.Height = Min(Report.UnitToInch(hpic.Height, "px"), AvailableH)
+          hMyHints.Width = ((hMyHints.Height - (Me.Border._Height + Me.Padding._Height)) * fRatio) + (Me.Border._Width + Me.Padding._Width)
         Endif
       Else
-        hMyHints.Width = Max(hMyHints.Width, Me.Padding._Left + (hpic.Width / 96 * 2.54) + Me.Padding._Right) 'Report.UnitToInch(hpic.Width, "px") + Me.Padding._Right)
-        hMyHints.Height = Max(hMyHints.Height, Me.Padding._Top + (hpic.Height / 96 * 2.54) + Me.Padding._Bottom) 'Report.UnitToInch(hpic.Height, "px") + Me.Padding._Bottom)
+        hMyHints.Width = Max(hMyHints.Width, Me.Padding._Left + Report.UnitToInch(hpic.Width, "px") + Me.Padding._Right) 'Report.UnitToInch(hpic.Width, "px") + Me.Padding._Right)
+        hMyHints.Height = Max(hMyHints.Height, Me.Padding._Top + Report.UnitToInch(hpic.Height, "px") + Me.Padding._Bottom) 'Report.UnitToInch(hpic.Height, "px") + Me.Padding._Bottom)
       Endif
       
     Endif
