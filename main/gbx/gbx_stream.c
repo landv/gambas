@@ -291,8 +291,13 @@ void STREAM_close(STREAM *stream)
 
 	stop_watching(stream, GB_WATCH_NONE);
 
-	if (stream->common.standard || !(*(stream->type->close))(stream))
-		stream->type = NULL;
+	if (!stream->common.standard)
+	{
+	  if ((*(stream->type->close))(stream))
+			THROW_SYSTEM(errno, "");
+	}
+
+	stream->type = NULL;
 
 	#if DEBUG_STREAM
 	_nopen--;
