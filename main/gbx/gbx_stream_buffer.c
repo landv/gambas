@@ -91,7 +91,7 @@ static int stream_close(STREAM *stream)
     return FALSE;
 
   if (fclose(FD) < 0)
-    ERROR_warning("fclose() fails with errno = %d", errno);
+    return TRUE;
 
   FD = NULL;
   return FALSE;
