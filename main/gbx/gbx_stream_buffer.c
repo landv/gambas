@@ -78,7 +78,7 @@ static int stream_open(STREAM *stream, const char *path, int mode)
   }
 
   //fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
-  
+
 	stream->common.available_now = TRUE;
   FD = file;
   return FALSE;
@@ -91,7 +91,7 @@ static int stream_close(STREAM *stream)
     return FALSE;
 
   if (fclose(FD) < 0)
-    return TRUE;
+    ERROR_warning("fclose() fails with errno = %d", errno);
 
   FD = NULL;
   return FALSE;
@@ -134,10 +134,10 @@ static int stream_read(STREAM *stream, char *buffer, int len)
 static int stream_getchar(STREAM *stream, char *buffer)
 {
   int c = getc(FD);
-  
+
   if (c == EOF)
     return TRUE;
-  
+
   *buffer = (char)c;
   return FALSE;
 }
@@ -192,7 +192,7 @@ static int stream_tell(STREAM *stream, int64_t *pos)
 static int stream_eof(STREAM *stream)
 {
   int c;
-  
+
   c = fgetc(FD);
   if (c == EOF)
   	return TRUE;
@@ -205,13 +205,13 @@ static int stream_eof(STREAM *stream)
 static int stream_lof(STREAM *stream, int64_t *len)
 {
 	struct stat info;
-	
+
 	//if (!stream->common.available_now)
 	//	return TRUE;
-		
+
 	if (fstat(fileno(FD), &info) < 0)
 		return TRUE;
-	
+
 	*len = info.st_size;
   return FALSE;
 }
