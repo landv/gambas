@@ -194,7 +194,7 @@ BEGIN_METHOD_VOID(Collection_next)
 	HASH_TABLE *hash_table = OBJECT(CCOLLECTION)->hash_table;
 	HASH_ENUM *iter = (HASH_ENUM *)GB_GetEnum();
 
-	value = HASH_TABLE_next(hash_table, iter, !DEBUG_inside_eval);
+	value = HASH_TABLE_next(hash_table, iter, TRUE);
 
 	if (value == NULL)
 		GB_StopEnum();
@@ -206,7 +206,7 @@ END_METHOD
 
 BEGIN_METHOD(Collection_get, GB_STRING key)
 
-	void *value = get_key(THIS, STRING(key), LENGTH(key), !DEBUG_inside_eval);
+	void *value = get_key(THIS, STRING(key), LENGTH(key), TRUE);
 	if (!value)
 	{
 		if (THIS->has_default)
@@ -342,7 +342,7 @@ bool GB_CollectionGet(GB_COLLECTION col, const char *key, int len, GB_VARIANT *v
 
 	value->type = T_VARIANT;
 
-	var = (VARIANT *)get_key(THIS, key, len, !DEBUG_inside_eval);
+	var = (VARIANT *)get_key(THIS, key, len, TRUE);
 
 	if (!var)
 	{
@@ -376,7 +376,7 @@ bool GB_CollectionEnum(GB_COLLECTION col, GB_COLLECTION_ITER *iter, GB_VARIANT *
 		return FALSE;
 	}
 
-	val = HASH_TABLE_next(hash_table, (HASH_ENUM *)iter, !DEBUG_inside_eval);
+	val = HASH_TABLE_next(hash_table, (HASH_ENUM *)iter, TRUE);
 	if (!val)
 		return TRUE;
 

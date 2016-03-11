@@ -78,7 +78,7 @@ const char *DEBUG_get_position(CLASS *cp, FUNCTION *fp, PCODE *pc)
 
 	if (!cp || !pc)
 		return "?";
-		
+
 	if (fp != NULL && fp->debug)
 		calc_line_from_position(cp, fp, pc, &line);
 
@@ -115,10 +115,10 @@ void DEBUG_init(void)
 	LIBRARY_get_interface_by_name("gb.debug", DEBUG_INTERFACE_VERSION, &DEBUG);
 
 	DEBUG_info = DEBUG.Init((GB_DEBUG_INTERFACE *)(void *)GAMBAS_DebugApi, EXEC_fifo, EXEC_fifo_name);
-	
+
 	if (!DEBUG_info)
 		ERROR_panic("Cannot initializing debug mode");
-	
+
 	if (EXEC_profile)
 	{
 		EXEC_profile_instr = TRUE;
@@ -248,14 +248,8 @@ bool DEBUG_get_value(const char *sym, int len, GB_VARIANT *ret)
 
 __FOUND:
 
-	/*printf("%.*s =", (int)len, sym);
-	print_value(&value);*/
-
 	BORROW(&value);
-	/*if (value.type == T_ARRAY)
-		value._array.keep = TRUE;
-	else*/
-		VALUE_conv_variant(&value);
+	VALUE_conv_variant(&value);
 	UNBORROW(&value);
 
 	*((VALUE *)ret) = value;
@@ -322,7 +316,7 @@ int DEBUG_set_value(const char *sym, int len, VALUE *value)
 		}
 
 		ret = GB_DEBUG_SET_READ_ONLY;
-		
+
 __FOUND:
 
 		0;
@@ -348,7 +342,7 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 
 	if (!object)
 		goto __NORMAL;
-	
+
 	if (class == CLASS_Class || OBJECT_is_class(object))
 	{
 		class = (CLASS *)object;
@@ -375,20 +369,20 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 		access = GB_DEBUG_ACCESS_COLLECTION;
 	else
 		goto __NORMAL;
-	
+
 	desc = CLASS_get_symbol_desc(class, "Count");
 	if (!desc)
 		goto __NORMAL;
-	
+
 	type = CLASS_DESC_get_type(desc);
-	
+
 	// The two only possible cases:
 	// A static read-only property, and object == NULL
 	// or a dynamic read-only property, and object != NULL
-	
+
 	if (!((type == CD_PROPERTY_READ && object) || (type == CD_STATIC_PROPERTY_READ && !object)))
 		goto __NORMAL;
-	
+
 	TRY
 	{
 		if (desc->property.native)
@@ -411,7 +405,7 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 			UNBORROW(RP);
 			RP->type = T_VOID;
 		}
-		
+
 		if (access != GB_DEBUG_ACCESS_NORMAL)
 		{
 			VALUE_conv_integer(&TEMP);
@@ -424,15 +418,15 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 	}
 	END_TRY
 
-	
+
 	// For collection-like objects, check _next and Key property
-	
+
 	if (access == GB_DEBUG_ACCESS_COLLECTION)
 	{
 		dm = CLASS_get_special_desc(class, SPEC_NEXT);
 		if (!dm)
 			goto __NORMAL;
-		
+
 		desc = CLASS_get_symbol_desc(class, "Key");
 		if (!desc)
 			goto __NORMAL;
@@ -441,7 +435,7 @@ int DEBUG_get_object_access_type(void *object, CLASS *class, int *count)
 		if (type != CD_PROPERTY_READ && type != CD_PROPERTY && type != CD_STATIC_PROPERTY_READ && type != CD_STATIC_PROPERTY && type != CD_VARIABLE && type != CD_STATIC_VARIABLE)
 			goto __NORMAL;
 	}
-	
+
 	return access;
 
 __NORMAL:
@@ -454,7 +448,7 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 	bool stop;
 	STACK_BACKTRACE *NO_WARNING(end);
 	//STACK_CONTEXT *sc = (STACK_CONTEXT *)(STACK_base + STACK_size) - err->bt_count;
-	
+
 	//fprintf(stderr, "0: %s\n", DEBUG_get_position(err->cp, err->fp, err->pc));
 	for (i = 0, n = 0, stop = FALSE; !stop; i++)
 	{
@@ -472,7 +466,7 @@ void DEBUG_print_backtrace(STACK_BACKTRACE *bt)
 		}
 	}
 	fputc('\n', stderr);
-	
+
 	STACK_backtrace_set_end(end);
 }
 
@@ -493,7 +487,7 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 	GB_ARRAY array;
 	int i, n, size;
 	STACK_BACKTRACE *end;
-	
+
 	for (i = 0, size = 0;; i++)
 	{
 		if (bt[i].pc)
@@ -505,10 +499,10 @@ GB_ARRAY DEBUG_get_string_array_from_backtrace(STACK_BACKTRACE *bt)
 			break;
 		}
 	}
-	
+
 	GB_ArrayNew(&array, GB_T_STRING, size);
 	//*((char **)GB_ArrayGet(array, 0)) = STRING_new_zero(DEBUG_get_position(err->cp, err->fp, err->pc));
-	
+
 	for (i = 0, n = 0; n < size; i++)
 	{
 		if (!bt[i].pc)
@@ -525,15 +519,15 @@ GB_CLASS DEBUG_find_class(const char *name)
 {
 	CLASS *class;
 	CLASS *save = CP;
-	
+
 	// As the startup class is automatically exported, this is the only way for the debugger to find it.
 	if (PROJECT_class && !strcmp(name, PROJECT_class->name))
 		return (GB_CLASS)PROJECT_class;
-	
+
 	CP = NULL;
 	class = CLASS_find(name);
 	CP = save;
-	
+
 	return (GB_CLASS)class;
 }
 
@@ -548,20 +542,21 @@ void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 	char *save_key;
 	int save_lkey;
 	GB_VALUE value;
-	
+
 	old = EXEC_enum;
-	
+
 	class = OBJECT_class(object);
 	if (class == CLASS_Class)
 	{
 		class = (CLASS *)object;
 		object = NULL;
 	}
-	
+
 	TRY
 	{
 		GB_GetProperty(object, "Key");
 		SUBR_get_string_len(&TEMP, &save_key, &save_lkey);
+		(*cb)(save_key, save_lkey);
 
 		cenum = CENUM_create(object ? object : class);
 
@@ -592,7 +587,7 @@ void DEBUG_enum_keys(void *object, GB_DEBUG_ENUM_CB cb)
 			SUBR_get_string_len(&TEMP, &str, &len);
 			(*cb)(str, len);
 		}
-		
+
 	__END:
 
 		value.type = GB_T_CSTRING;
