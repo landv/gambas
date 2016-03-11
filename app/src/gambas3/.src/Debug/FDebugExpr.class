@@ -22,6 +22,7 @@ Private $sClass As String
 Private $sRealClass As String
 Private $bArray As Boolean
 Private $bCollection As Boolean
+Private $sCollectionKey As String
 Private $aDim As Integer[]
 
 Static Public Sub Add(sExpr As String, sInfo As String)
@@ -151,6 +152,7 @@ Public Sub gvwExpr_Data(Row As Integer, Column As Integer)
         '$cVal.Remove(Row)
       Else  
         Design.Command("?X" & $sExpr & "#" & CStr(Row) & "\t" & $sExpr & "[" & sSym & "]")
+        Design.Command("=" & "\t" & $sExpr & ".Key = " & Quote($sCollectionKey))
       Endif
     Endif
     
@@ -390,7 +392,9 @@ Private Sub Init(sInfo As String, bNew As Boolean) As Boolean
 
   Else If $bCollection Then  
 
-    $aSym.Remove(0) ' Remove the count 
+    $sCollectionKey = $aSym[1] ' Current collection key
+    $aSym.Remove(0, 2) ' Remove the count and the current key
+    
 
   Else 
 
