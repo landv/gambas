@@ -46,8 +46,11 @@ Public Sub OnKeyPress() As Boolean
 
   Dim hEditor As TextEditor = GetEditor()
   Dim bStop As Boolean
+  Dim iCol As Integer
   
   If hEditor.ReadOnly Then Return
+  
+  iCol = hEditor.Column
 
   If FCompletion.VisibleFrom(hEditor) Then
     bStop = FCompletion.ManageKey()
@@ -65,6 +68,10 @@ Public Sub OnKeyPress() As Boolean
   Else If Key.Code = Key.Backspace Then
 
     CheckCompletion("<")
+    If iCol <> hEditor.Column Then
+      Stop Event
+      Return True
+    Endif
 
   Else If Key.Text = "." Then
 
