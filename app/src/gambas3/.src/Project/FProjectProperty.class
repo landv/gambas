@@ -130,28 +130,20 @@ Private Sub InitEnvironment()
   
   Dim I As Integer
   
-  tvwArg.Columns.Count = 1
-  tvwArg.Columns.Resizable = True
-  tvwArg.Rows.Resizable = False
-
-  Object.Lock(cmbArgList)
-  cmbArgList.Clear
-  
   $aArg = Project.Arguments.Copy()
-  If $aArg.Count = 0 Then $aArg.Add([])
-  
   For I = 0 To $aArg.Max
-    
     $aArg[I] = $aArg[I].Copy()
-    
-    cmbArgList.Add("")
-    UpdateArgListTitle(I)
-    
   Next
+  $aArg.Add([])
   
-  cmbArgList.Index = Project.CurrentArgument
-  Object.Unlock(cmbArgList)
-  cmbArgList_Click
+  CleanUpArgument
+  
+  Object.Lock(cmbArgument)
+  cmbArgument.Index = Project.CurrentArgument
+  Object.Unlock(cmbArgument)
+  cmbArgument_Click
+  
+  $hComp = New FileCompletion(lstArgument.Editor)
   
   tvwEnv.Columns.Count = 2
   tvwEnv.Columns[0].Text = ("Variable")
@@ -171,7 +163,6 @@ Private Sub SaveEnvironment()
   Dim iInd As Integer
   Dim iArg As Integer
   
-  tvwArg.Save
   tvwEnv.Save
   
   While iInd < $aEnv.Count
@@ -182,20 +173,13 @@ Private Sub SaveEnvironment()
     Endif
   Wend
 
-  iArg = cmbArgList.Index
+  iArg = cmbArgument.Index
+  UpdateArgument
+  If iArg < 0 Or If iArg >= $aArg.Count Then iArg = $aArg.Max
 
-  iInd = 0
-  While iInd < $aArg.Count
-    If $aArg[iInd].Count = 0 Then
-      $aArg.Remove(iInd)
-      If iInd <= iArg Then Dec iArg
-    Else
-      Inc iInd
-    Endif
-  Wend
+  Project.CurrentArgument = iArg
+  Project.Arguments = $aArg.Copy(0, $aArg.Max)
   
-  Project.CurrentArgument = Max(0, iArg)
-  Project.Arguments = $aArg
   Project.Environment = $aEnv
   
 End
@@ -613,97 +597,6 @@ Public Sub btnUndo_Click()
 
   choComponent.CheckedComponents = Project.Components
   choComponent.Libraries = $aLibraries
-
-End
-
-Public Sub tvwArg_Data(Row As Integer, (Column) As Integer)
-
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-  tvwArg.Data.Text = aArg[Row]
-
-End
-
-Public Sub btnInsertArg_Click()
-
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-  
-  If aArg.Count >= 255 Then Return
-  aArg.Add("")
-  Inc tvwArg.Rows.Count
-  tvwArg.MoveTo(aArg.Max, 0)
-  EditArg
-  UpdateArgListTitle
-
-End
-
-Public Sub btnRemoveArg_Click()
-  
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-
-  If aArg.Count = 0 Then Return
-  If tvwArg.Row < 0 Then Return
-  tvwArg.Save
-  aArg.Remove(tvwArg.Row)
-  Dec tvwArg.Rows.Count
-  tvwArg.Refresh
-  UpdateArgListTitle
-  
-End
-
-
-Public Sub tvwArg_Save(Row As Integer, (Column) As Integer, Value As String)
-
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-  aArg[Row] = Value  
-  UpdateArgListTitle
-
-End
-
-Public Sub tvwArg_Insert()
-  
-  btnInsertArg_Click
-  
-End
-
-Private Sub EditArg()
-
-  tvwArg.Edit
-  If $hComp And If $hComp.Editor <> tvwArg.Editor Then $hComp = Null
-  If Not $hComp Then $hComp = New FileCompletion(tvwArg.Editor)
-
-End
-
-Public Sub tvwArg_Click()
-
-  EditArg
-
-End
-
-Public Sub btnMoveUpArg_Click()
-
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-  
-  If tvwArg.Row <= 0 Then Return 
-  tvwArg.Save
-  Swap aArg[tvwArg.Row], aArg[tvwArg.Row - 1]
-  tvwArg.Refresh
-  Dec tvwArg.Row
-  UpdateArgListTitle
-  EditArg  
-
-End
-
-Public Sub btnMoveDownArg_Click()
-
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-
-  If tvwArg.Row >= (tvwArg.Rows.Count - 1) Then Return 
-  tvwArg.Save
-  Swap aArg[tvwArg.Row], aArg[tvwArg.Row + 1]
-  tvwArg.Refresh
-  Inc tvwArg.Row
-  UpdateArgListTitle
-  EditArg
 
 End
 
@@ -1291,49 +1184,85 @@ Public Sub gvwLibrary_Select()
   
 End
 
-Public Sub panArg_Arrange()
+Public Sub cmbArgument_Click()
 
-  cmbArgList.H = cmbArgList.ClientY
-
-End
-
-Public Sub cmbArgList_Click()
-
-  Dim aArg As String[] = $aArg[cmbArgList.Index]
-  tvwArg.Cancel
-  tvwArg.Rows.Count = aArg.Count
-  tvwArg.Refresh
+  lstArgument.List = $aArg[cmbArgument.Index]
+  lstArgument.SetFocus
 
 End
 
-Private Sub UpdateArgListTitle(Optional iInd As Integer = -1)
+Private Sub CleanUpArgument()
+  
+  Dim I As Integer
+  
+  I = 0
+  While I < $aArg.Max
+    If $aArg[I].Count = 0 Then
+      $aArg.Remove(I)
+    Else
+      Inc I
+    Endif
+  Wend
+  
+  Object.Lock(cmbArgument)
+  cmbArgument.Clear
+  For I = 0 To $aArg.Max
+    cmbArgument.Add("")
+    UpdateArgument(I)
+  Next
+  Object.Unlock(cmbArgument)
+  cmbArgument.Index = cmbArgument.Count - 1
+  
+End
+
+
+Private Sub UpdateArgument(Optional iInd As Integer = -1)
 
   Dim sArg As String
   
-  If iInd < 0 Then iInd = cmbArgList.Index
+  If iInd < 0 Then iInd = cmbArgument.Index
   
   sArg = $aArg[iInd].Join(" ")
-  If Not sArg Then sArg = Subst(("Argument list #&1"), CStr(iInd + 1))
-  cmbArgList[iInd].Text = sArg
+  If Not sArg Then
+    If iInd < $aArg.Max Then 
+      CleanUpArgument
+      Return
+    Endif
+  Else If iInd = $aArg.Max Then
+    $aArg.Add([])
+    cmbArgument.Add("")
+  Endif
   
-  panArgList.Visible = $aArg.Count > 1
+  If Not sArg Then sArg = ("No argument")
+  If $aArg.Count >= 2 Then sArg = CStr(iInd + 1) & " ‣ " & sArg
+  cmbArgument[iInd].Text = sArg
+  
+  cmbArgument.Enabled = cmbArgument.Count >= 2
+  btnRemoveArgument.Enabled = cmbArgument.Index < cmbArgument.Count - 1
+  
+End
+
+Public Sub btnRemoveArgument_Click()
+  
+  lstArgument.List = Null
+  
+End
+
+Public Sub lstArgument_Change()
+
+  $aArg[cmbArgument.Index] = lstArgument.List
+  UpdateArgument
 
 End
 
-Public Sub btnNewArgList_Click()
+Public Sub lstArgument_GotFocus()
 
-  $aArg.Add([])
-  cmbArgList.Add("")
-  cmbArgList.Index = $aArg.Max
-  UpdateArgListTitle
+  btnOK.Default = False
 
 End
 
-Public Sub btnRemoveArgList_Click()
-  
-  $aArg.Remove(cmbArgList.Index)
-  cmbArgList.Remove(cmbArgList.Index)
-  UpdateArgListTitle
-  cmbArgList.Index = Max(0, cmbArgList.Index)
-  
+Public Sub lstArgument_LostFocus()
+
+  btnOK.Default = True
+
 End
