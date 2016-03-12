@@ -13,6 +13,7 @@ Property List As String[]
 Property Border As Boolean
 Property Text As String
 Property Moveable As Boolean
+Property Read Editor As Control
 
 Event Select
 Event Change
@@ -82,5 +83,11 @@ End
 Private Sub Moveable_Write(Value As Boolean)
 
   $hForm.SetMoveable(Value)
+
+End
+
+Private Function Editor_Read() As Control
+
+  Return $hForm.GetEditor()
 
 End

@@ -326,7 +326,7 @@ Public Sub SetDir(sDir As String)
   If IsBookmarkVisible() Then
     SetBookmark($hBookmarkList.FindBest(sDir))
   Endif
-    
+  
   dvwChoose.Current = sDir
 
 End
@@ -725,12 +725,13 @@ Public Sub SetSettings(aVar As Variant[])
   If TypeOf(aVar[0]) = gb.Integer Then
     
     Try SetRoot(aVar[1])
+    Try fvwChoose.Settings = aVar[6]
+    UpdateShowHidden
     Try SetDir(aVar[2])
     If $bFile Then Try fvwChoose.Current = aVar[3]
     Try $bView = Not aVar[4]
     If Not Error Then btnView_Click
     splChoose.Layout = aVar[5]
-    Try fvwChoose.Settings = aVar[6]
     Try SetFilterIndex(aVar[7])
     
     Try iZoom = $aIconSize.Find(fvwChoose.IconSize)
