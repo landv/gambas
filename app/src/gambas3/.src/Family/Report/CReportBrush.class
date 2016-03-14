@@ -70,7 +70,7 @@ Public Function GetBrush(iX1 As Integer, iY1 As Integer, iX2 As Integer, iY2 As 
       If hImage Then
         hBrush = Paint.Image(hImage, iX1, iY1)
       Else
-        hBrush = Paint.Color(Color.Gray)
+        hBrush = Paint.Color(&H808080&)
       Endif
     
     Case TYPE_LINEAR_GRADIENT
