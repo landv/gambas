@@ -152,7 +152,12 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       Else
         aCommand = $hMarkdown.Command(Mid$(sLine, 3, -1))
         If aCommand And If aCommand.Count Then
-          aLine.Insert(aCommand, iLine + 1)
+          If $hMarkdown.Reinterpret Then
+            aLine.Insert(aCommand, iLine + 1)
+          Else
+            aResult.Insert(aCommand)
+          Endif
+          $hMarkdown.Reinterpret = True
         Endif
       Endif
       Continue
