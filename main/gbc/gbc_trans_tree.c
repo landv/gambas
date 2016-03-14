@@ -362,6 +362,7 @@ static void analyze_single(int op)
 	{
 		add_operator(PATTERN_index(current[0]), 0);
 		add_pattern(PATTERN_set_flag(current[1], RT_POINT));
+		add_operator(PATTERN_index(current[0]), 2);
 		current += 2;
 	}
 
@@ -798,7 +799,7 @@ void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
 		printf("\n");
 		for (i = 0; i < tree_length; i++)
 		{
-			printf("[%d] ", i);
+			printf("[% 4d] ", i);
 			READ_dump_pattern(&tree[i]);
 		}
 	#endif

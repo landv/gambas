@@ -108,7 +108,7 @@ char TABLE_compare_ignore_case_len(const char *s1, int len1, const char *s2, int
 	return 0;
 }
 
-static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int flag, const char *name, int len, int *index)
+static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, const char *name, int len, int *index)
 {
 	int pos, deb, fin;
 	SYMBOL *sym;
@@ -121,115 +121,109 @@ static bool search(void *symbol, ushort *sort, int n_symbol, size_t size, int fl
 	deb = 0;
 	fin = n_symbol; //ARRAY_count(table->symbol);
 
-	if (flag) // == TF_IGNORE_CASE
+	for(;;)
 	{
-		for(;;)
+		if (UNLIKELY(deb >= fin))
 		{
-			if (UNLIKELY(deb >= fin))
-			{
-				*index = deb;
-				return FALSE;
-			}
-	
-			pos = (deb + fin) >> 1;
-	
-			//sym = SYM(table, SYM(table, pos)->sort); /*&table->symbol[table->symbol[pos].sort];*/
-			
-			sym = SSYM(symbol, sort[pos], size);
-
-			if (LIKELY(len < sym->len))
-				goto __T_LOWER;
-			else if (LIKELY(len > sym->len))
-				goto __T_GREATER;
-			
-			//if (LIKELY(len > 0))
-			{
-				s1 = (uchar *)name;
-				s2 = (uchar *)sym->name;
-			
-				l = len;
-				
-				for(;;)
-				{
-					/*result = (*s1 - *s2) & ~0x20;
-					
-					if (LIKELY(result < 0))
-						goto __T_LOWER;
-					else if (LIKELY(result > 0))
-						goto __T_GREATER;*/
-					
-					result = tolower(*s1) - tolower(*s2);
-					
-					if (LIKELY(result < 0))
-						goto __T_LOWER;
-					else if (LIKELY(result > 0))
-						goto __T_GREATER;
-					
-					if (UNLIKELY(--l == 0))
-						break;
-					
-					s1++;
-					s2++;
-				}
-			
-			}  
-
-			*index = pos;
-			return TRUE;
-			
-			__T_LOWER: fin = pos; continue;
-			__T_GREATER: deb = pos + 1; continue;
+			*index = deb;
+			return FALSE;
 		}
-	}
-	else
-	{
+
+		pos = (deb + fin) >> 1;
+
+		sym = SSYM(symbol, sort[pos], size);
+		
+		if (LIKELY(len < sym->len))
+			goto __B_LOWER;
+		else if (LIKELY(len > sym->len))
+			goto __B_GREATER;
+		
+		s1 = (uchar *)name;
+		s2 = (uchar *)sym->name;
+		
+		l = len;
+	
 		for(;;)
 		{
-			if (UNLIKELY(deb >= fin))
-			{
-				*index = deb;
-				return FALSE;
-			}
-	
-			pos = (deb + fin) >> 1;
-	
-			sym = SSYM(symbol, sort[pos], size);
+			result = *s1 - *s2;
 			
-			if (LIKELY(len < sym->len))
+			if (LIKELY(result < 0))
 				goto __B_LOWER;
-			else if (LIKELY(len > sym->len))
+			else if (LIKELY(result > 0))
 				goto __B_GREATER;
 			
-			//if (LIKELY(len > 0))
-			{
-				s1 = (uchar *)name;
-				s2 = (uchar *)sym->name;
-				
-				l = len;
+			if (UNLIKELY(--l == 0))
+				break;
 			
-				for(;;)
-				{
-					result = *s1 - *s2;
-					
-					if (LIKELY(result < 0))
-						goto __B_LOWER;
-					else if (LIKELY(result > 0))
-						goto __B_GREATER;
-					
-					if (UNLIKELY(--l == 0))
-						break;
-					
-					s1++;
-					s2++;
-				}
-			}
+			s1++;
+			s2++;
+		}
 
-			*index = pos;
-			return TRUE;
+		*index = pos;
+		return TRUE;
+		
+		__B_LOWER: fin = pos; continue;
+		__B_GREATER: deb = pos + 1; continue;
+	}    
+}
+
+
+static bool search_ignore_case(void *symbol, ushort *sort, int n_symbol, size_t size, const char *name, int len, int *index)
+{
+	int pos, deb, fin;
+	SYMBOL *sym;
+	int l;
+	int result; // must be an integer (or a short) because uchar - uchar may not fit in a char!
+	const uchar *s1;
+	const uchar *s2;
+
+	pos = 0;
+	deb = 0;
+	fin = n_symbol;
+
+	for(;;)
+	{
+		if (UNLIKELY(deb >= fin))
+		{
+			*index = deb;
+			return FALSE;
+		}
+
+		pos = (deb + fin) >> 1;
+
+		sym = SSYM(symbol, sort[pos], size);
+
+		if (LIKELY(len < sym->len))
+			goto __T_LOWER;
+		else if (LIKELY(len > sym->len))
+			goto __T_GREATER;
+		
+		s1 = (uchar *)name;
+		s2 = (uchar *)sym->name;
+	
+		l = len;
+		
+		for(;;)
+		{
+			result = tolower(*s1) - tolower(*s2);
 			
-			__B_LOWER: fin = pos; continue;
-			__B_GREATER: deb = pos + 1; continue;
-		}    
+			if (LIKELY(result < 0))
+				goto __T_LOWER;
+			else if (LIKELY(result > 0))
+				goto __T_GREATER;
+			
+			if (UNLIKELY(--l == 0))
+				break;
+			
+			s1++;
+			s2++;
+		}
+
+		*index = pos;
+		return TRUE;
+		
+		__T_LOWER: fin = pos; continue;
+		__T_GREATER: deb = pos + 1; continue;
 	}
 }
 
@@ -252,10 +246,18 @@ int SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int f
 		name = _buffer;
 	}
 
-	if (LIKELY(search(symbol, sort, n_symbol, s_symbol, flag, name, len, &index)))
-		return sort[index];
+	if (flag)
+	{
+		if (search_ignore_case(symbol, sort, n_symbol, s_symbol, name, len, &index))
+			return sort[index];
+	}
 	else
-		return NO_SYMBOL;
+	{
+		if (search(symbol, sort, n_symbol, s_symbol, name, len, &index))
+			return sort[index];
+	}
+
+	return NO_SYMBOL;
 }
 
 #if 0
@@ -421,7 +423,10 @@ bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 	count = ARRAY_count(tsym);
 	size = ARRAY_size(tsym);
 
-	result = search(tsym, table->sort, count, size, table->flag, name, len, &ind);
+	if (table->flag)
+		result = search_ignore_case(tsym, table->sort, count, size, name, len, &ind);
+	else
+		result = search(tsym, table->sort, count, size, name, len, &ind);
 	
 	if (result)
 		*index = table->sort[ind];
@@ -465,7 +470,10 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 	count = ARRAY_count(table->symbol);
 	size = ARRAY_size(table->symbol);
 	
-	result = search(table->symbol, table->sort, count, size, table->flag, name, len, &ind);
+	if (table->flag)
+		result = search_ignore_case(table->symbol, table->sort, count, size, name, len, &ind);
+	else
+		result = search(table->symbol, table->sort, count, size, name, len, &ind);
 
 	if (!result)
 	{

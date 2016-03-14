@@ -59,6 +59,15 @@ enum
 	RSF_IMASK  = 0xFF00
 };
 
+enum {
+	RST_SAME     = 17, // T_OBJECT + 1
+	RST_ADD,
+	RST_AND,
+	RST_NOT,
+	RST_BCLR,
+	RST_MIN
+};
+
 #define RES_is_operator(value) (COMP_res_info[value].flag & RSF_OP)
 #define RES_is_type(value) (COMP_res_info[value].flag & RSF_TYPE)
 #define RES_is_assignment(value) (COMP_res_info[value].flag & RSF_ASGN)
@@ -305,9 +314,10 @@ typedef
 	struct {
 		const char *name;
 		short flag;
-		unsigned char value;
-		unsigned char read_switch;
-		unsigned short priority;
+		uchar value;
+		uchar read_switch;
+		uchar priority;
+		uchar type;
 		short code;
 		short subcode;
 		void (*func)();
@@ -319,6 +329,7 @@ typedef
 		const char *name;
 		ushort opcode;
 		ushort optype;
+		uchar type;
 		short min_param;
 		short max_param;
 		}

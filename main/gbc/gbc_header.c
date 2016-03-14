@@ -1014,7 +1014,7 @@ static bool header_use(void)
 	}
 
 	if (!PATTERN_is_newline(*JOB->current))
-		THROW("Syntax error");
+		THROW(E_SYNTAX);
 
 	return TRUE;
 }

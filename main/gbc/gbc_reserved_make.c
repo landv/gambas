@@ -68,6 +68,7 @@ void read_write_until(FILE *in, FILE *out, char *until)
 	}
 }
 
+#if 0
 int main(int argc, char **argv)
 {
   COMP_INFO *info;
@@ -234,6 +235,212 @@ int main(int argc, char **argv)
 			{
 				if (p)
 					fprintf(out, " && ");
+				c = subr->name[p];
+				if (isalpha(c))
+					fprintf(out, "tolower(word[%d]) == '%c'", p, tolower(subr->name[p]));
+				else if (c == '\\')
+					fprintf(out, "word[%d] == '\\\\'", p);
+				else
+					fprintf(out, "word[%d] == '%c'", p, subr->name[p]);
+			}
+			fprintf(out, ") return %d;\n", n);
+		}
+		
+		fprintf(out, "\treturn -1;\n");
+	}
+	
+	fprintf(out, "}\n");
+	
+	fclose(in);
+	fclose(out);
+	
+	unlink("../share/gb_reserved_temp.h");
+	rename("../share/gb_reserved_temp.h.tmp", "../share/gb_reserved_temp.h");
+	
+	return 0;
+}
+#endif
+
+static int compare_name(const char *name1, const char* name2)
+{
+	int l1 = strlen(name1);
+	int l2 = strlen(name2);
+	
+	if (l1 < l2)
+		return -1;
+	if (l1 > l2)
+		return 1;
+	return strcasecmp(name1, name2);
+}
+
+int main(int argc, char **argv)
+{
+  COMP_INFO *info;
+  SUBR_INFO *subr;
+  int len;
+  int i, p, n;
+	uint h;
+	char c;
+	char last[16];
+	char next[16];
+	FILE *in, *out;
+
+	in = fopen("../share/gb_reserved_temp.h", "r");
+	if (!in)
+	{
+		fprintf(stderr, "unable to open '../share/gb_reserved_temp.h': %s\n", strerror(errno));
+		exit(1);
+	}
+	
+	out = fopen("../share/gb_reserved_temp.h.tmp", "w");
+	
+	read_write_until(in, out, "int RESERVED_find_word(const char *word, int len)");
+
+	read_write_until(in, out, "static void *jump[] = {");
+	
+	for (h = 32; h < 127; h++)
+	{
+		if ((h % 8) == 0)
+			fprintf(out, "\t\t");
+		fprintf(out, "&&__%02X, ", h);
+		if ((h % 8) == 7)
+			fprintf(out, "\n");
+	}
+	fprintf(out, "\n\t};\n\n");
+
+	//printf("  goto *jump[h %% %d];\n\n", HASH_SIZE);
+	fprintf(out, "\tgoto *jump[*word - 32];\n\n");
+	
+	for (h = 32; h < 127; h++)
+	{
+		if (islower(h))
+			continue;
+		
+		fprintf(out, "__%02X:\n", h);
+		if (isupper(h))
+			fprintf(out, "__%02X:\n", tolower(h));
+		
+		*last = 0;
+	
+		for(;;)
+		{
+			n = -1;
+			
+			*next = 0;
+			
+			for (info = &COMP_res_info[1], i = 1; info->name; info++, i++)
+			{
+				if  (tolower(*info->name) != tolower(h) || !info->name[1])
+					continue;
+				
+				if (compare_name(info->name, last) <= 0)
+					continue;
+				
+				if (*next == 0 || compare_name(info->name, next) <= 0)
+				{
+					strcpy(next, info->name);
+					n = i;
+				}
+			}
+			
+			if (n < 0)
+				break;
+			
+			info = &COMP_res_info[n];
+			len = strlen(info->name);
+
+			strcpy(last, info->name);
+			
+			fprintf(out, "\tif (len == %d", len);
+			for (p = 1; p < len; p++)
+			{
+				fprintf(out, " && ");
+				c = info->name[p];
+				if (isalpha(c))
+					fprintf(out, "tolower(word[%d]) == '%c'", p, tolower(info->name[p]));
+				else if (c == '\\')
+					fprintf(out, "word[%d] == '\\\\'", p);
+				else
+					fprintf(out, "word[%d] == '%c'", p, info->name[p]);
+			}
+			/*printf("  if (!strncmp(\"");
+			for (p = 0; p < len; p++) 
+			{
+				c = info->name[p];
+				if (c == '\\')
+					printf("\\\\");
+				else
+					putchar(tolower(info->name[p]));
+			}
+			printf("\", word, %d)", len);*/
+			fprintf(out, ") return %d;\n", n);
+		}
+		
+		fprintf(out, "\treturn -1;\n");
+	}
+	
+	read_write_until(in, NULL, "}");
+	read_write_until(in, NULL, "}");
+	fprintf(out, "}\n");
+
+	read_write_until(in, out, "static void *jump[] = {");
+	
+	for (h = 32; h < 127; h++)
+	{
+		if ((h % 8) == 0)
+			fprintf(out, "\t\t");
+		fprintf(out, "&&__%02X, ", h);
+		if ((h % 8) == 7)
+			fprintf(out, "\n");
+	}
+	fprintf(out, "\n\t};\n\n");
+
+	fprintf(out, "\tgoto *jump[*word - 32];\n\n");
+	
+	for (h = 32; h < 127; h++)
+	{
+		if (islower(h))
+			continue;
+		
+		fprintf(out, "__%02X:\n", h);
+		if (isupper(h))
+			fprintf(out, "__%02X:\n", tolower(h));
+		
+		*last = 0;
+		
+		for(;;)
+		{
+			n = -1;
+			
+			*next = 0;
+			
+			for (subr = &COMP_subr_info[0], i = 0; subr->name; subr++, i++)
+			{
+				if  (tolower(*subr->name) != tolower(h) || !subr->name[1])
+					continue;
+				
+				if (compare_name(subr->name, last) <= 0)
+					continue;
+				
+				if (*next == 0 || compare_name(subr->name, next) <= 0)
+				{
+					strcpy(next, subr->name);
+					n = i;
+				}
+			}
+			
+			if (n < 0)
+				break;
+			
+			subr = &COMP_subr_info[n];
+			len = strlen(subr->name);
+
+			strcpy(last, subr->name);
+			
+			fprintf(out, "\tif (len == %d", len);
+			for (p = 1; p < len; p++)
+			{
+				fprintf(out, " && ");
 				c = subr->name[p];
 				if (isalpha(c))
 					fprintf(out, "tolower(word[%d]) == '%c'", p, tolower(subr->name[p]));

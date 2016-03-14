@@ -661,20 +661,27 @@ static void add_identifier()
 	type = RT_IDENTIFIER;
 
 	start = source_ptr;
-	len = 1;
-
+	for(;;)
+	{
+		source_ptr++;
+		if (!ident_car[get_char()])
+			break;
+	}
+	
+	len = source_ptr - start;
+	
 	last_class = (flag & RSF_CLASS) != 0;
 	last_type = (flag & RSF_AS) != 0;
 	
 	if (last_type)
 	{
+		source_ptr--;
+		
 		for(;;)
 		{
 			source_ptr++;
 			len++;
 			car = get_char();
-			if (ident_car[car])
-				continue;
 			if (car == '[')
 			{
 				car = get_char_offset(1);
@@ -689,17 +696,6 @@ static void add_identifier()
 			
 			len--;
 			break;
-		}
-	}
-	else
-	{
-		for(;;)
-		{
-			source_ptr++;
-			car = get_char();
-			if (!ident_car[car])
-				break;
-			len++;
 		}
 	}
 
@@ -932,7 +928,7 @@ static void add_string()
 	const char *start;
 	int len;
 	int index;
-	int newline;
+	ushort newline;
 	bool jump;
 	char *p;
 	const char *end;
@@ -1016,9 +1012,9 @@ static void add_string()
 				p--;
 				len--;
 				end = source_ptr;
+				jump = TRUE;
 				comp->line += newline;
 				newline = 0;
-				jump = TRUE;
 			}
 			else
 				*p = car;

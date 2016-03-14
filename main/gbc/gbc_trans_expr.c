@@ -35,11 +35,47 @@
 #include "gbc_trans.h"
 #include "gb_code.h"
 
-//#define DEBUG
+//#define DEBUG 1
 
 //static bool _accept_statement = FALSE;
 
 static bool _must_drop_vargs = FALSE;
+
+static TYPE _type[MAX_EXPR_LEVEL];
+static int _type_level = 0;
+
+#if DEBUG
+
+static void _push_type(TYPE type)
+{
+	if (_type_level >= MAX_EXPR_LEVEL) // should have been detected by TRANS_tree()
+		THROW("Expression too complex");
+	
+	_type[_type_level++] = type;
+}
+
+#define push_type(_type) fprintf(stderr, "push_type: %d in %s.%d\n", (_type).t.id, __func__, __LINE__), _push_type(_type)
+#define push_type_id(_id) fprintf(stderr, "push_type_id: %d in %s.%d\n", (_id), __func__, __LINE__), _push_type(TYPE_make(_id, 0, 0))
+#define pop_type() fprintf(stderr, "pop type: in %s.%d\n", __func__, __LINE__),(_type[--_type_level])
+#define drop_type(_n) fprintf(stderr, "drop type: %d in %s.%d\n", (_n), __func__, __LINE__),(_type_level -= (_n))
+#define get_type(_i, _nparam) (fprintf(stderr, "get type(%d,%d): %d in %s.%d\n", (_i), (_nparam), (_type[_type_level + (_i) - (_nparam)].t.id), __func__, __LINE__),(_type[_type_level + (_i) - (_nparam)].t.id))
+
+#else
+
+static void push_type(TYPE type)
+{
+	if (_type_level >= MAX_EXPR_LEVEL) // should have been detected by TRANS_tree()
+		THROW("Expression too complex");
+	
+	_type[_type_level++] = type;
+}
+
+#define push_type_id(_id) push_type(TYPE_make(_id, 0, 0))
+#define pop_type() (_type[--_type_level])
+#define drop_type(_n) (_type_level -= (_n))
+#define get_type(_i, _nparam) (_type[_type_level + (_i) - (_nparam)].t.id)
+
+#endif
 
 static short get_nparam(PATTERN *tree, int count, int *pindex, uint64_t *byref)
 {
@@ -80,7 +116,7 @@ static short get_nparam(PATTERN *tree, int count, int *pindex, uint64_t *byref)
 				index++;
 			}
 		}
-		
+
 		*pindex = index;
 	}
 
@@ -115,9 +151,14 @@ static void push_number(int index)
 			decl.lvalue = number.lval;
 		CODE_push_const(CLASS_add_constant(JOB->class, &decl));
 	}
-	
+
 	if (number.complex)
+	{
 		CODE_push_complex();
+		push_type_id(T_OBJECT);
+	}
+	else
+		push_type_id(number.type);
 }
 
 
@@ -156,6 +197,8 @@ static void push_string(int index, bool trans)
 
 		CODE_push_const(CLASS_add_constant(JOB->class, &decl));
 	}
+	
+	push_type_id(T_STRING);
 }
 
 bool TRANS_string(PATTERN pattern)
@@ -167,17 +210,18 @@ bool TRANS_string(PATTERN pattern)
 }
 
 
-void TRANS_class(int index)
+static void trans_class(int index)
 {
 	const char *name;
 
-	if (CLASS_exist_class(JOB->class, index))
-		CODE_push_class(CLASS_add_class(JOB->class, index));
-	else
+	if (!CLASS_exist_class(JOB->class, index))
 	{
 		name = TABLE_get_symbol_name(JOB->class->table, index);
 		THROW("Unknown identifier: &1", name);
 	}
+	
+	CODE_push_class(CLASS_add_class(JOB->class, index));
+	push_type_id(T_OBJECT);
 }
 
 static void trans_identifier(int index, bool point, PATTERN next)
@@ -188,9 +232,14 @@ static void trans_identifier(int index, bool point, PATTERN next)
 	int type;
 	CONSTANT *constant;
 
+#if DEBUG
+	fprintf(stderr, "trans_identifier: %.*s\n", sym->symbol.len, sym->symbol.name);
+#endif
+	
 	if (!TYPE_is_null(sym->local.type) && !point)
 	{
 		CODE_push_local(sym->local.value);
+		push_type(sym->local.type);
 		sym->local_used = TRUE;
 	}
 	else if (!TYPE_is_null(sym->global.type) && !point)
@@ -212,6 +261,8 @@ static void trans_identifier(int index, bool point, PATTERN next)
 				CODE_push_number(constant->value);
 			else
 				CODE_push_const(sym->global.value);
+			
+			push_type_id(type);
 		}
 		else if (type == TK_EXTERN)
 		{
@@ -219,6 +270,7 @@ static void trans_identifier(int index, bool point, PATTERN next)
 				goto __CLASS;
 
 			CODE_push_extern(sym->global.value);
+			push_type(JOB->class->ext_func[sym->global.value].type);
 		}
 		/* That breaks some code if the property has the same name as a class!
 		else if (type == TK_PROPERTY)
@@ -245,15 +297,22 @@ static void trans_identifier(int index, bool point, PATTERN next)
 				goto __CLASS;
 			else
 				CODE_push_global(sym->global.value, is_static, is_func);
+				
+			if (is_func)
+				push_type(JOB->class->function[sym->global.value].type);
+			else if (is_static)
+				push_type(JOB->class->stat[sym->global.value].type);
+			else
+				push_type(JOB->class->dyn[sym->global.value].type);
 		}
 	}
 	else
 	{
-		/*index = CLASS_add_symbol(JOB->class, index);*/
-
 		if (point)
+		{
 			CODE_push_unknown(CLASS_add_unknown(JOB->class, index));
-		/* Class must be declared now ! */
+			push_type_id(T_VOID);
+		}
 		else
 			goto __CLASS;
 	}
@@ -262,13 +321,14 @@ static void trans_identifier(int index, bool point, PATTERN next)
 
 __CLASS:
 
-	TRANS_class(index);
+	trans_class(index);
 }
 
 
 static void trans_subr(int subr, short nparam)
 {
 	SUBR_INFO *info = &COMP_subr_info[subr];
+	int type;
 
 	if (nparam < info->min_param)
 		THROW("Not enough arguments to &1()", info->name);
@@ -288,20 +348,53 @@ static void trans_subr(int subr, short nparam)
 	}
 
 	CODE_subr(info->opcode, nparam, info->optype, info->max_param == info->min_param);
+	
+	type = info->type;
+	switch(type)
+	{
+		case RST_SAME:
+			type = get_type(0, nparam);
+			break;
+			
+		case RST_BCLR:
+			type = get_type(0, nparam);
+			break;
+	}
+	
+	if (nparam)
+		drop_type(nparam);
+	
+	push_type_id(type);
 }
 
 
 static void trans_operation(short op, short nparam, PATTERN previous)
 {
 	COMP_INFO *info = &COMP_res_info[op];
+	int type = info->type;
 
 	switch (info->value)
 	{
 		case OP_PT:
 			if (nparam == 0)
+			{
 				TRANS_use_with();
+				type = T_OBJECT;
+			}
 			else if (!PATTERN_is_identifier(previous))
 				THROW(E_SYNTAX);
+			else
+			{
+				switch(get_type(0, nparam))
+				{
+					case T_OBJECT:
+					case T_VARIANT:
+						break;
+						
+					default:
+						THROW("Not an object");
+				}
+			}
 
 			break;
 
@@ -324,14 +417,52 @@ static void trans_operation(short op, short nparam, PATTERN previous)
 
 		case OP_MINUS:
 			if (nparam == 1)
+			{
 				CODE_op(C_NEG, 0, nparam, TRUE);
+				type = RST_SAME;
+			}
 			else
 				CODE_op(info->code, info->subcode, nparam, TRUE);
 			break;
-			
+
 		default:
 			CODE_op(info->code, info->subcode, nparam, (info->flag != RSF_OPN));
 	}
+	
+	switch(type)
+	{
+		case RST_SAME:
+			type = get_type(0, nparam);
+			break;
+			
+		case RST_ADD:
+			type = Max(get_type(0, nparam), get_type(1, nparam));
+			if (type == T_DATE)
+				type = T_FLOAT;
+			break;
+			
+		case RST_AND:
+			type = Max(get_type(0, nparam), get_type(1, nparam));
+			if (type > T_LONG && type != T_VARIANT && type != T_STRING)
+				THROW("Integer expected");
+			break;
+
+		case RST_NOT:
+			type = get_type(0, nparam);
+			if (type == T_STRING || type == T_OBJECT)
+				type = T_BOOLEAN;
+			break;
+			
+		case RST_MIN:
+			type = Max(get_type(0, nparam), get_type(1, nparam));
+			if (type > T_DATE && type != T_VARIANT)
+				THROW("Number or Date expected");
+	}
+	
+	if (nparam)
+		drop_type(nparam);
+	
+	push_type_id(type);
 }
 
 
@@ -340,16 +471,21 @@ static void trans_call(short nparam, uint64_t byref)
 	if (!byref)
 	{
 		CODE_call(nparam);
-		return;
 	}
-		
-	CODE_call_byref(nparam, byref);
-
-	if (_must_drop_vargs)
+	else
 	{
-		CODE_drop_vargs();
-		_must_drop_vargs = FALSE;
+		CODE_call_byref(nparam, byref);
+
+		if (_must_drop_vargs)
+		{
+			CODE_drop_vargs();
+			_must_drop_vargs = FALSE;
+		}
 	}
+	
+	drop_type(nparam + 1);
+	
+	push_type_id(T_VARIANT);
 }
 
 static void trans_expr_from_tree(TRANS_TREE *tree, int count)
@@ -357,10 +493,15 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 	int i, op;
 	short nparam;
 	PATTERN pattern, next_pattern, prev_pattern;
-	uint64_t byref;
+	uint64_t byref = 0;
 
 	count--;
 	pattern = NULL_PATTERN;
+	_type_level = 0;
+
+	#if DEBUG
+	fprintf(stderr, "-----------------------\n");
+	#endif
 
 	for (i = 0; i <= count; i++)
 	{
@@ -384,7 +525,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			trans_identifier(PATTERN_index(pattern), PATTERN_is_point(pattern), next_pattern);
 
 		else if (PATTERN_is_class(pattern))
-			TRANS_class(PATTERN_index(pattern));
+			trans_class(PATTERN_index(pattern));
 
 		else if (PATTERN_is_subr(pattern))
 		{
@@ -397,14 +538,17 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			if (PATTERN_is(pattern, RS_TRUE))
 			{
 				CODE_push_boolean(TRUE);
+				push_type_id(T_BOOLEAN);
 			}
 			else if (PATTERN_is(pattern, RS_FALSE))
 			{
 				CODE_push_boolean(FALSE);
+				push_type_id(T_BOOLEAN);
 			}
 			else if (PATTERN_is(pattern, RS_NULL))
 			{
 				CODE_push_null();
+				push_type_id(T_OBJECT);
 			}
 			else if (PATTERN_is(pattern, RS_ME))
 			{
@@ -412,6 +556,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 					THROW("ME cannot be used in a static function");*/
 
 				CODE_push_me(FALSE);
+				push_type_id(T_OBJECT);
 			}
 			else if (PATTERN_is(pattern, RS_SUPER))
 			{
@@ -419,10 +564,12 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 					THROW("ME cannot be used in a static function");*/
 
 				CODE_push_super(FALSE);
+				push_type_id(T_OBJECT);
 			}
 			else if (PATTERN_is(pattern, RS_LAST))
 			{
 				CODE_push_last();
+				push_type_id(T_OBJECT);
 			}
 			else if (PATTERN_is(pattern, RS_AT))
 			{
@@ -432,6 +579,7 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			else if (PATTERN_is(pattern, RS_COMMA))
 			{
 				CODE_drop();
+				drop_type(1);
 			}
 			else if (PATTERN_is(pattern, RS_ERROR))
 			{
@@ -440,19 +588,23 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 			else if (PATTERN_is(pattern, RS_OPTIONAL))
 			{
 				CODE_push_void();
+				push_type_id(T_VOID);
 			}
 			else if (PATTERN_is(pattern, RS_PINF))
 			{
 				CODE_push_inf(FALSE);
+				push_type_id(T_FLOAT);
 			}
 			else if (PATTERN_is(pattern, RS_MINF))
 			{
 				CODE_push_inf(TRUE);
+				push_type_id(T_FLOAT);
 			}
 			else if (PATTERN_is(pattern, RS_3PTS))
 			{
 				_must_drop_vargs = TRUE;
 				CODE_push_vargs();
+				// push_type_id(T_FLOAT); we push no type
 			}
 			else
 			{
@@ -489,7 +641,7 @@ void TRANS_new(void)
 		index = CLASS_add_class(JOB->class, PATTERN_index(*JOB->current));
 		if (PATTERN_is(JOB->current[1], RS_LSQR))
 			index = CLASS_get_array_class(JOB->class, T_OBJECT, index);
-		
+
 		CODE_push_class(index);
 		nparam = 1;
 	}
@@ -610,7 +762,7 @@ void TRANS_expression(bool check_statement)
 			return;
 		}
 	}
-	
+
 	TRANS_tree(check_statement, &tree, &tree_length);
 
 	trans_expr_from_tree(tree, tree_length);
@@ -640,9 +792,9 @@ TYPE TRANS_variable_get_type()
 	int count;
 	int index;
 	CLASS_SYMBOL *sym;
-	
+
 	TRANS_tree(FALSE, &tree, &count);
-	
+
 	if (count == 1 && PATTERN_is_identifier(*tree))
 	{
 		index = PATTERN_index(*tree);
@@ -659,9 +811,9 @@ TYPE TRANS_variable_get_type()
 				return sym->global.type;
 		}
 	}
-	
+
 	FREE(&tree);
-	
+
 	return type;
 }
 
