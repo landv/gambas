@@ -926,11 +926,12 @@ Public Sub HighlightFrom(Y As Integer)
         .Colors = aHighlight
       Endif
       
-      If .Alternate <> TextHighlighter.Alternate Or If .State <> TextHighlighter.State Or If .Tag <> TextHighlighter.Tag Or If .Limit <> TextHighlighter.Limit Then
+      If .Alternate <> TextHighlighter.Alternate Or If .State <> TextHighlighter.State Or If .Tag <> TextHighlighter.Tag Or If .Limit <> TextHighlighter.Limit Or If .Comment <> TextHighlighter.Comment Then
         .Alternate = TextHighlighter.Alternate
         .State = TextHighlighter.State
         .Tag = TextHighlighter.Tag
         .Limit = TextHighlighter.Limit
+        .Comment = TextHighlighter.Comment
         'Debug "Update: State = "; .State;; "Tag = "; .Tag;; "Alternate = "; .Alternate;; "Limit = "; .Limit
         If Y < Lines.Max Then SetInfo(Y + 1).ClearHighlight()
       Endif
@@ -1287,3 +1288,50 @@ Private Sub CheckUnlock()
   
 
 End
+
+Public Sub HasLimit(Y As Integer) As Boolean
+
+  Dim hInfo As CLineInfo
+  Dim YS As Integer
+  
+  If Y = 0 Then Return True
+  If Not Trim(Lines[Y]) Then Return False
+
+  hInfo = Info(Y)
+  If hInfo.Comment Then
+
+    YS = Y
+    Do
+      Dec Y
+      If Y < 0 Then Break
+      hInfo = Info(Y)
+      If hInfo.Comment Or If hInfo.Limit Then Return False
+      If Trim(Lines[Y]) Then Break
+    Loop
+  
+    Y = YS
+    Do
+      Inc Y
+      If Y >= Lines.Count Then Return False
+      If Trim(Lines[Y]) Then
+        hInfo = Info(Y)
+        If Not hInfo.Comment Then Return hInfo.Limit
+      Endif
+    Loop
+    
+  Else
+    
+    If Not hInfo.Limit Then Return
+    
+    Do
+      Dec Y
+      If Y < 0 Then Break
+      hInfo = Info(Y)
+      If hInfo.Comment Or If hInfo.Limit Then Return False
+      If Trim(Lines[Y]) Then Return True
+    Loop
+  
+  Endif
+    
+End
+

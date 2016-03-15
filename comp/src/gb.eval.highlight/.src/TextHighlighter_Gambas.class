@@ -51,6 +51,7 @@ Public Sub Run(Text As String)
   
   Highlight.Analyze(Text, True)
   TextHighlighter.Limit = IsProc()
+  TextHighlighter.Comment = Left(LTrim(Text)) = "'"
   
   iPos = 0
   For I = 0 To Highlight.Symbols.Max

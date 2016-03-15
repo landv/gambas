@@ -13,9 +13,10 @@ Static Public _Highlight As Byte[]
 Static Public (Line) As Integer
 Static Public State As Integer
 Static Public Tag As Integer
-Static Public Alternate As Boolean
 Static Public TextAfter As String
+Static Public Alternate As Boolean
 Static Public Limit As Boolean
+Static Public Comment As Boolean
 
 Static Private $aStyle As TextHighlighterStyle[]
 

@@ -68,7 +68,7 @@ End
 
 Private Function Limit_Read() As Boolean
 
-  Return GetDoc().Info(_Line).Limit
+  Return GetDoc().HasLimit(_Line)
 
 End
 

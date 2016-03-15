@@ -6,8 +6,9 @@ Property Alternate As Boolean
 Property Limit As Boolean
 Property Breakpoint As Boolean
 Property Bookmark As Boolean
+Property Comment As Boolean
 
-Private Enum FLAG_MODIFIED, FLAG_SAVED, FLAG_ALTERNATE, FLAG_LIMIT, FLAG_BREAKPOINT, FLAG_BOOKMARK
+Private Enum FLAG_MODIFIED, FLAG_SAVED, FLAG_ALTERNATE, FLAG_LIMIT, FLAG_BREAKPOINT, FLAG_BOOKMARK, FLAG_COMMENT
 
 Public Colors As Byte[]
 Public Tag As Short
@@ -113,5 +114,17 @@ End
 Private Sub Bookmark_Write(Value As Boolean)
 
   SetFlag(FLAG_BOOKMARK, Value)
+
+End
+
+Private Function Comment_Read() As Boolean
+
+  Return BTst($iFlag, FLAG_COMMENT)
+
+End
+
+Private Sub Comment_Write(Value As Boolean)
+
+  SetFlag(FLAG_COMMENT, Value)
 
 End

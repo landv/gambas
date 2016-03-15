@@ -4,7 +4,7 @@ Export
 
 Inherits UserControl
 
-Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces"
+Public Const _Properties As String = "*,Border=True,ScrollBar{Scroll.*}=Both,Highlight{None;Custom;Gambas;HTML;CSS;WebPage;Diff;JavaScript;SQL},ReadOnly,TabSize{Range:2;64}=2,Wrap,ShowPosition,ShowLimit,ShowCurrent,ShowLineNumber,ShowModified,ShowBraces,ShowIcon,ShowExpand,ShowCursor=True,ShowSpaces,ShowIndent"
 Public Const _DrawWith As String = "-"
 Public Const _DefaultEvent As String = "Change"
 Public Const _Similar As String = "TextArea"
@@ -59,6 +59,7 @@ Property ShowBraces As Boolean
 Property ShowCursor As Boolean
 Property ShowExpand As Boolean
 Property ShowSpaces As Boolean
+Property ShowIndent As Boolean
 
 Private Const MATCH_STRING As String = "()[]{}"
 
@@ -147,6 +148,7 @@ Private $bShowIcon As Boolean
 Private $bShowBraces As Boolean
 Private $bShowExpand As Boolean
 Private $bShowSpaces As Boolean
+Private $bShowIndent As Boolean
 
 Private $bFirstFocus As Boolean
 
@@ -682,6 +684,32 @@ DRAW_TEXT:
 
 End
 
+Private Sub GetTabSizeAround(Row As Integer) As Integer
+
+  Dim iBefore As Integer
+  Dim Y As Integer
+  Dim iAfter As Integer
+  
+  Y = Row
+  While Y > 0
+    Dec Y
+    iBefore = GetIndent(Y, True)
+    If iBefore >= 0 Then Break
+  Wend
+  
+  Y = Row
+  Do
+    Inc Y
+    If Y >= $hDoc.Count Then Break
+    iAfter = GetIndent(Y, True)
+    If iAfter >= 0 Then Break
+  Loop
+  
+  If iBefore = iAfter Then Return iAfter - 1
+  Return Min(iBefore, iAfter)
+
+End
+
 Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
   
   Dim X1 As Integer
@@ -844,6 +872,26 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     
   Endif
   
+  If $bShowIndent Then
+    
+    P = Len(LTrim(sText))
+    
+    If P = 0 Then 
+      P = GetTabSizeAround(Row) + 1
+      P = LinePos(Row, String.Len(sText)).X + (P - String.Len(sText)) * $iSpaceWidth
+    Else
+      P = Len(sText) - P
+      P = LinePos(Row, P).X
+    Endif
+    
+    XX = $iTabWidth
+    While XX < P
+      Paint.FillRect(XX + $iSpaceWidth \ 2, Y, 1, H, $iLimitColor)
+      XX += $iTabWidth
+    Wend
+    
+  Endif
+  
   If Row = $Y And If aLayout Then
     
     Paint.FillRect($iWidth - $MW - 4, Y, 4, Height, $iMultiLineColor)
@@ -878,6 +926,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   
 End
 
+
 Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
   
   Dim iCol As Integer
@@ -886,8 +935,10 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   Dim S, SS As Float
   Dim H As Integer
   Dim sStr As String
+  Dim bLimit As Boolean
 
   hInfo = $hDoc.Info(Row)
+  bLimit = $hDoc.HasLimit(Row)
   X += $hView.ScrollX
   H = $hRows.H
   
@@ -897,9 +948,9 @@ Private Sub DrawMargin(X As Integer, Y As Integer, Width As Integer, Height As I
   
   If $bShowLimit And If Row > 0 Then
     If Not RTrim($hDoc.Lines[Row]) And If Row < $hDoc.Max Then
-      If $hDoc.Info(_ViewToReal(_RealToView(Row) + 1)).Limit Then YL = Y + Height \ 2
+      If $hDoc.HasLimit(_ViewToReal(_RealToView(Row) + 1)) Then YL = Y + Height \ 2
     Else
-      If hInfo.Limit And RTrim($hDoc.Lines[_ViewToReal(_RealToView(Row) - 1)]) Then YL = Y
+      If bLimit And RTrim($hDoc.Lines[_ViewToReal(_RealToView(Row) - 1)]) Then YL = Y
     Endif
   Endif
   
@@ -2664,10 +2715,10 @@ Private Sub UpdatePosition()
   Dim sText As String
   
   If Not $hLabel Or If Not $hLabel.Visible Then Return
-  sText = " " & CStr($X + 1) & ":" & CStr($Y + 1) & If($bOverwrite, "  " & ("Overwrite"), "") & " "
+  sText = "  " & CStr($X + 1) & " : " & CStr($Y + 1) & If($bOverwrite, "  " & ("Overwrite"), "") & "  "
   $hLabel.Text = sText
-  $hLabelFrame.Move($hView.ClientW - $hLabel.W - 6, 5, $hLabel.W + 2, $hLabel.H + 2)
-  $hLabel.Move(0, 0, $hLabelFrame.ClientW, $hLabelFrame.ClientH)
+  $hLabelFrame.Move($hView.ClientW - $hLabel.W, $hView.ClientH - $hLabel.H, $hLabel.W, $hLabel.H)
+  $hLabel.Move(0, 0)
 
 End
 
@@ -2677,13 +2728,14 @@ Private Sub ShowPosition_Write(Value As Boolean)
   If $bShowPosition Then
     If Not $hLabel Then
       $hLabelFrame = New Panel(Me)
-      $hLabelFrame.Border = Border.Plain
-      $hLabelFrame.Background = Color.Background
+      $hLabelFrame.Background = $hStyles[Highlight.Background].Color
       $hLabelFrame.Ignore = True
       $hLabel = New Label($hLabelFrame) ' TODO: NULL + gb.gtk => crash!
       $hLabel.AutoResize = True
       '$hLabel.Padding = 0
       $hLabel.Font = Me.Parent.Font
+      $hLabel.Font.Bold = True
+      $hLabel.Foreground = $hStyles[Highlight.Normal].Color
       $hLabel.Show
     Endif
     UpdatePosition
@@ -4570,6 +4622,10 @@ Public Sub Styles_Change()
   
   $bStyleChanged = True
   ClearCacheText
+  If $hLabelFrame Then 
+    $hLabelFrame.Background = $hStyles[Highlight.Background].Color
+    $hLabel.Foreground = $hStyles[Highlight.Normal].Color
+  Endif
   
 End
 
@@ -4582,6 +4638,19 @@ End
 Private Sub ShowSpaces_Write(Value As Boolean)
 
   $bShowSpaces = Value
+  $hView.Refresh
+
+End
+
+Private Function ShowIndent_Read() As Boolean
+
+  Return $bShowIndent
+
+End
+
+Private Sub ShowIndent_Write(Value As Boolean)
+
+  $bShowIndent = Value
   $hView.Refresh
 
 End
