@@ -302,14 +302,14 @@ CommentNode* XMLComment_New(const char *ncontent, const size_t nlen)
 CDATANode* XMLCDATA_New()
 {
     CommentNode *newComment = XMLTextNode_New();
-    newComment->type = Node::Comment;
+    newComment->type = Node::CDATA;
     return newComment;
 }
 
 CDATANode* XMLCDATA_New(const char *ncontent, const size_t nlen)
 {
     CommentNode *newComment = XMLTextNode_New(ncontent, nlen);
-    newComment->type = Node::Comment;
+    newComment->type = Node::CDATA;
     return newComment;
 }
 
