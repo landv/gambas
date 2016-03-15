@@ -30,6 +30,7 @@ Public Sub ReadConfig()
   Me.ShowCurrent = Settings["/Editor/ShowCurrent", True]
   Me.ShowExpand = Settings["/Editor/ShowExpand", True]
   Me.ShowSpaces = Settings["/Editor/ShowSpaces", True]
+  Me.ShowIndent = Settings["/Editor/ShowIndent", True]
   'Me.Flags[Editor.NoFolding] = Not Settings["/Editor/ShowFolding", True]
   Me.ShowBraces = True
   

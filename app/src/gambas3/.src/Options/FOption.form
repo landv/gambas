@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,96,64)
+  MoveScaled(0,0,96,66)
   Action = "option"
   Text = ("Preferences")
   Icon = Picture["icon:/small/options"]
@@ -28,7 +28,7 @@
     }
   }
   { ipnOption IconPanel
-    MoveScaled(1,1,94,60)
+    MoveScaled(1,1,94,64)
     Arrangement = Arrange.Vertical
     Spacing = True
     Count = 10
@@ -521,13 +521,37 @@
         Animated = True
       }
     }
+    { HBox38 HBox
+      MoveScaled(1,49,66,4)
+      Spacing = True
+      Indent = True
+      { Label36 Label
+        MoveScaled(0,0,47,4)
+        Expand = True
+        Text = ("Show tabulations with vertical lines")
+      }
+      { btnShowIndent SwitchButton
+        MoveScaled(50,0,16,4)
+        Animated = True
+      }
+    }
     { Label57 Label
-      MoveScaled(1,50,63,3)
+      MoveScaled(1,55,63,3)
       Font = Font["Bold"]
       Text = ("Shortcuts")
     }
+    { Panel2 HBox
+      MoveScaled(2,59,39,4)
+      Indent = True
+      { btnShortcut Button
+        MoveScaled(0,0,31,4)
+        AutoResize = True
+        Text = ("Configure shortcuts") & "..."
+        Picture = Picture["icon:/small/shortcut"]
+      }
+    }
     { HBox20 HBox
-      MoveScaled(46,54,66,4)
+      MoveScaled(46,59,66,4)
       Visible = False
       Spacing = True
       Indent = True
@@ -539,16 +563,6 @@
       { btnUpperCaseKeywords SwitchButton
         MoveScaled(50,0,16,4)
         Animated = True
-      }
-    }
-    { Panel2 HBox
-      MoveScaled(2,54,39,4)
-      Indent = True
-      { btnShortcut Button
-        MoveScaled(0,0,31,4)
-        AutoResize = True
-        Text = ("Configure shortcuts") & "..."
-        Picture = Picture["icon:/small/shortcut"]
       }
     }
     Index = 4
@@ -759,6 +773,13 @@
             Text = Shortcut(("New"), "N") & "..."
             Picture = Picture["icon:/small/new"]
           }
+          { btnImportSnippet Button
+            MoveScaled(0,25,17,4)
+            Visible = False
+            AutoResize = True
+            Text = Shortcut(("Import"), "I") & "..."
+            Picture = Picture["icon:/small/open"]
+          }
           { btnEditSnippet Button
             MoveScaled(18,0,17,4)
             AutoResize = True
@@ -770,13 +791,6 @@
             AutoResize = True
             Text = Shortcut(("Remove"), "R")
             Picture = Picture["icon:/small/delete"]
-          }
-          { btnImportSnippet Button
-            MoveScaled(0,25,17,4)
-            Visible = False
-            AutoResize = True
-            Text = Shortcut(("Import"), "I") & "..."
-            Picture = Picture["icon:/small/open"]
           }
         }
       }

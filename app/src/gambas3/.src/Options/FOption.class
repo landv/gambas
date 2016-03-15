@@ -104,6 +104,7 @@ Public Sub _new()
     [btnShowChange, "/Editor/ShowChange", 1],
     [btnShowCurrent, "/Editor/ShowCurrent", 1],
     [btnShowSpaces, "/Editor/ShowSpaces", 1],
+    [btnShowIndent, "/Editor/ShowIndent", 1],
     [btnFold, "/Editor/ShowExpand", 1],
     [btnFoldProc, "/Editor/CollapseByDefault", 0],
     [btnWrapText, "/Editor/WrapTextByDefault", 0],
@@ -373,6 +374,13 @@ End
 Public Sub btnShowSpaces_Click()
 
   Settings["/Editor/ShowSpaces"] = btnShowSpaces.Value
+  RefreshEditor
+
+End
+
+Public Sub btnShowIndent_Click()
+
+  Settings["/Editor/ShowIndent"] = btnShowIndent.Value
   RefreshEditor
 
 End
