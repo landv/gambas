@@ -581,7 +581,7 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 		else
 		{
 			QVector<qreal> dv;
-			qreal d;
+			qreal d = 0;
 
 			for (int i = 0; i < *count; i++)
 			{
@@ -590,6 +590,10 @@ static void Dash(GB_PAINT *d, int set, float **dashes, int *count)
 					d = DASH_ZERO;
 				dv << (qreal)d;
 			}
+			
+			if (*count == 1)
+				dv << (qreal)d;
+			
 			pen.setStyle(Qt::CustomDashLine);
 			pen.setDashPattern(dv);
 		}
