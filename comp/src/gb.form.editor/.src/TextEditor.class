@@ -126,6 +126,7 @@ Private $iForeground As Integer
 Private $iSelectedBackground As Integer
 Private $iLimitColor As Integer
 Private $iMultiLineColor As Integer
+Private $iIndentColor As Integer
 
 Private $iLineNumberOffset As Integer
 Private $hTabImage As Image
@@ -710,7 +711,7 @@ Private Sub GetTabSizeAround(Row As Integer) As Integer
 
 End
 
-Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer)
+Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Integer, Row As Integer, RY As Integer)
   
   Dim X1 As Integer
   Dim Y1 As Integer
@@ -872,6 +873,8 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     
   Endif
   
+  ' Indent vertical lines
+  
   If $bShowIndent Then
     
     P = Len(LTrim(sText))
@@ -884,9 +887,14 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
       P = LinePos(Row, P).X
     Endif
     
+    Paint.Background = $iLimitColor
+    Paint.Dash = [2]
+    Paint.DashOffset = RY
     XX = $iTabWidth
     While XX < P
-      Paint.FillRect(XX + $iSpaceWidth \ 2, Y, 1, H, $iLimitColor)
+      Paint.MoveTo(XX + $iSpaceWidth \ 2 + 0.5, Y + 0.5)
+      Paint.RelLineTo(0, Height)
+      Paint.Stroke
       XX += $iTabWidth
     Wend
     
@@ -2492,6 +2500,7 @@ Public Sub View_Draw()
     $iForeground = $hStyles[Highlight.Normal].Color
     $iSelectedBackground = $hStyles[Highlight.Selection].Color
     $iLimitColor = Color.Gradient($iBackground, $hStyles[Highlight.Comment].Color)
+    $iIndentColor = Color.Gradient($iBackground, $iForeground)
     $iMultiLineColor = Color.Gradient($iBackground, $iLimitColor)
     $bStyleChanged = False
   Endif
@@ -2544,7 +2553,7 @@ Public Sub View_Draw()
     
     If H >= $hView.ClientH Or If $bRemoteDisplay Then
       Paint.Save
-      DrawLine(XX, Y, $iWidth, H, iRow)
+      DrawLine(XX, Y, $iWidth, H, iRow, Y)
       Paint.Restore
     Else
       hPict = $cCacheLine[iRow]
@@ -2553,7 +2562,7 @@ Public Sub View_Draw()
         hPict.Fill($iBackground)
         Paint.Begin(hPict)
         Paint.Font = $hFont
-        DrawLine(0, 0, $iWidth, H, iRow)
+        DrawLine(0, 0, $iWidth, H, iRow, Y)
         Paint.End
         $cCacheLine[iRow] = hPict
         $iCacheLineH += H
