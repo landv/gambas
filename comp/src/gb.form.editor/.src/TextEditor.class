@@ -1082,7 +1082,7 @@ Public Sub TextWidth(sText As String) As Integer
       
   Endif
   
-  Return CInt(W)
+  Return Ceil(W)
   
 End
 
@@ -1099,10 +1099,7 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
   
   XO = X
   Try hPos = $cCachePos[Y][XO]
-  If hPos Then 
-    'Debug "cache";; X;; Y;; "->";; hPos;; hPos.X;; hPos.Y
-    Return hPos
-  Endif
+  If hPos Then Goto RETURN_POS
   
   If $cLineLayout Then
     aLayout = $cLineLayout[Y]
@@ -1115,7 +1112,7 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
       XX = TextWidth(String.Mid$($hDoc.Lines[Y], P + 1, X))
       If I Then XX += LineStartPos(Y)
       hPos = Point(XX, I * $LH)
-      Goto RETURN_POS
+      Goto CACHE_POS
     Endif
   Endif
 
@@ -1126,7 +1123,7 @@ Private Sub LinePos(Y As Integer, Optional X As Integer = -1) As Point
     hPos.X = TextWidth(String.Left($hDoc.Lines[Y], X))
   Endif
   
-RETURN_POS:
+CACHE_POS:
   
   cCache = $cCachePos[Y]
   If Not cCache Then
@@ -1141,7 +1138,10 @@ RETURN_POS:
   Endif
   cCache[XO] = hPos
   
-  'Debug "calc";; X;; Y;; "->";; hPos;; hPos.X;; hPos.Y
+  'If Y = 28 Then Debug "calc";; X;; Y;; "->";; hPos;; hPos.X;; hPos.Y
+  
+RETURN_POS:
+
   Return hPos
 
 End
@@ -1530,6 +1530,7 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   
   _RefreshLine($Y)
   
+  'Debug "$XY.X =";; $XY.X
   If NX <> $X Or If NY <> $Y Then
     
     If Not Mark Then
@@ -1545,6 +1546,7 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
     '$YM = -1
     bRaiseCursor = True
   Endif
+  
   $X0 = $XY.X
   
   If Not Mark Then
@@ -1559,8 +1561,6 @@ Public Sub Goto(NX As Integer, NY As Integer, Optional Mark As Boolean)
   
   $bShowCursor = True
   If Not $bReadOnly Then $hTimerCursor.Start
-  
-  '$hView.EnsureVisible($XX, $hRows._GetRowY($Y), $MW + 3, $hRows._GetRowHeight($Y))
   
   CheckMatch
   _RaiseCursor
@@ -1581,8 +1581,8 @@ Private Sub EnsureVisible(Optional bCenter As Boolean)
     H = $hView.ClientH
   Endif
 
-  If $XY.X > $hView.ClientW Then
-    $hView.EnsureVisible($XY.X, Y, $MW + 3, H)
+  If $bMouseDown Or If $XY.X > ($hView.ClientW - $MW) Then
+    $hView.EnsureVisible($XY.X, Y, $iSpaceWidth + $MW, H)
   Else
     $hView.EnsureVisible(0, Y, $hView.ClientW, H)
   Endif
@@ -1608,7 +1608,7 @@ Public Sub EnsureVisible_Timer()
 End
 
 
-Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
+Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer, Optional bIgnoreMargin As Boolean) As Integer
 
   Dim I As Integer 
   Dim iLen As Integer
@@ -1621,7 +1621,9 @@ Private Sub PosToColumn(Y As Integer, PX As Integer, RY As Integer) As Integer
   sStr = $hDoc.Lines[Y]
   iLen = $hDoc.LineLength[Y]
   
-  If PX < $MW Then Return 0
+  If Not bIgnoreMargin Then
+    If PX < $MW Then Return 0
+  Endif
   
 '   if (px < margin || px >= visibleWidth())
 '     _posOutside = true;
@@ -1764,8 +1766,11 @@ Public Sub View_MouseMove()
   
   Dim Y, RY As Integer
   Dim X As Integer
+  Dim PX As Integer
+  
+  PX = Mouse.ScreenX - $hView.ScreenX 
 
-  If (Mouse.ScreenX - $hView.ScreenX) < $MW Then
+  If PX < $MW Then
     $hView.Mouse = Mouse.Default
   Else
     $hView.Mouse = Mouse.Text
@@ -1777,7 +1782,7 @@ Public Sub View_MouseMove()
     RY = $hRows.RelativeY
     If Y >= 0 Then
       'X = NormalizeColumn(PosToColumn(Y, Mouse.ScreenX - $hView.ScreenX, RY), Y)
-      X = PosToColumn(Y, Mouse.ScreenX - $hView.ScreenX, RY)
+      X = PosToColumn(Y, PX, RY, True)
       Goto(X, Y, True)
     Endif
     
