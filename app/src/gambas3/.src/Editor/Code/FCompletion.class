@@ -59,6 +59,7 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
   Dim hCont As Container
   Dim sText As String
   Dim W, H As Integer
+  Dim hPos As Point
 
   If hForm.GetEditor() <> $hEditor Then HideFrom($hEditor)
   $bHideLater = False
@@ -180,11 +181,13 @@ Public Sub Open(hForm As Object, sMode As String, Optional sClass As String, Opt
     sText &= Key.Text
   Endif
 
-  iX = $hEditor.X + $hEditor.ToPosX(0) + $hEditor.TextWidth(sText)
+  hPos = $hEditor.ToPos($hEditor.Line, $iCol)
+  
+  iX = $hEditor.X + hPos.X
 
   iX = Max(0, Min(iX, $hEditor.Window.ClientW - Me.Width))
 
-  iY = $hEditor.Y + $hEditor.ToPosY() + $hEditor.Current.Height
+  iY = hPos.Y + $hEditor.LineHeight
 
   If (iY + Me.Height) > ($hEditor.Y + $hEditor.H) Then
     iY = $hEditor.Y + $hEditor.ToPosY() - Me.Height

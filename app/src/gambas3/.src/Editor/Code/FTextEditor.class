@@ -876,7 +876,7 @@ Public Sub Compress() As Boolean
       $hEditor.Save(sPath)
     Endif
     SetText(sText)
-    CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b><p>" & ("Original file has been saved in the <b>Project</b> folder.")
+    CompressMessage = "<b>" & Subst(("The file has been compressed from &1 to &2 bytes (&3)."), Str(iLen), Str(Len(sText)), Format(fGain, "#.##%")) & "</b> " & ("Original file has been saved in the <b>Project</b> folder.")
   Endif
   
 Catch
@@ -893,7 +893,7 @@ Public Sub mnuCompress_Click()
   If Compress() Then
     FMain.ShowError(CompressMessage)
   Else
-    If CompressMessage Then FMain.ShowInfo(CompressMessage)
+    If CompressMessage Then $hEditor.ShowMessageLabel(CompressMessage)
   Endif
   
 End
@@ -993,7 +993,7 @@ Public Sub ShowErrorMessage(sMsg As String, (sIcon) As String)
 
   $hEditor.SetFocus
   Wait
-  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, True)
+  $hEditor.ShowMessageLabel(sMsg, $hEditor.ToPosX(), $hEditor.ToPosY() + $hEditor.LineHeight, Highlight.Breakpoint)
 
 End
 

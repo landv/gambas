@@ -201,35 +201,37 @@ Public Sub Label_MouseDown()
 End
 
 
-Public Sub ShowMessageLabel(sStr As String, X As Integer, Y As Integer, Optional bError As Boolean)
+Public Sub ShowMessageLabel(sStr As String, Optional X As Integer, Y As Integer, iStyle As Integer)
 
   Dim hParent As Container
 
   If Not $hLabel Then
+    
     hParent = Me.Parent
     If hParent Is HSplit Or If hParent Is VSplit Then hParent = hParent.Parent
     
     $hLabel = New TextLabel(hParent) As "Label"
     $hLabel.Ignore = True
     $hLabel.AutoResize = True
-    $hLabel.Border = Border.Plain
+    $hLabel.Border = If(IsMissing(Y), Border.None, Border.Plain)
     $hLabel.Padding = 2
     $hLabel.Wrap = False
     $hLabelTimer = New Timer As "LabelTimer"
     $hLabelTimer.Delay = 10000
+    
   Endif
+  
+  $hLabel.Foreground = Me.Styles[Highlight.Normal].Color
+  If IsMissing(iStyle) Then iStyle = Highlight.Highlight
+  $hLabel.Background = Color.Merge(Me.Styles[iStyle].Color, Style.BackgroundOf(Me), 0.3)
+  $hLabel.Text = "&nbsp;&nbsp;" & Replace(Replace(sStr, "<p>", " "), "<br>", " ") & "&nbsp;&nbsp;"
+
+  If IsMissing(X) Then X = 0
+  If IsMissing(Y) Then Y = Container(Me.Proxy).ClientH - $hLabel.H
 
   X = Me.ScreenX + X - $hLabel.Parent.ScreenX
   Y = Me.ScreenY + Y - $hLabel.Parent.ScreenY
   
-  $hLabel.Foreground = Me.Styles[Highlight.Normal].Color
-  If bError Then
-    $hLabel.Background = Color.Merge(Me.Styles[Highlight.Breakpoint].Color, Style.BackgroundOf(Me), 0.3)
-  Else
-    $hLabel.Background = Color.Merge(Me.Styles[Highlight.CurrentLine].Color, Style.BackgroundOf(Me), 0.3)
-  Endif
-  $hLabel.Text = Replace(Replace(sStr, "<p>", " "), "<br>", " ")
-
   If (Y + $hLabel.H) > $hLabel.Parent.ClientH Then Y -= $hLabel.H + Me.LineHeight
   $hLabel.Move(X, Y)
   
