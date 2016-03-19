@@ -56,7 +56,7 @@ Public Sub Form_Open()
   spnImport.Stop
   
   fchImport.Filter = ["*.csv", ("CSV files"), "*", ("All files")]
-  fchImport.SelectedPath = Project.Config["/FImportTable/Path"]
+  fchImport.SelectedPath = Project.Config["/FImportTable/Path", User.home]
 
   cmbTable.List = $aTable
 
