@@ -182,14 +182,22 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Mouse_ScreenX)
 
+#ifdef QT5
+	GB.ReturnInteger(QCursor::pos().x());
+#else
 	GB.ReturnInteger(MOUSE_info.valid ? MOUSE_info.screenX : QCursor::pos().x());
+#endif
 
 END_PROPERTY
 
 
 BEGIN_PROPERTY(Mouse_ScreenY)
 
+#ifdef QT5
+	GB.ReturnInteger(QCursor::pos().y());
+#else
 	GB.ReturnInteger(MOUSE_info.valid ? MOUSE_info.screenY : QCursor::pos().y());
+#endif
 
 END_PROPERTY
 
