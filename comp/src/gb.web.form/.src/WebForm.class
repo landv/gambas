@@ -17,14 +17,19 @@ Static Public _Current As WebForm
 
 Static Private $bDebug As Boolean
 Static Private $aJavascript As New String[]
+Static Private $cLibrary As New Collection
+'Static Private $aPreload As String[]
 
 Event Open
 Event Event
+Event Close
 
 Property Title As String
 Property Resizable As Boolean
 Property Width, W As String
 Property Height, H As String
+Property Read Popup As Boolean
+Property Read PopupParent As WebControl
 
 Static Public _DisableRefresh As Integer
 Static Public _HasRefresh As Boolean
@@ -50,6 +55,8 @@ Static Public Sub Main()
   Dim iPos As Integer
   Dim sClass As String
   Dim hStat As ClassStat
+  Dim aLib As String[]
+  Dim sFile As String
   
   System.Language = Request.Language
   'Debug "----";; Application.Request
@@ -62,12 +69,16 @@ Static Public Sub Main()
     
   Else If sPath Begins "style:" And sPath Ends ".css" Then
     
-    RenderStyleSheet
+    aLib = Split(Left(sPath, -4), ":")
+    If aLib.Count >= 3 Then sFile = aLib[1] & ".css"
+    RenderStyleSheet(sFile)
     Return
     
   Else If sPath Begins "lib:" And sPath Ends ".js" Then
     
-    RenderJavascript
+    aLib = Split(Left(sPath, -3), ":")
+    If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
+    RenderJavascript(sFile)
     Return
     
   Else If Exist("../.public/" &/ sPath) Then
@@ -141,7 +152,6 @@ Public Sub _new()
   
 End
 
-
 Public Sub _ready()
   
   Me._InitProperties
@@ -159,6 +169,25 @@ Public Sub _BeforeRender()
   
 End
 
+Private Sub PrintJavascript()
+
+  'Dim I As Integer
+  
+  If $aJavascript Then 
+    Print $aJavascript.Join("\n")
+    $aJavascript.Clear
+  Endif
+  
+  ' If $aPreload Then
+  '   Print "$('gw-preload').style.content = '";
+  '   For I = 0 To $aPreload.Max
+  '     If I Then Print " ";
+  '     Print "url(\"" & Application.Root &/ $aPreload[I] & "\")";
+  '   Next
+  '   Print "';"
+  ' Endif
+  
+End
 
 Public Sub Render()
   
@@ -170,24 +199,12 @@ Public Sub Render()
   'Print Header.ToString();
   Header.Form = Null
   
-  Print "<body"; Me._GetEventJS("onload", "open"); ">"
-  
-  Print "<script type=\"text/javascript\" src=\""; Application.Root &/ "/lib:" & Application.Version & ".js"; "\"></script>"
-  
   $aJavascript = New String[]
   
-  ' If $aWindows Then
-  '   Print "<div id=\""; Me.Name; "-windows\">"
-  '   For Each sName In $aWindows
-  '     hWindow = WebControl.FromId(_FromName[sName])
-  '     hWindow._BeforeRender()
-  '     hWindow._Render()
-  '     hWindow._AfterRender()
-  '   Next
-  '   Print "</div>"
-  ' Endif
+  Print "<body"; Me._GetEventJS("onload", "open"); ">"
   
-  Print "<div id=\"gw-modal\"></div>"
+  Print "<div id=\"gw-preload\" style=\"display:none;\"></div>"
+  Print "<div id=\"gw-modal\" onmousedown=\"gw.window.onDownModal();\"></div>"
   
   Me._BeforeRender()
   Me._Render()
@@ -195,10 +212,8 @@ Public Sub Render()
   
   Print "<script type=\"text/javascript\">"
   Print "gw.form = "; JS(Object.Type(Me)); ";"
-  If $aJavascript Then 
-    Print $aJavascript.Join("\n")
-    $aJavascript.Clear
-  Endif
+  Print "gw.version = "; JS(Application.Version); ";"
+  PrintJavascript
   Print "</script>"
   
   Print "</body>"
@@ -208,29 +223,42 @@ Public Sub Render()
   
 End
 
-Static Private Sub RenderStyleSheet()
+Static Private Sub RenderStyleSheet(Optional sFile As String)
+  
+  If Not sFile Then sFile = "style.css"
+  
+  Debug sFile
+  
+  If Not Exist(sFile) Then 
+    Response.Status = "404 NotFound"
+    Response.Begin
+    Response.End
+    Return
+  Endif
   
   Response.Buffered = True
   Response.ContentType = "text/css;charset=utf-8"
   Response.Begin
   
-  Print Replace(File.Load("gw-style.css"), "$(root)", Application.Root);
+  Print Replace(File.Load(sFile), "//", Application.Root);
   
-  If Exist("../style.css") Then 
-    Print File.Load("../style.css");
-  Endif
+  If Exist("../.public" &/ sFile) Then Print File.Load("../.public/" &/ sFile);
   
   Response.End
   
 End
 
-Static Private Sub RenderJavascript()
+Static Private Sub RenderJavascript(Optional sFile As String)
+  
+  If Not sFile Then sFile = "lib.js"
+  
+  Debug sFile
   
   Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
   
-  Print "$root = "; JS(Application.Root); ";"
-  Print File.Load("lib.js")
+  If sFile = "lib.js" Then Print "$root = "; JS(Application.Root); ";"
+  Print File.Load(sFile)
   
   Response.End
   
@@ -283,13 +311,13 @@ Public Sub _Exec(aCmd As Variant[])
         hCtrl = Me
       Endif
       
-      'Debug aCmd[1];; "("; hCtrl; ")";; aCmd[2];; aCmd[3]
-      
       If Not hCtrl Then Return
       
       Object.Raise(hCtrl, aCmd[2], aCmd[3])
       
     Case "update"
+      
+      'Debug aCmd[1];; aCmd[2];; aCmd[3]
       
       If aCmd[1] Then
         hCtrl = WebControl.FromName(aCmd[1])
@@ -310,14 +338,7 @@ Public Sub _Exec(aCmd As Variant[])
   If _HasRefresh Then 
     Me._RefreshReply()
   Endif
-  ' If $aWindows Then
-  '   For Each sName In $aWindows
-  '     hWindow = WebControl.FromId(_FromName[sName])
-  '     hWindow._RefreshReply()
-  '   Next
-  ' Endif
-  Print $aJavascript.Join("\n")
-  $aJavascript.Clear
+  PrintJavascript
   Response.End
   
 Catch
@@ -336,13 +357,20 @@ End
 Public Sub Close()
   
   ' Dim bCancel As Boolean
-  ' Dim hWindow As WebControl
+  Dim hWindow As WebWindow
+  
+  Raise Close
   
   If Me._Window Then
   
-    WebControl.FromId(Me._Window).Delete
     _AddReply("gw.window.refresh();")
   
+    hWindow = WebControl.FromId(Me._Window)
+    With hWindow
+      .Close
+      .Delete
+    End With
+    
   Else
     
     Me.Delete
@@ -395,6 +423,26 @@ Public Sub ShowModal()
   Raise Open
   
 End
+
+Public Sub ShowPopup(Control As WebControl, Optional Alignment As Integer = Align.Left)
+  
+  Dim hWindow As WebWindow
+  
+  If _Window Then Return
+  
+  hWindow = New WebWindow(WebForm._Current._GetWindowContainer())
+  hWindow.Child = Me
+  hWindow.Resizable = $bResizable
+  hWindow.PopupAlignment = Alignment
+  hWindow.PopupControl = Control
+  hWindow.Modal = True  
+  
+  _Window = hWindow.Id
+  
+  Raise Open
+  
+End
+
 
 
 Public Sub Move(X As String, Y As String, Optional Width As String, Optional Height As String)
@@ -508,3 +556,30 @@ Public Sub _GetWindowContainer() As WebContainer
   
 End
 
+' Public Sub _Preload(sUrl As String)
+'   
+'   If Not $aPreload Then $aPreload = New String[]
+'   If $aPreload.Exist(sUrl) Then Return
+'   $aPreload.Add(sUrl)
+'   
+' End
+' 
+Static Public Sub _AddLibrary(sLib As String)
+  
+  $cLibrary[sLib] = True
+  
+End
+
+Private Function Popup_Read() As Boolean
+
+  Dim hWindow As WebWindow = WebForm.FromId(Me._Window)
+  If hWindow Then Return hWindow.IsPopup()
+  
+End
+
+Private Function PopupParent_Read() As WebControl
+
+  Dim hWindow As WebWindow = WebForm.FromId(Me._Window)
+  If hWindow Then Return hWindow.PopupControl
+
+End

@@ -1,0 +1,238 @@
+' Gambas class file
+
+Export
+Inherits WebContainer
+
+Public Const _IsContainer As Boolean = False
+Public Const _Group As String = "Chooser"
+Public Const _Properties As String = "*,Value,Border"
+Public Const _DrawWith As String = "DateChooser"
+
+Event Change
+Event Click
+
+Property Value As Date
+
+Private $dDate As Date
+Private $dMonth As Date
+Private $dStart As Date
+Private $bLock As Boolean
+
+Private btnPrev As WebButton
+Private btnNext As WebButton
+Private cmbMonth As WebComboBox
+Private txtYear As WebSpinBox
+Private panCalendar As WebContainer
+Private $dOldDate As Date
+
+Public Sub _new()
+  
+  Dim hTop As WebHBox
+  Dim I As Integer
+  Dim aList As String[]
+  
+  Me.Arrangement = Arrange.Vertical
+  
+  hTop = New WebHBox(Me)
+  
+  btnPrev = New WebButton(hTop) As "btnPrev"
+  btnPrev.Image = "gw-arrow-left.png"
+  btnPrev.Border = False
+  
+  btnNext = New WebButton(hTop) As "btnNext"
+  btnNext.Image = "gw-arrow-right.png"
+  btnNext.Border = False
+  
+  cmbMonth = New WebComboBox(hTop) As "cmbMonth"
+  cmbMonth.ReadOnly = True
+  cmbMonth.Expand = True
+  
+  txtYear = New WebSpinBox(hTop) As "txtYear"
+  txtYear.MinValue = 1600
+  txtYear.MaxValue = 9999
+  txtYear.Width = "6em"
+  txtYear.Border = False
+  
+  panCalendar = New WebContainer(Me) As "panCalendar"
+  
+  aList = New String[]
+  For I = 1 To 12
+    aList.Add(Format(Date(1972, I, 1), "mmmm"))
+  Next
+  cmbMonth.List = aList
+
+  $dDate = Date(Now)
+  SetDate()
+  
+End
+
+Private Sub SetDate(Optional iYear As Integer, Optional iMonth As Integer, Optional iDay As Integer)
+  
+  Dim dMonth As Date
+  Dim dDate As Date
+
+  If $bLock Then Return
+  $bLock = True
+
+  ' If iYear = 0 And If iMonth = 0 And If iDay = 0 Then
+  '   $dDate = CheckDate($dDate)
+  ' Endif
+
+  If iYear <= 0 Then iYear = Year($dDate)
+  If iMonth <= 0 Then iMonth = Month($dDate)
+  If iDay <= 0 Then iDay = Day($dDate)
+  
+  Do  
+    Try dDate = Date(iYear, iMonth, iDay)
+    If Not Error Then Break 
+    Dec iDay
+    If iDay < 28 Then 
+      dDate = Null
+      Break
+    Endif
+  Loop
+
+  'If dDate And If CheckDate(dDate) <> dDate Then dDate = Null
+  
+  If dDate Then
+    $dDate = dDate
+    dMonth = Date(Year(dDate), Month(dDate), 1)
+  Else
+    dMonth = $dMonth
+    $dMonth = Null
+  Endif
+  
+  If dMonth <> $dMonth Then
+  
+    $dMonth = dMonth
+    
+    cmbMonth.Index = Month($dMonth) - 1
+    txtYear.Value = Year($dMonth)
+    
+  Endif
+    
+  iDay = WeekDay($dMonth) - System.FirstDayOfWeek
+  If iDay < 1 Then iDay += 7
+  $dStart = $dMonth - iDay
+    
+  ' If $dDate <> $dLast Then 
+  '   $dLast = $dDate
+  '   'GetParent()._Change    
+  ' Endif
+  
+  'dwgMonth.SetFocus
+  panCalendar.Refresh
+  
+  Me._SetProperty("Value", $dDate)
+  
+  $bLock = False
+  
+  If $dDate <> $dOldDate Then
+    $dOldDate = $dDate
+    Raise Change
+  Endif
+  
+End
+
+Public Sub panCalendar_Render()
+
+  Dim Y As Integer
+  Dim X As Integer
+  Dim dDate As Date
+  Dim sClass As String
+  Dim dNow As Date
+  
+  Print "<table class=\"gw-calendar\" cellspacing=\"0\" cellpadding=\"0\">"
+  
+  Print "<tr>"
+  For X = 0 To 6
+    Print "<th>"; Html(Format(CDate($dStart + X), "ddd")); "</th>"
+  Next
+  Print "</tr>"
+
+  dDate = Date($dStart)
+  dNow = Date(Now)
+  
+  For Y = 1 To 5
+    Print "<tr>"
+    For X = 0 To 6
+      Print "<td";
+      sClass = ""
+      If dDate = $dDate Then sClass &= " gw-date-current"
+      If dDate = dNow Then sClass &= " gw-date-today"
+      If Month(dDate) <> Month($dDate) Then sClass &= " gw-date-disabled"
+      sClass = Trim(sClass)
+      If sClass Then Print " class=\""; sClass; "\"";
+      If Month(dDate) = Month($dDate) Then
+        Print Me._GetUpdateJS("onclick", "#date", JS(CStr(dDate)));
+      Endif
+      Print ">"; Day(dDate); "</td>"
+      Inc dDate
+    Next
+    Print "</tr>"
+  Next
+  
+  Print "</table>"
+
+End
+
+Public Sub cmbMonth_Click()
+
+  SetDate(0, cmbMonth.Index + 1)
+
+End
+
+Public Sub txtYear_Change()
+
+  SetDate(txtYear.Value, 0)
+
+End
+
+Public Sub btnPrev_Click()
+
+  If Month($dDate) = 1 Then 
+    SetDate(Year($dDate) - 1, 12)
+  Else 
+    SetDate(0, Month($dDate) - 1)
+  Endif  
+
+End
+
+Public Sub btnNext_Click()
+
+  If Month($dDate) = 12 Then 
+    SetDate(Year($dDate) + 1, 1)
+  Else 
+    SetDate(0, Month($dDate) + 1)
+  Endif  
+
+End
+
+Public Sub _UpdateProperty(sProp As String, vValue As Variant)
+  
+  Select Case sProp
+  
+    Case "#date" 
+      $dDate = CDate(vValue)
+      SetDate()
+      Raise Click
+      
+    Default
+      Super._UpdateProperty(sProp, vValue)
+      
+  End Select
+  
+End
+
+
+Private Function Value_Read() As Date
+
+  Return $dDate
+
+End
+
+Private Sub Value_Write(Value As Date)
+
+  SetDate(Year(Value), Month(Value), Day(Value))
+
+End

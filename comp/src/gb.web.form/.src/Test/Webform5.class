@@ -1,0 +1,16 @@
+' Gambas class file
+
+
+Public Sub WebForm_Open()
+
+  Dim M As Integer
+  Dim aMonth As String[]
+
+  aMonth = New String[]
+  
+  For M = 1 To 12
+    aMonth.Add(Format(Date(1972, M, 1), "mmmm"))
+  Next
+  cmbMonth.List = aMonth
+
+End

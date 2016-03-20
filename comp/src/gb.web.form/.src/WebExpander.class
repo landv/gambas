@@ -65,7 +65,7 @@ Public Sub _Render()
   If $bBorder Then Print "<div class=\"gw-expander-border\">"
   
   Print "<div class=\"gw-expander-header\">";
-  Print "<img src=\""; If($bHidden, "gw-arrow-right.png", "gw-arrow-bottom.png"); "\""; Me._GetUpdateJS("onclick", "hidden", JS(Not $bHidden)); ">";
+  Print "<img src=\""; If($bHidden, "gw-arrow-right.png", "gw-arrow-down.png"); "\""; Me._GetUpdateJS("onclick", "hidden", JS(Not $bHidden)); ">";
   Print "<div>"; $sText; "</div>";
   Print "</div>"
   

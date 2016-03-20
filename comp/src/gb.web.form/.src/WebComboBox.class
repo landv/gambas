@@ -44,7 +44,7 @@ Public Sub _Render()
   Dim I As Integer
   
   If Not $bReadOnly Then
-    Print "<input class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); ">";
+    Print "<input id=\""; Me.Name; ":entry\" class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); ">";
     Print "<div class=\"gw-combobox-arrow\">";
   Endif
   

@@ -15,6 +15,9 @@ Property Child As WebForm
 Property Resizable As Boolean
 Property Modal As Boolean
 
+Property PopupControl As WebControl
+Property PopupAlignment As Integer
+
 Private $sX As String
 Private $sY As String
 Private $sWidth As String
@@ -22,6 +25,14 @@ Private $sHeight As String
 Private $iFormId As Integer
 Private $bResizable As Boolean
 Private $bModal As Boolean
+Private $iPopupControlId As Integer
+Private $iPopupAlignment As Integer
+
+Public Sub IsPopup() As Boolean
+
+  Return $iPopupControlId
+
+End
 
 Public Sub _RenderStyleSheet()
   
@@ -30,11 +41,15 @@ Public Sub _RenderStyleSheet()
   Me._AddStyleSheet("display:flex;")
   Me._AddStyleSheet("flex-flow:column;")
   
-  If $sX Then Me._AddStyleSheet("left:" & $sX & ";")
-  If $sY Then Me._AddStyleSheet("top:" & $sY & ";")
+  If Not IsPopup() Then
   
-  If Not $sX Or If Not $sY Then
-    WebForm._AddJavascript("gw.window.center(" & JS(Me.Name) & ")")
+    If $sX Then Me._AddStyleSheet("left:" & $sX & ";")
+    If $sY Then Me._AddStyleSheet("top:" & $sY & ";")
+    
+    If Not $sX Or If Not $sY Then
+      WebForm._AddJavascript("gw.window.center(" & JS(Me.Name) & ")")
+    Endif
+    
   Endif
   
   If $sWidth Then Me._AddStyleSheet("width:" & $sWidth & ";")
@@ -57,17 +72,21 @@ Public Sub _Render()
   
   Dim sOpen As String
   
-  Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
-  Print "<button class=\"gw-window-button gw-window-close-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
-  Print "<img src=\""; Html(Application.Root &/ "gw-close.png"); "\">";
-  Print "</button>"
-  Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
-  If $bResizable Then
-    Print "<button class=\"gw-window-button gw-window-max-button\" onclick=\"gw.window.maximize("; JS(Me.Name); ");\">";
-    Print "<img src=\""; Html(Application.Root &/ "gw-max.png"); "\">";
+  If Not IsPopup() Then
+  
+    Print "<div class=\"gw-window-titlebar\" id=\""; Me.Name; "-titlebar\">"
+    Print "<button class=\"gw-window-button gw-window-close-button\""; Me._GetUpdateJS("onclick", "#close"); ">";
+    Print "<img src=\""; Html(Application.Root &/ "gw-close.png"); "\">";
     Print "</button>"
+    Print "<div class=\"gw-window-title\">"; GetTitle(); "</div>"
+    If $bResizable Then
+      Print "<button class=\"gw-window-button gw-window-max-button\" onclick=\"gw.window.maximize("; JS(Me.Name); ");\">";
+      Print "<img src=\""; Html(Application.Root &/ "gw-max.png"); "\">";
+      Print "</button>"
+    Endif
+    Print "</div>"
+    
   Endif
-  Print "</div>"
   
   Print "<div class=\"gw-window-contents\">"
   If $iFormId Then 
@@ -79,9 +98,19 @@ Public Sub _Render()
   Endif
   Print "</div>"
   
-  sOpen = "gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS($bModal)
-  If Me["min-width"] Then sOpen &= "," & JS(Me["min-width"]) & "," & JS(Me["min-height"]) 
-  sOpen &= ");"
+  If IsPopup() Then
+  
+    sOpen = "gw.window.popup(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS(WebControl.FromId($iPopupControlId).Name) & "," & If($iPopupAlignment = Align.Right, "'right'", "'left'")
+    If Me["min-width"] Then sOpen &= "," & JS(Me["min-width"]) & "," & JS(Me["min-height"]) 
+    sOpen &= ");"
+    
+  Else
+    
+    sOpen = "gw.window.open(" & JS(Me.Name) & "," & JS($bResizable) & "," & JS($bModal)
+    If Me["min-width"] Then sOpen &= "," & JS(Me["min-width"]) & "," & JS(Me["min-height"]) 
+    sOpen &= ");"
+    
+  Endif
   
   WebForm._AddJavascript(sOpen)
   
@@ -258,5 +287,42 @@ Public Sub _RefreshReply() As Boolean
   
   If Super._RefreshReply() Then Return
   Child_Read()._RefreshReply()
+  
+End
+
+Private Function PopupControl_Read() As WebControl
+
+  If $iPopupControlId Then Return WebControl.FromId($iPopupControlId)
+
+End
+
+Private Sub PopupControl_Write(Value As WebControl)
+
+  $iPopupControlId = Value.Id
+  If IsPopup() Then
+    Me.Class = "gw-popup"
+  Else
+    Me.Class = ""
+  Endif
+  Me._SetProperty("PopupControl", Value)
+
+End
+
+Private Function PopupAlignment_Read() As Integer
+
+  Return $iPopupAlignment
+
+End
+
+Private Sub PopupAlignment_Write(Value As Integer)
+
+  $iPopupAlignment = Value
+  Me._SetProperty("PopupAlignment", Value)
+
+End
+
+Public Sub Close()
+  
+  If IsPopup() Then PopupControl_Read().setFocus
   
 End

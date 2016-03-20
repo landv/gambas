@@ -5,7 +5,7 @@ HTML, BODY {
   width: 100%;
 }
 
-HTML, BODY, DIV {
+HTML, BODY, DIV, INPUT {
   box-sizing: border-box;
 }
 
@@ -36,6 +36,8 @@ P:first-child,UL:first-child,OL:first-child {
   padding: 0;
   font: inherit;
   padding: 0 0.25em;
+  display: inline-flex;
+  justify-content: center;
   /*min-height: 1rem;*/
 }
 
@@ -126,7 +128,7 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-textbox {
   min-height: 2rem;
-  box-sizing: border-box;
+  /*box-sizing: border-box; firefox bug on refresh !*/
   padding: 0 0.25em;
 }
 .gw-textbox.gw-noborder {
@@ -197,6 +199,12 @@ P:first-child,UL:first-child,OL:first-child {
   overflow: hidden;
 }
 
+.gw-popup {
+  border: solid 1px #C0C0C0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .gw-window-titlebar {
   display: flex;
   flex-flow: row;
@@ -204,7 +212,7 @@ P:first-child,UL:first-child,OL:first-child {
   font-weight: bold;
   border-top-left-radius: 0.5em;
   border-top-right-radius: 0.5em;
-  border-bottom: solid #2980B9 0.5em;
+  padding: 0.25em;
 }
 
 .gw-window-title {
@@ -212,19 +220,19 @@ P:first-child,UL:first-child,OL:first-child {
   color: white;
   padding: 0 1em;
   pointer-events: none;
-  height: 1.5em;
 }
 
 .gw-window-button {
   width: 1.5em;
   height: 1.5em;
   padding: 0;
+  display: inline-flex;
+  justify-content: center;
 }
 
 .gw-window-button > IMG {
   width: 0.8em;
   height: 0.8em;
-  margin: 0.35em;
 }
 
 /*@-moz-document url-prefix() {
@@ -239,6 +247,11 @@ P:first-child,UL:first-child,OL:first-child {
   flex-grow: 1;
   padding: 0.5em;
 }
+
+.gw-popup > .gw-window-contents {
+  padding: 0;
+}
+
 
 .gw-label {
   display: flex;
@@ -427,6 +440,10 @@ P:first-child,UL:first-child,OL:first-child {
   width: 1em;
 }
 
+.gw-spinbox {
+  padding: 0 0.25em;
+}
+
 .gw-spinbox.gw-noborder {
   border: none;
 }
@@ -518,7 +535,7 @@ P:first-child,UL:first-child,OL:first-child {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('$(root)/gw-waiting.gif');
+  background-image: url('//gw-waiting.gif');
   background-position: center;
   background-repeat: no-repeat;
 }
@@ -534,4 +551,56 @@ P:first-child,UL:first-child,OL:first-child {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.gw-datebox {
+  position: relative;
+  display: inline-block;
+  min-height: 2rem;
+}
+
+.gw-datebox INPUT {
+  width: 100%;
+  min-height: 2rem;
+  box-sizing: border-box;
+  padding: 0 2.25em 0 0.25em;
+  vertical-align: middle;
+}
+
+.gw-datebox.gw-noborder INPUT {
+  border: none;
+}
+
+TABLE.gw-calendar {
+  width: 100%;
+}
+
+TABLE.gw-calendar > TBODY > TR > TH {
+  padding: 0.25em 0.5em;
+  background: #E0E0E0;
+}
+
+TABLE.gw-calendar > TBODY > TR > TD {
+  padding: 0.25em 0.5em;
+  text-align: center;
+  cursor: pointer;
+  border: solid 1px transparent;
+}
+
+TABLE.gw-calendar > TBODY > TR > TD:hover {
+  outline: solid 1px #C0C0C0;
+}
+
+TABLE.gw-calendar > TBODY > TR > TD.gw-date-disabled {
+  color: #C0C0C0;
+}
+
+TABLE.gw-calendar > TBODY > TR > TD.gw-date-today {
+  font-weight: bold;
+  border: solid 1px black;
+}
+
+TABLE.gw-calendar > TBODY > TR > TD.gw-date-current {
+  background-color: #2980B9;
+  color: white;
 }

@@ -10,27 +10,26 @@
     Height = "1px"
   }
   { WebHBox1 WebHBox
-    #MoveScaled(1,4,136,22)
+    #MoveScaled(1,4,136,17)
     Spacing = True
     { WebMenu3 WebMenu
-      #MoveScaled(1,1,32,20)
+      #MoveScaled(1,1,32,15)
       Text = ("File")
       { WebMenuItem7 WebMenuItem
         #MoveScaled(1,1,30,4)
-        Text = ("New...")
+        Text = ("New") & "..."
         Image = "new.png"
         Shortcut = "CTRL+N"
       }
       { WebMenuItem8 WebMenuItem
         #MoveScaled(1,5,30,4)
-        Text = ("Open...")
+        Text = ("Open") & "..."
         Image = "open.png"
         Shortcut = "CTRL+O"
       }
       { WebMenu4 WebMenu
         #MoveScaled(1,9,30,26)
         Text = ("Project")
-        Image = "gw-close.png"
         { WebMenuItem9 WebMenuItem
           #MoveScaled(1,1,28,4)
           Text = ("Compile")
@@ -67,7 +66,7 @@
       }
     }
     { WebMenu1 WebMenu
-      #MoveScaled(34,1,30,20)
+      #MoveScaled(34,1,30,15)
       Text = ("Project")
       { WebMenuItem2 WebMenuItem
         #MoveScaled(1,1,28,4)
@@ -98,7 +97,7 @@
     }
   }
   { WebContainer1 WebHBox
-    #MoveScaled(1,26,136,6)
+    #MoveScaled(1,21,136,6)
     { WebButton1 WebButton
       #MoveScaled(1,1,13,4)
       Border = False
@@ -113,7 +112,6 @@
       #MoveScaled(27,1,13,4)
       Border = False
       Text = ("Warning")
-      Image = "gw-close.png"
     }
     { WebButton6 WebButton
       #MoveScaled(40,1,13,4)
@@ -134,7 +132,7 @@
     }
   }
   { WebContainer9 WebContainer
-    #MoveScaled(1,32,136,88)
+    #MoveScaled(1,27,136,88)
     Expand = True
     Arrangement = Arrange.Vertical
     Margin = True
@@ -165,11 +163,14 @@
         { WebTextBox2 WebTextBox
           #MoveScaled(24,1,15,4)
         }
+        { WebDateBox2 WebDateBox
+          #MoveScaled(40,1,24,4)
+        }
         { WebSpinBox1 WebSpinBox
-          #MoveScaled(40,1,13,4)
+          #MoveScaled(65,1,13,4)
         }
         { WebSlider1 WebSlider
-          #MoveScaled(54,1,49,4)
+          #MoveScaled(79,1,49,4)
           Expand = True
           Border = False
         }
@@ -177,22 +178,25 @@
       { WebContainer3 WebHBox
         #MoveScaled(1,18,131.7143,6)
         Spacing = True
+        { WebDateBox1 WebDateBox
+          #MoveScaled(1,1,24,4)
+        }
         { WebComboBox1 WebComboBox
-          #MoveScaled(1,1,65.7143,4)
+          #MoveScaled(26,1,65.7143,4)
           Width = "30em"
           List = [("Élément 1"), ("Élément 2"), ("Élément 3"), ("Élément 4")]
           ReadOnly = False
         }
         { WebButton4 WebButton
-          #MoveScaled(67.7143,1,19,4)
+          #MoveScaled(92.7143,1,19,4)
           Text = ("New element")
         }
         { WebButton5 WebButton
-          #MoveScaled(87.7143,1,19,4)
+          #MoveScaled(112.7143,1,19,4)
           Text = ("Clear")
         }
         { WebSeparator3 WebSeparator
-          #MoveScaled(107.7143,1,11,4)
+          #MoveScaled(132.7143,1,11,4)
           Ignore = True
         }
       }

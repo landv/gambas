@@ -41,6 +41,7 @@ Static Public _NextName As String
 Public _Refresh As Boolean
 Public _EventName As String
 Public _Extra As Boolean
+Public _Proxy As String
 
 Private $iId As Integer
 Private $iParentId As Integer
@@ -133,8 +134,6 @@ Public Sub _SetForm(hForm As WebForm)
   $iFormId = hForm.Id
   
 End
-
-
 
 Private Function Id_Read() As Integer
 
@@ -347,11 +346,19 @@ Public Sub _SetProperty(sProp As String, vValue As Variant)
   Dim cProp As Collection
 
   If Me.Form._Loaded Then
+    
     If WebForm._InExec Then Me.Refresh
+    
+    If TypeOf(vValue) = gb.Object And If vValue Is WebControl Then 
+      sProp = "@" & sProp
+      vValue = vValue.Name
+    Endif
+    
     cProp = Session[$sName]
     If Not cProp Then cProp = New Collection
     cProp[sProp] = vValue
     Session[$sName] = cProp
+    
   Endif
   
 End
@@ -384,6 +391,8 @@ Public Sub _InitProperties()
       Else
         Me._InitSpecialProperty(sProp, vVal)
       Endif
+    Else If Left(sProp) = "@" Then
+      Object.SetProperty(Me, Mid$(sProp, 2), WebControl.FromName(vVal))
     Else
       Try Object.SetProperty(Me, sProp, vVal)
     Endif
@@ -475,11 +484,11 @@ Public Sub _GetUpdateJS(sEvent As String, sProp As String, Optional sGetValue As
   Dim sStr As String
   
   sStr = " " & sEvent & "=\"gw.update(" '& JS(Me.Form.Name) & "," 
-  If Me Is WebForm Then
-    sStr &= "null"
-  Else
+  'If Me Is WebForm Then
+  '  sStr &= "null"
+  'Else
     sStr &= JS($sName)
-  Endif
+  'Endif
   sStr &= "," & JS(sProp) & "," & sGetValue & ");"
   If sMore Then sStr &= sMore
   sStr &= "\""
@@ -554,8 +563,13 @@ Private Sub Ignore_Write(Value As Boolean)
 End
 
 Public Sub SetFocus()
+
+  Dim sName As String
   
-  WebForm._AddReply("gw.setFocus(" & JS($sName) & ");")
+  sName = $sName
+  If _Proxy Then sName &= _Proxy
+  
+  WebForm._AddReply("gw.setFocus(" & JS(sName) & ");")
   
 End
 

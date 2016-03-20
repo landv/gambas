@@ -672,15 +672,15 @@ Public Sub EnsureVisible(X As Integer, Y As Integer, W As Integer, H As Integer)
   Endif
 
   If XX < (- CX + WW) Then
-    CX = - XX + WW
+    CX = Ceil(- XX + WW)
   Else If XX >= (- CX + PW - WW) Then
-    CX = - XX + PW - WW
+    CX = Floor(- XX + PW - WW)
   Endif
   
   If YY < (- CY + HH) Then
-    CY = - YY + HH
+    CY = Ceil(- YY + HH)
   Else If YY >= (- CY + PH - HH) Then
-    CY = - YY + PH - HH
+    CY = Floor(- YY + PH - HH)
   Endif
 
   If CX > 0

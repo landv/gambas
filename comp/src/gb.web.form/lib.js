@@ -3,17 +3,62 @@ function $(a)
   return document.getElementById(a);
 }
 
+if (!String.prototype.endsWith) 
+{
+  String.prototype.endsWith = function(searchString, position) {
+    var subjectString = this.toString();
+    if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
+      position = subjectString.length;
+    }
+    position -= searchString.length;
+    var lastIndex = subjectString.indexOf(searchString, position);
+    return lastIndex !== -1 && lastIndex === position;
+  };
+}
+
 gw = {
 
+  version: '0',
   timers: {},
   windows: [],
   form: '',
   debug: false,
+  loaded: {},
 
   log: function(msg)
   {
     if (gw.debug)
       console.log(msg);
+  },
+  
+  load: function(lib)
+  {
+    var elt, src;
+    
+    if (gw.loaded[lib])
+      return;
+    
+    if (lib.endsWith('.js'))
+    {
+      elt = document.createElement('script');
+      elt.setAttribute("type", "text/javascript");
+      src = $root + '/lib:' + lib.slice(0, -3) + ':' + gw.version + '.js';
+      elt.setAttribute("src", src);
+    }
+    else if (lib.endsWith('.css'))
+    {
+      elt = document.createElement('link');
+      elt.setAttribute("rel", "stylesheet");
+      elt.setAttribute("type", "text/css");
+      src = $root + '/style:' + lib.slice(0, -4) + ':' + gw.version + '.css';
+      elt.setAttribute("href", src);
+    }
+    else
+      return;
+      
+    document.getElementsByTagName("head")[0].appendChild(elt);
+    gw.loaded[lib] = src;
+    console.log('load: ' + src);
   },
 
   send: function(command)
@@ -38,6 +83,7 @@ gw = {
         
         if (gw.active)
         {
+          console.log('active: ' + gw.active);
           if ($(gw.active))
           {
             $(gw.active).focus();
@@ -125,6 +171,44 @@ gw = {
     }
   },
   
+  getTargetId: function(elt)
+  {
+    for(;;)
+    {
+      if (elt.id)
+        return elt.id;
+      elt = elt.parentNode;
+      if (!elt)
+        return;
+    }
+  },
+
+  getPos: function(elt)
+  {
+    var found, left = 0, top = 0, width = 0, height = 0;
+    var offsetBase = gw.offsetBase;
+   
+    if (!offsetBase && document.body) 
+    {
+      offsetBase = gw.offsetBase = document.createElement('div');
+      offsetBase.style.cssText = 'position:absolute;left:0;top:0';
+      document.body.appendChild(offsetBase);
+    }
+    
+    if (elt && elt.ownerDocument === document && 'getBoundingClientRect' in elt && offsetBase) 
+    {
+      var boundingRect = elt.getBoundingClientRect();
+      var baseRect = offsetBase.getBoundingClientRect();
+      found = true;
+      left = boundingRect.left - baseRect.left;
+      top = boundingRect.top - baseRect.top;
+      width = boundingRect.right - boundingRect.left;
+      height = boundingRect.bottom - boundingRect.top;
+    }
+    
+    return { found: found, left: left, top: top, width: width, height: height, right: left + width, bottom: top + height };
+  },
+
   window: 
   {
     zIndex: 0,
@@ -169,6 +253,48 @@ gw = {
       gw.window.refresh();
     },
     
+    popup: function(id, resizable, control, alignment, minw, minh)
+    {
+      var pos;
+      
+      gw.window.close(id);
+
+      if (gw.windows.length == 0)
+      {
+        document.addEventListener('mousemove', gw.window.onMove);
+        document.addEventListener('mouseup', gw.window.onUp);
+        gw.log('document.addEventListener');
+      }
+      
+      gw.windows.push(id);
+      
+      $(id).addEventListener('mousedown', gw.window.onMouseDown);
+      
+      $(id).gw_resizable = resizable;
+      $(id).gw_modal = true;
+      $(id).gw_popup = true;
+      
+      if (minw != undefined)
+      {
+        $(id).gw_minw = minw;
+        $(id).gw_minh = minh;
+      }
+      else
+      {
+        $(id).gw_minw = $(id).offsetWidth;
+        $(id).gw_minh = $(id).offsetHeight;
+      }
+      
+      pos = gw.getPos($(control));
+      console.log(pos);
+      
+      $(id).style.left = pos.left + 'px';
+      $(id).style.top = pos.bottom + 'px';
+      
+      gw.window.updateTitleBars();
+      gw.window.refresh();
+    },
+
     close: function(id)
     {
       var i;
@@ -210,12 +336,20 @@ gw = {
     
     updateTitleBars: function()
     {
-      var i;
+      var i, win;
       
       for (i = 0; i < gw.windows.length - 1; i++)
-        $(gw.windows[i] + '-titlebar').style.backgroundColor = '#C0C0C0';
+      {
+        win = gw.windows[i];
+        if ($(win).gw_popup)
+          continue;
+        $(win + '-titlebar').style.backgroundColor = '#C0C0C0';
+      }
       
-      $(gw.windows[gw.windows.length - 1] + '-titlebar').style.backgroundColor = '';
+      win = gw.windows[i];
+      if (!$(win).gw_popup)
+        $(win + '-titlebar').style.backgroundColor = '';
+        
     },
     
     raise: function(id, send)
@@ -247,6 +381,10 @@ gw = {
           gw.window.zIndex = 10 + i * 2;
           elt.style.zIndex = 10 + i * 2;
           elt.style.display = 'block';
+          if ($(gw.windows[i]).gw_popup)
+            elt.style.opacity = '0';
+          else
+            elt.style.opacity = '';
           return;
         }
       }
@@ -291,7 +429,7 @@ gw = {
     
     onDown: function(e)
     {
-      var c;
+      var c, win;
       
       gw.window.context = undefined;
       
@@ -301,10 +439,13 @@ gw = {
       gw.window.onMove(e);
       
       c = gw.window.context;
+      if (c == undefined)
+        return; 
+        
       if ($(c.id).gw_save_geometry)
         return;
         
-      if (c && (c.isMoving || c.isResizing))
+      if (c.isMoving || c.isResizing)
       {
         gw.window.raise(c.id);
         gw.window.downEvent = e;
@@ -312,9 +453,17 @@ gw = {
       }
     },
     
+    onDownModal: function()
+    {
+      var win = gw.windows[gw.windows.length - 1];
+      
+      if ($(win).gw_popup)
+        gw.update(win, '#close');
+    },
+    
     onMove(e) 
     {
-      var i, id, elt, b, x, y, bx, by, bw, bh;
+      var i, id, elt, b, x, y, bx, by, bw, bh, th;
       var onTopEdge, onLeftEdge, onRightEdge, onBottomEdge, isResizing;
       var MARGINS = 6;
       
@@ -361,8 +510,12 @@ gw = {
           }
           else
             onTopEdge = onLeftEdge = onRightEdge = onBottomEdge = isResizing = false;
-            
-          isMoving = !isResizing && y < ($(id + '-titlebar').offsetHeight + MARGINS);
+          
+          if ($(id).gw_popup)
+            th = 0;
+          else
+            th = $(id + '-titlebar').offsetHeight;
+          isMoving = !isResizing && y < (th + MARGINS);
           
           gw.window.context = {
             id: id,
@@ -477,18 +630,6 @@ gw = {
     }
   },
   
-  getTargetId: function(elt)
-  {
-    for(;;)
-    {
-      if (elt.id)
-        return elt.id;
-      elt = elt.parentNode;
-      if (!elt)
-        return;
-    }
-  },
-
   menu:
   {
     hide: function(elt)

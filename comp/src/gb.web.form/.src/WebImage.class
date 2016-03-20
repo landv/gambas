@@ -37,6 +37,7 @@ End
 Private Sub Image_Write(Value As String)
 
   $sImage = Value
+  'If $sImage Then WebForm._Preload($sImage)
   Me._SetProperty("Image", Value)
 
 End

@@ -2728,12 +2728,16 @@ Private Sub UpdatePosition()
 
   Dim sText As String
   
-  If Not $hLabel Or If Not $hLabel.Visible Then Return
-  sText = "  " & CStr($X + 1) & " : " & CStr($Y + 1) & If($bOverwrite, "  " & ("Overwrite"), "") & "  "
-  $hLabel.Text = sText
-  $hLabelFrame.Move($hView.ClientW - $hLabel.W, $hView.ClientH - $hLabel.H, $hLabel.W, $hLabel.H)
-  $hLabel.Move(0, 0)
-
+  If $hLabel And If $hLabel.Visible Then 
+  
+    If $bOverwrite Then sText &= "  Overwrite"
+    sText &= "  " & CStr($X + 1) & " : " & CStr($Y + 1)
+    $hLabel.Text = "  " & Trim(sText) & "  "
+    $hLabelFrame.Move($hView.ClientW - $hLabel.W, $hView.ClientH - $hLabel.H, $hLabel.W, $hLabel.H)
+    $hLabel.Move(0, 0)
+    
+  Endif
+  
 End
 
 Private Sub ShowPosition_Write(Value As Boolean)
@@ -2748,7 +2752,7 @@ Private Sub ShowPosition_Write(Value As Boolean)
       $hLabel.AutoResize = True
       '$hLabel.Padding = 0
       $hLabel.Font = Me.Parent.Font
-      $hLabel.Font.Bold = True
+      '$hLabel.Font.Bold = True
       $hLabel.Foreground = $hStyles[Highlight.Normal].Color
       $hLabel.Show
     Endif

@@ -5,7 +5,10 @@ Export
 
 Private $sId As String
 Private $sPath As String
+
 Private $cVal As Collection
+'Private $cNew As Collection
+
 Private $bModify As Boolean
 Private $eTimeout As Float = 1
 Private $eStartup As Float
@@ -52,6 +55,8 @@ Private Sub SaveSession()
   Dim hFile As File
   Dim sTemp As String
   Dim eNow As Float
+  Dim vVal As Variant
+  Dim sKey As String
 
   'PRINT "<h2>Save session</h2>"
   'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
@@ -81,8 +86,24 @@ Private Sub SaveSession()
 
     Try Main.Log("SaveSession: " & $sId)
     
+    LockSession
+    
+    ' hFile = Open $sPath
+    ' Seek #hFile, SizeOf(gb.Float) * 2
+    ' $cVal = Read #hFile As Variant
+    ' Close #hFile
+    ' 
+    ' For Each vVal In $cNew
+    '   sKey = $cNew.Key
+    '   If TypeOf(vVal) = gb.Object And If vVal = $cNew Then
+    '     $cVal[sKey] = Null
+    '   Else
+    '     $cVal[sKey] = vVal
+    '   Endif
+    ' Next
+    
     'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
-    hFile = Open sTemp For Write Create 
+    hFile = Open sTemp For Output Create 
 
     Write #hFile, Now As Float
     Write #hFile, $eTimeout As Float
@@ -96,9 +117,9 @@ Private Sub SaveSession()
     $iSize = Lof(hFile)
     Close #hFile
     
-    LockSession
     Try Kill $sPath
     Move sTemp To $sPath
+    
     UnlockSession
     
     $bModify = False
@@ -163,6 +184,9 @@ Private Sub LoadSession()
   Close #hFile
   Input From Default
   UnlockSession
+  
+  '$cNew = New Collection
+  
   Main.Log("LoadSession: OK")
   Return  
 
@@ -359,7 +383,16 @@ End
 
 Public Sub _get(Key As String) As Variant
   
+'   Dim vVal As Variant
+  
   Init
+  ' If $cNew Then
+  '   vVal = $cNew[Key]
+  '   If TypeOf(vVal) <> gb.Null Then
+  '     If TypeOf(vVal) = gb.Object And If vVal = $cNew Then Return
+  '     Return vVal
+  '   Endif
+  ' Endif
   If $cVal Then Return $cVal[Key]
   
 End
@@ -376,6 +409,11 @@ Public Sub _put(Value As Variant, Key As String)
 
   Init
   If Not $cVal Then CreateSession
+  ' If Value Then
+  '   $cNew[Key] = Value
+  ' Else
+  '   $cNew[Key] = $cNew
+  ' Endif
   $cVal[Key] = Value
   $bModify = True
     
