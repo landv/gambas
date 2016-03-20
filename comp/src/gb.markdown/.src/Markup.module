@@ -346,8 +346,8 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         
         aCommand = aResult.Extract(iPos, -1)
         
-        If iPos >= 0 Then
-          aResult.Add("<div class=\"table\"><div class=\"" & sClass & "\">")
+        If Left(sClass) <> " " Then
+          aResult.Add("<div class=\"" & sClass & "\">")
           If sClass Begins "code " Then
             aTemp = ProcessCode(sClass, aCommand)
           Else
@@ -355,9 +355,9 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           Endif
           If aTemp Then aCommand = aTemp
           aResult.Insert(aCommand)
-          aResult.Add("</div></div>")
+          aResult.Add("</div>")
         Else
-          aResult.Add("<table class=\"" & sClass & "\">")
+          aResult.Add("<table class=\"" & LTrim(sClass) & "\">")
           aResult.Add("<tr><th>")
           aResult.Insert(aCommand)
           aResult.Add("</td></tr>")
@@ -388,7 +388,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         Endif
         bIgnorePar = True
         bInsidePar = True
-        $aTablePos[$aTablePos.Max] = -1
+        $aTableClass[$aTableClass.Max] = " " & Trim($aTableClass[$aTableClass.Max])
         Continue
         
       Else If sLine = "==" Then
@@ -407,7 +407,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           aResult.Add("</td></tr><tr><td>")
         Endif
         $aTable[$aTable.Max] = "=="
-        $aTablePos[$aTablePos.Max] = -1
+        $aTableClass[$aTableClass.Max] = " " & Trim($aTableClass[$aTableClass.Max])
         bIgnorePar = True
         bInsidePar = True
         Continue

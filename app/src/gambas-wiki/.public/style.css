@@ -300,6 +300,7 @@ DIV.table {
   }
   
 DIV.box {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
   border-radius: 8px;
@@ -307,6 +308,7 @@ DIV.box {
 }
 
 DIV.info {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
   border-radius: 8px;
@@ -317,6 +319,7 @@ DIV.info {
 }
 
 DIV.warning {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
   border-radius: 8px;
@@ -327,6 +330,7 @@ DIV.warning {
 }
 
 DIV.tip {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
   border-radius: 8px;
@@ -337,6 +341,7 @@ DIV.tip {
 }
 
 DIV.vb {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
   border-radius: 8px;
@@ -347,6 +352,7 @@ DIV.vb {
 }
 
 DIV.critical {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 1px;
   border-radius: 8px;
@@ -634,3 +640,23 @@ DIV.date p {
   vertical-align: middle;
   text-align: center;
 }
+
+DIV.result {
+  background-color: #D8D8D8;
+}
+
+DIV.result PRE {
+  padding: 0.5em 1em;
+  margin: 0;
+}
+
+DIV.code {
+  border: solid 2px #D8D8D8;
+  margin-top: 0.75em;
+}
+
+DIV.code PRE {
+  margin-top: 0;
+  border: none;
+}
+
