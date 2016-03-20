@@ -734,6 +734,7 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
   Dim XS As Integer
   Dim XX As Integer
   Dim hPos As Point
+  Dim iEndingSpaceLimit As Integer
 
   'Debug Row
   H = $LH
@@ -859,20 +860,6 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     
   Endif
   
-  ' Ending spaces
-  
-  If $bShowSpaces And If sText Ends " " Then
-    
-    XX = X + $iSpaceWidth \ 2 - 1
-    YY = Y + H \ 2 - 1
-    For P = String.Len(sText) DownTo 1
-      If String.Mid$(sText, P, 1) <> " " Then Break
-      hPos = LinePos(Row, P - 1)
-      Paint.FillRect(XX + hPos.X, YY + hPos.Y, 2, 2, $iLimitColor)
-    Next
-    
-  Endif
-  
   ' Indent vertical lines
   
   If $bShowIndent Then
@@ -890,13 +877,29 @@ Private Sub DrawLine(X As Integer, Y As Integer, Width As Integer, Height As Int
     Paint.Background = $iLimitColor
     Paint.Dash = [2]
     Paint.DashOffset = RY
-    XX = $iTabWidth
+    XX = $iTabWidth + X + $iSpaceWidth \ 2
     While XX < P
-      Paint.MoveTo(XX + $iSpaceWidth \ 2 + 0.5, Y + 0.5)
+      Paint.MoveTo(XX + 0.5, Y + 0.5)
       Paint.RelLineTo(0, Height)
       Paint.Stroke
+      iEndingSpaceLimit = XX
       XX += $iTabWidth
     Wend
+    
+  Endif
+  
+  ' Ending spaces
+  
+  If $bShowSpaces And If sText Ends " " Then
+    
+    XX = X + $iSpaceWidth \ 2 - 1
+    YY = Y + H \ 2 - 1
+    For P = String.Len(sText) DownTo 1
+      If String.Mid$(sText, P, 1) <> " " Then Break
+      hPos = LinePos(Row, P - 1)
+      If (XX + hPos.X) <= iEndingSpaceLimit Then Break
+      Paint.FillRect(XX + hPos.X, YY + hPos.Y, 2, 2, $iLimitColor)
+    Next
     
   Endif
   

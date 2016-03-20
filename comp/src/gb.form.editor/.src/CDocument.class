@@ -1325,7 +1325,7 @@ Public Sub HasLimit(Y As Integer) As Boolean
     
     Do
       Dec Y
-      If Y < 0 Then Break
+      If Y <= 0 Then Return True
       hInfo = Info(Y)
       If hInfo.Comment Or If hInfo.Limit Then Return False
       If Trim(Lines[Y]) Then Return True

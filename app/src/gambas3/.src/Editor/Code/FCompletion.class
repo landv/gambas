@@ -345,6 +345,44 @@ Private Sub FillWithClasses()
 
 End
 
+' private void FillWithSymbol(string sClass, bool bStatic, bool bPrivate)
+' {
+'   Collection cSymbol;
+'   CSymbolInfo hSymbol;
+'   string[] aSymbol = new string[];
+'   string sSymbol;
+'   
+'   ClearRows();
+'   
+'   cSymbol = Project.Documentation.GetClassSymbols(sClass);
+'   if (!cSymbol) return;
+' 
+'   if (Project.Documentation.IsAutoCreatable(sClass))
+'     bStatic = False;
+' 
+'   for(hSymbol in cSymbol)
+'   {
+'     if (hSymbol.NotPublic != bPrivate) continue;
+'     if (hSymbol.Name.left() == "_" && hSymbol.Component) continue;
+'     if (hSymbol.Kind == "m" && hSymbol.Name.indexOf("_")) continue;
+'     if (hSymbol.Kind == ":") continue;
+'     if (bStatic)
+'     {
+'       if (hSymbol.Kind.upper() != hSymbol.Kind) continue;
+'     }
+'     aSymbol.Add(hSymbol.Name);
+'   }
+' 
+'   aSymbol.Sort(gb.IgnoreCase + gb.Natural);
+' 
+'   foreach sSymbol in aSymbol
+'   {
+'     hSymbol = cSymbol[sSymbol];
+'     AddRow((string)(MHelp.TYPE_SYMBOL) & sSymbol, sSymbol, Picture[hSymbol.GetIcon()]);
+'     $iMaxLen = max($iMaxLen, String.Len(sSymbol));
+'   }
+' }
+
 Private Sub FillWithSymbol(sClass As String, bStatic As Boolean, bPrivate As Boolean)
 
   Dim cSymbol As Collection
