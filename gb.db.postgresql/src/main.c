@@ -540,7 +540,7 @@ static int do_query(DB_DATABASE *db, const char *error, PGresult **pres,
 
 	if (DB.IsDebug())
 	{
-		fprintf(stderr, "postgresql: %p: %s\n", conn, query);
+		fprintf(stderr, "gb.db.postgresql: %p: %s\n", conn, query);
 		fflush(stderr);
 	}
 
