@@ -87,7 +87,7 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
   
   aText = Split(Text, "\n")
   
-  iColor = Color.Black
+  iColor = 0
   aResult.Add("<pre><span style=\"color:black;\">")
   sOldStyle = "color:#000000;"
   
@@ -162,13 +162,13 @@ Static Private Function DefaultStyle_Read() As TextHighlighterStyle[]
   
     $aStyle = New TextHighlighterStyle[32]
     
-    $aStyle[Highlight.Background] = TextHighlighterStyle(Color.White)
-    $aStyle[Highlight.Normal] = TextHighlighterStyle(Color.Black)
-    $aStyle[Highlight.Keyword] = TextHighlighterStyle(Color.Black, True)
+    $aStyle[Highlight.Background] = TextHighlighterStyle(&HFFFFFF&)
+    $aStyle[Highlight.Normal] = TextHighlighterStyle(&H000000&)
+    $aStyle[Highlight.Keyword] = TextHighlighterStyle(&H000000&, True)
     $aStyle[Highlight.Datatype] = TextHighlighterStyle(&HDF6B00&, True)
     $aStyle[Highlight.Function] = TextHighlighterStyle(&H3398C3&, True)
-    $aStyle[Highlight.Operator] = TextHighlighterStyle(Color.Black, True)
-    $aStyle[Highlight.Symbol] = TextHighlighterStyle(Color.Black)
+    $aStyle[Highlight.Operator] = TextHighlighterStyle(&H000000&, True)
+    $aStyle[Highlight.Symbol] = TextHighlighterStyle(&H000000&)
     $aStyle[Highlight.Number] = TextHighlighterStyle(&HFF0000&, True)
     $aStyle[Highlight.String] = TextHighlighterStyle(&H7F0000&)
     $aStyle[Highlight.Comment] = TextHighlighterStyle(&H888888&, False)

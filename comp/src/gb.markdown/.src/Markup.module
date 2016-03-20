@@ -1,11 +1,14 @@
 ' Gambas module file
 
+Class TextHighlighter
+
 Public Struct MarkupList
   sType As String
   iIndent As Integer
 End Struct
 
 Public EnableCode As Integer
+Public Verbatim As Integer
 
 Private $aMarkup As String[]
 Private $cLink As Collection
@@ -69,6 +72,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   Dim sClass As String
   Dim sList As String
   Dim bSaveComment As Boolean
+  Dim aTemp As String[]
   
   aResult = New String[]
   
@@ -98,7 +102,6 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
   For iLine = 0 To aLine.Max
     
     sLine = LTrim(aLine[iLine])
-    
     If Not sLine Then Continue
     If Left(sLine) <> "[" Then Continue
     I = InStr(sLine, "]:")
@@ -134,6 +137,14 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
     'Endif
     
     sLine = RTrim(sLine)
+
+    If Verbatim Then
+      If sLine <> "]]" Then
+        aResult.Add(aLine[iLine])
+        Continue
+      Endif
+    Endif
+    
     If Not sLine Then sLine = aLine[iLine]
   
     If $bComment Then
@@ -306,13 +317,14 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
       $aTableClass.Push(sLine)
       $aTablePos.Push(aResult.Count)
       If sLine Then
-        aCommand = $hMarkdown.Enter(sLine)
-        If aCommand Then aResult.Insert(aCommand)
-        aResult.Add("<table class=\"" & sLine & "\">")
-      Else
-        aResult.Add("<table class=\"table\">")
+        If sLine Begins "code " Then
+          Inc Verbatim
+        Else
+          aCommand = $hMarkdown.Enter(sLine)
+          If aCommand Then aResult.Insert(aCommand)
+        Endif
       Endif
-      aResult.Add("<tr><th>")
+      'aResult.Add("<tr><th>")
       bIgnorePar = False
       bInsidePar = False
       Continue
@@ -332,17 +344,32 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         sClass = $aTableClass.Pop()
         iPos = $aTablePos.Pop()
         
+        aCommand = aResult.Extract(iPos, -1)
+        
         If iPos >= 0 Then
-          aResult[iPos] = Replace(aResult[iPos], "<table", "<div class=\"table\"><div")
-          aResult.Remove(iPos + 1)
+          aResult.Add("<div class=\"table\"><div class=\"" & sClass & "\">")
+          If sClass Begins "code " Then
+            aTemp = ProcessCode(sClass, aCommand)
+          Else
+            aTemp = $hMarkdown.Process(sClass, aCommand)
+          Endif
+          If aTemp Then aCommand = aTemp
+          aResult.Insert(aCommand)
           aResult.Add("</div></div>")
         Else
+          aResult.Add("<table class=\"" & sClass & "\">")
+          aResult.Add("<tr><th>")
+          aResult.Insert(aCommand)
           aResult.Add("</td></tr>")
           aResult.Add("</table>")
         Endif
         
-        aCommand = $hMarkdown.Leave(sClass)
-        If aCommand Then aResult.Insert(aCommand)
+        If sClass Begins "code " Then
+          Dec Verbatim
+        Else If sClass Then
+          aCommand = $hMarkdown.Leave(sClass)
+          If aCommand Then aResult.Insert(aCommand)
+        Endif
         
         Continue
       
@@ -970,5 +997,25 @@ ENTER_LINK:
 Catch
   
   Return "<div><div class=\"error\"><b>" & Html$(Error.Text) & ":</b><br>" & Html$(sLine) & "</div></div>"
+
+End
+
+Private Sub ProcessCode(sClass As String, aLines As String[]) As String[]
+
+  Dim sLang As String
+  Dim hTextHighlighter As TextHighlighter
+  
+  Try sLang = Scan(sClass, "code *")[0]
+  If Not sLang Then Return
+  
+  Component.Load("gb.eval")
+  Component.Load("gb.eval.highlight")
+  
+  hTextHighlighter = TextHighlighter[sLang]
+  Return [hTextHighlighter.ToHTML(aLines.Join("\n"))]
+  
+Catch
+  
+  Return ["<div class=\"error\">" & Html(Error.Text) & "</div>"]
 
 End

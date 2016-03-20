@@ -887,7 +887,7 @@ Private Sub Start(sCmd As String)
   
   aExec.Add(File.Dir(SConv(Project.Path)))
   
-  If Project.Arguments.Count Then
+  If Project.Arguments.Count And If Project.CurrentArgument < Project.Arguments.Count Then
     aExec.Add("--")
     aExec.Insert(Project.Arguments[Project.CurrentArgument])
   Endif

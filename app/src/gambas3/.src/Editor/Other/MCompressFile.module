@@ -289,10 +289,10 @@ Public Sub Javascript(sText As String) As String
       Endif
       #If True
       If Right(sRes) = "\n" Then sRes = Left(sRes, -1)
-    Else If sCar = " " Or If sCar = "\n" Then
+    Else If InStr(" \t\n", sCar) Then
       
       If Len(sRes) = 0 Then Continue
-      If Right(sRes) = " " Or If Right$(sRes) = "\n" Then Continue
+      If InStr(" \t\n", Right(sRes)) Then Continue
       
       If sCar = "\n" Then
         'Print Right(sRes, 40)
@@ -392,10 +392,10 @@ Public Sub Css(sText As String) As String
       Continue
     Else If sCar = "c" And If Mid$(sText, iPos, 5) = "calc(" Then
       sString = ")"
-    Else If sCar = " " Or If sCar = "\n" Then
+    Else If InStr(" \t\n", sCar) Then
       
       If Len(sRes) = 0 Then Continue
-      If Right(sRes) = " " Or If Right$(sRes) = "\n" Then Continue
+      If InStr(" \t\n", Right(sRes)) Then Continue
       
       sCar = " "
       

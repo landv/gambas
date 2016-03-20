@@ -100,6 +100,14 @@ Public Sub Run(sText As String)
           iNextState = iTag
         Endif
         Goto NEXT_STATE
+      
+      Case Highlight.Preprocessor
+        If sCar = "{" Then 
+          iState = Highlight.Keyword
+          iNextState = Highlight.Keyword
+          bLimit = True
+        Endif
+        Goto NEXT_STATE
         
       Case Else
         
@@ -144,6 +152,12 @@ Public Sub Run(sText As String)
           iState = Highlight.Keyword
           iNextState = Highlight.Symbol
           iTag = Highlight.Symbol
+          bLimit = True
+          
+        Else If sCar = "@" Then
+          
+          iState = Highlight.Preprocessor
+          iNextState = iState
           bLimit = True
           
         Endif
@@ -212,10 +226,10 @@ Public Sub Run(sText As String)
           iNextState = Highlight.Keyword
           iTag = Highlight.Keyword
           
-        Else If sCar = "#" Then
-          
-          iState = Highlight.Preprocessor
-          iNextState = iState
+        ' Else If sCar = "#" Then
+        '   
+        '   iState = Highlight.Preprocessor
+        '   iNextState = iState
           
         Endif
         
