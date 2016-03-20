@@ -74,7 +74,7 @@ bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index);
 void TABLE_sort(TABLE *table);
 void TABLE_print(TABLE *table, bool sort);
 /*PUBLIC bool TABLE_copy_symbol(TABLE *dst, TABLE *src, int index_src, SYMBOL **symbol, int *index);*/
-void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, int sort, SYMBOL **symbol, int *index);
+//void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, int sort, SYMBOL **symbol, int *index);
 
 int SYMBOL_find(void *symbol, ushort *sort, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix);
 //bool SYMBOL_find_old(void *symbol, int n_symbol, size_t s_symbol, int flag, const char *name, int len, const char *prefix, int *result);

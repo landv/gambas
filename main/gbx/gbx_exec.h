@@ -164,15 +164,32 @@ void EXEC_leave_keep();
 void EXEC_leave_drop();
 void EXEC_loop(void);
 
+#define EXEC_object_2(_val, _pclass, _pobject) \
+({ \
+	VALUE *v = (_val); \
+	\
+	*(_pobject) = v->_object.object; \
+	\
+	if (v->_object.class->is_simple) \
+	{ \
+		if (!*(_pobject)) \
+			THROW_NULL(); \
+		\
+		*(_pclass) = OBJECT_class(v->_object.object); \
+	} \
+	else \
+		*(_pclass) = EXEC_object_real(_val); \
+})
+
 #define EXEC_object(_val, _pclass, _pobject) \
-	((LIKELY(TYPE_is_pure_object((_val)->type))) ? (*(_pclass) = EXEC_object_real(_val, _pobject)), TRUE : \
+	((LIKELY(TYPE_is_pure_object((_val)->type))) ? EXEC_object_2(_val, _pclass, _pobject), TRUE : \
 	TYPE_is_variant((_val)->type) ? (*(_pclass) = EXEC_object_variant(_val, _pobject)), FALSE : \
 	EXEC_object_other(_val, _pclass, _pobject))
 
 #define EXEC_object_fast(_val, _pclass, _pobject) \
 ({ \
 	if ((_val)->type != T_CLASS) \
-		(*(_pclass)) = EXEC_object_real(_val, _pobject); \
+		EXEC_object_real(_val, _pclass, _pobject); \
 	else \
 		EXEC_object_other(_val, _pclass, _pobject); \
 })
@@ -180,12 +197,12 @@ void EXEC_loop(void);
 #define EXEC_object_array(_val, _vclass, _vobject) \
 	_vobject = (_val)->_object.object; \
 	if (!(_vobject)) \
-		THROW(E_NULL); \
+		THROW_NULL(); \
 	_vclass = (_vobject)->class; \
 	if ((_val) == EXEC_super) \
 		EXEC_super = (_val)->_object.super;
 
-CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject);
+CLASS *EXEC_object_real(VALUE *val);
 CLASS *EXEC_object_variant(VALUE *val, OBJECT **pobject);
 bool EXEC_object_other(VALUE *val, CLASS **pclass, OBJECT **pobject);
 

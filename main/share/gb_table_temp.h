@@ -434,7 +434,7 @@ bool TABLE_find_symbol(TABLE *table, const char *name, int len, int *index)
 	return result;
 }
 
-
+#if 0
 void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, int sort, SYMBOL **symbol, int *index)
 {
 	SYMBOL *sym;
@@ -454,7 +454,7 @@ void TABLE_add_new_symbol_without_sort(TABLE *table, const char *name, int len, 
 	if (symbol) *symbol = sym; /*&table->symbol[ind];*/
 	if (index) *index = count;
 }
-
+#endif
 
 bool TABLE_add_symbol(TABLE *table, const char *name, int len, int *index)
 {

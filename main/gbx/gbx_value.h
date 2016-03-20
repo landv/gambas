@@ -268,7 +268,7 @@ void THROW_TYPE_STRING(TYPE type) NORETURN;
 
 #define VALUE_conv(_value, _type) \
 ({ \
-	if (UNLIKELY((_value)->type != (_type))) \
+	if ((_value)->type != (_type)) \
 		VALUE_convert(_value, _type); \
 })
 

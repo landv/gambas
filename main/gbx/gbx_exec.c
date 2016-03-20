@@ -1421,7 +1421,7 @@ void EXEC_native(void)
 }
 
 
-CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
+CLASS *EXEC_object_real(VALUE *val)
 {
 	CLASS *class;
 	OBJECT *object;
@@ -1429,20 +1429,11 @@ CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
 	object = val->_object.object;
 	class = val->_object.class;
 
-	if (class->is_simple)
-	{
-		if (!object)
-			THROW(E_NULL);
-
-		class = object->class;
-		goto __RETURN;
-	}
-
 	if (!object)
 	{
 		/* A null object and a virtual class means that we want to pass a static class */
 		if (!class->is_virtual)
-			THROW(E_NULL);
+			THROW_NULL();
 		CLASS_load(class);
 		goto __RETURN;
 	}
@@ -1458,8 +1449,6 @@ CLASS *EXEC_object_real(VALUE *val, OBJECT **pobject)
 		THROW(E_IOBJECT);
 
 __RETURN:
-
-	*pobject = object;
 
 	return class;
 }
@@ -1496,7 +1485,7 @@ __ERROR:
 
 __NULL:
 
-	THROW(E_NULL);
+	THROW_NULL();
 
 __CHECK:
 
@@ -1578,7 +1567,7 @@ __ERROR:
 
 __NULL:
 
-	THROW(E_NULL);
+	THROW_NULL();
 
 __CHECK:
 

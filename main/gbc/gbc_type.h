@@ -95,8 +95,11 @@ EXTERN char *TYPE_name[];
 
 #define TYPE_compare(_t1, _t2) ((_t1)->t.id == (_t2)->t.id && (_t1)->t.value == (_t2)->t.value)
 
+#define TYPE_make_simple(_id) ({ TYPE _t; _t.t.flag = 0; _t.t.id = (_id); _t.t.value = -1; _t; })
+#define TYPE_make(_id, _value, _flag) ({ TYPE _t; _t.t.flag = (_flag); _t.t.id = (_id); _t.t.value = ((_id) == T_OBJECT || (_id) == T_ARRAY || (_id) == T_STRUCT) ? (_value) : -1; _t; })
+
 /*PUBLIC long TYPE_get_class(TYPE type);*/
-TYPE TYPE_make(TYPE_ID id, short value, int flag);
+//TYPE TYPE_make(TYPE_ID id, short value, int flag);
 char *TYPE_get_desc(TYPE type);
 const char *TYPE_get_short_desc(TYPE type);
 size_t TYPE_sizeof(TYPE type);

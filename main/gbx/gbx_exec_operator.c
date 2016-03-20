@@ -127,7 +127,7 @@ __OBJECT_FLOAT:
 
 	o1 = P1->_object.object;
 	if (!o1)
-		THROW(E_NULL);
+		THROW_NULL();
 	
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
@@ -147,7 +147,7 @@ __FLOAT_OBJECT:
 
 	o1 = P2->_object.object;
 	if (!o1)
-		THROW(E_NULL);
+		THROW_NULL();
 
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P1);
@@ -181,7 +181,7 @@ __OBJECT_OBJECT:
 __OTHER:
 
 	if (!OBJECT_are_not_null(o1, o2))
-		THROW(E_NULL);
+		THROW_NULL();
 	
 	func = OBJECT_class(o1)->operators[op];
 	result = (*(FUNC_O_OO)func)(o1, o2, invert);
@@ -214,7 +214,7 @@ void EXEC_operator_object_add_quick(VALUE *P1, double val)
 		P1->_object.object = result;
 	}
 	else
-		THROW(E_NULL);
+		THROW_NULL();
 
 	if (EXEC_has_native_error())
 	{
@@ -239,7 +239,7 @@ __OBJECT_FLOAT:
 
 	o1 = P1->_object.object;
 	if (!o1)
-		THROW(E_NULL);
+		THROW_NULL();
 	
 	func = OBJECT_class(o1)->operators[op];
 	VALUE_conv_float(P2);
@@ -255,7 +255,7 @@ __FLOAT_OBJECT:
 
 	o2 = P2->_object.object;
 	if (!o2)
-		THROW(E_NULL);
+		THROW_NULL();
 	
 	func = OBJECT_class(o2)->operators[op];
 	VALUE_conv_float(P1);
@@ -285,7 +285,7 @@ __OBJECT_OBJECT:
 __OTHER:
 
 	if (!OBJECT_are_not_null(o1, o2))
-		THROW(E_NULL);
+		THROW_NULL();
 	
 	func = OBJECT_class(o1)->operators[op];
 	result = (*(FUNC_I_OO)func)(o1, o2, invert);
@@ -318,7 +318,7 @@ void EXEC_operator_object_sgn(VALUE *P1)
 		P1->_integer.value = result;
 	}
 	else
-		THROW(E_NULL);
+		THROW_NULL();
 
 	if (EXEC_has_native_error())
 	{
@@ -338,7 +338,7 @@ void EXEC_operator_object_fabs(VALUE *P1)
 		P1->_float.value = result;
 	}
 	else
-		THROW(E_NULL);
+		THROW_NULL();
 
 	if (EXEC_has_native_error())
 	{
@@ -358,7 +358,7 @@ void EXEC_operator_object_single(uchar op, VALUE *P1)
 		P1->_object.object = result;
 	}
 	else
-		THROW(E_NULL);
+		THROW_NULL();
 	
 	if (EXEC_has_native_error())
 	{

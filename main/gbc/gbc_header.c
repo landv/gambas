@@ -570,7 +570,7 @@ static bool header_enumeration(TRANS_DECL *decl)
 		decl->index = PATTERN_index(*JOB->current);
 		JOB->current++;
 	
-		decl->type = TYPE_make(T_INTEGER, -1, 0);
+		decl->type = TYPE_make_simple(T_INTEGER);
 
 		if (is_public) TYPE_set_flag(&decl->type, TF_PUBLIC);
 		TYPE_set_kind(&decl->type, TK_CONST);

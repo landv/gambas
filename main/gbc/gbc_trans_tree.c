@@ -809,9 +809,10 @@ void TRANS_tree(bool check_statement, TRANS_TREE **result, int *count)
 
 	if (result)
 	{
+		add_pattern(NULL_PATTERN);
 		ALLOC(result, sizeof(PATTERN) * tree_length);
 		memcpy(*result, tree, sizeof(PATTERN) * tree_length);
-		*count = tree_length;
+		*count = tree_length - 1;
 	}
 }
 

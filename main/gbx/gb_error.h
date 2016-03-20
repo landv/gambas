@@ -156,6 +156,7 @@ void ERROR_propagate(void) NORETURN;
 
 void THROW(int code, ...) NORETURN;
 void THROW_SYSTEM(int err, const char *path);
+void THROW_NULL(void) NORETURN;
 void THROW_ILLEGAL(void) NORETURN;
 void THROW_STACK(void) NORETURN;
 void THROW_CLASS(void *class, char *arg1, char *arg2) NORETURN;

@@ -43,23 +43,6 @@ const char *TYPE_name[] =
 };
 
 
-TYPE TYPE_make(TYPE_ID id, short value, int flag)
-{
-  TYPE type;
-
-  TYPE_clear(&type);
-  TYPE_set_id(&type, id);
-
-  if (!(id == T_OBJECT || id == T_ARRAY || id == T_STRUCT))
-		value = -1;
-  
-	TYPE_set_value(&type, value);
-  TYPE_set_flag(&type, flag);
-
-  return type;
-}
-
-
 size_t TYPE_sizeof(TYPE type)
 {
   TYPE_ID id = TYPE_get_id(type);

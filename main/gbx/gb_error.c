@@ -479,17 +479,22 @@ void THROW(int code, ...)
 	PROPAGATE();
 }
 
+void THROW_NULL(void)
+{
+	THROW(E_NULL);
+}
+
 void THROW_CLASS(void *class, char *arg1, char *arg2)
 {
 	THROW(E_CLASS, CLASS_get_name((CLASS *)class), arg1, arg2);
 }
 
-void THROW_ILLEGAL()
+void THROW_ILLEGAL(void)
 {
 	THROW(E_ILLEGAL);
 }
 
-void THROW_STACK()
+void THROW_STACK(void)
 {
 	#if DEBUG_STACK
 	fprintf(stderr, "THROW STACK!\n");

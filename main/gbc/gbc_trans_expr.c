@@ -55,7 +55,7 @@ static void _push_type(TYPE type)
 }
 
 #define push_type(_type) fprintf(stderr, "push_type: %d in %s.%d\n", (_type).t.id, __func__, __LINE__), _push_type(_type)
-#define push_type_id(_id) fprintf(stderr, "push_type_id: %d in %s.%d\n", (_id), __func__, __LINE__), _push_type(TYPE_make(_id, 0, 0))
+#define push_type_id(_id) fprintf(stderr, "push_type_id: %d in %s.%d\n", (_id), __func__, __LINE__), _push_type(TYPE_make_simple(_id))
 #define pop_type() fprintf(stderr, "pop type: in %s.%d\n", __func__, __LINE__),(_type[--_type_level])
 #define drop_type(_n) fprintf(stderr, "drop type: %d in %s.%d\n", (_n), __func__, __LINE__),(_type_level -= (_n))
 #define get_type(_i, _nparam) (fprintf(stderr, "get type(%d,%d): %d in %s.%d\n", (_i), (_nparam), (_type[_type_level + (_i) - (_nparam)].t.id), __func__, __LINE__),(_type[_type_level + (_i) - (_nparam)].t.id))
@@ -70,7 +70,7 @@ static void push_type(TYPE type)
 	_type[_type_level++] = type;
 }
 
-#define push_type_id(_id) push_type(TYPE_make(_id, 0, 0))
+#define push_type_id(_id) push_type(TYPE_make_simple(_id))
 #define pop_type() (_type[--_type_level])
 #define drop_type(_n) (_type_level -= (_n))
 #define get_type(_i, _nparam) (_type[_type_level + (_i) - (_nparam)].t.id)
@@ -144,7 +144,7 @@ static void push_number(int index)
 	else
 	{
 		CLEAR(&decl);
-		decl.type = TYPE_make(number.type, 0, 0);
+		decl.type = TYPE_make_simple(number.type);
 		decl.index = NO_SYMBOL;
 		decl.value = index;
 		if (number.type == T_LONG)
@@ -189,9 +189,9 @@ static void push_string(int index, bool trans)
 		//CLEAR(&decl);
 
 		if (trans)
-			decl.type = TYPE_make(T_CSTRING, 0, 0);
+			decl.type = TYPE_make_simple(T_CSTRING);
 		else
-			decl.type = TYPE_make(T_STRING, 0, 0);
+			decl.type = TYPE_make_simple(T_STRING);
 		decl.index = NO_SYMBOL;
 		decl.value = index;
 
@@ -490,12 +490,15 @@ static void trans_call(short nparam, uint64_t byref)
 
 static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 {
+	static void *jump[] = {
+		&&__CONTINUE, &&__CONTINUE, &&__RESERVED, &&__IDENTIFIER, &&__NUMBER, &&__STRING, &&__TSTRING, &&__CONTINUE, &&__SUBR, &&__CLASS, &&__CONTINUE, &&__CONTINUE
+	};
+	
 	int i, op;
 	short nparam;
 	PATTERN pattern, next_pattern, prev_pattern;
 	uint64_t byref = 0;
 
-	count--;
 	pattern = NULL_PATTERN;
 	_type_level = 0;
 
@@ -503,124 +506,137 @@ static void trans_expr_from_tree(TRANS_TREE *tree, int count)
 	fprintf(stderr, "-----------------------\n");
 	#endif
 
-	for (i = 0; i <= count; i++)
+	i = 0;
+	
+	for(i = 0; i < count; i++)
 	{
 		prev_pattern = pattern;
 		pattern = tree[i];
-		if (i < count)
-			next_pattern = tree[i + 1];
-		else
-			next_pattern = NULL_PATTERN;
+		next_pattern = tree[i + 1];
 
-		if (PATTERN_is_number(pattern))
-			push_number(PATTERN_index(pattern));
+		goto *jump[PATTERN_type(pattern)];
+		
+	__NUMBER:
+		
+		push_number(PATTERN_index(pattern));
+		continue;
+		
+	__STRING:
 
-		else if (PATTERN_is_string(pattern))
-			push_string(PATTERN_index(pattern), FALSE);
+		push_string(PATTERN_index(pattern), FALSE);
+		continue;
 
-		else if (PATTERN_is_tstring(pattern))
-			push_string(PATTERN_index(pattern), TRUE);
+	__TSTRING:
 
-		else if (PATTERN_is_identifier(pattern))
-			trans_identifier(PATTERN_index(pattern), PATTERN_is_point(pattern), next_pattern);
+		push_string(PATTERN_index(pattern), TRUE);
+		continue;
 
-		else if (PATTERN_is_class(pattern))
-			trans_class(PATTERN_index(pattern));
+	__IDENTIFIER:
+	
+		trans_identifier(PATTERN_index(pattern), PATTERN_is_point(pattern), next_pattern);
+		continue;
 
-		else if (PATTERN_is_subr(pattern))
+	__CLASS:
+	
+		trans_class(PATTERN_index(pattern));
+		continue;
+
+	__SUBR:
+	
+		nparam = get_nparam(tree, count, &i, NULL);
+		trans_subr(PATTERN_index(pattern), nparam);
+		continue;
+		
+	__RESERVED:
+
+		if (PATTERN_is(pattern, RS_TRUE))
 		{
-			nparam = get_nparam(tree, count, &i, NULL);
-			trans_subr(PATTERN_index(pattern), nparam);
+			CODE_push_boolean(TRUE);
+			push_type_id(T_BOOLEAN);
 		}
-
-		else if (PATTERN_is_reserved(pattern))
+		else if (PATTERN_is(pattern, RS_FALSE))
 		{
-			if (PATTERN_is(pattern, RS_TRUE))
-			{
-				CODE_push_boolean(TRUE);
-				push_type_id(T_BOOLEAN);
-			}
-			else if (PATTERN_is(pattern, RS_FALSE))
-			{
-				CODE_push_boolean(FALSE);
-				push_type_id(T_BOOLEAN);
-			}
-			else if (PATTERN_is(pattern, RS_NULL))
-			{
-				CODE_push_null();
-				push_type_id(T_OBJECT);
-			}
-			else if (PATTERN_is(pattern, RS_ME))
-			{
-				/*if (FUNCTION_is_static(JOB->func))
-					THROW("ME cannot be used in a static function");*/
+			CODE_push_boolean(FALSE);
+			push_type_id(T_BOOLEAN);
+		}
+		else if (PATTERN_is(pattern, RS_NULL))
+		{
+			CODE_push_null();
+			push_type_id(T_OBJECT);
+		}
+		else if (PATTERN_is(pattern, RS_ME))
+		{
+			/*if (FUNCTION_is_static(JOB->func))
+				THROW("ME cannot be used in a static function");*/
 
-				CODE_push_me(FALSE);
-				push_type_id(T_OBJECT);
-			}
-			else if (PATTERN_is(pattern, RS_SUPER))
-			{
-				/*if (FUNCTION_is_static(JOB->func))
-					THROW("ME cannot be used in a static function");*/
+			CODE_push_me(FALSE);
+			push_type_id(T_OBJECT);
+		}
+		else if (PATTERN_is(pattern, RS_SUPER))
+		{
+			/*if (FUNCTION_is_static(JOB->func))
+				THROW("ME cannot be used in a static function");*/
 
-				CODE_push_super(FALSE);
-				push_type_id(T_OBJECT);
-			}
-			else if (PATTERN_is(pattern, RS_LAST))
+			CODE_push_super(FALSE);
+			push_type_id(T_OBJECT);
+		}
+		else if (PATTERN_is(pattern, RS_LAST))
+		{
+			CODE_push_last();
+			push_type_id(T_OBJECT);
+		}
+		else if (PATTERN_is(pattern, RS_AT))
+		{
+			if (!CODE_popify_last())
+				THROW("This expression cannot be passed by reference");
+		}
+		else if (PATTERN_is(pattern, RS_COMMA))
+		{
+			CODE_drop();
+			drop_type(1);
+		}
+		else if (PATTERN_is(pattern, RS_ERROR))
+		{
+			TRANS_subr(TS_SUBR_ERROR, 0);
+		}
+		else if (PATTERN_is(pattern, RS_OPTIONAL))
+		{
+			CODE_push_void();
+			push_type_id(T_VOID);
+		}
+		else if (PATTERN_is(pattern, RS_PINF))
+		{
+			CODE_push_inf(FALSE);
+			push_type_id(T_FLOAT);
+		}
+		else if (PATTERN_is(pattern, RS_MINF))
+		{
+			CODE_push_inf(TRUE);
+			push_type_id(T_FLOAT);
+		}
+		else if (PATTERN_is(pattern, RS_3PTS))
+		{
+			_must_drop_vargs = TRUE;
+			CODE_push_vargs();
+			// push_type_id(T_FLOAT); we push no type
+		}
+		else
+		{
+			op = PATTERN_index(pattern);
+			if (op == RS_LBRA)
 			{
-				CODE_push_last();
-				push_type_id(T_OBJECT);
-			}
-			else if (PATTERN_is(pattern, RS_AT))
-			{
-				if (!CODE_popify_last())
-					THROW("This expression cannot be passed by reference");
-			}
-			else if (PATTERN_is(pattern, RS_COMMA))
-			{
-				CODE_drop();
-				drop_type(1);
-			}
-			else if (PATTERN_is(pattern, RS_ERROR))
-			{
-				TRANS_subr(TS_SUBR_ERROR, 0);
-			}
-			else if (PATTERN_is(pattern, RS_OPTIONAL))
-			{
-				CODE_push_void();
-				push_type_id(T_VOID);
-			}
-			else if (PATTERN_is(pattern, RS_PINF))
-			{
-				CODE_push_inf(FALSE);
-				push_type_id(T_FLOAT);
-			}
-			else if (PATTERN_is(pattern, RS_MINF))
-			{
-				CODE_push_inf(TRUE);
-				push_type_id(T_FLOAT);
-			}
-			else if (PATTERN_is(pattern, RS_3PTS))
-			{
-				_must_drop_vargs = TRUE;
-				CODE_push_vargs();
-				// push_type_id(T_FLOAT); we push no type
+				nparam = get_nparam(tree, count, &i, &byref);
+				trans_call(nparam, byref);
 			}
 			else
 			{
-				op = PATTERN_index(pattern);
-				if (op == RS_LBRA)
-				{
-					nparam = get_nparam(tree, count, &i, &byref);
-					trans_call(nparam, byref);
-				}
-				else
-				{
-					nparam = get_nparam(tree, count, &i, NULL);
-					trans_operation((short)op, nparam, prev_pattern);
-				}
+				nparam = get_nparam(tree, count, &i, NULL);
+				trans_operation((short)op, nparam, prev_pattern);
 			}
 		}
+		
+	__CONTINUE:
+		;
 	}
 }
 
@@ -787,7 +803,7 @@ void TRANS_ignore_expression()
 
 TYPE TRANS_variable_get_type()
 {
-	TYPE type = TYPE_make(T_VOID, 0, 0);
+	TYPE type = TYPE_make_simple(T_VOID);
 	TRANS_TREE *tree;
 	int count;
 	int index;
