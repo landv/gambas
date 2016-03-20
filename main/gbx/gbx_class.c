@@ -863,24 +863,32 @@ static int partition(CLASS_DESC_SYMBOL *cds, ushort *sym, const int start, const
 
 		if (result == 0)
 		{
-			s1 = cds[sym[i]].name;
-			s2 = cds[pivot].name;
-
-			while (len)
-			{
-				result = tolower(*s1++) - tolower(*s2++);
-				if (result)
-					break;
-				len--;
-			}
-
-			if (result == 0)
-			{
-				if (*cds[pivot].name != '.')
-					ERROR_panic("Symbol '%s' declared twice in class '%s'\n", cds[sym[i]].name, _sorted_class->name);
-			}
-			if (result >= 0)
+#if TABLE_USE_KEY
+			result = cds[sym[i]].key - cds[pivot].key;
+			if (result > 0)
 				continue;
+			else if (result == 0)
+#endif
+			{
+				s1 = cds[sym[i]].name;
+				s2 = cds[pivot].name;
+
+				while (len)
+				{
+					result = tolower(*s1++) - tolower(*s2++);
+					if (result)
+						break;
+					len--;
+				}
+
+				if (result == 0)
+				{
+					if (*cds[pivot].name != '.')
+						ERROR_panic("Symbol '%s' declared twice in class '%s'\n", cds[sym[i]].name, _sorted_class->name);
+				}
+				if (result >= 0)
+					continue;
+			}
 		}
 
 		pos++; // incrémente compteur cad la place finale du pivot
@@ -915,6 +923,8 @@ void CLASS_sort(CLASS *class)
 
 	if (!class->n_desc)
 		return;
+
+	SYMBOL_compute_keys(class->table, class->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE);
 
 	_sorted_class = class;
 
@@ -1191,7 +1201,7 @@ void CLASS_make_description(CLASS *class, const CLASS_DESC *desc, int n_desc, in
 		class->table[i].name = (char *)name;
 		class->table[i].len = strlen(name);
 	}
-
+	
 	#if DEBUG_DESC
 	{
 		CLASS_DESC_SYMBOL *cds;

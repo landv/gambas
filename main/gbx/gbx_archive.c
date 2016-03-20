@@ -497,7 +497,7 @@ bool ARCHIVE_is_dir(ARCHIVE *arch, const char *path)
 
 void ARCHIVE_stat(ARCHIVE *arch, const char *path, FILE_STAT *info)
 {
-	ARCHIVE_FIND find;
+	ARCHIVE_FIND find = { 0 };
 	struct stat buf;
 
 	//if (get_current(&arch))

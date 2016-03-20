@@ -78,7 +78,15 @@ typedef
 
 typedef
 	struct {
-		SYMBOL sym;
+		char *name;
+		int len;
+	}
+	PACKED
+	DEBUG_SYMBOL;
+	
+typedef
+	struct {
+		DEBUG_SYMBOL sym;
 		int value;
 		}
 	LOCAL_SYMBOL;
@@ -190,7 +198,7 @@ struct _CLASS;
 
 typedef
 	struct {
-		SYMBOL sym;
+		DEBUG_SYMBOL sym;
 		CTYPE ctype;
 		int value;
 		}
@@ -455,8 +463,7 @@ CLASS_DESC_METHOD *CLASS_get_special_desc(CLASS *class, int spec);
 
 CLASS_DESC_EVENT *CLASS_get_event_desc(CLASS *class, const char *name);
 
-#define CLASS_find_symbol(_class, _name) \
-	SYMBOL_find((_class)->table, (_class)->sort, (_class)->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, (_name), strlen((_name)), NULL)
+#define CLASS_find_symbol(_class, _name) SYMBOL_find((_class)->table, (_class)->sort, (_class)->n_desc, sizeof(CLASS_DESC_SYMBOL), TF_IGNORE_CASE, (_name), strlen((_name)), NULL)
 
 int CLASS_find_symbol_with_prefix(CLASS *class, const char *name, const char *prefix);
 

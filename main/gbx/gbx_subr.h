@@ -91,8 +91,20 @@ void *SUBR_get_pointer(VALUE *param);
 void *SUBR_get_pointer_or_string(VALUE *param);
 
 char *SUBR_get_string(VALUE *param);
-//char *SUBR_copy_string(VALUE *param);
-void SUBR_get_string_len(VALUE *param, char **str, int *len);
+
+#define SUBR_get_string_len(_param, _pstr, _plen) \
+do { \
+  if (SUBR_check_string(_param)) \
+  { \
+    *(_pstr) = NULL; \
+    *(_plen) = 0; \
+  } \
+  else \
+	{ \
+		*(_pstr) = (_param)->_string.addr + (_param)->_string.start; \
+		*(_plen) = (_param)->_string.len; \
+	} \
+} while(0);
 
 bool SUBR_get_boolean(VALUE *param);
 

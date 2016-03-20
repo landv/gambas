@@ -147,27 +147,6 @@ char *SUBR_get_string(VALUE *param)
 }
 
 
-/*char *SUBR_copy_string(VALUE *param)
-{
-  SUBR_check_string(param);
-  return STRING_copy_from_value_temp(param);
-}*/
-
-
-void SUBR_get_string_len(VALUE *param, char **str, int *len)
-{
-  if (SUBR_check_string(param))
-  {
-    *str = NULL;
-    *len = 0;
-  }
-  else
-	{
-		*str = param->_string.addr + param->_string.start;
-		*len = param->_string.len;
-	}
-}
-
 bool SUBR_get_boolean(VALUE *param)
 {
 	VALUE_conv_boolean(param);

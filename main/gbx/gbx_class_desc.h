@@ -186,6 +186,7 @@ typedef
 	struct {
 		char *name;
 		int len;
+		uint key;
 		CLASS_DESC *desc;
 		}
 	PACKED
