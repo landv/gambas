@@ -137,13 +137,13 @@ Public Sub ToHTML(Text As String, Optional Styles As TextHighlighterStyle[]) As 
     
     If P < String.Len(sLine) Then sLineHtml &= Html(String.Mid$(sLine, P))
     
-    If TextHighlighter.Limit Then 
-      If Y And If Not Trim(aResult[aResult.Max]) Then
-        aResult.Add("<div style=\"height:1px;background:#808080;position:relative;top:-0.5em;\"></div>")
-      Else
-        aResult.Add("<div style=\"height:1px;background:#808080;\"></div>")
-      Endif
-    Endif
+    ' If TextHighlighter.Limit Then 
+    '   If Y And If Not Trim(aResult[aResult.Max]) Then
+    '     aResult.Add("<div style=\"height:1px;background:#808080;position:relative;top:-0.5em;\"></div>")
+    '   Else
+    '     aResult.Add("<div style=\"height:1px;background:#808080;\"></div>")
+    '   Endif
+    ' Endif
     
     aResult.Add(sLineHtml & "\n")
     

@@ -128,8 +128,8 @@ PRE HR {
 }
 
 TABLE.table, TABLE.error {
-  border-bottom: solid #D8D8D8 1px;
-  border-right: solid #D8D8D8 1px;
+  border-bottom: solid #D0D0D0 1px;
+  border-right: solid #D0D0D0 1px;
   padding: 0px;
   margin-top: 0.75em;
   border-spacing: 0;
@@ -137,15 +137,15 @@ TABLE.table, TABLE.error {
 }
 
 TABLE.table > TBODY > TR > TD, TABLE.error > TBODY > TR > TD {
-  border-top: solid #D8D8D8 1px;
-  border-left:  solid #D8D8D8 1px;
+  border-top: solid #D0D0D0 1px;
+  border-left:  solid #D0D0D0 1px;
   padding: 3px 6px;
   vertical-align: top;
 }
 
 TABLE.table > TBODY > TR > TH, TABLE.error > TBODY > TR > TH {
-  border-top: solid #D8D8D8 1px;
-  border-left:  solid #D8D8D8 1px;
+  border-top: solid #D0D0D0 1px;
+  border-left:  solid #D0D0D0 1px;
   padding: 3px 6px;
   text-align: left;
 }
@@ -402,8 +402,10 @@ DIV.index {
 }*/
 
 DIV.syntax {
+  margin-top: 0.75em;
   display: inline-block;
   border: solid #D8D8D8 2px;
+  background-color: #F0F0F0;
   padding: 4px 8px;
   font-family: monospace;
   white-space: pre-wrap;
@@ -651,7 +653,7 @@ DIV.result PRE {
 }
 
 DIV.code {
-  border: solid 2px #D8D8D8;
+  border: solid 1px #D8D8D8;
   margin-top: 0.75em;
 }
 

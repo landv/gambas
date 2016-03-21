@@ -357,8 +357,12 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           aResult.Insert(aCommand)
           aResult.Add("</div>")
         Else
-          aResult.Add("<table class=\"" & LTrim(sClass) & "\">")
-          aResult.Add("<tr><th>")
+          aResult.Add("<table class=\"table " & LTrim(sClass) & "\">")
+          If aCommand.Count And If aCommand[0] = "</th></tr>" Then
+            aCommand.Remove(0)
+          Else
+            aResult.Add("<tr><th>")
+          Endif
           aResult.Insert(aCommand)
           aResult.Add("</td></tr>")
           aResult.Add("</table>")
@@ -399,13 +403,12 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         GoSub CLOSE_CODE
         
         sTable = $aTable[$aTable.Max]
-        If aResult[aResult.Max] = "<tr><th>" Then
-          aResult[aResult.Max] = "<tr><td>"
-        Else If sTable = "[[" Then
-          aResult.Add("</th></tr><tr><td>")
+        If sTable = "[[" Then
+          aResult.Add("</th></tr>")
         Else
-          aResult.Add("</td></tr><tr><td>")
+          aResult.Add("</td></tr>")
         Endif
+        aResult.Add("<tr><td>")
         $aTable[$aTable.Max] = "=="
         $aTableClass[$aTableClass.Max] = " " & Trim($aTableClass[$aTableClass.Max])
         bIgnorePar = True

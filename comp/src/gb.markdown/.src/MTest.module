@@ -2,6 +2,9 @@
 
 Public Sub Main()
 
-  Print Markdown.ToHTML(File.Load("test.txt"))
+Dim X As Integer
+For X = 32 To 127
+  Print Chr$(X);
+Next
 
 End

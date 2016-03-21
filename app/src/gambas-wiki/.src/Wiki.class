@@ -36,6 +36,103 @@ Private Sub GetMaxHistory() As Integer
 
 End
 
+Private Sub CloseSection(aResult As String[])
+  
+  If aResult[aResult.Max] Begins "[[" Then
+    aResult.Remove(aResult.Max)
+  Else
+    aResult.Add("]]")
+  Endif
+  
+End
+
+
+Private Sub RewriteExample(sData As String) As String
+
+  Dim aData As String[]
+  Dim I As Integer
+  Dim sLine As String
+  Dim bProcess As Boolean
+  Dim sState As String
+  Dim aResult As String[]
+
+  If InStr(sData, "\n### Example") = 0 Then Return sData
+  If InStr(sData, "\n[[ code gambas") Then Return sData
+
+  aData = Split(sData, "\n")
+  aResult = New String[]
+  
+  For I = 0 To aData.Max
+    
+    sLine = aData[I]
+    
+    If sLine Begins "##" Then
+      
+      If sState Then 
+        CloseSection(aResult)
+        sState = ""
+      Endif
+      
+      If sLine Begins "### Example" Or If sLine Begins "### [Example" Then
+        bProcess = True
+      Else
+        bProcess = False
+      Endif
+      
+      aResult.Add(sLine)
+      
+      Continue
+    Endif
+    
+    If Not bProcess Then
+      aResult.Add(sLine)
+      Continue
+    Endif
+    
+    If sLine Begins "[[ code " Or If sLine Begins "[[ result" Then
+      bProcess = False
+      aResult.Add(sLine)
+      Continue
+    Endif
+    
+    If LTrim(sLine) Begins "---" Then
+      If sState = "code" Then CloseSection(aResult)
+      aResult.Add("[[ result")
+      sState = "result"
+      Continue
+    Endif
+    
+    If Not sState Then
+      aResult.Add("[[ code gambas")
+      sState = "code"
+    Endif
+    
+    If Left(sLine, 4) <> "    " Then
+      If sState Then
+        CloseSection(aResult)
+        sState = ""
+      Endif
+      aResult.Add(sLine)
+      Continue
+    Endif
+    
+    If sState = "code" Then 
+      sLine = Mid$(sLine, 5)
+      aResult.Add(sLine)
+      Continue
+    Else If sState = "result" Then
+      aResult.Add(sLine)
+      Continue
+    Endif
+    
+    aResult.Add(sLine)
+    
+  Next
+  
+  Return aResult.Join("\n")
+
+End
+
 Private Sub _PrintPage()
 
   Dim sPath As String
@@ -63,6 +160,9 @@ Private Sub _PrintPage()
       Else If Main.Class Then
         sData = "@{symbols}\n"
       Endif
+    Endif
+    If Main.Path Begins "/comp/" Or If Main.Path Begins "/lang/" Or If Main.Path Begins "/cat/" Then
+      sData = RewriteExample(sData)
     Endif
     Print Html(sData);
     Return
