@@ -210,10 +210,10 @@ Private Sub IndentLine(sLine As String) As String
   Dim sAdd As String
   Dim iNextLevel As Integer
   Dim sSym As String
+  Dim sFuncSym As String
   Dim iPos As Integer
   Dim iType As Integer
   Dim bLastWrap As Boolean
-  
   sLine = LTrim(sLine)
   
   If sLine Then
@@ -263,6 +263,8 @@ Private Sub IndentLine(sLine As String) As String
         $bNeedNewLine = True
       Else
         sSym = aSym[0]
+        If aSym.Count > 2 Then sFuncSym = LCase(aSym[2])
+        
         If sSym = "END" And If aSym.Count >= 2 Then sSym &= " " & aSym[1]
         
         If sSym = "DIM" Then
@@ -290,6 +292,14 @@ Private Sub IndentLine(sLine As String) As String
           Else If sSym = "SELECT" Then
             $iLastSelect = $iLine
             iNextLevel = $iLevel + 2
+          Else If sFuncSym = "end" Then                     'Fabien : Add End function detecetion
+            Dec $iLevel
+            iNextLevel = $iLevel
+            If bLastWrap Then Inc $iLevel
+          Else If sFuncSym = "begin" Then                   'Fabien : Add Begin function detection
+            iNextLevel = $iLevel
+            Inc iNextLevel
+            If bLastWrap Then Inc $iLevel
           Else
             If $cClose.Exist(sSym) Then Dec $iLevel
             iNextLevel = $iLevel
