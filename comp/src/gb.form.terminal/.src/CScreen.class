@@ -1,34 +1,352 @@
 ' Gambas class file
 
-'Classe representant un ecran en memoire et repondant a toutes les caracteritiques
-'d'un ecran VT102
+Private $aLines As New CChar[][]
 
-Private $aScreen As New CCharacter[][]
+Private $iColPos As Integer
+Private $iRowPos As Integer
+Private $hDefaultChar As CChar
 Private $iColumns As Integer
 Private $iRows As Integer
+Private $aHistory As New CChar[][]
+Private $iFontHeight As Integer
+Private $iFontWidth As Integer
+
+Private $iBackgroud As Integer = Color.Transparent
+Private $iForeground As Integer = Color.White
+
+Property Read TopMargin As Integer
+Property Read BottomMargin As Integer
+Property Read CursorX As Integer
+Property Read CursorY As Integer
+Property Read Rows As Integer
+Property Read Columns As Integer
+
+
+
+
+
 Private $iTopMargin As Integer
 Private $iBottomMargin As Integer
+Private Modes As New Boolean[6]
+Private SavedMode As New Boolean[6]
+Private Enum MODE_ORIGIN, MODE_WRAP, MODE_INSERT, MODE_SCREEN, MODE_CURSOR, MODE_NEWLINE
+Private $aLineProperies As New Integer[]
+Public Enum LINE_WRAPPED = 2, LINE_DOUBLEWIDTH = 4, LINE_DOUBLEHEIGHT = 8
+
+Public Sub _new(Rows As Integer, Columns As Integer)
+
+  Dim hLine As CChar[]
+
+  Dim i, j As Integer
+
+  $hDefaultChar = New CChar
+  $hDefaultChar.Character = String.Code(" ")
+  $hDefaultChar.BackGround = $iBackgroud
+  For j = 0 To Rows - 1
+    hLine = New CChar[Columns]
+
+    $aLines.Add(hLine)
+
+  Next
+  $iColumns = Columns
+  $iRows = Rows
+  $aLineProperies = New Integer[Rows]
+  $iBottomMargin = $iRows - 1
+
+  Reset
+
+End
+
+Public Sub AddString()
+
+End
 
 
-Private $hCurBackColor As Colors
-Private $hCurForeColor As Colors
 
+Public Sub DisplayChar(C As Integer)
 
+  Dim hChar As New CChar
+  'TODO: Need to take care of the effective width of a character width then wcwidth function
 
+  If $iColPos + 1 > $iColumns Then
+    If Modes[MODE_WRAP] Then
+      $aLineProperies[$iRowPos] = $aLineProperies[$iRowPos] Or LINE_WRAPPED
+      '$aLineProperies[_lineProperties[_cuY] = (LineProperty)(_lineProperties[_cuY] | LINE_WRAPPED);
+      Print "nextline"
+      nextLine()
+    Else
+      $iColPos = $iColumns - 1
+    Endif
+  Endif
 
-Private Sub FillLine(aLine As CCharacter[][])
+  hChar.Character = C
+  hChar.BackGround = $iBackgroud
+  hChar.ForeGround = $iForeground
+
+  If $aLines[$iRowPos].Max < $iColPos Then $aLines[$iRowPos].Resize($iColPos + 1)
+
+  $aLines[$iRowPos][$iColPos] = hChar
+
+  Inc $iColPos
+
+  'CursorLeft
+  ' If $iColPos >= $aLines[$iRowPos].Max Then
+  '  $iRowPos += 1
+  '   $iColPos = 0
+  ' Endif
+
+End
+
+Public Sub ToStartOfLine()
+
+  $iColPos = 0
+
+End
+
+Public Sub NewLine()
+
+  If Modes[MODE_NEWLINE] Then ToStartOfLine
+
+  Index()
+
+End
+
+Public Sub NextLine()
+
+  ToStartOfLine
+  Index
+
+End
+
+Public Sub Index()
+
+  If $iRowPos = $iBottomMargin Then
+    ScrollUp
+  Else If $iRowPos < $iRows - 1 Then
+    $iRowPos += 1
+
+  Endif
+
+End
+
+Public Sub ScrollUp(Optional n As Integer = 1)
+
+  Dim hLine As New CChar[$iColumns]
+  Dim hTemp As CChar
+  Dim i As Integer
+
+  If $iTopMargin = 0 Then AddHistory
+
+  ScrollUpFrom($iTopMargin, n)
+  Print "ScrollUp"
+
+End
+
+Public Sub ScrollUpFrom(iFrom As Integer, Optional n As Integer = 1)
+
+  Dim hLine As New CChar[$iColumns]
+  Dim hTemp As CChar
+  Dim i As Integer
+
+  If iFrom + n > $iBottomMargin Then Return
+
+  $aLines.Remove(0)
+  $aLines.Add(hLine)
+
+End
+
+Public Sub BackSpace()
+  $iColPos = Min($iColumns - 1, $iColPos)
+  $iColPos = Max($iColPos - 1, 0)
+  If $aLines[$iRowPos].Max < $iRowPos Then
+    $aLines[$iRowPos].Resize($iRowPos + 1)
+  Endif
+  $aLines[$iRowPos][$iColPos] = $hDefaultChar
+
+End
+
+Public Sub Resize(Rows As Integer, Cols As Integer)
 
   Dim i As Integer
+  Dim hLine As Cchar[]
+
+  If $iColumns = Cols And Rows = $iRows Then Return
+  Print "ImaxCol", $iColumns, Cols
+  Print "RowPos", $iRowPos, Rows - 1
+  If $iRowPos > Rows - 1 Then
+    For i = 0 To $iRowPos - (rows)
+      AddHistory
+      ScrollUpFrom(0, 1)
+    Next
+  Endif
+  $aLines.Resize(Rows)
+  $aLineProperies.Resize(Rows)
+  For i = 0 To Rows - 1
+    If IsNull($aLines[i]) Then
+      hLine = New CChar[Cols]
+      $aLines[i] = hLine
+    Endif
+  Next
+
+  $iColumns = Cols
+  $iRows = Rows
+  $iColPos = Min($iColPos, $iColumns - 1)
+  $iRowPos = Min($iRowPos, $iRows - 1)
+  $iBottomMargin = $iRows - 1
+End
+
+Public Function GetAllLinesCount() As Integer
+
+  Return ($aHistory.Count + $aLines.Count)
+
+End
+
+''Move the cursor down by n lines. The cursor will Stop at the
+''bottom margin.
+Public Sub CursorDown(Optional n As Integer = 1)
+
+End
+
+'' Move the cursor to the left by n columns.
+'' The cursor will Stop at the first column.
+
+Public Sub CursorLeft(Optional n As Integer = 1)
+
+  $iColPos = Min($iColumns - 1, $iColPos)  'no wrap
+  $iColPos = Max(0, $iColPos - n)
+
+End
+
+''Move the cursor To the right by n columns.
+''The cursor will Stop at the right - most column.
+
+Public Sub CursorRight(Optional n As Integer = 1)
+
+  $iColPos = Min($iColumns - 1, $iColPos + n)
+
+End
+
+''Position the cursor on line.
+Public Sub SetCursorLine(iLine As Integer)
+
+End
+
+''Position the cursor at column.
+Public Sub SetCursorColumn(iColumn As Integer)
+
+End
+
+''Sets the margins for scrolling the screen.
+''iTopLine  : The top line of the new scrolling margin.
+''iBottomLine : The bottom line of the new scrolling margin.
+Public Sub SetMargins(iTopLine As Integer, iBottomLine As Integer)
+
+  If iTopLine = 0 Then iTopLine = 1
+  If iBottomLine = 0 Then iBottomLine = $aLines.Count
+
+  Dec iTopLine
+  Dec iBottomLine
+
+  If Not (0 <= iTopLine And iTopLine < iBottomLine And iBottomLine < $aLines.Count) Then Return
+
+  $iTopMargin = iTopLine
+  $iBottomMargin = iTopLine
+  $iColPos = 0
+  $iRowPos = IIf(Modes[MODE_ORIGIN], iTopLine, 0)
+
+End
+
+Private Function TopMargin_Read() As Integer
+
+  Return $iTopMargin
+
+End
+
+Private Function BottomMargin_Read() As Integer
+
+  Return $iBottomMargin
+
+End
+
+Public Sub AddHistory()
+
+  $aHistory.Add($aLines[0])
+
+End
+
+Public Sub Reset()
+
+  Modes[MODE_WRAP] = True
+  SavedMode[MODE_WRAP] = Modes[MODE_WRAP]
+
+  Modes[MODE_ORIGIN] = False
+  SavedMode[MODE_ORIGIN] = Modes[MODE_ORIGIN]
+
+  Modes[MODE_INSERT] = False
+  SavedMode[MODE_INSERT] = Modes[MODE_INSERT]
+
+  Modes[MODE_CURSOR] = True
+  Modes[MODE_SCREEN] = False
+  Modes[MODE_NEWLINE] = True
+
+End
+
+Public Sub _Free()
+
+  $aLines.Clear
+  $aHistory.Clear
+  '$colImg.Clear
+
+End
+
+Public Sub GetLines(iRow As Integer) As CChar[][]
   
-  For i = 0 To $iColumns - 1
-    aLine = New CCharacter
+  Dim hLines As New CChar[][]
+  Dim i As Integer
+  Dim iMax As Integer
+  'hLines.Resize($aLines.Count)
+  For i = $aHistory.Count - Abs(iRow) To $aHistory.count - 1
+    hLines.Add($aHistory[i])
+    
+  Next
+  iMax = $iRows - hLines.count - 1
+  For i = 0 To iMax
+    hLines.Add($aLines[i])
   Next
   
+  Return hLines
+End
+
+Public Sub _GetDefaultChar() As CChar
+  
+  Return $hDefaultChar
+  
+End
+
+Private Function CursorX_Read() As Integer
+
+  Return $iColPos
+
+End
+
+Private Function CursorY_Read() As Integer
+
+  Return $iRowPos
+
 End
 
 
-Private Sub ScrollUp(n As Integer)
-  
-  
-  
+
+Private Function Columns_Read() As Integer
+
+  Return $iColumns
+
 End
+
+Private Function Rows_Read() As Integer
+
+  Return $iRows
+
+End
+
+

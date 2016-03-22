@@ -1,0 +1,85 @@
+' Gambas class file
+
+Private $Screens As New CScreen[2]
+Private $hCurScreen As CScreen
+Property Read CurrentScreen As CScreen
+
+
+Public Sub _New()
+
+  $Screens[0] = New CScreen(40, 80)
+  '$Screens[1] = New CScreen(24, 80)
+  $hCurScreen = $Screens[0]
+
+End
+
+Private Sub ReceiveChar(iChar As Integer)
+
+  Dim C As Integer
+
+  C = iChar 'And &HFF
+  Try Print C & "     " & Chr(C)
+  Select Case C
+
+    Case 8  'BkSpace
+      $hCurScreen.BackSpace()
+    Case 9  'BkSpace
+      '$hCurScreen.Tab()
+    Case 10 '\n LF
+      $hCurScreen.NewLine()
+    Case 13  '\r CR
+      $hCurScreen.NewLine 'ToStartOfLine()
+    Default
+      $hCurScreen.DisplayChar(C)
+  End Select
+  
+
+End
+
+Public Sub ReceiveStream(sValue As String)
+
+  Dim i As Integer
+
+  For i = 1 To String.Len(sValue)
+    ReceiveChar(String.Code(String.Mid(sValue, i, 1)))
+  Next
+
+End
+
+Public Sub Draw()
+  
+  $hCurScreen.Draw
+  
+End
+
+Public Sub Resize(iRows As Integer, iColumns As Integer)
+  'Print iRows
+  iRows = Max(2, iRows)
+  iColumns = Max(14, iColumns)
+  $Screens[0].Resize(iRows, iColumns)
+  '$Screens[1].Resize(iRows, iColumns)
+End
+
+
+Public Sub GetFullHeight() As Integer
+  
+  Return $hCurScreen.GetFullHeight()
+  
+End
+
+Public Sub GetLines(iFrom As Integer) As CChar[][]
+  
+  Return $hCurScreen.GetLines(iFrom)
+  
+End
+
+
+
+
+
+
+Private Function CurrentScreen_Read() As CScreen
+
+  Return $hCurScreen
+
+End

@@ -1,0 +1,29 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,104,64)
+  Text = ("Gambas Terminal")
+  Transparent = True
+  Arrangement = Arrange.Horizontal
+  { Terminal1 Terminal
+    MoveScaled(3,4,58,53)
+    Font = Font["Monospace"]
+    Expand = True
+  }
+  { VBox1 VBox
+    MoveScaled(67,4,37,58)
+    Background = Color.Background
+    Spacing = True
+    Margin = True
+    { ColorButton1 ColorButton
+      MoveScaled(0,0,35,6)
+    }
+    { SpinBar1 SpinBar
+      MoveScaled(1,7,35,6)
+      Value = 80
+      MaxValue = 255
+      Text = ("Alpha")
+      Step = 1
+    }
+  }
+}
