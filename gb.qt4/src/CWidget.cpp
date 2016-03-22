@@ -74,14 +74,19 @@ static QMap<int, int> _x11_to_qt_keycode;
 
 CWIDGET *CWIDGET_active_control = 0;
 CWIDGET *CWIDGET_previous_control = 0;
-static bool _focus_change = false;
-static CWIDGET *_old_active_control = 0;
+
 int CCONTROL_last_event_type = 0;
 
+static bool _focus_change = false;
+static CWIDGET *_old_active_control = 0;
 static CWIDGET *_hovered = 0;
 static CWIDGET *_official_hovered = 0;
 
-QSet<CWIDGET *> *_enter_leave_set = NULL;
+#ifdef QT5
+static CWIDGET *_last_entered = NULL;
+#else
+static QSet<CWIDGET *> *_enter_leave_set = NULL;
+#endif
 
 static QT_COLOR_FUNC _after_set_color = NULL;
 
@@ -346,6 +351,9 @@ static void CWIDGET_enter(void *_object)
 	//qDebug("CWIDGET_enter: %p %s", THIS, THIS->name);
 	if (!THIS->flag.inside)
 	{
+#ifdef QT5
+		_last_entered = THIS;
+#endif
 		THIS->flag.inside = true;
 		GB.Raise(THIS, EVENT_Enter, 0);
 	}
@@ -356,6 +364,10 @@ static void CWIDGET_leave(void *_object)
 	//qDebug("CWIDGET_leave: %p %s", THIS, THIS->name);
 	if (THIS->flag.inside)
 	{
+#ifdef QT5
+		if (_last_entered == THIS)
+			_last_entered = (CWIDGET *)CWIDGET_get_parent((void *)_last_entered);
+#endif
 		THIS->flag.inside = false;
 		GB.Raise(THIS, EVENT_Leave, 0);
 	}
@@ -421,6 +433,13 @@ QString CWIDGET_Utf8ToQString(GB_STRING *str)
 	return QString::fromUtf8((const char *)(str->value.addr + str->value.start), str->value.len);
 }
 
+#ifdef QT5
+void CWIDGET_leave_popup(void *)
+{
+	while (_last_entered)
+		CWIDGET_leave(_last_entered);
+}
+#else
 void *CWIDGET_enter_popup()
 {
 	void *save = _enter_leave_set;
@@ -464,6 +483,7 @@ static void insert_enter_leave_event(CWIDGET *control, bool in)
 	_enter_leave_set->insert(control);
 	GB.Ref(control);
 }
+#endif
 
 static bool _post_check_hovered = false;
 static CWIDGET *_post_check_hovered_window = NULL;
@@ -499,6 +519,11 @@ void CWIDGET_destroy(CWIDGET *_object)
 		return;
 	}
 
+#ifdef QT5
+	if (_last_entered == THIS)
+		_last_entered = NULL;
+#endif
+	
 	//qDebug("CWIDGET_destroy: %s %p", GB.GetClassName(THIS), THIS);
 
 	CWIDGET_set_visible(THIS, false);
@@ -2490,16 +2515,22 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 	__ENTER:
 	{
+#ifndef QT5
 		QWidget *popup = qApp->activePopupWidget();
+#endif
 		
 		//qDebug("enter %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
 		
 		if (real)
 		{
+#ifdef QT5
+			CWIDGET_enter(control);
+#else
 			if (!popup || CWidget::getReal(popup))
 				CWIDGET_enter(control);
 			else if (_enter_leave_set)
 				insert_enter_leave_event(control, true);
+#endif
 		}
 		
 		goto __NEXT;
@@ -2507,16 +2538,22 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 
 	__LEAVE:
 	{
+#ifndef QT5
 		QWidget *popup = qApp->activePopupWidget();
+#endif
 		
 		//qDebug("leave %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
 		
 		if (real)
 		{
+#ifdef QT5
+			CWIDGET_leave(control);
+#else
 			if (!popup || CWidget::getReal(popup))
 				CWIDGET_leave(control);
 			else if (_enter_leave_set)
 				insert_enter_leave_event(control, false);
+#endif
 		}
 		
 		goto __NEXT;

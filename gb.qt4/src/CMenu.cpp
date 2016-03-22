@@ -327,7 +327,11 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 		if (!menu->menu)
 		{
+#if QT_VERSION >= QT_VERSION_CHECK(5,0,0) && QT_VERSION < QT_VERSION_CHECK(5,5,0)
 			menu->menu = new MyMenu();
+#else
+			menu->menu = new QMenu();
+#endif
 			menu->menu->setSeparatorsCollapsible(true);
 			((QAction *)(menu->widget.widget))->setMenu(menu->menu);
 

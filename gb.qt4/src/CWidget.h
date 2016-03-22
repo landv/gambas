@@ -216,8 +216,13 @@ void CWIDGET_handle_focus(CWIDGET *control, bool on);
 void CWIDGET_finish_focus(void);
 void CWIDGET_register_proxy(void *_object, void *proxy);
 bool CWIDGET_container_for(void *_object, void *container_for);
+#ifdef QT5
+#define CWIDGET_enter_popup() (0)
+void CWIDGET_leave_popup(void *);
+#else
 void *CWIDGET_enter_popup();
 void CWIDGET_leave_popup(void *save);
+#endif
 void CACTION_register(void *control, const char *old, const char *key);
 void CACTION_raise(void *control);
 bool CWIDGET_get_allow_focus(void *_object);
