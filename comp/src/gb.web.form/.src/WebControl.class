@@ -1,5 +1,7 @@
 ' Gambas class file
 
+''' This class is the parent class of every web controls.
+
 Export
 Create Private
 
@@ -11,22 +13,61 @@ Public Const _DefaultEvent As String = "Render"
 Event Render
 Event Message(Source As WebControl, Action As String)
 
+'' Return the server control identifier.
 Property Read Id As Integer
+
+'' Return the name of the control, used as an identifier on the client side.
 Property Read Name As String
+
+'' Returns or sets the control tag.
+''
+'' This property is intended for the programmer and is never used by the component. It can contain any [/lang/type/variant] value.
 Property Tag As Variant
+
+'' Return the parent container of the control.
 Property Read Parent As WebContainer
+
+'' Return or set if the control should expand its size according to its parent arrangement mode.
 Property Expand As Boolean
+
+'' Return or set if the control is visible.
 Property Visible As Boolean
+
+'' Return a virtual object that allows to define specific style sheet elements of the control.
 Property Read Style As WebControlStyle
+
+'' Return the web form that control belongs to.
 Property Read Form As WebForm
+
+'' Return or set the explicit width of the control.
+''
+'' This property can take any valid CSS size. If not set, the control will have its default width.
 Property Width, W As String
+
+'' Return or set the explicit height of the control.
+''
+'' This property can take any valid CSS size. If not set, the control will have its default height.
 Property Height, H As String
+
+'' Return or set if the control must be ignored by its parent container in automatic arrangement mode.
 Property Ignore As Boolean
+
+'' Return or set if the control is enabled.
 Property Enabled As Boolean
+
+'' Return or set the background color of the control.
 Property Background As Integer
+
+'' Return or set the foreground color of the control.
 Property Foreground As Integer
+
+'' Return or set if the control has a border.
 Property Border As Boolean
+
+'' Return or set a specific CSS class added to the control.
 Property Class As String
+
+'' Return or set the tooltip displayed when the mouse cursor hovers the control.
 Property Tooltip As String
 
 Static Private $iLastId As Integer

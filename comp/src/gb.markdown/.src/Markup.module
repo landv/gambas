@@ -347,7 +347,7 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
         aCommand = aResult.Extract(iPos, -1)
         
         If Left(sClass) <> " " Then
-          aResult.Add("<div class=\"" & sClass & "\">")
+          aResult.Add("<div><div class=\"" & sClass & "\">")
           If sClass Begins "code " Then
             aTemp = ProcessCode(sClass, aCommand)
           Else
@@ -355,9 +355,11 @@ Private Sub ConvertMarkup(aLine As String[], Optional bDoNotSetLine As Boolean) 
           Endif
           If aTemp Then aCommand = aTemp
           aResult.Insert(aCommand)
-          aResult.Add("</div>")
+          aResult.Add("</div></div>")
         Else
-          aResult.Add("<table class=\"table " & LTrim(sClass) & "\">")
+          sClass = Trim(sClass)
+          If Not sClass Then sClass = "table"
+          aResult.Add("<table class=\"" & sClass & "\">")
           If aCommand.Count And If aCommand[0] = "</th></tr>" Then
             aCommand.Remove(0)
           Else

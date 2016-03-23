@@ -428,6 +428,7 @@ m
 #WebControl
 
 
+'This class is the parent class of every web controls.
 _IsControl
 C
 b
@@ -456,78 +457,102 @@ Id
 r
 i
 
+'Return the server control identifier.
 Name
 r
 s
 
+'Return the name of the control, used as an identifier on the client side.
 Tag
 p
 v
 
+'Returns or sets the control tag.
+'This property is intended for the programmer and is never used by the component. It can contain any [/lang/type/variant] value.
 Parent
 r
 WebContainer
 
+'Return the parent container of the control.
 Expand
 p
 b
 
+'Return or set if the control should expand its size according to its parent arrangement mode.
 Visible
 p
 b
 
+'Return or set if the control is visible.
 Style
 r
 WebControlStyle
 
+'Return a virtual object that allows to define specific style sheet elements of the control.
 Form
 r
 WebForm
 
+'Return the web form that control belongs to.
 Width
 p
 s
 
+'Return or set the explicit width of the control.
+'This property can take any valid CSS size. If not set, the control will have its default width.
 W
 p
 s
 
+'Return or set the explicit width of the control.
+'This property can take any valid CSS size. If not set, the control will have its default width.
 Height
 p
 s
 
+'Return or set the explicit height of the control.
+'This property can take any valid CSS size. If not set, the control will have its default height.
 H
 p
 s
 
+'Return or set the explicit height of the control.
+'This property can take any valid CSS size. If not set, the control will have its default height.
 Ignore
 p
 b
 
+'Return or set if the control must be ignored by its parent container in automatic arrangement mode.
 Enabled
 p
 b
 
+'Return or set if the control is enabled.
 Background
 p
 i
 
+'Return or set the background color of the control.
 Foreground
 p
 i
 
+'Return or set the foreground color of the control.
 Border
 p
 b
 
+'Return or set if the control has a border.
 Class
 p
 s
 
+'Return or set a specific CSS class added to the control.
 Tooltip
 p
 s
 
+'Return or set the tooltip displayed when the mouse cursor hovers the control.
 _NextName
 V
 s
