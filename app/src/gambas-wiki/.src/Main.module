@@ -376,6 +376,33 @@ Private Sub LoadUser(sUser As String) As Collection
 
 End
 
+Private Sub ConvertExample()
+
+  Dim sDir As String
+  Dim sFile As String
+  Dim sName As String
+  Dim sOldData As String
+  Dim sData As String
+  Dim sSuffix As String
+  
+  sDir = Root &/ "data"
+  sSuffix = "." & Format(Now, "yyyymmddhhnnssuu") & ".admin"
+
+  For Each sFile In RDir(sDir)
+    sName = File.Name(sFile)
+    If sName <> "~page" Then Continue
+    sOldData = File.Load(sDir &/ sFile)
+    sData = Wiki.RewriteExample(sOldData)
+    If sData = sOldData Then Continue
+    Print File.Dir(sFile)
+    File.Save(sDir &/ sFile, sData)
+    Copy sDir &/ sFile To sDir &/ sFile & sSuffix
+  Next
+
+End
+
+
+
 Public Sub Main()
 
   Dim sMsg As String
@@ -406,6 +433,9 @@ Public Sub Main()
       'Copy "passwd" To Root &/ "passwd"
     Endif
     OldWiki.Restore
+    Return
+  Else If Args[1] = "-convert-example" Then
+    ConvertExample
     Return
   Endif
   

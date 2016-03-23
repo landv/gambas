@@ -47,7 +47,7 @@ Private Sub CloseSection(aResult As String[])
 End
 
 
-Private Sub RewriteExample(sData As String) As String
+Public Sub RewriteExample(sData As String) As String
 
   Dim aData As String[]
   Dim I As Integer
@@ -133,6 +133,7 @@ Private Sub RewriteExample(sData As String) As String
 
 End
 
+
 Private Sub _PrintPage()
 
   Dim sPath As String
@@ -161,9 +162,9 @@ Private Sub _PrintPage()
         sData = "@{symbols}\n"
       Endif
     Endif
-    If Main.Path Begins "/comp/" Or If Main.Path Begins "/lang/" Or If Main.Path Begins "/cat/" Then
-      sData = RewriteExample(sData)
-    Endif
+    ' If Main.Path Begins "/comp/" Or If Main.Path Begins "/lang/" Or If Main.Path Begins "/cat/" Then
+    '   sData = RewriteExample(sData)
+    ' Endif
     Print Html(sData);
     Return
   Endif
