@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(9.4286,14,138,76)
+  MoveScaled(9.4286,14,158,76)
   Icon = Picture["icon:/small/text"]
   Persistent = True
   Arrangement = Arrange.Vertical
@@ -220,7 +220,7 @@
     }
   }
   { panToolBar ToolBar
-    MoveScaled(0,0,135,4)
+    MoveScaled(0,0,152,4)
     Key = "text"
     Text = ("Text editor")
     Separator = True
@@ -376,7 +376,7 @@
       MoveScaled(83,0,1,4)
     }
     { btnProc MenuButton
-      MoveScaled(85,0,32,4)
+      MoveScaled(85,0,52,4)
       Mouse = Mouse.Pointing
       Action = ".proc"
       Text = ("Procedure list")
@@ -385,7 +385,7 @@
       Border = False
     }
     { btnEndOfLine MenuButton
-      MoveScaled(117,0,11,4)
+      MoveScaled(139,0,11,4)
       Visible = False
       ToolTip = ("End of line")
       Action = ".eol"
