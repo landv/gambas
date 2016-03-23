@@ -25,6 +25,7 @@
 #define __GBX_CLASS_DESC_H
 
 #include "gb_class_desc_common.h"
+#include "gb_table.h"
 
 #define CD_PROPERTY               'p'
 #define CD_PROPERTY_READ          'r'
@@ -186,7 +187,9 @@ typedef
 	struct {
 		char *name;
 		int len;
+#if TABLE_USE_KEY
 		uint key;
+#endif
 		CLASS_DESC *desc;
 		}
 	PACKED
