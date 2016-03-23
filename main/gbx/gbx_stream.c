@@ -295,7 +295,7 @@ void STREAM_close(STREAM *stream)
 	{
 	  if ((*(stream->type->close))(stream))
 		{
-			if (errno != EBADF)
+			if (errno != EBADF && errno != EINPROGRESS && errno != EAGAIN)
 				THROW_SYSTEM(errno, "");
 		}
 	}
