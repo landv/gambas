@@ -361,13 +361,13 @@ static void CWIDGET_enter(void *_object)
 
 static void CWIDGET_leave(void *_object)
 {
-	//qDebug("CWIDGET_leave: %p %s", THIS, THIS->name);
-	if (THIS->flag.inside)
-	{
 #ifdef QT5
 		if (_last_entered == THIS)
 			_last_entered = (CWIDGET *)CWIDGET_get_parent((void *)_last_entered);
 #endif
+	//qDebug("CWIDGET_leave: %p %s", THIS, THIS->name);
+	if (THIS->flag.inside)
+	{
 		THIS->flag.inside = false;
 		GB.Raise(THIS, EVENT_Leave, 0);
 	}
