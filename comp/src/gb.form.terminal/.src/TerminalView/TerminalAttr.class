@@ -1,0 +1,25 @@
+' Gambas class file
+
+Export
+
+Public Foreground As Integer = -1
+Public Background As Integer = -1
+Public Bold As Boolean
+Public Bright As Boolean
+Public Dim As Boolean
+Public Underline As Boolean
+Public Reverse As Boolean
+Public Blink As Boolean
+
+Public Sub Reset()
+  
+  Foreground = -1
+  Background = -1
+  Bold = False
+  Bright = False
+  {Dim} = False
+  Underline = False
+  Reverse = False
+  Blink = False
+  
+End

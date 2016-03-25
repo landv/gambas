@@ -77,10 +77,18 @@ void CTIMER_raise(void *_object)
 }
 
 
-BEGIN_METHOD_VOID(Timer_new)
+BEGIN_METHOD(Timer_new, GB_INTEGER delay)
 
+	int delay;
 	THIS->id = 0;
-	THIS->delay = 1000;
+	
+	delay = VARGOPT(delay, -1);
+	if (delay < 0)
+		delay = 1000;
+	
+	THIS->delay = delay;
+	if (!MISSING(delay))
+		enable_timer(THIS, TRUE);
 
 END_METHOD
 
@@ -172,7 +180,7 @@ GB_DESC NATIVE_Timer[] =
 {
 	GB_DECLARE("Timer", sizeof(CTIMER)),
 
-	GB_METHOD("_new", NULL, Timer_new, NULL),
+	GB_METHOD("_new", NULL, Timer_new, "[(Delay)i]"),
 	GB_METHOD("_free", NULL, Timer_free, NULL),
 
 	GB_PROPERTY("Enabled", "b", Timer_Enabled),

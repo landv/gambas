@@ -1,0 +1,82 @@
+' Gambas class file
+
+Private $hProcess As Process
+
+
+
+Public Sub TextBox1_Activate()
+
+  If $hProcess Then Return
+  
+  $hProcess = Shell TextBox1.Text For Input Output As "Process"
+  
+End
+
+Public Sub Timer1_Timer()
+
+  TerminalView1.Insert(CStr(Int(Timer * 10)))
+  TerminalView1.NewLine
+
+End
+
+Public Sub Button1_Click()
+
+  TerminalView1.Attr.Bold = Last.Value
+
+End
+
+Public Sub Process_Read()
+
+  Dim sLine As String
+  
+  While Not Eof($hProcess)
+    sLine = $hProcess.ReadLine()
+    TerminalView1.Insert(sLine)
+    If Not $hProcess.EndOfFile Then TerminalView1.NewLine
+  Wend
+  TerminalView1.EnsureVisible
+  
+End
+
+Public Sub Process_Kill()
+  
+  $hProcess = Null
+  
+End
+
+
+Public Sub Form_Open()
+
+  TextBox1.SetFocus
+
+End
+
+Public Sub Button2_Click()
+
+  TerminalView1.Attr.Underline = Last.Value
+
+End
+
+Public Sub Button3_Click()
+
+  TerminalView1.Attr.Reverse = Last.Value
+
+End
+
+Public Sub Button4_Click()
+
+  TerminalView1.Attr.Bright = Last.Value
+
+End
+
+Public Sub Button5_Click()
+
+  TerminalView1.Attr.Foreground = Rand(0, 7)
+
+End
+
+Public Sub TerminalView1_KeyPress()
+
+  Debug Key.Code
+
+End
