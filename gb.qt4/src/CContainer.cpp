@@ -1342,7 +1342,7 @@ BEGIN_METHOD(Container_FindChild, GB_INTEGER x; GB_INTEGER y)
 		if (w->geometry().contains(VARG(x), VARG(y)))
 		{
 			control = CWidget::get(w);
-			if (control)
+			if (control && control != THIS)
 			{
 				GB.ReturnObject(control);
 				return;
