@@ -27,13 +27,10 @@ End
 
 Public Sub Process_Read()
 
-  Dim sLine As String
+  Dim sData As String
   
-  While Not Eof($hProcess)
-    sLine = $hProcess.ReadLine()
-    TerminalView1.Insert(sLine)
-    If Not $hProcess.EndOfFile Then TerminalView1.NewLine
-  Wend
+  sData = Read #$hProcess, Lof($hProcess)
+  TerminalView1.Print(sData)
   TerminalView1.EnsureVisible
   
 End

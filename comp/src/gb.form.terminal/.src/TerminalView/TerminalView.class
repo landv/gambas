@@ -16,6 +16,7 @@ Property Read Line As Integer
 Property Limit As Integer
 
 Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
+Static Private $sControlChar As String
 
 Private $hPanel As Panel
 Private $hView As ScrollArea
@@ -43,6 +44,14 @@ Private $bHideCursor As Boolean
 Private $hMouseTimer As Timer
 
 Public Sub _new()
+  
+  Dim I As Integer
+  
+  If Not $sControlChar Then
+    For I = 0 To 31
+      $sControlChar &= Chr$(I)
+    Next
+  Endif
   
   Me.Font = Font["monospace"]
 
@@ -307,7 +316,7 @@ Private Sub GetLine(Y As Integer) As CTerminalLine
 
 End
 
-Public Sub Insert(sText As String)
+Private Sub Insert(sText As String)
 
   Dim hLine As CTerminalLine
   Dim iLen As Integer = String.Len(sText)
@@ -338,6 +347,44 @@ Public Sub Insert(sText As String)
   $X += iLen
   
 End
+
+Public Sub Print(sText As String)
+
+  Dim aText As String[]
+  Dim sElt As String
+  Dim iLen As Integer
+  Dim iCode As Integer
+  
+  aText = Split(sText, $sControlChar)
+  
+  For Each sElt In aText
+    If sElt Then Insert(sElt)
+    iLen += Len(sElt)
+    If iLen >= Len(sText) Then Break
+    iCode = Asc(sText, iLen + 1)
+    Select Case iCode
+      Case 8
+        If $X Then
+          Dec $X
+          Insert(" ")
+          Dec $X
+        Endif
+      Case 9
+        Tab()
+      Case 10
+        NewLine()
+      Case 12
+        Clear()
+      Case 13
+        Goto(0, $Y)
+      Case Else
+        Insert("^" & Chr$(64 + iCode))
+    End Select
+    Inc iLen
+  Next
+  
+End
+
 
 Public Sub NewLine()
   
