@@ -144,13 +144,13 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
                 Case 27
                   hView.Attr.Reverse = False
                 Case 30 To 37
-                  hView.Attr.Background = iArg - 30
+                  hView.Attr.Foreground = iArg - 30
                 Case 39
-                  hView.Attr.Background = -1
-                Case 40 To 47
-                  hView.Attr.Foreground = iArg - 40
-                Case 49
                   hView.Attr.Foreground = -1
+                Case 40 To 47
+                  hView.Attr.Background = iArg - 40
+                Case 49
+                  hView.Attr.Background = -1
                   
               End Select
             Next
