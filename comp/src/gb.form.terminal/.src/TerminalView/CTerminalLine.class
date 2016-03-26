@@ -15,11 +15,10 @@ Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
   hAttr.Foreground = Lsr(iAttr And &HF0, 4)
   If hAttr.Foreground = 15 Then hAttr.Foreground = -1
   hAttr.Bold = iAttr And &H100
-  hAttr.Bright = iAttr And &H200
-  hAttr.Dim = iAttr And &H400
-  hAttr.Reverse = iAttr And &H800
-  hAttr.Underscore = iAttr And &H1000
-  hAttr.Blink = iAttr And &H2000
+  hAttr.Dim = iAttr And &H200
+  hAttr.Reverse = iAttr And &H400
+  hAttr.Underscore = iAttr And &H800
+  hAttr.Blink = iAttr And &H1000
   
 End
 
@@ -29,11 +28,10 @@ Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 
   
   iAttr = (hAttr.Background And 15) + Lsl(hAttr.Foreground And 15, 4)
   If hAttr.Bold Then iAttr += &H100
-  If hAttr.Bright Then iAttr += &H200
-  If hAttr.Dim Then iAttr += &H400
-  If hAttr.Reverse Then iAttr += &H800
-  If hAttr.Underscore Then iAttr += &H1000
-  If hAttr.Blink Then iAttr += &H2000
+  If hAttr.Dim Then iAttr += &H200
+  If hAttr.Reverse Then iAttr += &H400
+  If hAttr.Underscore Then iAttr += &H800
+  If hAttr.Blink Then iAttr += &H1000
   
   If iAttr = 0 And X + L >= Attr.Count Then
     Attr.Resize(X)

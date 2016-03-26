@@ -123,7 +123,6 @@ Private Sub CalcWidth()
     $OH = $H
     If $hProcess Then $hProcess.Term.Resize($W, $H)
   Endif
-  ' TODO: How to tell running process about terminal size change?
 
 End
 
@@ -251,10 +250,6 @@ DRAW_TEXT:
   Paint.DrawText(sText, X, Y + $iAscent)
   If hAttr.Bold Then Paint.DrawText(sText, X + 1, Y + $iAscent)
   Paint.Background = Color.SetAlpha(iFg, 64)
-  If hAttr.Bright Then
-    Paint.DrawText(sText, X + 1, Y + $iAscent)
-    If hAttr.Bold Then Paint.DrawText(sText, X + 2, Y + $iAscent)
-  Endif
   If hAttr.Underscore Then Paint.FillRect(X, Y + $LH - 1, iLen * $CW, 1, Paint.Background)
   X += iLen * $CW
   P = I

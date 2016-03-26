@@ -117,42 +117,44 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
         Case "m" ' Set attribute
           
           GoSub GET_ARGS
-          For Each sArg In aArg
-            
-            Try iArg = CInt(sArg)
-            If Error Then Continue
-            
-            Select Case iArg
+          If aArg Then
+            For Each sArg In aArg
               
-              Case 0
-                hView.Attr.Reset()
-              Case 1
-                hView.Attr.Bright = True
-              Case 2
-                hView.Attr.Dim = True
-              Case 4
-                hView.Attr.Underline = True
-              Case 7
-                hView.Attr.Reverse = True
-              Case 21
-                hView.Attr.Bright = False
-              Case 22
-                hView.Attr.Dim = False
-              Case 24
-                hView.Attr.Underline = False
-              Case 27
-                hView.Attr.Reverse = False
-              Case 30 To 37
-                hView.Attr.Background = iArg - 30
-              Case 39
-                hView.Attr.Background = -1
-              Case 40 To 47
-                hView.Attr.Foreground = iArg - 30
-              Case 49
-                hView.Attr.Foreground = -1
+              Try iArg = CInt(sArg)
+              If Error Then Continue
+              
+              Select Case iArg
                 
-            End Select
-          Next
+                Case 0
+                  hView.Attr.Reset()
+                Case 1
+                  hView.Attr.Bold = True
+                Case 2
+                  hView.Attr.Dim = True
+                Case 4
+                  hView.Attr.Underscore = True
+                Case 7
+                  hView.Attr.Reverse = True
+                Case 21
+                  hView.Attr.Bold = False
+                Case 22
+                  hView.Attr.Dim = False
+                Case 24
+                  hView.Attr.Underscore = False
+                Case 27
+                  hView.Attr.Reverse = False
+                Case 30 To 37
+                  hView.Attr.Background = iArg - 30
+                Case 39
+                  hView.Attr.Background = -1
+                Case 40 To 47
+                  hView.Attr.Foreground = iArg - 40
+                Case 49
+                  hView.Attr.Foreground = -1
+                  
+              End Select
+            Next
+          Endif
         
         Case "s" ' Save cursor
           
@@ -176,5 +178,7 @@ GET_ARGS:
   Else
     aArg = Null
   Endif
+  
+  Return
   
 End
