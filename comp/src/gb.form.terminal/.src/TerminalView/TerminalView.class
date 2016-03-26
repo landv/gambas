@@ -53,6 +53,8 @@ Private $hMouseTimer As Timer
 Private $hProcess As Process
 Private $hFilter As TerminalFilter
 Private $sType As String
+Private $OW As Integer
+Private $OH As Integer
 
 Public Sub _new()
   
@@ -116,6 +118,11 @@ Private Sub CalcWidth()
   If $hView.ScrollH <= $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
   $W = Max(1, CInt(W / $CW))
   $H = Max(1, $hView.ClientH \ $LH)
+  If $W <> $OW Or If $H <> $OH Then
+    $OW = $W
+    $OH = $H
+    If $hProcess Then $hProcess.Term.Resize($W, $H)
+  Endif
   ' TODO: How to tell running process about terminal size change?
 
 End
@@ -403,7 +410,7 @@ Public Sub Print(sText As String)
       Case 10
         NewLine()
       Case 12
-        Clear()
+        EraseScreen()
       Case 13
         Goto(0, $Y)
       Case Else
@@ -776,6 +783,7 @@ Public Sub Exec(aCommand As String[]) As Process
   If $hProcess Then Return
   
   $hProcess = Exec aCommand With ["TERM=xterm"] For Input Output As "Process"
+  $hProcess.Term.Resize($W, $H)  
   
 End
 
@@ -784,6 +792,7 @@ Public Sub Shell(sCommand As String) As Process
   If $hProcess Then Return
   
   $hProcess = Shell sCommand With ["TERM=xterm"] For Input Output As "Process"
+  $hProcess.Term.Resize($W, $H)  
   
 End
 
