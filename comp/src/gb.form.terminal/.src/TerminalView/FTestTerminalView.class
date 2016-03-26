@@ -2,7 +2,8 @@
 
 Public Sub TextBox1_Activate()
 
-  TerminalView1.Exec(Split(TextBox1.Text, " ", Chr$(34)))
+  Try TerminalView1.Exec(Split(TextBox1.Text, " ", Chr$(34)))
+  If Error Then Debug Error.Text
   
 End
 

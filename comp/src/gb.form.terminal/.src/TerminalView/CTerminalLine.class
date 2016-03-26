@@ -18,7 +18,7 @@ Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
   hAttr.Bright = iAttr And &H200
   hAttr.Dim = iAttr And &H400
   hAttr.Reverse = iAttr And &H800
-  hAttr.Underline = iAttr And &H1000
+  hAttr.Underscore = iAttr And &H1000
   hAttr.Blink = iAttr And &H2000
   
 End
@@ -32,7 +32,7 @@ Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 
   If hAttr.Bright Then iAttr += &H200
   If hAttr.Dim Then iAttr += &H400
   If hAttr.Reverse Then iAttr += &H800
-  If hAttr.Underline Then iAttr += &H1000
+  If hAttr.Underscore Then iAttr += &H1000
   If hAttr.Blink Then iAttr += &H2000
   
   If iAttr = 0 And X + L >= Attr.Count Then

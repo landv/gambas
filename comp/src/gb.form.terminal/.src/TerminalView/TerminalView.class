@@ -248,7 +248,7 @@ DRAW_TEXT:
     Paint.DrawText(sText, X + 1, Y + $iAscent)
     If hAttr.Bold Then Paint.DrawText(sText, X + 2, Y + $iAscent)
   Endif
-  If hAttr.Underline Then Paint.FillRect(X, Y + $LH - 1, iLen * $CW, 1, Paint.Background)
+  If hAttr.Underscore Then Paint.FillRect(X, Y + $LH - 1, iLen * $CW, 1, Paint.Background)
   X += iLen * $CW
   P = I
   Return
@@ -391,6 +391,7 @@ Public Sub Print(sText As String)
     If iLen >= Len(sText) Then Break
     iCode = Asc(sText, iLen + 1)
     Select Case iCode
+      Case 7
       Case 8
         If $X Then
           Dec $X
@@ -475,10 +476,17 @@ Private Function Attr_Read() As TerminalAttr
 
 End
 
-Public Sub EnsureVisible()
+Private Sub EnsureVisibleAt(X As Integer, Y As Integer)
   
-  GetLine($Y)
-  $hView.EnsureVisible($X * $CW, $Y * $LH, $CW, $LH)
+  GetLine(Y)
+  $hView.EnsureVisible(X * $CW, Y * $LH, $CW, $LH)
+  
+End
+
+
+Public Sub EnsureVisible()
+
+  EnsureVisibleAt($X, $Y)  
   
 End
 
@@ -495,7 +503,7 @@ Private Sub Foreground_Write(Value As Integer)
 
 End
 
-Private Sub GotoMouse()
+Private Sub GotoMouse(bStart As Boolean)
 
   Dim X As Integer
   Dim Y As Integer
@@ -503,20 +511,26 @@ Private Sub GotoMouse()
   X = (Mouse.ScreenX - $hView.ScreenX) \ $CW
   Y = (Mouse.ScreenY - $hView.ScreenY + $hView.ScrollY) \ $LH
 
-  Goto(Max(0, Min($W - 1, X)), Max(0, Min(Max($aLine.Max, $hView.ClientH \ $LH - 1), Y)))
-  EnsureVisible
+  X = Max(0, Min($W - 1, X))
+  Y = Max(0, Min(Max($aLine.Max, $hView.ClientH \ $LH - 1), Y))
+  
+  If bStart Then
+    $X1 = X
+    $Y1 = Y
+  Endif
+  $X2 = X
+  $Y2 = Y
+  
+  Refresh
+  
+  EnsureVisibleAt(X, Y)
 
 End
 
 Public Sub View_MouseDown()
   
   $bMouseDown = True
-  GotoMouse
-  $X1 = $X
-  $Y1 = $Y
-  $X2 = $X
-  $Y2 = $Y
-  
+  GotoMouse(True)
   $hMouseTimer = New Timer(50) As "MouseTimer"
   
 End
@@ -524,9 +538,7 @@ End
 Public Sub View_MouseMove()
   
   If $bMouseDown Then 
-    GotoMouse
-    $X2 = $X
-    $Y2 = $Y
+    GotoMouse(False)
   Endif
   
 End
@@ -605,10 +617,7 @@ End
 
 Public Sub MouseTimer_Timer()
   
-  GotoMouse
-  $X2 = $X
-  $Y2 = $Y
-  EnsureVisible
+  GotoMouse(False)
   
 End
 
@@ -766,7 +775,7 @@ Public Sub Exec(aCommand As String[]) As Process
 
   If $hProcess Then Return
   
-  $hProcess = Exec aCommand For Input Output As "Process"
+  $hProcess = Exec aCommand With ["TERM=xterm"] For Input Output As "Process"
   
 End
 
@@ -774,7 +783,7 @@ Public Sub Shell(sCommand As String) As Process
 
   If $hProcess Then Return
   
-  $hProcess = Shell sCommand For Input Output As "Process"
+  $hProcess = Shell sCommand With ["TERM=xterm"] For Input Output As "Process"
   
 End
 

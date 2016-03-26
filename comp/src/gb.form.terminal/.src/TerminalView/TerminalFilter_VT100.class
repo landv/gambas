@@ -6,17 +6,32 @@ Private $sLeft As String
 Private $X As Integer
 Private $Y As Integer
 
+Private Enum MODE_NORMAL, MODE_TITLE
+
 Public Sub OutputTo(hView As TerminalView, sData As String)
   
   Dim iPos As Integer
   Dim iPos2 As Integer
   Dim iCode As Integer
+  Dim iMode As Integer
   
   If $sLeft Then sData = $sLeft & sData
   
   Do
     
     Inc iPos
+    
+    If iMode = MODE_TITLE Then
+      iPos2 = InStr(sData, Chr$(7), iPos)
+      If iPos2 = 0 Then
+        $sLeft = Mid$(sData, iPos)
+        Return
+      Endif
+      Debug Mid$(sData, iPos, iPos2 - iPos)
+      iMode = MODE_NORMAL
+      iPos = iPos2
+      Continue
+    Endif
     
     iPos2 = InStr(sData, Chr$(27), iPos)
     If iPos2 = 0 Then 
@@ -46,7 +61,7 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
       
     Loop
     
-    Escape(hView, Mid$(sData, iPos2 + 1, iPos - iPos2))
+    iMode = Escape(hView, sData, iPos2 + 1, iPos - iPos2)
     
   Loop
   
@@ -54,11 +69,17 @@ End
 
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hView As TerminalView, sStr As String)
+Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen As Integer) As Integer
   
   Dim Y As Integer
   Dim X As Integer
   Dim aArg As String[]
+  Dim sArg As String
+  Dim iArg As Integer
+  Dim sStr As String
+  Dim iMode As Integer
+  
+  sStr = Mid$(sData, iPos, iLen)
   
   Select Case Left(sStr)
     
@@ -70,6 +91,10 @@ Private Sub Escape(hView As TerminalView, sStr As String)
     Case "8" ' Restore cursor
       
       hView.CursorGoto($X, $Y)
+    
+    Case "]"
+      
+      iMode = MODE_TITLE
     
     Case "["
       
@@ -89,6 +114,46 @@ Private Sub Escape(hView As TerminalView, sStr As String)
           
           hView.EraseEndOfLine
         
+        Case "m" ' Set attribute
+          
+          GoSub GET_ARGS
+          For Each sArg In aArg
+            
+            Try iArg = CInt(sArg)
+            If Error Then Continue
+            
+            Select Case iArg
+              
+              Case 0
+                hView.Attr.Reset()
+              Case 1
+                hView.Attr.Bright = True
+              Case 2
+                hView.Attr.Dim = True
+              Case 4
+                hView.Attr.Underline = True
+              Case 7
+                hView.Attr.Reverse = True
+              Case 21
+                hView.Attr.Bright = False
+              Case 22
+                hView.Attr.Dim = False
+              Case 24
+                hView.Attr.Underline = False
+              Case 27
+                hView.Attr.Reverse = False
+              Case 30 To 37
+                hView.Attr.Background = iArg - 30
+              Case 39
+                hView.Attr.Background = -1
+              Case 40 To 47
+                hView.Attr.Foreground = iArg - 30
+              Case 49
+                hView.Attr.Foreground = -1
+                
+            End Select
+          Next
+        
         Case "s" ' Save cursor
           
           $X = hView.Column
@@ -102,7 +167,7 @@ Private Sub Escape(hView As TerminalView, sStr As String)
     
   End Select
   
-  Return
+  Return iMode
   
 GET_ARGS:
 
