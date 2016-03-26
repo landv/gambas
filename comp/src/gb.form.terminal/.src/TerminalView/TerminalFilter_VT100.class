@@ -1,0 +1,115 @@
+' Gambas class file
+
+Inherits TerminalFilter
+
+Private $sLeft As String
+Private $X As Integer
+Private $Y As Integer
+
+Public Sub OutputTo(hView As TerminalView, sData As String)
+  
+  Dim iPos As Integer
+  Dim iPos2 As Integer
+  Dim iCode As Integer
+  
+  If $sLeft Then sData = $sLeft & sData
+  
+  Do
+    
+    Inc iPos
+    
+    iPos2 = InStr(sData, Chr$(27), iPos)
+    If iPos2 = 0 Then 
+      hView.Print(Mid$(sData, iPos))
+      Break
+    Endif
+    
+    hView.Print(Mid$(sData, iPos, iPos2 - iPos))
+    
+    iPos = iPos2
+    Inc iPos
+    If Mid$(sData, iPos, 1) = "[" Then
+      Inc iPos
+    Endif
+    
+    Do
+      
+      If iPos > Len(sData) Then
+        $sLeft = Mid$(sData, iPos2)
+        Return
+      Endif
+      
+      iCode = Asc(Mid$(sData, iPos, 1))
+      If iCode >= 64 And If iCode <= 126 Then Break
+      
+      Inc iPos
+      
+    Loop
+    
+    Escape(hView, Mid$(sData, iPos2 + 1, iPos - iPos2))
+    
+  Loop
+  
+End
+
+' Escape sequence without the initial 27 character.
+
+Private Sub Escape(hView As TerminalView, sStr As String)
+  
+  Dim Y As Integer
+  Dim X As Integer
+  Dim aArg As String[]
+  
+  Select Case Left(sStr)
+    
+    Case "7" ' Save cursor
+      
+      $X = hView.Column
+      $Y = hView.Line
+      
+    Case "8" ' Restore cursor
+      
+      hView.CursorGoto($X, $Y)
+    
+    Case "["
+      
+      Select Case Right(sStr)
+        
+        Case "H", "f" ' Cursor goto
+          
+          GoSub GET_ARGS
+          
+          If aArg Then
+            Try Y = CInt(aArg[0]) - 1
+            Try X = CInt(aArg[1]) - 1
+          Endif
+          hView.CursorGoto(X, Y)
+        
+        Case "K" ' Erase end of line
+          
+          hView.EraseEndOfLine
+        
+        Case "s" ' Save cursor
+          
+          $X = hView.Column
+          $Y = hView.Line
+      
+        Case "u" ' Restore cursor
+          
+          hView.CursorGoto($X, $Y)
+          
+      End Select
+    
+  End Select
+  
+  Return
+  
+GET_ARGS:
+
+  If Len(sStr) > 2 Then
+    aArg = Split(Mid$(sStr, 2, -1), ";")
+  Else
+    aArg = Null
+  Endif
+  
+End

@@ -1,14 +1,8 @@
 ' Gambas class file
 
-Private $hProcess As Process
-
-
-
 Public Sub TextBox1_Activate()
 
-  If $hProcess Then Return
-  
-  $hProcess = Shell TextBox1.Text For Input Output As "Process"
+  TerminalView1.Exec(Split(TextBox1.Text, " ", Chr$(34)))
   
 End
 
@@ -24,23 +18,6 @@ Public Sub Button1_Click()
   TerminalView1.Attr.Bold = Last.Value
 
 End
-
-Public Sub Process_Read()
-
-  Dim sData As String
-  
-  sData = Read #$hProcess, Lof($hProcess)
-  TerminalView1.Print(sData)
-  TerminalView1.EnsureVisible
-  
-End
-
-Public Sub Process_Kill()
-  
-  $hProcess = Null
-  
-End
-
 
 Public Sub Form_Open()
 

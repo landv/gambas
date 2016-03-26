@@ -6,6 +6,9 @@ Export
 
 Public Const _Properties As String = "*,Border=True,ScrollBar=True,Limit"
 Public Const _DrawWith As String = "-"
+Public Const _Group As String = "View"
+
+Event Kill
 
 Property Border As Boolean
 Property ScrollBar As Boolean
@@ -14,6 +17,8 @@ Property Foreground As Integer
 Property Read Column As Integer
 Property Read Line As Integer
 Property Limit As Integer
+Property Read Screen As Rect
+Property Type As String
 
 Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
 Static Private $sControlChar As String
@@ -27,7 +32,10 @@ Private $hFont As Font
 Private $LH As Integer
 Private $iAscent As Integer
 Private $CW As Integer
-Private $WMax As Integer
+
+' Screen size
+Private $W As Integer
+Private $H As Integer
 
 Private $X As Integer
 Private $Y As Integer
@@ -42,6 +50,9 @@ Private $iLimit As Integer
 Private $hCursorTimer As Timer
 Private $bHideCursor As Boolean
 Private $hMouseTimer As Timer
+Private $hProcess As Process
+Private $hFilter As TerminalFilter
+Private $sType As String
 
 Public Sub _new()
   
@@ -68,6 +79,8 @@ Public Sub _new()
   $hView.Foreground = Color.White
   
   Me.Proxy = $hView
+  
+  Me.Type = "VT100"
   
   CalcSize
   
@@ -100,8 +113,10 @@ Private Sub CalcWidth()
 
   $hView.ResizeContents($hView.ClientW, Max($hView.ClientH, $aLine.Count * $LH))
   W = $hView.ClientW
-  If $hView.ScrollH > $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
-  $WMax = Max(1, CInt(W / $CW))
+  If $hView.ScrollH <= $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
+  $W = Max(1, CInt(W / $CW))
+  $H = Max(1, $hView.ClientH \ $LH)
+  ' TODO: How to tell running process about terminal size change?
 
 End
 
@@ -233,7 +248,7 @@ DRAW_TEXT:
     Paint.DrawText(sText, X + 1, Y + $iAscent)
     If hAttr.Bold Then Paint.DrawText(sText, X + 2, Y + $iAscent)
   Endif
-  If hAttr.Underline Then Paint.FillRect(X, Y + $LH - 1, L * $CW, 1, Paint.Background)
+  If hAttr.Underline Then Paint.FillRect(X, Y + $LH - 1, iLen * $CW, 1, Paint.Background)
   X += iLen * $CW
   P = I
   Return
@@ -316,6 +331,19 @@ Private Sub GetLine(Y As Integer) As CTerminalLine
 
 End
 
+Private Sub ClearLine(Y As Integer)
+  
+  Dim hLine As CTerminalLine
+  
+  If Y > $aLine.Max Then Return
+  hLine = $aLine[Y]
+  hLine.Text = ""
+  hLine.Length = 0
+  hLine.Attr.Clear
+  
+End
+
+
 Private Sub Insert(sText As String)
 
   Dim hLine As CTerminalLine
@@ -323,8 +351,8 @@ Private Sub Insert(sText As String)
   
   If iLen = 0 Then Return
   
-  If ($X + iLen) > $WMax Then
-    iLen = Max(0, $WMax - $X)
+  If ($X + iLen) > $W Then
+    iLen = Max(0, $W - $X)
     If iLen Then
       Insert(String.Left(sText, iLen))
       sText = String.Mid$(sText, iLen + 1) 
@@ -386,49 +414,25 @@ Public Sub Print(sText As String)
 End
 
 
-Public Sub NewLine()
+Private Sub NewLine()
   
   Goto(0, $Y + 1)
   
 End
 
-Public Sub Tab()
+Private Sub Tab()
   
   Goto($X + 8 - $X Mod 8, $Y)
   
 End
 
-Public Sub CursorUp()
-  
-  Goto($X, $Y - 1)
-  
-End
-
-Public Sub CursorDown()
-  
-  Goto($X, $Y + 1)
-  
-End
-
-Public Sub CursorLeft()
-  
-  Goto($X - 1, $Y)
-  
-End
-
-Public Sub CursorRight()
-  
-  Goto($X + 1, $Y)
-  
-End
-
 Public Sub Goto(X As Integer, Y As Integer)
   
-  If X >= $WMax Then
+  If X >= $W Then
     X = 0
     Inc Y
   Else If X < 0 Then
-    X = $WMax - 1
+    X = $W - 1
     Dec Y
   Endif
   
@@ -439,6 +443,7 @@ Public Sub Goto(X As Integer, Y As Integer)
   Refresh
   
 End
+
 
 Private Function Border_Read() As Boolean
 
@@ -498,7 +503,7 @@ Private Sub GotoMouse()
   X = (Mouse.ScreenX - $hView.ScreenX) \ $CW
   Y = (Mouse.ScreenY - $hView.ScreenY + $hView.ScrollY) \ $LH
 
-  Goto(Max(0, Min($WMax - 1, X)), Max(0, Min(Max($aLine.Max, $hView.ClientH \ $LH - 1), Y)))
+  Goto(Max(0, Min($W - 1, X)), Max(0, Min(Max($aLine.Max, $hView.ClientH \ $LH - 1), Y)))
   EnsureVisible
 
 End
@@ -598,6 +603,86 @@ Public Sub CursorTimer_Timer()
   
 End
 
+Public Sub MouseTimer_Timer()
+  
+  GotoMouse
+  $X2 = $X
+  $Y2 = $Y
+  EnsureVisible
+  
+End
+
+Private Sub ScreenTop() As Integer
+  
+  Return Max(0, $aLine.Count - $H)
+  
+End
+
+
+Private Function Screen_Read() As Rect
+
+  Return Rect(0, ScreenTop(), $W, $H)
+
+End
+
+Private Function Type_Read() As String
+
+  Return $sType
+
+End
+
+Private Sub Type_Write(Value As String)
+
+  Try $hFilter = Object.New("TerminalFilter_" & Value)
+  If Error Then Error.Raise("Unknown terminal type: " & Value)
+  $sType = UCase(Value)
+
+End
+
+' Terminal VT100 commands
+
+Public Sub CursorGoto(X As Integer, Y As Integer)
+  
+  If X >= $W Then
+    X = 0
+    Inc Y
+  Else If X < 0 Then
+    X = $W - 1
+    Dec Y
+  Endif
+  
+  If Y < 0 Then Y = 0
+  
+  $X = X
+  $Y = Y + ScreenTop()
+  Refresh
+  
+End
+
+Public Sub CursorUp()
+  
+  CursorGoto($X, $Y - 1)
+  
+End
+
+Public Sub CursorDown()
+  
+  CursorGoto($X, $Y + 1)
+  
+End
+
+Public Sub CursorLeft()
+  
+  CursorGoto($X - 1, $Y)
+  
+End
+
+Public Sub CursorRight()
+  
+  CursorGoto($X + 1, $Y)
+  
+End
+
 Public Sub EraseEndOfLine()
 
   Dim hLine As CTerminalLine
@@ -637,9 +722,27 @@ Public Sub EraseLine()
 
 End
 
+Public Sub EraseScreen()
+
+  Dim Y As Integer
+  
+  For Y = ScreenTop() To $aLine.Max
+    ClearLine(Y)
+  Next
+  
+  Refresh
+  CursorGoto(0, 0)
+  
+End
+
 Public Sub EraseDown()
   
-  $aLine.Fill(Null, $Y, -1)
+  Dim Y As Integer
+  
+  For Y = Max(ScreenTop(), $Y) To $aLine.Max
+    ClearLine(Y)
+  Next
+  
   Refresh
   
 End
@@ -647,23 +750,49 @@ End
 
 Public Sub EraseUp()
 
-  $aLine.Fill(Null, 0, $Y)
+  Dim Y As Integer
+  
+  For Y = ScreenTop() To Max(ScreenTop() - 1, $Y)
+    ClearLine(Y)
+  Next
+  
   Refresh
   
 End
 
-Public Sub EraseScreen()
+' Running a command
+
+Public Sub Exec(aCommand As String[]) As Process
+
+  If $hProcess Then Return
   
-  $aLine.Fill(Null)
-  Refresh
+  $hProcess = Exec aCommand For Input Output As "Process"
   
 End
 
-Public Sub MouseTimer_Timer()
+Public Sub Shell(sCommand As String) As Process
+
+  If $hProcess Then Return
   
-  GotoMouse
-  $X2 = $X
-  $Y2 = $Y
+  $hProcess = Shell sCommand For Input Output As "Process"
+  
+End
+
+Public Sub Process_Kill()
+  
+  $hProcess = Null
+  Raise Kill
+  
+End
+
+Public Sub Process_Read()
+  
+  Dim sData As String
+  
+  sData = Read #$hProcess, Lof($hProcess)
+  $hFilter.OutputTo(Me, sData)
   EnsureVisible
   
 End
+
+
