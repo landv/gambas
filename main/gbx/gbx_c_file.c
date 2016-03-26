@@ -31,6 +31,7 @@
 #include <pwd.h>
 #include <grp.h>
 #include <sys/stat.h>
+#include <pty.h>
 
 #include "gb_common.h"
 #include "gb_list.h"
@@ -48,6 +49,7 @@
 
 #include "gbx_c_file.h"
 
+#define STREAM_FD STREAM_handle(CSTREAM_stream(THIS_STREAM))
 
 CFILE *CFILE_in, *CFILE_out, *CFILE_err;
 
@@ -716,7 +718,7 @@ END_METHOD
 
 BEGIN_PROPERTY(Stream_Handle)
 
-	GB_ReturnInteger(STREAM_handle(CSTREAM_stream(THIS_STREAM)));
+	GB_ReturnInteger(STREAM_FD);
 
 END_PROPERTY
 
@@ -829,6 +831,12 @@ BEGIN_METHOD_VOID(Stream_Cancel)
 
 END_METHOD
 
+BEGIN_PROPERTY(Stream_IsTerm)
+
+	GB_ReturnBoolean(isatty(STREAM_FD));
+
+END_PROPERTY
+
 BEGIN_METHOD_VOID(StreamLines_next)
 
 	char *str;
@@ -844,6 +852,24 @@ BEGIN_METHOD_VOID(StreamLines_next)
 
 END_METHOD
 
+BEGIN_PROPERTY(StreamTerm_Name)
+	
+	GB_ReturnNewZeroString(ttyname(STREAM_FD));
+
+END_PROPERTY
+
+BEGIN_METHOD(StreamTerm_Resize, GB_INTEGER width; GB_INTEGER height)
+
+	struct winsize winSize = { 0 };
+	
+	winSize.ws_row = (unsigned short)Max(1, Min(65535, VARG(height)));
+  winSize.ws_col = (unsigned short)Max(1, Min(65535, VARG(width)));
+  
+	if (ioctl(STREAM_FD, TIOCSWINSZ, (char *)&winSize))
+		THROW_SYSTEM(errno, NULL);
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_StreamLines[] = 
@@ -851,6 +877,16 @@ GB_DESC NATIVE_StreamLines[] =
 	GB_DECLARE(".Stream.Lines", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_METHOD("_next", "s", StreamLines_next, NULL),
+	
+	GB_END_DECLARE
+};
+
+GB_DESC NATIVE_StreamTerm[] = 
+{
+	GB_DECLARE(".Stream.Term", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_PROPERTY_READ("Name", "s", StreamTerm_Name),
+	GB_METHOD("Resize", NULL, StreamTerm_Resize, "(Width)i(Height)i"),
 	
 	GB_END_DECLARE
 };
@@ -870,8 +906,10 @@ GB_DESC NATIVE_Stream[] =
 	GB_PROPERTY("Blocking", "b", Stream_Blocking),
 	GB_PROPERTY("Tag", "v", Stream_Tag),
 	GB_METHOD("ReadLine", "s", Stream_ReadLine, "[(Escape)s]"),
+	GB_PROPERTY_READ("IsTerm", "b", Stream_IsTerm),
 	
 	GB_PROPERTY_SELF("Lines", ".Stream.Lines"),
+	GB_PROPERTY_SELF("Term", ".Stream.Term"),
 	
 	GB_METHOD("Begin", NULL, Stream_Begin, NULL),
 	GB_METHOD("Send", NULL, Stream_End, NULL),

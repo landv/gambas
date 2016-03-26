@@ -56,6 +56,7 @@ typedef
 
 #ifndef __GBX_C_FILE_C
 extern GB_DESC NATIVE_StreamLines[];
+extern GB_DESC NATIVE_StreamTerm[];
 extern GB_DESC NATIVE_Stream[];
 extern GB_DESC NATIVE_File[];
 extern GB_DESC NATIVE_Stat[];
