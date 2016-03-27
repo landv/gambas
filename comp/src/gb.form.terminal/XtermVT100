@@ -288,51 +288,51 @@ CSI ? Pm i	MC, DEC-specific	Media Copy)
 
 CSI Pm m	SGR	Character Attributes)
  	
-0	Normal (default)
-1	Bold
-4	Underlined
-5	Blink (appears as Bold)
-7	Inverse
-8	Invisible (hidden)
-2 2	Normal (neither bold nor faint)
-2 4	Not underlined
-2 5	Steady (not blinking)
-2 7	Positive (not inverse)
-2 8	Visible (not hidden)
-3 0	Set foreground color to Black
-3 1	Set foreground color to Red
-3 2	Set foreground color to Green
-3 3	Set foreground color to Yellow
-3 4	Set foreground color to Blue
-3 5	Set foreground color to Magenta
-3 6	Set foreground color to Cyan
-3 7	Set foreground color to White
-3 9	Set foreground color to default (original)
-4 0	Set background color to Black
-4 1	Set background color to Red
-4 2	Set background color to Green
-4 3	Set background color to Yellow
-4 4	Set background color to Blue
-4 5	Set background color to Magenta
-4 6	Set background color to Cyan
-4 7	Set background color to White
-4 9	Set background color to default (original).
-9 0	Set foreground color to Black
-9 1	Set foreground color to Red
-9 2	Set foreground color to Green
-9 3	Set foreground color to Yellow
-9 4	Set foreground color to Blue
-9 5	Set foreground color to Magenta
-9 6	Set foreground color to Cyan
-9 7	Set foreground color to White
-1 0 0	Set background color to Black
-1 0 1	Set background color to Red
-1 0 2	Set background color to Green
-1 0 3	Set background color to Yellow
-1 0 4	Set background color to Blue
-1 0 5	Set background color to Magenta
-1 0 6	Set background color to Cyan
-1 0 7	Set background color to White
+        0	Normal (default)
+        1	Bold
+        4	Underlined
+        5	Blink (appears as Bold)
+        7	Inverse
+        8	Invisible (hidden)
+        2 2	Normal (neither bold nor faint)
+        2 4	Not underlined
+        2 5	Steady (not blinking)
+        2 7	Positive (not inverse)
+        2 8	Visible (not hidden)
+        3 0	Set foreground color to Black
+        3 1	Set foreground color to Red
+        3 2	Set foreground color to Green
+        3 3	Set foreground color to Yellow
+        3 4	Set foreground color to Blue
+        3 5	Set foreground color to Magenta
+        3 6	Set foreground color to Cyan
+        3 7	Set foreground color to White
+        3 9	Set foreground color to default (original)
+        4 0	Set background color to Black
+        4 1	Set background color to Red
+        4 2	Set background color to Green
+        4 3	Set background color to Yellow
+        4 4	Set background color to Blue
+        4 5	Set background color to Magenta
+        4 6	Set background color to Cyan
+        4 7	Set background color to White
+        4 9	Set background color to default (original).
+        9 0	Set foreground color to Black
+        9 1	Set foreground color to Red
+        9 2	Set foreground color to Green
+        9 3	Set foreground color to Yellow
+        9 4	Set foreground color to Blue
+        9 5	Set foreground color to Magenta
+        9 6	Set foreground color to Cyan
+        9 7	Set foreground color to White
+        1 0 0	Set background color to Black
+        1 0 1	Set background color to Red
+        1 0 2	Set background color to Green
+        1 0 3	Set background color to Yellow
+        1 0 4	Set background color to Blue
+        1 0 5	Set background color to Magenta
+        1 0 6	Set background color to Cyan
+        1 0 7	Set background color to White
         If 88- or 256-color support is compiled, the following apply.
         3 8 ; 5 ; Ps	Set background color to Ps
         4 8 ; 5 ; Ps	Set foreground color to Ps

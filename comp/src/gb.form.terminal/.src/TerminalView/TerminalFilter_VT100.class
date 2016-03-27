@@ -88,6 +88,7 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
   Dim iArg As Integer
   Dim sStr As String
   Dim iMode As Integer
+  Dim i As Integer
   
   sStr = Mid$(sData, iPos, iLen)
   Print "ESC "; Quote(sStr)
@@ -222,6 +223,16 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
                   hScreen.Attr.Background = iArg - 40
                 Case 49
                   hScreen.Attr.Background = -1
+                Case 90 To 97
+                  hScreen.Attr.Foreground = iArg - 90
+                Case 100 To 107
+                  hScreen.Attr.Background = iArg - 100
+                ' Case 38
+                '   ' If aArg.Count >= 3 And If aArg[ Then
+                '   '   
+                '   ' Endif
+                ' Case 48
+                  
                 Default
                   Goto NOT_IMPLEMENTED
               End Select
