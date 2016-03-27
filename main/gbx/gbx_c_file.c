@@ -870,6 +870,28 @@ BEGIN_METHOD(StreamTerm_Resize, GB_INTEGER width; GB_INTEGER height)
 
 END_METHOD
 
+BEGIN_PROPERTY(StreamTerm_Echo)
+
+	struct termios ttmode;
+	
+	if (tcgetattr(STREAM_FD, &ttmode))
+		THROW_SYSTEM(errno, "");
+	
+	if (READ_PROPERTY)
+		GB_ReturnBoolean(ttmode.c_lflag & ECHO);
+	else
+	{
+		if (VPROP(GB_BOOLEAN))
+			ttmode.c_lflag |= ECHO;
+		else
+			ttmode.c_lflag &= ~ECHO;
+
+		if (tcsetattr(STREAM_FD, TCSANOW, &ttmode))
+		THROW_SYSTEM(errno, "");
+	}
+
+END_PROPERTY
+
 #endif
 
 GB_DESC NATIVE_StreamLines[] = 
@@ -886,6 +908,7 @@ GB_DESC NATIVE_StreamTerm[] =
 	GB_DECLARE(".Stream.Term", 0), GB_VIRTUAL_CLASS(),
 	
 	GB_PROPERTY_READ("Name", "s", StreamTerm_Name),
+	GB_PROPERTY("Echo", "b", StreamTerm_Echo),
 	GB_METHOD("Resize", NULL, StreamTerm_Resize, "(Width)i(Height)i"),
 	
 	GB_END_DECLARE

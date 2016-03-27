@@ -3,7 +3,11 @@
 Public Sub TextBox1_Activate()
 
   Try TerminalView1.Exec(Split(TextBox1.Text, " ", Chr$(34)))
-  If Error Then Debug Error.Text
+  If Error Then
+    Debug Error.Text
+  Else
+    TerminalView1.SetFocus
+  Endif
   
 End
 

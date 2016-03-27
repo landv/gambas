@@ -2,14 +2,18 @@
 
 Inherits TerminalFilter
 
+Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
+Private Enum FLAG_APP_CURSOR_KEY, FLAG_APP_KEYPAD, FLAG_ORIGIN
+
 Private $sLeft As String
 Private $X As Integer
 Private $Y As Integer
 
-Private Enum MODE_NORMAL, MODE_TITLE
+Private $iFlag As Integer
 
 Public Sub OutputTo(hView As TerminalView, sData As String)
   
+  Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   Dim iPos As Integer
   Dim iPos2 As Integer
   Dim iCode As Integer
@@ -21,55 +25,77 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
     
     Inc iPos
     
+    iPos2 = InStr(sData, Chr$(27), iPos)
+    If iPos2 = 0 Then 
+      hScreen.Print(Mid$(sData, iPos))
+      Break
+    Endif
+    
+    hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    
+    iPos = iPos2
+    Inc iPos
+    If Mid$(sData, iPos, 1) = "[" Then
+      
+      Inc iPos
+    
+      Do
+        
+        If iPos > Len(sData) Then
+          $sLeft = Mid$(sData, iPos2)
+          Return
+        Endif
+        
+        iCode = Asc(Mid$(sData, iPos, 1))
+        If iCode >= 64 And If iCode <= 126 Then Break
+        
+        Inc iPos
+        
+      Loop
+      
+    Endif
+    
+    iMode = Escape(hScreen, sData, iPos2 + 1, iPos - iPos2)
+    
     If iMode = MODE_TITLE Then
+      Inc iPos
       iPos2 = InStr(sData, Chr$(7), iPos)
       If iPos2 = 0 Then
         $sLeft = Mid$(sData, iPos)
         Return
       Endif
-      Debug Mid$(sData, iPos, iPos2 - iPos)
-      iMode = MODE_NORMAL
+      Debug "SET TITLE : " & Mid$(sData, iPos, iPos2 - iPos)
       iPos = iPos2
-      Continue
-    Endif
-    
-    iPos2 = InStr(sData, Chr$(27), iPos)
-    If iPos2 = 0 Then 
-      hView.Print(Mid$(sData, iPos))
-      Break
-    Endif
-    
-    hView.Print(Mid$(sData, iPos, iPos2 - iPos))
-    
-    iPos = iPos2
-    Inc iPos
-    If Mid$(sData, iPos, 1) = "[" Then
+      iMode = MODE_NORMAL
+    Else If iMode = MODE_IGNORE_CHAR Then
       Inc iPos
+      iMode = MODE_NORMAL
     Endif
-    
-    Do
-      
-      If iPos > Len(sData) Then
-        $sLeft = Mid$(sData, iPos2)
-        Return
-      Endif
-      
-      iCode = Asc(Mid$(sData, iPos, 1))
-      If iCode >= 64 And If iCode <= 126 Then Break
-      
-      Inc iPos
-      
-    Loop
-    
-    iMode = Escape(hView, sData, iPos2 + 1, iPos - iPos2)
     
   Loop
   
 End
 
+Private Sub SetFlag(iFlag As Integer, bOn As Boolean)
+
+  If bOn Then
+    $iFlag = BSet($iFlag, iFlag)
+  Else
+    $iFlag = BClr($iFlag, iFlag)
+  Endif
+
+End
+
+Private Sub GetFlag(iFlag As Integer) As Boolean
+  
+  Return BTst($iFlag, iFlag)
+  
+End
+
+
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen As Integer) As Integer
+Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, iLen As Integer) As Integer
   
   Dim Y As Integer
   Dim X As Integer
@@ -80,25 +106,47 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
   Dim iMode As Integer
   
   sStr = Mid$(sData, iPos, iLen)
+  Print "ESC "; Quote(sStr)
   
   Select Case Left(sStr)
     
     Case "7" ' Save cursor
       
-      $X = hView.Column
-      $Y = hView.Line
+      $X = hScreen.Column
+      $Y = hScreen.Line
       
     Case "8" ' Restore cursor
       
-      hView.CursorGoto($X, $Y)
+      hScreen.CursorGoto($X, $Y)
+      
+    Case "D" ' Index
+      
+      hScreen.Index
+      
+    Case "M" ' Reverse index
+      
+      hScreen.ReverseIndex
+      
+    Case "="
+      SetFlag(FLAG_APP_KEYPAD, True)
+      
+    Case ">"
+      SetFlag(FLAG_APP_KEYPAD, False)
+      
+    Case "("
+      iMode = MODE_IGNORE_CHAR
     
     Case "]"
-      
       iMode = MODE_TITLE
     
     Case "["
       
       Select Case Right(sStr)
+        
+        Case "G"
+          
+          GoSub GET_ARGS
+          Try hScreen.CursorGoto(CInt(aArg[0]) - 1, hScreen.Line)
         
         Case "H", "f" ' Cursor goto
           
@@ -108,11 +156,51 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
             Try Y = CInt(aArg[0]) - 1
             Try X = CInt(aArg[1]) - 1
           Endif
-          hView.CursorGoto(X, Y)
+          hScreen.CursorGoto(X, Y)
         
-        Case "K" ' Erase end of line
+        Case "J" ' Erase screen
+        
+          GoSub GET_ARGS
+          If Not aArg Or If aArg[0] = "0" Then
+            hScreen.EraseDown
+          Else If aArg[0] = "1" Then
+            hScreen.EraseUp
+          Else If aArg[0] = "2" Then
+            hScreen.EraseScreen
+          Endif
+        
+        Case "K" ' Erase line
           
-          hView.EraseEndOfLine
+          GoSub GET_ARGS
+          If Not aArg Or If aArg[0] = "0" Then
+            hScreen.EraseEndOfLine
+          Else If aArg[0] = "1" Then
+            hScreen.EraseStartOfLine
+          Else If aArg[0] = "2" Then
+            hScreen.EraseLine
+          Endif
+        
+        Case "h"
+          
+          Select Mid$(sStr, 2, -1)
+            Case "?1" ' Application cursor keys
+              SetFlag(FLAG_APP_CURSOR_KEY, True)
+            Case "?6" ' Origin
+              SetFlag(FLAG_ORIGIN, True)
+            Default
+              Goto NOT_IMPLEMENTED
+          End Select
+        
+        Case "l"
+          
+          Select Mid$(sStr, 2, -1)
+            Case "?1" ' Normal cursor keys
+              SetFlag(FLAG_APP_CURSOR_KEY, False)
+            Case "?6" ' Origin
+              SetFlag(FLAG_ORIGIN, False)
+            Default
+              Goto NOT_IMPLEMENTED
+          End Select
         
         Case "m" ' Set attribute
           
@@ -124,49 +212,66 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
               If Error Then Continue
               
               Select Case iArg
-                
                 Case 0
-                  hView.Attr.Reset()
+                  hScreen.Attr.Reset()
                 Case 1
-                  hView.Attr.Bold = True
+                  hScreen.Attr.Bold = True
                 Case 2
-                  hView.Attr.Dim = True
+                  hScreen.Attr.Dim = True
                 Case 4
-                  hView.Attr.Underscore = True
+                  hScreen.Attr.Underscore = True
                 Case 7
-                  hView.Attr.Reverse = True
+                  hScreen.Attr.Reverse = True
                 Case 21
-                  hView.Attr.Bold = False
+                  hScreen.Attr.Bold = False
                 Case 22
-                  hView.Attr.Dim = False
+                  hScreen.Attr.Dim = False
                 Case 24
-                  hView.Attr.Underscore = False
+                  hScreen.Attr.Underscore = False
                 Case 27
-                  hView.Attr.Reverse = False
+                  hScreen.Attr.Reverse = False
                 Case 30 To 37
-                  hView.Attr.Foreground = iArg - 30
+                  hScreen.Attr.Foreground = iArg - 30
                 Case 39
-                  hView.Attr.Foreground = -1
+                  hScreen.Attr.Foreground = -1
                 Case 40 To 47
-                  hView.Attr.Background = iArg - 40
+                  hScreen.Attr.Background = iArg - 40
                 Case 49
-                  hView.Attr.Background = -1
-                  
+                  hScreen.Attr.Background = -1
+                Default
+                  Goto NOT_IMPLEMENTED
               End Select
             Next
           Endif
         
+        Case "r" ' Scroll screen
+          
+          GoSub GET_ARGS
+          If Not aArg Then
+            hScreen.ScrollScreen()
+          Else
+            Try hScreen.ScrollScreen(CInt(aArg[0]) - 1, CInt(aArg[1]) - 1)
+          Endif
+        
         Case "s" ' Save cursor
           
-          $X = hView.Column
-          $Y = hView.Line
+          $X = hScreen.Column
+          $Y = hScreen.Line
       
         Case "u" ' Restore cursor
           
-          hView.CursorGoto($X, $Y)
+          hScreen.CursorGoto($X, $Y)
+          
+        Default
+          
+          Goto NOT_IMPLEMENTED
           
       End Select
-    
+      
+    Default
+      
+       Goto NOT_IMPLEMENTED
+          
   End Select
   
   Return iMode
@@ -180,5 +285,38 @@ GET_ARGS:
   Endif
   
   Return
+  
+NOT_IMPLEMENTED:
+  
+  Debug "Not implemented: "; Quote(sStr)
+    
+End
+
+Public Sub InputTo(hProcess As Process, iCode As Integer, sText As String) As Boolean
+  
+  If Key.Normal Then
+  
+    Select Case iCode
+      
+      Case Key.Up
+        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOA", "\e[A")
+        
+      Case Key.Down
+        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOB", "\e[B")
+        
+      Case Key.Right
+        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOC", "\e[C")
+        
+      Case Key.Left
+        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOD", "\e[D")
+        
+    End Select
+    
+  Endif
+  
+  If sText Then 
+    Print #hProcess, sText;
+    Return True
+  Endif
   
 End

@@ -1,0 +1,663 @@
+' Gambas class file
+
+Event _Foo
+
+Property Read Attr As TerminalAttr
+Property Read Column As Integer
+Property Read Line As Integer
+Property Read Width As Integer
+Property Read Height As Integer
+Property Read Geometry As Rect
+Property Read X As Integer
+Property Read Y As Integer
+
+Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
+Static Private $sControlChar As String
+
+Public Lines As New CTerminalLine[]
+
+' Screen size
+Private $W As Integer
+Private $H As Integer
+
+Private $X As Integer
+Private $Y As Integer
+Private $hAttr As New TerminalAttr
+'Private $hCacheFont As Image
+Private $X1 As Integer
+Private $Y1 As Integer
+Private $X2 As Integer
+Private $Y2 As Integer
+Private $iScrollStart As Integer = -1
+Private $iScrollEnd As Integer = -1
+
+Public Sub _new()
+  
+  Dim I As Integer
+  
+  If Not $sControlChar Then
+    For I = 0 To 31
+      $sControlChar &= Chr$(I)
+    Next
+  Endif
+  
+End
+
+Private Sub GetView() As TerminalView
+
+  Return Object.Parent(Me)
+
+End
+
+Public Sub Clear()
+  
+  Lines.Clear
+  
+End
+
+Public Sub Resize(W As Integer, H As Integer) As Boolean
+  
+  If W <> $W Or If H <> $H Then
+    $W = W
+    $H = H
+    Return True
+  Endif
+  
+End
+
+Public Sub GetLine(Y As Integer) As CTerminalLine
+
+  Dim hLine As CTerminalLine
+  
+  If Y > Lines.Max Then
+    Lines.Resize(Y + 1)
+    GetView()._UpdateSize()
+  Endif
+  hLine = Lines[Y]
+  If Not hLine Then 
+    hLine = New CTerminalLine
+    Lines[Y] = hLine
+  Endif
+  
+  Return hLine
+
+End
+
+Private Sub ClearLine(Y As Integer)
+  
+  Dim hLine As CTerminalLine
+  
+  If Y > Lines.Max Then Return
+  hLine = Lines[Y]
+  If Not hLine Then Return
+  hLine.Text = ""
+  hLine.Length = 0
+  hLine.Attr.Clear
+  
+End
+
+
+Private Sub Insert(sText As String)
+
+  Dim hLine As CTerminalLine
+  Dim iLen As Integer = String.Len(sText)
+  
+  If iLen = 0 Then Return
+  
+  If ($X + iLen) > $W Then
+    iLen = Max(0, $W - $X)
+    If iLen Then
+      Insert(String.Left(sText, iLen))
+      sText = String.Mid$(sText, iLen + 1) 
+    Endif
+    NewLine()
+    Insert(sText)
+    Return
+  Endif
+  
+  hLine = GetLine($Y)
+  If hLine.Length < $X Then 
+    hLine.Text &= Space$($X - hLine.Length) & sText & String.Mid(hLine.Text, $X + iLen)
+  Else
+    hLine.Text = String.Left(hLine.Text, $X) & sText & String.Mid(hLine.Text, $X + iLen)
+  Endif
+  hLine.Length = String.Len(hLine.Text)
+  
+  hLine.SetAttr($hAttr, $X, iLen)
+  GetView()._RefreshLine($Y)
+  $X += iLen
+  
+End
+
+Public Sub Print(sText As String)
+
+  Dim aText As String[]
+  Dim sElt As String
+  Dim iLen As Integer
+  Dim iCode As Integer
+  
+  aText = Split(sText, $sControlChar)
+  
+  For Each sElt In aText
+    If sElt Then Insert(sElt)
+    iLen += Len(sElt)
+    If iLen >= Len(sText) Then Break
+    iCode = Asc(sText, iLen + 1)
+    Select Case iCode
+      Case 7
+      Case 8
+        If $X Then
+          Dec $X
+          Insert(" ")
+          Dec $X
+        Endif
+      Case 9
+        Tab()
+      Case 10
+        NewLine()
+      Case 12
+        EraseScreen()
+      Case 13
+        Goto(0, $Y)
+      Case Else
+        Insert("^" & Chr$(64 + iCode))
+    End Select
+    Inc iLen
+  Next
+  
+End
+
+
+Private Sub NewLine()
+  
+  Goto(0, $Y + 1)
+  
+End
+
+Private Sub Tab()
+  
+  Goto($X + 8 - $X Mod 8, $Y)
+  
+End
+
+Public Sub Goto(X As Integer, Y As Integer)
+  
+  If X >= $W Then
+    X = 0
+    Inc Y
+  Else If X < 0 Then
+    X = $W - 1
+    Dec Y
+  Endif
+  
+  If Y < 0 Then Y = 0
+  
+  $X = X
+  $Y = Y
+  
+  GetView().EnsureVisible
+  GetView().Refresh
+  
+End
+
+
+' Private Sub EnsureVisibleAt(X As Integer, Y As Integer)
+'   
+'   GetLine(Y)
+'   GetView().EnsureVisible(X * $CW, Y * $LH, $CW, $LH)
+'   
+' End
+' 
+' 
+' Public Sub EnsureVisible()
+' 
+'   EnsureVisibleAt($X, $Y)  
+'   
+' End
+
+Private Function Column_Read() As Integer
+
+  Return $X
+
+End
+
+Private Function Line_Read() As Integer
+
+  Return Max(0, $Y - ScreenTop())
+
+End
+
+Public Sub ApplyLimit(iLimit As Integer)
+
+  Dim iDel As Integer
+  
+  iDel = Lines.Count - iLimit
+  If iDel <= 0 Then Return
+  
+  Lines.Remove(0, iDel)
+  $Y = Max(0, $Y - iDel)
+  
+  GetView()._UpdateSize()
+  
+End
+
+Private Sub ScreenTop() As Integer
+  
+  Return Max(0, Lines.Count - $H)
+  
+End
+
+' Terminal VT100 commands
+
+Public Sub CursorGoto(X As Integer, Y As Integer)
+  
+  ' If X >= $W Then
+  '   X = 0
+  '   Inc Y
+  ' Else If X < 0 Then
+  '   X = $W - 1
+  '   Dec Y
+  ' Endif
+  
+  If X < 0 Then
+    X = 0
+  Else If X >= $W
+    X = $W - 1
+  Endif
+  
+  If Y < 0 Then
+    Y = 0
+  Else If Y >= $H
+    Y = $H - 1
+  Endif
+  
+  $X = X
+  $Y = Y + ScreenTop()
+  GetView().EnsureVisible
+  GetView().Refresh
+  
+End
+
+Public Sub CursorUp(Optional Count As Integer = 1)
+  
+  CursorGoto($X, $Y - Count)
+  
+End
+
+Public Sub CursorDown(Optional Count As Integer = 1)
+  
+  CursorGoto($X, $Y + Count)
+  
+End
+
+Public Sub CursorLeft(Optional Count As Integer = 1)
+  
+  CursorGoto($X - Count, $Y)
+  
+End
+
+Public Sub CursorRight(Optional Count As Integer = 1)
+  
+  CursorGoto($X + Count, $Y)
+  
+End
+
+Public Sub EraseEndOfLine()
+
+  Dim hLine As CTerminalLine
+
+  hLine = GetLine($Y)
+  If hLine.Length <= $X Then Return
+  hLine.Text = String.Left(hLine.Text, $X)
+  hLine.Length = $X
+  GetView()._RefreshLine($Y)
+
+End
+
+Public Sub EraseStartOfLine()
+
+  Dim hLine As CTerminalLine
+
+  hLine = GetLine($Y)
+  If hLine.Length <= $X Then
+    hLine.Text = ""
+    hLine.Length = 0
+    GetView()._RefreshLine($Y)
+  Else
+    hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 1)
+  Endif
+  GetView()._RefreshLine($Y)
+
+End
+
+Public Sub EraseLine()
+
+  Dim hLine As CTerminalLine
+
+  hLine = GetLine($Y)
+  hLine.Text = ""
+  hLine.Length = 0
+  GetView()._RefreshLine($Y)
+
+End
+
+Public Sub EraseScreen()
+
+  Dim Y As Integer
+  
+  For Y = ScreenTop() To Lines.Max
+    ClearLine(Y)
+  Next
+  
+  CursorGoto(0, 0)
+  GetView().Refresh
+  
+End
+
+Public Sub EraseDown()
+  
+  Dim Y As Integer
+  
+  For Y = Max(ScreenTop(), $Y) To Lines.Max
+    ClearLine(Y)
+  Next
+  
+  GetView().Refresh
+  
+End
+
+
+Public Sub EraseUp()
+
+  Dim Y As Integer
+  
+  For Y = ScreenTop() To Max(ScreenTop() - 1, $Y)
+    ClearLine(Y)
+  Next
+  
+  GetView().Refresh
+  
+End
+
+Public Sub ScrollScreen(Optional Start As Integer, {End} As Integer)
+  
+  If IsMissing(Start) Or IsMissing({End}) Then
+    $iScrollStart = -1
+    $iScrollEnd = -1
+  Else
+    $iScrollStart = Start
+    $iScrollEnd = {End}
+  Endif
+  
+End
+
+Private Sub GetScreen(ByRef Y1 As Integer, ByRef Y2 As Integer)
+  
+  If $iScrollStart < 0 Or $iScrollEnd < 0 Then
+    Y1 = ScreenTop()
+    Y2 = Y1 + $H - 1
+  Else
+    Y1 = Max(ScreenTop(), $iScrollStart)
+    Y2 = Min(ScreenTop() + $H - 1, $iScrollEnd)
+  Endif
+  
+End
+
+
+Private Sub Scroll(bUp As Boolean)
+
+  Dim Y1, Y2 As Integer
+  
+  GetScreen(ByRef Y1, ByRef Y2)
+  
+  If bUp Then
+    Lines.Remove(Y2)
+    Lines.Add(Null, Y1)
+  Else
+    Lines.Remove(Y1)
+    Lines.Add(Null, Y2)
+  Endif
+  
+  GetView().Refresh
+  
+End
+
+Public Sub ScrollUp()
+  
+  Scroll(True)
+  
+End
+
+Public Sub ScrollDown()
+  
+  Scroll(False)
+  
+End
+
+Public Sub Index()
+  
+  Dim Y1, Y2 As Integer
+
+  GetScreen(ByRef Y1, ByRef Y2)
+
+  If $Y >= Y2 Then
+    Scroll(False)
+  Else
+    CursorUp
+  Endif
+  
+End
+
+Public Sub ReverseIndex()
+  
+  Dim Y1, Y2 As Integer
+
+  GetScreen(ByRef Y1, ByRef Y2)
+
+  If $Y <= Y1 Then
+    Scroll(True)
+  Else
+    CursorDown
+  Endif
+  
+End
+
+
+Private Function Attr_Read() As TerminalAttr
+
+  Return $hAttr
+
+End
+
+Private Function Geometry_Read() As Rect
+
+  Return Rect(0, ScreenTop(), $W, $H)
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return $W
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $H
+
+End
+
+Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Integer, LA As Integer)
+
+  Dim hView As TerminalView = GetView()
+  Dim hLine As CTerminalLine
+  Dim I As Integer
+  Dim sText As String
+  Dim aAttr As Integer[]
+  Dim iAttr As Integer
+  Dim iOldAttr As Integer
+  Dim hAttr As New TerminalAttr
+  Dim iFg As Integer = hView.Foreground
+  Dim iBg As Integer = hView.Background
+  'Dim hRect As Rect
+  Dim P, iLen As Integer
+
+  hLine = Lines[L]
+  If Not hLine Then Return
+  
+  aAttr = hLine.Attr
+  
+  P = 1
+  For I = 1 To hLine.Length
+    
+    iAttr = 0
+    Try iAttr = aAttr[I - 1]
+    
+    If iAttr <> iOldAttr Then
+      
+      GoSub DRAW_TEXT
+      
+      iOldAttr = iAttr
+      
+      hLine.GetAttr(hAttr, I - 1)
+      
+      iBg = hAttr.Background
+      If iBg >= 0 Then
+        iBg = $aColor[iBg]
+      Else
+        iBg = hView.Background
+      Endif
+      
+      iFg = hAttr.Foreground
+      If iFg >= 0 Then
+        iFg = $aColor[iFg]
+      Else
+        iFg = hView.Foreground
+      Endif
+      
+      If hAttr.Reverse Then Swap iBg, iFg
+      
+      If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
+      
+      Paint.Background = iFg
+      
+    Endif
+    
+    ' Paint.FillRect(X, Y, $CW, $LH, iBg)
+    ' If iFg = $hView.Foreground And If String.Code(sCar) <= 255 Then
+    '   hRect = Rect(String.Code(sCar) * $CW, 0, $CW, $LH)
+    '   Paint.DrawImage($hCacheFont, X, Y, $CW, $LH,, hRect)
+    '   If hAttr.Bold Then Paint.DrawImage($hCacheFont, X + 1, Y, $CW, $LH,, hRect)
+    ' Else
+    '   Paint.DrawText(sCar, X, Y + $iAscent)
+    '   If hAttr.Bold Then Paint.DrawText(sCar, X + 1, Y + $iAscent)
+    ' Endif
+    ' X += $CW
+    
+  Next
+  
+  GoSub DRAW_TEXT
+  Return
+  
+DRAW_TEXT:
+
+  iLen = I - P
+  If iLen <= 0 Then Return
+  
+  sText = String.Mid$(hLine.Text, P, iLen)
+  
+  Paint.FillRect(X, Y, CW * iLen, LH, iBg)
+  Paint.DrawText(sText, X, Y + LA)
+  If hAttr.Bold Then Paint.DrawText(sText, X + 1, Y + LA)
+  Paint.Background = Color.SetAlpha(iFg, 64)
+  If hAttr.Underscore Then Paint.FillRect(X, Y + LH - 1, iLen * CW, 1, Paint.Background)
+  X += iLen * CW
+  P = I
+  Return
+
+End
+
+Public Sub Paint(SY As Integer, LH As Integer, CW As Integer, LA As Integer, bHideCursor As Boolean)
+
+  Dim hView As TerminalView = GetView()
+  Dim L, L1, L2 As Integer
+  Dim Y As Integer
+  Dim X1 As Integer
+  Dim X2 As Integer
+  Dim Y1 As Integer
+  Dim Y2 As Integer
+
+  L1 = SY \ LH
+  L2 = L1 + $H - 1
+  
+  Y = 0 'L1 * $LH - $hView.ScrollY
+  
+  For L = L1 To L2
+    
+    If L < Lines.Count Then DrawLine(L, 0, Y, LH, CW, LA)
+
+    ' Cursor
+
+    If L = $Y And If Not bHideCursor Then
+      Paint.FillRect($X * CW, Y, CW, LH, Color.SetAlpha(hView.Foreground, 64))
+    Endif
+    
+    ' Selection
+    
+    Y1 = $Y1
+    Y2 = $Y2
+    X1 = $X1
+    X2 = $X2
+    
+    If Y1 > Y2 Then
+      Swap Y1, Y2
+      Swap X1, X2
+    Endif
+    
+    If L >= Y1 And If L <= Y2 Then
+      If L = Y1 Then
+        X1 *= CW
+      Else
+        X1 = 0
+      Endif
+      If L = Y2 Then
+        X2 *= CW
+      Else
+        X2 = Paint.W
+      Endif
+      If X2 > X1 Then Paint.FillRect(X1, Y, X2 - X1, LH, Color.SetAlpha(Color.SelectedBackground, 128))
+    Endif
+  
+    Y += LH
+      
+  Next
+  
+End
+
+
+Private Function X_Read() As Integer
+
+  Return $X
+
+End
+
+Private Function Y_Read() As Integer
+
+  Return $Y
+
+End
+
+Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
+
+  X = Max(0, Min($W - 1, X))
+  Y = Max(0, Min(Max(Lines.Max, $H - 1), Y))
+  
+  If bStart Then
+    $X1 = X
+    $Y1 = Y
+  Endif
+  $X2 = X
+  $Y2 = Y
+  
+End
+
