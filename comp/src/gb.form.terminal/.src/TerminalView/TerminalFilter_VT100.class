@@ -227,12 +227,12 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
                   hScreen.Attr.Background = iArg - 100
                 Case 38
                   If aArg.Count = 3 And If aArg[1] = "5" Then
-                    Try hScreen.Attr.BackGround = CInt(aArg[2])
+                    Try hScreen.Attr.Foreground = CInt(aArg[2])
                     Break
                   Endif
                 Case 48
                   If aArg.Count = 3 And If aArg[1] = "5" Then
-                    Try hScreen.Attr.Foreground = CInt(aArg[2])
+                    Try hScreen.Attr.Background = CInt(aArg[2])
                     Break
                   Endif
                   ' Case 38
