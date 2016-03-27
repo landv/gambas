@@ -4,6 +4,11 @@ C	A single (required) character.
 Ps	A single (usually optional) numeric parameter, composed of one of more digits.
 Pm	A multiple numeric parameter composed of any number of single numeric parameters, separated by ; character(s). Individual values for the parameters are listed with Ps .
 Pt	A text parameter composed of printable characters.
+ESC = 27
+CSI = ESC + "["
+OSC = ESC + "]"
+
+
 
 # C1 (8-Bit) Control Characters
 ESC D	IND	 0x84	Index
@@ -344,7 +349,6 @@ CSI ? Ps n	DSR, DEC-specific	Device Status Report
                         CSI ? 2 7 ; 1 ; 0 ; 0 n (North American)
                         CSI ? 5 3 n Locator available, if compiled-in, or
                         CSI ? 5 0 n No Locator, if not.
-                        
 CSI ! p	DECSTR	Soft terminal reset
 CSI Ps ; Ps " p	Set conformance level DECSCL
                 Valid values for the first parameter
@@ -356,3 +360,73 @@ CSI Ps ; Ps " p	Set conformance level DECSCL
                 0	8-bit controls
                 1	7-bit controls (always set for VT100)
                 2	8-bit controls
+
+CSI Pt ; Pl ; Pb ; Pr ` w	DECEFR	Enable Filter Rectangle
+                                Parameters are [top;left;bottom;right]. Defines the coordinates of a filter rectangle and acti- vates it. Anytime the locator is detected outside of the filter rectangle, an outside rectangle event is generated and the rectangle is disabled. Filter rectangles are always treated as "one-shot" events. Any parameters that are omitted default to the current locator position. If all parameters are omitted, any locator motion will be reported. DECELR always cancels any prevous rectangle definition.
+
+CSI Ps x	DECREQTPARM	Request Terminal Parameters)
+CSI Ps ; Pu ` z	DECELR	Enable Locator Reporting
+                The first parameter
+                0	Locator disabled (default)
+                1	Locator enabled
+                2	Locator enabled for one report, then disabled
+                The second parameter specifies the coordinate unit for locator reports.
+                0 or omitted	default to character cells
+                1	device physical pixels
+                2	character cells
+
+CSI Pm ` {	DECSLE	Select Locator Events
+                Valid values for the first (and any additional parameters) are:
+                0	only respond to explicit host requests DECRQLP (default) also cancels any filter rectangle
+                1	report button down transitions
+                2	do not report button down transitions
+                3	report button up transitions
+                4	do not report button up transitions
+
+CSI Ps ` |	DECRQLP	Request Locator Position
+                Valid values for the parameter are:
+                0 , 1 or omitted	transmit a single DECLRP locator report
+                If Locator Reporting has been enabled by a DECELR, xterm will respond with a DECLRP Locator Report. This report is also generated on button up and down events if they have been enabled with a DECSLE, or when the locator is detected outside of a filter rectangle, if filter rectangles have been enabled with a DECEFR.
+
+CSI Pe ; Pb ; Pr ; Pc ; Pp & w	DECLRP	Locator Report
+                                Parameters are [event;button;row;column;page].
+                                Valid values for the event (Pe):
+                                0	locator unavailable - no other parameters sent
+                                1	request - xterm received a DECRQLP
+                                2	left button down
+                                3	left button up
+                                4	middle button down
+                                5	middle button up
+                                6	right button down
+                                7	right button up
+                                8	M4 button down
+                                9	M4 button up
+                                1 0	locator outside filter rectangle
+                                ``button'' parameter (Pb) is a bitmask indicating which buttons are pressed:
+                                == 0	no buttons down
+                                & 1	right button down
+                                & 2	middle button down
+                                & 4	left button down
+                                & 8	M4 button down
+                                ``row'' and ``column'' parameters (Pr, Pc) are the coordinates of the locator position in the xterm window, encoded as ASCII decimal.
+                                The ``page'' parameter (Pp) is not used by xterm, and will be omitted.
+
+# Operating System Controls
+OSC Ps ; Pt ST	Set Text Parameters. For colors and font, if Pt is a "?", the control sequence elicits a response which consists of the control sequence which would set the corresponding value. The dtterm control sequences allow you to determine the icon name and window title.
+OSC Ps ; Pt BEL
+            0	Change Icon Name and Window Title to Pt
+            1	Change Icon Name to Pt
+            2	Change Window Title to Pt
+            3	Set X property on top-level window. Pt should be in the form "prop=value", or just "prop" to delete the property
+            4 ; c ; name	Change Color #c to cname. Any number of c name pairs may be given.
+            1 0	Change color names starting with text foreground to Pt (a list of one or more color names or RGB specifications, separated by semicolon, up to eight, as per XParseColor).
+            1 1	Change colors starting with text background to Pt
+            1 2	Change colors starting with text cursor to Pt
+            1 3	Change colors starting with mouse foreground to Pt
+            1 4	Change colors starting with mouse background to Pt
+            1 5	Change colors starting with Tek foreground to Pt
+            1 6	Change colors starting with Tek background to Pt
+            1 7	Change colors starting with highlight to Pt
+            4 6	Change Log File to Pt (normally disabled by a compile-time option)
+            5 0	Set Font to Pt If Pt begins with a "#", index in the font menu, relative (if the next character is a plus or minus sign) or absolute. A number is expected but not required after the sign (the default is the current entry for relative, zero for absolute indexing).
+
