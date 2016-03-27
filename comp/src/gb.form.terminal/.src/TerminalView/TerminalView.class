@@ -274,7 +274,7 @@ Public Sub View_KeyPress()
   
   'If Key.Text Then $hScreen.Print(Replace(Key.Text, "\r", "\n"))
   If Not $hProcess Then Return
-  If $hFilter.InputTo($hProcess, Key.Code, Key.Text) Then 
+  If $hFilter.InputTo(Me, $hProcess, Key.Code, Key.Text) Then 
     Stop Event
   Endif
   
@@ -327,6 +327,13 @@ Public Sub View_LostFocus()
   $bHideCursor = False
   
 End
+
+Public Sub _ShowCursor()
+  
+  $bHideCursor = False
+  
+End
+
 
 Public Sub CursorTimer_Timer()
   

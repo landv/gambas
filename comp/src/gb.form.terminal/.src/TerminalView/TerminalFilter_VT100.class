@@ -3,7 +3,6 @@
 Inherits TerminalFilter
 
 Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
-Private Enum FLAG_APP_CURSOR_KEY, FLAG_APP_KEYPAD, FLAG_ORIGIN
 
 Private $sLeft As String
 Private $X As Integer
@@ -76,21 +75,6 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
   
 End
 
-Private Sub SetFlag(iFlag As Integer, bOn As Boolean)
-
-  If bOn Then
-    $iFlag = BSet($iFlag, iFlag)
-  Else
-    $iFlag = BClr($iFlag, iFlag)
-  Endif
-
-End
-
-Private Sub GetFlag(iFlag As Integer) As Boolean
-  
-  Return BTst($iFlag, iFlag)
-  
-End
 
 
 ' Escape sequence without the initial 27 character.
@@ -128,10 +112,10 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
       hScreen.ReverseIndex
       
     Case "="
-      SetFlag(FLAG_APP_KEYPAD, True)
+      hScreen.SetFlag(TerminalScreen.FLAG_APP_KEYPAD, True)
       
     Case ">"
-      SetFlag(FLAG_APP_KEYPAD, False)
+      hScreen.SetFlag(TerminalScreen.FLAG_APP_KEYPAD, False)
       
     Case "("
       iMode = MODE_IGNORE_CHAR
@@ -184,9 +168,9 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
           
           Select Mid$(sStr, 2, -1)
             Case "?1" ' Application cursor keys
-              SetFlag(FLAG_APP_CURSOR_KEY, True)
+              hScreen.SetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY, True)
             Case "?6" ' Origin
-              SetFlag(FLAG_ORIGIN, True)
+              hScreen.SetFlag(TerminalScreen.FLAG_ORIGIN, True)
             Default
               Goto NOT_IMPLEMENTED
           End Select
@@ -195,9 +179,9 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
           
           Select Mid$(sStr, 2, -1)
             Case "?1" ' Normal cursor keys
-              SetFlag(FLAG_APP_CURSOR_KEY, False)
+              hScreen.SetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY, False)
             Case "?6" ' Origin
-              SetFlag(FLAG_ORIGIN, False)
+              hScreen.SetFlag(TerminalScreen.FLAG_ORIGIN, False)
             Default
               Goto NOT_IMPLEMENTED
           End Select
@@ -292,23 +276,25 @@ NOT_IMPLEMENTED:
     
 End
 
-Public Sub InputTo(hProcess As Process, iCode As Integer, sText As String) As Boolean
+Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer, sText As String) As Boolean
+  
+  Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   
   If Key.Normal Then
   
     Select Case iCode
       
       Case Key.Up
-        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOA", "\e[A")
+        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOA", "\e[A")
         
       Case Key.Down
-        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOB", "\e[B")
+        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOB", "\e[B")
         
       Case Key.Right
-        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOC", "\e[C")
+        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOC", "\e[C")
         
       Case Key.Left
-        sText = If(GetFlag(FLAG_APP_CURSOR_KEY), "\eOD", "\e[D")
+        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOD", "\e[D")
         
     End Select
     

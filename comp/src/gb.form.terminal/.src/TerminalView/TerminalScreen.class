@@ -11,23 +11,32 @@ Property Read Geometry As Rect
 Property Read X As Integer
 Property Read Y As Integer
 
+Public Enum FLAG_APP_CURSOR_KEY, FLAG_APP_KEYPAD, FLAG_ORIGIN
+
 Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
 Static Private $sControlChar As String
 
 Public Lines As New CTerminalLine[]
 
+Private $iFlag As Integer
+
 ' Screen size
 Private $W As Integer
 Private $H As Integer
 
+' Cursor position
 Private $X As Integer
 Private $Y As Integer
+
 Private $hAttr As New TerminalAttr
-'Private $hCacheFont As Image
+
+' Selection
 Private $X1 As Integer
 Private $Y1 As Integer
 Private $X2 As Integer
 Private $Y2 As Integer
+
+' Scroll area
 Private $iScrollStart As Integer = -1
 Private $iScrollEnd As Integer = -1
 
@@ -273,8 +282,12 @@ Public Sub CursorGoto(X As Integer, Y As Integer)
   
   $X = X
   $Y = Y + ScreenTop()
-  GetView().EnsureVisible
-  GetView().Refresh
+  
+  With GetView()
+    ._ShowCursor()
+    .EnsureVisible
+    .Refresh
+  End With
   
 End
 
@@ -661,3 +674,19 @@ Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
   
 End
 
+
+Public Sub SetFlag(iFlag As Integer, bOn As Boolean)
+
+  If bOn Then
+    $iFlag = BSet($iFlag, iFlag)
+  Else
+    $iFlag = BClr($iFlag, iFlag)
+  Endif
+
+End
+
+Public Sub GetFlag(iFlag As Integer) As Boolean
+  
+  Return BTst($iFlag, iFlag)
+  
+End
