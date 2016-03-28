@@ -5,6 +5,7 @@ Inherits TerminalFilter
 Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
 
 Private $sLeft As String
+Private $iPos As Long
 
 Public Sub OutputTo(hView As TerminalView, sData As String)
 
@@ -12,8 +13,12 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
   Dim iPos2 As Integer
   Dim iCode As Integer
   Dim iMode As Integer
+  Dim hFile As File
 
-  If $sLeft Then sData = $sLeft & sData
+  If $sLeft Then 
+    sData = $sLeft & sData
+    $sLeft = ""
+  Endif
 
   Do
 
@@ -25,10 +30,16 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
       Break
     Endif
 
-    hView._GetCurrentScreen().Print(Mid$(sData, iPos, iPos2 - iPos))
+    If iPos2 > iPos Then hView._GetCurrentScreen().Print(Mid$(sData, iPos, iPos2 - iPos))
 
     iPos = iPos2
     Inc iPos
+    
+    If iPos > Len(sData) Then
+      $sLeft = Mid$(sData, iPos2)
+      Return
+    Endif
+    
     If Mid$(sData, iPos, 1) = "[" Then
 
       Inc iPos
@@ -58,7 +69,7 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
         $sLeft = Mid$(sData, iPos)
         Return
       Endif
-      Debug "SET TITLE : " & Mid$(sData, iPos, iPos2 - iPos)
+      'Debug "SET TITLE : " & Mid$(sData, iPos, iPos2 - iPos)
       iPos = iPos2
       iMode = MODE_NORMAL
     Else If iMode = MODE_IGNORE_CHAR Then
@@ -82,9 +93,10 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
   Dim iArg As Integer
   Dim sStr As String
   Dim iMode As Integer
+  Dim N As Integer
 
   sStr = Mid$(sData, iPos, iLen)
-  'Print "ESC "; Quote(sStr)
+  'Print Hex$($iPos + iPos, 8);; "ESC "; Quote(sStr)
 
   Select Case Left(sStr)
 
@@ -119,6 +131,26 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
     Case "["
 
       Select Case Right(sStr)
+        
+        Case "A"
+          
+          GoSub GET_COUNT
+          hScreen.CursorUp(N)
+
+        Case "B"
+          
+          GoSub GET_COUNT
+          hScreen.CursorDown(N)
+
+        Case "C"
+          
+          GoSub GET_COUNT
+          hScreen.CursorRight(N)
+
+        Case "D"
+          
+          GoSub GET_COUNT
+          hScreen.CursorLeft(N)
 
         Case "G"
 
@@ -165,7 +197,7 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
             Case "?6" ' Origin
               hScreen.Origin = True
             Case "?47", "?1047"
-              hView.SetScreen(1)
+              hView.Screen = 1
             Case "?1048"
               hScreen.SaveCursor
             Case "?1049"
@@ -289,6 +321,13 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
   End Select
 
   Return iMode
+  
+GET_COUNT:
+
+  N = 1
+  If Len(sStr) > 2 Then Try N = CInt(Mid$(sStr, 2, -1))
+  
+  Return
 
 GET_ARGS:
 
