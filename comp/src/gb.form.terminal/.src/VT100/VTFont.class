@@ -2,10 +2,10 @@
 
 Enum Color16, Color256
 
-
+Private CSI As String = Chr(27) & "["
 Property Read Modified As Integer
 
-Property ColorMode As Integer = Color16
+Property ColorMode As Integer 
 Property Foreground As Integer = -1
 Property Background As Integer = -1
 Property Bold As Boolean = False
@@ -14,7 +14,7 @@ Property Underscore As Boolean = False
 Property Reverse As Boolean = False
 Property Blink As Boolean = False
 
-Private $iColorMode As Integer
+Private $iColorMode As Integer = Color16
 Private $iForground As Integer
 Private $iBackGround As Integer
 Private $bBold As Boolean
@@ -22,7 +22,7 @@ Private $bDim As Boolean
 Private $bUnderScore As Boolean
 Private $bReverse As Boolean
 Property $bBlink As Boolean
-
+Private $bModified As Boolean
 
 Public Sub _get(sFont As Integer)
   
@@ -32,18 +32,128 @@ End
 
 Private Function Modified_Read() As Integer
 
-  
+  Return $bModified
 
 End
 
-Private Function $bBlink_Read() As Boolean
 
-  
+
+Private Function Foreground_Read() As Integer
+
+  Return = $iForeground
 
 End
 
-Private Sub $bBlink_Write(Value As Boolean)
+Private Sub Foreground_Write(Value As Integer)
 
+  $iForground = Value
+  $bModified = True
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $iBackGround
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $iBackGround = Value
+  $bModified = True
+End
+
+Private Function Bold_Read() As Boolean
+
+  Return $bModified
+
+End
+
+Private Sub Bold_Write(Value As Boolean)
+
+  $bBold = Value
+  $bModified = True
+
+End
+
+Private Function Dim_Read() As Boolean
+
+  Return $bDim
+
+End
+
+Private Sub Dim_Write(Value As Boolean)
+
+  $bDim = Value
+  $bModified = True
+
+End
+
+Private Function Underscore_Read() As Boolean
+
+  Return $bUnderScore
+
+End
+
+Private Sub Underscore_Write(Value As Boolean)
+
+  $bUnderScore = Value
+  $bModified = True
+
+End
+
+Private Function Reverse_Read() As Boolean
+
+  Return $bReverse
+
+End
+
+Private Sub Reverse_Write(Value As Boolean)
+
+  $bReverse = Value
+  $bModified = True
+
+End
+
+Private Function Blink_Read() As Boolean
+
+  Return $bBlink
+
+End
+
+Private Sub Blink_Write(Value As Boolean)
+
+  $bBlink = Value
+  $bModified = True
+
+End
+
+Public Sub Reset()
   
+
+  $iColorMode = Color16
+  $iForground = -1
+  $iBackGround = -1
+  $bBold = False
+  $bDim = False
+  $bUnderScore = False
+  $bReverse = False
+  $bBlink = False
+  $bModified = False
+  Print CSI & "0m";
+  
+End
+
+
+Private Function ColorMode_Read() As Integer
+
+  Return $iColorMode
+
+End
+
+Private Sub ColorMode_Write(Value As Integer)
+
+  $iColorMode = Value
+  $bModified = True
 
 End
