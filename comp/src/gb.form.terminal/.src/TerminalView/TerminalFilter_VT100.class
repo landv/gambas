@@ -5,14 +5,9 @@ Inherits TerminalFilter
 Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
 
 Private $sLeft As String
-Private $X As Integer
-Private $Y As Integer
-
-Private $iFlag As Integer
 
 Public Sub OutputTo(hView As TerminalView, sData As String)
 
-  Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   Dim iPos As Integer
   Dim iPos2 As Integer
   Dim iCode As Integer
@@ -26,11 +21,11 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
 
     iPos2 = InStr(sData, Chr$(27), iPos)
     If iPos2 = 0 Then
-      hScreen.Print(Mid$(sData, iPos))
+      hView._GetCurrentScreen().Print(Mid$(sData, iPos))
       Break
     Endif
 
-    hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    hView._GetCurrentScreen().Print(Mid$(sData, iPos, iPos2 - iPos))
 
     iPos = iPos2
     Inc iPos
@@ -54,7 +49,7 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
 
     Endif
 
-    iMode = Escape(hScreen, sData, iPos2 + 1, iPos - iPos2)
+    iMode = Escape(hView, sData, iPos2 + 1, iPos - iPos2)
 
     If iMode = MODE_TITLE Then
       Inc iPos
@@ -77,8 +72,9 @@ End
 
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, iLen As Integer) As Integer
+Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen As Integer) As Integer
 
+  Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   Dim Y As Integer
   Dim X As Integer
   Dim aArg As String[]
@@ -86,21 +82,19 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
   Dim iArg As Integer
   Dim sStr As String
   Dim iMode As Integer
-  Dim i As Integer
 
   sStr = Mid$(sData, iPos, iLen)
-  Print "ESC "; Quote(sStr)
+  'Print "ESC "; Quote(sStr)
 
   Select Case Left(sStr)
 
     Case "7" ' Save cursor
 
-      $X = hScreen.Column
-      $Y = hScreen.Line
+      hScreen.SaveCursor()
 
     Case "8" ' Restore cursor
 
-      hScreen.CursorGoto($X, $Y)
+      hScreen.RestoreCursor()
 
     Case "D" ' Index
 
@@ -111,10 +105,10 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
       hScreen.ReverseIndex
 
     Case "="
-      hScreen.SetFlag(TerminalScreen.FLAG_APP_KEYPAD, True)
+      hScreen.AppKeypad = True
 
     Case ">"
-      hScreen.SetFlag(TerminalScreen.FLAG_APP_KEYPAD, False)
+      hScreen.AppKeypad = False
 
     Case "("
       iMode = MODE_IGNORE_CHAR
@@ -167,9 +161,17 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
 
           Select Mid$(sStr, 2, -1)
             Case "?1" ' Application cursor keys
-              hScreen.SetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY, True)
+              hScreen.AppCursorKey = True
             Case "?6" ' Origin
-              hScreen.SetFlag(TerminalScreen.FLAG_ORIGIN, True)
+              hScreen.Origin = True
+            Case "?47", "?1047"
+              hView.SetScreen(1)
+            Case "?1048"
+              hScreen.SaveCursor
+            Case "?1049"
+              hScreen.SaveCursor
+              hView.Screen = 1
+              hView._GetCurrentScreen().Clear()
             Default
               Goto NOT_IMPLEMENTED
           End Select
@@ -178,9 +180,19 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
 
           Select Mid$(sStr, 2, -1)
             Case "?1" ' Normal cursor keys
-              hScreen.SetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY, False)
+              hScreen.AppCursorKey = False
             Case "?6" ' Origin
-              hScreen.SetFlag(TerminalScreen.FLAG_ORIGIN, False)
+              hScreen.Origin = False
+            Case "?47"
+              hView.Screen = 0
+            Case "?1047"
+              hScreen.Clear
+              hView.Screen = 0
+            Case "?1048"
+              hScreen.RestoreCursor
+            Case "?1049"
+              hView.Screen = 0
+              hScreen.RestoreCursor
             Default
               Goto NOT_IMPLEMENTED
           End Select
@@ -258,12 +270,11 @@ Private Sub Escape(hScreen As TerminalScreen, sData As String, iPos As Integer, 
 
         Case "s" ' Save cursor
 
-          $X = hScreen.Column
-          $Y = hScreen.Line
+          hScreen.SaveCursor
 
         Case "u" ' Restore cursor
 
-          hScreen.CursorGoto($X, $Y)
+          hScreen.RestoreCursor
 
         Default
 
@@ -304,16 +315,16 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
     Select Case iCode
 
       Case Key.Up
-        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOA", "\e[A")
+        sText = If(hScreen.AppCursorKey, "\eOA", "\e[A")
 
       Case Key.Down
-        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOB", "\e[B")
+        sText = If(hScreen.AppCursorKey, "\eOB", "\e[B")
 
       Case Key.Right
-        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOC", "\e[C")
+        sText = If(hScreen.AppCursorKey, "\eOC", "\e[C")
 
       Case Key.Left
-        sText = If(hScreen.GetFlag(TerminalScreen.FLAG_APP_CURSOR_KEY), "\eOD", "\e[D")
+        sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
 
     End Select
 

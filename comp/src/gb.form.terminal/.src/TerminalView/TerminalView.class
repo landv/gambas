@@ -17,8 +17,8 @@ Property Foreground As Integer
 Property Read Column As Integer
 Property Read Line As Integer
 Property Limit As Integer
-Property Read Screen As Rect
 Property Type As String
+Property Screen As Integer
 
 Private $hPanel As Panel
 Private $hView As ScrollArea
@@ -348,12 +348,6 @@ Public Sub MouseTimer_Timer()
   
 End
 
-Private Function Screen_Read() As Rect
-
-  Return $hScreen.Geometry
-
-End
-
 Private Function Type_Read() As String
 
   Return $sType
@@ -411,4 +405,22 @@ Public Sub _GetCurrentScreen() As TerminalScreen
   
   Return $hScreen
   
+End
+
+Private Function Screen_Read() As Integer
+
+  If $hScreen = $aScreen[1] Then Return 1
+
+End
+
+Private Sub Screen_Write(Value As Integer)
+
+  If Value = 1 Then
+    $hScreen = $aScreen[1]
+  Else
+    $hScreen = $aScreen[0]
+  Endif
+  
+  _UpdateSize
+
 End

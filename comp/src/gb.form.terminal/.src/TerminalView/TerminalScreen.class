@@ -11,10 +11,13 @@ Property Read Geometry As Rect
 Property Read X As Integer
 Property Read Y As Integer
 
-Public Enum FLAG_APP_CURSOR_KEY, FLAG_APP_KEYPAD, FLAG_ORIGIN
+Public AppCursorKey As Boolean
+Public AppKeypad As Boolean
+Public Origin As Boolean
 
 'Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
-Static Private $aColor As Integer[] = [&H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
+Static Private $aColor As Integer[] = [
+&H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
 &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
 &H000000, &H00005f, &H000087, &H0000af, &H0000d7, &H0000ff,
 &H005f00, &H005f5f, &H005f87, &H005faf, &H005fd7, &H005fff,
@@ -63,8 +66,6 @@ Static Private $sControlChar As String
 
 Public Lines As New CTerminalLine[]
 
-Private $iFlag As Integer
-
 ' Screen size
 Private $W As Integer
 Private $H As Integer
@@ -73,6 +74,11 @@ Private $H As Integer
 Private $X As Integer
 Private $Y As Integer
 
+' Saved cursor
+Private $SX As Integer
+Private $SY As Integer
+
+' Current attributes
 Private $hAttr As New TerminalAttr
 
 ' Selection
@@ -719,19 +725,15 @@ Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
   
 End
 
-
-Public Sub SetFlag(iFlag As Integer, bOn As Boolean)
-
-  If bOn Then
-    $iFlag = BSet($iFlag, iFlag)
-  Else
-    $iFlag = BClr($iFlag, iFlag)
-  Endif
-
+Public Sub SaveCursor()
+  
+  $SX = $X
+  $SY = $Y
+  
 End
 
-Public Sub GetFlag(iFlag As Integer) As Boolean
+Public Sub RestoreCursor()
   
-  Return BTst($iFlag, iFlag)
+  Goto($SX, $SY)
   
 End
