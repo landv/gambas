@@ -6,25 +6,25 @@ Private CSI As String = Chr(27) & "["
 Property Read Modified As Integer
 
 Property ColorMode As Integer 
-Property Foreground As Integer = -1
-Property Background As Integer = -1
-Property Bold As Boolean = False
-Property Dim As Boolean = False
-Property Underscore As Boolean = False
-Property Reverse As Boolean = False
-Property Blink As Boolean = False
+Property Foreground As Integer
+Property Background As Integer 
+Property Bold As Boolean
+Property Dim As Boolean 
+Property Underscore As Boolean 
+Property Reverse As Boolean 
+Property Blink As Boolean 
 
 Private $iColorMode As Integer = Color16
-Private $iForground As Integer
+Private $iForeground As Integer
 Private $iBackGround As Integer
 Private $bBold As Boolean
 Private $bDim As Boolean
 Private $bUnderScore As Boolean
 Private $bReverse As Boolean
-Property $bBlink As Boolean
+Private $bBlink As Boolean
 Private $bModified As Boolean
 
-Public Sub _get(sFont As Integer)
+Public Sub _get(sFont As Integer) As VTFont
   
   
   
@@ -40,13 +40,13 @@ End
 
 Private Function Foreground_Read() As Integer
 
-  Return = $iForeground
+  Return $iForeground
 
 End
 
 Private Sub Foreground_Write(Value As Integer)
 
-  $iForground = Value
+  $iForeground = Value
   $bModified = True
 
 End
@@ -132,7 +132,7 @@ Public Sub Reset()
   
 
   $iColorMode = Color16
-  $iForground = -1
+  $iForeground = -1
   $iBackGround = -1
   $bBold = False
   $bDim = False
