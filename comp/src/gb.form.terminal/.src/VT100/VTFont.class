@@ -1,0 +1,49 @@
+' Gambas class file
+
+Enum Color16, Color256
+
+
+Property Read Modified As Integer
+
+Property ColorMode As Integer = Color16
+Property Foreground As Integer = -1
+Property Background As Integer = -1
+Property Bold As Boolean = False
+Property Dim As Boolean = False
+Property Underscore As Boolean = False
+Property Reverse As Boolean = False
+Property Blink As Boolean = False
+
+Private $iColorMode As Integer
+Private $iForground As Integer
+Private $iBackGround As Integer
+Private $bBold As Boolean
+Private $bDim As Boolean
+Private $bUnderScore As Boolean
+Private $bReverse As Boolean
+Property $bBlink As Boolean
+
+
+Public Sub _get(sFont As Integer)
+  
+  
+  
+End
+
+Private Function Modified_Read() As Integer
+
+  
+
+End
+
+Private Function $bBlink_Read() As Boolean
+
+  
+
+End
+
+Private Sub $bBlink_Write(Value As Boolean)
+
+  
+
+End
