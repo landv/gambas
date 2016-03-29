@@ -100,12 +100,15 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
   Dim I As Integer
 
   sStr = Mid$(sData, iPos, iLen)
-  Debug "ESC";
-  For I = 1 To Len(sStr)
-    Error " "; Mid$(sStr, I, 1);
-  Next
-  Error
-  hScreen.DebugRefresh
+  
+  If hScreen.DEBUG_FILTER Then
+    Debug "ESC";
+    For I = 1 To Len(sStr)
+      Error " "; Mid$(sStr, I, 1);
+    Next
+    Error
+    hScreen.DebugRefresh
+  Endif
 
   Select Case Left(sStr)
 

@@ -2,6 +2,8 @@
 
 Event _Foo
 
+Public Const DEBUG_FILTER As Boolean = False
+
 Property Read Attr As TerminalAttr
 Property Read Column As Integer
 Property Read Line As Integer
@@ -215,16 +217,27 @@ Public Sub Print(sText As String)
   aText = Split(sText, $sControlChar)
   
   For Each sElt In aText
+    
     If sElt Then 
-      Debug Quote(sElt)
-      DebugRefresh
+      
+      If DEBUG_FILTER Then
+        Debug Quote(sElt)
+        DebugRefresh
+      Endif
+      
       Insert(sElt)
+      
     Endif
+    
     iLen += Len(sElt)
     If iLen >= Len(sText) Then Break
     iCode = Asc(sText, iLen + 1)
-    Debug "^" & Chr$(64 + iCode)
-    DebugRefresh
+    
+    If DEBUG_FILTER Then
+      Debug "^" & Chr$(64 + iCode)
+      DebugRefresh
+    Endif
+    
     Select Case iCode
       Case 7
       Case 8
@@ -235,11 +248,11 @@ Public Sub Print(sText As String)
         Endif
       Case 9
         Tab()
-      Case 10
+      Case 10, 12
         Goto(0, $Y)
         NewLine()
-      Case 12
-        EraseScreen()
+      ' Case 12
+      '   EraseScreen()
       Case 13
         Goto(0, $Y)
       Case Else
@@ -739,7 +752,7 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
     ' Cursor
 
     If L = $Y And If Not bHideCursor Then
-      Paint.FillRect($X * CW, Y, CW, LH, Color.SetAlpha(hView.Foreground, 64))
+      Paint.FillRect($X * CW, Y, CW, LH, Color.Merge(Color.SelectedBackground, hView.Foreground))
     Endif
     
     ' Selection
@@ -833,8 +846,10 @@ End
 
 Public Sub DebugRefresh()
   
-  ' GetView().Refresh
-  ' Wait
-  ' Stop
+  If DEBUG_FILTER Then
+    GetView().Refresh
+    Wait
+    Stop
+  Endif
   
 End

@@ -4,14 +4,13 @@ Inherits UserControl
 
 Export
 
-Public Const _Properties As String = "*,Border=True,ScrollBar=True,Limit"
+Public Const _Properties As String = "*,Border=True,Limit"
 Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
 Event Kill
 
 Property Border As Boolean
-Property ScrollBar As Boolean
 Property Read Attr As TerminalAttr
 Property Foreground As Integer
 Property Read Column As Integer
@@ -21,7 +20,9 @@ Property Type As String
 Property Screen As Integer
 
 Private $hPanel As Panel
-Private $hView As ScrollArea
+Private $hView As DrawingArea
+Private $hScroll As ScrollBar
+
 Private $aScreen As New TerminalScreen[2]
 Private $hScreen As TerminalScreen
 
@@ -47,14 +48,18 @@ Public Sub _new()
   $hPanel.Arrangement = Arrange.Fill
   $hPanel.Border = Border.Plain
 
-  $hView = New ScrollArea($hPanel) As "View"
+  $hView = New DrawingArea($hPanel) As "View"
   $hView.Border = False
   $hView.Focus = True
   $hView.Tracking = True
   $hView.Mouse = Mouse.Text
   $hView.Background = Color.Black
   $hView.Foreground = Color.White
-  $hView.ScrollBar = Scroll.Vertical
+  
+  $hScroll = New ScrollBar($hView) As "ScrollBar"
+  $hScroll.Ignore = True
+  $hScroll.Mouse = Mouse.Arrow
+  $hScroll.Hide
   
   Me.Proxy = $hView
   
@@ -85,7 +90,7 @@ End
 
 Public Sub _RefreshLine((Y) As Integer)
 
-  $hView.RefreshRect(0, Y * $LH + $hView.ScrollY Mod $LH, $hView.ClientW, $LH)
+  $hView.Refresh(0, (Y - GetScrollY()) * $LH, $hView.ClientW, $LH)
 
 End
 
@@ -93,13 +98,14 @@ Public Sub _UpdateSize()
 
   Dim W, H As Integer
 
-  W = $hView.ClientW
-  If $hView.ScrollH <= $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
-  W = Max(1, CInt(W / $CW))
-  
+  'W = $hView.ClientW
+  'If $hView.ScrollH <= $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
+  W = Max(1, CInt($hView.ClientW / $CW))
   H = Max(1, $hView.ClientH \ $LH)
   
-  $hView.ResizeContents($hView.ClientW, Max(H, $hScreen.Lines.Count) * $LH + $hView.ClientH Mod $LH)
+  '$hView.ResizeContents($hView.ClientW, Max(H, $hScreen.Lines.Count) * $LH + $hView.ClientH Mod $LH)
+  $hScroll.MinValue = 0
+  $hScroll.MaxValue = Max(0, $hScreen.Lines.Count - H)
   
   If $hScreen.Resize(W, H) Then
     Debug W;; H
@@ -150,15 +156,16 @@ Public Sub View_Font()
 End
 
 
-Public Sub View_Resize()
+Public Sub View_Arrange()
   
+  $hScroll.Move($hView.ClientW - Style.ScrollbarSize, 0, Style.ScrollbarSize, $hView.ClientH)
   _UpdateSize
   
 End
 
 Private Sub GetScrollY() As Integer
   
-  Return ($hView.ScrollY \ $LH) * $LH
+  Return $hScroll.Value
   
 End
 
@@ -166,7 +173,7 @@ End
 Public Sub View_Draw()
 
   ApplyLimit
-  $hScreen.Paint($hView.ScrollY, $LH, $CW, $iAscent, $bHideCursor)
+  $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor)
   
 End
 
@@ -189,28 +196,50 @@ Private Sub Border_Write(Value As Boolean)
 
 End
 
-Private Function ScrollBar_Read() As Boolean
-
-  Return $hView.ScrollBar
-
-End
-
-Private Sub ScrollBar_Write(Value As Boolean)
-
-  $hView.ScrollBar = If(Value, Scroll.Vertical, Scroll.None)
-
-End
-
 Private Function Attr_Read() As TerminalAttr
 
   Return $hScreen.Attr
 
 End
 
-Private Sub EnsureVisibleAt(X As Integer, Y As Integer)
+Private Sub EnsureVisibleAt((X) As Integer, Y As Integer)
   
-  '$hScreen.GetLine(Y)
-  $hView.EnsureVisible(X * $CW, Y * $LH + $LH - 1, $CW, $LH)
+  Dim PH, CY, CH As Integer
+  Dim YY, HH As Float
+  Dim H As Integer
+  
+  Y = Y * $LH + $LH - 1
+  H = $LH
+  
+  HH = H / 2
+  YY = Y + HH
+
+  PH = $hView.ClientH
+
+  CY = - $hScroll.Value
+  CH = $hScroll.MaxValue
+
+  If PH < (HH * 2) Then HH = PH / 2
+
+  If CH <= PH Then
+    HH = 0
+    CY = 0
+  Endif
+
+  If YY < (- CY + HH) Then
+    CY = Ceil(- YY + HH)
+  Else If YY >= (- CY + PH - HH) Then
+    CY = Floor(- YY + PH - HH)
+  Endif
+
+  If CY > 0 Then
+    CY = 0
+  Else If CY < (PH - CH) And If CH > PH Then
+    CY = PH - CH
+  Endif
+
+  CY = (- CY)
+  If $hScroll.Value <> CY Then $hScroll.Value = CY
   
 End
 
@@ -240,7 +269,7 @@ Private Sub GotoMouse(bStart As Boolean)
   Dim Y As Integer
 
   X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW)
-  Y = (Mouse.ScreenY - $hView.ScreenY + GetScrollY()) \ $LH
+  Y = GetScrollY() + (Mouse.ScreenY - $hView.ScreenY) \ $LH
 
   $hScreen.GotoMouse(X, Y, bStart)
 
@@ -261,6 +290,13 @@ Public Sub View_MouseMove()
   
   If $bMouseDown Then 
     GotoMouse(False)
+  Else
+    If Mouse.X >= ($hView.ClientW - Style.ScrollbarSize) And If $hScroll.MaxValue Then
+      $hScroll.Raise
+      $hScroll.Show
+    Else
+      $hScroll.Hide
+    Endif
   Endif
   
 End
@@ -321,14 +357,14 @@ End
 
 Public Sub View_GotFocus()
   
-  '$hCursorTimer = New Timer(500) As "CursorTimer"
+  $hCursorTimer = New Timer(500) As "CursorTimer"
   
 End
 
 Public Sub View_LostFocus()
   
-  '$hCursorTimer.Stop
-  '$hCursorTimer = Null
+  $hCursorTimer.Stop
+  $hCursorTimer = Null
   $bHideCursor = False
   
 End
@@ -428,4 +464,10 @@ Private Sub Screen_Write(Value As Integer)
   
   _UpdateSize
 
+End
+
+Public Sub ScrollBar_Change()
+  
+  Refresh
+  
 End
