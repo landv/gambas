@@ -666,6 +666,7 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
       
       iFg = hAttr.Foreground
       If iFg >= 0 Then
+        'Debug iFg
         iFg = $aColor[iFg]
       Else
         iFg = hView.Foreground

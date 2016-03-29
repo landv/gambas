@@ -271,7 +271,9 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
 
           GoSub GET_ARGS
           If aArg Then
-            For Each sArg In aArg
+            For i = 0 To aArg.Max
+             sArg = aArg[i]
+            'For Each sArg In aArg
 
               Try iArg = CInt(sArg)
               If Error Then Continue
@@ -308,20 +310,25 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
                 Case 100 To 107
                   hScreen.Attr.Background = iArg - 100
                 Case 38
-                  If aArg.Count = 3 And If aArg[1] = "5" Then
-                    Try hScreen.Attr.Foreground = CInt(aArg[2])
-                    Break
+                  If (aArg.max - i) >= 2 And If aArg[i + 1] = "5" Then
+                    Try hScreen.Attr.Background = CInt(aArg[i + 2])
+                    i += 2
                   Endif
+                  'TODO: Implement support for RGB Colors
+                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
+                  '   Try hScreen.Attr.Background = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
+                  '   i += 4
+                  ' Endif
                 Case 48
-                  If aArg.Count = 3 And If aArg[1] = "5" Then
-                    Try hScreen.Attr.Background = CInt(aArg[2])
-                    Break
+                  If (aArg.max - i) >= 2 And If aArg[i + 1] = "5" Then
+                    Try hScreen.Attr.Foreground = CInt(aArg[i + 2])
+                    i += 2
                   Endif
-                  ' Case 38
-                  '   ' If aArg.Count >= 3 And If aArg[ Then
-                  '   '
-                  '   ' Endif
-                  ' Case 48
+                  'TODO: Implement support for RGB Colors
+                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
+                  '   Try hScreen.Attr.ForeGround = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
+                  '   i += 4
+                  ' Endif
 
                 Default
                   Goto NOT_IMPLEMENTED
