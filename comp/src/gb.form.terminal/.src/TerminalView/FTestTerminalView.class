@@ -26,7 +26,7 @@ End
 
 Public Sub Form_Open()
 
-  TextBox1.SetFocus
+  TerminalView1.Exec(["bash"])
 
 End
 

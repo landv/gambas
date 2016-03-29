@@ -5,12 +5,13 @@
   Arrangement = Arrange.Vertical
   { TerminalView1 TerminalView
     MoveScaled(2,1,59,52)
-    Font = Font["Ubuntu Mono"]
+    Font = Font["Gambas"]
     Expand = True
     Border = False
   }
   { Panel1 HBox
     MoveScaled(2,55,82,5)
+    Visible = False
     { TextBox1 TextBox
       MoveScaled(1,0,43,5)
       Expand = True
@@ -37,7 +38,7 @@
     }
   }
   { Timer1 #Timer
-    #MoveScaled(50,20)
+    #MoveScaled(44,21)
     Delay = 50
   }
 }

@@ -84,10 +84,8 @@ Public Sub Clear()
   
 End
 
-
 Public Sub Refresh()
 
-  'ClearCache
   $hView.Refresh
 
 End
@@ -112,7 +110,7 @@ Public Sub _UpdateSize()
   $hScroll.MaxValue = Max(0, $hScreen.Lines.Count - H)
   
   If $hScreen.Resize(W, H) Then
-    Debug W;; H
+    'Debug W;; H
     If $hProcess Then $hProcess.Term.Resize(W, H)
   Endif
 

@@ -425,8 +425,12 @@ Public Sub EraseEndOfLine()
   Dim hLine As CTerminalLine
 
   hLine = GetLine($Y)
-  If hLine.Length <= $X Then Return
-  hLine.Text = String.Left(hLine.Text, $X)
+  If hLine.Length <= $X Then 
+    If $hAttr.IsVoid() Then Return
+    hLine.Text &= Space($X - hLine.Length)
+  Else
+    hLine.Text = String.Left(hLine.Text, $X)
+  Endif
   hLine.Length = $X
   If Not $hAttr.IsVoid() Then Insert(Space$($W - $X), $X)
   GetView()._RefreshLine($Y)
