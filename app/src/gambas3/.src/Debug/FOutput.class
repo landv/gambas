@@ -478,7 +478,7 @@ Public Sub edtOutput_Leave()
 
   If $iLinkLen Then 
     $iLinkLen = 0
-    edtOutput[$iLinkY].Refresh
+    Try edtOutput[$iLinkY].Refresh
   Endif
   
 End

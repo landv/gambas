@@ -1021,7 +1021,7 @@ Public Sub ConstructorNeedParent() As Boolean
   hClass = Me
   Do
     hSym = hClass.Symbols["_new"]
-    If hSym And If hSym.Signature Then Return True
+    If hSym And If hSym.Signature And If Left(hSym.Signature) <> "[" Then Return True
     If Not hClass.Parent Then Return False
     hClass = Documentation.Classes[hClass.ParentComponent &/ hClass.Parent]
   Loop
