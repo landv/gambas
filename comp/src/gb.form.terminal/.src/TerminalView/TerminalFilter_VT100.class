@@ -5,7 +5,6 @@ Inherits TerminalFilter
 Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
 
 Private $sLeft As String
-Private $iPos As Long
 
 Public Sub OutputTo(hView As TerminalView, sData As String)
 
@@ -13,11 +12,15 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
   Dim iPos2 As Integer
   Dim iCode As Integer
   Dim iMode As Integer
-  Dim hFile As File
 
   If $sLeft Then 
     sData = $sLeft & sData
     $sLeft = ""
+  Endif
+  
+  If Not String.IsValid(sData) Then
+    $sLeft = sData
+    Return
   Endif
 
   Do
@@ -94,9 +97,15 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
   Dim sStr As String
   Dim iMode As Integer
   Dim N As Integer
+  Dim I As Integer
 
   sStr = Mid$(sData, iPos, iLen)
-  'Print Hex$($iPos + iPos, 8);; "ESC "; Quote(sStr)
+  Debug "ESC";
+  For I = 1 To Len(sStr)
+    Error " "; Mid$(sStr, I, 1);
+  Next
+  Error
+  hScreen.DebugRefresh
 
   Select Case Left(sStr)
 
@@ -176,6 +185,8 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
             hScreen.EraseUp
           Else If aArg[0] = "2" Then
             hScreen.EraseScreen
+          Else
+            Goto NOT_IMPLEMENTED
           Endif
 
         Case "K" ' Erase line
@@ -187,15 +198,28 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
             hScreen.EraseStartOfLine
           Else If aArg[0] = "2" Then
             hScreen.EraseLine
+          Else
+            Goto NOT_IMPLEMENTED
           Endif
+          
+        Case "P" ' Delete characters
+          
+          GoSub GET_COUNT
+          hScreen.DeleteChar(N)
 
         Case "h"
 
           Select Mid$(sStr, 2, -1)
+            Case "4" ' Insert mode
+              hScreen.InsertMode = True
+            Case "20" ' Newline mode
+              hScreen.NewLineMode = True
             Case "?1" ' Application cursor keys
               hScreen.AppCursorKey = True
             Case "?6" ' Origin
               hScreen.Origin = True
+            Case "?7" ' Wrap mode
+              hScreen.WrapMode = True
             Case "?47", "?1047"
               hView.Screen = 1
             Case "?1048"
@@ -211,10 +235,16 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
         Case "l"
 
           Select Mid$(sStr, 2, -1)
+            Case "4" ' Insert mode
+              hScreen.InsertMode = False
+            Case "20" ' Newline mode
+              hScreen.NewLineMode = False
             Case "?1" ' Normal cursor keys
               hScreen.AppCursorKey = False
             Case "?6" ' Origin
               hScreen.Origin = False
+            Case "?7" ' Wrap mode
+              hScreen.WrapMode = False
             Case "?47"
               hView.Screen = 0
             Case "?1047"

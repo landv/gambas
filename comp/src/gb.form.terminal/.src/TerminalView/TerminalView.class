@@ -25,19 +25,19 @@ Private $hView As ScrollArea
 Private $aScreen As New TerminalScreen[2]
 Private $hScreen As TerminalScreen
 
-Private $hFont As Font
 Private $LH As Integer
 Private $iAscent As Integer
-Private $CW As Integer
+Private $CW As Float
 
 Private $bMouseDown As Boolean
 Private $iLimit As Integer
-Private $hCursorTimer As Timer
 Private $bHideCursor As Boolean
 Private $hMouseTimer As Timer
 Private $hProcess As Process
 Private $hFilter As TerminalFilter
 Private $sType As String
+
+Private $hCursorTimer As Timer
 
 Public Sub _new()
   
@@ -54,6 +54,7 @@ Public Sub _new()
   $hView.Mouse = Mouse.Text
   $hView.Background = Color.Black
   $hView.Foreground = Color.White
+  $hView.ScrollBar = Scroll.Vertical
   
   Me.Proxy = $hView
   
@@ -84,7 +85,7 @@ End
 
 Public Sub _RefreshLine((Y) As Integer)
 
-  Refresh
+  $hView.RefreshRect(0, Y * $LH + $hView.ScrollY Mod $LH, $hView.ClientW, $LH)
 
 End
 
@@ -94,15 +95,14 @@ Public Sub _UpdateSize()
 
   W = $hView.ClientW
   If $hView.ScrollH <= $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
-  W = Max(1, W \ $CW)
+  W = Max(1, CInt(W / $CW))
   
   H = Max(1, $hView.ClientH \ $LH)
   
-  $hView.ResizeContents($hView.ClientW, Max(H, $hScreen.Lines.Count + 1) * $LH)
-
-  '$hView.ScrollY = GetScrollY()
+  $hView.ResizeContents($hView.ClientW, Max(H, $hScreen.Lines.Count) * $LH + $hView.ClientH Mod $LH)
   
   If $hScreen.Resize(W, H) Then
+    Debug W;; H
     If $hProcess Then $hProcess.Term.Resize(W, H)
   Endif
 
@@ -113,17 +113,22 @@ End
 Private Sub UpdateFont()
 
   Dim sText As String
+  
   'Dim I As Integer
   
-  $hFont = $hView.Font
+  '$hFont = $hView.Font
   '$hFontBold = $hView.Font.Copy()
   '$hFontBold.Bold = True
   
-  $LH = $hFont.Height + 1
-
-  $iAscent = $hFont.Ascent
-  sText = String$(4, "AbCdEfGh01#@WwmM")
-  $CW = Ceil($hFont.TextWidth(sText) / Len(sText))
+  With $hView.Font
+  
+    $LH = .Height + 1
+    $iAscent = .Ascent
+    sText = String$(4, "AbCdEfGh01#@WwmM")
+    $CW = .TextWidth(sText) / Len(sText)
+    Debug $CW
+    
+  End With
   
   ' $hCacheFont = New Image($CW * 256, $LH, Color.Transparent)
   ' Paint.Begin($hCacheFont)
@@ -204,7 +209,7 @@ End
 
 Private Sub EnsureVisibleAt(X As Integer, Y As Integer)
   
-  $hScreen.GetLine(Y)
+  '$hScreen.GetLine(Y)
   $hView.EnsureVisible(X * $CW, Y * $LH + $LH - 1, $CW, $LH)
   
 End
@@ -234,7 +239,7 @@ Private Sub GotoMouse(bStart As Boolean)
   Dim X As Integer
   Dim Y As Integer
 
-  X = (Mouse.ScreenX - $hView.ScreenX) \ $CW
+  X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW)
   Y = (Mouse.ScreenY - $hView.ScreenY + GetScrollY()) \ $LH
 
   $hScreen.GotoMouse(X, Y, bStart)
@@ -316,14 +321,14 @@ End
 
 Public Sub View_GotFocus()
   
-  $hCursorTimer = New Timer(500) As "CursorTimer"
+  '$hCursorTimer = New Timer(500) As "CursorTimer"
   
 End
 
 Public Sub View_LostFocus()
   
-  $hCursorTimer.Stop
-  $hCursorTimer = Null
+  '$hCursorTimer.Stop
+  '$hCursorTimer = Null
   $bHideCursor = False
   
 End

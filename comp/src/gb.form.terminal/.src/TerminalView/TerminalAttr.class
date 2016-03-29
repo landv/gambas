@@ -21,3 +21,13 @@ Public Sub Reset()
   Blink = False
   
 End
+
+Public Sub IsVoid() As Boolean
+  
+  If Foreground >= 0 Then Return
+  If Background >= 0 Then Return
+  If Bold Or If {Dim} Or If Underscore Or If Reverse Or If Blink Then Return
+  Return True
+  
+End
+

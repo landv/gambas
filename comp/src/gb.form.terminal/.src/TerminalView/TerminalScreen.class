@@ -14,6 +14,9 @@ Property Read Y As Integer
 Public AppCursorKey As Boolean
 Public AppKeypad As Boolean
 Public Origin As Boolean
+Public InsertMode As Boolean
+Public NewLineMode As Boolean
+Public WrapMode As Boolean
 
 'Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
 Static Private $aColor As Integer[] = [
@@ -60,8 +63,6 @@ Static Private $aColor As Integer[] = [
 &H808080, &H8a8a8a, &H949494, &H9e9e9e, &Ha8a8a8, &Hb2b2b2,
 &Hbcbcbc, &Hc6c6c6, &Hd0d0d0, &Hdadada, &He4e4e4, &Heeeeee]
 
-
-
 Static Private $sControlChar As String
 
 Public Lines As New CTerminalLine[]
@@ -101,6 +102,8 @@ Public Sub _new()
     Next
   Endif
   
+  Reset
+  
 End
 
 Private Sub GetView() As TerminalView
@@ -120,6 +123,10 @@ Public Sub Resize(W As Integer, H As Integer) As Boolean
   If W <> $W Or If H <> $H Then
     $W = W
     $H = H
+    $X = Min($X, $W - 1)
+    $Y = Min($Y, $H - 1)
+    $iScrollStart = -1
+    $iScrollEnd = -1
     Return True
   Endif
   
@@ -157,35 +164,44 @@ Private Sub ClearLine(Y As Integer)
 End
 
 
-Private Sub Insert(sText As String)
+Private Sub Insert(sText As String, Optional X As Integer = $X)
 
   Dim hLine As CTerminalLine
   Dim iLen As Integer = String.Len(sText)
   
   If iLen = 0 Then Return
   
-  If ($X + iLen) > $W Then
-    iLen = Max(0, $W - $X)
+  If (X + iLen) > $W Then
+    iLen = Max(0, $W - X)
     If iLen Then
       Insert(String.Left(sText, iLen))
       sText = String.Mid$(sText, iLen + 1) 
     Endif
-    NewLine()
-    Insert(sText)
+    If WrapMode Then
+      NewLine()
+      $X = 0
+      Insert(sText)
+    Endif
     Return
   Endif
   
   hLine = GetLine($Y)
-  If hLine.Length < $X Then 
-    hLine.Text &= Space$($X - hLine.Length) & sText & String.Mid(hLine.Text, $X + iLen)
+  
+  If hLine.Length < X Then 
+    hLine.Text &= Space$(X - hLine.Length) & sText & String.Mid(hLine.Text, X + iLen)
   Else
-    hLine.Text = String.Left(hLine.Text, $X) & sText & String.Mid(hLine.Text, $X + iLen)
+    If InsertMode Then
+      hLine.Text = String.Left(String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1), $W)
+    Else
+      hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen)
+    Endif
   Endif
   hLine.Length = String.Len(hLine.Text)
   
-  hLine.SetAttr($hAttr, $X, iLen)
+  hLine.SetAttr($hAttr, X, iLen)
   GetView()._RefreshLine($Y)
-  $X += iLen
+  
+  If IsMissing(X) Then $X += iLen
   
 End
 
@@ -199,21 +215,28 @@ Public Sub Print(sText As String)
   aText = Split(sText, $sControlChar)
   
   For Each sElt In aText
-    If sElt Then Insert(sElt)
+    If sElt Then 
+      Debug Quote(sElt)
+      DebugRefresh
+      Insert(sElt)
+    Endif
     iLen += Len(sElt)
     If iLen >= Len(sText) Then Break
     iCode = Asc(sText, iLen + 1)
+    Debug "^" & Chr$(64 + iCode)
+    DebugRefresh
     Select Case iCode
       Case 7
       Case 8
         If $X Then
           Dec $X
-          Insert(" ")
-          Dec $X
+          'Insert(" ")
+          'Dec $X
         Endif
       Case 9
         Tab()
       Case 10
+        Goto(0, $Y)
         NewLine()
       Case 12
         EraseScreen()
@@ -230,7 +253,8 @@ End
 
 Private Sub NewLine()
   
-  Goto(0, $Y + 1)
+  If NewLineMode Then $X = 0
+  Index()
   
 End
 
@@ -344,13 +368,13 @@ End
 
 Public Sub CursorUp(Optional Count As Integer = 1)
   
-  CursorGoto($X, $Y - Count)
+  CursorGoto($X, Me.Line - Count)
   
 End
 
 Public Sub CursorDown(Optional Count As Integer = 1)
   
-  CursorGoto($X, $Y + Count)
+  CursorGoto($X, Me.Line + Count)
   
 End
 
@@ -366,6 +390,21 @@ Public Sub CursorRight(Optional Count As Integer = 1)
   
 End
 
+Public Sub DeleteChar(Optional N As Integer = 1)
+
+  Dim hLine As CTerminalLine
+  
+  hLine = GetLine($Y)
+  If $X < hLine.Length Then 
+    hLine.Text = String.Left(hLine.Text, $X) & String.Mid$(hLine.Text, $X + N + 1)
+    hLine.Length = String.Len(hLine.Text)
+  Endif
+  If Not $hAttr.IsVoid() Then
+    Insert(Space$(N), hLine.Length)
+  Endif
+  
+End
+
 Public Sub EraseEndOfLine()
 
   Dim hLine As CTerminalLine
@@ -374,6 +413,7 @@ Public Sub EraseEndOfLine()
   If hLine.Length <= $X Then Return
   hLine.Text = String.Left(hLine.Text, $X)
   hLine.Length = $X
+  If Not $hAttr.IsVoid() Then Insert(Space$($W - $X), $X)
   GetView()._RefreshLine($Y)
 
 End
@@ -399,8 +439,13 @@ Public Sub EraseLine()
   Dim hLine As CTerminalLine
 
   hLine = GetLine($Y)
-  hLine.Text = ""
-  hLine.Length = 0
+  If $hAttr.IsVoid() Then
+    hLine.Text = ""
+    hLine.Length = 0
+  Else
+    Insert(Space$($W), 0)
+  Endif
+  
   GetView()._RefreshLine($Y)
 
 End
@@ -422,7 +467,9 @@ Public Sub EraseDown()
   
   Dim Y As Integer
   
-  For Y = Max(ScreenTop(), $Y) To Lines.Max
+  EraseEndOfLine
+  
+  For Y = Max(ScreenTop(), $Y + 1) To Lines.Max
     ClearLine(Y)
   Next
   
@@ -435,7 +482,9 @@ Public Sub EraseUp()
 
   Dim Y As Integer
   
-  For Y = ScreenTop() To Max(ScreenTop() - 1, $Y)
+  EraseStartOfLine
+  
+  For Y = ScreenTop() To Max(ScreenTop() - 1, $Y + 1)
     ClearLine(Y)
   Next
   
@@ -475,11 +524,18 @@ Private Sub Scroll(bUp As Boolean)
   GetScreen(ByRef Y1, ByRef Y2)
   
   If bUp Then
-    Lines.Remove(Y2)
-    Lines.Add(Null, Y1)
+    If $iScrollStart >= 0 And If $iScrollEnd >= 0 Then
+      Try Lines.Remove(Y1)
+      Try Lines.Add(Null, Y2)
+    Else
+      Lines.Add(Null)
+      Inc $Y
+      GetView()._UpdateSize()
+      GetView().EnsureVisible
+    Endif
   Else
-    Lines.Remove(Y1)
-    Lines.Add(Null, Y2)
+    Try Lines.Remove(Y2)
+    Try Lines.Add(Null, Y1)
   Endif
   
   GetView().Refresh
@@ -505,9 +561,9 @@ Public Sub Index()
   GetScreen(ByRef Y1, ByRef Y2)
 
   If $Y >= Y2 Then
-    Scroll(False)
+    ScrollUp
   Else
-    CursorUp
+    CursorDown
   Endif
   
 End
@@ -519,9 +575,9 @@ Public Sub ReverseIndex()
   GetScreen(ByRef Y1, ByRef Y2)
 
   If $Y <= Y1 Then
-    Scroll(True)
+    ScrollDown
   Else
-    CursorDown
+    CursorUp
   Endif
   
 End
@@ -551,7 +607,7 @@ Private Function Height_Read() As Integer
 
 End
 
-Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Integer, LA As Integer)
+Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, LA As Integer)
 
   Dim hView As TerminalView = GetView()
   Dim hLine As CTerminalLine
@@ -605,6 +661,12 @@ Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW
       
       Paint.Background = iFg
       
+      If hAttr.Bold Then
+        If Not Paint.Font.Bold Then Paint.Font.Bold = True
+      Else
+        If Paint.Font.Bold Then Paint.Font.Bold = False
+      Endif
+      
     Endif
     
     ' Paint.FillRect(X, Y, $CW, $LH, iBg)
@@ -631,8 +693,21 @@ DRAW_TEXT:
   sText = String.Mid$(hLine.Text, P, iLen)
   
   Paint.FillRect(X, Y, CW * iLen, LH, iBg)
+  
+  ' If hAttr.Bold Then
+  '   hImage = New Image(iLen * CW + 1, LH, Color.Transparent)
+  '   
+  '   Paint.Begin(hImage)
+  '   Paint.Background = iFg
+  '   Paint.Font = hView.Font
+  '   Paint.DrawText(sText, 0, LA)
+  '   Paint.End
+  '   Paint.DrawImage(hImage, X, Y)
+  '   Paint.DrawImage(hImage, X + 1, Y) ',,, 0.5)
+  ' Else
   Paint.DrawText(sText, X, Y + LA)
-  If hAttr.Bold Then Paint.DrawText(sText, X + 1, Y + LA)
+  ' Endif
+  
   Paint.Background = Color.SetAlpha(iFg, 64)
   If hAttr.Underscore Then Paint.FillRect(X, Y + LH - 1, iLen * CW, 1, Paint.Background)
   X += iLen * CW
@@ -641,7 +716,7 @@ DRAW_TEXT:
 
 End
 
-Public Sub Paint(SY As Integer, LH As Integer, CW As Integer, LA As Integer, bHideCursor As Boolean)
+Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean)
 
   Dim hView As TerminalView = GetView()
   Dim L, L1, L2 As Integer
@@ -651,10 +726,11 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Integer, LA As Integer, bHi
   Dim Y1 As Integer
   Dim Y2 As Integer
 
-  L1 = SY \ LH
-  L2 = L1 + $H - 1
+  L1 = (SY + Paint.ClipRect.Y) \ LH
+  L2 = (SY + Paint.ClipRect.Y + Paint.ClipRect.H - 1) \ LH
+  'Debug L1;; L2
   
-  Y = 0 'L1 * $LH - $hView.ScrollY
+  Y = L1 * LH - SY + SY Mod LH
   
   For L = L1 To L2
     
@@ -735,5 +811,30 @@ End
 Public Sub RestoreCursor()
   
   Goto($SX, $SY)
+  
+End
+
+Public Sub Reset()
+
+  $X = 0
+  $Y = 0
+  $iScrollStart = -1
+  $iScrollEnd = -1
+  $hAttr.Reset
+  
+  AppCursorKey = False
+  AppKeypad = False
+  Origin = False
+  InsertMode = False
+  NewLineMode = False
+  WrapMode = True
+  
+End
+
+Public Sub DebugRefresh()
+  
+  ' GetView().Refresh
+  ' Wait
+  ' Stop
   
 End
