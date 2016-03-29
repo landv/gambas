@@ -191,16 +191,18 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   
   If hLine.Length < X Then 
     hLine.Text &= Space$(X - hLine.Length) & sText & String.Mid(hLine.Text, X + iLen)
+    hLine.SetAttr($hAttr, X, iLen)
   Else
     If InsertMode Then
       hLine.Text = String.Left(String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1), $W)
+      hLine.SetAttr($hAttr, X, iLen, True)
     Else
-      hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen)
+      hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen + 1)
+      hLine.SetAttr($hAttr, X, iLen)
     Endif
   Endif
   hLine.Length = String.Len(hLine.Text)
   
-  hLine.SetAttr($hAttr, X, iLen)
   GetView()._RefreshLine($Y)
   
   If IsMissing(X) Then $X += iLen
@@ -634,6 +636,7 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
   Dim iBg As Integer = hView.Background
   'Dim hRect As Rect
   Dim P, iLen As Integer
+  Dim XT As Integer
 
   hLine = Lines[L]
   If Not hLine Then Return
@@ -705,24 +708,17 @@ DRAW_TEXT:
   
   sText = String.Mid$(hLine.Text, P, iLen)
   
-  Paint.FillRect(X, Y, CW * iLen, LH, iBg)
+  XT = CInt(X)
   
-  ' If hAttr.Bold Then
-  '   hImage = New Image(iLen * CW + 1, LH, Color.Transparent)
-  '   
-  '   Paint.Begin(hImage)
-  '   Paint.Background = iFg
-  '   Paint.Font = hView.Font
-  '   Paint.DrawText(sText, 0, LA)
-  '   Paint.End
-  '   Paint.DrawImage(hImage, X, Y)
-  '   Paint.DrawImage(hImage, X + 1, Y) ',,, 0.5)
-  ' Else
-  Paint.DrawText(sText, X, Y + LA)
-  ' Endif
+  Paint.FillRect(XT, Y, CW * iLen, LH, iBg)
+  Paint.DrawText(sText, XT, Y + LA)
   
-  Paint.Background = Color.SetAlpha(iFg, 64)
-  If hAttr.Underscore Then Paint.FillRect(X, Y + LH - 1, iLen * CW, 1, Paint.Background)
+  If hAttr.Underscore Then 
+    Paint.Background = Color.SetAlpha(iFg, 64)
+    Paint.FillRect(XT, Y + LH - 1, iLen * CW, 1, Paint.Background)
+    Paint.Background = iFg
+  Endif
+  
   X += iLen * CW
   P = I
   Return
@@ -848,7 +844,9 @@ Public Sub DebugRefresh()
   
   If DEBUG_FILTER Then
     GetView().Refresh
+    Inc GetView()._DisableFilter
     Wait
+    Dec GetView()._DisableFilter
     Stop
   Endif
   

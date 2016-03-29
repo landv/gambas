@@ -22,9 +22,10 @@ Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
   
 End
 
-Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 1)
+Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 1, Optional bInsert As Boolean)
   
   Dim iAttr As Integer
+  Dim aAttr As Short[]
   
   iAttr = (hAttr.Background And 15) + Lsl(hAttr.Foreground And 15, 4)
   If hAttr.Bold Then iAttr += &H100
@@ -33,11 +34,17 @@ Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 
   If hAttr.Underscore Then iAttr += &H800
   If hAttr.Blink Then iAttr += &H1000
   
-  If iAttr = 0 And X + L >= Attr.Count Then
+  If iAttr = 0 And If X + L >= Attr.Count Then
     Attr.Resize(X)
   Else
-    Attr.Resize(X + L)
-    Attr.Fill(iAttr, X, L)
+    If bInsert Then
+      aAttr = New Short[L]
+      aAttr.Fill(iAttr)
+      Attr.Insert(aAttr, X)
+    Else
+      If Attr.Count < X + L Then Attr.Resize(X + L)
+      Attr.Fill(iAttr, X, L)
+    Endif
   Endif
   
 End

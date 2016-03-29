@@ -34,8 +34,12 @@ Private $bMouseDown As Boolean
 Private $iLimit As Integer
 Private $bHideCursor As Boolean
 Private $hMouseTimer As Timer
+
 Private $hProcess As Process
+
 Private $hFilter As TerminalFilter
+Public _DisableFilter As Integer
+
 Private $sType As String
 
 Private $hCursorTimer As Timer
@@ -471,3 +475,4 @@ Public Sub ScrollBar_Change()
   Refresh
   
 End
+

@@ -13,6 +13,11 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
   Dim iCode As Integer
   Dim iMode As Integer
 
+  If hView._DisableFilter Then
+    $sLeft &= sData
+    Return
+  Endif
+  
   If $sLeft Then 
     sData = $sLeft & sData
     $sLeft = ""
