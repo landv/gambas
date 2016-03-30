@@ -53,3 +53,9 @@ Public Sub TerminalView1_KeyPress()
   Debug Key.Code
 
 End
+
+Public Sub Form_Close()
+
+  TerminalView1.Kill
+
+End

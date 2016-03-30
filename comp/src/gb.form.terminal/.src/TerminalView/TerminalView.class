@@ -17,7 +17,7 @@ Property Read Column As Integer
 Property Read Line As Integer
 Property Limit As Integer
 Property Type As String
-Property Screen As Integer
+Property AlternateScreen As Boolean
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -29,6 +29,7 @@ Private $hScreen As TerminalScreen
 Private $LH As Integer
 Private $iAscent As Integer
 Private $CW As Float
+Private $hCacheFont As Image
 
 Private $bMouseDown As Boolean
 Private $iLimit As Integer
@@ -121,31 +122,32 @@ End
 Private Sub UpdateFont()
 
   Dim sText As String
-  
-  'Dim I As Integer
-  
-  '$hFont = $hView.Font
-  '$hFontBold = $hView.Font.Copy()
-  '$hFontBold.Bold = True
+  Dim I As Integer
   
   With $hView.Font
   
-    $LH = .Height + 1
+    $LH = .Height
     $iAscent = .Ascent
-    sText = String$(4, "AbCdEfGh01#@WwmM")
+    sText = String$(16, "WwmM")
     $CW = .TextWidth(sText) / Len(sText)
     Debug $CW
+    $CW = Ceil($CW)
     
   End With
   
-  ' $hCacheFont = New Image($CW * 256, $LH, Color.Transparent)
-  ' Paint.Begin($hCacheFont)
-  ' Paint.Font = $hFont
-  ' Paint.Background = $hView.Foreground
-  ' For I = 32 To 255
-  '   Paint.DrawText(String.Chr(I), I * $CW, $iAscent)
-  ' Next
-  ' Paint.End
+  $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
+  Paint.Begin($hCacheFont)
+  Paint.Background = Color.White
+  Paint.Font = $hView.Font
+  For I = 32 To 255
+    Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+  Next
+  Paint.Font.Bold = True
+  For I = 32 To 255
+    Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
+    'Paint.DrawText(String.Chr(I), I * $CW, $iAscent + $LH)
+  Next
+  Paint.End
   
   _UpdateSize
 
@@ -175,7 +177,7 @@ End
 Public Sub View_Draw()
 
   ApplyLimit
-  $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor)
+  $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
   
 End
 
@@ -206,42 +208,13 @@ End
 
 Private Sub EnsureVisibleAt((X) As Integer, Y As Integer)
   
-  Dim PH, CY, CH As Integer
-  Dim YY, HH As Float
   Dim H As Integer
   
-  Y = Y * $LH + $LH - 1
-  H = $LH
+  H = $hView.ClientH \ $LH
   
-  HH = H / 2
-  YY = Y + HH
-
-  PH = $hView.ClientH
-
-  CY = - $hScroll.Value
-  CH = $hScroll.MaxValue
-
-  If PH < (HH * 2) Then HH = PH / 2
-
-  If CH <= PH Then
-    HH = 0
-    CY = 0
+  If $hScroll.Value < (Y - H + 1) Then
+    $hScroll.Value = Y - H + 1
   Endif
-
-  If YY < (- CY + HH) Then
-    CY = Ceil(- YY + HH)
-  Else If YY >= (- CY + PH - HH) Then
-    CY = Floor(- YY + PH - HH)
-  Endif
-
-  If CY > 0 Then
-    CY = 0
-  Else If CY < (PH - CH) And If CH > PH Then
-    CY = PH - CH
-  Endif
-
-  CY = (- CY)
-  If $hScroll.Value <> CY Then $hScroll.Value = CY
   
 End
 
@@ -450,20 +423,25 @@ Public Sub _GetCurrentScreen() As TerminalScreen
   
 End
 
-Private Function Screen_Read() As Integer
+Private Function AlternateScreen_Read() As Boolean
 
-  If $hScreen = $aScreen[1] Then Return 1
+  Return $hScreen = $aScreen[1] 
 
 End
 
-Private Sub Screen_Write(Value As Integer)
+Private Sub AlternateScreen_Write(Value As Boolean)
 
-  If Value = 1 Then
-    $hScreen = $aScreen[1]
+  Dim hScreen As TerminalScreen
+  
+  If Value Then
+    hScreen = $aScreen[1]
   Else
-    $hScreen = $aScreen[0]
+    hScreen = $aScreen[0]
   Endif
   
+  If hScreen = $hScreen Then Return
+  
+  $hScreen = hScreen
   _UpdateSize
 
 End
@@ -474,3 +452,8 @@ Public Sub ScrollBar_Change()
   
 End
 
+Public Sub Kill()
+  
+  Try $hProcess.Kill
+  
+End

@@ -19,6 +19,7 @@ Public Origin As Boolean
 Public InsertMode As Boolean
 Public NewLineMode As Boolean
 Public WrapMode As Boolean
+Public HideCursor As Boolean
 
 'Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
 Static Private $aColor As Integer[] = [
@@ -117,6 +118,7 @@ End
 Public Sub Clear()
   
   Lines.Clear
+  GetView()._UpdateSize
   
 End
 
@@ -129,6 +131,12 @@ Public Sub Resize(W As Integer, H As Integer) As Boolean
     $Y = Min($Y, $H - 1)
     $iScrollStart = -1
     $iScrollEnd = -1
+    If GetView().AlternateScreen Then
+      If Lines.Count > $H Then
+        Lines.Resize($H)
+        GetView()._UpdateSize
+      Endif
+    Endif
     Return True
   Endif
   
@@ -536,21 +544,23 @@ Private Sub GetScreen(ByRef Y1 As Integer, ByRef Y2 As Integer)
 End
 
 
-Private Sub Scroll(bUp As Boolean)
+Private Sub Scroll(bUp As Boolean, Optional iFrom As Integer)
 
+  Dim hView As TerminalView = GetView()
   Dim Y1, Y2 As Integer
   
   GetScreen(ByRef Y1, ByRef Y2)
+  If Not IsMissing(iFrom) Then Y1 = iFrom
   
   If bUp Then
-    If $iScrollStart >= 0 And If $iScrollEnd >= 0 Then
+    If $iScrollStart >= 0 Or If hView.AlternateScreen Then
       Try Lines.Remove(Y1)
       Try Lines.Add(Null, Y2)
     Else
       Lines.Add(Null)
       Inc $Y
-      GetView()._UpdateSize()
-      GetView().EnsureVisible
+      hView._UpdateSize()
+      hView.EnsureVisible
     Endif
   Else
     Try Lines.Remove(Y2)
@@ -570,6 +580,24 @@ End
 Public Sub ScrollDown()
   
   Scroll(False)
+  
+End
+
+Public Sub InsertLine(N As Integer)
+
+  While N > 0  
+    Scroll(False, $Y)
+    Dec N
+  Wend
+  
+End
+
+Public Sub DeleteLine(N As Integer)
+
+  While N > 0  
+    Scroll(True, $Y)
+    Dec N
+  Wend
   
 End
 
@@ -626,12 +654,12 @@ Private Function Height_Read() As Integer
 
 End
 
-Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, LA As Integer)
+Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
 
   Dim hView As TerminalView = GetView()
   Dim hLine As CTerminalLine
   Dim I As Integer
-  Dim sText As String
+  'Dim sText As String
   Dim aAttr As Integer[]
   Dim iAttr As Integer
   Dim iOldAttr As Integer
@@ -641,10 +669,16 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
   'Dim hRect As Rect
   Dim P, iLen As Integer
   Dim XT As Integer
+  Dim J As Integer
+  Dim sCar As String
+  Dim C As Integer
+  Dim hFont As Font
+  Dim HC As Integer
 
   hLine = Lines[L]
   If Not hLine Then Return
   
+  hFont = Paint.Font
   aAttr = hLine.Attr
   
   P = 1
@@ -680,11 +714,13 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
       
       If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
       
-      Paint.Background = iFg
+      Paint.Background = Color.White
       
       If hAttr.Bold Then
+        HC = LH
         If Not Paint.Font.Bold Then Paint.Font.Bold = True
       Else
+        HC = 0
         If Paint.Font.Bold Then Paint.Font.Bold = False
       Endif
       
@@ -704,6 +740,8 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
   Next
   
   GoSub DRAW_TEXT
+
+  Paint.Operator = Paint.OperatorOver
   Return
   
 DRAW_TEXT:
@@ -711,17 +749,40 @@ DRAW_TEXT:
   iLen = I - P
   If iLen <= 0 Then Return
   
-  sText = String.Mid$(hLine.Text, P, iLen)
+  'sText = String.Mid$(hLine.Text, P, iLen)
   
-  XT = CInt(X)
+  XT = X
   
+  Paint.Operator = Paint.OperatorOver
+  Paint.FillRect(XT, Y, CW * iLen, LH, iFg)
+  Paint.Operator = Paint.OperatorDestATop
+  For J = P To P + iLen - 1
+    sCar = String.Mid$(hLine.Text, J, 1)
+    C = String.Code(sCar)
+    If C <= 255 Then
+      Paint.DrawImage(hFontCache, XT, Y, CW, LH,, Rect(C * CW, HC, CW, LH))
+    Else
+      Paint.Begin(hFontCache)
+      Paint.Operator = Paint.OperatorSource
+      Paint.FillRect(0, 0, CW, LH, Color.Transparent)
+      Paint.Font = hFont
+      If hAttr.Bold Then Paint.Font.Bold = True
+      Paint.DrawText(sCar, 0, 0, CW, LH, Align.Center)
+      Paint.End
+      Paint.DrawImage(hFontCache, XT, Y, CW, LH,, Rect(0, 0, CW, LH))
+    Endif
+    XT += CW
+  Next
+  
+  XT = X
+  
+  Paint.Operator = Paint.OperatorDestOver
   Paint.FillRect(XT, Y, CW * iLen, LH, iBg)
-  Paint.DrawText(sText, XT, Y + LA)
+  'Paint.DrawText(sText, XT, Y + LA)
   
   If hAttr.Underscore Then 
-    Paint.Background = Color.SetAlpha(iFg, 64)
-    Paint.FillRect(XT, Y + LH - 1, iLen * CW, 1, Paint.Background)
-    Paint.Background = iFg
+    Paint.Operator = Paint.OperatorOver
+    Paint.FillRect(XT, Y + LH - 1, iLen * CW, 1, Color.SetAlpha(iFg, 64))
   Endif
   
   X += iLen * CW
@@ -730,7 +791,7 @@ DRAW_TEXT:
 
 End
 
-Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean)
+Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean, hFont As Image)
 
   Dim hView As TerminalView = GetView()
   Dim L, L1, L2 As Integer
@@ -748,11 +809,11 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
   
   For L = L1 To L2
     
-    If L < Lines.Count Then DrawLine(L, 0, Y, LH, CW, LA)
+    If L < Lines.Count Then DrawLine(L, 0, Y, LH, CW, LA, hFont)
 
     ' Cursor
 
-    If L = $Y And If Not bHideCursor Then
+    If L = $Y And If Not bHideCursor And If Not HideCursor Then
       Paint.FillRect($X * CW, Y, CW, LH, Color.Merge(Color.SelectedBackground, hView.Foreground))
     Endif
     

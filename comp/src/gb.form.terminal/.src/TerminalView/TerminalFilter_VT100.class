@@ -210,6 +210,16 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Goto NOT_IMPLEMENTED
           Endif
           
+        Case "L" ' Insert lines
+          
+          GoSub GET_COUNT
+          hScreen.InsertLine(N)
+          
+        Case "M" ' Delete lines
+          
+          GoSub GET_COUNT
+          hScreen.DeleteLine(N)
+          
         Case "P" ' Delete characters
           
           GoSub GET_COUNT
@@ -228,13 +238,15 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
               hScreen.Origin = True
             Case "?7" ' Wrap mode
               hScreen.WrapMode = True
+            Case "?25" ' Hide cursor
+              hScreen.HideCursor = True
             Case "?47", "?1047"
-              hView.Screen = 1
+              hView.AlternateScreen = True
             Case "?1048"
               hScreen.SaveCursor
             Case "?1049"
               hScreen.SaveCursor
-              hView.Screen = 1
+              hView.AlternateScreen = True
               hView._GetCurrentScreen().Clear()
             Default
               Goto NOT_IMPLEMENTED
@@ -253,15 +265,17 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
               hScreen.Origin = False
             Case "?7" ' Wrap mode
               hScreen.WrapMode = False
+            Case "?25" ' Hide cursor
+              hScreen.HideCursor = False
             Case "?47"
-              hView.Screen = 0
+              hView.AlternateScreen = False
             Case "?1047"
               hScreen.Clear
-              hView.Screen = 0
+              hView.AlternateScreen = False
             Case "?1048"
               hScreen.RestoreCursor
             Case "?1049"
-              hView.Screen = 0
+              hView.AlternateScreen = False
               hScreen.RestoreCursor
             Default
               Goto NOT_IMPLEMENTED
