@@ -426,10 +426,10 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
 
       Case Key.Left
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
-      Case Key.Space
-        sText = If(hScreen.AppCursorKey, "\eO ", " ")
-      Case Key.Tab
-        sText = If(hScreen.AppCursorKey, "\eO ", Key.Text)
+      ' Case Key.Space
+      '   sText = If(hScreen.AppCursorKey, "\eO ", " ")
+      ' Case Key.Tab
+      '   sText = If(hScreen.AppCursorKey, "\eOI", Key.Text)
       Case Key.Enter
         sText = If(hScreen.AppCursorKey, "\eOM", Key.Text)
       Case Key.Insert
