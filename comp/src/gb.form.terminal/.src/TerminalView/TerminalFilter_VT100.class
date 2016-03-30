@@ -412,7 +412,47 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
 
       Case Key.Left
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
-
+      Case Key.Space
+        sText = If(hScreen.AppCursorKey, "\eO ", " ")
+      Case Key.Tab
+        sText = If(hScreen.AppCursorKey, "\eO ", Key.Text)
+      Case Key.Enter
+        sText = If(hScreen.AppCursorKey, "\eOM", Key.Text)
+      Case Key.Insert
+        sText = "\e[2~"
+      Case Key.End
+        sText = "\e[4~"
+      Case Key.PageDown
+        sText = "\e[6~"
+      Case Key.Home
+        sText = "\e[1~"
+      Case Key.PageUp
+        sText = "\e[5~"
+      Case Key.F1
+        sText = "\eOP"
+      Case Key.F2
+        sText = "\eOQ"
+      Case Key.F3
+        sText = "\eOR"
+      Case Key.F4
+        sText = "\eOS"
+      Case Key.F5
+        sText = "\e[15~"
+      Case Key.F6
+        sText = "\e[17~"
+      Case Key.F7
+        sText = "\e[18~"
+      Case Key.F8
+        sText = "\e[19~"
+      Case Key.F9
+        sText = "\e[20~"
+      Case Key.F10
+        sText = "\e[21~"
+      Case Key.F11
+        sText = "\e[23~"
+      Case Key.F12
+        sText = "\e[24~"
+        
     End Select
 
   Endif
