@@ -439,7 +439,7 @@ Public Sub Process_Read()
   Dim sData As String
   
   sData = Read #$hProcess, Lof($hProcess)
-  $hFilter.OutputTo(Me, sData)
+  $hFilter.OutputTo(Me, $hProcess, sData)
   EnsureVisible
   
 End

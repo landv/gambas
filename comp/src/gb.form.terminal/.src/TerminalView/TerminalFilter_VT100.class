@@ -6,7 +6,7 @@ Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
 
 Private $sLeft As String
 
-Public Sub OutputTo(hView As TerminalView, sData As String)
+Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
 
   Dim iPos As Integer
   Dim iPos2 As Integer
@@ -68,7 +68,7 @@ Public Sub OutputTo(hView As TerminalView, sData As String)
 
     Endif
 
-    iMode = Escape(hView, sData, iPos2 + 1, iPos - iPos2)
+    iMode = Escape(hView, hProcess, sData, iPos2 + 1, iPos - iPos2)
 
     If iMode = MODE_TITLE Then
       Inc iPos
@@ -91,7 +91,7 @@ End
 
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen As Integer) As Integer
+Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, iPos As Integer, iLen As Integer) As Integer
 
   Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   Dim Y As Integer
@@ -352,6 +352,9 @@ Private Sub Escape(hView As TerminalView, sData As String, iPos As Integer, iLen
         Case "u" ' Restore cursor
 
           hScreen.RestoreCursor
+          
+        Case "c"  'Report terminal type
+          Print #hProcess, "\e[?1;2c"
 
         Default
 
