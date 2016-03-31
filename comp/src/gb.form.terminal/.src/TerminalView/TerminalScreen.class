@@ -21,7 +21,6 @@ Public NewLineMode As Boolean
 Public WrapMode As Boolean
 Public HideCursor As Boolean
 
-'Static Private $aColor As Integer[] = [Color.Black, Color.Red, Color.Green, Color.Yellow, Color.Blue, Color.Magenta, Color.Cyan, Color.White]
 Static Private $aColor As Integer[] = [
 &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
 &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
@@ -658,7 +657,7 @@ Private Function Height_Read() As Integer
 
 End
 
-Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
+Fast Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
 
   Dim hView As TerminalView = GetView()
   Dim hLine As CTerminalLine
@@ -691,8 +690,11 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
   P = 1
   For I = 1 To hLine.Length
     
-    iAttr = 0
-    Try iAttr = aAttr[I - 1]
+    If aAttr.Count >= I Then
+      iAttr = aAttr[I - 1]
+    Else
+      iAttr = 0
+    Endif
     
     If iAttr <> iOldAttr Then
       
@@ -812,12 +814,8 @@ DRAW_TEXT:
   
   Paint.FillRect(XT, Y, W, LH, iBg)
   Paint.DrawImage($hLineCache, XT, Y, W, LH,, Rect(0, 0, W, LH))
-  'Paint.DrawText(sText, XT, Y + LA)
   
-  If hAttr.Underscore Then 
-    Paint.Operator = Paint.OperatorOver
-    Paint.FillRect(XT, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
-  Endif
+  If hAttr.Underscore Then Paint.FillRect(XT, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
   
   X += W
   P = I
@@ -955,3 +953,4 @@ Public Sub DebugRefresh()
   Endif
   
 End
+

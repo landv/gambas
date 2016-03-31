@@ -7,12 +7,12 @@ Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
 Private $sLeft As String
 
 Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
-
+  
   Dim iPos As Integer
   Dim iPos2 As Integer
   Dim iCode As Integer
   Dim iMode As Integer
-
+  
   If hView._DisableFilter Then
     $sLeft &= sData
     Return
@@ -27,19 +27,19 @@ Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
     $sLeft = sData
     Return
   Endif
-
+  
   Do
-
+    
     Inc iPos
-
+    
     iPos2 = InStr(sData, Chr$(27), iPos)
     If iPos2 = 0 Then
       hView._GetCurrentScreen().Print(Mid$(sData, iPos))
       Break
     Endif
-
+    
     If iPos2 > iPos Then hView._GetCurrentScreen().Print(Mid$(sData, iPos, iPos2 - iPos))
-
+    
     iPos = iPos2
     Inc iPos
     
@@ -49,27 +49,27 @@ Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
     Endif
     
     If Mid$(sData, iPos, 1) = "[" Then
-
+      
       Inc iPos
-
+      
       Do
-
+        
         If iPos > Len(sData) Then
           $sLeft = Mid$(sData, iPos2)
           Return
         Endif
-
+        
         iCode = Asc(Mid$(sData, iPos, 1))
         If iCode >= 64 And If iCode <= 126 Then Break
-
+        
         Inc iPos
-
+        
       Loop
-
+      
     Endif
-
+    
     iMode = Escape(hView, hProcess, sData, iPos2 + 1, iPos - iPos2)
-
+    
     If iMode = MODE_TITLE Then
       Inc iPos
       iPos2 = InStr(sData, Chr$(7), iPos)
@@ -84,15 +84,15 @@ Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
       Inc iPos
       iMode = MODE_NORMAL
     Endif
-
+    
   Loop
-
+  
 End
 
 ' Escape sequence without the initial 27 character.
 
 Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, iPos As Integer, iLen As Integer) As Integer
-
+  
   Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   Dim Y As Integer
   Dim X As Integer
@@ -103,7 +103,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
   Dim iMode As Integer
   Dim N As Integer
   Dim I As Integer
-
+  
   sStr = Mid$(sData, iPos, iLen)
   
   If hScreen.DEBUG_FILTER Then
@@ -114,78 +114,78 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
     Error
     hScreen.DebugRefresh
   Endif
-
+  
   Select Case Left(sStr)
-
+      
     Case "7" ' Save cursor
-
+      
       hScreen.SaveCursor()
-
+      
     Case "8" ' Restore cursor
-
+      
       hScreen.RestoreCursor()
-
+      
     Case "D" ' Index
-
+      
       hScreen.Index
-
+      
     Case "M" ' Reverse index
-
+      
       hScreen.ReverseIndex
-
+      
     Case "="
       hScreen.AppKeypad = True
-
+      
     Case ">"
       hScreen.AppKeypad = False
-
+      
     Case "("
       iMode = MODE_IGNORE_CHAR
-
+      
     Case "]"
       iMode = MODE_TITLE
-
+      
     Case "["
-
+      
       Select Case Right(sStr)
-        
+          
         Case "A"
           
           GoSub GET_COUNT
           hScreen.CursorUp(N)
-
+          
         Case "B"
           
           GoSub GET_COUNT
           hScreen.CursorDown(N)
-
+          
         Case "C"
           
           GoSub GET_COUNT
           hScreen.CursorRight(N)
-
+          
         Case "D"
           
           GoSub GET_COUNT
           hScreen.CursorLeft(N)
-
+          
         Case "G"
-
+          
           GoSub GET_ARGS
           Try hScreen.CursorGoto(CInt(aArg[0]) - 1, hScreen.Line)
-
+          
         Case "H", "f" ' Cursor goto
-
+          
           GoSub GET_ARGS
-
+          
           If aArg Then
             Try Y = CInt(aArg[0]) - 1
             Try X = CInt(aArg[1]) - 1
           Endif
           hScreen.CursorGoto(X, Y)
-
+          
         Case "J" ' Erase screen
-
+          
           GoSub GET_ARGS
           If Not aArg Or If aArg[0] = "0" Then
             hScreen.EraseDown
@@ -196,9 +196,9 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           Else
             Goto NOT_IMPLEMENTED
           Endif
-
+          
         Case "K" ' Erase line
-
+          
           GoSub GET_ARGS
           If Not aArg Or If aArg[0] = "0" Then
             hScreen.EraseEndOfLine
@@ -224,9 +224,9 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           
           GoSub GET_COUNT
           hScreen.DeleteChar(N)
-
+          
         Case "h"
-
+          
           Select Mid$(sStr, 2, -1)
             Case "4" ' Insert mode
               hScreen.InsertMode = True
@@ -251,9 +251,9 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Default
               Goto NOT_IMPLEMENTED
           End Select
-
+          
         Case "l"
-
+          
           Select Mid$(sStr, 2, -1)
             Case "4" ' Insert mode
               hScreen.InsertMode = False
@@ -280,18 +280,18 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Default
               Goto NOT_IMPLEMENTED
           End Select
-
+          
         Case "m" ' Set attribute
-
+          
           GoSub GET_ARGS
           If aArg Then
             For i = 0 To aArg.Max
-             sArg = aArg[i]
-            'For Each sArg In aArg
-
+              sArg = aArg[i]
+              'For Each sArg In aArg
+              
               Try iArg = CInt(sArg)
               If Error Then Continue
-
+              
               Select Case iArg
                 Case 0
                   hScreen.Attr.Reset()
@@ -311,8 +311,10 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
                   hScreen.Attr.Underscore = False
                 Case 27
                   hScreen.Attr.Reverse = False
-                Case 30 To 37
-                  hScreen.Attr.Foreground = iArg - 30
+                Case 30
+                  hScreen.Attr.Foreground = 0
+                Case 31 To 37
+                  hScreen.Attr.Foreground = iArg - 30 + 8
                 Case 39
                   hScreen.Attr.Foreground = -1
                 Case 40 To 47
@@ -343,137 +345,154 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
                   '   Try hScreen.Attr.ForeGround = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
                   '   i += 4
                   ' Endif
-
+                  
                 Default
                   Goto NOT_IMPLEMENTED
               End Select
             Next
           Endif
-
+          
         Case "r" ' Scroll screen
-
+          
           GoSub GET_ARGS
           If Not aArg Then
             hScreen.ScrollScreen()
           Else
             Try hScreen.ScrollScreen(CInt(aArg[0]) - 1, CInt(aArg[1]) - 1)
           Endif
-
+          
         Case "s" ' Save cursor
-
+          
           hScreen.SaveCursor
-
+          
         Case "u" ' Restore cursor
-
+          
           hScreen.RestoreCursor
           
         Case "c"  'Report terminal type
           Print #hProcess, "\e[?1;2c"
-
+          
         Default
-
+          
           Goto NOT_IMPLEMENTED
-
+          
       End Select
-
+      
     Default
-
+      
       Goto NOT_IMPLEMENTED
-
+      
   End Select
-
+  
   Return iMode
   
 GET_COUNT:
-
+  
   N = 1
   If Len(sStr) > 2 Then Try N = CInt(Mid$(sStr, 2, -1))
   
   Return
-
+  
 GET_ARGS:
-
+  
   If Len(sStr) > 2 Then
     aArg = Split(Mid$(sStr, 2, -1), ";")
   Else
     aArg = Null
   Endif
-
+  
   Return
-
+  
 NOT_IMPLEMENTED:
-
+  
   Debug "Not implemented: "; Quote(sStr)
-
+  
 End
 
 Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer, sText As String) As Boolean
-
+  
   Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
-
+  
   If Key.Normal Then
-
+    
     Select Case iCode
-
+        
       Case Key.Up
         sText = If(hScreen.AppCursorKey, "\eOA", "\e[A")
-
+        
       Case Key.Down
         sText = If(hScreen.AppCursorKey, "\eOB", "\e[B")
-
+        
       Case Key.Right
         sText = If(hScreen.AppCursorKey, "\eOC", "\e[C")
-
+        
       Case Key.Left
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
-      ' Case Key.Space
-      '   sText = If(hScreen.AppCursorKey, "\eO ", " ")
-      ' Case Key.Tab
-      '   sText = If(hScreen.AppCursorKey, "\eOI", Key.Text)
+        ' Case Key.Space
+        '   sText = If(hScreen.AppCursorKey, "\eO ", " ")
+        ' Case Key.Tab
+        '   sText = If(hScreen.AppCursorKey, "\eOI", Key.Text)
       Case Key.Enter
         sText = If(hScreen.AppCursorKey, "\eOM", Key.Text)
+
       Case Key.Insert
         sText = "\e[2~"
+
       Case Key.End
         sText = "\e[4~"
+
       Case Key.PageDown
         sText = "\e[6~"
+
       Case Key.Home
         sText = "\e[1~"
+
       Case Key.PageUp
         sText = "\e[5~"
+
       Case Key.F1
         sText = "\eOP"
+
       Case Key.F2
         sText = "\eOQ"
+
       Case Key.F3
         sText = "\eOR"
+
       Case Key.F4
         sText = "\eOS"
+
       Case Key.F5
         sText = "\e[15~"
+
       Case Key.F6
         sText = "\e[17~"
+
       Case Key.F7
         sText = "\e[18~"
+
       Case Key.F8
         sText = "\e[19~"
+
       Case Key.F9
         sText = "\e[20~"
+
       Case Key.F10
         sText = "\e[21~"
+
       Case Key.F11
         sText = "\e[23~"
+
       Case Key.F12
         sText = "\e[24~"
         
     End Select
-
+    
   Endif
-
+  
   If sText Then
     Print #hProcess, sText;
     Return True
   Endif
-
+  
 End

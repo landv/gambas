@@ -161,7 +161,10 @@ Private Sub UpdateFont()
   Paint.Begin($hCacheFont)
   Paint.Background = Color.White
   Paint.Font = $hView.Font
-  For I = 33 To 255
+  For I = 33 To 126
+    Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+  Next
+  For I = 160 To 255
     Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
   Next
   Paint.End

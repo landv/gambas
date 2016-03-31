@@ -2,43 +2,55 @@
 
 Public Text As String
 Public Length As Integer
-Public Attr As New Short[]
+Public Attr As New Integer[]
+
+Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
 
 Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
   
-  Dim iAttr As Short
+  Dim iAttr As Integer
   
   Try iAttr = Attr[X]
   
-  hAttr.Background = iAttr And 15
-  If hAttr.Background = 15 Then hAttr.Background = -1
-  hAttr.Foreground = Lsr(iAttr And &HF0, 4)
-  If hAttr.Foreground = 15 Then hAttr.Foreground = -1
-  hAttr.Bold = iAttr And &H100
-  hAttr.Dim = iAttr And &H200
-  hAttr.Reverse = iAttr And &H400
-  hAttr.Underscore = iAttr And &H800
-  hAttr.Blink = iAttr And &H1000
+  If BTst(iAttr, FLAG_BG) Then
+    hAttr.Background = Lsr(iAttr, 16) And 255
+  Else
+    hAttr.Background = Color.Default
+  Endif
+
+  If BTst(iAttr, FLAG_FG) Then
+    hAttr.Foreground = Lsr(iAttr, 24) And 255
+  Else
+    hAttr.Foreground = Color.Default
+  Endif
+  
+  hAttr.Bold = BTst(iAttr, FLAG_BOLD)
+  hAttr.Dim = BTst(iAttr, FLAG_DIM)
+  hAttr.Reverse = BTst(iAttr, FLAG_REV)
+  hAttr.Underscore = BTst(iAttr, FLAG_UND)
+  hAttr.Blink = BTst(iAttr, FLAG_BLK)
   
 End
 
 Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 1, Optional bInsert As Boolean)
   
   Dim iAttr As Integer
-  Dim aAttr As Short[]
+  Dim aAttr As Integer[]
   
-  iAttr = (hAttr.Background And 15) + Lsl(hAttr.Foreground And 15, 4)
-  If hAttr.Bold Then iAttr += &H100
-  If hAttr.Dim Then iAttr += &H200
-  If hAttr.Reverse Then iAttr += &H400
-  If hAttr.Underscore Then iAttr += &H800
-  If hAttr.Blink Then iAttr += &H1000
+  If hAttr.Background <> Color.Default Then iAttr = BSet(iAttr, FLAG_BG) + Lsl(hAttr.Background And 255, 16)
+  If hAttr.Foreground <> Color.Default Then iAttr = BSet(iAttr, FLAG_FG) + Lsl(hAttr.Foreground And 255, 24)
+  
+  If hAttr.Bold Then iAttr = BSet(iAttr, FLAG_BOLD)
+  If hAttr.Dim Then iAttr = BSet(iAttr, FLAG_DIM)
+  If hAttr.Reverse Then iAttr = BSet(iAttr, FLAG_REV)
+  If hAttr.Underscore Then iAttr = BSet(iAttr, FLAG_UND)
+  If hAttr.Blink Then iAttr = BSet(iAttr, FLAG_BLK)
   
   If iAttr = 0 And If X + L >= Attr.Count Then
     Attr.Resize(X)
   Else
     If bInsert Then
-      aAttr = New Short[L]
+      aAttr = New Integer[L]
       aAttr.Fill(iAttr)
       Attr.Insert(aAttr, X)
     Else
