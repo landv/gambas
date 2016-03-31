@@ -184,6 +184,15 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           Endif
           hScreen.CursorGoto(X, Y)
           
+        Case "d" 'Set Cursor Y
+          
+          GoSub GET_ARGS
+          
+          If aArg Then 
+            Try Y = CInt(aArg[0]) - 1
+            hScreen.CursorGoto(hScreen.X, Y)
+          Endif
+          
         Case "J" ' Erase screen
           
           GoSub GET_ARGS
@@ -350,6 +359,8 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
                   Goto NOT_IMPLEMENTED
               End Select
             Next
+          Else
+            hScreen.Attr.Reset
           Endif
           
         Case "r" ' Scroll screen
