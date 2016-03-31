@@ -155,24 +155,32 @@ Private Sub UpdateFont()
     'Debug $CW
     $CW = Ceil($CW)
     
+    ' If .Fixed Then
+    '   
+    '   $hCacheFont = Null
+    '   
+    ' Else
+    
+      $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
+      Paint.Begin($hCacheFont)
+      Paint.Background = Color.White
+      Paint.Font = $hView.Font
+      For I = 33 To 126
+        Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+      Next
+      For I = 160 To 255
+        Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+      Next
+      Paint.End
+      
+      Paint.Begin($hCacheFont)
+      Paint.DrawImage($hCacheFont, 0, $LH, $hCacheFont.W, $LH,, Rect(0, 0, $hCacheFont.W, $LH))
+      Paint.DrawImage($hCacheFont, 1, $LH, $hCacheFont.W, $LH, 0.8, Rect(0, 0, $hCacheFont.W, $LH))
+      Paint.End
+      
+    ' Endif
+  
   End With
-  
-  $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
-  Paint.Begin($hCacheFont)
-  Paint.Background = Color.White
-  Paint.Font = $hView.Font
-  For I = 33 To 126
-    Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
-  Next
-  For I = 160 To 255
-    Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
-  Next
-  Paint.End
-  
-  Paint.Begin($hCacheFont)
-  Paint.DrawImage($hCacheFont, 0, $LH, $hCacheFont.W, $LH,, Rect(0, 0, $hCacheFont.W, $LH))
-  Paint.DrawImage($hCacheFont, 1, $LH, $hCacheFont.W, $LH, 0.8, Rect(0, 0, $hCacheFont.W, $LH))
-  Paint.End
   
   ' For I = 33 To 255
   '   Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)

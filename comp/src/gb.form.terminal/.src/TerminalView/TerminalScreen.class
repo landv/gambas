@@ -170,9 +170,8 @@ Private Sub ClearLine(Y As Integer)
   If Y > Lines.Max Then Return
   hLine = Lines[Y]
   If Not hLine Then Return
-  hLine.Text = ""
-  hLine.Length = 0
-  hLine.Attr.Clear
+  
+  hLine.Clear()
   
 End
 
@@ -202,17 +201,19 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   
   If hLine.Length < X Then 
     hLine.Text &= Space$(X - hLine.Length) & sText & String.Mid(hLine.Text, X + iLen)
+    hLine.Length = String.Len(hLine.Text)
     hLine.SetAttr($hAttr, X, iLen)
   Else
     If InsertMode Then
       hLine.Text = String.Left(String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1), $W)
+      hLine.Length = String.Len(hLine.Text)
       hLine.SetAttr($hAttr, X, iLen, True)
     Else
       hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen + 1)
+      hLine.Length = String.Len(hLine.Text)
       hLine.SetAttr($hAttr, X, iLen)
     Endif
   Endif
-  hLine.Length = String.Len(hLine.Text)
   
   GetView()._RefreshLine($Y)
   
@@ -454,8 +455,7 @@ Public Sub EraseStartOfLine()
 
   hLine = GetLine($Y)
   If hLine.Length <= $X Then
-    hLine.Text = ""
-    hLine.Length = 0
+    hLine.Clear()
     GetView()._RefreshLine($Y)
   Else
     hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 1)
@@ -470,8 +470,7 @@ Public Sub EraseLine()
 
   hLine = GetLine($Y)
   If $hAttr.IsVoid() Then
-    hLine.Text = ""
-    hLine.Length = 0
+    hLine.Clear()
   Else
     Insert(Space$($W), 0)
   Endif
@@ -664,8 +663,6 @@ Fast Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer,
   Dim I As Integer
   'Dim sText As String
   Dim aAttr As Integer[]
-  Dim iAttr As Integer
-  Dim iOldAttr As Integer
   Dim hAttr As New TerminalAttr
   Dim iFg As Integer = hView.Foreground
   Dim iBg As Integer = hView.Background
@@ -688,137 +685,137 @@ Fast Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer,
   aAttr = hLine.Attr
   
   P = 1
-  For I = 1 To hLine.Length
-    
-    If aAttr.Count >= I Then
-      iAttr = aAttr[I - 1]
+  
+  For I = 0 To aAttr.Max
+  
+    If P > hLine.Length Then Break
+  
+    hAttr.FillFrom(aAttr[I])
+    iLen = Min((Lsr(aAttr[I], 8) And 255), hLine.Length - P) + 1
+  
+    iBg = hAttr.Background
+    If iBg >= 0 Then
+      iBg = $aColor[iBg]
     Else
-      iAttr = 0
+      iBg = hView.Background
     Endif
     
-    If iAttr <> iOldAttr Then
-      
-      GoSub DRAW_TEXT
-      
-      iOldAttr = iAttr
-      
-      hLine.GetAttr(hAttr, I - 1)
-      
-      iBg = hAttr.Background
-      If iBg >= 0 Then
-        iBg = $aColor[iBg]
-      Else
-        iBg = hView.Background
-      Endif
-      
-      iFg = hAttr.Foreground
-      If iFg >= 0 Then
-        'Debug iFg
-        iFg = $aColor[iFg]
-      Else
-        iFg = hView.Foreground
-      Endif
-      
-      If hAttr.Reverse Then Swap iBg, iFg
-      
-      If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
-      
-      Paint.Background = Color.White
-      
-      If hAttr.Bold Then
-        HC = LH
-      Else
-        HC = 0
-      Endif
-      
+    iFg = hAttr.Foreground
+    If iFg >= 0 Then
+      'Debug iFg
+      iFg = $aColor[iFg]
+    Else
+      iFg = hView.Foreground
     Endif
     
-    ' Paint.FillRect(X, Y, $CW, $LH, iBg)
-    ' If iFg = $hView.Foreground And If String.Code(sCar) <= 255 Then
-    '   hRect = Rect(String.Code(sCar) * $CW, 0, $CW, $LH)
-    '   Paint.DrawImage($hCacheFont, X, Y, $CW, $LH,, hRect)
-    '   If hAttr.Bold Then Paint.DrawImage($hCacheFont, X + 1, Y, $CW, $LH,, hRect)
-    ' Else
-    '   Paint.DrawText(sCar, X, Y + $iAscent)
-    '   If hAttr.Bold Then Paint.DrawText(sCar, X + 1, Y + $iAscent)
-    ' Endif
-    ' X += $CW
+    If hAttr.Reverse Then Swap iBg, iFg
+    
+    If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
+    
+    Paint.Background = Color.White
+    
+    If hAttr.Bold Then
+      HC = LH
+    Else
+      HC = 0
+    Endif
+      
+    GoSub DRAW_TEXT
     
   Next
   
-  GoSub DRAW_TEXT
-
-  Paint.Operator = Paint.OperatorOver
+  If P <= hLine.Length Then
+    iLen = hLine.Length - P + 1
+    iFg = hView.Foreground
+    iBg = hView.Background
+    HC = 0
+    hAttr.FillFrom(0)
+    GoSub DRAW_TEXT
+  Endif
+    
   Return
   
 DRAW_TEXT:
 
-  iLen = I - P
   If iLen <= 0 Then Return
   
   W = iLen * CW
   
-  Paint.Begin($hLineCache)
+  If hFontCache Then
   
-  Paint.FillRect(0, 0, W, LH, iFg)
-  
-  XT = 0
-  
-  hRect = Rect(0, 0, CW, LH)
-  
-  Paint.Operator = Paint.OperatorDestATop
-  For J = P To P + iLen - 1
-    'sCar = String.Mid$(hLine.Text, J, 1)
-    C = String.Code(hLine.Text, J)
-    If C <= 255 Then
-      hRect.Move(C * CW, HC)
-      Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
-    Else
-      
-      If $cCharCache.Exist(C) Then
-        
-        C = $cCharCache[C]
-        hRect.Move(C * CW, 0)
+    Paint.Begin($hLineCache)
+    
+    Paint.FillRect(0, 0, W, LH, iFg)
+    
+    XT = 0
+    
+    hRect = Rect(0, 0, CW, LH)
+    
+    Paint.Operator = Paint.OperatorDestATop
+    For J = P To P + iLen - 1
+      'sCar = String.Mid$(hLine.Text, J, 1)
+      C = String.Code(hLine.Text, J)
+      If C = 0 Then Stop
+      If C <= 255 Then
+        hRect.Move(C * CW, HC)
         Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
-        
       Else
         
-        If $cCharCache.Count < 32 Then
-          XC = $cCharCache.Count * CW
-          YC = 0
+        If $cCharCache.Exist(C) Then
+          
+          C = $cCharCache[C]
+          hRect.Move(C * CW, 0)
+          Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+          
         Else
-          XC = 0
-          YC = LH
+          
+          If $cCharCache.Count < 32 Then
+            XC = $cCharCache.Count * CW
+            YC = 0
+          Else
+            XC = 0
+            YC = LH
+          Endif
+          
+          Paint.Begin(hFontCache)
+          Paint.Operator = Paint.OperatorSource
+          Paint.FillRect(XC, YC, CW, LH, Color.Transparent)
+          Paint.Font = hFont
+          Paint.DrawText(String.Chr$(C), XC, YC, CW, LH, Align.Center)
+          If hAttr.Bold Then Paint.DrawText(String.Chr$(C), XC + 1, YC, CW, LH, Align.Center)
+          Paint.End
+          hRect.Move(XC, YC)
+          Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+          
+          If YC = 0 Then $cCharCache[C] = $cCharCache.Count
+          
         Endif
-        
-        Paint.Begin(hFontCache)
-        Paint.Operator = Paint.OperatorSource
-        Paint.FillRect(XC, YC, CW, LH, Color.Transparent)
-        Paint.Font = hFont
-        Paint.DrawText(String.Chr$(C), XC, YC, CW, LH, Align.Center)
-        If hAttr.Bold Then Paint.DrawText(String.Chr$(C), XC + 1, YC, CW, LH, Align.Center)
-        Paint.End
-        hRect.Move(XC, YC)
-        Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
-        
-        If YC = 0 Then $cCharCache[C] = $cCharCache.Count
-        
       Endif
-    Endif
-    XT += CW
-  Next
-  
-  Paint.End
-  
-  XT = X
-  
-  Paint.FillRect(XT, Y, W, LH, iBg)
-  Paint.DrawImage($hLineCache, XT, Y, W, LH,, Rect(0, 0, W, LH))
+      XT += CW
+    Next
+    
+    Paint.End
+    
+    XT = X
+    
+    Paint.FillRect(XT, Y, W, LH, iBg)
+    Paint.DrawImage($hLineCache, XT, Y, W, LH,, Rect(0, 0, W, LH))
+    
+  Else
+    
+    XT = X
+    
+    Paint.FillRect(XT, Y, W, LH, iBg)
+    Paint.Background = iFg
+    Paint.DrawText(String.Mid$(hLine.Text, P, iLen), XT, Y + LA)
+    If hAttr.Bold Then Paint.DrawText(String.Mid$(hLine.Text, P, iLen), XT + 1, Y + LA)
+    
+  Endif
   
   If hAttr.Underscore Then Paint.FillRect(XT, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
   
   X += W
-  P = I
+  P += iLen
   Return
 
 End

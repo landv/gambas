@@ -4,38 +4,102 @@ Public Text As String
 Public Length As Integer
 Public Attr As New Integer[]
 
-Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
+Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
 
-Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
-  
+Private Sub Uncompress() As Integer[]
+
+  Dim I As Integer
   Dim iAttr As Integer
-  
-  Try iAttr = Attr[X]
-  
-  If BTst(iAttr, FLAG_BG) Then
-    hAttr.Background = Lsr(iAttr, 16) And 255
-  Else
-    hAttr.Background = Color.Default
-  Endif
+  Dim iCount As Integer
+  Dim aAttr As New Integer[]
+  Dim aTemp As Integer[]
 
-  If BTst(iAttr, FLAG_FG) Then
-    hAttr.Foreground = Lsr(iAttr, 24) And 255
-  Else
-    hAttr.Foreground = Color.Default
-  Endif
+  For I = 0 To Attr.Max
+    iAttr = Attr[I]
+    iCount = (Lsr(iAttr, 8) And 255) + 1
+    iAttr = iAttr And &HFFFF00FF
+    aTemp = New Integer[iCount]
+    aTemp.Fill(iAttr)
+    aAttr.Insert(aTemp)
+  Next
   
-  hAttr.Bold = BTst(iAttr, FLAG_BOLD)
-  hAttr.Dim = BTst(iAttr, FLAG_DIM)
-  hAttr.Reverse = BTst(iAttr, FLAG_REV)
-  hAttr.Underscore = BTst(iAttr, FLAG_UND)
-  hAttr.Blink = BTst(iAttr, FLAG_BLK)
+  'If aAttr.Count > String.Len(Text) Then Stop
+  
+  Return aAttr
+
+End
+
+Private Sub Compress(aAttr As Integer[])
+  
+  Dim I As Integer
+  Dim iAttr As Integer
+  Dim iOldAttr As Integer
+  Dim iCount As Integer
+  Dim N As Integer
+  
+  Attr.Clear
+  
+  For I = 0 To aAttr.Max
+    
+    iAttr = aAttr[I]
+    If iAttr = iOldAttr And If iCount < 256 Then
+      Inc iCount
+      Continue
+    Endif
+    
+    GoSub ADD_ATTR
+    iCount = 1
+    iOldAttr = iAttr
+    
+  Next
+  
+  GoSub ADD_ATTR
+  'Debug aAttr.Count; " -> "; N;; "/";; String.Len(Text)
+  'If N > String.Len(Text) Then Stop
+  Return
+  
+ADD_ATTR:
+
+  If iCount Then
+    N += iCount
+    Attr.Add(iOldAttr Or Lsl(iCount - 1, 8))
+  Endif
+  Return
   
 End
 
+
+' Public Sub GetAttr(hAttr As TerminalAttr, X As Integer)
+'   
+'   Dim iAttr As Integer
+'   
+'   Try iAttr = Attr[X]
+'   
+'   If BTst(iAttr, FLAG_BG) Then
+'     hAttr.Background = Lsr(iAttr, 16) And 255
+'   Else
+'     hAttr.Background = Color.Default
+'   Endif
+' 
+'   If BTst(iAttr, FLAG_FG) Then
+'     hAttr.Foreground = Lsr(iAttr, 24) And 255
+'   Else
+'     hAttr.Foreground = Color.Default
+'   Endif
+'   
+'   hAttr.Bold = BTst(iAttr, FLAG_BOLD)
+'   hAttr.Dim = BTst(iAttr, FLAG_DIM)
+'   hAttr.Reverse = BTst(iAttr, FLAG_REV)
+'   hAttr.Underscore = BTst(iAttr, FLAG_UND)
+'   hAttr.Blink = BTst(iAttr, FLAG_BLK)
+'   
+' End
+' 
 Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 1, Optional bInsert As Boolean)
   
   Dim iAttr As Integer
   Dim aAttr As Integer[]
+  Dim aTemp As Integer[]
   
   If hAttr.Background <> Color.Default Then iAttr = BSet(iAttr, FLAG_BG) + Lsl(hAttr.Background And 255, 16)
   If hAttr.Foreground <> Color.Default Then iAttr = BSet(iAttr, FLAG_FG) + Lsl(hAttr.Foreground And 255, 24)
@@ -46,18 +110,30 @@ Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 
   If hAttr.Underscore Then iAttr = BSet(iAttr, FLAG_UND)
   If hAttr.Blink Then iAttr = BSet(iAttr, FLAG_BLK)
   
-  If iAttr = 0 And If X + L >= Attr.Count Then
-    Attr.Resize(X)
+  aAttr = Uncompress()
+  
+  If iAttr = 0 And If X >= aAttr.Count Then
+    'aAttr.Resize(X)
   Else
     If bInsert Then
-      aAttr = New Integer[L]
-      aAttr.Fill(iAttr)
-      Attr.Insert(aAttr, X)
+      If aAttr.Count < X Then aAttr.Resize(X)
+      aTemp = New Integer[L]
+      aTemp.Fill(iAttr)
+      aAttr.Insert(aTemp, X)
     Else
-      If Attr.Count < X + L Then Attr.Resize(X + L)
-      Attr.Fill(iAttr, X, L)
+      If aAttr.Count < X + L Then aAttr.Resize(X + L)
+      aAttr.Fill(iAttr, X, L)
     Endif
   Endif
   
+  Compress(aAttr)
+  
 End
 
+Public Sub Clear()
+  
+  Text = ""
+  Length = 0
+  Attr.Clear
+  
+End

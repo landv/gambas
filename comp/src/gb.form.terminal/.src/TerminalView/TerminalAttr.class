@@ -2,6 +2,8 @@
 
 Export
 
+Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
+
 Public Foreground As Integer = -1
 Public Background As Integer = -1
 Public Bold As Boolean
@@ -31,3 +33,24 @@ Public Sub IsVoid() As Boolean
   
 End
 
+Public Sub FillFrom(iAttr As Integer)
+
+  If BTst(iAttr, FLAG_BG) Then
+    Background = Lsr(iAttr, 16) And 255
+  Else
+    Background = Color.Default
+  Endif
+
+  If BTst(iAttr, FLAG_FG) Then
+    Foreground = Lsr(iAttr, 24) And 255
+  Else
+    Foreground = Color.Default
+  Endif
+  
+  Bold = BTst(iAttr, FLAG_BOLD)
+  {Dim} = BTst(iAttr, FLAG_DIM)
+  Reverse = BTst(iAttr, FLAG_REV)
+  Underscore = BTst(iAttr, FLAG_UND)
+  Blink = BTst(iAttr, FLAG_BLK)
+  
+End

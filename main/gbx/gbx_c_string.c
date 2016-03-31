@@ -747,6 +747,13 @@ BEGIN_METHOD(String_Code, GB_STRING str; GB_INTEGER index)
 	
 	str = STRING(str);
 	len = LENGTH(str);
+	
+	if (index > len)
+	{
+		GB_ReturnInteger(0);
+		return;
+	}
+	
 	pos = utf8_get_pos(VARG(str).addr, str, len, index - 1);
 	lc = STRING_utf8_get_char_length(str[pos]);
 	
