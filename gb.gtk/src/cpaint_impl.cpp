@@ -1324,6 +1324,18 @@ static void TransformMap(GB_TRANSFORM matrix, double *x, double *y)
 	cairo_matrix_transform_point((cairo_matrix_t *)matrix, x, y);
 }
 
+static void my_cairo_fill(cairo_t *cr)
+{
+	if (cairo_get_operator(cr) == CAIRO_OPERATOR_OVER)
+		cairo_fill(cr);
+	else
+	{
+		cairo_save(cr);
+		cairo_clip(cr);
+		cairo_paint(cr);
+		cairo_restore(cr);
+	}
+}
 
 static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, float h, float opacity, GB_RECT *source)
 {
@@ -1364,7 +1376,7 @@ static void DrawImage(GB_PAINT *d, GB_IMAGE image, float x, float y, float w, fl
 	
 	if (opacity == 1.0)
 	{
-		cairo_fill(cr);
+		my_cairo_fill(cr);
 	}
 	else
 	{
@@ -1418,7 +1430,7 @@ static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float
 	cairo_set_source(cr, pattern);
 
 	cairo_rectangle(cr, x, y, w, h);
-	cairo_fill(cr);
+	my_cairo_fill(cr);
 
 	cairo_set_source(cr, save);
 	cairo_pattern_destroy(save);
@@ -1464,7 +1476,7 @@ static void DrawPicture(GB_PAINT *d, GB_PICTURE picture, float x, float y, float
 	cairo_pattern_set_matrix(pattern, &matrix);
 	
 	cairo_rectangle(CONTEXT(d), x, y, w, h);
-	cairo_fill(CONTEXT(d));
+	my_cairo_fill(CONTEXT(d));
 	
 	cairo_set_source(CONTEXT(d), save);
 	cairo_pattern_destroy(save);
@@ -1493,7 +1505,7 @@ static void FillRect(GB_PAINT *d, float x, float y, float w, float h, GB_COLOR c
 	
 	Background(d, TRUE, &color);
 	cairo_rectangle(CONTEXT(d), x, y, w, h);
-	cairo_fill(CONTEXT(d));
+	my_cairo_fill(CONTEXT(d));
 	
 	cairo_set_source(CONTEXT(d), save);
 	cairo_pattern_destroy(save);

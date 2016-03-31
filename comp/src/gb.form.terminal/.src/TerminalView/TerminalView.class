@@ -4,7 +4,7 @@ Inherits UserControl
 
 Export
 
-Public Const _Properties As String = "*,Border=True,Limit"
+Public Const _Properties As String = "*,Border=True,Limit,Blink"
 Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
@@ -18,6 +18,7 @@ Property Read Line As Integer
 Property Limit As Integer
 Property Type As String
 Property AlternateScreen As Boolean
+Property Blink As Boolean
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -44,6 +45,10 @@ Public _DisableFilter As Integer
 Private $sType As String
 
 Private $hCursorTimer As Timer
+Private $bBlink As Boolean
+
+Private $hRefreshTimer As Timer
+Private $iDisableRefresh As Integer
 
 Public Sub _new()
   
@@ -60,6 +65,7 @@ Public Sub _new()
   $hView.Mouse = Mouse.Text
   $hView.Background = Color.Black
   $hView.Foreground = Color.White
+  $hView.NoBackground = True
   
   $hScroll = New ScrollBar($hView) As "ScrollBar"
   $hScroll.Ignore = True
@@ -76,6 +82,9 @@ Public Sub _new()
   
   UpdateFont
   
+  $hRefreshTimer = New Timer As "RefreshTimer"
+  $hRefreshTimer.Delay = 50
+  
 End
 
 Public Sub Clear()
@@ -85,14 +94,27 @@ Public Sub Clear()
   
 End
 
+Public Sub RefreshTimer_Timer()
+  
+  Refresh
+  $hRefreshTimer.Stop
+  
+End
+
 Public Sub Refresh()
 
+  If $iDisableRefresh Then 
+    If Not $hRefreshTimer.Enabled Then $hRefreshTimer.Start
+    Return
+  Endif
+  
   $hView.Refresh
-
+  
 End
 
 Public Sub _RefreshLine((Y) As Integer)
 
+  If $hRefreshTimer.Enabled Then Return
   $hView.Refresh(0, (Y - GetScrollY()) * $LH, $hView.ClientW, $LH)
 
 End
@@ -130,7 +152,7 @@ Private Sub UpdateFont()
     $iAscent = .Ascent
     sText = String$(16, "WwmM")
     $CW = .TextWidth(sText) / Len(sText)
-    Debug $CW
+    'Debug $CW
     $CW = Ceil($CW)
     
   End With
@@ -139,15 +161,22 @@ Private Sub UpdateFont()
   Paint.Begin($hCacheFont)
   Paint.Background = Color.White
   Paint.Font = $hView.Font
-  For I = 32 To 255
+  For I = 33 To 255
     Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
   Next
-  Paint.Font.Bold = True
-  For I = 32 To 255
-    Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
-    'Paint.DrawText(String.Chr(I), I * $CW, $iAscent + $LH)
-  Next
   Paint.End
+  
+  Paint.Begin($hCacheFont)
+  Paint.DrawImage($hCacheFont, 0, $LH, $hCacheFont.W, $LH,, Rect(0, 0, $hCacheFont.W, $LH))
+  Paint.DrawImage($hCacheFont, 1, $LH, $hCacheFont.W, $LH, 0.8, Rect(0, 0, $hCacheFont.W, $LH))
+  Paint.End
+  
+  ' For I = 33 To 255
+  '   Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
+  '   Paint.DrawText(String.Chr(I), I * $CW + 1, $LH, $CW, $LH, Align.Center)
+  '   'Paint.DrawText(String.Chr(I), I * $CW, $iAscent + $LH)
+  ' Next
+  ' Paint.End
   
   _UpdateSize
 
@@ -311,9 +340,14 @@ End
 
 Private Sub ApplyLimit()
 
-  If $iLimit <= ($hView.ClientH \ $LH) Then Return
+  Dim iLimit As Integer
 
-  $hScreen.ApplyLimit($iLimit)
+  iLimit = $iLimit
+  If iLimit <= 0 Then iLimit = 10000
+
+  If iLimit <= ($hView.ClientH \ $LH) Then Return
+
+  $hScreen.ApplyLimit(iLimit)
 
 End
 
@@ -332,14 +366,17 @@ End
 
 Public Sub View_GotFocus()
   
-  $hCursorTimer = New Timer(500) As "CursorTimer"
+  If $bBlink Then $hCursorTimer = New Timer(500) As "CursorTimer"
   
 End
 
 Public Sub View_LostFocus()
   
-  $hCursorTimer.Stop
-  $hCursorTimer = Null
+  If $bBlink Then
+    $hCursorTimer.Stop
+    $hCursorTimer = Null
+  Endif
+  
   $bHideCursor = False
   
 End
@@ -412,8 +449,11 @@ Public Sub Process_Read()
   Dim sData As String
   
   sData = Read #$hProcess, Lof($hProcess)
+  Inc $iDisableRefresh
   $hFilter.OutputTo(Me, $hProcess, sData)
-  EnsureVisible
+  Dec $iDisableRefresh
+  
+  'EnsureVisible
   
 End
 
@@ -456,4 +496,25 @@ Public Sub Kill()
   
   Try $hProcess.Kill
   
+End
+
+Private Function Blink_Read() As Boolean
+
+  Return $bBlink
+
+End
+
+Private Sub Blink_Write(Value As Boolean)
+
+  If Value = $bBlink Then Return
+
+  If $hView.HasFocus Then
+    $bBlink = Value
+    View_GotFocus
+  Else
+    View_LostFocus
+    $bBlink = Value
+  Endif
+  _RefreshLine($hScreen.Line)
+
 End

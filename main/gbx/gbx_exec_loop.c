@@ -2307,7 +2307,7 @@ _SUBR_COMPI:
 
 	__SCI_ERROR:
 
-		THROW(E_TYPE, "Number, Date or String", TYPE_get_name(code));
+		THROW(E_TYPE, "Number, Date or String", TYPE_get_name(code & 0x1F));
 
 	__SCI_END_RELEASE:
 

@@ -95,6 +95,9 @@ Private $Y2 As Integer
 Private $iScrollStart As Integer = -1
 Private $iScrollEnd As Integer = -1
 
+Private $hLineCache As Image
+Private $cCharCache As New Collection
+
 Public Sub _new()
   
   Dim I As Integer
@@ -137,6 +140,7 @@ Public Sub Resize(W As Integer, H As Integer) As Boolean
         GetView()._UpdateSize
       Endif
     Endif
+    $hLineCache = Null
     Return True
   Endif
   
@@ -670,10 +674,13 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
   Dim P, iLen As Integer
   Dim XT As Integer
   Dim J As Integer
-  Dim sCar As String
   Dim C As Integer
   Dim hFont As Font
   Dim HC As Integer
+  Dim hRect As Rect
+  Dim W As Integer
+  Dim YC As Integer
+  Dim XC As Integer
 
   hLine = Lines[L]
   If Not hLine Then Return
@@ -718,10 +725,8 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
       
       If hAttr.Bold Then
         HC = LH
-        If Not Paint.Font.Bold Then Paint.Font.Bold = True
       Else
         HC = 0
-        If Paint.Font.Bold Then Paint.Font.Bold = False
       Endif
       
     Endif
@@ -749,43 +754,72 @@ DRAW_TEXT:
   iLen = I - P
   If iLen <= 0 Then Return
   
-  'sText = String.Mid$(hLine.Text, P, iLen)
+  W = iLen * CW
   
-  XT = X
+  Paint.Begin($hLineCache)
   
-  Paint.Operator = Paint.OperatorOver
-  Paint.FillRect(XT, Y, CW * iLen, LH, iFg)
+  Paint.FillRect(0, 0, W, LH, iFg)
+  
+  XT = 0
+  
+  hRect = Rect(0, 0, CW, LH)
+  
   Paint.Operator = Paint.OperatorDestATop
   For J = P To P + iLen - 1
-    sCar = String.Mid$(hLine.Text, J, 1)
-    C = String.Code(sCar)
+    'sCar = String.Mid$(hLine.Text, J, 1)
+    C = String.Code(hLine.Text, J)
     If C <= 255 Then
-      Paint.DrawImage(hFontCache, XT, Y, CW, LH,, Rect(C * CW, HC, CW, LH))
+      hRect.Move(C * CW, HC)
+      Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
     Else
-      Paint.Begin(hFontCache)
-      Paint.Operator = Paint.OperatorSource
-      Paint.FillRect(0, 0, CW, LH, Color.Transparent)
-      Paint.Font = hFont
-      If hAttr.Bold Then Paint.Font.Bold = True
-      Paint.DrawText(sCar, 0, 0, CW, LH, Align.Center)
-      Paint.End
-      Paint.DrawImage(hFontCache, XT, Y, CW, LH,, Rect(0, 0, CW, LH))
+      
+      If $cCharCache.Exist(C) Then
+        
+        C = $cCharCache[C]
+        hRect.Move(C * CW, 0)
+        Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+        
+      Else
+        
+        If $cCharCache.Count < 32 Then
+          XC = $cCharCache.Count * CW
+          YC = 0
+        Else
+          XC = 0
+          YC = LH
+        Endif
+        
+        Paint.Begin(hFontCache)
+        Paint.Operator = Paint.OperatorSource
+        Paint.FillRect(XC, YC, CW, LH, Color.Transparent)
+        Paint.Font = hFont
+        Paint.DrawText(String.Chr$(C), XC, YC, CW, LH, Align.Center)
+        If hAttr.Bold Then Paint.DrawText(String.Chr$(C), XC + 1, YC, CW, LH, Align.Center)
+        Paint.End
+        hRect.Move(XC, YC)
+        Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+        
+        If YC = 0 Then $cCharCache[C] = $cCharCache.Count
+        
+      Endif
     Endif
     XT += CW
   Next
   
+  Paint.End
+  
   XT = X
   
-  Paint.Operator = Paint.OperatorDestOver
-  Paint.FillRect(XT, Y, CW * iLen, LH, iBg)
+  Paint.FillRect(XT, Y, W, LH, iBg)
+  Paint.DrawImage($hLineCache, XT, Y, W, LH,, Rect(0, 0, W, LH))
   'Paint.DrawText(sText, XT, Y + LA)
   
   If hAttr.Underscore Then 
     Paint.Operator = Paint.OperatorOver
-    Paint.FillRect(XT, Y + LH - 1, iLen * CW, 1, Color.SetAlpha(iFg, 64))
+    Paint.FillRect(XT, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
   Endif
   
-  X += iLen * CW
+  X += W
   P = I
   Return
 
@@ -801,8 +835,12 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
   Dim Y1 As Integer
   Dim Y2 As Integer
 
+  If Not $hLineCache Then $hLineCache = New Image($W * CW, LH)
+  $cCharCache.Clear
+
   L1 = (SY + Paint.ClipRect.Y) \ LH
   L2 = (SY + Paint.ClipRect.Y + Paint.ClipRect.H - 1) \ LH
+
   'Debug L1;; L2
   
   Y = L1 * LH - SY + SY Mod LH
