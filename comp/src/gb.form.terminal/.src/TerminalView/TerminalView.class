@@ -47,11 +47,12 @@ Private $sType As String
 Private $hCursorTimer As Timer
 Private $bBlink As Boolean
 
-'Private $hRefreshTimer As Timer
-'Private $iDisableRefresh As Integer
-
 Private $sBuffer As String
 Private $hOutputTimer As Timer
+
+Public _HasBlink As Boolean
+Public _Blink As Boolean
+Private $hBlinkTimer As Timer
 
 Public Sub _new()
   
@@ -91,6 +92,9 @@ Public Sub _new()
   $hOutputTimer = New Timer As "OutputTimer"
   $hOutputTimer.Delay = 50
   
+  $hBlinkTimer = New Timer As "BlinkTimer"
+  $hBlinkTimer.Delay = 500
+  
 End
 
 Public Sub Clear()
@@ -100,21 +104,9 @@ Public Sub Clear()
   
 End
 
-' Public Sub RefreshTimer_Timer()
-'   
-'   Refresh
-'   EnsureVisible
-'   $hRefreshTimer.Stop
-'   
-' End
-
 Public Sub Refresh()
 
-  ' If $iDisableRefresh Then 
-  '   If Not $hRefreshTimer.Enabled Then $hRefreshTimer.Start
-  '   Return
-  ' Endif
-  
+  _HasBlink = False
   $hView.Refresh
   
 End
@@ -220,11 +212,23 @@ Private Sub GetScrollY() As Integer
   
 End
 
+Public Sub BlinkTimer_Timer()
+  
+  _Blink = Not _Blink
+  Refresh
+  
+End
+
 
 Public Sub View_Draw()
 
   ApplyLimit
   $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
+  If _HasBlink Then
+    If Not $hBlinkTimer.Enabled Then $hBlinkTimer.Start
+  Else
+    $hBlinkTimer.Stop
+  Endif
   
 End
 

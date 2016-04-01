@@ -672,7 +672,7 @@ Private Function Height_Read() As Integer
 
 End
 
-Fast Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
+Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
 
   Dim hView As TerminalView = GetView()
   Dim hLine As CTerminalLine
@@ -725,6 +725,11 @@ Fast Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer,
     Endif
     
     If hAttr.Reverse Then Swap iBg, iFg
+    
+    If hAttr.Blink Then
+      hView._HasBlink = True
+      If hView._Blink Then Swap iBg, iFg      
+    Endif
     
     If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
     
