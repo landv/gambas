@@ -13,13 +13,16 @@ Property Read Geometry As Rect
 Property Read X As Integer
 Property Read Y As Integer
 
+Property Read HasMode As Boolean
+
 Public AppCursorKey As Boolean
 Public AppKeypad As Boolean
 Public Origin As Boolean
 Public InsertMode As Boolean
-Public NewLineMode As Boolean
+Public NewlineMode As Boolean
 Public WrapMode As Boolean
 Public HideCursor As Boolean
+
 
 Static Private $aColor As Integer[] = [
 &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
@@ -276,7 +279,7 @@ End
 
 Private Sub NewLine()
   
-  If NewLineMode Then $X = 0
+  If NewlineMode Then $X = 0
   Index()
   
 End
@@ -954,7 +957,7 @@ Public Sub Reset()
   AppKeypad = False
   Origin = False
   InsertMode = False
-  NewLineMode = False
+  NewlineMode = False
   WrapMode = True
   HideCursor = False
   
@@ -972,3 +975,9 @@ Public Sub DebugRefresh()
   
 End
 
+
+Private Function HasMode_Read() As Boolean
+
+  If AppCursorKey Or If AppKeypad Or If Origin Or If InsertMode Or If NewlineMode Or If WrapMode Or If HideCursor Then Return True
+
+End

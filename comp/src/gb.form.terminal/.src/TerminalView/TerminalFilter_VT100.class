@@ -258,7 +258,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Case "4" ' Insert mode
               hScreen.InsertMode = True
             Case "20" ' Newline mode
-              hScreen.NewLineMode = True
+              hScreen.NewlineMode = True
             Case "?1" ' Application cursor keys
               hScreen.AppCursorKey = True
             Case "?6" ' Origin
@@ -285,7 +285,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Case "4" ' Insert mode
               hScreen.InsertMode = False
             Case "20" ' Newline mode
-              hScreen.NewLineMode = False
+              hScreen.NewlineMode = False
             Case "?1" ' Normal cursor keys
               hScreen.AppCursorKey = False
             Case "?6" ' Origin
@@ -457,10 +457,7 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
         
       Case Key.Left
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
-        ' Case Key.Space
-        '   sText = If(hScreen.AppCursorKey, "\eO ", " ")
-        ' Case Key.Tab
-        '   sText = If(hScreen.AppCursorKey, "\eOI", Key.Text)
+
       Case Key.Enter
         sText = If(hScreen.AppCursorKey, "\eOM", Key.Text)
         
@@ -470,14 +467,16 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
       Case Key.Delete
         sText = "\e[3~"
 
+      Case Key.Home
+        'sText="\e[1~"
+        sText = If(hScreen.AppCursorKey, "\eOH", "\e[H")
+
       Case Key.End
-        sText = "\e[4~"
+        'sText = "\e[4~"
+        sText = If(hScreen.AppCursorKey, "\eOF", "\e[F")
 
       Case Key.PageDown
         sText = "\e[6~"
-
-      Case Key.Home
-        sText = "\e[1~"
 
       Case Key.PageUp
         sText = "\e[5~"
@@ -517,6 +516,34 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
 
       Case Key.F12
         sText = "\e[24~"
+        
+      Case Key.Return, Key.Enter
+        If hScreen.NewlineMode Then
+          sText = "\r\n"
+        Else
+          sText = "\n"
+        Endif
+        
+      Case Key.BackSpace
+        sText = Chr$(127)
+      
+      Case Key.Tab
+        sText = "\t"
+      
+      Case Key.BackTab
+        sText = "\e[Z"
+      
+    End Select
+    
+  Else If Key.Shift Then
+    
+    Select Key.Code
+      
+      Case Key.Return, Key.Enter
+        sText = "\eOM"
+        
+      Case Key.BackTab
+        sText = "\e[Z"
         
     End Select
     
