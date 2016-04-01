@@ -47,8 +47,11 @@ Private $sType As String
 Private $hCursorTimer As Timer
 Private $bBlink As Boolean
 
-Private $hRefreshTimer As Timer
-Private $iDisableRefresh As Integer
+'Private $hRefreshTimer As Timer
+'Private $iDisableRefresh As Integer
+
+Private $sBuffer As String
+Private $hOutputTimer As Timer
 
 Public Sub _new()
   
@@ -82,8 +85,11 @@ Public Sub _new()
   
   UpdateFont
   
-  $hRefreshTimer = New Timer As "RefreshTimer"
-  $hRefreshTimer.Delay = 50
+  '$hRefreshTimer = New Timer As "RefreshTimer"
+  '$hRefreshTimer.Delay = 50
+  
+  $hOutputTimer = New Timer As "OutputTimer"
+  $hOutputTimer.Delay = 50
   
 End
 
@@ -94,20 +100,20 @@ Public Sub Clear()
   
 End
 
-Public Sub RefreshTimer_Timer()
-  
-  Refresh
-  EnsureVisible
-  $hRefreshTimer.Stop
-  
-End
+' Public Sub RefreshTimer_Timer()
+'   
+'   Refresh
+'   EnsureVisible
+'   $hRefreshTimer.Stop
+'   
+' End
 
 Public Sub Refresh()
 
-  If $iDisableRefresh Then 
-    If Not $hRefreshTimer.Enabled Then $hRefreshTimer.Start
-    Return
-  Endif
+  ' If $iDisableRefresh Then 
+  '   If Not $hRefreshTimer.Enabled Then $hRefreshTimer.Start
+  '   Return
+  ' Endif
   
   $hView.Refresh
   
@@ -115,7 +121,7 @@ End
 
 Public Sub _RefreshLine((Y) As Integer)
 
-  If $hRefreshTimer.Enabled Then Return
+  'If $hRefreshTimer.Enabled Then Return
   $hView.Refresh(0, (Y - GetScrollY()) * $LH, $hView.ClientW, $LH)
 
 End
@@ -328,6 +334,9 @@ Public Sub View_KeyPress()
   
   'If Key.Text Then $hScreen.Print(Replace(Key.Text, "\r", "\n"))
   If Not $hProcess Then Return
+  
+  If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
+  
   If $hFilter.InputTo(Me, $hProcess, Key.Code, Key.Text) Then 
     Stop Event
   Endif
@@ -459,10 +468,21 @@ Public Sub Process_Read()
   
   sData = Read #$hProcess, Lof($hProcess)
   
-  Inc $iDisableRefresh
-  $hFilter.OutputTo(Me, $hProcess, sData)
-  Dec $iDisableRefresh
-  'If Not $hRefreshTimer.Enabled Then EnsureVisible
+  $sBuffer &= sData
+  
+  If Len($sBuffer) > 65536 Then
+    $hOutputTimer.Trigger
+  Else
+    $hOutputTimer.Restart
+  Endif
+  
+End
+
+Public Sub OutputTimer_Timer()
+
+  $hFilter.OutputTo(Me, $hProcess, $sBuffer)
+  $sBuffer = ""
+  $hOutputTimer.Stop
   
 End
 
