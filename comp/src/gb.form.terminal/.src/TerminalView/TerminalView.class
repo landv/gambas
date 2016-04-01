@@ -261,6 +261,8 @@ Public Sub _EnsureVisibleAt((X) As Integer, Y As Integer)
   
   If $hScroll.Value < (Y - H + 1) Then
     $hScroll.Value = Y - H + 1
+  Else If $hScroll.Value > Y Then
+    $hScroll.Value = Y
   Endif
   
 End
@@ -298,10 +300,16 @@ Private Sub GotoMouse(bStart As Boolean)
 End
 
 Public Sub View_MouseDown()
-  
-  $bMouseDown = True
-  GotoMouse(True)
-  $hMouseTimer = New Timer(50) As "MouseTimer"
+
+  If Mouse.Left Then  
+    $bMouseDown = True
+    GotoMouse(True)
+    $hMouseTimer = New Timer(50) As "MouseTimer"
+  Else If Mouse.Middle Then
+    Clipboard.Current = Clipboard.Selection
+    Paste()
+    Clipboard.Current = Clipboard.Default
+  Endif
   
 End
 
@@ -322,10 +330,22 @@ End
 
 Public Sub View_MouseUp()
   
+  Dim sText As String
+  
   If $hMouseTimer Then
     $hMouseTimer.Stop
     $hMouseTimer = Null
   Endif
+  
+  If $bMouseDown Then
+    sText = $hScreen.GetSelectedText()
+    If sText Then
+      Clipboard.Current = Clipboard.Selection
+      Clipboard.Copy(sText, "text/plain")
+      Clipboard.Current = Clipboard.Default
+    Endif
+  Endif
+  
   $bMouseDown = False
   
 End
@@ -337,7 +357,7 @@ Public Sub View_KeyPress()
   
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
   
-  If $hFilter.InputTo(Me, $hProcess, Key.Code, Key.Text) Then 
+  If $hFilter.InputTo(Me, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift) Then 
     Stop Event
   Endif
   
@@ -546,4 +566,26 @@ Private Sub Blink_Write(Value As Boolean)
   Endif
   _RefreshLine($hScreen.Line)
 
+End
+
+Public Sub Copy()
+
+  Dim sText As String
+  
+  sText = $hScreen.GetSelectedText()
+  If sText Then Clipboard.Copy(sText)
+  
+End
+
+Public Sub Paste()
+
+  Dim sText As String
+  
+  If Not $hProcess Then Return
+  
+  sText = Clipboard.Paste("text/plain")
+  If Not sText Then Return
+  
+  $hFilter.InputTo(Me, $hProcess, 0, sText)
+  
 End

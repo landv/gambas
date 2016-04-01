@@ -438,11 +438,11 @@ NOT_IMPLEMENTED:
   
 End
 
-Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer, sText As String) As Boolean
+Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean) As Boolean
   
   Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   
-  If Key.Normal Then
+  If bNormal Then
     
     Select Case iCode
         
@@ -535,9 +535,9 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
       
     End Select
     
-  Else If Key.Shift Then
+  Else If bShift Then
     
-    Select Key.Code
+    Select iCode
       
       Case Key.Return, Key.Enter
         sText = "\eOM"

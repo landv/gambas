@@ -8,7 +8,7 @@ Public Sub OutputTo((hView) As TerminalView, (hProcess) As Process, (sData) As S
   
 End
 
-Public Sub InputTo((hView) As TerminalView, (hProcess) As Process, (iKeyCode) As Integer, (sKeyText) As String) As Boolean
+Public Sub InputTo((hView) As TerminalView, (hProcess) As Process, (iKeyCode) As Integer, (sText) As String, Optional (bNormal) As Boolean = True, (bShift) As Boolean) As Boolean
   
 End
 

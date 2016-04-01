@@ -836,6 +836,22 @@ DRAW_TEXT:
 
 End
 
+Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As Integer, ByRef Y2 As Integer) As Boolean
+
+  Y1 = $Y1
+  Y2 = $Y2
+  X1 = $X1
+  X2 = $X2
+  
+  If Y1 > Y2 Then
+    Swap Y1, Y2
+    Swap X1, X2
+  Endif
+
+  If Y2 > Y1 Or If X2 > X1 Then Return True
+  
+End
+
 Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHideCursor As Boolean, hFont As Image)
 
   Dim hView As TerminalView = GetView()
@@ -868,28 +884,22 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
     
     ' Selection
     
-    Y1 = $Y1
-    Y2 = $Y2
-    X1 = $X1
-    X2 = $X2
+    If GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2) Then
     
-    If Y1 > Y2 Then
-      Swap Y1, Y2
-      Swap X1, X2
-    Endif
-    
-    If L >= Y1 And If L <= Y2 Then
-      If L = Y1 Then
-        X1 *= CW
-      Else
-        X1 = 0
+      If L >= Y1 And If L <= Y2 Then
+        If L = Y1 Then
+          X1 *= CW
+        Else
+          X1 = 0
+        Endif
+        If L = Y2 Then
+          X2 *= CW
+        Else
+          X2 = Paint.W
+        Endif
+        If X2 > X1 Then Paint.FillRect(X1, Y, X2 - X1, LH, Color.SetAlpha(Color.SelectedBackground, 128))
       Endif
-      If L = Y2 Then
-        X2 *= CW
-      Else
-        X2 = Paint.W
-      Endif
-      If X2 > X1 Then Paint.FillRect(X1, Y, X2 - X1, LH, Color.SetAlpha(Color.SelectedBackground, 128))
+      
     Endif
   
     Y += LH
@@ -980,4 +990,29 @@ Private Function HasMode_Read() As Boolean
 
   If AppCursorKey Or If AppKeypad Or If Origin Or If InsertMode Or If NewlineMode Or If WrapMode Or If HideCursor Then Return True
 
+End
+
+Public Sub GetSelectedText() As String
+  
+  Dim X1 As Integer
+  Dim X2 As Integer
+  Dim Y1 As Integer
+  Dim Y2 As Integer
+  Dim sText As String
+  Dim Y As Integer
+  
+  If Not GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2) Then Return
+  
+  If Y2 = Y1 Then
+    sText = String.Mid$(Lines[Y1].Text, X1 + 1, X2 - X1)
+  Else
+    sText = String.Mid$(Lines[Y1].Text, X1 + 1) & "\n"
+    For Y = Y1 + 1 To Y2 - 1
+      sText &= Lines[Y].Text & "\n"
+    Next
+    sText &= String.Left$(Lines[Y2].Text, X2)
+  Endif
+  
+  Return sText
+  
 End
