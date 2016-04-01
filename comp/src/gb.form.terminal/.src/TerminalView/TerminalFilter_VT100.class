@@ -234,6 +234,24 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           GoSub GET_COUNT
           hScreen.DeleteChar(N)
           
+        Case "S" ' Scroll up
+          
+          GoSub GET_COUNT
+          hScreen.ScrollUp(N)
+          
+        Case "T" ' Scroll down
+          
+          GoSub GET_COUNT
+          hScreen.ScrollDown(N)
+        
+        Case "d"
+          
+          GoSub GET_ARGS
+          If aArg Then
+            Try Y = CInt(aArg[0]) - 1
+          Endif
+          hScreen.CursorGoto(hScreen.Column, Y)
+        
         Case "h"
           
           Select Mid$(sStr, 2, -1)
@@ -248,7 +266,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Case "?7" ' Wrap mode
               hScreen.WrapMode = True
             Case "?25" ' Hide cursor
-              hScreen.HideCursor = True
+              hScreen.HideCursor = False
             Case "?47", "?1047"
               hView.AlternateScreen = True
             Case "?1048"
@@ -275,7 +293,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Case "?7" ' Wrap mode
               hScreen.WrapMode = False
             Case "?25" ' Hide cursor
-              hScreen.HideCursor = False
+              hScreen.HideCursor = True
             Case "?47"
               hView.AlternateScreen = False
             Case "?1047"
@@ -445,9 +463,12 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
         '   sText = If(hScreen.AppCursorKey, "\eOI", Key.Text)
       Case Key.Enter
         sText = If(hScreen.AppCursorKey, "\eOM", Key.Text)
-
+        
       Case Key.Insert
         sText = "\e[2~"
+
+      Case Key.Delete
+        sText = "\e[3~"
 
       Case Key.End
         sText = "\e[4~"

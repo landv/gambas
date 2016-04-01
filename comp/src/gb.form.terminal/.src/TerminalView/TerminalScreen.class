@@ -255,11 +255,7 @@ Public Sub Print(sText As String)
     Select Case iCode
       Case 7
       Case 8
-        If $X Then
-          Dec $X
-          'Insert(" ")
-          'Dec $X
-        Endif
+        CursorLeft
       Case 9
         Tab()
       Case 10, 12
@@ -303,11 +299,18 @@ Public Sub Goto(X As Integer, Y As Integer)
   
   If Y < 0 Then Y = 0
   
-  $X = X
-  $Y = Y
+  With GetView()
   
-  GetView().EnsureVisible
-  GetView().Refresh
+    ._RefreshLine($Y)
+  
+    $X = X
+    $Y = Y
+  
+    ._ShowCursor()
+    ._RefreshLine($Y)
+    .EnsureVisible
+    
+  End With
   
 End
 
@@ -382,13 +385,17 @@ Public Sub CursorGoto(X As Integer, Y As Integer)
     Y = $H - 1
   Endif
   
-  $X = X
-  $Y = Y + ScreenTop()
-  
   With GetView()
+  
+    ._RefreshLine($Y)
+  
+    $X = X
+    $Y = Y + ScreenTop()
+  
     ._ShowCursor()
+    ._RefreshLine($Y)
     .EnsureVisible
-    .Refresh
+    
   End With
   
 End
@@ -573,15 +580,21 @@ Private Sub Scroll(bUp As Boolean, Optional iFrom As Integer)
   
 End
 
-Public Sub ScrollUp()
+Public Sub ScrollUp(Optional N As Integer)
   
-  Scroll(True)
+  Repeat
+    Scroll(True)
+    Dec N
+  Until N <= 0
   
 End
 
-Public Sub ScrollDown()
+Public Sub ScrollDown(Optional N As Integer)
   
-  Scroll(False)
+  Repeat
+    Scroll(False)
+    Dec N
+  Until N <= 0
   
 End
 
@@ -682,7 +695,7 @@ Fast Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer,
   If Not hLine Then Return
   
   hFont = Paint.Font
-  aAttr = hLine.Attr
+  aAttr = hLine.GetAttr()
   
   P = 1
   
@@ -847,7 +860,7 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
     ' Cursor
 
     If L = $Y And If Not bHideCursor And If Not HideCursor Then
-      Paint.FillRect($X * CW, Y, CW, LH, Color.Merge(Color.SelectedBackground, hView.Foreground))
+      Paint.FillRect($X * CW, Y, CW, LH, Color.SetAlpha(Color.Merge(Color.SelectedBackground, hView.Foreground), 64))
     Endif
     
     ' Selection
@@ -907,6 +920,13 @@ Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
   $X2 = X
   $Y2 = Y
   
+  If Not bStart Then
+    With GetView()
+      .Refresh
+      ._EnsureVisibleAt(X, Y)
+    End With
+  Endif
+
 End
 
 Public Sub SaveCursor()
@@ -936,6 +956,7 @@ Public Sub Reset()
   InsertMode = False
   NewLineMode = False
   WrapMode = True
+  HideCursor = False
   
 End
 

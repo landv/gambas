@@ -97,6 +97,7 @@ End
 Public Sub RefreshTimer_Timer()
   
   Refresh
+  EnsureVisible
   $hRefreshTimer.Stop
   
 End
@@ -246,7 +247,7 @@ Private Function Attr_Read() As TerminalAttr
 
 End
 
-Private Sub EnsureVisibleAt((X) As Integer, Y As Integer)
+Public Sub _EnsureVisibleAt((X) As Integer, Y As Integer)
   
   Dim H As Integer
   
@@ -261,7 +262,7 @@ End
 
 Public Sub EnsureVisible()
 
-  EnsureVisibleAt($hScreen.X, $hScreen.Y)
+  _EnsureVisibleAt($hScreen.X, $hScreen.Y)
   
 End
 
@@ -287,9 +288,6 @@ Private Sub GotoMouse(bStart As Boolean)
   Y = GetScrollY() + (Mouse.ScreenY - $hView.ScreenY) \ $LH
 
   $hScreen.GotoMouse(X, Y, bStart)
-
-  Refresh
-  EnsureVisibleAt(X, Y)
 
 End
 
@@ -460,11 +458,11 @@ Public Sub Process_Read()
   Dim sData As String
   
   sData = Read #$hProcess, Lof($hProcess)
+  
   Inc $iDisableRefresh
   $hFilter.OutputTo(Me, $hProcess, sData)
   Dec $iDisableRefresh
-  
-  'EnsureVisible
+  'If Not $hRefreshTimer.Enabled Then EnsureVisible
   
 End
 

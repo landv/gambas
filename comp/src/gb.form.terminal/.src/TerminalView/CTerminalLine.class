@@ -1,12 +1,17 @@
 ' Gambas class file
 
+Fast
+
 Public Text As String
 Public Length As Integer
-Public Attr As New Integer[]
+
+Private Attr As New Integer[]
+
+Private $bCompressed As Boolean
 
 Private Enum FLAG_BG, FLAG_FG, FLAG_BOLD, FLAG_DIM, FLAG_REV, FLAG_UND, FLAG_BLK
 
-Private Sub Uncompress() As Integer[]
+Private Sub Uncompress()
 
   Dim I As Integer
   Dim iAttr As Integer
@@ -25,46 +30,37 @@ Private Sub Uncompress() As Integer[]
   
   'If aAttr.Count > String.Len(Text) Then Stop
   
-  Return aAttr
+  Attr = aAttr
+  $bCompressed = False
 
 End
 
-Private Sub Compress(aAttr As Integer[])
+Private Sub Compress()
   
   Dim I As Integer
   Dim iAttr As Integer
   Dim iOldAttr As Integer
   Dim iCount As Integer
-  Dim N As Integer
+  Dim aAttr As New Integer[]
   
-  Attr.Clear
-  
-  For I = 0 To aAttr.Max
+  For I = 0 To Attr.Max
     
-    iAttr = aAttr[I]
+    iAttr = Attr[I]
     If iAttr = iOldAttr And If iCount < 256 Then
       Inc iCount
       Continue
     Endif
     
-    GoSub ADD_ATTR
+    If iCount Then aAttr.Add(iOldAttr Or Lsl(iCount - 1, 8))
     iCount = 1
     iOldAttr = iAttr
     
   Next
   
-  GoSub ADD_ATTR
-  'Debug aAttr.Count; " -> "; N;; "/";; String.Len(Text)
-  'If N > String.Len(Text) Then Stop
-  Return
+  If iCount Then aAttr.Add(iOldAttr Or Lsl(iCount - 1, 8))
   
-ADD_ATTR:
-
-  If iCount Then
-    N += iCount
-    Attr.Add(iOldAttr Or Lsl(iCount - 1, 8))
-  Endif
-  Return
+  Attr = aAttr
+  $bCompressed = True
   
 End
 
@@ -110,7 +106,9 @@ Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 
   If hAttr.Underscore Then iAttr = BSet(iAttr, FLAG_UND)
   If hAttr.Blink Then iAttr = BSet(iAttr, FLAG_BLK)
   
-  aAttr = Uncompress()
+  If $bCompressed Then Uncompress()
+  
+  aAttr = Attr
   
   If iAttr = 0 And If X >= aAttr.Count Then
     'aAttr.Resize(X)
@@ -126,14 +124,21 @@ Public Sub SetAttr(hAttr As TerminalAttr, X As Integer, Optional L As Integer = 
     Endif
   Endif
   
-  Compress(aAttr)
+End
+
+Public Sub GetAttr() As Integer[]
+  
+  If Not $bCompressed Then Compress()
+  Return Attr
   
 End
+
 
 Public Sub Clear()
   
   Text = ""
   Length = 0
   Attr.Clear
+  $bCompressed = False
   
 End
