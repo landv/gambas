@@ -3,7 +3,14 @@
 Inherits TerminalFilter
 
 Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
+Private Enum MODE_AppScreen, 
+MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, 
+MODE_AnsiMODE_132Columns, MODE_Allow132Columns, MODE_BracketedPaste
 
+Private $aMode As New Boolean[13]
+Private $aSavedMode As New Boolean[13]
+Public MouseActive As Boolean
+Public BracketedPasteActive As Boolean
 Private $sLeft As String
 
 Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
@@ -142,10 +149,10 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
     Case "("
       iMode = MODE_IGNORE_CHAR
       
-    Case "]"
+    Case "]" '>>>>> OSC
       iMode = MODE_TITLE
       
-    Case "["
+    Case "["    ' >>>>>> CSI
       
       Select Case Right(sStr)
           
@@ -183,6 +190,9 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Try X = CInt(aArg[1]) - 1
           Endif
           hScreen.CursorGoto(X, Y)
+
+        Case "c"  'Report terminal type
+          Print #hProcess, "\e[?1;2c"
           
         Case "d" 'Set Cursor Y
           
@@ -190,7 +200,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           
           If aArg Then 
             Try Y = CInt(aArg[0]) - 1
-            hScreen.CursorGoto(hScreen.X, Y)
+            hScreen.CursorGoto(hScreen.Column, Y)
           Endif
           
         Case "J" ' Erase screen
@@ -244,13 +254,13 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           GoSub GET_COUNT
           hScreen.ScrollDown(N)
         
-        Case "d"
-          
-          GoSub GET_ARGS
-          If aArg Then
-            Try Y = CInt(aArg[0]) - 1
-          Endif
-          hScreen.CursorGoto(hScreen.Column, Y)
+        ' Case "d"
+        '   
+        '   GoSub GET_ARGS
+        '   If aArg Then
+        '     Try Y = CInt(aArg[0]) - 1
+        '   Endif
+        '   hScreen.CursorGoto(hScreen.Column, Y)
         
         Case "h"
           
@@ -271,13 +281,32 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
                   Case "25" ' Hide cursor
                     hScreen.HideCursor = False
                   Case "47", "1047"
+                    $aMode[MODE_AppScreen] = False
                     hView.AlternateScreen = True
+                  Case "1000"
+                    $aMode[MODE_Mouse1000] = True
+                    MouseActive = True
+                  Case "1001"
+                    $aMode[MODE_Mouse1001] = True
+                    MouseActive = True
+                  Case "1002"
+                    $aMode[MODE_Mouse1002] = True
+                    MouseActive = True
+                  Case "1003"
+                    $aMode[MODE_Mouse1003] = True
+                    MouseActive = True
+                  Case "1005"
+                    $aMode[MODE_Mouse1005] = True
+                  Case "1006"
+                    $aMode[MODE_Mouse1006] = True
                   Case "1048"
                     hScreen.SaveCursor
                   Case "1049"
                     hScreen.SaveCursor
                     hView.AlternateScreen = True
                     hView._GetCurrentScreen().Clear()
+                  Case "2004"
+                    BracketedPasteActive = True
                   Default
                     Goto NOT_IMPLEMENTED
                 End Select
@@ -317,15 +346,35 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
                   Case "25" ' Hide cursor
                     hScreen.HideCursor = True
                   Case "47"
+                    $aMode[MODE_AppScreen] = False
                     hView.AlternateScreen = False
+                  Case "1000"
+                    $aMode[MODE_Mouse1000] = False
+                    MouseActive = False
+                  Case "1001"
+                    $aMode[MODE_Mouse1001] = False
+                    MouseActive = False
+                  Case "1002"
+                    $aMode[MODE_Mouse1002] = False
+                    MouseActive = False
+                  Case "1003"
+                    $aMode[MODE_Mouse1003] = False
+                    MouseActive = False
+                  Case "1005"
+                    $aMode[MODE_Mouse1005] = False
+                  Case "1006"
+                    $aMode[MODE_Mouse1006] = False
                   Case "1047"
                     hScreen.Clear
+                    $aMode[MODE_AppScreen] = False
                     hView.AlternateScreen = False
                   Case "1048"
                     hScreen.RestoreCursor
                   Case "1049"
                     hView.AlternateScreen = False
                     hScreen.RestoreCursor
+                  Case "2004"
+                    BracketedPasteActive = False
                   Default
                     Goto NOT_IMPLEMENTED
                 End Select
@@ -346,7 +395,26 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
               Next
             Endif
           Endif
+        
+        Case n  ' Device Status Report
           
+              Select Case Mid(sStr, 2, -1)
+                Case "5"
+                  Print #hProcess, "\e[0n";  'Report Status OK
+                Case "6"
+                  Print #hProcess, Subst("\e[&1;&2R", hScreen.Line, hScreen.Column);  'Report Cursor Position
+                Case "?6"
+                  Print #hProcess, Subst("\e[?&1;&2R", hScreen.Line, hScreen.Column); 'Report Cursor Position
+                Case "?15"
+                  Print #hProcess, "\0[?11n" 'Printer not ready (10 for ready)"
+                Case "?25" 'Report UDK statu
+                  Print #hProcess, "\0[?20n"  'UDK status as CSI ? 2 0 n (unlocked) or CSI ? 2 1 n (locked)
+                Case "?26" 'Report Keyboard status as
+                  Print #hProcess, "\0[?50n"  'No Locator, if not.
+              End Select
+              
+          
+        
         Case "m" ' Set attribute
           
           GoSub GET_ARGS
@@ -437,8 +505,6 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           
           hScreen.RestoreCursor
           
-        Case "c"  'Report terminal type
-          Print #hProcess, "\e[?1;2c"
           
         Default
           
@@ -594,3 +660,29 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
   Endif
   
 End
+
+Public Sub MouseUp()
+  
+  
+  
+End
+
+Public Sub MouseDown()
+  
+  
+  
+End
+
+Public Sub MouseMove()
+  
+  
+  
+End
+
+Public Sub MouseWheel()
+  
+  
+  
+End
+
+
