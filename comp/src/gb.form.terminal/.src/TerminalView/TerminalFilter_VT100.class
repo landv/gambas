@@ -254,59 +254,98 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
         
         Case "h"
           
-          Select Mid$(sStr, 2, -1)
-            Case "4" ' Insert mode
-              hScreen.InsertMode = True
-            Case "20" ' Newline mode
-              hScreen.NewlineMode = True
-            Case "?1" ' Application cursor keys
-              hScreen.AppCursorKey = True
-            Case "?6" ' Origin
-              hScreen.Origin = True
-            Case "?7" ' Wrap mode
-              hScreen.WrapMode = True
-            Case "?25" ' Hide cursor
-              hScreen.HideCursor = False
-            Case "?47", "?1047"
-              hView.AlternateScreen = True
-            Case "?1048"
-              hScreen.SaveCursor
-            Case "?1049"
-              hScreen.SaveCursor
-              hView.AlternateScreen = True
-              hView._GetCurrentScreen().Clear()
-            Default
-              Goto NOT_IMPLEMENTED
-          End Select
+          If sStr Begins "[?" Then      'DEC Private Mode Set
+            sStr = Replace(sStr, "?", "") 'remove the ?
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select sArg
+                  Case "1" ' Application cursor keys
+                    hScreen.AppCursorKey = True
+                  Case "6" ' Origin
+                    hScreen.Origin = True
+                  Case "7" ' Wrap mode
+                    hScreen.WrapMode = True
+                  Case "12"
+                    'Ignored
+                  Case "25" ' Hide cursor
+                    hScreen.HideCursor = False
+                  Case "47", "1047"
+                    hView.AlternateScreen = True
+                  Case "1048"
+                    hScreen.SaveCursor
+                  Case "1049"
+                    hScreen.SaveCursor
+                    hView.AlternateScreen = True
+                    hView._GetCurrentScreen().Clear()
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Else                         'Set Mode
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select Case sArg
+                  Case "4" ' Insert mode
+                    hScreen.InsertMode = True
+                  Case "20" ' Newline mode
+                    hScreen.NewLineMode = True
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Endif
           
         Case "l"
-          
-          Select Mid$(sStr, 2, -1)
-            Case "4" ' Insert mode
-              hScreen.InsertMode = False
-            Case "20" ' Newline mode
-              hScreen.NewlineMode = False
-            Case "?1" ' Normal cursor keys
-              hScreen.AppCursorKey = False
-            Case "?6" ' Origin
-              hScreen.Origin = False
-            Case "?7" ' Wrap mode
-              hScreen.WrapMode = False
-            Case "?25" ' Hide cursor
-              hScreen.HideCursor = True
-            Case "?47"
-              hView.AlternateScreen = False
-            Case "?1047"
-              hScreen.Clear
-              hView.AlternateScreen = False
-            Case "?1048"
-              hScreen.RestoreCursor
-            Case "?1049"
-              hView.AlternateScreen = False
-              hScreen.RestoreCursor
-            Default
-              Goto NOT_IMPLEMENTED
-          End Select
+            If sStr Begins "[?" Then      'DEC Private Mode Set
+            sStr = Replace(sStr, "?", "") 'remove the ?
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select sArg
+                  Case "1" ' Normal cursor keys
+                    hScreen.AppCursorKey = False
+                  Case "6" ' Origin
+                    hScreen.Origin = False
+                  Case "7" ' Wrap mode
+                    hScreen.WrapMode = False
+                  Case "12"
+                    'Ignored
+                  Case "25" ' Hide cursor
+                    hScreen.HideCursor = True
+                  Case "47"
+                    hView.AlternateScreen = False
+                  Case "1047"
+                    hScreen.Clear
+                    hView.AlternateScreen = False
+                  Case "1048"
+                    hScreen.RestoreCursor
+                  Case "1049"
+                    hView.AlternateScreen = False
+                    hScreen.RestoreCursor
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Else                          'Set Mode
+            GoSub GET_ARGS
+            If aArg Then
+              For Each sArg In aArg
+                Select Case sArg
+                  Case "4" ' Insert mode
+                    hScreen.InsertMode = False
+                  Case "20" ' Newline mode
+                    hScreen.NewLineMode = False
+                  Default
+                    Goto NOT_IMPLEMENTED
+                End Select
+              Next
+            Endif
+          Endif
           
         Case "m" ' Set attribute
           
@@ -458,7 +497,7 @@ Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer,
       Case Key.Left
         sText = If(hScreen.AppCursorKey, "\eOD", "\e[D")
 
-      Case Key.Enter
+      Case Key.Enter, Key.Return
         sText = If(hScreen.AppCursorKey, "\eOM", Key.Text)
         
       Case Key.Insert
