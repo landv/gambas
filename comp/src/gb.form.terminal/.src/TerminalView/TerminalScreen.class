@@ -427,6 +427,23 @@ Public Sub CursorRight(Optional Count As Integer = 1)
   
 End
 
+Public Sub InsertSpace(N As Integer)
+
+  Dim hLine As CTerminalLine
+  
+  hLine = GetLine($Y)
+  If $X < hLine.Length Then 
+    hLine.Text = String.Left(String.Left(hLine.Text, $X) & Space$(N) & String.Mid$(hLine.Text, $X + 1), $W)
+    hLine.Length = String.Len(hLine.Text)
+  Endif
+  If Not $hAttr.IsVoid() Then
+    hLine.SetAttr($hAttr, $X, N, True)
+  Endif
+  GetView()._RefreshLine($Y)
+  
+End
+
+
 Public Sub DeleteChar(Optional N As Integer = 1)
 
   Dim hLine As CTerminalLine
@@ -439,6 +456,7 @@ Public Sub DeleteChar(Optional N As Integer = 1)
   If Not $hAttr.IsVoid() Then
     Insert(Space$(N), hLine.Length)
   Endif
+  GetView()._RefreshLine($Y)
   
 End
 
@@ -1009,13 +1027,13 @@ Public Sub GetSelectedText() As String
   If Not GetSelection(ByRef X1, ByRef Y1, ByRef X2, ByRef Y2) Then Return
   
   If Y2 = Y1 Then
-    sText = String.Mid$(Lines[Y1].Text, X1 + 1, X2 - X1)
+    sText = String.Mid$(GetLine(Y1).Text, X1 + 1, X2 - X1)
   Else
-    sText = String.Mid$(Lines[Y1].Text, X1 + 1) & "\n"
+    sText = String.Mid$(GetLine(Y1).Text, X1 + 1) & "\n"
     For Y = Y1 + 1 To Y2 - 1
-      sText &= Lines[Y].Text & "\n"
+      sText &= GetLine(Y).Text & "\n"
     Next
-    sText &= String.Left$(Lines[Y2].Text, X2)
+    sText &= String.Left$(GetLine(Y2).Text, X2)
   Endif
   
   Return sText

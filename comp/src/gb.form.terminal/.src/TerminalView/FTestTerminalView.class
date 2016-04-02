@@ -48,14 +48,14 @@ Public Sub Button5_Click()
 
 End
 
-Public Sub TerminalView1_KeyPress()
-
-  Debug Key.Code
-
-End
-
 Public Sub Form_Close()
 
   TerminalView1.Kill
+
+End
+
+Public Sub TerminalView1_Kill()
+
+  Me.Close
 
 End
