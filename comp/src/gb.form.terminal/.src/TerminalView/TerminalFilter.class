@@ -6,11 +6,11 @@ Public Sub Clear()
   
 End
 
-Public Sub OutputTo((hView) As TerminalView, (hProcess) As Process, (sData) As String)
+Public Sub OutputTo((hView) As TerminalView, (hScreen) As TerminalScreen, (hProcess) As Process, (sData) As String)
   
 End
 
-Public Sub InputTo((hView) As TerminalView, (hProcess) As Process, (iKeyCode) As Integer, (sText) As String, Optional (bNormal) As Boolean = True, (bShift) As Boolean) As Boolean
+Public Sub InputTo((hView) As TerminalView, (hScreen) As TerminalScreen, (hProcess) As Process, (iKeyCode) As Integer, (sText) As String, Optional (bNormal) As Boolean = True, (bShift) As Boolean) As Boolean
   
 End
 

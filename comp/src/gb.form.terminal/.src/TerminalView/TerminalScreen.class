@@ -193,7 +193,7 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
       sText = String.Mid$(sText, iLen + 1) 
     Endif
     If WrapMode Then
-      NewLine()
+      Index()
       $X = 0
       Insert(sText)
     Endif
@@ -202,18 +202,18 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   
   hLine = GetLine($Y)
   
-  If hLine.Length < X Then 
-    hLine.Text &= Space$(X - hLine.Length) & sText & String.Mid(hLine.Text, X + iLen)
-    hLine.Length = String.Len(hLine.Text)
+  If hLine.Length <= X Then 
+    hLine.Text &= Space$(X - hLine.Length) & sText '& String.Mid(hLine.Text, X + iLen)
+    hLine.Length = X + iLen 'String.Len(hLine.Text)
     hLine.SetAttr($hAttr, X, iLen)
   Else
     If InsertMode Then
-      hLine.Text = String.Left(String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1), $W)
-      hLine.Length = String.Len(hLine.Text)
+      hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + 1)
+      hLine.Length += iLen 'Min(hLine.Length + iLen, $W)
       hLine.SetAttr($hAttr, X, iLen, True)
     Else
       hLine.Text = String.Left(hLine.Text, X) & sText & String.Mid(hLine.Text, X + iLen + 1)
-      hLine.Length = String.Len(hLine.Text)
+      hLine.Length = Max(hLine.Length, X + iLen)
       hLine.SetAttr($hAttr, X, iLen)
     Endif
   Endif
@@ -304,33 +304,20 @@ Public Sub Goto(X As Integer, Y As Integer)
   
   With GetView()
   
+    ._ShowCursor()
     ._RefreshLine($Y)
   
     $X = X
-    $Y = Y
-  
-    ._ShowCursor()
-    ._RefreshLine($Y)
-    .EnsureVisible
+    If Y <> $Y Then
+      $Y = Y
+      ._RefreshLine($Y)
+    Endif
+    
+    '.EnsureVisible
     
   End With
   
 End
-
-
-' Private Sub EnsureVisibleAt(X As Integer, Y As Integer)
-'   
-'   GetLine(Y)
-'   GetView().EnsureVisible(X * $CW, Y * $LH, $CW, $LH)
-'   
-' End
-' 
-' 
-' Public Sub EnsureVisible()
-' 
-'   EnsureVisibleAt($X, $Y)  
-'   
-' End
 
 Private Function Column_Read() As Integer
 
@@ -358,7 +345,7 @@ Public Sub ApplyLimit(iLimit As Integer)
   
 End
 
-Private Sub ScreenTop() As Integer
+Public Sub ScreenTop() As Integer
   
   Return Max(0, Lines.Count - $H)
   
@@ -390,14 +377,17 @@ Public Sub CursorGoto(X As Integer, Y As Integer)
   
   With GetView()
   
+    ._ShowCursor()
     ._RefreshLine($Y)
   
     $X = X
-    $Y = Y + ScreenTop()
-  
-    ._ShowCursor()
-    ._RefreshLine($Y)
-    .EnsureVisible
+    Y += ScreenTop()
+    
+    If Y <> $Y Then
+      $Y = Y
+      ._RefreshLine($Y)
+    Endif
+    '.EnsureVisible
     
   End With
   
@@ -484,7 +474,6 @@ Public Sub EraseStartOfLine()
   hLine = GetLine($Y)
   If hLine.Length <= $X Then
     hLine.Clear()
-    GetView()._RefreshLine($Y)
   Else
     hLine.Text = Space$($X + 1) & String.Mid$(hLine.Text, $X + 1)
   Endif
@@ -516,7 +505,7 @@ Public Sub EraseScreen()
   Next
   
   CursorGoto(0, 0)
-  GetView().Refresh
+  GetView()._ShowScreen()
   
 End
 
@@ -590,14 +579,14 @@ Private Sub Scroll(bUp As Boolean, Optional iFrom As Integer)
       Lines.Add(Null)
       Inc $Y
       hView._UpdateSize()
-      hView.EnsureVisible
+      'hView.EnsureVisible
     Endif
   Else
     Try Lines.Remove(Y2)
     Try Lines.Add(Null, Y1)
   Endif
   
-  GetView().Refresh
+  hView.Refresh
   
 End
 
@@ -644,7 +633,7 @@ Public Sub Index()
   GetScreen(ByRef Y1, ByRef Y2)
 
   If $Y >= Y2 Then
-    ScrollUp
+    Scroll(True)
   Else
     CursorDown
   Endif

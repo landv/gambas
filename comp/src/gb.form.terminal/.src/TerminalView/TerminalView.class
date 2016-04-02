@@ -4,7 +4,7 @@ Inherits UserControl
 
 Export
 
-Public Const _Properties As String = "*,Border=True,Limit,Blink"
+Public Const _Properties As String = "*,Border=True,Limit=1000,Blink"
 Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
@@ -12,7 +12,7 @@ Event Kill
 
 Property Border As Boolean
 Property Read Attr As TerminalAttr
-Property Foreground As Integer
+'Property Foreground As Integer
 Property Read Column As Integer
 Property Read Line As Integer
 Property Limit As Integer
@@ -26,6 +26,7 @@ Private $hScroll As ScrollBar
 
 Private $aScreen As New TerminalScreen[2]
 Private $hScreen As TerminalScreen
+Private $H As Integer
 
 Private $LH As Integer
 Private $iAscent As Integer
@@ -33,7 +34,7 @@ Private $CW As Float
 Private $hCacheFont As Image
 
 Private $bMouseDown As Boolean
-Private $iLimit As Integer
+Private $iLimit As Integer = 1000
 Private $bHideCursor As Boolean
 Private $hMouseTimer As Timer
 
@@ -111,32 +112,37 @@ Public Sub Refresh()
   
 End
 
-Public Sub _RefreshLine((Y) As Integer)
+Public Sub _RefreshLine(Y As Integer)
 
-  'If $hRefreshTimer.Enabled Then Return
-  $hView.Refresh(0, (Y - GetScrollY()) * $LH, $hView.ClientW, $LH)
+  Y -= $hScroll.Value
+  If Y >= 0 And If Y < $H Then 
+    $hView.Refresh(0, Y * $LH, $hView.ClientW, $LH)
+  Endif
 
 End
 
 Public Sub _UpdateSize()
 
+  $hScroll.MinValue = 0
+  $hScroll.MaxValue = Max(0, $hScreen.Lines.Count - $H)
+  $hScroll.PageStep = $H
+  
+End
+
+Private Sub UpdateScreen()
+
   Dim W, H As Integer
 
-  'W = $hView.ClientW
-  'If $hView.ScrollH <= $hView.ClientH Then W -= Style.ScrollbarSize + Style.ScrollbarSpacing
   W = Max(1, CInt($hView.ClientW / $CW))
   H = Max(1, $hView.ClientH \ $LH)
   
-  '$hView.ResizeContents($hView.ClientW, Max(H, $hScreen.Lines.Count) * $LH + $hView.ClientH Mod $LH)
-  $hScroll.MinValue = 0
-  $hScroll.MaxValue = Max(0, $hScreen.Lines.Count - H)
-  
   If $hScreen.Resize(W, H) Then
-    'Debug W;; H
+    $H = H
     If $hProcess Then $hProcess.Term.Resize(W, H)
+    _UpdateSize
+    Refresh
   Endif
 
-  Refresh
   
 End
 
@@ -188,7 +194,7 @@ Private Sub UpdateFont()
   ' Next
   ' Paint.End
   
-  _UpdateSize
+  UpdateScreen
 
 End
 
@@ -202,7 +208,7 @@ End
 Public Sub View_Arrange()
   
   $hScroll.Move($hView.ClientW - Style.ScrollbarSize, 0, Style.ScrollbarSize, $hView.ClientH)
-  _UpdateSize
+  UpdateScreen
   
 End
 
@@ -223,7 +229,9 @@ End
 Public Sub View_Draw()
 
   ApplyLimit
+  
   $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
+  
   If _HasBlink Then
     If Not $hBlinkTimer.Enabled Then $hBlinkTimer.Start
   Else
@@ -278,18 +286,18 @@ Public Sub EnsureVisible()
   
 End
 
-Private Function Foreground_Read() As Integer
-
-  Return Super.Foreground
-
-End
-
-Private Sub Foreground_Write(Value As Integer)
-
-  Super.Foreground = Value
-  UpdateFont
-
-End
+' Private Function Foreground_Read() As Integer
+' 
+'   Return Super.Foreground
+' 
+' End
+' 
+' Private Sub Foreground_Write(Value As Integer)
+' 
+'   Super.Foreground = Value
+'   UpdateFont
+' 
+' End
 
 Private Sub GotoMouse(bStart As Boolean)
 
@@ -361,7 +369,7 @@ Public Sub View_KeyPress()
   
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
   
-  If $hFilter.InputTo(Me, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift) Then 
+  If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift) Then 
     Stop Event
   Endif
   
@@ -385,8 +393,7 @@ Private Sub ApplyLimit()
   Dim iLimit As Integer
 
   iLimit = $iLimit
-  If iLimit <= 0 Then iLimit = 10000
-
+  If iLimit <= 0 Then Return
   If iLimit <= ($hView.ClientH \ $LH) Then Return
 
   $hScreen.ApplyLimit(iLimit)
@@ -452,7 +459,7 @@ End
 Private Sub Type_Write(Value As String)
 
   Try $hFilter = Object.New("TerminalFilter_" & Value)
-  If Error Then Error.Raise("Unknown terminal type: " & Value)
+  If Error Then Error.Raise("Unknown terminal type: " & Value & ". " & Error.Text)
   $sType = UCase(Value)
 
 End
@@ -491,6 +498,7 @@ Public Sub Process_Read()
   Dim sData As String
   
   sData = Read #$hProcess, Lof($hProcess)
+  'Debug Quote(sData)
   
   $sBuffer &= sData
   
@@ -504,7 +512,8 @@ End
 
 Public Sub OutputTimer_Timer()
 
-  $hFilter.OutputTo(Me, $hProcess, $sBuffer)
+  $hFilter.OutputTo(Me, $hScreen, $hProcess, $sBuffer)
+  EnsureVisible
   $sBuffer = ""
   $hOutputTimer.Stop
   
@@ -535,7 +544,7 @@ Private Sub AlternateScreen_Write(Value As Boolean)
   If hScreen = $hScreen Then Return
   
   $hScreen = hScreen
-  _UpdateSize
+  UpdateScreen
 
 End
 
@@ -590,10 +599,14 @@ Public Sub Paste()
   sText = Clipboard.Paste("text/plain")
   If Not sText Then Return
   
-  If Not $hFilter.BracketedPasteActive Then
-    $hFilter.InputTo(Me, $hProcess, 0, sText)
-  Else
-    $hFilter.InputTo(Me, "\e[200~" & $hProcess & "\e[200~", 0, sText)
-  Endif
+  If $hFilter.BracketedPasteActive Then sText = "\e[200~" & sText & "\e[200~"
+  $hFilter.InputTo(Me, $hScreen, $hProcess, 0, sText)
+  
+End
+
+Public Sub _ShowScreen()
+  
+  $hScroll.Value = $hScreen.ScreenTop()
+  Refresh
   
 End

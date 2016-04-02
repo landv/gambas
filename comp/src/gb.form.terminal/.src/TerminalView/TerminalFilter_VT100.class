@@ -13,7 +13,7 @@ Public MouseActive As Boolean
 Public BracketedPasteActive As Boolean
 Private $sLeft As String
 
-Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
+Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Process, sData As String)
   
   Dim iPos As Integer
   Dim iPos2 As Integer
@@ -66,7 +66,7 @@ Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
           Return
         Endif
         
-        iCode = Asc(Mid$(sData, iPos, 1))
+        iCode = Asc(sData, iPos)
         If iCode >= 64 And If iCode <= 126 Then Break
         
         Inc iPos
@@ -75,7 +75,7 @@ Public Sub OutputTo(hView As TerminalView, hProcess As Process, sData As String)
       
     Endif
     
-    iMode = Escape(hView, hProcess, sData, iPos2 + 1, iPos - iPos2)
+    iMode = Escape(hView, hScreen, hProcess, sData, iPos2 + 1, iPos - iPos2)
     
     If iMode = MODE_TITLE Then
       Inc iPos
@@ -98,9 +98,8 @@ End
 
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, iPos As Integer, iLen As Integer) As Integer
+Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As Process, sData As String, iPos As Integer, iLen As Integer) As Integer
   
-  Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
   Dim Y As Integer
   Dim X As Integer
   Dim aArg As String[]
@@ -124,38 +123,87 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
   
   Select Case Left(sStr)
       
-    Case "7" ' Save cursor
-      
-      hScreen.SaveCursor()
-      
-    Case "8" ' Restore cursor
-      
-      hScreen.RestoreCursor()
-      
-    Case "D" ' Index
-      
-      hScreen.Index
-      
-    Case "M" ' Reverse index
-      
-      hScreen.ReverseIndex
-      
-    Case "="
-      hScreen.AppKeypad = True
-      
-    Case ">"
-      hScreen.AppKeypad = False
-      
-    Case "("
-      iMode = MODE_IGNORE_CHAR
-      
-    Case "]" '>>>>> OSC
-      iMode = MODE_TITLE
-      
-    Case "["    ' >>>>>> CSI
+    Case "[" ' CSI, the most frequent
       
       Select Case Right(sStr)
         
+        Case "m" ' Set attribute (frequent, so test it first)
+          
+          GoSub GET_ARGS
+          If aArg Then
+            For I = 0 To aArg.Max
+              sArg = aArg[i]
+              'For Each sArg In aArg
+              
+              Try iArg = CInt(sArg)
+              If Error Then Continue
+              
+              Select Case iArg
+                Case 0
+                  hScreen.Attr.Reset()
+                Case 1
+                  hScreen.Attr.Bold = True
+                Case 2
+                  hScreen.Attr.Dim = True
+                Case 4
+                  hScreen.Attr.Underscore = True
+                Case 5
+                  hScreen.Attr.Blink = True
+                Case 7
+                  hScreen.Attr.Reverse = True
+                Case 21
+                  hScreen.Attr.Bold = False
+                Case 22
+                  hScreen.Attr.Dim = False
+                Case 24
+                  hScreen.Attr.Underscore = False
+                Case 25
+                  hScreen.Attr.Blink = False
+                Case 27
+                  hScreen.Attr.Reverse = False
+                Case 30
+                  hScreen.Attr.Foreground = 0
+                Case 31 To 37
+                  hScreen.Attr.Foreground = iArg - 30 + 8
+                Case 39
+                  hScreen.Attr.Foreground = -1
+                Case 40 To 47
+                  hScreen.Attr.Background = iArg - 40
+                Case 49
+                  hScreen.Attr.Background = -1
+                Case 90 To 97
+                  hScreen.Attr.Foreground = iArg - 90
+                Case 100 To 107
+                  hScreen.Attr.Background = iArg - 100
+                Case 38
+                  If (aArg.max - i) >= 2 And If aArg[I + 1] = "5" Then
+                    Try hScreen.Attr.Background = CInt(aArg[I + 2])
+                    I += 2
+                  Endif
+                  'TODO: Implement support for RGB Colors
+                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
+                  '   Try hScreen.Attr.Background = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
+                  '   i += 4
+                  ' Endif
+                Case 48
+                  If (aArg.max - I) >= 2 And If aArg[I + 1] = "5" Then
+                    Try hScreen.Attr.Foreground = CInt(aArg[I + 2])
+                    I += 2
+                  Endif
+                  'TODO: Implement support for RGB Colors
+                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
+                  '   Try hScreen.Attr.ForeGround = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
+                  '   i += 4
+                  ' Endif
+                  
+                Default
+                  Goto NOT_IMPLEMENTED
+              End Select
+            Next
+          Else
+            hScreen.Attr.Reset
+          Endif
+          
         Case "@"
           
           GoSub GET_COUNT
@@ -401,7 +449,7 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
             Endif
           Endif
         
-        Case n  ' Device Status Report
+        Case "n" ' Device Status Report
           
           Select Case Mid(sStr, 2, -1)
             Case "5"
@@ -418,83 +466,6 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
               Print #hProcess, "\0[?50n"  'No Locator, if not.
           End Select
         
-        Case "m" ' Set attribute
-          
-          GoSub GET_ARGS
-          If aArg Then
-            For I = 0 To aArg.Max
-              sArg = aArg[i]
-              'For Each sArg In aArg
-              
-              Try iArg = CInt(sArg)
-              If Error Then Continue
-              
-              Select Case iArg
-                Case 0
-                  hScreen.Attr.Reset()
-                Case 1
-                  hScreen.Attr.Bold = True
-                Case 2
-                  hScreen.Attr.Dim = True
-                Case 4
-                  hScreen.Attr.Underscore = True
-                Case 5
-                  hScreen.Attr.Blink = True
-                Case 7
-                  hScreen.Attr.Reverse = True
-                Case 21
-                  hScreen.Attr.Bold = False
-                Case 22
-                  hScreen.Attr.Dim = False
-                Case 24
-                  hScreen.Attr.Underscore = False
-                Case 25
-                  hScreen.Attr.Blink = False
-                Case 27
-                  hScreen.Attr.Reverse = False
-                Case 30
-                  hScreen.Attr.Foreground = 0
-                Case 31 To 37
-                  hScreen.Attr.Foreground = iArg - 30 + 8
-                Case 39
-                  hScreen.Attr.Foreground = -1
-                Case 40 To 47
-                  hScreen.Attr.Background = iArg - 40
-                Case 49
-                  hScreen.Attr.Background = -1
-                Case 90 To 97
-                  hScreen.Attr.Foreground = iArg - 90
-                Case 100 To 107
-                  hScreen.Attr.Background = iArg - 100
-                Case 38
-                  If (aArg.max - i) >= 2 And If aArg[I + 1] = "5" Then
-                    Try hScreen.Attr.Background = CInt(aArg[I + 2])
-                    I += 2
-                  Endif
-                  'TODO: Implement support for RGB Colors
-                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
-                  '   Try hScreen.Attr.Background = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
-                  '   i += 4
-                  ' Endif
-                Case 48
-                  If (aArg.max - I) >= 2 And If aArg[I + 1] = "5" Then
-                    Try hScreen.Attr.Foreground = CInt(aArg[I + 2])
-                    I += 2
-                  Endif
-                  'TODO: Implement support for RGB Colors
-                  ' If (aArg.max - i) >= 4 And If aArg[i + 1] = "2" Then
-                  '   Try hScreen.Attr.ForeGround = Color.RGB(CInt(aArg[i + 2]), CInt(aArg[i + 3]), CInt(aArg[i + 4))
-                  '   i += 4
-                  ' Endif
-                  
-                Default
-                  Goto NOT_IMPLEMENTED
-              End Select
-            Next
-          Else
-            hScreen.Attr.Reset
-          Endif
-          
         Case "r" ' Scroll screen
           
           GoSub GET_ARGS
@@ -517,6 +488,34 @@ Private Sub Escape(hView As TerminalView, hProcess As Process, sData As String, 
           Goto NOT_IMPLEMENTED
           
       End Select
+      
+    Case "7" ' Save cursor
+      
+      hScreen.SaveCursor()
+      
+    Case "8" ' Restore cursor
+      
+      hScreen.RestoreCursor()
+      
+    Case "D" ' Index
+      
+      hScreen.Index
+      
+    Case "M" ' Reverse index
+      
+      hScreen.ReverseIndex
+      
+    Case "="
+      hScreen.AppKeypad = True
+      
+    Case ">"
+      hScreen.AppKeypad = False
+      
+    Case "("
+      iMode = MODE_IGNORE_CHAR
+      
+    Case "]" '>>>>> OSC
+      iMode = MODE_TITLE
       
     Default
       
@@ -549,9 +548,7 @@ NOT_IMPLEMENTED:
   
 End
 
-Public Sub InputTo(hView As TerminalView, hProcess As Process, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean) As Boolean
-  
-  Dim hScreen As TerminalScreen = hView._GetCurrentScreen()
+Public Sub InputTo((hView) As TerminalView, hScreen As TerminalScreen, hProcess As Process, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean) As Boolean
   
   If bNormal Then
     
