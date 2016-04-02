@@ -590,6 +590,10 @@ Public Sub Paste()
   sText = Clipboard.Paste("text/plain")
   If Not sText Then Return
   
-  $hFilter.InputTo(Me, $hProcess, 0, sText)
+  If Not $hFilter.BracketedPasteActive Then
+    $hFilter.InputTo(Me, $hProcess, 0, sText)
+  Else
+    $hFilter.InputTo(Me, "\e[200~" & $hProcess & "\e[200~", 0, sText)
+  Endif
   
 End
