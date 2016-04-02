@@ -373,6 +373,8 @@ Public Sub View_KeyPress()
     Stop Event
   Endif
   
+  EnsureVisible
+  
 End
 
 
@@ -601,6 +603,7 @@ Public Sub Paste()
   
   If $hFilter.BracketedPasteActive Then sText = "\e[200~" & sText & "\e[200~"
   $hFilter.InputTo(Me, $hScreen, $hProcess, 0, sText)
+  EnsureVisible
   
 End
 
