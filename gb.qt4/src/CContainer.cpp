@@ -1425,7 +1425,7 @@ GB_DESC CContainerDesc[] =
 
 	GB_EVENT("BeforeArrange", NULL, NULL, &EVENT_BeforeArrange),
 	GB_EVENT("Arrange", NULL, NULL, &EVENT_Arrange),
-	GB_EVENT("NewChild", NULL, "(Control)Control", &EVENT_Insert),
+	GB_EVENT("NewChild", NULL, "(Child)Control", &EVENT_Insert),
 
 	GB_END_DECLARE
 };

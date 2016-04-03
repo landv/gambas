@@ -870,25 +870,46 @@ BEGIN_METHOD(StreamTerm_Resize, GB_INTEGER width; GB_INTEGER height)
 
 END_METHOD
 
-BEGIN_PROPERTY(StreamTerm_Echo)
-
+static void handle_term_property(void *_object, void *_param, bool iflag, int flag)
+{
 	struct termios ttmode;
 	
 	if (tcgetattr(STREAM_FD, &ttmode))
 		THROW_SYSTEM(errno, "");
 	
 	if (READ_PROPERTY)
-		GB_ReturnBoolean(ttmode.c_lflag & ECHO);
+		GB_ReturnBoolean(((iflag ? ttmode.c_iflag : ttmode.c_lflag) & flag) == flag);
 	else
 	{
 		if (VPROP(GB_BOOLEAN))
-			ttmode.c_lflag |= ECHO;
+		{
+			if (iflag)
+				ttmode.c_iflag |= flag;
+			else
+				ttmode.c_lflag |= flag;
+		}
 		else
-			ttmode.c_lflag &= ~ECHO;
+		{
+			if (iflag)
+				ttmode.c_iflag &= ~flag;
+			else
+				ttmode.c_lflag &= ~flag;
+		}
 
 		if (tcsetattr(STREAM_FD, TCSANOW, &ttmode))
 		THROW_SYSTEM(errno, "");
 	}
+}
+
+BEGIN_PROPERTY(StreamTerm_Echo)
+
+	handle_term_property(_object, _param, FALSE, ECHO);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(StreamTerm_FlowControl)
+
+	handle_term_property(_object, _param, TRUE, IXON | IXOFF);
 
 END_PROPERTY
 
@@ -909,6 +930,7 @@ GB_DESC NATIVE_StreamTerm[] =
 	
 	GB_PROPERTY_READ("Name", "s", StreamTerm_Name),
 	GB_PROPERTY("Echo", "b", StreamTerm_Echo),
+	GB_PROPERTY("FlowControl", "b", StreamTerm_FlowControl),
 	GB_METHOD("Resize", NULL, StreamTerm_Resize, "(Width)i(Height)i"),
 	
 	GB_END_DECLARE

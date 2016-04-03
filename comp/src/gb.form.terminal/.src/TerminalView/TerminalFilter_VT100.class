@@ -2,7 +2,8 @@
 
 Inherits TerminalFilter
 
-Private Enum MODE_NORMAL, MODE_TITLE, MODE_IGNORE_CHAR
+Private Enum SCAN_NORMAL, SCAN_TITLE, SCAN_IGNORE_CHAR
+
 Private Enum MODE_AppScreen, 
 MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, 
 MODE_AnsiMODE_132Columns, MODE_Allow132Columns, MODE_BracketedPaste
@@ -19,6 +20,9 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
   Dim iPos2 As Integer
   Dim iCode As Integer
   Dim iMode As Integer
+  Dim sTitle As String
+  Dim sCmd As String
+  Dim sStr As String
   
   If hView._DisableFilter Then
     $sLeft &= sData
@@ -79,22 +83,49 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
     
     iMode = Escape(hView, hScreen, hProcess, sData, iPos2 + 1, iPos - iPos2)
     
-    If iMode = MODE_TITLE Then
+    If iMode = SCAN_TITLE Then
       Inc iPos
       iPos2 = InStr(sData, Chr$(7), iPos)
       If iPos2 = 0 Then
         $sLeft = Mid$(sData, iPos)
         Return
       Endif
-      'Debug "SET TITLE : " & Mid$(sData, iPos, iPos2 - iPos)
+      
+      sStr = Mid$(sData, iPos, iPos2 - iPos)
+      
+      iPos = InStr(sStr, ";")
+      If iPos Then
+        
+        sCmd = Left(sStr, iPos - 1)
+        sTitle = Mid$(sStr, iPos + 1)
+        
+        If sCmd = "0" Or If sCmd = "1" Or If sCmd = "2" Then
+          hView._SetTitle(sCmd, sTitle)
+        Else
+          sStr = "]" & sStr
+          GoSub NOT_IMPLEMENTED
+        Endif
+            
+      Endif
+      
       iPos = iPos2
-      iMode = MODE_NORMAL
-    Else If iMode = MODE_IGNORE_CHAR Then
+      iMode = SCAN_NORMAL
+      
+    Else If iMode = SCAN_IGNORE_CHAR Then
+      
       Inc iPos
-      iMode = MODE_NORMAL
+      iMode = SCAN_NORMAL
+      
     Endif
     
   Loop
+  
+  Return
+  
+NOT_IMPLEMENTED:
+  
+  Debug "Not implemented: "; Quote(sStr)
+  Return
   
 End
 
@@ -247,6 +278,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
           hScreen.CursorGoto(X, Y)
 
         Case "c"  'Report terminal type
+          
           Print #hProcess, "\e[?1;2c"
           
         Case "d" 'Set Cursor Y
@@ -471,6 +503,8 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
               Print #hProcess, "\0[?20n"  'UDK status as CSI ? 2 0 n (unlocked) or CSI ? 2 1 n (locked)
             Case "?26" 'Report Keyboard status as
               Print #hProcess, "\0[?50n"  'No Locator, if not.
+            Default
+              Goto NOT_IMPLEMENTED
           End Select
         
         Case "r" ' Scroll screen
@@ -519,10 +553,12 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
       hScreen.AppKeypad = False
       
     Case "("
-      iMode = MODE_IGNORE_CHAR
+      
+      iMode = SCAN_IGNORE_CHAR
       
     Case "]" '>>>>> OSC
-      iMode = MODE_TITLE
+      
+      iMode = SCAN_TITLE
       
     Default
       
@@ -555,7 +591,7 @@ NOT_IMPLEMENTED:
   
 End
 
-Public Sub InputTo((hView) As TerminalView, hScreen As TerminalScreen, hProcess As Process, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean) As Boolean
+Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Process, iCode As Integer, sText As String, Optional bNormal As Boolean = True, bShift As Boolean, bControl As Boolean) As Boolean
   
   If bNormal Then
     
@@ -659,6 +695,20 @@ Public Sub InputTo((hView) As TerminalView, hScreen As TerminalScreen, hProcess 
         
       Case Key.BackTab
         sText = "\e[Z"
+        
+    End Select
+    
+  Else If bControl Then
+    
+    Select iCode
+      
+      Case Key["S"]
+        
+        hView._Suspend(True)
+        
+      Case Key["Q"], Key["C"]
+      
+        hView._Suspend(False)
         
     End Select
     

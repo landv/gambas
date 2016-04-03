@@ -10,7 +10,7 @@ Public Sub OutputTo((hView) As TerminalView, (hScreen) As TerminalScreen, (hProc
   
 End
 
-Public Sub InputTo((hView) As TerminalView, (hScreen) As TerminalScreen, (hProcess) As Process, (iKeyCode) As Integer, (sText) As String, Optional (bNormal) As Boolean = True, (bShift) As Boolean) As Boolean
+Public Sub InputTo((hView) As TerminalView, (hScreen) As TerminalScreen, (hProcess) As Process, (iKeyCode) As Integer, (sText) As String, Optional (bNormal) As Boolean = True, (bShift) As Boolean, (bControl) As Boolean) As Boolean
   
 End
 

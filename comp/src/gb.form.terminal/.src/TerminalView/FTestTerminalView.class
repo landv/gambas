@@ -59,3 +59,10 @@ Public Sub TerminalView1_Kill()
   Me.Close
 
 End
+
+Public Sub TerminalView1_Title(Title As String)
+
+  If Title Then Title &= " - "
+  Me.Title = Title & "Gambas Terminal Emulator"
+
+End

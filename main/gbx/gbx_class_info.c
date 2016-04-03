@@ -360,6 +360,7 @@ extern GB_DESC NATIVE_Collection[];
 extern GB_DESC NATIVE_Error[];
 extern GB_DESC NATIVE_Stream[];
 extern GB_DESC NATIVE_StreamLines[];
+extern GB_DESC NATIVE_StreamTerm[];
 extern GB_DESC NATIVE_StatPerm[];
 extern GB_DESC NATIVE_Stat[];
 extern GB_DESC NATIVE_File[];
@@ -406,6 +407,7 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_Collection,
 	NATIVE_Error,
 	NATIVE_StreamLines,
+	NATIVE_StreamTerm,
 	NATIVE_Stream,
 	NATIVE_StatPerm,
 	NATIVE_Stat,

@@ -9,6 +9,7 @@ Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
 Event Kill
+Event Title(Title As String)
 
 Property Border As Boolean
 Property Read Attr As TerminalAttr
@@ -55,6 +56,8 @@ Public _HasBlink As Boolean
 Public _Blink As Boolean
 Private $hBlinkTimer As Timer
 
+Private $bSuspend As Boolean
+
 Public Sub _new()
   
   Me.Font = Font["monospace"]
@@ -68,8 +71,8 @@ Public Sub _new()
   $hView.Focus = True
   $hView.Tracking = True
   $hView.Mouse = Mouse.Text
-  $hView.Background = Color.Black
-  $hView.Foreground = Color.White
+  $hView.Background = Color.TextForeground
+  $hView.Foreground = Color.TextBackground
   $hView.NoBackground = True
   
   $hScroll = New ScrollBar($hView) As "ScrollBar"
@@ -237,6 +240,8 @@ Public Sub View_Draw()
     $hBlinkTimer.Stop
   Endif
   
+  If $bSuspend Then Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha($hView.Background, 128))
+  
 End
 
 Public Sub Goto(X As Integer, Y As Integer)
@@ -368,7 +373,7 @@ Public Sub View_KeyPress()
   
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
   
-  If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift) Then 
+  If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then 
     Stop Event
   Endif
   
@@ -548,6 +553,7 @@ Private Sub AlternateScreen_Write(Value As Boolean)
   
   $hScreen = hScreen
   UpdateScreen
+  _UpdateSize
   _ShowScreen
 
 End
@@ -612,6 +618,21 @@ End
 Public Sub _ShowScreen()
   
   $hScroll.Value = $hScreen.ScreenTop()
+  Refresh
+  
+End
+
+Public Sub _SetTitle(sCmd As String, sTitle As String)
+  
+  If sCmd = "0" Or If sCmd = "2" Then Raise Title(sTitle)
+  
+End
+
+Public Sub _Suspend(bSuspend As Boolean)
+  
+  If Not $hProcess Then Return
+  If Not $hProcess.Term.FlowControl Then Return
+  $bSuspend = bSuspend
   Refresh
   
 End
