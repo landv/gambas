@@ -157,46 +157,42 @@ Private Sub UpdateFont()
   
     $LH = .Height
     $iAscent = .Ascent
-    sText = String$(16, "WwmM")
+    sText = String$(8, "mM0_@$#A")
     $CW = .TextWidth(sText) / Len(sText)
-    'Debug $CW
-    $CW = Ceil($CW)
+    Debug $CW
+    $CW = CInt($CW)
     
-    ' If .Fixed Then
-    '   
-    '   $hCacheFont = Null
-    '   
-    ' Else
+    $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
+    Paint.Begin($hCacheFont)
+    Paint.Font = $hView.Font
+    For I = 33 To 126
+      GoSub DRAW_CHAR
+    Next
+    For I = 160 To 255
+      GoSub DRAW_CHAR
+    Next
+    Paint.End
     
-      $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
-      Paint.Begin($hCacheFont)
-      Paint.Background = Color.White
-      Paint.Font = $hView.Font
-      For I = 33 To 126
-        Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
-      Next
-      For I = 160 To 255
-        Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
-      Next
-      Paint.End
+    $hCacheFont.Save("~/cache.png")
       
-      Paint.Begin($hCacheFont)
-      Paint.DrawImage($hCacheFont, 0, $LH, $hCacheFont.W, $LH,, Rect(0, 0, $hCacheFont.W, $LH))
-      Paint.DrawImage($hCacheFont, 1, $LH, $hCacheFont.W, $LH, 0.8, Rect(0, 0, $hCacheFont.W, $LH))
-      Paint.End
-      
-    ' Endif
-  
   End With
   
-  ' For I = 33 To 255
-  '   Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
-  '   Paint.DrawText(String.Chr(I), I * $CW + 1, $LH, $CW, $LH, Align.Center)
-  '   'Paint.DrawText(String.Chr(I), I * $CW, $iAscent + $LH)
-  ' Next
-  ' Paint.End
-  
   UpdateScreen
+  Return
+  
+DRAW_CHAR:
+
+  Paint.Operator = Paint.OperatorSource
+  Paint.FillRect(I * $CW, 0, $CW, $LH * 2, Color.Transparent)
+  Paint.Operator = Paint.OperatorOver
+  Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH * 2)
+  Paint.Background = Color.White
+  Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+  Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
+  Paint.Background = Color.SetAlpha(Color.White, 64)
+  Paint.DrawText(String.Chr(I), I * $CW + 1, $LH, $CW, $LH, Align.Center)
+
+  Return
 
 End
 

@@ -702,7 +702,7 @@ Private Function Height_Read() As Integer
 
 End
 
-Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
+Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
 
   Dim hView As TerminalView = GetView()
   Dim hLine As CTerminalLine
@@ -723,9 +723,13 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
   Dim W As Integer
   Dim YC As Integer
   Dim XC As Integer
+  Dim bNoText As Boolean
 
   hLine = Lines[L]
-  If Not hLine Then Return
+  If Not hLine Then 
+    Paint.FillRect(X, Y, Paint.W, LH, iBg)
+    Return
+  Endif
   
   hFont = Paint.Font
   aAttr = hLine.GetAttr()
@@ -756,9 +760,14 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
     
     If hAttr.Reverse Then Swap iBg, iFg
     
+    bNoText = False
+
     If hAttr.Blink Then
       hView._HasBlink = True
-      If hView._Blink Then Swap iBg, iFg      
+      If hView._Blink Then 
+        GoSub DRAW_NO_TEXT
+        Continue
+      Endif
     Endif
     
     If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
@@ -784,6 +793,8 @@ Private Sub DrawLine(L As Integer, X As Float, Y As Integer, LH As Integer, CW A
     GoSub DRAW_TEXT
   Endif
     
+  Paint.FillRect(X, Y, Paint.W - X, LH, hView.Background)
+  
   Return
   
 DRAW_TEXT:
@@ -832,8 +843,13 @@ DRAW_TEXT:
           Paint.Operator = Paint.OperatorSource
           Paint.FillRect(XC, YC, CW, LH, Color.Transparent)
           Paint.Font = hFont
+          Paint.ClipRect = Rect(XC, YC, CW, LH)
+          Paint.Background = Color.White
           Paint.DrawText(String.Chr$(C), XC, YC, CW, LH, Align.Center)
-          If hAttr.Bold Then Paint.DrawText(String.Chr$(C), XC + 1, YC, CW, LH, Align.Center)
+          If hAttr.Bold Then
+            Paint.Background = Color.SetAlpha(Color.White, 64)
+            Paint.DrawText(String.Chr$(C), XC + 1, YC, CW, LH, Align.Center)
+          Endif
           Paint.End
           hRect.Move(XC, YC)
           Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
@@ -868,7 +884,14 @@ DRAW_TEXT:
   X += W
   P += iLen
   Return
+  
+DRAW_NO_TEXT:
 
+  Paint.FillRect(X, Y, W, LH, iBg)
+  X += W
+  P += iLen
+  Return
+  
 End
 
 Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As Integer, ByRef Y2 As Integer) As Boolean
