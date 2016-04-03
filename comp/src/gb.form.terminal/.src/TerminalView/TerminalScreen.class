@@ -134,12 +134,13 @@ Public Sub Resize(W As Integer, H As Integer) As Boolean
     $H = H
     $X = Min($X, $W - 1)
     $Y = ScreenTop() + Max(0, Min($Y - ScreenTop(), $H - 1))
+    'Debug "$Y = "; $Y
     $iScrollStart = -1
     $iScrollEnd = -1
     If GetView().AlternateScreen Then
       If Lines.Count > $H Then
         Lines.Resize($H)
-        GetView()._UpdateSize
+        'GetView()._UpdateSize
       Endif
     Endif
     $hLineCache = Null
@@ -185,6 +186,8 @@ Private Sub Insert(sText As String, Optional X As Integer = $X)
   Dim iLen As Integer = String.Len(sText)
   
   If iLen = 0 Then Return
+  
+  'Debug Quote(sText);; X;; $Y
   
   If (X + iLen) > $W Then
     iLen = Max(0, $W - X)
@@ -310,6 +313,7 @@ Public Sub Goto(X As Integer, Y As Integer)
     $X = X
     If Y <> $Y Then
       $Y = Y
+      'Debug "$Y = "; Y
       ._RefreshLine($Y)
     Endif
     
@@ -340,6 +344,7 @@ Public Sub ApplyLimit(iLimit As Integer)
   
   Lines.Remove(0, iDel)
   $Y = Max(0, $Y - iDel)
+  'Debug "$Y = "; $Y
   
   GetView()._UpdateSize()
   
@@ -354,6 +359,8 @@ End
 ' Terminal VT100 commands
 
 Public Sub CursorGoto(X As Integer, Y As Integer)
+  
+  'Debug X;; Y
   
   ' If X >= $W Then
   '   X = 0
@@ -385,6 +392,8 @@ Public Sub CursorGoto(X As Integer, Y As Integer)
     
     If Y <> $Y Then
       $Y = Y
+      'Debug "$Y = "; $Y
+      'If $Y = 50 Then Stop
       ._RefreshLine($Y)
     Endif
     '.EnsureVisible
@@ -446,6 +455,20 @@ Public Sub DeleteChar(Optional N As Integer = 1)
   If Not $hAttr.IsVoid() Then
     Insert(Space$(N), hLine.Length)
   Endif
+  GetView()._RefreshLine($Y)
+  
+End
+
+Public Sub EraseChar(Optional N As Integer = 1)
+
+  Dim hLine As CTerminalLine
+  
+  hLine = GetLine($Y)
+  If $X < hLine.Length Then 
+    hLine.Text = String.Left(hLine.Text, $X) & Space$(N) & String.Mid$(hLine.Text, $X + N + 1)
+    hLine.Length = String.Len(hLine.Text)
+  Endif
+  hLine.SetAttr($hAttr, $X, N)
   GetView()._RefreshLine($Y)
   
 End
@@ -971,6 +994,7 @@ Public Sub Reset()
 
   $X = 0
   $Y = 0
+  'Debug "$Y = "; $Y
   $iScrollStart = -1
   $iScrollEnd = -1
   $hAttr.Reset

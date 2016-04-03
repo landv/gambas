@@ -37,15 +37,17 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
   
   Do
     
+    hScreen = hView._GetCurrentScreen()
+    
     Inc iPos
     
     iPos2 = InStr(sData, Chr$(27), iPos)
     If iPos2 = 0 Then
-      hView._GetCurrentScreen().Print(Mid$(sData, iPos))
+      hScreen.Print(Mid$(sData, iPos))
       Break
     Endif
     
-    If iPos2 > iPos Then hView._GetCurrentScreen().Print(Mid$(sData, iPos, iPos2 - iPos))
+    If iPos2 > iPos Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
     
     iPos = iPos2
     Inc iPos
@@ -306,6 +308,11 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
           
           GoSub GET_COUNT
           hScreen.ScrollDown(N)
+          
+        Case "X" ' Erase char
+          
+          GoSub GET_COUNT
+          hScreen.EraseChar(N)
         
         ' Case "d"
         '   

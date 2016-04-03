@@ -138,11 +138,10 @@ Private Sub UpdateScreen()
   
   If $hScreen.Resize(W, H) Then
     $H = H
-    If $hProcess Then $hProcess.Term.Resize(W, H)
     _UpdateSize
     Refresh
+    If $hProcess Then $hProcess.Term.Resize(W, H)
   Endif
-
   
 End
 
@@ -515,9 +514,9 @@ End
 Public Sub OutputTimer_Timer()
 
   $hFilter.OutputTo(Me, $hScreen, $hProcess, $sBuffer)
-  EnsureVisible
   $sBuffer = ""
   $hOutputTimer.Stop
+  EnsureVisible
   
 End
 
@@ -539,14 +538,17 @@ Private Sub AlternateScreen_Write(Value As Boolean)
   
   If Value Then
     hScreen = $aScreen[1]
+    'Debug "1"
   Else
     hScreen = $aScreen[0]
+    'Debug "0"
   Endif
   
   If hScreen = $hScreen Then Return
   
   $hScreen = hScreen
   UpdateScreen
+  _ShowScreen
 
 End
 
