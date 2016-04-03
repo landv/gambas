@@ -2297,7 +2297,7 @@ void CWidget::destroy()
 		{
 			_post_check_hovered = true;
 			_post_check_hovered_window = top;
-			GB.Post((void (*)())post_check_hovered, NULL);
+			GB.Post((void (*)())post_check_hovered, (intptr_t)NULL);
 		}
 	}
 	
@@ -2392,7 +2392,7 @@ static void handle_focus_change()
 		return;
 	
 	_focus_change = TRUE;
-	GB.Post((void (*)())post_focus_change, NULL);
+	GB.Post((void (*)())post_focus_change, (intptr_t)NULL);
 }
 
 void CWIDGET_finish_focus(void)

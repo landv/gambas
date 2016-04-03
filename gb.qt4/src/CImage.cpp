@@ -126,7 +126,7 @@ static void take_image(CIMAGE *_object, QImage *image)
 CIMAGE *CIMAGE_create(QImage *image)
 {
 	CIMAGE *img;
-	static GB_CLASS class_id = NULL;
+	static GB_CLASS class_id = 0;
 
 	if (!class_id)
 		class_id = GB.FindClass("Image");

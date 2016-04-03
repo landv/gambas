@@ -79,7 +79,7 @@ static void take_image(CIMAGE *_object, gPicture *image)
 CIMAGE *CIMAGE_create(gPicture *image)
 {
 	CIMAGE *img;
-  static GB_CLASS class_id = NULL;
+  static GB_CLASS class_id = 0;
 
   if (!class_id)
     class_id = GB.FindClass("Image");

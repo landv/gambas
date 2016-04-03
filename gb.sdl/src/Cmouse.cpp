@@ -35,7 +35,7 @@
 CMOUSE_INFO CMOUSE_info = { 0 };
 
 #define CHECK_VALID() \
-  if (UNLIKELY(CMOUSE_info.valid ==  NULL)) \
+  if (UNLIKELY(!CMOUSE_info.valid)) \
   { \
     GB.Error("No mouse event data"); \
     return; \

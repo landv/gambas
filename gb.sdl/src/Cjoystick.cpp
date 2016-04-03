@@ -46,7 +46,7 @@ static int joyindex = 0;
 CJOY_INFO CJOY_info = { 0 };
 
 #define CHECK_VALID() \
-  if (UNLIKELY(CJOY_info.valid == NULL)) \
+  if (UNLIKELY(!CJOY_info.valid)) \
   { \
     GB.Error("No joystick event data"); \
     return; \
