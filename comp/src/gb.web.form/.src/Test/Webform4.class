@@ -2,7 +2,18 @@
 
 Public Sub _new()
   
-  WebForm.Debug = True
+  'WebForm.Debug = True
   
 End
 
+
+Public Sub WebButton1_Click()
+
+
+End
+
+Public Sub WebUploadButton1_Click()
+
+  lblPath.Text = WebUploadButton1.File
+
+End

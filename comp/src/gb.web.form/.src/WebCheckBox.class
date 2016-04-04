@@ -35,7 +35,7 @@ End
 Public Sub _Render()
 
   If $sText Then Print "<label class=\"gw-checkbox-label\">";
-  Print "<input  class=\"gw-checkbox-toggle\" type=\"checkbox\""; Me._GetUpdateJS("onclick", "value", "this.checked");
+  Print "<input class=\"gw-checkbox-toggle\" type=\"checkbox\""; Me._GetUpdateJS("onclick", "value", "this.checked");
   If Not Me.Enabled Then Print " disabled";
   If $bChecked Then Print " checked";
   Print ">";

@@ -2,7 +2,7 @@
 
 Inherits TerminalFilter
 
-Private Enum SCAN_NORMAL, SCAN_TITLE, SCAN_IGNORE_CHAR
+Private Enum SCAN_NORMAL, SCAN_TITLE, SCAN_SET_CHARSET
 
 Private Enum MODE_AppScreen, 
 MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, 
@@ -23,6 +23,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
   Dim sTitle As String
   Dim sCmd As String
   Dim sStr As String
+  Dim iNum As Integer
   
   If hView._DisableFilter Then
     $sLeft &= sData
@@ -84,6 +85,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
     iMode = Escape(hView, hScreen, hProcess, sData, iPos2 + 1, iPos - iPos2)
     
     If iMode = SCAN_TITLE Then
+      
       Inc iPos
       iPos2 = InStr(sData, Chr$(7), iPos)
       If iPos2 = 0 Then
@@ -111,7 +113,10 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
       iPos = iPos2
       iMode = SCAN_NORMAL
       
-    Else If iMode = SCAN_IGNORE_CHAR Then
+    Else If iMode = SCAN_SET_CHARSET Then
+      
+      iNum = InStr("()*+", Mid$(sData, iPos, 1)) - 1
+      If iNum >= 0 Then hScreen.SetCharset(iNum, Mid$(sData, iPos + 1, 1))
       
       Inc iPos
       iMode = SCAN_NORMAL
@@ -421,6 +426,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
           Endif
           
         Case "l"
+          
             If sStr Begins "[?" Then      'DEC Private Mode Set
             sStr = Replace(sStr, "?", "") 'remove the ?
             GoSub GET_ARGS
@@ -546,15 +552,27 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
       
       hScreen.ReverseIndex
       
+    Case "n"
+      
+      ' TODO: Must apply it to both screens apparently
+      hScreen.UseCharset(2)
+      
+    Case "o"
+      
+      ' TODO: Must apply it to both screens apparently
+      hScreen.UseCharset(3)
+      
     Case "="
+      
       hScreen.AppKeypad = True
       
     Case ">"
+      
       hScreen.AppKeypad = False
       
-    Case "("
+    Case "(", ")", "*", "+"
       
-      iMode = SCAN_IGNORE_CHAR
+      iMode = SCAN_SET_CHARSET
       
     Case "]" '>>>>> OSC
       

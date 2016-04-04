@@ -23,7 +23,6 @@ Public NewlineMode As Boolean
 Public WrapMode As Boolean
 Public HideCursor As Boolean
 
-
 Static Private $aColor As Integer[] = [
 &H000000, &H800000, &H008000, &H808000, &H000080, &H800080, &H008080, &Hc0c0c0,
 &H808080, &Hff0000, &H00ff00, &Hffff00, &H0000ff, &Hff00ff, &H00ffff, &Hffffff,
@@ -68,6 +67,20 @@ Static Private $aColor As Integer[] = [
 &H808080, &H8a8a8a, &H949494, &H9e9e9e, &Ha8a8a8, &Hb2b2b2,
 &Hbcbcbc, &Hc6c6c6, &Hd0d0d0, &Hdadada, &He4e4e4, &Heeeeee]
 
+' unsigned short Konsole::vt100_graphics[32] = {
+'     // 0/8     1/9    2/10    3/11    4/12    5/13    6/14    7/15
+'     &H0020&, &H25C6&, &H2592&, &H2409&, &H240c&, &H240d&, &H240a&, &H00b0&,
+'     &H00b1&, &H2424&, &H240b&, &H2518&, &H2510&, &H250c&, &H2514&, &H253c&,
+'     &HF800&, &HF801&, &H2500&, &HF803&, &HF804&, &H251c&, &H2524&, &H2534&,
+'     &H252c&, &H2502&, &H2264&, &H2265&, &H03C0&, &H2260&, &H00A3&, &H00b7&
+' };
+' 
+Static Private $aGraphicCharset As Integer[] = [&H0020&, &H25C6&, &H2592&, &H2409&, &H240c&, &H240d&, &H240a&, &H00b0&,
+  &H00b1&, &H2424&, &H240b&, &H2518&, &H2510&, &H250c&, &H2514&, &H253c&,
+  &HF800&, &HF801&, &H2500&, &HF803&, &HF804&, &H251c&, &H2524&, &H2534&,
+  &H252c&, &H2502&, &H2264&, &H2265&, &H03C0&, &H2260&, &H00A3&, &H00b7&]
+
+
 Static Private $sControlChar As String
 
 Public Lines As New CTerminalLine[]
@@ -97,8 +110,14 @@ Private $Y2 As Integer
 Private $iScrollStart As Integer = -1
 Private $iScrollEnd As Integer = -1
 
+' Drawing cache
 Private $hLineCache As Image
 Private $cCharCache As New Collection
+
+' Charsets
+Private $aCharset As New Byte[4]
+Private $iCurrentCharset As Integer
+Private $bGraphicCharset As Boolean
 
 Public Sub _new()
   
@@ -245,6 +264,7 @@ Public Sub Print(sText As String)
         DebugRefresh
       Endif
       
+      If $bGraphicCharset Then sElt = ApplyGraphicCharset(sElt)
       Insert(sElt)
       
     Endif
@@ -271,6 +291,10 @@ Public Sub Print(sText As String)
       '   EraseScreen()
       Case 13
         Goto(0, $Y)
+      Case 14
+        UseCharset(0)
+      Case 15
+        UseCharset(1)
       Case Else
         Insert("^" & Chr$(64 + iCode))
     End Select
@@ -816,7 +840,9 @@ DRAW_TEXT:
     Paint.Operator = Paint.OperatorDestATop
     For J = P To P + iLen - 1
       'sCar = String.Mid$(hLine.Text, J, 1)
+      
       C = String.Code(hLine.Text, J)
+      
       If C = 0 Then Stop
       If C <= 255 Then
         hRect.Move(C * CW, HC)
@@ -1074,4 +1100,50 @@ Public Sub GetSelectedText() As String
   
   Return sText
   
+End
+
+Public Sub UseCharset(iNum As Integer)
+  
+  $iCurrentCharset = iNum
+  $bGraphicCharset = Chr$($aCharset[iNum]) = "0"
+  
+End
+
+
+Public Sub SetCharset(iNum As Integer, sCharset As String)
+  
+  $aCharset[iNum] = Asc(sCharset)
+  UseCharset($iCurrentCharset)
+  
+End
+
+' unsigned short Vt102Emulation::applyCharset(unsigned short c)
+' {
+'     if (CHARSET.graphic && 0x5f <= c && c <= 0x7e) return vt100_graphics[c - 0x5f];
+'     if (CHARSET.pound && c == '#') return 0xa3;  //This mode is obsolete
+'     return c;
+' }
+' 
+
+Private Sub ApplyGraphicCharset(sStr As String) As String
+
+  Dim sResult As String
+  Dim I As Integer
+  Dim C As Integer
+  
+  For I = 1 To Len(sStr)
+    C = Asc(sStr, I)
+    If C >= &5F And If C <= &7E Then 
+      sResult &= String.Chr($aGraphicCharset[C - &5F])
+    Else
+      sResult &= Chr$(C)
+    Endif
+    
+  Next
+  
+  Return sResult
+
+  If C >= &5F And If C <= &7E Then Return $aGraphicCharset[C - &5F]
+  Return C
+
 End

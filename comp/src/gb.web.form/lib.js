@@ -710,5 +710,14 @@ gw = {
       if (x != sw.scrollLeft || y != sw.scrollTop)
         gw.update(id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
     }
+  },
+  
+  file: {
+    select: function(id) 
+    {
+      var elt = $(id + ':file');
+      elt.focus();
+      elt.click();
+    }
   }
 }

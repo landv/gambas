@@ -157,7 +157,7 @@ Private Sub UpdateFont()
   
     $LH = .Height
     $iAscent = .Ascent
-    sText = String$(8, "mM0_@$#A")
+    sText = String$(8, "mM0_@$#W")
     $CW = .TextWidth(sText) / Len(sText)
     Debug $CW
     $CW = CInt($CW)
@@ -185,9 +185,11 @@ DRAW_CHAR:
   Paint.Operator = Paint.OperatorSource
   Paint.FillRect(I * $CW, 0, $CW, $LH * 2, Color.Transparent)
   Paint.Operator = Paint.OperatorOver
-  Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH * 2)
+  Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH)
   Paint.Background = Color.White
   Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+
+  Paint.ClipRect = Rect(I * $CW, $LH, $CW, $LH)
   Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
   Paint.Background = Color.SetAlpha(Color.White, 64)
   Paint.DrawText(String.Chr(I), I * $CW + 1, $LH, $CW, $LH, Align.Center)

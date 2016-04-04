@@ -1013,17 +1013,16 @@ Public Sub WikiGetDescription() As String
   
 End
 
+' If a control needs a parent
+
 Public Sub ConstructorNeedParent() As Boolean
 
   Dim hClass As CClassInfo
-  Dim hSym As CSymbolInfo
   
-  hClass = Me
-  Do
-    hSym = hClass.Symbols["_new"]
-    If hSym And If hSym.Signature And If Left(hSym.Signature) <> "[" Then Return True
-    If Not hClass.Parent Then Return False
-    hClass = Documentation.Classes[hClass.ParentComponent &/ hClass.Parent]
-  Loop
+  If Not VirtualControl Then Return True
+  If Not Parent Then Return False
+  
+  hClass = Documentation.Classes[ParentComponent &/ Parent]
+  Return hClass.ConstructorNeedParent()
   
 End
