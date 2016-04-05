@@ -176,7 +176,7 @@ static GB_TYPE conv_type(const MYSQL_FIELD *f)
 	switch(f->type)
 	{
 		case FIELD_TYPE_TINY:
-			return (f->max_length == 1 ? GB_T_BOOLEAN : GB_T_INTEGER);
+			return (f->max_length == 1 && f->length == 1) ? GB_T_BOOLEAN : GB_T_INTEGER;
 
 		case FIELD_TYPE_INT24:
 		case FIELD_TYPE_SHORT:
@@ -257,7 +257,11 @@ static void conv_string_type(const char *type, MYSQL_FIELD *f)
 		{
 			type += strlen(cst->pattern);
 			if (sscanf(type, "(%ld)", &l) == 1)
+			{
 				f->max_length = l;
+				if (cst->type == FIELD_TYPE_TINY)
+					f->length = l;
+			}
 		}
 	}
 
@@ -292,7 +296,7 @@ static void conv_data(int version, const char *data, long data_length, GB_VARIAN
 	{
 		case FIELD_TYPE_TINY:
 
-			if (f->max_length == 1)
+			if (f->max_length == 1 && f->length == 1)
 			{
 				val->type = GB_T_BOOLEAN;
 				/*GB.NumberFromString(GB_NB_READ_INTEGER, data, strlen(data), &conv);*/
