@@ -920,7 +920,9 @@ DRAW_TEXT:
           
         Endif
       Endif
+      
       XT += CW
+      
     Next
     
     Paint.End
@@ -1177,7 +1179,7 @@ Private Sub ApplyGraphicCharset(sStr As String) As String
 
 End
 
-Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer, bBold As Boolean)
+Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer, bBold As Boolean) 
   
   Dim L, DL As Integer
   Dim XC As Integer
@@ -1187,8 +1189,11 @@ Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer,
   Dim iBg As Integer
   Dim P, D As Float
   Dim hBold As Image
+  Dim hFont As Font
   
   iBg = Paint.Background
+  hFont = Paint.Font
+
   hChar = New Image(W, H, Color.Transparent)
   Paint.Begin(hChar)
   Paint.Background = iBg
@@ -1207,23 +1212,23 @@ Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer,
   XC = W \ 2
   YC = H \ 2
   
-  If C <= &H256C Then
+  If C <= &H256F Then
   
-    On C - &H2500 GoSub _2500, _2501, _2502, _2503, _2504, _2505, _2506, _2507, _2508, _2509, _250A, _250B, _250C, _250D, _250E, _250F, _2510, _2511, _2512, _2513, _2514, _2515, _2516, _2517, _2518, _2519, _251A, _251B, _251C, _251D, _251E, _251F, _2520, _2521, _2522, _2523, _2524, _2525, _2526, _2527, _2528, _2529, _252A, _252B, _252C, _252D, _252E, _252F, _2530, _2531, _2532, _2533, _2534, _2535, _2536, _2537, _2538, _2539, _253A, _253B, _253C, _253D, _253E, _253F, _2540, _2541, _2542, _2543, _2544, _2545, _2546, _2547, _2548, _2549, _254A, _254B, _254C, _254D, _254E, _254F, _2550, _2551, _2552, _2553, _2554, _2555, _2556, _2557, _2558, _2559, _255A, _255B, _255C, _255D, _255E, _255F, _2560, _2561, _2562, _2563, _2564, _2565, _2566, _2567, _2568, _2569, _256A, _256B, _256C
-    
-  Else If C >= &H2591 Then
-    
-    On C - &H2591 GoSub _2591, _2592, _2593
+    On C - &H2500 GoSub _2500, _2501, _2502, _2503, _2504, _2505, _2506, _2507, _2508, _2509, _250A, _250B, _250C, _250D, _250E, _250F, _2510, _2511, _2512, _2513, _2514, _2515, _2516, _2517, _2518, _2519, _251A, _251B, _251C, _251D, _251E, _251F, _2520, _2521, _2522, _2523, _2524, _2525, _2526, _2527, _2528, _2529, _252A, _252B, _252C, _252D, _252E, _252F, _2530, _2531, _2532, _2533, _2534, _2535, _2536, _2537, _2538, _2539, _253A, _253B, _253C, _253D, _253E, _253F, _2540, _2541, _2542, _2543, _2544, _2545, _2546, _2547, _2548, _2549, _254A, _254B, _254C, _254D, _254E, _254F, _2550, _2551, _2552, _2553, _2554, _2555, _2556, _2557, _2558, _2559, _255A, _255B, _255C, _255D, _255E, _255F, _2560, _2561, _2562, _2563, _2564, _2565, _2566, _2567, _2568, _2569, _256A, _256B, _256C, _256D, _256E, _256F
+
+  Else
+
+    On C - &H2570 GoSub _2570, _2571, _2572, _2573, _2574, _2575, _2576, _2577, _2578, _2579, _257A, _257B, _257C, _257D, _257E, _257F, _2580, _2581, _2582, _2583, _2584, _2585, _2586, _2587, _2588, _2589, _258A, _258B, _258C, _258D, _258E, _258F, _2590, _2591, _2592, _2593, _2594, _2595, _2596, _2597, _2598, _2599, _259A, _259B, _259C, _259D, _259E, _259F
     
   Endif
   
   Paint.End
   
-  If bBold And If C <= &H256C Then
+  If bBold And If C <= &H2580 Then
     hBold = hChar.Copy()
     Paint.Begin(hChar)
     If L >= 2 Then Paint.DrawImage(hBold, DL, 0)
-    If Odd(L) Then Paint.DrawImage(hBold, DL + 1, 0,,, 0.5)
+    If Odd(L) Then Paint.DrawImage(hBold, DL + 1, 0,,, 0.75)
     Paint.End
   Endif
   
@@ -1884,6 +1889,101 @@ _256C:
   GoSub _TOP_S
   Goto _BOTTOM_S
 
+_256D:
+_256E:
+_256F:
+_2570:
+  Goto _DRAW_CHAR
+  
+_2571:
+  Paint.AntiAlias = False
+  Paint.LineWidth = L
+  Paint.MoveTo(0, H)
+  Paint.LineTo(W, 0)
+  Paint.Stroke
+  Return
+
+_2572:
+  Paint.AntiAlias = False
+  Paint.LineWidth = L
+  Paint.MoveTo(0, 0)
+  Paint.LineTo(W, H)
+  Paint.Stroke
+  Return
+  
+_2573:
+  GoSub _2571
+  Goto _2572
+
+_2574:
+  Goto _LEFT_S
+  
+_2575:
+  Goto _TOP_S
+  
+_2576:
+  Goto _RIGHT_S
+  
+_2577:
+  Goto _BOTTOM_S
+  
+_2578:
+  Goto _LEFT_H
+  
+_2579:
+  Goto _TOP_H
+  
+_257A:
+  Goto _RIGHT_H
+  
+_257B:
+  Goto _BOTTOM_H
+  
+_257C:
+  GoSub _LEFT_S
+  Goto _RIGHT_H
+  
+_257D:
+  GoSub _TOP_S
+  Goto _BOTTOM_H
+  
+_257E:
+  GoSub _RIGHT_S
+  Goto _LEFT_H
+  
+_257F:
+  GoSub _BOTTOM_S
+  Goto _TOP_H
+
+_2580:
+  Paint.FillRect(0, 0, W, H / 2, iBg)
+  Return
+  
+_2581:
+_2582:
+_2583:
+_2584:
+_2585:
+_2586:
+_2587:
+_2588:
+  Paint.FillRect(0, H, W, - (C - &H2580) * H / 8, iBg)
+  Return
+
+_2589:
+_258A:
+_258B:
+_258C:
+_258D:
+_258E:
+_258F:
+  Paint.FillRect(0, 0, W - (C - &H2588) * W / 8, H, iBg)
+  Return
+
+_2590:
+  Paint.FillRect(W, 0, - W / 2, H, iBg)
+  Return
+
 _2591:
 
   If Not $hBrushLight Then $hBrushLight = Image.Load("brush_light.png")
@@ -1901,6 +2001,59 @@ _2593:
   If Not $hBrushDark Then $hBrushDark = Image.Load("brush_dark.png")
   Paint.Brush = Paint.Image($hBrushDark, - XB, - YB)
   Goto _DRAW_BRUSH
+
+_2594:
+  Paint.FillRect(0, 0, W, H / 8, iBg)
+  Return
+  
+_2595:
+  Paint.FillRect(W * 7 / 8, 0, W / 8, H, iBg)
+  Return
+
+
+_2596:
+  Paint.FillRect(0, H / 2, W / 2, H / 2, iBg)
+  Return
+  
+_2597:
+  Paint.FillRect(W / 2, H / 2, W / 2, H / 2, iBg)
+  Return
+  
+_2598:
+  Paint.FillRect(0, 0, W / 2, H / 2, iBg)
+  Return
+  
+_2599:
+  Paint.FillRect(0, 0, W / 2, H, iBg)
+  Paint.FillRect(0, H, W, - H / 2, iBg)
+  Return
+  
+_259A:
+  GoSub _2598
+  Goto _2597
+  
+_259B:
+  Paint.FillRect(0, 0, W, H / 2, iBg)
+  Paint.FillRect(0, 0, W / 2, H, iBg)
+  Return
+  
+_259C:
+  GoSub _2580
+  Goto _2590
+  
+_259D:
+  Paint.FillRect(W / 2, 0, W / 2, H / 2, iBg)
+  Return
+
+_259E:
+  GoSub _259D
+  Goto _2596
+  
+_259F:
+  Paint.FillRect(W, 0, - W / 2, H, iBg)
+  Paint.FillRect(0, H, W, - H / 2, iBg)
+  Return
+
 
 _DRAW_BRUSH:  
 
@@ -1962,5 +2115,11 @@ _CENTER_SV:
 
   Paint.FillRect(XC - DL, YC - DL3, L, L3, iBg)
   Return
-  
+
+_DRAW_CHAR:
+
+  Paint.Font = hFont
+  Paint.DrawText(String.Chr$(C), 0, 0, W, H, Align.Center)
+  Return
+
 End

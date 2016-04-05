@@ -31,7 +31,7 @@ Private $H As Integer
 
 Private $LH As Integer
 Private $iAscent As Integer
-Private $CW As Float
+Private $CW As Integer
 Private $hCacheFont As Image
 
 Private $bMouseDown As Boolean
@@ -155,15 +155,15 @@ Private Sub UpdateFont()
 
   Dim sText As String
   Dim I As Integer
+  Dim L As Integer
+  Dim W As Integer
   
   With $hView.Font
   
     $LH = .Height
     $iAscent = .Ascent
     sText = String$(8, "mM0_@$#W")
-    $CW = .TextWidth(sText) / Len(sText)
-    'Debug $CW
-    $CW = CInt($CW)
+    $CW = CInt(.TextWidth(sText) / Len(sText))
     
     $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
     Paint.Begin($hCacheFont)
@@ -195,8 +195,15 @@ DRAW_CHAR:
 
   Paint.ClipRect = Rect(I * $CW, $LH, $CW, $LH)
   Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
-  Paint.Background = Color.SetAlpha(Color.White, 64)
-  Paint.DrawText(String.Chr(I), I * $CW + 1, $LH, $CW, $LH, Align.Center)
+  
+  W = $CW \ 8 + 1
+  For L = 1 To W \ 2
+    Paint.DrawText(String.Chr(I), I * $CW + L, $LH, $CW, $LH, Align.Center)
+  Next
+  If Odd(W) Then 
+    Paint.Background = Color.SetAlpha(Color.White, 64)
+    Paint.DrawText(String.Chr(I), I * $CW + L, $LH, $CW, $LH, Align.Center)
+  Endif
 
   Return
 
@@ -390,10 +397,9 @@ Public Sub View_KeyPress()
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
   
   If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then 
+    EnsureVisible
     Stop Event
   Endif
-  
-  EnsureVisible
   
 End
 
