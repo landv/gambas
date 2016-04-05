@@ -185,6 +185,7 @@ DRAW_CHAR:
   Paint.Operator = Paint.OperatorSource
   Paint.FillRect(I * $CW, 0, $CW, $LH * 2, Color.Transparent)
   Paint.Operator = Paint.OperatorOver
+  
   Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH)
   Paint.Background = Color.White
   Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)

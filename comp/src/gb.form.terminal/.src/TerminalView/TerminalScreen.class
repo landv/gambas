@@ -830,6 +830,7 @@ DRAW_TEXT:
   If hFontCache Then
   
     Paint.Begin($hLineCache)
+    Paint.Font = hFont
     
     Paint.FillRect(0, 0, W, LH, iFg)
     
@@ -843,44 +844,57 @@ DRAW_TEXT:
       
       C = String.Code(hLine.Text, J)
       
-      If C = 0 Then Stop
       If C <= 255 Then
+        
         hRect.Move(C * CW, HC)
         Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+        
       Else
         
         If $cCharCache.Exist(C) Then
           
           C = $cCharCache[C]
-          hRect.Move(C * CW, 0)
+          hRect.Move(C * CW, HC)
           Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
           
         Else
           
           If $cCharCache.Count < 32 Then
+            
             XC = $cCharCache.Count * CW
             YC = 0
-          Else
-            XC = 0
-            YC = LH
-          Endif
           
-          Paint.Begin(hFontCache)
-          Paint.Operator = Paint.OperatorSource
-          Paint.FillRect(XC, YC, CW, LH, Color.Transparent)
-          Paint.Font = hFont
-          Paint.ClipRect = Rect(XC, YC, CW, LH)
-          Paint.Background = Color.White
-          Paint.DrawText(String.Chr$(C), XC, YC, CW, LH, Align.Center)
-          If hAttr.Bold Then
+            Paint.Begin(hFontCache)
+            Paint.Font = hFont
+            
+            Paint.Operator = Paint.OperatorSource
+            Paint.FillRect(XC, YC, CW, LH * 2, Color.Transparent)
+            Paint.Operator = Paint.OperatorOver
+            
+            Paint.ClipRect = Rect(XC, YC, CW, LH)
+            Paint.Background = Color.White
+            Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+          
+            YC += LH
+          
+            Paint.ClipRect = Rect(XC, YC, CW, LH)
+            Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
             Paint.Background = Color.SetAlpha(Color.White, 64)
-            Paint.DrawText(String.Chr$(C), XC + 1, YC, CW, LH, Align.Center)
-          Endif
-          Paint.End
-          hRect.Move(XC, YC)
-          Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+            Paint.DrawText(String.Chr(C), XC + 1, YC, CW, LH, Align.Center)
           
-          If YC = 0 Then $cCharCache[C] = $cCharCache.Count
+            Paint.End
+            
+            hRect.Move(XC, HC)
+            Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+
+            $cCharCache[C] = $cCharCache.Count
+            
+          Else
+            
+            Paint.DrawText(String.Chr(C), XT, 0, CW, LH, Align.Center)
+            If hAttr.Bold Then Paint.DrawText(String.Chr(C), XT + 1, 0, CW, LH, Align.Center)
+            
+          Endif
           
         Endif
       Endif
@@ -1117,14 +1131,6 @@ Public Sub SetCharset(iNum As Integer, sCharset As String)
   
 End
 
-' unsigned short Vt102Emulation::applyCharset(unsigned short c)
-' {
-'     if (CHARSET.graphic && 0x5f <= c && c <= 0x7e) return vt100_graphics[c - 0x5f];
-'     if (CHARSET.pound && c == '#') return 0xa3;  //This mode is obsolete
-'     return c;
-' }
-' 
-
 Private Sub ApplyGraphicCharset(sStr As String) As String
 
   Dim sResult As String
@@ -1138,12 +1144,8 @@ Private Sub ApplyGraphicCharset(sStr As String) As String
     Else
       sResult &= Chr$(C)
     Endif
-    
   Next
   
   Return sResult
-
-  If C >= &5F And If C <= &7E Then Return $aGraphicCharset[C - &5F]
-  Return C
 
 End
