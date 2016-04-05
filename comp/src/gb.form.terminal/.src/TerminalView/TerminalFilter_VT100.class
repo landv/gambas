@@ -181,6 +181,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                   hScreen.Attr.Reset()
                 Case 1
                   hScreen.Attr.Bold = True
+                  'hScreen.Attr.Reverse = True
                 Case 2
                   hScreen.Attr.Dim = True
                 Case 4
@@ -739,28 +740,50 @@ Public Sub InputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As
   
 End
 
-Public Sub MouseUp()
+'iButton indicates the button pressed or released (0-2) or scroll event (4-5).
+
+'iEvent represents the kind of mouse action that occurred:
+'        0 = Mouse button press
+'        1 = Mouse drag
+'        2 = Mouse button release
+
+
+
+Public Sub SendMouseEvent(hProcess As Process, iButton As Integer, X As Integer, Y As Integer, iEvent As Integer)
+
+  Dim sCommand As String
+  Dim sMouse As String
   
+  If X < 0 Or Y < 0 Then Return
   
+  X += 1
+  Y += 1
+   ' With the exception Of the 1006 mode, button release Is Encoded In cb.
+   'Note that If multiple extensions are enabled, the 1006 Is Used, so it 's okay to check for only that.
+    If iEvent = 2 And Not $aMode[MODE_Mouse1006] Then iButton = 3
+  
+  'normal buttons are passed As 0 x20 + button,
+  'mouse wheel(buttons 4, 5) As 0 x5c + button
+    If iButton >= 4 Then iButton += &H3c
+  
+  'Mouse motion handling
+    If ($aMode[MODE_Mouse1002] Or $aMode[MODE_Mouse1003]) And iEvent = 1 Then iButton += &H20 'add 32 To signify motion Event
+
+  'sCommand = "\e"
+  
+  If $aMode[MODE_Mouse1006] Then 
+    sCommand &= Subst("\e[<&1;&2;&3&4", iButton, x, y, IIf(iEvent = 2, "m", "M"))
+  Else If $aMode[MODE_Mouse1015] Then
+    sCommand &= Subst("\e[<&1;&2;&3M", iButton + &H20, x, y)
+  Else If $aMode[MODE_Mouse1005] Then 
+    If X <= 2015 And y <= 2015 Then
+      sMouse = Conv(Chr(X + &H20) & Chr(Y + &H20), "ASCII", "UTF-8")
+      sCommand = Subst("\e[M&1&2", iButton + &H20, sMouse)
+    Endif
+  Else If X <= 223 And Y <= 223 Then
+    sCommand = Subst("\e[M&1&2&3", iButton + &H20, X + &H20, Y + &H20)
+  Endif
+  Print #hProcess, sCommand;
   
 End
-
-Public Sub MouseDown()
-  
-  
-  
-End
-
-Public Sub MouseMove()
-  
-  
-  
-End
-
-Public Sub MouseWheel()
-  
-  
-  
-End
-
 
