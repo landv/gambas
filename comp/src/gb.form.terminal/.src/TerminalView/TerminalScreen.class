@@ -83,6 +83,10 @@ Static Private $aGraphicCharset As Integer[] = [&H0020&, &H25C6&, &H2592&, &H240
 
 Static Private $sControlChar As String
 
+Static Private $hBrushLight As Image
+Static Private $hBrushMedium As Image
+Static Private $hBrushDark As Image
+
 Public Lines As New CTerminalLine[]
 
 ' Screen size
@@ -848,7 +852,16 @@ DRAW_TEXT:
         
         hRect.Move(C * CW, HC)
         Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
+      
+      Else If C >= &H2500 And If C <= &H259F Then
         
+        Paint.Background = Color.White
+        DrawLineChar(C, XT, 0, CW, LH, XT, Y)
+        If hAttr.Bold Then
+          'Paint.Background = Color.SetAlpha(Color.White, 64)
+          'DrawLineChar(C, XT + 1, 0, CW, LH, XT, Y)
+        Endif
+      
       Else
         
         If $cCharCache.Exist(C) Then
@@ -873,14 +886,18 @@ DRAW_TEXT:
             
             Paint.ClipRect = Rect(XC, YC, CW, LH)
             Paint.Background = Color.White
-            Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+            GoSub DRAW_CHAR
           
             YC += LH
           
             Paint.ClipRect = Rect(XC, YC, CW, LH)
-            Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+            'Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+            GoSub DRAW_CHAR
             Paint.Background = Color.SetAlpha(Color.White, 64)
-            Paint.DrawText(String.Chr(C), XC + 1, YC, CW, LH, Align.Center)
+            'Paint.DrawText(String.Chr(C), XC + 1, YC, CW, LH, Align.Center)
+            Inc XC
+            GoSub DRAW_CHAR
+            Dec XC
           
             Paint.End
             
@@ -891,8 +908,17 @@ DRAW_TEXT:
             
           Else
             
-            Paint.DrawText(String.Chr(C), XT, 0, CW, LH, Align.Center)
-            If hAttr.Bold Then Paint.DrawText(String.Chr(C), XT + 1, 0, CW, LH, Align.Center)
+            'Paint.DrawText(String.Chr(C), XT, 0, CW, LH, Align.Center)
+            XC = XT
+            YC = 0
+            Paint.Background = Color.White
+            GoSub DRAW_CHAR
+            If hAttr.Bold Then 
+              'Paint.DrawText(String.Chr(C), XT + 1, 0, CW, LH, Align.Center)
+              Inc XC
+              Paint.Background = Color.SetAlpha(Color.White, 64)
+              GoSub DRAW_CHAR
+            Endif
             
           Endif
           
@@ -930,6 +956,11 @@ DRAW_NO_TEXT:
   Paint.FillRect(X, Y, W, LH, iBg)
   X += W
   P += iLen
+  Return
+  
+DRAW_CHAR:
+
+  Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
   Return
   
 End
@@ -1148,4 +1179,783 @@ Private Sub ApplyGraphicCharset(sStr As String) As String
   
   Return sResult
 
+End
+
+Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer)
+  
+  Dim L, DL As Integer
+  Dim XC As Integer
+  Dim YC As Integer
+  Dim L3, DL3 As Integer
+  Dim hChar As Image
+  Dim iBg As Integer
+  Dim P, D As Float
+  
+  iBg = Paint.Background
+  hChar = New Image(W, H, Color.Transparent)
+  Paint.Begin(hChar)
+  Paint.Background = iBg
+  'Paint.Operator = Paint.OperatorSource
+  
+  L = Min(W, H)
+  If L < 4 Then
+    L = 0
+  Else If L < 11
+    L = 1
+  Else
+    L \= 6
+  Endif
+  DL = L \ 2
+  L3 = L * 3
+  DL3 = L3 \ 2
+  XC = W \ 2
+  YC = H \ 2
+  
+  If C <= &H256C Then
+  
+    On C - &H2500 GoSub _2500, _2501, _2502, _2503, _2504, _2505, _2506, _2507, _2508, _2509, _250A, _250B, _250C, _250D, _250E, _250F, _2510, _2511, _2512, _2513, _2514, _2515, _2516, _2517, _2518, _2519, _251A, _251B, _251C, _251D, _251E, _251F, _2520, _2521, _2522, _2523, _2524, _2525, _2526, _2527, _2528, _2529, _252A, _252B, _252C, _252D, _252E, _252F, _2530, _2531, _2532, _2533, _2534, _2535, _2536, _2537, _2538, _2539, _253A, _253B, _253C, _253D, _253E, _253F, _2540, _2541, _2542, _2543, _2544, _2545, _2546, _2547, _2548, _2549, _254A, _254B, _254C, _254D, _254E, _254F, _2550, _2551, _2552, _2553, _2554, _2555, _2556, _2557, _2558, _2559, _255A, _255B, _255C, _255D, _255E, _255F, _2560, _2561, _2562, _2563, _2564, _2565, _2566, _2567, _2568, _2569, _256A, _256B, _256C
+    
+  Else If C >= &H2591 Then
+    
+    On C - &H2591 GoSub _2591, _2592, _2593
+    
+  Endif
+  
+  Paint.End
+  Paint.DrawImage(hChar, X, Y)
+  Return
+  
+_2500:
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+  
+_2501:
+  GoSub _LEFT_H
+  Goto _RIGHT_H
+  
+_2502:
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_2503:
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_2504:
+_2505:
+_2508:
+_2509:
+_254C:
+_254D:
+
+  If C = &H2504 Or If C = &H2505 Then
+    D = W / 6
+  Else If C = &H2508 Or If C = &H2509 Then
+    D = W / 8
+  Else
+    D = W / 4
+  Endif
+
+  P = 0
+  While P < W
+    If Odd(C) Then
+      Paint.Rectangle(P, YC - DL3, D, L3)
+    Else
+      Paint.Rectangle(P, YC - DL, D, L)
+    Endif
+    P += D * 2
+  Wend
+  Paint.Background = iBg
+  Paint.Fill
+
+  Return
+
+_2506:
+_2507:
+_250A:
+_250B:
+_254E:
+_254F:
+
+  If C = &H2506 Or If C = &H2507 Then
+    D = H / 6
+  Else If C = &H250A Or If C = &H250B Then
+    D = H / 8
+  Else
+    D = H / 4
+  Endif
+
+  P = 0
+  While P < H
+    If Odd(C) Then
+      Paint.Rectangle(XC - DL3, P, L3, D)
+    Else
+      Paint.Rectangle(XC - DL, P, L, D)
+    Endif
+    P += D * 2
+  Wend
+  Paint.Background = iBg
+  Paint.Fill
+
+  Return
+
+_250C:
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_250D:
+  GoSub _CENTER_SV
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_250E:
+  GoSub _CENTER_SH
+  GoSub _RIGHT_S
+  Goto _BOTTOM_H
+  
+_250F:
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2510:
+  GoSub _LEFT_S
+  Goto _BOTTOM_S
+  
+_2511:
+  GoSub _CENTER_SV
+  GoSub _LEFT_H
+  Goto _BOTTOM_S
+  
+_2512:
+  GoSub _CENTER_SH
+  GoSub _LEFT_S
+  Goto _BOTTOM_H
+  
+_2513:
+  GoSub _LEFT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2514:
+  GoSub _RIGHT_S
+  Goto _TOP_S
+  
+_2515:
+  GoSub _CENTER_SV
+  GoSub _RIGHT_H
+  Goto _TOP_S
+  
+_2516:
+  GoSub _CENTER_SH
+  GoSub _RIGHT_S
+  Goto _TOP_H
+  
+_2517:
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _CENTER_H
+  
+_2518:
+  GoSub _LEFT_S
+  Goto _TOP_S
+  
+_2519:
+  GoSub _CENTER_SV
+  GoSub _LEFT_H
+  Goto _TOP_S
+  
+_251A:
+  GoSub _CENTER_SH
+  GoSub _LEFT_S
+  Goto _TOP_H
+  
+_251B:
+  GoSub _LEFT_H
+  GoSub _TOP_H
+  Goto _CENTER_H
+  
+_251C:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _RIGHT_S
+  
+_251D:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _RIGHT_H
+  
+_251E:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  Goto _RIGHT_S
+  
+_251F:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  Goto _RIGHT_S
+  
+_2520:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _RIGHT_S
+  
+_2521:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  GoSub _RIGHT_H
+  Goto _CENTER_H
+  
+_2522:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  GoSub _RIGHT_H
+  Goto _CENTER_H
+  
+_2523:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _RIGHT_H
+  
+
+_2524:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _LEFT_S
+  
+_2525:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _LEFT_H
+  
+_2526:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  Goto _LEFT_S
+  
+_2527:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  Goto _LEFT_S
+  
+_2528:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _LEFT_S
+  
+_2529:
+  GoSub _TOP_H
+  GoSub _BOTTOM_S
+  GoSub _LEFT_H
+  Goto _CENTER_H
+  
+_252A:
+  GoSub _TOP_S
+  GoSub _BOTTOM_H
+  GoSub _LEFT_H
+  Goto _CENTER_H
+  
+_252B:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Goto _LEFT_H
+
+
+_252C:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_252D:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_252E:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_252F:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_2530:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_H
+  
+_2531:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2532:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_2533:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_H
+  
+  
+_2534:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_2535:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_2536:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_2537:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_S
+  
+_2538:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_H
+  
+_2539:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_253A:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Goto _CENTER_H
+  
+_253B:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Goto _BOTTOM_H
+
+
+_253C:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_253D:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_253E:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_253F:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+  
+_2540:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  Goto _BOTTOM_S
+  
+_2541:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_H
+  
+_2542:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_2543:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _CENTER_H
+  Goto _BOTTOM_S
+  
+_2544:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  GoSub _CENTER_H
+  Goto _BOTTOM_S
+  
+_2545:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  GoSub _CENTER_H
+  Goto _BOTTOM_H
+  
+_2546:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  GoSub _CENTER_H
+  Goto _BOTTOM_H
+  
+_2547:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _BOTTOM_S
+  
+_2548:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_S
+  Goto _BOTTOM_H
+  
+_2549:
+  GoSub _LEFT_H
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _CENTER_H
+  Goto _BOTTOM_H
+  
+_254A:
+  GoSub _LEFT_S
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_254B:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Goto _BOTTOM_H
+  
+_2550:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+  
+_2551:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2552:
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _BOTTOM_S
+
+_2553:
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _BOTTOM_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _RIGHT_S
+
+_2554:
+  GoSub _CENTER_H
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+  
+_2555:
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _BOTTOM_S
+
+_2556:
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _BOTTOM_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _LEFT_S
+
+_2557:
+  GoSub _CENTER_H
+  GoSub _LEFT_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _BOTTOM_S
+  
+_2558:
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _TOP_S
+
+_2559:
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _RIGHT_S
+
+_255A:
+  GoSub _CENTER_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Goto _TOP_S
+  
+_255B:
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _TOP_S
+
+_255C:
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Paint.Operator = Paint.OperatorOver
+  Goto _LEFT_S
+
+_255D:
+  GoSub _CENTER_H
+  GoSub _LEFT_H
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _TOP_S
+  
+_255E:
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _RIGHT_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_255F:
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2560:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _RIGHT_S
+  
+_2561:
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2562:
+  GoSub _LEFT_S
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2563:
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  GoSub _LEFT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  Goto _LEFT_S
+
+_2564:
+  GoSub _BOTTOM_S
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2565:
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _BOTTOM_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2566:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _BOTTOM_S
+
+_2567:
+  GoSub _TOP_S
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2568:
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Paint.Operator = Paint.OperatorOver
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_2569:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  Goto _TOP_S
+
+_256A:
+  GoSub _TOP_S
+  GoSub _BOTTOM_S
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  Goto _RIGHT_S
+
+_256B:
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_256C:
+  GoSub _LEFT_H
+  GoSub _RIGHT_H
+  GoSub _TOP_H
+  GoSub _BOTTOM_H
+  Paint.Operator = Paint.OperatorClear
+  GoSub _LEFT_S
+  GoSub _RIGHT_S
+  GoSub _TOP_S
+  Goto _BOTTOM_S
+
+_2591:
+
+  If Not $hBrushLight Then $hBrushLight = Image.Load("brush_light.png")
+  Paint.Brush = Paint.Image($hBrushLight, - XB, - YB)
+  Goto _DRAW_BRUSH
+  
+_2592:
+
+  If Not $hBrushMedium Then $hBrushMedium = Image.Load("brush_medium.png")
+  Paint.Brush = Paint.Image($hBrushMedium, - XB, - YB)
+  Goto _DRAW_BRUSH
+  
+_2593:
+
+  If Not $hBrushDark Then $hBrushDark = Image.Load("brush_dark.png")
+  Paint.Brush = Paint.Image($hBrushDark, - XB, - YB)
+  Goto _DRAW_BRUSH
+
+_DRAW_BRUSH:  
+
+  Paint.Rectangle(0, 0, W, H)
+  Paint.Fill
+  Return
+
+_LEFT_S:
+
+  Paint.FillRect(0, YC - DL, XC + L - DL, L, iBg)
+  Return
+  
+_RIGHT_S:
+
+  Paint.FillRect(XC - DL, YC - DL, W - XC + DL, L, iBg)
+  Return
+  
+_TOP_S:
+
+  Paint.FillRect(XC - DL, 0, L, YC + L - DL, iBg)
+  Return
+  
+_BOTTOM_S:
+
+  Paint.FillRect(XC - DL, YC - DL, L, H - YC + DL, iBg)
+  Return
+  
+_LEFT_H:
+
+  Paint.FillRect(0, YC - DL3, XC + L - DL, L3, iBg)
+  Return
+  
+_RIGHT_H:
+
+  Paint.FillRect(XC - DL, YC - DL3, W - XC + DL, L3, iBg)
+  Return
+  
+_TOP_H:
+
+  Paint.FillRect(XC - DL3, 0, L3, YC + L - DL, iBg)
+  Return
+  
+_BOTTOM_H:
+
+  Paint.FillRect(XC - DL3, YC - DL, L3, H - YC + DL, iBg)
+  Return
+  
+_CENTER_H:
+
+  Paint.FillRect(XC - DL3, YC - DL3, L3, L3, iBg)
+  Return
+  
+_CENTER_SH:
+
+  Paint.FillRect(XC - DL3, YC - DL, L3, L, iBg)
+  Return
+  
+_CENTER_SV:
+
+  Paint.FillRect(XC - DL, YC - DL3, L, L3, iBg)
+  Return
+  
 End

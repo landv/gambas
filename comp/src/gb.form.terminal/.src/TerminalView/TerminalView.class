@@ -89,6 +89,7 @@ Public Sub _new()
   $hScreen = $aScreen[0]
   
   UpdateFont
+  UpdateScreen
   
   '$hRefreshTimer = New Timer As "RefreshTimer"
   '$hRefreshTimer.Delay = 50
@@ -139,6 +140,8 @@ Private Sub UpdateScreen()
   W = Max(1, CInt($hView.ClientW / $CW))
   H = Max(1, $hView.ClientH \ $LH)
   
+  'Debug W;; H
+  
   If $hScreen.Resize(W, H) Then
     $H = H
     _UpdateSize
@@ -159,7 +162,7 @@ Private Sub UpdateFont()
     $iAscent = .Ascent
     sText = String$(8, "mM0_@$#W")
     $CW = .TextWidth(sText) / Len(sText)
-    Debug $CW
+    'Debug $CW
     $CW = CInt($CW)
     
     $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
@@ -365,6 +368,19 @@ Public Sub View_MouseUp()
   
 End
 
+Public Sub View_MouseWheel()
+  
+  If Mouse.Control Then
+    If Mouse.Forward Then
+      $hView.Font.Size = Min(32, $hView.Font.Size * Sqr(Sqr(2)))
+    Else
+      $hView.Font.Size = Max(6, $hView.Font.Size / Sqr(Sqr(2)))
+    Endif
+  Endif
+  
+End
+
+
 Public Sub View_KeyPress()
   
   'If Key.Text Then $hScreen.Print(Replace(Key.Text, "\r", "\n"))
@@ -514,6 +530,14 @@ Public Sub Process_Read()
   Endif
   
 End
+
+Public Sub Print(Text As String)
+  
+  $hFilter.OutputTo(Me, $hScreen, File.Out, Text)
+  EnsureVisible
+  
+End
+
 
 Public Sub OutputTimer_Timer()
 
