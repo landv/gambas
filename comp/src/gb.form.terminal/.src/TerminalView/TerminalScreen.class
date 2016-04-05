@@ -856,11 +856,7 @@ DRAW_TEXT:
       Else If C >= &H2500 And If C <= &H259F Then
         
         Paint.Background = Color.White
-        DrawLineChar(C, XT, 0, CW, LH, XT, Y)
-        If hAttr.Bold Then
-          'Paint.Background = Color.SetAlpha(Color.White, 64)
-          'DrawLineChar(C, XT + 1, 0, CW, LH, XT, Y)
-        Endif
+        DrawLineChar(C, XT, 0, CW, LH, XT, Y, hAttr.Bold)
       
       Else
         
@@ -1181,7 +1177,7 @@ Private Sub ApplyGraphicCharset(sStr As String) As String
 
 End
 
-Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer)
+Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer, H As Integer, XB As Integer, YB As Integer, bBold As Boolean)
   
   Dim L, DL As Integer
   Dim XC As Integer
@@ -1190,12 +1186,12 @@ Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer,
   Dim hChar As Image
   Dim iBg As Integer
   Dim P, D As Float
+  Dim hBold As Image
   
   iBg = Paint.Background
   hChar = New Image(W, H, Color.Transparent)
   Paint.Begin(hChar)
   Paint.Background = iBg
-  'Paint.Operator = Paint.OperatorSource
   
   L = Min(W, H)
   If L < 4 Then
@@ -1222,6 +1218,15 @@ Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer,
   Endif
   
   Paint.End
+  
+  If bBold And If C <= &H256C Then
+    hBold = hChar.Copy()
+    Paint.Begin(hChar)
+    If L >= 2 Then Paint.DrawImage(hBold, DL, 0)
+    If Odd(L) Then Paint.DrawImage(hBold, DL + 1, 0,,, 0.5)
+    Paint.End
+  Endif
+  
   Paint.DrawImage(hChar, X, Y)
   Return
   

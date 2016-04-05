@@ -72,15 +72,23 @@ End
 ' 
 '   Dim I As Integer
 '   Dim J As Integer
+'   Dim B As Integer
 ' 
-'   For I = &H2500 To &H259F Step 16
-'     TerminalView1.Print(Hex$(I, 4) & ": ")
-'     For J = I To I + 15
-'       TerminalView1.Print(String.Chr$(J) & " ")
+'   For B = 0 To 1
+'     For I = &H2500 To &H259F Step 16
+'       TerminalView1.Print(Hex$(I, 4) & ": ")
+'       For J = I To I + 15
+'         TerminalView1.Print(String.Chr$(J) & " ")
+'       Next
+'       TerminalView1.Print("\n\n")
 '     Next
-'     TerminalView1.Print("\n\n")
+'     If B = 0 Then
+'       TerminalView1.Print("\e[1m")
+'     Else
+'       TerminalView1.Print("\e[m")
+'     Endif
 '   Next
 '   
-'   TerminalView1.Print(String$(4, String$(20, String.Chr$(&H2591)) & "\n"))
+'   'TerminalView1.Print(String$(4, String$(20, String.Chr$(&H2591)) & "\n"))
 ' 
 ' End

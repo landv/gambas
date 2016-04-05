@@ -136,7 +136,7 @@ End
 
 ' Escape sequence without the initial 27 character.
 
-Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As Process, sData As String, iPos As Integer, iLen As Integer) As Integer
+Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String, iPos As Integer, iLen As Integer) As Integer
   
   Dim Y As Integer
   Dim X As Integer
