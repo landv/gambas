@@ -673,7 +673,10 @@ char *STRING_subst(const char *str, int len, SUBST_FUNC get_param)
 			}
 		}
 	}
-
+	
+	if (!len_subst)
+		return NULL;
+	
 	subst = STRING_new(NULL, len_subst);
 	ps = subst;
 
