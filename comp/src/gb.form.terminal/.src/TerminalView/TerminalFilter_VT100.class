@@ -14,6 +14,7 @@ Public MouseActive As Boolean
 Public BracketedPasteActive As Boolean
 Private $sLeft As String
 
+
 Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess As Stream, sData As String)
   
   Dim iPos As Integer
@@ -467,6 +468,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     hScreen.Clear
                     $aMode[MODE_AppScreen] = False
                     hView.AlternateScreen = False
+                    MouseActive = False
                   Case "1048"
                     hScreen.RestoreCursor
                   Case "1049"
@@ -749,40 +751,57 @@ End
 
 
 
-Public Sub SendMouseEvent(hProcess As Process, iButton As Integer, X As Integer, Y As Integer, iEvent As Integer)
+Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEvent As Integer)
 
   Dim sCommand As String
   Dim sMouse As String
+  Dim iButton As Integer = 3
+  
+  
+  If Mouse.left Then
+    iButton = 0
+  Else If Mouse.Right Then
+    iButton = 2
+  Else If Mouse.Middle Then
+    iButton = 1
+  Else If Mouse.Delta = -1 Then
+    iButton = 5
+  Else If Mouse.Delta = 1 Then 
+    iButton = 4
+  Endif
+  
   
   If X < 0 Or Y < 0 Then Return
   
   X += 1
   Y += 1
+
    ' With the exception Of the 1006 mode, button release Is Encoded In cb.
    'Note that If multiple extensions are enabled, the 1006 Is Used, so it 's okay to check for only that.
-    If iEvent = 2 And Not $aMode[MODE_Mouse1006] Then iButton = 3
+    If iEvent = Me.MouseMove And Not $aMode[MODE_Mouse1006] Then iButton = 3
   
   'normal buttons are passed As 0 x20 + button,
   'mouse wheel(buttons 4, 5) As 0 x5c + button
     If iButton >= 4 Then iButton += &H3c
   
   'Mouse motion handling
-    If ($aMode[MODE_Mouse1002] Or $aMode[MODE_Mouse1003]) And iEvent = 1 Then iButton += &H20 'add 32 To signify motion Event
+    If ($aMode[MODE_Mouse1002] Or $aMode[MODE_Mouse1003]) And iEvent = Me.MouseMove Then iButton += &H20  'add 32 To signify motion Event
 
-  'sCommand = "\e"
+
   
   If $aMode[MODE_Mouse1006] Then 
-    sCommand &= Subst("\e[<&1;&2;&3&4", iButton, x, y, IIf(iEvent = 2, "m", "M"))
+    sCommand &= Subst("\e[<&1;&2;&3&4", iButton, x, y, IIf(iEvent = Me.MouseUp, "m", "M"))
   Else If $aMode[MODE_Mouse1015] Then
     sCommand &= Subst("\e[<&1;&2;&3M", iButton + &H20, x, y)
-  Else If $aMode[MODE_Mouse1005] Then 
-    If X <= 2015 And y <= 2015 Then
-      sMouse = Conv(Chr(X + &H20) & Chr(Y + &H20), "ASCII", "UTF-8")
-      sCommand = Subst("\e[M&1&2", iButton + &H20, sMouse)
-    Endif
+  ' Else If $aMode[MODE_Mouse1005] Then 
+  '   If X <= 2015 And y <= 2015 Then
+  '     sMouse = Conv(Chr(X + &H20) & Chr(Y + &H20), "ASCII", "UTF-8")
+  '     sCommand = Subst("\e[M&1&2", iButton + &H20, sMouse)
+  '   Endif
   Else If X <= 223 And Y <= 223 Then
     sCommand = Subst("\e[M&1&2&3", iButton + &H20, X + &H20, Y + &H20)
   Endif
+  'Print sCommand
   Print #hProcess, sCommand;
   
 End

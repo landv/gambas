@@ -58,11 +58,14 @@ Private $hBlinkTimer As Timer
 
 Private $bSuspend As Boolean
 
+Private $iLastMouseX As Integer
+Private $iLastMouseY As Integer
+
 Public Sub _new()
-  
+
   Me.Font = Font["monospace"]
 
-  $hPanel = New Panel(Me) 
+  $hPanel = New Panel(Me)
   $hPanel.Arrangement = Arrange.Fill
   $hPanel.Border = Border.Plain
 
@@ -74,52 +77,52 @@ Public Sub _new()
   $hView.Background = Color.TextForeground
   $hView.Foreground = Color.TextBackground
   $hView.NoBackground = True
-  
+
   $hScroll = New ScrollBar($hView) As "ScrollBar"
   $hScroll.Ignore = True
   $hScroll.Mouse = Mouse.Arrow
   $hScroll.Hide
-  
+
   Me.Proxy = $hView
-  
+
   Me.Type = "VT100"
-  
+
   $aScreen[0] = New TerminalScreen As "TerminalScreen"
   $aScreen[1] = New TerminalScreen As "TerminalScreen"
   $hScreen = $aScreen[0]
-  
+
   UpdateFont
   UpdateScreen
-  
+
   '$hRefreshTimer = New Timer As "RefreshTimer"
   '$hRefreshTimer.Delay = 50
-  
+
   $hOutputTimer = New Timer As "OutputTimer"
   $hOutputTimer.Delay = 50
-  
+
   $hBlinkTimer = New Timer As "BlinkTimer"
   $hBlinkTimer.Delay = 500
-  
+
 End
 
 Public Sub Clear()
-  
+
   $hScreen.Clear()
   UpdateFont
-  
+
 End
 
 Public Sub Refresh()
 
   _HasBlink = False
   $hView.Refresh
-  
+
 End
 
 Public Sub _RefreshLine(Y As Integer)
 
   Y -= $hScroll.Value
-  If Y >= 0 And If Y < $H Then 
+  If Y >= 0 And If Y < $H Then
     $hView.Refresh(0, Y * $LH, $hView.ClientW, $LH)
   Endif
 
@@ -130,7 +133,7 @@ Public Sub _UpdateSize()
   $hScroll.MinValue = 0
   $hScroll.MaxValue = Max(0, $hScreen.Lines.Count - $H)
   $hScroll.PageStep = $H
-  
+
 End
 
 Private Sub UpdateScreen()
@@ -139,16 +142,16 @@ Private Sub UpdateScreen()
 
   W = Max(1, CInt($hView.ClientW / $CW))
   H = Max(1, $hView.ClientH \ $LH)
-  
+
   'Debug W;; H
-  
+
   If $hScreen.Resize(W, H) Then
     $H = H
     _UpdateSize
     Refresh
     If $hProcess Then $hProcess.Term.Resize(W, H)
   Endif
-  
+
 End
 
 Private Sub UpdateFont()
@@ -157,50 +160,50 @@ Private Sub UpdateFont()
   Dim I As Integer
   Dim L As Integer
   Dim W As Integer
-  
+
   With $hView.Font
-  
+
     $LH = .Height
     $iAscent = .Ascent
     sText = String$(8, "mM0_@$#W")
     $CW = CInt(.TextWidth(sText) / Len(sText))
-    
+
     $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
     Paint.Begin($hCacheFont)
-    Paint.Font = $hView.Font
-    For I = 33 To 126
-      GoSub DRAW_CHAR
-    Next
-    For I = 160 To 255
-      GoSub DRAW_CHAR
-    Next
+      Paint.Font = $hView.Font
+      For I = 33 To 126
+        GoSub DRAW_CHAR
+      Next
+      For I = 160 To 255
+        GoSub DRAW_CHAR
+      Next
     Paint.End
-    
+
     '$hCacheFont.Save("~/cache.png")
-      
+
   End With
-  
+
   UpdateScreen
   Return
-  
+
 DRAW_CHAR:
 
   Paint.Operator = Paint.OperatorSource
   Paint.FillRect(I * $CW, 0, $CW, $LH * 2, Color.Transparent)
   Paint.Operator = Paint.OperatorOver
-  
+
   Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH)
   Paint.Background = Color.White
   Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
 
   Paint.ClipRect = Rect(I * $CW, $LH, $CW, $LH)
   Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
-  
+
   W = $CW \ 8 + 1
   For L = 1 To W \ 2
     Paint.DrawText(String.Chr(I), I * $CW + L, $LH, $CW, $LH, Align.Center)
   Next
-  If Odd(W) Then 
+  If Odd(W) Then
     Paint.Background = Color.SetAlpha(Color.White, 64)
     Paint.DrawText(String.Chr(I), I * $CW + L, $LH, $CW, $LH, Align.Center)
   Endif
@@ -210,55 +213,52 @@ DRAW_CHAR:
 End
 
 Public Sub View_Font()
-  
+
   UpdateFont
-  
+
 End
 
-
 Public Sub View_Arrange()
-  
+
   $hScroll.Move($hView.ClientW - Style.ScrollbarSize, 0, Style.ScrollbarSize, $hView.ClientH)
   UpdateScreen
-  
+
 End
 
 Private Sub GetScrollY() As Integer
-  
+
   Return $hScroll.Value
-  
+
 End
 
 Public Sub BlinkTimer_Timer()
-  
+
   _Blink = Not _Blink
   Refresh
-  
-End
 
+End
 
 Public Sub View_Draw()
 
   ApplyLimit
-  
+
   $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
-  
+
   If _HasBlink Then
     If Not $hBlinkTimer.Enabled Then $hBlinkTimer.Start
   Else
     $hBlinkTimer.Stop
   Endif
-  
+
   If $bSuspend Then Paint.FillRect(0, 0, Paint.W, Paint.H, Color.SetAlpha($hView.Background, 128))
-  
+
 End
 
 Public Sub Goto(X As Integer, Y As Integer)
 
   $hScreen.Goto(X, Y)
-  
-End
 
+End
 
 Private Function Border_Read() As Boolean
 
@@ -279,37 +279,36 @@ Private Function Attr_Read() As TerminalAttr
 End
 
 Public Sub _EnsureVisibleAt((X) As Integer, Y As Integer)
-  
+
   Dim H As Integer
-  
+
   H = $hView.ClientH \ $LH
-  
+
   If $hScroll.Value < (Y - H + 1) Then
     $hScroll.Value = Y - H + 1
   Else If $hScroll.Value > Y Then
     $hScroll.Value = Y
   Endif
-  
-End
 
+End
 
 Public Sub EnsureVisible()
 
   _EnsureVisibleAt($hScreen.X, $hScreen.Y)
-  
+
 End
 
 ' Private Function Foreground_Read() As Integer
-' 
+'
 '   Return Super.Foreground
-' 
+'
 ' End
-' 
+'
 ' Private Sub Foreground_Write(Value As Integer)
-' 
+'
 '   Super.Foreground = Value
 '   UpdateFont
-' 
+'
 ' End
 
 Private Sub GotoMouse(bStart As Boolean)
@@ -319,14 +318,26 @@ Private Sub GotoMouse(bStart As Boolean)
 
   X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW)
   Y = GetScrollY() + (Mouse.ScreenY - $hView.ScreenY) \ $LH
-'Print x, y
+  'Print x, y
   $hScreen.GotoMouse(X, Y, bStart)
+
+End
+
+Private Sub GetMouseXY(ByRef X As Integer, ByRef Y As Integer)
+
+  X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW)
+  Y = CInt((Mouse.ScreenY - $hView.ScreenY) \ $LH)
+  'Print X, Y
+  'Print Mouse.Button
 
 End
 
 Public Sub View_MouseDown()
 
-  If Mouse.Left Then  
+  Dim X As Integer
+  Dim Y As Integer
+
+  If Mouse.Left Then
     $bMouseDown = True
     GotoMouse(True)
     $hMouseTimer = New Timer(50) As "MouseTimer"
@@ -335,13 +346,20 @@ Public Sub View_MouseDown()
     Paste()
     Clipboard.Current = Clipboard.Default
   Endif
-  
-  
+
+  If $hFilter.MouseActive Then
+    GetMouseXY(ByRef X, ByRef Y)
+    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
+  Endif
+
 End
 
 Public Sub View_MouseMove()
-  
-  If $bMouseDown Then 
+
+  Dim X As Integer
+  Dim Y As Integer
+
+  If $bMouseDown Then
     GotoMouse(False)
   Else
     If Mouse.X >= ($hView.ClientW - Style.ScrollbarSize) And If $hScroll.MaxValue Then
@@ -351,18 +369,30 @@ Public Sub View_MouseMove()
       $hScroll.Hide
     Endif
   Endif
-  
+  'X = Mouse.X
+  'Y = Mouse.Y
+
+  If $hFilter.MouseActive Then
+    GetMouseXY(ByRef X, ByRef Y)
+    If $iLastMouseX = X And $iLastMouseY = Y Then Return
+    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseMove)
+    $iLastMouseX = X
+    $iLastMouseY = Y
+  Endif
+
 End
 
 Public Sub View_MouseUp()
-  
+
+  Dim X As Integer
+  Dim Y As Integer
   Dim sText As String
-  
+
   If $hMouseTimer Then
     $hMouseTimer.Stop
     $hMouseTimer = Null
   Endif
-  
+
   If $bMouseDown Then
     sText = $hScreen.GetSelectedText()
     If sText Then
@@ -371,13 +401,19 @@ Public Sub View_MouseUp()
       Clipboard.Current = Clipboard.Default
     Endif
   Endif
-  
+
   $bMouseDown = False
-  
+
+  If $hFilter.MouseActive Then
+    GetMouseXY(ByRef X, ByRef Y)
+    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseUp)
+  Endif
+
 End
 
 Public Sub View_MouseWheel()
-  
+Dim X As Integer
+  Dim Y As Integer
   If Mouse.Control Then
     If Mouse.Forward Then
       $hView.Font.Size = Min(32, $hView.Font.Size * Sqr(Sqr(2)))
@@ -385,24 +421,27 @@ Public Sub View_MouseWheel()
       $hView.Font.Size = Max(6, $hView.Font.Size / Sqr(Sqr(2)))
     Endif
   Endif
-  
+
+  If $hFilter.MouseActive Then
+    GetMouseXY(ByRef X, ByRef Y)
+    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
+  Endif
+
 End
 
-
 Public Sub View_KeyPress()
-  
+
   'If Key.Text Then $hScreen.Print(Replace(Key.Text, "\r", "\n"))
   If Not $hProcess Then Return
-  
+
   If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
-  
-  If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then 
+
+  If $hFilter.InputTo(Me, $hScreen, $hProcess, Key.Code, Key.Text, Key.Normal, Key.Shift, Key.Control) Then
     EnsureVisible
     Stop Event
   Endif
-  
-End
 
+End
 
 Private Function Column_Read() As Integer
 
@@ -442,40 +481,39 @@ Private Sub Limit_Write(Value As Integer)
 End
 
 Public Sub View_GotFocus()
-  
+
   If $bBlink Then $hCursorTimer = New Timer(500) As "CursorTimer"
-  
+
 End
 
 Public Sub View_LostFocus()
-  
+
   If $bBlink Then
     $hCursorTimer.Stop
     $hCursorTimer = Null
   Endif
-  
+
   $bHideCursor = False
-  
+
 End
 
 Public Sub _ShowCursor()
-  
+
   $bHideCursor = False
-  
+
 End
 
-
 Public Sub CursorTimer_Timer()
-  
+
   $bHideCursor = Not $bHideCursor
   _RefreshLine($hScreen.Y)
-  
+
 End
 
 Public Sub MouseTimer_Timer()
-  
+
   GotoMouse(False)
-  
+
 End
 
 Private Function Type_Read() As String
@@ -497,54 +535,53 @@ End
 Public Sub Exec(aCommand As String[]) As Process
 
   If $hProcess Then Return
-  
+
   $hProcess = Exec aCommand With ["TERM=xterm"] For Input Output As "Process"
   $hProcess.Term.Echo = True
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
-  
+
 End
 
 Public Sub Shell(sCommand As String) As Process
 
   If $hProcess Then Return
-  
+
   $hProcess = Shell sCommand With ["TERM=xterm"] For Input Output As "Process"
   $hProcess.Term.Echo = True
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
-  
+
 End
 
 Public Sub Process_Kill()
-  
+
   $hProcess = Null
   Raise Kill
-  
+
 End
 
 Public Sub Process_Read()
-  
+
   Dim sData As String
-  
+
   sData = Read #$hProcess, Lof($hProcess)
   'Debug Quote(sData)
-  
+
   $sBuffer &= sData
-  
+
   If Len($sBuffer) > 65536 Then
     $hOutputTimer.Trigger
   Else
     $hOutputTimer.Restart
   Endif
-  
+
 End
 
 Public Sub Print(Text As String)
-  
+
   $hFilter.OutputTo(Me, $hScreen, File.Out, Text)
   EnsureVisible
-  
-End
 
+End
 
 Public Sub OutputTimer_Timer()
 
@@ -552,25 +589,25 @@ Public Sub OutputTimer_Timer()
   $sBuffer = ""
   $hOutputTimer.Stop
   EnsureVisible
-  
+
 End
 
 Public Sub _GetCurrentScreen() As TerminalScreen
-  
+
   Return $hScreen
-  
+
 End
 
 Private Function AlternateScreen_Read() As Boolean
 
-  Return $hScreen = $aScreen[1] 
+  Return $hScreen = $aScreen[1]
 
 End
 
 Private Sub AlternateScreen_Write(Value As Boolean)
 
   Dim hScreen As TerminalScreen
-  
+
   If Value Then
     hScreen = $aScreen[1]
     'Debug "1"
@@ -578,9 +615,9 @@ Private Sub AlternateScreen_Write(Value As Boolean)
     hScreen = $aScreen[0]
     'Debug "0"
   Endif
-  
+
   If hScreen = $hScreen Then Return
-  
+
   $hScreen = hScreen
   UpdateScreen
   _UpdateSize
@@ -589,15 +626,15 @@ Private Sub AlternateScreen_Write(Value As Boolean)
 End
 
 Public Sub ScrollBar_Change()
-  
+
   Refresh
-  
+
 End
 
 Public Sub Kill()
-  
+
   Try $hProcess.Kill
-  
+
 End
 
 Private Function Blink_Read() As Boolean
@@ -624,45 +661,45 @@ End
 Public Sub Copy()
 
   Dim sText As String
-  
+
   sText = $hScreen.GetSelectedText()
   If sText Then Clipboard.Copy(sText)
-  
+
 End
 
 Public Sub Paste()
 
   Dim sText As String
-  
+
   If Not $hProcess Then Return
-  
+
   sText = Clipboard.Paste("text/plain")
   If Not sText Then Return
-  
+
   If $hFilter.BracketedPasteActive Then sText = "\e[200~" & sText & "\e[200~"
   $hFilter.InputTo(Me, $hScreen, $hProcess, 0, sText)
   EnsureVisible
-  
+
 End
 
 Public Sub _ShowScreen()
-  
+
   $hScroll.Value = $hScreen.ScreenTop()
   Refresh
-  
+
 End
 
 Public Sub _SetTitle(sCmd As String, sTitle As String)
-  
+
   If sCmd = "0" Or If sCmd = "2" Then Raise Title(sTitle)
-  
+
 End
 
 Public Sub _Suspend(bSuspend As Boolean)
-  
+
   If Not $hProcess Then Return
   If Not $hProcess.Term.FlowControl Then Return
   $bSuspend = bSuspend
   Refresh
-  
+
 End

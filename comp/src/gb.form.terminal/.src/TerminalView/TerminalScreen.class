@@ -1228,7 +1228,7 @@ Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer,
     hBold = hChar.Copy()
     Paint.Begin(hChar)
     If L >= 2 Then Paint.DrawImage(hBold, DL, 0)
-    If Odd(L) Then Paint.DrawImage(hBold, DL + 1, 0,,, 0.75)
+    If Odd(L) Then Paint.DrawImage(hBold, DL + 2, 0,,, 0.75)
     Paint.End
   Endif
   
