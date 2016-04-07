@@ -1,8 +1,9 @@
 ' Gambas class file
 
-Public MouseActive As Boolean
-Public BracketedPasteActive As Boolean
 Public Enum MouseDown, MouseUp, MouseMove
+
+Public BracketedPasteActive As Boolean
+
 Public Sub Clear()
   
 End
@@ -15,8 +16,6 @@ Public Sub InputTo((hView) As TerminalView, (hScreen) As TerminalScreen, (hProce
   
 End
 
-Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEvent As Integer)
-  
-  
+Public Sub SendMouseEvent((hProcess) As Process, (X) As Integer, (Y) As Integer, (iEvent) As Integer)
   
 End

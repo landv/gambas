@@ -4,14 +4,10 @@ Inherits TerminalFilter
 
 Private Enum SCAN_NORMAL, SCAN_TITLE, SCAN_SET_CHARSET
 
-Private Enum MODE_AppScreen, 
-MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, 
-MODE_AnsiMODE_132Columns, MODE_Allow132Columns, MODE_BracketedPaste
+Private Enum MODE_AppScreen, MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, MODE_AnsiMODE_132Columns, MODE_Allow132Columns, MODE_BracketedPaste
 
 Private $aMode As New Boolean[13]
 Private $aSavedMode As New Boolean[13]
-Public MouseActive As Boolean
-Public BracketedPasteActive As Boolean
 Private $sLeft As String
 
 
@@ -384,16 +380,16 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     hView.AlternateScreen = True
                   Case "1000"
                     $aMode[MODE_Mouse1000] = True
-                    MouseActive = True
+                    UpdateMouseActive(hView)
                   Case "1001"
                     $aMode[MODE_Mouse1001] = True
-                    MouseActive = True
+                    UpdateMouseActive(hView)
                   Case "1002"
                     $aMode[MODE_Mouse1002] = True
-                    MouseActive = True
+                    UpdateMouseActive(hView)
                   Case "1003"
                     $aMode[MODE_Mouse1003] = True
-                    MouseActive = True
+                    UpdateMouseActive(hView)
                   Case "1005"
                     $aMode[MODE_Mouse1005] = True
                   Case "1006"
@@ -405,7 +401,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     hView.AlternateScreen = True
                     hView._GetCurrentScreen().Clear()
                   Case "2004"
-                    BracketedPasteActive = True
+                    Me.BracketedPasteActive = True
                   Default
                     Goto NOT_IMPLEMENTED
                 End Select
@@ -450,16 +446,16 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     hView.AlternateScreen = False
                   Case "1000"
                     $aMode[MODE_Mouse1000] = False
-                    MouseActive = False
+                    UpdateMouseActive(hView)
                   Case "1001"
                     $aMode[MODE_Mouse1001] = False
-                    MouseActive = False
+                    UpdateMouseActive(hView)
                   Case "1002"
                     $aMode[MODE_Mouse1002] = False
-                    MouseActive = False
+                    UpdateMouseActive(hView)
                   Case "1003"
                     $aMode[MODE_Mouse1003] = False
-                    MouseActive = False
+                    UpdateMouseActive(hView)
                   Case "1005"
                     $aMode[MODE_Mouse1005] = False
                   Case "1006"
@@ -468,14 +464,18 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                     hScreen.Clear
                     $aMode[MODE_AppScreen] = False
                     hView.AlternateScreen = False
-                    MouseActive = False
+                    $aMode[MODE_Mouse1000] = False
+                    $aMode[MODE_Mouse1001] = False
+                    $aMode[MODE_Mouse1002] = False
+                    $aMode[MODE_Mouse1003] = False
+                    UpdateMouseActive(hView)
                   Case "1048"
                     hScreen.RestoreCursor
                   Case "1049"
                     hView.AlternateScreen = False
                     hScreen.RestoreCursor
                   Case "2004"
-                    BracketedPasteActive = False
+                    Me.BracketedPasteActive = False
                   Default
                     Goto NOT_IMPLEMENTED
                 End Select
@@ -757,7 +757,6 @@ Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEven
   Dim sMouse As String
   Dim iButton As Integer = 3
   
-  
   If Mouse.left Then
     iButton = 0
   Else If Mouse.Right Then
@@ -770,7 +769,6 @@ Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEven
     iButton = 4
   Endif
   
-  
   If X < 0 Or Y < 0 Then Return
   
   X += 1
@@ -778,7 +776,7 @@ Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEven
 
    ' With the exception Of the 1006 mode, button release Is Encoded In cb.
    'Note that If multiple extensions are enabled, the 1006 Is Used, so it 's okay to check for only that.
-    If iEvent = Me.MouseMove And Not $aMode[MODE_Mouse1006] Then iButton = 3
+    If iEvent = Me.MouseMove And If Not $aMode[MODE_Mouse1006] Then iButton = 3
   
   'normal buttons are passed As 0 x20 + button,
   'mouse wheel(buttons 4, 5) As 0 x5c + button
@@ -806,3 +804,8 @@ Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEven
   
 End
 
+Private Sub UpdateMouseActive(hView As TerminalView)
+
+  hView._UseMouse($aMode[MODE_Mouse1000] Or $aMode[MODE_Mouse1001] Or $aMode[MODE_Mouse1002] Or $aMode[MODE_Mouse1003])
+
+End

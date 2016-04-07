@@ -38,6 +38,7 @@ Private $bMouseDown As Boolean
 Private $iLimit As Integer = 1000
 Private $bHideCursor As Boolean
 Private $hMouseTimer As Timer
+Private $bTermUseMouse As Boolean
 
 Private $hProcess As Process
 
@@ -58,8 +59,8 @@ Private $hBlinkTimer As Timer
 
 Private $bSuspend As Boolean
 
-Private $iLastMouseX As Integer
-Private $iLastMouseY As Integer
+Private $iMouseX As Integer
+Private $iMouseY As Integer
 
 Public Sub _new()
 
@@ -243,6 +244,10 @@ Public Sub View_Draw()
   ApplyLimit
 
   $hScreen.Paint(GetScrollY() * $LH, $LH, $CW, $iAscent, $bHideCursor, $hCacheFont)
+  
+  If $bTermUseMouse Then
+    Paint.FillRect($iMouseX * $CW, $iMouseY * $LH, $CW, $LH, Color.SetAlpha(Color.SelectedBackground, 64))
+  Endif
 
   If _HasBlink Then
     If Not $hBlinkTimer.Enabled Then $hBlinkTimer.Start
@@ -323,108 +328,130 @@ Private Sub GotoMouse(bStart As Boolean)
 
 End
 
-Private Sub GetMouseXY(ByRef X As Integer, ByRef Y As Integer)
+Private Sub UpdateMouse() As Boolean
 
-  X = CInt((Mouse.ScreenX - $hView.ScreenX) / $CW)
-  Y = CInt((Mouse.ScreenY - $hView.ScreenY) \ $LH)
-  'Print X, Y
-  'Print Mouse.Button
+  Dim X As Integer
+  Dim Y As Integer
+
+  X = (Mouse.ScreenX - $hView.ScreenX) \ $CW
+  Y = (Mouse.ScreenY - $hView.ScreenY) \ $LH
+  
+  If X = $iMouseX And If Y = $iMouseY Then Return
+
+  _RefreshLine($iMouseY + $hScroll.Value)
+  _RefreshLine(Y + $hScroll.Value)
+  
+  $iMouseX = X
+  $iMouseY = Y
+  
+  Return True
+
+End
+
+Private Sub SendMouseEvent(iType As Integer, Optional bIfMove As Boolean)
+
+  Dim bHasMoved As Boolean
+  
+  If $hOutputTimer.Enabled Then $hOutputTimer.Trigger
+  bHasMoved = UpdateMouse()
+  If bIfMove And If Not bHasMoved Then Return
+  If $hProcess Then $hFilter.SendMouseEvent($hProcess, $iMouseX, $iMouseY, iType)
 
 End
 
 Public Sub View_MouseDown()
 
-  Dim X As Integer
-  Dim Y As Integer
-
-  If Mouse.Left Then
-    $bMouseDown = True
-    GotoMouse(True)
-    $hMouseTimer = New Timer(50) As "MouseTimer"
-  Else If Mouse.Middle Then
-    Clipboard.Current = Clipboard.Selection
-    Paste()
-    Clipboard.Current = Clipboard.Default
-  Endif
-
-  If $hFilter.MouseActive Then
-    GetMouseXY(ByRef X, ByRef Y)
-    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
+  If $bTermUseMouse Then
+    
+    SendMouseEvent($hFilter.MouseDown)
+    
+  Else  
+  
+    If Mouse.Left Then
+      $bMouseDown = True
+      GotoMouse(True)
+      $hMouseTimer = New Timer(50) As "MouseTimer"
+    Else If Mouse.Middle Then
+      Clipboard.Current = Clipboard.Selection
+      Paste()
+      Clipboard.Current = Clipboard.Default
+    Endif
+    
   Endif
   'Print "MouseDown"
 End
 
 Public Sub View_MouseMove()
 
-  Dim X As Integer
-  Dim Y As Integer
-
-  If $bMouseDown Then
-    GotoMouse(False)
+  If $bTermUseMouse Then
+    
+    SendMouseEvent($hFilter.MouseMove, True)
+    
   Else
-    If Mouse.X >= ($hView.ClientW - Style.ScrollbarSize) And If $hScroll.MaxValue Then
-      $hScroll.Raise
-      $hScroll.Show
-    Else
-      $hScroll.Hide
-    Endif
-  Endif
-  'X = Mouse.X
-  'Y = Mouse.Y
 
-  If $hFilter.MouseActive Then
-    GetMouseXY(ByRef X, ByRef Y)
-    If $iLastMouseX = X And $iLastMouseY = Y Then Return
-    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseMove)
-    $iLastMouseX = X
-    $iLastMouseY = Y
+    If $bMouseDown Then
+      GotoMouse(False)
+    Else
+      If Mouse.X >= ($hView.ClientW - Style.ScrollbarSize) And If $hScroll.MaxValue Then
+        $hScroll.Raise
+        $hScroll.Show
+      Else
+        $hScroll.Hide
+      Endif
+    Endif
+    
   Endif
 
 End
 
 Public Sub View_MouseUp()
 
-  Dim X As Integer
-  Dim Y As Integer
   Dim sText As String
 
-  If $hMouseTimer Then
-    $hMouseTimer.Stop
-    $hMouseTimer = Null
-  Endif
+  If $bTermUseMouse Then
+    
+    SendMouseEvent($hFilter.MouseUp)
+    
+  Else
 
-  If $bMouseDown Then
-    sText = $hScreen.GetSelectedText()
-    If sText Then
-      Clipboard.Current = Clipboard.Selection
-      Clipboard.Copy(sText, "text/plain")
-      Clipboard.Current = Clipboard.Default
+    If $hMouseTimer Then
+      $hMouseTimer.Stop
+      $hMouseTimer = Null
     Endif
+  
+    If $bMouseDown Then
+      sText = $hScreen.GetSelectedText()
+      If sText Then
+        Clipboard.Current = Clipboard.Selection
+        Clipboard.Copy(sText, "text/plain")
+        Clipboard.Current = Clipboard.Default
+      Endif
+    Endif
+    
   Endif
 
   $bMouseDown = False
 
-  If $hFilter.MouseActive Then
-    GetMouseXY(ByRef X, ByRef Y)
-    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseUp)
-  Endif
-  'Print "MouseUp"
 End
 
 Public Sub View_MouseWheel()
-Dim X As Integer
-  Dim Y As Integer
+
   If Mouse.Control Then
+    
     If Mouse.Forward Then
       $hView.Font.Size = Min(32, $hView.Font.Size * Sqr(Sqr(2)))
     Else
       $hView.Font.Size = Max(6, $hView.Font.Size / Sqr(Sqr(2)))
     Endif
+    
+    Return
+    
   Endif
 
-  If $hFilter.MouseActive Then
-    GetMouseXY(ByRef X, ByRef Y)
-    $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
+  If $bTermUseMouse Then
+    
+    SendMouseEvent($hFilter.MouseDown)
+    
   Endif
 
 End
@@ -444,14 +471,9 @@ Public Sub View_KeyPress()
 End
 
 Public Sub View_DblClick()
-  Dim X As Integer
-  Dim Y As Integer
-  If $hFilter.MouseActive Then
-    If Not $bMouseDown Then 
-      GetMouseXY(ByRef X, ByRef Y)
-      $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
-    Endif
-    
+
+  If $bTermUseMouse And If Not $bMouseDown Then
+    SendMouseEvent($hFilter.MouseDown)
   Endif
   
 End
@@ -716,4 +738,18 @@ Public Sub _Suspend(bSuspend As Boolean)
   $bSuspend = bSuspend
   Refresh
 
+End
+
+Public Sub _UseMouse(bUse As Boolean)
+  
+  If $bTermUseMouse = bUse Then Return
+  
+  $bTermUseMouse = bUse
+  $hView.Mouse = If($bTermUseMouse, Mouse.Blank, Mouse.Text)
+  
+  If $bTermUseMouse Then 
+    UpdateMouse
+    _RefreshLine($iMouseY)
+  Endif
+  
 End
