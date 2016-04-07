@@ -351,7 +351,7 @@ Public Sub View_MouseDown()
     GetMouseXY(ByRef X, ByRef Y)
     $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
   Endif
-
+  'Print "MouseDown"
 End
 
 Public Sub View_MouseMove()
@@ -408,7 +408,7 @@ Public Sub View_MouseUp()
     GetMouseXY(ByRef X, ByRef Y)
     $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseUp)
   Endif
-
+  'Print "MouseUp"
 End
 
 Public Sub View_MouseWheel()
@@ -442,6 +442,20 @@ Public Sub View_KeyPress()
   Endif
 
 End
+
+Public Sub View_DblClick()
+  Dim X As Integer
+  Dim Y As Integer
+  If $hFilter.MouseActive Then
+    If Not $bMouseDown Then 
+      GetMouseXY(ByRef X, ByRef Y)
+      $hFilter.SendMouseEvent($hProcess, X, Y, $hFilter.MouseDown)
+    Endif
+    
+  Endif
+  
+End
+
 
 Private Function Column_Read() As Integer
 
