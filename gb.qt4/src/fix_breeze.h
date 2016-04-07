@@ -36,6 +36,7 @@ public:
 	
 	void drawComplexControl(ComplexControl, const QStyleOptionComplex*, QPainter*, const QWidget*) const;
 	void drawPrimitive(PrimitiveElement, const QStyleOption*, QPainter*, const QWidget*) const;
+	void drawControl(ControlElement, const QStyleOption *, QPainter *, const QWidget *) const;
 
 	QRect visualRect(const QStyleOption* opt, const QRect& subRect) const
 	{ return QProxyStyle::visualRect(opt->direction, opt->rect, subRect); }

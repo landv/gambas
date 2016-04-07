@@ -205,3 +205,17 @@ void FixBreezeStyle::drawComplexControl(ComplexControl element, const QStyleOpti
 	
 	QProxyStyle::drawComplexControl(element, option, painter, widget);
 }
+
+void FixBreezeStyle::drawControl(ControlElement element, const QStyleOption * option, QPainter * painter, const QWidget * widget) const
+{
+	QStyleOptionButton newOption;
+	
+	if (element == CE_PushButtonBevel)
+	{
+		newOption = *(QStyleOptionButton *)option;
+		newOption.iconSize = QSize(0, 0);
+		option = &newOption;
+	}
+	
+	QProxyStyle::drawControl(element, option, painter, widget);
+}
