@@ -433,8 +433,12 @@ Public Function SaveProperty() As Boolean
 
     Case "String[]", "Fields", "Field[]"
 
-      Try vVal = Split(sVal, "\n")
-      If Error Then Goto _BAD
+      If Not sVal Then
+        vVal = Null
+      Else
+        Try vVal = Split(sVal, "\n")
+        If Error Then Goto _BAD
+      Endif
 
     Case "Angle"
       
