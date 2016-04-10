@@ -55,12 +55,13 @@ typedef
 	CSTAT;
 
 #ifndef __GBX_C_FILE_C
-extern GB_DESC NATIVE_StreamLines[];
-extern GB_DESC NATIVE_StreamTerm[];
-extern GB_DESC NATIVE_Stream[];
-extern GB_DESC NATIVE_File[];
-extern GB_DESC NATIVE_Stat[];
-extern GB_DESC NATIVE_StatPerm[];
+extern GB_DESC StreamLinesDesc[];
+extern GB_DESC StreamTermDesc[];
+extern GB_DESC StreamDesc[];
+extern GB_DESC FileDesc[];
+extern GB_DESC StatDesc[];
+extern GB_DESC StatPermDesc[];
+
 extern CFILE *CFILE_in;
 extern CFILE *CFILE_out;
 extern CFILE *CFILE_err;

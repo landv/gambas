@@ -32,6 +32,7 @@
 #include <grp.h>
 #include <sys/stat.h>
 #include <pty.h>
+#include <termios.h>
 
 #include "gb_common.h"
 #include "gb_list.h"
@@ -46,6 +47,7 @@
 #include "gbx_string.h"
 #include "gbx_date.h"
 #include "gbx_watch.h"
+#include "gbx_signal.h"
 
 #include "gbx_c_file.h"
 
@@ -56,9 +58,17 @@ CFILE *CFILE_in, *CFILE_out, *CFILE_err;
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Write);
 
-static GB_FUNCTION read_func;
+static GB_FUNCTION _read_func;
 
 static char _buffer[16];
+
+static bool _term_init = FALSE;
+static bool _has_term_func = FALSE;
+static ushort _term_width = 0;
+static ushort _term_height = 0;
+static SIGNAL_CALLBACK *_SIGWINCH_callback = NULL;
+static GB_FUNCTION _term_resize_func;
+
 
 static void callback_read(int fd, int type, CFILE *file)
 {
@@ -68,10 +78,16 @@ static void callback_read(int fd, int type, CFILE *file)
 		WATCH_little_sleep();
 }
 
-
 static void callback_write(int fd, int type, CFILE *file)
 {
 	GB_Raise(file, EVENT_Write, 0);
+}
+
+static void cb_term_resize(int signum, intptr_t data)
+{
+	_term_width = _term_height = 0;
+	if (_has_term_func)
+		GB_Call(&_term_resize_func, 0, FALSE);
 }
 
 
@@ -134,11 +150,14 @@ void CFILE_exit(void)
 	OBJECT_UNREF(CFILE_in);
 	OBJECT_UNREF(CFILE_out);
 	OBJECT_UNREF(CFILE_err);
+	
+	if (_term_init)
+		SIGNAL_unregister(SIGWINCH, _SIGWINCH_callback);
 }
 
 void CFILE_init_watch(void)
 {
-	if (GB_GetFunction(&read_func, PROJECT_class, "Application_Read", "", "") == 0)
+	if (GB_GetFunction(&_read_func, PROJECT_class, "Application_Read", "", "") == 0)
 	{
 		//fprintf(stderr, "watch stdin\n");
 		OBJECT_attach((OBJECT *)CFILE_in, (OBJECT *)PROJECT_class, "Application");
@@ -852,6 +871,8 @@ BEGIN_METHOD_VOID(StreamLines_next)
 
 END_METHOD
 
+//---------------------------------------------------------------------------
+
 BEGIN_PROPERTY(StreamTerm_Name)
 	
 	GB_ReturnNewZeroString(ttyname(STREAM_FD));
@@ -913,30 +934,69 @@ BEGIN_PROPERTY(StreamTerm_FlowControl)
 
 END_PROPERTY
 
+static void init_term_size(void *_object)
+{
+	struct winsize winSize;
+	
+	if (_term_width == 0 || _term_height == 0)
+	{
+		if (ioctl(STREAM_FD, TIOCGWINSZ, (char *)&winSize))
+			THROW_SYSTEM(errno, NULL);
+		
+		_term_width = winSize.ws_col;
+		_term_height = winSize.ws_row;
+	}
+	
+	if (!_term_init)
+	{
+		_SIGWINCH_callback = SIGNAL_register(SIGWINCH, cb_term_resize, 0);
+		_has_term_func = GB_GetFunction(&_term_resize_func, PROJECT_class, "Application_Resize", "", "") == 0;
+		_term_init = TRUE;
+	}
+}
+
+BEGIN_PROPERTY(StreamTerm_Width)
+
+	init_term_size(_object);
+	GB_ReturnInteger(_term_width);
+
+END_PROPERTY
+
+BEGIN_PROPERTY(StreamTerm_Height)
+
+	init_term_size(_object);
+	GB_ReturnInteger(_term_height);
+
+END_PROPERTY
+
 #endif
 
-GB_DESC NATIVE_StreamLines[] = 
+GB_DESC StreamLinesDesc[] = 
 {
-	GB_DECLARE(".Stream.Lines", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".Stream.Lines"),
 	
 	GB_METHOD("_next", "s", StreamLines_next, NULL),
 	
 	GB_END_DECLARE
 };
 
-GB_DESC NATIVE_StreamTerm[] = 
+GB_DESC StreamTermDesc[] = 
 {
-	GB_DECLARE(".Stream.Term", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".Stream.Term"),
 	
 	GB_PROPERTY_READ("Name", "s", StreamTerm_Name),
 	GB_PROPERTY("Echo", "b", StreamTerm_Echo),
 	GB_PROPERTY("FlowControl", "b", StreamTerm_FlowControl),
+	GB_PROPERTY_READ("Width", "i", StreamTerm_Width),
+	GB_PROPERTY_READ("W", "i", StreamTerm_Width),
+	GB_PROPERTY_READ("Height", "i", StreamTerm_Height),
+	GB_PROPERTY_READ("H", "i", StreamTerm_Height),
 	GB_METHOD("Resize", NULL, StreamTerm_Resize, "(Width)i(Height)i"),
 	
 	GB_END_DECLARE
 };
 
-GB_DESC NATIVE_Stream[] =
+GB_DESC StreamDesc[] =
 {
 	GB_DECLARE("Stream", sizeof(CSTREAM)),
 	GB_NOT_CREATABLE(),
@@ -964,10 +1024,9 @@ GB_DESC NATIVE_Stream[] =
 };
 
 
-GB_DESC NATIVE_StatPerm[] =
+GB_DESC StatPermDesc[] =
 {
-	GB_DECLARE(".Stat.Perm", 0),
-	GB_VIRTUAL_CLASS(),
+	GB_DECLARE_VIRTUAL(".Stat.Perm"),
 
 	GB_METHOD("_get", "s", CFILE_perm_get, "(UserOrGroup)s"),
 	GB_PROPERTY_READ("User", "s", CFILE_perm_user),
@@ -978,7 +1037,7 @@ GB_DESC NATIVE_StatPerm[] =
 };
 
 
-GB_DESC NATIVE_Stat[] =
+GB_DESC StatDesc[] =
 {
 	GB_DECLARE("Stat", sizeof(CSTAT)),
 	GB_NOT_CREATABLE(),
@@ -1007,7 +1066,7 @@ GB_DESC NATIVE_Stat[] =
 };
 
 
-GB_DESC NATIVE_File[] =
+GB_DESC FileDesc[] =
 {
 	GB_DECLARE("File", sizeof(CFILE)),
 	GB_INHERITS("Stream"),

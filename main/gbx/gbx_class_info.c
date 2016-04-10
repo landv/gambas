@@ -358,12 +358,12 @@ extern GB_DESC NATIVE_Components[];
 extern GB_DESC NATIVE_Object[];
 extern GB_DESC NATIVE_Collection[];
 extern GB_DESC NATIVE_Error[];
-extern GB_DESC NATIVE_Stream[];
-extern GB_DESC NATIVE_StreamLines[];
-extern GB_DESC NATIVE_StreamTerm[];
-extern GB_DESC NATIVE_StatPerm[];
-extern GB_DESC NATIVE_Stat[];
-extern GB_DESC NATIVE_File[];
+extern GB_DESC StreamDesc[];
+extern GB_DESC StreamLinesDesc[];
+extern GB_DESC StreamTermDesc[];
+extern GB_DESC StatPermDesc[];
+extern GB_DESC StatDesc[];
+extern GB_DESC FileDesc[];
 extern GB_DESC NATIVE_AppEnv[];
 extern GB_DESC NATIVE_AppArgs[];
 extern GB_DESC NATIVE_App[];
@@ -406,12 +406,12 @@ GB_DESC *GB_CLASSES[] EXPORT =
 	NATIVE_Object,
 	NATIVE_Collection,
 	NATIVE_Error,
-	NATIVE_StreamLines,
-	NATIVE_StreamTerm,
-	NATIVE_Stream,
-	NATIVE_StatPerm,
-	NATIVE_Stat,
-	NATIVE_File,
+	StreamLinesDesc,
+	StreamTermDesc,
+	StreamDesc,
+	StatPermDesc,
+	StatDesc,
+	FileDesc,
 	NATIVE_AppEnv,
 	NATIVE_AppArgs,
 	NATIVE_App,

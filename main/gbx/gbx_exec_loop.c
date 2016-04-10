@@ -3751,6 +3751,8 @@ static void _break(ushort code)
 		TC = PC + 1;
 		TP = SP;
 
+		//fprintf(stderr, "%s\n", DEBUG_get_current_position());
+
 		if (CP && CP->component == COMPONENT_main)
 		{
 			if (EXEC_profile_instr)
