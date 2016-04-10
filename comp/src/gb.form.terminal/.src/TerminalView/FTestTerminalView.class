@@ -26,7 +26,6 @@ End
 
 Public Sub Form_Open()
 
-  TerminalView1.Font.Size = 13.95
   TerminalView1.Exec(["bash"])
 
 End
@@ -75,6 +74,11 @@ End
 '   Dim B As Integer
 ' 
 '   For B = 0 To 1
+'     If B = 0 Then
+'       TerminalView1.Print("\e[m")
+'     Else
+'       TerminalView1.Print("\e[1m")
+'     Endif
 '     For I = &H2500 To &H259F Step 16
 '       TerminalView1.Print(Hex$(I, 4) & ": ")
 '       For J = I To I + 15
@@ -82,13 +86,23 @@ End
 '       Next
 '       TerminalView1.Print("\n\n")
 '     Next
-'     If B = 0 Then
-'       TerminalView1.Print("\e[1m")
-'     Else
-'       TerminalView1.Print("\e[m")
-'     Endif
 '   Next
 '   
+'   TerminalView1.Print("\e[m")
 '   TerminalView1.Print(String$(4, String$(20, String.Chr$(&H2572)) & "\n"))
+'   
+'   For B = 0 To 1
+'     If B = 0 Then
+'       TerminalView1.Print("\e[m")
+'     Else
+'       TerminalView1.Print("\e[1m")
+'     Endif
+'     For I = 256 To 1024
+'       TerminalView1.Print(String.Chr$(I))
+'     Next
+'     TerminalView1.Print("\n\n")
+'   Next
+'   
+'   TerminalView1.Print("\e[m")
 ' 
 ' End

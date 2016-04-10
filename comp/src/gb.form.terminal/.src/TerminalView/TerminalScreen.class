@@ -157,6 +157,10 @@ Public Sub Resize(W As Integer, H As Integer) As Boolean
     $H = H
     $X = Min($X, $W - 1)
     $Y = ScreenTop() + Max(0, Min($Y - ScreenTop(), $H - 1))
+    $X1 = 0
+    $Y1 = 0
+    $X2 = 0
+    $Y2 = 0
     'Debug "$Y = "; $Y
     $iScrollStart = -1
     $iScrollEnd = -1
@@ -730,11 +734,10 @@ Private Function Height_Read() As Integer
 
 End
 
-Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Float, (LA) As Integer, hFontCache As Image)
+Private Sub DrawLine(hView As TerminalView, L As Integer, X As Integer, Y As Integer, LH As Integer, CW As Integer, (LA) As Integer, hFontCache As Image)
 
-  Dim hView As TerminalView = GetView()
   Dim hLine As CTerminalLine
-  Dim I As Integer
+  Dim I, J, K As Integer
   'Dim sText As String
   Dim aAttr As Integer[]
   Dim hAttr As New TerminalAttr
@@ -743,8 +746,7 @@ Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW
   'Dim hRect As Rect
   Dim P, iLen As Integer
   Dim XT As Integer
-  Dim J As Integer
-  Dim C As Integer
+  Dim C, OC As Integer
   Dim hFont As Font
   Dim HC As Integer
   Dim hRect As Rect
@@ -752,6 +754,9 @@ Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW
   Dim YC As Integer
   Dim XC As Integer
   Dim bNoText As Boolean
+  Dim XB, WB As Integer
+  Dim sText As String
+  
 
   hLine = Lines[L]
   If Not hLine Then 
@@ -800,7 +805,7 @@ Private Sub DrawLine(L As Integer, X As Integer, Y As Integer, LH As Integer, CW
     
     If hAttr.Dim Then iFg = Color.Merge(iFg, hView.Background)
     
-    Paint.Background = Color.White
+    'Paint.Background = Color.White
     
     If hAttr.Bold Then
       HC = LH
@@ -831,22 +836,27 @@ DRAW_TEXT:
   
   W = iLen * CW
   
-  If hFontCache Then
+  sText = String.Mid$(hLine.Text, P, iLen)
+  If IsSpace(sText) Then 
   
+    Paint.FillRect(X, Y, W, LH, iBg)
+    
+  Else
+    
     Paint.Begin($hLineCache)
     Paint.Font = hFont
     
     Paint.FillRect(0, 0, W, LH, iFg)
-    
+  
     XT = 0
     
     hRect = Rect(0, 0, CW, LH)
     
     Paint.Operator = Paint.OperatorDestATop
-    For J = P To P + iLen - 1
+    For J = 1 To iLen
       'sCar = String.Mid$(hLine.Text, J, 1)
       
-      C = String.Code(hLine.Text, J)
+      C = String.Code(sText, J)
       
       If C <= 255 Then
         
@@ -855,7 +865,7 @@ DRAW_TEXT:
       
       Else If C >= &H2500 And If C <= &H259F Then
         
-        Paint.Background = Color.White
+        'Paint.Background = Color.White
         DrawLineChar(C, XT, 0, CW, LH, XT, Y, hAttr.Bold)
       
       Else
@@ -868,9 +878,18 @@ DRAW_TEXT:
           
         Else
           
-          If $cCharCache.Count < 32 Then
+          If $cCharCache.Count = 32 Then
+            For Each OC In $cCharCache
+              $cCharCache.Remove($cCharCache.Key)
+              Break
+            Next
+          Else
+            OC = $cCharCache.Count
+          Endif
+          
+          If True '$cCharCache.Count < 32 Then
             
-            XC = $cCharCache.Count * CW
+            XC = OC * CW
             YC = 0
           
             Paint.Begin(hFontCache)
@@ -881,38 +900,39 @@ DRAW_TEXT:
             Paint.Operator = Paint.OperatorOver
             
             Paint.ClipRect = Rect(XC, YC, CW, LH)
-            Paint.Background = Color.White
+            'Paint.Background = Color.White
             GoSub DRAW_CHAR
           
             YC += LH
           
             Paint.ClipRect = Rect(XC, YC, CW, LH)
-            'Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
-            GoSub DRAW_CHAR
-            Paint.Background = Color.SetAlpha(Color.White, 64)
-            'Paint.DrawText(String.Chr(C), XC + 1, YC, CW, LH, Align.Center)
-            Inc XC
-            GoSub DRAW_CHAR
-            Dec XC
+            GoSub DRAW_BOLD_CHAR
+            
+            ' 'Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+            ' GoSub DRAW_CHAR
+            ' Paint.Background = Color.SetAlpha(Color.White, 64)
+            ' 'Paint.DrawText(String.Chr(C), XC + 1, YC, CW, LH, Align.Center)
+            ' Inc XC
+            ' GoSub DRAW_CHAR
+            ' Dec XC
           
             Paint.End
             
             hRect.Move(XC, HC)
             Paint.DrawImage(hFontCache, XT, 0, CW, LH,, hRect)
 
-            $cCharCache[C] = $cCharCache.Count
+            $cCharCache[C] = OC
             
           Else
             
             'Paint.DrawText(String.Chr(C), XT, 0, CW, LH, Align.Center)
             XC = XT
             YC = 0
-            Paint.Background = Color.White
-            GoSub DRAW_CHAR
+            'Paint.Background = Color.White
+            Paint.Operator = Paint.OperatorDestATop
             If hAttr.Bold Then 
-              'Paint.DrawText(String.Chr(C), XT + 1, 0, CW, LH, Align.Center)
-              Inc XC
-              Paint.Background = Color.SetAlpha(Color.White, 64)
+              GoSub DRAW_BOLD_CHAR
+            Else
               GoSub DRAW_CHAR
             Endif
             
@@ -924,7 +944,7 @@ DRAW_TEXT:
       XT += CW
       
     Next
-    
+      
     Paint.End
     
     XT = X
@@ -932,18 +952,9 @@ DRAW_TEXT:
     Paint.FillRect(XT, Y, W, LH, iBg)
     Paint.DrawImage($hLineCache, XT, Y, W, LH,, Rect(0, 0, W, LH))
     
-  Else
-    
-    XT = X
-    
-    Paint.FillRect(XT, Y, W, LH, iBg)
-    Paint.Background = iFg
-    Paint.DrawText(String.Mid$(hLine.Text, P, iLen), XT, Y + LA)
-    If hAttr.Bold Then Paint.DrawText(String.Mid$(hLine.Text, P, iLen), XT + 1, Y + LA)
-    
   Endif
   
-  If hAttr.Underscore Then Paint.FillRect(XT, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
+  If hAttr.Underscore Then Paint.FillRect(X, Y + LH - 1, W, 1, Color.SetAlpha(iFg, 64))
   
   X += W
   P += iLen
@@ -959,6 +970,26 @@ DRAW_NO_TEXT:
 DRAW_CHAR:
 
   Paint.DrawText(String.Chr(C), XC, YC, CW, LH, Align.Center)
+  Return
+  
+DRAW_BOLD_CHAR:
+
+  GoSub DRAW_CHAR
+
+  XB = XC
+  WB = CW \ 8 + 1
+  
+  For K = 1 To WB \ 2
+    Inc XC
+    GoSub DRAW_CHAR
+  Next
+  If Odd(WB) Then
+    Paint.Background = Color.SetAlpha(Color.White, 64)
+    Inc XC
+    GoSub DRAW_CHAR
+  Endif
+
+  XC = XB
   Return
   
 End
@@ -1001,7 +1032,7 @@ Public Sub Paint(SY As Integer, LH As Integer, CW As Float, LA As Integer, bHide
   
   For L = L1 To L2
     
-    If L < Lines.Count Then DrawLine(L, 0, Y, LH, CW, LA, hFont)
+    If L < Lines.Count Then DrawLine(hView, L, 0, Y, LH, CW, LA, hFont)
 
     ' Cursor
 
@@ -1228,7 +1259,7 @@ Private Sub DrawLineChar(C As Integer, X As Integer, Y As Integer, W As Integer,
     hBold = hChar.Copy()
     Paint.Begin(hChar)
     If L >= 2 Then Paint.DrawImage(hBold, DL, 0)
-    If Odd(L) Then Paint.DrawImage(hBold, DL + 2, 0,,, 0.75)
+    If Odd(L) Then Paint.DrawImage(hBold, DL + 1, 0,,, 0.75)
     Paint.End
   Endif
   

@@ -62,6 +62,8 @@ Private $bSuspend As Boolean
 Private $iMouseX As Integer
 Private $iMouseY As Integer
 
+'Private $bDoubleFont As Boolean = True
+
 Public Sub _new()
 
   Me.Font = Font["monospace"]
@@ -161,6 +163,8 @@ Private Sub UpdateFont()
   Dim I As Integer
   Dim L As Integer
   Dim W As Integer
+  ' Dim hZoom As Image
+  Dim X As Integer
 
   With $hView.Font
 
@@ -168,7 +172,7 @@ Private Sub UpdateFont()
     $iAscent = .Ascent
     sText = String$(8, "mM0_@$#W")
     $CW = CInt(.TextWidth(sText) / Len(sText))
-
+    
     $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
     Paint.Begin($hCacheFont)
       Paint.Font = $hView.Font
@@ -178,6 +182,29 @@ Private Sub UpdateFont()
       For I = 160 To 255
         GoSub DRAW_CHAR
       Next
+    Paint.End
+
+    ' If $bDoubleFont Then
+    '   hZoom = New Image($hCacheFont.W * 2, $hCacheFont.H * 2, Color.Transparent)
+    '   Paint.Begin(hZoom)
+    '   Paint.ZoomImage($hCacheFont, 2, 0, 0)
+    '   Paint.End
+    '   $hCacheFont = hZoom
+    '   $CW *= 2
+    '   $LH *= 2
+    ' Endif
+
+    ' Make bold font
+    
+    Paint.Begin($hCacheFont)
+
+    For I = 33 To 126
+      GoSub DRAW_BOLD_CHAR
+    Next
+    For I = 160 To 255
+      GoSub DRAW_BOLD_CHAR
+    Next
+
     Paint.End
 
     '$hCacheFont.Save("~/cache.png")
@@ -196,17 +223,24 @@ DRAW_CHAR:
   Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH)
   Paint.Background = Color.White
   Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+  
+  Return
+  
+DRAW_BOLD_CHAR:
 
-  Paint.ClipRect = Rect(I * $CW, $LH, $CW, $LH)
-  Paint.DrawText(String.Chr(I), I * $CW, $LH, $CW, $LH, Align.Center)
+  X = I * $CW
+  
+  Paint.ClipRect = Rect(X, $LH, $CW, $LH)
+  
+  Paint.DrawImage($hCacheFont, X, $LH, $CW, $LH,, Rect(X, 0, $CW, $LH))
 
   W = $CW \ 8 + 1
   For L = 1 To W \ 2
-    Paint.DrawText(String.Chr(I), I * $CW + L, $LH, $CW, $LH, Align.Center)
+    Paint.DrawImage($hCacheFont, X + L, $LH, $CW, $LH,, Rect(X, 0, $CW, $LH))
   Next
   If Odd(W) Then
     Paint.Background = Color.SetAlpha(Color.White, 64)
-    Paint.DrawText(String.Chr(I), I * $CW + L, $LH, $CW, $LH, Align.Center)
+    Paint.DrawImage($hCacheFont, X + L, $LH, $CW, $LH,, Rect(X, 0, $CW, $LH))
   Endif
 
   Return
