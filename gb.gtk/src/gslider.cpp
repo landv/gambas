@@ -42,9 +42,6 @@ void gSlider::init()
 {
 	GtkAdjustment* adj = gtk_range_get_adjustment(GTK_RANGE(widget));
 	
-	//if (_min == _max)
-	//	_max = _min + 1;
-	
 	if (_value < _min)
 		_value = _min;
 	else if (_value > _max)
@@ -52,6 +49,10 @@ void gSlider::init()
 	
 	if (g_typ == Type_gSlider)
 	{
+#ifndef GTK3
+	if (_min == _max)
+		_max = _min + 1;
+#endif
 		gtk_range_set_range(GTK_RANGE(widget), (gdouble)_min, (gdouble)_max);
 		gtk_range_set_increments(GTK_RANGE(widget), (gdouble)_step, (gdouble)_page_step);
 	}
@@ -203,8 +204,8 @@ int gSlider::value()
 void gSlider::setMax(int vl)
 {
 	_max = vl;
-	if (_min >= _max)
-		_min = _max - 1;
+	if (_min > _max)
+		_min = _max;
 	init();
 	updateMark();
 }
@@ -212,8 +213,8 @@ void gSlider::setMax(int vl)
 void gSlider::setMin(int vl)
 {
 	_min = vl;
-	if (_min >= _max)
-		_max = _min + 1;
+	if (_min > _max)
+		_max = _min;
 	init();
 	updateMark();
 }
