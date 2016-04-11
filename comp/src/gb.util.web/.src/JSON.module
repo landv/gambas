@@ -9,6 +9,12 @@ Private $sStr As String
 Private $iPos As Integer
 Private $bUseNull As Boolean
 
+Public Sub _init()
+  
+  $vNull = VarPtr($vNull)
+  
+End
+
 Private Sub GetChar() As String
   
   Dim sCar As String
@@ -260,7 +266,6 @@ Public Sub Decode(JSONString As String, Optional UseNull As Boolean) As Variant
   $sStr = JSONString
   $iPos = 1
   $bUseNull = UseNull
-  If UseNull And If IsNull($vNull) Then $vNull = VarPtr($vNull)
   vVal = ReadValue()
   $bUseNull = False
   $sStr = ""
