@@ -1,0 +1,13 @@
+' Gambas class file
+
+Inherits Control
+
+Property Read Children As Control[]
+
+Private $aCHildren As New Control[]
+
+Private Function Children_Read() As Control[]
+
+  Return $aCHildren
+
+End

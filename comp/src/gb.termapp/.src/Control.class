@@ -1,0 +1,63 @@
+' Gambas class file
+
+Property Top, Row As Integer
+Property Left, Column As Integer
+Property Width As Integer
+Property Height As Integer
+
+Private $iRow As Integer
+Private $iColumn As Integer 
+Private $iWidth As Integer
+Private $iHeight As Integer
+
+Public _Content As New CLine[]
+
+Private Function Top_Read() As Integer
+
+  Return $iRow
+
+End
+
+Private Sub Top_Write(Value As Integer)
+
+  $iRow = Value 
+
+End
+
+
+Private Function Left_Read() As Integer
+
+  Return $iColumn
+
+End
+
+Private Sub Left_Write(Value As Integer)
+
+  $iColumn = Value
+
+End
+
+Private Function Width_Read() As Integer
+
+  Return $iWidth
+
+End
+
+Private Sub Width_Write(Value As Integer)
+
+  $iWidth = Value
+
+End
+
+Private Function Height_Read() As Integer
+
+  Return $iHeight
+
+End
+
+Private Sub Height_Write(Value As Integer)
+  
+  _Content = New CLine[Value]
+  $iHeight = Value
+
+End

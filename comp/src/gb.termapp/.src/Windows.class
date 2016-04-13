@@ -1,0 +1,24 @@
+' Gambas class file
+
+Create Static
+
+
+Static Private aAreas As Integer[]
+Static Private $iScrWidth As Integer
+Static Private $iScrHeight As Integer
+
+Static Private $aWindows As New Window[]
+
+Static Public Sub _init()
+  
+  aAreas = New Integer[23, 80]
+  $iScrHeight = 23
+  $iScrWidth = 80
+  
+End
+
+Public Sub _Add(hWin As Window)
+  
+  $aWindows.Add(hWin)
+  
+End
