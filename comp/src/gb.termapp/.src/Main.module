@@ -2,6 +2,21 @@
 
 Public Sub Main()
 
-  Print "Hello world"
+  Dim hWIn As New Window
+  Dim hLab1 As New Label(hWin)
+  Dim hLab2 As New Label(hWIn)
+  Dim hC As Control
+  
+  hWIn.Tag = "Win"
+  
+  hLab1.Tag = 1
+  hLab2.Tag = 2
+  
+  For Each hC In hWIn.Children
+    Print hC.Tag  
+    
+  Next
+  
+  
 
 End

@@ -11,3 +11,10 @@ Private Function Children_Read() As Control[]
   Return $aCHildren
 
 End
+
+
+Public Sub _Add(hChild As Control)
+
+  $aCHildren.Add(hChild)
+  
+End

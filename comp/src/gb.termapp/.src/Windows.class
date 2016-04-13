@@ -9,6 +9,9 @@ Static Private $iScrHeight As Integer
 
 Static Private $aWindows As New Window[]
 
+
+
+
 Static Public Sub _init()
   
   aAreas = New Integer[23, 80]
@@ -20,5 +23,6 @@ End
 Public Sub _Add(hWin As Window)
   
   $aWindows.Add(hWin)
+  Print hWin.Tag
   
 End

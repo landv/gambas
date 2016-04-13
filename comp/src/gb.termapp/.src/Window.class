@@ -1,3 +1,18 @@
 ' Gambas class file
 
 Inherits Container
+Property Text, Title As String
+
+Private $sText As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End

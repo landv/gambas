@@ -1,3 +1,30 @@
 ' Gambas class file
 
 Inherits Control
+
+Property Text As String
+
+Private $sText As String
+
+Private Function Text_Read() As String
+
+  Return $sText
+
+End
+
+Private Sub Text_Write(Value As String)
+
+  $sText = Value
+
+End
+
+Public Sub _Render()
+  
+  Dim hLine As CLine
+  
+  Super._Render
+  
+  hLine = Me._Content[0]
+  Mid(hLine.Text, 0, Len($sText)) = $sText
+  
+End
