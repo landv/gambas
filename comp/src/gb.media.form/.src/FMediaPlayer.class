@@ -13,6 +13,7 @@ Private $iMute As Integer
 'Private $bNoVideo As Boolean
 Private $sName As String
 Private $bMutedIcon As Boolean
+Private $fStartupPos As Float
 
 Private Sub MakeMediaPlayer()
   
@@ -116,8 +117,8 @@ Public Sub btnStop_Click()
   timTime.Stop
   $fLength = 0
   HidePause
-  dwgTime.Hide
-  dwgTime.Show
+  dwgVideo.Refresh
+  dwgTime.Refresh
 
 End
 
@@ -173,7 +174,14 @@ Private Sub UpdateTime()
   fPos = $hPlayer.Position
   If fPos = 0 Then Return
   $fPos = fPos
-  If $fLength = 0 Then $fLength = $hPlayer.Duration
+  If $fLength = 0 Then
+    $fLength = $hPlayer.Duration
+    If $fStartupPos Then
+      SetPosition($fStartupPos)
+      $fStartupPos = 0
+      Return
+    Endif
+  Endif
   dwgTime.Refresh
   
 End
@@ -189,9 +197,9 @@ Public Sub dwgTime_Draw()
 
   Dim sText As String
   
-  Paint.Brush = Paint.LinearGradient(0, 0, Paint.W, 0, [Color.SetAlpha(Color.Foreground, 240), Color.Transparent], [0, 1])
-  Paint.Rectangle(0, 0, Paint.W, Paint.H)
-  Paint.Fill
+  'Paint.Brush = Paint.LinearGradient(0, 0, Paint.W, 0, [Color.SetAlpha(Color.Foreground, 240), Color.Transparent], [0, 1])
+  'Paint.Rectangle(0, 0, Paint.W, Paint.H)
+  'Paint.Fill
   
   If Not $hPlayer Or If $hPlayer.State = Media.Null Then Return
   If dwgTime.H < 16 Then Return
@@ -209,9 +217,9 @@ Public Sub dwgTime_Draw()
   Endif
   
   Paint.Background = Color.Foreground
-  Paint.DrawText(sText, 0, 0, dwgTime.W - 6, dwgTime.H, Align.Right)
+  Paint.DrawText(sText, 0, 0, dwgTime.W, dwgTime.H, Align.Right)
 
-  If $fLength > 0 Then Paint.FillRect(6, 7, (dwgTime.W - 12) * Min(1, $fPos / $fLength), dwgTime.H - 14, Color.SetAlpha(Color.Foreground, 192))
+  If $fLength > 0 Then Paint.FillRect(0, 7, dwgTime.W * Min(1, $fPos / $fLength), dwgTime.H - 14, Color.SetAlpha(Color.Foreground, 192))
   
 End
 
@@ -219,7 +227,7 @@ Private Sub SetPos(fPos As Float)
   
   If $hPlayer.State = Media.Paused Or If $hPlayer.State = Media.Playing Then
     If $fLength Then
-      $fPos = fPos * $fLength
+      $fPos = Max(0, Min($fLength, fPos * $fLength))
       $hPlayer.Position = $fPos
       dwgTime.Refresh
     Endif
@@ -324,8 +332,6 @@ Public Sub Stop()
   
 End
 
-
-
 Public Sub panBorder_BeforeArrange()
 
   If panBorder.H < Desktop.Scale * 10 Then
@@ -339,3 +345,40 @@ Public Sub panBorder_BeforeArrange()
 
 End
 
+Public Sub GetDuration() As Float
+  
+  Return $fLength
+  
+End
+
+Public Sub GetPosition() As Float
+  
+  Return $fPos
+  
+End
+
+Public Sub SetPosition(fPos As Float)
+  
+  If $fLength Then
+    SetPos(fPos / $fLength)
+  Else
+    $fStartupPos = fPos
+  Endif
+  
+End
+
+Public Sub dwgTime_MouseWheel()
+
+  If Mouse.Forward Then
+    SetPosition(GetPosition() + 10)
+  Else
+    SetPosition(GetPosition() - 10)
+  Endif
+
+End
+
+Public Sub dwgVideo_MouseWheel()
+
+  dwgTime_MouseWheel
+
+End
