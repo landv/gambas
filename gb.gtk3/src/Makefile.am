@@ -10,7 +10,7 @@ gb_gtk3_la_LDFLAGS = -module @LD_FLAGS@ @GTK3_LDFLAGS@
 gb_gtk3_la_CPPFLAGS = @GTK3_INC@ -I$(top_srcdir)/share -DGTK3 -DGTK_DISABLE_SINGLE_INCLUDES -DGSEAL_ENABLE
 
 gb_gtk3_la_SOURCES = \
-	gmemory.h gmemory.cpp gtag.h ggambastag.h gshare.h \
+	gtag.h ggambastag.h gshare.h \
 	gb.gtk.h widgets.h font-parser.h font-parser.cpp \
 	gtools.cpp gcolor.h \
 	gfont.cpp gpicture.cpp \

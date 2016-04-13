@@ -611,9 +611,8 @@ void gMainWindow::setVisible(bool vl)
 			}*/
 			
 			// Thanks for Ubuntu's GTK+ patching :-(
-			#if GTK_CHECK_VERSION(3,0,0)
-			gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
-			#else
+			#ifndef GTK3
+			//gtk_window_set_has_resize_grip(GTK_WINDOW(border), false);
 			if (g_object_class_find_property(G_OBJECT_GET_CLASS(border), "has-resize-grip"))
 				g_object_set(G_OBJECT(border), "has-resize-grip", false, (char *)NULL);
 			#endif
@@ -1170,7 +1169,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
 		
 		new_border = gtk_event_box_new();
-		gtk_widget_reparent(widget, new_border);
+		gt_widget_reparent(widget, new_border);
 		embedMenuBar(new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
@@ -1205,7 +1204,7 @@ void gMainWindow::reparent(gContainer *newpr, int x, int y)
 		gtk_window_remove_accel_group(GTK_WINDOW(topLevel()->border), accel);
 		// TODO: test that
 		new_border = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-		gtk_widget_reparent(widget, new_border);
+		gt_widget_reparent(widget, new_border);
 		embedMenuBar(new_border);
 		_no_delete = true;
 		gtk_widget_destroy(border);
@@ -1514,7 +1513,7 @@ void gMainWindow::embedMenuBar(GtkWidget *border)
 
 		g_object_unref(G_OBJECT(menuBar));
 	
-		gtk_widget_reparent(widget, GTK_WIDGET(layout));
+		gt_widget_reparent(widget, GTK_WIDGET(layout));
 		gtk_container_add(GTK_CONTAINER(border), GTK_WIDGET(layout));
 	
 		gtk_widget_show(GTK_WIDGET(menuBar));

@@ -40,10 +40,6 @@ public:
 	void setToolTip(char *txt);
 	bool isVisible();
 	void setVisible(bool vl);
-	int screenX();
-	int screenY();
-	int width();
-	int height();
 	
 //"Methods"
 	void destroy();

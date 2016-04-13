@@ -1304,7 +1304,7 @@ static void handle_focus_change()
 		return;
 
 	_focus_change = TRUE;
-	GB.Post((void (*)())post_focus_change, NULL);
+	GB.Post((void (*)())post_focus_change, (intptr_t)NULL);
 }
 
 void gApplication::setActiveControl(gControl *control, bool on)

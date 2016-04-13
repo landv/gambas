@@ -275,46 +275,6 @@ void gTrayIcon::setVisible(bool vl)
 	}
 }
 
-int gTrayIcon::screenX()
-{
-	GdkRectangle area;
-
-	if (!plug || !gtk_status_icon_get_geometry(plug, NULL, &area, NULL))
-		return 0;
-
-	return area.x;
-}
-
-int gTrayIcon::screenY()
-{
-	GdkRectangle area;
-
-	if (!plug || !gtk_status_icon_get_geometry(plug, NULL, &area, NULL))
-		return 0;
-
-	return area.y;
-}
-
-int gTrayIcon::width()
-{
-	GdkRectangle area;
-
-	if (!plug || !gtk_status_icon_get_geometry(plug, NULL, &area, NULL))
-		return 0;
-
-	return area.width;
-}
-
-int gTrayIcon::height()
-{
-	GdkRectangle area;
-
-	if (!plug || !gtk_status_icon_get_geometry(plug, NULL, &area, NULL))
-		return 0;
-
-	return area.height;
-}
-
 void gTrayIcon::exit()
 {
 	gTrayIcon *icon;

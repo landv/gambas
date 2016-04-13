@@ -60,8 +60,8 @@
 #include "gcontrol.h"
 #include "gcontainer.h"
 #include "gtools.h"
-#include "gmemory.h"
 
+#include "main.h"
 //#define GTK_DEBUG_SIGNALS
 //#define GTK_DEBUG_OBJECTS
 

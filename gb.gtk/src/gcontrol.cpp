@@ -2008,14 +2008,14 @@ void gControl::reparent(gContainer *newpr, int x, int y)
 
 	if (oldpr == newpr)
 	{
-		gtk_widget_reparent(border, newpr->getContainer());
+		gt_widget_reparent(border, newpr->getContainer());
 		oldpr->performArrange();
 	}
 	else
 	{
 		if (oldpr)
 		{
-			gtk_widget_reparent(border, newpr->getContainer());
+			gt_widget_reparent(border, newpr->getContainer());
 			oldpr->remove(this);
 			oldpr->performArrange();
 		}

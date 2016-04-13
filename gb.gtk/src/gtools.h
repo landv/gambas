@@ -210,4 +210,10 @@ int gt_get_preferred_width(GtkWidget *widget);
 bool gt_grab(GtkWidget *widget, bool owner_event, guint32 time);
 void gt_ungrab();
 
+#ifdef GTK3
+void gt_widget_reparent(GtkWidget *widget, GtkWidget *new_parent);
+#else
+#define gt_widget_reparent gtk_widget_reparent
+#endif
+
 #endif

@@ -2293,3 +2293,18 @@ void gt_ungrab(void)
 	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 #endif
 }
+
+#ifdef GTK3
+void gt_widget_reparent(GtkWidget *widget, GtkWidget *new_parent)
+{
+  GtkWidget *parent = gtk_widget_get_parent(widget);
+  
+  if (parent == new_parent)
+    return;
+  
+  g_object_ref(widget);
+  gtk_container_remove(GTK_CONTAINER(parent), widget);
+  gtk_container_add(GTK_CONTAINER(new_parent), widget);
+  g_object_unref(widget);
+}
+#endif

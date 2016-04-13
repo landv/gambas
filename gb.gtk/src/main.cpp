@@ -25,7 +25,6 @@
 
 #include <stdio.h>
 
-#include "gmemory.h"
 #include "main.h"
 #include "gb.image.h"
 #include "gb.gtk.h"

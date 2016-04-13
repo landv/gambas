@@ -24,7 +24,8 @@
 #include <gtk/gtk.h>
 #include <string.h>
 #include <stdlib.h>
-#include "gmemory.h"
+
+#include "gpicture.h"
 #include "gtree.h"
 	
 #if GTK_CHECK_VERSION(2, 12, 0)
