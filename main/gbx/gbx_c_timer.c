@@ -49,7 +49,7 @@ CTIMER *CTIMER_every(int delay, GB_TIMER_CALLBACK callback, intptr_t param)
 {
 	CTIMER *timer;
 
-	timer = OBJECT_create_native(CLASS_Timer, NULL);
+	timer = OBJECT_create(CLASS_Timer, NULL, NULL, 0);
 	OBJECT_REF(timer);
 	timer->callback = callback;
 	timer->delay = delay;
