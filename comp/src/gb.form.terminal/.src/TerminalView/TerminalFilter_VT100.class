@@ -7,7 +7,7 @@ Private Enum SCAN_NORMAL, SCAN_TITLE, SCAN_SET_CHARSET
 Private Enum MODE_AppScreen, MODE_AppCuKeys, MODE_AppKeyPad, MODE_Mouse1000, MODE_Mouse1001, MODE_Mouse1002, MODE_Mouse1003, MODE_Mouse1005, MODE_Mouse1006, MODE_Mouse1015, MODE_AnsiMODE_132Columns, MODE_Allow132Columns, MODE_BracketedPaste
 
 Private $aMode As New Boolean[13]
-Private $aSavedMode As New Boolean[13]
+'Private $aSavedMode As New Boolean[13]
 Private $sLeft As String
 
 
@@ -21,6 +21,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
   Dim sCmd As String
   Dim sStr As String
   Dim iNum As Integer
+  Dim iPosEraseScreen As Integer
   
   If hView._DisableFilter Then
     $sLeft &= sData
@@ -37,6 +38,10 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
     Return
   Endif
   
+  'If Len(sData) >= 4096 Then
+    iPosEraseScreen = RInStr(sData, "\e[2J")
+  'Endif
+  
   Do
     
     hScreen = hView._GetCurrentScreen()
@@ -49,7 +54,7 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
       Break
     Endif
     
-    If iPos2 > iPos Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
+    If iPos2 > iPos And If iPos > iPosEraseScreen Then hScreen.Print(Mid$(sData, iPos, iPos2 - iPos))
     
     iPos = iPos2
     Inc iPos
@@ -754,7 +759,6 @@ End
 Public Sub SendMouseEvent(hProcess As Process, X As Integer, Y As Integer, iEvent As Integer)
 
   Dim sCommand As String
-  Dim sMouse As String
   Dim iButton As Integer = 3
   
   If Mouse.left Then

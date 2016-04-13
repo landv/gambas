@@ -165,6 +165,7 @@ Private Sub UpdateFont()
   Dim W As Integer
   ' Dim hZoom As Image
   Dim X As Integer
+  Dim C As Integer
 
   With $hView.Font
 
@@ -173,15 +174,21 @@ Private Sub UpdateFont()
     sText = String$(8, "mM0_@$#W")
     $CW = CInt(.TextWidth(sText) / Len(sText))
     
-    $hCacheFont = New Image($CW * 256, $LH * 2, Color.Transparent)
+    $hCacheFont = New Image($CW * 416, $LH * 2, Color.Transparent)
     Paint.Begin($hCacheFont)
-      Paint.Font = $hView.Font
-      For I = 33 To 126
-        GoSub DRAW_CHAR
-      Next
-      For I = 160 To 255
-        GoSub DRAW_CHAR
-      Next
+    Paint.Font = $hView.Font
+    For I = 33 To 126
+      C = I
+      GoSub DRAW_CHAR
+    Next
+    For I = 160 To 255
+      C = I
+      GoSub DRAW_CHAR
+    Next
+    For I = 256 To 415
+      C = &H2500 + I - 256
+      GoSub DRAW_CHAR
+    Next
     Paint.End
 
     ' If $bDoubleFont Then
@@ -201,7 +208,7 @@ Private Sub UpdateFont()
     For I = 33 To 126
       GoSub DRAW_BOLD_CHAR
     Next
-    For I = 160 To 255
+    For I = 160 To 415
       GoSub DRAW_BOLD_CHAR
     Next
 
@@ -221,8 +228,12 @@ DRAW_CHAR:
   Paint.Operator = Paint.OperatorOver
 
   Paint.ClipRect = Rect(I * $CW, 0, $CW, $LH)
-  Paint.Background = Color.White
-  Paint.DrawText(String.Chr(I), I * $CW, 0, $CW, $LH, Align.Center)
+  If C < 256 Then
+    Paint.Background = Color.White
+    Paint.DrawText(String.Chr(C), I * $CW, 0, $CW, $LH, Align.Center)
+  Else
+    TerminalScreen.DrawLineChar(C, I * $CW, 0, $CW, $LH, 0, 0, False)
+  Endif
   
   Return
   

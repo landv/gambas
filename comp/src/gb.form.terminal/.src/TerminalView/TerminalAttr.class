@@ -34,7 +34,7 @@ Public Sub IsVoid() As Boolean
   
 End
 
-Public Sub FillFrom(iAttr As Integer)
+Public Sub _FillFrom(iAttr As Integer)
 
   If BTst(iAttr, FLAG_BG) Then
     Background = Lsr(iAttr, 16) And 255
