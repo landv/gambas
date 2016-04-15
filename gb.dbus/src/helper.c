@@ -186,6 +186,7 @@ static const char *to_dbus_type(GB_VALUE *arg)
 			while (a--)
 				result = GB.AddChar(result, 'a');
 			result = GB.AddString(result, dtype, strlen(dtype));
+			GB.FreeStringLater(result);
 			
 			return result;
 		}

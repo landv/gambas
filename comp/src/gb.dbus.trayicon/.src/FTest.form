@@ -2,7 +2,6 @@
 
 { Form Form
   MoveScaled(0,0,64,64)
-  Persistent = True
   { Menu1 Menu
     Text = ("Menu1")
     { Menu2 Menu
@@ -53,7 +52,7 @@
     #MoveScaled(22,14)
     Visible = True
     PopupMenu = "Menu1"
-    Tooltip = "Hello tooltip !"
+    Tooltip = ("Hello tooltip !")
   }
   { Button1 Button
     MoveScaled(5,4,16,4)
