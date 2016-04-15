@@ -98,6 +98,7 @@ aT        ARRAY             Array
 {TT}      DICT_ENTRY        Collection
 
 ***************************************************************************/
+
 typedef
 	struct {
 		const char *name;
@@ -128,6 +129,10 @@ CONV_TYPE _conv_type[] =
 static const char *to_dbus_type(GB_VALUE *arg)
 {
 	CONV_TYPE *p;
+	GB_TYPE type, atype;
+	int a;
+	const char *dtype;
+	char *result;
 	
 	switch(arg->type)
 	{
@@ -145,6 +150,8 @@ static const char *to_dbus_type(GB_VALUE *arg)
 
 	if (arg->type >= GB_T_OBJECT)
 	{
+		//fprintf(stderr, "%s\n", GB.GetClassName((void *)arg->type));
+		
 		for (p = _conv_type; p->name; p++)
 		{
 			if (GB.FindClass(p->name) == arg->type)
@@ -152,7 +159,36 @@ static const char *to_dbus_type(GB_VALUE *arg)
 		}
 				
 		if (GB.Is(arg->_object.value, GB.FindClass("Array")))
-			return "av";
+		{
+			type = arg->type;
+			a = 0;
+			
+			for(;;)
+			{
+				atype = GB.GetArrayType(type);
+				if (atype <= GB_T_OBJECT)
+					break;
+				type = atype;
+				a++;
+			}
+			
+			dtype = "v";
+			for (p = _conv_type; p->name; p++)
+			{
+				if (GB.FindClass(p->name) == type)
+				{
+					dtype = p->dbus;
+					break;
+				}
+			}
+			
+			result = NULL;
+			while (a--)
+				result = GB.AddChar(result, 'a');
+			result = GB.AddString(result, dtype, strlen(dtype));
+			
+			return result;
+		}
 		
 		if (GB.Is(arg->_object.value, CLASS_DBusVariant))
 			return "v";

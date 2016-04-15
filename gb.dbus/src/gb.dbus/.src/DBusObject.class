@@ -598,17 +598,9 @@ Public Sub DBusObserver_Message()
   If $aInterface And If sInterface <> $sInterface Then
     sMethod = Replace(sInterface, ".", "_") & "_" & sMethod
   Endif
-  
-  ' If InStr(sMethod, "XAyatana") Then
-  '   With $hObserver.Message.Arguments
-  '     Print sMethod
-  '     For I = 0 To .Max
-  '       Print "["; I; "] "; .[I]
-  '     Next
-  '   End With
-  ' Endif
 
   sType = Object.Class(Me)[sMethod].Type
+  
   If sType Then
     vVal = Object.Call(Me, sMethod, hObs.Message.Arguments)
     If TypeOf(vVal) = gb.Object And If vVal Is DBusValues Then
