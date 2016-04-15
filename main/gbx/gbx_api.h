@@ -102,6 +102,7 @@ char *GB_GetClassName(void *object);
 void *GB_FindClass(const char *name);
 bool GB_ExistClass(const char *name);
 bool GB_ExistClassLocal(const char *name);
+TYPE GB_GetArrayType(void *klass);
 
 char *GB_ToZeroString(GB_STRING *src);
 
