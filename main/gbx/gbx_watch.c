@@ -500,6 +500,9 @@ static void raise_callback(fd_set *rfd, fd_set *wfd)
 			}
 		}
 
+		if (watch_callback[i].fd < 0)
+			continue;
+		
 		if (FD_ISSET(wcb.fd, wfd))
 		{
 			FD_CLR(wcb.fd, wfd);
