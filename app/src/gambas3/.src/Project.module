@@ -1158,6 +1158,9 @@ Public Sub GetFileIcon(sPath As String, Optional iSize As Integer, hStat As Stat
 
         Case "connection"
           sIcon = sLocalPrefix &/ "database.png"
+          
+        Case "console"
+          sIcon = sLocalPrefix &/ "console.png"
 
       End Select
 
@@ -1322,11 +1325,11 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
   Dim bChecked As Boolean
   Dim bDir As Boolean
   Dim sAfter As String
-  'Dim hForm As Object
   Dim hModule As CModule
   Dim bSource As Boolean
   Dim bExtern As Boolean
   Dim hStat As Stat
+  Dim sTitle As String
 
   If $cProjectFilter And If Not $cProjectFilter.Exist(sDir &/ sFile) Then Return
 
@@ -1349,6 +1352,8 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
     sParent = KEY_EXTERN
     If Not ProjectTree.Exist(KEY_EXTERN) Then ProjectTree.Add(KEY_EXTERN, ("Files"), Picture["icon:/small/system"], Project.Dir)
     bExtern = True
+    Try sTitle = Files[sPath].GetTitle()
+    If sTitle Then sFile = sTitle
   Endif
 
   If Not ProjectTree.Exist(sParent) Then Return
@@ -1444,6 +1449,7 @@ Private Sub AddFile(sDir As String, sFile As String, Optional bAfter As Boolean,
 
         If Components.Exist("gb.db") And If sExt = "connection" Then
           sFile = File.BaseName(sFile)
+          bChecked = True
         Else
           bIgnore = True
         Endif
@@ -2251,14 +2257,14 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
     RefreshKey(sPath)
   Endif
   
-  If Not ProjectTree.Exist(sPath) Then
-    RefreshKey(sPath)
-  Endif
-  
   If Files[sPath] Then bAlreadyLoaded = True
 
   LoadFile(sPath)
 
+  If Not ProjectTree.Exist(sPath) Then
+    RefreshKey(sPath)
+  Endif
+  
   hForm = Files[sPath]
   If Not hForm Then Return
 
@@ -5554,7 +5560,8 @@ Public Sub DrawTitle(hForm As Object, Optional bNoReadOnly As Boolean)
   'If IsSourcePath(sPath) Or If IsConnectionPath(sPath) Then
   '  sTitle = File.BaseName(sPath)
   'Else
-  sTitle = File.Name(sPath)
+  Try sTitle = hForm.GetTitle()
+  If Not sTitle Then sTitle = File.Name(sPath)
   'Endif
 
   If hForm.IsModified() Then sTitle &= " (*)" & Left(("modified"), 0)

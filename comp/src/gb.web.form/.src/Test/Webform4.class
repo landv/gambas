@@ -7,13 +7,23 @@ Public Sub _new()
 End
 
 
-Public Sub WebButton1_Click()
+Public Sub WebUploadArea1_Progress()
 
+  btnSelectFile.Enabled = False
+  WebProgressBar1.Value = WebUploadArea1.Progress
+
+End
+
+Public Sub WebUploadArea1_Upload()
+
+  Dim sPath As String
+
+  btnSelectFile.Enabled = True
+
+  WebForm.Print("upload")
+  For Each sPath In Request.Files
+    Message(Request.Files.Key & ": " & sPath)
+  Next
 
 End
 
-Public Sub WebUploadButton1_Click()
-
-  lblPath.Text = WebUploadButton1.File
-
-End

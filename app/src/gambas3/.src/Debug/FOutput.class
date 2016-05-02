@@ -1,13 +1,15 @@
 ' Gambas class file
 
+Static Private $iConsole As Integer
+
 Private $aHistory As New String[]
 Private $bGotError As Boolean
 Private $iHistory As Integer
 Private $sCurrent As String
 
-Private $iLinkY As Integer
-Private $iLinkX As Integer
-Private $iLinkLen As Integer
+'Private $iLinkY As Integer
+'Private $iLinkX As Integer
+'Private $iLinkLen As Integer
 
 'PUBLIC Shown AS Boolean
 
@@ -24,9 +26,9 @@ Public Sub _new()
   btnEcho.Value = Settings["/FOutput/Echo", False]
   OnProjectDebug
   
-  edtOutput.Styles[Highlight.Keyword].Underline = True
-  edtOutput.Styles[Highlight.Keyword].Bold = False
-  edtOutput.Styles[Highlight.Keyword].Color = Color.Blue
+  'edtOutput.Styles[Highlight.Keyword].Underline = True
+  'edtOutput.Styles[Highlight.Keyword].Bold = False
+  'edtOutput.Styles[Highlight.Keyword].Color = Color.Blue
   'edtOutput.Overwrite = True
   'edtOutput.Flags[Editor.AlwaysShowCursor] = True
   'edtOutput.Flags[Editor.ShowDots] = False
@@ -35,17 +37,17 @@ End
 
 Public Sub GetEditor() As TextEditor
   
-  Return edtOutput
+  'Return edtOutput
   
 End
 
 
 Public Sub Clear()
 
-  edtOutput.Clear
+  trmOutput.Clear
   txtEnter.Clear
-  txtEnter.SetFocus
   $iHistory = $aHistory.Count
+  SetFocus
 
 End
 
@@ -61,9 +63,7 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
   Endif
   
-  edtOutput.ReadOnly = False
-  edtOutput.Print(sText)
-  edtOutput.ReadOnly = True
+  trmOutput.Print(sText)
   
   If Not Action["console"].Value Then Action["console"].Value = True
 
@@ -71,28 +71,19 @@ End
 
 Public Sub ReadConfig()
 
-  edtOutput.ReadConfig
-  edtOutput.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+  trmOutput.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
+  MTheme.InitControl(trmOutput)
 
-  MTheme.InitEditor(edtOutput)
-
-  edtOutput.ShowPosition = False
-  edtOutput.ShowCurrent = False
-  edtOutput.ShowModified = False
-  edtOutput.ShowLineNumber = False
-  edtOutput.ShowIcon = False
-  edtOutput.ShowExpand = False
-  
   Project.SetSmallFont(tlbOutput)
   
-  txtEnter.Font = edtOutput.Font
-  lblEnter.Font = edtOutput.Font
+  txtEnter.Font = trmOutput.Font
+  lblEnter.Font = trmOutput.Font
   lblEnter.Font.Bold = True
   panEnter.H = txtEnter.Font.Height + 4
 
 End
 
-Public Sub edtOutput_KeyPress()
+Public Sub trmOutput_KeyPress()
 
   If Key.Code = Key.Escape Then 
   
@@ -130,39 +121,43 @@ Public Sub Form_Show()
 
 End
 
-Public Sub Form_GotFocus()
-
-  txtEnter.SetFocus
-
-End
-
 Public Sub btnClear_Click()
 
   Clear
 
 End
 
-Public Sub btnCut_Click()
-
-  edtOutput.Cut
-
-End
-
 Public Sub btnCopy_Click()
 
-  edtOutput.Copy
+  trmOutput.Copy
 
 End
 
 Public Sub btnPaste_Click()
 
-  edtOutput.Paste
+  trmOutput.Paste
+
+End
+
+Public Sub SetFocus()
+
+  If panEnter.Visible Then
+    txtEnter.SetFocus
+  Else
+    trmOutput.SetFocus
+  Endif
+
+End
+
+Public Sub Form_GotFocus()
+
+  SetFocus
 
 End
 
 Public Sub Form_Activate()
 
-  'edtOutput.SetFocus
+  SetFocus
 
 End
 
@@ -190,7 +185,8 @@ Public Sub OnProjectDebug()
   
   btnAbove.Visible = Project.Running And btnUndock.Value
   If btnUndock.Value Then Me.Stacking = If(Project.Running And btnAbove.Value, Window.Above, Window.Normal)
-  'panControl.Visible = Project.Running
+  panEnter.Visible = Not Project.Running
+  SetFocus
   
 End
 
@@ -211,25 +207,13 @@ Public Sub Form_Open()
   
 End
 
-Public Sub edtOutput_Menu()
+Public Sub trmOutput_Menu()
 
   mnuEditor.Popup
 
 End
 
-Public Sub btnUndo_Click()
-  
-  edtOutput.Undo
-  
-End
-
-Public Sub btnRedo_Click()
-  
-  edtOutput.Redo
-  
-End
-
-Public Sub edtOutput_GotFocus()
+Public Sub trmOutput_GotFocus()
 
   Project.SetCurrentPopup(mnuEditor)
   FSearch.Update
@@ -249,48 +233,28 @@ Public Sub txtFind_KeyPress()
 
 End
 
-Public Sub edtOutput_LostFocus()
+Public Sub trmOutput_LostFocus()
 
   If Project.AboutToQuit Then Return
   FSearch.Update
 
 End
 
+Public Sub btnEdit_Click()
 
-Public Sub GetText() As String
+  Dim sPath As String
+  Dim sText As String
   
-  Return edtOutput.Text
-  
-End
+  sText = trmOutput.Text
+  If Not sText Then Return
 
-Public Sub GetPosition() As Integer
-  
-  Return edtOutput.GetPosition()
+  Inc $iConsole
 
-End
-
-Public Sub SetPosition(hResult As CFindResult, Optional bJustCheck As Boolean) As Boolean
+  sPath = File.Dir(Temp$()) &/ $iConsole & ".console"
+  File.Save(sPath, sText)
+  Project.OpenFile(sPath)
   
-  Return edtOutput.SetPosition(hResult, bJustCheck)
-  
-End
-
-Public Sub Replace(sReplace As String)
-  
-  edtOutput.Replace(sReplace)
-  
-End
-
-Public Sub GetSelection() As String
-  
-  Return edtOutput.GetSelection()
-  
-End
-
-Public Sub btnSearch_Click()
-
-  txtEnter.SetFocus
-  FSearch.WakeUp(False)
+  If Not Project.Running Then trmOutput.Clear
 
 End
 
@@ -390,12 +354,12 @@ Public Sub txtEnter_KeyPress()
       Endif
     Endif
     Stop Event
-  Else If Key.Code = Key.Home And If Key.Control Then
-    edtOutput.Goto(0, 0)
-    edtOutput.SetFocus
-    Stop Event
+  ' Else If Key.Code = Key.Home And If Key.Control Then
+  '   trmOutput.Goto(0, 0)
+  '   trmOutput.SetFocus
+  '   Stop Event
   Else
-    edtOutput_KeyPress
+    trmOutput.View_KeyPress
   Endif
 
 End
@@ -406,103 +370,109 @@ Public Sub btnEcho_Click()
 
 End
 
-Public Sub edtOutput_Highlight((Text) As String)
+' Public Sub edtOutput_Highlight((Text) As String)
+' 
+'   If $iLinkLen = 0 Then Return
+'   If $iLinkY <> TextHighlighter.Line Then Return
+' 
+'   TextHighlighter.Add(Highlight.Keyword, $iLinkLen)
+' 
+' End
 
-  If $iLinkLen = 0 Then Return
-  If $iLinkY <> TextHighlighter.Line Then Return
-
-  TextHighlighter.Add(Highlight.Keyword, $iLinkLen)
-
-End
-
-Public Sub edtOutput_MouseMove()
-
-  Dim MX, MY As Integer
-  Dim X, Y As Integer
-  Dim sText As String
-  Dim iPos As Integer
-  Dim aScan As String[]
-  Dim iNewX As Integer
-  Dim iNewY As Integer
-  Dim iNewLen As Integer
-  
-  If Not edtOutput.Hovered Then Return
-  
-  Try MX = Mouse.X
-  If Not Error Then 
-    MY = Mouse.Y
-  Else
-    MX = Mouse.ScreenX - edtOutput.ScreenX
-    MY = Mouse.ScreenY - edtOutput.ScreenY
-  Endif
-
-  X = edtOutput.ToColumn(MX, MY)
-  Y = edtOutput.ToLine(MY)
-  
-  If Y >= 0 And If X >= 0 Then
-  
-    sText = edtOutput[Y].Text
-    
-    iPos = InStr(sText, ": ")
-    If iPos > X Then
-      aScan = Scan(Left(sText, iPos - 1), "*.*.*")
-      If aScan.Count = 3 And If IsDigit(aScan[2]) Then 
-        iNewY = Y
-        iNewX = 0
-        iNewLen = iPos - 1
-      Endif
-    Endif
-  Endif
-  
-  If $iLinkLen Then 
-    $iLinkLen = 0
-    Try edtOutput[$iLinkY].Refresh
-  Endif
-  
-  If iNewLen Then 
-    $iLinkX = iNewX
-    $iLinkY = iNewY
-    $iLinkLen = iNewLen
-    edtOutput[iNewY].Refresh
-  Endif
-  
-  If $iLinkLen Then 
-    edtOutput.Mouse = Mouse.Pointing
-  Else
-    edtOutput.Mouse = Mouse.Default
-  Endif
-
-End
-
-Public Sub edtOutput_Leave()
-
-  If $iLinkLen Then 
-    $iLinkLen = 0
-    Try edtOutput[$iLinkY].Refresh
-  Endif
-  
-End
-
-Public Sub edtOutput_MouseDown()
-
-  If $iLinkLen And If Mouse.Normal Then
-    If Not Project.Goto(Left$(edtOutput[$iLinkY].Text, $iLinkLen)) Then 
-      Stop Event
-    Endif
-  Endif
-
-End
-
-
-Public Sub edtOutput_Scroll()
-
-  edtOutput_MouseMove
-
-End
+' Public Sub edtOutput_MouseMove()
+' 
+'   Dim MX, MY As Integer
+'   Dim X, Y As Integer
+'   Dim sText As String
+'   Dim iPos As Integer
+'   Dim aScan As String[]
+'   Dim iNewX As Integer
+'   Dim iNewY As Integer
+'   Dim iNewLen As Integer
+'   
+'   If Not edtOutput.Hovered Then Return
+'   
+'   Try MX = Mouse.X
+'   If Not Error Then 
+'     MY = Mouse.Y
+'   Else
+'     MX = Mouse.ScreenX - edtOutput.ScreenX
+'     MY = Mouse.ScreenY - edtOutput.ScreenY
+'   Endif
+' 
+'   X = edtOutput.ToColumn(MX, MY)
+'   Y = edtOutput.ToLine(MY)
+'   
+'   If Y >= 0 And If X >= 0 Then
+'   
+'     sText = edtOutput[Y].Text
+'     
+'     iPos = InStr(sText, ": ")
+'     If iPos > X Then
+'       aScan = Scan(Left(sText, iPos - 1), "*.*.*")
+'       If aScan.Count = 3 And If IsDigit(aScan[2]) Then 
+'         iNewY = Y
+'         iNewX = 0
+'         iNewLen = iPos - 1
+'       Endif
+'     Endif
+'   Endif
+'   
+'   If $iLinkLen Then 
+'     $iLinkLen = 0
+'     Try edtOutput[$iLinkY].Refresh
+'   Endif
+'   
+'   If iNewLen Then 
+'     $iLinkX = iNewX
+'     $iLinkY = iNewY
+'     $iLinkLen = iNewLen
+'     edtOutput[iNewY].Refresh
+'   Endif
+'   
+'   If $iLinkLen Then 
+'     edtOutput.Mouse = Mouse.Pointing
+'   Else
+'     edtOutput.Mouse = Mouse.Default
+'   Endif
+' 
+' End
+' 
+' Public Sub edtOutput_Leave()
+' 
+'   If $iLinkLen Then 
+'     $iLinkLen = 0
+'     Try edtOutput[$iLinkY].Refresh
+'   Endif
+'   
+' End
+' 
+' Public Sub edtOutput_MouseDown()
+' 
+'   If $iLinkLen And If Mouse.Normal Then
+'     If Not Project.Goto(Left$(edtOutput[$iLinkY].Text, $iLinkLen)) Then 
+'       Stop Event
+'     Endif
+'   Endif
+' 
+' End
+' 
+' 
+' Public Sub edtOutput_Scroll()
+' 
+'   edtOutput_MouseMove
+' 
+' End
 
 Public Sub PrintExpr(sExpr As String)
   
   txtEnter.Text = sExpr
   txtEnter_Activate
+  
+End
+
+Public Sub GetTerminal() As TerminalView
+  
+  Return trmOutput
   
 End

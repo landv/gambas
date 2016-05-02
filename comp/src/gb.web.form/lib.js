@@ -5,7 +5,8 @@ function $(a)
 
 if (!String.prototype.endsWith) 
 {
-  String.prototype.endsWith = function(searchString, position) {
+  String.prototype.endsWith = function(searchString, position) 
+  {
     var subjectString = this.toString();
     if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
       position = subjectString.length;
@@ -16,6 +17,33 @@ if (!String.prototype.endsWith)
   };
 }
 
+Element.prototype.hasClass = function(klass)
+{
+  if (this.classList)
+    return this.classList.contains(klass);
+  else
+    return !!this.className.match(new RegExp('(\\s|^)' + klass + '(\\s|$)'));
+};
+
+Element.prototype.addClass = function(klass)
+{
+  if (this.classList)
+    this.classList.add(klass);
+  else if (!this.hasClass(klass))
+    this.className += " " + klass;
+};
+
+Element.prototype.removeClass = function(klass)
+{
+  if (this.classList)
+    this.classList.remove(klass);
+  else if (this.hasClass(klass)) 
+  {
+    var reg = new RegExp('(\\s|^)' + klass + '(\\s|$)');
+    this.className = this.className.replace(reg, ' ');
+  }
+};
+
 gw = {
 
   version: '0',
@@ -24,7 +52,8 @@ gw = {
   form: '',
   debug: false,
   loaded: {},
-
+  uploads: {},
+  
   log: function(msg)
   {
     if (gw.debug)
@@ -60,40 +89,45 @@ gw = {
     gw.loaded[lib] = src;
     console.log('load: ' + src);
   },
+  
+  answer: function(xhr)
+  {
+    if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
+    {
+      gw.log('gw.answer: ' + xhr.gw_command);
+      
+      gw.active = document.activeElement.id;
+      if (gw.active)
+        gw.selection = gw.getSelection($(gw.active));
+      else
+        gw.selection = undefined;
+      
+      if (gw.debug)
+        console.log('--> ' + xhr.responseText);
+        
+      eval(xhr.responseText);
+      
+      if (gw.active)
+      {
+        gw.log('active: ' + gw.active);
+        if ($(gw.active))
+        {
+          $(gw.active).focus();
+          gw.setSelection($(gw.active), gw.selection);
+        }
+        else
+          gw.active = document.activeElement.id;
+      }
+    }
+  },
 
   send: function(command)
   {
     var xhr = new XMLHttpRequest();
-    gw.log(command);
+    gw.log('gw.send: ' + command);
+    xhr.gw_command = command;
     xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
-    xhr.onreadystatechange = function() {
-      //console.log('state = ' + xhr.readyState + ' / status = ' + xhr.status);
-      if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
-      {
-        gw.active = document.activeElement.id;
-        if (gw.active)
-          gw.selection = gw.getSelection($(gw.active));
-        else
-          gw.selection = undefined;
-        
-        if (gw.debug)
-          console.log(xhr.responseText);
-          
-        eval(xhr.responseText);
-        
-        if (gw.active)
-        {
-          console.log('active: ' + gw.active);
-          if ($(gw.active))
-          {
-            $(gw.active).focus();
-            gw.setSelection($(gw.active), gw.selection);
-          }
-          else
-            gw.active = document.activeElement.id;
-        }
-      }
-    };
+    xhr.onreadystatechange = function() { gw.answer(xhr); };
     xhr.send(null);
   },
 
@@ -145,6 +179,9 @@ gw = {
   
   setFocus: function(id)
   {
+    /*if (!$(id))
+      return;*/
+      
     $(id).focus();
     gw.active = document.activeElement.id;
     gw.selection = undefined;
@@ -286,7 +323,7 @@ gw = {
       }
       
       pos = gw.getPos($(control));
-      console.log(pos);
+      //console.log(pos);
       
       $(id).style.left = pos.left + 'px';
       $(id).style.top = pos.bottom + 'px';
@@ -343,12 +380,16 @@ gw = {
         win = gw.windows[i];
         if ($(win).gw_popup)
           continue;
-        $(win + '-titlebar').style.backgroundColor = '#C0C0C0';
+        $(win).addClass('gw-deactivated');
+        $(win + '-titlebar').addClass('gw-deactivated');
       }
       
       win = gw.windows[i];
       if (!$(win).gw_popup)
-        $(win + '-titlebar').style.backgroundColor = '';
+      {
+        $(win).removeClass('gw-deactivated');
+        $(win + '-titlebar').removeClass('gw-deactivated');
+      }
         
     },
     
@@ -712,12 +753,77 @@ gw = {
     }
   },
   
-  file: {
+  file: 
+  {
     select: function(id) 
     {
       var elt = $(id + ':file');
+      
+      if ($(id).gw_uploading)
+        return;
+      
       elt.focus();
       elt.click();
+    },
+    
+    upload: function(id)
+    {
+      var elt = $(id + ':file');
+      var file = elt.files[0];
+      var xhr = new XMLHttpRequest();
+      var form = new FormData();
+      
+      if (gw.uploads[id])
+        return;
+      
+      gw.uploads[id] = xhr;
+      
+      gw.log('gw.file.upload: ' + id + ': ' + file.name);
+      
+      form.append('file', file);
+      form.append('name', file.name);
+      form.append('id', id);
+      
+      //xhr.upload.addEventListener("loadstart", loadStartFunction, false);  
+      //xhr.upload.addEventListener("load", transferCompleteFunction, false);
+      
+      xhr.upload.addEventListener("progress", 
+        function(e) 
+        {
+          if (e.lengthComputable)
+          {
+            var t = (new Date()).getTime();
+            
+            if (xhr.gw_time == undefined || (t - xhr.gw_time) > 250)
+            {
+              gw.update(id, '#progress', e.loaded / e.total); 
+              xhr.gw_time = t;
+            }
+          }
+        },
+        false);
+      
+      xhr.gw_command = 'upload ' + id;
+      xhr.gw_id = id;
+        
+      xhr.open("POST", $root + '/' + encodeURIComponent(gw.form) + '/u', true);  
+      
+      xhr.onreadystatechange = function() 
+        {
+          if (xhr.readyState == 4)
+          {
+            gw.uploads[xhr.gw_id] = undefined;
+            gw.answer(xhr); 
+          }
+        };
+        
+      xhr.send(form);  
+    },
+    
+    abort: function(id)
+    {
+      if (gw.uploads[id])
+        gw.uploads[id].abort();
     }
   }
 }

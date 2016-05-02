@@ -33,6 +33,7 @@ Private $hEditor As TextEditor
 Private $bNoHighlight As Boolean
 Private $bShowCompress As Boolean
 Private $bModule As Boolean
+Private $bConsole As Boolean
 
 Private $bModify As Boolean
 
@@ -81,7 +82,7 @@ End
 
 Public Sub LoadFile() As Boolean
   
-  Dim sExt As String = LCase(File.Ext(Path))
+  Dim sExt As String
   
   With edtEditor
     .Clear
@@ -89,32 +90,43 @@ Public Sub LoadFile() As Boolean
   End With
   
   $bWebPage = False
+  $bNoHighlight = True
+  $bConsole = False
   
-  If $aExt.Exist(sExt) Then
-
-    Select Case sExt
-      Case "css"
-        edtEditor.Highlight = "css"
-      Case "webpage"
-        edtEditor.Highlight = "webpage"
-        $bWebPage = True
-      Case "js"
-        edtEditor.Highlight = "javascript"
-      Case "c"
-        edtEditor.Highlight = "c"
-      Case "cpp", "h"
-        edtEditor.Highlight = "c++"
-      Case "gbs"
-        edtEditor.Highlight = "gambas"
-      Case Else 
-        edtEditor.Highlight = "html"
-    End Select
+  If Path Then
+  
+    sExt = LCase(File.Ext(Path))
     
-    $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
+    If $aExt.Exist(sExt) Then
+  
+      Select Case sExt
+        Case "css"
+          edtEditor.Highlight = "css"
+        Case "webpage"
+          edtEditor.Highlight = "webpage"
+          $bWebPage = True
+        Case "js"
+          edtEditor.Highlight = "javascript"
+        Case "c"
+          edtEditor.Highlight = "c"
+        Case "cpp", "h"
+          edtEditor.Highlight = "c++"
+        Case "gbs"
+          edtEditor.Highlight = "gambas"
+        Case Else 
+          edtEditor.Highlight = "html"
+      End Select
+      
+      $bShowCompress = MCompressFile.CanCompress(Path) And Not Project.IsHiddenPath(Path)
+      
+      $bNoHighlight = False
+      
+    Else If sExt = "console" Then
+      
+      If File.Dir(Path) = File.Dir(Temp$()) Then $bConsole = True
+      
+    Endif
     
-    $bNoHighlight = False
-  Else
-    $bNoHighlight = True
   Endif
 
   $hInsertColor = New CInsertColor(Me, btnInsertColor)
@@ -189,6 +201,13 @@ Catch
   Return Save.Error()
 
 End
+
+Public Sub GetTitle() As String
+  
+  If $bConsole Then Return Subst(("Console output #&1"), File.BaseName(Path))
+  
+End
+
 
 Private Sub DrawTitle()
 

@@ -9,6 +9,7 @@ Public Const _DefaultSize As String = "24,24"
 Public Const _DefaultEvent As String = "Data"
 
 Event Data(Row As Integer, Column As Integer, Data As WebTableData)
+Event Select
 
 Property Read Columns As _WebTableColumns
 Property Count As Integer
@@ -203,13 +204,19 @@ End
 
 Public Sub SelectAll()
   
-  If $hSelection Then $hSelection.SelectAll
+  If $hSelection Then 
+    $hSelection.SelectAll
+    Raise Select
+  Endif
   
 End
 
 Public Sub UnselectAll()
   
-  If $hSelection Then $hSelection.UnselectAll
+  If $hSelection Then 
+    $hSelection.UnselectAll
+    Raise Select
+  Endif    
   
 End
 
@@ -228,13 +235,18 @@ Public Sub Select(Row As Integer, Optional Length As Integer = 1)
       
     Endif
     
+    Raise Select
+    
   Endif
   
 End
 
 Public Sub Unselect(Row As Integer, Optional Length As Integer = 1)
   
-  If $hSelection Then $hSelection.Unselect(Row, Length)
+  If $hSelection Then 
+    $hSelection.Unselect(Row, Length)
+    Raise Select
+  Endif
   
 End
 
@@ -281,18 +293,18 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       Endif
     Else
       iRow = CInt(Mid(sProp, 2))
-      Inc WebForm._DisableRefresh
+      Inc Me._NoRefresh
       If vValue Then
         Try Select(iRow)
       Else
         Try Unselect(iRow)
       Endif
-      Dec WebForm._DisableRefresh
+      Dec Me._NoRefresh
     Endif
   
   Else If sProp = "#more" Then
     
-    Inc WebForm._DisableRefresh
+    Inc Me._NoRefresh
     If $iDisplay < $iCount Then
       SendMoreJavascript()
       Me.Display += 100
@@ -300,15 +312,14 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     Endif
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
-    Dec WebForm._DisableRefresh
-    
+    Dec Me._NoRefresh
     
   Else If sProp = "#scroll" Then
     
-    Inc WebForm._DisableRefresh
+    Inc Me._NoRefresh
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
-    Dec WebForm._DisableRefresh
+    Dec Me._NoRefresh
     
   Endif
   

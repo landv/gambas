@@ -9,10 +9,8 @@ Private Const STATE_DEBUG As Integer = 2
 Private Const STATE_STARTING As Integer = 3
 
 Private $iState As Integer
-'Private $bError As Boolean
-'PRIVATE $cShow AS NEW Object[]
 Private $hProcess As Process
-'PRIVATE $cCommand AS NEW String[]
+Private $hObserver As Observer
 
 Private $sPosClass As String
 Private $iPosLine As Integer
@@ -135,12 +133,12 @@ End
 ' End
 
 
-Public Sub Process_Error(sData As String)
-
-  Insert(sData)
-
-End
-
+' Public Sub Process_Error(sData As String)
+' 
+'   Insert(sData)
+' 
+' End
+' 
 Public Sub File_Read()
   
   Dim sData As String
@@ -151,15 +149,15 @@ Public Sub File_Read()
 End
 
 
-Public Sub Process_Read()
-
-  Dim sData As String
-  
-  sData = Read #Last, -4096
-  Insert(sData)
-  
-End
-
+' Public Sub Process_Read()
+' 
+'   Dim sData As String
+'   
+'   sData = Read #Last, -4096
+'   Insert(sData)
+'   
+' End
+' 
 Private Sub Translate(sErr As String) As String
   
   If InStr(sErr, " ") Then Return Tr$(sErr)
@@ -966,7 +964,10 @@ Private Sub Start(sCmd As String)
   If sProg Then
     $hProcess = Exec aExec With aEnv As "Process"
   Else
-    $hProcess = Exec aExec With aEnv For Input Output As "Process"
+    '$hProcess = Exec aExec With aEnv For Input Output As "Process"
+    $hProcess = FOutput.GetTerminal().Exec(aExec, aEnv)
+    $hProcess.Term.Echo = True
+    $hObserver = New Observer($hProcess, True) As "Process"
   Endif
   
   If $sPipeError Then

@@ -23,6 +23,13 @@ Private $sText As String
 Private $aList As New String[]
 Private $bReadOnly As Boolean = True
 
+Public Sub _new()
+  
+  Me._Proxy = ":entry"
+  
+End
+
+
 Public Sub _BeforeRender()
   
   Dim sClass As String
@@ -128,7 +135,11 @@ End
 
 Private Sub List_Write(Value As String[])
 
-  $aList = Value.Copy()
+  If Value Then
+    $aList = Value.Copy()
+  Else
+    $aList = New String[]
+  Endif
   CheckIndex
   Me._SetProperty("List", $aList)
 
@@ -151,6 +162,11 @@ End
 Private Sub ReadOnly_Write(Value As Boolean)
 
   $bReadOnly = Value
+  If $bReadOnly Then
+    Me._Proxy = ""
+  Else
+    Me._Proxy = ":entry"
+  Endif
   Me._SetProperty("ReadOnly", Value)
 
 End

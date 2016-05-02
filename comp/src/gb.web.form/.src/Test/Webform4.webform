@@ -5,31 +5,33 @@
   Arrangement = Arrange.Horizontal
   Margin = True
   Spacing = True
-  { WebContainer1 WebContainer
-    #MoveScaled(1,1,27,24)
-    Width = "10em"
-    Arrangement = Arrange.Vertical
-    { WebContainer2 WebContainer
-      #MoveScaled(1,1,25,7)
-      Height = "4em"
+  { WebContainer3 WebVBox
+    #MoveScaled(1,1,60,24)
+    Spacing = True
+    { WebContainer2 WebHBox
+      #MoveScaled(1,1,58,8)
+      { WebUploadArea1 WebUploadArea
+        #MoveScaled(1,1,21,6)
+        { btnSelectFile WebButton
+          #MoveScaled(1,1,16,4)
+          Text = ("Select file") & "..."
+        }
+      }
     }
-    { WebDateBox1 WebDateBox
-      #MoveScaled(1,8,25,4)
+    { WebProgressBar1 WebProgressBar
+      #MoveScaled(1,10,58,4)
     }
   }
-  { WebContainer3 WebVBox
-    #MoveScaled(29,1,60,24)
-    { WebHBox1 WebHBox
-      #MoveScaled(1,1,58,6)
-      Spacing = True
-      { WebUploadButton1 WebUploadButton
-        #MoveScaled(1,1,21,4)
-        Text = ("Select file") & "..."
-      }
-      { lblPath WebLabel
-        #MoveScaled(23,1,24,4)
-        Expand = True
-      }
+  { WebContainer1 WebContainer
+    #MoveScaled(62,1,27,24)
+    Width = "10em"
+    Arrangement = Arrange.Vertical
+    { WebDateBox1 WebDateBox
+      #MoveScaled(1,1,25,4)
     }
+  }
+  { WebTimer1 WebTimer
+    #MoveScaled(93,7)
+    Delay = 500
   }
 }

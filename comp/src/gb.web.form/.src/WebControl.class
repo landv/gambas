@@ -83,6 +83,7 @@ Public _Refresh As Boolean
 Public _EventName As String
 Public _Extra As Boolean
 Public _Proxy As String
+Public _NoRefresh As Integer
 
 Private $iId As Integer
 Private $iParentId As Integer
@@ -363,6 +364,7 @@ End
 
 Private Sub Expand_Write(Value As Boolean)
 
+  If $bExpand = Value Then Return
   $bExpand = Value
   _SetProperty("Expand", Value)
   Try Me.Parent.Refresh
@@ -464,6 +466,7 @@ End
 Public Sub Refresh()
   
   If WebForm._DisableRefresh Then Return
+  If _NoRefresh Then Return
   If IsHidden() Then Return
   If WebForm._InExec Then
     _Refresh = True
@@ -479,8 +482,6 @@ Public Sub _RefreshReply() As Boolean
   
   If _Refresh Then 
     
-    Print "$("; JS(Me.Name); ").outerHTML = ";
-    
     hFile = Open String For Write
     Output To #hFile
     
@@ -491,8 +492,10 @@ Public Sub _RefreshReply() As Boolean
     sResult = Close #hFile
     Output To Default
     
-    Print JS(sResult); ";"
+    'WebForm._AddRefresh("$(" & JS(Me.Name) & ").outerHTML = " & JS(sResult) & ";")
+    Print "$(" & JS(Me.Name) & ").outerHTML = " & JS(sResult) & ";"
     
+    _Refresh = False
     Return True
     
   Endif
@@ -577,6 +580,7 @@ End
 
 Private Sub Visible_Write(Value As Boolean)
 
+  If $bHidden <> Value Then Return
   $bHidden = Not Value
   _SetProperty("Visible", Value)
   Me.Parent.Refresh
@@ -597,6 +601,7 @@ End
 
 Private Sub Ignore_Write(Value As Boolean)
 
+  If $bIgnore = Value Then Return
   $bIgnore = Value
   _SetProperty("Ignore", Value)
   Me.Parent.Refresh
@@ -622,6 +627,7 @@ End
 
 Private Sub Enabled_Write(Value As Boolean)
 
+  If $bDisabled <> Value Then Return
   $bDisabled = Not Value
   Me._SetProperty("Enabled", Value)
 
@@ -635,6 +641,7 @@ End
 
 Private Sub Background_Write(Value As Integer)
 
+  If $iBackground = Value Then Return
   $iBackground = Value
   Me._SetProperty("Background", Value)
 
@@ -648,6 +655,7 @@ End
 
 Private Sub Foreground_Write(Value As Integer)
 
+  If $iForeground = Value Then Return
   $iForeground = Value
   Me._SetProperty("Foreground", Value)
   
@@ -782,6 +790,7 @@ End
 
 Private Sub Border_Write(Value As Boolean)
 
+  If $bNoBorder <> Value Then Return
   $bNoBorder = Not Value
   Me._SetProperty("Border", Value)
 
@@ -795,6 +804,7 @@ End
 
 Private Sub Class_Write(Value As String)
 
+  If $sClass = Value Then Return
   $sClass = Value
   Me._SetProperty("Class", Value)
 
@@ -808,6 +818,7 @@ End
 
 Private Sub Tooltip_Write(Value As String)
 
+  If $sTooltip = Value Then Return
   $sTooltip = Value
   Me._SetProperty("Tooltip", Value)
 

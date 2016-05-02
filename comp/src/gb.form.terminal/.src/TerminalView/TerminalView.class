@@ -4,7 +4,7 @@ Inherits UserControl
 
 Export
 
-Public Const _Properties As String = "*,Border=True,Limit=1000,Blink"
+Public Const _Properties As String = "*,Border=True,Limit=1000,Blink,ShowScrollBar"
 Public Const _DrawWith As String = "-"
 Public Const _Group As String = "View"
 
@@ -20,6 +20,8 @@ Property Limit As Integer
 Property Type As String
 Property AlternateScreen As Boolean
 Property Blink As Boolean
+Property Read Text As String
+Property ShowScrollBar As Boolean
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -61,6 +63,7 @@ Private $bSuspend As Boolean
 
 Private $iMouseX As Integer
 Private $iMouseY As Integer
+Private $bShowScrollBar As Boolean
 
 'Private $bDoubleFont As Boolean = True
 
@@ -110,8 +113,10 @@ End
 
 Public Sub Clear()
 
-  $hScreen.Clear()
+  $hScreen.Clear
+  $hScreen.Reset
   UpdateFont
+  Refresh
 
 End
 
@@ -143,7 +148,10 @@ Private Sub UpdateScreen()
 
   Dim W, H As Integer
 
-  W = Max(1, CInt($hView.ClientW / $CW))
+  W = $hView.ClientW
+  If $bShowScrollBar Then W -= $hScroll.W
+
+  W = Max(1, CInt(W / $CW))
   H = Max(1, $hView.ClientH \ $LH)
 
   'Debug W;; H
@@ -436,7 +444,7 @@ Public Sub View_MouseMove()
 
     If $bMouseDown Then
       GotoMouse(False)
-    Else
+    Else If Not $bShowScrollBar Then
       If Mouse.X >= ($hView.ClientW - Style.ScrollbarSize) And If $hScroll.MaxValue Then
         $hScroll.Raise
         $hScroll.Show
@@ -613,23 +621,37 @@ End
 
 ' Running a command
 
-Public Sub Exec(aCommand As String[]) As Process
+Public Sub Exec(Command As String[], Optional Environment As String[]) As Process
 
+  Dim aEnv As String[]
+  
   If $hProcess Then Return
 
-  $hProcess = Exec aCommand With ["TERM=xterm"] For Input Output As "Process"
+  aEnv = ["TERM=xterm"]
+  If Environment Then aEnv.Insert(Environment)
+
+  $hProcess = Exec Command With aEnv For Input Output As "Process"
   $hProcess.Term.Echo = True
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
+
+  Return $hProcess
 
 End
 
-Public Sub Shell(sCommand As String) As Process
+Public Sub Shell(Command As String, Optional Environment As String[]) As Process
 
+  Dim aEnv As String[]
+  
   If $hProcess Then Return
 
-  $hProcess = Shell sCommand With ["TERM=xterm"] For Input Output As "Process"
+  aEnv = ["TERM=xterm"]
+  If Environment Then aEnv.Insert(Environment)
+  
+  $hProcess = Shell Command With aEnv For Input Output As "Process"
   $hProcess.Term.Echo = True
   $hProcess.Term.Resize($hScreen.Width, $hScreen.Height)
+  
+  Return $hProcess
 
 End
 
@@ -797,4 +819,35 @@ Public Sub _UseMouse(bUse As Boolean)
     _RefreshLine($iMouseY)
   Endif
   
+End
+
+Private Function Text_Read() As String
+
+  Dim hLine As CTerminalLine
+  Dim aLine As New String[]
+
+  For Each hLine In $hScreen.Lines
+    If Not hLine Then
+      aLine.Add("")
+    Else
+      aLine.Add(hLine.Text)
+    Endif
+  Next
+
+  Return aLine.Join("\n")
+
+End
+
+Private Function ShowScrollBar_Read() As Boolean
+
+  Return $bShowScrollBar
+
+End
+
+Private Sub ShowScrollBar_Write(Value As Boolean)
+
+  $bShowScrollBar = Value
+  $hScroll.Visible = $bShowScrollBar
+  UpdateScreen
+
 End

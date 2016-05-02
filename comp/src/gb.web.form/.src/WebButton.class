@@ -56,10 +56,17 @@ Public Sub _Render()
   
   If $sImage Then 
     If $sText Then
-      Print "<img class=\"gw-button-image\" src=\""; Html(Application.Root &/ $sImage); "\">";
+      Print "<img class=\"gw-button-image\" src=\""; Html(Application.Root &/ $sImage); "\"";
     Else
-      Print "<img src=\""; Html(Application.Root &/ $sImage); "\">";
+      Print "<img src=\""; Html(Application.Root &/ $sImage); "\"";
     Endif
+    If Me.Width Or If Me.Height Then
+      Print " style=\"";
+      If Me.Width Then Print "width:"; Me.Width; ";"
+      If Me.Height Then Print "height:"; Me.Height; ";"
+      Print "\"";
+    Endif
+    Print ">";
   Endif
   If $sText Then Print "<div>"; Html($sText); "</div>"
   

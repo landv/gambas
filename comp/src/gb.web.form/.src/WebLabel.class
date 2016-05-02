@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Text,Alignment,Border"
+Public Const _Properties As String = "*,Text,Alignment{Align.*}=Normal,Border"
 Public Const _DrawWith As String = "Label"
 Public Const _DefaultSize As String = "24,4"
 

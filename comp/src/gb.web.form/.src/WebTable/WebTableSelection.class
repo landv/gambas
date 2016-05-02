@@ -1,5 +1,7 @@
 ' Gambas class file
 
+Property Read Count As Integer
+
 Private $aSel As New Integer[]
 Private $bInvert As Boolean
 
@@ -196,6 +198,28 @@ Public Function GetSelectedRows() As Integer[]
   Return aRet.Sort()
 
 End
+
+Private Sub Count_Read() As Integer
+  
+  Dim I, N As Integer
+
+  For I = 0 To $aSel.Max Step 2
+    N += $aSel[I + 1]
+  Next
+  
+  If $bInvert Then
+    
+    Return GetTable().Count - N
+    
+  Else
+    
+    Return N
+    
+  Endif
+    
+End
+
+
 
 Public Sub IsEverythingSelected() As Boolean
   

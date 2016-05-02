@@ -1,6 +1,6 @@
 ' Gambas class file
 
-Export
+'Export
 Inherits WebControl
 
 Public Const _Properties As String = "*,Border=True,Text,Image{WebImage}"
@@ -9,6 +9,8 @@ Public Const _DefaultEvent As String = "Click"
 Public Const _DefaultSize As String = "16,4"
 
 Event Click
+Event Upload
+Event Progress(Progress As Float)
 
 Property Text As String
 Property Image As String
@@ -17,6 +19,7 @@ Property File As String
 Private $sText As String
 Private $sImage As String
 Private $sFile As String
+Private $bUpload As Boolean
 
 Private Function Text_Read() As String
 
@@ -46,14 +49,12 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<form action=\"x\" method=\"post\" enctype=\"multipart/form-data\">";
   Print "<input class=\"gw-file-input\" type=\"file\" id=\""; Me.Name; ":file\" name=\"p\""; Me._GetUpdateJS("onchange", "#path", "this.value"); ">";
-  Print "</form>"
   
   Print "<button"; Me._GetClassId(); " onclick=\"gw.file.select("; JS(Me.Name); ")\"";
   'Me._GetEventJS("onclick", "click");
   Me._RenderStyleSheet()
-  If Not Me.Enabled Then Print " disabled";
+  If Not Me.Enabled Or If $bUpload Then Print " disabled";
   Print ">";
   
 End
@@ -102,4 +103,35 @@ Private Sub File_Write(Value As String)
   $sFile = Value
   Me._SetProperty("File", Value)
 
+End
+
+Public Sub Upload()
+
+  If $bUpload Then Error.Raise("Pending upload")
+  
+  $bUpload = True
+  Me._SetProperty("#upload", True)
+  
+  WebForm._AddReply("gw.file.upload(" & JS(Me.Name) & ");")
+  
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  If sProp = "#upload" Then
+    $bUpload = vVal
+    Me.Refresh
+  Endif
+  
+End
+
+Public Sub _UploadFinish()
+
+  Raise Progress(1.0)
+  
+  $bUpload = False
+  Me._SetProperty("#upload", False)
+  
+  Raise Upload  
+  
 End

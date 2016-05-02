@@ -203,9 +203,9 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       Me["min-width"] = Left(vValue[2], -2)
       Me["min-height"] = Left(vValue[3], -2)
     Endif
-    Inc WebForm._DisableRefresh
+    Inc Me._NoRefresh
     Try Move(vValue[0], vValue[1], vValue[2], vValue[3])
-    Dec WebForm._DisableRefresh
+    Dec Me._NoRefresh
   
   Else If sProp = "#close" Then
     
@@ -323,6 +323,6 @@ End
 
 Public Sub Close()
   
-  If IsPopup() Then PopupControl_Read().setFocus
+  If IsPopup() Then PopupControl_Read().SetFocus
   
 End

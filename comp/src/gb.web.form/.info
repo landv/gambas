@@ -294,6 +294,10 @@ ReadOnly
 p
 b
 
+_new
+m
+
+
 _BeforeRender
 m
 
@@ -572,6 +576,10 @@ b
 _Proxy
 v
 s
+
+_NoRefresh
+v
+i
 
 _new
 m
@@ -1004,10 +1012,26 @@ _Exec
 m
 
 (aCmd)Variant[];
+_Upload
+m
+
+(Id)s
 Render
 m
 
 
+_AddRefresh
+M
+
+(sStr)s
+_AddReplyBefore
+M
+
+(sStr)s
+_AddReply
+M
+
+(sStr)s
 _AddJavascript
 M
 
@@ -1028,10 +1052,6 @@ Print
 M
 
 (Text)s
-_AddReply
-M
-
-(sStr)s
 _UpdateProperty
 m
 
@@ -1131,7 +1151,7 @@ C
 _Properties
 C
 s
-"*,Text,Alignment,Border"
+"*,Text,Alignment{Align.*}=Normal,Border"
 _DrawWith
 C
 s
@@ -1241,6 +1261,33 @@ s
 Shortcut
 p
 s
+
+_Render
+m
+
+
+#WebProgressBar
+WebControl
+C
+_Properties
+C
+s
+"*,Label=True,Border=True"
+_DefaultSize
+C
+s
+"24,4"
+_DrawWith
+C
+s
+"ProgressBar"
+Label
+p
+b
+
+Value
+p
+f
 
 _Render
 m
@@ -1487,6 +1534,10 @@ s
 :
 
 (Row)i(Column)i(Data)WebTableData;
+:Select
+:
+
+
 Columns
 r
 _WebTableColumns
@@ -1735,50 +1786,42 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
-#WebUploadButton
-WebControl
+#WebUploadArea
+WebContainer
 C
 _Properties
 C
 s
-"*,Border=True,Text,Image{WebImage}"
-_DrawWith
-C
-s
-"Button"
+"*"
 _DefaultEvent
 C
 s
 "Click"
-_DefaultSize
-C
-s
-"16,4"
-:Click
+:Upload
 :
 
 
-Text
-p
-s
+:Progress
+:
 
-Image
+
+Progress
 p
-s
+f
 
 File
-p
+r
 s
 
+Path
+r
+s
+
+Uploading
+r
+b
+
 _BeforeRender
-m
-
-
-_Render
-m
-
-
-_AfterRender
 m
 
 
@@ -1786,6 +1829,14 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
+_UploadFinish
+m
+
+
+Abort
+m
+
+
 #WebVBox
 WebContainer
 C

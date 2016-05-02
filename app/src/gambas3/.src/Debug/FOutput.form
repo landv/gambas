@@ -9,26 +9,6 @@
   { mnuEditor Menu
     Enabled = False
     Visible = False
-    { mnuUndo Menu btnUndo
-      Name = "mnuUndo"
-      Text = ("Undo")
-      Picture = Picture["icon:/small/undo"]
-      Shortcut = "Ctrl+Z"
-    }
-    { mnuRedo Menu btnRedo
-      Name = "mnuRedo"
-      Text = ("Redo")
-      Picture = Picture["icon:/small/redo"]
-      Shortcut = "Ctrl+Y"
-    }
-    { Menu1 Menu
-    }
-    { mnuCut Menu btnCut
-      Name = "mnuCut"
-      Text = ("Cut")
-      Picture = Picture["icon:/small/cut"]
-      Shortcut = "Ctrl+X"
-    }
     { mnuCopy Menu btnCopy
       Name = "mnuCopy"
       Text = ("Copy")
@@ -81,11 +61,6 @@
       ToolTip = ("Clear console")
       Picture = Picture["icon:/small/clear"]
     }
-    { btnCut ToolButton
-      MoveScaled(12,0,4,4)
-      ToolTip = ("Cut")
-      Picture = Picture["icon:/small/cut"]
-    }
     { btnCopy ToolButton
       MoveScaled(16,0,4,4)
       ToolTip = ("Copy")
@@ -106,11 +81,11 @@
     { Separator1 Separator
       MoveScaled(37,0,1,4.1429)
     }
-    { btnSearch ToolButton
+    { btnEdit ToolButton
       MoveScaled(39,0,11,4)
       AutoResize = True
-      Text = ("Search") & "..."
-      Picture = Picture["icon:/small/find"]
+      Text = ("Edit") & "..."
+      Picture = Picture["icon:/small/edit"]
     }
     { sepCharset Separator
       MoveScaled(53,0,1,4)
@@ -123,13 +98,12 @@
       Text = ("Use system charset")
     }
   }
-  { edtOutput TextEditor
-    MoveScaled(1,9,38,34)
-    Tracking = True
-    NoTabFocus = True
+  { trmOutput TerminalView
+    MoveScaled(5,9,69,27)
     Expand = True
     Border = False
-    ReadOnly = True
+    Blink = True
+    ShowScrollBar = True
   }
   { Separator2 Separator
     MoveScaled(24,45,34,0)

@@ -59,10 +59,10 @@ End
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   If sProp = "#scroll" Then
-    Inc WebForm._DisableRefresh
+    Inc Me._NoRefresh
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
-    Dec WebForm._DisableRefresh
+    Dec Me._NoRefresh
   Endif
   
 End

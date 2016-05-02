@@ -16,7 +16,11 @@ Static Public _InExec As Integer
 Static Public _Current As WebForm
 
 Static Private $bDebug As Boolean
+
+Static Private $aJavascriptBefore As New String[]
 Static Private $aJavascript As New String[]
+Static Private $aRefresh As New String[]
+
 Static Private $cLibrary As New Collection
 'Static Private $aPreload As String[]
 
@@ -124,6 +128,8 @@ Static Public Sub Main()
   
   If sPath = "x" Then
     hForm._Exec(JSON.Decode(Request["c"]))
+  Else If sPath = "u" And If Request.Method = "POST" Then
+    hForm._Upload(Request["id"])
   Else
     hForm.Render
   Endif
@@ -139,9 +145,28 @@ NOT_FOUND:
   
 End
 
+Static Public Sub _AddRefresh(sStr As String)
+  
+  $aRefresh.Add(sStr)
+  
+End
+
+Static Public Sub _AddReplyBefore(sStr As String)
+
+  $aJavascriptBefore.Add(sStr)
+  
+End
+
+Static Public Sub _AddReply(sStr As String)
+
+  $aJavascript.Add(sStr)
+  
+End
+
+
 Static Public Sub _AddJavascript(sStr As String)
   
-  $aJavascript.Add(sStr)
+  _AddReply(sStr)
   
 End
 
@@ -169,23 +194,22 @@ Public Sub _BeforeRender()
   
 End
 
-Private Sub PrintJavascript()
-
-  'Dim I As Integer
+Static Private Sub PrintJavascript()
   
-  If $aJavascript Then 
+  If $aJavascriptBefore.Count Then 
+    Print $aJavascriptBefore.Join("\n")
+    $aJavascriptBefore.Clear
+  Endif
+  
+  If _HasRefresh Then
+    _HasRefresh = False
+    Me._RefreshReply()
+  Endif
+  
+  If $aJavascript.Count Then 
     Print $aJavascript.Join("\n")
     $aJavascript.Clear
   Endif
-  
-  ' If $aPreload Then
-  '   Print "$('gw-preload').style.content = '";
-  '   For I = 0 To $aPreload.Max
-  '     If I Then Print " ";
-  '     Print "url(\"" & Application.Root &/ $aPreload[I] & "\")";
-  '   Next
-  '   Print "';"
-  ' Endif
   
 End
 
@@ -199,7 +223,7 @@ Public Sub Render()
   'Print Header.ToString();
   Header.Form = Null
   
-  $aJavascript = New String[]
+  $aJavascript.Clear
   
   Print "<body"; Me._GetEventJS("onload", "open"); ">"
   
@@ -227,8 +251,6 @@ Static Private Sub RenderStyleSheet(Optional sFile As String)
   
   If Not sFile Then sFile = "style.css"
   
-  Debug sFile
-  
   If Not Exist(sFile) Then 
     Response.Status = "404 NotFound"
     Response.Begin
@@ -251,8 +273,6 @@ End
 Static Private Sub RenderJavascript(Optional sFile As String)
   
   If Not sFile Then sFile = "lib.js"
-  
-  Debug sFile
   
   Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
@@ -283,13 +303,6 @@ Static Public Sub Print(Text As String)
   $aJavascript.Add("console.log(" & JS(Text) & ");")
   
 End
-
-Static Public Sub _AddReply(sStr As String)
-  
-  $aJavascript.Add(sStr)
-  
-End
-
 
 Public Sub _Exec(aCmd As Variant[])
   
@@ -325,19 +338,13 @@ Public Sub _Exec(aCmd As Variant[])
       Else
         hCtrl = Me
       Endif
-      'Inc _DisableRefresh
       hCtrl._UpdateProperty(aCmd[2], aCmd[3])
-      'Dec _DisableRefresh
-      
     
   End Select
   
   _InExec = iOldInExec
   
   Response.Begin
-  If _HasRefresh Then 
-    Me._RefreshReply()
-  Endif
   PrintJavascript
   Response.End
   
@@ -348,6 +355,7 @@ Catch
   _InExec = iOldInExec
   
   Response.Begin
+  Print "console.log("; JS(aCmd); ");"
   Print "console.log("; JS(sErr); ");"
   Print "console.log("; JS($aJavascript.Join("\n")); ");"
   Response.End
@@ -363,14 +371,14 @@ Public Sub Close()
   
   If Me._Window Then
   
-    _AddReply("gw.window.refresh();")
-  
     hWindow = WebControl.FromId(Me._Window)
     With hWindow
       .Close
       .Delete
     End With
     
+    _AddReply("gw.window.refresh();")
+  
   Else
     
     Me.Delete
@@ -581,5 +589,35 @@ Private Function PopupParent_Read() As WebControl
 
   Dim hWindow As WebWindow = WebForm.FromId(Me._Window)
   If hWindow Then Return hWindow.PopupControl
+
+End
+
+Public Sub _Upload(Id As String)
+
+  Dim hCtrl As Object
+  Dim iOldInExec As Integer = _InExec
+  Dim sErr As String
+  
+  Inc _InExec
+  
+  hCtrl = WebControl.FromName(Id)
+  If hCtrl Then hCtrl._UploadFinish
+      
+  _InExec = iOldInExec
+  
+  Response.Begin
+  PrintJavascript
+  Response.End
+  
+Catch
+  
+  sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
+  'Debug sErr
+  _InExec = iOldInExec
+  
+  Response.Begin
+  Print "console.log("; JS(sErr); ");"
+  Print "console.log("; JS($aJavascript.Join("\n")); ");"
+  Response.End
 
 End

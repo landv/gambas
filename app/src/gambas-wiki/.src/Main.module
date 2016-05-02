@@ -425,19 +425,28 @@ Public Sub Main()
   InfoDir = User.Home &/ "wiki/info"
   If Not Exist(InfoDir) Then InfoDir = ""
 
-  If Args[1] = "-restore" Then
-    If IsDir(Root) Then
-      Shell "rm -rf " & Shell$(Root & "~") & " >/dev/null 2>&1" Wait
-      Move Root To Root & "~"
-      Mkdir Root
-      'Copy "passwd" To Root &/ "passwd"
-    Endif
-    OldWiki.Restore
-    Return
-  Else If Args[1] = "-convert-example" Then
-    ConvertExample
-    Return
-  Endif
+  Select Case Args[1]
+
+    Case "-restore" 
+      If IsDir(Root) Then
+        Shell "rm -rf " & Shell$(Root & "~") & " >/dev/null 2>&1" Wait
+        Move Root To Root & "~"
+        Mkdir Root
+        'Copy "passwd" To Root &/ "passwd"
+      Endif
+      OldWiki.Restore
+      Return
+      
+    Case "-convert-example" 
+      ConvertExample
+      Return
+    
+    Case "-offline"
+      Shell "cd " & Shell$(File.Dir(Root)) & " && tar cfj gambas-wiki.tar.bz2 --exclude=passwd\\* --exclude=\\*.log --exclude=~page.\\* --exclude=~lock gambas && mv gambas-wiki.tar.bz2 ~/cgi-bin" Wait
+      If Process.LastValue = 0 Then File.Save("~/cgi-bin/timestamp", Format(Now, "yyyymmdd"))
+      Return
+      
+  End Select
   
   Try Mkdir Root
 

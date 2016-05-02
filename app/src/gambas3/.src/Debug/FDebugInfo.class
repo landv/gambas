@@ -695,7 +695,13 @@ End
 
 Public Sub tabDebug_Click()
 
-  If Design.IsRunning() Then Return
+  If Design.IsRunning() Then 
+    Select Case tabDebug.Index
+      Case TAB_CONSOLE
+        FOutput.SetFocus
+    End Select
+    Return
+  Endif
 
   Select Case tabDebug.Index
     Case TAB_LOCAL
@@ -715,11 +721,6 @@ Public Sub tabDebug_Click()
       Endif
     Case TAB_SEARCH
       FSearch.RefreshBrowse
-    ' Case TAB_HELP
-    '   FHelp.Background = Color.Background
-    '   FHelp.Reparent(panHelp)
-    '   FHelp.Ignore = False
-    '   FHelp.Visible = True
   End Select   
 
 End
