@@ -776,6 +776,13 @@ void gMenu::popup()
 	doPopup(false);
 }
 
+void gMenu::close()
+{
+	if (!child)
+		return;
+	
+	gtk_menu_popdown(child);
+}
 
 int gMenu::winChildCount(gMainWindow *par)
 {

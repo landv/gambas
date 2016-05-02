@@ -140,9 +140,6 @@ int gMouse::screenX()
 {
 	gint x;
 	
-	if (_isValid)
-		x = _screen_x;
-	else
 #ifdef GTK3
 		gdk_device_get_position(get_pointer(), NULL, &x, NULL);
 #else
@@ -156,9 +153,6 @@ int gMouse::screenY()
 {
 	gint y;
 	
-	if (_isValid)
-		y = _screen_y;
-	else
 #ifdef GTK3
 		gdk_device_get_position(get_pointer(), NULL, NULL, &y);
 #else

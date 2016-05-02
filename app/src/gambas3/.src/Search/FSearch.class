@@ -89,9 +89,9 @@ Private Sub UpdateTitle()
 
   Dim sWhere As String
 
-  If $hCurrent Is FOutput Then
-    sWhere = ("Console")
-  Else If $hCurrent Then
+  ' If $hCurrent Is FOutput Then
+  '   sWhere = ("Console")
+  If $hCurrent Then
     sWhere = $hCurrent.Title
   Else
     sWhere = ("Project")
@@ -114,14 +114,14 @@ Public Sub Update(Optional bForce As Boolean)
   If hWindow = Me Then Return
   $hCurrent = hWindow
   
-  If $hCurrent Is FOutput Then
-    radCurrentProcedure.Enabled = False
-    radCurrentFile.Enabled = True
-    radCurrentFile.Value = True
-    btnReplace.Enabled = False
-    btnReplaceAll.Enabled = False
-    cmbReplace.Enabled = False
-  Else 
+  ' If $hCurrent Is FOutput Then
+  '   radCurrentProcedure.Enabled = False
+  '   radCurrentFile.Enabled = True
+  '   radCurrentFile.Value = True
+  '   btnReplace.Enabled = False
+  '   btnReplaceAll.Enabled = False
+  '   cmbReplace.Enabled = False
+  ' Else 
     $hCurrent = Project.ActiveForm
     If $hCurrent Then
       If $hCurrent Is FEditor Or If $hCurrent Is FTextEditor Then
@@ -138,7 +138,7 @@ Public Sub Update(Optional bForce As Boolean)
     btnReplace.Enabled = True
     btnReplaceAll.Enabled = True
     cmbReplace.Enabled = True
-  Endif
+  'Endif
   
   If radCurrentProcedure.Value And If Not radCurrentProcedure.Enabled Then
     radCurrentFile.Value = True
@@ -318,13 +318,13 @@ Private Sub GrepFile(hFile As Object, Optional sPath As String, Optional bUseRep
     hResult = New CFindResult
     
     If hFile Then
-      If hFile Is FOutput Then
-        hResult.Path = ""
-        hResult.File = "Console"
-      Else
+      ' If hFile Is FOutput Then
+      '   hResult.Path = ""
+      '   hResult.File = "Console"
+      ' Else
         hResult.Path = sPath
         hResult.File = hFile.Name
-      Endif
+      'Endif
     Else
       hResult.Path = sPath
       hResult.File = If(Project.IsSourcePath(sPath), File.BaseName(sPath), File.Name(sPath))

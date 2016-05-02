@@ -2749,7 +2749,7 @@ Private Sub ShowPosition_Write(Value As Boolean)
   If $bShowPosition Then
     If Not $hLabel Then
       $hLabelFrame = New Panel(Me)
-      $hLabelFrame.Background = $hStyles[Highlight.Background].Color
+      $hLabelFrame.Background = Color.SetAlpha($hStyles[Highlight.Background].Color, 128)
       $hLabelFrame.Ignore = True
       $hLabel = New Label($hLabelFrame) ' TODO: NULL + gb.gtk => crash!
       $hLabel.AutoResize = True

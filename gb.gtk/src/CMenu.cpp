@@ -386,6 +386,12 @@ BEGIN_METHOD(Menu_Popup, GB_INTEGER x; GB_INTEGER y)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Menu_Close)
+
+	MENU->close();
+
+END_METHOD
+
 
 BEGIN_PROPERTY(Menu_Tag)
 
@@ -496,6 +502,7 @@ GB_DESC CMenuDesc[] =
 	MENU_DESCRIPTION,
 
 	GB_METHOD("Popup", 0, Menu_Popup, "[(X)i(Y)i]"),
+	GB_METHOD("Close", NULL, Menu_Close, NULL),
 	GB_METHOD("Delete", 0, Menu_Delete, 0),
 	GB_METHOD("Show", 0, Menu_Show, 0),
 	GB_METHOD("Hide", 0, Menu_Hide, 0),

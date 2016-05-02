@@ -41,6 +41,9 @@ Private $bArrow As Boolean
 Private $bAutoResize As Boolean
 Private $bMenuOnly As Boolean
 
+Static Private $hCurrent As MenuButton
+Static Private $hCurrentMenu As Menu
+
 Public Sub _new()
   
   'Dim hObs As Observer
@@ -141,16 +144,71 @@ Public Sub Button_Click()
   
 End
 
+Public Sub WatchTimer_Timer()
+  
+  Dim hMenuButton As MenuButton
+  Dim X As Integer
+  Dim Y As Integer
+  
+  X = Mouse.ScreenX - Me.Parent.ScreenX
+  Y = Mouse.ScreenY - Me.Parent.ScreenY
+  
+  'Debug X;; Y
+  
+  If X < 0 Or If Y < 0 Or If X >= Me.Parent.W Or If Y >= Me.Parent.H Then Return
+  
+  Try hMenuButton = Me.Parent.FindChild(X, Y)
+  If hMenuButton And If hMenuButton <> $hCurrent Then
+    If Main.FindMenu(hMenuButton, hMenuButton.Menu) Then
+      $hCurrentMenu.Close
+      $hCurrent.Refresh
+      $hCurrent = hMenuButton
+    Endif
+  Endif
+  
+End
+
+Static Private Sub HandleMenu(hCurrent As MenuButton)
+  
+  Dim hMenu As Menu
+  Dim hWatch As Timer
+  
+  hWatch = New Timer As "WatchTimer"
+  hWatch.Delay = 50
+  hWatch.Start
+  
+  Do
+    
+    hMenu = Main.FindMenu(hCurrent, hCurrent.Menu)
+    
+    $hCurrent = hCurrent
+    $hCurrentMenu = hMenu
+    
+    hMenu.Popup(hCurrent.ScreenX, hCurrent.ScreenY + hCurrent.H)
+    
+    If $hCurrent = hCurrent Then Break
+    hCurrent = $hCurrent
+    
+  Loop
+  
+  $hCurrent.Refresh
+  hWatch.Stop
+  hWatch = Null
+  $hCurrent = Null
+  $hCurrentMenu = Null
+  
+End
+
+
+
 Public Sub Arrow_Click()
 
-  Dim hMenu As Menu
-  
-  hMenu = Main.FindMenu(Me, $sMenu)
-  If hMenu Then
-    hMenu.Popup(Me.ScreenX, Me.ScreenY + Me.H)
-  Else
+  If Not Main.FindMenu(Me, $sMenu) Then
     Raise Click
+    Return
   Endif
+  
+  HandleMenu(Me)
   
 End
 
@@ -321,7 +379,12 @@ Public Sub DrawingArea_Draw()
   Dim bDrawArrow As Boolean
   
   iFlag = Style.StateOf(Last)
-  If $bInside Or If $bPressed Then iFlag = iFlag Or Draw.Hover
+  
+  If $hCurrent Then
+    If $hCurrent = Me Then iFlag = iFlag Or Draw.Hover
+  Else
+    If $bInside Then iFlag = iFlag Or Draw.Hover
+  Endif
   'If $bInside And If Me.Enabled And If Not Me.Design Then iFlag += Draw.Hover
   'If Not Me.Enabled Then iFlag += Draw.Disabled
   'If $hDrawingArea.HasFocus Then iFlag += Draw.Focus

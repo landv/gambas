@@ -82,6 +82,7 @@ public:
 //"Methods"
 	void popup();
 	void popup(int x, int y);
+	void close();
 	void destroy();
 	static bool insidePopup() { return _in_popup > 0; }
 	static gMenu *currentPopup() { return _current_popup; }
