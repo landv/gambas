@@ -155,19 +155,25 @@ void CSocket_post_connected(void *_object)
 
 static void CSocket_close(CSOCKET *_object)
 {
+	int fd;
+	
 	if (THIS->DnsTool)
 	{
 		dns_close_all(THIS->DnsTool);
 		GB.Unref(POINTER(&THIS->DnsTool));
-		THIS->DnsTool=NULL;
+		THIS->DnsTool = NULL;
 	}
 
 	if (SOCKET->status > NET_INACTIVE) /* if it's not connected, does nothing */
 	{
-		GB.Watch(SOCKET->socket , GB_WATCH_NONE , (void *)CSocket_CallBack,0);
-		SOCKET->stream.desc = NULL;
-		close(SOCKET->socket);
+		fd = SOCKET->socket;
+		//fprintf(stderr, "CSocket_close: %p: set fd %d to -1\n", THIS, fd);
 		SOCKET->socket = -1;
+		
+		GB.Watch(fd , GB_WATCH_NONE, NULL, 0);
+		SOCKET->stream.desc = NULL;
+		close(fd);
+		
 		set_status(THIS, NET_INACTIVE);
 	}
 	
@@ -221,6 +227,7 @@ void CSocket_CallBackFromDns(void *_object)
 		GB.Watch(SOCKET->socket , GB_WATCH_NONE, NULL, 0);
 		SOCKET->stream.desc = NULL;
 		close(SOCKET->socket);
+		SOCKET->socket = -1;
 		set_status(THIS, NET_INACTIVE);
 	}
 	
