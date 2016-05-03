@@ -112,7 +112,7 @@ int CCURL_stream_open(GB_STREAM *stream, const char *path, int mode, void *data)
 int CCURL_stream_seek(GB_STREAM *stream, int64_t pos, int whence){	return -1;}
 int CCURL_stream_tell(GB_STREAM *stream, int64_t *pos){return -1; }
 int CCURL_stream_flush(GB_STREAM *stream) {	return 0;}
-int CCURL_stream_close(GB_STREAM *stream) { return -1;}
+int CCURL_stream_close(GB_STREAM *stream) { return 0;}
 int CCURL_stream_write(GB_STREAM *stream, char *buffer, int len){return -1;}
 
 int CCURL_stream_lof(GB_STREAM *stream, int64_t *len)

@@ -488,7 +488,7 @@ Public Sub btnDownload_Click()
   If Message.Question(Subst(("Do you really want to download <b>&1</b>?"), sName), ("Download"), ("Cancel")) = 1 Then
     sErr = $hSoft.Install(True) 
     If sErr Then
-      Message.Error(Subst(("Unable to download <b>&1</b>:"), sName) & "\n\n" & sErr)
+      If sErr <> "*" Then Message.Error(Subst(("Unable to download <b>&1</b>:"), sName) & "\n\n" & sErr)
     Else
       Message(Subst(("<b>&1</b> has been successfully downloaded."), sName))
       Reload
@@ -508,7 +508,7 @@ Public Sub btnInstall_Click()
       If Message.Question(Subst(("Do you really want to upgrade to <b>&1</b>?"), sName), ("Upgrade"), ("Cancel")) = 1 Then
         sErr = $hSoft.Install() 
         If sErr Then
-          Message.Error(Subst(("Unable to upgrade to <b>&1</b>:"), sName) & "\n\n" & sErr)
+          If sErr <> "*" Then Message.Error(Subst(("Unable to upgrade to <b>&1</b>:"), sName) & "\n\n" & sErr)
         Else
           Message(Subst("<b>&1</b> has been successfully upgraded.", sName))
           Goto REFRESH
@@ -529,7 +529,7 @@ Public Sub btnInstall_Click()
     If Message.Question(Subst(("Do you really want to install <b>&1</b>?"), sName), ("Install"), ("Cancel")) = 1 Then
       sErr = $hSoft.Install() 
       If sErr Then
-        Message.Error(Subst(("Unable to install <b>&1</b>:"), sName) & "\n\n" & sErr)
+        If sErr <> "*" Then Message.Error(Subst(("Unable to install <b>&1</b>:"), sName) & "\n\n" & sErr)
       Else
         Message(Subst(("<b>&1</b> has been successfully installed."), sName))
         Goto REFRESH

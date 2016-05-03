@@ -339,13 +339,16 @@ Public Sub Install(Optional bJustDownload As Boolean) As String
   ' Check the components
   
   For Each sComp In hProjectInfo.Components
-    If Not Exist(Component.Path &/ sComp & ".component") Then
+    'If Not Exist(Component.Path &/ sComp & ".component") Then
       aMissing.Add(sComp)
-    Endif
+    'Endif
   Next
   
   If aMissing.Count Then
-    Error.Raise(("The following components are required:") & "\n\n" & aMissing.Join(", "))
+    If Message.Warning(("The following components are required:") & "\n\n" & aMissing.Join(", "), ("Abort"), ("Ignore")) = 1 Then
+      sErr = "*"
+      Goto LEAVE_INSTALL
+    Endif
   Endif
   
   ' TODO: Check the libraries
@@ -445,6 +448,9 @@ INSTALL_SOURCE:
 Catch
   
   sErr = Error.Text
+  
+LEAVE_INSTALL:
+  
   ' Try to remove the partial installation
   Try Move sSrcDir &/ sName & "~" To sSrcDir &/ sName
   Try Kill sExecDir &/ sName & ".gambas"

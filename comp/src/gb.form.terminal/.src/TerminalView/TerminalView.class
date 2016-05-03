@@ -22,6 +22,8 @@ Property AlternateScreen As Boolean
 Property Blink As Boolean
 Property Read Text As String
 Property ShowScrollBar As Boolean
+Property Background As Integer
+Property Foreground As Integer
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -71,8 +73,8 @@ Public Sub _new()
 
   Me.Font = Font["monospace"]
 
-  $hPanel = New Panel(Me)
-  $hPanel.Arrangement = Arrange.Fill
+  $hPanel = New Panel(Me) As "Panel"
+  '$hPanel.Arrangement = Arrange.Fill
   $hPanel.Border = Border.Plain
 
   $hView = New DrawingArea($hPanel) As "View"
@@ -80,11 +82,12 @@ Public Sub _new()
   $hView.Focus = True
   $hView.Tracking = True
   $hView.Mouse = Mouse.Text
-  $hView.Background = Color.Black 'Color.TextForeground
-  $hView.Foreground = Color.TextBackground
   $hView.NoBackground = True
 
-  $hScroll = New ScrollBar($hView) As "ScrollBar"
+  Me.Background = Color.TextForeground
+  Me.Foreground = Color.TextBackground
+  
+  $hScroll = New ScrollBar($hPanel) As "ScrollBar"
   $hScroll.Ignore = True
   $hScroll.Mouse = Mouse.Arrow
   $hScroll.Hide
@@ -149,7 +152,7 @@ Private Sub UpdateScreen()
   Dim W, H As Integer
 
   W = $hView.ClientW
-  If $bShowScrollBar Then W -= $hScroll.W
+  'If $bShowScrollBar Then W -= $hScroll.W
 
   W = Max(1, CInt(W / $CW))
   H = Max(1, $hView.ClientH \ $LH)
@@ -272,9 +275,24 @@ Public Sub View_Font()
 
 End
 
-Public Sub View_Arrange()
+Public Sub Panel_Arrange()
 
-  $hScroll.Move($hView.ClientW - Style.ScrollbarSize, 0, Style.ScrollbarSize, $hView.ClientH)
+  If System.RightToLeft Then
+    $hScroll.Move(0, 0, Style.ScrollbarSize, $hPanel.ClientH)
+  Else
+    $hScroll.Move($hPanel.ClientW - Style.ScrollbarSize, 0, Style.ScrollbarSize, $hPanel.ClientH)
+  Endif
+  
+  If $bShowScrollBar Then
+    If System.RightToLeft Then
+      $hView.Move($hScroll.W, 0, $hPanel.ClientW - $hScroll.W, $hPanel.ClientH)
+    Else
+      $hView.Move(0, 0, $hPanel.ClientW - $hScroll.W, $hPanel.ClientH)
+    Endif
+  Else
+    $hView.Move(0, 0, $hPanel.ClientW, $hPanel.ClientH)
+  Endif
+  
   UpdateScreen
 
 End
@@ -445,11 +463,20 @@ Public Sub View_MouseMove()
     If $bMouseDown Then
       GotoMouse(False)
     Else If Not $bShowScrollBar Then
-      If Mouse.X >= ($hView.ClientW - Style.ScrollbarSize) And If $hScroll.MaxValue Then
-        $hScroll.Raise
-        $hScroll.Show
+      If System.RightToLeft Then
+        If Mouse.X < $hScroll.W And If $hScroll.MaxValue Then
+          $hScroll.Raise
+          $hScroll.Show
+        Else
+          $hScroll.Hide
+        Endif
       Else
-        $hScroll.Hide
+        If Mouse.X >= ($hView.ClientW - $hScroll.W) And If $hScroll.MaxValue Then
+          $hScroll.Raise
+          $hScroll.Show
+        Else
+          $hScroll.Hide
+        Endif
       Endif
     Endif
     
@@ -848,6 +875,33 @@ Private Sub ShowScrollBar_Write(Value As Boolean)
 
   $bShowScrollBar = Value
   $hScroll.Visible = $bShowScrollBar
+  Panel_Arrange
   UpdateScreen
+
+End
+
+Private Function Background_Read() As Integer
+
+  Return $hView.Background
+
+End
+
+Private Sub Background_Write(Value As Integer)
+
+  $hPanel.Background = Value
+  $hView.Background = Value
+
+End
+
+Private Function Foreground_Read() As Integer
+
+  Return $hView.Foreground
+
+End
+
+Private Sub Foreground_Write(Value As Integer)
+
+  $hPanel.Foreground = Value
+  $hView.Foreground = Value
 
 End
