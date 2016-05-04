@@ -1,16 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,51,16)
+  MoveScaled(0,0,68,16)
   Resizable = False
   Arrangement = Arrange.Horizontal
+  AutoResize = True
   Spacing = True
   Margin = True
   { panBox Panel
-    MoveScaled(1,1,27,12)
+    MoveScaled(1,1,48,12)
+    AutoResize = True
     Spacing = True
     { lblMessage TextLabel
-      MoveScaled(0,0,27,7)
+      MoveScaled(0,0,48,7)
       AutoResize = True
     }
     { txtValue TextBox
@@ -18,10 +20,10 @@
     }
   }
   { Panel1 Panel
-    MoveScaled(30,1,2,10)
+    MoveScaled(50,1,2,10)
   }
   { VBox2 VBox
-    MoveScaled(34,1,14,9)
+    MoveScaled(53,1,14,9)
     Spacing = True
     { btnOK Button
       MoveScaled(0,0,14,4)

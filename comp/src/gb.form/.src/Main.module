@@ -201,8 +201,13 @@ End
 
 Public Sub Main()
 
-  'Application.Theme = "breeze"
-  Stock["32/directory"].Save("~/test.png")
+  Dim msg As String
+
+  msg = "This is a a very very very very very very very very very very " &
+    "a very very very very very very very very very very " &
+    "a very very very very very very very very very very " &
+    "moderate message. "
+  InputBox(String(4, msg), "This is the ill inputbox", "Default Text")
   
 End
 
