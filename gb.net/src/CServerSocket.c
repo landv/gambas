@@ -119,7 +119,8 @@ static void CServerSocket_CallBackUnix(int fd, int type, intptr_t lParam)
 /*********************************************************
  Starts listening (TCP/UDP/UNIX)
  **********************************************************/
-static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
+
+static int do_srvsock_listen(CSERVERSOCKET* _object, int mymax)
 {
 	int retval;
 	int auth = 1;
@@ -129,7 +130,8 @@ static int do_srvsock_listen(CSERVERSOCKET* _object,int mymax)
 
 	if (SOCKET->status > NET_INACTIVE) return 1;
 
-	if (mymax<0) return 13;
+	if (mymax < 0)
+		return 13;
 
 	if (THIS->type == NET_TYPE_LOCAL && !THIS->sPath)
 		return 7;
@@ -220,9 +222,12 @@ static void srvsock_listen(CSERVERSOCKET *_object, int max)
 	switch(do_srvsock_listen(THIS, max))
 	{
 		case 1: GB.Error("Socket is already listening"); break;
+		case 2: GB.Error("Cannot create socket"); break;
 		case 7: GB.Error("Path is not defined"); break;
 		case 8: GB.Error("Port is not defined"); break;
+		case 10: GB.Error("Cannot bind to socket"); break;
 		case 13: GB.Error("Invalid maximum number of connections"); break;
+		case 14: GB.Error("Cannot listen on socket"); break;
 		case 15: GB.Error("Unable to bind socket to interface"); break;
 		default: break;
 	}
