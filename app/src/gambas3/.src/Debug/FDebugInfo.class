@@ -92,8 +92,8 @@ Public Sub _new()
     .Columns[2].Text = ("Message")
   End With
   
-  tabDebug[TAB_COMPILATION].Visible = False
-  tabDebug[TAB_SEARCH].Closable = True
+  HideTab(TAB_COMPILATION)
+  'wizDebug[TAB_SEARCH].Closable = True
   
   ReadConfig
   UpdateLocal
@@ -104,8 +104,9 @@ End
 Public Sub Form_Open()
 
   FOutput.Load(panConsole)
-  tabDebug[TAB_SEARCH].Visible = False
+  HideTab(TAB_SEARCH)
   UpdateView
+  'GotoConsole
 
 End
 
@@ -300,7 +301,7 @@ Private Sub DefineVar(hView As TableView, sList As String, sCmd As String, iInde
     
   Endif
   
-  If tabDebug.Index <> iIndex Then Return
+  If wizDebug.Index <> iIndex Then Return
   
   For Each sVar In aVar
     If Right(sVar) = ":" Then Continue
@@ -513,7 +514,7 @@ Public Sub AddWatch(sExpr As String)
   Endif
 
   Design.Command("?W" & sExpr & "\t" & sExpr)
-  tabDebug.Index = TAB_WATCH
+  SelectTab(TAB_WATCH)
 
 End
 
@@ -542,7 +543,7 @@ Public Sub cmbWatch_Activate()
 End
 
 
-Public Sub btnWatch_Click()
+Public Sub btnAddWatch_Click()
 
   cmbWatch_Activate
 
@@ -565,7 +566,7 @@ End
 
 Public Sub cmbWatch_Click()
 
-  btnWatch_Click
+  btnAddWatch_Click
 
 End
 
@@ -606,7 +607,7 @@ Public Sub ReadConfig()
   Dim hCtrl As Control
 
   Settings.Read(panStack)
-  tabDebug.TextFont = Project.GetSmallFont()
+  wizDebug.TextFont = Project.GetSmallFont()
   
   Project.SetSmallFont(tbvLocal)
   tbvObject.Font = tbvLocal.Font
@@ -615,7 +616,9 @@ Public Sub ReadConfig()
   cvwBreak.Font = tbvLocal.Font
   gvwTask.Font = tbvLocal.Font
   gvwCompilation.Font = tbvLocal.Font
-  tabStack.TextFont = tabDebug.TextFont
+  'tabStack.TextFont = wizDebug.TextFont
+  
+  FDebugButton.ReadConfig
   
   For Each hCtrl In [panBreakpoint, panSearch, panWatch, panLocal]
     Project.SetSmallFont(hCtrl)
@@ -627,8 +630,6 @@ Public Sub ReadConfig()
   '   hButton.AutoResize = True
   ' Next
   btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
-  
-  Form_Arrange
   
 End
 
@@ -693,17 +694,17 @@ Catch
 
 End
 
-Public Sub tabDebug_Click()
+Public Sub wizDebug_Click()
 
   If Design.IsRunning() Then 
-    Select Case tabDebug.Index
+    Select Case wizDebug.Index
       Case TAB_CONSOLE
         FOutput.SetFocus
     End Select
     Return
   Endif
 
-  Select Case tabDebug.Index
+  Select Case wizDebug.Index
     Case TAB_LOCAL
       DefineLocal
     Case TAB_ME
@@ -814,6 +815,7 @@ Public Sub UpdateView()
   If bUndock Then  
     If FOutput.Parent Then 
       FOutput.Reparent(Null)
+      FOutput.Enabled = True
       'DEBUG "Read: "; Settings["/FOutput/Geometry"][0];; Settings["/FOutput/Geometry"][1]
       Settings.Read(FOutput)
       FOutput.OnProjectDebug
@@ -824,13 +826,12 @@ Public Sub UpdateView()
     Endif
     'FOutput.Stacking = If(Project.Running, Window.Above, Window.Normal)
   Endif
-  
 
-  tabDebug[TAB_CONSOLE].Visible = Not bUndock
-  tabDebug[TAB_LOCAL].Visible = Project.Running
-  tabDebug[TAB_ME].Visible = Project.Running
-  tabDebug[TAB_WATCH].Visible = Project.Running
-  tabDebug[TAB_BREAK].Visible = True 'Project.Running
+  ShowTab(TAB_CONSOLE, Not bUndock)
+  ShowTab(TAB_LOCAL, Project.Running)
+  ShowTab(TAB_ME, Project.Running)
+  ShowTab(TAB_WATCH, Project.Running)
+  ShowTab(TAB_BREAK)
   
   If panStack.Visible <> Project.Running Then
     If Project.Running Then
@@ -856,10 +857,12 @@ Public Sub UpdateView()
       'If bVisible Then FMain.ShowDebug(True)
     Endif
     
-    tabDebug.Index = TAB_CONSOLE
+    SelectTab(TAB_CONSOLE)
     FOutput.SetFocus
+    
   Endif 
   
+  FDebugButton.UpdateView
   FMain.UpdateConsoleAction()
   
 End
@@ -874,7 +877,7 @@ End
 Public Sub RefreshBreakpoint(sClass As String)
   
   $cRefreshBreakpoint[sClass] = sClass
-  If tabDebug.Index = TAB_BREAK Then 
+  If wizDebug.Index = TAB_BREAK Then 
     timBreakpoint.Stop
     timBreakpoint.Start
   Endif
@@ -1058,7 +1061,7 @@ End
 
 Public Sub ShowWatchTab()
   
-  tabDebug.Index = TAB_WATCH
+  SelectTab(TAB_WATCH)
   
 End
 
@@ -1083,8 +1086,8 @@ Public Sub ShowSearchList()
   gvwFind.Show
   lblNotFound.Hide
   'lblBrowse.Hide
-  tabDebug[TAB_SEARCH].Visible = True
-  tabDebug.Index = TAB_SEARCH
+  ShowTab(TAB_SEARCH)
+  SelectTab(TAB_SEARCH)
   
 End
 
@@ -1192,16 +1195,16 @@ End
 
 Public Sub IsSearchListVisible() As Boolean
   
-  Return tabDebug.Index = TAB_SEARCH And FMain.IsDebugVisible()
+  Return wizDebug.Index = TAB_SEARCH And FMain.IsDebugVisible()
   
 End
 
 Private Sub GotoConsole()
   
-  If tabDebug[TAB_CONSOLE].Visible Then
-    tabDebug.Index = TAB_CONSOLE
+  If IsNull(FOutput.Parent) Then
+    SelectTab(TAB_BREAK)
   Else
-    tabDebug.Index = TAB_BREAK
+    SelectTab(TAB_CONSOLE)
   Endif
   
 End
@@ -1223,7 +1226,7 @@ End
 
 Public Sub ShowConsole()
 
-  If FOutput.Parent Then tabDebug.Index = TAB_CONSOLE
+  If FOutput.Parent Then wizDebug.Index = TAB_CONSOLE
   FOutput.SetFocus
 
 End
@@ -1239,7 +1242,7 @@ End
 Public Sub RefreshTask(sPath As String)
   
   $cRefreshTask[sPath] = sPath
-  If tabDebug.Index = TAB_TASK Then
+  If wizDebug.Index = TAB_TASK Then
     timTask.Stop
     timTask.Start
   Endif
@@ -1250,7 +1253,7 @@ Public Sub UpdateTask()
   
   Dim sPath As String
   
-  If tabDebug.Index <> TAB_TASK Then Return
+  If wizDebug.Index <> TAB_TASK Then Return
   
   Inc Application.Busy
   
@@ -1364,7 +1367,7 @@ Public Sub OnProjectChange()
   $aTask = Null
   UpdateTask
   SetCompilation
-  tabDebug_Close(TAB_SEARCH)
+  CloseSearch
   
 End
 
@@ -1388,7 +1391,7 @@ Public Sub SetCompilation(Optional sOutput As String)
   
   gvwCompilation.Clear
   If Not sOutput Then 
-    tabDebug[TAB_COMPILATION].Visible = False
+    HideTab(TAB_COMPILATION)
     GotoConsole
     Return
   Endif
@@ -1413,11 +1416,11 @@ Public Sub SetCompilation(Optional sOutput As String)
   gvwCompilation.Columns[0].Width = -1
   gvwCompilation.Columns[1].Width = -1
   
-  tabDebug[TAB_COMPILATION].Visible = True
-  tabDebug[TAB_COMPILATION].Text = ("Warnings") & " (" & gvwCompilation.Rows.Count & ")"
+  ShowTab(TAB_COMPILATION)
+  'wizDebug[TAB_COMPILATION].Text = ("Warnings") & " (" & gvwCompilation.Rows.Count & ")"
   
   Action["console"].Value = True
-  tabDebug.Index = TAB_COMPILATION
+  SelectTab(TAB_COMPILATION)
   
 End
 
@@ -1496,34 +1499,49 @@ Public Sub btnLocalLayout_Click()
 
 End
 
-Public Sub tabDebug_Arrange()
+Public Sub wizDebug_Arrange()
 
-  If tabDebug.Index = TAB_LOCAL Then UpdateLocal
+  If wizDebug.Index = TAB_LOCAL Then UpdateLocal
 
 End
 
-Public Sub tabDebug_Close(Index As Integer)
+Private Sub CloseSearch()
 
-  If Index = TAB_SEARCH Then
-    FSearch.ResetBrowse
-    GotoConsole
-    tabDebug[TAB_SEARCH].Visible = False
+  FSearch.ResetBrowse
+  GotoConsole
+  HideTab(TAB_SEARCH)
+
+End
+
+Public Sub SelectTab(iTab As Integer)
+
+  If wizDebug.Index = iTab Then Return
+  
+  wizDebug.Index = iTab
+  FDebugButton.SelectButton(iTab)
+  
+End
+
+Private Sub ShowTab(iTab As Integer, Optional bShow As Boolean = True)
+  
+  If bShow Then
+    wizDebug[iTab].Enabled = True
+    FDebugButton.ShowButton(iTab, True)
+  Else
+    HideTab(iTab)
   Endif
-
+  
 End
 
-Public Sub Form_Arrange()
-
-  Dim H As Integer
-
-  H = tabDebug.H - tabDebug.ClientHeight - 1
-  btnClose.Move(Me.W - H, 0, H, H)
-  btnClose.Raise
-
+Private Sub HideTab(iTab As Integer)
+  
+  wizDebug[iTab].Enabled = False
+  FDebugButton.ShowButton(iTab, False)
+  
 End
 
-Public Sub btnClose_Click()
-
-  FMain.ShowDebug(False)
-
+Public Sub GetCurrentTab() As Integer
+  
+  Return wizDebug.Index
+  
 End

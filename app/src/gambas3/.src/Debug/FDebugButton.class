@@ -1,0 +1,74 @@
+' Gambas class file
+
+Public Sub ReadConfig()
+  
+  Project.SetSmallFont(Me)
+  Me.H = Me.Font.H + 8
+  
+End
+
+Public Sub UpdateView()
+  
+  btnConsole.Visible = Not IsNull(FOutput.Parent)
+  OnVisibilityChange
+  
+End
+
+Public Sub OnVisibilityChange()
+  
+  Dim hButton As ToolButton
+  
+  If FMain.IsDebugVisible() Then
+    SelectButton(FDebugInfo.GetCurrentTab())
+  Else
+    For Each hButton In Me.Children
+      hButton.Value = False
+    Next
+  Endif
+  
+End
+
+Public Sub btnDebug_Click()
+
+  Dim hLast As ToolButton = Last
+  Dim hButton As ToolButton 
+  Dim I As Integer
+  
+  If hLast.Value Then
+    
+    FMain.ShowDebug(True)
+    
+    For I = 0 To Me.Children.Count - 1
+      hButton = Me.Children[I]
+      If hButton <> hLast Then
+        Object.Lock(hButton)
+        hButton.Value = False
+        Object.Unlock(hButton)
+      Else
+        FDebugInfo.SelectTab(I)
+      Endif
+    Next
+    
+  Else
+    
+    FMain.ShowDebug(False)
+    
+  Endif
+  
+  
+End
+
+Public Sub SelectButton(iTab As Integer)
+
+  Dim hButton As ToolButton = Me.Children[iTab]
+  If hButton.Value Then Return
+  hButton.Value = True
+  
+End
+
+Public Sub ShowButton(iTab As Integer, bShow As Boolean)
+  
+  Dim hButton As ToolButton = Me.Children[iTab]
+  hButton.Visible = bShow
+  
+End

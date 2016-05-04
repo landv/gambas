@@ -309,12 +309,13 @@ void SUBR_eval(ushort code)
 	goto _FREE;
 
 _ERROR:
+
 	EVAL.Free((void **)(void *)&eval);
 	PROPAGATE();
 
 _FREE:
-	EVAL.Free((void **)(void *)&eval);
 
+	EVAL.Free((void **)(void *)&eval);
 	SUBR_LEAVE();
 }
 

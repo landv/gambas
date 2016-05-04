@@ -99,6 +99,8 @@ Private Sub SetState(iState As Integer)
   Action["stop"].Enabled = $iState <> STATE_STOP
   'btnInfo.Enabled = btnStop.Enabled
 
+  FOutput.OnProjectDebugState
+  
 End
 
 

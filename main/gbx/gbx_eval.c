@@ -107,6 +107,9 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 	#endif
 
 	STACK_enable_for_eval();
+	debug = EXEC_debug;
+	EXEC_debug = FALSE;
+	error = FALSE;
 
 	nvar = EVAL->nvar;
 
@@ -126,24 +129,20 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 		if ((*func)(sym->sym.name, sym->sym.len, (GB_VARIANT *)&SP[-1]))
 		{
 			GB_Error("Unknown symbol");
-			return TRUE;
+			error = TRUE;
+			goto __LEAVE;
 		}
+		
+		BORROW(SP - 1);
 	}
 
 	if (expr->custom)
 	{
 		SP->type = T_OBJECT;
 		SP->_object.object = expr->parent;
+		OBJECT_REF(expr->parent);
 		SP++;
-		nvar++;
 	}
-
-	for (i = 1; i <= nvar; i++)
-		BORROW(&SP[-i]);
-
-	debug = EXEC_debug;
-	EXEC_debug = FALSE;
-	error = FALSE;
 
 	TRY
 	{
@@ -155,6 +154,8 @@ bool EVAL_expression(EXPRESSION *expr, EVAL_FUNCTION func)
 	}
 	END_TRY
 
+__LEAVE:
+	
 	STACK_disable_for_eval();
 	EXEC_debug = debug;
 	EVAL = save_eval;

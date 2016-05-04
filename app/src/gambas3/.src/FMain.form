@@ -1089,7 +1089,7 @@
     Animated = True
   }
   { Panel1 Panel
-    MoveScaled(1,18,105,77)
+    MoveScaled(2,17,170,77)
     Expand = True
     Arrangement = Arrange.Horizontal
     Border = Border.Plain
@@ -1127,39 +1127,35 @@
       }
     }
     { Panel4 VBox
-      MoveScaled(33,2,68,74)
+      MoveScaled(33,2,135,74)
       Expand = True
       { Panel5 HBox
-        MoveScaled(0,7,66,66)
+        MoveScaled(0,7,133,66)
         Expand = True
         { panCentral Panel
-          MoveScaled(0,0,26,64)
+          MoveScaled(0,0,94,64)
           Expand = True
           Arrangement = Arrange.Vertical
           { Panel2 HBox
-            MoveScaled(1,2,24,32)
+            MoveScaled(1,2,88,32)
             Expand = True
             { Separator5 Separator
               MoveScaled(1,7,0,10)
               Visible = False
             }
             { wrkProject Workspace
-              MoveScaled(2,0,19,31)
+              MoveScaled(2,0,81,31)
               Background = Color.LightForeground
               Expand = True
               Border = False
             }
             { Separator8 Separator
-              MoveScaled(23,7,0,9)
+              MoveScaled(86,8,0,9)
               Visible = False
             }
           }
-          { Separator9 Separator
-            MoveScaled(3,35,19,0)
-            Visible = False
-          }
           { panDebug SidePanel
-            MoveScaled(2,38,19,27)
+            MoveScaled(3,37,81,14)
             Visible = False
             ToolTip = ("Debug")
             Arrangement = Arrange.Fill
@@ -1168,9 +1164,14 @@
             Transparent = True
             Hidden = True
           }
+          { panButton Panel
+            MoveScaled(3,56,85,4)
+            Visible = False
+            Arrangement = Arrange.Fill
+          }
         }
         { panProperty SidePanel
-          MoveScaled(28,0,32,65)
+          MoveScaled(97,1,32,65)
           ToolTip = ("Properties")
           Arrangement = Arrange.Vertical
           Action = "property"
@@ -1215,14 +1216,14 @@
     }
   }
   { dwgWelcome DrawingArea
-    MoveScaled(110,34,15,18)
+    MoveScaled(157,6,15,10)
     Ignore = True
     Arrangement = Arrange.Fill
     Margin = True
     Padding = 32
   }
   { timOpen #Timer
-    #MoveScaled(113,20)
+    #MoveScaled(147,7)
   }
 }
 

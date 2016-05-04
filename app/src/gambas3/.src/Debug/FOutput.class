@@ -141,7 +141,7 @@ End
 
 Public Sub SetFocus()
 
-  If panEnter.Visible Then
+  If panEnter.Visible And If Not txtEnter.ReadOnly Then
     txtEnter.SetFocus
   Else
     trmOutput.SetFocus
@@ -181,11 +181,16 @@ End
 '   
 ' END
 
+Public Sub OnProjectDebugState()
+
+  txtEnter.ReadOnly = Design.IsRunning()  
+  
+End
+
 Public Sub OnProjectDebug()
   
   btnAbove.Visible = Project.Running And btnUndock.Value
   If btnUndock.Value Then Me.Stacking = If(Project.Running And btnAbove.Value, Window.Above, Window.Normal)
-  panEnter.Visible = Not Project.Running
   SetFocus
   
 End

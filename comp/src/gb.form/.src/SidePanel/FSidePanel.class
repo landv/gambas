@@ -439,8 +439,6 @@ Private Sub TogglePanel()
     btnSide.Hide
     btnSide2.Hide
     
-    GetParent()._Hide
-    
     With Me.Parent
       $X = .X
       $Y = .Y
@@ -454,6 +452,8 @@ Private Sub TogglePanel()
     
     Action.Raise(Me.Parent)
 
+    GetParent()._Hide
+    
   Else
 
     btnSide.Show

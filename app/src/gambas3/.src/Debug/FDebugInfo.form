@@ -1,16 +1,18 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,2,125,47)
+  MoveScaled(0,2,125,50)
   Text = ("Debug")
   Persistent = True
   Arrangement = Arrange.Horizontal
-  { tabDebug TabPanel
+  { wizDebug Wizard
     MoveScaled(3,3,94,41)
     Expand = True
     Arrangement = Arrange.Vertical
-    Border = False
     Count = 8
+    ShowTitle = False
+    ShowButton = False
+    Border = False
     Index = 0
     Text = ("Console")
     Picture = Picture["img/16/console.png"]
@@ -78,7 +80,7 @@
       { Separator6 Separator
         MoveScaled(28,0,0,4)
       }
-      { btnWatch ToolButton
+      { btnAddWatch ToolButton
         MoveScaled(29,0,4,4)
         ToolTip = ("Add expression")
         Picture = Picture["icon:/small/add"]
@@ -160,7 +162,7 @@
       Delay = 250
     }
     Index = 5
-    Text = ("")
+    Text = ("Warnings")
     Picture = Picture["img/16/warning.png"]
     { gvwCompilation GridView
       MoveScaled(28,9,41,23)
@@ -251,30 +253,15 @@
     Index = 0
   }
   { panStack SidePanel
-    MoveScaled(99,3,24,43)
+    MoveScaled(99,2,24,43)
     Arrangement = Arrange.Fill
     Orientation = Align.Right
     Separator = True
     Transparent = True
-    { tabStack TabPanel
-      MoveScaled(0,0,21,41)
-      Arrangement = Arrange.Fill
+    { lvwStack ListView
+      MoveScaled(2,4,16,30)
+      Mouse = Mouse.Pointing
       Border = False
-      Index = 0
-      Text = ("Stack backtrace")
-      Picture = Picture["img/16/stack.png"]
-      { lvwStack ListView
-        MoveScaled(2,4,16,30)
-        Mouse = Mouse.Pointing
-        Border = False
-      }
-      Index = 0
     }
-  }
-  { btnClose ToolButton
-    MoveScaled(0,0,4,4)
-    Background = Color.Background
-    Ignore = True
-    Picture = Picture["icon:/small/close"]
   }
 }

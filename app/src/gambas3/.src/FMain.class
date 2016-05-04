@@ -44,6 +44,7 @@ Public Sub _new()
   Design.Init
   
   FDebugInfo.Load(panDebug)
+  FDebugButton.Load(panButton)
   FToolbox.Load(panTool)
   FProperty.Load(tabProperty)
   FImageProperty.Load(panImageProperty)
@@ -1243,7 +1244,7 @@ Private Sub UpdateGlobalLayout()
     hMenu.Enabled = hMenu.Visible
   Next
 
-  For Each hCtrl In [panDebug, panProject, tlbMain]
+  For Each hCtrl In [panDebug, panButton, panProject, tlbMain]
     hCtrl.Visible = Not bWelcome And Not bFake
     hMenu.Enabled = hMenu.Visible
   Next
@@ -1307,17 +1308,22 @@ Public Sub ShowTool(sType As String)
   
 End
 
+Public Sub GetDebugPanel() As SidePanel
+  
+  Return panDebug
+  
+End
+
+
 Public Sub ShowDebug(bShow As Boolean)
   
   panDebug.Hidden = Not bShow
-  FDebugInfo.OnVisibilityChange
   
 End
 
 Public Sub HideDebug(bHide As Boolean)
   
   panDebug.Visible = Not bHide
-  FDebugInfo.OnVisibilityChange
   
 End
 
@@ -2663,3 +2669,17 @@ Public Sub msgError_Close()
 
 End
 
+
+Public Sub panDebug_Show()
+
+  FDebugInfo.OnVisibilityChange
+  FDebugButton.OnVisibilityChange
+
+End
+
+Public Sub panDebug_Hide()
+
+  FDebugInfo.OnVisibilityChange
+  FDebugButton.OnVisibilityChange
+
+End
