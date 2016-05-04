@@ -1251,7 +1251,7 @@ static int begin_transaction(DB_DATABASE *db)
 	/* Autocommit is on by default. Lets set it off. */
 	/* BM: why not doing that when we open the connection ? */
 	//do_query(db, "Unable to set autocommit to 0: &1", NULL, "set autocommit=0", 0);
-	return do_query(db, "Unable to begin transaction: &1", NULL, "BEGIN", 0);
+	return do_query(db, "Unable to begin transaction: &1", NULL, "START TRANSACTION", 0);
 }
 
 
