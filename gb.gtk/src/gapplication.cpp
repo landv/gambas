@@ -214,6 +214,7 @@ static void gambas_handle_event(GdkEvent *event)
 	int x, y, xs, ys, xc, yc;
 	bool cancel;
 	int type;
+	bool handle_event = false;
 
 	if (gApplication::_fix_printer_dialog)
 	{
@@ -328,9 +329,6 @@ static void gambas_handle_event(GdkEvent *event)
 		if (!control)
 			goto __HANDLE_EVENT;
 	}
-
-	//if (event->type == GDK_BUTTON_RELEASE)
-	//	fprintf(stderr, "GDK_BUTTON_RELEASE #2\n");
 
 	if (event->type == GDK_FOCUS_CHANGE)
 	{
@@ -514,6 +512,12 @@ __FOUND_WIDGET:
 		case GDK_BUTTON_RELEASE:
 		{
 			save_control = control = find_child(control, (int)event->button.x_root, (int)event->button.y_root, button_grab);
+			
+			/*if (event->type == GDK_BUTTON_PRESS)
+				fprintf(stderr, "GDK_BUTTON_PRESS: %p / %p\n", control, button_grab);
+			else if (event->type == GDK_BUTTON_RELEASE)
+				fprintf(stderr, "GDK_BUTTON_RELEASE: %p / %p\n", control, button_grab);*/
+			
 			if (!control)
 				goto __HANDLE_EVENT;
 
@@ -782,9 +786,22 @@ __FOUND_WIDGET:
 
 __HANDLE_EVENT:
 
-	gtk_main_do_event(event);
+	handle_event = true;
 
 __RETURN:
+
+	if (event->type == GDK_BUTTON_RELEASE && gApplication::_button_grab)
+	{
+		if (gApplication::_enter_after_button_grab)
+		{
+			gApplication::checkHoveredControl(gApplication::_enter_after_button_grab);
+			gApplication::_enter_after_button_grab = NULL;
+		}
+		gApplication::setButtonGrab(NULL);
+	}
+	
+	if (handle_event)
+		gtk_main_do_event(event);
 
 	if (!gdk_events_pending()) // && event->type != GDK_ENTER_NOTIFY && event->type != GDK_LEAVE_NOTIFY)
 	{
@@ -802,16 +819,6 @@ __RETURN:
 
 			gApplication::_leave = NULL;
 		}
-	}
-
-	if (event->type == GDK_BUTTON_RELEASE && gApplication::_button_grab)
-	{
-		if (gApplication::_enter_after_button_grab)
-		{
-			gApplication::checkHoveredControl(gApplication::_enter_after_button_grab);
-			gApplication::_enter_after_button_grab = NULL;
-		}
-		gApplication::setButtonGrab(NULL);
 	}
 
 }
