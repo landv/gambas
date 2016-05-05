@@ -94,7 +94,7 @@ Private Sub CreateProject() As Boolean
     Project.CopyProject($sTemplate, sDir)
     
     Shell "rm -rf " & Shell$(sDir &/ ".lang") Wait
-    Kill sDir &/ "icon.png"
+    Try Kill sDir &/ "icon.png"
     
     sTemp = Temp$()
     
@@ -218,7 +218,7 @@ Public Sub wizProject_Close()
 
   If CreateProject() Then Return
   
-  Message(("The project has been successfully created."))
+  'Message(("The project has been successfully created."))
   
   InAnotherWindow = chkOther.Value
   
