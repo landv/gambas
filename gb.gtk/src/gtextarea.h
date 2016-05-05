@@ -63,7 +63,7 @@ public:
 	void insert(const char *txt);
 	int toLine(int pos);
 	int toColumn(int pos);
-	int toPosition(int line,int col);
+	int toPosition(int line, int col);
 
 //"Selection properties"
 	int selStart();

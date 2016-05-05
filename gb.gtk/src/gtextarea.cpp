@@ -694,8 +694,8 @@ int gTextArea::toLine(int pos)
 {
 	if (pos < 0)
 		pos=0;
-	else if (pos >= length())
-		pos = length() - 1;
+	else if (pos > length())
+		pos = length();
 
 	return gtk_text_iter_get_line(getIterAt(pos));
 }
@@ -704,26 +704,33 @@ int gTextArea::toColumn(int pos)
 {
 	if (pos < 0)
 		pos=0;
-	else if (pos >= length())
-		pos = length() - 1;
+	else if (pos > length())
+		pos = length();
 
 	return gtk_text_iter_get_line_offset(getIterAt(pos));
 }
 
-int gTextArea::toPosition(int line,int col)
+int gTextArea::toPosition(int line, int col)
 {
 	GtkTextIter iter;
+	int lm, cm;
 
-	if (line < 0) line=0;
-	if (col < 0) col=0;
+	if (line < 0) line = 0;
+	if (col < 0) col = 0;
 	
-	gtk_text_buffer_get_end_iter(_buffer, &iter);
-	if (line > gtk_text_iter_get_line(&iter))
-		line = gtk_text_iter_get_line(&iter);
+	lm = gtk_text_buffer_get_line_count(_buffer) - 1;
+	if (line >= lm)
+		line = lm;
+	
+	gtk_text_buffer_get_start_iter(_buffer, &iter);
 	gtk_text_iter_set_line(&iter, line);
 	
-	if (col > gtk_text_iter_get_line_offset(&iter)) 
-		col = gtk_text_iter_get_line_offset(&iter);
+	cm = gtk_text_iter_get_chars_in_line(&iter);
+	if (line < lm)
+		cm--;
+	
+	if (col > cm) 
+		col = cm;
 	
 	gtk_text_iter_set_line_offset(&iter, col);
 	

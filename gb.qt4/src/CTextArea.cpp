@@ -61,19 +61,27 @@ static int get_length(void *_object)
 
 static void to_pos(QTextEdit *wid, int par, int car, int *pos)
 {
-	QTextCursor cursor = wid->textCursor();
-	QTextBlock block = cursor.block();
+	QTextCursor cursor;
+	QTextBlock block;
 	int p = 0;
 
+	cursor = wid->textCursor();
+	cursor.movePosition(QTextCursor::Start);
+	
+	block = cursor.block();
+	
 	while (par)
 	{
 		if (!block.isValid())
 			break;
-		p += block.length() + 1;
+		p += block.length();
 		block = block.next();
 		par--;
 	}
 
+	if (block.isValid())
+		car = qMin(block.length() - 1, car);
+	
 	*pos = p + car;
 }
 
