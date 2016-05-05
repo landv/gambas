@@ -12,14 +12,17 @@ Static Private TypeToMInfo As New Collection        ''Table that return a mimeob
 Static Private $aCurMimes As DesktopMime[]          ''Temporary table for _Next walking
 Static Private $cIconCache As New Collection        ''Cache for icons
 Static Private $cCommentCache As New Collection     ''Cache for comments
+
 Public _$iWeight As Integer
 Public _$sType As String
 Public _$sPattern As String
 Public _$aMagic As New String[]
 Public _$sGenericIcon As String
 Public _$bIsSuffix As Boolean
+
 Static Private $bPreciseSearch As Boolean
 Static Property PreciseSearch As Boolean
+
 Property Read Weight As Integer                            ''Weight of a mime entry for a type
 Property Read Type As String                               ''Type mime
 Property Read Pattern As String                            ''Pattern of a mime type

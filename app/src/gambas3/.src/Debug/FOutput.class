@@ -359,12 +359,12 @@ Public Sub txtEnter_KeyPress()
       Endif
     Endif
     Stop Event
-  ' Else If Key.Code = Key.Home And If Key.Control Then
-  '   trmOutput.Goto(0, 0)
-  '   trmOutput.SetFocus
-  '   Stop Event
-  Else
-    trmOutput.View_KeyPress
+  Else If Key.Code = Key.Home And If Key.Control Then
+    trmOutput.Goto(0, 0)
+    Stop Event
+  Else If Key.Code = Key.End And If Key.Control Then
+    trmOutput.Goto(0, trmOutput.Count - 1)
+    Stop Event
   Endif
 
 End

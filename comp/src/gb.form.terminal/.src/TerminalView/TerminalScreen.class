@@ -997,6 +997,18 @@ Private Sub GetSelection(ByRef X1 As Integer, ByRef Y1 As Integer, ByRef X2 As I
   If Y1 > Y2 Then
     Swap Y1, Y2
     Swap X1, X2
+  Else If Y1 = Y2 Then
+    If X1 > X2 Then Swap X1, X2
+  Endif
+  
+  If Y1 < 0 Then
+    Y1 = 0
+    X1 = 0
+  Endif
+  
+  If Y2 >= Max($H, Lines.Count) Then
+    Y2 = Max($H, Lines.Count) - 1
+    X2 = $W
   Endif
 
   If Y2 > Y1 Or If X2 > X1 Then Return True
@@ -1074,8 +1086,8 @@ End
 
 Public Sub GotoMouse(X As Integer, Y As Integer, bStart As Boolean)
 
-  X = Max(0, Min($W - 1, X))
-  Y = Max(0, Min(Max(Lines.Max, $H - 1), Y))
+  X = Max(0, Min($W, X))
+  Y = Max(0, Min(Max(Lines.Count, $H), Y))
   
   If bStart Then
     $X1 = X

@@ -24,6 +24,7 @@ Property Read Text As String
 Property ShowScrollBar As Boolean
 Property Background As Integer
 Property Foreground As Integer
+Property Read Count As Integer
 
 Private $hPanel As Panel
 Private $hView As DrawingArea
@@ -333,6 +334,7 @@ End
 Public Sub Goto(X As Integer, Y As Integer)
 
   $hScreen.Goto(X, Y)
+  EnsureVisible
 
 End
 
@@ -554,7 +556,10 @@ Public Sub View_DblClick()
 
   If $bTermUseMouse And If Not $bMouseDown Then
     SendMouseEvent($hFilter.MouseDown)
+    Return
   Endif
+  
+  
   
 End
 
@@ -903,5 +908,11 @@ Private Sub Foreground_Write(Value As Integer)
 
   $hPanel.Foreground = Value
   $hView.Foreground = Value
+
+End
+
+Private Function Count_Read() As Integer
+
+  Return $hScreen.Lines.Count
 
 End

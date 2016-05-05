@@ -153,10 +153,12 @@ End
 
 Public Sub Main()
 
-  Dim aFile As DesktopFile[]
+  Dim hMime As DesktopMime
 
-  aFile = DesktopFile.FromMime("image/png")
-
+  hMime = DesktopMime.FromFile("/bin/ls")
+  Print hMime.Pattern
+  Print hMime.Type
+  
 End
 
 
