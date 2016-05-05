@@ -74,7 +74,7 @@ Public Sub ReadConfig()
   trmOutput.Font = Font[Settings["/ConsoleFont", Project.DEFAULT_FONT]]
   MTheme.InitControl(trmOutput)
 
-  Project.SetSmallFont(tlbOutput)
+  Project.SetSmallFont(panToolbar)
   
   txtEnter.Font = trmOutput.Font
   lblEnter.Font = trmOutput.Font

@@ -380,15 +380,25 @@ End
 
 Public Sub Process_Kill()
 
+  Dim sMsg As String
+  
   If Not Project.AboutToQuit Then AfterStop
   
   If Not $hProcess Then Return ' $hProcess may be NULL if the event loop is called somewhere during AfterStop()
 
   If $hProcess.State = Process.Crashed Then
-    ' SIGKILL and SIGTERM are not considered as bugs in the program
-    If $hProcess.Value <> 9 And $hProcess.Value <> 15 Then
-      FCrash.Run($hProcess)
-    Endif
+    ' SIGKILL, SIGTERM and SIGINT are not considered as bugs in the program
+    Select Case $hProcess.Value
+      Case 2
+        sMsg = ("The program has been interrupted by CTRL+C.")
+      Case 9
+        'sMsg = ("The program has been killed.")
+      Case 15
+        sMsg = ("The program has been terminated.")
+      Default
+        FCrash.Run($hProcess)
+    End Select
+    If sMsg Then FMain.ShowWarning(sMsg)
   Else If $hProcess.Value Then
     FMain.ShowInfo(Subst(("The program has returned\nthe value: &1"), $hProcess.Value))
   Endif

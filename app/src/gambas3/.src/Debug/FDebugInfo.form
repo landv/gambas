@@ -254,13 +254,30 @@
   }
   { panStack SidePanel
     MoveScaled(99,2,24,43)
-    Arrangement = Arrange.Fill
+    Arrangement = Arrange.Vertical
     Orientation = Align.Right
     Separator = True
     Transparent = True
+    { panBacktrace HBox
+      MoveScaled(2,2,18,4)
+      { PictureBox1 PictureBox
+        MoveScaled(0,0,4,4)
+        Picture = Picture["img/16/stack.png"]
+        Alignment = Align.Center
+      }
+      { Label1 Label
+        MoveScaled(5,0,9,4)
+        Expand = True
+        Text = ("Stack backtrace")
+      }
+    }
+    { Separator7 Separator
+      MoveScaled(6,8,9,0)
+    }
     { lvwStack ListView
-      MoveScaled(2,4,16,30)
+      MoveScaled(2,11,16,23)
       Mouse = Mouse.Pointing
+      Expand = True
       Border = False
     }
   }

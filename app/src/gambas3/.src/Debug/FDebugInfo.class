@@ -616,7 +616,7 @@ Public Sub ReadConfig()
   cvwBreak.Font = tbvLocal.Font
   gvwTask.Font = tbvLocal.Font
   gvwCompilation.Font = tbvLocal.Font
-  'tabStack.TextFont = wizDebug.TextFont
+  panBacktrace.Font = tbvLocal.Font
   
   FDebugButton.ReadConfig
   
@@ -624,11 +624,6 @@ Public Sub ReadConfig()
     Project.SetSmallFont(hCtrl)
   Next
 
-  ' For Each hButton In [btnClearBreak, btnKillAllWatch, btnKillWatch, btnRemoveBreak, btnShowMe, btnWatch]
-  '   hButton.AutoResize = False
-  '   hButton.W = 8
-  '   hButton.AutoResize = True
-  ' Next
   btnLocalLayout.Value = Settings["/FDebugInfo/LocalColumnView", 0]
   
 End

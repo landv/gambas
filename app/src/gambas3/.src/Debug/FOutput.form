@@ -13,13 +13,13 @@
       Name = "mnuCopy"
       Text = ("Copy")
       Picture = Picture["icon:/small/copy"]
-      Shortcut = "Ctrl+C"
+      Shortcut = "Ctrl+Shift+C"
     }
     { mnuPaste Menu btnPaste
       Name = "mnuPaste"
       Text = ("Paste")
       Picture = Picture["icon:/small/paste"]
-      Shortcut = "Ctrl+V"
+      Shortcut = "Ctrl+Shift+V"
     }
     { mnuClear Menu btnClear
       Name = "mnuClear"
@@ -27,24 +27,9 @@
       Picture = Picture["icon:/small/clear"]
       Shortcut = "Ctrl+L"
     }
-    { Menu2 Menu
-    }
-    { mnuFindNext Menu
-      Action = "find-next"
-      Text = ("Find next")
-      Picture = Picture["icon:/small/down"]
-      Shortcut = "F3"
-    }
-    { mnuFindPrevious Menu
-      Action = "find-previous"
-      Text = ("Find previous")
-      Picture = Picture["icon:/small/up"]
-      Shortcut = "Shift+F3"
-    }
   }
-  { tlbOutput ToolBar
-    MoveScaled(1,1,90,4)
-    Separator = True
+  { panToolbar HBox
+    MoveScaled(1,1,93,4)
     { btnUndock ToolButton
       MoveScaled(0,0,4,4)
       ToolTip = ("Undock console")
@@ -98,8 +83,11 @@
       Text = ("Use system charset")
     }
   }
+  { Separator2 Separator
+    MoveScaled(34,8,13,0)
+  }
   { trmOutput TerminalView
-    MoveScaled(5,9,69,27)
+    MoveScaled(5,13,69,27)
     Expand = True
     Border = False
     Limit = 65536
@@ -124,20 +112,5 @@
       Expand = True
       Border = False
     }
-  }
-}
-
-# Gambas Action File 3.0
-
-{ Actions
-  { Action find-next
-    Text = "Find next"
-    Shortcut = "F3"
-    Picture = "icon:/small/down"
-  }
-  { Action find-previous
-    Text = "Find previous"
-    Shortcut = "Shift+F3"
-    Picture = "icon:/small/up"
   }
 }
