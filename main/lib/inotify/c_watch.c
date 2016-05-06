@@ -30,53 +30,49 @@
 #include <sys/inotify.h>
 #include <limits.h>
 
-#include "gambas.h"
+#include "main.h"
 #include "c_watch.h"
+
+//#define DEBUG_ME 1
 
 #define GB_ErrorErrno()	GB.Error(strerror(errno))
 
-typedef struct {
-	GB_BASE ob;
-	int wd;
-	uint32_t mask;
-	char *path;
-	int paused;
-	GB_VARIANT_VALUE tag;
-} CWATCH;
+enum { EV_READ, EV_STAT, EV_CLOSE, EV_CREATE, EV_DELETE, EV_WRITE, EV_MOVE, EV_MOVED_FROM, EV_MOVED_TO, EV_OPEN, NUM_EV };
 
-typedef struct cinfo CINFO;
+typedef
+	struct cinfo CINFO;
+	
 struct cinfo {
 	struct inotify_event *iev;
 	CINFO *prev;
 };
 
-typedef struct {
-	int fd;
-	GB_HASHTABLE watches;
-	CINFO *top;
-} CINOTIFY;
+typedef 
+	struct {
+		int fd;
+		GB_HASHTABLE watches;
+		CINFO *top;
+	} 
+	CINOTIFY;
+
+typedef
+	struct {
+		CWATCH *root;
+		char *path;
+		int wd;
+		int events[NUM_EV];
+	}
+	WATCH_LIST;
+	
+typedef
+	struct {
+		int *eventp;
+		uint32_t mask;
+	}
+	EVENT_TABLE;
 
 /* XXX: We currently only support one inotify instance */
 static CINOTIFY _ino = {-1, NULL, NULL};
-
-static CWATCH *find_watch(CINOTIFY *ino, int wd)
-{
-	CWATCH *watch = NULL;
-
-	GB.HashTable.Get(ino->watches, (char *) &wd, sizeof(wd),
-			 (void **) &watch);
-	/* If the lookup fails, `watch' isn't changed */
-	return watch;
-}
-
-static CWATCH *find_watch_path(CINOTIFY *ino, const char *path)
-{
-	CWATCH *watch = NULL;
-
-	GB.HashTable.Get(ino->watches, path, GB.StringLength((char *) path),
-			 (void **) &watch);
-	return watch;
-}
 
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Stat);
@@ -89,10 +85,8 @@ DECLARE_EVENT(EVENT_MoveFrom);
 DECLARE_EVENT(EVENT_MoveTo);
 DECLARE_EVENT(EVENT_Open);
 
-static struct {
-	int *eventp;
-	uint32_t mask;
-} _event_table[] = {
+static EVENT_TABLE _event_table[] = 
+{
 	{&EVENT_Read,     IN_ACCESS},
 	{&EVENT_Stat,     IN_ATTRIB},
 	{&EVENT_Close,    IN_CLOSE_WRITE | IN_CLOSE_NOWRITE},
@@ -102,132 +96,17 @@ static struct {
 	{&EVENT_Move,     IN_MOVE_SELF},
 	{&EVENT_MoveFrom, IN_MOVED_FROM},
 	{&EVENT_MoveTo,   IN_MOVED_TO},
-	{&EVENT_Open,     IN_OPEN},
-	{NULL, 0}
+	{&EVENT_Open,     IN_OPEN}
 };
 
-static int *get_event(uint32_t *maskp)
+static bool destroy_watch(CWATCH *watch);
+static void callback(int fd, int flags, CINOTIFY *ino);
+
+static void init_inotify(void)
 {
-	int i;
-
-	for (i = 0; _event_table[i].eventp; i++) {
-		if (*maskp & _event_table[i].mask) {
-			/* Remove that event */
-			*maskp &= ~_event_table[i].mask;
-			return _event_table[i].eventp;
-		}
-	}
-	*maskp = 0;
-	return NULL;
-}
-
-/* Forward */
-static void INOTIFY_exit(void);
-
-static void destroy_watch(CWATCH *watch)
-{
-	inotify_rm_watch(_ino.fd, watch->wd);
-	GB.HashTable.Remove(_ino.watches, (char *) &watch->wd,
-			    sizeof(watch->wd));
-	if (watch->path) {
-		GB.HashTable.Remove(_ino.watches, watch->path,
-				    GB.StringLength(watch->path));
-	}
-
-	GB.FreeString(&watch->path);
-	GB.StoreVariant(NULL, &watch->tag);
-	/* Serves as a validity flag */
-	watch->path = NULL;
-
-	/* Close the inotify instance again if all watches were released */
-	if (!GB.HashTable.Count(_ino.watches))
-		INOTIFY_exit();
-}
-
-static int check_watch(CWATCH *watch)
-{
-	return !watch || !watch->path;
-}
-
-static void callback(int fd, int flags, CINOTIFY *ino)
-{
-	struct inotify_event *iev;
-	char buf[sizeof(*iev) + NAME_MAX + 1]
-		__attribute__((aligned(sizeof(int))));
-	int i, length;
-
-again:
-	if ((length = read(fd, buf, sizeof(buf))) <= 0) {
-		if (errno == EINTR) {
-			goto again;
-		} else {
-			GB_ErrorErrno();
-			return;
-		}
-	}
-
-	for (i = 0; i < length; i += sizeof(*iev) + iev->len) {
-		CWATCH *watch;
-		uint32_t mask;
-
-		iev = (struct inotify_event *) &buf[i];
-
-		watch = find_watch(ino, iev->wd);
-		if (!watch && !(iev->mask & IN_Q_OVERFLOW)) {
-			if (getenv("GB_INOTIFY_DEBUG")) {
-				fprintf(stderr, "gb.inotify: Descriptor "
-					"%d not known. Name was `%s'\n",
-					iev->wd, iev->name);
-			}
-			continue;
-		}
-
-		mask = iev->mask & ~(IN_IGNORED | IN_ISDIR | IN_Q_OVERFLOW
-				   | IN_UNMOUNT);
-		while (flags) {
-			uint32_t oldmask = mask;
-			int *eventp;
-			CINFO info;
-
-			eventp = get_event(&mask);
-			if (!eventp) {
-				if (getenv("GB_INOTIFY_DEBUG")) {
-					fprintf(stderr, "gb.inotify: "
-						"Unhandled event 0x%x "
-						"of watch `%s'\n",
-						oldmask ^ mask,
-						watch->path);
-				}
-				break;
-			}
-			if (!GB.CanRaise(watch, *eventp) || watch->paused)
-				continue;
-
-			/*
-			 * In case, the event loop kicks in at GB.Raise()
-			 * and preempts this callback with itself.
-			 *
-			 * The problem is then that the event info structure
-			 * may get replaced by another, thus we lose data.
-			 * That's why we save it here. However, it is
-			 * sufficient to keep the CINFO on the stack!
-			 */
-			info.iev = iev;
-			info.prev = _ino.top;
-			_ino.top = &info;
-
-			GB.Raise(watch, *eventp, 0);
-
-			_ino.top = info.prev;
-		}
-		/* Also remove the watch if the kernel did. */
-		if (iev->mask & IN_IGNORED)
-			destroy_watch(watch);
-	}
-}
-
-static void INOTIFY_init(void)
-{
+#if DEBUG_ME
+	fprintf(stderr, "init_inotify\n");
+#endif
 	_ino.fd = inotify_init();
 	if (_ino.fd == -1) {
 		GB_ErrorErrno();
@@ -238,12 +117,271 @@ static void INOTIFY_init(void)
 	_ino.top = NULL;
 }
 
-static void INOTIFY_exit(void)
+static void destroy_watch_list(WATCH_LIST *list)
 {
-	GB.Watch(_ino.fd, GB_WATCH_NONE, NULL, (intptr_t) NULL);
+	while (!destroy_watch(list->root));
+}
+
+static void exit_inotify(void)
+{
+#if DEBUG_ME
+	fprintf(stderr, "exit_inotify\n");
+#endif
+	if (_ino.fd < 0)
+		return;
+	
+	GB.HashTable.Enum(_ino.watches, (GB_HASHTABLE_ENUM_FUNC)destroy_watch_list);
+	GB.Watch(_ino.fd, GB_WATCH_NONE, NULL, 0);
 	close(_ino.fd);
 	_ino.fd = -1;
 	GB.HashTable.Free(&_ino.watches);
+}
+
+static WATCH_LIST *find_watch_list(CINOTIFY *ino, int wd)
+{
+	WATCH_LIST *list = NULL;
+	GB.HashTable.Get(ino->watches, (char *)&wd, sizeof(wd), (void **)&list);
+	return list;
+}
+
+static WATCH_LIST *find_watch_list_from_path(CINOTIFY *ino, const char *path, int len, bool create)
+{
+	WATCH_LIST *list = NULL;
+	GB.HashTable.Get(ino->watches, path, len, (void **)&list);
+	
+	if (!list && create)
+	{
+#if DEBUG_ME
+	fprintf(stderr, "find_watch_list_from_path: create watch list for %.*s\n", len, path);
+#endif
+		GB.AllocZero(POINTER(&list), sizeof(WATCH_LIST));
+		list->wd = -1;
+		list->path = GB.NewString(path, len);
+		GB.HashTable.Add(ino->watches, path, len, list);
+	}
+	
+	return list;
+}
+
+static void update_watch_list(WATCH_LIST *list)
+{
+	int i;
+	uint32_t mask = 0;
+	
+	for (i = 0; i < NUM_EV; i++)
+	{
+		if (list->events[i])
+			mask |= _event_table[i].mask;
+	}
+	
+	if (mask == 0)
+	{
+		if (list->wd >= 0)
+		{
+#if DEBUG_ME
+			fprintf(stderr, "update_watch_list: remove watch %d\n", list->wd);
+#endif
+			GB.HashTable.Remove(_ino.watches, (char *)&list->wd, sizeof(list->wd));
+			inotify_rm_watch(_ino.fd, list->wd);
+			list->wd = -1;
+		}
+	}
+	else
+	{
+		int wd = inotify_add_watch(_ino.fd, list->path, mask);
+		
+		if (list->wd != wd)
+		{
+#if DEBUG_ME
+		fprintf(stderr, "update_watch_list: add watch %d %08X\n", wd, mask);
+#endif
+			list->wd = wd;
+			GB.HashTable.Add(_ino.watches, (char *)&wd, sizeof(wd), list);
+		}
+	}
+}
+
+static void create_watch(CWATCH *watch, const char *path, int len)
+{
+	int i;
+	WATCH_LIST *list = find_watch_list_from_path(&_ino, path, len, TRUE);
+	
+	watch->root = list;
+	
+#if DEBUG_ME
+	fprintf(stderr, "create_watch: %p %.*s\n", watch, len, path);
+#endif
+		
+	LIST_insert(&list->root, watch, &watch->list);
+
+	for (i = 0; i < NUM_EV; i++)
+	{
+		if (watch->events & (1 << i))
+			list->events[i]++;
+	}
+	
+	update_watch_list(list);
+}
+
+static bool destroy_watch(CWATCH *watch)
+{
+	int i;
+	WATCH_LIST *list = (WATCH_LIST *)watch->root;
+
+#if DEBUG_ME
+	fprintf(stderr, "destroy_watch: %p %s\n", watch, list->path);
+#endif
+		
+	GB.StoreVariant(NULL, &watch->tag);
+	LIST_remove(&list->root, watch, &watch->list);
+	
+	for (i = 0; i < NUM_EV; i++)
+	{
+		if (watch->events & (1 << i))
+			list->events[i]--;
+	}
+	
+	update_watch_list(list);
+	
+	if (list->root == NULL)
+	{
+		GB.HashTable.Remove(_ino.watches, list->path, GB.StringLength(list->path));
+		
+#if DEBUG_ME
+		fprintf(stderr, "destroy_watch: remove watch list: %s -> %d\n", list->path, GB.HashTable.Count(_ino.watches));
+#endif
+		
+		GB.FreeString(&list->path);
+		GB.Free(POINTER(&list));
+		
+		if (GB.HashTable.Count(_ino.watches) == 0)
+			exit_inotify();
+		
+		return TRUE;
+	}
+	else
+		return FALSE;
+	
+}
+
+static void pause_watch(CWATCH *watch)
+{
+	int i;
+	WATCH_LIST *list = (WATCH_LIST *)watch->root;
+
+	if (watch->paused)
+		return;
+	
+	watch->paused = TRUE;
+	watch->save_events = watch->events;
+
+	for (i = 0; i < NUM_EV; i++)
+	{
+		if (watch->events & (1 << i))
+			list->events[i]--;
+	}
+	
+	watch->events = 0;
+	
+	update_watch_list(list);
+}
+
+static void resume_watch(CWATCH *watch)
+{
+	int i;
+	WATCH_LIST *list = (WATCH_LIST *)watch->root;
+
+	if (!watch->paused)
+		return;
+	
+	watch->paused = FALSE;
+	watch->events = watch->save_events;
+
+	for (i = 0; i < NUM_EV; i++)
+	{
+		if (watch->events & (1 << i))
+			list->events[i]++;
+	}
+	
+	watch->save_events = 0;
+	
+	update_watch_list(list);
+}
+
+static void callback(int fd, int flags, CINOTIFY *ino)
+{
+	struct inotify_event *iev;
+	int i, j, length;
+	int event;
+	CINFO info;
+	WATCH_LIST *list;
+	CWATCH *watch;
+	uint32_t mask;
+	char buf[sizeof(*iev) + NAME_MAX + 1] __attribute__((aligned(sizeof(int))));
+
+	for(;;)
+	{
+		if ((length = read(fd, buf, sizeof(buf))) <= 0) 
+		{
+			if (errno == EINTR)
+				continue;
+			
+			GB_ErrorErrno();
+			return;
+		}
+		
+		break;
+	}
+
+	for (i = 0; i < length; i += sizeof(*iev) + iev->len) 
+	{
+
+		iev = (struct inotify_event *) &buf[i];
+
+		list = find_watch_list(ino, iev->wd);
+		
+		if (!list && !(iev->mask & IN_Q_OVERFLOW)) {
+			if (getenv("GB_INOTIFY_DEBUG"))
+				fprintf(stderr, "gb.inotify: descriptor %d not known. Name was `%s'\n", iev->wd, iev->name);
+			continue;
+		}
+
+		mask = iev->mask & ~(IN_IGNORED | IN_ISDIR | IN_Q_OVERFLOW | IN_UNMOUNT);
+		
+		LIST_for_each(watch, list->root)
+		{
+			if (watch->paused)
+				continue;
+			
+			for (j = 0; j < NUM_EV; j++)
+			{
+				event = *_event_table[j].eventp;
+				if (_event_table[j].mask & mask && GB.CanRaise(watch, event))
+				{
+					/*
+					* In case, the event loop kicks in at GB.Raise()
+					* and preempts this callback with itself.
+					*
+					* The problem is then that the event info structure
+					* may get replaced by another, thus we lose data.
+					* That's why we save it here. However, it is
+					* sufficient to keep the CINFO on the stack!
+					*/
+					info.iev = iev;
+					info.prev = _ino.top;
+					_ino.top = &info;
+
+					GB.Raise(watch, event, 0);
+
+					_ino.top = info.prev;
+				}
+			}
+		}
+		
+		/* Also remove the watch if the kernel did. */
+		/*if (iev->mask & IN_IGNORED)
+			destroy_watch(watch);*/
+	}
 }
 
 /**G
@@ -255,10 +393,11 @@ BEGIN_METHOD_VOID(Watch_exit)
 		return;
 	/* Free the remaining objects. destroy_watch() will then also take
 	 * care of calling INOTIFY_exit() to free bookkeeping data. */
-	GB.HashTable.Enum(_ino.watches, (GB_HASHTABLE_ENUM_FUNC) destroy_watch);
+	exit_inotify();
 
 END_METHOD
 
+#if 0
 /**G
  * Return a Watch from its path. If the path is not watched, Null is
  * returned.
@@ -275,6 +414,7 @@ BEGIN_METHOD(Watch_get, GB_STRING path)
 	GB.ReturnObject(watch);
 
 END_METHOD
+#endif
 
 /**G
  * The name of the file or directory which is subject to the event, relative
@@ -332,12 +472,10 @@ END_PROPERTY
  *
  * TODO: Maybe add support for IN_EXCL_UNLINK, IN_ONESHOT and IN_ONLYDIR.
  **/
-BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow;
-			GB_INTEGER mask)
+BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow; GB_INTEGER events)
 
-	int wd, i;
-	uint32_t mask = VARGOPT(mask, 0);
-	char *path = GB.NewString(STRING(path), LENGTH(path));
+	int i;
+	ushort events = VARGOPT(events, 0);
 
 	/* If this is the first watch, we need an inotify instance first.
 	 * We don't use the component's init function to set up _ino because
@@ -345,36 +483,26 @@ BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow;
 	 * program open even if no watches were registered. So this is done
 	 * ad-hoc if there are watches. */
 	if (_ino.fd == -1)
-		INOTIFY_init();
+		init_inotify();
 
 	/* Get the mask */
-	if (!mask) {
-		for (i = 0; _event_table[i].eventp; i++) {
+	if (!events) 
+	{
+		for (i = 0; i < NUM_EV; i++) 
+		{
 			if (GB.CanRaise(THIS, *_event_table[i].eventp))
-				mask |= _event_table[i].mask;
+				events |= (1 << i); //_event_table[i].mask;
 		}
 		/* But we need at least to watch one event. IN_DELETE_SELF
 		 * seems a good one as it doesn't trigger too often :-) */
-		mask |= IN_DELETE_SELF;
+		//mask |= IN_DELETE_SELF;
 	}
 
-	if (VARGOPT(nofollow, 0))
-		mask |= IN_DONT_FOLLOW;
-
-	wd = inotify_add_watch(_ino.fd, path, mask);
-	if (wd == -1) {
-		GB.FreeString(&path);
-		GB_ErrorErrno();
-		return;
-	}
-	THIS->wd = wd;
-	THIS->mask = mask;
-	THIS->path = path;
-	THIS->paused = 0;
+	THIS->events = events;
+	THIS->nofollow = VARGOPT(nofollow, FALSE);
 	THIS->tag.type = GB_T_NULL;
 
-	GB.HashTable.Add(_ino.watches, (char *) &wd, sizeof(wd), THIS);
-	GB.HashTable.Add(_ino.watches, path, GB.StringLength(path), THIS);
+	create_watch(THIS, STRING(path), LENGTH(path));
 
 END_METHOD
 
@@ -387,30 +515,15 @@ BEGIN_METHOD_VOID(Watch_free)
 
 END_METHOD
 
-/**G
- * Resume a paused watch. Whether the watch was actually paused does not
- * matter.
- */
 BEGIN_METHOD_VOID(Watch_Resume)
 
-	inotify_add_watch(_ino.fd, THIS->path, THIS->mask);
+	resume_watch(THIS);
 
 END_METHOD
 
-/**G
- * Pause a watch. You can pause a watch multiple times. This has no effect.
- *
- * A paused watch will not monitor any events -- without formally altering
- * the events bitmask -- and thus not inflict any interruption by events
- * from the kernel.
- */
 BEGIN_METHOD_VOID(Watch_Pause)
 
-	/* We can't really pause as the kernel won't allow us to set an
-	 * empty mask. We pick an unlikely one here and add special logic
-	 * to the event dispatching code to prevent an event from being
-	 * raised if the watch is paused. */
-	inotify_add_watch(_ino.fd, THIS->path, IN_DELETE_SELF);
+	pause_watch(THIS);
 
 END_METHOD
 
@@ -419,7 +532,7 @@ END_METHOD
  **/
 BEGIN_PROPERTY(Watch_Path)
 
-	GB.ReturnString(THIS->path);
+	GB.ReturnString(((WATCH_LIST *)THIS->root)->path);
 
 END_PROPERTY
 
@@ -432,15 +545,15 @@ END_PROPERTY
  **/
 BEGIN_PROPERTY(Watch_IsPaused)
 
-	if (READ_PROPERTY) {
+	if (READ_PROPERTY)
 		GB.ReturnBoolean(THIS->paused);
-		return;
+	else if (THIS->paused != VPROP(GB_BOOLEAN))
+	{
+		if (VPROP(GB_BOOLEAN))
+			pause_watch(THIS);
+		else
+			resume_watch(THIS);
 	}
-	THIS->paused = VPROP(GB_BOOLEAN);
-	if (THIS->paused)
-		CALL_METHOD_VOID(Watch_Pause);
-	else
-		CALL_METHOD_VOID(Watch_Resume);
 
 END_PROPERTY
 
@@ -457,25 +570,21 @@ BEGIN_PROPERTY(Watch_Tag)
 
 END_PROPERTY
 
-GB_DESC CWatch[] = {
+GB_DESC CWatch[] = 
+{
 	GB_DECLARE("Watch", sizeof(CWATCH)),
 
-	GB_HOOK_CHECK(check_watch),
-
-	/*
-	 * Watch event bits
-	 */
-	GB_CONSTANT("Read", "i", IN_ACCESS),
-	GB_CONSTANT("Stat", "i", IN_ATTRIB),
-	GB_CONSTANT("Close", "i", IN_CLOSE_WRITE | IN_CLOSE_NOWRITE),
-	GB_CONSTANT("Create", "i", IN_CREATE),
-	GB_CONSTANT("Delete", "i", IN_DELETE | IN_DELETE_SELF),
-	GB_CONSTANT("Write", "i", IN_MODIFY),
-	GB_CONSTANT("Move", "i", IN_MOVE_SELF),
-	GB_CONSTANT("MoveFrom", "i", IN_MOVED_FROM),
-	GB_CONSTANT("MoveTo", "i", IN_MOVED_TO),
-	GB_CONSTANT("Open", "i", IN_OPEN),
-	GB_CONSTANT("All", "i", IN_ALL_EVENTS),
+	GB_CONSTANT("Read", "i", 1 << EV_READ),
+	GB_CONSTANT("Stat", "i", 1 << EV_STAT),
+	GB_CONSTANT("Close", "i", 1 << EV_CLOSE),
+	GB_CONSTANT("Create", "i", 1 << EV_CREATE),
+	GB_CONSTANT("Delete", "i", 1 << EV_DELETE),
+	GB_CONSTANT("Write", "i", 1 << EV_WRITE),
+	GB_CONSTANT("Move", "i", 1 << EV_MOVE),
+	GB_CONSTANT("MoveFrom", "i", 1 << EV_MOVED_FROM),
+	GB_CONSTANT("MoveTo", "i", 1 << EV_MOVED_TO),
+	GB_CONSTANT("Open", "i", 1 << EV_OPEN),
+	GB_CONSTANT("All", "i", -1),
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Stat", NULL, NULL, &EVENT_Stat),
@@ -489,7 +598,7 @@ GB_DESC CWatch[] = {
 	GB_EVENT("Open", NULL, NULL, &EVENT_Open),
 
 	GB_STATIC_METHOD("_exit", NULL, Watch_exit, NULL),
-	GB_STATIC_METHOD("_get", "Watch", Watch_get, "(Path)s"),
+	//GB_STATIC_METHOD("_get", "Watch", Watch_get, "(Path)s"),
 
 	GB_METHOD("Resume", NULL, Watch_Resume, NULL),
 	GB_METHOD("Pause", NULL, Watch_Pause, NULL),
@@ -510,23 +619,13 @@ GB_DESC CWatch[] = {
 	GB_END_DECLARE
 };
 
-static void change_mask(CWATCH *watch, int set, uint32_t bits)
-{
-	if (set)
-		watch->mask |= bits;
-	else
-		watch->mask &= ~bits;
-	/* Re-add with new mask */
-	inotify_add_watch(_ino.fd, watch->path, watch->mask);
-}
-
 /**G
  * Return if the given flag is set. You can also combine multiple flags to
  * check if at least one of them is set.
  **/
-BEGIN_METHOD(WatchEvents_get, GB_INTEGER flags)
+BEGIN_METHOD(WatchEvents_get, GB_INTEGER events)
 
-	GB.ReturnBoolean(!!(THIS->mask & VARG(flags)));
+	GB.ReturnBoolean(!!((THIS->paused ? THIS->save_events : THIS->events) & VARG(events)));
 
 END_METHOD
 
@@ -534,18 +633,42 @@ END_METHOD
  * Set or clear a flag. You can combine multiple flags to set or clear them
  * en masse.
  **/
-BEGIN_METHOD(WatchEvents_put, GB_BOOLEAN value; GB_INTEGER flags)
+BEGIN_METHOD(WatchEvents_put, GB_BOOLEAN value; GB_INTEGER events)
 
-	change_mask(THIS, !!VARG(value), VARG(flags));
+	WATCH_LIST *list = (WATCH_LIST *)THIS->root;
+	int i;
+	int events = VARG(events);
+	bool old, new;
+	
+	if (!THIS->paused)
+	{
+		for (i = 0; i < NUM_EV; i++)
+		{
+			new = (events & (1 << i)) != 0;
+			old = (THIS->events & (1 << i)) != 0;
+			if (new != old)
+			{
+				if (new)
+					list->events[i]++;
+				else
+					list->events[i]--;
+			}
+		}
+		
+		THIS->events = events;
+		update_watch_list(list);
+	}
+	else
+		THIS->save_events = events;
 
 END_METHOD
 
-GB_DESC CWatchEvents[] = {
-	GB_DECLARE(".Watch.Events", 0),
-	GB_VIRTUAL_CLASS(),
+GB_DESC CWatchEvents[] = 
+{
+	GB_DECLARE_VIRTUAL(".Watch.Events"),
 
-	GB_METHOD("_get", "b", WatchEvents_get, "(Flags)i"),
-	GB_METHOD("_put", NULL, WatchEvents_put, "(Value)b(Flags)i"),
+	GB_METHOD("_get", "b", WatchEvents_get, "(Events)i"),
+	GB_METHOD("_put", NULL, WatchEvents_put, "(Value)b(Events)i"),
 
 	GB_END_DECLARE
 };

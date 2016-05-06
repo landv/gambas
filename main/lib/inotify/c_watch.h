@@ -22,13 +22,25 @@
 #ifndef __C_WATCH_H
 #define __C_WATCH_H
 
-#include "gambas.h"
-
-extern GB_INTERFACE GB;
+#include "main.h"
+#include "gb_list.h"
 
 #ifndef __C_WATCH_C
 extern GB_DESC CWatch[];
 extern GB_DESC CWatchEvents[];
 #endif
+
+typedef
+	struct {
+		GB_BASE ob;
+		LIST list;
+		void *root;
+		GB_VARIANT_VALUE tag;
+		ushort events;
+		ushort save_events;
+		bool nofollow;
+		bool paused;
+		} 
+	CWATCH;
 
 #endif /* __C_WATCH_H */
