@@ -815,6 +815,7 @@ Public Sub UpdateView()
       Settings.Read(FOutput)
       FOutput.OnProjectDebug
       FOutput.Show
+      FMain.ShowDebug(False)
       'DEBUG FOutput.X;; FOutput.Y
       'Action["console"].Visible = TRUE
       'If Not Project.Running Then FMain.ShowDebug(False)

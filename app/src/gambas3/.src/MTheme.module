@@ -189,8 +189,13 @@ Public Sub GetColor(sStyle As String) As Integer
 End
 
 Public Sub InitControl(hControl As Control)
-  
-  hControl.Background = GetColor("Background")
-  hControl.Foreground = GetColor("Normal")
+
+  If Settings["/Editor/InvertTheme", 0] Then
+    hControl.Background = GetColor("Normal")
+    hControl.Foreground = GetColor("Foreground")
+  Else
+    hControl.Background = GetColor("Background")
+    hControl.Foreground = GetColor("Normal")
+  Endif
   
 End
