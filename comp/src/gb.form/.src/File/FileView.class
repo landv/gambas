@@ -491,6 +491,7 @@ End
 Private Sub RefreshViewLater(Optional bClear As Boolean)
   
   If $bRefreshTriggered Then Return
+  If $hRefresh.Enabled Then $hRefresh.Stop
 
   $bRefreshAll = bClear
   $bRefreshTriggered = True
@@ -498,10 +499,22 @@ Private Sub RefreshViewLater(Optional bClear As Boolean)
   
 End
 
+Public Sub RefreshViewAfter()
+  
+  If $bRefreshTriggered Then Return
+  If $hRefresh.Enabled Then Return
+  
+  $hRefresh.Delay = 100
+  $hRefresh.Start
+  
+End
+
+
 Public Sub Refresh_Timer()
   
-  If Not $bRefreshTriggered Then Return
+  If Not $bRefreshTriggered And Not $hRefresh.Enabled Then Return
   RefreshView
+  $hRefresh.Stop
   
 End
 

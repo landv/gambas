@@ -51,7 +51,6 @@
 DECLARE_EVENT(EVENT_Draw);
 DECLARE_EVENT(EVENT_Font);
 
-
 /***************************************************************************
 
 	class MyDrawingArea

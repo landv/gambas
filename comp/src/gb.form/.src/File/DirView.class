@@ -39,6 +39,9 @@ Private $bHideRoot As Boolean
 
 Private $cWatch As Collection
 Private $bWatch As Boolean
+Private $hRefreshTimer As Timer
+Private $bRefreshTimerTriggered As Boolean
+Private $hWatcher As Watcher
 
 Public Sub _new()
 
@@ -48,13 +51,8 @@ Public Sub _new()
   Me.Proxy = $hTreeView
   $hRootPict = Picture["icon:/small/directory"] 'open
   ClearView
+  $hRefreshTimer = New Timer As "Refresh"
 
-End
-
-Public Sub _attach((Parent) As Object, EventName As String)
-  
-  If Not EventName Then $cWatch = Null
-  
 End
 
 Private Function GetRoot() As String
@@ -75,12 +73,14 @@ End
 
 Private Sub AddWatch(sDir As String)
 
+  If Not $cWatch Then Return
   $cWatch[sDir] = New Watch(sDir) As "Watch"
 
 End
 
 Private Sub RemoveWatch(sDir As String)
 
+  If Not $cWatch Then Return
   $cWatch.Remove(sDir)
 
 End
@@ -93,7 +93,10 @@ Private Sub ClearView()
   $hTreeView.Clear
   
   $bWatch = Component.IsLoaded("gb.inotify")
-  If $bWatch Then $cWatch = New Collection
+  If $bWatch Then 
+    $cWatch = New Collection
+    $hWatcher = New Watcher($hTreeView) As "Watcher"
+  Endif
   
   AddDir(File.Dir(sRoot), File.Name(sRoot), True)
   '$hTreeView.Add(sRoot, sRoot, $hRootPict)
@@ -376,8 +379,28 @@ Private Sub RefreshView()
   Current_Write(sDir)
   
   $hTreeView.Scroll(SX, SY)
+  
+  $bRefreshTimerTriggered = False
 
 End
+
+Private Sub RefreshViewLater()
+  
+  If $bRefreshTimerTriggered Then Return
+  
+  $bRefreshTimerTriggered = True
+  $hRefreshTimer.Trigger
+  
+End
+
+Public Sub Refresh_Timer()
+  
+  If Not $bRefreshTimerTriggered Then Return
+  Debug
+  RefreshView
+  
+End
+
 
 
 Private Function ShowHidden_Read() As Boolean
@@ -629,15 +652,15 @@ End
 
 Public Sub Watch_Create()
 
-  Debug Last.Path;; Watch.Name
+  'Debug Last.Path;; Watch.Name
   DirCache[Last.Path].Invalidate
-  RefreshView
+  RefreshViewLater
   
 End
 
 Public Sub Watch_Delete()
   
-  Debug Last.Path;; Watch.Name
+  'Debug Last.Path;; Watch.Name
   DirCache[Last.Path].Invalidate
   Try $hTreeView.Remove(Last.Path &/ Watch.Name)
   'If Not Error Then RefreshView
@@ -646,7 +669,7 @@ End
 
 Public Sub Watch_MoveFrom()
   
-  Debug Last.Path;; Watch.Name
+  'Debug Last.Path;; Watch.Name
   DirCache[Last.Path].Invalidate
   Try $hTreeView.Remove(Last.Path &/ Watch.Name)
   
@@ -654,16 +677,28 @@ End
 
 Public Sub Watch_MoveTo()
   
-  Debug Last.Path;; Watch.Name
+  'Debug Last.Path;; Watch.Name
   DirCache[Last.Path].Invalidate
-  RefreshView
+  RefreshViewLater
   
 End
 
 Public Sub Watch_Move()
   
-  Debug Last.Path;; Watch.Name
+  'Debug Last.Path;; Watch.Name
   DirCache[Last.Path].Invalidate
-  RefreshView
+  RefreshViewLater
+  
+End
+
+Public Sub Watcher_Show()
+  
+  If Not $cWatch And If $bWatch Then RefreshView
+  
+End
+
+Public Sub Watcher_Hide()
+  
+  $cWatch = Null
   
 End
