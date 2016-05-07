@@ -104,9 +104,13 @@ static void callback(int fd, int flags, CINOTIFY *ino);
 
 static void init_inotify(void)
 {
+	if (_ino.fd >= 0)
+		return;
+	
 #if DEBUG_ME
 	fprintf(stderr, "init_inotify\n");
 #endif
+	
 	_ino.fd = inotify_init();
 	if (_ino.fd == -1) {
 		GB_ErrorErrno();
@@ -124,11 +128,12 @@ static void destroy_watch_list(WATCH_LIST *list)
 
 static void exit_inotify(void)
 {
+	if (_ino.fd < 0)
+		return;
+	
 #if DEBUG_ME
 	fprintf(stderr, "exit_inotify\n");
 #endif
-	if (_ino.fd < 0)
-		return;
 	
 	GB.HashTable.Enum(_ino.watches, (GB_HASHTABLE_ENUM_FUNC)destroy_watch_list);
 	GB.Watch(_ino.fd, GB_WATCH_NONE, NULL, 0);
@@ -482,8 +487,7 @@ BEGIN_METHOD(Watch_new, GB_STRING path; GB_BOOLEAN nofollow; GB_INTEGER events)
 	 * the inotify instance needs a GB.Watch() which would keep the
 	 * program open even if no watches were registered. So this is done
 	 * ad-hoc if there are watches. */
-	if (_ino.fd == -1)
-		init_inotify();
+	init_inotify();
 
 	/* Get the mask */
 	if (!events) 

@@ -45,6 +45,9 @@ Private $hWatcher As Watcher
 
 Public Sub _new()
 
+  $bWatch = Component.IsLoaded("gb.inotify")
+  If $bWatch Then $hWatcher = New Watcher(Me) As "Watcher"
+  
   $hTreeView = New TreeView(Me) As "TreeView"
   $hTreeView.Editable = True
   $hTimerExpand = New Timer As "TimerExpand"
@@ -92,10 +95,8 @@ Private Sub ClearView()
   $bNoEvent = True
   $hTreeView.Clear
   
-  $bWatch = Component.IsLoaded("gb.inotify")
-  If $bWatch Then 
-    $cWatch = New Collection
-    $hWatcher = New Watcher($hTreeView) As "Watcher"
+  If $bWatch Then
+    If $cWatch Then $cWatch.Clear
   Endif
   
   AddDir(File.Dir(sRoot), File.Name(sRoot), True)
@@ -693,12 +694,17 @@ End
 
 Public Sub Watcher_Show()
   
-  If Not $cWatch And If $bWatch Then RefreshView
+  'Debug
+  If $bWatch And If Not $cWatch Then 
+    $cWatch = New Collection
+    RefreshView
+  Endif
   
 End
 
 Public Sub Watcher_Hide()
   
+  'Debug  
   $cWatch = Null
   
 End

@@ -58,6 +58,8 @@ Private $hWatch As Watch
 Private $bWatch As Boolean
 Private $bRefreshIcon As Boolean
 Private $bRefreshAll As Boolean
+Private $hWatcher As Watcher
+Private $bVisible As Boolean
 
 Static Public Sub _init()
   
@@ -107,6 +109,10 @@ End
 
 Public Sub _new()
   
+  $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
+  $bWatch = Component.IsLoaded("gb.inotify")
+  If $bWatch Then $hWatcher = New Watcher(Me) As "Watcher"
+  
   With $hIconView = New IconView(Me) As "View"
     .Sorted = True
   End With
@@ -133,16 +139,6 @@ Public Sub _new()
   $hEnsureVisible = New Timer As "EnsureVisible"
   
   RefreshViewLater
-  
-End
-
-Public Sub _attach((Parent) As Object, EventName As String)
-  
-  If EventName Then 
-    If $hRefresh Then RefreshViewLater
-  Else
-    $hWatch = Null
-  Endif
   
 End
 
@@ -280,7 +276,6 @@ Static Public Sub _GetHiddenColor() As Integer
   
 End
 
-
 Private Sub RefreshView(Optional bInvalidate As Boolean)
   
   Dim sFile As String
@@ -306,8 +301,6 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   Inc Application.Busy
   
   $bRefreshTriggered = False
-  $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
-  $bWatch = Component.IsLoaded("gb.inotify")
   
   iHiddenFg = _GetHiddenColor()
   
@@ -332,8 +325,8 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   
   sDir = GetCurrentDir()
   
-  If $bWatch Then
-    If Not $hWatch Or If $hWatch.Path <> sDir Then
+  If $bWatch And If $bVisible Then
+    If Not $hWatch Or If $hWatch.Path <> sDir Then 
       $hWatch = New Watch(sDir) As "Watch"
     Endif
   Endif
@@ -1080,3 +1073,18 @@ Public Sub Watch_Stat()
   
 End
 
+Public Sub Watcher_Hide()
+
+  'Debug  
+  $hWatch = Null
+  $bVisible = False
+  
+End
+
+Public Sub Watcher_Show()
+  
+  'Debug  
+  $bVisible = True
+  RefreshViewLater
+  
+End
