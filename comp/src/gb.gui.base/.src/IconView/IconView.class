@@ -32,6 +32,13 @@ Property IconLines As Integer
 Property GridSize As Integer
 Property Read Renaming As Boolean
 
+Property Read ClientWidth, ClientW As Integer
+Property Read ClientHeight, ClientH As Integer
+Property ScrollX As Integer
+Property ScrollY As Integer
+Property Read ScrollW, ScrollWidth As Integer
+Property Read ScrollH, ScrollHeight As Integer
+
 Event Select
 Event Activate 
 Event Click 
@@ -1508,3 +1515,58 @@ Private Function Renaming_Read() As Boolean
   Return $iRename >= 0
 
 End
+
+Private Function ClientWidth_Read() As Integer
+
+  Return $hView.ClientW
+
+End
+
+Private Function ClientHeight_Read() As Integer
+
+  Return $hView.ClientH
+
+End
+
+Private Function ScrollX_Read() As Integer
+
+  Return $hView.ScrollX
+
+End
+
+Private Sub ScrollX_Write(Value As Integer)
+
+  $hView.ScrollX = Value
+
+End
+
+Private Function ScrollY_Read() As Integer
+
+  Return $hView.ScrollY
+
+End
+
+Private Sub ScrollY_Write(Value As Integer)
+
+  $hView.ScrollY = Value
+
+End
+
+Private Function ScrollW_Read() As Integer
+
+  Return $hView.ScrollW
+
+End
+
+Private Function ScrollH_Read() As Integer
+
+  Return $hView.ScrollH
+
+End
+
+Public Sub Scroll(X As Integer, Y As Integer)
+  
+  $hView.Scroll(X, Y)
+  
+End
+

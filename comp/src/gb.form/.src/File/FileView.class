@@ -3,6 +3,8 @@
 Export
 Inherits UserControl
 
+Class Watch
+
 Public Const _Properties As String = "*,Border=True,Mode{Select.*}=Single,Dir,ShowDetailed,ShowHidden,ShowDirectory,ShowPreview"
 Public Const _DefaultEvent As String = "Click"
 Public Const _Group As String = "View"
@@ -30,7 +32,6 @@ Property Read Count As Integer
 Property Background As Integer
 Property Foreground As Integer
 
-'Static Private $aImgExt As String[] = ["png", "jpeg", "jpg", "gif", "xpm"]
 Static Private $cExt As New Collection(gb.IgnoreCase)
 
 Private Const PREFIX_DIR As String = "0"
@@ -53,7 +54,10 @@ Private $bDesktopIsLoaded As Boolean
 
 Private $hPreview As CTaskPreview
 Private $hEnsureVisible As Timer
-'Private $cPreview As New Collection
+Private $hWatch As Watch
+Private $bWatch As Boolean
+Private $bRefreshIcon As Boolean
+Private $bRefreshAll As Boolean
 
 Static Public Sub _init()
   
@@ -129,6 +133,16 @@ Public Sub _new()
   $hEnsureVisible = New Timer As "EnsureVisible"
   
   RefreshViewLater
+  
+End
+
+Public Sub _attach((Parent) As Object, EventName As String)
+  
+  If EventName Then 
+    If $hRefresh Then RefreshViewLater
+  Else
+    $hWatch = Null
+  Endif
   
 End
 
@@ -283,22 +297,32 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   Dim bRichText As Boolean
   Dim hCache As DirCache
   Dim iHiddenFg As Integer
+  Dim SX As Integer
+  Dim SY As Integer
+  Dim sKey As String
+  Dim aPreview As New String[]
+  Dim sExt As String
 
   Inc Application.Busy
   
   $bRefreshTriggered = False
   $bDesktopIsLoaded = Component.IsLoaded("gb.desktop")
+  $bWatch = Component.IsLoaded("gb.inotify")
   
   iHiddenFg = _GetHiddenColor()
   
   aSel = GetSelection()
   
   If $hColumnView.Visible Then
-    $hColumnView.Clear
+    SX = $hColumnView.ScrollX
+    SY = $hColumnView.ScrollY
+    If Not $bWatch Or If $bRefreshAll Then $hColumnView.Clear
     hPictFile = Picture["icon:/small/file"]
     hPictFolder = Picture["icon:/small/directory"]
   Else
-    $hIconView.Clear
+    SX = $hIconView.ScrollX
+    SY = $hIconView.ScrollY
+    If Not $bWatch Or If $bRefreshAll Then $hIconView.Clear
     $hIconView._Begin
     hPictFile = Picture["icon:/" & $iIconSize & "/file"]
     hPictFolder = Picture["icon:/" & $iIconSize & "/directory"]
@@ -307,6 +331,12 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
   iSize = GetIconSize()
   
   sDir = GetCurrentDir()
+  
+  If $bWatch Then
+    If Not $hWatch Or If $hWatch.Path <> sDir Then
+      $hWatch = New Watch(sDir) As "Watch"
+    Endif
+  Endif
   
   hCache = DirCache[sDir]
   If bInvalidate Then hCache.Invalidate
@@ -325,6 +355,9 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
         If $aFilter And If CheckFilter(sFile) Then Continue
         sPrefix = PREFIX_FILE
       Endif
+      
+      sKey = sPrefix & sFile
+      
       hPict = GetIcon(sDir &/ sFile, iSize)
       If Not hPict Then 
         If hCache.IsDir(sFile) Then 
@@ -347,16 +380,36 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
       Endif
 
       If $hColumnView.Visible Then
-        $hColumnView.Add(sPrefix & sFile, sFile, hPict).Editable = Access(sDir, gb.Write)
-        $hColumnView[sPrefix & sFile][1] = "  " & Main.GetFileSize(.Size)
-        $hColumnView[sPrefix & sFile][2] = "  " & Str(.Time)
+        If Not $hColumnView.Exist(sKey) Then
+          $hColumnView.Add(sKey, sFile, hPict).Editable = Access(sDir, gb.Write)
+          GoSub ADD_PREVIEW
+        Else
+          $hColumnView[sKey].Editable = Access(sDir, gb.Write)
+          If $bRefreshIcon Then 
+            $hColumnView[sKey].Picture = hPict
+            GoSub ADD_PREVIEW
+          Endif
+        Endif
+        $hColumnView[sKey][1] = "  " & Main.GetFileSize(.Size)
+        $hColumnView[sKey][2] = "  " & Str(.Time)
         If bRichText Then $hColumnView[sPrefix & sFile].RichText = sText
       Else
-        $hIconView.Add(sPrefix & sFile, sFile, hPict).Editable = Access(sDir, gb.Write)
-        If bRichText Then $hIconView[sPrefix & sFile].RichText = sText
+        If Not $hIconView.Exist(sKey) Then
+          $hIconView.Add(sKey, sFile, hPict).Editable = Access(sDir, gb.Write)
+          GoSub ADD_PREVIEW
+        Else
+          $hIconView[sKey].Editable = Access(sDir, gb.Write)
+          If $bRefreshIcon Then 
+            $hIconView[sKey].Picture = hPict
+            GoSub ADD_PREVIEW
+          Endif
+        Endif
+        If bRichText Then $hIconView[sKey].RichText = sText
       Endif
+      
     End With
   Next
+  
   hCache.Unlock
   
   If $hColumnView.Visible Then
@@ -369,24 +422,36 @@ Private Sub RefreshView(Optional bInvalidate As Boolean)
     Try GetView()[sFile].Selected = True
   Next
   
-  If $bShowPreview Then RunPreview
+  If aPreview.Count Then RunPreview(aPreview)
   
 Finally
   
+  $bRefreshIcon = False
+  $bRefreshAll = False
   If Not $hColumnView.Visible Then $hIconView._End
+  Try GetView().Scroll(SX, SY)
   Dec Application.Busy
   
 Catch 
   
   Error "gb.form: "; Error.Where; ": "; Error.Text 
+  Return
+  
+ADD_PREVIEW:
+
+  If Not $bShowPreview Then Return
+  sExt = LCase(File.Ext(sFile))
+  If Not sExt Then Return
+  If $cExt[sExt] <> "image" Then Return
+  aPreview.Add(sFile)
+  Return
   
 End
 
-Private Sub RunPreview()
+Private Sub RunPreview(aPreview As String[])
 
-  If $hPreview Then $hPreview.Stop
-  
-  $hPreview = New CTaskPreview(GetCurrentDir(), GetIconSize()) As "TaskPreview"
+  If $hPreview Then $hPreview.Stop  
+  $hPreview = New CTaskPreview(GetCurrentDir(), GetIconSize(), aPreview) As "TaskPreview"
 
 End
 
@@ -423,10 +488,11 @@ Public Sub TaskPreview_Kill()
 End
 
 
-Private Sub RefreshViewLater()
+Private Sub RefreshViewLater(Optional bClear As Boolean)
   
   If $bRefreshTriggered Then Return
 
+  $bRefreshAll = bClear
   $bRefreshTriggered = True
   $hRefresh.Trigger
   
@@ -441,7 +507,7 @@ End
 
 Public Sub Reload()
   
-  RefreshViewLater
+  RefreshViewLater(True)
   
 End
 
@@ -454,7 +520,7 @@ End
 Private Sub Dir_Write(sDir As String)
   
   $sDir = sDir
-  RefreshViewLater
+  RefreshViewLater(True)
   
 End
 
@@ -468,7 +534,7 @@ Private Sub ShowHidden_Write(bShowHidden As Boolean)
   
   If bShowHidden = $bShowHidden Then Return 
   $bShowHidden = bShowHidden
-  RefreshViewLater
+  RefreshViewLater(True)
   
 End
 
@@ -482,7 +548,7 @@ Private Sub ShowDirectory_Write(bShow As Boolean)
   
   If $bShowDir = bShow Then Return
   $bShowDir = bShow
-  RefreshViewLater
+  RefreshViewLater(True)
   
 End
 
@@ -584,6 +650,7 @@ Private Sub ShowDetailed_Write(bDetailed As Boolean)
   Me.Proxy = GetView()
   Me.Background = hOld.Background
   Me.Foreground = hOld.Foreground
+  $bRefreshAll = True
   RefreshView
   TakeSelection
   
@@ -757,7 +824,7 @@ End
 Private Sub Filter_Write(aFilter As String[])
   
   $aFilter = aFilter.Copy()
-  RefreshViewLater
+  RefreshViewLater(True)
   
 End
 
@@ -842,6 +909,7 @@ End
 Private Sub IconSize_Write(Value As Integer)
   
   $iIconSize = Value
+  $bRefreshIcon = True
   RefreshViewLater
   $hIconView.GridSize = Min(40, (Value + 8) \ 3)
   
@@ -898,6 +966,7 @@ Private Sub ShowPreview_Write(Value As Boolean)
 
   If $bShowPreview = Value Then Return
   $bShowPreview = Value
+  $bRefreshIcon = True
   RefreshViewLater
   
 End
@@ -949,6 +1018,52 @@ Catch
   
   hView[sKey].Text = File.Name(sOldPath)
   Message.Error(("Cannot rename file.") & "\n\n" & Error.Text)
+  
+End
+
+Private Sub GetWatchKey() As String
+
+  If Watch.IsDir Then
+    Return PREFIX_DIR & Watch.Name
+  Else
+    Return PREFIX_FILE & Watch.Name
+  Endif
+
+End
+
+Public Sub Watch_Create()
+
+  DirCache[GetCurrentDir()].Invalidate
+  RefreshViewLater
+  
+End
+
+Public Sub Watch_Delete()
+  
+  DirCache[GetCurrentDir()].Invalidate
+  Try GetView().Remove(GetWatchKey())
+  If Not Error Then RefreshViewLater
+  
+End
+
+Public Sub Watch_MoveFrom()
+  
+  DirCache[GetCurrentDir()].Invalidate
+  Try GetView().Remove(GetWatchKey())
+  If Not Error Then RefreshViewLater
+  
+End
+
+Public Sub Watch_MoveTo()
+  
+  DirCache[GetCurrentDir()].Invalidate
+  RefreshViewLater
+  
+End
+
+Public Sub Watch_Stat()
+  
+  RefreshViewLater
   
 End
 

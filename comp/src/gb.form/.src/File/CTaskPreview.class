@@ -4,11 +4,13 @@ Inherits Task
 
 Private $sDir As String
 Private $iSize As Integer
+Private $aPreview As String[]
 
-Public Sub _new(sDir As String, iSize As Integer)
+Public Sub _new(sDir As String, iSize As Integer, aPreview As String[])
   
   $sDir = sDir
   $iSize = iSize
+  $aPreview = aPreview
   
 End
 
@@ -43,7 +45,7 @@ Public Sub Main()
 
   Application.Priority += 10
 
-  For Each sFile In Dir($sDir).Sort(gb.Natural)
+  For Each sFile In $aPreview
     
     sPath = $sDir &/ sFile
     sExt = LCase(File.Ext(sFile))

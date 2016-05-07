@@ -3,6 +3,8 @@
 Export
 Inherits UserControl
 
+Class Watch
+
 Public Const _Properties As String = "*,Border=True,Root,Picture,ShowHidden,HideRoot"
 Public Const _DefaultEvent As String = "Click"
 Public Const _Group As String = "View"
@@ -35,6 +37,9 @@ Private $hTimerExpand As Timer
 Private $bInRename As Boolean
 Private $bHideRoot As Boolean
 
+Private $cWatch As Collection
+Private $bWatch As Boolean
+
 Public Sub _new()
 
   $hTreeView = New TreeView(Me) As "TreeView"
@@ -44,6 +49,12 @@ Public Sub _new()
   $hRootPict = Picture["icon:/small/directory"] 'open
   ClearView
 
+End
+
+Public Sub _attach((Parent) As Object, EventName As String)
+  
+  If Not EventName Then $cWatch = Null
+  
 End
 
 Private Function GetRoot() As String
@@ -62,12 +73,28 @@ Private Sub UpdateHideRoot()
 
 End
 
+Private Sub AddWatch(sDir As String)
+
+  $cWatch[sDir] = New Watch(sDir) As "Watch"
+
+End
+
+Private Sub RemoveWatch(sDir As String)
+
+  $cWatch.Remove(sDir)
+
+End
+
 Private Sub ClearView()
 
   Dim sRoot As String = GetRoot()
 
   $bNoEvent = True
   $hTreeView.Clear
+  
+  $bWatch = Component.IsLoaded("gb.inotify")
+  If $bWatch Then $cWatch = New Collection
+  
   AddDir(File.Dir(sRoot), File.Name(sRoot), True)
   '$hTreeView.Add(sRoot, sRoot, $hRootPict)
   '$hTreeView.Add(sRoot & "/", "",, sRoot)
@@ -175,6 +202,9 @@ Public Sub TreeView_Expand()
   $hTreeView.Item.Selected = True
   
   sDir = $hTreeView.Item.Key
+  
+  If $bWatch Then AddWatch(sDir)
+  
   If sDir = GetRoot() Then
     $hTreeView.Item.Picture = $hRootPict
   Else
@@ -222,6 +252,8 @@ Public Sub TreeView_Collapse()
   $bNoExpand = True
   Last.Item.Selected = True
   $bNoExpand = False
+  
+  If $bWatch Then RemoveWatch(Last.Item.Key)
 
 End
 
@@ -333,10 +365,17 @@ End
 Private Sub RefreshView()
 
   Dim sDir As String
+  Dim SX As Integer
+  Dim SY As Integer
 
+  SX = $hTreeView.ScrollX
+  SY = $hTreeView.ScrollY
+  
   sDir = Current_Read()
   ClearView
-  Current_Write(sDir)  
+  Current_Write(sDir)
+  
+  $hTreeView.Scroll(SX, SY)
 
 End
 
@@ -586,4 +625,45 @@ Private Sub HideRoot_Write(Value As Boolean)
   $bHideRoot = Value
   UpdateHideRoot
 
+End
+
+Public Sub Watch_Create()
+
+  Debug Last.Path;; Watch.Name
+  DirCache[Last.Path].Invalidate
+  RefreshView
+  
+End
+
+Public Sub Watch_Delete()
+  
+  Debug Last.Path;; Watch.Name
+  DirCache[Last.Path].Invalidate
+  Try $hTreeView.Remove(Last.Path &/ Watch.Name)
+  'If Not Error Then RefreshView
+  
+End
+
+Public Sub Watch_MoveFrom()
+  
+  Debug Last.Path;; Watch.Name
+  DirCache[Last.Path].Invalidate
+  Try $hTreeView.Remove(Last.Path &/ Watch.Name)
+  
+End
+
+Public Sub Watch_MoveTo()
+  
+  Debug Last.Path;; Watch.Name
+  DirCache[Last.Path].Invalidate
+  RefreshView
+  
+End
+
+Public Sub Watch_Move()
+  
+  Debug Last.Path;; Watch.Name
+  DirCache[Last.Path].Invalidate
+  RefreshView
+  
 End
