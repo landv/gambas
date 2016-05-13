@@ -925,7 +925,7 @@ End
 
 Private Sub UpdateMode()
   
-  If $bCreate And If Not HasNewRecord() Then
+  If $bCreate And If HasNewRecord() Then
     $hCtrl.Mode = Select.None
   Else
     $hCtrl.Mode = $iMode

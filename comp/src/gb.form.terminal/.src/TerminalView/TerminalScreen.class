@@ -1122,9 +1122,16 @@ Public Sub Reset()
 
   $X = 0
   $Y = 0
-  'Debug "$Y = "; $Y
+  $SX = 0
+  $SY = 0
+  $X1 = 0
+  $Y1 = 0
+  $X2 = 0
+  $Y2 = 0
+
   $iScrollStart = -1
   $iScrollEnd = -1
+
   $hAttr.Reset
   
   AppCursorKey = False
@@ -1134,6 +1141,9 @@ Public Sub Reset()
   NewlineMode = False
   WrapMode = True
   HideCursor = False
+  
+  $iCurrentCharset = 0
+  $bGraphicCharset = False
   
 End
 

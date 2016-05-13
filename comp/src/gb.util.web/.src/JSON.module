@@ -8,6 +8,7 @@ Private $vNull As Variant
 Private $sStr As String
 Private $iPos As Integer
 Private $bUseNull As Boolean
+Private $hStream As File
 
 Public Sub _init()
   
@@ -205,20 +206,20 @@ Private Sub WriteValue(vVal As Variant)
   Select Case TypeOf(vVal)
     
     Case gb.Null
-      $sStr &= "null"
+      Write #$hStream, "null"
     
     Case gb.Boolean
       If vVal Then
-        $sStr &= "true"
+        Write #$hStream, "true"
       Else
-        $sStr &= "false"
+        Write #$hStream, "false"
       Endif
     
     Case gb.Byte, gb.Short, gb.Integer, gb.Long, gb.Float
-      $sStr &= CStr(vVal)
+      Write #$hStream, CStr(vVal)
     
     Case gb.Date
-      $sStr &= Chr$(34) & CStr(vVal) & Chr$(34)
+      Write #$hStream, Chr$(34) & CStr(vVal) & Chr$(34)
     
     Case gb.String
       sStr = Quote(vVal)
@@ -231,28 +232,28 @@ Private Sub WriteValue(vVal As Variant)
           Inc iPos
         Endif
       Loop
-      $sStr &= sStr
+      Write #$hStream, sStr
     
     Case Else
       If vVal Is Array Then
         aArray = vVal
-        $sStr &= "["
+        Write #$hStream, "["
         For iPos = 0 To vVal.Max
-          If iPos Then $sStr &= ", "
+          If iPos Then Write #$hStream, ","
           WriteValue(vVal[iPos])
         Next
-        $sStr &= "]"
+        Write #$hStream, "]"
       Else If vVal Is Collection Then
         cCol = vVal
-        $sStr &= "{"
+        Write #$hStream, "{"
         For Each vVal In cCol
-          If iPos Then $sStr &= ", "
+          If iPos Then Write #$hStream, ","
           WriteValue(cCol.Key)
-          $sStr &= ": "
+          $sStr &= ":"
           WriteValue(vVal)
           Inc iPos
         Next
-        $sStr &= "}"
+        Write #$hStream, "}"
       Endif
     
   End Select
@@ -275,9 +276,12 @@ End
 
 Public Sub Encode(Value As Variant) As String
   
-  $sStr = ""
+  Dim sStr As String
+  
+  $hStream = Open String For Write
   WriteValue(Value)
-  Return $sStr
+  sStr = Close #$hStream
+  Return sStr
   
 End
 

@@ -1927,3 +1927,15 @@ Private Sub UpdateDefinition()
   Endif
   
 End
+
+Public Sub btnSelectAll_Click()
+
+  dvwData.View.SelectAll
+
+End
+
+Public Sub btnUnselectAll_Click()
+
+  dvwData.View.UnSelectAll
+
+End

@@ -689,6 +689,7 @@ End
 
 Public Sub Process_Kill()
 
+  If $sBuffer Then OutputTimer_Timer
   $hProcess = Null
   Raise Kill
 

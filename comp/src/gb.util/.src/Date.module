@@ -10,7 +10,7 @@ End
 
 Public Sub FromUnixTime(UnixTime As Long) As Date
 
-  Return DateAdd(Date(1970, 1, 1), UnixTime, gb.Second)
+  Return Date(1970, 1, 1) + (- System.TimeZone + UnixTime) / 86400
 
 End
 

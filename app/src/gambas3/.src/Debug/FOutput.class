@@ -184,6 +184,7 @@ End
 Public Sub OnProjectDebugState()
 
   txtEnter.ReadOnly = Design.IsRunning()  
+  If txtEnter.HasFocus Then trmOutput.SetFocus
   
 End
 

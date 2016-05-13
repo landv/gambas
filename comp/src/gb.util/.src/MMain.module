@@ -2,9 +2,13 @@
 
 Public Sub Main()
 
-  Dim hStat As ClassStat
-
-  Try hStat = Class.Stat("String")
-  Print hStat
-
+  Dim sResult As String
+    
+  Shell "date +%s" To sResult
+  
+  Print Date.ToUnixTime(Now);; sResult
+  
+  Print Date.FromUnixTime(Date.ToUnixTime(Now));; Now
+  
+  
 End

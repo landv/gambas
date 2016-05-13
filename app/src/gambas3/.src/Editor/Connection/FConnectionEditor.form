@@ -355,6 +355,18 @@
                 Text = ("Delete")
                 Picture = Picture["icon:/small/remove"]
               }
+              { btnSelectAll ToolButton
+                MoveScaled(47,0,12,4)
+                AutoResize = True
+                Text = ("Select all")
+                Picture = Picture["icon:/small/select-all"]
+              }
+              { btnUnselectAll ToolButton
+                MoveScaled(59,0,12,4)
+                AutoResize = True
+                Text = ("Unselect all")
+                Picture = Picture["icon:/small/undo"]
+              }
             }
             { dvwData DataView
               MoveScaled(6,8,46,11)
