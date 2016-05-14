@@ -45,6 +45,8 @@ Event org_kde_StatusNotifierItem_NewToolTip
 ' The item has a new status, that is passed as an argument of the signal.
 Event org_kde_StatusNotifierItem_NewStatus(Status As String)
 
+Event org_kde_StatusNotifierItem_XAyatanaNewLabel
+
 ' Properties
 ' org.freedesktop.StatusNotifierItem.Category
 '
@@ -172,6 +174,8 @@ Property Read org_kde_StatusNotifierItem_ToolTip As _DBusStatusIconTooltip
 Property Read org_kde_StatusNotifierItem_ItemIsMenu As Boolean
 
 Property Read org_kde_StatusNotifierItem_Menu As DBusObject
+
+Property Read org_kde_StatusNotifierItem_XAyatanaLabel As String
 
 ' Methods
 ' ContextMenu
@@ -338,5 +342,11 @@ End
 Private Function org_kde_StatusNotifierItem_IconThemePath_Read() As String
 
   Return GetParent()._GetIconThemePath()
+
+End
+
+Private Function org_kde_StatusNotifierItem_XAyatanaLabel_Read() As String
+
+  Return GetParent().Text
 
 End

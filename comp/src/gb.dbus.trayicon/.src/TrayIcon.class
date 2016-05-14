@@ -240,7 +240,10 @@ End
 Private Sub Text_Write(Value As String)
 
   $sText = Value
-  If $bVisible Or If $bAppIndicator Then DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewTooltip")
+  If $bVisible Or If $bAppIndicator Then 
+    DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.NewTooltip")
+    DBus[GetServiceName()].Raise($hObject, "org.kde.StatusNotifierItem.XAyatanaNewLabel")
+  Endif
 
 End
 
