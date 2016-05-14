@@ -124,12 +124,13 @@ Public Sub Delete()
   Dim iIndex As Integer
   
   Hide
-  $hMenu = Null
   
   If $bAppIndicator Then
     DBus.UnRegister($hMenu) ', "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
     DBus.Unregister($hObject) ', "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
   Endif
+  
+  $hMenu = Null
   
   iIndex = TrayIcons._All.FindByRef(Me)
   If iIndex < 0 Then Return
