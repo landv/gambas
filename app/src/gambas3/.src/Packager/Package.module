@@ -513,14 +513,13 @@ End
 
 Private Function GetDependency(sLib As String) As String
         
-  Dim hComponent As CComponent
   Dim hLibrary As CLibraryInfo
   Dim sVersion As String
   Dim aMinVersion As String[]
   Dim aMaxVersion As String[]
   Dim sPackageName As String
   
-  If Left(sLib) = "/" Then
+  If Left(sLib) = "/" Or If Left(sLib) = ":" Then
     
     ' The package name dependency must not include the version!
     
@@ -548,9 +547,20 @@ Private Function GetDependency(sLib As String) As String
       aMaxVersion[2] = "90"
     Endif
     
+  ' Else If Left(sLib) = ":" Then
+  '     
+  '   sLib = File.Name(sLib)
+  '   iPos = RInStr(sLib, ":")
+  '   sVersion = Mid$(sLib, iPos + 1)
+  '   sLib = Left(sLib, iPos - 1)
+  '     
+  '   sPackageName = ComponentToPackageName(sLib)
+  '   
+  '   aMinVersion = Split(sVersion, ".")
+  '   aMaxVersion = Split(sVersion, ".")
+    
   Else
     
-    hComponent = Project.Documentation[sLib]
     sPackageName = ComponentToPackageName(sLib)
     
     aMinVersion = Split(MIN_VERSION, ".")
@@ -903,11 +913,6 @@ Private Function MakeDebPackage(sSys As String)
   Print #hFile, "Priority: optional"
   Print #hFile, "Maintainer: "; Project.Maintainer; " <"; Project.Address; ">"
   Print #hFile, "Build-Depends: debhelper (>= "; DEBIAN_DEBHELPER_VERSION; "), gambas"; System.Version; "-dev (>= "; MIN_VERSION; "), gambas"; System.Version; "-dev (<< "; MAX_VERSION; ")";
-  ' For Each sLib In GetDependencies()
-  '   aVer = GetComponentMinMaxVersion(sLib)
-  '   sLib = ComponentToPackageName(sLib)
-  '   Print #hFile, ", "; sLib; " (>= "; aVer[0]; "), "; sLib; " (<< "; aVer[1]; ")";
-  ' Next 
   Print #hFile, GetDependencies();
   Print #hFile, GetExtraDependencies(sSys);
   Print #hFile
