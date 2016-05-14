@@ -217,6 +217,7 @@ Static Private Sub GetDesktop() As String
           $sDesktop = "UNITY"
         Default
           $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+          If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
       End Select
     Endif
 
@@ -253,7 +254,7 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
         bNoDir = True
       Endif
       If Command Then sExec &= " -x " & Shell$(Command)
-    Case "MATE"
+    Case "MATE", "CINNAMON"
       sExec = "mate-terminal"
       If {Dir} Then
         sExec &= " --working-directory=" & Shell$({Dir})
