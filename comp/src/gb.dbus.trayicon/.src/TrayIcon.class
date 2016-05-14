@@ -39,7 +39,7 @@ Public Sub _new()
   
   $hObject = New DBusStatusIcon As "StatusIcon"
 
-  $bAppIndicator = LCase(Env["XDG_CURRENT_DESKTOP"]) = "unity"
+  $bAppIndicator = ["unity", "cinnamon", "x-cinnamon"].Exist(Env["XDG_CURRENT_DESKTOP"], gb.IgnoreCase)
   
   Inc $iCount
   $iId = $iCount
@@ -125,6 +125,11 @@ Public Sub Delete()
   
   Hide
   $hMenu = Null
+  
+  If $bAppIndicator Then
+    DBus.UnRegister($hMenu) ', "/org/kde/statusnotifieritem" &/ CStr($iId) &/ "menu", ["com.canonical.dbusmenu"])
+    DBus.Unregister($hObject) ', "/org/kde/statusnotifieritem" &/ CStr($iId), ["org.kde.StatusNotifierItem"])
+  Endif
   
   iIndex = TrayIcons._All.FindByRef(Me)
   If iIndex < 0 Then Return
