@@ -189,41 +189,48 @@ Static Private Sub GetDesktop() As String
 
   If Not $sDesktop Then
 
-    If Application.Env["KDE_FULL_SESSION"] Then
-      If Application.Env["KDE_SESSION_VERSION"] = "4" Then
-        $sDesktop = "KDE4"
-      Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
-        $sDesktop = "KDE5"
-      Else
-        $sDesktop = "KDE"
+    Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+      Case "LXDE"
+        $sDesktop = "LXDE"
+      Case "UNITY"
+        $sDesktop = "UNITY"
+      Default
+        $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+        If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
+    End Select
+    
+    If Not $sDesktop Then
+    
+      If Application.Env["KDE_FULL_SESSION"] Then
+        If Application.Env["KDE_SESSION_VERSION"] = "4" Then
+          $sDesktop = "KDE4"
+        Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
+          $sDesktop = "KDE5"
+        Else
+          $sDesktop = "KDE"
+        Endif
+      Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+        $sDesktop = "GNOME"
+      Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
+        $sDesktop = "MATE"
+      Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
+        $sDesktop = "ENLIGHTENMENT"
+      Else If Application.Env["WMAKER_BIN_NAME"] Then
+        $sDesktop = "WINDOWMAKER"
+      Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
+        $sDesktop = "LXDE"
+      Else If UCase(Env["DESKTOP_SESSION"]) = "XCFE" Then
+        $sDesktop = "XFCE"
+      Else If UCase(Env["XDG_MENU_PREFIX"]) Begins "XCFE" Then
+        $sDesktop = "XFCE"
+      Else If InStr(Env["XDG_DATA_DIR"], "/xfce") Then
+        $sDesktop = "XFCE"
       Endif
-    Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
-      $sDesktop = "GNOME"
-    Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
-      $sDesktop = "MATE"
-    Else If Application.Env["E_BIN_DIR"] And If Application.Env["E_LIB_DIR"] Then
-      $sDesktop = "ENLIGHTENMENT"
-    Else If Application.Env["WMAKER_BIN_NAME"] Then
-      $sDesktop = "WINDOWMAKER"
-    Else If Application.Env["DESKTOP_SESSION"] = "LXDE" Then
-      $sDesktop = "LXDE"
-    Else If InStr(X11.GetWindowProperty(X11.RootWindow, "_DT_SAVE_MODE"), "xfce4") Then
-      $sDesktop = "XFCE"
-    Else
-      Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
-        Case "LXDE"
-          $sDesktop = "LXDE"
-        Case "UNITY"
-          $sDesktop = "UNITY"
-        Default
-          $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
-          If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
-      End Select
+      
     Endif
 
   Endif
 
-  '$sDesktop = "GNOME"
   Return $sDesktop
 
 End
