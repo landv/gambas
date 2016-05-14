@@ -7,9 +7,11 @@ Inherits _DBus
 Static Property Name As String
 Static Public _ApplicationCache As New Collection
 Static Property Read Null As Object
+Static Property Unique As Boolean
 
 Static Private $sAppName As String
 Static Private $iRegisterCount As Integer
+Static Private $bUnique As Boolean
 
 Static Public Sub _get((Application) As String) As DBusApplication
   
@@ -71,7 +73,13 @@ Static Public Sub _RegisterApplication(hConnection As DBusConnection) As String
   
   If IsNull(hConnection.Tag) Then
     sName = Name_Read()
-    hConnection._RequestName(sName)
+    If hConnection._RequestName(sName, True) Then 
+      If $bUnique Then
+        Error.Raise("Unique application is already registered")
+      Else
+        Error.Raise("Application is already registered")
+      Endif
+    Endif
     hConnection.Tag = sName
   Endif
   Inc $iRegisterCount
@@ -91,8 +99,13 @@ End
 
 Static Private Function Name_Read() As String
 
+  Dim sName As String
+  
   If $sAppName Then Return $sAppName
-  Return "org.gambas." & _Normalize(Application.Name, True, "-_")
+  
+  sName = "org.gambas." & _Normalize(Application.Name, True, "-_")
+  If Not $bUnique Then sName &= "-" & CStr(Application.Handle)
+  Return sName
   
 End
 
@@ -137,4 +150,16 @@ Static Public Sub _HasSystemTray() As Boolean
   
   Try Return DBus["org.kde.StatusNotifierWatcher"]["/StatusNotifierWatcher", "org.kde.StatusNotifierWatcher"].IsStatusNotifierHostRegistered
   
+End
+
+Static Private Function Unique_Read() As Boolean
+
+  Return $bUnique
+
+End
+
+Static Private Sub Unique_Write(Value As Boolean)
+
+  $bUnique = Value
+
 End

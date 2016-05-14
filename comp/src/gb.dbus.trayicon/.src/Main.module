@@ -50,6 +50,7 @@ Public Sub Main()
   ' File.Save(Application.Path &/ "default.bin", String@(hImage.Data, hImage.W * hImage.H * SizeOf(gb.Integer)))
   
   DBus.Debug = True
+  DBus.Unique = True
   FTest.Show
 
 End
