@@ -84,6 +84,7 @@ Public _EventName As String
 Public _Extra As Boolean
 Public _Proxy As String
 Public _NoRefresh As Integer
+Public _Naked As Boolean
 
 Private $iId As Integer
 Private $iParentId As Integer
@@ -485,15 +486,21 @@ Public Sub _RefreshReply() As Boolean
     hFile = Open String For Write
     Output To #hFile
     
-    Me._BeforeRender()
+    If Not _Naked Then Me._BeforeRender()
     Me._Render()
-    Me._AfterRender()
+    If Not _Naked Then Me._AfterRender()
     
     sResult = Close #hFile
     Output To Default
     
     'WebForm._AddRefresh("$(" & JS(Me.Name) & ").outerHTML = " & JS(sResult) & ";")
-    Print "$(" & JS(Me.Name) & ").outerHTML = " & JS(sResult) & ";"
+    Print "$(" & JS(Me.Name) & ").";
+    If _Naked Then
+      Print "innerHTML";
+    Else
+      Print "outerHTML";
+    Endif
+    Print " = "; JS(sResult) & ";"
     
     _Refresh = False
     Return True

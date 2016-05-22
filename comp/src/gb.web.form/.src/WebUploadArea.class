@@ -89,7 +89,7 @@ Private Sub GetUploadDir() As String
   
   sDir = File.Dir(File.Dir(Temp$())) &/ "upload"
   Try Mkdir sDir
-  sDir &= Session.Id
+  sDir &/= Session.Id
   Try Mkdir sDir
   Return sDir
 
@@ -119,7 +119,7 @@ Public Sub _UploadFinish()
   Me["file"] = ""
   
   For Each sPath In Request.Files
-    sTemp = GetUploadDir() & Me.Name
+    sTemp = GetUploadDir() &/ Me.Name
     Try Kill sTemp
     Try Move sPath To sTemp
     If Error Then Break
