@@ -218,7 +218,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                   hScreen.Attr.Background = iArg - 100
                 Case 38
                   If (aArg.max - i) >= 2 And If aArg[I + 1] = "5" Then
-                    Try hScreen.Attr.Background = CInt(aArg[I + 2])
+                    Try hScreen.Attr.Foreground = CInt(aArg[I + 2])
                     I += 2
                   Endif
                   'TODO: Implement support for RGB Colors
@@ -228,7 +228,7 @@ Private Sub Escape(hView As TerminalView, hScreen As TerminalScreen, hProcess As
                   ' Endif
                 Case 48
                   If (aArg.max - I) >= 2 And If aArg[I + 1] = "5" Then
-                    Try hScreen.Attr.Foreground = CInt(aArg[I + 2])
+                    Try hScreen.Attr.Background = CInt(aArg[I + 2])
                     I += 2
                   Endif
                   'TODO: Implement support for RGB Colors
