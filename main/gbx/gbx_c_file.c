@@ -57,13 +57,13 @@ CFILE *CFILE_in, *CFILE_out, *CFILE_err;
 
 DECLARE_EVENT(EVENT_Read);
 DECLARE_EVENT(EVENT_Write);
+DECLARE_EVENT(EVENT_Resize);
 
 static GB_FUNCTION _read_func;
 
 static char _buffer[16];
 
 static bool _term_init = FALSE;
-static bool _has_term_func = FALSE;
 static ushort _term_width = 0;
 static ushort _term_height = 0;
 static SIGNAL_CALLBACK *_SIGWINCH_callback = NULL;
@@ -86,8 +86,8 @@ static void callback_write(int fd, int type, CFILE *file)
 static void cb_term_resize(int signum, intptr_t data)
 {
 	_term_width = _term_height = 0;
-	if (_has_term_func)
-		GB_Call(&_term_resize_func, 0, FALSE);
+	if (CFILE_in)
+		GB_Raise(CFILE_in, EVENT_Resize, 0);
 }
 
 
@@ -157,15 +157,19 @@ void CFILE_exit(void)
 
 void CFILE_init_watch(void)
 {
-	if (GB_GetFunction(&_read_func, PROJECT_class, "Application_Read", "", "") == 0)
+	bool has_term_func = GB_GetFunction(&_term_resize_func, PROJECT_class, "Application_Resize", "", "") == 0;
+	bool has_read_func = GB_GetFunction(&_read_func, PROJECT_class, "Application_Read", "", "") == 0;
+	
+	if (has_term_func || has_read_func)
+		OBJECT_attach((OBJECT *)CFILE_in, (OBJECT *)PROJECT_class, "Application");
+	
+	if (has_read_func)
 	{
 		//fprintf(stderr, "watch stdin\n");
-		OBJECT_attach((OBJECT *)CFILE_in, (OBJECT *)PROJECT_class, "Application");
 		CFILE_in->watch_fd = STDIN_FILENO;
 		GB_Watch(STDIN_FILENO, GB_WATCH_READ, (void *)callback_read, (intptr_t)CFILE_in);
 	}
 }
-
 
 BEGIN_METHOD_VOID(File_free)
 
@@ -873,6 +877,26 @@ END_METHOD
 
 //---------------------------------------------------------------------------
 
+static void init_term_size(void *_object)
+{
+	struct winsize winSize;
+	
+	if (_term_width == 0 || _term_height == 0)
+	{
+		if (ioctl(STREAM_FD, TIOCGWINSZ, (char *)&winSize))
+			THROW_SYSTEM(errno, NULL);
+		
+		_term_width = winSize.ws_col;
+		_term_height = winSize.ws_row;
+	}
+	
+	if (!_term_init)
+	{
+		_SIGWINCH_callback = SIGNAL_register(SIGWINCH, cb_term_resize, 0);
+		_term_init = TRUE;
+	}
+}
+
 BEGIN_PROPERTY(StreamTerm_Name)
 	
 	GB_ReturnNewZeroString(ttyname(STREAM_FD));
@@ -933,27 +957,6 @@ BEGIN_PROPERTY(StreamTerm_FlowControl)
 	handle_term_property(_object, _param, TRUE, IXON | IXOFF);
 
 END_PROPERTY
-
-static void init_term_size(void *_object)
-{
-	struct winsize winSize;
-	
-	if (_term_width == 0 || _term_height == 0)
-	{
-		if (ioctl(STREAM_FD, TIOCGWINSZ, (char *)&winSize))
-			THROW_SYSTEM(errno, NULL);
-		
-		_term_width = winSize.ws_col;
-		_term_height = winSize.ws_row;
-	}
-	
-	if (!_term_init)
-	{
-		_SIGWINCH_callback = SIGNAL_register(SIGWINCH, cb_term_resize, 0);
-		_has_term_func = GB_GetFunction(&_term_resize_func, PROJECT_class, "Application_Resize", "", "") == 0;
-		_term_init = TRUE;
-	}
-}
 
 BEGIN_PROPERTY(StreamTerm_Width)
 
@@ -1098,6 +1101,7 @@ GB_DESC FileDesc[] =
 
 	GB_EVENT("Read", NULL, NULL, &EVENT_Read),
 	GB_EVENT("Write", NULL, NULL, &EVENT_Write),
+	GB_EVENT("Resize", NULL, NULL, &EVENT_Resize),
 
 	GB_END_DECLARE
 };
