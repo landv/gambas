@@ -12,11 +12,12 @@ Property Read ScreenY As Integer
 Property Read Window As Window
 Property Background As Integer
 Property Foreground As Integer
-
-Private $iRow As Integer
-Private $iColumn As Integer
-Private $iWidth As Integer
-Private $iHeight As Integer
+Property Read _Rect As Rect
+Property Visible As Boolean
+' Private $iRow As Integer
+' Private $iColumn As Integer
+' Private $iWidth As Integer
+' Private $iHeight As Integer
 Private $vTag As Variant
 
 Public _Content As New CLine[]
@@ -27,9 +28,11 @@ Private $iWindow As Integer = -1
 Private $iScreenX As Integer
 Private $iScreenY As Integer
 Private $iBackground As Integer
-Private $iForeground As Integer
+Private $iForeground As Integer = Color.white
+Private $iVisible As Boolean = True
 
-Static Private $iLastId As Integer
+Private $hRect As New Rect
+Static Private $iLastId As Integer = 1
 Static Public _IdToControl As New Collection
 
 Static Public _RecalcPos As Boolean = True
@@ -54,52 +57,68 @@ End
 
 Private Function Top_Read() As Integer
 
-  Return $iRow
+  Return $hRect.Top
 
 End
 
 Private Sub Top_Write(Value As Integer)
 
+  Windows._RefreshAreas(_GetScreenRect())
   Control._RecalcPos = True
-  $iRow = Value
+  $hRect.Top = Value
+  Windows._RefreshAreas(_GetScreenRect())
 
 End
 
 Private Function Left_Read() As Integer
 
-  Return $iColumn
+  Return $hRect.Left
 
 End
 
 Private Sub Left_Write(Value As Integer)
 
+  Windows._RefreshAreas(_GetScreenRect())
   Control._RecalcPos = True
-  $iColumn = Value
+  $hRect.Left = Value
+  Windows._RefreshAreas(_GetScreenRect())
 
 End
 
 Private Function Width_Read() As Integer
 
-  Return $iWidth
+  Return $hRect.Width
 
 End
 
 Private Sub Width_Write(Value As Integer)
 
-  $iWidth = Value
+  Windows._RefreshAreas(_GetScreenRect())
+  $hRect.Width = Value
+  Windows._RefreshAreas(Me._Rect)
 
 End
 
 Private Function Height_Read() As Integer
 
-  Return $iHeight
+  Return $hRect.Height
 
 End
 
 Private Sub Height_Write(Value As Integer)
 
+  Dim i As Integer
+  
+  Windows._RefreshAreas(_GetScreenRect())
   _Content = New CLine[Value]
-  $iHeight = Value
+  
+  For i = 0 To _Content.Max
+    _Content[i] = New CLine
+  Next
+  
+  
+  $hRect.Height = Value
+  Windows._RefreshAreas(Me._Rect)
 
 End
 
@@ -165,18 +184,16 @@ End
 
 Private Sub ComputeScreenXY()
 
-  Dim X, Y As Integer
-  Dim hC As Control = Me
+  Dim hC As Control = Me.Parent
 
-  Do
-    X += hc.Left
-    Y += hc.Top
-    hC = hC.Parent
-    If IsNull(hC) Then Break
-  Loop
-
-  $iScreenX = X
-  $iScreenY = Y
+  If hC Then
+    $iScreenX = hC.Left + $hRect.Left
+    $iScreenY = hC.Top + $hRect.Top
+  Else
+    $iScreenX = $hRect.Left
+    $iScreenY = $hRect.Top
+  Endif
+  '_RecalcPos = False
 
 End
 
@@ -190,30 +207,29 @@ Public Sub Move(Top As Integer, Left As Integer, Optional Width As Integer, Opti
 
 End
 
-
 Public Sub _Render()
+
   Dim hAttr As New Attr
   Dim hLine As CLine
   Dim i As Integer
   'Fill The widget BackGround
-  
+
   hAttr.Background = $iBackground
   hAttr.Foreground = $iForeground
-  
+
   For i = 0 To _Content.Max
-    
+
     hLine = _Content[i]
     If Not hLine Then hLine = New CLine
-    hLine.Text = String($iWidth, " ")
-    hLine.SetAttr(hAttr, 0, $iWidth)
-    hLine.Length = $iWidth
-    
-    _Content[i] = hLine
-    
-  Next
-  
-End
+    hLine.Text = String($hRect.Width, " ")
+    hLine.SetAttr(hAttr, 0, $hRect.Width)
+    hLine.Length = $hRect.Width
 
+    _Content[i] = hLine
+
+  Next
+
+End
 
 Private Function Foreground_Read() As Integer
 
@@ -236,5 +252,35 @@ End
 Private Sub Background_Write(Value As Integer)
 
   $iBackground = Value
+
+End
+
+Private Function _Rect_Read() As Rect
+
+  Return $hRect
+
+End
+
+Public Function _GetScreenRect() As Rect
+
+  Dim hRet As New Rect
+
+  hRet.Left = Me.ScreenX
+  hRet.Top = Me.ScreenY
+  hRet.Width = $hRect.Width
+  hRet.Height = $hRect.Height
+  Return hRet
+
+End
+
+Private Function Visible_Read() As Boolean
+
+  Return $iVisible
+
+End
+
+Private Sub Visible_Write(Value As Boolean)
+
+  $iVisible = Value
 
 End
