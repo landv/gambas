@@ -56,7 +56,7 @@ Public Sub _Render()
   
   If $sImage Then 
     If $sText Then
-      Print "<img class=\"gw-button-image\" src=\""; Html(Application.Root &/ $sImage); "\"";
+      Print "<div><img class=\"gw-button-image\" src=\""; Html(Application.Root &/ $sImage); "\"";
     Else
       Print "<img src=\""; Html(Application.Root &/ $sImage); "\"";
     Endif
@@ -68,7 +68,10 @@ Public Sub _Render()
     Endif
     Print ">";
   Endif
-  If $sText Then Print "<div>"; Html($sText); "</div>"
+  If $sText Then
+    Print "<span>"; Html($sText); "</span>";
+    If $sImage Then Print "</div>";
+  Endif
   
 End
 

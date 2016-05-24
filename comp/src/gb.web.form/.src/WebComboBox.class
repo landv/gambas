@@ -51,11 +51,15 @@ Public Sub _Render()
   Dim I As Integer
   
   If Not $bReadOnly Then
-    Print "<input id=\""; Me.Name; ":entry\" class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); ">";
+    Print "<input id=\""; Me.Name; ":entry\" class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); 
+    If Not Me.Enabled Then Print " disabled";
+    Print ">";
     Print "<div class=\"gw-combobox-arrow\">";
   Endif
   
-  Print "<select id=\""; Me.Name; "-select\" autocomplete=\"off\""; Me._GetUpdateJS("onchange", "index", "this.selectedIndex"); ">"
+  Print "<select id=\""; Me.Name; "-select\" autocomplete=\"off\""; Me._GetUpdateJS("onchange", "index", "this.selectedIndex"); 
+  If Not Me.Enabled Then Print " disabled";
+  Print ">"
   
   For I = 0 To $aList.Max
     Print "<option";

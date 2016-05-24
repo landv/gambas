@@ -36,8 +36,6 @@ P:first-child,UL:first-child,OL:first-child {
   padding: 0;
   font: inherit;
   padding: 0.125em 0.25em;
-  display: inline-flex;
-  justify-content: center;
   /*min-height: 1rem;*/
 }
 
@@ -53,13 +51,20 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-button-image {
   margin-right: 0.5em;
-}
-
-.gw-button > IMG {
-  vertical-align: middle;
+  height: 1.1em;
 }
 
 .gw-button > DIV {
+  display: inline-flex;
+  justify-content: center;
+  flex-flow: row;
+}
+
+.gw-button > DIV > IMG {
+  vertical-align: middle;
+}
+
+.gw-button > DIV > SPAN {
   display: inline-block;
   vertical-align: middle;
 }
@@ -131,6 +136,7 @@ P:first-child,UL:first-child,OL:first-child {
   /*box-sizing: border-box; firefox bug on refresh !*/
   padding: 0 0.25em;
 }
+
 .gw-textbox.gw-noborder {
   border: none;
 }
@@ -547,6 +553,7 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-scrollview {
   position: relative;
+  border: solid #C0C0C0 1px;
 }
 
 .gw-scrollview > DIV {
@@ -622,7 +629,7 @@ TABLE.gw-calendar > TBODY > TR > TD.gw-date-current {
   border-radius: 0.25em;
 }
 
-.gw-progressbar.noborder {
+.gw-progressbar.gw-noborder {
   border: solid 1px transparent;
 }
 
@@ -644,3 +651,15 @@ TABLE.gw-calendar > TBODY > TR > TD.gw-date-current {
   justify-content: center;
 }
 
+.gw-form {
+  flex-grow: 1;
+}
+
+.gw-image {
+  border: solid 1px #C0C0C0;
+  box-sizing: border-box;
+}
+
+.gw-image.gw-noborder {
+  border: none;
+}

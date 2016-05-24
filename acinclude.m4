@@ -206,10 +206,10 @@ AC_DEFUN([GB_INIT],
   dnl AC_CHECK_LIB(m, main, echo)
   dnl AC_CHECK_LIB(z, main, echo)
 
-  C_LIB=-lc
+  GB_LIBC
 
-  AC_SUBST(C_LIB)
-
+  dnl ---- Check for C++ libraries
+  
   AC_CHECK_LIB(gcc_s, main, CXX_LIB="$CXX_LIB -lgcc_s")
   AC_CHECK_LIB(stdc++, main, CXX_LIB="$CXX_LIB -lstdc++")
 
@@ -363,6 +363,13 @@ AC_DEFUN([GB_THREAD],
       GBX_THREAD_INC="-pthread -D_REENTRANT"
       GBX_THREAD_LDFLAGS=""
       ;;
+    *-*-haiku* )
+      THREAD_LIB=""
+      THREAD_INC=""
+      GBX_THREAD_LIB=""
+      GBX_THREAD_INC=""
+      GBX_THREAD_LDFLAGS=""
+      ;;
     *-*-netbsd* )
       THREAD_LIB=""
       THREAD_INC="-pthread -D_REENTRANT"
@@ -393,6 +400,30 @@ AC_DEFUN([GB_THREAD],
 
 
 ## ---------------------------------------------------------------------------
+## GB_LIBC
+## Detect C library
+## ---------------------------------------------------------------------------
+
+AC_DEFUN([GB_LIBC],
+[
+  case "${host}" in
+    *-*-haiku* )
+      dnl Haiku has implicit C library in libroot.
+      C_LIB=""
+      ;;
+    *)
+      C_LIB="-lc"
+      ;;
+  esac
+
+  AC_MSG_CHECKING(for C library)
+  AC_MSG_RESULT($C_LIB)
+
+  AC_SUBST(C_LIB)
+])
+
+
+## ---------------------------------------------------------------------------
 ## GB_MATH
 ## Detect mathematic libraries
 ## ---------------------------------------------------------------------------
@@ -402,6 +433,9 @@ AC_DEFUN([GB_MATH],
   case "${host}" in
     *-*-freebsd* )
       MATH_LIB="-lm"
+      ;;
+    *-*-haiku* )
+      MATH_LIB=""
       ;;
     *)
       MATH_LIB="-lm"
@@ -521,6 +555,12 @@ AC_DEFUN([GB_SYSTEM],
       AC_DEFINE(OS_HURD, 1, [Target system is Hurd])
       AC_DEFINE(SYSTEM, "Hurd", [Operating system])
       ;;
+    *-*-haiku* )
+      SYSTEM=HAIKU
+      dnl AC_DEFINE(OS_GNU, 1, [Target system is of GNU family])
+      AC_DEFINE(OS_HAIKU, 1, [Target system is Haiku])
+      AC_DEFINE(SYSTEM, "Haiku", [Operating system])
+      ;;      
     * )
       SYSTEM=UNKNOWN
       AC_DEFINE(SYSTEM, "unknown", [Operating system])
@@ -575,8 +615,8 @@ AC_DEFUN([GB_SHARED_LIBRARY_EXT],
 
   case "${host}" in
     *-*-cygwin* )
-      SHLIBEXT="la"
-      AC_DEFINE(SHARED_LIBRARY_EXT, "dll", [Shared library extension is '.dll'])
+      SHLIBEXT="dll.a"
+      AC_DEFINE(SHARED_LIBRARY_EXT, "dll", [Shared library extension is '.dll.a'])
       ;;
     *-*-darwin* )
       SHLIBEXT="dylib"
@@ -640,6 +680,18 @@ gb_main_dir_list="$2"
 gb_sub_dir_list="$3"
 
 gb_sub_dir_list_64=`echo "$gb_sub_dir_list" | sed s/"lib"/"lib64"/g`
+
+if test $SYSTEM == "HAIKU"; then
+  gb_arch="`getarch`"
+  gb_main_dir_list="$gb_main_dir_list `findpaths -c' ' -a "$gb_arch" B_FIND_PATH_DEVELOP_DIRECTORY`"
+  gb_arch_inc_subdir=headers
+  gb_arch_lib_subdir=lib
+  if test "$gb_arch" != "`getarch -p`"; then
+    gb_arch_inc_subdir="headers/$gb_arch"
+    gb_arch_lib_subdir="lib/$gb_arch"
+  fi
+  gb_sub_dir_list=`echo "$gb_sub_dir_list" | sed "s:include:$gb_arch_inc_subdir:g;s:lib:$gb_arch_lib_subdir:g"`
+fi
 
 ## if there is 'lib' inside sub-directories, then we decide to search "lib64" first.
 

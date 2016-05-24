@@ -11,12 +11,12 @@ GB_CHECK_XWINDOW()
 
 GB_COMPONENT_PKG_CONFIG(
   gtk, GTK, gb.gtk, [src],
-  'gtk+-2.0 >= 2.16' 'librsvg-2.0 >= 2.14.3' 'cairo >= 1.6.0' 'cairo-ft >= 1.6.0' 'gtk+-unix-print-2.0 >= 2.10' sm ice
+  'gtk+-2.0 >= 2.16' 'librsvg-2.0 >= 2.14.3' 'cairo >= 1.6.0' 'cairo-ft >= 1.6.0' 'gtk+-unix-print-2.0 >= 2.10' sm ice x11
 )
 
 GB_COMPONENT_PKG_CONFIG(
   gtkopengl, GTKOPENGL, gb.gtk.opengl, [opengl],
-  gtkglext-1.0
+  gtkglext-1.0 gl x11
 )
 
 AC_OUTPUT( \

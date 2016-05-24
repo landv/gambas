@@ -249,7 +249,7 @@ Private Sub WriteValue(vVal As Variant)
         For Each vVal In cCol
           If iPos Then Write #$hStream, ","
           WriteValue(cCol.Key)
-          $sStr &= ":"
+          Write #$hStream, ":"
           WriteValue(vVal)
           Inc iPos
         Next

@@ -109,7 +109,7 @@ Private Sub UpdateMaskAndSeparator(sMask As String)
       If iPos2 = 0 Then Error.Raise("Bad mask")
       aMask.Add(String.Mid$(sMask, iPos, iPos2 - iPos + 1))
       iPos = iPos2
-      sSeparator &= " "
+      sSeparator &= String.Chr(&H2007)
       sDefault &= " "
       Continue
     Else If sCar = "<" Then
@@ -120,7 +120,7 @@ Private Sub UpdateMaskAndSeparator(sMask As String)
       iPosFocus = aMask.Count
     Else If sCar = "?" Then
       aMask.Add(sCar)
-      sSeparator &= " "
+      sSeparator &= String.Chr(&H2007)
       sDefault &= " "
     ' Else If sCar = "0" Then
     '   aMask.Add("[0-9]")
@@ -128,15 +128,15 @@ Private Sub UpdateMaskAndSeparator(sMask As String)
     '   sDefault &= "0"
     Else If sCar = "0" Then
       aMask.Add("[0-9]")
-      sSeparator &= " "
+      sSeparator &= String.Chr(&H2007)
       sDefault &= "0"
     Else If sCar = "#" Or If sCar = "9" Then
       aMask.Add("[0-9]")
-      sSeparator &= " "
+      sSeparator &= String.Chr(&H2007)
       sDefault &= " "
     Else If sCar = "A" Then
       aMask.Add("[A-Za-z]")
-      sSeparator &= " "
+      sSeparator &= String.Chr(&H2007)
       sDefault &= " "
     Else If sCar = "\\" And If iPos < iLen Then
       aMask.Add("")
@@ -274,11 +274,15 @@ Private Sub MaskText(sText As String) As String
     If sMask = "" Then
       bNumber = False
     Else If sMask = "[0-9]" Then
-      If sCar = "0" Or If sCar = " " Then
-        If Not bNumber Then 
-          sCar = GetDefaultCharacter(iPos - 1)
+      If iPos < String.Len(sText) And If $aMask[iPos] Then
+        If sCar = "0" Or If sCar = " " Then
+          If Not bNumber Then 
+            sCar = GetDefaultCharacter(iPos - 1)
+          Else
+            sCar = "0"
+          Endif
         Else
-          sCar = "0"
+          bNumber = True
         Endif
       Else
         bNumber = True

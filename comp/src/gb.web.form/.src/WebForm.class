@@ -84,7 +84,13 @@ Static Public Sub Main()
     If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
     RenderJavascript(sFile)
     Return
+  
+  Else If sPath Begins "img:" Then
     
+    Try sPath = Session[Mid$(sPath, 5)]["Image"]
+    If Not Error Then Response.SendFile(sPath)
+    Return
+  
   Else If Exist("../.public/" &/ sPath) Then
     
     Response.SendFile("../.public/" &/ sPath)

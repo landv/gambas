@@ -12,7 +12,7 @@ AM_CONDITIONAL(XWINDOW, test x"$have_x" = xyes)
 
 GB_COMPONENT_PKG_CONFIG(
   qt5, QT5, gb.qt5, [src],
-  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Svg Qt5PrintSupport Qt5X11Extras
+  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Svg Qt5PrintSupport Qt5X11Extras x11
 )
 
 ## GB_COMPONENT_PKG_CONFIG(
@@ -22,7 +22,7 @@ GB_COMPONENT_PKG_CONFIG(
 
 GB_COMPONENT_PKG_CONFIG(
   qt5webkit, QT5WEBKIT, gb.qt5.webkit, [webkit],
-  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Network Qt5Xml Qt5WebKit Qt5WebKitWidgets Qt5PrintSupport
+  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets Qt5Network Qt5Xml Qt5WebKit Qt5WebKitWidgets Qt5PrintSupport x11
 )
 
 pkg-config --atleast-version 5.4.0 Qt5Core
@@ -36,12 +36,12 @@ AM_CONDITIONAL(QT_OLD_OPENGL, [test x$QT_OPENGL_SUPPORT != x])
 
 GB_COMPONENT_PKG_CONFIG(
   qt5opengl, QT5OPENGL, gb.qt5.opengl, [opengl],
-  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets $QT_OPENGL_SUPPORT
+  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets $QT_OPENGL_SUPPORT gl x11
 )
 
 GB_COMPONENT_PKG_CONFIG(
   qt5ext, QT5EXT, gb.qt5.ext, [ext],
-  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets
+  'Qt5Core >= 5.3.0' Qt5Gui Qt5Widgets x11
 )
 
 MOC=`pkg-config --variable=host_bins Qt5Core`/moc

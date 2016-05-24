@@ -109,6 +109,7 @@ Public Sub _UploadFinish()
 
   Dim sPath As String
   Dim sTemp As String
+  Dim sName As String
   
   Progress_Write(1)
   Raise Progress
@@ -119,12 +120,13 @@ Public Sub _UploadFinish()
   Me["file"] = ""
   
   For Each sPath In Request.Files
-    sTemp = GetUploadDir() &/ Me.Name
+    sName = Request["name"]
+    sTemp = GetUploadDir() &/ Me.Name & "." & File.Ext(sName)
     Try Kill sTemp
     Try Move sPath To sTemp
     If Error Then Break
     Me["path"] = sTemp
-    Me["file"] = Request["name"]
+    Me["file"] = sName
     Break
   Next
   

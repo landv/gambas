@@ -3,17 +3,32 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Image{WebImage}"
+Public Const _Properties As String = "*,Border,Image{WebImage}"
 
 Property Image As String
 
 Private $sImage As String
 
+Public Sub _new()
+  
+  Me.Border = False
+  
+End
+
 
 Public Sub _BeforeRender()
   
   If $sImage Then
-    Print "<img"; Me._GetClassId(); " src=\""; Html(Application.Root &/ $sImage); "\"";
+    Print "<img"; Me._GetClassId(); 
+    If $sImage Then
+      Print " src=\""; 
+      If Left($sImage) = "/" Then
+        Print Html(Application.Root &/ "img:" & Me.Name); "?z="; Base64(Format(Now, "hhnnssuuu"))
+      Else
+        Print Html(Application.Root &/ $sImage); 
+      Endif
+      Print "\"";
+    Endif
     Me._RenderStyleSheet()
     Print ">";
   Else
@@ -39,7 +54,14 @@ Private Sub Image_Write(Value As String)
   $sImage = Value
   'If $sImage Then WebForm._Preload($sImage)
   Me._SetProperty("Image", Value)
+  ' Inc $iCpt
+  ' Me._SetProperty("#count", $iCpt)
 
 End
 
 
+' Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+'   
+'   If sProp = "#count" Then $iCpt = vVal
+'   
+' End
