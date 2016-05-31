@@ -855,9 +855,21 @@ End
 Private Function InsertItem(Optional bNoSpace As Boolean) As Boolean
 
   Dim sText As String
+  Dim hClass As CClassInfo
+  Dim sEvent As String
+  Dim hEvent As CSymbolInfo
 
   Try sText = gvwComp.Current.Text
   If Not sText Then Return True
+
+  If gvwComp[gvwComp.Row, 0].Picture = Picture["img/symbol/event.png"] Then
+    If $hForm.IsProc($hEditor[$hEditor.Line].Text) Then
+      hClass = Project.Documentation.Classes[$sEventClass]
+      sEvent = Mid$(sText, InStr(sText, "_") + 1)
+      hEvent = hClass.Symbols[":" & sEvent]
+      sText &= hEvent.GetSignature(False)
+    Endif
+  Endif  
 
   If bNoSpace Then
     If Right(sText) = " " Then sText = Left$(sText, -1)

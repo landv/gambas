@@ -63,10 +63,10 @@ Public Sub Insert(sText As String, Optional bCurrent As Boolean)
     'edtOutput.Goto(edtOutput.Lines.Count, 10000)
   Endif
   
-  trmOutput.Print(sText)
-  
   If Not Action["console"].Value Then Action["console"].Value = True
 
+  trmOutput.Print(sText)
+  
 End
 
 Public Sub ReadConfig()
