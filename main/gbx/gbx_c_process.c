@@ -1045,13 +1045,22 @@ END_PROPERTY
 
 BEGIN_METHOD_VOID(Process_Kill)
 
+	pid_t pid;
+	
 	if (!THIS->running)
 		return;
 
 	if (THIS->process_group)
-		kill(-getpgid(THIS->pid), SIGKILL);
+	{
+		pid = getpgid(THIS->pid);
+		if (pid < 0)
+			return;
+		pid = - pid;
+	}
 	else
-		kill(THIS->pid, SIGKILL);
+		pid = THIS->pid;
+	
+	kill(pid, SIGKILL);
 
 	//CPROCESS_wait_for(THIS);
 
