@@ -232,6 +232,10 @@ P:first-child,UL:first-child,OL:first-child {
   pointer-events: none;
 }
 
+.gw-window-titlebar.gw-deactivated > DIV.gw-window-title {
+  color: gray;
+}
+
 .gw-window-button {
   width: 1.5em;
   height: 1.5em;
@@ -662,4 +666,9 @@ TABLE.gw-calendar > TBODY > TR > TD.gw-date-current {
 
 .gw-image.gw-noborder {
   border: none;
+}
+
+.gw-table-row-selected {
+  background-color: #2980B9 !important;
+  color: white !important;
 }

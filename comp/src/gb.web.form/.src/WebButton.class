@@ -24,6 +24,7 @@ End
 
 Private Sub Text_Write(Value As String)
 
+  If $sText = Value Then Return
   $sText = Value
   Me._SetProperty("Text", Value)
 
@@ -37,6 +38,7 @@ End
 
 Private Sub Image_Write(Value As String)
 
+  If $sImage = Value Then Return
   $sImage = Value
   Me._SetProperty("Image", Value)
 
@@ -56,9 +58,9 @@ Public Sub _Render()
   
   If $sImage Then 
     If $sText Then
-      Print "<div><img class=\"gw-button-image\" src=\""; Html(Application.Root &/ $sImage); "\"";
+      Print "<div><img class=\"gw-button-image\" src=\""; Me._GetImageLink($sImage); "\"";
     Else
-      Print "<img src=\""; Html(Application.Root &/ $sImage); "\"";
+      Print "<img src=\""; Me._GetImageLink($sImage); "\"";
     Endif
     If Me.Width Or If Me.Height Then
       Print " style=\"";

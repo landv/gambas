@@ -59,3 +59,9 @@ Public Sub WebContainer1_Render()
   Endif
 
 End
+
+Public Sub WebButton1_Click()
+
+  Message.Warning("Ceci est une table avec " & WebTable1.Count & " éléments !")
+
+End

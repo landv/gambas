@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None"
+Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None,ShowCheck=True"
 Public Const _DrawWith As String = "GridView"
 Public Const _DefaultSize As String = "24,24"
 Public Const _DefaultEvent As String = "Data"
@@ -19,6 +19,7 @@ Property Read Selection As Integer[]
 Property Display As Integer
 Property ScrollX As Integer
 Property ScrollY As Integer
+Property ShowCheck As Boolean
 'Property Fixed As Boolean
 
 Private $hColumns As _WebTableColumns
@@ -30,6 +31,7 @@ Private $iDisplay As Integer = 100
 Private $iScrollX As Integer
 Private $iScrollY As Integer
 Private $bNoScrolling As Boolean
+Private $bNoCheck As Boolean
 'Private $bFixed As Boolean
 
 
@@ -56,9 +58,15 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
   
   Print "<tbody>"
   For iRow = iStart To iEnd
-    Print "<tr>";
     
-    If $iMode Then
+    Print "<tr";
+    If $iMode And If $bNoCheck Then
+      If IsSelected(iRow) Then Print " class=\"gw-table-row-selected\";"
+      Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
+    Endif
+    Print ">";
+    
+    If $iMode And If Not $bNoCheck Then
       Print "<td>";
       If $iMode = Select.Single Then
         Print "<input type=\"radio\" name=\""; Me.Name; "\""; 
@@ -301,6 +309,15 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       Endif
       Dec Me._NoRefresh
     Endif
+    
+  Else If Left(sProp) = "$" Then
+    
+    iRow = CInt(Mid(sProp, 2))
+    If IsSelected(iRow) Then
+      Try Unselect(iRow)
+    Else
+      Try Select(iRow)
+    Endif
   
   Else If sProp = "#more" Then
     
@@ -400,4 +417,17 @@ Public Sub Clear()
   Me.ScrollX = 0
   Me.ScrollY = 0
   
+End
+
+Private Function ShowCheck_Read() As Boolean
+
+  Return Not $bNoCheck
+
+End
+
+Private Sub ShowCheck_Write(Value As Boolean)
+
+  $bNoCheck = Not Value
+  Me._SetProperty("ShowCheck", Value)
+
 End

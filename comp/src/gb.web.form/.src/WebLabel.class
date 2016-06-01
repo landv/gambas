@@ -22,6 +22,7 @@ End
 
 Private Sub Text_Write(Value As String)
 
+  If $sText = Value Then Return
   $sText = Value
   Me._SetProperty("Text", Value)
 

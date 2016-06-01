@@ -717,6 +717,10 @@ Reset
 m
 
 
+_GetImageLink
+m
+s
+(sImage)s
 #WebControlStyle
 
 C
@@ -1529,7 +1533,7 @@ C
 _Properties
 C
 s
-"*,Border=True,Mode{Select.*}=None"
+"*,Border=True,Mode{Select.*}=None,ShowCheck=True"
 _DrawWith
 C
 s
@@ -1582,18 +1586,22 @@ ScrollY
 p
 i
 
+ShowCheck
+p
+b
+
 _new
 m
 
 
-Select
-m
-
-(Row)i[(Length)i]
 IsSelected
 m
 b
 (Row)i
+Select
+m
+
+(Row)i[(Length)i]
 _Render
 m
 

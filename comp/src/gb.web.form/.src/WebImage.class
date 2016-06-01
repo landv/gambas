@@ -21,13 +21,7 @@ Public Sub _BeforeRender()
   If $sImage Then
     Print "<img"; Me._GetClassId(); 
     If $sImage Then
-      Print " src=\""; 
-      If Left($sImage) = "/" Then
-        Print Html(Application.Root &/ "img:" & Me.Name); "?z="; Base64(Format(Now, "hhnnssuuu"))
-      Else
-        Print Html(Application.Root &/ $sImage); 
-      Endif
-      Print "\"";
+      Print " src=\""; Me._GetImageLink($sImage); "\"";
     Endif
     Me._RenderStyleSheet()
     Print ">";

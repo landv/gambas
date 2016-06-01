@@ -34,8 +34,13 @@ Public Sub OutputTo(hView As TerminalView, hScreen As TerminalScreen, hProcess A
   Endif
   
   If Not String.IsValid(sData) Then
-    $sLeft = sData
-    Return
+    For iPos = Len(sData) DownTo 1
+      If Asc(sData, iPos) >= 192 Then Break 
+    Next
+    If iPos = 0 Then Return
+    $sLeft = Mid$(sData, iPos)
+    sData = Left(sData, iPos - 1)
+    If Not sData Then Return
   Endif
   
   'If Len(sData) >= 4096 Then

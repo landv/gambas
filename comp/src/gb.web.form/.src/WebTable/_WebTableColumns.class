@@ -44,13 +44,14 @@ End
 
 Public Sub _Render()
   
+  Dim hTable As WebTable = GetTable()
   Dim hCol As _WebTableColumn
   Dim iMode As Integer
   
   Print "<thead><tr>";
   
-  iMode = GetTable().Mode
-  If iMode Then
+  iMode = hTable.Mode
+  If iMode And If hTable.ShowCheck Then
     Print "<th><div>";
     If iMode = Select.Multiple Then
       Print "<input type=\"checkbox\"";

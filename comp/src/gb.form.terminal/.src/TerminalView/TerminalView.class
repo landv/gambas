@@ -534,6 +534,14 @@ Public Sub View_MouseWheel()
     
     SendMouseEvent($hFilter.MouseDown)
     
+  Else
+    
+    If Mouse.Forward Then
+      $hScroll.Value -= 3
+    Else
+      $hScroll.Value += 3
+    Endif
+    
   Endif
 
 End
@@ -558,8 +566,6 @@ Public Sub View_DblClick()
     SendMouseEvent($hFilter.MouseDown)
     Return
   Endif
-  
-  
   
 End
 

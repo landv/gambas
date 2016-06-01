@@ -38,13 +38,18 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   Dim hChild As WebControl
   
   If sProp = "#progress" Then
+    
+    If Me.Progress = 1 Then Return
+    
     If Me.Progress = 0 Then
       For Each hChild In Me.Children
         hChild.Enabled = False
       Next
     Endif
+    
     Me.Progress = vValue
     Raise Progress
+    
   Endif
   
 End

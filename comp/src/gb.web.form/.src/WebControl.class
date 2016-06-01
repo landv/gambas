@@ -292,6 +292,8 @@ Public Sub _RenderStyleSheet()
     
   Else
   
+    If Me Is WebContainer Then _AddStyleSheet("position:relative;")
+  
     If $bExpand Then 
       _AddStyleSheet("flex-grow:1;")
     Else
@@ -829,4 +831,14 @@ Private Sub Tooltip_Write(Value As String)
   $sTooltip = Value
   Me._SetProperty("Tooltip", Value)
 
+End
+
+Public Sub _GetImageLink(sImage As String) As String
+
+  If Left(sImage) = "/" Then
+    Return Application.Root &/ "img:" & Me.Name & "?z=" & Base64(Format(Now, "hhnnssuuu"))
+  Else
+    Return Application.Root &/ sImage
+  Endif
+  
 End

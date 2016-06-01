@@ -53,6 +53,7 @@ gw = {
   debug: false,
   loaded: {},
   uploads: {},
+  autocompletion: [],
   
   log: function(msg)
   {
@@ -325,8 +326,9 @@ gw = {
       pos = gw.getPos($(control));
       //console.log(pos);
       
-      $(id).style.left = pos.left + 'px';
-      $(id).style.top = pos.bottom + 'px';
+      /*$(id).style.left = pos.left + 'px';
+      $(id).style.top = pos.bottom + 'px';*/
+      $(id).style.transform = 'translate(' + pos.left + 'px,' + pos.bottom + 'px)';
       
       gw.window.updateTitleBars();
       gw.window.refresh();
@@ -436,8 +438,7 @@ gw = {
     
     center: function(id)
     {
-      $(id).style.left = ((window.innerWidth - $(id).offsetWidth) / 2 + 0) + 'px';
-      $(id).style.top = ((window.innerHeight - $(id).offsetHeight) / 2 + 0) + 'px';
+      $(id).style.transform = 'translate(' + ((window.innerWidth - $(id).offsetWidth) / 2 | 0) + 'px,' + ((window.innerHeight - $(id).offsetHeight) / 2 | 0) + 'px)';
       gw.window.updateGeometry(id);
     },
     
@@ -446,17 +447,17 @@ gw = {
       var geom = $(id).gw_save_geometry;
       if (geom != undefined)
       {
-        $(id).style.left = geom[0];
-        $(id).style.top = geom[1];
-        $(id).style.width = geom[2];
-        $(id).style.height = geom[3];
+        //$(id).style.left = geom[0];
+        //$(id).style.top = geom[1];
+        $(id).style.transform = geom[0]
+        $(id).style.width = geom[1];
+        $(id).style.height = geom[2];
         $(id).gw_save_geometry = undefined;
       }
       else
       {
-        $(id).gw_save_geometry = [$(id).style.left, $(id).style.top, $(id).style.width, $(id).style.height];
-        $(id).style.left = '0';
-        $(id).style.top = '0';
+        $(id).gw_save_geometry = [$(id).style.transform, $(id).style.width, $(id).style.height];
+        $(id).style.transform = '';
         $(id).style.width = '100%';
         $(id).style.height = '100%';
       }
@@ -624,6 +625,9 @@ gw = {
         if (c.onBottomEdge)
           elt.style.height = Math.max(c.h + c.cy - e.clientY, minHeight) + 'px';
     
+        x = c.x;
+        y = c.y;
+    
         if (c.onLeftEdge) 
         {
           x = c.x + c.cx - e.clientX;
@@ -631,7 +635,9 @@ gw = {
           if (w >= minWidth) 
           {
             elt.style.width = w + 'px';
-            elt.style.left = x + 'px'; 
+            //elt.style.left = x + 'px'; 
+            elt.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+            //c.x = x;
           }
         }
     
@@ -642,7 +648,8 @@ gw = {
           if (h >= minHeight) 
           {
             elt.style.height = h + 'px';
-            elt.style.top = y + 'px'; 
+            //elt.style.top = y + 'px'; 
+            elt.style.transform = 'translate(' + x + 'px,' + y + 'px)';
           }
         }
     
@@ -651,8 +658,9 @@ gw = {
     
       if (c && c.isMoving && e)
       {
-        elt.style.left = (Math.max(0, c.x + c.cx - e.clientX)) + 'px';
-        elt.style.top = (Math.max(0, c.y + c.cy - e.clientY)) + 'px';
+        /*elt.style.left = (Math.max(0, c.x + c.cx - e.clientX)) + 'px';
+        elt.style.top = (Math.max(0, c.y + c.cy - e.clientY)) + 'px';*/
+        elt.style.transform = 'translate(' + (Math.max(0, c.x + c.cx - e.clientX)) + 'px,' + (Math.max(0, c.y + c.cy - e.clientY)) + 'px)';
         return;
       }
     
@@ -825,5 +833,33 @@ gw = {
       if (gw.uploads[id])
         gw.uploads[id].abort();
     }
+  },
+  
+  autocomplete: function(id)
+  {
+    new AutoComplete({
+      selector: $(id),
+      source: function(term, response) {
+        var xhr = $(id).gw_xhr;
+        if (xhr)
+        {
+          try { xhr.abort(); } catch(e) {}
+        }
+        
+        $(id).gw_xhr = xhr = new XMLHttpRequest();
+        
+        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'autocomplete', null])), true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4)
+          {
+            gw.autocompletion = [];
+            gw.answer(xhr);
+            response(gw.autocompletion);
+          }
+        };
+        xhr_autocomplete.send();
+      }
+    });
   }
 }
+

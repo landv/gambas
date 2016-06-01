@@ -286,6 +286,7 @@ Static Private Sub RenderJavascript(Optional sFile As String)
   
   If sFile = "lib.js" Then Print "$root = "; JS(Application.Root); ";"
   Print File.Load(sFile)
+  If sFile = "lib.js" Then Print File.Load("ac.js")
   
   Response.End
   
