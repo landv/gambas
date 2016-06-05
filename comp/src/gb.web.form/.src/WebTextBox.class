@@ -8,6 +8,7 @@ Public Const _DrawWith As String = "TextBox"
 Public Const _DefaultSize As String = "24,4"
 
 Event Change
+Event Completion(Text As String)
 
 Property Text As String
 Property ReadOnly As Boolean
@@ -40,6 +41,10 @@ Public Sub _BeforeRender()
   If $sText Then Print " value=\""; Html($sText); "\"";
   Print ">"
   
+  If Object.CanRaise(Me, "Completion") Then
+    WebForm._AddJavascript("gw.autocomplete(" & JS(Me.Name) & ");")
+  Endif
+  
 End
 
 
@@ -69,3 +74,8 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
 End
 
+Public Sub CompleteWith(CompletionList As String[])
+  
+  WebForm._AddReply("gw.autocompletion = " & JSON.Encode(CompletionList) & ";")
+  
+End

@@ -57,23 +57,22 @@ End
 Public Sub _Render()
   
   If $sImage Then 
-    If $sText Then
-      Print "<div><img class=\"gw-button-image\" src=\""; Me._GetImageLink($sImage); "\"";
+    Print "<div><img src=\""; Me._GetImageLink($sImage); "\"";
+    If $sText Then Print " class=\"gw-button-image\";"
+    If Me.Height Then
+      Print " style=\"max-height:"; Me.Height; "\"";
     Else
-      Print "<img src=\""; Me._GetImageLink($sImage); "\"";
+      Print " style=\"height:1em;\"";
     Endif
-    If Me.Width Or If Me.Height Then
-      Print " style=\"";
-      If Me.Width Then Print "width:"; Me.Width; ";"
-      If Me.Height Then Print "height:"; Me.Height; ";"
-      Print "\"";
-    Endif
+    ' If Me.Width Or If Me.Height Then
+    '   Print " style=\"";
+    '   If Me.Width Then Print "max-width:"; Me.Width; ";"
+    '   If Me.Height Then Print "max-height:"; Me.Height; ";"
+    '   Print "\"";
+    ' Endif
     Print ">";
   Endif
-  If $sText Then
-    Print "<span>"; Html($sText); "</span>";
-    If $sImage Then Print "</div>";
-  Endif
+  If $sText Then Print "<span>"; Html($sText); "</span>";
   
 End
 

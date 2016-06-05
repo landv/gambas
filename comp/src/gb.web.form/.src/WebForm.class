@@ -629,3 +629,13 @@ Catch
   Response.End
 
 End
+
+Public Sub Reload()
+  
+  If Me = _Current Then
+    _AddReply("location.reload(true);")
+  Else
+    Me.Refresh
+  Endif
+  
+End

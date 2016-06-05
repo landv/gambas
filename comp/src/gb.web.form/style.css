@@ -51,22 +51,19 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-button-image {
   margin-right: 0.5em;
-  height: 1.1em;
 }
 
 .gw-button > DIV {
+  vertical-align: middle;
+  position: relative;
   display: inline-flex;
   justify-content: center;
+  align-items: center;
   flex-flow: row;
-}
-
-.gw-button > DIV > IMG {
-  vertical-align: middle;
 }
 
 .gw-button > DIV > SPAN {
   display: inline-block;
-  vertical-align: middle;
 }
 
 .gw-tab-header {
@@ -671,4 +668,40 @@ TABLE.gw-calendar > TBODY > TR > TD.gw-date-current {
 .gw-table-row-selected {
   background-color: #2980B9 !important;
   color: white !important;
+}
+
+.gw-ac-suggestions {
+  text-align: left;
+  cursor: default; 
+  border: 1px solid #C0C0C0; 
+  border-top: 0; 
+  background: white; 
+  /*box-shadow: -1px 1px 3px rgba(0,0,0,.1);*/
+
+  /* core styles should not be changed */
+  position: absolute; 
+  display: none; 
+  z-index: 9999; 
+  max-height: 12em;
+  overflow: hidden; 
+  overflow-y: auto; 
+  box-sizing: border-box;
+}
+
+.gw-ac-suggestion { 
+  position: relative; 
+  padding: 0 0.5em;
+  line-height: 1.5em;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+}
+
+.gw-ac-suggestion b { 
+  font-weight: normal; 
+  color: #2980B9; 
+}
+
+.gw-ac-suggestion.selected { 
+  background: #E0E0E0; 
 }

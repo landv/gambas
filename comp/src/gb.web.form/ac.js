@@ -41,7 +41,7 @@ var AutoComplete = (function(){
                 // escape special characters
                 search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                 var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + item.replace(re, "<b>$1</b>") + '</div>';
+                return '<div class="gw-ac-suggestion" data-val="' + item + '">' + item.replace(re, "<b>$1</b>") + '</div>';
             },
             onSelect: function(e, term, item){}
         };
@@ -54,7 +54,7 @@ var AutoComplete = (function(){
 
             // create suggestions container "sc"
             that.sc = document.createElement('div');
-            that.sc.className = 'autocomplete-suggestions '+o.menuClass;
+            that.sc.className = 'gw-ac-suggestions '+o.menuClass;
 
             that.autocompleteAttr = that.getAttribute('autocomplete');
             that.setAttribute('autocomplete', 'off');
@@ -69,7 +69,7 @@ var AutoComplete = (function(){
                 if (!resize) {
                     that.sc.style.display = 'block';
                     if (!that.sc.maxHeight) { that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight); }
-                    if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector('.autocomplete-suggestion').offsetHeight;
+                    if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector('.gw-ac-suggestion').offsetHeight;
                     if (that.sc.suggestionHeight)
                         if (!next) that.sc.scrollTop = 0;
                         else {
@@ -84,19 +84,19 @@ var AutoComplete = (function(){
             addEvent(window, 'resize', that.updateSC);
             document.body.appendChild(that.sc);
 
-            live('autocomplete-suggestion', 'mouseleave', function(e){
-                var sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+            live('gw-ac-suggestion', 'mouseleave', function(e){
+                var sel = that.sc.querySelector('.gw-ac-suggestion.selected');
                 if (sel) setTimeout(function(){ sel.className = sel.className.replace('selected', ''); }, 20);
             }, that.sc);
 
-            live('autocomplete-suggestion', 'mouseover', function(e){
-                var sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+            live('gw-ac-suggestion', 'mouseover', function(e){
+                var sel = that.sc.querySelector('.gw-ac-suggestion.selected');
                 if (sel) sel.className = sel.className.replace('selected', '');
                 this.className += ' selected';
             }, that.sc);
 
-            live('autocomplete-suggestion', 'mousedown', function(e){
-                if (hasClass(this, 'autocomplete-suggestion')) { // else outside click
+            live('gw-ac-suggestion', 'mousedown', function(e){
+                if (hasClass(this, 'gw-ac-suggestion')) { // else outside click
                     var v = this.getAttribute('data-val');
                     that.value = v;
                     o.onSelect(e, v, this);
@@ -105,7 +105,7 @@ var AutoComplete = (function(){
             }, that.sc);
 
             that.blurHandler = function(){
-                try { var over_sb = document.querySelector('.autocomplete-suggestions:hover'); } catch(e){ var over_sb = 0; }
+                try { var over_sb = document.querySelector('.gw-ac-suggestions:hover'); } catch(e){ var over_sb = 0; }
                 if (!over_sb) {
                     that.last_val = that.value;
                     that.sc.style.display = 'none';
@@ -131,9 +131,9 @@ var AutoComplete = (function(){
                 var key = window.event ? e.keyCode : e.which;
                 // down (40), up (38)
                 if ((key == 40 || key == 38) && that.sc.innerHTML) {
-                    var next, sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+                    var next, sel = that.sc.querySelector('.gw-ac-suggestion.selected');
                     if (!sel) {
-                        next = (key == 40) ? that.sc.querySelector('.autocomplete-suggestion') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
+                        next = (key == 40) ? that.sc.querySelector('.gw-ac-suggestion') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
                         next.className += ' selected';
                         that.value = next.getAttribute('data-val');
                     } else {
@@ -152,7 +152,7 @@ var AutoComplete = (function(){
                 else if (key == 27) { that.value = that.last_val; that.sc.style.display = 'none'; }
                 // enter
                 else if (key == 13 || key == 9) {
-                    var sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+                    var sel = that.sc.querySelector('.gw-ac-suggestion.selected');
                     if (sel && that.sc.style.display != 'none') { 
                       o.onSelect(e, sel.getAttribute('data-val'), sel); setTimeout(function(){ that.sc.style.display = 'none'; }, 20); 
                       e.preventDefault();

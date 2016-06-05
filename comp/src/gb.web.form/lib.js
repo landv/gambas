@@ -834,11 +834,17 @@ gw = {
         gw.uploads[id].abort();
     }
   },
-  
+
   autocomplete: function(id)
   {
     new AutoComplete({
       selector: $(id),
+      cache: false,
+      /*source: function(term, response) 
+        {
+          gw.raise(id, 'completion', [term]);
+          response($(id).gw_completion);
+        }*/
       source: function(term, response) {
         var xhr = $(id).gw_xhr;
         if (xhr)
@@ -848,7 +854,7 @@ gw = {
         
         $(id).gw_xhr = xhr = new XMLHttpRequest();
         
-        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'autocomplete', null])), true);
+        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(['raise', id, 'completion', [term]])), true);
         xhr.onreadystatechange = function() {
           if (xhr.readyState == 4)
           {
@@ -857,7 +863,7 @@ gw = {
             response(gw.autocompletion);
           }
         };
-        xhr_autocomplete.send();
+        xhr.send();
       }
     });
   }
