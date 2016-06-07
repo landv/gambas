@@ -562,7 +562,7 @@ void TRANS_code(void)
 			if ((i == FUNC_INIT_DYNAMIC) && (JOB->form != NULL))
 			{
 				//CODE_event(FALSE);
-				trans_call("$load", 0);
+				trans_call("@load", 0);
 				//CODE_event(TRUE);
 			}
 
