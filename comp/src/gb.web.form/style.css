@@ -122,6 +122,14 @@ P:first-child,UL:first-child,OL:first-child {
   vertical-align: middle;
 }
 
+.gw-checkbox.gw-disabled > .gw-checkbox-label {
+  opacity: 0.5;
+}
+
+.gw-radiobutton.gw-disabled > .gw-checkbox-label {
+  opacity: 0.5;
+}
+
 .gw-checkbox-toggle,.gw-radiobutton-toggle {
   vertical-align: middle;
   margin: 0;
@@ -271,6 +279,10 @@ P:first-child,UL:first-child,OL:first-child {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.gw-label.gw-disabled {
+  opacity: 0.5;
 }
 
 #gw-modal {
@@ -453,6 +465,7 @@ P:first-child,UL:first-child,OL:first-child {
 }
 
 .gw-spinbox {
+  min-height: 2rem;
   padding: 0 0.25em;
 }
 

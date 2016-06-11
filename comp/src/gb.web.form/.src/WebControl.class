@@ -253,6 +253,7 @@ Public Sub _GetClassId(Optional sClass As String) As String
   
   If Not sClass Then sClass = "gw-" & LCase(Mid$(Object.Type(Me), 4))
   If $bNoBorder Then sClass &= " gw-noborder"
+  If Not Me.Enabled Then sClass &= " gw-disabled"
   If $sClass Then sClass &= " " & $sClass
   sResult = " class=\"" & sClass & "\" id=\"" & $sName & "\""
   If $sTooltip Then sResult &= " title=\"" & Replace($sTooltip, Chr$(34), "&quot;") & "\""
@@ -630,7 +631,9 @@ End
 
 Private Function Enabled_Read() As Boolean
 
-  Return Not $bDisabled
+  If $bDisabled Then Return
+  If $iParentId = 0 Then Return True
+  Return Parent_Read().Enabled
 
 End
 
