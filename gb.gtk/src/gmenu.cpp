@@ -151,7 +151,11 @@ static gboolean cb_check_draw(GtkWidget *wid, cairo_t *cr, gMenu *menu)
 	state = gtk_widget_get_state_flags(wid);
 
 	if (menu->checked())
-		state = (GtkStateFlags)((int)state | GTK_STATE_FLAG_ACTIVE | GTK_STATE_FLAG_CHECKED);
+		state = (GtkStateFlags)((int)state | GTK_STATE_FLAG_ACTIVE
+#if GTK_CHECK_VERSION(3, 14, 0)
+		| GTK_STATE_FLAG_CHECKED
+#endif
+		);
 
 	gtk_widget_set_state_flags(item, state, true);
 
