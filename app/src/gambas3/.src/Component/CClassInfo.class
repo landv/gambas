@@ -10,6 +10,7 @@ Public DefaultEvent As String
 Public Events As String[]
 Public PropertyList As String[]
 Public Properties As Collection
+Public Control As Boolean
 Public VirtualControl As Boolean
 Public DrawWith As String
 Public DefaultWidth As Short
@@ -132,6 +133,8 @@ Public Sub InitControl()
   Dim bTranslate As Boolean
 
   'DEBUG Component;; Name
+  
+  Control = True
 
   hSym = Symbols["_Family"]
   If hSym Then Family = hSym.Value
@@ -1018,7 +1021,8 @@ End
 Public Sub ConstructorNeedParent() As Boolean
 
   Dim hClass As CClassInfo
-  
+
+  If Not Control Then Return False
   If Not VirtualControl Then Return True
   If Not Parent Then Return False
   
