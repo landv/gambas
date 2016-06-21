@@ -2688,6 +2688,8 @@ void CWINDOW_activate(CWIDGET *ob)
 		GB.Raise(active, EVENT_Activate, 0);
 
 	CWINDOW_Active = active;
+	
+	CWIDGET_check_hovered();
 }
 
 void CWINDOW_set_default_button(CWINDOW *win, QPushButton *button, bool on)

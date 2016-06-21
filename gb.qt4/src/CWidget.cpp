@@ -74,6 +74,7 @@ static QMap<int, int> _x11_to_qt_keycode;
 
 CWIDGET *CWIDGET_active_control = 0;
 CWIDGET *CWIDGET_previous_control = 0;
+CWIDGET *CWIDGET_hovered = 0;
 
 int CCONTROL_last_event_type = 0;
 
@@ -348,9 +349,14 @@ bool CWIDGET_container_for(void *_object, void *container_for)
 
 static void CWIDGET_enter(void *_object)
 {
-	//qDebug("CWIDGET_enter: %p %s", THIS, THIS->name);
+	CWIDGET *parent = (CWIDGET *)CWIDGET_get_parent(THIS);
+	
+	if (parent && !parent->flag.inside)
+		CWIDGET_enter(parent);
+	
 	if (!THIS->flag.inside)
 	{
+		//qDebug("CWIDGET_enter: %p %s", THIS, THIS->name);
 #ifdef QT5
 		_last_entered = THIS;
 #endif
@@ -365,9 +371,9 @@ static void CWIDGET_leave(void *_object)
 		if (_last_entered == THIS)
 			_last_entered = (CWIDGET *)CWIDGET_get_parent((void *)_last_entered);
 #endif
-	//qDebug("CWIDGET_leave: %p %s", THIS, THIS->name);
 	if (THIS->flag.inside)
 	{
+		//qDebug("CWIDGET_leave: %p %s", THIS, THIS->name);
 		THIS->flag.inside = false;
 		GB.Raise(THIS, EVENT_Leave, 0);
 	}
@@ -488,9 +494,14 @@ static void insert_enter_leave_event(CWIDGET *control, bool in)
 static bool _post_check_hovered = false;
 static CWIDGET *_post_check_hovered_window = NULL;
 
-static void post_check_hovered(intptr_t)
+static void post_check_hovered(intptr_t toplevel)
 {
-	CWIDGET *_object = _post_check_hovered_window;
+	void *_object;
+	
+	if (toplevel)
+		_object = (void *)toplevel;
+	else
+		_object = CWINDOW_Active;
 	
 	if (THIS && WIDGET)
 	{
@@ -503,6 +514,11 @@ static void post_check_hovered(intptr_t)
 	}
 	
 	_post_check_hovered = false;
+}
+
+void CWIDGET_check_hovered()
+{
+	post_check_hovered(0);
 }
 
 void CWIDGET_destroy(CWIDGET *_object)
@@ -2293,12 +2309,10 @@ void CWidget::destroy()
 	if (!_post_check_hovered)
 	{
 		CWIDGET *top = (CWIDGET *)CWidget::getTopLevel(THIS);
-		if (top != THIS)
-		{
-			_post_check_hovered = true;
-			_post_check_hovered_window = top;
-			GB.Post((void (*)())post_check_hovered, (intptr_t)NULL);
-		}
+		if (top == THIS)
+			top = NULL;
+		_post_check_hovered = true;
+		GB.Post((void (*)())post_check_hovered, (intptr_t)top);
 	}
 	
 	CLEAN_POINTER(_hovered);
@@ -2306,6 +2320,7 @@ void CWidget::destroy()
 	CLEAN_POINTER(_post_check_hovered_window);
 	CLEAN_POINTER(CWIDGET_active_control);
 	CLEAN_POINTER(CWIDGET_previous_control);
+	CLEAN_POINTER(CWIDGET_hovered);
 	CLEAN_POINTER(_old_active_control);
 
 	if (THIS_EXT)
@@ -2519,7 +2534,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		QWidget *popup = qApp->activePopupWidget();
 #endif
 		
-		//qDebug("enter %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
+		//qDebug("enter %p %s real = %d inside = %d", widget, control->name, real, control->flag.inside);
 		
 		if (real)
 		{
@@ -2542,7 +2557,7 @@ bool CWidget::eventFilter(QObject *widget, QEvent *event)
 		QWidget *popup = qApp->activePopupWidget();
 #endif
 		
-		//qDebug("leave %s real = %d popup = %p inside = %d", control->name, real, popup, control->flag.inside);
+		//qDebug("leave %p %s real = %d inside = %d", widget, control->name, real, control->flag.inside);
 		
 		if (real)
 		{

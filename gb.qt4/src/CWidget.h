@@ -113,6 +113,7 @@ enum {
 extern GB_DESC CControlDesc[];
 extern CWIDGET *CWIDGET_active_control;
 extern CWIDGET *CWIDGET_previous_control;
+extern CWIDGET *CWIDGET_hovered;
 
 extern int CCONTROL_last_event_type;
 
@@ -229,7 +230,7 @@ bool CWIDGET_get_allow_focus(void *_object);
 void CWIDGET_set_allow_focus(void *_object, bool f);
 bool CWIDGET_is_design(CWIDGET *_object);
 void CWIDGET_check_visibility(CWIDGET *_object);
-
+void CWIDGET_check_hovered();
 
 #ifndef DO_NOT_DECLARE_EVENTS
 #ifndef __CWIDGET_CPP
