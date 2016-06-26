@@ -11,3 +11,13 @@ Private Sub GetTitle() As String
   Endif
 
 End
+
+Private Sub GetJavascript() As String
+  
+  Dim aFiles As String[]
+  
+  aFiles = Form._GetJavascriptFiles()
+  If aFiles And If aFiles.Count Then Return ":" & aFiles.Join(":")
+  
+  
+End

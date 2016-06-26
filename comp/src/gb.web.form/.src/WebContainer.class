@@ -64,6 +64,8 @@ Public Sub _Remove(hChild As WebControl)
   
   $aChildren.Remove($aChildren.Find(hChild.Name))
   
+  Inc WebForm._DisableRefresh
+  
   If hChild._Extra Then
     
     For iPos = 0 To $aExtraChildren.Max
@@ -78,6 +80,12 @@ Public Sub _Remove(hChild As WebControl)
   Endif
   
   Me._SetProperty("#children", $aChildren)
+  
+  Dec WebForm._DisableRefresh
+  
+  If WebForm._InExec And If WebForm._DisableRefresh = 0 Then
+    WebForm._AddJavascript("gw.removeElement(" & JS(hChild.Name) & ");")
+  Endif
   
 End
 
@@ -156,13 +164,13 @@ Public Sub _RenderStyleSheet()
       
     Endif
     
-    If $bMargin Then Me._AddStyleSheet("padding:0.5em;")
+    If $bMargin Then Me._AddStyleSheet("padding:0.5rem;")
     
     If $bIndent Then
       If $bMargin Then
-        Me._AddStyleSheet("padding-left:1em;")
+        Me._AddStyleSheet("padding-left:1rem;")
       Else
-        Me._AddStyleSheet("padding-left:0.5em;")
+        Me._AddStyleSheet("padding-left:0.5rem;")
       Endif
     Endif
     
@@ -369,7 +377,9 @@ End
 
 Public Sub Delete()
 
+  Inc WebForm._DisableRefresh
   DeleteChildren
+  Dec WebForm._DisableRefresh
   Super.Delete
   
 End

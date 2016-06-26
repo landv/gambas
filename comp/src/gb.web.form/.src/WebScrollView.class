@@ -4,28 +4,76 @@ Export
 Inherits WebContainer
 
 Public Const _Similar As String = "WebContainer"
+Public Const _Properties As String = "*,ScrollBar{Scroll.*}=Both"
+
+Event Scroll
 
 Property ScrollX As Integer
 Property ScrollY As Integer
+Property ScrollBar As Integer
 
 Private $hCont As WebContainer
 Private $iScrollX As Integer
 Private $iScrollY As Integer
+Private $iScroll As Integer = Scroll.Both
+
+Private $hHeaderH As WebScrollView
+Private $hHeaderV As WebScrollView
 
 Public Sub _new()
   
-  $hCont = New WebContainer(Me)
+  $hCont = New WebContainer(Me) 'As Me.Name & "-contents"
   Me._Container = $hCont
   
 End
 
 Public Sub _Render()
   
-  Print "<div onscroll=\"gw.table.onScroll("; JS(Me.Name); ",false)\">";
-  $hCont._Render()
-  Print "</div>"
+  Dim sHeaderH As String
+  Dim sHeaderV As String
   
-  WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ");")
+  Print "<div onscroll=\"gw.table.onScroll("; JS(Me.Name); ",false";
+  If Object.CanRaise(Me, "Scroll") Then Print ",100";
+  Print ")\"";
+  $hCont._StartStyleSheet
+  $hCont._RenderStyleSheet
+  Select Case $iScroll
+    Case Scroll.None
+      $hCont._AddStyleSheet("overflow:hidden")
+      'Print " style=\"overflow:hidden;\"";
+    Case Scroll.Horizontal
+      $hCont._AddStyleSheet("overflow-y:hidden")
+      'Print " style=\"overflow-y:hidden;\"";
+    Case Scroll.Vertical
+      $hCont._AddStyleSheet("overflow-x:hidden")
+      'Print " style=\"overflow-x:hidden;\"";
+  End Select
+  $hCont._EndStyleSheet
+  'Print ">";
+  'Print "<div";
+  $hCont._RenderStyleSheet
+  Print ">";
+  $hCont._Render()
+  'Print "</div>";
+  Print "</div>";
+  
+  WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & "); // _Render")
+  
+  If $hHeaderH Then
+    sHeaderH = JS($hHeaderH.Name)
+  Else
+    sHeaderH = "undefined"
+  Endif
+  
+  If $hHeaderV Then
+    sHeaderV = JS($hHeaderV.Name)
+  Else
+    sHeaderV = "undefined"
+  Endif
+  
+  If $hHeaderH Or If $hHeaderV Then
+    WebForm._AddJavascript("gw.scrollview.setHeaders(" & JS(Me.Name) & "," & sHeaderH & "," & sHeaderV & ");")
+  Endif
 
 End
 
@@ -38,8 +86,14 @@ End
 
 Private Sub ScrollX_Write(Value As Integer)
 
+  If $iScrollX = Value Then Return
   $iScrollX = Value
+
+  Inc Me._NoRefresh
   Me._SetProperty("ScrollX", Value)
+  Dec Me._NoRefresh
+
+  If Me._CanRefresh() Then WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & "); // _ScrollX")
 
 End
 
@@ -51,9 +105,26 @@ End
 
 Private Sub ScrollY_Write(Value As Integer)
 
+  If $iScrollY = Value Then Return
   $iScrollY = Value
-  Me._SetProperty("ScrollY", Value)
 
+  Inc Me._NoRefresh
+  Me._SetProperty("ScrollY", Value)
+  Dec Me._NoRefresh
+
+  If Me._CanRefresh() Then WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & "); // _ScrollY")
+
+End
+
+Public Sub _InitSpecialProperty(sProp As String, vVal As Variant)
+  
+  Select Case sProp
+    Case "#headerh"
+      $hHeaderH = vVal
+    Case "#headerv"
+      $hHeaderV = vVal
+  End Select
+  
 End
 
 Public Sub _UpdateProperty(sProp As String, vValue As Variant)
@@ -63,7 +134,32 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     Me.ScrollX = vValue[0]
     Me.ScrollY = vValue[1]
     Dec Me._NoRefresh
+    Raise Scroll
   Endif
   
 End
 
+
+Private Function ScrollBar_Read() As Integer
+
+  Return $iScroll
+
+End
+
+Private Sub ScrollBar_Write(Value As Integer)
+
+  If Value < 0 Or If Value > 3 Then Error.Raise("Bad argument")
+  $iScroll = Value
+  Me._SetProperty("ScrollBar", Value)
+
+End
+
+Public Sub SetHeaders(Horizontal As WebScrollView, Vertical As WebScrollView)
+  
+  $hHeaderH = Horizontal
+  $hHeaderV = Vertical  
+  
+  Me._SetProperty("#headerh", Horizontal)
+  Me._SetProperty("#headerv", Vertical)
+  
+End

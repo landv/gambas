@@ -200,8 +200,14 @@ P:first-child,UL:first-child,OL:first-child {
   border: none;
 }
 
+.gw-window-container {
+  position: static !important;
+}
+
 .gw-window {
   position: fixed;
+  top: 0;
+  left: 0;
   border: solid 1px white;
   box-shadow: 0 0 0.5em black;
   border-radius: 0.5em;
@@ -533,7 +539,7 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-table > DIV > TABLE > TBODY > TR > TD {
   /*border-right: solid 1px #C0C0C0;*/
-  padding: 0.25em 0.5em;
+  padding: 0 0.5em;
   vertical-align: top;
 }
 
@@ -567,11 +573,10 @@ P:first-child,UL:first-child,OL:first-child {
 
 .gw-scrollview {
   position: relative;
-  border: solid #C0C0C0 1px;
 }
 
 .gw-scrollview > DIV {
-  position: absolute;
+  position: absolute !important;
   overflow: auto;
   top: 0;
   left: 0;

@@ -326,6 +326,7 @@ End
 
 Public Sub Close()
   
+  WebForm._AddReply("gw.window.close(" & JS(Me.Name) & ");")
   If IsPopup() Then PopupControl_Read().SetFocus
   
 End

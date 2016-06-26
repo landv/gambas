@@ -198,8 +198,14 @@ End
 
 Private Function Parent_Read() As WebContainer
 
+  Dim hParent As WebContainer
+  
   If $iParentId = 0 Then Return
-  Return $cFromId[$iParentId]
+  
+  hParent = $cFromId[$iParentId]
+'  If hParent.Parent And If hParent.Parent._Container = hParent Then hParent = hParent.Parent
+  
+  Return hParent
 
 End
 
@@ -306,13 +312,13 @@ Public Sub _RenderStyleSheet()
       Select Case hParent.Arrangement
         Case Arrange.Vertical
           'If bInline Then _AddStyleSheet("display:block;")
-          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5em;")
+          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-top:0.5rem;")
         Case Arrange.Horizontal
           '_AddStyleSheet("display: block;")
-          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-left:0.5em;")
+          If hParent.Spacing And If Not hParent._IsFirstVisibleChild(Me) Then _AddStyleSheet("margin-left:0.5rem;")
         Case Arrange.Column, Arrange.Row
           _AddStyleSheet("display:inline-block;")
-          If hParent.Spacing Then _AddStyleSheet("margin-right:0.5em;margin-bottom:0.5em;")
+          If hParent.Spacing Then _AddStyleSheet("margin-right:0.5rem;margin-bottom:0.5rem;")
       End Select
     Endif
     
@@ -339,6 +345,12 @@ End
 Public Sub _AddStyleSheet(sStyle As String)
   
   $aStyleSheet.Add(sStyle)
+  
+End
+
+Public Sub _RemoveStyleSheet(sStyle As String)
+  
+  Try $aStyleSheet.Add($aStyleSheet.Find(sStyle))
   
 End
 
@@ -466,6 +478,16 @@ Public Sub IsHidden() As Boolean
   
 End
 
+Public Sub _CanRefresh() As Boolean
+  
+  If Not Me.Form._Loaded Then Return
+  If Not WebForm._InExec Then Return
+  If WebForm._DisableRefresh Then Return
+  If _NoRefresh Then Return
+  Return True
+  
+End
+
 
 Public Sub Refresh()
   
@@ -497,13 +519,13 @@ Public Sub _RefreshReply() As Boolean
     Output To Default
     
     'WebForm._AddRefresh("$(" & JS(Me.Name) & ").outerHTML = " & JS(sResult) & ";")
-    Print "$(" & JS(Me.Name) & ").";
+    
     If _Naked Then
-      Print "innerHTML";
+      Print "gw.setInnerHtml("; JS(Me.Name); ","; JS(sResult); ");"
     Else
-      Print "outerHTML";
+      Print "gw.setOuterHtml("; JS(Me.Name); ","; JS(sResult); ");"
+      'Print "$("; JS(Me.Name); ").outerHTML = "; JS(sResult); ";"
     Endif
-    Print " = "; JS(sResult) & ";"
     
     _Refresh = False
     Return True

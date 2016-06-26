@@ -41,6 +41,8 @@ Static Public _HasRefresh As Boolean
 Public _Loaded As Boolean
 Public _Window As Integer
 
+Private $aJavascriptFiles As String[]
+
 Private $sTitle As String
 Private $bResizable As Boolean
 Private $sX As String
@@ -63,7 +65,6 @@ Static Public Sub Main()
   Dim sFile As String
   
   System.Language = Request.Language
-  'Debug "----";; Application.Request
   
   sPath = Mid$(Request.Path, 2)
   
@@ -181,12 +182,14 @@ Public Sub _new()
   $hWindowContainer = New WebContainer(Me)
   $hWindowContainer.Ignore = True
   $hWindowContainer._Naked = True
+  $hWindowContainer.Class = "gw-window-container"
   
 End
 
 Public Sub _ready()
   
   Me._InitProperties
+  $hWindowContainer.Raise
   _Loaded = True
 
 End
@@ -284,9 +287,17 @@ Static Private Sub RenderJavascript(Optional sFile As String)
   Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
   
-  If sFile = "lib.js" Then Print "$root = "; JS(Application.Root); ";"
-  Print File.Load(sFile)
-  If sFile = "lib.js" Then Print File.Load("ac.js")
+  If sFile = "lib.js" Then 
+    Print "$root = "; JS(Application.Root); ";"
+    Print File.Load(sFile)
+    Print File.Load("ac.js")
+  Else
+    If Exist(sFile) Then
+      Print File.Load(sFile)
+    Else If Exist(".." &/ sFile) Then
+      Print File.Load(".." &/ sFile)
+    Endif
+  Endif
   
   Response.End
   
@@ -637,5 +648,18 @@ Public Sub Reload()
   Else
     Me.Refresh
   Endif
+  
+End
+
+Public Sub _GetJavascriptFiles() As String[]
+  
+  Return $aJavascriptFiles
+  
+End
+
+Public Sub AddJavascriptFile(sFile As String)
+  
+  If Not $aJavascriptFiles Then $aJavascriptFiles = New String[]
+  $aJavascriptFiles.Add(sFile)
   
 End

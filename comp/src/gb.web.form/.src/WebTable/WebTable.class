@@ -17,6 +17,7 @@ Property Read Max As Integer
 Property Mode As Integer
 Property Read Selection As Integer[]
 Property Display As Integer
+Property Step As Integer
 Property ScrollX As Integer
 Property ScrollY As Integer
 Property ShowCheck As Boolean
@@ -26,6 +27,7 @@ Private $hColumns As _WebTableColumns
 Private $iCount As Integer
 Private $iMode As Integer
 Private $hSelection As WebTableSelection
+Private $iStep As Integer = 100
 Private $iDisplay As Integer = 100
 
 Private $iScrollX As Integer
@@ -278,7 +280,7 @@ Private Sub SendMoreJavascript()
   hFile = Open String For Write
   Output To #hFile
     
-  PrintBody($iDisplay, Min($iDisplay + 100, $iCount) - 1)
+  PrintBody($iDisplay, Min($iDisplay + $iStep, $iCount) - 1)
     
   sResult = Close #hFile
   Output To Default
@@ -324,7 +326,7 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     Inc Me._NoRefresh
     If $iDisplay < $iCount Then
       SendMoreJavascript()
-      Me.Display += 100
+      Me.Display += $iStep
       Me.SetFocus
     Endif
     Me.ScrollX = vValue[0]
@@ -429,5 +431,18 @@ Private Sub ShowCheck_Write(Value As Boolean)
 
   $bNoCheck = Not Value
   Me._SetProperty("ShowCheck", Value)
+
+End
+
+Private Function Step_Read() As Integer
+
+  Return $iStep
+
+End
+
+Private Sub Step_Write(Value As Integer)
+
+  $iStep = Value
+  Me._SetProperty("Step", $iStep)
 
 End

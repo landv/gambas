@@ -6,6 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="stylesheet" href="<%/%>/<%="style:" & Application.Version & ".css"%>">
   <link rel="icon" href="<%/%>/favicon.png" type="image/png">
-  <script type="text/javascript" src="<%/%>/<%="lib:" & Application.Version & ".js"%>"></script>
+  <script type="text/javascript" src="<%/%>/<%="lib" & GetJavascript() & ":" & Application.Version & ".js"%>"></script>
   <title><%=GetTitle()%></title>
 </head>

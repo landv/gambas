@@ -3,7 +3,7 @@
 Export
 Inherits WebContainer
 
-Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text"
+Public Const _Properties As String = "*,Border=True,Count{Range:1;256}=1,Index,Text,ShowTabs=True"
 Public Const _IsMultiContainer As Boolean = True
 Public Const _DrawWith As String = "TabPanel"
 Public Const _DefaultEvent As String = "Click"
@@ -14,12 +14,14 @@ Property Count As Integer
 Property Text As String
 Property Index As Integer
 Property Border As Boolean
+Property ShowTabs As Boolean
 
 Private $aTab As New WebContainer[]
 Private $aText As New String[]
 
 Private $iIndex As Integer
 Private $bBorder As Boolean = True
+Private $bHideTabs As Boolean
 
 Public Sub _new()
   
@@ -114,16 +116,20 @@ End
 Public Sub _Render()
   
   Dim I As Integer
-  
-  Print "<div class=\"gw-tab-header";
-  If Not $bBorder Then Print " gw-noborder";
-  Print "\" style=\"display:flex;flex-flow:row;\">"
-  For I = 0 To $aTab.Max
-    Print "<div class=\""; If(I = $iIndex, "gw-tab-selected", "gw-tab"); "\"";
-    If I <> $iIndex Then Print Me._GetUpdateJS("onclick", "index", CStr(I));
-    Print ">"; $aText[I]; "</div>"
-  Next
-  Print "</div>"
+
+  If Not $bHideTabs Then
+    
+    Print "<div class=\"gw-tab-header";
+    If Not $bBorder Then Print " gw-noborder";
+    Print "\" style=\"display:flex;flex-flow:row;\">"
+    For I = 0 To $aTab.Max
+      Print "<div class=\""; If(I = $iIndex, "gw-tab-selected", "gw-tab"); "\"";
+      If I <> $iIndex Then Print Me._GetUpdateJS("onclick", "index", CStr(I));
+      Print ">"; $aText[I]; "</div>"
+    Next
+    Print "</div>"
+    
+  Endif
   
   Print "<div class=\"gw-tab-contents";
   If Not $bBorder Then Print " gw-noborder";
@@ -170,5 +176,18 @@ Private Sub Border_Write(Value As Boolean)
   $bBorder = Value
   Me._SetProperty("Border", Value)
   Me.Refresh
+
+End
+
+Private Function ShowTabs_Read() As Boolean
+
+  Return Not $bHideTabs
+
+End
+
+Private Sub ShowTabs_Write(Value As Boolean)
+
+  $bHideTabs = Not Value
+  Me._SetProperty("ShowTabs", Value)
 
 End

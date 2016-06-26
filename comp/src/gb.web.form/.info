@@ -142,6 +142,25 @@ Question
 M
 
 (Text)s[(Button1)s(Button2)s(Button3)s]
+#Scroll
+
+C
+None
+C
+i
+0
+Horizontal
+C
+i
+1
+Vertical
+C
+i
+2
+Both
+C
+i
+3
 #Select
 
 C
@@ -645,6 +664,10 @@ _EndStyleSheet
 m
 
 
+_RemoveStyleSheet
+m
+
+(sStyle)s
 Refresh
 m
 
@@ -662,6 +685,10 @@ m
 
 
 IsHidden
+m
+b
+
+_CanRefresh
 m
 b
 
@@ -1108,6 +1135,14 @@ Reload
 m
 
 
+_GetJavascriptFiles
+m
+String[]
+
+AddJavascriptFile
+m
+
+(sFile)s
 #WebHBox
 WebContainer
 C
@@ -1371,11 +1406,23 @@ _Similar
 C
 s
 "WebContainer"
+_Properties
+C
+s
+"*,ScrollBar{Scroll.*}=Both"
+:Scroll
+:
+
+
 ScrollX
 p
 i
 
 ScrollY
+p
+i
+
+ScrollBar
 p
 i
 
@@ -1387,10 +1434,18 @@ _Render
 m
 
 
+_InitSpecialProperty
+m
+
+(sProp)s(vVal)v
 _UpdateProperty
 m
 
 (sProp)s(vValue)v
+SetHeaders
+m
+
+(Horizontal)WebScrollView;(Vertical)WebScrollView;
 #WebSeparator
 WebControl
 C
@@ -1486,7 +1541,7 @@ C
 _Properties
 C
 s
-"*,Border=True,Count{Range:1;256}=1,Index,Text"
+"*,Border=True,Count{Range:1;256}=1,Index,Text,ShowTabs=True"
 _IsMultiContainer
 C
 b
@@ -1516,6 +1571,10 @@ p
 i
 
 Border
+p
+b
+
+ShowTabs
 p
 b
 
@@ -1587,6 +1646,10 @@ r
 Integer[]
 
 Display
+p
+i
+
+Step
 p
 i
 

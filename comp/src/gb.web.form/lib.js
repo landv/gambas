@@ -44,6 +44,12 @@ Element.prototype.removeClass = function(klass)
   }
 };
 
+function replaceInnerHTML(oldDiv, html) {
+    var newDiv = oldDiv.cloneNode(false);
+    newDiv.innerHTML = html;
+    oldDiv.parentNode.replaceChild(newDiv, oldDiv);
+};
+
 gw = {
 
   version: '0',
@@ -58,7 +64,11 @@ gw = {
   log: function(msg)
   {
     if (gw.debug)
-      console.log(msg);
+    {
+      if (gw.startTime == undefined)
+        gw.startTime = Date.now();
+      console.log(((Date.now() - gw.startTime) / 1000) + ': ' + msg);
+    }
   },
   
   load: function(lib)
@@ -91,11 +101,42 @@ gw = {
     console.log('load: ' + src);
   },
   
+  setInnerHtml : function(id, html)
+  {
+    var oldDiv = $(id);
+    var newDiv = oldDiv.cloneNode(false);
+    newDiv.innerHTML = html;
+    oldDiv.parentNode.replaceChild(newDiv, oldDiv);
+  },
+  
+  setOuterHtml : function(id, html)
+  {
+    if ($(id))
+      $(id).outerHTML = html;
+    else
+      console.log('setOuterHtml: ' + id + '? ' + html);
+  },
+  
+  removeElement : function(id)
+  {
+    var elt = $(id);
+    //for (i = 0; i < id_list.length; i++)
+    //{
+      //elt = $(id_list[i]);
+      if (!elt)
+        return;
+    
+      console.log(id + " removed");
+    
+      elt.parentNode.removeChild(elt);
+    //}
+  },
+  
   answer: function(xhr)
   {
     if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
     {
-      gw.log('gw.answer: ' + xhr.gw_command);
+      gw.log('gw.answer (' + xhr.gw_command + ')');
       
       gw.active = document.activeElement.id;
       if (gw.active)
@@ -119,16 +160,21 @@ gw = {
         else
           gw.active = document.activeElement.id;
       }
+      
+      gw.log('answer done');
     }
   },
 
-  send: function(command)
+  send: function(command, after)
   {
-    var xhr = new XMLHttpRequest();
     gw.log('gw.send: ' + command);
+    var xhr = new XMLHttpRequest();
     xhr.gw_command = command;
     xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
-    xhr.onreadystatechange = function() { gw.answer(xhr); };
+    if (after)
+      xhr.onreadystatechange = function() { gw.answer(xhr); after(); };
+    else
+      xhr.onreadystatechange = function() { gw.answer(xhr); };
     xhr.send(null);
   },
 
@@ -137,9 +183,9 @@ gw = {
     gw.send(['raise', id, event, args]);
   },
   
-  update: function(id, prop, value)
+  update: function(id, prop, value, after)
   {
-    gw.send(['update', id, prop, value]);
+    gw.send(['update', id, prop, value], after);
   },
 
   getSelection: function(o)
@@ -287,7 +333,6 @@ gw = {
       //document.addEventListener('touchmove', onTouchMove);
       //document.addEventListener('touchend', onTouchEnd);
       
-      gw.window.updateTitleBars();
       gw.window.refresh();
     },
     
@@ -330,7 +375,6 @@ gw = {
       $(id).style.top = pos.bottom + 'px';*/
       $(id).style.transform = 'translate(' + pos.left + 'px,' + pos.bottom + 'px)';
       
-      gw.window.updateTitleBars();
       gw.window.refresh();
     },
 
@@ -371,11 +415,13 @@ gw = {
         document.removeEventListener('mousemove', gw.window.onMove);
         document.removeEventListener('mouseup', gw.window.onUp);
       }
+      else
+        gw.window.updateTitleBars();
     },
     
     updateTitleBars: function()
     {
-      var i, win;
+      var i, win, last;
       
       for (i = 0; i < gw.windows.length - 1; i++)
       {
@@ -384,13 +430,13 @@ gw = {
           continue;
         $(win).addClass('gw-deactivated');
         $(win + '-titlebar').addClass('gw-deactivated');
+        last = win;
       }
       
-      win = gw.windows[i];
-      if (!$(win).gw_popup)
+      if (last && !$(last).gw_popup)
       {
-        $(win).removeClass('gw-deactivated');
-        $(win + '-titlebar').removeClass('gw-deactivated');
+        $(last).removeClass('gw-deactivated');
+        $(last + '-titlebar').removeClass('gw-deactivated');
       }
         
     },
@@ -697,10 +743,18 @@ gw = {
   
   table:
   {
-    onScroll: function(id, more)
+    onScroll: function(id, more, timeout)
     {
       var elt = $(id);
       var sw = elt.firstChild;
+      var last = elt.gw_last_scroll;
+      
+      if (last && last[0] == sw.scrollLeft && last[1] == sw.scrollTop)
+        return;
+      
+      elt.gw_last_scroll = [sw.scrollLeft, sw.scrollTop];
+      
+      //console.log('onScroll: ' + id + ' ' + sw.scrollLeft + ',' + sw.scrollTop);
       
       if (more)
       {
@@ -720,6 +774,12 @@ gw = {
           return;
         }
       }
+      
+      if (elt.gw_headerh)
+        $(elt.gw_headerh).firstChild.scrollLeft = sw.scrollLeft;
+
+      if (elt.gw_headerv)
+        $(elt.gw_headerv).firstChild.scrollTop = sw.scrollTop;
 
       if (elt.gw_noscroll)
       {
@@ -728,16 +788,24 @@ gw = {
       }
       
       if (elt.gw_scroll)
-        return;
+        clearTimeout(elt.gw_scroll); 
       
       elt.gw_scroll = setTimeout(function()
         { 
           //console.log("gw.table.onScroll: " + id + ": " + sw.scrollLeft + " " + sw.scrollTop);
-      
-          gw.update(elt.id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
+          var pos = [sw.scrollLeft, sw.scrollTop];
+          
           clearTimeout(elt.gw_scroll); 
-          elt.gw_scroll = undefined;
-        }, 250);
+          
+          gw.update(elt.id, '#scroll', pos, function() 
+            { 
+              elt.gw_scroll = undefined; 
+              if (pos[0] != sw.scrollLeft || pos[1] != sw.scrollTop)
+                gw.table.onScroll(id, more, timeout);
+            });
+            
+          //elt.gw_scroll = undefined;
+        }, timeout || 250);
     },
     
     scroll: function(id, x, y)
@@ -758,6 +826,15 @@ gw = {
       }
       if (x != sw.scrollLeft || y != sw.scrollTop)
         gw.update(id, '#scroll', [sw.scrollLeft, sw.scrollTop]); 
+    }
+  },
+  
+  scrollview:
+  {
+    setHeaders: function(id, hid, vid)
+    {
+      $(id).gw_headerh = hid;
+      $(id).gw_headerv = vid;
     }
   },
   
@@ -866,6 +943,6 @@ gw = {
         xhr.send();
       }
     });
-  }
+  } 
 }
 

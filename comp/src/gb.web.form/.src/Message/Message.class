@@ -30,31 +30,31 @@ End
 
 Static Public Sub _call(Text As String, Optional Button As String)
 
-  Open("info", "Information", Text, Button)
+  Open("info", ("Information"), Text, Button)
 
 End
 
 Static Public Sub Info(Text As String, Optional Button As String)
   
-  Open("info", "Information", Text, Button)
+  _call(Text, Button)
   
 End
 
 Static Public Sub Warning(Text As String, Optional Button1 As String, Button2 As String, Button3 As String)
   
-  Open("warning", "Warning", Text, Button1, Button2, Button3)
+  Open("warning", ("Warning"), Text, Button1, Button2, Button3)
   
 End
 
 Static Public Sub Error(Text As String, Optional Button As String)
   
-  Open("error", "Error", Text, Button)
+  Open("error", ("Error"), Text, Button)
   
 End
 
 Static Public Sub Question(Text As String, Optional Button1 As String, Button2 As String, Button3 As String)
   
-  Open("question", "Question", Text, Button1, Button2, Button3)
+  Open("question", ("Question"), Text, Button1, Button2, Button3)
   
 End
 
