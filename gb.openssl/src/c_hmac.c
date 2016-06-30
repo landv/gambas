@@ -37,7 +37,7 @@
  **/
 BEGIN_METHOD(HMac_call, GB_STRING key; GB_STRING data; GB_INTEGER method)
 
-	char *hash;
+	char hash[EVP_MAX_MD_SIZE];
 	unsigned int len;
 	const EVP_MD *method;
 
@@ -47,9 +47,9 @@ BEGIN_METHOD(HMac_call, GB_STRING key; GB_STRING data; GB_INTEGER method)
 		return;
 	}
 
-	hash = (char *) HMAC(method, STRING(key), LENGTH(key),
-			     (unsigned char *) STRING(data),
-			     LENGTH(data), NULL, &len);
+	memset(hash, 0, sizeof(hash));
+	HMAC(method, STRING(key), LENGTH(key), (unsigned char *) STRING(data),
+	     LENGTH(data), (unsigned char *) hash, &len);
 	GB.ReturnNewString(hash, len);
 
 END_METHOD

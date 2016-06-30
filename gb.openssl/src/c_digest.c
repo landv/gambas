@@ -21,6 +21,8 @@
 
 #define __C_DIGEST_C
 
+#include <openssl/crypto.h>
+#include <openssl/engine.h>
 #include <openssl/evp.h>
 
 #include "main.h"
@@ -130,18 +132,85 @@ GB_DESC CDigest[] = {
  * .Digest.Method
  */
 
+/*
+ * Forward compatibility for openssl 1.1
+ *
+ * OPENSSL_zalloc() and OPENSSL_clear_free() have been written according to
+ * the behaviour described in their manpage.
+ */
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+static void OPENSSL_clear_free(void *str, size_t num)
+{
+	OPENSSL_cleanse(str, num);
+	OPENSSL_free(str);
+}
+
+static void *OPENSSL_zalloc(size_t num)
+{
+	void *ret = OPENSSL_malloc(num);
+
+	if (!ret)
+		return NULL;
+	memset(ret, 0, num);
+	return ret;
+}
+
+static int EVP_MD_CTX_reset(EVP_MD_CTX *ctx)
+{
+    if (ctx == NULL)
+        return 1;
+
+    /*
+     * Don't assume ctx->md_data was cleaned in EVP_Digest_Final, because
+     * sometimes only copies of the context are ever finalised.
+     */
+    if (ctx->digest && ctx->digest->cleanup
+        && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_CLEANED))
+        ctx->digest->cleanup(ctx);
+    if (ctx->digest && ctx->digest->ctx_size && ctx->md_data
+        && !EVP_MD_CTX_test_flags(ctx, EVP_MD_CTX_FLAG_REUSE)) {
+        OPENSSL_clear_free(ctx->md_data, ctx->digest->ctx_size);
+    }
+    EVP_PKEY_CTX_free(ctx->pctx);
+#ifndef OPENSSL_NO_ENGINE
+    ENGINE_finish(ctx->engine);
+#endif
+    OPENSSL_cleanse(ctx, sizeof(*ctx));
+
+    return 1;
+}
+
+static EVP_MD_CTX *EVP_MD_CTX_new(void)
+{
+    return OPENSSL_zalloc(sizeof(EVP_MD_CTX));
+}
+
+static void EVP_MD_CTX_free(EVP_MD_CTX *ctx)
+{
+    EVP_MD_CTX_reset(ctx);
+    OPENSSL_free(ctx);
+}
+#endif
+
 /**G
  * Hash the given string using this digest algorithm.
  **/
 BEGIN_METHOD(DigestMethod_Hash, GB_STRING data)
 
-	EVP_MD_CTX ctx;
+	EVP_MD_CTX *ctx;
 	char digest[EVP_MAX_MD_SIZE];
 	unsigned int length;
 
-	EVP_DigestInit(&ctx, _method);
-	EVP_DigestUpdate(&ctx, STRING(data), LENGTH(data));
-	EVP_DigestFinal(&ctx, (unsigned char *) digest, &length);
+	ctx = EVP_MD_CTX_new();
+	if (!ctx) {
+		GB.Error("Could not allocate digest context");
+		return;
+	}
+	memset(digest, 0, sizeof(digest));
+	EVP_DigestInit(ctx, _method);
+	EVP_DigestUpdate(ctx, STRING(data), LENGTH(data));
+	EVP_DigestFinal(ctx, (unsigned char *) digest, &length);
+	EVP_MD_CTX_free(ctx);
 	GB.ReturnNewString(digest, length);
 
 END_METHOD

@@ -23,6 +23,7 @@
 
 #include <assert.h>
 
+#include <openssl/crypto.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
@@ -147,7 +148,6 @@ BEGIN_PROPERTY(CipherMethod_KeyLength)
 		return;
 	}
 
-
 END_PROPERTY
 
 /**G
@@ -163,46 +163,55 @@ BEGIN_PROPERTY(CipherMethod_IvLength)
 		return;
 	}
 
-
 END_PROPERTY
 
 static char *do_cipher(const unsigned char *data, unsigned int dlen,
 		       const unsigned char *key, const unsigned char *iv,
-		       unsigned int *length, int enc)
+		       unsigned int *length, int enc, char **errmsg)
 {
-	EVP_CIPHER_CTX ctx;
+	EVP_CIPHER_CTX *ctx;
 	unsigned char block[1024 + EVP_MAX_BLOCK_LENGTH];
 	char *out;
 	unsigned int ilen;
 	int blen;
 
-	EVP_CIPHER_CTX_init(&ctx);
-	if (!EVP_CipherInit_ex(&ctx, _method, NULL, key, iv, enc))
+	*errmsg = NULL;
+	ctx = EVP_CIPHER_CTX_new();
+
+	if (!ctx) {
+		*errmsg = "Could not allocate cipher context";
+		return NULL;
+	}
+	EVP_CIPHER_CTX_init(ctx);
+	if (!EVP_CipherInit_ex(ctx, _method, NULL, key, iv, enc))
 		return NULL;
 
 	out = NULL;
 	*length = 0;
+	memset(block, 0, sizeof(block));
 	while (dlen) {
 		ilen = MIN(dlen, 1024);
-		if (!EVP_CipherUpdate(&ctx, block, &blen, data, ilen))
+		if (!EVP_CipherUpdate(ctx, block, &blen, data, ilen))
 			goto __ERROR;
 		out = GB.AddString(out, (char *) block, blen);
 		*length += blen;
 		data += ilen;
 		dlen -= ilen;
 	}
-	if (!EVP_CipherFinal_ex(&ctx, block, &blen))
+	if (!EVP_CipherFinal_ex(ctx, block, &blen))
 		goto __ERROR;
-	if (!EVP_CIPHER_CTX_cleanup(&ctx))
+	if (!EVP_CIPHER_CTX_cleanup(ctx))
 		goto __ERROR;
 	if (blen) {
 		out = GB.AddString(out, (char *) block, blen);
 		*length += blen;
 	}
+	EVP_CIPHER_CTX_free(ctx);
 	return out;
 
 __ERROR:
 	GB.FreeString(&out);
+	EVP_CIPHER_CTX_free(ctx);
 	return NULL;
 }
 
@@ -220,7 +229,7 @@ BEGIN_METHOD(CipherMethod_Encrypt, GB_STRING plain; GB_STRING key;
 	unsigned char key[EVP_CIPHER_key_length(_method)];
 	unsigned char iv[EVP_CIPHER_iv_length(_method)];
 	unsigned int length;
-	char *cipher;
+	char *cipher, *errmsg;
 	CCIPHERTEXT *res;
 
 	bzero(key, sizeof(key));
@@ -245,9 +254,9 @@ BEGIN_METHOD(CipherMethod_Encrypt, GB_STRING plain; GB_STRING key;
 	}
 
 	cipher = do_cipher((uchar *) STRING(plain), LENGTH(plain), key, iv,
-			   &length, 1);
+			   &length, 1, &errmsg);
 	if (!cipher) {
-		GB.Error("Encryption failed");
+		GB.Error(errmsg ? errmsg : "Encryption failed");
 		return;
 	}
 
@@ -267,20 +276,18 @@ BEGIN_METHOD(CipherMethod_Decrypt, GB_OBJECT ciph)
 
 	CCIPHERTEXT *ciph = VARG(ciph);
 	unsigned int length;
-	char *plain;
+	char *plain, *errmsg;
 
 	plain = do_cipher((uchar *) ciph->cipher,
 			  GB.StringLength(ciph->cipher),
 			  (uchar *) ciph->key, (uchar *) ciph->iv,
-			  &length, 0);
+			  &length, 0, &errmsg);
 	if (!plain) {
-		GB.Error("Decryption failed");
+		GB.Error(errmsg ? errmsg : "Decryption failed");
 		return;
 	}
-	GB.ReturnString(plain);
-	GB.ReturnBorrow();
+	GB.ReturnNewString(plain, length);
 	GB.FreeString(&plain);
-	GB.ReturnRelease();
 
 END_METHOD
 
@@ -310,7 +317,7 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd;
 	unsigned char key[EVP_CIPHER_key_length(_method)];
 	unsigned char iv[EVP_CIPHER_iv_length(_method)];
 	unsigned int length;
-	char *cipher, *res;
+	char *cipher, *res, *errmsg;
 
 	bzero(salt, sizeof(salt));
 	if (MISSING(salt)) {
@@ -323,9 +330,9 @@ BEGIN_METHOD(CipherMethod_EncryptSalted, GB_STRING plain; GB_STRING passwd;
 	EVP_BytesToKey(_method, EVP_md5(), salt, (uchar *) STRING(passwd),
 		       LENGTH(passwd), ITER, key, iv);
 	cipher = do_cipher((uchar *) STRING(plain), LENGTH(plain), key, iv,
-			   &length, 1);
+			   &length, 1, &errmsg);
 	if (!cipher) {
-		GB.Error("Encryption failed");
+		GB.Error(errmsg ? errmsg : "Encryption failed");
 		return;
 	}
 	res = GB.NewZeroString("Salted__");
@@ -348,7 +355,7 @@ BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
 	unsigned char key[EVP_CIPHER_key_length(_method)];
 	unsigned char iv[EVP_CIPHER_iv_length(_method)];
 	unsigned int clen, length;
-	char *plain;
+	char *plain, *errmsg;
 
 	if (!strstr(STRING(cipher), "Salted__")) {
 		GB.Error("Unrecognised cipher string format");
@@ -361,9 +368,9 @@ BEGIN_METHOD(CipherMethod_DecryptSalted, GB_STRING cipher; GB_STRING passwd)
 		       LENGTH(passwd), ITER, key, iv);
 	cipher = (uchar *) STRING(cipher) + 8 + sizeof(salt);
 	clen = LENGTH(cipher) - (uint) (cipher - (uchar *) STRING(cipher));
-	plain = do_cipher((uchar *) cipher, clen, key, iv, &length, 0);
+	plain = do_cipher((uchar *) cipher, clen, key, iv, &length, 0, &errmsg);
 	if (!plain) {
-		GB.Error("Decryption failed");
+		GB.Error(errmsg ? errmsg : "Decryption failed");
 		return;
 	}
 	GB.ReturnString(plain);
