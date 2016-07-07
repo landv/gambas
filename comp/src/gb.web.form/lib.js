@@ -249,12 +249,14 @@ gw = {
   
   setFocus: function(id)
   {
-    /*if (!$(id))
-      return;*/
-      
-    $(id).focus();
-    gw.active = document.activeElement.id;
-    gw.selection = undefined;
+    var elt = $(id);
+    
+    if (elt)
+    {
+      elt.focus();
+      gw.active = document.activeElement.id;
+      gw.selection = undefined;
+    }
   },
   
   resizeComboBox: function(id)
