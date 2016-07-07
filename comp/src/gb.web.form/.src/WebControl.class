@@ -487,6 +487,7 @@ Public Sub _CanRefresh() As Boolean
   If Not WebForm._InExec Then Return
   If WebForm._DisableRefresh Then Return
   If _NoRefresh Then Return
+  If IsHidden() Then Return
   Return True
   
 End
