@@ -10,12 +10,14 @@ Public Const _DefaultEvent As String = "Data"
 
 Event Data(Row As Integer, Column As Integer, Data As WebTableData)
 Event Select
+Event DblClick
 
 Property Read Columns As _WebTableColumns
 Property Count As Integer
 Property Read Max As Integer
 Property Mode As Integer
 Property Read Selection As Integer[]
+Property Current As Integer
 Property Display As Integer
 Property Step As Integer
 Property ScrollX As Integer
@@ -39,6 +41,7 @@ Private $bNoCheck As Boolean
 
 Public Sub _new()
   
+  Me._Proxy = ":table"
   $hColumns = New _WebTableColumns As "Columns"
   
 End
@@ -63,8 +66,11 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
     
     Print "<tr";
     If $iMode And If $bNoCheck Then
+      Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
       If IsSelected(iRow) Then Print " class=\"gw-table-row-selected\";"
-      Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
+      'Print Me._GetUpdateJS("onclick", "$" & CStr(iRow));
+      Print " onclick=\"gw.table.select("; JS(Me.Name); ","; iRow; ");\"";
+      Print Me._GetEventJS("ondblclick", "DblClick");
     Endif
     Print ">";
     
@@ -75,6 +81,7 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
       Else
         Print "<input type=\"checkbox\""; 
       Endif
+      Print " id=\""; Me.Name & ":" & CStr(iRow); "\""
       Print Me._GetUpdateJS("onchange", "!" & CStr(iRow), "this.checked"); 
       If IsSelected(iRow) Then Print " checked";
       Print ">";
@@ -139,6 +146,8 @@ Public Sub _Render()
   Else
     WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ");")
   Endif
+  
+  If $iMode = Select.Single Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").gw_current = " & Current_Read() & ";")
 
 End
 
@@ -266,11 +275,11 @@ Public Sub IsSelected(Row As Integer) As Boolean
   
 End
 
-Public Sub SetFocus()
-  
-  WebForm._AddReply("gw.setFocus(" & JS(Me.Name & ":table") & ");")
-  
-End
+' Public Sub SetFocus()
+'   
+'   WebForm._AddReply("gw.setFocus(" & JS(Me.Name & ":table") & ");")
+'   
+' End
 
 Private Sub SendMoreJavascript()
 
@@ -314,12 +323,14 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
     
   Else If Left(sProp) = "$" Then
     
+    Inc Me._NoRefresh
     iRow = CInt(Mid(sProp, 2))
     If IsSelected(iRow) Then
-      Try Unselect(iRow)
+      If $iMode = Select.Multiple Then Try Unselect(iRow)
     Else
       Try Select(iRow)
     Endif
+    Dec Me._NoRefresh
   
   Else If sProp = "#more" Then
     
@@ -444,5 +455,23 @@ Private Sub Step_Write(Value As Integer)
 
   $iStep = Value
   Me._SetProperty("Step", $iStep)
+
+End
+
+Private Function Current_Read() As Integer
+
+  If $hSelection Then
+    Return $hSelection.GetCurrent()
+  Else
+    Return -1
+  Endif
+
+End
+
+Private Sub Current_Write(Value As Integer)
+
+  If $iMode = Select.None Then Return
+  UnselectAll
+  Select(Value)  
 
 End

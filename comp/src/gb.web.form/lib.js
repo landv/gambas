@@ -44,12 +44,6 @@ Element.prototype.removeClass = function(klass)
   }
 };
 
-function replaceInnerHTML(oldDiv, html) {
-    var newDiv = oldDiv.cloneNode(false);
-    newDiv.innerHTML = html;
-    oldDiv.parentNode.replaceChild(newDiv, oldDiv);
-};
-
 gw = {
 
   version: '0',
@@ -132,34 +126,63 @@ gw = {
     //}
   },
   
+  insertElement : function(id, parent)
+  {
+    var elt = document.createElement('div');
+    elt.id = id;
+    
+    $(parent).appendChild(elt);
+  },
+  
+  saveFocus: function() {
+    var active = document.activeElement.id;
+    var selection;
+    
+    if (active)
+      selection = gw.getSelection($(active));
+      
+    return [active, selection];
+  },
+  
+  restoreFocus: function(save) {
+    var elt;
+    
+    if (save[0])
+    {
+      elt = $(save[0])
+      if (elt) 
+      {
+        elt.focus();
+        gw.setSelection(elt, save[1]);
+      }
+    }
+    //else
+    //  gw.active = document.activeElement.id;
+  },
+  
   answer: function(xhr)
   {
     if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
     {
       gw.log('gw.answer (' + xhr.gw_command + ')');
       
-      gw.active = document.activeElement.id;
-      if (gw.active)
-        gw.selection = gw.getSelection($(gw.active));
-      else
-        gw.selection = undefined;
+      var save = gw.saveFocus();
       
-      if (gw.debug)
-        console.log('--> ' + xhr.responseText);
-        
-      eval(xhr.responseText);
+      /*if (gw.debug)
+        console.log('--> ' + xhr.responseText);*/
       
-      if (gw.active)
+      var r = xhr.responseText.split('\n');
+      var i;
+      
+      for (i = 0; i < r.length; i++)
       {
-        gw.log('active: ' + gw.active);
-        if ($(gw.active))
-        {
-          $(gw.active).focus();
-          gw.setSelection($(gw.active), gw.selection);
-        }
-        else
-          gw.active = document.activeElement.id;
+        gw.log(r[i]);
+        eval(r[i]);
       }
+       
+      //eval(xhr.responseText);
+      
+      gw.restoreFocus(save);
       
       gw.log('answer done');
     }
@@ -239,6 +262,29 @@ gw = {
     $(id + '-select').onmouseover = function() { $(id + '-select').style.width = $(id).offsetWidth + 'px'; }
   },
   
+  highlightMandatory: function(id)
+  {
+    var elt = $(id);
+    var elt_br;
+    var div;
+    var div_br;
+    
+    if (elt.gw_mandatory)
+      return;
+    
+    elt.gw_mandatory = div = document.createElement('div');
+    div.className = 'gw-mandatory';
+    elt.parentNode.insertBefore(div, elt);
+    
+    elt_br = gw.getPos(elt);
+    div_br = gw.getPos(div);
+    
+    div.style.top = (elt_br.top - div_br.top) + 'px';
+    div.style.left = (elt_br.left - div_br.left) + 'px';
+    div.style.width = elt_br.width + 'px';
+    div.style.height = elt_br.height + 'px';
+  },
+  
   addTimer: function(id, delay)
   {
     gw.removeTimer(id);
@@ -315,6 +361,9 @@ gw = {
       $(id).gw_resizable = resizable;
       $(id).gw_modal = modal;
       
+      if (modal)
+        $(id).gw_focus = gw.saveFocus();
+      
       if (minw != undefined)
       {
         $(id).gw_minw = minw;
@@ -356,6 +405,7 @@ gw = {
       $(id).gw_resizable = resizable;
       $(id).gw_modal = true;
       $(id).gw_popup = true;
+      $(id).gw_focus = gw.saveFocus();
       
       if (minw != undefined)
       {
@@ -390,17 +440,26 @@ gw = {
         gw.windows.splice(i, 1);
         gw.window.refresh();
       }
+      
+      if ($(id).gw_focus)
+      {
+        gw.restoreFocus($(id).gw_focus);
+        $(id).gw_focus = undefined;
+      }
     },
     
     refresh: function()
     {
       var i = 0;
+      var zi;
       
       while (i < gw.windows.length)
       {
         if ($(gw.windows[i]))
         {
-          $(gw.windows[i]).style.zIndex = 11 + i * 2;
+          zi = 11 + i * 2;
+          if ($(gw.windows[i]).style.zIndex != zi)
+            $(gw.windows[i]).style.zIndex = zi;
           i++;
         }
         else
@@ -470,10 +529,10 @@ gw = {
           gw.window.zIndex = 10 + i * 2;
           elt.style.zIndex = 10 + i * 2;
           elt.style.display = 'block';
-          if ($(gw.windows[i]).gw_popup)
+          /*if ($(gw.windows[i]).gw_popup)
             elt.style.opacity = '0';
           else
-            elt.style.opacity = '';
+            elt.style.opacity = '';*/
           return;
         }
       }
@@ -743,6 +802,33 @@ gw = {
   
   table:
   {
+    select: function(id, row)
+    {
+      var elt = $(id);
+      var tr = $(id + ':' + row);
+      var current = elt.gw_current;
+      
+      if (tr.tagName == 'TR')
+      {
+        if (current !== undefined)
+        {
+          if (current >= 0)
+            $(id + ':' + current).removeClass('gw-table-row-selected');
+          tr.addClass('gw-table-row-selected');
+          elt.gw_current = row;
+        }
+        else
+        {
+          if (tr.hasClass('gw-table-row-selected'))
+            tr.removeClass('gw-table-row-selected');
+          else
+            tr.addClass('gw-table-row-selected');
+        }
+      }
+      
+      gw.update(id, '$' + row, null);
+    },
+    
     onScroll: function(id, more, timeout)
     {
       var elt = $(id);

@@ -23,7 +23,7 @@ Static Private Sub Open(sIcon As String, sTitle As String, sText As String, Opti
   
   hMessage["#message"] = sName
   
-  hMessage.ShowModal
+  hMessage.ShowModal(Null)
   
 End
 

@@ -17,6 +17,7 @@ Property Modal As Boolean
 
 Property PopupControl As WebControl
 Property PopupAlignment As Integer
+Property ParentControl As WebControl
 
 Private $sX As String
 Private $sY As String
@@ -27,6 +28,7 @@ Private $bResizable As Boolean
 Private $bModal As Boolean
 Private $iPopupControlId As Integer
 Private $iPopupAlignment As Integer
+Private $iParentControlId As Integer
 
 Public Sub IsPopup() As Boolean
 
@@ -324,9 +326,30 @@ Private Sub PopupAlignment_Write(Value As Integer)
 
 End
 
-Public Sub Close()
+Public Sub Close(Optional vReturnValue As Variant)
   
-  WebForm._AddReply("gw.window.close(" & JS(Me.Name) & ");")
+  WebForm._AddReplyBefore("gw.window.close(" & JS(Me.Name) & ");")
+  WebForm._AddReplyBefore("gw.window.refresh();")
+  
   If IsPopup() Then PopupControl_Read().SetFocus
+  If $iParentControlId Then Object.Raise(WebControl.FromId($iParentControlId), "Dialog", [Child_Read(), vReturnValue])
+  'If $iParentControlId Then WebForm._AddReply("gw.raise(" & JS(WebControl.FromId($iParentControlId).Name) & ",);")
   
+End
+
+Private Function ParentControl_Read() As WebControl
+
+  If $iParentControlId Then Return WebControl.FromId($iParentControlId)
+
+End
+
+Private Sub ParentControl_Write(Value As WebControl)
+
+  If Value Then
+    $iParentControlId = Value.Id
+  Else
+    $iParentControlId = 0
+  Endif
+  Me._SetProperty("ParentControl", Value)
+
 End

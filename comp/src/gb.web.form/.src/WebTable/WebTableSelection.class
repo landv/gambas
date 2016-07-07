@@ -282,3 +282,10 @@ End
 '   'Dump
 '   
 ' End
+
+Public Sub GetCurrent() As Integer
+  
+  If $aSel.Count = 2 Then Return $aSel[0]
+  Return -1
+  
+End

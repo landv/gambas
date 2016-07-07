@@ -480,6 +480,10 @@ s
 :
 
 (Source)WebControl;(Action)s
+:Dialog
+:
+
+(Dialog)WebForm;(Result)v
 Id
 r
 i
@@ -711,7 +715,7 @@ m
 SetFocus
 m
 
-
+[(Highlight)b]
 Raise
 m
 
@@ -1079,6 +1083,10 @@ _AddJavascript
 M
 
 (sStr)s
+_AddJavascriptBefore
+M
+
+(sStr)s
 _new
 m
 
@@ -1102,7 +1110,7 @@ m
 Close
 m
 
-
+[(ReturnValue)v]
 Show
 m
 
@@ -1118,7 +1126,7 @@ m
 ShowModal
 m
 
-
+[(Parent)WebControl;]
 ShowPopup
 m
 
@@ -1625,6 +1633,10 @@ s
 :
 
 
+:DblClick
+:
+
+
 Columns
 r
 _WebTableColumns
@@ -1644,6 +1656,10 @@ i
 Selection
 r
 Integer[]
+
+Current
+p
+i
 
 Display
 p
@@ -1697,10 +1713,6 @@ Unselect
 m
 
 (Row)i[(Length)i]
-SetFocus
-m
-
-
 _UpdateProperty
 m
 
@@ -1814,6 +1826,10 @@ ReadOnly
 p
 b
 
+Clear
+m
+
+
 _BeforeRender
 m
 
@@ -1889,6 +1905,14 @@ _UpdateProperty
 m
 
 (sProp)s(vValue)v
+Start
+m
+
+
+Stop
+m
+
+
 #WebUploadArea
 WebContainer
 C

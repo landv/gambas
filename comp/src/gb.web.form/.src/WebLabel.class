@@ -24,7 +24,13 @@ Private Sub Text_Write(Value As String)
 
   If $sText = Value Then Return
   $sText = Value
+  Inc Me._NoRefresh
   Me._SetProperty("Text", Value)
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then
+    WebForm._AddJavascript("gw.setInnerHtml(" & JS(Me.Name) & "," & JS(Replace(Html($sText), "\n", "<br>")) & ");")
+  Endif
 
 End
 

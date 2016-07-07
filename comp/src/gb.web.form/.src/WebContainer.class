@@ -35,6 +35,8 @@ Public Sub _Add(hChild As WebControl)
   
   $aChildren.Add(hChild.Name)
   
+  Inc Me._NoRefresh
+  
   If WebForm._InExec And If Not Object.IsLocked(Me) Then
   'If Not Object.IsLocked(Me) Then
     
@@ -56,6 +58,13 @@ Public Sub _Add(hChild As WebControl)
   
   Me._SetProperty("#children", $aChildren)
   
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then
+    WebForm._AddJavascriptBefore("gw.insertElement(" & JS(hChild.Name) & "," & JS(Me.Name) & ");")
+    hChild.Refresh
+  Endif
+  
 End
 
 Public Sub _Remove(hChild As WebControl)
@@ -64,7 +73,7 @@ Public Sub _Remove(hChild As WebControl)
   
   $aChildren.Remove($aChildren.Find(hChild.Name))
   
-  Inc WebForm._DisableRefresh
+  Inc Me._NoRefresh
   
   If hChild._Extra Then
     
@@ -81,9 +90,9 @@ Public Sub _Remove(hChild As WebControl)
   
   Me._SetProperty("#children", $aChildren)
   
-  Dec WebForm._DisableRefresh
+  Dec Me._NoRefresh
   
-  If WebForm._InExec And If WebForm._DisableRefresh = 0 Then
+  If Me._CanRefresh() Then
     WebForm._AddJavascript("gw.removeElement(" & JS(hChild.Name) & ");")
   Endif
   
@@ -152,6 +161,7 @@ Public Sub _RenderStyleSheet()
       Select Case $iArrangement
         Case Arrange.Horizontal
           Me._AddStyleSheet("flex-flow:row;")
+          Me._AddStyleSheet("overflow:hidden;")
         Case Arrange.Vertical
           Me._AddStyleSheet("flex-flow:column;")
         Case Arrange.Column

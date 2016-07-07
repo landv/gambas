@@ -69,6 +69,7 @@ Public Sub _Render()
     Else If hCol.Width Then
       Print " style=\"min-width:"; hCol.Width; ";\"";
     Endif
+    If Not hCol.Wrap Then Print " nowrap";
     Print ">";
     Print "<div";
     hCol._PrintAlignment()

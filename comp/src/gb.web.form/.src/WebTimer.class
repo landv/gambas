@@ -80,3 +80,14 @@ Public Sub _UpdateProperty(sProp As String, (vValue) As Variant)
   
 End
 
+Public Sub Start()
+  
+  Enabled_Write(True)
+  
+End
+
+Public Sub Stop()
+  
+  Enabled_Write(False)
+  
+End

@@ -37,15 +37,18 @@ Public Sub _Render()
   Print ")\"";
   $hCont._StartStyleSheet
   $hCont._RenderStyleSheet
+  $hCont._RemoveStyleSheet("overflow:hidden;")
   Select Case $iScroll
     Case Scroll.None
-      $hCont._AddStyleSheet("overflow:hidden")
+      $hCont._AddStyleSheet("overflow:hidden;")
       'Print " style=\"overflow:hidden;\"";
     Case Scroll.Horizontal
-      $hCont._AddStyleSheet("overflow-y:hidden")
+      $hCont._AddStyleSheet("overflow-x:auto;")
+      $hCont._AddStyleSheet("overflow-y:hidden;")
       'Print " style=\"overflow-y:hidden;\"";
     Case Scroll.Vertical
-      $hCont._AddStyleSheet("overflow-x:hidden")
+      $hCont._AddStyleSheet("overflow-x:hidden;")
+      $hCont._AddStyleSheet("overflow-y:auto;")
       'Print " style=\"overflow-x:hidden;\"";
   End Select
   $hCont._EndStyleSheet

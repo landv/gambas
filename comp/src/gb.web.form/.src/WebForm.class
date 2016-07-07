@@ -63,6 +63,7 @@ Static Public Sub Main()
   Dim hStat As ClassStat
   Dim aLib As String[]
   Dim sFile As String
+  Dim sKey As String
   
   System.Language = Request.Language
   
@@ -91,6 +92,25 @@ Static Public Sub Main()
     Try sPath = Session[Mid$(sPath, 5)]["Image"]
     If Not Error Then Response.SendFile(sPath)
     Return
+    
+  Else If sPath = "~dump" Then
+    
+    If Session.Id Then
+      
+      Response.ContentType = "text/plain;charset=utf-8"
+      Response.Begin
+
+      For Each sKey In Session.Keys
+        Print sKey; " : "; JSON.Encode(Session[sKey])
+      Next
+      
+      Print
+      Print "size = "; Session.Size
+      
+      Response.End
+      Return
+      
+    Endif
   
   Else If Exist("../.public/" &/ sPath) Then
     
@@ -127,6 +147,7 @@ Static Public Sub Main()
       Goto NOT_FOUND
     Endif
     
+    'Main.DumpSession
     hForm = hClass.AutoCreate()
     
   Endif
@@ -174,6 +195,12 @@ End
 Static Public Sub _AddJavascript(sStr As String)
   
   _AddReply(sStr)
+  
+End
+
+Static Public Sub _AddJavascriptBefore(sStr As String)
+  
+  _AddReplyBefore(sStr)
   
 End
 
@@ -370,18 +397,19 @@ Public Sub _Exec(aCmd As Variant[])
 Catch
   
   sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
-  'Debug sErr
+  'Debug aCmd[0];; aCmd[1];; sErr
   _InExec = iOldInExec
   
   Response.Begin
   Print "console.log("; JS(aCmd); ");"
   Print "console.log("; JS(sErr); ");"
   Print "console.log("; JS($aJavascript.Join("\n")); ");"
+  Print "alert("; JS(sErr); ");"
   Response.End
   
 End
 
-Public Sub Close()
+Public Sub Close(Optional ReturnValue As Variant)
   
   ' Dim bCancel As Boolean
   Dim hWindow As WebWindow
@@ -392,12 +420,10 @@ Public Sub Close()
   
     hWindow = WebControl.FromId(Me._Window)
     With hWindow
-      .Close
+      .Close(ReturnValue)
       .Delete
     End With
     
-    _AddReply("gw.window.refresh();")
-  
   Else
     
     Me.Delete
@@ -438,14 +464,18 @@ Public Sub Show()
   
 End
 
-Public Sub ShowModal()
+Public Sub ShowModal(Optional Parent As WebControl)
   
   Dim hWindow As WebWindow
   
   If _Window = 0 Then Show()
   
   hWindow = WebControl.FromId(_Window)
-  If hWindow Then hWindow.Modal = True
+  If hWindow Then
+    hWindow.Modal = True
+    If IsMissing(Parent) Then Parent = Last
+    If Parent Then hWindow.ParentControl = Parent
+  Endif
   
   Raise Open
   

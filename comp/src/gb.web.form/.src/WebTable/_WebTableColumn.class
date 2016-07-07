@@ -81,7 +81,7 @@ End
 
 Private Function Wrap_Read() As Boolean
 
-  Return $bNoWrap
+  Return Not $bNoWrap
 
 End
 

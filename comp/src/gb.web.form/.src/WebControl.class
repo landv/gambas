@@ -12,6 +12,7 @@ Public Const _DefaultEvent As String = "Render"
 
 Event Render
 Event Message(Source As WebControl, Action As String)
+Event Dialog(Dialog As WebForm, Result As Variant)
 
 '' Return the server control identifier.
 Property Read Id As Integer
@@ -136,6 +137,8 @@ Public Sub _new(Optional Parent As WebContainer)
   $cFromId[$iId] = Me
   
   Parent_Write(Parent)
+  
+  'Debug Object.Type(Me);; $sName;; $iId
   
 End
 
@@ -350,7 +353,7 @@ End
 
 Public Sub _RemoveStyleSheet(sStyle As String)
   
-  Try $aStyleSheet.Add($aStyleSheet.Find(sStyle))
+  Try $aStyleSheet.Remove($aStyleSheet.Find(sStyle))
   
 End
 
@@ -640,7 +643,7 @@ Private Sub Ignore_Write(Value As Boolean)
 
 End
 
-Public Sub SetFocus()
+Public Sub SetFocus(Optional Highlight As Boolean)
 
   Dim sName As String
   
@@ -648,6 +651,7 @@ Public Sub SetFocus()
   If _Proxy Then sName &= _Proxy
   
   WebForm._AddReply("gw.setFocus(" & JS(sName) & ");")
+  If Highlight Then WebForm._AddReply("gw.highlightMandatory(" & JS(sName) & ");")
   
 End
 
@@ -758,6 +762,7 @@ Public Sub Delete()
   
   $cFromName[$sName] = Null
   $cFromId[$iId] = Null
+  'Debug $sName;; $iId;; System.Backtrace.Join(" ")
   
 End
 
@@ -867,3 +872,4 @@ Public Sub _GetImageLink(sImage As String) As String
   Endif
   
 End
+

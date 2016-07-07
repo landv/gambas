@@ -290,6 +290,7 @@ P:first-child,UL:first-child,OL:first-child {
   align-items: center;
   overflow: hidden;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .gw-label.gw-disabled {
@@ -728,12 +729,4 @@ TABLE.gw-calendar > TBODY > TR > TD.gw-date-current {
 
 .gw-ac-suggestion.selected { 
   background: #E0E0E0; 
-}
-
-.gw-mandatory {
-  position: absolute;
-  box-shadow: 0 0 0.5em red;
-  top: 0;
-  left: 0;
-  z-index: -1;
 }

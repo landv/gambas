@@ -32,6 +32,13 @@ Private Sub Text_Write(Value As String)
 
 End
 
+Public Sub Clear()
+  
+  Text_Write("")
+  
+End
+
+
 Public Sub _BeforeRender()
   
   Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value");

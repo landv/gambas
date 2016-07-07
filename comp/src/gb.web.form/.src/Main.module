@@ -13,15 +13,17 @@ Public Sub DumpSession()
   
   Dim sKey As String
 
-  Debug Session.Id
+  Debug String$(80, "-")
   
   If Session.Id Then
     
     For Each sKey In Session.Keys
-      Debug sKey; ": "; JSON.Encode(Session[sKey])
+      Error sKey; ": "; JSON.Encode(Session[sKey])
     Next
     
   Endif
+  
+  Debug String$(80, "-")
   
 End
 
