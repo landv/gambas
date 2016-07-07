@@ -41,7 +41,7 @@ End
 
 Public Sub _BeforeRender()
   
-  Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value");
+  Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value");
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
