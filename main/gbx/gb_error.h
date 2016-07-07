@@ -172,7 +172,6 @@ void ERROR_hook(void);
 void ERROR_save(ERROR_INFO *save, ERROR_INFO *last);
 void ERROR_restore(ERROR_INFO *save, ERROR_INFO *last);
 
-void ERROR_clear(void);
 void ERROR_reset(ERROR_INFO *info);
 void ERROR_lock(void);
 void ERROR_unlock(void);

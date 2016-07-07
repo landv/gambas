@@ -176,7 +176,7 @@ void ERROR_reset(ERROR_INFO *info)
 	info->msg = NULL;
 }
 
-void ERROR_clear()
+static void ERROR_clear()
 {
 	if (_lock)
 	{
@@ -190,6 +190,7 @@ void ERROR_clear()
 	fprintf(stderr, "ERROR_clear: (%p)\n", ERROR_current);
 	#endif
 	ERROR_reset(&ERROR_current->info);
+	STACK_free_backtrace(&ERROR_backtrace);
 }
 
 #if 0
@@ -670,8 +671,8 @@ void ERROR_set_last(bool bt)
 	ERROR_last = ERROR_current->info;
 	if (ERROR_last.free)
 		STRING_ref(ERROR_last.msg);
-	STACK_free_backtrace(&ERROR_backtrace);
-	if (bt)
+	
+	if (bt && !ERROR_backtrace)
 		ERROR_backtrace = STACK_get_backtrace();
 }
 
