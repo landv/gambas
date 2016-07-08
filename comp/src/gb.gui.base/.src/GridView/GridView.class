@@ -214,6 +214,8 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
   
   With hData
 
+    If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
+    
     iColor = .Background
     If iColor = Color.Default Then 
       iColor = $hColumns[iCol].Background
@@ -224,8 +226,6 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
         Endif
       Endif
     Endif
-    
-    If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
     
     Paint.FillRect(X, Y, W, H, iColor)
     
@@ -263,12 +263,16 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
     If W <= 0 Or If H <= 0 Then Goto DRAW_GRID
     
     'Paint.FillRect(X, Y, W, H, Color.SetAlpha(Color.Red, 240))
-      
-    If .Foreground = Color.Default Then
-      Paint.Background = Style.ForegroundOf(Me)
-    Else
-      Paint.Background = .Foreground
+    
+    iColor = .Foreground
+    If iColor = Color.Default Then 
+      iColor = Me.Foreground
+      If iColor = Color.Default Then
+        iColor = Style.ForegroundOf(Me)
+      Endif
     Endif
+    
+    Paint.Background = iColor
     
     If .Font And If .Font.Modified Then 
       Paint.Font = .Font
