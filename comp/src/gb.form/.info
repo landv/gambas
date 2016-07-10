@@ -2686,7 +2686,7 @@ C
 _Properties
 C
 s
-"*,Value,MaxValue=1.0,MinValue,Text,Step=0.1"
+"*,Border=True,Value,MaxValue=1.0,MinValue,Text,Step=0.1"
 _DefaultEvent
 C
 s
@@ -2699,6 +2699,10 @@ _Similar
 C
 s
 "Slider"
+:Change
+:
+
+
 Value
 p
 f
@@ -2719,11 +2723,15 @@ Step
 p
 f
 
-:Change
-:
+Background
+p
+i
 
+Border
+p
+b
 
-_New
+_new
 m
 
 
@@ -2776,6 +2784,10 @@ m
 
 
 Text_MouseWheel
+m
+
+
+View_Font
 m
 
 
