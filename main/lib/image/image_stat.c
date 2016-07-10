@@ -30,12 +30,12 @@
 
 const char *IMAGE_error = NULL;
 
-static const char _sign_gif[3] = {'G', 'I', 'F'};
-static const char _sign_bmp[2] = {'B', 'M'};
-static const char _sign_jpg[3] = {0xff, 0xd8, 0xff};
-static const char _sign_png[8] = {0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a};
-static const char _sign_tif_ii[4] = {'I','I', 0x2A, 0x00};
-static const char _sign_tif_mm[4] = {'M','M', 0x00, 0x2A};
+static const char _sign_gif[3] = { 'G', 'I', 'F' };
+static const char _sign_bmp[2] = { 'B', 'M' };
+static const char _sign_jpg[3] = { 0xff, 0xd8, 0xff };
+static const char _sign_png[8] = { 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a };
+static const char _sign_tif_ii[4] = { 'I', 'I', 0x2A, 0x00 };
+static const char _sign_tif_mm[4] = { 'M', 'M', 0x00, 0x2A };
 
 static int stream_seek(IMAGE_STREAM *stream, int pos, int whence)
 {
@@ -87,9 +87,10 @@ static ushort read_ushort(IMAGE_STREAM * stream)
 	uchar a[2];
 
 	/* returns 0 if we hit the end-of-file */
-	if((stream_read(stream, a, sizeof(a))) <= 0)
+	if((stream_read(stream, a, 2)) < 2)
 		return 0;
 
+	//fprintf(stderr, "read_ushort -> %d\n", (int)(((ushort)a[0]) << 8) + ((ushort)a[1]));
 	return (((ushort)a[0]) << 8) + ((ushort)a[1]);
 }
 
@@ -295,9 +296,8 @@ static uint next_marker(IMAGE_STREAM * stream, int last_marker, int comment_corr
 	return (uint)marker;
 }
 
-
 /* skip over a variable-length block; assumes proper length marker */
-static int skip_variable(IMAGE_STREAM * stream)
+static bool skip_variable(IMAGE_STREAM * stream)
 {
 	int length = read_ushort(stream);
 
@@ -305,8 +305,8 @@ static int skip_variable(IMAGE_STREAM * stream)
 		return 0;
 
 	length -= 2;
-	(void)stream_seek(stream, length, SEEK_CUR);
-	return 1;
+	
+	return stream_seek(stream, length, SEEK_CUR) == 0;
 }
 
 
@@ -321,6 +321,8 @@ static bool handle_jpeg(IMAGE_STREAM * stream, IMAGE_INFO *result)
 		marker = next_marker(stream, marker, 1, ff_read);
 		ff_read = 0;
 
+		//fprintf(stderr, "marker = 0x%02X\n", marker);
+		
 		switch (marker)
 		{
 			case M_SOF0:
@@ -337,6 +339,7 @@ static bool handle_jpeg(IMAGE_STREAM * stream, IMAGE_INFO *result)
 			case M_SOF14:
 			case M_SOF15:
 
+				read_ushort(stream);
 				stream_getc(stream);
 				result->height = read_ushort(stream);
 				result->width = read_ushort(stream);
