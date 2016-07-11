@@ -1371,6 +1371,10 @@ int gApplication::getFrameWidth()
 {
 	int w;
 #ifdef GTK3
+	
+	if (strcmp(getStyleName(), "Breeze") == 0)
+		return 2;
+	
   GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
   GtkBorder tmp;
 
@@ -1408,7 +1412,13 @@ void gApplication::getBoxFrame(int *pw, int *ph)
 	int w, h;
 
 #ifdef GTK3
-  GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
+	if (strcmp(getStyleName(), "Breeze") == 0)
+	{
+		*pw = *ph = 2;
+		return;
+	}
+	
+	GtkStyleContext *context = gt_get_style(GTK_TYPE_ENTRY);
   GtkBorder tmp;
 
 	gtk_style_context_get_padding(context, (GtkStateFlags)0, &tmp);

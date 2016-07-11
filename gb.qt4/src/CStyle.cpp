@@ -43,6 +43,8 @@
 
 bool CSTYLE_fix_breeze = false;
 
+static char *_style_name = NULL;
+
 static QWidget *_fake = 0;
 
 static QWidget *get_fake_widget()
@@ -50,6 +52,36 @@ static QWidget *get_fake_widget()
 	if (!_fake)
 		_fake = new QWidget;
 	return _fake;
+}
+
+static char *get_style_name()
+{
+	if (!_style_name)
+	{
+		if (CSTYLE_fix_breeze)
+		{
+			_style_name = GB.NewZeroString("Breeze");
+		}
+		else
+		{
+			const char *name = qApp->style()->metaObject()->className();
+			int len = strlen(name);
+		
+			if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
+				len -= 5;
+			if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)
+				len -= 2;
+			if (name[0] == 'Q' && isupper(name[1]))
+			{
+				len--;
+				name++;
+			}
+			
+			_style_name = GB.NewString(name, len);
+		}
+	}
+	
+	return _style_name;
 }
 
 static void init_option(QStyleOption &opt, int x, int y, int w, int h, int state, GB_COLOR color = COLOR_DEFAULT, QPalette::ColorRole role = QPalette::Window)
@@ -277,7 +309,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Style_ScrollbarSpacing)
 
-	if (::strcmp(qApp->style()->metaObject()->className(), "Breeze::Style") == 0)
+	if (::strcmp(get_style_name(), "Breeze") == 0)
 		GB.ReturnInteger(0);
 	else
 		GB.ReturnInteger(qMax(0, qApp->style()->pixelMetric(QStyle::PM_ScrollView_ScrollBarSpacing)));
@@ -286,44 +318,32 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Style_FrameWidth)
 
-	GB.ReturnInteger(qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth));
+	if (::strcmp(get_style_name(), "Breeze") == 0)
+		GB.ReturnInteger(2);
+	else
+		GB.ReturnInteger(qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth));
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Style_BoxFrameWidth)
 
-	int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
-	
-	if (::strcmp(qApp->style()->metaObject()->className(), "Oxygen::Style") == 0)
-		w++;
-	
-	GB.ReturnInteger(w);
+	if (::strcmp(get_style_name(), "Breeze") == 0)
+		GB.ReturnInteger(2);
+	else
+	{
+		int w = qApp->style()->pixelMetric(QStyle::QStyle::PM_ComboBoxFrameWidth);
+		
+		if (::strcmp(get_style_name(), "Oxygen") == 0)
+			w++;
+		
+		GB.ReturnInteger(w);
+	}
 
 END_PROPERTY
 
 BEGIN_PROPERTY(Style_Name)
 
-	if (CSTYLE_fix_breeze)
-	{
-		GB.ReturnNewZeroString("Breeze");
-	}
-	else
-	{
-		const char *name = qApp->style()->metaObject()->className();
-		int len = strlen(name);
-	
-		if (len >= 6 && strncasecmp(&name[len - 5], "style", 5) == 0)
-			len -= 5;
-		if (len >= 3 && strncmp(&name[len - 2], "::", 2) == 0)
-			len -= 2;
-		if (name[0] == 'Q' && isupper(name[1]))
-		{
-			len--;
-			name++;
-		}
-		
-		GB.ReturnNewString(name, len);
-	}
+	GB.ReturnString(get_style_name());
 
 END_PROPERTY
 
@@ -458,9 +478,17 @@ BEGIN_METHOD(Style_FontOf, GB_OBJECT control)
 END_METHOD
 #endif
 
+BEGIN_METHOD_VOID(Style_exit)
+
+	GB.FreeString(&_style_name);
+
+END_METHOD
+
 GB_DESC StyleDesc[] =
 {
 	GB_DECLARE("Style", 0), GB_VIRTUAL_CLASS(),
+	
+	GB_STATIC_METHOD("_exit", NULL, Style_exit, NULL),
 	
 	GB_STATIC_PROPERTY_READ("ScrollbarSize", "i", Style_ScrollbarSize),
 	GB_STATIC_PROPERTY_READ("ScrollbarSpacing", "i", Style_ScrollbarSpacing),

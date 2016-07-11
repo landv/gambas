@@ -879,7 +879,7 @@ GB_DESC CWindowDesc[] =
 
 	WINDOW_DESCRIPTION,
 
-	GB_EVENT("Close", "b", NULL, &EVENT_Close),
+	GB_EVENT("Close", NULL, NULL, &EVENT_Close),
 	GB_EVENT("Open", NULL, NULL, &EVENT_Open),
 	GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
 	GB_EVENT("Deactivate", NULL, NULL, &EVENT_Deactivate),
