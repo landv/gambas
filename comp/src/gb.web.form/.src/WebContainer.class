@@ -184,10 +184,10 @@ Public Sub _RenderStyleSheet()
       Endif
     Endif
     
-    If $bBorder Then Me._AddStyleSheet("border:solid #C0C0C0 1px;")
-    
   Endif
   
+  If $bBorder Then Me._AddStyleSheet("border:solid #C0C0C0 1px;")
+    
   Me._EndStyleSheet
   
   ' For I = 0 To $aChildren.Max

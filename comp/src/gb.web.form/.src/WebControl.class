@@ -264,6 +264,7 @@ Public Sub _GetClassId(Optional sClass As String) As String
   If $bNoBorder Then sClass &= " gw-noborder"
   If Not Me.Enabled Then sClass &= " gw-disabled"
   If $sClass Then sClass &= " " & $sClass
+  If $bHidden Then sClass &= " gw-hidden"
   sResult = " class=\"" & sClass & "\" id=\"" & $sName & "\""
   If $sTooltip Then sResult &= " title=\"" & Replace($sTooltip, Chr$(34), "&quot;") & "\""
   Return sResult
@@ -331,8 +332,6 @@ Public Sub _RenderStyleSheet()
   If $iForeground <> Color.Default Then _AddStyleSheet("color:" & _GetColor($iForeground) & ";")
   
   If $hStyle And If Not $hStyle.IsVoid() Then $aStyleSheet.Insert($hStyle._GetStyleSheet())
-  
-  If $bHidden Then $aStyleSheet.Add("display:none;")
   
   _EndStyleSheet
   
@@ -616,10 +615,21 @@ End
 
 Private Sub Visible_Write(Value As Boolean)
 
+  Dim bCanRefresh As Boolean
+  
   If $bHidden <> Value Then Return
+  
+  $bHidden = False
+  bCanRefresh = _CanRefresh()
   $bHidden = Not Value
+  
+  Inc _NoRefresh
   _SetProperty("Visible", Value)
-  Me.Parent.Refresh
+  Dec _NoRefresh
+  If bCanRefresh Then 
+    WebForm._AddJavascript("gw.setVisible(" & JS(Me.Name) & "," & JS(Not $bHidden) & ");")
+  Endif
+  'Me.Parent.Refresh
   
   ' If Value Then
   '   If $hStyle Then Style_Read()["display"] = ""

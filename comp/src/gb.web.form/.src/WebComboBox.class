@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,List,ReadOnly=True"
+Public Const _Properties As String = "*,Border=True,List,ReadOnly=True,PlaceHolder,Text"
 Public Const _DrawWith As String = "ComboBox"
 Public Const _DefaultSize As String = "24,4"
 Public Const _Similar As String = "WebTextBox"
@@ -11,17 +11,20 @@ Public Const _DefaultEvent As String = "Click"
 
 Event Click
 Event Change
+Event Activate
 
 Property Text As String
 Property Read Count As Integer
 Property Index As Integer
 Property List As String[]
 Property ReadOnly As Boolean
+Property PlaceHolder As String
 
 Private $iIndex As Integer
 Private $sText As String
 Private $aList As New String[]
 Private $bReadOnly As Boolean = True
+Private $sPlaceHolder As String
 
 Public Sub _new()
   
@@ -52,7 +55,11 @@ Public Sub _Render()
   
   If Not $bReadOnly Then
     Print "<input id=\""; Me.Name; ":entry\" class=\"gw-combobox-text\" type=\"text\" value=\""; Html(Text_Read()); "\""; Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value"); 
+    If Object.CanRaise(Me, "Activate") Then
+      Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ");")
+    Endif
     If Not Me.Enabled Then Print " disabled";
+    If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
     Print ">";
     Print "<div class=\"gw-combobox-arrow\">";
   Endif
@@ -154,6 +161,7 @@ Public Sub Clear()
   $aList.Clear
   Index_Write(-1)
   Me._SetProperty("List", $aList)
+  If Not $bReadOnly Then Text_Write("")
   
 End
 
@@ -206,12 +214,35 @@ End
 Private Sub Text_Write(Value As String)
 
   If $bReadOnly Then
+    
     Index_Write($aList.Find(Value))
+    
   Else
+    
     If $sText = Value Then Return
     $sText = Value
+    
+    Inc Me._NoRefresh
     Me._SetProperty("Text", Value)
+    Dec Me._NoRefresh
+    
+    If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText) & ";")
+    
     Raise Change
+    
   Endif
+
+End
+
+Private Function PlaceHolder_Read() As String
+
+  Return $sPlaceHolder
+
+End
+
+Private Sub PlaceHolder_Write(Value As String)
+
+  $sPlaceHolder = Value
+  Me._SetProperty("PlaceHolder", Value)
 
 End

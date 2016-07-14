@@ -133,6 +133,18 @@ gw = {
     
     $(parent).appendChild(elt);
   },
+
+  setVisible : function(id, visible)
+  {
+    var elt = $(id);
+    if (elt)
+    {
+      if (visible)
+        elt.removeClass('gw-hidden');
+      else
+        elt.addClass('gw-hidden');
+    }
+  },
   
   saveFocus: function() {
     var active = document.activeElement.id;
@@ -610,7 +622,7 @@ gw = {
         gw.update(win, '#close');
     },
     
-    onMove(e) 
+    onMove: function(e) 
     {
       var i, id, elt, b, x, y, bx, by, bw, bh, th;
       var onTopEdge, onLeftEdge, onRightEdge, onBottomEdge, isResizing;
@@ -1031,6 +1043,21 @@ gw = {
         xhr.send();
       }
     });
-  } 
+  },
+  
+  textbox:
+  {
+    onactivate: function(id, e)
+    {
+      if (e.keyCode == 13)
+        setTimeout(function() { gw.raise(id, 'activate'); }, 50);
+    },
+    
+    setText: function(id, text)
+    {
+      $(id).value = text;
+      gw.update(id, 'text', text);
+    }
+  }
 }
 

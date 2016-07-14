@@ -83,8 +83,9 @@ Static Public Sub Main()
   Else If sPath Begins "lib:" And sPath Ends ".js" Then
     
     aLib = Split(Left(sPath, -3), ":")
-    If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
-    RenderJavascript(sFile)
+    aLib.Remove(aLib.Max)
+    'If aLib.Count >= 3 Then sFile = aLib[1] & ".js"
+    RenderJavascript(aLib)
     Return
   
   Else If sPath Begins "img:" Then
@@ -307,24 +308,30 @@ Static Private Sub RenderStyleSheet(Optional sFile As String)
   
 End
 
-Static Private Sub RenderJavascript(Optional sFile As String)
+Static Private Sub RenderJavascript(aLib As String[])
   
-  If Not sFile Then sFile = "lib.js"
+  Dim sFile As String
   
   Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
   
-  If sFile = "lib.js" Then 
-    Print "$root = "; JS(Application.Root); ";"
-    Print File.Load(sFile)
-    Print File.Load("ac.js")
-  Else
-    If Exist(sFile) Then
+  For Each sFile In aLib
+  
+    sFile &= ".js"
+  
+    If sFile = "lib.js" Then 
+      Print "$root = "; JS(Application.Root); ";"
       Print File.Load(sFile)
-    Else If Exist(".." &/ sFile) Then
-      Print File.Load(".." &/ sFile)
+      Print File.Load("ac.js")
+    Else
+      If Exist(sFile) Then
+        Print File.Load(sFile)
+      Else If Exist(".." &/ sFile) Then
+        Print File.Load(".." &/ sFile)
+      Endif
     Endif
-  Endif
+    
+  Next
   
   Response.End
   
@@ -689,6 +696,7 @@ End
 
 Public Sub AddJavascriptFile(sFile As String)
   
+  If sFile Ends ".js" Then sFile = Left(sFile, -3)
   If Not $aJavascriptFiles Then $aJavascriptFiles = New String[]
   $aJavascriptFiles.Add(sFile)
   

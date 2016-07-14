@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,ReadOnly,Wrap,Text"
+Public Const _Properties As String = "*,Border=True,ReadOnly,Wrap,PlaceHolder,Text"
 Public Const _DrawWith As String = "TextArea"
 Public Const _DefaultSize As String = "16,16"
 
@@ -12,10 +12,12 @@ Event Change
 Property Text As String
 Property ReadOnly As Boolean
 Property Wrap As Boolean
+Property PlaceHolder As String
 
 Private $sText As String
 Private $bReadOnly As Boolean
 Private $bWrap As Boolean
+Private $sPlaceHolder As String
 
 Private Function Text_Read() As String
 
@@ -51,6 +53,7 @@ Public Sub _BeforeRender()
   Print "<textarea"; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); " autocomplete=\"off\""; 
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
+  If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
   Me._RenderStyleSheet()
   Print ">";
   
@@ -99,5 +102,18 @@ Private Sub Wrap_Write(Value As Boolean)
 
   $bWrap = Value
   Me._SetProperty("Wrap", Value)
+
+End
+
+Private Function PlaceHolder_Read() As String
+
+  Return $sPlaceHolder
+
+End
+
+Private Sub PlaceHolder_Write(Value As String)
+
+  $sPlaceHolder = Value
+  Me._SetProperty("PlaceHolder", Value)
 
 End

@@ -3,18 +3,23 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,ReadOnly,Text"
+Public Const _Properties As String = "*,Border=True,ReadOnly,PlaceHolder,Text"
 Public Const _DrawWith As String = "TextBox"
 Public Const _DefaultSize As String = "24,4"
 
 Event Change
 Event Completion(Text As String)
+Event Activate
 
 Property Text As String
 Property ReadOnly As Boolean
+Property PlaceHolder As String
+'Property Button As String
 
 Private $sText As String
 Private $bReadOnly As Boolean
+Private $sPlaceHolder As String
+'Private $sButton As String
 
 Private Function Text_Read() As String
 
@@ -27,7 +32,13 @@ Private Sub Text_Write(Value As String)
   If $sText = Value Then Return
   
   $sText = Value
+
+  Inc Me._NoRefresh
   Me._SetProperty("Text", Value)
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText) & ";")
+  
   Raise Change
 
 End
@@ -42,9 +53,14 @@ End
 Public Sub _BeforeRender()
   
   Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value");
+  If Object.CanRaise(Me, "Activate") Then
+    Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ");")
+  Endif
+  
   Me._RenderStyleSheet()
   If Not Me.Enabled Then Print " disabled";
   If $bReadOnly Then Print " readonly";
+  If $sPlaceHolder Then Print " placeholder=\""; Html($sPlaceHolder); "\"";
   If $sText Then Print " value=\""; Html($sText); "\"";
   Print ">"
   
@@ -86,3 +102,30 @@ Public Sub CompleteWith(CompletionList As String[])
   WebForm._AddReply("gw.autocompletion = " & JSON.Encode(CompletionList) & ";")
   
 End
+
+Private Function PlaceHolder_Read() As String
+
+  Return $sPlaceHolder
+
+End
+
+Private Sub PlaceHolder_Write(Value As String)
+
+  $sPlaceHolder = Value
+  Me._SetProperty("PlaceHolder", Value)
+
+End
+
+' Private Function Button_Read() As String
+' 
+'   Return $sButton
+' 
+' End
+' 
+' Private Sub Button_Write(Value As String)
+' 
+'   If $sButton = Value Then Return
+'   $sButton = Value
+'   Me._SetProperty("Button", Value)
+' 
+' End

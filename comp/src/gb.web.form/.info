@@ -272,7 +272,7 @@ C
 _Properties
 C
 s
-"*,Border=True,List,ReadOnly=True"
+"*,Border=True,List,ReadOnly=True,PlaceHolder,Text"
 _DrawWith
 C
 s
@@ -297,6 +297,10 @@ s
 :
 
 
+:Activate
+:
+
+
 Text
 p
 s
@@ -316,6 +320,10 @@ String[]
 ReadOnly
 p
 b
+
+PlaceHolder
+p
+s
 
 _new
 m
@@ -1612,7 +1620,7 @@ C
 _Properties
 C
 s
-"*,Border=True,Mode{Select.*}=None,ShowCheck=True"
+"*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=true"
 _DrawWith
 C
 s
@@ -1678,6 +1686,10 @@ p
 i
 
 ShowCheck
+p
+b
+
+ShowHeader
 p
 b
 
@@ -1750,7 +1762,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ReadOnly,Wrap,Text"
+"*,Border=True,ReadOnly,Wrap,PlaceHolder,Text"
 _DrawWith
 C
 s
@@ -1774,6 +1786,10 @@ b
 Wrap
 p
 b
+
+PlaceHolder
+p
+s
 
 _RenderStyleSheet
 m
@@ -1801,7 +1817,7 @@ C
 _Properties
 C
 s
-"*,Border=True,ReadOnly,Text"
+"*,Border=True,ReadOnly,PlaceHolder,Text"
 _DrawWith
 C
 s
@@ -1822,9 +1838,17 @@ Text
 p
 s
 
+:Activate
+:
+
+
 ReadOnly
 p
 b
+
+PlaceHolder
+p
+s
 
 Clear
 m

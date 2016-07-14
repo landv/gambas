@@ -3,7 +3,7 @@
 Export
 Inherits WebControl
 
-Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None,ShowCheck=True"
+Public Const _Properties As String = "*,Border=True,Mode{Select.*}=None,ShowCheck=True,ShowHeader=true"
 Public Const _DrawWith As String = "GridView"
 Public Const _DefaultSize As String = "24,24"
 Public Const _DefaultEvent As String = "Data"
@@ -23,6 +23,7 @@ Property Step As Integer
 Property ScrollX As Integer
 Property ScrollY As Integer
 Property ShowCheck As Boolean
+Property ShowHeader As Boolean
 'Property Fixed As Boolean
 
 Private $hColumns As _WebTableColumns
@@ -36,7 +37,7 @@ Private $iScrollX As Integer
 Private $iScrollY As Integer
 Private $bNoScrolling As Boolean
 Private $bNoCheck As Boolean
-'Private $bFixed As Boolean
+Private $bNoHeader As Boolean
 
 
 Public Sub _new()
@@ -97,6 +98,13 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
       Print "<td";
       hCol._PrintAlignment()
       sStyle = ""
+      If $bNoHeader And If iCol = 0 Then
+        If hCol.Expand Then 
+          Print " width=\"100%\"";
+        Else If hCol.Width Then
+          sStyle &= "min-width:" & hCol.Width & ";"
+        Endif
+      Endif
       If hData.Background <> Color.Default Then sStyle &= "background-color:" & WebControl._GetColor(hData.Background) & ";"
       If hData.Foreground <> Color.Default Then sStyle &= "color:" & WebControl._GetColor(hData.Foreground) & ";"
       If sStyle Then Print " style=\""; sStyle; "\"";
@@ -126,10 +134,10 @@ Public Sub _Render()
   'If $bFixed Then
   '  Print "<table style=\"table-layout:fixed;\">"
   'Else
-    Print "<table id=\""; Me.Name; ":table\">"
+    Print "<table id=\""; Me.Name; ":table\" width=\"100%\">"
   'Endif
 
-  $hColumns._Render()
+  If Not $bNoHeader Then $hColumns._Render()
   
   PrintBody(0, Min($iDisplay, $iCount) - 1)
   
@@ -473,5 +481,18 @@ Private Sub Current_Write(Value As Integer)
   If $iMode = Select.None Then Return
   UnselectAll
   Select(Value)  
+
+End
+
+Private Function ShowHeader_Read() As Boolean
+
+  Return Not $bNoHeader
+
+End
+
+Private Sub ShowHeader_Write(Value As Boolean)
+
+  $bNoHeader = Not Value
+  Me._SetProperty("ShowHeader", Value)
 
 End
