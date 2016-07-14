@@ -354,7 +354,7 @@ Public Sub SetAlpha(Value As Boolean)
   panAlpha.Visible = Value
   If Not Value Then txtA.Value = 0
 
-  H = panValue.H
+  H = panAlpha.H * 3 + Desktop.Scale * 2
   If panAlpha.Visible Then H += panAlpha.H + Desktop.Scale
   panInfo.H = H
 
@@ -574,5 +574,11 @@ End
 Public Sub palColor_Activate()
 
   GetParent()._RaiseActivate()
+
+End
+
+Public Sub panValue_Arrange()
+
+  txtA.W = txtR.W
 
 End
