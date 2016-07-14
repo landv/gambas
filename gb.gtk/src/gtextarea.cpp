@@ -1011,6 +1011,7 @@ void gTextArea::clear()
 void gTextArea::updateColor()
 {
 	gt_widget_set_color(textview, FALSE, background(), _bg_name, &_bg_default);
+	gt_widget_set_color(textview, TRUE, foreground(), _fg_name, &_fg_default);
 }
 #endif
 

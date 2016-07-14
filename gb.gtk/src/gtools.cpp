@@ -2184,7 +2184,8 @@ void gt_widget_set_color(GtkWidget *widget, bool fg, gColor color, const char *n
 	{
 		if (name)
 			gtk_widget_override_symbolic_color(widget, name, def_color);
-		else if (fg)
+		
+		if (fg)
 			gtk_widget_override_color(widget, GTK_STATE_FLAG_NORMAL, NULL);
 		else
 			gtk_widget_override_background_color(widget, GTK_STATE_FLAG_NORMAL, NULL);
@@ -2193,9 +2194,11 @@ void gt_widget_set_color(GtkWidget *widget, bool fg, gColor color, const char *n
 	{
 		GdkRGBA rgba;
 		gt_from_color(color, &rgba);
+		
 		if (name)
 			gtk_widget_override_symbolic_color(widget, name, &rgba);
-		else if (fg)
+		
+		if (fg)
 			gtk_widget_override_color(widget, GTK_STATE_FLAG_NORMAL, &rgba);
 		else
 			gtk_widget_override_background_color(widget, GTK_STATE_FLAG_NORMAL, &rgba);
