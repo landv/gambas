@@ -237,6 +237,7 @@ Public Sub Modify(Optional bReset As Boolean)
   $bModify = True
   Inc Project.TimeStamp
   Inc Age
+  Scan = Null
   $cProc.Clear ' = New Collection
   $aProc.Clear ' = New String[]
 

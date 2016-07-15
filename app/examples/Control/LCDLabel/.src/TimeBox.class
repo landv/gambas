@@ -115,7 +115,7 @@ End
 
 Public Sub MinuteBox_MouseWheel()
 
-  $hMinute.Text = Format(Max(0, Min(59, CInt($hMinute.Text) + If(Mouse.Forward, -1, 1))), "00")
+  $hMinute.Text = Format(Max(0, Min(59, CInt($hMinute.Text) + If(Mouse.Forward, 1, -1))), "00")
   
 End
 

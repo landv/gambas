@@ -290,13 +290,14 @@ Public Sub Main()
     Else If sArg = "--version" Or If sArg = "-V" Then
       Print Application.Version
       Quit
-    ' Else If sArg = "-u" Then
-    '   Project.JustUpdateVersion = True
-    '   Project.Dir = Args[iInd + 1]
-    '   Project.Path = Project.Dir &/ PROJECT_FILE
-    '   Project.ReadProject(False)
-    '   Project.Exit
-    '   Quit
+    Else If sArg = "--cleanup" Then
+      sPath = Args[iInd + 1]
+      If Not sPath Then sPath = Application.Dir
+      If CleanUp(sPath, True) Then
+        Quit 1
+      Else
+        Quit
+      Endif
     Else If Left(sArg) = "-" Then
       Error "gambas3: unknown option: " & sArg
       Quit
@@ -2268,15 +2269,9 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   hForm = Files[sPath]
   If Not hForm Then Return
 
-  CPosition.Disable
-
   ShowFile(hForm)
 
-  'hForm.Show
-
-  'IF Object.Type(hForm) = "FEditor" THEN
-  '  hForm.GetEditor().SetFocus
-  'ENDIF
+  CPosition.Disable
 
   If iLine Then
     Try hForm.GotoCenter(iLine - 1, iColumn)
@@ -2288,7 +2283,7 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   CPosition.SaveCurrent(Me)
 
   Return hForm
-
+  
 End
 
 Public Function ExistForm(sClass As String) As Boolean
@@ -5278,15 +5273,15 @@ Private Sub CreateGitIgnore()
 
 End
 
-Public Sub CleanUp(Optional sDir As String = Project.Dir)
+Public Sub CleanUp(Optional sDir As String = Project.Dir, bCommandLine As Boolean) As Boolean
 
   Dim sFile As String
-  Dim aPattern As String[] = ["*.gambas", ".lock", "*~", "core", "core.*", "vgcore", "vgcore.*", ".kdbg*", ".*.prof"]
+  Dim aPattern As String[] = ["*.gambas", ".lock", "*~", "core", "core.*", "vgcore", "vgcore.*", ".kdbg*", ".*.prof", "cachegrind.out.*", "callgrind.out.*"]
   Dim sName As String
   Dim sPattern As String
   Dim aFail As New String[]
 
-  Inc Application.Busy
+  If Not bCommandLine Then Inc Application.Busy
 
   For Each sFile In RDir(sDir)
     
@@ -5311,10 +5306,16 @@ DELETE_FILE:
 
   If sDir = Project.Dir Then Project.Refresh
   
-  Dec Application.Busy
+  If Not bCommandLine Then Dec Application.Busy
   
   If aFail.Count Then
-    Message.Error(("The following files couldn't be removed:") & "<br><br><tt>" & aFail.Join("<br>") & "</tt>")
+    If bCommandLine Then
+      Error ("The following files couldn't be removed:")
+      Error aFail.Join("\n")
+      Return True
+    Else
+      Message.Error(("The following files couldn't be removed:") & "<br><br><tt>" & aFail.Join("<br>") & "</tt>")
+    Endif
   Endif
 
 End

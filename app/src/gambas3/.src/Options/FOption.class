@@ -255,7 +255,7 @@ Private Sub RefreshEditor()
   Project.RefreshBreakpointPicture
   
   For Each hFile In Project.Files
-    If hFile Is FEditor Or hFile Is FTextEditor Then hFile.ReadConfig()
+    Try hFile.ReadConfig()
   Next  
   
   FSearch.ReadConfig

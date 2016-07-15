@@ -1880,15 +1880,12 @@ End
 
 Public Sub Modify(Optional bReset As Boolean)
 
-  Dim hEditor As FEditor
-
   If Project.ReadOnly Then Return
   If $bDoNotModify Then Return
 
   If $bModify <> bReset Then Return
 
-  hEditor = GetClassEditor()
-  If hEditor Then hEditor.Scan = Null
+  ResetClassScan
   Inc Project.TimeStamp
 
   $bModify = Not bReset

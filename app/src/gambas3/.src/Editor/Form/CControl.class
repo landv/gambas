@@ -1015,11 +1015,15 @@ Public Function Rename(sNewName As String) As Boolean
     hForm.GetClassEditor(True).RenameControl(Name, sNewName)
   Endif
   
-  If Name Then hForm.Control[Name] = Null
+  If Name Then
+    hForm.Control[Name] = Null
+    If Selected Then hForm.Selection[Name] = Null
+  Endif
 
   Name = sNewName
   hForm.Control[Name] = Me
   Control.Tag = Name
+  If Selected Then hForm.Selection[Name] = Me
 
   hForm.Modify
 

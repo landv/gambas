@@ -117,7 +117,24 @@ Static Public Sub PaintMenuItem(hCCtrl As CControl)
   
 End
 
+Private Sub PaintButton(hCCtrl As CControl)
 
+  Dim hRect As Rect
+  Dim F As Integer = Style.FrameWidth * 2
+  
+  Style.PaintButton(0, 0, Paint.W, Paint.H, False,, Not hCCtrl["Border"])
+  
+  hRect = New Rect(0, 0, Paint.W, Paint.H)
+  'hRect.Adjust(F)
+  
+  If hCCtrl["Image"] Then
+    CFamily.PaintImage(hCCtrl, ".public", Align.Left, F)
+    hRect.Left += CFamily.LastRect.W + F
+  Endif
+  
+  If hCCtrl["Text"] Then Paint.DrawText(hCCtrl["Text"], hRect.X, hRect.Y, hRect.W, hRect.H, Align.Center)
+
+End
 
 Public Sub DrawControl(hCCtrl As CControl) As Boolean
   
@@ -136,6 +153,10 @@ Public Sub DrawControl(hCCtrl As CControl) As Boolean
       
     Case "WebImage"
       Return CFamily.PaintImage(hCCtrl, ".public")
+      
+    Case "WebButton"
+      PaintButton(hCCtrl)
+      Return
     
     Case Else
       

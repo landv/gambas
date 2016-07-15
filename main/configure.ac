@@ -60,7 +60,7 @@ dnl ---- Check for ffi library
 GB_COMPONENT_SEARCH(
   ffi, FFI, libffi, [],
   libffi,
-  [GB_FIND(ffi.h, /usr/local /usr/local/lib /usr /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
+  [GB_FIND(ffi.h, /usr/local /usr/local/lib/64 /usr/local/lib /usr /usr/lib64 /usr/lib /usr/lib/gcc/*/*, include ffi/include)],
   [GB_FIND(libffi.$SHLIBEXT, /usr/local /usr /usr/lib/gcc/*/*, lib .)],
   [-lffi])
 

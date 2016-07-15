@@ -358,6 +358,8 @@ Private Sub LoadUser(sUser As String) As Collection
   
   cUser = New Collection
   
+  cUser["activé"] = "Oui"
+  
   For Each sLine In Split(File.Load(sPath), "\n")
     iPos = InStr(sLine, ": ")
     If iPos = 0 Then Continue
