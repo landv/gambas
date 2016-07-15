@@ -641,6 +641,9 @@ void gMainWindow::setVisible(bool vl)
 				
 				if (parent)
 					gtk_window_set_transient_for(GTK_WINDOW(border), GTK_WINDOW(parent->border));
+				
+				if (!_no_take_focus)
+					present();
 			}
 
 			if (gApplication::mainWindow() == this)
