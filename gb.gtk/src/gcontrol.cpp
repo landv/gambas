@@ -1891,7 +1891,7 @@ void gControl::updateStyleSheet()
 		
 		g_stradd(&css, "}\n");
 		
-		fprintf(stderr, "---- %s\n%s", _name, css);
+		//fprintf(stderr, "---- %s\n%s", _name, css);
 		
 		gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(_css), css, -1, NULL);
 		gtk_style_context_add_provider(context, _css, GTK_STYLE_PROVIDER_PRIORITY_USER);
