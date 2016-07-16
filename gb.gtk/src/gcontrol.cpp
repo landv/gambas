@@ -1876,17 +1876,18 @@ void gControl::updateStyleSheet()
 		
 		if (_bg != COLOR_DEFAULT)
 		{
-			sprintf(buffer, "#%06X;\n", _bg);
 			g_stradd(&css, "background-color:");
+			gt_to_css_color(buffer, _bg);
 			g_stradd(&css, buffer);
-			g_stradd(&css, "background-image:none;\n");
+			g_stradd(&css, ";\nbackground-image:none;\n");
 		}
 		
 		if (_fg != COLOR_DEFAULT)
 		{
-			sprintf(buffer, "#%06X;\n", _fg);
 			g_stradd(&css, "color:");
+			gt_to_css_color(buffer, _fg);
 			g_stradd(&css, buffer);
+			g_stradd(&css, ";\n");
 		}
 		
 		g_stradd(&css, "}\n");

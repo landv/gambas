@@ -276,6 +276,21 @@ gColor gt_to_color(GdkRGBA *rgba)
 	return gt_frgba_to_color(rgba->red, rgba->green, rgba->blue, rgba->alpha);
 }
 
+void gt_to_css_color(char *css, gColor color)
+{
+	int r, g, b, a;
+	char buffer[8];
+	
+	gt_color_to_rgba(color, &r, &g, &b, &a);
+	if (a == 255)
+		sprintf(css, "#%02X%02X%02X", r, g, b);
+	else
+	{
+		sprintf(buffer, "%.3f", a / 255.0);
+		sprintf(css, "rgba(%d,%d,%d,0.%s)", r, g, b, &buffer[2]);
+	}
+}
+
 #endif
 
 gColor gt_frgba_to_color(double r, double g, double b, double a)

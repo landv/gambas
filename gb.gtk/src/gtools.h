@@ -174,6 +174,7 @@ gColor gt_frgba_to_color(double r, double g, double b, double a);
 
 void gt_from_color(gColor color, GdkRGBA *rgba);
 gColor gt_to_color(GdkRGBA *rgba);
+void gt_to_css_color(char *css, gColor color);
 
 void gt_widget_set_color(GtkWidget *widget, bool fg, gColor color, const char *name = NULL, const GdkRGBA *def_color = NULL);
 bool gt_style_lookup_color(GtkStyleContext *style, const char **names, const char **pname, GdkRGBA *rgba);
