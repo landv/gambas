@@ -283,15 +283,11 @@ void gComboBox::popup()
 }
 
 #ifdef GTK3
-void gComboBox::updateColor()
+GtkWidget *gComboBox::getStyleSheetWidget()
 {
-	gTextBox::updateColor();
-	if (entry)
-	{
-		gt_widget_set_color(entry, FALSE, background(), _bg_name, &_bg_default);
-		gt_widget_set_color(entry, TRUE, foreground(), _fg_name, &_fg_default);
-	}
+	return entry ? entry : border;
 }
+
 #else
 void gComboBox::setRealBackground(gColor color)
 {

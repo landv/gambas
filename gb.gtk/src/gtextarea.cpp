@@ -1007,14 +1007,6 @@ void gTextArea::clear()
 	end();
 }
 
-#ifdef GTK3
-void gTextArea::updateColor()
-{
-	gt_widget_set_color(textview, FALSE, background(), _bg_name, &_bg_default);
-	gt_widget_set_color(textview, TRUE, foreground(), _fg_name, &_fg_default);
-}
-#endif
-
 GtkIMContext *gTextArea::getInputMethod()
 {
 #ifdef GTK3
@@ -1025,6 +1017,11 @@ GtkIMContext *gTextArea::getInputMethod()
 }
 
 #ifdef GTK3
+GtkWidget *gTextArea::getStyleSheetWidget()
+{
+	return textview;
+}
+
 int gTextArea::minimumWidth() const
 {
 	return gDesktop::scale() * 4;

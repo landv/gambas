@@ -329,6 +329,7 @@ void gControl::initAll(gContainer *parent)
 
 	_fg = _bg = COLOR_DEFAULT;
 #ifdef GTK3
+	_css = NULL;
 	_fg_name = _bg_name = NULL;
 #endif
 
@@ -374,6 +375,11 @@ gControl::~gControl()
 		gFont::assign(&_resolved_font);
 	}
 
+#ifdef GTK3
+	if (_css)
+		g_object_unref(_css);
+#endif
+	
 	//fprintf(stderr, "~gControl: %s\n", name());
 
 	setName(NULL);
@@ -1828,6 +1834,70 @@ void gControl::setName(char *name)
 
 #ifdef GTK3
 
+GtkWidget *gControl::getStyleSheetWidget()
+{
+	return border;
+}
+
+void gControl::updateStyleSheet()
+{
+	static int count = 0;
+	
+	GtkWidget *wid;
+	GtkStyleContext *context;
+	char *css = NULL;
+	const char *name;
+	char buffer[128];
+	
+	wid = getStyleSheetWidget();
+	context = gtk_widget_get_style_context(wid);
+	
+	if (_bg == COLOR_DEFAULT && _fg == COLOR_DEFAULT)
+	{
+		if (_css)
+			gtk_style_context_remove_provider(context, _css);
+	}
+	else
+	{
+		if (!_css)
+		{
+			count++;
+			sprintf(buffer, "g%d", count);
+			gtk_widget_set_name(wid, buffer);
+			
+			_css = GTK_STYLE_PROVIDER(gtk_css_provider_new());
+		}
+		else
+			gtk_style_context_remove_provider(context, _css);
+		
+		name = gtk_widget_get_name(wid);
+		sprintf(buffer, "#%s:not(:selected) {\n", name);
+		g_stradd(&css, buffer);
+		
+		if (_bg != COLOR_DEFAULT)
+		{
+			sprintf(buffer, "#%06X;\n", _bg);
+			g_stradd(&css, "background-color:");
+			g_stradd(&css, buffer);
+			g_stradd(&css, "background-image:none;\n");
+		}
+		
+		if (_fg != COLOR_DEFAULT)
+		{
+			sprintf(buffer, "#%06X;\n", _fg);
+			g_stradd(&css, "color:");
+			g_stradd(&css, buffer);
+		}
+		
+		g_stradd(&css, "}\n");
+		
+		fprintf(stderr, "---- %s\n%s", _name, css);
+		
+		gtk_css_provider_load_from_data(GTK_CSS_PROVIDER(_css), css, -1, NULL);
+		gtk_style_context_add_provider(context, _css, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	}
+}
+
 gColor gControl::realBackground(bool no_default)
 {
 	if (_bg != COLOR_DEFAULT)
@@ -1850,7 +1920,8 @@ void gControl::setRealBackground(gColor color)
 void gControl::setBackground(gColor color)
 {
 	_bg = color;
-	gt_widget_set_color(border, FALSE, _bg, _bg_name, &_bg_default);
+	updateStyleSheet();
+	//gt_widget_set_color(border, FALSE, _bg, _bg_name, &_bg_default);
 	updateColor();
 }
 
@@ -1876,7 +1947,8 @@ void gControl::setRealForeground(gColor color)
 void gControl::setForeground(gColor color)
 {
 	_fg = color;
-	gt_widget_set_color(border, TRUE, _fg, _fg_name, &_fg_default);
+	updateStyleSheet();
+	//gt_widget_set_color(border, TRUE, _fg, _fg_name, &_fg_default);
 	updateColor();
 }
 

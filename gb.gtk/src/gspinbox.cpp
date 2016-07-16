@@ -189,6 +189,6 @@ void gSpinBox::resize(int w, int h)
 
 int gSpinBox::minimumWidth() const
 {
-	return _first_width + gDesktop::scale() * 6;
+	return _first_width + gDesktop::scale() * 7;
 }
 #endif

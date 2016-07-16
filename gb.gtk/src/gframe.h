@@ -58,7 +58,7 @@ public:
 
 	virtual void updateFont();
 #ifdef GTK3
-	virtual void updateColor();
+	virtual GtkWidget *getStyleSheetWidget();
 #else
 	virtual void setRealForeground(gColor color);
 #endif

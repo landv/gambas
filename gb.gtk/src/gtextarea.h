@@ -92,7 +92,7 @@ public:
 //"Private"
   virtual void updateCursor(GdkCursor *cursor);
 #ifdef GTK3
-	virtual void updateColor();
+	virtual GtkWidget *getStyleSheetWidget();
 	virtual int minimumWidth() const;
 	virtual int minimumHeight() const;
 #endif

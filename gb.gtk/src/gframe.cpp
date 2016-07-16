@@ -221,10 +221,9 @@ void gFrame::updateFont()
 }
 
 #ifdef GTK3
-void gFrame::updateColor()
+GtkWidget *gFrame::getStyleSheetWidget()
 {
-	gContainer::updateColor();
-	gt_widget_set_color(fr, FALSE, background());
+	return fr;
 }
 #else
 void gFrame::setRealForeground(gColor color)

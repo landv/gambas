@@ -61,7 +61,7 @@ public:
 	
 	virtual void resize(int w, int h);
 #ifdef GTK3
-	virtual void updateColor();
+	virtual GtkWidget *getStyleSheetWidget();
 #else
 	virtual void setRealBackground(gColor vl);
 #endif

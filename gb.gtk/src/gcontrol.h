@@ -121,6 +121,8 @@ public:
 	virtual void updateFont();
 	virtual void updateSize();
 #ifdef GTK3
+	virtual GtkWidget *getStyleSheetWidget();
+	void updateStyleSheet();
 	virtual void updateColor();
 	void setColorNames(const char *bg_names[], const char *fg_names[]);
 	void setColorBase();
@@ -214,6 +216,7 @@ public:
 	gControl *_proxy, *_proxy_for;
 	gColor _bg, _fg;
 #ifdef GTK3
+	GtkStyleProvider *_css;
 	const char *_bg_name;
 	const char **_bg_name_list;
 	GdkRGBA _bg_default;
