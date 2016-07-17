@@ -58,6 +58,7 @@ typedef
 		void (*get_preferred_width_for_height)(GtkWidget *widget, gint height, gint *minimum_width, gint *natural_width);
 		void (*get_preferred_width)(GtkWidget *widget, gint *minimum_width, gint *natural_width);
 		void (*get_preferred_height_for_width)(GtkWidget *widget, gint width, gint *minimum_height, gint *natural_height);
+		//void (*get_preferred_height_and_baseline_for_width)(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline);
 	}
 	PATCH_FUNCS;
 
@@ -1561,7 +1562,21 @@ static void type##_get_preferred_height_for_width(GtkWidget *widget, gint width,
 	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
 	(*OLD_FUNC->get_preferred_height_for_width)(widget, width, minimum_size, natural_size); \
 }
-
+#define PATCH_DECLARE_BASELINE(type) \
+static void type##get_preferred_height_and_baseline_for_width(GtkWidget *widget, gint width, gint *minimum, gint *natural, gint *minimum_baseline, gint *natural_baseline) \
+{ \
+	if (minimum && minimum_baseline && must_patch(widget)) \
+	{ \
+		*minimum = 0; \
+		*natural = 0; \
+		*minimum_baseline = 0; \
+		*natural_baseline = 0; \
+		fprintf(stderr, "%s\n", __func__); \
+		return; \
+	} \
+	GtkWidgetClass *klass = (GtkWidgetClass *)g_type_class_peek(type); \
+	(*OLD_FUNC->get_preferred_height_and_baseline_for_width)(widget, width, minimum, natural, minimum_baseline, natural_baseline); \
+}
 
 //fprintf(stderr, "patching [%p %s] (%p %p)\n", klass, G_OBJECT_TYPE_NAME(widget), klass->get_preferred_width, klass->get_preferred_height);
 //		fprintf(stderr, "PATCH_CLASS: %s\n", G_OBJECT_TYPE_NAME(widget));
@@ -1584,8 +1599,29 @@ if (G_OBJECT_TYPE(widget) == type) \
 	} \
 }
 
+#define PATCH_CLASS_BASELINE(widget, type) \
+if (G_OBJECT_TYPE(widget) == type) \
+{ \
+	GtkWidgetClass *klass = (GtkWidgetClass *)GTK_WIDGET_GET_CLASS(widget); \
+	if (klass->get_preferred_width != type##_get_preferred_width) \
+	{ \
+		PATCH_FUNCS *funcs = g_new0(PATCH_FUNCS, 1); \
+		funcs->get_preferred_width = klass->get_preferred_width; \
+		funcs->get_preferred_height = klass->get_preferred_height; \
+		funcs->get_preferred_height_for_width = klass->get_preferred_height_for_width; \
+		funcs->get_preferred_width_for_height = klass->get_preferred_width_for_height; \
+		funcs->get_preferred_height_and_baseline_for_width = klass->get_preferred_height_and_baseline_for_width; \
+		klass->_gtk_reserved6 = (void(*)())funcs; \
+		klass->get_preferred_width = type##_get_preferred_width; \
+		klass->get_preferred_height = type##_get_preferred_height; \
+		klass->get_preferred_height_for_width = type##_get_preferred_height_for_width; \
+		klass->get_preferred_height_and_baseline_for_width = type##get_preferred_height_and_baseline_for_width; \
+	} \
+}
+
 PATCH_DECLARE(GTK_TYPE_WINDOW)
 PATCH_DECLARE(GTK_TYPE_ENTRY)
+//PATCH_DECLARE_BASELINE(GTK_TYPE_ENTRY)
 PATCH_DECLARE(GTK_TYPE_COMBO_BOX)
 PATCH_DECLARE(GTK_TYPE_SPIN_BUTTON)
 PATCH_DECLARE(GTK_TYPE_BUTTON)
@@ -1650,6 +1686,7 @@ void gControl::realize(bool make_frame)
 
 	PATCH_CLASS(border, GTK_TYPE_WINDOW)
 	else PATCH_CLASS(border, GTK_TYPE_ENTRY)
+	//else PATCH_CLASS_BASELINE(border, GTK_TYPE_ENTRY)
 	else PATCH_CLASS(border, GTK_TYPE_SPIN_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_BUTTON)
 	else PATCH_CLASS(border, GTK_TYPE_FIXED)

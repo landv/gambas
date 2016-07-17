@@ -204,6 +204,17 @@ BEGIN_PROPERTY(TextBox_MaxLength)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(TextBox_CursorPos)
+
+	GET_TEXT_BOX();
+	
+	// Hack to call cursorRect()
+	QRect rect = textbox->inputMethodQuery(Qt::ImMicroFocus).toRect();
+	
+	GB.ReturnObject(GEOM.CreatePoint((rect.left() + rect.right()) / 2 + 1, rect.bottom()));
+
+END_PROPERTY
+
 /***************************************************************************
 
 	.TextBox.Selection
@@ -855,6 +866,8 @@ GB_DESC CTextBoxDesc[] =
 
 	GB_METHOD("Clear", NULL, TextBox_Clear, NULL),
 	GB_METHOD("Insert", NULL, TextBox_Insert, "(Text)s"),
+	
+	GB_PROPERTY_READ("CursorPos", "Point", TextBox_CursorPos),
 
 	GB_EVENT("Change", NULL, NULL, &EVENT_Change),
 	GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),
@@ -913,6 +926,8 @@ GB_DESC CComboBoxDesc[] =
 	GB_PROPERTY_READ("Count", "i", ComboBox_Count),
 	GB_PROPERTY_READ("Current", ".ComboBox.Item", ComboBox_Current),
 	GB_PROPERTY("Index", "i", ComboBox_Index),
+
+	GB_PROPERTY_READ("CursorPos", "Point", TextBox_CursorPos),
 
 	GB_EVENT("Change", NULL, NULL, &EVENT_Change),
 	GB_EVENT("Activate", NULL, NULL, &EVENT_Activate),

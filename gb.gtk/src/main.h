@@ -26,6 +26,7 @@
 
 #include "gambas.h"
 #include "gb.image.h"
+#include "gb.geom.h"
 #include "gb.gtk.h"
 #include "widgets.h"
 #include "CWidget.h"
@@ -33,6 +34,7 @@
 #ifndef __MAIN_C
 extern const GB_INTERFACE *GB_PTR;
 extern IMAGE_INTERFACE IMAGE;
+extern GEOM_INTERFACE GEOM;
 
 extern GB_CLASS CLASS_Control;
 extern GB_CLASS CLASS_Picture;

@@ -61,6 +61,8 @@ public:
 	void selectAll();
 	bool hasEntry() const { return entry != 0; }
 
+	void getCursorPos(int *x, int *y);
+	
 //"Signals"
 	void (*onChange)(gTextBox *sender);
 	void (*onActivate)(gTextBox *sender);
@@ -73,6 +75,7 @@ public:
 	virtual GtkIMContext *getInputMethod();
 
 	unsigned _changed : 1;
+	unsigned _border : 1;
 
 #ifdef GTK3
 	static GtkCssProvider *_style_provider;

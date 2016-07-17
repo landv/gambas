@@ -38,10 +38,13 @@
 #define DO_NOT_USE_QT_INTERFACE
 #include "gb.qt.h"
 #include "gb.image.h"
+#include "gb.geom.h"
 
 #ifndef __MAIN_CPP
 extern "C" const GB_INTERFACE *GB_PTR;
 extern "C" IMAGE_INTERFACE IMAGE;
+extern "C" GEOM_INTERFACE GEOM;
+
 extern int MAIN_in_wait;
 extern int MAIN_in_message_box;
 extern int MAIN_loop_level;

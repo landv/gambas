@@ -119,7 +119,7 @@ extern "C" {
 
 const GB_INTERFACE *GB_PTR EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
-
+GEOM_INTERFACE GEOM EXPORT;
 }
 
 int MAIN_in_wait = 0;
@@ -1396,8 +1396,12 @@ int EXPORT GB_INIT(void)
 	GB.Component.Load("gb.draw");
 	GB.Component.Load("gb.image");
 	GB.Component.Load("gb.gui.base");
+	
+	GB.GetInterface("gb.geom", GEOM_INTERFACE_VERSION, &GEOM);
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	
   IMAGE.SetDefaultFormat(GB_IMAGE_BGRP);
+	
 	DRAW_init();
 
 	CLASS_Control = GB.FindClass("Control");

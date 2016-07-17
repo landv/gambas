@@ -315,8 +315,8 @@ static void cb_changed(GtkTextBuffer *buf, gTextArea *data)
 
 static void cb_mark_set(GtkTextBuffer *buf, GtkTextIter *location, GtkTextMark *mark, gTextArea *data)
 {
-	if (mark == gtk_text_buffer_get_insert(buf))
-		data->emit(SIGNAL(data->onCursor));
+	//if (mark == gtk_text_buffer_get_insert(buf))
+	data->emitCursor();
 } 
 
 static void cb_insert_text(GtkTextBuffer *buf, GtkTextIter *location, gchar *text, gint len, gTextArea *ctrl)
@@ -449,6 +449,7 @@ gTextArea::gTextArea(gContainer *parent) : gControl(parent)
 {
 	g_typ = Type_gTextArea;
 	_align_normal = false;
+	_last_pos = -1;
 	
 	have_cursor = true;
 	_undo_stack = NULL;
@@ -532,6 +533,7 @@ void gTextArea::setText(const char *txt, int len)
 		len = 0;
 	}
 	
+	_last_pos = -1;
 	begin();
 	gtk_text_buffer_set_text(_buffer, (const gchar *)txt, len);
 	end();
@@ -1032,3 +1034,26 @@ int gTextArea::minimumHeight() const
 	return gDesktop::scale() * 8;
 }
 #endif
+
+void gTextArea::getCursorPos(int *x, int *y)
+{
+	GdkRectangle rect;
+	int f = getFrameWidth();
+	GtkTextIter *iter = getIterAt();
+	
+	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(widget), iter, &rect);
+	gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, rect.x, rect.y + rect.height, x, y);
+	*x += f;
+	*y += f;
+}
+
+void gTextArea::emitCursor()
+{
+	int pos = position();
+	
+	if (pos == _last_pos)
+		return;
+	
+	_last_pos = pos;
+	emit(SIGNAL(onCursor));
+}

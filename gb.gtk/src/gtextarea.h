@@ -85,6 +85,10 @@ public:
 	void redo();
 	void clear();
 	
+	void getCursorPos(int *x, int *y);
+	
+	void emitCursor();
+	
 //"Signals"
 	void (*onChange)(gTextArea *sender);
 	void (*onCursor)(gTextArea *sender);
@@ -110,6 +114,7 @@ private:
 	GtkWidget *textview;
 	GtkTextBuffer *_buffer;
 	bool _align_normal;
+	int _last_pos;
 
 	GtkTextIter *getIterAt(int pos = -1);
 };

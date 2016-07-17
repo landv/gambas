@@ -122,7 +122,7 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 		/*if (strcmp(gApplication::getStyleName(), "Clearlooks-Phenix") == 0)
 			css = ".entry { border-width: 0; padding: 0; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
 		else*/
-		css = ".entry { border-width: 0; padding: 1px 2px 0px 2px; border-radius: 0; margin: 0; border-style: none; box-shadow: none; background-image: none; }";
+		css = "* { border: none; border-radius: 0; margin: 0; box-shadow: none; }";
 
 		gtk_css_provider_load_from_data(_style_provider, css, -1, NULL);
 	}
@@ -144,6 +144,8 @@ gTextBox::gTextBox(gContainer *parent, bool combo) : gControl(parent)
 	}
 	
 	_changed = false;
+	_border = true;
+	
 	onChange = NULL;
 	onActivate = NULL;
 }
@@ -250,7 +252,7 @@ void gTextBox::setPosition(int pos)
 bool gTextBox::hasBorder()
 {
 	if (entry)
-		return gtk_entry_get_has_frame(GTK_ENTRY(entry));
+		return _border; //gtk_entry_get_has_frame(GTK_ENTRY(entry));
 	else
 		return true;
 }
@@ -263,7 +265,7 @@ void gTextBox::setBorder(bool vl)
 	if (vl == hasBorder())
 		return;
 	
-	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
+	_border = vl;
 	
 #ifdef GTK3
 	GtkStyleContext *style = gtk_widget_get_style_context(entry);
@@ -274,7 +276,9 @@ void gTextBox::setBorder(bool vl)
 
 	//gtk_style_context_invalidate(style);
 #else
-	if (vl)
+	gtk_entry_set_has_frame(GTK_ENTRY(entry), vl);
+	
+	/*if (vl)
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), NULL);
 	else
 	{
@@ -283,7 +287,7 @@ void gTextBox::setBorder(bool vl)
 		border->top = 1;
 		gtk_entry_set_inner_border(GTK_ENTRY(entry), border);
 		gtk_border_free(border);
-	}
+	}*/
 #endif
 }
 
@@ -477,4 +481,27 @@ GtkIMContext *gTextBox::getInputMethod()
 #else
 	return entry ? GTK_ENTRY(entry)->im_context : NULL;
 #endif
+}
+
+
+void gTextBox::getCursorPos(int *x, int *y)
+{
+	int px, py, p;
+	PangoLayout *layout;
+	PangoRectangle rect;
+	
+	layout = gtk_entry_get_layout(GTK_ENTRY(entry));
+	p = gtk_entry_text_index_to_layout_index(GTK_ENTRY(entry), position());
+	pango_layout_get_cursor_pos(layout, p, &rect, NULL);
+	
+	gtk_entry_get_layout_offsets(GTK_ENTRY(entry), &px, &py);
+	
+#ifdef GTK3
+	GdkRectangle r;
+	gtk_entry_get_text_area(GTK_ENTRY(entry), &r);
+	py = r.y;
+#endif
+	
+	*x = px + PANGO_PIXELS(rect.x);
+	*y = py + PANGO_PIXELS(rect.y + rect.height);
 }

@@ -582,17 +582,13 @@ BEGIN_PROPERTY(TextArea_Border)
 	
 END_PROPERTY
 
-/*
-GB_DESC CTextAreaLinesDesc[] =
-{
-	GB_DECLARE(".TextArea.Lines", 0), GB_VIRTUAL_CLASS(),
+BEGIN_PROPERTY(TextArea_CursorPos)
 
-	GB_METHOD("_get", "i", CTEXTAREA_line_get, "s"),
-	GB_PROPERTY_READ("Count", "i", CTEXTAREA_line_count),
+	QRect rect = WIDGET->cursorRect();
+	
+	GB.ReturnObject(GEOM.CreatePoint(rect.x() + WIDGET->viewport()->x(), rect.bottom() + WIDGET->viewport()->y()));
 
-	GB_END_DECLARE
-};
-*/
+END_PROPERTY
 
 GB_DESC CTextAreaSelectionDesc[] =
 {
@@ -648,6 +644,8 @@ GB_DESC CTextAreaDesc[] =
 	GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
 	GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
 	GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
+
+	GB_PROPERTY_READ("CursorPos", "Point", TextArea_CursorPos),
 
 	GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 

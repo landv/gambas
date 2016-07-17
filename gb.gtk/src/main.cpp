@@ -110,6 +110,7 @@ extern "C"
 
 GB_INTERFACE GB EXPORT;
 IMAGE_INTERFACE IMAGE EXPORT;
+GEOM_INTERFACE GEOM EXPORT;
 
 static void declare_tray_icon()
 {
@@ -222,7 +223,10 @@ int EXPORT GB_INIT(void)
 	GB.Component.Load("gb.draw");
 	GB.Component.Load("gb.image");
 	GB.Component.Load("gb.gui.base");
+	
 	GB.GetInterface("gb.image", IMAGE_INTERFACE_VERSION, &IMAGE);
+	GB.GetInterface("gb.geom", GEOM_INTERFACE_VERSION, &GEOM);
+	
 	IMAGE.SetDefaultFormat(GB_IMAGE_RGBA);
 	DRAW_init();
 

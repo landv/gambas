@@ -293,6 +293,14 @@ BEGIN_PROPERTY(TextArea_Alignment)
 END_PROPERTY
 
 
+BEGIN_PROPERTY(TextArea_CursorPos)
+
+	int x, y;
+	WIDGET->getCursorPos(&x, &y);
+	GB.ReturnObject(GEOM.CreatePoint(x, y));
+
+END_PROPERTY
+
 GB_DESC CTextAreaSelectionDesc[] =
 {
   GB_DECLARE(".TextArea.Selection", 0), GB_VIRTUAL_CLASS(),
@@ -347,6 +355,8 @@ GB_DESC CTextAreaDesc[] =
 
   GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
   
+	GB_PROPERTY_READ("CursorPos", "Point", TextArea_CursorPos),
+	
   GB_EVENT("Change", NULL, NULL, &EVENT_Change),
   GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
   
