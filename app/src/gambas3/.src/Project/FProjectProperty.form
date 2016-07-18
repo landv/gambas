@@ -491,14 +491,21 @@
     }
     Index = 5
     Text = ("Arguments")
-    { svwArgList ScrollView
-      MoveScaled(2,1,80,40)
-      Background = Color.TextBackground
+    { Panel8 Panel
+      MoveScaled(2,1,83,43)
       Expand = True
-      Arrangement = Arrange.Vertical
-      Spacing = True
-      Margin = True
-      ScrollBar = Scroll.Vertical
+      Arrangement = Arrange.Fill
+      Border = Border.Plain
+      { svwArgList ScrollView
+        MoveScaled(1,1,80,40)
+        Background = Color.TextBackground
+        Expand = True
+        Arrangement = Arrange.Vertical
+        Spacing = True
+        Margin = True
+        Border = False
+        ScrollBar = Scroll.Vertical
+      }
     }
     { HBox2 HBox
       MoveScaled(3,47,77,4)

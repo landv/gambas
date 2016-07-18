@@ -23,7 +23,7 @@ End
 
 Private Sub AutoResize()
 
-  Me.Resize(Me.Font.TextWidth($hTextBox.Text) + Desktop.Scale * 2, Desktop.Scale * 3)
+  Me.Resize(Me.Font.TextWidth($hTextBox.Text) + Desktop.Scale + 2, Desktop.Scale * 3)
   $hTextBox.Move(1, 1, Me.W - 2, Me.H - 2)
 
 End

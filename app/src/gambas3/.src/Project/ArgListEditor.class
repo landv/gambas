@@ -10,6 +10,7 @@ Property Selected As Boolean
 
 Private $hPanel As DrawingArea
 Private $bSelected As Boolean
+Private $bNoResizePanel As Boolean
 
 Public Sub _new()
   
@@ -41,6 +42,8 @@ Public Sub Set(aArg As String[])
   
   $hPanel.Children.Clear
   
+  $bNoResizePanel = True
+  
   If aArg Then
     For Each sArg In aArg
       Add(sArg)
@@ -48,6 +51,8 @@ Public Sub Set(aArg As String[])
   Endif
   
   Add()
+  
+  $bNoResizePanel = False
   
   ResizePanel
   
@@ -78,12 +83,15 @@ Private Sub ResizePanel()
   
   Dim H As Integer
   
+  If $bNoResizePanel Then Return
+  
   With $hPanel.Children[$hPanel.Children.Count - 1]
     H = .Y + .H + Desktop.Scale
   End With
   
   H = Max(H, Desktop.Scale * 5)
   
+  $hPanel.H = H
   Me.H = H
   
 End
