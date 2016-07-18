@@ -1,23 +1,23 @@
 /***************************************************************************
 
-  CTextArea.cpp
+	CTextArea.cpp
 
-  (c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
+	(c) 2004-2006 - Daniel Campos Fernández <dcamposf@gmail.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2, or (at your option)
-  any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2, or (at your option)
+	any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-  MA 02110-1301, USA.
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+	MA 02110-1301, USA.
 
 ***************************************************************************/
 
@@ -151,7 +151,7 @@ END_PROPERTY
 
 /***************************************************************************
 
-  .TextArea.Selection
+	.TextArea.Selection
 
 ***************************************************************************/
 
@@ -278,7 +278,7 @@ END_METHOD
 
 BEGIN_METHOD_VOID(CTEXTAREA_selected)
 
-  GB.ReturnBoolean(TEXTAREA->isSelected());
+	GB.ReturnBoolean(TEXTAREA->isSelected());
 
 END_METHOD
 
@@ -293,76 +293,76 @@ BEGIN_PROPERTY(TextArea_Alignment)
 END_PROPERTY
 
 
-BEGIN_PROPERTY(TextArea_CursorPos)
+BEGIN_METHOD(TextArea_CursorAt, GB_INTEGER pos)
 
 	int x, y;
-	WIDGET->getCursorPos(&x, &y);
+	WIDGET->getCursorPos(&x, &y, VARGOPT(pos, -1));
 	GB.ReturnObject(GEOM.CreatePoint(x, y));
 
 END_PROPERTY
 
 GB_DESC CTextAreaSelectionDesc[] =
 {
-  GB_DECLARE(".TextArea.Selection", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".TextArea.Selection", 0), GB_VIRTUAL_CLASS(),
 
-  GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
-  GB_PROPERTY_READ("Length", "i", CTEXTAREA_sel_length),
-  GB_PROPERTY_READ("Start", "i", CTEXTAREA_sel_start),
-  GB_PROPERTY_READ("Pos", "i", CTEXTAREA_sel_start),
+	GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
+	GB_PROPERTY_READ("Length", "i", CTEXTAREA_sel_length),
+	GB_PROPERTY_READ("Start", "i", CTEXTAREA_sel_start),
+	GB_PROPERTY_READ("Pos", "i", CTEXTAREA_sel_start),
 
-  GB_METHOD("Hide", 0, CTEXTAREA_sel_clear, 0),
+	GB_METHOD("Hide", 0, CTEXTAREA_sel_clear, 0),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 GB_DESC CTextAreaDesc[] =
 {
-  GB_DECLARE("TextArea", sizeof(CTEXTAREA)), GB_INHERITS("Control"),
+	GB_DECLARE("TextArea", sizeof(CTEXTAREA)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", 0, CTEXTAREA_new, "(Parent)Container;"),
+	GB_METHOD("_new", 0, CTEXTAREA_new, "(Parent)Container;"),
 
-  GB_PROPERTY("Text", "s", CTEXTAREA_text),
-  GB_PROPERTY_READ("Length", "i", CTEXTAREA_length),
-  GB_PROPERTY("ReadOnly", "b", CTEXTAREA_read_only),
+	GB_PROPERTY("Text", "s", CTEXTAREA_text),
+	GB_PROPERTY_READ("Length", "i", CTEXTAREA_length),
+	GB_PROPERTY("ReadOnly", "b", CTEXTAREA_read_only),
 
-  GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
-  GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
-  GB_PROPERTY("Border", "b", CTEXTAREA_border),
-  GB_PROPERTY("Alignment", "i", TextArea_Alignment),
+	GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
+	GB_PROPERTY("Wrap", "b", CTEXTAREA_wrap),
+	GB_PROPERTY("Border", "b", CTEXTAREA_border),
+	GB_PROPERTY("Alignment", "i", TextArea_Alignment),
 
-  GB_PROPERTY("Line", "i", CTEXTAREA_line),
-  GB_PROPERTY("Column", "i", CTEXTAREA_column),
-  GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
+	GB_PROPERTY("Line", "i", CTEXTAREA_line),
+	GB_PROPERTY("Column", "i", CTEXTAREA_column),
+	GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
 
-  GB_PROPERTY_SELF("Selection", ".TextArea.Selection"),
-  GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
-  GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
+	GB_PROPERTY_SELF("Selection", ".TextArea.Selection"),
+	GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
+	GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
+	GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
 	GB_PROPERTY_READ("Selected", "b", CTEXTAREA_selected),
 
-  GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
-  GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
+	GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
+	GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
 
-  GB_METHOD("Copy", NULL, CTEXTAREA_copy, NULL),
-  GB_METHOD("Cut", NULL, CTEXTAREA_cut, NULL),
-  GB_METHOD("Paste", NULL, CTEXTAREA_paste, NULL),
-  GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
-  GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),
+	GB_METHOD("Copy", NULL, CTEXTAREA_copy, NULL),
+	GB_METHOD("Cut", NULL, CTEXTAREA_cut, NULL),
+	GB_METHOD("Paste", NULL, CTEXTAREA_paste, NULL),
+	GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
+	GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),
 
-  GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
-  GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
-  GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
+	GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Line)i(Column)i"),
+	GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
+	GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
 
-  GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
-  
-	GB_PROPERTY_READ("CursorPos", "Point", TextArea_CursorPos),
+	GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 	
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
-  GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
-  
-  TEXTAREA_DESCRIPTION,
+	GB_METHOD("CursorAt", "Point", TextArea_CursorAt, "[(Pos)i]"),
+	
+	GB_EVENT("Change", NULL, NULL, &EVENT_Change),
+	GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
+	
+	TEXTAREA_DESCRIPTION,
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 #if 0
@@ -420,82 +420,82 @@ END_PROPERTY
 
 GB_DESC CTextEditFormatDesc[] =
 {
-  GB_DECLARE(".TextEditFormat", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".TextEditFormat", 0), GB_VIRTUAL_CLASS(),
 
-  GB_PROPERTY("Alignment", "i", CTEXTEDIT_format_alignment),
-  //GB_PROPERTY("Position", "i", CTEXTEDIT_format_position),
-  GB_PROPERTY("Font", "Font", CTEXTEDIT_format_font),
-  GB_PROPERTY("Color", "i", CTEXTEDIT_format_color),
-    
-  GB_END_DECLARE
+	GB_PROPERTY("Alignment", "i", CTEXTEDIT_format_alignment),
+	//GB_PROPERTY("Position", "i", CTEXTEDIT_format_position),
+	GB_PROPERTY("Font", "Font", CTEXTEDIT_format_font),
+	GB_PROPERTY("Color", "i", CTEXTEDIT_format_color),
+		
+	GB_END_DECLARE
 };
 
 GB_DESC CTextEditSelectionDesc[] =
 {
-  GB_DECLARE(".TextEditSelection", 0), GB_VIRTUAL_CLASS(),
+	GB_DECLARE(".TextEditSelection", 0), GB_VIRTUAL_CLASS(),
 
-  GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
-  GB_PROPERTY_READ("Length", "i", CTEXTAREA_sel_length),
-  GB_PROPERTY_READ("Start", "i", CTEXTAREA_sel_start),
-  GB_METHOD("Hide", NULL, CTEXTAREA_sel_clear, NULL),
+	GB_PROPERTY("Text", "s", CTEXTAREA_sel_text),
+	GB_PROPERTY_READ("Length", "i", CTEXTAREA_sel_length),
+	GB_PROPERTY_READ("Start", "i", CTEXTAREA_sel_start),
+	GB_METHOD("Hide", NULL, CTEXTAREA_sel_clear, NULL),
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 
 GB_DESC CTextEditDesc[] =
 {
-  GB_DECLARE("TextEdit", sizeof(CTEXTAREA)), GB_INHERITS("Control"),
+	GB_DECLARE("TextEdit", sizeof(CTEXTAREA)), GB_INHERITS("Control"),
 
-  GB_METHOD("_new", NULL, CTEXTEDIT_new, "(Parent)Container;"),
+	GB_METHOD("_new", NULL, CTEXTEDIT_new, "(Parent)Container;"),
 
-  GB_PROPERTY("ReadOnly", "b", CTEXTAREA_read_only),
-  
-  GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
+	GB_PROPERTY("ReadOnly", "b", CTEXTAREA_read_only),
+	
+	GB_METHOD("Clear", NULL, CTEXTAREA_clear, NULL),
 
-  GB_PROPERTY("Text", "s", CTEXTAREA_text),
-  GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
+	GB_PROPERTY("Text", "s", CTEXTAREA_text),
+	GB_METHOD("Insert", NULL, CTEXTAREA_insert, "(Text)s"),
 
-  GB_PROPERTY("Paragraph", "i", CTEXTAREA_line),
-  GB_PROPERTY("Index", "i", CTEXTAREA_column),
-  GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
+	GB_PROPERTY("Paragraph", "i", CTEXTAREA_line),
+	GB_PROPERTY("Index", "i", CTEXTAREA_column),
+	GB_PROPERTY("Pos", "i", CTEXTAREA_pos),
 
-  GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Paragraph)i(Index)i"),
-  GB_METHOD("ToParagraph", "i", CTEXTAREA_to_line, "(Pos)i"),
-  GB_METHOD("ToIndex", "i", CTEXTAREA_to_col, "(Pos)i"),
+	GB_METHOD("ToPos", "i", CTEXTAREA_to_pos, "(Paragraph)i(Index)i"),
+	GB_METHOD("ToParagraph", "i", CTEXTAREA_to_line, "(Pos)i"),
+	GB_METHOD("ToIndex", "i", CTEXTAREA_to_col, "(Pos)i"),
 
-  GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
+	GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 
-  GB_PROPERTY_SELF("Selection", ".TextEditSelection"),
-  GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
-  GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
-  GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
+	GB_PROPERTY_SELF("Selection", ".TextEditSelection"),
+	GB_METHOD("Select", NULL, CTEXTAREA_sel_select, "[(Start)i(Length)i]"),
+	GB_METHOD("SelectAll", NULL, CTEXTAREA_sel_all, NULL),
+	GB_METHOD("Unselect", NULL, CTEXTAREA_sel_clear, NULL),
 	GB_PROPERTY_READ("Selected", "b", CTEXTAREA_selected),
 	
-  GB_METHOD("Copy", NULL, CTEXTAREA_copy, NULL),
-  GB_METHOD("Cut", NULL, CTEXTAREA_cut, NULL),
-  GB_METHOD("Paste", NULL, CTEXTAREA_paste, NULL),
-  GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
-  GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),  
-  
-  GB_PROPERTY("Border", "b", CTEXTAREA_border),
-  GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
+	GB_METHOD("Copy", NULL, CTEXTAREA_copy, NULL),
+	GB_METHOD("Cut", NULL, CTEXTAREA_cut, NULL),
+	GB_METHOD("Paste", NULL, CTEXTAREA_paste, NULL),
+	GB_METHOD("Undo", NULL, CTEXTAREA_undo, NULL),
+	GB_METHOD("Redo", NULL, CTEXTAREA_redo, NULL),  
+	
+	GB_PROPERTY("Border", "b", CTEXTAREA_border),
+	GB_PROPERTY("ScrollBar", "i", CTEXTAREA_scrollbar),
 
-  GB_PROPERTY("ScrollX", "i", CTEXTEDIT_scroll_x),
-  GB_PROPERTY("ScrollY", "i", CTEXTEDIT_scroll_y),
-  
-  GB_PROPERTY("TextWidth", "i", CTEXTEDIT_text_width),
-  GB_PROPERTY("TextHeight", "i", CTEXTEDIT_text_height),
+	GB_PROPERTY("ScrollX", "i", CTEXTEDIT_scroll_x),
+	GB_PROPERTY("ScrollY", "i", CTEXTEDIT_scroll_y),
+	
+	GB_PROPERTY("TextWidth", "i", CTEXTEDIT_text_width),
+	GB_PROPERTY("TextHeight", "i", CTEXTEDIT_text_height),
 
-  GB_PROPERTY_SELF("Format", ".TextEditFormat"),
-  
-  GB_EVENT("Change", NULL, NULL, &EVENT_Change),
-  GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
-  GB_EVENT("Link", NULL, "(Path)s", &EVENT_Link),
+	GB_PROPERTY_SELF("Format", ".TextEditFormat"),
+	
+	GB_EVENT("Change", NULL, NULL, &EVENT_Change),
+	GB_EVENT("Cursor", NULL, NULL, &EVENT_Cursor),
+	GB_EVENT("Link", NULL, "(Path)s", &EVENT_Link),
 
-  TEXTEDIT_DESCRIPTION,
+	TEXTEDIT_DESCRIPTION,
 
-  GB_END_DECLARE
+	GB_END_DECLARE
 };
 
 #endif

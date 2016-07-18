@@ -49,6 +49,17 @@ static void error(int code, CLASS *class, const char *name)
 	GB_Error((char *)(intptr_t)code, CLASS_get_name(class), name);
 }
 
+static bool check_null(void *object)
+{
+	if (!object)
+	{
+		GB_Error((char *)E_NULL);
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
 //---- Components ---------------------------------------------------------
 
 BEGIN_METHOD(Components_get, GB_STRING name)
@@ -565,7 +576,7 @@ BEGIN_METHOD(Object_Class, GB_OBJECT object)
 
 	void *object = VARG(object);
 
-	if (GB_CheckObject(object))
+	if (check_null(object))
 		return;
 
 	GB_ReturnObject(OBJECT_class(object));
@@ -577,7 +588,7 @@ BEGIN_METHOD(Object_Type, GB_OBJECT object)
 
 	void *object = VARG(object);
 
-	if (GB_CheckObject(object))
+	if (check_null(object))
 		return;
 
 	GB_ReturnConstZeroString(OBJECT_class(object)->name);
@@ -590,7 +601,7 @@ BEGIN_METHOD(Object_Is, GB_OBJECT object; GB_STRING class)
 	void *object = VARG(object);
 	CLASS *class = CLASS_look(STRING(class), LENGTH(class));
 
-	if (GB_CheckObject(object))
+	if (check_null(object))
 		return;
 
 	if (!class)
@@ -757,7 +768,7 @@ BEGIN_METHOD(Object_SizeOf, GB_OBJECT object)
 
 	void *object = VARG(object);
 
-	if (GB_CheckObject(object))
+	if (check_null(object))
 		return;
 
 	GB_ReturnInteger(CLASS_sizeof(OBJECT_class(object)));

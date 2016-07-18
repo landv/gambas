@@ -491,22 +491,39 @@
     }
     Index = 5
     Text = ("Arguments")
-    { panArgList HBox
-      MoveScaled(4,2,71,4)
+    { svwArgList ScrollView
+      MoveScaled(2,1,80,40)
+      Background = Color.TextBackground
+      Expand = True
+      Arrangement = Arrange.Vertical
       Spacing = True
-      { cmbArgument ComboBox
-        MoveScaled(0,0,54,4)
-        Expand = True
-        ReadOnly = True
+      Margin = True
+      ScrollBar = Scroll.Vertical
+    }
+    { HBox2 HBox
+      MoveScaled(3,47,77,4)
+      Spacing = True
+      { btnNewArgument Button
+        MoveScaled(0,0,16,4)
+        Text = ("Insert")
+        Picture = Picture["icon:/small/add"]
       }
       { btnRemoveArgument Button
-        MoveScaled(60,0,5,4)
+        MoveScaled(17,0,16,4)
+        Enabled = False
+        Text = ("Remove")
         Picture = Picture["icon:/small/remove"]
       }
-    }
-    { lstArgument ListEditor
-      MoveScaled(3,11,80,53)
-      Expand = True
+      { btnMoveUpArg Button
+        MoveScaled(34,0,6,4)
+        Enabled = False
+        Picture = Picture["icon:/small/up"]
+      }
+      { btnMoveDownArg Button
+        MoveScaled(41,0,6,4)
+        Enabled = False
+        Picture = Picture["icon:/small/down"]
+      }
     }
     Index = 6
     Text = ("Options")

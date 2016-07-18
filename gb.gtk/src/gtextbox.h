@@ -61,7 +61,7 @@ public:
 	void selectAll();
 	bool hasEntry() const { return entry != 0; }
 
-	void getCursorPos(int *x, int *y);
+	void getCursorPos(int *x, int *y, int pos);
 	
 //"Signals"
 	void (*onChange)(gTextBox *sender);

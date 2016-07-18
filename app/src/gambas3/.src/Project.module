@@ -2269,9 +2269,12 @@ Public Sub OpenFile(sPath As String, Optional iLine As Integer, Optional iColumn
   hForm = Files[sPath]
   If Not hForm Then Return
 
-  ShowFile(hForm)
-
   CPosition.Disable
+  Try ShowFile(hForm)
+  If Error Then
+    CPosition.Enable
+    Error.Raise(Error.Text)
+  Endif
 
   If iLine Then
     Try hForm.GotoCenter(iLine - 1, iColumn)
@@ -6355,3 +6358,22 @@ Public Sub RevertFile(sPath As String)
   Dec Application.Busy
   
 End
+
+Public Sub ArgumentToString(aArg As String[]) As String
+
+  Dim sResult As String
+  Dim sArg As String
+  
+  For Each sArg In aArg
+    If sResult Then sResult &= " "
+    If InStr(sArg, " ") Or If InStr(sArg, Chr$(34)) Then
+      sResult &= Chr$(34) & Replace(sArg, Chr$(34), Chr$(34) & Chr$(34)) & Chr$(34)
+    Else
+      sResult &= sArg
+    Endif
+  Next
+  
+  Return sResult
+
+End
+

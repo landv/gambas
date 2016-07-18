@@ -3048,6 +3048,18 @@ Public Sub ToPos(Optional ({Line}) As Integer, Column As Integer) As Point
   
 End
 
+Public Sub CursorAt(Optional ({Line}) As Integer, Column As Integer) As Point
+  
+  If IsMissing({Line}) Then
+    {Line} = $Y
+    If IsMissing(Column) Then Column = $X
+  Endif
+  
+  Return ToPos({Line}, Column)
+  
+End
+
+
 
 Public Sub ToColumn(X As Integer, Y As Integer) As Integer
 
@@ -4751,4 +4763,3 @@ Private Sub ClearCacheText()
   $cCacheText.Clear
 
 End
-

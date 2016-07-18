@@ -283,7 +283,7 @@ gw = {
     var div;
     var div_br;
     
-    if (elt.gw_mandatory)
+    if (elt == undefined || elt.gw_mandatory)
       return;
     
     elt.gw_mandatory = div = document.createElement('div');

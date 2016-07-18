@@ -74,19 +74,19 @@ Public Sub Form_Open()
   End With
   
   
-  gvwInfo[6, 1].Background = Color.Yellow
-  gvwInfo[6, 1].Border = New Border '.Copy() 'New Border 'hBorderLeft.Copy()
-  With gvwInfo[6, 1].Border
-    .SlashStyle = Border.Dotted
-    .SlashColor = Color.Red
-    .SlashWidth = 4
-    .BackSlashStyle = Border.Double + Border.Dashed
-    .BackSlashColor = Color.Red
-    .BackSlashWidth = 4
-    .Color = Color.Green
-    .Margin = 8
-    .Padding = 8
-  End With
+  ' gvwInfo[6, 1].Background = Color.Yellow
+  ' gvwInfo[6, 1].Border = New Border '.Copy() 'New Border 'hBorderLeft.Copy()
+  ' With gvwInfo[6, 1].Border
+  '   .SlashStyle = Border.Dotted
+  '   .SlashColor = Color.Red
+  '   .SlashWidth = 4
+  '   .BackSlashStyle = Border.Double + Border.Dashed
+  '   .BackSlashColor = Color.Red
+  '   .BackSlashWidth = 4
+  '   .Color = Color.Green
+  '   .Margin = 8
+  '   .Padding = 8
+  ' End With
   
   
   'gvwInfo.Columns[1].Alignment = Align.Right

@@ -318,7 +318,7 @@ Private Sub DrawCell(X As Integer, Y As Integer, W As Integer, H As Integer, iRo
     
     If .Text Then
       If .WordWrap Then
-        Paint.DrawRichText(Html(.Text), X, Y, W, H, .Alignment)
+        Paint.DrawRichText(Replace(Html(.Text), "\n", "<br>"), X, Y, W, H, .Alignment)
       Else
         Paint.DrawText(.Text, X, Y, W, H, .Alignment)
       Endif
@@ -2190,7 +2190,7 @@ Public Sub _GetPreferredHeight(iRow As Integer) As Integer
         Endif
       Else If .Text Then
         If .WordWrap Then
-          H += hFont.RichTextHeight(Html(.Text), WT)
+          H += hFont.RichTextHeight(Replace(Html(.Text), "\n", "<br>"), WT)
         Else
           H += hFont.TextHeight(.Text)
         Endif

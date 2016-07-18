@@ -8,7 +8,6 @@ Private $sIcon As String
 
 Private $bCanInitComponents As Boolean
 
-Private $aArg As String[][]
 Private $aEnv As String[]
 
 Private $aComponents As String[]
@@ -24,7 +23,6 @@ Private $aNeed As String[]
 Private $aRequire As String[]
 Private $aExclude As String[]
 Private $aImplement As String[]
-Private $hComp As FileCompletion
 Private $iCurrentLibrary As Integer
 
 Static Public Function Run() As Boolean
@@ -127,23 +125,15 @@ Public Sub Form_Activate()
 End
 
 Private Sub InitEnvironment()
-  
-  Dim I As Integer
-  
-  $aArg = Project.Arguments.Copy()
-  For I = 0 To $aArg.Max
-    $aArg[I] = $aArg[I].Copy()
+
+  Dim aArg As String[]
+  Dim hArgListEditor As ArgListEditor
+
+  svwArgList.Children.Clear
+  For Each aArg In Project.Arguments
+    hArgListEditor = New ArgListEditor(svwArgList) As "ArgListEditor"
+    hArgListEditor.Set(aArg)
   Next
-  $aArg.Add([])
-  
-  CleanUpArgument
-  
-  Object.Lock(cmbArgument)
-  cmbArgument.Index = Project.CurrentArgument
-  Object.Unlock(cmbArgument)
-  cmbArgument_Click
-  
-  $hComp = New FileCompletion(lstArgument.Editor)
   
   tvwEnv.Columns.Count = 2
   tvwEnv.Columns[0].Text = ("Variable")
@@ -161,7 +151,9 @@ End
 Private Sub SaveEnvironment()
   
   Dim iInd As Integer
-  Dim iArg As Integer
+  Dim aArgList As String[][]
+  Dim hArgListEditor As ArgListEditor
+  Dim aArg As String[]
   
   tvwEnv.Save
   
@@ -173,12 +165,14 @@ Private Sub SaveEnvironment()
     Endif
   Wend
 
-  iArg = cmbArgument.Index
-  UpdateArgument
-  If iArg < 0 Or If iArg >= $aArg.Count Then iArg = $aArg.Max
+  aArgList = New String[][]
+  For Each hArgListEditor In svwArgList.Children
+    aArg = hArgListEditor.Get()
+    If aArg.Count = 0 Then Continue
+    aArgList.Add(aArg)
+  Next
 
-  Project.CurrentArgument = iArg
-  Project.Arguments = $aArg.Copy(0, $aArg.Max)
+  Project.Arguments = aArgList
   
   Project.Environment = $aEnv
   
@@ -1184,85 +1178,184 @@ Public Sub gvwLibrary_Select()
   
 End
 
-Public Sub cmbArgument_Click()
+' Public Sub btnNewArgument_Click()
+' 
+'   Dim aArg As String[]
+'   
+'   tbvArgument.Save
+' 
+'   aArg = New String[]
+'   $aArg.Add(aArg)
+' 
+'   tbvArgument.Rows.Count = $aArg.Count
+' 
+'   tbvArgument.Row = $aArg.Max
+'   tbvArgument.Edit
+' 
+' End
+' 
+' Public Sub tbvArgument_Click()
+' 
+'   btnMoveDownArg.Enabled = tbvArgument.Row >= 0 And tbvArgument.Row < $aArg.Max
+'   btnMoveUpArg.Enabled = tbvArgument.Row > 0
+'   tbvArgument.EditWith(txtArgument)
+'   $hComp = New FileCompletion(txtArgument)
+' 
+' End
+' 
+' Public Sub tbvArgument_Save(Row As Integer, (Column) As Integer, Value As String)
+' 
+'   $aArg[Row] = ArgumentFromString(Value)
+'   tbvArgument.Rows[Row].Height = -1
+'   
+' End
+' 
+' Public Sub tbvArgument_Hide()
+' 
+'   btnMoveDownArg.Enabled = False
+'   btnMoveUpArg.Enabled = False
+' 
+' End
+' 
+' Public Sub btnMoveUpArg_Click()
+' 
+'   tbvArgument.Save
+'   Swap $aArg[tbvArgument.Row], $aArg[tbvArgument.Row - 1]
+'   tbvArgument.Refresh
+'   UpdateArguments
+'   Dec tbvArgument.Row
+'   tbvArgument_Click
+' 
+' End
+' 
+' Public Sub btnMoveDownArg_Click()
+' 
+'   tbvArgument.Save
+'   Swap $aArg[tbvArgument.Row], $aArg[tbvArgument.Row + 1]
+'   tbvArgument.Refresh
+'   UpdateArguments
+'   Inc tbvArgument.Row
+'   tbvArgument_Click
+' 
+' End
+' 
+' Public Sub tbvArgument_Insert()
+' 
+'   btnNewArgument_Click
+' 
+' End
 
-  lstArgument.List = $aArg[cmbArgument.Index]
-  lstArgument.SetFocus
+Private Sub UpdateArgButtons()
+
+  Dim iCurrent As Integer
+
+  iCurrent = GetCurrentArgListEditor()
+
+  btnMoveDownArg.Enabled = iCurrent >= 0 And iCurrent < svwArgList.Children.Count - 1
+  btnMoveUpArg.Enabled = iCurrent > 0
+  btnRemoveArgument.Enabled = iCurrent >= 0
 
 End
 
-Private Sub CleanUpArgument()
+Public Sub ArgListEditor_Click()
+
+  Dim hArgListEditor As ArgListEditor
+  Dim hChild As ArgListEditor
+  
+  hArgListEditor = Last
+  If hArgListEditor.Selected Then Return
+  
+  For Each hChild In svwArgList.Children
+    hChild.Selected = hChild = hArgListEditor
+  Next
+  
+  UpdateArgButtons
+  
+End
+
+Private Sub GetCurrentArgListEditor() As Integer
   
   Dim I As Integer
+  Dim hChild As ArgListEditor
   
-  I = 0
-  While I < $aArg.Max
-    If $aArg[I].Count = 0 Then
-      $aArg.Remove(I)
-    Else
-      Inc I
-    Endif
-  Wend
-  
-  Object.Lock(cmbArgument)
-  cmbArgument.Clear
-  For I = 0 To $aArg.Max
-    cmbArgument.Add("")
-    UpdateArgument(I)
+  For I = 0 To svwArgList.Children.Count - 1
+    hChild = svwArgList.Children[I]
+    If hChild.Selected Then Return I
   Next
-  Object.Unlock(cmbArgument)
-  cmbArgument.Index = cmbArgument.Count - 1
+  
+  Return -1
   
 End
 
 
-Private Sub UpdateArgument(Optional iInd As Integer = -1)
+Public Sub btnNewArgument_Click()
 
-  Dim sArg As String
-  
-  If iInd < 0 Then iInd = cmbArgument.Index
-  
-  sArg = $aArg[iInd].Join(" ")
-  If Not sArg Then
-    If iInd < $aArg.Max Then 
-      CleanUpArgument
-      Return
-    Endif
-  Else If iInd = $aArg.Max Then
-    $aArg.Add([])
-    cmbArgument.Add("")
-  Endif
-  
-  If Not sArg Then sArg = ("No argument")
-  If $aArg.Count >= 2 Then sArg = CStr(iInd + 1) & " ‣ " & sArg
-  cmbArgument[iInd].Text = sArg
-  
-  cmbArgument.Enabled = cmbArgument.Count >= 2
-  btnRemoveArgument.Enabled = cmbArgument.Index < cmbArgument.Count - 1
-  
+  Dim hArgListEditor As ArgListEditor
+
+  hArgListEditor = New ArgListEditor(svwArgList) As "ArgListEditor"
+  hArgListEditor.SetFocus
+
 End
 
 Public Sub btnRemoveArgument_Click()
+
+  Dim iCurrent As Integer
+
+  iCurrent = GetCurrentArgListEditor()
+  If iCurrent < 0 Then Return
   
-  lstArgument.List = Null
+  svwArgList.Children[iCurrent].Delete
+
+End
+
+Private Sub UnselectArgList()
+
+  Dim I As Integer
+  Dim hChild As ArgListEditor
   
-End
-
-Public Sub lstArgument_Change()
-
-  $aArg[cmbArgument.Index] = lstArgument.List
-  UpdateArgument
-
-End
-
-Public Sub lstArgument_GotFocus()
-
-  btnOK.Default = False
+  For I = 0 To svwArgList.Children.Count - 1
+    hChild = svwArgList.Children[I]
+    hChild.Selected = False
+  Next
+  
+  UpdateArgButtons
 
 End
 
-Public Sub lstArgument_LostFocus()
+Public Sub svwArgList_GotFocus()
 
-  btnOK.Default = True
+  UnselectArgList
+
+End
+
+Public Sub btnMoveUpArg_Click()
+
+  Dim iCurrent As Integer
+  Dim hArgListEditor As ArgListEditor
+
+  iCurrent = GetCurrentArgListEditor()
+  If iCurrent <= 0 Then Return
+  
+  hArgListEditor = svwArgList.Children[iCurrent]
+  hArgListEditor.Next = svwArgList.Children[iCurrent - 1]
+  hArgListEditor.SetFocus
+
+  UpdateArgButtons
+
+End
+
+Public Sub btnMoveDownArg_Click()
+
+  Dim iCurrent As Integer
+  Dim hArgListEditor As ArgListEditor
+
+  iCurrent = GetCurrentArgListEditor()
+  If iCurrent < 0 Or If iCurrent >= svwArgList.Children.Count - 1 Then Return
+  
+  hArgListEditor = svwArgList.Children[iCurrent]
+  hArgListEditor.Next = svwArgList.Children[iCurrent + 1].Next
+  hArgListEditor.SetFocus
+
+  UpdateArgButtons
 
 End

@@ -9,7 +9,7 @@ Public Icons As String[]
 Public Start As Integer
 
 Property Delay As Integer
-Property Read Editor As TextBox
+Property Editor As Control
 
 Private $hObserver As Observer
 Private $hTimer As Timer
@@ -20,19 +20,19 @@ Private $bExplicit As Boolean
 Private $hObsWindow As Observer
 Private $iHeight As Integer
 
-Private Sub FindTextBox(hCtrl As Control) As Control
+Private Sub FindEditor(hCtrl As Control) As Control
 
   If hCtrl Is Container Then
     For Each hCtrl In Container(hCtrl).Children
-      If hCtrl Is TextBox Then Return hCtrl
+      If hCtrl Is TextBox Or If hCtrl Is TextArea Then Return hCtrl
     Next
-  Else If hCtrl Is TextBox Then
+  Else If hCtrl Is TextBox Or If hCtrl Is TextArea Then
     Return hCtrl
   Endif
 
 End
 
-Private Sub GetTextBox() As TextBox
+Private Sub GetEditor() As Object
 
   Return $hObserver.Object
 
@@ -40,15 +40,25 @@ End
 
 Public Sub _new(hCtrl As Control)
 
-  hCtrl = FindTextBox(hCtrl)
+  $hTimer = New Timer As "Timer"
+  $hTimer.Delay = 350
+
+  Attach(hCtrl)
+
+End
+
+Private Sub Attach(hCtrl As Control)
+  
+  hCtrl = FindEditor(hCtrl)
+  If Not hCtrl Then Error.Raise("Unable to find TextBox or TextArea")
+
+  HideList
 
   $hObserver = New Observer(hCtrl) As "TextBox"
   $hWatcher = New Watcher(hCtrl) As "TextBox"
 
-  $hTimer = New Timer As "Timer"
-  $hTimer.Delay = 350
-
 End
+
 
 Public Sub Open()
 
@@ -131,38 +141,39 @@ End
 
 Private Sub MovePopup()
 
-  Dim hCtrl As TextBox
-  Dim X As Integer
-  Dim Y As Integer
+  Dim hCtrl As Object
+  Dim hPos As Point
 
   If Not $hPopup Then Return
 
-  hCtrl = GetTextBox()
-  X = hCtrl.Font.TextWidth(String.Left(hCtrl.Text, Start))
-  Y = hCtrl.ScreenY + hCtrl.H
+  hCtrl = GetEditor()
+  hPos = hCtrl.CursorAt(Start)
+  
+  'X = hCtrl.Font.TextWidth(String.Left(hCtrl.Text, Start))
+  'Y = hCtrl.ScreenY + hCtrl.H
 
-  $hPopup.Move(hCtrl.ScreenX + X, Y, Desktop.Scale * 48, $iHeight)
+  $hPopup.Move(hCtrl.ScreenX + hPos.X, hCtrl.ScreenY + hPos.Y, Desktop.Scale * 48, $iHeight)
 
 End
 
 Public Sub Timer_Timer()
 
   Dim aList As String[]
-  Dim hCtrl As TextBox
+  Dim hCtrl As Control
   Dim hPanel As Panel
-
-  'Debug
+  Dim hEditor As Object
 
   $hTimer.Stop
 
   List = Null
-  Me.Fill(GetTextBox().Text, $bExplicit)
+  hEditor = GetEditor()
+  Me.Fill(String.Left(hEditor.Text, hEditor.Pos), $bExplicit)
   aList = List
 
   $bExplicit = False
   If Not aList Or If aList.Count = 0 Then Return
 
-  hCtrl = GetTextBox()
+  hCtrl = GetEditor()
   Object.Lock(hCtrl)
 
   If Not $hPopup Then
@@ -206,7 +217,7 @@ End
 
 ' Public Sub Popup_Activate()
 '
-'   With GetTextBox()
+'   With GetEditor()
 '     .Window.Show
 '     .SetFocus
 '   End With
@@ -221,13 +232,13 @@ End
 
 Public Sub TextBox_Move()
 
-  HideList
+  MovePopup
 
 End
 
 Public Sub TextBox_Resize()
 
-  HideList
+  MovePopup
 
 End
 
@@ -252,8 +263,8 @@ End
 
 Public Sub GridView_GotFocus()
 
-  GetTextBox().Window.Activate
-  GetTextBox().SetFocus
+  GetEditor().Window.Activate
+  GetEditor().SetFocus
 
 End
 
@@ -271,13 +282,16 @@ End
 
 Public Sub GridView_MouseUp()
 
-  Dim hCtrl As TextBox
+  Dim hCtrl As Object
+  Dim sElt As String
 
-  If $hList.Row < 0 Then Return
+  Try sElt = List[$hList.Row]
+  If Error Then Return
+  
+  hCtrl = GetEditor()
 
-  hCtrl = GetTextBox()
-
-  Try hCtrl.Text = String.Left(hCtrl.Text, Start) & List[$hList.Row]
+  Try hCtrl.Text = String.Left(hCtrl.Text, Start) & sElt & String.Mid(hCtrl.Text, hCtrl.Pos + 1)
+  Try hCtrl.Pos = Start + String.Len(sElt)
   HideList
   'hCtrl.SetFocus
   Raise Activate
@@ -298,7 +312,7 @@ Public Sub Fill(Text As String, Explicit As Boolean)
 
 End
 
-Private Function Editor_Read() As TextBox
+Private Function Editor_Read() As Control
 
   Return $hObserver.Object
 
@@ -307,5 +321,11 @@ End
 Public Sub Window_Move()
 
   MovePopup
+
+End
+
+Private Sub Editor_Write(Value As Control)
+
+  Attach(Value)
 
 End

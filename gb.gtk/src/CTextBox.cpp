@@ -168,12 +168,12 @@ BEGIN_METHOD_VOID(CTEXTBOX_selected)
 END_METHOD
 
 
-BEGIN_PROPERTY(TextBox_CursorPos)
+BEGIN_METHOD(TextBox_CursorAt, GB_INTEGER pos)
 
 	int x, y;
 	
 	CHECK_COMBOBOX();
-	TEXTBOX->getCursorPos(&x, &y);
+	TEXTBOX->getCursorPos(&x, &y, VARGOPT(pos, -1));
 	GB.ReturnObject(GEOM.CreatePoint(x, y));
 	
 END_PROPERTY
@@ -470,7 +470,7 @@ GB_DESC CTextBoxDesc[] =
 	GB_METHOD("Clear", 0, CTEXTBOX_clear, 0),
 	GB_METHOD("Insert", 0, CTEXTBOX_insert, "(Text)s"),
 
-	GB_PROPERTY_READ("CursorPos", "Point", TextBox_CursorPos),
+	GB_METHOD("CursorAt", "Point", TextBox_CursorAt, "[(Pos)i]"),
 
 	GB_EVENT("Change", 0, 0, &EVENT_Change),
 	GB_EVENT("Activate", 0, 0, &EVENT_Activate),
@@ -525,7 +525,7 @@ GB_DESC CComboBoxDesc[] =
 	GB_PROPERTY_READ("Current", ".ComboBox.Item", CCOMBOBOX_current),
 	GB_PROPERTY("Index", "i", CCOMBOBOX_index),
 
-	GB_PROPERTY_READ("CursorPos", "Point", TextBox_CursorPos),
+	GB_METHOD("CursorAt", "Point", TextBox_CursorAt, "[(Pos)i]"),
 	
 	GB_EVENT("Change", 0, 0, &EVENT_Change),
 	GB_EVENT("Activate", 0, 0, &EVENT_Activate),

@@ -10,6 +10,7 @@ Public Const _Similar As String = "GridView"
 Event Save(Row As Integer, Column As Integer, Value As String)
 Event Insert
 Event Click
+Event Hide
 
 Property Read Editor As Control
 Property NoKeyboard As Boolean
@@ -104,6 +105,7 @@ Private Sub HideEditor(Optional bNoSave As Boolean) As Boolean
       $hPanel.Hide
       $hEditor.Hide
       $hEditor = Null
+      Raise Hide
     Endif
   Endif
   
@@ -152,7 +154,7 @@ Private Sub MoveEditor()
     Endif
     
     $hPanel.Move(X, Y, W, H)
-    $hEditor.Move(P, 0, W - P * 2, H)
+    $hEditor.Move(P, P, W - P * 2, H - P * 2)
     $hPanel.Background = Style.BackgroundOf($hEditor)
     
     $hEditor.Font = Me.Font

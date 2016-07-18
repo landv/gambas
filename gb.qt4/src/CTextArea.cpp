@@ -582,9 +582,15 @@ BEGIN_PROPERTY(TextArea_Border)
 	
 END_PROPERTY
 
-BEGIN_PROPERTY(TextArea_CursorPos)
+BEGIN_METHOD(TextArea_CursorAt, GB_INTEGER pos)
 
-	QRect rect = WIDGET->cursorRect();
+	QRect rect;
+	QTextCursor cursor = WIDGET->textCursor();
+	
+	if (!MISSING(pos))
+		cursor.setPosition(VARG(pos));
+	
+	rect = WIDGET->cursorRect(cursor);
 	
 	GB.ReturnObject(GEOM.CreatePoint(rect.x() + WIDGET->viewport()->x(), rect.bottom() + WIDGET->viewport()->y()));
 
@@ -645,7 +651,7 @@ GB_DESC CTextAreaDesc[] =
 	GB_METHOD("ToLine", "i", CTEXTAREA_to_line, "(Pos)i"),
 	GB_METHOD("ToColumn", "i", CTEXTAREA_to_col, "(Pos)i"),
 
-	GB_PROPERTY_READ("CursorPos", "Point", TextArea_CursorPos),
+	GB_METHOD("CursorAt", "Point", TextArea_CursorAt, "[(Pos)i]"),
 
 	GB_METHOD("EnsureVisible", NULL, CTEXTAREA_ensure_visible, NULL),
 

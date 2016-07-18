@@ -2683,3 +2683,41 @@ Public Sub panDebug_Hide()
   FDebugButton.OnVisibilityChange
 
 End
+
+Public Sub mnuRunWith_Show()
+  
+  Dim hMenu As Menu
+  Dim I As Integer
+  
+  mnuRunWith.Children.Clear
+  
+  hMenu = New Menu(mnuRunWith) As "runWithNoArg"
+  hMenu.Text = ("No argument")
+  hMenu.Radio = True
+  If Project.CurrentArgument = 0 Then hMenu.Value = True
+  
+  hMenu = New Menu(mnuRunWith)
+    
+  For I = 0 To Project.Arguments.Max
+    hMenu = New Menu(mnuRunWith) As "runWithArg"
+    hMenu.Text = Project.ArgumentToString(Project.Arguments[I])
+    hMenu.Radio = True
+    hMenu.Tag = I + 1
+    If Project.CurrentArgument = I + 1 Then hMenu.Value = True
+  Next
+  
+End
+
+Public Sub runWithNoArg_Click()
+  
+  Project.CurrentArgument = 0
+  Project.WriteProject
+  
+End
+
+Public Sub runWithArg_Click()
+  
+  Project.CurrentArgument = Last.Tag
+  Project.WriteProject
+  
+End

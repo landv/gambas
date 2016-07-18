@@ -484,15 +484,15 @@ GtkIMContext *gTextBox::getInputMethod()
 }
 
 
-void gTextBox::getCursorPos(int *x, int *y)
+void gTextBox::getCursorPos(int *x, int *y, int pos)
 {
-	int px, py, p;
+	int px, py;
 	PangoLayout *layout;
 	PangoRectangle rect;
 	
 	layout = gtk_entry_get_layout(GTK_ENTRY(entry));
-	p = gtk_entry_text_index_to_layout_index(GTK_ENTRY(entry), position());
-	pango_layout_get_cursor_pos(layout, p, &rect, NULL);
+	pos = gtk_entry_text_index_to_layout_index(GTK_ENTRY(entry), pos < 0 ? position() : pos);
+	pango_layout_get_cursor_pos(layout, pos, &rect, NULL);
 	
 	gtk_entry_get_layout_offsets(GTK_ENTRY(entry), &px, &py);
 	

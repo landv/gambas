@@ -1035,11 +1035,11 @@ int gTextArea::minimumHeight() const
 }
 #endif
 
-void gTextArea::getCursorPos(int *x, int *y)
+void gTextArea::getCursorPos(int *x, int *y, int pos)
 {
 	GdkRectangle rect;
 	int f = getFrameWidth();
-	GtkTextIter *iter = getIterAt();
+	GtkTextIter *iter = getIterAt(pos);
 	
 	gtk_text_view_get_iter_location(GTK_TEXT_VIEW(widget), iter, &rect);
 	gtk_text_view_buffer_to_window_coords(GTK_TEXT_VIEW(widget), GTK_TEXT_WINDOW_WIDGET, rect.x, rect.y + rect.height, x, y);

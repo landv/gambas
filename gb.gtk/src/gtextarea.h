@@ -85,7 +85,7 @@ public:
 	void redo();
 	void clear();
 	
-	void getCursorPos(int *x, int *y);
+	void getCursorPos(int *x, int *y, int pos);
 	
 	void emitCursor();
 	
