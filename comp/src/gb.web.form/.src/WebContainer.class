@@ -61,7 +61,7 @@ Public Sub _Add(hChild As WebControl)
   Dec Me._NoRefresh
   
   If Me._CanRefresh() Then
-    WebForm._AddJavascriptBefore("gw.insertElement(" & JS(hChild.Name) & "," & JS(Me.Name) & ");")
+    WebForm._AddJavascriptBefore("gw.insertElement(" & JS(hChild.Name) & "," & JS(Me.Name) & ")")
     hChild.Refresh
   Endif
   
@@ -93,7 +93,7 @@ Public Sub _Remove(hChild As WebControl)
   Dec Me._NoRefresh
   
   If Me._CanRefresh() Then
-    WebForm._AddJavascript("gw.removeElement(" & JS(hChild.Name) & ");")
+    WebForm._AddJavascript("gw.removeElement(" & JS(hChild.Name) & ")")
   Endif
   
 End

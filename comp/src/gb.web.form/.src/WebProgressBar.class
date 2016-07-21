@@ -17,8 +17,8 @@ Private $fValue As Float
 
 Public Sub _Render()
   
-  Print "<div class=\"gw-progressbar-bar\" style=\"width:"; CInt($fValue * 100); "."; CInt(Frac($fValue * 100) * 10); "%\">"; "</div>"
-  If $bLabel Then Print "<div class=\"gw-progressbar-label\">"; Html(Format($fValue, "0%")); "</div>"
+  Print "<div id=\""; Me.Name; ":p\" class=\"gw-progressbar-bar\" style=\"width:"; CInt($fValue * 100); "."; CInt(Frac($fValue * 100) * 10); "%\">"; "</div>"
+  If $bLabel Then Print "<div id=\""; Me.Name; ":l\" class=\"gw-progressbar-label\">"; Html(Format($fValue, "0%")); "</div>"
   
 End
 
@@ -45,6 +45,14 @@ End
 Private Sub Value_Write(Value As Float)
 
   $fValue = Min(1, Max(0, Value))
+  
+  Inc Me._NoRefresh
   Me._SetProperty("Value", Value)
+  Dec Me._NoRefresh
+  
+  If Me._CanRefresh() Then
+    WebForm._AddJavascript("$(" & JS(Me.Name & ":p") & ").style.width = '" & CStr(CInt($fValue * 100)) & "." & CStr(CInt(Frac($fValue * 100) * 10)) & "%'")
+    If $bLabel Then WebForm._AddJavascript("gw.setInnerHtml(" & JS(Me.Name & ":l") & "," & JS(Html(Format($fValue, "0%"))) & ")")
+  Endif
 
 End

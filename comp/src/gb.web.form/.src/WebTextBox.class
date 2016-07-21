@@ -37,7 +37,7 @@ Private Sub Text_Write(Value As String)
   Me._SetProperty("Text", Value)
   Dec Me._NoRefresh
   
-  If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText) & ";")
+  If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText))
   
   Raise Change
 
@@ -54,7 +54,7 @@ Public Sub _BeforeRender()
   
   Print "<input type=\"text\""; Me._GetClassId(); Me._GetUpdateJS("onchange", "text", "this.value"); Me._GetUpdateJS("onblur", "text", "this.value");
   If Object.CanRaise(Me, "Activate") Then
-    Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ");")
+    Print " onkeypress=\"gw.textbox.onactivate("; JS(Me.Name); ",event);\""; 'WebForm._AddJavascript("gw.textbox.onactivate(" & JS(Me.Name) & ")")
   Endif
   
   Me._RenderStyleSheet()
@@ -65,7 +65,7 @@ Public Sub _BeforeRender()
   Print ">"
   
   If Object.CanRaise(Me, "Completion") Then
-    WebForm._AddJavascript("gw.autocomplete(" & JS(Me.Name) & ");")
+    WebForm._AddJavascript("gw.autocomplete(" & JS(Me.Name) & ")")
   Endif
   
 End
@@ -99,7 +99,7 @@ End
 
 Public Sub CompleteWith(CompletionList As String[])
   
-  WebForm._AddReply("gw.autocompletion = " & JSON.Encode(CompletionList) & ";")
+  WebForm._AddReply("gw.autocompletion = " & JSON.Encode(CompletionList))
   
 End
 

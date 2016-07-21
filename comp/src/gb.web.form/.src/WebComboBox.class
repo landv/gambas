@@ -78,7 +78,7 @@ Public Sub _Render()
   
   If Not $bReadOnly Then
     Print "</div>";
-    WebForm._AddJavascript("gw.resizeComboBox(" & JS(Me.Name) & ");")
+    WebForm._AddJavascript("gw.resizeComboBox(" & JS(Me.Name) & ")")
   Endif
   Print
   
@@ -226,7 +226,7 @@ Private Sub Text_Write(Value As String)
     Me._SetProperty("Text", Value)
     Dec Me._NoRefresh
     
-    If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText) & ";")
+    If Me._CanRefresh() Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").value = " & JS($sText))
     
     Raise Change
     

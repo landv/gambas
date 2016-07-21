@@ -483,7 +483,7 @@ End
 Public Sub _CanRefresh() As Boolean
   
   If Not Me.Form._Loaded Then Return
-  If Not WebForm._InExec Then Return
+  If WebForm._InExec = 0 Then Return
   If WebForm._DisableRefresh Then Return
   If _NoRefresh Then Return
   If IsHidden() Then Return
@@ -627,7 +627,7 @@ Private Sub Visible_Write(Value As Boolean)
   _SetProperty("Visible", Value)
   Dec _NoRefresh
   If bCanRefresh Then 
-    WebForm._AddJavascript("gw.setVisible(" & JS(Me.Name) & "," & JS(Not $bHidden) & ");")
+    WebForm._AddJavascript("gw.setVisible(" & JS(Me.Name) & "," & JS(Not $bHidden) & ")")
   Endif
   'Me.Parent.Refresh
   
@@ -661,8 +661,8 @@ Public Sub SetFocus(Optional Highlight As Boolean)
   sName = $sName
   If _Proxy Then sName &= _Proxy
   
-  WebForm._AddReply("gw.setFocus(" & JS(sName) & ");")
-  If Highlight Then WebForm._AddReply("gw.highlightMandatory(" & JS(sName) & ");")
+  WebForm._AddReply("gw.setFocus(" & JS(sName) & ")")
+  If Highlight Then WebForm._AddReply("gw.highlightMandatory(" & JS(sName) & ")")
   
 End
 

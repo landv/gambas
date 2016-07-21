@@ -47,6 +47,7 @@ Public Sub _Render()
   Dim hTable As WebTable = GetTable()
   Dim hCol As _WebTableColumn
   Dim iMode As Integer
+  Dim NX As Integer
   
   Print "<thead><tr>";
   
@@ -63,9 +64,13 @@ Public Sub _Render()
   Endif
   
   For Each hCol In $aColumns
+    If hCol.Expand Then Inc NX
+  Next
+  
+  For Each hCol In $aColumns
     Print "<th";
     If hCol.Expand Then 
-      Print " width=\"100%\"";
+      Print " width=\""; 100 \ NX; "%\"";
     Else If hCol.Width Then
       Print " style=\"min-width:"; hCol.Width; ";\"";
     Endif

@@ -47,6 +47,7 @@ Element.prototype.removeClass = function(klass)
 gw = {
 
   version: '0',
+  commands: [],
   timers: {},
   windows: [],
   form: '',
@@ -61,7 +62,7 @@ gw = {
     {
       if (gw.startTime == undefined)
         gw.startTime = Date.now();
-      console.log(((Date.now() - gw.startTime) / 1000) + ': ' + msg);
+      console.log(((Date.now() - gw.startTime) / 1000).toFixed(3) + ': ' + msg);
     }
   },
   
@@ -172,45 +173,93 @@ gw = {
     //  gw.active = document.activeElement.id;
   },
   
-  answer: function(xhr)
+  answer: function(xhr, after)
   {
-    if (xhr.readyState == 4 && xhr.status == 200 && xhr.responseText)
+    if (xhr.readyState == 4)
     {
-      gw.log('gw.answer (' + xhr.gw_command + ')');
-      
-      var save = gw.saveFocus();
-      
-      /*if (gw.debug)
-        console.log('--> ' + xhr.responseText);*/
-      
-      var r = xhr.responseText.split('\n');
-      var i;
-      
-      for (i = 0; i < r.length; i++)
+      if (xhr.status == 200 && xhr.responseText)
       {
-        gw.log(r[i]);
-        eval(r[i]);
+        gw.log('==> ' + xhr.gw_command);
+        
+        var save = gw.saveFocus();
+        
+        /*if (gw.debug)
+          console.log('--> ' + xhr.responseText);*/
+        
+        var r = xhr.responseText.split('\n');
+        var i, expr;
+        
+        for (i = 0; i < r.length; i++)
+        {
+          expr = r[i].trim();
+          if (expr.length == 0)
+            continue;
+          if (gw.debug)
+          {
+            if (expr.length > 1024)
+              gw.log('--> ' + expr.substr(0, 1024) + '...');
+            else
+              gw.log('--> ' + expr);
+          }
+          eval(expr);
+        }
+         
+        //eval(xhr.responseText);
+        
+        gw.restoreFocus(save);
+        
+        if (after)
+          after();
+        
+        gw.log('answer done');
       }
-       
-      //eval(xhr.responseText);
       
-      gw.restoreFocus(save);
+      gw.commands.splice(0, 2);
+      gw.sendNewCommand();
+    }
+  },
+  
+  sendNewCommand: function()
+  {
+    var command, after, len;
+    var xhr;
+    
+    for(;;) {
+    
+      len = gw.commands.length;
       
-      gw.log('answer done');
+      if (len < 2)
+        return;
+      
+      command = gw.commands[0];
+      after = gw.commands[1];
+  
+      gw.log('[ ' + command + ' ]');
+    
+      if (command)
+      {
+        xhr = new XMLHttpRequest();
+        xhr.gw_command = command;
+        xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
+        xhr.onreadystatechange = function() { gw.answer(xhr, after); };
+        xhr.send(null);
+        return;
+      }
+      
+      after();
+      gw.commands.splice(0, 2);
     }
   },
 
   send: function(command, after)
   {
-    gw.log('gw.send: ' + command);
-    var xhr = new XMLHttpRequest();
-    xhr.gw_command = command;
-    xhr.open('GET', $root + '/' + encodeURIComponent(gw.form) + '/x?c=' + encodeURIComponent(JSON.stringify(command)), true);
-    if (after)
-      xhr.onreadystatechange = function() { gw.answer(xhr); after(); };
-    else
-      xhr.onreadystatechange = function() { gw.answer(xhr); };
-    xhr.send(null);
+    gw.log('gw.send: ' + command + ' ' + JSON.stringify(gw.commands));
+    
+    gw.commands.push(command);
+    gw.commands.push(after);
+    
+    if (gw.commands.length == 2)
+      gw.sendNewCommand();
   },
 
   raise: function(id, event, args)
@@ -221,6 +270,11 @@ gw = {
   update: function(id, prop, value, after)
   {
     gw.send(['update', id, prop, value], after);
+  },
+  
+  command: function(action)
+  {
+    gw.send(null, action);
   },
 
   getSelection: function(o)
@@ -951,6 +1005,26 @@ gw = {
       elt.click();
     },
     
+    finish: function(xhr)
+    {
+      if (xhr.gw_progress)
+      {
+        console.log('finish later ' + xhr.gw_progress);
+        setTimeout(function() { gw.file.finish(xhr); }, 250);
+        return;
+      }
+      
+      console.log('finish');
+      
+      gw.update(xhr.gw_id, '#progress', 1, function() {
+        console.log('finish answer');
+        gw.answer(xhr); 
+        gw.uploads[xhr.gw_id] = undefined;
+        gw.raise(xhr.gw_id, 'upload');
+        xhr.gw_id = undefined;
+        });
+    },
+    
     upload: function(id)
     {
       var elt = $(id + ':file');
@@ -963,7 +1037,12 @@ gw = {
       
       gw.uploads[id] = xhr;
       
-      gw.log('gw.file.upload: ' + id + ': ' + file.name);
+      //gw.log('gw.file.upload: ' + id + ': ' + file.name);
+      
+      xhr.gw_progress = 0;
+      
+      xhr.gw_progress++;
+      gw.update(id, '#progress', 0, function() { xhr.gw_progress--; });
       
       form.append('file', file);
       form.append('name', file.name);
@@ -975,13 +1054,19 @@ gw = {
       xhr.upload.addEventListener("progress", 
         function(e) 
         {
+          //console.log('upload: progress ' + e.loaded + ' / ' + e.total);
+          
+          if (xhr.gw_id == undefined)
+            return;
+            
           if (e.lengthComputable)
           {
             var t = (new Date()).getTime();
             
-            if (xhr.gw_time == undefined || (t - xhr.gw_time) > 250)
+            if ((xhr.gw_time == undefined || (t - xhr.gw_time) > 250) && xhr.gw_progress == 0)
             {
-              gw.update(id, '#progress', e.loaded / e.total); 
+              xhr.gw_progress++;
+              gw.update(xhr.gw_id, '#progress', e.loaded / e.total, function() { xhr.gw_progress--; }); 
               xhr.gw_time = t;
             }
           }
@@ -996,10 +1081,7 @@ gw = {
       xhr.onreadystatechange = function() 
         {
           if (xhr.readyState == 4)
-          {
-            gw.uploads[xhr.gw_id] = undefined;
-            gw.answer(xhr); 
-          }
+            gw.file.finish(xhr);
         };
         
       xhr.send(form);  
@@ -1055,8 +1137,11 @@ gw = {
     
     setText: function(id, text)
     {
-      $(id).value = text;
-      gw.update(id, 'text', text);
+      gw.command(function() {
+        $(id).value = text;
+        gw.setSelection($(id), [text.length, text.length]);
+        gw.update(id, 'text', text);
+        });
     }
   }
 }

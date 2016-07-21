@@ -61,6 +61,7 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
   Dim hCol As _WebTableColumn
   Dim hData As WebTableData
   Dim sStyle As String
+  Dim NX As Integer
   
   Print "<tbody>"
   For iRow = iStart To iEnd
@@ -89,6 +90,12 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
       Print "</td>";
     Endif
     
+    If $bNoHeader Then
+      For iCol = 0 To $hColumns.Count - 1
+        If $hColumns[iCol].Expand Then Inc NX
+      Next
+    Endif
+    
     For iCol = 0 To $hColumns.Count - 1
       
       hCol = $hColumns[iCol]
@@ -100,7 +107,7 @@ Private Sub PrintBody(iStart As Integer, iEnd As Integer)
       sStyle = ""
       If $bNoHeader And If iCol = 0 Then
         If hCol.Expand Then 
-          Print " width=\"100%\"";
+          Print " width=\""; 100 \ NX; "%\"";
         Else If hCol.Width Then
           sStyle &= "min-width:" & hCol.Width & ";"
         Endif
@@ -152,10 +159,10 @@ Public Sub _Render()
   If $bNoScrolling Then
     $bNoScrolling = False
   Else
-    WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ");")
+    WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ")")
   Endif
   
-  If $iMode = Select.Single Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").gw_current = " & Current_Read() & ";")
+  If $iMode = Select.Single Then WebForm._AddJavascript("$(" & JS(Me.Name) & ").gw_current = " & Current_Read())
 
 End
 
@@ -302,7 +309,7 @@ Private Sub SendMoreJavascript()
   sResult = Close #hFile
   Output To Default
   
-  WebForm._AddJavascript("$(" & JS(Me.Name & ":more") & ").outerHTML = " & JS(sResult) & ";")
+  WebForm._AddJavascript("$(" & JS(Me.Name & ":more") & ").outerHTML = " & JS(sResult))
 
 End
 

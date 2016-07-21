@@ -15,8 +15,6 @@ Static Property Debug As Boolean
 Static Public _InExec As Integer
 Static Public _Current As WebForm
 
-Static Private $bDebug As Boolean
-
 Static Private $aJavascriptBefore As New String[]
 Static Private $aJavascript As New String[]
 Static Private $aRefresh As New String[]
@@ -235,7 +233,7 @@ End
 Static Private Sub PrintJavascript()
   
   If $aJavascriptBefore.Count Then 
-    Print $aJavascriptBefore.Join("\n")
+    Print $aJavascriptBefore.Join(";\n"); ";"
     $aJavascriptBefore.Clear
   Endif
   
@@ -245,7 +243,7 @@ Static Private Sub PrintJavascript()
   Endif
   
   If $aJavascript.Count Then 
-    Print $aJavascript.Join("\n")
+    Print $aJavascript.Join(";\n"); ";"
     $aJavascript.Clear
   Endif
   
@@ -275,6 +273,7 @@ Public Sub Render()
   Print "<script type=\"text/javascript\">"
   Print "gw.form = "; JS(Object.Type(Me)); ";"
   Print "gw.version = "; JS(Application.Version); ";"
+  Print "gw.debug = "; JS(Debug_Read()); ";"
   PrintJavascript
   Print "</script>"
   
@@ -353,7 +352,7 @@ End
 
 Static Public Sub Print(Text As String)
   
-  $aJavascript.Add("console.log(" & JS(Text) & ");")
+  $aJavascript.Add("console.log(" & JS(Text) & ")")
   
 End
 
@@ -377,7 +376,7 @@ Public Sub _Exec(aCmd As Variant[])
         hCtrl = Me
       Endif
       
-      If Not hCtrl Then Return
+      If Not hCtrl Then Goto VOID_RESPONSE
       
       Object.Raise(hCtrl, aCmd[2], aCmd[3])
       
@@ -387,7 +386,7 @@ Public Sub _Exec(aCmd As Variant[])
       
       If aCmd[1] Then
         hCtrl = WebControl.FromName(aCmd[1])
-        If Not hCtrl Then Return 'Error.Raise("Unknown control: " & aCmd[1] & " " & aCmd[2] & "\n" & WebControl._GetNames())
+        If Not hCtrl Then Goto VOID_RESPONSE
       Else
         hCtrl = Me
       Endif
@@ -400,11 +399,18 @@ Public Sub _Exec(aCmd As Variant[])
   Response.Begin
   PrintJavascript
   Response.End
+  Return
+  
+VOID_RESPONSE:
+
+  Response.Begin
+  'Print "console.log("; JS("unknown control " & aCmd[1]); ");"
+  Response.End
+  Return
   
 Catch
   
   sErr = Error.Text & "\n" & Error.Backtrace.Join(" ")
-  'Debug aCmd[0];; aCmd[1];; sErr
   _InExec = iOldInExec
   
   Response.Begin
@@ -434,7 +440,7 @@ Public Sub Close(Optional ReturnValue As Variant)
   Else
     
     Me.Delete
-    _AddReply("window.location.reload(true);")
+    _AddReply("window.location.reload(true)")
     
   Endif
     
@@ -546,7 +552,7 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
       aWindows = vValue
       Inc _DisableRefresh
       For Each sName In aWindows
-        WebControl.FromName(sName).Raise()
+        Try WebControl.FromName(sName).Raise()
       Next
       Dec _DisableRefresh
       
@@ -579,15 +585,20 @@ End
 
 Static Private Function Debug_Read() As Boolean
 
-  Return $bDebug
+  Try Return Session["debug"]
 
 End
 
 Static Private Sub Debug_Write(Value As Boolean)
 
-  $bDebug = Value
+  Dim bDebug As Boolean
+  
+  Try bDebug = Session["debug"]
+  If Value = bDebug Then Return
+  
+  Session["debug"] = Value
   _AddJavascript("gw.debug = " & JS(Value))
-
+  
 End
 
 Private Function Width_Read() As String
@@ -681,7 +692,7 @@ End
 Public Sub Reload()
   
   If Me = _Current Then
-    _AddReply("location.reload(true);")
+    _AddReply("location.reload(true)")
   Else
     Me.Refresh
   Endif

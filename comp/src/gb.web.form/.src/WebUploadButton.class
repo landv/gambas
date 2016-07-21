@@ -112,7 +112,7 @@ Public Sub Upload()
   $bUpload = True
   Me._SetProperty("#upload", True)
   
-  WebForm._AddReply("gw.file.upload(" & JS(Me.Name) & ");")
+  WebForm._AddReply("gw.file.upload(" & JS(Me.Name) & ")")
   
 End
 

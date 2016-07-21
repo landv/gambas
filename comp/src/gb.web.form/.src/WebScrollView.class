@@ -76,7 +76,7 @@ Public Sub _Render()
   Endif
   
   If $hHeaderH Or If $hHeaderV Then
-    WebForm._AddJavascript("gw.scrollview.setHeaders(" & JS(Me.Name) & "," & sHeaderH & "," & sHeaderV & ");")
+    WebForm._AddJavascript("gw.scrollview.setHeaders(" & JS(Me.Name) & "," & sHeaderH & "," & sHeaderV & ")")
   Endif
 
 End
@@ -116,7 +116,7 @@ Private Sub ScrollY_Write(Value As Integer)
   Me._SetProperty("ScrollY", Value)
   Dec Me._NoRefresh
 
-  If Me._CanRefresh() Then WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & "); // _ScrollY")
+  If Me._CanRefresh() Then WebForm._AddJavascript("gw.table.scroll(" & JS(Me.Name) & "," & JS($iScrollX) & "," & JS($iScrollY) & ") // _ScrollY")
 
 End
 

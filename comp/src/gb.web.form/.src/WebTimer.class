@@ -43,9 +43,9 @@ End
 Public Sub _Render()
   
   If $bEnabled Then
-    WebForm._AddJavascript("gw.addTimer(" & JS(Me.Name) & "," & CStr($iDelay) & ");")
+    WebForm._AddJavascript("gw.addTimer(" & JS(Me.Name) & "," & CStr($iDelay) & ")")
   Else
-    WebForm._AddJavascript("gw.removeTimer(" & JS(Me.Name) & ");")
+    WebForm._AddJavascript("gw.removeTimer(" & JS(Me.Name) & ")")
   Endif
   
 End

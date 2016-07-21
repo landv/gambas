@@ -15,8 +15,10 @@ Property Progress As Float
 Property Read File As String
 Property Read Path As String
 Property Read Uploading As Boolean
+'Property TempDir As String
 
 Private $fProgress As Float
+'Private $sTempDir As String
 
 'Property File As String
 
@@ -26,7 +28,7 @@ Private $fProgress As Float
 Public Sub _BeforeRender()
   
   Print "<div"; Me._GetClassId(); 
-  Print " onclick=\"gw.file.select("; JS(Me.Name); ")\"";
+  If Me.Enabled Then Print " onclick=\"gw.file.select("; JS(Me.Name); ")\"";
   Me._RenderStyleSheet()
   Print ">";
   Print "<input class=\"gw-file-input\" type=\"file\" id=\""; Me.Name; ":file\" onchange=\"gw.file.upload("; JS(Me.Name); ");\">"
@@ -39,12 +41,11 @@ Public Sub _UpdateProperty(sProp As String, vValue As Variant)
   
   If sProp = "#progress" Then
     
-    If Me.Progress = 1 Then Return
-    
     If Me.Progress = 0 Then
       For Each hChild In Me.Children
         hChild.Enabled = False
       Next
+      Me.Enabled = False
     Endif
     
     Me.Progress = vValue
@@ -107,6 +108,7 @@ Private Sub Finish()
   For Each hChild In Me.Children
     hChild.Enabled = True
   Next
+  Me.Enabled = True
   
 End
 
@@ -116,10 +118,11 @@ Public Sub _UploadFinish()
   Dim sTemp As String
   Dim sName As String
   
-  Progress_Write(1)
-  Raise Progress
+  'Progress_Write(1)
+  'Raise Progress
   
-  Finish
+  Session.Load
+  Me._InitProperties
   
   If Me["path"] Then Try Kill Me["path"]
   Me["file"] = ""
@@ -135,9 +138,9 @@ Public Sub _UploadFinish()
     Break
   Next
   
-  Raise Upload  
+  Finish
   
-  Progress_Write(0)
+  'Progress_Write(0)
   
 End
 
@@ -174,7 +177,20 @@ End
 
 Public Sub Abort()
   
-  WebForm._AddReplyBefore("gw.file.abort(" & JS(Me.Name) & ");")  
+  WebForm._AddReplyBefore("gw.file.abort(" & JS(Me.Name) & ")")  
   Finish
   
 End
+
+' Private Function TempDir_Read() As String
+' 
+'   Return $sTempDir
+' 
+' End
+' 
+' Private Sub TempDir_Write(Value As String)
+' 
+'   $sTempDir = Value
+'   Me._SetProperty("TempDir", Value)
+' 
+' End

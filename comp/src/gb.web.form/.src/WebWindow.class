@@ -328,8 +328,8 @@ End
 
 Public Sub Close(Optional vReturnValue As Variant)
   
-  WebForm._AddReplyBefore("gw.window.close(" & JS(Me.Name) & ");")
-  WebForm._AddReplyBefore("gw.window.refresh();")
+  WebForm._AddReplyBefore("gw.window.close(" & JS(Me.Name) & ")")
+  WebForm._AddReplyBefore("gw.window.refresh()")
   
   If IsPopup() Then PopupControl_Read().SetFocus
   If $iParentControlId Then Object.Raise(WebControl.FromId($iParentControlId), "Dialog", [Child_Read(), vReturnValue])

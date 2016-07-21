@@ -29,7 +29,7 @@ Private Sub Text_Write(Value As String)
   Dec Me._NoRefresh
   
   If Me._CanRefresh() Then
-    WebForm._AddJavascript("gw.setInnerHtml(" & JS(Me.Name) & "," & JS(Replace(Html($sText), "\n", "<br>")) & ");")
+    WebForm._AddJavascript("gw.setInnerHtml(" & JS(Me.Name) & "," & JS(Replace(Html($sText), "\n", "<br>")) & ")")
   Endif
 
 End
