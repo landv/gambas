@@ -1339,6 +1339,11 @@ Public Sub btnMoveUpArg_Click()
   hArgListEditor = svwArgList.Children[iCurrent]
   hArgListEditor.Next = svwArgList.Children[iCurrent - 1]
   hArgListEditor.SetFocus
+  
+  If iCurrent = (Project.CurrentArgument - 1) Then
+    Dec Project.CurrentArgument
+    Project.WriteProject
+  Endif
 
   UpdateArgButtons
 
@@ -1355,6 +1360,11 @@ Public Sub btnMoveDownArg_Click()
   hArgListEditor = svwArgList.Children[iCurrent]
   hArgListEditor.Next = svwArgList.Children[iCurrent + 1].Next
   hArgListEditor.SetFocus
+
+  If iCurrent = (Project.CurrentArgument - 1) Then
+    Inc Project.CurrentArgument
+    Project.WriteProject
+  Endif
 
   UpdateArgButtons
 

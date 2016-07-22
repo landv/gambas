@@ -121,7 +121,7 @@ gw = {
       if (!elt)
         return;
     
-      console.log(id + " removed");
+      //console.log(id + " removed");
     
       elt.parentNode.removeChild(elt);
     //}
@@ -1009,15 +1009,11 @@ gw = {
     {
       if (xhr.gw_progress)
       {
-        console.log('finish later ' + xhr.gw_progress);
         setTimeout(function() { gw.file.finish(xhr); }, 250);
         return;
       }
       
-      console.log('finish');
-      
       gw.update(xhr.gw_id, '#progress', 1, function() {
-        console.log('finish answer');
         gw.answer(xhr); 
         gw.uploads[xhr.gw_id] = undefined;
         gw.raise(xhr.gw_id, 'upload');

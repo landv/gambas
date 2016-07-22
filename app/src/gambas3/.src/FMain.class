@@ -1267,6 +1267,7 @@ Public Sub OnProjectChange()
   mnuProfile.Value = Project.Profiling
   'Action["breakerr"].Value = Project.BreakOnError
   OnRefreshComponents
+  UpdateRunButton
   'UpdateTranslate
   'RefreshInfo
   'IF $bHidden THEN HideAll
@@ -1401,7 +1402,10 @@ Public Sub Action_Activate((Key) As String) As Boolean
     Case "refresh-project"
       Project.RefreshAll
     Case "project-property"
-      If Not FProjectProperty.Run() Then Project.Refresh
+      If Not FProjectProperty.Run() Then
+        Project.Refresh
+        UpdateRunButton
+      Endif
     Case "translate"
       Translate
     Case "compile"
@@ -2719,5 +2723,19 @@ Public Sub runWithArg_Click()
   
   Project.CurrentArgument = Last.Tag
   Project.WriteProject
+  
+End
+
+Public Sub UpdateRunButton()
+  
+  If Project.Arguments.Count Then
+    btnGo.Arrow = True
+    btnGo.W = btnGo.H + Desktop.Scale * 2
+    btnGo.Menu = "mnuRunWith"
+  Else
+    btnGo.Arrow = False
+    btnGo.W = btnGo.H
+    btnGo.Menu = ""
+  Endif
   
 End

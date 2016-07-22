@@ -3,21 +3,19 @@
 Export 
 'CREATE 
 
+Public Enum File = 0, Sqlite = 1
+
+Private $hManager As SessionManager
+Private $iType As Integer
+
 Private $sId As String
-Private $sPath As String
 
-Private $cVal As Collection
-'Private $cNew As Collection
-
-Private $bModify As Boolean
-Private $eTimeout As Float = 1
-Private $eStartup As Float
-Private $hLock As File
 Private $sPrefix As String
 Private $bUnique As Boolean
 Private $sCookiePath As String
 Private $bInit As Boolean
 
+Property Type As Integer
 Property Id As String
 Property Timeout As Float
 Property Prefix As String
@@ -27,292 +25,27 @@ Property CookiePath As String
 Property Read Keys As String[]
 Property Read Size As Long
 
-Private $iSize As Long
-
-Private Sub LockSession() 
-  
-  Dim iInd As Integer
-  
-  For iInd = 1 To 10
-    Try $hLock = Lock $sPath & ".lock"
-    If Not Error Then Return
-    Sleep 0.1
-  Next
-  
-  Main.Log("LockSession: unable to lock session")
-  
-End
-
-Private Sub UnlockSession()
-  
-  Try Unlock #$hLock
-  
-End
-
-
-Private Sub SaveSession()
-  
-  Dim hFile As File
-  Dim sTemp As String
-  Dim eNow As Float
-  Dim vVal As Variant
-  Dim sKey As String
-
-  'PRINT "<h2>Save session</h2>"
-  'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
-  
-  If Not $sId Then Return 
-  
-  'Startup time is always modified
-  If Not $bModify Then 
-  
-    eNow = Now
-    If (eNow - $eStartup) < (1 / 86400) Then Return
-  
-    Try Main.Log("SaveSession: " & $sId & ": update timestamp")
-
-    LockSession
-    
-    'Main.Log("SaveSession: " & $sPath & ": Just update time stamp : " & Exist($sPath))
-    hFile = Open $sPath For Write 
-    Write #hFile, Now As Float
-    Close #hFile
-    
-    UnlockSession
-
-  Else
-  
-    sTemp = Temp$()
-
-    Try Main.Log("SaveSession: " & $sId)
-    
-    LockSession
-    
-    ' hFile = Open $sPath
-    ' Seek #hFile, SizeOf(gb.Float) * 2
-    ' $cVal = Read #hFile As Variant
-    ' Close #hFile
-    ' 
-    ' For Each vVal In $cNew
-    '   sKey = $cNew.Key
-    '   If TypeOf(vVal) = gb.Object And If vVal = $cNew Then
-    '     $cVal[sKey] = Null
-    '   Else
-    '     $cVal[sKey] = vVal
-    '   Endif
-    ' Next
-    
-    'Main.Log("SaveSession: " & $sPath & ": Save all session : " & Exist($sPath))
-    hFile = Open sTemp For Output Create 
-
-    Write #hFile, Now As Float
-    Write #hFile, $eTimeout As Float
-
-    'Output To #hFile
-    'WriteValue($cVal)
-    Write #hFile, $cVal As Variant
-    Write #hFile, $sCookiePath As String
-    'Output To Default
-    
-    $iSize = Lof(hFile)
-    Close #hFile
-    
-    Try Kill $sPath
-    Move sTemp To $sPath
-    
-    UnlockSession
-    
-    $bModify = False
-    
-  Endif
-    
-  Try Main.Log("SaveSession: OK")
-
-  ' If Exist($sPath) Then
-  '   Main.Log("SaveSession: " & $sPath & " (" & Stat($sPath).Size & ")")
-  ' Else
-  '   Main.Log("SaveSession: " & $sPath & " NOT FOUND!")
-  ' Endif
-  
-Catch
-  
-  Try Main.Log("SaveSession: " & Error.Where & ": " & Error.Text)
-  
-End
-
-
-Private Sub CheckSession() As Boolean
-  
-  'Main.Log("TimeOut: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
-  Return (CFloat(Now) - $eStartup) >= $eTimeout
-  
-End
-
-
-Private Sub LoadSession()
-  
-  Dim hFile As File
-
-  Main.Log("LoadSession: " & $sPath)
-  ' Main.Log("System.Language = " & System.Language)
-  ' Main.Log("System.Charset = " & System.Charset)
-  ' Main.Log(System.Backtrace.Join(" "))
-
-  If Not Exist($sPath) Then Goto _ABANDON
-  
-  'Main.Log("LoadSession: #2")
-  
-  LockSession
-  hFile = Open $sPath
-  
-  $iSize = Lof(hFile)
-  
-  Input From #hFile
-
-  'IF ReadValue() = 1 THEN GOTO _ABANDON
-  $eStartup = Read As Float
-  $eTimeout = Read As Float
-  If CheckSession() Then 
-    Main.Log("LoadSession: timeout: " & CStr(CDate($eTimeOut)) & " Startup: " & CStr(CDate($eStartup)) & " Now: " & CStr(Now))
-    Goto _ABANDON
-  Endif
-  
-  $cVal = Read #hFile As Variant 
-  Try $sCookiePath = Read #hFile As String
-  '$cVal = ReadValue()
-  $bModify = False
-  Close #hFile
-  Input From Default
-  UnlockSession
-  
-  '$cNew = New Collection
-  
-  Main.Log("LoadSession: OK")
-  Return  
-
-Catch
-
-  Main.Log("LoadSession: " & $sId & ": " & Error.Where & ": " & Error.Text)
-  'Try File.Save(File.Dir($sPath) &/ "session.error", Error.Where & ": " & Error.Text & "\n")
-  'Try Kill $sPath & ".error"
-  'Try Copy $sPath To $sPath & ".error"
-
-_ABANDON:
-
-  Main.Log("LoadSession: abandon")
-
-  'Main.Log("LoadSession: #4")
-
-  If hFile Then
-    Close #hFile
-    Input From Default 
-    UnlockSession
-  Endif
-  
-  Try Object.Call(Application.Startup, "Session_Abandon")
-  
-  Try Kill $sPath
-  Try Kill $sPath & ".lock"
-  $sId = ""
-  
-End
-
-Private Sub GetPath(Optional sId As String) As String
-  
-  Return "/tmp/gambas." & System.User.Id &/ "session" &/ sId 
-  
-End
-
-Private Sub CheckUnique()
-  
-  Dim hLock As File
-  Dim sPrefix As String
-  Dim aKill As String[]
-  Dim sKill As String
-  Dim sFile As String
-  Dim sDir As String
-  Dim dNow As Date
-  Dim hStat As Stat
-  
-  If $sPrefix Then
-    sPrefix = $sPrefix
-  Else
-    sPrefix = CGI["REMOTE_ADDR"]
-  Endif
-  
-  sDir = GetPath()
-    
-  If $bUnique Then 
-  
-    Try hLock = Lock GetPath(".unique.lock")
-    If Error Then Return
-    
-    Do
-      aKill = Dir(sDir, sPrefix & ":*")
-      If aKill.Count = 0 Then Break
-      For Each sKill In aKill
-        Try Kill sDir &/ sKill
-      Next
-    Loop
-    
-    Unlock #hLock
-  
-  Else
-
-    ' dNow = Now
-    ' For Each sFile In Dir(sDir, sPrefix & ":*")
-    '   Try hStat = Stat(sDir &/ sFile)
-    '   If Error Then Continue
-    '   If DateDiff(hStat.LastModified, dNow, gb.Hour) >= 24 Then
-    '     Try Kill sDir &/ sFile
-    '   Endif
-    ' Next
-    
-  Endif
-  
-End
-
-
 Private Sub CreateSession()
+
+  If $hManager Then Return
   
-  Dim iInd As Integer
-  Dim sPrefix As String
+  Select Case $iType
+    Case File
+      $hManager = New FileSessionManager($sId)
+    Case Sqlite
+      $hManager = New SqliteSessionManager($sId)
+  End Select
   
-  sPrefix = "/tmp/gambas." & System.User.Id
-  
-  Repeat 
-    $sId = ""
-    For iInd = 1 To 6
-      $sId &= Hex$(Int(Rnd(65536)), 4)
-    Next
-    If $sPrefix Then
-      $sId = $sPrefix & ":" & $sId
-    Else
-      $sId = CGI["REMOTE_ADDR"] & ":" & $sId
-    Endif
-    '$sId = "TEST"
-    $sPath = GetPath($sId) 'sPrefix &/ "session" &/ $sId  
-  Until Not Exist($sPath)
-  
-  'TRY MKDIR $sPrefix
-  Try Mkdir GetPath() 'sPrefix &/ "session"
-  
-  CheckUnique
+  If Not $sId Then
+    $hManager.Create()
+  Else
+    If $hManager.Load() Then Return
+  Endif
   
   Main.Log("CreateSession: " & $sId)
-  Response.SetCookie("SESSION", $sId, "", GetCookiePath(),, True)
+  Response.SetCookie("GBSESSIONID", $sId, "", GetCookiePath(),, True)
   
-  $cVal = New Collection
-  $eStartup = Now
   
-End
-
-Private Sub SelectSession()
-  
-  $sPath = GetPath($sId) '"/tmp/gambas." & System.User.Id &/ "session" &/ $sId
-  
-  LoadSession
-
 End
 
 
@@ -327,14 +60,14 @@ Private Sub Init()
   'Main.Log("Session.Init")
   
   'Main.Log("HTTP_COOKIE = " & CGI["HTTP_COOKIE"] & " / " & Env["HTTP_COOKIE"])
-  $sId = Request.Cookies["SESSION"]
+  $sId = Request.Cookies["GBSESSIONID"]
   Main.Log("--------------- Init: Cookie = " & $sId)
   
   'Main.Log("Cookie = " & $sId)
   '$sId = "9E2496B3AB6DDED93ABE6F0CF6E071B3@"
   If Not $sId Then Return
   
-  SelectSession
+  CreateSession
   
 'CATCH 
 '  CGI.Error(Error.Where & ": " & Error.Text)
@@ -344,7 +77,7 @@ End
 Public Sub _exit()
   
   Try Main.Log("Session._exit")
-  SaveSession
+  If $hManager Then $hManager.Exit
   
 End
 
@@ -362,45 +95,33 @@ End
 
 Public Sub Abandon()
   
-  Init
-  
   Main.Log("Abandon")
   
   If Not $sId Then Return
+  If Not $hManager Then Return
 
   Try Object.Call(Application.Startup, "Session_Abandon")
 
-  Try Kill $sPath
-  Try Kill $sPath & ".lock"
-  Response.RemoveCookie("SESSION", $sId, "", GetCookiePath())
+  $hManager.Abandon
+
+  Response.RemoveCookie("GBSESSIONID", $sId, "", GetCookiePath())
   
   $sId = ""
-  $sPath = ""
-  $cVal = Null
-  $iSize = 0
+  $hManager = Null
   
 End
 
 Public Sub _get(Key As String) As Variant
   
-'   Dim vVal As Variant
-  
   Init
-  ' If $cNew Then
-  '   vVal = $cNew[Key]
-  '   If TypeOf(vVal) <> gb.Null Then
-  '     If TypeOf(vVal) = gb.Object And If vVal = $cNew Then Return
-  '     Return vVal
-  '   Endif
-  ' Endif
-  If $cVal Then Return $cVal[Key]
+  If $hManager Then Return $hManager[Key]
   
 End
 
 Public Sub Exist(Key As String) As Boolean
   
   Init
-  If $cVal Then Return $cVal.Exist(Key)
+  If $hManager Then Return $hManager.Exist(Key)
   
 End
 
@@ -408,14 +129,8 @@ End
 Public Sub _put(Value As Variant, Key As String)
 
   Init
-  If Not $cVal Then CreateSession
-  ' If Value Then
-  '   $cNew[Key] = Value
-  ' Else
-  '   $cNew[Key] = $cNew
-  ' Endif
-  $cVal[Key] = Value
-  $bModify = True
+  If Not $hManager Then CreateSession
+  $hManager[Key] = Value
     
 End
 
@@ -433,35 +148,35 @@ Private Sub Id_Write(Value As String)
   Init
   Abandon
   $sId = Value
-  SelectSession    
+  CreateSession
 
 End
 
 Private Function Timeout_Read() As Float
 
   Init
-  Return Int($eTimeout * 86400 + 0.5)
+  Return Int($hManager.Timeout * 86400 + 0.5)
 
 End
 
 Private Sub Timeout_Write(Value As Float)
 
   Init
-  $eTimeout = Value / 86400
+  $hManager.Timeout = Value / 86400
 
 End
 
 Public Sub Save()
   
   Init
-  SaveSession
+  $hManager.Save
   
 End
 
 Public Sub Load()
 
   Init
-  LoadSession
+  $hManager.Load
   
 End
 
@@ -488,20 +203,20 @@ Private Sub Unique_Write(Value As Boolean)
 
   Init
   $bUnique = Value
-  CheckUnique
+  $hManager.CheckUnique
 
 End
 
 Private Function Modified_Read() As Boolean
 
-  Return $bModify
+  Return $hManager.Modified
 
 End
 
 Private Sub Modified_Write(Value As Boolean)
 
   Init
-  $bModify = Value
+  $hManager.Modified = Value
 
 End
 
@@ -520,19 +235,47 @@ End
 
 Private Function Keys_Read() As String[]
 
-  Dim aKey As New String[]
-
-  For Each $cVal
-    aKey.Add($cVal.Key)
-  Next
-  Return aKey
-  
+  Return $hManager.GetKeys()
 
 End
 
 Private Function Size_Read() As Long
 
-  Return $iSize
+  Try Return $hManager.Size
 
+End
+
+
+Private Function Type_Read() As Integer
+
+  Return $iType
+
+End
+
+Private Sub Type_Write(Value As Integer)
+
+  Select Case Value
+    Case File, Sqlite
+      $iType = Value
+    Case Else
+      Error.Raise("Unknown session type")
+  End Select
+
+End
+
+Public Sub _MakeId()
+  
+  Dim iInd As Integer
+  
+  $sId = ""
+  For iInd = 1 To 6
+    $sId &= Hex$(Int(Rnd(65536)), 4)
+  Next
+  If $sPrefix Then
+    $sId = $sPrefix & ":" & $sId
+  Else
+    $sId = CGI["REMOTE_ADDR"] & ":" & $sId
+  Endif
+  
 End
 

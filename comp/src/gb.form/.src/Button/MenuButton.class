@@ -201,7 +201,12 @@ End
 
 
 
-Public Sub Arrow_Click()
+Private Sub Arrow_Click()
+
+  If Not $sMenu Then
+    Raise Click
+    Return
+  Endif
 
   If Not Main.FindMenu(Me, $sMenu) Then
     Raise Click
@@ -329,7 +334,7 @@ Public Sub DrawingArea_MouseDown()
   If $bArrow Then
     $bInsideArrow = Mouse.X > (Me.W - Desktop.Scale * 3 + 3)
   Else
-    $bInsideArrow = True ' if the arrow is hidden, the all button will popup the menu
+    $bInsideArrow = $sMenu ' if the arrow is hidden, the all button will popup the menu
   Endif
   $hDrawingArea.SetFocus
   $hDrawingArea.Refresh

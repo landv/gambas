@@ -132,7 +132,10 @@ Public Sub _UploadFinish()
     sTemp = GetUploadDir() &/ Me.Name & "." & File.Ext(sName)
     Try Kill sTemp
     Try Move sPath To sTemp
-    If Error Then Break
+    If Error Then 
+      WebForm.Print(Error.Text & ": " & sPath & " -> " & sTemp)
+      Break
+    Endif
     Me["path"] = sTemp
     Me["file"] = sName
     Break
