@@ -560,7 +560,7 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Window_Handle)
 
-	GB.ReturnInteger(SDL_GetWindowId(WINDOW));
+	GB.ReturnInteger(SDL_GetWindowID(WINDOW));
 
 END_PROPERTY
 
