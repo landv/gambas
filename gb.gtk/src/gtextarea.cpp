@@ -406,17 +406,33 @@ static gboolean cb_keypress(GtkWidget *widget, GdkEvent *event, gTextArea *ctrl)
 	{
 		int key = gdk_keyval_to_unicode(gdk_keyval_to_upper(event->key.keyval));
 		
-		if (key == 'Z')
+		if (!ctrl->readOnly())
 		{
-			ctrl->undo();
-			return true;
+			if (key == 'Z')
+			{
+				ctrl->undo();
+				return true;
+			}
+			else if (key == 'Y')
+			{
+				ctrl->redo();
+				return true;
+			}
+			else if (key == 'X')
+			{
+				ctrl->cut();
+				ctrl->ensureVisible();
+				return true;
+			}
+			else if (key == 'V')
+			{
+				ctrl->paste();
+				ctrl->ensureVisible();
+				return true;
+			}
 		}
-		else if (key == 'Y')
-		{
-			ctrl->redo();
-			return true;
-		}
-		else if (key == 'A')
+
+		if (key == 'A')
 		{
 			ctrl->selectAll();
 			return true;
@@ -424,18 +440,6 @@ static gboolean cb_keypress(GtkWidget *widget, GdkEvent *event, gTextArea *ctrl)
 		else if (key == 'C')
 		{
 			ctrl->copy();
-			return true;
-		}
-		else if (key == 'X')
-		{
-			ctrl->cut();
-			ctrl->ensureVisible();
-			return true;
-		}
-		else if (key == 'V')
-		{
-			ctrl->paste();
-			ctrl->ensureVisible();
 			return true;
 		}
 	}
