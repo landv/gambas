@@ -38,6 +38,15 @@
 #ifndef CURLE_FTP_BAD_FILE_LIST
 #define CURLE_FTP_BAD_FILE_LIST 87
 #endif
+#ifndef CURLE_SSL_CRL_BADFILE
+#define CURLE_SSL_CRL_BADFILE 82 /* was on 7.19.0 */
+#endif
+#ifndef CURLAUTH_DIGEST_IE
+#define CURLAUTH_DIGEST_IE    (1<<4)  /* Digest with IE flavour */
+#endif
+#ifndef CURLE_SSL_ISSUER_ERROR
+#define CURLE_SSL_ISSUER_ERROR 83
+#endif
 #ifndef CURLE_CHUNK_FAILED
 #define CURLE_CHUNK_FAILED 88
 #endif
