@@ -4287,6 +4287,7 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   Endif
 
   If sExt Then
+    
     Try Kill Project.Dir &/ ".gambas" &/ UCase(sName)
     If Not Error Then bRecompile = True
     'Try Kill Project.Dir &/ ".list"
@@ -4344,6 +4345,10 @@ Private Function RenameOneFile(sDir As String, sName As String, sNewName As Stri
   'RenamePathCollection(AddedPaths, sPath, sNewPath)
 
   'If bRecompile Then Compile
+  
+  If sExt And If IsExported(sNewPath) Then
+    UpdateAllForms(sName, sNewName)
+  Endif
 
   Return sNewPath
 
@@ -6005,30 +6010,54 @@ Public Sub InsideDirectory(sPath As String, sDir As String) As Boolean
 End
 
 
-Public Sub UpdateAllForms() 
+Public Sub UpdateAllForms(Optional sOldClass As String, sNewClass As String) 
 
   Dim sPath As String
-  Dim hForm As Object
+  Dim hForm As FForm
 
   Inc Application.Busy 
 
   For Each sPath In $cSourceDir
 
-    If File.Ext(sPath) <> "form" Then Continue
+    If Not IsFormPath(sPath) Then Continue
     If Stat(sPath).Type = gb.Link Then Continue
 
     hForm = LoadFile(sPath)
-    hForm.Modify()
-    hForm.Save()
+    If sOldClass Then
+      hForm.RenameClass(sOldClass, sNewClass)
+    Else
+      hForm.Modify()
+      hForm.Save()
+    Endif
 
   Next
 
   Dec Application.Busy 
 
+  If sOldClass Then
+    
+    Compile(True)
+    
+    Inc Application.Busy 
+
+    For Each sPath In $cSourceDir
+  
+      If Not IsFormPath(sPath) Then Continue
+      If Stat(sPath).Type = gb.Link Then Continue
+  
+      hForm = LoadFile(sPath)
+      hForm.Reload()
+  
+    Next
+    
+    Dec Application.Busy 
+
+  Endif
+
 Catch
 
   Application.Busy = 0
-  Message.Error("<b>Unable to update all forms!</b><p>" & Error.Text & "<br>" & Error.Where)
+  Message.Error(("Unable to update forms.") & "<p><tt>" & Error.Text & "<br><br>" & Error.Where & "</tt>")
 
 End
 

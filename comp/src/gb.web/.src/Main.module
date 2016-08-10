@@ -75,7 +75,7 @@ End
 
 Public Sub Main()
 
-  Session.Type = Session.Sqlite
+  Session.Type = "sqlite"
   Session["test"] = "value"
   Session.Save
 

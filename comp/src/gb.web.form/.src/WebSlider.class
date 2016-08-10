@@ -15,6 +15,7 @@ Public Sub _BeforeRender()
   Print " value=\""; CStr(Me.Value); "\"";
   Print " min=\""; CStr(Me.MinValue); "\"";
   Print " max=\""; CStr(Me.MaxValue); "\"";
+  If Me.Step > 1 Then Print " step=\""; CStr(Me.Step); "\"";
   Print ">"
   
 End

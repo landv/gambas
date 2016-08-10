@@ -69,7 +69,7 @@ Private Sub DoOpen()
     
     While Me.H < $H
       Me.H = $H * Min(1, (Timer - fTime) * 8)
-      Wait
+      Try Wait
     Wend
     
   Endif

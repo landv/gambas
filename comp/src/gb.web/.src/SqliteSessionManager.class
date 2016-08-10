@@ -8,6 +8,9 @@ Private $eStartup As Float
 
 Private $hConn As Connection
 
+Private $cValues As Collection
+Private $cDelete As Collection
+
 Private Sub GetPath(Optional sId As String) As String
 
   Dim sPath As String
@@ -55,6 +58,9 @@ Public Sub Load() As Boolean
   
   Session.CookiePath = rConf!sCookiePath
 
+  $cValues = New Collection
+  $cDelete = New Collection
+
   Me.Modified = False
   
 Catch
@@ -84,6 +90,7 @@ Public Sub Save()
   
   Dim eNow As Float
   Dim rConf As Result
+  Dim vVal As Variant
 
   'PRINT "<h2>Save session</h2>"
   'PRINT "<p>"; $sId; "<br>"; $bModify; "<br>"; $sPath; "<br>"; $cVal.Count
@@ -100,10 +107,25 @@ Public Sub Save()
 
   Else
   
+    $hConn.Begin
+    
     rConf = $hConn.Edit("config")
     rConf!fStartup = CFloat(Now)
     rConf!sCookiePath = Session.CookiePath
     rConf.Update
+    
+    For Each $cDelete
+      FlushValue(Null, $cDelete.Key)
+    Next
+    
+    For Each vVal In $cValues
+      FlushValue(vVal, $cValues.Key)
+    Next
+    
+    $cDelete.Clear
+    $cValues.Clear
+    
+    $hConn.Commit
     
     $hConn.Close
     $hConn.Open
@@ -215,6 +237,8 @@ Public Sub Create()
   hTable.Update
   
   $hConn = hConn
+  $cValues = New Collection
+  $cDelete = New Collection
   
 End
 
@@ -222,6 +246,8 @@ Public Sub Abandon()
 
   $sPath = ""
   Me.Size = 0
+  $cValues = Null
+  $cDelete = Null
   If $hConn Then 
     $hConn.Close
     $hConn = Null
@@ -238,6 +264,10 @@ Public Sub _get(Key As String) As Variant
   Dim hFile As File
   Dim vVal As Variant
 
+  If $cDelete.Exist(Key) Then Return
+  vVal = $cValues[Key]
+  If vVal Then Return vVal
+
   rValue = $hConn.Find("values", "sKey = &1", Key)
   If rValue.Available Then 
     sValue = rValue!sValue.Data
@@ -250,6 +280,9 @@ End
 
 Public Sub Exist(Key As String) As Boolean
 
+  If $cDelete.Exist(Key) Then Return
+  If $cValues.Exist(Key) Then Return True
+  
   Return $hConn.Exec("SELECT 1 FROM values WHERE sKey = &1", Key).Available
   
 End
@@ -257,9 +290,28 @@ End
 
 Public Sub _put(Value As Variant, Key As String)
 
+  If IsNull(Value) Then
+    $cDelete[Key] = True
+    $cValues.Remove(Key)
+  Else
+    $cDelete.Remove(Key)
+    $cValues[Key] = Value
+  Endif
+  
+  Me.Modified = True
+  
+End
+
+Private Sub FlushValue(Value As Variant, Key As String)
+
   Dim rValue As Result
   Dim hFile As File
   Dim sValue As String
+
+  If IsNull(Value) Then
+    $hConn.Delete("values", "sKey = &1", Key)
+    Return
+  Endif
 
   rValue = $hConn.Edit("values", "sKey = &1", Key)
   If Not rValue.Available Then
@@ -272,8 +324,6 @@ Public Sub _put(Value As Variant, Key As String)
   sValue = Close #hFile
   rValue!sValue = sValue
   rValue.Update
-
-  Me.Modified = True
     
 End
 
@@ -282,7 +332,7 @@ Public Sub GetKeys() As String[]
   Dim rValue As Result
   Dim aKey As New String[]
 
-  rValue = DB.Exec("SELECT sKey FROM values")
+  rValue = DB.Find("values")
   For Each rValue
     aKey.Add(rValue!sKey)
   Next

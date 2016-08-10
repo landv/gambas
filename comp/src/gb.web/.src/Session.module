@@ -3,10 +3,8 @@
 Export 
 'CREATE 
 
-Public Enum File = 0, Sqlite = 1
-
 Private $hManager As SessionManager
-Private $iType As Integer
+Private $sType As String = "sqlite"
 
 Private $sId As String
 
@@ -15,7 +13,7 @@ Private $bUnique As Boolean
 Private $sCookiePath As String
 Private $bInit As Boolean
 
-Property Type As Integer
+Property Type As String
 Property Id As String
 Property Timeout As Float
 Property Prefix As String
@@ -29,10 +27,10 @@ Private Sub CreateSession()
 
   If $hManager Then Return
   
-  Select Case $iType
-    Case File
+  Select Case $sType
+    Case "file"
       $hManager = New FileSessionManager($sId)
-    Case Sqlite
+    Case Else
       $hManager = New SqliteSessionManager($sId)
   End Select
   
@@ -246,17 +244,20 @@ Private Function Size_Read() As Long
 End
 
 
-Private Function Type_Read() As Integer
+Private Function Type_Read() As String
 
-  Return $iType
+  Return $sType
 
 End
 
-Private Sub Type_Write(Value As Integer)
+Private Sub Type_Write(Value As String)
 
+  Value = LCase(Value)
   Select Case Value
-    Case File, Sqlite
-      $iType = Value
+    Case "sqlite", "file"
+      $sType = Value
+    Case ""
+      $sType = "sqlite"
     Case Else
       Error.Raise("Unknown session type")
   End Select

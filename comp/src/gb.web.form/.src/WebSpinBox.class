@@ -37,6 +37,7 @@ Public Sub _BeforeRender()
   Print " value=\""; CStr($iVal); "\"";
   Print " min=\""; CStr($iMinVal); "\"";
   Print " max=\""; CStr($iMaxVal); "\"";
+  If $iStep > 1 Then Print " step=\""; CStr($iStep); "\"";
   Print ">"
   
 End

@@ -250,7 +250,7 @@ Static Private Sub PrintJavascript()
 End
 
 Public Sub Render()
-  
+
   Response.Buffered = True
   Response.Begin
   
@@ -361,6 +361,9 @@ Public Sub _Exec(aCmd As Variant[])
   Dim hCtrl As WebControl
   Dim iOldInExec As Integer = _InExec
   Dim sErr As String
+  'Dim fTimer As Float
+  
+  'fTimer = Timer
   
   Inc _InExec
   
@@ -396,8 +399,11 @@ Public Sub _Exec(aCmd As Variant[])
   
   _InExec = iOldInExec
   
+  Response.ContentType = "text/javascript;charset=utf-8"
   Response.Begin
   PrintJavascript
+  'Session.Save
+  'Print "// WebForm._Exec: " & Format(Timer - fTimer, "0.000 s")
   Response.End
   Return
   

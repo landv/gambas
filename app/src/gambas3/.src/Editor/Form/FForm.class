@@ -21,6 +21,9 @@ Private $bSelChange As Boolean
 Private $bReadOnly As Boolean
 Private $bScaled As Boolean
 Private $bNoUpdateMenu As Boolean
+
+Private $sRenameOld As String
+Private $sRenameNew As String
 'PRIVATE $sType AS String
 
 ' Gestion de la souris
@@ -758,6 +761,7 @@ Private Sub SaveOne(hCtrl As CControl)
   Dim bPublic As Boolean
   Dim bTranslate As Boolean
   Dim hCChild As CControl
+  Dim sClass As String
 
   If IsNull(hCtrl) Then Return
 
@@ -766,11 +770,14 @@ Private Sub SaveOne(hCtrl As CControl)
 
   sGroup = hCtrl.GetProperty(CPropertyInfo.EVENT_NAME)
   bPublic = hCtrl.Public
+  
+  sClass = hCtrl.Kind
+  If sClass = $sRenameOld Then sClass = $sRenameNew
 
   If hCtrl.NoParent Then
-    AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " #" & hCtrl.Kind & " " & sGroup))
+    AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " #" & sClass & " " & sGroup))
   Else
-    AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " " & hCtrl.Kind & " " & sGroup))
+    AddLine(Trim("{ " & If(bPublic, "!", "") & sName & " " & sClass & " " & sGroup))
   Endif
 
   If $iSaveLevel = 0 Then
@@ -3573,7 +3580,7 @@ Public Sub panBorder_Draw()
   'Else
   'Endif
 
-  If RootControl["#Grid"] Then
+  If RootControl And If RootControl["#Grid"] Then
     hCont = RootControl.Control
     
     ' Draw.FillX = hCont.ClientX + hCont.X
@@ -3821,6 +3828,17 @@ Public Sub RenameControl(sOldName As String, sNewName As String)
   Control[sOldName].Rename(sNewName)
   
 End
+
+Public Sub RenameClass(sOldName As String, sNewName As String)
+  
+  $sRenameOld = sOldName
+  $sRenameNew = sNewName
+  Try Me.Save(True)
+  $sRenameOld = ""
+  $sRenameNew = ""
+  
+End
+
 
 Public Sub SetControlProperty(sName As String, sProp As String, vVal As Variant, bDoNotApply As Boolean)
   
