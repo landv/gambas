@@ -1184,6 +1184,12 @@ BEGIN_PROPERTY(Process_Ignore)
 
 END_METHOD
 
+BEGIN_METHOD_VOID(Process_CloseInput)
+
+	close_fd(&THIS->in);
+
+END_METHOD
+
 #endif
 
 GB_DESC NATIVE_Process[] =
@@ -1211,6 +1217,8 @@ GB_DESC NATIVE_Process[] =
 	GB_METHOD("Kill", NULL, Process_Kill, NULL),
 	GB_METHOD("Signal", NULL, Process_Signal, NULL),
 	GB_METHOD("Wait", NULL, Process_Wait, "[(Timeout)f]"),
+	
+	GB_METHOD("CloseInput", NULL, Process_CloseInput, NULL),
 
 	GB_PROPERTY("Ignore", "b", Process_Ignore),
 
