@@ -24,6 +24,8 @@ Public Sub Form_Open()
   Dim hButton As MenuButton
   Dim hGroup As CSoftwareGroup
   Dim sIcon As String
+  Dim sVendor As String
+  Dim hVoid As Control
 
   Settings.Read(Me)
   Me.Center
@@ -51,9 +53,29 @@ Public Sub Form_Open()
 
   aGroup.Sort
 
+  aGroup.Add(Null)
+
+  sVendor = Settings["/Packager/Vendor"]
+  If sVendor Then aGroup.Add(CSoftwareGroup(sVendor, ("My software") & "\n« " & sVendor & " »", "user"))
+
+  If Project.Path And If Project.Vendor <> sVendor Then
+    sVendor = Project.Vendor
+    If sVendor Then aGroup.Add(CSoftwareGroup(sVendor, ("Other software from") & "\n« " & sVendor & " »", "people"))
+  Endif
+  
   aGroup.Add(CSoftwareGroup("", ("All software"), "img/48/all.png"))
   
   For Each hGroup In aGroup
+    
+    If Not hGroup Then
+      hVoid = New Panel(panGroup)
+      hVoid.ResizeScaled(1, 1)
+      hVoid.Expand = True
+      hVoid = New Separator(panGroup)
+      hVoid.ResizeScaled(1, 1)
+      hVoid.Expand = True
+      Continue
+    Endif
     
     hButton = New MenuButton(panGroup) As "ButtonGroup"
     hButton.Text = hGroup.Name
@@ -63,7 +85,7 @@ Public Sub Form_Open()
     sIcon = hGroup.Icon
     If InStr(sIcon, "/") = 0 Then sIcon = "icon:/48" &/ sIcon
     hButton.Picture = Picture[sIcon]
-    hButton.ResizeScaled(32, 10)
+    hButton.ResizeScaled(36, 10)
     hButton.Mouse = Mouse.Pointing
     
   Next

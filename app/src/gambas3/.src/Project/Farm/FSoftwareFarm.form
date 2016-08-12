@@ -1,17 +1,13 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,103,82)
+  MoveScaled(0,0,114,82)
   Background = Color.TextBackground
   Text = ("Gambas Software Farm")
   Arrangement = Arrange.Vertical
   { dwgTitle DrawingArea
     MoveScaled(1,1,66,8)
     Background = &H3398C3&
-  }
-  { timLoad #Timer
-    #MoveScaled(117,2)
-    Delay = 500
   }
   { VBox1 HBox
     MoveScaled(0,10,98,6)
@@ -302,5 +298,9 @@
       }
     }
     Index = 0
+  }
+  { timLoad #Timer
+    #MoveScaled(117,2)
+    Delay = 500
   }
 }
