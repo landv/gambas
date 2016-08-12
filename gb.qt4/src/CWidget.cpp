@@ -494,13 +494,11 @@ static void insert_enter_leave_event(CWIDGET *control, bool in)
 static bool _post_check_hovered = false;
 static CWIDGET *_post_check_hovered_window = NULL;
 
-static void post_check_hovered(intptr_t toplevel)
+static void post_check_hovered(intptr_t)
 {
-	void *_object;
+	void *_object = _post_check_hovered_window;
 	
-	if (toplevel)
-		_object = (void *)toplevel;
-	else
+	if (!THIS)
 		_object = CWINDOW_Active;
 	
 	if (THIS && WIDGET)
@@ -514,10 +512,13 @@ static void post_check_hovered(intptr_t toplevel)
 	}
 	
 	_post_check_hovered = false;
+	_post_check_hovered_window = NULL;
+	
 }
 
 void CWIDGET_check_hovered()
 {
+	_post_check_hovered_window = NULL;
 	post_check_hovered(0);
 }
 
@@ -2312,7 +2313,8 @@ void CWidget::destroy()
 		if (top == THIS)
 			top = NULL;
 		_post_check_hovered = true;
-		GB.Post((void (*)())post_check_hovered, (intptr_t)top);
+		_post_check_hovered_window = top;
+		GB.Post((void (*)())post_check_hovered, (intptr_t)0);
 	}
 	
 	CLEAN_POINTER(_hovered);
