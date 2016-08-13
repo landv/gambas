@@ -240,44 +240,60 @@ Static Public Sub OpenTerminal(Optional {Dir} As String) ', Optional Command As 
   Dim sExec As String
   Dim sCmd As String
   Dim bNoDir As Boolean
-  Dim Command As String
+  'Dim Command As String
+  Dim aProg As String[]
+  Dim sProg As String
+  Dim sDesktop As String
 
-  Select Case GetDesktop()
+  sDesktop = GetDesktop()
 
-    Case "KDE"
-      sExec = "konsole"
-    Case "KDE4", "KDE5"
-      If {Dir} Then
-        sExec = "konsole --workdir " & Shell$({Dir})
-        bNoDir = True
-      Else
-        sExec = "konsole"
-      Endif
-      If Command Then sExec &= " -e " & Shell$(Command)
-    Case "GNOME"
-      sExec = "gnome-terminal"
-      If {Dir} Then
-        sExec &= " --working-directory=" & Shell$({Dir})
-        bNoDir = True
-      Endif
-      If Command Then sExec &= " -x " & Shell$(Command)
+  Select Case sDesktop
+
+    Case "KDE", "KDE4", "KDE5 "
+      aProg = ["konsole"]
+    Case "GNOME", "UNITY"
+      aProg = ["gnome-terminal"]
     Case "MATE", "CINNAMON"
-      sExec = "mate-terminal"
+      aProg = ["mate-terminal", "gnome-terminal"]
+    Case "XFCE"
+      aProg = ["xfce4-terminal", "gnome-terminal"]
+    Case "LXDE"
+      aProg = ["lxterminal"]
+    Case Else
+      aProg = New String[]
+
+  End Select
+  
+  aProg.Add("xterm")
+  
+  For Each sProg In aProg
+    If System.Exist(sProg) Then Break
+    sProg = ""
+  Next
+  
+  If Not sProg Then Error.Raise("No terminal program found")
+  
+  sExec = sProg
+  
+  Select Case sProg
+
+    Case "konsole"
+      
+      If sDesktop <> "KDE" Then
+        If {Dir} Then
+          sExec = "konsole --workdir " & Shell$({Dir})
+          bNoDir = True
+        Endif
+        'If Command Then sExec &= " -e " & Shell$(Command)
+      Endif
+      
+    Case "gnome-terminal", "mate-terminal"
       If {Dir} Then
         sExec &= " --working-directory=" & Shell$({Dir})
         bNoDir = True
       Endif
-      If Command Then sExec &= " -x " & Shell$(Command)
-    Case "XFCE"
-      sExec = "xfce4-terminal"
-      If Command Then sExec &= " -x " & Shell$(Command)
-    Case "LXDE"
-      sExec = "lxterminal"
-      If Command Then sExec &= " -e " & Shell$(Command)
-    Case Else
-      sExec = "xterm"
-      If Command Then sExec &= " -e " & Shell$(Command)
-
+      'If Command Then sExec &= " -x " & Shell$(Command)
+      
   End Select
 
   If {Dir} And If Not bNoDir Then
@@ -412,7 +428,24 @@ End
 
 Static Public Sub RunAsRoot(Command As String)
 
-  Main.RunXdgUtil("xdg-su", ["-c", Command])
+  'Main.RunXdgUtil("xdg-su", ["-c", Command])
+
+  Dim sExec As String
+  
+  Select Case GetDesktop()
+    
+    Case "KDE", "KDE4", "KDE5"
+      sExec = "kdesudo"
+    Case "LXDE"
+      sExec = "lxde-sudo"
+    Case Else
+      sExec = "gksudo"
+    
+  End Select
+  
+  If Not System.Exist(sExec) Then Error.Raise("No graphical sudo program found")
+  
+  Exec [sExec, Command]
 
 End
 
