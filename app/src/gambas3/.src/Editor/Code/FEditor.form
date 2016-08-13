@@ -6,138 +6,37 @@
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
     Enabled = False
-    { mnuGoto Menu
-      Text = ("Go to")
+    { mnuUndo Menu
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
     }
-    { mnuGotoLine Menu
-      Action = ".goto-line"
-      Text = ("Go to line") & "..."
-      Shortcut = "Ctrl+G"
+    { mnuRedo Menu
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
     }
-    { mnuBookmark Menu
-      Text = ("Bookmarks")
+    { mnuSepUndo Menu
     }
-    { mnuDefinition Menu
-      Action = ".find-definition"
-      Text = ("Find definition")
-      Picture = Picture["icon:/small/info"]
-      Shortcut = "F2"
+    { mnuCut Menu
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
     }
-    { mnuForm Menu
-      Action = ".show-form"
-      Text = ("Open form")
-      Picture = Picture["img/16/form.png"]
-      Shortcut = "F12"
+    { mnuCopy Menu
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
     }
-    { mnuRun Menu
-      Action = ".run-me"
-      Text = ("Run this class")
-      Picture = Picture["icon:/small/play"]
-      Shortcut = "Shift+F5"
-    }
-    { mnuSepGoto Menu
-    }
-    { Menu5 Menu
-      Text = ("Edit")
-      { mnuUndo Menu
-        Action = ".undo"
-        Text = ("Undo")
-        Picture = Picture["icon:/small/undo"]
-        Shortcut = "Ctrl+Z"
-      }
-      { mnuRedo Menu
-        Action = ".redo"
-        Text = ("Redo")
-        Picture = Picture["icon:/small/redo"]
-        Shortcut = "Ctrl+Y"
-      }
-      { mnuSepUndo Menu
-      }
-      { mnuCut Menu
-        Action = ".cut"
-        Text = ("Cut")
-        Picture = Picture["icon:/small/cut"]
-        Shortcut = "Ctrl+X"
-      }
-      { mnuCopy Menu
-        Action = ".copy"
-        Text = ("Copy")
-        Picture = Picture["icon:/small/copy"]
-        Shortcut = "Ctrl+C"
-      }
-      { mnuPaste Menu
-        Action = ".paste"
-        Text = ("Paste")
-        Picture = Picture["icon:/small/paste"]
-        Shortcut = "Ctrl+V"
-      }
-      { Menu3 Menu
-      }
-      { mnuSelectAll Menu
-        Action = ".select-all"
-        Text = Shortcut(("Select All"), "A")
-        Shortcut = "Ctrl+A"
-      }
-    }
-    { mnuSep2 Menu
-    }
-    { mnuFindNext Menu
-      Action = "find-next"
-      Text = ("Find next")
-      Picture = Picture["icon:/small/down"]
-      Shortcut = "F3"
-    }
-    { mnuFindPrevious Menu
-      Action = "find-previous"
-      Text = ("Find previous")
-      Picture = Picture["icon:/small/up"]
-      Shortcut = "Shift+F3"
-    }
-    { mnuSep4 Menu
-    }
-    { mnuUntil Menu
-      Text = Shortcut(("Run until current line"), "u")
-      Picture = Picture["icon:/small/jump"]
-      Shortcut = "Shift+F5"
-    }
-    { mnuBreakpoint Menu
-      Action = ".break"
-      Text = Shortcut(("Toggle breakpoint"), "b")
-      Picture = Picture["icon:/small/halt"]
-      Shortcut = "F9"
-    }
-    { mnuWatch Menu
-      Action = ".watch"
-      Text = Shortcut(("Watch expression"), "W")
-      Picture = Picture["img/16/watch.png"]
-    }
-    { mnuSepBookmark Menu
-    }
-    { mnuEditorView Menu
-      Text = ("View")
-      { mnuWrap Menu
-        Action = ".wrap"
-        Text = ("Automatic word wrap")
-        Picture = Picture["img/16/wrap.png"]
-        Toggle = True
-      }
-      { mnuNoSplit Menu
-        Action = ".view-nosplit"
-        Text = ("No split")
-        Picture = Picture["icon:/small/view-normal"]
-      }
-      { mnuHorizontalSplit Menu
-        Action = ".view-hsplit"
-        Text = ("Horizontal split")
-        Picture = Picture["icon:/small/view-split-h"]
-        Shortcut = "Ctrl+H"
-      }
-      { mnuVerticalSplit Menu
-        Action = ".view-vsplit"
-        Text = ("Vertical split")
-        Picture = Picture["icon:/small/view-split-v"]
-        Shortcut = "Ctrl+J"
-      }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
     }
     { mnuAdvanced Menu
       Text = ("Advanced")
@@ -191,6 +90,106 @@
         Picture = Picture["icon:/small/sort-ascent"]
         Visible = False
       }
+    }
+    { Menu3 Menu
+    }
+    { mnuSelectAll Menu
+      Action = ".select-all"
+      Text = Shortcut(("Select All"), "A")
+      Shortcut = "Ctrl+A"
+    }
+    { Menu1 Menu
+    }
+    { mnuGoto Menu
+      Text = ("Go to")
+    }
+    { mnuGotoLine Menu
+      Action = ".goto-line"
+      Text = ("Go to line") & "..."
+      Shortcut = "Ctrl+G"
+    }
+    { mnuBookmark Menu
+      Text = ("Bookmarks")
+    }
+    { mnuSepGoto Menu
+    }
+    { mnuDefinition Menu
+      Action = ".find-definition"
+      Text = ("Find definition")
+      Picture = Picture["icon:/small/info"]
+      Shortcut = "F2"
+    }
+    { mnuFindNext Menu
+      Action = "find-next"
+      Text = ("Find next")
+      Picture = Picture["icon:/small/down"]
+      Shortcut = "F3"
+    }
+    { mnuFindPrevious Menu
+      Action = "find-previous"
+      Text = ("Find previous")
+      Picture = Picture["icon:/small/up"]
+      Shortcut = "Shift+F3"
+    }
+    { mnuSep4 Menu
+    }
+    { mnuEditorView Menu
+      Text = ("View")
+      { mnuWrap Menu
+        Action = ".wrap"
+        Text = ("Automatic word wrap")
+        Picture = Picture["img/16/wrap.png"]
+        Toggle = True
+      }
+      { mnuNoSplit Menu
+        Action = ".view-nosplit"
+        Text = ("No split")
+        Picture = Picture["icon:/small/view-normal"]
+      }
+      { mnuHorizontalSplit Menu
+        Action = ".view-hsplit"
+        Text = ("Horizontal split")
+        Picture = Picture["icon:/small/view-split-h"]
+        Shortcut = "Ctrl+H"
+      }
+      { mnuVerticalSplit Menu
+        Action = ".view-vsplit"
+        Text = ("Vertical split")
+        Picture = Picture["icon:/small/view-split-v"]
+        Shortcut = "Ctrl+J"
+      }
+    }
+    { Menu5 Menu
+    }
+    { mnuUntil Menu
+      Text = Shortcut(("Run until current line"), "u")
+      Picture = Picture["icon:/small/jump"]
+      Shortcut = "Shift+F5"
+    }
+    { mnuBreakpoint Menu
+      Action = ".break"
+      Text = Shortcut(("Toggle breakpoint"), "b")
+      Picture = Picture["icon:/small/halt"]
+      Shortcut = "F9"
+    }
+    { mnuWatch Menu
+      Action = ".watch"
+      Text = Shortcut(("Watch expression"), "W")
+      Picture = Picture["img/16/watch.png"]
+    }
+    { mnuSepBookmark Menu
+    }
+    { mnuForm Menu
+      Action = ".show-form"
+      Text = ("Open form")
+      Picture = Picture["img/16/form.png"]
+      Shortcut = "F12"
+    }
+    { mnuRun Menu
+      Action = ".run-me"
+      Text = ("Run this class")
+      Picture = Picture["icon:/small/play"]
+      Shortcut = "Shift+F5"
     }
     { mnuSep5 Menu
     }

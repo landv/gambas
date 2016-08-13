@@ -23,7 +23,7 @@ Public RequiredGambasVersion As String
 Public Checksum As String
 Public Owner As String
 Public DownloadCount As Integer
-'Public FullDownloadCount As Integer
+Public FullDownloadCount As Integer
 Public VoteCount As Integer
 Public YourVote As Integer
 Public Icon As Image
@@ -135,7 +135,7 @@ Public Sub Request_Finished()
   RequiredGambasVersion = cResult["RequiredGambasVersion"]
   Checksum = UnQuote(cResult["Checksum"])
   Try DownloadCount = CInt(cResult["DownloadCount"])
-  'Try FullDownloadCount = CInt(cResult["FullDownloadCount"])
+  Try FullDownloadCount = CInt(cResult["FullDownloadCount"])
   Try VoteCount = CInt(cResult["VoteCount"])
   Owner = UnQuote(cResult["Owner"])
   If cResult.Exist("YourVote") Then
@@ -588,7 +588,7 @@ Public Sub PaintName(X As Float, Y As Float) As Integer
   Paint.DrawText(Version, X, Y, W, H, Align.TopLeft)
   
   X = XO
-  Y += H + Desktop.Scale \ 2
+  Y += H + Desktop.Scale \ 4
   
   Paint.Font.Italic = True
   Paint.Font.Grade -= 2

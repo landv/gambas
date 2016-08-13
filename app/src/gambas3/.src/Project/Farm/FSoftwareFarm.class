@@ -202,7 +202,7 @@ Public Sub Request_Finished()
     
     hSoftwareBox = New SoftwareBox(svwFarm, CInt(sId), hReq.Farm) As "SoftwareBox"
     If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Hide
-    hSoftwareBox.ResizeScaled(48, 30)
+    hSoftwareBox.ResizeScaled(54, 30)
     If cmbSort.Index = SORT_INSTALLED Then hSoftwareBox.Load
     
   Next

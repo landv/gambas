@@ -5,139 +5,41 @@
   Persistent = True
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
-    { Menu4 Menu
-      Text = ("Edit")
-      { mnuUndo Menu btnUndo
-        Name = "mnuUndo"
-        Action = ".undo"
-        Text = ("Undo")
-        Picture = Picture["icon:/small/undo"]
-        Shortcut = "Ctrl+Z"
-      }
-      { mnuRedo Menu btnRedo
-        Name = "mnuRedo"
-        Action = ".redo"
-        Text = ("Redo")
-        Picture = Picture["icon:/small/redo"]
-        Shortcut = "Ctrl+Y"
-      }
-      { mnuSep2 Menu
-      }
-      { mnuCut Menu btnCut
-        Name = "mnuCut"
-        Action = ".cut"
-        Text = ("Cut")
-        Picture = Picture["icon:/small/cut"]
-        Shortcut = "Ctrl+X"
-      }
-      { mnuCopy Menu btnCopy
-        Name = "mnuCopy"
-        Action = ".copy"
-        Text = ("Copy")
-        Picture = Picture["icon:/small/copy"]
-        Shortcut = "Ctrl+C"
-      }
-      { mnuPaste Menu
-        Action = ".paste"
-        Text = ("Paste")
-        Picture = Picture["icon:/small/paste"]
-        Shortcut = "Ctrl+V"
-      }
-      { Menu2 Menu
-      }
-      { mnuSelectAll Menu
-        Action = ".select-all"
-        Text = Shortcut(("Select All"), "A")
-        Shortcut = "Ctrl+A"
-      }
-      { mnuHideSelection Menu
-        Action = ".hide"
-        Text = ("Hide selection")
-        Picture = Picture["img/draw/hide.png"]
-        Shortcut = "Esc"
-      }
+    { mnuUndo Menu btnUndo
+      Name = "mnuUndo"
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
     }
-    { mnuSelection Menu
-      Text = ("Selection")
-      { mnuInvert Menu btnInvert
-        Name = "mnuInvert"
-        Action = ".invert"
-        Text = ("Invert selection")
-        Picture = Picture["img/draw/invert.png"]
-        Shortcut = "Ctrl+I"
-      }
-      { mnuDuplicate Menu btnDuplicate
-        Name = "mnuDuplicate"
-        Action = ".duplicate"
-        Text = ("Duplicate selection")
-        Picture = Picture["img/draw/duplicate.png"]
-        Shortcut = "Ctrl+D"
-      }
-      { mnuOffset Menu btnOffset
-        Name = "mnuOffset"
-        Action = ".offset"
-        Text = ("Offset selection")
-        Picture = Picture["img/draw/offset.png"]
-        Shortcut = "Ctrl+*"
-      }
-      { Menu5 Menu
-      }
-      { mnuUnion Menu btnUnion
-        Name = "mnuUnion"
-        Text = ("Union")
-        Picture = Picture["img/draw/union.png"]
-      }
-      { mnuDifference Menu btnDifference
-        Name = "mnuDifference"
-        Text = ("Difference")
-        Picture = Picture["img/draw/difference.png"]
-      }
-      { mnuIntersection Menu btnIntersection
-        Name = "mnuIntersection"
-        Text = ("Intersection")
-        Picture = Picture["img/draw/intersection.png"]
-      }
-      { mnuExclusive Menu btnExclusive
-        Name = "mnuExclusive"
-        Text = ("Exclusive or")
-        Picture = Picture["img/draw/exclusive.png"]
-      }
+    { mnuRedo Menu btnRedo
+      Name = "mnuRedo"
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
     }
-    { mnuShapeGrid Menu
-      Text = ("Shape grid")
-      Picture = Picture["img/draw/shgrid.png"]
-      Visible = False
-      { mnuDivide2 Menu mnuDivide
-        Name = "mnuDivide2"
-        #Translate = False
-        Text = "2 × 2"
-        Checked = True
-        Tag = "2"
-        Shortcut = "Ctrl+2"
-      }
-      { mnuDivide3 Menu mnuDivide
-        Name = "mnuDivide3"
-        #Translate = False
-        Text = "3 × 3"
-        Tag = "3"
-        Shortcut = "Ctrl+3"
-      }
-      { mnuDivide4 Menu mnuDivide
-        Name = "mnuDivide4"
-        #Translate = False
-        Text = "4 × 4"
-        Tag = "4"
-        Shortcut = "Ctrl+4"
-      }
-      { mnuDivide5 Menu mnuDivide
-        Name = "mnuDivide5"
-        #Translate = False
-        Text = "5 × 5"
-        Tag = "5"
-        Shortcut = "Ctrl+5"
-      }
+    { mnuSep2 Menu
     }
-    { mnuSep4 Menu
+    { mnuCut Menu btnCut
+      Name = "mnuCut"
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu btnCopy
+      Name = "mnuCopy"
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
     }
     { mnuAction Menu
       Text = ("Action")
@@ -188,6 +90,103 @@
         Text = ("Rotate") & "..."
         Picture = Picture["img/draw/rotate.png"]
       }
+    }
+    { Menu2 Menu
+    }
+    { mnuSelectAll Menu
+      Action = ".select-all"
+      Text = Shortcut(("Select All"), "A")
+      Shortcut = "Ctrl+A"
+    }
+    { mnuHideSelection Menu
+      Action = ".hide"
+      Text = ("Hide selection")
+      Picture = Picture["img/draw/hide.png"]
+      Shortcut = "Esc"
+    }
+    { mnuSelection Menu
+      Text = ("Selection")
+      { mnuInvert Menu btnInvert
+        Name = "mnuInvert"
+        Action = ".invert"
+        Text = ("Invert selection")
+        Picture = Picture["img/draw/invert.png"]
+        Shortcut = "Ctrl+I"
+      }
+      { mnuDuplicate Menu btnDuplicate
+        Name = "mnuDuplicate"
+        Action = ".duplicate"
+        Text = ("Duplicate selection")
+        Picture = Picture["img/draw/duplicate.png"]
+        Shortcut = "Ctrl+D"
+      }
+      { mnuOffset Menu btnOffset
+        Name = "mnuOffset"
+        Action = ".offset"
+        Text = ("Offset selection")
+        Picture = Picture["img/draw/offset.png"]
+        Shortcut = "Ctrl+*"
+      }
+      { Menu5 Menu
+      }
+      { mnuUnion Menu btnUnion
+        Name = "mnuUnion"
+        Text = ("Union")
+        Picture = Picture["img/draw/union.png"]
+      }
+      { mnuDifference Menu btnDifference
+        Name = "mnuDifference"
+        Text = ("Difference")
+        Picture = Picture["img/draw/difference.png"]
+      }
+      { mnuIntersection Menu btnIntersection
+        Name = "mnuIntersection"
+        Text = ("Intersection")
+        Picture = Picture["img/draw/intersection.png"]
+      }
+      { mnuExclusive Menu btnExclusive
+        Name = "mnuExclusive"
+        Text = ("Exclusive or")
+        Picture = Picture["img/draw/exclusive.png"]
+      }
+    }
+    { Menu4 Menu
+    }
+    { mnuShapeGrid Menu
+      Text = ("Shape grid")
+      Picture = Picture["img/draw/shgrid.png"]
+      Visible = False
+      { mnuDivide2 Menu mnuDivide
+        Name = "mnuDivide2"
+        #Translate = False
+        Text = "2 × 2"
+        Checked = True
+        Tag = "2"
+        Shortcut = "Ctrl+2"
+      }
+      { mnuDivide3 Menu mnuDivide
+        Name = "mnuDivide3"
+        #Translate = False
+        Text = "3 × 3"
+        Tag = "3"
+        Shortcut = "Ctrl+3"
+      }
+      { mnuDivide4 Menu mnuDivide
+        Name = "mnuDivide4"
+        #Translate = False
+        Text = "4 × 4"
+        Tag = "4"
+        Shortcut = "Ctrl+4"
+      }
+      { mnuDivide5 Menu mnuDivide
+        Name = "mnuDivide5"
+        #Translate = False
+        Text = "5 × 5"
+        Tag = "5"
+        Shortcut = "Ctrl+5"
+      }
+    }
+    { mnuSep4 Menu
     }
     { mnuZoom Menu
       Text = ("View")

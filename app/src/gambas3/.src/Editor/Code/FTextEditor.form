@@ -7,6 +7,97 @@
   Arrangement = Arrange.Vertical
   { mnuEditor Menu
     Enabled = False
+    { mnuUndo Menu
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
+    }
+    { mnuRedo Menu
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { mnuSep2 Menu
+    }
+    { mnuCut Menu
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuAdvanced Menu
+      Text = ("Advanced")
+      { mnuUpperCase Menu
+        Action = ".ucase"
+        Text = ("Upper case")
+        Picture = Picture["img/16/ucase.png"]
+        Shortcut = "Ctrl+Alt+U"
+      }
+      { mnuLowerCase Menu
+        Action = ".lcase"
+        Text = ("Lower case")
+        Picture = Picture["img/16/lcase.png"]
+        Shortcut = "Ctrl+Alt+L"
+      }
+      { Menu6 Menu
+      }
+      { mnuSortAscent Menu
+        Action = ".sort-ascent"
+        Text = ("Sort ascent")
+        Picture = Picture["icon:/small/sort-ascent"]
+      }
+      { mnuSortDescent Menu
+        Action = ".sort-descent"
+        Text = ("Sort descent")
+        Picture = Picture["icon:/small/sort-descent"]
+      }
+      { mnuSep5 Menu
+      }
+      { mnuPasteSpecial Menu
+        Action = ".paste-special"
+        Text = ("Paste special") & "..."
+        Picture = Picture["icon:/small/paste"]
+        Shortcut = "Ctrl+Shift+V"
+      }
+      { mnuInsertColor Menu
+        Action = ".color"
+        Text = ("Insert color") & "..."
+        Picture = Picture["icon:/small/color"]
+      }
+      { mnuCompress Menu
+        Action = ".compress"
+        Text = ("Compress file")
+        Picture = Picture["icon:/small/archive"]
+      }
+      { mnuUncompress Menu
+        Action = ".uncompress"
+        Text = ("Uncompress file")
+        Picture = Picture["icon:/small/undo"]
+      }
+    }
+    { mnuSep3 Menu
+    }
+    { mnuSelectAll Menu
+      Action = ".select-all"
+      Text = Shortcut(("Select All"), "A")
+      Shortcut = "Ctrl+A"
+    }
+    { Menu4 Menu
+    }
     { mnuGotoLine Menu
       Action = ".goto-line"
       Text = ("Go to line") & "..."
@@ -14,56 +105,6 @@
     }
     { mnuBookmark Menu
       Text = ("Bookmarks")
-    }
-    { mnuShowCode Menu
-      Action = ".show-code"
-      Text = ("Open code")
-      Picture = Picture["img/16/class.png"]
-      Shortcut = "F12"
-    }
-    { Menu3 Menu
-    }
-    { mnuEdit Menu
-      Text = ("Edit")
-      { mnuUndo Menu
-        Action = ".undo"
-        Text = ("Undo")
-        Picture = Picture["icon:/small/undo"]
-        Shortcut = "Ctrl+Z"
-      }
-      { mnuRedo Menu
-        Action = ".redo"
-        Text = ("Redo")
-        Picture = Picture["icon:/small/redo"]
-        Shortcut = "Ctrl+Y"
-      }
-      { mnuSep2 Menu
-      }
-      { mnuCut Menu
-        Action = ".cut"
-        Text = ("Cut")
-        Picture = Picture["icon:/small/cut"]
-        Shortcut = "Ctrl+X"
-      }
-      { mnuCopy Menu
-        Action = ".copy"
-        Text = ("Copy")
-        Picture = Picture["icon:/small/copy"]
-        Shortcut = "Ctrl+C"
-      }
-      { mnuPaste Menu
-        Action = ".paste"
-        Text = ("Paste")
-        Picture = Picture["icon:/small/paste"]
-        Shortcut = "Ctrl+V"
-      }
-      { mnuSep3 Menu
-      }
-      { mnuSelectAll Menu
-        Action = ".select-all"
-        Text = Shortcut(("Select All"), "A")
-        Shortcut = "Ctrl+A"
-      }
     }
     { Menu2 Menu
     }
@@ -122,55 +163,13 @@
         Radio = True
       }
     }
-    { mnuAdvanced Menu
-      Text = ("Advanced")
-      { mnuUpperCase Menu
-        Action = ".ucase"
-        Text = ("Upper case")
-        Picture = Picture["img/16/ucase.png"]
-        Shortcut = "Ctrl+Alt+U"
-      }
-      { mnuLowerCase Menu
-        Action = ".lcase"
-        Text = ("Lower case")
-        Picture = Picture["img/16/lcase.png"]
-        Shortcut = "Ctrl+Alt+L"
-      }
-      { Menu6 Menu
-      }
-      { mnuSortAscent Menu
-        Action = ".sort-ascent"
-        Text = ("Sort ascent")
-        Picture = Picture["icon:/small/sort-ascent"]
-      }
-      { mnuSortDescent Menu
-        Action = ".sort-descent"
-        Text = ("Sort descent")
-        Picture = Picture["icon:/small/sort-descent"]
-      }
-      { mnuSep5 Menu
-      }
-      { mnuPasteSpecial Menu
-        Action = ".paste-special"
-        Text = ("Paste special") & "..."
-        Picture = Picture["icon:/small/paste"]
-        Shortcut = "Ctrl+Shift+V"
-      }
-      { mnuInsertColor Menu
-        Action = ".color"
-        Text = ("Insert color") & "..."
-        Picture = Picture["icon:/small/color"]
-      }
-      { mnuCompress Menu
-        Action = ".compress"
-        Text = ("Compress file")
-        Picture = Picture["icon:/small/archive"]
-      }
-      { mnuUncompress Menu
-        Action = ".uncompress"
-        Text = ("Uncompress file")
-        Picture = Picture["icon:/small/undo"]
-      }
+    { Menu3 Menu
+    }
+    { mnuShowCode Menu
+      Action = ".show-code"
+      Text = ("Open code")
+      Picture = Picture["img/16/class.png"]
+      Shortcut = "F12"
     }
     { Menu1 Menu
     }

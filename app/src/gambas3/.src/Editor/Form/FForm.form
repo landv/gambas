@@ -7,140 +7,86 @@
   Arrangement = Arrange.Vertical
   { mnuForm Menu
     Enabled = False
-    { mnuSelect Menu
-      Text = ("Select")
-      Picture = Picture["img/16/select.png"]
+    { mnuUndo Menu
+      Action = ".undo"
+      Text = ("Undo")
+      Picture = Picture["icon:/small/undo"]
+      Shortcut = "Ctrl+Z"
     }
-    { mnuEvent Menu
-      Text = ("Event")
-      Picture = Picture["img/symbol/event.png"]
+    { mnuRedo Menu
+      Action = ".redo"
+      Text = ("Redo")
+      Picture = Picture["icon:/small/redo"]
+      Shortcut = "Ctrl+Y"
+    }
+    { Menu2 Menu
+    }
+    { mnuCut Menu
+      Action = ".cut"
+      Text = ("Cut")
+      Picture = Picture["icon:/small/cut"]
+      Shortcut = "Ctrl+X"
+    }
+    { mnuCopy Menu
+      Action = ".copy"
+      Text = ("Copy")
+      Picture = Picture["icon:/small/copy"]
+      Shortcut = "Ctrl+C"
+    }
+    { mnuCopyAt Menu
+      Action = ".copy-same"
+      Text = ("Copy at the same place")
+      Shortcut = "Ctrl+Shift+C"
+    }
+    { mnuPaste Menu
+      Action = ".paste"
+      Text = ("Paste")
+      Picture = Picture["icon:/small/paste"]
+      Shortcut = "Ctrl+V"
+    }
+    { mnuDelete Menu
+      Action = ".delete"
+      Text = ("Delete")
+      Picture = Picture["icon:/small/delete"]
+      Shortcut = "Del"
+    }
+    { mnuDeleteContainer Menu
+      Action = ".delete-container"
+      Text = ("Delete container only")
+      Picture = Picture["img/16/delete-container.png"]
+      Visible = False
+    }
+    { mnuEmbedContainer Menu
+      Action = ".embed-container"
+      Text = ("Embed into a container")
+      Picture = Picture["img/16/embed-container.png"]
       Visible = False
     }
     { mnuChange Menu
       Text = ("Change into")
       Picture = Picture["icon:/small/wizard"]
     }
-    { mnuShowCode Menu
-      Action = ".code-form"
-      Text = ("Open code")
-      Picture = Picture["img/16/class.png"]
-      Shortcut = "F12"
+    { mnuSep1 Menu
     }
-    { mnuRun Menu
-      Action = ".run-me"
-      Text = ("Run this form")
-      Picture = Picture["icon:/small/play"]
-      Shortcut = "Shift+F5"
+    { mnuSelect Menu
+      Text = ("Select")
+      Picture = Picture["img/16/select.png"]
     }
-    { mnuSepUndo Menu
+    { mnuSelectAll Menu
+      Action = ".select-all"
+      Text = ("Select all")
+      Shortcut = "Ctrl+A"
     }
-    { Menu6 Menu
-      Text = ("Edit")
-      { mnuUndo Menu
-        Action = ".undo"
-        Text = ("Undo")
-        Picture = Picture["icon:/small/undo"]
-        Shortcut = "Ctrl+Z"
-      }
-      { mnuRedo Menu
-        Action = ".redo"
-        Text = ("Redo")
-        Picture = Picture["icon:/small/redo"]
-        Shortcut = "Ctrl+Y"
-      }
-      { Menu2 Menu
-      }
-      { mnuCut Menu
-        Action = ".cut"
-        Text = ("Cut")
-        Picture = Picture["icon:/small/cut"]
-        Shortcut = "Ctrl+X"
-      }
-      { mnuCopy Menu
-        Action = ".copy"
-        Text = ("Copy")
-        Picture = Picture["icon:/small/copy"]
-        Shortcut = "Ctrl+C"
-      }
-      { mnuCopyAt Menu
-        Action = ".copy-same"
-        Text = ("Copy at the same place")
-        Shortcut = "Ctrl+Shift+C"
-      }
-      { mnuPaste Menu
-        Action = ".paste"
-        Text = ("Paste")
-        Picture = Picture["icon:/small/paste"]
-        Shortcut = "Ctrl+V"
-      }
-      { mnuDelete Menu
-        Action = ".delete"
-        Text = ("Delete")
-        Picture = Picture["icon:/small/delete"]
-        Shortcut = "Del"
-      }
-      { mnuDeleteContainer Menu
-        Action = ".delete-container"
-        Text = ("Delete container only")
-        Picture = Picture["img/16/delete-container.png"]
-        Visible = False
-      }
-      { mnuEmbedContainer Menu
-        Action = ".embed-container"
-        Text = ("Embed into a container")
-        Picture = Picture["img/16/embed-container.png"]
-        Visible = False
-      }
-      { mnuSep1 Menu
-      }
-      { mnuSelectAll Menu
-        Action = ".select-all"
-        Text = ("Select all")
-        Shortcut = "Ctrl+A"
-      }
-      { mnuSelectParent Menu
-        Action = ".select-parent"
-        Text = ("Select parent")
-      }
-      { mnuUnselectAll Menu
-        Action = ".unselect-all"
-        Text = ("Unselect all")
-        Shortcut = "Esc"
-      }
+    { mnuSelectParent Menu
+      Action = ".select-parent"
+      Text = ("Select parent")
     }
-    { mnuShowTab Menu
-      Text = ("Show tab")
-      Picture = Picture["img/16/tabstrip.png"]
-      { Menu1 Menu
-      }
+    { mnuUnselectAll Menu
+      Action = ".unselect-all"
+      Text = ("Unselect all")
+      Shortcut = "Esc"
     }
-    { mnuMoveTab Menu
-      Text = ("Move tab")
-      Picture = Picture["img/16/tabmove.png"]
-      { mnuTabFirst Menu
-        Action = ".move-tab-first"
-        Text = Shortcut(("First"), "F")
-        Picture = Picture["icon:/small/first"]
-        Shortcut = "Ctrl+Alt+Home"
-      }
-      { mnuTabPrevious Menu
-        Action = ".move-tab-previous"
-        Text = Shortcut(("Previous"), "P")
-        Picture = Picture["icon:/small/left"]
-        Shortcut = "Ctrl+Alt+Left"
-      }
-      { mnuTabNext Menu
-        Action = ".move-tab-next"
-        Text = Shortcut(("Next"), "N")
-        Picture = Picture["icon:/small/right"]
-        Shortcut = "Ctrl+Alt+Right"
-      }
-      { mnuTabLast Menu
-        Action = ".move-tab-last"
-        Text = Shortcut(("Last"), "L")
-        Picture = Picture["icon:/small/last"]
-        Shortcut = "Ctrl+Alt+End"
-      }
+    { Menu8 Menu
     }
     { mnuArrange Menu
       Text = ("Arrangement")
@@ -228,6 +174,42 @@
         Picture = Picture["img/16/same-height.png"]
       }
     }
+    { mnuSepUndo Menu
+    }
+    { mnuShowTab Menu
+      Text = ("Show tab")
+      Picture = Picture["img/16/tabstrip.png"]
+      { Menu1 Menu
+      }
+    }
+    { mnuMoveTab Menu
+      Text = ("Move tab")
+      Picture = Picture["img/16/tabmove.png"]
+      { mnuTabFirst Menu
+        Action = ".move-tab-first"
+        Text = Shortcut(("First"), "F")
+        Picture = Picture["icon:/small/first"]
+        Shortcut = "Ctrl+Alt+Home"
+      }
+      { mnuTabPrevious Menu
+        Action = ".move-tab-previous"
+        Text = Shortcut(("Previous"), "P")
+        Picture = Picture["icon:/small/left"]
+        Shortcut = "Ctrl+Alt+Left"
+      }
+      { mnuTabNext Menu
+        Action = ".move-tab-next"
+        Text = Shortcut(("Next"), "N")
+        Picture = Picture["icon:/small/right"]
+        Shortcut = "Ctrl+Alt+Right"
+      }
+      { mnuTabLast Menu
+        Action = ".move-tab-last"
+        Text = Shortcut(("Last"), "L")
+        Picture = Picture["icon:/small/last"]
+        Shortcut = "Ctrl+Alt+End"
+      }
+    }
     { mnuSep3 Menu
     }
     { mnuMenu Menu
@@ -235,6 +217,25 @@
       Text = ("Menu editor") & "..."
       Picture = Picture["icon:/small/menu"]
       Shortcut = "Ctrl+E"
+    }
+    { Menu6 Menu
+    }
+    { mnuEvent Menu
+      Text = ("Event")
+      Picture = Picture["img/symbol/event.png"]
+      Visible = False
+    }
+    { mnuShowCode Menu
+      Action = ".code-form"
+      Text = ("Open code")
+      Picture = Picture["img/16/class.png"]
+      Shortcut = "F12"
+    }
+    { mnuRun Menu
+      Action = ".run-me"
+      Text = ("Run this form")
+      Picture = Picture["icon:/small/play"]
+      Shortcut = "Shift+F5"
     }
     { mnuSep4 Menu
     }
