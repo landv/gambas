@@ -296,6 +296,9 @@ bool ARCH_find(ARCH *arch, const char *path, int len_path, ARCH_FIND *find)
 	if (len_path <= 0)
 		len_path = strlen(path);
 
+	while (len_path >= 2 && path[len_path - 1] == '/')
+		len_path--;
+	
 	if (get_absolute_path(path, len_path, tpath, &len_tpath))
 		return TRUE;
 	
