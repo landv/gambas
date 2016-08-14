@@ -1233,7 +1233,7 @@ Private Sub UpdateGlobalLayout()
   mnuSave.Visible = Not bWelcome
   mnuSaveAs.Visible = Not bWelcome
 
-  For Each hMenu In [mnuProject, mnuDebug, mnuView]
+  For Each hMenu In [mnuEdit, mnuProject, mnuDebug, mnuView]
     hMenu.Visible = Not bWelcome And Not bFake
     hMenu.Enabled = hMenu.Visible
   Next
@@ -2583,11 +2583,28 @@ WRITE_PROJECT:
 End
 
 Public Sub wrkProject_Activate()
+
+  Dim hForm As Object
+  Dim hMenu As Menu
   
-  Project.Activate(wrkProject.ActiveWindow)
+  hForm = wrkProject.ActiveWindow
+  
+  Project.Activate(hForm)
   
   If Project.IsFake() Then
     If wrkProject.Count = 0 Then Me.Close
+  Endif
+  
+  If Not hForm Then
+    mnuEdit.Enabled = False
+  Else
+    Try hMenu = hForm.GetPopupMenu()
+    If Not hMenu Then
+      mnuEdit.Enabled = False
+    Else
+      mnuEdit.Enabled = True
+      mnuEdit.Proxy = hMenu
+    Endif
   Endif
   
 End

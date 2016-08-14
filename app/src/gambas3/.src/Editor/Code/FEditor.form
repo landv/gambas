@@ -102,6 +102,7 @@
     }
     { mnuGoto Menu
       Text = ("Go to")
+      Visible = False
     }
     { mnuGotoLine Menu
       Action = ".goto-line"
@@ -458,7 +459,7 @@
     }
     { edtEditor TextEditor Editors
       Name = "edtEditor"
-      MoveScaled(3,1,24,16)
+      MoveScaled(4,1,24,16)
       Expand = True
       Border = False
     }

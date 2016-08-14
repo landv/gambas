@@ -54,6 +54,58 @@ static void clear_menu(CMENU *_object);
 static GB_FUNCTION _init_shortcut_func;
 
 
+#define EXT(_ob) ((CMENU_EXT *)((CWIDGET *)_ob)->ext)
+#define ENSURE_EXT(_ob) (EXT(_ob) ? EXT(_ob) : alloc_ext((CMENU *)(_ob)))
+
+#define HANDLE_PROXY(_ob) \
+	while (EXT(_ob) && EXT(_ob)->proxy) \
+		_ob = (typeof _ob)(EXT(_ob)->proxy);
+
+static CMENU_EXT *alloc_ext(CMENU *_object)
+{
+	GB.Alloc(POINTER(&(THIS->widget.ext)), sizeof(CMENU_EXT));
+	THIS_EXT->proxy = NULL;
+	THIS_EXT->action = NULL;
+	THIS_EXT->tag.type = GB_T_NULL;
+	return THIS_EXT;
+}
+	
+
+static void register_proxy(void *_object, CMENU *proxy)
+{
+	void *check = proxy;
+
+	while (check)
+	{
+		if (check == THIS)
+		{
+			GB.Error("Circular proxy chain");	
+			return;
+		}
+		check = EXT(check) ? EXT(check)->proxy : NULL;
+	}
+	
+	//if (THIS_EXT && THIS_EXT->proxy && EXT(THIS_EXT->proxy))
+	//	EXT(THIS_EXT->proxy)->proxy_for = NULL;
+	
+	if (THIS_EXT && THIS_EXT->proxy)
+		GB.Unref(POINTER(&THIS_EXT->proxy));
+	
+	if (proxy)
+	{
+		GB.Ref(proxy);
+		ENSURE_EXT(THIS)->proxy = proxy;
+	}
+	
+	if (ACTION)
+	{
+		if (!proxy || !proxy->menu)
+			ACTION->setMenu(THIS->menu);
+		else
+			ACTION->setMenu(proxy->menu);
+	}
+}
+
 static int check_menu(void *_object)
 {
 	return THIS->deleted || ACTION == 0;
@@ -96,10 +148,10 @@ static void refresh_menubar(CMENU *menu)
 
 static void unregister_menu(CMENU *_object)
 {
-	if (THIS->action)
+	if (THIS_EXT && THIS_EXT->action)
 	{
-		CACTION_register((CWIDGET *)THIS, THIS->action, NULL);
-		GB.FreeString(&THIS->action);
+		CACTION_register((CWIDGET *)THIS, THIS_EXT->action, NULL);
+		GB.FreeString(&THIS_EXT->action);
 	}
 }
 
@@ -116,10 +168,12 @@ static void delete_menu(CMENU *_object)
 	if (THIS->deleted)
 		return;
 
-	//qDebug("delete_menu: %s %p", THIS->widget.name, THIS);
+	//qDebug("delete_menu: %s %p action %p", THIS->widget.name, THIS, ACTION);
 
 	THIS->deleted = true;
 
+	register_proxy(THIS, NULL);
+		
 	clear_menu(THIS);
 
 	if (THIS->menu)
@@ -335,7 +389,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 			menu->menu->setSeparatorsCollapsible(true);
 			((QAction *)(menu->widget.widget))->setMenu(menu->menu);
 
-			QObject::connect(menu->menu, SIGNAL(triggered(QAction *)), &CMenu::manager, SLOT(slotTriggered(QAction *)));
+			//QObject::connect(menu->menu, SIGNAL(triggered(QAction *)), &CMenu::manager, SLOT(slotTriggered(QAction *)));
 			QObject::connect(menu->menu, SIGNAL(aboutToShow()), &CMenu::manager, SLOT(slotShown()));
 			QObject::connect(menu->menu, SIGNAL(aboutToHide()), &CMenu::manager, SLOT(slotHidden()));
 		}
@@ -344,6 +398,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 		action->setSeparator(true);
 		QObject::connect(action, SIGNAL(toggled(bool)), &CMenu::manager, SLOT(slotToggled(bool)));
 		QObject::connect(action, SIGNAL(destroyed()), &CMenu::manager, SLOT(slotDestroyed()));
+		QObject::connect(action, SIGNAL(triggered()), &CMenu::manager, SLOT(slotTriggered()));
 
 		menu->menu->addAction(action);
 		//qDebug("New action %p for Menu %p", action, THIS);
@@ -406,19 +461,25 @@ BEGIN_METHOD_VOID(Menu_free)
 	qDebug("Menu_free: item = %p", THIS);
 #endif
 
-	//qDebug("Menu_free: (%s %p)", THIS->widget.name, THIS);
-
 	delete_menu(THIS);
+
+	//qDebug("Menu_free: (%s %p)", THIS->widget.name, THIS);
 
 	GB.StoreObject(NULL, POINTER(&(THIS->picture)));
 
-#ifdef DEBUG_MENU
-	qDebug("*** Menu_free: free tag");
-#endif
-
-	if (THIS->widget.ext)
+	if (THIS_EXT)
 	{
-		GB.StoreVariant(NULL, &THIS->widget.ext->tag);
+		//CACTION_register(THIS, THIS_EXT->action, NULL);
+		//GB.FreeString(&THIS_EXT->action);
+	
+		/*if (THIS_EXT->proxy)
+			EXT(THIS_EXT->proxy)->proxy_for = NULL;
+		if (THIS_EXT->proxy_for)
+			EXT(THIS_EXT->proxy_for)->proxy = NULL;*/
+		
+		GB.StoreVariant(NULL, &THIS_EXT->tag);
+		GB.FreeString(&THIS_EXT->action);
+		
 		GB.Free(POINTER(&THIS->widget.ext));
 	}
 
@@ -559,7 +620,6 @@ BEGIN_PROPERTY(Menu_Value)
 	}
 	else if (!CMENU_is_toplevel(THIS))
 	{
-		//qDebug("Menu_Value: %s", THIS->widget.name);
 		GB.Ref(THIS);
 		send_click_event(THIS);
 	}
@@ -684,6 +744,8 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 	bool disabled;
 	void *save;
 
+	HANDLE_PROXY(_object);
+	
 	if (THIS->menu && !THIS->exec)
 	{
 		disabled = THIS->disabled;
@@ -717,6 +779,7 @@ void CMENU_popup(CMENU *_object, const QPoint &pos)
 			CMENU *menu = _popup_menu_clicked;
 			_popup_menu_clicked = NULL;
 			send_click_event(menu);
+			//GB.Unref(POINTER(&menu));
 		}
 
 		//qDebug("CMENU_popup: %p: end", THIS);
@@ -743,7 +806,9 @@ END_METHOD
 
 BEGIN_METHOD_VOID(Menu_Close)
 
-	THIS->menu->close();
+	HANDLE_PROXY(_object);
+	if (THIS->menu)
+		THIS->menu->close();
 
 END_METHOD
 
@@ -755,17 +820,24 @@ END_PROPERTY
 
 BEGIN_PROPERTY(Menu_Action)
 
+	char *current = THIS_EXT ? THIS_EXT->action : NULL;
+
 	if (READ_PROPERTY)
-		GB.ReturnString(THIS->action);
+		GB.ReturnString(current);
 	else
 	{
 		char *action = PLENGTH() ? GB.NewString(PSTRING(), PLENGTH()) : NULL;
-		CACTION_register(THIS, THIS->action, action);
-		GB.FreeString(&THIS->action);
-		THIS->action = action;
+		
+		CACTION_register(THIS, current, action);
+		
+		if (THIS_EXT)
+			GB.FreeString(&THIS_EXT->action);
+		
+		if (action)
+			ENSURE_EXT(THIS)->action = action;
 	}
-
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Menu_SaveText)
 
@@ -776,18 +848,42 @@ BEGIN_PROPERTY(Menu_SaveText)
 
 END_PROPERTY
 
-/*BEGIN_PROPERTY(CMENU_tear_off)
 
-	if (!THIS->menu)
-		return;
+BEGIN_PROPERTY(Menu_Proxy)
 
 	if (READ_PROPERTY)
-		GB.ReturnBoolean(THIS->menu->isTearOffEnabled());
+		GB.ReturnObject(THIS_EXT ? THIS_EXT->proxy : NULL);
 	else
-		THIS->menu->setTearOffEnabled(VPROP(GB_BOOLEAN));
+	{
+		CMENU *menu = (CMENU *)VPROP(GB_OBJECT);
+		
+		if (menu && GB.CheckObject(menu))
+			return;
+		
+		register_proxy(THIS, menu);
+	}
 
-END_PROPERTY*/
+END_PROPERTY
 
+
+BEGIN_PROPERTY(Menu_Tag)
+
+	if (READ_PROPERTY)
+	{
+		if (THIS_EXT)
+			GB.ReturnVariant(&THIS_EXT->tag);
+		else
+		{
+			GB.ReturnNull();
+			GB.ReturnConvVariant();
+		}
+	}
+	else
+		GB.StoreVariant(PROP(GB_VARIANT), POINTER(&(ENSURE_EXT(THIS)->tag)));
+
+END_METHOD
+
+//---------------------------------------------------------------------------
 
 GB_DESC CMenuChildrenDesc[] =
 {
@@ -816,7 +912,7 @@ GB_DESC CMenuDesc[] =
 	GB_PROPERTY("_Text", "s", Menu_SaveText),
 	GB_PROPERTY("Enabled", "b", Menu_Enabled),
 	GB_PROPERTY("Checked", "b", Menu_Checked),
-	GB_PROPERTY("Tag", "v", Control_Tag),
+	GB_PROPERTY("Tag", "v", Menu_Tag),
 	GB_PROPERTY("Picture", "Picture", Menu_Picture),
 	GB_PROPERTY("Shortcut", "s", Menu_Shortcut),
 	GB_PROPERTY("Visible", "b", Menu_Visible),
@@ -825,6 +921,7 @@ GB_DESC CMenuDesc[] =
 	GB_PROPERTY("Value", "b", Menu_Value),
 	GB_PROPERTY("Action", "s", Menu_Action),
 	GB_PROPERTY_READ("Window", "Window", Menu_Window),
+	GB_PROPERTY("Proxy", "Menu", Menu_Proxy),
 
 	GB_PROPERTY_SELF("Children", ".Menu.Children"),
 
@@ -860,6 +957,7 @@ static void send_click_event(CMENU *_object)
 	}
 
 	GB.Raise(THIS, EVENT_Click, 0);
+	//qDebug("CACTION_raise: %s", THIS->widget.name);
 	CACTION_raise((CWIDGET *)THIS);
 	GB.Unref(POINTER(&_object));
 }
@@ -870,20 +968,39 @@ static void send_menu_event(CMENU *_object, intptr_t event)
 	GB.Unref(POINTER(&_object));
 }
 
-void CMenu::slotTriggered(QAction *action)
+/*void CMenu::slotTriggered(QAction *action)
 {
 	GET_MENU_SENDER(parent);
 	CMENU *menu = CMenu::dict[action];
 
-	if (menu->parent != parent)
+	qDebug("slotTriggered: %s %s from %s", menu->widget.name, (const char *)action->text().toUtf8(), parent->widget.name);
+	
+	if (GB.Is(parent->parent, CLASS_Menu))
 		return;
-
-	//qDebug("slotTriggered: %s %s", menu->widget.name, (const char *)action->text().toUtf8());
+	
 	GB.Ref(menu);
+	
 	if (_popup_immediate)
 		_popup_menu_clicked = menu;
 	else
 		GB.Post((GB_CALLBACK)send_click_event, (intptr_t)menu);
+}*/
+
+void CMenu::slotTriggered()
+{
+	CMENU *_object = dict[(QAction *)sender()];
+
+	if (!_object)
+		return;
+
+	//qDebug("slotTriggered: %s %s from %s", menu->widget.name, (const char *)action->text().toUtf8(), parent->widget.name);
+	
+	GB.Ref(THIS);
+	
+	if (_popup_immediate)
+		_popup_menu_clicked = THIS;
+	else
+		GB.Post((GB_CALLBACK)send_click_event, (intptr_t)THIS);
 }
 
 void CMenu::slotShown(void)
@@ -891,7 +1008,8 @@ void CMenu::slotShown(void)
 	static bool init = FALSE;
 
 	GET_MENU_SENDER(menu);
-
+	HANDLE_PROXY(menu);
+	
 	GB.Ref(menu);
 
 	GB.Raise(menu, EVENT_Show, 0);
@@ -911,6 +1029,7 @@ void CMenu::slotShown(void)
 void CMenu::slotHidden(void)
 {
 	GET_MENU_SENDER(menu);
+	HANDLE_PROXY(menu);
 
 	if (GB.CanRaise(menu, EVENT_Hide))
 	{

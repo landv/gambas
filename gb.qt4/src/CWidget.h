@@ -53,7 +53,7 @@ typedef
 	struct CWIDGET {
 		GB_BASE ob;
 		QWidget *widget;
-		CWIDGET_EXT *ext;
+		void *ext;
 		struct {
 			unsigned char f;
 			unsigned expand : 1;
@@ -120,7 +120,7 @@ extern int CCONTROL_last_event_type;
 #else
 
 #define THIS (((CWIDGET *)_object))
-#define THIS_EXT (((CWIDGET *)_object)->ext)
+#define THIS_EXT ((CWIDGET_EXT *)((CWIDGET *)_object)->ext)
 #define WIDGET QWIDGET(_object)
 
 #endif

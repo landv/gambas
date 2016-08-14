@@ -105,6 +105,12 @@
       Shortcut = "Ctrl+Q"
     }
   }
+  { mnuEdit Menu
+    Text = Shortcut(("Edit"), "E")
+    Visible = False
+    { Menu38 Menu
+    }
+  }
   { mnuProject Menu
     Text = Shortcut(("Project"), "P")
     Visible = False
@@ -1005,66 +1011,6 @@
       Action = "send-mail"
       Picture = Picture["icon:/small/mail"]
     }
-    { btnMnuFile MenuButton
-      MoveScaled(153,0,8,4)
-      Visible = False
-      Action = "menu-file"
-      AutoResize = True
-      Text = ("&File")
-      Arrow = False
-      Border = False
-      Menu = "mnuFile"
-    }
-    { btnMnuProject MenuButton
-      MoveScaled(156,0,7,4)
-      Visible = False
-      Action = "menu-project"
-      AutoResize = True
-      Text = ("&Project")
-      Arrow = False
-      Border = False
-      Menu = "mnuProject"
-    }
-    { btnMnuDebug MenuButton
-      MoveScaled(159,0,7,4)
-      Visible = False
-      Action = "menu-debug"
-      AutoResize = True
-      Text = ("&Debug")
-      Arrow = False
-      Border = False
-      Menu = "mnuDebug"
-    }
-    { btnMenuView MenuButton
-      MoveScaled(162,0,7,4)
-      Visible = False
-      Action = "menu-view"
-      AutoResize = True
-      Text = ("&View")
-      Arrow = False
-      Border = False
-      Menu = "mnuView"
-    }
-    { btnMnuTool MenuButton
-      MoveScaled(165,0,7,4)
-      Visible = False
-      Action = "menu-tool"
-      AutoResize = True
-      Text = ("&Tools")
-      Arrow = False
-      Border = False
-      Menu = "mnuTool"
-    }
-    { btnMnuHelp MenuButton
-      MoveScaled(169,0,4,4)
-      Visible = False
-      Action = "menu-help"
-      AutoResize = True
-      Text = ("&?")
-      Arrow = False
-      Border = False
-      Menu = "mnuHelp"
-    }
     { ToolButton16 ToolButton
       MoveScaled(0,4,4,4)
       Visible = False
@@ -1089,6 +1035,76 @@
       Border = False
       Menu = "mnuGUI"
       MenuOnly = True
+    }
+    { btnMnuFile MenuButton
+      MoveScaled(25,4,8,4)
+      Visible = False
+      Action = "menu-file"
+      AutoResize = True
+      Text = ("&File")
+      Arrow = False
+      Border = False
+      Menu = "mnuFile"
+    }
+    { btnMenuEdit MenuButton
+      MoveScaled(32,4,8,4)
+      Visible = False
+      Action = "menu-edit"
+      AutoResize = True
+      Text = ("&Edit")
+      Arrow = False
+      Border = False
+      Menu = "mnuEdit"
+    }
+    { btnMnuProject MenuButton
+      MoveScaled(43,4,7,4)
+      Visible = False
+      Action = "menu-project"
+      AutoResize = True
+      Text = ("&Project")
+      Arrow = False
+      Border = False
+      Menu = "mnuProject"
+    }
+    { btnMnuDebug MenuButton
+      MoveScaled(50,4,7,4)
+      Visible = False
+      Action = "menu-debug"
+      AutoResize = True
+      Text = ("&Debug")
+      Arrow = False
+      Border = False
+      Menu = "mnuDebug"
+    }
+    { btnMenuView MenuButton
+      MoveScaled(58,4,7,4)
+      Visible = False
+      Action = "menu-view"
+      AutoResize = True
+      Text = ("&View")
+      Arrow = False
+      Border = False
+      Menu = "mnuView"
+    }
+    { btnMnuTool MenuButton
+      MoveScaled(65,4,7,4)
+      Visible = False
+      Action = "menu-tool"
+      AutoResize = True
+      Text = ("&Tools")
+      Arrow = False
+      Border = False
+      Menu = "mnuTool"
+    }
+    { btnMnuHelp MenuButton
+      MoveScaled(73,4,4,4)
+      Visible = False
+      Action = "menu-help"
+      AutoResize = True
+      Text = ("&?")
+      Arrow = False
+      Border = False
+      Menu = "mnuHelp"
     }
   }
   { sepMessage Separator
@@ -1400,6 +1416,10 @@
     Text = "Debug"
     Picture = "$MenuButton"
   }
+  { Action menu-edit
+    Text = "Edit"
+    Picture = "$MenuButton"
+  }
   { Action menu-file
     Text = "File"
     Picture = "$MenuButton"
@@ -1611,7 +1631,7 @@
 { Toolbars
   { Toolbar main
     Text = ""
-    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,menu-file,menu-project,menu-debug,menu-view,menu-tool,menu-help,publish,farm,gui"
+    List = "new-project,open-project,save-project,save-project-as,project-property,project-version,refresh-project,option,shortcut,exec,translate,archive,install,project,property,control,console,find,help,compile,compile-all,start,pause,stop,step,forward,return,until,find-project,go-back,go-forward,browse-project,open-terminal,send-mail,publish,farm,gui,menu-file,menu-edit,menu-project,menu-debug,menu-view,menu-tool,menu-help"
     Default = "new-project,open-project,save-project,save-project-as,project-property,project-version,option,|,exec,translate,|,compile,compile-all,start,pause,stop,step,forward,return,until,-,find-project,go-back,go-forward"
   }
 }

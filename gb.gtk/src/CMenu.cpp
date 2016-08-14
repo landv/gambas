@@ -39,6 +39,36 @@ static CMENU *_popup_menu_clicked = NULL;
 static GB_FUNCTION _init_shortcut_func;
 
 
+static void register_proxy(void *_object, CMENU *proxy)
+{
+	CMENU *check = proxy;
+
+	while (check)
+	{
+		if (check == THIS)
+		{
+			GB.Error("Circular proxy chain");	
+			return;
+		}
+		
+		check = (CMENU *)check->proxy;
+	}
+	
+	//if (THIS_EXT && THIS_EXT->proxy && EXT(THIS_EXT->proxy))
+	//	EXT(THIS_EXT->proxy)->proxy_for = NULL;
+	
+	
+	GB.Unref(POINTER(&THIS->proxy));
+	
+	if (proxy)
+	{
+		GB.Ref(proxy);
+		THIS->proxy = proxy;
+	}
+	
+	// set submenu
+}
+
 static void send_click_event(void *_object)
 {
 	GB.Raise(THIS, EVENT_Click, 0);
@@ -155,7 +185,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 
 	hidden = VARGOPT(hidden, false);
 
-	if (GB.Is(parent,CLASS_Window))
+	if (GB.Is(parent, CLASS_Window))
 	{
 		if (!((CWINDOW*)parent)->ob.widget)
 		{
@@ -167,7 +197,7 @@ BEGIN_METHOD(Menu_new, GB_OBJECT parent; GB_BOOLEAN hidden)
 		goto __OK;
 	}
 
-	if (GB.Is(parent,CLASS_Menu))
+	if (GB.Is(parent, CLASS_Menu))
 	{
 		if ( !((CMENU*)parent)->widget )
 		{
@@ -411,6 +441,7 @@ BEGIN_PROPERTY(Menu_Toggle)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Menu_Radio)
 
 	if (READ_PROPERTY)
@@ -420,11 +451,13 @@ BEGIN_PROPERTY(Menu_Radio)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Menu_Window)
 
 	GB.ReturnObject(GetObject(MENU->window()));
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Menu_Name)
 
@@ -434,6 +467,7 @@ BEGIN_PROPERTY(Menu_Name)
 		MENU->setName(GB.ToZeroString(PROP(GB_STRING)));
 
 END_PROPERTY
+
 
 BEGIN_PROPERTY(Menu_Action)
 
@@ -447,6 +481,7 @@ BEGIN_PROPERTY(Menu_Action)
 
 END_PROPERTY
 
+
 BEGIN_PROPERTY(Menu_SaveText)
 
 	if (READ_PROPERTY)
@@ -456,6 +491,25 @@ BEGIN_PROPERTY(Menu_SaveText)
 
 END_PROPERTY
 
+
+BEGIN_PROPERTY(Menu_Proxy)
+
+	if (READ_PROPERTY)
+		GB.ReturnObject(THIS->proxy);
+	else
+	{
+		CMENU *menu = (CMENU *)VPROP(GB_OBJECT);
+		
+		if (menu && GB.CheckObject(menu))
+			return;
+		
+		register_proxy(THIS, menu);
+	}
+
+END_PROPERTY
+
+
+//---------------------------------------------------------------------------
 
 GB_DESC CMenuChildrenDesc[] =
 {
@@ -496,6 +550,7 @@ GB_DESC CMenuDesc[] =
 	//GB_PROPERTY("TearOff", "b", CMENU_tear_off),
 	GB_PROPERTY("Action", "s", Menu_Action),
 	GB_PROPERTY_READ("Window", "Window", Menu_Window),
+	GB_PROPERTY("Proxy", "Menu", Menu_Proxy),
 
 	GB_PROPERTY_SELF("Children", ".Menu.Children"),
 

@@ -46,6 +46,7 @@ typedef
 		GB_VARIANT_VALUE tag;
 		char *action;
 		char *save_text;
+		void *proxy;
 		unsigned init_shortcut : 1;
 	} 
 	CMENU;

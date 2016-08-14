@@ -91,8 +91,7 @@ static QSet<CWIDGET *> *_enter_leave_set = NULL;
 
 static QT_COLOR_FUNC _after_set_color = NULL;
 
-#define EXT(_ob) (((CWIDGET *)_ob)->ext)
-
+#define EXT(_ob) ((CWIDGET_EXT *)((CWIDGET *)_ob)->ext)
 #define ENSURE_EXT(_ob) (EXT(_ob) ? EXT(_ob) : alloc_ext((CWIDGET *)(_ob)))
 
 #define HANDLE_PROXY(_ob) \
@@ -102,11 +101,11 @@ static QT_COLOR_FUNC _after_set_color = NULL;
 static CWIDGET_EXT *alloc_ext(CWIDGET *_object)
 {
 	GB.Alloc(POINTER(&(THIS->ext)), sizeof(CWIDGET_EXT));
-	CLEAR(THIS->ext);
+	CLEAR(THIS_EXT);
 	THIS_EXT->bg = COLOR_DEFAULT;
 	THIS_EXT->fg = COLOR_DEFAULT;
 	THIS_EXT->tag.type = GB_T_NULL;
-	return THIS->ext;
+	return THIS_EXT;
 }
 	
 static void set_mouse(QWidget *w, int mouse, void *cursor)

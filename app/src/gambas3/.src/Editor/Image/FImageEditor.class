@@ -2995,3 +2995,9 @@ Private Sub DoOperation(iOp As Integer)
   RefreshSelection
 
 End
+
+Public Sub GetPopupMenu() As Menu
+  
+  Return mnuEditor
+  
+End

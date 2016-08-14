@@ -665,7 +665,7 @@ Public Sub Reload()
   
   If $bNoHighlight Then
     If LTrim(sText) Like "<!DOCTYPE*" Or If LTrim(sText) Like "<html*" Then
-      edtEditor.Highlight = "HTML"
+      edtEditor.Highlight = "html"
     Else
       edtEditor.Highlight = ""
     Endif
@@ -1333,21 +1333,19 @@ Public Sub CheckCompletion(sMode As String)
   If sMode = "A" Then
     
     If Not FCompletion.VisibleFrom($hEditor) Then
+      
+      ' Select Case $hEditor.Highlight 
+      '   
+      '   Case "css"
+      '     
+      ' End Select
+      
       sWord = $hCompletion.GetWord(sLine & Key.Text, $hEditor.Column + 1)
       If String.Len(sWord) >= 3 Then FCompletion.Open(Me, "I", sWord)
       'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
+      
     Endif
     
-  ' Else If sMode = "_" Then
-  '   
-  '   If Not FCompletion.VisibleFrom(Editor) Then
-  '     sWord = GetIdentifier(sLine, Editor.Column)
-  '     If Len(sWord) >= 3 Then
-  '       FCompletion.Open(Me, "A", sWord & "_")
-  '     Endif
-  '     'IF Len(sWord) >= 3 THEN DEBUG FindCompletion(sWord).Join(" ")
-  '   Endif
-  '   
   Else If sMode = "<" Then
     
     If Not $hEditor.Selected And If $hEditor.Column >= 1 And If Not FCompletion.VisibleFrom($hEditor) Then
@@ -1546,4 +1544,10 @@ Public Sub SetFoldedProc(aFold As Integer[])
     $hEditor[iLine].Expanded = False
   Next
 
+End
+
+Public Sub GetPopupMenu() As Menu
+  
+  Return mnuEditor
+  
 End

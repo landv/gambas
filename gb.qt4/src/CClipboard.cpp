@@ -601,7 +601,7 @@ bool CDRAG_drag_enter(QWidget *w, CWIDGET *control, QDropEvent *e)
 	return cancel;
 }
 
-#define EXT(_ob) (((CWIDGET *)_ob)->ext)
+#define EXT(_ob) ((CWIDGET_EXT *)((CWIDGET *)_ob)->ext)
 
 void CDRAG_drag_leave(CWIDGET *control)
 {

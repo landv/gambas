@@ -64,6 +64,10 @@ void CACTION_register(void *control, const char *old, const char *key)
 
 	init_action();
 
+	//GB.Ref(control);
+	
+	SET_ACTION(control, key && *key);
+	
 	GB.Push(3,
 		GB_T_OBJECT, control,
 		GB_T_STRING, old, 0,
@@ -72,7 +76,7 @@ void CACTION_register(void *control, const char *old, const char *key)
 	// The register function must not raise an error, otherwise bad things may happen
 	GB.Call(&_action_register_func, 3, true);
 
-	SET_ACTION(control, key && *key);
+	//GB.Unref(&control);
 }
 
 void CACTION_raise(void *control)

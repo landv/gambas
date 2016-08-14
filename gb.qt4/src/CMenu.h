@@ -37,13 +37,15 @@
 #include "CPicture.h"
 
 #ifndef __CMENU_CPP
+
 extern GB_DESC CMenuDesc[];
 extern GB_DESC CMenuChildrenDesc[];
 extern int MENU_popup_count;
+
 #else
 
 #define THIS  OBJECT(CMENU)
-//#define CONTROL  OBJECT(CWIDGET)
+#define THIS_EXT ((CMENU_EXT *)(THIS->widget.ext))
 #define ACTION ((QAction *)((CWIDGET *)_object)->widget)
 #define PARENT_ACTION ((QAction *)((CWIDGET *)(THIS->parent))->widget)
 
@@ -53,18 +55,22 @@ extern int MENU_popup_count;
 
 #endif
 
+typedef 
+	struct {
+		GB_VARIANT_VALUE tag;
+		void *proxy;
+		char *action;
+	}
+	CMENU_EXT;
+
 typedef
 	struct _CMENU {
 		CWIDGET widget;
 		void *parent;
-		//QList<struct _CMENU *> children;
-		//QMenu *parentMenu;
-		//QMenuBar *parentMenuBar;
 		QWidget *toplevel;
 		QMenu *menu;
 		QKeySequence *accel;
 		CPICTURE *picture;
-		char *action;
 		char *save_text;
 		unsigned deleted : 1;
 		unsigned toggle : 1;
@@ -108,7 +114,7 @@ public:
 
 public slots:
 
-	void slotTriggered(QAction *);
+	void slotTriggered();
 	void slotToggled(bool);
 	void slotDestroyed();
 	void slotShown();

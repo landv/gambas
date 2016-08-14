@@ -478,7 +478,7 @@ void gMenu::initialize()
 	
 	sizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	
-	menus=g_list_append (menus,(gpointer)this);
+	menus = g_list_append (menus,(gpointer)this);
 }
 
 
@@ -514,7 +514,7 @@ gMenu::gMenu(gMenu *par, bool hidden)
 	pr = (gpointer)par;
 	
 	initialize();
-	sizeGroup=gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
+	//sizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	
 	if (!par) return;
 	if (!par->menu) return;
