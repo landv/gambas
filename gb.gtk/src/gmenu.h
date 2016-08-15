@@ -76,8 +76,9 @@ public:
 	void setAction(bool v) { _action = v; }
 	void setFont();
 	void setColor();
-	//bool isTearOff() const;
-	//void setTearOff(bool v);
+	
+	void setProxy(gMenu *menu);
+	gMenu *proxy() const { return _proxy; }
 
 //"Methods"
 	void popup();
@@ -107,11 +108,16 @@ public:
 	GtkWidget *image;
 	GtkWidget *check;
 	GtkSizeGroup *sizeGroup;
+	gMenu *_proxy;
+	unsigned _opened : 1;
+
 	void initialize();
 	gMenuStyle style() const { return _style; }
   void hideSeparators();
 	void willBeDeletedLater() { _delete_later = TRUE; }
 	void setRadio();
+	GtkMenu *getSubMenu();
+	void ensureChildMenu();
 
 private:
 
@@ -120,6 +126,7 @@ private:
   gPicture *_picture;
 	char *_shortcut;
 	char *_text;
+
 	unsigned _checked : 1;
 	unsigned _toggle : 1;
 	unsigned _radio : 1;

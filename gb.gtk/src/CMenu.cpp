@@ -60,13 +60,18 @@ static void register_proxy(void *_object, CMENU *proxy)
 	
 	GB.Unref(POINTER(&THIS->proxy));
 	
+	if (!MENU)
+		return;
+	
 	if (proxy)
 	{
 		GB.Ref(proxy);
 		THIS->proxy = proxy;
+		MENU->setProxy((gMenu *)proxy->widget);
 	}
+	else
+		MENU->setProxy(NULL);
 	
-	// set submenu
 }
 
 static void send_click_event(void *_object)
@@ -81,18 +86,22 @@ static int CMENU_check(void *_object)
 	return (MENU == NULL);
 }
 
-#ifndef GTK3
+#ifdef GTK3
+
+static void delete_menu(gMenu *menu)
+{
+	delete menu;
+}
+
+#else
+
 static void delete_later(gMenu *menu)
 {
 	delete menu;
 }
-#endif
 
 static void delete_menu(gMenu *menu)
 {
-#ifdef GTK3
-	delete menu;
-#else
 	void *_object = menu->hFree;
 
 	if (!MENU)
@@ -102,8 +111,9 @@ static void delete_menu(gMenu *menu)
 	THIS->widget = NULL;
 
 	GB.Post((GB_CALLBACK)delete_later, (intptr_t)menu);
-#endif
 }
+
+#endif
 
 static void cb_finish(gMenu *sender)
 {
@@ -234,6 +244,7 @@ END_METHOD
 BEGIN_METHOD_VOID(Menu_free)
 
 	GB.FreeString(&THIS->save_text);
+	register_proxy(THIS, NULL);
 	if (MENU) MENU->destroy();
 
 END_METHOD

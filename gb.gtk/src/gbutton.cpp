@@ -385,7 +385,6 @@ gButton::gButton(gContainer *par, Type typ) : gControl(par)
 		setColorButton();
 	}
 	
-	
 	setText(NULL);
 
 	if (type == Tool) 

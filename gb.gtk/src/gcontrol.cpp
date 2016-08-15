@@ -353,6 +353,9 @@ gControl::~gControl()
 
 	emit(SIGNAL(onFinish));
 
+	if (pr)
+		pr->remove(this);
+	
 	if (win && win->focus == this)
 		win->focus = NULL;
 
