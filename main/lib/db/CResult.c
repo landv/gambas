@@ -848,8 +848,10 @@ static CBLOB *make_blob(CRESULT *result, int field)
 
 	if (result->handle && result->pos >= 0)
 	{
+		BLOB->constant = FALSE;
 		result->driver->Result.Blob(result->handle, result->pos, field, BLOB);
-		set_blob(BLOB, BLOB->data, BLOB->length);
+		if (BLOB->constant)
+			set_blob(BLOB, BLOB->data, BLOB->length);
 	}
 
 	//fprintf(stderr, "make_blob: [%d] %d (%d) -> %p\n", result->pos, field, BLOB->length, BLOB);
