@@ -318,10 +318,12 @@ End
 Public Sub ScrollArea_Arrange()
   
   LayoutScrollbars
-  If $hBorder Then
+  If $hBorder Then 
     $hBorder.Move(0, 0, Me.W, Me.H)
-    $hBorder.Lower
+    '' GTK+ does not like if Lower() is called during the Arrange event!
+    ' $hBorder.Lower
   Endif
+  
   ' If Not $hTimerArrange Then
   '   $hTimerArrange = New Timer As "TimerArrange"
   '   $hTimerArrange.Trigger
@@ -531,6 +533,7 @@ Private Sub Border_Write(Value As Boolean)
     hSave = Me._Container
     Me._Container = Null
     $hBorder = New DrawingArea(Me) As "Border"
+    $hBorder.Lower '' GTK+ does not like if Lower() is called during the Arrange event!
     Me._Container = hSave
   Else
     $hBorder.Delete
