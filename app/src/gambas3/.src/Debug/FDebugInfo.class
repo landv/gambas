@@ -1222,7 +1222,7 @@ End
 
 Public Sub ShowConsole()
 
-  If FOutput.Parent Then wizDebug.Index = TAB_CONSOLE
+  If FOutput.Parent Then FDebugButton.SelectButton(TAB_CONSOLE)
   FOutput.SetFocus
 
 End
