@@ -23,6 +23,7 @@ End
 
 Public Sub _new(sId As String)
   
+  Component.Load("gb.db")
   $sPath = GetPath(sId) '"/tmp/gambas." & System.User.Id &/ "session" &/ $sId
   
 End
@@ -294,7 +295,7 @@ Public Sub _put(Value As Variant, Key As String)
     $cDelete[Key] = True
     $cValues.Remove(Key)
   Else
-    $cDelete.Remove(Key)
+    If $cDelete.Count Then $cDelete.Remove(Key)
     $cValues[Key] = Value
   Endif
   
@@ -335,6 +336,14 @@ Public Sub GetKeys() As String[]
   rValue = DB.Find("values")
   For Each rValue
     aKey.Add(rValue!sKey)
+  Next
+  
+  For Each $cDelete
+    Try aKey.Remove(aKey.Find($cDelete.Key))
+  Next
+  
+  For Each $cValues
+    If Not aKey.Exist($cValues.Key) Then aKey.Add($cValues.Key)
   Next
   
   Return aKey

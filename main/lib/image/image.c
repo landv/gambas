@@ -793,7 +793,7 @@ void IMAGE_make_gray(GB_IMG *img)
 	while (p != pm) 
 	{
 		col = BGRA_from_format(*p, format);
-		g = (((RED(col) + BLUE(col)) >> 1) + GREEN(col)) >> 1;
+		g = GRAY(col);
 		
 		*p++ = BGRA_to_format(RGBA(g, g, g, ALPHA(col)), format);
 	}

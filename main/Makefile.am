@@ -53,7 +53,7 @@ install-exec-local:
 	      rm -rf .gambas; \
 	      echo "Installing $$p..."; \
 	      $(INSTALL) $$p.gambas $(DESTDIR)$(bindir); \
-	      ln -s $$p.gambas $(DESTDIR)$(bindir)/$$p || true; \
+	      $(LN_S) -f $$p.gambas $(DESTDIR)$(bindir)/$$p || true; \
 	    else \
 	      echo "|| Unable to compile $$p" >> ../../../warnings.log; \
 	    fi \
