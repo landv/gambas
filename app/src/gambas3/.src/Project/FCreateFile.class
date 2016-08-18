@@ -178,6 +178,10 @@ Private Sub CreateFile() As Boolean
     
       sTemp = "' Gambas class file\n\n"
       
+      If sType = "webform" Then
+        sTemp &= "Export\n\n"
+      Endif
+      
       If chkDialog.Value Then 
         sTemp &= "Public Sub Run() As Boolean\n\n"
                  "\tReturn Not Me.ShowModal()\n\n"
