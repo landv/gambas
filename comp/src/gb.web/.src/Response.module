@@ -8,6 +8,8 @@ Property Buffered As Boolean
 Property ContentType As String
 Property Status As String
 Property EndOfLine As Integer
+Property Read Done As Boolean
+
 'Property LastModified As Date
 'Property Read Cache As _ResponseCache
 
@@ -21,6 +23,7 @@ Private $iBegin As Integer
 Private $bCompressionComponentChecked As Boolean
 Private $bCanUseCompression As Boolean
 Private $hComp As Compress
+Private $bDone As Boolean
 
 Public Sub AddHeader(Name As String, Value As String)
 
@@ -165,6 +168,8 @@ Public Sub End()
     Flush
     
   Endif
+  
+  $bDone = True
   
 'Catch
   
@@ -319,5 +324,11 @@ End
 Private Sub EndOfLine_Write(Value As Integer)
 
   File.Out.EndOfLine = Value
+
+End
+
+Private Function Done_Read() As Boolean
+
+  Return $bDone
 
 End

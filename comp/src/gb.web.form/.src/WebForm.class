@@ -51,6 +51,10 @@ Private $sHeight As String
 Private $hWindowContainer As WebContainer
 'Private $bCentered As Boolean
 
+Static Public Sub HandleRequest()
+  
+End
+
 Static Public Sub Main()
 
   Dim sPath As String
@@ -62,6 +66,9 @@ Static Public Sub Main()
   Dim aLib As String[]
   Dim sFile As String
   Dim sKey As String
+  
+  Me.HandleRequest
+  If Response.Done Then Return
   
   System.Language = Request.Language
   
