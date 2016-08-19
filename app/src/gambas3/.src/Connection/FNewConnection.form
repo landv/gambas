@@ -1,7 +1,7 @@
 # Gambas Form File 3.0
 
 { Form Form
-  MoveScaled(0,0,98,91)
+  MoveScaled(0,0,103,91)
   Icon = Picture["img/16/database.png"]
   Resizable = False
   Arrangement = Arrange.Vertical
@@ -65,7 +65,7 @@
     }
   }
   { panLogin VBox
-    MoveScaled(1,21,68,13)
+    MoveScaled(1,21,96,9)
     Spacing = True
     { HBox4 HBox
       MoveScaled(0,0,68,4)
@@ -79,9 +79,10 @@
       }
     }
     { HBox5 HBox
-      MoveScaled(0,5,68,4)
+      MoveScaled(0,5,79,4)
+      Spacing = True
       { Label4 Label
-        MoveScaled(0,0,18,4)
+        MoveScaled(0,0,17,4)
         Text = ("Password")
       }
       { txtPassword TextBox
@@ -89,25 +90,20 @@
         Expand = True
         Password = True
       }
-    }
-    { HBox9 HBox
-      MoveScaled(0,10,68,3)
-      { Label9 Label
-        MoveScaled(0,0,18,3)
-      }
       { chkRememberPassword CheckBox
-        MoveScaled(27,0,24,3)
+        MoveScaled(53,0,24,4)
         Expand = True
+        AutoResize = True
         Text = ("Remember password")
       }
     }
   }
   { panDatabase VBox
-    MoveScaled(1,35,84,47)
+    MoveScaled(1,35,96,47)
     AutoResize = True
     Spacing = True
     { HBox6 HBox
-      MoveScaled(0,0,84,4)
+      MoveScaled(0,0,96,4)
       { Label6 Label
         MoveScaled(0,0,18,4)
         Text = ("Database")
@@ -119,13 +115,13 @@
       }
     }
     { panChooseDatabase HBox
-      MoveScaled(0,5,68,30)
+      MoveScaled(0,5,95,30)
       Visible = False
       { Label8 Label
         MoveScaled(0,0,18,3)
       }
       { VBox1 VBox
-        MoveScaled(32,0,35,18)
+        MoveScaled(27,0,66,18)
         Expand = True
         Spacing = True
         { lvwDatabase ListView
@@ -133,7 +129,7 @@
           Expand = True
         }
         { panDatabaseAction HBox
-          MoveScaled(0,12,34,4)
+          MoveScaled(0,12,65,4)
           Spacing = True
           { btnCreateDatabase Button
             MoveScaled(0,0,14,4)
@@ -144,6 +140,22 @@
             MoveScaled(15,0,14,4)
             AutoResize = True
             Picture = Picture["icon:/small/delete"]
+          }
+          { panCreateFrom HBox
+            MoveScaled(30,0,30,4)
+            Expand = True
+            Spacing = True
+            { chkCreateFrom CheckBox
+              MoveScaled(0,0,9,4)
+              AutoResize = True
+              Text = ("From")
+            }
+            { cmbCreateFrom ComboBox
+              MoveScaled(9,0,20,4)
+              Enabled = False
+              Expand = True
+              ReadOnly = True
+            }
           }
         }
       }

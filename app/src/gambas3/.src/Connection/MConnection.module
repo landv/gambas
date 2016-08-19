@@ -334,6 +334,24 @@ Finally
   
 End
 
+Public Sub GetTemplates() As String[]
+  
+  Dim sFile As String
+  Dim aConn As New String[]
+  
+  For Each sFile In Dir(Project.Dir &/ ".connection", "*.template")
+    sFile = File.BaseName(sFile)
+    If Not Exist(Project.Dir &/ ".connection" &/ sFile & ".connection") Then Continue
+    aConn.Add(sFile)
+  Next
+  aConn.Sort
+
+Finally 
+
+  Return aConn
+  
+End
+
 Public Sub FillViewWithTables(lvwTable As TreeView, hConn As Connection, bShowSystem As Boolean)
   
   Dim hTable As Table

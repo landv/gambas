@@ -226,6 +226,26 @@ Public Sub GetTemplate() As String
   
 End
 
+Public Sub Copy() As Connection
+
+  Dim hConn As Connection
+  
+  hConn = New Connection
+  hConn.Host = Me.Host
+  hConn.IgnoreCharset = Me.IgnoreCharset
+  hConn.Name = Me.Name
+  hConn.Password = Me.Password
+  hConn.Port = Me.Port
+  hConn.Timeout = Me.Timeout
+  hConn.Type = Me.Type
+  hConn.User = Me.User
+
+  Return hConn
+  
+End
+
+
+
 Private Function SQL_Read() As SQLRequest
 
   Return New SQLRequest(Me)

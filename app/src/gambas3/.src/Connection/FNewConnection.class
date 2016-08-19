@@ -206,20 +206,38 @@ Private Sub UpdateCreateDatabase()
   Dim sDatabase As String
   
   If Not $hConn.Opened Then Return
+  
   sDatabase = Trim(txtDatabase.Text)
   If sDatabase Then
+  
     If Not $hConn.Databases.Exist(sDatabase) Then
+      
       btnCreateDatabase.Text = ("Create database")
+      
       btnCreateDatabase.Show
       btnDeleteDatabase.Hide
+      
+      cmbCreateFrom.List = MConnection.GetTemplates()
+      panCreateFrom.Visible = cmbCreateFrom.Count
+      chkCreateFrom.Value = False
+      cmbCreateFrom.Enabled = False
+      
     Else
+      
       btnDeleteDatabase.Text = ("Delete database")
+      
       btnCreateDatabase.Hide
+      panCreateFrom.Hide
       btnDeleteDatabase.Show
+    
     Endif
+    
     panDatabaseAction.Show
+  
   Else
+  
     panDatabaseAction.Hide
+  
   Endif
   
   Try lvwDatabase[sDatabase].Selected = True
@@ -329,9 +347,20 @@ End
 
 Public Sub btnCreateDatabase_Click()
 
+  Dim hConn As Connection
+  Dim sName As String
+  
   Inc Application.Busy
-  $hConn.Databases.Add(Trim(txtDatabase.Text))
+  sName = Trim(txtDatabase.Text)
+  $hConn.Databases.Add(sName)
   FillDatabaseList
+  If chkCreateFrom.Value Then
+    hConn = $hConn.Copy()
+    hConn.Name = sName
+    hConn.Open
+    hConn.ApplyTemplate(File.Load(Project.Dir &/ ".connection" &/ cmbCreateFrom.Text & ".template"))
+    hConn.Close
+  Endif
   Dec Application.Busy
   
 Catch
@@ -359,5 +388,11 @@ Catch
   Application.Busy = 0
   Balloon.Error(("Unable to delete database.") & "\n\n" & Error.Text, btnDeleteDatabase)
   txtDatabase.SetFocus
+
+End
+
+Public Sub chkCreateFrom_Click()
+
+  cmbCreateFrom.Enabled = chkCreateFrom.Value
 
 End
