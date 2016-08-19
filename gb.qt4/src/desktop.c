@@ -43,15 +43,6 @@ static const char *calc_desktop_type()
 {
 	char *env;
 	
-	env = getenv("XDG_CURRENT_DESKTOP");
-	if (env && *env && strlen(env) < sizeof(_desktop))
-	{
-		if (env[0] == 'X' && env[1] == '-')
-			env += 2;
-		
-		return env;
-	}
-	
 	env = getenv("KDE_FULL_SESSION");
 	if (env && strcasecmp(env, "true") == 0)
 	{
@@ -64,6 +55,15 @@ static const char *calc_desktop_type()
 				return "KDE5";
 		}
 		return "KDE";
+	}
+	
+	env = getenv("XDG_CURRENT_DESKTOP");
+	if (env && *env && strlen(env) < sizeof(_desktop))
+	{
+		if (env[0] == 'X' && env[1] == '-')
+			env += 2;
+		
+		return env;
 	}
 	
 	env = getenv("GNOME_DESKTOP_SESSION_ID");

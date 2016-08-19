@@ -189,27 +189,33 @@ Static Private Sub GetDesktop() As String
 
   If Not $sDesktop Then
 
-    Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
-      Case "LXDE"
-        $sDesktop = "LXDE"
-      Case "UNITY"
-        $sDesktop = "UNITY"
-      Default
-        $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
-        If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
-    End Select
+    If Application.Env["KDE_FULL_SESSION"] Then
+      
+      If Application.Env["KDE_SESSION_VERSION"] = "4" Then
+        $sDesktop = "KDE4"
+      Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
+        $sDesktop = "KDE5"
+      Else
+        $sDesktop = "KDE"
+      Endif
+
+    Else
+      
+      Select Case UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+        Case "LXDE"
+          $sDesktop = "LXDE"
+        Case "UNITY"
+          $sDesktop = "UNITY"
+        Default
+          $sDesktop = UCase(Application.Env["XDG_CURRENT_DESKTOP"])
+          If $sDesktop Begins "X-" Then $sDesktop = Mid$($sDesktop, 3)
+      End Select
+      
+    Endif
     
     If Not $sDesktop Then
     
-      If Application.Env["KDE_FULL_SESSION"] Then
-        If Application.Env["KDE_SESSION_VERSION"] = "4" Then
-          $sDesktop = "KDE4"
-        Else If Application.Env["KDE_SESSION_VERSION"] = "5" Then
-          $sDesktop = "KDE5"
-        Else
-          $sDesktop = "KDE"
-        Endif
-      Else If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
+      If Application.Env["GNOME_DESKTOP_SESSION_ID"] Then
         $sDesktop = "GNOME"
       Else If Application.Env["MATE_DESKTOP_SESSION_ID"] Or If Application.Env["MATECORBA_SOCKETDIR"] Then
         $sDesktop = "MATE"
