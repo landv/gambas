@@ -2484,7 +2484,7 @@ End
 
 Public Sub mnuEvent_Click()
 
-  GotoEventMethod(Master, Last.Text)
+  GotoEventMethod(Master, Replace(Last.Text, "&", ""))
 
 End
 
