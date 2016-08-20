@@ -10,7 +10,7 @@
     Border = False
     ScrollBar = Scroll.Vertical
     { tabBrush TabPanel
-      MoveScaled(1,6,61,53)
+      MoveScaled(-1,1,61,53)
       Arrangement = Arrange.Vertical
       Border = False
       Count = 4
@@ -24,7 +24,7 @@
         Spacing = True
         Margin = True
         { cchColor ColorChooser
-          MoveScaled(0,0,47,37)
+          MoveScaled(0,0,50,37)
           Expand = True
           Border = False
         }
@@ -89,7 +89,7 @@
             }
             { btnColorGradient ToolButton
               MoveScaled(8,0,4,4)
-              ToolTip = ("Select gradient stop color...")
+              ToolTip = ("Select gradient stop color") & "..."
               Picture = Picture["icon:/small/color"]
             }
             { btnExchangeGradient ToolButton
@@ -191,11 +191,11 @@
       }
       Index = 0
     }
-    { Separator4 Separator
-      MoveScaled(22,60,15,0)
+    { Separator6 Separator
+      MoveScaled(20,56,15,0)
     }
     { HBox4 HBox
-      MoveScaled(0,61,56,4)
+      MoveScaled(2,58,56,4)
       { btnStroke ToolButton btnAction
         Name = "btnStroke"
         MoveScaled(0,0,4,4)
@@ -254,8 +254,8 @@
         ToolTip = ("Fill rule")
       }
     }
-    { Separator6 Separator
-      MoveScaled(18,66,15,0)
+    { Separator4 Separator
+      MoveScaled(22,66,15,0)
     }
     { panSlider VBox
       MoveScaled(1,67,63,17)
@@ -549,6 +549,7 @@
       { fchText FontChooser
         MoveScaled(1,6,55,8)
         Border = False
+        ShowRelative = False
       }
       { txtText TextArea
         MoveScaled(1,15,54,7)

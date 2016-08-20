@@ -71,8 +71,8 @@ Public Sub _new()
   
   palColor.Colors = $aDefaultColor
   
-  SetLineCap(Paint.LineCapButt)
-  SetLineJoin(Paint.LineJoinMiter)
+  SetLineCap(Paint.LineCapRound)
+  SetLineJoin(Paint.LineJoinRound)
   SetFillRule(Paint.FillRuleWinding)
   
 End

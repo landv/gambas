@@ -833,7 +833,7 @@ Private Sub Highlight_Write(Value As String)
 
   Dim Y As Integer
   
-  If Value Then
+  If Value And If Value <> "none" And If Value <> "custom" Then
     If Value == "c++" Then Value = "cplusplus"
     $hHighlight = TextHighlighter[Value]
   Else
