@@ -1,1 +1,0 @@
-../main/lib/db/gb.db.proto.h

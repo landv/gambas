@@ -1,1 +1,0 @@
-../../gb.gtk/src/gclipboard.h

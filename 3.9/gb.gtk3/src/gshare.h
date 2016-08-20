@@ -1,1 +1,0 @@
-../../gb.gtk/src/gshare.h
